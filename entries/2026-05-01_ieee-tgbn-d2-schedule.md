@@ -62,4 +62,4 @@ The May 2026 → July 2026 slip is a 2-month delay that does not cascade — the
 
 ## Images
 
-![LB291 (D1.0) comment resolution status, March 2026 Vancouver | LB291（D1.0）评论解决进度，2026 年 3 月温哥华会议](https://www.ieee802.org/11/Reports/IEEE%20P802.11%20-%20TASK%20GROUP%20BN%20(UHR)%20-%20GROUP%20INFORMATION%20UPDATE_files/image004.png)
+![LB291 (D1.0) comment resolution status, March 2026 Vancouver | LB291（D1.0）评论解决进度，2026 年 3 月温哥华会议](assets/2026-05-01_ieee-tgbn-d2-schedule/comment-resolution-status.png)

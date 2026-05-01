@@ -88,7 +88,12 @@ A single shared section that lists images relevant to the finding, in markdown i
 
 If you only have one caption, omit the `|` and the rebuilder will use the same string for both languages. If you have no relevant images, omit the section entirely.
 
-Image URLs should point at stable hosts: arxiv (`https://arxiv.org/html/<id>/x<N>.png`), IEEE pages, vendor press-kit URLs. Avoid hotlinking from sites that block external referers.
+Image URLs may be either:
+
+- **Hotlinks** (preferred for arxiv and most CDN-hosted images) — e.g. `https://arxiv.org/html/<id>/x<N>.png`. Stable, costs no repo space.
+- **Locally hosted** under `assets/<entry-id>/<filename>` (use this when the source server blocks hotlinking, e.g. some IEEE Word-saved HTML pages and a few enterprise CDNs). Reference as a relative URL: `assets/2026-05-01_foo/diagram.png`. The viewer resolves it relative to `index.html`, so it works under both `file://` and the GitHub Pages mirror.
+
+Test the URL in a private-browser window before committing — if it 404s when opened directly (i.e. the source enforces a Referer or User-Agent), fall back to local hosting.
 
 ## Contributing
 
