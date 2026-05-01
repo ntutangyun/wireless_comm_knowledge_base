@@ -18,10 +18,11 @@
   * { box-sizing: border-box; }
   body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
     color: var(--fg); background: var(--bg);
     font-size: 14px; line-height: 1.5;
   }
+  body.lang-zh { font-family: "Microsoft YaHei", "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
   header {
     border-bottom: 2px solid var(--accent);
     padding: 14px 24px;
@@ -31,9 +32,17 @@
     margin: 0; font-size: 18px; color: var(--accent); font-weight: 700;
   }
   header .stats { color: var(--muted); font-size: 12px; }
-  header .repo-link { margin-left: auto; font-size: 12px; }
+  header .header-right { margin-left: auto; display: flex; gap: 14px; align-items: baseline; font-size: 12px; }
   header .repo-link a { color: var(--muted); text-decoration: none; }
   header .repo-link a:hover { color: var(--accent); text-decoration: underline; }
+  .lang-toggle {
+    display: inline-flex; border: 1px solid var(--border); border-radius: 4px; overflow: hidden;
+  }
+  .lang-toggle button {
+    background: none; border: none; padding: 4px 10px; font: inherit;
+    color: var(--muted); cursor: pointer; font-size: 12px;
+  }
+  .lang-toggle button.active { background: var(--accent); color: var(--bg); }
   nav.tabs {
     display: flex; gap: 0; padding: 0 24px; border-bottom: 1px solid var(--border);
   }
@@ -95,6 +104,23 @@
   .entry .links { margin-top: 6px; font-size: 12px; }
   .entry .links a { color: var(--accent); text-decoration: none; margin-right: 12px; }
   .entry .links a:hover { text-decoration: underline; }
+  .entry .images {
+    display: flex; gap: 8px; overflow-x: auto;
+    margin-top: 8px; padding-bottom: 4px;
+  }
+  .entry .images figure {
+    margin: 0; flex: 0 0 auto; max-width: 220px;
+  }
+  .entry .images img {
+    max-width: 220px; max-height: 140px;
+    border: 1px solid var(--border); border-radius: 3px;
+    background: #fafafa;
+    display: block;
+  }
+  .entry .images figcaption {
+    font-size: 11px; color: var(--muted); margin-top: 3px;
+    line-height: 1.3;
+  }
   .empty {
     text-align: center; padding: 60px 20px;
     color: var(--muted); font-size: 13px;
@@ -113,25 +139,31 @@
 <script src="kb.js" onerror="window.__KB_JS_FAILED=true"></script>
 
 <header>
-  <h1>Wi-Fi Knowledge Base</h1>
+  <h1 id="header-title">Wi-Fi Knowledge Base</h1>
   <div class="stats" id="stats">Loading…</div>
-  <div class="repo-link"><a href="https://github.com/ntutangyun/wifi_knowledge_base" target="_blank" rel="noopener">GitHub ↗</a></div>
+  <div class="header-right">
+    <div class="lang-toggle" id="lang-toggle">
+      <button data-lang="en" class="active">EN</button>
+      <button data-lang="zh">中文</button>
+    </div>
+    <div class="repo-link"><a href="https://github.com/ntutangyun/wifi_knowledge_base" target="_blank" rel="noopener">GitHub ↗</a></div>
+  </div>
 </header>
 
-<nav class="tabs">
-  <button data-tab="all" class="active">All entries</button>
-  <button data-tab="recent">Last 7 days</button>
-  <button data-tab="recent30">Last 30 days</button>
+<nav class="tabs" id="tabs">
+  <button data-tab="all" class="active"></button>
+  <button data-tab="recent"></button>
+  <button data-tab="recent30"></button>
 </nav>
 
 <main>
   <aside class="facets">
-    <input class="search" id="search" placeholder="Search title, summary, topics…" />
+    <input class="search" id="search" />
 
-    <h3>Type</h3>
+    <h3 id="facet-type-h">Type</h3>
     <div id="facet-type"></div>
 
-    <h3>Topic</h3>
+    <h3 id="facet-topic-h">Topic</h3>
     <div id="facet-topic"></div>
   </aside>
 
@@ -142,6 +174,41 @@
 </main>
 
 <script>
+const I18N = {
+  en: {
+    title: "Wi-Fi Knowledge Base",
+    search_placeholder: "Search title, summary, topics…",
+    facet_type: "Type",
+    facet_topic: "Topic",
+    tab_all: "All entries",
+    tab_recent: "Last 7 days",
+    tab_recent30: "Last 30 days",
+    result_count: (n, total) => n + " of " + total,
+    no_match: "No entries match the current filters.",
+    last_updated: "last updated",
+    entries_label: "entries",
+    link_original: "↗ original",
+    link_entry: "📄 entry",
+    load_error: (msg) => 'No <code>kb.json</code> yet, or <code>kb.js</code> failed to load (' + msg + '). Run <code>python scripts/rebuild_index.py</code> to regenerate.',
+  },
+  zh: {
+    title: "Wi-Fi 知识库",
+    search_placeholder: "搜索标题、摘要、标签…",
+    facet_type: "类型",
+    facet_topic: "主题",
+    tab_all: "全部条目",
+    tab_recent: "最近 7 天",
+    tab_recent30: "最近 30 天",
+    result_count: (n, total) => "共 " + total + " 条 · 命中 " + n,
+    no_match: "当前筛选条件下没有条目。",
+    last_updated: "最后更新",
+    entries_label: "条目",
+    link_original: "↗ 原文链接",
+    link_entry: "📄 条目文件",
+    load_error: (msg) => '尚无 <code>kb.json</code>，或 <code>kb.js</code> 加载失败（' + msg + '）。请运行 <code>python scripts/rebuild_index.py</code> 重建。',
+  },
+};
+
 let state = {
   entries: [],
   topicCounts: {},
@@ -152,16 +219,36 @@ let state = {
     types: new Set(),
     topics: new Set(),
   },
+  lang: localStorage.getItem("kb_lang") || "en",
 };
 
+function t() { return I18N[state.lang]; }
+
+function applyLang() {
+  document.documentElement.lang = state.lang === "zh" ? "zh" : "en";
+  document.body.classList.toggle("lang-zh", state.lang === "zh");
+  const labels = t();
+  document.title = labels.title;
+  document.getElementById("header-title").textContent = labels.title;
+  document.getElementById("search").placeholder = labels.search_placeholder;
+  document.getElementById("facet-type-h").textContent = labels.facet_type;
+  document.getElementById("facet-topic-h").textContent = labels.facet_topic;
+  const tabBtns = document.querySelectorAll("nav.tabs button");
+  tabBtns[0].textContent = labels.tab_all;
+  tabBtns[1].textContent = labels.tab_recent;
+  tabBtns[2].textContent = labels.tab_recent30;
+  document.querySelectorAll("#lang-toggle button").forEach(b => {
+    b.classList.toggle("active", b.dataset.lang === state.lang);
+  });
+}
+
 async function load() {
+  applyLang();
   try {
     let data;
     if (window.KB_DATA && Array.isArray(window.KB_DATA.entries)) {
-      // kb.js loaded successfully — use it (works under file:// without a server).
       data = window.KB_DATA;
     } else {
-      // Fall back to fetching kb.json directly (works when served over http(s)://).
       const r = await fetch("kb.json", { cache: "no-store" });
       if (!r.ok) throw new Error("HTTP " + r.status);
       data = await r.json();
@@ -171,18 +258,15 @@ async function load() {
     state.typeCounts = data.type_counts || {};
 
     document.getElementById("stats").textContent =
-      state.entries.length + " entries · last updated " +
-      (data.last_updated || "—");
+      state.entries.length + " " + t().entries_label + " · " +
+      t().last_updated + " " + (data.last_updated || "—");
 
     renderFacets();
     render();
   } catch (err) {
-    document.getElementById("stats").textContent = "Failed to load kb.json (" + err.message + ")";
+    document.getElementById("stats").textContent = "—";
     document.getElementById("entries").innerHTML =
-      '<div class="empty">No <code>kb.json</code> yet, or <code>kb.js</code> ' +
-      'failed to load. ' +
-      'Run <code>python scripts/rebuild_index.py</code> ' +
-      'to regenerate it from the entries directory.</div>';
+      '<div class="empty">' + t().load_error(err.message) + '</div>';
   }
 }
 
@@ -191,7 +275,9 @@ function renderFacets() {
     .sort((a, b) => b[1] - a[1])
     .map(([name, n]) => {
       const id = key + "-" + name.replace(/[^a-z0-9]/gi, "_");
-      return '<label><input type="checkbox" data-facet="' + key + '" data-value="' + name + '" id="' + id + '">' +
+      const checked = state.filters[key === "type" ? "types" : "topics"].has(name);
+      return '<label><input type="checkbox" data-facet="' + key + '" data-value="' + name + '" id="' + id + '"' +
+             (checked ? " checked" : "") + '>' +
              '<span>' + name + '</span><span class="count">' + n + '</span></label>';
     }).join("");
 
@@ -225,26 +311,53 @@ function entryMatches(e) {
   }
 
   if (f.types.size && !f.types.has(e.type)) return false;
-  if (f.topics.size && !(e.topics || []).some(t => f.topics.has(t))) return false;
+  if (f.topics.size && !(e.topics || []).some(tg => f.topics.has(tg))) return false;
 
   if (f.search) {
     const q = f.search.toLowerCase();
-    const hay = (e.search_blob || (e.title + " " + (e.topics || []).join(" ") + " " + (e.summary_short || ""))).toLowerCase();
+    const hay = (e.search_blob ||
+                 [e.title_en, e.title_zh, (e.topics || []).join(" "),
+                  e.summary_short_en, e.summary_short_zh].join(" ")).toLowerCase();
     if (!hay.includes(q)) return false;
   }
 
   return true;
 }
 
+function pickLang(e, field) {
+  // Prefer the active language; fall back to the other if missing.
+  const primary = e[field + "_" + state.lang];
+  if (primary) return primary;
+  const fallback = e[field + "_" + (state.lang === "en" ? "zh" : "en")];
+  return fallback || "";
+}
+
+function imagesHTML(images) {
+  if (!images || !images.length) return "";
+  const captionKey = state.lang === "zh" ? "caption_zh" : "caption_en";
+  const figs = images.map(img => {
+    const cap = img[captionKey] || img.caption_en || img.caption_zh || "";
+    return '<figure>' +
+             '<a href="' + escapeAttr(img.url) + '" target="_blank" rel="noopener">' +
+               '<img src="' + escapeAttr(img.url) + '" alt="' + escapeAttr(cap) + '" loading="lazy">' +
+             '</a>' +
+             (cap ? '<figcaption>' + escapeHTML(cap) + '</figcaption>' : '') +
+           '</figure>';
+  }).join("");
+  return '<div class="images">' + figs + '</div>';
+}
+
 function entryHTML(e) {
   const novelty = (e.novelty_score != null) ? '<span class="pill novelty">novelty ' + e.novelty_score + '</span>' : '';
-  const topicPills = (e.topics || []).map(t => '<span class="pill topic">' + t + '</span>').join("");
-  // Viewer is at the repo root, entries at entries/.
+  const topicPills = (e.topics || []).map(tg => '<span class="pill topic">' + tg + '</span>').join("");
   const entryRel = e.entry_path || "";
+  const title = pickLang(e, "title");
+  const summary = pickLang(e, "summary_short");
+  const labels = t();
   return '' +
     '<div class="entry">' +
       '<div class="row1">' +
-        '<div class="title"><a href="' + (e.url || "#") + '" target="_blank" rel="noopener">' + escapeHTML(e.title) + '</a></div>' +
+        '<div class="title"><a href="' + (e.url || "#") + '" target="_blank" rel="noopener">' + escapeHTML(title) + '</a></div>' +
         '<div class="date">' + (e.date_found || "") + '</div>' +
       '</div>' +
       '<div class="meta">' +
@@ -252,10 +365,11 @@ function entryHTML(e) {
         topicPills +
         novelty +
       '</div>' +
-      '<div class="summary">' + escapeHTML(e.summary_short || "") + '</div>' +
+      '<div class="summary">' + escapeHTML(summary) + '</div>' +
+      imagesHTML(e.images) +
       '<div class="links">' +
-        (e.url ? '<a href="' + e.url + '" target="_blank" rel="noopener">↗ original</a>' : '') +
-        '<a href="' + entryRel + '" target="_blank">📄 entry</a>' +
+        (e.url ? '<a href="' + e.url + '" target="_blank" rel="noopener">' + labels.link_original + '</a>' : '') +
+        '<a href="' + entryRel + '" target="_blank">' + labels.link_entry + '</a>' +
       '</div>' +
     '</div>';
 }
@@ -265,13 +379,14 @@ function escapeHTML(s) {
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
   }[c]));
 }
+function escapeAttr(s) { return escapeHTML(s); }
 
 function render() {
   const matches = state.entries.filter(entryMatches);
-  document.getElementById("result-count").textContent = matches.length + " of " + state.entries.length;
+  document.getElementById("result-count").textContent = t().result_count(matches.length, state.entries.length);
   if (!matches.length) {
     document.getElementById("entries").innerHTML =
-      '<div class="empty">No entries match the current filters.</div>';
+      '<div class="empty">' + t().no_match + '</div>';
   } else {
     document.getElementById("entries").innerHTML = matches.map(entryHTML).join("");
   }
@@ -289,6 +404,22 @@ document.querySelectorAll("nav.tabs button").forEach(btn => {
 document.getElementById("search").addEventListener("input", e => {
   state.filters.search = e.target.value;
   render();
+});
+
+document.querySelectorAll("#lang-toggle button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    state.lang = btn.dataset.lang;
+    localStorage.setItem("kb_lang", state.lang);
+    applyLang();
+    // Re-render: stats line + entries pick up the new language.
+    if (state.entries.length) {
+      const data = window.KB_DATA || {};
+      document.getElementById("stats").textContent =
+        state.entries.length + " " + t().entries_label + " · " +
+        t().last_updated + " " + (data.last_updated || "—");
+      render();
+    }
+  });
 });
 
 load();

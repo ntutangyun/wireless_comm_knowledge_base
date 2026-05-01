@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 """Rebuild index.json, kb.json, and kb.js from entries/*.md.
 
+Bilingual schema (v3): each entry carries title_en / title_zh in
+frontmatter, body sections suffixed with (EN) or (ZH), and an optional
+shared `## Images` section with markdown image syntax whose alt text is
+"<english caption> | <chinese caption>".
+
 The entry frontmatter is the single source of truth. This script never
 touches the entry .md files themselves — it only reads them and writes the
 three derived files at the repo root atomically (write-temp-then-rename).
@@ -29,6 +34,7 @@ from typing import Any
 
 # Topic-normalisation rewrites. Lowercased keys; values are the canonical
 # spelling we want to land on. Keep this short — only fix actual collisions.
+# Topic tags are intentionally English-canonical (matching IEEE conventions).
 TOPIC_REWRITES = {
     "80211bn": "802.11bn",
     "80211be": "802.11be",
@@ -98,14 +104,49 @@ def parse_frontmatter(text: str) -> tuple[dict[str, Any], str]:
     return out, body
 
 
-def first_summary_paragraph(body: str) -> str:
-    """Return the first paragraph under the '## Summary' heading."""
-    m = re.search(r"^## Summary\s*\n(.+?)(?=\n##|\Z)", body, flags=re.S | re.M)
+def section_paragraph(body: str, heading: str) -> str:
+    """Return the first paragraph under a heading like '## Summary (EN)'.
+
+    The heading match is exact (case-sensitive). Returns "" if not found.
+    """
+    pattern = re.escape(heading)
+    m = re.search(rf"^{pattern}\s*\n(.+?)(?=\n##|\Z)", body, flags=re.S | re.M)
     if not m:
         return ""
     block = m.group(1).strip()
     para = block.split("\n\n", 1)[0]
     return re.sub(r"\s+", " ", para).strip()
+
+
+# Markdown image: ![alt text](url)
+IMAGE_RE = re.compile(r"!\[([^\]]*)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
+
+
+def parse_images(body: str) -> list[dict[str, str]]:
+    """Parse the '## Images' section.
+
+    Each image line is ``![<en-caption> | <zh-caption>](<url>)``. If the alt
+    text contains no ``|``, it's used as both captions.
+    """
+    m = re.search(r"^## Images\s*\n(.+?)(?=\n##|\Z)", body, flags=re.S | re.M)
+    if not m:
+        return []
+    block = m.group(1)
+    out: list[dict[str, str]] = []
+    for alt, url in IMAGE_RE.findall(block):
+        alt = alt.strip()
+        url = url.strip()
+        if not url:
+            continue
+        if "|" in alt:
+            en, _, zh = alt.partition("|")
+            caption_en = en.strip()
+            caption_zh = zh.strip()
+        else:
+            caption_en = alt
+            caption_zh = alt
+        out.append({"url": url, "caption_en": caption_en, "caption_zh": caption_zh})
+    return out
 
 
 def normalise_topics(topics: list[str]) -> list[str]:
@@ -119,7 +160,7 @@ def normalise_topics(topics: list[str]) -> list[str]:
     return out
 
 
-REQUIRED = ("id", "date_found", "type", "title", "url", "topics", "novelty_score")
+REQUIRED = ("id", "date_found", "type", "title_en", "title_zh", "url", "topics", "novelty_score")
 
 
 def build_entry_record(path: Path, fm: dict[str, Any], body: str) -> dict[str, Any]:
@@ -127,22 +168,34 @@ def build_entry_record(path: Path, fm: dict[str, Any], body: str) -> dict[str, A
     if missing:
         raise ValueError(f"missing fields {missing} in {path}")
     topics = normalise_topics(fm.get("topics") or [])
-    summary_short = first_summary_paragraph(body)
+    summary_short_en = section_paragraph(body, "## Summary (EN)")
+    summary_short_zh = section_paragraph(body, "## Summary (ZH)")
+    images = parse_images(body)
     return {
         "id": fm["id"],
         "date_found": fm["date_found"],
         "type": fm["type"],
-        "title": fm["title"],
+        "title_en": fm["title_en"],
+        "title_zh": fm["title_zh"],
         "url": fm.get("url") or "",
         "topics": topics,
         "novelty_score": int(fm.get("novelty_score") or 0),
         "entry_path": f"entries/{path.name}",
-        "summary_short": summary_short,
+        "summary_short_en": summary_short_en,
+        "summary_short_zh": summary_short_zh,
+        "images": images,
     }
 
 
 def build_search_blob(entry: dict[str, Any]) -> str:
-    parts = [entry["title"], " ".join(entry["topics"]), entry["summary_short"], entry["type"]]
+    parts = [
+        entry["title_en"],
+        entry["title_zh"],
+        " ".join(entry["topics"]),
+        entry["summary_short_en"],
+        entry["summary_short_zh"],
+        entry["type"],
+    ]
     return " ".join(parts).lower()
 
 
@@ -203,11 +256,15 @@ def main(argv: list[str]) -> int:
     for r in records:
         if r["date_found"] > today:
             warnings.append(f"future date_found in {r['entry_path']}: {r['date_found']}")
+        if not r["summary_short_en"]:
+            warnings.append(f"empty Summary (EN) in {r['entry_path']}")
+        if not r["summary_short_zh"]:
+            warnings.append(f"empty Summary (ZH) in {r['entry_path']}")
 
     records.sort(key=lambda r: (r["date_found"], r["id"]), reverse=True)
 
     index_payload = {
-        "schema_version": 2,
+        "schema_version": 3,
         "last_updated": today,
         "entries": records,
     }
@@ -215,13 +272,14 @@ def main(argv: list[str]) -> int:
 
     topic_counts = Counter(t for r in records for t in r["topics"])
     type_counts = Counter(r["type"] for r in records)
+    image_count = sum(len(r["images"]) for r in records)
     kb_entries = []
     for r in records:
         e = dict(r)
         e["search_blob"] = build_search_blob(r)
         kb_entries.append(e)
     kb_payload = {
-        "schema_version": 2,
+        "schema_version": 3,
         "last_updated": today,
         "topic_counts": dict(topic_counts.most_common()),
         "type_counts": dict(type_counts.most_common()),
@@ -244,7 +302,7 @@ def main(argv: list[str]) -> int:
     os.replace(tmp_js, kb_js_path)
 
     n = len(records)
-    print(f"KB rebuild: {n} entries · {len(topic_counts)} topics · {len(type_counts)} types")
+    print(f"KB rebuild: {n} entries · {len(topic_counts)} topics · {len(type_counts)} types · {image_count} images")
     if warnings:
         print(f"  Warnings ({len(warnings)}):")
         for w in warnings:
