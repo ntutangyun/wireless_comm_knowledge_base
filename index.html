@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wi-Fi Knowledge Base</title>
+<style>
+  :root {
+    --fg: #1a1a1a;
+    --muted: #6b6b6b;
+    --bg: #ffffff;
+    --border: #e0e0e0;
+    --accent: #b40000;
+    --accent-bg: #fdf3f3;
+    --tag-bg: #f1f1f1;
+    --hit-bg: #fffaf0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+    color: var(--fg); background: var(--bg);
+    font-size: 14px; line-height: 1.5;
+  }
+  header {
+    border-bottom: 2px solid var(--accent);
+    padding: 14px 24px;
+    display: flex; align-items: baseline; gap: 16px;
+  }
+  header h1 {
+    margin: 0; font-size: 18px; color: var(--accent); font-weight: 700;
+  }
+  header .stats { color: var(--muted); font-size: 12px; }
+  header .repo-link { margin-left: auto; font-size: 12px; }
+  header .repo-link a { color: var(--muted); text-decoration: none; }
+  header .repo-link a:hover { color: var(--accent); text-decoration: underline; }
+  nav.tabs {
+    display: flex; gap: 0; padding: 0 24px; border-bottom: 1px solid var(--border);
+  }
+  nav.tabs button {
+    background: none; border: none; padding: 10px 16px;
+    font: inherit; color: var(--muted); cursor: pointer;
+    border-bottom: 2px solid transparent;
+  }
+  nav.tabs button.active {
+    color: var(--accent); border-bottom-color: var(--accent); font-weight: 600;
+  }
+  main {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 24px;
+    padding: 16px 24px;
+    max-width: 1400px; margin: 0 auto;
+  }
+  aside.facets { font-size: 13px; }
+  aside.facets h3 {
+    margin: 14px 0 6px; font-size: 11px; letter-spacing: 0.5px;
+    text-transform: uppercase; color: var(--muted);
+  }
+  aside.facets label {
+    display: flex; align-items: center; gap: 6px;
+    padding: 2px 0; cursor: pointer;
+  }
+  aside.facets label input { margin: 0; }
+  aside.facets label .count { color: var(--muted); margin-left: auto; }
+  .search {
+    width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px;
+    font: inherit;
+  }
+  .results { min-width: 0; }
+  .result-count { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+  .entry {
+    border: 1px solid var(--border); border-radius: 4px;
+    padding: 12px 14px; margin-bottom: 10px;
+    transition: border-color 0.1s;
+  }
+  .entry:hover { border-color: var(--accent); }
+  .entry .row1 {
+    display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap;
+  }
+  .entry .title { font-weight: 600; flex: 1; min-width: 0; }
+  .entry .title a { color: var(--fg); text-decoration: none; }
+  .entry .title a:hover { color: var(--accent); }
+  .entry .date { color: var(--muted); font-size: 12px; white-space: nowrap; }
+  .entry .meta {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin: 6px 0;
+  }
+  .pill {
+    display: inline-block; padding: 1px 8px; border-radius: 10px;
+    font-size: 11px; background: var(--tag-bg); color: var(--fg);
+  }
+  .pill.novelty { background: var(--hit-bg); color: var(--accent); }
+  .entry .summary { color: var(--muted); font-size: 13px; margin-top: 6px; }
+  .entry .links { margin-top: 6px; font-size: 12px; }
+  .entry .links a { color: var(--accent); text-decoration: none; margin-right: 12px; }
+  .entry .links a:hover { text-decoration: underline; }
+  .empty {
+    text-align: center; padding: 60px 20px;
+    color: var(--muted); font-size: 13px;
+  }
+  .empty code { background: var(--tag-bg); padding: 2px 6px; border-radius: 3px; }
+  @media (max-width: 720px) {
+    main { grid-template-columns: 1fr; }
+    aside.facets { border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- kb.js defines window.KB_DATA. Loaded first so the file:// case works
+     without a local web server (browsers block fetch() under file://). -->
+<script src="kb.js" onerror="window.__KB_JS_FAILED=true"></script>
+
+<header>
+  <h1>Wi-Fi Knowledge Base</h1>
+  <div class="stats" id="stats">Loading…</div>
+  <div class="repo-link"><a href="https://github.com/ntutangyun/wifi_knowledge_base" target="_blank" rel="noopener">GitHub ↗</a></div>
+</header>
+
+<nav class="tabs">
+  <button data-tab="all" class="active">All entries</button>
+  <button data-tab="recent">Last 7 days</button>
+  <button data-tab="recent30">Last 30 days</button>
+</nav>
+
+<main>
+  <aside class="facets">
+    <input class="search" id="search" placeholder="Search title, summary, topics…" />
+
+    <h3>Type</h3>
+    <div id="facet-type"></div>
+
+    <h3>Topic</h3>
+    <div id="facet-topic"></div>
+  </aside>
+
+  <section class="results">
+    <div class="result-count" id="result-count"></div>
+    <div id="entries"></div>
+  </section>
+</main>
+
+<script>
+let state = {
+  entries: [],
+  topicCounts: {},
+  typeCounts: {},
+  filters: {
+    tab: "all",
+    search: "",
+    types: new Set(),
+    topics: new Set(),
+  },
+};
+
+async function load() {
+  try {
+    let data;
+    if (window.KB_DATA && Array.isArray(window.KB_DATA.entries)) {
+      // kb.js loaded successfully — use it (works under file:// without a server).
+      data = window.KB_DATA;
+    } else {
+      // Fall back to fetching kb.json directly (works when served over http(s)://).
+      const r = await fetch("kb.json", { cache: "no-store" });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      data = await r.json();
+    }
+    state.entries = data.entries || [];
+    state.topicCounts = data.topic_counts || {};
+    state.typeCounts = data.type_counts || {};
+
+    document.getElementById("stats").textContent =
+      state.entries.length + " entries · last updated " +
+      (data.last_updated || "—");
+
+    renderFacets();
+    render();
+  } catch (err) {
+    document.getElementById("stats").textContent = "Failed to load kb.json (" + err.message + ")";
+    document.getElementById("entries").innerHTML =
+      '<div class="empty">No <code>kb.json</code> yet, or <code>kb.js</code> ' +
+      'failed to load. ' +
+      'Run <code>python scripts/rebuild_index.py</code> ' +
+      'to regenerate it from the entries directory.</div>';
+  }
+}
+
+function renderFacets() {
+  const mkChecks = (counts, key) => Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([name, n]) => {
+      const id = key + "-" + name.replace(/[^a-z0-9]/gi, "_");
+      return '<label><input type="checkbox" data-facet="' + key + '" data-value="' + name + '" id="' + id + '">' +
+             '<span>' + name + '</span><span class="count">' + n + '</span></label>';
+    }).join("");
+
+  document.getElementById("facet-type").innerHTML = mkChecks(state.typeCounts, "type");
+  document.getElementById("facet-topic").innerHTML = mkChecks(state.topicCounts, "topic");
+
+  document.querySelectorAll('[data-facet]').forEach(el => {
+    el.addEventListener("change", e => {
+      const facet = e.target.dataset.facet;
+      const value = e.target.dataset.value;
+      const setKey = facet === "type" ? "types" : "topics";
+      const set = state.filters[setKey];
+      if (e.target.checked) set.add(value); else set.delete(value);
+      render();
+    });
+  });
+}
+
+function entryMatches(e) {
+  const f = state.filters;
+
+  if (f.tab === "recent") {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 7);
+    if (new Date(e.date_found) < cutoff) return false;
+  }
+  if (f.tab === "recent30") {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 30);
+    if (new Date(e.date_found) < cutoff) return false;
+  }
+
+  if (f.types.size && !f.types.has(e.type)) return false;
+  if (f.topics.size && !(e.topics || []).some(t => f.topics.has(t))) return false;
+
+  if (f.search) {
+    const q = f.search.toLowerCase();
+    const hay = (e.search_blob || (e.title + " " + (e.topics || []).join(" ") + " " + (e.summary_short || ""))).toLowerCase();
+    if (!hay.includes(q)) return false;
+  }
+
+  return true;
+}
+
+function entryHTML(e) {
+  const novelty = (e.novelty_score != null) ? '<span class="pill novelty">novelty ' + e.novelty_score + '</span>' : '';
+  const topicPills = (e.topics || []).map(t => '<span class="pill topic">' + t + '</span>').join("");
+  // Viewer is at the repo root, entries at entries/.
+  const entryRel = e.entry_path || "";
+  return '' +
+    '<div class="entry">' +
+      '<div class="row1">' +
+        '<div class="title"><a href="' + (e.url || "#") + '" target="_blank" rel="noopener">' + escapeHTML(e.title) + '</a></div>' +
+        '<div class="date">' + (e.date_found || "") + '</div>' +
+      '</div>' +
+      '<div class="meta">' +
+        '<span class="pill type">' + (e.type || "") + '</span>' +
+        topicPills +
+        novelty +
+      '</div>' +
+      '<div class="summary">' + escapeHTML(e.summary_short || "") + '</div>' +
+      '<div class="links">' +
+        (e.url ? '<a href="' + e.url + '" target="_blank" rel="noopener">↗ original</a>' : '') +
+        '<a href="' + entryRel + '" target="_blank">📄 entry</a>' +
+      '</div>' +
+    '</div>';
+}
+
+function escapeHTML(s) {
+  return String(s || "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
+}
+
+function render() {
+  const matches = state.entries.filter(entryMatches);
+  document.getElementById("result-count").textContent = matches.length + " of " + state.entries.length;
+  if (!matches.length) {
+    document.getElementById("entries").innerHTML =
+      '<div class="empty">No entries match the current filters.</div>';
+  } else {
+    document.getElementById("entries").innerHTML = matches.map(entryHTML).join("");
+  }
+}
+
+document.querySelectorAll("nav.tabs button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("nav.tabs button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    state.filters.tab = btn.dataset.tab;
+    render();
+  });
+});
+
+document.getElementById("search").addEventListener("input", e => {
+  state.filters.search = e.target.value;
+  render();
+});
+
+load();
+</script>
+</body>
+</html>
