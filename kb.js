@@ -2,34 +2,36 @@ window.KB_DATA = {
   "schema_version": 4,
   "last_updated": "2026-05-01",
   "topic_counts": {
-    "MAC-layer": 13,
-    "802.11bn": 11,
-    "agentic-AI": 10,
-    "802.11be": 7,
+    "MAC-layer": 18,
+    "802.11bn": 15,
+    "agentic-AI": 14,
+    "scheduling": 13,
+    "PHY-layer": 11,
+    "802.11be": 9,
+    "WiFi-sensing": 8,
     "products": 7,
-    "scheduling": 7,
+    "generative-AI": 7,
     "MLO": 6,
-    "PHY-layer": 5,
+    "security": 4,
+    "802.11bf": 4,
+    "MAPC": 4,
+    "802.11az": 3,
     "IoT": 3,
-    "WiFi-sensing": 3,
-    "security": 2,
-    "generative-AI": 2,
-    "802.11ax": 2,
-    "802.11bf": 2,
-    "802.11az": 1,
-    "XR": 1,
+    "802.11ax": 3,
+    "XR": 2,
     "802.11bq": 1,
-    "roaming": 1
+    "roaming": 1,
+    "MU-MIMO": 1
   },
   "type_counts": {
-    "academic-paper": 11,
+    "academic-paper": 26,
     "industry-news": 5,
     "proposal": 2,
     "product": 2,
     "ieee-document": 1
   },
   "category_counts": {
-    "academia": 11,
+    "academia": 26,
     "industry": 7,
     "standards": 3
   },
@@ -89,6 +91,29 @@ window.KB_DATA = {
       "search_blob": "ieee 802.11bn (wi-fi 8 / uhr) — tgbn status: d2.0 ballot july 2026, may 2028 ratification target ieee 802.11bn（wi-fi 8 / uhr）—— tgbn 进展：d2.0 投票延至 2026 年 7 月，目标 2028 年 5 月批准 802.11bn mac-layer phy-layer mlo the ieee 802.11bn task group (tgbn) — codifying wi-fi 8 / ultra high reliability — has finalized the schedule slip first hinted at the march 2026 plenary in vancouver. draft 2.0 letter ballot, originally targeted for may 2026, has shifted to july 2026 after roughly 1,800 comments from lb291 (d1.0 letter ballot) were resolved through d1.4. approximately 60% of d1.0 technical comments have been addressed; the remaining 40% will be handled before d2.0 freeze. the may 2028 final ieee-sa sponsor ballot / revcom approval target remains intact despite the d2.0 slip. ieee 802.11bn 工作组（tgbn）—— 即 wi-fi 8 / 超高可靠性（uhr）的标准化任务组 —— 已经正式确认了 2026 年 3 月温哥华全会上预告的排期延后。draft 2.0 letter ballot 原定 2026 年 5 月，目前推迟到 2026 年 7 月；起因是 lb291（d1.0 letter ballot）阶段提交的约 1,800 条意见在 d1.4 之前已陆续解决。约 60% 的 d1.0 技术意见已处理完毕，剩余 40% 将在 d2.0 冻结前消化。尽管 d2.0 延后两个月，最终 ieee-sa sponsor ballot / revcom 批准时间仍维持在 2028 年 5 月。 ieee-document"
     },
     {
+      "id": "2026-05-01_arxiv-rf-lego-deep-unrolling",
+      "date_found": "2026-05-01",
+      "date_published": "2026-04-13",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "RF-LEGO: Modularized Signal Processing-Deep Learning Co-Design for RF Sensing via Deep Unrolling",
+      "title_zh": "RF-LEGO：通过深度展开的\"信号处理-深度学习\"模块化协同设计的 RF 感知",
+      "url": "https://arxiv.org/abs/2604.10183",
+      "topics": [
+        "WiFi-sensing",
+        "PHY-layer",
+        "generative-AI"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-05-01_arxiv-rf-lego-deep-unrolling.md",
+      "summary_short_en": "RF-LEGO (April 2026) bridges classical signal processing and deep learning for RF (including Wi-Fi CSI) sensing through **deep unrolling** — taking each step of a classical signal-processing algorithm (filter, denoise, detect) and rendering it as a learnable neural network layer with explicit signal-domain semantics. The result is a model where every internal block has a physically-meaningful interpretation, *and* the whole pipeline trains end-to-end.",
+      "summary_short_zh": "RF-LEGO（2026 年 4 月）通过**深度展开（deep unrolling）**把经典信号处理与深度学习连接起来用于 RF（包括 Wi-Fi CSI）感知 —— 把经典信号处理算法的每一步（滤波、去噪、检测）渲染为一个具有显式信号域语义的可学习神经网络层。结果是一个内部每个块都具有物理可解释意义、*同时* 整个流水线可端到端训练的模型。",
+      "body_html_en": "<h3>Summary</h3>\n<p>RF-LEGO (April 2026) bridges classical signal processing and deep learning for RF (including Wi-Fi CSI) sensing through <strong>deep unrolling</strong> — taking each step of a classical signal-processing algorithm (filter, denoise, detect) and rendering it as a learnable neural network layer with explicit signal-domain semantics. The result is a model where every internal block has a physically-meaningful interpretation, <em>and</em> the whole pipeline trains end-to-end.</p>\n<p>Compared to pure-DL CSI sensing models, RF-LEGO components are interpretable and reusable: the same &quot;denoise-block&quot; trained for one task can plug into another pipeline without retraining. Compared to pure signal-processing methods, RF-LEGO components automatically adapt their parameters to data — they don't need handtuning.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Deep unrolling</strong> of classical signal-processing algorithms into learnable layers</li><li>Each internal block has physical-domain interpretation</li><li>End-to-end trainable, components reusable across tasks</li><li>Targets RF sensing (Wi-Fi CSI included)</li></ul>\n<h3>Why it matters / what's new</h3>\n<ul><li><strong>Methodological middle ground.</strong> Pure-DL CSI sensing has been the default for two years; RF-LEGO restores the case for hybrid signal-processing+DL designs and shows the cost-benefit is favourable.</li><li><strong>Reusability is a real win.</strong> Component reuse across tasks is rare in pure-DL settings; if RF-LEGO's claim holds, it's an organisational/training-cost saving across the whole sensing-research pipeline.</li></ul>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>RF-LEGO（2026 年 4 月）通过<strong>深度展开（deep unrolling）</strong>把经典信号处理与深度学习连接起来用于 RF（包括 Wi-Fi CSI）感知 —— 把经典信号处理算法的每一步（滤波、去噪、检测）渲染为一个具有显式信号域语义的可学习神经网络层。结果是一个内部每个块都具有物理可解释意义、<em>同时</em> 整个流水线可端到端训练的模型。</p>\n<p>相对纯 DL 的 CSI 感知模型，RF-LEGO 的各组件具有可解释性与可重用性：为某个任务训练的&quot;去噪块&quot;可以直接接入另一个流水线而无需重训。相对纯信号处理方法，RF-LEGO 的组件能根据数据自动调整参数 —— 不需要人工调优。</p>\n<h3>技术要点</h3>\n<ul><li>把经典信号处理算法<strong>深度展开</strong>为可学习层</li><li>每个内部块具有物理域可解释含义</li><li>端到端可训练，组件可跨任务复用</li><li>面向 RF 感知（含 Wi-Fi CSI）</li></ul>\n<h3>意义与新意</h3>\n<ul><li><strong>方法论的中间地带。</strong> 纯 DL CSI 感知已经主导了两年；RF-LEGO 让&quot;信号处理 + DL 混合设计&quot;重新有理由存在，并显示性价比有利。</li><li><strong>可复用性是真正的胜利。</strong> 在纯 DL 设置下组件跨任务复用很少出现；若 RF-LEGO 的主张成立，整个感知研究流水线的组织成本和训练成本都会下降。</li></ul>",
+      "images": [],
+      "search_blob": "rf-lego: modularized signal processing-deep learning co-design for rf sensing via deep unrolling rf-lego：通过深度展开的\"信号处理-深度学习\"模块化协同设计的 rf 感知 wifi-sensing phy-layer generative-ai rf-lego (april 2026) bridges classical signal processing and deep learning for rf (including wi-fi csi) sensing through **deep unrolling** — taking each step of a classical signal-processing algorithm (filter, denoise, detect) and rendering it as a learnable neural network layer with explicit signal-domain semantics. the result is a model where every internal block has a physically-meaningful interpretation, *and* the whole pipeline trains end-to-end. rf-lego（2026 年 4 月）通过**深度展开（deep unrolling）**把经典信号处理与深度学习连接起来用于 rf（包括 wi-fi csi）感知 —— 把经典信号处理算法的每一步（滤波、去噪、检测）渲染为一个具有显式信号域语义的可学习神经网络层。结果是一个内部每个块都具有物理可解释意义、*同时* 整个流水线可端到端训练的模型。 academic-paper"
+    },
+    {
       "id": "2026-05-01_ieee-march-2026-readout",
       "date_found": "2026-05-01",
       "date_published": "2026-04-01",
@@ -122,6 +147,28 @@ window.KB_DATA = {
         }
       ],
       "search_blob": "march 2026 ieee 802.11 plenary: ai offload study group formed; 802.11bq mmwave ppdu finalized; wi-fi 9 sg forming july 2026 2026 年 3 月 ieee 802.11 全会：ai offload 研究组成立；802.11bq 毫米波 ppdu 定稿；wi-fi 9 研究组将于 2026 年 7 月成立 802.11bn agentic-ai mac-layer scheduling the march 2026 ieee 802.11 plenary in vancouver produced four substantive outcomes: 2026 年 3 月在温哥华举行的 ieee 802.11 全会产生了四项实质性成果： proposal"
+    },
+    {
+      "id": "2026-05-01_arxiv-wirelessbench-llm-agent",
+      "date_found": "2026-05-01",
+      "date_published": "2026-03-22",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "WirelessBench: A Tolerance-Aware LLM Agent Benchmark for Wireless Network Intelligence",
+      "title_zh": "WirelessBench：面向无线网络智能的容错感知 LLM 智能体基准",
+      "url": "https://arxiv.org/abs/2603.21251",
+      "topics": [
+        "agentic-AI",
+        "generative-AI"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-05-01_arxiv-wirelessbench-llm-agent.md",
+      "summary_short_en": "Tong et al. (March 2026) release WirelessBench, the first **tolerance-aware** evaluation framework for LLM agents acting as autonomous wireless-network operators. Standard ML benchmarks score by exact-match correctness — but that misses the kind of error that actually breaks production wireless: a unit confusion between dB and dBm, a signed-vs-unsigned conversion, an off-by-one in resource-block indexing. Those slip past exact match because the format is right; in deployment they are catastrophic. WirelessBench bakes *tolerance categories* into scoring so a 0.1 dB rounding error and a \"30 dBm vs 30 dB\" mistake count differently.",
+      "summary_short_zh": "Tong 等人（2026 年 3 月）发布了 WirelessBench —— 首个**容错感知**的 LLM 智能体评估框架，针对的是把 LLM 作为自主无线网络运维者的场景。标准 ML 基准按精确匹配打分 —— 但这会漏掉真正在生产环境中击穿的错误：dB 与 dBm 单位混淆、有/无符号转换、资源块索引差一。这些错误\"格式正确\"，能蒙骗精确匹配；但部署中是灾难性的。WirelessBench 把*容错类别*写进了评分体系，使 0.1 dB 舍入误差与\"30 dBm 当成 30 dB\"被区别对待。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Tong et al. (March 2026) release WirelessBench, the first <strong>tolerance-aware</strong> evaluation framework for LLM agents acting as autonomous wireless-network operators. Standard ML benchmarks score by exact-match correctness — but that misses the kind of error that actually breaks production wireless: a unit confusion between dB and dBm, a signed-vs-unsigned conversion, an off-by-one in resource-block indexing. Those slip past exact match because the format is right; in deployment they are catastrophic. WirelessBench bakes <em>tolerance categories</em> into scoring so a 0.1 dB rounding error and a &quot;30 dBm vs 30 dB&quot; mistake count differently.</p>\n<p>The benchmark has three cognitive tiers. <strong>Tier 1: domain knowledge</strong> (1,392 items) — Wi-Fi / cellular concepts, protocol semantics, RF math. <strong>Tier 2: resource allocation under user intent</strong> (1,000 items) — given a natural-language SLA, allocate users / RBs / power. <strong>Tier 3: multi-step decisions during mobility</strong> (1,000 items) — chain handoff, beam reselection, and traffic-routing decisions. Tool integration is mandatory: agents must call a 3GPP-compliant ray-tracing engine for channel-quality estimates rather than hallucinate them.</p>\n<p>Headline numbers: direct prompting gets 68% accuracy; tool-integrated agents get 84.64%. <strong>23% of errors are catastrophic failures</strong> (the unit-confusion class) that exact-match scoring misses entirely. Each item ships with a chain-of-thought traceability log so failures can be diagnosed without re-running the agent.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Three-tier benchmark:</strong> domain knowledge (1,392) + resource allocation (1,000) + multi-step mobility decisions (1,000)</li><li><strong>Tolerance-aware scoring</strong> — distinguishes catastrophic from harmless errors; identifies the 23% of failures invisible to exact match</li><li><strong>Mandatory tool integration:</strong> 3GPP-compliant ray-tracing for channel quality estimation</li><li><strong>Chain-of-Thought traceability</strong> logs ship with each benchmark item</li><li><strong>Headline numbers:</strong> direct prompting 68% / tool-integrated 84.64%</li></ul>\n<h3>Why it matters / what's new</h3>\n<ul><li><strong>Wireless agentic benchmarking maturity step.</strong> WirelessAgent++ (<code>2026-05-01_arxiv-wirelessagent-plus-plus.md</code>) targeted <em>workflow design</em>; WirelessBench targets the <em>evaluation</em> axis. Together they form a complete loop: search the workflow space, then score the agents against safety-aware metrics.</li><li><strong>Catastrophic-error class is the key contribution.</strong> The 23% finding will reshape how the field reports agent accuracy — peak accuracy is now meaningless if catastrophic failures aren't separately reported.</li><li><strong>Anchor for future LLM-agent papers.</strong> Subsequent agentic-Wi-Fi work will likely be expected to report WirelessBench scores or explain why not.</li></ul>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Tong 等人（2026 年 3 月）发布了 WirelessBench —— 首个<strong>容错感知</strong>的 LLM 智能体评估框架，针对的是把 LLM 作为自主无线网络运维者的场景。标准 ML 基准按精确匹配打分 —— 但这会漏掉真正在生产环境中击穿的错误：dB 与 dBm 单位混淆、有/无符号转换、资源块索引差一。这些错误&quot;格式正确&quot;，能蒙骗精确匹配；但部署中是灾难性的。WirelessBench 把<em>容错类别</em>写进了评分体系，使 0.1 dB 舍入误差与&quot;30 dBm 当成 30 dB&quot;被区别对待。</p>\n<p>基准分三层。<strong>第一层：领域知识</strong>（1,392 项）—— Wi-Fi / 蜂窝概念、协议语义、射频数学。<strong>第二层：基于用户意图的资源分配</strong>（1,000 项）—— 给定自然语言 SLA，分配用户 / RB / 功率。<strong>第三层：移动场景下的多步决策</strong>（1,000 项）—— 切换、波束重选、流量路由的链式决策。强制要求工具集成：智能体必须调用符合 3GPP 的射线追踪引擎以获得信道质量估计，而不是凭空&quot;幻想&quot;。</p>\n<p>关键数据：纯提示工程 68% 准确率；工具集成智能体达到 84.64%。<strong>23% 的错误属于灾难性失败</strong>（单位混淆这一类）—— 这部分错误用精确匹配评分根本看不出来。每条样本都附带 CoT 可追溯日志，使得失败可在不重新跑智能体的情况下复盘。</p>\n<h3>技术要点</h3>\n<ul><li><strong>三层基准：</strong> 领域知识（1,392）+ 资源分配（1,000）+ 多步移动决策（1,000）</li><li><strong>容错感知评分</strong> —— 区分灾难性错误与无害误差；揭示了精确匹配遗漏的 23% 失败</li><li><strong>强制工具集成：</strong> 必须调用 3GPP 一致的射线追踪</li><li><strong>CoT 可追溯日志</strong>随每个样本提供</li><li><strong>关键数据：</strong> 纯提示 68%；工具集成 84.64%</li></ul>\n<h3>意义与新意</h3>\n<ul><li><strong>无线智能体基准化的成熟一步。</strong> WirelessAgent++（<code>2026-05-01_arxiv-wirelessagent-plus-plus.md</code>）针对的是<em>工作流设计</em>；WirelessBench 针对的是<em>评估</em>维度。两者合起来形成完整闭环：搜索工作流空间，然后用安全感知的指标评分。</li><li><strong>灾难性错误类别是关键贡献。</strong> &quot;23%&quot;这一发现将重塑该领域报告智能体准确率的方式 —— 如果不单列灾难性失败，峰值准确率本身就失去意义。</li><li><strong>未来 LLM 智能体论文的锚点。</strong> 后续智能体 Wi-Fi 工作大概率会被期望报告 WirelessBench 分数，或解释为何未报告。</li></ul>",
+      "images": [],
+      "search_blob": "wirelessbench: a tolerance-aware llm agent benchmark for wireless network intelligence wirelessbench：面向无线网络智能的容错感知 llm 智能体基准 agentic-ai generative-ai tong et al. (march 2026) release wirelessbench, the first **tolerance-aware** evaluation framework for llm agents acting as autonomous wireless-network operators. standard ml benchmarks score by exact-match correctness — but that misses the kind of error that actually breaks production wireless: a unit confusion between db and dbm, a signed-vs-unsigned conversion, an off-by-one in resource-block indexing. those slip past exact match because the format is right; in deployment they are catastrophic. wirelessbench bakes *tolerance categories* into scoring so a 0.1 db rounding error and a \"30 dbm vs 30 db\" mistake count differently. tong 等人（2026 年 3 月）发布了 wirelessbench —— 首个**容错感知**的 llm 智能体评估框架，针对的是把 llm 作为自主无线网络运维者的场景。标准 ml 基准按精确匹配打分 —— 但这会漏掉真正在生产环境中击穿的错误：db 与 dbm 单位混淆、有/无符号转换、资源块索引差一。这些错误\"格式正确\"，能蒙骗精确匹配；但部署中是灾难性的。wirelessbench 把*容错类别*写进了评分体系，使 0.1 db 舍入误差与\"30 dbm 当成 30 db\"被区别对待。 academic-paper"
     },
     {
       "id": "2026-05-01_arxiv-secure-wifi-ranging-az-bk",
@@ -305,6 +352,53 @@ window.KB_DATA = {
       "search_blob": "intellicise wireless networks meet agentic ai: a security and privacy perspective 智简（intellicise）无线网络与智能体 ai 的相遇：安全与隐私视角 agentic-ai security meng et al. (february 2026; 12-author group spanning bupt, multiple chinese carriers, and u. surrey) make a structured argument that \"intellicise\" — intelligent + concise — wireless networks are the natural endpoint of mobile-network evolution, and that agentic ai is the technology that gets the industry there. the paper's framing of agentic ai is the now-standard **continuous perception → memory → reasoning → action loop**, and the authors' contribution is the security and privacy analysis specific to that loop in a wireless context. meng 等（2026 年 2 月，12 位作者，分布于北邮、多家中国运营商以及英国萨里大学）以结构化方式论证：以\"智简（intellicise，intelligent + concise）\"为目标的无线网络是移动通信演进的自然终点，而智能体 ai 正是把整个产业引到这一终点的技术。论文对智能体 ai 的刻画采用现已成型的**感知 → 记忆 → 推理 → 行动**连续闭环；作者的贡献是从无线视角对该闭环做安全与隐私分析。 academic-paper"
     },
     {
+      "id": "2026-05-01_arxiv-llm-rl-wireless-optimization",
+      "date_found": "2026-05-01",
+      "date_published": "2026-02-15",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Large Language Model (LLM)-enabled Reinforcement Learning for Wireless Network Optimization",
+      "title_zh": "基于大语言模型的强化学习在无线网络优化中的应用",
+      "url": "https://arxiv.org/abs/2602.13210",
+      "topics": [
+        "agentic-AI",
+        "generative-AI",
+        "MAC-layer",
+        "scheduling"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-05-01_arxiv-llm-rl-wireless-optimization.md",
+      "summary_short_en": "Zheng, Zhang, Niyato, et al. (February 2026) propose using LLMs not as the *agent* but as a **state-representation and semantic-extraction front-end** for traditional reinforcement learning on wireless-network optimisation problems. The argument: high-dimensional wireless state spaces (channel busy fractions, interference graphs, queue lengths, neighbour BSS context, traffic-class semantics) blow up the input dimension for standard RL agents. An LLM that pre-digests the raw state into compact, semantically-meaningful features can reduce that explosion materially.",
+      "summary_short_zh": "Zheng、Zhang、Niyato 等人（2026 年 2 月）提出把 LLM 作为传统强化学习用于无线网络优化时的**状态表示与语义抽取前端**，而非智能体本身。论点是：无线状态空间（信道忙占比、干扰图、队列长度、邻 BSS 上下文、流量类别语义）维数极高，会让标准 RL 智能体的输入维度炸开。让 LLM 把原始状态预先消化成紧凑、语义化的特征，可以显著缩减这一爆炸。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Zheng, Zhang, Niyato, et al. (February 2026) propose using LLMs not as the <em>agent</em> but as a <strong>state-representation and semantic-extraction front-end</strong> for traditional reinforcement learning on wireless-network optimisation problems. The argument: high-dimensional wireless state spaces (channel busy fractions, interference graphs, queue lengths, neighbour BSS context, traffic-class semantics) blow up the input dimension for standard RL agents. An LLM that pre-digests the raw state into compact, semantically-meaningful features can reduce that explosion materially.</p>\n<p>The paper covers the full protocol stack — physical, data link, network, transport, application — and shows how LLM-front-ended RL can be applied at each layer. The contribution that's most concrete is at the MARL (multi-agent RL) layer: case studies in <strong>service migration, request routing, and topology generation for UAV-satellite networks</strong>, with the LLM doing the semantic abstraction and the RL agent doing the optimisation.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>LLM as feature extractor</strong>, not as agent — keeps RL exploitation tractable in high-dim wireless state</li><li><strong>Multi-layer applicability</strong> demonstrated: PHY through application</li><li><strong>MARL extension</strong> with LLM-aided state representation</li><li><strong>Case studies:</strong> service migration, request routing, UAV-satellite topology</li></ul>\n<h3>Why it matters / what's new</h3>\n<ul><li><strong>Counter-narrative to &quot;LLM as agent.&quot;</strong> Most LLM-for-Wi-Fi work has the LLM at the policy-output level (see MAPC-LLM). This paper makes the case that the <em>bigger</em> near-term win is using the LLM upstream — for state representation. Cheaper, lower-latency, and easier to deploy than runtime LLM-policy decisions.</li><li><strong>Pairs with WirelessAgent++ (<code>2026-05-01_arxiv-wirelessagent-plus-plus.md</code>):</strong> that paper automates workflow design over a fixed RL substrate; this paper changes what the substrate consumes.</li></ul>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Zheng、Zhang、Niyato 等人（2026 年 2 月）提出把 LLM 作为传统强化学习用于无线网络优化时的<strong>状态表示与语义抽取前端</strong>，而非智能体本身。论点是：无线状态空间（信道忙占比、干扰图、队列长度、邻 BSS 上下文、流量类别语义）维数极高，会让标准 RL 智能体的输入维度炸开。让 LLM 把原始状态预先消化成紧凑、语义化的特征，可以显著缩减这一爆炸。</p>\n<p>论文覆盖完整协议栈 —— 物理层、数据链路层、网络层、传输层、应用层 —— 展示如何在每一层使用&quot;LLM 前端 + RL&quot;。最具体的贡献集中在 MARL（多智能体 RL）层：<strong>业务迁移、请求路由、UAV-卫星网络拓扑生成</strong>等案例研究，由 LLM 做语义抽象，RL 智能体做优化。</p>\n<h3>技术要点</h3>\n<ul><li><strong>LLM 作为特征抽取器</strong>，而非智能体本身 —— 让 RL 的利用阶段在高维无线状态下仍可行</li><li><strong>多层适用性</strong>得到展示：PHY → 应用层</li><li>在 MARL 中扩展，加入 LLM 辅助状态表示</li><li><strong>案例：</strong> 业务迁移、请求路由、UAV-卫星拓扑</li></ul>\n<h3>意义与新意</h3>\n<ul><li><strong>对&quot;LLM 作为智能体&quot;叙事的反向论证。</strong> 当前多数 LLM-for-Wi-Fi 工作把 LLM 放在策略输出层（参见 MAPC-LLM）。本论文论证：近期更大的收益来自把 LLM 放在<em>上游</em> —— 做状态表示。代价更低、时延更低、更容易部署。</li><li><strong>与 WirelessAgent++（<code>2026-05-01_arxiv-wirelessagent-plus-plus.md</code>）形成搭配：</strong> 该论文在固定 RL 基础上自动化工作流设计；本论文改变 RL 基础所消费的输入。</li></ul>",
+      "images": [],
+      "search_blob": "large language model (llm)-enabled reinforcement learning for wireless network optimization 基于大语言模型的强化学习在无线网络优化中的应用 agentic-ai generative-ai mac-layer scheduling zheng, zhang, niyato, et al. (february 2026) propose using llms not as the *agent* but as a **state-representation and semantic-extraction front-end** for traditional reinforcement learning on wireless-network optimisation problems. the argument: high-dimensional wireless state spaces (channel busy fractions, interference graphs, queue lengths, neighbour bss context, traffic-class semantics) blow up the input dimension for standard rl agents. an llm that pre-digests the raw state into compact, semantically-meaningful features can reduce that explosion materially. zheng、zhang、niyato 等人（2026 年 2 月）提出把 llm 作为传统强化学习用于无线网络优化时的**状态表示与语义抽取前端**，而非智能体本身。论点是：无线状态空间（信道忙占比、干扰图、队列长度、邻 bss 上下文、流量类别语义）维数极高，会让标准 rl 智能体的输入维度炸开。让 llm 把原始状态预先消化成紧凑、语义化的特征，可以显著缩减这一爆炸。 academic-paper"
+    },
+    {
+      "id": "2026-05-01_arxiv-ibis-csi-bandwidth-constrained",
+      "date_found": "2026-05-01",
+      "date_published": "2026-01-27",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Hybrid Deep Learning Framework for CSI-Based Activity Recognition in Bandwidth-Constrained Wi-Fi Sensing",
+      "title_zh": "面向带宽受限 Wi-Fi 感知的 CSI 人体活动识别混合深度学习框架",
+      "url": "https://arxiv.org/abs/2602.06983",
+      "topics": [
+        "802.11bf",
+        "WiFi-sensing",
+        "PHY-layer"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-05-01_arxiv-ibis-csi-bandwidth-constrained.md",
+      "summary_short_en": "Fernandes, Del Monego, Chang, Munaretto, Fontes, and Campos (January 2026, arxiv id 2602.06983 — published February 2026 in arxiv format) tackle a previously underserved corner of Wi-Fi sensing: how do you do high-accuracy human-activity recognition on **20 MHz** channels — the bandwidth that the new Wi-Fi CERTIFIED 7 IoT category (`2026-05-01_wifi-alliance-20mhz-iot-cert.md`) targets, and the bandwidth that low-cost / low-power sensing devices realistically have?",
+      "summary_short_zh": "Fernandes、Del Monego、Chang、Munaretto、Fontes、Campos（arxiv 2602.06983，2026 年 1 月底投稿）攻克了 Wi-Fi 感知此前关注不足的一角：在 **20 MHz** 信道上如何做高精度人体活动识别 —— 即新的 Wi-Fi CERTIFIED 7 IoT 子类（`2026-05-01_wifi-alliance-20mhz-iot-cert.md`）所瞄准的带宽，也是低成本 / 低功耗感知设备实际能用的带宽。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Fernandes, Del Monego, Chang, Munaretto, Fontes, and Campos (January 2026, arxiv id 2602.06983 — published February 2026 in arxiv format) tackle a previously underserved corner of Wi-Fi sensing: how do you do high-accuracy human-activity recognition on <strong>20 MHz</strong> channels — the bandwidth that the new Wi-Fi CERTIFIED 7 IoT category (<code>2026-05-01_wifi-alliance-20mhz-iot-cert.md</code>) targets, and the bandwidth that low-cost / low-power sensing devices realistically have?</p>\n<p>Their hybrid architecture is unusual. <strong>Stage 0</strong> is a Doppler-trace extraction pre-processor that amplifies motion-related features in the raw CSI before any neural network sees them. <strong>Stage 1</strong> is an Inception network for spatial features. <strong>Stage 2</strong> is a bidirectional LSTM for temporal features. <strong>Stage 3</strong> is a Support Vector Machine doing the final classification. The pipeline reads like 2010s+2020s in series, and the result is impressive: <strong>89.27% accuracy at 20 MHz, 94.13% at 40 MHz, 95.30% at 80 MHz</strong> — i.e. the 20 MHz number beats the 80-MHz baseline of standalone deep models in the comparison.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Bandwidth target:</strong> 20 MHz — the IoT-friendly low-bandwidth regime</li><li><strong>Pipeline:</strong> Doppler-trace pre-extract → Inception (spatial) → BiLSTM (temporal) → SVM (classify)</li><li>Accuracies: <strong>89.27% / 94.13% / 95.30%</strong> at 20 / 40 / 80 MHz</li><li>Outperforms standalone DL baselines at the same or higher bandwidth</li><li>Bridges classical signal processing and modern DL</li></ul>\n<h3>Why it matters / what's new</h3>\n<ul><li><strong>Concretely answers what the 20 MHz IoT cert needs.</strong> The Wi-Fi CERTIFIED 7 20 MHz announcement opens a new product class but leaves sensing capability open. This paper is a working proof that 20 MHz is enough.</li><li><strong>Pipeline composability.</strong> Stage-0 Doppler pre-extract + Stage-3 SVM is a portable recipe — it can be slotted into any other DL-CSI pipeline.</li><li><strong>Pairs with the multiband-passive-sensing entry (<code>2026-05-01_arxiv-multiband-passive-sensing.md</code>):</strong> different bandwidth regimes (20 MHz vs 5/60 GHz multiband) but same goal of doing more sensing with less.</li></ul>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Fernandes、Del Monego、Chang、Munaretto、Fontes、Campos（arxiv 2602.06983，2026 年 1 月底投稿）攻克了 Wi-Fi 感知此前关注不足的一角：在 <strong>20 MHz</strong> 信道上如何做高精度人体活动识别 —— 即新的 Wi-Fi CERTIFIED 7 IoT 子类（<code>2026-05-01_wifi-alliance-20mhz-iot-cert.md</code>）所瞄准的带宽，也是低成本 / 低功耗感知设备实际能用的带宽。</p>\n<p>他们的混合架构很不寻常。<strong>第 0 阶段</strong>是 Doppler 轨迹抽取预处理器，在任何神经网络看到 CSI 之前就放大其中与运动相关的特征。<strong>第 1 阶段</strong>是 Inception 网络做空间特征。<strong>第 2 阶段</strong>是双向 LSTM 做时序特征。<strong>第 3 阶段</strong>是 SVM 做最终分类。整个流水线像把 2010 与 2020 年代的代表方法串起来，但效果显著：<strong>20 MHz 准确率 89.27%、40 MHz 94.13%、80 MHz 95.30%</strong> —— 即 20 MHz 的数字已经超过对照组中纯深度模型在 80 MHz 上的基线。</p>\n<h3>技术要点</h3>\n<ul><li><strong>目标带宽：</strong> 20 MHz —— 面向 IoT 友好的低带宽场景</li><li><strong>流水线：</strong> Doppler 轨迹预处理 → Inception（空间）→ BiLSTM（时序）→ SVM（分类）</li><li>准确率：20/40/80 MHz 分别为 <strong>89.27% / 94.13% / 95.30%</strong></li><li>在相同甚至更高带宽下，超越独立 DL 基线</li><li>连接了经典信号处理与现代深度学习</li></ul>\n<h3>意义与新意</h3>\n<ul><li><strong>明确回应了 20 MHz IoT 认证带来的需求。</strong> Wi-Fi CERTIFIED 7 的 20 MHz 子类开启了新产品类别，但感知能力问题仍未明确。本论文给出了 20 MHz 足够的有效证据。</li><li><strong>流水线的可组合性。</strong> 第 0 阶段 Doppler 预处理 + 第 3 阶段 SVM 是可迁移的&quot;配方&quot;，可嵌入其他任何 DL-CSI 流水线。</li><li><strong>与多频段被动感知条目（<code>2026-05-01_arxiv-multiband-passive-sensing.md</code>）形成搭配：</strong> 带宽体制不同（20 MHz vs 5/60 GHz 多频段），但目标一致 —— 用更少代价做更多感知。</li></ul>",
+      "images": [],
+      "search_blob": "hybrid deep learning framework for csi-based activity recognition in bandwidth-constrained wi-fi sensing 面向带宽受限 wi-fi 感知的 csi 人体活动识别混合深度学习框架 802.11bf wifi-sensing phy-layer fernandes, del monego, chang, munaretto, fontes, and campos (january 2026, arxiv id 2602.06983 — published february 2026 in arxiv format) tackle a previously underserved corner of wi-fi sensing: how do you do high-accuracy human-activity recognition on **20 mhz** channels — the bandwidth that the new wi-fi certified 7 iot category (`2026-05-01_wifi-alliance-20mhz-iot-cert.md`) targets, and the bandwidth that low-cost / low-power sensing devices realistically have? fernandes、del monego、chang、munaretto、fontes、campos（arxiv 2602.06983，2026 年 1 月底投稿）攻克了 wi-fi 感知此前关注不足的一角：在 **20 mhz** 信道上如何做高精度人体活动识别 —— 即新的 wi-fi certified 7 iot 子类（`2026-05-01_wifi-alliance-20mhz-iot-cert.md`）所瞄准的带宽，也是低成本 / 低功耗感知设备实际能用的带宽。 academic-paper"
+    },
+    {
       "id": "2026-05-01_ieee-january-2026-readout",
       "date_found": "2026-05-01",
       "date_published": "2026-01-23",
@@ -333,6 +427,30 @@ window.KB_DATA = {
         }
       ],
       "search_blob": "january 2026 ieee 802.11 interim (victoria): wi-fi 8 d1.3 approved, 802.11bq beacon split, wi-fi 9 wng discussions begin 2026 年 1 月 ieee 802.11 中期会议（维多利亚）：wi-fi 8 d1.3 通过、802.11bq 信标问题分歧、wi-fi 9 wng 启动讨论 802.11bn 802.11bq mac-layer scheduling the january 2026 ieee 802.11 interim session in victoria, bc produced three substantive outcomes that bridge the november 2025 plenary and the march 2026 plenary readout already in this kb (`2026-05-01_ieee-march-2026-readout.md`). 2026 年 1 月在不列颠哥伦比亚维多利亚举行的 ieee 802.11 中期会议产生了三项实质性成果，承上启下连接 2025 年 11 月全会与本 kb 中已记录的 2026 年 3 月全会回顾（`2026-05-01_ieee-march-2026-readout.md`）。 proposal"
+    },
+    {
+      "id": "2026-05-01_arxiv-wukong-neuro-wideband-sensing",
+      "date_found": "2026-05-01",
+      "date_published": "2026-01-10",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Neuro-Wideband WiFi Sensing via Self-Conditioned CSI Extrapolation",
+      "title_zh": "基于自条件 CSI 外推的神经宽带 Wi-Fi 感知",
+      "url": "https://arxiv.org/abs/2601.06467",
+      "topics": [
+        "802.11bf",
+        "WiFi-sensing",
+        "PHY-layer",
+        "generative-AI"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-05-01_arxiv-wukong-neuro-wideband-sensing.md",
+      "summary_short_en": "Ji, Hou and Wu (January 2026) propose **WUKONG**, a self-supervised framework that synthesises wideband CSI from narrowband measurements — letting commodity Wi-Fi devices \"fake\" the bandwidth needed for higher-resolution sensing without specialised hardware. The architecture combines a Transformer (for capturing the multipath structure of a sample) with a Diffusion model (for generating the extended-bandwidth CSI conditional on that multipath structure). The output is **eCSI** (extended CSI), which downstream sensing models then consume as if it came from a wider channel.",
+      "summary_short_zh": "Ji、Hou 和 Wu（2026 年 1 月）提出 **WUKONG（悟空）**，一个自监督框架，能从窄带 CSI 测量合成宽带 CSI —— 让商用 Wi-Fi 设备在不依赖专用硬件的前提下\"伪造\"出更高分辨率感知所需的带宽。架构组合了 Transformer（用于刻画样本本身的多径结构）与 Diffusion 模型（在该多径结构条件下生成扩展带宽 CSI）。输出 **eCSI**（extended CSI），下游感知模型可以像消费来自更宽信道的 CSI 那样消费它。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Ji, Hou and Wu (January 2026) propose <strong>WUKONG</strong>, a self-supervised framework that synthesises wideband CSI from narrowband measurements — letting commodity Wi-Fi devices &quot;fake&quot; the bandwidth needed for higher-resolution sensing without specialised hardware. The architecture combines a Transformer (for capturing the multipath structure of a sample) with a Diffusion model (for generating the extended-bandwidth CSI conditional on that multipath structure). The output is <strong>eCSI</strong> (extended CSI), which downstream sensing models then consume as if it came from a wider channel.</p>\n<p>The key technical move is <em>self-conditioning</em>. Instead of using a fixed prior, the diffusion stage is conditioned on sample-specific multipath parameters extracted by the Transformer. This means the synthesis is per-environment rather than per-dataset — the model adapts to the physical layout it's currently observing.</p>\n<p>Validation tasks: localisation and <strong>multi-person breathing monitoring</strong>. Both benefit from the synthesised wideband data without any extra channel measurements or hardware modifications.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Self-supervised</strong> training — works on existing CSI without manual labels</li><li><strong>Architecture:</strong> Transformer (multipath extraction) + Diffusion (conditional CSI synthesis)</li><li><strong>eCSI output</strong> — downstream sensing models consume it as if from a wider channel</li><li>Validated on <strong>localisation</strong> and <strong>multi-person breathing monitoring</strong></li><li>Hardware-agnostic — runs on commodity Wi-Fi</li></ul>\n<h3>Why it matters / what's new</h3>\n<ul><li><strong>First &quot;synthesise the missing bandwidth&quot; approach to Wi-Fi sensing.</strong> Earlier work either accepted narrow-band limits or required specialised hardware (USRP). WUKONG argues these are no longer the only options.</li><li><strong>Diffusion is now usable in the Wi-Fi PHY pipeline.</strong> The conditioning trick makes diffusion practical despite the per-sample latency hit — significant signal for the next 12 months of CSI-research.</li><li><strong>Pairs with IBIS (<code>2026-05-01_arxiv-ibis-csi-bandwidth-constrained.md</code>):</strong> IBIS makes 20 MHz CSI go further; WUKONG makes 20 MHz CSI <em>look like</em> 80 MHz. Two complementary attacks on the same constraint.</li></ul>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Ji、Hou 和 Wu（2026 年 1 月）提出 <strong>WUKONG（悟空）</strong>，一个自监督框架，能从窄带 CSI 测量合成宽带 CSI —— 让商用 Wi-Fi 设备在不依赖专用硬件的前提下&quot;伪造&quot;出更高分辨率感知所需的带宽。架构组合了 Transformer（用于刻画样本本身的多径结构）与 Diffusion 模型（在该多径结构条件下生成扩展带宽 CSI）。输出 <strong>eCSI</strong>（extended CSI），下游感知模型可以像消费来自更宽信道的 CSI 那样消费它。</p>\n<p>关键技术动作是<em>自条件（self-conditioning）</em>。Diffusion 阶段不是依赖固定先验，而是依赖 Transformer 抽取的样本特定多径参数。结果是合成是逐环境的，而非逐数据集 —— 模型适应它当下所观测的物理布局。</p>\n<p>验证任务：定位与<strong>多人呼吸监测</strong>。两类任务都能从合成的宽带数据中获益，且无需额外信道测量或硬件改动。</p>\n<h3>技术要点</h3>\n<ul><li><strong>自监督</strong>训练 —— 在已有 CSI 上即可训练，无需人工标注</li><li><strong>架构：</strong> Transformer（多径抽取）+ Diffusion（条件 CSI 合成）</li><li><strong>输出 eCSI</strong> —— 下游感知模型可像消费来自更宽信道的 CSI 那样消费</li><li>在<strong>定位</strong>与<strong>多人呼吸监测</strong>上验证</li><li>与硬件无关 —— 可在商用 Wi-Fi 上运行</li></ul>\n<h3>意义与新意</h3>\n<ul><li><strong>首个&quot;合成缺失带宽&quot;思路用于 Wi-Fi 感知。</strong> 此前工作要么接受窄带局限，要么依赖专用硬件（USRP）。WUKONG 论证这并非唯一两条路。</li><li><strong>Diffusion 已经可以进入 Wi-Fi PHY 流水线。</strong> 条件化技巧让 Diffusion 在每样本时延代价下变得可用 —— 对未来 12 个月 CSI 研究的方向具有指标意义。</li><li><strong>与 IBIS（<code>2026-05-01_arxiv-ibis-csi-bandwidth-constrained.md</code>）形成搭配：</strong> IBIS 让 20 MHz CSI 走得更远；WUKONG 让 20 MHz CSI <em>看起来像</em> 80 MHz。同一约束下的两条互补攻法。</li></ul>",
+      "images": [],
+      "search_blob": "neuro-wideband wifi sensing via self-conditioned csi extrapolation 基于自条件 csi 外推的神经宽带 wi-fi 感知 802.11bf wifi-sensing phy-layer generative-ai ji, hou and wu (january 2026) propose **wukong**, a self-supervised framework that synthesises wideband csi from narrowband measurements — letting commodity wi-fi devices \"fake\" the bandwidth needed for higher-resolution sensing without specialised hardware. the architecture combines a transformer (for capturing the multipath structure of a sample) with a diffusion model (for generating the extended-bandwidth csi conditional on that multipath structure). the output is **ecsi** (extended csi), which downstream sensing models then consume as if it came from a wider channel. ji、hou 和 wu（2026 年 1 月）提出 **wukong（悟空）**，一个自监督框架，能从窄带 csi 测量合成宽带 csi —— 让商用 wi-fi 设备在不依赖专用硬件的前提下\"伪造\"出更高分辨率感知所需的带宽。架构组合了 transformer（用于刻画样本本身的多径结构）与 diffusion 模型（在该多径结构条件下生成扩展带宽 csi）。输出 **ecsi**（extended csi），下游感知模型可以像消费来自更宽信道的 csi 那样消费它。 academic-paper"
     },
     {
       "id": "2026-05-01_wifi-alliance-20mhz-iot-cert",
@@ -414,6 +532,29 @@ window.KB_DATA = {
         }
       ],
       "search_blob": "broadcom unveils unified wi-fi 8 platform at ces 2026 — bcm4918 apu + bcm6714 / bcm6719 dual-band radios 博通在 ces 2026 发布统一 wi-fi 8 平台 —— bcm4918 apu + bcm6714 / bcm6719 双频射频 802.11bn agentic-ai products mac-layer at ces 2026 (january 2026), broadcom announced its first-wave wi-fi 8 / 802.11bn product family with three new parts that, together, span the complete ap / gateway stack. the headline part is the **bcm4918 apu** (accelerated processing unit), an soc that combines high-performance cpus, networking offload, and a dedicated **broadcom neural engine** for on-device ai inference. broadcom positions the chip as the substrate for \"real-time agentic applications\" running directly on the home router. two companion dual-band wi-fi 8 radios round out the portfolio: **bcm6714** and **bcm6719**, both targeting integrated 2.4 / 5 / 6 ghz operation with energy-efficiency and real-time-analytics enhancements. 博通在 2026 年 1 月的 ces 2026 上发布了首批 wi-fi 8 / 802.11bn 产品家族，包括三款新芯片，共同覆盖整个 ap / 网关栈。旗舰是 **bcm4918 apu**（加速处理单元），这是一颗集成高性能 cpu、网络卸载和专用 **broadcom neural engine**（神经引擎）的 soc，可在终端进行 ai 推理。博通将其定位为家用路由器上\"实时智能体应用\"的运行底座。两款配套的双频 wi-fi 8 射频 **bcm6714** 与 **bcm6719** 完整了产品线，都面向 2.4 / 5 / 6 ghz 一体化工作并加入了能效与实时分析增强。 product"
+    },
+    {
+      "id": "2026-05-01_arxiv-fedwiloc-federated-localization",
+      "date_found": "2026-05-01",
+      "date_published": "2025-12-22",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "FedWiLoc: Federated Learning for Privacy-Preserving WiFi Indoor Localization",
+      "title_zh": "FedWiLoc：保护隐私的 Wi-Fi 室内定位联邦学习方案",
+      "url": "https://arxiv.org/abs/2512.18207",
+      "topics": [
+        "WiFi-sensing",
+        "security",
+        "agentic-AI"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-01_arxiv-fedwiloc-federated-localization.md",
+      "summary_short_en": "FedWiLoc (December 2025, submitted to MobiSys '26) makes the case that production indoor-localization deployments don't need to centralise raw RSS / CSI data to train a usable model. The system trains a localization model under federated learning across multiple physical environments — each device contributes gradient updates only, never the underlying observations — and reports **median localization error of 55 cm** with **90th-percentile error of 155 cm** across a multi-site evaluation.",
+      "summary_short_zh": "FedWiLoc（2025 年 12 月，投稿 MobiSys '26）论证：生产级室内定位部署并不需要把原始 RSS / CSI 数据集中到一处才能训练可用模型。该系统在多个物理环境间用联邦学习训练定位模型 —— 每台设备只贡献梯度更新，不上传原始观测 —— 在多场景评测中报告**中位定位误差 55 cm，第 90 百分位误差 155 cm**。",
+      "body_html_en": "<h3>Summary</h3>\n<p>FedWiLoc (December 2025, submitted to MobiSys '26) makes the case that production indoor-localization deployments don't need to centralise raw RSS / CSI data to train a usable model. The system trains a localization model under federated learning across multiple physical environments — each device contributes gradient updates only, never the underlying observations — and reports <strong>median localization error of 55 cm</strong> with <strong>90th-percentile error of 155 cm</strong> across a multi-site evaluation.</p>\n<p>The technical contribution is the federation strategy. Indoor localization models are notoriously environment-specific (a model trained in lab A doesn't work in office B). FedWiLoc handles this with a federation scheme that preserves cross-environment transferability without leaking which environment any individual gradient came from.</p>\n<h3>Key technical points</h3>\n<ul><li>Federated training across multiple physical environments</li><li>Median error 55 cm; 90th-percentile error 155 cm</li><li>Privacy-preserving: only gradients leave the device</li><li>MobiSys '26 submission</li></ul>\n<h3>Why it matters / what's new</h3>\n<ul><li><strong>Privacy-positioning intersection is concrete now.</strong> Combined with the FTM-security paper (<code>2026-05-01_arxiv-secure-wifi-ranging-az-bk.md</code>), the 2026 indoor-positioning research agenda has security &amp; privacy as first-class concerns.</li><li><strong>Federated localisation that actually transfers.</strong> Most prior FL-localisation work fails when deployed across heterogeneous environments. The 55 cm number across multi-site evaluation is the first credible cross-site federated result.</li></ul>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>FedWiLoc（2025 年 12 月，投稿 MobiSys '26）论证：生产级室内定位部署并不需要把原始 RSS / CSI 数据集中到一处才能训练可用模型。该系统在多个物理环境间用联邦学习训练定位模型 —— 每台设备只贡献梯度更新，不上传原始观测 —— 在多场景评测中报告<strong>中位定位误差 55 cm，第 90 百分位误差 155 cm</strong>。</p>\n<p>技术贡献在于联邦策略。室内定位模型出了名的&quot;环境强相关&quot;（实验室 A 训练的模型在办公室 B 用不了）。FedWiLoc 用一种保持跨环境迁移性的联邦方案应对，同时不会泄露每条梯度来自哪个具体环境。</p>\n<h3>技术要点</h3>\n<ul><li>跨多个物理环境的联邦训练</li><li>中位误差 55 cm；第 90 百分位 155 cm</li><li>隐私保护：设备只外传梯度</li><li>投稿 MobiSys '26</li></ul>\n<h3>意义与新意</h3>\n<ul><li><strong>隐私 + 定位交叉点已经具体化。</strong> 加上 FTM 安全论文（<code>2026-05-01_arxiv-secure-wifi-ranging-az-bk.md</code>），2026 年室内定位研究议程已经把安全与隐私列为一等议题。</li><li><strong>真正具备迁移性的联邦定位。</strong> 此前大多数联邦定位工作在跨异构环境时失败。多场景评测下 55 cm 中位误差是首批可信的跨场景联邦结果。</li></ul>",
+      "images": [],
+      "search_blob": "fedwiloc: federated learning for privacy-preserving wifi indoor localization fedwiloc：保护隐私的 wi-fi 室内定位联邦学习方案 wifi-sensing security agentic-ai fedwiloc (december 2025, submitted to mobisys '26) makes the case that production indoor-localization deployments don't need to centralise raw rss / csi data to train a usable model. the system trains a localization model under federated learning across multiple physical environments — each device contributes gradient updates only, never the underlying observations — and reports **median localization error of 55 cm** with **90th-percentile error of 155 cm** across a multi-site evaluation. fedwiloc（2025 年 12 月，投稿 mobisys '26）论证：生产级室内定位部署并不需要把原始 rss / csi 数据集中到一处才能训练可用模型。该系统在多个物理环境间用联邦学习训练定位模型 —— 每台设备只贡献梯度更新，不上传原始观测 —— 在多场景评测中报告**中位定位误差 55 cm，第 90 百分位误差 155 cm**。 academic-paper"
     },
     {
       "id": "2026-05-01_arxiv-25-years-tutorial",
@@ -525,6 +666,98 @@ window.KB_DATA = {
       "search_blob": "learning multi-access point coordination in agentic ai wi-fi with large language models 用大语言模型学习智能体 ai wi-fi 中的多接入点协调 802.11bn mlo agentic-ai mac-layer scheduling fan et al. (nov 2025) propose treating each wi-fi access point as an autonomous llm agent that negotiates multi-ap coordination (mapc) decisions through natural-language dialogue with neighboring aps. the paper frames mapc — the headline 802.11bn feature for dense-deployment interference mitigation — as a multi-agent reasoning problem rather than a traditional rule-based or rl-based optimization. each ap-agent maintains memory, performs reflection over past decisions, and can invoke \"tools\" (read radio metrics, propose airtime allocations, vote on coordinated-beamforming pairings). agents converge on coordination strategies via iterative dialogue, demonstrated to beat spatial-reuse baselines. fan 等人（2025 年 11 月）提出把每个 wi-fi 接入点视为一个自主的大语言模型（llm）智能体，通过与邻居 ap 进行自然语言对话来协商多 ap 协调（mapc）决策。论文把 mapc —— 802.11bn 用于密集部署干扰抑制的标志性特性 —— 框定为多智能体推理问题，而不是传统的基于规则或基于强化学习的优化。每个 ap 智能体保留记忆、对历史决策进行反思，并可以调用\"工具\"（读取无线指标、提议空时分配、对协同波束成形配对投票）。智能体通过迭代对话收敛到协调策略，论文展示其在仿真中优于空间复用基线。 academic-paper"
     },
     {
+      "id": "2026-05-01_arxiv-mc-az-performance-comparison",
+      "date_found": "2026-05-01",
+      "date_published": "2025-11-22",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Performance Comparison of 802.11mc and 802.11az Wi-Fi Positioning",
+      "title_zh": "802.11mc 与 802.11az Wi-Fi 定位性能对比",
+      "url": "https://arxiv.org/abs/2511.17935",
+      "topics": [
+        "802.11az",
+        "PHY-layer"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-01_arxiv-mc-az-performance-comparison.md",
+      "summary_short_en": "A direct head-to-head measurement comparison of IEEE 802.11mc (the original FTM amendment, ratified 2016) and IEEE 802.11az (next-generation positioning, ratified 2023) under controlled conditions and under realistic congested-RF conditions. The headline number is uncomfortable for the new standard: in congested environments, **802.11az packet failure rates are 50%, 37%, 55%, 50% and 65% at 2 m, 4 m, 6 m, 8 m and 10 m** respectively — i.e. roughly half of FTM exchanges fail in the field.",
+      "summary_short_zh": "对 IEEE 802.11mc（最初的 FTM 修订，2016 批准）与 IEEE 802.11az（下一代定位，2023 批准）在受控条件与真实拥塞射频条件下的直接对比测量。结果对新标准而言比较尴尬：拥塞条件下 802.11az 在 2 m / 4 m / 6 m / 8 m / 10 m 距离上**包失败率分别为 50%、37%、55%、50%、65%** —— 现场约一半的 FTM 交互会失败。",
+      "body_html_en": "<h3>Summary</h3>\n<p>A direct head-to-head measurement comparison of IEEE 802.11mc (the original FTM amendment, ratified 2016) and IEEE 802.11az (next-generation positioning, ratified 2023) under controlled conditions and under realistic congested-RF conditions. The headline number is uncomfortable for the new standard: in congested environments, <strong>802.11az packet failure rates are 50%, 37%, 55%, 50% and 65% at 2 m, 4 m, 6 m, 8 m and 10 m</strong> respectively — i.e. roughly half of FTM exchanges fail in the field.</p>\n<p>The takeaway: 802.11az's analytical advantages (improved frame format, better security baseline) don't automatically translate to deployment-ready positioning if the failure mode under congestion isn't engineered around. This pairs with the FTM survey (<code>2026-05-01_arxiv-ftm-survey-2025.md</code>) and Antonijević et al.'s security paper (<code>2026-05-01_arxiv-secure-wifi-ranging-az-bk.md</code>) to make the same point: 802.11az on commercial hardware in 2025 is not yet ready for high-stakes use without significant engineering.</p>\n<h3>Key technical points</h3>\n<ul><li>Direct mc vs az measurement comparison</li><li>Congested-RF failure rates: 37%–65% across 2–10 m</li><li>Field-measurement methodology, not just simulation</li></ul>\n<h3>Why it matters / what's new</h3>\n<ul><li><strong>Challenges the &quot;newer is better&quot; narrative for 802.11az.</strong> Real failure rates push back against the assumption that az is a drop-in upgrade for mc.</li><li><strong>Sets up engineering work.</strong> The hardware / firmware fixes needed to bring az failure rates down to mc levels are an immediate deployment-engineering agenda.</li></ul>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>对 IEEE 802.11mc（最初的 FTM 修订，2016 批准）与 IEEE 802.11az（下一代定位，2023 批准）在受控条件与真实拥塞射频条件下的直接对比测量。结果对新标准而言比较尴尬：拥塞条件下 802.11az 在 2 m / 4 m / 6 m / 8 m / 10 m 距离上<strong>包失败率分别为 50%、37%、55%、50%、65%</strong> —— 现场约一半的 FTM 交互会失败。</p>\n<p>结论是：802.11az 的分析优势（更好的帧格式、更好的安全基线）并不会自动等价于&quot;可部署的定位&quot;，如果不针对拥塞下的失败模式做工程设计的话。本论文与 FTM 综述（<code>2026-05-01_arxiv-ftm-survey-2025.md</code>）以及 Antonijević 等人的安全论文（<code>2026-05-01_arxiv-secure-wifi-ranging-az-bk.md</code>）共同传达同一个信号：2025 年商用硬件上的 802.11az 尚不适合高风险用途，除非配以大量工程优化。</p>\n<h3>技术要点</h3>\n<ul><li>mc 与 az 的直接实测对比</li><li>拥塞射频下失败率：2–10 m 范围 37%–65%</li><li>实测方法，非纯仿真</li></ul>\n<h3>意义与新意</h3>\n<ul><li><strong>挑战了&quot;802.11az 越新越好&quot;的叙事。</strong> 真实失败率推翻了&quot;az 可以平替 mc&quot;的假设。</li><li><strong>奠定了工程议程。</strong> 把 az 的失败率降到 mc 水平所需的硬件 / 固件修整工作，已是落地工程上的当务之急。</li></ul>",
+      "images": [],
+      "search_blob": "performance comparison of 802.11mc and 802.11az wi-fi positioning 802.11mc 与 802.11az wi-fi 定位性能对比 802.11az phy-layer a direct head-to-head measurement comparison of ieee 802.11mc (the original ftm amendment, ratified 2016) and ieee 802.11az (next-generation positioning, ratified 2023) under controlled conditions and under realistic congested-rf conditions. the headline number is uncomfortable for the new standard: in congested environments, **802.11az packet failure rates are 50%, 37%, 55%, 50% and 65% at 2 m, 4 m, 6 m, 8 m and 10 m** respectively — i.e. roughly half of ftm exchanges fail in the field. 对 ieee 802.11mc（最初的 ftm 修订，2016 批准）与 ieee 802.11az（下一代定位，2023 批准）在受控条件与真实拥塞射频条件下的直接对比测量。结果对新标准而言比较尴尬：拥塞条件下 802.11az 在 2 m / 4 m / 6 m / 8 m / 10 m 距离上**包失败率分别为 50%、37%、55%、50%、65%** —— 现场约一半的 ftm 交互会失败。 academic-paper"
+    },
+    {
+      "id": "2026-05-01_arxiv-llm-6ghz-wifi-nru-coexistence",
+      "date_found": "2026-05-01",
+      "date_published": "2025-09-26",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "LLM-Assisted Alpha Fairness for 6 GHz WiFi and NR-U Coexistence: An Agentic Orchestrator for Throughput, Energy, and SLA",
+      "title_zh": "面向 6 GHz Wi-Fi 与 NR-U 共存的 LLM 辅助 Alpha 公平：兼顾吞吐、能耗与 SLA 的智能体调度器",
+      "url": "https://arxiv.org/abs/2510.17814",
+      "topics": [
+        "802.11be",
+        "agentic-AI",
+        "scheduling"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-05-01_arxiv-llm-6ghz-wifi-nru-coexistence.md",
+      "summary_short_en": "Wang, Lu, Liu, Zhu, and Liu (September 2025) tackle one of the messiest open problems in unlicensed spectrum: how does Wi-Fi 7 (in 6 GHz) coexist *fairly* with 5G NR-U (also in 6 GHz), where both contend under listen-before-talk (LBT) rules? Their answer is an **agentic orchestrator** that splits the decision in two — an LLM generates **interpretable** policy parameters (alpha-fairness index, duty-cycle limits, per-class weights) from telemetry; a deterministic optimiser then applies safety constraints and computes the actual fair allocation, accounting for LBT losses and energy cost.",
+      "summary_short_zh": "Wang、Lu、Liu、Zhu、Liu（2025 年 9 月）攻克免许可频段中最棘手的开放问题之一：在 6 GHz 频段，Wi-Fi 7 如何与 5G NR-U 在 LBT（先听后讲）规则下进行*公平*共存？答案是一个**智能体调度器**，把决策一分为二 —— LLM 从遥测中生成**可解释**的策略参数（alpha 公平指数、占空比上限、每类权重）；然后由一个确定性优化器在这些参数上施加安全约束，计算真实分配，并考虑 LBT 损失与能耗。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Wang, Lu, Liu, Zhu, and Liu (September 2025) tackle one of the messiest open problems in unlicensed spectrum: how does Wi-Fi 7 (in 6 GHz) coexist <em>fairly</em> with 5G NR-U (also in 6 GHz), where both contend under listen-before-talk (LBT) rules? Their answer is an <strong>agentic orchestrator</strong> that splits the decision in two — an LLM generates <strong>interpretable</strong> policy parameters (alpha-fairness index, duty-cycle limits, per-class weights) from telemetry; a deterministic optimiser then applies safety constraints and computes the actual fair allocation, accounting for LBT losses and energy cost.</p>\n<p>The <strong>interpretability split</strong> is the design contribution. Pure LLM-policy systems are hard to certify; pure deterministic systems can't adapt to operator intent. Splitting LLM (intent → parameters) from optimiser (parameters → allocation) keeps the LLM out of the safety-critical path.</p>\n<p>Headline numbers from a dual-160 MHz simulator: one LLM configuration gets <strong>35.3% lower total energy</strong> at modest throughput cost; another gets <strong>+3.5% total bits and +12.2% bits/J</strong> vs rule-based baselines.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Setting:</strong> unlicensed 6 GHz, Wi-Fi 7 vs 5G NR-U under LBT</li><li><strong>Architecture split:</strong> LLM generates interpretable policy params; deterministic optimiser does safety + allocation</li><li><strong>Output policy:</strong> alpha-fairness index, duty-cycle limits, per-class weights</li><li><strong>Numbers:</strong> −35.3% energy (configuration A) or +3.5% throughput / +12.2% bits/J (config B)</li><li><strong>Reproducible</strong> code + logs released</li></ul>\n<h3>Why it matters / what's new</h3>\n<ul><li><strong>Architectural template for safety-aware agentic Wi-Fi.</strong> The &quot;LLM → params → optimiser&quot; pattern is a portable design that solves the certification problem for production agentic networks.</li><li><strong>6 GHz coexistence is now a hot topic.</strong> With the 20 MHz Wi-Fi 7 IoT cert (<code>2026-05-01_wifi-alliance-20mhz-iot-cert.md</code>) and increasing Wi-Fi 7 deployment, expect more 6 GHz coexistence work — this paper sets the bar.</li><li><strong>Pairs with Zheng et al.'s LLM-RL paper (<code>2026-05-01_arxiv-llm-rl-wireless-optimization.md</code>):</strong> both put LLM upstream rather than at the policy output, but for different reasons (state representation vs interpretability).</li></ul>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Wang、Lu、Liu、Zhu、Liu（2025 年 9 月）攻克免许可频段中最棘手的开放问题之一：在 6 GHz 频段，Wi-Fi 7 如何与 5G NR-U 在 LBT（先听后讲）规则下进行<em>公平</em>共存？答案是一个<strong>智能体调度器</strong>，把决策一分为二 —— LLM 从遥测中生成<strong>可解释</strong>的策略参数（alpha 公平指数、占空比上限、每类权重）；然后由一个确定性优化器在这些参数上施加安全约束，计算真实分配，并考虑 LBT 损失与能耗。</p>\n<p><strong>可解释性切分</strong>是本文的设计贡献。纯 LLM 策略系统难以认证；纯确定性系统又无法贴合运营商意图。把 LLM（意图→参数）与优化器（参数→分配）解耦，使 LLM 处于安全关键路径之外。</p>\n<p>双 160 MHz 模拟器中关键数据：一种 LLM 配置在小幅吞吐损失下总能耗<strong>降低 35.3%</strong>；另一种配置相对基于规则的基线获得<strong>总比特 +3.5%、bits/J +12.2%</strong>。</p>\n<h3>技术要点</h3>\n<ul><li><strong>场景：</strong> 免许可 6 GHz，Wi-Fi 7 与 5G NR-U 在 LBT 下竞争</li><li><strong>架构切分：</strong> LLM 生成可解释策略参数；确定性优化器负责安全约束 + 资源分配</li><li><strong>输出策略：</strong> alpha 公平指数、占空比上限、每类权重</li><li><strong>数据：</strong> 总能耗 −35.3%（A 配置）或 总比特 +3.5% / bits/J +12.2%（B 配置）</li><li><strong>可复现</strong> —— 代码与日志公开</li></ul>\n<h3>意义与新意</h3>\n<ul><li><strong>安全感知智能体 Wi-Fi 的架构样板。</strong> &quot;LLM → 参数 → 优化器&quot;模式是可迁移设计，解决了生产环境智能体网络的认证问题。</li><li><strong>6 GHz 共存已经是热门议题。</strong> 加上 20 MHz Wi-Fi 7 IoT 认证（<code>2026-05-01_wifi-alliance-20mhz-iot-cert.md</code>）以及 Wi-Fi 7 部署扩张，6 GHz 共存工作必然增多 —— 本论文树立了基线。</li><li><strong>与 Zheng 等人的 LLM-RL 论文（<code>2026-05-01_arxiv-llm-rl-wireless-optimization.md</code>）形成搭配：</strong> 二者都把 LLM 放在上游而非策略输出，但出于不同动机（状态表示 vs 可解释性）。</li></ul>",
+      "images": [],
+      "search_blob": "llm-assisted alpha fairness for 6 ghz wifi and nr-u coexistence: an agentic orchestrator for throughput, energy, and sla 面向 6 ghz wi-fi 与 nr-u 共存的 llm 辅助 alpha 公平：兼顾吞吐、能耗与 sla 的智能体调度器 802.11be agentic-ai scheduling wang, lu, liu, zhu, and liu (september 2025) tackle one of the messiest open problems in unlicensed spectrum: how does wi-fi 7 (in 6 ghz) coexist *fairly* with 5g nr-u (also in 6 ghz), where both contend under listen-before-talk (lbt) rules? their answer is an **agentic orchestrator** that splits the decision in two — an llm generates **interpretable** policy parameters (alpha-fairness index, duty-cycle limits, per-class weights) from telemetry; a deterministic optimiser then applies safety constraints and computes the actual fair allocation, accounting for lbt losses and energy cost. wang、lu、liu、zhu、liu（2025 年 9 月）攻克免许可频段中最棘手的开放问题之一：在 6 ghz 频段，wi-fi 7 如何与 5g nr-u 在 lbt（先听后讲）规则下进行*公平*共存？答案是一个**智能体调度器**，把决策一分为二 —— llm 从遥测中生成**可解释**的策略参数（alpha 公平指数、占空比上限、每类权重）；然后由一个确定性优化器在这些参数上施加安全约束，计算真实分配，并考虑 lbt 损失与能耗。 academic-paper"
+    },
+    {
+      "id": "2026-05-01_arxiv-ftm-survey-2025",
+      "date_found": "2026-05-01",
+      "date_published": "2025-09-04",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Indoor Positioning with Wi-Fi Location: A Survey of IEEE 802.11mc/az/bk Fine Timing Measurement Research",
+      "title_zh": "Wi-Fi 室内定位：IEEE 802.11mc/az/bk 精细时序测量研究综述",
+      "url": "https://arxiv.org/abs/2509.03901",
+      "topics": [
+        "802.11az",
+        "security",
+        "PHY-layer"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-01_arxiv-ftm-survey-2025.md",
+      "summary_short_en": "Kosek-Szott, Szott, Ciezobka, Wojnar, Rusek, and Segev (September 2025) deliver the first comprehensive 30-page survey of indoor positioning research using IEEE 802.11mc / az / bk Fine Timing Measurement (FTM, commercially \"Wi-Fi Location\"). They classify and review **180+ papers** across five axes: practical accuracy achievable in deployment, ML methods for accuracy improvement, hybrid systems that combine FTM with non-Wi-Fi technologies, FTM-based applications, and **security**.",
+      "summary_short_zh": "Kosek-Szott、Szott、Ciezobka、Wojnar、Rusek、Segev（2025 年 9 月）发表了首篇全面综述，30 页篇幅覆盖使用 IEEE 802.11mc / az / bk 精细时序测量（FTM，即商用名 \"Wi-Fi Location\"）做室内定位的研究。他们沿五条主轴分类整理 **180+ 篇论文**：部署中可达的实际精度、用 ML 改进精度的方法、把 FTM 与非 Wi-Fi 技术结合的混合系统、FTM 应用、以及**安全性**。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Kosek-Szott, Szott, Ciezobka, Wojnar, Rusek, and Segev (September 2025) deliver the first comprehensive 30-page survey of indoor positioning research using IEEE 802.11mc / az / bk Fine Timing Measurement (FTM, commercially &quot;Wi-Fi Location&quot;). They classify and review <strong>180+ papers</strong> across five axes: practical accuracy achievable in deployment, ML methods for accuracy improvement, hybrid systems that combine FTM with non-Wi-Fi technologies, FTM-based applications, and <strong>security</strong>.</p>\n<p>The security axis is the most timely. With Antonijević et al.'s March 2026 paper (<code>2026-05-01_arxiv-secure-wifi-ranging-az-bk.md</code>) showing concrete vulnerabilities in 802.11az/bk deployment, this survey provides the prior-art map against which those vulnerabilities should be understood.</p>\n<p>For practitioners, the value is the comprehensive categorisation: which mechanisms work in which scenarios, what realistic accuracy looks like across published trials, and which open problems remain unsolved.</p>\n<h3>Key technical points</h3>\n<ul><li>30-page survey, 180+ papers reviewed</li><li>Standards covered: 802.11mc, 802.11az (next-gen positioning), 802.11bk (320 MHz extension)</li><li>Five axes: practical accuracy, ML accuracy improvement, hybrid FTM+other, applications, security</li><li>First comprehensive FTM survey in the literature</li></ul>\n<h3>Why it matters / what's new</h3>\n<ul><li><strong>Citation backbone for any FTM / positioning paper.</strong> Until now there was no canonical FTM survey; researchers had to cite a scattered set of partial reviews.</li><li><strong>Sets up the security axis.</strong> Combined with <code>2026-05-01_arxiv-secure-wifi-ranging-az-bk.md</code>, the FTM-security story now has both the literature map and a concrete vulnerability paper.</li><li><strong>Useful before drafting any 802.11bk / az contribution</strong> — tells you what's already published.</li></ul>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Kosek-Szott、Szott、Ciezobka、Wojnar、Rusek、Segev（2025 年 9 月）发表了首篇全面综述，30 页篇幅覆盖使用 IEEE 802.11mc / az / bk 精细时序测量（FTM，即商用名 &quot;Wi-Fi Location&quot;）做室内定位的研究。他们沿五条主轴分类整理 <strong>180+ 篇论文</strong>：部署中可达的实际精度、用 ML 改进精度的方法、把 FTM 与非 Wi-Fi 技术结合的混合系统、FTM 应用、以及<strong>安全性</strong>。</p>\n<p>安全性这一轴最具时效性。加上 Antonijević 等人 2026 年 3 月的论文（<code>2026-05-01_arxiv-secure-wifi-ranging-az-bk.md</code>）已展示了 802.11az/bk 在落地中的具体漏洞，本综述提供了理解这些漏洞所需的现有技术全景。</p>\n<p>对于从业者，本文价值在于&quot;全面分类&quot;：哪些机制在哪些场景管用、不同公开试验中的实际精度水平、以及哪些开放问题仍未解决。</p>\n<h3>技术要点</h3>\n<ul><li>30 页综述，覆盖 180+ 篇论文</li><li>涵盖标准：802.11mc、802.11az（下一代定位）、802.11bk（320 MHz 扩展）</li><li>五条主轴：实际精度、ML 精度改进、混合 FTM + 其他技术、应用、安全性</li><li>文献中首篇全面 FTM 综述</li></ul>\n<h3>意义与新意</h3>\n<ul><li><strong>任何 FTM / 定位论文的引用骨干。</strong> 此前没有规范的 FTM 综述，研究者不得不引用一堆零散的部分综述。</li><li><strong>奠定了安全性这条主轴。</strong> 结合 <code>2026-05-01_arxiv-secure-wifi-ranging-az-bk.md</code>，FTM 安全的故事线现在既有文献地图，又有一篇具体的漏洞论文。</li><li><strong>在起草任何 802.11bk / az 贡献之前都建议先读</strong> —— 它告诉你哪些内容已发表。</li></ul>",
+      "images": [],
+      "search_blob": "indoor positioning with wi-fi location: a survey of ieee 802.11mc/az/bk fine timing measurement research wi-fi 室内定位：ieee 802.11mc/az/bk 精细时序测量研究综述 802.11az security phy-layer kosek-szott, szott, ciezobka, wojnar, rusek, and segev (september 2025) deliver the first comprehensive 30-page survey of indoor positioning research using ieee 802.11mc / az / bk fine timing measurement (ftm, commercially \"wi-fi location\"). they classify and review **180+ papers** across five axes: practical accuracy achievable in deployment, ml methods for accuracy improvement, hybrid systems that combine ftm with non-wi-fi technologies, ftm-based applications, and **security**. kosek-szott、szott、ciezobka、wojnar、rusek、segev（2025 年 9 月）发表了首篇全面综述，30 页篇幅覆盖使用 ieee 802.11mc / az / bk 精细时序测量（ftm，即商用名 \"wi-fi location\"）做室内定位的研究。他们沿五条主轴分类整理 **180+ 篇论文**：部署中可达的实际精度、用 ml 改进精度的方法、把 ftm 与非 wi-fi 技术结合的混合系统、ftm 应用、以及**安全性**。 academic-paper"
+    },
+    {
+      "id": "2026-05-01_arxiv-co-tdma-802-11bn",
+      "date_found": "2026-05-01",
+      "date_published": "2025-08-26",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Performance Analysis of IEEE 802.11bn with Coordinated TDMA on Real-Time Applications",
+      "title_zh": "IEEE 802.11bn 协同 TDMA 在实时应用中的性能分析",
+      "url": "https://arxiv.org/abs/2508.18755",
+      "topics": [
+        "802.11bn",
+        "MAPC",
+        "MAC-layer",
+        "scheduling"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-05-01_arxiv-co-tdma-802-11bn.md",
+      "summary_short_en": "Lee, Lee, Noh and Lee (August 2025, accepted to GLOBECOM 2025) study **Coordinated TDMA (Co-TDMA)** — one of the Multi-AP Coordination (MAPC) techniques on the table for 802.11bn — and quantify what it does for the kind of latency that actually matters for real-time applications: *worst-case latency* and *jitter*, rather than mean throughput.",
+      "summary_short_zh": "Lee、Lee、Noh、Lee（2025 年 8 月，被 GLOBECOM 2025 接收）研究**协同 TDMA（Co-TDMA）** —— 802.11bn 候选 MAPC 技术之一 —— 并量化其对实时应用真正关心的时延（*最坏时延*与*抖动*，而非平均吞吐）的影响。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Lee, Lee, Noh and Lee (August 2025, accepted to GLOBECOM 2025) study <strong>Coordinated TDMA (Co-TDMA)</strong> — one of the Multi-AP Coordination (MAPC) techniques on the table for 802.11bn — and quantify what it does for the kind of latency that actually matters for real-time applications: <em>worst-case latency</em> and <em>jitter</em>, rather than mean throughput.</p>\n<p>The setup is system-level simulation of TGbn-aligned MAC behaviour with Co-TDMA scheduling for time-sensitive traffic. The headline result: <strong>~24% reduction in worst-case latency</strong> for low-latency traffic relative to the uncoordinated baseline, plus consistent reduction in jitter. Both numbers track directly with TGbn's three explicit performance targets (throughput +25% / p95 latency −25% / MPDU loss −25% — see <code>2026-05-01_ieee-tgbn-d2-schedule.md</code>), which makes Co-TDMA a credible mechanism for hitting the latency target.</p>\n<p>The paper is the first quantitative case for Co-TDMA in the published TGbn literature and lands at a moment when the TGbn comment cluster has been actively debating MAPC scheduling between TWT-based and on-demand variants (see <code>2026-05-01_ieee-march-2026-readout.md</code>).</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Co-TDMA</strong> = one of MAPC's candidate scheduling techniques in 802.11bn</li><li>Metrics targeted: <strong>worst-case latency</strong> and <strong>jitter</strong> (not mean throughput)</li><li>System-level simulation aligned with TGbn MAC</li><li>~24% worst-case latency reduction for low-latency traffic</li><li>Concrete consistent improvement vs uncoordinated baseline</li></ul>\n<h3>Why it matters / what's new</h3>\n<ul><li><strong>Quantitative anchor for Co-TDMA in TGbn debate.</strong> TGbn comments have been arguing between TWT and on-demand MAPC scheduling without comparable numbers on either side. This paper supplies one for the TWT/coordinated branch.</li><li><strong>Latency-as-metric continues to dominate.</strong> Aligns with the WBA enterprise-trial focus on tail latency (<code>2026-05-01_wifi7-deployment-milestone-2026.md</code>) and the BLADE result (<code>2026-05-01_arxiv-blade-adaptive-contention.md</code>).</li></ul>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Lee、Lee、Noh、Lee（2025 年 8 月，被 GLOBECOM 2025 接收）研究<strong>协同 TDMA（Co-TDMA）</strong> —— 802.11bn 候选 MAPC 技术之一 —— 并量化其对实时应用真正关心的时延（<em>最坏时延</em>与<em>抖动</em>，而非平均吞吐）的影响。</p>\n<p>实验设置是与 TGbn 一致的 MAC 行为的系统级仿真，对时延敏感流量启用 Co-TDMA 调度。关键结果：低时延流量的<strong>最坏时延降低约 24%</strong>，抖动也持续下降。两项数字都与 TGbn 的三项明确性能目标（吞吐 +25% / p95 时延 −25% / MPDU 丢包 −25%，见 <code>2026-05-01_ieee-tgbn-d2-schedule.md</code>）形成对应，使 Co-TDMA 成为命中时延目标的一个可信机制。</p>\n<p>本论文是公开 TGbn 文献中第一篇 Co-TDMA 的定量论证，发表时正值 TGbn 评论集群正在 TWT 型与按需型 MAPC 调度之间激烈辩论（见 <code>2026-05-01_ieee-march-2026-readout.md</code>）。</p>\n<h3>技术要点</h3>\n<ul><li><strong>Co-TDMA</strong> = 802.11bn MAPC 候选调度技术之一</li><li>关注指标：<strong>最坏时延</strong>与<strong>抖动</strong>（不是平均吞吐）</li><li>与 TGbn MAC 一致的系统级仿真</li><li>低时延流量最坏时延降低约 24%</li><li>相对未协调基线，给出一致且具体的改进</li></ul>\n<h3>意义与新意</h3>\n<ul><li><strong>TGbn 辩论中 Co-TDMA 的定量锚点。</strong> 此前 TGbn 评论在 TWT 与按需 MAPC 调度之间互不让步，但双方都缺乏可比数据。本论文为 TWT / 协同那一支提供了首个数据。</li><li><strong>时延作为指标继续占主导。</strong> 与 WBA 企业试验聚焦尾时延（<code>2026-05-01_wifi7-deployment-milestone-2026.md</code>）以及 BLADE 结果（<code>2026-05-01_arxiv-blade-adaptive-contention.md</code>）保持一致。</li></ul>",
+      "images": [],
+      "search_blob": "performance analysis of ieee 802.11bn with coordinated tdma on real-time applications ieee 802.11bn 协同 tdma 在实时应用中的性能分析 802.11bn mapc mac-layer scheduling lee, lee, noh and lee (august 2025, accepted to globecom 2025) study **coordinated tdma (co-tdma)** — one of the multi-ap coordination (mapc) techniques on the table for 802.11bn — and quantify what it does for the kind of latency that actually matters for real-time applications: *worst-case latency* and *jitter*, rather than mean throughput. lee、lee、noh、lee（2025 年 8 月，被 globecom 2025 接收）研究**协同 tdma（co-tdma）** —— 802.11bn 候选 mapc 技术之一 —— 并量化其对实时应用真正关心的时延（*最坏时延*与*抖动*，而非平均吞吐）的影响。 academic-paper"
+    },
+    {
       "id": "2026-05-01_arxiv-multiband-passive-sensing",
       "date_found": "2026-05-01",
       "date_published": "2025-07-30",
@@ -562,6 +795,77 @@ window.KB_DATA = {
         }
       ],
       "search_blob": "802.11bf multiband passive sensing: reusing wi-fi signaling for sensing 802.11bf 多频段被动感知：复用 wi-fi 现有信令实现感知 802.11bf wifi-sensing phy-layer picazo-martinez et al. (jul 2025, iot-journal preprint) propose milagro, a passive multiband wi-fi sensing system that fuses csi from 5 ghz beacon frames *and* 60 ghz mmwave beamforming-training (trn-unit) sequences to detect human presence, motion, and activities indoors. the key claim: a passive station (p-sta) that only receives — never transmits — already-emitted standard frames can deliver 95–100% accuracy on common sensing tasks, with no airtime cost and no protocol change. picazo-martinez 等人（2025 年 7 月，iot-journal preprint）提出 milagro，一种被动式多频段 wi-fi 感知系统，通过融合 5 ghz beacon 帧的 csi **以及** 60 ghz 毫米波波束训练（trn-unit）序列，实现室内人员存在、运动和活动检测。关键声明是：一种只接收不发送的\"被动站点（p-sta）\"，仅靠接收已存在的标准帧就能在常见感知任务上达到 95–100% 的准确率，且不消耗空中时间、不修改协议。 academic-paper"
+    },
+    {
+      "id": "2026-05-01_arxiv-wifi8-latency-co-sr",
+      "date_found": "2026-05-01",
+      "date_published": "2025-07-24",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Improving Wi-Fi 8 Latency with Coordinated Spatial Reuse",
+      "title_zh": "通过协同空间复用改善 Wi-Fi 8 时延",
+      "url": "https://arxiv.org/abs/2507.18480",
+      "topics": [
+        "802.11bn",
+        "MAPC",
+        "MAC-layer",
+        "scheduling",
+        "XR"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-05-01_arxiv-wifi8-latency-co-sr.md",
+      "summary_short_en": "Nunez, Wilhelmi, Galati-Giordano, Geraci and Bellalta (July 2025) implement and simulate **Coordinated Spatial Reuse (Co-SR)** as proposed for 802.11bn, evaluating it in a four-AP dense-deployment scenario with cloud gaming / XR-style traffic. The headline result is a remarkable **31%–95% delay reduction** versus the uncoordinated DCF baseline, depending on traffic and topology mix.",
+      "summary_short_zh": "Nunez、Wilhelmi、Galati-Giordano、Geraci 和 Bellalta（2025 年 7 月）针对 802.11bn 提出的**协同空间复用（Co-SR）**给出实现并做系统级仿真，评估场景是四 AP 密集部署 + 云游戏 / XR 风格流量。关键结果是惊人的**时延降低 31%–95%**（相对未协调的 DCF 基线，取决于流量与拓扑组合）。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Nunez, Wilhelmi, Galati-Giordano, Geraci and Bellalta (July 2025) implement and simulate <strong>Coordinated Spatial Reuse (Co-SR)</strong> as proposed for 802.11bn, evaluating it in a four-AP dense-deployment scenario with cloud gaming / XR-style traffic. The headline result is a remarkable <strong>31%–95% delay reduction</strong> versus the uncoordinated DCF baseline, depending on traffic and topology mix.</p>\n<p>Co-SR is a different MAPC primitive from Co-TDMA (<code>2026-05-01_arxiv-co-tdma-802-11bn.md</code>): rather than time-slot coordination, it has neighbouring APs transmit simultaneously on the same channel with carefully managed transmit-power adjustments so they don't kill each other. The Geraci group has been the leading academic shop on Co-SR for several years and this paper is the first published implementation aligned with the TGbn-track design.</p>\n<p>The paper functions as the empirical companion to <code>2026-05-01_arxiv-throughput-coord-spatial-reuse-bn.md</code> (analytical) and is a useful baseline for any subsequent C-SR work.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Co-SR</strong> = Coordinated Spatial Reuse via simultaneous neighbouring transmissions with managed power</li><li>Four-AP dense deployment, cloud-gaming / XR traffic</li><li><strong>31%–95% delay reduction</strong> over DCF baseline (range depends on conditions)</li><li>TGbn-track aligned design</li><li>Companion to throughput-analysis work (Continuous-Time Markov Chains)</li></ul>\n<h3>Why it matters / what's new</h3>\n<ul><li><strong>Strongest published Co-SR latency number to date.</strong> A 31–95% reduction puts Co-SR firmly in the &quot;must-have feature for XR&quot; conversation.</li><li><strong>Pairs with Co-TDMA.</strong> With Lee et al.'s Co-TDMA paper, TGbn now has comparable evaluations of two MAPC alternatives — useful for the comment-resolution debate.</li><li><strong>Practical for implementers:</strong> the simulation is reproducible and the parameter sweeps give a recipe for tuning Co-SR in real deployments.</li></ul>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Nunez、Wilhelmi、Galati-Giordano、Geraci 和 Bellalta（2025 年 7 月）针对 802.11bn 提出的<strong>协同空间复用（Co-SR）</strong>给出实现并做系统级仿真，评估场景是四 AP 密集部署 + 云游戏 / XR 风格流量。关键结果是惊人的<strong>时延降低 31%–95%</strong>（相对未协调的 DCF 基线，取决于流量与拓扑组合）。</p>\n<p>Co-SR 与 Co-TDMA（<code>2026-05-01_arxiv-co-tdma-802-11bn.md</code>）是不同的 MAPC 原语：它不是按时隙协调，而是让邻居 AP 同时在相同信道传输，但通过精细的发送功率调节使彼此不互相&quot;打死&quot;。Geraci 团队在 Co-SR 方向上深耕多年；本论文是首个与 TGbn 路线对齐的公开实现。</p>\n<p>本论文是 <code>2026-05-01_arxiv-throughput-coord-spatial-reuse-bn.md</code>（分析型）的实证配套，可作为后续 C-SR 工作的基线。</p>\n<h3>技术要点</h3>\n<ul><li><strong>Co-SR</strong> = 通过功率管理的同信道并发传输实现的协同空间复用</li><li>四 AP 密集部署、云游戏 / XR 流量</li><li>相对 DCF 基线<strong>时延降低 31%–95%</strong>（依条件而定）</li><li>与 TGbn 路线对齐的设计</li><li>与吞吐分析工作（连续时间马尔可夫链）形成配套</li></ul>\n<h3>意义与新意</h3>\n<ul><li><strong>迄今为止 Co-SR 公开发表的最强时延数据。</strong> 31–95% 的降幅使 Co-SR 牢牢站在&quot;XR 必备特性&quot;的讨论中心。</li><li><strong>与 Co-TDMA 形成搭配。</strong> 加上 Lee 等人的 Co-TDMA 论文，TGbn 现在有了两种 MAPC 备选的可比评估 —— 对评论裁定辩论很有用。</li><li><strong>对实现方有实操价值：</strong> 仿真可复现，参数扫描给出在真实部署中调优 Co-SR 的&quot;食谱&quot;。</li></ul>",
+      "images": [],
+      "search_blob": "improving wi-fi 8 latency with coordinated spatial reuse 通过协同空间复用改善 wi-fi 8 时延 802.11bn mapc mac-layer scheduling xr nunez, wilhelmi, galati-giordano, geraci and bellalta (july 2025) implement and simulate **coordinated spatial reuse (co-sr)** as proposed for 802.11bn, evaluating it in a four-ap dense-deployment scenario with cloud gaming / xr-style traffic. the headline result is a remarkable **31%–95% delay reduction** versus the uncoordinated dcf baseline, depending on traffic and topology mix. nunez、wilhelmi、galati-giordano、geraci 和 bellalta（2025 年 7 月）针对 802.11bn 提出的**协同空间复用（co-sr）**给出实现并做系统级仿真，评估场景是四 ap 密集部署 + 云游戏 / xr 风格流量。关键结果是惊人的**时延降低 31%–95%**（相对未协调的 dcf 基线，取决于流量与拓扑组合）。 academic-paper"
+    },
+    {
+      "id": "2026-05-01_arxiv-ssl-wifi-sensing-tutorial",
+      "date_found": "2026-05-01",
+      "date_published": "2025-06-15",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "A Tutorial-cum-Survey on Self-Supervised Learning for Wi-Fi Sensing: Trends, Challenges, and Outlook",
+      "title_zh": "自监督学习用于 Wi-Fi 感知的综述与教程：趋势、挑战与展望",
+      "url": "https://arxiv.org/abs/2506.12052",
+      "topics": [
+        "WiFi-sensing",
+        "generative-AI"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-01_arxiv-ssl-wifi-sensing-tutorial.md",
+      "summary_short_en": "A combined tutorial + survey on **self-supervised learning (SSL)** for Wi-Fi CSI sensing — the now-dominant strategy for getting useful sensing models out of the limited labeled CSI data the field actually has. The paper organises the SSL design space into contrastive, generative, and predictive families, maps which Wi-Fi sensing tasks (proximity, occupancy, activity, breathing, gesture) each family handles best, and outlines the open problems where SSL is failing to close the labeled-data gap.",
+      "summary_short_zh": "针对 **自监督学习（SSL）** 用于 Wi-Fi CSI 感知的综合教程 + 综述。SSL 已经成为该领域应对\"有标注 CSI 数据少\"的主流策略。论文把 SSL 设计空间划分为对比式、生成式、预测式三族，映射出哪些 Wi-Fi 感知任务（接近检测、占用检测、活动识别、呼吸监测、手势）由哪一族应对最佳，并梳理出 SSL 在哪些方向仍未能弥合标注数据缺口。",
+      "body_html_en": "<h3>Summary</h3>\n<p>A combined tutorial + survey on <strong>self-supervised learning (SSL)</strong> for Wi-Fi CSI sensing — the now-dominant strategy for getting useful sensing models out of the limited labeled CSI data the field actually has. The paper organises the SSL design space into contrastive, generative, and predictive families, maps which Wi-Fi sensing tasks (proximity, occupancy, activity, breathing, gesture) each family handles best, and outlines the open problems where SSL is failing to close the labeled-data gap.</p>\n<p>The piece is positioned as a citation backbone for any subsequent Wi-Fi sensing paper that uses SSL — which by 2025 is essentially all of them. Authors highlight cross-environment generalisation, label-noise robustness, and computational cost on edge devices as the three open frontiers.</p>\n<h3>Key technical points</h3>\n<ul><li>Three SSL families surveyed: contrastive, generative, predictive</li><li>Task-family pairing: which SSL works best for which sensing task</li><li>Open frontiers: cross-environment generalisation, label noise, edge cost</li></ul>\n<h3>Why it matters / what's new</h3>\n<ul><li><strong>Field-defining tutorial.</strong> Wi-Fi sensing has converged on SSL; this paper is the canonical reference for newcomers and for citation-completeness.</li><li><strong>Pairs with WUKONG (<code>2026-05-01_arxiv-wukong-neuro-wideband-sensing.md</code>) and IBIS (<code>2026-05-01_arxiv-ibis-csi-bandwidth-constrained.md</code>):</strong> both papers are SSL-flavoured CSI methods; this survey is the methodological context.</li></ul>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>针对 <strong>自监督学习（SSL）</strong> 用于 Wi-Fi CSI 感知的综合教程 + 综述。SSL 已经成为该领域应对&quot;有标注 CSI 数据少&quot;的主流策略。论文把 SSL 设计空间划分为对比式、生成式、预测式三族，映射出哪些 Wi-Fi 感知任务（接近检测、占用检测、活动识别、呼吸监测、手势）由哪一族应对最佳，并梳理出 SSL 在哪些方向仍未能弥合标注数据缺口。</p>\n<p>本文定位为后续任何使用 SSL 的 Wi-Fi 感知论文的引用骨干 —— 到 2025 年几乎所有这类工作都使用 SSL。作者把跨环境泛化、标签噪声鲁棒性、边缘设备的计算成本列为三个开放前沿。</p>\n<h3>技术要点</h3>\n<ul><li>综述三族 SSL：对比式、生成式、预测式</li><li>任务-方法配对：哪种 SSL 最适合哪类感知任务</li><li>开放前沿：跨环境泛化、标签噪声、边缘计算成本</li></ul>\n<h3>意义与新意</h3>\n<ul><li><strong>领域定义性教程。</strong> Wi-Fi 感知已经收敛到 SSL；本论文是新人入门与引用完整性的标准参考。</li><li><strong>与 WUKONG（<code>2026-05-01_arxiv-wukong-neuro-wideband-sensing.md</code>）和 IBIS（<code>2026-05-01_arxiv-ibis-csi-bandwidth-constrained.md</code>）形成搭配：</strong> 二者都是 SSL 风味的 CSI 方法；本综述提供方法论背景。</li></ul>",
+      "images": [],
+      "search_blob": "a tutorial-cum-survey on self-supervised learning for wi-fi sensing: trends, challenges, and outlook 自监督学习用于 wi-fi 感知的综述与教程：趋势、挑战与展望 wifi-sensing generative-ai a combined tutorial + survey on **self-supervised learning (ssl)** for wi-fi csi sensing — the now-dominant strategy for getting useful sensing models out of the limited labeled csi data the field actually has. the paper organises the ssl design space into contrastive, generative, and predictive families, maps which wi-fi sensing tasks (proximity, occupancy, activity, breathing, gesture) each family handles best, and outlines the open problems where ssl is failing to close the labeled-data gap. 针对 **自监督学习（ssl）** 用于 wi-fi csi 感知的综合教程 + 综述。ssl 已经成为该领域应对\"有标注 csi 数据少\"的主流策略。论文把 ssl 设计空间划分为对比式、生成式、预测式三族，映射出哪些 wi-fi 感知任务（接近检测、占用检测、活动识别、呼吸监测、手势）由哪一族应对最佳，并梳理出 ssl 在哪些方向仍未能弥合标注数据缺口。 academic-paper"
+    },
+    {
+      "id": "2026-05-01_arxiv-ml-co-sr-scheduling",
+      "date_found": "2026-05-01",
+      "date_published": "2025-05-12",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Coordinated Spatial Reuse Scheduling With Machine Learning",
+      "title_zh": "基于机器学习的协同空间复用调度",
+      "url": "https://arxiv.org/abs/2505.07278",
+      "topics": [
+        "802.11bn",
+        "MAPC",
+        "MAC-layer",
+        "scheduling"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-05-01_arxiv-ml-co-sr-scheduling.md",
+      "summary_short_en": "A machine-learning approach to the Coordinated Spatial Reuse (Co-SR) scheduling problem in 802.11bn: given multiple APs that can transmit simultaneously on the same channel, learn the joint power-and-grouping policy that maximises aggregate throughput while keeping per-AP SINR above a tolerance threshold. The novelty is treating Co-SR as a *learning* problem rather than a deterministic optimisation — the trained policy can adapt to topology changes at runtime instead of needing a fresh constraint solve every reconfiguration.",
+      "summary_short_zh": "针对 802.11bn 中协同空间复用（Co-SR）调度问题的机器学习方法：给定多 AP 可在同信道上并发传输，学习联合的\"功率 + 分组\"策略，使总吞吐最大化，同时保持每个 AP 的 SINR 高于容忍阈值。新颖之处在于把 Co-SR 当作*学习*问题而不是确定性优化 —— 训练好的策略可以在拓扑变化时即时适应，而不必每次重配置都重新解一次约束。",
+      "body_html_en": "<h3>Summary</h3>\n<p>A machine-learning approach to the Coordinated Spatial Reuse (Co-SR) scheduling problem in 802.11bn: given multiple APs that can transmit simultaneously on the same channel, learn the joint power-and-grouping policy that maximises aggregate throughput while keeping per-AP SINR above a tolerance threshold. The novelty is treating Co-SR as a <em>learning</em> problem rather than a deterministic optimisation — the trained policy can adapt to topology changes at runtime instead of needing a fresh constraint solve every reconfiguration.</p>\n<p>The training architecture is event-based simulation against TGbn-aligned MAC behaviour. The policy is trained offline, then deployed online with a tight inference budget so it fits inside the per-TXOP scheduling window.</p>\n<p>Pairs naturally with the Hierarchical Multi-Armed Bandit Co-SR paper (<code>2026-05-01_arxiv-hmab-co-sr.md</code>) and Nunez et al.'s implementation (<code>2026-05-01_arxiv-wifi8-latency-co-sr.md</code>) — three different ML angles on the same Co-SR design problem.</p>\n<h3>Key technical points</h3>\n<ul><li>ML approach to Co-SR group selection + power assignment</li><li>Trained against TGbn-aligned event-based simulator</li><li>Tight inference budget for per-TXOP deployment</li><li>Adaptive to topology changes at runtime</li></ul>\n<h3>Why it matters / what's new</h3>\n<ul><li><strong>Methodological pluralism on Co-SR.</strong> The fact that three different ML approaches to Co-SR have appeared by mid-2025 (HMAB, plain DL, MAB-with-shaping) signals the design space is open.</li><li><strong>Runtime adaptation is the differentiator.</strong> Static optimisation breaks the moment a STA roams; ML-policy approaches don't.</li></ul>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>针对 802.11bn 中协同空间复用（Co-SR）调度问题的机器学习方法：给定多 AP 可在同信道上并发传输，学习联合的&quot;功率 + 分组&quot;策略，使总吞吐最大化，同时保持每个 AP 的 SINR 高于容忍阈值。新颖之处在于把 Co-SR 当作<em>学习</em>问题而不是确定性优化 —— 训练好的策略可以在拓扑变化时即时适应，而不必每次重配置都重新解一次约束。</p>\n<p>训练架构是基于事件的仿真，对照 TGbn 一致的 MAC 行为。策略离线训练，在线部署时推理预算紧凑，可在每个 TXOP 调度窗口内完成。</p>\n<p>与基于分层多臂老虎机的 Co-SR 论文（<code>2026-05-01_arxiv-hmab-co-sr.md</code>）以及 Nunez 等人的实现（<code>2026-05-01_arxiv-wifi8-latency-co-sr.md</code>）形成天然配套 —— 同一 Co-SR 设计问题的三个不同 ML 角度。</p>\n<h3>技术要点</h3>\n<ul><li>用 ML 解决 Co-SR 的分组选择 + 功率分配</li><li>在与 TGbn 一致的事件级仿真上训练</li><li>推理预算紧凑，可在每 TXOP 部署</li><li>对运行时拓扑变化具有自适应能力</li></ul>\n<h3>意义与新意</h3>\n<ul><li><strong>Co-SR 上的方法论多样性。</strong> 到 2025 年中已经出现三种 ML 角度的 Co-SR 论文（HMAB、普通 DL、带塑形的 MAB），表明设计空间仍开放。</li><li><strong>运行时自适应是差异化点。</strong> 静态优化在 STA 漫游瞬间失效；ML 策略类方法不会。</li></ul>",
+      "images": [],
+      "search_blob": "coordinated spatial reuse scheduling with machine learning 基于机器学习的协同空间复用调度 802.11bn mapc mac-layer scheduling a machine-learning approach to the coordinated spatial reuse (co-sr) scheduling problem in 802.11bn: given multiple aps that can transmit simultaneously on the same channel, learn the joint power-and-grouping policy that maximises aggregate throughput while keeping per-ap sinr above a tolerance threshold. the novelty is treating co-sr as a *learning* problem rather than a deterministic optimisation — the trained policy can adapt to topology changes at runtime instead of needing a fresh constraint solve every reconfiguration. 针对 802.11bn 中协同空间复用（co-sr）调度问题的机器学习方法：给定多 ap 可在同信道上并发传输，学习联合的\"功率 + 分组\"策略，使总吞吐最大化，同时保持每个 ap 的 sinr 高于容忍阈值。新颖之处在于把 co-sr 当作*学习*问题而不是确定性优化 —— 训练好的策略可以在拓扑变化时即时适应，而不必每次重配置都重新解一次约束。 academic-paper"
     },
     {
       "id": "2026-05-01_arxiv-on-device-llm-roaming",
@@ -668,6 +972,54 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>Ziming He（2025 年 3 月）首次端到端梳理了 AI/ML 如何被引入 IEEE 802.11 的波束成形 <strong>CSI 反馈压缩</strong> —— 即一个 STA 为闭环 MIMO 波束成形而向 AP 上报信道状态信息所占用的空口带宽。论文同时覆盖 802.11be（Wi-Fi 7）与 802.11bn（Wi-Fi 8 / UHR），以及向两条线路同时输送成果的 IEEE 802.11 AIML Topic Interest Group 的工作。</p>\n<p>论文形式化了 AIML TIG 指出的<strong>两大技术挑战</strong>：（1）降低 CSI 反馈开销（即上报本身占用的空中时间），（2）控制压缩复杂度 —— 编码器 + 解码器模型尺寸与每帧推理成本 —— 使其适合真实芯片。继而列出该标准化工作所追踪的<strong>四项关键性能指标（KPI）</strong>：反馈开销、模型共享开销、包错误率、计算复杂度。</p>\n<p>论文主体是对 AIML TIG 已接纳为可行的两类压缩方案的并列综述：<strong>基于 K-means 的方法</strong>（低复杂度、精度较低）与<strong>基于自编码器的方法</strong>（高复杂度、精度更佳）。仿真与分析展示了二者如何映射到四项 KPI、以及在权衡曲线上的取舍位置。本文定位为后续提出新压缩机制的论文的引用骨干。</p>\n<h3>技术要点</h3>\n<ul><li>综述 IEEE 802.11 <strong>AIML Topic Interest Group</strong> 在波束成形 CSI 反馈压缩方向的工作</li><li>同时覆盖 <strong>802.11be</strong> 与 <strong>802.11bn</strong></li><li>两大设计挑战：反馈开销 vs 压缩复杂度</li><li>四项 KPI：反馈开销、模型共享开销、PER、计算复杂度</li><li>两类已接纳压缩方案：<strong>K-means</strong> 与 <strong>自编码器</strong></li><li>两类方案在 KPI 矩阵上的并列对照</li></ul>\n<h3>意义与新意</h3>\n<ul><li><strong>首篇以标准化为锚的 AIML CSI 压缩综述。</strong> 大多数 ML-for-Wi-Fi 工作发表在标准化之外，本论文是站在标准化<em>内部</em>、解释 AIML TIG 实际接纳了什么的视角。</li><li><strong>建立四项 KPI 的衡量网格</strong> —— 后续提案都会以该网格被衡量。准备就该方向写贡献者建议先读。</li><li><strong>与 TGbn 的 MAPC 和波束成形相关：</strong> TGbn 关于协同波束成形的评论（见 <code>2026-05-01_ieee-march-2026-readout.md</code>）将与最终批准的 CSI 压缩机制相互作用。</li></ul>",
       "images": [],
       "search_blob": "toward aiml-enabled wifi beamforming csi feedback compression: an overview of ieee 802.11 standardization 面向 aiml 的 wi-fi 波束成形 csi 反馈压缩：ieee 802.11 标准化综述 802.11be 802.11bn mac-layer phy-layer generative-ai ziming he (march 2025) provides the first end-to-end overview of how ai/ml is being introduced into ieee 802.11 beamforming **csi feedback compression** — the on-the-wire bandwidth a station spends reporting channel state back to the ap for closed-loop mimo beamforming. the paper covers both the 802.11be (wi-fi 7) and 802.11bn (wi-fi 8 / uhr) lines, plus the work emerging from the ieee 802.11 aiml topic interest group that is feeding into both. ziming he（2025 年 3 月）首次端到端梳理了 ai/ml 如何被引入 ieee 802.11 的波束成形 **csi 反馈压缩** —— 即一个 sta 为闭环 mimo 波束成形而向 ap 上报信道状态信息所占用的空口带宽。论文同时覆盖 802.11be（wi-fi 7）与 802.11bn（wi-fi 8 / uhr），以及向两条线路同时输送成果的 ieee 802.11 aiml topic interest group 的工作。 academic-paper"
+    },
+    {
+      "id": "2026-05-01_arxiv-gr-wifi-platform",
+      "date_found": "2026-05-01",
+      "date_published": "2025-01-10",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "GR-WiFi: A GNU Radio-based WiFi Platform with Single-User and Multi-User MIMO Capability",
+      "title_zh": "GR-WiFi：基于 GNU Radio 的支持单用户与多用户 MIMO 的 Wi-Fi 平台",
+      "url": "https://arxiv.org/abs/2501.06176",
+      "topics": [
+        "802.11ax",
+        "802.11be",
+        "MU-MIMO",
+        "PHY-layer"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-05-01_arxiv-gr-wifi-platform.md",
+      "summary_short_en": "GR-WiFi is an open-source GNU Radio-based Wi-Fi software-defined-radio platform that — uniquely in the open ecosystem — supports both **single-user MIMO and multi-user MIMO** transmission and reception, including DL MU-MIMO with explicit beamforming feedback. Until now, openly available SDR Wi-Fi implementations either skipped MU-MIMO or limited support to one or two simplified scenarios. GR-WiFi closes that gap with a real implementation that researchers can use for measurement, protocol-modification experiments, and ML model evaluation against actual radios.",
+      "summary_short_zh": "GR-WiFi 是一个基于 GNU Radio 的开源 Wi-Fi 软件无线电（SDR）平台 —— 在开源生态中独此一家地同时支持**单用户 MIMO 与多用户 MIMO** 的发送与接收，包括带显式波束成形反馈的下行 MU-MIMO。此前公开可用的 SDR Wi-Fi 实现要么完全不做 MU-MIMO，要么只支持有限的简化场景。GR-WiFi 用一个真实可用的实现填补了这一缺口，研究者可用于测量、协议改动实验、以及在真实射频条件下评估 ML 模型。",
+      "body_html_en": "<h3>Summary</h3>\n<p>GR-WiFi is an open-source GNU Radio-based Wi-Fi software-defined-radio platform that — uniquely in the open ecosystem — supports both <strong>single-user MIMO and multi-user MIMO</strong> transmission and reception, including DL MU-MIMO with explicit beamforming feedback. Until now, openly available SDR Wi-Fi implementations either skipped MU-MIMO or limited support to one or two simplified scenarios. GR-WiFi closes that gap with a real implementation that researchers can use for measurement, protocol-modification experiments, and ML model evaluation against actual radios.</p>\n<p>The platform is positioned as foundational infrastructure: every paper that wants to validate a Wi-Fi PHY/MAC modification on real hardware now has a credible open option (joining ns-3 modules like the 802.11bf one in <code>2026-05-01_arxiv-bf-ax-coexistence-ns3.md</code>).</p>\n<h3>Key technical points</h3>\n<ul><li>Open-source, GNU Radio-based</li><li>SU-MIMO + MU-MIMO transmission and reception</li><li>DL MU-MIMO with explicit beamforming feedback</li><li>Researcher-grade evaluation platform</li></ul>\n<h3>Why it matters / what's new</h3>\n<ul><li><strong>Closes a long-standing gap in open SDR Wi-Fi tooling.</strong> Researchers no longer need proprietary tools to test MU-MIMO mods.</li><li><strong>Pairs with the bf-ax ns-3 module entry (<code>2026-05-01_arxiv-bf-ax-coexistence-ns3.md</code>):</strong> GR-WiFi covers SDR-based testing, ns-3 covers system-level simulation. Two complementary slots in the open evaluation stack.</li></ul>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>GR-WiFi 是一个基于 GNU Radio 的开源 Wi-Fi 软件无线电（SDR）平台 —— 在开源生态中独此一家地同时支持<strong>单用户 MIMO 与多用户 MIMO</strong> 的发送与接收，包括带显式波束成形反馈的下行 MU-MIMO。此前公开可用的 SDR Wi-Fi 实现要么完全不做 MU-MIMO，要么只支持有限的简化场景。GR-WiFi 用一个真实可用的实现填补了这一缺口，研究者可用于测量、协议改动实验、以及在真实射频条件下评估 ML 模型。</p>\n<p>该平台定位为基础设施：任何想在真实硬件上验证 Wi-Fi PHY/MAC 改动的论文，现在都有一个可信的开源选项（与 <code>2026-05-01_arxiv-bf-ax-coexistence-ns3.md</code> 中提到的 802.11bf ns-3 模块共同构成评估栈）。</p>\n<h3>技术要点</h3>\n<ul><li>开源、基于 GNU Radio</li><li>SU-MIMO + MU-MIMO 收发都支持</li><li>下行 MU-MIMO 含显式波束成形反馈</li><li>适合学术 / 研究级评估的平台</li></ul>\n<h3>意义与新意</h3>\n<ul><li><strong>填补开源 SDR Wi-Fi 工具长期空白。</strong> 研究者不再需要使用专有工具来测试 MU-MIMO 改动。</li><li><strong>与 bf-ax ns-3 模块条目（<code>2026-05-01_arxiv-bf-ax-coexistence-ns3.md</code>）形成搭配：</strong> GR-WiFi 覆盖 SDR 测试，ns-3 覆盖系统级仿真。在开源评估栈中是两个互补位。</li></ul>",
+      "images": [],
+      "search_blob": "gr-wifi: a gnu radio-based wifi platform with single-user and multi-user mimo capability gr-wifi：基于 gnu radio 的支持单用户与多用户 mimo 的 wi-fi 平台 802.11ax 802.11be mu-mimo phy-layer gr-wifi is an open-source gnu radio-based wi-fi software-defined-radio platform that — uniquely in the open ecosystem — supports both **single-user mimo and multi-user mimo** transmission and reception, including dl mu-mimo with explicit beamforming feedback. until now, openly available sdr wi-fi implementations either skipped mu-mimo or limited support to one or two simplified scenarios. gr-wifi closes that gap with a real implementation that researchers can use for measurement, protocol-modification experiments, and ml model evaluation against actual radios. gr-wifi 是一个基于 gnu radio 的开源 wi-fi 软件无线电（sdr）平台 —— 在开源生态中独此一家地同时支持**单用户 mimo 与多用户 mimo** 的发送与接收，包括带显式波束成形反馈的下行 mu-mimo。此前公开可用的 sdr wi-fi 实现要么完全不做 mu-mimo，要么只支持有限的简化场景。gr-wifi 用一个真实可用的实现填补了这一缺口，研究者可用于测量、协议改动实验、以及在真实射频条件下评估 ml 模型。 academic-paper"
+    },
+    {
+      "id": "2026-05-01_arxiv-hmab-co-sr",
+      "date_found": "2026-05-01",
+      "date_published": "2025-01-07",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "IEEE 802.11bn Multi-AP Coordinated Spatial Reuse with Hierarchical Multi-Armed Bandits",
+      "title_zh": "基于分层多臂老虎机的 IEEE 802.11bn 多 AP 协同空间复用",
+      "url": "https://arxiv.org/abs/2501.03680",
+      "topics": [
+        "802.11bn",
+        "MAPC",
+        "MAC-layer",
+        "scheduling"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-05-01_arxiv-hmab-co-sr.md",
+      "summary_short_en": "A Hierarchical Multi-Armed Bandit (HMAB) framework for the Co-SR group-selection problem in 802.11bn. The hierarchy comes from splitting the problem into \"which set of APs are allowed to overlap?\" (high-level arm) and \"given that set, how do we power-allocate?\" (low-level arm). HMAB's online-learning structure handles the non-stationarity that plagues fixed-environment Co-SR optimisation: when a STA moves, the bandit re-allocates exploration without a full retrain.",
+      "summary_short_zh": "针对 802.11bn 中协同空间复用（Co-SR）分组选择问题的分层多臂老虎机（HMAB）框架。分层来自把问题拆成\"哪一组 AP 可以同时复用？\"（高层臂）和\"给定该组，如何分配功率？\"（低层臂）。HMAB 的在线学习结构应对了 Co-SR 优化在固定环境上的非平稳性 —— 当 STA 移动时，老虎机会重新调整探索，而无需整模型重训。",
+      "body_html_en": "<h3>Summary</h3>\n<p>A Hierarchical Multi-Armed Bandit (HMAB) framework for the Co-SR group-selection problem in 802.11bn. The hierarchy comes from splitting the problem into &quot;which set of APs are allowed to overlap?&quot; (high-level arm) and &quot;given that set, how do we power-allocate?&quot; (low-level arm). HMAB's online-learning structure handles the non-stationarity that plagues fixed-environment Co-SR optimisation: when a STA moves, the bandit re-allocates exploration without a full retrain.</p>\n<p>This paper, the ML-Co-SR paper (<code>2026-05-01_arxiv-ml-co-sr-scheduling.md</code>), and the Nunez implementation (<code>2026-05-01_arxiv-wifi8-latency-co-sr.md</code>) are now the three primary published Co-SR-for-TGbn papers — and HMAB's contribution is specifically the online-learning angle with formal regret guarantees.</p>\n<h3>Key technical points</h3>\n<ul><li>Two-tier bandit: AP-set selection (high) + power allocation (low)</li><li>Online learning, no full retrain on topology change</li><li>Formal regret guarantees</li><li>Comparable to other ML Co-SR approaches; different design tradeoffs</li></ul>\n<h3>Why it matters / what's new</h3>\n<ul><li><strong>Online-learning baseline for Co-SR.</strong> Until now Co-SR ML work was offline-trained; HMAB introduces principled online adaptation.</li><li><strong>Theoretical anchor.</strong> Regret-bound results give the field a way to compare Co-SR algorithms beyond just simulation-throughput.</li></ul>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>针对 802.11bn 中协同空间复用（Co-SR）分组选择问题的分层多臂老虎机（HMAB）框架。分层来自把问题拆成&quot;哪一组 AP 可以同时复用？&quot;（高层臂）和&quot;给定该组，如何分配功率？&quot;（低层臂）。HMAB 的在线学习结构应对了 Co-SR 优化在固定环境上的非平稳性 —— 当 STA 移动时，老虎机会重新调整探索，而无需整模型重训。</p>\n<p>本论文连同 ML-Co-SR 论文（<code>2026-05-01_arxiv-ml-co-sr-scheduling.md</code>）以及 Nunez 实现（<code>2026-05-01_arxiv-wifi8-latency-co-sr.md</code>）现在是 TGbn Co-SR 主要的三篇公开论文 —— HMAB 的具体贡献是在线学习视角加上形式化遗憾界。</p>\n<h3>技术要点</h3>\n<ul><li>两层老虎机：AP 组选择（高层）+ 功率分配（低层）</li><li>在线学习，拓扑变化时无需整模型重训</li><li>形式化遗憾界</li><li>与其他 ML Co-SR 方法可比较；设计折中不同</li></ul>\n<h3>意义与新意</h3>\n<ul><li><strong>Co-SR 的在线学习基线。</strong> 此前 Co-SR ML 工作多为离线训练；HMAB 引入了原理化的在线自适应。</li><li><strong>理论锚点。</strong> 遗憾界结果给该领域提供了一种&quot;超越纯仿真吞吐&quot;的算法对比方式。</li></ul>",
+      "images": [],
+      "search_blob": "ieee 802.11bn multi-ap coordinated spatial reuse with hierarchical multi-armed bandits 基于分层多臂老虎机的 ieee 802.11bn 多 ap 协同空间复用 802.11bn mapc mac-layer scheduling a hierarchical multi-armed bandit (hmab) framework for the co-sr group-selection problem in 802.11bn. the hierarchy comes from splitting the problem into \"which set of aps are allowed to overlap?\" (high-level arm) and \"given that set, how do we power-allocate?\" (low-level arm). hmab's online-learning structure handles the non-stationarity that plagues fixed-environment co-sr optimisation: when a sta moves, the bandit re-allocates exploration without a full retrain. 针对 802.11bn 中协同空间复用（co-sr）分组选择问题的分层多臂老虎机（hmab）框架。分层来自把问题拆成\"哪一组 ap 可以同时复用？\"（高层臂）和\"给定该组，如何分配功率？\"（低层臂）。hmab 的在线学习结构应对了 co-sr 优化在固定环境上的非平稳性 —— 当 sta 移动时，老虎机会重新调整探索，而无需整模型重训。 academic-paper"
     }
   ]
 };
