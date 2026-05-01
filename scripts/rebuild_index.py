@@ -160,6 +160,121 @@ def normalise_topics(topics: list[str]) -> list[str]:
     return out
 
 
+# Body sections to include in the rendered detail view, per language. Each
+# section is rendered without its language suffix (so '(EN)' / '(ZH)' is
+# stripped before display) and with a localised heading.
+LANG_SECTIONS = (
+    "Summary",
+    "Key technical points",
+    "Why it matters / what's new",
+)
+SECTION_HEADINGS = {
+    "EN": {
+        "Summary": "Summary",
+        "Key technical points": "Key technical points",
+        "Why it matters / what's new": "Why it matters / what's new",
+    },
+    "ZH": {
+        "Summary": "摘要",
+        "Key technical points": "技术要点",
+        "Why it matters / what's new": "意义与新意",
+    },
+}
+
+
+def extract_section(body: str, heading: str) -> str:
+    """Return the raw markdown content under a heading like '## Foo'."""
+    pattern = re.escape(heading)
+    m = re.search(rf"^{pattern}\s*\n(.+?)(?=\n##\s|\Z)", body, flags=re.S | re.M)
+    if not m:
+        return ""
+    return m.group(1).strip()
+
+
+def _html_escape(s: str) -> str:
+    return (s.replace("&", "&amp;")
+             .replace("<", "&lt;")
+             .replace(">", "&gt;")
+             .replace('"', "&quot;"))
+
+
+def _inline_md(s: str) -> str:
+    """Convert inline markdown to HTML. Escape first, then run patterns whose
+    delimiters (``*``, ``[``, ``(``, `` ` ``) survive HTML-escape unchanged."""
+    s = _html_escape(s)
+    # Inline code first so its content isn't bold/italic-parsed.
+    s = re.sub(r"`([^`]+)`", r"<code>\1</code>", s)
+    # Links
+    s = re.sub(
+        r"\[([^\]]+)\]\(([^)\s]+)\)",
+        r'<a href="\2" target="_blank" rel="noopener">\1</a>',
+        s,
+    )
+    # Bold (must come before italic so ** isn't eaten by *)
+    s = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", s)
+    # Italic — single * not preceded/followed by another *
+    s = re.sub(r"(?<!\*)\*([^*\n]+)\*(?!\*)", r"<em>\1</em>", s)
+    return s
+
+
+def md_block_to_html(md: str) -> str:
+    """Tiny Markdown→HTML for the subset we use in entries:
+    headings (## ###), paragraphs, bullet lists, inline emphasis, links.
+
+    Tables, blockquotes, fenced code blocks, footnotes are not supported.
+    """
+    lines = md.split("\n")
+    out: list[str] = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        stripped = line.strip()
+        if not stripped:
+            i += 1
+            continue
+        if line.startswith("### "):
+            out.append(f"<h4>{_inline_md(line[4:].strip())}</h4>")
+            i += 1
+        elif line.startswith("## "):
+            out.append(f"<h3>{_inline_md(line[3:].strip())}</h3>")
+            i += 1
+        elif stripped.startswith("- "):
+            items: list[str] = []
+            while i < len(lines) and lines[i].strip().startswith("- "):
+                items.append(f"<li>{_inline_md(lines[i].strip()[2:])}</li>")
+                i += 1
+            out.append("<ul>" + "".join(items) + "</ul>")
+        else:
+            para: list[str] = [line]
+            i += 1
+            while (i < len(lines)
+                   and lines[i].strip()
+                   and not lines[i].startswith(("#", "- "))
+                   and not lines[i].strip().startswith("- ")):
+                para.append(lines[i])
+                i += 1
+            out.append(f"<p>{_inline_md(' '.join(p.strip() for p in para))}</p>")
+    return "\n".join(out)
+
+
+def build_body_html(body: str, lang_tag: str) -> str:
+    """Concatenate the language-specific sections into a single HTML block,
+    stripping the language suffix from headings so the reader sees clean
+    section titles."""
+    parts: list[str] = []
+    headings = SECTION_HEADINGS.get(lang_tag, SECTION_HEADINGS["EN"])
+    for section in LANG_SECTIONS:
+        heading = f"## {section} ({lang_tag})"
+        content = extract_section(body, heading)
+        if not content:
+            continue
+        local = headings.get(section, section)
+        parts.append(f"## {local}\n\n{content}")
+    if not parts:
+        return ""
+    return md_block_to_html("\n\n".join(parts))
+
+
 REQUIRED = ("id", "date_found", "type", "title_en", "title_zh", "url", "topics", "novelty_score")
 
 
@@ -183,6 +298,8 @@ def build_entry_record(path: Path, fm: dict[str, Any], body: str) -> dict[str, A
         "entry_path": f"entries/{path.name}",
         "summary_short_en": summary_short_en,
         "summary_short_zh": summary_short_zh,
+        "body_html_en": build_body_html(body, "EN"),
+        "body_html_zh": build_body_html(body, "ZH"),
         "images": images,
     }
 
