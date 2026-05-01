@@ -1,6 +1,7 @@
 ---
 id: 2026-05-01_arxiv-intellicise-agentic-ai-security
 date_found: 2026-05-01
+date_published: 2026-02-17
 type: academic-paper
 title_en: "Intellicise Wireless Networks Meet Agentic AI: A Security and Privacy Perspective"
 title_zh: "智简（Intellicise）无线网络与智能体 AI 的相遇：安全与隐私视角"

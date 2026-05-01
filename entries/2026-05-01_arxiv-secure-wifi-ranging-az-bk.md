@@ -1,6 +1,7 @@
 ---
 id: 2026-05-01_arxiv-secure-wifi-ranging-az-bk
 date_found: 2026-05-01
+date_published: 2026-03-19
 type: academic-paper
 title_en: "Secure Wi-Fi Ranging Today: Security and Adoption of IEEE 802.11az/bk"
 title_zh: "今日安全的 Wi-Fi 测距：IEEE 802.11az/bk 的安全性与落地分析"

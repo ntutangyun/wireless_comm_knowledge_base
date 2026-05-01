@@ -1,6 +1,7 @@
 ---
 id: 2026-05-01_arxiv-mapc-llm-agents
 date_found: 2026-05-01
+date_published: 2025-11-26
 type: academic-paper
 title_en: "Learning Multi-Access Point Coordination in Agentic AI Wi-Fi with Large Language Models"
 title_zh: "用大语言模型学习智能体 AI Wi-Fi 中的多接入点协调"

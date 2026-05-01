@@ -1,6 +1,7 @@
 ---
 id: 2026-05-01_arxiv-multiband-passive-sensing
 date_found: 2026-05-01
+date_published: 2025-07-30
 type: academic-paper
 title_en: "802.11bf Multiband Passive Sensing: Reusing Wi-Fi Signaling for Sensing"
 title_zh: "802.11bf 多频段被动感知：复用 Wi-Fi 现有信令实现感知"

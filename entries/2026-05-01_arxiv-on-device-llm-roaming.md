@@ -1,6 +1,7 @@
 ---
 id: 2026-05-01_arxiv-on-device-llm-roaming
 date_found: 2026-05-01
+date_published: 2025-05-07
 type: academic-paper
 title_en: "On-Device LLM for Context-Aware Wi-Fi Roaming"
 title_zh: "面向情境感知 Wi-Fi 漫游的端侧大语言模型"

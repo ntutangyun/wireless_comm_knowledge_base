@@ -1,6 +1,7 @@
 ---
 id: 2026-05-01_wifi7-deployment-milestone-2026
 date_found: 2026-05-01
+date_published: 2026-04-22
 type: industry-news
 title_en: "Wi-Fi 7 deployment milestone: 500 M certified devices shipped, WBA enterprise trials with AT&T / CommScope / Intel"
 title_zh: "Wi-Fi 7 部署里程碑：累计认证设备出货 5 亿台，WBA 与 AT&T / CommScope / Intel 完成企业试验"

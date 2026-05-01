@@ -1,6 +1,7 @@
 ---
 id: 2026-05-01_arxiv-wirelessagent-plus-plus
 date_found: 2026-05-01
+date_published: 2026-02-28
 type: academic-paper
 title_en: "WirelessAgent++: Automated Agentic Workflow Design and Benchmarking for Wireless Networks"
 title_zh: "WirelessAgent++：面向无线网络的自动化智能体工作流设计与基准测试"

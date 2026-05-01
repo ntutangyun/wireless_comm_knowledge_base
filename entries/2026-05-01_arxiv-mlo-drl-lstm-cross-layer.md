@@ -1,6 +1,7 @@
 ---
 id: 2026-05-01_arxiv-mlo-drl-lstm-cross-layer
 date_found: 2026-05-01
+date_published: 2026-03-19
 type: academic-paper
 title_en: "Cross-Layer Traffic Allocation and Contention-Window Optimization for Wi-Fi 7 MLO: When DRL Meets LSTM"
 title_zh: "Wi-Fi 7 MLO 跨层流量分配与竞争窗口优化：DRL × LSTM"

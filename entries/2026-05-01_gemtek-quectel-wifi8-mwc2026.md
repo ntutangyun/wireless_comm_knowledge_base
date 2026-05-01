@@ -1,6 +1,7 @@
 ---
 id: 2026-05-01_gemtek-quectel-wifi8-mwc2026
 date_found: 2026-05-01
+date_published: 2026-03-03
 type: industry-news
 title_en: "MWC 2026 second-tier vendors line up Wi-Fi 8: Gemtek's AI-driven CPE vision + Quectel × MediaTek 5G-A + Wi-Fi 8 reference design"
 title_zh: "MWC 2026 二线厂商纷纷押注 Wi-Fi 8：Gemtek 的 AI-驱动 CPE 愿景 + Quectel × 联发科 5G-A + Wi-Fi 8 参考设计"

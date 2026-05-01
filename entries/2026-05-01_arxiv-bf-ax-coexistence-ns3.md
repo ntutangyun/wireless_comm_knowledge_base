@@ -1,6 +1,7 @@
 ---
 id: 2026-05-01_arxiv-bf-ax-coexistence-ns3
 date_found: 2026-05-01
+date_published: 2025-03-06
 type: academic-paper
 title_en: "When Next-Gen Sensing Meets Legacy Wi-Fi: Performance Analyses of IEEE 802.11bf and IEEE 802.11ax Coexistence"
 title_zh: "下一代感知遇上既有 Wi-Fi：IEEE 802.11bf 与 IEEE 802.11ax 共存的性能分析"

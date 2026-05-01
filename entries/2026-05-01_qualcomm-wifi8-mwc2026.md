@@ -1,6 +1,7 @@
 ---
 id: 2026-05-01_qualcomm-wifi8-mwc2026
 date_found: 2026-05-01
+date_published: 2026-03-01
 type: industry-news
 title_en: "Qualcomm debuts AI-Native Wi-Fi 8 portfolio at MWC 2026 (FastConnect 8800 + Dragonwing NPro A8 Elite)"
 title_zh: "高通在 MWC 2026 推出 AI 原生 Wi-Fi 8 产品组合（FastConnect 8800 + Dragonwing NPro A8 Elite）"

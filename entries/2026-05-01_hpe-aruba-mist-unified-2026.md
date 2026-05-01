@@ -1,6 +1,7 @@
 ---
 id: 2026-05-01_hpe-aruba-mist-unified-2026
 date_found: 2026-05-01
+date_published: 2025-12-03
 type: industry-news
 title_en: "HPE merges Aruba Central and Juniper Mist platforms — unified AI-native enterprise WLAN brain (Q1 2026)"
 title_zh: "HPE 整合 Aruba Central 与 Juniper Mist 平台 —— 统一 AI 原生的企业 WLAN 大脑（2026 第一季度）"

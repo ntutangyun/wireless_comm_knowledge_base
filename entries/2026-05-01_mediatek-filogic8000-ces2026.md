@@ -1,6 +1,7 @@
 ---
 id: 2026-05-01_mediatek-filogic8000-ces2026
 date_found: 2026-05-01
+date_published: 2026-01-07
 type: product
 title_en: "MediaTek Filogic 8000 family announced at CES 2026 — first Wi-Fi 8 platform shipping later in 2026"
 title_zh: "联发科 Filogic 8000 系列在 CES 2026 亮相 —— 首款 Wi-Fi 8 平台将于 2026 年下半年量产"

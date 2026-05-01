@@ -1,6 +1,7 @@
 ---
 id: 2026-05-01_arxiv-blade-adaptive-contention
 date_found: 2026-05-01
+date_published: 2026-03-17
 type: academic-paper
 title_en: "BLADE: Adaptive Wi-Fi Contention Control for Next-Generation Real-Time Communication"
 title_zh: "BLADE：面向下一代实时通信的自适应 Wi-Fi 竞争控制"

@@ -1,6 +1,7 @@
 ---
 id: 2026-05-01_broadcom-wifi8-ces2026
 date_found: 2026-05-01
+date_published: 2026-01-06
 type: product
 title_en: "Broadcom unveils unified Wi-Fi 8 platform at CES 2026 — BCM4918 APU + BCM6714 / BCM6719 dual-band radios"
 title_zh: "博通在 CES 2026 发布统一 Wi-Fi 8 平台 —— BCM4918 APU + BCM6714 / BCM6719 双频射频"

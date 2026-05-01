@@ -277,6 +277,23 @@ def build_body_html(body: str, lang_tag: str) -> str:
 
 REQUIRED = ("id", "date_found", "type", "title_en", "title_zh", "url", "topics", "novelty_score")
 
+# Coarse category derived from the entry's `type`. Drives the three-column
+# layout in the viewer: Academia | Industry | Standards.
+TYPE_TO_CATEGORY = {
+    "academic-paper": "academia",
+    "tutorial":       "academia",
+    "ieee-document":  "standards",
+    "proposal":       "standards",
+    "product":        "industry",
+    "industry-news":  "industry",
+    "vendor-news":    "industry",
+    "news":           "industry",
+}
+
+
+def category_for_type(t: str) -> str:
+    return TYPE_TO_CATEGORY.get(t, "industry")
+
 
 def build_entry_record(path: Path, fm: dict[str, Any], body: str) -> dict[str, Any]:
     missing = [k for k in REQUIRED if k not in fm]
@@ -286,10 +303,14 @@ def build_entry_record(path: Path, fm: dict[str, Any], body: str) -> dict[str, A
     summary_short_en = section_paragraph(body, "## Summary (EN)")
     summary_short_zh = section_paragraph(body, "## Summary (ZH)")
     images = parse_images(body)
+    # date_published is preferred for sort/timeline; fall back to date_found.
+    date_published = fm.get("date_published") or fm["date_found"]
     return {
         "id": fm["id"],
         "date_found": fm["date_found"],
+        "date_published": date_published,
         "type": fm["type"],
+        "category": category_for_type(fm["type"]),
         "title_en": fm["title_en"],
         "title_zh": fm["title_zh"],
         "url": fm.get("url") or "",
@@ -378,10 +399,11 @@ def main(argv: list[str]) -> int:
         if not r["summary_short_zh"]:
             warnings.append(f"empty Summary (ZH) in {r['entry_path']}")
 
-    records.sort(key=lambda r: (r["date_found"], r["id"]), reverse=True)
+    # Primary sort: publication date desc, id as tiebreak.
+    records.sort(key=lambda r: (r["date_published"], r["id"]), reverse=True)
 
     index_payload = {
-        "schema_version": 3,
+        "schema_version": 4,
         "last_updated": today,
         "entries": records,
     }
@@ -389,6 +411,7 @@ def main(argv: list[str]) -> int:
 
     topic_counts = Counter(t for r in records for t in r["topics"])
     type_counts = Counter(r["type"] for r in records)
+    category_counts = Counter(r["category"] for r in records)
     image_count = sum(len(r["images"]) for r in records)
     kb_entries = []
     for r in records:
@@ -396,10 +419,11 @@ def main(argv: list[str]) -> int:
         e["search_blob"] = build_search_blob(r)
         kb_entries.append(e)
     kb_payload = {
-        "schema_version": 3,
+        "schema_version": 4,
         "last_updated": today,
         "topic_counts": dict(topic_counts.most_common()),
         "type_counts": dict(type_counts.most_common()),
+        "category_counts": dict(category_counts.most_common()),
         "entries": kb_entries,
     }
     write_json_atomic(kb_json_path, kb_payload)
@@ -419,7 +443,8 @@ def main(argv: list[str]) -> int:
     os.replace(tmp_js, kb_js_path)
 
     n = len(records)
-    print(f"KB rebuild: {n} entries · {len(topic_counts)} topics · {len(type_counts)} types · {image_count} images")
+    cat_summary = " · ".join(f"{k}={v}" for k, v in category_counts.most_common())
+    print(f"KB rebuild: {n} entries · {len(topic_counts)} topics · {image_count} images · [{cat_summary}]")
     if warnings:
         print(f"  Warnings ({len(warnings)}):")
         for w in warnings:

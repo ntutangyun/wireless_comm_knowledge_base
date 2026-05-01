@@ -1,6 +1,7 @@
 ---
 id: 2026-05-01_wifi-alliance-20mhz-iot-cert
 date_found: 2026-05-01
+date_published: 2026-01-08
 type: industry-news
 title_en: "Wi-Fi Alliance launches Wi-Fi CERTIFIED 7 for 20 MHz-only client devices (CES 2026)"
 title_zh: "Wi-Fi 联盟为仅 20 MHz 客户端设备推出 Wi-Fi CERTIFIED 7（CES 2026）"

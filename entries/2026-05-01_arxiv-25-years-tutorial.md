@@ -1,6 +1,7 @@
 ---
 id: 2026-05-01_arxiv-25-years-tutorial
 date_found: 2026-05-01
+date_published: 2025-12-12
 type: academic-paper
 title_en: "Wi-Fi: Twenty-Five Years and Counting"
 title_zh: "Wi-Fi 二十五年：演进、现状与展望"

@@ -1,6 +1,7 @@
 ---
 id: 2026-05-01_ieee-january-2026-readout
 date_found: 2026-05-01
+date_published: 2026-01-23
 type: proposal
 title_en: "January 2026 IEEE 802.11 interim (Victoria): Wi-Fi 8 D1.3 approved, 802.11bq beacon split, Wi-Fi 9 WNG discussions begin"
 title_zh: "2026 年 1 月 IEEE 802.11 中期会议（维多利亚）：Wi-Fi 8 D1.3 通过、802.11bq 信标问题分歧、Wi-Fi 9 WNG 启动讨论"

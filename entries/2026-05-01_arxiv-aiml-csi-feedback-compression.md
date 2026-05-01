@@ -1,6 +1,7 @@
 ---
 id: 2026-05-01_arxiv-aiml-csi-feedback-compression
 date_found: 2026-05-01
+date_published: 2025-03-01
 type: academic-paper
 title_en: "Toward AIML-Enabled WiFi Beamforming CSI Feedback Compression: An Overview of IEEE 802.11 Standardization"
 title_zh: "面向 AIML 的 Wi-Fi 波束成形 CSI 反馈压缩：IEEE 802.11 标准化综述"

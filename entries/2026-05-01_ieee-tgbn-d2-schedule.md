@@ -1,6 +1,7 @@
 ---
 id: 2026-05-01_ieee-tgbn-d2-schedule
 date_found: 2026-05-01
+date_published: 2026-04-15
 type: ieee-document
 title_en: "IEEE 802.11bn (Wi-Fi 8 / UHR) — TGbn status: D2.0 ballot July 2026, May 2028 ratification target"
 title_zh: "IEEE 802.11bn（Wi-Fi 8 / UHR）—— TGbn 进展：D2.0 投票延至 2026 年 7 月，目标 2028 年 5 月批准"

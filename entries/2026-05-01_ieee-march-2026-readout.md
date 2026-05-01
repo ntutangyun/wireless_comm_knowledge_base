@@ -1,6 +1,7 @@
 ---
 id: 2026-05-01_ieee-march-2026-readout
 date_found: 2026-05-01
+date_published: 2026-04-01
 type: proposal
 title_en: "March 2026 IEEE 802.11 plenary: AI Offload Study Group formed; 802.11bq mmWave PPDU finalized; Wi-Fi 9 SG forming July 2026"
 title_zh: "2026 年 3 月 IEEE 802.11 全会：AI Offload 研究组成立；802.11bq 毫米波 PPDU 定稿；Wi-Fi 9 研究组将于 2026 年 7 月成立"
