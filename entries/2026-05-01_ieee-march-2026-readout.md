@@ -63,3 +63,8 @@ The most consequential standards-activity entry of the run. Three takeaways:
 1. **AI Offload SG 的窗口已经打开**。这是 IEEE 802.11 史上第一个把"AP 作为边缘 AI 计算节点"明确写进范围的研究组。2026 年 5 月安特卫普的 interim 是外部贡献塑造 SG 初始范围的第一个窗口；此后正在进行中的工作将快速固化。
 2. **TGbq 毫米波 MAC 调度仍有弹性**。基于 TWT vs 基于 ICF/ICR 的按需接入，是当下 802.11 中最开放的设计议题之一。
 3. **MAPC 持续是 TGbn 中最活跃的意见聚集区**。独立佐证了 2025 年 11 月 MAPC-LLM 论文（`2026-05-01_arxiv-mapc-llm-agents.md`）所处的研究面正是最热的方向。
+
+## Images
+
+![AI offload routing inference to edge APs vs cloud | AI Offload：将推理任务路由到边缘 AP 与云端的对比](https://ofinno.com/wp-content/uploads/2026/04/March-WiFi-Readout-1.svg)
+![Wi-Fi generations and shifting design priorities timeline | Wi-Fi 各代演进与设计优先级变迁时间线](https://ofinno.com/wp-content/uploads/2026/04/March-WiFi-Readout-2.svg)

@@ -49,3 +49,7 @@ Confirms the second major Wi-Fi 8 silicon platform is in the pipeline alongside 
 ## Why it matters / what's new (ZH)
 
 确认了继高通之后第二个主要 Wi-Fi 8 硅平台已进入路线图。两家厂商同步推进通常意味着"这一代标准是真的、且按计划推进"。当联发科正式发布 Filogic 8000 规格书时值得重点回访 —— 那时可以读出联发科认为已锁定的 802.11bn D1.x 具体特性。
+
+## Images
+
+![Wi-Fi 8 abstract graphic from CES 2026 coverage | CES 2026 报道中的 Wi-Fi 8 概念图](https://cdn.mos.cms.futurecdn.net/vcwbw8JLSrwV3JYvaZL5D.jpg)
