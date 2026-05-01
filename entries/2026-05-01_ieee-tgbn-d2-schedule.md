@@ -59,3 +59,7 @@ The May 2026 → July 2026 slip is a 2-month delay that does not cascade — the
 - 跨 BSS 可靠性机制 —— 由于必然引入新的空口信令，预计是当前最活跃的设计集群
 
 2026 年 5 月延到 7 月只是 2 个月的局部延迟，并未级联到后续节点 —— 该延迟被吸收在 D2.0 / D3.0 之间的准备阶段。如果该延迟进一步扩大，则需要重点关注。
+
+## Images
+
+![LB291 (D1.0) comment resolution status, March 2026 Vancouver | LB291（D1.0）评论解决进度，2026 年 3 月温哥华会议](https://www.ieee802.org/11/Reports/IEEE%20P802.11%20-%20TASK%20GROUP%20BN%20(UHR)%20-%20GROUP%20INFORMATION%20UPDATE_files/image004.png)

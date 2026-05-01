@@ -65,3 +65,9 @@ The silicon side of the agentic-AI Wi-Fi thesis becoming real:
 - **NPU-on-AP 已经"焊"进硬件**。"AP 可以实时运行小型 LLM 或神经模型"这一架构假设不再是推演，而是 2026 年的实际产品。
 - **硬件网络加速模块**值得长期关注。当具体加速哪些 MAC 流（如 TWT 调度、MAPC 协商）的细节披露后，可以判断高通下一阶段 MAC 层工作的重点方向。
 - **数据来源仅为搜索摘要**。当前条目内容来自搜索片段，后续巡检如能完整抓取新闻稿应回填详细内容。
+
+## Images
+
+![Wi-Fi 8 hero image | Wi-Fi 8 主视觉图](https://s7d1.scene7.com/is/image/dmqualcommprod/WiFiHeroImage?$QC_Responsive$&fmt=png-alpha&wid=814)
+![FastConnect 8800 infographic | FastConnect 8800 信息图](https://s7d1.scene7.com/is/image/dmqualcommprod/FastConnect8800Infographic-1?$QC_Responsive$&fmt=png-alpha&wid=814)
+![High-performance Wi-Fi 8 infrastructure built to scale | 面向规模化的高性能 Wi-Fi 8 基础设施](https://s7d1.scene7.com/is/image/dmqualcommprod/High-PerformanceWi-Fi8InfrastructureBuilttoScale?$QC_Responsive$&fmt=png-alpha&wid=814)
