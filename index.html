@@ -183,6 +183,12 @@
   }
   .applied .chip:hover { border-color: var(--accent); }
   .applied .chip::after { content: " ×"; opacity: 0.6; }
+  .link-btn {
+    background: transparent; border: 0; color: var(--fg-3);
+    font: inherit; font-size: 11px; cursor: pointer; padding: 2px 6px;
+    text-decoration: underline; text-underline-offset: 2px;
+  }
+  .link-btn:hover { color: var(--accent); }
 
   .columns {
     display: grid;
@@ -211,11 +217,43 @@
   .column[data-cat="standards"] .col-head { border-color: var(--col-standards); }
   .column[data-cat="standards"] .col-head .name { color: var(--col-standards); }
 
+  /* Per-column sparkline of entries-per-month */
+  .col-density {
+    display: flex; align-items: flex-end; gap: 1px;
+    height: 22px; padding: 0 0 4px;
+    margin-bottom: 8px;
+  }
+  .col-density .bar {
+    flex: 1; min-width: 4px; background: var(--bg-3);
+    border-radius: 1px 1px 0 0;
+    cursor: pointer; position: relative;
+    transition: background 0.1s;
+  }
+  .col-density .bar:hover { background: var(--fg-3); }
+  .col-density .bar.has-current { background: var(--bg-3); }
+  .col-density .bar[data-cat="academia"]  { background: var(--col-academia); opacity: 0.55; }
+  .col-density .bar[data-cat="industry"]  { background: var(--col-industry); opacity: 0.55; }
+  .col-density .bar[data-cat="standards"] { background: var(--col-standards); opacity: 0.55; }
+  .col-density .bar:hover { opacity: 1; }
+  .col-density .bar .tooltip {
+    display: none; position: absolute; bottom: calc(100% + 4px); left: 50%;
+    transform: translateX(-50%); white-space: nowrap;
+    background: var(--fg); color: var(--bg);
+    font-size: 10px; padding: 2px 6px; border-radius: 3px;
+    z-index: 5; pointer-events: none;
+    font-variant-numeric: tabular-nums;
+  }
+  .col-density .bar:hover .tooltip { display: block; }
+
   .month-divider {
     font-size: 11px; font-weight: 600; color: var(--fg-3);
     letter-spacing: 0.05em; text-transform: uppercase;
-    margin: 14px 0 6px; padding-top: 4px;
+    margin: 12px 0 6px; padding: 4px 0;
     border-top: 1px solid var(--border);
+    background: var(--bg);
+    position: sticky;
+    top: calc(var(--header-h) + 38px + 1px + 60px);  /* below col-head */
+    z-index: 8;
   }
   .month-divider:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
 
@@ -223,28 +261,66 @@
   .entry-card {
     border: 1px solid var(--border); border-radius: var(--radius);
     background: var(--bg);
-    padding: 10px 12px;
     cursor: pointer;
     margin-bottom: 8px;
     transition: border-color 0.1s, background 0.1s;
     position: relative;
+    display: grid;
+    grid-template-columns: 4px 1fr auto;   /* color stripe | content | thumb */
+    overflow: hidden;
   }
   .entry-card:hover { border-color: var(--border-strong); background: var(--bg-2); }
   .entry-card.focused { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-2); }
-  .entry-card.has-images::after {
-    content: ""; position: absolute; right: 10px; top: 10px;
-    width: 5px; height: 5px; background: var(--col-industry); border-radius: 50%; opacity: 0.55;
+  .entry-card .stripe { background: var(--bg-3); }
+  .entry-card[data-cat="academia"]  .stripe { background: var(--col-academia); }
+  .entry-card[data-cat="industry"]  .stripe { background: var(--col-industry); }
+  .entry-card[data-cat="standards"] .stripe { background: var(--col-standards); }
+  .entry-card .content { padding: 10px 12px; min-width: 0; }
+  .entry-card .thumb {
+    width: 72px; height: auto; flex-shrink: 0;
+    background: var(--bg-3);
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    border-left: 1px solid var(--border);
+  }
+  .entry-card .thumb img {
+    width: 72px; height: 100%; min-height: 72px; max-height: 120px;
+    object-fit: cover; display: block;
+    background: var(--bg-3);
+  }
+  .entry-card.read .title { color: var(--fg-2); font-weight: 500; }
+  .entry-card.unread .pub-date::before {
+    content: "•"; color: var(--accent); margin-right: 4px;
+    font-size: 14px; line-height: 0; vertical-align: middle;
+  }
+  .entry-card .top-row {
+    display: flex; align-items: baseline; gap: 6px;
+    margin-bottom: 3px;
   }
   .entry-card .pub-date {
     font-size: 11px; color: var(--fg-3); font-variant-numeric: tabular-nums;
     font-family: var(--mono);
+    white-space: nowrap;
   }
+  .entry-card .type-label {
+    font-size: 10px; font-family: var(--mono);
+    text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--fg-3);
+  }
+  .entry-card[data-cat="academia"]  .type-label { color: var(--col-academia); }
+  .entry-card[data-cat="industry"]  .type-label { color: var(--col-industry); }
+  .entry-card[data-cat="standards"] .type-label { color: var(--col-standards); }
   .entry-card .title {
     font-weight: 600; font-size: 13.5px; line-height: 1.4; color: var(--fg);
-    margin: 3px 0 5px;
-    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    margin: 0 0 4px;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
   }
-  .entry-card .meta { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; margin: 5px 0 0; }
+  .entry-card .summary {
+    font-size: 12px; line-height: 1.45; color: var(--fg-2);
+    margin: 0 0 5px;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .entry-card .meta { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; margin: 0; }
   .pill {
     display: inline-flex; align-items: center; height: 17px; padding: 0 6px; border-radius: 3px;
     font-size: 10.5px; font-family: var(--mono);
@@ -436,6 +512,9 @@
   <section class="results">
     <div class="result-bar">
       <div class="applied" id="applied-chips"></div>
+      <button class="link-btn" id="mark-all-read" title="Mark all entries as read">
+        <span data-i18n="mark_all_read"></span>
+      </button>
       <div id="result-count"></div>
     </div>
     <div class="columns" id="columns">
@@ -516,6 +595,7 @@ const I18N = {
     pos: (i, n) => `${i + 1} / ${n}`,
     novelty: "novelty",
     facet_clear: "Clear filters",
+    mark_all_read: "Mark all read",
     help_title: "Keyboard shortcuts",
     month_label: (y, m) => `${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][m-1]} ${y}`,
     load_error: (msg) => `No <code>kb.json</code> yet, or <code>kb.js</code> failed (${msg}). Run <code>python scripts/rebuild_index.py</code> to regenerate.`,
@@ -548,6 +628,7 @@ const I18N = {
     pos: (i, n) => `${i + 1} / ${n}`,
     novelty: "新颖度",
     facet_clear: "清除筛选",
+    mark_all_read: "全部标为已读",
     help_title: "键盘快捷键",
     month_label: (y, m) => `${y} 年 ${m} 月`,
     load_error: (msg) => `尚无 <code>kb.json</code>，或 <code>kb.js</code> 加载失败（${msg}）。请运行 <code>python scripts/rebuild_index.py</code> 重建。`,
@@ -592,9 +673,26 @@ let state = {
   },
   lang: localStorage.getItem("kb_lang") || "en",
   theme: localStorage.getItem("kb_theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"),
+  readSet: new Set(JSON.parse(localStorage.getItem("kb_read") || "[]")),
   drawerIdx: -1,
   focusIdx: -1,
 };
+
+function markRead(entryId) {
+  if (!entryId) return;
+  state.readSet.add(entryId);
+  localStorage.setItem("kb_read", JSON.stringify([...state.readSet]));
+}
+function markAllRead() {
+  state.entries.forEach(e => state.readSet.add(e.id));
+  localStorage.setItem("kb_read", JSON.stringify([...state.readSet]));
+  render();
+}
+function clearRead() {
+  state.readSet.clear();
+  localStorage.removeItem("kb_read");
+  render();
+}
 
 function t() { return I18N[state.lang]; }
 
@@ -745,9 +843,35 @@ function pickLang(e, field) {
   return e[k] || e[field + "_" + (state.lang === "en" ? "zh" : "en")] || "";
 }
 
+function buildDensityHTML(items, cat) {
+  // Bucket items by month over the last 12 months. items = [{e, idx}, ...]
+  const now = new Date();
+  const buckets = [];
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const yy = d.getFullYear(), mm = d.getMonth() + 1;
+    buckets.push({ key: `${yy}-${String(mm).padStart(2,"0")}`, year: yy, month: mm, count: 0 });
+  }
+  const idx = Object.fromEntries(buckets.map((b, i) => [b.key, i]));
+  for (const { e } of items) {
+    const date = e.date_published || e.date_found;
+    if (!date) continue;
+    const [yy, mm] = date.split("-");
+    const k = `${yy}-${mm}`;
+    if (k in idx) buckets[idx[k]].count++;
+  }
+  const max = Math.max(1, ...buckets.map(b => b.count));
+  return `<div class="col-density" data-cat="${cat}">${
+    buckets.map(b => {
+      const h = Math.max(2, Math.round((b.count / max) * 22));
+      const tip = `${t().month_label(b.year, b.month)} · ${b.count}`;
+      return `<div class="bar" data-cat="${cat}" data-month-key="${b.key}" style="height:${h}px"><span class="tooltip">${tip}</span></div>`;
+    }).join("")
+  }</div>`;
+}
+
 function render() {
   state.filtered = state.entries.filter(entryMatches);
-  // Filtered ordering: by date_published desc — same as kb.json already provides
   document.getElementById("result-count").textContent = t().of_n(state.filtered.length, state.entries.length);
   renderAppliedChips();
   document.getElementById("facet-clear").hidden = !(state.filters.topics.size || state.filters.search);
@@ -762,22 +886,35 @@ function render() {
       target.innerHTML = `<div class="empty-col">${t().no_match_col}</div>`;
       continue;
     }
+    const density = buildDensityHTML(byCat[cat], cat);
     let lastMonthKey = null;
-    const html = byCat[cat].map(({ e, idx }) => {
+    const cardsHtml = byCat[cat].map(({ e, idx }) => {
       const date = e.date_published || e.date_found;
       const [yy, mm] = date.split("-");
       const monthKey = yy + "-" + mm;
       let divider = "";
       if (monthKey !== lastMonthKey) {
-        divider = `<div class="month-divider">${t().month_label(parseInt(yy,10), parseInt(mm,10))}</div>`;
+        divider = `<div class="month-divider" data-month-key="${monthKey}">${t().month_label(parseInt(yy,10), parseInt(mm,10))}</div>`;
         lastMonthKey = monthKey;
       }
       return divider + cardHTML(e, idx);
     }).join("");
-    target.innerHTML = html;
+    target.innerHTML = density + cardsHtml;
   }
   bindCards();
+  bindDensityBars();
   applyFocus();
+}
+
+function bindDensityBars() {
+  document.querySelectorAll(".col-density .bar").forEach(bar => {
+    bar.addEventListener("click", () => {
+      const k = bar.dataset.monthKey;
+      const cat = bar.dataset.cat;
+      const target = document.querySelector(`#col-${cat} .month-divider[data-month-key="${k}"]`);
+      if (target) target.scrollIntoView({ block: "start", behavior: "smooth" });
+    });
+  });
 }
 
 function renderAppliedChips() {
@@ -798,24 +935,62 @@ function renderAppliedChips() {
   });
 }
 
+function relativeDate(iso) {
+  // Returns "3d ago" / "May 1" / "Apr 2025" depending on age.
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  const now = new Date();
+  const ms = now - d;
+  const day = 24 * 60 * 60 * 1000;
+  const days = Math.floor(ms / day);
+  if (days < 1)  return state.lang === "zh" ? "今天" : "today";
+  if (days < 7)  return state.lang === "zh" ? `${days} 天前` : `${days}d ago`;
+  if (days < 30) return state.lang === "zh" ? `${Math.floor(days/7)} 周前` : `${Math.floor(days/7)}w ago`;
+  // Same calendar year → short month + day
+  const monthsEn = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const yyyy = d.getFullYear(), mm = d.getMonth() + 1, dd = d.getDate();
+  if (yyyy === now.getFullYear()) {
+    return state.lang === "zh" ? `${mm} 月 ${dd} 日` : `${monthsEn[mm-1]} ${dd}`;
+  }
+  return state.lang === "zh" ? `${yyyy} 年 ${mm} 月` : `${monthsEn[mm-1]} ${yyyy}`;
+}
+
 function cardHTML(e, idx) {
   const title = pickLang(e, "title");
+  const summary = pickLang(e, "summary_short");
   const novelty = e.novelty_score || 0;
   const noveltyHTML = `<span class="novelty"><span class="novelty-bar">${[1,2,3,4,5].map(n => `<i${n<=novelty?' class="on"':''}></i>`).join("")}</span></span>`;
-  const topicsHTML = (e.topics || []).map(tg => {
+  const topicsHTML = (e.topics || []).slice(0, 5).map(tg => {
     const active = state.filters.topics.has(tg) ? " active" : "";
     return `<span class="pill topic${active}" data-topic="${escAttr(tg)}">${escHTML(tg)}</span>`;
   }).join("");
-  const hasImg = (e.images || []).length ? " has-images" : "";
+  const overflow = (e.topics || []).length > 5 ? `<span class="pill" title="${escAttr((e.topics || []).slice(5).join(", "))}">+${(e.topics || []).length - 5}</span>` : "";
   const date = e.date_published || e.date_found;
-  return `<article class="entry-card${hasImg}" data-idx="${idx}">
-    <div class="pub-date">${date}</div>
-    <div class="title">${escHTML(title)}</div>
-    <div class="meta">
-      <span class="pill type">${escHTML(e.type || "")}</span>
-      ${noveltyHTML}
-      ${topicsHTML}
+  const dateLabel = relativeDate(date);
+  const dateTitle = ` title="${escAttr(date)}"`;
+  const isRead = state.readSet.has(e.id);
+  const cls = isRead ? "read" : "unread";
+  const cat = e.category || "industry";
+  const firstImg = (e.images && e.images[0]) ? e.images[0].url : "";
+  const thumb = firstImg
+    ? `<div class="thumb"><img src="${escAttr(firstImg)}" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>`
+    : "";
+  return `<article class="entry-card ${cls}" data-idx="${idx}" data-cat="${escAttr(cat)}">
+    <div class="stripe"></div>
+    <div class="content">
+      <div class="top-row">
+        <span class="pub-date"${dateTitle}>${dateLabel}</span>
+        <span class="type-label">${escHTML(e.type || "")}</span>
+      </div>
+      <div class="title">${escHTML(title)}</div>
+      ${summary ? `<div class="summary">${escHTML(summary)}</div>` : ""}
+      <div class="meta">
+        ${noveltyHTML}
+        ${topicsHTML}${overflow}
+      </div>
     </div>
+    ${thumb}
   </article>`;
 }
 
@@ -838,6 +1013,13 @@ function bindCards() {
 function openDrawer(idx) {
   if (idx < 0 || idx >= state.filtered.length) return;
   state.drawerIdx = idx; state.focusIdx = idx;
+  const e = state.filtered[idx];
+  if (e && !state.readSet.has(e.id)) {
+    markRead(e.id);
+    // Update the open card's class without a full re-render so the position is preserved.
+    const card = document.querySelector(`.entry-card[data-idx="${idx}"]`);
+    if (card) { card.classList.remove("unread"); card.classList.add("read"); }
+  }
   renderDrawer();
   document.getElementById("drawer").classList.add("open");
   document.getElementById("drawer-overlay").classList.add("open");
@@ -859,6 +1041,12 @@ function drawerStep(delta) {
   const next = state.drawerIdx + delta;
   if (next < 0 || next >= state.filtered.length) return;
   state.drawerIdx = next; state.focusIdx = next;
+  const e = state.filtered[next];
+  if (e && !state.readSet.has(e.id)) {
+    markRead(e.id);
+    const card = document.querySelector(`.entry-card[data-idx="${next}"]`);
+    if (card) { card.classList.remove("unread"); card.classList.add("read"); }
+  }
   renderDrawer();
   document.getElementById("drawer-body").scrollTop = 0;
   writeUrlState(); applyFocus();
@@ -976,6 +1164,10 @@ document.getElementById("facet-clear").addEventListener("click", () => {
   state.filters.topics.clear(); state.filters.search = "";
   document.getElementById("search").value = "";
   render(); renderFacets(); writeUrlState();
+});
+document.getElementById("mark-all-read").addEventListener("click", (ev) => {
+  // Click = mark all read; Shift+Click = clear all read state
+  if (ev.shiftKey) clearRead(); else markAllRead();
 });
 document.getElementById("help-btn").addEventListener("click", () => document.getElementById("help-modal").classList.add("open"));
 document.getElementById("help-close").addEventListener("click", () => document.getElementById("help-modal").classList.remove("open"));
