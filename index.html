@@ -128,6 +128,10 @@
     max-width: 1700px; margin: 0 auto;
     align-items: start;
   }
+  /* Sources tab: hide the sidebar slot entirely so the section can use full width */
+  body.tab-sources main {
+    grid-template-columns: 1fr;
+  }
 
   /* ---------- SIDEBAR ---------- */
   aside.sidebar {
@@ -388,7 +392,7 @@
   [hidden] { display: none !important; }
 
   /* ---------- SOURCES PAGE ---------- */
-  .sources-page { padding: 0; max-width: 1100px; margin: 0 auto; }
+  .sources-page { padding: 0; width: 100%; }
   .sources-page .intro {
     color: var(--fg-2); font-size: 13px; line-height: 1.55;
     margin: 0 0 18px; padding: 12px 14px;
@@ -400,6 +404,11 @@
   }
   .sources-page .src-cat {
     margin: 0 0 22px;
+  }
+  .sources-page .src-cat-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 10px;
   }
   .sources-page .src-cat-head {
     font-size: 12px; font-weight: 700; letter-spacing: 0.06em;
@@ -413,10 +422,11 @@
   .sources-page .src-cat[data-cat="standards"] .src-cat-head { border-color: var(--col-standards); color: var(--col-standards); }
   .sources-page .src-card {
     border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 10px 14px; margin-bottom: 8px;
+    padding: 10px 14px;
     background: var(--bg);
     display: grid; grid-template-columns: 1fr auto;
     gap: 8px; align-items: start;
+    min-width: 0;
   }
   .sources-page .src-card:hover { border-color: var(--border-strong); background: var(--bg-2); }
   .sources-page .src-card .name {
@@ -1053,7 +1063,7 @@ function renderSources() {
         <span>${escHTML(labels["col_" + cat] || cat)}</span>
         <span class="count">${items.length} ${labels.entries_label || ""}</span>
       </div>
-      ${items.map(cardHtml).join("")}
+      <div class="src-cat-cards">${items.map(cardHtml).join("")}</div>
     </section>`;
   }).join("");
 
@@ -1066,6 +1076,9 @@ function render() {
   document.getElementById("columns").hidden = isSources;
   document.getElementById("sources-page").hidden = !isSources;
   // The whole sidebar (search + facets) only makes sense for entry browsing.
+  // Toggle a body class so the main grid drops the 220px sidebar slot too —
+  // otherwise the sources page renders inside a track that's still 220px short.
+  document.body.classList.toggle("tab-sources", isSources);
   const sidebar = document.querySelector("aside.sidebar");
   if (sidebar) sidebar.style.display = isSources ? "none" : "";
   // Result-bar items: search/topic chips don't apply on the sources page.
