@@ -448,11 +448,6 @@
     height: 18px; line-height: 1;
   }
   .sources-page .src-card .pill.kind     { background: var(--bg-3); }
-  .sources-page .src-card .pill.priority {
-    border-color: var(--accent); color: var(--accent); background: var(--accent-2);
-  }
-  .sources-page .src-card .pill.priority[data-prio="weekly"]  { color: var(--fg-2); border-color: var(--border-strong); background: var(--bg-3); }
-  .sources-page .src-card .pill.priority[data-prio="monthly"] { color: var(--fg-3); border-color: var(--border); background: var(--bg-2); }
   .sources-page .src-card .notes {
     color: var(--fg-2); font-size: 12px; line-height: 1.5;
     margin: 0;
@@ -567,7 +562,7 @@
 <body>
 
 <script src="kb.js?v=dc26a907" onerror="window.__KB_JS_FAILED=true"></script>
-<script src="sources.js?v=5d1a2b4d" onerror="window.__SRC_JS_FAILED=true"></script>
+<script src="sources.js?v=33d3057b" onerror="window.__SRC_JS_FAILED=true"></script>
 
 <header class="app-header">
   <div class="brand">
@@ -1030,9 +1025,9 @@ function renderSources() {
   }
   const byCat = { academia: [], industry: [], standards: [] };
   for (const s of data.sources) (byCat[s.category] || byCat.industry).push(s);
-  // Order priority for sort: daily > weekly > monthly
-  const prio = { daily: 0, weekly: 1, monthly: 2 };
-  for (const cat of CATEGORIES) byCat[cat].sort((a, b) => (prio[a.priority]||9) - (prio[b.priority]||9));
+  // Sort within each category alphabetically by name (priority tier was removed
+  // - the scout now visits every source on every run).
+  for (const cat of CATEGORIES) byCat[cat].sort((a, b) => (a.name || "").localeCompare(b.name || ""));
 
   const cardHtml = (s) => {
     const open = s.url
@@ -1042,8 +1037,7 @@ function renderSources() {
       ? `<a href="${escAttr(s.url)}" target="_blank" rel="noopener">${escHTML(s.name)}</a>`
       : escHTML(s.name);
     const meta = [];
-    if (s.kind)     meta.push(`<span class="pill kind">${escHTML(s.kind)}</span>`);
-    if (s.priority) meta.push(`<span class="pill priority" data-prio="${escAttr(s.priority)}">${escHTML(s.priority)}</span>`);
+    if (s.kind) meta.push(`<span class="pill kind">${escHTML(s.kind)}</span>`);
     (s.topics_hint || []).forEach(tg => meta.push(`<span class="topic-hint">${escHTML(tg)}</span>`));
     const query = s.query_hint ? `<div class="query">${escHTML(s.query_hint)}</div>` : "";
     const notes = s.notes ? `<p class="notes">${escHTML(s.notes)}</p>` : "";

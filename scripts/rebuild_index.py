@@ -639,7 +639,7 @@ def main(argv: list[str]) -> int:
         try:
             parsed = _parse_sources_yaml(candidate.read_text(encoding="utf-8"))
             keep_keys = ("id", "name", "url", "kind", "category",
-                         "topics_hint", "priority", "notes")
+                         "topics_hint", "notes")
             sanitised = []
             for src in parsed.get("sources", []):
                 if src.get("enabled") is False:
