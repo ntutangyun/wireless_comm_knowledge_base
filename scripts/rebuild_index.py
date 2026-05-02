@@ -22,6 +22,7 @@ the data root.
 Stock Python 3.10+; no third-party dependencies.
 """
 import datetime as dt
+import hashlib
 import json
 import os
 import re
@@ -661,6 +662,39 @@ def main(argv: list[str]) -> int:
             os.replace(tmp_sj, sources_js_path)
         except Exception as exc:  # noqa: BLE001
             warnings.append(f"sources.yaml: {exc}")
+
+    # ---------- Cache-bust the <script src="kb.js"> / <script src="sources.js"> ----------
+    # GitHub Pages serves all assets with `Cache-Control: max-age=600`, so a
+    # browser holds onto a stale kb.js for 10 minutes after a new push. Embed
+    # an 8-char content hash in the script src so any change to kb.js content
+    # forces an immediate re-fetch the moment index.html itself refreshes.
+    # The hash is over the file bytes we just wrote, so it tracks data changes
+    # exactly — no churn when nothing changed.
+    index_html_path = data_root / "index.html"
+    if index_html_path.is_file():
+        def _short_hash(p: Path) -> str:
+            return hashlib.sha256(p.read_bytes()).hexdigest()[:8] if p.is_file() else ""
+        kb_v = _short_hash(kb_js_path)
+        src_v = _short_hash(data_root / "sources.js")
+        html = index_html_path.read_text(encoding="utf-8")
+        new_html = html
+        if kb_v:
+            new_html = re.sub(
+                r'src="kb\.js(?:\?v=[a-f0-9]+)?"',
+                f'src="kb.js?v={kb_v}"',
+                new_html,
+            )
+        if src_v:
+            new_html = re.sub(
+                r'src="sources\.js(?:\?v=[a-f0-9]+)?"',
+                f'src="sources.js?v={src_v}"',
+                new_html,
+            )
+        if new_html != html:
+            tmp_html = index_html_path.with_suffix(index_html_path.suffix + ".tmp")
+            with open(tmp_html, "w", encoding="utf-8", newline="\n") as f:
+                f.write(new_html); f.flush(); os.fsync(f.fileno())
+            os.replace(tmp_html, index_html_path)
 
     n = len(records)
     cat_summary = " · ".join(f"{k}={v}" for k, v in category_counts.most_common())
