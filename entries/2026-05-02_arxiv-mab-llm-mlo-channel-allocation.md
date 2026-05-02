@@ -1,5 +1,6 @@
 ---
 id: 2026-05-02_arxiv-mab-llm-mlo-channel-allocation
+date_published: 2025-06-05
 date_found: 2026-05-02
 type: academic-paper
 title_en: "Intelligent Channel Allocation for IEEE 802.11be Multi-Link Operation: When MAB Meets LLM"
