@@ -56,7 +56,3 @@ Coupled with MediaTek's Filogic 8000 (CES 2026, see `2026-05-01_mediatek-filogic
 - **三家厂商落定：** 加入博通后，三大主要厂商的 Wi-Fi 8 硅片已全部公开承诺。这是 802.11bn 时间表如期、并且"AP 作为边缘 AI 计算节点"成为本代产品共识框架的最强市场信号。
 - **NPU-on-AP 已成必备：** BCM4918 的 Neural Engine、高通的 Hexagon NPU 以及联发科预期的 AI 模块（待披露）都暗含同一架构前提。后续巡检应重点跟踪每家 NPU 主要加速的 MAC 流类型。
 - **家用 vs 企业市场已形成分化：** 博通主打家用路由、高通主打企业 AP，意味着 Wi-Fi 8 硅片市场正按既有路线分层，而非在中段贴身肉搏。
-
-## Images
-
-![Broadcom Wi-Fi 8 platform overview | 博通 Wi-Fi 8 平台总览](https://docs.broadcom.com/getmedia/d3a86e9f-cb33-4f0a-a8a3-cb1428f6df56/Wi-Fi-8-Platform-CES-2026.jpg)

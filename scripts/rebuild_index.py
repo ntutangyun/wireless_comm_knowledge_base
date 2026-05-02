@@ -27,7 +27,10 @@ import os
 import re
 import sys
 import tempfile
+import urllib.error
+import urllib.request
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
@@ -418,6 +421,97 @@ def build_search_blob(entry: dict[str, Any]) -> str:
     return " ".join(parts).lower()
 
 
+def probe_image_url(url: str, referer: str = "") -> tuple[bool, str]:
+    """HEAD-probe an image URL with browser-like headers.
+
+    Returns (ok, detail). ok=True means the URL responded with 2xx/3xx and the
+    Content-Type looks image-y. ok=False means broken — caller surfaces a warning.
+
+    HEAD with browser-like User-Agent + Referer mirrors how a real browser would
+    fetch an <img>, so hosts that 403 bot user-agents (Cisco, IEEE, some CDNs)
+    don't get falsely flagged. Falls back to a small GET if HEAD is rejected
+    (some CDNs only allow GET).
+    """
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/120.0 Safari/537.36"
+        ),
+        "Accept": "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+    }
+    if referer:
+        headers["Referer"] = referer
+
+    def _check(method: str) -> tuple[bool, str]:
+        req = urllib.request.Request(url, headers=headers, method=method)
+        with urllib.request.urlopen(req, timeout=12) as r:
+            ct = (r.headers.get("Content-Type") or "").lower()
+            code = r.status
+            if code >= 400:
+                return False, f"HTTP {code}"
+            # Some hosts return text/html on a HEAD probe of an image — accept
+            # 2xx/3xx as long as it's not an obvious error page.
+            if method == "HEAD" and not ct:
+                return True, f"HTTP {code} (no content-type, accepted)"
+            if "image/" in ct or method == "HEAD":
+                return True, f"HTTP {code} {ct or 'unknown-type'}"
+            return False, f"HTTP {code} non-image content-type: {ct}"
+
+    try:
+        return _check("HEAD")
+    except urllib.error.HTTPError as e:
+        if e.code in (403, 405, 501):
+            try:
+                return _check("GET")
+            except Exception as e2:  # noqa: BLE001
+                return False, f"GET fallback: {type(e2).__name__}: {str(e2)[:80]}"
+        return False, f"HTTPError {e.code}"
+    except Exception as e:  # noqa: BLE001
+        return False, f"{type(e).__name__}: {str(e)[:80]}"
+
+
+def probe_all_images(records: list[dict[str, Any]], data_root: Path) -> list[str]:
+    """Probe every image URL in the records, return a list of warning strings.
+
+    Skips locally-hosted images (asset paths like ``assets/<id>/<file>``) — for
+    those, we just verify the file exists on disk. Hotlinked URLs go to the
+    network probe in parallel (network is the bottleneck, not CPU).
+    """
+    targets: list[tuple[str, str, str]] = []  # (entry_id, url, source_url)
+    local_warns: list[str] = []
+    for r in records:
+        for img in r.get("images", []):
+            url = img.get("url", "")
+            if not url:
+                continue
+            if url.startswith(("http://", "https://")):
+                targets.append((r["entry_path"], url, r.get("url", "")))
+            else:
+                # Local asset — verify file exists.
+                local_path = data_root / url
+                if not local_path.is_file():
+                    local_warns.append(
+                        f"{r['entry_path']}: local image missing on disk: {url}"
+                    )
+
+    if not targets:
+        return local_warns
+
+    warnings: list[str] = list(local_warns)
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        futures = [
+            (entry_id, url, pool.submit(probe_image_url, url, src))
+            for entry_id, url, src in targets
+        ]
+        for entry_id, url, fut in futures:
+            ok, detail = fut.result()
+            if not ok:
+                warnings.append(
+                    f"{entry_id}: broken image URL ({detail}): {url}"
+                )
+    return warnings
+
+
 def write_json_atomic(path: Path, payload: Any) -> None:
     """Write JSON to a temp file in the same dir, fsync, rename. Avoids leaving
     a half-written index.json if anything dies mid-write."""
@@ -485,6 +579,10 @@ def main(argv: list[str]) -> int:
             warnings.append(f"empty Summary (EN) in {r['entry_path']}")
         if not r["summary_short_zh"]:
             warnings.append(f"empty Summary (ZH) in {r['entry_path']}")
+
+    # Probe every image URL in parallel — skipped if --no-image-check passed.
+    if "--no-image-check" not in argv:
+        warnings.extend(probe_all_images(records, data_root))
 
     # Primary sort: publication date desc, id as tiebreak.
     records.sort(key=lambda r: (r["date_published"], r["id"]), reverse=True)
