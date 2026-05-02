@@ -475,6 +475,12 @@ def main(argv: list[str]) -> int:
     for r in records:
         if r["date_found"] > today:
             warnings.append(f"future date_found in {r['entry_path']}: {r['date_found']}")
+        if r["date_published"] > r["date_found"]:
+            warnings.append(
+                f"date_published ({r['date_published']}) is after date_found "
+                f"({r['date_found']}) in {r['entry_path']} — usually means the "
+                f"two dates were swapped"
+            )
         if not r["summary_short_en"]:
             warnings.append(f"empty Summary (EN) in {r['entry_path']}")
         if not r["summary_short_zh"]:
