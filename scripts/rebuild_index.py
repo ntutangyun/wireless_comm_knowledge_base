@@ -32,6 +32,87 @@ from pathlib import Path
 from typing import Any
 
 
+# =============================================================================
+# Optional sources-list import. The canonical source list is a YAML file in
+# the private repo's wifi_research_scout skill folder. When this script runs
+# inside the parent project (the typical case), we read it and emit a
+# sanitised JSON copy at the public repo root so the viewer can show it.
+# When running standalone (for an external contributor) we just skip — the
+# public repo doesn't keep its own copy of sources.yaml.
+# =============================================================================
+
+def _parse_sources_yaml(text: str):
+    """Tiny YAML subset parser sufficient for our sources.yaml layout.
+
+    Recognises only what sources.yaml actually uses:
+      - top-level scalars (`version: 1`, `last_updated: 2026-05-02`)
+      - top-level list under `sources:` whose items are mappings of scalars
+        and a single inline list (`topics_hint: [a, b, c]`).
+
+    Returns a dict with `version`, `last_updated`, `sources: [..]`. We avoid
+    pulling pyyaml so the curator stays stdlib-only.
+    """
+    out = {"version": None, "last_updated": "", "sources": []}
+    lines = text.splitlines()
+    i = 0
+    cur = None
+    in_sources = False
+    while i < len(lines):
+        raw = lines[i]
+        line = raw.split("#", 1)[0].rstrip() if not raw.strip().startswith('"') else raw.rstrip()
+        if not line.strip():
+            i += 1
+            continue
+        if not line.startswith(" "):
+            # Top-level key
+            if line.startswith("sources:"):
+                in_sources = True
+                i += 1
+                continue
+            if ":" in line:
+                k, _, v = line.partition(":")
+                v = v.strip()
+                if k.strip() in ("version", "last_updated"):
+                    out[k.strip()] = _yaml_scalar(v)
+            i += 1
+            continue
+        if in_sources:
+            stripped = line.lstrip()
+            indent = len(line) - len(stripped)
+            if indent == 2 and stripped.startswith("- "):
+                if cur is not None:
+                    out["sources"].append(cur)
+                cur = {}
+                stripped = stripped[2:]
+                if ":" in stripped:
+                    k, _, v = stripped.partition(":")
+                    cur[k.strip()] = _yaml_scalar(v.strip())
+            elif indent >= 4 and ":" in stripped:
+                k, _, v = stripped.partition(":")
+                cur[k.strip()] = _yaml_scalar(v.strip())
+        i += 1
+    if cur is not None:
+        out["sources"].append(cur)
+    return out
+
+
+def _yaml_scalar(v):
+    if v == "" or v == "~" or v.lower() == "null":
+        return None
+    if v.lower() == "true":  return True
+    if v.lower() == "false": return False
+    if v.startswith('"') and v.endswith('"'): return v[1:-1]
+    if v.startswith("'") and v.endswith("'"): return v[1:-1]
+    if v.startswith("[") and v.endswith("]"):
+        inner = v[1:-1].strip()
+        return [s.strip().strip('"').strip("'") for s in inner.split(",") if s.strip()]
+    try:
+        return int(v)
+    except ValueError:
+        pass
+    return v
+
+
 # Topic-normalisation rewrites. Lowercased keys; values are the canonical
 # spelling we want to land on. Keep this short — only fix actual collisions.
 # Topic tags are intentionally English-canonical (matching IEEE conventions).
@@ -442,9 +523,45 @@ def main(argv: list[str]) -> int:
         os.fsync(f.fileno())
     os.replace(tmp_js, kb_js_path)
 
+    # ---------- Sources list (optional) ----------
+    # Walk up from the data root looking for the private repo's sources.yaml.
+    # If found, parse it and emit a sanitised JSON copy alongside kb.json so
+    # the viewer can show the list. Public-safe fields only — `enabled` is
+    # dropped because it represents internal scout configuration.
+    sources_payload = None
+    candidate = data_root.parent / ".claude" / "skills" / "wifi_research_scout" / "sources.yaml"
+    if candidate.exists():
+        try:
+            parsed = _parse_sources_yaml(candidate.read_text(encoding="utf-8"))
+            keep_keys = ("id", "name", "url", "kind", "category",
+                         "topics_hint", "priority", "notes")
+            sanitised = []
+            for src in parsed.get("sources", []):
+                if src.get("enabled") is False:
+                    continue
+                row = {k: src.get(k) for k in keep_keys if k in src}
+                sanitised.append(row)
+            sources_payload = {
+                "version": parsed.get("version", 1),
+                "last_updated": parsed.get("last_updated") or today,
+                "sources": sanitised,
+            }
+            sources_path = data_root / "sources.json"
+            write_json_atomic(sources_path, sources_payload)
+            sources_js_path = data_root / "sources.js"
+            sj = "window.SOURCES_DATA = " + json.dumps(
+                sources_payload, ensure_ascii=False, indent=2) + ";\n"
+            tmp_sj = sources_js_path.with_suffix(sources_js_path.suffix + ".tmp")
+            with open(tmp_sj, "w", encoding="utf-8") as f:
+                f.write(sj); f.flush(); os.fsync(f.fileno())
+            os.replace(tmp_sj, sources_js_path)
+        except Exception as exc:  # noqa: BLE001
+            warnings.append(f"sources.yaml: {exc}")
+
     n = len(records)
     cat_summary = " · ".join(f"{k}={v}" for k, v in category_counts.most_common())
-    print(f"KB rebuild: {n} entries · {len(topic_counts)} topics · {image_count} images · [{cat_summary}]")
+    src_n = len(sources_payload["sources"]) if sources_payload else 0
+    print(f"KB rebuild: {n} entries · {len(topic_counts)} topics · {image_count} images · [{cat_summary}] · {src_n} sources")
     if warnings:
         print(f"  Warnings ({len(warnings)}):")
         for w in warnings:

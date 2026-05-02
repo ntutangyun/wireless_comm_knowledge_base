@@ -297,8 +297,9 @@
     background: var(--bg-3);
   }
   .entry-card .carousel-slide img {
-    width: 100%; height: 100%;
-    object-fit: cover; display: block;
+    max-width: 100%; max-height: 100%;
+    width: auto; height: auto;
+    object-fit: contain; display: block;
   }
   .entry-card .carousel-btn {
     position: absolute; top: 50%; transform: translateY(-50%);
@@ -381,6 +382,85 @@
   .empty-col {
     text-align: center; padding: 40px 12px; color: var(--fg-3); font-size: 12px;
     border: 1px dashed var(--border); border-radius: var(--radius);
+  }
+
+  /* HTML `hidden` should always win even when something has display:grid/flex */
+  [hidden] { display: none !important; }
+
+  /* ---------- SOURCES PAGE ---------- */
+  .sources-page { padding: 0; max-width: 1100px; margin: 0 auto; }
+  .sources-page .intro {
+    color: var(--fg-2); font-size: 13px; line-height: 1.55;
+    margin: 0 0 18px; padding: 12px 14px;
+    background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius);
+  }
+  .sources-page .intro code {
+    font-family: var(--mono); font-size: 12px;
+    background: var(--bg-3); padding: 1px 5px; border-radius: 3px;
+  }
+  .sources-page .src-cat {
+    margin: 0 0 22px;
+  }
+  .sources-page .src-cat-head {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding-bottom: 6px; border-bottom: 2px solid; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .sources-page .src-cat-head .count { font-size: 11px; color: var(--fg-3); font-weight: 500; letter-spacing: 0; text-transform: none; }
+  .sources-page .src-cat[data-cat="academia"]  .src-cat-head { border-color: var(--col-academia); color: var(--col-academia); }
+  .sources-page .src-cat[data-cat="industry"]  .src-cat-head { border-color: var(--col-industry); color: var(--col-industry); }
+  .sources-page .src-cat[data-cat="standards"] .src-cat-head { border-color: var(--col-standards); color: var(--col-standards); }
+  .sources-page .src-card {
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 10px 14px; margin-bottom: 8px;
+    background: var(--bg);
+    display: grid; grid-template-columns: 1fr auto;
+    gap: 8px; align-items: start;
+  }
+  .sources-page .src-card:hover { border-color: var(--border-strong); background: var(--bg-2); }
+  .sources-page .src-card .name {
+    font-weight: 600; font-size: 13.5px; color: var(--fg);
+    margin: 0 0 3px;
+  }
+  .sources-page .src-card .name a { color: var(--fg); text-decoration: none; }
+  .sources-page .src-card .name a:hover { color: var(--accent); text-decoration: underline; }
+  .sources-page .src-card .meta {
+    display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
+    font-size: 11px;
+    margin: 4px 0 6px;
+  }
+  .sources-page .src-card .meta .pill {
+    height: 18px; line-height: 1;
+  }
+  .sources-page .src-card .pill.kind     { background: var(--bg-3); }
+  .sources-page .src-card .pill.priority {
+    border-color: var(--accent); color: var(--accent); background: var(--accent-2);
+  }
+  .sources-page .src-card .pill.priority[data-prio="weekly"]  { color: var(--fg-2); border-color: var(--border-strong); background: var(--bg-3); }
+  .sources-page .src-card .pill.priority[data-prio="monthly"] { color: var(--fg-3); border-color: var(--border); background: var(--bg-2); }
+  .sources-page .src-card .notes {
+    color: var(--fg-2); font-size: 12px; line-height: 1.5;
+    margin: 0;
+  }
+  .sources-page .src-card .query {
+    font-family: var(--mono); font-size: 11.5px;
+    color: var(--fg-2); background: var(--code-bg);
+    padding: 2px 6px; border-radius: 3px;
+    margin-top: 4px; display: inline-block;
+    word-break: break-word;
+  }
+  .sources-page .src-card .open {
+    align-self: start;
+    font-size: 11px; color: var(--accent);
+    text-decoration: none; white-space: nowrap;
+    padding: 4px 8px; border: 1px solid var(--accent); border-radius: var(--radius);
+  }
+  .sources-page .src-card .open:hover { background: var(--accent); color: var(--accent-fg); }
+  .sources-page .src-card .topic-hint {
+    font-size: 10.5px; font-family: var(--mono);
+    background: var(--bg-3); color: var(--fg-2);
+    padding: 1px 5px; border-radius: 3px;
   }
   .empty-state { text-align: center; padding: 80px 20px; color: var(--fg-3); font-size: 14px; }
   .empty-state code { background: var(--bg-3); padding: 2px 6px; border-radius: 3px; font-family: var(--mono); font-size: 12px; }
@@ -473,6 +553,7 @@
 <body>
 
 <script src="kb.js" onerror="window.__KB_JS_FAILED=true"></script>
+<script src="sources.js" onerror="window.__SRC_JS_FAILED=true"></script>
 
 <header class="app-header">
   <div class="brand">
@@ -503,6 +584,7 @@
   <button data-tab="recent"></button>
   <button data-tab="recent30"></button>
   <button data-tab="recent365"></button>
+  <button data-tab="sources" id="tab-sources"></button>
   <span class="kbd-hint"><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd></span>
 </nav>
 
@@ -569,6 +651,7 @@
         <div class="col-body" id="col-standards"></div>
       </div>
     </div>
+    <div class="sources-page" id="sources-page" hidden></div>
   </section>
 </main>
 
@@ -621,6 +704,13 @@ const I18N = {
     tab_recent: "Last 7 days",
     tab_recent30: "Last 30 days",
     tab_recent365: "Last 12 months",
+    tab_sources: "Sources",
+    sources_intro: "The fixed list of research sources the daily scout iterates over. Edit `.claude/skills/wifi_research_scout/sources.yaml` to add or remove sources.",
+    sources_kind: "Kind",
+    sources_priority: "Priority",
+    sources_topics: "Topic hint",
+    sources_query: "Query template",
+    sources_open: "Open ↗",
     of_n: (n, total) => `${n} of ${total}`,
     no_match: "Nothing matches the current filters.",
     no_match_col: "(none)",
@@ -654,6 +744,13 @@ const I18N = {
     tab_recent: "最近 7 天",
     tab_recent30: "最近 30 天",
     tab_recent365: "最近 12 个月",
+    tab_sources: "来源",
+    sources_intro: "每日巡检所遍历的固定研究来源清单。编辑 `.claude/skills/wifi_research_scout/sources.yaml` 增删来源。",
+    sources_kind: "类型",
+    sources_priority: "优先级",
+    sources_topics: "话题提示",
+    sources_query: "查询模板",
+    sources_open: "打开 ↗",
     of_n: (n, total) => `共 ${total} · 命中 ${n}`,
     no_match: "当前筛选条件下没有条目。",
     no_match_col: "（无）",
@@ -771,6 +868,7 @@ function applyLang() {
   tabBtns[1].textContent = labels.tab_recent;
   tabBtns[2].textContent = labels.tab_recent30;
   tabBtns[3].textContent = labels.tab_recent365;
+  if (tabBtns[4]) tabBtns[4].textContent = labels.tab_sources;
   document.querySelectorAll("#lang-toggle button").forEach(b => b.classList.toggle("active", b.dataset.lang === state.lang));
   document.getElementById("facet-clear").textContent = labels.facet_clear;
   document.getElementById("drawer-original").textContent = labels.open_original;
@@ -908,7 +1006,75 @@ function buildDensityHTML(items, cat) {
   }</div>`;
 }
 
+function renderSources() {
+  const labels = t();
+  const target = document.getElementById("sources-page");
+  const data = window.SOURCES_DATA;
+  if (!data || !Array.isArray(data.sources)) {
+    target.innerHTML = `<div class="empty-state">No <code>sources.json</code> found. Run <code>python scripts/rebuild_index.py</code> from a checkout that has the private skills folder.</div>`;
+    return;
+  }
+  const byCat = { academia: [], industry: [], standards: [] };
+  for (const s of data.sources) (byCat[s.category] || byCat.industry).push(s);
+  // Order priority for sort: daily > weekly > monthly
+  const prio = { daily: 0, weekly: 1, monthly: 2 };
+  for (const cat of CATEGORIES) byCat[cat].sort((a, b) => (prio[a.priority]||9) - (prio[b.priority]||9));
+
+  const cardHtml = (s) => {
+    const open = s.url
+      ? `<a class="open" href="${escAttr(s.url)}" target="_blank" rel="noopener">${labels.sources_open}</a>`
+      : "";
+    const nameInner = s.url
+      ? `<a href="${escAttr(s.url)}" target="_blank" rel="noopener">${escHTML(s.name)}</a>`
+      : escHTML(s.name);
+    const meta = [];
+    if (s.kind)     meta.push(`<span class="pill kind">${escHTML(s.kind)}</span>`);
+    if (s.priority) meta.push(`<span class="pill priority" data-prio="${escAttr(s.priority)}">${escHTML(s.priority)}</span>`);
+    (s.topics_hint || []).forEach(tg => meta.push(`<span class="topic-hint">${escHTML(tg)}</span>`));
+    const query = s.query_hint ? `<div class="query">${escHTML(s.query_hint)}</div>` : "";
+    const notes = s.notes ? `<p class="notes">${escHTML(s.notes)}</p>` : "";
+    return `<article class="src-card">
+      <div>
+        <div class="name">${nameInner}</div>
+        <div class="meta">${meta.join("")}</div>
+        ${query}
+        ${notes}
+      </div>
+      ${open}
+    </article>`;
+  };
+
+  const intro = `<p class="intro">${labels.sources_intro}</p>`;
+  const cats = CATEGORIES.map(cat => {
+    const items = byCat[cat];
+    if (!items.length) return "";
+    return `<section class="src-cat" data-cat="${cat}">
+      <div class="src-cat-head">
+        <span>${escHTML(labels["col_" + cat] || cat)}</span>
+        <span class="count">${items.length} ${labels.entries_label || ""}</span>
+      </div>
+      ${items.map(cardHtml).join("")}
+    </section>`;
+  }).join("");
+
+  target.innerHTML = intro + cats;
+}
+
 function render() {
+  // Sources tab is a different view altogether — show that instead of cards.
+  const isSources = state.filters.tab === "sources";
+  document.getElementById("columns").hidden = isSources;
+  document.getElementById("sources-page").hidden = !isSources;
+  // The whole sidebar (search + facets) only makes sense for entry browsing.
+  const sidebar = document.querySelector("aside.sidebar");
+  if (sidebar) sidebar.style.display = isSources ? "none" : "";
+  // Result-bar items: search/topic chips don't apply on the sources page.
+  document.getElementById("result-count").style.display = isSources ? "none" : "";
+  document.getElementById("mark-all-read").style.display = isSources ? "none" : "";
+  if (isSources) {
+    renderSources();
+    return;
+  }
   state.filtered = state.entries.filter(entryMatches);
   document.getElementById("result-count").textContent = t().of_n(state.filtered.length, state.entries.length);
   renderAppliedChips();
