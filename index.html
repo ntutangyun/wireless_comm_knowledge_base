@@ -320,6 +320,10 @@
   }
   .entry-card:hover .carousel-btn { opacity: 1; }
   .entry-card .carousel-btn:hover { background: rgba(0, 0, 0, 0.75); }
+  /* Touch devices: keep arrows visible since :hover never fires */
+  @media (hover: none) {
+    .entry-card .carousel-btn { opacity: 0.7; }
+  }
   .entry-card .carousel-btn.prev { left: 6px; }
   .entry-card .carousel-btn.next { right: 6px; }
   .entry-card .carousel-btn svg { width: 14px; height: 14px; pointer-events: none; }
@@ -523,6 +527,7 @@
   .drawer-foot {
     border-top: 1px solid var(--border); background: var(--bg);
     padding: 12px 24px; display: flex; gap: 12px; flex-shrink: 0; font-size: 13px;
+    flex-wrap: wrap;
   }
   .drawer-foot .btn {
     background: var(--bg-2); border: 1px solid var(--border); color: var(--fg-2);
@@ -545,6 +550,10 @@
   .help-modal td { padding: 5px 0; font-size: 13px; }
   .help-modal td:first-child { width: 110px; }
 
+  /* Mobile-only "Filters" toggle button — visible <=640px */
+  .filters-toggle { display: none; }
+  .filters-toggle.is-active { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+
   /* ---------- RESPONSIVE ---------- */
   @media (max-width: 1100px) {
     main { grid-template-columns: 1fr; }
@@ -556,6 +565,58 @@
     .drawer { width: 100%; }
     .drawer-body { padding: 20px 18px 80px; }
     nav.tabs .kbd-hint { display: none; }
+  }
+
+  /* ---------- PHONE (<= 640px) ---------- */
+  @media (max-width: 640px) {
+    :root { --header-h: 56px; }
+    body { font-size: 14px; }
+    /* Header: tighter padding, drop stats text, drop GitHub + help icons */
+    header.app-header { padding: 0 12px; gap: 6px; }
+    .brand { min-width: 0; gap: 6px; }
+    .brand h1 { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .brand .stats { display: none; }
+    #help-btn, .header-actions a.icon-btn[href*="github.com"] { display: none; }
+    /* Very narrow phones: tighten button widths */
+    @media (max-width: 360px) {
+      .icon-btn, .lang-toggle { min-width: 32px; padding: 0 8px; }
+      .lang-toggle button { padding: 0 8px; }
+    }
+    /* Touch-target sizing for header buttons */
+    .icon-btn, .lang-toggle { height: 36px; min-width: 36px; padding: 0 10px; }
+    .lang-toggle button { height: 34px; padding: 0 12px; font-size: 13px; }
+    /* Tabs: scroll horizontally if the labels overflow */
+    nav.tabs { padding: 0 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    nav.tabs::-webkit-scrollbar { display: none; }
+    nav.tabs button { font-size: 13px; padding: 0 12px; height: 42px; flex-shrink: 0; }
+    /* Main grid: trim outer padding */
+    main { padding: 12px 12px 60px; gap: 12px; }
+    /* Filters toggle becomes visible; sidebar hides until toggled */
+    .filters-toggle { display: inline-flex; }
+    aside.sidebar { display: none; padding: 12px 0 16px; margin-bottom: 0; }
+    body.show-filters aside.sidebar { display: block; }
+    /* Larger tap targets for facet checkboxes + clear */
+    .facet-item { padding: 8px 6px; }
+    .facet-item input { width: 16px; height: 16px; }
+    .facet-clear { padding: 8px 0; }
+    /* Search input: a touch larger to match the new header height */
+    .search { padding: 9px 32px 9px 30px; font-size: 14px; }
+    /* Result-bar: chips can wrap */
+    .result-bar { flex-wrap: wrap; }
+    /* Card text: a hair larger for readability */
+    .entry-card .title { font-size: 14px; }
+    .entry-card .summary { font-size: 12.5px; }
+    .entry-card .carousel { aspect-ratio: 16 / 9; }
+    /* Drawer: tighter padding, full-bleed; foot wraps */
+    .drawer-body { padding: 18px 14px 90px; }
+    .drawer-body h2.entry-title { font-size: 19px; }
+    .drawer-body .body-html { font-size: 14.5px; }
+    .drawer-foot { padding: 10px 12px; gap: 8px; }
+    .drawer-foot .btn { padding: 9px 12px; font-size: 13px; flex: 0 0 auto; }
+    /* Help modal sized down */
+    .help-modal .panel { padding: 18px 16px; }
+    /* Sources page: single-column at narrow widths */
+    .sources-page .src-cat-cards { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -572,6 +633,9 @@
   </div>
   <div class="header-spacer"></div>
   <div class="header-actions">
+    <button class="icon-btn filters-toggle" id="filters-btn" aria-label="Toggle filters" aria-pressed="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+    </button>
     <div class="lang-toggle" id="lang-toggle" role="group" aria-label="Language">
       <button data-lang="en" class="active">EN</button>
       <button data-lang="zh">中文</button>
@@ -1419,6 +1483,11 @@ document.getElementById("theme-btn").addEventListener("click", () => {
   state.theme = state.theme === "dark" ? "light" : "dark";
   localStorage.setItem("kb_theme", state.theme);
   applyTheme();
+});
+document.getElementById("filters-btn").addEventListener("click", () => {
+  const on = document.body.classList.toggle("show-filters");
+  document.getElementById("filters-btn").classList.toggle("is-active", on);
+  document.getElementById("filters-btn").setAttribute("aria-pressed", on ? "true" : "false");
 });
 document.getElementById("drawer-close").addEventListener("click", closeDrawer);
 document.getElementById("drawer-overlay").addEventListener("click", closeDrawer);
