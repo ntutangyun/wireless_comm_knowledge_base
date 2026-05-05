@@ -132,6 +132,11 @@ TOPIC_REWRITES = {
     "multi-link": "MLO",
     "restricted twt": "R-TWT",
     "r twt": "R-TWT",
+    # Folded 2026-05-05 — `regulatory` was used in 2026-05-05_ieee-wng-charter-bypass-lbt-upper-6ghz
+    # before the canonical bin existed; future regulatory/spectrum entries should land on
+    # `spectrum-policy` (the topic_primary bin used by eu-rspg-upper-6ghz-decision and
+    # ofcom-better-together-6ghz-uk).
+    "regulatory": "spectrum-policy",
 }
 
 
