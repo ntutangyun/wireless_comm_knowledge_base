@@ -385,6 +385,46 @@ def category_for_type(t: str) -> str:
     return TYPE_TO_CATEGORY.get(t, "industry")
 
 
+def load_topic_narrative(data_root: Path,
+                         topic_id: str) -> tuple[str, str, str]:
+    """Read topics/<id>.md, return (en_md, zh_md, last_updated).
+
+    Format expected (all sections optional — empty strings when absent):
+
+        ---
+        id: mlo
+        last_updated: 2026-05-05
+        ---
+        ## Current state (EN)
+        ...
+        ## Current state (ZH)
+        ...
+
+    The 2-3 paragraph narrative is the *living document* that absorbs
+    staleness. Per-entry markdown stays append-only; this is where
+    'Draft 2.0 was scheduled May, slipped to July' gets to evolve.
+    """
+    path = data_root / "topics" / f"{topic_id}.md"
+    if not path.is_file():
+        return ("", "", "")
+    text = path.read_text(encoding="utf-8")
+    last_updated = ""
+    body = text
+    if text.startswith("---"):
+        end = text.find("\n---", 3)
+        if end >= 0:
+            block = text[3:end]
+            for raw in block.splitlines():
+                line = raw.strip()
+                if line.startswith("last_updated:"):
+                    v = line.split(":", 1)[1].strip().strip('"').strip("'")
+                    last_updated = v
+            body = text[end + 4:].lstrip()
+    en = extract_section(body, "## Current state (EN)").strip()
+    zh = extract_section(body, "## Current state (ZH)").strip()
+    return (en, zh, last_updated)
+
+
 def load_topics(data_root: Path) -> tuple[dict[str, Any], list[str]]:
     """Load topics.json. Returns (vocab, warnings).
 
@@ -414,7 +454,8 @@ def load_topics(data_root: Path) -> tuple[dict[str, Any], list[str]]:
 
 
 def aggregate_by_topic(records: list[dict[str, Any]],
-                       vocab: dict[str, Any]) -> dict[str, Any]:
+                       vocab: dict[str, Any],
+                       data_root: Path) -> dict[str, Any]:
     """Group entry ids by topic and by (topic, type).
 
     Returns a dict keyed by topic id, each value being:
@@ -434,6 +475,7 @@ def aggregate_by_topic(records: list[dict[str, Any]],
     """
     out: dict[str, Any] = {}
     for t in vocab.get("topics", []):
+        narr_en, narr_zh, narr_updated = load_topic_narrative(data_root, t["id"])
         out[t["id"]] = {
             "id": t["id"],
             "label_en": t.get("label_en", t["id"]),
@@ -441,6 +483,9 @@ def aggregate_by_topic(records: list[dict[str, Any]],
             "stack": t.get("stack", ""),
             "description_en": t.get("description_en", ""),
             "description_zh": t.get("description_zh", ""),
+            "narrative_html_en": md_block_to_html(narr_en) if narr_en else "",
+            "narrative_html_zh": md_block_to_html(narr_zh) if narr_zh else "",
+            "narrative_last_updated": narr_updated,
             "entries_primary": [],
             "entries_secondary": [],
             "by_type_primary": {},
@@ -712,7 +757,7 @@ def main(argv: list[str]) -> int:
     # Primary sort: publication date desc, id as tiebreak.
     records.sort(key=lambda r: (r["date_published"], r["id"]), reverse=True)
 
-    topics_aggregate = aggregate_by_topic(records, vocab)
+    topics_aggregate = aggregate_by_topic(records, vocab, data_root)
 
     index_payload = {
         "schema_version": 5,
