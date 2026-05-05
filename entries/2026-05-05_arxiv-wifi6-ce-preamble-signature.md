@@ -8,6 +8,8 @@ title_zh: "针对中继与伪装攻击的 Wi-Fi 6 连接建立阶段安全加固
 url: "https://arxiv.org/abs/2501.01517"
 source_quality: full
 topics: [802.11ax, security, MAC-layer, PHY-layer]
+topic_primary: security-privacy
+topics_secondary: []
 novelty_score: 4
 ---
 

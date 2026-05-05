@@ -8,6 +8,8 @@ title_zh: "欧盟 RSPG 关于上 6 GHz 频段的决定 —— 540 MHz 给移动 
 url: "https://wifinowglobal.com/news-and-blog/guest-paper-europes-6-ghz-crossroads-what-the-rspg-decision-means-for-wi-fi-and-the-eu-digital-economy/"
 source_quality: snippet_only
 topics: [products, security]
+topic_primary: spectrum-policy
+topics_secondary: []
 novelty_score: 3
 ---
 

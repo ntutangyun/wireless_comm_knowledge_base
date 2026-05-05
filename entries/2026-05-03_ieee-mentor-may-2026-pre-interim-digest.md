@@ -8,6 +8,8 @@ title_zh: "IEEE 802.11 Mentor 会前文档摘要 —— 2026 年 4-5 月（Antwe
 url: "https://mentor.ieee.org/802.11/documents"
 source_quality: full
 topics: [802.11bn, 802.11bp, 802.11bi, 802.11bt, 802.11bq, 802.11br, MAC-layer, security, agentic-AI]
+topic_primary: wifi8-uhr
+topics_secondary: [amp-iot, mmwave-bq, sensing-csi]
 novelty_score: 4
 ---
 

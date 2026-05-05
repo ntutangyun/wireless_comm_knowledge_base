@@ -8,6 +8,8 @@ title_zh: "VWAttacker：面向 Voice over WiFi 终端的系统化安全测试框
 url: "https://arxiv.org/abs/2508.01469"
 source_quality: full
 topics: [security, agentic-AI]
+topic_primary: security-privacy
+topics_secondary: [agentic-wifi]
 novelty_score: 4
 ---
 

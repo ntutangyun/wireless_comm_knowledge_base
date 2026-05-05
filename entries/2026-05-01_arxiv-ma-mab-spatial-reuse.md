@@ -8,6 +8,8 @@ title_zh: "面向 Wi-Fi 空间复用改进的协同多臂老虎机"
 url: "https://arxiv.org/abs/2412.03076"
 source_quality: full
 topics: [802.11bn, MAPC, MAC-layer, scheduling]
+topic_primary: mapc-cosr
+topics_secondary: [ai-for-wifi]
 novelty_score: 4
 ---
 

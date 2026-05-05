@@ -8,6 +8,8 @@ title_zh: "ComAgent：多 LLM 智能体协同赋能的无线网络优化框架"
 url: "https://arxiv.org/abs/2601.19607"
 source_quality: full
 topics: [agentic-AI]
+topic_primary: agentic-wifi
+topics_secondary: []
 novelty_score: 4
 ---
 

@@ -8,6 +8,8 @@ title_zh: "基于大语言模型的强化学习在无线网络优化中的应用
 url: "https://arxiv.org/abs/2602.13210"
 source_quality: full
 topics: [agentic-AI, generative-AI, MAC-layer, scheduling]
+topic_primary: ai-for-wifi
+topics_secondary: [agentic-wifi]
 novelty_score: 4
 ---
 

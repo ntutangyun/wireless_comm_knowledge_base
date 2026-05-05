@@ -8,6 +8,8 @@ title_zh: "从身份识别到活动计数 —— 面向多用户 Wi-Fi 感知的
 url: "https://arxiv.org/abs/2604.16572"
 source_quality: full
 topics: [802.11bf, WiFi-sensing, MAC-layer]
+topic_primary: sensing-csi
+topics_secondary: []
 novelty_score: 3
 ---
 

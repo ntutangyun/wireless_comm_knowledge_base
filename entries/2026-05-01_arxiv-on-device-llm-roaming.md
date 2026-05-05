@@ -8,6 +8,8 @@ title_zh: "面向情境感知 Wi-Fi 漫游的端侧大语言模型"
 url: "https://arxiv.org/html/2505.04174v1"
 source_quality: full
 topics: [roaming, agentic-AI, MAC-layer, MLO]
+topic_primary: roaming-mobility
+topics_secondary: [agentic-wifi]
 novelty_score: 4
 ---
 

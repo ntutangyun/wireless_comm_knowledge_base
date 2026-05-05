@@ -8,6 +8,8 @@ title_zh: "联发科 Filogic 8000 系列在 CES 2026 亮相 —— 首款 Wi-Fi 
 url: "https://www.tomshardware.com/networking/mediatek-unveils-filogic-8000-wi-fi-8-family-at-ces-2026-new-chipsets-expected-to-arrive-later-this-year"
 source_quality: full
 topics: [802.11bn, products]
+topic_primary: wifi8-uhr
+topics_secondary: []
 novelty_score: 3
 ---
 

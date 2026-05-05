@@ -8,6 +8,8 @@ title_zh: "Wi-Fi 7 MLO 跨层流量分配与竞争窗口优化：DRL × LSTM"
 url: "https://arxiv.org/abs/2603.18602"
 source_quality: full
 topics: [802.11be, MLO, MAC-layer, scheduling]
+topic_primary: mlo
+topics_secondary: [ai-for-wifi]
 novelty_score: 4
 ---
 

@@ -8,6 +8,8 @@ title_zh: "智简（Intellicise）无线网络与智能体 AI 的相遇：安全
 url: "https://arxiv.org/abs/2602.15290"
 source_quality: full
 topics: [agentic-AI, security]
+topic_primary: agentic-wifi
+topics_secondary: [security-privacy]
 novelty_score: 4
 ---
 

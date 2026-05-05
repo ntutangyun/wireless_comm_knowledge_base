@@ -8,6 +8,8 @@ title_zh: "IEEE 802.11bn —— 用于无缝漫游的 EPCS 上下文转移（Sam
 url: "https://mentor.ieee.org/802.11/dcn/26/11-26-0036-03-00bn-epcs-context-transfer-for-seamless-roaming.docx"
 source_quality: snippet_only
 topics: [802.11bn, MAC-layer, security, roaming]
+topic_primary: roaming-mobility
+topics_secondary: [wifi8-uhr, security-privacy]
 novelty_score: 4
 ---
 

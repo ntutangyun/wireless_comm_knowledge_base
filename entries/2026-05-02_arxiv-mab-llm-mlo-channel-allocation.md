@@ -8,6 +8,8 @@ title_zh: "面向 IEEE 802.11be MLO 的智能信道分配 —— 多臂老虎机
 url: "https://arxiv.org/abs/2506.04594"
 source_quality: full
 topics: [802.11be, MLO, scheduling, agentic-AI]
+topic_primary: mlo
+topics_secondary: [agentic-wifi, ai-for-wifi]
 novelty_score: 2
 ---
 

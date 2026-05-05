@@ -8,6 +8,8 @@ title_zh: "在 Wi-Fi 6 上用 TWT 实现确定性调度 —— 实验方法"
 url: "https://arxiv.org/abs/2505.00447"
 source_quality: full
 topics: [802.11ax, scheduling, R-TWT, XR]
+topic_primary: rtwt-latency
+topics_secondary: [energy-power-save]
 novelty_score: 2
 ---
 

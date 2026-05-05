@@ -8,6 +8,8 @@ title_zh: "Realtek 2026 Q1：营收 NT$364 亿，Wi-Fi 7 采纳被点名为主�
 url: "https://www.digitimes.com/news/a20260504PD204/realtek-revenue-wi-fi-7-adoption-demand.html"
 source_quality: snippet_only
 topics: [802.11be, products]
+topic_primary: mlo
+topics_secondary: []
 novelty_score: 2
 ---
 

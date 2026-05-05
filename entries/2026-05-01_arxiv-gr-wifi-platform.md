@@ -8,6 +8,8 @@ title_zh: "GR-WiFi：基于 GNU Radio 的支持单用户与多用户 MIMO 的 Wi
 url: "https://arxiv.org/abs/2501.06176"
 source_quality: full
 topics: [802.11ax, 802.11be, MU-MIMO, PHY-layer]
+topic_primary: mapc-cosr
+topics_secondary: []
 novelty_score: 4
 ---
 

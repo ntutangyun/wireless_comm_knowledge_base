@@ -8,6 +8,8 @@ title_zh: "Cisco CTO 视角：2026 年是 Wi-Fi 7 的爆发之年 —— 三大�
 url: "https://www.rcrwireless.com/20260122/fundamentals/cisco-wi-fi-7"
 source_quality: full
 topics: [802.11be, MLO, OFDMA, products]
+topic_primary: mlo
+topics_secondary: []
 novelty_score: 3
 ---
 

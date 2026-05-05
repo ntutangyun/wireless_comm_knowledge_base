@@ -8,6 +8,8 @@ title_zh: "基于机器学习的协同空间复用调度"
 url: "https://arxiv.org/abs/2505.07278"
 source_quality: full
 topics: [802.11bn, MAPC, MAC-layer, scheduling]
+topic_primary: mapc-cosr
+topics_secondary: [ai-for-wifi]
 novelty_score: 4
 ---
 

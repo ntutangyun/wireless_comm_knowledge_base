@@ -8,6 +8,8 @@ title_zh: "运行时空中 Wi-Fi MAC 地址再随机化"
 url: "https://arxiv.org/abs/2405.15747"
 source_quality: full
 topics: [802.11, security, MAC-layer, privacy]
+topic_primary: security-privacy
+topics_secondary: []
 novelty_score: 3
 ---
 

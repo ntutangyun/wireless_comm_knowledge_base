@@ -8,6 +8,8 @@ title_zh: "HPE 整合 Aruba Central 与 Juniper Mist 平台 —— 统一 AI 原
 url: "https://siliconangle.com/2025/12/03/aruba-meets-juniper-mist-discover-hpe-unveils-unified-ai-native-network-brain/"
 source_quality: full
 topics: [802.11be, agentic-AI, products, MAC-layer]
+topic_primary: agentic-wifi
+topics_secondary: [wifi8-uhr]
 novelty_score: 4
 ---
 

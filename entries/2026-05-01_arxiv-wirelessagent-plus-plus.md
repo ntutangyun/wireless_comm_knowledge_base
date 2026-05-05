@@ -8,6 +8,8 @@ title_zh: "WirelessAgent++：面向无线网络的自动化智能体工作流设
 url: "https://arxiv.org/abs/2603.00501"
 source_quality: full
 topics: [agentic-AI, generative-AI]
+topic_primary: agentic-wifi
+topics_secondary: []
 novelty_score: 4
 ---
 

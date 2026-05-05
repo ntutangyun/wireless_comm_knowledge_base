@@ -8,6 +8,8 @@ title_zh: "面向 NR-U / Wi-Fi 共存的策略驱动 DRL 框架：系统级折�
 url: "https://arxiv.org/abs/2605.00457"
 source_quality: full
 topics: [802.11, 6GHz, agentic-AI, MAC-layer, scheduling]
+topic_primary: spectrum-policy
+topics_secondary: [ai-for-wifi]
 novelty_score: 3
 ---
 

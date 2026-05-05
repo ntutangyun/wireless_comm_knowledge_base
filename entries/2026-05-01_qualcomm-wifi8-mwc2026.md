@@ -8,6 +8,8 @@ title_zh: "高通在 MWC 2026 推出 AI 原生 Wi-Fi 8 产品组合（FastConnec
 url: "https://www.qualcomm.com/news/releases/2026/03/qualcomm-debuts-ai-native-wifi-8-portfolio-unifying-client-and-n"
 source_quality: snippet_only
 topics: [802.11bn, agentic-AI, IoT, products]
+topic_primary: wifi8-uhr
+topics_secondary: [wifi-for-ai, amp-iot]
 novelty_score: 4
 ---
 

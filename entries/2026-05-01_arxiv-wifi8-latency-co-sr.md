@@ -8,6 +8,8 @@ title_zh: "通过协同空间复用改善 Wi-Fi 8 时延"
 url: "https://arxiv.org/abs/2507.18480"
 source_quality: full
 topics: [802.11bn, MAPC, MAC-layer, scheduling, XR]
+topic_primary: mapc-cosr
+topics_secondary: [rtwt-latency]
 novelty_score: 4
 ---
 

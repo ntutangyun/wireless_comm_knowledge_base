@@ -8,6 +8,8 @@ title_zh: "RUCKUS Networks + Nokia：集成 Wi-Fi 7 + 光纤 LAN 一体化方案
 url: "https://www.ruckusnetworks.com/press-releases/2026/ruckus-networks-and-nokia-announce-early-access-availability-for-their-combined-solutionan-integrated-wifi-7-and-fiber-optical-lan-solution/"
 source_quality: full
 topics: [802.11be, products, agentic-AI]
+topic_primary: mlo
+topics_secondary: []
 novelty_score: 3
 ---
 

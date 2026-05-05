@@ -8,6 +8,8 @@ title_zh: "面向 AIML 的 Wi-Fi 波束成形 CSI 反馈压缩：IEEE 802.11 标
 url: "https://arxiv.org/abs/2503.00412"
 source_quality: full
 topics: [802.11be, 802.11bn, MAC-layer, PHY-layer, generative-AI]
+topic_primary: ai-for-wifi
+topics_secondary: [mapc-cosr, wifi8-uhr]
 novelty_score: 4
 ---
 

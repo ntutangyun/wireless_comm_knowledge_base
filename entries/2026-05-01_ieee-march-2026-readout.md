@@ -8,6 +8,8 @@ title_zh: "2026 年 3 月 IEEE 802.11 全会：AI Offload 研究组成立；802.
 url: "https://ofinno.com/the-standards-readout-2/wi-fis-ai-era-begins-as-the-industry-charts-its-next-generation-march-2026-ieee-802-11-standards-readout/"
 source_quality: full
 topics: [802.11bn, agentic-AI, MAC-layer, scheduling]
+topic_primary: wifi8-uhr
+topics_secondary: [agentic-wifi, mmwave-bq]
 novelty_score: 5
 ---
 

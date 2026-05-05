@@ -8,6 +8,8 @@ title_zh: "今日安全的 Wi-Fi 测距：IEEE 802.11az/bk 的安全性与落地
 url: "https://arxiv.org/abs/2603.18687"
 source_quality: full
 topics: [802.11az, security, PHY-layer, MAC-layer]
+topic_primary: ftm-ranging
+topics_secondary: [security-privacy]
 novelty_score: 4
 ---
 

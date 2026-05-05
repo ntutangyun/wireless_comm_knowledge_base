@@ -8,6 +8,8 @@ title_zh: "下一代感知遇上既有 Wi-Fi：IEEE 802.11bf 与 IEEE 802.11ax �
 url: "https://arxiv.org/html/2503.04637v1"
 source_quality: full
 topics: [802.11bf, 802.11ax, WiFi-sensing, MAC-layer, scheduling]
+topic_primary: sensing-csi
+topics_secondary: []
 novelty_score: 3
 ---
 

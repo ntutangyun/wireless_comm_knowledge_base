@@ -8,6 +8,8 @@ title_zh: "WirelessBench：面向无线网络智能的容错感知 LLM 智能体
 url: "https://arxiv.org/abs/2603.21251"
 source_quality: full
 topics: [agentic-AI, generative-AI]
+topic_primary: agentic-wifi
+topics_secondary: []
 novelty_score: 4
 ---
 

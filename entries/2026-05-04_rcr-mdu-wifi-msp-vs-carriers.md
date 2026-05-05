@@ -8,6 +8,8 @@ title_zh: "为什么前 10 大宽带运营商并不主导 MDU Wi-Fi 市场 —�
 url: "https://www.rcrwireless.com/20260504/analyst-angle/scale-service-broadband-wi-fi-mdus"
 source_quality: full
 topics: [products, roaming]
+topic_primary: mlo
+topics_secondary: []
 novelty_score: 3
 ---
 

@@ -8,6 +8,8 @@ title_zh: "2026 年 1 月 IEEE 802.11 中期会议（维多利亚）：Wi-Fi 8 D
 url: "https://ofinno.com/the-standards-readout-2/wi-fi-8-advances-mmwave-hits-a-split-wi-fi-9-begins/"
 source_quality: full
 topics: [802.11bn, 802.11bq, MAC-layer, scheduling]
+topic_primary: wifi8-uhr
+topics_secondary: [mmwave-bq]
 novelty_score: 4
 ---
 

@@ -8,6 +8,8 @@ title_zh: "IEEE 802.11bn 非主信道接入（NPCA）的建模与性能分析"
 url: "https://arxiv.org/abs/2504.15774"
 source_quality: full
 topics: [802.11bn, MAC-layer, scheduling]
+topic_primary: mapc-cosr
+topics_secondary: []
 novelty_score: 4
 ---
 

@@ -8,6 +8,8 @@ title_zh: "FedWiLoc：保护隐私的 Wi-Fi 室内定位联邦学习方案"
 url: "https://arxiv.org/abs/2512.18207"
 source_quality: full
 topics: [WiFi-sensing, security, agentic-AI]
+topic_primary: sensing-csi
+topics_secondary: [security-privacy, ai-for-wifi]
 novelty_score: 3
 ---
 

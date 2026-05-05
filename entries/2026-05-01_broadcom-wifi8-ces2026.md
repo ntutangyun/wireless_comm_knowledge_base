@@ -8,6 +8,8 @@ title_zh: "博通在 CES 2026 发布统一 Wi-Fi 8 平台 —— BCM4918 APU + B
 url: "https://www.broadcom.com/company/news/product-releases/63856"
 source_quality: full
 topics: [802.11bn, agentic-AI, products, MAC-layer]
+topic_primary: wifi8-uhr
+topics_secondary: [mlo]
 novelty_score: 5
 ---
 

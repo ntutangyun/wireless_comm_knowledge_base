@@ -8,6 +8,8 @@ title_zh: "802.11mc 与 802.11az Wi-Fi 定位性能对比"
 url: "https://arxiv.org/abs/2511.17935"
 source_quality: full
 topics: [802.11az, PHY-layer]
+topic_primary: ftm-ranging
+topics_secondary: []
 novelty_score: 3
 ---
 

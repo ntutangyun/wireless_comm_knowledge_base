@@ -8,6 +8,8 @@ title_zh: "IEEE 802.11bp —— 非 AP AMP 站点的上行信道接入（Qualcom
 url: "https://mentor.ieee.org/802.11/dcn/26/11-26-0802-00-00bp-ul-channel-access-for-non-ap-amp-sta.docx"
 source_quality: snippet_only
 topics: [802.11bp, MAC-layer, IoT]
+topic_primary: amp-iot
+topics_secondary: []
 novelty_score: 4
 ---
 

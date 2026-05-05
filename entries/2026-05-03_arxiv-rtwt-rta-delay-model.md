@@ -8,6 +8,8 @@ title_zh: "面向 Wi-Fi 7 实时业务的专用 R-TWT —— 时延概率模型�
 url: "https://arxiv.org/abs/2402.15900"
 source_quality: full
 topics: [802.11be, R-TWT, scheduling, XR]
+topic_primary: rtwt-latency
+topics_secondary: []
 novelty_score: 2
 ---
 

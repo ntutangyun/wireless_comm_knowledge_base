@@ -8,6 +8,8 @@ title_zh: "ProxySelect —— 频选感知的 802.11ax OFDMA + MU-MIMO 联合调
 url: "https://arxiv.org/abs/2510.15452"
 source_quality: full
 topics: [802.11ax, MAC-layer, scheduling]
+topic_primary: mapc-cosr
+topics_secondary: [ai-for-wifi]
 novelty_score: 3
 ---
 

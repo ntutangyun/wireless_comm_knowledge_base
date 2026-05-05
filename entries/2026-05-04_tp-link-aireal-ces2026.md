@@ -8,6 +8,8 @@ title_zh: "TP-Link Aireal 在 CES 2026：基于微软 Azure / GPT 类 LLM 的云
 url: "https://www.tp-link.com/us/press/news/22158/"
 source_quality: full
 topics: [products, agentic-AI]
+topic_primary: agentic-wifi
+topics_secondary: []
 novelty_score: 3
 ---
 

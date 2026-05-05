@@ -8,6 +8,8 @@ title_zh: "面向农村地区安全可扩展 Wi-Fi 接入的开放挑战 —— 
 url: "https://arxiv.org/abs/2604.02774"
 source_quality: full
 topics: [security, IoT]
+topic_primary: security-privacy
+topics_secondary: []
 novelty_score: 3
 ---
 

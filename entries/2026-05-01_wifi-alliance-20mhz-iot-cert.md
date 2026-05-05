@@ -8,6 +8,8 @@ title_zh: "Wi-Fi 联盟为仅 20 MHz 客户端设备推出 Wi-Fi CERTIFIED 7（C
 url: "https://www.wi-fi.org/news-events/newsroom/wi-fi-alliance-launches-wi-fi-certified-7-for-20-mhz-devices"
 source_quality: full
 topics: [802.11be, IoT, products]
+topic_primary: amp-iot
+topics_secondary: []
 novelty_score: 4
 ---
 

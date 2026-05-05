@@ -8,6 +8,8 @@ title_zh: "Wi-Fi 二十五年：演进、现状与展望"
 url: "https://arxiv.org/html/2507.09613v2"
 source_quality: full
 topics: [802.11bn, 802.11be, 802.11ax, MLO, MAC-layer, PHY-layer, WiFi-sensing, agentic-AI]
+topic_primary: wifi8-uhr
+topics_secondary: [mlo, mapc-cosr, sensing-csi]
 novelty_score: 2
 ---
 

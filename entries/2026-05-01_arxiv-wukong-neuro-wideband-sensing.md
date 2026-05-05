@@ -8,6 +8,8 @@ title_zh: "基于自条件 CSI 外推的神经宽带 Wi-Fi 感知"
 url: "https://arxiv.org/abs/2601.06467"
 source_quality: full
 topics: [802.11bf, WiFi-sensing, PHY-layer, generative-AI]
+topic_primary: sensing-csi
+topics_secondary: [ai-for-wifi]
 novelty_score: 4
 ---
 

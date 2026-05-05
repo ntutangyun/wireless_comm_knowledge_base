@@ -8,6 +8,8 @@ title_zh: "MWC 2026 二线厂商纷纷押注 Wi-Fi 8：Gemtek 的 AI-驱动 CPE 
 url: "https://www.businesswire.com/news/home/20260303124613/en/Quectel-and-MediaTek-Unveil-Next-Generation-5G-A-and-Wi-Fi-8-Intelligent-CPE-Reference-Design-at-MWC-2026"
 source_quality: full
 topics: [802.11bn, agentic-AI, products, IoT]
+topic_primary: wifi8-uhr
+topics_secondary: [wifi-for-ai]
 novelty_score: 3
 ---
 

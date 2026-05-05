@@ -8,6 +8,8 @@ title_zh: "面向带宽受限 Wi-Fi 感知的 CSI 人体活动识别混合深度
 url: "https://arxiv.org/abs/2602.06983"
 source_quality: full
 topics: [802.11bf, WiFi-sensing, PHY-layer]
+topic_primary: sensing-csi
+topics_secondary: [ai-for-wifi]
 novelty_score: 4
 ---
 

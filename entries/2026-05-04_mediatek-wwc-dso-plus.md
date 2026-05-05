@@ -8,6 +8,8 @@ title_zh: "MediaTek 在 WWC Mountain View 2026：DSO+ 扩展让 Wi-Fi 8 DSO 收�
 url: "https://wifinowglobal.com/news-and-blog/mediatek-wwc-challenging-business-environment-requires-new-approach-to-successfully-introducing-wi-fi-8/"
 source_quality: full
 topics: [802.11bn, products, MAC-layer, PHY-layer, power-save]
+topic_primary: mapc-cosr
+topics_secondary: [wifi8-uhr]
 novelty_score: 4
 ---
 

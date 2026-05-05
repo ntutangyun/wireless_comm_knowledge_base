@@ -8,6 +8,8 @@ title_zh: "BLADE：面向下一代实时通信的自适应 Wi-Fi 竞争控制"
 url: "https://arxiv.org/abs/2603.16119"
 source_quality: full
 topics: [802.11be, 802.11bn, MAC-layer, scheduling, XR]
+topic_primary: rtwt-latency
+topics_secondary: [ai-for-wifi]
 novelty_score: 5
 ---
 

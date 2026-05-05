@@ -8,6 +8,8 @@ title_zh: "用大语言模型学习智能体 AI Wi-Fi 中的多接入点协调"
 url: "https://arxiv.org/abs/2511.20719"
 source_quality: full
 topics: [802.11bn, MLO, agentic-AI, MAC-layer, scheduling]
+topic_primary: mapc-cosr
+topics_secondary: [agentic-wifi, ai-for-wifi]
 novelty_score: 5
 ---
 
