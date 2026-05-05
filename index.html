@@ -771,12 +771,63 @@
     color: var(--fg-3); font-style: italic;
     text-align: center; padding: 14px 16px;
   }
+  /* Per-topic Mermaid mindmap (Phase 5). Lives below the narrative; one
+     glance overview of the bin's structure. Source is topics/<id>.diagram.mmd
+     in the public repo, rendered client-side via mermaid.js from CDN. */
+  .topic-diagram {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px 8px;
+    margin: 10px 0 0;
+    overflow-x: auto;
+  }
+  .topic-diagram-header {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; color: var(--fg-3);
+    text-transform: uppercase; letter-spacing: 0.04em;
+    margin-bottom: 6px; font-family: var(--mono);
+  }
+  .topic-diagram-toggle {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--fg-2); font: inherit; cursor: pointer;
+    padding: 1px 8px; border-radius: 3px;
+  }
+  .topic-diagram-body { min-height: 0; }
+  .topic-diagram.collapsed .topic-diagram-body { display: none; }
+  .topic-diagram svg { max-width: 100%; height: auto; }
 </style>
 </head>
 <body>
 
-<script src="kb.js?v=f0d98cb4" onerror="window.__KB_JS_FAILED=true"></script>
-<script src="sources.js?v=35c05513" onerror="window.__SRC_JS_FAILED=true"></script>
+<script src="kb.js?v=fb231346" onerror="window.__KB_JS_FAILED=true"></script>
+<script src="sources.js?v=2d31df3f" onerror="window.__SRC_JS_FAILED=true"></script>
+<!-- Mermaid for per-topic mindmap rendering. Two scripts:
+       1. A synchronous regular script defines window.mermaidReady as a
+          Promise *before* the viewer's main render code runs. The viewer
+          awaits this Promise, so it always sees a Promise (never undefined).
+       2. A deferred module script imports mermaid from the CDN and resolves
+          the Promise once initialized. Without (1), the viewer's render code
+          runs during HTML parsing, when (2) has not yet executed —
+          window.mermaidReady would be undefined and the SVG never appears. -->
+<script>
+  window.__mermaidResolve = null;
+  window.mermaidReady = new Promise(res => { window.__mermaidResolve = res; });
+</script>
+<script type="module">
+  import("https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs")
+    .then(mod => {
+      const mermaid = mod.default;
+      mermaid.initialize({ startOnLoad: false, securityLevel: "loose", theme: "neutral" });
+      window.mermaid = mermaid;
+      window.__mermaidResolve(mermaid);
+    })
+    .catch(err => {
+      // Leave the Promise pending — the viewer's catch handler will swallow
+      // the never-resolves case and the diagram falls back to raw source.
+      console.warn("mermaid load failed:", err);
+    });
+</script>
 
 <header class="app-header">
   <div class="brand">
@@ -1466,6 +1517,23 @@ function renderTopicBreadcrumb() {
           : "No narrative for this topic yet — the scout will write one when entries accumulate."
       }</div>`;
   }
+  // Per-topic mindmap (mermaid). Rendered below the narrative.
+  const diagramSrc = (agg.diagram_mmd || "").trim();
+  let diagramBlock = "";
+  if (diagramSrc) {
+    const headerLabel = state.lang === "zh" ? "结构总览" : "Topic map";
+    const toggleLabel = state.lang === "zh" ? "折叠" : "Hide";
+    diagramBlock = `
+      <div class="topic-diagram" id="topic-diagram">
+        <div class="topic-diagram-header">
+          <span>${escHTML(headerLabel)}</span>
+          <button class="topic-diagram-toggle" id="topic-diagram-toggle">${escHTML(toggleLabel)}</button>
+        </div>
+        <div class="topic-diagram-body">
+          <pre class="mermaid">${escHTML(diagramSrc)}</pre>
+        </div>
+      </div>`;
+  }
   bc.hidden = false;
   bc.innerHTML = `
     <div class="crumb-row">
@@ -1474,13 +1542,36 @@ function renderTopicBreadcrumb() {
       <span class="topic-name">${escHTML(label)}</span>
     </div>
     <p class="topic-detail-desc">${escHTML(desc || "")}</p>
-    ${narrativeBlock}`;
+    ${narrativeBlock}
+    ${diagramBlock}`;
   document.getElementById("topic-back-btn").addEventListener("click", () => {
     state.filters.topicPrimary = "";
     state.focusIdx = -1;
     render(); writeUrlState();
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
+  if (diagramSrc) {
+    const wrap = document.getElementById("topic-diagram");
+    const toggleBtn = document.getElementById("topic-diagram-toggle");
+    toggleBtn.addEventListener("click", () => {
+      wrap.classList.toggle("collapsed");
+      const collapsed = wrap.classList.contains("collapsed");
+      toggleBtn.textContent = collapsed
+        ? (state.lang === "zh" ? "展开" : "Show")
+        : (state.lang === "zh" ? "折叠" : "Hide");
+    });
+    // Mermaid is loaded as an ES module (async), so the first render of a
+    // topic page often happens before window.mermaid is set. Await the
+    // Promise the module assigns to window.mermaidReady before calling run().
+    // mermaid.run() is itself idempotent — running again on the same element
+    // after later renders is harmless because mermaid checks the data attr.
+    const ready = window.mermaidReady;
+    if (ready && typeof ready.then === "function") {
+      ready
+        .then(m => m.run({ querySelector: "#topic-diagram .mermaid" }))
+        .catch(() => { /* viewer still works without the diagram */ });
+    }
+  }
 }
 
 function render() {

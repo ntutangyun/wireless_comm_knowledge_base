@@ -430,6 +430,21 @@ def load_topic_narrative(data_root: Path,
     return (en, zh, last_updated)
 
 
+def load_topic_diagram(data_root: Path, topic_id: str) -> str:
+    """Read topics/<id>.diagram.mmd and return the raw Mermaid source.
+
+    The viewer renders this client-side via mermaid.js (loaded from CDN).
+    File format is a plain Mermaid mindmap; no frontmatter, no parsing on
+    this side beyond stripping a leading BOM and trailing whitespace.
+    Returns "" when the file is absent or empty.
+    """
+    path = data_root / "topics" / f"{topic_id}.diagram.mmd"
+    if not path.is_file():
+        return ""
+    text = path.read_text(encoding="utf-8")
+    return text.lstrip("﻿").rstrip()
+
+
 def load_topics(data_root: Path) -> tuple[dict[str, Any], list[str]]:
     """Load topics.json. Returns (vocab, warnings).
 
@@ -481,6 +496,7 @@ def aggregate_by_topic(records: list[dict[str, Any]],
     out: dict[str, Any] = {}
     for t in vocab.get("topics", []):
         narr_en, narr_zh, narr_updated = load_topic_narrative(data_root, t["id"])
+        diagram_mmd = load_topic_diagram(data_root, t["id"])
         out[t["id"]] = {
             "id": t["id"],
             "label_en": t.get("label_en", t["id"]),
@@ -491,6 +507,7 @@ def aggregate_by_topic(records: list[dict[str, Any]],
             "narrative_html_en": md_block_to_html(narr_en) if narr_en else "",
             "narrative_html_zh": md_block_to_html(narr_zh) if narr_zh else "",
             "narrative_last_updated": narr_updated,
+            "diagram_mmd": diagram_mmd,
             "entries_primary": [],
             "entries_secondary": [],
             "by_type_primary": {},

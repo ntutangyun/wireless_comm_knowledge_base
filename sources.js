@@ -1,6 +1,6 @@
 window.SOURCES_DATA = {
   "version": 1,
-  "last_updated": "2026-05-04",
+  "last_updated": "2026-05-06",
   "sources": [
     {
       "id": "arxiv-cs-ni",
@@ -148,11 +148,11 @@ window.SOURCES_DATA = {
     {
       "id": "ieee-mentor",
       "name": "IEEE 802.11 Mentor (proposals & contributions)",
-      "url": "https://mentor.ieee.org/802.11/documents",
+      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026",
       "kind": "playwright",
       "category": "standards",
       "topics_hint": [],
-      "notes": "JS-rendered list; auth not required for public docs. New contribution numbers (11-26-NNNN-…) appear here first."
+      "notes": "JS-rendered list filtered to current year (is_year=YYYY). New contribution numbers (11-YY-NNNN-…) appear here first. Per-doc .docx is 418/403 to anonymous downloaders, so we never fetch the body — Step 4a clusters new rows by Group (TGbn / TGbp / TGbi / TGbq / TGbr / TGbt / TGm / WNG SC) into per-group daily digests. State key: state.sources.ieee-mentor.last_dcn_seen — the highest DCN ingested last run; rows whose DCN is greater are new."
     },
     {
       "id": "ofinno-standards-readout",
@@ -162,6 +162,15 @@ window.SOURCES_DATA = {
       "category": "standards",
       "topics_hint": [],
       "notes": "Excellent post-plenary / post-interim summaries. Cadence aligned with IEEE 802.11 sessions (Jan / Mar / May / Jul / Sep / Nov). Switched to playwright 2026-05-04 after WebFetch returned transient 404s."
+    },
+    {
+      "id": "standards-get-program",
+      "name": "IEEE 802 GET program — newly free 802.11 standards",
+      "url": "https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=93",
+      "kind": "playwright",
+      "category": "standards",
+      "topics_hint": [],
+      "notes": "Lists all 802 standards currently free under the 6-month-after-publication GET rule. Page changes once or twice a year when a new amendment crosses the threshold. The scout watches for *new* 802.11 entries (not download attempts — PDFs are gated behind ieee.org login). When a new 802.11/be/bf/bk/bn/bp amendment goes free, surface it as a public-side news entry and remind the user to add the PDF to patent_pipeline/standards_archive/. Direct PDF downloads stay private."
     },
     {
       "id": "iso-iec-jtc1-search",
