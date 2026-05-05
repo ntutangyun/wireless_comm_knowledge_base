@@ -38,10 +38,10 @@ window.KB_DATA = {
     "privacy": 1
   },
   "primary_topic_counts": {
-    "mlo": 11,
     "sensing-csi": 11,
     "wifi8-uhr": 10,
     "mapc-cosr": 10,
+    "wifi7-deployment": 9,
     "agentic-wifi": 7,
     "security-privacy": 7,
     "spectrum-policy": 5,
@@ -49,6 +49,7 @@ window.KB_DATA = {
     "ftm-ranging": 4,
     "amp-iot": 2,
     "roaming-mobility": 2,
+    "mlo": 2,
     "ai-for-wifi": 2
   },
   "type_counts": {
@@ -142,6 +143,14 @@ window.KB_DATA = {
         "description_zh": "不属于更具体主题的 802.11bn 超高可靠性工作——UHR-SIG 信令、增强长距离（ELR）、草案高层进度、全会综述、AIML / AI Offload 研究组活动，以及 Wi-Fi 9 / WNG 讨论。"
       },
       {
+        "id": "wifi7-deployment",
+        "label_en": "Wi-Fi 7 Ecosystem & Deployment",
+        "label_zh": "Wi-Fi 7 生态与部署",
+        "stack": "standards",
+        "description_en": "Wi-Fi 7 / 802.11be rollout: silicon and AP product launches, customer deployments, vendor market thesis pieces, silicon-revenue prints, M&A activity, and analyst coverage of the 2025-2027 Wi-Fi 7 transition window. The deployment-side counterpart of `wifi8-uhr` for the current shipping generation. MLO-mechanism work stays in `mlo`; this bin is the ecosystem story.",
+        "description_zh": "Wi-Fi 7 / 802.11be 部署面：硅片与 AP 产品发布、客户部署、厂商市场观点、硅片营收数据、并购、以及围绕 2025-2027 Wi-Fi 7 过渡窗口的分析。是 `wifi8-uhr` 在当下出货代际上的部署侧对位。MLO 机制工作仍归 `mlo`；本桶覆盖生态故事。"
+      },
+      {
         "id": "spectrum-policy",
         "label_en": "Spectrum & Regulatory Policy",
         "label_zh": "频谱与监管政策",
@@ -211,16 +220,7 @@ window.KB_DATA = {
       "narrative_html_zh": "<p><strong>多链路操作（MLO）</strong>是 802.11be / Wi-Fi 7 的旗舰特性：单一 STA-AP 关联可同时跨 2.4 / 5 / 6 GHz 上的多条射频链路，链路集合在关联时协商，流量按链路动态分配。本 KB 从三个角度追踪 MLO——协议机制（STR / NSTR / SLO 模式、链路增删流程）、流量分配研究（跨层 DRL、MAB 驱动的信道选择）、以及部署数据。主题明确覆盖 802.11bn 对 MLO 的扩展；与&quot;协调多 AP&quot;专属的机制工作归 <code>mapc-cosr</code>。</p>\n<p>2026 年 MLO 从&quot;宣传特性&quot;跨入&quot;部署特性&quot;。<code>2026-05-04_cisco-wifi7-breakout-year-2026</code> 主张 2026 是拐点之年，引用 5 亿台 Wi-Fi 7 认证设备出货量（<code>2026-05-01_wifi7-deployment-milestone-2026</code>）以及 2026 年 Q1 的厂商营收激增（<code>2026-05-04_realtek-wifi7-revenue-surge-q1-2026</code>、Extreme 在 Q3 的 37% 出货占比 <code>2026-05-04_extreme-networks-wifi7-momentum-q3</code>）。企业部署既具体又规模化——Cisco 在 Georgetown 的 6,000 AP 部署（<code>2026-05-04_cisco-georgetown-wifi7-deployment</code>）、HPE Aruba 730 系列 UTB AP（<code>2026-05-04_hpe-aruba-730-utb-wifi7-ap</code>）、RUCKUS / Nokia OLAN 整合（<code>2026-05-04_ruckus-nokia-wifi7-fiber-olan</code>）。学界工作已从&quot;MLO 有效吗&quot;转向&quot;跨链路如何调度&quot;——<code>2026-05-01_arxiv-mlo-drl-lstm-cross-layer</code>（DRL + LSTM 跨层优化）、<code>2026-05-02_arxiv-mab-llm-mlo-channel-allocation</code>（MAB + LLM 信道分配）。</p>\n<p>待关注：802.11bn 对 MLO 的扩展（每链路 MAC 隐私，参考今日候选 <code>mlo-coordinated-mac-rerandomization-ie</code>）；来自真实遥测的 NSTR vs STR 部署模式；MLO-roam 机制（与 <code>roaming-mobility</code> 的桥梁）；每链路能耗权衡的测量（与 <code>energy-power-save</code> 的桥梁）。</p>",
       "narrative_last_updated": "2026-05-05",
       "entries_primary": [
-        "2026-05-05_belden-acquires-ruckus-1-85b",
-        "2026-05-04_realtek-wifi7-revenue-surge-q1-2026",
-        "2026-05-04_rcr-mdu-wifi-msp-vs-carriers",
-        "2026-05-04_extreme-networks-wifi7-momentum-q3",
-        "2026-05-01_wifi7-deployment-milestone-2026",
-        "2026-05-04_hpe-aruba-730-utb-wifi7-ap",
-        "2026-05-04_ruckus-nokia-wifi7-fiber-olan",
         "2026-05-01_arxiv-mlo-drl-lstm-cross-layer",
-        "2026-05-04_cisco-georgetown-wifi7-deployment",
-        "2026-05-04_cisco-wifi7-breakout-year-2026",
         "2026-05-02_arxiv-mab-llm-mlo-channel-allocation"
       ],
       "entries_secondary": [
@@ -228,19 +228,6 @@ window.KB_DATA = {
         "2026-05-01_arxiv-25-years-tutorial"
       ],
       "by_type_primary": {
-        "industry-news": [
-          "2026-05-05_belden-acquires-ruckus-1-85b",
-          "2026-05-04_realtek-wifi7-revenue-surge-q1-2026",
-          "2026-05-04_rcr-mdu-wifi-msp-vs-carriers",
-          "2026-05-04_extreme-networks-wifi7-momentum-q3",
-          "2026-05-01_wifi7-deployment-milestone-2026",
-          "2026-05-04_ruckus-nokia-wifi7-fiber-olan",
-          "2026-05-04_cisco-georgetown-wifi7-deployment",
-          "2026-05-04_cisco-wifi7-breakout-year-2026"
-        ],
-        "product": [
-          "2026-05-04_hpe-aruba-730-utb-wifi7-ap"
-        ],
         "academic-paper": [
           "2026-05-01_arxiv-mlo-drl-lstm-cross-layer",
           "2026-05-02_arxiv-mab-llm-mlo-channel-allocation"
@@ -487,6 +474,44 @@ window.KB_DATA = {
         ]
       }
     },
+    "wifi7-deployment": {
+      "id": "wifi7-deployment",
+      "label_en": "Wi-Fi 7 Ecosystem & Deployment",
+      "label_zh": "Wi-Fi 7 生态与部署",
+      "stack": "standards",
+      "description_en": "Wi-Fi 7 / 802.11be rollout: silicon and AP product launches, customer deployments, vendor market thesis pieces, silicon-revenue prints, M&A activity, and analyst coverage of the 2025-2027 Wi-Fi 7 transition window. The deployment-side counterpart of `wifi8-uhr` for the current shipping generation. MLO-mechanism work stays in `mlo`; this bin is the ecosystem story.",
+      "description_zh": "Wi-Fi 7 / 802.11be 部署面：硅片与 AP 产品发布、客户部署、厂商市场观点、硅片营收数据、并购、以及围绕 2025-2027 Wi-Fi 7 过渡窗口的分析。是 `wifi8-uhr` 在当下出货代际上的部署侧对位。MLO 机制工作仍归 `mlo`；本桶覆盖生态故事。",
+      "narrative_html_en": "",
+      "narrative_html_zh": "",
+      "narrative_last_updated": "",
+      "entries_primary": [
+        "2026-05-05_belden-acquires-ruckus-1-85b",
+        "2026-05-04_realtek-wifi7-revenue-surge-q1-2026",
+        "2026-05-04_rcr-mdu-wifi-msp-vs-carriers",
+        "2026-05-04_extreme-networks-wifi7-momentum-q3",
+        "2026-05-01_wifi7-deployment-milestone-2026",
+        "2026-05-04_hpe-aruba-730-utb-wifi7-ap",
+        "2026-05-04_ruckus-nokia-wifi7-fiber-olan",
+        "2026-05-04_cisco-georgetown-wifi7-deployment",
+        "2026-05-04_cisco-wifi7-breakout-year-2026"
+      ],
+      "entries_secondary": [],
+      "by_type_primary": {
+        "industry-news": [
+          "2026-05-05_belden-acquires-ruckus-1-85b",
+          "2026-05-04_realtek-wifi7-revenue-surge-q1-2026",
+          "2026-05-04_rcr-mdu-wifi-msp-vs-carriers",
+          "2026-05-04_extreme-networks-wifi7-momentum-q3",
+          "2026-05-01_wifi7-deployment-milestone-2026",
+          "2026-05-04_ruckus-nokia-wifi7-fiber-olan",
+          "2026-05-04_cisco-georgetown-wifi7-deployment",
+          "2026-05-04_cisco-wifi7-breakout-year-2026"
+        ],
+        "product": [
+          "2026-05-04_hpe-aruba-730-utb-wifi7-ap"
+        ]
+      }
+    },
     "spectrum-policy": {
       "id": "spectrum-policy",
       "label_en": "Spectrum & Regulatory Policy",
@@ -716,7 +741,7 @@ window.KB_DATA = {
         "802.11be",
         "products"
       ],
-      "topic_primary": "mlo",
+      "topic_primary": "wifi7-deployment",
       "topics_secondary": [],
       "novelty_score": 3,
       "entry_path": "entries/2026-05-05_belden-acquires-ruckus-1-85b.md",
@@ -778,7 +803,7 @@ window.KB_DATA = {
         "802.11be",
         "products"
       ],
-      "topic_primary": "mlo",
+      "topic_primary": "wifi7-deployment",
       "topics_secondary": [],
       "novelty_score": 2,
       "entry_path": "entries/2026-05-04_realtek-wifi7-revenue-surge-q1-2026.md",
@@ -802,7 +827,7 @@ window.KB_DATA = {
         "products",
         "roaming"
       ],
-      "topic_primary": "mlo",
+      "topic_primary": "wifi7-deployment",
       "topics_secondary": [],
       "novelty_score": 3,
       "entry_path": "entries/2026-05-04_rcr-mdu-wifi-msp-vs-carriers.md",
@@ -872,7 +897,7 @@ window.KB_DATA = {
         "802.11be",
         "products"
       ],
-      "topic_primary": "mlo",
+      "topic_primary": "wifi7-deployment",
       "topics_secondary": [],
       "novelty_score": 3,
       "entry_path": "entries/2026-05-04_extreme-networks-wifi7-momentum-q3.md",
@@ -1176,7 +1201,7 @@ window.KB_DATA = {
         "products",
         "scheduling"
       ],
-      "topic_primary": "mlo",
+      "topic_primary": "wifi7-deployment",
       "topics_secondary": [],
       "novelty_score": 3,
       "entry_path": "entries/2026-05-01_wifi7-deployment-milestone-2026.md",
@@ -1202,7 +1227,7 @@ window.KB_DATA = {
         "products",
         "IoT"
       ],
-      "topic_primary": "mlo",
+      "topic_primary": "wifi7-deployment",
       "topics_secondary": [
         "amp-iot"
       ],
@@ -1286,7 +1311,7 @@ window.KB_DATA = {
         "products",
         "agentic-AI"
       ],
-      "topic_primary": "mlo",
+      "topic_primary": "wifi7-deployment",
       "topics_secondary": [],
       "novelty_score": 3,
       "entry_path": "entries/2026-05-04_ruckus-nokia-wifi7-fiber-olan.md",
@@ -1643,7 +1668,7 @@ window.KB_DATA = {
         "802.11be",
         "products"
       ],
-      "topic_primary": "mlo",
+      "topic_primary": "wifi7-deployment",
       "topics_secondary": [],
       "novelty_score": 3,
       "entry_path": "entries/2026-05-04_cisco-georgetown-wifi7-deployment.md",
@@ -1920,7 +1945,7 @@ window.KB_DATA = {
         "OFDMA",
         "products"
       ],
-      "topic_primary": "mlo",
+      "topic_primary": "wifi7-deployment",
       "topics_secondary": [],
       "novelty_score": 3,
       "entry_path": "entries/2026-05-04_cisco-wifi7-breakout-year-2026.md",

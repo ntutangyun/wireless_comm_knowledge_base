@@ -8,7 +8,7 @@ title_zh: "Wi-Fi 7 部署里程碑：累计认证设备出货 5 亿台，WBA 与
 url: "https://wballiance.com/wireless-broadband-alliance-reveals-its-wi-fi-predictions-for-2026-and-beyond/"
 source_quality: full
 topics: [802.11be, MLO, products, scheduling]
-topic_primary: mlo
+topic_primary: wifi7-deployment
 topics_secondary: []
 novelty_score: 3
 ---

@@ -8,7 +8,7 @@ title_zh: "Cisco + Georgetown 大学：6,000 AP Wi-Fi 7 部署作为高等教育
 url: "https://newsroom.cisco.com/c/r/newsroom/en/us/a/y2026/m02/a-wi-fi-7-network-for-higher-faster-future-proof-learning.html"
 source_quality: full
 topics: [802.11be, products]
-topic_primary: mlo
+topic_primary: wifi7-deployment
 topics_secondary: []
 novelty_score: 3
 ---
