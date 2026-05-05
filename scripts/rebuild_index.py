@@ -362,6 +362,11 @@ def build_body_html(body: str, lang_tag: str) -> str:
 
 REQUIRED = ("id", "date_found", "type", "title_en", "title_zh", "url", "topics", "novelty_score")
 
+# topic_primary + topics_secondary became part of the schema in v5 (topic-binned
+# layout). Entries written before that change may be missing them; this script
+# tolerates the gap (silent default) but will warn loudly if the values it does
+# see refer to topic ids that aren't in topics.json.
+
 # Coarse category derived from the entry's `type`. Drives the three-column
 # layout in the viewer: Academia | Industry | Standards.
 TYPE_TO_CATEGORY = {
@@ -380,6 +385,84 @@ def category_for_type(t: str) -> str:
     return TYPE_TO_CATEGORY.get(t, "industry")
 
 
+def load_topics(data_root: Path) -> tuple[dict[str, Any], list[str]]:
+    """Load topics.json. Returns (vocab, warnings).
+
+    vocab is a dict with `stacks`, `topics`, plus a derived `by_id` mapping
+    from topic id → topic record for fast lookup. If topics.json is absent we
+    return an empty vocab and a single warning — the script still produces a
+    valid index, just without topic-binning.
+    """
+    topics_path = data_root / "topics.json"
+    if not topics_path.is_file():
+        return {"stacks": [], "topics": [], "by_id": {}}, [
+            "topics.json missing at repo root — topic-binning disabled for this build"
+        ]
+    try:
+        raw = json.loads(topics_path.read_text(encoding="utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        return {"stacks": [], "topics": [], "by_id": {}}, [
+            f"topics.json: failed to parse ({exc}) — topic-binning disabled"
+        ]
+    by_id = {t["id"]: t for t in raw.get("topics", [])}
+    vocab = {
+        "stacks": raw.get("stacks", []),
+        "topics": raw.get("topics", []),
+        "by_id": by_id,
+    }
+    return vocab, []
+
+
+def aggregate_by_topic(records: list[dict[str, Any]],
+                       vocab: dict[str, Any]) -> dict[str, Any]:
+    """Group entry ids by topic and by (topic, type).
+
+    Returns a dict keyed by topic id, each value being:
+
+        {
+          "id": ..., "label_en": ..., "label_zh": ...,
+          "stack": ..., "description_en": ..., "description_zh": ...,
+          "entries_primary":   [<entry-id>, ...],   # date_published desc
+          "entries_secondary": [<entry-id>, ...],   # date_published desc
+          "by_type_primary": {"academic-paper": [...], "industry-news": [...], ...}
+        }
+
+    Sort within each list is date_published desc, id desc. Topic order in the
+    returned dict matches topics.json order (Python 3.7+ preserves insertion).
+    Entries whose `topic_primary` is missing or unknown are simply absent — the
+    scope of the warning was already handled in build_entry_record.
+    """
+    out: dict[str, Any] = {}
+    for t in vocab.get("topics", []):
+        out[t["id"]] = {
+            "id": t["id"],
+            "label_en": t.get("label_en", t["id"]),
+            "label_zh": t.get("label_zh", t["id"]),
+            "stack": t.get("stack", ""),
+            "description_en": t.get("description_en", ""),
+            "description_zh": t.get("description_zh", ""),
+            "entries_primary": [],
+            "entries_secondary": [],
+            "by_type_primary": {},
+        }
+
+    sorted_records = sorted(
+        records,
+        key=lambda r: (r["date_published"], r["id"]),
+        reverse=True,
+    )
+    for r in sorted_records:
+        prim = r.get("topic_primary") or ""
+        if prim and prim in out:
+            out[prim]["entries_primary"].append(r["id"])
+            bt = out[prim]["by_type_primary"]
+            bt.setdefault(r["type"], []).append(r["id"])
+        for sec in r.get("topics_secondary") or []:
+            if sec in out and sec != prim:
+                out[sec]["entries_secondary"].append(r["id"])
+    return out
+
+
 def build_entry_record(path: Path, fm: dict[str, Any], body: str) -> dict[str, Any]:
     missing = [k for k in REQUIRED if k not in fm]
     if missing:
@@ -390,6 +473,10 @@ def build_entry_record(path: Path, fm: dict[str, Any], body: str) -> dict[str, A
     images = parse_images(body)
     # date_published is preferred for sort/timeline; fall back to date_found.
     date_published = fm.get("date_published") or fm["date_found"]
+    topic_primary = fm.get("topic_primary") or ""
+    topics_secondary = fm.get("topics_secondary") or []
+    if not isinstance(topics_secondary, list):
+        topics_secondary = []
     return {
         "id": fm["id"],
         "date_found": fm["date_found"],
@@ -400,6 +487,8 @@ def build_entry_record(path: Path, fm: dict[str, Any], body: str) -> dict[str, A
         "title_zh": fm["title_zh"],
         "url": fm.get("url") or "",
         "topics": topics,
+        "topic_primary": topic_primary,
+        "topics_secondary": topics_secondary,
         "novelty_score": int(fm.get("novelty_score") or 0),
         "entry_path": f"entries/{path.name}",
         "summary_short_en": summary_short_en,
@@ -546,9 +635,10 @@ def main(argv: list[str]) -> int:
     if not entries_dir.is_dir():
         raise SystemExit(f"no entries directory at {entries_dir}")
 
+    vocab, vocab_warnings = load_topics(data_root)
     md_files = sorted(p for p in entries_dir.glob("*.md") if not p.name.startswith("."))
     records: list[dict[str, Any]] = []
-    warnings: list[str] = []
+    warnings: list[str] = list(vocab_warnings)
 
     for path in md_files:
         text = path.read_text(encoding="utf-8")
@@ -559,6 +649,40 @@ def main(argv: list[str]) -> int:
             warnings.append(f"{path.name}: {exc}")
             continue
         records.append(rec)
+
+    # Topic validation. We *don't* warn about entries simply missing
+    # topic_primary — that's the expected state during the schema-v5 transition
+    # and would drown the output in 70+ duplicate lines. We DO warn loudly when
+    # an entry refers to a topic id that isn't in topics.json (real bug).
+    if vocab.get("by_id"):
+        known = set(vocab["by_id"].keys())
+        unassigned = 0
+        for r in records:
+            tp = r.get("topic_primary") or ""
+            if not tp:
+                unassigned += 1
+                continue
+            if tp not in known:
+                warnings.append(
+                    f"{r['entry_path']}: unknown topic_primary '{tp}' "
+                    f"(not in topics.json)"
+                )
+            for sec in r.get("topics_secondary") or []:
+                if sec not in known:
+                    warnings.append(
+                        f"{r['entry_path']}: unknown topics_secondary "
+                        f"'{sec}' (not in topics.json)"
+                    )
+        if unassigned and unassigned == len(records):
+            warnings.append(
+                f"all {unassigned} entries lack topic_primary — run the "
+                f"Phase-2 frontmatter migration"
+            )
+        elif unassigned:
+            warnings.append(
+                f"{unassigned} of {len(records)} entries lack "
+                f"topic_primary — partial migration in progress"
+            )
 
     seen_ids: dict[str, str] = {}
     for r in records:
@@ -588,9 +712,16 @@ def main(argv: list[str]) -> int:
     # Primary sort: publication date desc, id as tiebreak.
     records.sort(key=lambda r: (r["date_published"], r["id"]), reverse=True)
 
+    topics_aggregate = aggregate_by_topic(records, vocab)
+
     index_payload = {
-        "schema_version": 4,
+        "schema_version": 5,
         "last_updated": today,
+        "topics_vocab": {
+            "stacks": vocab.get("stacks", []),
+            "topics": vocab.get("topics", []),
+        },
+        "topics_aggregate": topics_aggregate,
         "entries": records,
     }
     write_json_atomic(index_path, index_payload)
@@ -598,6 +729,9 @@ def main(argv: list[str]) -> int:
     topic_counts = Counter(t for r in records for t in r["topics"])
     type_counts = Counter(r["type"] for r in records)
     category_counts = Counter(r["category"] for r in records)
+    primary_topic_counts = Counter(
+        r["topic_primary"] for r in records if r.get("topic_primary")
+    )
     image_count = sum(len(r["images"]) for r in records)
     kb_entries = []
     for r in records:
@@ -605,11 +739,17 @@ def main(argv: list[str]) -> int:
         e["search_blob"] = build_search_blob(r)
         kb_entries.append(e)
     kb_payload = {
-        "schema_version": 4,
+        "schema_version": 5,
         "last_updated": today,
         "topic_counts": dict(topic_counts.most_common()),
+        "primary_topic_counts": dict(primary_topic_counts.most_common()),
         "type_counts": dict(type_counts.most_common()),
         "category_counts": dict(category_counts.most_common()),
+        "topics_vocab": {
+            "stacks": vocab.get("stacks", []),
+            "topics": vocab.get("topics", []),
+        },
+        "topics_aggregate": topics_aggregate,
         "entries": kb_entries,
     }
     write_json_atomic(kb_json_path, kb_payload)
@@ -699,7 +839,21 @@ def main(argv: list[str]) -> int:
     n = len(records)
     cat_summary = " · ".join(f"{k}={v}" for k, v in category_counts.most_common())
     src_n = len(sources_payload["sources"]) if sources_payload else 0
-    print(f"KB rebuild: {n} entries · {len(topic_counts)} topics · {image_count} images · [{cat_summary}] · {src_n} sources")
+    primary_n = sum(primary_topic_counts.values())
+    primary_topic_n = len(primary_topic_counts)
+    vocab_n = len(vocab.get("topics", []))
+    if vocab_n:
+        topic_bin_summary = (
+            f"{vocab_n} bins / {primary_topic_n} populated / "
+            f"{n - primary_n} unassigned"
+        )
+    else:
+        topic_bin_summary = "no vocab"
+    print(
+        f"KB rebuild: {n} entries · {topic_bin_summary} · "
+        f"{len(topic_counts)} legacy-tags · {image_count} images · "
+        f"[{cat_summary}] · {src_n} sources"
+    )
     if warnings:
         print(f"  Warnings ({len(warnings)}):")
         for w in warnings:
