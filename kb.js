@@ -2,12 +2,12 @@ window.KB_DATA = {
   "schema_version": 5,
   "last_updated": "2026-05-05",
   "topic_counts": {
-    "MAC-layer": 32,
-    "agentic-AI": 23,
+    "MAC-layer": 34,
+    "agentic-AI": 24,
+    "802.11bn": 22,
     "scheduling": 22,
-    "802.11bn": 21,
-    "products": 19,
-    "802.11be": 17,
+    "products": 20,
+    "802.11be": 18,
     "security": 15,
     "PHY-layer": 15,
     "WiFi-sensing": 13,
@@ -25,9 +25,11 @@ window.KB_DATA = {
     "802.11bq": 2,
     "6GHz": 2,
     "R-TWT": 2,
+    "802.11n": 1,
     "802.11bi": 1,
     "802.11bt": 1,
     "802.11br": 1,
+    "regulatory": 1,
     "FTM": 1,
     "power-save": 1,
     "regulation": 1,
@@ -36,13 +38,13 @@ window.KB_DATA = {
     "privacy": 1
   },
   "primary_topic_counts": {
+    "mlo": 11,
     "sensing-csi": 11,
-    "mlo": 10,
     "wifi8-uhr": 10,
     "mapc-cosr": 10,
+    "agentic-wifi": 7,
     "security-privacy": 7,
-    "agentic-wifi": 6,
-    "spectrum-policy": 4,
+    "spectrum-policy": 5,
     "rtwt-latency": 4,
     "ftm-ranging": 4,
     "amp-iot": 2,
@@ -50,16 +52,16 @@ window.KB_DATA = {
     "ai-for-wifi": 2
   },
   "type_counts": {
-    "academic-paper": 47,
-    "industry-news": 15,
+    "academic-paper": 48,
+    "industry-news": 16,
     "proposal": 4,
     "product": 4,
-    "ieee-document": 2
+    "ieee-document": 3
   },
   "category_counts": {
-    "academia": 47,
-    "industry": 19,
-    "standards": 6
+    "academia": 48,
+    "industry": 20,
+    "standards": 7
   },
   "topics_vocab": {
     "stacks": [
@@ -209,6 +211,7 @@ window.KB_DATA = {
       "narrative_html_zh": "<p><strong>多链路操作（MLO）</strong>是 802.11be / Wi-Fi 7 的旗舰特性：单一 STA-AP 关联可同时跨 2.4 / 5 / 6 GHz 上的多条射频链路，链路集合在关联时协商，流量按链路动态分配。本 KB 从三个角度追踪 MLO——协议机制（STR / NSTR / SLO 模式、链路增删流程）、流量分配研究（跨层 DRL、MAB 驱动的信道选择）、以及部署数据。主题明确覆盖 802.11bn 对 MLO 的扩展；与&quot;协调多 AP&quot;专属的机制工作归 <code>mapc-cosr</code>。</p>\n<p>2026 年 MLO 从&quot;宣传特性&quot;跨入&quot;部署特性&quot;。<code>2026-05-04_cisco-wifi7-breakout-year-2026</code> 主张 2026 是拐点之年，引用 5 亿台 Wi-Fi 7 认证设备出货量（<code>2026-05-01_wifi7-deployment-milestone-2026</code>）以及 2026 年 Q1 的厂商营收激增（<code>2026-05-04_realtek-wifi7-revenue-surge-q1-2026</code>、Extreme 在 Q3 的 37% 出货占比 <code>2026-05-04_extreme-networks-wifi7-momentum-q3</code>）。企业部署既具体又规模化——Cisco 在 Georgetown 的 6,000 AP 部署（<code>2026-05-04_cisco-georgetown-wifi7-deployment</code>）、HPE Aruba 730 系列 UTB AP（<code>2026-05-04_hpe-aruba-730-utb-wifi7-ap</code>）、RUCKUS / Nokia OLAN 整合（<code>2026-05-04_ruckus-nokia-wifi7-fiber-olan</code>）。学界工作已从&quot;MLO 有效吗&quot;转向&quot;跨链路如何调度&quot;——<code>2026-05-01_arxiv-mlo-drl-lstm-cross-layer</code>（DRL + LSTM 跨层优化）、<code>2026-05-02_arxiv-mab-llm-mlo-channel-allocation</code>（MAB + LLM 信道分配）。</p>\n<p>待关注：802.11bn 对 MLO 的扩展（每链路 MAC 隐私，参考今日候选 <code>mlo-coordinated-mac-rerandomization-ie</code>）；来自真实遥测的 NSTR vs STR 部署模式；MLO-roam 机制（与 <code>roaming-mobility</code> 的桥梁）；每链路能耗权衡的测量（与 <code>energy-power-save</code> 的桥梁）。</p>",
       "narrative_last_updated": "2026-05-05",
       "entries_primary": [
+        "2026-05-05_belden-acquires-ruckus-1-85b",
         "2026-05-04_realtek-wifi7-revenue-surge-q1-2026",
         "2026-05-04_rcr-mdu-wifi-msp-vs-carriers",
         "2026-05-04_extreme-networks-wifi7-momentum-q3",
@@ -226,6 +229,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "industry-news": [
+          "2026-05-05_belden-acquires-ruckus-1-85b",
           "2026-05-04_realtek-wifi7-revenue-surge-q1-2026",
           "2026-05-04_rcr-mdu-wifi-msp-vs-carriers",
           "2026-05-04_extreme-networks-wifi7-momentum-q3",
@@ -495,6 +499,7 @@ window.KB_DATA = {
       "narrative_last_updated": "2026-05-05",
       "entries_primary": [
         "2026-05-04_arxiv-policy-driven-drl-nru-wifi-coexistence",
+        "2026-05-05_ieee-wng-charter-bypass-lbt-upper-6ghz",
         "2026-05-04_ofcom-better-together-6ghz-uk",
         "2026-05-04_eu-rspg-upper-6ghz-decision",
         "2026-05-01_arxiv-llm-6ghz-wifi-nru-coexistence"
@@ -504,6 +509,9 @@ window.KB_DATA = {
         "academic-paper": [
           "2026-05-04_arxiv-policy-driven-drl-nru-wifi-coexistence",
           "2026-05-01_arxiv-llm-6ghz-wifi-nru-coexistence"
+        ],
+        "ieee-document": [
+          "2026-05-05_ieee-wng-charter-bypass-lbt-upper-6ghz"
         ],
         "industry-news": [
           "2026-05-04_ofcom-better-together-6ghz-uk",
@@ -526,6 +534,7 @@ window.KB_DATA = {
         "2026-05-01_arxiv-aiml-csi-feedback-compression"
       ],
       "entries_secondary": [
+        "2026-05-05_arxiv-iterate-ebpf-rate-control",
         "2026-05-04_arxiv-policy-driven-drl-nru-wifi-coexistence",
         "2026-05-03_nsdi-law-802-11-low-latency-link-layer",
         "2026-05-01_arxiv-rf-lego-deep-unrolling",
@@ -580,6 +589,7 @@ window.KB_DATA = {
       "narrative_html_zh": "<p>本桶覆盖 <strong>在 Wi-Fi 网络上感知、规划、行动的 LLM 智能体</strong>：编排智能体（决定要配置什么）、排障智能体（决定要调查什么）、生成策略代码的智能体（写出控制器要执行的规则），以及由专项智能体协同的多智能体框架。本桶的定义性特征是<em>网络是智能体的环境</em>，动作空间是<em>配置 / 控制</em>，而非直接的射频参数——后者属于 <code>ai-for-wifi</code>。</p>\n<p>当前 KB 覆盖共 6 条，学界框架与产业落地各半。学术：<code>2026-05-01_arxiv-wirelessbench-llm-agent</code>（WirelessBench 容忍度感知基准，三层认知层级，GPT-4o 在其上 23% 灾难性失败率）、<code>2026-05-01_arxiv-wirelessagent-plus-plus</code>（蒙特卡洛树搜索的自动智能体工作流设计）、<code>2026-05-04_arxiv-comagent-multi-llm-wireless</code>（多 LLM 的感知-规划-行动-反思管线）、<code>2026-05-01_arxiv-intellicise-agentic-ai-security</code>（智能体层安全 / 隐私威胁模型）。产业：<code>2026-05-01_hpe-aruba-mist-unified-2026</code>（HPE 在收购 Juniper 后将 Aruba Central + Mist 合为统一 AI-Native 平台）、<code>2026-05-04_tp-link-aireal-ces2026</code>（TP-Link Aireal 云 GPT 助手）。<code>2026-05-01_ieee-march-2026-readout</code> 将 <code>agentic-wifi</code> 作为次属，因为 AI Offload 研究组在标准层正是这一问题。</p>\n<p>待关注：AI Offload SG 是否转为真任务组；超越 WirelessBench 的基准——尤其评估安全 / 幻觉而非仅任务正确率的基准；LLM 管理 Wi-Fi 的生产部署（误报最终落在哪里？）；与 <code>security-privacy</code> 的交叉（控制网络的 LLM 是高价值攻击目标）。</p>",
       "narrative_last_updated": "2026-05-05",
       "entries_primary": [
+        "2026-05-05_arxiv-iterate-ebpf-rate-control",
         "2026-05-01_arxiv-wirelessbench-llm-agent",
         "2026-05-01_arxiv-wirelessagent-plus-plus",
         "2026-05-01_arxiv-intellicise-agentic-ai-security",
@@ -599,6 +609,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-05-05_arxiv-iterate-ebpf-rate-control",
           "2026-05-01_arxiv-wirelessbench-llm-agent",
           "2026-05-01_arxiv-wirelessagent-plus-plus",
           "2026-05-01_arxiv-intellicise-agentic-ai-security",
@@ -692,6 +703,68 @@ window.KB_DATA = {
     }
   },
   "entries": [
+    {
+      "id": "2026-05-05_belden-acquires-ruckus-1-85b",
+      "date_found": "2026-05-05",
+      "date_published": "2026-05-04",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "Belden acquires Ruckus Networks for $1.85B — second owner change in four months bundles enterprise Wi-Fi 7 + AV-over-IP switching with industrial-edge portfolio",
+      "title_zh": "Belden 以 18.5 亿美元收购 Ruckus Networks —— 四个月内第二次易主，把企业级 Wi-Fi 7 + AV-over-IP 交换机与工业边缘产品线打包",
+      "url": "https://www.networkworld.com/article/4166854/ruckus-networks-on-the-move-again-this-time-acquired-by-belden-for-1-85-billion.html",
+      "topics": [
+        "802.11be",
+        "products"
+      ],
+      "topic_primary": "mlo",
+      "topics_secondary": [],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-05_belden-acquires-ruckus-1-85b.md",
+      "summary_short_en": "In a 4 May 2026 piece by Sean Michael Kerner (Network World), Belden announced an agreement to acquire **Ruckus Networks from Vistance Networks for $1.846 billion in cash** — Ruckus's second corporate-parent change in less than four months, after Vistance carved Ruckus out of CommScope in January 2026. Belden positions the deal as a \"completion story\" rather than a consolidation: Belden previously had no enterprise Wi-Fi or campus switching, and Ruckus's three core portfolios — enterprise Wi-Fi 7 access points for high-density / mission-critical environments, the ICX switching line (inherited via Foundry / Brocade) including a new Pro AV switch portfolio for AV-over-IP, and the **Ruckus One** unified wired/wireless cloud management platform — fill that gap end-to-end.",
+      "summary_short_zh": "2026-05-04，Sean Michael Kerner 在 Network World 发文：Belden 已宣布将以 **18.46 亿美元现金从 Vistance Networks 手中收购 Ruckus Networks** —— 这是 Ruckus 不到四个月内第二次易主，前次是 2026 年 1 月 Vistance 将其从 CommScope 剥离。Belden 把这桩交易定位为「补全战略」而非整合：Belden 此前完全没有企业级 Wi-Fi 与园区交换机产品，而 Ruckus 的三大产品线——面向高密度 / 关键业务的企业级 Wi-Fi 7 接入点、源自 Foundry / Brocade 的 ICX 交换机线（含面向 AV-over-IP 的全新 Pro AV 交换机系列）、以及统一有线 / 无线的云管理平台 **Ruckus One** ——刚好端到端补齐空缺。",
+      "body_html_en": "<h3>Summary</h3>\n<p>In a 4 May 2026 piece by Sean Michael Kerner (Network World), Belden announced an agreement to acquire <strong>Ruckus Networks from Vistance Networks for $1.846 billion in cash</strong> — Ruckus's second corporate-parent change in less than four months, after Vistance carved Ruckus out of CommScope in January 2026. Belden positions the deal as a &quot;completion story&quot; rather than a consolidation: Belden previously had no enterprise Wi-Fi or campus switching, and Ruckus's three core portfolios — enterprise Wi-Fi 7 access points for high-density / mission-critical environments, the ICX switching line (inherited via Foundry / Brocade) including a new Pro AV switch portfolio for AV-over-IP, and the <strong>Ruckus One</strong> unified wired/wireless cloud management platform — fill that gap end-to-end.</p>\n<p>Belden CEO Ashish Chand framed the strategic logic in two parts. First, the combined company can sell &quot;a complete active-and-passive networking solution spanning the industrial edge to the enterprise campus&quot; — Belden's existing strength is in cabling and physical-layer infrastructure, and bolting an enterprise Wi-Fi + switching software stack on top lets them sell the full vertical to industrial / commercial / hospitality / healthcare / education buyers. Second, Chand explicitly named <strong>Wi-Fi 8</strong> as the technology pivot driving the rationale: &quot;as you get to more Wi-Fi 7, Wi-Fi 8, this has to become more deterministic and you need AI optimization really to make that happen&quot; — i.e., the AI-native cloud management substrate (Ruckus One) is the multi-year asset, and a hardware OEM like Belden needs to own that to compete.</p>\n<p>The deal also illustrates a structural pattern in the post-Wi-Fi-7 enterprise market: silicon and AP hardware are increasingly commoditised, while the differentiator is the cloud control plane (Mist, Aruba Central, Ruckus One, Cisco Spaces). Customer base over 48,000 across hospitality, education, healthcare, warehousing and manufacturing — the same verticals where <code>ruckus-nokia-wifi7-fiber-olan</code> (Wi-Fi 7 + fiber OLAN) and <code>cisco-georgetown-wifi7-deployment</code> recently landed.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Deal</strong>: Belden acquires Ruckus Networks from Vistance Networks for $1.846B cash, announced May 2026.</li><li><strong>Timing</strong>: less than 4 months after Vistance carved Ruckus out of CommScope (Jan 2026).</li><li><strong>Strategic framing</strong>: &quot;completion&quot; not consolidation — Belden had no enterprise Wi-Fi / switching before.</li><li><strong>Three Ruckus portfolios</strong>: enterprise Wi-Fi 7 APs; ICX switches incl. Pro AV (AV-over-IP); Ruckus One cloud management.</li><li><strong>Customer base</strong>: 48,000+ across hospitality, education, healthcare, warehousing, manufacturing.</li><li><strong>Technical pivot</strong>: Belden CEO names Wi-Fi 8's determinism + AI optimization as the rationale for owning the cloud control plane.</li><li><strong>Structural read</strong>: silicon/AP hardware commoditising; differentiator now sits in the AI-native cloud control plane (Mist / Aruba Central / Ruckus One / Cisco Spaces).</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is a structural data point for the post-Wi-Fi-7 enterprise market. The KB has tracked the cloud-control-plane layer indirectly (<code>hpe-aruba-mist-unified-2026</code> for Aruba Central + Mist convergence, <code>ruckus-nokia-wifi7-fiber-olan</code> for Ruckus + Nokia fibre + Wi-Fi 7) but had not captured the <strong>enterprise Wi-Fi vendor consolidation thesis explicitly</strong>. The Belden CEO's quoted rationale makes that thesis concrete: as Wi-Fi 7 / 8 push deterministic-latency requirements, the algorithmic value migrates from the AP firmware to the cloud control plane, and a physical-infrastructure OEM (Belden — cables, connectors, racks) needs to own that plane to retain margin. The two-step ownership change (CommScope → Vistance Jan 2026 → Belden May 2026, less than four months apart) is itself a tell: financial ownership keeps recycling because the strategic ownership question — who can run a multi-year AI-native control plane — has not been answered. Combined with <code>realtek-wifi7-revenue-surge-q1-2026</code> (silicon-side Wi-Fi 7 demand), <code>extreme-networks-wifi7-momentum-q3</code> (37% unit-share, DDR locked through FY27) and <code>cisco-wifi7-breakout-year-2026</code> (40% still on Wi-Fi 5, refresh window opening), this completes the Q1-Q2 2026 deployment picture: enterprise Wi-Fi 7 demand is real and broad, the silicon-and-hardware tier is consolidating around control-plane software, and the M&amp;A cadence is accelerating into Wi-Fi 8.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>2026-05-04，Sean Michael Kerner 在 Network World 发文：Belden 已宣布将以 <strong>18.46 亿美元现金从 Vistance Networks 手中收购 Ruckus Networks</strong> —— 这是 Ruckus 不到四个月内第二次易主，前次是 2026 年 1 月 Vistance 将其从 CommScope 剥离。Belden 把这桩交易定位为「补全战略」而非整合：Belden 此前完全没有企业级 Wi-Fi 与园区交换机产品，而 Ruckus 的三大产品线——面向高密度 / 关键业务的企业级 Wi-Fi 7 接入点、源自 Foundry / Brocade 的 ICX 交换机线（含面向 AV-over-IP 的全新 Pro AV 交换机系列）、以及统一有线 / 无线的云管理平台 <strong>Ruckus One</strong> ——刚好端到端补齐空缺。</p>\n<p>Belden CEO Ashish Chand 把战略逻辑分两层讲。第一，合并后能向工业 / 商业 / 酒店 / 医疗 / 教育客户卖出&quot;覆盖工业边缘到企业园区的完整有源 + 无源网络方案&quot;——Belden 自身的强项在线缆与物理层基础设施，叠上一套企业 Wi-Fi + 交换机的软件栈，就能把整条垂直栈一起卖。第二，Chand 明确点名 <strong>Wi-Fi 8</strong> 作为驱动逻辑的技术拐点：「随着进入 Wi-Fi 7、Wi-Fi 8，网络必须更确定性，需要 AI 优化才能做到」——即 AI 原生云管平台（Ruckus One）才是多年资产；硬件 OEM 必须握住这一资产才能参与竞争。</p>\n<p>这桩交易也折射出 Wi-Fi 7 之后企业市场的结构性图景：硅片与 AP 硬件日益商品化，差异化越来越压在云控制面上（Mist、Aruba Central、Ruckus One、Cisco Spaces）。Ruckus 现有 4.8 万家以上客户，覆盖酒店、教育、医疗、仓储与制造——与近期 <code>ruckus-nokia-wifi7-fiber-olan</code>（Wi-Fi 7 + 光纤 OLAN）、<code>cisco-georgetown-wifi7-deployment</code> 落地的同一批垂直行业。</p>\n<h3>技术要点</h3>\n<ul><li><strong>交易</strong>：Belden 以 18.46 亿美元现金从 Vistance Networks 收购 Ruckus Networks，2026 年 5 月宣布。</li><li><strong>节奏</strong>：距 Vistance 从 CommScope 剥离 Ruckus（2026 年 1 月）不到四个月。</li><li><strong>战略定位</strong>：「补全」而非整合 —— Belden 此前完全没有企业级 Wi-Fi / 交换机线。</li><li><strong>Ruckus 三大产品线</strong>：企业级 Wi-Fi 7 AP；ICX 交换机（含面向 AV-over-IP 的 Pro AV 系列）；Ruckus One 云管理。</li><li><strong>客户体量</strong>：4.8 万家以上，覆盖酒店、教育、医疗、仓储、制造。</li><li><strong>技术拐点</strong>：Belden CEO 明确点名 Wi-Fi 8 的确定性 + AI 优化作为「必须握住云控制面」的逻辑。</li><li><strong>结构性读数</strong>：硅片 / AP 硬件商品化，差异化已迁移至 AI 原生云控制面（Mist / Aruba Central / Ruckus One / Cisco Spaces）。</li></ul>\n<h3>意义与新意</h3>\n<p>这是 Wi-Fi 7 之后企业市场的结构性数据点。KB 此前从侧面追踪过云控制面这一层（<code>hpe-aruba-mist-unified-2026</code> 涉及 Aruba Central + Mist 融合；<code>ruckus-nokia-wifi7-fiber-olan</code> 是 Ruckus + Nokia 光纤 + Wi-Fi 7），但<strong>「企业 Wi-Fi 厂商正在围绕控制面整合」这一论点并未被显式捕获</strong>。Belden CEO 的原话把这一论点摊开了：当 Wi-Fi 7 / 8 把确定性时延推到核心要求，算法价值从 AP 固件迁移到云控制面，一家物理基础设施 OEM（Belden ——线缆、连接器、机柜）必须把控制面握在手里才能保住毛利。两步易主（CommScope → Vistance 2026-01 → Belden 2026-05，间隔不到 4 个月）本身就是信号：财务所有权在反复倒手，是因为「谁能把多年的 AI 原生控制面跑下去」这一战略归属问题尚未回答。配合 <code>realtek-wifi7-revenue-surge-q1-2026</code>（硅片侧 Wi-Fi 7 需求）、<code>extreme-networks-wifi7-momentum-q3</code>（出货 37%，DDR 锁定至 FY27）、<code>cisco-wifi7-breakout-year-2026</code>（40% 仍在 Wi-Fi 5、刷新窗口已开启），2026 上半年部署全景就完整了：企业 Wi-Fi 7 需求真实而广面，硅片与硬件层正围绕控制面软件整合，M&amp;A 节奏向 Wi-Fi 8 加速。</p>",
+      "images": [],
+      "search_blob": "belden acquires ruckus networks for $1.85b — second owner change in four months bundles enterprise wi-fi 7 + av-over-ip switching with industrial-edge portfolio belden 以 18.5 亿美元收购 ruckus networks —— 四个月内第二次易主，把企业级 wi-fi 7 + av-over-ip 交换机与工业边缘产品线打包 802.11be products in a 4 may 2026 piece by sean michael kerner (network world), belden announced an agreement to acquire **ruckus networks from vistance networks for $1.846 billion in cash** — ruckus's second corporate-parent change in less than four months, after vistance carved ruckus out of commscope in january 2026. belden positions the deal as a \"completion story\" rather than a consolidation: belden previously had no enterprise wi-fi or campus switching, and ruckus's three core portfolios — enterprise wi-fi 7 access points for high-density / mission-critical environments, the icx switching line (inherited via foundry / brocade) including a new pro av switch portfolio for av-over-ip, and the **ruckus one** unified wired/wireless cloud management platform — fill that gap end-to-end. 2026-05-04，sean michael kerner 在 network world 发文：belden 已宣布将以 **18.46 亿美元现金从 vistance networks 手中收购 ruckus networks** —— 这是 ruckus 不到四个月内第二次易主，前次是 2026 年 1 月 vistance 将其从 commscope 剥离。belden 把这桩交易定位为「补全战略」而非整合：belden 此前完全没有企业级 wi-fi 与园区交换机产品，而 ruckus 的三大产品线——面向高密度 / 关键业务的企业级 wi-fi 7 接入点、源自 foundry / brocade 的 icx 交换机线（含面向 av-over-ip 的全新 pro av 交换机系列）、以及统一有线 / 无线的云管理平台 **ruckus one** ——刚好端到端补齐空缺。 industry-news"
+    },
+    {
+      "id": "2026-05-05_arxiv-iterate-ebpf-rate-control",
+      "date_found": "2026-05-05",
+      "date_published": "2026-05-04",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "IteRate: Autonomous AI Synthesis of In-Kernel eBPF Wi-Fi Rate Control Algorithms",
+      "title_zh": "IteRate：用 AI 自主合成内核内 eBPF Wi-Fi 速率控制算法",
+      "url": "https://arxiv.org/abs/2605.02542",
+      "topics": [
+        "MAC-layer",
+        "agentic-AI",
+        "802.11n"
+      ],
+      "topic_primary": "agentic-wifi",
+      "topics_secondary": [
+        "ai-for-wifi"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-05-05_arxiv-iterate-ebpf-rate-control.md",
+      "summary_short_en": "James Lynch, Ziqian Liu, Snehadeep Gayen, Om Chabra and Hari Balakrishnan (MIT CSAIL, submitted 4 May 2026) present **IteRate**, an autonomous research system that closes the loop on Wi-Fi rate-adaptation algorithm development end-to-end. The team's argument is structural: deployed rate adaptation in Linux (Minstrel-HT) has been substantively unchanged for over a decade, has known failure modes in dense / mobile environments, and has resisted improvement because the iteration cycle (hypothesise → write kernel code → flash devices → run experiments → analyse logs) is too slow for human researchers to iterate productively. IteRate replaces that loop with a multi-agent LLM architecture that runs the same scientific cycle without human intervention.",
+      "summary_short_zh": "James Lynch、Ziqian Liu、Snehadeep Gayen、Om Chabra 与 Hari Balakrishnan（MIT CSAIL，2026-05-04 提交）提出 **IteRate**：一个端到端闭环的自主研究系统，用于自动开发 Wi-Fi 速率自适应算法。团队的论点是结构性的：Linux 内核里部署的速率自适应（Minstrel-HT）十年来基本未变，在密集/移动环境下的失效模式众所周知，但难以改进——原因是「假设 → 写内核代码 → 刷设备 → 跑实验 → 看日志」这一迭代周期对人类研究者太慢、做不动几轮。IteRate 用一个多智能体 LLM 架构取代了这个循环，让同一个科研周期在无人值守下自动运行。",
+      "body_html_en": "<h3>Summary</h3>\n<p>James Lynch, Ziqian Liu, Snehadeep Gayen, Om Chabra and Hari Balakrishnan (MIT CSAIL, submitted 4 May 2026) present <strong>IteRate</strong>, an autonomous research system that closes the loop on Wi-Fi rate-adaptation algorithm development end-to-end. The team's argument is structural: deployed rate adaptation in Linux (Minstrel-HT) has been substantively unchanged for over a decade, has known failure modes in dense / mobile environments, and has resisted improvement because the iteration cycle (hypothesise → write kernel code → flash devices → run experiments → analyse logs) is too slow for human researchers to iterate productively. IteRate replaces that loop with a multi-agent LLM architecture that runs the same scientific cycle without human intervention.</p>\n<p>The system has three load-bearing pieces. (1) A <strong>kernel module that exposes per-frame hardware telemetry</strong> — modulation and coding scheme (MCS), retry counts, and outcome — to eBPF programs running in the Linux kernel. This gives the AI access to the same low-level signal a hand-tuned rate controller sees, at line rate. (2) A <strong>structured agentic AI architecture</strong> with specialised subagents: an Algorithm Designer that emits eBPF C, an Experiment Runner that deploys it OTA to a 58-device testbed, a Data Analyst that interprets the resulting per-frame logs, and a Network Engineer that maintains physical setup. The four are coordinated by a top-level Autonomous Research Agent following a fixed six-step protocol (Orient → Hypothesize → Design → Execute → Interpret → Iterate) with persistent knowledge across cycles. (3) A <strong>closed-loop pipeline</strong> that automates cross-compilation, verification and OTA deployment to embedded Wi-Fi targets, with the full build-test cycle completing in under 10 seconds.</p>\n<p>Headline numbers, evaluated on 58 Hak5 Wi-Fi Pineapple Mark VII devices (MediaTek MT76x02 radios, single-stream 20 MHz 802.11n) running OpenWrt + Linux 6.6 across a multi-floor university testbed: against the deployed Minstrel-HT baseline, IteRate-synthesised policies deliver <strong>21% faster web-page loads, 7% higher video QoE, and 21% higher peak throughput</strong>. Against rate-control policies generated by the OpenEvolve LLM-based code-evolution baseline, IteRate cuts web completion time by <strong>52%</strong> and improves video QoE by <strong>12%</strong> — the gain attributed to the closed-loop OTA evaluation step that OpenEvolve lacks.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Per-frame hardware telemetry → eBPF</strong>: a Linux kernel module exposes MCS index, retry counts and success/failure to in-kernel eBPF programs at line rate.</li><li><strong>Six-step research protocol</strong>: Orient → Hypothesize → Design → Execute → Interpret → Iterate, with persistent knowledge across cycles.</li><li><strong>Specialised subagents</strong>: Algorithm Designer (writes eBPF C), Experiment Runner (deploys OTA), Data Analyst (interprets logs), Network Engineer (physical setup).</li><li><strong>Build pipeline</strong>: cross-compile, verify, OTA deploy to embedded Wi-Fi targets — full cycle ≤10 s.</li><li><strong>Five evaluation workloads</strong>: peak throughput, file download, web page load, VoIP, adaptive video — system tunes per-workload rather than producing a one-size-fits-all algorithm.</li><li><strong>Headline gains</strong>: 21% faster web load, 7% higher video QoE, 21% higher peak throughput vs Minstrel-HT.</li><li><strong>vs OpenEvolve LLM code evolution</strong>: 52% lower web completion time, 12% higher video QoE — attributable to the OTA-eval loop.</li><li><strong>Testbed</strong>: 58 Hak5 Wi-Fi Pineapple Mark VII (MT76x02), 802.11n single-stream 20 MHz, OpenWrt + Linux 6.6.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the first KB entry on <strong>agentic-AI for in-kernel Wi-Fi protocol development</strong>. Existing KB agentic-AI entries (<code>arxiv-mapc-llm-agents</code>, <code>arxiv-on-device-llm-roaming</code>, <code>arxiv-wirelessbench-llm-agent</code>, <code>arxiv-wirelessagent-plus-plus</code>, <code>arxiv-comagent-multi-llm-wireless</code>, <code>arxiv-llm-rl-wireless-optimization</code>, <code>arxiv-llm-6ghz-wifi-nru-coexistence</code>) all sit at the network-management or scheduling layer, where the LLM proposes policies that are then enforced by a deterministic controller. IteRate is the first that pushes the agent loop down to the <strong>kernel data path itself</strong> — the agent writes eBPF code that runs per-frame inside the rate-control fast path. Two structural shifts follow: (a) the LLM no longer just chooses parameters within a fixed algorithmic skeleton, it composes the algorithm; (b) the OTA deploy + line-rate evaluation step closes a loop that the prior code-evolution baselines (OpenEvolve) lacked, and the 52% ablation is the empirical evidence that this closed-loop is what drives the win. The eBPF-hosted rate-control hook also matters as a substrate: Wi-Fi 8's higher reliability targets (MAPC, P-EDCA, EPCS, NPCA) all depend on rate adaptation that responds correctly to coordinated transmissions, and a per-frame, in-kernel synthesis loop is exactly the toolchain that lets standards-feature-aware rate controllers get tuned faster than the standard ships.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>James Lynch、Ziqian Liu、Snehadeep Gayen、Om Chabra 与 Hari Balakrishnan（MIT CSAIL，2026-05-04 提交）提出 <strong>IteRate</strong>：一个端到端闭环的自主研究系统，用于自动开发 Wi-Fi 速率自适应算法。团队的论点是结构性的：Linux 内核里部署的速率自适应（Minstrel-HT）十年来基本未变，在密集/移动环境下的失效模式众所周知，但难以改进——原因是「假设 → 写内核代码 → 刷设备 → 跑实验 → 看日志」这一迭代周期对人类研究者太慢、做不动几轮。IteRate 用一个多智能体 LLM 架构取代了这个循环，让同一个科研周期在无人值守下自动运行。</p>\n<p>系统有三个核心组件：(1) <strong>暴露每帧硬件遥测的内核模块</strong>——把 MCS、重传次数、传输结果暴露给运行在 Linux 内核中的 eBPF 程序，让 AI 在线速下能拿到和手调速率控制器一样的底层信号。(2) <strong>结构化的智能体架构</strong>——专业化子智能体：算法设计者（输出 eBPF C 代码）、实验执行者（OTA 部署到 58 台设备）、数据分析师（解读每帧日志）、网络工程师（维护物理拓扑）。四者由顶层 Autonomous Research Agent 按固定 6 步协议（定向 → 假设 → 设计 → 执行 → 解读 → 迭代）调度，跨周期保留知识。(3) <strong>闭环流水线</strong>——自动完成交叉编译、验证、OTA 下发，整套 build-test 循环 10 秒以内。</p>\n<p>关键数据：在 58 台 Hak5 Wi-Fi Pineapple Mark VII（联发科 MT76x02 射频，单流 20 MHz 802.11n）OpenWrt + Linux 6.6 的多层楼校园测试床上，相对部署中的 Minstrel-HT，IteRate 合成的策略实现 <strong>网页加载快 21%、视频 QoE 高 7%、峰值吞吐高 21%</strong>；相对 OpenEvolve 生成的代码进化基线，网页完成时间 <strong>降 52%</strong>、视频 QoE <strong>升 12%</strong>——增益归因于 IteRate 的闭环 OTA 评估这一 OpenEvolve 缺失的环节。</p>\n<h3>技术要点</h3>\n<ul><li><strong>每帧硬件遥测 → eBPF</strong>：Linux 内核模块以线速向内核内 eBPF 程序暴露 MCS、重传次数、收发结果。</li><li><strong>六步研究协议</strong>：定向 → 假设 → 设计 → 执行 → 解读 → 迭代，跨周期保留知识。</li><li><strong>专业化子智能体</strong>：算法设计（写 eBPF C）、实验执行（OTA 部署）、数据分析（解读日志）、网络工程（物理布置）。</li><li><strong>构建流水线</strong>：交叉编译 → 验证 → OTA 下发到嵌入式 Wi-Fi 设备，整环 ≤10 秒。</li><li><strong>五种评测负载</strong>：峰值吞吐、文件下载、网页加载、VoIP、自适应视频——按负载调优，非一刀切。</li><li><strong>关键增益</strong>：相对 Minstrel-HT，网页加载快 21%、视频 QoE 升 7%、峰值吞吐升 21%。</li><li><strong>相对 OpenEvolve LLM 代码进化基线</strong>：网页完成时间降 52%、视频 QoE 升 12%——归因于 OTA 评测闭环。</li><li><strong>测试床</strong>：58 台 Hak5 Wi-Fi Pineapple Mark VII（MT76x02），802.11n 单流 20 MHz，OpenWrt + Linux 6.6。</li></ul>\n<h3>意义与新意</h3>\n<p>这是 KB 中<strong>第一篇关于「智能体 AI 用于内核内 Wi-Fi 协议开发」</strong>的条目。已有的智能体类条目（<code>arxiv-mapc-llm-agents</code>、<code>arxiv-on-device-llm-roaming</code>、<code>arxiv-wirelessbench-llm-agent</code>、<code>arxiv-wirelessagent-plus-plus</code>、<code>arxiv-comagent-multi-llm-wireless</code>、<code>arxiv-llm-rl-wireless-optimization</code>、<code>arxiv-llm-6ghz-wifi-nru-coexistence</code>）全部停留在网络管理 / 调度层，由 LLM 提议策略、再交由确定性控制器执行。IteRate 第一次把智能体闭环下沉到<strong>内核数据通路本身</strong>——智能体写出来的 eBPF 代码逐帧跑在速率控制快路径中。由此带来两点结构性变化：(a) LLM 不再只是从一个既定的算法骨架里挑参数，而是在「写算法」；(b) OTA 部署 + 线速评估这一步封闭了 OpenEvolve 等代码进化基线所缺的闭环，论文里 52% 的消融实验就是「闭环本身才是胜负手」的实证。eBPF 速率控制钩子作为底座也具有方法论意义：Wi-Fi 8 的高可靠目标（MAPC、P-EDCA、EPCS、NPCA）都依赖能正确响应「协调式传输」的速率自适应；一个逐帧、内核内的合成闭环正是让「标准感知的速率控制器」比标准本身落地得更快的工具链。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2605.02542v1/x1.png",
+          "caption_en": "IteRate system architecture: agent server, hierarchical subagents, programmable MAC layer, eBPF telemetry pipeline",
+          "caption_zh": "IteRate 系统架构：智能体服务器、分层子智能体、可编程 MAC 层、eBPF 遥测流水线"
+        },
+        {
+          "url": "https://arxiv.org/html/2605.02542v1/x2.png",
+          "caption_en": "IteRate evaluation: per-workload comparison vs Minstrel-HT and OpenEvolve baselines",
+          "caption_zh": "IteRate 评测：相对 Minstrel-HT 与 OpenEvolve 基线在各负载下的对比"
+        }
+      ],
+      "search_blob": "iterate: autonomous ai synthesis of in-kernel ebpf wi-fi rate control algorithms iterate：用 ai 自主合成内核内 ebpf wi-fi 速率控制算法 mac-layer agentic-ai 802.11n james lynch, ziqian liu, snehadeep gayen, om chabra and hari balakrishnan (mit csail, submitted 4 may 2026) present **iterate**, an autonomous research system that closes the loop on wi-fi rate-adaptation algorithm development end-to-end. the team's argument is structural: deployed rate adaptation in linux (minstrel-ht) has been substantively unchanged for over a decade, has known failure modes in dense / mobile environments, and has resisted improvement because the iteration cycle (hypothesise → write kernel code → flash devices → run experiments → analyse logs) is too slow for human researchers to iterate productively. iterate replaces that loop with a multi-agent llm architecture that runs the same scientific cycle without human intervention. james lynch、ziqian liu、snehadeep gayen、om chabra 与 hari balakrishnan（mit csail，2026-05-04 提交）提出 **iterate**：一个端到端闭环的自主研究系统，用于自动开发 wi-fi 速率自适应算法。团队的论点是结构性的：linux 内核里部署的速率自适应（minstrel-ht）十年来基本未变，在密集/移动环境下的失效模式众所周知，但难以改进——原因是「假设 → 写内核代码 → 刷设备 → 跑实验 → 看日志」这一迭代周期对人类研究者太慢、做不动几轮。iterate 用一个多智能体 llm 架构取代了这个循环，让同一个科研周期在无人值守下自动运行。 academic-paper"
+    },
     {
       "id": "2026-05-04_realtek-wifi7-revenue-surge-q1-2026",
       "date_found": "2026-05-04",
@@ -903,6 +976,31 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>Samsung 的 Peshal Nayak（DCN 11-26/036r3，2026 年 5 月 1 日 Antwerp 临时会议前提交）为 Wi-Fi 8（TGbn）提交了一项 <strong>EPCS</strong> —— 即每站台的 Pairwise Cipher Suite 上下文（PMK、序列计数器、密钥确认状态）—— 在 AP 间转移的机制，使漫游非 AP STA 能在新 AP <strong>不重做 4-way 握手</strong>就续上已认证会话。</p>\n<p>该机制嵌入 TGbn 当前正在消耗大量贡献流量的「无缝漫游」工作流（并行的 LB291 评论决议系列 11-26/378 + 11-26/379 来自 Qualcomm 的 Duncan Ho，覆盖第 3+4 部分）。新颖之处在空口：在 AP 之间（走 distribution system 或独立 backhaul）的新上下文转移 Action 帧、STA 关联流程中的新状态、以及新 AP 在上下文转移成功前对上层流量的明确门控时序。</p>\n<h3>技术要点</h3>\n<ul><li>AP 间新 Action 帧，携带 PMK + 序列计数器 + 密钥确认状态。</li><li>非 AP STA 关联状态机新增状态：「EPCS-transferring」。</li><li>新门控规则：新 AP 在 EPCS 转移完成前拒绝上层数据。</li><li>消除每次漫游约 60–100 ms 的 4-way 握手成本。</li><li>并行的 LB291 决议（11-26/378-379）处理无缝漫游修订文本。</li></ul>\n<h3>意义与新意</h3>\n<p>这是一条干净的 rule-1.1 / rule-1.3 机制：空口新 Action 帧 + 新 MLME 状态 + 新门控时序，全部可在抓包中观测。它与既有 KB 候选 <code>roaming-context-mlme-extension</code> 互补（不重复）：那一份是把「每 AP 的上下文」通过 MLME SAP 暴露给<em>端侧 AI 智能体</em>；本贡献是漫游时把「每 STA 的上下文」在 <em>AP 之间</em> 转移。二者甚至可以在同一部署中组合使用。</p>",
       "images": [],
       "search_blob": "ieee 802.11bn — epcs context transfer for seamless roaming (samsung, may 2026 pre-interim) ieee 802.11bn —— 用于无缝漫游的 epcs 上下文转移（samsung，2026 年 5 月会前） 802.11bn mac-layer security roaming samsung's peshal nayak (dcn 11-26/036r3, posted 01-may-2026 ahead of the antwerp interim) tables a wi-fi 8 (tgbn) mechanism for transferring **epcs** — the per-station pairwise cipher suite context (pmk, sequence counters, key-confirmation state) — between aps so that a roaming non-ap sta can resume an authenticated session at the new ap **without performing a fresh 4-way handshake**. samsung 的 peshal nayak（dcn 11-26/036r3，2026 年 5 月 1 日 antwerp 临时会议前提交）为 wi-fi 8（tgbn）提交了一项 **epcs** —— 即每站台的 pairwise cipher suite 上下文（pmk、序列计数器、密钥确认状态）—— 在 ap 间转移的机制，使漫游非 ap sta 能在新 ap **不重做 4-way 握手**就续上已认证会话。 proposal"
+    },
+    {
+      "id": "2026-05-05_ieee-wng-charter-bypass-lbt-upper-6ghz",
+      "date_found": "2026-05-05",
+      "date_published": "2026-04-30",
+      "type": "ieee-document",
+      "category": "standards",
+      "title_en": "IEEE 802.11 WNG SC contribution: Bypassing LBT in US Upper 6 GHz (Charter Communications, May 2026 interim)",
+      "title_zh": "IEEE 802.11 WNG SC 贡献：在美国上 6 GHz 频段绕开 LBT（Charter Communications 提交，2026 年 5 月临时会议）",
+      "url": "https://mentor.ieee.org/802.11/dcn/26/11-26-0878-00-0wng-bypassing-lbt-in-us-upper-6ghz.docx",
+      "topics": [
+        "802.11bn",
+        "MAC-layer",
+        "regulatory"
+      ],
+      "topic_primary": "spectrum-policy",
+      "topics_secondary": [],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-05_ieee-wng-charter-bypass-lbt-upper-6ghz.md",
+      "summary_short_en": "On 30 April 2026, Charter Communications (Maulik Vaidya) tabled a contribution to the IEEE 802.11 **Wireless Next Generations Standing Committee (WNG SC)** titled **\"Bypassing LBT in US Upper 6 GHz\"** — document 11-26/878-00-0wng. The submission targets the May 10-15 Antwerp interim and is registered against WNG, the standing committee that incubates new study groups before they become task groups. The header docx is access-gated (the IEEE Mentor server returns 418 to anonymous downloaders), so this entry captures the metadata signal pending document availability; the title alone, however, carries clear regulatory-and-MAC content.",
+      "summary_short_zh": "2026 年 4 月 30 日，Charter Communications（Maulik Vaidya）向 IEEE 802.11 **Wireless Next Generations Standing Committee (WNG SC)** 提交了一份贡献，标题为 **「在美国上 6 GHz 绕开 LBT（Bypassing LBT in US Upper 6GHz）」**——文档号 11-26/878-00-0wng。提交目标是 5 月 10-15 日 Antwerp 临时会议；WNG 是 IEEE 802.11 内孵化新研究组的常委会（在升级为正式 Task Group 之前的入口）。文档本身被 IEEE Mentor 服务器对匿名下载者拒绝访问（418 状态码），所以这条目先以元数据信号入库；但仅凭标题已可定位其属于「监管 + MAC」交界处。",
+      "body_html_en": "<h3>Summary</h3>\n<p>On 30 April 2026, Charter Communications (Maulik Vaidya) tabled a contribution to the IEEE 802.11 <strong>Wireless Next Generations Standing Committee (WNG SC)</strong> titled <strong>&quot;Bypassing LBT in US Upper 6 GHz&quot;</strong> — document 11-26/878-00-0wng. The submission targets the May 10-15 Antwerp interim and is registered against WNG, the standing committee that incubates new study groups before they become task groups. The header docx is access-gated (the IEEE Mentor server returns 418 to anonymous downloaders), so this entry captures the metadata signal pending document availability; the title alone, however, carries clear regulatory-and-MAC content.</p>\n<p>Context for what the contribution likely proposes: in the <strong>US Upper 6 GHz (6.425-7.125 GHz)</strong> band the FCC's current rules require Wi-Fi clients in Standard Power / AFC mode to perform a Listen-Before-Talk (LBT) check before transmitting. LBT is conservative — it was carried over from sub-7-GHz coexistence frameworks — and on 6 GHz, where incumbent fixed-service receivers are protected by the AFC database itself, Wi-Fi proponents have argued LBT adds latency cost without proportionate interference benefit. Charter, as a major US cable MSO operating community Wi-Fi at scale, has a direct deployment incentive to surface a contribution that asks WNG to study a regime where AFC alone (without LBT) is sufficient.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Document</strong>: IEEE 11-26/0878-00-0wng &quot;Bypassing LBT in US Upper 6 GHz&quot;</li><li><strong>Author / submitter</strong>: Maulik Vaidya, Charter Communications</li><li><strong>Group / venue</strong>: WNG SC (incubator for new study groups), May 2026 Antwerp interim</li><li><strong>Date uploaded</strong>: 30-Apr-2026 (rev 0; appeared in mentor portal 04-May-2026 ET)</li><li><strong>Topic</strong>: regulatory-MAC interface — proposes that AFC database protection should obviate Listen-Before-Talk in US 6.425-7.125 GHz</li><li><strong>Likely audience</strong>: WNG members deciding whether to charter a study group on 6 GHz LBT-relaxation</li><li><strong>Source-quality caveat</strong>: full docx is access-gated; metadata-only entry until the contribution is accessible.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the first KB entry capturing a <strong>regulatory-MAC bridge contribution</strong> in the WNG. Existing 6 GHz coverage in the KB is policy-side: <code>eu-rspg-upper-6ghz-decision</code> (EU RSPG 6 GHz allocation), <code>ofcom-better-together-6ghz-uk</code> (UK 6 GHz hybrid plan). A WNG SC submission to <strong>change the MAC-layer LBT requirement on US 6 GHz</strong> is the first sign the standards body is being asked to converge with the regulatory state on a specific country. WNG submissions are signals not decisions — most don't graduate to a study group, let alone a task group — but the choice of submitter (Charter, an MSO that operates community Wi-Fi at large scale) and the explicit US-only framing suggest a deployment-driven push rather than a research one. If the contribution gains traction in Antwerp it would set up a 2026-2027 study-group track on AFC-vs-LBT trade-offs — directly relevant to any Wi-Fi 8 deployment that wants to use the upper 6 GHz under AFC.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>2026 年 4 月 30 日，Charter Communications（Maulik Vaidya）向 IEEE 802.11 <strong>Wireless Next Generations Standing Committee (WNG SC)</strong> 提交了一份贡献，标题为 <strong>「在美国上 6 GHz 绕开 LBT（Bypassing LBT in US Upper 6GHz）」</strong>——文档号 11-26/878-00-0wng。提交目标是 5 月 10-15 日 Antwerp 临时会议；WNG 是 IEEE 802.11 内孵化新研究组的常委会（在升级为正式 Task Group 之前的入口）。文档本身被 IEEE Mentor 服务器对匿名下载者拒绝访问（418 状态码），所以这条目先以元数据信号入库；但仅凭标题已可定位其属于「监管 + MAC」交界处。</p>\n<p>背景：在 <strong>美国上 6 GHz（6.425-7.125 GHz）</strong> 频段，FCC 现行规则要求 Wi-Fi 客户端在标准功率 / AFC 模式下传输前必须执行 Listen-Before-Talk（LBT）检测。LBT 是从 sub-7 GHz 共存框架沿用过来的保守做法；而在 6 GHz，AFC 数据库本身已在保护固定业务接收机，Wi-Fi 阵营长期主张 LBT 在此带来时延代价却没有相称的干扰收益。Charter 作为大规模运营社区 Wi-Fi 的美国主流 MSO，有直接的部署诱因把这一议题在 WNG 推上桌面，请求研究「仅靠 AFC、不再要求 LBT」的可行机制。</p>\n<h3>技术要点</h3>\n<ul><li><strong>文档</strong>：IEEE 11-26/0878-00-0wng「Bypassing LBT in US Upper 6 GHz」</li><li><strong>作者 / 提交人</strong>：Maulik Vaidya，Charter Communications</li><li><strong>委员会 / 场合</strong>：WNG SC（新研究组孵化机构），2026 年 5 月 Antwerp 临时会议</li><li><strong>上传日期</strong>：2026-04-30（rev 0；2026-05-04 出现在 mentor 文档列表）</li><li><strong>议题</strong>：监管-MAC 交界面 —— 主张 AFC 数据库的保护已足以替代 6.425-7.125 GHz 的 Listen-Before-Talk 要求</li><li><strong>目标受众</strong>：WNG 成员，判断是否就「6 GHz LBT 放宽」立项研究组</li><li><strong>来源质量说明</strong>：完整 docx 受访问限制；先以元数据条目入库，待文档可访问后回补。</li></ul>\n<h3>意义与新意</h3>\n<p>这是 KB 第一条捕获 WNG 中「<strong>监管-MAC 桥接贡献</strong>」的条目。已有的 6 GHz 覆盖都站在政策侧：<code>eu-rspg-upper-6ghz-decision</code>（欧盟 RSPG 6 GHz 分配）、<code>ofcom-better-together-6ghz-uk</code>（英国 6 GHz 混合方案）。一份明确要求「<strong>修改美国 6 GHz 的 MAC 层 LBT 要求</strong>」的 WNG SC 提案，是标准侧第一次被请求与某一具体国家的监管态势靠拢。WNG 提交是信号而非决议——大多数 WNG 贡献从不进入研究组、更不会成为 Task Group——但提交人选（Charter 这家以社区 Wi-Fi 大规模运营为主业的 MSO）与明确的「仅美国」边界，暗示其驱动力来自部署而非纯研究。若该贡献在 Antwerp 获得呼应，将在 2026-2027 形成一条「AFC 替代 LBT」的研究组轨道——直接关系到任何在 AFC 模式下使用上 6 GHz 的 Wi-Fi 8 部署。</p>",
+      "images": [],
+      "search_blob": "ieee 802.11 wng sc contribution: bypassing lbt in us upper 6 ghz (charter communications, may 2026 interim) ieee 802.11 wng sc 贡献：在美国上 6 ghz 频段绕开 lbt（charter communications 提交，2026 年 5 月临时会议） 802.11bn mac-layer regulatory on 30 april 2026, charter communications (maulik vaidya) tabled a contribution to the ieee 802.11 **wireless next generations standing committee (wng sc)** titled **\"bypassing lbt in us upper 6 ghz\"** — document 11-26/878-00-0wng. the submission targets the may 10-15 antwerp interim and is registered against wng, the standing committee that incubates new study groups before they become task groups. the header docx is access-gated (the ieee mentor server returns 418 to anonymous downloaders), so this entry captures the metadata signal pending document availability; the title alone, however, carries clear regulatory-and-mac content. 2026 年 4 月 30 日，charter communications（maulik vaidya）向 ieee 802.11 **wireless next generations standing committee (wng sc)** 提交了一份贡献，标题为 **「在美国上 6 ghz 绕开 lbt（bypassing lbt in us upper 6ghz）」**——文档号 11-26/878-00-0wng。提交目标是 5 月 10-15 日 antwerp 临时会议；wng 是 ieee 802.11 内孵化新研究组的常委会（在升级为正式 task group 之前的入口）。文档本身被 ieee mentor 服务器对匿名下载者拒绝访问（418 状态码），所以这条目先以元数据信号入库；但仅凭标题已可定位其属于「监管 + mac」交界处。 ieee-document"
     },
     {
       "id": "2026-05-04_intel-wwc-wifi8-vision",
