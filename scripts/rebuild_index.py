@@ -544,6 +544,114 @@ def build_entry_record(path: Path, fm: dict[str, Any], body: str) -> dict[str, A
     }
 
 
+def _canonical_url(u: str) -> str:
+    """Strip fragment / query / trailing slash; collapse arxiv variants to /abs/.
+
+    arxiv exposes the same paper at /abs/, /html/, /pdf/ and at /vN suffixes.
+    All resolve to the same logical entity, so we collapse them so a hit at
+    one path is recognised as a duplicate of an entry filed under another.
+    """
+    if not u:
+        return ""
+    u = u.lower().strip()
+    u = re.sub(r"[#?].*$", "", u)
+    u = u.rstrip("/")
+    m = re.match(
+        r"^(https?://arxiv\.org)/(?:abs|html|pdf)/(\d+\.\d+)(?:v\d+)?(?:/.*)?$",
+        u,
+    )
+    if m:
+        return f"{m.group(1)}/abs/{m.group(2)}"
+    return u
+
+
+def _arxiv_id(u: str) -> str:
+    """Return the bare arxiv id (e.g. '2501.01517') or '' if not arxiv."""
+    if not u:
+        return ""
+    m = re.search(r"arxiv\.org/(?:abs|html|pdf)/(\d+\.\d+)", u.lower())
+    return m.group(1) if m else ""
+
+
+def _title_fingerprint(t: str) -> str:
+    """Lowercase + strip punctuation + collapse whitespace. Robust against
+    minor title rewrites (e.g. paper title in arxiv vs in a citation)."""
+    t = (t or "").lower()
+    t = re.sub(r"[^a-z0-9 ]+", "", t)
+    t = re.sub(r"\s+", " ", t).strip()
+    return t
+
+
+def build_dedup_index(records: list[dict[str, Any]],
+                      today_iso: str) -> dict[str, Any]:
+    """Emit a structured dedup index — public-facing, rebuilt on every run.
+
+    The scout reads this file at the start of each run instead of
+    grepping entries/*.md. Three orthogonal lookup tables let the scout
+    do O(1) dedup checks against canonical URL, arxiv id, or title
+    fingerprint. by_topic_primary lets the scout narrow its dedup scan
+    to the candidate's likely bin (5–15 entries) instead of the full set.
+
+    Schema is stable; bump schema_version when fields change.
+    """
+    entries = []
+    by_topic_primary: dict[str, list[str]] = {}
+    lookup_url: dict[str, str] = {}
+    lookup_arxiv: dict[str, str] = {}
+    lookup_title: dict[str, str] = {}
+
+    for r in records:
+        url = r.get("url") or ""
+        canon = _canonical_url(url)
+        ax = _arxiv_id(url)
+        # Aliases the same paper might appear under (helps the scout
+        # match a hit URL string-for-string before falling back to canon).
+        aliases: list[str] = []
+        if url:
+            aliases.append(url)
+        if ax:
+            for path in ("abs", "html", "pdf"):
+                aliases.append(f"https://arxiv.org/{path}/{ax}")
+                aliases.append(f"https://arxiv.org/{path}/{ax}v1")
+                aliases.append(f"https://arxiv.org/{path}/{ax}v2")
+        # Dedupe + lowercase aliases.
+        aliases = sorted({a.lower().rstrip("/") for a in aliases if a})
+        fp = _title_fingerprint(r.get("title_en") or "")
+        rec = {
+            "id": r["id"],
+            "url_canonical": canon,
+            "url_aliases": aliases,
+            "arxiv_id": ax,
+            "title_fingerprint": fp,
+            "topic_primary": r.get("topic_primary", "") or "",
+            "topics_secondary": r.get("topics_secondary", []) or [],
+            "date_found": r.get("date_found", ""),
+            "date_published": r.get("date_published", ""),
+        }
+        entries.append(rec)
+        if canon:
+            lookup_url[canon] = r["id"]
+        if ax:
+            lookup_arxiv[ax] = r["id"]
+        if fp:
+            lookup_title[fp] = r["id"]
+        prim = r.get("topic_primary") or ""
+        if prim:
+            by_topic_primary.setdefault(prim, []).append(r["id"])
+
+    return {
+        "schema_version": 1,
+        "last_updated": today_iso,
+        "entries": entries,
+        "by_topic_primary": by_topic_primary,
+        "lookups": {
+            "url_canonical": lookup_url,
+            "arxiv_id": lookup_arxiv,
+            "title_fingerprint": lookup_title,
+        },
+    }
+
+
 def build_search_blob(entry: dict[str, Any]) -> str:
     parts = [
         entry["title_en"],
@@ -798,6 +906,14 @@ def main(argv: list[str]) -> int:
         "entries": kb_entries,
     }
     write_json_atomic(kb_json_path, kb_payload)
+
+    # ---------- Dedup index ----------
+    # Compact lookup-friendly file the scout reads at run-start to dedupe
+    # search hits in O(1) against URL canonical / arxiv id / title fingerprint.
+    # Cheaper to load than kb.json (no entry bodies, no summaries) and shaped
+    # to match what the scout's Step 3 actually does.
+    dedup_path = data_root / "dedup_index.json"
+    write_json_atomic(dedup_path, build_dedup_index(records, today))
 
     # kb.js: same payload as a JS assignment, so the viewer can load it via
     # <script src="kb.js"> when the page is opened over file://. Modern
