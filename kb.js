@@ -1,68 +1,130 @@
 window.KB_DATA = {
   "schema_version": 5,
-  "last_updated": "2026-05-06",
+  "last_updated": "2026-05-12",
   "topic_counts": {
     "MAC-layer": 34,
-    "agentic-AI": 24,
-    "802.11bn": 22,
-    "scheduling": 22,
+    "agentic-AI": 28,
+    "scheduling": 23,
+    "802.11bn": 23,
+    "802.11be": 20,
     "products": 20,
-    "802.11be": 18,
+    "WiFi-sensing": 15,
     "security": 15,
     "PHY-layer": 15,
-    "WiFi-sensing": 13,
-    "MLO": 9,
-    "802.11bf": 8,
+    "MLO": 11,
+    "802.11bf": 10,
+    "IoT": 7,
     "802.11ax": 7,
     "generative-AI": 7,
-    "IoT": 6,
+    "MAPC": 6,
     "XR": 5,
-    "MAPC": 5,
+    "802.11": 4,
     "802.11az": 4,
+    "802.11bq": 3,
+    "802.11bp": 3,
     "roaming": 3,
-    "802.11": 3,
-    "802.11bp": 2,
-    "802.11bq": 2,
+    "802.11bt": 2,
+    "Wi-Fi 7": 2,
+    "enterprise": 2,
+    "CSI": 2,
     "6GHz": 2,
     "R-TWT": 2,
+    "WNG SC": 1,
+    "Wi-Fi 9": 1,
+    "802.11bx": 1,
+    "automotive": 1,
+    "exponential-backoff": 1,
+    "freshness": 1,
+    "CSMA": 1,
+    "post-quantum-cryptography": 1,
+    "PAKE": 1,
+    "PASN": 1,
+    "PQC-roaming": 1,
+    "802.1X": 1,
+    "PoW": 1,
+    "mmWave": 1,
+    "IMMW": 1,
+    "beam-establishment": 1,
+    "polarization": 1,
+    "deterministic-latency": 1,
+    "AMP": 1,
+    "ambient-power": 1,
+    "backscatter": 1,
+    "S1G-coexistence": 1,
+    "energizer": 1,
+    "Co-SR": 1,
+    "Co-BF": 1,
+    "Co-TDMA": 1,
+    "Co-RTWT": 1,
+    "ELR": 1,
+    "NPCA": 1,
+    "seamless-roaming": 1,
+    "L4S": 1,
+    "P-EDCA": 1,
+    "DRU": 1,
+    "LB291": 1,
+    "AI Offload SG": 1,
+    "AI-inference": 1,
+    "computation-offloading": 1,
+    "PAR": 1,
+    "CSD": 1,
+    "HPE": 1,
+    "Aruba": 1,
+    "Mist": 1,
+    "Juniper": 1,
+    "AIOps": 1,
+    "Extreme": 1,
+    "Platform ONE": 1,
     "802.11n": 1,
+    "domain-adaptation": 1,
+    "self-supervised": 1,
+    "multi-user": 1,
     "802.11bi": 1,
-    "802.11bt": 1,
     "802.11br": 1,
+    "CSMA/CA": 1,
+    "edge-computing": 1,
+    "DAG-scheduling": 1,
+    "simulation": 1,
+    "interference": 1,
     "spectrum-policy": 1,
     "FTM": 1,
     "power-save": 1,
+    "fall-detection": 1,
+    "healthcare": 1,
+    "transformer": 1,
     "regulation": 1,
     "OFDMA": 1,
     "MU-MIMO": 1,
     "privacy": 1
   },
   "primary_topic_counts": {
-    "sensing-csi": 11,
-    "wifi8-uhr": 10,
+    "sensing-csi": 13,
+    "wifi8-uhr": 12,
+    "wifi7-deployment": 11,
     "mapc-cosr": 10,
-    "wifi7-deployment": 9,
-    "agentic-wifi": 7,
-    "security-privacy": 7,
+    "security-privacy": 8,
+    "agentic-wifi": 8,
     "spectrum-policy": 5,
     "rtwt-latency": 4,
     "ftm-ranging": 4,
-    "amp-iot": 2,
+    "amp-iot": 3,
     "roaming-mobility": 2,
     "mlo": 2,
-    "ai-for-wifi": 2
+    "ai-for-wifi": 2,
+    "mmwave-bq": 1,
+    "wifi-for-ai": 1
   },
   "type_counts": {
-    "academic-paper": 48,
+    "academic-paper": 51,
     "industry-news": 16,
-    "proposal": 4,
-    "product": 4,
-    "ieee-document": 3
+    "ieee-document": 9,
+    "product": 6,
+    "proposal": 4
   },
   "category_counts": {
-    "academia": 48,
-    "industry": 20,
-    "standards": 7
+    "academia": 51,
+    "industry": 22,
+    "standards": 13
   },
   "topics_vocab": {
     "stacks": [
@@ -225,6 +287,8 @@ window.KB_DATA = {
         "2026-05-02_arxiv-mab-llm-mlo-channel-allocation"
       ],
       "entries_secondary": [
+        "2026-05-12_ieee-mentor-wng-sc-antwerp-digest",
+        "2026-05-12_ieee-mentor-tgbn-antwerp-digest",
         "2026-05-01_broadcom-wifi8-ces2026",
         "2026-05-01_arxiv-25-years-tutorial"
       ],
@@ -259,6 +323,7 @@ window.KB_DATA = {
         "2026-05-01_arxiv-ma-mab-spatial-reuse"
       ],
       "entries_secondary": [
+        "2026-05-12_ieee-mentor-tgbn-antwerp-digest",
         "2026-05-01_arxiv-25-years-tutorial",
         "2026-05-01_arxiv-aiml-csi-feedback-compression"
       ],
@@ -297,6 +362,8 @@ window.KB_DATA = {
         "2026-05-03_arxiv-rtwt-rta-delay-model"
       ],
       "entries_secondary": [
+        "2026-05-12_ieee-mentor-tgbq-antwerp-digest",
+        "2026-05-12_ieee-mentor-tgbn-antwerp-digest",
         "2026-05-01_arxiv-co-tdma-802-11bn",
         "2026-05-01_arxiv-wifi8-latency-co-sr"
       ],
@@ -321,6 +388,8 @@ window.KB_DATA = {
       "narrative_last_updated": "2026-05-05",
       "diagram_mmd": "mindmap\n  root((Sensing / CSI / RFF))\n    802.11bf standard\n      Monostatic\n      Bistatic\n      Multistatic\n      Passive\n    Protocol modelling\n      bf-vs-ax coexistence in ns-3\n      Multiband passive sensing\n    ML pipelines\n      WuKong neuro-wideband\n      RF-Lego deep unrolling\n      AM-FM CSI foundation model\n      Self-supervised sensing\n    Applications\n      Respiratory monitoring\n      Activity recognition\n      Multi-user counting\n      Federated indoor localisation\n      RSSI-only sensing\n    RFF adjacency\n      CSI-RFF microsignals\n      FSM device fingerprinting\n    Watch\n      Productisation gap\n      Sensing-privacy regulation",
       "entries_primary": [
+        "2026-05-12_arxiv-mu-shot-fi-multiuser-sensing",
+        "2026-05-12_arxiv-wifi-fall-detection-physics-transformer",
         "2026-05-04_arxiv-respirfi-respiratory-wifi-csi",
         "2026-05-03_arxiv-multiuser-wifi-sensing-counting",
         "2026-05-01_arxiv-rf-lego-deep-unrolling",
@@ -340,6 +409,8 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-05-12_arxiv-mu-shot-fi-multiuser-sensing",
+          "2026-05-12_arxiv-wifi-fall-detection-physics-transformer",
           "2026-05-04_arxiv-respirfi-respiratory-wifi-csi",
           "2026-05-03_arxiv-multiuser-wifi-sensing-counting",
           "2026-05-01_arxiv-rf-lego-deep-unrolling",
@@ -393,6 +464,7 @@ window.KB_DATA = {
       "narrative_last_updated": "2026-05-05",
       "diagram_mmd": "mindmap\n  root((AMP-IoT / 20MHz IoT))\n    Standards\n      802.11bp Ambient Power\n      Wi-Fi CERTIFIED 7 at 20MHz\n    Energy harvesting\n      RF\n      Light\n      Vibration\n    TGbp mechanisms\n      AMP UL channel access\n      AMP receive procedure\n      AMP transmit spec\n      AMP triggering\n      AMP WPT control\n    Coexistence\n      BLE / Thread / Zigbee market\n      HPE Aruba 730 BLE 5.4 + Wi-Fi 7\n    Watch\n      TGbp draft progress\n      Coin-cell / no-battery designs\n      AMP-aware Wi-Fi 8 silicon",
       "entries_primary": [
+        "2026-05-12_ieee-mentor-tgbp-antwerp-digest",
         "2026-05-03_ieee-11bp-amp-ul-channel-access",
         "2026-05-01_wifi-alliance-20mhz-iot-cert"
       ],
@@ -402,6 +474,9 @@ window.KB_DATA = {
         "2026-05-01_qualcomm-wifi8-mwc2026"
       ],
       "by_type_primary": {
+        "ieee-document": [
+          "2026-05-12_ieee-mentor-tgbp-antwerp-digest"
+        ],
         "proposal": [
           "2026-05-03_ieee-11bp-amp-ul-channel-access"
         ],
@@ -421,14 +496,20 @@ window.KB_DATA = {
       "narrative_html_zh": "<p>本桶留给 <strong>802.11bq 融合 mmWave</strong> 工作——60 GHz Wi-Fi 通过 sub-7 GHz 链路紧耦合完成发现、关联与调度。截至 2026 年 5 月，尚无以 <code>mmwave-bq</code> 为主属的条目；该主题作为<em>次属</em>出现在数份全会综述中（<code>2026-05-01_ieee-january-2026-readout</code>、<code>2026-05-01_ieee-march-2026-readout</code>、<code>2026-05-03_ieee-mentor-may-2026-pre-interim-digest</code>），以及 <code>2026-05-01_arxiv-multiband-passive-sensing</code>（利用 mmWave TRN 字段做感知）。</p>\n<p>本 KB 一直追踪的 802.11bq 关键设计争议是 <strong>mmWave 信标分裂</strong>：60 GHz AP 是否要自行发射信标帧（独立可运行架构、复杂度更高），还是完全依赖 sub-7 GHz 协调（功耗更低、上市更快）。2026 年 1 月中期会议未对二者做禁令。</p>\n<p>待关注：802.11bq 草案的实质性进展；厂商芯片公告（mmWave + Wi-Fi 7/8 双射频芯片）；学界对 mmWave–sub-7 GHz 调度原语的研究。</p>",
       "narrative_last_updated": "2026-05-05",
       "diagram_mmd": "mindmap\n  root((mmWave / 802.11bq))\n    Architecture question\n      Standalone 60 GHz beacons\n      Sub-7 GHz coordination only\n    Bands\n      60 GHz\n      Sub-7 GHz pairing\n    Cross-references\n      Plenary readouts (secondary)\n      Multiband passive sensing (TRN)\n    Watch\n      802.11bq draft progress\n      mmWave + Wi-Fi 7/8 dual-radio silicon\n      Sub-7 / mmWave scheduling primitives",
-      "entries_primary": [],
+      "entries_primary": [
+        "2026-05-12_ieee-mentor-tgbq-antwerp-digest"
+      ],
       "entries_secondary": [
         "2026-05-03_ieee-mentor-may-2026-pre-interim-digest",
         "2026-05-01_ieee-march-2026-readout",
         "2026-05-01_ieee-january-2026-readout",
         "2026-05-01_arxiv-multiband-passive-sensing"
       ],
-      "by_type_primary": {}
+      "by_type_primary": {
+        "ieee-document": [
+          "2026-05-12_ieee-mentor-tgbq-antwerp-digest"
+        ]
+      }
     },
     "wifi8-uhr": {
       "id": "wifi8-uhr",
@@ -442,6 +523,8 @@ window.KB_DATA = {
       "narrative_last_updated": "2026-05-05",
       "diagram_mmd": "mindmap\n  root((Wi-Fi 8 / 802.11bn / UHR))\n    Schedule 2026\n      D1.3 approved Jan Victoria\n      March plenary - no D2.0 ratify\n      D2.0 ballot slipped May to Jul\n      Ratify target May 2028\n    Study groups\n      AIML TIG/SC\n      AI Offload SG\n      WNG SC\n    Vendor positioning\n      Qualcomm AI-Native MWC 2026\n      Broadcom unified CES 2026\n      MediaTek Filogic 8000\n      Intel four-pillar WWC\n      Gemtek / Quectel\n    Background reading\n      25-year Wi-Fi tutorial\n      AIML CSI feedback survey\n    Watch\n      July 2026 D2.0 ballot\n      AI Offload SG charter\n      Wi-Fi 9 / WNG contributions",
       "entries_primary": [
+        "2026-05-12_ieee-mentor-wng-sc-antwerp-digest",
+        "2026-05-12_ieee-mentor-tgbn-antwerp-digest",
         "2026-05-03_ieee-mentor-may-2026-pre-interim-digest",
         "2026-05-04_intel-wwc-wifi8-vision",
         "2026-05-01_ieee-tgbn-d2-schedule",
@@ -454,6 +537,9 @@ window.KB_DATA = {
         "2026-05-01_arxiv-25-years-tutorial"
       ],
       "entries_secondary": [
+        "2026-05-12_ieee-mentor-tgbt-antwerp-digest",
+        "2026-05-12_ieee-mentor-tgbq-antwerp-digest",
+        "2026-05-12_ieee-mentor-ai-offload-sg-antwerp-digest",
         "2026-05-03_ieee-11bn-epcs-context-transfer-seamless-roaming",
         "2026-05-04_mediatek-wwc-dso-plus",
         "2026-05-01_hpe-aruba-mist-unified-2026",
@@ -461,6 +547,8 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "ieee-document": [
+          "2026-05-12_ieee-mentor-wng-sc-antwerp-digest",
+          "2026-05-12_ieee-mentor-tgbn-antwerp-digest",
           "2026-05-03_ieee-mentor-may-2026-pre-interim-digest",
           "2026-05-01_ieee-tgbn-d2-schedule"
         ],
@@ -494,6 +582,8 @@ window.KB_DATA = {
       "narrative_last_updated": "",
       "diagram_mmd": "",
       "entries_primary": [
+        "2026-05-12_hpe-self-driving-networks-723h",
+        "2026-05-12_extreme-connect-platform-one-agentone",
         "2026-05-05_belden-acquires-ruckus-1-85b",
         "2026-05-04_realtek-wifi7-revenue-surge-q1-2026",
         "2026-05-04_rcr-mdu-wifi-msp-vs-carriers",
@@ -506,6 +596,11 @@ window.KB_DATA = {
       ],
       "entries_secondary": [],
       "by_type_primary": {
+        "product": [
+          "2026-05-12_hpe-self-driving-networks-723h",
+          "2026-05-12_extreme-connect-platform-one-agentone",
+          "2026-05-04_hpe-aruba-730-utb-wifi7-ap"
+        ],
         "industry-news": [
           "2026-05-05_belden-acquires-ruckus-1-85b",
           "2026-05-04_realtek-wifi7-revenue-surge-q1-2026",
@@ -515,9 +610,6 @@ window.KB_DATA = {
           "2026-05-04_ruckus-nokia-wifi7-fiber-olan",
           "2026-05-04_cisco-georgetown-wifi7-deployment",
           "2026-05-04_cisco-wifi7-breakout-year-2026"
-        ],
-        "product": [
-          "2026-05-04_hpe-aruba-730-utb-wifi7-ap"
         ]
       }
     },
@@ -571,8 +663,11 @@ window.KB_DATA = {
       ],
       "entries_secondary": [
         "2026-05-05_arxiv-iterate-ebpf-rate-control",
+        "2026-05-12_arxiv-mu-shot-fi-multiuser-sensing",
+        "2026-05-12_arxiv-ncsim-edge-wifi-interference",
         "2026-05-04_arxiv-policy-driven-drl-nru-wifi-coexistence",
         "2026-05-03_nsdi-law-802-11-low-latency-link-layer",
+        "2026-05-12_arxiv-wifi-fall-detection-physics-transformer",
         "2026-05-01_arxiv-rf-lego-deep-unrolling",
         "2026-05-01_arxiv-mlo-drl-lstm-cross-layer",
         "2026-05-01_arxiv-blade-adaptive-contention",
@@ -607,13 +702,20 @@ window.KB_DATA = {
       "narrative_html_zh": "<p>本桶覆盖 <strong>Wi-Fi 作为 AI / 自治系统负载的接入层</strong>——XR 流、设备端 LLM 协调、智能体流量投递，以及边缘设备到 LAN 侧算力的计算卸载，<em>仅当卸载跳板为 Wi-Fi 时</em>（蜂窝卸载——5G MEC、NTN、通过蜂窝接入的 NR-U 计算卸载——明确不在范围，会在巡检采集环节过滤）。核心问题：<strong>为了让 AI 工作负载保持在其时延 / 丢包 / 吞吐预算内，射频侧需要交付什么？</strong></p>\n<p>截至 2026 年 5 月，尚无以 <code>wifi-for-ai</code> 为主属的条目。该主题作为<em>次属</em>出现在三条明确将 Wi-Fi 8 芯片定位为 AI 流量承载的厂商公告中——<code>2026-05-01_qualcomm-wifi8-mwc2026</code>（面向&quot;AI-Native&quot;体验的 FastConnect 8800 + Dragonwing）、<code>2026-05-01_gemtek-quectel-wifi8-mwc2026</code>（Gemtek 的 AI-driven CPE 路线）和 <code>2026-05-04_intel-wwc-wifi8-vision</code>（四支柱框架中 AI-enablement 居首）。</p>\n<p>待关注：MLO 上的 XR / VR 流传输研究；设备端 LLM 协调协议；带有 AI 工作负载特征的确定性交付测量；将 Wi-Fi 显式纳入卸载预算的计算卸载论文。<strong>拒绝</strong>任何卸载跳板为蜂窝的论文；它们属于蜂窝文献，不在此范围。</p>",
       "narrative_last_updated": "2026-05-05",
       "diagram_mmd": "mindmap\n  root((Wi-Fi for AI))\n    Workloads\n      XR streams\n      On-device LLM coordination\n      Agentic-traffic delivery\n      Wi-Fi-leg computation offload\n    Out of scope\n      5G MEC offload\n      NTN offload\n      NR-U cellular offload\n    Vendor positioning (secondaries)\n      Qualcomm FastConnect 8800 AI-Native\n      Gemtek AI-driven CPE\n      Intel four-pillar AI-enablement\n    Watch\n      XR / VR over MLO papers\n      On-device LLM coordination protocols\n      Deterministic delivery with AI signatures\n      Wi-Fi-leg offload-budget modelling",
-      "entries_primary": [],
+      "entries_primary": [
+        "2026-05-12_arxiv-ncsim-edge-wifi-interference"
+      ],
       "entries_secondary": [
+        "2026-05-12_ieee-mentor-ai-offload-sg-antwerp-digest",
         "2026-05-04_intel-wwc-wifi8-vision",
         "2026-05-01_gemtek-quectel-wifi8-mwc2026",
         "2026-05-01_qualcomm-wifi8-mwc2026"
       ],
-      "by_type_primary": {}
+      "by_type_primary": {
+        "academic-paper": [
+          "2026-05-12_arxiv-ncsim-edge-wifi-interference"
+        ]
+      }
     },
     "agentic-wifi": {
       "id": "agentic-wifi",
@@ -627,6 +729,7 @@ window.KB_DATA = {
       "narrative_last_updated": "2026-05-05",
       "diagram_mmd": "mindmap\n  root((Agentic Wi-Fi))\n    Agent shapes\n      Orchestration\n      Troubleshooting\n      Policy code generation\n      Multi-agent collaboration\n    Academic frameworks\n      WirelessBench (3-tier hierarchy)\n      WirelessAgent++ (MCTS workflow)\n      ComAgent multi-LLM PPAR\n      IntelliCISE security threat model\n    Industry\n      HPE Aruba+Mist unified\n      TP-Link Aireal cloud GPT\n    Standards adjacency\n      AI Offload SG (March 2026)\n    Watch\n      AI Offload SG to TG?\n      Safety / hallucination benchmarks\n      Production false-positive landings\n      LLM-controller attack surface",
       "entries_primary": [
+        "2026-05-12_ieee-mentor-ai-offload-sg-antwerp-digest",
         "2026-05-05_arxiv-iterate-ebpf-rate-control",
         "2026-05-01_arxiv-wirelessbench-llm-agent",
         "2026-05-01_arxiv-wirelessagent-plus-plus",
@@ -636,6 +739,9 @@ window.KB_DATA = {
         "2026-05-01_hpe-aruba-mist-unified-2026"
       ],
       "entries_secondary": [
+        "2026-05-12_ieee-mentor-wng-sc-antwerp-digest",
+        "2026-05-12_hpe-self-driving-networks-723h",
+        "2026-05-12_extreme-connect-platform-one-agentone",
         "2026-05-04_intel-wwc-wifi8-vision",
         "2026-05-01_ieee-march-2026-readout",
         "2026-05-01_arxiv-llm-rl-wireless-optimization",
@@ -646,6 +752,9 @@ window.KB_DATA = {
         "2026-05-01_arxiv-on-device-llm-roaming"
       ],
       "by_type_primary": {
+        "ieee-document": [
+          "2026-05-12_ieee-mentor-ai-offload-sg-antwerp-digest"
+        ],
         "academic-paper": [
           "2026-05-05_arxiv-iterate-ebpf-rate-control",
           "2026-05-01_arxiv-wirelessbench-llm-agent",
@@ -673,6 +782,7 @@ window.KB_DATA = {
       "narrative_last_updated": "2026-05-05",
       "diagram_mmd": "mindmap\n  root((Security & privacy))\n    Attacks\n      AirSnitch client-isolation (NDSS'26)\n      CSI-RFF microsignals\n      StateFi FSM fingerprinting\n      VWattacker VoWiFi\n      Rural deployment surface\n    Defenses\n      PHY-preamble signatures (CE)\n      Runtime MAC re-randomization\n      Secure FTM (cross to ftm-ranging)\n    Standards activity\n      TGbi EPPKE\n      TGbt post-quantum / crypto agility\n    Patent candidates\n      uhr-sig-ce-preamble-signature\n      mlo-coordinated-mac-rerandomization-ie\n      secure-ftm-anti-downgrade-ie\n    Watch\n      WPA3 successor at IETF/IEEE\n      Sensing-privacy regulation\n      RFF rotation + MAC re-randomization",
       "entries_primary": [
+        "2026-05-12_ieee-mentor-tgbt-antwerp-digest",
         "2026-05-04_arxiv-rural-wifi-security-piso-pmwani",
         "2026-05-04_arxiv-csi-rff-microsignals-fingerprinting",
         "2026-05-03_ndss-airsnitch-wifi-client-isolation",
@@ -682,6 +792,7 @@ window.KB_DATA = {
         "2026-05-05_arxiv-mac-rerandomization-runtime"
       ],
       "entries_secondary": [
+        "2026-05-12_ieee-mentor-tgbp-antwerp-digest",
         "2026-05-03_ieee-11bn-epcs-context-transfer-seamless-roaming",
         "2026-05-01_arxiv-secure-wifi-ranging-az-bk",
         "2026-05-01_arxiv-intellicise-agentic-ai-security",
@@ -689,6 +800,9 @@ window.KB_DATA = {
         "2026-05-01_arxiv-ftm-survey-2025"
       ],
       "by_type_primary": {
+        "ieee-document": [
+          "2026-05-12_ieee-mentor-tgbt-antwerp-digest"
+        ],
         "academic-paper": [
           "2026-05-04_arxiv-rural-wifi-security-piso-pmwani",
           "2026-05-04_arxiv-csi-rff-microsignals-fingerprinting",
@@ -715,7 +829,10 @@ window.KB_DATA = {
         "2026-05-03_ieee-11bn-epcs-context-transfer-seamless-roaming",
         "2026-05-01_arxiv-on-device-llm-roaming"
       ],
-      "entries_secondary": [],
+      "entries_secondary": [
+        "2026-05-12_ieee-mentor-tgbn-antwerp-digest",
+        "2026-05-12_hpe-self-driving-networks-723h"
+      ],
       "by_type_primary": {
         "proposal": [
           "2026-05-03_ieee-11bn-epcs-context-transfer-seamless-roaming"
@@ -738,12 +855,282 @@ window.KB_DATA = {
       "diagram_mmd": "mindmap\n  root((Energy / power save))\n    Mechanisms\n      TWT energy budgets\n      R-TWT energy side\n      Deep-sleep schedules\n      Battery-aware client behaviour\n    Cross-references\n      amp-iot harvesting\n      rtwt-latency latency side\n      mlo per-link cost\n    Today (secondary appearances)\n      TWT deterministic on Wi-Fi 6\n      20 MHz Wi-Fi 7 IoT cert\n    Splitting rule\n      Save N% energy - primary here\n      Deliver under M ms - primary in latency bin\n    Watch\n      Per-class MLO energy measurements\n      AMP-IoT battery-life pilots\n      Wi-Fi 8 deep-sleep current draw",
       "entries_primary": [],
       "entries_secondary": [
+        "2026-05-12_ieee-mentor-wng-sc-antwerp-digest",
+        "2026-05-12_ieee-mentor-tgbp-antwerp-digest",
+        "2026-05-12_ieee-mentor-tgbn-antwerp-digest",
         "2026-05-03_arxiv-twt-deterministic-scheduling-wifi6"
       ],
       "by_type_primary": {}
     }
   },
   "entries": [
+    {
+      "id": "2026-05-12_ieee-mentor-wng-sc-antwerp-digest",
+      "date_found": "2026-05-12",
+      "date_published": "2026-05-11",
+      "type": "ieee-document",
+      "category": "standards",
+      "title_en": "IEEE 802.11 WNG SC Mentor digest — Antwerp interim May 2026 (Wi-Fi 9 directional pitches)",
+      "title_zh": "IEEE 802.11 WNG SC Mentor 摘要——Antwerp 期中会议 2026-05（Wi-Fi 9 方向性提案）",
+      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=0wng",
+      "topics": [
+        "WNG SC",
+        "Wi-Fi 9",
+        "802.11bx",
+        "agentic-AI",
+        "automotive",
+        "MLO",
+        "exponential-backoff",
+        "freshness",
+        "CSMA"
+      ],
+      "topic_primary": "wifi8-uhr",
+      "topics_secondary": [
+        "agentic-wifi",
+        "mlo",
+        "energy-power-save"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-05-12_ieee-mentor-wng-sc-antwerp-digest.md",
+      "summary_short_en": "The Wireless Next Generation Standing Committee (WNG SC) is where Wi-Fi 9 / post-11bn directional ideas land first. The Antwerp interim produced an unusually substantive WNG SC docket — five distinctly new proposal threads, each pointing at a possible future task group or technology axis. The headline contribution is **DCN 11-26-1012 \"802.11bx for AI\"** from Huawei (Abdalla Hussein), which sketches the case for a dedicated AI-centric task group beyond the current AI Offload SG / AIML TIG work — a meaningful escalation in how the AI story is being structured in the 802.11 WG. The other four are individually focused but collectively map the post-Wi-Fi-8 landscape: Qualcomm pitching a reconsideration of exponential backoff, UW academics proposing power save for Wi-Fi MLO, Toyota arguing for an automotive perspective on the next amendment, and TCL pitching freshness indication for real-time information delivery.",
+      "summary_short_zh": "无线下一代常务委员会（WNG SC）是 Wi-Fi 9 / 后 11bn 方向性想法的首发场地。Antwerp 期中会议产生了一份内容异常丰富的 WNG SC 议程 —— 五条明显新的提案线，每一条都指向一个可能的未来任务组或技术轴。头条贡献是 **DCN 11-26-1012「面向 AI 的 802.11bx」**，由 Huawei（Abdalla Hussein）提出，勾勒了为何应该设立一个超越当前 AI Offload SG / AIML TIG 工作之外、专门面向 AI 的任务组——这是 AI 故事在 802.11 WG 中如何被结构化方面的一次有意义升级。另外四条单独看各有侧重，合起来勾勒了后 Wi-Fi 8 版图：Qualcomm 主张重新考量指数退避、UW 学者提出 Wi-Fi MLO 的省电方案、Toyota 主张以汽车视角审视下一份修订、TCL 提出实时信息分发的「新鲜度」指示。",
+      "body_html_en": "<h3>Summary</h3>\n<p>The Wireless Next Generation Standing Committee (WNG SC) is where Wi-Fi 9 / post-11bn directional ideas land first. The Antwerp interim produced an unusually substantive WNG SC docket — five distinctly new proposal threads, each pointing at a possible future task group or technology axis. The headline contribution is <strong>DCN 11-26-1012 &quot;802.11bx for AI&quot;</strong> from Huawei (Abdalla Hussein), which sketches the case for a dedicated AI-centric task group beyond the current AI Offload SG / AIML TIG work — a meaningful escalation in how the AI story is being structured in the 802.11 WG. The other four are individually focused but collectively map the post-Wi-Fi-8 landscape: Qualcomm pitching a reconsideration of exponential backoff, UW academics proposing power save for Wi-Fi MLO, Toyota arguing for an automotive perspective on the next amendment, and TCL pitching freshness indication for real-time information delivery.</p>\n<p>These contributions are exactly the type the March 2026 plenary readout (<code>2026-05-01_ieee-march-2026-readout</code>) flagged as expected: &quot;WNG discussions will continue building toward a formal Study Group at the July 2026 plenary, with the first half of 2026 expected to remain focused on market requirements.&quot; The May docket is the requirements-side material that will inform a July SG decision.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>DCN 11-26-1012 · WNG SC</strong> — &quot;802.11bx for AI&quot;. Abdalla Hussein (Huawei). Pitches a dedicated AI-centric task group beyond AI Offload SG / AIML TIG; if it converges to a Study Group at July 2026 plenary, this is the next post-11bn amendment line.</li><li><strong>DCN 11-26-1001 · WNG SC</strong> — Power Save for Wi-Fi MLO. S. Roy &amp; M. Shen (University of Washington). Academic proposal addressing the MLO power tax — joining <code>2026-05-04_intel-wwc-wifi8-vision</code>'s power thread.</li><li><strong>DCN 11-26-1000 · WNG SC</strong> — Considerations on Beyond 11bn from an Automotive Perspective. Jing Ma (Toyota). First Wi-Fi-for-automotive pitch in the post-11bn WNG sequence; pairs with NGV work on the cellular side.</li><li><strong>DCN 11-26-985 · WNG SC</strong> — Reconsidering Exponential Backoff. Menzo Wentink (Qualcomm) et al. <strong>Most provocative</strong> — questions a 25-year bedrock of WiFi MAC; companion to 1010/1008 coex measurements.</li><li><strong>DCN 11-26-633r1 · WNG SC</strong> — Freshness Indication for Real-Time Information Delivery in Next-Gen WLAN. Weiwei Fan (TCL). Per-packet age-of-information signalling for RTA traffic.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>WNG SC's role is to be the staging area, and this week three of the five threads — 802.11bx for AI, exponential-backoff reconsideration, and freshness indication — each have legitimate paths to becoming named amendments. The Huawei AI pitch (DCN 1012) deserves a dedicated entry on next run; it's the first explicit &quot;give AI its own amendment, not just an SG&quot; proposal in the public record and the wording matters for how AI-for-WiFi vs WiFi-for-AI work gets divided. The Qualcomm exponential-backoff piece is more disruptive in scope (it touches every Wi-Fi MAC since 802.11-1997) but less likely to result in a near-term amendment — more a position paper meant to seed conversations during D2.0 review. The Toyota and UW pitches are good cross-domain signal: automotive Wi-Fi is finally surfacing as a WG-level concern, and academic MLO power-save work is being routed through WNG rather than only published in papers.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>无线下一代常务委员会（WNG SC）是 Wi-Fi 9 / 后 11bn 方向性想法的首发场地。Antwerp 期中会议产生了一份内容异常丰富的 WNG SC 议程 —— 五条明显新的提案线，每一条都指向一个可能的未来任务组或技术轴。头条贡献是 <strong>DCN 11-26-1012「面向 AI 的 802.11bx」</strong>，由 Huawei（Abdalla Hussein）提出，勾勒了为何应该设立一个超越当前 AI Offload SG / AIML TIG 工作之外、专门面向 AI 的任务组——这是 AI 故事在 802.11 WG 中如何被结构化方面的一次有意义升级。另外四条单独看各有侧重，合起来勾勒了后 Wi-Fi 8 版图：Qualcomm 主张重新考量指数退避、UW 学者提出 Wi-Fi MLO 的省电方案、Toyota 主张以汽车视角审视下一份修订、TCL 提出实时信息分发的「新鲜度」指示。</p>\n<p>这些贡献正是 2026 年 3 月全会综述（<code>2026-05-01_ieee-march-2026-readout</code>）所预期的：「WNG 讨论将继续向 2026 年 7 月全会上正式设立 Study Group 推进；2026 上半年预计继续聚焦市场需求」。5 月这份议程正是为 7 月 SG 决定提供需求侧素材。</p>\n<h3>技术要点</h3>\n<ul><li><strong>DCN 11-26-1012 · WNG SC</strong> —— 「面向 AI 的 802.11bx」。Abdalla Hussein（Huawei）。倡议设立一个超越 AI Offload SG / AIML TIG 的专门面向 AI 的任务组；若在 2026 年 7 月全会上推进为 SG，将是 11bn 之后的下一条修订线。</li><li><strong>DCN 11-26-1001 · WNG SC</strong> —— Wi-Fi MLO 的省电方案。S. Roy 与 M. Shen（华盛顿大学）。学界提案，针对 MLO 省电税；与 <code>2026-05-04_intel-wwc-wifi8-vision</code> 的功耗线呼应。</li><li><strong>DCN 11-26-1000 · WNG SC</strong> —— 从汽车视角看 11bn 之后。Jing Ma（丰田）。WNG 后 11bn 序列中首个 Wi-Fi-for-automotive 提案；与蜂窝侧 NGV 工作互为搭配。</li><li><strong>DCN 11-26-985 · WNG SC</strong> —— 重新考量指数退避。Menzo Wentink（Qualcomm）等。<strong>最具争议</strong>——挑战 WiFi MAC 25 年来的基石；与 1010/1008 共存测量为同一线索。</li><li><strong>DCN 11-26-633r1 · WNG SC</strong> —— 下一代 WLAN 中实时信息分发的新鲜度指示。Weiwei Fan（TCL）。RTA 流量的「信息年龄」逐包信令。</li></ul>\n<h3>意义与新意</h3>\n<p>WNG SC 的角色是「候场区」，而本周五条线中有三条 —— 面向 AI 的 802.11bx、重新考量指数退避、新鲜度指示 —— 各自都有合理路径成为命名修订。Huawei 的 AI 提案（DCN 1012）值得在下次运行中独立成文；它是公开记录中首份明确「给 AI 一份独立修订、而不只是一个 SG」的提案，措辞对 AI-for-WiFi 与 WiFi-for-AI 工作如何划分至关重要。Qualcomm 的指数退避提案影响范围更大（触及 802.11-1997 以来的每一份 WiFi MAC），但近期落成修订的可能性较低 —— 更像是一份在 D2.0 评审期间播种讨论的立场文。Toyota 与 UW 的提案是良好的跨域信号：汽车 WiFi 终于在 WG 层面浮出水面，学界的 MLO 省电工作也开始走 WNG 而不仅仅发表论文。</p>",
+      "images": [],
+      "search_blob": "ieee 802.11 wng sc mentor digest — antwerp interim may 2026 (wi-fi 9 directional pitches) ieee 802.11 wng sc mentor 摘要——antwerp 期中会议 2026-05（wi-fi 9 方向性提案） wng sc wi-fi 9 802.11bx agentic-ai automotive mlo exponential-backoff freshness csma the wireless next generation standing committee (wng sc) is where wi-fi 9 / post-11bn directional ideas land first. the antwerp interim produced an unusually substantive wng sc docket — five distinctly new proposal threads, each pointing at a possible future task group or technology axis. the headline contribution is **dcn 11-26-1012 \"802.11bx for ai\"** from huawei (abdalla hussein), which sketches the case for a dedicated ai-centric task group beyond the current ai offload sg / aiml tig work — a meaningful escalation in how the ai story is being structured in the 802.11 wg. the other four are individually focused but collectively map the post-wi-fi-8 landscape: qualcomm pitching a reconsideration of exponential backoff, uw academics proposing power save for wi-fi mlo, toyota arguing for an automotive perspective on the next amendment, and tcl pitching freshness indication for real-time information delivery. 无线下一代常务委员会（wng sc）是 wi-fi 9 / 后 11bn 方向性想法的首发场地。antwerp 期中会议产生了一份内容异常丰富的 wng sc 议程 —— 五条明显新的提案线，每一条都指向一个可能的未来任务组或技术轴。头条贡献是 **dcn 11-26-1012「面向 ai 的 802.11bx」**，由 huawei（abdalla hussein）提出，勾勒了为何应该设立一个超越当前 ai offload sg / aiml tig 工作之外、专门面向 ai 的任务组——这是 ai 故事在 802.11 wg 中如何被结构化方面的一次有意义升级。另外四条单独看各有侧重，合起来勾勒了后 wi-fi 8 版图：qualcomm 主张重新考量指数退避、uw 学者提出 wi-fi mlo 的省电方案、toyota 主张以汽车视角审视下一份修订、tcl 提出实时信息分发的「新鲜度」指示。 ieee-document"
+    },
+    {
+      "id": "2026-05-12_ieee-mentor-tgbt-antwerp-digest",
+      "date_found": "2026-05-12",
+      "date_published": "2026-05-11",
+      "type": "ieee-document",
+      "category": "standards",
+      "title_en": "IEEE 802.11 TGbt Mentor digest — Antwerp interim May 2026 (PQC PAKE / PASN / Roaming / PoW)",
+      "title_zh": "IEEE 802.11 TGbt Mentor 摘要——Antwerp 期中会议 2026-05（PQC PAKE / PASN / 漫游 / PoW）",
+      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=0bt",
+      "topics": [
+        "802.11bt",
+        "post-quantum-cryptography",
+        "PAKE",
+        "PASN",
+        "PQC-roaming",
+        "802.1X",
+        "PoW"
+      ],
+      "topic_primary": "security-privacy",
+      "topics_secondary": [
+        "wifi8-uhr"
+      ],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-05-12_ieee-mentor-tgbt-antwerp-digest.md",
+      "summary_short_en": "TGbt (Post-Quantum Cryptography for 802.11) is collecting comments on D0.2 and is on track for an initial WG ballot on D1.0 coming out of the May 2026 session — the schedule flagged at the March plenary. Antwerp activity is dense: 25+ contributions spanning PQC PAKE, PQC PASN, PQC roaming, PQC direct authentication, key derivation, rekey CIDs, 802.1X integration, and proof-of-work strengthening. The week also produced two academic-quality cryptographic critiques from KU Leuven (Mathy Vanhoef): **DCN 11-26-1047 \"PQC PTK hash transcript ambiguity\"** and **DCN 11-26-1024 \"CPACEOQUAKE+ in 802.11\"** (a CPace+OQUAKE+ hybrid PAKE variant from ZTE) — bringing the same security-research rigor Vanhoef applied to KRACK / FragAttacks into the PQC drafting phase before D1.0 ratification.",
+      "summary_short_zh": "TGbt（802.11 后量子密码）正在收集 D0.2 评论，按本届 5 月会议结束后启动 D1.0 初次 WG 投票的进度推进 —— 这是 3 月全会确认的时间表。Antwerp 活动密集：25 余项贡献覆盖 PQC PAKE、PQC PASN、PQC 漫游、PQC 直接认证、密钥派生、rekey CID、802.1X 集成、以及工作量证明加固。本周还产生了两份来自 KU Leuven（Mathy Vanhoef）的学术级密码学批评：**DCN 11-26-1047「PQC PTK 哈希转录歧义」** 与 **DCN 11-26-1024「802.11 中的 CPACEOQUAKE+」**（ZTE 提出的 CPace+OQUAKE+ 混合 PAKE 变体）—— 把 Vanhoef 在 KRACK / FragAttacks 上的安全研究严谨度带入 PQC 起草、在 D1.0 批准之前。",
+      "body_html_en": "<h3>Summary</h3>\n<p>TGbt (Post-Quantum Cryptography for 802.11) is collecting comments on D0.2 and is on track for an initial WG ballot on D1.0 coming out of the May 2026 session — the schedule flagged at the March plenary. Antwerp activity is dense: 25+ contributions spanning PQC PAKE, PQC PASN, PQC roaming, PQC direct authentication, key derivation, rekey CIDs, 802.1X integration, and proof-of-work strengthening. The week also produced two academic-quality cryptographic critiques from KU Leuven (Mathy Vanhoef): <strong>DCN 11-26-1047 &quot;PQC PTK hash transcript ambiguity&quot;</strong> and <strong>DCN 11-26-1024 &quot;CPACEOQUAKE+ in 802.11&quot;</strong> (a CPace+OQUAKE+ hybrid PAKE variant from ZTE) — bringing the same security-research rigor Vanhoef applied to KRACK / FragAttacks into the PQC drafting phase before D1.0 ratification.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>DCN 11-26-1047 · TGbt</strong> — PQC PTK hash transcript ambiguity. KU Leuven (Mathy Vanhoef).</li><li><strong>DCN 11-26-1040r3 · TGbt</strong> — CIDs related to rekey. Bo Cao (ZTE).</li><li><strong>DCN 11-26-1024r1 · TGbt</strong> — CPACEOQUAKE+ in 802.11. Jay Yang (ZTE). Hybrid PAKE construction.</li><li><strong>DCN 11-26-1007 · TGbt</strong> — aggregation of authentication frames. Yan Li (ZTE).</li><li><strong>DCN 11-26-1003 · TGbt</strong> — TGbt CC52 with Grouping. Stephen Orr (Cisco).</li><li><strong>DCN 11-26-984/981/980 · TGbt</strong> — Strengthening PoW Mechanisms (CR + presentation). Anuj Dharap (Cisco).</li><li><strong>DCN 11-26-974 · TGbt</strong> — Proposed Draft Texts for PQC PASN. Xuwen Zhao (TCL).</li><li><strong>DCN 11-26-973 · TGbt</strong> — Proposed Draft Texts for PQC Roaming. Xuwen Zhao (TCL).</li><li><strong>DCN 11-26-972 · TGbt</strong> — Proposed Draft Texts for PQC Direct Authentication. Xuwen Zhao (TCL).</li><li><strong>DCN 11-26-938r1 · TGbt</strong> — ptk-key-derivation. Dan Harkins (HPE).</li><li><strong>DCN 11-26-921r3 · TGbt</strong> — CR for 802.1X. Po-Kai Huang (Intel).</li><li><strong>DCN 11-26-841r2 · TGbt</strong> — TGbt agenda May Interim. Stephen Orr (Cisco).</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>PQC for Wi-Fi was rushed into TG status (TGbt formed November 2024) on the back of NIST PQC standardisation; the Antwerp output is the first time the TG has had to face academic-grade cryptographic scrutiny of its drafts. Vanhoef's transcript-ambiguity finding (DCN 1047) is exactly the kind of issue that would have shipped if D1.0 had ratified without independent review — the discovery before D1.0 is the success story here. TCL's three direct-text proposals (PASN / Roaming / Direct Auth) are the broadest single-contributor PQC-text drop in TGbt history and will likely anchor the D1.0 base text. The rekey-CIDs thread (DCN 1040) revising three times in two days indicates active disagreement on key-rotation semantics — worth a dedicated entry next run if a converged proposal emerges.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>TGbt（802.11 后量子密码）正在收集 D0.2 评论，按本届 5 月会议结束后启动 D1.0 初次 WG 投票的进度推进 —— 这是 3 月全会确认的时间表。Antwerp 活动密集：25 余项贡献覆盖 PQC PAKE、PQC PASN、PQC 漫游、PQC 直接认证、密钥派生、rekey CID、802.1X 集成、以及工作量证明加固。本周还产生了两份来自 KU Leuven（Mathy Vanhoef）的学术级密码学批评：<strong>DCN 11-26-1047「PQC PTK 哈希转录歧义」</strong> 与 <strong>DCN 11-26-1024「802.11 中的 CPACEOQUAKE+」</strong>（ZTE 提出的 CPace+OQUAKE+ 混合 PAKE 变体）—— 把 Vanhoef 在 KRACK / FragAttacks 上的安全研究严谨度带入 PQC 起草、在 D1.0 批准之前。</p>\n<h3>技术要点</h3>\n<ul><li><strong>DCN 11-26-1047 · TGbt</strong> —— PQC PTK 哈希转录歧义。KU Leuven（Mathy Vanhoef）。</li><li><strong>DCN 11-26-1040r3 · TGbt</strong> —— rekey 相关 CID。Bo Cao（ZTE）。</li><li><strong>DCN 11-26-1024r1 · TGbt</strong> —— 802.11 中的 CPACEOQUAKE+。Jay Yang（ZTE）。混合 PAKE 构造。</li><li><strong>DCN 11-26-1007 · TGbt</strong> —— 认证帧聚合。Yan Li（ZTE）。</li><li><strong>DCN 11-26-1003 · TGbt</strong> —— TGbt CC52 分组。Stephen Orr（Cisco）。</li><li><strong>DCN 11-26-984/981/980 · TGbt</strong> —— 加固 PoW 机制（CR + 演示）。Anuj Dharap（Cisco）。</li><li><strong>DCN 11-26-974 · TGbt</strong> —— PQC PASN 提议文本。Xuwen Zhao（TCL）。</li><li><strong>DCN 11-26-973 · TGbt</strong> —— PQC 漫游提议文本。Xuwen Zhao（TCL）。</li><li><strong>DCN 11-26-972 · TGbt</strong> —— PQC 直接认证提议文本。Xuwen Zhao（TCL）。</li><li><strong>DCN 11-26-938r1 · TGbt</strong> —— PTK 密钥派生。Dan Harkins（HPE）。</li><li><strong>DCN 11-26-921r3 · TGbt</strong> —— 802.1X CR。Po-Kai Huang（Intel）。</li><li><strong>DCN 11-26-841r2 · TGbt</strong> —— TGbt 期中议程。Stephen Orr（Cisco）。</li></ul>\n<h3>意义与新意</h3>\n<p>Wi-Fi 后量子密码是借 NIST PQC 标准化的势能在 2024-11 仓促立项（TGbt）；Antwerp 输出是该 TG 首次面对学术级别的密码学审视。Vanhoef 的转录歧义发现（DCN 1047）恰是若 D1.0 未经独立评审就批准、将随之进入草案的那类问题 —— 在 D1.0 之前发现，正是本周的成功故事。TCL 的三项直接文本提案（PASN / 漫游 / 直接认证）是 TGbt 历史上单一贡献者的最广 PQC 文本投放，很可能锚定 D1.0 基础文本。rekey CID 线索（DCN 1040）两天三修说明对密钥轮换语义仍有活跃分歧 —— 若有收敛方案出现，下次运行值得独立成文。</p>",
+      "images": [],
+      "search_blob": "ieee 802.11 tgbt mentor digest — antwerp interim may 2026 (pqc pake / pasn / roaming / pow) ieee 802.11 tgbt mentor 摘要——antwerp 期中会议 2026-05（pqc pake / pasn / 漫游 / pow） 802.11bt post-quantum-cryptography pake pasn pqc-roaming 802.1x pow tgbt (post-quantum cryptography for 802.11) is collecting comments on d0.2 and is on track for an initial wg ballot on d1.0 coming out of the may 2026 session — the schedule flagged at the march plenary. antwerp activity is dense: 25+ contributions spanning pqc pake, pqc pasn, pqc roaming, pqc direct authentication, key derivation, rekey cids, 802.1x integration, and proof-of-work strengthening. the week also produced two academic-quality cryptographic critiques from ku leuven (mathy vanhoef): **dcn 11-26-1047 \"pqc ptk hash transcript ambiguity\"** and **dcn 11-26-1024 \"cpaceoquake+ in 802.11\"** (a cpace+oquake+ hybrid pake variant from zte) — bringing the same security-research rigor vanhoef applied to krack / fragattacks into the pqc drafting phase before d1.0 ratification. tgbt（802.11 后量子密码）正在收集 d0.2 评论，按本届 5 月会议结束后启动 d1.0 初次 wg 投票的进度推进 —— 这是 3 月全会确认的时间表。antwerp 活动密集：25 余项贡献覆盖 pqc pake、pqc pasn、pqc 漫游、pqc 直接认证、密钥派生、rekey cid、802.1x 集成、以及工作量证明加固。本周还产生了两份来自 ku leuven（mathy vanhoef）的学术级密码学批评：**dcn 11-26-1047「pqc ptk 哈希转录歧义」** 与 **dcn 11-26-1024「802.11 中的 cpaceoquake+」**（zte 提出的 cpace+oquake+ 混合 pake 变体）—— 把 vanhoef 在 krack / fragattacks 上的安全研究严谨度带入 pqc 起草、在 d1.0 批准之前。 ieee-document"
+    },
+    {
+      "id": "2026-05-12_ieee-mentor-tgbq-antwerp-digest",
+      "date_found": "2026-05-12",
+      "date_published": "2026-05-11",
+      "type": "ieee-document",
+      "category": "standards",
+      "title_en": "IEEE 802.11 TGbq Mentor digest — Antwerp interim May 2026 (mmWave beam establishment, scheduling, polarization)",
+      "title_zh": "IEEE 802.11 TGbq Mentor 摘要——Antwerp 期中会议 2026-05（mmWave 波束建立、调度、极化）",
+      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=0bq",
+      "topics": [
+        "802.11bq",
+        "mmWave",
+        "IMMW",
+        "beam-establishment",
+        "scheduling",
+        "polarization",
+        "deterministic-latency"
+      ],
+      "topic_primary": "mmwave-bq",
+      "topics_secondary": [
+        "wifi8-uhr",
+        "rtwt-latency"
+      ],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-05-12_ieee-mentor-tgbq-antwerp-digest.md",
+      "summary_short_en": "TGbq (Integrated mmWave) used the Antwerp interim to push on three open architectural questions: how beams are established and reported, how mmWave service periods are scheduled (on-demand vs. pre-scheduled), and how polarisation factors into IMMW link design. The Huawei pitch DCN 11-26-1002 — \"Deterministic Low-Latency ~10 Gbps in the mmWave band for IEEE 802.11bq\" — is the most concrete numerical target the TG has put on paper this year, mapping the technical mission to a ~10 Gbps deterministic envelope rather than a peak-throughput marketing claim. Beam-establishment timing and reporting are now the most-revised threads (DCN 944, 510r2, 480r1), suggesting the TG is converging on a frame-level beam-establishment protocol but hasn't yet locked the timing parameters.",
+      "summary_short_zh": "TGbq（融合 mmWave）在 Antwerp 期中会议推进三个尚未收敛的架构问题：波束如何建立与上报、mmWave 服务期如何调度（按需 vs 预调度）、以及极化如何进入 IMMW 链路设计。Huawei 的 DCN 11-26-1002 ——「IEEE 802.11bq mmWave 频段确定性低时延约 10 Gbps」—— 是该 TG 本年度在文稿上给出最具体的数值目标，把技术任务映射到约 10 Gbps 的确定性包络，而不是峰值吞吐的营销口径。波束建立时序与上报是当前修订次数最多的线索（DCN 944、510r2、480r1），说明 TG 在向帧级波束建立协议收敛，但尚未锁定时序参数。",
+      "body_html_en": "<h3>Summary</h3>\n<p>TGbq (Integrated mmWave) used the Antwerp interim to push on three open architectural questions: how beams are established and reported, how mmWave service periods are scheduled (on-demand vs. pre-scheduled), and how polarisation factors into IMMW link design. The Huawei pitch DCN 11-26-1002 — &quot;Deterministic Low-Latency ~10 Gbps in the mmWave band for IEEE 802.11bq&quot; — is the most concrete numerical target the TG has put on paper this year, mapping the technical mission to a ~10 Gbps deterministic envelope rather than a peak-throughput marketing claim. Beam-establishment timing and reporting are now the most-revised threads (DCN 944, 510r2, 480r1), suggesting the TG is converging on a frame-level beam-establishment protocol but hasn't yet locked the timing parameters.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>DCN 11-26-1046 · TGbq</strong> — Discussion on Report of Beam establishment results. Chun Huang (ZTE).</li><li><strong>DCN 11-26-1002 · TGbq</strong> — Deterministic Low-Latency ~10 Gbps in the mmWave band for IEEE 802.11bq. Luna Xin Li (Huawei). <strong>First explicit numerical target</strong> the TG has put on paper for the IMMW mission.</li><li><strong>DCN 11-26-944r1 · TGbq</strong> — Timing of Initial Beam Establishment. Liangxiao Xin (OPPO).</li><li><strong>DCN 11-26-967 · TGbq</strong> — Measure the interference during BFT. Chaoming Luo (OPPO).</li><li><strong>DCN 11-26-957 · TGbq</strong> — IMMW Polarization Considerations. Ratnesh Kumbhkar (Intel).</li><li><strong>DCN 11-26-958 · TGbq</strong> — On-Demand mmWave SP scheduling. Shuang Fan (Sanechips).</li><li><strong>DCN 11-26-888r1 · TGbq</strong> — IMMW Service Period for Beam Establishment. Safi Hoque (Ofinno).</li><li><strong>DCN 11-26-510r2 · TGbq</strong> — Thoughts on channel access in IMMW. Dmitry Akhmetov (Intel).</li><li><strong>DCN 11-26-480r1 · TGbq</strong> — Considerations on SIG. Eunsung Park (LG).</li><li><strong>DCN 11-26-692r3 · TGbq</strong> — TGbq agenda - May wireless interim. Edward Au (Huawei).</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The Huawei ~10 Gbps deterministic envelope is the contribution worth tracking — it's the first time a TGbq contributor has formally proposed a service-class target rather than a peak-rate goal, which aligns the TG with the Wi-Fi 8 reliability narrative rather than the mmWave-as-fat-pipe story. The March 2026 readout flagged that &quot;the broader question of how much independence 60 GHz links should have remains open&quot; — Antwerp doesn't close that question but the on-demand-SP-scheduling thread (DCN 958) is the first contribution that materially leans toward sub-7 GHz scheduling state driving mmWave link-up rather than independent 60 GHz operation.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>TGbq（融合 mmWave）在 Antwerp 期中会议推进三个尚未收敛的架构问题：波束如何建立与上报、mmWave 服务期如何调度（按需 vs 预调度）、以及极化如何进入 IMMW 链路设计。Huawei 的 DCN 11-26-1002 ——「IEEE 802.11bq mmWave 频段确定性低时延约 10 Gbps」—— 是该 TG 本年度在文稿上给出最具体的数值目标，把技术任务映射到约 10 Gbps 的确定性包络，而不是峰值吞吐的营销口径。波束建立时序与上报是当前修订次数最多的线索（DCN 944、510r2、480r1），说明 TG 在向帧级波束建立协议收敛，但尚未锁定时序参数。</p>\n<h3>技术要点</h3>\n<ul><li><strong>DCN 11-26-1046 · TGbq</strong> —— 波束建立结果上报讨论。Chun Huang（ZTE）。</li><li><strong>DCN 11-26-1002 · TGbq</strong> —— IEEE 802.11bq mmWave 频段确定性低时延约 10 Gbps。Luna Xin Li（Huawei）。<strong>TG 在 IMMW 任务上首次给出明确数值目标</strong>。</li><li><strong>DCN 11-26-944r1 · TGbq</strong> —— 初始波束建立时序。Liangxiao Xin（OPPO）。</li><li><strong>DCN 11-26-967 · TGbq</strong> —— BFT 期间干扰测量。Chaoming Luo（OPPO）。</li><li><strong>DCN 11-26-957 · TGbq</strong> —— IMMW 极化考量。Ratnesh Kumbhkar（Intel）。</li><li><strong>DCN 11-26-958 · TGbq</strong> —— 按需 mmWave SP 调度。Shuang Fan（Sanechips）。</li><li><strong>DCN 11-26-888r1 · TGbq</strong> —— 波束建立的 IMMW 服务期。Safi Hoque（Ofinno）。</li><li><strong>DCN 11-26-510r2 · TGbq</strong> —— IMMW 信道接入考量。Dmitry Akhmetov（Intel）。</li><li><strong>DCN 11-26-480r1 · TGbq</strong> —— SIG 设计考量。Eunsung Park（LG）。</li><li><strong>DCN 11-26-692r3 · TGbq</strong> —— TGbq 期中会议议程。Edward Au（Huawei）。</li></ul>\n<h3>意义与新意</h3>\n<p>Huawei 的 ~10 Gbps 确定性包络是值得跟进的贡献 —— 这是 TGbq 贡献者首次正式提出服务类目标而非峰值速率，使该 TG 与 Wi-Fi 8 可靠性叙事对齐，而不是 mmWave-as-fat-pipe 故事。2026 年 3 月综述提到「60 GHz 链路应当多大程度独立运行仍是开放问题」—— Antwerp 没有关闭这个问题，但按需 SP 调度线（DCN 958）是首个明确倾向于「sub-7 GHz 调度状态驱动 mmWave 链路建立」、而非「60 GHz 独立运行」的贡献。</p>",
+      "images": [],
+      "search_blob": "ieee 802.11 tgbq mentor digest — antwerp interim may 2026 (mmwave beam establishment, scheduling, polarization) ieee 802.11 tgbq mentor 摘要——antwerp 期中会议 2026-05（mmwave 波束建立、调度、极化） 802.11bq mmwave immw beam-establishment scheduling polarization deterministic-latency tgbq (integrated mmwave) used the antwerp interim to push on three open architectural questions: how beams are established and reported, how mmwave service periods are scheduled (on-demand vs. pre-scheduled), and how polarisation factors into immw link design. the huawei pitch dcn 11-26-1002 — \"deterministic low-latency ~10 gbps in the mmwave band for ieee 802.11bq\" — is the most concrete numerical target the tg has put on paper this year, mapping the technical mission to a ~10 gbps deterministic envelope rather than a peak-throughput marketing claim. beam-establishment timing and reporting are now the most-revised threads (dcn 944, 510r2, 480r1), suggesting the tg is converging on a frame-level beam-establishment protocol but hasn't yet locked the timing parameters. tgbq（融合 mmwave）在 antwerp 期中会议推进三个尚未收敛的架构问题：波束如何建立与上报、mmwave 服务期如何调度（按需 vs 预调度）、以及极化如何进入 immw 链路设计。huawei 的 dcn 11-26-1002 ——「ieee 802.11bq mmwave 频段确定性低时延约 10 gbps」—— 是该 tg 本年度在文稿上给出最具体的数值目标，把技术任务映射到约 10 gbps 的确定性包络，而不是峰值吞吐的营销口径。波束建立时序与上报是当前修订次数最多的线索（dcn 944、510r2、480r1），说明 tg 在向帧级波束建立协议收敛，但尚未锁定时序参数。 ieee-document"
+    },
+    {
+      "id": "2026-05-12_ieee-mentor-tgbp-antwerp-digest",
+      "date_found": "2026-05-12",
+      "date_published": "2026-05-11",
+      "type": "ieee-document",
+      "category": "standards",
+      "title_en": "IEEE 802.11 TGbp Mentor digest — Antwerp interim May 2026 (AMP backscatter demo, frames, privacy)",
+      "title_zh": "IEEE 802.11 TGbp Mentor 摘要——Antwerp 期中会议 2026-05（AMP 反向散射演示、帧、隐私）",
+      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=0bp",
+      "topics": [
+        "802.11bp",
+        "AMP",
+        "ambient-power",
+        "backscatter",
+        "IoT",
+        "S1G-coexistence",
+        "energizer"
+      ],
+      "topic_primary": "amp-iot",
+      "topics_secondary": [
+        "energy-power-save",
+        "security-privacy"
+      ],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-05-12_ieee-mentor-tgbp-antwerp-digest.md",
+      "summary_short_en": "TGbp (Ambient Power IoT) is on schedule for an initial WG ballot on D1.0 out of the May 2026 session — the deadline the March readout flagged. Antwerp output is heavy on AMP control-plane primitives: AMP frames structure, AMP energizer control, AMP-S1G coexistence (IFS rules), AMP privacy considerations, scrambling-seed indication, and the 40 MHz protection mechanism for bi-static backscatter that has been TGbp's most-revised single thread (DCN 79). The week's most concrete signal is **DCN 11-26-1013 \"Demo of 2.4 GHz AMP mono-static backscattering\"** from Rui Cao (NXP) — the first AMP demo entry pointing at actual silicon producing the right waveforms, not just protocol text. Companion PDT contributions (DCN 959 Excitation Field, 732 PPDU encoding) continue to refine the PHY description.",
+      "summary_short_zh": "TGbp（环境能量供电 IoT）按 3 月综述所示节奏推进，目标在 2026-05 会议结束后启动 D1.0 初次 WG 投票。Antwerp 输出大量集中在 AMP 控制面原语：AMP 帧结构、AMP 激励控制、AMP-S1G 共存（IFS 规则）、AMP 隐私考量、扰码种子指示，以及 40 MHz 双站反向散射保护机制 —— 后者是 TGbp 修订次数最多的单一线索（DCN 79）。本周最具体的信号是 **DCN 11-26-1013「2.4 GHz AMP 单站反向散射演示」**，由 Rui Cao（NXP）提交 —— 这是首份指向实际硅片产生正确波形（而不只是协议文本）的 AMP 演示条目。配套 PDT 贡献（DCN 959 激励场、732 PPDU 编码）继续细化 PHY 描述。",
+      "body_html_en": "<h3>Summary</h3>\n<p>TGbp (Ambient Power IoT) is on schedule for an initial WG ballot on D1.0 out of the May 2026 session — the deadline the March readout flagged. Antwerp output is heavy on AMP control-plane primitives: AMP frames structure, AMP energizer control, AMP-S1G coexistence (IFS rules), AMP privacy considerations, scrambling-seed indication, and the 40 MHz protection mechanism for bi-static backscatter that has been TGbp's most-revised single thread (DCN 79). The week's most concrete signal is <strong>DCN 11-26-1013 &quot;Demo of 2.4 GHz AMP mono-static backscattering&quot;</strong> from Rui Cao (NXP) — the first AMP demo entry pointing at actual silicon producing the right waveforms, not just protocol text. Companion PDT contributions (DCN 959 Excitation Field, 732 PPDU encoding) continue to refine the PHY description.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>DCN 11-26-1017 · TGbp</strong> — tgbp-snapshot-may-2026. Bo Sun (Sanechips).</li><li><strong>DCN 11-26-1013 · TGbp</strong> — Demo of 2.4 GHz AMP mono-static backscattering. Rui Cao (NXP). <strong>First silicon demo entry.</strong></li><li><strong>DCN 11-26-965 · TGbp</strong> — Scrambling Seed Indication for AMP Communication. Lumin Liu (Huawei).</li><li><strong>DCN 11-26-963 · TGbp</strong> — AMP S1G Coexistence and IFS. Rojan Chitrakar (Huawei).</li><li><strong>DCN 11-26-962 · TGbp</strong> — AMP privacy considerations. Rojan Chitrakar.</li><li><strong>DCN 11-26-961 · TGbp</strong> — AMP Frames - follow up. Rojan Chitrakar.</li><li><strong>DCN 11-26-960 · TGbp</strong> — AMP Energizer Control. Rojan Chitrakar.</li><li><strong>DCN 11-26-959r1 · TGbp</strong> — PDT for Excitation Field. Rui Cao (NXP).</li><li><strong>DCN 11-26-732r1 · TGbp</strong> — PDT 40.3.4 overview of the PPDU encoding process. Alice Jialing Li Chen (Qualcomm).</li><li><strong>DCN 11-26-79 · TGbp</strong> — Protection Mechanisms for Bi-static Backscatter in 40MHz channel (Jan rev, referenced).</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The NXP demo entry is the contribution worth flagging — TGbp has had plenty of text contributions but very few that point at running silicon, and a 2.4 GHz mono-static backscatter demo with actual waveform output is exactly the kind of validation gate D1.0 needs before WG ballot. AMP-S1G IFS coexistence (DCN 963) is the most consequential standards-side question on this docket — sub-1 GHz IoT (802.11ah) and AMP-IoT will share spectrum in many deployments and the IFS rules determine which gets priority. The privacy contribution (DCN 962) is the first AMP-privacy text and connects to the security-privacy bin (DCN 962 deserves a cross-link to the TGbi work on MAC randomisation).</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>TGbp（环境能量供电 IoT）按 3 月综述所示节奏推进，目标在 2026-05 会议结束后启动 D1.0 初次 WG 投票。Antwerp 输出大量集中在 AMP 控制面原语：AMP 帧结构、AMP 激励控制、AMP-S1G 共存（IFS 规则）、AMP 隐私考量、扰码种子指示，以及 40 MHz 双站反向散射保护机制 —— 后者是 TGbp 修订次数最多的单一线索（DCN 79）。本周最具体的信号是 <strong>DCN 11-26-1013「2.4 GHz AMP 单站反向散射演示」</strong>，由 Rui Cao（NXP）提交 —— 这是首份指向实际硅片产生正确波形（而不只是协议文本）的 AMP 演示条目。配套 PDT 贡献（DCN 959 激励场、732 PPDU 编码）继续细化 PHY 描述。</p>\n<h3>技术要点</h3>\n<ul><li><strong>DCN 11-26-1017 · TGbp</strong> —— tgbp 5 月快照。Bo Sun（Sanechips）。</li><li><strong>DCN 11-26-1013 · TGbp</strong> —— 2.4 GHz AMP 单站反向散射演示。Rui Cao（NXP）。<strong>首份硅片演示条目。</strong></li><li><strong>DCN 11-26-965 · TGbp</strong> —— AMP 通信扰码种子指示。Lumin Liu（Huawei）。</li><li><strong>DCN 11-26-963 · TGbp</strong> —— AMP 与 S1G 共存及 IFS。Rojan Chitrakar（Huawei）。</li><li><strong>DCN 11-26-962 · TGbp</strong> —— AMP 隐私考量。Rojan Chitrakar。</li><li><strong>DCN 11-26-961 · TGbp</strong> —— AMP 帧 - 后续。Rojan Chitrakar。</li><li><strong>DCN 11-26-960 · TGbp</strong> —— AMP 激励控制。Rojan Chitrakar。</li><li><strong>DCN 11-26-959r1 · TGbp</strong> —— 激励场 PDT。Rui Cao（NXP）。</li><li><strong>DCN 11-26-732r1 · TGbp</strong> —— PPDU 编码 PDT 40.3.4。Alice Jialing Li Chen（Qualcomm）。</li><li><strong>DCN 11-26-79 · TGbp</strong> —— 40 MHz 信道双站反向散射保护机制（1 月修订，被引用）。</li></ul>\n<h3>意义与新意</h3>\n<p>NXP 演示条目是值得点出的贡献 —— TGbp 文本贡献很多，但指向实际硅片运行的极少，而 2.4 GHz 单站反向散射演示并给出实际波形输出，恰是 D1.0 WG 投票前所需的验证关口。AMP-S1G IFS 共存（DCN 963）是本议程上最具影响的标准侧问题 —— sub-1 GHz IoT（802.11ah）与 AMP-IoT 在许多部署中将共享频谱，IFS 规则决定谁优先。隐私贡献（DCN 962）是首份 AMP 隐私文本，与 security-privacy 桶相连（DCN 962 值得与 TGbi 的 MAC 随机化工作做交叉引用）。</p>",
+      "images": [],
+      "search_blob": "ieee 802.11 tgbp mentor digest — antwerp interim may 2026 (amp backscatter demo, frames, privacy) ieee 802.11 tgbp mentor 摘要——antwerp 期中会议 2026-05（amp 反向散射演示、帧、隐私） 802.11bp amp ambient-power backscatter iot s1g-coexistence energizer tgbp (ambient power iot) is on schedule for an initial wg ballot on d1.0 out of the may 2026 session — the deadline the march readout flagged. antwerp output is heavy on amp control-plane primitives: amp frames structure, amp energizer control, amp-s1g coexistence (ifs rules), amp privacy considerations, scrambling-seed indication, and the 40 mhz protection mechanism for bi-static backscatter that has been tgbp's most-revised single thread (dcn 79). the week's most concrete signal is **dcn 11-26-1013 \"demo of 2.4 ghz amp mono-static backscattering\"** from rui cao (nxp) — the first amp demo entry pointing at actual silicon producing the right waveforms, not just protocol text. companion pdt contributions (dcn 959 excitation field, 732 ppdu encoding) continue to refine the phy description. tgbp（环境能量供电 iot）按 3 月综述所示节奏推进，目标在 2026-05 会议结束后启动 d1.0 初次 wg 投票。antwerp 输出大量集中在 amp 控制面原语：amp 帧结构、amp 激励控制、amp-s1g 共存（ifs 规则）、amp 隐私考量、扰码种子指示，以及 40 mhz 双站反向散射保护机制 —— 后者是 tgbp 修订次数最多的单一线索（dcn 79）。本周最具体的信号是 **dcn 11-26-1013「2.4 ghz amp 单站反向散射演示」**，由 rui cao（nxp）提交 —— 这是首份指向实际硅片产生正确波形（而不只是协议文本）的 amp 演示条目。配套 pdt 贡献（dcn 959 激励场、732 ppdu 编码）继续细化 phy 描述。 ieee-document"
+    },
+    {
+      "id": "2026-05-12_ieee-mentor-tgbn-antwerp-digest",
+      "date_found": "2026-05-12",
+      "date_published": "2026-05-11",
+      "type": "ieee-document",
+      "category": "standards",
+      "title_en": "IEEE 802.11 TGbn Mentor digest — Antwerp interim May 6–11, 2026",
+      "title_zh": "IEEE 802.11 TGbn Mentor 摘要——Antwerp 期中会议 2026-05-06 至 2026-05-11",
+      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=0bn",
+      "topics": [
+        "802.11bn",
+        "MAPC",
+        "Co-SR",
+        "Co-BF",
+        "Co-TDMA",
+        "Co-RTWT",
+        "ELR",
+        "NPCA",
+        "MLO",
+        "seamless-roaming",
+        "L4S",
+        "P-EDCA",
+        "DRU",
+        "LB291"
+      ],
+      "topic_primary": "wifi8-uhr",
+      "topics_secondary": [
+        "mapc-cosr",
+        "mlo",
+        "rtwt-latency",
+        "roaming-mobility",
+        "energy-power-save"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-05-12_ieee-mentor-tgbn-antwerp-digest.md",
+      "summary_short_en": "TGbn (Wi-Fi 8 / UHR) ran the bulk of its May 2026 Antwerp interim through a MAC ad-hoc on May 6–8 followed by the WG sessions May 10–11. The dominant activity is **LB291 comment resolution** — the comment ballot opened on Draft 1.0 and the group is now ~60-65 % through the comment population, with the goal of clearing the remaining material in time for **Draft 2.0 in July 2026** (slipped from the original May target, ratification still tracking for May 2028). The Antwerp uploads visible in Mentor span essentially every active Co- mechanism plus three structurally new items: cross-BSS CSI memory management, P2P TWT agreement modification, and \"Memory Management for Cross-BSS CSI\" — the latter pointing at a quiet but real cost surface for MAPC-class coordination at AP scale.",
+      "summary_short_zh": "TGbn（Wi-Fi 8 / UHR）2026 年 5 月 Antwerp 期中会议主体工作分两段：5 月 6-8 日的 MAC 临时组会，以及 5 月 10-11 日的 WG 会议。主导活动是 **LB291 评论解决** —— 针对 Draft 1.0 的评论投票已开启，目前已处理约 60-65% 的评论池，目标是在 **2026 年 7 月发布 Draft 2.0**（从原计划的 5 月推迟，仍按 2028 年 5 月发布全标准的节奏推进）。Antwerp 上传到 Mentor 的内容覆盖了几乎所有活跃的 Co- 机制，加上三项结构性新增议题：跨 BSS CSI 内存管理、P2P TWT 协议修改、以及「跨 BSS CSI 内存管理」—— 后者暗示在 AP 规模上 MAPC 类协调存在一个不显眼但真实的成本面。",
+      "body_html_en": "<h3>Summary</h3>\n<p>TGbn (Wi-Fi 8 / UHR) ran the bulk of its May 2026 Antwerp interim through a MAC ad-hoc on May 6–8 followed by the WG sessions May 10–11. The dominant activity is <strong>LB291 comment resolution</strong> — the comment ballot opened on Draft 1.0 and the group is now ~60-65 % through the comment population, with the goal of clearing the remaining material in time for <strong>Draft 2.0 in July 2026</strong> (slipped from the original May target, ratification still tracking for May 2028). The Antwerp uploads visible in Mentor span essentially every active Co- mechanism plus three structurally new items: cross-BSS CSI memory management, P2P TWT agreement modification, and &quot;Memory Management for Cross-BSS CSI&quot; — the latter pointing at a quiet but real cost surface for MAPC-class coordination at AP scale.</p>\n<p>Volume on May 6–11 is unusually high — the group cycled through 11 LB291 CR clusters in parallel (Co-RTWT, Co-TDMA, Co-BF/Co-SR, NPCA, DBE, P-EDCA, DRU, ELR, MLO, roaming, MIB), most as rev N≥3 of previously-uploaded contributions. The contributor distribution is the familiar leaders: Qualcomm (channel access, Co-RTWT, seamless roaming, ELR), Huawei (Co-BF/Co-SR, ELR naming, cross-BSS CSI), LG (DRU PHY, target AP MLD selection), Cisco (DBE part 4, L4S), Samsung (downlink data forwarding, P2P TWT), Intel (CIDs across multiple sub-clauses), Mediatek (37.13.3 LB291 CRs). The L4S liaison from ARC SC to TGbn (DCN 755) is the most consequential cross-group thread of the week — it brings the IETF L4S congestion-control framework onto the TGbn radar as a downstream concern for the Wi-Fi 8 latency story.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>DCN 11-26-1023r0 · TGbn</strong> — lb291-cr-phy-service-interface-misc. Bo Sun (Sanechips). PHY service interface clean-up cluster.</li><li><strong>DCN 11-26-1003r0 · TGbn</strong> — <em>(none — was TGbt; ignore)</em>.</li><li><strong>DCN 11-26-991/990/989/988/987 · TGbn</strong> — LB291 CR for CIDs in subclause 38.3.14.4 (Parts I-IV) + 38.3.2.3 part III. Bo Gong (Huawei). PHY-layer CR sweep.</li><li><strong>DCN 11-26-983 · TGbn</strong> — CR for Naming ELR Rates. Junghoon Suh (Huawei).</li><li><strong>DCN 11-26-982 · TGbn</strong> — Memory Management for Cross-BSS CSI. Junghoon Suh (Huawei). <strong>Structurally new</strong> — addresses storage/aging of CSI shared across coordinated APs.</li><li><strong>DCN 11-26-971 · TGbn</strong> — CR to Modify the existing P2P TWT agreement. Taeyoung Ha (Samsung). <strong>Structurally new</strong> — P2P TWT semantics in the UHR draft.</li><li><strong>DCN 11-26-970 · TGbn</strong> — LB291 CR for MIB part 2. Yan Li (ZTE).</li><li><strong>DCN 11-26-272r4 · TGbn</strong> — LB291 CR for Co-RTWT Part 6. Giovanni Chisci (Qualcomm). Co-RTWT thread alive across the week.</li><li><strong>DCN 11-26-351r1 · TGbn</strong> — LB291 CR for Co-TDMA CIDs Part 6. Sanket Kalamkar (Qualcomm).</li><li><strong>DCN 11-26-289r2 · TGbn</strong> — LB291 CR for Multiple Co-BF/Co-SR transmissions. Mahmoud Hasabelnaby (Huawei).</li><li><strong>DCN 11-26-285r3 · TGbn</strong> — Co-BF Terminology. Mahmoud Kamel (InterDigital).</li><li><strong>DCN 11-26-349r3 · TGbn</strong> — LB291-CR-MAC-NPCA-BSSMEDSTATE. Matthew Fischer (Broadcom).</li><li><strong>DCN 11-26-342r3 · TGbn</strong> — LB291 CR for P-EDCA. Ning Gao (Lenovo).</li><li><strong>DCN 11-26-280r2 · TGbn</strong> — LB291-MAC-CR for Misc_ELR. Alfred Asterjadhi (Qualcomm).</li><li><strong>DCN 11-26-378r13 / 379r4 · TGbn</strong> — LB291 CR for Seamless roaming Parts 3-4. Duncan Ho (Qualcomm). Roaming thread heavily revised.</li><li><strong>DCN 11-26-427r1 · TGbn</strong> — LB291 CR for L4S CIDs. Binita Gupta (Cisco). Companion to the ARC-SC liaison.</li><li><strong>DCN 11-26-16r17 · TGbn</strong> — LB291 CR for DBE CIDs part 4. Binita Gupta (Cisco). 17th revision — a long-running thread.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This week confirms TGbn is on the revised D2.0-in-July timeline rather than slipping further: 11 parallel CR clusters with multi-revision iterations is the expected pace. The two structurally new items — <strong>Memory Management for Cross-BSS CSI</strong> and the <strong>P2P TWT modification</strong> — are the contributions worth tracking for a possible dedicated entry on next run: the cross-BSS CSI memory question is the first time the storage cost of MAPC-class coordination has shown up as its own CR thread, and the L4S liaison (ARC SC → TGbn, DCN 755) opens a new IETF-track interaction surface for the Wi-Fi 8 latency story. The L4S thread also connects directly to the standing <code>2026-05-03_nsdi-law-802-11-low-latency-link-layer</code> work — academic-side WiFi-LLL designs and IETF L4S converging on TGbn is a structural sign.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>TGbn（Wi-Fi 8 / UHR）2026 年 5 月 Antwerp 期中会议主体工作分两段：5 月 6-8 日的 MAC 临时组会，以及 5 月 10-11 日的 WG 会议。主导活动是 <strong>LB291 评论解决</strong> —— 针对 Draft 1.0 的评论投票已开启，目前已处理约 60-65% 的评论池，目标是在 <strong>2026 年 7 月发布 Draft 2.0</strong>（从原计划的 5 月推迟，仍按 2028 年 5 月发布全标准的节奏推进）。Antwerp 上传到 Mentor 的内容覆盖了几乎所有活跃的 Co- 机制，加上三项结构性新增议题：跨 BSS CSI 内存管理、P2P TWT 协议修改、以及「跨 BSS CSI 内存管理」—— 后者暗示在 AP 规模上 MAPC 类协调存在一个不显眼但真实的成本面。</p>\n<p>5 月 6-11 日的体量异常高 —— 该组并行推进了 11 个 LB291 CR 集群（Co-RTWT、Co-TDMA、Co-BF/Co-SR、NPCA、DBE、P-EDCA、DRU、ELR、MLO、漫游、MIB），多数为已上传文稿的第 N≥3 修订。贡献者分布仍是熟悉的头部公司：Qualcomm（信道接入、Co-RTWT、无缝漫游、ELR）、Huawei（Co-BF/Co-SR、ELR 命名、跨 BSS CSI）、LG（DRU PHY、目标 AP MLD 选择）、Cisco（DBE part 4、L4S）、Samsung（下行数据转发、P2P TWT）、Intel（多个子条款的 CID）、Mediatek（37.13.3 LB291 CR）。ARC SC 给 TGbn 的 L4S 联络函（DCN 755）是本周最具影响的跨组线索 —— 它把 IETF L4S 拥塞控制框架带到了 TGbn 视野中，作为 Wi-Fi 8 时延叙事的下游关注点。</p>\n<h3>技术要点</h3>\n<ul><li><strong>DCN 11-26-1023r0 · TGbn</strong> —— LB291 PHY 服务接口杂项 CR。Bo Sun（Sanechips）。</li><li><strong>DCN 11-26-991/990/989/988/987 · TGbn</strong> —— 38.3.14.4 各部分（I-IV）+ 38.3.2.3 part III 的 LB291 CR。Bo Gong（Huawei）。PHY 层 CR 集中清理。</li><li><strong>DCN 11-26-983 · TGbn</strong> —— ELR 速率命名 CR。Junghoon Suh（Huawei）。</li><li><strong>DCN 11-26-982 · TGbn</strong> —— 跨 BSS CSI 的内存管理。Junghoon Suh（Huawei）。<strong>结构性新增</strong>——处理协调 AP 之间共享 CSI 的存储与老化。</li><li><strong>DCN 11-26-971 · TGbn</strong> —— 修改现有 P2P TWT 协议的 CR。Taeyoung Ha（三星）。<strong>结构性新增</strong>——UHR 草案中的 P2P TWT 语义。</li><li><strong>DCN 11-26-970 · TGbn</strong> —— LB291 MIB CR part 2。Yan Li（ZTE）。</li><li><strong>DCN 11-26-272r4 · TGbn</strong> —— Co-RTWT Part 6 LB291 CR。Giovanni Chisci（Qualcomm）。Co-RTWT 线索本周持续活跃。</li><li><strong>DCN 11-26-351r1 · TGbn</strong> —— Co-TDMA CIDs Part 6。Sanket Kalamkar（Qualcomm）。</li><li><strong>DCN 11-26-289r2 · TGbn</strong> —— 多次 Co-BF/Co-SR 传输 LB291 CR。Mahmoud Hasabelnaby（Huawei）。</li><li><strong>DCN 11-26-285r3 · TGbn</strong> —— Co-BF 术语。Mahmoud Kamel（InterDigital）。</li><li><strong>DCN 11-26-349r3 · TGbn</strong> —— LB291-CR-MAC-NPCA-BSSMEDSTATE。Matthew Fischer（Broadcom）。</li><li><strong>DCN 11-26-342r3 · TGbn</strong> —— P-EDCA LB291 CR。Ning Gao（Lenovo）。</li><li><strong>DCN 11-26-280r2 · TGbn</strong> —— Misc_ELR LB291 MAC CR。Alfred Asterjadhi（Qualcomm）。</li><li><strong>DCN 11-26-378r13 / 379r4 · TGbn</strong> —— 无缝漫游 LB291 CR Part 3-4。Duncan Ho（Qualcomm）。漫游线索本周大改。</li><li><strong>DCN 11-26-427r1 · TGbn</strong> —— L4S CIDs LB291 CR。Binita Gupta（Cisco）。配合 ARC-SC 联络函。</li><li><strong>DCN 11-26-16r17 · TGbn</strong> —— DBE CIDs part 4 LB291 CR。Binita Gupta（Cisco）。第 17 修订 —— 长跑线索。</li></ul>\n<h3>意义与新意</h3>\n<p>本周确认 TGbn 仍在 D2.0-on-July 修订时间表上推进，没有进一步滑期：11 个并行 CR 集群多次修订是预期节奏。两项结构性新增 —— <strong>跨 BSS CSI 内存管理</strong> 与 <strong>P2P TWT 修改</strong> —— 是值得在下次运行中考虑独立深度条目的贡献：跨 BSS CSI 内存问题是 MAPC 级协调的存储成本首次作为独立 CR 线索浮出，而 L4S 联络函（ARC SC → TGbn，DCN 755）则为 Wi-Fi 8 时延叙事打开了与 IETF 轨道的新交互面。L4S 线索也直接联通到既有的 <code>2026-05-03_nsdi-law-802-11-low-latency-link-layer</code> 工作 —— 学界的 WiFi-LLL 设计与 IETF L4S 在 TGbn 上汇合，是结构性信号。</p>",
+      "images": [],
+      "search_blob": "ieee 802.11 tgbn mentor digest — antwerp interim may 6–11, 2026 ieee 802.11 tgbn mentor 摘要——antwerp 期中会议 2026-05-06 至 2026-05-11 802.11bn mapc co-sr co-bf co-tdma co-rtwt elr npca mlo seamless-roaming l4s p-edca dru lb291 tgbn (wi-fi 8 / uhr) ran the bulk of its may 2026 antwerp interim through a mac ad-hoc on may 6–8 followed by the wg sessions may 10–11. the dominant activity is **lb291 comment resolution** — the comment ballot opened on draft 1.0 and the group is now ~60-65 % through the comment population, with the goal of clearing the remaining material in time for **draft 2.0 in july 2026** (slipped from the original may target, ratification still tracking for may 2028). the antwerp uploads visible in mentor span essentially every active co- mechanism plus three structurally new items: cross-bss csi memory management, p2p twt agreement modification, and \"memory management for cross-bss csi\" — the latter pointing at a quiet but real cost surface for mapc-class coordination at ap scale. tgbn（wi-fi 8 / uhr）2026 年 5 月 antwerp 期中会议主体工作分两段：5 月 6-8 日的 mac 临时组会，以及 5 月 10-11 日的 wg 会议。主导活动是 **lb291 评论解决** —— 针对 draft 1.0 的评论投票已开启，目前已处理约 60-65% 的评论池，目标是在 **2026 年 7 月发布 draft 2.0**（从原计划的 5 月推迟，仍按 2028 年 5 月发布全标准的节奏推进）。antwerp 上传到 mentor 的内容覆盖了几乎所有活跃的 co- 机制，加上三项结构性新增议题：跨 bss csi 内存管理、p2p twt 协议修改、以及「跨 bss csi 内存管理」—— 后者暗示在 ap 规模上 mapc 类协调存在一个不显眼但真实的成本面。 ieee-document"
+    },
+    {
+      "id": "2026-05-12_ieee-mentor-ai-offload-sg-antwerp-digest",
+      "date_found": "2026-05-12",
+      "date_published": "2026-05-11",
+      "type": "ieee-document",
+      "category": "standards",
+      "title_en": "IEEE 802.11 AI Offload SG Mentor digest — Antwerp interim May 2026 (initial PAR + CSD)",
+      "title_zh": "IEEE 802.11 AI Offload SG Mentor 摘要——Antwerp 期中会议 2026-05（首版 PAR 与 CSD）",
+      "url": "https://mentor.ieee.org/802.11/documents?is_year=2026&is_group=0aio",
+      "topics": [
+        "AI Offload SG",
+        "agentic-AI",
+        "AI-inference",
+        "computation-offloading",
+        "PAR",
+        "CSD"
+      ],
+      "topic_primary": "agentic-wifi",
+      "topics_secondary": [
+        "wifi-for-ai",
+        "wifi8-uhr"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-05-12_ieee-mentor-ai-offload-sg-antwerp-digest.md",
+      "summary_short_en": "The AI Offload Study Group held its first formal session at the Antwerp interim and started moving toward chartering. The two most important contributions of the week are **DCN 11-26-978 \"Initial PAR discussion\"** and **DCN 11-26-979 \"Initial CSD discussion\"**, both from Gaurang Naik (Qualcomm) and chair of the SG — these are the first concrete artefacts on the path from SG → study → PAR ballot → task group. PAR (Project Authorization Request) defines what an amendment would do; CSD (Criteria for Standards Development) demonstrates the case for why IEEE 802 should do it. The AI Offload SG was formed at the March 2026 plenary (`2026-05-01_ieee-march-2026-readout`); having initial PAR/CSD drafts on the table by May suggests the chair is targeting a Study Group → Task Group escalation at the July 2026 plenary.",
+      "summary_short_zh": "AI Offload Study Group 在 Antwerp 期中会议召开了首次正式会议，并开始向立项推进。本周最重要的两项贡献是 **DCN 11-26-978「初版 PAR 讨论」** 与 **DCN 11-26-979「初版 CSD 讨论」**，均由 Gaurang Naik（Qualcomm，SG 主席）提交 —— 这是从 SG → 研究 → PAR 投票 → 任务组 这条路径上的第一批具体产出。PAR（项目授权请求）定义一份修订要做什么；CSD（标准制定准则）论证为什么 IEEE 802 应该做这件事。AI Offload SG 在 2026 年 3 月全会上成立（`2026-05-01_ieee-march-2026-readout`）；在 5 月就把初版 PAR/CSD 摆到桌上，说明主席的目标是在 2026 年 7 月全会上把 SG 升级为 TG。",
+      "body_html_en": "<h3>Summary</h3>\n<p>The AI Offload Study Group held its first formal session at the Antwerp interim and started moving toward chartering. The two most important contributions of the week are <strong>DCN 11-26-978 &quot;Initial PAR discussion&quot;</strong> and <strong>DCN 11-26-979 &quot;Initial CSD discussion&quot;</strong>, both from Gaurang Naik (Qualcomm) and chair of the SG — these are the first concrete artefacts on the path from SG → study → PAR ballot → task group. PAR (Project Authorization Request) defines what an amendment would do; CSD (Criteria for Standards Development) demonstrates the case for why IEEE 802 should do it. The AI Offload SG was formed at the March 2026 plenary (<code>2026-05-01_ieee-march-2026-readout</code>); having initial PAR/CSD drafts on the table by May suggests the chair is targeting a Study Group → Task Group escalation at the July 2026 plenary.</p>\n<p>Alongside PAR/CSD, the SG ran a substantive use-case session (DCNs 968, 994/995/996, 930) clustering around two themes: (a) collaborative STA-AP inference offloading where the device hands part of a model to the AP for execution, and (b) agent-perspective use cases where the LLM agent on the device negotiates compute, memory, and link budget with the AP. ZTE (Zisheng Wang), OPPO (Sam Shi), and InterDigital (Antonio de la Oliva) each contributed; the contributor distribution is notably broader than typical TGbn drafting, reflecting that AI-offload requirements are being gathered from device, infrastructure, and academic perspectives at once.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>DCN 11-26-978 · AI Offload SG</strong> — Initial PAR discussion. Gaurang Naik (Qualcomm, SG chair). The skeleton document defining what an &quot;AI Offload&quot; amendment would cover.</li><li><strong>DCN 11-26-979 · AI Offload SG</strong> — Initial CSD discussion. Gaurang Naik. The companion document making the IEEE 802-level case for the project.</li><li><strong>DCN 11-26-968 · AI Offload SG</strong> — Collaborative STA-AP Inference Offloading use case. Antonio de la Oliva (InterDigital). Model-partitioning between STA and AP.</li><li><strong>DCN 11-26-994 / 995 / 996 · AI Offload SG</strong> — AI offloading use cases and requirements / Considerations on AI offload procedures. Sam Shi (OPPO). Device-side perspective.</li><li><strong>DCN 11-26-930r2 · AI Offload SG</strong> — AI Offload Use Cases - Agent Perspective. Zisheng Wang (ZTE). Agent-side view: LLM agent on STA negotiates with AP.</li><li><strong>DCN 11-26-779 · AI Offload SG</strong> — May 2026 meeting agenda. Gaurang Naik.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The PAR/CSD drafts are the meaningful Antwerp output: they make AI offload a concrete IEEE 802 candidate amendment rather than a marketing slogan. If the SG ratifies them in July, a Task Group is plausible by November 2026, which would be one of the fastest SG-to-TG promotions in recent 802.11 history. Initial PAR/CSD also crystallise the scope question that has been latent since the SG was formed: is &quot;AI Offload&quot; specifically about computation offloading from STA to AP (which is what the InterDigital and OPPO use cases assume), or more broadly about the full agent-AP negotiation surface (which is what the ZTE agent-perspective contribution argues for)? The next-run dedicated entry on DCN 978/979 will be worth writing once their full content is digestible from the readout. The relationship with <code>2026-05-12_arxiv-ncsim-edge-wifi-interference</code> is also worth flagging — the academic rank-inversion result there is the empirical foundation under the &quot;AI offload needs Wi-Fi awareness&quot; argument the SG is now formalising.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>AI Offload Study Group 在 Antwerp 期中会议召开了首次正式会议，并开始向立项推进。本周最重要的两项贡献是 <strong>DCN 11-26-978「初版 PAR 讨论」</strong> 与 <strong>DCN 11-26-979「初版 CSD 讨论」</strong>，均由 Gaurang Naik（Qualcomm，SG 主席）提交 —— 这是从 SG → 研究 → PAR 投票 → 任务组 这条路径上的第一批具体产出。PAR（项目授权请求）定义一份修订要做什么；CSD（标准制定准则）论证为什么 IEEE 802 应该做这件事。AI Offload SG 在 2026 年 3 月全会上成立（<code>2026-05-01_ieee-march-2026-readout</code>）；在 5 月就把初版 PAR/CSD 摆到桌上，说明主席的目标是在 2026 年 7 月全会上把 SG 升级为 TG。</p>\n<p>除 PAR/CSD 外，本组还举办了一场较实质的用例讨论（DCN 968、994/995/996、930），围绕两个主题成簇：(a) STA-AP 协同推理卸载 —— 设备把模型的一部分交给 AP 执行；(b) 智能体视角用例 —— 设备上的 LLM 智能体与 AP 协商算力、内存、链路预算。ZTE（王自圣）、OPPO（Sam Shi）、InterDigital（Antonio de la Oliva）各有贡献；贡献者分布明显比典型的 TGbn 起草更宽，说明 AI 卸载需求正在同时从设备、基础设施、学界三个视角汇集。</p>\n<h3>技术要点</h3>\n<ul><li><strong>DCN 11-26-978 · AI Offload SG</strong> —— 初版 PAR 讨论。Gaurang Naik（Qualcomm，SG 主席）。定义「AI Offload」修订将覆盖什么的骨架文档。</li><li><strong>DCN 11-26-979 · AI Offload SG</strong> —— 初版 CSD 讨论。Gaurang Naik。从 IEEE 802 层面论证该项目的配套文档。</li><li><strong>DCN 11-26-968 · AI Offload SG</strong> —— STA-AP 协同推理卸载用例。Antonio de la Oliva（InterDigital）。STA 与 AP 之间的模型分割。</li><li><strong>DCN 11-26-994 / 995 / 996 · AI Offload SG</strong> —— AI 卸载用例与需求 / AI 卸载流程考量。Sam Shi（OPPO）。设备侧视角。</li><li><strong>DCN 11-26-930r2 · AI Offload SG</strong> —— AI 卸载用例——智能体视角。王自圣（ZTE）。智能体侧视图：STA 上的 LLM 智能体与 AP 协商。</li><li><strong>DCN 11-26-779 · AI Offload SG</strong> —— 2026-05 会议议程。Gaurang Naik。</li></ul>\n<h3>意义与新意</h3>\n<p>PAR/CSD 草案是 Antwerp 本周最有意义的产出：它把 AI 卸载变成了一个具体的 IEEE 802 候选修订，而不只是一句营销口号。如果 SG 在 7 月批准它们，那 11 月之前出现任务组是合理可能 —— 这将是 802.11 近年最快的 SG→TG 跃迁之一。初版 PAR/CSD 也把自 SG 成立以来潜伏的范围问题正式摆出：「AI 卸载」究竟是 STA 到 AP 的算力卸载（InterDigital 与 OPPO 用例所假设的范围），还是更广义的「智能体—AP 协商面」（ZTE 智能体视角的主张）？等 DCN 978/979 的完整内容可解读后，下次运行值得写独立深度条目。与 <code>2026-05-12_arxiv-ncsim-edge-wifi-interference</code> 的关联也值得点出 —— 学界的排名反转结果是 SG 当前正在正式化的「AI 卸载需要 Wi-Fi 感知」论点的实证底座。</p>",
+      "images": [],
+      "search_blob": "ieee 802.11 ai offload sg mentor digest — antwerp interim may 2026 (initial par + csd) ieee 802.11 ai offload sg mentor 摘要——antwerp 期中会议 2026-05（首版 par 与 csd） ai offload sg agentic-ai ai-inference computation-offloading par csd the ai offload study group held its first formal session at the antwerp interim and started moving toward chartering. the two most important contributions of the week are **dcn 11-26-978 \"initial par discussion\"** and **dcn 11-26-979 \"initial csd discussion\"**, both from gaurang naik (qualcomm) and chair of the sg — these are the first concrete artefacts on the path from sg → study → par ballot → task group. par (project authorization request) defines what an amendment would do; csd (criteria for standards development) demonstrates the case for why ieee 802 should do it. the ai offload sg was formed at the march 2026 plenary (`2026-05-01_ieee-march-2026-readout`); having initial par/csd drafts on the table by may suggests the chair is targeting a study group → task group escalation at the july 2026 plenary. ai offload study group 在 antwerp 期中会议召开了首次正式会议，并开始向立项推进。本周最重要的两项贡献是 **dcn 11-26-978「初版 par 讨论」** 与 **dcn 11-26-979「初版 csd 讨论」**，均由 gaurang naik（qualcomm，sg 主席）提交 —— 这是从 sg → 研究 → par 投票 → 任务组 这条路径上的第一批具体产出。par（项目授权请求）定义一份修订要做什么；csd（标准制定准则）论证为什么 ieee 802 应该做这件事。ai offload sg 在 2026 年 3 月全会上成立（`2026-05-01_ieee-march-2026-readout`）；在 5 月就把初版 par/csd 摆到桌上，说明主席的目标是在 2026 年 7 月全会上把 sg 升级为 tg。 ieee-document"
+    },
+    {
+      "id": "2026-05-12_hpe-self-driving-networks-723h",
+      "date_found": "2026-05-12",
+      "date_published": "2026-05-06",
+      "type": "product",
+      "category": "industry",
+      "title_en": "HPE 'Self-Driving Networks' launch — Networking 723H is the first dual-platform Wi-Fi 7 AP for Aruba Central + Mist",
+      "title_zh": "HPE 推出「自驾网络」——Networking 723H 是首款同时支持 Aruba Central 与 Mist 的 Wi-Fi 7 双平台 AP",
+      "url": "https://www.theregister.com/networks/2026/05/08/hpe-drops-first-juniper-x-aruba-collab-self-driving-wi-fi/",
+      "topics": [
+        "Wi-Fi 7",
+        "802.11be",
+        "HPE",
+        "Aruba",
+        "Mist",
+        "Juniper",
+        "agentic-AI",
+        "AIOps",
+        "enterprise"
+      ],
+      "topic_primary": "wifi7-deployment",
+      "topics_secondary": [
+        "agentic-wifi",
+        "roaming-mobility"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-05-12_hpe-self-driving-networks-723h.md",
+      "summary_short_en": "HPE's first concrete output from the Juniper acquisition shipped on 2026-05-06: a unified \"Self-Driving Networks\" pitch that pairs autonomous AI operations agents with a new Wi-Fi 7 access point — the HPE Networking 723H — that is software-flexible between the Aruba Central and HPE Mist management planes. The 723H is a three-radio 2×2 802.11be AP with a wall-plate hospitality form factor, dual platform identity selectable at deployment without hardware swap, and AI telemetry feeds into both management clouds. HPE frames the launch as the first dual-platform AP and the first fruit of stitching the two acquired networking portfolios together.",
+      "summary_short_zh": "HPE 完成对 Juniper 收购后的首项具体落地于 2026-05-06 发布：一套统一的「自驾网络（Self-Driving Networks）」叙事，将自治 AI 运维智能体与一款新的 Wi-Fi 7 AP（HPE Networking 723H）打包推出，该 AP 可以在不更换硬件的前提下，由部署方在 Aruba Central 与 HPE Mist 两个管理面之间任意切换。723H 是一款三射频 2×2 802.11be AP，采用面向酒店场景的壁挂形态，AI 遥测同时上送到两个管理云。HPE 将其定位为业界首款双平台 AP，也是其将收购回来的两套网络组合整合到一起的首个直接产出。",
+      "body_html_en": "<h3>Summary</h3>\n<p>HPE's first concrete output from the Juniper acquisition shipped on 2026-05-06: a unified &quot;Self-Driving Networks&quot; pitch that pairs autonomous AI operations agents with a new Wi-Fi 7 access point — the HPE Networking 723H — that is software-flexible between the Aruba Central and HPE Mist management planes. The 723H is a three-radio 2×2 802.11be AP with a wall-plate hospitality form factor, dual platform identity selectable at deployment without hardware swap, and AI telemetry feeds into both management clouds. HPE frames the launch as the first dual-platform AP and the first fruit of stitching the two acquired networking portfolios together.</p>\n<p>The &quot;self-driving&quot; half of the announcement names a concrete set of autonomous workflows the new control plane can execute without operator approval: optimisation of wireless capacity, correction of VLAN configuration errors, blocking of unauthorised DHCP servers in the broadcast domain, retuning of Wi-Fi channels facing interference, refinement of client roaming behaviour, and end-to-end latency measurement from client association through the cloud. A separately-highlighted feature scans the local RF environment for frequencies that should be avoided because they are in active use by military or other priority licensees, and automatically steers Wi-Fi away from those bands — an interesting policy-driven channel allocator that goes beyond standard DFS.</p>\n<p>For competitive context: Cisco took years to merge Catalyst with Meraki after the acquisition; HPE has shipped a unified product within months of closing Juniper. The launch is also the clearest competitive answer yet to the agentic-AI-for-networking pitches Extreme made the same week and that Cisco has been telegraphing across its AgenticOps rollouts.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>HPE Networking 723H</strong> — 802.11be Wi-Fi 7 AP, 3 radios, 2×2, single hospitality-form-factor SKU with 1+2 Ethernet ports; recommended deployments: hospitality, branch, teleworker.</li><li><strong>Dual-platform identity</strong> — the same hardware enrols into either HPE Aruba Central or HPE Mist; AI telemetry feeds both clouds; choice is a deployment-time configuration, not a hardware variant.</li><li><strong>Autonomous network actions</strong> — wireless capacity optimisation; VLAN error correction; rogue DHCP server protection; Wi-Fi channel retuning under interference; client roaming optimisation; end-to-end latency telemetry (client association → cloud).</li><li><strong>Priority-spectrum avoidance</strong> — local RF scan identifies frequencies in use by military / priority licensees and steers Wi-Fi off those bands; goes beyond DFS, hints at AFC-style coordination layered onto the channel planner.</li><li><strong>Unification cadence</strong> — first dual-platform AP from HPE; positioned as the first concrete deliverable post-Juniper-acquisition.</li><li><strong>Competitive frame</strong> — explicit comparison to Cisco's multi-year Catalyst/Meraki merger; signals HPE intends to outpace Cisco on convergence speed.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the first Wi-Fi access point in the public KB whose identity is software-configurable between two formerly-competing management planes — a meaningful inflection in how acquisitions can be technically resolved. It also moves the agentic-AI-for-networking story from analyst pitches and demos (Cisco AgenticOps, Mist AI, Aruba AI Insights) into a shipping product with a named action set. Read alongside <code>2026-05-04_cisco-wifi7-breakout-year-2026</code> and the same-week <code>2026-05-12_extreme-connect-platform-one-agentone</code> entry, the three enterprise leaders are now publicly committed to an autonomous-actions pattern with very similar action lists (channel tuning, VLAN/DHCP hygiene, roaming, latency telemetry) — a sign that the action surface is converging into a de facto enterprise-Wi-Fi autonomy specification.</p>\n<p>The priority-spectrum avoidance feature is the most technically distinctive piece: it implies a richer channel planner than what 802.11 DFS or 6 GHz AFC require, and is the closest production analogue to the LBT-bypass debates currently in WNG SC (see <code>2026-05-05_ieee-wng-charter-bypass-lbt-upper-6ghz</code>). HPE is, in effect, productising a federated coexistence layer that anticipates regulatory bands the IEEE has been arguing over.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>HPE 完成对 Juniper 收购后的首项具体落地于 2026-05-06 发布：一套统一的「自驾网络（Self-Driving Networks）」叙事，将自治 AI 运维智能体与一款新的 Wi-Fi 7 AP（HPE Networking 723H）打包推出，该 AP 可以在不更换硬件的前提下，由部署方在 Aruba Central 与 HPE Mist 两个管理面之间任意切换。723H 是一款三射频 2×2 802.11be AP，采用面向酒店场景的壁挂形态，AI 遥测同时上送到两个管理云。HPE 将其定位为业界首款双平台 AP，也是其将收购回来的两套网络组合整合到一起的首个直接产出。</p>\n<p>「自驾」部分明确列出了新控制面在不经过人工批准下可以自治执行的工作流：无线容量优化、VLAN 配置错误纠正、广播域中非法 DHCP 服务器拦截、面向干扰的 Wi-Fi 信道重新调谐、客户端漫游行为优化，以及从客户端关联到云端的端到端时延测量。单独被强调的一项是：扫描本地射频环境，识别因军用或其他优先级许可方在用而应回避的频段，自动让 Wi-Fi 绕开那些频段——这是一个由政策驱动的信道分配器，超出了标准 DFS 的范畴。</p>\n<p>对照来看：Cisco 在 Catalyst 与 Meraki 合并上花了多年；HPE 在 Juniper 收购关闭后几个月就交付了统一产品。这次发布也是对 Extreme 同周在 Connect 2026 上的智能体网络叙事，以及 Cisco 各 AgenticOps 阶段所传递信号的最直接竞争回应。</p>\n<h3>技术要点</h3>\n<ul><li><strong>HPE Networking 723H</strong> —— 802.11be Wi-Fi 7 AP，3 射频，2×2，单 SKU 酒店壁挂形态，1+2 个以太网口；推荐部署场景：酒店、分支、远端办公。</li><li><strong>双平台身份</strong> —— 同一硬件可注册到 HPE Aruba Central 或 HPE Mist；AI 遥测同时进入两个云；选择哪个平台是部署时的配置，不是硬件型号差异。</li><li><strong>自治网络动作</strong> —— 无线容量优化；VLAN 错误纠正；非法 DHCP 服务器防护；面向干扰的 Wi-Fi 信道重新调谐；客户端漫游优化；从客户端关联到云端的端到端时延遥测。</li><li><strong>优先频段回避</strong> —— 本地射频扫描识别军用 / 优先级许可方在用的频段，自动让 Wi-Fi 绕开；超出 DFS 范畴，暗示在信道规划器之上叠加了类似 AFC 的协调层。</li><li><strong>整合节奏</strong> —— HPE 首款双平台 AP；定位为 Juniper 收购完成后的首项具体交付。</li><li><strong>竞争框架</strong> —— 显式对比 Cisco 多年才完成的 Catalyst/Meraki 合并；信号是 HPE 在融合速度上要超过 Cisco。</li></ul>\n<h3>意义与新意</h3>\n<p>这是公共 KB 中首款身份可由软件在两个曾经互为竞争的管理面之间切换的 Wi-Fi AP——这在收购如何完成技术性融合的层面是个明显的转折。它也把「智能体 AI 用于网络」的叙事从分析师讲稿与演示（Cisco AgenticOps、Mist AI、Aruba AI Insights）推进到带明确动作清单的实际出货产品。与 <code>2026-05-04_cisco-wifi7-breakout-year-2026</code> 以及本周同期的 <code>2026-05-12_extreme-connect-platform-one-agentone</code> 一起读：企业 Wi-Fi 三巨头都已在公开层面承诺一套自治动作模式，且其动作列表（信道调谐、VLAN/DHCP 维护、漫游、时延遥测）相似度很高——这是动作空间正在收敛为事实标准的信号。</p>\n<p>优先频段回避特性在技术上最具区分度：它意味着信道规划器比 802.11 DFS 或 6 GHz AFC 所要求的更丰富，是 WNG SC 当前 LBT 绕开讨论（参见 <code>2026-05-05_ieee-wng-charter-bypass-lbt-upper-6ghz</code>）在产品端最接近的对应物。HPE 实际上是在把一个联合共存层产品化，先于 IEEE 内部的监管频段争论一步落地。</p>",
+      "images": [],
+      "search_blob": "hpe 'self-driving networks' launch — networking 723h is the first dual-platform wi-fi 7 ap for aruba central + mist hpe 推出「自驾网络」——networking 723h 是首款同时支持 aruba central 与 mist 的 wi-fi 7 双平台 ap wi-fi 7 802.11be hpe aruba mist juniper agentic-ai aiops enterprise hpe's first concrete output from the juniper acquisition shipped on 2026-05-06: a unified \"self-driving networks\" pitch that pairs autonomous ai operations agents with a new wi-fi 7 access point — the hpe networking 723h — that is software-flexible between the aruba central and hpe mist management planes. the 723h is a three-radio 2×2 802.11be ap with a wall-plate hospitality form factor, dual platform identity selectable at deployment without hardware swap, and ai telemetry feeds into both management clouds. hpe frames the launch as the first dual-platform ap and the first fruit of stitching the two acquired networking portfolios together. hpe 完成对 juniper 收购后的首项具体落地于 2026-05-06 发布：一套统一的「自驾网络（self-driving networks）」叙事，将自治 ai 运维智能体与一款新的 wi-fi 7 ap（hpe networking 723h）打包推出，该 ap 可以在不更换硬件的前提下，由部署方在 aruba central 与 hpe mist 两个管理面之间任意切换。723h 是一款三射频 2×2 802.11be ap，采用面向酒店场景的壁挂形态，ai 遥测同时上送到两个管理云。hpe 将其定位为业界首款双平台 ap，也是其将收购回来的两套网络组合整合到一起的首个直接产出。 product"
+    },
+    {
+      "id": "2026-05-12_extreme-connect-platform-one-agentone",
+      "date_found": "2026-05-12",
+      "date_published": "2026-05-06",
+      "type": "product",
+      "category": "industry",
+      "title_en": "Extreme Connect 2026 — Platform ONE expands across wired/Wi-Fi/fabric/SD-WAN; Agent ONE coworker + Wi-Fi 7 lineup expansion",
+      "title_zh": "Extreme Connect 2026 —— Platform ONE 扩展至有线 / Wi-Fi / 织构 / SD-WAN；Agent ONE 协作智能体与 Wi-Fi 7 产品线扩张",
+      "url": "https://siliconangle.com/2026/05/06/extreme-connect-2026-agentic-ai-platform-one-next-phase-enterprise-networking/",
+      "topics": [
+        "Wi-Fi 7",
+        "802.11be",
+        "Extreme",
+        "agentic-AI",
+        "Platform ONE",
+        "enterprise"
+      ],
+      "topic_primary": "wifi7-deployment",
+      "topics_secondary": [
+        "agentic-wifi"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-12_extreme-connect-platform-one-agentone.md",
+      "summary_short_en": "At Extreme Connect 2026 (announced 2026-05-06), Extreme Networks promoted Platform ONE — first generally available in July 2025 as a wired/Wi-Fi/fabric/SD-WAN control plane — into the company's full enterprise networking foundation, and introduced the second-generation Agent ONE agentic-AI stack on top of it. Agent ONE Coworker is available now and runs in a \"proactive warm coworker\" mode: it monitors the network continuously, investigates anomalies, and proposes changes for operator approval. Agent ONE Operator, slated for Q4 2026, will execute multi-step workflows autonomously within configurable guardrails — the same agentic-vs-autonomous split HPE used for its Self-Driving Networks pitch the same week.",
+      "summary_short_zh": "在 Extreme Connect 2026（2026-05-06 发布）上，Extreme Networks 将 Platform ONE—— 该平台 2025-07 首次 GA，作为有线 / Wi-Fi / 织构 / SD-WAN 的统一控制面 —— 推升为公司完整的企业网络底座，并在其上推出第二代 Agent ONE 智能体 AI 堆栈。Agent ONE Coworker 当前已上线，运行在「主动型温和同事」模式下：持续监控网络、调查异常、向运维提出变更建议待批。Agent ONE Operator 计划在 2026 第四季度推出，将在可配置的护栏内自动执行多步工作流——这与 HPE 同周「自驾网络」叙事中同样的「智能体 vs 自治」二分法一致。",
+      "body_html_en": "<h3>Summary</h3>\n<p>At Extreme Connect 2026 (announced 2026-05-06), Extreme Networks promoted Platform ONE — first generally available in July 2025 as a wired/Wi-Fi/fabric/SD-WAN control plane — into the company's full enterprise networking foundation, and introduced the second-generation Agent ONE agentic-AI stack on top of it. Agent ONE Coworker is available now and runs in a &quot;proactive warm coworker&quot; mode: it monitors the network continuously, investigates anomalies, and proposes changes for operator approval. Agent ONE Operator, slated for Q4 2026, will execute multi-step workflows autonomously within configurable guardrails — the same agentic-vs-autonomous split HPE used for its Self-Driving Networks pitch the same week.</p>\n<p>On the Wi-Fi hardware side Extreme broadened its 802.11be lineup with the 5022 and 5060 (4×4 tri-band APs with a dedicated sensor radio), the 3020 / 3060 (entry-level 2×2 tri-band), and a 3020W wallplate for hospitality and retail — directly competing with HPE's same-week 723H launch. Companion switching updates include the 5420M mixed-media switch and 100/400G uplinks on the 7830 family.</p>\n<p>Architecturally Agent ONE sits on a four-layer stack: frontier LLMs sourced from hyperscalers; an Extreme AI Core that maintains a networking-specific knowledge graph encoding relationships between MACs, clients, policies, and services; a skills layer with Entra ID / SIEM / ServiceNow connectors; and the agentic execution layer with its two modes. Edge Services — the Platform ONE extension that orchestrates multi-vendor equipment (Cisco, Aruba, HPE, Juniper) locally while reporting upstream — addresses prior customer feedback about the &quot;black box&quot; fabric layer.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Agent ONE Coworker (GA)</strong> — proactive monitoring, anomaly investigation, change proposals for operator approval.</li><li><strong>Agent ONE Operator (Q4 2026)</strong> — autonomous multi-step workflow execution within configurable guardrails.</li><li><strong>AI Core knowledge graph</strong> — networking-specific graph linking MACs, clients, policies, services; the substrate that lets the LLM reason about specific identities rather than generic networking concepts.</li><li><strong>Wi-Fi 7 APs</strong> — 5022 / 5060 (4×4 tri-band + dedicated sensor radio), 3020 / 3060 (2×2 tri-band entry), 3020W (wallplate hospitality/retail).</li><li><strong>Switches</strong> — 5420M mixed-media (48-port fiber/copper); 7830 family 100/400G; 4600 series ruggedised for OT/industrial.</li><li><strong>Multi-vendor Edge Services</strong> — local orchestration of Cisco / Aruba / HPE / Juniper gear from a single Platform ONE pane.</li><li><strong>Financials cited</strong> — $316.9M Q revenue (+11% YoY), $236.4M SaaS ARR (+29%) — relevant because they're the public bull-case for continued investment in the AI/agentic features.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>Together with HPE's 2026-05-06 launch and Cisco's Catalyst+Meraki AgenticOps direction, this confirms that the agentic-AI-for-networking pattern has crossed from analyst pitches into a three-vendor commercial race in less than six months. The architectural patterns are remarkably similar: knowledge graph encoding network state + LLM-driven reasoning + skill-bound action layer with human-in-the-loop now / autonomous later. The dedicated sensor radio in the 5022/5060 is interesting — it positions Extreme to play in the same &quot;AP-as-sensor&quot; space <code>2026-05-04_hpe-aruba-730-utb-wifi7-ap</code> already occupied for HPE, suggesting the sensor radio is becoming table-stakes on the flagship enterprise tier rather than a differentiator.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>在 Extreme Connect 2026（2026-05-06 发布）上，Extreme Networks 将 Platform ONE—— 该平台 2025-07 首次 GA，作为有线 / Wi-Fi / 织构 / SD-WAN 的统一控制面 —— 推升为公司完整的企业网络底座，并在其上推出第二代 Agent ONE 智能体 AI 堆栈。Agent ONE Coworker 当前已上线，运行在「主动型温和同事」模式下：持续监控网络、调查异常、向运维提出变更建议待批。Agent ONE Operator 计划在 2026 第四季度推出，将在可配置的护栏内自动执行多步工作流——这与 HPE 同周「自驾网络」叙事中同样的「智能体 vs 自治」二分法一致。</p>\n<p>在 Wi-Fi 硬件侧 Extreme 扩展了其 802.11be 产品线：5022 与 5060（4×4 三频段 AP，专设感知射频）、3020/3060（入门级 2×2 三频段）、以及 3020W 壁挂式型号（面向酒店与零售）—— 直接对标 HPE 同周发布的 723H。配套交换机更新包括 5420M 混合介质交换机以及 7830 系列的 100/400G 上联。</p>\n<p>架构上 Agent ONE 是一个四层堆栈：来自超大规模云的前沿 LLM；Extreme AI Core—— 维护一张面向网络的知识图谱，编码 MAC、客户端、策略与服务之间的关系；Skills 层 —— 提供 Entra ID / SIEM / ServiceNow 等连接器；以及带两个模式的智能体执行层。Edge Services —— Platform ONE 的扩展，可在本地编排多厂商设备（Cisco、Aruba、HPE、Juniper）并向上汇报 —— 回应了此前客户对织构层「黑盒」的反馈。</p>\n<h3>技术要点</h3>\n<ul><li><strong>Agent ONE Coworker（GA）</strong> —— 主动监控、异常调查、向运维提出变更建议待批。</li><li><strong>Agent ONE Operator（2026 Q4）</strong> —— 在可配置护栏内自动执行多步工作流。</li><li><strong>AI Core 知识图谱</strong> —— 面向网络的图，关联 MAC、客户端、策略、服务；这是让 LLM 能就具体身份做推理（而不是泛泛网络概念）的底座。</li><li><strong>Wi-Fi 7 AP</strong> —— 5022 / 5060（4×4 三频段+专设感知射频）、3020 / 3060（2×2 三频段入门）、3020W（壁挂酒店/零售）。</li><li><strong>交换机</strong> —— 5420M 混合介质（48 口光/铜）；7830 系列 100/400G；4600 系列为 OT/工业现场加固。</li><li><strong>多厂商 Edge Services</strong> —— 通过单一 Platform ONE 视图本地编排 Cisco / Aruba / HPE / Juniper 设备。</li><li><strong>财务参考</strong> —— Q3 营收 3.169 亿美元（同比 +11%）、SaaS ARR 2.364 亿美元（+29%）—— 这些数字相关，因为它们是支撑继续在智能体/AI 上投入的公开多头叙事。</li></ul>\n<h3>意义与新意</h3>\n<p>与 HPE 2026-05-06 的发布以及 Cisco 的 Catalyst+Meraki AgenticOps 路线放在一起，这确认了「智能体 AI 用于网络」的模式在不到半年内已从分析师讲稿落地为三厂商的商业竞赛。这三家的架构模式高度相似：编码网络状态的知识图谱 + LLM 推理 + 受技能约束的动作层，且都遵循「先人在环、后自治」的节奏。5022/5060 上专设的感知射频值得注意 —— 它把 Extreme 放到了 <code>2026-05-04_hpe-aruba-730-utb-wifi7-ap</code> 上 HPE 已经占据的「AP 即传感器」位置，说明感知射频正在成为旗舰企业级 AP 的标配，而不是差异化卖点。</p>",
+      "images": [],
+      "search_blob": "extreme connect 2026 — platform one expands across wired/wi-fi/fabric/sd-wan; agent one coworker + wi-fi 7 lineup expansion extreme connect 2026 —— platform one 扩展至有线 / wi-fi / 织构 / sd-wan；agent one 协作智能体与 wi-fi 7 产品线扩张 wi-fi 7 802.11be extreme agentic-ai platform one enterprise at extreme connect 2026 (announced 2026-05-06), extreme networks promoted platform one — first generally available in july 2025 as a wired/wi-fi/fabric/sd-wan control plane — into the company's full enterprise networking foundation, and introduced the second-generation agent one agentic-ai stack on top of it. agent one coworker is available now and runs in a \"proactive warm coworker\" mode: it monitors the network continuously, investigates anomalies, and proposes changes for operator approval. agent one operator, slated for q4 2026, will execute multi-step workflows autonomously within configurable guardrails — the same agentic-vs-autonomous split hpe used for its self-driving networks pitch the same week. 在 extreme connect 2026（2026-05-06 发布）上，extreme networks 将 platform one—— 该平台 2025-07 首次 ga，作为有线 / wi-fi / 织构 / sd-wan 的统一控制面 —— 推升为公司完整的企业网络底座，并在其上推出第二代 agent one 智能体 ai 堆栈。agent one coworker 当前已上线，运行在「主动型温和同事」模式下：持续监控网络、调查异常、向运维提出变更建议待批。agent one operator 计划在 2026 第四季度推出，将在可配置的护栏内自动执行多步工作流——这与 hpe 同周「自驾网络」叙事中同样的「智能体 vs 自治」二分法一致。 product"
+    },
     {
       "id": "2026-05-05_belden-acquires-ruckus-1-85b",
       "date_found": "2026-05-05",
@@ -866,6 +1253,47 @@ window.KB_DATA = {
       "search_blob": "why the top 10 broadband operators don't own the mdu wi-fi market — managed-wi-fi msps win on operational service delivery 为什么前 10 大宽带运营商并不主导 mdu wi-fi 市场 —— 托管 wi-fi msp 凭运营服务交付胜出 products roaming in a may 4 2026 rcr wireless analyst piece, **adlane fellah (chief analyst, maravedis research)** argues that the major us broadband carriers — comcast xfinity (31.25m subs), charter spectrum (29.7m), at&t (~16.7m), verizon (~13m) — **don't dominate the multi-dwelling-unit (mdu) wi-fi opportunity** despite their subscriber scale, and that managed-wi-fi msps are winning the segment on operational service delivery. roughly nine out of ten new us multifamily development projects choose **managed wi-fi** over retail-isp-per-unit models. 在 2026 年 5 月 4 日的 rcr wireless 分析专栏中，**maravedis research 首席分析师 adlane fellah** 论证：尽管美国主要宽带运营商体量巨大——comcast xfinity（3125 万用户）、charter spectrum（2970 万）、at&t（约 1670 万）、verizon（约 1300 万）——**它们并不主导多户公寓（mdu）wi-fi 机会**；托管 wi-fi msp 正凭运营服务交付能力赢下这个细分市场。美国新建多户公寓项目中约有九成选择 **托管 wi-fi** 模式，而非\"每户一份零售 isp\"模式。 industry-news"
     },
     {
+      "id": "2026-05-12_arxiv-mu-shot-fi-multiuser-sensing",
+      "date_found": "2026-05-12",
+      "date_published": "2026-05-02",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "MU-SHOT-Fi: Self-Supervised Multi-User Wi-Fi Sensing with Source-free Unsupervised Domain Adaptation",
+      "title_zh": "MU-SHOT-Fi：基于无源无监督域适配的自监督多用户 WiFi 感知",
+      "url": "https://arxiv.org/abs/2605.01369",
+      "topics": [
+        "802.11bf",
+        "WiFi-sensing",
+        "CSI",
+        "domain-adaptation",
+        "self-supervised",
+        "multi-user"
+      ],
+      "topic_primary": "sensing-csi",
+      "topics_secondary": [
+        "ai-for-wifi"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-12_arxiv-mu-shot-fi-multiuser-sensing.md",
+      "summary_short_en": "Ahmed Y. Radwan and Hina Tabassum (EECS, York University) released MU-SHOT-Fi on 2026-05-02 (arxiv 2605.01369), framing multi-user CSI sensing as a *source-free* domain adaptation problem: at deployment time you have only the pre-trained model and unlabelled target-domain CSI — no source data, no target labels. The framework targets the two specific failure modes of multi-user WiFi sensing: (1) signal entanglement when several people move simultaneously, and (2) severe class imbalance from the long tail of \"no one present\" slots, which causes naive information-maximisation regularisers to collapse onto the dominant class.",
+      "summary_short_zh": "Radwan 与 Tabassum（多伦多约克大学电气与计算机科学系）于 2026-05-02 提交 MU-SHOT-Fi（arxiv 2605.01369），将多用户 CSI 感知建模为**无源**域适配问题：部署时只有预训练模型与目标域无标签 CSI——既没有源数据，也没有目标标签。框架瞄准多用户 WiFi 感知的两个具体失败模式：（1）多人同时移动时的信号纠缠；（2）「无人在场」槽位长尾导致的严重类不平衡，这会使朴素信息最大化正则项坍缩到主导类上。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Ahmed Y. Radwan and Hina Tabassum (EECS, York University) released MU-SHOT-Fi on 2026-05-02 (arxiv 2605.01369), framing multi-user CSI sensing as a <em>source-free</em> domain adaptation problem: at deployment time you have only the pre-trained model and unlabelled target-domain CSI — no source data, no target labels. The framework targets the two specific failure modes of multi-user WiFi sensing: (1) signal entanglement when several people move simultaneously, and (2) severe class imbalance from the long tail of &quot;no one present&quot; slots, which causes naive information-maximisation regularisers to collapse onto the dominant class.</p>\n<p>Two technical choices carry the contribution. First, source-side training uses <strong>Hungarian-matched permutation-invariant set prediction</strong>, so the model treats <code>{user A doing X, user B doing Y}</code> and <code>{user B doing Y, user A doing X}</code> as the same target — eliminating the spurious slot-ordering signal. Second, adaptation uses <strong>occupancy-weighted information maximisation</strong>, weighting diversity regularisation by the per-slot occupancy probability rather than uniformly across slots, plus a binary-rotation self-supervised pretext task that exploits the time-frequency structure of CSI to learn domain-invariant features without labels. For the single-user case a sibling SU-SHOT-Fi variant replaces occupancy weighting with standard IM plus contrastive temporal learning.</p>\n<p>On WiMANS (multi-user, 0-5 simultaneous people, 9 activities, classroom + meeting room, 2.4 GHz + 5 GHz) the framework reaches <strong>41.97 % slot-wise accuracy</strong> under combined domain shifts versus 19.61 % source-only — slightly above 2× relative — with occupancy MAE 2.12 vs 2.48. On Widar 3.0 (single-user gestures, 6 classes, 5 locations + orientations) single-user accuracy moves from 80.18 % to 85.75 % under domain shift.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Source-free DA setting</strong> — at adaptation time only pre-trained model + unlabelled target CSI; no source data, no target labels.</li><li><strong>Permutation-invariant set prediction with Hungarian matching</strong> — used during source training to remove slot-ordering as a spurious signal.</li><li><strong>Occupancy-weighted information maximisation</strong> — weights diversity regularisation by per-slot occupancy probability; prevents collapse to the &quot;no-person&quot; class.</li><li><strong>Binary rotation self-supervised pretext</strong> — exploits CSI time-frequency structure to learn domain-invariant features without labels.</li><li><strong>Sibling SU-SHOT-Fi</strong> — single-user variant; uses standard IM + contrastive temporal learning.</li><li><strong>WiMANS results</strong> — 41.97 % slot accuracy under combined shifts (vs 19.61 % source-only); occupancy MAE 2.12 vs 2.48.</li><li><strong>Widar 3.0 results</strong> — 85.75 % single-user accuracy under domain shift (vs 80.18 %).</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's prior multi-user sensing entry (<code>2026-05-03_arxiv-multiuser-wifi-sensing-counting</code>) explicitly chose an identity-agnostic counting task to sidestep multi-user attribution. MU-SHOT-Fi keeps the per-user attribution and tackles the harder problem head-on, but the headline absolute number (~42 % slot-wise accuracy under combined shifts) shows how far multi-user-attributed sensing still has to go before it matches single-user systems. The contribution is the framing — source-free DA is a realistic deployment story for sensing-enabled APs that ship without ever seeing labelled CSI from the customer site — and the occupancy-weighting trick, which is a cleaner fix than synthetic class balancing for the &quot;no person present&quot; failure mode. Companion paper to <code>2026-05-12_arxiv-wifi-fall-detection-physics-transformer</code> (same week, different domain-adaptation strategy).</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Radwan 与 Tabassum（多伦多约克大学电气与计算机科学系）于 2026-05-02 提交 MU-SHOT-Fi（arxiv 2605.01369），将多用户 CSI 感知建模为<strong>无源</strong>域适配问题：部署时只有预训练模型与目标域无标签 CSI——既没有源数据，也没有目标标签。框架瞄准多用户 WiFi 感知的两个具体失败模式：（1）多人同时移动时的信号纠缠；（2）「无人在场」槽位长尾导致的严重类不平衡，这会使朴素信息最大化正则项坍缩到主导类上。</p>\n<p>贡献由两项技术选择支撑。第一，源端训练采用<strong>带匈牙利匹配的置换不变集合预测</strong>，让模型把 <code>{用户 A 做 X，用户 B 做 Y}</code> 与 <code>{用户 B 做 Y，用户 A 做 X}</code> 视为相同目标——消除虚假的槽位顺序信号。第二，适配阶段采用<strong>按槽位占用率加权的信息最大化</strong>，按每槽位占用概率而非均匀地加权多样性正则项，并叠加一个二元旋转自监督预设任务——利用 CSI 时频结构在无标签下学到域不变特征。单用户场景下的姊妹版 SU-SHOT-Fi 把占用加权换成标准 IM 加对比性时序学习。</p>\n<p>在 WiMANS（多用户，0-5 人同时在场，9 种动作，教室+会议室，2.4 GHz 与 5 GHz）上，框架在组合域偏移下达到<strong>槽位级 41.97% 准确率</strong>，对比仅源训练的 19.61%——大约 2 倍的相对提升，占用 MAE 2.12 vs 2.48。在 Widar 3.0（单用户手势，6 类，5 个位置+朝向）上单用户准确率在域偏移下从 80.18% 提升到 85.75%。</p>\n<h3>技术要点</h3>\n<ul><li><strong>无源域适配设定</strong> —— 适配阶段只用预训练模型 + 目标域无标签 CSI；无源数据、无目标标签。</li><li><strong>匈牙利匹配的置换不变集合预测</strong> —— 源端训练阶段使用，消除槽位顺序作为虚假信号。</li><li><strong>占用率加权的信息最大化</strong> —— 按每槽位占用概率加权多样性正则项；防止坍缩到「无人」类。</li><li><strong>二元旋转自监督预设任务</strong> —— 利用 CSI 时频结构在无标签下学到域不变特征。</li><li><strong>姊妹版 SU-SHOT-Fi</strong> —— 单用户变体；使用标准 IM + 对比性时序学习。</li><li><strong>WiMANS 结果</strong> —— 组合偏移下槽位准确率 41.97%（vs 仅源训练 19.61%）；占用 MAE 2.12 vs 2.48。</li><li><strong>Widar 3.0 结果</strong> —— 域偏移下单用户准确率 85.75%（vs 80.18%）。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 此前的多用户感知条目（<code>2026-05-03_arxiv-multiuser-wifi-sensing-counting</code>）显式选择「身份无关计数」任务来回避多用户身份归属问题。MU-SHOT-Fi 保留按用户归属，正面解决更难的问题，但其头条绝对数字（组合偏移下槽位级约 42% 准确率）也说明多用户带身份归属的感知离单用户系统还有相当距离。本文贡献在于问题设定 —— 无源 DA 是「带感知功能的 AP 出厂时尚未见过客户现场任何标注 CSI」的现实部署叙事 —— 以及占用率加权这个小技巧，相比合成类平衡是对「无人在场」失败模式更干净的修法。与 <code>2026-05-12_arxiv-wifi-fall-detection-physics-transformer</code> 为同周姊妹篇，采用不同的域适配策略。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2605.01369v1/x1.png",
+          "caption_en": "MU-SHOT-Fi architecture for multi-user sensing",
+          "caption_zh": "MU-SHOT-Fi 多用户感知架构"
+        },
+        {
+          "url": "https://arxiv.org/html/2605.01369v1/x2.png",
+          "caption_en": "SU-SHOT-Fi architecture for single-user sensing",
+          "caption_zh": "SU-SHOT-Fi 单用户感知架构"
+        }
+      ],
+      "search_blob": "mu-shot-fi: self-supervised multi-user wi-fi sensing with source-free unsupervised domain adaptation mu-shot-fi：基于无源无监督域适配的自监督多用户 wifi 感知 802.11bf wifi-sensing csi domain-adaptation self-supervised multi-user ahmed y. radwan and hina tabassum (eecs, york university) released mu-shot-fi on 2026-05-02 (arxiv 2605.01369), framing multi-user csi sensing as a *source-free* domain adaptation problem: at deployment time you have only the pre-trained model and unlabelled target-domain csi — no source data, no target labels. the framework targets the two specific failure modes of multi-user wifi sensing: (1) signal entanglement when several people move simultaneously, and (2) severe class imbalance from the long tail of \"no one present\" slots, which causes naive information-maximisation regularisers to collapse onto the dominant class. radwan 与 tabassum（多伦多约克大学电气与计算机科学系）于 2026-05-02 提交 mu-shot-fi（arxiv 2605.01369），将多用户 csi 感知建模为**无源**域适配问题：部署时只有预训练模型与目标域无标签 csi——既没有源数据，也没有目标标签。框架瞄准多用户 wifi 感知的两个具体失败模式：（1）多人同时移动时的信号纠缠；（2）「无人在场」槽位长尾导致的严重类不平衡，这会使朴素信息最大化正则项坍缩到主导类上。 academic-paper"
+    },
+    {
       "id": "2026-05-03_ieee-mentor-may-2026-pre-interim-digest",
       "date_found": "2026-05-03",
       "date_published": "2026-05-02",
@@ -899,6 +1327,36 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>在 2026 年 5 月 10–15 日 Antwerp 无线临时会议前的四周，IEEE 802.11 Mentor 门户出现了<strong>六个活跃 Task Group</strong> 的密集提交。会前窗口正是实质性贡献定稿、为面对面辩论做准备的时段，因此本摘要记录了工作组将在 Antwerp 投票的技术议程。</p>\n<p>按 TG 列出要点：</p>\n<ul><li><strong>TGbn (Wi-Fi 8 / 超高可靠性)：</strong> EPCS 上下文转移用于无缝漫游（11-26/036r3，Samsung）；P-EDCA 改进的空间复用（11-26/826，Cisco）；MAPC 安全协议更新（11-26/424r5，Huawei）；LB291 评论决议系列（无缝漫游 第 3+4 部分，Qualcomm 与多家迭代）。</li><li><strong>TGbi (隐私 / EPP)：</strong> EPPKE 认证回归机制（11-26/862，Qualcomm）；EPSAE 引入（11-26/799，HPE）—— 隐私增强关联机制。</li><li><strong>TGbt (后量子密码)：</strong> 两种 PQC 认证变体上桌 —— pqc-sig-auth 与 pqc-no-sig-auth（11-26/546、547；HPE）。预期 D1.0 初版工作组投票从 5 月会议起步。</li><li><strong>TGbp (环境取电通信)：</strong> Non-AP AMP STA 的上行信道接入（11-26/802，Qualcomm）—— 面向超低功耗 IoT 站点的接入机制。预期 D1.0 初版工作组投票从 5 月会议起步。</li><li><strong>TGbq (集成毫米波)：</strong> A-Control 更新与 MultiBSSID 设计（11-26/827、819；OPPO）。</li><li><strong>TGbr (LiFi)：</strong> 波分复用提案（11-26/831，pureLiFi）。</li></ul>\n<h3>技术要点</h3>\n<ul><li><strong>TGbn EPCS 上下文转移</strong>：在 AP 间转移 PMK / 关联上下文，实现毫秒以下无重认证的无缝漫游。</li><li><strong>TGbn P-EDCA</strong>：经 CID 10740 提出的参数化 EDCA 微调，用以改进空间复用决策。</li><li><strong>TGbn MAPC 安全</strong>：多 AP 协调安全协议的更新（跨协调 AP 的密钥派生）。</li><li><strong>TGbi EPPKE / EPSAE</strong>：隐私保护型关联 —— 派生密钥而不泄露长期标识符。</li><li><strong>TGbt PQC 认证</strong>：用于认证握手的格基 + 无签名 PQC 变体（防御「先收今后解」）。</li><li><strong>TGbp AMP UL</strong>：面向反向散射 / 环境取电射频的非 AP STA 信道接入流程。</li><li><strong>TGbq</strong>：为集成毫米波操作模式定制的 A-Control 控制 ID 与 MultiBSSID 扩展。</li><li><strong>TGbr</strong>：可见光 Wi-Fi 的 PHY 层波分复用。</li></ul>\n<h3>意义与新意</h3>\n<p>会前四周窗口集中了一年中数量最多的提交，因为投稿人都想在 Antwerp 拿到台面时间。本摘要比 <code>ieee-march-2026-readout</code> 与 <code>ieee-january-2026-readout</code> 中的会后总结更干净地呈现「标准当下正在发生什么」。其中三个 TG（TGbi 隐私、TGbt PQC、TGbp 环境取电）正处于 D1.0 ballot 阶段 —— 即这几个修订的结构形态将在未来 1-2 次会议锁定。TGbn (Wi-Fi 8) 已过 D2.0 准备期；本窗口的提交以 LB291 评论决议为主，并非架构性变更。</p>",
       "images": [],
       "search_blob": "ieee 802.11 mentor pre-interim digest — apr-may 2026 contributions ahead of the antwerp interim (may 10-15, 2026) ieee 802.11 mentor 会前文档摘要 —— 2026 年 4-5 月（antwerp 临时会议前夕，5 月 10-15 日） 802.11bn 802.11bp 802.11bi 802.11bt 802.11bq 802.11br mac-layer security agentic-ai in the four weeks leading up to the may 10-15 2026 antwerp wireless interim, the ieee 802.11 mentor portal saw a strong wave of task-group submissions across **six active task groups**. the pre-interim window is when the substantive contributions get tabled before face-to-face debate, so this digest captures the technical agenda that the working group will be voting on in antwerp. 在 2026 年 5 月 10–15 日 antwerp 无线临时会议前的四周，ieee 802.11 mentor 门户出现了**六个活跃 task group** 的密集提交。会前窗口正是实质性贡献定稿、为面对面辩论做准备的时段，因此本摘要记录了工作组将在 antwerp 投票的技术议程。 ieee-document"
+    },
+    {
+      "id": "2026-05-12_arxiv-ncsim-edge-wifi-interference",
+      "date_found": "2026-05-12",
+      "date_published": "2026-05-01",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "ncsim: A Lightweight Simulator for Networked Edge Computing with Wireless Interference Modeling",
+      "title_zh": "ncsim：耦合无线干扰建模的网络化边缘计算轻量级仿真器",
+      "url": "https://arxiv.org/abs/2605.01094",
+      "topics": [
+        "802.11",
+        "CSMA/CA",
+        "edge-computing",
+        "DAG-scheduling",
+        "simulation",
+        "interference"
+      ],
+      "topic_primary": "wifi-for-ai",
+      "topics_secondary": [
+        "ai-for-wifi"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-05-12_arxiv-ncsim-edge-wifi-interference.md",
+      "summary_short_en": "Krishnamachari, Gutierrez, and Coleman released ncsim on 2026-05-01 (arxiv 2605.01094), a single Python package that couples DAG workflow scheduling with physically-grounded **IEEE 802.11 CSMA/CA** interference modelling — the explicit goal being to close the gap between idealised scheduler benchmarks (which assume an interference-free channel) and the WiFi-mediated reality of real edge / IoT deployments. The paper's headline observation: a 108-run factorial experiment shows **rank inversions in 27.8 % of scenarios**, with schedulers that look optimal under the interference-free model producing **up to 2.7× worse makespan** than plain round-robin once 802.11 CSMA/CA contention is layered in.",
+      "summary_short_zh": "Krishnamachari、Gutierrez、Coleman 于 2026-05-01 发布 ncsim（arxiv 2605.01094），一个 Python 包将 DAG 工作流调度与基于物理建模的 **IEEE 802.11 CSMA/CA** 干扰建模耦合在一起——明确目标是弥合理想化调度器基准（假设无干扰信道）与 WiFi 中介下真实边缘 / IoT 部署的差距。论文头条观察：108 次析因实验显示，**27.8% 的场景出现排名反转**，在无干扰模型下看起来最优的调度器在叠加 802.11 CSMA/CA 争用后，makespan **可比朴素轮询差 2.7 倍**。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Krishnamachari, Gutierrez, and Coleman released ncsim on 2026-05-01 (arxiv 2605.01094), a single Python package that couples DAG workflow scheduling with physically-grounded <strong>IEEE 802.11 CSMA/CA</strong> interference modelling — the explicit goal being to close the gap between idealised scheduler benchmarks (which assume an interference-free channel) and the WiFi-mediated reality of real edge / IoT deployments. The paper's headline observation: a 108-run factorial experiment shows <strong>rank inversions in 27.8 % of scenarios</strong>, with schedulers that look optimal under the interference-free model producing <strong>up to 2.7× worse makespan</strong> than plain round-robin once 802.11 CSMA/CA contention is layered in.</p>\n<p>The technical contribution is methodological rather than algorithmic. Existing edge-compute simulators either (a) abstract the wireless link as a constant-rate / constant-loss pipe (iFogSim, EdgeSim variants), or (b) live inside ns-3 with full PHY/MAC fidelity but at a complexity cost that rules out DAG scheduling sweeps. ncsim splits the difference: it keeps CSMA/CA back-off, contention window, packet timing, and aggregate per-AP airtime as first-class simulator state, but exposes the workflow / scheduling layer as plain Python so authors can run hundreds of DAG configurations per evaluation. Reference code is on GitHub; 13 pages, 9 figures.</p>\n<p>The relevance to the Wi-Fi-for-AI bin is the rank-inversion result itself. It is a clean empirical illustration of why &quot;Wi-Fi-aware schedulers&quot; are not just a nice-to-have for AI / agentic computation offloading — under realistic 802.11 contention, the interference-blind optimal can be worse than a no-thought baseline. The same observation underpins multiple WNG SC and AI Offload SG contributions at the May 2026 Antwerp interim (see the per-group Mentor digests for that week).</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Coupled simulator</strong> — DAG workflow scheduling + 802.11 CSMA/CA interference modelling in one Python package; CSMA back-off, CW, packet timing, per-AP airtime are first-class state.</li><li><strong>Headline result</strong> — 108-run factorial experiment; <strong>rank inversions in 27.8 % of scenarios</strong>; interference-free-optimal scheduler up to <strong>2.7× worse makespan</strong> than round-robin under realistic 802.11 contention.</li><li><strong>Positioning</strong> — sits between iFogSim-style pipe abstractions (too lossy) and ns-3 (too heavy for scheduler sweeps).</li><li><strong>Reproducibility</strong> — code on GitHub; 13 pages, 9 figures; cs.DC + cs.NI cross-listed.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>For the <code>wifi-for-ai</code> bin, ncsim's value is the <strong>rank-inversion result</strong>, not the simulator code itself. It quantifies what AI Offload SG contributions to the May 2026 Antwerp interim have been arguing qualitatively: an AI-offload scheduler that ignores Wi-Fi contention can pick its worst-case configuration. The 2.7× / 27.8 % numbers are concrete enough to cite in MAC-layer feedback channels for AI workloads — a structural argument that the offload decision needs visibility into 802.11 state, which lines up with the &quot;Collaborative STA-AP Inference Offloading&quot; thread in AI Offload SG.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Krishnamachari、Gutierrez、Coleman 于 2026-05-01 发布 ncsim（arxiv 2605.01094），一个 Python 包将 DAG 工作流调度与基于物理建模的 <strong>IEEE 802.11 CSMA/CA</strong> 干扰建模耦合在一起——明确目标是弥合理想化调度器基准（假设无干扰信道）与 WiFi 中介下真实边缘 / IoT 部署的差距。论文头条观察：108 次析因实验显示，<strong>27.8% 的场景出现排名反转</strong>，在无干扰模型下看起来最优的调度器在叠加 802.11 CSMA/CA 争用后，makespan <strong>可比朴素轮询差 2.7 倍</strong>。</p>\n<p>技术贡献是方法学层面的，而非算法层面。现有边缘计算仿真器要么 (a) 把无线链路抽象为恒速率/恒丢包管道（iFogSim、EdgeSim 各变体），要么 (b) 寄宿在 ns-3 中获得完整 PHY/MAC 保真度但复杂度高到无法做 DAG 调度扫描。ncsim 折中两者：把 CSMA/CA 退避、争用窗口、报文时序、每 AP 总占空时长当作仿真器一等状态，同时把工作流 / 调度层暴露为普通 Python，让作者可以为单次评估跑数百种 DAG 配置。参考代码放在 GitHub；13 页、9 张图。</p>\n<p>对 Wi-Fi-for-AI 桶的相关性正是排名反转结果本身。它干净地实证了为什么「WiFi 感知调度器」对 AI / 智能体算力卸载不是「锦上添花」——在实际 802.11 争用下，干扰盲目的最优解可能比无脑基线更差。同样的观察支撑了 2026 年 5 月 Antwerp 期中会议上若干 WNG SC 与 AI Offload SG 贡献（详见本周对应 Mentor 群组摘要）。</p>\n<h3>技术要点</h3>\n<ul><li><strong>耦合仿真器</strong> —— 单个 Python 包内同时包含 DAG 工作流调度与 802.11 CSMA/CA 干扰建模；CSMA 退避、CW、报文时序、每 AP 占空时长都是一等状态。</li><li><strong>头条结果</strong> —— 108 次析因实验；<strong>27.8% 场景出现排名反转</strong>；无干扰最优调度器在实际 802.11 争用下 makespan 可比轮询差 <strong>2.7 倍</strong>。</li><li><strong>定位</strong> —— 介于 iFogSim 式管道抽象（太粗糙）与 ns-3（对调度扫描太重）之间。</li><li><strong>可复现</strong> —— 代码在 GitHub；13 页 9 图；cs.DC + cs.NI 跨列。</li></ul>\n<h3>意义与新意</h3>\n<p>对 <code>wifi-for-ai</code> 桶而言，ncsim 的价值是<strong>排名反转结果</strong>本身，而非仿真代码。它把 2026 年 5 月 Antwerp 期中 AI Offload SG 多个贡献定性提出的论点定量化了：忽视 WiFi 争用的 AI 卸载调度器可能挑出自身最坏的配置。2.7 倍 / 27.8% 这两个数字足够具体，可以作为「为 AI 工作负载设计 MAC 层反馈通道」的引证——这是个结构性论点，说明卸载决策需要看到 802.11 状态可见性，恰好与 AI Offload SG 中「STA-AP 协同推理卸载」一线讨论吻合。</p>",
+      "images": [],
+      "search_blob": "ncsim: a lightweight simulator for networked edge computing with wireless interference modeling ncsim：耦合无线干扰建模的网络化边缘计算轻量级仿真器 802.11 csma/ca edge-computing dag-scheduling simulation interference krishnamachari, gutierrez, and coleman released ncsim on 2026-05-01 (arxiv 2605.01094), a single python package that couples dag workflow scheduling with physically-grounded **ieee 802.11 csma/ca** interference modelling — the explicit goal being to close the gap between idealised scheduler benchmarks (which assume an interference-free channel) and the wifi-mediated reality of real edge / iot deployments. the paper's headline observation: a 108-run factorial experiment shows **rank inversions in 27.8 % of scenarios**, with schedulers that look optimal under the interference-free model producing **up to 2.7× worse makespan** than plain round-robin once 802.11 csma/ca contention is layered in. krishnamachari、gutierrez、coleman 于 2026-05-01 发布 ncsim（arxiv 2605.01094），一个 python 包将 dag 工作流调度与基于物理建模的 **ieee 802.11 csma/ca** 干扰建模耦合在一起——明确目标是弥合理想化调度器基准（假设无干扰信道）与 wifi 中介下真实边缘 / iot 部署的差距。论文头条观察：108 次析因实验显示，**27.8% 的场景出现排名反转**，在无干扰模型下看起来最优的调度器在叠加 802.11 csma/ca 争用后，makespan **可比朴素轮询差 2.7 倍**。 academic-paper"
     },
     {
       "id": "2026-05-04_extreme-networks-wifi7-momentum-q3",
@@ -1176,6 +1634,57 @@ window.KB_DATA = {
         }
       ],
       "search_blob": "mediatek @ wwc mountain view 2026: dso+ extension brings wi-fi 8 dso benefits to legacy clients; dpd-driven 20% power reduction mediatek 在 wwc mountain view 2026：dso+ 扩展让 wi-fi 8 dso 收益惠及旧客户端；数字预失真驱动 20% 功耗降低 802.11bn products mac-layer phy-layer power-save at wi-fi world congress mountain view 2026 (april 14, reported april 25), **james chen, vp product & technology marketing at mediatek**, made two technically substantive disclosures behind a wider message about \"humble pie\" wi-fi 8 marketing in a tariff/geopolitics/memory-shortage environment. 在 wi-fi world congress mountain view 2026（4 月 14 日演讲，4 月 25 日报道），**mediatek 产品与技术市场副总裁 james chen** 在\"关税 / 地缘 / 内存短缺\"的大背景之下，于\"低姿态推 wi-fi 8\"的整体叙事中给出两条技术层面的实质性披露。 industry-news"
+    },
+    {
+      "id": "2026-05-12_arxiv-wifi-fall-detection-physics-transformer",
+      "date_found": "2026-05-12",
+      "date_published": "2026-04-23",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Robust Cross-Domain WiFi Fall Detection via Physics-Driven Attention-Enhanced Transformers",
+      "title_zh": "基于物理驱动注意力增强 Transformer 的跨域鲁棒 WiFi 跌倒检测",
+      "url": "https://arxiv.org/abs/2605.00869",
+      "topics": [
+        "802.11bf",
+        "WiFi-sensing",
+        "CSI",
+        "fall-detection",
+        "healthcare",
+        "transformer"
+      ],
+      "topic_primary": "sensing-csi",
+      "topics_secondary": [
+        "ai-for-wifi"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-12_arxiv-wifi-fall-detection-physics-transformer.md",
+      "summary_short_en": "Yingzhe Wang and colleagues (Southeast University / others) submitted a CSI-based fall-detection system on 2026-04-23 (arxiv 2605.00869) that targets two perennial weaknesses of WiFi-sensing systems: severe accuracy drops in unseen rooms and signal degradation under non-line-of-sight conditions. Their architecture pairs a physics-driven preprocessing module — a Dynamic Variance Gate (DVG) that computes per-bin temporal variance over a 15-sample sliding window and converts it to a soft attention mask with a -3.0 sigmoid bias to suppress static environmental components — with an attention-enhanced backbone (EfficientNet-B0 → Convolutional Block Attention Module → 2-layer 4-head 512-dim Transformer encoder with sinusoidal positional encodings).",
+      "summary_short_zh": "王映哲与合作者（东南大学等）于 2026-04-23 提交（arxiv 2605.00869）了一套基于 CSI 的跌倒检测系统，瞄准 WiFi 感知系统两个长期痛点：在未见过的房间里准确率大幅跌落、以及在非视距（NLoS）条件下信号退化。他们的架构把一个物理驱动的预处理模块——动态方差门（DVG），在 15 样本滑窗内按子载波计算时间方差并以 -3.0 sigmoid 偏置转换为软注意力掩码以抑制静态环境成分——与一个注意力增强的骨干（EfficientNet-B0 → 卷积块注意力模块 CBAM → 2 层 4 头 512 维 Transformer 编码器，采用正弦位置编码）配对在一起。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Yingzhe Wang and colleagues (Southeast University / others) submitted a CSI-based fall-detection system on 2026-04-23 (arxiv 2605.00869) that targets two perennial weaknesses of WiFi-sensing systems: severe accuracy drops in unseen rooms and signal degradation under non-line-of-sight conditions. Their architecture pairs a physics-driven preprocessing module — a Dynamic Variance Gate (DVG) that computes per-bin temporal variance over a 15-sample sliding window and converts it to a soft attention mask with a -3.0 sigmoid bias to suppress static environmental components — with an attention-enhanced backbone (EfficientNet-B0 → Convolutional Block Attention Module → 2-layer 4-head 512-dim Transformer encoder with sinusoidal positional encodings).</p>\n<p>Cross-environment performance is the headline contribution. On their four-environment dataset (22 volunteers, 321 falls, 436 non-fall activities across Living Room A, Meeting Room B, Home Lab C with separate LoS/NLoS zones, and Lecture Room D), the model reaches <strong>98.8 % accuracy on a completely unseen environment without fine-tuning</strong> and <strong>97.6 % under NLoS</strong>. A live deployment on edge hardware with commercial WiFi adapters held <strong>94 % accuracy</strong> on a brand-new office environment, at 12.4 ms inference latency / 648 FPS on GPU.</p>\n<p>Beyond the DVG, two more techniques carry the cross-domain story: a &quot;physics-aware&quot; augmentation set (Rician-channel noise injection, random amplitude scaling 0.5-1.5×, circular time shifts, and NLoS simulation via spectral smoothing) that explicitly mimics the distortions CSI undergoes between environments; and the CBAM stage between EfficientNet and the Transformer, which gives the channel/spatial attention modules a chance to refine the feature map before sequence modelling.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Dynamic Variance Gate (DVG)</strong> — 15-sample sliding window, per-bin variance → convolution → sigmoid with -3.0 init bias → soft attention mask. Designed to suppress the static-environment component of the CSI stream.</li><li><strong>Backbone</strong> — EfficientNet-B0 (1280-channel, 20×1 output) → CBAM channel+spatial attention → Transformer encoder (2 layers, 4 heads, 512-dim, sinusoidal positions).</li><li><strong>Physics-aware augmentation</strong> — Rician noise injection; amplitude scaling 0.5-1.5×; circular time shifts; NLoS simulation via spectral smoothing (downsample + interpolate).</li><li><strong>Dataset</strong> — 4 indoor environments; 22 volunteers; 321 falls + 436 non-fall activities; LoS and NLoS zones separated in Home Lab C.</li><li><strong>Results</strong> — 99.5 % aggregate accuracy; 97.6 % NLoS; <strong>98.8 % unseen environment, zero fine-tuning</strong>; <strong>94 % in live field test on a novel office</strong>.</li><li><strong>Latency</strong> — 12.4 ms / window inference; 648 FPS on GPU; tested on edge devices with commercial WiFi NICs.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The cross-domain story is the meaningful contribution. Recent KB entries on this axis (<code>2026-05-04_arxiv-respirfi-respiratory-wifi-csi</code>, <code>2026-05-03_arxiv-multiuser-wifi-sensing-counting</code>) hit similar accuracies in single-environment training; the headline here is <strong>near-99 % accuracy without fine-tuning on a fully unseen room</strong>, which is the part that has historically blocked CSI-sensing deployments at scale. The DVG is a small, principled physics-side preprocessing step rather than yet-another-attention-flavour; pairing it with a CBAM+Transformer is a fairly standard recipe but the ablation in the paper attributes most of the cross-domain robustness to the DVG plus the physics-aware augmentation set, not the Transformer itself. For 802.11bf-track work that wants to standardise CSI sensing for healthcare use cases, this paper is one of the cleaner demonstrations that the deployability gap is closing.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>王映哲与合作者（东南大学等）于 2026-04-23 提交（arxiv 2605.00869）了一套基于 CSI 的跌倒检测系统，瞄准 WiFi 感知系统两个长期痛点：在未见过的房间里准确率大幅跌落、以及在非视距（NLoS）条件下信号退化。他们的架构把一个物理驱动的预处理模块——动态方差门（DVG），在 15 样本滑窗内按子载波计算时间方差并以 -3.0 sigmoid 偏置转换为软注意力掩码以抑制静态环境成分——与一个注意力增强的骨干（EfficientNet-B0 → 卷积块注意力模块 CBAM → 2 层 4 头 512 维 Transformer 编码器，采用正弦位置编码）配对在一起。</p>\n<p>跨环境性能是核心贡献。在他们的四环境数据集上（22 位志愿者、321 次跌倒、436 次非跌倒活动；环境包含起居室 A、会议室 B、家庭实验室 C 的视距与 NLoS 分区，以及讲堂 D），模型在<strong>完全未见过的环境、零微调情况下达到 98.8% 准确率</strong>，<strong>NLoS 下达到 97.6%</strong>。在搭载商业 WiFi 适配器的边缘硬件上现场部署，在全新办公室环境下保持 <strong>94% 准确率</strong>，单窗口推理时延 12.4 ms，GPU 上 648 FPS。</p>\n<p>除 DVG 之外，跨域故事还有两项辅助技术：一套「物理感知」数据增强（Rician 信道噪声注入、随机幅度缩放 0.5-1.5 倍、循环时间偏移、用频域平滑模拟 NLoS）显式模仿 CSI 跨环境时所经历的失真；以及 EfficientNet 与 Transformer 之间的 CBAM 阶段，让通道/空间注意力模块在序列建模之前先对特征图做一次细化。</p>\n<h3>技术要点</h3>\n<ul><li><strong>动态方差门（DVG）</strong> —— 15 样本滑窗、按子载波算方差 → 卷积 → sigmoid（-3.0 初始偏置）→ 软注意力掩码。设计目标是抑制 CSI 流中的静态环境成分。</li><li><strong>骨干网络</strong> —— EfficientNet-B0（1280 通道、20×1 输出）→ CBAM 通道+空间注意力 → Transformer 编码器（2 层、4 头、512 维、正弦位置编码）。</li><li><strong>物理感知数据增强</strong> —— Rician 噪声注入；幅度随机缩放 0.5-1.5×；循环时间偏移；用频域平滑（降采样+插值）模拟 NLoS。</li><li><strong>数据集</strong> —— 4 个室内环境；22 名志愿者；321 次跌倒 + 436 次非跌倒动作；Home Lab C 内 LoS 与 NLoS 分区。</li><li><strong>结果</strong> —— 综合 99.5%；NLoS 97.6%；<strong>未见过环境零微调 98.8%</strong>；<strong>新办公室现场实测 94%</strong>。</li><li><strong>时延</strong> —— 单窗口推理 12.4 ms；GPU 648 FPS；在搭载商业 WiFi 网卡的边缘设备上做过部署测试。</li></ul>\n<h3>意义与新意</h3>\n<p>跨域故事是真正有意义的贡献。本 KB 近期同类条目（<code>2026-05-04_arxiv-respirfi-respiratory-wifi-csi</code>、<code>2026-05-03_arxiv-multiuser-wifi-sensing-counting</code>）在单环境训练下也能达到类似准确率；本文的核心亮点是<strong>未见过房间、零微调，准确率接近 99%</strong> —— 而这正是历史上阻碍 CSI 感知规模化部署的那一关。DVG 是一个小但有原则的物理侧预处理步骤，而不是又一种注意力变体；将其与 CBAM+Transformer 配对是较常规的配方，但论文的消融研究把绝大部分跨域鲁棒性归因于 DVG 与物理感知增强，而不是 Transformer 本身。对希望把 CSI 感知用于医疗场景并推到 802.11bf 轨道上的工作来说，这篇是「可部署性差距正在收窄」的较干净示范之一。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2605.00869v1/x1.png",
+          "caption_en": "System overview — DVG + EfficientNet + CBAM + Transformer pipeline",
+          "caption_zh": "系统总览——DVG + EfficientNet + CBAM + Transformer 流水线"
+        },
+        {
+          "url": "https://arxiv.org/html/2605.00869v1/x2.png",
+          "caption_en": "Network architecture detail",
+          "caption_zh": "网络架构细节"
+        },
+        {
+          "url": "https://arxiv.org/html/2605.00869v1/x3.png",
+          "caption_en": "DVG, CBAM and Transformer module breakdown",
+          "caption_zh": "DVG、CBAM 与 Transformer 模块拆解"
+        },
+        {
+          "url": "https://arxiv.org/html/2605.00869v1/x4.png",
+          "caption_en": "Four-environment dataset overview",
+          "caption_zh": "四环境数据集概览"
+        }
+      ],
+      "search_blob": "robust cross-domain wifi fall detection via physics-driven attention-enhanced transformers 基于物理驱动注意力增强 transformer 的跨域鲁棒 wifi 跌倒检测 802.11bf wifi-sensing csi fall-detection healthcare transformer yingzhe wang and colleagues (southeast university / others) submitted a csi-based fall-detection system on 2026-04-23 (arxiv 2605.00869) that targets two perennial weaknesses of wifi-sensing systems: severe accuracy drops in unseen rooms and signal degradation under non-line-of-sight conditions. their architecture pairs a physics-driven preprocessing module — a dynamic variance gate (dvg) that computes per-bin temporal variance over a 15-sample sliding window and converts it to a soft attention mask with a -3.0 sigmoid bias to suppress static environmental components — with an attention-enhanced backbone (efficientnet-b0 → convolutional block attention module → 2-layer 4-head 512-dim transformer encoder with sinusoidal positional encodings). 王映哲与合作者（东南大学等）于 2026-04-23 提交（arxiv 2605.00869）了一套基于 csi 的跌倒检测系统，瞄准 wifi 感知系统两个长期痛点：在未见过的房间里准确率大幅跌落、以及在非视距（nlos）条件下信号退化。他们的架构把一个物理驱动的预处理模块——动态方差门（dvg），在 15 样本滑窗内按子载波计算时间方差并以 -3.0 sigmoid 偏置转换为软注意力掩码以抑制静态环境成分——与一个注意力增强的骨干（efficientnet-b0 → 卷积块注意力模块 cbam → 2 层 4 头 512 维 transformer 编码器，采用正弦位置编码）配对在一起。 academic-paper"
     },
     {
       "id": "2026-05-04_arxiv-respirfi-respiratory-wifi-csi",
