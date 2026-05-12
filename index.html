@@ -800,7 +800,7 @@
 </head>
 <body>
 
-<script src="kb.js?v=97111a4b" onerror="window.__KB_JS_FAILED=true"></script>
+<script src="kb.js?v=5ffbf558" onerror="window.__KB_JS_FAILED=true"></script>
 <script src="sources.js?v=2d31df3f" onerror="window.__SRC_JS_FAILED=true"></script>
 <!-- Mermaid for per-topic mindmap rendering. Two scripts:
        1. A synchronous regular script defines window.mermaidReady as a
@@ -1518,7 +1518,13 @@ function renderTopicBreadcrumb() {
       }</div>`;
   }
   // Per-topic mindmap (mermaid). Rendered below the narrative.
-  const diagramSrc = (agg.diagram_mmd || "").trim();
+  // Pick the right language variant; fall back to English when the Chinese
+  // file is absent (e.g., new topics added before translation lands).
+  const diagramSrcZh = (agg.diagram_mmd_zh || "").trim();
+  const diagramSrcEn = (agg.diagram_mmd_en || agg.diagram_mmd || "").trim();
+  const diagramSrc = state.lang === "zh"
+    ? (diagramSrcZh || diagramSrcEn)
+    : diagramSrcEn;
   let diagramBlock = "";
   if (diagramSrc) {
     const headerLabel = state.lang === "zh" ? "结构总览" : "Topic map";

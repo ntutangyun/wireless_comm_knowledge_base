@@ -430,19 +430,27 @@ def load_topic_narrative(data_root: Path,
     return (en, zh, last_updated)
 
 
-def load_topic_diagram(data_root: Path, topic_id: str) -> str:
-    """Read topics/<id>.diagram.mmd and return the raw Mermaid source.
+def load_topic_diagram(data_root: Path, topic_id: str, lang: str = "en") -> str:
+    """Read topics/<id>.diagram.mmd (English) or topics/<id>.diagram.zh.mmd (Chinese).
 
     The viewer renders this client-side via mermaid.js (loaded from CDN).
     File format is a plain Mermaid mindmap; no frontmatter, no parsing on
     this side beyond stripping a leading BOM and trailing whitespace.
     Returns "" when the file is absent or empty.
+
+    Language fallback: a missing Chinese variant falls back to the English
+    source so the viewer always has something to render. A missing English
+    variant returns empty (no diagram).
     """
-    path = data_root / "topics" / f"{topic_id}.diagram.mmd"
-    if not path.is_file():
+    if lang == "zh":
+        zh_path = data_root / "topics" / f"{topic_id}.diagram.zh.mmd"
+        if zh_path.is_file():
+            return zh_path.read_text(encoding="utf-8").lstrip("﻿").rstrip()
+        # fall through to English
+    en_path = data_root / "topics" / f"{topic_id}.diagram.mmd"
+    if not en_path.is_file():
         return ""
-    text = path.read_text(encoding="utf-8")
-    return text.lstrip("﻿").rstrip()
+    return en_path.read_text(encoding="utf-8").lstrip("﻿").rstrip()
 
 
 def load_topics(data_root: Path) -> tuple[dict[str, Any], list[str]]:
@@ -496,7 +504,8 @@ def aggregate_by_topic(records: list[dict[str, Any]],
     out: dict[str, Any] = {}
     for t in vocab.get("topics", []):
         narr_en, narr_zh, narr_updated = load_topic_narrative(data_root, t["id"])
-        diagram_mmd = load_topic_diagram(data_root, t["id"])
+        diagram_mmd_en = load_topic_diagram(data_root, t["id"], lang="en")
+        diagram_mmd_zh = load_topic_diagram(data_root, t["id"], lang="zh")
         out[t["id"]] = {
             "id": t["id"],
             "label_en": t.get("label_en", t["id"]),
@@ -507,7 +516,12 @@ def aggregate_by_topic(records: list[dict[str, Any]],
             "narrative_html_en": md_block_to_html(narr_en) if narr_en else "",
             "narrative_html_zh": md_block_to_html(narr_zh) if narr_zh else "",
             "narrative_last_updated": narr_updated,
-            "diagram_mmd": diagram_mmd,
+            # diagram_mmd kept as an English alias for backward compatibility
+            # with any consumer reading the field directly. Viewers should
+            # prefer diagram_mmd_en / diagram_mmd_zh.
+            "diagram_mmd": diagram_mmd_en,
+            "diagram_mmd_en": diagram_mmd_en,
+            "diagram_mmd_zh": diagram_mmd_zh,
             "entries_primary": [],
             "entries_secondary": [],
             "by_type_primary": {},
