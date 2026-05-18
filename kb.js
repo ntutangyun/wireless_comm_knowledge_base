@@ -4,18 +4,18 @@ window.KB_DATA = {
   "topic_counts": {
     "MAC-layer": 34,
     "agentic-AI": 28,
-    "802.11bn": 26,
-    "scheduling": 23,
+    "802.11bn": 27,
+    "scheduling": 24,
+    "802.11be": 21,
     "products": 21,
-    "802.11be": 20,
     "WiFi-sensing": 17,
     "security": 15,
     "PHY-layer": 15,
     "MLO": 14,
     "802.11bf": 12,
     "MAPC": 8,
+    "802.11ax": 8,
     "IoT": 7,
-    "802.11ax": 7,
     "generative-AI": 7,
     "802.11bp": 5,
     "CSI": 5,
@@ -39,6 +39,8 @@ window.KB_DATA = {
     "DRU": 2,
     "802.11br": 2,
     "mmWave": 2,
+    "MU-MIMO": 2,
+    "OFDMA": 2,
     "Wi-Fi 7": 2,
     "enterprise": 2,
     "6GHz": 2,
@@ -50,6 +52,9 @@ window.KB_DATA = {
     "light-comms": 1,
     "LB292": 1,
     "LB294": 1,
+    "LLM-agent": 1,
+    "resource-allocation": 1,
+    "WiSER": 1,
     "LLM": 1,
     "802.11ac": 1,
     "WiFi-localization": 1,
@@ -108,8 +113,6 @@ window.KB_DATA = {
     "healthcare": 1,
     "transformer": 1,
     "regulation": 1,
-    "OFDMA": 1,
-    "MU-MIMO": 1,
     "privacy": 1
   },
   "primary_topic_counts": {
@@ -123,21 +126,21 @@ window.KB_DATA = {
     "amp-iot": 4,
     "rtwt-latency": 4,
     "ftm-ranging": 4,
+    "ai-for-wifi": 3,
     "roaming-mobility": 2,
     "mlo": 2,
-    "ai-for-wifi": 2,
     "mmwave-bq": 1,
     "wifi-for-ai": 1
   },
   "type_counts": {
-    "academic-paper": 54,
+    "academic-paper": 55,
     "industry-news": 16,
     "ieee-document": 12,
     "product": 7,
     "proposal": 4
   },
   "category_counts": {
-    "academia": 54,
+    "academia": 55,
     "industry": 23,
     "standards": 16
   },
@@ -586,6 +589,7 @@ window.KB_DATA = {
         "2026-05-01_arxiv-25-years-tutorial"
       ],
       "entries_secondary": [
+        "2026-05-18_arxiv-maxlm-wlan-scheduling",
         "2026-05-12_ieee-mentor-tgbt-antwerp-digest",
         "2026-05-12_ieee-mentor-tgbq-antwerp-digest",
         "2026-05-12_ieee-mentor-ai-offload-sg-antwerp-digest",
@@ -716,6 +720,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((AI for Wi-Fi))\n    Action surface\n      CW selection\n      Scheduling\n      Spatial-reuse choice\n      Power control\n      Link adaptation\n      Channel allocation\n    Methods\n      Reinforcement learning\n      Multi-armed bandits\n      Supervised ML\n      LLM-as-encoder\n      Foundation models\n    Direct primaries\n      LLM-RL wireless optimisation\n      AIML CSI feedback compression\n    Adjacency\n      mapc-cosr secondaries\n      mlo secondaries\n      sensing-csi pipelines\n    Watch\n      Wi-Fi-specific benchmarks\n      Cross-BSS transfer learning\n      Generic CW + TXOP RL",
       "diagram_mmd_zh": "mindmap\n  root((AI 优化 Wi-Fi))\n    动作空间\n      CW 选择\n      调度\n      空间复用决策\n      功率控制\n      链路自适应\n      信道分配\n    方法\n      强化学习\n      多臂老虎机\n      有监督 ML\n      LLM 作编码器\n      基础模型\n    直接主条目\n      LLM-RL 无线优化\n      AIML CSI 反馈压缩\n    邻接\n      mapc-cosr 次要\n      mlo 次要\n      sensing-csi 流水线\n    关注\n      Wi-Fi 专属基准\n      跨 BSS 迁移学习\n      通用 CW + TXOP RL",
       "entries_primary": [
+        "2026-05-18_arxiv-maxlm-wlan-scheduling",
         "2026-05-01_arxiv-llm-rl-wireless-optimization",
         "2026-05-01_arxiv-aiml-csi-feedback-compression"
       ],
@@ -747,6 +752,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-05-18_arxiv-maxlm-wlan-scheduling",
           "2026-05-01_arxiv-llm-rl-wireless-optimization",
           "2026-05-01_arxiv-aiml-csi-feedback-compression"
         ]
@@ -806,6 +812,7 @@ window.KB_DATA = {
       ],
       "entries_secondary": [
         "2026-05-18_ieee-mentor-may-2026-post-interim-digest",
+        "2026-05-18_arxiv-maxlm-wlan-scheduling",
         "2026-05-12_ieee-mentor-wng-sc-antwerp-digest",
         "2026-05-12_hpe-self-driving-networks-723h",
         "2026-05-12_extreme-connect-platform-one-agentone",
@@ -1061,6 +1068,56 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>IEEE 802.11 2026 年 5 月期中会议于 5 月 11-15 日在 Antwerp 召开，所有活跃任务组均参会。本次会议是 2026 年 1 月全会后的首次完整工作会议，也是多个草案时间表的关键检查点。本周 Mentor 上传峰值出现在 5 月 14 日（闭幕日），<strong>DCN 编号达到 1097</strong> —— 为年内迄今最高 —— 主要由闭幕报告、修订后的 LB 评论解决方案以及少数结构性新增贡献驱动。</p>\n<p>各组的主导工作是<strong>函评评论解决</strong>：TGbn（针对 Draft 1.0 的 LB291）、TGbi（LB292）和 TGm/REVmf（LB294）均大幅推进了各自的评论池。TGbn 预计已完成约 70% 的 LB291 评论，正朝 <strong>2026 年 7 月发布 Draft 2.0</strong> 推进（较原定 5 月滑期，最终标准通过仍定 2028 年 5 月）。TGbp 继续在 AMP-IoT 规范骨架上进行 PDT 构建，现已覆盖接收流程、激励场、触发机制及安全等条款。TGbq 成熟化了 mmWave 服务期和多射频操作文稿。TGbt 推进了 PQC 工作，包括 PQC 企业认证框架、4 次握手 PQC 密钥更新和算法可扩展性。TGbr 达成了 <strong>D0.1 基线</strong>。新增或升级的跨组线索包括：ARC SC 给 TGbn 的 L4S 联络函（IETF 低时延拥塞控制框架触及 Wi-Fi 8）、802.11 WG 给 Wi-Fi Alliance 关于 PQC 项目的联络函、AIML TIG/SC 关于 AI/ML 用于协调波束成形（CBF）的工作，以及 UCM TIG 关于高效部署的传播/KPI 研究。</p>\n<h3>技术要点</h3>\n<ul><li><strong>TGbn（7 月 D2.0）</strong>——LB291 完成约 70%。主导 CR 集群：Co-RTWT、Co-TDMA、Co-BF/Co-SR、NPCA、DBE、P-EDCA、DRU、ELR、MLO、无缝漫游、MIB。新增：跨 BSS CSI 内存管理（DCN 982r0）、P2P TWT 修改（DCN 971r0）、来自 ARC SC 的 L4S 联络函（DCN 1078r0）。主要贡献者：Qualcomm、Huawei、Intel、Mediatek、Cisco、LG、Samsung、InterDigital、Broadcom、Maxlinear。</li><li><strong>TGbp（AMP-IoT PDT 构建）</strong>——闭幕报告 DCN 1081。主要 PDT 线索：AMP 接收流程（837r7）、激励场（959r4）、触发流程（823r4）、AMP SP 公告帧（940r5）、PPDU 编码流程（732r3）、安全概述（1060r1）、非 AP AMP STA 上行信道接入（802r4）、Sub-1GHz 接收流程（817r2）。贡献者：Huawei、Qualcomm、HaiLa、NXP、OPPO、Infineon、Ericsson。</li><li><strong>TGbq（mmWave 成熟化）</strong>——5-7 月电话会议议程（1092r0）、闭幕报告（1090r0）。主要线索：IMMW 按需运行（618r3）、IMMW 波束建立服务期（888r4）、mmW 链路上的多射频操作（834r1）、IMMW STA 信道接入（612r1）、GI 选项后续（116r0）、IMMW PHY L-STF（25r0）。贡献者：Ofinno、Qualcomm、OPPO、Xiaomi、Huawei、NXP。</li><li><strong>TGbt（PQC + CC52）</strong>——闭幕报告（1085r0/r1）。主要线索：PQC 企业认证（95r0）、4 次握手中 PQC 密钥更新（101r0）、Hpqc-pake（89r0）、pqc-dot1x（88r0）、PQC 算法可扩展性 CR（1064r3）、CC52 CID16 CR（935r3）。贡献者：Apple、ZTE、HPE、Huawei、Cisco、Ericsson。</li><li><strong>TGbr（光通信 D0.1）</strong>——闭幕报告（1083r0、1089r0）。D0.1 基线确立（1070r1）。RF-to-IF 信道化方案（38r0）。贡献者：FTH/pureLiFi、Fraunhofer HHI。</li><li><strong>TGbi（EPPKE 安全）</strong>——闭幕报告（1080r0）。LB292 CR：EPPKE（117r0）、PGTK（104r0）、EPP 纪元开始时间（50r0）。贡献者：Qualcomm、Canon。</li><li><strong>TGm（REVmf LB294）</strong>——LB294 解决方案（1097r0、787r1、1034r1、740r1）、修订议程（772r6）、动议（580r3）。贡献者：Qualcomm、Huawei、Cisco、pureLiFi。</li><li><strong>802.11 WG</strong>——给 WFA 关于 PQC 项目的联络函（1086r0）、5 月会议报告（714r2）、WG 动议（715r1）、编辑闭幕报告（1072r1）。</li><li><strong>ARC SC</strong>——闭幕报告（1076r1）、给 TGbn 的 L4S 联络函（1078r0）。</li><li><strong>UCM TIG</strong>——会议纪要（1091r0）、闭幕报告（1087r1）、高效部署传播 KPI（1071r1）、空间一致性 COTS 信道测量（1018r1）。</li><li><strong>AIML TIG/SC</strong>——AI/ML 用于 WiFi / CBF 应用（808r1）。AI/ML 应用于协调波束成形。</li><li><strong>Coex SC</strong>——闭幕报告（691r1）、致 ETSI TC BRAN 关于 TR 104 893 的联络函草案（1088r0）。</li></ul>\n<h3>意义与新意</h3>\n<p>这是 1 月全会后的首次完整会议检查点，体量证实 802.11 工作组在三个主要草案（bn、bp、bq）加 REVmf 维护修订上全速推进。三项结构性发展值得关注：(1) <strong>L4S/ARC 给 TGbn 的联络函</strong> 标志着 IETF 低时延拥塞控制触及 802.11bn —— 既有 KB 条目 <code>2026-05-03_nsdi-law-802-11-low-latency-link-layer</code> 已从学术侧跟踪此话题；(2) <strong>给 WFA 关于 PQC 的联络函</strong>（DCN 1086）是 802.11 ↔ Wi-Fi Alliance 在后量子密码学上的首次正式协调，标志着全行业就绪信号；(3) <strong>AIML TIG/SC 的 CBF 工作</strong>（808r1）将 AI/ML 带入协调波束成形讨论，是 <code>agentic-wifi</code> 与 <code>mapc-cosr</code> 话题的新交叉点。TGbr 达成 D0.1 以及 TGbt 的 PQC 企业认证框架同样具有里程碑意义。TGbn 的 2026 年 7 月 D2.0 目标仍是影响最重大的单项时间表 —— 如能守住，D2.0 → D3.0 → 2028 年 5 月标准通过的路径就是可信的。</p>",
       "images": [],
       "search_blob": "ieee 802.11 may 2026 antwerp interim — post-session digest ieee 802.11 2026年5月 antwerp 期中会议——会后摘要 802.11bn 802.11bp 802.11bq 802.11bt 802.11br mapc co-sr co-bf npca elr mlo amp-iot mmwave pqc light-comms lb291 lb292 lb294 the ieee 802.11 may 2026 interim session convened in antwerp may 11–15, with all active task groups meeting. the session was the first full working meeting after the january 2026 plenary and represented a critical checkpoint for several draft schedules. mentor uploads for the week peaked on may 14 (closing-plenary day), with **dcns reaching 1097** — the highest number of the year — driven by closing reports, revised lb comment resolutions, and a handful of structurally new contributions. ieee 802.11 2026 年 5 月期中会议于 5 月 11-15 日在 antwerp 召开，所有活跃任务组均参会。本次会议是 2026 年 1 月全会后的首次完整工作会议，也是多个草案时间表的关键检查点。本周 mentor 上传峰值出现在 5 月 14 日（闭幕日），**dcn 编号达到 1097** —— 为年内迄今最高 —— 主要由闭幕报告、修订后的 lb 评论解决方案以及少数结构性新增贡献驱动。 ieee-document"
+    },
+    {
+      "id": "2026-05-18_arxiv-maxlm-wlan-scheduling",
+      "date_found": "2026-05-18",
+      "date_published": "2026-05-15",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "MAxLM: Multi-Agent Language Model-Based Scheduling and Resource Allocation in MU-MIMO-OFDMA-Enabled Wireless Networks",
+      "title_zh": "MAxLM：基于多智能体语言模型的 MU-MIMO-OFDMA 无线网络调度与资源分配",
+      "url": "https://arxiv.org/abs/2605.16144",
+      "topics": [
+        "802.11ax",
+        "802.11be",
+        "802.11bn",
+        "MU-MIMO",
+        "OFDMA",
+        "LLM-agent",
+        "scheduling",
+        "resource-allocation",
+        "WiSER"
+      ],
+      "topic_primary": "ai-for-wifi",
+      "topics_secondary": [
+        "agentic-wifi",
+        "wifi8-uhr"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-05-18_arxiv-maxlm-wlan-scheduling.md",
+      "summary_short_en": "This paper proposes **MAxLM**, a multi-agent framework that uses a pretrained small/medium-sized language model (xLM) to perform user scheduling and resource allocation (SRA) for the uplink scheduled access (UL-SA) of a joint MU-MIMO-OFDMA-enabled WLAN. The authors (Adnan Quadri and Hongxiang Li, University of Louisville) tackle the combinatorially complex SRA problem — assigning which STAs transmit on which resource units (RUs) in each UL trigger frame — by decomposing it into per-STA agents, each modeled as an independent decision-maker prompted with its own channel state.",
+      "summary_short_zh": "本文提出 **MAxLM**，一种利用预训练中小规模语言模型（xLM）为联合 MU-MIMO-OFDMA WLAN 的上行调度接入（UL-SA）执行用户调度与资源分配（SRA）的多智能体框架。作者（Adnan Quadri 和 Hongxiang Li，路易斯维尔大学）通过将 SRA 问题分解为每 STA 一个智能体来解决其组合复杂性——每个智能体根据自身信道状态被独立提示，做出 RU 分配决策。",
+      "body_html_en": "<h3>Summary</h3>\n<p>This paper proposes <strong>MAxLM</strong>, a multi-agent framework that uses a pretrained small/medium-sized language model (xLM) to perform user scheduling and resource allocation (SRA) for the uplink scheduled access (UL-SA) of a joint MU-MIMO-OFDMA-enabled WLAN. The authors (Adnan Quadri and Hongxiang Li, University of Louisville) tackle the combinatorially complex SRA problem — assigning which STAs transmit on which resource units (RUs) in each UL trigger frame — by decomposing it into per-STA agents, each modeled as an independent decision-maker prompted with its own channel state.</p>\n<p>The key mechanism is the <strong>Adaptive Context Management (ACM)</strong> procedure: before each UL-SA slot, the ACM module constructs a prompt for each agent-STA containing the STA's channel gain vector across all RUs, the AP's antenna count, and a semantic summary of the competition (other STAs' channel quality). The xLM (Mistral-NeMo:12b tested) then outputs a binary RU assignment vector. The authors compare two prompt templates — PT1 (semantic analysis of agent attributes) and PT2 (raw channel-gain arrays) — and find PT2 substantially more reliable, with false-positive/false-negative rates below 5% for the 4-antenna AP / 10-STA scenario.</p>\n<p>To orchestrate the full workflow, the authors introduce the <strong>WiSER platform</strong> (AI-assisted Wireless Systems Engineering and Research, open-sourced at github.com/quadri-a/wiser), which handles channel estimation, prompt construction, xLM inference, and RU-to-STA mapping in a modular pipeline. Numerical results using the IEEE TGax Indoor channel model (Model-B delay profile) show that MAxLM-optimized SRA using Mistral-NeMo:12b achieves a <strong>30% UL throughput gain</strong> over the BCQ (best-channel-quality) benchmark, with the gain widening as the AP antenna count increases from 4 to 8. Multi-agent decomposition is what makes this tractable: a single centralized agent would face a state-action space exponential in both STAs and RUs; the per-STA agents each face a binary decision per RU, reducing complexity to O(N × R).</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Multi-agent decomposition:</strong> Each AP-STA UL connection is modeled as an independent agent. The agent's state space = channel gain vector across 9 RUs (26-tone RU configuration per 802.11ax). The action space = binary assignment vector per RU. This collapses the centralized MDP from exponential to O(N × R).</li><li><strong>Adaptive Context Management (ACM):</strong> Before each UL-SA slot (T=50 slots per episode), ACM builds a fresh prompt for each agent containing (i) the agent's own channel gains across all RUs, (ii) a one-sentence summary of competing STAs' channel quality, (iii) the AP antenna count. The prompt is fed to the xLM which outputs a structured RU assignment.</li><li><strong>Prompt template comparison:</strong> PT1 (semantic — &quot;your channel on RU-3 is strong, RU-7 is weak&quot;) vs. PT2 (raw vectors — 1×9 channel gain array). PT2 consistently outperforms PT1, showing that structured numeric data is more reliable than semantic paraphrasing for xLM-based radio decisions.</li><li><strong>WiSER platform:</strong> Open-source modular pipeline (Python). Modules: Channel Estimation → Prompt Construction → xLM Inference → RU-to-STA Mapping → TF Generation. Uses Mistral-NeMo:12b via HuggingFace Transformers.</li><li><strong>Evaluation:</strong> IEEE TGax Indoor channel model, Model-B delay profile. 4-antenna and 8-antenna AP, 10-STA and 20-STA scenarios. 1200 test episodes × 50 UL-SA slots each. 30% throughput gain over BCQ. Error rates (FP/FN) analyzed per prompt template and antenna count.</li><li><strong>xLM choice matters:</strong> Mistral-NeMo:12b significantly outperforms smaller xLMs (Qwen2.5:7b tested). The 12B-parameter class appears to be the sweet spot for radio-resource reasoning tasks — large enough to handle structured numerical prompts, small enough for practical per-slot inference.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the first paper to demonstrate that a <strong>small/medium language model (12B parameters) can directly perform WiFi resource scheduling</strong> — not as an assistant to a human operator or as a code-generator for a scheduler, but as the scheduler itself, ingesting channel-state vectors and outputting RU assignments per UL trigger frame. Prior LLM-for-wireless work either used LLMs as orchestration wrappers (WirelessAgent, ComAgent) or as code synthesizers (IteRate). MAxLM puts the xLM inside the scheduling loop, making per-slot (~1-5 ms latency budget) xLM inference a practical question.</p>\n<p>The introduction of the <strong>open-source WiSER platform</strong> is separately significant — it gives the research community a reproducible testbed for LLM-driven radio resource management, which has been a gap. The ACM procedure (structured numeric prompts beat semantic paraphrasing) is a design lesson that likely generalizes to other WiFi control problems (link adaptation, MCS selection, spatial-reuse decisions). The multi-agent decomposition approach also connects directly to the MAPC (Multi-AP Coordination) problem in 802.11bn — if each AP-STA link can be modeled as an agent, then cross-AP coordination becomes a multi-agent negotiation problem amenable to the same xLM prompting framework.</p>\n<p>Compared to existing KB entries: <code>2026-05-05_arxiv-iterate-ebpf-rate-control</code> uses AI to <em>synthesize</em> rate-control code offline; MAxLM uses AI to <em>execute</em> scheduling online. <code>2026-05-01_arxiv-ma-mab-spatial-reuse</code> uses Multi-Armed Bandits for spatial-reuse decisions — a simpler model class. MAxLM's 30% throughput gain on a standard-compliant WLAN model with open-source code makes it one of the stronger empirical results in the ai-for-wifi bin.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>本文提出 <strong>MAxLM</strong>，一种利用预训练中小规模语言模型（xLM）为联合 MU-MIMO-OFDMA WLAN 的上行调度接入（UL-SA）执行用户调度与资源分配（SRA）的多智能体框架。作者（Adnan Quadri 和 Hongxiang Li，路易斯维尔大学）通过将 SRA 问题分解为每 STA 一个智能体来解决其组合复杂性——每个智能体根据自身信道状态被独立提示，做出 RU 分配决策。</p>\n<p>核心机制是<strong>自适应上下文管理（ACM）</strong>流程：在每个 UL-SA 时隙前，ACM 模块为每个智能体 STA 构建提示，包含该 STA 在所有 RU 上的信道增益向量、AP 天线数，以及竞争态势的语义摘要（其他 STA 的信道质量）。xLM（测试了 Mistral-NeMo:12b）随后输出二进制 RU 分配向量。作者比较了两种提示模板——PT1（智能体属性的语义分析）与 PT2（原始信道增益数组）——发现 PT2 显著更可靠，在 4 天线 AP / 10 STA 场景下假阳性/假阴性率低于 5%。</p>\n<p>为编排完整工作流，作者引入了 <strong>WiSER 平台</strong>（AI 辅助无线系统工程与研究，已在 github.com/quadri-a/wiser 开源），该平台以模块化流水线处理信道估计、提示构建、xLM 推理及 RU 到 STA 的映射。使用 IEEE TGax 室内信道模型（Model-B 延迟剖面）的数值结果表明，采用 Mistral-NeMo:12b 的 MAxLM 优化 SRA 相比 BCQ（最佳信道质量）基准实现了 <strong>30% 的上行吞吐增益</strong>，且随着 AP 天线数从 4 增加到 8，增益进一步扩大。多智能体分解是实现可解性的关键：单一集中式智能体将面临 STA 和 RU 均呈指数的状态-动作空间；而每 STA 智能体仅面临每 RU 的二元决策，复杂度降至 O(N × R)。</p>\n<h3>技术要点</h3>\n<ul><li><strong>多智能体分解：</strong> 每条 AP-STA 上行连接建模为独立智能体。智能体状态空间 = 跨 9 个 RU 的信道增益向量（每 802.11ax 的 26-tone RU 配置）。动作空间 = 每 RU 的二元分配向量。将集中式 MDP 从指数级降至 O(N × R)。</li><li><strong>自适应上下文管理（ACM）：</strong> 在每个 UL-SA 时隙前（每 episode T=50 个时隙），ACM 为每个智能体构建全新提示，包含 (i) 该智能体在所有 RU 上的信道增益，(ii) 关于竞争 STA 信道质量的单句摘要，(iii) AP 天线数。提示送入 xLM，后者输出结构化 RU 分配。</li><li><strong>提示模板对比：</strong> PT1（语义化——&quot;你在 RU-3 的信道很强，RU-7 很弱&quot;）vs. PT2（原始向量——1×9 信道增益数组）。PT2 持续优于 PT1，表明对于基于 xLM 的射频决策，结构化数值数据比语义转述更可靠。</li><li><strong>WiSER 平台：</strong> 开源模块化流水线（Python）。模块：信道估计 → 提示构建 → xLM 推理 → RU 到 STA 映射 → TF 生成。通过 HuggingFace Transformers 使用 Mistral-NeMo:12b。</li><li><strong>评估：</strong> IEEE TGax 室内信道模型，Model-B 延迟剖面。4 天线和 8 天线 AP，10 STA 和 20 STA 场景。1200 个测试 episode × 每 episode 50 个 UL-SA 时隙。相比 BCQ 吞吐增益 30%。按提示模板和天线数分析错误率（FP/FN）。</li><li><strong>xLM 选择很重要：</strong> Mistral-NeMo:12b 显著优于更小的 xLM（测试了 Qwen2.5:7b）。12B 参数级别似乎是射频资源推理任务的甜点——足够大以处理结构化数值提示，足够小以实现每时隙的实用推理。</li></ul>\n<h3>意义与新意</h3>\n<p>这是首篇证明<strong>中小规模语言模型（12B 参数）可直接执行 WiFi 资源调度</strong>的论文——不是作为人类操作员的助手或调度器的代码生成器，而是作为调度器本身，摄入信道状态向量并输出每 UL 触发帧的 RU 分配。此前的 LLM-for-wireless 工作要么将 LLM 用作编排包装器（WirelessAgent、ComAgent），要么用作代码合成器（IteRate）。MAxLM 将 xLM 置于调度环路内部，使每时隙（约 1-5 ms 时延预算）的 xLM 推理成为可实践的课题。</p>\n<p><strong>开源 WiSER 平台</strong>的引入同样意义重大——它为研究社区提供了 LLM 驱动射频资源管理的可复现试验台，填补了既有空白。ACM 流程（结构化数值提示优于语义转述）是一条设计经验，很可能适用于其他 Wi-Fi 控制问题（链路自适应、MCS 选择、空间复用决策）。多智能体分解思路也与 802.11bn 的 MAPC（多 AP 协调）问题直接联通——若每条 AP-STA 链路可建模为智能体，则跨 AP 协调即变为适用于同套 xLM 提示框架的多智能体协商问题。</p>\n<p>与既有 KB 条目对比：<code>2026-05-05_arxiv-iterate-ebpf-rate-control</code> 用 AI 离线<em>合成</em>速率控制代码；MAxLM 用 AI 在线<em>执行</em>调度。<code>2026-05-01_arxiv-ma-mab-spatial-reuse</code> 使用多臂老虎机进行空间复用决策——属更简单的模型类别。MAxLM 在标准兼容 WLAN 模型上以开源代码实现的 30% 吞吐增益，使其成为 ai-for-wifi 桶中实证结果最强的条目之一。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2605.16144v1/x1.png",
+          "caption_en": "Figure 1(a): Indoor WLAN environment with MU-MIMO-OFDMA AP and multiple STAs",
+          "caption_zh": "图 1(a)：具有 MU-MIMO-OFDMA AP 和多 STA 的室内 WLAN 环境"
+        },
+        {
+          "url": "https://arxiv.org/html/2605.16144v1/x2.png",
+          "caption_en": "Figure 2(a): WiSER platform modules and MAxLM-optimized SRA workflow",
+          "caption_zh": "图 2(a)：WiSER 平台模块与 MAxLM 优化 SRA 工作流"
+        },
+        {
+          "url": "https://arxiv.org/html/2605.16144v1/x4.png",
+          "caption_en": "Figure 4: MAxLM performance: false positive/negative rates per prompt template",
+          "caption_zh": "图 4：MAxLM 性能：每提示模板的假阳性/假阴性率"
+        }
+      ],
+      "search_blob": "maxlm: multi-agent language model-based scheduling and resource allocation in mu-mimo-ofdma-enabled wireless networks maxlm：基于多智能体语言模型的 mu-mimo-ofdma 无线网络调度与资源分配 802.11ax 802.11be 802.11bn mu-mimo ofdma llm-agent scheduling resource-allocation wiser this paper proposes **maxlm**, a multi-agent framework that uses a pretrained small/medium-sized language model (xlm) to perform user scheduling and resource allocation (sra) for the uplink scheduled access (ul-sa) of a joint mu-mimo-ofdma-enabled wlan. the authors (adnan quadri and hongxiang li, university of louisville) tackle the combinatorially complex sra problem — assigning which stas transmit on which resource units (rus) in each ul trigger frame — by decomposing it into per-sta agents, each modeled as an independent decision-maker prompted with its own channel state. 本文提出 **maxlm**，一种利用预训练中小规模语言模型（xlm）为联合 mu-mimo-ofdma wlan 的上行调度接入（ul-sa）执行用户调度与资源分配（sra）的多智能体框架。作者（adnan quadri 和 hongxiang li，路易斯维尔大学）通过将 sra 问题分解为每 sta 一个智能体来解决其组合复杂性——每个智能体根据自身信道状态被独立提示，做出 ru 分配决策。 academic-paper"
     },
     {
       "id": "2026-05-16_arxiv-wireless-sense-llm",
