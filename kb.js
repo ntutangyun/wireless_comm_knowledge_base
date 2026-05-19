@@ -1,9 +1,9 @@
 window.KB_DATA = {
   "schema_version": 5,
-  "last_updated": "2026-05-18",
+  "last_updated": "2026-05-19",
   "topic_counts": {
     "MAC-layer": 34,
-    "agentic-AI": 28,
+    "agentic-AI": 29,
     "802.11bn": 27,
     "scheduling": 24,
     "802.11be": 21,
@@ -17,12 +17,13 @@ window.KB_DATA = {
     "802.11ax": 8,
     "IoT": 7,
     "generative-AI": 7,
-    "802.11bp": 5,
+    "802.11bp": 6,
     "CSI": 5,
     "XR": 5,
     "802.11bq": 4,
     "802.11": 4,
     "802.11az": 4,
+    "backscatter": 3,
     "Co-SR": 3,
     "Co-BF": 3,
     "NPCA": 3,
@@ -30,8 +31,8 @@ window.KB_DATA = {
     "LB291": 3,
     "802.11bt": 3,
     "roaming": 3,
+    "LLM-agent": 2,
     "AMP-IoT": 2,
-    "backscatter": 2,
     "Co-RTWT": 2,
     "seamless-roaming": 2,
     "L4S": 2,
@@ -45,6 +46,9 @@ window.KB_DATA = {
     "enterprise": 2,
     "6GHz": 2,
     "R-TWT": 2,
+    "Ambient-IoT": 1,
+    "6G": 1,
+    "AI-native": 1,
     "energy-harvesting": 1,
     "PDT": 1,
     "WPT": 1,
@@ -52,7 +56,6 @@ window.KB_DATA = {
     "light-comms": 1,
     "LB292": 1,
     "LB294": 1,
-    "LLM-agent": 1,
     "resource-allocation": 1,
     "WiSER": 1,
     "LLM": 1,
@@ -120,10 +123,10 @@ window.KB_DATA = {
     "wifi8-uhr": 15,
     "wifi7-deployment": 11,
     "mapc-cosr": 10,
+    "agentic-wifi": 9,
     "security-privacy": 8,
-    "agentic-wifi": 8,
+    "amp-iot": 5,
     "spectrum-policy": 5,
-    "amp-iot": 4,
     "rtwt-latency": 4,
     "ftm-ranging": 4,
     "ai-for-wifi": 3,
@@ -133,14 +136,14 @@ window.KB_DATA = {
     "wifi-for-ai": 1
   },
   "type_counts": {
-    "academic-paper": 55,
+    "academic-paper": 57,
     "industry-news": 16,
     "ieee-document": 12,
     "product": 7,
     "proposal": 4
   },
   "category_counts": {
-    "academia": 55,
+    "academia": 57,
     "industry": 23,
     "standards": 16
   },
@@ -505,6 +508,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((AMP-IoT / 20MHz IoT))\n    Standards\n      802.11bp Ambient Power\n      Wi-Fi CERTIFIED 7 at 20MHz\n    Energy harvesting\n      RF\n      Light\n      Vibration\n    TGbp mechanisms\n      AMP UL channel access\n      AMP receive procedure\n      AMP transmit spec\n      AMP triggering\n      AMP WPT control\n    Coexistence\n      BLE / Thread / Zigbee market\n      HPE Aruba 730 BLE 5.4 + Wi-Fi 7\n    Watch\n      TGbp draft progress\n      Coin-cell / no-battery designs\n      AMP-aware Wi-Fi 8 silicon",
       "diagram_mmd_zh": "mindmap\n  root((AMP-IoT / 20 MHz IoT))\n    标准化\n      802.11bp 环境取电\n      Wi-Fi CERTIFIED 7 20 MHz\n    能量收集\n      射频\n      光\n      振动\n    TGbp 机制\n      AMP 上行信道接入\n      AMP 接收过程\n      AMP 发送规范\n      AMP 触发\n      AMP WPT 控制\n    共存\n      BLE / Thread / Zigbee 市场\n      HPE Aruba 730 BLE 5.4 + Wi-Fi 7\n    关注\n      TGbp 草案进度\n      纽扣电池 / 无电池设计\n      AMP 感知的 Wi-Fi 8 硅片",
       "entries_primary": [
+        "2026-05-19_arxiv-janus-hybrid-ambient-iot-radio",
         "2026-05-18_ieee-mentor-tgbp-antwerp-digest",
         "2026-05-12_ieee-mentor-tgbp-antwerp-digest",
         "2026-05-03_ieee-11bp-amp-ul-channel-access",
@@ -517,6 +521,9 @@ window.KB_DATA = {
         "2026-05-01_qualcomm-wifi8-mwc2026"
       ],
       "by_type_primary": {
+        "academic-paper": [
+          "2026-05-19_arxiv-janus-hybrid-ambient-iot-radio"
+        ],
         "ieee-document": [
           "2026-05-18_ieee-mentor-tgbp-antwerp-digest",
           "2026-05-12_ieee-mentor-tgbp-antwerp-digest"
@@ -725,6 +732,7 @@ window.KB_DATA = {
         "2026-05-01_arxiv-aiml-csi-feedback-compression"
       ],
       "entries_secondary": [
+        "2026-05-19_arxiv-composable-agentic-nextg",
         "2026-05-16_arxiv-wireless-sense-llm",
         "2026-05-16_arxiv-csi-jepa",
         "2026-05-14_arxiv-envcoloc-wifi-localization",
@@ -801,6 +809,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((Agentic Wi-Fi))\n    Agent shapes\n      Orchestration\n      Troubleshooting\n      Policy code generation\n      Multi-agent collaboration\n    Academic frameworks\n      WirelessBench (3-tier hierarchy)\n      WirelessAgent++ (MCTS workflow)\n      ComAgent multi-LLM PPAR\n      IntelliCISE security threat model\n    Industry\n      HPE Aruba+Mist unified\n      TP-Link Aireal cloud GPT\n    Standards adjacency\n      AI Offload SG (March 2026)\n    Watch\n      AI Offload SG to TG?\n      Safety / hallucination benchmarks\n      Production false-positive landings\n      LLM-controller attack surface",
       "diagram_mmd_zh": "mindmap\n  root((智能体 Wi-Fi))\n    智能体形态\n      编排\n      故障排查\n      策略代码生成\n      多智能体协作\n    学术框架\n      WirelessBench（三层认知）\n      WirelessAgent++（MCTS 工作流）\n      ComAgent 多 LLM PPAR\n      IntelliCISE 安全威胁模型\n    工业\n      HPE Aruba+Mist 统一\n      TP-Link Aireal 云端 GPT\n    标准邻接\n      AI Offload SG（2026-03）\n    关注\n      AI Offload SG 升 TG？\n      安全 / 幻觉基准\n      生产环境误报落地\n      LLM 控制器攻击面",
       "entries_primary": [
+        "2026-05-19_arxiv-composable-agentic-nextg",
         "2026-05-12_ieee-mentor-ai-offload-sg-antwerp-digest",
         "2026-05-05_arxiv-iterate-ebpf-rate-control",
         "2026-05-01_arxiv-wirelessbench-llm-agent",
@@ -826,15 +835,16 @@ window.KB_DATA = {
         "2026-05-01_arxiv-on-device-llm-roaming"
       ],
       "by_type_primary": {
-        "ieee-document": [
-          "2026-05-12_ieee-mentor-ai-offload-sg-antwerp-digest"
-        ],
         "academic-paper": [
+          "2026-05-19_arxiv-composable-agentic-nextg",
           "2026-05-05_arxiv-iterate-ebpf-rate-control",
           "2026-05-01_arxiv-wirelessbench-llm-agent",
           "2026-05-01_arxiv-wirelessagent-plus-plus",
           "2026-05-01_arxiv-intellicise-agentic-ai-security",
           "2026-05-04_arxiv-comagent-multi-llm-wireless"
+        ],
+        "ieee-document": [
+          "2026-05-12_ieee-mentor-ai-offload-sg-antwerp-digest"
         ],
         "product": [
           "2026-05-04_tp-link-aireal-ces2026"
@@ -938,6 +948,7 @@ window.KB_DATA = {
       "diagram_mmd_zh": "mindmap\n  root((能效与省电))\n    机制\n      TWT 能耗预算\n      R-TWT 能耗侧\n      深睡眠调度\n      电池感知客户端行为\n    交叉引用\n      amp-iot 能量收集\n      rtwt-latency 时延侧\n      mlo 每链路开销\n    今日（次要出现）\n      Wi-Fi 6 上的确定性 TWT\n      20 MHz Wi-Fi 7 IoT 认证\n    分桶规则\n      节省 N% 能耗 - 主在此\n      M ms 内交付 - 主在时延桶\n    关注\n      逐类 MLO 能耗测量\n      AMP-IoT 电池寿命试点\n      Wi-Fi 8 深睡眠电流",
       "entries_primary": [],
       "entries_secondary": [
+        "2026-05-19_arxiv-janus-hybrid-ambient-iot-radio",
         "2026-05-18_ieee-mentor-tgbp-antwerp-digest",
         "2026-05-18_ieee-mentor-tgbn-antwerp-digest",
         "2026-05-18_ieee-mentor-may-2026-post-interim-digest",
@@ -950,6 +961,78 @@ window.KB_DATA = {
     }
   },
   "entries": [
+    {
+      "id": "2026-05-19_arxiv-janus-hybrid-ambient-iot-radio",
+      "date_found": "2026-05-19",
+      "date_published": "2026-05-18",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Janus: Enabling Agile Ambient IoT Networking via a Parameterized Hybrid Radio",
+      "title_zh": "Janus：通过参数化混合无线电实现敏捷环境 IoT 组网",
+      "url": "https://arxiv.org/abs/2605.18314",
+      "topics": [
+        "802.11bp",
+        "Ambient-IoT",
+        "backscatter"
+      ],
+      "topic_primary": "amp-iot",
+      "topics_secondary": [
+        "energy-power-save"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-05-19_arxiv-janus-hybrid-ambient-iot-radio.md",
+      "summary_short_en": "Janus is the first hybrid active-passive configurable radio architecture purpose-built for Ambient IoT (A-IoT) protocol research and standardization. Developed by researchers at Shanghai Jiao Tong University, the work addresses a fundamental barrier in the A-IoT space: current testbeds use decoupled active and passive radio paths with high static power consumption and cumbersome FPGA-level reconfiguration, making it nearly impossible to rapidly prototype and compare emerging A-IoT protocols across different standards bodies.",
+      "summary_short_zh": "Janus 是首个专为环境物联网（A-IoT）协议研究与标准化打造的混合主动-被动可配置无线电架构，由上海交通大学研究团队开发。该工作解决了 A-IoT 领域的一个根本性障碍：现有测试平台使用解耦的主动和被动射频路径，静态功耗高，且需要 FPGA 级别的重配置，几乎不可能在 3GPP、IEEE 802.11 和蓝牙 SIG 等不同标准体系之间快速原型化和对比新兴 A-IoT 协议。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Janus is the first hybrid active-passive configurable radio architecture purpose-built for Ambient IoT (A-IoT) protocol research and standardization. Developed by researchers at Shanghai Jiao Tong University, the work addresses a fundamental barrier in the A-IoT space: current testbeds use decoupled active and passive radio paths with high static power consumption and cumbersome FPGA-level reconfiguration, making it nearly impossible to rapidly prototype and compare emerging A-IoT protocols across different standards bodies.</p>\n<p>The core contribution is a parameterized RF front-end that unifies active transmission and passive backscatter into a single hardware path. Instead of requiring separate transmit chains for active and passive modes, Janus abstracts physical-layer behaviors — carrier generation patterns, modulation indices, quantization strategies — into concise software parameters. A system-level control plane manages dynamic mode transitions between active and passive operation, while an energy-management plane coordinates fine-grained harvesting from multiple ambient sources (solar, RF, thermal).</p>\n<p>The authors implement a compact PCB prototype and evaluate it across the three major A-IoT standardization tracks: 3GPP Release-19 Ambient IoT, IEEE 802.11 AMP (TGbp), and Bluetooth SIG ambient networking. Experimental results show that Janus achieves communication performance on par with dedicated single-mode radios while substantially reducing configuration overhead. The platform is positioned as a community enabler — a common hardware substrate on which protocol designers can validate new A-IoT mechanisms before they are locked into silicon.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Unified hybrid RF front-end</strong>: A single signal path handles both active (DAC + mixer-based upconversion) and passive (impedance-toggling backscatter) transmission by parameterizing carrier generation patterns rather than duplicating transmit chains.</li><li><strong>Parameterized control abstraction</strong>: Physical-layer behaviors across protocols (3GPP A-IoT, 802.11 AMP, Bluetooth SIG) are expressed as concise parameter sets — modulation format, data rate, carrier offset, backscatter encoding — decoupling protocol design from hardware re-synthesis.</li><li><strong>Dynamic mode switching</strong>: The control plane enables runtime transitions between active and passive modes, allowing a single device to operate as an active transmitter in one timeslot and a backscatter tag in the next.</li><li><strong>Multi-source energy harvesting management</strong>: An energy plane tracks harvested power from solar, RF, and thermal sources, scheduling active transmission bursts within the available energy budget.</li><li><strong>Cross-standard validation</strong>: The same Janus PCB prototype was tested against all three major A-IoT PHY/MAC frameworks, demonstrating equivalent PER vs. SNR performance to dedicated single-standard radios.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>Prior to Janus, A-IoT protocol research relied on either commercial active radios (power-hungry, passive-incapable) or bespoke backscatter tags (passive-only, protocol-specific), with no platform spanning both modes across multiple standards. Janus is the first to unify active and passive transmission in a single parameterized architecture and demonstrate cross-standard operation.</p>\n<p>For the 802.11 AMP (TGbp) standardization effort specifically, Janus provides the first hardware validation vehicle that can test proposed AMP PHY and MAC mechanisms — frame formats, channel access rules, energy-budget signaling — on real silicon before the standard is frozen. This is a maturity signal for the AMP ecosystem: when a common testbed exists, protocol proposals can be benchmarked against each other empirically rather than debated purely in simulation.</p>\n<p>The paper's limitation is that it is a hardware platform contribution, not a protocol mechanism — it does not propose new on-the-wire formats or MAC rules. Its value to the KB is as a standardization-maturity indicator and a reference for future AMP protocol entries.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Janus 是首个专为环境物联网（A-IoT）协议研究与标准化打造的混合主动-被动可配置无线电架构，由上海交通大学研究团队开发。该工作解决了 A-IoT 领域的一个根本性障碍：现有测试平台使用解耦的主动和被动射频路径，静态功耗高，且需要 FPGA 级别的重配置，几乎不可能在 3GPP、IEEE 802.11 和蓝牙 SIG 等不同标准体系之间快速原型化和对比新兴 A-IoT 协议。</p>\n<p>核心贡献是一个参数化射频前端，将主动发射与被动反向散射统一到单一硬件路径中。Janus 不要求为主动和被动模式分别设计发射链路，而是将物理层行为——载波生成模式、调制指数、量化策略——抽象为简洁的软件参数。系统级控制平面管理主动与被动操作之间的动态模式切换，能量管理平面则协调来自多种环境源（太阳能、射频、热能）的细粒度能量采集。</p>\n<p>作者实现了一个紧凑的 PCB 原型，并在三大 A-IoT 标准化轨道上进行了评估：3GPP Release-19 环境物联网、IEEE 802.11 AMP（TGbp）和蓝牙 SIG 环境组网。实验结果表明，Janus 的通信性能可与专用单模无线电媲美，同时大幅降低了配置开销。该平台定位为社区赋能工具——为协议设计者提供一个通用硬件基座，在新 A-IoT 机制被固化到硅片之前进行验证。</p>\n<h3>技术要点</h3>\n<ul><li><strong>统一混合射频前端</strong>：通过参数化载波生成模式而非复制发射链路，单一信号路径同时处理主动（基于 DAC + 混频器的上变频）和被动（阻抗切换反向散射）发射。</li><li><strong>参数化控制抽象</strong>：跨协议（3GPP A-IoT、802.11 AMP、蓝牙 SIG）的物理层行为被表达为简洁的参数集——调制格式、数据速率、载波偏移、反向散射编码——将协议设计与硬件重综合解耦。</li><li><strong>动态模式切换</strong>：控制平面支持主动与被动模式之间的运行时转换，使单一设备可在一个时隙作为主动发射器运行，在下一时隙作为反向散射标签运行。</li><li><strong>多源能量采集管理</strong>：能量平面追踪来自太阳能、射频和热能的采集功率，在可用能量预算内调度主动发射突发。</li><li><strong>跨标准验证</strong>：同一 Janus PCB 原型在全部三大 A-IoT PHY/MAC 框架下进行了测试，展现出与专用单标准无线电相当的 PER vs SNR 性能。</li></ul>\n<h3>意义与新意</h3>\n<p>在 Janus 之前，A-IoT 协议研究要么依赖商用主动无线电（功耗高、不支持被动模式），要么依赖定制反向散射标签（仅被动、协议特定），没有平台能在单一架构中跨多种标准同时支持两种模式。Janus 是首个在单一参数化架构中统一主动与被动发射并展示跨标准操作的平台。</p>\n<p>特别对 802.11 AMP（TGbp）标准化工作而言，Janus 提供了首个硬件验证载体，可在标准冻结前在实际硅片上测试提议的 AMP PHY 和 MAC 机制——帧格式、信道接入规则、能量预算信令。这对 AMP 生态是成熟度信号：当存在通用测试床时，协议提案可以通过实测相互基准对比，而非仅在仿真中争论。</p>\n<p>本文的局限在于它是一项硬件平台贡献，而非协议机制——它不提出新的空中帧格式或 MAC 规则。其对 KB 的价值在于作为标准化成熟度指标和未来 AMP 协议条目的参考。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2605.18314v1/x1.png",
+          "caption_en": "Janus parameterized configuration approach enabling cross-standard Ambient IoT protocol prototyping, showing 3GPP A-IoT, IEEE 802.11 AMP, and Bluetooth SIG tracks",
+          "caption_zh": "Janus 参数化配置方法实现跨标准环境物联网协议原型，展示 3GPP A-IoT、IEEE 802.11 AMP 和蓝牙 SIG 三大轨道"
+        },
+        {
+          "url": "https://arxiv.org/html/2605.18314v1/x2.png",
+          "caption_en": "Comparison of existing RF Tx front-ends vs. Janus unified hybrid architecture",
+          "caption_zh": "现有射频发射前端与 Janus 统一混合架构的对比"
+        }
+      ],
+      "search_blob": "janus: enabling agile ambient iot networking via a parameterized hybrid radio janus：通过参数化混合无线电实现敏捷环境 iot 组网 802.11bp ambient-iot backscatter janus is the first hybrid active-passive configurable radio architecture purpose-built for ambient iot (a-iot) protocol research and standardization. developed by researchers at shanghai jiao tong university, the work addresses a fundamental barrier in the a-iot space: current testbeds use decoupled active and passive radio paths with high static power consumption and cumbersome fpga-level reconfiguration, making it nearly impossible to rapidly prototype and compare emerging a-iot protocols across different standards bodies. janus 是首个专为环境物联网（a-iot）协议研究与标准化打造的混合主动-被动可配置无线电架构，由上海交通大学研究团队开发。该工作解决了 a-iot 领域的一个根本性障碍：现有测试平台使用解耦的主动和被动射频路径，静态功耗高，且需要 fpga 级别的重配置，几乎不可能在 3gpp、ieee 802.11 和蓝牙 sig 等不同标准体系之间快速原型化和对比新兴 a-iot 协议。 academic-paper"
+    },
+    {
+      "id": "2026-05-19_arxiv-composable-agentic-nextg",
+      "date_found": "2026-05-19",
+      "date_published": "2026-05-15",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Against the Monolithic Wireless World Model: Why NextG Needs Composable and Agentic Intelligence",
+      "title_zh": "反对单体无线世界模型：为何下一代网络需要可组合与智能体驱动的智能",
+      "url": "https://arxiv.org/abs/2605.16689",
+      "topics": [
+        "agentic-AI",
+        "LLM-agent",
+        "6G",
+        "AI-native"
+      ],
+      "topic_primary": "agentic-wifi",
+      "topics_secondary": [
+        "ai-for-wifi"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-19_arxiv-composable-agentic-nextg.md",
+      "summary_short_en": "This position paper from IBM Research, Apple, and the Technical University of Munich pushes back against the rising tide of \"wireless foundation model\" proposals — large pretrained models that aim to provide universal intelligence across all layers of the wireless protocol stack. The authors argue that the analogy between large language models (LLMs) and wireless foundation models is structurally broken, and that monolithic wireless world models face four data bottlenecks that scaling alone cannot resolve.",
+      "summary_short_zh": "这篇来自 IBM Research、Apple 和慕尼黑工业大学的立场论文，对日益兴起的\"无线基础模型\"提案——旨在为无线协议栈所有层提供通用智能的大规模预训练模型——提出了反驳。作者论证了大语言模型（LLM）与无线基础模型之间的类比在结构上存在根本缺陷，单体无线世界模型面临规模扩展无法解决的四大数据瓶颈。",
+      "body_html_en": "<h3>Summary</h3>\n<p>This position paper from IBM Research, Apple, and the Technical University of Munich pushes back against the rising tide of &quot;wireless foundation model&quot; proposals — large pretrained models that aim to provide universal intelligence across all layers of the wireless protocol stack. The authors argue that the analogy between large language models (LLMs) and wireless foundation models is structurally broken, and that monolithic wireless world models face four data bottlenecks that scaling alone cannot resolve.</p>\n<p>The four bottlenecks are: (1) <strong>Configuration dependence</strong> — a CSI tensor labeled &quot;good&quot; under one antenna geometry or scheduler is meaningless under another, so there is no stable tokenization substrate comparable to text; (2) <strong>Simulator conditioning</strong> — most wireless ML training data comes from simulators with baked-in assumptions, creating a gap between train-time and deploy-time distributions; (3) <strong>Task disaggregation</strong> — wireless tasks are inherently modular (PHY vs. MAC vs. RAN vs. core), and a single model lacks the inductive biases to serve all of them; (4) <strong>Weak operational grounding</strong> — wireless models rarely receive closed-loop feedback from live networks, so errors compound silently without the RL-style reward signals that ground language models in human preference.</p>\n<p>Instead, the authors advocate for <strong>composable and agentic architectures</strong>: reasoning agents (LLMs) that orchestrate specialized signal-processing models, classical algorithms, digital twins, standards-aware retrieval systems, and safety monitors through explicit programmable interfaces. This architecture aligns with the existing modularity of the wireless protocol stack and with O-RAN's near-real-time / non-real-time control loops and xApp/rApp interfaces. Notably, the paper explicitly cites Wi-Fi optimization work — including LLM-powered Wi-Fi sensing and multi-agent MAC coordination — as evidence that agentic composition is already producing results where monolithic pretraining has not.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Four structural data bottlenecks</strong>: Configuration dependence (no stable tokenization substrate), simulator conditioning (train/deploy distribution gap), task disaggregation (no single model serves PHY-through-core), and weak operational grounding (no live-network closed-loop feedback) — each argued to resist resolution by scale alone.</li><li><strong>Composable agentic architecture</strong>: A reasoning LLM agent sits in a runtime harness, invoking specialized wireless models, classical solvers, digital twins, standards retrieval (RAG over 3GPP/IEEE specs), and safety monitors through typed interfaces — rather than absorbing the protocol stack into a single model.</li><li><strong>Alignment with O-RAN and 802.11 modularity</strong>: The agent harness maps naturally onto O-RAN's near-RT/non-RT RIC loops, xApps/rApps, and telemetry streams. For Wi-Fi, the 802.11 MLME SAP and emerging AI Offload SG interfaces provide analogous connection points.</li><li><strong>Explicit Wi-Fi citations</strong>: The paper references LLM-powered Wi-Fi sensing (Zhang et al. 2025), multi-agent MAC coordination frameworks, and CSI foundation models for 802.11 — situating Wi-Fi as a key domain within the composable-agentic thesis.</li><li><strong>JEPA and world-model critique</strong>: The authors specifically critique Joint Embedding Predictive Architecture (JEPA)-style wireless world models, arguing they inherit the same data bottlenecks and are compelling only when the &quot;world&quot; is explicitly scoped to a single control problem.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the first paper to systematically articulate <em>why</em> the &quot;wireless ChatGPT&quot; analogy fails, and to do so from authors at major industry players (IBM, Apple) who are themselves active in wireless AI standardization (3GPP, O-RAN, IEEE 802.11 AIML TIG). Prior KB entries in the agentic-wifi bin (<code>wirelessagent-plus-plus</code>, <code>comagent-multi-llm-wireless</code>, <code>iterate-ebpf-rate-control</code>) all assume agentic composition is the right path; this paper provides the architectural argument for <em>why</em>, and connects it to the specific modularity surfaces already available in 802.11 (MLME SAP, AI Offload SG) and O-RAN (xApps/rApps, RIC loops).</p>\n<p>The paper's significance for the KB's agentic-wifi and ai-for-wifi topics is as a reference architecture: future entries proposing specific Wi-Fi agent mechanisms can cite this paper as the architectural framing, rather than re-arguing the case against monolithic models each time. The four bottleneck taxonomy also provides a checklist for evaluating new wireless AI proposals — if a proposal doesn't address configuration dependence, simulator grounding, task scope, and operational feedback, it inherits the vulnerabilities this paper catalogs.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>这篇来自 IBM Research、Apple 和慕尼黑工业大学的立场论文，对日益兴起的&quot;无线基础模型&quot;提案——旨在为无线协议栈所有层提供通用智能的大规模预训练模型——提出了反驳。作者论证了大语言模型（LLM）与无线基础模型之间的类比在结构上存在根本缺陷，单体无线世界模型面临规模扩展无法解决的四大数据瓶颈。</p>\n<p>四大瓶颈为：（1）<strong>配置依赖性</strong>——在某一根天线几何或调度器下被标记为&quot;良好&quot;的 CSI 张量，在另一配置下毫无意义，因此不存在可与文本类比稳定的分词基底；（2）<strong>仿真器条件化</strong>——大多数无线 ML 训练数据来自带有预设假设的仿真器，造成训练时与部署时分布之间的鸿沟；（3）<strong>任务解耦</strong>——无线任务本质上是模块化的（PHY vs. MAC vs. RAN vs. 核心网），单一模型缺乏为所有任务服务的归纳偏置；（4）<strong>弱的操作性闭环</strong>——无线模型很少从现网获得闭环反馈，因此错误会无声累积，缺乏像 RL 风格奖励信号那样将语言模型锚定在人类偏好中的机制。</p>\n<p>替代方案是<strong>可组合的智能体驱动架构</strong>：推理智能体（LLM）通过显式可编程接口编排专用信号处理模型、经典算法、数字孪生、标准感知检索系统和安全监控器。该架构与无线协议栈现有的模块化以及 O-RAN 的近实时/非实时控制环路及 xApp/rApp 接口高度一致。值得注意的是，本文明确引用了 Wi-Fi 优化工作——包括 LLM 驱动的 Wi-Fi 感知和多智能体 MAC 协调——作为证据，表明智能体组合已经在单体预训练尚未奏效的地方产生了成果。</p>\n<h3>技术要点</h3>\n<ul><li><strong>四大结构性数据瓶颈</strong>：配置依赖性（无稳定分词基底）、仿真器条件化（训练/部署分布鸿沟）、任务解耦（无单一模型可服务 PHY 到核心网）、弱的操作性闭环（无现网闭环反馈）——每项都被论证为规模扩展无法单独解决的障碍。</li><li><strong>可组合智能体架构</strong>：推理 LLM 智能体位于运行时有线束中，通过类型化接口调用专用无线模型、经典求解器、数字孪生、标准检索（基于 3GPP/IEEE 规范的 RAG）和安全监控器——而非将协议栈吸收进单一模型。</li><li><strong>与 O-RAN 和 802.11 模块化一致</strong>：智能体线束自然映射到 O-RAN 的近 RT/非 RT RIC 环路、xApp/rApp 和遥测流。对 Wi-Fi 而言，802.11 MLME SAP 和新兴的 AI Offload SG 接口提供了类似的连接点。</li><li><strong>明确的 Wi-Fi 引用</strong>：本文引用了 LLM 驱动的 Wi-Fi 感知（Zhang et al. 2025）、多智能体 MAC 协调框架以及面向 802.11 的 CSI 基础模型——将 Wi-Fi 定位为可组合智能体论文的关键领域。</li><li><strong>对 JEPA 和世界模型的批判</strong>：作者特别批评了基于联合嵌入预测架构（JEPA）的无线世界模型，认为它们继承了相同的数据瓶颈，只有当&quot;世界&quot;被明确限定在单一控制问题时才具说服力。</li></ul>\n<h3>意义与新意</h3>\n<p>这是首篇系统阐述&quot;无线 ChatGPT&quot;类比为何失败的论文，且作者来自自身活跃于无线 AI 标准化（3GPP、O-RAN、IEEE 802.11 AIML TIG）的主要行业玩家（IBM、Apple）。KB 中 agentic-wifi 分类下的先前条目（<code>wirelessagent-plus-plus</code>、<code>comagent-multi-llm-wireless</code>、<code>iterate-ebpf-rate-control</code>）均假定智能体组合是正确的路径；本文提供了<em>为何如此</em>的架构论证，并将其连接到 802.11（MLME SAP、AI Offload SG）和 O-RAN（xApp/rApp、RIC 环路）中已有的具体模块化接口面。</p>\n<p>本文对 KB 的 agentic-wifi 和 ai-for-wifi 主题的意义在于作为参考架构：未来提出具体 Wi-Fi 智能体机制的条目可引用本文作为架构框架，而无需每次都重新论证反对单体模型的理由。四大瓶颈分类法还为评估新的无线 AI 提案提供了检查清单——如果一项提案不处理配置依赖性、仿真器锚定、任务范围及操作性反馈，则它继承了本文所编目的脆弱性。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2605.16689v1/x1.png",
+          "caption_en": "Composable agentic architecture: reasoning agent harness orchestrating specialized wireless models, classical algorithms, digital twins, retrieval, and safety monitors through explicit interfaces",
+          "caption_zh": "可组合智能体架构：推理智能体线束通过显式接口编排专用无线模型、经典算法、数字孪生、检索系统和安全监控器"
+        }
+      ],
+      "search_blob": "against the monolithic wireless world model: why nextg needs composable and agentic intelligence 反对单体无线世界模型：为何下一代网络需要可组合与智能体驱动的智能 agentic-ai llm-agent 6g ai-native this position paper from ibm research, apple, and the technical university of munich pushes back against the rising tide of \"wireless foundation model\" proposals — large pretrained models that aim to provide universal intelligence across all layers of the wireless protocol stack. the authors argue that the analogy between large language models (llms) and wireless foundation models is structurally broken, and that monolithic wireless world models face four data bottlenecks that scaling alone cannot resolve. 这篇来自 ibm research、apple 和慕尼黑工业大学的立场论文，对日益兴起的\"无线基础模型\"提案——旨在为无线协议栈所有层提供通用智能的大规模预训练模型——提出了反驳。作者论证了大语言模型（llm）与无线基础模型之间的类比在结构上存在根本缺陷，单体无线世界模型面临规模扩展无法解决的四大数据瓶颈。 academic-paper"
+    },
     {
       "id": "2026-05-18_ieee-mentor-tgbp-antwerp-digest",
       "date_found": "2026-05-18",
