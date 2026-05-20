@@ -1017,7 +1017,7 @@ def main(argv: list[str]) -> int:
     # the viewer can show the list. Public-safe fields only — `enabled` is
     # dropped because it represents internal scout configuration.
     sources_payload = None
-    candidate = data_root.parent / ".claude" / "skills" / "wireless_research_scout" / "sources.yaml"
+    candidate = data_root.parent / ".claude" / "skills" / "wifi_research_scout" / "sources.yaml"
     if candidate.exists():
         try:
             parsed = _parse_sources_yaml(candidate.read_text(encoding="utf-8"))
