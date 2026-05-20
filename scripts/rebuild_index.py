@@ -375,14 +375,20 @@ REQUIRED = ("id", "date_found", "type", "title_en", "title_zh", "url", "topics",
 # Coarse category derived from the entry's `type`. Drives the three-column
 # layout in the viewer: Academia | Industry | Standards.
 TYPE_TO_CATEGORY = {
-    "academic-paper": "academia",
-    "tutorial":       "academia",
-    "ieee-document":  "standards",
-    "proposal":       "standards",
-    "product":        "industry",
-    "industry-news":  "industry",
-    "vendor-news":    "industry",
-    "news":           "industry",
+    "academic-paper":  "academia",
+    "tutorial":        "academia",
+    "ieee-document":   "standards",
+    "proposal":        "standards",
+    "product":         "industry",
+    "industry-news":   "industry",
+    "vendor-news":     "industry",
+    "news":            "industry",
+    "3gpp-document":   "standards",
+    "itu-document":    "standards",
+    "bluetooth-spec":  "standards",
+    "uwb-spec":        "standards",
+    "nearlink-spec":   "standards",
+    "satellite-news":  "industry",
 }
 
 
@@ -481,6 +487,28 @@ def load_topics(data_root: Path) -> tuple[dict[str, Any], list[str]]:
     return vocab, []
 
 
+def load_technologies(data_root: Path) -> tuple[dict[str, Any], list[str]]:
+    """Load technologies.json. Returns (vocab, warnings).
+
+    vocab is a dict with ``technologies`` list and a derived ``by_id`` mapping
+    from tech id → tech record. Each tech record includes its stacks, topic_ids,
+    and bilingual labels. Returns empty vocab when absent (backward-compatible).
+    """
+    tech_path = data_root / "technologies.json"
+    if not tech_path.is_file():
+        return {"technologies": [], "by_id": {}}, [
+            "technologies.json missing — technology-level grouping disabled"
+        ]
+    try:
+        raw = json.loads(tech_path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        return {"technologies": [], "by_id": {}}, [
+            f"technologies.json: failed to parse ({exc})"
+        ]
+    by_id = {t["id"]: t for t in raw.get("technologies", [])}
+    return {"technologies": raw.get("technologies", []), "by_id": by_id}, []
+
+
 def aggregate_by_topic(records: list[dict[str, Any]],
                        vocab: dict[str, Any],
                        data_root: Path) -> dict[str, Any]:
@@ -554,6 +582,7 @@ def build_entry_record(path: Path, fm: dict[str, Any], body: str) -> dict[str, A
     images = parse_images(body)
     # date_published is preferred for sort/timeline; fall back to date_found.
     date_published = fm.get("date_published") or fm["date_found"]
+    technology = fm.get("technology") or "wifi"
     topic_primary = fm.get("topic_primary") or ""
     topics_secondary = fm.get("topics_secondary") or []
     if not isinstance(topics_secondary, list):
@@ -561,6 +590,7 @@ def build_entry_record(path: Path, fm: dict[str, Any], body: str) -> dict[str, A
     return {
         "id": fm["id"],
         "date_found": fm["date_found"],
+        "technology": technology,
         "date_published": date_published,
         "type": fm["type"],
         "category": category_for_type(fm["type"]),
@@ -659,6 +689,7 @@ def build_dedup_index(records: list[dict[str, Any]],
             "url_aliases": aliases,
             "arxiv_id": ax,
             "title_fingerprint": fp,
+            "technology": r.get("technology", "") or "wifi",
             "topic_primary": r.get("topic_primary", "") or "",
             "topics_secondary": r.get("topics_secondary", []) or [],
             "date_found": r.get("date_found", ""),
@@ -696,6 +727,7 @@ def build_search_blob(entry: dict[str, Any]) -> str:
         entry["summary_short_en"],
         entry["summary_short_zh"],
         entry["type"],
+        entry.get("technology") or "wifi",
     ]
     return " ".join(parts).lower()
 
@@ -825,9 +857,10 @@ def main(argv: list[str]) -> int:
         raise SystemExit(f"no entries directory at {entries_dir}")
 
     vocab, vocab_warnings = load_topics(data_root)
+    tech_vocab, tech_warnings = load_technologies(data_root)
     md_files = sorted(p for p in entries_dir.glob("*.md") if not p.name.startswith("."))
     records: list[dict[str, Any]] = []
-    warnings: list[str] = list(vocab_warnings)
+    warnings: list[str] = list(vocab_warnings) + list(tech_warnings)
 
     for path in md_files:
         text = path.read_text(encoding="utf-8")
@@ -901,11 +934,23 @@ def main(argv: list[str]) -> int:
     # Primary sort: publication date desc, id as tiebreak.
     records.sort(key=lambda r: (r["date_published"], r["id"]), reverse=True)
 
+    # Technology validation: warn when entries reference unknown technology ids.
+    if tech_vocab.get("by_id"):
+        known_tech = set(tech_vocab["by_id"].keys())
+        for r in records:
+            t = r.get("technology") or "wifi"
+            if t not in known_tech:
+                warnings.append(
+                    f"{r['entry_path']}: unknown technology '{t}' "
+                    f"(not in technologies.json)"
+                )
+
     topics_aggregate = aggregate_by_topic(records, vocab, data_root)
 
     index_payload = {
-        "schema_version": 5,
+        "schema_version": 6,
         "last_updated": today,
+        "technologies_vocab": tech_vocab,
         "topics_vocab": {
             "stacks": vocab.get("stacks", []),
             "topics": vocab.get("topics", []),
@@ -928,12 +973,13 @@ def main(argv: list[str]) -> int:
         e["search_blob"] = build_search_blob(r)
         kb_entries.append(e)
     kb_payload = {
-        "schema_version": 5,
+        "schema_version": 6,
         "last_updated": today,
         "topic_counts": dict(topic_counts.most_common()),
         "primary_topic_counts": dict(primary_topic_counts.most_common()),
         "type_counts": dict(type_counts.most_common()),
         "category_counts": dict(category_counts.most_common()),
+        "technologies_vocab": tech_vocab,
         "topics_vocab": {
             "stacks": vocab.get("stacks", []),
             "topics": vocab.get("topics", []),
@@ -971,7 +1017,7 @@ def main(argv: list[str]) -> int:
     # the viewer can show the list. Public-safe fields only — `enabled` is
     # dropped because it represents internal scout configuration.
     sources_payload = None
-    candidate = data_root.parent / ".claude" / "skills" / "wifi_research_scout" / "sources.yaml"
+    candidate = data_root.parent / ".claude" / "skills" / "wireless_research_scout" / "sources.yaml"
     if candidate.exists():
         try:
             parsed = _parse_sources_yaml(candidate.read_text(encoding="utf-8"))
