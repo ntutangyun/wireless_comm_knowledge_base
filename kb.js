@@ -1,6 +1,6 @@
 window.KB_DATA = {
   "schema_version": 5,
-  "last_updated": "2026-05-19",
+  "last_updated": "2026-05-20",
   "topic_counts": {
     "MAC-layer": 34,
     "agentic-AI": 29,

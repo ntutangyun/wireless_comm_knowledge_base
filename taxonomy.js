@@ -1,0 +1,653 @@
+window.TAXONOMY_DATA = {
+  "schema_version": 1,
+  "categories": [
+    {
+      "id": "wifi-standards",
+      "label_en": "802.11 Standards & Amendments",
+      "label_zh": "802.11 标准与修订案",
+      "description_en": "IEEE 802.11 is the defining family of standards for wireless local-area networks (WLANs), commercially known as Wi-Fi. Each amendment adds new features, frequency bands, or performance improvements.",
+      "description_zh": "IEEE 802.11 是无线局域网（WLAN）的定义性标准族，即商业化所称的 Wi-Fi。每个修订案增加新的特性、频段或性能提升。",
+      "terms": [
+        {
+          "term": "802.11a",
+          "definition_en": "Ratified 1999. First OFDM-based PHY operating in the 5 GHz band, delivering up to 54 Mbps. Laid the foundation for all subsequent high-speed amendments by introducing orthogonal subcarriers.",
+          "definition_zh": "1999 年批准。首个在 5 GHz 频段运行的 OFDM PHY，速率最高 54 Mbps。通过引入正交子载波，为后续所有高速修订案奠定了基础。"
+        },
+        {
+          "term": "802.11b",
+          "definition_en": "Ratified 1999. 2.4 GHz DSSS/CCK PHY at up to 11 Mbps. The amendment that made Wi-Fi a consumer success; still used as a fallback and for long-range IoT links.",
+          "definition_zh": "1999 年批准。2.4 GHz DSSS/CCK PHY，最高 11 Mbps。使 Wi-Fi 走向消费市场的修订案；至今仍作为回退模式和长距离 IoT 链路使用。"
+        },
+        {
+          "term": "802.11g",
+          "definition_en": "Ratified 2003. Brought OFDM modulation (from 802.11a) into the 2.4 GHz band at up to 54 Mbps, while maintaining backward compatibility with 802.11b.",
+          "definition_zh": "2003 年批准。将 OFDM 调制（来自 802.11a）引入 2.4 GHz 频段，速率最高 54 Mbps，并保持与 802.11b 的后向兼容。"
+        },
+        {
+          "term": "802.11n",
+          "aliases": [
+            "Wi-Fi 4"
+          ],
+          "definition_en": "Ratified 2009. Introduced MIMO (Multiple Input Multiple Output), 40 MHz channel bonding, and frame aggregation. Marketed as Wi-Fi 4. Up to 600 Mbps with 4 spatial streams.",
+          "definition_zh": "2009 年批准。引入 MIMO（多输入多输出）、40 MHz 信道捆绑和帧聚合。市场称为 Wi-Fi 4。4 条空间流下最高 600 Mbps。"
+        },
+        {
+          "term": "802.11ac",
+          "aliases": [
+            "Wi-Fi 5"
+          ],
+          "definition_en": "Ratified 2013. 5 GHz-only amendment introducing 80/160 MHz channels, 256-QAM, downlink MU-MIMO, and explicit beamforming. Marketed as Wi-Fi 5. Up to 6.9 Gbps with 8 spatial streams.",
+          "definition_zh": "2013 年批准。仅 5 GHz 频段修订案，引入 80/160 MHz 信道、256-QAM、下行 MU-MIMO 和显式波束成形。市场称为 Wi-Fi 5。8 条空间流下最高 6.9 Gbps。"
+        },
+        {
+          "term": "802.11ax",
+          "aliases": [
+            "Wi-Fi 6",
+            "Wi-Fi 6E"
+          ],
+          "definition_en": "Ratified 2021. Introduced OFDMA, uplink MU-MIMO, 1024-QAM, Target Wake Time (TWT), BSS Coloring for spatial reuse, and extended to 6 GHz as Wi-Fi 6E. Markets itself on efficiency in dense environments, not just peak speed.",
+          "definition_zh": "2021 年批准。引入 OFDMA、上行 MU-MIMO、1024-QAM、目标唤醒时间（TWT）、用于空间复用的 BSS 着色，并扩展至 6 GHz 称为 Wi-Fi 6E。卖点是密集环境下的效率而非仅峰值速率。"
+        },
+        {
+          "term": "802.11be",
+          "aliases": [
+            "Wi-Fi 7"
+          ],
+          "definition_en": "Expected ratification 2024–2025. Introduces Multi-Link Operation (MLO), 320 MHz channels, 4096-QAM, Multi-AP Coordination (MAPC), and Restricted TWT (R-TWT). Aims for up to 46 Gbps theoretical throughput. The first amendment designed with XR and real-time workloads in mind.",
+          "definition_zh": "预计 2024–2025 年批准。引入多链路操作（MLO）、320 MHz 信道、4096-QAM、多 AP 协调（MAPC）和受限目标唤醒时间（R-TWT）。理论吞吐量最高 46 Gbps。首个将 XR 和实时工作负载纳入设计的修订案。"
+        },
+        {
+          "term": "802.11bn",
+          "aliases": [
+            "Wi-Fi 8",
+            "UHR"
+          ],
+          "definition_en": "Target ratification 2028. Branded as Ultra High Reliability (UHR). Core goals: deterministic low-latency, enhanced MAPC (Co-SR, Co-TDMA, Co-BF), ELR-PPDU for long range, unequal modulation, and AI/ML-native features via the AI Offload Study Group. Shifts the emphasis from peak throughput to reliability guarantees.",
+          "definition_zh": "目标 2028 年批准。冠以超高可靠性（UHR）之名。核心目标：确定性低时延、增强 MAPC（Co-SR, Co-TDMA, Co-BF）、面向长距离的 ELR-PPDU、不等调制，以及通过 AI Offload 研究组引入 AI/ML 原生特性。重心从峰值吞吐转向可靠性保证。"
+        },
+        {
+          "term": "802.11bf",
+          "aliases": [
+            "WLAN Sensing"
+          ],
+          "definition_en": "Amendment defining how Wi-Fi devices perform sensing (motion detection, presence, gesture recognition) using CSI measurements. Standardises monostatic, bistatic, multistatic, and passive sensing configurations so sensing becomes a protocol-level service.",
+          "definition_zh": "定义 Wi-Fi 设备如何利用 CSI 测量执行感知（运动检测、在场、手势识别）的修订案。标准化单站、双站、多站及被动感知配置，使感知成为协议级服务。"
+        },
+        {
+          "term": "802.11bq",
+          "aliases": [
+            "Integrated mmWave"
+          ],
+          "definition_en": "Amendment for tightly coupling 60 GHz mmWave operation with sub-7 GHz Wi-Fi. Enables a single device to switch between or aggregate sub-7 GHz and mmWave links under unified MAC management.",
+          "definition_zh": "将 60 GHz mmWave 运行与 sub-7 GHz Wi-Fi 紧耦合的修订案。使单设备能够在统一 MAC 管理下切换或聚合 sub-7 GHz 与 mmWave 链路。"
+        },
+        {
+          "term": "802.11ba",
+          "aliases": [
+            "Wake-Up Radio",
+            "WUR"
+          ],
+          "definition_en": "Amendment defining a low-power wake-up radio (WUR) that listens for a specific wake-up signal, allowing the main Wi-Fi radio to stay in deep sleep until data actually arrives. Targets IoT and battery-constrained devices.",
+          "definition_zh": "定义低功耗唤醒无线电（WUR）的修订案，WUR 监听特定唤醒信号，使主 Wi-Fi 无线电保持深睡眠直到数据真正到达。面向 IoT 和电池受限设备。"
+        },
+        {
+          "term": "802.11az",
+          "aliases": [
+            "Next Generation Positioning"
+          ],
+          "definition_en": "Amendment enhancing Fine Timing Measurement (FTM) for sub-meter indoor positioning. Adds multi-user FTM, secure LTF-based ranging, and phase-differential measurements.",
+          "definition_zh": "增强精细时间测量（FTM）以实现亚米级室内定位的修订案。增加多用户 FTM、基于安全 LTF 的测距和相差测量。"
+        },
+        {
+          "term": "802.11bp",
+          "aliases": [
+            "Ambient Power IoT",
+            "AMP-IoT"
+          ],
+          "definition_en": "Amendment for battery-less / energy-harvesting IoT devices that operate on ambient RF power. Enables sensor-class devices to communicate using harvested energy from Wi-Fi or other RF sources.",
+          "definition_zh": "面向无电池 / 能量采集 IoT 设备的修订案，设备利用环境射频能量供电。使传感器类设备能够利用 Wi-Fi 或其他射频源采集的能量进行通信。"
+        },
+        {
+          "term": "802.11bk",
+          "definition_en": "Amendment for enhanced 802.11az ranging security, addressing downgrade attacks and adding cryptographic protections to FTM exchanges.",
+          "definition_zh": "增强 802.11az 测距安全性的修订案，应对降级攻击并为 FTM 交互增加密码保护。"
+        },
+        {
+          "term": "TGbn / TGbe / TGbf",
+          "definition_en": "IEEE 802.11 Task Groups: TGbn (UHR / Wi-Fi 8), TGbe (Wi-Fi 7), TGbf (WLAN Sensing), TGbq (mmWave), TGbp (AMP-IoT), TGbk (ranging security). Each TG is responsible for drafting and progressing a specific amendment through the IEEE standards process.",
+          "definition_zh": "IEEE 802.11 任务组：TGbn（UHR / Wi-Fi 8）、TGbe（Wi-Fi 7）、TGbf（WLAN 感知）、TGbq（mmWave）、TGbp（AMP-IoT）、TGbk（测距安全）。每个任务组负责起草并推动特定修订案通过 IEEE 标准流程。"
+        },
+        {
+          "term": "WNG SC",
+          "definition_en": "Wireless Next Generation Standing Committee. The IEEE 802.11 body that explores beyond-next-generation ideas (currently: Wi-Fi 9 and beyond). Acts as the early-stage incubator before a formal Study Group or Task Group is chartered.",
+          "definition_zh": "无线下一代常设委员会。IEEE 802.11 中探索下一代（当前：Wi-Fi 9 及以后）构想的机构。在正式研究组或任务组成立前充当早期孵化器。"
+        },
+        {
+          "term": "Wi-Fi Alliance",
+          "definition_en": "Industry consortium that certifies Wi-Fi interoperability and defines branding (Wi-Fi 4 / 5 / 6 / 6E / 7 / 8). Separate from IEEE — IEEE writes the standard, the Alliance runs plugfests and grants the Wi-Fi logo.",
+          "definition_zh": "认证 Wi-Fi 互操作性并定义品牌（Wi-Fi 4 / 5 / 6 / 6E / 7 / 8）的产业联盟。与 IEEE 独立 — IEEE 编写标准，联盟组织互通性测试并授予 Wi-Fi 标志。"
+        }
+      ]
+    },
+    {
+      "id": "mac-layer",
+      "label_en": "MAC Layer Concepts",
+      "label_zh": "MAC 层概念",
+      "description_en": "The Medium Access Control (MAC) layer governs how devices share the wireless medium — who transmits when, for how long, and under what rules. 802.11 MAC innovations have been the primary driver of Wi-Fi efficiency improvements.",
+      "description_zh": "媒体接入控制（MAC）层管理设备如何共享无线介质 — 谁在何时传输、传输多久、遵循什么规则。802.11 MAC 创新一直是 Wi-Fi 效率提升的主要驱动力。",
+      "terms": [
+        {
+          "term": "MLO",
+          "aliases": [
+            "Multi-Link Operation"
+          ],
+          "definition_en": "Multi-Link Operation: a Wi-Fi 7 (802.11be) feature allowing a device to simultaneously send and receive across multiple frequency bands (2.4, 5, 6 GHz). Comes in several modes: STR (Simultaneous Transmit & Receive — independent Tx/Rx across links), NSTR (Non-Simultaneous Transmit & Receive — can Rx on one link while Tx on another but not simultaneously), and SLO (Single-Link Operation — one link active at a time). MLO is extended in 802.11bn with tighter latency constraints.",
+          "definition_zh": "多链路操作：Wi-Fi 7（802.11be）特性，允许设备同时跨多个频段（2.4、5、6 GHz）收发。包含多种模式：STR（同时收发 — 各链路独立收发）、NSTR（非同时收发 — 可在一链路收另一链路发但不能同时进行）、SLO（单链路操作 — 每次仅一条链路活跃）。MLO 在 802.11bn 中以更严格的时延约束得到扩展。"
+        },
+        {
+          "term": "STR / NSTR",
+          "definition_en": "MLO operating modes. STR (Simultaneous Transmit & Receive): each link operates independently, able to Tx and Rx at the same time. NSTR (Non-STR): can Tx on one link and Rx on another concurrently, but cannot Tx simultaneously on both. STR requires better RF isolation between bands.",
+          "definition_zh": "MLO 操作模式。STR（同时收发）：各链路独立运行，可同时收发。NSTR（非同时收发）：可在一链路发送同时在另一链路接收，但不能同时在两链路发送。STR 要求更好的频段间射频隔离。"
+        },
+        {
+          "term": "OFDMA",
+          "aliases": [
+            "Orthogonal Frequency Division Multiple Access"
+          ],
+          "definition_en": "OFDMA divides a Wi-Fi channel into smaller frequency units called Resource Units (RUs), which can be assigned to different users simultaneously. Introduced in 802.11ax (Wi-Fi 6). A single AP transmission can carry data for multiple STAs, or multiple STAs can transmit back to the AP in the same frame. The key advantage over OFDM: instead of one user occupying the whole channel, many users share it, reducing overhead for small-packet traffic (IoT, voice, gaming).",
+          "definition_zh": "OFDMA 将 Wi-Fi 信道划分成更小的频率单元 — 资源单元（RU），可同时分配给不同用户。在 802.11ax（Wi-Fi 6）中引入。单次 AP 传输可为多个 STA 携带数据，或多个 STA 可在同一帧内同时向 AP 回传。相较 OFDM 的核心优势：不再是一个用户独占整个信道，而是多用户共享，减少小包流量的开销（IoT、语音、游戏）。"
+        },
+        {
+          "term": "MU-MIMO",
+          "aliases": [
+            "Multi-User MIMO"
+          ],
+          "definition_en": "Multi-User Multiple Input Multiple Output: the AP transmits different data streams to different users simultaneously using the same frequency, separated by spatial beamforming. Downlink MU-MIMO appeared in 802.11ac; uplink MU-MIMO arrived in 802.11ax. Unlike OFDMA (frequency-domain multiplexing), MU-MIMO is spatial-domain multiplexing.",
+          "definition_zh": "多用户多输入多输出：AP 利用空间波束成形在同一频率上向不同用户同时传输不同数据流。下行 MU-MIMO 出现于 802.11ac；上行 MU-MIMO 出现于 802.11ax。与 OFDMA（频域复用）不同，MU-MIMO 是空域复用。"
+        },
+        {
+          "term": "EDCA",
+          "aliases": [
+            "Enhanced Distributed Channel Access"
+          ],
+          "definition_en": "The QoS-aware channel access mechanism in 802.11e and all subsequent amendments. Traffic is classified into four Access Categories (Voice, Video, Best Effort, Background) with different contention parameters — higher-priority ACs wait less time before transmitting, giving them statistical advantage without centralised scheduling.",
+          "definition_zh": "802.11e 及后续所有修订案中的 QoS 感知信道接入机制。流量分为四个接入类别（语音、视频、尽力而为、背景），各有不同的竞争参数 — 高优先级 AC 发射前等待的时间更短，无需集中调度即可获得统计优势。"
+        },
+        {
+          "term": "DCF",
+          "aliases": [
+            "Distributed Coordination Function"
+          ],
+          "definition_en": "The baseline 802.11 channel access method: CSMA/CA with binary exponential backoff. Every device listens before transmitting; if the channel is busy, it waits a random backoff period. Still the default fallback when OFDMA or MU-MIMO scheduling cannot be used. All modern Wi-Fi efficiency work is essentially about replacing DCF with something smarter.",
+          "definition_zh": "802.11 的基础信道接入方法：带二进制指数退避的 CSMA/CA。每个设备在发射前监听；如果信道忙，则等待一段随机退避时间。当 OFDMA 或 MU-MIMO 调度不可用时，这仍是默认回退机制。所有现代 Wi-Fi 效率工作本质上都是要用更智能的方案替代 DCF。"
+        },
+        {
+          "term": "TWT",
+          "aliases": [
+            "Target Wake Time"
+          ],
+          "definition_en": "Target Wake Time: introduced in 802.11ah and adopted in 802.11ax. The AP and STA negotiate a schedule — the STA sleeps between agreed wake-up windows, waking only at its scheduled TWT service periods. Dramatically reduces power consumption for IoT and battery-powered devices. Individual TWT (one STA) and Broadcast TWT (a group of STAs).",
+          "definition_zh": "目标唤醒时间：在 802.11ah 中引入并在 802.11ax 中采纳。AP 与 STA 协商时间表 — STA 在约定唤醒窗口之间睡眠，仅在其排定的 TWT 服务时段唤醒。大幅降低 IoT 和电池供电设备的功耗。分为个体 TWT（单 STA）和广播 TWT（一组 STA）。"
+        },
+        {
+          "term": "R-TWT",
+          "aliases": [
+            "Restricted Target Wake Time"
+          ],
+          "definition_en": "Restricted TWT: a 802.11be enhancement where certain TWT service periods are reserved exclusively for low-latency traffic. During an R-TWT SP, other STAs must yield the medium. Designed for XR, cloud gaming, and industrial control where a single delayed frame breaks the experience.",
+          "definition_zh": "受限目标唤醒时间：802.11be 增强特性，将特定 TWT 服务时段专门保留给低时延流量。在 R-TWT 服务时段内，其他 STA 必须让出介质。面向 XR、云游戏和工业控制等单帧延迟即破坏体验的场景。"
+        },
+        {
+          "term": "MAPC",
+          "aliases": [
+            "Multi-AP Coordination"
+          ],
+          "definition_en": "Multi-Access Point Coordination: a family of 802.11bn mechanisms where neighbouring APs coordinate their transmissions instead of treating each other as interference. Includes Co-SR (power-managed simultaneous transmissions), Co-TDMA (time-slot coordination), Co-BF (joint beamforming), and NPCA (Non-Primary Channel Access). The single biggest architectural shift in 802.11bn.",
+          "definition_zh": "多接入点协调：802.11bn 的一组机制族，相邻 AP 彼此协调传输，而非将对方视为干扰。包括 Co-SR（功率管理的并发传输）、Co-TDMA（时隙协调）、Co-BF（联合波束成形）和 NPCA（非主信道接入）。这是 802.11bn 最大的架构性变革。"
+        },
+        {
+          "term": "Co-SR",
+          "aliases": [
+            "Coordinated Spatial Reuse"
+          ],
+          "definition_en": "Coordinated Spatial Reuse: a MAPC primitive where neighbouring APs transmit simultaneously on the same channel with carefully managed transmit-power adjustments so they do not destroy each other's packets. Unlike Co-TDMA (time-domain), Co-SR multiplexes in the spatial / power domain. Published results show 31-95% latency reduction vs. uncoordinated DCF.",
+          "definition_zh": "协调空间复用：MAPC 的一种原语，相邻 AP 在同一信道上同时传输，通过精心管理的发送功率调节使彼此不破坏对方的数据包。与 Co-TDMA（时域）不同，Co-SR 在空间 / 功率域进行复用。已发表结果显示相对无协调 DCF 可降低 31-95% 时延。"
+        },
+        {
+          "term": "Co-TDMA",
+          "definition_en": "Coordinated TDMA: a MAPC primitive where APs divide time into coordinated slots, eliminating cross-BSS collisions by construction. Simpler than Co-SR but potentially less spectrally efficient.",
+          "definition_zh": "协调 TDMA：MAPC 的一种原语，AP 间将时间划分为协调时隙，从结构上消除跨 BSS 碰撞。比 Co-SR 简单，但频谱效率可能较低。"
+        },
+        {
+          "term": "Spatial Reuse",
+          "definition_en": "Techniques that let multiple APs or STAs transmit simultaneously on the same channel without excessive interference. BSS Coloring (802.11ax) is the well-known mechanism: each BSS gets a 'colour' in the preamble, and a device can ignore frames from other colours if the signal is weak enough. Co-SR (802.11bn) is the next generation.",
+          "definition_zh": "允许多个 AP 或 STA 在同一信道上同时传输而不产生过度干扰的技术。BSS 着色（802.11ax）是广为人知的机制：每个 BSS 在前导码中获得一个颜色标识，设备可以在信号足够弱时忽略其他颜色的帧。Co-SR（802.11bn）是下一代方案。"
+        },
+        {
+          "term": "ICW",
+          "aliases": [
+            "Initial Contention Window"
+          ],
+          "definition_en": "Initial Contention Window: the starting backoff window size in CSMA/CA. A smaller ICW means faster channel access but more collisions; a larger ICW reduces collisions at the cost of access delay. Adaptive ICW tuning (dynamically choosing the right size per traffic condition) is an active research area for both Wi-Fi 7 and 8.",
+          "definition_zh": "初始竞争窗口：CSMA/CA 中退避窗口的起始大小。较小的 ICW 意味着更快的信道接入但更多碰撞；较大的 ICW 以减少碰撞为代价换取更长的接入延迟。自适应 ICW 调优（根据流量条件动态选择合适尺寸）是 Wi-Fi 7 和 8 的活跃研究领域。"
+        },
+        {
+          "term": "U-MAC / L-MAC",
+          "definition_en": "Upper MAC and Lower MAC: conceptual layering within the 802.11 MAC. U-MAC handles traffic classification, MLO link selection, and queue management. L-MAC handles per-link contention (EDCA, backoff, retransmission). The split matters in MLO because traffic allocation (U-MAC) and contention-window tuning (L-MAC) interact.",
+          "definition_zh": "上层 MAC 与下层 MAC：802.11 MAC 内部的概念分层。U-MAC 处理流量分类、MLO 链路选择和队列管理。L-MAC 处理每链路竞争（EDCA、退避、重传）。这一分层在 MLO 中很重要，因为流量分配（U-MAC）与竞争窗口调优（L-MAC）之间存在交互。"
+        },
+        {
+          "term": "BSS / OBSS",
+          "definition_en": "Basic Service Set: a single AP and its associated STAs. OBSS (Overlapping BSS) refers to neighbouring BSSs whose coverage areas overlap — the source of co-channel interference that MAPC and spatial reuse aim to manage.",
+          "definition_zh": "基本服务集：单个 AP 及其关联的 STA。OBSS（重叠基本服务集）指覆盖区域重叠的相邻 BSS — 是 MAPC 和空间复用旨在管理的同频干扰来源。"
+        },
+        {
+          "term": "CSMA/CA",
+          "aliases": [
+            "Carrier Sense Multiple Access with Collision Avoidance"
+          ],
+          "definition_en": "The foundational access method of Wi-Fi. Before transmitting, a device listens (carrier sense) to check the channel is idle, then waits a random backoff period to avoid collisions with other waiting devices. The CA (Collision Avoidance) distinguishes Wi-Fi from Ethernet's CSMA/CD (Collision Detection).",
+          "definition_zh": "Wi-Fi 的基础接入方法。设备在发送前先监听（载波侦听）确认信道空闲，然后等待一段随机退避时间以避免与其他等待设备碰撞。CA（碰撞避免）将 Wi-Fi 与以太网的 CSMA/CD（碰撞检测）区分开来。"
+        },
+        {
+          "term": "Backoff",
+          "definition_en": "The random wait period a Wi-Fi device observes before transmitting after the channel becomes idle. The window doubles on each collision (binary exponential backoff) up to a maximum, then resets on success. This is the core fairness and collision-resolution mechanism in 802.11.",
+          "definition_zh": "Wi-Fi 设备在信道空闲后、发射前所等待的随机时段。每次碰撞后窗口加倍（二进制指数退避）至上限，成功后重置。这是 802.11 中核心的公平性与碰撞解决机制。"
+        },
+        {
+          "term": "Beacon Frame",
+          "definition_en": "Periodic broadcast frame sent by the AP (typically every ~100 ms) advertising the BSS's capabilities, supported rates, timestamps for synchronisation, and power-save delivery information. STAs use beacons to discover and stay associated with the network.",
+          "definition_zh": "AP 周期性广播的帧（通常约每 100 ms），通告 BSS 的能力、支持速率、用于同步的时间戳和省电投递信息。STA 利用信标帧发现网络并维持关联。"
+        },
+        {
+          "term": "NPCA",
+          "aliases": [
+            "Non-Primary Channel Access"
+          ],
+          "definition_en": "A MAPC mechanism where an AP can schedule transmissions on a channel that is not its primary operating channel, coordinated with the AP that owns that channel as primary. Increases spectrum utilisation in dense multi-AP deployments.",
+          "definition_zh": "MAPC 的一种机制，AP 可以在非自身主信道的信道上进行调度传输，与该信道的主 AP 进行协调。提高密集多 AP 部署中的频谱利用率。"
+        },
+        {
+          "term": "DRU",
+          "aliases": [
+            "Distributed Resource Unit"
+          ],
+          "definition_en": "Distributed Resource Unit: a concept in 802.11bn where RUs (OFDMA sub-channels) are distributed across multiple APs in a coordinated fashion, rather than each AP independently allocating its own RUs. Enables cross-AP OFDMA scheduling.",
+          "definition_zh": "分布式资源单元：802.11bn 中的概念，将 RU（OFDMA 子信道）以协调方式分布在多个 AP 之间，而非各 AP 独立分配自身 RU。实现跨 AP 的 OFDMA 调度。"
+        }
+      ]
+    },
+    {
+      "id": "phy-layer",
+      "label_en": "PHY Layer Concepts",
+      "label_zh": "PHY 层概念",
+      "description_en": "The Physical (PHY) layer converts bits into radio waves and back. PHY innovations determine the fundamental data rate, range, and robustness of a Wi-Fi link.",
+      "description_zh": "物理（PHY）层将比特转换为无线电波并还原。PHY 创新决定了 Wi-Fi 链路的基础数据速率、距离和鲁棒性。",
+      "terms": [
+        {
+          "term": "OFDM",
+          "aliases": [
+            "Orthogonal Frequency Division Multiplexing"
+          ],
+          "definition_en": "The modulation scheme at the heart of Wi-Fi since 802.11a/g. Data is split across many closely-spaced subcarriers that are mathematically orthogonal (do not interfere with each other). Each subcarrier carries a low-rate QAM-modulated stream; together they deliver high total throughput with resilience to multipath fading.",
+          "definition_zh": "自 802.11a/g 以来 Wi-Fi 的核心调制方案。数据被分配到许多间距紧密且数学上正交（互不干扰）的子载波上。每个子载波承载低速 QAM 调制流；合在一起以抗多径衰落的鲁棒性提供高总吞吐量。"
+        },
+        {
+          "term": "MIMO",
+          "aliases": [
+            "Multiple Input Multiple Output"
+          ],
+          "definition_en": "Using multiple antennas at both transmitter and receiver to send multiple data streams (spatial streams) simultaneously over the same frequency. Each stream takes a different spatial path. MIMO multiplies throughput without needing more spectrum. The number of spatial streams is limited by min(Tx antennas, Rx antennas).",
+          "definition_zh": "在发送端和接收端同时使用多根天线，通过不同空间路径在同一频率上同时发送多个数据流（空间流）。MIMO 无需更多频谱即可成倍提升吞吐量。空间流数受限于 min（发送天线数，接收天线数）。"
+        },
+        {
+          "term": "Beamforming",
+          "definition_en": "Technique where the transmitter adjusts the phase and amplitude of signals on each antenna to create constructive interference in the direction of the intended receiver. The result is a stronger signal at the receiver (beamforming gain) and less interference elsewhere. Explicit beamforming (802.11ac/ax/be) uses CSI feedback from the receiver to compute the steering matrix.",
+          "definition_zh": "发射机调整各天线信号的相位与幅度，在目标接收机方向形成相长干涉的技术。结果是接收端信号更强（波束成形增益）且别处干扰更小。显式波束成形（802.11ac/ax/be）利用接收端的 CSI 反馈计算导向矩阵。"
+        },
+        {
+          "term": "CSI",
+          "aliases": [
+            "Channel State Information"
+          ],
+          "definition_en": "Channel State Information: a detailed frequency-domain description of how the wireless signal propagates from transmitter to receiver — amplitude and phase per subcarrier. CSI captures multipath reflections, attenuation, and Doppler shifts, making it the raw material for Wi-Fi sensing (motion, presence, activity recognition). Distinct from RSSI, which gives only a single received power number.",
+          "definition_zh": "信道状态信息：无线信号从发射机到接收机传播过程的详细频域描述 — 每个子载波的幅度和相位。CSI 捕获多径反射、衰减和多普勒频移，使其成为 Wi-Fi 感知（运动、在场、活动识别）的原始材料。不同于仅给出单个接收功率值的 RSSI。"
+        },
+        {
+          "term": "RSSI",
+          "aliases": [
+            "Received Signal Strength Indicator"
+          ],
+          "definition_en": "Received Signal Strength Indicator: a single number representing total received power (in dBm). Cheap to obtain, available on every Wi-Fi chipset, but contains far less information than CSI — one value vs. one value per subcarrier. Used for coarse proximity and basic signal quality but insufficient for fine-grained sensing.",
+          "definition_zh": "接收信号强度指示：表示总接收功率（单位 dBm）的单一数值。获取成本低，每块 Wi-Fi 芯片都支持，但包含的信息远少于 CSI — 一个值 vs 每个子载波一个值。用于粗略接近度和基础信号质量，但不足以实现细粒度感知。"
+        },
+        {
+          "term": "RFF",
+          "aliases": [
+            "Radio Frequency Fingerprinting"
+          ],
+          "definition_en": "Radio Frequency Fingerprinting: identifying a specific device by its unique hardware imperfections in the transmitted RF signal (oscillator drift, power-amplifier nonlinearity, I/Q imbalance). These micro-signatures are hard to spoof, making RFF a physical-layer authentication mechanism complementary to MAC-layer security.",
+          "definition_zh": "射频指纹：通过发射射频信号中独特的硬件不完美特征（振荡器漂移、功放非线性、I/Q 不平衡）识别特定设备。这些微签名难以伪造，使 RFF 成为对 MAC 层安全形成补充的物理层认证机制。"
+        },
+        {
+          "term": "PPDU",
+          "aliases": [
+            "PLCP Protocol Data Unit"
+          ],
+          "definition_en": "The physical-layer frame format — preamble + headers + payload. Each Wi-Fi generation defines its own PPDU format (HT for 11n, VHT for 11ac, HE for 11ax, EHT for 11be, UHR for 11bn). The preamble lets receivers detect, synchronise, and estimate the channel before decoding the data.",
+          "definition_zh": "物理层帧格式 — 前导码 + 头部 + 载荷。每一代 Wi-Fi 定义自己的 PPDU 格式（11n 的 HT、11ac 的 VHT、11ax 的 HE、11be 的 EHT、11bn 的 UHR）。前导码让接收端在解码数据前完成检测、同步和信道估计。"
+        },
+        {
+          "term": "ELR-PPDU",
+          "aliases": [
+            "Extended Long Range PPDU"
+          ],
+          "definition_en": "A new PPDU format proposed for 802.11bn optimised for extended range rather than peak throughput. Uses longer preambles, narrower subcarriers, and more robust coding to reach devices at the cell edge or outdoors — important for IoT and industrial Wi-Fi.",
+          "definition_zh": "为 802.11bn 提出的新 PPDU 格式，针对扩展距离而非峰值吞吐优化。使用更长的前导码、更窄的子载波和更鲁棒的编码以覆盖小区边缘或室外设备 — 对 IoT 和工业 Wi-Fi 至关重要。"
+        },
+        {
+          "term": "256-QAM / 1024-QAM / 4096-QAM",
+          "definition_en": "Quadrature Amplitude Modulation densities: 256-QAM (8 bits/symbol, 802.11ac), 1024-QAM (10 bits/symbol, 802.11ax), 4096-QAM (12 bits/symbol, 802.11be). Higher QAM packs more bits per symbol but needs higher SNR — the constellation points are closer together, so noise tolerance is lower. Each generation's peak rate gains come partly from QAM density increases.",
+          "definition_zh": "正交幅度调制密度：256-QAM（8 比特/符号，802.11ac）、1024-QAM（10 比特/符号，802.11ax）、4096-QAM（12 比特/符号，802.11be）。更高 QAM 每个符号打包更多比特但需要更高 SNR — 星座点更密集，噪声容忍度更低。每一代的峰值速率提升部分来自 QAM 密度增加。"
+        },
+        {
+          "term": "Subcarrier",
+          "definition_en": "In OFDM, the channel is divided into many narrowband subcarriers (e.g., 256 subcarriers in 20 MHz 802.11n, up to 4096 in 320 MHz 802.11be). Each subcarrier carries an independent QAM symbol. Subcarrier spacing is typically 312.5 kHz in 802.11 — narrow enough for flat fading per subcarrier, wide enough to be robust against Doppler.",
+          "definition_zh": "在 OFDM 中，信道被划分为许多窄带子载波（如 20 MHz 802.11n 为 256 个子载波，320 MHz 802.11be 可达 4096 个）。每个子载波承载独立的 QAM 符号。802.11 中子载波间隔通常为 312.5 kHz — 足够窄以使每个子载波经历平坦衰落，同时足够宽以抗多普勒。"
+        },
+        {
+          "term": "Guard Interval",
+          "definition_en": "A silent period inserted between OFDM symbols to absorb delayed multipath copies of the previous symbol. 802.11 uses 0.8 us (normal) or 0.4 us (short, for indoor). If the guard interval is shorter than the longest multipath delay, inter-symbol interference (ISI) corrupts the signal.",
+          "definition_zh": "插入在 OFDM 符号之间的静默期，用于吸收前一符号延迟到达的多径副本。802.11 使用 0.8 us（常规）或 0.4 us（短，用于室内）。如果保护间隔短于最长多径延迟，符号间干扰（ISI）会破坏信号。"
+        },
+        {
+          "term": "Channel Bonding",
+          "definition_en": "Combining multiple 20 MHz channels into a wider channel: 40 MHz (802.11n), 80/160 MHz (802.11ac), 320 MHz (802.11be). Wider channels = more subcarriers = higher throughput, but also higher noise floor and fewer non-overlapping channels available.",
+          "definition_zh": "将多个 20 MHz 信道合并为更宽信道：40 MHz（802.11n）、80/160 MHz（802.11ac）、320 MHz（802.11be）。更宽信道 = 更多子载波 = 更高吞吐量，但也带来更高的噪声基底和更少的非重叠信道可用数。"
+        },
+        {
+          "term": "Doppler Shift",
+          "definition_en": "Frequency shift caused by relative motion between transmitter and receiver. In Wi-Fi sensing, Doppler patterns reveal whether a person is walking, running, or stationary. In high-mobility scenarios (vehicular Wi-Fi), large Doppler spreads make channel estimation harder.",
+          "definition_zh": "由发射机与接收机之间相对运动引起的频移。在 Wi-Fi 感知中，多普勒模式可以揭示行人是行走、跑步还是静止。在高速移动场景（车载 Wi-Fi）中，大多普勒扩展使信道估计更加困难。"
+        },
+        {
+          "term": "SINR / SNR",
+          "definition_en": "Signal-to-(Interference-plus-)Noise Ratio: the ratio of desired signal power to noise (and interference) power, measured in dB. The fundamental determinant of which MCS (Modulation and Coding Scheme) a link can sustain — higher SINR enables denser QAM and higher throughput.",
+          "definition_zh": "信（干）噪比：期望信号功率与噪声（及干扰）功率之比，单位 dB。决定链路能维持何种 MCS（调制编码方案）的基本因素 — 更高 SINR 使能更密集的 QAM 和更高吞吐量。"
+        }
+      ]
+    },
+    {
+      "id": "sensing-positioning",
+      "label_en": "Sensing & Positioning",
+      "label_zh": "感知与定位",
+      "description_en": "Wi-Fi sensing repurposes the radio signals already present in every Wi-Fi network to detect motion, count people, recognise gestures, and locate devices — without dedicated sensors or cameras.",
+      "description_zh": "Wi-Fi 感知重新利用每个 Wi-Fi 网络中已存在的无线电信号来检测运动、计人数、识别手势和定位设备 — 无需专用传感器或摄像头。",
+      "terms": [
+        {
+          "term": "FTM",
+          "aliases": [
+            "Fine Timing Measurement"
+          ],
+          "definition_en": "Fine Timing Measurement: a protocol defined in 802.11mc and enhanced in 802.11az / 802.11bk. Two Wi-Fi devices exchange timestamped frames to measure round-trip time with nanosecond precision, from which distance is calculated (time-of-flight x speed of light). Achieves sub-meter accuracy indoors. 802.11az adds multi-user FTM for simultaneous range to multiple STAs.",
+          "definition_zh": "精细时间测量：在 802.11mc 中定义并在 802.11az / 802.11bk 中增强的协议。两个 Wi-Fi 设备交换带时间戳的帧，以纳秒精度测量往返时间，由此计算距离（飞行时间 x 光速）。室内可达亚米级精度。802.11az 增加多用户 FTM 以同时测距多个 STA。"
+        },
+        {
+          "term": "ToF / AoA",
+          "aliases": [
+            "Time of Flight / Angle of Arrival"
+          ],
+          "definition_en": "Two positioning primitives. ToF measures signal travel time giving distance. AoA measures the phase difference of the signal across multiple antennas giving direction. Combined (ToF + AoA on multiple APs), they enable triangulation without GPS — the basis of 802.11az indoor positioning.",
+          "definition_zh": "两种定位原语。ToF 测量信号传播时间得到距离。AoA 测量信号跨多天线的相位差得到方向。两者结合（多 AP 的 ToF + AoA）可实现无需 GPS 的三角定位 — 这是 802.11az 室内定位的基础。"
+        },
+        {
+          "term": "ICAS",
+          "aliases": [
+            "Integrated Communication and Sensing"
+          ],
+          "definition_en": "Integrated Communication and Sensing: the vision that future Wi-Fi (and cellular) radios will simultaneously communicate and sense using the same waveform, spectrum, and hardware. 802.11bf is the first 802.11 amendment explicitly targeting ICAS. CSI-JEPA and similar representation-learning work provides the software layer between standardised sensing procedures and application-level inference.",
+          "definition_zh": "通信感知一体化：未来 Wi-Fi（和蜂窝）无线电将使用同一波形、频谱和硬件同时进行通信和感知的愿景。802.11bf 是首个明确针对 ICAS 的 802.11 修订案。CSI-JEPA 等表示学习工作提供了标准化感知流程与应用层推理之间的软件层。"
+        },
+        {
+          "term": "Bistatic / Multistatic Sensing",
+          "definition_en": "Sensing configurations distinguished by who transmits and who receives. Monostatic: same device Tx and Rx, sensing from reflections. Bistatic: one device Tx, a different device Rx. Multistatic: multiple Tx and Rx devices cooperate. 802.11bf standardises all three, enabling a single sensing event to leverage every device in the BSS.",
+          "definition_zh": "按发射与接收角色划分的感知配置。单站：同一设备收发，通过反射感知。双站：一台设备发射、另一台接收。多站：多台发射与接收设备协同。802.11bf 对三种配置均标准化，使单次感知事件可调动 BSS 中所有设备。"
+        },
+        {
+          "term": "CSI-JEPA",
+          "definition_en": "The first application of JEPA (Joint Embedding Predictive Architecture) to Wi-Fi CSI sensing. Unlike autoencoders that reconstruct raw CSI (wasting capacity on low-level signal details), CSI-JEPA learns to predict latent representations of masked CSI regions. This produces reusable, task-agnostic CSI features that transfer across activity recognition, respiration monitoring, fall detection, and other sensing tasks with minimal fine-tuning.",
+          "definition_zh": "JEPA（联合嵌入预测架构）在 Wi-Fi CSI 感知中的首次应用。与重建原始 CSI（将容量浪费在低层信号细节上）的自编码器不同，CSI-JEPA 学会预测被掩码 CSI 区域的潜在表示。这产生可复用的、任务无关的 CSI 特征，可在活动识别、呼吸监测、跌倒检测等感知任务间以最少微调进行迁移。"
+        }
+      ]
+    },
+    {
+      "id": "ai-ml",
+      "label_en": "AI / Machine Learning",
+      "label_zh": "AI / 机器学习",
+      "description_en": "Machine learning and AI techniques increasingly applied to Wi-Fi — both as tools to optimise the radio (AI for Wi-Fi) and as workloads the radio must serve (Wi-Fi for AI). Understanding these terms is essential for following the modern Wi-Fi research literature.",
+      "description_zh": "机器学习和 AI 技术日益应用于 Wi-Fi — 既作为优化射频的工具（AI 优化 Wi-Fi），也作为射频必须服务的工作负载（面向 AI 的 Wi-Fi）。理解这些术语对于阅读现代 Wi-Fi 研究文献至关重要。",
+      "terms": [
+        {
+          "term": "DRL",
+          "aliases": [
+            "Deep Reinforcement Learning"
+          ],
+          "definition_en": "Deep Reinforcement Learning: an RL agent uses a deep neural network to approximate the policy or value function. In Wi-Fi, DRL is applied to channel access, MLO link selection, backoff tuning, and spatial reuse decisions — problems where the optimal action depends on complex, high-dimensional network state that a neural network can compress better than a hand-crafted heuristic.",
+          "definition_zh": "深度强化学习：RL 智能体使用深度神经网络近似策略或价值函数。在 Wi-Fi 中，DRL 被应用于信道接入、MLO 链路选择、退避调优和空间复用决策 — 当最优动作取决于复杂高维的网络状态时，神经网络比人工启发式能更好地压缩状态。"
+        },
+        {
+          "term": "LSTM",
+          "aliases": [
+            "Long Short-Term Memory"
+          ],
+          "definition_en": "A recurrent neural network architecture that maintains a memory state over time, making it suitable for sequence prediction. In Wi-Fi, LSTM is used when network state is partially observable and non-Markovian — channel busy fractions, traffic patterns, and cross-link interference have temporal dependencies that a feedforward network would miss. LSTM-augmented SAC (LSTM-SAC) combines the LSTM memory with the Soft Actor-Critic RL algorithm.",
+          "definition_zh": "一种随时间保持记忆状态的递归神经网络架构，适用于序列预测。在 Wi-Fi 中，LSTM 用于网络状态部分可观测且非马尔可夫的情形 — 信道忙占比、流量模式和跨链路干扰具有前馈网络无法捕获的时间依赖性。LSTM-SAC 是将 LSTM 记忆与 Soft Actor-Critic RL 算法结合的具体架构。"
+        },
+        {
+          "term": "LLM",
+          "aliases": [
+            "Large Language Model"
+          ],
+          "definition_en": "Large Language Model: a transformer-based neural network trained on internet-scale text corpora, capable of understanding and generating natural language. In Wi-Fi, LLMs are being used in two ways: (1) as network management agents that read logs, write configurations, and troubleshoot (Agentic Wi-Fi), and (2) as optimisers that generate wireless resource allocation decisions from natural-language descriptions of network conditions.",
+          "definition_zh": "大语言模型：在互联网规模文本语料上训练的基于 Transformer 的神经网络，能理解和生成自然语言。在 Wi-Fi 中，LLM 有两种用法：（1）作为读取日志、编写配置和排除故障的网络管理智能体（智能体 Wi-Fi），（2）作为从网络状况的自然语言描述生成无线资源分配决策的优化器。"
+        },
+        {
+          "term": "Foundation Model",
+          "definition_en": "A large neural network pre-trained on broad, unlabeled data that can be adapted (fine-tuned or prompted) to many downstream tasks. AM-FM is claimed as the first Wi-Fi CSI foundation model — pre-trained on 9.2M CSI samples across 20 device types, then adapted to 9 sensing tasks. The paradigm shifts the bottleneck from 'collect labeled data for each task' to 'pre-train once, adapt cheaply.'",
+          "definition_zh": "在海量无标注数据上预训练的大型神经网络，可适配（微调或提示）到多个下游任务。AM-FM 声称为首个 Wi-Fi CSI 基础模型 — 在 20 种设备类型、920 万 CSI 样本上预训练，然后适配到 9 种感知任务。该范式将瓶颈从「为每个任务收集标注数据」转变为「一次预训练，廉价适配」。"
+        },
+        {
+          "term": "Agentic AI",
+          "definition_en": "AI systems that perceive their environment, reason about goals, make plans, and execute actions — rather than just answering questions or classifying inputs. In Wi-Fi, agentic AI manifests as LLM-based agents that manage networks (WirelessAgent, ComAgent), as NPU-equipped APs running real-time agentic applications (Broadcom BCM4918), and as autonomous network controllers that observe, decide, and act in closed loops.",
+          "definition_zh": "能感知环境、推理目标、制定计划并执行动作的 AI 系统 — 不仅仅是回答问题或分类输入。在 Wi-Fi 中，智能体 AI 表现为：基于 LLM 的管理网络的智能体（WirelessAgent、ComAgent）、运行实时智能体应用的 NPU 配备的 AP（Broadcom BCM4918）、以及在闭环中观察-决策-行动的自主网络控制器。"
+        },
+        {
+          "term": "Generative AI",
+          "definition_en": "AI models that generate new content (text, images, code, network configurations). In Wi-Fi, generative models are used for CSI feedback compression (autoencoders that compress and reconstruct channel state) and for generating candidate network configurations from natural language descriptions.",
+          "definition_zh": "生成新内容（文本、图像、代码、网络配置）的 AI 模型。在 Wi-Fi 中，生成模型被用于 CSI 反馈压缩（压缩并重建信道状态的自编码器）以及从自然语言描述生成候选网络配置。"
+        },
+        {
+          "term": "MAB",
+          "aliases": [
+            "Multi-Armed Bandit"
+          ],
+          "definition_en": "A simple RL framework where an agent chooses among arms (actions) and observes a reward, balancing exploration (trying new arms) and exploitation (sticking with the best-known arm). In Wi-Fi, MAB is used for MLO link selection, channel allocation, and rate adaptation — problems where the action space is small and the feedback (throughput, latency) is immediate.",
+          "definition_zh": "一种简单的 RL 框架，智能体在行动选项（臂）中选择并观察奖励，在探索（尝试新臂）与利用（坚持已知最优臂）之间取得平衡。在 Wi-Fi 中，MAB 被用于 MLO 链路选择、信道分配和速率自适应 — 动作空间小、反馈（吞吐量、时延）即时的场景。"
+        },
+        {
+          "term": "SAC",
+          "aliases": [
+            "Soft Actor-Critic"
+          ],
+          "definition_en": "An off-policy DRL algorithm that adds an entropy bonus to the reward — the agent is rewarded for being somewhat random (high-entropy policies), which encourages exploration. SAC is popular in Wi-Fi research because Wi-Fi environments have noisy, stochastic dynamics where premature convergence to a deterministic policy can miss better solutions.",
+          "definition_zh": "一种离策略 DRL 算法，在奖励中加入熵奖励 — 智能体因保持一定随机性（高熵策略）而获得奖励，从而鼓励探索。SAC 在 Wi-Fi 研究中很流行，因为 Wi-Fi 环境具有嘈杂、随机的动力学特性，过早收敛到确定性策略可能错过更优解。"
+        },
+        {
+          "term": "Transformer",
+          "definition_en": "A neural network architecture based on self-attention — each element of a sequence attends to every other element. The backbone of LLMs (GPT, Claude) and increasingly used in Wi-Fi for CSI processing (CSI-JEPA), traffic prediction, and multi-agent coordination. Transformers capture long-range dependencies that CNNs and RNNs struggle with.",
+          "definition_zh": "基于自注意力的神经网络架构 — 序列中每个元素关注所有其他元素。LLM（GPT、Claude）的主干网络，并越来越多地用于 Wi-Fi 中的 CSI 处理（CSI-JEPA）、流量预测和多智能体协调。Transformer 捕获 CNN 和 RNN 难以处理的远距离依赖关系。"
+        },
+        {
+          "term": "Self-Supervised Learning",
+          "definition_en": "Training methodology where the model learns from unlabeled data by creating its own supervision signal (e.g., predicting the next token, reconstructing masked patches). In Wi-Fi, self-supervised learning on unlabeled CSI is the key enabler for foundation models — labeled CSI data is scarce, but raw CSI measurements are free and abundant in every Wi-Fi deployment.",
+          "definition_zh": "模型从未标注数据中通过自行创建监督信号（如预测下一个 token、重建被掩码的补丁）进行学习的训练方法。在 Wi-Fi 中，在未标注 CSI 上进行自监督学习是基础模型的关键使能因素 — 标注 CSI 数据稀缺，但每个 Wi-Fi 部署中原始 CSI 测量随处可得。"
+        },
+        {
+          "term": "Contrastive Learning",
+          "definition_en": "A self-supervised approach where the model learns representations by pulling similar samples closer and pushing dissimilar samples apart in embedding space. In Wi-Fi sensing, contrastive learning on CSI segments teaches the model to distinguish different environments and activities without needing labeled examples.",
+          "definition_zh": "一种自监督方法，模型通过将相似样本拉近、将不相似样本推远来学习表示。在 Wi-Fi 感知中，对 CSI 片段的对比学习教会模型区分不同环境和活动而无需标注样本。"
+        },
+        {
+          "term": "JEPA",
+          "aliases": [
+            "Joint Embedding Predictive Architecture"
+          ],
+          "definition_en": "A self-supervised learning architecture that predicts the latent embeddings of masked regions rather than reconstructing raw input values. Introduced by Meta AI (I-JEPA for images, V-JEPA for video). CSI-JEPA adapts this to Wi-Fi — predicting semantic channel features rather than raw CSI amplitude / phase, which makes the learned representations more transferable to downstream sensing tasks.",
+          "definition_zh": "一种自监督学习架构，预测被掩码区域的潜在嵌入而非重建原始输入值。由 Meta AI 提出（图像 I-JEPA、视频 V-JEPA）。CSI-JEPA 将其适配到 Wi-Fi — 预测语义信道特征而非原始 CSI 幅度 / 相位，使学习到的表示更可迁移到下游感知任务。"
+        },
+        {
+          "term": "NPU",
+          "aliases": [
+            "Neural Processing Unit"
+          ],
+          "definition_en": "A specialised hardware accelerator for neural network inference, distinct from CPU and GPU. In Wi-Fi 8, NPUs are being integrated directly into AP SoCs (e.g., Broadcom BCM4918 Neural Engine, Qualcomm Hexagon NPU) to run on-device AI workloads — agentic applications, real-time CSI processing, and intelligent scheduling — without cloud round-trips.",
+          "definition_zh": "专用的神经网络推理硬件加速器，不同于 CPU 和 GPU。在 Wi-Fi 8 中，NPU 被直接集成到 AP SoC 中（如 Broadcom BCM4918 Neural Engine、Qualcomm Hexagon NPU），在设备端运行 AI 工作负载 — 智能体应用、实时 CSI 处理和智能调度 — 无需往返云端。"
+        },
+        {
+          "term": "Autoencoder",
+          "definition_en": "A neural network architecture that compresses input into a lower-dimensional latent representation (encoder) and reconstructs the output from it (decoder). In Wi-Fi, autoencoders are used for CSI feedback compression — the STA runs the encoder to compress channel state into fewer bits before sending; the AP runs the decoder to recover the full channel matrix.",
+          "definition_zh": "一种将输入压缩为低维潜在表示（编码器）并从中重建输出（解码器）的神经网络架构。在 Wi-Fi 中，自编码器用于 CSI 反馈压缩 — STA 运行编码器将信道状态压缩为较少比特后发送；AP 运行解码器恢复完整信道矩阵。"
+        },
+        {
+          "term": "K-means",
+          "definition_en": "An unsupervised clustering algorithm that partitions data into K clusters by minimising within-cluster variance. In the 802.11 AIML standardization context, K-means is used as a lightweight CSI feedback compression method — channel vectors are quantised by assigning them to the nearest cluster centroid, trading some accuracy for very low computational complexity.",
+          "definition_zh": "一种无监督聚类算法，通过最小化簇内方差将数据分为 K 个簇。在 802.11 AIML 标准化语境中，K-means 被用作轻量级 CSI 反馈压缩方法 — 将信道向量量化到最近簇中心，以部分精度换取极低计算复杂度。"
+        }
+      ]
+    },
+    {
+      "id": "networking-architecture",
+      "label_en": "Networking & Architecture",
+      "label_zh": "网络与架构",
+      "description_en": "Core networking concepts that define how Wi-Fi devices connect, move, and deliver data. These form the vocabulary for understanding Wi-Fi system architecture beyond individual protocol mechanisms.",
+      "description_zh": "定义 Wi-Fi 设备如何连接、移动和传输数据的核心网络概念。这些构成理解 Wi-Fi 系统架构（超脱单个协议机制）的基础词汇。",
+      "terms": [
+        {
+          "term": "AP / STA",
+          "definition_en": "Access Point (AP): the device that manages a BSS, typically connected to the wired network. Station (STA / non-AP STA): a client device (phone, laptop, IoT sensor) associated to an AP. In Wi-Fi mesh, some devices act as both AP and STA. Most Wi-Fi links are AP<->STA; direct STA<->STA links use Wi-Fi Direct or Tunneled Direct Link Setup (TDLS).",
+          "definition_zh": "接入点（AP）：管理一个 BSS 的设备，通常连接有线网络。站点（STA / 非 AP STA）：关联到 AP 的客户端设备（手机、笔记本、IoT 传感器）。在 Wi-Fi Mesh 中，部分设备同时充当 AP 和 STA。多数 Wi-Fi 链路是 AP<->STA；直接 STA<->STA 链路使用 Wi-Fi Direct 或隧道化直连建立（TDLS）。"
+        },
+        {
+          "term": "BSS / ESS",
+          "definition_en": "Basic Service Set (BSS): one AP + its associated STAs, identified by a BSSID (the AP's MAC address). Extended Service Set (ESS): multiple APs sharing the same SSID (network name), enabling seamless roaming. An ESS is what an end user calls 'my Wi-Fi network'; BSSs are the individual AP cells that compose it.",
+          "definition_zh": "基本服务集（BSS）：一个 AP + 其关联的 STA，由 BSSID （AP 的 MAC 地址）标识。扩展服务集（ESS）：共享同一 SSID（网络名）的多个 AP，实现无缝漫游。ESS 是终端用户所称的「我的 Wi-Fi 网络」；BSS 是组成它的各个 AP 小区。"
+        },
+        {
+          "term": "SSID / BSSID",
+          "definition_en": "SSID (Service Set Identifier): the human-readable network name (e.g., 'HomeWiFi-5G'). BSSID: the MAC address of the AP's radio, unique per BSS. One SSID maps to multiple BSSIDs in a multi-AP deployment. Both are carried in Beacon frames.",
+          "definition_zh": "SSID（服务集标识符）：人类可读的网络名称（如 'HomeWiFi-5G'）。BSSID：AP 无线电的 MAC 地址，每 BSS 唯一。在多 AP 部署中，一个 SSID 对应多个 BSSID。两者均在信标帧中携带。"
+        },
+        {
+          "term": "Mesh Wi-Fi",
+          "definition_en": "A multi-AP deployment where APs relay traffic to each other wirelessly (rather than each AP requiring a wired backhaul). Common in residential whole-home Wi-Fi systems. Mesh introduces additional MAC complexity — the backhaul link between APs contends for the same spectrum as the fronthaul links to STAs.",
+          "definition_zh": "多个 AP 彼此通过无线中继流量（而非每个 AP 都需要有线回传）的多 AP 部署。常见于家用全屋 Wi-Fi 系统。Mesh 引入了额外的 MAC 复杂性 — AP 之间的回传链路与面向 STA 的前传链路竞争同一频谱。"
+        },
+        {
+          "term": "Roaming",
+          "definition_en": "The process of a STA moving from one AP (or BSS) to another while maintaining network connectivity. Fast BSS Transition (802.11r) reduces the authentication handshake delay. MLO-enabled roaming (802.11bn) lets a STA set up a new link before tearing down the old one (make-before-break). Predictive roaming uses ML to anticipate when a device will move.",
+          "definition_zh": "STA 从一个 AP（或 BSS）移动到另一个同时保持网络连接的过程。快速 BSS 切换（802.11r）减少认证握手延迟。MLO 使能漫游（802.11bn）允许 STA 在拆除旧链路前先建立新链路（先建后断）。预测式漫游使用 ML 预判设备何时将移动。"
+        },
+        {
+          "term": "Backhaul",
+          "definition_en": "The connection between an AP and the broader network (internet). In enterprise Wi-Fi, backhaul is typically wired Ethernet. In mesh, it is wireless (wireless backhaul). Backhaul capacity and latency can be the bottleneck for Wi-Fi 7 / 8 APs whose air interface is faster than their wired backhaul.",
+          "definition_zh": "AP 与更广泛网络（互联网）之间的连接。在企业 Wi-Fi 中，回传通常是有线以太网。在 Mesh 中，回传是无线的（无线回传）。对于空口速率快于有线回传的 Wi-Fi 7 / 8 AP，回传容量和时延可能成为瓶颈。"
+        },
+        {
+          "term": "Latency",
+          "definition_en": "The time a packet takes from sender to receiver, typically measured as one-way or round-trip time in milliseconds. In Wi-Fi, latency is dominated by queuing (waiting for channel access), retransmissions (collisions or poor SNR), and scheduling (TWT service period alignment). 802.11bn targets deterministic latency — not just low average but bounded worst-case.",
+          "definition_zh": "数据包从发送方到接收方所需的时间，通常以单向或往返时间（毫秒）计量。在 Wi-Fi 中，时延主要由排队（等待信道接入）、重传（碰撞或 SNR 不佳）和调度（TWT 服务时段对齐）贡献。802.11bn 目标为确定性时延 — 不仅是低平均，而是有界的最坏情况。"
+        },
+        {
+          "term": "Throughput",
+          "definition_en": "The rate of successful data delivery over a communication link, measured in Mbps or Gbps. Wi-Fi throughput is affected by: MCS (QAM density + coding rate), number of spatial streams, channel width, contention (collisions and backoff), and overhead (preamble, IFS, ACKs). Real-world throughput is typically 50-70% of the PHY rate.",
+          "definition_zh": "通信链路上成功传输数据的速率，以 Mbps 或 Gbps 计量。Wi-Fi 吞吐量受以下因素影响：MCS（QAM 密度 + 编码率）、空间流数、信道宽度、竞争（碰撞与退避）和开销（前导码、IFS、ACK）。实际吞吐通常为 PHY 速率的 50-70%。"
+        },
+        {
+          "term": "QoS",
+          "aliases": [
+            "Quality of Service"
+          ],
+          "definition_en": "Mechanisms that prioritise certain traffic types over others. 802.11 QoS (802.11e / EDCA) uses four Access Categories with different contention parameters. Modern QoS extends beyond EDCA: R-TWT reserves time for latency-sensitive flows, and 802.11bn's deterministic latency target is essentially a QoS guarantee at the amendment level.",
+          "definition_zh": "将特定流量类型优先于其他的机制。802.11 QoS（802.11e / EDCA）使用四种具有不同竞争参数的接入类别。现代 QoS 超越 EDCA：R-TWT 为时延敏感流预留时间，而 802.11bn 的确定性时延目标本质上是在修订案级别提供 QoS 保证。"
+        },
+        {
+          "term": "XR",
+          "aliases": [
+            "Extended Reality",
+            "AR",
+            "VR",
+            "MR"
+          ],
+          "definition_en": "Extended Reality: the umbrella term for Augmented Reality (AR), Virtual Reality (VR), and Mixed Reality (MR). XR is the defining traffic class for Wi-Fi 7 / 8 because it simultaneously demands very high throughput (gigabit video), very low latency (<10 ms for motion-to-photon), and very high reliability (a single dropped frame causes visible stutter or motion sickness).",
+          "definition_zh": "扩展现实：增强现实（AR）、虚拟现实（VR）和混合现实（MR）的统称。XR 是 Wi-Fi 7 / 8 的决定性流量类别，因为它同时要求极高吞吐（千兆视频）、极低时延（<10 ms 运动到光子）和极高可靠性（单帧丢失即导致可见卡顿或晕动症）。"
+        },
+        {
+          "term": "IoT",
+          "aliases": [
+            "Internet of Things"
+          ],
+          "definition_en": "Internet of Things: sensor-class devices with constrained power, compute, and bandwidth. Wi-Fi IoT spans several 802.11 amendments: 802.11ah (sub-1 GHz HaLow), 802.11ba (Wake-Up Radio), 802.11bp (Ambient Power IoT), and the 20 MHz-only IoT certification from the Wi-Fi Alliance. The common thread: reduce power and complexity while maintaining IP-layer connectivity.",
+          "definition_zh": "物联网：功率、算力和带宽受限的传感器类设备。Wi-Fi IoT 横跨多个 802.11 修订案：802.11ah（sub-1 GHz HaLow）、802.11ba（唤醒无线电）、802.11bp（环境供电 IoT），以及 Wi-Fi 联盟的 20 MHz-only IoT 认证。共同主线：降低功耗和复杂度，同时保持 IP 层连接。"
+        },
+        {
+          "term": "SoC",
+          "aliases": [
+            "System on Chip"
+          ],
+          "definition_en": "System on Chip: a single silicon die integrating CPU cores, Wi-Fi baseband, RF transceiver, memory controller, and increasingly an NPU (neural engine). Modern Wi-Fi AP SoCs (BCM4918, Qualcomm Networking Pro, MediaTek Filogic) are full edge-compute nodes, not just packet-forwarding ASICs.",
+          "definition_zh": "系统级芯片：在单一硅片上集成 CPU 核心、Wi-Fi 基带、射频收发器、内存控制器，并日益增加 NPU（神经引擎）。现代 Wi-Fi AP SoC（BCM4918、Qualcomm Networking Pro、MediaTek Filogic）是完整的边缘计算节点，而不仅是包转发 ASIC。"
+        }
+      ]
+    },
+    {
+      "id": "spectrum-regulation",
+      "label_en": "Spectrum & Regulation",
+      "label_zh": "频谱与监管",
+      "description_en": "Wi-Fi operates in unlicensed spectrum — frequency bands where anyone can transmit subject to technical rules (power limits, sharing etiquette). Spectrum access decisions by regulators directly determine what Wi-Fi can do and where.",
+      "description_zh": "Wi-Fi 运行在免许可频谱中 — 任何人都可以在满足技术规则（功率限制、共享规范）的前提下发送信号的频段。监管机构的频谱接入决策直接决定了 Wi-Fi 能做什么、在哪里用。",
+      "terms": [
+        {
+          "term": "2.4 GHz / 5 GHz / 6 GHz",
+          "definition_en": "The three frequency bands Wi-Fi operates in today. 2.4 GHz (802.11b/g/n/ax): longest range, most crowded (microwaves, Bluetooth, Zigbee). 5 GHz (802.11a/n/ac/ax): more channels, less interference, shorter range. 6 GHz (Wi-Fi 6E / 7 / 8): newest band, 1200 MHz of fresh spectrum, minimal legacy interference — but indoor-only in some regions and subject to AFC coordination.",
+          "definition_zh": "当前 Wi-Fi 运行的三个频段。2.4 GHz（802.11b/g/n/ax）：覆盖最远、最拥挤（微波炉、蓝牙、Zigbee）。5 GHz（802.11a/n/ac/ax）：信道更多、干扰更少、覆盖较近。6 GHz（Wi-Fi 6E / 7 / 8）：最新频段，1200 MHz 全新频谱，几乎无传统干扰 — 但在部分地区仅限室内并需配合 AFC 协调。"
+        },
+        {
+          "term": "AFC",
+          "aliases": [
+            "Automated Frequency Coordination"
+          ],
+          "definition_en": "Automated Frequency Coordination: a database-driven system that tells 6 GHz Wi-Fi APs which channels they can use and at what power to avoid interfering with incumbent services (fixed microwave links, satellite uplinks). Required for standard-power outdoor 6 GHz operation in the US (FCC rules); low-power indoor devices are exempt.",
+          "definition_zh": "自动频率协调：一种数据库驱动的系统，告知 6 GHz Wi-Fi AP 可以使用哪些信道及何种功率，以避免干扰既有业务（固定微波链路、卫星上行）。美国（FCC 规则）要求标准功率室外 6 GHz 运行必须配合 AFC；低功率室内设备可豁免。"
+        },
+        {
+          "term": "LBT",
+          "aliases": [
+            "Listen Before Talk"
+          ],
+          "definition_en": "A spectrum-sharing rule requiring a device to listen (sense) the channel and transmit only if idle. Wi-Fi's CSMA/CA is inherently LBT. Some regulators (EU / UK) require LBT for certain bands, while others (US) permit alternatives. The 'bypass LBT' debate in upper 6 GHz is one of the most active regulatory discussions affecting Wi-Fi 8.",
+          "definition_zh": "一种频谱共享规则，要求设备先侦听（感知）信道，仅在空闲时发射。Wi-Fi 的 CSMA/CA 天然采用 LBT。部分监管机构（欧盟 / 英国）要求特定频段采用 LBT，而其他（美国）允许替代方案。Upper 6 GHz 中「绕过 LBT」的辩论是影响 Wi-Fi 8 最活跃的监管讨论之一。"
+        },
+        {
+          "term": "Unlicensed Spectrum",
+          "definition_en": "Radio spectrum that can be used by anyone without a license, subject to technical rules (power limits, modulation requirements, sharing protocols). Wi-Fi's success is built on unlicensed spectrum. The 2.4 GHz ISM band was the original; 5 GHz U-NII bands expanded it; 6 GHz (U-NII-5 through U-NII-8) is the latest frontier.",
+          "definition_zh": "任何人都可在满足技术规则（功率限制、调制要求、共享协议）前提下无需许可即可使用的无线电频谱。Wi-Fi 的成功建立在免许可频谱之上。2.4 GHz ISM 频段是起点；5 GHz U-NII 频段扩展了版图；6 GHz（U-NII-5 至 U-NII-8）是最新前沿。"
+        },
+        {
+          "term": "FCC / Ofcom / RSPG / EU",
+          "definition_en": "National and regional spectrum regulators. FCC (US Federal Communications Commission), Ofcom (UK), RSPG (EU Radio Spectrum Policy Group). Each makes independent decisions about which bands Wi-Fi can use, at what power, indoors vs. outdoors. Wi-Fi 8's upper 6 GHz access depends on coordinated regulatory decisions across these bodies.",
+          "definition_zh": "国家和地区频谱监管机构。FCC（美国联邦通信委员会）、Ofcom（英国通信办公室）、RSPG（欧盟无线电频谱政策组）。各自独立决定 Wi-Fi 可用频段、功率及室内外使用规则。Wi-Fi 8 的 Upper 6 GHz 接入取决于这些机构的协调监管决策。"
+        }
+      ]
+    }
+  ]
+};

@@ -134,6 +134,7 @@
      the (now-display:none) sidebar — which collapses cards to a single
      slim column once min-width: 280px kicks in. */
   body.tab-sources main,
+  body.tab-taxonomy main,
   body.tab-topics-landing main {
     grid-template-columns: 1fr;
   }
@@ -796,12 +797,103 @@
   .topic-diagram-body { min-height: 0; }
   .topic-diagram.collapsed .topic-diagram-body { display: none; }
   .topic-diagram svg { max-width: 100%; height: auto; }
+
+  /* ---------- TAXONOMY PAGE ---------- */
+  .taxonomy-page { padding: 4px 0 24px; }
+  .taxonomy-page .intro {
+    color: var(--fg-2); font-size: 13px; line-height: 1.55;
+    margin: 0 0 20px; padding: 12px 14px;
+    background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius);
+    max-width: 900px;
+  }
+  .taxonomy-search-wrap {
+    position: relative; max-width: 420px; margin: 0 0 22px;
+  }
+  .taxonomy-search-wrap input {
+    width: 100%; padding: 8px 34px 8px 32px;
+    border: 1px solid var(--border); border-radius: var(--radius);
+    font: inherit; background: var(--bg-2); color: var(--fg); outline: none;
+  }
+  .taxonomy-search-wrap input:focus { border-color: var(--accent); background: var(--bg); }
+  .taxonomy-search-wrap .search-icon { position: absolute; left: 9px; top: 9px; color: var(--fg-3); pointer-events: none; }
+  .taxonomy-search-wrap .search-clear {
+    position: absolute; right: 4px; top: 4px; background: transparent; border: 0;
+    color: var(--fg-3); cursor: pointer; font-size: 16px; padding: 4px 6px; border-radius: 3px;
+  }
+  .taxonomy-search-wrap .search-clear:hover { color: var(--fg); }
+  .taxonomy-cat {
+    margin: 0 0 28px;
+    scroll-margin-top: calc(var(--header-h) + 38px + 16px);
+  }
+  .taxonomy-cat-head {
+    font-size: 15px; font-weight: 700; color: var(--fg);
+    padding: 0 0 8px; margin: 0 0 14px;
+    border-bottom: 2px solid var(--border);
+    display: flex; align-items: baseline; gap: 8px;
+  }
+  .taxonomy-cat-head .count { font-size: 12px; color: var(--fg-3); font-weight: 500; }
+  .taxonomy-cat-desc {
+    font-size: 13px; color: var(--fg-2); line-height: 1.55;
+    margin: 0 0 16px; max-width: 800px;
+  }
+  .taxonomy-term {
+    border: 1px solid var(--border); border-radius: var(--radius);
+    background: var(--bg); padding: 14px 18px;
+    margin: 0 0 10px;
+    scroll-margin-top: calc(var(--header-h) + 38px + 8px);
+    transition: border-color 0.1s, background 0.1s;
+  }
+  .taxonomy-term:hover { border-color: var(--border-strong); background: var(--bg-2); }
+  .taxonomy-term .term-head {
+    display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+    margin: 0 0 8px;
+  }
+  .taxonomy-term .term-name {
+    font-weight: 700; font-size: 14px; color: var(--accent);
+    font-family: var(--mono);
+  }
+  .taxonomy-term .term-aliases {
+    font-size: 11px; color: var(--fg-3); font-family: var(--mono);
+  }
+  .taxonomy-term .term-def {
+    font-size: 13px; line-height: 1.6; color: var(--fg-2);
+    margin: 0 0 6px;
+  }
+  .taxonomy-term .term-def:last-child { margin-bottom: 0; }
+  .taxonomy-term .term-lang-tag {
+    font-size: 10px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--fg-3);
+    margin-bottom: 2px;
+  }
+  .taxonomy-no-results {
+    text-align: center; padding: 40px 20px; color: var(--fg-3); font-size: 14px;
+  }
+  /* Side-nav for jumping between taxonomy categories */
+  .taxonomy-nav {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin: 0 0 18px; padding: 0;
+  }
+  .taxonomy-nav a {
+    font-size: 12px; color: var(--fg-2); text-decoration: none;
+    padding: 4px 10px; border: 1px solid var(--border); border-radius: 999px;
+    transition: border-color 0.1s, background 0.1s, color 0.1s;
+  }
+  .taxonomy-nav a:hover { border-color: var(--border-strong); background: var(--bg-2); color: var(--fg); }
+  .taxonomy-nav a:target { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .taxonomy-term { padding: 12px 14px; }
+    .taxonomy-term .term-name { font-size: 13px; }
+    .taxonomy-term .term-def { font-size: 12.5px; }
+    .taxonomy-cat-head { font-size: 14px; }
+  }
 </style>
 </head>
 <body>
 
-<script src="kb.js?v=18f35a55" onerror="window.__KB_JS_FAILED=true"></script>
+<script src="kb.js?v=6be5ed91" onerror="window.__KB_JS_FAILED=true"></script>
 <script src="sources.js?v=4256212c" onerror="window.__SRC_JS_FAILED=true"></script>
+<script src="taxonomy.js?v=342b2242" onerror="window.__TAX_JS_FAILED=true"></script>
 <!-- Mermaid for per-topic mindmap rendering. Two scripts:
        1. A synchronous regular script defines window.mermaidReady as a
           Promise *before* the viewer's main render code runs. The viewer
@@ -863,7 +955,8 @@
   <button data-tab="recent30"></button>
   <button data-tab="recent365"></button>
   <button data-tab="sources" id="tab-sources"></button>
-  <span class="kbd-hint"><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd><kbd>5</kbd></span>
+  <button data-tab="taxonomy"></button>
+  <span class="kbd-hint"><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd><kbd>5</kbd><kbd>6</kbd></span>
 </nav>
 
 <main>
@@ -932,6 +1025,7 @@
     </div>
     <div class="topics-page" id="topics-page" hidden></div>
     <div class="sources-page" id="sources-page" hidden></div>
+    <div class="taxonomy-page" id="taxonomy-page" hidden></div>
   </section>
 </main>
 
@@ -986,6 +1080,11 @@ const I18N = {
     tab_recent30: "Last 30 days",
     tab_recent365: "Last 12 months",
     tab_sources: "Sources",
+    tab_taxonomy: "Taxonomy",
+    taxonomy_intro: "A bilingual glossary of domain-specific terms that appear throughout the knowledge base — 802.11 amendments, MAC/PHY concepts, AI/ML terminology, and networking fundamentals. Intended to help newcomers and cross-disciplinary readers navigate the Wi-Fi research literature with confidence.",
+    taxonomy_search: "Filter terms…",
+    taxonomy_no_results: "No terms match your search.",
+    taxonomy_count: (n) => `${n} terms`,
     topics_intro: "Browse the knowledge base by topic. Each topic gathers academic papers, industry news / products, and standards activity into a single bin.",
     topics_stack_standards: "Standards-track",
     topics_stack_cross: "Cross-cutting",
@@ -1034,6 +1133,11 @@ const I18N = {
     tab_recent30: "最近 30 天",
     tab_recent365: "最近 12 个月",
     tab_sources: "来源",
+    tab_taxonomy: "术语表",
+    taxonomy_intro: "双语领域术语表，覆盖知识库中出现的所有专业术语 — 802.11 修订案、MAC/PHY 概念、AI/ML 术语及网络基础。帮助新手和跨学科读者自信地阅读 Wi-Fi 研究文献。",
+    taxonomy_search: "筛选术语…",
+    taxonomy_no_results: "没有匹配的术语。",
+    taxonomy_count: (n) => `${n} 个术语`,
     topics_intro: "按主题浏览知识库。每个主题汇集学术论文、产业新闻 / 产品、标准化进展，方便聚焦阅读。",
     topics_stack_standards: "标准化方向",
     topics_stack_cross: "横切主题",
@@ -1175,6 +1279,7 @@ function applyLang() {
   tabBtns[3].textContent = labels.tab_recent30;
   tabBtns[4].textContent = labels.tab_recent365;
   if (tabBtns[5]) tabBtns[5].textContent = labels.tab_sources;
+  if (tabBtns[6]) tabBtns[6].textContent = labels.tab_taxonomy;
   document.querySelectorAll("#lang-toggle button").forEach(b => b.classList.toggle("active", b.dataset.lang === state.lang));
   document.getElementById("facet-clear").textContent = labels.facet_clear;
   document.getElementById("drawer-original").textContent = labels.open_original;
@@ -1580,29 +1685,139 @@ function renderTopicBreadcrumb() {
   }
 }
 
+function renderTaxonomy() {
+  const labels = t();
+  const target = document.getElementById("taxonomy-page");
+  const data = window.TAXONOMY_DATA;
+  if (!data || !Array.isArray(data.categories)) {
+    target.innerHTML = `<div class="empty-state">No <code>taxonomy.json</code> found. Run <code>python scripts/gen_taxonomy.py</code> to regenerate.</div>`;
+    return;
+  }
+
+  let html = `<p class="intro">${escHTML(labels.taxonomy_intro)}</p>`;
+
+  // Search box
+  html += `<div class="taxonomy-search-wrap">
+    <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input class="taxonomy-search" id="taxonomy-search" autocomplete="off" placeholder="${escAttr(labels.taxonomy_search)}" />
+    <button class="search-clear" id="taxonomy-search-clear" hidden aria-label="Clear">x</button>
+  </div>`;
+
+  // Category nav pills
+  const catLabels = data.categories.map(c => {
+    const label = state.lang === "zh" ? c.label_zh : c.label_en;
+    return `<a href="#tax-cat-${escAttr(c.id)}">${escHTML(label)}</a>`;
+  }).join("");
+  html += `<nav class="taxonomy-nav">${catLabels}</nav>`;
+
+  // Each category and its terms
+  for (const cat of data.categories) {
+    const catLabel = state.lang === "zh" ? cat.label_zh : cat.label_en;
+    const catDesc = state.lang === "zh" ? cat.description_zh : cat.description_en;
+    html += `<section class="taxonomy-cat" id="tax-cat-${escAttr(cat.id)}">
+      <div class="taxonomy-cat-head">
+        <span>${escHTML(catLabel)}</span>
+        <span class="count">${labels.taxonomy_count(cat.terms.length)}</span>
+      </div>`;
+    if (catDesc) {
+      html += `<p class="taxonomy-cat-desc">${escHTML(catDesc)}</p>`;
+    }
+    for (const term of cat.terms) {
+      const aliases = term.aliases && term.aliases.length
+        ? term.aliases.map(a => escHTML(a)).join(" · ")
+        : "";
+      const defEN = term.definition_en || "";
+      const defZH = term.definition_zh || "";
+      // Show both language definitions, with the active language first
+      const defPrimary = state.lang === "zh" ? defZH : defEN;
+      const defSecondary = state.lang === "zh" ? defEN : defZH;
+      const tagPrimary = state.lang === "zh" ? "ZH" : "EN";
+      const tagSecondary = state.lang === "zh" ? "EN" : "ZH";
+      html += `<div class="taxonomy-term" data-term="${escAttr(term.term)}" data-search="${escAttr(term.term + " " + (term.aliases || []).join(" ") + " " + defEN + " " + defZH)}">
+        <div class="term-head">
+          <span class="term-name">${escHTML(term.term)}</span>
+          ${aliases ? `<span class="term-aliases">${aliases}</span>` : ""}
+        </div>
+        <div class="term-lang-tag">${tagPrimary}</div>
+        <div class="term-def">${defPrimary}</div>`;
+      if (defSecondary) {
+        html += `<div class="term-lang-tag" style="margin-top:6px">${tagSecondary}</div>
+        <div class="term-def">${defSecondary}</div>`;
+      }
+      html += `</div>`;
+    }
+    html += `</section>`;
+  }
+
+  target.innerHTML = html;
+
+  // Wire search
+  const searchInput = document.getElementById("taxonomy-search");
+  const clearBtn = document.getElementById("taxonomy-search-clear");
+  searchInput.addEventListener("input", () => {
+    const q = searchInput.value.toLowerCase().trim();
+    clearBtn.hidden = !q;
+    let hasVisible = false;
+    document.querySelectorAll(".taxonomy-term").forEach(el => {
+      const hay = (el.dataset.search || "").toLowerCase();
+      const match = !q || hay.includes(q);
+      el.style.display = match ? "" : "none";
+      if (match) hasVisible = true;
+    });
+    // Also hide/show categories
+    document.querySelectorAll(".taxonomy-cat").forEach(cat => {
+      const visible = cat.querySelectorAll(".taxonomy-term[style*=\"display: none\"]").length < cat.querySelectorAll(".taxonomy-term").length;
+      cat.style.display = visible || !q ? "" : "none";
+    });
+    // Show no-results message
+    let nr = document.getElementById("taxonomy-no-results");
+    if (!hasVisible && q) {
+      if (!nr) {
+        nr = document.createElement("div");
+        nr.id = "taxonomy-no-results";
+        nr.className = "taxonomy-no-results";
+        nr.textContent = labels.taxonomy_no_results;
+        document.querySelector(".taxonomy-nav").after(nr);
+      }
+      nr.style.display = "";
+    } else if (nr) {
+      nr.style.display = "none";
+    }
+  });
+  clearBtn.addEventListener("click", () => {
+    searchInput.value = "";
+    searchInput.dispatchEvent(new Event("input"));
+    searchInput.focus();
+  });
+}
+
 function render() {
   // The viewer has three top-level page modes:
   //   1. Sources tab        → sources page
   //   2. Topics tab + no topicPrimary → topic-landing grid
   //   3. Everything else    → 3-column entry view (filtered as appropriate)
   const isSources = state.filters.tab === "sources";
+  const isTaxonomy = state.filters.tab === "taxonomy";
   const isTopicsLanding = state.filters.tab === "topics" && !state.filters.topicPrimary;
   const isTopicDetail   = state.filters.tab === "topics" && !!state.filters.topicPrimary;
 
-  document.getElementById("columns").hidden = isSources || isTopicsLanding;
+  document.getElementById("columns").hidden = isSources || isTopicsLanding || isTaxonomy;
   document.getElementById("sources-page").hidden = !isSources;
   document.getElementById("topics-page").hidden = !isTopicsLanding;
+  document.getElementById("taxonomy-page").hidden = !isTaxonomy;
+  document.body.classList.toggle("tab-taxonomy", isTaxonomy);
   // The whole sidebar (search + facets) only makes sense for entry browsing
   // (topic-detail and All/Recent tabs). On Sources and Topics-landing, hide.
-  const hideSidebar = isSources || isTopicsLanding;
+  const hideSidebar = isSources || isTopicsLanding || isTaxonomy;
   document.body.classList.toggle("tab-sources", isSources);
   document.body.classList.toggle("tab-topics-landing", isTopicsLanding);
   const sidebar = document.querySelector("aside.sidebar");
   if (sidebar) sidebar.style.display = hideSidebar ? "none" : "";
-  document.getElementById("result-count").style.display = (isSources || isTopicsLanding) ? "none" : "";
-  document.getElementById("mark-all-read").style.display = (isSources || isTopicsLanding) ? "none" : "";
+  document.getElementById("result-count").style.display = (isSources || isTopicsLanding || isTaxonomy) ? "none" : "";
+  document.getElementById("mark-all-read").style.display = (isSources || isTopicsLanding || isTaxonomy) ? "none" : "";
 
   if (isSources)        { renderSources(); return; }
+  if (isTaxonomy)       { renderTaxonomy(); return; }
   if (isTopicsLanding)  { renderTopicsLanding(); return; }
   renderTopicBreadcrumb();
   state.filtered = state.entries.filter(entryMatches);
@@ -1917,6 +2132,7 @@ document.querySelectorAll("nav.tabs button").forEach(btn => {
     else if (state.filters.tab !== "topics") state.filters.topicPrimary = "";
     state.filters.tab = newTab;
     state.focusIdx = -1;
+    document.body.classList.toggle("tab-taxonomy", newTab === "taxonomy");
     render(); writeUrlState();
   });
 });
@@ -1995,6 +2211,7 @@ window.addEventListener("keydown", e => {
   if (e.key === "3") { document.querySelector('[data-tab="recent"]').click(); return; }
   if (e.key === "4") { document.querySelector('[data-tab="recent30"]').click(); return; }
   if (e.key === "5") { document.querySelector('[data-tab="recent365"]').click(); return; }
+  if (e.key === "6") { document.querySelector('[data-tab="taxonomy"]').click(); return; }
   if (e.key === "j" || e.key === "ArrowDown") {
     e.preventDefault();
     if (drawerOpen) drawerStep(1); else moveFocus(1);

@@ -1000,7 +1000,22 @@ def main(argv: list[str]) -> int:
         except Exception as exc:  # noqa: BLE001
             warnings.append(f"sources.yaml: {exc}")
 
-    # ---------- Cache-bust the <script src="kb.js"> / <script src="sources.js"> ----------
+    # ---------- Taxonomy (static glossary) ----------
+    # taxonomy.json is manually curated; we just mirror it into taxonomy.js for
+    # file:// protocol support, same as kb.js and sources.js.
+    taxonomy_json_path = data_root / "taxonomy.json"
+    if taxonomy_json_path.is_file():
+        try:
+            taxonomy_js_path = data_root / "taxonomy.js"
+            tj = "window.TAXONOMY_DATA = " + taxonomy_json_path.read_text(encoding="utf-8").strip() + ";\n"
+            tmp_tj = taxonomy_js_path.with_suffix(taxonomy_js_path.suffix + ".tmp")
+            with open(tmp_tj, "w", encoding="utf-8") as f:
+                f.write(tj); f.flush(); os.fsync(f.fileno())
+            os.replace(tmp_tj, taxonomy_js_path)
+        except Exception as exc:  # noqa: BLE001
+            warnings.append(f"taxonomy.json → taxonomy.js: {exc}")
+
+    # ---------- Cache-bust <script src="kb.js"> / <script src="sources.js"> / <script src="taxonomy.js"> ----------
     # GitHub Pages serves all assets with `Cache-Control: max-age=600`, so a
     # browser holds onto a stale kb.js for 10 minutes after a new push. Embed
     # an 8-char content hash in the script src so any change to kb.js content
@@ -1013,6 +1028,7 @@ def main(argv: list[str]) -> int:
             return hashlib.sha256(p.read_bytes()).hexdigest()[:8] if p.is_file() else ""
         kb_v = _short_hash(kb_js_path)
         src_v = _short_hash(data_root / "sources.js")
+        tax_v = _short_hash(data_root / "taxonomy.js")
         html = index_html_path.read_text(encoding="utf-8")
         new_html = html
         if kb_v:
@@ -1025,6 +1041,12 @@ def main(argv: list[str]) -> int:
             new_html = re.sub(
                 r'src="sources\.js(?:\?v=[a-f0-9]+)?"',
                 f'src="sources.js?v={src_v}"',
+                new_html,
+            )
+        if tax_v:
+            new_html = re.sub(
+                r'src="taxonomy\.js(?:\?v=[a-f0-9]+)?"',
+                f'src="taxonomy.js?v={tax_v}"',
                 new_html,
             )
         if new_html != html:
