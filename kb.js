@@ -32,6 +32,9 @@ window.KB_DATA = {
     "802.11bt": 3,
     "mmWave": 3,
     "roaming": 3,
+    "NearLink": 2,
+    "SparkLink": 2,
+    "ISLA": 2,
     "LLM-agent": 2,
     "6G": 2,
     "AMP-IoT": 2,
@@ -45,10 +48,16 @@ window.KB_DATA = {
     "OFDMA": 2,
     "LLM": 2,
     "AI-RAN": 2,
+    "automotive": 2,
     "Wi-Fi 7": 2,
     "enterprise": 2,
     "6GHz": 2,
     "R-TWT": 2,
+    "ecosystem": 1,
+    "SLB": 1,
+    "SLE": 1,
+    "OpenLab": 1,
+    "chip-IP": 1,
     "BLE": 1,
     "ESB": 1,
     "Nordic": 1,
@@ -93,7 +102,6 @@ window.KB_DATA = {
     "WNG SC": 1,
     "Wi-Fi 9": 1,
     "802.11bx": 1,
-    "automotive": 1,
     "exponential-backoff": 1,
     "freshness": 1,
     "CSMA": 1,
@@ -134,6 +142,8 @@ window.KB_DATA = {
     "self-supervised": 1,
     "multi-user": 1,
     "802.11bi": 1,
+    "digital-car-key": 1,
+    "Beijing-Auto-Show": 1,
     "O-RAN": 1,
     "interference-mitigation": 1,
     "xApp": 1,
@@ -153,6 +163,12 @@ window.KB_DATA = {
     "healthcare": 1,
     "transformer": 1,
     "regulation": 1,
+    "UWB": 1,
+    "payments": 1,
+    "FiRa": 1,
+    "JCB": 1,
+    "Resona": 1,
+    "digital-wallet": 1,
     "privacy": 1
   },
   "primary_topic_counts": {
@@ -170,24 +186,27 @@ window.KB_DATA = {
     "cellular-ai": 2,
     "roaming-mobility": 2,
     "mlo": 2,
+    "nearlink-slb": 1,
     "bt-le": 1,
     "network-slicing": 1,
     "mmwave-bq": 1,
     "leo-constellations": 1,
     "6g-vision": 1,
+    "nearlink-automotive": 1,
     "open-ran": 1,
-    "wifi-for-ai": 1
+    "wifi-for-ai": 1,
+    "uwb-fi-ra": 1
   },
   "type_counts": {
     "academic-paper": 61,
-    "industry-news": 20,
+    "industry-news": 23,
     "ieee-document": 12,
     "product": 7,
     "proposal": 4
   },
   "category_counts": {
     "academia": 61,
-    "industry": 27,
+    "industry": 30,
     "standards": 16
   },
   "technologies_vocab": {
@@ -2190,7 +2209,9 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [],
-      "entries_secondary": [],
+      "entries_secondary": [
+        "2026-05-21_jcb-uwb-payments-japan"
+      ],
       "by_type_primary": {}
     },
     "uwb-fi-ra": {
@@ -2206,9 +2227,15 @@ window.KB_DATA = {
       "diagram_mmd": "",
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
-      "entries_primary": [],
+      "entries_primary": [
+        "2026-05-21_jcb-uwb-payments-japan"
+      ],
       "entries_secondary": [],
-      "by_type_primary": {}
+      "by_type_primary": {
+        "industry-news": [
+          "2026-05-21_jcb-uwb-payments-japan"
+        ]
+      }
     },
     "uwb-security": {
       "id": "uwb-security",
@@ -2224,7 +2251,9 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [],
-      "entries_secondary": [],
+      "entries_secondary": [
+        "2026-05-21_jcb-uwb-payments-japan"
+      ],
       "by_type_primary": {}
     },
     "uwb-radar": {
@@ -2257,9 +2286,17 @@ window.KB_DATA = {
       "diagram_mmd": "",
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
-      "entries_primary": [],
-      "entries_secondary": [],
-      "by_type_primary": {}
+      "entries_primary": [
+        "2026-05-21_sparklink-ecosystem-2026-overview"
+      ],
+      "entries_secondary": [
+        "2026-05-21_sparklink-digital-car-key-beijing-autoshow"
+      ],
+      "by_type_primary": {
+        "industry-news": [
+          "2026-05-21_sparklink-ecosystem-2026-overview"
+        ]
+      }
     },
     "nearlink-sle": {
       "id": "nearlink-sle",
@@ -2275,7 +2312,9 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [],
-      "entries_secondary": [],
+      "entries_secondary": [
+        "2026-05-21_sparklink-ecosystem-2026-overview"
+      ],
       "by_type_primary": {}
     },
     "nearlink-coexistence": {
@@ -2292,7 +2331,9 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [],
-      "entries_secondary": [],
+      "entries_secondary": [
+        "2026-05-21_sparklink-ecosystem-2026-overview"
+      ],
       "by_type_primary": {}
     },
     "nearlink-automotive": {
@@ -2308,12 +2349,55 @@ window.KB_DATA = {
       "diagram_mmd": "",
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
-      "entries_primary": [],
-      "entries_secondary": [],
-      "by_type_primary": {}
+      "entries_primary": [
+        "2026-05-21_sparklink-digital-car-key-beijing-autoshow"
+      ],
+      "entries_secondary": [
+        "2026-05-21_sparklink-ecosystem-2026-overview"
+      ],
+      "by_type_primary": {
+        "industry-news": [
+          "2026-05-21_sparklink-digital-car-key-beijing-autoshow"
+        ]
+      }
     }
   },
   "entries": [
+    {
+      "id": "2026-05-21_sparklink-ecosystem-2026-overview",
+      "date_found": "2026-05-21",
+      "technology": "nearlink",
+      "date_published": "2026-05-21",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "SparkLink (NearLink) Ecosystem 2026: Chip IP Labs, OpenLab, and Expanding Vertical Applications",
+      "title_zh": "星闪生态 2026 概览：芯片 IP 实验室、OpenLab 与多垂直场景扩展",
+      "url": "https://www.isla.org.cn/",
+      "topics": [
+        "NearLink",
+        "SparkLink",
+        "ISLA",
+        "ecosystem",
+        "SLB",
+        "SLE",
+        "OpenLab",
+        "chip-IP"
+      ],
+      "topic_primary": "nearlink-slb",
+      "topics_secondary": [
+        "nearlink-sle",
+        "nearlink-automotive",
+        "nearlink-coexistence"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-21_sparklink-ecosystem-2026-overview.md",
+      "summary_short_en": "The International SparkLink Alliance (ISLA) has significantly expanded its ecosystem infrastructure in early 2026, adding a chip IP innovation lab in Beijing (passed formal review), an OpenLab for developer onboarding and product certification, and a growing portfolio of reference designs spanning automotive, consumer, and industrial verticals.",
+      "summary_short_zh": "国际星闪联盟（ISLA）在 2026 年初显著扩展了其生态基础设施，新增了北京芯片 IP 创新实验室（已通过正式评审）、面向开发者入驻和产品认证的 OpenLab，以及覆盖车载、消费和工业垂直领域的日益增长的参考设计组合。",
+      "body_html_en": "<h3>Summary</h3>\n<p>The International SparkLink Alliance (ISLA) has significantly expanded its ecosystem infrastructure in early 2026, adding a chip IP innovation lab in Beijing (passed formal review), an OpenLab for developer onboarding and product certification, and a growing portfolio of reference designs spanning automotive, consumer, and industrial verticals.</p>\n<p>SparkLink (NearLink) is a next-generation short-range wireless technology designed to outperform Bluetooth and Wi-Fi in specific high-performance scenarios. Its two-mode architecture — SLB (SparkLink Basic) for high-throughput low-latency applications, SLE (SparkLink Low Energy) for power-constrained IoT — is complemented by five core technical pillars: anti-interference (fast channel scanning, frequency hopping), precision synchronization (frame boundary alignment, distributed measurement), low latency (air-interface ultra-short frames, negotiable TX/RX cycles), high concurrency (unified scheduling, dynamic resource allocation), and high reliability (Polar channel coding, HARQ retransmission).</p>\n<p>The ISLA homepage (isla.org.cn) identifies seven key application domains with specific performance targets: automotive active noise cancellation (e2e &lt;100μs), wireless battery management (cell-level, hundreds of nodes), 4K/8K video casting (&lt;2ms latency), smart audio (96KHz/32bit lossless, &lt;-110dBm sensitivity), gaming peripherals (4K polling, &lt;250μs), robot arm control (99.999%-99.999999% reliability), and collaborative robots (μs-level sync, 100-500μs one-way). The 3rd &quot;SparkLink Cup&quot; competition and 4th F5.5G C-WAN &amp; SparkLink AI Symposium (Wuhan) highlight growing academic and developer engagement.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Dual-mode architecture</strong>: SLB (high-throughput, low-latency) + SLE (low-power IoT) on shared PHY/MAC framework</li><li><strong>Five technical pillars</strong>: Anti-interference, precision sync, low latency, high concurrency, high reliability (Polar + HARQ)</li><li><strong>Chip IP ecosystem</strong>: Beijing Innovation Lab passed review — enables third-party chip designs beyond Huawei's in-house Kirin integration</li><li><strong>OpenLab</strong>: Professional guidance, one-stop development toolchains, performance optimization assistance, commercialization support</li><li><strong>Seven verticals with quantified targets</strong>: Automotive ANC (&lt;100μs), wBMS, 8K casting (&lt;2ms), lossless audio (96KHz/32bit), gaming (&lt;250μs), industrial robots (six-9s reliability), collaborative robots (100-500μs)</li><li><strong>Academic engagement</strong>: 3rd SparkLink Cup, 4th F5.5G C-WAN AI Symposium</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>First comprehensive English-language summary of the SparkLink/NearLink ecosystem as visible from the official ISLA portal in mid-2026. The chip IP Beijing lab is the key structural milestone: it signals that ISLA is building a multi-vendor chip ecosystem (like Bluetooth SIG's qualified chip program), not relying solely on Huawei's in-house Kirin integration. The quantified performance targets across seven verticals provide concrete benchmarks for comparing NearLink against Bluetooth 6.0, UWB 802.15.4ab, and Wi-Fi 8 in overlapping use cases. The F5.5G C-WAN AI Symposium (Wuhan) also indicates that NearLink is positioning itself within the broader Chinese &quot;AI + connectivity&quot; industrial policy framework.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>国际星闪联盟（ISLA）在 2026 年初显著扩展了其生态基础设施，新增了北京芯片 IP 创新实验室（已通过正式评审）、面向开发者入驻和产品认证的 OpenLab，以及覆盖车载、消费和工业垂直领域的日益增长的参考设计组合。</p>\n<p>星闪（NearLink）是一种新一代短距离无线通信技术，旨在特定高性能场景中超越蓝牙和 Wi-Fi。其双模架构——SLB（星闪基础接入）用于高吞吐低时延应用，SLE（星闪低功耗）用于功耗受限 IoT——辅以五大核心技术支柱：抗干扰（快速信道扫描、跳频）、精同步（帧边界对齐、分布式测量）、低时延（空口超短帧、可协商收发周期）、高并发（统一调度、动态资源分配）和高可靠（Polar 信道编码、HARQ 重传）。</p>\n<p>ISLA 官网（isla.org.cn）明确了七个关键应用领域及其性能目标：车载主动降噪（端到端 &lt;100μs）、无线电池管理（电芯级、数百节点）、4K/8K 视频投屏（&lt;2ms 时延）、智能音频（96KHz/32bit 无损，&lt;-110dBm 灵敏度）、游戏外设（4K 轮询率，&lt;250μs）、机械臂控制（99.999%-99.999999% 可靠性）和协同机器人（微秒级同步，100-500μs 单向）。第三届&quot;星闪杯&quot;大赛和第四届 F5.5G C-WAN 与星闪智联学术研讨会（武汉）彰显了日益增长的学术与开发者参与度。</p>\n<h3>技术要点</h3>\n<ul><li><strong>双模架构</strong>：SLB（高吞吐低时延）+ SLE（低功耗 IoT），共享 PHY/MAC 框架</li><li><strong>五大技术支柱</strong>：抗干扰、精同步、低时延、高并发、高可靠（Polar + HARQ）</li><li><strong>芯片 IP 生态</strong>：北京创新实验室通过评审——赋能华为自研 Kirin 集成之外的第三方芯片设计</li><li><strong>OpenLab</strong>：专业指导、一站式开发工具链、性能优化协助、商业转化支持</li><li><strong>七垂直领域量化目标</strong>：车载 ANC（&lt;100μs）、wBMS、8K 投屏（&lt;2ms）、无损音频（96KHz/32bit）、游戏（&lt;250μs）、工业机器人（六个 9 可靠性）、协同机器人（100-500μs）</li><li><strong>学术参与</strong>：第三届星闪杯、第四届 F5.5G C-WAN AI 研讨会</li></ul>",
+      "images": [],
+      "search_blob": "sparklink (nearlink) ecosystem 2026: chip ip labs, openlab, and expanding vertical applications 星闪生态 2026 概览：芯片 ip 实验室、openlab 与多垂直场景扩展 nearlink sparklink isla ecosystem slb sle openlab chip-ip the international sparklink alliance (isla) has significantly expanded its ecosystem infrastructure in early 2026, adding a chip ip innovation lab in beijing (passed formal review), an openlab for developer onboarding and product certification, and a growing portfolio of reference designs spanning automotive, consumer, and industrial verticals. 国际星闪联盟（isla）在 2026 年初显著扩展了其生态基础设施，新增了北京芯片 ip 创新实验室（已通过正式评审）、面向开发者入驻和产品认证的 openlab，以及覆盖车载、消费和工业垂直领域的日益增长的参考设计组合。 industry-news nearlink"
+    },
     {
       "id": "2026-05-21_arxiv-enhanced-ble-esb-hybrid",
       "date_found": "2026-05-21",
@@ -3411,6 +3495,37 @@ window.KB_DATA = {
       "search_blob": "ieee 802.11 mentor pre-interim digest — apr-may 2026 contributions ahead of the antwerp interim (may 10-15, 2026) ieee 802.11 mentor 会前文档摘要 —— 2026 年 4-5 月（antwerp 临时会议前夕，5 月 10-15 日） 802.11bn 802.11bp 802.11bi 802.11bt 802.11bq 802.11br mac-layer security agentic-ai in the four weeks leading up to the may 10-15 2026 antwerp wireless interim, the ieee 802.11 mentor portal saw a strong wave of task-group submissions across **six active task groups**. the pre-interim window is when the substantive contributions get tabled before face-to-face debate, so this digest captures the technical agenda that the working group will be voting on in antwerp. 在 2026 年 5 月 10–15 日 antwerp 无线临时会议前的四周，ieee 802.11 mentor 门户出现了**六个活跃 task group** 的密集提交。会前窗口正是实质性贡献定稿、为面对面辩论做准备的时段，因此本摘要记录了工作组将在 antwerp 投票的技术议程。 ieee-document wifi"
     },
     {
+      "id": "2026-05-21_sparklink-digital-car-key-beijing-autoshow",
+      "date_found": "2026-05-21",
+      "technology": "nearlink",
+      "date_published": "2026-05-01",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "SparkLink Digital Car Key Debuts at 2026 Beijing Auto Show — First Centralized Showcase",
+      "title_zh": "星闪数字车钥匙首次集中亮相 2026 北京车展",
+      "url": "https://www.isla.org.cn/",
+      "topics": [
+        "NearLink",
+        "SparkLink",
+        "digital-car-key",
+        "automotive",
+        "ISLA",
+        "Beijing-Auto-Show"
+      ],
+      "topic_primary": "nearlink-automotive",
+      "topics_secondary": [
+        "nearlink-slb"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-21_sparklink-digital-car-key-beijing-autoshow.md",
+      "summary_short_en": "The SparkLink (NearLink) digital car key made its first centralized appearance at the 2026 Beijing Auto Show, marking a major milestone for NearLink's automotive vertical. The showcase follows the International SparkLink Alliance (ISLA)'s ecosystem expansion, which now includes chip IP labs (Beijing Innovation Lab), an OpenLab for developer support, and a growing roster of automotive partners.",
+      "summary_short_zh": "星闪数字车钥匙在 2026 北京车展首次集中亮相，标志着星闪车载垂直领域的重大里程碑。此次展示紧随国际星闪联盟（ISLA）生态扩展，目前已包括芯片 IP 实验室（北京创新实验室）、面向开发者支持的 OpenLab，以及不断增长的车企合作伙伴阵容。",
+      "body_html_en": "<h3>Summary</h3>\n<p>The SparkLink (NearLink) digital car key made its first centralized appearance at the 2026 Beijing Auto Show, marking a major milestone for NearLink's automotive vertical. The showcase follows the International SparkLink Alliance (ISLA)'s ecosystem expansion, which now includes chip IP labs (Beijing Innovation Lab), an OpenLab for developer support, and a growing roster of automotive partners.</p>\n<p>NearLink digital car key leverages the SLB (SparkLink Basic) mode's key advantages over Bluetooth and UWB alternatives: sub-μs time synchronization, Polar-coded high-reliability links with HARQ retransmission, and coordinated channel access that avoids the interference issues of shared 2.4 GHz spectrum. The automotive use case is one of NearLink's primary verticals alongside in-cabin active noise cancellation (e2e &lt;100μs), wireless battery management (wBMS, cell-level monitoring across hundreds of nodes), and collaborative robot control (99.999%-99.999999% reliability).</p>\n<p>The Beijing Auto Show showcase confirms that NearLink has moved from standards definition into automotive product integration — a trajectory similar to UWB's CCC digital key ecosystem but with the advantage of being native to Chinese OEM supply chains via Huawei Kirin multi-mode chips (Wi-Fi/Bluetooth/NearLink).</p>\n<h3>Key technical points</h3>\n<ul><li><strong>SLB mode for digital car key</strong>: SparkLink Basic (SLB) provides μs-level time sync, Polar codes + HARQ for reliable proximity authentication</li><li><strong>Multi-mode SoC integration</strong>: Huawei Kirin chips integrate Wi-Fi/BT/NearLink on a single die — no additional radio needed for NearLink car key</li><li><strong>Ecosystem infrastructure</strong>: ISLA chip IP Beijing Innovation Lab (passed review), OpenLab for developer support, professional guidance, one-stop development toolchains</li><li><strong>Automotive vertical depth</strong>: Beyond digital key — active noise cancellation (&lt;100μs e2e), wBMS (hundreds of cells), collaborative robot control (six-9s reliability)</li><li><strong>First centralized showcase</strong>: Beijing Auto Show 2026 marks the transition from standards to product integration</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>First centralized public showcase of NearLink digital car key at a major auto show — the automotive equivalent of UWB CCC digital key's coming-out moment. NearLink's advantage over UWB for automotive is the multi-mode SoC integration: Huawei Kirin already ships Wi-Fi/BT/NearLink on one die, so adding NearLink car key costs zero additional RF BOM. The Beijing Auto Show timing (April-May 2026) aligns with Chinese OEMs' 2027 model-year planning, suggesting production vehicles with NearLink digital key could ship as early as late 2026 or 2027.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>星闪数字车钥匙在 2026 北京车展首次集中亮相，标志着星闪车载垂直领域的重大里程碑。此次展示紧随国际星闪联盟（ISLA）生态扩展，目前已包括芯片 IP 实验室（北京创新实验室）、面向开发者支持的 OpenLab，以及不断增长的车企合作伙伴阵容。</p>\n<p>星闪数字车钥匙利用 SLB（星闪基础接入）模式的关键优势，相较蓝牙和 UWB 方案具有：亚微秒级时间同步、Polar 编码高可靠链路配合 HARQ 重传，以及避免 2.4 GHz 共享频谱干扰的协调信道接入。车载用例是星闪的主要垂直领域之一，此外还包括舱内主动降噪（端到端 &lt;100μs）、无线电池管理（wBMS，数百节点电芯级监控）和协同机器人控制（99.999%-99.999999% 可靠性）。</p>\n<p>北京车展的展示确认星闪已从标准定义阶段进入车载产品集成阶段——轨迹类似 UWB 的 CCC 数字钥匙生态，但具有通过华为麒麟多模芯片（Wi-Fi/蓝牙/星闪）原生融入中国 OEM 供应链的优势。</p>\n<h3>技术要点</h3>\n<ul><li><strong>SLB 模式用于数字车钥匙</strong>：星闪基础接入（SLB）提供微秒级时间同步、Polar 码 + HARQ 实现可靠的接近认证</li><li><strong>多模 SoC 集成</strong>：华为麒麟芯片在单一裸片上集成 Wi-Fi/蓝牙/星闪——星闪车钥匙无需额外射频芯片</li><li><strong>生态基础设施</strong>：ISLA 芯片 IP 北京创新实验室（通过评审）、OpenLab 开发者支持、专业指导、一站式开发工具链</li><li><strong>车载垂直深度</strong>：超越数字钥匙——主动降噪（&lt;100μs 端到端）、wBMS（数百电芯）、协同机器人控制（六个 9 可靠性）</li><li><strong>首次集中展示</strong>：2026 北京车展标志从标准到产品集成的过渡</li></ul>",
+      "images": [],
+      "search_blob": "sparklink digital car key debuts at 2026 beijing auto show — first centralized showcase 星闪数字车钥匙首次集中亮相 2026 北京车展 nearlink sparklink digital-car-key automotive isla beijing-auto-show the sparklink (nearlink) digital car key made its first centralized appearance at the 2026 beijing auto show, marking a major milestone for nearlink's automotive vertical. the showcase follows the international sparklink alliance (isla)'s ecosystem expansion, which now includes chip ip labs (beijing innovation lab), an openlab for developer support, and a growing roster of automotive partners. 星闪数字车钥匙在 2026 北京车展首次集中亮相，标志着星闪车载垂直领域的重大里程碑。此次展示紧随国际星闪联盟（isla）生态扩展，目前已包括芯片 ip 实验室（北京创新实验室）、面向开发者支持的 openlab，以及不断增长的车企合作伙伴阵容。 industry-news nearlink"
+    },
+    {
       "id": "2026-05-21_arxiv-aiim-o-ran-interference-xapp",
       "date_found": "2026-05-21",
       "technology": "cellular",
@@ -4271,6 +4386,38 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>Guo、Zhou、Jiang、Miao 等 10 位作者（2026 年 3 月）在大量商用 Wi-Fi AP 上做了大规模测量，发现 AP —— 具体来说 CSMA/CA 内的传统竞争窗口控制 —— 才是云游戏、XR 等下一代实时应用的<strong>尾时延瓶颈</strong>。即便边缘服务器与现代传输层拥塞控制都已经到位，测量数据仍然显示反复出现的&quot;短期分组投递断流&quot;，且根因在 Wi-Fi 竞争层。</p>\n<p>BLADE 是他们提出的解法：一种完全<strong>分布式</strong>的竞争窗口自适应算法，让每个 Wi-Fi 发射端依据信道竞争水平的实时观察动态调整自己的 CW。算法不需要协调、不依赖集中式控制器，也不突破 CSMA/CA 的标准范围 —— 它通过在线估计器在标准允许的 CW 取值内做动态选择。</p>\n<p>论文给出的关键数据对竞争控制类工作而言异常强：在重竞争场景下<strong>包发送尾时延降低超过 5 倍</strong>；MAC 吞吐稳定；收敛快；在使用商用 AP 的真实部署中<strong>云游戏视频卡顿率降低超过 90%</strong>。论文同时给出了 NS3 仿真与商用 Wi-Fi 硬件的验证，这在该类工作中并不常见。</p>\n<h3>技术要点</h3>\n<ul><li><strong>大规模测量根因分析：</strong> 商用 Wi-Fi AP 上的尾时延主要源自 CSMA/CA 内的竞争窗口控制</li><li><strong>分布式算法：</strong> 每个发射端依据信道竞争的实时估计独立调整自己的 CW</li><li><strong>完全符合标准：</strong> 在标准已定义的 CW 范围内取值 —— 不引入新的 IE / Action / 帧格式</li><li><strong>关键结果：</strong> 重竞争下尾时延 &gt;5 倍下降；云游戏视频卡顿率 &gt;90% 下降</li><li><strong>同时给出 NS3 仿真与商用 Wi-Fi 硬件实测</strong></li><li>目标场景：下一代实时通信（NGRTC）—— 云游戏、XR、全息视频</li></ul>\n<h3>意义与新意</h3>\n<ul><li><strong>重新框定了 XR 时延问题的叙事。</strong> 多数 XR-Wi-Fi 工作聚焦于 R-TWT 与专用空中时间预留。BLADE 论证：即便是<em>无预留</em>的尽力而为流量，仅凭修正 CW 动态就能显著提升可靠性 —— 这比 R-TWT 触动更小，并且受益对象是任何部署，而非仅限于双方协商了调度访问的 AP/STA。</li><li><strong>与 TGbn 协同空间复用相关：</strong> BLADE 所操作的竞争窗口维度，正是 TGbn 协同 SR 机制最终所影响的维度。分布式 CW 自适应有可能成为衡量集中式协同 SR 的基线。</li><li><strong>&quot;完全符合标准&quot;才是真正的看点。</strong> 一项无需协议修改、却带来 5 倍尾时延改善的结果，往往会被业界快速吸收，可能在 TGbn 那些更重的机制批准之前就出现在产品里。</li></ul>",
       "images": [],
       "search_blob": "blade: adaptive wi-fi contention control for next-generation real-time communication blade：面向下一代实时通信的自适应 wi-fi 竞争控制 802.11be 802.11bn mac-layer scheduling xr guo, zhou, jiang, miao and a 10-author team (march 2026) ran a large-scale measurement campaign on commercial wi-fi access points and identified the ap — specifically the legacy contention-window control inside csma/ca — as the primary tail-latency bottleneck for next-generation real-time applications like cloud gaming and xr. even with edge servers and modern transport-layer congestion control already in place, the measurement traces show recurring \"short-term packet delivery droughts\" that originate at the wi-fi contention layer. guo、zhou、jiang、miao 等 10 位作者（2026 年 3 月）在大量商用 wi-fi ap 上做了大规模测量，发现 ap —— 具体来说 csma/ca 内的传统竞争窗口控制 —— 才是云游戏、xr 等下一代实时应用的**尾时延瓶颈**。即便边缘服务器与现代传输层拥塞控制都已经到位，测量数据仍然显示反复出现的\"短期分组投递断流\"，且根因在 wi-fi 竞争层。 academic-paper wifi"
+    },
+    {
+      "id": "2026-05-21_jcb-uwb-payments-japan",
+      "date_found": "2026-05-21",
+      "technology": "uwb",
+      "date_published": "2026-03-04",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "JCB and Resona Partner to Commercialize UWB Contactless Payments in Japan",
+      "title_zh": "JCB 与 Resona 合作在日本推动 UWB 非接触支付商用化",
+      "url": "https://asianbankingandfinance.net/cards-payments/news/jcb-explore-commercialisation-uwb-payments",
+      "topics": [
+        "UWB",
+        "payments",
+        "FiRa",
+        "JCB",
+        "Resona",
+        "digital-wallet"
+      ],
+      "topic_primary": "uwb-fi-ra",
+      "topics_secondary": [
+        "uwb-ranging",
+        "uwb-security"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-21_jcb-uwb-payments-japan.md",
+      "summary_short_en": "JCB Co., Ltd., Japan's major card and payment network provider, has partnered with Resona Holdings to commercialize UWB-based contactless payments. JCB plans small-scale commercial operations by 2027 and full-scale commercialization by 2028. The announcement marks the first concrete timeline for UWB payment deployment by a major payment network.",
+      "summary_short_zh": "日本主要卡组织与支付网络 JCB 株式会社与 Resona Holdings 合作，推动基于 UWB 的非接触支付商用化。JCB 计划于 2027 年启动小规模商业运营，2028 年实现全面商用。这是首个由主要支付网络制定的 UWB 支付部署具体时间表。",
+      "body_html_en": "<h3>Summary</h3>\n<p>JCB Co., Ltd., Japan's major card and payment network provider, has partnered with Resona Holdings to commercialize UWB-based contactless payments. JCB plans small-scale commercial operations by 2027 and full-scale commercialization by 2028. The announcement marks the first concrete timeline for UWB payment deployment by a major payment network.</p>\n<p>UWB payments leverage short-range wireless communication for accurate device location and high-speed data exchange. JCB noted that smartphones with UWB functions are already widely available in Japan — a key adoption prerequisite. UWB is currently used for digital car keys, home access, indoor navigation, asset tags, and some gateless public transit systems. JCB will work with multiple technology partners and collaborating merchants to demonstrate the payment technology and conduct user-experience trials.</p>\n<p>This follows the broader FiRa Consortium push to extend UWB beyond access control into payments — a use case that requires UWB's secure ranging (STS-based distance bounding) to prevent relay attacks, a critical advantage over NFC for high-value transactions.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>UWB payment timeline</strong>: Small-scale commercial by 2027, full-scale by 2028 — first concrete timeline from a major payment network</li><li><strong>Partnership</strong>: JCB (payment network) + Resona Holdings (financial group) + multiple technology partners and merchants</li><li><strong>UWB advantage for payments</strong>: STS-based secure ranging prevents relay attacks that NFC is vulnerable to; accurate distance measurement enables &quot;pay at this terminal&quot; assurance</li><li><strong>Japan ecosystem readiness</strong>: Smartphones with UWB already widely available in Japan — Pixel, iPhone, and domestic Android models</li><li><strong>Existing UWB use cases cited</strong>: Digital car keys (CCC), home access (Aliro), indoor navigation, asset tags, gateless transit</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>First concrete timeline for UWB payments from a major payment network — moves UWB payments from &quot;potential use case&quot; to &quot;planned deployment.&quot; JCB's 2027-2028 timeline is aggressive: it suggests the FiRa payment certification framework must be finalized within the next 12-18 months. Japan is a natural lead market: widespread UWB smartphone penetration (iPhone + Pixel), existing UWB transit infrastructure (gateless fare collection), and a payment industry accustomed to contactless innovation (FeliCa/NFC). The UWB payment use case also drives UWB security requirements (STS, distance bounding) that differentiate it from BLE/NFC payments.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>日本主要卡组织与支付网络 JCB 株式会社与 Resona Holdings 合作，推动基于 UWB 的非接触支付商用化。JCB 计划于 2027 年启动小规模商业运营，2028 年实现全面商用。这是首个由主要支付网络制定的 UWB 支付部署具体时间表。</p>\n<p>UWB 支付利用短距离无线通信实现精确设备定位和高速数据交换。JCB 指出，具备 UWB 功能的智能手机在日本已广泛普及——这是采用的关键前提。UWB 目前已用于数字车钥匙、家庭门禁、室内导航、资产标签及部分无闸机公交系统。JCB 将与多家技术合作伙伴及合作商户共同演示该支付技术并开展用户体验试点。</p>\n<p>这延续了 FiRa 联盟将 UWB 从门禁控制扩展到支付的更广泛推动——该用例需要 UWB 的安全测距（基于 STS 的距离界定）来防止中继攻击，这是相对 NFC 在高价值交易中的关键优势。</p>\n<h3>技术要点</h3>\n<ul><li><strong>UWB 支付时间表</strong>：2027 年小规模商用，2028 年全面商用——首个主要支付网络的具体时间表</li><li><strong>合作方</strong>：JCB（支付网络）+ Resona Holdings（金融集团）+ 多家技术合作伙伴及商户</li><li><strong>UWB 支付优势</strong>：基于 STS 的安全测距可防止 NFC 易受的中继攻击；精确距离测量实现&quot;在此终端支付&quot;保障</li><li><strong>日本生态就绪</strong>：具备 UWB 的智能手机已在日本广泛普及——Pixel、iPhone 及国内 Android 机型</li><li><strong>已引用 UWB 用例</strong>：数字车钥匙（CCC）、家庭门禁（Aliro）、室内导航、资产标签、无闸机公交</li></ul>",
+      "images": [],
+      "search_blob": "jcb and resona partner to commercialize uwb contactless payments in japan jcb 与 resona 合作在日本推动 uwb 非接触支付商用化 uwb payments fira jcb resona digital-wallet jcb co., ltd., japan's major card and payment network provider, has partnered with resona holdings to commercialize uwb-based contactless payments. jcb plans small-scale commercial operations by 2027 and full-scale commercialization by 2028. the announcement marks the first concrete timeline for uwb payment deployment by a major payment network. 日本主要卡组织与支付网络 jcb 株式会社与 resona holdings 合作，推动基于 uwb 的非接触支付商用化。jcb 计划于 2027 年启动小规模商业运营，2028 年实现全面商用。这是首个由主要支付网络制定的 uwb 支付部署具体时间表。 industry-news uwb"
     },
     {
       "id": "2026-05-01_gemtek-quectel-wifi8-mwc2026",
