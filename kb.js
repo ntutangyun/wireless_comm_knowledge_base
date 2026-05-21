@@ -3,7 +3,7 @@ window.KB_DATA = {
   "last_updated": "2026-05-21",
   "topic_counts": {
     "MAC-layer": 34,
-    "agentic-AI": 29,
+    "agentic-AI": 30,
     "802.11bn": 27,
     "scheduling": 24,
     "802.11be": 21,
@@ -13,9 +13,9 @@ window.KB_DATA = {
     "PHY-layer": 15,
     "MLO": 14,
     "802.11bf": 12,
+    "IoT": 8,
     "MAPC": 8,
     "802.11ax": 8,
-    "IoT": 7,
     "generative-AI": 7,
     "802.11bp": 6,
     "CSI": 5,
@@ -30,8 +30,10 @@ window.KB_DATA = {
     "ELR": 3,
     "LB291": 3,
     "802.11bt": 3,
+    "mmWave": 3,
     "roaming": 3,
     "LLM-agent": 2,
+    "6G": 2,
     "AMP-IoT": 2,
     "Co-RTWT": 2,
     "seamless-roaming": 2,
@@ -39,15 +41,19 @@ window.KB_DATA = {
     "P-EDCA": 2,
     "DRU": 2,
     "802.11br": 2,
-    "mmWave": 2,
     "MU-MIMO": 2,
     "OFDMA": 2,
+    "LLM": 2,
     "Wi-Fi 7": 2,
     "enterprise": 2,
     "6GHz": 2,
     "R-TWT": 2,
+    "BLE": 1,
+    "ESB": 1,
+    "Nordic": 1,
+    "energy-efficiency": 1,
+    "protocol-hybrid": 1,
     "Ambient-IoT": 1,
-    "6G": 1,
     "AI-native": 1,
     "energy-harvesting": 1,
     "PDT": 1,
@@ -58,7 +64,6 @@ window.KB_DATA = {
     "LB294": 1,
     "resource-allocation": 1,
     "WiSER": 1,
-    "LLM": 1,
     "6-GHz": 1,
     "AFC": 1,
     "LPI": 1,
@@ -102,10 +107,20 @@ window.KB_DATA = {
     "Extreme": 1,
     "Platform ONE": 1,
     "802.11n": 1,
+    "LEO": 1,
+    "sub-THz": 1,
+    "inter-satellite-links": 1,
+    "space-economy": 1,
+    "semantic-control-plane": 1,
     "domain-adaptation": 1,
     "self-supervised": 1,
     "multi-user": 1,
     "802.11bi": 1,
+    "O-RAN": 1,
+    "interference-mitigation": 1,
+    "xApp": 1,
+    "near-RT-RIC": 1,
+    "PRB-allocation": 1,
     "CSMA/CA": 1,
     "edge-computing": 1,
     "DAG-scheduling": 1,
@@ -136,18 +151,22 @@ window.KB_DATA = {
     "ai-for-wifi": 3,
     "roaming-mobility": 2,
     "mlo": 2,
+    "bt-le": 1,
     "mmwave-bq": 1,
+    "leo-constellations": 1,
+    "6g-vision": 1,
+    "open-ran": 1,
     "wifi-for-ai": 1
   },
   "type_counts": {
-    "academic-paper": 57,
+    "academic-paper": 61,
     "industry-news": 17,
     "ieee-document": 12,
     "product": 7,
     "proposal": 4
   },
   "category_counts": {
-    "academia": 57,
+    "academia": 61,
     "industry": 24,
     "standards": 16
   },
@@ -1666,6 +1685,7 @@ window.KB_DATA = {
       "diagram_mmd_zh": "mindmap\n  root((能效与省电))\n    机制\n      TWT 能耗预算\n      R-TWT 能耗侧\n      深睡眠调度\n      电池感知客户端行为\n    交叉引用\n      amp-iot 能量收集\n      rtwt-latency 时延侧\n      mlo 每链路开销\n    今日（次要出现）\n      Wi-Fi 6 上的确定性 TWT\n      20 MHz Wi-Fi 7 IoT 认证\n    分桶规则\n      节省 N% 能耗 - 主在此\n      M ms 内交付 - 主在时延桶\n    关注\n      逐类 MLO 能耗测量\n      AMP-IoT 电池寿命试点\n      Wi-Fi 8 深睡眠电流",
       "entries_primary": [],
       "entries_secondary": [
+        "2026-05-21_arxiv-enhanced-ble-esb-hybrid",
         "2026-05-19_arxiv-janus-hybrid-ambient-iot-radio",
         "2026-05-18_ieee-mentor-tgbp-antwerp-digest",
         "2026-05-18_ieee-mentor-tgbn-antwerp-digest",
@@ -1691,7 +1711,9 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [],
-      "entries_secondary": [],
+      "entries_secondary": [
+        "2026-05-21_arxiv-aiim-o-ran-interference-xapp"
+      ],
       "by_type_primary": {}
     },
     "4g-lte": {
@@ -1724,9 +1746,15 @@ window.KB_DATA = {
       "diagram_mmd": "",
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
-      "entries_primary": [],
+      "entries_primary": [
+        "2026-05-21_arxiv-6g-agentic-ai-native"
+      ],
       "entries_secondary": [],
-      "by_type_primary": {}
+      "by_type_primary": {
+        "academic-paper": [
+          "2026-05-21_arxiv-6g-agentic-ai-native"
+        ]
+      }
     },
     "cellular-massive-mimo": {
       "id": "cellular-massive-mimo",
@@ -1759,7 +1787,9 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [],
-      "entries_secondary": [],
+      "entries_secondary": [
+        "2026-05-21_arxiv-leo-mmwave-subthz-relay"
+      ],
       "by_type_primary": {}
     },
     "open-ran": {
@@ -1775,9 +1805,15 @@ window.KB_DATA = {
       "diagram_mmd": "",
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
-      "entries_primary": [],
+      "entries_primary": [
+        "2026-05-21_arxiv-aiim-o-ran-interference-xapp"
+      ],
       "entries_secondary": [],
-      "by_type_primary": {}
+      "by_type_primary": {
+        "academic-paper": [
+          "2026-05-21_arxiv-aiim-o-ran-interference-xapp"
+        ]
+      }
     },
     "network-slicing": {
       "id": "network-slicing",
@@ -1827,7 +1863,10 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [],
-      "entries_secondary": [],
+      "entries_secondary": [
+        "2026-05-21_arxiv-6g-agentic-ai-native",
+        "2026-05-21_arxiv-aiim-o-ran-interference-xapp"
+      ],
       "by_type_primary": {}
     },
     "cellular-spectrum": {
@@ -1911,9 +1950,15 @@ window.KB_DATA = {
       "diagram_mmd": "",
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
-      "entries_primary": [],
+      "entries_primary": [
+        "2026-05-21_arxiv-leo-mmwave-subthz-relay"
+      ],
       "entries_secondary": [],
-      "by_type_primary": {}
+      "by_type_primary": {
+        "academic-paper": [
+          "2026-05-21_arxiv-leo-mmwave-subthz-relay"
+        ]
+      }
     },
     "sat-iot": {
       "id": "sat-iot",
@@ -1996,9 +2041,15 @@ window.KB_DATA = {
       "diagram_mmd": "",
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
-      "entries_primary": [],
+      "entries_primary": [
+        "2026-05-21_arxiv-enhanced-ble-esb-hybrid"
+      ],
       "entries_secondary": [],
-      "by_type_primary": {}
+      "by_type_primary": {
+        "academic-paper": [
+          "2026-05-21_arxiv-enhanced-ble-esb-hybrid"
+        ]
+      }
     },
     "bt-le-audio": {
       "id": "bt-le-audio",
@@ -2223,6 +2274,37 @@ window.KB_DATA = {
     }
   },
   "entries": [
+    {
+      "id": "2026-05-21_arxiv-enhanced-ble-esb-hybrid",
+      "date_found": "2026-05-21",
+      "technology": "bluetooth",
+      "date_published": "2026-05-20",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Enhanced-BLE: A Hybrid BLE-ESB Framework for Energy-Efficient 2.4 GHz IoT Communication",
+      "title_zh": "Enhanced-BLE：面向高能效 2.4 GHz IoT 通信的 BLE-ESB 混合框架",
+      "url": "https://arxiv.org/abs/2605.21270",
+      "topics": [
+        "BLE",
+        "ESB",
+        "Nordic",
+        "IoT",
+        "energy-efficiency",
+        "protocol-hybrid"
+      ],
+      "topic_primary": "bt-le",
+      "topics_secondary": [
+        "energy-power-save"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-21_arxiv-enhanced-ble-esb-hybrid.md",
+      "summary_short_en": "Zhou, Shen, Cao, and Huang propose Enhanced-BLE, a hybrid framework that integrates Bluetooth Low Energy (BLE) with Nordic Semiconductor's Enhanced ShockBurst (ESB) protocol on a unified nRF54L15 platform. BLE's connection-oriented architecture introduces tradeoffs among wake-up latency, throughput, and energy efficiency, limiting its suitability for burst-mode and on-demand sensing. ESB, a lightweight connectionless 2.4 GHz protocol, enables fast wake-up and efficient data transmission but lacks BLE-level robustness for sustained bidirectional communication.",
+      "summary_short_zh": "Zhou、Shen、Cao 与 Huang 提出 Enhanced-BLE，一个在 Nordic Semiconductor 统一 nRF54L15 平台上集成低功耗蓝牙（BLE）与 Nordic 增强型 ShockBurst（ESB）协议的混合框架。BLE 面向连接架构在唤醒时延、吞吐和能效之间存在权衡，限制了其适用于突发模式和按需感知场景。ESB 作为轻量无连接 2.4 GHz 协议，支持快速唤醒和高效数据传输，但缺乏 BLE 级别的可靠双向通信能力。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Zhou, Shen, Cao, and Huang propose Enhanced-BLE, a hybrid framework that integrates Bluetooth Low Energy (BLE) with Nordic Semiconductor's Enhanced ShockBurst (ESB) protocol on a unified nRF54L15 platform. BLE's connection-oriented architecture introduces tradeoffs among wake-up latency, throughput, and energy efficiency, limiting its suitability for burst-mode and on-demand sensing. ESB, a lightweight connectionless 2.4 GHz protocol, enables fast wake-up and efficient data transmission but lacks BLE-level robustness for sustained bidirectional communication.</p>\n<p>Systematic benchmarking on the nRF54L15 reveals: ESB nearly halves packet transmission time and energy vs BLE, doubles forward throughput, and reduces wake-up latency and energy by nearly 20× during intermittent operation. However, ESB reverse transmission suffers packet loss. Enhanced-BLE addresses this through adaptive radio scheduling and coexistence-aware connection management — combining ESB-based high-throughput forward transmission with BLE-based reliable reverse communication. The BLE-to-ESB handover completes in ~18 ms, and BLE restoration from standby takes ~49 ms. The framework achieves ~2× higher forward throughput than BLE while reducing wake-up latency.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Hybrid BLE-ESB protocol</strong>: ESB for high-throughput forward path, BLE for reliable reverse path — coexisting on same Nordic nRF54L15 hardware</li><li><strong>Benchmarking on nRF54L15</strong>: ESB halves packet TX time/energy, doubles forward throughput, 20× lower wake-up latency vs BLE</li><li><strong>Adaptive radio scheduling</strong>: Coexistence-aware scheduling manages BLE and ESB timesharing on the same 2.4 GHz radio</li><li><strong>Fast handover</strong>: BLE→ESB in ~18 ms, standby→BLE in ~49 ms</li><li><strong>Protocol selection logic</strong>: Framework dynamically chooses BLE or ESB based on traffic pattern (burst vs sustained, forward vs bidirectional)</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>First systematic comparison of BLE vs ESB on Nordic's latest nRF54L15 platform, and first hybrid framework that combines both protocols on a single radio. Prior BLE-IoT work focused on BLE parameter tuning (connection interval, PHY selection); this paper goes further by integrating an entirely different link-layer protocol (ESB) alongside BLE. The practical significance: any Nordic-based IoT device (a huge fraction of the BLE market) can adopt this hybrid approach with the same hardware, no additional radio needed. The ~18 ms handover time makes the hybrid practical for real-time sensing applications.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Zhou、Shen、Cao 与 Huang 提出 Enhanced-BLE，一个在 Nordic Semiconductor 统一 nRF54L15 平台上集成低功耗蓝牙（BLE）与 Nordic 增强型 ShockBurst（ESB）协议的混合框架。BLE 面向连接架构在唤醒时延、吞吐和能效之间存在权衡，限制了其适用于突发模式和按需感知场景。ESB 作为轻量无连接 2.4 GHz 协议，支持快速唤醒和高效数据传输，但缺乏 BLE 级别的可靠双向通信能力。</p>\n<p>在 nRF54L15 上的系统基准测试表明：ESB 相对 BLE 近乎减半包传输时间和能耗，前向吞吐翻倍，间歇运行时唤醒时延和能耗降低近 20 倍。但 ESB 反向传输存在丢包。Enhanced-BLE 通过自适应射频调度和共存感知的连接管理解决此权衡——结合基于 ESB 的高速前向传输与基于 BLE 的可靠反向通信。BLE 到 ESB 切换约 18 ms 完成，从待机恢复 BLE 运行约 49 ms。该框架实现约 2 倍于纯 BLE 的前向吞吐，同时降低唤醒时延。</p>\n<h3>技术要点</h3>\n<ul><li><strong>BLE-ESB 混合协议</strong>：ESB 用于高速前向路径，BLE 用于可靠反向路径——共存于同一 Nordic nRF54L15 硬件</li><li><strong>nRF54L15 基准测试</strong>：ESB 包传输时间/能耗减半，前向吞吐翻倍，唤醒时延较 BLE 降低 20 倍</li><li><strong>自适应射频调度</strong>：共存感知调度管理同一 2.4 GHz 射频上 BLE 与 ESB 的分时共享</li><li><strong>快速切换</strong>：BLE→ESB 约 18 ms，待机→BLE 约 49 ms</li><li><strong>协议选择逻辑</strong>：框架根据流量模式（突发 vs 持续、前向 vs 双向）动态选择 BLE 或 ESB</li></ul>",
+      "images": [],
+      "search_blob": "enhanced-ble: a hybrid ble-esb framework for energy-efficient 2.4 ghz iot communication enhanced-ble：面向高能效 2.4 ghz iot 通信的 ble-esb 混合框架 ble esb nordic iot energy-efficiency protocol-hybrid zhou, shen, cao, and huang propose enhanced-ble, a hybrid framework that integrates bluetooth low energy (ble) with nordic semiconductor's enhanced shockburst (esb) protocol on a unified nrf54l15 platform. ble's connection-oriented architecture introduces tradeoffs among wake-up latency, throughput, and energy efficiency, limiting its suitability for burst-mode and on-demand sensing. esb, a lightweight connectionless 2.4 ghz protocol, enables fast wake-up and efficient data transmission but lacks ble-level robustness for sustained bidirectional communication. zhou、shen、cao 与 huang 提出 enhanced-ble，一个在 nordic semiconductor 统一 nrf54l15 平台上集成低功耗蓝牙（ble）与 nordic 增强型 shockburst（esb）协议的混合框架。ble 面向连接架构在唤醒时延、吞吐和能效之间存在权衡，限制了其适用于突发模式和按需感知场景。esb 作为轻量无连接 2.4 ghz 协议，支持快速唤醒和高效数据传输，但缺乏 ble 级别的可靠双向通信能力。 academic-paper bluetooth"
+    },
     {
       "id": "2026-05-19_arxiv-janus-hybrid-ambient-iot-radio",
       "date_found": "2026-05-19",
@@ -3056,6 +3138,65 @@ window.KB_DATA = {
       "search_blob": "why the top 10 broadband operators don't own the mdu wi-fi market — managed-wi-fi msps win on operational service delivery 为什么前 10 大宽带运营商并不主导 mdu wi-fi 市场 —— 托管 wi-fi msp 凭运营服务交付胜出 products roaming in a may 4 2026 rcr wireless analyst piece, **adlane fellah (chief analyst, maravedis research)** argues that the major us broadband carriers — comcast xfinity (31.25m subs), charter spectrum (29.7m), at&t (~16.7m), verizon (~13m) — **don't dominate the multi-dwelling-unit (mdu) wi-fi opportunity** despite their subscriber scale, and that managed-wi-fi msps are winning the segment on operational service delivery. roughly nine out of ten new us multifamily development projects choose **managed wi-fi** over retail-isp-per-unit models. 在 2026 年 5 月 4 日的 rcr wireless 分析专栏中，**maravedis research 首席分析师 adlane fellah** 论证：尽管美国主要宽带运营商体量巨大——comcast xfinity（3125 万用户）、charter spectrum（2970 万）、at&t（约 1670 万）、verizon（约 1300 万）——**它们并不主导多户公寓（mdu）wi-fi 机会**；托管 wi-fi msp 正凭运营服务交付能力赢下这个细分市场。美国新建多户公寓项目中约有九成选择 **托管 wi-fi** 模式，而非\"每户一份零售 isp\"模式。 industry-news wifi"
     },
     {
+      "id": "2026-05-21_arxiv-leo-mmwave-subthz-relay",
+      "date_found": "2026-05-21",
+      "technology": "satellite",
+      "date_published": "2026-05-03",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "LEO Satellite Relay Networks with mmWave and sub-THz Inter-Satellite Links",
+      "title_zh": "基于毫米波与亚毫米波星间链路的低轨卫星中继网络",
+      "url": "https://arxiv.org/abs/2605.02061",
+      "topics": [
+        "LEO",
+        "mmWave",
+        "sub-THz",
+        "inter-satellite-links",
+        "space-economy"
+      ],
+      "topic_primary": "leo-constellations",
+      "topics_secondary": [
+        "ntn"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-21_arxiv-leo-mmwave-subthz-relay.md",
+      "summary_short_en": "Aliaga, Petrov, Jornet et al. analyze an alternative LEO space relay architecture where high-rate mmWave and sub-THz inter-satellite links (ISLs) form a satellite-based relay backbone for space vehicles (CubeSats, space data centers), replacing the bottlenecked ground-station relay model. Current Ku-band ground relay networks provide only minutes-per-day of contact time with a CubeSat at LEO.",
+      "summary_short_zh": "Aliaga、Petrov、Jornet 等人分析了一种替代性 LEO 空间中继架构，以高速毫米波与亚毫米波星间链路构建面向空间飞行器（立方星、空间数据中心）的卫星中继骨干网，替代瓶颈化的地面站中继模式。现有 Ku 波段地面中继网络对 LEO 立方星仅能提供每日数分钟的接触时间。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Aliaga, Petrov, Jornet et al. analyze an alternative LEO space relay architecture where high-rate mmWave and sub-THz inter-satellite links (ISLs) form a satellite-based relay backbone for space vehicles (CubeSats, space data centers), replacing the bottlenecked ground-station relay model. Current Ku-band ground relay networks provide only minutes-per-day of contact time with a CubeSat at LEO.</p>\n<p>The authors develop a comprehensive mathematical framework that jointly incorporates time-variant orbital dynamics and mmWave/sub-THz link characteristics, then derive key performance indicators: contact probability, channel capacity, and energy efficiency. Key finding: with only ten LEO relay satellites equipped with mmWave/sub-THz ISLs, continuous 24/7 connectivity becomes achievable — a fundamental bound on download capacity is identified and shown to improve by several orders of magnitude compared to existing ground-station networks. The results are cross-verified by computer simulation.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>mmWave/sub-THz ISL backbone</strong>: Replaces ground-station relay with space-based relay using mmWave (30–300 GHz) and sub-THz (&gt;100 GHz) inter-satellite links</li><li><strong>Joint orbital-dynamics + link model</strong>: Mathematical framework couples time-variant orbital mechanics with directional mmWave/sub-THz link budgets</li><li><strong>Ten-satellite threshold</strong>: Continuous 24/7 LEO connectivity becomes feasible with only 10 relay satellites</li><li><strong>Orders-of-magnitude improvement</strong>: Contact probability and capacity several orders above Ku-band ground relay baseline</li><li><strong>Energy-efficiency analysis</strong>: Includes power budget for space-vehicle terminals</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This paper addresses a gap in the LEO constellation literature: most prior work focuses on satellite-to-ground links for consumer broadband (Starlink, Kuiper), while this targets satellite-to-satellite relay for space users (CubeSats, orbital data centers). The finding that only 10 relay satellites enable 24/7 coverage is practically significant — it makes a commercial space relay network look feasible at small scale. As the space economy expands (orbital data centers, in-space manufacturing), the demand for space-to-space connectivity grows, and mmWave/sub-THz ISLs are the enabling technology.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Aliaga、Petrov、Jornet 等人分析了一种替代性 LEO 空间中继架构，以高速毫米波与亚毫米波星间链路构建面向空间飞行器（立方星、空间数据中心）的卫星中继骨干网，替代瓶颈化的地面站中继模式。现有 Ku 波段地面中继网络对 LEO 立方星仅能提供每日数分钟的接触时间。</p>\n<p>作者开发了联合纳入时变轨道动力学与毫米波/亚毫米波链路特性的综合数学框架，推导出关键性能指标：接触概率、信道容量和能效。关键发现：仅需十颗配备毫米波/亚毫米波 ISL 的 LEO 中继卫星即可实现 24/7 持续连接——识别出下载容量的基本界限，并证明其相对现有地面站网络可提升数个数量级。结果经计算机仿真交叉验证。</p>\n<h3>技术要点</h3>\n<ul><li><strong>毫米波/亚毫米波 ISL 骨干网</strong>：以基于空间的毫米波（30–300 GHz）与亚毫米波（&gt;100 GHz）星间链路替代地面站中继</li><li><strong>轨道动力学与链路联合模型</strong>：数学框架耦合时变轨道力学与定向毫米波/亚毫米波链路预算</li><li><strong>十星阈值</strong>：仅需 10 颗中继卫星即可实现 LEO 24/7 持续连接</li><li><strong>数量级提升</strong>：接触概率与容量相对 Ku 波段地面中继基线提升数个数量级</li><li><strong>能效分析</strong>：包含空间飞行器终端的功率预算</li></ul>",
+      "images": [],
+      "search_blob": "leo satellite relay networks with mmwave and sub-thz inter-satellite links 基于毫米波与亚毫米波星间链路的低轨卫星中继网络 leo mmwave sub-thz inter-satellite-links space-economy aliaga, petrov, jornet et al. analyze an alternative leo space relay architecture where high-rate mmwave and sub-thz inter-satellite links (isls) form a satellite-based relay backbone for space vehicles (cubesats, space data centers), replacing the bottlenecked ground-station relay model. current ku-band ground relay networks provide only minutes-per-day of contact time with a cubesat at leo. aliaga、petrov、jornet 等人分析了一种替代性 leo 空间中继架构，以高速毫米波与亚毫米波星间链路构建面向空间飞行器（立方星、空间数据中心）的卫星中继骨干网，替代瓶颈化的地面站中继模式。现有 ku 波段地面中继网络对 leo 立方星仅能提供每日数分钟的接触时间。 academic-paper satellite"
+    },
+    {
+      "id": "2026-05-21_arxiv-6g-agentic-ai-native",
+      "date_found": "2026-05-21",
+      "technology": "cellular",
+      "date_published": "2026-05-02",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "6G Needs Agents: Toward Agentic AI-Native Networks for Autonomous Intelligence",
+      "title_zh": "6G 需要智能体：迈向自主智能的智能体 AI 原生网络",
+      "url": "https://arxiv.org/abs/2605.01546",
+      "topics": [
+        "6G",
+        "agentic-AI",
+        "LLM",
+        "semantic-control-plane"
+      ],
+      "topic_primary": "6g-vision",
+      "topics_secondary": [
+        "cellular-ai"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-05-21_arxiv-6g-agentic-ai-native.md",
+      "summary_short_en": "Ferrag, Lakas, and Debbah argue for a paradigm shift in 6G architecture from optimization-centric closed-loop control to Agentic AI-Native 6G, where LLM-based agents operate as bounded, policy-governed reasoning entities within a semantic control plane layered above deterministic 3GPP infrastructure. They propose a four-layer architecture: (1) deterministic network infrastructure, (2) semantic abstraction of intent and context, (3) hierarchical reasoning, and (4) a distributed multi-agent fabric spanning device, edge, and core domains.",
+      "summary_short_zh": "Ferrag、Lakas 与 Debbah 主张 6G 架构从以优化为中心的闭环控制向智能体 AI 原生 6G 进行范式转变，其中基于 LLM 的智能体作为有界、策略管控的推理实体，运行在确定性 3GPP 基础设施之上的语义控制平面中。他们提出了四层架构：（1）确定性网络基础设施，（2）意图与上下文的语义抽象，（3）分层推理，以及（4）横跨设备、边缘与核心域的分布式多智能体结构。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Ferrag, Lakas, and Debbah argue for a paradigm shift in 6G architecture from optimization-centric closed-loop control to Agentic AI-Native 6G, where LLM-based agents operate as bounded, policy-governed reasoning entities within a semantic control plane layered above deterministic 3GPP infrastructure. They propose a four-layer architecture: (1) deterministic network infrastructure, (2) semantic abstraction of intent and context, (3) hierarchical reasoning, and (4) a distributed multi-agent fabric spanning device, edge, and core domains.</p>\n<p>A proof-of-concept agentic reasoning and orchestration framework was built and evaluated on a domain-specific 6G benchmark under realistic deployment constraints. Key findings: (a) no single LLM model simultaneously satisfies latency, throughput, and accuracy requirements — heterogeneous deployment of LLM agents across the device-edge-core continuum is necessary; (b) quantization introduces non-uniform effects across models, reinforcing the need for system-level optimization rather than model-level compression alone; (c) the fundamental tradeoff between reasoning capability and system efficiency is inherent, not an artifact of a specific model choice. All experimental results and evaluation scripts are publicly available.</p>\n<p>This paper establishes the first architectural framework for agentic 6G networks and is a direct cellular-domain counterpart to the agentic Wi-Fi literature (WirelessAgent, ComAgent, IteRate) already in the KB. The four-layer semantic control plane concept maps naturally to 3GPP SA2/SA5 study items on AI/ML for network management.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Four-layer agentic 6G architecture</strong>: Deterministic 3GPP infra → semantic abstraction layer → hierarchical reasoning → distributed multi-agent fabric (device/edge/core)</li><li><strong>Heterogeneous LLM deployment</strong>: No single model meets all requirements; different LLMs at different network tiers based on latency/throughput/accuracy tradeoffs</li><li><strong>Semantic control plane</strong>: LLM agents operate above deterministic 3GPP infrastructure via intent/context abstraction, not direct protocol manipulation</li><li><strong>Quantization analysis</strong>: Per-model quantization effects are non-uniform — system-level optimization beats model-level compression</li><li><strong>Public benchmark + code</strong>: Domain-specific 6G agent benchmark with reproducible evaluation scripts</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>First architectural framework for agentic 6G — the cellular counterpart to the agentic Wi-Fi literature already well-represented in the KB. Prior 6G papers focus on AI/ML for specific RAN functions (beam management, channel estimation); this paper argues that the entire network control plane should be re-architected around LLM agents. The semantic control plane concept is the key architectural innovation — it preserves deterministic 3GPP infrastructure (no &quot;throw out 5G&quot; argument) while adding a reasoning layer above it. The heterogeneous deployment finding (different LLMs at device/edge/core) is practically important for anyone building agentic network systems.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Ferrag、Lakas 与 Debbah 主张 6G 架构从以优化为中心的闭环控制向智能体 AI 原生 6G 进行范式转变，其中基于 LLM 的智能体作为有界、策略管控的推理实体，运行在确定性 3GPP 基础设施之上的语义控制平面中。他们提出了四层架构：（1）确定性网络基础设施，（2）意图与上下文的语义抽象，（3）分层推理，以及（4）横跨设备、边缘与核心域的分布式多智能体结构。</p>\n<p>在真实部署约束下，基于领域专用 6G 基准对概念验证的智能体推理与编排框架进行了评估。关键发现：（a）没有任何单一 LLM 模型同时满足时延、吞吐和准确性要求——必须在设备-边缘-核心连续体上异构部署 LLM 智能体；（b）量化对模型的影响不均匀，强化了系统级优化优于单纯模型级压缩的必要性；（c）推理能力与系统效率之间的根本性权衡是内在的，非特定模型选择所致。所有实验结果与评估脚本已公开。</p>\n<p>本文建立了首个智能体 6G 网络的架构框架，是 KB 中已有智能体 Wi-Fi 文献（WirelessAgent、ComAgent、IteRate）在蜂窝域的直接对应。四层语义控制平面概念自然地映射到 3GPP SA2/SA5 关于 AI/ML 网络管理的研究课题。</p>\n<h3>技术要点</h3>\n<ul><li><strong>四层智能体 6G 架构</strong>：确定性 3GPP 基础设施 → 语义抽象层 → 分层推理 → 分布式多智能体结构（设备/边缘/核心）</li><li><strong>异构 LLM 部署</strong>：无单一模型满足所有需求；根据时延/吞吐/准确性权衡在不同网络层级部署不同 LLM</li><li><strong>语义控制平面</strong>：LLM 智能体通过意图/上下文抽象运行在确定性 3GPP 基础设施之上，而非直接操纵协议</li><li><strong>量化分析</strong>：各模型量化效应不均匀——系统级优化优于模型级压缩</li><li><strong>公开基准与代码</strong>：领域专用 6G 智能体基准，含可复现评估脚本</li></ul>",
+      "images": [],
+      "search_blob": "6g needs agents: toward agentic ai-native networks for autonomous intelligence 6g 需要智能体：迈向自主智能的智能体 ai 原生网络 6g agentic-ai llm semantic-control-plane ferrag, lakas, and debbah argue for a paradigm shift in 6g architecture from optimization-centric closed-loop control to agentic ai-native 6g, where llm-based agents operate as bounded, policy-governed reasoning entities within a semantic control plane layered above deterministic 3gpp infrastructure. they propose a four-layer architecture: (1) deterministic network infrastructure, (2) semantic abstraction of intent and context, (3) hierarchical reasoning, and (4) a distributed multi-agent fabric spanning device, edge, and core domains. ferrag、lakas 与 debbah 主张 6g 架构从以优化为中心的闭环控制向智能体 ai 原生 6g 进行范式转变，其中基于 llm 的智能体作为有界、策略管控的推理实体，运行在确定性 3gpp 基础设施之上的语义控制平面中。他们提出了四层架构：（1）确定性网络基础设施，（2）意图与上下文的语义抽象，（3）分层推理，以及（4）横跨设备、边缘与核心域的分布式多智能体结构。 academic-paper cellular"
+    },
+    {
       "id": "2026-05-12_arxiv-mu-shot-fi-multiuser-sensing",
       "date_found": "2026-05-12",
       "technology": "wifi",
@@ -3132,6 +3273,37 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>在 2026 年 5 月 10–15 日 Antwerp 无线临时会议前的四周，IEEE 802.11 Mentor 门户出现了<strong>六个活跃 Task Group</strong> 的密集提交。会前窗口正是实质性贡献定稿、为面对面辩论做准备的时段，因此本摘要记录了工作组将在 Antwerp 投票的技术议程。</p>\n<p>按 TG 列出要点：</p>\n<ul><li><strong>TGbn (Wi-Fi 8 / 超高可靠性)：</strong> EPCS 上下文转移用于无缝漫游（11-26/036r3，Samsung）；P-EDCA 改进的空间复用（11-26/826，Cisco）；MAPC 安全协议更新（11-26/424r5，Huawei）；LB291 评论决议系列（无缝漫游 第 3+4 部分，Qualcomm 与多家迭代）。</li><li><strong>TGbi (隐私 / EPP)：</strong> EPPKE 认证回归机制（11-26/862，Qualcomm）；EPSAE 引入（11-26/799，HPE）—— 隐私增强关联机制。</li><li><strong>TGbt (后量子密码)：</strong> 两种 PQC 认证变体上桌 —— pqc-sig-auth 与 pqc-no-sig-auth（11-26/546、547；HPE）。预期 D1.0 初版工作组投票从 5 月会议起步。</li><li><strong>TGbp (环境取电通信)：</strong> Non-AP AMP STA 的上行信道接入（11-26/802，Qualcomm）—— 面向超低功耗 IoT 站点的接入机制。预期 D1.0 初版工作组投票从 5 月会议起步。</li><li><strong>TGbq (集成毫米波)：</strong> A-Control 更新与 MultiBSSID 设计（11-26/827、819；OPPO）。</li><li><strong>TGbr (LiFi)：</strong> 波分复用提案（11-26/831，pureLiFi）。</li></ul>\n<h3>技术要点</h3>\n<ul><li><strong>TGbn EPCS 上下文转移</strong>：在 AP 间转移 PMK / 关联上下文，实现毫秒以下无重认证的无缝漫游。</li><li><strong>TGbn P-EDCA</strong>：经 CID 10740 提出的参数化 EDCA 微调，用以改进空间复用决策。</li><li><strong>TGbn MAPC 安全</strong>：多 AP 协调安全协议的更新（跨协调 AP 的密钥派生）。</li><li><strong>TGbi EPPKE / EPSAE</strong>：隐私保护型关联 —— 派生密钥而不泄露长期标识符。</li><li><strong>TGbt PQC 认证</strong>：用于认证握手的格基 + 无签名 PQC 变体（防御「先收今后解」）。</li><li><strong>TGbp AMP UL</strong>：面向反向散射 / 环境取电射频的非 AP STA 信道接入流程。</li><li><strong>TGbq</strong>：为集成毫米波操作模式定制的 A-Control 控制 ID 与 MultiBSSID 扩展。</li><li><strong>TGbr</strong>：可见光 Wi-Fi 的 PHY 层波分复用。</li></ul>\n<h3>意义与新意</h3>\n<p>会前四周窗口集中了一年中数量最多的提交，因为投稿人都想在 Antwerp 拿到台面时间。本摘要比 <code>ieee-march-2026-readout</code> 与 <code>ieee-january-2026-readout</code> 中的会后总结更干净地呈现「标准当下正在发生什么」。其中三个 TG（TGbi 隐私、TGbt PQC、TGbp 环境取电）正处于 D1.0 ballot 阶段 —— 即这几个修订的结构形态将在未来 1-2 次会议锁定。TGbn (Wi-Fi 8) 已过 D2.0 准备期；本窗口的提交以 LB291 评论决议为主，并非架构性变更。</p>",
       "images": [],
       "search_blob": "ieee 802.11 mentor pre-interim digest — apr-may 2026 contributions ahead of the antwerp interim (may 10-15, 2026) ieee 802.11 mentor 会前文档摘要 —— 2026 年 4-5 月（antwerp 临时会议前夕，5 月 10-15 日） 802.11bn 802.11bp 802.11bi 802.11bt 802.11bq 802.11br mac-layer security agentic-ai in the four weeks leading up to the may 10-15 2026 antwerp wireless interim, the ieee 802.11 mentor portal saw a strong wave of task-group submissions across **six active task groups**. the pre-interim window is when the substantive contributions get tabled before face-to-face debate, so this digest captures the technical agenda that the working group will be voting on in antwerp. 在 2026 年 5 月 10–15 日 antwerp 无线临时会议前的四周，ieee 802.11 mentor 门户出现了**六个活跃 task group** 的密集提交。会前窗口正是实质性贡献定稿、为面对面辩论做准备的时段，因此本摘要记录了工作组将在 antwerp 投票的技术议程。 ieee-document wifi"
+    },
+    {
+      "id": "2026-05-21_arxiv-aiim-o-ran-interference-xapp",
+      "date_found": "2026-05-21",
+      "technology": "cellular",
+      "date_published": "2026-05-01",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "AIIM: Adaptive Inter-cell Interference Mitigation xApp for Heterogeneous Multi-vendor 5G O-RAN Networks",
+      "title_zh": "AIIM：面向异构多厂商 5G O-RAN 网络的自适应小区间干扰抑制 xApp",
+      "url": "https://arxiv.org/abs/2605.01112",
+      "topics": [
+        "O-RAN",
+        "interference-mitigation",
+        "xApp",
+        "near-RT-RIC",
+        "PRB-allocation"
+      ],
+      "topic_primary": "open-ran",
+      "topics_secondary": [
+        "5g-nr",
+        "cellular-ai"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-21_arxiv-aiim-o-ran-interference-xapp.md",
+      "summary_short_en": "Reinders et al. present AIIM, an adaptive inter-cell interference mitigation xApp for the O-RAN near-real-time RAN Intelligent Controller (near-RT RIC). AIIM performs coordinated physical resource block (PRB) allocation across multiple heterogeneous base stations under diverse traffic demands and channel conditions. Unlike prior simulation-only studies, AIIM is built and evaluated in a full-stack O-RAN system using srsRAN, Open5GS, and the O-RAN Software Community (ORAN-SC) components, deployed on a hybrid experimental platform that combines SDR-based and virtual gNBs and UEs.",
+      "summary_short_zh": "Reinders 等人提出 AIIM，一个运行在 O-RAN 近实时 RAN 智能控制器（near-RT RIC）上的自适应小区间干扰抑制 xApp。AIIM 在多样化流量需求和信道条件下跨多个异构基站执行协调物理资源块（PRB）分配。与先前仅基于仿真的研究不同，AIIM 在完整 O-RAN 协议栈系统中构建与评估，使用 srsRAN、Open5GS 和 O-RAN 软件社区（ORAN-SC）组件，部署于结合 SDR 与虚拟 gNB/UE 的混合实验平台上。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Reinders et al. present AIIM, an adaptive inter-cell interference mitigation xApp for the O-RAN near-real-time RAN Intelligent Controller (near-RT RIC). AIIM performs coordinated physical resource block (PRB) allocation across multiple heterogeneous base stations under diverse traffic demands and channel conditions. Unlike prior simulation-only studies, AIIM is built and evaluated in a full-stack O-RAN system using srsRAN, Open5GS, and the O-RAN Software Community (ORAN-SC) components, deployed on a hybrid experimental platform that combines SDR-based and virtual gNBs and UEs.</p>\n<p>The xApp explicitly models overlapping PRB regions across neighboring cells and learns coordinated allocation policies that adapt to per-user QoS demand and pathloss variation. Experimental results show AIIM improves QoS satisfaction and reduces interference-induced PRB loss relative to proportional-fair scheduling baselines, while maintaining comparable aggregate network throughput. The hybrid SDR + virtual-gNB platform design is itself a contribution — it preserves realistic PHY-layer interactions while improving scalability, reproducibility, and cost-effectiveness for multi-cell interference experiments compared to fully hardware-centric testbeds.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>O-RAN near-RT RIC xApp</strong>: Runs in the O-RAN near-real-time RIC control loop (10ms–1s timescale), making coordinated PRB allocation decisions across multiple gNBs</li><li><strong>Full-stack implementation</strong>: Built on srsRAN (RAN) + Open5GS (core) + ORAN-SC (RIC), with hybrid SDR + virtual gNB/UE testbed</li><li><strong>Overlapping PRB modeling</strong>: Explicitly models PRB regions shared across neighboring cells to learn interference-aware allocation policies</li><li><strong>QoS + pathloss adaptation</strong>: Per-user QoS demand and pathloss variation inform the learned allocation policy</li><li><strong>Baseline comparison</strong>: Outperforms proportional-fair scheduling on QoS satisfaction and PRB loss, with comparable aggregate throughput</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>AIIM is one of the first O-RAN xApp papers to demonstrate coordinated interference management on a full-stack, hybrid (SDR + virtual) testbed rather than simulation-only. The practical significance for O-RAN adoption: it shows that a near-RT RIC xApp can meaningfully improve interference management in heterogeneous multi-vendor deployments — the exact scenario O-RAN was designed for. The hybrid testbed design (SDR PHY + virtualized higher layers) is a template future xApp papers can follow. The open-source stack (srsRAN + Open5GS + ORAN-SC) means the results are reproducible without proprietary 5G hardware.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Reinders 等人提出 AIIM，一个运行在 O-RAN 近实时 RAN 智能控制器（near-RT RIC）上的自适应小区间干扰抑制 xApp。AIIM 在多样化流量需求和信道条件下跨多个异构基站执行协调物理资源块（PRB）分配。与先前仅基于仿真的研究不同，AIIM 在完整 O-RAN 协议栈系统中构建与评估，使用 srsRAN、Open5GS 和 O-RAN 软件社区（ORAN-SC）组件，部署于结合 SDR 与虚拟 gNB/UE 的混合实验平台上。</p>\n<p>该 xApp 显式建模相邻小区间的重叠 PRB 区域，并学习适应每用户 QoS 需求和路径损耗变化的协调分配策略。实验结果表明，AIIM 相对比例公平调度基线提升了 QoS 满足率并减少了干扰导致的 PRB 损失，同时保持了可比的总网络吞吐。混合 SDR + 虚拟 gNB 的平台设计本身即为贡献——在保持真实 PHY 层交互的同时，相对纯硬件测试床提升了多小区干扰实验的可扩展性、可复现性和成本效益。</p>\n<h3>技术要点</h3>\n<ul><li><strong>O-RAN near-RT RIC xApp</strong>：运行在 O-RAN 近实时 RIC 控制环（10ms–1s 时间尺度），跨多个 gNB 做出协调 PRB 分配决策</li><li><strong>全协议栈实现</strong>：基于 srsRAN（RAN）+ Open5GS（核心网）+ ORAN-SC（RIC）构建，采用混合 SDR + 虚拟 gNB/UE 测试床</li><li><strong>重叠 PRB 建模</strong>：显式建模相邻小区共享的 PRB 区域以学习干扰感知分配策略</li><li><strong>QoS 与路径损耗自适应</strong>：每用户 QoS 需求和路径损耗变化驱动学习到的分配策略</li><li><strong>基线对比</strong>：在 QoS 满足率和 PRB 损失方面优于比例公平调度，总吞吐可比</li></ul>",
+      "images": [],
+      "search_blob": "aiim: adaptive inter-cell interference mitigation xapp for heterogeneous multi-vendor 5g o-ran networks aiim：面向异构多厂商 5g o-ran 网络的自适应小区间干扰抑制 xapp o-ran interference-mitigation xapp near-rt-ric prb-allocation reinders et al. present aiim, an adaptive inter-cell interference mitigation xapp for the o-ran near-real-time ran intelligent controller (near-rt ric). aiim performs coordinated physical resource block (prb) allocation across multiple heterogeneous base stations under diverse traffic demands and channel conditions. unlike prior simulation-only studies, aiim is built and evaluated in a full-stack o-ran system using srsran, open5gs, and the o-ran software community (oran-sc) components, deployed on a hybrid experimental platform that combines sdr-based and virtual gnbs and ues. reinders 等人提出 aiim，一个运行在 o-ran 近实时 ran 智能控制器（near-rt ric）上的自适应小区间干扰抑制 xapp。aiim 在多样化流量需求和信道条件下跨多个异构基站执行协调物理资源块（prb）分配。与先前仅基于仿真的研究不同，aiim 在完整 o-ran 协议栈系统中构建与评估，使用 srsran、open5gs 和 o-ran 软件社区（oran-sc）组件，部署于结合 sdr 与虚拟 gnb/ue 的混合实验平台上。 academic-paper cellular"
     },
     {
       "id": "2026-05-12_arxiv-ncsim-edge-wifi-interference",
