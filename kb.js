@@ -1,19 +1,19 @@
 window.KB_DATA = {
   "schema_version": 6,
-  "last_updated": "2026-05-23",
+  "last_updated": "2026-05-24",
   "topic_counts": {
     "MAC-layer": 34,
-    "agentic-AI": 32,
-    "802.11bn": 27,
+    "agentic-AI": 33,
+    "802.11bn": 28,
     "scheduling": 24,
+    "products": 22,
     "802.11be": 21,
-    "products": 21,
-    "WiFi-sensing": 17,
-    "security": 15,
+    "WiFi-sensing": 18,
+    "security": 16,
     "PHY-layer": 15,
     "MLO": 14,
     "802.11bf": 12,
-    "IoT": 9,
+    "IoT": 10,
     "MAPC": 8,
     "802.11ax": 8,
     "generative-AI": 7,
@@ -34,6 +34,7 @@ window.KB_DATA = {
     "mmWave": 3,
     "LLM": 3,
     "AI-RAN": 3,
+    "Wi-Fi 7": 3,
     "roaming": 3,
     "NearLink": 2,
     "SparkLink": 2,
@@ -50,7 +51,7 @@ window.KB_DATA = {
     "OFDMA": 2,
     "automotive": 2,
     "LEO": 2,
-    "Wi-Fi 7": 2,
+    "AIOps": 2,
     "enterprise": 2,
     "6GHz": 2,
     "R-TWT": 2,
@@ -132,6 +133,8 @@ window.KB_DATA = {
     "computation-offloading": 1,
     "PAR": 1,
     "CSD": 1,
+    "WPA3": 1,
+    "Matter": 1,
     "NTN": 1,
     "D2C": 1,
     "satellite": 1,
@@ -140,9 +143,9 @@ window.KB_DATA = {
     "Aruba": 1,
     "Mist": 1,
     "Juniper": 1,
-    "AIOps": 1,
     "Extreme": 1,
     "Platform ONE": 1,
+    "QoE": 1,
     "802.11n": 1,
     "sub-THz": 1,
     "inter-satellite-links": 1,
@@ -188,12 +191,13 @@ window.KB_DATA = {
     "mapc-cosr": 10,
     "agentic-wifi": 9,
     "security-privacy": 8,
-    "amp-iot": 6,
+    "amp-iot": 7,
     "spectrum-policy": 6,
     "ai-for-wifi": 4,
     "rtwt-latency": 4,
     "ftm-ranging": 4,
     "cellular-ai": 3,
+    "wifi-for-ai": 2,
     "roaming-mobility": 2,
     "mlo": 2,
     "nearlink-slb": 1,
@@ -205,19 +209,18 @@ window.KB_DATA = {
     "6g-vision": 1,
     "nearlink-automotive": 1,
     "open-ran": 1,
-    "wifi-for-ai": 1,
     "uwb-fi-ra": 1
   },
   "type_counts": {
     "academic-paper": 65,
-    "industry-news": 23,
+    "industry-news": 25,
     "ieee-document": 12,
     "product": 7,
     "proposal": 4
   },
   "category_counts": {
     "academia": 65,
-    "industry": 30,
+    "industry": 32,
     "standards": 16
   },
   "technologies_vocab": {
@@ -1223,6 +1226,7 @@ window.KB_DATA = {
         "2026-05-01_arxiv-bf-ax-coexistence-ns3"
       ],
       "entries_secondary": [
+        "2026-05-24_synaptics-wwc-hyper-connected-household",
         "2026-05-03_ieee-mentor-may-2026-pre-interim-digest",
         "2026-05-04_arxiv-csi-rff-microsignals-fingerprinting",
         "2026-05-01_arxiv-25-years-tutorial"
@@ -1295,6 +1299,7 @@ window.KB_DATA = {
         "2026-05-22_arxiv-halow-field-characterization",
         "2026-05-18_ieee-mentor-tgbp-antwerp-digest",
         "2026-05-12_ieee-mentor-tgbp-antwerp-digest",
+        "2026-05-24_synaptics-wwc-hyper-connected-household",
         "2026-05-03_ieee-11bp-amp-ul-channel-access",
         "2026-05-01_wifi-alliance-20mhz-iot-cert"
       ],
@@ -1313,11 +1318,12 @@ window.KB_DATA = {
           "2026-05-18_ieee-mentor-tgbp-antwerp-digest",
           "2026-05-12_ieee-mentor-tgbp-antwerp-digest"
         ],
+        "industry-news": [
+          "2026-05-24_synaptics-wwc-hyper-connected-household",
+          "2026-05-01_wifi-alliance-20mhz-iot-cert"
+        ],
         "proposal": [
           "2026-05-03_ieee-11bp-amp-ul-channel-access"
-        ],
-        "industry-news": [
-          "2026-05-01_wifi-alliance-20mhz-iot-cert"
         ]
       }
     },
@@ -1385,6 +1391,7 @@ window.KB_DATA = {
         "2026-05-12_ieee-mentor-tgbt-antwerp-digest",
         "2026-05-12_ieee-mentor-tgbq-antwerp-digest",
         "2026-05-12_ieee-mentor-ai-offload-sg-antwerp-digest",
+        "2026-05-24_qualcomm-wwc-ai-traffic-architecture-rethink",
         "2026-05-03_ieee-11bn-epcs-context-transfer-seamless-roaming",
         "2026-05-04_mediatek-wwc-dso-plus",
         "2026-05-01_hpe-aruba-mist-unified-2026",
@@ -1526,6 +1533,7 @@ window.KB_DATA = {
         "2026-05-16_arxiv-wireless-sense-llm",
         "2026-05-16_arxiv-csi-jepa",
         "2026-05-14_arxiv-envcoloc-wifi-localization",
+        "2026-05-24_qualcomm-wwc-ai-traffic-architecture-rethink",
         "2026-05-05_arxiv-iterate-ebpf-rate-control",
         "2026-05-12_arxiv-mu-shot-fi-multiuser-sensing",
         "2026-05-12_arxiv-ncsim-edge-wifi-interference",
@@ -1571,16 +1579,21 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((Wi-Fi for AI))\n    Workloads\n      XR streams\n      On-device LLM coordination\n      Agentic-traffic delivery\n      Wi-Fi-leg computation offload\n    Out of scope\n      5G MEC offload\n      NTN offload\n      NR-U cellular offload\n    Vendor positioning (secondaries)\n      Qualcomm FastConnect 8800 AI-Native\n      Gemtek AI-driven CPE\n      Intel four-pillar AI-enablement\n    Watch\n      XR / VR over MLO papers\n      On-device LLM coordination protocols\n      Deterministic delivery with AI signatures\n      Wi-Fi-leg offload-budget modelling",
       "diagram_mmd_zh": "mindmap\n  root((Wi-Fi 承载 AI 负载))\n    工作负载\n      XR 流\n      端侧 LLM 协调\n      智能体流量分发\n      Wi-Fi 跳算力卸载\n    范围之外\n      5G MEC 卸载\n      NTN 卸载\n      NR-U 蜂窝卸载\n    厂商站位（次要）\n      Qualcomm FastConnect 8800 AI-Native\n      Gemtek AI-driven CPE\n      Intel 四支柱 AI 启用\n    关注\n      MLO 上的 XR / VR 论文\n      端侧 LLM 协调协议\n      带 AI 签名的确定性交付\n      Wi-Fi 跳卸载预算建模",
       "entries_primary": [
+        "2026-05-24_qualcomm-wwc-ai-traffic-architecture-rethink",
         "2026-05-12_arxiv-ncsim-edge-wifi-interference"
       ],
       "entries_secondary": [
         "2026-05-16_arxiv-wireless-sense-llm",
         "2026-05-12_ieee-mentor-ai-offload-sg-antwerp-digest",
+        "2026-05-24_synaptics-wwc-hyper-connected-household",
         "2026-05-04_intel-wwc-wifi8-vision",
         "2026-05-01_gemtek-quectel-wifi8-mwc2026",
         "2026-05-01_qualcomm-wifi8-mwc2026"
       ],
       "by_type_primary": {
+        "industry-news": [
+          "2026-05-24_qualcomm-wwc-ai-traffic-architecture-rethink"
+        ],
         "academic-paper": [
           "2026-05-12_arxiv-ncsim-edge-wifi-interference"
         ]
@@ -1617,6 +1630,7 @@ window.KB_DATA = {
         "2026-05-12_ieee-mentor-wng-sc-antwerp-digest",
         "2026-05-12_hpe-self-driving-networks-723h",
         "2026-05-12_extreme-connect-platform-one-agentone",
+        "2026-05-24_qualcomm-wwc-ai-traffic-architecture-rethink",
         "2026-05-04_intel-wwc-wifi8-vision",
         "2026-05-01_ieee-march-2026-readout",
         "2026-05-01_arxiv-llm-rl-wireless-optimization",
@@ -1673,6 +1687,7 @@ window.KB_DATA = {
         "2026-05-18_ieee-mentor-tgbp-antwerp-digest",
         "2026-05-18_ieee-mentor-may-2026-post-interim-digest",
         "2026-05-12_ieee-mentor-tgbp-antwerp-digest",
+        "2026-05-24_synaptics-wwc-hyper-connected-household",
         "2026-05-03_ieee-11bn-epcs-context-transfer-seamless-roaming",
         "2026-05-01_arxiv-secure-wifi-ranging-az-bk",
         "2026-05-01_arxiv-intellicise-agentic-ai-security",
@@ -3288,6 +3303,39 @@ window.KB_DATA = {
       "search_blob": "ieee 802.11 ai offload sg mentor digest — antwerp interim may 2026 (initial par + csd) ieee 802.11 ai offload sg mentor 摘要——antwerp 期中会议 2026-05（首版 par 与 csd） ai offload sg agentic-ai ai-inference computation-offloading par csd the ai offload study group held its first formal session at the antwerp interim and started moving toward chartering. the two most important contributions of the week are **dcn 11-26-978 \"initial par discussion\"** and **dcn 11-26-979 \"initial csd discussion\"**, both from gaurang naik (qualcomm) and chair of the sg — these are the first concrete artefacts on the path from sg → study → par ballot → task group. par (project authorization request) defines what an amendment would do; csd (criteria for standards development) demonstrates the case for why ieee 802 should do it. the ai offload sg was formed at the march 2026 plenary (`2026-05-01_ieee-march-2026-readout`); having initial par/csd drafts on the table by may suggests the chair is targeting a study group → task group escalation at the july 2026 plenary. ai offload study group 在 antwerp 期中会议召开了首次正式会议，并开始向立项推进。本周最重要的两项贡献是 **dcn 11-26-978「初版 par 讨论」** 与 **dcn 11-26-979「初版 csd 讨论」**，均由 gaurang naik（qualcomm，sg 主席）提交 —— 这是从 sg → 研究 → par 投票 → 任务组 这条路径上的第一批具体产出。par（项目授权请求）定义一份修订要做什么；csd（标准制定准则）论证为什么 ieee 802 应该做这件事。ai offload sg 在 2026 年 3 月全会上成立（`2026-05-01_ieee-march-2026-readout`）；在 5 月就把初版 par/csd 摆到桌上，说明主席的目标是在 2026 年 7 月全会上把 sg 升级为 tg。 ieee-document wifi"
     },
     {
+      "id": "2026-05-24_synaptics-wwc-hyper-connected-household",
+      "date_found": "2026-05-24",
+      "technology": "wifi",
+      "date_published": "2026-05-08",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "Synaptics @ WWC Mountain View 2026: 60-device hyper-connected household needs Wi-Fi 7 IoT + edge AI + enterprise-grade security (anonymised PMKID, WPA3 client isolation, Wi-Fi-only Matter provisioning)",
+      "title_zh": "Synaptics 在 WWC Mountain View 2026：60 设备的超联接家庭需要 Wi-Fi 7 IoT + 边缘 AI + 企业级安全（匿名化 PMKID、WPA3 客户端隔离、仅 Wi-Fi 的 Matter 配网）",
+      "url": "https://wifinowglobal.com/news-blog/synaptics-wwc-the-hyper-connected-household-will-require-a-shift-in-wireless-architecture-said-shishir-gupta/",
+      "topics": [
+        "Wi-Fi 7",
+        "IoT",
+        "WPA3",
+        "security",
+        "Matter",
+        "WiFi-sensing"
+      ],
+      "topic_primary": "amp-iot",
+      "topics_secondary": [
+        "security-privacy",
+        "sensing-csi",
+        "wifi-for-ai"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-24_synaptics-wwc-hyper-connected-household.md",
+      "summary_short_en": "At Wi-Fi World Congress Mountain View 2026 (reported May 8), Synaptics VP of Product Marketing **Shishir Gupta** argued that the residential IoT environment is heading toward **>60 connected devices per household by 2030**, and that today's wireless architectures cannot deliver the latency, density, and security those households will need. Synaptics' position is that the answer is a high-density, high-performance IoT-targeted Wi-Fi 7 platform — they were first to ship an IoT-optimised Wi-Fi 7 platform in April 2025 — combined with edge AI for performance tuning and enterprise-grade security primitives moved down into consumer IoT.",
+      "summary_short_zh": "在 WWC Mountain View 2026（5 月 8 日报道），Synaptics 产品营销与客户工程副总裁 **Shishir Gupta** 指出：到 2030 年，居住空间内的联网设备将超过每户 **60 台**，今天的无线架构无法满足这种家庭所需的时延、密度与安全。Synaptics 的方案是面向 IoT 的高密度、高性能 Wi-Fi 7 平台 —— 他们于 2025 年 4 月率先推出 IoT 优化的 Wi-Fi 7 平台 —— 结合边缘 AI 用于性能调优，并把企业级安全原语下沉到消费 IoT。",
+      "body_html_en": "<h3>Summary</h3>\n<p>At Wi-Fi World Congress Mountain View 2026 (reported May 8), Synaptics VP of Product Marketing <strong>Shishir Gupta</strong> argued that the residential IoT environment is heading toward <strong>&gt;60 connected devices per household by 2030</strong>, and that today's wireless architectures cannot deliver the latency, density, and security those households will need. Synaptics' position is that the answer is a high-density, high-performance IoT-targeted Wi-Fi 7 platform — they were first to ship an IoT-optimised Wi-Fi 7 platform in April 2025 — combined with edge AI for performance tuning and enterprise-grade security primitives moved down into consumer IoT.</p>\n<p>The reliability-and-density case is built on Wi-Fi 7 features: <strong>MLO for QoS</strong> (separate physical paths for time-critical and best-effort flows), <strong>preamble puncturing</strong> (interference resilience in 6 GHz), and <strong>wider channels</strong> (raw capacity headroom). The security case is the unusual part of the pitch — Synaptics names specific mechanisms typically associated with enterprise networking and argues they belong in the residential IoT path: <strong>anonymised PMKID</strong> (the Pairwise Master Key Identifier is randomised so passwords can't be derived from observed associations), encrypted flows, <strong>WPA3 client isolation</strong> (restricting peer-to-peer links among devices authenticated on shared SSIDs), and <strong>Wi-Fi-only Matter provisioning</strong> — onboarding without the Bluetooth out-of-band leg, which closes a known onboarding-attack surface.</p>\n<p>On the AI angle, Gupta separates two roles: (1) <strong>AI for Wi-Fi</strong>: RF-configuration tuning especially under the higher complexity of Wi-Fi 8 (channel/MLO/EDCA parameter selection); proactive threat mitigation that detects 'side-door' entries before they propagate. (2) <strong>AI for new Wi-Fi services</strong>: fused sensing combining CSI + time-of-flight + Doppler delivers position/trajectory accuracy good enough for indoor navigation, presence/motion detection, gesture recognition, object classification, and retail journey analytics. The framing is that the high-end IoT radio becomes the sensing front-end for a household-scale awareness layer.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Forecast</strong>: &gt;60 connected devices per household by ~2030.</li><li><strong>Wi-Fi 7 IoT pillars</strong>: MLO for QoS, preamble puncturing for 6 GHz resilience, wider channels for capacity headroom.</li><li><strong>Enterprise-grade security in consumer IoT</strong>:</li><li><strong>Anonymised PMKID</strong> — randomised PMK identifier so observed associations don't leak password material.</li><li><strong>WPA3 client isolation</strong> — restricts peer-to-peer between devices authenticated on shared SSIDs.</li><li><strong>Wi-Fi-only Matter provisioning</strong> — eliminates the Bluetooth OOB onboarding leg.</li><li><strong>AI-for-Wi-Fi</strong>: automated RF/MLO/EDCA tuning (especially needed for Wi-Fi 8's higher parameter space); proactive threat detection for side-door network entries.</li><li><strong>AI-enabled Wi-Fi services</strong>: fused CSI + ToF + Doppler → presence, motion, gesture, object classification; product use-cases include indoor navigation, occupancy detection, retail journey analytics.</li><li><strong>Vendor context</strong>: Synaptics shipped the first IoT-optimised Wi-Fi 7 platform in April 2025; this WWC talk is the strategy framing on top of that platform.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This entry adds two things to the existing KB picture. First, the <strong>enterprise-grade-security-in-residential-IoT</strong> angle is novel: anonymised PMKID, WPA3 client isolation, and Wi-Fi-only Matter provisioning have appeared individually in enterprise / standards entries but have not been bundled as a &quot;consumer IoT 2030&quot; requirement. That bundling is the strategic signal — silicon vendors aiming at the smart-home / smart-meter market are starting to treat enterprise-style isolation as table stakes. Second, the <strong>fused-sensing pitch</strong> (CSI + ToF + Doppler in one product line, with concrete use-cases for retail and navigation) is consistent with the standards-side direction in <code>2026-05-01_arxiv-multiband-passive-sensing.md</code> and <code>2026-05-01_arxiv-wukong-neuro-wideband-sensing.md</code> but explicitly commercial — Synaptics is naming retail journey analytics as a near-term deliverable, not a research target. The piece complements the Intel and Qualcomm WWC entries (<code>2026-05-04_intel-wwc-wifi8-vision.md</code>, <code>2026-05-24_qualcomm-wwc-ai-traffic-architecture-rethink.md</code>) by capturing the third major silicon view of the same event from a Wi-Fi 7 IoT angle rather than the Wi-Fi 8 PC/agentic angle.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>在 WWC Mountain View 2026（5 月 8 日报道），Synaptics 产品营销与客户工程副总裁 <strong>Shishir Gupta</strong> 指出：到 2030 年，居住空间内的联网设备将超过每户 <strong>60 台</strong>，今天的无线架构无法满足这种家庭所需的时延、密度与安全。Synaptics 的方案是面向 IoT 的高密度、高性能 Wi-Fi 7 平台 —— 他们于 2025 年 4 月率先推出 IoT 优化的 Wi-Fi 7 平台 —— 结合边缘 AI 用于性能调优，并把企业级安全原语下沉到消费 IoT。</p>\n<p>可靠性与密度的论据基于 Wi-Fi 7 特性：<strong>用于 QoS 的 MLO</strong>（为时延敏感和尽力而为流量分配独立物理路径）、<strong>前导穿孔</strong>（6 GHz 干扰韧性）、<strong>更宽信道</strong>（原始容量裕量）。安全部分是该方案的不寻常之处 —— Synaptics 点名了通常属于企业网络的具体机制，并认为它们应该出现在居家 IoT 链路里：<strong>匿名化 PMKID</strong>（成对主密钥标识符随机化，使观察到的关联无法推导出口令）、加密流、<strong>WPA3 客户端隔离</strong>（限制同一 SSID 上已认证设备之间的对等链路）、以及<strong>仅 Wi-Fi 的 Matter 配网</strong> —— 去掉蓝牙带外配网腿，从而关闭已知的配网攻击面。</p>\n<p>AI 方面，Gupta 区分两种角色：(1) <strong>AI 服务 Wi-Fi</strong>：RF 配置调优，尤其是 Wi-Fi 8 更高复杂度场景下（信道/MLO/EDCA 参数选择）；主动威胁缓解，在&quot;侧门入侵&quot;扩散前发现。(2) <strong>AI 赋能新型 Wi-Fi 服务</strong>：融合 CSI + 飞行时间 + 多普勒的感知，达到足够精度支持室内导航、存在/运动检测、手势识别、物体分类与零售客流分析。该框架将高端 IoT 无线设备定位为家庭级感知层的前端。</p>\n<h3>技术要点</h3>\n<ul><li><strong>预测</strong>：约 2030 年，每家庭超过 60 台联网设备。</li><li><strong>Wi-Fi 7 IoT 三支柱</strong>：用于 QoS 的 MLO、前导穿孔（6 GHz 抗干扰）、更宽信道（容量裕量）。</li><li><strong>企业级安全下沉到消费 IoT</strong>：</li><li><strong>匿名化 PMKID</strong> —— 成对主密钥标识符随机化，观察到的关联不会泄露口令材料。</li><li><strong>WPA3 客户端隔离</strong> —— 限制同一 SSID 上已认证设备的点对点链路。</li><li><strong>仅 Wi-Fi 的 Matter 配网</strong> —— 取消蓝牙带外配网。</li><li><strong>AI 服务 Wi-Fi</strong>：自动 RF/MLO/EDCA 调参（Wi-Fi 8 参数空间更大尤其需要）；主动检测&quot;侧门&quot;网络入侵。</li><li><strong>AI 赋能 Wi-Fi 服务</strong>：CSI + ToF + 多普勒融合 → 存在、运动、手势、物体分类；产品场景含室内导航、占用检测、零售客流分析。</li><li><strong>厂商背景</strong>：Synaptics 于 2025 年 4 月率先推出 IoT 优化的 Wi-Fi 7 平台；本次 WWC 报告是该平台上的战略叙事。</li></ul>\n<h3>意义与新意</h3>\n<p>本条目对现有 KB 增加两点。其一，<strong>企业级安全下沉到居住 IoT</strong> 是新角度：匿名化 PMKID、WPA3 客户端隔离、仅 Wi-Fi 的 Matter 配网这些机制在企业/标准类条目中单独出现过，但作为&quot;2030 年消费级 IoT&quot;的捆绑需求来呈现，这种捆绑本身是战略信号 —— 面向智能家居/智能电表市场的芯片厂商开始把企业级隔离视为标配。其二，<strong>融合感知</strong>叙事（CSI + ToF + 多普勒整合到同一产品线，并明确零售与导航场景）与 <code>2026-05-01_arxiv-multiband-passive-sensing.md</code>、<code>2026-05-01_arxiv-wukong-neuro-wideband-sensing.md</code> 的标准侧方向一致，但更具商业化 —— Synaptics 把零售客流分析点名为近期可交付项，而非研究目标。本条目与 Intel 和 Qualcomm 的 WWC 条目（<code>2026-05-04_intel-wwc-wifi8-vision.md</code>、<code>2026-05-24_qualcomm-wwc-ai-traffic-architecture-rethink.md</code>）互补，从 Wi-Fi 7 IoT 视角而非 Wi-Fi 8 PC/智能体视角捕获了同一活动的第三类主要芯片厂商立场。</p>",
+      "images": [],
+      "search_blob": "synaptics @ wwc mountain view 2026: 60-device hyper-connected household needs wi-fi 7 iot + edge ai + enterprise-grade security (anonymised pmkid, wpa3 client isolation, wi-fi-only matter provisioning) synaptics 在 wwc mountain view 2026：60 设备的超联接家庭需要 wi-fi 7 iot + 边缘 ai + 企业级安全（匿名化 pmkid、wpa3 客户端隔离、仅 wi-fi 的 matter 配网） wi-fi 7 iot wpa3 security matter wifi-sensing at wi-fi world congress mountain view 2026 (reported may 8), synaptics vp of product marketing **shishir gupta** argued that the residential iot environment is heading toward **>60 connected devices per household by 2030**, and that today's wireless architectures cannot deliver the latency, density, and security those households will need. synaptics' position is that the answer is a high-density, high-performance iot-targeted wi-fi 7 platform — they were first to ship an iot-optimised wi-fi 7 platform in april 2025 — combined with edge ai for performance tuning and enterprise-grade security primitives moved down into consumer iot. 在 wwc mountain view 2026（5 月 8 日报道），synaptics 产品营销与客户工程副总裁 **shishir gupta** 指出：到 2030 年，居住空间内的联网设备将超过每户 **60 台**，今天的无线架构无法满足这种家庭所需的时延、密度与安全。synaptics 的方案是面向 iot 的高密度、高性能 wi-fi 7 平台 —— 他们于 2025 年 4 月率先推出 iot 优化的 wi-fi 7 平台 —— 结合边缘 ai 用于性能调优，并把企业级安全原语下沉到消费 iot。 industry-news wifi"
+    },
+    {
       "id": "2026-05-22_arxiv-d2c-vs-ntn-comparative-analysis",
       "date_found": "2026-05-22",
       "technology": "wifi",
@@ -3384,6 +3432,49 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>在 Extreme Connect 2026（2026-05-06 发布）上，Extreme Networks 将 Platform ONE—— 该平台 2025-07 首次 GA，作为有线 / Wi-Fi / 织构 / SD-WAN 的统一控制面 —— 推升为公司完整的企业网络底座，并在其上推出第二代 Agent ONE 智能体 AI 堆栈。Agent ONE Coworker 当前已上线，运行在「主动型温和同事」模式下：持续监控网络、调查异常、向运维提出变更建议待批。Agent ONE Operator 计划在 2026 第四季度推出，将在可配置的护栏内自动执行多步工作流——这与 HPE 同周「自驾网络」叙事中同样的「智能体 vs 自治」二分法一致。</p>\n<p>在 Wi-Fi 硬件侧 Extreme 扩展了其 802.11be 产品线：5022 与 5060（4×4 三频段 AP，专设感知射频）、3020/3060（入门级 2×2 三频段）、以及 3020W 壁挂式型号（面向酒店与零售）—— 直接对标 HPE 同周发布的 723H。配套交换机更新包括 5420M 混合介质交换机以及 7830 系列的 100/400G 上联。</p>\n<p>架构上 Agent ONE 是一个四层堆栈：来自超大规模云的前沿 LLM；Extreme AI Core—— 维护一张面向网络的知识图谱，编码 MAC、客户端、策略与服务之间的关系；Skills 层 —— 提供 Entra ID / SIEM / ServiceNow 等连接器；以及带两个模式的智能体执行层。Edge Services —— Platform ONE 的扩展，可在本地编排多厂商设备（Cisco、Aruba、HPE、Juniper）并向上汇报 —— 回应了此前客户对织构层「黑盒」的反馈。</p>\n<h3>技术要点</h3>\n<ul><li><strong>Agent ONE Coworker（GA）</strong> —— 主动监控、异常调查、向运维提出变更建议待批。</li><li><strong>Agent ONE Operator（2026 Q4）</strong> —— 在可配置护栏内自动执行多步工作流。</li><li><strong>AI Core 知识图谱</strong> —— 面向网络的图，关联 MAC、客户端、策略、服务；这是让 LLM 能就具体身份做推理（而不是泛泛网络概念）的底座。</li><li><strong>Wi-Fi 7 AP</strong> —— 5022 / 5060（4×4 三频段+专设感知射频）、3020 / 3060（2×2 三频段入门）、3020W（壁挂酒店/零售）。</li><li><strong>交换机</strong> —— 5420M 混合介质（48 口光/铜）；7830 系列 100/400G；4600 系列为 OT/工业现场加固。</li><li><strong>多厂商 Edge Services</strong> —— 通过单一 Platform ONE 视图本地编排 Cisco / Aruba / HPE / Juniper 设备。</li><li><strong>财务参考</strong> —— Q3 营收 3.169 亿美元（同比 +11%）、SaaS ARR 2.364 亿美元（+29%）—— 这些数字相关，因为它们是支撑继续在智能体/AI 上投入的公开多头叙事。</li></ul>\n<h3>意义与新意</h3>\n<p>与 HPE 2026-05-06 的发布以及 Cisco 的 Catalyst+Meraki AgenticOps 路线放在一起，这确认了「智能体 AI 用于网络」的模式在不到半年内已从分析师讲稿落地为三厂商的商业竞赛。这三家的架构模式高度相似：编码网络状态的知识图谱 + LLM 推理 + 受技能约束的动作层，且都遵循「先人在环、后自治」的节奏。5022/5060 上专设的感知射频值得注意 —— 它把 Extreme 放到了 <code>2026-05-04_hpe-aruba-730-utb-wifi7-ap</code> 上 HPE 已经占据的「AP 即传感器」位置，说明感知射频正在成为旗舰企业级 AP 的标配，而不是差异化卖点。</p>",
       "images": [],
       "search_blob": "extreme connect 2026 — platform one expands across wired/wi-fi/fabric/sd-wan; agent one coworker + wi-fi 7 lineup expansion extreme connect 2026 —— platform one 扩展至有线 / wi-fi / 织构 / sd-wan；agent one 协作智能体与 wi-fi 7 产品线扩张 wi-fi 7 802.11be extreme agentic-ai platform one enterprise at extreme connect 2026 (announced 2026-05-06), extreme networks promoted platform one — first generally available in july 2025 as a wired/wi-fi/fabric/sd-wan control plane — into the company's full enterprise networking foundation, and introduced the second-generation agent one agentic-ai stack on top of it. agent one coworker is available now and runs in a \"proactive warm coworker\" mode: it monitors the network continuously, investigates anomalies, and proposes changes for operator approval. agent one operator, slated for q4 2026, will execute multi-step workflows autonomously within configurable guardrails — the same agentic-vs-autonomous split hpe used for its self-driving networks pitch the same week. 在 extreme connect 2026（2026-05-06 发布）上，extreme networks 将 platform one—— 该平台 2025-07 首次 ga，作为有线 / wi-fi / 织构 / sd-wan 的统一控制面 —— 推升为公司完整的企业网络底座，并在其上推出第二代 agent one 智能体 ai 堆栈。agent one coworker 当前已上线，运行在「主动型温和同事」模式下：持续监控网络、调查异常、向运维提出变更建议待批。agent one operator 计划在 2026 第四季度推出，将在可配置的护栏内自动执行多步工作流——这与 hpe 同周「自驾网络」叙事中同样的「智能体 vs 自治」二分法一致。 product wifi"
+    },
+    {
+      "id": "2026-05-24_qualcomm-wwc-ai-traffic-architecture-rethink",
+      "date_found": "2026-05-24",
+      "technology": "wifi",
+      "date_published": "2026-05-05",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "Qualcomm @ WWC Mountain View 2026: AI traffic surge drives Wi-Fi 8 architecture rethink — cloud + access + edge tightly integrated, compute on the platform itself",
+      "title_zh": "Qualcomm 在 WWC Mountain View 2026：AI 流量激增推动 Wi-Fi 8 架构重构 —— 云、接入、边缘紧耦合，平台本身即承担算力",
+      "url": "https://wifinowglobal.com/news-blog/qualcomm-wwc-surge-in-ai-traffic-services-drives-need-for-a-connectivity-architecture-rethink-says-ganesh-swaminathan/",
+      "topics": [
+        "802.11bn",
+        "products",
+        "agentic-AI",
+        "QoE",
+        "AIOps"
+      ],
+      "topic_primary": "wifi-for-ai",
+      "topics_secondary": [
+        "wifi8-uhr",
+        "agentic-wifi",
+        "ai-for-wifi"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-24_qualcomm-wwc-ai-traffic-architecture-rethink.md",
+      "summary_short_en": "At Wi-Fi World Congress Mountain View 2026 (reported May 5), Qualcomm VP & GM **Ganesh Swaminathan** framed Wi-Fi 8 as the trigger for a network-architecture rethink rather than just another PHY/MAC bump. The headline number: per Nokia's 2024 Global Network Traffic Report, AI is expected to reach **33% of global Internet traffic**, with direct consumer-AI traffic growing >50% CAGR through 2033. The architectural implication, per Qualcomm, is that the home gateway becomes the critical node: it terminates the service-provider network into the home while holding context about users, applications, and the live environment that AI-based services need to behave well.",
+      "summary_short_zh": "在 WWC Mountain View 2026（5 月 5 日报道），Qualcomm 副总裁兼总经理 **Ganesh Swaminathan** 将 Wi-Fi 8 定位为引发网络架构整体重构的契机，而非又一次单纯的 PHY/MAC 升级。关键数据：根据 Nokia 2024 全球网络流量报告，AI 流量预计将占全球 Internet 流量的 **33%**，直接消费级 AI 流量在 2033 年前年复合增长率超过 50%。架构层面的含义是：家庭网关成为关键节点 —— 它既是运营商网络在家庭中的延伸，也持有用户、应用、实时环境的上下文，这些都是 AI 服务表现良好所需的。",
+      "body_html_en": "<h3>Summary</h3>\n<p>At Wi-Fi World Congress Mountain View 2026 (reported May 5), Qualcomm VP &amp; GM <strong>Ganesh Swaminathan</strong> framed Wi-Fi 8 as the trigger for a network-architecture rethink rather than just another PHY/MAC bump. The headline number: per Nokia's 2024 Global Network Traffic Report, AI is expected to reach <strong>33% of global Internet traffic</strong>, with direct consumer-AI traffic growing &gt;50% CAGR through 2033. The architectural implication, per Qualcomm, is that the home gateway becomes the critical node: it terminates the service-provider network into the home while holding context about users, applications, and the live environment that AI-based services need to behave well.</p>\n<p>Qualcomm's prescription has three integrated layers — <strong>cloud + access + edge</strong> — that must work as a single fabric. The pitch contrasts with the prevailing &quot;AI at the edge&quot; framing from some chipset peers: Qualcomm argues no single tier can be the weak link if the experience is to hold up under always-on, multi-modal, agentic devices that drive both throughput and proactive uplink traffic. Wi-Fi 8's specific contribution is consistency-and-reliability rather than peak speed — &quot;consistent and continuous throughput in more locations, ultra-high reliability, and deterministic low latency.&quot; Swaminathan called out the <strong>uplink improvements</strong> in 802.11bn as the under-discussed piece that matters most for AI services (vision/audio/sensor data flowing FROM the device).</p>\n<p>The most product-relevant claim is that the platform itself now ships <strong>two new architectural compute components</strong>: (1) on-device inference for <strong>Agentic AI</strong> support, and (2) compute for <strong>Network AI</strong> — always-on telemetry/AIOps that analyses traffic and network health to detect early warning signs of failures and to optimise QoE in real time. &quot;Gone are the days where we're introducing just another PHY and MAC Wi-Fi connectivity standard,&quot; Swaminathan said. This frames Qualcomm's Wi-Fi 8 platform (FastConnect 8800 + Dragonwing NPro A8 Elite, debuted at MWC 2026 — see <code>2026-05-01_qualcomm-wifi8-mwc2026.md</code>) as a compute-and-connectivity converged product, not a discrete radio.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>AI traffic projection cited</strong>: AI = 33% of global Internet traffic; consumer-AI CAGR &gt;50% through 2033 (source: Nokia Global Network Traffic Report 2024).</li><li><strong>Home gateway = critical node</strong>: it's the SP-network terminator with rich household context (users, apps, environment) that AI services consume.</li><li><strong>Three-tier integration</strong>: cloud + access + edge must operate as one fabric — Qualcomm explicitly argues against &quot;edge-only&quot; framing.</li><li><strong>Wi-Fi 8 angle</strong>: consistency/reliability over peak speed — &quot;deterministic low latency&quot;; <strong>uplink</strong> highlighted as the under-appreciated piece most relevant for AI (sensor / vision upload).</li><li><strong>Platform compute additions</strong>: (1) on-device inference for Agentic AI; (2) Network AI compute for always-on telemetry, AIOps, real-time QoE optimisation.</li><li><strong>Strategic framing</strong>: &quot;Gone are the days where we're introducing just another PHY and MAC Wi-Fi connectivity standard.&quot;</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the clearest articulation yet of how a top-tier silicon vendor reframes Wi-Fi 8 — Qualcomm is explicitly de-emphasising the spec-bump narrative (no peak-rate bragging) and selling instead a converged connectivity-plus-compute platform whose value is QoE consistency under AI workloads. Three claims advance the existing KB picture: (a) the explicit 33%-AI-traffic / 50%-CAGR sizing gives a citable demand-side number that previous entries left implicit; (b) the <strong>uplink-matters-most</strong> framing inverts the speed/peak conversation that has dominated Wi-Fi 8 marketing (TP-Link's BE770 review, ASUS NeoCore CES demos, etc.); (c) the explicit <strong>two compute components</strong> layered on the radio platform (Agentic-AI inference + Network-AI AIOps) puts Qualcomm in the same architectural lane as the Intel @WWC pitch (<code>2026-05-04_intel-wwc-wifi8-vision.md</code>, &quot;beyond-standard&quot; features) and the MediaTek DSO+ pitch (<code>2026-05-04_mediatek-wwc-dso-plus.md</code>) — a converging vendor-strategy theme that Wi-Fi 8 silicon ships with substantial non-standard compute on-die.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>在 WWC Mountain View 2026（5 月 5 日报道），Qualcomm 副总裁兼总经理 <strong>Ganesh Swaminathan</strong> 将 Wi-Fi 8 定位为引发网络架构整体重构的契机，而非又一次单纯的 PHY/MAC 升级。关键数据：根据 Nokia 2024 全球网络流量报告，AI 流量预计将占全球 Internet 流量的 <strong>33%</strong>，直接消费级 AI 流量在 2033 年前年复合增长率超过 50%。架构层面的含义是：家庭网关成为关键节点 —— 它既是运营商网络在家庭中的延伸，也持有用户、应用、实时环境的上下文，这些都是 AI 服务表现良好所需的。</p>\n<p>Qualcomm 的处方是三层紧耦合：<strong>云 + 接入 + 边缘</strong>，必须作为一个整体协同。这与部分芯片同行强调&quot;AI 在边缘&quot;的叙事不同，Qualcomm 认为在常开、多模态、智能体（Agentic）设备同时拉高吞吐与主动上行流量的场景下，任何一层都不能成为短板。Wi-Fi 8 的具体贡献是一致性与可靠性，而非峰值速度 —— &quot;在更多位置上保持一致且持续的吞吐、超高可靠性、确定性低时延&quot;。Swaminathan 特别点出 802.11bn 的<strong>上行能力改进</strong>是被忽视、但对 AI 服务最关键的一环（视觉/音频/传感器数据从设备上行）。</p>\n<p>最具产品意义的论断是：平台本身已经新增 <strong>两类架构性算力组件</strong>：(1) 用于 <strong>Agentic AI</strong> 支撑的设备端推理算力，(2) 用于 <strong>Network AI</strong> 的算力 —— 始终在线、持续分析流量与网络健康度的遥测/AIOps，提前发现潜在故障并实时优化 QoE。&quot;我们不再只是引入又一个 PHY/MAC Wi-Fi 连接标准。&quot;这把 Qualcomm Wi-Fi 8 平台（FastConnect 8800 + Dragonwing NPro A8 Elite，详见 <code>2026-05-01_qualcomm-wifi8-mwc2026.md</code>）定位为算力与连接融合的产品，而非分立的射频器件。</p>\n<h3>技术要点</h3>\n<ul><li><strong>AI 流量预测</strong>：AI 占全球 Internet 流量 33%；消费级 AI 在 2033 年前 CAGR &gt; 50%（来源：Nokia 2024 全球网络流量报告）。</li><li><strong>家庭网关 = 关键节点</strong>：终结运营商网络入户，并持有用户/应用/环境的家庭上下文，是 AI 服务的必备输入。</li><li><strong>三层耦合架构</strong>：云 + 接入 + 边缘必须作为单一织物运作 —— Qualcomm 明确反对&quot;仅边缘&quot;叙事。</li><li><strong>Wi-Fi 8 的角色</strong>：一致性与可靠性优于峰值速度 —— &quot;确定性低时延&quot;；特别强调 <strong>上行</strong> 是 AI 时代最被忽视、最关键的一环（传感器/视觉数据上行）。</li><li><strong>平台算力新增</strong>：(1) 设备端推理算力支撑智能体 AI；(2) Network AI 算力支持常开遥测、AIOps、实时 QoE 优化。</li><li><strong>战略定位</strong>：&quot;我们不再只是发布又一个 PHY/MAC Wi-Fi 连接标准的时代了。&quot;</li></ul>\n<h3>意义与新意</h3>\n<p>这是迄今为止顶级芯片厂商对 Wi-Fi 8 最清晰的重新定位 —— Qualcomm 明确淡化&quot;规格升级&quot;叙事（不再炫耀峰值速率），转而推销融合的&quot;连接 + 算力&quot;平台，其价值在于 AI 负载下的 QoE 一致性。三点对现有 KB 的推进：(a) 明确给出 33% AI 流量占比 / 50% CAGR 这一可引用的需求侧数字，此前条目仅含暗示；(b) <strong>上行最关键</strong>的框架颠覆了主导 Wi-Fi 8 营销的&quot;峰值/速度&quot;对话（TP-Link BE770 评测、ASUS NeoCore CES 演示等）；(c) 明确将 <strong>两类算力组件</strong>（智能体 AI 推理 + Network AI 的 AIOps）叠加到无线平台之上，使 Qualcomm 与 Intel @WWC 提出的&quot;超出标准&quot;特性（<code>2026-05-04_intel-wwc-wifi8-vision.md</code>）与 MediaTek DSO+（<code>2026-05-04_mediatek-wwc-dso-plus.md</code>）形成趋同的厂商战略主题 —— Wi-Fi 8 芯片在出货时已搭载大量非标准片上算力。</p>",
+      "images": [
+        {
+          "url": "https://wifinowevents.s3.amazonaws.com/uploads/2026/05/slide17-768x432.png",
+          "caption_en": "Qualcomm vision for next-gen home connectivity (including Wi-Fi 8) and compute architecture with platform support for both Agentic-AI inference and Network-AI optimisation",
+          "caption_zh": "Qualcomm 对包含 Wi-Fi 8 的下一代家庭连接与算力架构愿景，平台同时支持智能体 AI 推理与 Network AI 优化两类算力"
+        },
+        {
+          "url": "https://wifinowevents.s3.amazonaws.com/uploads/2026/05/Screenshot-2026-05-04-at-15.47.45-600x807.png",
+          "caption_en": "Ganesh Swaminathan, Qualcomm VP & GM, speaking at WWC Mountain View 2026",
+          "caption_zh": "Qualcomm 副总裁兼总经理 Ganesh Swaminathan 在 WWC Mountain View 2026 演讲"
+        }
+      ],
+      "search_blob": "qualcomm @ wwc mountain view 2026: ai traffic surge drives wi-fi 8 architecture rethink — cloud + access + edge tightly integrated, compute on the platform itself qualcomm 在 wwc mountain view 2026：ai 流量激增推动 wi-fi 8 架构重构 —— 云、接入、边缘紧耦合，平台本身即承担算力 802.11bn products agentic-ai qoe aiops at wi-fi world congress mountain view 2026 (reported may 5), qualcomm vp & gm **ganesh swaminathan** framed wi-fi 8 as the trigger for a network-architecture rethink rather than just another phy/mac bump. the headline number: per nokia's 2024 global network traffic report, ai is expected to reach **33% of global internet traffic**, with direct consumer-ai traffic growing >50% cagr through 2033. the architectural implication, per qualcomm, is that the home gateway becomes the critical node: it terminates the service-provider network into the home while holding context about users, applications, and the live environment that ai-based services need to behave well. 在 wwc mountain view 2026（5 月 5 日报道），qualcomm 副总裁兼总经理 **ganesh swaminathan** 将 wi-fi 8 定位为引发网络架构整体重构的契机，而非又一次单纯的 phy/mac 升级。关键数据：根据 nokia 2024 全球网络流量报告，ai 流量预计将占全球 internet 流量的 **33%**，直接消费级 ai 流量在 2033 年前年复合增长率超过 50%。架构层面的含义是：家庭网关成为关键节点 —— 它既是运营商网络在家庭中的延伸，也持有用户、应用、实时环境的上下文，这些都是 ai 服务表现良好所需的。 industry-news wifi"
     },
     {
       "id": "2026-05-05_belden-acquires-ruckus-1-85b",
