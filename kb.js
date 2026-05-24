@@ -6,7 +6,7 @@ window.KB_DATA = {
     "agentic-AI": 33,
     "802.11bn": 28,
     "scheduling": 24,
-    "products": 22,
+    "products": 23,
     "802.11be": 21,
     "WiFi-sensing": 18,
     "security": 16,
@@ -40,6 +40,8 @@ window.KB_DATA = {
     "NearLink": 2,
     "SparkLink": 2,
     "ISLA": 2,
+    "UWB": 2,
+    "deterministic-latency": 2,
     "BT-LE": 2,
     "Channel-Sounding": 2,
     "LLM-agent": 2,
@@ -56,6 +58,7 @@ window.KB_DATA = {
     "network-slicing": 2,
     "FCC": 2,
     "automotive": 2,
+    "healthcare": 2,
     "AIOps": 2,
     "enterprise": 2,
     "O-RAN": 2,
@@ -74,6 +77,9 @@ window.KB_DATA = {
     "Nordic": 1,
     "energy-efficiency": 1,
     "protocol-hybrid": 1,
+    "LE-UWB": 1,
+    "low-power": 1,
+    "CES": 1,
     "Ambient-IoT": 1,
     "802.11ah": 1,
     "HaLow": 1,
@@ -134,7 +140,6 @@ window.KB_DATA = {
     "IMMW": 1,
     "beam-establishment": 1,
     "polarization": 1,
-    "deterministic-latency": 1,
     "AMP": 1,
     "ambient-power": 1,
     "S1G-coexistence": 1,
@@ -147,6 +152,9 @@ window.KB_DATA = {
     "CSD": 1,
     "WPA3": 1,
     "Matter": 1,
+    "UWB-radar": 1,
+    "vital-sign": 1,
+    "dielectric-spectroscopy": 1,
     "5G": 1,
     "Release 20": 1,
     "MRSS": 1,
@@ -202,10 +210,8 @@ window.KB_DATA = {
     "FTM": 1,
     "power-save": 1,
     "fall-detection": 1,
-    "healthcare": 1,
     "transformer": 1,
     "regulation": 1,
-    "UWB": 1,
     "payments": 1,
     "FiRa": 1,
     "JCB": 1,
@@ -235,24 +241,26 @@ window.KB_DATA = {
     "mlo": 2,
     "nearlink-slb": 1,
     "bt-le": 1,
+    "uwb-ranging": 1,
     "network-slicing": 1,
     "sat-direct-device": 1,
     "mmwave-bq": 1,
+    "uwb-radar": 1,
     "ntn": 1,
     "nearlink-automotive": 1,
     "uwb-fi-ra": 1
   },
   "type_counts": {
-    "academic-paper": 68,
-    "industry-news": 28,
+    "academic-paper": 69,
+    "industry-news": 29,
     "ieee-document": 12,
     "product": 7,
     "proposal": 4,
     "bluetooth-spec": 1
   },
   "category_counts": {
-    "academia": 68,
-    "industry": 35,
+    "academia": 69,
+    "industry": 36,
     "standards": 17
   },
   "technologies_vocab": {
@@ -2335,11 +2343,18 @@ window.KB_DATA = {
       "diagram_mmd": "",
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
-      "entries_primary": [],
+      "entries_primary": [
+        "2026-05-24_spark-sr1120-le-uwb-wwc-pitch"
+      ],
       "entries_secondary": [
+        "2026-05-24_arxiv-uwb-fat-body-composition",
         "2026-05-21_jcb-uwb-payments-japan"
       ],
-      "by_type_primary": {}
+      "by_type_primary": {
+        "industry-news": [
+          "2026-05-24_spark-sr1120-le-uwb-wwc-pitch"
+        ]
+      }
     },
     "uwb-fi-ra": {
       "id": "uwb-fi-ra",
@@ -2396,9 +2411,17 @@ window.KB_DATA = {
       "diagram_mmd": "",
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
-      "entries_primary": [],
-      "entries_secondary": [],
-      "by_type_primary": {}
+      "entries_primary": [
+        "2026-05-24_arxiv-uwb-fat-body-composition"
+      ],
+      "entries_secondary": [
+        "2026-05-24_spark-sr1120-le-uwb-wwc-pitch"
+      ],
+      "by_type_primary": {
+        "academic-paper": [
+          "2026-05-24_arxiv-uwb-fat-body-composition"
+        ]
+      }
     },
     "nearlink-slb": {
       "id": "nearlink-slb",
@@ -2583,6 +2606,37 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>Zhou、Shen、Cao 与 Huang 提出 Enhanced-BLE，一个在 Nordic Semiconductor 统一 nRF54L15 平台上集成低功耗蓝牙（BLE）与 Nordic 增强型 ShockBurst（ESB）协议的混合框架。BLE 面向连接架构在唤醒时延、吞吐和能效之间存在权衡，限制了其适用于突发模式和按需感知场景。ESB 作为轻量无连接 2.4 GHz 协议，支持快速唤醒和高效数据传输，但缺乏 BLE 级别的可靠双向通信能力。</p>\n<p>在 nRF54L15 上的系统基准测试表明：ESB 相对 BLE 近乎减半包传输时间和能耗，前向吞吐翻倍，间歇运行时唤醒时延和能耗降低近 20 倍。但 ESB 反向传输存在丢包。Enhanced-BLE 通过自适应射频调度和共存感知的连接管理解决此权衡——结合基于 ESB 的高速前向传输与基于 BLE 的可靠反向通信。BLE 到 ESB 切换约 18 ms 完成，从待机恢复 BLE 运行约 49 ms。该框架实现约 2 倍于纯 BLE 的前向吞吐，同时降低唤醒时延。</p>\n<h3>技术要点</h3>\n<ul><li><strong>BLE-ESB 混合协议</strong>：ESB 用于高速前向路径，BLE 用于可靠反向路径——共存于同一 Nordic nRF54L15 硬件</li><li><strong>nRF54L15 基准测试</strong>：ESB 包传输时间/能耗减半，前向吞吐翻倍，唤醒时延较 BLE 降低 20 倍</li><li><strong>自适应射频调度</strong>：共存感知调度管理同一 2.4 GHz 射频上 BLE 与 ESB 的分时共享</li><li><strong>快速切换</strong>：BLE→ESB 约 18 ms，待机→BLE 约 49 ms</li><li><strong>协议选择逻辑</strong>：框架根据流量模式（突发 vs 持续、前向 vs 双向）动态选择 BLE 或 ESB</li></ul>",
       "images": [],
       "search_blob": "enhanced-ble: a hybrid ble-esb framework for energy-efficient 2.4 ghz iot communication enhanced-ble：面向高能效 2.4 ghz iot 通信的 ble-esb 混合框架 ble esb nordic iot energy-efficiency protocol-hybrid zhou, shen, cao, and huang propose enhanced-ble, a hybrid framework that integrates bluetooth low energy (ble) with nordic semiconductor's enhanced shockburst (esb) protocol on a unified nrf54l15 platform. ble's connection-oriented architecture introduces tradeoffs among wake-up latency, throughput, and energy efficiency, limiting its suitability for burst-mode and on-demand sensing. esb, a lightweight connectionless 2.4 ghz protocol, enables fast wake-up and efficient data transmission but lacks ble-level robustness for sustained bidirectional communication. zhou、shen、cao 与 huang 提出 enhanced-ble，一个在 nordic semiconductor 统一 nrf54l15 平台上集成低功耗蓝牙（ble）与 nordic 增强型 shockburst（esb）协议的混合框架。ble 面向连接架构在唤醒时延、吞吐和能效之间存在权衡，限制了其适用于突发模式和按需感知场景。esb 作为轻量无连接 2.4 ghz 协议，支持快速唤醒和高效数据传输，但缺乏 ble 级别的可靠双向通信能力。 academic-paper bluetooth"
+    },
+    {
+      "id": "2026-05-24_spark-sr1120-le-uwb-wwc-pitch",
+      "date_found": "2026-05-24",
+      "technology": "uwb",
+      "date_published": "2026-05-18",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "SPARK SR1120 LE-UWB transceiver pitched at WWC: 40.96 Mbps, sub-200 µs latency, 1 nJ/bit; CES 2026 Innovation Award; CAD $17M Series B; positioned as deterministic-low-power layer below BT/Wi-Fi for AI wearables, presence detection, gaming",
+      "title_zh": "SPARK SR1120 LE-UWB 收发机在 WWC 推介：40.96 Mbps、亚 200 µs 时延、1 nJ/比特；CES 2026 创新奖；C$17M B 轮；定位为面向 AI 可穿戴、存在检测、游戏的、低于 BT/Wi-Fi 的确定性低功耗层",
+      "url": "https://wifinowglobal.com/news-and-blog/ultra-wideband-for-ultra-low-power-deterministic-connectivity-is-poised-for-a-breakthrough-says-spark-microsystems/",
+      "topics": [
+        "UWB",
+        "LE-UWB",
+        "low-power",
+        "products",
+        "CES",
+        "deterministic-latency"
+      ],
+      "topic_primary": "uwb-ranging",
+      "topics_secondary": [
+        "uwb-radar"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-24_spark-sr1120-le-uwb-wwc-pitch.md",
+      "summary_short_en": "SPARK Microsystems (Montreal, founded 2016) has been pushing a category they call **LE-UWB** — Low-Energy Ultra-Wideband — as a third short-range wireless option positioned between BLE (efficient but throughput-limited) and Wi-Fi (high-throughput but power-hungry). The pitch has been on the road through Q1–Q2 2026: a Wi-Fi NOW Global interview (May 18 2026), CES 2026 Innovation Award honors, and a **CAD $17 million Series B follow-on closed March 2026** (co-led by Idealist Capital and Real Ventures).",
+      "summary_short_zh": "SPARK Microsystems（蒙特利尔，成立于 2016 年）一直在推广他们称为 **LE-UWB**（低能耗超宽带）的类别，将其定位为介于 BLE（高效但吞吐受限）与 Wi-Fi（高吞吐但耗电）之间的第三种短距无线选项。该推介贯穿 2026 Q1–Q2：Wi-Fi NOW Global 访谈（2026 年 5 月 18 日）、CES 2026 创新奖认可，以及 **2026 年 3 月完成的 1700 万加元 B 轮跟投**（由 Idealist Capital 与 Real Ventures 联合领投）。",
+      "body_html_en": "<h3>Summary</h3>\n<p>SPARK Microsystems (Montreal, founded 2016) has been pushing a category they call <strong>LE-UWB</strong> — Low-Energy Ultra-Wideband — as a third short-range wireless option positioned between BLE (efficient but throughput-limited) and Wi-Fi (high-throughput but power-hungry). The pitch has been on the road through Q1–Q2 2026: a Wi-Fi NOW Global interview (May 18 2026), CES 2026 Innovation Award honors, and a <strong>CAD $17 million Series B follow-on closed March 2026</strong> (co-led by Idealist Capital and Real Ventures).</p>\n<p>The flagship silicon is the <strong>SPARK SR1120 LE-UWB transceiver</strong> — the company claims it as &quot;the industry's first&quot; LE-UWB part. The three headline numbers SPARK pushes:</p>\n<ul><li><strong>Throughput up to 40.96 Mbps</strong> — well below Wi-Fi 6E but ~30× the practical BLE 5.x ceiling on a single connection.</li><li><strong>Sub-200 µs latency</strong> — substantially lower than BLE (typical ~7.5 ms minimum connection interval) and lower than what Wi-Fi 7 R-TWT typically delivers without dedicated TX opportunities.</li><li><strong>1 nJ/bit power efficiency</strong> — the figure SPARK leans on hardest; for context, BLE 5.x is typically 5–20 nJ/bit on commodity silicon, so a 5–20× efficiency claim if it holds at workload-realistic conditions.</li></ul>\n<p>The target applications named at WWC and CES: <strong>AI wearables</strong> (always-on local inference needing low-latency uplink to a phone/AP), <strong>presence detection</strong> (a development kit specifically announced for this), and <strong>gaming devices</strong> (controllers, peripherals where the 200 µs latency floor is the differentiator). The &quot;deterministic&quot; framing is the technical-marketing pitch — competing with BLE's connection-interval jitter and Wi-Fi's contention-window variance by leveraging UWB's pulse-based PHY where the airtime per packet is bounded and predictable.</p>\n<p>The strategic question SPARK is implicitly answering: <strong>does the IEEE 802.15.4z / FiRa UWB stack — which is ranging-centric — need a sibling stack optimised for data transport?</strong> SPARK's bet is yes. Whether the rest of the UWB ecosystem (Apple U2, NXP Trimension, Qorvo) follows them into LE-UWB-as-data-link versus staying ranging-first is the open question.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Silicon</strong>: SPARK SR1120, claimed as industry's first LE-UWB transceiver.</li><li><strong>Throughput</strong>: up to 40.96 Mbps (~30× practical BLE 5.x single-connection ceiling).</li><li><strong>Latency</strong>: sub-200 µs (vs BLE ~7.5 ms minimum connection interval; vs Wi-Fi 7 R-TWT variable).</li><li><strong>Energy</strong>: 1 nJ/bit (vs BLE 5.x 5–20 nJ/bit on commodity silicon → claimed 5–20× efficiency).</li><li><strong>Targeting</strong>: AI wearables, presence detection (dedicated dev kit), gaming peripherals.</li><li><strong>Technical framing</strong>: &quot;deterministic&quot; — bounded per-packet airtime via UWB pulse PHY, vs BLE/Wi-Fi contention variance.</li><li><strong>Strategic positioning</strong>: third short-range option between BLE and Wi-Fi; sibling to IEEE 802.15.4z/FiRa ranging-centric UWB stack but optimised for data transport.</li><li><strong>Recent traction</strong>: CES 2026 Innovation Award; March 2026 CAD $17M Series B follow-on (Idealist Capital + Real Ventures).</li><li><strong>Open ecosystem question</strong>: will Apple U2 / NXP Trimension / Qorvo extend their UWB stacks toward LE-UWB-style data links, or stay ranging-first?</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This entry captures a specific UWB-industry positioning bet that's distinct from the FiRa/IEEE-802.15.4ab ranging-first narrative that's been dominant in the existing KB UWB content (<code>2026-05-21_jcb-uwb-payments-japan.md</code> for FiRa payments; the 802.15.4ab IP). SPARK is explicitly arguing <strong>UWB should also be the wireless data link for ultra-low-latency, ultra-low-power applications</strong> — not just ranging — and the SR1120 silicon plus CES Innovation Award plus $17M B-round give the pitch credibility. The 1 nJ/bit figure is the most aggressive claim; if validated at scale, it would reset what's achievable in always-on wearable connectivity. Apple/NXP/Qorvo's response — extending their ranging-first UWB stacks into LE-UWB-style data, or treating SPARK as a niche competitor — is the strategic angle to watch through 2026. Pairs with the IEEE 802.15.4ab amendment thread (expected release 2026, adds enhanced PHY/MAC and sensing) as parallel UWB-evolution directions: 802.15.4ab evolves the existing ranging stack; SPARK's LE-UWB is a parallel data-link reinterpretation.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>SPARK Microsystems（蒙特利尔，成立于 2016 年）一直在推广他们称为 <strong>LE-UWB</strong>（低能耗超宽带）的类别，将其定位为介于 BLE（高效但吞吐受限）与 Wi-Fi（高吞吐但耗电）之间的第三种短距无线选项。该推介贯穿 2026 Q1–Q2：Wi-Fi NOW Global 访谈（2026 年 5 月 18 日）、CES 2026 创新奖认可，以及 <strong>2026 年 3 月完成的 1700 万加元 B 轮跟投</strong>（由 Idealist Capital 与 Real Ventures 联合领投）。</p>\n<p>旗舰硅片是 <strong>SPARK SR1120 LE-UWB 收发机</strong> —— 公司声称为&quot;业界首款&quot; LE-UWB 器件。SPARK 强推的三项关键指标：</p>\n<ul><li><strong>吞吐量最高 40.96 Mbps</strong> —— 远低于 Wi-Fi 6E，但约为单连接 BLE 5.x 实际上限的 30 倍。</li><li><strong>亚 200 µs 时延</strong> —— 实质性低于 BLE（典型最低连接间隔 ~7.5 ms），也低于未配置专属发送机会的 Wi-Fi 7 R-TWT 通常能达到的水平。</li><li><strong>1 nJ/比特功率效率</strong> —— SPARK 最强调的数字；作为对比，BLE 5.x 在商用硅片上通常 5–20 nJ/比特，因此若在工作负载真实条件下成立，则为 5–20 倍效率主张。</li></ul>\n<p>WWC 与 CES 上具名的目标应用：<strong>AI 可穿戴</strong>（始终在线的本地推理需要低时延上行到手机/AP）、<strong>存在检测</strong>（专为此宣布开发套件）以及<strong>游戏设备</strong>（控制器、外设，200 µs 时延地板是差异化因素）。&quot;确定性&quot;框架是技术营销话术 —— 通过 UWB 基于脉冲的 PHY（每包空口时间有界、可预测），与 BLE 连接间隔抖动和 Wi-Fi 竞争窗方差竞争。</p>\n<p>SPARK 隐含回答的战略问题：<strong>以测距为中心的 IEEE 802.15.4z / FiRa UWB 栈，是否需要一个针对数据传输优化的姊妹栈？</strong> SPARK 押注是。UWB 生态其余玩家（Apple U2、NXP Trimension、Qorvo）是否跟随其进入 LE-UWB-作-数据-链路，还是继续以测距为先，是开放问题。</p>\n<h3>技术要点</h3>\n<ul><li><strong>硅片</strong>：SPARK SR1120，声称为业界首款 LE-UWB 收发机。</li><li><strong>吞吐</strong>：最高 40.96 Mbps（约为 BLE 5.x 单连接实际上限的 30 倍）。</li><li><strong>时延</strong>：亚 200 µs（vs BLE 最低连接间隔约 7.5 ms；vs Wi-Fi 7 R-TWT 变化）。</li><li><strong>能效</strong>：1 nJ/比特（vs BLE 5.x 商用硅片 5–20 nJ/比特 → 声称 5–20 倍效率）。</li><li><strong>目标应用</strong>：AI 可穿戴、存在检测（专用开发套件）、游戏外设。</li><li><strong>技术框架</strong>：&quot;确定性&quot; —— 通过 UWB 脉冲 PHY 实现的每包有界空口时间，vs BLE/Wi-Fi 的竞争方差。</li><li><strong>战略定位</strong>：BLE 与 Wi-Fi 之间的第三短距选项；与以测距为中心的 IEEE 802.15.4z/FiRa UWB 栈互为姊妹，但针对数据传输优化。</li><li><strong>近期进展</strong>：CES 2026 创新奖；2026 年 3 月 1700 万加元 B 轮跟投（Idealist Capital + Real Ventures）。</li><li><strong>生态未决问题</strong>：Apple U2 / NXP Trimension / Qorvo 是否会将其 UWB 栈向 LE-UWB 风格的数据链路扩展，或继续以测距为先？</li></ul>\n<h3>意义与新意</h3>\n<p>本条目捕捉到一个具体的 UWB 产业定位押注，区别于现有 KB UWB 内容（<code>2026-05-21_jcb-uwb-payments-japan.md</code> 关于 FiRa 支付；以及 802.15.4ab 内容）中主导的 FiRa/IEEE-802.15.4ab 测距优先叙事。SPARK 明确主张 <strong>UWB 也应当成为超低时延、超低功耗应用的无线数据链路</strong> —— 不仅仅是测距 —— 而 SR1120 硅片 + CES 创新奖 + 1700 万美元 B 轮给该推介提供可信度。1 nJ/比特数字是最激进主张；若规模化验证，将重置始终在线可穿戴连接的可达性。Apple/NXP/Qorvo 的回应 —— 将其测距优先 UWB 栈扩展至 LE-UWB 风格数据，或视 SPARK 为利基竞争者 —— 是贯穿 2026 年值得观察的战略角度。与 IEEE 802.15.4ab 修订主线（预计 2026 年发布，新增增强 PHY/MAC 与感知能力）平行：802.15.4ab 演进既有测距栈；SPARK 的 LE-UWB 是数据链路角度的平行重新诠释。</p>",
+      "images": [],
+      "search_blob": "spark sr1120 le-uwb transceiver pitched at wwc: 40.96 mbps, sub-200 µs latency, 1 nj/bit; ces 2026 innovation award; cad $17m series b; positioned as deterministic-low-power layer below bt/wi-fi for ai wearables, presence detection, gaming spark sr1120 le-uwb 收发机在 wwc 推介：40.96 mbps、亚 200 µs 时延、1 nj/比特；ces 2026 创新奖；c$17m b 轮；定位为面向 ai 可穿戴、存在检测、游戏的、低于 bt/wi-fi 的确定性低功耗层 uwb le-uwb low-power products ces deterministic-latency spark microsystems (montreal, founded 2016) has been pushing a category they call **le-uwb** — low-energy ultra-wideband — as a third short-range wireless option positioned between ble (efficient but throughput-limited) and wi-fi (high-throughput but power-hungry). the pitch has been on the road through q1–q2 2026: a wi-fi now global interview (may 18 2026), ces 2026 innovation award honors, and a **cad $17 million series b follow-on closed march 2026** (co-led by idealist capital and real ventures). spark microsystems（蒙特利尔，成立于 2016 年）一直在推广他们称为 **le-uwb**（低能耗超宽带）的类别，将其定位为介于 ble（高效但吞吐受限）与 wi-fi（高吞吐但耗电）之间的第三种短距无线选项。该推介贯穿 2026 q1–q2：wi-fi now global 访谈（2026 年 5 月 18 日）、ces 2026 创新奖认可，以及 **2026 年 3 月完成的 1700 万加元 b 轮跟投**（由 idealist capital 与 real ventures 联合领投）。 industry-news uwb"
     },
     {
       "id": "2026-05-19_arxiv-janus-hybrid-ambient-iot-radio",
@@ -3475,6 +3529,35 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>在 WWC Mountain View 2026（5 月 8 日报道），Synaptics 产品营销与客户工程副总裁 <strong>Shishir Gupta</strong> 指出：到 2030 年，居住空间内的联网设备将超过每户 <strong>60 台</strong>，今天的无线架构无法满足这种家庭所需的时延、密度与安全。Synaptics 的方案是面向 IoT 的高密度、高性能 Wi-Fi 7 平台 —— 他们于 2025 年 4 月率先推出 IoT 优化的 Wi-Fi 7 平台 —— 结合边缘 AI 用于性能调优，并把企业级安全原语下沉到消费 IoT。</p>\n<p>可靠性与密度的论据基于 Wi-Fi 7 特性：<strong>用于 QoS 的 MLO</strong>（为时延敏感和尽力而为流量分配独立物理路径）、<strong>前导穿孔</strong>（6 GHz 干扰韧性）、<strong>更宽信道</strong>（原始容量裕量）。安全部分是该方案的不寻常之处 —— Synaptics 点名了通常属于企业网络的具体机制，并认为它们应该出现在居家 IoT 链路里：<strong>匿名化 PMKID</strong>（成对主密钥标识符随机化，使观察到的关联无法推导出口令）、加密流、<strong>WPA3 客户端隔离</strong>（限制同一 SSID 上已认证设备之间的对等链路）、以及<strong>仅 Wi-Fi 的 Matter 配网</strong> —— 去掉蓝牙带外配网腿，从而关闭已知的配网攻击面。</p>\n<p>AI 方面，Gupta 区分两种角色：(1) <strong>AI 服务 Wi-Fi</strong>：RF 配置调优，尤其是 Wi-Fi 8 更高复杂度场景下（信道/MLO/EDCA 参数选择）；主动威胁缓解，在&quot;侧门入侵&quot;扩散前发现。(2) <strong>AI 赋能新型 Wi-Fi 服务</strong>：融合 CSI + 飞行时间 + 多普勒的感知，达到足够精度支持室内导航、存在/运动检测、手势识别、物体分类与零售客流分析。该框架将高端 IoT 无线设备定位为家庭级感知层的前端。</p>\n<h3>技术要点</h3>\n<ul><li><strong>预测</strong>：约 2030 年，每家庭超过 60 台联网设备。</li><li><strong>Wi-Fi 7 IoT 三支柱</strong>：用于 QoS 的 MLO、前导穿孔（6 GHz 抗干扰）、更宽信道（容量裕量）。</li><li><strong>企业级安全下沉到消费 IoT</strong>：</li><li><strong>匿名化 PMKID</strong> —— 成对主密钥标识符随机化，观察到的关联不会泄露口令材料。</li><li><strong>WPA3 客户端隔离</strong> —— 限制同一 SSID 上已认证设备的点对点链路。</li><li><strong>仅 Wi-Fi 的 Matter 配网</strong> —— 取消蓝牙带外配网。</li><li><strong>AI 服务 Wi-Fi</strong>：自动 RF/MLO/EDCA 调参（Wi-Fi 8 参数空间更大尤其需要）；主动检测&quot;侧门&quot;网络入侵。</li><li><strong>AI 赋能 Wi-Fi 服务</strong>：CSI + ToF + 多普勒融合 → 存在、运动、手势、物体分类；产品场景含室内导航、占用检测、零售客流分析。</li><li><strong>厂商背景</strong>：Synaptics 于 2025 年 4 月率先推出 IoT 优化的 Wi-Fi 7 平台；本次 WWC 报告是该平台上的战略叙事。</li></ul>\n<h3>意义与新意</h3>\n<p>本条目对现有 KB 增加两点。其一，<strong>企业级安全下沉到居住 IoT</strong> 是新角度：匿名化 PMKID、WPA3 客户端隔离、仅 Wi-Fi 的 Matter 配网这些机制在企业/标准类条目中单独出现过，但作为&quot;2030 年消费级 IoT&quot;的捆绑需求来呈现，这种捆绑本身是战略信号 —— 面向智能家居/智能电表市场的芯片厂商开始把企业级隔离视为标配。其二，<strong>融合感知</strong>叙事（CSI + ToF + 多普勒整合到同一产品线，并明确零售与导航场景）与 <code>2026-05-01_arxiv-multiband-passive-sensing.md</code>、<code>2026-05-01_arxiv-wukong-neuro-wideband-sensing.md</code> 的标准侧方向一致，但更具商业化 —— Synaptics 把零售客流分析点名为近期可交付项，而非研究目标。本条目与 Intel 和 Qualcomm 的 WWC 条目（<code>2026-05-04_intel-wwc-wifi8-vision.md</code>、<code>2026-05-24_qualcomm-wwc-ai-traffic-architecture-rethink.md</code>）互补，从 Wi-Fi 7 IoT 视角而非 Wi-Fi 8 PC/智能体视角捕获了同一活动的第三类主要芯片厂商立场。</p>",
       "images": [],
       "search_blob": "synaptics @ wwc mountain view 2026: 60-device hyper-connected household needs wi-fi 7 iot + edge ai + enterprise-grade security (anonymised pmkid, wpa3 client isolation, wi-fi-only matter provisioning) synaptics 在 wwc mountain view 2026：60 设备的超联接家庭需要 wi-fi 7 iot + 边缘 ai + 企业级安全（匿名化 pmkid、wpa3 客户端隔离、仅 wi-fi 的 matter 配网） wi-fi 7 iot wpa3 security matter wifi-sensing at wi-fi world congress mountain view 2026 (reported may 8), synaptics vp of product marketing **shishir gupta** argued that the residential iot environment is heading toward **>60 connected devices per household by 2030**, and that today's wireless architectures cannot deliver the latency, density, and security those households will need. synaptics' position is that the answer is a high-density, high-performance iot-targeted wi-fi 7 platform — they were first to ship an iot-optimised wi-fi 7 platform in april 2025 — combined with edge ai for performance tuning and enterprise-grade security primitives moved down into consumer iot. 在 wwc mountain view 2026（5 月 8 日报道），synaptics 产品营销与客户工程副总裁 **shishir gupta** 指出：到 2030 年，居住空间内的联网设备将超过每户 **60 台**，今天的无线架构无法满足这种家庭所需的时延、密度与安全。synaptics 的方案是面向 iot 的高密度、高性能 wi-fi 7 平台 —— 他们于 2025 年 4 月率先推出 iot 优化的 wi-fi 7 平台 —— 结合边缘 ai 用于性能调优，并把企业级安全原语下沉到消费 iot。 industry-news wifi"
+    },
+    {
+      "id": "2026-05-24_arxiv-uwb-fat-body-composition",
+      "date_found": "2026-05-24",
+      "technology": "uwb",
+      "date_published": "2026-05-08",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "UWB-Fat: first commodity-UWB-radar body-fat skinfold-thickness system — 0.63 mm pooled-site RMSE across 15 participants, leveraging skin/fat/muscle dielectric contrast and physics-inspired modelling",
+      "title_zh": "UWB-Fat：首个使用商用 UWB 雷达的身体脂肪皮褶厚度测量系统 —— 15 名参与者跨部位汇总 RMSE 0.63 mm，利用皮肤/脂肪/肌肉介电对比与物理启发式建模",
+      "url": "https://arxiv.org/abs/2605.08403",
+      "topics": [
+        "UWB-radar",
+        "vital-sign",
+        "healthcare",
+        "dielectric-spectroscopy"
+      ],
+      "topic_primary": "uwb-radar",
+      "topics_secondary": [
+        "uwb-ranging"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-05-24_arxiv-uwb-fat-body-composition.md",
+      "summary_short_en": "Li et al. (arxiv 2605.08403, submitted May 8 2026) extend UWB radar into a new sensing domain — **body composition**. The existing UWB-radar healthcare literature has focused almost exclusively on vital-sign monitoring (heart rate, respiration) where the radar tracks rhythmic motion of the chest/abdomen. UWB-Fat instead applies UWB radar to **estimating subcutaneous fat-layer thickness at clinical skinfold sites**, a measurement that historically requires either a calibrated mechanical caliper (low cost, high inter-operator variance) or a DEXA scan (high accuracy, expensive, ionising radiation).",
+      "summary_short_zh": "Li 等（arxiv 2605.08403，2026 年 5 月 8 日提交）将 UWB 雷达扩展到新的感知领域 —— **身体成分**。现有 UWB 雷达医疗文献几乎只关注生命体征监测（心率、呼吸），雷达追踪胸腹的节奏性运动。UWB-Fat 反而把 UWB 雷达应用于**临床皮褶位点的皮下脂肪层厚度估计**，这种测量在传统上要么需要校准过的机械卡尺（成本低、操作者间方差大），要么需要 DEXA 扫描（精度高、昂贵、有电离辐射）。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Li et al. (arxiv 2605.08403, submitted May 8 2026) extend UWB radar into a new sensing domain — <strong>body composition</strong>. The existing UWB-radar healthcare literature has focused almost exclusively on vital-sign monitoring (heart rate, respiration) where the radar tracks rhythmic motion of the chest/abdomen. UWB-Fat instead applies UWB radar to <strong>estimating subcutaneous fat-layer thickness at clinical skinfold sites</strong>, a measurement that historically requires either a calibrated mechanical caliper (low cost, high inter-operator variance) or a DEXA scan (high accuracy, expensive, ionising radiation).</p>\n<p>The physical principle the system exploits is <strong>dielectric contrast between skin, subcutaneous fat, and underlying muscle</strong> — these three tissues have markedly different permittivity at UWB frequencies, so the reflected UWB pulse contains distinguishable echoes from each tissue interface. A physics-inspired model maps the time-of-arrival of each echo (constrained by the propagation speeds dictated by each tissue's permittivity) to a skinfold thickness in millimetres. The model is site-specific (different anatomical locations have different layer ordering and thickness ranges), so the system applies per-site calibration before pooling.</p>\n<p>The headline number: <strong>0.63 mm root-mean-square error for pooled-site subcutaneous fat thickness across 15 participants</strong> — caliper-equivalent accuracy from a contactless, commodity-radar setup. The paper claims it as the <strong>first system</strong> to apply commodity UWB radar to body composition specifically (distinguishing it from prior vital-sign work). The 15-participant cohort is small (it's a proof-of-concept), and the abstract does not specify validation against DEXA — only &quot;caliper-equivalent&quot; framing. Specific chipset, band, and antenna geometry aren't surfaced in the abstract excerpt, but &quot;commodity&quot; UWB radar implies an off-the-shelf consumer chipset rather than a lab instrument.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>New application domain</strong>: body composition (subcutaneous fat thickness), distinct from prior UWB-radar vital-sign work.</li><li><strong>Physical mechanism</strong>: dielectric contrast among skin / subcutaneous fat / muscle at UWB frequencies → distinct reflected-pulse echoes.</li><li><strong>Method</strong>: physics-inspired model maps echo time-of-arrival → skinfold thickness; per-site calibration.</li><li><strong>Hardware</strong>: commodity UWB radar (specific chipset not stated in abstract).</li><li><strong>Cohort</strong>: 15 participants, multi-site evaluation.</li><li><strong>Accuracy</strong>: <strong>0.63 mm RMSE</strong> pooled-site subcutaneous fat thickness; &quot;caliper-equivalent&quot; — abstract does not claim DEXA-equivalent.</li><li><strong>Novelty claim</strong>: first commodity-UWB-radar body-composition system.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the cleanest example I've seen of UWB radar moving out of the &quot;presence detection + vital signs&quot; frame and into a quantitative tissue-characterisation use case. The dielectric-contrast principle is well known in medical imaging but has rarely been applied with commodity UWB hardware — most prior body-composition radar work uses lab-grade vector network analysers. If the 0.63 mm RMSE holds up under larger cohort and DEXA-validated comparison (the obvious follow-up), this opens a category of consumer / fitness-device applications that wasn't previously feasible: home body-composition tracking with the same hardware that already does presence detection. For the KB it expands the UWB-radar topic beyond the current vital-sign-dominated literature (<code>2026-05-21_arxiv-enhanced-ble-esb-hybrid.md</code> and Bluetooth-side ranging work) — UWB-Fat shows the radar channel itself has tissue-level information content that's been under-exploited.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Li 等（arxiv 2605.08403，2026 年 5 月 8 日提交）将 UWB 雷达扩展到新的感知领域 —— <strong>身体成分</strong>。现有 UWB 雷达医疗文献几乎只关注生命体征监测（心率、呼吸），雷达追踪胸腹的节奏性运动。UWB-Fat 反而把 UWB 雷达应用于<strong>临床皮褶位点的皮下脂肪层厚度估计</strong>，这种测量在传统上要么需要校准过的机械卡尺（成本低、操作者间方差大），要么需要 DEXA 扫描（精度高、昂贵、有电离辐射）。</p>\n<p>系统利用的物理原理是<strong>皮肤、皮下脂肪与肌肉之间的介电对比</strong> —— 这三种组织在 UWB 频段下介电常数差异显著，反射的 UWB 脉冲包含来自每个组织界面的可区分回波。一个物理启发式模型将每个回波的到达时间（由各组织介电常数决定的传播速度约束）映射为毫米级皮褶厚度。模型是部位特定的（不同解剖位置具有不同的层序与厚度范围），因此系统在汇总前对每个部位进行校准。</p>\n<p>关键指标：<strong>15 名参与者跨部位汇总的皮下脂肪厚度均方根误差 0.63 mm</strong> —— 来自非接触式、商用雷达设置的卡尺等效精度。论文声称这是<strong>首个</strong>将商用 UWB 雷达专门应用于身体成分的系统（与既有的生命体征工作区分）。15 人队列较小（属于概念验证），摘要未明确与 DEXA 的对比验证 —— 仅有&quot;卡尺等效&quot;措辞。具体芯片、频段与天线几何在摘要节选中未现，但&quot;商用 UWB 雷达&quot;暗示是消费级现成芯片，而非实验室仪器。</p>\n<h3>技术要点</h3>\n<ul><li><strong>新应用领域</strong>：身体成分（皮下脂肪厚度），区别于既有 UWB 雷达生命体征工作。</li><li><strong>物理机制</strong>：UWB 频段下皮肤/皮下脂肪/肌肉的介电对比 → 不同的反射脉冲回波。</li><li><strong>方法</strong>：物理启发式模型将回波到达时间 → 皮褶厚度；按部位校准。</li><li><strong>硬件</strong>：商用 UWB 雷达（具体芯片摘要未述）。</li><li><strong>队列</strong>：15 名参与者，多部位评估。</li><li><strong>精度</strong>：跨部位汇总皮下脂肪厚度 RMSE <strong>0.63 mm</strong>；&quot;卡尺等效&quot; —— 摘要未声明 DEXA 等效。</li><li><strong>新颖性主张</strong>：首个商用 UWB 雷达身体成分系统。</li></ul>\n<h3>意义与新意</h3>\n<p>这是我看到的 UWB 雷达跳出&quot;存在检测 + 生命体征&quot;框架、进入定量组织表征用例的最清晰例子。介电对比原理在医学成像中众所周知，但很少用商用 UWB 硬件实现 —— 大多数既有身体成分雷达工作使用实验室级矢量网络分析仪。如果 0.63 mm RMSE 在更大队列与 DEXA 验证下成立（明显的后续工作），就为一类此前不可行的消费/健身设备应用打开大门：用已有的存在检测硬件做家庭身体成分追踪。对于 KB 而言，它把 UWB 雷达主题扩展到目前以生命体征为主的文献之外（<code>2026-05-21_arxiv-enhanced-ble-esb-hybrid.md</code> 与蓝牙侧测距工作）—— UWB-Fat 显示雷达信道本身含有未被充分利用的组织级信息内容。</p>",
+      "images": [],
+      "search_blob": "uwb-fat: first commodity-uwb-radar body-fat skinfold-thickness system — 0.63 mm pooled-site rmse across 15 participants, leveraging skin/fat/muscle dielectric contrast and physics-inspired modelling uwb-fat：首个使用商用 uwb 雷达的身体脂肪皮褶厚度测量系统 —— 15 名参与者跨部位汇总 rmse 0.63 mm，利用皮肤/脂肪/肌肉介电对比与物理启发式建模 uwb-radar vital-sign healthcare dielectric-spectroscopy li et al. (arxiv 2605.08403, submitted may 8 2026) extend uwb radar into a new sensing domain — **body composition**. the existing uwb-radar healthcare literature has focused almost exclusively on vital-sign monitoring (heart rate, respiration) where the radar tracks rhythmic motion of the chest/abdomen. uwb-fat instead applies uwb radar to **estimating subcutaneous fat-layer thickness at clinical skinfold sites**, a measurement that historically requires either a calibrated mechanical caliper (low cost, high inter-operator variance) or a dexa scan (high accuracy, expensive, ionising radiation). li 等（arxiv 2605.08403，2026 年 5 月 8 日提交）将 uwb 雷达扩展到新的感知领域 —— **身体成分**。现有 uwb 雷达医疗文献几乎只关注生命体征监测（心率、呼吸），雷达追踪胸腹的节奏性运动。uwb-fat 反而把 uwb 雷达应用于**临床皮褶位点的皮下脂肪层厚度估计**，这种测量在传统上要么需要校准过的机械卡尺（成本低、操作者间方差大），要么需要 dexa 扫描（精度高、昂贵、有电离辐射）。 academic-paper uwb"
     },
     {
       "id": "2026-05-24_ericsson-6g-mwc2026-momentum",
