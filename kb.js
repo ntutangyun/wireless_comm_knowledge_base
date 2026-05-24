@@ -24,6 +24,8 @@ window.KB_DATA = {
     "802.11bq": 4,
     "802.11": 4,
     "802.11az": 4,
+    "NearLink": 3,
+    "SparkLink": 3,
     "backscatter": 3,
     "Co-SR": 3,
     "Co-BF": 3,
@@ -34,11 +36,10 @@ window.KB_DATA = {
     "mmWave": 3,
     "LLM": 3,
     "AI-RAN": 3,
+    "automotive": 3,
     "Wi-Fi 7": 3,
     "LEO": 3,
     "roaming": 3,
-    "NearLink": 2,
-    "SparkLink": 2,
     "ISLA": 2,
     "UWB": 2,
     "deterministic-latency": 2,
@@ -57,8 +58,8 @@ window.KB_DATA = {
     "OFDMA": 2,
     "network-slicing": 2,
     "FCC": 2,
-    "automotive": 2,
     "healthcare": 2,
+    "digital-car-key": 2,
     "AIOps": 2,
     "enterprise": 2,
     "O-RAN": 2,
@@ -155,6 +156,8 @@ window.KB_DATA = {
     "UWB-radar": 1,
     "vital-sign": 1,
     "dielectric-spectroscopy": 1,
+    "HarmonyOS": 1,
+    "ICCE": 1,
     "5G": 1,
     "Release 20": 1,
     "MRSS": 1,
@@ -194,7 +197,6 @@ window.KB_DATA = {
     "Kuiper": 1,
     "broadband": 1,
     "constellation": 1,
-    "digital-car-key": 1,
     "Beijing-Auto-Show": 1,
     "interference-mitigation": 1,
     "xApp": 1,
@@ -234,6 +236,7 @@ window.KB_DATA = {
     "cellular-ai": 3,
     "6g-vision": 3,
     "bt-channel-sounding": 2,
+    "nearlink-automotive": 2,
     "wifi-for-ai": 2,
     "leo-constellations": 2,
     "open-ran": 2,
@@ -247,12 +250,11 @@ window.KB_DATA = {
     "mmwave-bq": 1,
     "uwb-radar": 1,
     "ntn": 1,
-    "nearlink-automotive": 1,
     "uwb-fi-ra": 1
   },
   "type_counts": {
     "academic-paper": 69,
-    "industry-news": 29,
+    "industry-news": 30,
     "ieee-document": 12,
     "product": 7,
     "proposal": 4,
@@ -260,7 +262,7 @@ window.KB_DATA = {
   },
   "category_counts": {
     "academia": 69,
-    "industry": 36,
+    "industry": 37,
     "standards": 17
   },
   "technologies_vocab": {
@@ -2440,6 +2442,7 @@ window.KB_DATA = {
         "2026-05-21_sparklink-ecosystem-2026-overview"
       ],
       "entries_secondary": [
+        "2026-05-24_sparklink-car-key-device-rollout-2-0",
         "2026-05-21_sparklink-digital-car-key-beijing-autoshow"
       ],
       "by_type_primary": {
@@ -2500,6 +2503,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-05-24_sparklink-car-key-device-rollout-2-0",
         "2026-05-21_sparklink-digital-car-key-beijing-autoshow"
       ],
       "entries_secondary": [
@@ -2507,6 +2511,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "industry-news": [
+          "2026-05-24_sparklink-car-key-device-rollout-2-0",
           "2026-05-21_sparklink-digital-car-key-beijing-autoshow"
         ]
       }
@@ -3558,6 +3563,37 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>Li 等（arxiv 2605.08403，2026 年 5 月 8 日提交）将 UWB 雷达扩展到新的感知领域 —— <strong>身体成分</strong>。现有 UWB 雷达医疗文献几乎只关注生命体征监测（心率、呼吸），雷达追踪胸腹的节奏性运动。UWB-Fat 反而把 UWB 雷达应用于<strong>临床皮褶位点的皮下脂肪层厚度估计</strong>，这种测量在传统上要么需要校准过的机械卡尺（成本低、操作者间方差大），要么需要 DEXA 扫描（精度高、昂贵、有电离辐射）。</p>\n<p>系统利用的物理原理是<strong>皮肤、皮下脂肪与肌肉之间的介电对比</strong> —— 这三种组织在 UWB 频段下介电常数差异显著，反射的 UWB 脉冲包含来自每个组织界面的可区分回波。一个物理启发式模型将每个回波的到达时间（由各组织介电常数决定的传播速度约束）映射为毫米级皮褶厚度。模型是部位特定的（不同解剖位置具有不同的层序与厚度范围），因此系统在汇总前对每个部位进行校准。</p>\n<p>关键指标：<strong>15 名参与者跨部位汇总的皮下脂肪厚度均方根误差 0.63 mm</strong> —— 来自非接触式、商用雷达设置的卡尺等效精度。论文声称这是<strong>首个</strong>将商用 UWB 雷达专门应用于身体成分的系统（与既有的生命体征工作区分）。15 人队列较小（属于概念验证），摘要未明确与 DEXA 的对比验证 —— 仅有&quot;卡尺等效&quot;措辞。具体芯片、频段与天线几何在摘要节选中未现，但&quot;商用 UWB 雷达&quot;暗示是消费级现成芯片，而非实验室仪器。</p>\n<h3>技术要点</h3>\n<ul><li><strong>新应用领域</strong>：身体成分（皮下脂肪厚度），区别于既有 UWB 雷达生命体征工作。</li><li><strong>物理机制</strong>：UWB 频段下皮肤/皮下脂肪/肌肉的介电对比 → 不同的反射脉冲回波。</li><li><strong>方法</strong>：物理启发式模型将回波到达时间 → 皮褶厚度；按部位校准。</li><li><strong>硬件</strong>：商用 UWB 雷达（具体芯片摘要未述）。</li><li><strong>队列</strong>：15 名参与者，多部位评估。</li><li><strong>精度</strong>：跨部位汇总皮下脂肪厚度 RMSE <strong>0.63 mm</strong>；&quot;卡尺等效&quot; —— 摘要未声明 DEXA 等效。</li><li><strong>新颖性主张</strong>：首个商用 UWB 雷达身体成分系统。</li></ul>\n<h3>意义与新意</h3>\n<p>这是我看到的 UWB 雷达跳出&quot;存在检测 + 生命体征&quot;框架、进入定量组织表征用例的最清晰例子。介电对比原理在医学成像中众所周知，但很少用商用 UWB 硬件实现 —— 大多数既有身体成分雷达工作使用实验室级矢量网络分析仪。如果 0.63 mm RMSE 在更大队列与 DEXA 验证下成立（明显的后续工作），就为一类此前不可行的消费/健身设备应用打开大门：用已有的存在检测硬件做家庭身体成分追踪。对于 KB 而言，它把 UWB 雷达主题扩展到目前以生命体征为主的文献之外（<code>2026-05-21_arxiv-enhanced-ble-esb-hybrid.md</code> 与蓝牙侧测距工作）—— UWB-Fat 显示雷达信道本身含有未被充分利用的组织级信息内容。</p>",
       "images": [],
       "search_blob": "uwb-fat: first commodity-uwb-radar body-fat skinfold-thickness system — 0.63 mm pooled-site rmse across 15 participants, leveraging skin/fat/muscle dielectric contrast and physics-inspired modelling uwb-fat：首个使用商用 uwb 雷达的身体脂肪皮褶厚度测量系统 —— 15 名参与者跨部位汇总 rmse 0.63 mm，利用皮肤/脂肪/肌肉介电对比与物理启发式建模 uwb-radar vital-sign healthcare dielectric-spectroscopy li et al. (arxiv 2605.08403, submitted may 8 2026) extend uwb radar into a new sensing domain — **body composition**. the existing uwb-radar healthcare literature has focused almost exclusively on vital-sign monitoring (heart rate, respiration) where the radar tracks rhythmic motion of the chest/abdomen. uwb-fat instead applies uwb radar to **estimating subcutaneous fat-layer thickness at clinical skinfold sites**, a measurement that historically requires either a calibrated mechanical caliper (low cost, high inter-operator variance) or a dexa scan (high accuracy, expensive, ionising radiation). li 等（arxiv 2605.08403，2026 年 5 月 8 日提交）将 uwb 雷达扩展到新的感知领域 —— **身体成分**。现有 uwb 雷达医疗文献几乎只关注生命体征监测（心率、呼吸），雷达追踪胸腹的节奏性运动。uwb-fat 反而把 uwb 雷达应用于**临床皮褶位点的皮下脂肪层厚度估计**，这种测量在传统上要么需要校准过的机械卡尺（成本低、操作者间方差大），要么需要 dexa 扫描（精度高、昂贵、有电离辐射）。 academic-paper uwb"
+    },
+    {
+      "id": "2026-05-24_sparklink-car-key-device-rollout-2-0",
+      "date_found": "2026-05-24",
+      "technology": "nearlink",
+      "date_published": "2026-05-07",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "SparkLink (NearLink) car-key device-side scaling: HarmonyOS 6.0 OTA brings ICCE-SparkLink digital car key to ~50M Huawei phones (Pura 80, Pura X, Mate 70, Watch 5 / GT 6 / Ultimate 2); SparkLink 2.0 (2026) delivers 5× ranging refresh, +50% find distance, +20% accuracy vs 1.0",
+      "title_zh": "星闪车钥匙端侧规模化：HarmonyOS 6.0 OTA 将 ICCE 星闪数字车钥匙带给约 5000 万台华为设备（Pura 80、Pura X、Mate 70、WATCH 5 / GT 6 / Ultimate 2）；星闪 2.0（2026）相比 1.0 实现测距刷新 5 倍、查找距离 +50%、精度 +20%",
+      "url": "https://news.qq.com/rain/a/20251124A01UQ000",
+      "topics": [
+        "NearLink",
+        "SparkLink",
+        "digital-car-key",
+        "automotive",
+        "HarmonyOS",
+        "ICCE"
+      ],
+      "topic_primary": "nearlink-automotive",
+      "topics_secondary": [
+        "nearlink-slb"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-05-24_sparklink-car-key-device-rollout-2-0.md",
+      "summary_short_en": "Following the Beijing Auto Show 2026 centralized debut covered in `2026-05-21_sparklink-digital-car-key-beijing-autoshow.md` and the ecosystem overview in `2026-05-21_sparklink-ecosystem-2026-overview.md`, two May 2026 developments push the SparkLink car-key story from \"showcased\" into \"scaled at the device side.\" This entry captures the device-side rollout and the SparkLink 2.0 (car-key) performance step.",
+      "summary_short_zh": "继 `2026-05-21_sparklink-digital-car-key-beijing-autoshow.md` 中报道的 2026 北京车展集中亮相和 `2026-05-21_sparklink-ecosystem-2026-overview.md` 中的生态概览之后，2026 年 5 月的两项发展将星闪车钥匙故事从\"展示\"推进到\"端侧规模化\"。本条目捕捉端侧推广与星闪 2.0（车钥匙）性能提升。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Following the Beijing Auto Show 2026 centralized debut covered in <code>2026-05-21_sparklink-digital-car-key-beijing-autoshow.md</code> and the ecosystem overview in <code>2026-05-21_sparklink-ecosystem-2026-overview.md</code>, two May 2026 developments push the SparkLink car-key story from &quot;showcased&quot; into &quot;scaled at the device side.&quot; This entry captures the device-side rollout and the SparkLink 2.0 (car-key) performance step.</p>\n<p><strong>(1) HarmonyOS 6.0 → ~50M phones gain ICCE-SparkLink car key.</strong> Huawei has confirmed that the rollout of HarmonyOS 6.0 brings SparkLink-based car-key support — under the <strong>ICCE</strong> (Industry Cooperation Committee for ECU) digital-key framework — to multiple existing handset and watch families via OTA, not just newly launched silicon. The named SKUs:</p>\n<ul><li><strong>Phones</strong>: Pura 80 series (first to natively ship the feature), with Pura X and Mate 70 gaining it via HarmonyOS 6.0 upgrade. The cited industry-side estimate from late 2025 forecast ~<strong>50 million Huawei smartphones eligible</strong> for OTA-enabled SparkLink car key — the May 2026 device-page documentation is the operationalisation of that forecast.</li><li><strong>Watches</strong>: WATCH 5 (incl. 10th-anniversary edition), WATCH GT 6 series, WATCH Ultimate 2 series, WATCH ULTIMATE DESIGN variants, WATCH GT Runner 2, WATCH FIT 5.</li></ul>\n<p><strong>(2) Supported vehicles, May 2026 snapshot.</strong> Per the Huawei device-page, paired vehicle support currently covers the Huawei-affiliated SUV/sedan brands: AITO (问界) M7/M8/M9; Luxeed (智界) S7/R7; Maextro (尊界) S800; Stelato (享界) S9 EREV / S9T / S9 2026; Sharedi (尚界) H5 — all 2025+ models. The broader Beijing Auto Show showcase (covered in the May 21 entry) named 20+ vehicle models across Dongfeng, BAIC, SAIC, JAC, Chery, Geely, GAC, GAC Toyota, etc., so ICCE compatibility extends beyond the Huawei-house brands — Huawei's own device-page lists only the in-house combos.</p>\n<p><strong>(3) Features supported</strong>: three primary use cases — vehicle greeting/welcome on approach, unlock-on-approach, walk-away auto-lock — the standard &quot;passive entry&quot; flow that BLE / UWB car keys already deliver but with SparkLink-grade ranging precision and the sub-μs sync from SLB.</p>\n<p><strong>(4) SparkLink 2.0 (car-key version) performance step.</strong> Industry reporting confirms the 2.0 car-key version launching in 2026 delivers vs 1.0: <strong>5× ranging refresh rate</strong>, <strong>+50% detection distance</strong>, <strong>+20% measurement accuracy</strong>. The implication is that 1.0 deployments will get successor silicon / firmware that closes the remaining gap to UWB ranging precision while preserving SparkLink's coexistence / power advantages.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>OTA rollout vehicle</strong>: HarmonyOS 6.0 → enables ICCE-SparkLink car key on existing devices (not just newly-launched silicon).</li><li><strong>Phones supported</strong>: Pura 80 (native), Pura X, Mate 70 (via OTA upgrade); industry estimate <strong>~50M Huawei smartphones eligible</strong>.</li><li><strong>Watches supported</strong>: WATCH 5 / WATCH 5 10th anniversary, WATCH GT 6, WATCH Ultimate 2, WATCH ULTIMATE DESIGN, WATCH GT Runner 2, WATCH FIT 5.</li><li><strong>Vehicles</strong> (Huawei device-page snapshot): AITO M7/M8/M9, Luxeed S7/R7, Maextro S800, Stelato S9/S9T/S9 2026, Sharedi H5 — Huawei-affiliated brands; broader 20+ car models from Beijing Auto Show covered across Dongfeng / BAIC / SAIC / JAC / Chery / Geely / GAC.</li><li><strong>Use cases</strong>: welcome-on-approach, unlock-on-approach, walk-away auto-lock — passive-entry flow.</li><li><strong>SparkLink 2.0 (car-key) vs 1.0</strong>: <strong>5× ranging refresh rate, +50% detection distance, +20% measurement accuracy</strong>.</li><li><strong>Framework</strong>: ICCE (汽车数字钥匙产业合作委员会) — Chinese industry digital-key umbrella, parallel to CCC (Car Connectivity Consortium).</li><li><strong>Forecast cited</strong>: 2030 → 80.8% projected digital-key penetration in Chinese passenger vehicles (Tencent News, Nov 2025).</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The May 21 Beijing Auto Show entry captured supply-side momentum (20+ vehicle models showcased). This entry captures the demand-side enabler — <strong>HarmonyOS 6.0 turning 50M existing Huawei phones into SparkLink car-key clients via OTA</strong>, without requiring users to buy new hardware. That's the inflection that takes the deployment from &quot;interesting demo at trade show&quot; to &quot;addressable consumer base in the tens of millions.&quot; For the SparkLink ecosystem this is the missing piece between (a) ISLA's Beijing Innovation Lab / OpenLab certification infrastructure, (b) the OEM showcase, and (c) actual car-owner adoption. The <strong>SparkLink 2.0 (5× refresh / +50% distance / +20% accuracy)</strong> numbers are also the first concrete generational-improvement metrics for a SparkLink mode — previously the &quot;2.0&quot; framing existed mostly at the alliance-spec level. The 2030 80.8% digital-key penetration forecast (cited from Nov 2025 industry analysis) sets the addressable market context — if it holds, SparkLink digital car key is competing for that ~80% slot against UWB-CCC and BLE-CCC alternatives, with the Huawei-driven Chinese OEM supply chain as its native advantage.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>继 <code>2026-05-21_sparklink-digital-car-key-beijing-autoshow.md</code> 中报道的 2026 北京车展集中亮相和 <code>2026-05-21_sparklink-ecosystem-2026-overview.md</code> 中的生态概览之后，2026 年 5 月的两项发展将星闪车钥匙故事从&quot;展示&quot;推进到&quot;端侧规模化&quot;。本条目捕捉端侧推广与星闪 2.0（车钥匙）性能提升。</p>\n<p><strong>(1) HarmonyOS 6.0 → 约 5000 万台手机获得 ICCE 星闪车钥匙。</strong> 华为已确认 HarmonyOS 6.0 推广将通过 OTA 把基于星闪的车钥匙支持 —— 处于 <strong>ICCE</strong>（汽车数字钥匙产业合作委员会）数字钥匙框架下 —— 带给多个既有手机与手表家族，而非仅新发布的硅片。具名 SKU：</p>\n<ul><li><strong>手机</strong>：Pura 80 系列（首款原生上市该功能），Pura X 与 Mate 70 通过 HarmonyOS 6.0 升级获得。2025 年底业界估计有约 <strong>5000 万台华为手机</strong>符合 OTA 启用星闪车钥匙的条件 —— 2026 年 5 月设备页面文档是该预测的落地。</li><li><strong>手表</strong>：WATCH 5（含十周年）、WATCH GT 6 系列、WATCH Ultimate 2 系列、WATCH ULTIMATE DESIGN 各款、WATCH GT Runner 2、WATCH FIT 5。</li></ul>\n<p><strong>(2) 支持的车辆，2026 年 5 月快照。</strong> 据华为设备页面，配对车辆支持目前覆盖华为生态相关 SUV/轿车品牌：问界 M7/M8/M9；智界 S7/R7；尊界 S800；享界 S9 EREV / S9T / S9 2026；尚界 H5 —— 全部 2025+ 车型。更广泛的北京车展展示（5 月 21 日条目覆盖）具名 20+ 车型横跨东风、北汽、上汽、江淮、奇瑞、吉利、广汽、广丰等，因此 ICCE 兼容性延伸到华为系品牌之外 —— 华为自家设备页面只列入华为系组合。</p>\n<p><strong>(3) 支持功能</strong>：三个主要用例 —— 靠近车辆迎宾、解锁车辆、远离闭锁，是 BLE / UWB 车钥匙已提供的标准&quot;被动进入&quot;流程，但具有星闪级测距精度与 SLB 的亚微秒同步。</p>\n<p><strong>(4) 星闪 2.0（车钥匙版本）性能提升。</strong> 业界报道确认 2026 年推出的 2.0 车钥匙版本相对 1.0 提供：<strong>测距刷新率 5 倍</strong>、<strong>检测距离 +50%</strong>、<strong>测量精度 +20%</strong>。其含义是 1.0 部署将获得后继硅片/固件升级，关闭与 UWB 测距精度的剩余差距，同时保留星闪的共存/功耗优势。</p>\n<h3>技术要点</h3>\n<ul><li><strong>OTA 推广载体</strong>：HarmonyOS 6.0 → 在已有设备上启用 ICCE 星闪车钥匙（不仅限新发布硅片）。</li><li><strong>支持手机</strong>：Pura 80（原生）、Pura X、Mate 70（OTA 升级）；业界估计 <strong>约 5000 万台华为手机符合条件</strong>。</li><li><strong>支持手表</strong>：WATCH 5 / WATCH 5 十周年、WATCH GT 6、WATCH Ultimate 2、WATCH ULTIMATE DESIGN、WATCH GT Runner 2、WATCH FIT 5。</li><li><strong>支持车辆</strong>（华为设备页快照）：问界 M7/M8/M9、智界 S7/R7、尊界 S800、享界 S9/S9T/S9 2026、尚界 H5 —— 华为系品牌；更广泛的北京车展 20+ 车型覆盖东风/北汽/上汽/江淮/奇瑞/吉利/广汽。</li><li><strong>使用场景</strong>：靠近迎宾、靠近解锁、远离闭锁 —— 被动进入流程。</li><li><strong>星闪 2.0（车钥匙）vs 1.0</strong>：<strong>测距刷新率 5 倍、检测距离 +50%、测量精度 +20%</strong>。</li><li><strong>框架</strong>：ICCE（汽车数字钥匙产业合作委员会）—— 中国产业数字钥匙伞，与 CCC（Car Connectivity Consortium）并行。</li><li><strong>预测</strong>：2030 年 → 中国乘用车数字钥匙渗透率 80.8%（腾讯新闻，2025 年 11 月）。</li></ul>\n<h3>意义与新意</h3>\n<p>5 月 21 日北京车展条目捕捉到了供给侧动力（展示 20+ 车型）。本条目捕捉需求侧的启用器 —— <strong>HarmonyOS 6.0 通过 OTA 把 5000 万台已有华为手机变成星闪车钥匙客户端</strong>，无需用户购买新硬件。这是把部署从&quot;贸易展会上的有趣演示&quot;推进到&quot;千万级可触达消费者基础&quot;的转折点。对星闪生态而言，这是连接 (a) ISLA 的北京创新实验室 / OpenLab 认证基础设施、(b) OEM 展示与 (c) 车主实际采用之间缺失的拼图。<strong>星闪 2.0（测距刷新 5 倍 / +50% 距离 / +20% 精度）</strong>数字也是星闪某模式首次具体的代际改进指标 —— 此前&quot;2.0&quot;措辞主要存在于联盟规范层面。2030 年 80.8% 数字钥匙渗透率预测（引自 2025 年 11 月业界分析）设定可触达市场背景 —— 若该预测成立，星闪数字车钥匙将与 UWB-CCC 和 BLE-CCC 方案竞争该约 80% 市场份额，华为驱动的中国 OEM 供应链是其天然优势。</p>",
+      "images": [],
+      "search_blob": "sparklink (nearlink) car-key device-side scaling: harmonyos 6.0 ota brings icce-sparklink digital car key to ~50m huawei phones (pura 80, pura x, mate 70, watch 5 / gt 6 / ultimate 2); sparklink 2.0 (2026) delivers 5× ranging refresh, +50% find distance, +20% accuracy vs 1.0 星闪车钥匙端侧规模化：harmonyos 6.0 ota 将 icce 星闪数字车钥匙带给约 5000 万台华为设备（pura 80、pura x、mate 70、watch 5 / gt 6 / ultimate 2）；星闪 2.0（2026）相比 1.0 实现测距刷新 5 倍、查找距离 +50%、精度 +20% nearlink sparklink digital-car-key automotive harmonyos icce following the beijing auto show 2026 centralized debut covered in `2026-05-21_sparklink-digital-car-key-beijing-autoshow.md` and the ecosystem overview in `2026-05-21_sparklink-ecosystem-2026-overview.md`, two may 2026 developments push the sparklink car-key story from \"showcased\" into \"scaled at the device side.\" this entry captures the device-side rollout and the sparklink 2.0 (car-key) performance step. 继 `2026-05-21_sparklink-digital-car-key-beijing-autoshow.md` 中报道的 2026 北京车展集中亮相和 `2026-05-21_sparklink-ecosystem-2026-overview.md` 中的生态概览之后，2026 年 5 月的两项发展将星闪车钥匙故事从\"展示\"推进到\"端侧规模化\"。本条目捕捉端侧推广与星闪 2.0（车钥匙）性能提升。 industry-news nearlink"
     },
     {
       "id": "2026-05-24_ericsson-6g-mwc2026-momentum",
