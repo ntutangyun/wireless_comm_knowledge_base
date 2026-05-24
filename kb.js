@@ -18,9 +18,9 @@ window.KB_DATA = {
     "802.11ax": 8,
     "generative-AI": 7,
     "802.11bp": 6,
+    "6G": 6,
     "CSI": 5,
     "XR": 5,
-    "6G": 4,
     "802.11bq": 4,
     "802.11": 4,
     "802.11az": 4,
@@ -40,6 +40,7 @@ window.KB_DATA = {
     "SparkLink": 2,
     "ISLA": 2,
     "LLM-agent": 2,
+    "AI-native": 2,
     "AMP-IoT": 2,
     "Co-RTWT": 2,
     "seamless-roaming": 2,
@@ -49,10 +50,13 @@ window.KB_DATA = {
     "802.11br": 2,
     "MU-MIMO": 2,
     "OFDMA": 2,
+    "network-slicing": 2,
     "automotive": 2,
     "LEO": 2,
     "AIOps": 2,
     "enterprise": 2,
+    "O-RAN": 2,
+    "PRB-allocation": 2,
     "6GHz": 2,
     "R-TWT": 2,
     "WiFi-diagnosis": 1,
@@ -71,7 +75,6 @@ window.KB_DATA = {
     "802.11ah": 1,
     "HaLow": 1,
     "long-range": 1,
-    "AI-native": 1,
     "energy-harvesting": 1,
     "PDT": 1,
     "WPT": 1,
@@ -82,7 +85,6 @@ window.KB_DATA = {
     "resource-allocation": 1,
     "WiSER": 1,
     "5G-SA": 1,
-    "network-slicing": 1,
     "URSP": 1,
     "AI": 1,
     "China-Mobile": 1,
@@ -135,6 +137,12 @@ window.KB_DATA = {
     "CSD": 1,
     "WPA3": 1,
     "Matter": 1,
+    "5G": 1,
+    "Release 20": 1,
+    "MRSS": 1,
+    "ISAC": 1,
+    "BSR": 1,
+    "AI-receivers": 1,
     "NTN": 1,
     "D2C": 1,
     "satellite": 1,
@@ -155,13 +163,17 @@ window.KB_DATA = {
     "self-supervised": 1,
     "multi-user": 1,
     "802.11bi": 1,
+    "5G-NR": 1,
+    "reinforcement-learning": 1,
+    "handover": 1,
+    "RAN": 1,
+    "machine-learning": 1,
+    "Xn-interface": 1,
     "digital-car-key": 1,
     "Beijing-Auto-Show": 1,
-    "O-RAN": 1,
     "interference-mitigation": 1,
     "xApp": 1,
     "near-RT-RIC": 1,
-    "PRB-allocation": 1,
     "CSMA/CA": 1,
     "edge-computing": 1,
     "DAG-scheduling": 1,
@@ -197,7 +209,9 @@ window.KB_DATA = {
     "rtwt-latency": 4,
     "ftm-ranging": 4,
     "cellular-ai": 3,
+    "6g-vision": 3,
     "wifi-for-ai": 2,
+    "open-ran": 2,
     "roaming-mobility": 2,
     "mlo": 2,
     "nearlink-slb": 1,
@@ -206,21 +220,19 @@ window.KB_DATA = {
     "mmwave-bq": 1,
     "ntn": 1,
     "leo-constellations": 1,
-    "6g-vision": 1,
     "nearlink-automotive": 1,
-    "open-ran": 1,
     "uwb-fi-ra": 1
   },
   "type_counts": {
-    "academic-paper": 65,
-    "industry-news": 25,
+    "academic-paper": 67,
+    "industry-news": 26,
     "ieee-document": 12,
     "product": 7,
     "proposal": 4
   },
   "category_counts": {
-    "academia": 65,
-    "industry": 32,
+    "academia": 67,
+    "industry": 33,
     "standards": 16
   },
   "technologies_vocab": {
@@ -1786,7 +1798,9 @@ window.KB_DATA = {
         "2026-05-21_chinamobile-5g-sa-network-slicing",
         "2026-05-21_tmobile-ericsson-ai-ran-scheduler",
         "2026-05-21_kddi-ericsson-ai-uplink-ropt",
+        "2026-05-24_ericsson-6g-mwc2026-momentum",
         "2026-05-22_arxiv-d2c-vs-ntn-comparative-analysis",
+        "2026-05-24_arxiv-ilcp-6g-post-handover-cold-start",
         "2026-05-21_arxiv-aiim-o-ran-interference-xapp"
       ],
       "by_type_primary": {}
@@ -1824,15 +1838,21 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
-        "2026-05-21_arxiv-6g-agentic-ai-native"
+        "2026-05-24_ericsson-6g-mwc2026-momentum",
+        "2026-05-21_arxiv-6g-agentic-ai-native",
+        "2026-05-24_arxiv-ilcp-6g-post-handover-cold-start"
       ],
       "entries_secondary": [
         "2026-05-22_arxiv-agentic-6g-ai-ran-orchestrator",
         "2026-05-22_arxiv-d2c-vs-ntn-comparative-analysis"
       ],
       "by_type_primary": {
+        "industry-news": [
+          "2026-05-24_ericsson-6g-mwc2026-momentum"
+        ],
         "academic-paper": [
-          "2026-05-21_arxiv-6g-agentic-ai-native"
+          "2026-05-21_arxiv-6g-agentic-ai-native",
+          "2026-05-24_arxiv-ilcp-6g-post-handover-cold-start"
         ]
       }
     },
@@ -1892,6 +1912,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-05-24_arxiv-morph-multi-env-rl-prb-oran",
         "2026-05-21_arxiv-aiim-o-ran-interference-xapp"
       ],
       "entries_secondary": [
@@ -1899,6 +1920,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-05-24_arxiv-morph-multi-env-rl-prb-oran",
           "2026-05-21_arxiv-aiim-o-ran-interference-xapp"
         ]
       }
@@ -1919,7 +1941,9 @@ window.KB_DATA = {
       "entries_primary": [
         "2026-05-21_chinamobile-5g-sa-network-slicing"
       ],
-      "entries_secondary": [],
+      "entries_secondary": [
+        "2026-05-24_arxiv-morph-multi-env-rl-prb-oran"
+      ],
       "by_type_primary": {
         "industry-news": [
           "2026-05-21_chinamobile-5g-sa-network-slicing"
@@ -1963,7 +1987,10 @@ window.KB_DATA = {
       ],
       "entries_secondary": [
         "2026-05-21_chinamobile-5g-sa-network-slicing",
+        "2026-05-24_ericsson-6g-mwc2026-momentum",
         "2026-05-21_arxiv-6g-agentic-ai-native",
+        "2026-05-24_arxiv-morph-multi-env-rl-prb-oran",
+        "2026-05-24_arxiv-ilcp-6g-post-handover-cold-start",
         "2026-05-21_arxiv-aiim-o-ran-interference-xapp"
       ],
       "by_type_primary": {
@@ -3336,6 +3363,40 @@ window.KB_DATA = {
       "search_blob": "synaptics @ wwc mountain view 2026: 60-device hyper-connected household needs wi-fi 7 iot + edge ai + enterprise-grade security (anonymised pmkid, wpa3 client isolation, wi-fi-only matter provisioning) synaptics 在 wwc mountain view 2026：60 设备的超联接家庭需要 wi-fi 7 iot + 边缘 ai + 企业级安全（匿名化 pmkid、wpa3 客户端隔离、仅 wi-fi 的 matter 配网） wi-fi 7 iot wpa3 security matter wifi-sensing at wi-fi world congress mountain view 2026 (reported may 8), synaptics vp of product marketing **shishir gupta** argued that the residential iot environment is heading toward **>60 connected devices per household by 2030**, and that today's wireless architectures cannot deliver the latency, density, and security those households will need. synaptics' position is that the answer is a high-density, high-performance iot-targeted wi-fi 7 platform — they were first to ship an iot-optimised wi-fi 7 platform in april 2025 — combined with edge ai for performance tuning and enterprise-grade security primitives moved down into consumer iot. 在 wwc mountain view 2026（5 月 8 日报道），synaptics 产品营销与客户工程副总裁 **shishir gupta** 指出：到 2030 年，居住空间内的联网设备将超过每户 **60 台**，今天的无线架构无法满足这种家庭所需的时延、密度与安全。synaptics 的方案是面向 iot 的高密度、高性能 wi-fi 7 平台 —— 他们于 2025 年 4 月率先推出 iot 优化的 wi-fi 7 平台 —— 结合边缘 ai 用于性能调优，并把企业级安全原语下沉到消费 iot。 industry-news wifi"
     },
     {
+      "id": "2026-05-24_ericsson-6g-mwc2026-momentum",
+      "date_found": "2026-05-24",
+      "technology": "cellular",
+      "date_published": "2026-05-07",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "Ericsson post-MWC 2026 readout: 6G is consolidating around Release 20 — 400 MHz / 30 kHz SCS prototype CCs, MRSS 5G/6G coexistence, contention-based BSR, physics-aware AI receivers, Apple/MediaTek/Qualcomm collaborative testbeds",
+      "title_zh": "爱立信 MWC 2026 后总结：6G 围绕 Release 20 收敛 —— 400 MHz / 30 kHz SCS 原型载波、MRSS 5G/6G 共存、基于竞争的 BSR、物理感知 AI 接收机、与 Apple/MediaTek/Qualcomm 的协同测试床",
+      "url": "https://www.ericsson.com/en/blog/2026/5/blog-6g-gains-momentum-mwc2026",
+      "topics": [
+        "6G",
+        "5G",
+        "Release 20",
+        "AI-native",
+        "MRSS",
+        "ISAC",
+        "BSR",
+        "AI-receivers"
+      ],
+      "topic_primary": "6g-vision",
+      "topics_secondary": [
+        "5g-nr",
+        "cellular-ai"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-24_ericsson-6g-mwc2026-momentum.md",
+      "summary_short_en": "Johan Lundsjö and Marie Hogan's May 7 2026 Ericsson blog is the clearest post-MWC 2026 consolidation of what 6G is actually shaping up to be at the working-prototype level, distinct from the abstract \"AI-native\" / \"ISAC\" / \"MRSS\" buzzwords. They report that **the industry sentiment shifted at MWC 2026 from \"distant possibilities\" to \"concrete opportunities and practical preparation\"** — i.e., the marketing layer is now backed by named features and named test partners.",
+      "summary_short_zh": "Johan Lundsjö 与 Marie Hogan 在 2026 年 5 月 7 日的爱立信博文是 MWC 2026 后关于\"6G 在工作原型级别实际成型为什么\"的最清晰总结，区别于抽象的\"AI 原生\"/\"ISAC\"/\"MRSS\"流行词。他们报告**MWC 2026 上业界情绪从\"遥远的可能性\"转向\"具体机会与务实准备\"** —— 即营销层面如今由具名特性和具名测试伙伴支撑。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Johan Lundsjö and Marie Hogan's May 7 2026 Ericsson blog is the clearest post-MWC 2026 consolidation of what 6G is actually shaping up to be at the working-prototype level, distinct from the abstract &quot;AI-native&quot; / &quot;ISAC&quot; / &quot;MRSS&quot; buzzwords. They report that <strong>the industry sentiment shifted at MWC 2026 from &quot;distant possibilities&quot; to &quot;concrete opportunities and practical preparation&quot;</strong> — i.e., the marketing layer is now backed by named features and named test partners.</p>\n<p>The concrete physical-layer prototype: <strong>400 MHz component carrier with 30 kHz subcarrier spacing</strong>, which Ericsson and Qualcomm demonstrated end-to-end. The 30 kHz SCS is the 5G NR FR1 numerology — keeping it for 6G FR1 means the OFDM symbol time and slot timing carry over directly, which makes the 5G-to-6G migration straightforward at the time-domain level and lets MRSS (Multi-RAT Spectrum Sharing) overlay 5G and 6G transmissions within the same 400 MHz pool. The 400 MHz CC width is also the upper end of FR1 — a real number, not the THz mid-band fantasy from 6G's earliest white papers.</p>\n<p>The named 6G features: (1) <strong>MRSS</strong> — Multi-RAT Spectrum Sharing for transparent 5G/6G coexistence in the same band, the analogue of DSS but for the next generational bridge; (2) <strong>ISAC</strong> — Integrated Sensing &amp; Communication as a native capability rather than a bolt-on, consistent with arxiv 2603.03607's O-RAN architectural primitives push; (3) <strong>Contention-based buffer status reporting</strong> — reduces uplink scheduling latency by letting UEs report buffer status on contention slots instead of requesting grants, a small but real protocol change targeting the AI-traffic uplink-burst pattern; (4) <strong>Physics-aware AI receivers</strong> — neural OFDM symbol detection that incorporates channel-physics priors, generally outperforming pure-ML approaches. The industry-alignment signal: <strong>Apple, MediaTek, and Qualcomm</strong> all named as collaborative-testbed partners for these prototypes — historically Apple's silence on the IEEE/3GPP roadmap was the missing piece; their named participation suggests the device side is now committed.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Physical-layer prototype demonstrated</strong>: <strong>400 MHz CC + 30 kHz SCS</strong> (Ericsson + Qualcomm joint demo). Keeps 5G NR FR1 numerology → straightforward time-domain migration; FR1-realistic carrier width.</li><li><strong>Named 6G features</strong>:</li><li><strong>MRSS</strong> (Multi-RAT Spectrum Sharing) — 5G/6G transparent coexistence in same band.</li><li><strong>ISAC</strong> — Integrated Sensing &amp; Communication as native capability.</li><li><strong>Contention-based BSR</strong> — UE reports buffer status on contention slots → lower uplink scheduling latency.</li><li><strong>Physics-aware AI receivers</strong> — channel-physics-informed neural OFDM detection.</li><li><strong>AI-native framing</strong>: &quot;AI-native from day one, throughout the network stack&quot; — explicitly contrasted with retrofitting AI onto existing networks.</li><li><strong>Test partners named</strong>: Apple, MediaTek, Qualcomm — device-side commitment signal.</li><li><strong>Standards context</strong>: 6G work under 3GPP Release 20; Stage 1 (TR 22.870) requirements complete; architecture/security/radio studies underway.</li><li><strong>Operator alignment</strong>: blog claims consensus among &quot;CSPs, vendors, regulators, analysts, media&quot; — the marketing-narrative-to-prototype gap is closing.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The most important signal is <strong>what's not in the list</strong>. The early 6G hype cycle pushed THz, RIS, holographic-MIMO, and AI-orchestration-of-everything as the headline pillars. Ericsson's post-MWC 2026 consolidation lists none of those at the prototype level — instead it names <strong>400 MHz / 30 kHz SCS, MRSS, ISAC, contention-BSR, AI receivers</strong> as the demonstrated 6G capabilities. That's a narrower, more pragmatic 6G than the 2024-era discourse implied: an evolutionary FR1-friendly numerology, transparent 5G/6G coexistence, and AI-receiver / contention-BSR / ISAC as the named feature additions. The Apple/MediaTek/Qualcomm naming is the device-side commitment that previous Ericsson 6G material lacked — that's the new data point. This complements <code>2026-05-22_arxiv-agentic-6g-ai-ran-orchestrator.md</code> (6G AI orchestration research direction), <code>2026-05-21_arxiv-6g-agentic-ai-native.md</code> (the academic AI-native pitch), and <code>2026-05-21_tmobile-ericsson-ai-ran-scheduler.md</code> (operator-side AI-RAN production deployment) by anchoring the standards/vendor side at a specific prototype configuration the industry is now collectively willing to defend.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Johan Lundsjö 与 Marie Hogan 在 2026 年 5 月 7 日的爱立信博文是 MWC 2026 后关于&quot;6G 在工作原型级别实际成型为什么&quot;的最清晰总结，区别于抽象的&quot;AI 原生&quot;/&quot;ISAC&quot;/&quot;MRSS&quot;流行词。他们报告<strong>MWC 2026 上业界情绪从&quot;遥远的可能性&quot;转向&quot;具体机会与务实准备&quot;</strong> —— 即营销层面如今由具名特性和具名测试伙伴支撑。</p>\n<p>具体的物理层原型：<strong>400 MHz 分量载波 + 30 kHz 子载波间隔</strong>，由爱立信与高通端到端演示。30 kHz SCS 是 5G NR FR1 的数值学 —— 在 6G FR1 中保留它意味着 OFDM 符号时间与时隙定时直接沿用，使 5G 到 6G 在时域层面的迁移变直接，并允许 MRSS（多 RAT 频谱共享）在同一 400 MHz 池内叠加 5G 与 6G 传输。400 MHz 载波宽度也是 FR1 上限 —— 是真实数字，不是 6G 早期白皮书中的 THz 中频段幻想。</p>\n<p>具名的 6G 特性：(1) <strong>MRSS</strong> —— 多 RAT 频谱共享，用于同频段下 5G/6G 透明共存，类似 DSS 但面向下一代过渡；(2) <strong>ISAC</strong> —— 集成感知与通信作为原生能力而非附加，与 arxiv 2603.03607 推动的 O-RAN 架构原语方向一致；(3) <strong>基于竞争的缓冲状态报告（BSR）</strong> —— 让 UE 在竞争时隙上报缓冲状态而非请求 grant，从而降低上行调度延迟，是针对 AI 流量上行突发模式的小而实的协议变化；(4) <strong>物理感知 AI 接收机</strong> —— 融合信道物理先验的神经 OFDM 符号检测，普遍优于纯 ML 方法。业界对齐信号：<strong>Apple、MediaTek、高通</strong>均被点名为这些原型的协同测试床伙伴 —— 历史上 Apple 在 IEEE/3GPP 路线图上的沉默是缺失的拼图；其具名参与表明设备侧现已承诺。</p>\n<h3>技术要点</h3>\n<ul><li><strong>演示的物理层原型</strong>：<strong>400 MHz 分量载波 + 30 kHz SCS</strong>（爱立信 + 高通联合演示）。保留 5G NR FR1 数值学 → 时域迁移直接；FR1 现实的载波宽度。</li><li><strong>具名的 6G 特性</strong>：</li><li><strong>MRSS</strong>（多 RAT 频谱共享）—— 同频段下 5G/6G 透明共存。</li><li><strong>ISAC</strong> —— 集成感知与通信作为原生能力。</li><li><strong>基于竞争的 BSR</strong> —— UE 在竞争时隙上报缓冲状态 → 降低上行调度时延。</li><li><strong>物理感知 AI 接收机</strong> —— 融入信道物理先验的神经 OFDM 检测。</li><li><strong>AI 原生定位</strong>：&quot;从第一天起 AI 原生，贯穿整个网络栈&quot; —— 与对现有网络加装 AI 形成明确对比。</li><li><strong>具名测试伙伴</strong>：Apple、MediaTek、高通 —— 设备侧承诺信号。</li><li><strong>标准背景</strong>：6G 工作位于 3GPP Release 20；Stage 1（TR 22.870）需求已完成；架构/安全/无线研究进行中。</li><li><strong>运营商对齐</strong>：博文称在&quot;CSP、厂商、监管、分析机构、媒体&quot;间形成共识 —— 营销叙事到原型的差距正在收敛。</li></ul>\n<h3>意义与新意</h3>\n<p>最重要的信号是<strong>未列出的内容</strong>。早期 6G 炒作周期将 THz、RIS、全息 MIMO 与&quot;AI 编排一切&quot;作为头部支柱。爱立信 MWC 2026 后的总结在原型级别均未列出这些 —— 反而具名 <strong>400 MHz / 30 kHz SCS、MRSS、ISAC、竞争 BSR、AI 接收机</strong> 作为已演示的 6G 能力。这比 2024 年话语隐含的 6G 更窄、更务实：演进型 FR1 友好的数值学、5G/6G 透明共存，AI 接收机/竞争 BSR/ISAC 作为具名新增特性。Apple/MediaTek/高通的具名是先前爱立信 6G 材料缺失的设备侧承诺 —— 这是新的数据点。该条目补充 <code>2026-05-22_arxiv-agentic-6g-ai-ran-orchestrator.md</code>（6G AI 编排研究方向）、<code>2026-05-21_arxiv-6g-agentic-ai-native.md</code>（学界 AI 原生主张）与 <code>2026-05-21_tmobile-ericsson-ai-ran-scheduler.md</code>（运营商侧 AI-RAN 生产部署），将标准/厂商侧锚定在业界如今集体愿意捍卫的具体原型配置上。</p>",
+      "images": [],
+      "search_blob": "ericsson post-mwc 2026 readout: 6g is consolidating around release 20 — 400 mhz / 30 khz scs prototype ccs, mrss 5g/6g coexistence, contention-based bsr, physics-aware ai receivers, apple/mediatek/qualcomm collaborative testbeds 爱立信 mwc 2026 后总结：6g 围绕 release 20 收敛 —— 400 mhz / 30 khz scs 原型载波、mrss 5g/6g 共存、基于竞争的 bsr、物理感知 ai 接收机、与 apple/mediatek/qualcomm 的协同测试床 6g 5g release 20 ai-native mrss isac bsr ai-receivers johan lundsjö and marie hogan's may 7 2026 ericsson blog is the clearest post-mwc 2026 consolidation of what 6g is actually shaping up to be at the working-prototype level, distinct from the abstract \"ai-native\" / \"isac\" / \"mrss\" buzzwords. they report that **the industry sentiment shifted at mwc 2026 from \"distant possibilities\" to \"concrete opportunities and practical preparation\"** — i.e., the marketing layer is now backed by named features and named test partners. johan lundsjö 与 marie hogan 在 2026 年 5 月 7 日的爱立信博文是 mwc 2026 后关于\"6g 在工作原型级别实际成型为什么\"的最清晰总结，区别于抽象的\"ai 原生\"/\"isac\"/\"mrss\"流行词。他们报告**mwc 2026 上业界情绪从\"遥远的可能性\"转向\"具体机会与务实准备\"** —— 即营销层面如今由具名特性和具名测试伙伴支撑。 industry-news cellular"
+    },
+    {
       "id": "2026-05-22_arxiv-d2c-vs-ntn-comparative-analysis",
       "date_found": "2026-05-22",
       "technology": "wifi",
@@ -3737,6 +3798,68 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>在 2026 年 5 月 10–15 日 Antwerp 无线临时会议前的四周，IEEE 802.11 Mentor 门户出现了<strong>六个活跃 Task Group</strong> 的密集提交。会前窗口正是实质性贡献定稿、为面对面辩论做准备的时段，因此本摘要记录了工作组将在 Antwerp 投票的技术议程。</p>\n<p>按 TG 列出要点：</p>\n<ul><li><strong>TGbn (Wi-Fi 8 / 超高可靠性)：</strong> EPCS 上下文转移用于无缝漫游（11-26/036r3，Samsung）；P-EDCA 改进的空间复用（11-26/826，Cisco）；MAPC 安全协议更新（11-26/424r5，Huawei）；LB291 评论决议系列（无缝漫游 第 3+4 部分，Qualcomm 与多家迭代）。</li><li><strong>TGbi (隐私 / EPP)：</strong> EPPKE 认证回归机制（11-26/862，Qualcomm）；EPSAE 引入（11-26/799，HPE）—— 隐私增强关联机制。</li><li><strong>TGbt (后量子密码)：</strong> 两种 PQC 认证变体上桌 —— pqc-sig-auth 与 pqc-no-sig-auth（11-26/546、547；HPE）。预期 D1.0 初版工作组投票从 5 月会议起步。</li><li><strong>TGbp (环境取电通信)：</strong> Non-AP AMP STA 的上行信道接入（11-26/802，Qualcomm）—— 面向超低功耗 IoT 站点的接入机制。预期 D1.0 初版工作组投票从 5 月会议起步。</li><li><strong>TGbq (集成毫米波)：</strong> A-Control 更新与 MultiBSSID 设计（11-26/827、819；OPPO）。</li><li><strong>TGbr (LiFi)：</strong> 波分复用提案（11-26/831，pureLiFi）。</li></ul>\n<h3>技术要点</h3>\n<ul><li><strong>TGbn EPCS 上下文转移</strong>：在 AP 间转移 PMK / 关联上下文，实现毫秒以下无重认证的无缝漫游。</li><li><strong>TGbn P-EDCA</strong>：经 CID 10740 提出的参数化 EDCA 微调，用以改进空间复用决策。</li><li><strong>TGbn MAPC 安全</strong>：多 AP 协调安全协议的更新（跨协调 AP 的密钥派生）。</li><li><strong>TGbi EPPKE / EPSAE</strong>：隐私保护型关联 —— 派生密钥而不泄露长期标识符。</li><li><strong>TGbt PQC 认证</strong>：用于认证握手的格基 + 无签名 PQC 变体（防御「先收今后解」）。</li><li><strong>TGbp AMP UL</strong>：面向反向散射 / 环境取电射频的非 AP STA 信道接入流程。</li><li><strong>TGbq</strong>：为集成毫米波操作模式定制的 A-Control 控制 ID 与 MultiBSSID 扩展。</li><li><strong>TGbr</strong>：可见光 Wi-Fi 的 PHY 层波分复用。</li></ul>\n<h3>意义与新意</h3>\n<p>会前四周窗口集中了一年中数量最多的提交，因为投稿人都想在 Antwerp 拿到台面时间。本摘要比 <code>ieee-march-2026-readout</code> 与 <code>ieee-january-2026-readout</code> 中的会后总结更干净地呈现「标准当下正在发生什么」。其中三个 TG（TGbi 隐私、TGbt PQC、TGbp 环境取电）正处于 D1.0 ballot 阶段 —— 即这几个修订的结构形态将在未来 1-2 次会议锁定。TGbn (Wi-Fi 8) 已过 D2.0 准备期；本窗口的提交以 LB291 评论决议为主，并非架构性变更。</p>",
       "images": [],
       "search_blob": "ieee 802.11 mentor pre-interim digest — apr-may 2026 contributions ahead of the antwerp interim (may 10-15, 2026) ieee 802.11 mentor 会前文档摘要 —— 2026 年 4-5 月（antwerp 临时会议前夕，5 月 10-15 日） 802.11bn 802.11bp 802.11bi 802.11bt 802.11bq 802.11br mac-layer security agentic-ai in the four weeks leading up to the may 10-15 2026 antwerp wireless interim, the ieee 802.11 mentor portal saw a strong wave of task-group submissions across **six active task groups**. the pre-interim window is when the substantive contributions get tabled before face-to-face debate, so this digest captures the technical agenda that the working group will be voting on in antwerp. 在 2026 年 5 月 10–15 日 antwerp 无线临时会议前的四周，ieee 802.11 mentor 门户出现了**六个活跃 task group** 的密集提交。会前窗口正是实质性贡献定稿、为面对面辩论做准备的时段，因此本摘要记录了工作组将在 antwerp 投票的技术议程。 ieee-document wifi"
+    },
+    {
+      "id": "2026-05-24_arxiv-morph-multi-env-rl-prb-oran",
+      "date_found": "2026-05-24",
+      "technology": "cellular",
+      "date_published": "2026-05-01",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "MORPH: Multi-Environment Orchestrated RL for slice-aware PRB scheduling in O-RAN — fuses iPerf-on-OAI measurements + empirical MCS distributions + scalable PHY simulator into one training signal",
+      "title_zh": "MORPH：面向 O-RAN 切片感知 PRB 调度的多环境编排式强化学习 —— 将 OAI 上的 iPerf 测量 + 经验 MCS 选择分布 + 可扩展 PHY 仿真器融合为单一训练信号",
+      "url": "https://arxiv.org/abs/2605.01128",
+      "topics": [
+        "O-RAN",
+        "5G-NR",
+        "reinforcement-learning",
+        "PRB-allocation",
+        "network-slicing"
+      ],
+      "topic_primary": "open-ran",
+      "topics_secondary": [
+        "cellular-ai",
+        "network-slicing"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-24_arxiv-morph-multi-env-rl-prb-oran.md",
+      "summary_short_en": "Dorcheh, Seyfi, Barker, & Afghah (arxiv 2605.01128, submitted May 1 2026) tackle a recurring problem with RL-trained O-RAN xApps for **physical resource block (PRB) scheduling**: where do you get the training data? Two existing options each have a fatal weakness. **Analytical / PHY-only simulators** scale beautifully (millions of episodes, cheap) but miss protocol-stack effects — signalling overhead, ARQ/HARQ retransmissions, scheduler-application interactions — that dominate real throughput. **OpenAirInterface (OAI) + real measurements** capture those effects accurately but train painfully slowly and don't generalise outside the test bench.",
+      "summary_short_zh": "Dorcheh、Seyfi、Barker 与 Afghah（arxiv 2605.01128，2026 年 5 月 1 日提交）针对 RL 训练的 O-RAN xApp 用于**物理资源块（PRB）调度**的反复出现的问题：训练数据从哪里来？现有两种选择各有致命缺陷。**纯解析/PHY 仿真器**扩展性极佳（百万级回合、成本低），但遗漏协议栈效应 —— 信令开销、ARQ/HARQ 重传、调度器-应用交互 —— 而这些往往主导实际吞吐。**OpenAirInterface (OAI) + 实测**能准确捕捉上述效应，但训练痛苦缓慢且无法泛化到测试台之外。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Dorcheh, Seyfi, Barker, &amp; Afghah (arxiv 2605.01128, submitted May 1 2026) tackle a recurring problem with RL-trained O-RAN xApps for <strong>physical resource block (PRB) scheduling</strong>: where do you get the training data? Two existing options each have a fatal weakness. <strong>Analytical / PHY-only simulators</strong> scale beautifully (millions of episodes, cheap) but miss protocol-stack effects — signalling overhead, ARQ/HARQ retransmissions, scheduler-application interactions — that dominate real throughput. <strong>OpenAirInterface (OAI) + real measurements</strong> capture those effects accurately but train painfully slowly and don't generalise outside the test bench.</p>\n<p><strong>MORPH</strong> (Multi-Environment Orchestrated Reinforcement-learning Pipeline) refuses the choice. It trains a single PRB-allocation policy on <strong>three throughput sources fused into one reward signal</strong>:</p>\n<p>1. <strong>Application-layer measurements via iPerf running on the OAI 5G-NR RF-simulator stack</strong> — captures real packet flow, real MAC/RLC retransmits, real scheduler queue dynamics. 2. <strong>Empirical MCS-selection distributions</strong> — empirically observed link-adaptation behaviour from real link-level traces, used to sample realistic MCS outcomes for given SINR. 3. <strong>Scalable PHY-fidelity OFDM simulator</strong> — fills in the rare-event tails (high-mobility, deep fades) that iPerf-on-OAI can't sample in reasonable wall time.</p>\n<p>The policy targets <strong>slice-aware PRB allocation within a single gNB</strong>: given multiple slices with different SLAs (e.g. an eMBB slice and a URLLC slice contending for the same PRB pool), allocate to honour all slice SLAs simultaneously. The orchestration step decides at each step which signal to weight more heavily based on the current state (e.g. lean on iPerf for slow-time-varying scenarios, lean on the PHY simulator for rare deep-fade events).</p>\n<p>The result, per the abstract, is <strong>more robust slice-wise performance and improved SLA compliance</strong> vs. agents trained on any single source — OAI-only or simulator-only. The contribution is a training-methodology pattern as much as a particular policy: the recipe (fuse measurement-grounded + behavioural-empirical + scalable-simulator signals via orchestrated weighting) is portable to other O-RAN xApp targets (handover, beam-management, energy-saving).</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Problem</strong>: PRB-allocation xApp RL training is gated by quality/scale of the training environment.</li><li><strong>Three signal sources fused into one reward</strong>:</li></ul>\n<p>1. iPerf application-layer measurements on OAI 5G-NR RF-simulator (full stack). 2. Empirical MCS-selection distributions (real link-adaptation behaviour). 3. Scalable PHY-fidelity OFDM simulator (rare-event tails).</p>\n<ul><li><strong>Orchestration step</strong> weights sources per state — exploits each one where it's accurate.</li><li><strong>Target task</strong>: slice-aware PRB allocation under multi-slice SLA contention within a single gNB.</li><li><strong>Stack</strong>: OpenAirInterface (OAI), open-source — replicable.</li><li><strong>Reported result</strong>: more robust slice-wise performance + improved SLA compliance vs single-source agents.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The methodology angle is more valuable than the specific PRB policy. Most RL-in-O-RAN papers either use a toy PHY simulator (great scale, wrong stack) or train on a real testbench (right stack, no scale). The fused-sources + orchestration pattern is a reusable recipe — and it's grounded in OAI (which is what RAN researchers actually run), so the artefact is replicable, not aspirational. This complements the existing <code>2026-05-21_arxiv-aiim-o-ran-interference-xapp.md</code> entry (AIIM, also an O-RAN xApp but for inter-cell interference) and the <code>2026-05-22_arxiv-agentic-6g-ai-ran-orchestrator.md</code> entry (which posits an agentic RAN orchestrator one layer up the stack) — together they map out the early-2026 O-RAN-xApp research frontier: domain-specific control surfaces (interference, PRB, scheduling) each getting their own RL-trained xApp, with shared infrastructure problems (training-environment quality, generalisation across vendors) being addressed alongside.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Dorcheh、Seyfi、Barker 与 Afghah（arxiv 2605.01128，2026 年 5 月 1 日提交）针对 RL 训练的 O-RAN xApp 用于<strong>物理资源块（PRB）调度</strong>的反复出现的问题：训练数据从哪里来？现有两种选择各有致命缺陷。<strong>纯解析/PHY 仿真器</strong>扩展性极佳（百万级回合、成本低），但遗漏协议栈效应 —— 信令开销、ARQ/HARQ 重传、调度器-应用交互 —— 而这些往往主导实际吞吐。<strong>OpenAirInterface (OAI) + 实测</strong>能准确捕捉上述效应，但训练痛苦缓慢且无法泛化到测试台之外。</p>\n<p><strong>MORPH</strong>（多环境编排式强化学习管道）拒绝二选一。它在<strong>三种吞吐源融合为单一奖励信号</strong>上训练单一 PRB 分配策略：</p>\n<p>1. <strong>基于 OAI 5G-NR RF-simulator 协议栈上运行的 iPerf 应用层测量</strong> —— 捕捉真实分组流、真实 MAC/RLC 重传、真实调度器队列动态。 2. <strong>经验 MCS 选择分布</strong> —— 实测链路自适应行为，用于根据给定 SINR 采样合实际的 MCS 结果。 3. <strong>可扩展的 PHY 保真 OFDM 仿真器</strong> —— 填补 iPerf-on-OAI 在合理墙钟内无法采样的稀有事件尾部（高移动性、深衰落）。</p>\n<p>策略目标为<strong>单 gNB 内的切片感知 PRB 分配</strong>：给定具有不同 SLA 的多个切片（如争夺同一 PRB 池的 eMBB 切片与 URLLC 切片），分配以同时满足所有切片 SLA。编排步骤根据当前状态决定每一步对哪种信号加大权重（如缓变场景偏重 iPerf，稀有深衰落事件偏重 PHY 仿真器）。</p>\n<p>摘要所示结果是：相比单一来源训练的代理（仅 OAI 或仅仿真器），具有<strong>更鲁棒的切片侧性能与更好的 SLA 合规性</strong>。贡献既是特定策略，也是训练方法学模式：该配方（融合测量基准 + 行为经验 + 可扩展仿真信号，通过编排加权）可移植到其他 O-RAN xApp 目标（切换、波束管理、节能）。</p>\n<h3>技术要点</h3>\n<ul><li><strong>问题</strong>：PRB 分配 xApp 的 RL 训练受限于训练环境的质量/规模。</li><li><strong>三种信号源融合为单一奖励</strong>：</li></ul>\n<p>1. OAI 5G-NR RF-simulator 上的 iPerf 应用层测量（完整协议栈）。 2. 经验 MCS 选择分布（真实链路自适应行为）。 3. 可扩展的 PHY 保真 OFDM 仿真器（稀有事件尾部）。</p>\n<ul><li><strong>编排步骤</strong>按状态对来源加权 —— 在各自精确的领域内充分利用。</li><li><strong>目标任务</strong>：单 gNB 内多切片 SLA 竞争下的切片感知 PRB 分配。</li><li><strong>平台</strong>：OpenAirInterface (OAI)，开源，可复现。</li><li><strong>报告结果</strong>：相比单一来源代理，切片侧性能更鲁棒、SLA 合规更好。</li></ul>\n<h3>意义与新意</h3>\n<p>方法学角度比特定 PRB 策略更具价值。大多数 O-RAN 中的 RL 论文要么使用玩具 PHY 仿真器（规模好、协议栈错），要么在真实测试台上训练（协议栈对、无规模）。融合源 + 编排的模式是一种可复用的配方 —— 而且建立在 OAI（RAN 研究人员实际运行的平台）之上，因此产物可复现而非空想。该工作补充现有的 <code>2026-05-21_arxiv-aiim-o-ran-interference-xapp.md</code> 条目（AIIM，也是 O-RAN xApp，但针对小区间干扰）和 <code>2026-05-22_arxiv-agentic-6g-ai-ran-orchestrator.md</code> 条目（其在协议栈上一层提出智能体 RAN 编排器）—— 三者共同勾勒出 2026 年初 O-RAN xApp 的研究前沿：领域特定控制面（干扰、PRB、调度）各自获得自有的 RL 训练 xApp，而共享的基础设施问题（训练环境质量、跨厂商泛化）同步得到解决。</p>",
+      "images": [],
+      "search_blob": "morph: multi-environment orchestrated rl for slice-aware prb scheduling in o-ran — fuses iperf-on-oai measurements + empirical mcs distributions + scalable phy simulator into one training signal morph：面向 o-ran 切片感知 prb 调度的多环境编排式强化学习 —— 将 oai 上的 iperf 测量 + 经验 mcs 选择分布 + 可扩展 phy 仿真器融合为单一训练信号 o-ran 5g-nr reinforcement-learning prb-allocation network-slicing dorcheh, seyfi, barker, & afghah (arxiv 2605.01128, submitted may 1 2026) tackle a recurring problem with rl-trained o-ran xapps for **physical resource block (prb) scheduling**: where do you get the training data? two existing options each have a fatal weakness. **analytical / phy-only simulators** scale beautifully (millions of episodes, cheap) but miss protocol-stack effects — signalling overhead, arq/harq retransmissions, scheduler-application interactions — that dominate real throughput. **openairinterface (oai) + real measurements** capture those effects accurately but train painfully slowly and don't generalise outside the test bench. dorcheh、seyfi、barker 与 afghah（arxiv 2605.01128，2026 年 5 月 1 日提交）针对 rl 训练的 o-ran xapp 用于**物理资源块（prb）调度**的反复出现的问题：训练数据从哪里来？现有两种选择各有致命缺陷。**纯解析/phy 仿真器**扩展性极佳（百万级回合、成本低），但遗漏协议栈效应 —— 信令开销、arq/harq 重传、调度器-应用交互 —— 而这些往往主导实际吞吐。**openairinterface (oai) + 实测**能准确捕捉上述效应，但训练痛苦缓慢且无法泛化到测试台之外。 academic-paper cellular"
+    },
+    {
+      "id": "2026-05-24_arxiv-ilcp-6g-post-handover-cold-start",
+      "date_found": "2026-05-24",
+      "technology": "cellular",
+      "date_published": "2026-05-01",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "ILCP: Inductive Latent Context Persistence — closing the post-handover cold start in 6G RAN by transporting a 128-byte recurrent-state payload over Xn",
+      "title_zh": "ILCP：归纳式潜在上下文持久化 —— 通过 Xn 接口传输 128 字节循环状态有效载荷，消除 6G RAN 切换冷启动问题",
+      "url": "https://arxiv.org/abs/2605.00593",
+      "topics": [
+        "6G",
+        "handover",
+        "RAN",
+        "machine-learning",
+        "Xn-interface"
+      ],
+      "topic_primary": "6g-vision",
+      "topics_secondary": [
+        "cellular-ai",
+        "5g-nr"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-05-24_arxiv-ilcp-6g-post-handover-cold-start.md",
+      "summary_short_en": "Banerjee & Awan (arxiv 2605.00593, submitted May 1 2026) address a problem that emerges when an ML-driven RAN runs into mobility: the AI/ML models inside a serving gNB carry **recurrent state** (LSTM hidden states, transformer KV caches, graph-message buffers) that summarises everything the model has learned about the UE's recent behaviour — and when the UE hands over to a neighbour gNB, that state is **lost**. The target gNB sees a \"cold start\": its model has to rebuild a usable representation of the UE over hundreds of milliseconds of new observations. During that window, handover decisions and resource allocations are noticeably worse, which manifests in measurable failures (ping-pongs, throughput drops, dropped sessions). The cold-start window is small in clock terms but large in 6G's intended use cases (XR, V2X, eMTC) where 50–250 ms of degraded decisioning is operationally bad.",
+      "summary_short_zh": "Banerjee 与 Awan（arxiv 2605.00593，2026 年 5 月 1 日提交）解决了 ML 驱动 RAN 在移动性下出现的核心问题：服务 gNB 内的 AI/ML 模型携带**循环状态**（LSTM 隐藏状态、transformer KV 缓存、图消息缓冲），这些状态浓缩了模型对 UE 近期行为的全部学习内容 —— 而当 UE 切换到邻接 gNB 时，这些状态**完全丢失**。目标 gNB 经历\"冷启动\"：其模型需要数百毫秒的新观测才能重建对 UE 的可用表示。在此期间，切换决策与资源分配明显变差，表现为乒乓切换、吞吐下降、会话掉线。冷启动窗口在时钟上虽短，但对 6G 目标场景（XR、V2X、eMTC）而言，50–250 ms 的决策劣化在运营上不可接受。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Banerjee &amp; Awan (arxiv 2605.00593, submitted May 1 2026) address a problem that emerges when an ML-driven RAN runs into mobility: the AI/ML models inside a serving gNB carry <strong>recurrent state</strong> (LSTM hidden states, transformer KV caches, graph-message buffers) that summarises everything the model has learned about the UE's recent behaviour — and when the UE hands over to a neighbour gNB, that state is <strong>lost</strong>. The target gNB sees a &quot;cold start&quot;: its model has to rebuild a usable representation of the UE over hundreds of milliseconds of new observations. During that window, handover decisions and resource allocations are noticeably worse, which manifests in measurable failures (ping-pongs, throughput drops, dropped sessions). The cold-start window is small in clock terms but large in 6G's intended use cases (XR, V2X, eMTC) where 50–250 ms of degraded decisioning is operationally bad.</p>\n<p><strong>Inductive Latent Context Persistence (ILCP)</strong> is the proposed fix. The source gNB <strong>compresses</strong> the relevant recurrent state into a compact <strong>128-byte payload</strong>, ships it over the existing <strong>3GPP Xn interface</strong> as part of the handover signalling, and the target gNB <strong>adapts</strong> it to its own model topology using a dynamic heterogeneous graph network. The adapter is the novelty: it doesn't assume source and target gNBs run identical models (different vendors, different generations), and it doesn't require a full retraining round-trip — the graph operates on the compressed latent and outputs an initialisation vector for the target model that captures the UE's behavioural fingerprint.</p>\n<p>The headline numbers are strong. <strong>Ping-pong handovers drop from 6.5% (baseline) and 22.6% (Transformer baseline) to 0.0%</strong>. Post-handover decision accuracy improves by <strong>+5.1 pp average / +13.3 pp peak</strong> in the critical 50–250 ms window vs. cold-start. The Xn-transport overhead is tiny (128 bytes), and per-handover decision latency is <strong>7.7 ms p99 on a single GPU</strong> — comfortable for near-real-time RAN operation. Under perturbation (channel changes, vendor swap), ILCP holds at 10–13% HO failure vs. A3/A5 baseline rules degrading to 57–65%, suggesting the latent compression generalises rather than memorising.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Problem framing</strong>: ML-RAN handover cold start — recurrent ML state is lost when UE moves to target gNB, causing measurable degradation for 50–250 ms.</li><li><strong>Mechanism</strong>:</li><li>Source gNB <strong>compresses</strong> recurrent state → 128-byte payload.</li><li>Payload transported via existing <strong>3GPP Xn interface</strong> (no new air-interface signalling).</li><li>Target gNB <strong>adapts</strong> payload using dynamic heterogeneous graph model (handles vendor/model heterogeneity).</li><li><strong>Results</strong>:</li><li>Ping-pong rate: <strong>0.0%</strong> (vs 6.5% baseline / 22.6% Transformer).</li><li>Post-HO accuracy: <strong>+5.1 pp avg, +13.3 pp peak</strong> in 50–250 ms window.</li><li>Per-decision latency: <strong>7.7 ms p99</strong> on single GPU.</li><li>Robustness under perturbation: 10–13% HO failure vs 57–65% for A3/A5 rules.</li><li><strong>Standards angle</strong>: rides existing Xn interface — no new 3GPP work needed for transport; the adapter is purely vendor-side ML infrastructure.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The contribution is significant for two reasons. First, <strong>the failure mode is real and underappreciated</strong>: 6G's AI-native vision assumes ML models will sit in the RAN and improve over time — but mobility actively destroys that improvement at every handover boundary. ILCP is the first paper I've seen that names this problem cleanly and quantifies it (the 22.6% ping-pong rate for naive Transformer baseline is a striking number — vendor RAN AI without context-handoff is <em>worse</em> than rules-based A3/A5). Second, <strong>the transport choice is pragmatic</strong>: 128 bytes on Xn is invisible inside existing handover signalling overhead, and the adapter design accommodates heterogeneous gNB models — so the proposal can land in deployments without 3GPP needing to standardise a new context-handoff IE on N2/N3. The work pairs naturally with the existing <code>2026-05-21_kddi-ericsson-ai-uplink-ropt.md</code> and <code>2026-05-22_arxiv-agentic-6g-ai-ran-orchestrator.md</code> entries that frame the agentic-RAN direction — those entries describe the goal state; ILCP supplies a primitive that mobility-aware agentic-RAN actually needs.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Banerjee 与 Awan（arxiv 2605.00593，2026 年 5 月 1 日提交）解决了 ML 驱动 RAN 在移动性下出现的核心问题：服务 gNB 内的 AI/ML 模型携带<strong>循环状态</strong>（LSTM 隐藏状态、transformer KV 缓存、图消息缓冲），这些状态浓缩了模型对 UE 近期行为的全部学习内容 —— 而当 UE 切换到邻接 gNB 时，这些状态<strong>完全丢失</strong>。目标 gNB 经历&quot;冷启动&quot;：其模型需要数百毫秒的新观测才能重建对 UE 的可用表示。在此期间，切换决策与资源分配明显变差，表现为乒乓切换、吞吐下降、会话掉线。冷启动窗口在时钟上虽短，但对 6G 目标场景（XR、V2X、eMTC）而言，50–250 ms 的决策劣化在运营上不可接受。</p>\n<p><strong>归纳式潜在上下文持久化（ILCP）</strong>是其提出的解法。源 gNB 将相关循环状态<strong>压缩</strong>为紧凑的 <strong>128 字节有效载荷</strong>，作为切换信令的一部分通过现有 <strong>3GPP Xn 接口</strong>传送，目标 gNB 使用动态异构图网络<strong>适配</strong>到其自身模型拓扑。适配器是创新点：它不假设源/目标 gNB 运行相同模型（不同厂商、不同代际），也不需要完整再训练往返 —— 图作用于压缩的潜在表示，输出一个能捕捉 UE 行为指纹的目标模型初始化向量。</p>\n<p>主要指标很强。<strong>乒乓切换从基线 6.5%、Transformer 基线 22.6% 降至 0.0%</strong>。切换后决策准确率在关键 50–250 ms 窗口内相对冷启动<strong>平均提升 5.1 pp / 峰值 13.3 pp</strong>。Xn 传输开销极小（128 字节），每次切换决策延迟 <strong>7.7 ms p99</strong>（单 GPU）—— 完全适合近实时 RAN 运行。扰动下（信道变化、厂商更换），ILCP 切换失败率维持在 10–13%，而 A3/A5 基线规则恶化到 57–65%，说明潜在压缩具有泛化性而非简单记忆。</p>\n<h3>技术要点</h3>\n<ul><li><strong>问题界定</strong>：ML-RAN 切换冷启动 —— 循环 ML 状态在 UE 移到目标 gNB 时丢失，导致 50–250 ms 内决策可测的劣化。</li><li><strong>机制</strong>：</li><li>源 gNB 将循环状态<strong>压缩</strong>为 128 字节有效载荷。</li><li>通过现有 <strong>3GPP Xn 接口</strong>传输（不引入新的空口信令）。</li><li>目标 gNB 使用动态异构图模型<strong>适配</strong>有效载荷（处理厂商/模型异构性）。</li><li><strong>结果</strong>：</li><li>乒乓切换率：<strong>0.0%</strong>（vs 基线 6.5% / Transformer 22.6%）。</li><li>切换后准确率：<strong>平均 +5.1 pp，峰值 +13.3 pp</strong>（50–250 ms 窗口）。</li><li>每决策延迟：<strong>单 GPU 7.7 ms p99</strong>。</li><li>扰动下鲁棒性：HO 失败 10–13% vs A3/A5 规则的 57–65%。</li><li><strong>标准接口角度</strong>：复用现有 Xn 接口 —— 传输部分无需新的 3GPP 工作；适配器纯属厂商侧 ML 基础设施。</li></ul>\n<h3>意义与新意</h3>\n<p>该贡献意义重大有两点。第一，<strong>失效模式真实且被低估</strong>：6G AI 原生愿景假设 ML 模型驻留 RAN 并随时间改进 —— 但每次切换边界处的移动性都在主动摧毁这种改进。ILCP 是我看到的第一篇清晰命名该问题并将其量化的论文（朴素 Transformer 基线的 22.6% 乒乓率是惊人数字 —— 没有上下文交接的厂商 RAN AI 比规则化 A3/A5 <em>更差</em>）。第二，<strong>传输选择很务实</strong>：Xn 上的 128 字节淹没在现有切换信令开销中，适配器设计容纳异构 gNB 模型 —— 该提案可在不需要 3GPP 在 N2/N3 上标准化新上下文交接 IE 的情况下落地。该工作与现有的 <code>2026-05-21_kddi-ericsson-ai-uplink-ropt.md</code> 和 <code>2026-05-22_arxiv-agentic-6g-ai-ran-orchestrator.md</code> 条目天然配套 —— 后者描述目标状态；ILCP 提供了移动性感知的智能体 RAN 实际需要的一项原语。</p>",
+      "images": [],
+      "search_blob": "ilcp: inductive latent context persistence — closing the post-handover cold start in 6g ran by transporting a 128-byte recurrent-state payload over xn ilcp：归纳式潜在上下文持久化 —— 通过 xn 接口传输 128 字节循环状态有效载荷，消除 6g ran 切换冷启动问题 6g handover ran machine-learning xn-interface banerjee & awan (arxiv 2605.00593, submitted may 1 2026) address a problem that emerges when an ml-driven ran runs into mobility: the ai/ml models inside a serving gnb carry **recurrent state** (lstm hidden states, transformer kv caches, graph-message buffers) that summarises everything the model has learned about the ue's recent behaviour — and when the ue hands over to a neighbour gnb, that state is **lost**. the target gnb sees a \"cold start\": its model has to rebuild a usable representation of the ue over hundreds of milliseconds of new observations. during that window, handover decisions and resource allocations are noticeably worse, which manifests in measurable failures (ping-pongs, throughput drops, dropped sessions). the cold-start window is small in clock terms but large in 6g's intended use cases (xr, v2x, emtc) where 50–250 ms of degraded decisioning is operationally bad. banerjee 与 awan（arxiv 2605.00593，2026 年 5 月 1 日提交）解决了 ml 驱动 ran 在移动性下出现的核心问题：服务 gnb 内的 ai/ml 模型携带**循环状态**（lstm 隐藏状态、transformer kv 缓存、图消息缓冲），这些状态浓缩了模型对 ue 近期行为的全部学习内容 —— 而当 ue 切换到邻接 gnb 时，这些状态**完全丢失**。目标 gnb 经历\"冷启动\"：其模型需要数百毫秒的新观测才能重建对 ue 的可用表示。在此期间，切换决策与资源分配明显变差，表现为乒乓切换、吞吐下降、会话掉线。冷启动窗口在时钟上虽短，但对 6g 目标场景（xr、v2x、emtc）而言，50–250 ms 的决策劣化在运营上不可接受。 academic-paper cellular"
     },
     {
       "id": "2026-05-21_sparklink-digital-car-key-beijing-autoshow",
