@@ -42,6 +42,7 @@ window.KB_DATA = {
     "LEO": 3,
     "roaming": 3,
     "802.11ac": 2,
+    "BLE": 2,
     "5G": 2,
     "ISLA": 2,
     "resource-allocation": 2,
@@ -75,6 +76,13 @@ window.KB_DATA = {
     "hidden-terminal": 1,
     "Bianchi-model": 1,
     "saturation-throughput": 1,
+    "bt-location": 1,
+    "direction-finding": 1,
+    "AoA": 1,
+    "DoA": 1,
+    "RSSI": 1,
+    "maximum-likelihood": 1,
+    "particle-filter": 1,
     "open-ran": 1,
     "vRAN": 1,
     "OpenAirInterface": 1,
@@ -92,7 +100,6 @@ window.KB_DATA = {
     "multi-cell": 1,
     "PPO": 1,
     "gossip": 1,
-    "BLE": 1,
     "ESB": 1,
     "Nordic": 1,
     "energy-efficiency": 1,
@@ -258,6 +265,7 @@ window.KB_DATA = {
     "leo-constellations": 2,
     "roaming-mobility": 2,
     "mlo": 2,
+    "bt-location": 1,
     "nearlink-slb": 1,
     "bt-le": 1,
     "uwb-ranging": 1,
@@ -269,7 +277,7 @@ window.KB_DATA = {
     "uwb-fi-ra": 1
   },
   "type_counts": {
-    "academic-paper": 72,
+    "academic-paper": 73,
     "industry-news": 30,
     "ieee-document": 12,
     "product": 7,
@@ -277,7 +285,7 @@ window.KB_DATA = {
     "bluetooth-spec": 1
   },
   "category_counts": {
-    "academia": 72,
+    "academia": 73,
     "industry": 37,
     "standards": 17
   },
@@ -2248,6 +2256,7 @@ window.KB_DATA = {
         "2026-05-21_arxiv-enhanced-ble-esb-hybrid"
       ],
       "entries_secondary": [
+        "2026-05-25_arxiv-ble-doa-missed-detections",
         "2026-05-24_arxiv-connectionless-ble-cs-pawr",
         "2026-05-24_bluetooth-core-6-3-spec-release"
       ],
@@ -2350,11 +2359,17 @@ window.KB_DATA = {
       "diagram_mmd": "",
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
-      "entries_primary": [],
+      "entries_primary": [
+        "2026-05-25_arxiv-ble-doa-missed-detections"
+      ],
       "entries_secondary": [
         "2026-05-24_arxiv-connectionless-ble-cs-pawr"
       ],
-      "by_type_primary": {}
+      "by_type_primary": {
+        "academic-paper": [
+          "2026-05-25_arxiv-ble-doa-missed-detections"
+        ]
+      }
     },
     "uwb-ranging": {
       "id": "uwb-ranging",
@@ -2571,6 +2586,39 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>本文提出一个范围不大但具有实践意义的问题：若在一个其余部分保持不变、运行标准分布式协调功能（DCF）的 IEEE 802.11 WLAN 上加装全双工（FD）射频，在引入隐藏终端之后，实际能获得多少吞吐增益？作者给出的是解析答案而非仿真答案——他们将 Bianchi 经典的二维马尔可夫链 DCF 退避模型扩展到「1 个 AP + n 个饱和站点」的场景，其中 AP 与恰好一个 STA 可同时收发（对称 FD，AP↔STA），或第二路发送与一个隐藏目的端重叠（非对称 FD）。</p>\n<p>关键的建模手法是不再把所有节点视作统计上等同。碰撞概率被拆分为 AP 的 p_ap 与各站点的 p_sta(i)，并将空间按以 AP 为中心的 M 个同心圆环分层，从而以几何方式计算「环 j 中的节点对环 i 中的节点隐藏」的条件概率。两个重叠发送圆所形成的隐藏区域以闭式给出，当两圆心相距一个半径时，站点落入该区域的概率峰值约为 0.6。模型假设每个数据帧前都有 RTS/CTS 保护，并假定完美自干扰抵消与每节点两根天线。</p>\n<p>核心结论令人「降温」：在带隐藏终端的 DCF 下，FD 几乎无所增益。n=5 时模型给出 FD 约 491 Mbps、HD 约 486 Mbps——约 1.03× 增益，即约 5 Mbps；到 n=1000 时两条曲线已无法区分（≈136.25 vs ≈136.22 Mbps）。作者将其归因于结构性错配：DCF 本就是为「阻止」同时接入而设计的，因此 FD 所需依赖的「AP + 单个 STA」配对极少出现；当大规模碰撞发生时，往往涉及多个站点，而非 FD 所青睐的 AP+STA 精确同发。</p>\n<h3>技术要点</h3>\n<ul><li>将 Bianchi 的 DCF 马尔可夫链扩展为 <strong>节点区分的碰撞概率</strong>（AP 与各 STA 分开），而非全网单一 τ/p。</li><li><strong>空间按 M 个同心圆环分层</strong>（M=5 即收敛），借助交叠几何计算隐藏终端条件概率 ph(i|j)。</li><li>隐藏区域闭式面积：S_h = πr² − 2r²·arccos(d/2r) + (d/2)·√(4r²−d²)；当 d=r 时隐藏归属概率峰值约 0.6。</li><li>同时建模 <strong>对称 FD</strong>（AP↔STA 双向）与 <strong>非对称 FD</strong>（向隐藏目的端的重叠发送）；不需修改 DCF——仅当 AP 与一个 STA 同时退避到零时 FD 才触发。</li><li>评估参数：IEEE 802.11ac、MCS 8（780 Mbps PHY）、11,454 字节 MPDU、开启 RTS/CTS、时隙 9 µs、DIFS 34 µs、SIFS 16 µs、CW 16–1024、m=6。</li><li>结论：n=5 时 FD/HD 饱和吞吐增益约 1.03×（约 5 Mbps），到 n=1000 时坍缩至约 1.0（两者均约 136 Mbps）。</li></ul>\n<h3>意义与新意</h3>\n<p>多数 FD-WLAN 文献通过假设一个「FD 感知」的 MAC 主动调度同时发送来报告显著增益。本文隔离出相反且更易落地的情形——保持 DCF 不变、仅加装 FD 射频——并以解析方式证明：一旦诚实地建模隐藏终端与竞争，增益几近消失。对于在「FD 芯片」与「MAC 重设计」之间权衡的人，这是一个有用的负向 / 边界结论：不改 MAC，FD 在 DCF 下的收益微乎其微。它通过定量说明 <em>为何</em> FD 要靠 MAC 层调度支持（而非仅靠 PHY 自干扰抵消）才能兑现收益，补充了 KB 中其他 MAC 分析与可靠性条目，也为 802.11bn UHR 以调度为中心的方向提供了相关背景。</p>",
       "images": [],
       "search_blob": "on the performance of dcf in full duplex wlans with hidden terminals 存在隐藏终端时全双工 wlan 中 dcf 的性能分析 dcf full-duplex csma-ca hidden-terminal 802.11ac bianchi-model saturation-throughput this paper asks a narrow but practically important question: if you bolt full-duplex (fd) radios onto an otherwise-unchanged ieee 802.11 wlan running the standard distributed coordination function (dcf), how much throughput do you actually gain once hidden terminals are in the picture? the authors build an analytical answer rather than a simulation one, extending bianchi's classic two-dimensional markov-chain model of dcf backoff to a setting with one ap and *n* saturated stations, where the ap and exactly one sta can transmit simultaneously (symmetric fd, ap↔sta) or where a second transmission overlaps a hidden destination (asymmetric fd). 本文提出一个范围不大但具有实践意义的问题：若在一个其余部分保持不变、运行标准分布式协调功能（dcf）的 ieee 802.11 wlan 上加装全双工（fd）射频，在引入隐藏终端之后，实际能获得多少吞吐增益？作者给出的是解析答案而非仿真答案——他们将 bianchi 经典的二维马尔可夫链 dcf 退避模型扩展到「1 个 ap + n 个饱和站点」的场景，其中 ap 与恰好一个 sta 可同时收发（对称 fd，ap↔sta），或第二路发送与一个隐藏目的端重叠（非对称 fd）。 academic-paper wifi"
+    },
+    {
+      "id": "2026-05-25_arxiv-ble-doa-missed-detections",
+      "date_found": "2026-05-25",
+      "technology": "bluetooth",
+      "date_published": "2026-05-22",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Utilizing Missed Detections in Directional Sensitivity-Based DOA Estimation",
+      "title_zh": "在基于方向灵敏度的到达角估计中利用漏检信息",
+      "url": "https://arxiv.org/abs/2605.23536",
+      "topics": [
+        "bt-location",
+        "BLE",
+        "direction-finding",
+        "AoA",
+        "DoA",
+        "RSSI",
+        "maximum-likelihood",
+        "particle-filter"
+      ],
+      "topic_primary": "bt-location",
+      "topics_secondary": [
+        "bt-le"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-25_arxiv-ble-doa-missed-detections.md",
+      "summary_short_en": "This paper attacks Bluetooth Low Energy direction-of-arrival (DoA) estimation in the practical regime where sensors only report scalar RSSI from directional antennas — no coherent phase array, no CTE-style I/Q snapshots. The classic problem with RSSI-only direction finding at the edge of coverage is that weak signals simply fail the detection threshold and are dropped, starving the estimator exactly when it needs data most. The authors' insight is to treat those drops as information rather than missing data: when a directional sensor reports an empty set ∅ because received power fell below a known threshold γ, that silence is itself a constraint — the true signal-plus-pattern power at that antenna's orientation must lie below γ.",
+      "summary_short_zh": "本文针对一种实际场景下的低功耗蓝牙到达角（DoA）估计：传感器仅从定向天线上报标量 RSSI——没有相干相位阵列，也没有 CTE 式的 I/Q 采样。仅凭 RSSI 在覆盖边缘做方向查找的经典难题是：弱信号会直接低于检测门限被丢弃，恰恰在估计器最需要数据时让它「挨饿」。作者的关键洞见是把这些丢弃当作信息而非缺失数据：当某个定向传感器因接收功率低于已知门限 γ 而上报空集 ∅ 时，这份「沉默」本身就是约束——在该天线朝向上，真实的「信号×方向图」功率必定低于 γ。",
+      "body_html_en": "<h3>Summary</h3>\n<p>This paper attacks Bluetooth Low Energy direction-of-arrival (DoA) estimation in the practical regime where sensors only report scalar RSSI from directional antennas — no coherent phase array, no CTE-style I/Q snapshots. The classic problem with RSSI-only direction finding at the edge of coverage is that weak signals simply fail the detection threshold and are dropped, starving the estimator exactly when it needs data most. The authors' insight is to treat those drops as information rather than missing data: when a directional sensor reports an empty set ∅ because received power fell below a known threshold γ, that silence is itself a constraint — the true signal-plus-pattern power at that antenna's orientation must lie below γ.</p>\n<p>They build a unified maximum-likelihood framework over both kinds of observation. Detected measurements are modelled as a truncated normal (values above threshold, Gaussian noise σ²); missed detections contribute a (1 − p_D(x)) probability term that encodes &quot;this antenna would have seen something above γ only with low probability given the candidate DoA.&quot; Each antenna's directional sensitivity h(x) is a Fourier series (K=7 harmonics) parameterised by the unknown DoA angle ψ and signal power α, and estimation is a grid search over ψ (0–360°, 1° steps) and α (−100…0 dBm, 0.2 dBm steps), minimising the combined negative log-likelihood across detected and non-detected sensors. A particle filter tracks the correct likelihood peak over time on moving targets.</p>\n<p>The payoff shows up precisely in the low-SNR / high-missed-detection regime. In simulation with a 4-sensor uniform circular array, the method essentially matches a standard baseline at −70 dBm (16.2° vs 16.5° RMSE) but pulls dramatically ahead as signal weakens: 16.0° vs 31.0° at −75 dBm (48% better), and ~15–19° vs 84–108° at −80/−85 dBm (≈82% better) — i.e. the baseline collapses to near-random while the proposed estimator stays stable. Real outdoor BLE experiments (4 Yagi antennas × 3 advertising channels = 12 effective sensors, beacon at 1 m, iPhone-GPS ground truth, an elevated γ = −65 dBm forcing many missed detections) confirm the simulation: the baseline RMSE degrades badly while the missed-detection-aware estimator holds up.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Missed detection = constraint, not missing data:</strong> an empty report ∅ implies true power &lt; threshold γ, encoded as a (1 − p_D(x)) term in the likelihood.</li><li><strong>Unified ML over detected + non-detected sensors:</strong> detected = truncated normal; minimise combined negative log-likelihood by grid search over ψ (1°) and α (0.2 dBm).</li><li><strong>Directional sensitivity</strong> modelled per-antenna as a K=7 Fourier series; RSSI-only, no phase/coherent array needed.</li><li><strong>Particle filter</strong> tracks the correct likelihood peak for moving targets.</li><li><strong>Simulation (4-sensor UCA, 50 MC runs):</strong> ~equal at −70 dBm; 48% RMSE reduction at −75 dBm; ~82% at −80/−85 dBm vs baseline that collapses to &gt;80° error.</li><li><strong>Real BLE:</strong> 4 Yagi × 3 channels = 12 sensors, beacon @1 m, γ = −65 dBm — proposed stays stable while baseline degrades.</li><li>Authors: Zetterqvist, Gustafsson, Hendeby (Linköping University); WASP/ELLIIT funded.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's Bluetooth location entries to date center on phase-based Channel Sounding (Core 6.0/6.3, connectionless CS via PAwR) — the high-accuracy, hardware-coordinated path. This paper occupies the opposite, cheaper corner: RSSI-only DoA with off-the-shelf directional antennas, where the contribution is statistical rather than RF. Treating non-detections as likelihood constraints is the kind of estimator-side trick that squeezes usable bearing out of links too weak for standard Dir-MUSIC/NLS, which matters for low-cost asset-tracking and long-range beacon localisation where most sensors are below threshold most of the time. It's a useful complement to the channel-sounding thread: same goal (where is the device), very different cost/accuracy operating point.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>本文针对一种实际场景下的低功耗蓝牙到达角（DoA）估计：传感器仅从定向天线上报标量 RSSI——没有相干相位阵列，也没有 CTE 式的 I/Q 采样。仅凭 RSSI 在覆盖边缘做方向查找的经典难题是：弱信号会直接低于检测门限被丢弃，恰恰在估计器最需要数据时让它「挨饿」。作者的关键洞见是把这些丢弃当作信息而非缺失数据：当某个定向传感器因接收功率低于已知门限 γ 而上报空集 ∅ 时，这份「沉默」本身就是约束——在该天线朝向上，真实的「信号×方向图」功率必定低于 γ。</p>\n<p>他们在两类观测上构建统一的最大似然框架。检测到的测量建模为截断正态分布（高于门限的值，高斯噪声 σ²）；漏检贡献一个 (1 − p_D(x)) 概率项，编码「给定候选 DoA，该天线本应以较低概率才看到高于 γ 的信号」。每个天线的方向灵敏度 h(x) 用傅里叶级数（K=7 次谐波）表示，由未知 DoA 角 ψ 与信号功率 α 参数化；估计是在 ψ（0–360°，1° 步进）与 α（−100…0 dBm，0.2 dBm 步进）上做网格搜索，最小化检测与未检测传感器合并的负对数似然。对运动目标用粒子滤波跟踪正确的似然峰。</p>\n<p>收益恰恰出现在低信噪比 / 高漏检的区间。在 4 传感器均匀圆阵的仿真中，本方法在 −70 dBm 时与标准基线基本持平（RMSE 16.2° vs 16.5°），但随信号变弱大幅领先：−75 dBm 时 16.0° vs 31.0°（提升 48%），−80/−85 dBm 时约 15–19° vs 84–108°（约提升 82%）——即基线退化至近乎随机，而本估计器保持稳定。真实户外 BLE 实验（4 根八木天线 × 3 个广播信道 = 12 个等效传感器、信标 1 m、iPhone-GPS 真值、抬高 γ = −65 dBm 以制造大量漏检）印证了仿真结果。</p>\n<h3>技术要点</h3>\n<ul><li><strong>漏检即约束，而非缺失：</strong> 空报 ∅ 蕴含真实功率 &lt; 门限 γ，以似然中的 (1 − p_D(x)) 项编码。</li><li><strong>检测+未检测传感器上的统一 ML：</strong> 检测=截断正态；在 ψ（1°）与 α（0.2 dBm）上网格搜索最小化合并负对数似然。</li><li><strong>方向灵敏度</strong> 按天线建模为 K=7 傅里叶级数；仅用 RSSI，无需相位 / 相干阵列。</li><li><strong>粒子滤波</strong> 为运动目标跟踪正确似然峰。</li><li><strong>仿真（4 传感器圆阵、50 次蒙特卡洛）：</strong> −70 dBm 基本持平；−75 dBm RMSE 降低 48%；−80/−85 dBm 约 82%，而基线误差崩至 &gt;80°。</li><li><strong>真实 BLE：</strong> 4 八木 × 3 信道 = 12 传感器、信标 1 m、γ = −65 dBm——本方法稳定，基线退化。</li><li>作者：Zetterqvist、Gustafsson、Hendeby（林雪平大学）；WASP/ELLIIT 资助。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 现有的蓝牙定位条目集中在基于相位的信道探测（Core 6.0/6.3、经 PAwR 的无连接 CS）——即高精度、硬件协同的路线。本文占据相反、更廉价的一角：用现成定向天线、仅凭 RSSI 做 DoA，其贡献偏统计而非射频。把「未检测」当作似然约束，是一种估计器侧技巧，能从弱到标准 Dir-MUSIC/NLS 失效的链路中榨出可用方位——这对低成本资产追踪与远距信标定位很重要，因为那里多数传感器多数时间都低于门限。它与信道探测主线形成有益互补：目标相同（设备在何方向），但成本 / 精度工作点迥异。</p>",
+      "images": [],
+      "search_blob": "utilizing missed detections in directional sensitivity-based doa estimation 在基于方向灵敏度的到达角估计中利用漏检信息 bt-location ble direction-finding aoa doa rssi maximum-likelihood particle-filter this paper attacks bluetooth low energy direction-of-arrival (doa) estimation in the practical regime where sensors only report scalar rssi from directional antennas — no coherent phase array, no cte-style i/q snapshots. the classic problem with rssi-only direction finding at the edge of coverage is that weak signals simply fail the detection threshold and are dropped, starving the estimator exactly when it needs data most. the authors' insight is to treat those drops as information rather than missing data: when a directional sensor reports an empty set ∅ because received power fell below a known threshold γ, that silence is itself a constraint — the true signal-plus-pattern power at that antenna's orientation must lie below γ. 本文针对一种实际场景下的低功耗蓝牙到达角（doa）估计：传感器仅从定向天线上报标量 rssi——没有相干相位阵列，也没有 cte 式的 i/q 采样。仅凭 rssi 在覆盖边缘做方向查找的经典难题是：弱信号会直接低于检测门限被丢弃，恰恰在估计器最需要数据时让它「挨饿」。作者的关键洞见是把这些丢弃当作信息而非缺失数据：当某个定向传感器因接收功率低于已知门限 γ 而上报空集 ∅ 时，这份「沉默」本身就是约束——在该天线朝向上，真实的「信号×方向图」功率必定低于 γ。 academic-paper bluetooth"
     },
     {
       "id": "2026-05-25_arxiv-vran-openairinterface-multi-instance-scaling",
