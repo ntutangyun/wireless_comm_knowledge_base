@@ -2,8 +2,8 @@ window.KB_DATA = {
   "schema_version": 6,
   "last_updated": "2026-05-27",
   "topic_counts": {
+    "agentic-AI": 34,
     "MAC-layer": 34,
-    "agentic-AI": 33,
     "802.11bn": 29,
     "scheduling": 24,
     "products": 23,
@@ -15,22 +15,25 @@ window.KB_DATA = {
     "802.11bf": 12,
     "IoT": 10,
     "802.11ax": 9,
+    "6G": 8,
     "MAPC": 8,
-    "6G": 7,
     "generative-AI": 7,
     "802.11bp": 6,
     "CSI": 6,
     "LEO": 5,
     "XR": 5,
+    "O-RAN": 4,
     "OFDMA": 4,
     "NPCA": 4,
     "802.11bq": 4,
     "automotive": 4,
     "802.11": 4,
     "802.11az": 4,
+    "NTN": 3,
+    "network-slicing": 3,
     "resource-allocation": 3,
-    "O-RAN": 3,
     "802.11ac": 3,
+    "5G": 3,
     "NearLink": 3,
     "SparkLink": 3,
     "UWB": 3,
@@ -45,6 +48,8 @@ window.KB_DATA = {
     "AI-RAN": 3,
     "Wi-Fi 7": 3,
     "roaming": 3,
+    "OpenAirInterface": 2,
+    "cellular-ai": 2,
     "5G-NR": 2,
     "RIC": 2,
     "xApp": 2,
@@ -52,7 +57,7 @@ window.KB_DATA = {
     "reinforcement-learning": 2,
     "QoE": 2,
     "BLE": 2,
-    "5G": 2,
+    "handover": 2,
     "ISLA": 2,
     "deterministic-latency": 2,
     "BT-LE": 2,
@@ -69,12 +74,10 @@ window.KB_DATA = {
     "802.11br": 2,
     "MU-MIMO": 2,
     "WPA3": 2,
-    "network-slicing": 2,
     "direct-to-device": 2,
     "FCC": 2,
     "healthcare": 2,
     "digital-car-key": 2,
-    "NTN": 2,
     "AIOps": 2,
     "enterprise": 2,
     "802.11n": 2,
@@ -84,6 +87,11 @@ window.KB_DATA = {
     "802.15.4ab": 2,
     "narrowband-assist": 2,
     "R-TWT": 2,
+    "satellite-backhaul": 1,
+    "game-theory": 1,
+    "SLA": 1,
+    "traffic-steering": 1,
+    "RAN-automation": 1,
     "V2X": 1,
     "sidelink": 1,
     "road-safety": 1,
@@ -104,9 +112,13 @@ window.KB_DATA = {
     "RSSI": 1,
     "maximum-likelihood": 1,
     "particle-filter": 1,
+    "cellular-core": 1,
+    "mobility": 1,
+    "IPv6": 1,
+    "UPF": 1,
+    "edge": 1,
     "open-ran": 1,
     "vRAN": 1,
-    "OpenAirInterface": 1,
     "virtualization": 1,
     "hardware-acceleration": 1,
     "WiFi-diagnosis": 1,
@@ -116,7 +128,6 @@ window.KB_DATA = {
     "SLE": 1,
     "OpenLab": 1,
     "chip-IP": 1,
-    "cellular-ai": 1,
     "federated-RL": 1,
     "multi-cell": 1,
     "PPO": 1,
@@ -229,7 +240,6 @@ window.KB_DATA = {
     "domain-adaptation": 1,
     "multi-user": 1,
     "802.11bi": 1,
-    "handover": 1,
     "RAN": 1,
     "machine-learning": 1,
     "Xn-interface": 1,
@@ -291,21 +301,22 @@ window.KB_DATA = {
     "security-privacy": 9,
     "amp-iot": 7,
     "spectrum-policy": 6,
+    "cellular-ai": 5,
     "open-ran": 4,
     "ai-for-wifi": 4,
-    "cellular-ai": 4,
     "rtwt-latency": 4,
     "ftm-ranging": 4,
     "uwb-ranging": 3,
     "bt-channel-sounding": 3,
     "6g-vision": 3,
+    "ntn": 2,
+    "5g-nr": 2,
     "sat-direct-device": 2,
     "nearlink-automotive": 2,
     "wifi-for-ai": 2,
     "leo-constellations": 2,
     "roaming-mobility": 2,
     "mlo": 2,
-    "5g-nr": 1,
     "starlink": 1,
     "bt-location": 1,
     "nearlink-slb": 1,
@@ -313,11 +324,10 @@ window.KB_DATA = {
     "network-slicing": 1,
     "mmwave-bq": 1,
     "uwb-radar": 1,
-    "ntn": 1,
     "uwb-fi-ra": 1
   },
   "type_counts": {
-    "academic-paper": 80,
+    "academic-paper": 83,
     "industry-news": 31,
     "ieee-document": 12,
     "product": 9,
@@ -325,7 +335,7 @@ window.KB_DATA = {
     "bluetooth-spec": 1
   },
   "category_counts": {
-    "academia": 80,
+    "academia": 83,
     "industry": 40,
     "standards": 17
   },
@@ -1903,9 +1913,11 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
-        "2026-05-26_arxiv-v2x-mode0-rcu-safety"
+        "2026-05-26_arxiv-v2x-mode0-rcu-safety",
+        "2026-05-27_arxiv-encor-anchorless-cellular-core"
       ],
       "entries_secondary": [
+        "2026-05-27_arxiv-tn-ntn-backhaul-potential-game",
         "2026-05-25_arxiv-vran-openairinterface-multi-instance-scaling",
         "2026-05-21_chinamobile-5g-sa-network-slicing",
         "2026-05-21_tmobile-ericsson-ai-ran-scheduler",
@@ -1917,7 +1929,8 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
-          "2026-05-26_arxiv-v2x-mode0-rcu-safety"
+          "2026-05-26_arxiv-v2x-mode0-rcu-safety",
+          "2026-05-27_arxiv-encor-anchorless-cellular-core"
         ]
       }
     },
@@ -1936,6 +1949,7 @@ window.KB_DATA = {
       "diagram_mmd_zh": "",
       "entries_primary": [],
       "entries_secondary": [
+        "2026-05-27_arxiv-encor-anchorless-cellular-core",
         "2026-05-21_kddi-ericsson-ai-uplink-ropt"
       ],
       "by_type_primary": {}
@@ -1959,6 +1973,7 @@ window.KB_DATA = {
         "2026-05-24_arxiv-ilcp-6g-post-handover-cold-start"
       ],
       "entries_secondary": [
+        "2026-05-27_arxiv-genesis-agentic-6g-ran-synthesis",
         "2026-05-25_arxiv-fedcritic-serverless-federated-ofdma",
         "2026-05-22_arxiv-agentic-6g-ai-ran-orchestrator",
         "2026-05-22_arxiv-d2c-vs-ntn-comparative-analysis"
@@ -2004,6 +2019,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-05-27_arxiv-tn-ntn-backhaul-potential-game",
         "2026-05-22_arxiv-d2c-vs-ntn-comparative-analysis"
       ],
       "entries_secondary": [
@@ -2012,6 +2028,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-05-27_arxiv-tn-ntn-backhaul-potential-game",
           "2026-05-22_arxiv-d2c-vs-ntn-comparative-analysis"
         ]
       }
@@ -2036,6 +2053,7 @@ window.KB_DATA = {
         "2026-05-21_arxiv-aiim-o-ran-interference-xapp"
       ],
       "entries_secondary": [
+        "2026-05-27_arxiv-genesis-agentic-6g-ran-synthesis",
         "2026-05-22_arxiv-agentic-6g-ai-ran-orchestrator"
       ],
       "by_type_primary": {
@@ -2064,6 +2082,7 @@ window.KB_DATA = {
         "2026-05-21_chinamobile-5g-sa-network-slicing"
       ],
       "entries_secondary": [
+        "2026-05-27_arxiv-tn-ntn-backhaul-potential-game",
         "2026-05-24_arxiv-morph-multi-env-rl-prb-oran"
       ],
       "by_type_primary": {
@@ -2087,7 +2106,8 @@ window.KB_DATA = {
       "diagram_mmd_zh": "",
       "entries_primary": [],
       "entries_secondary": [
-        "2026-05-26_arxiv-v2x-mode0-rcu-safety"
+        "2026-05-26_arxiv-v2x-mode0-rcu-safety",
+        "2026-05-27_arxiv-encor-anchorless-cellular-core"
       ],
       "by_type_primary": {}
     },
@@ -2105,6 +2125,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-05-27_arxiv-genesis-agentic-6g-ran-synthesis",
         "2026-05-25_arxiv-fedcritic-serverless-federated-ofdma",
         "2026-05-22_arxiv-agentic-6g-ai-ran-orchestrator",
         "2026-05-21_tmobile-ericsson-ai-ran-scheduler",
@@ -2122,6 +2143,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-05-27_arxiv-genesis-agentic-6g-ran-synthesis",
           "2026-05-25_arxiv-fedcritic-serverless-federated-ofdma",
           "2026-05-22_arxiv-agentic-6g-ai-ran-orchestrator"
         ],
@@ -2653,6 +2675,81 @@ window.KB_DATA = {
   },
   "entries": [
     {
+      "id": "2026-05-27_arxiv-tn-ntn-backhaul-potential-game",
+      "date_found": "2026-05-27",
+      "technology": "wifi",
+      "date_published": "2026-05-26",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "SLA-aware traffic steering in hybrid TN-NTN 5G backhaul via an exact potential game",
+      "title_zh": "基于精确势博弈的混合 TN-NTN 5G 回传 SLA 感知流量调度",
+      "url": "https://arxiv.org/abs/2605.26673",
+      "topics": [
+        "NTN",
+        "satellite-backhaul",
+        "network-slicing",
+        "game-theory",
+        "SLA",
+        "traffic-steering"
+      ],
+      "topic_primary": "ntn",
+      "topics_secondary": [
+        "network-slicing",
+        "5g-nr"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-27_arxiv-tn-ntn-backhaul-potential-game.md",
+      "summary_short_en": "This paper (Navidan, Rico, Cheraghinia, Moerman, Shahid — IDLab/Ghent) tackles traffic steering across hybrid terrestrial / non-terrestrial (TN-NTN) 5G backhaul, where an operator has both a cheap, high-capacity terrestrial path and an expensive, capacity-constrained satellite path, and must keep multiple network slices inside their service-level agreements while spending as little satellite capacity as possible. The asymmetry is the hard part: uplink and downlink have very different cost and capacity profiles, and the slices (V2X, emergency, video, IoT, best-effort) compete for the same shared backhaul.",
+      "summary_short_zh": "本文（Navidan、Rico、Cheraghinia、Moerman、Shahid——根特大学 IDLab）研究混合地面/非地面（TN-NTN）5G 回传中的流量调度：运营商同时拥有廉价、大容量的地面路径与昂贵、容量受限的卫星路径，必须在尽量少用卫星容量的同时让多个网络切片满足各自的服务等级协议（SLA）。难点在于不对称性：上行与下行的成本与容量特征差异很大，而各切片（V2X、应急、视频、IoT、尽力而为）争用同一共享回传。",
+      "body_html_en": "<h3>Summary</h3>\n<p>This paper (Navidan, Rico, Cheraghinia, Moerman, Shahid — IDLab/Ghent) tackles traffic steering across hybrid terrestrial / non-terrestrial (TN-NTN) 5G backhaul, where an operator has both a cheap, high-capacity terrestrial path and an expensive, capacity-constrained satellite path, and must keep multiple network slices inside their service-level agreements while spending as little satellite capacity as possible. The asymmetry is the hard part: uplink and downlink have very different cost and capacity profiles, and the slices (V2X, emergency, video, IoT, best-effort) compete for the same shared backhaul.</p>\n<p>The core contribution is to formulate per-slice load balancing as an <strong>exact potential game</strong>. That formulation lets uplink and downlink &quot;agents&quot; coordinate in a decentralized way — each adjusts the fraction of its slice's traffic sent over the terrestrial vs. satellite path to improve a utility that folds in throughput, latency, packet loss, and an SLA-violation penalty — and the potential-game structure guarantees the dynamics converge to a pure-strategy Nash equilibrium without any explicit control signalling between the agents. The result is stable, low-overhead adaptation rather than a central optimizer that needs global state every cycle.</p>\n<p>The authors validate on a geographically distributed 5G testbed with five representative slices and bidirectional traffic. The controller holds SLA violations to 1.7% for V2X and 0.7% for emergency services and drives them to zero for video, IoT, and best-effort, beating heuristic baselines while minimizing satellite usage.</p>\n<h3>Key technical points</h3>\n<ul><li>Problem: steer per-slice traffic across asymmetric TN (cheap/large) vs NTN (expensive/limited) 5G backhaul while honoring SLAs and sparing satellite capacity.</li><li>Formulation: load balancing as an <strong>exact potential game</strong>; convergence to a pure-strategy Nash equilibrium is guaranteed.</li><li>Decentralized uplink/downlink agents adjust per-slice terrestrial-vs-satellite split with no explicit inter-agent signalling.</li><li>Utility folds in throughput, latency, packet loss, and SLA-violation penalty.</li><li>Testbed: geographically distributed 5G, five slices (V2X, emergency, video, IoT, best-effort), bidirectional traffic.</li><li>Results: SLA violations 1.7% (V2X), 0.7% (emergency), 0% (video/IoT/best-effort); beats heuristic baselines, minimizes satellite usage.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>NTN-as-backhaul (rather than NTN-as-access) is an under-covered corner of this KB's cellular and satellite coverage, and the potential-game framing is the genuinely new piece: it gives decentralized, signalling-free coordination with a convergence guarantee, which is attractive when the satellite leg's control latency makes a tight central optimizer impractical. It complements the access-side direct-to-device and D2C-vs-NTN material already in the KB (2026-05-22_arxiv-d2c-vs-ntn-comparative-analysis) by addressing the transport tier behind the cell rather than the air interface in front of it.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>本文（Navidan、Rico、Cheraghinia、Moerman、Shahid——根特大学 IDLab）研究混合地面/非地面（TN-NTN）5G 回传中的流量调度：运营商同时拥有廉价、大容量的地面路径与昂贵、容量受限的卫星路径，必须在尽量少用卫星容量的同时让多个网络切片满足各自的服务等级协议（SLA）。难点在于不对称性：上行与下行的成本与容量特征差异很大，而各切片（V2X、应急、视频、IoT、尽力而为）争用同一共享回传。</p>\n<p>核心贡献是把按切片的负载均衡建模为<strong>精确势博弈（exact potential game）</strong>。该建模使上行与下行&quot;智能体&quot;以去中心化方式协调——各自调整其切片在地面与卫星路径间的流量分配比例，以改进一个综合了吞吐、时延、丢包与 SLA 违约惩罚的效用函数——而势博弈结构保证动态收敛到纯策略纳什均衡，且智能体之间无需任何显式控制信令。其结果是稳定、低开销的自适应，而非每周期都需要全局状态的中心优化器。</p>\n<p>作者在地理上分布的 5G 试验床上以五个代表性切片与双向流量进行验证。控制器将 V2X 的 SLA 违约率控制在 1.7%、应急业务 0.7%，并将视频、IoT 与尽力而为业务的违约率降为零，在最小化卫星用量的同时优于启发式基线。</p>\n<h3>技术要点</h3>\n<ul><li>问题：在不对称的 TN（廉价/大容量）与 NTN（昂贵/受限）5G 回传间按切片调度流量，同时满足 SLA 并节省卫星容量。</li><li>建模：把负载均衡表述为<strong>精确势博弈</strong>；保证收敛到纯策略纳什均衡。</li><li>去中心化的上/下行智能体调整各切片地面-卫星分流比例，无需智能体间显式信令。</li><li>效用综合吞吐、时延、丢包与 SLA 违约惩罚。</li><li>试验床：地理分布的 5G，五个切片（V2X、应急、视频、IoT、尽力而为），双向流量。</li><li>结果：SLA 违约率 V2X 1.7%、应急 0.7%、视频/IoT/尽力而为 0%；优于启发式基线，最小化卫星用量。</li></ul>\n<h3>意义与新意</h3>\n<p>&quot;NTN 作为回传&quot;（而非作为接入）是本 KB 蜂窝与卫星内容中覆盖较少的一角，而势博弈建模是真正的新意：它在带收敛保证的前提下实现去中心化、免信令的协调；当卫星链路的控制时延使紧耦合中心优化器不切实际时，这一点尤为可取。它与本库已有的接入侧直连设备及 D2C-vs-NTN 内容（2026-05-22_arxiv-d2c-vs-ntn-comparative-analysis）互补——后者关注小区前的空口，本文关注小区后的传输层。</p>",
+      "images": [],
+      "search_blob": "sla-aware traffic steering in hybrid tn-ntn 5g backhaul via an exact potential game 基于精确势博弈的混合 tn-ntn 5g 回传 sla 感知流量调度 ntn satellite-backhaul network-slicing game-theory sla traffic-steering this paper (navidan, rico, cheraghinia, moerman, shahid — idlab/ghent) tackles traffic steering across hybrid terrestrial / non-terrestrial (tn-ntn) 5g backhaul, where an operator has both a cheap, high-capacity terrestrial path and an expensive, capacity-constrained satellite path, and must keep multiple network slices inside their service-level agreements while spending as little satellite capacity as possible. the asymmetry is the hard part: uplink and downlink have very different cost and capacity profiles, and the slices (v2x, emergency, video, iot, best-effort) compete for the same shared backhaul. 本文（navidan、rico、cheraghinia、moerman、shahid——根特大学 idlab）研究混合地面/非地面（tn-ntn）5g 回传中的流量调度：运营商同时拥有廉价、大容量的地面路径与昂贵、容量受限的卫星路径，必须在尽量少用卫星容量的同时让多个网络切片满足各自的服务等级协议（sla）。难点在于不对称性：上行与下行的成本与容量特征差异很大，而各切片（v2x、应急、视频、iot、尽力而为）争用同一共享回传。 academic-paper wifi"
+    },
+    {
+      "id": "2026-05-27_arxiv-genesis-agentic-6g-ran-synthesis",
+      "date_found": "2026-05-27",
+      "technology": "wifi",
+      "date_published": "2026-05-26",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "GENESIS: AI agents for autonomous 6G RAN synthesis, research, and testing",
+      "title_zh": "GENESIS：用于自主 6G RAN 合成、研究与测试的 AI 智能体框架",
+      "url": "https://arxiv.org/abs/2605.27360",
+      "topics": [
+        "6G",
+        "O-RAN",
+        "agentic-AI",
+        "RAN-automation",
+        "OpenAirInterface",
+        "cellular-ai"
+      ],
+      "topic_primary": "cellular-ai",
+      "topics_secondary": [
+        "open-ran",
+        "6g-vision"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-05-27_arxiv-genesis-agentic-6g-ran-synthesis.md",
+      "summary_short_en": "GENESIS, from the Northeastern University OpenRANGym group (Aghayev, Elkael, Polese, D'Oro, Melodia et al.), is an agentic framework that automates six labor-intensive RAN R&D workflows that today each take months of manual engineering per iteration: synthesizing standards clauses into code, conformance testing, hardening against field anomalies, data-driven optimization, discovering new capabilities, and security hardening. The paper's premise is that general LLMs fail at RAN engineering in characteristic ways — hallucinating APIs, misreading specification clauses in ways that silently break interoperability, and producing designs that pass in simulation but fail on real radios — and that closing those gaps requires structure around the model plus over-the-air validation rather than a bigger model alone.",
+      "summary_short_zh": "GENESIS 来自美国东北大学 OpenRANGym 团队（Aghayev、Elkael、Polese、D'Oro、Melodia 等），是一个智能体（agentic）框架，用于自动化当前各需数月手工工程的六类 RAN 研发流程：把标准条款合成为代码、一致性测试、针对现场异常的加固、数据驱动优化、新能力发现以及安全加固。论文的出发点是：通用大模型在 RAN 工程中会以典型方式失败——臆造 API、误读规范条款从而悄然破坏互操作性、给出仿真能过但真机失败的设计——弥合这些差距需要在模型之外加上结构化编排与空口验证，而非单纯堆更大的模型。",
+      "body_html_en": "<h3>Summary</h3>\n<p>GENESIS, from the Northeastern University OpenRANGym group (Aghayev, Elkael, Polese, D'Oro, Melodia et al.), is an agentic framework that automates six labor-intensive RAN R&amp;D workflows that today each take months of manual engineering per iteration: synthesizing standards clauses into code, conformance testing, hardening against field anomalies, data-driven optimization, discovering new capabilities, and security hardening. The paper's premise is that general LLMs fail at RAN engineering in characteristic ways — hallucinating APIs, misreading specification clauses in ways that silently break interoperability, and producing designs that pass in simulation but fail on real radios — and that closing those gaps requires structure around the model plus over-the-air validation rather than a bigger model alone.</p>\n<p>The system is built from three composable primitives. <strong>Agents</strong> are LLM reasoners with distinct personas (DevOps, RAN, Radio, UE, Testbed), each with its own tool surface and a ReAct-style control loop. <strong>Skills</strong> are deterministic instruction packages (markdown-guided, with scripted fallbacks) that bridge an agent's reasoning to executable actions. <strong>Hooks</strong> are event-driven shell commands that provide observability, non-bypassable safety/policy gates, and audit trails. Tying these together is <strong>SYNAPSE</strong>, a knowledge layer that serves three roles at once: curated ground truth (3GPP / O-RAN specs via hybrid retrieval), the store for every generated artifact (code with spec-to-code traceability, logs, experiment records), and the substrate that lets capabilities compound across runs. An &quot;intent&quot; — a spec clause, a telemetry anomaly, or a research hypothesis — flows through the relevant capability pipeline and is validated along a three-tier continuum: RF simulation (seconds), emulation on Colosseum / Keysight hardware-in-the-loop (minutes to hours), and finally over-the-air on the X5G private-5G testbed (ground truth), with results fed back into SYNAPSE.</p>\n<p>Evaluation runs on a full open RAN stack — OpenAirInterface with NVIDIA Aerial L1, Open5GS core, and OSC / FlexRIC for xApps — across the multi-campus X5G deployment (Foxconn RUs, COTS/OAI UEs, OpenShift orchestration). On two concrete tasks, implementing an RRC connection-mean KPM and a Conditional Handover, GENESIS reaches a 100% success rate across statistically independent runs while a plain coding-agent baseline fails every attempt. The authors also report that mid-tier models can match frontier models on cost-per-successful-feature, trading wall-clock time for throughput — making model choice a deployment-latency decision rather than a capability one. (The models exercised include Claude Opus 4.7 and Sonnet 4.6 alongside open-weight alternatives.)</p>\n<h3>Key technical points</h3>\n<ul><li>Three primitives: <strong>Agents</strong> (persona LLM reasoners + ReAct loop), <strong>Skills</strong> (deterministic markdown-guided instruction packages), <strong>Hooks</strong> (event-driven shell commands for observability / safety gates / audit).</li><li><strong>SYNAPSE</strong> knowledge layer = curated 3GPP/O-RAN ground truth + artifact store (spec-to-code traceability) + cross-run compounding substrate.</li><li>Six automated workflows: Synthesize, Test, Harden, Optimize, Discover, Secure.</li><li>Three-tier validation continuum: RFSIM (seconds) → emulation (Colosseum/Keysight, minutes–hours) → OTA on X5G private 5G (ground truth).</li><li>Stack: OpenAirInterface + NVIDIA Aerial L1, Open5GS, OSC/FlexRIC xApps; X5G multi-campus testbed with Foxconn RUs.</li><li>Results: 100% success on RRC.ConnMean KPM and Conditional Handover tasks across independent runs; plain coding-agent baseline fails all attempts.</li><li>Mid-tier vs frontier models match on cost-per-successful-feature → model choice becomes a latency/throughput tradeoff.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB already tracks the agentic-RAN thesis at the conceptual level — &quot;agents should replace narrow predictive AI as the orchestrator in 6G AI-RAN&quot; (2026-05-22_arxiv-agentic-6g-ai-ran-orchestrator) and the composable-vs-monolithic argument (2026-05-19_arxiv-composable-agentic-nextg). GENESIS is the first entry here to turn that thesis into a concrete, evaluated engineering system: it names the primitives (agents/skills/hooks), pins down a persistent knowledge substrate with spec-to-code traceability, and — crucially — closes the loop with over-the-air validation on a real private-5G testbed rather than simulation alone. The 100%-vs-0% result against a plain coding agent on real RAN tasks is the headline evidence that structure + OTA validation, not model scale, is what makes LLMs usable for RAN engineering. It pairs naturally with OpenTwin's digital-twin closed loop (2026-05-26_arxiv-opentwin-oran-digital-twin) on the operations side.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>GENESIS 来自美国东北大学 OpenRANGym 团队（Aghayev、Elkael、Polese、D'Oro、Melodia 等），是一个智能体（agentic）框架，用于自动化当前各需数月手工工程的六类 RAN 研发流程：把标准条款合成为代码、一致性测试、针对现场异常的加固、数据驱动优化、新能力发现以及安全加固。论文的出发点是：通用大模型在 RAN 工程中会以典型方式失败——臆造 API、误读规范条款从而悄然破坏互操作性、给出仿真能过但真机失败的设计——弥合这些差距需要在模型之外加上结构化编排与空口验证，而非单纯堆更大的模型。</p>\n<p>系统由三种可组合原语构成。<strong>Agents（智能体）</strong>是带不同人设（DevOps、RAN、Radio、UE、Testbed）的大模型推理器，各自拥有工具面与 ReAct 式控制环。<strong>Skills（技能）</strong>是确定性的指令包（以 markdown 引导、带脚本化兜底），把智能体推理与可执行动作衔接起来。<strong>Hooks（钩子）</strong>是事件驱动的 shell 命令，提供可观测性、不可绕过的安全/策略门以及审计轨迹。把这些串起来的是 <strong>SYNAPSE</strong> 知识层，它同时承担三种角色：经过整理的事实来源（通过混合检索接入 3GPP / O-RAN 规范）、所有生成物的存储（带规范到代码可追溯性的代码、日志、实验记录），以及让能力跨轮次复利累积的底座。一个&quot;意图&quot;——规范条款、遥测异常或研究假设——流经相应能力流水线，并沿三级连续体验证：射频仿真（秒级）、Colosseum / Keysight 硬件在环仿真（分钟到小时级），最终在 X5G 私有 5G 试验床上空口验证（基准真值），结果再回灌至 SYNAPSE。</p>\n<p>评测运行在完整的开放 RAN 栈上——OpenAirInterface 配 NVIDIA Aerial L1、Open5GS 核心网、OSC / FlexRIC 承载 xApp——部署于多校区 X5G（Foxconn RU、COTS/OAI UE、OpenShift 编排）。在实现 RRC 连接均值 KPM 与条件切换（Conditional Handover）两个具体任务上，GENESIS 在多次统计独立运行中达到 100% 成功率，而普通编码智能体基线全部失败。作者还报告中端模型在&quot;每个成功特性的成本&quot;上可与前沿模型持平，以墙钟时间换吞吐——使模型选择成为部署时延决策而非能力决策。（所测模型包括 Claude Opus 4.7、Sonnet 4.6 以及开源权重替代模型。）</p>\n<h3>技术要点</h3>\n<ul><li>三原语：<strong>Agents</strong>（带人设的大模型推理器 + ReAct 环）、<strong>Skills</strong>（确定性、markdown 引导的指令包）、<strong>Hooks</strong>（事件驱动 shell 命令，用于可观测性/安全门/审计）。</li><li><strong>SYNAPSE</strong> 知识层 = 经整理的 3GPP/O-RAN 事实 + 生成物存储（规范到代码可追溯）+ 跨轮复利底座。</li><li>六类自动化流程：合成、测试、加固、优化、发现、安全。</li><li>三级验证连续体：RFSIM（秒）→ 仿真（Colosseum/Keysight，分钟–小时）→ X5G 私有 5G 空口（基准真值）。</li><li>技术栈：OpenAirInterface + NVIDIA Aerial L1、Open5GS、OSC/FlexRIC xApp；X5G 多校区试验床（Foxconn RU）。</li><li>结果：RRC.ConnMean KPM 与条件切换任务在多次独立运行中 100% 成功；普通编码智能体基线全失败。</li><li>中端模型与前沿模型在&quot;每成功特性成本&quot;上持平 → 模型选择变为时延/吞吐权衡。</li></ul>\n<h3>意义与新意</h3>\n<p>本 KB 已在概念层面跟踪&quot;智能体化 RAN&quot;主张——&quot;在 6G AI-RAN 中应由智能体取代狭义预测式 AI 担任编排者&quot;（2026-05-22_arxiv-agentic-6g-ai-ran-orchestrator）以及&quot;可组合 vs 单体&quot;之辩（2026-05-19_arxiv-composable-agentic-nextg）。GENESIS 是本库首个把该主张落为具体、可评测工程系统的条目：它明确了原语（agents/skills/hooks）、确立了带规范到代码可追溯性的持久知识底座，并且关键地用真实私有 5G 试验床上的空口验证闭环，而非仅靠仿真。在真实 RAN 任务上相对普通编码智能体的 100% vs 0% 结果，是&quot;结构 + 空口验证（而非模型规模）才让大模型可用于 RAN 工程&quot;这一论点的核心证据。它与运维侧的 OpenTwin 数字孪生闭环（2026-05-26_arxiv-opentwin-oran-digital-twin）天然互补。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2605.27360v1/x1.png",
+          "caption_en": "GENESIS agentic framework overview",
+          "caption_zh": "GENESIS 智能体框架总览"
+        },
+        {
+          "url": "https://arxiv.org/html/2605.27360v1/x2.png",
+          "caption_en": "GENESIS intent-to-validation workflow",
+          "caption_zh": "GENESIS 从意图到验证的工作流"
+        }
+      ],
+      "search_blob": "genesis: ai agents for autonomous 6g ran synthesis, research, and testing genesis：用于自主 6g ran 合成、研究与测试的 ai 智能体框架 6g o-ran agentic-ai ran-automation openairinterface cellular-ai genesis, from the northeastern university openrangym group (aghayev, elkael, polese, d'oro, melodia et al.), is an agentic framework that automates six labor-intensive ran r&d workflows that today each take months of manual engineering per iteration: synthesizing standards clauses into code, conformance testing, hardening against field anomalies, data-driven optimization, discovering new capabilities, and security hardening. the paper's premise is that general llms fail at ran engineering in characteristic ways — hallucinating apis, misreading specification clauses in ways that silently break interoperability, and producing designs that pass in simulation but fail on real radios — and that closing those gaps requires structure around the model plus over-the-air validation rather than a bigger model alone. genesis 来自美国东北大学 openrangym 团队（aghayev、elkael、polese、d'oro、melodia 等），是一个智能体（agentic）框架，用于自动化当前各需数月手工工程的六类 ran 研发流程：把标准条款合成为代码、一致性测试、针对现场异常的加固、数据驱动优化、新能力发现以及安全加固。论文的出发点是：通用大模型在 ran 工程中会以典型方式失败——臆造 api、误读规范条款从而悄然破坏互操作性、给出仿真能过但真机失败的设计——弥合这些差距需要在模型之外加上结构化编排与空口验证，而非单纯堆更大的模型。 academic-paper wifi"
+    },
+    {
       "id": "2026-05-26_arxiv-v2x-mode0-rcu-safety",
       "date_found": "2026-05-26",
       "technology": "wifi",
@@ -2808,6 +2905,50 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>本文针对一种实际场景下的低功耗蓝牙到达角（DoA）估计：传感器仅从定向天线上报标量 RSSI——没有相干相位阵列，也没有 CTE 式的 I/Q 采样。仅凭 RSSI 在覆盖边缘做方向查找的经典难题是：弱信号会直接低于检测门限被丢弃，恰恰在估计器最需要数据时让它「挨饿」。作者的关键洞见是把这些丢弃当作信息而非缺失数据：当某个定向传感器因接收功率低于已知门限 γ 而上报空集 ∅ 时，这份「沉默」本身就是约束——在该天线朝向上，真实的「信号×方向图」功率必定低于 γ。</p>\n<p>他们在两类观测上构建统一的最大似然框架。检测到的测量建模为截断正态分布（高于门限的值，高斯噪声 σ²）；漏检贡献一个 (1 − p_D(x)) 概率项，编码「给定候选 DoA，该天线本应以较低概率才看到高于 γ 的信号」。每个天线的方向灵敏度 h(x) 用傅里叶级数（K=7 次谐波）表示，由未知 DoA 角 ψ 与信号功率 α 参数化；估计是在 ψ（0–360°，1° 步进）与 α（−100…0 dBm，0.2 dBm 步进）上做网格搜索，最小化检测与未检测传感器合并的负对数似然。对运动目标用粒子滤波跟踪正确的似然峰。</p>\n<p>收益恰恰出现在低信噪比 / 高漏检的区间。在 4 传感器均匀圆阵的仿真中，本方法在 −70 dBm 时与标准基线基本持平（RMSE 16.2° vs 16.5°），但随信号变弱大幅领先：−75 dBm 时 16.0° vs 31.0°（提升 48%），−80/−85 dBm 时约 15–19° vs 84–108°（约提升 82%）——即基线退化至近乎随机，而本估计器保持稳定。真实户外 BLE 实验（4 根八木天线 × 3 个广播信道 = 12 个等效传感器、信标 1 m、iPhone-GPS 真值、抬高 γ = −65 dBm 以制造大量漏检）印证了仿真结果。</p>\n<h3>技术要点</h3>\n<ul><li><strong>漏检即约束，而非缺失：</strong> 空报 ∅ 蕴含真实功率 &lt; 门限 γ，以似然中的 (1 − p_D(x)) 项编码。</li><li><strong>检测+未检测传感器上的统一 ML：</strong> 检测=截断正态；在 ψ（1°）与 α（0.2 dBm）上网格搜索最小化合并负对数似然。</li><li><strong>方向灵敏度</strong> 按天线建模为 K=7 傅里叶级数；仅用 RSSI，无需相位 / 相干阵列。</li><li><strong>粒子滤波</strong> 为运动目标跟踪正确似然峰。</li><li><strong>仿真（4 传感器圆阵、50 次蒙特卡洛）：</strong> −70 dBm 基本持平；−75 dBm RMSE 降低 48%；−80/−85 dBm 约 82%，而基线误差崩至 &gt;80°。</li><li><strong>真实 BLE：</strong> 4 八木 × 3 信道 = 12 传感器、信标 1 m、γ = −65 dBm——本方法稳定，基线退化。</li><li>作者：Zetterqvist、Gustafsson、Hendeby（林雪平大学）；WASP/ELLIIT 资助。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 现有的蓝牙定位条目集中在基于相位的信道探测（Core 6.0/6.3、经 PAwR 的无连接 CS）——即高精度、硬件协同的路线。本文占据相反、更廉价的一角：用现成定向天线、仅凭 RSSI 做 DoA，其贡献偏统计而非射频。把「未检测」当作似然约束，是一种估计器侧技巧，能从弱到标准 Dir-MUSIC/NLS 失效的链路中榨出可用方位——这对低成本资产追踪与远距信标定位很重要，因为那里多数传感器多数时间都低于门限。它与信道探测主线形成有益互补：目标相同（设备在何方向），但成本 / 精度工作点迥异。</p>",
       "images": [],
       "search_blob": "utilizing missed detections in directional sensitivity-based doa estimation 在基于方向灵敏度的到达角估计中利用漏检信息 bt-location ble direction-finding aoa doa rssi maximum-likelihood particle-filter this paper attacks bluetooth low energy direction-of-arrival (doa) estimation in the practical regime where sensors only report scalar rssi from directional antennas — no coherent phase array, no cte-style i/q snapshots. the classic problem with rssi-only direction finding at the edge of coverage is that weak signals simply fail the detection threshold and are dropped, starving the estimator exactly when it needs data most. the authors' insight is to treat those drops as information rather than missing data: when a directional sensor reports an empty set ∅ because received power fell below a known threshold γ, that silence is itself a constraint — the true signal-plus-pattern power at that antenna's orientation must lie below γ. 本文针对一种实际场景下的低功耗蓝牙到达角（doa）估计：传感器仅从定向天线上报标量 rssi——没有相干相位阵列，也没有 cte 式的 i/q 采样。仅凭 rssi 在覆盖边缘做方向查找的经典难题是：弱信号会直接低于检测门限被丢弃，恰恰在估计器最需要数据时让它「挨饿」。作者的关键洞见是把这些丢弃当作信息而非缺失数据：当某个定向传感器因接收功率低于已知门限 γ 而上报空集 ∅ 时，这份「沉默」本身就是约束——在该天线朝向上，真实的「信号×方向图」功率必定低于 γ。 academic-paper bluetooth"
+    },
+    {
+      "id": "2026-05-27_arxiv-encor-anchorless-cellular-core",
+      "date_found": "2026-05-27",
+      "technology": "wifi",
+      "date_published": "2026-05-21",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "EnCoR: an end-to-end architecture that removes in-network mobility anchoring from the cellular core",
+      "title_zh": "EnCoR：把移动性锚定移出核心网的端到端蜂窝架构",
+      "url": "https://arxiv.org/abs/2605.22524",
+      "topics": [
+        "5G",
+        "cellular-core",
+        "mobility",
+        "IPv6",
+        "UPF",
+        "handover",
+        "edge"
+      ],
+      "topic_primary": "5g-nr",
+      "topics_secondary": [
+        "4g-lte",
+        "mec"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-05-27_arxiv-encor-anchorless-cellular-core.md",
+      "summary_short_en": "EnCoR (Woo, Wen, Velmurugan, Raad, Ratnasamy, Shenker, Hasan — Berkeley / Virginia Tech) revisits one of cellular's oldest architectural assumptions: that mobility must be provided as an in-network service by tunnelling all user traffic through a handful of centralized anchors (P-GWs in LTE, UPFs in 5G). That design dates to the 1990s and, the authors argue, is now actively harmful — it hairpins traffic through the core and inflates latency, it forces operators to coordinate heterogeneous systems on every upgrade, and it makes low-latency service expensive because it requires costly core build-out. Their observation is that modern applications and transport protocols (QUIC, modern TCP) are already mobility-tolerant, so the network no longer has to hide mobility from the endpoints.",
+      "summary_short_zh": "EnCoR（Woo、Wen、Velmurugan、Raad、Ratnasamy、Shenker、Hasan——伯克利 / 弗吉尼亚理工）重新审视蜂窝网最古老的架构假设之一：移动性必须由网络作为内置服务提供，做法是把所有用户流量隧道汇聚到少数集中锚点（LTE 的 P-GW、5G 的 UPF）。作者指出这套源自上世纪 90 年代的设计如今已弊大于利——它把流量绕回核心网、推高时延；迫使运营商在每次升级时协调异构系统；并且因为需要昂贵的核心网扩建而使低时延业务代价高昂。他们的洞见是：现代应用与传输协议（QUIC、现代 TCP）本就容忍移动性中断，因此网络不必再向端点隐藏移动性。",
+      "body_html_en": "<h3>Summary</h3>\n<p>EnCoR (Woo, Wen, Velmurugan, Raad, Ratnasamy, Shenker, Hasan — Berkeley / Virginia Tech) revisits one of cellular's oldest architectural assumptions: that mobility must be provided as an in-network service by tunnelling all user traffic through a handful of centralized anchors (P-GWs in LTE, UPFs in 5G). That design dates to the 1990s and, the authors argue, is now actively harmful — it hairpins traffic through the core and inflates latency, it forces operators to coordinate heterogeneous systems on every upgrade, and it makes low-latency service expensive because it requires costly core build-out. Their observation is that modern applications and transport protocols (QUIC, modern TCP) are already mobility-tolerant, so the network no longer has to hide mobility from the endpoints.</p>\n<p>EnCoR removes in-network anchoring while keeping the operator's control intact through a clean functional decomposition. The <strong>edge user plane</strong> lives in extended base stations (iNodeBs) that terminate user traffic directly and apply stateless NAT using split IPv6 addressing: each iNB owns a publicly routable IPv6 /64, devices keep private addresses in the lower bits, and there is no tunnel to a central anchor. A <strong>stateful central control plane</strong> retains the functions operators actually need to keep centralized — authentication, provisioning, charging (a Security Management Entity, subscriber database, online charging system). A <strong>stateless edge control plane</strong> of Handover Proxies and Charging Proxies handles ephemeral per-session state next to the RAN so signalling scales without per-flow state in the core. Critically, EnCoR preserves the 3GPP radio interface, so existing phones attach and roam unchanged.</p>\n<p>The prototype is built on Open5GS and srsRAN with a software SME, stateless HOP message proxy, and modified iNodeBs, and is tested over the air with unmodified Google Pixel 3 handsets running real apps. Reported results: more than 90% capital-cost reduction versus a 3GPP network (a simulated ten-PoP EnCoR deployment matches a 3GPP network for about $2M), 2.6× faster handover completion under load (275 ms vs 738 ms at 64 handovers/second), and correct operation of QUIC/TCP apps (Zoom, YouTube, Spotify) without modification — with one edge case (MoQ live video) needing a single application-layer ping for IP discovery. Handover packet loss rises modestly (15–130% depending on traffic type) but is mitigable with lightweight source-forwarding.</p>\n<h3>Key technical points</h3>\n<ul><li>Thesis: modern apps/transport are mobility-tolerant → drop in-network mobility anchoring (no P-GW/UPF tunnels).</li><li>Edge user plane: iNodeBs terminate traffic + stateless NAT via split IPv6 (each iNB = public /64; device private in lower 64 bits).</li><li>Stateful central control plane keeps auth / provisioning / charging centralized (SME, subscriber DB, OCS).</li><li>Stateless edge control plane: Handover Proxies + Charging Proxies hold ephemeral session state near the RAN.</li><li>Preserves the 3GPP radio interface → unmodified phones (tested on Pixel 3).</li><li>Prototype: Open5GS + srsRAN; OTA tested with real apps.</li><li>Results: &gt;90% capex reduction (10-PoP ≈ $2M); 2.6× faster handover under load (275 ms vs 738 ms @ 64 HO/s); QUIC/TCP apps unmodified; handover loss +15–130%, mitigable.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is a clean-slate architectural argument from a heavyweight systems group, and it cuts against the grain of the rest of this KB's cellular coverage, which mostly optimizes the existing anchored core (AI schedulers, slicing, digital twins). EnCoR instead asks whether the anchor should exist at all, and backs the claim with an over-the-air prototype on unmodified handsets plus a concrete cost model. The split-IPv6 / stateless-NAT-at-the-iNB design is the novel mechanism; the 2.6× handover and &gt;90% capex numbers are the evidence. It is the architectural counterpart to the operations-automation work landing this week (GENESIS, 2026-05-27_arxiv-genesis-agentic-6g-ran-synthesis; OpenTwin, 2026-05-26_arxiv-opentwin-oran-digital-twin) — where those make the current core easier to run, EnCoR proposes shrinking it.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>EnCoR（Woo、Wen、Velmurugan、Raad、Ratnasamy、Shenker、Hasan——伯克利 / 弗吉尼亚理工）重新审视蜂窝网最古老的架构假设之一：移动性必须由网络作为内置服务提供，做法是把所有用户流量隧道汇聚到少数集中锚点（LTE 的 P-GW、5G 的 UPF）。作者指出这套源自上世纪 90 年代的设计如今已弊大于利——它把流量绕回核心网、推高时延；迫使运营商在每次升级时协调异构系统；并且因为需要昂贵的核心网扩建而使低时延业务代价高昂。他们的洞见是：现代应用与传输协议（QUIC、现代 TCP）本就容忍移动性中断，因此网络不必再向端点隐藏移动性。</p>\n<p>EnCoR 在保留运营商控制力的前提下移除内置锚定，方法是清晰的功能解耦。<strong>边缘用户面</strong>置于扩展后的基站（iNodeB）内，直接终结用户流量并用拆分式 IPv6 做无状态 NAT：每个 iNB 拥有一个可公网路由的 IPv6 /64，设备在低位保留私有地址，不再有指向中心锚点的隧道。<strong>有状态的中心控制面</strong>保留运营商确实需要集中的功能——鉴权、开通、计费（安全管理实体、用户数据库、在线计费系统）。由切换代理（HOP）与计费代理（CP）组成的<strong>无状态边缘控制面</strong>在 RAN 旁处理短暂的每会话状态，使信令可扩展而无需在核心网保存每流状态。关键在于 EnCoR 保留了 3GPP 空口接口，现有手机无需改动即可接入与漫游。</p>\n<p>原型基于 Open5GS 与 srsRAN 构建，含软件化 SME、无状态 HOP 消息代理与改造的 iNodeB，并用未改装的 Google Pixel 3 真机运行真实应用做空口测试。报告结果：相对 3GPP 网络资本成本下降超 90%（仿真中十 PoP 的 EnCoR 部署以约 200 万美元即可对标 3GPP 网络）；负载下切换完成快 2.6 倍（64 次/秒时 275 ms vs 738 ms）；QUIC/TCP 应用（Zoom、YouTube、Spotify）无需修改即可正确运行——唯一边角情形（MoQ 直播视频）需一次应用层 ping 以发现 IP。切换丢包有适度上升（按流量类型 15–130%），但可用轻量源转发缓解。</p>\n<h3>技术要点</h3>\n<ul><li>论点：现代应用/传输容忍移动性 → 取消内置移动性锚定（不再有 P-GW/UPF 隧道）。</li><li>边缘用户面：iNodeB 直接终结流量 + 拆分式 IPv6 无状态 NAT（每 iNB 一个公网 /64；设备私有地址在低 64 位）。</li><li>有状态中心控制面集中保留鉴权/开通/计费（SME、用户库、OCS）。</li><li>无状态边缘控制面：切换代理 + 计费代理在 RAN 旁保存短暂会话状态。</li><li>保留 3GPP 空口 → 手机无需改动（Pixel 3 实测）。</li><li>原型：Open5GS + srsRAN；真实应用空口测试。</li><li>结果：资本成本降 &gt;90%（十 PoP≈200 万美元）；负载下切换快 2.6 倍（64 次/秒时 275 ms vs 738 ms）；QUIC/TCP 应用无需改动；切换丢包 +15–130%，可缓解。</li></ul>\n<h3>意义与新意</h3>\n<p>这是来自重量级系统研究团队的&quot;白纸重设计&quot;论证，与本 KB 其余蜂窝内容（多在优化现有锚定核心：AI 调度、切片、数字孪生）背道而驰。EnCoR 转而追问锚点是否还应存在，并以未改装手机上的空口原型加具体成本模型支撑论点。拆分式 IPv6 / iNB 处无状态 NAT 的设计是其新机制；2.6 倍切换与 &gt;90% 资本成本数字是证据。它是本周运维自动化工作（GENESIS，2026-05-27_arxiv-genesis-agentic-6g-ran-synthesis；OpenTwin，2026-05-26_arxiv-opentwin-oran-digital-twin）的架构对照面——后者让现有核心更易运行，EnCoR 则主张把它缩小。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2605.22524v1/x1.png",
+          "caption_en": "EnCoR architecture: anchorless edge user plane with central control plane",
+          "caption_zh": "EnCoR 架构：无锚定的边缘用户面与中心控制面"
+        },
+        {
+          "url": "https://arxiv.org/html/2605.22524v1/x2.png",
+          "caption_en": "EnCoR handover and data-path handling",
+          "caption_zh": "EnCoR 切换与数据路径处理"
+        }
+      ],
+      "search_blob": "encor: an end-to-end architecture that removes in-network mobility anchoring from the cellular core encor：把移动性锚定移出核心网的端到端蜂窝架构 5g cellular-core mobility ipv6 upf handover edge encor (woo, wen, velmurugan, raad, ratnasamy, shenker, hasan — berkeley / virginia tech) revisits one of cellular's oldest architectural assumptions: that mobility must be provided as an in-network service by tunnelling all user traffic through a handful of centralized anchors (p-gws in lte, upfs in 5g). that design dates to the 1990s and, the authors argue, is now actively harmful — it hairpins traffic through the core and inflates latency, it forces operators to coordinate heterogeneous systems on every upgrade, and it makes low-latency service expensive because it requires costly core build-out. their observation is that modern applications and transport protocols (quic, modern tcp) are already mobility-tolerant, so the network no longer has to hide mobility from the endpoints. encor（woo、wen、velmurugan、raad、ratnasamy、shenker、hasan——伯克利 / 弗吉尼亚理工）重新审视蜂窝网最古老的架构假设之一：移动性必须由网络作为内置服务提供，做法是把所有用户流量隧道汇聚到少数集中锚点（lte 的 p-gw、5g 的 upf）。作者指出这套源自上世纪 90 年代的设计如今已弊大于利——它把流量绕回核心网、推高时延；迫使运营商在每次升级时协调异构系统；并且因为需要昂贵的核心网扩建而使低时延业务代价高昂。他们的洞见是：现代应用与传输协议（quic、现代 tcp）本就容忍移动性中断，因此网络不必再向端点隐藏移动性。 academic-paper wifi"
     },
     {
       "id": "2026-05-25_arxiv-vran-openairinterface-multi-instance-scaling",
