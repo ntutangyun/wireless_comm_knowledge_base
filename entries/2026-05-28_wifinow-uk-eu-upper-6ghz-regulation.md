@@ -3,6 +3,7 @@ id: 2026-05-28_wifinow-uk-eu-upper-6ghz-regulation
 date_published: 2026-05-26
 date_found: 2026-05-28
 type: industry-news
+technology: wifi
 title_en: "UK vs EU on the upper 6 GHz band: Ofcom's AFC-shared approach against the RSPG's IMT reservation"
 title_zh: "上 6 GHz 频段之争：英国 Ofcom 的 AFC 共享方案 vs 欧盟 RSPG 的 IMT 预留"
 url: "https://wifinowglobal.com/news-blog/innovation-productivity-and-common-sense-contrasting-uk-and-eu-proposals-for-for-upper-6-ghz-wi-fi-regulation/"

@@ -3,6 +3,7 @@ id: 2026-05-27_arxiv-tn-ntn-backhaul-potential-game
 date_published: 2026-05-26
 date_found: 2026-05-27
 type: academic-paper
+technology: cellular
 title_en: "SLA-aware traffic steering in hybrid TN-NTN 5G backhaul via an exact potential game"
 title_zh: "基于精确势博弈的混合 TN-NTN 5G 回传 SLA 感知流量调度"
 url: "https://arxiv.org/abs/2605.26673"

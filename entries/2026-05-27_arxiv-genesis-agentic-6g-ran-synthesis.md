@@ -3,6 +3,7 @@ id: 2026-05-27_arxiv-genesis-agentic-6g-ran-synthesis
 date_published: 2026-05-26
 date_found: 2026-05-27
 type: academic-paper
+technology: cellular
 title_en: "GENESIS: AI agents for autonomous 6G RAN synthesis, research, and testing"
 title_zh: "GENESIS：用于自主 6G RAN 合成、研究与测试的 AI 智能体框架"
 url: "https://arxiv.org/abs/2605.27360"

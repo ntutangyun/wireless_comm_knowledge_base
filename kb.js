@@ -29,6 +29,8 @@ window.KB_DATA = {
     "automotive": 4,
     "802.11": 4,
     "802.11az": 4,
+    "spectrum-policy": 3,
+    "direct-to-device": 3,
     "6GHz": 3,
     "NTN": 3,
     "network-slicing": 3,
@@ -49,7 +51,6 @@ window.KB_DATA = {
     "AI-RAN": 3,
     "Wi-Fi 7": 3,
     "roaming": 3,
-    "spectrum-policy": 2,
     "AFC": 2,
     "OpenAirInterface": 2,
     "cellular-ai": 2,
@@ -77,7 +78,6 @@ window.KB_DATA = {
     "802.11br": 2,
     "MU-MIMO": 2,
     "WPA3": 2,
-    "direct-to-device": 2,
     "FCC": 2,
     "healthcare": 2,
     "digital-car-key": 2,
@@ -89,6 +89,11 @@ window.KB_DATA = {
     "802.15.4ab": 2,
     "narrowband-assist": 2,
     "R-TWT": 2,
+    "MSS": 1,
+    "2GHz": 1,
+    "IRIS2": 1,
+    "NGSO": 1,
+    "EU": 1,
     "Ofcom": 1,
     "RSPG": 1,
     "IMT": 1,
@@ -321,6 +326,7 @@ window.KB_DATA = {
     "leo-constellations": 2,
     "roaming-mobility": 2,
     "mlo": 2,
+    "ngso-regulation": 1,
     "starlink": 1,
     "bt-location": 1,
     "nearlink-slb": 1,
@@ -332,7 +338,7 @@ window.KB_DATA = {
   },
   "type_counts": {
     "academic-paper": 83,
-    "industry-news": 32,
+    "industry-news": 33,
     "ieee-document": 12,
     "product": 9,
     "proposal": 4,
@@ -340,7 +346,7 @@ window.KB_DATA = {
   },
   "category_counts": {
     "academia": 83,
-    "industry": 41,
+    "industry": 42,
     "standards": 17
   },
   "technologies_vocab": {
@@ -2299,7 +2305,9 @@ window.KB_DATA = {
         "2026-05-24_ast-spacemobile-q1-2026-45-bluebirds",
         "2026-05-26_arxiv-elevation-aware-sul-ds2d"
       ],
-      "entries_secondary": [],
+      "entries_secondary": [
+        "2026-05-28_eu-2ghz-mss-spectrum-three-way-split"
+      ],
       "by_type_primary": {
         "industry-news": [
           "2026-05-24_ast-spacemobile-q1-2026-45-bluebirds"
@@ -2341,12 +2349,18 @@ window.KB_DATA = {
       "diagram_mmd": "",
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
-      "entries_primary": [],
+      "entries_primary": [
+        "2026-05-28_eu-2ghz-mss-spectrum-three-way-split"
+      ],
       "entries_secondary": [
         "2026-05-24_ast-spacemobile-q1-2026-45-bluebirds",
         "2026-05-24_amazon-leo-300-satellites-may-2026"
       ],
-      "by_type_primary": {}
+      "by_type_primary": {
+        "industry-news": [
+          "2026-05-28_eu-2ghz-mss-spectrum-three-way-split"
+        ]
+      }
     },
     "bt-le": {
       "id": "bt-le",
@@ -2682,6 +2696,38 @@ window.KB_DATA = {
   },
   "entries": [
     {
+      "id": "2026-05-28_eu-2ghz-mss-spectrum-three-way-split",
+      "date_found": "2026-05-28",
+      "technology": "satellite",
+      "date_published": "2026-05-27",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "EU proposes splitting the 2 GHz MSS band three ways, favouring European operators and clouding SpaceX/Viasat D2D plans",
+      "title_zh": "欧盟拟将 2 GHz 卫星移动频段三分，偏向欧洲运营商，令 SpaceX/Viasat 的直连设备计划蒙上阴影",
+      "url": "https://spacenews.com/europes-satellite-spectrum-proposal-clouds-spacex-and-viasat-plans/",
+      "topics": [
+        "MSS",
+        "2GHz",
+        "spectrum-policy",
+        "direct-to-device",
+        "IRIS2",
+        "NGSO",
+        "EU"
+      ],
+      "topic_primary": "ngso-regulation",
+      "topics_secondary": [
+        "sat-direct-device"
+      ],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-05-28_eu-2ghz-mss-spectrum-three-way-split.md",
+      "summary_short_en": "The European Commission proposed (May 27, 2026) reserving two-thirds of the 2 GHz mobile-satellite-service (MSS) band — which comes up for renewal next year — for European operators, dividing the spectrum into three equal blocks. One-third would be set aside for a European operator providing dedicated government communications integrated into IRIS², the EU's planned sovereign connectivity constellation. A second third would be a commercial block reserved for \"EU operators entering the market,\" and the final third would remain open to operators based outside Europe. EU tech-sovereignty VP Henna Virkkunen framed it as ensuring satellite-and-terrestrial connectivity direct to mobile devices across the EU, especially where terrestrial networks are absent.",
+      "summary_short_zh": "欧盟委员会于 2026 年 5 月 27 日提议，将明年到期续期的 2 GHz 卫星移动业务（MSS）频段中的三分之二预留给欧洲运营商，把频谱划分为三等份。其中三分之一留给一家为欧盟主权连接星座 IRIS² 提供专用政府通信的欧洲运营商；第二份为商用区块，预留给\"进入市场的欧盟运营商\"；最后三分之一仍向欧洲以外的运营商开放。欧盟科技主权事务执行副主席 Henna Virkkunen 称此举旨在确保全欧盟范围、尤其是地面网络缺失之处都能获得直达移动设备的卫星与地面连接。",
+      "body_html_en": "<h3>Summary</h3>\n<p>The European Commission proposed (May 27, 2026) reserving two-thirds of the 2 GHz mobile-satellite-service (MSS) band — which comes up for renewal next year — for European operators, dividing the spectrum into three equal blocks. One-third would be set aside for a European operator providing dedicated government communications integrated into IRIS², the EU's planned sovereign connectivity constellation. A second third would be a commercial block reserved for &quot;EU operators entering the market,&quot; and the final third would remain open to operators based outside Europe. EU tech-sovereignty VP Henna Virkkunen framed it as ensuring satellite-and-terrestrial connectivity direct to mobile devices across the EU, especially where terrestrial networks are absent.</p>\n<p>The proposal directly complicates two non-European players. U.S.-based Viasat currently uses the 2 GHz band for its hybrid satellite-cellular European Aviation Network, and EchoStar had planned to sell its 2 GHz holdings to bolster SpaceX's Starlink Mobile direct-to-device (D2D) service — a path the three-way split would constrain. Would-be beneficiaries of the European-reserved blocks include Luxembourg's OQ Technology (sovereign D2D) and AST SpaceMobile, which has registered plans for a European network via a joint venture with Vodafone in Germany.</p>\n<p>The plan still requires approval from the European Parliament and Council, leaving room for amendment. It also sharpens a transatlantic spectrum dispute: it lands alongside U.S. criticism of the EU Space Act's harmonisation push, and FCC Chairman Brendan Carr warned in March 2026 that the U.S. would respond &quot;in kind&quot; — invoking reciprocity — if Europe favours domestic satellite firms over American ones.</p>\n<h3>Key technical points</h3>\n<ul><li>Band: 2 GHz MSS (mobile satellite service) spectrum, up for renewal next year.</li><li>Proposed split into three equal blocks: (1) European operator for IRIS²-integrated government comms; (2) commercial block for EU market entrants; (3) open to non-EU operators.</li><li>Hits Viasat (2 GHz European Aviation Network) and SpaceX (EchoStar's 2 GHz earmarked for Starlink Mobile D2D).</li><li>European-reserved blocks favour OQ Technology (sovereign D2D) and AST SpaceMobile (Vodafone JV in Germany).</li><li>Still needs European Parliament + Council approval; amendable.</li><li>Transatlantic tension: aligns with EU Space Act harmonisation; FCC's Carr threatened &quot;reciprocity&quot; (March 2026).</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is a concrete legislative move in the direct-to-device land grab the KB has tracked on the operator side (AST SpaceMobile Q1 2026, 2026-05-24; D2C-vs-NTN analysis, 2026-05-22). Spectrum, not satellites, is now the binding constraint for European D2D, and the EU is proposing to allocate it by nationality of operator rather than purely by technical merit — reserving two-thirds for European players and tying one block to the IRIS² sovereign constellation. It also mirrors, on the satellite side, the same EU spectrum-sovereignty instinct seen this week on the Wi-Fi side (2026-05-28_wifinow-uk-eu-upper-6ghz-regulation): Europe leaning toward reservation/sovereignty where the US and UK lean toward open or shared access. Novelty is low (a regulatory proposal, not a new mechanism), but it is the clearest signal yet that European D2D market access will be gated by spectrum policy.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>欧盟委员会于 2026 年 5 月 27 日提议，将明年到期续期的 2 GHz 卫星移动业务（MSS）频段中的三分之二预留给欧洲运营商，把频谱划分为三等份。其中三分之一留给一家为欧盟主权连接星座 IRIS² 提供专用政府通信的欧洲运营商；第二份为商用区块，预留给&quot;进入市场的欧盟运营商&quot;；最后三分之一仍向欧洲以外的运营商开放。欧盟科技主权事务执行副主席 Henna Virkkunen 称此举旨在确保全欧盟范围、尤其是地面网络缺失之处都能获得直达移动设备的卫星与地面连接。</p>\n<p>该提案直接令两家非欧洲玩家受阻。美国的 Viasat 目前用 2 GHz 频段运营其卫星-蜂窝混合的&quot;欧洲航空网络&quot;；EchoStar 原计划出售其 2 GHz 频谱资产以助力 SpaceX 的 Starlink Mobile 直连设备（D2D）服务——而三分法将限制这条路径。可能受益于&quot;欧洲预留&quot;区块的包括卢森堡 OQ Technology（主权 D2D）以及通过与英国沃达丰在德国设合资公司布局欧洲网络的 AST SpaceMobile。</p>\n<p>该计划仍需欧洲议会与理事会批准，存在修改空间。它也使跨大西洋频谱之争升温：此事正值美国批评《欧盟太空法》的统一化推动之际，FCC 主席 Brendan Carr 已于 2026 年 3 月警告，若欧洲偏袒本土卫星企业而非美国企业，美国将&quot;对等&quot;回应——即所谓&quot;对等原则（reciprocity）&quot;。</p>\n<h3>技术要点</h3>\n<ul><li>频段：2 GHz MSS（卫星移动业务）频谱，明年到期续期。</li><li>拟三等分：(1) 为 IRIS² 政府通信的欧洲运营商；(2) 留给欧盟市场新进入者的商用区块；(3) 向非欧盟运营商开放。</li><li>冲击 Viasat（2 GHz 欧洲航空网络）与 SpaceX（EchoStar 的 2 GHz 原拟用于 Starlink Mobile D2D）。</li><li>欧洲预留区块利好 OQ Technology（主权 D2D）与 AST SpaceMobile（德国沃达丰合资）。</li><li>仍需欧洲议会与理事会批准，可修改。</li><li>跨大西洋张力：契合《欧盟太空法》统一化；FCC 主席 Carr 已威胁&quot;对等&quot;回应（2026 年 3 月）。</li></ul>\n<h3>意义与新意</h3>\n<p>这是本 KB 在运营商侧持续跟踪的直连设备争夺战（AST SpaceMobile 2026 一季度，2026-05-24；D2C-vs-NTN 分析，2026-05-22）在立法层面的具体动作。如今制约欧洲 D2D 的不是卫星而是频谱，而欧盟提议按运营商国籍而非纯技术优劣来分配——为欧洲玩家预留三分之二，并将一个区块与 IRIS² 主权星座绑定。它在卫星侧也映照了本周 Wi-Fi 侧（2026-05-28_wifinow-uk-eu-upper-6ghz-regulation）相同的欧盟频谱主权倾向：欧洲倾向预留/主权，而美英倾向开放或共享接入。其新颖性较低（监管提案而非新机制），但这是迄今最清晰的信号：欧洲 D2D 市场准入将由频谱政策把关。</p>",
+      "images": [],
+      "search_blob": "eu proposes splitting the 2 ghz mss band three ways, favouring european operators and clouding spacex/viasat d2d plans 欧盟拟将 2 ghz 卫星移动频段三分，偏向欧洲运营商，令 spacex/viasat 的直连设备计划蒙上阴影 mss 2ghz spectrum-policy direct-to-device iris2 ngso eu the european commission proposed (may 27, 2026) reserving two-thirds of the 2 ghz mobile-satellite-service (mss) band — which comes up for renewal next year — for european operators, dividing the spectrum into three equal blocks. one-third would be set aside for a european operator providing dedicated government communications integrated into iris², the eu's planned sovereign connectivity constellation. a second third would be a commercial block reserved for \"eu operators entering the market,\" and the final third would remain open to operators based outside europe. eu tech-sovereignty vp henna virkkunen framed it as ensuring satellite-and-terrestrial connectivity direct to mobile devices across the eu, especially where terrestrial networks are absent. 欧盟委员会于 2026 年 5 月 27 日提议，将明年到期续期的 2 ghz 卫星移动业务（mss）频段中的三分之二预留给欧洲运营商，把频谱划分为三等份。其中三分之一留给一家为欧盟主权连接星座 iris² 提供专用政府通信的欧洲运营商；第二份为商用区块，预留给\"进入市场的欧盟运营商\"；最后三分之一仍向欧洲以外的运营商开放。欧盟科技主权事务执行副主席 henna virkkunen 称此举旨在确保全欧盟范围、尤其是地面网络缺失之处都能获得直达移动设备的卫星与地面连接。 industry-news satellite"
+    },
+    {
       "id": "2026-05-28_wifinow-uk-eu-upper-6ghz-regulation",
       "date_found": "2026-05-28",
       "technology": "wifi",
@@ -2716,7 +2762,7 @@ window.KB_DATA = {
     {
       "id": "2026-05-27_arxiv-tn-ntn-backhaul-potential-game",
       "date_found": "2026-05-27",
-      "technology": "wifi",
+      "technology": "cellular",
       "date_published": "2026-05-26",
       "type": "academic-paper",
       "category": "academia",
@@ -2743,12 +2789,12 @@ window.KB_DATA = {
       "body_html_en": "<h3>Summary</h3>\n<p>This paper (Navidan, Rico, Cheraghinia, Moerman, Shahid — IDLab/Ghent) tackles traffic steering across hybrid terrestrial / non-terrestrial (TN-NTN) 5G backhaul, where an operator has both a cheap, high-capacity terrestrial path and an expensive, capacity-constrained satellite path, and must keep multiple network slices inside their service-level agreements while spending as little satellite capacity as possible. The asymmetry is the hard part: uplink and downlink have very different cost and capacity profiles, and the slices (V2X, emergency, video, IoT, best-effort) compete for the same shared backhaul.</p>\n<p>The core contribution is to formulate per-slice load balancing as an <strong>exact potential game</strong>. That formulation lets uplink and downlink &quot;agents&quot; coordinate in a decentralized way — each adjusts the fraction of its slice's traffic sent over the terrestrial vs. satellite path to improve a utility that folds in throughput, latency, packet loss, and an SLA-violation penalty — and the potential-game structure guarantees the dynamics converge to a pure-strategy Nash equilibrium without any explicit control signalling between the agents. The result is stable, low-overhead adaptation rather than a central optimizer that needs global state every cycle.</p>\n<p>The authors validate on a geographically distributed 5G testbed with five representative slices and bidirectional traffic. The controller holds SLA violations to 1.7% for V2X and 0.7% for emergency services and drives them to zero for video, IoT, and best-effort, beating heuristic baselines while minimizing satellite usage.</p>\n<h3>Key technical points</h3>\n<ul><li>Problem: steer per-slice traffic across asymmetric TN (cheap/large) vs NTN (expensive/limited) 5G backhaul while honoring SLAs and sparing satellite capacity.</li><li>Formulation: load balancing as an <strong>exact potential game</strong>; convergence to a pure-strategy Nash equilibrium is guaranteed.</li><li>Decentralized uplink/downlink agents adjust per-slice terrestrial-vs-satellite split with no explicit inter-agent signalling.</li><li>Utility folds in throughput, latency, packet loss, and SLA-violation penalty.</li><li>Testbed: geographically distributed 5G, five slices (V2X, emergency, video, IoT, best-effort), bidirectional traffic.</li><li>Results: SLA violations 1.7% (V2X), 0.7% (emergency), 0% (video/IoT/best-effort); beats heuristic baselines, minimizes satellite usage.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>NTN-as-backhaul (rather than NTN-as-access) is an under-covered corner of this KB's cellular and satellite coverage, and the potential-game framing is the genuinely new piece: it gives decentralized, signalling-free coordination with a convergence guarantee, which is attractive when the satellite leg's control latency makes a tight central optimizer impractical. It complements the access-side direct-to-device and D2C-vs-NTN material already in the KB (2026-05-22_arxiv-d2c-vs-ntn-comparative-analysis) by addressing the transport tier behind the cell rather than the air interface in front of it.</p>",
       "body_html_zh": "<h3>摘要</h3>\n<p>本文（Navidan、Rico、Cheraghinia、Moerman、Shahid——根特大学 IDLab）研究混合地面/非地面（TN-NTN）5G 回传中的流量调度：运营商同时拥有廉价、大容量的地面路径与昂贵、容量受限的卫星路径，必须在尽量少用卫星容量的同时让多个网络切片满足各自的服务等级协议（SLA）。难点在于不对称性：上行与下行的成本与容量特征差异很大，而各切片（V2X、应急、视频、IoT、尽力而为）争用同一共享回传。</p>\n<p>核心贡献是把按切片的负载均衡建模为<strong>精确势博弈（exact potential game）</strong>。该建模使上行与下行&quot;智能体&quot;以去中心化方式协调——各自调整其切片在地面与卫星路径间的流量分配比例，以改进一个综合了吞吐、时延、丢包与 SLA 违约惩罚的效用函数——而势博弈结构保证动态收敛到纯策略纳什均衡，且智能体之间无需任何显式控制信令。其结果是稳定、低开销的自适应，而非每周期都需要全局状态的中心优化器。</p>\n<p>作者在地理上分布的 5G 试验床上以五个代表性切片与双向流量进行验证。控制器将 V2X 的 SLA 违约率控制在 1.7%、应急业务 0.7%，并将视频、IoT 与尽力而为业务的违约率降为零，在最小化卫星用量的同时优于启发式基线。</p>\n<h3>技术要点</h3>\n<ul><li>问题：在不对称的 TN（廉价/大容量）与 NTN（昂贵/受限）5G 回传间按切片调度流量，同时满足 SLA 并节省卫星容量。</li><li>建模：把负载均衡表述为<strong>精确势博弈</strong>；保证收敛到纯策略纳什均衡。</li><li>去中心化的上/下行智能体调整各切片地面-卫星分流比例，无需智能体间显式信令。</li><li>效用综合吞吐、时延、丢包与 SLA 违约惩罚。</li><li>试验床：地理分布的 5G，五个切片（V2X、应急、视频、IoT、尽力而为），双向流量。</li><li>结果：SLA 违约率 V2X 1.7%、应急 0.7%、视频/IoT/尽力而为 0%；优于启发式基线，最小化卫星用量。</li></ul>\n<h3>意义与新意</h3>\n<p>&quot;NTN 作为回传&quot;（而非作为接入）是本 KB 蜂窝与卫星内容中覆盖较少的一角，而势博弈建模是真正的新意：它在带收敛保证的前提下实现去中心化、免信令的协调；当卫星链路的控制时延使紧耦合中心优化器不切实际时，这一点尤为可取。它与本库已有的接入侧直连设备及 D2C-vs-NTN 内容（2026-05-22_arxiv-d2c-vs-ntn-comparative-analysis）互补——后者关注小区前的空口，本文关注小区后的传输层。</p>",
       "images": [],
-      "search_blob": "sla-aware traffic steering in hybrid tn-ntn 5g backhaul via an exact potential game 基于精确势博弈的混合 tn-ntn 5g 回传 sla 感知流量调度 ntn satellite-backhaul network-slicing game-theory sla traffic-steering this paper (navidan, rico, cheraghinia, moerman, shahid — idlab/ghent) tackles traffic steering across hybrid terrestrial / non-terrestrial (tn-ntn) 5g backhaul, where an operator has both a cheap, high-capacity terrestrial path and an expensive, capacity-constrained satellite path, and must keep multiple network slices inside their service-level agreements while spending as little satellite capacity as possible. the asymmetry is the hard part: uplink and downlink have very different cost and capacity profiles, and the slices (v2x, emergency, video, iot, best-effort) compete for the same shared backhaul. 本文（navidan、rico、cheraghinia、moerman、shahid——根特大学 idlab）研究混合地面/非地面（tn-ntn）5g 回传中的流量调度：运营商同时拥有廉价、大容量的地面路径与昂贵、容量受限的卫星路径，必须在尽量少用卫星容量的同时让多个网络切片满足各自的服务等级协议（sla）。难点在于不对称性：上行与下行的成本与容量特征差异很大，而各切片（v2x、应急、视频、iot、尽力而为）争用同一共享回传。 academic-paper wifi"
+      "search_blob": "sla-aware traffic steering in hybrid tn-ntn 5g backhaul via an exact potential game 基于精确势博弈的混合 tn-ntn 5g 回传 sla 感知流量调度 ntn satellite-backhaul network-slicing game-theory sla traffic-steering this paper (navidan, rico, cheraghinia, moerman, shahid — idlab/ghent) tackles traffic steering across hybrid terrestrial / non-terrestrial (tn-ntn) 5g backhaul, where an operator has both a cheap, high-capacity terrestrial path and an expensive, capacity-constrained satellite path, and must keep multiple network slices inside their service-level agreements while spending as little satellite capacity as possible. the asymmetry is the hard part: uplink and downlink have very different cost and capacity profiles, and the slices (v2x, emergency, video, iot, best-effort) compete for the same shared backhaul. 本文（navidan、rico、cheraghinia、moerman、shahid——根特大学 idlab）研究混合地面/非地面（tn-ntn）5g 回传中的流量调度：运营商同时拥有廉价、大容量的地面路径与昂贵、容量受限的卫星路径，必须在尽量少用卫星容量的同时让多个网络切片满足各自的服务等级协议（sla）。难点在于不对称性：上行与下行的成本与容量特征差异很大，而各切片（v2x、应急、视频、iot、尽力而为）争用同一共享回传。 academic-paper cellular"
     },
     {
       "id": "2026-05-27_arxiv-genesis-agentic-6g-ran-synthesis",
       "date_found": "2026-05-27",
-      "technology": "wifi",
+      "technology": "cellular",
       "date_published": "2026-05-26",
       "type": "academic-paper",
       "category": "academia",
@@ -2786,7 +2832,7 @@ window.KB_DATA = {
           "caption_zh": "GENESIS 从意图到验证的工作流"
         }
       ],
-      "search_blob": "genesis: ai agents for autonomous 6g ran synthesis, research, and testing genesis：用于自主 6g ran 合成、研究与测试的 ai 智能体框架 6g o-ran agentic-ai ran-automation openairinterface cellular-ai genesis, from the northeastern university openrangym group (aghayev, elkael, polese, d'oro, melodia et al.), is an agentic framework that automates six labor-intensive ran r&d workflows that today each take months of manual engineering per iteration: synthesizing standards clauses into code, conformance testing, hardening against field anomalies, data-driven optimization, discovering new capabilities, and security hardening. the paper's premise is that general llms fail at ran engineering in characteristic ways — hallucinating apis, misreading specification clauses in ways that silently break interoperability, and producing designs that pass in simulation but fail on real radios — and that closing those gaps requires structure around the model plus over-the-air validation rather than a bigger model alone. genesis 来自美国东北大学 openrangym 团队（aghayev、elkael、polese、d'oro、melodia 等），是一个智能体（agentic）框架，用于自动化当前各需数月手工工程的六类 ran 研发流程：把标准条款合成为代码、一致性测试、针对现场异常的加固、数据驱动优化、新能力发现以及安全加固。论文的出发点是：通用大模型在 ran 工程中会以典型方式失败——臆造 api、误读规范条款从而悄然破坏互操作性、给出仿真能过但真机失败的设计——弥合这些差距需要在模型之外加上结构化编排与空口验证，而非单纯堆更大的模型。 academic-paper wifi"
+      "search_blob": "genesis: ai agents for autonomous 6g ran synthesis, research, and testing genesis：用于自主 6g ran 合成、研究与测试的 ai 智能体框架 6g o-ran agentic-ai ran-automation openairinterface cellular-ai genesis, from the northeastern university openrangym group (aghayev, elkael, polese, d'oro, melodia et al.), is an agentic framework that automates six labor-intensive ran r&d workflows that today each take months of manual engineering per iteration: synthesizing standards clauses into code, conformance testing, hardening against field anomalies, data-driven optimization, discovering new capabilities, and security hardening. the paper's premise is that general llms fail at ran engineering in characteristic ways — hallucinating apis, misreading specification clauses in ways that silently break interoperability, and producing designs that pass in simulation but fail on real radios — and that closing those gaps requires structure around the model plus over-the-air validation rather than a bigger model alone. genesis 来自美国东北大学 openrangym 团队（aghayev、elkael、polese、d'oro、melodia 等），是一个智能体（agentic）框架，用于自动化当前各需数月手工工程的六类 ran 研发流程：把标准条款合成为代码、一致性测试、针对现场异常的加固、数据驱动优化、新能力发现以及安全加固。论文的出发点是：通用大模型在 ran 工程中会以典型方式失败——臆造 api、误读规范条款从而悄然破坏互操作性、给出仿真能过但真机失败的设计——弥合这些差距需要在模型之外加上结构化编排与空口验证，而非单纯堆更大的模型。 academic-paper cellular"
     },
     {
       "id": "2026-05-26_arxiv-v2x-mode0-rcu-safety",
@@ -2948,7 +2994,7 @@ window.KB_DATA = {
     {
       "id": "2026-05-27_arxiv-encor-anchorless-cellular-core",
       "date_found": "2026-05-27",
-      "technology": "wifi",
+      "technology": "cellular",
       "date_published": "2026-05-21",
       "type": "academic-paper",
       "category": "academia",
@@ -2987,7 +3033,7 @@ window.KB_DATA = {
           "caption_zh": "EnCoR 切换与数据路径处理"
         }
       ],
-      "search_blob": "encor: an end-to-end architecture that removes in-network mobility anchoring from the cellular core encor：把移动性锚定移出核心网的端到端蜂窝架构 5g cellular-core mobility ipv6 upf handover edge encor (woo, wen, velmurugan, raad, ratnasamy, shenker, hasan — berkeley / virginia tech) revisits one of cellular's oldest architectural assumptions: that mobility must be provided as an in-network service by tunnelling all user traffic through a handful of centralized anchors (p-gws in lte, upfs in 5g). that design dates to the 1990s and, the authors argue, is now actively harmful — it hairpins traffic through the core and inflates latency, it forces operators to coordinate heterogeneous systems on every upgrade, and it makes low-latency service expensive because it requires costly core build-out. their observation is that modern applications and transport protocols (quic, modern tcp) are already mobility-tolerant, so the network no longer has to hide mobility from the endpoints. encor（woo、wen、velmurugan、raad、ratnasamy、shenker、hasan——伯克利 / 弗吉尼亚理工）重新审视蜂窝网最古老的架构假设之一：移动性必须由网络作为内置服务提供，做法是把所有用户流量隧道汇聚到少数集中锚点（lte 的 p-gw、5g 的 upf）。作者指出这套源自上世纪 90 年代的设计如今已弊大于利——它把流量绕回核心网、推高时延；迫使运营商在每次升级时协调异构系统；并且因为需要昂贵的核心网扩建而使低时延业务代价高昂。他们的洞见是：现代应用与传输协议（quic、现代 tcp）本就容忍移动性中断，因此网络不必再向端点隐藏移动性。 academic-paper wifi"
+      "search_blob": "encor: an end-to-end architecture that removes in-network mobility anchoring from the cellular core encor：把移动性锚定移出核心网的端到端蜂窝架构 5g cellular-core mobility ipv6 upf handover edge encor (woo, wen, velmurugan, raad, ratnasamy, shenker, hasan — berkeley / virginia tech) revisits one of cellular's oldest architectural assumptions: that mobility must be provided as an in-network service by tunnelling all user traffic through a handful of centralized anchors (p-gws in lte, upfs in 5g). that design dates to the 1990s and, the authors argue, is now actively harmful — it hairpins traffic through the core and inflates latency, it forces operators to coordinate heterogeneous systems on every upgrade, and it makes low-latency service expensive because it requires costly core build-out. their observation is that modern applications and transport protocols (quic, modern tcp) are already mobility-tolerant, so the network no longer has to hide mobility from the endpoints. encor（woo、wen、velmurugan、raad、ratnasamy、shenker、hasan——伯克利 / 弗吉尼亚理工）重新审视蜂窝网最古老的架构假设之一：移动性必须由网络作为内置服务提供，做法是把所有用户流量隧道汇聚到少数集中锚点（lte 的 p-gw、5g 的 upf）。作者指出这套源自上世纪 90 年代的设计如今已弊大于利——它把流量绕回核心网、推高时延；迫使运营商在每次升级时协调异构系统；并且因为需要昂贵的核心网扩建而使低时延业务代价高昂。他们的洞见是：现代应用与传输协议（quic、现代 tcp）本就容忍移动性中断，因此网络不必再向端点隐藏移动性。 academic-paper cellular"
     },
     {
       "id": "2026-05-25_arxiv-vran-openairinterface-multi-instance-scaling",

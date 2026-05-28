@@ -3,6 +3,7 @@ id: 2026-05-27_networkworld-wifi8-edge-ai-platform
 date_published: 2026-05-13
 date_found: 2026-05-27
 type: industry-news
+technology: wifi
 title_en: "Wi-Fi 8 as an edge-AI compute platform: a Network World field guide to 802.11bn"
 title_zh: "Wi-Fi 8 化身边缘 AI 计算平台：Network World 对 802.11bn 的解读"
 url: "https://www.networkworld.com/article/4170841/wi-fi-8-is-closer-than-you-think-heres-what-you-need-to-know.html"

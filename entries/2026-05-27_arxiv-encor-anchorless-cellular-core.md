@@ -3,6 +3,7 @@ id: 2026-05-27_arxiv-encor-anchorless-cellular-core
 date_published: 2026-05-21
 date_found: 2026-05-27
 type: academic-paper
+technology: cellular
 title_en: "EnCoR: an end-to-end architecture that removes in-network mobility anchoring from the cellular core"
 title_zh: "EnCoR：把移动性锚定移出核心网的端到端蜂窝架构"
 url: "https://arxiv.org/abs/2605.22524"
