@@ -8,6 +8,7 @@ title_zh: "面向卫星直连设备通信的仰角感知补充上行"
 url: "https://arxiv.org/abs/2602.19427"
 source_quality: abstract_only
 topics: [direct-to-device, DS2D, NTN, supplementary-uplink, LEO, uplink-coverage]
+technology: satellite
 topic_primary: sat-direct-device
 topics_secondary: [ntn, leo-constellations]
 novelty_score: 3

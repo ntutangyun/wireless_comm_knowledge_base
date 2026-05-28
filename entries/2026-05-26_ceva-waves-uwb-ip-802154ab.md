@@ -8,6 +8,7 @@ title_zh: "Ceva 推出 Ceva-Waves UWB IP——首个符合 IEEE 802.15.4ab 的 U
 url: "https://www.prnewswire.com/news-releases/ceva-launches-next-generation-uwb-ip-with-extended-range-and-higher-throughput-302708842.html"
 source_quality: snippet_only
 topics: [UWB, 802.15.4ab, IP-core, MMS-ranging, narrowband-assist, RTLS]
+technology: uwb
 topic_primary: uwb-ranging
 topics_secondary: [uwb-radar, uwb-fi-ra]
 novelty_score: 2

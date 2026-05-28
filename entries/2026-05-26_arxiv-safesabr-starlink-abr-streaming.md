@@ -8,6 +8,7 @@ title_zh: "SafeSABR：面向 Starlink 网络的风险校准自适应码率流媒
 url: "https://arxiv.org/abs/2605.23560"
 source_quality: abstract_only
 topics: [Starlink, LEO, adaptive-bitrate, video-streaming, reinforcement-learning, QoE]
+technology: satellite
 topic_primary: starlink
 topics_secondary: [sat-ai, leo-constellations]
 novelty_score: 3

@@ -8,6 +8,7 @@ title_zh: "智能体应取代窄带预测AI成为6G AI-RAN的编排核心"
 url: "https://arxiv.org/abs/2605.11516"
 source_quality: full
 topics: [6G, AI-RAN, LLM, RIC, agentic-AI]
+technology: cellular
 topic_primary: cellular-ai
 topics_secondary: [6g-vision, open-ran]
 novelty_score: 4

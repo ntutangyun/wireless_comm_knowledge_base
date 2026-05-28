@@ -8,6 +8,7 @@ title_zh: "OpenTwin：面向开放 RAN 的数字孪生驱动闭环 KPM 推断与
 url: "https://arxiv.org/abs/2605.24662"
 source_quality: abstract_only
 topics: [O-RAN, RIC, digital-twin, xApp, energy-saving]
+technology: cellular
 topic_primary: open-ran
 topics_secondary: [cellular-ai, energy-power-save]
 novelty_score: 3

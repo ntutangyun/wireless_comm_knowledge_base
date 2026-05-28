@@ -8,6 +8,7 @@ title_zh: "窄带条件下基于互相关的到达时间估计的安全性分析
 url: "https://arxiv.org/abs/2605.10632"
 source_quality: abstract_only
 topics: [Bluetooth, channel-sounding, ranging, distance-reduction-attack, ToA, security]
+technology: bluetooth
 topic_primary: bt-channel-sounding
 topics_secondary: [bt-security]
 novelty_score: 4
