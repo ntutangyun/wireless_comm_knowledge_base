@@ -36,6 +36,7 @@ window.KB_DATA = {
     "reinforcement-learning": 3,
     "spectrum-policy": 3,
     "direct-to-device": 3,
+    "Starlink": 3,
     "6GHz": 3,
     "NTN": 3,
     "resource-allocation": 3,
@@ -53,6 +54,7 @@ window.KB_DATA = {
     "Wi-Fi 7": 3,
     "roaming": 3,
     "digital-twin": 2,
+    "PQC": 2,
     "UPF": 2,
     "AFC": 2,
     "OpenAirInterface": 2,
@@ -60,7 +62,6 @@ window.KB_DATA = {
     "5G-NR": 2,
     "RIC": 2,
     "xApp": 2,
-    "Starlink": 2,
     "QoE": 2,
     "BLE": 2,
     "handover": 2,
@@ -102,6 +103,12 @@ window.KB_DATA = {
     "MCS": 1,
     "Sionna": 1,
     "OLLA": 1,
+    "satellite-security": 1,
+    "IKE": 1,
+    "IKEv2": 1,
+    "post-quantum": 1,
+    "key-exchange": 1,
+    "harvest-now-decrypt-later": 1,
     "5G-core": 1,
     "eBPF": 1,
     "TC-BPF": 1,
@@ -112,6 +119,12 @@ window.KB_DATA = {
     "IRIS2": 1,
     "NGSO": 1,
     "EU": 1,
+    "queuing": 1,
+    "AQM": 1,
+    "drop-front": 1,
+    "bufferbloat": 1,
+    "congestion-control": 1,
+    "one-way-delay": 1,
     "Ofcom": 1,
     "RSPG": 1,
     "IMT": 1,
@@ -174,7 +187,6 @@ window.KB_DATA = {
     "energy-harvesting": 1,
     "PDT": 1,
     "WPT": 1,
-    "PQC": 1,
     "light-comms": 1,
     "LB292": 1,
     "LB294": 1,
@@ -334,20 +346,20 @@ window.KB_DATA = {
     "ai-for-wifi": 4,
     "rtwt-latency": 4,
     "ftm-ranging": 4,
+    "leo-constellations": 3,
     "uwb-ranging": 3,
     "bt-channel-sounding": 3,
     "6g-vision": 3,
     "network-slicing": 2,
+    "starlink": 2,
     "ntn": 2,
     "5g-nr": 2,
     "sat-direct-device": 2,
     "nearlink-automotive": 2,
     "wifi-for-ai": 2,
-    "leo-constellations": 2,
     "roaming-mobility": 2,
     "mlo": 2,
     "ngso-regulation": 1,
-    "starlink": 1,
     "bt-location": 1,
     "nearlink-slb": 1,
     "bt-le": 1,
@@ -357,7 +369,7 @@ window.KB_DATA = {
     "nearlink-sle": 1
   },
   "type_counts": {
-    "academic-paper": 85,
+    "academic-paper": 87,
     "industry-news": 34,
     "ieee-document": 12,
     "product": 9,
@@ -366,7 +378,7 @@ window.KB_DATA = {
     "nearlink-spec": 1
   },
   "category_counts": {
-    "academia": 85,
+    "academia": 87,
     "industry": 43,
     "standards": 18
   },
@@ -2267,11 +2279,13 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-05-29_arxiv-starlink-queuing-characterization",
         "2026-05-26_arxiv-safesabr-starlink-abr-streaming"
       ],
       "entries_secondary": [],
       "by_type_primary": {
         "academic-paper": [
+          "2026-05-29_arxiv-starlink-queuing-characterization",
           "2026-05-26_arxiv-safesabr-starlink-abr-streaming"
         ]
       }
@@ -2290,16 +2304,19 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-05-29_arxiv-quantum-safe-ike-satellite",
         "2026-05-21_arxiv-leo-mmwave-subthz-relay",
         "2026-05-24_amazon-leo-300-satellites-may-2026"
       ],
       "entries_secondary": [
+        "2026-05-29_arxiv-starlink-queuing-characterization",
         "2026-05-26_arxiv-safesabr-starlink-abr-streaming",
         "2026-05-24_ast-spacemobile-q1-2026-45-bluebirds",
         "2026-05-26_arxiv-elevation-aware-sul-ds2d"
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-05-29_arxiv-quantum-safe-ike-satellite",
           "2026-05-21_arxiv-leo-mmwave-subthz-relay"
         ],
         "industry-news": [
@@ -2321,7 +2338,9 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [],
-      "entries_secondary": [],
+      "entries_secondary": [
+        "2026-05-29_arxiv-quantum-safe-ike-satellite"
+      ],
       "by_type_primary": {}
     },
     "sat-direct-device": {
@@ -2803,6 +2822,38 @@ window.KB_DATA = {
       "search_blob": "ariadne: ai-ran-informed link adaptation learned in a sionna digital twin ariadne：在 sionna 数字孪生中学习的 ai-ran 链路自适应 ai-ran link-adaptation mcs reinforcement-learning digital-twin sionna olla ariadne (tsampazi, neasamoni santhi, perrotta, dressler, melodia — northeastern / tu berlin) is an online reinforcement-learning module for ran link adaptation that trains inside a digital twin. link adaptation is the runtime choice of modulation and coding scheme (mcs) per user: pick too aggressive an mcs and blocks fail; too conservative and spectrum is wasted. industry today uses outer loop link adaptation (olla), a fixed-threshold sinr-offset controller. ariadne replaces that heuristic with an rl agent that learns an mcs-selection policy from experience. ariadne（tsampazi、neasamoni santhi、perrotta、dressler、melodia——东北大学 / 柏林工大）是一个用于 ran 链路自适应的在线强化学习模块，在数字孪生中训练。链路自适应即按用户实时选择调制编码方案（mcs）：选得过激进则数据块失败，过保守则浪费频谱。业界现用外环链路自适应（olla）——一种固定阈值的 sinr 偏置控制器。ariadne 用一个从经验中学习 mcs 选择策略的 rl 智能体取代该启发式。 academic-paper cellular"
     },
     {
+      "id": "2026-05-29_arxiv-quantum-safe-ike-satellite",
+      "date_found": "2026-05-29",
+      "technology": "satellite",
+      "date_published": "2026-05-27",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Efficient and quantum-safe IKE protocols for satellite communications",
+      "title_zh": "面向卫星通信的高效抗量子 IKE 协议",
+      "url": "https://arxiv.org/abs/2605.28660",
+      "topics": [
+        "satellite-security",
+        "IKE",
+        "IKEv2",
+        "post-quantum",
+        "PQC",
+        "key-exchange",
+        "harvest-now-decrypt-later"
+      ],
+      "topic_primary": "leo-constellations",
+      "topics_secondary": [
+        "sat-iot"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-29_arxiv-quantum-safe-ike-satellite.md",
+      "summary_short_en": "De Zuane, Baldi, Santini, Anchelergues, Romano, Cammarano and Grosso (Università Politecnica delle Marche and partners) adapt the Internet Key Exchange (IKE) protocol — the handshake that sets up IPsec security associations — for satellite links, where two constraints bite at once: onboard resource limits and long propagation latency, plus the need to resist future quantum attackers. IKE on a satellite link is expensive (every round trip costs hundreds of milliseconds, and onboard terminals are compute-constrained), and its classical Diffie-Hellman key exchange is vulnerable to \"harvest-now, decrypt-later\" attacks where an adversary records today's traffic to decrypt once a quantum computer exists.",
+      "summary_short_zh": "De Zuane、Baldi、Santini、Anchelergues、Romano、Cammarano 与 Grosso（马尔凯理工大学及合作方）将互联网密钥交换协议（IKE，建立 IPsec 安全关联的握手）适配到卫星链路。卫星链路同时面临两重约束：星上资源受限与长传播时延，外加抵御未来量子攻击者的需求。在卫星链路上运行 IKE 代价高昂（每次往返耗时数百毫秒，星上终端算力受限），而其经典 Diffie-Hellman 密钥交换易受\"先截获、后解密\"攻击——攻击者今日记录流量，待量子计算机出现后再解密。",
+      "body_html_en": "<h3>Summary</h3>\n<p>De Zuane, Baldi, Santini, Anchelergues, Romano, Cammarano and Grosso (Università Politecnica delle Marche and partners) adapt the Internet Key Exchange (IKE) protocol — the handshake that sets up IPsec security associations — for satellite links, where two constraints bite at once: onboard resource limits and long propagation latency, plus the need to resist future quantum attackers. IKE on a satellite link is expensive (every round trip costs hundreds of milliseconds, and onboard terminals are compute-constrained), and its classical Diffie-Hellman key exchange is vulnerable to &quot;harvest-now, decrypt-later&quot; attacks where an adversary records today's traffic to decrypt once a quantum computer exists.</p>\n<p>The work proposes IKE variants that combine low-complexity cryptographic designs tuned for satellite links (reducing computational and bandwidth demand on constrained terminals) with post-quantum cryptography (PQC), and hybrid classical+PQC modes intended to manage the migration period (so a break in either the classical or the PQC primitive alone doesn't compromise the session). The framing is deliberately incremental: rather than redesign IKE wholesale, they modify standard IKE for the satellite context while folding in PQC, bridging legacy crypto and emerging PQC standards. The paper is a 6-page presentation paper accepted at IEEE LANMAN 2026.</p>\n<h3>Key technical points</h3>\n<ul><li>Problem: IKE on satellite links — onboard compute limits + long RTT make the handshake costly; classical DH is quantum-vulnerable (harvest-now-decrypt-later).</li><li>Approach: low-complexity IKE variants for satellite + PQC integration + hybrid classical/PQC modes for migration.</li><li>Stance: modify standard IKE for the satellite context rather than redesign; bridge legacy and PQC standards.</li><li>Venue: IEEE LANMAN 2026 (6-page presentation paper).</li><li>source_quality: abstract_only — summary from the abstract; full evaluation numbers not captured.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the KB's first satellite-side security/PQC entry; existing security coverage is Wi-Fi (BFI, WPA3, FTM) and the Bluetooth TGbt PQC track. It extends the post-quantum-migration theme to the satellite link layer, where the long-RTT + onboard-constraint combination makes naive PQC-IKE (with larger keys/more round trips) especially painful — hence the low-complexity + hybrid framing. Note a taxonomy gap: the satellite technology has no dedicated security bin, so this is filed under leo-constellations; a <code>sat-security</code> topic may be warranted if more such work appears.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>De Zuane、Baldi、Santini、Anchelergues、Romano、Cammarano 与 Grosso（马尔凯理工大学及合作方）将互联网密钥交换协议（IKE，建立 IPsec 安全关联的握手）适配到卫星链路。卫星链路同时面临两重约束：星上资源受限与长传播时延，外加抵御未来量子攻击者的需求。在卫星链路上运行 IKE 代价高昂（每次往返耗时数百毫秒，星上终端算力受限），而其经典 Diffie-Hellman 密钥交换易受&quot;先截获、后解密&quot;攻击——攻击者今日记录流量，待量子计算机出现后再解密。</p>\n<p>该工作提出 IKE 变体，将面向卫星链路调优的低复杂度密码设计（降低受限终端的算力与带宽需求）与后量子密码（PQC）相结合，并采用经典+PQC 的混合模式以管理迁移期（使经典或 PQC 原语单独被攻破都不致危及会话）。其思路刻意采用渐进式：不整体重设 IKE，而是为卫星场景修改标准 IKE 并融入 PQC，衔接既有密码与新兴 PQC 标准。该论文为 IEEE LANMAN 2026 录用的 6 页报告论文。</p>\n<h3>技术要点</h3>\n<ul><li>问题：卫星链路上的 IKE——星上算力受限 + 长 RTT 使握手代价高；经典 DH 易受量子威胁（先截获后解密）。</li><li>方法：面向卫星的低复杂度 IKE 变体 + PQC 集成 + 经典/PQC 混合迁移模式。</li><li>立场：为卫星场景修改标准 IKE 而非重设；衔接既有与 PQC 标准。</li><li>出处：IEEE LANMAN 2026（6 页报告论文）。</li><li>source_quality：abstract_only——摘要总结，未捕获完整评测数字。</li></ul>\n<h3>意义与新意</h3>\n<p>这是本 KB 首个卫星侧安全/PQC 条目；现有安全内容集中在 Wi-Fi（BFI、WPA3、FTM）与蓝牙 TGbt 的 PQC 线。它把&quot;后量子迁移&quot;主题延伸到卫星链路层——长 RTT 加星上约束的组合使朴素的 PQC-IKE（更大密钥/更多往返）尤为吃力，故采用低复杂度 + 混合的思路。注意一个分类缺口：卫星技术下无专门的安全分箱，故本条目暂归入 leo-constellations；若此类工作增多，或应新增 <code>sat-security</code> 主题。</p>",
+      "images": [],
+      "search_blob": "efficient and quantum-safe ike protocols for satellite communications 面向卫星通信的高效抗量子 ike 协议 satellite-security ike ikev2 post-quantum pqc key-exchange harvest-now-decrypt-later de zuane, baldi, santini, anchelergues, romano, cammarano and grosso (università politecnica delle marche and partners) adapt the internet key exchange (ike) protocol — the handshake that sets up ipsec security associations — for satellite links, where two constraints bite at once: onboard resource limits and long propagation latency, plus the need to resist future quantum attackers. ike on a satellite link is expensive (every round trip costs hundreds of milliseconds, and onboard terminals are compute-constrained), and its classical diffie-hellman key exchange is vulnerable to \"harvest-now, decrypt-later\" attacks where an adversary records today's traffic to decrypt once a quantum computer exists. de zuane、baldi、santini、anchelergues、romano、cammarano 与 grosso（马尔凯理工大学及合作方）将互联网密钥交换协议（ike，建立 ipsec 安全关联的握手）适配到卫星链路。卫星链路同时面临两重约束：星上资源受限与长传播时延，外加抵御未来量子攻击者的需求。在卫星链路上运行 ike 代价高昂（每次往返耗时数百毫秒，星上终端算力受限），而其经典 diffie-hellman 密钥交换易受\"先截获、后解密\"攻击——攻击者今日记录流量，待量子计算机出现后再解密。 academic-paper satellite"
+    },
+    {
       "id": "2026-05-29_arxiv-per-slice-upf-latency-ebpf-5gc",
       "date_found": "2026-05-29",
       "technology": "cellular",
@@ -2866,6 +2917,38 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>欧盟委员会于 2026 年 5 月 27 日提议，将明年到期续期的 2 GHz 卫星移动业务（MSS）频段中的三分之二预留给欧洲运营商，把频谱划分为三等份。其中三分之一留给一家为欧盟主权连接星座 IRIS² 提供专用政府通信的欧洲运营商；第二份为商用区块，预留给&quot;进入市场的欧盟运营商&quot;；最后三分之一仍向欧洲以外的运营商开放。欧盟科技主权事务执行副主席 Henna Virkkunen 称此举旨在确保全欧盟范围、尤其是地面网络缺失之处都能获得直达移动设备的卫星与地面连接。</p>\n<p>该提案直接令两家非欧洲玩家受阻。美国的 Viasat 目前用 2 GHz 频段运营其卫星-蜂窝混合的&quot;欧洲航空网络&quot;；EchoStar 原计划出售其 2 GHz 频谱资产以助力 SpaceX 的 Starlink Mobile 直连设备（D2D）服务——而三分法将限制这条路径。可能受益于&quot;欧洲预留&quot;区块的包括卢森堡 OQ Technology（主权 D2D）以及通过与英国沃达丰在德国设合资公司布局欧洲网络的 AST SpaceMobile。</p>\n<p>该计划仍需欧洲议会与理事会批准，存在修改空间。它也使跨大西洋频谱之争升温：此事正值美国批评《欧盟太空法》的统一化推动之际，FCC 主席 Brendan Carr 已于 2026 年 3 月警告，若欧洲偏袒本土卫星企业而非美国企业，美国将&quot;对等&quot;回应——即所谓&quot;对等原则（reciprocity）&quot;。</p>\n<h3>技术要点</h3>\n<ul><li>频段：2 GHz MSS（卫星移动业务）频谱，明年到期续期。</li><li>拟三等分：(1) 为 IRIS² 政府通信的欧洲运营商；(2) 留给欧盟市场新进入者的商用区块；(3) 向非欧盟运营商开放。</li><li>冲击 Viasat（2 GHz 欧洲航空网络）与 SpaceX（EchoStar 的 2 GHz 原拟用于 Starlink Mobile D2D）。</li><li>欧洲预留区块利好 OQ Technology（主权 D2D）与 AST SpaceMobile（德国沃达丰合资）。</li><li>仍需欧洲议会与理事会批准，可修改。</li><li>跨大西洋张力：契合《欧盟太空法》统一化；FCC 主席 Carr 已威胁&quot;对等&quot;回应（2026 年 3 月）。</li></ul>\n<h3>意义与新意</h3>\n<p>这是本 KB 在运营商侧持续跟踪的直连设备争夺战（AST SpaceMobile 2026 一季度，2026-05-24；D2C-vs-NTN 分析，2026-05-22）在立法层面的具体动作。如今制约欧洲 D2D 的不是卫星而是频谱，而欧盟提议按运营商国籍而非纯技术优劣来分配——为欧洲玩家预留三分之二，并将一个区块与 IRIS² 主权星座绑定。它在卫星侧也映照了本周 Wi-Fi 侧（2026-05-28_wifinow-uk-eu-upper-6ghz-regulation）相同的欧盟频谱主权倾向：欧洲倾向预留/主权，而美英倾向开放或共享接入。其新颖性较低（监管提案而非新机制），但这是迄今最清晰的信号：欧洲 D2D 市场准入将由频谱政策把关。</p>",
       "images": [],
       "search_blob": "eu proposes splitting the 2 ghz mss band three ways, favouring european operators and clouding spacex/viasat d2d plans 欧盟拟将 2 ghz 卫星移动频段三分，偏向欧洲运营商，令 spacex/viasat 的直连设备计划蒙上阴影 mss 2ghz spectrum-policy direct-to-device iris2 ngso eu the european commission proposed (may 27, 2026) reserving two-thirds of the 2 ghz mobile-satellite-service (mss) band — which comes up for renewal next year — for european operators, dividing the spectrum into three equal blocks. one-third would be set aside for a european operator providing dedicated government communications integrated into iris², the eu's planned sovereign connectivity constellation. a second third would be a commercial block reserved for \"eu operators entering the market,\" and the final third would remain open to operators based outside europe. eu tech-sovereignty vp henna virkkunen framed it as ensuring satellite-and-terrestrial connectivity direct to mobile devices across the eu, especially where terrestrial networks are absent. 欧盟委员会于 2026 年 5 月 27 日提议，将明年到期续期的 2 ghz 卫星移动业务（mss）频段中的三分之二预留给欧洲运营商，把频谱划分为三等份。其中三分之一留给一家为欧盟主权连接星座 iris² 提供专用政府通信的欧洲运营商；第二份为商用区块，预留给\"进入市场的欧盟运营商\"；最后三分之一仍向欧洲以外的运营商开放。欧盟科技主权事务执行副主席 henna virkkunen 称此举旨在确保全欧盟范围、尤其是地面网络缺失之处都能获得直达移动设备的卫星与地面连接。 industry-news satellite"
+    },
+    {
+      "id": "2026-05-29_arxiv-starlink-queuing-characterization",
+      "date_found": "2026-05-29",
+      "technology": "satellite",
+      "date_published": "2026-05-26",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Characterizing the configuration of Starlink queuing: drop-front buffers, no per-flow fairness",
+      "title_zh": "刻画 Starlink 的队列配置：丢队首缓冲、无逐流公平",
+      "url": "https://arxiv.org/abs/2605.27717",
+      "topics": [
+        "Starlink",
+        "queuing",
+        "AQM",
+        "drop-front",
+        "bufferbloat",
+        "congestion-control",
+        "one-way-delay"
+      ],
+      "topic_primary": "starlink",
+      "topics_secondary": [
+        "leo-constellations"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-29_arxiv-starlink-queuing-characterization.md",
+      "summary_short_en": "Garcia, Sundberg and Brunstrom (Karlstad University) probe a normally-proprietary detail of Starlink: how its network queues are actually configured. They use a high-precision, burst-pattern-controlled traffic-generation approach to measure one-way delay (OWD) under carefully shaped load, and infer the queue-management behaviour from how delay and loss respond to the bursts.",
+      "summary_short_zh": "Garcia、Sundberg 与 Brunstrom（卡尔斯塔德大学）探查了 Starlink 通常保密的一个细节：其网络队列究竟如何配置。他们采用高精度、突发模式受控的流量生成方法，在精心整形的负载下测量单向时延（OWD），并据时延与丢包对突发的响应推断队列管理行为。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Garcia, Sundberg and Brunstrom (Karlstad University) probe a normally-proprietary detail of Starlink: how its network queues are actually configured. They use a high-precision, burst-pattern-controlled traffic-generation approach to measure one-way delay (OWD) under carefully shaped load, and infer the queue-management behaviour from how delay and loss respond to the bursts.</p>\n<p>Three findings stand out. First, Starlink does not apply per-flow fair queuing — flows are not isolated from one another in the queue. Second, the buffers use drop-front rather than the conventional drop-tail discipline: when the buffer is full, the oldest packet at the head is dropped instead of the newly arriving one at the tail. Third, that drop-front choice has a double edge — it reduces queuing delay (the freshest packets are kept, trimming latency), but it can interfere with the assumptions of loss-based congestion-control algorithms (which expect tail drops to signal congestion), potentially degrading throughput under some conditions.</p>\n<p>The contribution is the rare empirical characterisation itself: Starlink's internal queue configuration is undisclosed, and this work reverse-engineers it from the outside via controlled measurement, showing the design leans toward latency reduction at some cost to compatibility with standard congestion control.</p>\n<h3>Key technical points</h3>\n<ul><li>Method: high-precision, burst-pattern-controlled traffic generation; one-way-delay (OWD) measurement to infer queue behaviour.</li><li>Finding 1: no per-flow fair queuing (flows not isolated in the queue).</li><li>Finding 2: drop-front buffers (oldest/head packet dropped when full), not drop-tail.</li><li>Finding 3: drop-front cuts latency but breaks loss-based congestion-control assumptions → possible throughput degradation.</li><li>Contribution: external empirical reverse-engineering of Starlink's otherwise-undisclosed queue configuration.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's Starlink coverage is mostly capacity/market (subscriber counts, D2D) and one application-layer adaptation study (SafeSABR ABR over Starlink, 2026-05-26). This adds the transport-layer mechanism underneath: a concrete, measured statement of how Starlink queues — drop-front, no per-flow fairness — which directly explains why loss-based congestion control can misbehave on Starlink and informs ABR/transport designs like SafeSABR. Reverse-engineering an undisclosed AQM configuration from controlled OWD bursts is the methodological novelty.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Garcia、Sundberg 与 Brunstrom（卡尔斯塔德大学）探查了 Starlink 通常保密的一个细节：其网络队列究竟如何配置。他们采用高精度、突发模式受控的流量生成方法，在精心整形的负载下测量单向时延（OWD），并据时延与丢包对突发的响应推断队列管理行为。</p>\n<p>三点发现尤为突出。其一，Starlink 不施加逐流公平排队——队列中各流之间并不相互隔离。其二，缓冲采用&quot;丢队首（drop-front）&quot;而非常规的&quot;丢队尾（drop-tail）&quot;：缓冲满时丢弃队首最旧的分组，而非新到达的队尾分组。其三，丢队首是一把双刃剑——它降低排队时延（保留最新分组、削减延迟），但会干扰基于丢包的拥塞控制算法的假设（这类算法期望队尾丢包来指示拥塞），在某些条件下可能损害吞吐。</p>\n<p>其贡献正是这一罕见的实测刻画：Starlink 的内部队列配置未公开，本工作通过受控测量从外部逆向还原，揭示其设计偏向降低时延，但以牺牲与标准拥塞控制的兼容性为一定代价。</p>\n<h3>技术要点</h3>\n<ul><li>方法：高精度、突发模式受控的流量生成；以单向时延（OWD）测量推断队列行为。</li><li>发现 1：无逐流公平排队（队列中各流不隔离）。</li><li>发现 2：丢队首缓冲（满时丢最旧/队首分组），非丢队尾。</li><li>发现 3：丢队首降低时延，但破坏基于丢包的拥塞控制假设 → 可能损害吞吐。</li><li>贡献：从外部实测逆向还原 Starlink 未公开的队列配置。</li></ul>\n<h3>意义与新意</h3>\n<p>本 KB 的 Starlink 内容多为容量/市场（用户数、D2D）以及一项应用层自适应研究（SafeSABR 在 Starlink 上的 ABR，2026-05-26）。本条目补上其下的传输层机制：对 Starlink 如何排队的具体实测结论——丢队首、无逐流公平——这直接解释了为何基于丢包的拥塞控制在 Starlink 上可能行为异常，并为 SafeSABR 等 ABR/传输设计提供依据。从受控 OWD 突发逆向还原未公开的 AQM 配置，是其方法论上的新意。</p>",
+      "images": [],
+      "search_blob": "characterizing the configuration of starlink queuing: drop-front buffers, no per-flow fairness 刻画 starlink 的队列配置：丢队首缓冲、无逐流公平 starlink queuing aqm drop-front bufferbloat congestion-control one-way-delay garcia, sundberg and brunstrom (karlstad university) probe a normally-proprietary detail of starlink: how its network queues are actually configured. they use a high-precision, burst-pattern-controlled traffic-generation approach to measure one-way delay (owd) under carefully shaped load, and infer the queue-management behaviour from how delay and loss respond to the bursts. garcia、sundberg 与 brunstrom（卡尔斯塔德大学）探查了 starlink 通常保密的一个细节：其网络队列究竟如何配置。他们采用高精度、突发模式受控的流量生成方法，在精心整形的负载下测量单向时延（owd），并据时延与丢包对突发的响应推断队列管理行为。 academic-paper satellite"
     },
     {
       "id": "2026-05-28_wifinow-uk-eu-upper-6ghz-regulation",
