@@ -28,10 +28,10 @@ window.SOURCES_DATA = {
       "id": "ieee-xplore-search",
       "name": "IEEE Xplore — recent 802.11 papers",
       "url": "https://ieeexplore.ieee.org/search/searchresult.jsp?queryText=802.11&searchWithin=publishedYear&searchWithin=",
-      "kind": "playwright",
+      "kind": "browser",
       "category": "academia",
       "topics_hint": [],
-      "notes": "JS-rendered; needs Playwright. Higher-quality (peer-reviewed) than arxiv but lower volume.",
+      "notes": "JS-rendered; needs the claude-in-chrome browser plugin. Higher-quality (peer-reviewed) than arxiv but lower volume.",
       "technology": "wifi"
     },
     {
@@ -88,7 +88,7 @@ window.SOURCES_DATA = {
       "id": "ieee-mentor",
       "name": "IEEE 802.11 Mentor (proposals & contributions)",
       "url": "https://mentor.ieee.org/802.11/documents?is_year=2026",
-      "kind": "playwright",
+      "kind": "browser",
       "category": "standards",
       "topics_hint": [],
       "notes": "JS-rendered list filtered to current year (is_year=YYYY). New contribution numbers (11-YY-NNNN-…) appear here first. Per-doc .docx is 418/403 to anonymous downloaders, so we never fetch the body — Step 4a clusters new rows by Group (TGbn / TGbp / TGbi / TGbq / TGbr / TGbt / TGm / WNG SC) into per-group daily digests. State key: state.sources.ieee-mentor.last_dcn_seen — the highest DCN ingested last run; rows whose DCN is greater are new.",
@@ -98,7 +98,7 @@ window.SOURCES_DATA = {
       "id": "ofinno-standards-readout",
       "name": "Ofinno — The Standards Readout",
       "url": "https://ofinno.com/standards-readout/",
-      "kind": "playwright",
+      "kind": "browser",
       "category": "standards",
       "topics_hint": [],
       "notes": "Excellent post-plenary / post-interim summaries. Cadence aligned with IEEE 802.11 sessions (Jan / Mar / May / Jul / Sep / Nov). 2026-05-28: URL updated — /the-standards-readout-2/ landing now 404s; articles live under /standards-readout/<slug>/.",
@@ -108,7 +108,7 @@ window.SOURCES_DATA = {
       "id": "standards-get-program",
       "name": "IEEE 802 GET program — newly free 802.11 standards",
       "url": "https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=93",
-      "kind": "playwright",
+      "kind": "browser",
       "category": "standards",
       "topics_hint": [],
       "notes": "Lists all 802 standards currently free under the 6-month-after-publication GET rule. Page changes once or twice a year when a new amendment crosses the threshold. The scout watches for *new* 802.11 entries (not download attempts — PDFs are gated behind ieee.org login). When a new 802.11/be/bf/bk/bn/bp amendment goes free, surface it as a public-side news entry and remind the user to add the PDF to patent_pipeline/standards_archive/. Direct PDF downloads stay private.",
@@ -128,7 +128,7 @@ window.SOURCES_DATA = {
       "id": "wfa-news",
       "name": "Wi-Fi Alliance press releases",
       "url": "https://www.wi-fi.org/news-events/press-releases",
-      "kind": "playwright",
+      "kind": "browser",
       "category": "standards",
       "topics_hint": [],
       "notes": "Certification announcements (e.g. Wi-Fi CERTIFIED 7 20 MHz IoT cert in Jan 2026). URL fixed and switched to playwright 2026-05-04 (the /newsroom path now 404s).",
@@ -148,20 +148,20 @@ window.SOURCES_DATA = {
       "id": "qualcomm-press",
       "name": "Qualcomm news releases",
       "url": "https://www.qualcomm.com/news/releases",
-      "kind": "playwright",
+      "kind": "browser",
       "category": "industry",
       "topics_hint": [
         "802.11bn",
         "products"
       ],
-      "notes": "JS-rendered SPA; Playwright required (the scout already learned this on the FastConnect 8800 entry).",
+      "notes": "JS-rendered SPA; browser plugin required (the scout already learned this on the FastConnect 8800 entry).",
       "technology": "wifi"
     },
     {
       "id": "broadcom-press",
       "name": "Broadcom press releases",
       "url": "https://news.broadcom.com/releases",
-      "kind": "playwright",
+      "kind": "browser",
       "category": "industry",
       "topics_hint": [
         "802.11bn",
@@ -174,7 +174,7 @@ window.SOURCES_DATA = {
       "id": "mediatek-press",
       "name": "MediaTek press releases",
       "url": "https://corp.mediatek.com/news-events/press-releases",
-      "kind": "playwright",
+      "kind": "browser",
       "category": "industry",
       "topics_hint": [
         "802.11bn",
@@ -187,7 +187,7 @@ window.SOURCES_DATA = {
       "id": "intel-newsroom",
       "name": "Intel newsroom — Wi-Fi & connectivity",
       "url": "https://www.intel.com/content/www/us/en/newsroom/news-by-topic.html",
-      "kind": "playwright",
+      "kind": "browser",
       "category": "industry",
       "topics_hint": [
         "products"
@@ -199,7 +199,7 @@ window.SOURCES_DATA = {
       "id": "nordic-semiconductor",
       "name": "Nordic Semiconductor — IoT Wi-Fi",
       "url": "https://www.nordicsemi.com/Nordic-news",
-      "kind": "playwright",
+      "kind": "browser",
       "category": "industry",
       "topics_hint": [
         "IoT",
@@ -225,7 +225,7 @@ window.SOURCES_DATA = {
       "id": "cisco-press",
       "name": "Cisco press releases",
       "url": "https://newsroom.cisco.com/pressreleases",
-      "kind": "playwright",
+      "kind": "browser",
       "category": "industry",
       "topics_hint": [
         "products"
@@ -237,7 +237,7 @@ window.SOURCES_DATA = {
       "id": "hpe-aruba-press",
       "name": "HPE press release hub (Aruba Networking)",
       "url": "https://www.hpe.com/us/en/newsroom/press-hub.html",
-      "kind": "playwright",
+      "kind": "browser",
       "category": "industry",
       "topics_hint": [
         "products"
@@ -249,7 +249,7 @@ window.SOURCES_DATA = {
       "id": "juniper-mist-press",
       "name": "Juniper Mist press",
       "url": "https://www.juniper.net/us/en/company/press-releases.html",
-      "kind": "playwright",
+      "kind": "browser",
       "category": "industry",
       "topics_hint": [
         "products"
@@ -261,7 +261,7 @@ window.SOURCES_DATA = {
       "id": "extreme-networks-press",
       "name": "Extreme Networks newsroom",
       "url": "https://www.extremenetworks.com/about-extreme-networks/company/newsroom",
-      "kind": "playwright",
+      "kind": "browser",
       "category": "industry",
       "topics_hint": [
         "products"
@@ -321,10 +321,10 @@ window.SOURCES_DATA = {
       "id": "wifi-now-global",
       "name": "Wi-Fi NOW Global",
       "url": "https://wifinowglobal.com/news-blog/",
-      "kind": "playwright",
+      "kind": "browser",
       "category": "industry",
       "topics_hint": [],
-      "notes": "Industry-focused publication; covers MWC / CES / IEEE plenary readouts. Flipped kind: html -> playwright 2026-05-28 — WebFetch reliably 403s this domain; the only path that works is Playwright. Top WiFi-news performer in the rotation (Qualcomm/Synaptics/Intel/MediaTek WWC, FCC 6 GHz, UK/EU 6 GHz).",
+      "notes": "Industry-focused publication; covers MWC / CES / IEEE plenary readouts. Flipped kind: html -> browser 2026-05-28 — WebFetch reliably 403s this domain; the only path that works is the browser plugin. Top WiFi-news performer in the rotation (Qualcomm/Synaptics/Intel/MediaTek WWC, FCC 6 GHz, UK/EU 6 GHz).",
       "technology": "wifi"
     },
     {
@@ -341,7 +341,7 @@ window.SOURCES_DATA = {
       "id": "light-reading",
       "name": "Light Reading",
       "url": "https://www.lightreading.com/",
-      "kind": "playwright",
+      "kind": "browser",
       "category": "industry",
       "topics_hint": [],
       "notes": "Carrier-side analysis; relevant for VoWiFi, FWA, ePDG topics.",
@@ -383,7 +383,7 @@ window.SOURCES_DATA = {
       "id": "siliconangle-networking",
       "name": "SiliconANGLE — networking",
       "url": "https://siliconangle.com/category/networking/",
-      "kind": "playwright",
+      "kind": "browser",
       "category": "industry",
       "topics_hint": [],
       "notes": "Added 2026-05-04. Strong enterprise + agentic-networking coverage; surfaced HPE Discover Aruba/Mist convergence and the agentic-AI-at-edge piece (2026-04-10) during the 2026-05-04 scan. Playwright (the category landing page is JS-heavy).",
@@ -413,7 +413,7 @@ window.SOURCES_DATA = {
       "id": "edgeup-asus",
       "name": "EdgeUp by ASUS — technical blog",
       "url": "https://edgeup.asus.com/",
-      "kind": "playwright",
+      "kind": "browser",
       "category": "industry",
       "topics_hint": [
         "products"
@@ -859,7 +859,7 @@ window.SOURCES_DATA = {
       "id": "spacenews",
       "name": "SpaceNews",
       "url": "https://spacenews.com/section/news-archive/",
-      "kind": "playwright",
+      "kind": "browser",
       "category": "industry",
       "topics_hint": [
         "starlink",
@@ -934,14 +934,14 @@ window.SOURCES_DATA = {
       "id": "bluetooth-sig-news",
       "name": "Bluetooth SIG News",
       "url": "https://www.bluetooth.com/news/",
-      "kind": "playwright",
+      "kind": "browser",
       "category": "standards",
       "topics_hint": [
         "bt-le",
         "bt-channel-sounding",
         "bt-le-audio"
       ],
-      "notes": "Official Bluetooth SIG press and specification announcements. Switched html->playwright 2026-05-26: WebFetch returns only a client-rendered JS shell ('It seems we can't find what you're looking for'); the news listing is JS-rendered. Use web-search query_hint as fallback when Playwright is unavailable.",
+      "notes": "Official Bluetooth SIG press and specification announcements. Switched html->playwright 2026-05-26: WebFetch returns only a client-rendered JS shell ('It seems we can't find what you're looking for'); the news listing is JS-rendered. Use web-search query_hint as fallback when the browser plugin is unavailable.",
       "technology": "bluetooth"
     },
     {
@@ -1228,7 +1228,7 @@ window.SOURCES_DATA = {
       "id": "sparklink-alliance-home",
       "name": "星闪联盟官网 (SparkLink Alliance)",
       "url": "https://www.sparklink.org.cn/",
-      "kind": "playwright",
+      "kind": "browser",
       "category": "standards",
       "topics_hint": [
         "nearlink-slb",
@@ -1241,7 +1241,7 @@ window.SOURCES_DATA = {
       "id": "huawei-nearlink-news",
       "name": "Huawei NearLink News",
       "url": "https://consumer.huawei.com/cn/press/",
-      "kind": "playwright",
+      "kind": "browser",
       "category": "industry",
       "topics_hint": [
         "nearlink-slb",
