@@ -1017,21 +1017,35 @@ def main(argv: list[str]) -> int:
     # the viewer can show the list. Public-safe fields only — `enabled` is
     # dropped because it represents internal scout configuration.
     sources_payload = None
-    candidate = data_root.parent / ".claude" / "skills" / "wifi_research_scout" / "sources.yaml"
-    if candidate.exists():
+    skills_dir = data_root.parent / ".claude" / "skills"
+    techs = ["wifi", "cellular", "satellite", "bluetooth", "uwb", "nearlink"]
+    keep_keys = ("id", "name", "url", "kind", "category",
+                 "topics_hint", "notes", "technology")
+    sanitised = []
+    last_updated = None
+    found_any = False
+    for tech in techs:
+        candidate = skills_dir / f"{tech}_research_scout" / "sources.yaml"
+        if not candidate.exists():
+            continue
         try:
             parsed = _parse_sources_yaml(candidate.read_text(encoding="utf-8"))
-            keep_keys = ("id", "name", "url", "kind", "category",
-                         "topics_hint", "notes")
-            sanitised = []
+            found_any = True
+            if last_updated is None:
+                last_updated = parsed.get("last_updated")
             for src in parsed.get("sources", []):
                 if src.get("enabled") is False:
                     continue
+                src.setdefault("technology", tech)
                 row = {k: src.get(k) for k in keep_keys if k in src}
                 sanitised.append(row)
+        except Exception as exc:  # noqa: BLE001
+            warnings.append(f"{tech} sources.yaml: {exc}")
+    if found_any:
+        try:
             sources_payload = {
-                "version": parsed.get("version", 1),
-                "last_updated": parsed.get("last_updated") or today,
+                "version": 1,
+                "last_updated": last_updated or today,
                 "sources": sanitised,
             }
             sources_path = data_root / "sources.json"

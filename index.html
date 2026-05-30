@@ -957,8 +957,8 @@
 </head>
 <body>
 
-<script src="kb.js?v=e1a02054" onerror="window.__KB_JS_FAILED=true"></script>
-<script src="sources.js?v=0af74866" onerror="window.__SRC_JS_FAILED=true"></script>
+<script src="kb.js?v=c7470c87" onerror="window.__KB_JS_FAILED=true"></script>
+<script src="sources.js?v=8e3d97ac" onerror="window.__SRC_JS_FAILED=true"></script>
 <script src="taxonomy.js?v=342b2242" onerror="window.__TAX_JS_FAILED=true"></script>
 <!-- Mermaid for per-topic mindmap rendering. Two scripts:
        1. A synchronous regular script defines window.mermaidReady as a
@@ -1181,6 +1181,7 @@ const I18N = {
     sources_topics: "Topic hint",
     sources_query: "Query template",
     sources_open: "Open ↗",
+    sources_none: "No sources for this technology yet.",
     of_n: (n, total) => `${n} of ${total}`,
     no_match: "Nothing matches the current filters.",
     no_match_col: "(none)",
@@ -1241,6 +1242,7 @@ const I18N = {
     sources_topics: "话题提示",
     sources_query: "查询模板",
     sources_open: "打开 ↗",
+    sources_none: "该技术暂无来源。",
     of_n: (n, total) => `共 ${total} · 命中 ${n}`,
     no_match: "当前筛选条件下没有条目。",
     no_match_col: "（无）",
@@ -1544,8 +1546,18 @@ function renderSources() {
     target.innerHTML = `<div class="empty-state">No <code>sources.json</code> found. Run <code>python scripts/rebuild_index.py</code> from a checkout that has the private skills folder.</div>`;
     return;
   }
+  const techF = state.filters.technology;
   const byCat = { academia: [], industry: [], standards: [] };
-  for (const s of data.sources) (byCat[s.category] || byCat.industry).push(s);
+  let matched = 0;
+  for (const s of data.sources) {
+    if (techF !== "all" && (s.technology || "wifi") !== techF) continue;
+    (byCat[s.category] || byCat.industry).push(s);
+    matched++;
+  }
+  if (!matched) {
+    target.innerHTML = `<div class="empty-state">${labels.sources_none}</div>`;
+    return;
+  }
   // Sort within each category alphabetically by name (priority tier was removed
   // - the scout now visits every source on every run).
   for (const cat of CATEGORIES) byCat[cat].sort((a, b) => (a.name || "").localeCompare(b.name || ""));
