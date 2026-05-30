@@ -856,6 +856,20 @@ window.SOURCES_DATA = {
       "technology": "satellite"
     },
     {
+      "id": "satnews",
+      "name": "SatNews",
+      "url": "https://satnews.com/",
+      "kind": "html",
+      "category": "industry",
+      "topics_hint": [
+        "ntn",
+        "sat-direct-device",
+        "leo-constellations"
+      ],
+      "notes": "Added 2026-05-30 during the Jan-2026 backfill. Major satellite-industry publication; broader and more technical NTN/standards coverage than the existing spacenews source (surfaced the Keysight+Samsung Rel-19 NR-NTN S-band validation that spacenews/web-search did not lead with). html/WebFetch tier works; complements spacenews (playwright).",
+      "technology": "satellite"
+    },
+    {
       "id": "itu-ngso",
       "name": "ITU NGSO Regulation",
       "kind": "web-search",
