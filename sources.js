@@ -674,6 +674,20 @@ window.SOURCES_DATA = {
       "technology": "cellular"
     },
     {
+      "id": "fierce-network",
+      "name": "Fierce Network (telecom)",
+      "url": "https://www.fierce-network.com/wireless",
+      "kind": "html",
+      "category": "industry",
+      "topics_hint": [
+        "5g-nr",
+        "6g-vision",
+        "open-ran"
+      ],
+      "notes": "Added 2026-05-30 during the Jan-2026 cellular backfill. Major US telecom-industry publication (formerly FierceWireless); strong MWC / 6G / AI-RAN / O-RAN coverage and 'takeaways' analysis pieces that the vendor-blog web-searches miss. html/WebFetch tier works.",
+      "technology": "cellular"
+    },
+    {
       "id": "o-ran-alliance",
       "name": "O-RAN Alliance News",
       "kind": "web-search",

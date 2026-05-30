@@ -12,10 +12,10 @@ window.KB_DATA = {
     "security": 18,
     "PHY-layer": 15,
     "MLO": 14,
+    "6G": 12,
     "802.11bf": 12,
     "IoT": 11,
     "802.11ax": 9,
-    "6G": 8,
     "MAPC": 8,
     "generative-AI": 7,
     "direct-to-device": 6,
@@ -23,6 +23,7 @@ window.KB_DATA = {
     "802.11bp": 6,
     "CSI": 6,
     "NTN": 5,
+    "O-RAN": 5,
     "BLE": 5,
     "NearLink": 5,
     "SparkLink": 5,
@@ -30,7 +31,6 @@ window.KB_DATA = {
     "AI-RAN": 4,
     "network-slicing": 4,
     "Starlink": 4,
-    "O-RAN": 4,
     "OFDMA": 4,
     "NPCA": 4,
     "802.11bq": 4,
@@ -43,12 +43,14 @@ window.KB_DATA = {
     "6GHz": 3,
     "5G-NR": 3,
     "resource-allocation": 3,
+    "RIC": 3,
     "802.11ac": 3,
     "AoA": 3,
     "5G": 3,
     "handover": 3,
     "UWB": 3,
     "backscatter": 3,
+    "AI-native": 3,
     "Co-SR": 3,
     "Co-BF": 3,
     "ELR": 3,
@@ -66,9 +68,9 @@ window.KB_DATA = {
     "AFC": 2,
     "OpenAirInterface": 2,
     "cellular-ai": 2,
-    "RIC": 2,
     "xApp": 2,
     "QoE": 2,
+    "full-duplex": 2,
     "ISLA": 2,
     "SLE": 2,
     "Nordic": 2,
@@ -77,7 +79,6 @@ window.KB_DATA = {
     "Channel-Sounding": 2,
     "ranging": 2,
     "LLM-agent": 2,
-    "AI-native": 2,
     "AMP-IoT": 2,
     "Co-RTWT": 2,
     "seamless-roaming": 2,
@@ -92,12 +93,15 @@ window.KB_DATA = {
     "channel-sounding": 2,
     "healthcare": 2,
     "digital-car-key": 2,
+    "MRSS": 2,
+    "ISAC": 2,
     "AIOps": 2,
     "enterprise": 2,
     "802.11n": 2,
     "self-supervised": 2,
     "PRB-allocation": 2,
     "NGSO-regulation": 2,
+    "3GPP": 2,
     "802.15.4ab": 2,
     "narrowband-assist": 2,
     "Rel-19": 2,
@@ -152,7 +156,6 @@ window.KB_DATA = {
     "adaptive-bitrate": 1,
     "video-streaming": 1,
     "DCF": 1,
-    "full-duplex": 1,
     "CSMA-CA": 1,
     "hidden-terminal": 1,
     "Bianchi-model": 1,
@@ -259,8 +262,6 @@ window.KB_DATA = {
     "HarmonyOS": 1,
     "ICCE": 1,
     "Release 20": 1,
-    "MRSS": 1,
-    "ISAC": 1,
     "BSR": 1,
     "AI-receivers": 1,
     "D2C": 1,
@@ -319,6 +320,11 @@ window.KB_DATA = {
     "physical-layer-security": 1,
     "device-authentication": 1,
     "key-generation": 1,
+    "Release-20": 1,
+    "Release-21": 1,
+    "IMT-2030": 1,
+    "TR-38.914": 1,
+    "study-item": 1,
     "sensing-csi": 1,
     "multi-station": 1,
     "CroSSL": 1,
@@ -332,6 +338,9 @@ window.KB_DATA = {
     "multi-millisecond-ranging": 1,
     "digital-key": 1,
     "radar": 1,
+    "monostatic-sensing": 1,
+    "E2SM": 1,
+    "dApp": 1,
     "payments": 1,
     "FiRa": 1,
     "JCB": 1,
@@ -340,6 +349,12 @@ window.KB_DATA = {
     "802.11w": 1,
     "PMF": 1,
     "deauthentication": 1,
+    "MWC-2026": 1,
+    "spectrum-sharing": 1,
+    "cmWave": 1,
+    "Ericsson": 1,
+    "Apple": 1,
+    "MediaTek": 1,
     "DS2D": 1,
     "supplementary-uplink": 1,
     "uplink-coverage": 1,
@@ -347,6 +362,11 @@ window.KB_DATA = {
     "inertial-navigation": 1,
     "factor-graph": 1,
     "GNSS-denied": 1,
+    "semantic-communication": 1,
+    "waveform": 1,
+    "OSSDM": 1,
+    "OFDM": 1,
+    "RF-chain": 1,
     "CTE": 1,
     "channel-model": 1,
     "indoor-positioning": 1,
@@ -359,7 +379,6 @@ window.KB_DATA = {
     "n252": 1,
     "Keysight": 1,
     "Samsung": 1,
-    "3GPP": 1,
     "Rel-20": 1,
     "ns-3": 1,
     "nRF54L": 1,
@@ -385,8 +404,9 @@ window.KB_DATA = {
     "spectrum-policy": 7,
     "amp-iot": 7,
     "cellular-ai": 6,
+    "6g-vision": 6,
+    "open-ran": 5,
     "sat-direct-device": 5,
-    "open-ran": 4,
     "ai-for-wifi": 4,
     "rtwt-latency": 4,
     "ftm-ranging": 4,
@@ -394,7 +414,6 @@ window.KB_DATA = {
     "bt-location": 3,
     "uwb-ranging": 3,
     "bt-channel-sounding": 3,
-    "6g-vision": 3,
     "network-slicing": 2,
     "ngso-regulation": 2,
     "starlink": 2,
@@ -413,8 +432,8 @@ window.KB_DATA = {
     "nearlink-sle": 1
   },
   "type_counts": {
-    "academic-paper": 92,
-    "industry-news": 38,
+    "academic-paper": 94,
+    "industry-news": 40,
     "ieee-document": 12,
     "product": 11,
     "proposal": 4,
@@ -422,8 +441,8 @@ window.KB_DATA = {
     "nearlink-spec": 1
   },
   "category_counts": {
-    "academia": 92,
-    "industry": 49,
+    "academia": 94,
+    "industry": 51,
     "standards": 18
   },
   "technologies_vocab": {
@@ -2027,7 +2046,8 @@ window.KB_DATA = {
         "2026-05-24_ericsson-6g-mwc2026-momentum",
         "2026-05-22_arxiv-d2c-vs-ntn-comparative-analysis",
         "2026-05-24_arxiv-ilcp-6g-post-handover-cold-start",
-        "2026-05-21_arxiv-aiim-o-ran-interference-xapp"
+        "2026-05-21_arxiv-aiim-o-ran-interference-xapp",
+        "2026-05-30_3gpp-release20-6g-study-status"
       ],
       "by_type_primary": {
         "academic-paper": [
@@ -2072,21 +2092,28 @@ window.KB_DATA = {
       "entries_primary": [
         "2026-05-24_ericsson-6g-mwc2026-momentum",
         "2026-05-21_arxiv-6g-agentic-ai-native",
-        "2026-05-24_arxiv-ilcp-6g-post-handover-cold-start"
+        "2026-05-24_arxiv-ilcp-6g-post-handover-cold-start",
+        "2026-05-30_3gpp-release20-6g-study-status",
+        "2026-05-30_ericsson-mwc2026-6g-demos-apple-mediatek",
+        "2026-05-30_arxiv-semantic-waveforms-ossdm-6g"
       ],
       "entries_secondary": [
         "2026-05-27_arxiv-genesis-agentic-6g-ran-synthesis",
         "2026-05-25_arxiv-fedcritic-serverless-federated-ofdma",
         "2026-05-22_arxiv-agentic-6g-ai-ran-orchestrator",
-        "2026-05-22_arxiv-d2c-vs-ntn-comparative-analysis"
+        "2026-05-22_arxiv-d2c-vs-ntn-comparative-analysis",
+        "2026-05-30_arxiv-native-isac-oran-6g"
       ],
       "by_type_primary": {
         "industry-news": [
-          "2026-05-24_ericsson-6g-mwc2026-momentum"
+          "2026-05-24_ericsson-6g-mwc2026-momentum",
+          "2026-05-30_3gpp-release20-6g-study-status",
+          "2026-05-30_ericsson-mwc2026-6g-demos-apple-mediatek"
         ],
         "academic-paper": [
           "2026-05-21_arxiv-6g-agentic-ai-native",
-          "2026-05-24_arxiv-ilcp-6g-post-handover-cold-start"
+          "2026-05-24_arxiv-ilcp-6g-post-handover-cold-start",
+          "2026-05-30_arxiv-semantic-waveforms-ossdm-6g"
         ]
       }
     },
@@ -2152,7 +2179,8 @@ window.KB_DATA = {
         "2026-05-26_arxiv-opentwin-oran-digital-twin",
         "2026-05-25_arxiv-vran-openairinterface-multi-instance-scaling",
         "2026-05-24_arxiv-morph-multi-env-rl-prb-oran",
-        "2026-05-21_arxiv-aiim-o-ran-interference-xapp"
+        "2026-05-21_arxiv-aiim-o-ran-interference-xapp",
+        "2026-05-30_arxiv-native-isac-oran-6g"
       ],
       "entries_secondary": [
         "2026-05-29_arxiv-ariadne-airan-link-adaptation-digital-twin",
@@ -2164,7 +2192,8 @@ window.KB_DATA = {
           "2026-05-26_arxiv-opentwin-oran-digital-twin",
           "2026-05-25_arxiv-vran-openairinterface-multi-instance-scaling",
           "2026-05-24_arxiv-morph-multi-env-rl-prb-oran",
-          "2026-05-21_arxiv-aiim-o-ran-interference-xapp"
+          "2026-05-21_arxiv-aiim-o-ran-interference-xapp",
+          "2026-05-30_arxiv-native-isac-oran-6g"
         ]
       }
     },
@@ -2248,7 +2277,8 @@ window.KB_DATA = {
         "2026-05-21_arxiv-6g-agentic-ai-native",
         "2026-05-24_arxiv-morph-multi-env-rl-prb-oran",
         "2026-05-24_arxiv-ilcp-6g-post-handover-cold-start",
-        "2026-05-21_arxiv-aiim-o-ran-interference-xapp"
+        "2026-05-21_arxiv-aiim-o-ran-interference-xapp",
+        "2026-05-30_arxiv-semantic-waveforms-ossdm-6g"
       ],
       "by_type_primary": {
         "academic-paper": [
@@ -2277,7 +2307,9 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [],
-      "entries_secondary": [],
+      "entries_secondary": [
+        "2026-05-30_ericsson-mwc2026-6g-demos-apple-mediatek"
+      ],
       "by_type_primary": {}
     },
     "cellular-security": {
@@ -6057,6 +6089,38 @@ window.KB_DATA = {
       "search_blob": "wirelessbench: a tolerance-aware llm agent benchmark for wireless network intelligence wirelessbench：面向无线网络智能的容错感知 llm 智能体基准 agentic-ai generative-ai tong et al. (march 2026) release wirelessbench, the first **tolerance-aware** evaluation framework for llm agents acting as autonomous wireless-network operators. standard ml benchmarks score by exact-match correctness — but that misses the kind of error that actually breaks production wireless: a unit confusion between db and dbm, a signed-vs-unsigned conversion, an off-by-one in resource-block indexing. those slip past exact match because the format is right; in deployment they are catastrophic. wirelessbench bakes *tolerance categories* into scoring so a 0.1 db rounding error and a \"30 dbm vs 30 db\" mistake count differently. tong 等人（2026 年 3 月）发布了 wirelessbench —— 首个**容错感知**的 llm 智能体评估框架，针对的是把 llm 作为自主无线网络运维者的场景。标准 ml 基准按精确匹配打分 —— 但这会漏掉真正在生产环境中击穿的错误：db 与 dbm 单位混淆、有/无符号转换、资源块索引差一。这些错误\"格式正确\"，能蒙骗精确匹配；但部署中是灾难性的。wirelessbench 把*容错类别*写进了评分体系，使 0.1 db 舍入误差与\"30 dbm 当成 30 db\"被区别对待。 academic-paper wifi"
     },
     {
+      "id": "2026-05-30_3gpp-release20-6g-study-status",
+      "date_found": "2026-05-30",
+      "technology": "cellular",
+      "date_published": "2026-03-20",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "3GPP Release 20 6G Studies Pass Mid-Point: Stage-1 Use Cases Complete, TR 38.914 60% Done, Rel-21 to Carry First 6G Specs",
+      "title_zh": "3GPP Release 20 的 6G 研究过半：Stage-1 用例完成，TR 38.914 完成 60%，Rel-21 将承载首批 6G 规范",
+      "url": "https://www.3gpp.org/news-events/3gpp-news/sa-rel20",
+      "topics": [
+        "3GPP",
+        "Release-20",
+        "Release-21",
+        "6G",
+        "IMT-2030",
+        "TR-38.914",
+        "study-item"
+      ],
+      "topic_primary": "6g-vision",
+      "topics_secondary": [
+        "5g-nr"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-05-30_3gpp-release20-6g-study-status.md",
+      "summary_short_en": "By the March 2026 plenaries, 3GPP's Release 20 6G study programme had passed its mid-point, clarifying the division of labour between Rel-20 (study and preparation) and Rel-21 (the first formal 6G specifications). Rel-20 runs the 6G studies alongside continued 5G-Advanced evolution; the studies produce technical reports that scope what is feasible before normative 6G work begins. The 6G study phase started Q3 2025 and runs ~21 months, in parallel with an 18-month 5G-Advanced evolution track.",
+      "summary_short_zh": "到 2026 年 3 月全会，3GPP Release 20 的 6G 研究计划已过半，明确了 Rel-20（研究与准备）与 Rel-21（首批正式 6G 规范）之间的分工。Rel-20 在持续推进 5G-Advanced 演进的同时开展 6G 研究；这些研究产出技术报告，界定在规范性 6G 工作启动前何者可行。6G 研究阶段始于 2025 年第三季度、约持续 21 个月，与一条 18 个月的 5G-Advanced 演进轨道并行。",
+      "body_html_en": "<h3>Summary</h3>\n<p>By the March 2026 plenaries, 3GPP's Release 20 6G study programme had passed its mid-point, clarifying the division of labour between Rel-20 (study and preparation) and Rel-21 (the first formal 6G specifications). Rel-20 runs the 6G studies alongside continued 5G-Advanced evolution; the studies produce technical reports that scope what is feasible before normative 6G work begins. The 6G study phase started Q3 2025 and runs ~21 months, in parallel with an 18-month 5G-Advanced evolution track.</p>\n<p>Concrete progress markers: the Stage-1 Study on 6G Use Cases and Service Requirements completed at the March plenaries, and the RAN-side Study on 6G Scenarios and Requirements (TR 38.914) was about 60% complete in March 2026. The headline planning fact is that Release 21 — not Rel-20 — will contain the first 3GPP 6G technical specifications, with the Rel-21 timeline expected to be finalized by June 2026 to align with the ITU IMT-2030 schedule. Spectrum framing is sharpening too: observers expect 6G to need new mid-bands (4.5 GHz, 6 GHz, 7 GHz) and as much as 400 MHz of contiguous spectrum, making it more spectrum-hungry than any prior 3GPP release.</p>\n<p>For the KB this is the standards-calendar anchor that dates everything else in the 6G bin: the agentic-RAN, AI-native-air-interface, and ISAC-in-O-RAN research entries are all pre-normative work feeding the Rel-20 studies, with normative output landing in Rel-21.</p>\n<h3>Key technical points</h3>\n<ul><li>Rel-20 = 6G studies + 5G-Advanced evolution; Rel-21 = first formal 6G specifications.</li><li>6G study phase: started Q3 2025, ~21 months; 5G-Advanced track ~18 months.</li><li>March 2026: Stage-1 Study on 6G Use Cases &amp; Service Requirements complete; TR 38.914 (6G Scenarios &amp; Requirements) ~60% done.</li><li>Rel-21 timeline to be finalized by June 2026 to match ITU IMT-2030.</li><li>Spectrum: 6G expected to need 4.5/6/7 GHz mid-bands and up to 400 MHz contiguous — most spectrum-hungry release yet.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>Gives the KB's heavily-research-driven 6G bin a fixed standards calendar to hang on: it dates the pre-normative wave (agentic RAN, AI-native PHY, ISAC-in-O-RAN) against the Rel-20-study / Rel-21-spec split, and flags June 2026 as the Rel-21 timeline-lock checkpoint to watch. The 400 MHz / new-mid-band spectrum framing also sets up the cellular-spectrum thread.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>到 2026 年 3 月全会，3GPP Release 20 的 6G 研究计划已过半，明确了 Rel-20（研究与准备）与 Rel-21（首批正式 6G 规范）之间的分工。Rel-20 在持续推进 5G-Advanced 演进的同时开展 6G 研究；这些研究产出技术报告，界定在规范性 6G 工作启动前何者可行。6G 研究阶段始于 2025 年第三季度、约持续 21 个月，与一条 18 个月的 5G-Advanced 演进轨道并行。</p>\n<p>具体进展标记：Stage-1《6G 用例与业务需求研究》在 3 月全会完成；RAN 侧《6G 场景与需求研究》（TR 38.914）在 2026 年 3 月约完成 60%。头条规划事实是：包含首批 3GPP 6G 技术规范的将是 Release 21（而非 Rel-20），Rel-21 时间线预计在 2026 年 6 月前敲定，以对齐 ITU IMT-2030 日程。频谱框架也在清晰化：业界预期 6G 需要新的中频段（4.5 GHz、6 GHz、7 GHz）以及多达 400 MHz 的连续频谱，使其比以往任何 3GPP 版本更&quot;吃频谱&quot;。</p>\n<p>对本知识库而言，这是为 6G 分箱中其他内容定标的标准日历锚点：智能体 RAN、AI 原生空口、O-RAN 内 ISAC 等研究条目都是喂给 Rel-20 研究的预规范工作，规范性产出将落在 Rel-21。</p>\n<h3>技术要点</h3>\n<ul><li>Rel-20 = 6G 研究 + 5G-Advanced 演进；Rel-21 = 首批正式 6G 规范。</li><li>6G 研究阶段：始于 2025 Q3，约 21 个月；5G-Advanced 轨道约 18 个月。</li><li>2026 年 3 月：Stage-1《6G 用例与业务需求研究》完成；TR 38.914（6G 场景与需求）约完成 60%。</li><li>Rel-21 时间线 2026 年 6 月前敲定，以对齐 ITU IMT-2030。</li><li>频谱：6G 预期需 4.5/6/7 GHz 中频段及最多 400 MHz 连续频谱——史上最吃频谱的版本。</li></ul>\n<h3>意义与新意</h3>\n<p>为 KB 中以研究为主的 6G 分箱提供固定的标准日历：它将预规范浪潮（智能体 RAN、AI 原生 PHY、O-RAN 内 ISAC）对标到 Rel-20 研究/Rel-21 规范的划分，并标出 2026 年 6 月作为 Rel-21 时间线锁定的观察检查点。400 MHz/新中频段的频谱框架也为蜂窝频谱线索铺垫。</p>",
+      "images": [],
+      "search_blob": "3gpp release 20 6g studies pass mid-point: stage-1 use cases complete, tr 38.914 60% done, rel-21 to carry first 6g specs 3gpp release 20 的 6g 研究过半：stage-1 用例完成，tr 38.914 完成 60%，rel-21 将承载首批 6g 规范 3gpp release-20 release-21 6g imt-2030 tr-38.914 study-item by the march 2026 plenaries, 3gpp's release 20 6g study programme had passed its mid-point, clarifying the division of labour between rel-20 (study and preparation) and rel-21 (the first formal 6g specifications). rel-20 runs the 6g studies alongside continued 5g-advanced evolution; the studies produce technical reports that scope what is feasible before normative 6g work begins. the 6g study phase started q3 2025 and runs ~21 months, in parallel with an 18-month 5g-advanced evolution track. 到 2026 年 3 月全会，3gpp release 20 的 6g 研究计划已过半，明确了 rel-20（研究与准备）与 rel-21（首批正式 6g 规范）之间的分工。rel-20 在持续推进 5g-advanced 演进的同时开展 6g 研究；这些研究产出技术报告，界定在规范性 6g 工作启动前何者可行。6g 研究阶段始于 2025 年第三季度、约持续 21 个月，与一条 18 个月的 5g-advanced 演进轨道并行。 industry-news cellular"
+    },
+    {
       "id": "2026-05-01_arxiv-secure-wifi-ranging-az-bk",
       "date_found": "2026-05-01",
       "technology": "wifi",
@@ -6241,6 +6305,39 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>在 Embedded World 2026（纽伦堡，约 2026 年 3 月 10–11 日）上，意法半导体（ST）发布 ST64UWB 系列，并将其定位为业界首款面向下一代超宽带标准 IEEE 802.15.4ab 打造的全集成系统级芯片。核心差异点是片上窄带辅助（NBA）射频与该修订版的多毫秒测距（MMS）模式相结合——ST 称这一组合带来约 8× 于当前 HRP UWB 的工作距离、对放在包内或口袋中的标签显著更好的非视距性能、近距离方向查找，并在同一芯片上开启「全新」的雷达 / 感知应用。</p>\n<p>802.15.4ab（802.15.4z 的后继修订）是整个 UWB 生态翘首以待的标准步伐：它加入窄带辅助捕获、多毫秒测距与相干接收机改进，直指两大走量市场——车载数字钥匙 / 钥匙扣，以及消费级免提门禁 / 在场检测。ST 把 ST64UWB 标榜为 <em>首款</em> 符合 4ab 的 SoC 是值得关注之处：它让 ST 在标准切换的当口，与现有 UWB 芯片领导者（NXP、Qorvo 及 Apple 自研 U 系列）正面竞争，而非追赶上一代 4z。</p>\n<p>本条目标记为 <code>snippet_only</code>——它基于发布报道与 ST 博客标题汇编，而非完整抓取的文章，因此具体型号、送样时间与制程节点细节应在后续补读。现在收录，是因为「首款 802.15.4ab SoC」对 <code>uwb-ranging</code> 桶是承重里程碑，并以标准化的硅片侧故事补充 KB 既有的 UWB 条目（UWB 雷达体脂论文与 SPARK 的 LE-UWB 路演）。</p>\n<h3>技术要点</h3>\n<ul><li><strong>首款 IEEE 802.15.4ab SoC</strong>（据 ST）——802.15.4z 的后继修订。</li><li><strong>片上集成窄带辅助（NBA）射频</strong> 与 UWB 射频并存——用于更快 / 更省的捕获与距离扩展。</li><li><strong>多毫秒测距（MMS）</strong> 模式——4ab 的特性，配合 NBA，ST 称带来约 <strong>8× 工作距离</strong> 与更优 <strong>非视距（NLOS）</strong>（包内 / 口袋）性能。</li><li>同一芯片上的 <strong>近距离方向查找</strong> 与 <strong>全新雷达 / 感知</strong> 模式。</li><li>目标市场：<strong>车载数字钥匙 / 钥匙扣</strong>、消费级 <strong>免提门禁</strong> 与 <strong>在场检测</strong>。</li><li>于 <strong>Embedded World 2026</strong>（约 2026 年 3 月 10–11 日）发布；在 4z→4ab 切换之际与 NXP / Qorvo / Apple 竞争。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 目前的 UWB 覆盖偏应用驱动（UWB 雷达体成分）与路演驱动（SPARK LE-UWB）。ST64UWB 补上标准与硅片的锚点：它是 802.15.4ab——定义窄带辅助 UWB 与多毫秒测距的修订——首款公布的商用器件。这使它成为后续 NXP/Qorvo/Apple 4ab 器件的参照基准，也是 4ab 从草案走向产品的具体信号。其距离扩展与 NLOS 主张（由 NBA 驱动）恰好针对 4z UWB 在包内 / 口袋标签场景中的短板，因此值得作为数字钥匙与在场检测走量市场的使能者来跟踪。型号与送样时间待后续完整抓取时补录。</p>",
       "images": [],
       "search_blob": "stmicroelectronics st64uwb: first ieee 802.15.4ab uwb soc with narrowband assistance 意法半导体 st64uwb：首款支持窄带辅助的 ieee 802.15.4ab uwb 系统级芯片 uwb-ranging 802.15.4ab narrowband-assist multi-millisecond-ranging digital-key automotive radar at embedded world 2026 (nuremberg, ~10–11 march 2026), stmicroelectronics launched the st64uwb family, which it positions as the industry's first fully-integrated system-on-chip built to the next-generation ultra-wideband standard, ieee 802.15.4ab. the headline differentiator is an on-chip narrowband-assistance (nba) radio paired with the amendment's multi-millisecond ranging (mms) mode — the combination st credits with roughly 8× more operating range than current-generation hrp uwb, materially better non-line-of-sight performance for tags carried in a bag or pocket, and close-range direction finding, while also opening \"entirely new\" radar/sensing applications on the same silicon. 在 embedded world 2026（纽伦堡，约 2026 年 3 月 10–11 日）上，意法半导体（st）发布 st64uwb 系列，并将其定位为业界首款面向下一代超宽带标准 ieee 802.15.4ab 打造的全集成系统级芯片。核心差异点是片上窄带辅助（nba）射频与该修订版的多毫秒测距（mms）模式相结合——st 称这一组合带来约 8× 于当前 hrp uwb 的工作距离、对放在包内或口袋中的标签显著更好的非视距性能、近距离方向查找，并在同一芯片上开启「全新」的雷达 / 感知应用。 product uwb"
+    },
+    {
+      "id": "2026-05-30_arxiv-native-isac-oran-6g",
+      "date_found": "2026-05-30",
+      "technology": "cellular",
+      "date_published": "2026-03-04",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Toward Native ISAC Support in O-RAN Architectures for 6G",
+      "title_zh": "面向 6G 的 O-RAN 架构原生 ISAC 支持",
+      "url": "https://arxiv.org/abs/2603.03607",
+      "topics": [
+        "ISAC",
+        "O-RAN",
+        "6G",
+        "monostatic-sensing",
+        "E2SM",
+        "dApp",
+        "RIC",
+        "full-duplex"
+      ],
+      "topic_primary": "open-ran",
+      "topics_secondary": [
+        "6g-vision"
+      ],
+      "novelty_score": 4,
+      "entry_path": "entries/2026-05-30_arxiv-native-isac-oran-6g.md",
+      "summary_short_en": "Baena, Krishnan, Vu, Zussman, and Koutsonikolas (Columbia / Tufts and collaborators) show that today's O-RAN specification has no architectural hooks for Integrated Sensing and Communication (ISAC), and propose three concrete extensions to add native monostatic sensing — where transmit and receive are co-located at the base station — to the open-RAN control loop. The gap they identify is specific: no O-RAN service model exposes physical-layer observables, no execution framework supports sub-millisecond sensing tasks, and the Open Fronthaul cannot correlate a transmitted waveform with its reflection.",
+      "summary_short_zh": "Baena、Krishnan、Vu、Zussman 与 Koutsonikolas（哥伦比亚大学/塔夫茨大学及合作者）指出，当前 O-RAN 规范缺乏支持通信感知一体化（ISAC）的架构钩子，并提出三项具体扩展，将原生的单基地感知（收发在基站同址）引入开放 RAN 控制环。他们识别出的缺口很具体：没有 O-RAN 服务模型暴露物理层可观测量，没有执行框架支持亚毫秒级感知任务，开放前传也无法将发射波形与其反射相关联。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Baena, Krishnan, Vu, Zussman, and Koutsonikolas (Columbia / Tufts and collaborators) show that today's O-RAN specification has no architectural hooks for Integrated Sensing and Communication (ISAC), and propose three concrete extensions to add native monostatic sensing — where transmit and receive are co-located at the base station — to the open-RAN control loop. The gap they identify is specific: no O-RAN service model exposes physical-layer observables, no execution framework supports sub-millisecond sensing tasks, and the Open Fronthaul cannot correlate a transmitted waveform with its reflection.</p>\n<p>Their three extensions map cleanly onto the O-RAN architecture. (1) Sensing <strong>dApps at the O-DU</strong> process raw IQ samples to extract delay, Doppler, and angular features close to the radio, where latency budgets are tight. (2) A new <strong>E2SM-SENS</strong> service model lets xApps in the Near-RT RIC subscribe to sensing telemetry at configurable periodicity, so sensing becomes a first-class, schedulable RIC data stream. (3) <strong>Open Fronthaul metadata</strong> enhancements associate transmitted waveforms with their received echoes, which monostatic sensing fundamentally requires. Sensing telemetry then flows up through the RIC/SMO like any other O-RAN measurement.</p>\n<p>A prototype using beamforming and full-duplex operation demonstrated closed-loop control with median end-to-end latency suitable for near-real-time sensing, and the authors argue the design extends naturally to bistatic and cooperative multi-node sensing. The work is one of the clearest blueprints to date for making ISAC a native O-RAN capability rather than a bolt-on.</p>\n<h3>Key technical points</h3>\n<ul><li>Identifies the O-RAN ISAC gap: no PHY-observable service model, no sub-ms sensing execution, no fronthaul waveform↔echo correlation.</li><li>Extension 1 — Sensing dApps at O-DU: extract delay/Doppler/angle from IQ near the radio.</li><li>Extension 2 — E2SM-SENS service model: xApps subscribe to sensing telemetry at configurable periodicity in the Near-RT RIC.</li><li>Extension 3 — Open Fronthaul metadata to associate transmitted waveforms with received echoes (monostatic requirement).</li><li>Prototype: beamforming + full-duplex closed-loop control, near-real-time median latency; extensible to bistatic/cooperative.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's cellular bin is rich in O-RAN AI/agentic control (AIIM, MORPH, GENESIS, ARIADNE) but had no ISAC-in-O-RAN entry; this fills it with a precise, prototyped architecture. The E2SM-SENS service model is the transferable idea — it makes sensing a schedulable RIC stream alongside KPM, which is exactly how the KB's xApp entries treat performance telemetry. Strong bridge between the 6G-ISAC vision and the open-RAN control plane.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Baena、Krishnan、Vu、Zussman 与 Koutsonikolas（哥伦比亚大学/塔夫茨大学及合作者）指出，当前 O-RAN 规范缺乏支持通信感知一体化（ISAC）的架构钩子，并提出三项具体扩展，将原生的单基地感知（收发在基站同址）引入开放 RAN 控制环。他们识别出的缺口很具体：没有 O-RAN 服务模型暴露物理层可观测量，没有执行框架支持亚毫秒级感知任务，开放前传也无法将发射波形与其反射相关联。</p>\n<p>三项扩展与 O-RAN 架构清晰对应：(1) <strong>O-DU 上的感知 dApp</strong> 在靠近射频、时延预算紧张处处理原始 IQ 样本，提取时延、多普勒与角度特征；(2) 新的 <strong>E2SM-SENS</strong> 服务模型让 Near-RT RIC 中的 xApp 以可配置周期订阅感知遥测，使感知成为一等、可调度的 RIC 数据流；(3) <strong>开放前传元数据</strong> 增强将发射波形与接收回波关联——这是单基地感知的根本需求。感知遥测随后像其他 O-RAN 测量一样上送至 RIC/SMO。</p>\n<p>采用波束成形与全双工的原型演示了闭环控制，端到端中位时延适合近实时感知；作者认为该设计可自然扩展到双基地与协作多节点感知。该工作是迄今将 ISAC 做成 O-RAN 原生能力（而非外挂）的最清晰蓝图之一。</p>\n<h3>技术要点</h3>\n<ul><li>指出 O-RAN 的 ISAC 缺口：无 PHY 可观测服务模型、无亚毫秒感知执行、前传无波形↔回波关联。</li><li>扩展 1——O-DU 感知 dApp：在靠近射频处从 IQ 提取时延/多普勒/角度。</li><li>扩展 2——E2SM-SENS 服务模型：Near-RT RIC 中 xApp 以可配置周期订阅感知遥测。</li><li>扩展 3——开放前传元数据，关联发射波形与接收回波（单基地需求）。</li><li>原型：波束成形 + 全双工闭环控制，近实时中位时延；可扩展至双基地/协作。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 的蜂窝分箱在 O-RAN AI/智能体控制方面已很丰富（AIIM、MORPH、GENESIS、ARIADNE），但缺少 O-RAN 内 ISAC 条目；本文以精确、已原型化的架构补上。E2SM-SENS 服务模型是可迁移的思想——它使感知像 KPM 一样成为可调度的 RIC 数据流，这正是 KB 中 xApp 条目处理性能遥测的方式。是 6G-ISAC 愿景与开放 RAN 控制面之间的有力桥梁。</p>",
+      "images": [],
+      "search_blob": "toward native isac support in o-ran architectures for 6g 面向 6g 的 o-ran 架构原生 isac 支持 isac o-ran 6g monostatic-sensing e2sm dapp ric full-duplex baena, krishnan, vu, zussman, and koutsonikolas (columbia / tufts and collaborators) show that today's o-ran specification has no architectural hooks for integrated sensing and communication (isac), and propose three concrete extensions to add native monostatic sensing — where transmit and receive are co-located at the base station — to the open-ran control loop. the gap they identify is specific: no o-ran service model exposes physical-layer observables, no execution framework supports sub-millisecond sensing tasks, and the open fronthaul cannot correlate a transmitted waveform with its reflection. baena、krishnan、vu、zussman 与 koutsonikolas（哥伦比亚大学/塔夫茨大学及合作者）指出，当前 o-ran 规范缺乏支持通信感知一体化（isac）的架构钩子，并提出三项具体扩展，将原生的单基地感知（收发在基站同址）引入开放 ran 控制环。他们识别出的缺口很具体：没有 o-ran 服务模型暴露物理层可观测量，没有执行框架支持亚毫秒级感知任务，开放前传也无法将发射波形与其反射相关联。 academic-paper cellular"
     },
     {
       "id": "2026-05-21_jcb-uwb-payments-japan",
@@ -6482,6 +6579,39 @@ window.KB_DATA = {
       "search_blob": "airsnitch: demystifying and breaking client isolation in wi-fi networks (ndss 2026) airsnitch —— wi-fi 客户端隔离的剖析与攻击（ndss 2026） security 802.11 zhou et al. (ucr + ku leuven, ndss 2026) systematically demystify how vendors implement wi-fi *client isolation* — the feature that's supposed to stop two associated stations from sniffing or impersonating each other — and demonstrate that, across all tested home-router and enterprise-ap firmware, every device fails at least one isolation invariant. airsnitch is the resulting attack toolkit: an attacker on the same wi-fi network can execute man-in-the-middle, intercept traffic, and spy on other clients even when wpa3 encryption is in place. zhou 等人（uc riverside + ku leuven，ndss 2026）系统化地剖析了厂商如何实现 wi-fi *客户端隔离*（client isolation） —— 这个特性本应阻止已关联的两个 sta 互相嗅探或冒充 —— 并证明在所有测试过的家用路由器与企业 ap 固件中，每台设备至少违反一项隔离不变式。airsnitch 是相应的攻击工具：即便启用 wpa3 加密，处于同一 wi-fi 网络中的攻击者也能做中间人、拦截流量、监视他人客户端。 academic-paper wifi"
     },
     {
+      "id": "2026-05-30_ericsson-mwc2026-6g-demos-apple-mediatek",
+      "date_found": "2026-05-30",
+      "technology": "cellular",
+      "date_published": "2026-02-23",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "Ericsson Demos Pre-Standard 6G at MWC 2026: MRSS 5G/6G Spectrum Sharing with Apple, cmWave with MediaTek",
+      "title_zh": "爱立信在 MWC 2026 演示预标准 6G：与 Apple 的 MRSS 5G/6G 频谱共享、与联发科的 cmWave",
+      "url": "https://www.ericsson.com/en/news/2026/2/ericsson-to-demo-6g-with-apple-mediatek-at-mwc-2026",
+      "topics": [
+        "6G",
+        "MWC-2026",
+        "MRSS",
+        "spectrum-sharing",
+        "cmWave",
+        "Ericsson",
+        "Apple",
+        "MediaTek"
+      ],
+      "topic_primary": "6g-vision",
+      "topics_secondary": [
+        "cellular-spectrum"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-05-30_ericsson-mwc2026-6g-demos-apple-mediatek.md",
+      "summary_short_en": "At MWC Barcelona 2026 (2–5 March), Ericsson ran live pre-standard 6G demonstrations with two notable device-side partners. With Apple, it showed MRSS (Multi-RAT Spectrum Sharing) between 5G and 6G — dynamically sharing the same spectrum between a 5G and a 6G air interface, the mechanism that lets operators introduce 6G on existing mid-band holdings without stranding 5G users. With MediaTek, it showcased cmWave (centimeter-wave) technology, focusing on the low-latency portion of the 6G stack and the new mid-to-high bands 6G is expected to use.",
+      "summary_short_zh": "在 MWC 巴塞罗那 2026（3 月 2–5 日），爱立信与两家值得注意的终端侧伙伴进行了预标准 6G 实景演示。与 Apple 展示 5G 与 6G 之间的 MRSS（多制式频谱共享）——在同一频谱上于 5G 与 6G 空口间动态共享，这一机制让运营商可在既有中频段资产上引入 6G 而不弃用 5G 用户。与联发科展示 cmWave（厘米波）技术，聚焦 6G 协议栈的低时延部分及 6G 预期使用的新中高频段。",
+      "body_html_en": "<h3>Summary</h3>\n<p>At MWC Barcelona 2026 (2–5 March), Ericsson ran live pre-standard 6G demonstrations with two notable device-side partners. With Apple, it showed MRSS (Multi-RAT Spectrum Sharing) between 5G and 6G — dynamically sharing the same spectrum between a 5G and a 6G air interface, the mechanism that lets operators introduce 6G on existing mid-band holdings without stranding 5G users. With MediaTek, it showcased cmWave (centimeter-wave) technology, focusing on the low-latency portion of the 6G stack and the new mid-to-high bands 6G is expected to use.</p>\n<p>The MWC 2026 telecom narrative around these demos was twofold. First, 6G is moving from whitepaper to prototype hardware: Ericsson and partners demonstrated working spectrum-sharing and cmWave prototypes rather than slideware. Second, agentic AI dominated the operations story — Ericsson and Nokia both demonstrated agentic AI managing RAN optimization, traffic routing, and fault detection across multi-vendor environments, and Huawei's &quot;Agentic Core&quot; session imagined a network core that is itself an AI agent deciding when to update.</p>\n<p>For the KB this is the concrete industry-milestone counterpart to the 3GPP Rel-20 6G-study status: while standards bodies scope 6G on paper, Ericsson/Apple/MediaTek are exercising the spectrum-sharing and cmWave building blocks on real radios — and the operations layer is consolidating around the agentic-AI direction the cellular bin already tracks heavily.</p>\n<h3>Key technical points</h3>\n<ul><li>MWC 2026 (2–5 Mar): Ericsson pre-standard 6G demos with device partners Apple and MediaTek.</li><li>With Apple: MRSS (Multi-RAT Spectrum Sharing) between 5G and 6G on shared spectrum — 6G introduction without stranding 5G.</li><li>With MediaTek: cmWave (centimeter-wave) prototype, low-latency 6G-stack focus, new mid/high bands.</li><li>Operations theme: Ericsson + Nokia agentic-AI RAN management across multi-vendor environments; Huawei &quot;Agentic Core&quot; vision.</li><li>Signal: 6G transitioning from whitepaper to working spectrum-sharing / cmWave prototypes on real radios.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>Anchors the cellular bin's 2026 industry calendar at MWC and gives concrete prototype substance (MRSS, cmWave) to the otherwise paper-heavy 6G narrative. MRSS is the practically important mechanism — 6G-on-existing-spectrum without a 5G flag day — and is the operator-economics counterpart to the Rel-20/Rel-21 standards split. Reinforces, from the vendor side, the agentic-AI-operations consolidation the KB's GENESIS / ARIADNE / agentic-RAN entries describe from the research side.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>在 MWC 巴塞罗那 2026（3 月 2–5 日），爱立信与两家值得注意的终端侧伙伴进行了预标准 6G 实景演示。与 Apple 展示 5G 与 6G 之间的 MRSS（多制式频谱共享）——在同一频谱上于 5G 与 6G 空口间动态共享，这一机制让运营商可在既有中频段资产上引入 6G 而不弃用 5G 用户。与联发科展示 cmWave（厘米波）技术，聚焦 6G 协议栈的低时延部分及 6G 预期使用的新中高频段。</p>\n<p>围绕这些演示的 MWC 2026 电信叙事有两点。其一，6G 正从白皮书走向原型硬件：爱立信及伙伴演示的是可工作的频谱共享与 cmWave 原型，而非幻灯片。其二，智能体 AI 主导了运营叙事——爱立信与诺基亚均演示了智能体 AI 在多厂商环境中管理 RAN 优化、流量路由与故障检测；华为的&quot;Agentic Core&quot;专题设想了一个核心网本身即为 AI 智能体、自行决定何时更新。</p>\n<p>对本知识库而言，这是与 3GPP Rel-20 6G 研究状态对应的具体产业里程碑：标准机构在纸面上界定 6G 之时，爱立信/Apple/联发科已在真实射频上验证频谱共享与 cmWave 构件——而运营层正向蜂窝分箱已大量追踪的智能体 AI 方向收敛。</p>\n<h3>技术要点</h3>\n<ul><li>MWC 2026（3 月 2–5 日）：爱立信与终端伙伴 Apple、联发科的预标准 6G 演示。</li><li>与 Apple：5G 与 6G 间共享频谱的 MRSS（多制式频谱共享）——引入 6G 而不弃用 5G。</li><li>与联发科：cmWave（厘米波）原型，聚焦低时延 6G 栈与新中/高频段。</li><li>运营主题：爱立信 + 诺基亚跨多厂商环境的智能体 AI RAN 管理；华为&quot;Agentic Core&quot;愿景。</li><li>信号：6G 正从白皮书过渡到真实射频上的可工作频谱共享/cmWave 原型。</li></ul>\n<h3>意义与新意</h3>\n<p>将蜂窝分箱 2026 年的产业日历锚定在 MWC，并为偏纸面的 6G 叙事提供具体原型实体（MRSS、cmWave）。MRSS 是实际重要的机制——在既有频谱上引入 6G 而无需 5G&quot;切换日&quot;——是 Rel-20/Rel-21 标准划分在运营商经济学侧的对应。从厂商侧印证了 KB 的 GENESIS / ARIADNE / 智能体 RAN 条目从研究侧描述的智能体 AI 运营收敛趋势。</p>",
+      "images": [],
+      "search_blob": "ericsson demos pre-standard 6g at mwc 2026: mrss 5g/6g spectrum sharing with apple, cmwave with mediatek 爱立信在 mwc 2026 演示预标准 6g：与 apple 的 mrss 5g/6g 频谱共享、与联发科的 cmwave 6g mwc-2026 mrss spectrum-sharing cmwave ericsson apple mediatek at mwc barcelona 2026 (2–5 march), ericsson ran live pre-standard 6g demonstrations with two notable device-side partners. with apple, it showed mrss (multi-rat spectrum sharing) between 5g and 6g — dynamically sharing the same spectrum between a 5g and a 6g air interface, the mechanism that lets operators introduce 6g on existing mid-band holdings without stranding 5g users. with mediatek, it showcased cmwave (centimeter-wave) technology, focusing on the low-latency portion of the 6g stack and the new mid-to-high bands 6g is expected to use. 在 mwc 巴塞罗那 2026（3 月 2–5 日），爱立信与两家值得注意的终端侧伙伴进行了预标准 6g 实景演示。与 apple 展示 5g 与 6g 之间的 mrss（多制式频谱共享）——在同一频谱上于 5g 与 6g 空口间动态共享，这一机制让运营商可在既有中频段资产上引入 6g 而不弃用 5g 用户。与联发科展示 cmwave（厘米波）技术，聚焦 6g 协议栈的低时延部分及 6g 预期使用的新中高频段。 industry-news cellular"
+    },
+    {
       "id": "2026-05-26_arxiv-elevation-aware-sul-ds2d",
       "date_found": "2026-05-26",
       "technology": "satellite",
@@ -6624,6 +6754,38 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>Zheng、Zhang、Niyato 等人（2026 年 2 月）提出把 LLM 作为传统强化学习用于无线网络优化时的<strong>状态表示与语义抽取前端</strong>，而非智能体本身。论点是：无线状态空间（信道忙占比、干扰图、队列长度、邻 BSS 上下文、流量类别语义）维数极高，会让标准 RL 智能体的输入维度炸开。让 LLM 把原始状态预先消化成紧凑、语义化的特征，可以显著缩减这一爆炸。</p>\n<p>论文覆盖完整协议栈 —— 物理层、数据链路层、网络层、传输层、应用层 —— 展示如何在每一层使用&quot;LLM 前端 + RL&quot;。最具体的贡献集中在 MARL（多智能体 RL）层：<strong>业务迁移、请求路由、UAV-卫星网络拓扑生成</strong>等案例研究，由 LLM 做语义抽象，RL 智能体做优化。</p>\n<h3>技术要点</h3>\n<ul><li><strong>LLM 作为特征抽取器</strong>，而非智能体本身 —— 让 RL 的利用阶段在高维无线状态下仍可行</li><li><strong>多层适用性</strong>得到展示：PHY → 应用层</li><li>在 MARL 中扩展，加入 LLM 辅助状态表示</li><li><strong>案例：</strong> 业务迁移、请求路由、UAV-卫星拓扑</li></ul>\n<h3>意义与新意</h3>\n<ul><li><strong>对&quot;LLM 作为智能体&quot;叙事的反向论证。</strong> 当前多数 LLM-for-Wi-Fi 工作把 LLM 放在策略输出层（参见 MAPC-LLM）。本论文论证：近期更大的收益来自把 LLM 放在<em>上游</em> —— 做状态表示。代价更低、时延更低、更容易部署。</li><li><strong>与 WirelessAgent++（<code>2026-05-01_arxiv-wirelessagent-plus-plus.md</code>）形成搭配：</strong> 该论文在固定 RL 基础上自动化工作流设计；本论文改变 RL 基础所消费的输入。</li></ul>",
       "images": [],
       "search_blob": "large language model (llm)-enabled reinforcement learning for wireless network optimization 基于大语言模型的强化学习在无线网络优化中的应用 agentic-ai generative-ai mac-layer scheduling zheng, zhang, niyato, et al. (february 2026) propose using llms not as the *agent* but as a **state-representation and semantic-extraction front-end** for traditional reinforcement learning on wireless-network optimisation problems. the argument: high-dimensional wireless state spaces (channel busy fractions, interference graphs, queue lengths, neighbour bss context, traffic-class semantics) blow up the input dimension for standard rl agents. an llm that pre-digests the raw state into compact, semantically-meaningful features can reduce that explosion materially. zheng、zhang、niyato 等人（2026 年 2 月）提出把 llm 作为传统强化学习用于无线网络优化时的**状态表示与语义抽取前端**，而非智能体本身。论点是：无线状态空间（信道忙占比、干扰图、队列长度、邻 bss 上下文、流量类别语义）维数极高，会让标准 rl 智能体的输入维度炸开。让 llm 把原始状态预先消化成紧凑、语义化的特征，可以显著缩减这一爆炸。 academic-paper wifi"
+    },
+    {
+      "id": "2026-05-30_arxiv-semantic-waveforms-ossdm-6g",
+      "date_found": "2026-05-30",
+      "technology": "cellular",
+      "date_published": "2026-02-10",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Semantic Waveforms for AI-Native 6G Networks (OSSDM)",
+      "title_zh": "面向 AI 原生 6G 网络的语义波形（OSSDM）",
+      "url": "https://arxiv.org/abs/2602.13316",
+      "topics": [
+        "6G",
+        "semantic-communication",
+        "waveform",
+        "OSSDM",
+        "AI-native",
+        "OFDM",
+        "RF-chain"
+      ],
+      "topic_primary": "6g-vision",
+      "topics_secondary": [
+        "cellular-ai"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-30_arxiv-semantic-waveforms-ossdm-6g.md",
+      "summary_short_en": "Hello, Hamoura, Rivet, and Calvanese Strinati (CEA-Leti / Bordeaux) propose a waveform that builds semantic meaning into the physical signal itself, rather than treating PHY transmission and semantic communication as separate layers. Their design, Orthogonal Semantic Sequency Division Multiplexing (OSSDM), is a parametrizable orthogonal-base waveform that allows controlled, graceful degradation of the transmitted signal so that semantically significant content is preserved while overall resource consumption is minimized — and crucially, it does so while respecting the hardware constraints of real RF chains.",
+      "summary_short_zh": "Hello、Hamoura、Rivet 与 Calvanese Strinati（CEA-Leti / 波尔多）提出一种将语义含义直接构建进物理信号本身的波形，而非把物理层传输与语义通信当作彼此独立的层。其设计称为正交语义序率分复用（OSSDM），是一种可参数化的正交基波形，允许对发射信号进行受控、平滑的降级，使语义重要内容得以保留、同时最小化整体资源消耗——关键是，它在尊重真实射频链硬件约束的前提下做到这点。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Hello, Hamoura, Rivet, and Calvanese Strinati (CEA-Leti / Bordeaux) propose a waveform that builds semantic meaning into the physical signal itself, rather than treating PHY transmission and semantic communication as separate layers. Their design, Orthogonal Semantic Sequency Division Multiplexing (OSSDM), is a parametrizable orthogonal-base waveform that allows controlled, graceful degradation of the transmitted signal so that semantically significant content is preserved while overall resource consumption is minimized — and crucially, it does so while respecting the hardware constraints of real RF chains.</p>\n<p>The core idea is &quot;meaning-aware physical signal construction&quot;: instead of maximizing bit-fidelity uniformly, OSSDM allocates signal energy and sequency components so that the information that matters most semantically is the most robust to channel impairment and resource cuts. This makes degradation under poor channels or tight resource budgets degrade <em>meaning</em> slowly even as raw bit-accuracy drops — the property semantic-communication systems want but that conventional OFDM, which is semantics-agnostic, does not provide.</p>\n<p>Numerical evaluation shows OSSDM outperforming conventional OFDM on both spectral efficiency and semantic fidelity while remaining robust to channel impairments. For 6G's &quot;AI-native&quot; agenda — where the network carries AI task payloads, not just bits — a waveform whose degradation is aligned with semantic importance is a concrete PHY-layer enabler.</p>\n<h3>Key technical points</h3>\n<ul><li>OSSDM: parametrizable orthogonal-base waveform encoding semantic importance into physical signal construction.</li><li>Controlled graceful degradation preserves semantically significant content under tight resource / poor channel conditions.</li><li>Explicitly accounts for RF-chain hardware constraints (not just an abstract information-theory result).</li><li>Outperforms conventional OFDM on spectral efficiency and semantic fidelity in numerical evaluation.</li><li>Targets the AI-native 6G case where the link carries AI/semantic task payloads rather than generic bits.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>Adds a PHY-layer dimension to the KB's 6G coverage, which has skewed toward RAN control / agentic orchestration. Semantic communication is widely discussed at the application layer; OSSDM pushes it down into the waveform with explicit RF-chain realism, which is the harder and more deployable contribution. Complements the AI-native-air-interface thread the cellular bin tracks.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Hello、Hamoura、Rivet 与 Calvanese Strinati（CEA-Leti / 波尔多）提出一种将语义含义直接构建进物理信号本身的波形，而非把物理层传输与语义通信当作彼此独立的层。其设计称为正交语义序率分复用（OSSDM），是一种可参数化的正交基波形，允许对发射信号进行受控、平滑的降级，使语义重要内容得以保留、同时最小化整体资源消耗——关键是，它在尊重真实射频链硬件约束的前提下做到这点。</p>\n<p>核心思想是&quot;含义感知的物理信号构造&quot;：OSSDM 不是均匀地最大化比特保真度，而是分配信号能量与序率分量，使语义上最重要的信息对信道损伤与资源削减最稳健。这样在信道恶劣或资源预算紧张时，即便原始比特准确度下降，<em>含义</em>也只缓慢退化——这正是语义通信系统所追求、而语义无关的传统 OFDM 无法提供的特性。</p>\n<p>数值评估显示 OSSDM 在频谱效率与语义保真度上均优于传统 OFDM，且对信道损伤保持稳健。对于 6G 的&quot;AI 原生&quot;议程——网络承载的是 AI 任务负载而非仅仅是比特——一种降级方式与语义重要性对齐的波形，是具体的物理层使能技术。</p>\n<h3>技术要点</h3>\n<ul><li>OSSDM：将语义重要性编码进物理信号构造的可参数化正交基波形。</li><li>受控平滑降级，在资源紧张/信道恶劣下保留语义重要内容。</li><li>明确考虑射频链硬件约束（非纯抽象信息论结果）。</li><li>数值评估中在频谱效率与语义保真度上优于传统 OFDM。</li><li>面向 AI 原生 6G：链路承载 AI/语义任务负载而非通用比特。</li></ul>\n<h3>意义与新意</h3>\n<p>为 KB 偏向 RAN 控制/智能体编排的 6G 覆盖增加了物理层维度。语义通信多在应用层讨论；OSSDM 将其下沉到波形并显式考虑射频链现实，这是更难也更可部署的贡献。与蜂窝分箱所追踪的 AI 原生空口线索互补。</p>",
+      "images": [],
+      "search_blob": "semantic waveforms for ai-native 6g networks (ossdm) 面向 ai 原生 6g 网络的语义波形（ossdm） 6g semantic-communication waveform ossdm ai-native ofdm rf-chain hello, hamoura, rivet, and calvanese strinati (cea-leti / bordeaux) propose a waveform that builds semantic meaning into the physical signal itself, rather than treating phy transmission and semantic communication as separate layers. their design, orthogonal semantic sequency division multiplexing (ossdm), is a parametrizable orthogonal-base waveform that allows controlled, graceful degradation of the transmitted signal so that semantically significant content is preserved while overall resource consumption is minimized — and crucially, it does so while respecting the hardware constraints of real rf chains. hello、hamoura、rivet 与 calvanese strinati（cea-leti / 波尔多）提出一种将语义含义直接构建进物理信号本身的波形，而非把物理层传输与语义通信当作彼此独立的层。其设计称为正交语义序率分复用（ossdm），是一种可参数化的正交基波形，允许对发射信号进行受控、平滑的降级，使语义重要内容得以保留、同时最小化整体资源消耗——关键是，它在尊重真实射频链硬件约束的前提下做到这点。 academic-paper cellular"
     },
     {
       "id": "2026-05-04_arxiv-am-fm-wifi-foundation-model",
