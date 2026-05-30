@@ -1,15 +1,15 @@
 window.KB_DATA = {
   "schema_version": 6,
-  "last_updated": "2026-05-29",
+  "last_updated": "2026-05-30",
   "topic_counts": {
+    "MAC-layer": 35,
     "agentic-AI": 34,
-    "MAC-layer": 34,
-    "802.11bn": 29,
+    "802.11bn": 30,
+    "products": 24,
     "scheduling": 24,
-    "products": 23,
     "802.11be": 21,
     "WiFi-sensing": 18,
-    "security": 17,
+    "security": 18,
     "PHY-layer": 15,
     "MLO": 14,
     "802.11bf": 12,
@@ -50,9 +50,11 @@ window.KB_DATA = {
     "LB291": 3,
     "802.11bt": 3,
     "mmWave": 3,
+    "WPA3": 3,
     "LLM": 3,
     "Wi-Fi 7": 3,
     "roaming": 3,
+    "Wi-Fi-8": 2,
     "digital-twin": 2,
     "PQC": 2,
     "UPF": 2,
@@ -81,7 +83,6 @@ window.KB_DATA = {
     "DRU": 2,
     "802.11br": 2,
     "MU-MIMO": 2,
-    "WPA3": 2,
     "FCC": 2,
     "healthcare": 2,
     "digital-car-key": 2,
@@ -93,6 +94,8 @@ window.KB_DATA = {
     "802.15.4ab": 2,
     "narrowband-assist": 2,
     "R-TWT": 2,
+    "UHR": 1,
+    "TP-Link": 1,
     "Wi-Fi-security": 1,
     "residential-proxy": 1,
     "proxyware": 1,
@@ -191,7 +194,6 @@ window.KB_DATA = {
     "LB292": 1,
     "LB294": 1,
     "WiSER": 1,
-    "Wi-Fi-8": 1,
     "SMD-roaming": 1,
     "edge-AI": 1,
     "5G-SA": 1,
@@ -323,6 +325,9 @@ window.KB_DATA = {
     "JCB": 1,
     "Resona": 1,
     "digital-wallet": 1,
+    "802.11w": 1,
+    "PMF": 1,
+    "deauthentication": 1,
     "DS2D": 1,
     "supplementary-uplink": 1,
     "uplink-coverage": 1,
@@ -335,8 +340,8 @@ window.KB_DATA = {
   "primary_topic_counts": {
     "wifi8-uhr": 17,
     "sensing-csi": 17,
-    "wifi7-deployment": 11,
-    "security-privacy": 10,
+    "wifi7-deployment": 12,
+    "security-privacy": 11,
     "mapc-cosr": 10,
     "agentic-wifi": 9,
     "spectrum-policy": 7,
@@ -369,8 +374,8 @@ window.KB_DATA = {
     "nearlink-sle": 1
   },
   "type_counts": {
-    "academic-paper": 87,
-    "industry-news": 34,
+    "academic-paper": 88,
+    "industry-news": 35,
     "ieee-document": 12,
     "product": 9,
     "proposal": 4,
@@ -378,8 +383,8 @@ window.KB_DATA = {
     "nearlink-spec": 1
   },
   "category_counts": {
-    "academia": 87,
-    "industry": 43,
+    "academia": 88,
+    "industry": 44,
     "standards": 18
   },
   "technologies_vocab": {
@@ -1551,6 +1556,7 @@ window.KB_DATA = {
         "2026-05-01_arxiv-25-years-tutorial"
       ],
       "entries_secondary": [
+        "2026-05-30_tplink-wifi8-archer8-roadmap",
         "2026-05-18_arxiv-maxlm-wlan-scheduling",
         "2026-05-12_ieee-mentor-tgbt-antwerp-digest",
         "2026-05-12_ieee-mentor-tgbq-antwerp-digest",
@@ -1605,6 +1611,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-05-30_tplink-wifi8-archer8-roadmap",
         "2026-05-12_hpe-self-driving-networks-723h",
         "2026-05-12_extreme-connect-platform-one-agentone",
         "2026-05-05_belden-acquires-ruckus-1-85b",
@@ -1622,12 +1629,8 @@ window.KB_DATA = {
         "2026-05-21_fcc-6ghz-rule-changes"
       ],
       "by_type_primary": {
-        "product": [
-          "2026-05-12_hpe-self-driving-networks-723h",
-          "2026-05-12_extreme-connect-platform-one-agentone",
-          "2026-05-04_hpe-aruba-730-utb-wifi7-ap"
-        ],
         "industry-news": [
+          "2026-05-30_tplink-wifi8-archer8-roadmap",
           "2026-05-05_belden-acquires-ruckus-1-85b",
           "2026-05-04_realtek-wifi7-revenue-surge-q1-2026",
           "2026-05-04_rcr-mdu-wifi-msp-vs-carriers",
@@ -1636,6 +1639,11 @@ window.KB_DATA = {
           "2026-05-04_ruckus-nokia-wifi7-fiber-olan",
           "2026-05-04_cisco-georgetown-wifi7-deployment",
           "2026-05-04_cisco-wifi7-breakout-year-2026"
+        ],
+        "product": [
+          "2026-05-12_hpe-self-driving-networks-723h",
+          "2026-05-12_extreme-connect-platform-one-agentone",
+          "2026-05-04_hpe-aruba-730-utb-wifi7-ap"
         ]
       }
     },
@@ -1851,6 +1859,7 @@ window.KB_DATA = {
         "2026-05-12_ieee-mentor-tgbt-antwerp-digest",
         "2026-05-25_arxiv-bfi-attack-wifi-phy-security",
         "2026-05-04_arxiv-rural-wifi-security-piso-pmwani",
+        "2026-05-30_arxiv-deauth-resilience-pmf-testbed",
         "2026-05-04_arxiv-csi-rff-microsignals-fingerprinting",
         "2026-05-03_ndss-airsnitch-wifi-client-isolation",
         "2026-05-01_arxiv-vwattacker-vowifi-security",
@@ -1880,6 +1889,7 @@ window.KB_DATA = {
         "academic-paper": [
           "2026-05-25_arxiv-bfi-attack-wifi-phy-security",
           "2026-05-04_arxiv-rural-wifi-security-piso-pmwani",
+          "2026-05-30_arxiv-deauth-resilience-pmf-testbed",
           "2026-05-04_arxiv-csi-rff-microsignals-fingerprinting",
           "2026-05-03_ndss-airsnitch-wifi-client-isolation",
           "2026-05-01_arxiv-vwattacker-vowifi-security",
@@ -2757,6 +2767,36 @@ window.KB_DATA = {
     }
   },
   "entries": [
+    {
+      "id": "2026-05-30_tplink-wifi8-archer8-roadmap",
+      "date_found": "2026-05-30",
+      "technology": "wifi",
+      "date_published": "2026-05-29",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "TP-Link publishes its first consumer Wi-Fi 8 roadmap: Archer 8 router in October 2026, Deco 8 mesh in early 2027",
+      "title_zh": "TP-Link 公布首份消费级 Wi-Fi 8 路线图：Archer 8 路由器 2026 年 10 月，Deco 8 Mesh 2027 年初",
+      "url": "https://www.tomshardware.com/networking/routers/tp-link-announces-its-first-consumer-wi-fi-8-roadmap-archer-8-routers-scheduled-to-arrive-in-october-2026-pending-fcc-approval",
+      "topics": [
+        "802.11bn",
+        "Wi-Fi-8",
+        "UHR",
+        "products",
+        "TP-Link"
+      ],
+      "topic_primary": "wifi7-deployment",
+      "topics_secondary": [
+        "wifi8-uhr"
+      ],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-05-30_tplink-wifi8-archer8-roadmap.md",
+      "summary_short_en": "TP-Link has published its first consumer Wi-Fi 8 (802.11bn) product roadmap. The lead product is a standalone Archer 8 router slated for October 2026, pending FCC approval, followed by a Deco 8 mesh system in early 2027 and a line of Wi-Fi 8 range extenders and client adapters thereafter. This is notable as one of the first consumer-vendor roadmaps to put dated milestones on pre-final-standard 802.11bn hardware — the IEEE draft is still in comment resolution (TGbn cleared ~75% of D1.0 comments at the May 2026 Antwerp interim, with D2.0 balloting expected July 2026 and final ratification projected for 2028).",
+      "summary_short_zh": "TP-Link 公布了首份面向消费者的 Wi-Fi 8（802.11bn）产品路线图。首发产品是独立式 Archer 8 路由器，计划于 2026 年 10 月推出（待 FCC 批准），随后是 2027 年初的 Deco 8 Mesh 系统，以及之后的 Wi-Fi 8 信号扩展器与客户端网卡系列。其意义在于，这是最早为\"标准定稿前\"的 802.11bn 硬件给出明确时间节点的消费厂商路线图之一——IEEE 草案仍处于意见处理阶段（TGbn 在 2026 年 5 月安特卫普中间会议上已解决约 75% 的 D1.0 意见，D2.0 投票预计 7 月，最终批准预计 2028 年）。",
+      "body_html_en": "<h3>Summary</h3>\n<p>TP-Link has published its first consumer Wi-Fi 8 (802.11bn) product roadmap. The lead product is a standalone Archer 8 router slated for October 2026, pending FCC approval, followed by a Deco 8 mesh system in early 2027 and a line of Wi-Fi 8 range extenders and client adapters thereafter. This is notable as one of the first consumer-vendor roadmaps to put dated milestones on pre-final-standard 802.11bn hardware — the IEEE draft is still in comment resolution (TGbn cleared ~75% of D1.0 comments at the May 2026 Antwerp interim, with D2.0 balloting expected July 2026 and final ratification projected for 2028).</p>\n<p>The framing follows the now-consistent industry line that Wi-Fi 8 is a reliability generation rather than a peak-speed generation: the article reiterates that 802.11bn keeps a Wi-Fi 7-class peak PHY rate and instead targets Ultra-High Reliability (UHR) — better behaviour in dense/congested environments, lower tail latency, and fewer losses on transitions. No chipset, band plan, or spatial-stream configuration was disclosed in the announcement.</p>\n<h3>Key technical points</h3>\n<ul><li>Archer 8 standalone router: October 2026 target, pending FCC approval.</li><li>Deco 8 mesh: early 2027; Wi-Fi 8 range extenders / client adapters to follow.</li><li>Pre-standard hardware: 802.11bn still in comment resolution (D2.0 ballot expected July 2026, ratification ~2028).</li><li>Reliability-first positioning (UHR); Wi-Fi 7-class peak PHY rate retained.</li><li>No chipset / band-plan / stream-count detail disclosed.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is a product-roadmap announcement, not a new mechanism — hence novelty 1. Its value is as a deployment-timeline datapoint for the <code>wifi7-deployment</code> bin: it marks when a major consumer vendor expects pre-standard Wi-Fi 8 silicon to reach retail (Q4 2026 for routers, 2027 for mesh). It complements the silicon-side coverage (MediaTek Filogic, Broadcom, Qualcomm Wi-Fi 8 previews) by adding the consumer-OEM ship-date view, and pairs with the <code>wifi8-uhr</code> standards-track entries that track the IEEE draft progress.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>TP-Link 公布了首份面向消费者的 Wi-Fi 8（802.11bn）产品路线图。首发产品是独立式 Archer 8 路由器，计划于 2026 年 10 月推出（待 FCC 批准），随后是 2027 年初的 Deco 8 Mesh 系统，以及之后的 Wi-Fi 8 信号扩展器与客户端网卡系列。其意义在于，这是最早为&quot;标准定稿前&quot;的 802.11bn 硬件给出明确时间节点的消费厂商路线图之一——IEEE 草案仍处于意见处理阶段（TGbn 在 2026 年 5 月安特卫普中间会议上已解决约 75% 的 D1.0 意见，D2.0 投票预计 7 月，最终批准预计 2028 年）。</p>\n<p>其定位延续了当前一致的行业说法：Wi-Fi 8 是可靠性代际而非峰值速率代际——文章重申 802.11bn 保持 Wi-Fi 7 级别的峰值 PHY 速率，转而以超高可靠性（UHR）为目标：在密集/拥塞环境下表现更好、尾时延更低、切换时丢包更少。公告未披露芯片、频段规划或空间流配置。</p>\n<h3>技术要点</h3>\n<ul><li>Archer 8 独立路由器：目标 2026 年 10 月，待 FCC 批准。</li><li>Deco 8 Mesh：2027 年初；随后推出 Wi-Fi 8 扩展器 / 客户端网卡。</li><li>标准定稿前硬件：802.11bn 仍在意见处理阶段（D2.0 投票预计 2026 年 7 月，批准约 2028 年）。</li><li>可靠性优先定位（UHR）；保留 Wi-Fi 7 级峰值 PHY 速率。</li><li>未披露芯片 / 频段规划 / 空间流数量等细节。</li></ul>\n<h3>意义与新意</h3>\n<p>这是一份产品路线图公告，而非新机制——故新颖度为 1。其价值在于为 <code>wifi7-deployment</code> 桶提供部署时间线数据点：标志着一家主流消费厂商预期&quot;标准定稿前&quot;的 Wi-Fi 8 硅片何时进入零售渠道（路由器约 2026 年第四季度，Mesh 约 2027 年）。它与硅片侧报道（MediaTek Filogic、Broadcom、Qualcomm 的 Wi-Fi 8 预览）互补，加入了消费 OEM 的出货时间视角，并与跟踪 IEEE 草案进度的 <code>wifi8-uhr</code> 标准化条目相配合。</p>",
+      "images": [],
+      "search_blob": "tp-link publishes its first consumer wi-fi 8 roadmap: archer 8 router in october 2026, deco 8 mesh in early 2027 tp-link 公布首份消费级 wi-fi 8 路线图：archer 8 路由器 2026 年 10 月，deco 8 mesh 2027 年初 802.11bn wi-fi-8 uhr products tp-link tp-link has published its first consumer wi-fi 8 (802.11bn) product roadmap. the lead product is a standalone archer 8 router slated for october 2026, pending fcc approval, followed by a deco 8 mesh system in early 2027 and a line of wi-fi 8 range extenders and client adapters thereafter. this is notable as one of the first consumer-vendor roadmaps to put dated milestones on pre-final-standard 802.11bn hardware — the ieee draft is still in comment resolution (tgbn cleared ~75% of d1.0 comments at the may 2026 antwerp interim, with d2.0 balloting expected july 2026 and final ratification projected for 2028). tp-link 公布了首份面向消费者的 wi-fi 8（802.11bn）产品路线图。首发产品是独立式 archer 8 路由器，计划于 2026 年 10 月推出（待 fcc 批准），随后是 2027 年初的 deco 8 mesh 系统，以及之后的 wi-fi 8 信号扩展器与客户端网卡系列。其意义在于，这是最早为\"标准定稿前\"的 802.11bn 硬件给出明确时间节点的消费厂商路线图之一——ieee 草案仍处于意见处理阶段（tgbn 在 2026 年 5 月安特卫普中间会议上已解决约 75% 的 d1.0 意见，d2.0 投票预计 7 月，最终批准预计 2028 年）。 industry-news wifi"
+    },
     {
       "id": "2026-05-29_plume-superproxy-residential-proxyware-media-boxes",
       "date_found": "2026-05-29",
@@ -6193,6 +6233,35 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>Tong、Li、Liu、Guo、Zhang（2026 年 2 月）面对一个此前在显眼处被忽视的问题：当 LLM 智能体被用于无线任务时，智能体<em>工作流</em> —— 调用哪些工具、按什么顺序、配什么推理步骤 —— 通常都是手工搭建且很难迁移。WirelessAgent++ 用自动化的<strong>程序搜索</strong>替代手工搭建：把每个工作流视为由模块化算子（检索、推理、工具调用、评估）组成的可执行代码，于是设计问题变成&quot;在能解决该无线任务的程序空间中搜索&quot;。</p>\n<p>搜索引擎是一个领域自适应的<strong>蒙特卡洛树搜索（MCTS）</strong>—— 之所以&quot;领域自适应&quot;，是因为代价函数与算子集都对无线任务作了定制（例如处理 KPI 阈值、对网络控制器的工具调用）。框架之外，作者还发布了 <strong>WirelessBench</strong>，一个三模块的基准测试套件：无线通信作业题（推理）、网络切片（决策）、移动业务保障（工具使用）。</p>\n<p>关键数据：三项基准上分别达到 78.37% / 90.95% / 97.07%，<strong>单任务搜索成本 &lt; 5 美元</strong> —— 把框架定位在&quot;便宜跑得起、易于重部署&quot;区间。相对基线提升显著：相对提示工程基线最高 +31%，相对通用程序优化器 +11.1%。代码开源。</p>\n<h3>技术要点</h3>\n<ul><li>智能体工作流表示为由模块化算子组成的<strong>可执行代码</strong></li><li>领域自适应 <strong>MCTS</strong> 作为工作流搜索引擎</li><li>发布了 <strong>WirelessBench</strong>：通信作业题（推理）、网络切片（决策）、业务保障（工具调用）</li><li>三轴关键得分：78.37 / 90.95 / 97.07%</li><li>单任务搜索成本 &lt; 5 美元；相对提示工程基线最高 +31%，相对通用程序优化器 +11.1%</li><li>代码开源</li></ul>\n<h3>意义与新意</h3>\n<ul><li><strong>把无线智能体 AI 推过了&quot;提示工程时代&quot;。</strong> 如今&quot;为无线场景做智能体&quot;的论文大多依赖手工搭建的提示 + 工具栈。WirelessAgent++ 证明工作流本身可以被搜索，并且搜索收敛得足够快、足够便宜，可逐任务重部署。</li><li><strong>WirelessBench 有望成为引用骨干。</strong> &quot;三轴 / 三类任务&quot;基准正是该领域长期缺失的东西，后续无线智能体论文很可能会在此套件上报告结果。</li><li><strong>与 MAPC-LLM（<code>2026-05-01_arxiv-mapc-llm-agents.md</code>）相邻：</strong> 该论文手工搭建了 AP-as-LLM-agent 的工作流。WirelessAgent++ 提供了让这类工作流<em>自动演化</em>的方法 —— 是任何智能体 Wi-Fi 工作的自然后续方向。</li></ul>",
       "images": [],
       "search_blob": "wirelessagent++: automated agentic workflow design and benchmarking for wireless networks wirelessagent++：面向无线网络的自动化智能体工作流设计与基准测试 agentic-ai generative-ai tong, li, liu, guo, and zhang (february 2026) attack a problem that has so far been hidden in plain sight: when llm agents are applied to wireless-network tasks, the agentic *workflow* — which tools to call, in what order, with what reasoning steps — is hand-crafted and rarely portable. wirelessagent++ replaces the hand-crafting with an automated **program-search** procedure. each workflow is treated as a piece of executable code composed of modular operators (retrieval, reasoning, tool use, evaluation), and the design problem becomes \"search the space of programs that solve this wireless task.\" tong、li、liu、guo、zhang（2026 年 2 月）面对一个此前在显眼处被忽视的问题：当 llm 智能体被用于无线任务时，智能体*工作流* —— 调用哪些工具、按什么顺序、配什么推理步骤 —— 通常都是手工搭建且很难迁移。wirelessagent++ 用自动化的**程序搜索**替代手工搭建：把每个工作流视为由模块化算子（检索、推理、工具调用、评估）组成的可执行代码，于是设计问题变成\"在能解决该无线任务的程序空间中搜索\"。 academic-paper wifi"
+    },
+    {
+      "id": "2026-05-30_arxiv-deauth-resilience-pmf-testbed",
+      "date_found": "2026-05-30",
+      "technology": "wifi",
+      "date_published": "2026-02-26",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "A software-defined testbed for quantifying deauthentication resilience: PMF / WPA3 vs legacy Wi-Fi",
+      "title_zh": "量化去认证攻击韧性的软件定义测试床：PMF / WPA3 与传统 Wi-Fi 的对比",
+      "url": "https://arxiv.org/abs/2602.23513",
+      "topics": [
+        "802.11w",
+        "PMF",
+        "deauthentication",
+        "WPA3",
+        "security",
+        "MAC-layer"
+      ],
+      "topic_primary": "security-privacy",
+      "topics_secondary": [],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-05-30_arxiv-deauth-resilience-pmf-testbed.md",
+      "summary_short_en": "Carbajal and Jodeiri Akbarfam (Washington State University Tri-Cities) present an automated, software-defined access-point testbed that quantifies how well modern Wi-Fi configurations resist the classical deauthentication denial-of-service attack — the attack that forges unprotected 802.11 management (deauth/disassociate) frames to forcibly disconnect clients. The testbed is built on Arch Linux with three roles (software AP host, attacker, clients) using commodity NICs in monitor/injection mode, and is offered as a reproducible alternative to vendor-specific platforms.",
+      "summary_short_zh": "Carbajal 与 Jodeiri Akbarfam（华盛顿州立大学 Tri-Cities 分校）提出了一个自动化的软件定义接入点测试床，用于量化现代 Wi-Fi 配置对经典去认证拒绝服务攻击的抵抗能力——该攻击伪造未受保护的 802.11 管理帧（deauth/disassociate）以强制断开客户端。测试床基于 Arch Linux，包含三个角色（软件 AP 主机、攻击者、客户端），使用支持监听/注入模式的通用网卡，作为可复现的、不依赖特定厂商平台的替代方案。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Carbajal and Jodeiri Akbarfam (Washington State University Tri-Cities) present an automated, software-defined access-point testbed that quantifies how well modern Wi-Fi configurations resist the classical deauthentication denial-of-service attack — the attack that forges unprotected 802.11 management (deauth/disassociate) frames to forcibly disconnect clients. The testbed is built on Arch Linux with three roles (software AP host, attacker, clients) using commodity NICs in monitor/injection mode, and is offered as a reproducible alternative to vendor-specific platforms.</p>\n<p>They sweep five security configurations — open, WPA1, WPA2 without Protected Management Frames (PMF / 802.11w), WPA2 with PMF, and WPA3 — and report three metrics: average client disconnection rate, median packets-to-disconnect, and median time-to-disruption. The result is a clean quantitative confirmation of the expected boundary: open, WPA1 and WPA2-without-PMF were 100% vulnerable (clients dropped in ~0.22–0.28 s after a few thousand injected frames), while WPA2-with-PMF and WPA3 saw 0% successful disconnections under the tested conditions. The headline contribution is the systematic, identical-conditions comparison and the open testbed, not a new attack or defense.</p>\n<h3>Key technical points</h3>\n<ul><li>Reproducible software-defined AP testbed (Arch Linux + commodity monitor-mode NICs); host / attacker / client roles.</li><li>Five configs swept: open, WPA1, WPA2 (no PMF), WPA2 (PMF), WPA3.</li><li>Metrics: avg disconnect %, median packets-to-disconnect, median time-to-disruption.</li><li>Findings: open / WPA1 / WPA2-no-PMF = 100% disconnect (~0.22–0.28 s); WPA2-PMF and WPA3 = 0%.</li><li>Confirms PMF (802.11w) as the operative mitigation; isolates its effect under identical conditions.</li><li>Limitation: small client count (hardware-constrained), so dense-deployment generalisation is open.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>Novelty 1 — this is a confirmatory measurement study, not a new mechanism. Deauthentication DoS and PMF/802.11w as its mitigation are long established (prior art: Schepers et al. 2022; Chatzoglou et al. 2022). The contribution is the open, reproducible testbed and a clean side-by-side dataset across all five configurations under identical conditions, which is useful as a teaching/benchmarking reference and as a quantified argument for retiring legacy no-PMF deployments. It is the first <code>security-privacy</code> paper added since the May lull and resets the dedicated arxiv security query after a stale run.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Carbajal 与 Jodeiri Akbarfam（华盛顿州立大学 Tri-Cities 分校）提出了一个自动化的软件定义接入点测试床，用于量化现代 Wi-Fi 配置对经典去认证拒绝服务攻击的抵抗能力——该攻击伪造未受保护的 802.11 管理帧（deauth/disassociate）以强制断开客户端。测试床基于 Arch Linux，包含三个角色（软件 AP 主机、攻击者、客户端），使用支持监听/注入模式的通用网卡，作为可复现的、不依赖特定厂商平台的替代方案。</p>\n<p>作者遍历五种安全配置——开放、WPA1、不带受保护管理帧（PMF / 802.11w）的 WPA2、带 PMF 的 WPA2、以及 WPA3——并报告三项指标：平均客户端断连率、断连所需中位数据包数、以及中位中断时间。结果干净地量化确认了预期边界：开放、WPA1 与不带 PMF 的 WPA2 在 100% 情况下被攻破（注入数千帧后约 0.22–0.28 秒内客户端掉线），而带 PMF 的 WPA2 与 WPA3 在测试条件下断连成功率为 0%。核心贡献是同等条件下的系统化对比与开放测试床，而非新的攻击或防御。</p>\n<h3>技术要点</h3>\n<ul><li>可复现的软件定义 AP 测试床（Arch Linux + 通用监听模式网卡）；主机 / 攻击者 / 客户端三角色。</li><li>遍历五种配置：开放、WPA1、WPA2（无 PMF）、WPA2（PMF）、WPA3。</li><li>指标：平均断连率、断连所需中位数据包数、中位中断时间。</li><li>结论：开放 / WPA1 / WPA2-无-PMF = 100% 断连（约 0.22–0.28 秒）；WPA2-PMF 与 WPA3 = 0%。</li><li>确认 PMF（802.11w）为有效缓解手段；在同等条件下隔离其作用。</li><li>局限：客户端数量少（受硬件限制），密集部署下的泛化性待验证。</li></ul>\n<h3>意义与新意</h3>\n<p>新颖度 1——这是一项确认性测量研究，而非新机制。去认证拒绝服务及其缓解手段 PMF/802.11w 早已确立（现有技术：Schepers 等 2022；Chatzoglou 等 2022）。其贡献在于开放、可复现的测试床，以及在同等条件下覆盖全部五种配置的整洁对比数据集，可作为教学/基准参考，并为淘汰传统无 PMF 部署提供量化论据。它是五月沉寂以来新增的首篇 <code>security-privacy</code> 论文，并在一次陈旧检索后重置了专用的 arxiv 安全检索源。</p>",
+      "images": [],
+      "search_blob": "a software-defined testbed for quantifying deauthentication resilience: pmf / wpa3 vs legacy wi-fi 量化去认证攻击韧性的软件定义测试床：pmf / wpa3 与传统 wi-fi 的对比 802.11w pmf deauthentication wpa3 security mac-layer carbajal and jodeiri akbarfam (washington state university tri-cities) present an automated, software-defined access-point testbed that quantifies how well modern wi-fi configurations resist the classical deauthentication denial-of-service attack — the attack that forges unprotected 802.11 management (deauth/disassociate) frames to forcibly disconnect clients. the testbed is built on arch linux with three roles (software ap host, attacker, clients) using commodity nics in monitor/injection mode, and is offered as a reproducible alternative to vendor-specific platforms. carbajal 与 jodeiri akbarfam（华盛顿州立大学 tri-cities 分校）提出了一个自动化的软件定义接入点测试床，用于量化现代 wi-fi 配置对经典去认证拒绝服务攻击的抵抗能力——该攻击伪造未受保护的 802.11 管理帧（deauth/disassociate）以强制断开客户端。测试床基于 arch linux，包含三个角色（软件 ap 主机、攻击者、客户端），使用支持监听/注入模式的通用网卡，作为可复现的、不依赖特定厂商平台的替代方案。 academic-paper wifi"
     },
     {
       "id": "2026-05-04_cisco-georgetown-wifi7-deployment",
