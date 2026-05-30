@@ -22,12 +22,12 @@ window.KB_DATA = {
     "CSI": 6,
     "LEO": 5,
     "BLE": 5,
+    "NearLink": 5,
+    "SparkLink": 5,
     "XR": 5,
     "AI-RAN": 4,
     "network-slicing": 4,
     "O-RAN": 4,
-    "NearLink": 4,
-    "SparkLink": 4,
     "OFDMA": 4,
     "NPCA": 4,
     "802.11bq": 4,
@@ -351,6 +351,11 @@ window.KB_DATA = {
     "China-national-standard": 1,
     "short-range-wireless": 1,
     "standardization": 1,
+    "StarLink-audio": 1,
+    "L2HC": 1,
+    "lossless-audio": 1,
+    "Kirin-A3": 1,
+    "TWS": 1,
     "privacy": 1
   },
   "primary_topic_counts": {
@@ -376,6 +381,7 @@ window.KB_DATA = {
     "starlink": 2,
     "ntn": 2,
     "5g-nr": 2,
+    "nearlink-slb": 2,
     "bt-le": 2,
     "sat-direct-device": 2,
     "nearlink-automotive": 2,
@@ -383,7 +389,6 @@ window.KB_DATA = {
     "roaming-mobility": 2,
     "mlo": 2,
     "ngso-regulation": 1,
-    "nearlink-slb": 1,
     "mmwave-bq": 1,
     "uwb-radar": 1,
     "bt-mesh": 1,
@@ -394,14 +399,14 @@ window.KB_DATA = {
     "academic-paper": 91,
     "industry-news": 35,
     "ieee-document": 12,
-    "product": 10,
+    "product": 11,
     "proposal": 4,
     "bluetooth-spec": 1,
     "nearlink-spec": 1
   },
   "category_counts": {
     "academia": 91,
-    "industry": 45,
+    "industry": 46,
     "standards": 18
   },
   "technologies_vocab": {
@@ -2717,7 +2722,8 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
-        "2026-05-21_sparklink-ecosystem-2026-overview"
+        "2026-05-21_sparklink-ecosystem-2026-overview",
+        "2026-05-30_huawei-starlink-e2-audio-lossless"
       ],
       "entries_secondary": [
         "2026-05-24_sparklink-car-key-device-rollout-2-0",
@@ -2727,6 +2733,9 @@ window.KB_DATA = {
       "by_type_primary": {
         "industry-news": [
           "2026-05-21_sparklink-ecosystem-2026-overview"
+        ],
+        "product": [
+          "2026-05-30_huawei-starlink-e2-audio-lossless"
         ]
       }
     },
@@ -2747,7 +2756,8 @@ window.KB_DATA = {
         "2026-05-28_sparklink-gbt-46803-national-standards"
       ],
       "entries_secondary": [
-        "2026-05-21_sparklink-ecosystem-2026-overview"
+        "2026-05-21_sparklink-ecosystem-2026-overview",
+        "2026-05-30_huawei-starlink-e2-audio-lossless"
       ],
       "by_type_primary": {
         "nearlink-spec": [
@@ -7096,6 +7106,38 @@ window.KB_DATA = {
         }
       ],
       "search_blob": "learning multi-access point coordination in agentic ai wi-fi with large language models 用大语言模型学习智能体 ai wi-fi 中的多接入点协调 802.11bn mlo agentic-ai mac-layer scheduling fan et al. (nov 2025) propose treating each wi-fi access point as an autonomous llm agent that negotiates multi-ap coordination (mapc) decisions through natural-language dialogue with neighboring aps. the paper frames mapc — the headline 802.11bn feature for dense-deployment interference mitigation — as a multi-agent reasoning problem rather than a traditional rule-based or rl-based optimization. each ap-agent maintains memory, performs reflection over past decisions, and can invoke \"tools\" (read radio metrics, propose airtime allocations, vote on coordinated-beamforming pairings). agents converge on coordination strategies via iterative dialogue, demonstrated to beat spatial-reuse baselines. fan 等人（2025 年 11 月）提出把每个 wi-fi 接入点视为一个自主的大语言模型（llm）智能体，通过与邻居 ap 进行自然语言对话来协商多 ap 协调（mapc）决策。论文把 mapc —— 802.11bn 用于密集部署干扰抑制的标志性特性 —— 框定为多智能体推理问题，而不是传统的基于规则或基于强化学习的优化。每个 ap 智能体保留记忆、对历史决策进行反思，并可以调用\"工具\"（读取无线指标、提议空时分配、对协同波束成形配对投票）。智能体通过迭代对话收敛到协调策略，论文展示其在仿真中优于空间复用基线。 academic-paper wifi"
+    },
+    {
+      "id": "2026-05-30_huawei-starlink-e2-audio-lossless",
+      "date_found": "2026-05-30",
+      "technology": "nearlink",
+      "date_published": "2025-11-25",
+      "type": "product",
+      "category": "industry",
+      "title_en": "Huawei StarLink E2.0 Audio: NearLink-Based Master-Quality Lossless Wireless Audio (FreeBuds Pro 5, FreeClip 2 OTA)",
+      "title_zh": "华为星闪 E2.0 音频：基于 NearLink 的母带级无损无线音频（FreeBuds Pro 5、FreeClip 2 OTA）",
+      "url": "https://finance.sina.com.cn/roll/2025-11-26/doc-infystcp2024958.shtml",
+      "topics": [
+        "NearLink",
+        "SparkLink",
+        "StarLink-audio",
+        "L2HC",
+        "lossless-audio",
+        "Kirin-A3",
+        "TWS"
+      ],
+      "topic_primary": "nearlink-slb",
+      "topics_secondary": [
+        "nearlink-sle"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-05-30_huawei-starlink-e2-audio-lossless.md",
+      "summary_short_en": "Huawei's StarLink (星闪 / NearLink) ecosystem opened an audio front in late 2025 that expanded through early 2026, giving the KB its first coverage of NearLink as a wireless-audio transport rather than a ranging / car-key / IoT-control technology. The flagship vehicle is the FreeBuds Pro 5 (launched 25 Nov 2025 alongside the Mate 80 series), the first TWS earbud carrying StarLink E2.0 audio, driven by a Kirin A3 chip. Over StarLink audio it uses the L2HC 5.0 codec to deliver 96 kHz / 24-bit \"master-quality\" lossless at up to 4.6 Mbps, with a peak link rate of up to 16 Mbps — roughly 8× classic Bluetooth audio — and antenna-side active frequency-band optimization that adaptively hops to the best channel.",
+      "summary_short_zh": "华为星闪（NearLink）生态在 2025 年底开辟了音频战线，并在 2026 年初持续扩展，为本知识库带来首个将 NearLink 作为无线音频传输（而非测距/车钥匙/物联网控制）的覆盖。旗舰载体是 FreeBuds Pro 5（2025 年 11 月 25 日随 Mate 80 系列发布），首款搭载星闪 E2.0 音频的 TWS 耳机，由麒麟 A3 芯片驱动。通过星闪音频，它采用 L2HC 5.0 编解码，实现 96 kHz / 24 bit 母带级无损、最高 4.6 Mbps，峰值链路速率最高达 16 Mbps——约为传统蓝牙音频的 8 倍——并配合耳机天线侧的主动频段寻优，自适应切换到最佳信道。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Huawei's StarLink (星闪 / NearLink) ecosystem opened an audio front in late 2025 that expanded through early 2026, giving the KB its first coverage of NearLink as a wireless-audio transport rather than a ranging / car-key / IoT-control technology. The flagship vehicle is the FreeBuds Pro 5 (launched 25 Nov 2025 alongside the Mate 80 series), the first TWS earbud carrying StarLink E2.0 audio, driven by a Kirin A3 chip. Over StarLink audio it uses the L2HC 5.0 codec to deliver 96 kHz / 24-bit &quot;master-quality&quot; lossless at up to 4.6 Mbps, with a peak link rate of up to 16 Mbps — roughly 8× classic Bluetooth audio — and antenna-side active frequency-band optimization that adaptively hops to the best channel.</p>\n<p>In January 2026 Huawei extended StarLink E2.0 audio to the FreeClip 2 ear-clip earbuds via an OTA firmware update, and a May 2026 phone adaptation list formalized the split: StarLink E2.0 devices (Mate 80 / Mate X7 / Pura 80 / Pura 90 / Pura X Max / nova 15 Pro / Ultra) get audio + car key + precise finding, while older StarLink E1.0 devices (Mate 70/60, Pura 70/X, nova 14) lack the audio and car-key paths. StarLink audio therefore requires both an E2.0-capable phone SoC and an E2.0-capable earbud.</p>\n<p>The significance is that NearLink is now competing directly with Bluetooth LE Audio / LC3 on the consumer-audio battleground, leaning on its low-latency, high-reliability, high-throughput short-range link to claim lossless master-quality streaming that classic Bluetooth cannot sustain. This is the audio counterpart to the SparkLink car-key and national-standard threads already in the KB.</p>\n<h3>Key technical points</h3>\n<ul><li>FreeBuds Pro 5 (25 Nov 2025): first TWS earbud with StarLink E2.0 audio; Kirin A3 chip.</li><li>L2HC 5.0 codec: 96 kHz / 24-bit lossless, up to 4.6 Mbps &quot;master-quality&quot;; peak link up to 16 Mbps (~8× classic Bluetooth).</li><li>Antenna-side active band optimization with dynamic adaptive channel switching.</li><li>Jan 2026: StarLink E2.0 audio extended to FreeClip 2 via OTA; May 2026 adaptation matrix splits E2.0 (audio + car key) vs E1.0 (neither).</li><li>Requires both an E2.0-capable phone SoC and an E2.0-capable earbud (Mate 80 / Pura 80/90 / nova 15 Pro/Ultra class).</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's NearLink coverage was entirely ranging / car-key / standards-and-ecosystem; this opens the consumer-audio dimension. It positions StarLink E2.0 + L2HC 5.0 as a direct challenger to Bluetooth LE Audio / LC3 and Auracast on lossless quality and throughput — a useful cross-reference against the KB's Bluetooth LE Audio entries. The E1.0-vs-E2.0 device split is the practical gating fact: NearLink audio is a closed Huawei-SoC-to-Huawei-earbud loop today, unlike Bluetooth's cross-vendor interop.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>华为星闪（NearLink）生态在 2025 年底开辟了音频战线，并在 2026 年初持续扩展，为本知识库带来首个将 NearLink 作为无线音频传输（而非测距/车钥匙/物联网控制）的覆盖。旗舰载体是 FreeBuds Pro 5（2025 年 11 月 25 日随 Mate 80 系列发布），首款搭载星闪 E2.0 音频的 TWS 耳机，由麒麟 A3 芯片驱动。通过星闪音频，它采用 L2HC 5.0 编解码，实现 96 kHz / 24 bit 母带级无损、最高 4.6 Mbps，峰值链路速率最高达 16 Mbps——约为传统蓝牙音频的 8 倍——并配合耳机天线侧的主动频段寻优，自适应切换到最佳信道。</p>\n<p>2026 年 1 月，华为通过 OTA 固件升级将星闪 E2.0 音频扩展到 FreeClip 2 夹耳耳机；2026 年 5 月的手机适配清单正式确立了能力划分：星闪 E2.0 设备（Mate 80 / Mate X7 / Pura 80 / Pura 90 / Pura X Max / nova 15 Pro / Ultra）获得音频 + 车钥匙 + 精准查找，而较旧的星闪 E1.0 设备（Mate 70/60、Pura 70/X、nova 14）则缺少音频与车钥匙能力。因此星闪音频同时要求 E2.0 能力的手机 SoC 与 E2.0 能力的耳机。</p>\n<p>其意义在于：NearLink 现已在消费音频战场上与蓝牙 LE Audio / LC3 正面竞争，凭借低时延、高可靠、高吞吐的短距链路，主张传统蓝牙无法维持的母带级无损流传输。这是 KB 中已有的星闪车钥匙与国家标准线索在音频侧的对应。</p>\n<h3>技术要点</h3>\n<ul><li>FreeBuds Pro 5（2025-11-25）：首款星闪 E2.0 音频 TWS 耳机；麒麟 A3 芯片。</li><li>L2HC 5.0 编解码：96 kHz / 24 bit 无损，最高 4.6 Mbps 母带级；峰值链路最高 16 Mbps（约为传统蓝牙的 8 倍）。</li><li>天线侧主动频段寻优，动态自适应切换信道。</li><li>2026 年 1 月：星闪 E2.0 音频经 OTA 扩展至 FreeClip 2；2026 年 5 月适配清单区分 E2.0（音频 + 车钥匙）与 E1.0（两者皆无）。</li><li>同时需要 E2.0 能力的手机 SoC 与 E2.0 能力的耳机（Mate 80 / Pura 80/90 / nova 15 Pro/Ultra 级别）。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 此前的 NearLink 覆盖完全集中在测距/车钥匙/标准与生态；本条目开辟了消费音频维度。它将星闪 E2.0 + L2HC 5.0 定位为在无损音质与吞吐上对蓝牙 LE Audio / LC3 与 Auracast 的直接挑战者——可与 KB 的蓝牙 LE Audio 条目交叉对照。E1.0 与 E2.0 的设备划分是关键的实际门槛：当前 NearLink 音频是华为 SoC 到华为耳机的封闭闭环，不同于蓝牙的跨厂商互操作。</p>",
+      "images": [],
+      "search_blob": "huawei starlink e2.0 audio: nearlink-based master-quality lossless wireless audio (freebuds pro 5, freeclip 2 ota) 华为星闪 e2.0 音频：基于 nearlink 的母带级无损无线音频（freebuds pro 5、freeclip 2 ota） nearlink sparklink starlink-audio l2hc lossless-audio kirin-a3 tws huawei's starlink (星闪 / nearlink) ecosystem opened an audio front in late 2025 that expanded through early 2026, giving the kb its first coverage of nearlink as a wireless-audio transport rather than a ranging / car-key / iot-control technology. the flagship vehicle is the freebuds pro 5 (launched 25 nov 2025 alongside the mate 80 series), the first tws earbud carrying starlink e2.0 audio, driven by a kirin a3 chip. over starlink audio it uses the l2hc 5.0 codec to deliver 96 khz / 24-bit \"master-quality\" lossless at up to 4.6 mbps, with a peak link rate of up to 16 mbps — roughly 8× classic bluetooth audio — and antenna-side active frequency-band optimization that adaptively hops to the best channel. 华为星闪（nearlink）生态在 2025 年底开辟了音频战线，并在 2026 年初持续扩展，为本知识库带来首个将 nearlink 作为无线音频传输（而非测距/车钥匙/物联网控制）的覆盖。旗舰载体是 freebuds pro 5（2025 年 11 月 25 日随 mate 80 系列发布），首款搭载星闪 e2.0 音频的 tws 耳机，由麒麟 a3 芯片驱动。通过星闪音频，它采用 l2hc 5.0 编解码，实现 96 khz / 24 bit 母带级无损、最高 4.6 mbps，峰值链路速率最高达 16 mbps——约为传统蓝牙音频的 8 倍——并配合耳机天线侧的主动频段寻优，自适应切换到最佳信道。 product nearlink"
     },
     {
       "id": "2026-05-01_arxiv-mc-az-performance-comparison",
