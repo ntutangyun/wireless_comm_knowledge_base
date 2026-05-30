@@ -47,3 +47,8 @@ This is the clearest 2026 signal that BLE silicon is absorbing dedicated NPU blo
 
 ## Why it matters / what's new (ZH)
 这是 2026 年最清晰的信号之一：BLE 芯片正在吸纳专用 NPU 模块——把常开推理（关键词唤醒、异常检测）下沉到连接 SoC 本身，而非独立 AI 芯片。对 KB 而言，它把 bt-le 分箱锚定到边缘 AI 方向，并与信道探测（该器件原生支持）相连，打通定位与 AI 两条线索。它是 WiFi 条目所追踪的 "射频 SoC 上的 AI" 大趋势在蓝牙侧的对应。
+
+## Images
+![nRF54LM20B CSP package | nRF54LM20B CSP 封装](https://www.cnx-software.com/wp-content/uploads/2026/01/nRF54LM20B.jpg)
+![nRF54LM20B QFN package | nRF54LM20B QFN 封装](https://www.cnx-software.com/wp-content/uploads/2026/01/Nordic-Semi-nRF54LM20B-QFN-package.webp)
+![Axon NPU block diagram | Axon NPU 框图](https://www.cnx-software.com/wp-content/uploads/2026/01/Nordic-Sermi-Wireless-SoC-Axon-NPU.webp)
