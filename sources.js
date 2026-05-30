@@ -1023,6 +1023,32 @@ window.SOURCES_DATA = {
       "technology": "bluetooth"
     },
     {
+      "id": "novelbits",
+      "name": "Novel Bits — BLE technical blog",
+      "url": "https://novelbits.io/",
+      "kind": "html",
+      "category": "industry",
+      "topics_hint": [
+        "bt-le",
+        "bt-channel-sounding",
+        "bt-le-audio"
+      ],
+      "notes": "Added 2026-05-30 during the Jan-2026 backfill. Independent deep-dive BLE engineering blog; consistently the clearest technical explainers on Channel Sounding (nRF54L15 applications), LE Audio/Auracast profile stacks, and BLE security. Higher analytical depth than vendor PR. Surfaced repeatedly across the bluetooth backfill sweep.",
+      "technology": "bluetooth"
+    },
+    {
+      "id": "audioxpress",
+      "name": "audioXpress — Bluetooth audio / SIG releases",
+      "url": "https://audioxpress.com/",
+      "kind": "html",
+      "category": "industry",
+      "topics_hint": [
+        "bt-le-audio"
+      ],
+      "notes": "Added 2026-05-30 during the Jan-2026 backfill. Pro-audio trade publication; authoritative, prompt coverage of Bluetooth SIG Core-spec releases (6.2, 6.3) and the LE Audio / Auracast roadmap with engineering detail. Complements bluetooth-sig-news (which is Playwright-gated).",
+      "technology": "bluetooth"
+    },
+    {
       "id": "arxiv-api-uwb",
       "name": "arxiv API — UWB papers",
       "url": "http://export.arxiv.org/api/query?search_query=all:ultra-wideband+OR+all:802.15.4z+OR+all:FiRa&sortBy=submittedDate&sortOrder=descending&max_results=10",

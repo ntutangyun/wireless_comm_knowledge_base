@@ -13,7 +13,7 @@ window.KB_DATA = {
     "PHY-layer": 15,
     "MLO": 14,
     "802.11bf": 12,
-    "IoT": 10,
+    "IoT": 11,
     "802.11ax": 9,
     "6G": 8,
     "MAPC": 8,
@@ -21,6 +21,7 @@ window.KB_DATA = {
     "802.11bp": 6,
     "CSI": 6,
     "LEO": 5,
+    "BLE": 5,
     "XR": 5,
     "AI-RAN": 4,
     "network-slicing": 4,
@@ -41,6 +42,7 @@ window.KB_DATA = {
     "NTN": 3,
     "resource-allocation": 3,
     "802.11ac": 3,
+    "AoA": 3,
     "5G": 3,
     "UWB": 3,
     "backscatter": 3,
@@ -65,10 +67,10 @@ window.KB_DATA = {
     "RIC": 2,
     "xApp": 2,
     "QoE": 2,
-    "BLE": 2,
     "handover": 2,
     "ISLA": 2,
     "SLE": 2,
+    "Nordic": 2,
     "deterministic-latency": 2,
     "BT-LE": 2,
     "Channel-Sounding": 2,
@@ -83,7 +85,10 @@ window.KB_DATA = {
     "DRU": 2,
     "802.11br": 2,
     "MU-MIMO": 2,
+    "edge-AI": 2,
     "FCC": 2,
+    "Bluetooth": 2,
+    "channel-sounding": 2,
     "healthcare": 2,
     "digital-car-key": 2,
     "AIOps": 2,
@@ -151,7 +156,6 @@ window.KB_DATA = {
     "saturation-throughput": 1,
     "bt-location": 1,
     "direction-finding": 1,
-    "AoA": 1,
     "DoA": 1,
     "RSSI": 1,
     "maximum-likelihood": 1,
@@ -175,7 +179,6 @@ window.KB_DATA = {
     "PPO": 1,
     "gossip": 1,
     "ESB": 1,
-    "Nordic": 1,
     "energy-efficiency": 1,
     "protocol-hybrid": 1,
     "LE-UWB": 1,
@@ -195,7 +198,6 @@ window.KB_DATA = {
     "LB294": 1,
     "WiSER": 1,
     "SMD-roaming": 1,
-    "edge-AI": 1,
     "5G-SA": 1,
     "URSP": 1,
     "AI": 1,
@@ -213,8 +215,6 @@ window.KB_DATA = {
     "6-GHz": 1,
     "LPI": 1,
     "spectrum": 1,
-    "Bluetooth": 1,
-    "channel-sounding": 1,
     "distance-reduction-attack": 1,
     "ToA": 1,
     "rApp": 1,
@@ -300,6 +300,12 @@ window.KB_DATA = {
     "power-save": 1,
     "fall-detection": 1,
     "transformer": 1,
+    "LoRa": 1,
+    "mesh": 1,
+    "AODV": 1,
+    "emergency-comms": 1,
+    "dual-radio": 1,
+    "Coded-PHY": 1,
     "regulation": 1,
     "security-privacy": 1,
     "BFI": 1,
@@ -331,6 +337,16 @@ window.KB_DATA = {
     "DS2D": 1,
     "supplementary-uplink": 1,
     "uplink-coverage": 1,
+    "phased-array": 1,
+    "inertial-navigation": 1,
+    "factor-graph": 1,
+    "GNSS-denied": 1,
+    "CTE": 1,
+    "channel-model": 1,
+    "indoor-positioning": 1,
+    "L-moments": 1,
+    "nRF54L": 1,
+    "NPU": 1,
     "GB/T-46803": 1,
     "China-national-standard": 1,
     "short-range-wireless": 1,
@@ -352,6 +368,7 @@ window.KB_DATA = {
     "rtwt-latency": 4,
     "ftm-ranging": 4,
     "leo-constellations": 3,
+    "bt-location": 3,
     "uwb-ranging": 3,
     "bt-channel-sounding": 3,
     "6g-vision": 3,
@@ -359,32 +376,32 @@ window.KB_DATA = {
     "starlink": 2,
     "ntn": 2,
     "5g-nr": 2,
+    "bt-le": 2,
     "sat-direct-device": 2,
     "nearlink-automotive": 2,
     "wifi-for-ai": 2,
     "roaming-mobility": 2,
     "mlo": 2,
     "ngso-regulation": 1,
-    "bt-location": 1,
     "nearlink-slb": 1,
-    "bt-le": 1,
     "mmwave-bq": 1,
     "uwb-radar": 1,
+    "bt-mesh": 1,
     "uwb-fi-ra": 1,
     "nearlink-sle": 1
   },
   "type_counts": {
-    "academic-paper": 88,
+    "academic-paper": 91,
     "industry-news": 35,
     "ieee-document": 12,
-    "product": 9,
+    "product": 10,
     "proposal": 4,
     "bluetooth-spec": 1,
     "nearlink-spec": 1
   },
   "category_counts": {
-    "academia": 88,
-    "industry": 44,
+    "academia": 91,
+    "industry": 45,
     "standards": 18
   },
   "technologies_vocab": {
@@ -2441,16 +2458,23 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
-        "2026-05-21_arxiv-enhanced-ble-esb-hybrid"
+        "2026-05-21_arxiv-enhanced-ble-esb-hybrid",
+        "2026-05-30_nordic-nrf54lm20b-npu-ble-soc"
       ],
       "entries_secondary": [
         "2026-05-25_arxiv-ble-doa-missed-detections",
         "2026-05-24_arxiv-connectionless-ble-cs-pawr",
-        "2026-05-24_bluetooth-core-6-3-spec-release"
+        "2026-05-24_bluetooth-core-6-3-spec-release",
+        "2026-05-30_arxiv-dual-radio-ble-lora-hierarchical-mesh",
+        "2026-05-30_arxiv-bluetooth-phased-array-inertial-nav",
+        "2026-05-30_arxiv-lmoment-ble-cte-los-nlos"
       ],
       "by_type_primary": {
         "academic-paper": [
           "2026-05-21_arxiv-enhanced-ble-esb-hybrid"
+        ],
+        "product": [
+          "2026-05-30_nordic-nrf54lm20b-npu-ble-soc"
         ]
       }
     },
@@ -2486,9 +2510,15 @@ window.KB_DATA = {
       "diagram_mmd": "",
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
-      "entries_primary": [],
+      "entries_primary": [
+        "2026-05-30_arxiv-dual-radio-ble-lora-hierarchical-mesh"
+      ],
       "entries_secondary": [],
-      "by_type_primary": {}
+      "by_type_primary": {
+        "academic-paper": [
+          "2026-05-30_arxiv-dual-radio-ble-lora-hierarchical-mesh"
+        ]
+      }
     },
     "bt-channel-sounding": {
       "id": "bt-channel-sounding",
@@ -2508,7 +2538,9 @@ window.KB_DATA = {
         "2026-05-26_arxiv-toa-ranging-ngd-attack-bt-cs",
         "2026-05-24_bluetooth-core-6-3-spec-release"
       ],
-      "entries_secondary": [],
+      "entries_secondary": [
+        "2026-05-30_nordic-nrf54lm20b-npu-ble-soc"
+      ],
       "by_type_primary": {
         "academic-paper": [
           "2026-05-24_arxiv-connectionless-ble-cs-pawr",
@@ -2552,14 +2584,18 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
-        "2026-05-25_arxiv-ble-doa-missed-detections"
+        "2026-05-25_arxiv-ble-doa-missed-detections",
+        "2026-05-30_arxiv-bluetooth-phased-array-inertial-nav",
+        "2026-05-30_arxiv-lmoment-ble-cte-los-nlos"
       ],
       "entries_secondary": [
         "2026-05-24_arxiv-connectionless-ble-cs-pawr"
       ],
       "by_type_primary": {
         "academic-paper": [
-          "2026-05-25_arxiv-ble-doa-missed-detections"
+          "2026-05-25_arxiv-ble-doa-missed-detections",
+          "2026-05-30_arxiv-bluetooth-phased-array-inertial-nav",
+          "2026-05-30_arxiv-lmoment-ble-cte-los-nlos"
         ]
       }
     },
@@ -5657,6 +5693,38 @@ window.KB_DATA = {
       "search_blob": "from user recognition to activity counting: an identity-agnostic approach to multi-user wifi sensing 从身份识别到活动计数 —— 面向多用户 wi-fi 感知的身份无关方法 802.11bf wifi-sensing mac-layer bayik et al. (arxiv 2604.16572, apr 2026) reformulate the multi-user wi-fi-sensing problem from \"who did what\" to \"how many people did each thing.\" instead of assigning observed activities to identified individuals — the historical framing — they treat scene composition as a counting regression problem over channel state information (csi). csi tensors are projected into a spatial representation, encoded by a pretrained convolutional backbone, and consumed by an identity-agnostic regression head that estimates per-activity occupancy. bayik 等人（arxiv 2604.16572，2026 年 4 月）把多用户 wi-fi 感知问题从\"谁做了什么\"重新建模为\"几个人各自做了什么\"。传统做法是把观测到的活动归到识别出来的具体人，本文则把场景成分视作 csi 上的计数回归问题：把 csi 张量投影成空间表示，过预训练卷积主干网络，最后由身份无关的回归头估计\"每类活动的人数\"。 academic-paper wifi"
     },
     {
+      "id": "2026-05-30_arxiv-dual-radio-ble-lora-hierarchical-mesh",
+      "date_found": "2026-05-30",
+      "technology": "bluetooth",
+      "date_published": "2026-04-16",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Dual-Radio BLE-LoRa Hierarchical Mesh for Infrastructure-Free Emergency Communication",
+      "title_zh": "面向无基础设施应急通信的双射频 BLE-LoRa 分层网状网络",
+      "url": "https://arxiv.org/abs/2604.15532",
+      "topics": [
+        "BLE",
+        "LoRa",
+        "mesh",
+        "AODV",
+        "emergency-comms",
+        "dual-radio",
+        "Coded-PHY"
+      ],
+      "topic_primary": "bt-mesh",
+      "topics_secondary": [
+        "bt-le"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-30_arxiv-dual-radio-ble-lora-hierarchical-mesh.md",
+      "summary_short_en": "Vakhnovskyi proposes a dual-radio hierarchical mesh that pairs Bluetooth Low Energy (BLE) with LoRa to deliver infrastructure-free emergency communication that balances energy, coverage, and latency. Each node carries an nRF52840 (Bluetooth 5.0 Coded PHY) and an SX1262 (sub-GHz LoRa). BLE forms dense local clusters using advertising-based AODV (Ad Hoc On-Demand Distance Vector) routing; dynamically elected cluster heads bridge inter-cluster traffic over a long-range LoRa backbone.",
+      "summary_short_zh": "Vakhnovskyi 提出一种双射频分层网状网络，将蓝牙低功耗（BLE）与 LoRa 配对，提供在能耗、覆盖与时延之间取得平衡的无基础设施应急通信。每个节点同时搭载 nRF52840（蓝牙 5.0 Coded PHY）与 SX1262（Sub-GHz LoRa）。BLE 用基于广播的 AODV（按需距离矢量）路由组成密集的本地簇；动态选举出的簇头通过远距 LoRa 骨干桥接簇间流量。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Vakhnovskyi proposes a dual-radio hierarchical mesh that pairs Bluetooth Low Energy (BLE) with LoRa to deliver infrastructure-free emergency communication that balances energy, coverage, and latency. Each node carries an nRF52840 (Bluetooth 5.0 Coded PHY) and an SX1262 (sub-GHz LoRa). BLE forms dense local clusters using advertising-based AODV (Ad Hoc On-Demand Distance Vector) routing; dynamically elected cluster heads bridge inter-cluster traffic over a long-range LoRa backbone.</p>\n<p>The design exploits the complementary strengths of the two radios: BLE gives high local throughput and low latency at short range, while LoRa provides kilometre-scale reach at low data rate for the sparse inter-cluster hops. A traffic-distribution model with a locality bias parameter β keeps 82–90% of communication on BLE (β ≥ 0.76), reserving the power-hungry LoRa backbone for traffic that genuinely must cross clusters.</p>\n<p>Reported results: a 79% reduction in LoRa energy consumption versus a LoRa-only mesh, 10+ km network diameter, 250–562 node scalability, sub-50 ms intra-cluster latency, and a 3.0 KB RAM footprint on commodity hardware. The authors claim it is the first architecture to combine BLE advertising-based mesh routing with a multi-hop LoRa backbone on commodity parts.</p>\n<h3>Key technical points</h3>\n<ul><li>Per-node dual radio: nRF52840 BLE 5.0 Coded PHY (local) + SX1262 LoRa sub-GHz (backbone).</li><li>BLE clusters use advertising-based AODV routing; elected cluster heads relay over multi-hop LoRa.</li><li>Locality-bias model (β ≥ 0.76) keeps 82–90% of traffic on BLE; LoRa reserved for inter-cluster hops.</li><li>79% lower LoRa energy vs LoRa-only mesh; 10+ km diameter; 250–562 nodes; &lt;50 ms intra-cluster latency; 3.0 KB RAM.</li><li>Claimed first BLE-advertising-mesh + multi-hop-LoRa-backbone architecture on commodity hardware.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's existing BLE-mesh coverage is thin; this is a concrete, evaluated dual-radio architecture rather than a survey. The locality-bias traffic split is the transferable idea — it shows how to keep a low-power short-range mesh dominant while a long-range radio handles only the rare cross-cluster hops, a pattern relevant to any heterogeneous IoT mesh. Complements the energy-efficiency framing of <code>2026-05-21_arxiv-enhanced-ble-esb-hybrid</code>.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Vakhnovskyi 提出一种双射频分层网状网络，将蓝牙低功耗（BLE）与 LoRa 配对，提供在能耗、覆盖与时延之间取得平衡的无基础设施应急通信。每个节点同时搭载 nRF52840（蓝牙 5.0 Coded PHY）与 SX1262（Sub-GHz LoRa）。BLE 用基于广播的 AODV（按需距离矢量）路由组成密集的本地簇；动态选举出的簇头通过远距 LoRa 骨干桥接簇间流量。</p>\n<p>该设计利用两种射频的互补优势：BLE 在短距提供高本地吞吐与低时延，LoRa 则以低速率提供公里级覆盖用于稀疏的簇间跳。带局部性偏置参数 β 的流量分布模型将 82–90% 的通信保留在 BLE 上（β ≥ 0.76），把耗电的 LoRa 骨干留给确实必须跨簇的流量。</p>\n<p>报告结果：相比纯 LoRa 网状网络，LoRa 能耗降低 79%；网络直径 10+ km；可扩展至 250–562 节点；簇内时延低于 50 ms；在商用硬件上仅占 3.0 KB RAM。作者称这是首个在商用器件上把 BLE 基于广播的网状路由与多跳 LoRa 骨干相结合的架构。</p>\n<h3>技术要点</h3>\n<ul><li>每节点双射频：nRF52840 BLE 5.0 Coded PHY（本地）+ SX1262 LoRa Sub-GHz（骨干）。</li><li>BLE 簇采用基于广播的 AODV 路由；选举出的簇头通过多跳 LoRa 转发。</li><li>局部性偏置模型（β ≥ 0.76）将 82–90% 流量保留在 BLE；LoRa 仅用于簇间跳。</li><li>相比纯 LoRa 网状，LoRa 能耗降低 79%；直径 10+ km；250–562 节点；簇内时延 &lt;50 ms；3.0 KB RAM。</li><li>声称为首个在商用硬件上结合 BLE 广播网状与多跳 LoRa 骨干的架构。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 现有的 BLE 网状覆盖较薄；本文是一个具体、经过评估的双射频架构，而非综述。局部性偏置的流量划分是可迁移的思想——展示了如何让低功耗短距网状占主导，而长距射频只处理少见的跨簇跳，这一模式适用于任何异构 IoT 网状网络。与 <code>2026-05-21_arxiv-enhanced-ble-esb-hybrid</code> 的能效论述互补。</p>",
+      "images": [],
+      "search_blob": "dual-radio ble-lora hierarchical mesh for infrastructure-free emergency communication 面向无基础设施应急通信的双射频 ble-lora 分层网状网络 ble lora mesh aodv emergency-comms dual-radio coded-phy vakhnovskyi proposes a dual-radio hierarchical mesh that pairs bluetooth low energy (ble) with lora to deliver infrastructure-free emergency communication that balances energy, coverage, and latency. each node carries an nrf52840 (bluetooth 5.0 coded phy) and an sx1262 (sub-ghz lora). ble forms dense local clusters using advertising-based aodv (ad hoc on-demand distance vector) routing; dynamically elected cluster heads bridge inter-cluster traffic over a long-range lora backbone. vakhnovskyi 提出一种双射频分层网状网络，将蓝牙低功耗（ble）与 lora 配对，提供在能耗、覆盖与时延之间取得平衡的无基础设施应急通信。每个节点同时搭载 nrf52840（蓝牙 5.0 coded phy）与 sx1262（sub-ghz lora）。ble 用基于广播的 aodv（按需距离矢量）路由组成密集的本地簇；动态选举出的簇头通过远距 lora 骨干桥接簇间流量。 academic-paper bluetooth"
+    },
+    {
       "id": "2026-05-01_ieee-tgbn-d2-schedule",
       "date_found": "2026-05-01",
       "technology": "wifi",
@@ -6374,6 +6442,37 @@ window.KB_DATA = {
       "search_blob": "elevation-aware supplementary uplink for direct satellite-to-device communications 面向卫星直连设备通信的仰角感知补充上行 direct-to-device ds2d ntn supplementary-uplink leo uplink-coverage direct satellite-to-device (ds2d) communication lets ordinary mobile phones connect straight to leo satellites with no terrestrial infrastructure, but the uplink is the hard direction: long propagation distance, severe path loss, and tight handset power limits make it especially unreliable at low elevation angles and beam edges — exactly where a pass spends much of its time. this paper proposes an elevation-aware supplementary uplink (sul) scheme that exploits the predictable orbital geometry of leo to decide, moment by moment, which uplink carrier the device should use. 卫星直连设备（ds2d）通信让普通手机无需地面基础设施即可直连 leo 卫星，但上行是困难方向：传播距离远、路损严重、手机发射功率受限，使其在低仰角与波束边缘尤其不可靠——而一次过境的大部分时间恰恰处于这些区域。本文提出一种仰角感知的补充上行（sul）方案，利用 leo 可预测的轨道几何，逐时刻决定设备应使用哪个上行载波。 academic-paper satellite"
     },
     {
+      "id": "2026-05-30_arxiv-bluetooth-phased-array-inertial-nav",
+      "date_found": "2026-05-30",
+      "technology": "bluetooth",
+      "date_published": "2026-02-19",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Bluetooth Phased-Array Aided Inertial Navigation Using Factor Graphs: Experimental Verification",
+      "title_zh": "基于因子图的蓝牙相控阵辅助惯性导航：实验验证",
+      "url": "https://arxiv.org/abs/2602.17407",
+      "topics": [
+        "Bluetooth",
+        "AoA",
+        "phased-array",
+        "inertial-navigation",
+        "factor-graph",
+        "GNSS-denied"
+      ],
+      "topic_primary": "bt-location",
+      "topics_secondary": [
+        "bt-le"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-30_arxiv-bluetooth-phased-array-inertial-nav.md",
+      "summary_short_en": "Sørensen, Bryne, Gryte, and Johansen (NTNU) demonstrate that commercial phased-array Bluetooth angle measurements can aid inertial navigation when GNSS is unavailable — for warehouse logistics, drone landing, and autonomous docking. The challenge is that low-cost phased-array Bluetooth produces noisy angular observations with limited range, so naïve fusion degrades quickly.",
+      "summary_short_zh": "Sørensen、Bryne、Gryte 与 Johansen（NTNU）证明：在 GNSS 不可用时，商用相控阵蓝牙的角度测量可用于辅助惯性导航——适用于仓储物流、无人机降落与自主对接等场景。难点在于低成本相控阵蓝牙的角度观测噪声大、作用距离有限，朴素融合会迅速退化。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Sørensen, Bryne, Gryte, and Johansen (NTNU) demonstrate that commercial phased-array Bluetooth angle measurements can aid inertial navigation when GNSS is unavailable — for warehouse logistics, drone landing, and autonomous docking. The challenge is that low-cost phased-array Bluetooth produces noisy angular observations with limited range, so naïve fusion degrades quickly.</p>\n<p>The authors fuse inertial measurement unit (IMU) data with Bluetooth angle-of-arrival observations using factor graph optimization, and systematically compare robust estimation strategies (different robust cost functions / outlier handling) to keep the noisy Bluetooth angles from corrupting the state estimate. They additionally test aiding configurations that add either a range measurement or barometric-pressure altitude alongside the Bluetooth angles.</p>\n<p>Verification used real multirotor drone flight data with simulated GNSS loss. The paper's contribution is empirical: it shows which robust factor-graph strategies survive realistic phased-array Bluetooth noise, and how range or barometric aiding complements the angular observations during GNSS outages. It positions commodity Bluetooth AoA as a viable, low-cost aiding sensor for short-range GNSS-denied navigation rather than a standalone positioning system.</p>\n<h3>Key technical points</h3>\n<ul><li>Factor-graph fusion of IMU + commercial phased-array Bluetooth AoA observations.</li><li>Systematic comparison of robust estimation strategies to tolerate noisy, short-range Bluetooth angles.</li><li>Aiding variants: Bluetooth angle + range, or Bluetooth angle + barometric altitude.</li><li>Experimental verification on real multirotor drone flights with simulated GNSS loss.</li><li>Framing: commodity Bluetooth AoA as a low-cost GNSS-denied aiding sensor, not standalone positioning.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>Extends the KB's Bluetooth direction-finding coverage from pure-RF DOA/channel work into sensor-fusion / robotics applications. Where <code>2026-05-30_arxiv-lmoment-ble-cte-los-nlos</code> characterises the AoA channel statistically, this paper shows what to do with noisy AoA downstream — robustly fusing it with inertial data for GNSS-denied navigation. The robust factor-graph recipe is the transferable contribution.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Sørensen、Bryne、Gryte 与 Johansen（NTNU）证明：在 GNSS 不可用时，商用相控阵蓝牙的角度测量可用于辅助惯性导航——适用于仓储物流、无人机降落与自主对接等场景。难点在于低成本相控阵蓝牙的角度观测噪声大、作用距离有限，朴素融合会迅速退化。</p>\n<p>作者用因子图优化将惯性测量单元（IMU）数据与蓝牙到达角观测融合，并系统比较多种稳健估计策略（不同的稳健代价函数/离群点处理），以防噪声较大的蓝牙角度污染状态估计。此外还测试了在蓝牙角度之外再加入测距或气压高度的辅助配置。</p>\n<p>验证使用真实多旋翼无人机飞行数据并模拟 GNSS 失锁。论文贡献是实证性的：展示了哪些稳健因子图策略能在真实相控阵蓝牙噪声下存活，以及在 GNSS 中断期间测距或气压辅助如何与角度观测互补。它将商用蓝牙 AoA 定位为短距 GNSS 拒止导航中可行、低成本的辅助传感器，而非独立定位系统。</p>\n<h3>技术要点</h3>\n<ul><li>用因子图融合 IMU 与商用相控阵蓝牙 AoA 观测。</li><li>系统比较多种稳健估计策略，以容忍噪声大、距离短的蓝牙角度。</li><li>辅助变体：蓝牙角度 + 测距，或蓝牙角度 + 气压高度。</li><li>在真实多旋翼无人机飞行数据上做实验验证并模拟 GNSS 失锁。</li><li>定位：将商用蓝牙 AoA 作为低成本 GNSS 拒止辅助传感器，而非独立定位。</li></ul>\n<h3>意义与新意</h3>\n<p>将 KB 的蓝牙测向覆盖从纯射频 DOA/信道工作扩展到传感器融合/机器人应用。<code>2026-05-30_arxiv-lmoment-ble-cte-los-nlos</code> 在统计上刻画 AoA 信道，本文则展示噪声 AoA 在下游如何使用——与惯性数据稳健融合以实现 GNSS 拒止导航。稳健因子图方法是可迁移的核心贡献。</p>",
+      "images": [],
+      "search_blob": "bluetooth phased-array aided inertial navigation using factor graphs: experimental verification 基于因子图的蓝牙相控阵辅助惯性导航：实验验证 bluetooth aoa phased-array inertial-navigation factor-graph gnss-denied sørensen, bryne, gryte, and johansen (ntnu) demonstrate that commercial phased-array bluetooth angle measurements can aid inertial navigation when gnss is unavailable — for warehouse logistics, drone landing, and autonomous docking. the challenge is that low-cost phased-array bluetooth produces noisy angular observations with limited range, so naïve fusion degrades quickly. sørensen、bryne、gryte 与 johansen（ntnu）证明：在 gnss 不可用时，商用相控阵蓝牙的角度测量可用于辅助惯性导航——适用于仓储物流、无人机降落与自主对接等场景。难点在于低成本相控阵蓝牙的角度观测噪声大、作用距离有限，朴素融合会迅速退化。 academic-paper bluetooth"
+    },
+    {
       "id": "2026-05-01_arxiv-intellicise-agentic-ai-security",
       "date_found": "2026-05-01",
       "technology": "wifi",
@@ -6481,6 +6580,37 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>Zhu、Hu、Jayaweera、Gao、Wang、Zhang、Wang、Wu、Liu（arXiv 2602.11200，2026 年 2 月 4 日提交）提出 <strong>AM-FM</strong>，声称为<strong>面向 WiFi 的第一个环境智能与感知基础模型</strong>。本 KB 中的既有 CSI 感知工作（<code>arxiv-ssl-wifi-sensing-tutorial</code>、<code>arxiv-multiband-passive-sensing</code>、<code>arxiv-wukong-neuro-wideband-sensing</code>）多为任务特定（在场检测、呼吸、动作），而 AM-FM 是一个统一的预训练主干，目标是迁移到全部 WiFi 感知任务族。</p>\n<p>预训练语料是关键：<strong>920 万条无标注 CSI 样本</strong>，跨 <strong>20 种商用 WiFi 设备类型</strong>、<strong>439 天</strong>在真实部署环境采集。这一规模远超既有 CSI 数据集 —— 多数 CSI 深度学习论文只用单一实验室内一两种 AP 的数千 / 数万样本。训练目标结合三种损失：对比学习（CSI 片段间的实例判别）、掩码重建（在子载波 / 时间维做 BERT 式重建）、以及<strong>物理先验目标</strong>（编码无线信道的多径几何、Doppler 统计等结构），让模型不必从数据里重新发现这些。</p>\n<p>下游评估涵盖 9 项任务（在场、运动、动作、生命体征、身份等），数据效率优于任务特定基线。其隐含信号是：<strong>标签稀缺是 WiFi 感知产品化的最大阻碍，而一个互联网规模训练的通用 CSI 主干能解决其中绝大部分</strong>。这正是 2018-2022 年语言与视觉社区经历的 FM 范式转换，被搬到了 WiFi 上。</p>\n<h3>技术要点</h3>\n<ul><li>920 万无标注 CSI 样本，439 天，20 种商用设备，全球分布。</li><li>三类预训练目标：对比 + 掩码重建 + 物理先验。</li><li>通用 CSI 主干，迁移到 9 项下游感知任务。</li><li>在下游任务上的标签效率显著优于任务特定基线。</li><li>架构尊重 CSI 结构（子载波维有物理含义，不可任意置换）。</li></ul>\n<h3>意义与新意</h3>\n<p>这是本 KB 近半年所追踪的 WiFi 感知中最具分量的一篇。<code>arxiv-ssl-wifi-sensing-tutorial</code> 在理论上主张了自监督表征学习的必要性，AM-FM 把它在互联网级别落地了。三条下游影响值得标记：(1) 802.11bf 感知任务组的基准工作（<code>arxiv-bf-ax-coexistence-ns3</code>、<code>arxiv-multiband-passive-sensing</code>）现在有了一个强外部对照；(2) 端侧感知（<code>arxiv-on-device-llm-roaming</code> 等线背后的方向）的微调目标变小很多，无需从头训练任务头；(3) 全网 CSI 采集的隐私问题变得更紧迫 —— 用 920 万全球 CSI 样本训练的基础模型会引发与 CV/NLP 社区在网级语料上同样的监控泄漏争论。</p>",
       "images": [],
       "search_blob": "am-fm — a foundation model for ambient intelligence through wifi (9.2m csi samples, 20 device types, 439 days) am-fm —— 面向 wifi 环境智能的基础模型（920 万 csi 样本 / 20 种设备 / 439 天） wifi-sensing 802.11bf agentic-ai zhu, hu, jayaweera, gao, wang, zhang, wang, wu, and liu (arxiv 2602.11200, posted 4 february 2026) introduce **am-fm**, claimed as the **first foundation model for ambient intelligence and sensing through wifi**. where prior csi-sensing work in this kb (`arxiv-ssl-wifi-sensing-tutorial`, `arxiv-multiband-passive-sensing`, `arxiv-wukong-neuro-wideband-sensing`) has been task-specific (presence detection, breathing, activity), am-fm is a single pre-trained backbone designed to transfer across the full wifi-sensing task family. zhu、hu、jayaweera、gao、wang、zhang、wang、wu、liu（arxiv 2602.11200，2026 年 2 月 4 日提交）提出 **am-fm**，声称为**面向 wifi 的第一个环境智能与感知基础模型**。本 kb 中的既有 csi 感知工作（`arxiv-ssl-wifi-sensing-tutorial`、`arxiv-multiband-passive-sensing`、`arxiv-wukong-neuro-wideband-sensing`）多为任务特定（在场检测、呼吸、动作），而 am-fm 是一个统一的预训练主干，目标是迁移到全部 wifi 感知任务族。 academic-paper wifi"
+    },
+    {
+      "id": "2026-05-30_arxiv-lmoment-ble-cte-los-nlos",
+      "date_found": "2026-05-30",
+      "technology": "bluetooth",
+      "date_published": "2026-02-01",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "L-Moment-Based LOS and NLOS Channel Characterization via Four-Parameter Kappa Distribution for AoA BLE CTE Measurements",
+      "title_zh": "基于 L 矩与四参数 Kappa 分布的 BLE CTE 到达角测量视距/非视距信道表征",
+      "url": "https://arxiv.org/abs/2602.01229",
+      "topics": [
+        "BLE",
+        "AoA",
+        "CTE",
+        "channel-model",
+        "indoor-positioning",
+        "L-moments"
+      ],
+      "topic_primary": "bt-location",
+      "topics_secondary": [
+        "bt-le"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-30_arxiv-lmoment-ble-cte-los-nlos.md",
+      "summary_short_en": "Talebian, Mahmood, and Gidlund tackle a gap in Bluetooth Low Energy (BLE) direction-finding: the channel models used for Angle-of-Arrival (AoA) positioning assume flat-fading statistics that break down in cluttered indoor settings, and few public datasets pair line-of-sight (LOS) and non-line-of-sight (NLOS) measurements at IQ level under matched geometry. The paper introduces an L-moment-based statistical framework and fits a four-parameter Kappa distribution to the per-packet channel response extracted from BLE Constant Tone Extension (CTE) measurements.",
+      "summary_short_zh": "Talebian、Mahmood 与 Gidlund 针对蓝牙低功耗（BLE）测向中的一个缺口展开研究：到达角（AoA）定位所用的信道模型通常假设平坦衰落统计，但在杂乱的室内环境中并不成立；且公开数据集很少在相同几何条件下、以 IQ 级别同时提供视距（LOS）与非视距（NLOS）配对测量。论文提出一种基于 L 矩的统计框架，对从 BLE 恒定音调扩展（CTE）测量中提取的逐包信道响应拟合四参数 Kappa 分布。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Talebian, Mahmood, and Gidlund tackle a gap in Bluetooth Low Energy (BLE) direction-finding: the channel models used for Angle-of-Arrival (AoA) positioning assume flat-fading statistics that break down in cluttered indoor settings, and few public datasets pair line-of-sight (LOS) and non-line-of-sight (NLOS) measurements at IQ level under matched geometry. The paper introduces an L-moment-based statistical framework and fits a four-parameter Kappa distribution to the per-packet channel response extracted from BLE Constant Tone Extension (CTE) measurements.</p>\n<p>The method leans on the L-moment Ratio Diagram (LMRD) — a robust, outlier-resistant alternative to conventional moment fitting — to quantify tail heaviness and asymmetry of the fading distribution, and adds self-supervised clustering over the L-moment statistics to improve LOS/NLOS separability. A paired-geometry campaign collected 132,000 labelled CTE packets from commercial off-the-shelf BLE modules under matched anchor–tag placements, with univariate and multivariate preprocessing to strip anomalous samples.</p>\n<p>Results: 92% of the feature-wise variance differences between LOS and NLOS were statistically significant; NLOS distributions showed markedly heavier tails and stronger asymmetry; and the four-parameter Kappa fit delivered substantially better L-moment goodness-of-fit than standard models, especially for NLOS. The framework gives BLE positioning systems a principled NLOS-detection and channel-modelling primitive grounded in measured data.</p>\n<h3>Key technical points</h3>\n<ul><li>Fits a four-parameter Kappa distribution to per-packet BLE CTE channel responses; uses the L-moment Ratio Diagram for robust, outlier-resistant fitting.</li><li>Self-supervised clustering over L-moment statistics improves LOS vs NLOS separability without hand-labelled features.</li><li>Dataset: 132,000 labelled CTE packets, COTS BLE modules, paired LOS/NLOS anchor–tag geometry, IQ-level data.</li><li>92% of feature-wise LOS/NLOS variance differences statistically significant; NLOS = heavier tails + stronger asymmetry.</li><li>Kappa fit beats standard fading models on L-moment goodness-of-fit, especially for NLOS.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's existing BLE direction-finding entries focus on DOA estimators and ToA security; this adds the channel-statistics layer underneath them. A measured, IQ-level paired LOS/NLOS dataset plus a robust L-moment fitting recipe is exactly what downstream AoA/positioning algorithms need for NLOS mitigation. It complements the connectionless Channel Sounding work (<code>2026-05-24_arxiv-connectionless-ble-cs-pawr</code>) by characterising the propagation environment those ranging systems must survive.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Talebian、Mahmood 与 Gidlund 针对蓝牙低功耗（BLE）测向中的一个缺口展开研究：到达角（AoA）定位所用的信道模型通常假设平坦衰落统计，但在杂乱的室内环境中并不成立；且公开数据集很少在相同几何条件下、以 IQ 级别同时提供视距（LOS）与非视距（NLOS）配对测量。论文提出一种基于 L 矩的统计框架，对从 BLE 恒定音调扩展（CTE）测量中提取的逐包信道响应拟合四参数 Kappa 分布。</p>\n<p>方法核心是 L 矩比图（LMRD）——一种相比传统矩估计更稳健、抗离群点的工具——用以刻画衰落分布的尾部厚重程度与不对称性，并在 L 矩统计量上施加自监督聚类以提升 LOS/NLOS 的可分性。配对几何测量活动用商用现成 BLE 模块在匹配的锚点–标签布置下采集了 132,000 个带标签 CTE 包，并以单变量与多变量准则做预处理剔除异常样本。</p>\n<p>结果：LOS 与 NLOS 之间 92% 的逐特征方差差异具有统计显著性；NLOS 分布呈现明显更厚的尾部与更强的不对称性；四参数 Kappa 拟合的 L 矩拟合优度显著优于标准模型，尤其在 NLOS 条件下。该框架为 BLE 定位系统提供了一个建立在实测数据之上、原理清晰的 NLOS 检测与信道建模基元。</p>\n<h3>技术要点</h3>\n<ul><li>对逐包 BLE CTE 信道响应拟合四参数 Kappa 分布；用 L 矩比图实现稳健、抗离群点的拟合。</li><li>在 L 矩统计量上做自监督聚类，无需手工标注特征即可提升 LOS/NLOS 可分性。</li><li>数据集：132,000 个带标签 CTE 包，商用 BLE 模块，配对 LOS/NLOS 锚点–标签几何，IQ 级数据。</li><li>92% 的逐特征 LOS/NLOS 方差差异具统计显著性；NLOS 表现为更厚尾部与更强不对称。</li><li>Kappa 拟合在 L 矩拟合优度上优于标准衰落模型，NLOS 条件下尤为明显。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 中现有的 BLE 测向条目聚焦于 DOA 估计器与 ToA 安全；本文补上了其底层的信道统计层。一份实测、IQ 级的配对 LOS/NLOS 数据集，加上稳健的 L 矩拟合方法，正是下游 AoA/定位算法做 NLOS 抑制所需。它与无连接信道探测工作（<code>2026-05-24_arxiv-connectionless-ble-cs-pawr</code>）互补——刻画了这些测距系统必须应对的传播环境。</p>",
+      "images": [],
+      "search_blob": "l-moment-based los and nlos channel characterization via four-parameter kappa distribution for aoa ble cte measurements 基于 l 矩与四参数 kappa 分布的 ble cte 到达角测量视距/非视距信道表征 ble aoa cte channel-model indoor-positioning l-moments talebian, mahmood, and gidlund tackle a gap in bluetooth low energy (ble) direction-finding: the channel models used for angle-of-arrival (aoa) positioning assume flat-fading statistics that break down in cluttered indoor settings, and few public datasets pair line-of-sight (los) and non-line-of-sight (nlos) measurements at iq level under matched geometry. the paper introduces an l-moment-based statistical framework and fits a four-parameter kappa distribution to the per-packet channel response extracted from ble constant tone extension (cte) measurements. talebian、mahmood 与 gidlund 针对蓝牙低功耗（ble）测向中的一个缺口展开研究：到达角（aoa）定位所用的信道模型通常假设平坦衰落统计，但在杂乱的室内环境中并不成立；且公开数据集很少在相同几何条件下、以 iq 级别同时提供视距（los）与非视距（nlos）配对测量。论文提出一种基于 l 矩的统计框架，对从 ble 恒定音调扩展（cte）测量中提取的逐包信道响应拟合四参数 kappa 分布。 academic-paper bluetooth"
     },
     {
       "id": "2026-05-04_arxiv-comagent-multi-llm-wireless",
@@ -6661,6 +6791,38 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>Wi-Fi 联盟在 2026 年 1 月的 CES 2026 上发布了一项新的 Wi-Fi CERTIFIED 7 认证子类，<strong>专为仅在 20 MHz 信道工作的客户端设备</strong>而设。该认证在以宽带为中心的 Wi-Fi 7 生态中开辟出一条低复杂度、低功耗、对 IoT 友好的路径，目标对象是电池供电传感器、智能家居设备、可穿戴设备以及其他低数据率终端 —— 它们用不上标准本身围绕的 320 MHz / 多频段能力，但仍希望享受现代特性（更好的调度、MLO 意识、安全性）。</p>\n<p>仅 20 MHz 的子类为这类设备带来三项具体优势：更低的<strong>功耗</strong>（窄带所需 RF 与 DSP 更少）、更简洁的<strong>RF 设计</strong>（芯片更便宜、更紧凑）、以及在密集部署下更好的<strong>链路可靠性</strong>（20 MHz 客户端对宽带干扰暴露更小）。该认证仍保留 Wi-Fi 7 的核心多用户优势 —— 多设备可以同时上行而不必排队 —— 这正是密集 IoT 场景中真正关键的能力。</p>\n<p>本次发布正式确立了&quot;低端 Wi-Fi 7&quot;产品类别。此前对在低成本 IoT 硅片中加入完整带宽 Wi-Fi 7 芯片心存犹豫的厂商，现在有了一个匹配成本 / 功耗包络的认证目标。</p>\n<h3>技术要点</h3>\n<ul><li><strong>认证：</strong> Wi-Fi CERTIFIED 7 —— 仅 20 MHz 客户端子类</li><li><strong>发布：</strong> CES 2026，2026 年 1 月</li><li>目标设备：低数据率 IoT、传感器、可穿戴、智能家居、电池设备</li><li>优势：低功耗、简化 RF、低硅成本、密集场景下更好的抗干扰</li><li>保留 Wi-Fi 7 多用户优势（无需排队竞争即可同时上行）</li><li>在 20 MHz 范围内仍享有 Wi-Fi 7 的现代特性（MLO 意识、新安全机制等）</li></ul>\n<h3>意义与新意</h3>\n<ul><li><strong>将 Wi-Fi 7 产品线进行分层。</strong> 此前 Wi-Fi 7 隐含定位为&quot;宽带 + 多频段&quot;。20 MHz 认证正式确立了低端分支，并降低 IoT 硅片厂商采用 Wi-Fi 7 特性的启动门槛。</li><li><strong>在 Wi-Fi 8 到来之前为 IoT 板块锁定 Wi-Fi 7。</strong> 没有该认证，低端 IoT 很可能会跳过 Wi-Fi 7 或等到未来的低功耗 Wi-Fi 8 子类。该认证<em>现在</em>就提供了真实的升级路径。</li><li><strong>巡检线索：</strong> 未来 12-18 个月应该会看到联发科、Espressif 等 IoT 倾向厂商推出低成本 Wi-Fi 7 IoT 芯片。出现时建议重点跟踪。</li></ul>",
       "images": [],
       "search_blob": "wi-fi alliance launches wi-fi certified 7 for 20 mhz-only client devices (ces 2026) wi-fi 联盟为仅 20 mhz 客户端设备推出 wi-fi certified 7（ces 2026） 802.11be iot products wi-fi alliance announced at ces 2026 (january 2026) a new wi-fi certified 7 certification track specifically for **client devices that operate only on 20 mhz channels**. the certification carves a low-complexity, low-power iot-friendly path into the otherwise wideband-centric wi-fi 7 ecosystem. it targets battery-powered sensors, smart-home devices, wearables, and other low-data-rate endpoints that don't need the 320 mhz / multi-band capability the rest of the standard is built around but still want the modern feature set (improved scheduling, mlo awareness, security). wi-fi 联盟在 2026 年 1 月的 ces 2026 上发布了一项新的 wi-fi certified 7 认证子类，**专为仅在 20 mhz 信道工作的客户端设备**而设。该认证在以宽带为中心的 wi-fi 7 生态中开辟出一条低复杂度、低功耗、对 iot 友好的路径，目标对象是电池供电传感器、智能家居设备、可穿戴设备以及其他低数据率终端 —— 它们用不上标准本身围绕的 320 mhz / 多频段能力，但仍希望享受现代特性（更好的调度、mlo 意识、安全性）。 industry-news wifi"
+    },
+    {
+      "id": "2026-05-30_nordic-nrf54lm20b-npu-ble-soc",
+      "date_found": "2026-05-30",
+      "technology": "bluetooth",
+      "date_published": "2026-01-07",
+      "type": "product",
+      "category": "industry",
+      "title_en": "Nordic nRF54LM20B: Bluetooth LE SoC with 128 MHz Axon NPU for On-Device Edge AI",
+      "title_zh": "Nordic nRF54LM20B：集成 128 MHz Axon NPU 的蓝牙 LE SoC，面向端侧边缘 AI",
+      "url": "https://www.cnx-software.com/2026/01/07/nordic-semi-nrf54lm20b-wireless-soc-integrates-128-mhz-axon-npu-for-edge-ai-workloads/",
+      "topics": [
+        "BLE",
+        "Nordic",
+        "nRF54L",
+        "edge-AI",
+        "NPU",
+        "channel-sounding",
+        "IoT"
+      ],
+      "topic_primary": "bt-le",
+      "topics_secondary": [
+        "bt-channel-sounding"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-05-30_nordic-nrf54lm20b-npu-ble-soc.md",
+      "summary_short_en": "Nordic Semiconductor's nRF54LM20B is a Bluetooth LE system-on-chip that integrates a dedicated 128 MHz Axon Neural Processing Unit (NPU) for on-device edge-AI workloads such as sound classification and keyword spotting. Nordic claims the NPU delivers up to 7× faster performance and up to 8× higher energy efficiency versus competing wireless solutions, and runs inference roughly 15× faster than the on-chip Cortex-M33 alone — keeping always-on classification within a coin-cell power budget without a cloud round-trip.",
+      "summary_short_zh": "Nordic Semiconductor 的 nRF54LM20B 是一款蓝牙 LE 片上系统，集成了专用的 128 MHz Axon 神经处理单元（NPU），用于声音分类、关键词唤醒等端侧边缘 AI 任务。Nordic 称该 NPU 相比竞品无线方案性能最高快 7 倍、能效最高高 8 倍，推理速度约为仅用片上 Cortex-M33 的 15 倍——在纽扣电池功耗预算内实现常开分类，无需云端往返。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Nordic Semiconductor's nRF54LM20B is a Bluetooth LE system-on-chip that integrates a dedicated 128 MHz Axon Neural Processing Unit (NPU) for on-device edge-AI workloads such as sound classification and keyword spotting. Nordic claims the NPU delivers up to 7× faster performance and up to 8× higher energy efficiency versus competing wireless solutions, and runs inference roughly 15× faster than the on-chip Cortex-M33 alone — keeping always-on classification within a coin-cell power budget without a cloud round-trip.</p>\n<p>Beyond the NPU, the SoC pairs a 128 MHz Arm Cortex-M33 with a 128 MHz RISC-V (FLPR) coprocessor, 2 MB NVM, and 512 KB RAM. Its ultra-low-power 2.4 GHz radio supports Bluetooth LE, Bluetooth Channel Sounding (the Bluetooth 6.x secure fine-ranging feature), Matter-over-Thread, Zigbee, and proprietary modes up to 4 Mbps, with −96 dBm BLE (1 Mbps) and −101 dBm 802.15.4 RX sensitivity. I/O is generous: up to 66 GPIOs (CSP98), high-speed USB, high-speed SPI/UART, an 8-channel 14-bit/2 MS/s ADC, PDM/TDM/PWM/QDEC, and NFC. Packages are a 6×6 mm QFN52 (35 GPIO) or 3.9×3.7 mm CSP98 (66 GPIO).</p>\n<p>Nordic ships the part through the nRF Connect SDK plus ultra-compact Neuton edge-AI models (typically under 5 KB) and a &quot;Nordic Edge AI Lab&quot; tool for generating custom anomaly-detection, gesture/activity-recognition, and biometric models without cloud connectivity. The nRF54LM20B was sampling to selected customers at announcement (Jan 2026) with general availability scheduled for Q2 2026.</p>\n<h3>Key technical points</h3>\n<ul><li>Dedicated 128 MHz Axon NPU: up to 7× faster / 8× more energy-efficient vs competing wireless solutions; ~15× faster than the Cortex-M33 for inference.</li><li>128 MHz Cortex-M33 + 128 MHz RISC-V FLPR coprocessor; 2 MB NVM; 512 KB RAM.</li><li>2.4 GHz radio: Bluetooth LE + Channel Sounding, Matter/Thread, Zigbee, proprietary up to 4 Mbps; RX −96 dBm BLE / −101 dBm 802.15.4.</li><li>Up to 66 GPIO, high-speed USB, 8ch 14-bit 2 MS/s ADC, NFC; QFN52 or CSP98 packages.</li><li>Neuton models &lt;5 KB + Nordic Edge AI Lab for cloud-free model generation; sampling Jan 2026, GA Q2 2026.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the clearest 2026 signal that BLE silicon is absorbing dedicated NPU blocks — pushing always-on inference (keyword spotting, anomaly detection) onto the connectivity SoC itself rather than a separate AI chip. For the KB it anchors the bt-le bin in the edge-AI direction and ties to Channel Sounding (the part supports it natively), bridging the location and AI threads. It is the Bluetooth-side counterpart to the broader &quot;AI on the radio SoC&quot; trend the WiFi entries track.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Nordic Semiconductor 的 nRF54LM20B 是一款蓝牙 LE 片上系统，集成了专用的 128 MHz Axon 神经处理单元（NPU），用于声音分类、关键词唤醒等端侧边缘 AI 任务。Nordic 称该 NPU 相比竞品无线方案性能最高快 7 倍、能效最高高 8 倍，推理速度约为仅用片上 Cortex-M33 的 15 倍——在纽扣电池功耗预算内实现常开分类，无需云端往返。</p>\n<p>除 NPU 外，该 SoC 搭配 128 MHz Arm Cortex-M33 与 128 MHz RISC-V（FLPR）协处理器、2 MB NVM 与 512 KB RAM。其超低功耗 2.4 GHz 射频支持蓝牙 LE、蓝牙信道探测（Bluetooth 6.x 的安全精测距特性）、Matter-over-Thread、Zigbee 及最高 4 Mbps 的私有模式，BLE（1 Mbps）接收灵敏度 −96 dBm，802.15.4 为 −101 dBm。I/O 丰富：最多 66 个 GPIO（CSP98）、高速 USB、高速 SPI/UART、8 通道 14 位/2 MS/s ADC、PDM/TDM/PWM/QDEC 以及 NFC。封装为 6×6 mm QFN52（35 GPIO）或 3.9×3.7 mm CSP98（66 GPIO）。</p>\n<p>Nordic 通过 nRF Connect SDK 提供该器件，并配套超紧凑的 Neuton 边缘 AI 模型（通常小于 5 KB）以及用于生成自定义异常检测、手势/活动识别与生物特征模型的 &quot;Nordic Edge AI Lab&quot; 工具，全程无需云连接。nRF54LM20B 在发布时（2026 年 1 月）向部分客户送样，量产计划在 2026 年第二季度。</p>\n<h3>技术要点</h3>\n<ul><li>专用 128 MHz Axon NPU：相比竞品最高快 7 倍/能效高 8 倍；推理约为 Cortex-M33 的 15 倍。</li><li>128 MHz Cortex-M33 + 128 MHz RISC-V FLPR 协处理器；2 MB NVM；512 KB RAM。</li><li>2.4 GHz 射频：蓝牙 LE + 信道探测、Matter/Thread、Zigbee、最高 4 Mbps 私有模式；接收 −96 dBm BLE / −101 dBm 802.15.4。</li><li>最多 66 GPIO、高速 USB、8 通道 14 位 2 MS/s ADC、NFC；QFN52 或 CSP98 封装。</li><li>Neuton 模型 &lt;5 KB + Nordic Edge AI Lab 实现无云模型生成；2026 年 1 月送样，Q2 2026 量产。</li></ul>\n<h3>意义与新意</h3>\n<p>这是 2026 年最清晰的信号之一：BLE 芯片正在吸纳专用 NPU 模块——把常开推理（关键词唤醒、异常检测）下沉到连接 SoC 本身，而非独立 AI 芯片。对 KB 而言，它把 bt-le 分箱锚定到边缘 AI 方向，并与信道探测（该器件原生支持）相连，打通定位与 AI 两条线索。它是 WiFi 条目所追踪的 &quot;射频 SoC 上的 AI&quot; 大趋势在蓝牙侧的对应。</p>",
+      "images": [],
+      "search_blob": "nordic nrf54lm20b: bluetooth le soc with 128 mhz axon npu for on-device edge ai nordic nrf54lm20b：集成 128 mhz axon npu 的蓝牙 le soc，面向端侧边缘 ai ble nordic nrf54l edge-ai npu channel-sounding iot nordic semiconductor's nrf54lm20b is a bluetooth le system-on-chip that integrates a dedicated 128 mhz axon neural processing unit (npu) for on-device edge-ai workloads such as sound classification and keyword spotting. nordic claims the npu delivers up to 7× faster performance and up to 8× higher energy efficiency versus competing wireless solutions, and runs inference roughly 15× faster than the on-chip cortex-m33 alone — keeping always-on classification within a coin-cell power budget without a cloud round-trip. nordic semiconductor 的 nrf54lm20b 是一款蓝牙 le 片上系统，集成了专用的 128 mhz axon 神经处理单元（npu），用于声音分类、关键词唤醒等端侧边缘 ai 任务。nordic 称该 npu 相比竞品无线方案性能最高快 7 倍、能效最高高 8 倍，推理速度约为仅用片上 cortex-m33 的 15 倍——在纽扣电池功耗预算内实现常开分类，无需云端往返。 product bluetooth"
     },
     {
       "id": "2026-05-01_mediatek-filogic8000-ces2026",
