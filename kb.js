@@ -1,8 +1,8 @@
 window.KB_DATA = {
   "schema_version": 6,
-  "last_updated": "2026-06-01",
+  "last_updated": "2026-06-03",
   "topic_counts": {
-    "MAC-layer": 35,
+    "MAC-layer": 36,
     "agentic-AI": 34,
     "802.11bn": 30,
     "scheduling": 25,
@@ -15,14 +15,16 @@ window.KB_DATA = {
     "802.11bf": 13,
     "6G": 12,
     "IoT": 11,
+    "MAPC": 9,
     "802.11ax": 9,
     "O-RAN": 8,
-    "MAPC": 8,
     "CSI": 8,
     "LEO": 7,
     "generative-AI": 7,
     "direct-to-device": 6,
     "802.11bp": 6,
+    "802.11bq": 5,
+    "reinforcement-learning": 5,
     "network-slicing": 5,
     "Starlink": 5,
     "NTN": 5,
@@ -30,12 +32,11 @@ window.KB_DATA = {
     "NearLink": 5,
     "SparkLink": 5,
     "XR": 5,
-    "reinforcement-learning": 4,
+    "mmWave": 4,
     "RIC": 4,
     "AI-RAN": 4,
     "OFDMA": 4,
     "NPCA": 4,
-    "802.11bq": 4,
     "FCC": 4,
     "automotive": 4,
     "802.11": 4,
@@ -56,7 +57,6 @@ window.KB_DATA = {
     "ELR": 3,
     "LB291": 3,
     "802.11bt": 3,
-    "mmWave": 3,
     "WPA3": 3,
     "edge-AI": 3,
     "LLM": 3,
@@ -108,6 +108,12 @@ window.KB_DATA = {
     "narrowband-assist": 2,
     "Rel-19": 2,
     "R-TWT": 2,
+    "multi-AP": 1,
+    "CMAB": 1,
+    "spatial-reuse": 1,
+    "random-access": 1,
+    "slotted-ALOHA": 1,
+    "distributed-MAC": 1,
     "LTE": 1,
     "fuzzing": 1,
     "control-plane": 1,
@@ -425,8 +431,8 @@ window.KB_DATA = {
     "amp-iot": 7,
     "open-ran": 6,
     "6g-vision": 6,
+    "ai-for-wifi": 5,
     "sat-direct-device": 5,
-    "ai-for-wifi": 4,
     "rtwt-latency": 4,
     "ftm-ranging": 4,
     "leo-constellations": 3,
@@ -434,6 +440,7 @@ window.KB_DATA = {
     "bt-location": 3,
     "uwb-ranging": 3,
     "bt-channel-sounding": 3,
+    "mmwave-bq": 2,
     "cellular-security": 2,
     "network-slicing": 2,
     "ngso-regulation": 2,
@@ -445,14 +452,13 @@ window.KB_DATA = {
     "wifi-for-ai": 2,
     "roaming-mobility": 2,
     "mlo": 2,
-    "mmwave-bq": 1,
     "uwb-radar": 1,
     "bt-mesh": 1,
     "uwb-fi-ra": 1,
     "nearlink-sle": 1
   },
   "type_counts": {
-    "academic-paper": 102,
+    "academic-paper": 104,
     "industry-news": 40,
     "ieee-document": 12,
     "product": 11,
@@ -461,7 +467,7 @@ window.KB_DATA = {
     "nearlink-spec": 1
   },
   "category_counts": {
-    "academia": 102,
+    "academia": 104,
     "industry": 51,
     "standards": 18
   },
@@ -1378,6 +1384,7 @@ window.KB_DATA = {
         "2026-05-01_arxiv-ma-mab-spatial-reuse"
       ],
       "entries_secondary": [
+        "2026-06-03_arxiv-cmab-802-11bq-multi-ap-mmwave-throughput",
         "2026-05-18_ieee-mentor-tgbn-antwerp-digest",
         "2026-05-18_ieee-mentor-may-2026-post-interim-digest",
         "2026-05-12_ieee-mentor-tgbn-antwerp-digest",
@@ -1590,6 +1597,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((mmWave / 802.11bq))\n    Architecture question\n      Standalone 60 GHz beacons\n      Sub-7 GHz coordination only\n    Bands\n      60 GHz\n      Sub-7 GHz pairing\n    Cross-references\n      Plenary readouts (secondary)\n      Multiband passive sensing (TRN)\n    Watch\n      802.11bq draft progress\n      mmWave + Wi-Fi 7/8 dual-radio silicon\n      Sub-7 / mmWave scheduling primitives",
       "diagram_mmd_zh": "mindmap\n  root((毫米波 / 802.11bq))\n    架构争议\n      独立 60 GHz 信标\n      仅 sub-7 GHz 协调\n    频段\n      60 GHz\n      sub-7 GHz 配对\n    交叉引用\n      全会综述（次要）\n      多频段被动感知（TRN）\n    关注\n      802.11bq 草案进度\n      mmWave + Wi-Fi 7/8 双射频硅片\n      sub-7 / mmWave 调度原语",
       "entries_primary": [
+        "2026-06-03_arxiv-cmab-802-11bq-multi-ap-mmwave-throughput",
         "2026-05-12_ieee-mentor-tgbq-antwerp-digest"
       ],
       "entries_secondary": [
@@ -1601,6 +1609,9 @@ window.KB_DATA = {
         "2026-05-01_arxiv-multiband-passive-sensing"
       ],
       "by_type_primary": {
+        "academic-paper": [
+          "2026-06-03_arxiv-cmab-802-11bq-multi-ap-mmwave-throughput"
+        ],
         "ieee-document": [
           "2026-05-12_ieee-mentor-tgbq-antwerp-digest"
         ]
@@ -1783,12 +1794,14 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((AI for Wi-Fi))\n    Action surface\n      CW selection\n      Scheduling\n      Spatial-reuse choice\n      Power control\n      Link adaptation\n      Channel allocation\n    Methods\n      Reinforcement learning\n      Multi-armed bandits\n      Supervised ML\n      LLM-as-encoder\n      Foundation models\n    Direct primaries\n      LLM-RL wireless optimisation\n      AIML CSI feedback compression\n    Adjacency\n      mapc-cosr secondaries\n      mlo secondaries\n      sensing-csi pipelines\n    Watch\n      Wi-Fi-specific benchmarks\n      Cross-BSS transfer learning\n      Generic CW + TXOP RL",
       "diagram_mmd_zh": "mindmap\n  root((AI 优化 Wi-Fi))\n    动作空间\n      CW 选择\n      调度\n      空间复用决策\n      功率控制\n      链路自适应\n      信道分配\n    方法\n      强化学习\n      多臂老虎机\n      有监督 ML\n      LLM 作编码器\n      基础模型\n    直接主条目\n      LLM-RL 无线优化\n      AIML CSI 反馈压缩\n    邻接\n      mapc-cosr 次要\n      mlo 次要\n      sensing-csi 流水线\n    关注\n      Wi-Fi 专属基准\n      跨 BSS 迁移学习\n      通用 CW + TXOP RL",
       "entries_primary": [
+        "2026-06-03_arxiv-kiss-slotted-distributed-rl-channel-access",
         "2026-05-22_arxiv-wifi-fault-diagnosis-benchmark",
         "2026-05-18_arxiv-maxlm-wlan-scheduling",
         "2026-05-01_arxiv-llm-rl-wireless-optimization",
         "2026-05-01_arxiv-aiml-csi-feedback-compression"
       ],
       "entries_secondary": [
+        "2026-06-03_arxiv-cmab-802-11bq-multi-ap-mmwave-throughput",
         "2026-05-29_plume-superproxy-residential-proxyware-media-boxes",
         "2026-05-19_arxiv-composable-agentic-nextg",
         "2026-05-27_networkworld-wifi8-edge-ai-platform",
@@ -1822,6 +1835,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-06-03_arxiv-kiss-slotted-distributed-rl-channel-access",
           "2026-05-22_arxiv-wifi-fault-diagnosis-benchmark",
           "2026-05-18_arxiv-maxlm-wlan-scheduling",
           "2026-05-01_arxiv-llm-rl-wireless-optimization",
@@ -2924,6 +2938,77 @@ window.KB_DATA = {
     }
   },
   "entries": [
+    {
+      "id": "2026-06-03_arxiv-cmab-802-11bq-multi-ap-mmwave-throughput",
+      "date_found": "2026-06-03",
+      "technology": "wifi",
+      "date_published": "2026-06-02",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Throughput Optimization for Multi-AP IEEE P802.11bq Networks Based on Combinatorial Multi-Armed Bandits",
+      "title_zh": "基于组合多臂老虎机的多 AP IEEE P802.11bq 网络吞吐优化",
+      "url": "https://arxiv.org/abs/2606.03528",
+      "topics": [
+        "802.11bq",
+        "mmWave",
+        "MAPC",
+        "multi-AP",
+        "CMAB",
+        "spatial-reuse"
+      ],
+      "topic_primary": "mmwave-bq",
+      "topics_secondary": [
+        "mapc-cosr",
+        "ai-for-wifi"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-06-03_arxiv-cmab-802-11bq-multi-ap-mmwave-throughput.md",
+      "summary_short_en": "This paper tackles distributed throughput optimization in dense multi-AP IEEE P802.11bq networks — the emerging amendment that couples a sub-7 GHz control/contention link with a 60 GHz directional mmWave data link in a single Wi-Fi device. The authors observe that the two planes are cross-coupled: the sub-7 GHz CSMA/CA parameters (minimum contention window, CCA threshold, RTS/CTS) decide *who gets to transmit*, while the mmWave beamwidth and MCS reservation margin decide *whether the payload is delivered successfully*. Static or independently-tuned configurations therefore leave throughput on the table, because aggressive carrier sensing can starve neighbours while narrow beams raise beam-training overhead and wide beams invite directional interference.",
+      "summary_short_zh": "本文研究密集多 AP IEEE P802.11bq 网络中的分布式吞吐优化。P802.11bq 是新兴修正案，在单个 Wi-Fi 设备中将 sub-7 GHz 控制/竞争链路与 60 GHz 定向 mmWave 数据链路耦合。作者指出两个平面存在跨层耦合：sub-7 GHz 的 CSMA/CA 参数（最小竞争窗口 CW_min、CCA 门限、RTS/CTS）决定\"谁能发送\"，而 mmWave 的波束宽度与 MCS 预留余量决定\"载荷能否成功送达\"。静态或各自独立调参会损失吞吐——激进的载波侦听会饿死邻居，窄波束抬高波束训练开销，宽波束又招致定向干扰。",
+      "body_html_en": "<h3>Summary</h3>\n<p>This paper tackles distributed throughput optimization in dense multi-AP IEEE P802.11bq networks — the emerging amendment that couples a sub-7 GHz control/contention link with a 60 GHz directional mmWave data link in a single Wi-Fi device. The authors observe that the two planes are cross-coupled: the sub-7 GHz CSMA/CA parameters (minimum contention window, CCA threshold, RTS/CTS) decide <em>who gets to transmit</em>, while the mmWave beamwidth and MCS reservation margin decide <em>whether the payload is delivered successfully</em>. Static or independently-tuned configurations therefore leave throughput on the table, because aggressive carrier sensing can starve neighbours while narrow beams raise beam-training overhead and wide beams invite directional interference.</p>\n<p>The configuration problem is cast as a multi-group combinatorial multi-armed bandit (CMAB) with G=4 parameter groups (CW_min, CCA threshold, beamwidth, MCS margin). The proposed CSAR-inspired algorithm indexes each group's candidate values as &quot;elementary arms&quot;, uses Hadamard-matrix-guided exploration to sample diverse <em>feasible</em> configurations (exactly one value chosen per group), scores each arm's main effect from local throughput feedback, and successively rejects the weakest candidate in each group per phase. This reduces the exploration cost from the full Cartesian product of all parameter combinations to roughly O(2V·max_g(V_g−1)) trials while preserving the grouped feasibility constraints that P802.11bq imposes.</p>\n<p>A packet-level simulator models backoff delay, RTS/CTS failures, beam-training overhead, MCS selection, directional interference and retransmissions across 2–12 co-located APs (6 GHz control plane, 60 GHz / 80 MHz data plane, 240 kbit payloads). Against a Thompson-sampling MAB over the flat Cartesian action space (MAB-TS), a pure-mmWave MAB-TS, and fixed configurations, the CMAB scheme reaches ~4570 Mbps aggregate at 10 APs versus ~3110 Mbps for MAB-TS (~47% higher) and stabilizes in 1.66–2.21 s versus 3.49–3.78 s (~49% faster convergence). The learned policies are notably non-extremal: relaxed CCA thresholds (~−2 to −5 dBm in dense cases), moderate beamwidths (26–38°), and intermediate MCS margins (2–4), confirming that good performance requires <em>balancing</em> control-channel aggressiveness, mmWave spatial reuse, beam-training cost and MCS robustness rather than maximizing any single knob.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Coupled PHY/MAC model for P802.11bq:</strong> sub-7 GHz contention plane (CW_min, CCA, RTS/CTS) jointly modeled with 60 GHz directional data plane (beamwidth, MCS reservation margin), including beam-training overhead and directional interference.</li><li><strong>Multi-group CMAB formulation:</strong> four parameter groups, each contributing &quot;elementary arms&quot;; the joint action must pick exactly one value per group (feasibility constraint).</li><li><strong>Hadamard-guided exploration + successive group-wise rejection (CSAR-inspired):</strong> main-effect scoring via ω̂ = (1/L)·Hᵀy; exploration cost ~O(2V·max_g(V_g−1)) instead of the full Cartesian product ∏V_g.</li><li><strong>Fully decentralized:</strong> each AP learns from local throughput feedback only — no central coordinator, no explicit interference map.</li><li><strong>Results:</strong> ~47% higher aggregate throughput and ~49% faster convergence vs. flat Thompson-sampling MAB at 10 APs; learned configs are balanced/non-extremal.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>802.11bq (integrated mmWave) is one of the least-explored 802.11 amendments in the KB's <code>mmwave-bq</code> bin — most existing coverage is standards-track structure rather than working optimization algorithms. This is the first KB entry to give a concrete <em>learning-based, decentralized configuration</em> mechanism that treats the sub-7 GHz↔mmWave coupling as a single joint optimization rather than two independent tuning problems. It also connects <code>mmwave-bq</code> to the <code>mapc-cosr</code> (multi-AP coordination) and <code>ai-for-wifi</code> (bandit/RL parameter tuning) bins: the same coupled-plane, feasibility-constrained CMAB framing could generalize to Co-SR / Co-BF parameter selection. The headline gains (~47% throughput, ~49% faster convergence over a flat bandit) quantify how much the grouped/feasible structure buys over naive combinatorial exploration.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>本文研究密集多 AP IEEE P802.11bq 网络中的分布式吞吐优化。P802.11bq 是新兴修正案，在单个 Wi-Fi 设备中将 sub-7 GHz 控制/竞争链路与 60 GHz 定向 mmWave 数据链路耦合。作者指出两个平面存在跨层耦合：sub-7 GHz 的 CSMA/CA 参数（最小竞争窗口 CW_min、CCA 门限、RTS/CTS）决定&quot;谁能发送&quot;，而 mmWave 的波束宽度与 MCS 预留余量决定&quot;载荷能否成功送达&quot;。静态或各自独立调参会损失吞吐——激进的载波侦听会饿死邻居，窄波束抬高波束训练开销，宽波束又招致定向干扰。</p>\n<p>作者将配置问题建模为含 G=4 个参数组（CW_min、CCA 门限、波束宽度、MCS 余量）的多组组合多臂老虎机（CMAB）。所提 CSAR 启发式算法将每组候选值索引为&quot;基本臂&quot;，用 Hadamard 矩阵引导的探索采样多样化的<em>可行</em>配置（每组恰选一个值），依据本地吞吐反馈对各臂主效应打分，并在每个阶段逐组剔除最弱候选。这将探索代价从所有参数组合的完整笛卡尔积降至约 O(2V·max_g(V_g−1)) 次试验，同时保持 P802.11bq 要求的分组可行性约束。</p>\n<p>包级仿真建模了退避时延、RTS/CTS 失败、波束训练开销、MCS 选择、定向干扰与重传，覆盖 2–12 个同址 AP（6 GHz 控制面、60 GHz / 80 MHz 数据面、240 kbit 载荷）。相较于在扁平笛卡尔动作空间上的汤普森采样 MAB（MAB-TS）、纯 mmWave MAB-TS 及固定配置，本 CMAB 方案在 10 个 AP 时达到约 4570 Mbps 聚合吞吐（MAB-TS 约 3110 Mbps，高约 47%），收敛时间 1.66–2.21 s（MAB-TS 为 3.49–3.78 s，快约 49%）。学到的策略明显非极端：CCA 门限放松（密集时约 −2 至 −5 dBm）、波束宽度适中（26–38°）、MCS 余量居中（2–4），印证了优良性能需要<em>平衡</em>控制信道激进度、mmWave 空间复用、波束训练开销与 MCS 鲁棒性，而非单一参数取极值。</p>\n<h3>技术要点</h3>\n<ul><li><strong>P802.11bq 的 PHY/MAC 耦合模型：</strong> sub-7 GHz 竞争面（CW_min、CCA、RTS/CTS）与 60 GHz 定向数据面（波束宽度、MCS 预留余量）联合建模，含波束训练开销与定向干扰。</li><li><strong>多组 CMAB 建模：</strong> 四个参数组各贡献&quot;基本臂&quot;；联合动作须每组恰选一个值（可行性约束）。</li><li><strong>Hadamard 引导探索 + 逐组逐次剔除（CSAR 启发）：</strong> 主效应打分 ω̂ = (1/L)·Hᵀy；探索代价约 O(2V·max_g(V_g−1))，而非完整笛卡尔积 ∏V_g。</li><li><strong>完全去中心化：</strong> 每个 AP 仅凭本地吞吐反馈学习——无中心协调器、无显式干扰图。</li><li><strong>结果：</strong> 10 个 AP 时聚合吞吐高约 47%、收敛快约 49%（对比扁平汤普森采样 MAB）；学到的配置均衡、非极端。</li></ul>\n<h3>意义与新意</h3>\n<p>802.11bq（融合 mmWave）是本 KB <code>mmwave-bq</code> 桶中探索最少的 802.11 修正案之一——现有内容多为标准化结构而非可运行的优化算法。这是 KB 中首个给出具体<em>基于学习的去中心化配置</em>机制的条目，将 sub-7 GHz↔mmWave 耦合视为单一联合优化，而非两个独立调参问题。它还把 <code>mmwave-bq</code> 与 <code>mapc-cosr</code>（多 AP 协调）、<code>ai-for-wifi</code>（老虎机/RL 参数调优）两个桶联系起来：同样的耦合面、带可行性约束的 CMAB 框架可推广到 Co-SR / Co-BF 参数选择。约 47% 吞吐、约 49% 更快收敛的结果量化了分组/可行结构相对朴素组合探索的收益。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2606.03528v1/x1.png",
+          "caption_en": "Multi-AP P802.11bq system model: sub-7 GHz contention plane + 60 GHz directional data plane",
+          "caption_zh": "多 AP P802.11bq 系统模型：sub-7 GHz 竞争面 + 60 GHz 定向数据面"
+        },
+        {
+          "url": "https://arxiv.org/html/2606.03528v1/x3.png",
+          "caption_en": "Aggregate and per-AP throughput vs. AP density: CMAB vs. MAB-TS baselines",
+          "caption_zh": "聚合与每 AP 吞吐随 AP 密度变化：CMAB 对比 MAB-TS 基线"
+        }
+      ],
+      "search_blob": "throughput optimization for multi-ap ieee p802.11bq networks based on combinatorial multi-armed bandits 基于组合多臂老虎机的多 ap ieee p802.11bq 网络吞吐优化 802.11bq mmwave mapc multi-ap cmab spatial-reuse this paper tackles distributed throughput optimization in dense multi-ap ieee p802.11bq networks — the emerging amendment that couples a sub-7 ghz control/contention link with a 60 ghz directional mmwave data link in a single wi-fi device. the authors observe that the two planes are cross-coupled: the sub-7 ghz csma/ca parameters (minimum contention window, cca threshold, rts/cts) decide *who gets to transmit*, while the mmwave beamwidth and mcs reservation margin decide *whether the payload is delivered successfully*. static or independently-tuned configurations therefore leave throughput on the table, because aggressive carrier sensing can starve neighbours while narrow beams raise beam-training overhead and wide beams invite directional interference. 本文研究密集多 ap ieee p802.11bq 网络中的分布式吞吐优化。p802.11bq 是新兴修正案，在单个 wi-fi 设备中将 sub-7 ghz 控制/竞争链路与 60 ghz 定向 mmwave 数据链路耦合。作者指出两个平面存在跨层耦合：sub-7 ghz 的 csma/ca 参数（最小竞争窗口 cw_min、cca 门限、rts/cts）决定\"谁能发送\"，而 mmwave 的波束宽度与 mcs 预留余量决定\"载荷能否成功送达\"。静态或各自独立调参会损失吞吐——激进的载波侦听会饿死邻居，窄波束抬高波束训练开销，宽波束又招致定向干扰。 academic-paper wifi"
+    },
+    {
+      "id": "2026-06-03_arxiv-kiss-slotted-distributed-rl-channel-access",
+      "date_found": "2026-06-03",
+      "technology": "wifi",
+      "date_published": "2026-05-29",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "KISS: Keeping it Simple and Slotted when Learning to Communicate over Wireless",
+      "title_zh": "KISS：在无线信道上学习通信时保持简单与时隙化",
+      "url": "https://arxiv.org/abs/2606.00266",
+      "topics": [
+        "random-access",
+        "slotted-ALOHA",
+        "reinforcement-learning",
+        "MAC-layer",
+        "distributed-MAC"
+      ],
+      "topic_primary": "ai-for-wifi",
+      "topics_secondary": [],
+      "novelty_score": 1,
+      "entry_path": "entries/2026-06-03_arxiv-kiss-slotted-distributed-rl-channel-access.md",
+      "summary_short_en": "KISS (\"Keeping It Simple and Slotted\") asks a foundational question: can fully distributed deep reinforcement-learning agents learn efficient *and fair* channel-access strategies with no centralization, no coordination, no explicit signaling, and no knowledge of network parameters such as the number of contending nodes? The authors come from the AGH Kraków group that contributes to IEEE 802.11 / ns-3 random-access research, but this paper deliberately steps back from 802.11 specifics to study the underlying slotted random-access problem.",
+      "summary_short_zh": "KISS（\"保持简单与时隙化\"）提出一个基础问题：完全分布式的深度强化学习智能体能否在无中心化、无协调、无显式信令、且不知网络参数（如竞争节点数）的条件下，学到高效*且公平*的信道接入策略？作者来自参与 IEEE 802.11 / ns-3 随机接入研究的 AGH 克拉科夫团队，但本文有意从 802.11 细节退一步，研究底层的时隙化随机接入问题。",
+      "body_html_en": "<h3>Summary</h3>\n<p>KISS (&quot;Keeping It Simple and Slotted&quot;) asks a foundational question: can fully distributed deep reinforcement-learning agents learn efficient <em>and fair</em> channel-access strategies with no centralization, no coordination, no explicit signaling, and no knowledge of network parameters such as the number of contending nodes? The authors come from the AGH Kraków group that contributes to IEEE 802.11 / ns-3 random-access research, but this paper deliberately steps back from 802.11 specifics to study the underlying slotted random-access problem.</p>\n<p>Each node runs an independent Double Deep Q-Network (DDQN) with a one-layer transformer classifier and a Bayesian neural network for inference. The only observations are per-slot channel outcomes (idle / success / collision); the action space is just transmit (TX) or carrier-sense (CS). The reward rewards successful transmissions and penalizes collisions and excessive waiting. With no pre-training, no shared parameters, and no signaling, each agent must infer how aggressively to transmit purely from the slot-outcome history.</p>\n<p>On a JAX-based slotted-channel simulator (no attenuation, no hidden terminals; 5–40 nodes, saturated and non-saturated, static and dynamic), KISS recovers near-optimal p-persistent behavior: it approaches the theoretical slotted-ALOHA throughput limit of 1/e ≈ 0.368 (~0.4 normalized throughput), learns to approximate the optimal per-node transmission probability 1/N without ever being told N, maintains high Jain's fairness across network sizes, adapts quickly to topology changes, and outperforms EB-ALOHA, ALOHA-Q, and DLMA baselines especially in non-saturated traffic.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Fully distributed DDQN</strong>, one agent per node, no parameter sharing, no coordination, no signaling.</li><li><strong>Minimal observation/action:</strong> per-slot outcome (idle/success/collision) in, TX-or-CS out.</li><li><strong>Architecture:</strong> one-layer transformer classifier + Bayesian neural network.</li><li><strong>Result:</strong> recovers slotted-ALOHA 1/e throughput limit and the optimal 1/N transmission probability <em>without knowing N</em>; high fairness; robust to dynamic topologies; beats EB-ALOHA / ALOHA-Q / DLMA in non-saturated regimes.</li><li><strong>Scope caveat:</strong> abstract slotted channel (no attenuation, no hidden terminals) — foundational random-access theory, not an 802.11-specific MAC.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is an adjacency read for the <code>ai-for-wifi</code> bin rather than a direct 802.11 contribution: it shows that minimal-assumption distributed deep RL can <em>rediscover</em> classical p-persistent ALOHA behavior, which sets a clean lower-bound baseline for any learned-MAC claim that targets real 802.11 CSMA/CA. The novelty is methodological (no pre-training / no signaling / no N knowledge), not a new wireless mechanism — the agents converge to behavior that contention-window theory already predicts. Useful as a reference point when evaluating the more applied learned-channel-access entries in the KB, but it does not introduce a new on-the-wire mechanism.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>KISS（&quot;保持简单与时隙化&quot;）提出一个基础问题：完全分布式的深度强化学习智能体能否在无中心化、无协调、无显式信令、且不知网络参数（如竞争节点数）的条件下，学到高效<em>且公平</em>的信道接入策略？作者来自参与 IEEE 802.11 / ns-3 随机接入研究的 AGH 克拉科夫团队，但本文有意从 802.11 细节退一步，研究底层的时隙化随机接入问题。</p>\n<p>每个节点运行独立的双深度 Q 网络（DDQN），配单层 transformer 分类器与贝叶斯神经网络做推断。唯一观测是每时隙的信道结果（空闲/成功/冲突）；动作空间仅为发送（TX）或载波侦听（CS）。奖励函数鼓励成功发送、惩罚冲突与过度等待。在无预训练、无共享参数、无信令的条件下，每个智能体须仅凭时隙结果历史推断发送的激进程度。</p>\n<p>在基于 JAX 的时隙信道仿真器上（无衰落、无隐藏终端；5–40 节点，饱和与非饱和、静态与动态），KISS 恢复出近最优的 p-持续行为：逼近时隙 ALOHA 的理论吞吐上限 1/e ≈ 0.368（归一化吞吐约 0.4），在不被告知 N 的情况下学会逼近最优每节点发送概率 1/N，在各网络规模下保持高 Jain 公平性，对拓扑变化快速自适应，并在非饱和流量下优于 EB-ALOHA、ALOHA-Q、DLMA 等基线。</p>\n<h3>技术要点</h3>\n<ul><li><strong>完全分布式 DDQN</strong>，每节点一个智能体，无参数共享、无协调、无信令。</li><li><strong>极简观测/动作：</strong> 输入每时隙结果（空闲/成功/冲突），输出 TX 或 CS。</li><li><strong>架构：</strong> 单层 transformer 分类器 + 贝叶斯神经网络。</li><li><strong>结果：</strong> 在<em>不知 N</em> 的情况下恢复时隙 ALOHA 的 1/e 吞吐上限与最优 1/N 发送概率；公平性高；对动态拓扑鲁棒；非饱和场景优于 EB-ALOHA / ALOHA-Q / DLMA。</li><li><strong>范围说明：</strong> 抽象时隙信道（无衰落、无隐藏终端）——属基础随机接入理论，非 802.11 专用 MAC。</li></ul>\n<h3>意义与新意</h3>\n<p>本文是 <code>ai-for-wifi</code> 桶的邻接读物，而非直接的 802.11 贡献：它表明最小假设的分布式深度 RL 能<em>重新发现</em>经典 p-持续 ALOHA 行为，为任何面向真实 802.11 CSMA/CA 的&quot;学习型 MAC&quot;主张提供了干净的下界基线。其新意在方法层面（无预训练/无信令/不知 N），而非新的无线机制——智能体收敛到竞争窗口理论早已预测的行为。可作为评估 KB 中更应用化的学习型信道接入条目的参照点，但并未引入可保护的在网（on-the-wire）机制。</p>",
+      "images": [],
+      "search_blob": "kiss: keeping it simple and slotted when learning to communicate over wireless kiss：在无线信道上学习通信时保持简单与时隙化 random-access slotted-aloha reinforcement-learning mac-layer distributed-mac kiss (\"keeping it simple and slotted\") asks a foundational question: can fully distributed deep reinforcement-learning agents learn efficient *and fair* channel-access strategies with no centralization, no coordination, no explicit signaling, and no knowledge of network parameters such as the number of contending nodes? the authors come from the agh kraków group that contributes to ieee 802.11 / ns-3 random-access research, but this paper deliberately steps back from 802.11 specifics to study the underlying slotted random-access problem. kiss（\"保持简单与时隙化\"）提出一个基础问题：完全分布式的深度强化学习智能体能否在无中心化、无协调、无显式信令、且不知网络参数（如竞争节点数）的条件下，学到高效*且公平*的信道接入策略？作者来自参与 ieee 802.11 / ns-3 随机接入研究的 agh 克拉科夫团队，但本文有意从 802.11 细节退一步，研究底层的时隙化随机接入问题。 academic-paper wifi"
+    },
     {
       "id": "2026-06-01_arxiv-kairos-timing-induced-failures-5g-core",
       "date_found": "2026-06-01",
