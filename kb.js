@@ -25,14 +25,14 @@ window.KB_DATA = {
     "Starlink": 6,
     "NTN": 6,
     "direct-to-device": 6,
+    "NearLink": 6,
+    "SparkLink": 6,
     "802.11bp": 6,
     "LLM": 5,
     "802.11bq": 5,
     "mmWave": 5,
     "reinforcement-learning": 5,
     "BLE": 5,
-    "NearLink": 5,
-    "SparkLink": 5,
     "automotive": 5,
     "XR": 5,
     "5G-NR": 4,
@@ -56,6 +56,7 @@ window.KB_DATA = {
     "AoA": 3,
     "5G": 3,
     "handover": 3,
+    "SLE": 3,
     "backscatter": 3,
     "AI-native": 3,
     "Co-SR": 3,
@@ -79,6 +80,7 @@ window.KB_DATA = {
     "measurement": 2,
     "beamforming": 2,
     "phased-array": 2,
+    "PHY": 2,
     "control-plane": 2,
     "semantic-communication": 2,
     "V2X": 2,
@@ -92,7 +94,6 @@ window.KB_DATA = {
     "QoE": 2,
     "full-duplex": 2,
     "ISLA": 2,
-    "SLE": 2,
     "Nordic": 2,
     "deterministic-latency": 2,
     "BT-LE": 2,
@@ -164,7 +165,6 @@ window.KB_DATA = {
     "weather": 1,
     "telemetry": 1,
     "reliability": 1,
-    "PHY": 1,
     "edge-cloud": 1,
     "autonomous-vehicles": 1,
     "random-access": 1,
@@ -462,6 +462,10 @@ window.KB_DATA = {
     "China-national-standard": 1,
     "short-range-wireless": 1,
     "standardization": 1,
+    "GB/T": 1,
+    "national-standard": 1,
+    "polar-codes": 1,
+    "data-link-layer": 1,
     "StarLink-audio": 1,
     "L2HC": 1,
     "lossless-audio": 1,
@@ -502,10 +506,10 @@ window.KB_DATA = {
     "wifi-for-ai": 2,
     "roaming-mobility": 2,
     "mlo": 2,
+    "nearlink-sle": 2,
     "uwb-radar": 1,
     "bt-mesh": 1,
-    "uwb-fi-ra": 1,
-    "nearlink-sle": 1
+    "uwb-fi-ra": 1
   },
   "type_counts": {
     "academic-paper": 117,
@@ -513,13 +517,13 @@ window.KB_DATA = {
     "ieee-document": 12,
     "product": 11,
     "proposal": 4,
-    "bluetooth-spec": 1,
-    "nearlink-spec": 1
+    "nearlink-spec": 2,
+    "bluetooth-spec": 1
   },
   "category_counts": {
     "academia": 117,
     "industry": 53,
-    "standards": 18
+    "standards": 19
   },
   "technologies_vocab": {
     "technologies": [
@@ -2979,7 +2983,8 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
-        "2026-05-28_sparklink-gbt-46803-national-standards"
+        "2026-05-28_sparklink-gbt-46803-national-standards",
+        "2026-06-05_nearlink-sle-gbt-46803-national-standard"
       ],
       "entries_secondary": [
         "2026-05-21_sparklink-ecosystem-2026-overview",
@@ -2987,7 +2992,8 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "nearlink-spec": [
-          "2026-05-28_sparklink-gbt-46803-national-standards"
+          "2026-05-28_sparklink-gbt-46803-national-standards",
+          "2026-06-05_nearlink-sle-gbt-46803-national-standard"
         ]
       }
     },
@@ -8354,6 +8360,37 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>继 HPE 在 2025 年底完成对 Juniper Networks 的收购后，HPE Discover 大会披露了两大企业 WLAN 管理平台 <strong>Aruba Central</strong> 与 <strong>Juniper Mist</strong> 的整合计划：两个平台将合并为一个&quot;AI 原生的网络大脑&quot;，共享能力将在 2026 第一季度陆续上线。HPE 内部将该策略称为<strong>&quot;一次构建、两次发布&quot;</strong> —— 通用能力沉淀进统一代码库，然后通过 Aruba 与 Mist 各自的 UI 暴露出去，同时产品逐步收敛。</p>\n<p>对企业 Wi-Fi 工程师而言，这是 Wi-Fi 6 后时代规模最大的 WLAN 管理整合事件。Aruba Central 与 Mist 此前分别是两阵营各自的 AI 驱动 WLAN 管理领头羊，现在都被 HPE 收入囊中。CEO Antonio Neri 的表述 —— 即 Wi-Fi 7 部署将成为统一平台所管理的第一代网络 —— 把这次整合锚定在已经正在进行的 Wi-Fi 7 部署浪潮上（见 <code>2026-05-01_wifi7-deployment-milestone-2026.md</code>）。</p>\n<p>竞争格局也更清晰：根据 IDC 的市场领导者认定，HPE Aruba 与思科已成为企业 WLAN 的两强格局；思科以 <strong>G300 AI 网络芯片</strong>、<strong>AgenticOps</strong> 管理套件以及预计 2026 下半年交付的液冷 Nexus 8000/9000 交换机回应。</p>\n<h3>技术要点</h3>\n<ul><li><strong>两平台整合：</strong> Aruba Central + Juniper Mist 合并为统一代码库</li><li><strong>策略：</strong> &quot;一次构建、两次发布&quot; —— 共享后端、双 UI 并行，逐步收敛</li><li><strong>时间线：</strong> 共享能力 2026 Q1 陆续发布</li><li><strong>锚点是 Wi-Fi 7：</strong> Wi-Fi 7 部署将成为统一平台所管理的第一代网络</li><li><strong>竞争格局：</strong> HPE Aruba vs Cisco；思科以 G300 芯片 + AgenticOps + 2026 下半年液冷 Nexus 交换机回应</li><li><strong>市场定位（IDC）：</strong> HPE Aruba 与思科是仅有的两家企业 WLAN 市场领导者</li></ul>\n<h3>意义与新意</h3>\n<ul><li><strong>本十年最大规模的企业 WLAN 整合。</strong> 当每一代代际中的领头厂商都被<em>同一家</em>厂商收购，企业 WLAN 管理面的多样性叙事就被削去一层。值得跟踪：与非 HPE 设备的互操作性如何处理。</li><li><strong>AI 原生管理已不可选。</strong> HPE 与思科的回应都把智能体 AI 放在管理面 —— 隐性抬高了企业 WLAN 销售的底线。</li><li><strong>客户侧决策压力。</strong> 当前同时运行 Aruba/Mist 混合舰队的企业现在有了明确的路线图（以及厂商倾向）去做整合。2026 年的采购决策将以此次收敛为前提考虑。</li></ul>",
       "images": [],
       "search_blob": "hpe merges aruba central and juniper mist platforms — unified ai-native enterprise wlan brain (q1 2026) hpe 整合 aruba central 与 juniper mist 平台 —— 统一 ai 原生的企业 wlan 大脑（2026 第一季度） 802.11be agentic-ai products mac-layer following hpe's acquisition of juniper networks (closed late 2025), hpe discover unveiled the integration plan for the two enterprise wlan management platforms: **aruba central** and **juniper mist**. the two platforms are being merged into a single \"ai-native network brain\" with shared capabilities rolling out throughout q1 2026. the strategy is described internally as **\"build once, deploy twice\"** — common functionality is built into a unified codebase, then surfaced through both aruba and mist uis while the products converge. 继 hpe 在 2025 年底完成对 juniper networks 的收购后，hpe discover 大会披露了两大企业 wlan 管理平台 **aruba central** 与 **juniper mist** 的整合计划：两个平台将合并为一个\"ai 原生的网络大脑\"，共享能力将在 2026 第一季度陆续上线。hpe 内部将该策略称为**\"一次构建、两次发布\"** —— 通用能力沉淀进统一代码库，然后通过 aruba 与 mist 各自的 ui 暴露出去，同时产品逐步收敛。 industry-news wifi"
+    },
+    {
+      "id": "2026-06-05_nearlink-sle-gbt-46803-national-standard",
+      "date_found": "2026-06-05",
+      "technology": "nearlink",
+      "date_published": "2025-12-02",
+      "type": "nearlink-spec",
+      "category": "standards",
+      "title_en": "NearLink SLE elevated to Chinese national standard: GB/T 46803.1/.2-2025 (polar-code low-power short-range PHY + data-link layer)",
+      "title_zh": "星闪 SLE 升级为国家标准：GB/T 46803.1/.2-2025（基于极化码的低功耗无线通信网络 物理层 + 数据链路层）",
+      "url": "https://std.samr.gov.cn/gb/search/gbDetailed?id=4507EFE13DACCB6AE06397BE0A0A601F",
+      "topics": [
+        "NearLink",
+        "SparkLink",
+        "SLE",
+        "GB/T",
+        "national-standard",
+        "polar-codes",
+        "PHY",
+        "data-link-layer"
+      ],
+      "topic_primary": "nearlink-sle",
+      "topics_secondary": [],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-06-05_nearlink-sle-gbt-46803-national-standard.md",
+      "summary_short_en": "On 2 December 2025 China's State Administration for Market Regulation (SAMR) released two recommended national standards that codify the NearLink (星闪 / SparkLink) low-energy mode — SLE — into the GB/T system: **GB/T 46803.1-2025 \"Information technology — Low-power wireless communication network based on polar codes — Part 1: Physical layer\"** and **GB/T 46803.2-2025 — Part 2: Data link layer**. Both are recommended (GB/T) national standards with an implementation date of 1 July 2026. Notably, the standard titles describe the technology generically as a \"low-power wireless communication network based on polar codes\" rather than naming the brand — the conventional framing for a Chinese national standard — but these are the national-standard realisation of NearLink's SLE access stack.",
+      "summary_short_zh": "2025 年 12 月 2 日，国家市场监督管理总局（SAMR）发布两项推荐性国家标准，将星闪（NearLink / SparkLink）的低功耗模式 SLE 纳入 GB/T 体系：**GB/T 46803.1-2025《信息技术 基于极化码的低功耗无线通信网络 第1部分：物理层》** 与 **GB/T 46803.2-2025 第2部分：数据链路层**。两者均为推荐性（GB/T）国家标准，实施日期为 2026 年 7 月 1 日。值得注意的是，标准名称以\"基于极化码的低功耗无线通信网络\"这一通用表述命名，而非直接使用品牌名——这是中国国家标准的惯常做法——但其实质即星闪 SLE 接入协议栈的国标化落地。",
+      "body_html_en": "<h3>Summary</h3>\n<p>On 2 December 2025 China's State Administration for Market Regulation (SAMR) released two recommended national standards that codify the NearLink (星闪 / SparkLink) low-energy mode — SLE — into the GB/T system: <strong>GB/T 46803.1-2025 &quot;Information technology — Low-power wireless communication network based on polar codes — Part 1: Physical layer&quot;</strong> and <strong>GB/T 46803.2-2025 — Part 2: Data link layer</strong>. Both are recommended (GB/T) national standards with an implementation date of 1 July 2026. Notably, the standard titles describe the technology generically as a &quot;low-power wireless communication network based on polar codes&quot; rather than naming the brand — the conventional framing for a Chinese national standard — but these are the national-standard realisation of NearLink's SLE access stack.</p>\n<p>The two parts split the SLE radio stack along the usual layered boundary: Part 1 fixes the physical layer (modulation/coding built on polar codes, the channel structure, and the low-power PHY procedures that let SLE reach Bluetooth-class power while keeping NearLink's latency/reliability targets), and Part 2 fixes the data link layer (framing, channel access, and link control above the PHY). This is the SLE counterpart to the high-throughput SLB mode; SLE targets IoT sensors, wearables and other low-power endpoints, whereas SLB targets high-bandwidth automotive/projection use cases.</p>\n<p>The national-standard step builds directly on the alliance-level NearLink 2.0 specification published by the International NearLink Alliance in March 2025 (which added audio transport and integrated sensing-and-communication to the end-to-end protocol system). Moving from an alliance specification to a SAMR GB/T standard is the institutional milestone: it gives the SLE PHY and data-link layer a citable national reference for procurement, certification and cross-vendor interoperability, which is what large-scale industrial and government adoption in China typically waits for.</p>\n<h3>Key technical points</h3>\n<ul><li>Two recommended national standards, released 2025-12-02, in force 2026-07-01:</li><li><strong>GB/T 46803.1-2025</strong> — 信息技术 基于极化码的低功耗无线通信网络 第1部分：物理层 (PHY: polar-code-based modulation/coding, channel structure, low-power procedures).</li><li><strong>GB/T 46803.2-2025</strong> — 第2部分：数据链路层 (data link layer: framing, channel access, link control).</li><li>These standardise the <strong>SLE</strong> (SparkLink Low Energy) side of NearLink — the Bluetooth-class-power, IoT/wearable mode — as opposed to the high-throughput SLB mode.</li><li>Built on the alliance-level NearLink 2.0 spec (March 2025); this is the GB/T national-standard realisation, not a new technical version.</li><li>GB/T = recommended (not mandatory) national standard; significance is institutional — a citable national reference for procurement/certification/interoperability.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB has tracked NearLink mainly through alliance specs (NearLink 1.0/2.0), chip-shipment milestones, and consumer-product adoption (Huawei phones, the Enjoy 90, peripherals). This is the first entry on a <strong>GB/T national standard</strong> for NearLink, and it pins down a fact the prior coverage left implicit: the SLE radio is specified as a polar-code-based low-power PHY + data-link layer, now with a SAMR document number and a 2026-07-01 in-force date. It is the standards-track anchor for the SLE side of the ecosystem and the institutional precondition that typically precedes broad Chinese industrial/government deployment — worth watching for the parallel SLB national-standard parts and any conformance/certification scheme that references these GB/T numbers.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>2025 年 12 月 2 日，国家市场监督管理总局（SAMR）发布两项推荐性国家标准，将星闪（NearLink / SparkLink）的低功耗模式 SLE 纳入 GB/T 体系：<strong>GB/T 46803.1-2025《信息技术 基于极化码的低功耗无线通信网络 第1部分：物理层》</strong> 与 <strong>GB/T 46803.2-2025 第2部分：数据链路层</strong>。两者均为推荐性（GB/T）国家标准，实施日期为 2026 年 7 月 1 日。值得注意的是，标准名称以&quot;基于极化码的低功耗无线通信网络&quot;这一通用表述命名，而非直接使用品牌名——这是中国国家标准的惯常做法——但其实质即星闪 SLE 接入协议栈的国标化落地。</p>\n<p>两部分按经典分层边界拆分 SLE 无线协议栈：第 1 部分规定物理层（基于极化码的调制/编码、信道结构，以及让 SLE 在保持星闪时延/可靠性目标的同时达到蓝牙级功耗的低功耗 PHY 流程）；第 2 部分规定数据链路层（帧结构、信道接入与链路控制）。这是与高吞吐 SLB 模式相对应的 SLE 一侧：SLE 面向 IoT 传感器、可穿戴等低功耗终端，而 SLB 面向高带宽的车载/投屏等场景。</p>\n<p>国标化这一步直接建立在国际星闪联盟 2025 年 3 月发布的星闪 2.0 标准之上（该版本为端到端协议体系新增了音频传输与通感一体等核心规范）。从联盟标准上升为 SAMR 的 GB/T 国家标准是制度层面的里程碑：它为 SLE 物理层与数据链路层提供了可被采购、认证与跨厂商互操作引用的国家级依据——这通常正是中国大规模工业与政府采用所等待的前提。</p>\n<h3>技术要点</h3>\n<ul><li>两项推荐性国家标准，2025-12-02 发布，2026-07-01 实施：</li><li><strong>GB/T 46803.1-2025</strong>——《信息技术 基于极化码的低功耗无线通信网络 第1部分：物理层》（PHY：基于极化码的调制/编码、信道结构、低功耗流程）。</li><li><strong>GB/T 46803.2-2025</strong>——第2部分：数据链路层（帧结构、信道接入、链路控制）。</li><li>标准化的是星闪的 <strong>SLE</strong>（SparkLink Low Energy）一侧——蓝牙级功耗的 IoT/可穿戴模式，区别于高吞吐的 SLB 模式。</li><li>建立在联盟级星闪 2.0 标准（2025 年 3 月）之上；这是 GB/T 国标化落地，而非新的技术版本。</li><li>GB/T 为推荐性（非强制）国家标准；其意义在制度层面——为采购/认证/互操作提供可引用的国家级依据。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 此前主要通过联盟标准（星闪 1.0/2.0）、芯片出货里程碑与消费产品采用（华为手机、Enjoy 90、外设）来跟踪星闪。本条目是首个关于星闪 <strong>GB/T 国家标准</strong> 的条目，并明确了此前报道隐含的事实：SLE 无线被规定为基于极化码的低功耗物理层 + 数据链路层，如今有了 SAMR 文件编号与 2026-07-01 的实施日期。它是生态中 SLE 一侧的标准锚点，也是中国大规模工业/政府部署通常的制度前提——后续值得关注与之对应的 SLB 国标分册，以及引用这些 GB/T 编号的一致性/认证方案。</p>",
+      "images": [],
+      "search_blob": "nearlink sle elevated to chinese national standard: gb/t 46803.1/.2-2025 (polar-code low-power short-range phy + data-link layer) 星闪 sle 升级为国家标准：gb/t 46803.1/.2-2025（基于极化码的低功耗无线通信网络 物理层 + 数据链路层） nearlink sparklink sle gb/t national-standard polar-codes phy data-link-layer on 2 december 2025 china's state administration for market regulation (samr) released two recommended national standards that codify the nearlink (星闪 / sparklink) low-energy mode — sle — into the gb/t system: **gb/t 46803.1-2025 \"information technology — low-power wireless communication network based on polar codes — part 1: physical layer\"** and **gb/t 46803.2-2025 — part 2: data link layer**. both are recommended (gb/t) national standards with an implementation date of 1 july 2026. notably, the standard titles describe the technology generically as a \"low-power wireless communication network based on polar codes\" rather than naming the brand — the conventional framing for a chinese national standard — but these are the national-standard realisation of nearlink's sle access stack. 2025 年 12 月 2 日，国家市场监督管理总局（samr）发布两项推荐性国家标准，将星闪（nearlink / sparklink）的低功耗模式 sle 纳入 gb/t 体系：**gb/t 46803.1-2025《信息技术 基于极化码的低功耗无线通信网络 第1部分：物理层》** 与 **gb/t 46803.2-2025 第2部分：数据链路层**。两者均为推荐性（gb/t）国家标准，实施日期为 2026 年 7 月 1 日。值得注意的是，标准名称以\"基于极化码的低功耗无线通信网络\"这一通用表述命名，而非直接使用品牌名——这是中国国家标准的惯常做法——但其实质即星闪 sle 接入协议栈的国标化落地。 nearlink-spec nearlink"
     },
     {
       "id": "2026-05-01_arxiv-mapc-llm-agents",
