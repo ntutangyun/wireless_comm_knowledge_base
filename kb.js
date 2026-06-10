@@ -1,6 +1,6 @@
 window.KB_DATA = {
   "schema_version": 6,
-  "last_updated": "2026-06-09",
+  "last_updated": "2026-06-10",
   "topic_counts": {
     "MAC-layer": 36,
     "agentic-AI": 35,
@@ -22,21 +22,22 @@ window.KB_DATA = {
     "CSI": 8,
     "network-slicing": 7,
     "generative-AI": 7,
+    "mmWave": 6,
     "Starlink": 6,
     "NTN": 6,
     "direct-to-device": 6,
     "NearLink": 6,
     "SparkLink": 6,
     "802.11bp": 6,
+    "5G-NR": 5,
     "LLM": 5,
     "802.11bq": 5,
-    "mmWave": 5,
     "reinforcement-learning": 5,
     "BLE": 5,
     "automotive": 5,
     "XR": 5,
+    "V2X": 4,
     "Wi-Fi-8": 4,
-    "5G-NR": 4,
     "resource-allocation": 4,
     "RIC": 4,
     "AI-RAN": 4,
@@ -73,6 +74,7 @@ window.KB_DATA = {
     "ISAC": 3,
     "roaming": 3,
     "802.15.4ab": 3,
+    "sidelink": 2,
     "5G-SA": 2,
     "5G-Advanced": 2,
     "SLA": 2,
@@ -86,7 +88,6 @@ window.KB_DATA = {
     "PHY": 2,
     "control-plane": 2,
     "semantic-communication": 2,
-    "V2X": 2,
     "ns-3": 2,
     "PQC": 2,
     "UPF": 2,
@@ -127,6 +128,12 @@ window.KB_DATA = {
     "FiRa": 2,
     "Rel-19": 2,
     "R-TWT": 2,
+    "C-V2X": 1,
+    "semantic-communications": 1,
+    "cooperative-perception": 1,
+    "user-association": 1,
+    "contextual-bandit": 1,
+    "blockage": 1,
     "spectrum-aggregation": 1,
     "carrier-aggregation": 1,
     "dual-connectivity": 1,
@@ -239,7 +246,6 @@ window.KB_DATA = {
     "game-theory": 1,
     "traffic-steering": 1,
     "RAN-automation": 1,
-    "sidelink": 1,
     "road-safety": 1,
     "energy-saving": 1,
     "adaptive-bitrate": 1,
@@ -495,9 +501,9 @@ window.KB_DATA = {
     "agentic-wifi": 9,
     "spectrum-policy": 7,
     "amp-iot": 7,
+    "5g-nr": 6,
     "ai-for-wifi": 5,
     "sat-direct-device": 5,
-    "5g-nr": 4,
     "leo-constellations": 4,
     "starlink": 4,
     "uwb-ranging": 4,
@@ -522,7 +528,7 @@ window.KB_DATA = {
     "uwb-fi-ra": 1
   },
   "type_counts": {
-    "academic-paper": 120,
+    "academic-paper": 122,
     "industry-news": 42,
     "product": 12,
     "ieee-document": 12,
@@ -531,7 +537,7 @@ window.KB_DATA = {
     "bluetooth-spec": 1
   },
   "category_counts": {
-    "academia": 120,
+    "academia": 122,
     "industry": 54,
     "standards": 19
   },
@@ -2145,6 +2151,8 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-06-10_arxiv-semantic-task-oriented-v2x-scalability",
+        "2026-06-10_arxiv-band-blockage-aware-bandit-mmwave-v2x",
         "2026-06-05_arxiv-wab-wireless-access-backhaul-rel19",
         "2026-06-03_arxiv-auguste-predictive-urllc-ul-scheduling",
         "2026-05-26_arxiv-v2x-mode0-rcu-safety",
@@ -2170,6 +2178,8 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-06-10_arxiv-semantic-task-oriented-v2x-scalability",
+          "2026-06-10_arxiv-band-blockage-aware-bandit-mmwave-v2x",
           "2026-06-05_arxiv-wab-wireless-access-backhaul-rel19",
           "2026-06-03_arxiv-auguste-predictive-urllc-ul-scheduling",
           "2026-05-26_arxiv-v2x-mode0-rcu-safety",
@@ -2222,6 +2232,7 @@ window.KB_DATA = {
         "2026-05-30_arxiv-semantic-waveforms-ossdm-6g"
       ],
       "entries_secondary": [
+        "2026-06-10_arxiv-semantic-task-oriented-v2x-scalability",
         "2026-06-09_arxiv-ai-native-closed-loop-security-6g-cps",
         "2026-06-05_arxiv-wab-wireless-access-backhaul-rel19",
         "2026-05-27_arxiv-genesis-agentic-6g-ran-synthesis",
@@ -2430,6 +2441,7 @@ window.KB_DATA = {
         "2026-05-21_kddi-ericsson-ai-uplink-ropt"
       ],
       "entries_secondary": [
+        "2026-06-10_arxiv-band-blockage-aware-bandit-mmwave-v2x",
         "2026-06-05_arxiv-dast-vlm-llm-oran-cross-interface-anomaly",
         "2026-06-04_arxiv-cosmo-oran-cross-tech-multitenant-smo",
         "2026-06-03_arxiv-auguste-predictive-urllc-ul-scheduling",
@@ -3069,6 +3081,78 @@ window.KB_DATA = {
     }
   },
   "entries": [
+    {
+      "id": "2026-06-10_arxiv-semantic-task-oriented-v2x-scalability",
+      "date_found": "2026-06-10",
+      "technology": "cellular",
+      "date_published": "2026-06-08",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Semantic and Task-Oriented V2X Communications: Pushing the Limits of V2X Networks Scalability",
+      "title_zh": "语义与任务导向的 V2X 通信：突破 V2X 网络可扩展性的极限",
+      "url": "https://arxiv.org/abs/2606.09126",
+      "topics": [
+        "V2X",
+        "C-V2X",
+        "sidelink",
+        "semantic-communications",
+        "cooperative-perception"
+      ],
+      "topic_primary": "5g-nr",
+      "topics_secondary": [
+        "6g-vision"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-06-10_arxiv-semantic-task-oriented-v2x-scalability.md",
+      "summary_short_en": "This paper attacks the scalability ceiling of Vehicle-to-Everything (V2X) networks by replacing the dominant \"deliver everything reliably and on time\" paradigm with a semantic and task-oriented communication approach that selects message content by its *relevance to the intended receivers*. The authors (Lusvarghi, Gozalvez, Khan, Ucar, Sepulcre, Altintas — the UMH Elche / Toyota InfoTech V2X group) frame the problem around cooperative perception (sensor-data sharing in ETSI terms): in dense traffic, every vehicle broadcasting full object lists saturates the shared channel, so the marginal message carries mostly redundant information. By transmitting only the content that changes a receiver's task state, channel resources are used far more efficiently.",
+      "summary_short_zh": "本文针对车联网（V2X）网络的可扩展性瓶颈，提出用\"语义与任务导向通信\"取代当前\"可靠且及时地传输全部信息\"的主导范式——按消息内容对目标接收方的**相关性**来筛选发送内容。作者为 UMH Elche / 丰田 InfoTech 的 V2X 团队。其问题围绕协作感知（ETSI 术语中的传感器数据共享）展开：在高密度交通下，每辆车广播完整目标列表会使共享信道饱和，边际消息大多是冗余信息。仅传输能改变接收方任务状态的内容，可大幅提升信道资源利用率。",
+      "body_html_en": "<h3>Summary</h3>\n<p>This paper attacks the scalability ceiling of Vehicle-to-Everything (V2X) networks by replacing the dominant &quot;deliver everything reliably and on time&quot; paradigm with a semantic and task-oriented communication approach that selects message content by its <em>relevance to the intended receivers</em>. The authors (Lusvarghi, Gozalvez, Khan, Ucar, Sepulcre, Altintas — the UMH Elche / Toyota InfoTech V2X group) frame the problem around cooperative perception (sensor-data sharing in ETSI terms): in dense traffic, every vehicle broadcasting full object lists saturates the shared channel, so the marginal message carries mostly redundant information. By transmitting only the content that changes a receiver's task state, channel resources are used far more efficiently.</p>\n<p>The evaluation is built on C-V2X sidelink at 5.9 GHz (QPSK), using the openly released C-V2X sidelink analytical reception models and the ETSI CBR-based (Channel Busy Ratio) congestion-control mechanism that drops/limits transmissions under load. Against the conventional content-agnostic baseline, semantic/task-oriented V2X increases the number of supported vehicles by up to <strong>4.1×</strong> in high-density single-channel scenarios (gains preserved in multi-channel scenarios), <strong>nearly doubles</strong> the probability of successfully serving a vehicle with all the relevant information it needs, and cuts the <strong>inter-reception time (IRT)</strong> between consecutive useful messages by up to <strong>67%</strong> — a more regular, frequent exchange that directly benefits safety applications.</p>\n<p>The contribution is a quantified demonstration that relevance-based content selection — not better PHY or more spectrum — is the lever for V2X scalability, and that the gains hold under realistic sidelink congestion control rather than in an idealized channel.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Paradigm shift</strong>: from reliability/timeliness-first to relevance-first message-content selection (semantic + task-oriented), evaluated on the cooperative-perception use case.</li><li><strong>Radio layer</strong>: C-V2X <strong>sidelink</strong> at 5.9 GHz, QPSK; reception modeled with openly released C-V2X sidelink analytical models; <strong>ETSI CBR-based congestion control</strong> implemented (drops transmissions when channel load is high).</li><li><strong>Headline numbers</strong>: up to <strong>4.1×</strong> more supported vehicles (high-density single-channel; preserved multi-channel); <strong>~2×</strong> probability of delivering all required relevant info; up to <strong>67%</strong> lower inter-reception time.</li><li><strong>Why the gains appear</strong>: relevance filtering removes redundant transmissions, freeing channel airtime under CBR congestion control, which both raises capacity and regularizes IRT.</li><li><strong>Sensitivity analysis</strong>: scalability gains analyzed across different driving conditions, confirming robustness rather than a single-scenario artifact.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's existing V2X entry — <code>2026-05-26_arxiv-v2x-mode0-rcu-safety</code> (Mode 0, roadside-computing-assisted resource allocation) — works the <em>resource-allocation</em> axis of C-V2X scalability. This paper works a complementary and largely orthogonal axis: <em>what to send</em>, not <em>how to schedule it</em>. It is the KB's first entry to quantify semantic / task-oriented communications on a realistic C-V2X sidelink stack with ETSI congestion control (most semantic-comms work is evaluated on idealized point-to-point links). The relevance-as-scalability-lever result is a concrete data point for the broader 6G &quot;semantic communications&quot; thesis, grounded here in a deployed-standard vehicular setting.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>本文针对车联网（V2X）网络的可扩展性瓶颈，提出用&quot;语义与任务导向通信&quot;取代当前&quot;可靠且及时地传输全部信息&quot;的主导范式——按消息内容对目标接收方的<strong>相关性</strong>来筛选发送内容。作者为 UMH Elche / 丰田 InfoTech 的 V2X 团队。其问题围绕协作感知（ETSI 术语中的传感器数据共享）展开：在高密度交通下，每辆车广播完整目标列表会使共享信道饱和，边际消息大多是冗余信息。仅传输能改变接收方任务状态的内容，可大幅提升信道资源利用率。</p>\n<p>评估基于 5.9 GHz 的 C-V2X 旁链路（sidelink，QPSK 调制），采用公开发布的 C-V2X 旁链路接收解析模型与 ETSI 基于信道忙比（CBR）的拥塞控制机制（在高负载下丢弃/限制发送）。相比内容无关的传统基线，语义/任务导向 V2X 在高密度单信道场景下将可支持车辆数提升最多 <strong>4.1 倍</strong>（多信道场景下增益依旧保持），将&quot;成功向某车辆送达其所需全部相关信息&quot;的概率<strong>几乎翻倍</strong>，并将连续有效消息之间的<strong>接收间隔时间（IRT）</strong>缩短最多 <strong>67%</strong>——更规律、更频繁的信息交换直接利好安全类应用。</p>\n<p>本文的贡献在于量化证明：撬动 V2X 可扩展性的杠杆是基于相关性的内容筛选，而非更强的物理层或更多频谱，且这些增益在真实的旁链路拥塞控制下依然成立。</p>\n<h3>技术要点</h3>\n<ul><li><strong>范式转变</strong>：从&quot;可靠性/时效性优先&quot;转为&quot;相关性优先&quot;的消息内容筛选（语义+任务导向），以协作感知用例评估。</li><li><strong>无线层</strong>：5.9 GHz 的 C-V2X <strong>旁链路</strong>，QPSK；接收采用公开的 C-V2X 旁链路解析模型；实现 <strong>ETSI 基于 CBR 的拥塞控制</strong>（高负载时丢弃发送）。</li><li><strong>关键数字</strong>：可支持车辆数最多提升 <strong>4.1 倍</strong>（高密度单信道；多信道下保持）；送达全部所需相关信息的概率<strong>约 2 倍</strong>；接收间隔时间最多降低 <strong>67%</strong>。</li><li><strong>增益来源</strong>：相关性筛选剔除冗余发送，在 CBR 拥塞控制下释放信道时长，既提升容量又使 IRT 更规律。</li><li><strong>敏感性分析</strong>：在不同驾驶条件下分析可扩展性增益，确认其稳健性而非单一场景的偶然结果。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 现有的 V2X 条目 <code>2026-05-26_arxiv-v2x-mode0-rcu-safety</code>（Mode 0，路侧计算辅助的资源分配）处理的是 C-V2X 可扩展性的<em>资源分配</em>维度；本文处理的是互补且基本正交的维度：<em>发送什么</em>而非<em>如何调度</em>。这是 KB 中首个在带 ETSI 拥塞控制的真实 C-V2X 旁链路协议栈上量化语义/任务导向通信的条目（多数语义通信工作仅在理想点对点链路上评估）。&quot;相关性即可扩展性杠杆&quot;的结论，为更广泛的 6G&quot;语义通信&quot;命题提供了一个落地于已部署标准车联网场景的具体数据点。</p>",
+      "images": [],
+      "search_blob": "semantic and task-oriented v2x communications: pushing the limits of v2x networks scalability 语义与任务导向的 v2x 通信：突破 v2x 网络可扩展性的极限 v2x c-v2x sidelink semantic-communications cooperative-perception this paper attacks the scalability ceiling of vehicle-to-everything (v2x) networks by replacing the dominant \"deliver everything reliably and on time\" paradigm with a semantic and task-oriented communication approach that selects message content by its *relevance to the intended receivers*. the authors (lusvarghi, gozalvez, khan, ucar, sepulcre, altintas — the umh elche / toyota infotech v2x group) frame the problem around cooperative perception (sensor-data sharing in etsi terms): in dense traffic, every vehicle broadcasting full object lists saturates the shared channel, so the marginal message carries mostly redundant information. by transmitting only the content that changes a receiver's task state, channel resources are used far more efficiently. 本文针对车联网（v2x）网络的可扩展性瓶颈，提出用\"语义与任务导向通信\"取代当前\"可靠且及时地传输全部信息\"的主导范式——按消息内容对目标接收方的**相关性**来筛选发送内容。作者为 umh elche / 丰田 infotech 的 v2x 团队。其问题围绕协作感知（etsi 术语中的传感器数据共享）展开：在高密度交通下，每辆车广播完整目标列表会使共享信道饱和，边际消息大多是冗余信息。仅传输能改变接收方任务状态的内容，可大幅提升信道资源利用率。 academic-paper cellular"
+    },
+    {
+      "id": "2026-06-10_arxiv-band-blockage-aware-bandit-mmwave-v2x",
+      "date_found": "2026-06-10",
+      "technology": "cellular",
+      "date_published": "2026-06-06",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "BAND: Blockage-Aware Non-stationary Dynamic Bandit for User Association in mmWave V2X Networks",
+      "title_zh": "BAND：面向毫米波 V2X 网络用户关联的阻挡感知非平稳动态老虎机算法",
+      "url": "https://arxiv.org/abs/2606.08118",
+      "topics": [
+        "V2X",
+        "mmWave",
+        "5G-NR",
+        "user-association",
+        "contextual-bandit",
+        "blockage"
+      ],
+      "topic_primary": "5g-nr",
+      "topics_secondary": [
+        "cellular-ai"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-06-10_arxiv-band-blockage-aware-bandit-mmwave-v2x.md",
+      "summary_short_en": "BAND (Weiqi Chi, Manabu Tsukada, U. Tokyo) tackles user association in dense millimeter-wave V2X deployments, where a vehicle must continually decide which of many nearby base stations to attach to while mobility and intermittent blockage make link quality swing rapidly. Conventional association relies on frequent CSI acquisition and centralized coordination, which generates heavy signaling overhead and reacts poorly to sudden blockages. BAND reframes the problem as a **non-stationary contextual bandit** solved fully online — no central coordinator and no offline training — using only the vehicle's own position and the (static) base-station locations.",
+      "summary_short_zh": "BAND（Weiqi Chi、Manabu Tsukada，东京大学）研究密集毫米波 V2X 部署下的用户关联问题：车辆需在众多邻近基站中持续选择接入对象，而移动性与间歇性阻挡使链路质量剧烈波动。传统关联依赖频繁的 CSI 采集与集中式协调，信令开销大、对突发阻挡反应迟缓。BAND 将该问题重构为**非平稳上下文老虎机（contextual bandit）**，完全在线求解——无需中心协调器、无需离线训练——仅使用车辆自身位置与（静态的）基站位置。",
+      "body_html_en": "<h3>Summary</h3>\n<p>BAND (Weiqi Chi, Manabu Tsukada, U. Tokyo) tackles user association in dense millimeter-wave V2X deployments, where a vehicle must continually decide which of many nearby base stations to attach to while mobility and intermittent blockage make link quality swing rapidly. Conventional association relies on frequent CSI acquisition and centralized coordination, which generates heavy signaling overhead and reacts poorly to sudden blockages. BAND reframes the problem as a <strong>non-stationary contextual bandit</strong> solved fully online — no central coordinator and no offline training — using only the vehicle's own position and the (static) base-station locations.</p>\n<p>Four mechanisms make the bandit blockage-aware. A <strong>two-sided CUSUM change detector</strong> monitors per-BS reward (rate) distributions and triggers a learner reset when a genuine distribution shift is detected, so the algorithm forgets stale statistics after a real environment change. A <strong>proactive blockage detector</strong> uses geometry-based Fresnel-zone prediction to suppress <em>transient</em> signal drops, preventing them from raising false CUSUM alarms. A <strong>two-stage BS selection</strong> step balances exploration of inactive base stations against UCB-driven exploitation of active ones (picking the highest UCB index). Finally a <strong>dynamic BS-management</strong> rule confines early exploration with distance-based initialization and promotes/demotes candidate base stations asymmetrically by cumulative reward drift. Every step runs locally on the vehicle with zero added air-interface signaling.</p>\n<p>Evaluation uses a realistic urban scenario — a 550×540 m slice of Shibuya, Tokyo, with 69 densely deployed mmWave base stations, SUMO-driven traffic, and CDL channel modeling with ray tracing at 28 GHz / 4×4 arrays (3GPP TR 38.901 and TR 37.885 methodology). Against a hypercube contextual-bandit baseline (C-UCB), BAND delivers <strong>~40% lower cumulative regret</strong> at 200 steps and <strong>33.1% higher network communication rate</strong>, closing to within <strong>4.2%</strong> of a full-CSI maxRSRP oracle, and stays robust across 10–50% blockage rates, 50–100 MHz bandwidth, and varying transmit power.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Formulation</strong>: user association as a <strong>non-stationary contextual bandit</strong>, solved online and distributedly (per-vehicle, local position + BS locations only, zero extra signaling).</li><li><strong>CUSUM change detection</strong>: two-sided cumulative-sum test on per-BS reward distributions triggers learner resets on genuine shifts.</li><li><strong>Proactive blockage detection</strong>: Fresnel-zone geometric prediction suppresses transient blockage drops so they don't false-trigger CUSUM.</li><li><strong>Two-stage selection + dynamic BS management</strong>: explore-inactive / exploit-active (UCB), distance-based init, asymmetric promote/demote of candidate BSs by reward drift.</li><li><strong>Setup</strong>: Shibuya 550×540 m, 69 mmWave BS, 28 GHz, 4×4, SUMO + CDL ray tracing; 3GPP TR 38.901 / TR 37.885.</li><li><strong>Results</strong>: ~<strong>40%</strong> regret reduction and <strong>33.1%</strong> rate gain vs C-UCB; <strong>4.2%</strong> gap to full-CSI oracle; robust across blockage 10–50%, BW 50–100 MHz, varied Tx power.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the KB's first mmWave-V2X mobility/user-association entry and complements the existing V2X resource-allocation work (<code>2026-05-26_arxiv-v2x-mode0-rcu-safety</code>) and the day's companion C-V2X scalability paper (<code>2026-06-10_arxiv-semantic-task-oriented-v2x-scalability</code>) on a different axis — <em>which base station to attach to</em> under blockage, rather than <em>what/how to transmit</em>. The novel piece is combining non-stationary bandit change-detection (CUSUM) with a <em>physics-informed</em> proactive blockage predictor (Fresnel-zone geometry) so transient blockages don't corrupt the online learner — a fully distributed, signaling-free association policy that nearly matches a full-CSI oracle.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>BAND（Weiqi Chi、Manabu Tsukada，东京大学）研究密集毫米波 V2X 部署下的用户关联问题：车辆需在众多邻近基站中持续选择接入对象，而移动性与间歇性阻挡使链路质量剧烈波动。传统关联依赖频繁的 CSI 采集与集中式协调，信令开销大、对突发阻挡反应迟缓。BAND 将该问题重构为<strong>非平稳上下文老虎机（contextual bandit）</strong>，完全在线求解——无需中心协调器、无需离线训练——仅使用车辆自身位置与（静态的）基站位置。</p>\n<p>四个机制使该老虎机具备阻挡感知能力：<strong>双边 CUSUM 变点检测</strong>监控各基站的奖励（速率）分布，在检测到真实分布漂移时触发学习器重置，从而在环境真正变化后遗忘过时统计；<strong>主动阻挡检测</strong>基于几何的菲涅尔区预测来抑制<em>瞬态</em>信号跌落，避免其引发 CUSUM 误报；<strong>两阶段基站选择</strong>在探索未激活基站与基于 UCB 利用已激活基站（选最高 UCB 指数）之间取得平衡；<strong>动态基站管理</strong>规则以基于距离的初始化约束早期探索，并按累计奖励漂移非对称地提升/降级候选基站。所有步骤均在车辆本地运行，不增加任何空口信令。</p>\n<p>评估采用真实城市场景——东京涩谷 550×540 m 区域、69 个密集部署的毫米波基站、SUMO 驱动的交通流，以及 28 GHz / 4×4 阵列下带射线追踪的 CDL 信道建模（遵循 3GPP TR 38.901 与 TR 37.885 方法）。相比超立方上下文老虎机基线（C-UCB），BAND 在 200 步时累计遗憾降低<strong>约 40%</strong>、网络通信速率提升 <strong>33.1%</strong>，逼近全 CSI 的 maxRSRP 理想上界至 <strong>4.2%</strong> 以内，并在 10–50% 阻挡率、50–100 MHz 带宽与不同发射功率下保持稳健。</p>\n<h3>技术要点</h3>\n<ul><li><strong>建模</strong>：将用户关联建为<strong>非平稳上下文老虎机</strong>，在线、分布式求解（每车本地，仅用自身位置+基站位置，零额外信令）。</li><li><strong>CUSUM 变点检测</strong>：对各基站奖励分布做双边累计和检验，真实漂移时触发学习器重置。</li><li><strong>主动阻挡检测</strong>：菲涅尔区几何预测抑制瞬态阻挡跌落，避免误触发 CUSUM。</li><li><strong>两阶段选择 + 动态基站管理</strong>：探索未激活/利用已激活（UCB），基于距离的初始化，按奖励漂移非对称提升/降级候选基站。</li><li><strong>场景</strong>：涩谷 550×540 m、69 个毫米波基站、28 GHz、4×4、SUMO + CDL 射线追踪；3GPP TR 38.901 / TR 37.885。</li><li><strong>结果</strong>：相比 C-UCB 遗憾降低约 <strong>40%</strong>、速率提升 <strong>33.1%</strong>；距全 CSI 理想上界 <strong>4.2%</strong>；在阻挡 10–50%、带宽 50–100 MHz、不同发射功率下稳健。</li></ul>\n<h3>意义与新意</h3>\n<p>这是 KB 中首个毫米波 V2X 移动性/用户关联条目，与现有的 V2X 资源分配工作（<code>2026-05-26_arxiv-v2x-mode0-rcu-safety</code>）及当日配套的 C-V2X 可扩展性论文（<code>2026-06-10_arxiv-semantic-task-oriented-v2x-scalability</code>）在不同维度互补——处理阻挡下<em>接入哪个基站</em>，而非<em>发送什么/如何发送</em>。其新意在于将非平稳老虎机的变点检测（CUSUM）与<em>物理启发</em>的主动阻挡预测（菲涅尔区几何）结合，使瞬态阻挡不会污染在线学习器——一种完全分布式、零信令、且性能逼近全 CSI 理想上界的关联策略。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2606.08118v1/x1.png",
+          "caption_en": "BAND system framework — distributed per-vehicle bandit with CUSUM change detection and Fresnel-zone blockage prediction",
+          "caption_zh": "BAND 系统框架——分布式车端老虎机，含 CUSUM 变点检测与菲涅尔区阻挡预测"
+        },
+        {
+          "url": "https://arxiv.org/html/2606.08118v1/x2.png",
+          "caption_en": "Cumulative regret vs learning steps — BAND vs C-UCB baseline and oracles",
+          "caption_zh": "累计遗憾随学习步数变化——BAND 对比 C-UCB 基线与理想上界"
+        }
+      ],
+      "search_blob": "band: blockage-aware non-stationary dynamic bandit for user association in mmwave v2x networks band：面向毫米波 v2x 网络用户关联的阻挡感知非平稳动态老虎机算法 v2x mmwave 5g-nr user-association contextual-bandit blockage band (weiqi chi, manabu tsukada, u. tokyo) tackles user association in dense millimeter-wave v2x deployments, where a vehicle must continually decide which of many nearby base stations to attach to while mobility and intermittent blockage make link quality swing rapidly. conventional association relies on frequent csi acquisition and centralized coordination, which generates heavy signaling overhead and reacts poorly to sudden blockages. band reframes the problem as a **non-stationary contextual bandit** solved fully online — no central coordinator and no offline training — using only the vehicle's own position and the (static) base-station locations. band（weiqi chi、manabu tsukada，东京大学）研究密集毫米波 v2x 部署下的用户关联问题：车辆需在众多邻近基站中持续选择接入对象，而移动性与间歇性阻挡使链路质量剧烈波动。传统关联依赖频繁的 csi 采集与集中式协调，信令开销大、对突发阻挡反应迟缓。band 将该问题重构为**非平稳上下文老虎机（contextual bandit）**，完全在线求解——无需中心协调器、无需离线训练——仅使用车辆自身位置与（静态的）基站位置。 academic-paper cellular"
+    },
     {
       "id": "2026-06-09_arxiv-spectrum-aggregation-6g-ca-vs-dc",
       "date_found": "2026-06-09",
