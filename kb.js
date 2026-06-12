@@ -31,6 +31,7 @@ window.KB_DATA = {
     "SparkLink": 6,
     "802.11bp": 6,
     "OFDMA": 5,
+    "UWB": 5,
     "V2X": 5,
     "5G-NR": 5,
     "802.11bq": 5,
@@ -39,18 +40,19 @@ window.KB_DATA = {
     "automotive": 5,
     "XR": 5,
     "5G-core": 4,
+    "802.15.4ab": 4,
     "URLLC": 4,
     "Wi-Fi-8": 4,
     "resource-allocation": 4,
     "RIC": 4,
     "AI-RAN": 4,
-    "UWB": 4,
     "NPCA": 4,
     "FCC": 4,
     "802.11": 4,
     "802.11az": 4,
     "3GPP": 3,
     "QoS": 3,
+    "ranging": 3,
     "digital-twin": 3,
     "rApp": 3,
     "energy-efficiency": 3,
@@ -75,7 +77,6 @@ window.KB_DATA = {
     "digital-car-key": 3,
     "ISAC": 3,
     "roaming": 3,
-    "802.15.4ab": 3,
     "Release-21": 2,
     "IMT-2030": 2,
     "intent-based-networking": 2,
@@ -105,7 +106,6 @@ window.KB_DATA = {
     "deterministic-latency": 2,
     "BT-LE": 2,
     "Channel-Sounding": 2,
-    "ranging": 2,
     "LLM-agent": 2,
     "AMP-IoT": 2,
     "Co-RTWT": 2,
@@ -136,6 +136,9 @@ window.KB_DATA = {
     "TSN": 1,
     "NWDAF": 1,
     "Free5GC": 1,
+    "NBA": 1,
+    "RFIC": 1,
+    "imec": 1,
     "flexible-duplex": 1,
     "deterministic": 1,
     "C-V2X": 1,
@@ -510,11 +513,11 @@ window.KB_DATA = {
     "spectrum-policy": 7,
     "amp-iot": 7,
     "rtwt-latency": 5,
+    "uwb-ranging": 5,
     "ai-for-wifi": 5,
     "sat-direct-device": 5,
     "leo-constellations": 4,
     "starlink": 4,
-    "uwb-ranging": 4,
     "ftm-ranging": 4,
     "network-slicing": 3,
     "ntn": 3,
@@ -536,7 +539,7 @@ window.KB_DATA = {
   },
   "type_counts": {
     "academic-paper": 125,
-    "industry-news": 43,
+    "industry-news": 44,
     "product": 12,
     "ieee-document": 12,
     "proposal": 4,
@@ -545,7 +548,7 @@ window.KB_DATA = {
   },
   "category_counts": {
     "academia": 125,
-    "industry": 55,
+    "industry": 56,
     "standards": 19
   },
   "technologies_vocab": {
@@ -2899,6 +2902,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-06-12_imec-802154ab-nba-receiver-rfic2026",
         "2026-05-24_spark-sr1120-le-uwb-wwc-pitch",
         "2026-05-26_ceva-waves-uwb-ip-802154ab",
         "2026-05-25_st64uwb-first-802-15-4ab-soc-narrowband-assist",
@@ -2910,6 +2914,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "industry-news": [
+          "2026-06-12_imec-802154ab-nba-receiver-rfic2026",
           "2026-05-24_spark-sr1120-le-uwb-wwc-pitch",
           "2026-06-04_calterah-dubhe-uwb-soc-802154ab"
         ],
@@ -2936,6 +2941,7 @@ window.KB_DATA = {
         "2026-05-21_jcb-uwb-payments-japan"
       ],
       "entries_secondary": [
+        "2026-06-12_imec-802154ab-nba-receiver-rfic2026",
         "2026-05-26_ceva-waves-uwb-ip-802154ab",
         "2026-05-25_st64uwb-first-802-15-4ab-soc-narrowband-assist"
       ],
@@ -3230,6 +3236,43 @@ window.KB_DATA = {
         }
       ],
       "search_blob": "llm-enabled nwdaf: a step toward ai-native 6g network intelligence llm 赋能的 nwdaf：迈向 ai 原生 6g 网络智能 nwdaf 5g-core llm intent-based-networking free5gc daniel, alhussein, li, liang and damiani (arxiv 2606.11877, submitted 10 june 2026) present an open-source network data analytics function (nwdaf) for the free5gc 5g core, fronted by an llm intent interface — positioning it as a concrete step from procedural network management toward declarative, ai-native 6g operations. the gap they target: nwdaf is the standardised hook for zero-touch automation, but open implementations are scarce and operator-facing interfaces are raw apis. daniel、alhussein、li、liang 与 damiani（arxiv 2606.11877，2026 年 6 月 10 日提交）发布了基于 free5gc 5g 核心网的开源 nwdaf（网络数据分析功能）实现，并在其上叠加 llm 意图接口——定位为从过程式网络管理走向声明式、ai 原生 6g 运维的具体一步。其针对的缺口是：nwdaf 是零接触自动化的标准化挂钩，但开源实现稀缺，且面向运维人员的接口只有原始 api。 academic-paper cellular"
+    },
+    {
+      "id": "2026-06-12_imec-802154ab-nba-receiver-rfic2026",
+      "date_found": "2026-06-12",
+      "technology": "uwb",
+      "date_published": "2026-06-09",
+      "type": "industry-news",
+      "category": "industry",
+      "title_en": "imec Unveils World's First IEEE 802.15.4ab-Compliant Narrowband-Assist UWB Receiver: 4x Ranging Distance at <6 mW",
+      "title_zh": "imec 发布全球首款符合 IEEE 802.15.4ab 的窄带辅助 UWB 接收机：测距距离提升 4 倍、功耗低于 6 mW",
+      "url": "https://www.iotinsider.com/industries/communications/imec-unveils-worlds-first-ieee-802-15-4ab-uwb-receiver/",
+      "topics": [
+        "802.15.4ab",
+        "UWB",
+        "NBA",
+        "ranging",
+        "RFIC",
+        "imec"
+      ],
+      "topic_primary": "uwb-ranging",
+      "topics_secondary": [
+        "uwb-fi-ra"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-06-12_imec-802154ab-nba-receiver-rfic2026.md",
+      "summary_short_en": "At the IEEE MTT-S RF Integrated Circuits Symposium (RFIC, San Francisco, June 2026), the Belgian research institute imec presented what it describes as the world's first narrowband receiver chip compliant with the upcoming IEEE 802.15.4ab UWB standard. The 22 nm CMOS receiver implements the standard's narrowband assistance (NBA) radio path — the companion narrowband link that 802.15.4ab adds alongside the impulse-radio UWB channel to coordinate ranging sessions cheaply — and consumes less than 6 mW.",
+      "summary_short_zh": "在 IEEE MTT-S 射频集成电路研讨会（RFIC，旧金山，2026 年 6 月）上，比利时研究机构 imec 展示了其描述为全球首款符合即将发布的 IEEE 802.15.4ab UWB 标准的窄带接收机芯片。该 22 nm CMOS 接收机实现了标准中的窄带辅助（NBA）射频路径——802.15.4ab 在脉冲无线电 UWB 信道之外新增的伴随窄带链路，用于以低成本协调测距会话——功耗低于 6 mW。",
+      "body_html_en": "<h3>Summary</h3>\n<p>At the IEEE MTT-S RF Integrated Circuits Symposium (RFIC, San Francisco, June 2026), the Belgian research institute imec presented what it describes as the world's first narrowband receiver chip compliant with the upcoming IEEE 802.15.4ab UWB standard. The 22 nm CMOS receiver implements the standard's narrowband assistance (NBA) radio path — the companion narrowband link that 802.15.4ab adds alongside the impulse-radio UWB channel to coordinate ranging sessions cheaply — and consumes less than 6 mW.</p>\n<p>The headline claim is a fourfold increase in UWB ranging distance attributable to the NBA-assisted architecture, and a 32-fold overall ranging improvement when the full transceiver architecture is compared against conventional implementations. The receiver achieves a 3.2 dB noise figure and a 9 dB dynamic-range improvement over state-of-the-art designs. Robustness against co-located Wi-Fi is a central design goal: the front end combines a second-order transimpedance amplifier with precision filtering and an adaptive clip detector that monitors interference levels and automatically engages additional filtering and gain control when a strong interferer appears, tolerating Wi-Fi blockers at roughly −32 dBm.</p>\n<p>The chip slots into a rapidly forming 802.15.4ab silicon ecosystem the KB has been tracking: STMicroelectronics' ST64UWB (the first fully integrated 4ab SoC with NBA), CEVA's licensable 4ab IP, and Calterah's Dubhe SoC. imec's contribution is the research-grade receiver demonstrating how much of the standard's promised link-budget and coexistence gain the NBA path can actually deliver in silicon.</p>\n<h3>Key technical points</h3>\n<ul><li>World-first IEEE 802.15.4ab-compliant narrowband-assist (NBA) receiver chip; 22 nm CMOS, &lt;6 mW.</li><li>4x UWB ranging-distance increase from the NBA-assisted design; 32x overall ranging improvement for the full transceiver architecture vs conventional implementations.</li><li>3.2 dB noise figure; 9 dB dynamic-range improvement over state-of-the-art.</li><li>Wi-Fi coexistence: adaptive clip detector + second-order transimpedance amplifier + precision filtering; tolerates ~−32 dBm Wi-Fi blockers by auto-engaging extra filtering/gain control.</li><li>Presented at IEEE MTT-S RFIC Symposium, San Francisco, June 2026 (Anoop Bhat, senior researcher).</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB's 802.15.4ab thread so far has been commercial silicon announcements (2026-05-25_st64uwb-first-802-15-4ab-soc-narrowband-assist, 2026-05-26_ceva-waves-uwb-ip-802154ab, 2026-06-04_calterah-dubhe-uwb-soc-802154ab) quoting standard-level range claims. This entry adds the first published receiver-level measurement set for the NBA path itself — noise figure, dynamic range, blocker tolerance — and quantifies the Wi-Fi-coexistence mechanism, which is the key deployment question for UWB ranging in 2.4/5/6 GHz-dense environments.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>在 IEEE MTT-S 射频集成电路研讨会（RFIC，旧金山，2026 年 6 月）上，比利时研究机构 imec 展示了其描述为全球首款符合即将发布的 IEEE 802.15.4ab UWB 标准的窄带接收机芯片。该 22 nm CMOS 接收机实现了标准中的窄带辅助（NBA）射频路径——802.15.4ab 在脉冲无线电 UWB 信道之外新增的伴随窄带链路，用于以低成本协调测距会话——功耗低于 6 mW。</p>\n<p>核心指标是：得益于 NBA 辅助架构，UWB 测距距离提升 4 倍；完整收发机架构与传统实现相比，整体测距性能提升 32 倍。接收机噪声系数为 3.2 dB，动态范围较最先进设计提升 9 dB。对共存 Wi-Fi 的鲁棒性是其核心设计目标：前端将二阶跨阻放大器与精密滤波结合，并配备自适应削波检测器，实时监测干扰水平，在强干扰出现时自动启用额外滤波与增益控制，可容忍约 −32 dBm 的 Wi-Fi 阻塞信号。</p>\n<p>该芯片融入了本知识库一直跟踪的、正在快速成形的 802.15.4ab 硅生态：意法半导体的 ST64UWB（首款集成 NBA 的完整 4ab SoC）、CEVA 的可授权 4ab IP、加特兰的 Dubhe SoC。imec 的贡献在于以研究级接收机实证 NBA 路径在硅片上究竟能兑现多少标准承诺的链路预算与共存增益。</p>\n<h3>技术要点</h3>\n<ul><li>全球首款符合 IEEE 802.15.4ab 的窄带辅助（NBA）接收机芯片；22 nm CMOS，功耗 &lt;6 mW。</li><li>NBA 辅助设计带来 4 倍 UWB 测距距离提升；完整收发机架构较传统实现整体测距性能提升 32 倍。</li><li>噪声系数 3.2 dB；动态范围较最先进设计提升 9 dB。</li><li>Wi-Fi 共存：自适应削波检测器 + 二阶跨阻放大器 + 精密滤波；通过自动启用额外滤波/增益控制容忍约 −32 dBm 的 Wi-Fi 阻塞。</li><li>2026 年 6 月在旧金山 IEEE MTT-S RFIC 研讨会发表（高级研究员 Anoop Bhat）。</li></ul>\n<h3>意义与新意</h3>\n<p>本知识库的 802.15.4ab 线索此前均为商业芯片发布（2026-05-25_st64uwb-first-802-15-4ab-soc-narrowband-assist、2026-05-26_ceva-waves-uwb-ip-802154ab、2026-06-04_calterah-dubhe-uwb-soc-802154ab），引用的是标准层面的距离声称。本条目首次提供了 NBA 路径本身的接收机级实测数据——噪声系数、动态范围、阻塞容限——并量化了 Wi-Fi 共存机制，而这正是 UWB 测距在 2.4/5/6 GHz 密集环境中部署的关键问题。</p>",
+      "images": [
+        {
+          "url": "https://www.iotinsider.com/wp-content/uploads/2026/06/Imec_UWB.jpg",
+          "caption_en": "imec's IEEE 802.15.4ab narrowband-assist UWB receiver chip",
+          "caption_zh": "imec 的 IEEE 802.15.4ab 窄带辅助 UWB 接收机芯片"
+        }
+      ],
+      "search_blob": "imec unveils world's first ieee 802.15.4ab-compliant narrowband-assist uwb receiver: 4x ranging distance at <6 mw imec 发布全球首款符合 ieee 802.15.4ab 的窄带辅助 uwb 接收机：测距距离提升 4 倍、功耗低于 6 mw 802.15.4ab uwb nba ranging rfic imec at the ieee mtt-s rf integrated circuits symposium (rfic, san francisco, june 2026), the belgian research institute imec presented what it describes as the world's first narrowband receiver chip compliant with the upcoming ieee 802.15.4ab uwb standard. the 22 nm cmos receiver implements the standard's narrowband assistance (nba) radio path — the companion narrowband link that 802.15.4ab adds alongside the impulse-radio uwb channel to coordinate ranging sessions cheaply — and consumes less than 6 mw. 在 ieee mtt-s 射频集成电路研讨会（rfic，旧金山，2026 年 6 月）上，比利时研究机构 imec 展示了其描述为全球首款符合即将发布的 ieee 802.15.4ab uwb 标准的窄带接收机芯片。该 22 nm cmos 接收机实现了标准中的窄带辅助（nba）射频路径——802.15.4ab 在脉冲无线电 uwb 信道之外新增的伴随窄带链路，用于以低成本协调测距会话——功耗低于 6 mw。 industry-news uwb"
     },
     {
       "id": "2026-06-11_arxiv-flexible-duplex-deterministic-sched",
