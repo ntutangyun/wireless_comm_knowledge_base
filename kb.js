@@ -16,9 +16,9 @@ window.KB_DATA = {
     "MLO": 14,
     "802.11bf": 13,
     "IoT": 11,
+    "LEO": 10,
     "802.11ax": 10,
     "MAPC": 10,
-    "LEO": 8,
     "CSI": 8,
     "NTN": 7,
     "network-slicing": 7,
@@ -132,6 +132,12 @@ window.KB_DATA = {
     "FiRa": 2,
     "Rel-19": 2,
     "R-TWT": 2,
+    "space-data-center": 1,
+    "orbital-computing": 1,
+    "ISL": 1,
+    "laser-comms": 1,
+    "task-oriented": 1,
+    "in-orbit-AI": 1,
     "network-digital-twin": 1,
     "intent-driven": 1,
     "green-networking": 1,
@@ -139,6 +145,12 @@ window.KB_DATA = {
     "upper-midband": 1,
     "ray-tracing": 1,
     "RFI": 1,
+    "ground-station": 1,
+    "GSaaS": 1,
+    "downlink": 1,
+    "placement-optimization": 1,
+    "gradient-free": 1,
+    "Walker-Star": 1,
     "TSG-112": 1,
     "timeline": 1,
     "TSN": 1,
@@ -519,11 +531,11 @@ window.KB_DATA = {
     "5g-nr": 7,
     "spectrum-policy": 7,
     "amp-iot": 7,
+    "leo-constellations": 5,
     "rtwt-latency": 5,
     "uwb-ranging": 5,
     "ai-for-wifi": 5,
     "sat-direct-device": 5,
-    "leo-constellations": 4,
     "starlink": 4,
     "ftm-ranging": 4,
     "network-slicing": 3,
@@ -540,13 +552,14 @@ window.KB_DATA = {
     "roaming-mobility": 2,
     "mlo": 2,
     "nearlink-sle": 2,
+    "sat-ai": 1,
     "cellular-spectrum": 1,
     "uwb-radar": 1,
     "bt-mesh": 1,
     "uwb-fi-ra": 1
   },
   "type_counts": {
-    "academic-paper": 127,
+    "academic-paper": 129,
     "industry-news": 44,
     "product": 12,
     "ieee-document": 12,
@@ -555,7 +568,7 @@ window.KB_DATA = {
     "bluetooth-spec": 1
   },
   "category_counts": {
-    "academia": 127,
+    "academia": 129,
     "industry": 56,
     "standards": 19
   },
@@ -2625,12 +2638,14 @@ window.KB_DATA = {
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-06-13_arxiv-score-leo-ground-station-placement",
         "2026-06-03_arxiv-robust-rb-allocation-satellite",
         "2026-05-29_arxiv-quantum-safe-ike-satellite",
         "2026-05-21_arxiv-leo-mmwave-subthz-relay",
         "2026-05-24_amazon-leo-300-satellites-may-2026"
       ],
       "entries_secondary": [
+        "2026-06-13_arxiv-space-data-centers-orbital-computing",
         "2026-06-03_arxiv-mapping-storm-weather-leo-starlink",
         "2026-05-29_arxiv-starlink-queuing-characterization",
         "2026-05-26_arxiv-safesabr-starlink-abr-streaming",
@@ -2640,6 +2655,7 @@ window.KB_DATA = {
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-06-13_arxiv-score-leo-ground-station-placement",
           "2026-06-03_arxiv-robust-rb-allocation-satellite",
           "2026-05-29_arxiv-quantum-safe-ike-satellite",
           "2026-05-21_arxiv-leo-mmwave-subthz-relay"
@@ -2717,11 +2733,18 @@ window.KB_DATA = {
       "diagram_mmd": "",
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
-      "entries_primary": [],
+      "entries_primary": [
+        "2026-06-13_arxiv-space-data-centers-orbital-computing"
+      ],
       "entries_secondary": [
+        "2026-06-13_arxiv-score-leo-ground-station-placement",
         "2026-05-26_arxiv-safesabr-starlink-abr-streaming"
       ],
-      "by_type_primary": {}
+      "by_type_primary": {
+        "academic-paper": [
+          "2026-06-13_arxiv-space-data-centers-orbital-computing"
+        ]
+      }
     },
     "ngso-regulation": {
       "id": "ngso-regulation",
@@ -3126,6 +3149,49 @@ window.KB_DATA = {
   },
   "entries": [
     {
+      "id": "2026-06-13_arxiv-space-data-centers-orbital-computing",
+      "date_found": "2026-06-13",
+      "technology": "satellite",
+      "date_published": "2026-06-11",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Revolutionizing Wireless Communications with Space Data Centers: Applications and Open Challenges",
+      "title_zh": "以太空数据中心革新无线通信：应用与开放挑战",
+      "url": "https://arxiv.org/abs/2606.13086",
+      "topics": [
+        "space-data-center",
+        "orbital-computing",
+        "ISL",
+        "laser-comms",
+        "task-oriented",
+        "in-orbit-AI",
+        "LEO"
+      ],
+      "topic_primary": "sat-ai",
+      "topics_secondary": [
+        "leo-constellations"
+      ],
+      "novelty_score": 2,
+      "entry_path": "entries/2026-06-13_arxiv-space-data-centers-orbital-computing.md",
+      "summary_short_en": "This survey/vision paper (Minghao Sun, Zehui Chen, Jinbo Hou, Kezhi Wang, Xiaoli Chu) argues that the next phase of satellite networks is not better connectivity but in-orbit computation. **Space Data Centers (SDCs)** integrate communication, computing, storage, and control in orbit, rather than acting as relay nodes that simply forward bits to the ground. The framing is a paradigm shift \"from connectivity-oriented data transmission toward task-oriented and service-centric information exchange\" — the satellite network becomes a multifunctional service platform for the AI industry, not just a pipe.",
+      "summary_short_zh": "本综述/愿景论文（Minghao Sun、Zehui Chen、Jinbo Hou、Kezhi Wang、Xiaoli Chu）主张卫星网络的下一阶段不是更好的连接，而是在轨计算。**太空数据中心（SDC）**在轨集成通信、计算、存储与控制，而非仅作为把比特转发到地面的中继节点。其框架是一次范式转变——\"从面向连接的数据传输转向面向任务、以服务为中心的信息交换\"——卫星网络成为面向 AI 产业的多功能服务平台，而不只是管道。",
+      "body_html_en": "<h3>Summary</h3>\n<p>This survey/vision paper (Minghao Sun, Zehui Chen, Jinbo Hou, Kezhi Wang, Xiaoli Chu) argues that the next phase of satellite networks is not better connectivity but in-orbit computation. <strong>Space Data Centers (SDCs)</strong> integrate communication, computing, storage, and control in orbit, rather than acting as relay nodes that simply forward bits to the ground. The framing is a paradigm shift &quot;from connectivity-oriented data transmission toward task-oriented and service-centric information exchange&quot; — the satellite network becomes a multifunctional service platform for the AI industry, not just a pipe.</p>\n<p>The authors lay out a four-layer hierarchical SDC architecture: an <strong>access layer</strong> (ground terminals, EO satellites and sensing payloads that acquire data and do preliminary task classification); a <strong>relay &amp; transport layer</strong> (relay satellites with inter-satellite links, dynamic routing and buffer-assisted forwarding, capable of ~400 Gbps via laser communications); an <strong>in-orbit computing layer</strong> (constellation- or space-station-based distributed/centralised compute plus caching and load-balancing nodes); and a <strong>service &amp; control layer</strong> (ground control for task orchestration, AI-model lifecycle, resource provisioning and result dissemination). They map four representative applications onto it: AI model deployment/retraining in orbit, ground-space collaborative computing for delay-tolerant offload, Earth-observation data triage (extract events in-orbit before downlinking to cut raw volume), and in-orbit coordination/control as a low-latency constellation-management hub.</p>\n<p>The survey identifies three core bottlenecks: the communication-capacity gap between current and required ground-space/inter-satellite links; cross-layer resource orchestration under dynamic orbital conditions; and security, multi-tenancy and access control as first-class design objectives. A simulation (Figure 4) shows an SDC-centred space control architecture achieving lower control-layer latency than a ground-station-centred approach in multi-constellation LEO networks, supporting the case that moving coordination into orbit improves responsiveness. As a vision paper it proposes a framework and research agenda rather than a single validated mechanism.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Concept:</strong> Space Data Centers integrate comms + compute + storage + control in orbit; shift from connectivity-oriented to task/service-oriented exchange.</li><li><strong>4-layer architecture:</strong> access (sensing + task classification) → relay/transport (ISL, ~400 Gbps laser, buffer-assisted) → in-orbit computing (distributed/centralised + caching) → service/control (orchestration, AI-model lifecycle).</li><li><strong>Applications:</strong> in-orbit AI model deploy/retrain; ground-space collaborative offload; EO data triage before downlink; in-orbit coordination hub.</li><li><strong>Challenges:</strong> ground-space/ISL capacity gap; dynamic cross-layer orchestration; security/multi-tenancy/access control.</li><li><strong>Result:</strong> SDC-centred control architecture lowers control-layer latency vs ground-station-centred in multi-constellation LEO (Fig 4).</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the KB's first entry on orbital computing / space data centers as a communications-architecture topic, complementing the satellite-AI thread. It frames the &quot;satellite as compute platform&quot; trend (Starcloud/orbital-GPU announcements, EO in-orbit processing) into a layered reference architecture and a concrete research agenda. As a survey its novelty is organisational rather than mechanistic, but the 400 Gbps laser-ISL relay assumption and the in-orbit-control-latency result give the sat-ai bin a forward-looking anchor for the compute-in-orbit direction.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>本综述/愿景论文（Minghao Sun、Zehui Chen、Jinbo Hou、Kezhi Wang、Xiaoli Chu）主张卫星网络的下一阶段不是更好的连接，而是在轨计算。<strong>太空数据中心（SDC）</strong>在轨集成通信、计算、存储与控制，而非仅作为把比特转发到地面的中继节点。其框架是一次范式转变——&quot;从面向连接的数据传输转向面向任务、以服务为中心的信息交换&quot;——卫星网络成为面向 AI 产业的多功能服务平台，而不只是管道。</p>\n<p>作者提出四层分级 SDC 架构：<strong>接入层</strong>（地面终端、对地观测卫星与感知载荷，完成数据采集与初步任务分类）；<strong>中继与传输层</strong>（带星间链路、动态路由与缓冲辅助转发的中继卫星，激光通信下可达约 400 Gbps）；<strong>在轨计算层</strong>（基于星座或空间站的分布式/集中式计算平台，加缓存与负载均衡辅助节点）；<strong>服务与控制层</strong>（地面控制负责任务编排、AI 模型生命周期、资源调配与结果分发）。并映射四类代表性应用：在轨 AI 模型部署/再训练、面向时延容忍卸载的天地协同计算、对地观测数据在轨分流（下行前在轨提取事件以削减原始数据量）、作为低时延星座管理枢纽的在轨协调/控制。</p>\n<p>综述指出三大瓶颈：当前与所需的天地/星间链路之间的通信容量差距；动态轨道条件下的跨层资源编排；以及作为一级设计目标的安全、多租户与访问控制。仿真（图 4）显示，在多星座 LEO 网络中，以 SDC 为中心的空间控制架构比以地面站为中心的方案实现更低的控制层时延，支持将协调移入轨道可提升响应性的论点。作为愿景论文，它提出框架与研究议程，而非单一已验证机制。</p>\n<h3>技术要点</h3>\n<ul><li><strong>概念：</strong> 太空数据中心在轨集成通信+计算+存储+控制；从面向连接转向面向任务/服务的交换。</li><li><strong>四层架构：</strong> 接入（感知+任务分类）→中继/传输（星间链路、约 400 Gbps 激光、缓冲辅助）→在轨计算（分布式/集中式+缓存）→服务/控制（编排、AI 模型生命周期）。</li><li><strong>应用：</strong> 在轨 AI 模型部署/再训练；天地协同卸载；下行前对地观测数据分流；在轨协调枢纽。</li><li><strong>挑战：</strong> 天地/星间链路容量差距；动态跨层编排；安全/多租户/访问控制。</li><li><strong>结果：</strong> 多星座 LEO 中，以 SDC 为中心的控制架构相比以地面站为中心降低控制层时延（图 4）。</li></ul>\n<h3>意义与新意</h3>\n<p>这是 KB 中首个将在轨计算/太空数据中心作为通信架构主题的条目，补充卫星-AI 线索。它将&quot;卫星即计算平台&quot;趋势（Starcloud/在轨 GPU 公告、对地观测在轨处理）归纳为分层参考架构与具体研究议程。作为综述，其新颖性在于组织性而非机制性，但 400 Gbps 激光星间中继假设与在轨控制时延结果为 sat-ai 分箱在&quot;在轨计算&quot;方向上提供了前瞻锚点。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2606.13086v1/x1.png",
+          "caption_en": "Hierarchical Space Data Center architecture",
+          "caption_zh": "分级太空数据中心架构"
+        },
+        {
+          "url": "https://arxiv.org/html/2606.13086v1/fig/result.png",
+          "caption_en": "Control-layer latency comparison",
+          "caption_zh": "控制层时延对比"
+        }
+      ],
+      "search_blob": "revolutionizing wireless communications with space data centers: applications and open challenges 以太空数据中心革新无线通信：应用与开放挑战 space-data-center orbital-computing isl laser-comms task-oriented in-orbit-ai leo this survey/vision paper (minghao sun, zehui chen, jinbo hou, kezhi wang, xiaoli chu) argues that the next phase of satellite networks is not better connectivity but in-orbit computation. **space data centers (sdcs)** integrate communication, computing, storage, and control in orbit, rather than acting as relay nodes that simply forward bits to the ground. the framing is a paradigm shift \"from connectivity-oriented data transmission toward task-oriented and service-centric information exchange\" — the satellite network becomes a multifunctional service platform for the ai industry, not just a pipe. 本综述/愿景论文（minghao sun、zehui chen、jinbo hou、kezhi wang、xiaoli chu）主张卫星网络的下一阶段不是更好的连接，而是在轨计算。**太空数据中心（sdc）**在轨集成通信、计算、存储与控制，而非仅作为把比特转发到地面的中继节点。其框架是一次范式转变——\"从面向连接的数据传输转向面向任务、以服务为中心的信息交换\"——卫星网络成为面向 ai 产业的多功能服务平台，而不只是管道。 academic-paper satellite"
+    },
+    {
       "id": "2026-06-13_arxiv-modular-multidomain-digital-twin-6g",
       "date_found": "2026-06-13",
       "technology": "cellular",
@@ -3206,6 +3272,54 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>本文来自美国东北大学无线物联网研究所（Paolo Testolina、Ergest Beshaj、Michele Polese、Tommaso Melodia），研究将定义 6G 频谱政策的 FR3 上中频段共存问题——即监管机构看好用于地面 6G、但已被现有卫星业务占用的 7–24 GHz 频段。随着 6G 地面网络进入这些频段，地面基站向上辐射到卫星的射频干扰（RFI）成为两类业务能否共享频谱的关键约束。</p>\n<p>作者用物理上真实的射线追踪研究而非统计模型来量化该干扰。他们构建了波士顿市真实地面部署的大尺度三维模型，使用开源射线追踪求解器，计算数十个下一代基站（gNB）在不同仰角下对卫星产生的聚合 RFI。传播模型刻画了遮挡、杂波、绕射与反射——这些都是简单视距链路预算会遗漏的效应。</p>\n<p>核心发现是：干扰预算由朴素分析忽略的路径主导——天线旁瓣与非视距（NLoS）反射/绕射路径对到达卫星的 RFI 贡献显著，而不仅仅是主瓣视距分量。聚合干扰还强烈取决于地面基站的空间分布。实践结论是：考虑干扰的精细部署设计（基站布点、天线下倾、旁瓣管理）可使 FR3 地面/非地面共存成为可能，但前提是显式计入旁瓣与 NLoS 贡献。</p>\n<h3>技术要点</h3>\n<ul><li><strong>频段：</strong> FR3 上中频段 7–24 GHz——与现有卫星业务共享的 6G 候选频谱争议区。</li><li><strong>方法：</strong> 波士顿真实部署的大尺度三维模型 + 开源射线追踪（非统计干扰模型）；刻画遮挡、杂波、绕射、反射。</li><li><strong>场景：</strong> 数十个 gNB 在不同仰角向卫星辐射；按仰角计算聚合 RFI。</li><li><strong>关键结果：</strong> 天线旁瓣与 NLoS 路径对到达卫星的 RFI 贡献显著——仅算主瓣视距会低估干扰。</li><li><strong>设计杠杆：</strong> 基站空间分布显著影响干扰；考虑干扰的布点/下倾可实现实用共存。</li></ul>\n<h3>意义与新意</h3>\n<p>这是 KB 中首个用完整射线追踪城市模型量化 FR3 上中频段地面 6G 与卫星共存的条目。它为 cellular-spectrum 分箱中的政策级条目（如 6G 频谱聚合 CA-vs-DC 立场论文 2606.07944）补充了具有直接监管分量的传播物理结果：WRC/3GPP 关于是否向地面 6G 开放 7–24 GHz 的辩论，正取决于本文测量的卫星保护干扰预算。旁瓣/NLoS 发现是可操作的部分——它表明仅建模主瓣视距的共存研究会对现有业务保护不足。</p>",
       "images": [],
       "search_blob": "spectrum sharing across terrestrial and non-terrestrial services in the fr3 upper midband fr3 上中频段地面与非地面业务的频谱共享 6g fr3 upper-midband spectrum-sharing ntn ray-tracing rfi this paper from the northeastern university institute for the wireless internet of things group (paolo testolina, ergest beshaj, michele polese, tommaso melodia) studies the coexistence problem that will define 6g spectrum policy in the fr3 upper midband — the 7–24 ghz range that regulators are eyeing for terrestrial 6g but which is already occupied by incumbent satellite services. as 6g terrestrial deployments push into these bands, the radio-frequency interference (rfi) that ground base stations radiate upward toward satellites becomes the gating constraint on whether the two services can share the spectrum at all. 本文来自美国东北大学无线物联网研究所（paolo testolina、ergest beshaj、michele polese、tommaso melodia），研究将定义 6g 频谱政策的 fr3 上中频段共存问题——即监管机构看好用于地面 6g、但已被现有卫星业务占用的 7–24 ghz 频段。随着 6g 地面网络进入这些频段，地面基站向上辐射到卫星的射频干扰（rfi）成为两类业务能否共享频谱的关键约束。 academic-paper cellular"
+    },
+    {
+      "id": "2026-06-13_arxiv-score-leo-ground-station-placement",
+      "date_found": "2026-06-13",
+      "technology": "satellite",
+      "date_published": "2026-06-10",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Free-Placement Optimization of Ground Station Locations for Low-Earth Orbit Satellites",
+      "title_zh": "低轨卫星地面站位置的自由布点优化",
+      "url": "https://arxiv.org/abs/2606.12667",
+      "topics": [
+        "LEO",
+        "ground-station",
+        "GSaaS",
+        "downlink",
+        "placement-optimization",
+        "gradient-free",
+        "Walker-Star"
+      ],
+      "topic_primary": "leo-constellations",
+      "topics_secondary": [
+        "sat-ai"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-06-13_arxiv-score-leo-ground-station-placement.md",
+      "summary_short_en": "This paper from Mykel Kochenderfer's group at Stanford (Grace Ra Kim, Duncan Eddy, Vedant Srinivas, Mykel J. Kochenderfer; to appear in the Journal of Aerospace Information Systems) addresses a practical bottleneck for LEO satellite operators: where to put ground stations. Modern LEO Earth-observation satellites generate enormous data volumes — some 80+ terabytes daily — but each pass offers only a 3–10 minute visibility window, so the placement of the downlink ground network directly caps how much of that data can actually be retrieved. The authors formulate this as a continuous **free-placement** problem (choose any latitude/longitude on Earth) and contrast it with conventional **fixed-site selection** (pick from existing GSaaS provider teleports).",
+      "summary_short_zh": "本文来自斯坦福 Mykel Kochenderfer 团队（Grace Ra Kim、Duncan Eddy、Vedant Srinivas、Mykel J. Kochenderfer；将发表于 Journal of Aerospace Information Systems），研究 LEO 卫星运营商的实际瓶颈：地面站布点。现代 LEO 对地观测卫星产生海量数据——部分每天 80+ TB——但每次过境仅有 3–10 分钟可见窗口，因此下行地面网络的布点直接决定能取回多少数据。作者将其建模为连续的**自由布点**问题（在地球上任意经纬度选址），并与传统的**固定站点选择**（从现有 GSaaS 运营商地面站中挑选）对比。",
+      "body_html_en": "<h3>Summary</h3>\n<p>This paper from Mykel Kochenderfer's group at Stanford (Grace Ra Kim, Duncan Eddy, Vedant Srinivas, Mykel J. Kochenderfer; to appear in the Journal of Aerospace Information Systems) addresses a practical bottleneck for LEO satellite operators: where to put ground stations. Modern LEO Earth-observation satellites generate enormous data volumes — some 80+ terabytes daily — but each pass offers only a 3–10 minute visibility window, so the placement of the downlink ground network directly caps how much of that data can actually be retrieved. The authors formulate this as a continuous <strong>free-placement</strong> problem (choose any latitude/longitude on Earth) and contrast it with conventional <strong>fixed-site selection</strong> (pick from existing GSaaS provider teleports).</p>\n<p>Their method, <strong>SCORE (Sequential Cyclic Optimization via Refinement &amp; Evaluation)</strong>, is a two-phase gradient-free optimizer. Phase 1 (sequential coordinate selection) greedily adds stations one at a time, each placed to maximise total downlink given the stations already chosen, until the network reaches the target size. Phase 2 (cyclic refinement) then walks through each station, temporarily removes it, and re-optimises its location with the others fixed, repeating until a full cycle yields no improvement. Individual coordinate placements use Nelder–Mead or Powell's method, decomposing the high-dimensional, non-convex landscape into tractable sub-problems. The objective maximises total reliably-downlinked data over the mission, with quadratic penalties for ocean placement, minimum inter-station separation, and distance from existing power/fibre infrastructure (within 50 km of population centres), plus a contact-scheduling layer that enforces single-antenna, non-overlapping contact windows.</p>\n<p>Validated on two real commercial Earth-observation constellations (Capella Space's 5 satellites, ICEYE's 34 sun-synchronous satellites) plus a synthetic Walker-Star constellation, using real teleport locations from KSAT and the World Teleport Association: SCORE needs up to <strong>5× fewer function evaluations</strong> than differential evolution (≈4,100 vs ≈17,400 for a 4-sat/4-station case) while delivering up to <strong>13% better downlink</strong>. Unconstrained free placement beats fixed-site selection by <strong>8–15%</strong> for the high-inclination ICEYE constellation; even when restricted to placements near existing infrastructure, SCORE retains <strong>over 92%</strong> of that unconstrained advantage. The optimisation landscape has many near-optimal layouts, implying that broad spatial patterns — not exact coordinates — drive performance.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Problem:</strong> free-placement (continuous lat/lon) ground-station siting to maximise LEO downlink, vs fixed-site GSaaS selection; passes are only 3–10 min, sats generate 80+ TB/day.</li><li><strong>Method:</strong> SCORE — two-phase gradient-free; Phase 1 sequential greedy add, Phase 2 cyclic remove-and-reoptimise; Nelder–Mead/Powell per coordinate.</li><li><strong>Constraints:</strong> quadratic penalties for ocean placement, min separation, infra-proximity (≤50 km); single-antenna non-overlapping contact scheduling.</li><li><strong>Efficiency:</strong> up to 5× fewer evaluations than differential evolution (~4,100 vs ~17,400), linear vs super-linear growth.</li><li><strong>Quality:</strong> up to 13% better downlink than DE; 8–15% over fixed-site for ICEYE; 92%+ of gain retained under infrastructure constraints.</li><li><strong>Insight:</strong> many near-optimal configurations — spatial pattern, not exact coordinates, drives throughput.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>This is the KB's first ground-station-network optimisation entry — a distinct sub-problem from the constellation-side handover/RB-allocation papers already in the leo-constellations bin. As LEO EO constellations scale (ICEYE, Capella, and the Starlink/Kuiper data-relay ambitions), the downlink bottleneck shifts to the ground segment, and a gradient-free method that beats differential evolution at 5× lower cost is directly useful for GSaaS planning. The 92%-retention-under-infrastructure-constraints result is the operationally important finding: free-placement gains survive the realism penalty of needing power and fibre.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>本文来自斯坦福 Mykel Kochenderfer 团队（Grace Ra Kim、Duncan Eddy、Vedant Srinivas、Mykel J. Kochenderfer；将发表于 Journal of Aerospace Information Systems），研究 LEO 卫星运营商的实际瓶颈：地面站布点。现代 LEO 对地观测卫星产生海量数据——部分每天 80+ TB——但每次过境仅有 3–10 分钟可见窗口，因此下行地面网络的布点直接决定能取回多少数据。作者将其建模为连续的<strong>自由布点</strong>问题（在地球上任意经纬度选址），并与传统的<strong>固定站点选择</strong>（从现有 GSaaS 运营商地面站中挑选）对比。</p>\n<p>其方法 <strong>SCORE（顺序循环优化—精化与评估）</strong>为两阶段无梯度优化。阶段一（顺序坐标选择）逐个贪心添加站点，每个站点在已选站点基础上最大化总下行，直至达到目标规模。阶段二（循环精化）逐个移除站点并在其余固定时重新优化其位置，直到整轮无改进为止。单点选址使用 Nelder–Mead 或 Powell 方法，将高维非凸问题分解为可处理子问题。目标函数最大化任务期内可靠下行的总数据量，对海洋选址、站间最小间隔、距现有电力/光纤基础设施（人口中心 50 km 内）的距离施加二次惩罚，并由接触调度层强制单天线、不重叠的接触窗口。</p>\n<p>在两个真实商业对地观测星座（Capella Space 5 星、ICEYE 34 颗太阳同步星）加合成 Walker-Star 星座上验证，使用 KSAT 与世界地面站协会的真实地面站位置：SCORE 比差分进化少用至多 <strong>5 倍函数评估</strong>（4 星/4 站约 4,100 对约 17,400），同时下行性能高出至多 <strong>13%</strong>。对高倾角 ICEYE 星座，无约束自由布点比固定站点选择高 <strong>8–15%</strong>；即便限制在现有基础设施附近，SCORE 仍保留该无约束优势的 <strong>92% 以上</strong>。优化景观存在多个近优布局，意味着驱动性能的是整体空间格局而非精确坐标。</p>\n<h3>技术要点</h3>\n<ul><li><strong>问题：</strong> 自由布点（连续经纬度）地面站选址以最大化 LEO 下行，对比固定站点 GSaaS 选择；过境仅 3–10 分钟，卫星日产 80+ TB。</li><li><strong>方法：</strong> SCORE——两阶段无梯度；阶段一顺序贪心添加，阶段二循环移除并重优化；每坐标用 Nelder–Mead/Powell。</li><li><strong>约束：</strong> 对海洋选址、最小间隔、基础设施邻近（≤50 km）施加二次惩罚；单天线不重叠接触调度。</li><li><strong>效率：</strong> 比差分进化少用至多 5 倍评估（约 4,100 对约 17,400），线性 vs 超线性增长。</li><li><strong>质量：</strong> 下行比 DE 高至多 13%；ICEYE 比固定站点高 8–15%；约束下仍保留 92%+ 增益。</li><li><strong>洞见：</strong> 存在多个近优布局——驱动吞吐的是空间格局而非精确坐标。</li></ul>\n<h3>意义与新意</h3>\n<p>这是 KB 中首个地面站网络优化条目——与 leo-constellations 分箱中已有的星座侧切换/RB 分配论文是不同的子问题。随着 LEO 对地观测星座扩张（ICEYE、Capella，以及 Starlink/Kuiper 的数据中继野心），下行瓶颈转向地面段，而以 5 倍更低成本胜过差分进化的无梯度方法对 GSaaS 规划直接有用。约束下保留 92% 增益的结果是运营上重要的发现：自由布点的收益在需要电力与光纤的现实惩罚下仍然存续。</p>",
+      "images": [
+        {
+          "url": "https://arxiv.org/html/2606.12667v1/x4.png",
+          "caption_en": "SCORE vs differential evolution: computation and performance",
+          "caption_zh": "SCORE 与差分进化：计算量与性能"
+        },
+        {
+          "url": "https://arxiv.org/html/2606.12667v1/x6.png",
+          "caption_en": "Full constellation performance — Capella and ICEYE",
+          "caption_zh": "全星座性能——Capella 与 ICEYE"
+        },
+        {
+          "url": "https://arxiv.org/html/2606.12667v1/x7.png",
+          "caption_en": "High-performing ground station layout",
+          "caption_zh": "高性能地面站布局"
+        }
+      ],
+      "search_blob": "free-placement optimization of ground station locations for low-earth orbit satellites 低轨卫星地面站位置的自由布点优化 leo ground-station gsaas downlink placement-optimization gradient-free walker-star this paper from mykel kochenderfer's group at stanford (grace ra kim, duncan eddy, vedant srinivas, mykel j. kochenderfer; to appear in the journal of aerospace information systems) addresses a practical bottleneck for leo satellite operators: where to put ground stations. modern leo earth-observation satellites generate enormous data volumes — some 80+ terabytes daily — but each pass offers only a 3–10 minute visibility window, so the placement of the downlink ground network directly caps how much of that data can actually be retrieved. the authors formulate this as a continuous **free-placement** problem (choose any latitude/longitude on earth) and contrast it with conventional **fixed-site selection** (pick from existing gsaas provider teleports). 本文来自斯坦福 mykel kochenderfer 团队（grace ra kim、duncan eddy、vedant srinivas、mykel j. kochenderfer；将发表于 journal of aerospace information systems），研究 leo 卫星运营商的实际瓶颈：地面站布点。现代 leo 对地观测卫星产生海量数据——部分每天 80+ tb——但每次过境仅有 3–10 分钟可见窗口，因此下行地面网络的布点直接决定能取回多少数据。作者将其建模为连续的**自由布点**问题（在地球上任意经纬度选址），并与传统的**固定站点选择**（从现有 gsaas 运营商地面站中挑选）对比。 academic-paper satellite"
     },
     {
       "id": "2026-06-12_3gpp-rel21-6g-timeline-approved",
