@@ -1,10 +1,10 @@
 window.KB_DATA = {
   "schema_version": 6,
-  "last_updated": "2026-06-13",
+  "last_updated": "2026-06-15",
   "topic_counts": {
     "MAC-layer": 36,
     "agentic-AI": 35,
-    "802.11bn": 32,
+    "802.11bn": 33,
     "scheduling": 27,
     "products": 26,
     "security": 22,
@@ -15,10 +15,10 @@ window.KB_DATA = {
     "O-RAN": 14,
     "MLO": 14,
     "802.11bf": 13,
+    "MAPC": 11,
+    "802.11ax": 11,
     "IoT": 11,
     "LEO": 10,
-    "802.11ax": 10,
-    "MAPC": 10,
     "CSI": 8,
     "NTN": 7,
     "network-slicing": 7,
@@ -30,6 +30,7 @@ window.KB_DATA = {
     "NearLink": 6,
     "SparkLink": 6,
     "802.11bp": 6,
+    "Wi-Fi-8": 5,
     "OFDMA": 5,
     "UWB": 5,
     "V2X": 5,
@@ -39,12 +40,14 @@ window.KB_DATA = {
     "BLE": 5,
     "automotive": 5,
     "XR": 5,
+    "Co-SR": 4,
+    "Co-BF": 4,
     "digital-twin": 4,
     "energy-efficiency": 4,
+    "6GHz": 4,
     "5G-core": 4,
     "802.15.4ab": 4,
     "URLLC": 4,
-    "Wi-Fi-8": 4,
     "resource-allocation": 4,
     "RIC": 4,
     "AI-RAN": 4,
@@ -52,13 +55,16 @@ window.KB_DATA = {
     "FCC": 4,
     "802.11": 4,
     "802.11az": 4,
+    "Co-RTWT": 3,
+    "UHR": 3,
+    "AFC": 3,
+    "spectrum": 3,
     "3GPP": 3,
     "QoS": 3,
     "ranging": 3,
     "rApp": 3,
     "xApp": 3,
     "spectrum-policy": 3,
-    "6GHz": 3,
     "802.11ac": 3,
     "AoA": 3,
     "5G": 3,
@@ -66,8 +72,6 @@ window.KB_DATA = {
     "SLE": 3,
     "backscatter": 3,
     "AI-native": 3,
-    "Co-SR": 3,
-    "Co-BF": 3,
     "ELR": 3,
     "LB291": 3,
     "802.11bt": 3,
@@ -77,7 +81,10 @@ window.KB_DATA = {
     "digital-car-key": 3,
     "ISAC": 3,
     "roaming": 3,
+    "Co-TDMA": 2,
     "spectrum-sharing": 2,
+    "LPI": 2,
+    "spatial-reuse": 2,
     "Release-21": 2,
     "IMT-2030": 2,
     "intent-based-networking": 2,
@@ -85,7 +92,6 @@ window.KB_DATA = {
     "5G-SA": 2,
     "5G-Advanced": 2,
     "SLA": 2,
-    "UHR": 2,
     "dApp": 2,
     "Samsung": 2,
     "measurement": 2,
@@ -97,7 +103,6 @@ window.KB_DATA = {
     "ns-3": 2,
     "PQC": 2,
     "UPF": 2,
-    "AFC": 2,
     "OpenAirInterface": 2,
     "cellular-ai": 2,
     "QoE": 2,
@@ -109,14 +114,12 @@ window.KB_DATA = {
     "Channel-Sounding": 2,
     "LLM-agent": 2,
     "AMP-IoT": 2,
-    "Co-RTWT": 2,
     "seamless-roaming": 2,
     "L4S": 2,
     "P-EDCA": 2,
     "DRU": 2,
     "802.11br": 2,
     "MU-MIMO": 2,
-    "spectrum": 2,
     "Bluetooth": 2,
     "channel-sounding": 2,
     "healthcare": 2,
@@ -145,6 +148,8 @@ window.KB_DATA = {
     "upper-midband": 1,
     "ray-tracing": 1,
     "RFI": 1,
+    "SP": 1,
+    "OBSS-PD": 1,
     "ground-station": 1,
     "GSaaS": 1,
     "downlink": 1,
@@ -202,7 +207,6 @@ window.KB_DATA = {
     "Asus": 1,
     "multi-AP": 1,
     "CMAB": 1,
-    "spatial-reuse": 1,
     "uplink-scheduling": 1,
     "online-learning": 1,
     "FWA": 1,
@@ -342,7 +346,6 @@ window.KB_DATA = {
     "spectral-efficiency": 1,
     "T-Mobile": 1,
     "6-GHz": 1,
-    "LPI": 1,
     "distance-reduction-attack": 1,
     "ToA": 1,
     "uplink-optimization": 1,
@@ -371,7 +374,6 @@ window.KB_DATA = {
     "ambient-power": 1,
     "S1G-coexistence": 1,
     "energizer": 1,
-    "Co-TDMA": 1,
     "AI Offload SG": 1,
     "AI-inference": 1,
     "computation-offloading": 1,
@@ -523,13 +525,13 @@ window.KB_DATA = {
     "sensing-csi": 19,
     "security-privacy": 13,
     "wifi7-deployment": 12,
+    "mapc-cosr": 11,
     "6g-vision": 11,
     "cellular-ai": 11,
-    "mapc-cosr": 10,
     "open-ran": 9,
     "agentic-wifi": 9,
+    "spectrum-policy": 8,
     "5g-nr": 7,
-    "spectrum-policy": 7,
     "amp-iot": 7,
     "leo-constellations": 5,
     "rtwt-latency": 5,
@@ -559,7 +561,7 @@ window.KB_DATA = {
     "uwb-fi-ra": 1
   },
   "type_counts": {
-    "academic-paper": 129,
+    "academic-paper": 131,
     "industry-news": 44,
     "product": 12,
     "ieee-document": 12,
@@ -568,7 +570,7 @@ window.KB_DATA = {
     "bluetooth-spec": 1
   },
   "category_counts": {
-    "academia": 129,
+    "academia": 131,
     "industry": 56,
     "standards": 19
   },
@@ -1445,6 +1447,7 @@ window.KB_DATA = {
         "2026-05-02_arxiv-mab-llm-mlo-channel-allocation"
       ],
       "entries_secondary": [
+        "2026-06-15_arxiv-11bn-mapc-tutorial-d14",
         "2026-05-18_ieee-mentor-tgbn-antwerp-digest",
         "2026-05-12_ieee-mentor-wng-sc-antwerp-digest",
         "2026-05-12_ieee-mentor-tgbn-antwerp-digest",
@@ -1473,6 +1476,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((MAPC / Co-SR))\n    Standards\n      Co-SR group formation\n      Co-BF coordinated beamforming\n      NPCA non-primary channel access\n      DRU distributed resource units\n      TGbn D2.0 ballot Jul 2026\n    ML / RL\n      Hierarchical MAB (hmab-co-sr)\n      Reward-sharing MAB\n      Supervised ML scheduling\n      LLM agents for MAPC\n    Performance models\n      Co-TDMA throughput on bn\n      Co-SR latency under Wi-Fi 8\n      NPCA modelling\n    Vendor extensions\n      MediaTek DSO+ at WWC 2026\n    Watch\n      Cross-vendor MAPC interop\n      Two-AP simultaneous limit",
       "diagram_mmd_zh": "mindmap\n  root((MAPC / Co-SR 多 AP 协调))\n    标准化\n      Co-SR 组建立\n      Co-BF 协调波束成形\n      NPCA 非主信道接入\n      DRU 分布式资源单元\n      TGbn D2.0 投票 2026-07\n    机器学习 / 强化学习\n      分层 MAB（hmab-co-sr）\n      奖励共享 MAB\n      有监督 ML 调度\n      LLM 智能体驱动 MAPC\n    性能模型\n      bn 下 Co-TDMA 吞吐\n      Wi-Fi 8 下 Co-SR 时延\n      NPCA 建模\n    厂商扩展\n      MediaTek DSO+（WWC 2026）\n    关注\n      跨厂商 MAPC 互操作\n      双 AP 同时上限",
       "entries_primary": [
+        "2026-06-15_arxiv-11bn-mapc-tutorial-d14",
         "2026-05-04_mediatek-wwc-dso-plus",
         "2026-05-01_arxiv-mapc-llm-agents",
         "2026-05-04_arxiv-proxyselect-ofdma-mu-mimo-scheduling",
@@ -1485,6 +1489,7 @@ window.KB_DATA = {
         "2026-05-01_arxiv-ma-mab-spatial-reuse"
       ],
       "entries_secondary": [
+        "2026-06-15_arxiv-wifi-6ghz-lpi-sp-self-coexistence",
         "2026-06-08_asus-rog-gt-bn98-pro-wifi8-router",
         "2026-06-03_arxiv-cmab-802-11bq-multi-ap-mmwave-throughput",
         "2026-05-18_ieee-mentor-tgbn-antwerp-digest",
@@ -1494,10 +1499,8 @@ window.KB_DATA = {
         "2026-05-01_arxiv-aiml-csi-feedback-compression"
       ],
       "by_type_primary": {
-        "industry-news": [
-          "2026-05-04_mediatek-wwc-dso-plus"
-        ],
         "academic-paper": [
+          "2026-06-15_arxiv-11bn-mapc-tutorial-d14",
           "2026-05-01_arxiv-mapc-llm-agents",
           "2026-05-04_arxiv-proxyselect-ofdma-mu-mimo-scheduling",
           "2026-05-01_arxiv-co-tdma-802-11bn",
@@ -1507,6 +1510,9 @@ window.KB_DATA = {
           "2026-05-01_arxiv-gr-wifi-platform",
           "2026-05-01_arxiv-hmab-co-sr",
           "2026-05-01_arxiv-ma-mab-spatial-reuse"
+        ],
+        "industry-news": [
+          "2026-05-04_mediatek-wwc-dso-plus"
         ]
       }
     },
@@ -1531,6 +1537,7 @@ window.KB_DATA = {
         "2026-05-03_arxiv-rtwt-rta-delay-model"
       ],
       "entries_secondary": [
+        "2026-06-15_arxiv-11bn-mapc-tutorial-d14",
         "2026-05-18_ieee-mentor-tgbn-antwerp-digest",
         "2026-05-12_ieee-mentor-tgbq-antwerp-digest",
         "2026-05-12_ieee-mentor-tgbn-antwerp-digest",
@@ -1756,6 +1763,7 @@ window.KB_DATA = {
         "2026-05-01_arxiv-25-years-tutorial"
       ],
       "entries_secondary": [
+        "2026-06-15_arxiv-11bn-mapc-tutorial-d14",
         "2026-05-30_tplink-wifi8-archer8-roadmap",
         "2026-05-18_arxiv-maxlm-wlan-scheduling",
         "2026-05-12_ieee-mentor-tgbt-antwerp-digest",
@@ -1863,6 +1871,7 @@ window.KB_DATA = {
       "diagram_mmd_en": "mindmap\n  root((Spectrum policy))\n    EU upper-6 GHz\n      RSPG decision - 540 MHz mobile\n      160 MHz frozen for sharing\n    UK Ofcom Better Together\n      Concurrent Wi-Fi + mobile\n      Sharing rules TBD\n    Coexistence research\n      DRL Wi-Fi / NR-U\n      LLM alpha-fairness\n    Mechanisms\n      AFC (Automated Frequency Coordination)\n      LBT bypass debate (Mentor WNG)\n    Watch\n      FCC AFC pilot results\n      Ofcom technical sharing rules\n      APAC / India 6 GHz decisions",
       "diagram_mmd_zh": "mindmap\n  root((频谱与监管政策))\n    欧盟 upper-6 GHz\n      RSPG 决议 - 540 MHz 划给移动\n      160 MHz 暂留共享\n    英国 Ofcom Better Together\n      Wi-Fi 与移动并行使用\n      共享规则待定\n    共存研究\n      DRL Wi-Fi / NR-U\n      LLM alpha 公平\n    机制\n      AFC（自动频率协调）\n      LBT 绕开之争（Mentor WNG）\n    关注\n      FCC AFC 试点结果\n      Ofcom 技术共享规则\n      亚太 / 印度 6 GHz 决策",
       "entries_primary": [
+        "2026-06-15_arxiv-wifi-6ghz-lpi-sp-self-coexistence",
         "2026-05-28_wifinow-uk-eu-upper-6ghz-regulation",
         "2026-05-21_fcc-6ghz-rule-changes",
         "2026-05-04_arxiv-policy-driven-drl-nru-wifi-coexistence",
@@ -1873,15 +1882,16 @@ window.KB_DATA = {
       ],
       "entries_secondary": [],
       "by_type_primary": {
+        "academic-paper": [
+          "2026-06-15_arxiv-wifi-6ghz-lpi-sp-self-coexistence",
+          "2026-05-04_arxiv-policy-driven-drl-nru-wifi-coexistence",
+          "2026-05-01_arxiv-llm-6ghz-wifi-nru-coexistence"
+        ],
         "industry-news": [
           "2026-05-28_wifinow-uk-eu-upper-6ghz-regulation",
           "2026-05-21_fcc-6ghz-rule-changes",
           "2026-05-04_ofcom-better-together-6ghz-uk",
           "2026-05-04_eu-rspg-upper-6ghz-decision"
-        ],
-        "academic-paper": [
-          "2026-05-04_arxiv-policy-driven-drl-nru-wifi-coexistence",
-          "2026-05-01_arxiv-llm-6ghz-wifi-nru-coexistence"
         ],
         "ieee-document": [
           "2026-05-05_ieee-wng-charter-bypass-lbt-upper-6ghz"
@@ -3149,6 +3159,41 @@ window.KB_DATA = {
   },
   "entries": [
     {
+      "id": "2026-06-15_arxiv-11bn-mapc-tutorial-d14",
+      "date_found": "2026-06-15",
+      "technology": "wifi",
+      "date_published": "2026-06-11",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "A Tutorial on IEEE 802.11bn Multi-AP Coordination for Wi-Fi 8: From Standardization to Performance Evaluation",
+      "title_zh": "IEEE 802.11bn 多 AP 协调（MAPC）Wi-Fi 8 教程：从标准化到性能评估",
+      "url": "https://arxiv.org/abs/2606.13759",
+      "topics": [
+        "802.11bn",
+        "MAPC",
+        "Co-SR",
+        "Co-BF",
+        "Co-TDMA",
+        "Co-RTWT",
+        "UHR",
+        "Wi-Fi-8"
+      ],
+      "topic_primary": "mapc-cosr",
+      "topics_secondary": [
+        "rtwt-latency",
+        "wifi8-uhr",
+        "mlo"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-06-15_arxiv-11bn-mapc-tutorial-d14.md",
+      "summary_short_en": "This tutorial is the first published work to walk through the technical details of **IEEE 802.11bn Draft 1.4 (D1.4)** Multi-AP Coordination (MAPC) — the headline feature of Wi-Fi 8 / Ultra High Reliability (UHR). It blends the standardization view (architecture, signaling, frame formats) with a unified performance evaluation, written by a Universitat Pompeu Fabra / Nokia / Northeastern / MaxLinear team (Wilhelmi, Bellalta, Geraci, Galati-Giordano, Meneghello, Kijanka, Val, López-Pérez), submitted 11 June 2026.",
+      "summary_short_zh": "本教程是首篇系统讲解 **IEEE 802.11bn Draft 1.4（D1.4）** 多 AP 协调（MAPC）技术细节的工作——MAPC 是 Wi-Fi 8 / 超高可靠性（UHR）的核心特性。论文将标准化视角（架构、信令、帧格式）与统一的性能评估结合，作者来自 Universitat Pompeu Fabra / Nokia / Northeastern / MaxLinear（Wilhelmi、Bellalta、Geraci、Galati-Giordano、Meneghello、Kijanka、Val、López-Pérez），于 2026 年 6 月 11 日提交。",
+      "body_html_en": "<h3>Summary</h3>\n<p>This tutorial is the first published work to walk through the technical details of <strong>IEEE 802.11bn Draft 1.4 (D1.4)</strong> Multi-AP Coordination (MAPC) — the headline feature of Wi-Fi 8 / Ultra High Reliability (UHR). It blends the standardization view (architecture, signaling, frame formats) with a unified performance evaluation, written by a Universitat Pompeu Fabra / Nokia / Northeastern / MaxLinear team (Wilhelmi, Bellalta, Geraci, Galati-Giordano, Meneghello, Kijanka, Val, López-Pérez), submitted 11 June 2026.</p>\n<p>The paper describes the common MAPC framework — <strong>discovery, agreement management (negotiation/update/teardown), and authentication via an extended PASN protocol</strong> — then details five mechanisms standardized in D1.4: <strong>Coordinated Beamforming (Co-BF)</strong> (null-steering with CSI exchange), <strong>Coordinated Spatial Reuse (Co-SR)</strong> (power control, no CSI), <strong>Coordinated TDMA (Co-TDMA)</strong> (TXOP sharing for collision-free access), <strong>Coordinated R-TWT (Co-RTWT)</strong> (cross-BSS schedule alignment for latency protection), and <strong>Coordinated Channel Recommendation (Co-CR)</strong> for P2P channel agreement. Section VI sketches future mechanisms not yet in the draft: Joint Transmission (JT), Coordinated OFDMA (Co-OFDMA), and Coordinated NPCA (Co-NPCA).</p>\n<p>Evaluation uses <strong>Kom8ndor</strong>, an open-source Wi-Fi 8 simulator derived from Komondor (GPLv3). Three didactic scenarios isolate the key trade-offs rather than chase aggregate benchmarks: Co-BF in an exhibition hall (effectiveness hinges on angular separation — ~90% per-BSS gain at Δθ≈117°, but throughput collapses to 0 when STAs are collinear and the ZF precoder fails); Co-SR across two apartments (~95% channel-access-delay reduction under favorable geometry, but packet loss for the coordinated AP under high interference); and Co-TDMA across three enterprise APs (−55% delay for coordinated BSSs but +130% delay penalty for the non-coordinated neighbor, plus ICF/ICR signaling overhead before any data flows).</p>\n<p>The recurring message is that MAPC delivers substantial gains but only under scenario-specific conditions — spatial geometry, deployment density, and traffic load all decide whether a given coordination scheme helps or hurts.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>First technical treatment of 802.11bn D1.4</strong> — frame-level MAPC Element structures, Discovery/Negotiation/Authentication message formats documented in appendices; authentication reuses an extended PASN.</li><li><strong>Five standardized mechanisms</strong>: Co-BF (CSI, null-steering), Co-SR (power control, no CSI), Co-TDMA (TXOP split), Co-RTWT (cross-BSS R-TWT alignment), Co-CR (P2P channel agreement).</li><li><strong>Kom8ndor open-source simulator</strong> (Komondor-derived, GPLv3) — first unified tool comparing multiple MAPC schemes under one methodology.</li><li><strong>Co-BF</strong> is geometry-bound: ~375 Mb/s per BSS (~90% gain) at high angular separation, but 0 Mb/s when STAs collinear (ZF precoder fails).</li><li><strong>Co-SR</strong>: ~95% channel-access-delay drop under favorable reuse; degrades to packet loss under high interference (~35 vs ~55 Mb/s at 5000 pkt/s).</li><li><strong>Co-TDMA</strong>: −55% delay for coordinated BSSs but +130% for the uncoordinated neighbor; equal TXOP split shown suboptimal; ICF/ICR overhead is non-trivial.</li><li><strong>UHR target restated</strong>: ≥25% improvement in throughput, 95th-percentile latency, and MPDU loss vs 802.11be (EHT).</li><li><strong>Future roadmap</strong>: JT, Co-OFDMA, Co-NPCA flagged as post-D1.4 directions.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The KB already tracks individual MAPC mechanisms and tools — the Komondor-based MAPC studies, the multi-AP coordination digests from IEEE Mentor, and the P802.11bq combinatorial-MAB optimizer (2026-06-03). This entry is the first <strong>consolidated D1.4-level reference</strong>: it pins down exactly which mechanisms made it into Draft 1.4, their frame formats, and a like-for-like simulation comparison under one open tool (Kom8ndor). For anyone tracking how Wi-Fi 8 coordination actually performs versus the marketing &quot;25%&quot; UHR targets, the scenario-dependent results (Co-BF collapsing at collinear geometry, Co-TDMA hurting the uncoordinated neighbor by +130%) are the practical reality check. It is a strong anchor entry for the <code>mapc-cosr</code> bin and a natural prior-art reference for any coordination-scheme work.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>本教程是首篇系统讲解 <strong>IEEE 802.11bn Draft 1.4（D1.4）</strong> 多 AP 协调（MAPC）技术细节的工作——MAPC 是 Wi-Fi 8 / 超高可靠性（UHR）的核心特性。论文将标准化视角（架构、信令、帧格式）与统一的性能评估结合，作者来自 Universitat Pompeu Fabra / Nokia / Northeastern / MaxLinear（Wilhelmi、Bellalta、Geraci、Galati-Giordano、Meneghello、Kijanka、Val、López-Pérez），于 2026 年 6 月 11 日提交。</p>\n<p>论文描述了 MAPC 的通用框架——<strong>发现、协商管理（协商/更新/拆除）、以及通过扩展 PASN 协议的认证</strong>——随后详解 D1.4 中标准化的五种机制：<strong>协调波束成形（Co-BF）</strong>（需交换 CSI 的零陷调向）、<strong>协调空间复用（Co-SR）</strong>（功率控制、无需 CSI）、<strong>协调 TDMA（Co-TDMA）</strong>（共享 TXOP 实现无冲突接入）、<strong>协调 R-TWT（Co-RTWT）</strong>（跨 BSS 调度对齐以保护时延）、以及用于 P2P 信道协商的<strong>协调信道推荐（Co-CR）</strong>。第六节展望了尚未进入草案的机制：联合传输（JT）、协调 OFDMA（Co-OFDMA）、协调 NPCA（Co-NPCA）。</p>\n<p>评估使用 <strong>Kom8ndor</strong>——一个基于 Komondor 的开源 Wi-Fi 8 仿真器（GPLv3）。三个教学场景刻意凸显关键权衡而非追求总吞吐：展览大厅中的 Co-BF（效果取决于角度分离——Δθ≈117° 时每 BSS 增益约 90%，但当 STA 共线、ZF 预编码失效时吞吐跌至 0）；两套公寓间的 Co-SR（在有利几何下信道接入时延降低约 95%，但高干扰下协调 AP 出现丢包）；三 AP 企业场景的 Co-TDMA（协调 BSS 时延 −55%，但未协调邻居时延恶化 +130%，且数据传输前有 ICF/ICR 信令开销）。</p>\n<p>反复出现的结论是：MAPC 能带来显著收益，但仅在特定场景条件下成立——空间几何、部署密度与流量负载共同决定某种协调方案是帮还是伤。</p>\n<h3>技术要点</h3>\n<ul><li><strong>首次对 802.11bn D1.4 的技术解读</strong>——附录给出帧级 MAPC Element 结构、发现/协商/认证消息格式；认证复用扩展 PASN。</li><li><strong>五种标准化机制</strong>：Co-BF（需 CSI、零陷调向）、Co-SR（功率控制、无需 CSI）、Co-TDMA（TXOP 分配）、Co-RTWT（跨 BSS R-TWT 对齐）、Co-CR（P2P 信道协商）。</li><li><strong>Kom8ndor 开源仿真器</strong>（源自 Komondor，GPLv3）——首个在统一方法下比较多种 MAPC 方案的工具。</li><li><strong>Co-BF</strong> 受几何约束：高角度分离下每 BSS 约 375 Mb/s（增益约 90%），STA 共线时跌至 0 Mb/s（ZF 预编码失效）。</li><li><strong>Co-SR</strong>：有利复用下信道接入时延降约 95%；高干扰下退化为丢包（5000 pkt/s 时约 35 vs 55 Mb/s）。</li><li><strong>Co-TDMA</strong>：协调 BSS 时延 −55%，未协调邻居 +130%；等分 TXOP 被证明次优；ICF/ICR 开销不可忽略。</li><li><strong>UHR 目标重申</strong>：相对 802.11be（EHT），吞吐、95 分位时延、MPDU 丢失率均改善 ≥25%。</li><li><strong>未来路线</strong>：JT、Co-OFDMA、Co-NPCA 列为 D1.4 之后方向。</li></ul>\n<h3>意义与新意</h3>\n<p>KB 已分别跟踪各类 MAPC 机制与工具——基于 Komondor 的 MAPC 研究、来自 IEEE Mentor 的多 AP 协调摘要、以及 P802.11bq 组合式 MAB 优化器（2026-06-03）。本条目是首个 <strong>D1.4 级别的整合参考</strong>：明确哪些机制进入了 Draft 1.4、其帧格式，并在统一开源工具（Kom8ndor）下做同口径仿真比较。对于关注 Wi-Fi 8 协调相对于&quot;25%&quot;UHR 宣传目标实际表现的人，场景相关结果（Co-BF 在共线几何下崩溃、Co-TDMA 使未协调邻居恶化 +130%）提供了务实的现实检验。它是 <code>mapc-cosr</code> 分箱的有力锚点条目，也是任何协调方案工作的天然先行技术参考。</p>",
+      "images": [],
+      "search_blob": "a tutorial on ieee 802.11bn multi-ap coordination for wi-fi 8: from standardization to performance evaluation ieee 802.11bn 多 ap 协调（mapc）wi-fi 8 教程：从标准化到性能评估 802.11bn mapc co-sr co-bf co-tdma co-rtwt uhr wi-fi-8 this tutorial is the first published work to walk through the technical details of **ieee 802.11bn draft 1.4 (d1.4)** multi-ap coordination (mapc) — the headline feature of wi-fi 8 / ultra high reliability (uhr). it blends the standardization view (architecture, signaling, frame formats) with a unified performance evaluation, written by a universitat pompeu fabra / nokia / northeastern / maxlinear team (wilhelmi, bellalta, geraci, galati-giordano, meneghello, kijanka, val, lópez-pérez), submitted 11 june 2026. 本教程是首篇系统讲解 **ieee 802.11bn draft 1.4（d1.4）** 多 ap 协调（mapc）技术细节的工作——mapc 是 wi-fi 8 / 超高可靠性（uhr）的核心特性。论文将标准化视角（架构、信令、帧格式）与统一的性能评估结合，作者来自 universitat pompeu fabra / nokia / northeastern / maxlinear（wilhelmi、bellalta、geraci、galati-giordano、meneghello、kijanka、val、lópez-pérez），于 2026 年 6 月 11 日提交。 academic-paper wifi"
+    },
+    {
       "id": "2026-06-13_arxiv-space-data-centers-orbital-computing",
       "date_found": "2026-06-13",
       "technology": "satellite",
@@ -3272,6 +3317,39 @@ window.KB_DATA = {
       "body_html_zh": "<h3>摘要</h3>\n<p>本文来自美国东北大学无线物联网研究所（Paolo Testolina、Ergest Beshaj、Michele Polese、Tommaso Melodia），研究将定义 6G 频谱政策的 FR3 上中频段共存问题——即监管机构看好用于地面 6G、但已被现有卫星业务占用的 7–24 GHz 频段。随着 6G 地面网络进入这些频段，地面基站向上辐射到卫星的射频干扰（RFI）成为两类业务能否共享频谱的关键约束。</p>\n<p>作者用物理上真实的射线追踪研究而非统计模型来量化该干扰。他们构建了波士顿市真实地面部署的大尺度三维模型，使用开源射线追踪求解器，计算数十个下一代基站（gNB）在不同仰角下对卫星产生的聚合 RFI。传播模型刻画了遮挡、杂波、绕射与反射——这些都是简单视距链路预算会遗漏的效应。</p>\n<p>核心发现是：干扰预算由朴素分析忽略的路径主导——天线旁瓣与非视距（NLoS）反射/绕射路径对到达卫星的 RFI 贡献显著，而不仅仅是主瓣视距分量。聚合干扰还强烈取决于地面基站的空间分布。实践结论是：考虑干扰的精细部署设计（基站布点、天线下倾、旁瓣管理）可使 FR3 地面/非地面共存成为可能，但前提是显式计入旁瓣与 NLoS 贡献。</p>\n<h3>技术要点</h3>\n<ul><li><strong>频段：</strong> FR3 上中频段 7–24 GHz——与现有卫星业务共享的 6G 候选频谱争议区。</li><li><strong>方法：</strong> 波士顿真实部署的大尺度三维模型 + 开源射线追踪（非统计干扰模型）；刻画遮挡、杂波、绕射、反射。</li><li><strong>场景：</strong> 数十个 gNB 在不同仰角向卫星辐射；按仰角计算聚合 RFI。</li><li><strong>关键结果：</strong> 天线旁瓣与 NLoS 路径对到达卫星的 RFI 贡献显著——仅算主瓣视距会低估干扰。</li><li><strong>设计杠杆：</strong> 基站空间分布显著影响干扰；考虑干扰的布点/下倾可实现实用共存。</li></ul>\n<h3>意义与新意</h3>\n<p>这是 KB 中首个用完整射线追踪城市模型量化 FR3 上中频段地面 6G 与卫星共存的条目。它为 cellular-spectrum 分箱中的政策级条目（如 6G 频谱聚合 CA-vs-DC 立场论文 2606.07944）补充了具有直接监管分量的传播物理结果：WRC/3GPP 关于是否向地面 6G 开放 7–24 GHz 的辩论，正取决于本文测量的卫星保护干扰预算。旁瓣/NLoS 发现是可操作的部分——它表明仅建模主瓣视距的共存研究会对现有业务保护不足。</p>",
       "images": [],
       "search_blob": "spectrum sharing across terrestrial and non-terrestrial services in the fr3 upper midband fr3 上中频段地面与非地面业务的频谱共享 6g fr3 upper-midband spectrum-sharing ntn ray-tracing rfi this paper from the northeastern university institute for the wireless internet of things group (paolo testolina, ergest beshaj, michele polese, tommaso melodia) studies the coexistence problem that will define 6g spectrum policy in the fr3 upper midband — the 7–24 ghz range that regulators are eyeing for terrestrial 6g but which is already occupied by incumbent satellite services. as 6g terrestrial deployments push into these bands, the radio-frequency interference (rfi) that ground base stations radiate upward toward satellites becomes the gating constraint on whether the two services can share the spectrum at all. 本文来自美国东北大学无线物联网研究所（paolo testolina、ergest beshaj、michele polese、tommaso melodia），研究将定义 6g 频谱政策的 fr3 上中频段共存问题——即监管机构看好用于地面 6g、但已被现有卫星业务占用的 7–24 ghz 频段。随着 6g 地面网络进入这些频段，地面基站向上辐射到卫星的射频干扰（rfi）成为两类业务能否共享频谱的关键约束。 academic-paper cellular"
+    },
+    {
+      "id": "2026-06-15_arxiv-wifi-6ghz-lpi-sp-self-coexistence",
+      "date_found": "2026-06-15",
+      "technology": "wifi",
+      "date_published": "2026-06-10",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Wi-Fi Self-Coexistence in the 6 GHz Band: An ns-3 Evaluation of LPI and SP Usage",
+      "title_zh": "6 GHz 频段 Wi-Fi 自共存：LPI 与 SP 使用的 ns-3 评估",
+      "url": "https://arxiv.org/abs/2606.13711",
+      "topics": [
+        "802.11ax",
+        "6GHz",
+        "LPI",
+        "SP",
+        "AFC",
+        "OBSS-PD",
+        "spatial-reuse",
+        "spectrum"
+      ],
+      "topic_primary": "spectrum-policy",
+      "topics_secondary": [
+        "mapc-cosr"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-06-15_arxiv-wifi-6ghz-lpi-sp-self-coexistence.md",
+      "summary_short_en": "A University of Notre Dame team (Nasiri, Dogan-Tusha, Gatsi, Ghosh — Monisha Ghosh's group) presents the first system-level ns-3 study of **Wi-Fi self-coexistence in the 6 GHz band across heterogeneous power regimes**, submitted 10 June 2026. The FCC allows unlicensed 6 GHz (5.925–7.125 GHz) under several power classes — **LPI (Low-Power Indoor, 30 dBm EIRP, no coordination)**, **SP (Standard Power, 36 dBm EIRP, requires AFC)**, plus GVP and VLP. Prior coexistence work targeted Wi-Fi vs cellular (LTE-LAA, NR-U); this paper isolates Wi-Fi-on-Wi-Fi interference between LPI and SP networks.",
+      "summary_short_zh": "Notre Dame 团队（Nasiri、Dogan-Tusha、Gatsi、Ghosh——Monisha Ghosh 课题组）首次对 **6 GHz 频段异构功率制式下的 Wi-Fi 自共存** 做系统级 ns-3 研究，于 2026 年 6 月 10 日提交。FCC 允许 6 GHz（5.925–7.125 GHz）非授权使用，分多种功率等级——**LPI（低功率室内，30 dBm EIRP，无需协调）**、**SP（标准功率，36 dBm EIRP，需 AFC）**，以及 GVP 与 VLP。以往共存研究针对 Wi-Fi 与蜂窝（LTE-LAA、NR-U）；本文聚焦 LPI 与 SP 两类 Wi-Fi 网络之间的相互干扰。",
+      "body_html_en": "<h3>Summary</h3>\n<p>A University of Notre Dame team (Nasiri, Dogan-Tusha, Gatsi, Ghosh — Monisha Ghosh's group) presents the first system-level ns-3 study of <strong>Wi-Fi self-coexistence in the 6 GHz band across heterogeneous power regimes</strong>, submitted 10 June 2026. The FCC allows unlicensed 6 GHz (5.925–7.125 GHz) under several power classes — <strong>LPI (Low-Power Indoor, 30 dBm EIRP, no coordination)</strong>, <strong>SP (Standard Power, 36 dBm EIRP, requires AFC)</strong>, plus GVP and VLP. Prior coexistence work targeted Wi-Fi vs cellular (LTE-LAA, NR-U); this paper isolates Wi-Fi-on-Wi-Fi interference between LPI and SP networks.</p>\n<p>The core problem is <strong>power asymmetry</strong>: at 20 MHz, SP can transmit up to <strong>18 dB above LPI</strong>, so the louder SP transmitter dominates carrier sensing — LPI devices defer while SP may not even detect LPI activity. Crucially, regulatory EIRP caps (not the per-MHz PSD limit) set the relative gap, so the asymmetry <strong>narrows to ~9 dB at 160 MHz</strong>. The simulation (ns-3 802.11ax, HybridBuildings propagation, 2×2 MIMO, two APs × 5 STAs, AP separation swept 40–360 m, MCS0/5/9, 20/80/160 MHz, downlink CBR ~480 Mbps/AP) measures per-AP goodput, Jain's fairness, latency, and airtime ratio.</p>\n<p>Headline findings: (1) a <strong>~100 m threshold</strong> — within it mutual carrier sensing keeps airtime balanced; beyond it sensing asymmetry lets SP dominate, worst at 20 MHz. (2) <strong>Wider channels help</strong> — 160 MHz fairness approaches the LPI–LPI baseline because the power gap shrinks. (3) <strong>Robust MCS0 masks</strong> the asymmetry; MCS5/9 expose it (fairness drops below 0.8 around 150 m). (4) A counter-intuitive <strong>OBSS-PD backfire</strong>: raising the OBSS-PD threshold to make LPI more aggressive <em>worsened</em> LPI goodput — &quot;asymmetric BSS coloring is insufficient to restore fairness.&quot; (5) Indoor–outdoor building penetration loss only partially mitigates; outdoor SP still degrades indoor LPI at all distances. Results are tied to a real measurement campaign at the Notre Dame stadium (outdoor SP + indoor LPI co-channel separation CDF).</p>\n<h3>Key technical points</h3>\n<ul><li><strong>First ns-3 framework for LPI–SP heterogeneous-power Wi-Fi self-coexistence</strong> (prior work was Wi-Fi vs cellular).</li><li><strong>18 dB SP–LPI gap at 20 MHz → ~9 dB at 160 MHz</strong>; the gap is set by EIRP caps, not PSD, so wider channels are fairer.</li><li><strong>~100 m carrier-sensing threshold</strong>: balanced airtime within, SP dominance beyond.</li><li><strong>Fairness (Jain)</strong>: ≥0.8 at MCS0/20 MHz; drops below 0.8 by ~150 m at MCS5/9; 160 MHz approaches LPI–LPI baseline.</li><li><strong>OBSS-PD backfire</strong>: aggressive thresholds increased LPI exposure without enabling concurrent TX — spatial reuse tuning cannot fix the power imbalance.</li><li><strong>Indoor–outdoor</strong>: building penetration loss only partially mitigates; outdoor SP degrades indoor LPI at all distances.</li><li><strong>Real-world tie-in</strong>: CDF of measured co-channel SP–LPI separation from the Notre Dame stadium campaign.</li><li>Config: ns-3 802.11ax, 2×2 MIMO, A-MPDU on, RTS/CTS off, OBSS-PD swept at −72/−62 dBm vs disabled, BSS coloring on with OBSS-PD.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The <code>spectrum-policy</code> bin has tracked the regulatory side of 6 GHz (FCC LPI/SP/VLP rules, UK/EU upper-6 GHz decisions) but not a quantitative look at what the power-class mix does to Wi-Fi-on-Wi-Fi fairness. This paper fills that gap: it shows the LPI/SP power asymmetry is a real, measurable airtime-fairness problem beyond ~100 m, that the standard spatial-reuse lever (OBSS-PD / BSS coloring) actively backfires, and — counter-intuitively — that wider channels (160 MHz) are <em>fairer</em> because EIRP caps shrink the relative power gap. That last point is directly relevant to deployment guidance and to the <code>mapc-cosr</code> line of work, since coordinated spatial reuse is exactly the mechanism being proposed to manage inter-BSS interference that OBSS-PD handles poorly here. Strong, well-instrumented entry with a real measurement tie-in.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>Notre Dame 团队（Nasiri、Dogan-Tusha、Gatsi、Ghosh——Monisha Ghosh 课题组）首次对 <strong>6 GHz 频段异构功率制式下的 Wi-Fi 自共存</strong> 做系统级 ns-3 研究，于 2026 年 6 月 10 日提交。FCC 允许 6 GHz（5.925–7.125 GHz）非授权使用，分多种功率等级——<strong>LPI（低功率室内，30 dBm EIRP，无需协调）</strong>、<strong>SP（标准功率，36 dBm EIRP，需 AFC）</strong>，以及 GVP 与 VLP。以往共存研究针对 Wi-Fi 与蜂窝（LTE-LAA、NR-U）；本文聚焦 LPI 与 SP 两类 Wi-Fi 网络之间的相互干扰。</p>\n<p>核心问题是<strong>功率不对称</strong>：在 20 MHz 下，SP 发射功率可高出 LPI <strong>达 18 dB</strong>，因此较强的 SP 发射者主导载波侦听——LPI 设备退避，而 SP 甚至侦测不到 LPI 活动。关键在于决定相对差距的是监管 EIRP 上限（而非每 MHz 的 PSD 限制），因此在 <strong>160 MHz 下不对称收窄至约 9 dB</strong>。仿真（ns-3 802.11ax、HybridBuildings 传播模型、2×2 MIMO、两 AP × 5 STA、AP 间距 40–360 m 扫描、MCS0/5/9、20/80/160 MHz、下行 CBR 约 480 Mbps/AP）测量每 AP 吞吐、Jain 公平性、时延与占空比。</p>\n<p>主要发现：（1）<strong>约 100 m 阈值</strong>——阈值内相互载波侦听保持占空平衡；阈值外侦听不对称使 SP 主导，20 MHz 最严重。（2）<strong>更宽信道有帮助</strong>——160 MHz 公平性接近 LPI–LPI 基线，因功率差距收窄。（3）<strong>鲁棒的 MCS0 掩盖</strong>不对称；MCS5/9 暴露之（约 150 m 处公平性跌破 0.8）。（4）反直觉的 <strong>OBSS-PD 反效果</strong>：提高 OBSS-PD 门限让 LPI 更激进，反而<em>恶化</em> LPI 吞吐——&quot;非对称 BSS 着色不足以恢复公平&quot;。（5）室内—室外建筑穿透损耗仅部分缓解；室外 SP 在所有距离下仍恶化室内 LPI。结果与 Notre Dame 体育场的实测活动（室外 SP + 室内 LPI 同信道间距 CDF）相印证。</p>\n<h3>技术要点</h3>\n<ul><li><strong>首个针对 LPI–SP 异构功率 Wi-Fi 自共存的 ns-3 框架</strong>（以往工作针对 Wi-Fi 与蜂窝）。</li><li><strong>20 MHz 下 SP–LPI 差距 18 dB → 160 MHz 下约 9 dB</strong>；差距由 EIRP 上限而非 PSD 决定，故更宽信道更公平。</li><li><strong>约 100 m 载波侦听阈值</strong>：阈值内占空平衡，阈值外 SP 主导。</li><li><strong>公平性（Jain）</strong>：MCS0/20 MHz 时 ≥0.8；MCS5/9 时约 150 m 跌破 0.8；160 MHz 接近 LPI–LPI 基线。</li><li><strong>OBSS-PD 反效果</strong>：激进门限增加 LPI 暴露却未实现并发发送——空间复用调参无法修复功率失衡。</li><li><strong>室内—室外</strong>：建筑穿透损耗仅部分缓解；室外 SP 在所有距离下恶化室内 LPI。</li><li><strong>现实印证</strong>：Notre Dame 体育场实测同信道 SP–LPI 间距 CDF。</li><li>配置：ns-3 802.11ax、2×2 MIMO、开启 A-MPDU、关闭 RTS/CTS、OBSS-PD 在 −72/−62 dBm 与禁用间扫描、OBSS-PD 开启时启用 BSS 着色。</li></ul>\n<h3>意义与新意</h3>\n<p><code>spectrum-policy</code> 分箱此前跟踪了 6 GHz 的监管面（FCC 的 LPI/SP/VLP 规则、英国/欧盟上 6 GHz 决定），但缺少对功率等级混合如何影响 Wi-Fi 间公平性的定量分析。本文填补了该空白：它表明 LPI/SP 功率不对称在约 100 m 之外是真实、可测的占空公平性问题，标准的空间复用手段（OBSS-PD / BSS 着色）反而起反作用，且——反直觉地——更宽信道（160 MHz）<em>更公平</em>，因为 EIRP 上限收窄了相对功率差距。最后一点对部署指导以及 <code>mapc-cosr</code> 方向的工作直接相关，因为协调空间复用正是被提出用于管理 OBSS-PD 在此处处理不佳的 BSS 间干扰的机制。条目扎实、仪表化充分，并有实测数据印证。</p>",
+      "images": [],
+      "search_blob": "wi-fi self-coexistence in the 6 ghz band: an ns-3 evaluation of lpi and sp usage 6 ghz 频段 wi-fi 自共存：lpi 与 sp 使用的 ns-3 评估 802.11ax 6ghz lpi sp afc obss-pd spatial-reuse spectrum a university of notre dame team (nasiri, dogan-tusha, gatsi, ghosh — monisha ghosh's group) presents the first system-level ns-3 study of **wi-fi self-coexistence in the 6 ghz band across heterogeneous power regimes**, submitted 10 june 2026. the fcc allows unlicensed 6 ghz (5.925–7.125 ghz) under several power classes — **lpi (low-power indoor, 30 dbm eirp, no coordination)**, **sp (standard power, 36 dbm eirp, requires afc)**, plus gvp and vlp. prior coexistence work targeted wi-fi vs cellular (lte-laa, nr-u); this paper isolates wi-fi-on-wi-fi interference between lpi and sp networks. notre dame 团队（nasiri、dogan-tusha、gatsi、ghosh——monisha ghosh 课题组）首次对 **6 ghz 频段异构功率制式下的 wi-fi 自共存** 做系统级 ns-3 研究，于 2026 年 6 月 10 日提交。fcc 允许 6 ghz（5.925–7.125 ghz）非授权使用，分多种功率等级——**lpi（低功率室内，30 dbm eirp，无需协调）**、**sp（标准功率，36 dbm eirp，需 afc）**，以及 gvp 与 vlp。以往共存研究针对 wi-fi 与蜂窝（lte-laa、nr-u）；本文聚焦 lpi 与 sp 两类 wi-fi 网络之间的相互干扰。 academic-paper wifi"
     },
     {
       "id": "2026-06-13_arxiv-score-leo-ground-station-placement",
