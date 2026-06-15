@@ -2078,6 +2078,7 @@
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-06-15_arxiv-aidos-beam-hopping-ngso",
         "2026-06-13_arxiv-score-leo-ground-station-placement",
         "2026-06-03_arxiv-robust-rb-allocation-satellite",
         "2026-05-29_arxiv-quantum-safe-ike-satellite",
@@ -2085,6 +2086,7 @@
         "2026-05-24_amazon-leo-300-satellites-may-2026"
       ],
       "entries_secondary": [
+        "2026-06-15_arxiv-agon-satellite-interference-detection",
         "2026-06-13_arxiv-space-data-centers-orbital-computing",
         "2026-06-03_arxiv-mapping-storm-weather-leo-starlink",
         "2026-05-29_arxiv-starlink-queuing-characterization",
@@ -2095,6 +2097,7 @@
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-06-15_arxiv-aidos-beam-hopping-ngso",
           "2026-06-13_arxiv-score-leo-ground-station-placement",
           "2026-06-03_arxiv-robust-rb-allocation-satellite",
           "2026-05-29_arxiv-quantum-safe-ike-satellite",
@@ -2174,14 +2177,17 @@
       "diagram_mmd_en": "",
       "diagram_mmd_zh": "",
       "entries_primary": [
+        "2026-06-15_arxiv-agon-satellite-interference-detection",
         "2026-06-13_arxiv-space-data-centers-orbital-computing"
       ],
       "entries_secondary": [
+        "2026-06-15_arxiv-aidos-beam-hopping-ngso",
         "2026-06-13_arxiv-score-leo-ground-station-placement",
         "2026-05-26_arxiv-safesabr-starlink-abr-streaming"
       ],
       "by_type_primary": {
         "academic-paper": [
+          "2026-06-15_arxiv-agon-satellite-interference-detection",
           "2026-06-13_arxiv-space-data-centers-orbital-computing"
         ]
       }
@@ -2204,6 +2210,7 @@
         "2026-05-30_fcc-starlink-gen2-authorization-spectrum"
       ],
       "entries_secondary": [
+        "2026-06-15_arxiv-agon-satellite-interference-detection",
         "2026-05-24_ast-spacemobile-q1-2026-45-bluebirds",
         "2026-05-24_amazon-leo-300-satellites-may-2026",
         "2026-05-30_fcc-ast-spacemobile-full-constellation-approval",
@@ -2617,6 +2624,68 @@
       "summary_short_zh": "Alaimo、Dino、Tinnirello 与 Garlisi（arXiv 2606.14465，2026 年 6 月 12 日提交）提出 **STORM-RJ**——一种源自网络内部的 5G NR 实时*反应式*上行干扰攻击：被植入后门的 UE 提取解码后的**下行控制信息（DCI），特别是上行授权（UL-Grant）**，并将调度决策（分配的资源块 RB、中心频率、时序）转发给外部 SDR 干扰机。由于精确知道受害者将使用哪些 RB 及时刻（授权与发送之间的 **K₂** 间隔，实验中为 4 ms），干扰机可将干扰与已调度的 PUSCH 突发精确对齐——比宽带压制式干扰更高效、更隐蔽。",
       "body_html_en": "<h3>Summary</h3>\n<p>Alaimo, Dino, Tinnirello and Garlisi (arXiv 2606.14465, submitted 12 June 2026) present <strong>STORM-RJ</strong>, a real-time <em>reactive</em> uplink jamming attack on 5G NR that originates from inside the network: a compromised UE with a backdoor that extracts decoded <strong>Downlink Control Information (DCI) — specifically the UL-Grant</strong> — and forwards the scheduling decision (allocated Resource Blocks, center frequency, timing) to an external SDR jammer. Knowing exactly which RBs the victim will use and when (the <strong>K₂</strong> gap between grant and transmission, 4 ms in their setup), the jammer aligns interference precisely with the scheduled PUSCH burst — a far more efficient and stealthy attack than broadband barrage jamming.</p>\n<p>The core engineering contribution is meeting 5G's microsecond timing budget. Naive high-level retuning of the analog local oscillator via the UHD API takes ~3 ms (2867 µs API delay + ~67 µs PLL lock), which misses the reaction window. STORM-RJ instead fixes the analog LO at init and applies per-slot <strong>digital frequency shifts via the baseband NCO</strong>, achieving ~20 µs adjustments on a USRP-B210 — fast enough to track per-slot frequency hopping and dynamic RB allocation.</p>\n<p>On a non-isolated lab testbed (srsRAN-4G UE, srsRAN-Project gNB with PUSCH frequency hopping, Open5GS core, USRP B210/N310, n2 band, 20 MHz, μ=0, 106 RB), at maximum intensity (J_idle = 1 ms) uplink throughput collapsed to <strong>0.73 Mbit/s — a 66.9% reduction</strong>, with permanent HARQ failure rising from 12.4% (15 ms) to 73.4% (1 ms). A clear threshold appears around J_idle ≈ 3 ms: above it HARQ soft-combining absorbs the interference, below it permanent failures exceed recovery capacity. The paper proposes detection via HARQ-pattern anomaly analysis (frequent retransmissions despite high RSSI imply interference, not fading), ML classifiers on PER/throughput anomalies, and PHY-layer RF-fingerprinting of the SDR jammer (IQ imbalance, phase noise, EVM).</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Insider reactive jamming</strong>: backdoored UE leaks decoded DCI UL-Grant to an external SDR jammer — interference is aligned to the victim's exact PUSCH RBs/timing, not broadband.</li><li><strong>Microsecond retuning</strong>: analog-LO retune (~3 ms via UHD API) is too slow; per-slot baseband NCO digital shift (~20 µs) meets the K₂=4 ms reaction window and tracks frequency hopping.</li><li><strong>Testbed</strong>: srsRAN-4G UE + srsRAN-Project gNB (PUSCH hopping) + Open5GS, USRP B210/N310, n2 band, 20 MHz, μ=0, 106 RB, iPerf UDP UL.</li><li><strong>Impact</strong>: J_idle=1 ms → 0.73 Mbit/s UL (−66.9%); permanent HARQ failure 12.4%→73.4% as J_idle drops 15→1 ms.</li><li><strong>Threshold</strong>: J_idle ≈ 3 ms — above it HARQ soft-combining hides the attack; below it failures cascade.</li><li><strong>Detection proposed</strong>: HARQ-retransmission-vs-RSSI anomaly, ML on PER/throughput, SDR RF-fingerprinting (IQ imbalance/phase-noise/EVM), temporal-spectral correlation of slot-aligned interference.</li><li><strong>Novelty vs prior jamming</strong>: dynamic per-slot bandwidth+frequency adaptation (not fixed-allocation), and first demonstration DSP frequency-shifting meets NR's µs reactive-jamming constraint.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The <code>cellular-security</code> bin tracks 5G/6G attack-surface research (closed-loop security reviews, AI-native security). STORM-RJ adds a concrete, reproducible PHY/MAC insider-threat result: it shows that leaking the UL-Grant turns a cheap SDR into a precise reactive jammer that cuts uplink throughput by two-thirds while staying invisible to RSSI-based monitoring — and that the only thing standing between theory and practice was meeting NR's microsecond retune budget, which the baseband-NCO trick solves. The HARQ-threshold finding (attacks below ~3 ms idle cascade, above it hide) and the proposed HARQ-vs-RSSI detector are directly useful to anyone building 5G intrusion detection. It complements the AI-native 6G security-loop entry (2026-06-09) with a real-hardware attack rather than a survey.</p>",
       "body_html_zh": "<h3>摘要</h3>\n<p>Alaimo、Dino、Tinnirello 与 Garlisi（arXiv 2606.14465，2026 年 6 月 12 日提交）提出 <strong>STORM-RJ</strong>——一种源自网络内部的 5G NR 实时<em>反应式</em>上行干扰攻击：被植入后门的 UE 提取解码后的<strong>下行控制信息（DCI），特别是上行授权（UL-Grant）</strong>，并将调度决策（分配的资源块 RB、中心频率、时序）转发给外部 SDR 干扰机。由于精确知道受害者将使用哪些 RB 及时刻（授权与发送之间的 <strong>K₂</strong> 间隔，实验中为 4 ms），干扰机可将干扰与已调度的 PUSCH 突发精确对齐——比宽带压制式干扰更高效、更隐蔽。</p>\n<p>核心工程贡献是满足 5G 的微秒级时序预算。通过 UHD API 对模拟本振做高层重调谐约需 3 ms（2867 µs API 时延 + 约 67 µs PLL 锁定），错过反应窗口。STORM-RJ 改为在初始化时固定模拟 LO，并通过基带 <strong>NCO 逐 slot 施加数字频移</strong>，在 USRP-B210 上实现约 20 µs 的调整——足以跟踪逐 slot 跳频与动态 RB 分配。</p>\n<p>在非隔离实验台（srsRAN-4G UE、支持 PUSCH 跳频的 srsRAN-Project gNB、Open5GS 核心、USRP B210/N310、n2 频段、20 MHz、μ=0、106 RB）上，最高强度（J_idle = 1 ms）时上行吞吐跌至 <strong>0.73 Mbit/s——下降 66.9%</strong>，HARQ 永久失败率从 15 ms 时的 12.4% 升至 1 ms 时的 73.4%。在 J_idle ≈ 3 ms 处出现明显阈值：高于该值 HARQ 软合并可吸收干扰，低于该值永久失败超出恢复能力。论文提出的检测手段包括 HARQ 模式异常分析（高 RSSI 下频繁重传意味干扰而非衰落）、对 PER/吞吐异常的 ML 分类器，以及对 SDR 干扰机的 PHY 层射频指纹识别（IQ 失衡、相位噪声、EVM）。</p>\n<h3>技术要点</h3>\n<ul><li><strong>内部反应式干扰</strong>：被植入后门的 UE 将解码的 DCI 上行授权泄露给外部 SDR 干扰机——干扰对齐受害者确切的 PUSCH RB/时序，而非宽带压制。</li><li><strong>微秒级重调谐</strong>：模拟 LO 重调（经 UHD API 约 3 ms）太慢；逐 slot 基带 NCO 数字频移（约 20 µs）满足 K₂=4 ms 反应窗口并跟踪跳频。</li><li><strong>实验台</strong>：srsRAN-4G UE + srsRAN-Project gNB（PUSCH 跳频）+ Open5GS，USRP B210/N310，n2 频段，20 MHz，μ=0，106 RB，iPerf UDP 上行。</li><li><strong>影响</strong>：J_idle=1 ms → 上行 0.73 Mbit/s（−66.9%）；J_idle 从 15→1 ms，HARQ 永久失败率 12.4%→73.4%。</li><li><strong>阈值</strong>：J_idle ≈ 3 ms——高于该值 HARQ 软合并掩盖攻击，低于该值失败级联。</li><li><strong>检测建议</strong>：HARQ 重传与 RSSI 对照异常、对 PER/吞吐的 ML、SDR 射频指纹（IQ 失衡/相位噪声/EVM）、slot 对齐干扰的时频相关性。</li><li><strong>相对既有干扰的新颖性</strong>：动态逐 slot 带宽+频率自适应（非固定分配），首次证明 DSP 频移可满足 NR 的微秒级反应式干扰约束。</li></ul>\n<h3>意义与新意</h3>\n<p><code>cellular-security</code> 分箱跟踪 5G/6G 攻击面研究（闭环安全综述、AI 原生安全）。STORM-RJ 增加了一个具体、可复现的 PHY/MAC 内部威胁结果：它表明泄露上行授权可把廉价 SDR 变成精确的反应式干扰机，将上行吞吐削减三分之二，同时对基于 RSSI 的监测保持隐形——而理论与实践之间唯一的障碍是满足 NR 的微秒级重调谐预算，基带 NCO 技巧恰好解决了这一点。HARQ 阈值发现（约 3 ms 空闲以下攻击级联、以上则隐藏）与提出的 HARQ-vs-RSSI 检测器对构建 5G 入侵检测者直接有用。它以真实硬件攻击补充了 AI 原生 6G 安全闭环条目（2026-06-09），而非综述。</p>",
+      "images": []
+    },
+    {
+      "id": "2026-06-15_arxiv-aidos-beam-hopping-ngso",
+      "date_found": "2026-06-15",
+      "technology": "satellite",
+      "date_published": "2026-06-12",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Aidos: A Hybrid Optimization Algorithm for Beam Hopping Scheduling in NGSO Mega-Constellations",
+      "title_zh": "Aidos：面向 NGSO 巨型星座波束跳变调度的混合优化算法",
+      "url": "https://arxiv.org/abs/2606.14151",
+      "topics": [
+        "LEO",
+        "NGSO",
+        "beam-hopping",
+        "scheduling",
+        "PSO",
+        "Starlink",
+        "resource-allocation"
+      ],
+      "topic_primary": "leo-constellations",
+      "topics_secondary": [
+        "sat-ai"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-06-15_arxiv-aidos-beam-hopping-ngso.md",
+      "summary_short_en": "Zhao, Chen, Qiu and Gao (Fudan University, Institute of Space Internet; arXiv 2606.14151, submitted 12 June 2026) tackle **real-time beam-hopping time-plan (BHTP) generation** for NGSO mega-constellations like Starlink. A satellite must dynamically steer a limited set of beams across thousands of ground cells within a ~300-second visibility window, re-planning as traffic shifts. Existing methods don't keep up: round-robin ignores traffic heterogeneity, genetic algorithms need ~67.8 s per plan (far too slow for online use), and multi-agent deep RL collapses past ~200 cells.",
+      "summary_short_zh": "赵、陈、邱与高（复旦大学空间互联网研究院；arXiv 2606.14151，2026 年 6 月 12 日提交）研究面向 Starlink 等 NGSO 巨型星座的**实时波束跳变时间规划（BHTP）生成**。卫星须在约 300 秒可见窗口内，将有限波束动态指向数千个地面小区，并随流量变化重新规划。现有方法跟不上：轮询忽略流量异质性，遗传算法每个规划需约 67.8 秒（在线使用太慢），多智能体深度 RL 在超过约 200 小区时崩溃。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Zhao, Chen, Qiu and Gao (Fudan University, Institute of Space Internet; arXiv 2606.14151, submitted 12 June 2026) tackle <strong>real-time beam-hopping time-plan (BHTP) generation</strong> for NGSO mega-constellations like Starlink. A satellite must dynamically steer a limited set of beams across thousands of ground cells within a ~300-second visibility window, re-planning as traffic shifts. Existing methods don't keep up: round-robin ignores traffic heterogeneity, genetic algorithms need ~67.8 s per plan (far too slow for online use), and multi-agent deep RL collapses past ~200 cells.</p>\n<p><strong>Aidos</strong> is a particle-swarm-optimization core augmented with four specialized modules: <strong>TARK</strong> (traffic-aware random-key encoding, mapping discrete cell assignments to a continuous space the swarm can search), <strong>STP-PMD</strong> (Beta-distribution resampling guided by short-term traffic prediction, to accelerate convergence), <strong>LR</strong> (local refinement via greedy hotspot injection and time-slot swapping), and <strong>MSP</strong> (multi-scale Gaussian perturbation with adaptive step size to escape local optima).</p>\n<p>On a Starlink-scale scenario (1,127 cells, 96 beams), Aidos delivers <strong>+79.2% throughput vs the MOGA-BH genetic baseline and +247.2% vs multi-agent DRL</strong>, with a <strong>99.45% latency reduction</strong> and a <strong>9.3 s runtime (50 iterations)</strong> — fast enough for ~13 re-plans per satellite pass. It scales to 2,693 cells with under-5-second latency, the regime where GA and MADRL fail outright. The novelty is the combination of traffic-aware encoding with a multi-objective metaheuristic plus sliding-window Beta resampling, demonstrating that online large-scale BHTP replanning is actually feasible.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Problem</strong>: online BHTP for NGSO — thousands of cells, limited beams, ~300 s visibility, frequent re-planning.</li><li><strong>Core</strong>: PSO + TARK (traffic-aware random-key continuous encoding), STP-PMD (traffic-predicted Beta resampling), LR (greedy hotspot/time-slot local refine), MSP (adaptive multi-scale perturbation).</li><li><strong>Results (1,127 cells, 96 beams)</strong>: +79.2% throughput vs MOGA-BH, +247.2% vs MADRL, −99.45% latency, 9.3 s/plan (50 iters), ~13 replans per pass.</li><li><strong>Scale</strong>: handles 2,693 cells at &lt;5 s — GA (67.8 s) too slow, MADRL collapses &gt;200 cells.</li><li><strong>Novelty</strong>: traffic-aware encoding + multi-objective metaheuristic + sliding-window Beta resampling for practical online replanning.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>The <code>leo-constellations</code> bin tracks LEO capacity and resource-management work — recently the SCORE ground-station-placement optimizer (2026-06-13) and the Space Data Centers vision (2026-06-13). Aidos sits squarely in the on-board resource-allocation thread: it makes the case that classical metaheuristics, properly engineered with traffic-aware encoding and predictive resampling, beat both genetic algorithms (too slow) and multi-agent DRL (doesn't scale) for the specific, hard, real-time problem of beam-hopping in Starlink-scale constellations. The headline that it re-plans in ~9 s where GA needs ~68 s is the practical unlock. From the same Fudan Space Internet group as today's companion interference-detection paper (Agon, 2026-06-15).</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>赵、陈、邱与高（复旦大学空间互联网研究院；arXiv 2606.14151，2026 年 6 月 12 日提交）研究面向 Starlink 等 NGSO 巨型星座的<strong>实时波束跳变时间规划（BHTP）生成</strong>。卫星须在约 300 秒可见窗口内，将有限波束动态指向数千个地面小区，并随流量变化重新规划。现有方法跟不上：轮询忽略流量异质性，遗传算法每个规划需约 67.8 秒（在线使用太慢），多智能体深度 RL 在超过约 200 小区时崩溃。</p>\n<p><strong>Aidos</strong> 以粒子群优化为核心，外加四个专用模块：<strong>TARK</strong>（流量感知随机键编码，将离散小区分配映射到连续搜索空间）、<strong>STP-PMD</strong>（由短期流量预测引导的 Beta 分布重采样，加速收敛）、<strong>LR</strong>（通过贪婪热点注入与时隙交换的局部精化）、以及 <strong>MSP</strong>（自适应步长的多尺度高斯扰动以逃离局部最优）。</p>\n<p>在 Starlink 规模场景（1,127 小区、96 波束）下，Aidos 相对 MOGA-BH 遗传基线吞吐 <strong>+79.2%</strong>、相对多智能体 DRL <strong>+247.2%</strong>，时延降低 <strong>99.45%</strong>，运行时间 <strong>9.3 秒（50 次迭代）</strong>——足以在每次卫星过境内重规划约 13 次。它可扩展到 2,693 小区且时延低于 5 秒，而 GA 与 MADRL 在该规模下直接失效。新颖性在于将流量感知编码与多目标元启发式相结合，并引入滑窗 Beta 重采样，证明在线大规模 BHTP 重规划确实可行。</p>\n<h3>技术要点</h3>\n<ul><li><strong>问题</strong>：NGSO 在线 BHTP——数千小区、有限波束、约 300 秒可见、频繁重规划。</li><li><strong>核心</strong>：PSO + TARK（流量感知随机键连续编码）、STP-PMD（流量预测 Beta 重采样）、LR（贪婪热点/时隙局部精化）、MSP（自适应多尺度扰动）。</li><li><strong>结果（1,127 小区、96 波束）</strong>：相对 MOGA-BH 吞吐 +79.2%，相对 MADRL +247.2%，时延 −99.45%，9.3 秒/规划（50 迭代），每过境约 13 次重规划。</li><li><strong>规模</strong>：可处理 2,693 小区且 &lt;5 秒——GA（67.8 秒）太慢，MADRL 超 200 小区崩溃。</li><li><strong>新颖性</strong>：流量感知编码 + 多目标元启发式 + 滑窗 Beta 重采样，实现实用的在线重规划。</li></ul>\n<h3>意义与新意</h3>\n<p><code>leo-constellations</code> 分箱跟踪 LEO 容量与资源管理工作——近期有 SCORE 地面站选址优化器（2026-06-13）与 Space Data Centers 愿景（2026-06-13）。Aidos 正处于星上资源分配这一主线：它论证了经过流量感知编码与预测式重采样精心设计的经典元启发式，在 Starlink 规模星座波束跳变这一具体、困难、实时的问题上，胜过遗传算法（太慢）与多智能体 DRL（无法扩展）。其相对 GA 需约 68 秒、Aidos 约 9 秒即可重规划是关键的实用突破。与今日同组的干扰检测论文（Agon，2026-06-15）同出自复旦空间互联网团队。</p>",
+      "images": []
+    },
+    {
+      "id": "2026-06-15_arxiv-agon-satellite-interference-detection",
+      "date_found": "2026-06-15",
+      "technology": "satellite",
+      "date_published": "2026-06-12",
+      "type": "academic-paper",
+      "category": "academia",
+      "title_en": "Agon: A Semi-Supervised Framework for Robust Satellite Interference Detection",
+      "title_zh": "Agon：用于鲁棒卫星干扰检测的半监督框架",
+      "url": "https://arxiv.org/abs/2606.14147",
+      "topics": [
+        "NGSO",
+        "GSO",
+        "interference-detection",
+        "semi-supervised",
+        "masked-autoencoder",
+        "NGSO-GSO-coexistence"
+      ],
+      "topic_primary": "sat-ai",
+      "topics_secondary": [
+        "ngso-regulation",
+        "leo-constellations"
+      ],
+      "novelty_score": 3,
+      "entry_path": "entries/2026-06-15_arxiv-agon-satellite-interference-detection.md",
+      "summary_short_en": "Yang, Yang, Chen, Qiu and Gao (Fudan University, Space Internet Research Institute; arXiv 2606.14147, submitted 12 June 2026) present **Agon**, a semi-supervised framework for real-time RF **interference detection** in satellite links as NGSO constellations multiply and NGSO–GSO / NGSO–NGSO interference becomes a millisecond-timescale, rapidly time-varying problem. Static regulatory frameworks and reconstruction-based ML detectors (which depend on brittle, unstable error thresholds) cannot keep up.",
+      "summary_short_zh": "杨、杨、陈、邱与高（复旦大学空间互联网研究院；arXiv 2606.14147，2026 年 6 月 12 日提交）提出 **Agon**——一个用于卫星链路实时射频**干扰检测**的半监督框架。随着 NGSO 星座激增、NGSO–GSO 与 NGSO–NGSO 干扰成为毫秒级、快速时变的问题，静态监管框架与依赖脆弱不稳定误差阈值的基于重构的 ML 检测器都无法应对。",
+      "body_html_en": "<h3>Summary</h3>\n<p>Yang, Yang, Chen, Qiu and Gao (Fudan University, Space Internet Research Institute; arXiv 2606.14147, submitted 12 June 2026) present <strong>Agon</strong>, a semi-supervised framework for real-time RF <strong>interference detection</strong> in satellite links as NGSO constellations multiply and NGSO–GSO / NGSO–NGSO interference becomes a millisecond-timescale, rapidly time-varying problem. Static regulatory frameworks and reconstruction-based ML detectors (which depend on brittle, unstable error thresholds) cannot keep up.</p>\n<p>Agon uses a <strong>two-stage hybrid paradigm</strong>. First, <strong>self-supervised pre-training</strong>: a masked autoencoder (MAE) with a dual-attention-transformer (DAT) encoder learns universal signal structure from unlabeled data. Then <strong>multi-task fine-tuning</strong> trains a <em>direct binary classifier</em> (eliminating the unstable reconstruction-threshold approach) using: <strong>High-Order-Statistics (HOS)-augmented attention</strong> (second-order/covariance priors that separate interference from thermal noise even when it's buried below the noise floor), a <strong>wavelet regularization loss</strong> (multi-scale structural fidelity in the discrete-wavelet domain to recover transient spectral detail), plus auxiliary modulation-classification and signal-reconstruction tasks.</p>\n<p>On the public NGSO–GSO dataset (17,281 snapshots) Agon reaches <strong>0.9327 AUC, 0.9251 accuracy, 0.8351 F1, and a 0.0553 false-positive rate</strong> — versus 0.1763 FPR for the TrID baseline. On an NGSO–NGSO Starlink/OneWeb dataset (7,450 samples) it hits 0.9085 AUC / 0.9055 F1 with &gt;90% modulation-classification accuracy, staying robust across off-axis angles and interference-to-noise ratios and generalizing across C-, Ku- and Ka-bands. It outperforms VAE, CNN-AE, TrID and energy-detection baselines, most strongly under high interference density.</p>\n<h3>Key technical points</h3>\n<ul><li><strong>Problem</strong>: millisecond-timescale, time-varying NGSO–GSO / NGSO–NGSO interference; static rules and threshold-based ML detectors fail.</li><li><strong>Stage 1</strong>: self-supervised MAE pre-training with a dual-attention-transformer encoder on unlabeled signals.</li><li><strong>Stage 2</strong>: multi-task fine-tuning → direct binary classifier (threshold-free), with HOS-augmented attention + wavelet regularization + aux modulation/reconstruction tasks.</li><li><strong>NGSO–GSO (17,281 snaps)</strong>: AUC 0.9327, acc 0.9251, F1 0.8351, FPR 0.0553 (vs TrID 0.1763).</li><li><strong>NGSO–NGSO (7,450, Starlink/OneWeb)</strong>: AUC 0.9085, F1 0.9055, modulation-class &gt;90%.</li><li><strong>Robustness</strong>: generalizes across C/Ku/Ka bands, off-axis angles, INR; beats VAE/CNN-AE/TrID/energy-detection.</li><li><strong>Novelty</strong>: threshold-free detection, HOS second-order attention priors, wavelet multi-scale fidelity loss.</li></ul>\n<h3>Why it matters / what's new</h3>\n<p>NGSO–GSO coexistence and interference management are a live regulatory and engineering issue (cf. the FR3 terrestrial/NTN coexistence work, cellular entry 2026-06-13). Agon contributes the detection side: a robust, threshold-free ML interference detector that works at the millisecond timescale where regulatory masks and reconstruction-error detectors break down, validated on both NGSO–GSO and NGSO–NGSO (Starlink/OneWeb) data across three bands. The HOS-augmented attention (pulling interference out from under the noise floor via second-order statistics) is the technically distinctive piece. It pairs with today's companion paper Aidos (2026-06-15) from the same Fudan Space Internet group — Aidos schedules the beams, Agon polices the resulting interference.</p>",
+      "body_html_zh": "<h3>摘要</h3>\n<p>杨、杨、陈、邱与高（复旦大学空间互联网研究院；arXiv 2606.14147，2026 年 6 月 12 日提交）提出 <strong>Agon</strong>——一个用于卫星链路实时射频<strong>干扰检测</strong>的半监督框架。随着 NGSO 星座激增、NGSO–GSO 与 NGSO–NGSO 干扰成为毫秒级、快速时变的问题，静态监管框架与依赖脆弱不稳定误差阈值的基于重构的 ML 检测器都无法应对。</p>\n<p>Agon 采用<strong>两阶段混合范式</strong>。首先<strong>自监督预训练</strong>：带双注意力 Transformer（DAT）编码器的掩码自编码器（MAE）从无标注数据中学习通用信号结构。随后<strong>多任务微调</strong>训练一个<em>直接二分类器</em>（摒弃不稳定的重构阈值法），使用：<strong>高阶统计量（HOS）增强注意力</strong>（二阶/协方差先验，即使干扰埋于热噪声之下也能将其与噪声分离）、<strong>小波正则化损失</strong>（离散小波域的多尺度结构保真，以恢复瞬态频谱细节），并辅以调制分类与信号重构辅助任务。</p>\n<p>在公开 NGSO–GSO 数据集（17,281 快照）上，Agon 达到 <strong>AUC 0.9327、准确率 0.9251、F1 0.8351、误报率 0.0553</strong>——而 TrID 基线误报率为 0.1763。在 NGSO–NGSO Starlink/OneWeb 数据集（7,450 样本）上达到 AUC 0.9085 / F1 0.9055，调制分类准确率 &gt;90%，在不同离轴角与干噪比下保持鲁棒，并在 C/Ku/Ka 频段间泛化。它在 VAE、CNN-AE、TrID 与能量检测基线之上全面领先，在高干扰密度下优势最显著。</p>\n<h3>技术要点</h3>\n<ul><li><strong>问题</strong>：毫秒级时变 NGSO–GSO / NGSO–NGSO 干扰；静态规则与基于阈值的 ML 检测器失效。</li><li><strong>阶段一</strong>：在无标注信号上以双注意力 Transformer 编码器做自监督 MAE 预训练。</li><li><strong>阶段二</strong>：多任务微调 → 直接二分类器（免阈值），含 HOS 增强注意力 + 小波正则化 + 调制/重构辅助任务。</li><li><strong>NGSO–GSO（17,281 快照）</strong>：AUC 0.9327，准确率 0.9251，F1 0.8351，误报率 0.0553（TrID 为 0.1763）。</li><li><strong>NGSO–NGSO（7,450，Starlink/OneWeb）</strong>：AUC 0.9085，F1 0.9055，调制分类 &gt;90%。</li><li><strong>鲁棒性</strong>：跨 C/Ku/Ka 频段、离轴角、INR 泛化；优于 VAE/CNN-AE/TrID/能量检测。</li><li><strong>新颖性</strong>：免阈值检测、HOS 二阶注意力先验、小波多尺度保真损失。</li></ul>\n<h3>意义与新意</h3>\n<p>NGSO–GSO 共存与干扰管理是当下的监管与工程议题（参见 FR3 地面/NTN 共存工作，蜂窝条目 2026-06-13）。Agon 贡献了检测一侧：一个鲁棒、免阈值的 ML 干扰检测器，可在监管掩码与重构误差检测器失效的毫秒时间尺度上工作，并在 NGSO–GSO 与 NGSO–NGSO（Starlink/OneWeb）数据上跨三个频段验证。HOS 增强注意力（以二阶统计将干扰从噪声底之下提取出来）是技术上最具特色的部分。它与今日同组复旦空间互联网团队的姊妹论文 Aidos（2026-06-15）相配——Aidos 调度波束，Agon 监管由此产生的干扰。</p>",
       "images": []
     },
     {
