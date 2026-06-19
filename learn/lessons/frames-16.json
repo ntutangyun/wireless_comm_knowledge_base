@@ -1,0 +1,133 @@
+{
+  "id": "frames-16",
+  "title": {
+    "en": "Network Management & Discovery: WNM, BTM, Interworking & Multiple-BSSID Elements",
+    "zh": "网络管理与发现：WNM、BSS 过渡、Interworking 与多 BSSID 元素"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A beacon advertises one network's parameters — but a modern AP also has to steer clients between radios, keep sleepy devices alive, schedule their downlink traffic, advertise external services, and tell a phone that a single antenna is actually hosting a dozen virtual networks. None of that fits in the basic capability fields. Instead, 802.11 carries it in a family of wireless-network-management (WNM, the 802.11v feature set) and discovery elements that ride inside Beacons, Probe Requests/Responses, and Association frames. This tour names each one and the single job it does — think of it as the AP's toolbox for managing and advertising the network rather than just describing it.",
+      "zh": "信标（Beacon）会广播一个网络的参数——但现代 AP 还得在不同射频之间引导客户端、让休眠设备保持在线、为它们的下行流量排期、对外通告各种服务，并告诉手机：一根天线其实承载着十几个虚拟网络。这些都塞不进基本的能力字段里。于是 802.11 用一整套“无线网络管理”（WNM，即 802.11v 特性集）与发现类元素来承载它们，这些元素搭载在信标、探测请求/响应（Probe Request/Response）和关联帧里。本课会逐一点名每个元素及它负责的那一件事——可以把它看作 AP 用来“管理并通告”网络（而不仅仅是“描述”网络）的工具箱。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Helpful mental split. Three jobs recur in this family: (1) keep alive & schedule — tell a power-saving STA when it may go quiet and when its buffered traffic lands; (2) filter — let a STA ask the AP to wake or notify it only for traffic it cares about; (3) discover & advertise — expose neighbours, external services, and the many virtual BSSes one radio hosts. Most elements below slot into exactly one of these.",
+      "zh": "一个有用的分类。本家族反复出现三类职责：(1) 保活与排期——告诉省电的站点（STA）它何时可以安静下来、何时能收到为它缓存的流量；(2) 过滤——让站点请求 AP 只为它真正关心的流量唤醒或通知它；(3) 发现与通告——对外暴露邻居、外部服务，以及一根射频承载的多个虚拟 BSS。下面大多数元素都恰好落在其中一类里。"
+    },
+    {
+      "type": "diagram",
+      "en": "mindmap\n  root((Net Mgmt & Discovery))\n    KeepAlive_Schedule\n      BSS Max Idle Period 9.4.2.77\n      FMS Descriptor 9.4.2.73\n      FMS Request 9.4.2.74\n    Filtering\n      TFS Request 9.4.2.78\n      DMS Request 9.4.2.86\n    Diagnostics_Events\n      Event Request 9.4.2.65\n      Diagnostic Request 9.4.2.67\n    Interworking_HS20\n      Interworking 9.4.2.90\n      Advertisement Protocol 9.4.2.91\n      Roaming Consortium 9.4.2.94\n    Multiple_BSSID\n      Multiple BSSID 9.4.2.44\n      Nontx BSSID Capability 9.4.2.70\n      SSID List 9.4.2.71\n      Multiple BSSID-Index 9.4.2.72\n    Discovery\n      Reduced Neighbor Report 9.4.2.169\n      Known BSSID 9.4.2.260\n      Short SSID List 9.4.2.261",
+      "zh": "mindmap\n  root((网络管理与发现))\n    保活与排期\n      BSS 最大空闲周期 9.4.2.77\n      FMS 描述符 9.4.2.73\n      FMS 请求 9.4.2.74\n    流量过滤\n      TFS 请求 9.4.2.78\n      DMS 请求 9.4.2.86\n    诊断与事件\n      事件请求 9.4.2.65\n      诊断请求 9.4.2.67\n    Interworking_HS20\n      Interworking 9.4.2.90\n      通告协议 9.4.2.91\n      漫游联盟 9.4.2.94\n    多 BSSID\n      多 BSSID 9.4.2.44\n      非发送 BSSID 能力 9.4.2.70\n      SSID 列表 9.4.2.71\n      多 BSSID-Index 9.4.2.72\n    发现\n      精简邻居报告 9.4.2.169\n      已知 BSSID 9.4.2.260\n      短 SSID 列表 9.4.2.261"
+    },
+    {
+      "type": "prose",
+      "en": "Keep-alive & scheduling. The BSS Max Idle Period element (9.4.2.77), sent in (Re)Association Response, tells a STA how long it may stay silent before the AP disassociates it for inactivity — and one bit demands that the keep-alive frame be a protected one. For sleepy devices receiving group/multicast traffic, the FMS Descriptor element (9.4.2.73) rides in Beacons to announce which DTIM beacon the buffered group-addressed frames will follow, and the FMS Request element (9.4.2.74) is how a STA asks the AP for a specific delivery interval per stream — so a battery device can wake on a slow, predictable cadence instead of every DTIM.",
+      "zh": "保活与排期。BSS 最大空闲周期元素（9.4.2.77）随（重）关联响应发送，告诉 STA 在被 AP 因不活动而解除关联之前，它最多能保持静默多久——其中一个比特还能要求保活帧必须是受保护的帧。对于接收组播/多播流量的休眠设备，FMS 描述符元素（9.4.2.73）搭载在信标里，通告缓存的组寻址帧会跟在哪个 DTIM 信标之后；而 FMS 请求元素（9.4.2.74）则是 STA 用来按流（per-stream）向 AP 请求特定投递间隔的方式——这样电池设备就能以缓慢、可预测的节奏唤醒，而不必每个 DTIM 都醒来。"
+    },
+    {
+      "type": "prose",
+      "en": "Filtering & service tailoring. Rather than receive everything, a STA can install filters. The TFS Request element (9.4.2.78) hands the AP a traffic-filter set with an action code — drop unmatched downlink, or notify/wake the STA only when a frame matches (handy for Wake-Up Radio). The DMS Request element (9.4.2.86) goes the other way for group traffic: it asks the AP to deliver chosen group-addressed streams to this STA as reliable individually addressed frames (Directed Multicast Service), carrying TCLAS classifiers to name the streams. Two diagnostic/event companions round out management: the Event Request element (9.4.2.65) asks a STA to report events such as transitions or RSNA setup, and the Diagnostic Request element (9.4.2.67) asks it to run a diagnostic such as a configuration-profile or 802.1X authentication check.",
+      "zh": "过滤与服务定制。STA 不必照单全收所有流量，而可以安装过滤器。TFS 请求元素（9.4.2.78）向 AP 提交一组带动作码（action code）的流量过滤集——丢弃未匹配的下行流量，或仅在某帧匹配时才通知/唤醒 STA（对唤醒射频 WUR 很有用）。DMS 请求元素（9.4.2.86）则对组播流量反向操作：它请求 AP 把选定的组寻址流以可靠的单播帧形式投递给本 STA（定向组播服务 DMS），并携带 TCLAS 分类器来指明这些流。两个诊断/事件搭档补全了管理能力：事件请求元素（9.4.2.65）请求 STA 上报诸如切换或 RSNA 建立等事件，诊断请求元素（9.4.2.67）则请求它执行某项诊断，例如配置档案或 802.1X 认证检查。"
+    },
+    {
+      "type": "prose",
+      "en": "Discover & advertise. The Interworking element (9.4.2.90) flags Hotspot-2.0-style external connectivity — access-network type, whether Internet is reachable, and an HESSID; the Advertisement Protocol element (9.4.2.91) names the query protocol (typically ANQP/GAS) a client can use to ask richer questions before associating; and the Roaming Consortium element (9.4.2.94) lists the roaming organizations whose credentials this AP will accept. The Multiple-BSSID family lets one transmitting radio advertise many virtual APs compactly: the Multiple BSSID element (9.4.2.44) carries a MaxBSSID Indicator (2^n addresses) and per-BSS profile subelements; each nontransmitted BSS supplies its own Nontransmitted BSSID Capability element (9.4.2.70) and a Multiple BSSID-Index element (9.4.2.72) giving its index and DTIM. A probing client uses the SSID List element (9.4.2.71) to name several SSIDs at once. Finally, discovery across radios: the Reduced Neighbor Report (9.4.2.169) compactly points at co-located neighbour APs (notably a 6 GHz BSS) by TBTT/channel; the Known BSSID element (9.4.2.260) lets a STA tell the AP which nontransmitted BSSIDs it already knows (a bitmap) to trim the response; and the Short SSID List element (9.4.2.261) requests info using compact 4-octet Short SSIDs instead of full SSIDs.",
+      "zh": "发现与通告。Interworking 元素（9.4.2.90）标示 Hotspot 2.0 式的对外连通性——接入网类型、是否可达互联网，以及 HESSID；通告协议元素（9.4.2.91）指明客户端在关联前可用来发起更丰富查询的查询协议（通常是 ANQP/GAS）；漫游联盟元素（9.4.2.94）则列出本 AP 会接受其凭据的漫游组织。多 BSSID 家族让一根发送射频紧凑地通告多个虚拟 AP：多 BSSID 元素（9.4.2.44）携带 MaxBSSID 指示符（2^n 个地址）和各 BSS 的概要子元素；每个非发送 BSS 提供自己的非发送 BSSID 能力元素（9.4.2.70）和给出其索引与 DTIM 的多 BSSID-Index 元素（9.4.2.72）。探测中的客户端用 SSID 列表元素（9.4.2.71）一次性指明多个 SSID。最后是跨射频发现：精简邻居报告（9.4.2.169）以 TBTT/信道紧凑地指向同处一地的邻居 AP（尤其是 6 GHz BSS）；已知 BSSID 元素（9.4.2.260）让 STA 用一个位图告诉 AP 它已经知道哪些非发送 BSSID，从而精简响应；短 SSID 列表元素（9.4.2.261）则用紧凑的 4 字节短 SSID 而非完整 SSID 来请求信息。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why two layers for Multiple BSSID? The transmitting AP beacons once; its MaxBSSID Indicator n means up to 2^n co-hosted BSSIDs, each derived arithmetically from the reference address. The per-BSS differences (capabilities, DTIM, SSID) are folded into nontransmitted-BSSID profile subelements so the air stays uncluttered. Known BSSID + Short SSID List then let a returning client say 'I already know most of these — only tell me what's new.'",
+      "zh": "多 BSSID 为何要分两层？发送 AP 只发一份信标；其 MaxBSSID 指示符 n 表示最多 2^n 个共址 BSSID，每个都由参考地址经算术推导得出。各 BSS 之间的差异（能力、DTIM、SSID）被折叠进“非发送 BSSID 概要”子元素，从而让空口保持简洁。随后，已知 BSSID 加短 SSID 列表让回访的客户端表达：“这些我大多已经知道——只把新的告诉我就好。”"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "BSS Max Idle Period and the Multiple BSSID arithmetic, field-exact",
+        "zh": "BSS 最大空闲周期与多 BSSID 地址推导（按字段精确）"
+      },
+      "en": "The BSS Max Idle Period element (Figure 9-541) is Element ID 90 and carries a 2-octet Max Idle Period plus a 1-octet Idle Options field. For a non-S1G STA the period is in units of 1000 TUs (value 0 reserved); for an S1G STA it reuses the Listen Interval scaling format. Bit 0 of Idle Options, Protected Keep-Alive Required, when set means only a protected frame counts as activity. It appears in (Re)Association Request and Response frames. The Multiple BSSID element (Figure 9-433, Element ID 71) carries a 1-octet MaxBSSID Indicator n (max 8) and optional per-BSS profile subelements; the ith BSSID is derived from the reference BSSID by A5(i) = A5 − (A5 mod 2^n) + ((A5 mod 2^n) + i) mod 2^n, leaving the upper five octets unchanged. The BSSID index (9.4.2.72) cannot exceed 255, which caps n at 8. The Known BSSID element's BSSID Bitmap (9.4.2.260) is exactly 2^n bits: bit position k set means the STA already knows the nontransmitted BSSID with index k, with bit 0 reserved and a Pad subfield rounding to whole octets.",
+      "zh": "BSS 最大空闲周期元素（图 9-541）的 Element ID 为 90，携带 2 字节的 Max Idle Period 加 1 字节的 Idle Options 字段。对非 S1G STA，该周期以 1000 TU 为单位（值 0 保留）；对 S1G STA，则复用监听间隔（Listen Interval）的缩放格式。Idle Options 的比特 0“Protected Keep-Alive Required”置 1 时，表示只有受保护的帧才算作活动。该元素出现在（重）关联的请求与响应帧中。多 BSSID 元素（图 9-433，Element ID 71）携带 1 字节的 MaxBSSID 指示符 n（最大 8）和可选的各 BSS 概要子元素；第 i 个 BSSID 由参考 BSSID 推导：A5(i) = A5 − (A5 mod 2^n) + ((A5 mod 2^n) + i) mod 2^n，高五个字节保持不变。BSSID 索引（9.4.2.72）不能超过 255，因而把 n 限制在 8。已知 BSSID 元素的 BSSID 位图（9.4.2.260）恰为 2^n 比特：位置 k 置 1 表示 STA 已知索引为 k 的非发送 BSSID，比特 0 保留，并以 Pad 子字段补齐到整字节。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1183,
+          1110,
+          1474
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1183,
+        1184
+      ],
+      "note": "9.4.2.77 BSS Max Idle Period; 9.4.2.78 TFS Request element + action code"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1175,
+        1176,
+        1177,
+        1178
+      ],
+      "note": "9.4.2.70 Nontransmitted BSSID Capability; 9.4.2.71 SSID List; 9.4.2.72 Multiple BSSID-Index; 9.4.2.73 FMS Descriptor; 9.4.2.74 FMS Request"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1142,
+        1154,
+        1193
+      ],
+      "note": "9.4.2.65 Event Request; 9.4.2.67 Diagnostic Request; 9.4.2.86 DMS Request"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1200,
+        1202,
+        1205
+      ],
+      "note": "9.4.2.90 Interworking; 9.4.2.91 Advertisement Protocol; 9.4.2.94 Roaming Consortium"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1110,
+        1321,
+        1474,
+        1475
+      ],
+      "note": "9.4.2.44 Multiple BSSID + MaxBSSID arithmetic; 9.4.2.169 Reduced Neighbor Report; 9.4.2.260 Known BSSID; 9.4.2.261 Short SSID List"
+    }
+  ],
+  "covers": [
+    "80211-2024:9.4.2.77",
+    "80211-2024:9.4.2.73",
+    "80211-2024:9.4.2.74",
+    "80211-2024:9.4.2.78",
+    "80211-2024:9.4.2.86",
+    "80211-2024:9.4.2.65",
+    "80211-2024:9.4.2.67",
+    "80211-2024:9.4.2.90",
+    "80211-2024:9.4.2.91",
+    "80211-2024:9.4.2.94",
+    "80211-2024:9.4.2.44",
+    "80211-2024:9.4.2.70",
+    "80211-2024:9.4.2.71",
+    "80211-2024:9.4.2.72",
+    "80211-2024:9.4.2.169",
+    "80211-2024:9.4.2.260",
+    "80211-2024:9.4.2.261"
+  ],
+  "track": "frames"
+}

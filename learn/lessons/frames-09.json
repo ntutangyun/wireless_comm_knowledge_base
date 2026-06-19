@@ -1,0 +1,115 @@
+{
+  "id": "frames-09",
+  "title": {
+    "en": "The Basics: SSID, Rates, Beacon Timing & BSS Capability Elements",
+    "zh": "基础信标元素：SSID、速率、信道与 BSS 能力"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Open a Wi-Fi scanner and every nearby network shows you its name, before you have typed a single password. That is because an access point broadcasts a Beacon many times a second, and answers a scanning station with a Probe Response — both stuffed with small tagged building blocks called information elements (IEs). Each IE is a tiny Type-Length-Value: a one-octet Element ID, a one-octet Length, then its payload. This lesson tours the handful of IEs that make up a basic BSS 'business card' — the ones a station reads to decide whether a network is even worth talking to.",
+      "zh": "打开一个 Wi-Fi 扫描器，还没输入任何密码，附近每个网络就已经把自己的名字亮给你看了。这是因为接入点（AP）每秒都会多次广播信标帧（Beacon），并用探测响应帧（Probe Response）回应正在扫描的站点——两者都塞满了被称作“信息元素（IE）”的小型带标签积木。每个 IE 都是一个微型的“类型-长度-值”结构：1 字节的 Element ID、1 字节的 Length，然后是它的载荷。本课带你巡览构成一个基本 BSS“名片”的那几个 IE——也就是站点用来判断一个网络是否值得搭话的那些元素。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Think of these elements as fields on a business card. The card doesn't get you a meeting (that's association, later) — it just tells you who this is, what languages they speak, where to find them, and whether they have a message waiting for you. We'll name each element and the one job it does, not dump every bit.",
+      "zh": "把这些元素想象成名片上的各个栏目。名片本身并不能让你获得一次会面（那是之后的“关联”）——它只是告诉你“对方是谁、会说哪些语言、在哪里能找到、以及有没有给你留言”。我们会逐一点名每个元素及它负责的那一件事，而不是把每个比特都倾倒出来。"
+    },
+    {
+      "type": "diagram",
+      "en": "mindmap\n  root((Basic BSS<br/>elements))\n    Identity\n      SSID 9.4.2.2\n    What it speaks\n      Supported Rates + Selectors 9.4.2.3\n      Extended Supported Rates 9.4.2.11\n      ERP 9.4.2.10\n    Where it lives\n      DSSS Param Set 9.4.2.4\n      Country 9.4.2.7\n    Buffered traffic\n      TIM 9.4.2.5\n    Capabilities\n      Extended Capabilities 9.4.2.25\n      BSS Load 9.4.2.26\n    Modes and asks\n      IBSS Param Set 9.4.2.6\n      Request 9.4.2.8\n      Extended Request 9.4.2.9\n      Vendor Specific 9.4.2.24",
+      "zh": "mindmap\n  root((基本 BSS<br/>元素))\n    身份\n      SSID 9.4.2.2\n    会说什么\n      支持速率+选择符 9.4.2.3\n      扩展支持速率 9.4.2.11\n      ERP 9.4.2.10\n    身在何处\n      DSSS 参数集 9.4.2.4\n      国家 9.4.2.7\n    缓存的流量\n      TIM 9.4.2.5\n    能力\n      扩展能力 9.4.2.25\n      BSS 负载 9.4.2.26\n    模式与请求\n      IBSS 参数集 9.4.2.6\n      请求 9.4.2.8\n      扩展请求 9.4.2.9\n      厂商自定义 9.4.2.24"
+    },
+    {
+      "type": "prose",
+      "en": "Start with identity and language. The SSID element (9.4.2.2) carries the network name — 0 to 32 octets; a length-0 SSID is the 'wildcard' used in Probe Requests to ask everyone to answer. The Supported Rates and BSS Membership Selectors element (9.4.2.3) lists up to eight entries: data rates the BSS accepts, with the top bit marking a rate as 'basic' (mandatory), plus membership selectors that say things like 'you must support HE PHY to join.' When more than eight are needed, the Extended Supported Rates and BSS Membership Selectors element (9.4.2.11) holds the overflow in the same encoding. The ERP element (9.4.2.10) is the legacy-coexistence flag: it tells newer stations whether older non-OFDM (Clause 15/16) stations are around and whether protection mechanisms should be on.",
+      "zh": "先看身份和语言。SSID 元素（9.4.2.2）承载网络名称——长度 0 到 32 字节；长度为 0 的 SSID 是“通配 SSID”，用在探测请求里以请求所有 AP 都来应答。支持速率与 BSS 成员选择符元素（9.4.2.3）最多列出八个条目：BSS 接受的数据速率（最高位置 1 表示该速率为“基本/必需”速率），外加成员选择符，用来表达诸如“必须支持 HE PHY 才能加入”之类的要求。当需要超过八个条目时，扩展支持速率与 BSS 成员选择符元素（9.4.2.11）以相同编码承载溢出部分。ERP 元素（9.4.2.10）是“老设备共存”标志：它告诉较新的站点周围是否存在旧的非 OFDM（Clause 15/16）站点，以及是否应开启保护机制。"
+    },
+    {
+      "type": "prose",
+      "en": "Next, where the network lives and what it asks for. The DSSS Parameter Set element (9.4.2.4) is a single octet — the current channel number — so a station scanning passively still learns which channel it heard the Beacon on. The Country element (9.4.2.7) names the regulatory domain (a country string plus channel/operating-class triplets and max transmit power), letting a roaming station legally configure its radio. The IBSS Parameter Set element (9.4.2.6) appears only in ad-hoc (IBSS) networks and carries the ATIM window. And two 'ask-back' elements ride in Probe Requests: the Request element (9.4.2.8) lists element IDs the station wants echoed in the Probe Response, while the Extended Request element (9.4.2.9) does the same for elements that use an Element ID Extension.",
+      "zh": "接着看网络“身在何处”以及它“想要什么”。DSSS 参数集元素（9.4.2.4）只有一个字节——当前信道号——这样即便被动扫描的站点也能知道它是在哪个信道上听到这个信标的。国家元素（9.4.2.7）标明监管域（一个国家字符串，加上信道/操作类三元组与最大发射功率），让漫游中的站点能合法地配置其射频。IBSS 参数集元素（9.4.2.6）只出现在自组织（IBSS）网络中，承载 ATIM 窗口。还有两个“反向索取”的元素搭乘在探测请求里：请求元素（9.4.2.8）列出站点希望在探测响应中被回带的元素 ID，而扩展请求元素（9.4.2.9）对使用 Element ID Extension 的元素做同样的事。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 90' xmlns='http://www.w3.org/2000/svg' role='img' aria-label='TIM element layout'><g fill='none' stroke='currentColor' stroke-width='1.5'><rect x='6' y='30' width='62' height='34'/><rect x='68' y='30' width='62' height='34'/><rect x='130' y='30' width='80' height='34'/><rect x='210' y='30' width='80' height='34'/><rect x='290' y='30' width='80' height='34'/><rect x='370' y='30' width='84' height='34'/></g><g fill='currentColor' font-family='sans-serif' font-size='10' text-anchor='middle'><text x='37' y='51'>Element ID</text><text x='99' y='51'>Length</text><text x='170' y='51'>DTIM Count</text><text x='250' y='51'>DTIM Period</text><text x='330' y='47'>Bitmap</text><text x='330' y='59'>Control</text><text x='412' y='47'>Partial Virtual</text><text x='412' y='59'>Bitmap</text></g><g fill='currentColor' font-family='sans-serif' font-size='9' text-anchor='middle'><text x='37' y='80'>1</text><text x='99' y='80'>1</text><text x='170' y='80'>1</text><text x='250' y='80'>1</text><text x='330' y='80'>0 or 1</text><text x='412' y='80'>0-251</text></g><text x='8' y='18' fill='currentColor' font-family='sans-serif' font-size='11'>TIM element (octets)</text></svg>",
+      "caption": {
+        "en": "The TIM element (9.4.2.5): DTIM Count/Period set the rhythm for delivering buffered group traffic, and the Partial Virtual Bitmap flags which sleeping stations (by AID) have unicast data waiting.",
+        "zh": "TIM 元素（9.4.2.5）：DTIM 计数/周期设定投递缓存组播流量的节奏，部分虚拟位图则标记哪些休眠站点（按 AID）有单播数据在等待。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The TIM element (Traffic Indication Map, 9.4.2.5) is how power-saving works: a sleeping station wakes for a Beacon, reads the bitmap, and sees a bit set if the AP has buffered data for its AID — otherwise it goes back to sleep. The DTIM Count and Period tell it when group-addressed traffic will be delivered. Finally, two capability summaries: the Extended Capabilities element (9.4.2.25) is a long bitfield advertising features beyond the fixed Capability Information field (UTF-8 SSID, BSS Transition, TIM Broadcast, and dozens more), and the BSS Load element (9.4.2.26) reports live congestion — station count, channel utilization, and available admission capacity — so a station can prefer the less crowded AP. The Vendor Specific element (9.4.2.24), tagged with an Organization Identifier, is the escape hatch vendors use to carry non-standard data without colliding with reserved IDs.",
+      "zh": "TIM 元素（流量指示图，9.4.2.5）正是省电机制的关键：休眠的站点为某个信标醒来，读取位图，若 AP 为它的 AID 缓存了数据则相应比特会被置 1——否则它就继续睡。DTIM 计数与周期告诉它组播流量将在何时投递。最后是两个能力概览：扩展能力元素（9.4.2.25）是一长串比特位域，用以通告固定的 Capability Information 字段之外的特性（UTF-8 SSID、BSS 切换、TIM 广播等数十项）；BSS 负载元素（9.4.2.26）则报告实时拥塞情况——关联站点数、信道利用率、可用接纳容量——使站点能够优先选择较空闲的 AP。厂商自定义元素（9.4.2.24）带有一个组织标识符（Organization Identifier），是厂商用来承载非标准数据而又不与保留 ID 冲突的“逃生通道”。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact TLV formats and the basic/membership-selector encoding",
+        "zh": "精确的 TLV 格式与“基本速率/成员选择符”编码"
+      },
+      "en": "Every element shares the common format of 9.4.2.1: Element ID (1 octet), Length (1 octet, counting only the payload), optional Element ID Extension, then the Information field. The SSID field is 0-32 octets (9.4.2.2); a length-0 SSID is the wildcard. In the Supported Rates element (9.4.2.3) each octet is one entry: in a Beacon/Probe Response a rate with bit 7 set belongs to the BSSBasicRateSet, and a membership selector with bit 7 set is 'basic' — Table 9-131 assigns values such as 127=HT PHY, 126=VHT PHY, 122=HE PHY, 123=SAE Hash-to-Element Only. Because selectors and rates share one field, selector values are chosen so they cannot collide with any valid rate. The DSSS Parameter Set (9.4.2.4) is a single Current Channel octet; the IBSS Parameter Set (9.4.2.6) is a 2-octet ATIM Window. The TIM element (9.4.2.5) carries DTIM Count, DTIM Period, a Bitmap Control octet, and a Partial Virtual Bitmap of 0-251 octets encoding buffered-traffic bits by AID. The Country element (9.4.2.7) is a 3-octet Country String followed by Subband and/or Operating triplets (first channel, number of channels, max transmit power). The Extended Capabilities element (9.4.2.25) is a variable bitfield (Table 9-192) and the BSS Load element (9.4.2.26) reports Station Count, Channel Utilization (0-255 scaled), and Available Admission Capacity. The Vendor Specific element (9.4.2.24) begins with a 3- or 5-octet Organization Identifier.",
+      "zh": "每个元素都遵循 9.4.2.1 的通用格式：Element ID（1 字节）、Length（1 字节，只计载荷）、可选的 Element ID Extension，然后是 Information 字段。SSID 字段为 0–32 字节（9.4.2.2），长度为 0 即通配 SSID。在支持速率元素（9.4.2.3）中每个字节就是一个条目：在信标/探测响应里，bit 7 置 1 的速率属于 BSSBasicRateSet，bit 7 置 1 的成员选择符则为“基本”——表 9-131 规定了诸如 127=HT PHY、126=VHT PHY、122=HE PHY、123=仅 SAE Hash-to-Element 等取值。由于选择符与速率共用一个字段，选择符取值被特意挑选为不会与任何有效速率冲突。DSSS 参数集（9.4.2.4）是单字节的当前信道；IBSS 参数集（9.4.2.6）是 2 字节的 ATIM 窗口。TIM 元素（9.4.2.5）携带 DTIM 计数、DTIM 周期、一个位图控制字节，以及 0–251 字节的部分虚拟位图，按 AID 编码缓存流量比特。国家元素（9.4.2.7）由 3 字节国家字符串后跟子频带/操作三元组（起始信道、信道数、最大发射功率）构成。扩展能力元素（9.4.2.25）是一个可变长比特位域（表 9-192），BSS 负载元素（9.4.2.26）报告关联站点数、信道利用率（按 0–255 缩放）与可用接纳容量。厂商自定义元素（9.4.2.24）以 3 或 5 字节的组织标识符开头。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          935,
+          936,
+          937,
+          946,
+          1058
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        935,
+        936,
+        937
+      ],
+      "note": "9.4.2.2 SSID; 9.4.2.3 Supported Rates and BSS Membership Selectors (Table 9-131 selector values); 9.4.2.4 DSSS Parameter Set; 9.4.2.5 TIM (DTIM Count/Period, Partial Virtual Bitmap)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        945,
+        946,
+        949,
+        950,
+        951
+      ],
+      "note": "9.4.2.6 IBSS Parameter Set; 9.4.2.7 Country; 9.4.2.8 Request; 9.4.2.9 Extended Request; 9.4.2.10 ERP; 9.4.2.11 Extended Supported Rates"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1058,
+        1059
+      ],
+      "note": "9.4.2.24 Vendor Specific (Organization Identifier); 9.4.2.25 Extended Capabilities (Table 9-192); 9.4.2.26 BSS Load (Station Count, Channel Utilization, Available Admission Capacity)"
+    }
+  ],
+  "covers": [
+    "80211-2024:9.4.2.2",
+    "80211-2024:9.4.2.3",
+    "80211-2024:9.4.2.4",
+    "80211-2024:9.4.2.5",
+    "80211-2024:9.4.2.6",
+    "80211-2024:9.4.2.7",
+    "80211-2024:9.4.2.8",
+    "80211-2024:9.4.2.9",
+    "80211-2024:9.4.2.10",
+    "80211-2024:9.4.2.11",
+    "80211-2024:9.4.2.25",
+    "80211-2024:9.4.2.26",
+    "80211-2024:9.4.2.24"
+  ],
+  "track": "frames"
+}

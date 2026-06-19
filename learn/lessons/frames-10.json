@@ -1,0 +1,149 @@
+{
+  "id": "frames-10",
+  "title": {
+    "en": "Playing Nice with the Spectrum: Power, DFS & Channel-Switch Elements",
+    "zh": "频谱礼让：功率控制、DFS 与信道切换元素"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Wi-Fi runs on spectrum that nobody owns outright. The same channels are shared with neighbouring networks, capped by regulators at a maximum power, and in some bands kept clear for weather and military radar. So the access point acts like a traffic cop: it tells stations how loud they may transmit here, warns that a channel might host radar, occasionally orders everyone to go quiet for a moment, and announces 'we are all hopping to channel N at this beacon — follow me'. This lesson is a guided tour of the small family of Information Elements (IEEE 802.11-2024, clause 9.4.2) that carry exactly those regulatory and coexistence messages.",
+      "zh": "Wi-Fi 跑在一段谁都不能完全独占的频谱上。同样的信道既要和邻近网络共享，又被监管机构限定了最大发射功率，在某些频段还得为气象雷达和军用雷达让路。于是接入点（AP）就像一名交通警察：它告诉各站点在这里可以用多大功率发射、提醒某个信道可能存在雷达、偶尔命令所有人安静片刻，并宣布“我们将在这个信标时刻一起跳到信道 N——跟我走”。本课就是一次导览，带你走遍 IEEE 802.11-2024 第 9.4.2 节中承载这些“监管 + 共存”消息的这一小类信息元素（Information Element）。"
+    },
+    {
+      "type": "prose",
+      "en": "The family splits into three jobs. First, POWER: how loud may I transmit, and how loud am I able to transmit? Second, CHANNEL AGILITY: which channels can I use, and how do we coordinate a move to a new one? Third, COURTESY: short silences so the network can listen for radar or take a clean measurement. The elements below are just the named messages that implement these three jobs — each is small, and each does exactly one thing.",
+      "zh": "这一类元素按职责分成三组。第一组是“功率”：我在这里可以用多大功率发射？我又有能力用多大功率发射？第二组是“信道敏捷性”：我能用哪些信道？我们又如何协同地切换到一个新信道？第三组是“礼让”：用一小段静默，让网络能够监听雷达或完成一次干净的测量。下面这些元素，正是实现这三项职责的那些“具名消息”——每一个都很小，且只做一件事。"
+    },
+    {
+      "type": "diagram",
+      "en": "mindmap\n  root((Spectrum etiquette elements))\n    Power\n      Power Constraint 9.4.2.12\n      Power Capability 9.4.2.13\n      TPC Request 9.4.2.14\n      TPC Report 9.4.2.15\n      Transmit Power Envelope 9.4.2.160\n    Channel agility\n      Supported Channels 9.4.2.16\n      Supported Operating Classes 9.4.2.52\n      Channel Switch Announcement 9.4.2.17\n      Extended CSA 9.4.2.51\n      Secondary Channel Offset 9.4.2.18\n      Wide Bandwidth Channel Switch 9.4.2.159\n      Channel Switch Wrapper 9.4.2.161\n      Channel Switch Timing 9.4.2.62\n      Max Channel Switch Time 9.4.2.216\n    Courtesy\n      Quiet 9.4.2.21\n      IBSS DFS 9.4.2.22",
+      "zh": "mindmap\n  root((频谱礼让类元素))\n    功率\n      功率约束 9.4.2.12\n      功率能力 9.4.2.13\n      TPC 请求 9.4.2.14\n      TPC 报告 9.4.2.15\n      发射功率包络 9.4.2.160\n    信道敏捷性\n      支持的信道 9.4.2.16\n      支持的操作类 9.4.2.52\n      信道切换通告 9.4.2.17\n      扩展信道切换通告 9.4.2.51\n      次信道偏移 9.4.2.18\n      宽带宽信道切换 9.4.2.159\n      信道切换封装 9.4.2.161\n      信道切换定时 9.4.2.62\n      最大信道切换时间 9.4.2.216\n    礼让\n      静默 9.4.2.21\n      IBSS DFS 9.4.2.22"
+    },
+    {
+      "type": "prose",
+      "en": "POWER first. The Power Constraint element (9.4.2.12) is the AP's way of saying 'subtract this many dB from the regulatory maximum here' — the local limit equals the Country element's channel maximum minus this constraint. The Power Capability element (9.4.2.13) is the station's reply: the minimum and maximum power it is physically able to transmit, so the AP knows the dynamic range it has to work with. The pair TPC Request (9.4.2.14) / TPC Report (9.4.2.15) is a live closed loop: the AP asks 'tell me your transmit power and link margin', and the report carries the power actually used plus the headroom on the link, so power can be trimmed to just enough. For the wide-channel, 6 GHz era, the Transmit Power Envelope (9.4.2.160) generalises all this into per-bandwidth (20/40/80/160 MHz) or per-20-MHz-channel EIRP and PSD limits — the modern shape of 'how loud, exactly, on each slice of the channel'.",
+      "zh": "先看“功率”。功率约束元素（Power Constraint，9.4.2.12）是 AP 在说“在这里请从监管最大值里再减去这么多 dB”——本地功率上限等于 Country 元素给出的该信道最大值减去这个约束值。功率能力元素（Power Capability，9.4.2.13）是站点的回应：它在物理上能发射的最小与最大功率，好让 AP 知道可调的动态范围。TPC 请求（9.4.2.14）/ TPC 报告（9.4.2.15）这一对则构成一个实时闭环：AP 问“把你的发射功率和链路裕量告诉我”，报告里就带回实际使用的功率以及链路上的余量，于是功率可以被削减到“刚好够用”。到了宽信道、6 GHz 时代，发射功率包络（Transmit Power Envelope，9.4.2.160）把这一切推广为按带宽（20/40/80/160 MHz）或按每个 20 MHz 子信道给出的 EIRP 与功率谱密度（PSD）上限——这就是“在信道的每一小片上到底可以多大声”的现代形态。"
+    },
+    {
+      "type": "prose",
+      "en": "CHANNEL AGILITY next. A station advertises where it can go with two catalogues: Supported Channels (9.4.2.16) lists subbands of channels it can operate in, and Supported Operating Classes (9.4.2.52) names the regulatory operating classes (which pin down both centre frequency and bandwidth) it is currently configured for. When the AP actually decides to move, it broadcasts a Channel Switch Announcement (9.4.2.17): the new channel number, a count of beacons until the hop, and a mode bit that can hush traffic until then. The Extended CSA (9.4.2.51) does the same but adds a new operating class, so the BSS can jump to a different band entirely. Three helpers ride along to describe the destination's shape: Secondary Channel Offset (9.4.2.18) says where the second 20 MHz sits for a 40 MHz-or-wider move; Wide Bandwidth Channel Switch (9.4.2.159) gives the post-switch width and centre frequencies for 80/160 MHz; and the Channel Switch Wrapper (9.4.2.161) is a container that bundles the new country, the wide-bandwidth subelement, and a fresh power envelope so the destination is fully described in one place.",
+      "zh": "接着看“信道敏捷性”。站点用两份“目录”来声明自己能去哪里：支持的信道元素（Supported Channels，9.4.2.16）列出它可以工作的信道子带；支持的操作类元素（Supported Operating Classes，9.4.2.52）则给出它当前配置使用的监管操作类（操作类同时确定了中心频率和带宽）。当 AP 真的决定搬家时，它会广播一条信道切换通告（CSA，9.4.2.17）：新信道号、距离跳转还有多少个信标，以及一个可以在此之前压制流量的模式位。扩展 CSA（9.4.2.51）做的事一样，但额外带上一个新操作类，于是整个 BSS 可以直接跳到另一个频段。还有三个“辅助元素”随行，用来描述目的地的形态：次信道偏移（Secondary Channel Offset，9.4.2.18）说明在 40 MHz 或更宽的切换中第二个 20 MHz 落在哪一侧；宽带宽信道切换（Wide Bandwidth Channel Switch，9.4.2.159）给出切换后 80/160 MHz 的带宽与中心频率；信道切换封装（Channel Switch Wrapper，9.4.2.161）则是一个容器，把新的国家、宽带宽子元素以及一份新的功率包络打包在一起，让目的地在同一处被完整描述。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two timing elements answer the station's anxious question 'how long will I be deaf during the hop?'. Channel Switch Timing (9.4.2.62) carries the switch time and a timeout, used in TDLS off-channel operation. Max Channel Switch Time (9.4.2.216) gives the worst-case gap between the last beacon on the old channel and the first beacon on the new one — so a station can budget its silence and not give up on the BSS too early.",
+      "zh": "有两个“定时”元素回答了站点最焦虑的问题——“跳转期间我会有多久听不到东西？”。信道切换定时（Channel Switch Timing，9.4.2.62）携带切换耗时和一个超时，用于 TDLS 的离信道操作。最大信道切换时间（Max Channel Switch Time，9.4.2.216）给出最坏情况下的间隔：从旧信道上最后一个信标到新信道上第一个信标之间的时间——这样站点就能为这段静默留出预算，而不会过早地放弃这个 BSS。"
+    },
+    {
+      "type": "prose",
+      "en": "COURTESY closes the family. The Quiet element (9.4.2.21) schedules an interval in which nobody transmits — a count of beacons until it starts, a period for repeats, a duration and an offset — so the BSS can listen cleanly, typically to sniff for radar before or while using a DFS channel. In an ad-hoc network with no AP to lead, the IBSS DFS element (9.4.2.22) distributes the same responsibility: it names a DFS Owner, a recovery interval, and a channel map of measurements, letting peers cooperatively detect radar and vacate a channel. Together, Quiet and IBSS DFS are how the network earns its right to use radar-protected spectrum.",
+      "zh": "“礼让”为这一类元素收尾。静默元素（Quiet，9.4.2.21）安排一段谁都不发射的时间间隔——用“还有几个信标开始”、重复周期、持续时长以及偏移来描述——好让 BSS 能干净地监听，通常是在使用 DFS 信道之前或期间侦测雷达。在没有 AP 来主导的自组织网络（IBSS）里，IBSS DFS 元素（9.4.2.22）把同样的职责分摊出去：它指定一个 DFS 拥有者（DFS Owner）、一个恢复间隔以及一张包含各信道测量结果的信道映射表，让各对等站点协同地检测雷达并腾空信道。静默与 IBSS DFS 合在一起，正是网络“挣得”使用雷达保护频谱之权利的方式。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='10' y='40' width='90' height='30' /><rect x='100' y='40' width='90' height='30' /><rect x='190' y='40' width='90' height='30' /><rect x='280' y='40' width='90' height='30' /><rect x='370' y='40' width='80' height='30' /><text x='55' y='30' font-size='10' text-anchor='middle' fill='currentColor' stroke='none'>Element ID</text><text x='145' y='30' font-size='10' text-anchor='middle' fill='currentColor' stroke='none'>Length</text><text x='235' y='30' font-size='10' text-anchor='middle' fill='currentColor' stroke='none'>Switch Mode</text><text x='325' y='30' font-size='10' text-anchor='middle' fill='currentColor' stroke='none'>New Channel</text><text x='410' y='30' font-size='10' text-anchor='middle' fill='currentColor' stroke='none'>Switch Count</text><text x='55' y='59' font-size='10' text-anchor='middle' fill='currentColor' stroke='none'>1</text><text x='145' y='59' font-size='10' text-anchor='middle' fill='currentColor' stroke='none'>1</text><text x='235' y='59' font-size='10' text-anchor='middle' fill='currentColor' stroke='none'>1</text><text x='325' y='59' font-size='10' text-anchor='middle' fill='currentColor' stroke='none'>1</text><text x='410' y='59' font-size='10' text-anchor='middle' fill='currentColor' stroke='none'>1</text><text x='10' y='100' font-size='10' fill='currentColor' stroke='none'>octets, top to bottom: ID=37, then the three info bytes that say</text><text x='10' y='116' font-size='10' fill='currentColor' stroke='none'>'quiet-or-not / go here / in this many beacons'</text></svg>",
+      "caption": {
+        "en": "One representative member up close: the Channel Switch Announcement element (9.4.2.17, Element ID 37). After the common ID/Length header, just three one-octet fields carry the whole message — a mode bit (may you keep transmitting?), the new channel number, and a count of beacons until the hop.",
+        "zh": "近看这一类中的一个代表成员：信道切换通告元素（CSA，9.4.2.17，元素 ID 37）。在通用的 ID/长度头之后，仅凭三个各一字节的字段就承载了整条消息——模式位（在此之前你还能不能继续发射？）、新信道号，以及距离跳转还有几个信标。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact byte layouts and a couple of sharp edges",
+        "zh": "精确的字节布局与几处易踩的坑"
+      },
+      "en": "Power Constraint (9.4.2.12) is a single octet of dB subtracted from the Country maximum; Power Capability (9.4.2.13) is two octets, min/max in dBm as 2s-complement. TPC Report (9.4.2.15) carries Transmit Power (dBm) and Link Margin (dB); note the Link Margin field is reserved when the report rides in a Beacon or Probe Response with no request behind it. The CSA (9.4.2.17) Channel Switch Count is in TBTTs — value 1 means 'switch at the next TBTT', value 0 'any time after this frame'; for mesh STAs the same octet is reinterpreted as a time in units of 2 TU or 100 TU keyed by its MSB. The Extended CSA (9.4.2.51) inserts a New Operating Class octet so the move can cross bands. The Transmit Power Envelope (9.4.2.160) packs a 3-bit Maximum Transmit Power Count, a 3-bit Interpretation (EIRP vs EIRP-PSD, local vs regulatory), and a 2-bit Category; EIRP values are 0.5 dB-step 2s-complement (63.5 dBm meaning 'no constraint'), while PSD values are dBm/MHz with -128 meaning 'this 20 MHz channel may not be used'. Max Channel Switch Time (9.4.2.216) is an Element-ID-Extension element (ID 255, ext 52) whose 3-octet Switch Time is in TUs.",
+      "zh": "功率约束（9.4.2.12）是单字节、表示从 Country 最大值里减去的 dB 数；功率能力（9.4.2.13）是两字节，以 2 的补码、dBm 为单位给出最小/最大值。TPC 报告（9.4.2.15）携带发射功率（dBm）与链路裕量（dB）；要注意：当该报告搭在没有对应请求的信标帧或探测响应帧里时，链路裕量字段是保留的。CSA（9.4.2.17）的信道切换计数以 TBTT 为单位——值 1 表示“在下一个 TBTT 切换”，值 0 表示“在本帧之后任意时刻”；对网状（mesh）站点，同一个字节会被改读为以 2 TU 或 100 TU 为单位的时间，由其最高位（MSB）选择单位。扩展 CSA（9.4.2.51）插入一个新操作类字节，使切换可以跨频段。发射功率包络（9.4.2.160）打包了 3 比特的最大发射功率计数、3 比特的解释字段（EIRP 还是 EIRP-PSD、本地还是监管）以及 2 比特的类别；EIRP 值以 0.5 dB 步进、2 的补码编码（63.5 dBm 表示“无约束”），而 PSD 值以 dBm/MHz 为单位，-128 表示“该 20 MHz 信道不可用于发射”。最大信道切换时间（9.4.2.216）是一个带元素 ID 扩展的元素（ID 255，扩展号 52），其 3 字节的切换时间字段以 TU 为单位。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          951,
+          953,
+          954,
+          1120,
+          1306,
+          1400
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        951,
+        952,
+        953,
+        954
+      ],
+      "note": "9.4.2.12-9.4.2.18 Power Constraint, Power Capability, TPC Request/Report, Supported Channels, Channel Switch Announcement, Secondary Channel Offset"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1045,
+        1046
+      ],
+      "note": "9.4.2.21 Quiet element; 9.4.2.22 IBSS DFS element"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1120,
+        1121,
+        1122
+      ],
+      "note": "9.4.2.51 Extended Channel Switch Announcement; 9.4.2.52 Supported Operating Classes"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1305,
+        1306,
+        1307,
+        1308,
+        1309,
+        1310
+      ],
+      "note": "9.4.2.159 Wide Bandwidth Channel Switch; 9.4.2.160 Transmit Power Envelope; 9.4.2.161 Channel Switch Wrapper"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1140
+      ],
+      "note": "9.4.2.62 Channel Switch Timing element"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1400
+      ],
+      "note": "9.4.2.216 Max Channel Switch Time element"
+    }
+  ],
+  "covers": [
+    "80211-2024:9.4.2.12",
+    "80211-2024:9.4.2.13",
+    "80211-2024:9.4.2.14",
+    "80211-2024:9.4.2.15",
+    "80211-2024:9.4.2.16",
+    "80211-2024:9.4.2.17",
+    "80211-2024:9.4.2.18",
+    "80211-2024:9.4.2.21",
+    "80211-2024:9.4.2.22",
+    "80211-2024:9.4.2.51",
+    "80211-2024:9.4.2.52",
+    "80211-2024:9.4.2.159",
+    "80211-2024:9.4.2.160",
+    "80211-2024:9.4.2.161",
+    "80211-2024:9.4.2.62",
+    "80211-2024:9.4.2.216"
+  ],
+  "track": "frames"
+}

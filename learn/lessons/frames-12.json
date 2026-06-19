@@ -1,0 +1,154 @@
+{
+  "id": "frames-12",
+  "title": {
+    "en": "Quality of Service: EDCA, TSPEC, TCLAS & Traffic Scheduling Elements",
+    "zh": "服务质量：EDCA、TSPEC、TCLAS 与流量调度元素"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Not all packets are equal. A voice call cannot tolerate the same delay that a background file sync happily absorbs. The 802.11 QoS family (the elements born from 802.11e and the WMM certification) is the toolbox that lets a network decide which packets jump the queue. This lesson is a guided tour of that family — not a field-by-field dump, but a map of which element does which job, and when each one shows up on the air.",
+      "zh": "并非所有数据包都同等重要。语音通话无法容忍后台文件同步可以轻松接受的那种延迟。802.11 的 QoS（服务质量）元素家族（源自 802.11e 标准与 WMM 认证）正是让网络决定“哪些包可以插队”的工具箱。本课是对这个家族的一次导览——不是逐字段的枯燥罗列，而是一张地图：每个元素负责哪项工作、又在何时出现在空口上。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the big picture. There are two ways to get good service. The first is statistical priority: split traffic into four Access Categories — Voice, Video, Best Effort, Background — and give the urgent ones shorter waits so they win the channel more often. That is EDCA. The second is a reservation: a station asks the AP to set aside guaranteed airtime for one specific traffic stream, and the AP runs admission control to decide whether to grant it. That is the TSPEC path. The rest of the family exists to set the EDCA dials, describe the stream, and tag which packets belong to it.",
+      "zh": "先看全局。获得良好服务有两条路。第一条是统计式优先级：把流量分成四个接入类别（Access Category）——语音、视频、尽力而为、后台——让紧急类别等待更短，从而更频繁地抢到信道，这就是 EDCA。第二条是预留式：站点请求 AP 为某条特定的流量流（traffic stream）预留有保障的空口时间，由 AP 通过准入控制（admission control）决定是否批准，这就是 TSPEC 路线。家族里其余的元素则负责设定 EDCA 的各项“旋钮”、描述这条流，并标记哪些数据包属于它。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "EDCA is the everyday default that every QoS station uses; TSPEC-style reservations are the heavier, opt-in mechanism for traffic that truly needs a guarantee. Most Wi-Fi never sets up a single TSPEC — it lives entirely on EDCA's four-category priority.",
+      "zh": "EDCA 是每个 QoS 站点日常都在使用的默认机制；而 TSPEC 式的预留是更“重”的、需主动开启的机制，专为真正需要保障的流量服务。绝大多数 Wi-Fi 流量从不建立任何 TSPEC——它们完全运行在 EDCA 的四类别优先级之上。"
+    },
+    {
+      "type": "diagram",
+      "en": "mindmap\n  root((QoS family))\n    EDCA priority\n      EDCA Parameter Set 9.4.2.27\n      QoS Capability 9.4.2.33\n    Stream reservation\n      TSPEC 9.4.2.28\n      TS Delay 9.4.2.30\n      Schedule 9.4.2.32\n      QoS Traffic Capability 9.4.2.76\n    Classify packets\n      TCLAS 9.4.2.29\n      TCLAS Processing 9.4.2.31\n      TCLAS Mask 9.4.2.241\n      QoS Map 9.4.2.93\n    Stream-level tuning\n      Intra-AC Priority 9.4.2.119\n      SCS Descriptor 9.4.2.120\n      MSCS Descriptor 9.4.2.242",
+      "zh": "mindmap\n  root((QoS 家族))\n    EDCA 优先级\n      EDCA 参数集 9.4.2.27\n      QoS 能力 9.4.2.33\n    流预留\n      TSPEC 9.4.2.28\n      TS 时延 9.4.2.30\n      调度 9.4.2.32\n      QoS 流量能力 9.4.2.76\n    数据包分类\n      TCLAS 9.4.2.29\n      TCLAS 处理 9.4.2.31\n      TCLAS 掩码 9.4.2.241\n      QoS 映射 9.4.2.93\n    流级调优\n      AC 内优先级 9.4.2.119\n      SCS 描述符 9.4.2.120\n      MSCS 描述符 9.4.2.242"
+    },
+    {
+      "type": "prose",
+      "en": "Walk the family one element at a time. The EDCA Parameter Set element (9.4.2.27) is the master dial: the AP advertises it in Beacons and (Re)Association Responses, carrying one parameter record per Access Category — AIFSN, CWmin/CWmax, and TXOP Limit — that every station copies to set how aggressively it contends for each category. Crucially it also carries the ACM (admission control mandatory) bit, which is what tells a station that for that category it may not just transmit — it must reserve first. The QoS Capability element (9.4.2.33) is the compact companion an AP or station uses to advertise its optional QoS features (such as U-APSD power-save) when the full EDCA set is not being sent.",
+      "zh": "我们逐个走过这个家族。EDCA 参数集元素（9.4.2.27）是总旋钮：AP 在信标帧和（重）关联响应中通告它，为每个接入类别携带一份参数记录——AIFSN、CWmin/CWmax 和 TXOP Limit——每个站点都把它复制下来，用以设定自己在各类别上竞争信道的“激进程度”。它还携带关键的 ACM（强制准入控制）比特位：该位告诉站点，对于这一类别它不能直接发送，而必须先做预留。QoS 能力元素（9.4.2.33）则是一个紧凑的搭档，当 AP 或站点没有发送完整的 EDCA 参数集时，用它来通告自己可选的 QoS 特性（例如 U-APSD 省电）。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the reservation path. The TSPEC element (9.4.2.28) is the contract itself: a station hands the AP a traffic specification — data rate, MSDU size, delay bound, direction, user priority, TSID — describing exactly the stream it wants protected, and the AP's admission control says yes or no. If the answer is not yet, the TS Delay element (9.4.2.30) rides back in the ADDTS Response telling the station how long to wait before retrying. The QoS Traffic Capability element (9.4.2.76) lets a non-AP station hint up front what categories of traffic it tends to generate, helping the AP plan. Once a stream is admitted, the Schedule element (9.4.2.32) is the AP announcing the service schedule — when and how often it will grant the station its reserved service periods.",
+      "zh": "再看预留路线。TSPEC 元素（9.4.2.28）本身就是这份“合同”：站点把一份流量规格交给 AP——数据速率、MSDU 大小、时延上限、方向、用户优先级、TSID——精确描述它希望被保护的那条流，AP 的准入控制据此答复同意或拒绝。如果答复是“暂不”，TS 时延元素（9.4.2.30）会随 ADDTS 响应返回，告诉站点重试前需等待多久。QoS 流量能力元素（9.4.2.76）则让非 AP 站点提前提示它通常会产生哪些类别的流量，帮助 AP 做规划。一旦某条流被准入，调度元素（9.4.2.32）就是 AP 用来通告服务计划的——它将在何时、以多大频率为该站点分配其预留的服务周期（SP）。"
+    },
+    {
+      "type": "prose",
+      "en": "A reservation is useless unless the AP can tell which arriving packets belong to it. That is the classification job. The TCLAS (traffic classification) element (9.4.2.29) carries a frame classifier — match on Ethernet fields, IP 5-tuple, 802.1Q tags, and more — naming exactly the packets that map to a stream. When several TCLAS elements are attached, the TCLAS Processing element (9.4.2.31) says whether a packet must match all of them, any of them, or all-or-none. The QoS Map element (9.4.2.93) handles a simpler, common case: the AP sends a non-AP STA a mapping from IP DSCP values to the eight user priorities, so downstream IP priority survives the wired-to-wireless boundary.",
+      "zh": "如果 AP 无法判断到达的数据包属于哪条流，预留就毫无意义，这便是分类的工作。TCLAS（流量分类）元素（9.4.2.29）携带一个帧分类器——可匹配以太网字段、IP 五元组、802.1Q 标签等——精确指明哪些数据包映射到某条流。当附带多个 TCLAS 元素时，TCLAS 处理元素（9.4.2.31）规定一个数据包须匹配全部、任意一个，还是全部都不匹配。QoS 映射元素（9.4.2.93）处理一种更简单且常见的情形：AP 向非 AP 站点下发一份从 IP DSCP 值到八个用户优先级的映射，使得上层 IP 的优先级能在“有线到无线”的边界上得以保留。"
+    },
+    {
+      "type": "prose",
+      "en": "The newest members refine priority at the stream level. The Intra-Access Category Priority element (9.4.2.119) lets a station mark, within a single Access Category, which of its streams carry a higher user priority and which are Drop Eligible — discarded first under congestion. The SCS Descriptor element (9.4.2.120) is the Stream Classification Service container, bundling a classifier (and an Intra-AC Priority) so a station can ask the AP to classify a specific stream. The MSCS Descriptor element (9.4.2.242) is its Mirrored-SCS cousin, where the station supplies TCLAS Mask elements (9.4.2.241) — partial classifiers that match on a field pattern rather than exact values — plus a user-priority bitmap, and the AP mirrors that classification policy for downlink traffic.",
+      "zh": "家族中最新的成员在流级别上细化优先级。AC 内优先级元素（Intra-Access Category Priority，9.4.2.119）让站点在同一个接入类别内部标记：哪些流承载更高的用户优先级，哪些流“可丢弃”（Drop Eligible）——在拥塞时最先被丢掉。SCS 描述符元素（9.4.2.120）是流分类服务（Stream Classification Service）的容器，它打包一个分类器（以及一个 AC 内优先级），让站点请求 AP 对某条特定流进行分类。MSCS 描述符元素（9.4.2.242）是它的“镜像 SCS”表亲：站点提供若干 TCLAS 掩码元素（9.4.2.241）——按字段模式而非精确值匹配的局部分类器——外加一个用户优先级位图，AP 则据此为下行流量镜像出相应的分类策略。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Read the family as three layers stacked on EDCA's foundation: set the dials (EDCA Parameter Set, QoS Capability), reserve the airtime (TSPEC, TS Delay, Schedule, QoS Traffic Capability), and tag the packets (TCLAS, TCLAS Processing, TCLAS Mask, QoS Map, Intra-AC Priority, SCS, MSCS). Every element answers the same question — 'how does this packet get the treatment it needs?' — at a different level of detail.",
+      "zh": "可以把这个家族理解为叠在 EDCA 基础之上的三层：设定旋钮（EDCA 参数集、QoS 能力）、预留空口时间（TSPEC、TS 时延、调度、QoS 流量能力）、标记数据包（TCLAS、TCLAS 处理、TCLAS 掩码、QoS 映射、AC 内优先级、SCS、MSCS）。每个元素都在不同的细节层面回答同一个问题——“这个数据包如何获得它所需的处理？”"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Inside the EDCA Parameter Set: the four dials and the ACM bit",
+        "zh": "深入 EDCA 参数集：四组旋钮与 ACM 比特"
+      },
+      "en": "The EDCA Parameter Set element (9.4.2.27) carries a QoS Info field followed by four identical 4-octet Parameter Records, one each for AC_BE, AC_BK, AC_VI, and AC_VO. Each record holds an ACI/AIFSN field, an ECWmin/ECWmax field, and a 2-octet TXOP Limit. The ACI subfield (2 bits) names the Access Category per Table 9-193 (0=BE, 1=BK, 2=VI, 3=VO). The ACM (admission control mandatory) bit, when set to 1, requires a station to complete admission control before transmitting in that AC; when 0, the AC is freely usable. AIFSN (minimum value 2) sets how many slots after a SIFS the station defers; ECWmin/ECWmax encode the contention window exponentially, with CWmin = 2^ECWmin − 1 and CWmax = 2^ECWmax − 1. TXOP Limit is an unsigned integer in units of 32 us, with 0 carrying a special meaning. Voice (AC_VO) gets the smallest AIFSN and contention window so it contends most aggressively; Background (AC_BK) gets the largest, so it yields. The AP advertises this element to set policy and re-advertises it (with an updated EDCA Parameter Set Update Count in the QoS Info field) whenever the dials change.",
+      "zh": "EDCA 参数集元素（9.4.2.27）携带一个 QoS Info 字段，其后是四份格式相同、各 4 字节的参数记录，分别对应 AC_BE、AC_BK、AC_VI 和 AC_VO。每份记录包含一个 ACI/AIFSN 字段、一个 ECWmin/ECWmax 字段，以及 2 字节的 TXOP Limit。ACI 子字段（2 比特）依据表 9-193 指明接入类别（0=BE，1=BK，2=VI，3=VO）。ACM（强制准入控制）比特置 1 时，要求站点在该 AC 上发送前先完成准入控制；为 0 时该 AC 可自由使用。AIFSN（最小值为 2）规定站点在一个 SIFS 之后需推迟多少个时隙；ECWmin/ECWmax 以指数形式编码竞争窗口，满足 CWmin = 2^ECWmin − 1、CWmax = 2^ECWmax − 1。TXOP Limit 是以 32 微秒为单位的无符号整数，取值 0 具有特殊含义。语音（AC_VO）获得最小的 AIFSN 与竞争窗口，因而竞争最为激进；后台（AC_BK）则取值最大，从而让路。AP 通告该元素以确立策略，并在旋钮发生变化时重新通告（同时更新 QoS Info 字段中的 EDCA Parameter Set Update Count 计数）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1067,
+          1068,
+          1069
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.4.2.27",
+    "80211-2024:9.4.2.28",
+    "80211-2024:9.4.2.29",
+    "80211-2024:9.4.2.30",
+    "80211-2024:9.4.2.31",
+    "80211-2024:9.4.2.32",
+    "80211-2024:9.4.2.33",
+    "80211-2024:9.4.2.76",
+    "80211-2024:9.4.2.93",
+    "80211-2024:9.4.2.119",
+    "80211-2024:9.4.2.120",
+    "80211-2024:9.4.2.241",
+    "80211-2024:9.4.2.242"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1067,
+        1068,
+        1069
+      ],
+      "note": "9.4.2.27 EDCA Parameter Set element; ACI/AIFSN, ECWmin/ECWmax, TXOP Limit, ACM bit, Table 9-193 ACI-to-AC"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1070,
+        1071
+      ],
+      "note": "9.4.2.28 TSPEC element; TS Info field, traffic specification for QoS stream reservation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1089,
+        1090,
+        1091,
+        1092,
+        1093
+      ],
+      "note": "9.4.2.30 TS Delay, 9.4.2.31 TCLAS Processing, 9.4.2.32 Schedule, 9.4.2.33 QoS Capability elements"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1182
+      ],
+      "note": "9.4.2.76 QoS Traffic Capability element"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1204,
+        1205
+      ],
+      "note": "9.4.2.93 QoS Map element; DSCP-to-User-Priority mapping with DSCP Exception List and DSCP Range"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1232,
+        1233,
+        1234
+      ],
+      "note": "9.4.2.119 Intra-Access Category Priority (User Priority + Drop Eligibility); 9.4.2.120 SCS Descriptor element"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1434,
+        1435,
+        1436
+      ],
+      "note": "9.4.2.241 TCLAS Mask element; 9.4.2.242 MSCS Descriptor element (User Priority Control, TCLAS Mask Elements)"
+    }
+  ],
+  "track": "frames"
+}

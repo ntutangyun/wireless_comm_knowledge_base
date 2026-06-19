@@ -1,0 +1,145 @@
+{
+  "id": "frames-15",
+  "title": {
+    "en": "Trust & Mobility: RSN, FT, Mesh & FILS Security Elements",
+    "zh": "信任与移动：RSN、快速漫游、Mesh 与 FILS 安全元素"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Beacons and probe responses advertise more than just a network name — they carry a whole security menu. This lesson tours the elements that handle trust and mobility: the ones that say which ciphers and authentication methods a network offers, the ones that let a moving station re-key on the fly as it hops between access points, the ones that protect management frames from forgery, the ones that build a self-forming mesh backhaul, and the ones that fold authentication and IP setup into one fast secure exchange. Each element does one small job; together they cover the whole authentication-and-roaming lifecycle.",
+      "zh": "信标帧和探测响应帧广播的，远不止一个网络名称——它们携带着一整套安全菜单。本课带你巡览处理“信任”与“移动”的那一族元素：有的负责声明网络提供哪些加密算法和认证方法；有的让正在移动的站点在接入点之间跳转时即时重新协商密钥；有的保护管理帧不被伪造；有的搭建自组网状回程链路；还有的把认证与 IP 配置压缩进一次快速、安全的交换。每个元素只做一件小事，合在一起就覆盖了整个“认证—漫游”生命周期。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the foundation. The RSN element (RSNE) is the security advertisement: it lists the group data cipher, the pairwise cipher menu, the AKM (authentication and key management) suite menu — PSK, SAE, 802.1X, FT variants, FILS — plus an RSN Capabilities field (e.g. the MFPC/MFPR bits that say whether management-frame protection is enabled or required) and any cached-key PMKIDs. Its companion, the RSNX element (RSNXE), carries newer capability bits that didn't fit the original layout — SAE hash-to-element, protected TWT, SSID protection and more. Between them, a station learns exactly what crypto a network speaks before it commits.",
+      "zh": "先看地基。RSN 元素（RSNE）就是这份安全广告：它列出组数据加密套件、成对加密套件菜单、AKM（认证与密钥管理）套件菜单——PSK、SAE、802.1X、FT 各变体、FILS——外加一个 RSN 能力字段（例如 MFPC/MFPR 位，用以表明管理帧保护是否启用、是否强制），以及缓存密钥的 PMKID。它的搭档 RSNX 元素（RSNXE）则承载原始布局放不下的较新能力位——SAE hash-to-element、受保护 TWT、SSID 保护等等。二者结合，站点在真正接入之前就能确切知道这个网络“说”哪种密码学语言。"
+    },
+    {
+      "type": "diagram",
+      "en": "mindmap\n  root((Security & Mobility family))\n    Advertise\n      RSNE 9.4.2.23 cipher+AKM menu\n      RSNXE 9.4.2.240 extra capability bits\n    Fast Transition\n      MDE 9.4.2.45 which mobility domain\n      FTE 9.4.2.46 nonces+keys+MIC\n      TIE 9.4.2.47 reassoc/key timeouts\n      RDE 9.4.2.48 resource request\n    Protect mgmt\n      MME 9.4.2.53 per-frame MIC\n      MIC 9.4.2.117 mesh peering MIC\n      OCI 9.4.2.235 operating-channel proof\n    Mesh backhaul\n      MeshID 9.4.2.97 mesh name\n      MeshConfig 9.4.2.96 path/sync/auth\n      MeshPeering 9.4.2.100 link setup\n    FILS fast setup\n      FILSIndication 9.4.2.181 capability\n      FILSReqParams 9.4.2.176 probe filter\n      FILSSession 9.4.2.178 session id\n      FILSKeyConfirm 9.4.2.177 proof\n      DHParam 9.4.2.312 PFS key share",
+      "zh": "mindmap\n  root((安全与移动元素族))\n    广告声明\n      RSNE 9.4.2.23 加密+AKM菜单\n      RSNXE 9.4.2.240 额外能力位\n    快速漫游FT\n      MDE 9.4.2.45 属于哪个移动域\n      FTE 9.4.2.46 随机数+密钥+MIC\n      TIE 9.4.2.47 重关联/密钥超时\n      RDE 9.4.2.48 资源请求\n    保护管理帧\n      MME 9.4.2.53 逐帧MIC\n      MIC 9.4.2.117 mesh配对MIC\n      OCI 9.4.2.235 工作信道证明\n    Mesh回程\n      MeshID 9.4.2.97 网格名称\n      MeshConfig 9.4.2.96 路径/同步/认证\n      MeshPeering 9.4.2.100 链路建立\n    FILS快速接入\n      FILSIndication 9.4.2.181 能力\n      FILSReqParams 9.4.2.176 探测过滤\n      FILSSession 9.4.2.178 会话ID\n      FILSKeyConfirm 9.4.2.177 证明\n      DHParam 9.4.2.312 PFS密钥份额"
+    },
+    {
+      "type": "prose",
+      "en": "Now mobility. When a station roams between APs in the same mobility domain, a full re-authentication would stall traffic — so Fast BSS Transition (FT) re-keys without starting over. The MDE (mobility domain element) names the domain and advertises FT capability and policy, so a station knows which APs share a key hierarchy. During the transition the FTE (fast transition element) does the heavy lifting: it carries the ANonce and SNonce, the wrapped group keys (GTK/IGTK/BIGTK subelements), and a MIC over the exchange. The TIE (timeout interval element) sets the clocks — the reassociation deadline and key lifetimes. And when the station also needs reserved resources (like a Block Ack agreement) carried along with the move, the RDE (RIC data element) wraps that resource request or response.",
+      "zh": "再看移动。当站点在同一移动域内的多个 AP 间漫游时，完整重新认证会让流量卡顿——于是快速 BSS 切换（FT）在不从头开始的前提下重新协商密钥。MDE（移动域元素）为该域命名，并广播 FT 能力与策略，让站点知道哪些 AP 共享同一套密钥层级。切换过程中，FTE（快速切换元素）承担重活：它携带 ANonce 与 SNonce、被封装的组密钥（GTK/IGTK/BIGTK 子元素），以及覆盖本次交换的 MIC。TIE（超时间隔元素）负责设定时钟——重关联截止时限与密钥生命周期。当站点还需要把预留资源（例如 Block Ack 协定）随漫游一并带走时，RDE（RIC 数据元素）则封装这份资源请求或响应。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Protecting the management frames themselves needs its own elements. The MME (management MIC element) appends a per-frame integrity code (and replay counter, the IPN/BIPN) to protected group-addressed robust management frames and beacons, so an attacker can't forge a deauth or a beacon. The MIC element is the mesh equivalent — it carries the integrity code for an Authenticated Mesh Peering Exchange. And the OCI (operating channel information) element binds an exchange to the actual operating channel, so a man-in-the-middle can't quietly relay it on a different channel.",
+      "zh": "保护管理帧本身需要专门的元素。MME（管理 MIC 元素）为受保护的组寻址鲁棒管理帧和信标附加逐帧完整性码（以及重放计数器 IPN/BIPN），使攻击者无法伪造解除认证帧或信标帧。MIC 元素是网状网络中的对应物——它为“受认证 Mesh 配对交换”携带完整性码。而 OCI（工作信道信息）元素把一次交换绑定到实际的工作信道上，使中间人无法在另一信道上悄悄中继它。"
+    },
+    {
+      "type": "prose",
+      "en": "Two more families round out the tour. For self-forming networks, mesh STAs use the Mesh ID element to name the mesh (its analogue of an SSID), the Mesh Configuration element to advertise which path-selection, congestion-control, synchronization and authentication protocols the mesh runs (plus formation info and capability bits), and the Mesh Peering Management element to open, confirm and close a peering link with a neighbour (carrying link IDs and, when secured, the chosen PMKID). Finally, FILS (Fast Initial Link Setup) compresses joining: the FILS Indication element advertises in beacons that FILS and its variants are supported; the FILS Request Parameters element lets a probe request filter which APs should answer; the FILS Session element tags a single in-progress FILS exchange with a unique identifier; the FILS Key Confirmation element carries the cryptographic proof that authentication succeeded; and the Diffie-Hellman Parameter element carries the public key share that gives the exchange perfect forward secrecy.",
+      "zh": "还有两族元素为本次巡览收尾。对于自组网络，Mesh 站点用 Mesh ID 元素为网格命名（相当于 SSID 的对应物），用 Mesh Configuration 元素广播该网格运行哪种路径选择、拥塞控制、同步与认证协议（外加组网信息与能力位），用 Mesh Peering Management 元素与邻居打开、确认、关闭一条配对链路（携带链路 ID，在启用安全时还携带所选 PMKID）。最后，FILS（快速初始链路建立）压缩了入网过程：FILS Indication 元素在信标中广播支持 FILS 及其各变体；FILS Request Parameters 元素让探测请求过滤出应当回应的 AP；FILS Session 元素用唯一标识符标记一次进行中的 FILS 交换；FILS Key Confirmation 元素携带认证成功的密码学证明；Diffie-Hellman Parameter 元素则携带为该交换提供完美前向保密的公钥份额。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "How the RSNE actually lists ciphers and AKMs",
+        "zh": "RSNE 究竟如何列出加密套件与 AKM"
+      },
+      "en": "The RSNE (9.4.2.23) is a sequence of optional fields after a 2-octet Version: a single Group Data Cipher Suite, then a count + list of Pairwise Cipher Suites, then a count + list of AKM Suites, then a 2-octet RSN Capabilities field, then a PMKID count + list, then an optional Group Management Cipher Suite. Each cipher or AKM is a 4-octet suite selector — a 3-octet OUI (00-0F-AC for standard suites) plus a 1-octet type. So 00-0F-AC:4 is CCMP-128, 00-0F-AC:8 is GCMP-128; on the AKM side 00-0F-AC:2 is PSK, 00-0F-AC:8 is SAE, 00-0F-AC:4 is FT-PSK, 00-0F-AC:14/15 are FILS. The RSN Capabilities bits include MFPR (bit 6, protection of robust management frames required) and MFPC (bit 7, enabled), plus PTKSA/GTKSA replay-counter counts and an OCVC bit that pairs with the OCI element. The RSNXE (9.4.2.240) extends this with a variable-length Extended RSN Capabilities bitmap (its first 4 bits encode the length), advertising newer features such as SAE hash-to-element (bit 5) and SSID protection (bit 21).",
+      "zh": "RSNE（9.4.2.23）在 2 字节的 Version 之后是一串可选字段：单个组数据加密套件，然后是成对加密套件的计数+列表，再是 AKM 套件的计数+列表，接着是 2 字节的 RSN 能力字段，然后是 PMKID 计数+列表，最后是可选的组管理加密套件。每个加密套件或 AKM 都是一个 4 字节的套件选择子——3 字节 OUI（标准套件用 00-0F-AC）加 1 字节类型。于是 00-0F-AC:4 表示 CCMP-128，00-0F-AC:8 表示 GCMP-128；AKM 一侧，00-0F-AC:2 是 PSK，00-0F-AC:8 是 SAE，00-0F-AC:4 是 FT-PSK，00-0F-AC:14/15 是 FILS。RSN 能力位包含 MFPR（第 6 位，强制保护鲁棒管理帧）与 MFPC（第 7 位，已启用），以及 PTKSA/GTKSA 重放计数器数量和与 OCI 元素配合的 OCVC 位。RSNXE（9.4.2.240）用一个变长的“扩展 RSN 能力”位图加以扩展（其前 4 位编码长度），广播诸如 SAE hash-to-element（第 5 位）与 SSID 保护（第 21 位）等较新特性。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1046,
+          1049,
+          1051,
+          1056,
+          1432
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.4.2.23",
+    "80211-2024:9.4.2.240",
+    "80211-2024:9.4.2.53",
+    "80211-2024:9.4.2.45",
+    "80211-2024:9.4.2.46",
+    "80211-2024:9.4.2.47",
+    "80211-2024:9.4.2.48",
+    "80211-2024:9.4.2.117",
+    "80211-2024:9.4.2.96",
+    "80211-2024:9.4.2.97",
+    "80211-2024:9.4.2.100",
+    "80211-2024:9.4.2.181",
+    "80211-2024:9.4.2.176",
+    "80211-2024:9.4.2.177",
+    "80211-2024:9.4.2.178",
+    "80211-2024:9.4.2.235",
+    "80211-2024:9.4.2.312"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1046,
+        1049,
+        1051,
+        1056
+      ],
+      "note": "9.4.2.23 RSNE — version, cipher/AKM suite lists, suite selector format, RSN Capabilities (MFPC/MFPR), PMKID"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1432
+      ],
+      "note": "9.4.2.240 RSNXE — Extended RSN Capabilities bitmap (SAE hash-to-element, SSID protection, etc.)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1113,
+        1114,
+        1116,
+        1117
+      ],
+      "note": "9.4.2.45 MDE, 9.4.2.46 FTE (ANonce/SNonce/MIC, GTK/IGTK/BIGTK/OCI subelements), 9.4.2.47 TIE, 9.4.2.48 RDE"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        927,
+        1123
+      ],
+      "note": "9.4.2.53 MME (Key ID, IPN/BIPN, MIC) p.1123; 9.4.2.117 MIC element catalog entry (EID 140, Authenticated Mesh Peering Exchange) p.927"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1207,
+        1211,
+        1212
+      ],
+      "note": "9.4.2.96 Mesh Configuration, 9.4.2.97 Mesh ID, 9.4.2.100 Mesh Peering Management"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1330,
+        1333,
+        1334,
+        1335,
+        1578
+      ],
+      "note": "9.4.2.176 FILS Request Parameters, 9.4.2.177 FILS Key Confirmation, 9.4.2.178 FILS Session, 9.4.2.181 FILS Indication, 9.4.2.312 Diffie-Hellman Parameter"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1428
+      ],
+      "note": "9.4.2.235 OCI element — operating class / primary channel / frequency segment, channel-binding proof"
+    }
+  ],
+  "track": "frames"
+}

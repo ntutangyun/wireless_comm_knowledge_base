@@ -1,0 +1,148 @@
+{
+  "id": "frames-14",
+  "title": {
+    "en": "The OFDMA Era: HE, 6 GHz, Spatial Reuse & BSS-Color Elements",
+    "zh": "OFDMA 时代：HE、6 GHz、空间复用与 BSS Color 元素"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "802.11ax (Wi-Fi 6, and Wi-Fi 6E once you add 6 GHz) was a different kind of upgrade. Earlier generations chased raw peak speed; HE chased efficiency in a crowded room — many devices, overlapping networks, all sharing the air. To make that work the standard introduced a whole new family of information elements, and almost all of them share one trait: their Element ID is 255, with the real identity carried in a one-octet Element ID Extension. This lesson is a guided tour of that family — what each element declares and when it shows up — not a field-by-field dump.",
+      "zh": "802.11ax（Wi-Fi 6，加上 6 GHz 频段后就是 Wi-Fi 6E）是一次不一样的升级。前几代追求的是峰值速率，而 HE 追求的是“拥挤房间里的效率”——许多设备、相互重叠的网络，共享同一片空气。为了实现这一点，标准引入了一整套全新的信息元素，它们几乎都有一个共同特征：Element ID 取值为 255，真正的身份由一个字节的 Element ID Extension（元素 ID 扩展）来承载。本课就是对这一家族的一次导览——讲清每个元素声明了什么、在什么时候出现——而不是逐字段的罗列。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why Element ID 255? The original 1-octet Element ID space (0–254) was running out. HE elements use the 'Element ID Extension present' escape: Element ID = 255, then a second octet (the extension) picks the actual element. HE Capabilities is extension 35, HE Operation 36, and so on. The extension number is just bookkeeping — think of it as a second-tier directory once the first ran full.",
+      "zh": "为什么是 Element ID 255？最初 1 字节的 Element ID 空间（0–254）快用完了。HE 元素采用“存在 Element ID 扩展”这一逃逸机制：Element ID = 255，再用第二个字节（扩展字段）来选出真正的元素。HE Capabilities 是扩展 35，HE Operation 是 36，以此类推。这个扩展编号只是“记账”用的——可以把它理解为第一层目录写满之后开出的第二层目录。"
+    },
+    {
+      "type": "prose",
+      "en": "Two elements form the backbone. The HE Capabilities element is how a station announces 'I am an HE STA' and lists what its radio can do — MAC features like TWT support and OFDMA random access, plus the PHY's MCS/spatial-stream map. The HE Operation element is the AP's counterpart: it sets BSS-wide rules — the BSS Color, whether TWT is required, the RTS threshold — and, crucially, carries the 6 GHz Operation Information sub-field that tells stations the primary channel and width when the BSS lives in the new 6 GHz band.",
+      "zh": "有两个元素是整个家族的骨架。HE Capabilities 元素是站点宣告“我是一个 HE STA”的方式，并列出它的射频能力——MAC 层特性（如 TWT 支持、OFDMA 随机接入），以及 PHY 层的 MCS／空间流映射。HE Operation 元素则是 AP 这一侧的对应物：它设定整个 BSS 的规则——BSS Color、是否强制使用 TWT、RTS 门限——并且关键地携带了 6 GHz Operation Information 子字段，当 BSS 工作在新的 6 GHz 频段时，由它告诉站点主信道与带宽。"
+    },
+    {
+      "type": "diagram",
+      "en": "mindmap\n  root((HE / 802.11ax<br/>element family))\n    Backbone\n      HE Capabilities 247<br/>STA: I am HE + radio caps\n      HE Operation 248<br/>AP: BSS rules + 6 GHz info\n      HE BSS Load 258<br/>AP: HE load / underuse\n    Uplink multi-user\n      UORA Param Set 249<br/>OFDMA random-access window\n      MU EDCA Param Set 250<br/>queues after UL MU TB PPDU\n      NDP Feedback 252<br/>buffer-status report threshold\n    Coexistence\n      Spatial Reuse 251<br/>OBSS-PD / PSR thresholds\n      BSS Color Change 253<br/>announce new color\n    New 6 GHz band\n      HE 6 GHz Band Caps 262<br/>STA extra caps in 6 GHz\n      UL MU Power Caps 263<br/>per-MCS TB-PPDU power\n    Power save companions\n      OPS 256<br/>opportunistic doze window\n      TWT 198<br/>scheduled wake times",
+      "zh": "mindmap\n  root((HE / 802.11ax<br/>元素家族))\n    骨架\n      HE Capabilities 247<br/>STA：我是 HE + 射频能力\n      HE Operation 248<br/>AP：BSS 规则 + 6 GHz 信息\n      HE BSS Load 258<br/>AP：HE 负载 / 未充分利用\n    上行多用户\n      UORA 参数集 249<br/>OFDMA 随机接入窗口\n      MU EDCA 参数集 250<br/>UL MU TB PPDU 后的队列\n      NDP 反馈 252<br/>缓存状态上报门限\n    共存\n      空间复用 251<br/>OBSS-PD / PSR 门限\n      BSS Color Change 253<br/>宣告新的颜色\n    新的 6 GHz 频段\n      HE 6 GHz 频段能力 262<br/>STA 在 6 GHz 的额外能力\n      UL MU 功率能力 263<br/>每个 MCS 的 TB-PPDU 功率\n    省电搭档\n      OPS 256<br/>机会式打盹窗口\n      TWT 198<br/>预定唤醒时刻"
+    },
+    {
+      "type": "prose",
+      "en": "The headline feature of HE is OFDMA — slicing a channel into resource units so the AP can serve many stations at once, including on the uplink. Three elements govern the uplink side. The UORA Parameter Set element carries the OFDMA contention window (an EOCWmin/EOCWmax pair) for stations that grab a random-access RU without an explicit invite. The MU EDCA Parameter Set element gives stations a separate, AP-controlled set of EDCA queue parameters to use for a timed window right after they send an uplink multi-user trigger-based transmission — nudging them to back off so the trigger-based scheme stays orderly. The NDP Feedback Report Parameter Set element just sets the buffer threshold that decides when a station reports it has data waiting.",
+      "zh": "HE 的招牌特性是 OFDMA——把一个信道切成若干资源单元（RU），让 AP 能同时服务多个站点，包括上行方向。有三个元素管理上行这一侧。UORA Parameter Set 元素携带 OFDMA 竞争窗口（一对 EOCWmin／EOCWmax），供那些未被显式邀请、自行抢占随机接入 RU 的站点使用。MU EDCA Parameter Set 元素给站点提供一套独立的、由 AP 控制的 EDCA 队列参数，让它们在发送一次上行多用户、基于触发（trigger-based）的传输之后的一段限定时间内使用——促使它们退避，从而让基于触发的机制保持有序。NDP Feedback Report Parameter Set 元素则只是设定缓存门限，用以决定站点何时上报“我有数据在等着发”。"
+    },
+    {
+      "type": "prose",
+      "en": "Dense deployments mean overlapping BSSs stepping on each other. Two elements let neighbours coexist. Each network paints itself a 6-bit BSS Color so a station can tell 'my network's frame' from 'a neighbour's frame' at a glance. The Spatial Reuse Parameter Set element then carries the OBSS-PD and PSR thresholds that let a station treat a coloured-as-foreign transmission as ignorable interference and transmit anyway, reclaiming airtime. When an AP needs to change its colour (because of a clash), the BSS Color Change Announcement element counts down the switch over a number of TBTTs so nobody is surprised. The HE BSS Load element rounds out the AP's broadcast picture with HE station count and how underused the frequency and spatial dimensions are.",
+      "zh": "密集部署意味着相互重叠的 BSS 会彼此干扰。有两个元素让相邻网络得以共存。每个网络给自己涂上一个 6 比特的 BSS Color，这样站点一眼就能区分“我网络的帧”和“邻居的帧”。随后，Spatial Reuse Parameter Set 元素携带 OBSS-PD 与 PSR 门限，让站点把一个被标记为“外来颜色”的传输当作可忽略的干扰，照样发送，从而把空口时间夺回来。当某个 AP 需要更换自己的颜色（因为发生了冲突）时，BSS Color Change Announcement 元素会以若干个 TBTT 为周期对切换进行倒计时，让谁都不会被打个措手不及。HE BSS Load 元素则用 HE 站点数量、以及频域与空域资源的未充分利用程度，补全了 AP 对外广播的负载画像。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Wi-Fi 6E added the 6 GHz band, and two elements handle it. The HE 6 GHz Band Capabilities element lets a station declare extra 6 GHz-only capabilities (A-MPDU length, SM power save, etc.) that previously lived in the legacy HT/VHT elements it no longer sends in that band. The UL MU Power Capabilities element reports, per HE-MCS, how much transmit power the station can muster for an uplink trigger-based transmission — so the AP can plan uplink OFDMA fairly. Power-save in HE leans on two companions too: the OPS element opens an opportunistic doze window, and the TWT element negotiates scheduled target wake times.",
+      "zh": "Wi-Fi 6E 增加了 6 GHz 频段，由两个元素来应对。HE 6 GHz Band Capabilities 元素让站点声明仅在 6 GHz 才有意义的额外能力（A-MPDU 长度、SM 省电等）——这些能力原本承载在传统 HT／VHT 元素里，而在该频段站点已不再发送那些元素。UL MU Power Capabilities 元素按 HE-MCS 上报站点在一次上行触发式传输中能拿出多大的发射功率，好让 AP 公平地规划上行 OFDMA。HE 的省电同样依赖两个搭档：OPS 元素开启一个机会式的打盹窗口，TWT 元素则协商预定的目标唤醒时刻（target wake time）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "How the standard wires up HE Operation and the 6 GHz sub-field",
+        "zh": "标准如何串接 HE Operation 与 6 GHz 子字段"
+      },
+      "en": "The HE Operation element (9.4.2.248) is the precise hinge between the bands. Its presence rules are explicit: in 2.4 GHz an HE BSS is controlled by the HT Operation plus HE Operation elements; in 5 GHz by HT Operation, VHT Operation (if present) and HE Operation; in 6 GHz by the HE Operation element alone. Inside it, the HE Operation Parameters field holds the TWT Required bit (force associated TWT-capable STAs into a TWT role), the TXOP Duration RTS Threshold, and the VHT Operation Information Present / Co-Hosted BSS / 6 GHz Operation Information Present flags. The BSS Color Information field carries the 6-bit BSS Color plus a BSS Color Disabled bit. When the 6 GHz Operation Information Present flag is 1 (always so for a 6 GHz AP), the trailing 6 GHz Operation Information field appears, giving the Primary Channel, a Control field (Channel Width, Duplicate Beacon, Regulatory Info), the two Channel Center Frequency Segment fields, and a Minimum Rate. That single sub-field is what lets the HE Operation element fully describe a 6 GHz BSS without any legacy HT/VHT operation element riding along.",
+      "zh": "HE Operation 元素（9.4.2.248）是各频段之间精确的“铰链”。它的存在规则写得很明确：在 2.4 GHz，HE BSS 由 HT Operation 加 HE Operation 元素控制；在 5 GHz，由 HT Operation、VHT Operation（若存在）和 HE Operation 控制；在 6 GHz，则仅由 HE Operation 元素控制。其内部的 HE Operation Parameters 字段含有 TWT Required 位（强制支持 TWT 的已关联 STA 进入某个 TWT 角色）、TXOP Duration RTS Threshold，以及 VHT Operation Information Present／Co-Hosted BSS／6 GHz Operation Information Present 等标志位。BSS Color Information 字段携带 6 比特的 BSS Color 加一个 BSS Color Disabled 位。当 6 GHz Operation Information Present 标志为 1（对 6 GHz AP 而言总是如此）时，末尾的 6 GHz Operation Information 字段就会出现，给出主信道（Primary Channel）、一个 Control 字段（信道带宽、Duplicate Beacon、Regulatory Info）、两个 Channel Center Frequency Segment 字段以及 Minimum Rate。正是这个子字段，使得 HE Operation 元素无需附带任何传统 HT／VHT operation 元素，便能完整描述一个 6 GHz BSS。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1460,
+          1461,
+          1462
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1438,
+        1439
+      ],
+      "note": "9.4.2.247 HE Capabilities element — Element ID 255 / ext 35; declares an HE STA; MAC + PHY caps, MCS/NSS set"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1460,
+        1461,
+        1462
+      ],
+      "note": "9.4.2.248 HE Operation element — BSS Color Info, TWT Required, RTS threshold, 6 GHz Operation Information sub-field"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1463,
+        1464
+      ],
+      "note": "9.4.2.249 UORA Parameter Set (OCW range) and 9.4.2.250 MU EDCA Parameter Set (per-AC queue params after UL MU)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1464,
+        1465,
+        1466
+      ],
+      "note": "9.4.2.251 Spatial Reuse Parameter Set (OBSS-PD/PSR), 9.4.2.252 NDP Feedback Report Parameter Set (buffer threshold)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1467
+      ],
+      "note": "9.4.2.253 BSS Color Change Announcement element — Color Switch Countdown, New BSS Color Information"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1471,
+        1472
+      ],
+      "note": "9.4.2.256 OPS element (opportunistic doze window) and 9.4.2.258 HE BSS Load element (HE STA count + underutilization)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1475,
+        1476
+      ],
+      "note": "9.4.2.262 HE 6 GHz Band Capabilities and 9.4.2.263 UL MU Power Capabilities elements"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1358,
+        1359,
+        1360
+      ],
+      "note": "9.4.2.198 TWT element — scheduled target wake times; power-save companion to the HE family"
+    }
+  ],
+  "covers": [
+    "80211-2024:9.4.2.247",
+    "80211-2024:9.4.2.248",
+    "80211-2024:9.4.2.249",
+    "80211-2024:9.4.2.250",
+    "80211-2024:9.4.2.251",
+    "80211-2024:9.4.2.252",
+    "80211-2024:9.4.2.253",
+    "80211-2024:9.4.2.258",
+    "80211-2024:9.4.2.262",
+    "80211-2024:9.4.2.263",
+    "80211-2024:9.4.2.198",
+    "80211-2024:9.4.2.256"
+  ],
+  "track": "frames"
+}
