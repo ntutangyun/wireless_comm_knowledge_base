@@ -1,0 +1,130 @@
+{
+  "id": "foundations-15",
+  "title": {
+    "en": "The rest of the services: spectrum, QoS, timing, discovery, broadcast",
+    "zh": "其余服务：频谱、QoS、定时、发现与广播"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 4 of the standard reads like a menu of services a Wi-Fi device can offer. We have already toured the headline ones — data delivery, authentication, association. This lesson is a quick walk past the remaining counters on that menu. Don't memorise them; just learn the one-line job each one does, so that when you meet the detailed machinery later you already know what problem it was invented to solve.",
+      "zh": "标准的第 4 章读起来就像一份“Wi-Fi 设备能提供哪些服务”的菜单。我们已经逛过了最显眼的几道——数据传输、认证、关联。本课则是快速走过菜单上剩下的那几个柜台。不必死记硬背，只需记住每个服务“解决什么问题”的一句话概括，这样当你日后遇到它们详细的实现机制时，就已经知道它当初是为了解决什么问题而被发明出来的。"
+    },
+    {
+      "type": "prose",
+      "en": "First, being a good radio neighbour. In the 5 GHz band some regulators demand two spectrum-management services. Transmit Power Control (TPC) turns your power down to the minimum that still works, so you don't shout over everyone else. Dynamic Frequency Selection (DFS) listens for radar on the channel and, if it hears any, quietly moves the whole BSS to a clean channel — Wi-Fi must yield to radar, never the other way around.",
+      "zh": "首先是“做一个友好的无线邻居”。在 5 GHz 频段，某些监管机构要求两项频谱管理服务。发射功率控制（TPC）会把你的功率降到“仍能正常工作”的最低水平，这样你就不会盖过其他人的声音。动态频率选择（DFS）则持续侦听信道上是否有雷达信号；一旦听到，它会悄悄地把整个 BSS 迁移到一条干净的信道上——Wi-Fi 必须给雷达让路，绝不能反过来。"
+    },
+    {
+      "type": "prose",
+      "en": "Next, making sure voice beats a bulk download. The QoS facility gives different traffic differentiated access to the shared medium, so latency-sensitive streams get on the air ahead of best-effort bytes. A companion service, QoS management-frame support (QMF), lets the network send certain management frames in a non-voice access category under a QMF policy, so management chatter doesn't crowd out the very voice traffic QoS is trying to protect.",
+      "zh": "接下来，是要保证“语音优先于大文件下载”。QoS（服务质量）机制为不同的业务流提供对共享介质的差异化接入，让对时延敏感的业务流抢在尽力而为（best-effort）的数据之前上空口。与之配套的服务——QoS 管理帧支持（QMF）——允许网络依据一份 QMF 策略，把某些管理帧放到“非语音”的接入类别中发送，这样管理类的“闲聊”帧就不会去挤占 QoS 本想保护的语音业务。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    A[Clause 4 service menu] --> B[Spectrum mgmt<br/>TPC + DFS]\n    A --> C[QoS + QMF<br/>voice beats bulk]\n    A --> D[Higher-layer<br/>timer sync]\n    A --> E[Radio measurement<br/>service]\n    A --> F[Interworking + PAD<br/>+ GAS: ask before joining]\n    A --> G[WUR<br/>low-power wake]\n    A --> H[EBCS DL + relaying<br/>efficient one-to-many]",
+      "zh": "graph TD\n    A[第 4 章服务菜单] --> B[频谱管理<br/>TPC + DFS]\n    A --> C[QoS + QMF<br/>语音优先于大流量]\n    A --> D[上层<br/>定时同步]\n    A --> E[无线电测量<br/>服务]\n    A --> F[互通 + PAD<br/>+ GAS：入网前先问]\n    A --> G[WUR<br/>低功耗唤醒]\n    A --> H[EBCS DL + 中继<br/>高效一对多]"
+    },
+    {
+      "type": "prose",
+      "en": "Three more services are about awareness. Higher-layer timer synchronization (4.5.7) gives apps a shared, accurate clock across the WLAN — handy when several stations must render the same audio or video stream in lockstep with tight jitter bounds. The MAC supplies a common reference instant (the end of a particular group-addressed PPDU) that upper-layer timers can lock onto. The radio measurement service (4.5.8) lets a station request, perform, and report measurements of the channels it supports, and learn about neighbour APs — the raw sensing data that smarter roaming and management decisions are built on.",
+      "zh": "还有三项服务是关于“感知”的。上层定时同步（4.5.7）为整个 WLAN 上的应用提供一个共享且精确的时钟——当多个站点必须以很小的抖动界限“齐步”渲染同一路音频或视频流时，这非常有用。MAC 提供一个共同的参考时刻（某个组播 PPDU 的结束时刻），上层定时器可以锁定到这个时刻上。无线电测量服务（4.5.8）则让站点能够请求、执行并报告其所支持信道的测量结果，并了解邻近 AP 的信息——这些原始的感知数据，正是更聪明的漫游与管理决策得以建立的基础。"
+    },
+    {
+      "type": "prose",
+      "en": "Then there is the family that lets you ask the network questions before you join. Interworking with external networks (4.5.9) lets a station reach services provided beyond the AP — for example a subscription network — and includes preassociation discovery (PAD), where a service-information client queries a service-information registry about what would be available once associated. The generic advertisement service (GAS, 4.5.10) is the carrier: Public Action frames that let a still-unassociated station query multiple networks in parallel and pick wisely. Together they mean you can window-shop the network's services before committing to associate.",
+      "zh": "接下来是这样一族服务：它们让你在加入网络之前就能向网络“发问”。与外部网络的互通（4.5.9）让站点能够访问 AP 之外（例如某个订阅网络）所提供的服务，其中包含关联前发现（PAD）——由“服务信息客户端（SIC）”向“服务信息注册中心（SIR）”查询“一旦关联后能用到哪些服务”。通用广告服务（GAS，4.5.10）则是承载手段：用公共 Action 帧让仍未关联的站点并行查询多个网络，从而做出明智选择。两者结合，意味着你可以在正式决定关联之前，先“逛一逛”网络提供的各项服务。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why ask before joining? Associating just to discover services, then deciding to leave, is wasteful. PAD and GAS let a station gather the facts while still in a preassociated state — and even query networks run by a different administrative group than its current AP — so the join decision is informed from the start.",
+      "zh": "为什么要“入网前先问”？为了发现服务而先关联、再决定离开，是一种浪费。PAD 与 GAS 让站点在“未关联”状态下就把情况摸清楚——甚至可以查询与当前 AP 属于不同管理组的网络——这样从一开始，加入与否的决定就是基于充分信息的。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, two services about power and reach. Wake-up radio (WUR, 4.5.11) lets a station sip basic services — discovery, synchronization, and wake-up instructions — while running at very low power, so a battery device can sleep deeply yet still be wakeable. And enhanced broadcast services (EBCS) make one-to-many delivery efficient: EBCS DL (4.5.12.2) lets an AP broadcast authenticated traffic streams to receivers whether or not they are associated, while EBCS relaying (4.5.12.3) has an EBCS proxy forward an uplink payload onward to a destination, checking criteria first. Clause 4 closes (4.6) by noting the WM, DS, and any wired LAN may live in different logical address spaces, though IEEE 802.11 itself only ever specifies the WM address space.",
+      "zh": "最后是两项关于“功耗”与“覆盖”的服务。唤醒无线电（WUR，4.5.11）让站点能在极低功耗下“浅尝”基本服务——发现、同步以及唤醒指令——从而让电池设备可以深度休眠，却仍可被唤醒。增强广播服务（EBCS）则让“一对多”的传递更高效：EBCS DL（4.5.12.2）让 AP 向接收方广播带认证的业务流，无论接收方是否已关联；EBCS 中继（4.5.12.3）则由一个 EBCS 代理在先行核验若干准则后，把上行载荷继续转发到目的地。第 4 章以 4.6 收尾，指出 WM、DS 以及任何有线 LAN 可能处于不同的逻辑地址空间，但 IEEE 802.11 本身始终只规定 WM 这一个地址空间。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exactly what each service promises, in the standard's own words",
+        "zh": "用标准自己的话，逐一说明每个服务的承诺"
+      },
+      "en": "TPC (4.5.5.2) provides power-capability-based association, specification of regulatory/local max power for the current channel, per-transmission power selection within those limits, and power adaptation from path-loss and link-margin estimates. DFS (4.5.5.3) provides supported-channel-based association, quieting a channel to test it, testing for radar before and during use, discontinuing on detection, detecting radar per regulatory rules, and advertising a new channel to migrate the BSS. QMF (4.5.6.2) lets some Management frames use an access category other than AC_VO under a QMF policy; only QoS STAs implement QMF, and a QMF STA falls back to AC_VO toward STAs that do not support the service. Higher-layer timer sync (4.5.7) is delivered by indicating the end of a PPDU[+SigExt] carrying group-addressed Data frames whose Address 1 is a previously registered group address. Interworking (4.5.9) lists network discovery/selection, PAD, emergency services, QoS mapping, and the SSPN interface. PAD (4.5.9.2) runs between a Service Information Client (SIC) and a Service Information Registry (SIR), in unsolicited (11.23.2) or solicited (11.23.3) form. GAS (4.5.10) carries network-service info in a generic container over Public Action frames, usable before or after joining. EBCS DL (4.5.12.2) uses an EBCS traffic stream mapper in the AP and an EBCS filter in the receiver, keyed on dot11EBCSTrafficStreamTable. EBCS relaying (4.5.12.3) has an EBCS proxy evaluate criteria — certificate verification, replay checking, per-destination rate/amount limits — before forwarding the HLP payload, best-effort.",
+      "zh": "TPC（4.5.5.2）提供：基于功率能力的关联、为当前信道规定监管与本地最大功率、在这些限值内为每次发送选择功率，以及依据路径损耗与链路余量估计进行功率自适应。DFS（4.5.5.3）提供：基于所支持信道的关联、静默某信道以便测试、在使用前及使用中测试是否有雷达、检测到雷达后停止操作、按监管要求检测雷达，以及通告一条新信道以迁移 BSS。QMF（4.5.6.2）允许部分管理帧在 QMF 策略下使用 AC_VO 以外的接入类别；只有 QoS 站点才实现 QMF，且 QMF 站点对不支持该服务的站点会回退到使用 AC_VO。上层定时同步（4.5.7）通过指示某个 PPDU[+SigExt] 的结束时刻来实现，该 PPDU 承载 Address 1 为预先注册的组地址的组播数据帧。互通（4.5.9）列出了：网络发现/选择、PAD、紧急服务、QoS 映射，以及 SSPN 接口。PAD（4.5.9.2）在“服务信息客户端（SIC）”与“服务信息注册中心（SIR）”之间运行，分为非请求式（11.23.2）与请求式（11.23.3）两种。GAS（4.5.10）以通用容器在公共 Action 帧上承载网络服务信息，可在加入网络之前或之后使用。EBCS DL（4.5.12.2）在 AP 中使用 EBCS 业务流映射器、在接收方中使用 EBCS 过滤器，二者均以 dot11EBCSTrafficStreamTable 为索引。EBCS 中继（4.5.12.3）则由 EBCS 代理在转发 HLP 载荷前评估若干准则——证书验证、重放检查、每目的地的速率/数量限制——并以尽力而为方式转发。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          399,
+          400,
+          401,
+          402,
+          404,
+          406
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        399,
+        400
+      ],
+      "note": "4.5.5 Spectrum management — 4.5.5.1 General, 4.5.5.2 TPC, 4.5.5.3 DFS"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        400,
+        401
+      ],
+      "note": "4.5.6 Traffic differentiation and QoS support (4.5.6.1/4.5.6.2 QMF); 4.5.7 higher-layer timer sync; 4.5.8 Radio measurement service"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        401,
+        402,
+        403,
+        404
+      ],
+      "note": "4.5.9 Interworking with external networks (4.5.9.1 General, 4.5.9.2 PAD with SIC/SIR); 4.5.10 GAS; 4.5.11 WUR services"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        404,
+        405,
+        406,
+        407,
+        409
+      ],
+      "note": "4.5.12 Enhanced broadcast services (4.5.12.1 General, 4.5.12.2 EBCS DL, 4.5.12.3 EBCS relaying); 4.6 Multiple logical address spaces"
+    }
+  ],
+  "covers": [
+    "80211-2024:4.5.5.1",
+    "80211-2024:4.5.5.2",
+    "80211-2024:4.5.5.3",
+    "80211-2024:4.5.6.1",
+    "80211-2024:4.5.6.2",
+    "80211-2024:4.5.7",
+    "80211-2024:4.5.8",
+    "80211-2024:4.5.9.1",
+    "80211-2024:4.5.9.2",
+    "80211-2024:4.5.10",
+    "80211-2024:4.5.11",
+    "80211-2024:4.5.12.1",
+    "80211-2024:4.5.12.2",
+    "80211-2024:4.5.12.3",
+    "80211-2024:4.6.1",
+    "80211-2024:4.6.2"
+  ],
+  "track": "foundations"
+}

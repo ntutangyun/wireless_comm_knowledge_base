@@ -1,0 +1,111 @@
+{
+  "id": "foundations-16",
+  "title": {
+    "en": "The reference models: how the standard draws itself",
+    "zh": "参考模型：标准如何描绘自身"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 4 of 802.11 ends with a gallery of block diagrams. They are not decoration — they are the map of the whole standard. Each box is a function (a MAC, a PHY, a management entity), and each line between boxes is a service access point (SAP) where one piece talks to another. Once you know where a function lives on this map — which box, which plane, which band — the dense later clauses stop feeling random. They are just filling in the boxes the reference models already drew.",
+      "zh": "802.11 的第 4 章以一组方框图收尾。它们不是装饰——而是整部标准的地图。每个方框都是一个功能（一个 MAC、一个 PHY、一个管理实体），方框之间的每条连线都是一个服务接入点（SAP），是各部分彼此对话的地方。一旦你知道某个功能在这张地图上的位置——在哪个方框、哪个平面、哪个频段——后面那些密密麻麻的章节就不再显得杂乱无章。它们只是在填充参考模型早已画好的那些方框。"
+    },
+    {
+      "type": "prose",
+      "en": "The base picture splits a station into two layers: the MAC (the lower part of the data link layer) and the PHY (the radio). Riding alongside them is the management plane — a recurring trio of entities. The MLME manages the MAC, the PLME manages the PHY, and above both sits the SME (station management entity), which makes policy decisions and drives the other two through their SAPs. Almost every procedure in the standard is some conversation between SME, MLME, and PLME. Learn this scaffold once and you can read any later flow.",
+      "zh": "基础图把一个站点分成两层：MAC（数据链路层的下半部）和 PHY（射频部分）。与它们并行的是管理平面——一组反复出现的实体三人组。MLME 管理 MAC，PLME 管理 PHY，而在两者之上是 SME（站点管理实体），它负责制定策略决策，并通过各自的 SAP 驱动另外两者。标准里几乎每一个流程，都是 SME、MLME 与 PLME 之间的某种对话。把这套脚手架学一遍，之后任何流程你都能读懂。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TB\n    SME[\"SME — station management entity (policy)\"]\n    MLME[\"MLME — MAC management\"]\n    PLME[\"PLME — PHY management\"]\n    MAC[\"MAC sublayer\"]\n    PHY[\"PHY\"]\n    SME ---|MLME SAP| MLME\n    SME ---|PLME SAP| PLME\n    MLME --- MAC\n    PLME --- PHY\n    MAC ---|PHY SAP| PHY",
+      "zh": "graph TB\n    SME[\"SME — 站点管理实体（策略）\"]\n    MLME[\"MLME — MAC 管理\"]\n    PLME[\"PLME — PHY 管理\"]\n    MAC[\"MAC 子层\"]\n    PHY[\"PHY\"]\n    SME ---|MLME SAP| MLME\n    SME ---|PLME SAP| PLME\n    MLME --- MAC\n    PLME --- PHY\n    MAC ---|PHY SAP| PHY"
+    },
+    {
+      "type": "prose",
+      "en": "On top of the base picture, clause 4.9 hangs several specialized reference models, each adding a box for a different job. The interworking reference model inserts a MAC state generic convergence function (MSGCF): it watches the MLME-SME and PLME-SME interactions, correlates those low-level events, and synthesizes connection-status indications upward to higher-layer mobility managers (the media-independent handover work of IEEE 802.21). Its key idea is the ESS link — the up/down state of a non-AP STA's connection to an ESS as a whole, independent of which particular AP it is currently associated with.",
+      "zh": "在基础图之上，4.9 节又挂上了几个专门的参考模型，每一个都为不同的职责增添一个方框。互通参考模型插入了一个 MAC 状态通用汇聚功能（MSGCF）：它观察 MLME-SME 与 PLME-SME 之间的交互，将这些底层事件加以关联，并向上把连接状态指示综合给更高层的移动性管理器（即 IEEE 802.21 的媒体无关切换工作）。它的核心理念是“ESS 链路”——一个非 AP 站点对整个 ESS 的连接“通/断”状态，与它当前关联到哪一个具体的 AP 无关。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why expose an ESS-wide link state? A phone roaming between AP1 and AP2 inside the same ESS keeps moving its association, but to a mobility manager upstairs the link should look continuously \"up\". The MSGCF abstracts away the individual hand-offs so higher layers see one stable link, not a flicker every time the radio reassociates.",
+      "zh": "为什么要暴露一个覆盖整个 ESS 的链路状态？一部手机在同一个 ESS 内的 AP1 与 AP2 之间漫游时，它的关联在不断切换，但对上层的移动性管理器而言，这条链路应当看上去持续“通”着。MSGCF 把一次次具体的切换抽象掉，让高层看到的是一条稳定的链路，而不是每次射频重新关联时都闪烁一下。"
+    },
+    {
+      "type": "prose",
+      "en": "Two more models share or split radios. The multiple-MAC-sublayers model lets several STAs sit on top of one shared PHY and antennas; an MM-SME coordinates their separate SMEs, each MAC keeping its own address and its own MAC SAP / MLME SAP. Because they share one PHY, their transmit attempts can collide internally and a backoff resolves it. Peers connect over multiple-MAC-sublayers links (MMSLs), advertised via the MMS element. The multi-band-operation model instead spreads a device across bands, with a multi-band management entity inside the SME orchestrating fast session transfer (FST) — moving an active session from one band/channel to another, transparently (state shared, one MAC SAP) or nontransparently (state re-established). Finally, the co-channel coordinated management operation model places multiple STAs on the same channel, each on its own antenna/PHY, coordinated for TDD-style scheduling.",
+      "zh": "还有两个模型在共享或拆分射频。多 MAC 子层模型让多个站点坐在同一个共享的 PHY 和天线之上；一个 MM-SME 协调它们各自的 SME，每个 MAC 仍保留自己的地址、自己的 MAC SAP / MLME SAP。由于共用一个 PHY，它们的发送尝试可能在内部冲突，此时用退避来化解。对端之间通过“多 MAC 子层链路”（MMSL）相连，并由 MMS 元素来通告。多频段操作模型则把一台设备铺开到多个频段，由 SME 内部的多频段管理实体来编排快速会话转移（FST）——把一条活跃会话从一个频段/信道转移到另一个，可以是透明的（状态共享、单一 MAC SAP），也可以是非透明的（状态需重新建立）。最后，同信道协同管理操作模型把多个站点放在同一信道上，每个站点各用自己的天线/PHY，并被协同起来做类似 TDD 的调度。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What each specialized model actually adds — and where state lives",
+        "zh": "每个专门模型究竟增添了什么——以及状态存放在何处"
+      },
+      "en": "The MSGCF (defined in 6.4) has access to all management information by observing both the MAC and PHY management entities, and feeds higher-level entities such as Mobility Managers; the example interface given is the media independent service (MIS) of IEEE Std 802.21-2017. The ESS link is up whenever a non-AP STA is associated with any AP comprising that ESS. In the multiple-MAC model, an MM-SME coordinates multiple STAs (hence multiple MACs) sharing one PHY; STAs under the same MM-SME cannot directly exchange frames, and the MMS element carries the coordinated MAC addresses in frames like Probe Request/Response and Association. For multi-band FST, a \"session\" is the non-PHY state between two directly communicating STAs: under transparent FST a shared multi-band management entity sees each SME's local state — sequence numbers, block ack agreements, TSs, association state, RSNA, security keys, replay/PN counters — and presents a single MAC SAP; under nontransparent FST the entity only sets up/tears down the transfer, so all SME-local state must be re-established and higher layers manage the FST. On-channel tunneling (OCT, 11.31.5) lets one MLME carry another MLME's frames so (de)authentication and (re)association can happen seamlessly across bands. In the co-channel coordinated model a coordinated management entity in the SME handles setup, configuration, time synchronization and scheduling across STAs, each MAC SAP controlled by its own RSNA key management entity, supporting TDD channel access (11.54).",
+      "zh": "MSGCF（在 6.4 中定义）通过观察 MAC 与 PHY 两个管理实体，能够接触到全部管理信息，并把信息提供给诸如移动性管理器这样的高层实体；标准给出的接口示例是 IEEE Std 802.21-2017 的媒体无关服务（MIS）。只要一个非 AP 站点关联到构成该 ESS 的任意一个 AP，ESS 链路即为“通”。在多 MAC 模型中，一个 MM-SME 协调多个共用一个 PHY 的站点（因而也是多个 MAC）；同一 MM-SME 下的各站点之间不能直接交换帧，而 MMS 元素则在诸如 Probe Request/Response 和 Association 等帧中携带这些被协调的 MAC 地址。对于多频段 FST，“会话”指的是两个直接通信的站点之间的非 PHY 状态：在透明 FST 下，一个共享的多频段管理实体能看到每个 SME 的本地状态——序号、块确认协议、TS、关联状态、RSNA、安全密钥、重放/PN 计数器——并对外呈现单一的 MAC SAP；在非透明 FST 下，该实体只负责建立/拆除这次转移，因此所有 SME 本地状态都必须重新建立，且由高层来管理 FST。同信道隧道（OCT，11.31.5）让一个 MLME 替另一个 MLME 承载帧，从而（去）认证与（重）关联可以跨频段无缝完成。在同信道协同模型中，SME 内的一个协同管理实体负责跨站点的建立、配置、时间同步与调度，每个 MAC SAP 由各自独立的 RSNA 密钥管理实体控制，支持 TDD 信道访问（11.54）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          412,
+          413,
+          414,
+          415,
+          416,
+          417,
+          418
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A reading habit that pays off: when a later clause names an entity (MM-SME, MSGCF, multi-band management entity, coordinated management entity), flip back to the matching figure in 4.9 and locate its box. Knowing which SAP it sits behind and which plane it belongs to tells you instantly what it can and cannot touch.",
+      "zh": "一个很划算的阅读习惯：当后面的章节提到某个实体（MM-SME、MSGCF、多频段管理实体、协同管理实体）时，翻回 4.9 中对应的图，找到它的方框。知道它处在哪个 SAP 之后、属于哪个平面，你就能立刻明白它能碰什么、不能碰什么。"
+    }
+  ],
+  "covers": [
+    "80211-2024:4.9.1",
+    "80211-2024:4.9.2",
+    "80211-2024:4.9.3",
+    "80211-2024:4.9.4",
+    "80211-2024:4.9.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        412
+      ],
+      "note": "4.9.1 General + 4.9.2 Interworking — MAC/PHY split, Figure 4-27, MSGCF correlating MLME/PLME events"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        413,
+        414
+      ],
+      "note": "4.9.2 ESS link (Fig 4-29) + 4.9.3 multiple MAC sublayers — MM-SME, MMSL, MMS element (Fig 4-30)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        415,
+        416,
+        417
+      ],
+      "note": "4.9.4 multi-band operation — transparent vs nontransparent FST, multi-band management entity, OCT (Figs 4-31/4-32)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        417,
+        418
+      ],
+      "note": "4.9.5 co-channel coordinated management operation — coordinated management entity, TDD (Fig 4-33)"
+    }
+  ],
+  "track": "foundations"
+}

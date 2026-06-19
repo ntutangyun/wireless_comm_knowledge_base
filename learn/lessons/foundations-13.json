@@ -1,0 +1,156 @@
+{
+  "id": "foundations-13",
+  "title": {
+    "en": "Measuring the air: radio measurement, mesh, and special service sets",
+    "zh": "丈量空中环境：无线电测量、Mesh 与特殊服务集"
+  },
+  "estMinutes": 6,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A radio that can only talk is half-blind. To use unlicensed spectrum well — to dodge interference, pick the right channel, or hand off cleanly to a better AP — a station first has to see the air around it. Clause 4 of 802.11 frames a whole family of capabilities around exactly this: a STA can measure its own radio environment, ask a neighbour to measure and report back, and use what it learns to make smarter decisions. This lesson tours those senses, then two ways a network can organise itself beyond the plain access point: the self-healing mesh, and a handful of less-common special service sets.",
+      "zh": "一个只会“说话”的无线电其实是半盲的。要把非授权频谱用好——避开干扰、挑选合适的信道、或者干净利落地切换到更好的 AP——站点首先得“看见”周围的空中环境。802.11 的第 4 章正是围绕这一点定义了一整套能力：站点可以测量自身所处的无线电环境，可以请邻居代为测量并回报结果，再用学到的信息做出更聪明的决策。本课先带你走一遍这些“感官”，再介绍两种让网络在普通接入点之外自组织的方式：自愈式的 Mesh，以及若干不太常见的特殊服务集。"
+    },
+    {
+      "type": "prose",
+      "en": "The radio measurement service gives STAs a standard, cross-vendor way to observe link performance and the radio environment. A STA can measure locally, request a measurement from another STA, or be asked to measure and return results — the data then flows up to STA management and upper layers. The headline use case is mobility: Channel Load and Neighbor reports collect transition information that can dramatically speed up handoffs between BSSs in the same ESS. The request/report pairs are: Beacon, Frame, Channel Load, Noise Histogram, STA Statistics, Location (LCI), Neighbor Report, Link Measurement, and Transmit Stream/Category Measurement. Two siblings round it out: Measurement Pause (request-only — it just inserts a timed gap between measurements in a series) and Measurement Pilot (report-only — a small, frequent beacon-subset frame that helps a STA scan).",
+      "zh": "无线电测量服务为站点提供了一套标准化、跨厂商的方式来观察链路性能与无线电环境。站点可以本地测量、向另一个站点请求测量、或被请求测量并返回结果——这些数据随后上送到站点管理实体和上层协议。最重要的应用场景是移动性：信道负载（Channel Load）和邻居（Neighbor）报告会收集切换所需的信息，可以大幅加快同一 ESS 内各 BSS 之间的切换速度。请求/报告成对的测量包括：信标（Beacon）、帧（Frame）、信道负载、噪声直方图（Noise Histogram）、站点统计（STA Statistics）、位置（LCI）、邻居报告、链路测量（Link Measurement）和发送流/类别测量（Transmit Stream/Category Measurement）。还有两个“偏门”成员：测量暂停（Measurement Pause，只有请求——它只是在一系列测量之间插入一段定时的间隔）和测量导频（Measurement Pilot，只有报告——一种比信标更小、发送更频繁的帧，用于帮助站点扫描）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A quick way to remember the measurements: some look outward (Beacon = what APs can I hear?, Neighbor = where could I roam next?), some look at the medium (Channel Load = how busy?, Noise Histogram = how much non-802.11 noise?), some look inward at this STA (STA Statistics = my own counters, Location = where am I?), and some look at a specific link or stream (Link Measurement = instantaneous link quality, Transmit Stream/Category = how is this QoS stream doing?).",
+      "zh": "记住这些测量的小窍门：有的向外看（Beacon＝我能听到哪些 AP？邻居＝我接下来可以漫游到哪里？），有的看介质（信道负载＝有多忙？噪声直方图＝有多少非 802.11 噪声？），有的向内看本站点（站点统计＝我自己的计数器，位置＝我在哪里？），还有的看某条具体的链路或数据流（链路测量＝瞬时链路质量，发送流/类别＝这条 QoS 流状况如何？）。"
+    },
+    {
+      "type": "prose",
+      "en": "Measuring is the first step to self-organising — and the mesh BSS (MBSS) takes self-organisation furthest. A mesh BSS is a LAN of autonomous mesh STAs that each establish wireless links with neighbours; using multi-hop forwarding, MSDUs and management frames can reach a STA that is not in direct range. From the data point of view, every mesh STA appears able to deliver MSDUs to any other, even across several hops. Mesh STAs are QoS STAs (a mesh BSS is one kind of QoS BSS) that use the mesh coordination function (MCF) for channel access; they do not associate with an AP. To talk to the outside world, an MBSS uses a mesh gate — the logical point where MSDUs enter the distribution system (DS). Several mesh gates can connect different mesh BSSs to the same DS, and one device can combine AP + portal + mesh gate functions.",
+      "zh": "测量是自组织的第一步——而 Mesh BSS（MBSS）把自组织推到了极致。Mesh BSS 是由若干自治的 Mesh 站点组成的局域网，每个站点都与邻居建立无线链路；借助多跳转发，MSDU 和管理帧可以送达不在直接通信范围内的站点。从数据传输的角度看，每个 Mesh 站点都仿佛能把 MSDU 直接交付给任意其他站点，哪怕中间隔了好几跳。Mesh 站点都是 QoS 站点（Mesh BSS 属于一种 QoS BSS），使用 Mesh 协调功能（MCF）来接入信道；它们不与 AP 关联。要与外部世界通信，MBSS 通过 Mesh 网关（mesh gate）——这是 MSDU 进入分布式系统（DS）的逻辑入口点。多个 Mesh 网关可以把不同的 Mesh BSS 接入同一个 DS，而一台设备也可以同时兼具 AP＋门户（portal）＋Mesh 网关的功能。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    subgraph MBSS[\"Mesh BSS (multi-hop)\"]\n        M1[\"Mesh STA 1\"] --- M2[\"Mesh STA 2\"]\n        M2 --- M3[\"Mesh STA 3\"]\n        M3 --- MG[\"Mesh STA + Mesh Gate\"]\n        M1 --- M3\n    end\n    MG --> DS[\"Distribution System (DS)\"]\n    DS --> AP[\"Infrastructure AP\"]\n    AP --> STA[\"Non-mesh STA\"]\n    Note[\"MSDU from STA1 reaches STA3 over multiple hops; mesh gate bridges to the DS\"]",
+      "zh": "graph TD\n    subgraph MBSS[\"Mesh BSS（多跳）\"]\n        M1[\"Mesh 站点 1\"] --- M2[\"Mesh 站点 2\"]\n        M2 --- M3[\"Mesh 站点 3\"]\n        M3 --- MG[\"Mesh 站点 + Mesh 网关\"]\n        M1 --- M3\n    end\n    MG --> DS[\"分布式系统 (DS)\"]\n    DS --> AP[\"基础设施 AP\"]\n    AP --> STA[\"非 Mesh 站点\"]\n    Note[\"来自站点1的 MSDU 经多跳到达站点3；Mesh 网关桥接到 DS\"]"
+    },
+    {
+      "type": "prose",
+      "en": "Inside, a mesh BSS runs a set of mesh functions. Mesh discovery lets a STA find an MBSS (identified by a Mesh ID in Beacons and Probe Responses); mesh peering management establishes and closes the peerings that make two neighbours into peer mesh STAs; mesh security authenticates a pair of mesh STAs and derives session keys. On top of that sit mesh beaconing and synchronization, the mesh coordination function (EDCA + reservation-based MCCA), mesh power management (active / light-sleep / deep-sleep per peering), and mesh channel switching. The clever multi-hop part is path selection and forwarding: HWMP is the default protocol, choosing routes by an airtime link metric, so once a path between a source and destination mesh STA is found the frame is forwarded hop by hop. Mesh gates announce themselves with Gate Announcement frames so STAs can build paths toward the DS, and intra-mesh congestion control provides flow control so buffer overflow at one hop doesn't waste the medium.",
+      "zh": "在内部，Mesh BSS 运行着一组 Mesh 功能。Mesh 发现（mesh discovery）让站点找到某个 MBSS（由信标和探测响应帧中的 Mesh ID 标识）；Mesh 对等管理（mesh peering management）负责建立和关闭对等关系，使两个邻居成为对等 Mesh 站点；Mesh 安全（mesh security）对一对 Mesh 站点进行认证并派生会话密钥。在这之上还有 Mesh 信标与同步、Mesh 协调功能（EDCA＋基于预约的 MCCA）、Mesh 电源管理（按对等关系分为活跃／浅睡眠／深睡眠）以及 Mesh 信道切换。最精妙的多跳部分是路径选择与转发：HWMP 是默认协议，依据“空口时间链路度量（airtime link metric）”来选路，因此一旦找到源 Mesh 站点与目的 Mesh 站点之间的路径，帧就会被逐跳转发。Mesh 网关通过网关通告（Gate Announcement）帧宣告自身存在，使站点能够建立通往 DS 的路径；而 Mesh 内拥塞控制（intra-mesh congestion control）提供流量控制，避免某一跳的缓冲区溢出而浪费介质。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 4 also collects several special service-set and bridging concepts you'll meet less often. For dense millimetre-wave deployments, CCSS/ECAPC clustering coordinates multiple synchronization APs so their transmissions land in non-overlapping time periods. The robust AV streaming family makes media flows survive: GCR (groupcast with retries) adds reliability to group-addressed streams, SCS and MSCS classify individually addressed traffic into the right access category or user priority, OBSS management lets co-channel APs cooperatively share the medium via QLoad reports, SRP interworking ties 802.11 into IEEE 802.1Q reservations, and intra-AC prioritization splits an access category into finer transmit queues. The SSPN interface lets an AP consult an external subscription provider network to authenticate and provision a STA, and operation under GDB control lets devices share TV white space under a geolocation database's permission.",
+      "zh": "第 4 章还汇集了几个你不太常遇到的特殊服务集与桥接概念。针对密集的毫米波部署，CCSS/ECAPC 集群（clustering）协调多个同步 AP，使它们的传输落在互不重叠的时间段内。健壮音视频流（robust AV streaming）家族让媒体流更耐用：GCR（带重传的组播）为组地址流增加可靠性；SCS 与 MSCS 把单播流量归类到正确的接入类别或用户优先级；OBSS 管理让同信道的 AP 通过 QLoad 报告协同共享介质；SRP 互通把 802.11 接入到 IEEE 802.1Q 的预约机制；AC 内优先级（intra-AC prioritization）则把一个接入类别拆分成更细的发送队列。SSPN 接口让 AP 可以咨询外部订阅服务提供商网络，对站点进行认证和业务开通；而在地理位置数据库（GDB）控制下的操作，则让设备在该数据库许可下共享电视空白频段。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "GLK and EPD are the 'be a good Ethernet bridge' concepts. A general link (GLK) is a point-to-point link between two GLK STAs that plugs straight into an IEEE 802.1Q bridged network — no DS, no ESS. Because a bridge sometimes needs to send a group-addressed frame to only some receivers (to break loops, or to keep the sender from receiving its own frame), GLK adds selective reception of group-addressed frames using a SYNRA (synthetic receiver address). And EPD (EtherType protocol discrimination) is simply an alternative LLC framing — the default is LPD, but EPD is used in the 5.9 GHz bands and may be used elsewhere when both ends support it.",
+      "zh": "GLK 与 EPD 是“当一个称职的以太网网桥”这类概念。通用链路（general link, GLK）是两个 GLK 站点之间的点对点链路，可直接接入 IEEE 802.1Q 桥接网络——不需要 DS，也不需要 ESS。由于网桥有时需要把一个组地址帧只发给部分接收者（为了打破环路，或避免发送方收到自己发出的帧），GLK 通过 SYNRA（合成接收地址）增加了对组地址帧的选择性接收。而 EPD（EtherType 协议判别）只是另一种 LLC 封装方式——默认是 LPD，但在 5.9 GHz 频段使用 EPD，在两端都支持时也可在其他频段使用。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What the standard actually says about the measurement set and the mesh gate",
+        "zh": "标准对测量集合与 Mesh 网关的确切表述"
+      },
+      "en": "Clause 4.3.11.1 lists the request/report measurements (Beacon, Frame, Channel Load, Noise Histogram, STA Statistics, LCI, Neighbor Report, Link Measurement, Transmit Stream/Category), the request-only Measurement Pause, and the report-only Measurement Pilot, and calls measurement 'the first step in making WLAN smart' for fast transition and mesh connectivity. The per-measurement subclauses pin down the specifics: STA Statistics returns counters plus a BSS Average Access Delay group (4.3.11.7); Noise Histogram samples only when virtual carrier sense is idle and the STA is neither transmitting nor receiving (4.3.11.6); the Neighbor Report comes from the AP and lists candidates for a BSS transition (4.3.11.10). For mesh, 4.3.24.4 introduces the mesh gate as 'the logical point at which MSDUs from a non-GLK MBSS enter the DS', distinct from a portal (which integrates a non-802.11 LAN); 4.3.24.5.10 names HWMP the default path-selection protocol using the airtime link metric. On the bridging side, 4.3.31.2 defines selective reception of group-addressed frames via a SYNRA, and 4.3.32 sets LPD as the default LLC discrimination with EPD mandatory in the 5.9 GHz bands.",
+      "zh": "4.3.11.1 节列出了请求/报告类测量（Beacon、Frame、信道负载、噪声直方图、站点统计、LCI、邻居报告、链路测量、发送流/类别），仅请求的测量暂停，以及仅报告的测量导频，并称测量是“让 WLAN 变智能的第一步”，服务于快速切换与 Mesh 连接。各测量的子条款锁定了细节：站点统计返回各类计数器以及一组 BSS 平均接入时延（4.3.11.7）；噪声直方图仅在虚拟载波侦听为空闲、且站点既不发送也不接收帧时采样（4.3.11.6）；邻居报告来自 AP，列出可作为 BSS 切换候选的 AP（4.3.11.10）。在 Mesh 方面，4.3.24.4 节将 Mesh 网关定义为“非 GLK 的 MBSS 中 MSDU 进入 DS 的逻辑入口点”，并与门户（portal，用于集成非 802.11 局域网）相区分；4.3.24.5.10 节指明 HWMP 是默认的路径选择协议，使用空口时间链路度量。在桥接方面，4.3.31.2 节定义了通过 SYNRA 对组地址帧进行选择性接收，4.3.32 节将 LPD 设为默认的 LLC 判别方式，而在 5.9 GHz 频段则强制使用 EPD。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          351,
+          352,
+          370,
+          373,
+          381,
+          386
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        351,
+        352,
+        353
+      ],
+      "note": "4.3.11.1-4.3.11.12 WLAN radio measurements — the request/report set, Measurement Pause, Measurement Pilot"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        368,
+        369,
+        370,
+        371,
+        372,
+        373,
+        374
+      ],
+      "note": "4.3.23 SSPN interface; 4.3.24 Mesh BSS — overview, mesh STA, components, mesh gate, and introduction to mesh functions"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        376,
+        377
+      ],
+      "note": "4.3.27 Robust AV streaming (GCR, SCS, MSCS, OBSS management, SRP, intra-AC prioritization); 4.3.28 GDB-controlled operation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        348,
+        349
+      ],
+      "note": "4.3.9 CCSS and ECAPC clustering for DMG synchronization APs/PCPs"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        380,
+        381,
+        386
+      ],
+      "note": "4.3.31 General link (GLK), SYNRA selective reception, GLK service sets; 4.3.32 EtherType protocol discrimination (EPD)"
+    }
+  ],
+  "covers": [
+    "80211-2024:4.3.9",
+    "80211-2024:4.3.11.1",
+    "80211-2024:4.3.11.2",
+    "80211-2024:4.3.11.3",
+    "80211-2024:4.3.11.4",
+    "80211-2024:4.3.11.5",
+    "80211-2024:4.3.11.6",
+    "80211-2024:4.3.11.7",
+    "80211-2024:4.3.11.8",
+    "80211-2024:4.3.11.9",
+    "80211-2024:4.3.11.10",
+    "80211-2024:4.3.11.11",
+    "80211-2024:4.3.11.12",
+    "80211-2024:4.3.23",
+    "80211-2024:4.3.24.1",
+    "80211-2024:4.3.24.2",
+    "80211-2024:4.3.24.3",
+    "80211-2024:4.3.24.4",
+    "80211-2024:4.3.24.5",
+    "80211-2024:4.3.27.1",
+    "80211-2024:4.3.27.2",
+    "80211-2024:4.3.27.3",
+    "80211-2024:4.3.27.4",
+    "80211-2024:4.3.27.5",
+    "80211-2024:4.3.27.6",
+    "80211-2024:4.3.27.7",
+    "80211-2024:4.3.28",
+    "80211-2024:4.3.31.1",
+    "80211-2024:4.3.31.2",
+    "80211-2024:4.3.31.3",
+    "80211-2024:4.3.32"
+  ],
+  "track": "foundations"
+}
