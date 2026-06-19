@@ -1,0 +1,111 @@
+{
+  "id": "v2x-light-04-light-communication-lifi",
+  "title": {
+    "en": "Wi-Fi Over Light: LEDs, Photodiodes, and Keeping the 802.11 MAC",
+    "zh": "用光传输的 Wi-Fi：LED、光电二极管，以及沿用 802.11 MAC"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Light Communication (LC) — the technology popularly known as Li-Fi — asks a simple question: what if Wi-Fi rode on light instead of radio? Instead of an antenna pushing radio waves into the air, an LED flickers far faster than the human eye can follow, encoding bits in tiny changes of brightness. At the other end, a photodiode senses those changes and turns them back into bits. The clever part is that everything above the PHY stays the same: the LC station reuses the ordinary 802.11 MAC, so to the software stack it still looks and behaves like Wi-Fi.",
+      "zh": "光通信（Light Communication，简称 LC）——也就是大家熟知的 Li-Fi——提出了一个很朴素的问题：如果 Wi-Fi 用光来传，而不是用无线电，会怎样？这里不再是天线把无线电波推向空中，而是一颗 LED 以远超人眼可察觉的速度闪烁，把比特编码进亮度的微小变化里。在接收端，一个光电二极管感知这些变化，再把它们还原成比特。巧妙之处在于：PHY 之上的一切都保持不变——LC 站点沿用普通的 802.11 MAC，因此在软件栈看来，它依然像 Wi-Fi、用起来也像 Wi-Fi。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The headline idea: LC swaps only the bottom layer. An LC STA still runs the Clause 10 MAC, the Clause 11 MLME, and Clause 12 security. If it claims HT, VHT, or HE support, it follows that generation's MAC procedures — just with an optical PHY underneath. Same brain, different mouth and ears.",
+      "zh": "核心思想：LC 只替换最底下那一层。LC 站点仍然运行第 10 章定义的 MAC、第 11 章的 MLME 以及第 12 章的安全功能。如果它声明支持 HT、VHT 或 HE，就遵循对应那一代的 MAC 流程——只是底下换成了光学 PHY。同一个大脑，换了一张嘴和一对耳朵。"
+    },
+    {
+      "type": "prose",
+      "en": "How does the transmitter build a light signal? The chain looks almost exactly like a normal OFDM Wi-Fi transmitter — FEC encoder, interleaving and mapping, IDFT, guard-interval insertion, windowing, I/Q modulation — right up to the last step. Where an RF radio would upconvert to a 5 or 6 GHz carrier and feed an antenna, the LC transmitter instead produces an LC intermediate-frequency (IF) signal, adds a DC bias, and feeds it into an optical front end (OFE). That OFE drives the LED. The DC bias matters because a solid-state lighting (SSL) device — an LED — can only carry positive current; the light can get brighter or dimmer, but it cannot go negative. Lifting the whole waveform up onto a DC pedestal keeps the modulated signal in the region where the LED actually emits light.",
+      "zh": "发射机是怎么把信号变成光的？这条链路几乎和普通的 OFDM Wi-Fi 发射机一模一样——FEC 编码器、交织与映射、IDFT、插入保护间隔、加窗、I/Q 调制——一直到最后一步都相同。普通射频电台会把信号上变频到 5 GHz 或 6 GHz 载波再送往天线；而 LC 发射机则是生成一个 LC 中频（IF）信号，加上一个直流偏置，然后送入光前端（Optical Front End，OFE）。这个 OFE 驱动 LED。直流偏置之所以重要，是因为固态照明（SSL）器件——也就是 LED——只能通过正向电流；光可以变亮或变暗，但不能“变成负的”。把整个波形抬到一个直流基座上，就能让被调制的信号始终处在 LED 真正会发光的区间里。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    A[FEC Encoder] --> B[Interleave + Mapping]\n    B --> C[IDFT]\n    C --> D[Insert GI / Window]\n    D --> E[I/Q Mod]\n    E --> F[Add DC bias]\n    F --> G[TX OFE - LED]\n    G --> H((Light))\n    H -.optical channel.-> I[RX OFE - Photodiode]",
+      "zh": "graph LR\n    A[FEC 编码器] --> B[交织 + 映射]\n    B --> C[IDFT]\n    C --> D[插入 GI / 加窗]\n    D --> E[I/Q 调制]\n    E --> F[加直流偏置]\n    F --> G[发射 OFE - LED]\n    G --> H((光))\n    H -.光信道.-> I[接收 OFE - 光电二极管]"
+    },
+    {
+      "type": "prose",
+      "en": "What about 'channels'? RF Wi-Fi numbers its channels by carrier frequency in the 2.4, 5, and 6 GHz bands. LC keeps the same idea but applies it to the LC IF signal: channel center frequencies sit at integer multiples of 5 MHz above a starting frequency, indexed by a channel number. The spectrum is split into two segments — one mapped from the 5 GHz band (roughly 16–176 MHz of IF) and one mapped from the 6 GHz band (roughly 176–336 MHz of IF). This neat mapping is exactly why an LC radio can be built by taking a familiar 5/6 GHz Wi-Fi front end and downconverting it onto the optical IF, rather than designing the optical PHY from scratch.",
+      "zh": "那“信道”又是怎么回事？射频 Wi-Fi 用 2.4、5、6 GHz 频段里的载波频率来给信道编号。LC 沿用了同样的思路，只不过把它套用到 LC 中频（IF）信号上：信道中心频率位于某个起始频率之上、以 5 MHz 整数倍排列，用一个信道号来索引。整个频谱被划分为两段——一段由 5 GHz 频段映射而来（IF 大约 16–176 MHz），另一段由 6 GHz 频段映射而来（IF 大约 176–336 MHz）。正是这种整齐的映射关系，使得人们可以直接拿一个熟悉的 5/6 GHz Wi-Fi 前端、把它下变频到光学中频上来搭建 LC 收发机，而不必从零设计光学 PHY。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 320 160' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><rect x='10' y='30' width='70' height='40' rx='4'/><text x='45' y='55' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>LC PHY TX</text><line x1='80' y1='50' x2='120' y2='50'/><circle cx='135' cy='50' r='15'/><text x='135' y='54' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>LED</text><path d='M152 50 q14 -10 28 0 q14 10 28 0' stroke-dasharray='2 3'/><path d='M152 60 q14 -10 28 0 q14 10 28 0' stroke-dasharray='2 3'/><path d='M152 40 q14 -10 28 0 q14 10 28 0' stroke-dasharray='2 3'/><circle cx='225' cy='50' r='15'/><text x='225' y='54' fill='currentColor' stroke='none' font-size='8' text-anchor='middle'>PD</text><line x1='240' y1='50' x2='280' y2='50'/><rect x='280' y='30' width='30' height='40' rx='4'/><text x='160' y='120' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>LOS dominates: the direct beam is tens of dB</text><text x='160' y='135' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>stronger than reflected (non-LOS) light</text></svg>",
+      "caption": {
+        "en": "An LED transmits an intensity-modulated optical signal to a photodiode (PD). Unlike a multipath RF channel, the LC channel is dominated by the line-of-sight beam.",
+        "zh": "一颗 LED 向光电二极管（PD）发出强度调制的光信号。与存在多径的射频信道不同，LC 信道由直射（视距，LOS）光束主导。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Because light is directional, LC can run several streams in parallel. With multiple transmit and receive chains it supports spatial multiplexing (beams aimed so each photodiode mostly sees its own LED) and wavelength-division multiplexing (different LEDs at different colours, e.g. 850 nm and 950 nm, separated by an optical filter at the receiver). Channel access also has to be rethought: clear-channel assessment (CCA) — Wi-Fi's 'listen before you talk' — is now done by measuring the LC IF signal at the antenna connector, reusing the HT/VHT/HE busy-detection rules but applied to light. There is even an optional 'LC repetition' feature: because beams are directional, two stations might not see each other, so the AP can rebroadcast (within 1 microsecond) what it hears, so hidden stations still sense the medium as busy.",
+      "zh": "由于光是有方向性的，LC 可以并行传输多条数据流。借助多条发射链与接收链，它支持空间复用（光束各自对准，使每个光电二极管主要只“看到”属于自己的那颗 LED），以及波分复用（不同 LED 用不同波长，例如 850 nm 与 950 nm，在接收端用光学滤光片分开）。信道接入也需要重新设计：空闲信道评估（CCA）——也就是 Wi-Fi 那套“先听后说”——如今改为在天线接口处测量 LC IF 信号，复用 HT/VHT/HE 的“忙”判定规则，只是把对象换成了光。这里甚至还有一个可选的“LC 转发（LC repetition）”特性：因为光束有方向性，两个站点可能彼此看不见，于是 AP 可以把它收到的信号（在 1 微秒内）重新广播出去，让被遮挡的隐藏站点依然能感知到介质处于忙碌状态。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact wording: MAC reuse, the DC-biased OFE, IF channel numbering, and optical CCA",
+        "zh": "标准原文：MAC 复用、加直流偏置的 OFE、IF 信道编号，以及光学 CCA"
+      },
+      "en": "Clause 33.1.2 is explicit that an LC STA with HT/VHT/HE support shall follow that generation's MAC procedures and requirements, just with an LC PHY underneath. Clause 33.2.3.2 describes the transmitter: the complex baseband waveform of each transmit chain is upconverted to an LC IF signal (directly, or via 5–6 GHz RF then downconversion), a DC bias is added, and the result is fed into an optical front end (OFE) that produces an intensity-modulated optical signal — the bias is required because the current through a solid-state lighting (SSL) device can only be positive. Clause 33.2.3.4 defines channel numbering: LC IF channel center frequency = LC IF channel starting frequency + 5 × nch MHz, with nch = 1…64, splitting the IF spectrum into a 5 GHz-mapped segment (16–176 MHz) and a 6 GHz-mapped segment (176–336 MHz). Clause 33.2.3.7 specifies CCA: requirements apply to the LC IF signal measured at the antenna connector, reusing the HT (19.3.19.6), VHT (21.3.18.5), and HE (27.2.7 / 27.3.22) busy-detection rules; 33.2.3.7.2 adds the optional LC repetition feature in which an LC AP repeats a received signal at its TX OFE with under 1 microsecond of delay.",
+      "zh": "33.1.2 节明确规定：声明支持 HT/VHT/HE 的 LC 站点，应遵循对应那一代的 MAC 流程与要求，只是底层换成 LC PHY。33.2.3.2 节描述了发射机：每条发射链的复基带波形被上变频到一个 LC IF 信号（可直接上变频，或先上变频到 5–6 GHz 射频再下变频），随后加上直流偏置，结果送入光前端（OFE），由其产生强度调制的光信号——之所以必须加偏置，是因为固态照明（SSL）器件中的电流只能为正。33.2.3.4 节定义了信道编号：LC IF 信道中心频率 = LC IF 信道起始频率 + 5 × nch（MHz），其中 nch = 1…64，将 IF 频谱划分为一段由 5 GHz 映射而来（16–176 MHz）和一段由 6 GHz 映射而来（176–336 MHz）。33.2.3.7 节规定了 CCA：相关要求作用于在天线接口处测得的 LC IF 信号，复用 HT（19.3.19.6）、VHT（21.3.18.5）与 HE（27.2.7 / 27.3.22）的“忙”判定规则；33.2.3.7.2 节还补充了可选的 LC 转发特性，即 LC AP 在其发射 OFE 处转发收到的信号，时延小于 1 微秒。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4842,
+          4843,
+          4845,
+          4850
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:33.1.2",
+    "80211-2024:33.2.3.2",
+    "80211-2024:33.2.3.4",
+    "80211-2024:33.2.3.7"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4842
+      ],
+      "note": "33.1.2 LC MAC — an LC STA with HT/VHT/HE support follows that generation's MAC procedures with an LC PHY"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4842,
+        4843,
+        4844
+      ],
+      "note": "33.2.3.2 Transmitter block diagram — upconvert to LC IF, add DC bias, feed OFE; SSL current only positive (Figures 33-1/33-2/33-3/33-4)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4844,
+        4845,
+        4846,
+        4847
+      ],
+      "note": "33.2.3.4 Channel numbering — Eq (33-1), nch = 1..64, 5/6 GHz-mapped IF segments (Table 33-1)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4850,
+        4851
+      ],
+      "note": "33.2.3.7 CCA for LC — applies to LC IF at antenna connector; reuses HT/VHT/HE busy detection; 33.2.3.7.2 optional LC repetition (<1 us)"
+    }
+  ],
+  "track": "v2x-light"
+}

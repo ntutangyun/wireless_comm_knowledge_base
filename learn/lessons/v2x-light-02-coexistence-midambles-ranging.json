@@ -1,0 +1,113 @@
+{
+  "id": "v2x-light-02-coexistence-midambles-ranging",
+  "title": {
+    "en": "Sharing the Road: Coexisting with Legacy 11p, and Midambles for a Moving Channel",
+    "zh": "共享车道：与传统 11p 共存，以及应对快速变化信道的 Midamble"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Cars talk to each other over Wi-Fi in the 5.9 GHz band, with no access point in the middle — that 'no AP' mode is called OCB (outside the context of a BSS). The newest flavour is NGV (Next Generation V2X), the faster successor to the original 802.11p that has been in vehicles for years. But you cannot flip a switch and replace every car overnight. For a long time a brand-new NGV car and an old 11p car will sit on the same channel, beside each other on the same highway. NGV is designed so the new car never breaks the old one.",
+      "zh": "汽车之间通过 5.9 GHz 频段的 Wi-Fi 直接对话，中间没有接入点——这种“没有 AP”的模式叫做 OCB（脱离 BSS 上下文）。其中最新的一代是 NGV（下一代 V2X），它是多年前就装车的最初 802.11p 的提速继任者。但你没法一夜之间把每辆车都换掉。在相当长一段时间里，一辆全新的 NGV 车和一辆老旧的 11p 车会共用同一个信道，在同一条高速公路上比邻而行。NGV 的设计原则就是：新车绝不能把老车搞坏。"
+    },
+    {
+      "type": "prose",
+      "en": "The first trick is to talk in a language the old radio can still read. An NGV station can send in a plain 'non-NGV' frame format that a legacy 11p radio decodes natively. Even better, it can send the same broadcast frame several times in a row — a repetition transmission — and it can duplicate a 20 MHz frame across two 10 MHz halves. Repetition gives a weak or fast-moving receiver several chances to catch the message; duplication lets a narrow 10 MHz legacy radio still grab its half. The result: the modern car gets to broadcast safety messages without leaving the older cars deaf.",
+      "zh": "第一个技巧，是用老收音机仍然听得懂的语言说话。NGV 站点可以用一种普通的“非 NGV”帧格式发送，传统 11p 收音机能原生解码它。更妙的是，它可以把同一个广播帧连续重复发送多次——这叫重复传输（repetition）；还可以把一个 20 MHz 的帧在两个 10 MHz 的半边上复制一份（duplication）。重复给了信号弱或高速移动的接收方好几次机会去接住这条消息；复制则让只有 10 MHz 窄带的老收音机仍能抓住属于它的那一半。结果就是：现代车得以广播安全消息，而不会让旧车“失聪”。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "How does an NGV car secretly tell another NGV car 'I'm new' without confusing the old ones? It hides a hint in plain sight: the Duration/ID field of an ordinary frame is set to a special agreed value (e.g. 2 for an Ack or a group-addressed frame). A legacy radio just treats it as a normal duration; an NGV radio reads it as 'transmitter is NGV-capable'. Same bytes, two audiences.",
+      "zh": "一辆 NGV 车怎么悄悄告诉另一辆 NGV 车“我是新车”，又不把老车弄糊涂？它把暗号藏在明面上：普通帧的 Duration/ID 字段被置为一个事先约定好的特殊值（例如 Ack 帧或组播帧设为 2）。老收音机只把它当作普通的时长值；而 NGV 收音机会把它读作“发送方支持 NGV”。同样的字节，两种听众。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    A[NGV car has a safety message] --> B{Who needs to hear it?}\n    B -->|legacy 11p nearby| C[Send non-NGV format frame]\n    C --> D[Repeat the frame N times<br/>SIFS gap between copies]\n    C --> E[Duplicate 20 MHz across two 10 MHz halves]\n    D --> F[Weak / fast receiver gets<br/>multiple chances to decode]\n    E --> G[Narrow 10 MHz legacy radio<br/>still catches its half]\n    B -->|NGV only| H[Use efficient NGV PPDU format]\n    C --> I[Hide 'I am NGV' hint in Duration/ID]",
+      "zh": "graph TD\n    A[NGV 车有一条安全消息] --> B{谁需要听到它?}\n    B -->|附近有传统 11p| C[发送非 NGV 格式帧]\n    C --> D[把帧重复发送 N 次<br/>每两次之间间隔 SIFS]\n    C --> E[把 20 MHz 在两个 10 MHz 半边上复制]\n    D --> F[信号弱/高速接收方<br/>获得多次解码机会]\n    E --> G[10 MHz 窄带老收音机<br/>仍能接住自己那一半]\n    B -->|仅 NGV| H[使用高效的 NGV PPDU 格式]\n    C --> I[把'我是 NGV'暗号藏进 Duration/ID]"
+    },
+    {
+      "type": "prose",
+      "en": "Now the second intuition: speed. Every Wi-Fi packet starts with a preamble — training symbols the receiver uses to learn the channel (how the signal bounced, faded, and shifted on its way over). On a desk that estimate stays valid for the whole packet. But two cars closing at 250 km/h relative speed make the radio channel change inside a single frame: by the time the receiver reaches the end of the packet, the channel it learned at the start is stale, and bits start flipping. A preamble at the front alone is not enough.",
+      "zh": "现在来看第二个直觉：速度。每个 Wi-Fi 数据包都以一段前导（preamble）开头——这是一组训练符号，接收方用它来“学习”信道（信号一路上是怎么反射、衰落、频移的）。在桌面上，这个估计在整个数据包期间都保持有效。但两辆以 250 km/h 相对速度相向而行的汽车，会让无线信道在一个帧的内部就发生变化：等接收方读到数据包末尾时，它在开头学到的信道早已过时，比特开始出错。只在帧头放一段前导，是不够的。"
+    },
+    {
+      "type": "prose",
+      "en": "The fix is the midamble: extra training symbols sprinkled into the middle of the packet at regular intervals. Each midamble is a fresh, mid-flight snapshot of the channel, so the receiver can re-track a channel that is shifting under it as the cars move. Think of reading a road sign while driving — one glance at the start of a long straight is not enough; you keep glancing to stay locked on. Midambles are those repeated glances, built into the waveform so high-mobility V2X links stay decodable end to end.",
+      "zh": "解决办法就是 Midamble：在数据包中间按固定间隔插入额外的训练符号。每一段 Midamble 都是对信道的一次“飞行途中”的新鲜快照，于是接收方能够持续重新追踪那个随着车辆移动而不断漂移的信道。可以类比开车时看路牌——在一条长直道开头瞥一眼是不够的，你得不断地瞥，才能始终锁定。Midamble 就是这些反复的“瞥视”，它们被内建进波形之中，让高速移动的 V2X 链路从头到尾都保持可解码。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 480 130' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='6' y='16' fill='currentColor' stroke='none' font-size='11'>Single preamble (desk): channel learned once</text><rect x='6' y='24' width='44' height='22' fill='currentColor' stroke='none' opacity='0.85'/><text x='10' y='39' fill='#fff' stroke='none' font-size='9'>PRE</text><rect x='50' y='24' width='200' height='22'/><text x='120' y='39' fill='currentColor' stroke='none' font-size='9'>data payload</text><text x='6' y='78' fill='currentColor' stroke='none' font-size='11'>With midambles (highway): re-track mid-packet</text><rect x='6' y='86' width='44' height='22' fill='currentColor' stroke='none' opacity='0.85'/><text x='10' y='101' fill='#fff' stroke='none' font-size='9'>PRE</text><rect x='50' y='86' width='52' height='22'/><rect x='102' y='86' width='20' height='22' fill='currentColor' stroke='none' opacity='0.55'/><text x='104' y='101' fill='#fff' stroke='none' font-size='8'>MID</text><rect x='122' y='86' width='52' height='22'/><rect x='174' y='86' width='20' height='22' fill='currentColor' stroke='none' opacity='0.55'/><text x='176' y='101' fill='#fff' stroke='none' font-size='8'>MID</text><rect x='194' y='86' width='56' height='22'/></svg>",
+      "caption": {
+        "en": "Top: one preamble trains the channel once — fine when nothing moves. Bottom: midambles (MID) inserted between data chunks let a fast-moving receiver refresh its channel estimate mid-packet.",
+        "zh": "上：单个前导只训练一次信道——在静止时足够。下：在数据块之间插入的 Midamble（MID）让高速移动的接收方在数据包中途刷新它的信道估计。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Coexistence and midambles keep the link alive; NGV ranging adds a sense of distance. An NGV station may reuse the fine timing measurement (FTM) machinery — measuring how long a round-trip signal takes — to estimate the range to a peer car, which is exactly what collision-avoidance wants. It is a trimmed-down subset of full FTM: non-trigger-based ranging, no PHY-layer security in the 5.9 GHz band, with capability discovery handled by higher layers rather than by 802.11 itself.",
+      "zh": "共存机制与 Midamble 让链路保持鲜活；而 NGV 测距（ranging）则增添了一种“距离感”。NGV 站点可以复用精细时间测量（FTM）那套机制——测量信号往返一趟所花的时间——来估计与对端车辆之间的距离，而这正是防碰撞所需要的。它是完整 FTM 的一个精简子集：采用非触发式（non-TB）测距，在 5.9 GHz 频段不设 PHY 层安全，并且其能力发现交由更高层处理，而非由 802.11 自身完成。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What the standard actually mandates for coexistence, repetition, duplication, and ranging",
+        "zh": "标准对共存、重复、复制与测距的具体规定"
+      },
+      "en": "Clause 31.2.1 ties coexistence to OCB: if dot11NGVOptionImplemented is true then dot11OCBActivated shall be true, and an NGV STA signals that it is NGV-capable through specific Duration/ID values in non-NGV PPDUs — an Ack/BlockAck or group-addressed frame with Duration/ID = 2, or an individually addressed frame with Duration/ID equal to the sum of 4, SIFS, and the responding Ack/BlockAck transmission time. Clause 31.2.4 defines NON_NGV_10 repetition transmission: an NGV STA repeats one NON_NGV_10 PPDU multiple times with a SIFS gap between transmissions, improving group-addressed broadcast reliability for both NGV and non-NGV receivers; the repetition count for a group-addressed MPDU is set by a higher layer via the radio environment request vector and carried as N_PPDU_REP in the TXVECTOR. Clause 31.2.5 covers non-NGV duplication: a 20 MHz NGV STA may send RTS in non-NGV duplicate PPDUs to protect a 20 MHz NGV PPDU, and the CTS-response bandwidth (CBW10 vs CBW20) follows the RTS's CH_BANDWIDTH_IN_NON_NGV plus NAV/CCA state on the secondary 10 MHz channel. Clause 31.4 scopes NGV ranging as a subset of the FTM functionalities in 11.21.6 — non-TB ranging only, no PHY security in the 5.9 GHz band, NGV ranging NDP and a Ranging NDP Announcement frame substituted for the HE equivalents, and capability discovery delegated to higher layers (channel, ISTA/RSTA role, LMR feedback policy). The midamble concept itself is realised in the NGV PHY (Clause 32) rather than in Clause 31.",
+      "zh": "31.2.1 节把共存绑定到 OCB：若 dot11NGVOptionImplemented 为真，则 dot11OCBActivated 也应为真；NGV STA 通过非 NGV PPDU 中特定的 Duration/ID 值来表明自己具备 NGV 能力——Ack/BlockAck 帧或组播帧的 Duration/ID = 2，或个体寻址帧的 Duration/ID 等于 4、SIFS 与所响应的 Ack/BlockAck 传输时间之和。31.2.4 节定义了 NON_NGV_10 重复传输：NGV STA 把一个 NON_NGV_10 PPDU 重复发送多次，每两次之间间隔 SIFS，从而为 NGV 与非 NGV 接收方同时提升组播广播的可靠性；组播 MPDU 的重复次数由更高层经无线环境请求向量设定，并在 TXVECTOR 中以 N_PPDU_REP 携带。31.2.5 节涵盖非 NGV 复制：20 MHz 的 NGV STA 可在非 NGV 复制 PPDU 中发送 RTS 以保护 20 MHz NGV PPDU，而 CTS 应答的带宽（CBW10 还是 CBW20）取决于 RTS 的 CH_BANDWIDTH_IN_NON_NGV 以及次 10 MHz 信道上的 NAV/CCA 状态。31.4 节把 NGV 测距界定为 11.21.6 中 FTM 功能的一个子集——仅支持非 TB 测距，在 5.9 GHz 频段不设 PHY 安全，用 NGV 测距 NDP 和测距 NDP 通告帧替代对应的 HE 版本，并把能力发现交给更高层（信道、ISTA/RSTA 角色、LMR 反馈策略）。Midamble 这一概念本身是在 NGV PHY（第 32 章）中实现的，而非第 31 章。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4777,
+          4780,
+          4781,
+          4782,
+          4783
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:31.2.1",
+    "80211-2024:31.2.4",
+    "80211-2024:31.2.5",
+    "80211-2024:31.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4777
+      ],
+      "note": "31.2.1 Coexistence with non-NGV STAs — OCB requirement; NGV-capable indication via Duration/ID values in non-NGV PPDUs"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4780
+      ],
+      "note": "31.2.4 NON_NGV_10 repetition transmission — repeat a NON_NGV_10 PPDU N times with SIFS gaps; N_PPDU_REP via radio environment request vector"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4780,
+        4781
+      ],
+      "note": "31.2.5 Non-NGV duplication operation — 20 MHz NGV STA RTS/CTS in non-NGV duplicate PPDUs; CBW10/CBW20 response rules"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4782,
+        4783
+      ],
+      "note": "31.4 NGV ranging — subset of FTM (11.21.6); non-TB ranging, no PHY security in 5.9 GHz, higher-layer capability discovery"
+    }
+  ],
+  "track": "v2x-light"
+}

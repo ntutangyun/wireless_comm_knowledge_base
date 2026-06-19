@@ -1,0 +1,99 @@
+{
+  "id": "v2x-light-01-ngv-mac-ocb-why-vehicles",
+  "title": {
+    "en": "Wi-Fi for Cars: Why NGV, and Talking Without a BSS (OCB)",
+    "zh": "车联网 Wi-Fi：为什么需要 NGV，以及脱离 BSS 的通信（OCB）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Imagine two cars approaching the same intersection at 100 km/h from different directions. If one is braking hard, the other needs to know now — not in three seconds after a network login finishes. This is the problem Next Generation V2X (NGV, the 802.11bd amendment folded into 802.11-2024) was built to solve: vehicles and roadside units exchanging short safety messages, reliably, with the lowest possible latency, while everything is moving fast.",
+      "zh": "想象两辆车以 100 公里/小时的速度，从不同方向驶向同一个路口。如果其中一辆正在急刹车，另一辆必须立刻知道——而不是等三秒钟、等某个网络登录流程跑完之后才知道。这正是下一代车联网（NGV，即并入 802.11-2024 的 802.11bd 修正案）要解决的问题：让车辆与路侧单元在高速移动的同时，可靠地、以尽可能低的时延交换简短的安全消息。"
+    },
+    {
+      "type": "prose",
+      "en": "Ordinary Wi-Fi makes you join a network first: scan, authenticate, associate, then talk. That handshake is fine in a coffee shop, but it is a non-starter on the road — by the time two vehicles finished negotiating a connection, they would already have passed each other. NGV's answer is to skip the network entirely. Stations operate 'outside the context of a BSS' (OCB): there is no access point, no association, no handshake. A car simply broadcasts data frames directly, and any NGV station within range can receive them.",
+      "zh": "普通 Wi-Fi 要求你先加入网络：扫描、认证、关联，然后才能通信。这套握手流程在咖啡馆里没问题，但在道路上却根本行不通——等两辆车谈妥一个连接，它们早就已经擦肩而过了。NGV 的答案是干脆跳过网络。站点工作在“脱离 BSS 上下文”（OCB，outside the context of a BSS）的模式下：没有接入点、没有关联、没有握手。一辆车直接广播数据帧，任何在覆盖范围内的 NGV 站点都能收到。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "OCB means there is no 'network' to belong to. Frames are sent and received with no prior relationship between sender and receiver — much like a radio broadcast. NGV operates in the 5.9 GHz band specifically reserved for intelligent-transport / vehicular communication.",
+      "zh": "OCB 意味着根本不存在一个可以“归属”的网络。帧的发送和接收无需收发双方事先建立任何关系——很像广播电台。NGV 工作在专门为智能交通／车载通信预留的 5.9 GHz 频段上。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    subgraph Normal[\"Ordinary Wi-Fi: must join first\"]\n      A[Scan] --> B[Authenticate] --> C[Associate] --> D[Send data]\n    end\n    subgraph OCB[\"NGV / OCB: just broadcast\"]\n      E[Car A] -->|broadcast data frame| F[Car B]\n      E -->|same frame| G[Roadside Unit]\n    end",
+      "zh": "graph LR\n    subgraph Normal[\"普通 Wi-Fi：必须先入网\"]\n      A[扫描] --> B[认证] --> C[关联] --> D[发送数据]\n    end\n    subgraph OCB[\"NGV / OCB：直接广播\"]\n      E[车辆 A] -->|广播数据帧| F[车辆 B]\n      E -->|同一帧| G[路侧单元]\n    end"
+    },
+    {
+      "type": "prose",
+      "en": "Skipping association does not mean skipping good manners on the air. NGV stations still share the medium politely. In the 5.9 GHz band, an NGV 20 MHz channel is built from two adjacent 10 MHz channels — an OCB primary channel and an OCB secondary channel — and the station contends for both using EDCA before transmitting. It only treats the 20 MHz medium as idle when the primary's carrier sense, the secondary's CCA, and (optionally) virtual carrier sense all agree it is free; otherwise it backs off. If the secondary channel is busy, a station may fall back to sending a narrower 10 MHz frame on the primary alone, so a single congested half does not silence safety traffic.",
+      "zh": "跳过关联，并不意味着可以不讲“空口礼仪”。NGV 站点依然要文明地共享信道。在 5.9 GHz 频段，一个 NGV 的 20 MHz 信道由两个相邻的 10 MHz 信道拼成——一个 OCB 主信道、一个 OCB 辅信道——站点在发送前要用 EDCA 对这两个信道一起竞争。只有当主信道的载波侦听、辅信道的 CCA，以及（可选的）虚拟载波侦听都判定空闲时，它才认为这个 20 MHz 媒介是空闲的；否则就退避。如果辅信道忙，站点可以退回到只在主信道上发送较窄的 10 MHz 帧，这样某一半信道拥塞也不会让安全消息彻底哑火。"
+    },
+    {
+      "type": "prose",
+      "en": "Safety messaging also needs throughput and acknowledgement without the usual setup overhead. So NGV pre-bakes its aggregation rules. A station can bundle several payloads into one A-MSDU, pack multiple frames into an A-MPDU, and use Block Ack to acknowledge a batch at once — all without exchanging capabilities or negotiating a Block Ack agreement first. The parameters are fixed by the standard (for example, 32 reorder buffers, each able to hold a full ~7935-octet A-MSDU, with HT-immediate Block Ack and no timeout). Because there is no peer to negotiate with under OCB, hard-coding these values is what makes aggregation possible at all.",
+      "zh": "安全消息同样需要吞吐量和确认机制，但又不能背上通常那套建立开销。于是 NGV 把聚合规则预先固化了。站点可以把多个净荷捆进一个 A-MSDU，把多帧打包成一个 A-MPDU，并用块确认（Block Ack）一次性确认一批帧——而这一切都无需事先交换能力或协商块确认协定。这些参数由标准写死（例如：32 个重排序缓冲区，每个能容纳一个完整的约 7935 字节 A-MSDU，采用 HT 立即块确认且无超时）。正因为在 OCB 下根本没有对端可供协商，把这些数值硬编码下来，才使聚合得以成立。"
+    },
+    {
+      "type": "prose",
+      "en": "Tying it together: the NGV MAC data service is driven not by a connection but by a 'radio environment request vector' that a higher layer attaches to each outgoing message. That vector tells the MAC which PPDU format, data rate / NGV-MCS, number of spatial streams, channel and width, transmit power, and lifetime to use for that specific frame. The MAC obeys per-frame instead of per-session — exactly what you want when every message is a standalone broadcast and conditions on the road change moment to moment.",
+      "zh": "把这些串起来：NGV 的 MAC 数据服务不是由“连接”驱动的，而是由高层为每一条待发消息附带的“无线环境请求向量（radio environment request vector）”驱动的。这个向量告诉 MAC 这一帧具体该用哪种 PPDU 格式、哪个数据速率／NGV-MCS、多少条空间流、哪个信道和带宽、多大的发射功率以及多长的生存期。MAC 是按帧、而不是按会话来执行的——当每条消息都是独立广播、而路况又瞬息万变时，这正是你想要的方式。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact OCB 20 MHz idle rule and the fixed Block Ack configuration",
+        "zh": "精确的 OCB 20 MHz 空闲判定规则与固定块确认配置"
+      },
+      "en": "Clause 31.2.2 defines the NGV 20 MHz channel as two contiguous 10 MHz channels — an OCB primary and an OCB secondary — with the primary designated by the radio environment vector in the MA-UNITDATA.request. A station transmitting a 20 MHz NGV (or non-NGV duplicate) PPDU contends via EDCA and treats the 20 MHz medium as idle only if the CS mechanism says the OCB primary is idle, PHY-CCA.indication says the OCB secondary is idle, and — if dot11VirtualCSonOCBSecondaryImplemented is true — virtual CS agrees on the secondary; otherwise it is busy and the random backoff procedure is invoked. If the secondary is busy and fallback is enabled, the STA may instead transmit a 10 MHz PPDU on the OCB primary. Clause 31.2.3 fixes NGV aggregation: an NGV STA may transmit and shall support receiving A-MSDU/A-MPDU, supports block ack without exchanging capabilities or creating a block ack agreement, with adjacent MPDUs spaced at least 2 µs; the fixed config is A-MSDU supported, HT-immediate block ack policy, no timeout, 32 buffers each holding 7935 octets, using a Compressed BlockAck frame. Clause 31.5 then makes the MAC data service per-frame: each outgoing MSDU follows the PPDU format, data rate/NGV-MCS, spatial streams, channel/width, transmit power and lifetime carried in its radio environment request vector.",
+      "zh": "31.2.2 节将 NGV 的 20 MHz 信道定义为两个相邻的 10 MHz 信道——一个 OCB 主信道与一个 OCB 辅信道——其中主信道由 MA-UNITDATA.request 中的无线环境向量指定。发送 20 MHz NGV（或 non-NGV 复制）PPDU 的站点通过 EDCA 竞争，且仅当：载波侦听机制判定 OCB 主信道空闲、PHY-CCA.indication 判定 OCB 辅信道空闲，并且——若 dot11VirtualCSonOCBSecondaryImplemented 为真——虚拟载波侦听也认为辅信道空闲时，才认定 20 MHz 媒介空闲；否则即为忙，并触发随机退避过程。若辅信道忙且使能了回退，站点可改为在 OCB 主信道上发送 10 MHz PPDU。31.2.3 节固化了 NGV 聚合：NGV 站点可发送、且必须支持接收 A-MSDU/A-MPDU，无需交换能力或建立块确认协定即支持块确认，A-MPDU 内相邻 MPDU 间隔至少 2 µs；固定配置为：支持 A-MSDU、采用 HT 立即块确认策略、无超时、32 个缓冲区且每个可容纳 7935 字节、使用压缩块确认（Compressed BlockAck）帧。31.5 节进而使 MAC 数据服务以帧为粒度运作：每个待发 MSDU 都按其无线环境请求向量所携带的 PPDU 格式、数据速率/NGV-MCS、空间流数、信道/带宽、发射功率与生存期来处理。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4777,
+          4778,
+          4779,
+          4780,
+          4783
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:31.2.2",
+    "80211-2024:31.2.3",
+    "80211-2024:31.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4777,
+        4778,
+        4779
+      ],
+      "note": "31.2.2 Channel access and transmission methods for 20 MHz OCB transmission — OCB primary/secondary 10 MHz channels, EDCA contention, 20 MHz idle rule, 10 MHz fallback"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4779,
+        4780
+      ],
+      "note": "31.2.3 A-MSDU/A-MPDU/BA operation — fixed aggregation parameters, block ack without negotiation, 32 buffers, Compressed BlockAck"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4783,
+        4784
+      ],
+      "note": "31.5 NGV MAC data service — per-frame radio environment request vector drives PPDU format, NGV-MCS, spatial streams, channel/width, power, lifetime"
+    }
+  ],
+  "track": "v2x-light"
+}
