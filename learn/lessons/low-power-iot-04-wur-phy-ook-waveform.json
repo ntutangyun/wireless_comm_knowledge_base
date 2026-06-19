@@ -1,0 +1,131 @@
+{
+  "id": "low-power-iot-04-wur-phy-ook-waveform",
+  "title": {
+    "en": "Designed to Be Cheap: The WUR PHY & OOK Waveform",
+    "zh": "为极简而生：WUR 物理层与 OOK 波形"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A battery sensor cannot keep its full Wi-Fi radio listening — OFDM reception with its FFT, phase-locked loop and channel estimation burns tens of milliwatts, far too much to run for months on a coin cell. The Wake-Up Radio (WUR) is the answer: a tiny companion receiver that sips power and does only one job — wait for a wake-up signal and then poke the main radio awake. For that to work, the wake-up signal itself has to be something a near-trivial receiver can decode. So the WUR PHY is, by design, a deliberately dumb waveform.",
+      "zh": "靠电池供电的传感器无法让它的完整 Wi-Fi 射频一直处于侦听状态——OFDM 接收要做 FFT、锁相环（PLL）和信道估计，功耗高达数十毫瓦，纽扣电池根本撑不了几个月。唤醒无线电（Wake-Up Radio, WUR）就是答案：一个极省电的小型“陪同”接收机，只做一件事——等待唤醒信号，然后把主射频唤醒。要实现这一点，唤醒信号本身必须是一个近乎平凡的接收机就能解出的东西。因此 WUR 物理层被有意设计成一种“笨拙”的波形。"
+    },
+    {
+      "type": "prose",
+      "en": "The trick is On-Off Keying (OOK), the oldest modulation there is: a bit is just 'carrier on = 1, carrier off = 0'. To decode it you only need an envelope detector — a circuit that asks 'is there energy right now, yes or no?' No FFT, no PLL, no OFDM demodulator. That envelope detector can run on roughly a milliwatt. The clever part is how the access point produces this signal: instead of building a separate low-rate transmitter, it generates multi-carrier OOK (MC-OOK) from an ordinary 20 MHz Wi-Fi transmitter, concentrating energy onto about 13 subcarriers (~4 MHz) in the centre of the channel so the cheap receiver sees a clean on/off pulse train.",
+      "zh": "诀窍在于开关键控（On-Off Keying, OOK）——最古老的调制方式：一个比特就是“载波有 = 1，载波无 = 0”。要解调它，你只需要一个包络检波器（envelope detector）——一个只问“此刻有没有能量，是或否？”的电路。不需要 FFT、不需要锁相环、不需要 OFDM 解调器。这个包络检波器只需约 1 毫瓦就能工作。巧妙之处在于接入点（AP）如何产生这个信号：它并不另建一个独立的低速发射机，而是用一台普通的 20 MHz Wi-Fi 发射机生成多载波 OOK（MC-OOK），把能量集中到信道中央约 13 个子载波（约 4 MHz）上，这样廉价接收机看到的就是一串干净的开/关脉冲。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 170\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><text x=\"8\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">bits:</text><text x=\"66\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">1</text><text x=\"146\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">0</text><text x=\"226\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">1</text><text x=\"306\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">1</text><text x=\"386\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">0</text><line x1=\"50\" y1=\"60\" x2=\"50\" y2=\"110\"/><line x1=\"50\" y1=\"110\" x2=\"90\" y2=\"110\"/><rect x=\"50\" y=\"60\" width=\"40\" height=\"50\" fill=\"currentColor\" stroke=\"none\" opacity=\"0.25\"/><line x1=\"90\" y1=\"110\" x2=\"130\" y2=\"110\"/><rect x=\"130\" y=\"60\" width=\"40\" height=\"50\" fill=\"currentColor\" stroke=\"none\" opacity=\"0.25\"/><line x1=\"170\" y1=\"110\" x2=\"210\" y2=\"110\"/><rect x=\"210\" y=\"60\" width=\"40\" height=\"50\" fill=\"currentColor\" stroke=\"none\" opacity=\"0.25\"/><rect x=\"290\" y=\"60\" width=\"40\" height=\"50\" fill=\"currentColor\" stroke=\"none\" opacity=\"0.25\"/><line x1=\"330\" y1=\"110\" x2=\"370\" y2=\"110\"/><line x1=\"410\" y1=\"110\" x2=\"450\" y2=\"110\"/><line x1=\"40\" y1=\"130\" x2=\"450\" y2=\"130\"/><text x=\"8\" y=\"85\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">RF</text><text x=\"8\" y=\"145\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">time</text><text x=\"60\" y=\"152\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">on</text><text x=\"138\" y=\"152\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">off</text></svg>",
+      "caption": {
+        "en": "On-Off Keying: energy present in a symbol means 1, silence means 0. An envelope detector just measures power per symbol — no demodulator needed.",
+        "zh": "开关键控：一个符号内有能量代表 1，静默代表 0。包络检波器只需逐符号测量功率——无需任何解调器。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now look at the WUR Basic PPDU — the packet the AP sends in a 20 MHz channel. It opens with a legacy preamble (L-STF / L-LTF / L-SIG) built in ordinary OFDM. That part isn't for the WUR receiver at all; it's there so normal Wi-Fi stations decode the L-SIG, see a duration, and politely defer — they don't trample the wake-up burst. Two BPSK-modulated marker symbols (BPSK-Mark1/2) follow, then the OOK part begins: the WUR-Sync field, and finally the OOK-modulated WUR-Data field carrying the actual wake-up payload.",
+      "zh": "再来看 WUR Basic PPDU——AP 在一个 20 MHz 信道里发送的帧。它以一段传统前导（L-STF / L-LTF / L-SIG）开头，用普通的 OFDM 构造。这一段根本不是给 WUR 接收机用的；它存在的意义是让普通 Wi-Fi 站点解出 L-SIG、读到一个持续时间，从而礼貌地退避——不去踩踏这段唤醒突发。其后是两个 BPSK 调制的标记符号（BPSK-Mark1/2），接着 OOK 部分开始：WUR-Sync 字段，最后是承载真正唤醒载荷的 OOK 调制 WUR-Data 字段。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    subgraph OFDM[\"Legacy OFDM preamble (for normal STAs to defer)\"]\n      A[L-STF] --> B[L-LTF] --> C[L-SIG] --> D[BPSK-Mark1] --> E[BPSK-Mark2]\n    end\n    subgraph OOK[\"OOK fields (for the cheap WUR receiver)\"]\n      F[WUR-Sync<br/>64 or 128 us] --> G[WUR-Data<br/>PSDU payload]\n    end\n    E --> F",
+      "zh": "graph LR\n    subgraph OFDM[\"传统 OFDM 前导（让普通站点退避）\"]\n      A[L-STF] --> B[L-LTF] --> C[L-SIG] --> D[BPSK-Mark1] --> E[BPSK-Mark2]\n    end\n    subgraph OOK[\"OOK 字段（给廉价 WUR 接收机）\"]\n      F[WUR-Sync<br/>64 或 128 us] --> G[WUR-Data<br/>PSDU 载荷]\n    end\n    E --> F"
+    },
+    {
+      "type": "prose",
+      "en": "The WUR-Sync field is the receiver's anchor: it marks where the packet starts, lets the receiver lock symbol timing, and — cleverly — encodes the data rate without any signalling field. There are exactly two rates: WUR LDR (low data rate, 62.5 kb/s) and WUR HDR (high data rate, 250 kb/s). The receiver tells them apart purely by the WUR-Sync pattern: LDR sends a repeated 32-bit sequence W, while HDR sends the bitwise complement of W. Inside WUR-Data the encoding is just as plain — for HDR each input bit maps to two OOK symbols (1 → 01, 0 → 10), and for LDR to four — so an On/Off pulse never sits still long enough to confuse a simple detector.",
+      "zh": "WUR-Sync 字段是接收机的“锚点”：它标记帧的起点，让接收机锁定符号定时，并且——很巧妙地——在没有任何信令字段的情况下编码出数据速率。速率正好只有两种：WUR LDR（低速率，62.5 kb/s）与 WUR HDR（高速率，250 kb/s）。接收机仅凭 WUR-Sync 的图案就能区分二者：LDR 发送重复的 32 比特序列 W，而 HDR 发送 W 的按位取反。WUR-Data 内部的编码同样朴素——HDR 下每个输入比特映射为两个 OOK 符号（1 → 01，0 → 10），LDR 下映射为四个——这样开/关脉冲不会长时间保持不变，免得让简单的检波器犯糊涂。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The design goal here is sensitivity, not speed. A wake-up packet carries only a tiny address-and-command payload, so 62.5 or 250 kb/s is plenty. What matters is hearing a faint signal far away on almost no power — and the simpler the waveform, the lower the receiver's noise floor can be. That is exactly the trade that lets the sensor stay asleep for months: a dumb, robust signal a milliwatt detector can hear, instead of a fast one it cannot.",
+      "zh": "这里的设计目标是灵敏度，而不是速度。一个唤醒包只携带极小的地址加命令载荷，所以 62.5 或 250 kb/s 已经绰绰有余。真正重要的是能在几乎不耗电的情况下，从很远处听到一个微弱的信号——而波形越简单，接收机的噪声门限就能压得越低。正是这一权衡让传感器得以沉睡数月：一个笨拙却稳健、毫瓦级检波器听得见的信号，胜过一个它根本听不见的快信号。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The numbers behind 'cheap': MC-OOK, the two rates, and the sensitivity spec",
+        "zh": "“极简”背后的数字：MC-OOK、两种速率与灵敏度指标"
+      },
+      "en": "Clause 30.1 fixes the baseline: the WUR PHY is built on the Clause 17 PHY, supports only WUR LDR (62.5 kb/s) and WUR HDR (250 kb/s), and uses OOK for the WUR-Sync and WUR-Data fields. When generated by MC-OOK, the recommended construction is 13 contiguous subcarriers centred in the 20 MHz channel at 312.5 kHz spacing with the centre subcarrier nulled — roughly 4 MHz of occupied bandwidth out of 20 MHz. The WUR Basic PPDU (30.3.2) is defined for 20 MHz and runs L-STF, L-LTF, L-SIG, BPSK-Mark1, BPSK-Mark2, WUR-Sync, then WUR-Data; the WUR-Sync field is 64 us at HDR or 128 us at LDR. Rate is signalled implicitly by the WUR-Sync sequence (30.3.9.3): LDR concatenates two copies of the 32-bit sequence W, HDR uses the bitwise complement of W. WUR-Data encoding (30.3.10.2) maps each input bit to encoded bits — LDR: 0->1010, 1->0101; HDR: 0->10, 1->01 — where encoded 1 is an On symbol and 0 an Off symbol. The payoff is in 30.3.13.1: receiver minimum input sensitivity for a 6-octet PSDU at <10% PER is -82 dBm for WUR LDR and -77 dBm for WUR HDR — the lower rate buys ~5 dB more reach, the explicit reason speed is traded for sensitivity.",
+      "zh": "30.1 节确立了基准：WUR 物理层建立在 Clause 17 物理层之上，仅支持 WUR LDR（62.5 kb/s）和 WUR HDR（250 kb/s），并对 WUR-Sync 与 WUR-Data 字段使用 OOK。当用 MC-OOK 生成时，推荐的构造是在 20 MHz 信道中央取 13 个连续子载波、间隔 312.5 kHz、中心子载波置零——在 20 MHz 中实际占用约 4 MHz。WUR Basic PPDU（30.3.2）针对 20 MHz 定义，依次为 L-STF、L-LTF、L-SIG、BPSK-Mark1、BPSK-Mark2、WUR-Sync，再到 WUR-Data；WUR-Sync 字段在 HDR 下为 64 微秒、LDR 下为 128 微秒。速率由 WUR-Sync 序列隐式指示（30.3.9.3）：LDR 拼接两份 32 比特序列 W，HDR 使用 W 的按位取反。WUR-Data 编码（30.3.10.2）把每个输入比特映射为编码比特——LDR：0->1010、1->0101；HDR：0->10、1->01——其中编码 1 对应 On 符号、0 对应 Off 符号。回报体现在 30.3.13.1：对 6 字节 PSDU、在 PER < 10% 条件下，接收机最低输入灵敏度 WUR LDR 为 -82 dBm、WUR HDR 为 -77 dBm——低速率换来约 5 dB 的更远覆盖，这正是以速度换灵敏度的明确理由。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4740,
+          4745,
+          4761,
+          4763,
+          4768
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:30.1",
+    "80211-2024:30.3.1",
+    "80211-2024:30.3.2",
+    "80211-2024:30.3.9.3",
+    "80211-2024:30.3.10.2",
+    "80211-2024:30.3.6",
+    "80211-2024:30.3.13.1"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4740
+      ],
+      "note": "30.1 Introduction — WUR PHY based on Clause 17 PHY; OOK for WUR-Sync/WUR-Data; MC-OOK with 13 subcarriers centred in 20 MHz at 312.5 kHz, centre null; LDR 62.5 kb/s and HDR 250 kb/s"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4741
+      ],
+      "note": "30.3.1 Introduction — WUR PPDU built from L-STF/L-LTF/L-SIG/BPSK-Mark1/BPSK-Mark2/WUR-Sync preamble plus PSDU"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4745
+      ],
+      "note": "30.3.2 WUR Basic PPDU format and Table 30-2 field list; WUR-Sync field 64 us or 128 us by data rate"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4754
+      ],
+      "note": "30.3.6 WUR data rates — 62.5 kb/s (LDR) and 250 kb/s (HDR) distinguished by the WUR-Sync sequence"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4761,
+        4762
+      ],
+      "note": "30.3.9.3 WUR-Sync field — used for PPDU detection, symbol timing, data-rate determination; LDR = two copies of W, HDR = bitwise complement of W"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4763
+      ],
+      "note": "30.3.10.2 WUR-Data field — WUR encoded bits (LDR 0->1010,1->0101; HDR 0->10,1->01); encoded 1 = On symbol, 0 = Off symbol"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4768
+      ],
+      "note": "30.3.13.1 Receiver minimum input sensitivity and Table 30-11 — -82 dBm (WUR LDR), -77 dBm (WUR HDR) at <10% PER for 6-octet PSDU"
+    }
+  ],
+  "track": "low-power-iot"
+}

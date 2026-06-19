@@ -1,0 +1,123 @@
+{
+  "id": "low-power-iot-02-wur-mode-negotiation-and-discovery",
+  "title": {
+    "en": "Turning It On: WUR Mode Setup, Duty Cycle & Discovery",
+    "zh": "开启唤醒模式：WUR 模式协商、占空比与发现"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A wake-up radio (WUR) lets a battery-powered device almost completely shut down its main Wi-Fi radio, leaving only a tiny ultra-low-power receiver listening for a short 'wake up' signal. But before any of that can happen, the station and the access point have to agree to use it. This lesson walks through that agreement — WUR mode setup — and then the schedule that lets the little radio nap instead of staying on a constant vigil.",
+      "zh": "唤醒无线电（WUR）让靠电池供电的设备几乎可以完全关闭其主 Wi-Fi 射频，只保留一个极低功耗的微型接收器，专门监听简短的“唤醒”信号。但在这一切发生之前，站点（STA）和接入点（AP）必须先就“是否使用 WUR”达成一致。本课将带你走完这个协商过程——也就是 WUR 模式协商（WUR mode setup）——然后再讲讲那套让小射频可以“打盹”、而非时刻保持警觉的时间表。"
+    },
+    {
+      "type": "prose",
+      "en": "Before negotiating, the station must first find a WUR-capable AP — this is WUR discovery. A WUR AP periodically sends WUR Discovery frames on a designated discovery channel, and advertises which channel it uses inside the WUR Discovery element it places in regular Beacon and Probe Response frames. A station performs WUR scanning: it tunes its wake-up receiver to the agreed discovery channels (the standard recommends a small common set — channel 1 in 2.4 GHz, and 40/44/149/153 in 5 GHz) and listens for those Discovery frames. Once it has found an AP and read its WUR parameters, it can begin the real negotiation. WUR mode setup is a short request/response handshake. The station sends a frame carrying a WUR Mode element with an Action Type of 'Enter WUR Mode' and its proposed WUR Parameters; the AP replies with a WUR Mode element whose Response Status is either 'Accept' or 'Denied'. A frame counts as successfully transmitted only when an Ack comes back. If the AP accepts, the two sides have negotiated WUR power management service using exactly the parameters carried in those elements. From then on, the station is in WUR mode (actively using the service) — or it can park itself in WUR mode suspend, keeping the negotiated parameters but pausing the duty-cycle obligations.",
+      "zh": "在协商之前，站点必须先找到一个支持 WUR 的 AP——这就是 WUR 发现（WUR discovery）。WUR AP 会在指定的“发现信道”上周期性地发送 WUR 发现帧（WUR Discovery frame），并把自己所用的发现信道写进 WUR 发现元素（WUR Discovery element），放在普通的信标帧（Beacon）和探测响应帧（Probe Response）里对外公告。站点则执行 WUR 扫描：把唤醒接收器调到约定的发现信道（标准建议采用一小组通用信道——2.4 GHz 的信道 1，以及 5 GHz 的信道 40/44/149/153），监听这些发现帧。一旦找到 AP 并读取了它的 WUR 参数，站点就可以开始真正的协商了。WUR 模式协商是一段简短的“请求/响应”握手。站点发送一个携带 WUR 模式元素（WUR Mode element）的帧，其动作类型（Action Type）为“Enter WUR Mode”，并附上自己建议的 WUR 参数；AP 回复一个 WUR 模式元素，其响应状态（Response Status）为“Accept（接受）”或“Denied（拒绝）”。只有在收到 Ack（确认帧）后，一个帧才算成功发送。如果 AP 接受，双方就以这些元素中所携带的参数协商成功，确立了 WUR 电源管理服务。此后，站点便处于 WUR 模式（主动使用该服务）——或者它也可以进入 WUR 模式挂起（WUR mode suspend），保留已协商的参数，但暂停占空比相关的义务。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as WUR non-AP STA\n    participant AP as WUR AP\n    Note over AP: periodically sends WUR Discovery frames\n    AP-->>STA: WUR Discovery frame (on discovery channel)\n    Note over STA: WUR scanning finds the AP + reads params\n    STA->>AP: WUR Mode Setup (Enter WUR Mode + proposed params)\n    AP->>STA: Ack\n    AP->>STA: WUR Mode Setup (Enter WUR Mode Response, Status = Accept)\n    STA->>AP: Ack\n    Note over STA,AP: WUR power management service negotiated -> STA in WUR mode",
+      "zh": "sequenceDiagram\n    participant STA as WUR 非 AP 站点\n    participant AP as WUR AP\n    Note over AP: 周期性发送 WUR 发现帧\n    AP-->>STA: WUR 发现帧（在发现信道上）\n    Note over STA: WUR 扫描找到 AP 并读取参数\n    STA->>AP: WUR 模式协商（Enter WUR Mode + 建议参数）\n    AP->>STA: Ack（确认）\n    AP->>STA: WUR 模式协商（Enter WUR Mode Response，状态 = Accept）\n    STA->>AP: Ack（确认）\n    Note over STA,AP: WUR 电源管理服务协商完成 -> 站点进入 WUR 模式"
+    },
+    {
+      "type": "prose",
+      "en": "Now the power-saving payoff. Even the tiny wake-up receiver costs energy if it listens non-stop, so WUR uses a duty cycle: think of a phone alarm that only checks the clock at set moments, not a guard who never blinks. The schedule has three numbers — a start point (when a listening window begins), a WUR duty cycle service period (how long the radio stays WUR-awake each cycle), and a duty cycle period (the gap from one window's start to the next). Inside each service period the wake-up radio is in the WUR awake state and can hear frames; the rest of the time it drops to WUR doze and hears nothing. The station proposes these values within bounds the AP sets (the service period can't be shorter than the AP's Minimum Wake-up Duration, nor longer than the duty cycle period).",
+      "zh": "现在来看节能带来的回报。即便是那个微型唤醒接收器，如果一刻不停地监听也会耗电，所以 WUR 采用占空比（duty cycle）：可以把它想象成一只闹钟，只在设定的时刻看一眼时间，而不是一个从不眨眼的守卫。这套时间表由三个数字定义——起始点（start point，监听窗口何时开始）、WUR 占空比服务周期（WUR duty cycle service period，每个周期内射频保持 WUR 唤醒的时长）以及占空比周期（duty cycle period，从一个窗口开始到下一个窗口开始之间的间隔）。在每个服务周期内，唤醒射频处于 WUR 唤醒态（WUR awake state），能够接收帧；其余时间它则跌入 WUR 打盹态（WUR doze），什么也听不到。站点会在 AP 设定的范围内提议这些数值（服务周期不能短于 AP 的“最小唤醒时长（Minimum Wake-up Duration）”，也不能长于占空比周期）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 480 150' xmlns='http://www.w3.org/2000/svg' stroke='currentColor' fill='currentColor'><line x1='20' y1='110' x2='460' y2='110' stroke-width='1.5'/><polygon points='460,110 452,106 452,114' /><rect x='40' y='60' width='60' height='50' fill='currentColor' fill-opacity='0.25' stroke-width='1.5'/><rect x='200' y='60' width='60' height='50' fill='currentColor' fill-opacity='0.25' stroke-width='1.5'/><rect x='360' y='60' width='60' height='50' fill='currentColor' fill-opacity='0.25' stroke-width='1.5'/><text x='70' y='90' font-size='9' text-anchor='middle' stroke='none'>awake</text><text x='230' y='90' font-size='9' text-anchor='middle' stroke='none'>awake</text><text x='390' y='90' font-size='9' text-anchor='middle' stroke='none'>awake</text><text x='150' y='90' font-size='9' text-anchor='middle' stroke='none'>doze</text><text x='310' y='90' font-size='9' text-anchor='middle' stroke='none'>doze</text><line x1='40' y1='40' x2='200' y2='40' stroke-width='1'/><line x1='40' y1='35' x2='40' y2='45' stroke-width='1'/><line x1='200' y1='35' x2='200' y2='45' stroke-width='1'/><text x='120' y='32' font-size='9' text-anchor='middle' stroke='none'>duty cycle period</text><line x1='40' y1='118' x2='100' y2='118' stroke-width='1'/><text x='70' y='132' font-size='8' text-anchor='middle' stroke='none'>service period</text><text x='40' y='55' font-size='8' text-anchor='middle' stroke='none'>start</text></svg>",
+      "caption": {
+        "en": "WUR duty cycle: short WUR-awake service periods (the radio can hear wake-up frames) separated by long WUR-doze gaps, repeating every duty cycle period.",
+        "zh": "WUR 占空比：短暂的 WUR 唤醒服务周期（此时射频能接收唤醒帧）之间夹着较长的 WUR 打盹间隔，按占空比周期循环往复。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "There are two layers of 'asleep' here. The classic 802.11 doze/awake state governs the main radio (whether it can receive normal frames); the WUR doze/awake state governs the tiny wake-up radio. They are independent: a station can have its main radio dozing to save power while its wake-up radio stays alert, waiting for the AP to tap it on the shoulder.",
+      "zh": "这里有两层“睡眠”。经典的 802.11 打盹/唤醒态（doze/awake）管的是主射频（它能否接收普通帧）；而 WUR 打盹/唤醒态管的是那个微型唤醒射频。两者相互独立：站点完全可以让主射频打盹以省电，同时让唤醒射频保持警觉，等着 AP 来“拍它的肩膀”。"
+    },
+    {
+      "type": "prose",
+      "en": "One more piece keeps the whole scheme honest: timing. If the station's clock drifts, its listening window will no longer line up with when the AP actually sends, and wake-ups get missed. So a station in WUR mode expects a WUR Beacon frame every WUR beacon period. That frame carries a partial TSF timestamp, and the station uses it to re-align bits of its own TSF timer — its sense of 'now' — so that its short awake windows keep landing exactly where the AP is transmitting. If the WUR Beacons stop arriving for a while, the station knows it may be out of range and can fall back to WUR scanning or fully wake up.",
+      "zh": "还有最后一块拼图让整套机制保持精准：时间同步。如果站点的时钟发生漂移，它的监听窗口就会与 AP 实际发送的时刻错开，于是错过唤醒。因此，处于 WUR 模式的站点会期望每隔一个 WUR 信标周期（WUR beacon period）收到一个 WUR 信标帧（WUR Beacon frame）。该帧携带一个部分 TSF 时间戳（partial TSF timestamp），站点据此重新校准自己 TSF 定时器的若干比特——也就是它对“现在”的认知——从而让那些短暂的唤醒窗口始终精确地落在 AP 发送的时刻上。如果 WUR 信标在一段时间内不再到达，站点就明白自己可能已经脱离覆盖范围，可以退回去执行 WUR 扫描，或者干脆完全唤醒。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact setup frames, the duty-cycle bounds, and TSF re-alignment",
+        "zh": "精确的协商帧、占空比边界与 TSF 重对齐"
+      },
+      "en": "Per 29.8.2, the WUR mode setup exchange uses an 'Enter WUR Mode Request' carrying a WUR Mode element, answered by an 'Enter WUR Mode Response' whose WUR Mode Response Status is 'Accept' or 'Denied' (Table 29-1); each frame is 'successfully transmitted' only when an Ack is received. An accepted exchange negotiates WUR power management service with the parameters in the WUR Mode elements, and the station then operates per 29.8.3 (AP side) and 29.8.4 (non-AP STA side), which define the WUR awake / WUR doze power states. Per 29.7, duty cycle operation is fixed by start point, WUR duty cycle service period, and duty cycle period; the station must set its service period >= the AP's Minimum Wake-up Duration (from the WUR Operation element) and <= the duty cycle period, and while in the doze state it must be WUR-awake within each service period. Per 29.6.3, on receiving a WUR Beacon frame with valid FCS and matching transmitter ID, the station reconstructs a temporary timestamp from the partial TSF, adds its own PHY/processing delay, applies the modulo-2^47 roll-over correction to bits 17-63, and sets bits 5-16 of its local TSF timer to the adjusted value. Per 29.12, a WUR AP with dot11WURDiscoveryImplemented periodically schedules WUR Discovery frames; the station discovers APs by issuing MLME-WURDISCOVERY.request and scanning each listed discovery channel for at least MinChannelTime, returning results via MLME-WURDISCOVERY.confirm.",
+      "zh": "依据 29.8.2，WUR 模式协商交换使用携带 WUR 模式元素的“Enter WUR Mode Request（进入 WUR 模式请求）”，由“Enter WUR Mode Response（进入 WUR 模式响应）”应答，其 WUR 模式响应状态为“Accept”或“Denied”（见表 29-1）；每个帧只有在收到 Ack 时才算“成功发送”。一次被接受的交换会以 WUR 模式元素中的参数协商出 WUR 电源管理服务，随后站点按 29.8.3（AP 侧）与 29.8.4（非 AP 站点侧）运行，这两节定义了 WUR 唤醒态 / WUR 打盹态这两种 WUR 电源状态。依据 29.7，占空比操作由起始点、WUR 占空比服务周期和占空比周期共同确定；站点必须将其服务周期设为 >= AP 的最小唤醒时长（来自 WUR 操作元素），且 <= 占空比周期，并且在处于打盹态时，必须在每个服务周期内保持 WUR 唤醒。依据 29.6.3，站点在收到 FCS 有效且发送方 ID 匹配的 WUR 信标帧后，会用部分 TSF 重建一个临时时间戳，加上自身的 PHY/处理时延，对第 17-63 比特施加 modulo-2^47 的回卷修正，并把本地 TSF 定时器的第 5-16 比特设为该调整后的值。依据 29.12，dot11WURDiscoveryImplemented 为真的 WUR AP 会周期性地调度 WUR 发现帧；站点通过发出 MLME-WURDISCOVERY.request 来发现 AP，对列表中每个发现信道至少扫描 MinChannelTime，并通过 MLME-WURDISCOVERY.confirm 返回结果。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4717,
+          4718,
+          4721,
+          4724,
+          4725,
+          4738
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:29.8.2",
+    "80211-2024:29.8.3",
+    "80211-2024:29.8.4",
+    "80211-2024:29.7",
+    "80211-2024:29.12",
+    "80211-2024:29.6.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4721,
+        4722,
+        4723
+      ],
+      "note": "29.8.2 WUR mode setup — Enter WUR Mode request/response, WUR Mode element, Accept/Denied status, Ack-gated success; Table 29-1/29-2"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4724,
+        4725,
+        4726
+      ],
+      "note": "29.8.3 / 29.8.4 WUR power management operation — AP-side and non-AP STA-side; WUR awake / WUR doze power states"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4718,
+        4719,
+        4720
+      ],
+      "note": "29.7 WUR duty cycle operation — start point, WUR duty cycle service period, duty cycle period; service-period bounds vs Minimum Wake-up Duration; Figures 29-1/29-2"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4717,
+        4718
+      ],
+      "note": "29.6.3 Maintaining TSF timer synchronization with WUR Beacon frame — partial TSF reconstruction and roll-over correction"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4738
+      ],
+      "note": "29.12 WUR discovery — WUR Discovery frames/element, recommended discovery channels, MLME-WURDISCOVERY scanning"
+    }
+  ],
+  "track": "low-power-iot"
+}

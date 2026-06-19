@@ -1,0 +1,133 @@
+{
+  "id": "low-power-iot-03-wake-up-frame-and-addressing",
+  "title": {
+    "en": "The Page Itself: Wake-Up Frame Format & Addressing",
+    "zh": "寻呼信号本身：唤醒帧格式与寻址"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A Wake-Up Radio (WUR) device keeps a tiny, ultra-low-power companion receiver listening while its main Wi-Fi radio sleeps. That companion radio is dumb on purpose — it can only catch one kind of signal: a short WUR frame sent by the access point. This lesson is about that signal itself. What exactly does the companion radio receive, and how does it decide 'this page is for me, time to wake the big radio' versus 'not for me, keep sleeping'?",
+      "zh": "唤醒无线电（Wake-Up Radio, WUR）设备会让一个极低功耗的小型“陪伴接收机”持续侦听，而它的主 Wi-Fi 射频则处于休眠状态。这个陪伴射频被刻意设计得很“笨”——它只能捕捉一种信号：接入点（AP）发出的简短 WUR 帧。本课讲的就是这个信号本身。陪伴射频究竟收到了什么？它又如何判断“这条寻呼是发给我的，该唤醒主射频了”，还是“不是发给我的，继续睡”？"
+    },
+    {
+      "type": "prose",
+      "en": "Every WUR frame except one tiny variant follows the same shape: a MAC header, an optional variable-length frame body, and a 16-bit FCS at the end. The MAC header itself splits into three fields — a 1-octet Frame Control, a 12-bit ID field, and a 12-bit Type Dependent Control field. Frame Control's Type subfield names the frame (WUR Beacon, WUR Wake-up, WUR Discovery, WUR Vendor Specific, or WUR Short Wake-up). The ID field is the star of the show: it is the address that tells the receiver whether the page is meant for it.",
+      "zh": "除了一种极小的变体之外，每个 WUR 帧都遵循同一种结构：一个 MAC 头、一个可选的变长帧体，以及末尾的 16 位 FCS（帧校验序列）。MAC 头本身又分为三个字段——1 个八位组的帧控制（Frame Control）、12 位的 ID 字段，以及 12 位的类型相关控制（Type Dependent Control）字段。帧控制中的类型（Type）子字段标明这是哪种帧（WUR Beacon、WUR Wake-up、WUR Discovery、WUR Vendor Specific 或 WUR Short Wake-up）。ID 字段才是主角：它就是那个“地址”，告诉接收方这条寻呼是不是发给它的。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"320\" y=\"18\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"13\">General WUR frame (FL/VL)</text><rect x=\"20\" y=\"40\" width=\"180\" height=\"44\"/><rect x=\"200\" y=\"40\" width=\"240\" height=\"44\" stroke-dasharray=\"5 4\"/><rect x=\"440\" y=\"40\" width=\"100\" height=\"44\"/><text x=\"110\" y=\"66\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">MAC Header (32 bits)</text><text x=\"320\" y=\"66\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">Frame Body (0-16 oct, optional)</text><text x=\"490\" y=\"66\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">FCS (16 bits)</text><rect x=\"20\" y=\"96\" width=\"60\" height=\"40\"/><rect x=\"80\" y=\"96\" width=\"60\" height=\"40\"/><rect x=\"140\" y=\"96\" width=\"60\" height=\"40\"/><text x=\"50\" y=\"112\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Frame</text><text x=\"50\" y=\"125\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Control 8b</text><text x=\"110\" y=\"112\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">ID</text><text x=\"110\" y=\"125\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">12b</text><text x=\"170\" y=\"112\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Type Dep</text><text x=\"170\" y=\"125\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Ctrl 12b</text></svg>",
+      "caption": {
+        "en": "The general WUR frame: a 32-bit MAC header (Frame Control + ID + Type Dependent Control), an optional 2-16 octet frame body, and a 16-bit FCS. The 12-bit ID field carries the address that decides who wakes up.",
+        "zh": "通用 WUR 帧：32 位的 MAC 头（帧控制 + ID + 类型相关控制）、一个可选的 2–16 八位组帧体，以及 16 位 FCS。12 位的 ID 字段承载着决定“谁该醒来”的地址。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "There are two flavours of the wake-up itself. The WUR Wake-up frame is the full version with that 32-bit header and an optional body; it can be Fixed-Length (FL, no body) or Variable-Length (VL, body present). The WUR Short Wake-up frame is the stripped-down compact form: just a 3-bit Type, a 1-bit Protected flag, a 12-bit WUR ID, and a 16-bit FCS — 32 bits total, no separate ID or Type Dependent Control field. The short frame trades flexibility for airtime: it is the cheapest possible 'wake up' you can broadcast, and the AP and station agree to use it only when both advertise support.",
+      "zh": "唤醒帧本身有两种形态。WUR Wake-up 帧是完整版本，带有那个 32 位的头和一个可选帧体；它可以是定长（FL，无帧体）或变长（VL，含帧体）。WUR Short Wake-up 帧则是精简的紧凑形态：仅由 3 位类型、1 位保护（Protected）标志、12 位 WUR ID 和 16 位 FCS 组成——总共 32 位，没有独立的 ID 字段，也没有类型相关控制字段。短帧用灵活性换取空口时间：它是你能广播出去的、开销最小的一种“唤醒”，且只有当 AP 与站点双方都声明支持时才会被采用。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the trick: the WUR Short Wake-up frame has no room to say what kind of address it carries — the 12-bit ID is always a WUR ID (an individual station). The full WUR Wake-up frame's ID field is interpreted differently depending on which addressing mode the AP chose. Same 12 bits, different meaning by context.",
+      "zh": "注意这个巧妙之处：WUR Short Wake-up 帧没有空间去说明它携带的是哪种地址——那 12 位 ID 永远是一个 WUR ID（指向单个站点）。而完整的 WUR Wake-up 帧的 ID 字段，则会根据 AP 所选的寻址模式而有不同的解读。同样的 12 位，因上下文不同而含义不同。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the addressing story — the whole point of the ID field. Think of waking a device like reaching someone by phone. Dial one number and one phone rings: that's a WUR ID, an individual address the AP assigns uniquely to one station. Start a group call and several phones ring at once: that's a WUR Group ID, addressed to all stations in a group. Make a public announcement that everyone hears: that's a broadcast, carried by the Transmitter ID (the AP's own identifier) or, in a multiple-BSSID setup, a Nontransmitter ID (the identifier of a co-hosted virtual BSS). All of these identifiers are 12-bit values drawn from one shared space of 0-4095, and the AP derives them from a Compressed BSSID — a 32-bit CRC over the BSSID whose low 12 bits become the Transmitter ID.",
+      "zh": "现在来讲寻址的故事——这正是 ID 字段存在的全部意义。把唤醒一个设备想象成用电话联系某人。拨一个号码、一部电话响：这就是 WUR ID，AP 为单个站点唯一分配的个体地址。发起一个群组通话、多部电话同时响：这就是 WUR Group ID（组 ID），寻址给一个组内的所有站点。做一次人人都能听到的公开广播：这就是广播，由 Transmitter ID（AP 自身的标识符）承载；在多 BSSID 场景下，则由 Nontransmitter ID（一个共宿的虚拟 BSS 的标识符）承载。所有这些标识符都是 12 位的值，取自同一个 0–4095 的共享空间；AP 由“压缩 BSSID（Compressed BSSID）”推导出它们——压缩 BSSID 是对 BSSID 做 32 位 CRC 得到的结果，其低 12 位即成为 Transmitter ID。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as WUR AP\n    participant WUR as Companion radio (always-on)\n    participant Main as Main Wi-Fi radio (asleep)\n    Note over WUR: knows its WUR ID, WUR Group IDs,\\nTransmitter ID, Nontransmitter ID\n    AP->>WUR: WUR (Short) Wake-up frame, ID field = X\n    Note over WUR: check FCS, then match ID X\n    alt X is in my maintained ID list\n        WUR->>Main: boot the main radio\n        Note over Main: now awake, retrieve buffered traffic\n    else X not mine\n        Note over WUR: discard the page, keep main radio asleep\n    end",
+      "zh": "sequenceDiagram\n    participant AP as WUR AP\n    participant WUR as 陪伴射频(常开)\n    participant Main as 主 Wi-Fi 射频(休眠)\n    Note over WUR: 知道自己的 WUR ID、WUR Group ID、\\nTransmitter ID、Nontransmitter ID\n    AP->>WUR: WUR (Short) Wake-up 帧, ID 字段 = X\n    Note over WUR: 先校验 FCS, 再匹配 ID X\n    alt X 在我维护的 ID 列表中\n        WUR->>Main: 启动主射频\n        Note over Main: 已唤醒, 取回缓存的流量\n    else X 不是我的\n        Note over WUR: 丢弃这条寻呼, 主射频继续休眠\n    end"
+    },
+    {
+      "type": "prose",
+      "en": "The decisive behaviour is what the companion radio does when the ID does not match. A WUR station in WUR mode maintains a small list of the identifiers that belong to it — its WUR ID, its group IDs, the Transmitter ID, and (in a multiple-BSSID set) its Nontransmitter ID. When a WUR frame arrives, the station checks the FCS and then compares the ID field against that list. If the ID is not one it maintains, the station discards the frame and the main radio stays asleep. Only a match — an individual page, a group page, or a broadcast — causes the expensive main radio to boot. That single comparison is the entire reason a WUR device can sip microwatts while still being reachable.",
+      "zh": "真正起决定作用的，是当 ID 不匹配时陪伴射频的行为。处于 WUR 模式的 WUR 站点会维护一份属于自己的标识符小清单——它的 WUR ID、它的组 ID、Transmitter ID，以及（在多 BSSID 集合中）它的 Nontransmitter ID。当一个 WUR 帧到达时，站点先校验 FCS，再把 ID 字段与这份清单比对。如果该 ID 不在它维护的清单中，站点就丢弃该帧，主射频继续休眠。只有匹配上——无论是个体寻呼、组寻呼还是广播——才会启动那个耗电的主射频。正是这一次比对，构成了 WUR 设备能够在保持可被触达的同时只消耗微瓦级功耗的全部原因。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact field widths, the shared identifier space, and how each ID is derived",
+        "zh": "精确的字段宽度、共享标识符空间，以及每种 ID 的推导方式"
+      },
+      "en": "Per 9.9.2, the WUR MAC header is 32 bits: an 8-bit Frame Control (3-bit Type, 1-bit Protected, 1-bit Frame Body Present, 3-bit Length/Miscellaneous), a 12-bit ID, and a 12-bit Type Dependent Control field; the frame body, when present, is 2 to 16 octets and the FCS is a 16-bit CRC (or a MIC when Protected = 1). The WUR Short Wake-up frame (9.9.3.5) drops the ID and Type Dependent Control fields entirely: 3-bit Type, 1-bit Protected, 12-bit WUR ID, 16-bit FCS. All identifiers live in one space of integer values 0-4095 (29.5.1). The Compressed BSSID (29.5.2) is a 32-bit CRC over the (transmitted) BSSID; the Transmitter ID is its 12 LSBs (29.5.3). A WUR ID (29.5.5) is assigned per station — either chosen randomly or computed as AID + Transmitter ID modulo 2^12 — and must not collide with any group ID, Transmitter ID, or Nontransmitter ID. A WUR Group ID (29.5.4) is drawn from a randomly-based contiguous sub-range. A Nontransmitter ID (29.5.6) is computed as k + Transmitter ID modulo 2^12, where k is the BSSID index of a nontransmitted BSSID. Per 29.9.1, a full WUR Wake-up frame can target a station by WUR ID (individual), by WUR group ID (FL group, or VL group with per-station WUR IDs in the body), or by broadcast; the station acts only on a frame whose ID it maintains.",
+      "zh": "依据 9.9.2，WUR MAC 头为 32 位：8 位帧控制（3 位类型、1 位保护、1 位帧体存在、3 位长度/杂项）、12 位 ID，以及 12 位类型相关控制字段；帧体若存在则为 2 至 16 个八位组，FCS 为 16 位 CRC（当 Protected = 1 时为 MIC）。WUR Short Wake-up 帧（9.9.3.5）则完全去掉了 ID 字段与类型相关控制字段：3 位类型、1 位保护、12 位 WUR ID、16 位 FCS。所有标识符都取自同一个 0–4095 的整数值空间（29.5.1）。压缩 BSSID（29.5.2）是对（发送的）BSSID 做的 32 位 CRC；Transmitter ID 是其低 12 位（29.5.3）。WUR ID（29.5.5）按站点分配——要么随机选取，要么计算为 AID + Transmitter ID 对 2^12 取模——且不得与任何组 ID、Transmitter ID 或 Nontransmitter ID 冲突。WUR Group ID（29.5.4）取自一个以随机起点为基础的连续子区间。Nontransmitter ID（29.5.6）计算为 k + Transmitter ID 对 2^12 取模，其中 k 是某个非发送 BSSID 的 BSSID 索引。依据 29.9.1，一个完整的 WUR Wake-up 帧可以按 WUR ID（个体）、按 WUR 组 ID（FL 组，或在帧体中带逐站点 WUR ID 的 VL 组）或按广播来寻址某个站点；站点只对其所维护的 ID 所对应的帧做出动作。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1866,
+          1872,
+          1873,
+          4713,
+          4714,
+          4715,
+          4716,
+          4726
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.9.2",
+    "80211-2024:9.9.3.2",
+    "80211-2024:9.9.3.5",
+    "80211-2024:29.5.2",
+    "80211-2024:29.5.3",
+    "80211-2024:29.5.4",
+    "80211-2024:29.5.5",
+    "80211-2024:29.5.6",
+    "80211-2024:29.9.1"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1866,
+        1867,
+        1868
+      ],
+      "note": "9.9.1-9.9.2 General WUR frame format: MAC header (Frame Control, ID, Type Dependent Control), variable frame body, FCS; Table 9-674 frame types; Table 9-675 identifiers"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1870,
+        1871
+      ],
+      "note": "9.9.3.2 WUR Wake-up frame format: ID field carries WUR ID / WUR group ID / transmitter ID / nontransmitter ID; FL vs VL"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1872,
+        1873
+      ],
+      "note": "9.9.3.5 WUR Short Wake-up frame format: Type, Protected, 12-bit WUR ID, FCS"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4713,
+        4714,
+        4715,
+        4716
+      ],
+      "note": "29.5.1-29.5.6 Setting identifiers: shared 0-4095 space, Compressed BSSID, Transmitter ID, WUR Group ID, WUR ID, Nontransmitter ID; station maintains its ID list"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4726
+      ],
+      "note": "29.9.1 Wake-up operation: a WUR Wake-up frame addresses a station by WUR ID, WUR group ID, or broadcast"
+    }
+  ],
+  "track": "low-power-iot"
+}

@@ -1,0 +1,85 @@
+{
+  "id": "low-power-iot-01-why-a-wake-up-radio",
+  "title": {
+    "en": "Why a Wake-Up Radio? The Two-Radio Idea",
+    "zh": "为什么需要唤醒无线电？双无线电的核心思路"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Picture a battery-powered sensor stuck on a wall — a door contact, a water-leak detector, a temperature probe. You want it to run for months, maybe years, on a single coin cell. But you also want it to react the instant the network has something for it. Those two wishes pull in opposite directions, and the tension is almost entirely about one component: the radio. A Wi-Fi radio is the hungriest part of such a device, and how you manage its listening time decides whether the battery lasts a week or a decade.",
+      "zh": "想象一个靠电池供电的传感器，贴在墙上——可能是门磁、漏水探测器，或温度探头。你希望它用一颗纽扣电池就能运行数月、甚至数年；但你又希望网络一有事找它，它就能立刻响应。这两个愿望恰好朝相反方向拉扯，而这股张力几乎全都集中在一个部件上：无线电。Wi-Fi 无线电是这类设备里最“耗电”的部分，你如何管理它的“侦听时间”，直接决定了电池是撑一周还是撑十年。"
+    },
+    {
+      "type": "prose",
+      "en": "There are two obvious approaches, and both are bad. Keep the main Wi-Fi radio always on and listening, and you can be paged instantly — but a receiver burning tens or hundreds of milliwatts will flatten a coin cell in days. Turn the main radio fully off to save power, and now you cannot be reached at all; the device has to wake on its own timer and poll, which means latency and missed pages. Neither 'always listening' nor 'mostly off' gives you both long life and instant reachability.",
+      "zh": "有两种显而易见的做法，但两种都很糟。让主 Wi-Fi 无线电一直开着侦听，你就能被瞬间寻呼到——可是一个动辄几十、上百毫瓦的接收机，几天就会把纽扣电池榨干。把主无线电彻底关掉来省电，那现在又完全联系不上它了；设备只能靠自己的定时器醒来轮询，这就带来了时延和漏掉寻呼的问题。无论是“一直侦听”还是“大部分时间关闭”，都无法同时兼顾长续航与即时可达。"
+    },
+    {
+      "type": "prose",
+      "en": "The Wake-Up Radio (WUR) feature added in IEEE 802.11 resolves the dilemma by refusing to choose. It pairs the main radio with a second, tiny companion receiver — the Wake-Up Receiver — whose only job is to lie awake and listen for a single, simple signal: 'wake up.' The main radio sleeps almost all the time. When the access point has traffic for the station, it sends a low-rate wake-up signal that the always-on WUR can hear for a fraction of the power a full Wi-Fi receiver would need. The WUR then nudges the main radio back on, and normal Wi-Fi takes over to actually move the data.",
+      "zh": "IEEE 802.11 新增的“唤醒无线电（Wake-Up Radio，WUR）”特性，通过“拒绝二选一”化解了这一两难。它给主无线电配上了第二个、极小的伴随接收机——唤醒接收机（Wake-Up Receiver，WUR）——它唯一的任务就是一直醒着，侦听一个简单的信号：“醒来”。主无线电则几乎一直在休眠。当接入点（AP）有数据要发给该站点时，它会发出一个低速率的唤醒信号；这个常开的唤醒接收机能以远低于完整 Wi-Fi 接收机所需的功耗把它听到。随后唤醒接收机轻轻“推醒”主无线电，再由常规 Wi-Fi 接管，真正完成数据传输。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The core trick is asymmetry. The WUR doesn't have to receive data, decode OFDM, or run the full MAC — it only has to recognise a simple paging signal. That lets it be built as a milliwatt-class (or sub-milliwatt) receiver, often one to two orders of magnitude leaner than the main radio. You spend a trickle of power continuously so you can keep the expensive radio off until the exact moment it's needed.",
+      "zh": "核心诀窍在于“不对称”。唤醒接收机不需要接收数据、不需要解调 OFDM、也不需要运行完整的 MAC——它只需要识别一个简单的寻呼信号即可。这使得它可以被做成毫瓦级（甚至亚毫瓦级）的接收机，往往比主无线电省一到两个数量级的功耗。你持续地花一点点“涓流”功率，换来把那台昂贵的无线电一直关着、直到真正需要它的那一刻才打开。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    subgraph STA[\"WUR non-AP STA (battery sensor)\"]\n        MAIN[\"Main Wi-Fi radio<br/>(mostly OFF, hungry)\"]\n        WUR[\"Wake-Up Receiver<br/>(always ON, ~mW)\"]\n        WUR -->|\"wake!\"| MAIN\n    end\n    AP[\"WUR AP\"]\n    AP -.->|\"WUR wake-up signal<br/>on the WUR channel\"| WUR\n    AP ==>|\"normal Wi-Fi data<br/>once main radio is up\"| MAIN",
+      "zh": "graph LR\n    subgraph STA[\"WUR 非 AP 站点（电池传感器）\"]\n        MAIN[\"主 Wi-Fi 无线电<br/>（大部分时间关闭，耗电）\"]\n        WUR[\"唤醒接收机<br/>（始终开启，约毫瓦级）\"]\n        WUR -->|\"唤醒！\"| MAIN\n    end\n    AP[\"WUR AP\"]\n    AP -.->|\"WUR 唤醒信号<br/>发于 WUR 信道\"| WUR\n    AP ==>|\"主无线电启动后<br/>走常规 Wi-Fi 数据\"| MAIN"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as WUR AP\n    participant W as Wake-Up Receiver (always on)\n    participant M as Main Wi-Fi radio (asleep)\n    Note over M: doze — saving battery\n    Note over AP: has buffered traffic for this STA\n    AP-->>W: WUR wake-up signal (low rate, WUR channel)\n    W->>M: recognise page, switch main radio ON\n    Note over M: boots up, regular Wi-Fi\n    M->>AP: I'm awake — send my data\n    AP->>M: data exchange over normal Wi-Fi\n    Note over M: done — back to doze",
+      "zh": "sequenceDiagram\n    participant AP as WUR AP\n    participant W as 唤醒接收机（始终开启）\n    participant M as 主 Wi-Fi 无线电（休眠中）\n    Note over M: 休眠——省电\n    Note over AP: 有缓存数据要发给该站点\n    AP-->>W: WUR 唤醒信号（低速率，WUR 信道）\n    W->>M: 识别寻呼，开启主无线电\n    Note over M: 启动，恢复常规 Wi-Fi\n    M->>AP: 我醒了——把我的数据发来\n    AP->>M: 通过常规 Wi-Fi 交换数据\n    Note over M: 完成——重新进入休眠"
+    },
+    {
+      "type": "prose",
+      "en": "Where does the WUR listen? Not just anywhere — the standard names specific channels. The WUR primary channel is where the AP sends its periodic WUR Beacon frames, the heartbeat that keeps a sleeping station roughly in sync. The WUR channel is where the AP sends the actual wake-up signals (and short wake-up and vendor-specific frames) to an associated station. By default these two are the same channel, but a feature called WUR FDMA operation lets the wake-up channel be offset from the primary one. There is also a WUR discovery channel, used for WUR Discovery frames, which may differ from both. For now the important point is simply that the tiny receiver knows exactly where to point its ear.",
+      "zh": "唤醒接收机在哪里侦听呢？不是随便哪儿——标准为此命名了几条特定信道。WUR 主信道（WUR primary channel）是 AP 发送周期性 WUR Beacon 帧的地方，这种“心跳”让休眠中的站点大致保持同步。WUR 信道（WUR channel）则是 AP 向已关联站点发送真正的唤醒信号（以及短唤醒帧、厂商自定义帧）的地方。默认情况下这两者是同一条信道，但一种叫做 WUR FDMA 操作的特性允许唤醒信道相对主信道发生偏移。此外还有一条 WUR 发现信道（WUR discovery channel），用于发送 WUR Discovery 帧，它可能与前两者都不同。眼下要记住的重点很简单：这个小小的接收机清楚地知道该把“耳朵”对准哪里。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What the standard actually nails down about the companion radio and its channels",
+        "zh": "标准对伴随无线电及其信道究竟做了哪些硬性规定"
+      },
+      "en": "Clause 29 (WUR MAC specification) defines a WUR STA as one with dot11WUROptionImplemented equal to true. Crucially, the WUR functions sit on top of — not instead of — the ordinary MAC: a WUR STA still supports the MAC of Clause 10, the MLME of Clause 11, and the security of Clause 12 (and the HE MAC of Clause 26 when it is an HE STA); where Clause 29 conflicts with those, Clause 29 wins. A WUR AP that transmits a WUR PPDU must include a WUR frame inside it. The standard then pins down the channels (29.2): the WUR primary channel is the one on which the AP transmits WUR Beacon frames, advertised via the WUR Operating Class and WUR Channel subfields of the WUR Operation element carried in Beacon, (Re)Association Response, and Probe Response frames; the WUR channel carries WUR Short Wake-up, Wake-up, and Vendor Specific frames to an associated STA. Under WUR FDMA the WUR channel may differ from the WUR primary channel; otherwise they are equal. A separate WUR discovery channel carries WUR Discovery frames and may differ from both. The standard recommends the WUR and WUR primary channels stay in the same band as the BSS primary channel, noting this gives similar range.",
+      "zh": "第 29 章（WUR MAC 规范）将 WUR 站点定义为 dot11WUROptionImplemented 等于 true 的站点。关键在于：WUR 功能是“叠加”在普通 MAC 之上，而非取而代之——WUR 站点仍然支持第 10 章的 MAC、第 11 章的 MLME 以及第 12 章的安全功能（当它是 HE 站点时还支持第 26 章的 HE MAC）；当第 29 章与这些发生冲突时，以第 29 章为准。发送 WUR PPDU 的 WUR AP 必须在其中包含一个 WUR 帧。随后标准明确了各信道（29.2）：WUR 主信道是 AP 发送 WUR Beacon 帧所用的信道，通过 Beacon、（重）关联响应和探测响应帧所携带的 WUR Operation 元素中的 WUR Operating Class 与 WUR Channel 子字段来通告；WUR 信道则用于向已关联站点发送 WUR 短唤醒帧、唤醒帧和厂商自定义帧。在 WUR FDMA 下，WUR 信道可与 WUR 主信道不同；否则二者相等。另有一条独立的 WUR 发现信道用于发送 WUR Discovery 帧，它可与前两者都不同。标准建议 WUR 信道与 WUR 主信道保持在与 BSS 主信道相同的频段内，并指出这样可提供相近的覆盖范围。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4712,
+          4713
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:29.1",
+    "80211-2024:29.2"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4712
+      ],
+      "note": "29.1 Introduction — WUR STA (dot11WUROptionImplemented), WUR functions layered on Clauses 10/11/12/26, WUR AP must include a WUR frame in a WUR PPDU"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4712,
+        4713
+      ],
+      "note": "29.2 WUR channel, WUR primary channel, WUR discovery channel — definitions, FDMA offset, same-band recommendation"
+    }
+  ],
+  "track": "low-power-iot"
+}
