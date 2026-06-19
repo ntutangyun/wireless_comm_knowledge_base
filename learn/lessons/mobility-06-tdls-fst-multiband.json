@@ -1,0 +1,155 @@
+{
+  "id": "mobility-06-tdls-fst-multiband",
+  "title": {
+    "en": "Switching Links and Bands: TDLS, Fast Session Transfer and Multi-band",
+    "zh": "切换链路与频段：TDLS、快速会话转移（FST）与多频段"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "So far we have treated the access point (AP) as the only path your traffic can take. But the standard offers ways to move traffic onto a *better* path: straight to a nearby peer instead of bouncing through the AP, or onto a different radio band entirely. This lesson introduces three such mechanisms — TDLS (a direct link between two associated stations), FST (transferring a live session to another band), and the multi-band machinery that ties devices with several radios together. Before all that, a tiny related primitive: a station can simply *advertise time*.",
+      "zh": "到目前为止，我们一直把接入点（AP）当作流量唯一的通路。但标准其实提供了把流量挪到更优路径上的办法：直接发给附近的对端，而不必经 AP 中转；或者干脆切换到另一个频段的无线电上。本课介绍其中三种机制——TDLS（两个已关联站点之间的直连链路）、FST（把正在进行的会话转移到另一频段），以及把带多个无线电的设备捆在一起的多频段机制。在此之前，先讲一个相关的小原语：站点可以单纯地“播报时间”。"
+    },
+    {
+      "type": "prose",
+      "en": "Timing advertisement (11.19.1) is the simplest of the bunch. A station may advertise a time standard by putting a Time Advertisement element into a Timing Advertisement, Probe Response, Beacon, DMG Beacon or Announce frame. The element carries a Time Value (an estimate of the difference between a time standard and the frame's own timestamp) plus a Time Error (the standard deviation of that estimate). A receiver that maintains a TSF timer notes its local time at the first octet of the timestamp, and can then align its own estimate of the time standard to the sender's. How the sender derives that standard — say from an external clock — is left outside the standard.",
+      "zh": "时间播报（Timing advertisement，11.19.1）是其中最简单的一个。站点可以通过在 Timing Advertisement、Probe Response、Beacon、DMG Beacon 或 Announce 帧中放入一个 Time Advertisement 元素来播报某个时间标准。该元素携带 Time Value（对某时间标准与该帧自身时间戳之间差值的估计）以及 Time Error（这一估计的标准差）。维护 TSF 定时器的接收方会记下接收时间戳首字节时的本地时间，进而把自己对该时间标准的估计对齐到发送方的估计上。发送方如何得出该时间标准（例如来自外部时钟）则不在标准范围内。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the headline act: Tunneled Direct Link Setup (TDLS, 11.20.1). Two stations associated with the *same* infrastructure BSS can set up a direct link and send frames straight to each other, while still remaining associated. The trick is in the name — the setup frames are *tunnelled*: they are encapsulated inside ordinary Data frames so they pass through the AP transparently. That means the AP need not be direct-link aware and need not support whatever fancy capabilities the two peers want to use between themselves. A frame sent through the AP has its RA set to the BSSID; a frame sent over the direct path has its RA set to the peer's MAC address.",
+      "zh": "接下来是重头戏：隧道式直连建立（Tunneled Direct Link Setup，TDLS，11.20.1）。关联到“同一个”基础设施 BSS 的两个站点，可以建立一条直连链路并彼此直接收发帧，同时仍保持各自的关联。奥妙就在名字里——建立用的帧是被“隧道封装”的：它们被装进普通的 Data 帧里，从而透明地穿过 AP。这意味着 AP 既不必懂直连，也不必支持两个对端之间想用的那些高级能力。经 AP 转发的帧把 RA 设为 BSSID；走直连路径的帧把 RA 设为对端的 MAC 地址。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant I as Initiator STA\n  participant AP as AP\n  participant R as Responder STA\n  Note over I,R: setup frames tunnelled through AP\n  I->>AP: TDLS Setup Request\n  AP->>R: (forwarded)\n  R->>AP: TDLS Setup Response (SUCCESS)\n  AP->>I: (forwarded)\n  I->>AP: TDLS Setup Confirm\n  AP->>R: (forwarded)\n  Note over I,R: direct link now live\n  I->>R: Data (direct path, RA = peer)",
+      "zh": "sequenceDiagram\n  participant I as 发起方 STA\n  participant AP as AP\n  participant R as 响应方 STA\n  Note over I,R: 建立帧经 AP 隧道转发\n  I->>AP: TDLS Setup 请求\n  AP->>R: （转发）\n  R->>AP: TDLS Setup 响应（成功）\n  AP->>I: （转发）\n  I->>AP: TDLS Setup 确认\n  AP->>R: （转发）\n  Note over I,R: 直连链路已建立\n  I->>R: 数据（直连路径，RA=对端）"
+    },
+    {
+      "type": "prose",
+      "en": "What actually rides inside those tunnels? That is the TDLS payload (11.20.2). TDLS signaling uses MSDUs with the dedicated EtherType 89-0d, and the Payload field carries one of the TDLS Action fields followed by zero or more Vendor Specific elements. The three-way handshake — Setup Request, Setup Response, Setup Confirm — establishes the peers, and if security is required the TPK (TDLS PeerKey) handshake messages 1, 2 and 3 are carried inside those same three frames. One subtlety: the TDLS Discovery Response is *not* a tunnelled payload but a Public Action frame sent over the direct path.",
+      "zh": "这些隧道里到底装了什么？这就是 TDLS 载荷（TDLS payload，11.20.2）。TDLS 信令使用带专用 EtherType 89-0d 的 MSDU，其 Payload 字段携带一个 TDLS Action 字段，后面跟零个或多个 Vendor Specific 元素。三次握手——Setup 请求、Setup 响应、Setup 确认——确立两个对端；如果需要安全保护，TPK（TDLS PeerKey）握手的第 1、2、3 条消息就分别装进这三个帧里。一个细节：TDLS Discovery Response 帧“并非”隧道载荷，而是一个走直连路径发送的 Public Action 帧。"
+    },
+    {
+      "type": "prose",
+      "en": "A direct link does not have to stay on the AP's channel. With TDLS channel switching (11.20.6), two peers can hop to an *off-channel* — any channel that is not the AP's base channel — to grab a quieter or wider slice of spectrum, then hop back. Either peer may request the switch: it sends a TDLS Channel Switch Request (over the direct link, not through the AP) naming a target channel and operating class; the peer answers with a TDLS Channel Switch Response. Both frames carry a Channel Switch Timing element, and the larger of the two requested SwitchTime/SwitchTimeout values wins. After switching, each peer performs a clear channel assessment until it can set its NAV, then waits out a random backoff before transmitting. If no successful exchange happens within SwitchTimeout, the peers fall back to the base channel.",
+      "zh": "直连链路不必一直待在 AP 的信道上。借助 TDLS 信道切换（11.20.6），两个对端可以跳到“off-channel”（任何非 AP 基础信道的信道）去占用更安静或更宽的频谱，然后再跳回来。任一对端都可发起切换：它通过直连链路（而非经 AP）发送一个 TDLS Channel Switch 请求，指明目标信道和操作类；对端用 TDLS Channel Switch 响应作答。两帧都携带 Channel Switch Timing 元素，两者请求的 SwitchTime/SwitchTimeout 中较大者胜出。切换后，每个对端都先做空闲信道评估（CCA）直到能设置其 NAV，再退避一段随机时间后才发送。若在 SwitchTimeout 内没有成功的帧交换，两端便回退到基础信道。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "TDLS is for the infrastructure world only. It must not be used in an IBSS or an MBSS, a DMG STA must not use it, and it is forbidden if the AP set the TDLS Prohibited bit in the Extended Capabilities of the association response. Security on the direct link is available only when both peers already have an RSNA with the BSS.",
+      "zh": "TDLS 只面向基础设施网络。它不得用于 IBSS 或 MBSS，DMG STA 不得使用它；如果 AP 在关联响应的 Extended Capabilities 中置位了 TDLS Prohibited，也禁止使用。只有当两个对端都已与 BSS 建立 RSNA 时，直连链路上才提供安全保护。"
+    },
+    {
+      "type": "prose",
+      "en": "TDLS moves one link onto another channel. Fast Session Transfer (FST) goes further: it moves a whole session onto another *band*. A multi-band capable device (one with dot11MultibandImplemented true) carries more than one radio and advertises this with a Multi-band element. The FST setup protocol (11.31.3) walks a session through four states — Initial, Setup Completed, Transition Done, and Transition Confirmed — using FST Setup Request and FST Setup Response frames. In the Initial state the session runs in the old band; once both sides reach Setup Completed they are ready to switch; reaching Transition Confirmed means both have successfully communicated in the new band. A per-session State Transition Timer (STT) governs the moves, and the session is identified throughout by a fast session transfer session identifier (FSTS ID) that the initiator allocates and never changes.",
+      "zh": "TDLS 把一条链路挪到另一个信道上。快速会话转移（Fast Session Transfer，FST）则更进一步：它把一整个会话挪到另一个“频段”上。多频段能力设备（dot11MultibandImplemented 为真）配备多个无线电，并用 Multi-band 元素来宣告这一能力。FST 建立协议（11.31.3）通过 FST Setup 请求与 FST Setup 响应帧，让会话走过四个状态——Initial、Setup Completed、Transition Done、Transition Confirmed。在 Initial 状态会话仍在旧频段运行；一旦双方都到达 Setup Completed 便已准备好切换；到达 Transition Confirmed 则意味着双方都已在新频段成功通信。每个会话各有一个状态转移定时器（STT）来管理这些迁移，整个过程中会话由发起方分配且始终不变的快速会话转移会话标识（FSTS ID）来标识。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> Initial\n  Initial --> SetupCompleted: FST Setup Req/Resp\n  SetupCompleted --> TransitionDone: LLT reaches 0\n  TransitionDone --> TransitionConfirmed: success in new band\n  TransitionConfirmed --> Initial: new band becomes old band\n  SetupCompleted --> Initial: timeout / teardown\n  TransitionDone --> Initial: teardown",
+      "zh": "stateDiagram-v2\n  [*] --> Initial\n  Initial --> SetupCompleted: FST Setup 请求/响应\n  SetupCompleted --> TransitionDone: LLT 归零\n  TransitionDone --> TransitionConfirmed: 在新频段通信成功\n  TransitionConfirmed --> Initial: 新频段变为旧频段\n  SetupCompleted --> Initial: 超时/拆除\n  TransitionDone --> Initial: 拆除"
+    },
+    {
+      "type": "prose",
+      "en": "FST also lends a hand with *discovery*. The multi-band discovery assistance procedure (11.31.7) lets a device find a hard-to-find band — typically a directional DMG (60 GHz) BSS — by using one of its radios on an easier band. A device sets the Discovery Assistance Enabled subfield in its Multi-band element to advertise the capability. A station scanning on an old band learns from the scan which peers support assistance and for which band, then issues an FST Setup Request carrying a DMG Discovery Assistance element. If the peer accepts (status SUCCESS), it schedules on-demand sector sweeping — sweeping its DMG Beacon across all its antenna sectors, or scheduling a beamforming training period — so the requesting station can find and align to it on the new band.",
+      "zh": "FST 在“发现”上也能帮一把。多频段发现辅助过程（11.31.7）让设备借助自己在较易频段上的某个无线电，去发现一个难以发现的频段——通常是定向的 DMG（60 GHz）BSS。设备通过把 Multi-band 元素中的 Discovery Assistance Enabled 子字段置位来宣告该能力。在旧频段上扫描的站点会从扫描结果中得知哪些对端支持辅助、支持哪个频段，然后发出携带 DMG Discovery Assistance 元素的 FST Setup 请求。如果对端接受（状态为 SUCCESS），它便安排按需扇区扫描——把它的 DMG Beacon 在所有天线扇区上扫一遍，或安排一段波束成形训练时段——使请求方能在新频段上找到它并完成对齐。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, when a single device fields several MAC entities, those MACs are bound into an MMSL (Multiple MAC Sublayers) cluster (11.32.1). A station is MMSL cluster capable if it carries an MMS element in its (Re)Association, ADDTS, Probe or Information frames. An MM-SME (a single management entity coordinating multiple MACs) ties the device's MACs together, and the cluster lists the advertised MAC addresses of those entities. MMSL cluster setup (11.32.2) is just the exchange of that MMS element between the two parties — once, per cluster setup. With an AP or PCP this rides on Association Request/Response frames; between two non-AP stations it rides on an ADDTS Request/Response exchange carrying a PTP TSPEC. If the response frame comes back without an MMS element, the cluster setup simply fails.",
+      "zh": "最后，当单个设备同时拥有多个 MAC 实体时，这些 MAC 会被绑成一个 MMSL（多 MAC 子层，Multiple MAC Sublayers）簇（11.32.1）。如果一个站点在其（重）关联、ADDTS、Probe 或 Information 帧中携带了 MMS 元素，它就是 MMSL 簇能力站点。MM-SME（协调多个 MAC 的单一管理实体）把设备的各个 MAC 绑在一起，簇则列出这些实体所宣告的 MAC 地址。MMSL 簇建立（11.32.2）其实就是双方交换这个 MMS 元素——每次簇建立只交换一次。与 AP 或 PCP 建立时，它搭载在 Association 请求/响应帧上；两个非 AP 站点之间建立时，它搭载在携带 PTP TSPEC 的 ADDTS 请求/响应交换上。如果返回的响应帧里没有 MMS 元素，簇建立就直接失败。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each clause lives",
+        "zh": "覆盖对照表：每个条款落在何处"
+      },
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2644,
+          2645,
+          2646,
+          2647,
+          2650,
+          2651,
+          2849,
+          2850,
+          2863,
+          2867,
+          2869
+        ]
+      },
+      "en": "This lesson teaches eight leaf clauses of IEEE 802.11-2024. Timing advertisement: 11.19.1 (Introduction) — the Time Advertisement element's Time Value and Time Error, carried in Timing Advertisement/Probe Response/Beacon/DMG Beacon/Announce frames, and TSF-based local-time alignment at the receiver. TDLS: 11.20.1 (General) — direct link between two STAs in the same infrastructure BSS, setup frames tunnelled through the AP as Data frames (RA = BSSID through AP, RA = peer MAC over the direct path), with the prohibitions on IBSS/MBSS/DMG and the TDLS Prohibited / RSNA security rules; 11.20.2 (TDLS payload) — EtherType 89-0d MSDUs carrying a TDLS Action field plus optional Vendor Specific elements; 11.20.6 (TDLS channel switching) — its General subclause 11.20.6.1: TDLS Channel Switch Request/Response over the direct link, base channel vs off-channel, Channel Switch Timing element, SwitchTime/SwitchTimeout, CCA + backoff, and fallback to the base channel. Multi-band: 11.31.3 (FST setup protocol) — the four states (Initial, Setup Completed, Transition Done, Transition Confirmed), FST Setup Request/Response frames, the State Transition Timer, and the FSTS ID; 11.31.7 (Multi-band discovery assistance procedure) — its request subclause 11.31.7.1: using a STA on one band to assist discovery of a DMG BSS on another, the Discovery Assistance Enabled advertisement, the DMG Discovery Assistance element in FST Setup frames, and on-demand sector sweeping. MMSL: 11.32.1 (Introduction) — MMSL cluster capability via the MMS element and the role of the MM-SME; 11.32.2 (MMSL cluster setup) — its General subclause 11.32.2.1: exchanging the MMS element once per setup, via Association frames with an AP/PCP or via an ADDTS PTP-TSPEC exchange between non-AP STAs, with setup failing if no MMS element is returned.",
+      "zh": "本课讲授 IEEE 802.11-2024 的八个叶子条款。时间播报：11.19.1（Introduction）——Time Advertisement 元素的 Time Value 与 Time Error，承载于 Timing Advertisement/Probe Response/Beacon/DMG Beacon/Announce 帧中，以及接收端基于 TSF 的本地时间对齐。TDLS：11.20.1（General）——同一基础设施 BSS 内两个 STA 之间的直连链路，建立帧作为 Data 帧经 AP 隧道转发（经 AP 时 RA=BSSID，走直连路径时 RA=对端 MAC），以及禁用于 IBSS/MBSS/DMG、TDLS Prohibited 与 RSNA 安全规则；11.20.2（TDLS payload）——携带 TDLS Action 字段及可选 Vendor Specific 元素的 EtherType 89-0d MSDU；11.20.6（TDLS 信道切换）的 General 子条款 11.20.6.1：走直连链路的 TDLS Channel Switch 请求/响应、基础信道与 off-channel 之分、Channel Switch Timing 元素、SwitchTime/SwitchTimeout、CCA 加退避、以及回退基础信道。多频段：11.31.3（FST 建立协议）——四个状态（Initial、Setup Completed、Transition Done、Transition Confirmed）、FST Setup 请求/响应帧、状态转移定时器以及 FSTS ID；11.31.7（多频段发现辅助过程）的请求子条款 11.31.7.1：用某一频段上的 STA 协助发现另一频段上的 DMG BSS、Discovery Assistance Enabled 宣告、FST Setup 帧中的 DMG Discovery Assistance 元素、以及按需扇区扫描。MMSL：11.32.1（Introduction）——通过 MMS 元素体现的 MMSL 簇能力及 MM-SME 的角色；11.32.2（MMSL 簇建立）的 General 子条款 11.32.2.1：每次建立只交换一次 MMS 元素，与 AP/PCP 之间经 Association 帧、两个非 AP STA 之间经 ADDTS PTP-TSPEC 交换，若未返回 MMS 元素则建立失败。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2644,
+        2645
+      ],
+      "note": "11.19.1 Timing advertisement Introduction (Time Advertisement element, Time Value/Time Error); 11.20.1 TDLS General"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2646,
+        2647
+      ],
+      "note": "11.20.1 TDLS rules (IBSS/MBSS/DMG prohibitions, RSNA security); 11.20.2 TDLS payload (EtherType 89-0d, TDLS Action field)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2650,
+        2651
+      ],
+      "note": "11.20.6 / 11.20.6.1 TDLS channel switching General — Channel Switch Request/Response, base vs off-channel, SwitchTime/SwitchTimeout, CCA + backoff"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2849,
+        2850,
+        2851
+      ],
+      "note": "11.31.3 FST setup protocol — four states, FST Setup Request/Response, State Transition Timer, FSTS ID, state diagram"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2863,
+        2864,
+        2865
+      ],
+      "note": "11.31.7 / 11.31.7.1 Multi-band discovery assistance — Discovery Assistance Enabled, DMG Discovery Assistance element, on-demand sector sweeping"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2867,
+        2869
+      ],
+      "note": "11.32.1 MMSL cluster Introduction (MMS element, MM-SME); 11.32.2 / 11.32.2.1 MMSL cluster setup (MMS element exchange once per setup)"
+    }
+  ],
+  "covers": [
+    "80211-2024:11.19.1",
+    "80211-2024:11.20.1",
+    "80211-2024:11.20.2",
+    "80211-2024:11.20.6",
+    "80211-2024:11.31.3",
+    "80211-2024:11.31.7",
+    "80211-2024:11.32.1",
+    "80211-2024:11.32.2"
+  ],
+  "track": "mobility"
+}

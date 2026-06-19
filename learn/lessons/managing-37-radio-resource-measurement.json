@@ -1,0 +1,156 @@
+{
+  "id": "managing-37-radio-resource-measurement",
+  "title": {
+    "en": "Measuring the Radio Environment: Radio Resource Measurement (RRM)",
+    "zh": "测量无线环境：无线资源测量（RRM）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Wi-Fi devices share crowded, invisible airwaves. To make good decisions — which channel to use, which AP to roam to, how busy the medium is — a station (STA) or access point (AP) first needs to *measure* its radio environment. Radio Resource Measurement (RRM) is the toolbox the 802.11 standard gives them: a family of requests and reports that let one device ask another to observe the medium and send back the numbers. This lesson maps that toolbox, from interpreting the results of common measurements to the more specialized power, neighbor, and admission-capacity reports.",
+      "zh": "Wi-Fi 设备共享着拥挤而又看不见的空中信道。要做出正确的决策——用哪个信道、漫游到哪个 AP、介质有多忙——站点（STA）或接入点（AP）首先得**测量**自己所处的无线环境。无线资源测量（RRM）就是 IEEE 802.11 标准为它们准备的工具箱：一系列的请求与报告，让一台设备能请另一台设备观测介质并把测量数值回传。本课将梳理这个工具箱，从常见测量结果的解读，到更专门的功率、邻居和接纳容量报告。"
+    },
+    {
+      "type": "prose",
+      "en": "Most RRM exchanges follow one pattern: a requester sends a Radio Measurement Request frame carrying one or more Measurement Request elements; the measuring STA observes the medium and replies with a Radio Measurement Report frame. Clause 11.10.9 (\"Specific measurement usage\") defines, report type by report type, exactly how the measuring STA must build each reply — Beacon, Frame, Channel Load, Noise Histogram, STA Statistics, location reports, and more. For example, a Channel Load report expresses how busy the channel was as a value scaled so that 255 means the medium was sensed busy 100% of the measurement duration.",
+      "zh": "大多数 RRM 交互都遵循同一个模式：请求方发送一帧无线测量请求（Radio Measurement Request），其中携带一个或多个测量请求元素；测量方观测介质，再用一帧无线测量报告（Radio Measurement Report）回复。第 11.10.9 节（“具体测量用法”）逐种报告地规定了测量方必须如何构造每一份回复——信标报告、帧报告、信道负载、噪声直方图、STA 统计、位置类报告等等。例如，信道负载报告用一个线性缩放的数值表示信道有多忙，其中 255 表示在整个测量时长内介质都被感知为忙。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant R as Requester STA\n  participant M as Measuring STA\n  R->>M: Radio Measurement Request\n  Note over M: Observe medium\\nfor Measurement Duration\n  M->>R: Radio Measurement Report\n  Note over R: Use channel load,\\nneighbors, RPI, etc.",
+      "zh": "sequenceDiagram\n  participant R as 请求方 STA\n  participant M as 测量方 STA\n  R->>M: 无线测量请求\n  Note over M: 在测量时长内\\n观测介质\n  M->>R: 无线测量报告\n  Note over R: 使用信道负载、\\n邻居、RPI 等结果"
+    },
+    {
+      "type": "prose",
+      "en": "Two measurements describe the raw RF power floor. The RPI (Received Power Indicator) histogram (clause 11.10.12) samples the received power at the antenna connector over time, quantizes each sample into one of eight RPI bins, and reports how much of the duration fell in each bin — a fingerprint of how loud and how often the channel is occupied. Closely related, the Noise Histogram report captures IPI (idle power) densities to characterize the noise-plus-interference floor when no frame is being sent or received.",
+      "zh": "有两种测量刻画了射频功率的本底。RPI（接收功率指示）直方图（第 11.10.12 节）随时间在天线接口处采样接收功率，把每个采样量化到八个 RPI 区间之一，再报告各区间各占测量时长的比例——这就像一张指纹，刻画了信道被占用的强度与频度。与之密切相关的噪声直方图报告则采集 IPI（空闲功率）密度，用于刻画在没有帧收发时的噪声加干扰本底。"
+    },
+    {
+      "type": "prose",
+      "en": "RRM also covers how a device advertises and finds neighbors. The neighbor report (clause 11.10.10) lets a STA ask its AP for a list of nearby APs — candidates for roaming — which the AP returns as Neighbor Report elements (optionally with location and timing subelements). To make discovery faster, an AP can also emit Measurement Pilot frames (clause 11.10.15): compact Action frames sent far more often than Beacons, so a passively scanning STA can spot a BSS and gauge its signal strength quickly. The AP Channel Report (clause 11.10.18) complements this by listing the channels where a STA is likely to hear an AP's Beacons, so scanning can be targeted instead of exhaustive.",
+      "zh": "RRM 还涵盖了设备如何宣告与发现邻居。邻居报告（第 11.10.10 节）让 STA 向其 AP 索取附近 AP 的清单——这些是漫游的候选——AP 以邻居报告元素（可选附带位置与定时子元素）的形式返回。为了加快发现，AP 还可以发送测量导频帧（Measurement Pilot，第 11.10.15 节）：这是一种紧凑的动作帧，发送频率远高于信标，使被动扫描的 STA 能迅速发现某个 BSS 并估计其信号强度。AP 信道报告（第 11.10.18 节）则与之互补，列出 STA 最可能听到某 AP 信标的信道，使扫描可以有针对性而非穷举。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Measurement Pilots are powerful but costly: many overlapping APs all piloting can eat medium time. The standard advises APs to enable them judiciously — for instance, keeping beacons plus pilots under ~10% of medium time, and pilots alone under ~5%. The pilot interval is also tied to a fraction of the Beacon Interval (roughly 3%–50%, per a defined table).",
+      "zh": "测量导频很有用，但代价不低：多个相互重叠的 AP 都发导频会吃掉介质时间。标准建议 AP 谨慎启用——例如把信标加导频控制在介质时间的约 10% 以内，单独的导频控制在约 5% 以内。导频间隔也按信标间隔的一个比例来设定（依据一张规定的表格，大致在 3%–50% 之间）。"
+    },
+    {
+      "type": "prose",
+      "en": "Closely linked to neighbor discovery is the multiple BSSID set (clause 11.10.14): a group of BSSIDs that all share one operating class, channel, and antenna connectors. The set has size 2^n, and its members coordinate so that at most one of them transmits Measurement Pilots (clause 11.10.15.2) — avoiding wasteful duplicate pilots from co-located virtual APs. A STA testing a requested BSSID against a pilot treats a match against *any* BSSID in an advertised Multiple BSSID element as a hit (clause 11.10.15.3).",
+      "zh": "与邻居发现密切相关的是多 BSSID 集合（multiple BSSID set，第 11.10.14 节）：这是一组共享同一运行类别、信道与天线接口的 BSSID。集合大小为 2^n，其成员之间相互协调，使得最多只有一个成员发送测量导频（第 11.10.15.2 节）——从而避免同址虚拟 AP 重复发送导频造成的浪费。当 STA 拿某个请求的 BSSID 去与导频比对时，只要它匹配导频所宣告的多 BSSID 元素中的**任一** BSSID，即视为命中（第 11.10.15.3 节）。"
+    },
+    {
+      "type": "prose",
+      "en": "A second cluster of RRM tools helps the AP describe its own load and reach. Access delay measurement (clause 11.10.16) has the AP average, over a 30 s window, how long a frame waits from \"ready to send\" until it actually goes out — a direct read on congestion, reported in the BSS Average Delay and BSS AC Access Delay elements. BSS Available Admission Capacity (clause 11.10.17) advertises how much medium time is still free for admission-controlled traffic in each access category, scaled in units of 32 µs/s — guidance a STA can weigh when deciding whether to associate or roam. And the Max Transmit Power field (clause 11.10.13) carries a simple but firm rule: it must never exceed the regulatory maximum for the current channel.",
+      "zh": "第二组 RRM 工具帮助 AP 描述自身的负载与覆盖。接入时延测量（第 11.10.16 节）让 AP 在 30 秒窗口内对每一帧从“准备好发送”到真正发出去之间的等待时间取平均——这是对拥塞程度的直接读数，通过 BSS 平均时延元素和 BSS AC 接入时延元素上报。BSS 可用接纳容量（第 11.10.17 节）宣告每个接入类别中还有多少介质时间可供受接纳控制的业务使用，以 32 µs/s 为单位缩放——STA 在决定是否关联或漫游时可参考这一指引。而最大发射功率字段（第 11.10.13 节）则承载着一条简单却刚性的规则：它绝不能超过当前信道的法规上限。"
+    },
+    {
+      "type": "prose",
+      "en": "Multicast diagnostic reporting (clause 11.10.19) lets an AP audit how well group-addressed (multicast/broadcast) traffic is reaching associated STAs: a STA counts received MSDUs for a given group address and records the maximum observed PHY rate, returning both. It can run on demand or as a triggered, autonomous report that fires when a condition is met. The legacy CCA request/report and RPI Histogram request/report (clauses 11.10.20 and 11.10.21) are brief, optional carry-overs: a STA *may* support generating a CCA (Clear Channel Assessment) report or an RPI histogram report in response to the corresponding request.",
+      "zh": "组播诊断报告（第 11.10.19 节）让 AP 审查组地址（组播/广播）业务到达各关联 STA 的情况：STA 统计某个组地址下收到的 MSDU 数量，并记录观测到的最大 PHY 速率，将两者一并回传。它既可按需运行，也可作为在满足某条件时自动触发的报告。沿用下来的 CCA 请求/报告与 RPI 直方图请求/报告（第 11.10.20、11.10.21 节）则是简短而可选的旧机制：STA **可以**选择支持，在收到相应请求时生成 CCA（空闲信道评估）报告或 RPI 直方图报告。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, RRM sits next to a regulatory mechanism for shared bands: Dependent STA Enablement (DSE). In bands such as the US 3650 MHz band, regulators require operating locations to be registered. DSE enablement and deenablement (clause 11.11.2) is a tiny handshake on top of that: enablement is a two-frame transaction — a requester asserts its identity and asks to be enabled, and an enabling STA replies with a result and, on success, a unique enablement identifier. Deenablement is a single frame that flips the per-STA enablement state back to \"unenabled.\" These identifiers and registered locations help licensees track down and resolve interference.",
+      "zh": "最后，RRM 紧邻着一套面向共享频段的法规机制：从属站点使能（DSE，Dependent STA Enablement）。在诸如美国 3650 MHz 频段中，监管机构要求登记运行位置。DSE 的使能与解除使能（第 11.11.2 节）就是建立在其上的一个小型握手：使能是一次两帧事务——请求方声明自身身份并请求被使能，使能方回复结果，成功时还附带一个唯一的使能标识符。解除使能则是单帧操作，把对应站点的使能状态翻回“未使能”。这些标识符与登记位置有助于持照方追查并解决干扰问题。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: which clause defines what",
+        "zh": "覆盖映射：各条款定义了什么"
+      },
+      "en": "Precise mapping of every clause taught here. 11.10.9 Specific measurement usage — per-report-type rules (Beacon, Frame, Channel Load with its 255=100%-busy scaling, Noise Histogram/IPI, STA Statistics, LCI/Civic/Identifier/FTM Range). 11.10.10 Usage of the neighbor report — STA requests, AP responds with Neighbor Report elements (optionally LCI/Civic/TSF subelements). 11.10.12 Measurement of the RPI histogram — sample received power at antenna connector, ±5 dB tolerance, quantize to 8 RPI bins, densities sum to ~255. 11.10.13 Operation of the Max Transmit Power field — must be ≤ Max Regulatory Power for the current channel. 11.10.14 Multiple BSSID set — shared class/channel/antenna, size 2^n, constrains pilot transmission. 11.10.15 Measurement Pilot frame generation/usage — compact Action frame sent on a fraction of the Beacon Interval; at most one AP of a multi-BSSID set pilots; STA BSSID-equality rules. 11.10.16 Access delay measurement — 30 s average of ready-to-transmit→TX-start, ±100 µs over ≥200 frames; BSS Average Delay / BSS AC Access Delay. 11.10.17 BSS Available Admission Capacity — free medium time per UP/AC in 32 µs/s units (0–31250). 11.10.18 AP Channel Report — channels where a STA is likely to hear the AP's Beacons. 11.10.19 Multicast diagnostic reporting — count group-addressed MSDUs + max PHY rate, on-demand or triggered. 11.10.20 CCA request/report and 11.10.21 RPI Histogram request/report — optional, a STA may generate the report. 11.11.2 DSE Enablement and deenablement — two-frame enablement transaction yielding a unique enablement identifier; one-frame deenablement reverting state to unenabled.",
+      "zh": "本课所教每条款的精确映射。11.10.9 具体测量用法——逐报告类型的规则（信标、帧、信道负载及其 255=100% 忙的缩放、噪声直方图/IPI、STA 统计、LCI/Civic/标识符/FTM 测距）。11.10.10 邻居报告的使用——STA 请求，AP 以邻居报告元素回复（可选 LCI/Civic/TSF 子元素）。11.10.12 RPI 直方图的测量——在天线接口处采样接收功率，容差 ±5 dB，量化为 8 个 RPI 区间，密度之和约为 255。11.10.13 最大发射功率字段的操作——必须 ≤ 当前信道的法规最大功率。11.10.14 多 BSSID 集合——共享类别/信道/天线，大小为 2^n，约束导频发送。11.10.15 测量导频帧的生成/使用——按信标间隔的一个比例发送的紧凑动作帧；多 BSSID 集合中最多一个 AP 发导频；STA 的 BSSID 相等判定规则。11.10.16 接入时延测量——对“准备发送→开始发送”取 30 秒平均，≥200 帧时精度 ±100 µs；BSS 平均时延 / BSS AC 接入时延。11.10.17 BSS 可用接纳容量——每 UP/AC 的空闲介质时间，单位 32 µs/s（0–31250）。11.10.18 AP 信道报告——STA 最可能听到该 AP 信标的信道。11.10.19 组播诊断报告——统计组地址 MSDU 数量加最大 PHY 速率，可按需或触发。11.10.20 CCA 请求/报告与 11.10.21 RPI 直方图请求/报告——可选，STA 可生成该报告。11.11.2 DSE 使能与解除使能——两帧使能事务，产生唯一的使能标识符；单帧解除使能，把状态恢复为未使能。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2597,
+          2602,
+          2613,
+          2616,
+          2617,
+          2620,
+          2621,
+          2622,
+          2623
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2597,
+        2602,
+        2603,
+        2604
+      ],
+      "note": "11.10.9 Specific measurement usage — Beacon, Frame, Channel Load (255=100% busy), Noise Histogram, STA Statistics reports"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2613,
+        2614,
+        2615,
+        2616
+      ],
+      "note": "11.10.10 Usage of the neighbor report — requesting and responding with Neighbor Report elements"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2616,
+        2617
+      ],
+      "note": "11.10.12 RPI histogram measurement; 11.10.13 Max Transmit Power field; 11.10.14 Multiple BSSID set; 11.10.15 Measurement Pilot generation/usage"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2618,
+        2619,
+        2620
+      ],
+      "note": "11.10.15.2/.3 Pilot generation by AP and usage by STA; 11.10.16 Access delay measurement; 11.10.17 BSS Available Admission Capacity"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2621,
+        2622
+      ],
+      "note": "11.10.18 AP Channel Report; 11.10.19 Multicast diagnostic reporting; 11.10.20 CCA request/report; 11.10.21 RPI Histogram request/report"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2623,
+        2624
+      ],
+      "note": "11.11.2 DSE Enablement and deenablement — two-frame enablement, one-frame deenablement, enablement identifiers"
+    }
+  ],
+  "covers": [
+    "80211-2024:11.10.9",
+    "80211-2024:11.10.10",
+    "80211-2024:11.10.12",
+    "80211-2024:11.10.13",
+    "80211-2024:11.10.14",
+    "80211-2024:11.10.15",
+    "80211-2024:11.10.16",
+    "80211-2024:11.10.17",
+    "80211-2024:11.10.18",
+    "80211-2024:11.10.19",
+    "80211-2024:11.10.20",
+    "80211-2024:11.10.21",
+    "80211-2024:11.11.2"
+  ],
+  "track": "managing"
+}

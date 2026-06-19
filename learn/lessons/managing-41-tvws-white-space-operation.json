@@ -1,0 +1,164 @@
+{
+  "id": "managing-41-tvws-white-space-operation",
+  "title": {
+    "en": "Wi-Fi in the TV Bands: TVHT and White-Space Database Operation",
+    "zh": "电视频段里的 Wi-Fi：TVHT 与白空间数据库运行"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Most Wi-Fi lives at 2.4, 5, and 6 GHz. But IEEE 802.11 also defines a mode that operates down in the **TV broadcast bands** (roughly 54-790 MHz), reusing the frequencies left idle between local TV stations. These idle slices are called **TV white space (TVWS)**. Because TV signals carry far over hills and walls, Wi-Fi here reaches much farther than ordinary Wi-Fi. This lesson covers how 802.11 builds a BSS in those bands using **TVHT** (TV-band Very High Throughput) and how it stays legal by asking a geolocation database (GDB) which channels are free at your exact location.",
+      "zh": "大多数 Wi-Fi 工作在 2.4、5 和 6 GHz。但 IEEE 802.11 还定义了一种工作在**电视广播频段**（大约 54-790 MHz）的模式，复用本地电视台之间空闲的频率。这些空闲的频段被称为**电视白空间（TVWS）**。由于电视信号能越过山丘和墙壁传播很远，这里的 Wi-Fi 覆盖距离远超普通 Wi-Fi。本课讲解 802.11 如何用 **TVHT**（电视频段超高吞吐）在这些频段建立 BSS，以及它如何通过向地理位置数据库（GDB）查询你所在位置当前空闲的信道来保持合规。"
+    },
+    {
+      "type": "prose",
+      "en": "First, the radio layer. A STA that starts a **TVHT BSS** must support all the <VHT-MCS, NSS> tuples in the *basic VHT-MCS and NSS set*, and a STA may join only if it can both transmit and receive every tuple in that set. TVHT borrows VHT machinery: any TVHT STA sets `dot11VHTOptionImplemented` to true, and the AP declares its bandwidth (TVHT_W, 2W, 4W, W+W, 2W+2W) in the TVHT Operation element. Before starting any VHT-family BSS, a STA must also perform **OBSS scans** to discover existing neighbors and pick a clean primary channel.",
+      "zh": "先看无线层。启动 **TVHT BSS** 的 STA 必须支持*基本 VHT-MCS 与 NSS 集合*中所有的 <VHT-MCS, NSS> 元组；只有当一个 STA 能够收发该集合中的每一个元组时，才被允许加入。TVHT 复用了 VHT 的机制：任何 TVHT STA 都会将 `dot11VHTOptionImplemented` 置为真，AP 则在 TVHT Operation 元素中声明其带宽（TVHT_W、2W、4W、W+W、2W+2W）。在启动任何 VHT 系列 BSS 之前，STA 还必须执行 **OBSS 扫描**，以发现已存在的邻居并选出一个干净的主信道。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "An OBSS scan (11.38.3) is a passive or active scan of every channel that the wide BSS could touch. Each channel must be visited at least once per `dot11BSSWidthTriggerScanInterval` seconds, with a minimum dwell of `dot11OBSSScanPassiveDwell` / `dot11OBSSScanActiveDwell` TUs. This is how a TVHT/VHT AP avoids stomping on a hidden neighbor before it ever transmits.",
+      "zh": "OBSS 扫描（11.38.3）是对宽带 BSS 可能涉及的每一个信道进行的被动或主动扫描。每个信道必须至少每隔 `dot11BSSWidthTriggerScanInterval` 秒被扫描一次，每次最短停留 `dot11OBSSScanPassiveDwell` / `dot11OBSSScanActiveDwell` 个 TU。这就是 TVHT/VHT AP 在首次发射前避免压住隐藏邻居的方法。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the regulatory core. In TVWS you cannot just transmit — TV stations and wireless microphones have priority. So 802.11 splits STAs into two roles. A **GDD enabling STA** (geolocation database dependent enabling STA) knows its own location, contacts the **GDB**, and learns which frequencies are permitted there. A **GDD dependent STA** has no database access of its own; it stays silent, listening, until an enabling STA explicitly authorizes it. When `dot11TVHTOptionImplemented` is true and the STA is in a band that requires GDB control, `dot11GDDActivated` is set true and all of clause 11.42 applies.",
+      "zh": "接下来是合规核心。在 TVWS 中你不能随意发射——电视台和无线麦克风拥有优先权。因此 802.11 把 STA 分为两种角色。**GDD 使能 STA**（依赖地理位置数据库的使能 STA）知道自己的位置，联系 **GDB**，并获知该处允许使用的频率。**GDD 依赖 STA** 自身没有数据库访问能力；它保持静默、只接收，直到某个使能 STA 明确授权它。当 `dot11TVHTOptionImplemented` 为真且 STA 处于需要 GDB 控制的频段时，`dot11GDDActivated` 置为真，整个 11.42 条款随之生效。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant D as GDD dependent STA\n  participant E as GDD enabling STA\n  participant G as GDB / RLSS\n  Note over D: state = Unenabled (listen only)\n  E->>D: GDD enabling signal (Beacon)\n  Note over D: state = AttemptingGDDEnablement\n  D->>E: Authenticate + Associate\n  D->>E: GDD Enablement Request\n  E->>G: verify + fetch channels\n  E->>D: GDD Enablement Response (SUCCESS + WSM)\n  Note over D: state = GDDEnabled (may transmit)",
+      "zh": "sequenceDiagram\n  participant D as GDD 依赖 STA\n  participant E as GDD 使能 STA\n  participant G as GDB / RLSS\n  Note over D: 状态 = 未使能（仅接收）\n  E->>D: GDD 使能信号（Beacon）\n  Note over D: 状态 = 尝试使能中\n  D->>E: 认证 + 关联\n  D->>E: GDD 使能请求\n  E->>G: 核验并获取信道\n  E->>D: GDD 使能响应（成功 + WSM）\n  Note over D: 状态 = 已使能（可发射）"
+    },
+    {
+      "type": "prose",
+      "en": "The dependent STA's life is a three-state machine (11.42.3): **Unenabled** → **AttemptingGDDEnablement** → **GDDEnabled**. It boots in Unenabled, transmitting nothing, passively scanning for a **GDD enabling signal** — a Beacon whose Extended Capabilities element carries the *Geodatabase Inband Enabling Signal* bit set to 1 (11.42.2). On hearing it, the STA authenticates, associates, and sends a **GDD Enablement Request**. The enabling STA replies with a **GDD Enablement Response**: SUCCESS (now GDDEnabled, with a White Space Map attached) or a denial code. The STA must finish enablement within `dot11GDDEnablementTimeLimit`; on failure it must back off for `dot11GDDEnablementFailHoldTime` before retrying. The enabling STA can also fire an *unsolicited* response with status AUTHORIZATION DEENABLED to instantly silence a dependent STA.",
+      "zh": "依赖 STA 的生命周期是一个三状态机（11.42.3）：**未使能** → **尝试使能中** → **已使能**。它启动时处于未使能态，不发射任何帧，被动扫描 **GDD 使能信号**——即一个 Beacon，其 Extended Capabilities 元素中的*带内地理数据库使能信号*位被置为 1（11.42.2）。收到后，STA 进行认证、关联，并发送 **GDD 使能请求**。使能 STA 以 **GDD 使能响应**回复：成功（此时进入已使能态，并附带一份白空间地图）或某个拒绝码。STA 必须在 `dot11GDDEnablementTimeLimit` 内完成使能；失败后须退避 `dot11GDDEnablementFailHoldTime` 才能重试。使能 STA 还可以发出*非请求的*响应，状态为 AUTHORIZATION DEENABLED，从而立即让某个依赖 STA 停止发射。"
+    },
+    {
+      "type": "prose",
+      "en": "Once enabled, the STA must keep proving the channels are still legal — TV usage changes over time and space. Four mechanisms keep it honest. The **Channel Availability Query (CAQ, 11.42.4)** lets a STA ask the enabling STA (which may consult the RLSS/GDB) for the current list of available channels; a successful response carries fresh WSM info and resets the GDD enablement validity timer. A STA may even query a *bounded geographic area* by including several Device Location Information fields. **Channel Schedule Management (CSM, 11.42.5)** returns the *time schedule* of channel availability — when channels open and close — mapped from TV channels onto WLAN channels by the RLSS. Note: a GDD dependent STA must **not** send a CSM request; CSM is between enabling STAs and the RLSS.",
+      "zh": "一旦被使能，STA 必须持续证明这些信道仍然合法——电视使用情况会随时间和地点变化。四种机制保证其诚实运行。**信道可用性查询（CAQ，11.42.4）**让 STA 向使能 STA（其可能咨询 RLSS/GDB）询问当前可用信道列表；成功的响应携带最新的 WSM 信息并重置 GDD 使能有效性定时器。STA 甚至可以通过包含多个 Device Location Information 字段来查询一个*有界地理区域*。**信道日程管理（CSM，11.42.5）**返回信道可用性的*时间日程*——信道何时开放、何时关闭——由 RLSS 从电视信道映射到 WLAN 信道。注意：GDD 依赖 STA **不得**发送 CSM 请求；CSM 是在使能 STA 与 RLSS 之间进行的。"
+    },
+    {
+      "type": "prose",
+      "en": "The **Contact Verification Signal (CVS, 11.42.6)** is the heartbeat. The enabling STA periodically sends each dependent STA an individually addressed Protected CVS frame carrying a **Map ID**. The dependent STA compares this Map ID against its current WSM: if they match, the map is still valid and the STA resets its validity timer to `dot11ContactVerificationSignalInterval`; if they differ, the map changed and the STA must run a CAQ to fetch the new one. Fail to refresh and the validity timer expires — the STA falls back to Unenabled and goes silent. **Network Channel Control (NCC, 11.42.7)** is a two-message request/response where a STA proposes its preferred frequencies (as Operating Class / Channel Number / Max Transmit Power triplets) and the responder (or RLSS) grants a confirmed subset plus a power cap.",
+      "zh": "**联系核验信号（CVS，11.42.6）**是心跳信号。使能 STA 周期性地向每个依赖 STA 发送一个单独寻址的受保护 CVS 帧，其中携带一个 **Map ID**。依赖 STA 将该 Map ID 与自己当前的 WSM 比较：若一致，则地图仍然有效，STA 将有效性定时器重置为 `dot11ContactVerificationSignalInterval`；若不一致，则地图已变更，STA 必须运行 CAQ 来获取新地图。若未能刷新，有效性定时器到期——STA 退回未使能态并停止发射。**网络信道控制（NCC，11.42.7）**是一个两消息的请求/响应过程：STA 提出其偏好频率（以 Operating Class / Channel Number / 最大发射功率三元组表示），响应方（或 RLSS）批准一个确认的子集并给出功率上限。"
+    },
+    {
+      "type": "prose",
+      "en": "Tying it all together is the **White Space Map (WSM, 11.42.8)** — the actual list of permitted channels plus, for each, the maximum allowed transmit power. The enabling STA contacts the GDB, builds the WSM, and ships it inside GDD Enablement Response, CAQ response, and WSM Announcement frames. Every WSM carries a Map version (incremented mod 127 on each update; version 127 means reference-only). A dependent STA transmits **only** on channels in its valid WSM, and on receiving an updated WSM it must **move off** any channel that has just become unavailable. This is what makes TVWS Wi-Fi a good neighbor to broadcast TV.",
+      "zh": "把这一切串起来的是**白空间地图（WSM，11.42.8）**——它就是允许使用的信道列表，并为每个信道给出最大允许发射功率。使能 STA 联系 GDB、构建 WSM，并将其装入 GDD 使能响应、CAQ 响应和 WSM 通告帧中发送。每份 WSM 都带有一个 Map 版本号（每次更新按 mod 127 递增；版本 127 表示仅供参考）。依赖 STA **只能**在其有效 WSM 中的信道上发射，并且在收到更新的 WSM 时，必须**撤离**任何刚刚变为不可用的信道。这正是 TVWS Wi-Fi 能与广播电视和谐共存的原因。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Many of these exchanges (CAQ, CSM, NCC, CVS, WSM Announcement) ride either RLQP via the GAS protocol when talking to an RLSS, or Public Action frames (often the *protected dual* of a Public Action frame) when talking peer-to-peer. The protected variants matter: an unsecured CAQ connection forces the responder to return REFUSED.",
+      "zh": "这些交互（CAQ、CSM、NCC、CVS、WSM 通告）中的许多，要么在与 RLSS 通信时通过 GAS 协议承载 RLQP，要么在点对点通信时使用 Public Action 帧（通常是 Public Action 帧的*受保护对偶*）。受保护的变体很关键：未加密的 CAQ 连接会迫使响应方返回 REFUSED。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Clause coverage map: where each rule lives",
+        "zh": "条款覆盖图：每条规则的出处"
+      },
+      "en": "Radio layer: **11.38.3** OBSS scanning requirements for VHT STAs (passive/active dwell, per-channel scan interval) — inherited by TVHT. **11.41** Basic TVHT BSS functionality (basic VHT-MCS and NSS set, join rule, TVHT Operation element bandwidths in Table 11-32, primary TVHT_W channel). GDB control: **11.42.1** General — GDD enabling vs dependent STA roles, dot11GDDActivated, dot11STALCITable location. **11.42.2** GDD enabling STA operation — enabling signal (Geodatabase Inband Enabling Signal bit), Enablement Response status codes, AUTHORIZATION DEENABLED. **11.42.3** GDD dependent STA operation — three-state machine (Unenabled/AttemptingGDDEnablement/GDDEnabled, Figure 11-102), enablement timers, validity timer. **11.42.4** CAQ procedure — query for available channel list, bounded-area query, resets validity timer (.1 intro, .2 requesting STA, .3 responding STA). **11.42.5** CSM procedures — channel time-schedule, TV→WLAN mapping by RLSS, dependent STA may not request (.1/.2/.3). **11.42.6** CVS — Map ID heartbeat that validates the WSM and resets the validity timer. **11.42.7** NCC procedures — two-message frequency-grant transaction with power constraints (.1/.2/.3). **11.42.8** WSM — channel list + max power, Map version mod 127, dependent STA must vacate newly-unavailable channels.",
+      "zh": "无线层：**11.38.3** VHT STA 的 OBSS 扫描要求（被动/主动停留、每信道扫描间隔）——被 TVHT 继承。**11.41** 基本 TVHT BSS 功能（基本 VHT-MCS 与 NSS 集合、加入规则、表 11-32 中 TVHT Operation 元素的各带宽、主 TVHT_W 信道）。GDB 控制：**11.42.1** 概述——GDD 使能与依赖 STA 角色、dot11GDDActivated、dot11STALCITable 位置信息。**11.42.2** GDD 使能 STA 运行——使能信号（带内地理数据库使能信号位）、使能响应状态码、AUTHORIZATION DEENABLED。**11.42.3** GDD 依赖 STA 运行——三状态机（未使能/尝试使能中/已使能，图 11-102）、使能定时器、有效性定时器。**11.42.4** CAQ 过程——查询可用信道列表、有界区域查询、重置有效性定时器（.1 引言、.2 请求 STA、.3 响应 STA）。**11.42.5** CSM 过程——信道时间日程、RLSS 进行电视到 WLAN 的映射、依赖 STA 不得请求（.1/.2/.3）。**11.42.6** CVS——以 Map ID 心跳验证 WSM 并重置有效性定时器。**11.42.7** NCC 过程——带功率约束的两消息频率授权事务（.1/.2/.3）。**11.42.8** WSM——信道列表 + 最大功率、Map 版本按 mod 127 递增、依赖 STA 必须撤离新近不可用的信道。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2887,
+          2895,
+          2896,
+          2897,
+          2898,
+          2899,
+          2900,
+          2901,
+          2902,
+          2903,
+          2904,
+          2905,
+          2906,
+          2907
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2887,
+        2888
+      ],
+      "note": "11.38.3 Scanning requirements for VHT STA — OBSS scan dwell times and per-channel scan interval"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2895,
+        2896
+      ],
+      "note": "11.41 Basic TVHT BSS functionality (basic VHT-MCS/NSS set, Table 11-32 bandwidths); 11.42.1 General GDD roles"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2897,
+        2898,
+        2899
+      ],
+      "note": "11.42.2 GDD enabling STA operation; 11.42.3 GDD dependent STA state machine; 11.42.4.1 CAQ introduction"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2900,
+        2901
+      ],
+      "note": "11.42.4.2/.3 CAQ requesting and responding STA, bounded-area query, WSM in response"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2902,
+        2903
+      ],
+      "note": "11.42.5 CSM procedures — schedule query, TV→WLAN mapping, dependent STA may not request CSM"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2904,
+        2905,
+        2906
+      ],
+      "note": "11.42.6 CVS Map ID heartbeat; 11.42.7 NCC two-message grant with power constraints"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2906,
+        2907
+      ],
+      "note": "11.42.8 White Space Map — channel/power list, Map version mod 127, vacate unavailable channels"
+    }
+  ],
+  "covers": [
+    "80211-2024:11.38.3",
+    "80211-2024:11.41",
+    "80211-2024:11.42.1",
+    "80211-2024:11.42.2",
+    "80211-2024:11.42.3",
+    "80211-2024:11.42.4",
+    "80211-2024:11.42.5",
+    "80211-2024:11.42.6",
+    "80211-2024:11.42.7",
+    "80211-2024:11.42.8"
+  ],
+  "track": "managing"
+}

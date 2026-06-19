@@ -1,0 +1,126 @@
+{
+  "id": "security-26-fils-dils-beacon-protection",
+  "title": {
+    "en": "Faster, Safer Onboarding: FILS, DILS and Beacon Protection",
+    "zh": "更快更安全的入网：FILS、DILS 与信标保护"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Joining a Wi-Fi network normally takes several round trips: you scan, you authenticate, you associate, and only then do you ask for an IP address over DHCP. In a busy place — an airport, a stadium, a train pulling into a platform — thousands of devices try to do all of this at once, and the join gets slow and fragile. The IEEE 802.11-2024 standard defines a family of procedures that make the join both faster and harder to attack. This lesson covers three of them: Fast Initial Link Setup (FILS), Decentralized Initial Link Setup (DILS), and Beacon protection.",
+      "zh": "通常情况下，接入 Wi-Fi 网络需要多次来回交互：先扫描，再认证，然后关联，最后才通过 DHCP 申请 IP 地址。在人流密集的场所——机场、体育场、刚进站的列车——成千上万台设备同时执行这一切，入网就会变得既缓慢又脆弱。IEEE 802.11-2024 标准定义了一组让入网既更快又更难被攻击的流程。本课介绍其中三项：快速初始链路建立（FILS）、去中心化初始链路建立（DILS）以及信标保护（Beacon protection）。"
+    },
+    {
+      "type": "prose",
+      "en": "FILS (clause 11.45) is the 'fast' part. A FILS STA is a QoS station, and FILS only runs in a non-DMG, non-S1G infrastructure BSS. Its core trick is to compress authentication, key establishment, and even higher-layer setup like IP-address assignment into the same association exchange, instead of doing them one after another. A FILS AP advertises that it speaks FILS by setting the FILS Capability bit in its Extended Capabilities and by including a FILS Indication element in Beacon, Probe Response, and FILS Discovery frames; a FILS non-AP STA sets the same capability bit in its Probe Request and (Re)Association Request frames.",
+      "zh": "FILS（第 11.45 节）负责“快”这一部分。FILS STA 是一种 QoS 站点，且 FILS 只在非 DMG、非 S1G 的基础结构 BSS 中运行。它的核心技巧是把认证、密钥建立，甚至像 IP 地址分配这样的高层建立步骤，全部压缩进同一次关联交互中，而不是逐个串行执行。FILS AP 通过在扩展能力（Extended Capabilities）中置位 FILS Capability 比特，并在信标帧、探测响应帧和 FILS Discovery 帧中携带 FILS Indication 元素，来宣告自己支持 FILS；FILS 非 AP 站点则在其探测请求帧和（重）关联请求帧中置位相同的能力比特。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant STA\n  participant AP\n  AP-->>STA: Beacon / FILS Discovery (FILS Indication)\n  STA->>AP: Auth Request (FILS auth)\n  AP->>STA: Auth Response\n  STA->>AP: (Re)Assoc Req + HLP / IP request\n  AP->>STA: (Re)Assoc Resp + keys + IP\n  Note over STA,AP: Linked and IP-ready in one exchange",
+      "zh": "sequenceDiagram\n  participant STA as 站点\n  participant AP as 接入点\n  AP-->>STA: 信标 / FILS Discovery（FILS 指示）\n  STA->>AP: 认证请求（FILS 认证）\n  AP->>STA: 认证响应\n  STA->>AP: （重）关联请求 + 高层包 / IP 申请\n  AP->>STA: （重）关联响应 + 密钥 + IP\n  Note over STA,AP: 一次交互即完成链路与 IP 就绪"
+    },
+    {
+      "type": "prose",
+      "en": "How does a STA know what kind of FILS an AP offers before it commits? That is the job of the FILS Indication element, defined by the capability-indication procedures in clause 11.45.4. A FILS AP must include this element in Beacon and Probe Response frames (and may include it in FILS Discovery frames). The element advertises two things: which FILS authentication protocol the AP uses, and whether the AP performs IP-address assignment for the STA. It can also list up to seven realms — domain names of EAP-RP authentication servers the AP can reach — each carried as a 16-byte hash of the lowercased realm name computed with SHA-256. A STA reads these indications and picks an AP it can actually authenticate with, before sending a single frame.",
+      "zh": "站点在真正发起接入之前，如何知道某个 AP 提供哪种 FILS？这正是第 11.45.4 节所定义的能力指示流程的职责，由 FILS Indication 元素承担。FILS AP 必须在信标帧和探测响应帧中携带该元素（也可在 FILS Discovery 帧中携带）。该元素宣告两件事：AP 所使用的 FILS 认证协议，以及 AP 是否为站点分配 IP 地址。它还能列出最多 7 个 realm——即 AP 可达的 EAP-RP 认证服务器的域名——每个以将 realm 名称转为小写后用 SHA-256 计算得到的 16 字节哈希形式携带。站点读取这些指示后，可在发出任何一帧之前，就选定一个自己确实能认证成功的 AP。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why hash the realm instead of sending the plain domain name? A hash keeps the Beacon compact (16 bytes per realm regardless of name length) and lets a STA test 'do I have credentials for one of these realms?' by hashing its own realm and comparing — without the AP broadcasting a readable list of every identity provider it serves.",
+      "zh": "为什么对 realm 做哈希，而不是直接发送明文域名？哈希让信标保持紧凑（无论名称多长，每个 realm 都是 16 字节），同时让站点可以通过对自己的 realm 做哈希再比对，来判断“我是否拥有这些 realm 之一的凭证”——而 AP 无需广播一份可读的、列出它所服务的每一个身份提供商的清单。"
+    },
+    {
+      "type": "prose",
+      "en": "FILS makes a single join fast, but speed creates a new problem: when one event ends or a train arrives, a crowd of STAs may all attempt link setup in the same instant and swamp the AP. DILS (clause 11.45.5) is the throttle. DILS applies only to FILS STAs. Its purpose is to let an AP moderate the rate at which non-AP STAs send Authentication and (Re)Association Request frames — not by rejecting them after the fact, but by telling some STAs up front to wait.",
+      "zh": "FILS 让单次入网变快，但速度带来了新问题：当某场活动结束、或一列火车到站时，大批站点可能在同一瞬间发起链路建立，把 AP 淹没。DILS（第 11.45.5 节）就是这个“节流阀”。DILS 仅适用于 FILS 站点。它的目的是让 AP 调节非 AP 站点发送认证帧与（重）关联请求帧的速率——不是事后拒绝，而是预先告诉部分站点先等一等。"
+    },
+    {
+      "type": "prose",
+      "en": "An AP that implements DILS may add a DILS element to its Beacon and Probe Response frames. The element carries a DILS Duration plus optional filters. A STA that receives it checks every optional field that is present: if it satisfies all of them, it may proceed with FILS immediately, with no extra delay; if it does not, it must not associate until the DILS Duration has elapsed. The filters let the AP admit specific subsets: a FILS User Priority field selects STAs by the priority of traffic queued (high-priority, low-priority, or no traffic at all), and a MAC Address Filter field admits STAs whose trailing MAC-address bits match a configured bit pattern — more bits means fewer STAs let through. A vendor-specific field allows further criteria. The net effect is a decentralized, staggered admission: each STA decides locally whether it is allowed in this window, so the AP smooths the stampede without a central scheduler.",
+      "zh": "实现 DILS 的 AP 可在其信标帧和探测响应帧中加入 DILS 元素。该元素携带一个 DILS Duration（持续时间）以及若干可选过滤字段。收到该元素的站点会逐一检查每个出现的可选字段：若全部满足，它便可立即继续 FILS，无需额外延迟；若不满足，则在 DILS Duration 经过之前不得发起关联。这些过滤字段让 AP 可放行特定子集：FILS User Priority 字段按排队流量的优先级（高优先级、低优先级、或完全无流量）来挑选站点；MAC Address Filter 字段则放行那些 MAC 地址末尾若干比特与配置好的比特模式相匹配的站点——使用的比特越多，被放行的站点越少。Vendor Specific 字段还可附加其他条件。最终效果是一种去中心化、错峰的准入：每个站点本地判断自己在本时间窗内是否获准接入，于是 AP 无需中央调度器即可平滑这股入网洪流。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Receive Beacon with DILS element] --> B{Match all present filters?}\n  B -- Yes --> C[Proceed with FILS now]\n  B -- No --> D[Wait until DILS Duration elapses]\n  D --> E[Then attempt link setup]",
+      "zh": "flowchart TD\n  A[收到含 DILS 元素的信标] --> B{满足所有出现的过滤条件?}\n  B -- 是 --> C[立即继续 FILS]\n  B -- 否 --> D[等待 DILS Duration 经过]\n  D --> E[随后再尝试链路建立]"
+    },
+    {
+      "type": "prose",
+      "en": "Speed and admission control still leave one classic attack open: Beacon frames are broadcast unprotected, so anyone can forge or tamper with them — for example, faking an operating-channel change to push your STA somewhere harmful, or spoofing an SSID. Beacon protection (clause 11.52) closes this gap. In an infrastructure BSS, when beacon protection is enabled, the MLME runs an encapsulation service through which all Beacon frames must pass. Protection uses BIP (the Broadcast/Multicast Integrity Protocol) keyed by a BIGTK (Beacon Integrity Group Temporal Key). The AP installs the BIGTK as a transmit key and protects every Beacon; an associated non-AP STA that has received the BIGTK enables protection as a receive key and validates each incoming Beacon's integrity.",
+      "zh": "速度与准入控制之外，仍留有一个经典攻击面：信标帧是不受保护地广播的，因此任何人都能伪造或篡改它们——例如伪造一次工作信道变更，把你的站点驱赶到危险信道，或假冒 SSID。信标保护（第 11.52 节）堵上了这个缺口。在基础结构 BSS 中，当启用信标保护时，MLME 会运行一个封装服务，所有信标帧都必须经过它。保护机制采用 BIP（广播/组播完整性协议），并以 BIGTK（信标完整性组临时密钥）作为密钥。AP 将 BIGTK 安装为发送密钥并保护每一帧信标；已收到 BIGTK 的关联非 AP 站点则将其作为接收密钥启用保护，并校验每一个收到的信标的完整性。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Beacon protection authenticates Beacons but does not encrypt them — a STA can still read a Beacon, it just can't be fooled by a forged one. It rides on management-frame protection: if robust management-frame protection is not active, beacon protection must be disabled. It is an infrastructure-BSS feature only — not supported in IBSS, MBSS, or PBSS.",
+      "zh": "信标保护对信标做的是认证而非加密——站点仍能读取信标，只是不会被伪造的信标欺骗。它依附于管理帧保护：若稳健管理帧保护未激活，则必须关闭信标保护。它仅是基础结构 BSS 的特性——在 IBSS、MBSS 或 PBSS 中均不支持。"
+    },
+    {
+      "type": "prose",
+      "en": "Beacon protection also lets a STA cross-check the contents it depends on. If operating-channel validation (OCVC) is not in play but beacon protection is enabled, the STA must verify that the operating-channel information in the first BIP-validated Beacon matches its current operating channel; on a mismatch it must disassociate. Similarly, if SSID protection is not supported but beacon protection is on, the STA should verify that validated Beacons stay consistent with the SSID it associated under, and should disassociate if they do not. Together, these checks turn the Beacon from a trust-me broadcast into a verifiable statement about the network you are actually on.",
+      "zh": "信标保护还让站点能够交叉核验它所依赖的内容。若未启用工作信道验证（OCVC）但启用了信标保护，站点必须核验第一个通过 BIP 校验的信标中的工作信道信息是否与当前工作信道一致；若不一致，则必须解除关联。同样，若 SSID 保护不受支持但信标保护已开启，站点应核验通过校验的信标与其关联时所用的 SSID 始终一致，若不一致则应解除关联。这些核验合在一起，把信标从一份“请相信我”的广播，转变为关于你当前真正所处网络的一份可验证声明。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: exactly where each clause is taught",
+        "zh": "覆盖对照：各条款的讲解位置"
+      },
+      "en": "This lesson teaches four leaf clauses of IEEE 802.11-2024. 11.45.1 (FILS General) — FILS runs only in a non-DMG/non-S1G infrastructure BSS; a FILS STA is a QoS STA; the AP advertises FILS via the FILS Capability bit and the FILS Indication element in Beacon, Probe Response, and FILS Discovery frames, and the non-AP STA sets the FILS Capability bit in Probe Request and (Re)Association Request frames (covered in the second prose block and the FILS sequence diagram). 11.45.4 (FILS authentication and higher layer setup capability indications) — the FILS Indication element, mandatory in Beacon and Probe Response frames, advertises the FILS authentication protocol and whether the AP does IP-address assignment, and may carry up to 7 realm hashes computed as ExtractBits(SHA-256(ToLowerCase(D)),0,16) (covered in the FILS Indication prose and tip). 11.45.5 (DILS) — DILS applies only to FILS STAs and lets an AP moderate concurrent link setup via a DILS element carrying DILS Duration, FILS User Priority, MAC Address Filter, and Vendor Specific fields; a STA that satisfies all present filters proceeds immediately, otherwise it waits out the DILS Duration (covered in the two DILS prose blocks and the DILS flowchart). 11.52 (Beacon protection procedures) — in an infrastructure BSS the MLME provides a Beacon encapsulation service using BIP keyed by the BIGTK (AP=Tx, non-AP STA=Rx); requires robust management-frame protection; STA verifies operating-channel and SSID consistency from BIP-validated Beacons and disassociates on mismatch; not supported in IBSS/MBSS/PBSS (covered in the Beacon-protection prose, tip, and consistency-check prose).",
+      "zh": "本课讲解 IEEE 802.11-2024 的四个叶级条款。11.45.1（FILS 概述）——FILS 仅在非 DMG/非 S1G 基础结构 BSS 中运行；FILS STA 为 QoS 站点；AP 通过 FILS Capability 比特及在信标、探测响应、FILS Discovery 帧中的 FILS Indication 元素宣告 FILS，非 AP 站点在探测请求与（重）关联请求帧中置位 FILS Capability 比特（见第二个正文块与 FILS 时序图）。11.45.4（FILS 认证与高层建立能力指示）——FILS Indication 元素在信标和探测响应帧中为必含，宣告 FILS 认证协议及 AP 是否做 IP 地址分配，并可携带最多 7 个 realm 哈希，按 ExtractBits(SHA-256(ToLowerCase(D)),0,16) 计算（见 FILS Indication 正文与提示）。11.45.5（DILS）——DILS 仅适用于 FILS 站点，让 AP 通过携带 DILS Duration、FILS User Priority、MAC Address Filter 与 Vendor Specific 字段的 DILS 元素来调节并发链路建立；满足全部出现过滤条件的站点立即继续，否则须等待 DILS Duration（见两个 DILS 正文块与 DILS 流程图）。11.52（信标保护流程）——在基础结构 BSS 中，MLME 提供基于 BIP、以 BIGTK 为密钥的信标封装服务（AP 为发送方，非 AP 站点为接收方）；需稳健管理帧保护；站点依据通过 BIP 校验的信标核验工作信道与 SSID 一致性，不一致则解除关联；IBSS/MBSS/PBSS 不支持（见信标保护正文、提示与一致性核验正文）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2910,
+          2916,
+          2917,
+          2930,
+          2931
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2910
+      ],
+      "note": "11.45.1 FILS General — FILS STA is a QoS STA; non-DMG/non-S1G infrastructure BSS; FILS Capability bit and FILS Indication element advertised in Beacon/Probe Response/FILS Discovery"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2916
+      ],
+      "note": "11.45.4 FILS authentication and higher layer setup capability indications — FILS Indication element; auth protocol and IP-assignment indication; up to 7 realm hashes via SHA-256"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2916,
+        2917
+      ],
+      "note": "11.45.5 DILS (General, AP procedures, non-AP STA procedures) — DILS element, DILS Duration, FILS User Priority, MAC Address Filter; satisfy-or-wait admission"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2930,
+        2931
+      ],
+      "note": "11.52 Beacon protection procedures — MLME encapsulation service, BIP with BIGTK (AP Tx / STA Rx), MFP requirement, operating-channel and SSID consistency checks, not in IBSS/MBSS/PBSS"
+    }
+  ],
+  "covers": [
+    "80211-2024:11.45.1",
+    "80211-2024:11.45.4",
+    "80211-2024:11.45.5",
+    "80211-2024:11.52"
+  ],
+  "track": "security"
+}

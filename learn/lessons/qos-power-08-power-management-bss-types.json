@@ -1,0 +1,143 @@
+{
+  "id": "qos-power-08-power-management-bss-types",
+  "title": {
+    "en": "Sleeping Smart: Power Management Across BSS Types",
+    "zh": "聪明地休眠：各类 BSS 下的功率管理"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Battery-powered Wi-Fi devices spend most of their life asleep. A station (STA) toggles between two power states: **awake**, where it is fully powered and can transmit or receive, and **doze**, where its radio is mostly off and it draws very little current. The trick is to doze as much as possible while never missing a frame that someone has queued for you. IEEE 802.11 solves this differently for each kind of network — an infrastructure BSS with an access point, an ad-hoc IBSS with no AP, a mesh, and the millimeter-wave DMG world — but every variant shares the same idea: a sleeping STA wakes up at agreed-upon moments to learn whether traffic is buffered for it, then fetches it.",
+      "zh": "靠电池供电的 Wi-Fi 设备，绝大部分时间都在睡觉。一个站点（STA）在两种功率状态之间切换：**唤醒（awake）**状态下它满功率工作、可收可发；**休眠（doze）**状态下射频基本关闭、耗电极低。诀窍在于：尽可能多地休眠，同时绝不漏掉别人为你排队的帧。IEEE 802.11 针对不同类型的网络给出了不同的解法——有接入点的基础设施 BSS、无 AP 的自组织 IBSS、网状网络（mesh），以及毫米波 DMG 世界——但所有变体都共享同一个核心思想：睡着的 STA 在约定好的时刻醒来，弄清楚是否有为它缓存的流量，然后取走它。"
+    },
+    {
+      "type": "prose",
+      "en": "**Infrastructure networks (non-DMG): TIM, DTIM, and PS-Poll.** When a STA tells its AP it is entering power save (PS) mode — by setting the Power Management subfield in a frame the AP acknowledges — the AP starts buffering the station's individually addressed frames instead of sending them blindly. The AP advertises who has buffered traffic in a **Traffic Indication Map (TIM)** carried in every Beacon. A dozing STA wakes just before the Beacon, reads the TIM, and if its bit is set it sends a **PS-Poll** frame to pull down one buffered unit. Group-addressed (broadcast/multicast) frames are special: they are buffered and released only right after a **DTIM** (Delivery TIM) Beacon, which appears every few Beacons. So a STA that wants broadcast traffic must at least wake for every DTIM.",
+      "zh": "**基础设施网络（非 DMG）：TIM、DTIM 与 PS-Poll。** 当一个 STA 告诉它的 AP 自己要进入省电（PS）模式时——通过在一帧中置位 Power Management 子字段、并得到 AP 的确认——AP 便开始为该站点缓存单播帧，而不再盲目下发。AP 在每个 Beacon 中携带一个**流量指示图（TIM）**，公布哪些站点有缓存流量。休眠的 STA 在 Beacon 前醒来读取 TIM，若发现自己的比特被置位，就发送一个 **PS-Poll** 帧来取走一个缓存单元。组播/广播帧比较特殊：它们只在 **DTIM**（Delivery TIM）Beacon 之后被释放，而 DTIM 每隔若干个 Beacon 才出现一次。因此想接收广播流量的 STA，至少要在每个 DTIM 时醒来。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA\n    participant AP\n    Note over STA: doze\n    AP->>STA: Beacon (TIM: bit set)\n    Note over STA: awake\n    STA->>AP: PS-Poll\n    AP->>STA: Buffered frame\n    STA->>AP: Ack\n    Note over STA: back to doze",
+      "zh": "sequenceDiagram\n    participant STA\n    participant AP\n    Note over STA: 休眠\n    AP->>STA: Beacon（TIM：比特置位）\n    Note over STA: 唤醒\n    STA->>AP: PS-Poll\n    AP->>STA: 缓存帧\n    STA->>AP: Ack\n    Note over STA: 重新休眠"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A STA can only switch power management mode through a frame exchange the AP acknowledges with an Ack or BlockAck. A PS-Poll does not necessarily draw an Ack, so you cannot change mode with one. The Power Management subfield is also the same for every MPDU in an A-MPDU — you cannot be half-asleep mid-aggregate.",
+      "zh": "STA 只能通过一次被 AP 用 Ack 或 BlockAck 确认的帧交换来切换功率管理模式。PS-Poll 不一定会引出 Ack，所以不能用它来改变模式。此外，A-MPDU 中每个 MPDU 的 Power Management 子字段都相同——你不可能在一个聚合帧的中途“睡到一半”。"
+    },
+    {
+      "type": "prose",
+      "en": "**Modern delivery: APSD.** Polling for one frame at a time is wasteful. QoS APs advertise **Automatic Power Save Delivery (APSD)**. With **unscheduled APSD (U-APSD)**, the STA designates some access categories as *trigger-enabled*; sending any uplink frame on such an AC opens an unscheduled service period (SP) during which the AP bursts down the STA's buffered frames, marking the last one with the EOSP bit. **Scheduled APSD (S-APSD)** delivers during pre-negotiated SPs instead. Either way the STA wakes briefly, drains its queue in one burst, and dozes again — far more efficient than one PS-Poll per frame.",
+      "zh": "**现代取帧方式：APSD。** 一次只轮询一帧太浪费了。QoS AP 会通告**自动省电交付（APSD）**。在**非调度 APSD（U-APSD）**中，STA 指定某些接入类别为“触发使能（trigger-enabled）”；只要在这样的 AC 上发送任意上行帧，就会开启一个非调度服务周期（SP），AP 在此期间把缓存帧成串下发，并在最后一帧上置位 EOSP 比特。**调度 APSD（S-APSD）**则在事先协商好的 SP 中交付。无论哪种方式，STA 都只需短暂醒来、在一串突发中清空队列、然后再次休眠——这远比每帧一个 PS-Poll 高效。"
+    },
+    {
+      "type": "prose",
+      "en": "**Ad-hoc networks (IBSS): the ATIM window.** An IBSS has no AP to hold a TIM, so peers synchronize instead. After every TBTT there is a fixed **ATIM window** during which all STAs stay awake. If you have a frame buffered for a dozing peer, you announce it by sending that peer an **ATIM** (Announcement Traffic Indication Message) frame inside this window. A STA that receives an individually addressed ATIM (and acknowledges it) stays awake for the rest of the beacon interval to receive the announced frame; a STA that hears nothing addressed to it may doze again at the window's end. An ATIM Window value of 0 means power save is simply not available in that IBSS. (This IBSS mechanism is now marked deprecated in the standard.)",
+      "zh": "**自组织网络（IBSS）：ATIM 窗口。** IBSS 没有 AP 来维护 TIM，于是各对等节点改用同步机制。每个 TBTT 之后都有一个固定的 **ATIM 窗口**，期间所有 STA 都保持唤醒。如果你为某个正在休眠的对等节点缓存了帧，就在这个窗口内向它发送一个 **ATIM**（通告流量指示消息）帧来宣告。收到单播 ATIM 帧并予以确认的 STA，会在该 Beacon 间隔的剩余时间里保持唤醒以接收被宣告的帧；而没有听到任何指向自己的帧的 STA，可以在窗口结束时重新休眠。ATIM Window 值为 0 表示该 IBSS 根本不支持省电。（该 IBSS 机制在标准中现已被标注为弃用。）"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 400 130\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" fill=\"none\" stroke=\"currentColor\"><line x1=\"10\" y1=\"110\" x2=\"390\" y2=\"110\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"20\" x2=\"30\" y2=\"110\" stroke-width=\"1\" stroke-dasharray=\"3 3\"/><line x1=\"230\" y1=\"20\" x2=\"230\" y2=\"110\" stroke-width=\"1\" stroke-dasharray=\"3 3\"/><text x=\"30\" y=\"15\" font-size=\"10\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">TBTT</text><text x=\"230\" y=\"15\" font-size=\"10\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">TBTT</text><rect x=\"30\" y=\"30\" width=\"70\" height=\"22\" stroke-width=\"1.5\"/><text x=\"65\" y=\"45\" font-size=\"9\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">ATIM window</text><text x=\"65\" y=\"68\" font-size=\"8\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">all STAs awake</text><rect x=\"100\" y=\"30\" width=\"130\" height=\"22\" stroke-width=\"1\" stroke-dasharray=\"4 2\"/><text x=\"165\" y=\"45\" font-size=\"9\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">announced data</text><text x=\"165\" y=\"68\" font-size=\"8\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">others may doze</text><text x=\"40\" y=\"95\" font-size=\"8\" fill=\"currentColor\" stroke=\"none\">ATIM</text></svg>",
+      "caption": {
+        "en": "In an IBSS, the ATIM window after each TBTT is when peers announce buffered traffic; STAs with no announcement may doze for the rest of the beacon interval.",
+        "zh": "在 IBSS 中，每个 TBTT 之后的 ATIM 窗口是对等节点宣告缓存流量的时机；未收到宣告的 STA 可在该 Beacon 间隔的剩余时间里休眠。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "**Mesh and spatial-multiplexing save.** Power management in a **mesh BSS (MBSS)** has its own home: the standard simply points to the mesh clause (14.15), where peer mesh STAs coordinate doze/awake states per mesh peering. A different lever is **SM power save (spatial-multiplexing power save)**: a multi-antenna STA keeps just **one receive chain** active most of the time, because idle RF chains still burn power. In *static* SM-PS it always runs a single chain; in *dynamic* SM-PS it powers up the extra chains only when a frame exchange addressed to it begins (an RTS/CTS, or a Grant for EDMG, signals the upcoming MIMO burst), then powers them back down. The STA advertises its SM-PS state in its capabilities or with an SM Power Save Action frame, and only switches chain count after that indication is acknowledged.",
+      "zh": "**网状网络与空间复用省电。** **网状 BSS（MBSS）**中的功率管理另有归属：标准直接指向网状网络条款（14.15），由对等网状 STA 按各自的网状结对关系来协调休眠/唤醒状态。另一种手段是 **SM 省电（空间复用省电）**：多天线 STA 在大部分时间里只保持**一条接收链**有效，因为空闲的射频链仍在耗电。在*静态* SM-PS 中它始终只用单链；在*动态* SM-PS 中它仅在收到指向自己的帧交换起始时才点亮额外的链（一次 RTS/CTS、或 EDMG 的 Grant 预示着即将到来的 MIMO 突发），随后再把它们关掉。STA 在其能力字段中、或通过 SM Power Save 动作帧来通告自己的 SM-PS 状态，并且只有在该通告被确认之后才改变链的数量。"
+    },
+    {
+      "type": "prose",
+      "en": "**DMG / PBSS (60 GHz) and the ATIM frame.** In a millimeter-wave Personal BSS (PBSS) or DMG infrastructure BSS, non-AP/non-PCP STAs can sleep for whole beacon intervals or parts of one, either after signaling the PCP/AP or on a negotiated wakeup schedule. Here too the **ATIM frame** announces buffered traffic, but it is sent during an **awake window** carved out of a CBAP. A DMG STA that exchanges an ATIM with a peer becomes its peer for that interval and stays awake for the matching allocations; a STA that neither sends nor receives an ATIM can doze at the window's end. The detailed queuing-and-retransmission rules for ATIM frames — buffer until announced, back off for the first frame after the window, retain fragments across intervals — are shared between IBSS, DMG infrastructure BSS, and PBSS.",
+      "zh": "**DMG / PBSS（60 GHz）与 ATIM 帧。** 在毫米波个人 BSS（PBSS）或 DMG 基础设施 BSS 中，非 AP/非 PCP 的 STA 可以睡过整个 Beacon 间隔、或其中的一部分——既可以在向 PCP/AP 发出信令后入睡，也可以按协商好的唤醒计划入睡。这里同样用 **ATIM 帧**来宣告缓存流量，但它是在从 CBAP 中划出的**唤醒窗口（awake window）**内发送的。与某个对等节点交换了 ATIM 的 DMG STA，在该间隔内成为它的对等方，并为相应的分配时段保持唤醒；既未发送也未收到 ATIM 的 STA，可在窗口结束时休眠。ATIM 帧详细的排队与重传规则——缓存直到被宣告、窗口后第一帧要退避、跨间隔保留分片——在 IBSS、DMG 基础设施 BSS 与 PBSS 之间是共用的。"
+    },
+    {
+      "type": "prose",
+      "en": "**General links (GLK).** STAs that establish *general links* carry traffic on behalf of other endpoints (think bridged networks behind the STA), and they use a synthesized group address (SYNRA) plus GLK group-cast retries. Power save interacts awkwardly here: a SYNRA must never address a GLK STA that is in PS mode, so traffic for a dozing GLK STA gets buffered and individually delivered — potentially duplicated if there are several receivers. A GLK STA that has enabled GLK-GCR must not enter PS mode at all, and GLK STAs cannot use FMS/TFS/WNM-Sleep for group-addressed frames. The standard even cautions that a STA relaying unknown traffic loads should generally avoid PS mode, because the buffering adds delay and jitter for everyone downstream.",
+      "zh": "**通用链路（GLK）。** 建立了*通用链路*的 STA 会代表其他端点转发流量（可以想象成 STA 背后挂着的桥接网络），它们使用一个合成的组地址（SYNRA）以及 GLK 组播重传。省电机制在这里的配合显得有些别扭：SYNRA 绝不能寻址处于 PS 模式的 GLK STA，因此发往休眠 GLK STA 的流量会被缓存并以单播逐一交付——若有多个接收者，还可能被复制多份。已启用 GLK-GCR 的 GLK STA 完全不得进入 PS 模式，而且 GLK STA 不能对组播帧使用 FMS/TFS/WNM-Sleep。标准甚至提醒：转发未知流量负载的 STA 一般应避免使用 PS 模式，因为缓存会给所有下游带来额外的时延与抖动。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Clause coverage map (11.2.3–11.2.9)",
+        "zh": "条款覆盖对照（11.2.3–11.2.9）"
+      },
+      "en": "Where each leaf clause is taught: **11.2.3** Power management in a non-DMG infrastructure network — PS mode, the Power Management subfield, AP buffering, TIM in every Beacon, DTIM for group-addressed BUs, PS-Poll, and APSD (U-APSD/S-APSD service periods with the EOSP bit). **11.2.4** Power management in an IBSS (deprecated) — active vs PS mode, the ATIM window after each TBTT, individually vs group addressed ATIM frames, ATIM Window = 0 disabling PS, and the STA awake/doze transition rules. **11.2.5** Power management in an MBSS — defined by reference to the mesh clause 14.15. **11.2.6** SM power save — one active receive chain; static vs dynamic SM-PS; chain count changes only after an acknowledged SM Power Save indication; not used with TDLS links. **11.2.7** Power management in a PBSS and DMG infrastructure BSS — non-AP/non-PCP and PCP power save with or without a wakeup schedule, the awake window, ATIM-frame usage (11.2.7.4), and MU-MIMO power save (11.2.7.5). **11.2.8** ATIM frame and frame transmission in IBSS, DMG infrastructure BSS, and PBSS — the shared queuing, backoff, acknowledgment, fragment-retention, and (QoS) Null mode-change rules. **11.2.9** Power management with general links — SYNRA never to a PS GLK STA, GLK-GCR forbids PS mode, and no FMS/TFS/WNM-Sleep on group-addressed frames.",
+      "zh": "各叶子条款的讲解位置：**11.2.3** 非 DMG 基础设施网络中的功率管理——PS 模式、Power Management 子字段、AP 缓存、每个 Beacon 中的 TIM、用于组播 BU 的 DTIM、PS-Poll，以及 APSD（带 EOSP 比特的 U-APSD/S-APSD 服务周期）。**11.2.4** IBSS 中的功率管理（已弃用）——active 与 PS 模式、每个 TBTT 之后的 ATIM 窗口、单播与组播 ATIM 帧、ATIM Window=0 禁用省电，以及 STA 的唤醒/休眠转换规则。**11.2.5** MBSS 中的功率管理——通过引用网状条款 14.15 定义。**11.2.6** SM 省电——单条有效接收链；静态与动态 SM-PS；链数仅在 SM Power Save 通告被确认后才改变；不与 TDLS 链路同用。**11.2.7** PBSS 与 DMG 基础设施 BSS 中的功率管理——非 AP/非 PCP 与 PCP 的省电（带或不带唤醒计划）、唤醒窗口、ATIM 帧用法（11.2.7.4）以及 MU-MIMO 省电（11.2.7.5）。**11.2.8** IBSS、DMG 基础设施 BSS 与 PBSS 中的 ATIM 帧与帧传输——共用的排队、退避、确认、分片保留以及用 (QoS) Null 帧切换模式的规则。**11.2.9** 通用链路下的功率管理——SYNRA 绝不寻址处于 PS 的 GLK STA、GLK-GCR 禁止 PS 模式，且组播帧不使用 FMS/TFS/WNM-Sleep。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2468,
+          2470,
+          2472,
+          2473,
+          2474,
+          2499,
+          2500,
+          2501,
+          2502,
+          2503,
+          2514,
+          2516,
+          2517,
+          2518
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2468,
+        2470,
+        2472,
+        2473,
+        2474
+      ],
+      "note": "11.2.3 Power management in a non-DMG infrastructure network: PS mode, Power Management subfield, AP buffering, TIM/DTIM, PS-Poll, AP TIM transmissions, TIM types, APSD (U-APSD/S-APSD)."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2499,
+        2500,
+        2501,
+        2502
+      ],
+      "note": "11.2.4 Power management in an IBSS (deprecated): ATIM window, ATIM frames, STA power state transitions; 11.2.5 MBSS (points to 14.15); 11.2.6 SM power save begins p.2502."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2503
+      ],
+      "note": "11.2.6 SM power save (static/dynamic, single receive chain) and 11.2.7.1 General — power management in a PBSS and DMG infrastructure BSS."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2514,
+        2516,
+        2517,
+        2518
+      ],
+      "note": "11.2.7.4 ATIM frame usage / awake window and 11.2.7.5 MU-MIMO power save; 11.2.8 ATIM frame and frame transmission in IBSS/DMG/PBSS; 11.2.9 Power management with general links (GLK)."
+    }
+  ],
+  "covers": [
+    "80211-2024:11.2.3",
+    "80211-2024:11.2.4",
+    "80211-2024:11.2.5",
+    "80211-2024:11.2.6",
+    "80211-2024:11.2.7",
+    "80211-2024:11.2.8",
+    "80211-2024:11.2.9"
+  ],
+  "track": "qos-power"
+}

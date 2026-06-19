@@ -1,0 +1,141 @@
+{
+  "id": "connecting-07-synchronization-beaconing-scanning",
+  "title": {
+    "en": "Finding and Keeping Time: Synchronization, Beaconing and Scanning",
+    "zh": "找到并保持节拍：同步、信标与扫描"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every station in a Wi-Fi network needs to agree on what time it is. Power-saving wake-ups, when a beacon is expected, and many channel-access rules all depend on a shared clock. The mechanism that keeps everyone in step is the Timing Synchronization Function (TSF): each station keeps a local TSF timer that counts microseconds, and they are all nudged toward a common value. This lesson follows the whole arc — how the clock is defined, how a station keeps in sync, how it first finds a network by scanning, how a network is shut down, and a special clock mode used in millimeter-wave TDD operation.",
+      "zh": "Wi-Fi 网络中的每个站点都需要对“现在是几点”达成一致。省电唤醒、何时该收到信标、以及许多信道接入规则都依赖于一个共享时钟。让所有人保持同步的机制就是定时同步功能（TSF）：每个站点维护一个以微秒计数的本地 TSF 计时器，并被逐步对齐到一个共同的数值。本课沿着完整的脉络展开——时钟如何定义、站点如何保持同步、它如何通过扫描首次找到网络、网络如何关闭，以及毫米波 TDD 操作中使用的一种特殊时钟模式。"
+    },
+    {
+      "type": "prose",
+      "en": "The basic approach is simple: in an infrastructure BSS the access point (AP) is the timing master. In a non-DMG, non-S1G BSS the AP periodically transmits Beacon frames once every dot11BeaconPeriod TUs; an S1G AP sends S1G Beacons instead, and a DMG AP/PCP sends DMG Beacon and Announce frames. Each of these carries the AP's current TSF value in a Timestamp field. A receiving station accepts that timing and, if its own timer differs, sets its local TSF timer to the received timestamp. So the AP's clock simply propagates outward with every beacon.",
+      "zh": "其基本思路很简单：在基础设施 BSS 中，接入点（AP）是定时主控。在非 DMG、非 S1G 的 BSS 中，AP 每隔 dot11BeaconPeriod 个 TU 周期性地发送一次信标帧；S1G AP 改为发送 S1G 信标，而 DMG 的 AP/PCP 则发送 DMG 信标帧和 Announce 帧。这些帧都在时间戳字段中携带 AP 当前的 TSF 值。接收站点采纳该定时信息，若自身计时器与之不同，便将本地 TSF 计时器设置为收到的时间戳。于是 AP 的时钟便随每一个信标向外传播。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The Timestamp must be the TSF value at the instant the first bit of the Timestamp field leaves the transmit antenna connector — not when the frame was queued. Implementations compensate for PHY transmit-path delay so the number is accurate the moment it hits the air. On the receive side the value is adjusted by the receiver's own PHY delay plus the time elapsed since it arrived at the MAC/PHY interface.",
+      "zh": "时间戳必须是该字段第一个比特离开发射天线接口那一刻的 TSF 值——而不是帧入队时的值。实现需补偿 PHY 发射通路延迟，使该数值在上空中的那一刻保持准确。在接收端，该值还需加上接收机自身的 PHY 延迟以及它到达 MAC/PHY 接口后经过的时间来进行调整。"
+    },
+    {
+      "type": "prose",
+      "en": "Maintaining synchronization is the steady-state job once a station has joined. Each station keeps a 64-bit TSF timer counting in microseconds. A non-AP station expects beacons at a nominal rate — every dot11BeaconPeriod in a non-DMG infrastructure BSS — and uses each beacon's timestamp to keep its timer aligned. The AP defines a series of Target Beacon Transmission Times (TBTTs) exactly dot11BeaconPeriod TUs apart. Time 0 is the TBTT of the first beacon. A beacon may be delayed by CSMA deferral if the medium is busy, but the next TBTT is still scheduled at the undelayed nominal interval — the rhythm never drifts even when an individual beacon is late.",
+      "zh": "一旦站点加入网络，保持同步便成为稳态工作。每个站点维护一个以微秒计数的 64 位 TSF 计时器。非 AP 站点期望以标称速率收到信标——在非 DMG 基础设施 BSS 中为每隔 dot11BeaconPeriod 一次——并利用每个信标的时间戳保持计时器对齐。AP 定义一系列目标信标发送时刻（TBTT），彼此恰好相隔 dot11BeaconPeriod 个 TU。时间 0 即第一个信标的 TBTT。若介质繁忙，某个信标可能因 CSMA 退避而延迟，但下一个 TBTT 仍按未延迟的标称间隔安排——即便单个信标迟到，节拍也绝不漂移。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 140\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" fill=\"none\" stroke=\"currentColor\"><line x1=\"20\" y1=\"100\" x2=\"500\" y2=\"100\" stroke-width=\"1.5\"/><g stroke-width=\"1\" stroke-dasharray=\"3 3\"><line x1=\"60\" y1=\"40\" x2=\"60\" y2=\"100\"/><line x1=\"180\" y1=\"40\" x2=\"180\" y2=\"100\"/><line x1=\"300\" y1=\"40\" x2=\"300\" y2=\"100\"/><line x1=\"420\" y1=\"40\" x2=\"420\" y2=\"100\"/></g><g fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\"><text x=\"60\" y=\"32\">TBTT</text><text x=\"180\" y=\"32\">TBTT</text><text x=\"300\" y=\"32\">TBTT</text><text x=\"420\" y=\"32\">TBTT</text></g><g fill=\"currentColor\" stroke=\"none\"><rect x=\"56\" y=\"70\" width=\"16\" height=\"30\"/><rect x=\"196\" y=\"70\" width=\"16\" height=\"30\"/><rect x=\"300\" y=\"70\" width=\"16\" height=\"30\"/><rect x=\"420\" y=\"70\" width=\"16\" height=\"30\"/></g><g fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\"><text x=\"120\" y=\"118\">dot11BeaconPeriod</text><text x=\"204\" y=\"118\">delayed (busy)</text></g></svg>",
+      "caption": {
+        "en": "TBTTs are spaced exactly one beacon period apart. A beacon may slip later when the medium is busy, but the next TBTT stays on the nominal grid.",
+        "zh": "各 TBTT 恰好相隔一个信标周期。介质繁忙时信标可能稍晚发出，但下一个 TBTT 仍位于标称网格上。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Acquiring synchronization is how a station finds a network in the first place, and it is done by scanning. There are two modes. In passive scanning the station simply listens on each channel for up to MaxChannelTime, collecting any Beacon (and DMG Beacon, FILS Discovery, Measurement Pilot) frames that match the SSID it is looking for. In active scanning the station transmits a Probe Request — often with a wildcard SSID — and listens for Probe Responses (plus beacons) until its scan timer reaches MaxChannelTime, then moves on. Active scanning is faster but is restricted in some bands and regulatory domains; passive scanning never transmits, so it is allowed everywhere.",
+      "zh": "获取同步是站点首次找到网络的方式，它通过扫描完成。扫描有两种模式。被动扫描中，站点只是在每个信道上侦听最多 MaxChannelTime 的时间，收集与所寻 SSID 匹配的任意信标帧（以及 DMG 信标、FILS Discovery、Measurement Pilot 帧）。主动扫描中，站点发送探测请求帧（Probe Request）——通常带通配符 SSID——并侦听探测响应帧（外加信标），直到扫描计时器达到 MaxChannelTime，然后切换信道。主动扫描更快，但在某些频段和管制域中受限；被动扫描从不发送，因此在任何地方都被允许。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[MLME-SCAN.request] --> B{ScanMode?}\n  B -->|Passive| C[Listen on channel up to MaxChannelTime]\n  C --> D[Collect Beacons matching SSID]\n  B -->|Active| E[Send Probe Request wildcard SSID]\n  E --> F[Receive Probe Responses and Beacons]\n  D --> G[MLME-SCAN.confirm: BSS list]\n  F --> G",
+      "zh": "flowchart TD\n  A[MLME-SCAN.request] --> B{扫描模式?}\n  B -->|被动| C[在信道侦听至 MaxChannelTime]\n  C --> D[收集匹配 SSID 的信标]\n  B -->|主动| E[发送探测请求 通配符 SSID]\n  E --> F[接收探测响应与信标]\n  D --> G[MLME-SCAN.confirm: BSS 列表]\n  F --> G"
+    },
+    {
+      "type": "prose",
+      "en": "Once scanning has located a suitable BSS, the station joins it with an MLME-JOIN.request: it adopts the target BSSID and, on receiving a Beacon from that BSS, adopts the beacon's TSF timer value (using the adoption algorithm) and the BSS parameters such as the beacon period. If a join-failure timeout expires before any beacon arrives, the join is reported as unsuccessful. This is the moment a station's clock first locks onto the AP's clock.",
+      "zh": "扫描定位到合适的 BSS 后，站点通过 MLME-JOIN.request 加入它：采纳目标 BSSID，并在收到该 BSS 的信标后采纳信标中的 TSF 计时器值（使用采纳算法）以及诸如信标周期等 BSS 参数。若在任何信标到达之前加入失败超时计时器到期，则该次加入被报告为失败。这正是站点时钟首次锁定到 AP 时钟的时刻。"
+    },
+    {
+      "type": "prose",
+      "en": "Terminating a BSS is the clean shutdown. An infrastructure BSS or PBSS may be torn down at any time, and a station may stop supporting an IBSS it created. On an MLME-STOP.request the station stops transmitting all the beacon-family frames — Beacon, S1G Beacon, Probe Response, PV1 Probe Response, DMG Beacon, and Announce — and deauthenticates every associated station. With the timing master gone, the synchronized clock for that network simply ceases.",
+      "zh": "终止 BSS 是干净的关闭过程。基础设施 BSS 或 PBSS 可在任意时刻拆除，站点也可停止支持自己创建的 IBSS。收到 MLME-STOP.request 后，站点停止发送所有信标族帧——信标、S1G 信标、探测响应、PV1 探测响应、DMG 信标和 Announce——并对每个已关联的站点执行去认证。定时主控一旦消失，该网络的同步时钟也随之终止。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, TDD time synchronization is a specialized clock mode for DMG (60 GHz) stations operating under TDD channel access with the TDD Synchronization Mode bit set. These stations include a TDD Synchronization element at least once per beacon interval in Announce frames (and optionally in DMG Beacons). A station in local-clock mode does not update its TSF from received timestamps at all; a station not in local-clock mode updates from each qualifying frame, but when two candidate frames arrive in the same beacon interval it keeps the one whose Clock Attributes score better — a hierarchical comparison (Priority 1, Clock Class, Clock Accuracy, variance, Priority 2) borrowed from IEEE 802.1AS. If such a station receives an Announce with Sync Mode = 1, it disassociates with reason code TIME_SYNC_LOST.",
+      "zh": "最后，TDD 时间同步是一种专用时钟模式，用于在 TDD 信道接入下运行且 TDD 同步模式位置 1 的 DMG（60 GHz）站点。这些站点在每个信标间隔内至少一次在 Announce 帧中（可选地在 DMG 信标中）包含 TDD 同步元素。处于本地时钟模式的站点完全不根据收到的时间戳更新其 TSF；非本地时钟模式的站点则根据每个合格帧更新，但当同一信标间隔内到达两个候选帧时，它保留时钟属性评分更优的那一个——这是一种借鉴 IEEE 802.1AS 的分级比较（Priority 1、时钟类别、时钟精度、方差、Priority 2）。若此类站点收到 Sync Mode = 1 的 Announce 帧，它将以原因码 TIME_SYNC_LOST 解除关联。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the two halves of the lesson title. \"Finding\" time is the one-off acquisition step — scanning, then joining and adopting the AP's TSF. \"Keeping\" time is the continuous maintenance step — re-reading every beacon's timestamp so a 64-bit microsecond counter on a cheap oscillator never drifts away from the rest of the BSS.",
+      "zh": "请留意课程标题的两层含义。“找到”节拍是一次性的获取步骤——扫描，然后加入并采纳 AP 的 TSF。“保持”节拍是持续的维护步骤——不断重读每个信标的时间戳，使运行在廉价晶振上的 64 位微秒计数器永不偏离 BSS 中的其他成员。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each clause lives in this lesson",
+        "zh": "覆盖对照：各子条款在本课中的位置"
+      },
+      "en": "This lesson teaches five leaf clauses of IEEE 802.11-2024 Clause 11.1 (Synchronization). 11.1.2 (Basic approach) — the AP/PCP as timing master, periodic Beacon/S1G/DMG Beacon/Announce frames carrying the Timestamp, and the receiving STA setting its TSF to the received value; covered in the \"basic approach\" prose and the Timestamp callout. 11.1.3 (Maintaining synchronization) — the 64-bit microsecond TSF timer, the nominal beacon rate, the TBTT grid spaced dot11BeaconPeriod apart with Time 0 at the first beacon, and the no-drift rule under CSMA deferral; covered in the maintenance prose and the TBTT figure. 11.1.4 (Acquiring synchronization, scanning) — MLME-SCAN.request, passive vs active scanning, Probe Request/Response, MaxChannelTime, and MLME-JOIN.request / synchronizing with a BSS (11.1.4.5); covered in the scanning prose, the scan flowchart, and the join prose. 11.1.6 (Terminating a BSS) — MLME-STOP.request, ceasing all beacon-family transmissions and deauthenticating associated STAs; covered in the termination prose. 11.1.7 (TDD time synchronization) — DMG TDD-mode STAs, the TDD Synchronization element, local-clock vs non-local-clock behavior, the 802.1AS-style Clock Attributes comparison, and TIME_SYNC_LOST disassociation; covered in the final prose block.",
+      "zh": "本课讲授 IEEE 802.11-2024 第 11.1 节（同步）下的五个叶级子条款。11.1.2（基本思路）——AP/PCP 作为定时主控，周期性发送携带时间戳的信标/S1G/DMG 信标/Announce 帧，接收 STA 将其 TSF 设置为收到的值；见“基本思路”正文和时间戳提示框。11.1.3（保持同步）——64 位微秒 TSF 计时器、标称信标速率、间隔 dot11BeaconPeriod 且以首个信标为时间 0 的 TBTT 网格，以及 CSMA 退避下不漂移的规则；见维护正文与 TBTT 图。11.1.4（获取同步、扫描）——MLME-SCAN.request、被动与主动扫描、探测请求/响应、MaxChannelTime，以及 MLME-JOIN.request 与同步至 BSS（11.1.4.5）；见扫描正文、扫描流程图和加入正文。11.1.6（终止 BSS）——MLME-STOP.request、停止所有信标族帧发送并去认证已关联 STA；见终止正文。11.1.7（TDD 时间同步）——DMG TDD 模式 STA、TDD 同步元素、本地时钟与非本地时钟行为、802.1AS 风格的时钟属性比较，以及 TIME_SYNC_LOST 解除关联；见最后一段正文。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2427,
+          2428,
+          2429,
+          2444,
+          2446,
+          2462,
+          2467
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2427,
+        2428
+      ],
+      "note": "11.1.2 Basic approach — AP/PCP as TSF timing master; Beacon/S1G/DMG Beacon/Announce carry Timestamp; receiving STA sets local TSF to received timestamp; beacon period dot11BeaconPeriod TUs."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2428,
+        2429
+      ],
+      "note": "11.1.3 Maintaining synchronization — 64-bit microsecond TSF timer; Timestamp set at antenna connector; TBTT grid; Time 0 at first beacon; CSMA deferral does not shift the nominal interval (Figure 11-1)."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2444,
+        2445,
+        2446
+      ],
+      "note": "11.1.4 Acquiring synchronization, scanning — MLME-SCAN.request, passive vs active scanning, Probe Request wildcard SSID, MaxChannelTime; passive (11.1.4.2) and active (11.1.4.3) procedures."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2462
+      ],
+      "note": "11.1.4.5 Synchronizing with a BSS — MLME-JOIN.request adopts BSSID, on Beacon adopts TSF value and BSS parameters; JoinFailureTimeout reports failure."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2467
+      ],
+      "note": "11.1.6 Terminating a BSS (MLME-STOP.request stops all beacon-family frames, deauthenticates) and 11.1.7 TDD time synchronization (TDD Synchronization element, local-clock mode, Clock Attributes comparison, TIME_SYNC_LOST)."
+    }
+  ],
+  "covers": [
+    "80211-2024:11.1.2",
+    "80211-2024:11.1.3",
+    "80211-2024:11.1.4",
+    "80211-2024:11.1.6",
+    "80211-2024:11.1.7"
+  ],
+  "track": "connecting"
+}

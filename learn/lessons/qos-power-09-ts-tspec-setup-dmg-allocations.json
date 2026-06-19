@@ -1,0 +1,134 @@
+{
+  "id": "qos-power-09-ts-tspec-setup-dmg-allocations",
+  "title": {
+    "en": "Reserving Airtime: Traffic Stream Setup, TSPECs and DMG Allocations",
+    "zh": "预约空口时间：流量流（TS）建立、TSPEC 与 DMG 分配"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Wi-Fi is shared airtime. When an application needs predictable quality — low jitter for a voice call, steady bandwidth for video — best-effort contention is not enough. A station can ask the network to set aside resources for a specific flow. That flow is a traffic stream (TS), and the description of what it needs — data rate, packet size, delay bounds, access policy — is a TSPEC (Traffic Specification). This lesson looks at three less-obvious corners of TS handling: setting up a TS while roaming, recovering when setup fails, and how the 60 GHz (DMG, Directional Multi-Gigabit) world carves time into allocations.",
+      "zh": "Wi-Fi 是共享的空口时间。当应用需要可预测的质量——语音通话要求低抖动、视频要求稳定带宽时，尽力而为的竞争式接入就不够用了。站点（STA）可以请求网络为某条特定的数据流预留资源。这条流就叫流量流（TS），而描述它需求（数据速率、包大小、时延界限、接入策略）的那份说明书就是 TSPEC（流量规格）。本课聚焦 TS 处理中三个不那么显而易见的角落：漫游过程中建立 TS、建立失败后的恢复，以及 60 GHz（DMG，定向超高速）世界如何把时间切分成各类分配。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.4.5 covers a special way to set up a TS: as part of a fast BSS transition (a fast roam between APs). Instead of associating first and then requesting QoS, a QoS STA can carry a TSPEC inside a RIC-Request (Resource Information Container) during the roam. The new AP's SME decides to accept the TSPEC, refuse it, or counter-propose an alternative, and answers with a RIC-Response. The point is to have the resources lined up the instant the STA arrives, so a live call does not drop while roaming.",
+      "zh": "11.4.5 条款描述了一种特殊的 TS 建立方式：把它作为快速 BSS 切换（在 AP 之间的快速漫游）的一部分。QoS STA 不必先关联再申请 QoS，而是可以在漫游过程中把 TSPEC 装进 RIC-Request（资源信息容器）里一起发出。新 AP 的 SME 决定接受该 TSPEC、拒绝它、或反过来建议一个替代方案，并以 RIC-Response 作答。其用意是在 STA 刚一到达时资源就已就位，从而让正在进行的通话不会因漫游而中断。"
+    },
+    {
+      "type": "prose",
+      "en": "A TS set up this way enters the accepted state — an intermediate state between inactive and active. In the accepted state the inactivity and suspension timers do not start, and for an HCCA-based TS the hybrid coordinator (HC) does not yet poll it. The reservation is held but not yet running. The TS only becomes active once the STA actually performs the reassociation to that AP; at that moment the timers start. And there is a safety net: if the reassociation timer expires before the TS goes active, the TS falls back to the inactive state — a half-completed roam does not leave a phantom reservation alive forever.",
+      "zh": "用这种方式建立的 TS 会进入“已接受”（accepted）状态——它是介于“非活动”与“活动”之间的一个中间状态。在已接受状态下，非活动计时器和挂起计时器都不会启动；对于基于 HCCA 的 TS，混合协调器（HC）也还不会去轮询它。也就是说预约被保留了，但尚未真正运行。只有当 STA 真正完成对该 AP 的重关联时，TS 才转为“活动”状态；那一刻，各计时器才开始计时。这里还有一道保险：若重关联计时器在 TS 转活动之前就超时，TS 会退回到“非活动”状态——一次半途而废的漫游，不会让一个幽灵般的预约永远悬而不决。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> Inactive\n  Inactive --> Accepted: RIC-Request in roam accepted\n  Accepted --> Active: reassociation done\n  Accepted --> Inactive: reassoc timer expires\n  note right of Accepted\n    timers paused\n    no CF-Poll yet\n  end note",
+      "zh": "stateDiagram-v2\n  [*] --> 非活动\n  非活动 --> 已接受: 漫游中RIC请求被接受\n  已接受 --> 活动: 重关联完成\n  已接受 --> 非活动: 重关联计时器超时\n  note right of 已接受\n    计时器暂停\n    暂不轮询\n  end note"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.4.6 handles the unhappy path: a failed TS setup. There are three failure types. (a) The ADDTS Request frame transmission itself fails. (b) No ADDTS Response comes back from the HC — perhaps congestion delayed it or it could not be sent. (c) An ADDTS Response arrives carrying the status code REJECTED_FOR_DELAY_PERIOD; if its TS Delay element's Delay field is nonzero, the requesting STA must not send another ADDTS Request to the same AP until that delay has elapsed. This back-off stops a rejected STA from hammering an already-busy AP.",
+      "zh": "11.4.6 条款处理的是不顺利的路径：TS 建立失败。失败分三种类型。（a）ADDTS Request 帧本身发送失败。（b）始终没有收到 HC 回的 ADDTS Response——也许是拥塞导致延迟，也许是响应帧根本发不出去。（c）收到了一个 ADDTS Response，但其状态码为 REJECTED_FOR_DELAY_PERIOD；若该帧 TS Delay 元素中的 Delay 字段非零，则发出请求的 STA 在这段延迟过去之前，不得再向同一个 AP 发送新的 ADDTS Request。这个退避机制可以防止一个被拒绝的 STA 反复去骚扰一个本就繁忙的 AP。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A subtle recovery rule: on failure, if the request was not for an existing TS, the STA's SME issues a DELTS.request for that TSID/allocation ID and direction — just in case the HC actually did receive the original request and it was the response that got lost. Sending a delete cleans up any reservation that may silently exist on the AP side, keeping both ends' state consistent.",
+      "zh": "一条微妙的恢复规则：建立失败后，如果这次请求并非针对已存在的 TS，STA 的 SME 会针对该 TSID／分配 ID 及方向发出一个 DELTS.request——以防 HC 其实已经收到了原始请求、只是回程的响应丢了。主动发一个删除，可以清掉 AP 侧可能悄悄存在的预约，让两端的状态保持一致。"
+    },
+    {
+      "type": "prose",
+      "en": "Now to 60 GHz. In a DMG BSS the AP or PCP (PBSS control point) publishes a schedule that divides the beacon interval into time periods. Clause 11.4.12 describes the two DMG allocation formats a DMG STA requests via the DMG TSPEC element. An isochronous allocation (Allocation Format = 1) is for periodic, steady traffic: the STA wants regular channel access and does not expect to change how much it needs often. An asynchronous allocation (Allocation Format = 0) is for bursty traffic: the STA reserves a minimum amount of channel time and asks for more when bursts actually arrive, using an SPR (Service Period Request) frame.",
+      "zh": "现在转到 60 GHz。在 DMG BSS 中，AP 或 PCP（PBSS 控制点）会发布一份调度表，把信标间隔切分成若干时间段。11.4.12 条款描述了 DMG STA 通过 DMG TSPEC 元素请求的两种 DMG 分配格式。等时（isochronous）分配（Allocation Format = 1）面向周期性、稳定的流量：STA 希望定期获得信道接入，且预期所需时长不会频繁变化。异步（asynchronous）分配（Allocation Format = 0）面向突发流量：STA 预留一份最小信道时间，等突发真正到来时再用 SPR（服务周期请求）帧请求更多。"
+    },
+    {
+      "type": "prose",
+      "en": "These allocations show up in the schedule as two kinds of time period. A service period (SP) is dedicated, contention-free time granted to a particular source/destination pair — ideal for an isochronous TS that needs guaranteed slots. A contention-based access period (CBAP) is shared time in which stations contend using EDCA, much like ordinary Wi-Fi. With an isochronous DMG TSPEC the scheduler is free to place the SPs that make up the allocation anywhere within the allocation period, as long as each allocation period delivers at least the minimum allocation and each SP is no shorter than the minimum SP duration.",
+      "zh": "这两类分配在调度表中表现为两种时间段。服务周期（SP）是分配给某个特定源／目的站点对的专属、无竞争时间——非常适合需要保证时隙的等时 TS。竞争接入周期（CBAP）则是共享时间，站点在其中用 EDCA 竞争接入，与普通 Wi-Fi 颇为相似。对于等时 DMG TSPEC，调度器可以自由地把组成该分配的若干 SP 放在分配周期内的任意位置，只要每个分配周期至少交付“最小分配”的时长、且每个 SP 都不短于“最小 SP 时长”即可。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 400 120\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" font-family=\"sans-serif\" font-size=\"11\"><text x=\"0\" y=\"14\" fill=\"currentColor\">Beacon interval (DMG schedule)</text><rect x=\"0\" y=\"30\" width=\"60\" height=\"34\" fill=\"none\" stroke=\"currentColor\"/><text x=\"30\" y=\"51\" fill=\"currentColor\" text-anchor=\"middle\">SP</text><rect x=\"60\" y=\"30\" width=\"110\" height=\"34\" fill=\"none\" stroke=\"currentColor\" stroke-dasharray=\"4 3\"/><text x=\"115\" y=\"51\" fill=\"currentColor\" text-anchor=\"middle\">CBAP (EDCA)</text><rect x=\"170\" y=\"30\" width=\"60\" height=\"34\" fill=\"none\" stroke=\"currentColor\"/><text x=\"200\" y=\"51\" fill=\"currentColor\" text-anchor=\"middle\">SP</text><rect x=\"230\" y=\"30\" width=\"110\" height=\"34\" fill=\"none\" stroke=\"currentColor\" stroke-dasharray=\"4 3\"/><text x=\"285\" y=\"51\" fill=\"currentColor\" text-anchor=\"middle\">CBAP (EDCA)</text><rect x=\"340\" y=\"30\" width=\"60\" height=\"34\" fill=\"none\" stroke=\"currentColor\"/><text x=\"370\" y=\"51\" fill=\"currentColor\" text-anchor=\"middle\">SP</text><line x1=\"0\" y1=\"80\" x2=\"170\" y2=\"80\" stroke=\"currentColor\"/><text x=\"85\" y=\"95\" fill=\"currentColor\" text-anchor=\"middle\">allocation period (repeats)</text></svg>",
+      "caption": {
+        "en": "A DMG beacon interval is sliced into dedicated SPs (contention-free, per source/destination) and shared CBAPs (EDCA contention). An isochronous allocation repeats its SPs every allocation period.",
+        "zh": "DMG 信标间隔被切分为专属 SP（无竞争、针对源／目的对）与共享 CBAP（EDCA 竞争）。等时分配在每个分配周期里都会重复其 SP。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.4.13 covers peer-to-peer (PTP) TSPEC operation — two non-AP DMG stations reserving a TS directly with each other rather than with the AP. The ADDTS Request carrying the PTP TSPEC can go straight to the peer, or be relayed through the AP/PCP. If relayed, the request carries a TCLAS element with Ethernet-type classifier whose Source Address is the requester and Destination Address is the peer; the AP/PCP forwards the request to that destination and forwards the response back to the source — without altering any of the contained elements. A non-AP DMG STA can also add extra TSs to an existing allocation by setting the Allocation ID subfield; and an EDCA-policy TS needs no explicit add at all — it may use any matching CBAP allocation.",
+      "zh": "11.4.13 条款描述对等（PTP）TSPEC 操作——两个非 AP 的 DMG 站点彼此之间直接预留 TS，而不是与 AP 预留。携带 PTP TSPEC 的 ADDTS Request 既可以直接发给对端，也可以经由 AP/PCP 转发。若经转发，该请求会携带一个以太网类型分类器的 TCLAS 元素，其源地址（Source Address）为请求方、目的地址（Destination Address）为对端；AP/PCP 据此把请求转发给该目的站点，并把响应转发回源站点——且不得改动其中所含的任何元素。非 AP 的 DMG STA 还可以通过设置 Allocation ID 子字段，往一个已存在的分配里追加额外的 TS；而采用 EDCA 策略的 TS 则完全不需要显式追加——只要 CBAP 分配匹配，它就可以使用任意一个。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "In a PTP TSPEC the Direction field reorients who the parameters describe. Direction = downlink means the requesting STA is the destination, so its Maximum MSDU Size says what it can receive. Direction = uplink means the STA is the source, so the same field caps what it will send. One field, read from the requester's point of view, sets the limit on the correct end of the link.",
+      "zh": "在 PTP TSPEC 中，Direction（方向）字段会重新界定这些参数所描述的是谁。Direction = 下行 表示请求方 STA 是目的站点，于是它的 Maximum MSDU Size 表明它能接收多大的 MSDU。Direction = 上行 表示该 STA 是源站点，于是同一个字段限定的是它将发送多大的 MSDU。一个字段，从请求方的视角来读，就把限制设到了链路上正确的那一端。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each clause lives in IEEE 802.11-2024",
+        "zh": "覆盖对照：本课各条款在 IEEE 802.11-2024 中的位置"
+      },
+      "en": "11.4.5 TS setup by resource request during a fast BSS transition — a QoS STA carries a TSPEC in a RIC-Request; the HC SME answers with a RIC-Response (procedures in 13.11); the TS enters the accepted state (timers paused, no CF-Poll), goes active on reassociation, and falls back to inactive if the reassociation timer expires. 11.4.6 Failed TS setup — three failure types (ADDTS Request TX failed; no ADDTS Response; REJECTED_FOR_DELAY_PERIOD with a nonzero Delay field that gates retries), plus the precautionary DELTS.request issued for a non-existing TS. 11.4.12 DMG allocation formats — General (11.4.12.1), isochronous allocations with Allocation Format = 1 (11.4.12.2), and asynchronous allocations with Allocation Format = 0 using the SPR frame (11.4.12.3); SPs are placed within the allocation period subject to minimum allocation and minimum SP duration. 11.4.13 PTP TSPEC operation — ADDTS Request sent directly to the peer or relayed via AP/PCP using a TCLAS Ethernet classifier (elements unaltered in transit), adding TSs to an existing allocation by Allocation ID, EDCA-policy TSs riding any matching CBAP, and the Direction field reorienting parameters such as Maximum MSDU Size.",
+      "zh": "11.4.5 漫游期间通过资源请求建立 TS——QoS STA 在 RIC-Request 中携带 TSPEC；HC 的 SME 以 RIC-Response 作答（流程见 13.11）；TS 进入“已接受”状态（计时器暂停、不轮询），在重关联时转为“活动”，若重关联计时器超时则退回“非活动”。11.4.6 TS 建立失败——三种失败类型（ADDTS Request 发送失败；无 ADDTS Response；返回 REJECTED_FOR_DELAY_PERIOD 且 Delay 字段非零、用以限制重试），外加针对不存在 TS 而预防性发出的 DELTS.request。11.4.12 DMG 分配格式——总则（11.4.12.1）、Allocation Format = 1 的等时分配（11.4.12.2）、以及 Allocation Format = 0、使用 SPR 帧的异步分配（11.4.12.3）；SP 在受“最小分配”与“最小 SP 时长”约束的前提下被安排进分配周期。11.4.13 PTP TSPEC 操作——ADDTS Request 直发对端或经 AP/PCP 用以太网类型 TCLAS 分类器转发（传输途中元素不被改动）、按 Allocation ID 往已存在分配中追加 TS、EDCA 策略 TS 搭乘任意匹配的 CBAP，以及 Direction 字段对 Maximum MSDU Size 等参数语义的重定向。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2551,
+          2552,
+          2559,
+          2560,
+          2561
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2551
+      ],
+      "note": "11.4.5 TS setup by resource request during a fast BSS transition (RIC-Request/Response, accepted state, timers); start of 11.4.6 Failed TS setup (three failure types)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2552
+      ],
+      "note": "11.4.6 continued (precautionary DELTS.request in non-DMG and DMG BSS); Figure 11-27 failed TS setup"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2559
+      ],
+      "note": "11.4.12 DMG allocation formats — General, isochronous allocations (Allocation Format = 1), start of asynchronous allocations"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2560
+      ],
+      "note": "11.4.12.3 asynchronous allocations (Allocation Format = 0, SPR frame); start of 11.4.13 PTP TSPEC operation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2561
+      ],
+      "note": "11.4.13 PTP TSPEC operation continued — relay via AP/PCP with TCLAS Ethernet classifier, Direction field semantics for Maximum MSDU Size"
+    }
+  ],
+  "covers": [
+    "80211-2024:11.4.5",
+    "80211-2024:11.4.6",
+    "80211-2024:11.4.12",
+    "80211-2024:11.4.13"
+  ],
+  "track": "qos-power"
+}

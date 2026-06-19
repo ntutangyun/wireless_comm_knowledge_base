@@ -1,0 +1,154 @@
+{
+  "id": "managing-38-ht-2040-coexistence",
+  "title": {
+    "en": "Living Together at 40 MHz: HT BSS Operation and 20/40 MHz Coexistence",
+    "zh": "在 40 MHz 上共处：HT BSS 运行与 20/40 MHz 共存"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "An HT (high-throughput, 802.11n) access point can double its channel width from 20 MHz to 40 MHz by pairing a primary channel with an adjacent secondary channel. That extra width is free throughput when the air is clear, but a 40 MHz signal sits on top of a chunk of spectrum that older 20 MHz neighbors may already be using. The 802.11 standard therefore wraps wide-channel operation in a careful set of coexistence rules so that a 40 MHz BSS and its 20 MHz neighbors can share the band without trampling each other. This lesson walks through those rules: how an HT BSS is set up, how a 20/40 MHz BSS decides whether it may go wide, and how every station senses, defers, and falls back to 20 MHz when it must.",
+      "zh": "HT（高吞吐量，即 802.11n）接入点可以把信道带宽从 20 MHz 翻倍到 40 MHz，方法是把一个主信道与相邻的一个辅信道配对使用。当空口干净时，这多出来的带宽就是白赚的吞吐量；但 40 MHz 信号会覆盖一大片频谱，而附近的老式 20 MHz 邻居可能正在使用这片频谱。因此 802.11 标准为宽信道运行设计了一整套谨慎的共存规则，让一个 40 MHz BSS 与它的 20 MHz 邻居能够共享频段而互不踩踏。本课将逐一讲解这些规则：HT BSS 如何建立、20/40 MHz BSS 如何决定能否变宽，以及每个站点如何感知、退让，并在必要时回退到 20 MHz。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the foundation in clause 11.14, HT BSS Operation. An HT STA that starts or joins a BSS must be able to send and receive at every rate listed in the Basic HT-MCS Set the BSS advertises (carried in the HT Operation element of the MLME-START or MLME-JOIN primitive) — those are the rates everyone in the BSS is guaranteed to understand. There is also a small but important consistency rule: if a frame carries both an HT Operation element and a DSSS Parameter Set element, the Primary Channel field of the HT Operation element must equal the Current Channel field of the DSSS Parameter Set. The two ways of naming the operating channel must never disagree.",
+      "zh": "先从 11.14 条「HT BSS 运行」打下基础。一个启动或加入 BSS 的 HT STA，必须能够以该 BSS 所通告的 Basic HT-MCS Set（基本 HT-MCS 集合，承载在 MLME-START 或 MLME-JOIN 原语的 HT Operation 元素中）中列出的每一个速率收发——这些是 BSS 内所有成员都保证能理解的速率。还有一条虽小但重要的一致性规则：如果一帧同时携带 HT Operation 元素和 DSSS Parameter Set 元素，那么 HT Operation 元素中的 Primary Channel（主信道）字段必须等于 DSSS Parameter Set 中的 Current Channel（当前信道）字段。对工作信道的两种命名方式绝不能互相矛盾。"
+    },
+    {
+      "type": "prose",
+      "en": "Clauses 11.15.1 and 11.15.2 lay out who plays and what they advertise. A 40-MHz-capable STA (40MC STA) must support 20/40 BSS coexistence management — it sets the 20/40 BSS Coexistence Management Support bit in its Extended Capabilities. An HT AP declares whether it can do 20 MHz only or 20/40 MHz in the Supported Channel Width Set subfield of its HT Capabilities element, and signals the live secondary-channel position with the Secondary Channel Offset field: SCA (secondary above), SCB (secondary below), or SCN (no secondary — the BSS is 20 MHz wide right now). A STA must not declare 40 MHz support unless it can actually transmit and receive 40 MHz PPDUs at every basic MCS. And a key politeness rule: an HT STA must never send a 20 MHz data PPDU on the secondary channel of a 20/40 MHz BSS — the secondary is a helper, not an independent channel.",
+      "zh": "11.15.1 和 11.15.2 条规定了谁参与、各自通告什么。具备 40 MHz 能力的 STA（40MC STA）必须支持 20/40 BSS 共存管理——它会在 Extended Capabilities（扩展能力）中置位 20/40 BSS Coexistence Management Support 比特。HT AP 在其 HT Capabilities 元素的 Supported Channel Width Set 子字段中声明自己是仅支持 20 MHz 还是支持 20/40 MHz，并用 Secondary Channel Offset（辅信道偏移）字段表明当前辅信道的位置：SCA（辅信道在上方）、SCB（辅信道在下方）或 SCN（无辅信道——此刻 BSS 为 20 MHz 宽）。一个 STA 除非真能在所有基本 MCS 下收发 40 MHz PPDU，否则不得声明支持 40 MHz。还有一条关键的礼让规则：HT STA 绝不能在 20/40 MHz BSS 的辅信道上发送 20 MHz 数据 PPDU——辅信道是个辅助角色，而非独立信道。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[40MC HT AP wants 40 MHz in 2.4 GHz] --> B[Run OBSS scans 11.15.5]\n  B --> C{20/40 Operation Permitted? Eq 11-2}\n  C -- true --> D[Set Secondary Channel Offset = SCA or SCB]\n  C -- false --> E[Stay 20 MHz: Offset = SCN]\n  D --> F[Operate 20/40 MHz BSS]\n  E --> G[Retry later or move channels]",
+      "zh": "flowchart TD\n  A[40MC HT AP 想在 2.4 GHz 用 40 MHz] --> B[执行 OBSS 扫描 11.15.5]\n  B --> C{20/40 运行被允许? 公式 11-2}\n  C -- 是 --> D[置 Secondary Channel Offset = SCA 或 SCB]\n  C -- 否 --> E[保持 20 MHz: Offset = SCN]\n  D --> F[运行 20/40 MHz BSS]\n  E --> G[稍后重试或换信道]"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.15.3 governs how an AP scans and picks its channels before and during 20/40 operation. Before starting a 20/40 MHz BSS, an AP (or a DFS owner in an IBSS) must run a minimum number of OBSS scans to find existing networks. In 5 GHz, if it lands on the same two channels as an existing 20/40 BSS it should adopt that BSS's primary and secondary so the two networks stay aligned, and it should prefer a secondary channel on which it heard no beacons. The 2.4 GHz band gets stricter: a 40MC HT AP there maintains a MAC variable called '20/40 Operation Permitted', computed by Equation (11-2). That equation says, in plain terms: go wide only if your chosen primary and secondary channels are clear of conflicting 20/40 BSSs, 20 MHz BSSs, and stations that reported 40 MHz intolerance. If that variable is false, the AP shall not start a 20/40 MHz BSS in 2.4 GHz, and if it later turns false the AP reverts to 20 MHz.",
+      "zh": "11.15.3 条规定了 AP 在进入 20/40 运行之前和期间如何扫描并选择信道。在启动 20/40 MHz BSS 之前，AP（或 IBSS 中的 DFS owner）必须执行最少次数的 OBSS 扫描以发现已有网络。在 5 GHz 中，如果它落在与某个已有 20/40 BSS 相同的两个信道上，就应采用该 BSS 的主、辅信道以保持两个网络对齐，并应优先选择没有听到信标的信道作为辅信道。2.4 GHz 频段则更严格：那里的 40MC HT AP 会维护一个名为「20/40 Operation Permitted（20/40 运行被允许）」的 MAC 变量，由公式 (11-2) 计算。该公式通俗地说就是：只有当你选定的主、辅信道上没有冲突的 20/40 BSS、20 MHz BSS 以及报告了 40 MHz 不容忍的站点时，才可以变宽。如果该变量为 false，AP 不得在 2.4 GHz 启动 20/40 MHz BSS；若其后变为 false，AP 须回退到 20 MHz。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why is 2.4 GHz the strict zone? It has only three non-overlapping 20 MHz channels, so a single 40 MHz BSS swallows most of the band. The 5 GHz band has far more room, so its coexistence rules are gentler. The 2.4 GHz 'permission' machinery — Equation (11-2), the intolerance reports, the OBSS scanning — exists precisely because there is almost no spectrum to spare there.",
+      "zh": "为什么 2.4 GHz 是严格区？它只有三个互不重叠的 20 MHz 信道，因此单个 40 MHz BSS 就会吞掉大半个频段。5 GHz 频段空间大得多，所以其共存规则要宽松些。2.4 GHz 这套「许可」机制——公式 (11-2)、不容忍报告、OBSS 扫描——之所以存在，正是因为那里几乎没有多余的频谱可供挥霍。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.15.4 nails down exactly when a 40 MHz PPDU may be sent. The decision rides on a handful of fields: the Supported Channel Width Set subfield, the Secondary Channel Offset field, the STA Channel Width / Channel Width fields (from the Notify Channel Width frame), and the Extended Channel Switch Announcement element. For an infrastructure non-AP STA (11.15.4.2), all three of these must hold to send a 40 MHz PPDU to a peer: both stations support 40 MHz, the AP's latest Secondary Channel Offset is SCA or SCB, and the MAC variable 40MHzOperatingClass is true. The AP itself (11.15.4.3) follows the mirror-image conditions, and additionally a station may temporarily pin itself to 20 MHz by sending Channel Width = 0, after which peers must not send it 40 MHz frames. Stations outside an infrastructure BSS (11.15.4.4) have their own variant — and an HT STA 2G4 that isn't an infrastructure member must not transmit a 40 MHz mask PPDU at all.",
+      "zh": "11.15.4 条精确规定了何时才可以发送 40 MHz PPDU。这个判断依赖于若干字段：Supported Channel Width Set 子字段、Secondary Channel Offset 字段、STA Channel Width / Channel Width 字段（来自 Notify Channel Width 帧），以及 Extended Channel Switch Announcement 元素。对于基础设施型非 AP 站点（11.15.4.2），向对端发送 40 MHz PPDU 必须同时满足三点：双方都支持 40 MHz、AP 最近的 Secondary Channel Offset 为 SCA 或 SCB、且 MAC 变量 40MHzOperatingClass 为 true。AP 自身（11.15.4.3）遵循镜像对称的条件；此外，站点可以通过发送 Channel Width = 0 把自己临时锁定在 20 MHz，之后对端就不得再向它发送 40 MHz 帧。处于基础设施型 BSS 之外的站点（11.15.4.4）有自己的变体——而一个非基础设施成员的 HT STA 2G4 则完全不得发送 40 MHz 掩码 PPDU。"
+    },
+    {
+      "type": "prose",
+      "en": "Clauses 11.15.5 and 11.15.6 cover the scanning duty and its escape hatch. An OBSS scan is a passive or active sweep of the 20 MHz channels that overlap the 40 MHz signal, looking for neighbors. This duty falls on 40MC HT STAs in 2.4 GHz — 5 GHz 40MC STAs are not required to do it. Each affected channel must be scanned at least once per dot11BSSWidthTriggerScanInterval, with per-channel dwell and total-time minimums set by the OBSS scan MIB attributes (which the AP can override via the Overlapping BSS Scan Parameters element). Scanning is real work, so 11.15.6 gives a busy station an exemption: each STA tracks an ActivityFraction (its share of time spent sending and receiving traffic), and if that fraction is below dot11OBSSScanActivityThreshold/10000 and the AP has granted a Scanning Exemption, the station may skip scanning. The AP must be careful, though — it cannot exempt the only station reporting a channel as unusable, because then no one would be watching that channel.",
+      "zh": "11.15.5 和 11.15.6 条讲的是扫描义务及其豁免出口。OBSS 扫描是对与 40 MHz 信号重叠的那些 20 MHz 信道进行的被动或主动扫掠，用于发现邻居。这项义务落在 2.4 GHz 的 40MC HT STA 身上——5 GHz 的 40MC STA 无需执行。每个受影响的信道必须每隔 dot11BSSWidthTriggerScanInterval 至少扫描一次，每信道的驻留时间和总时间下限由 OBSS 扫描相关的 MIB 属性设定（AP 可通过 Overlapping BSS Scan Parameters 元素覆盖这些默认值）。扫描是实打实的开销，因此 11.15.6 给繁忙的站点一个豁免：每个 STA 跟踪一个 ActivityFraction（它用于收发流量的时间占比），如果该占比低于 dot11OBSSScanActivityThreshold/10000 且 AP 已授予扫描豁免，该站点便可跳过扫描。不过 AP 必须谨慎——它不能豁免唯一一个报告某信道不可用的站点，否则就没人盯着那个信道了。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.15.8 keeps the oldest clients alive: support of DSSS/CCK (the original 1990s 802.11b modulations) inside a 40 MHz BSS is governed by the 'DSSS/CCK Mode in 40 MHz' subfield of the HT Capabilities element. If a Beacon/Probe Response sets it to 1, associated HT STAs may send DSSS/CCK; if it is 0, they must not, the AP drops the ERP element and DSSS/CCK rates from its rate sets, and it refuses any station that offers only DSSS/CCK rates. Any STA outside 2.4 GHz simply sets this subfield to 0 — DSSS/CCK is a 2.4 GHz-only concern.",
+      "zh": "11.15.8 条照顾最老的客户端：在 40 MHz BSS 内对 DSSS/CCK（最早的 1990 年代 802.11b 调制方式）的支持，由 HT Capabilities 元素中的「DSSS/CCK Mode in 40 MHz」子字段控制。如果 Beacon/Probe Response 把它置为 1，关联的 HT STA 便可发送 DSSS/CCK；若为 0，则它们不得发送，AP 会从其速率集中去掉 ERP 元素和 DSSS/CCK 速率，并拒绝任何只提供 DSSS/CCK 速率的站点。任何不在 2.4 GHz 工作的 STA 直接把该子字段置为 0——DSSS/CCK 只是 2.4 GHz 才需要操心的事。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, clauses 11.15.9 and 11.15.10 govern listening before talking and reserving the air. For CCA sensing (11.15.9), a 20 MHz PPDU may go on the primary channel, but a 40 MHz mask PPDU may only begin if the STA has sensed both the primary AND the secondary channel idle — the primary across the full backoff and the secondary for a PIFS (5 GHz) or DIFS (2.4 GHz) immediately before the backoff expires. If the secondary turns out busy at that moment, the STA either narrows to a 20 MHz PPDU on the primary or restarts its backoff as if the medium were busy. For NAV (11.15.10), an HT STA updates its NAV from the Duration/ID field of any frame it hears in a 20 MHz PPDU on the primary channel or in a 40 MHz PPDU (when the RA isn't its own) — but it need not set its NAV from 20 MHz frames heard only on the secondary or any non-primary channel. The primary channel is the heartbeat; everything else is conditional.",
+      "zh": "最后，11.15.9 和 11.15.10 条规定了「先听后说」与预约空口。在 CCA 感知方面（11.15.9），20 MHz PPDU 可以在主信道上发送，但 40 MHz 掩码 PPDU 只有在 STA 感知到主信道「和」辅信道都空闲时才可开始——主信道需在整个退避过程中空闲，辅信道则需在退避计数器到期前的一个 PIFS（5 GHz）或 DIFS（2.4 GHz）内空闲。如果此刻辅信道恰好繁忙，STA 要么收窄为在主信道上发送 20 MHz PPDU，要么按介质繁忙重启退避。在 NAV 方面（11.15.10），HT STA 会根据它在主信道上以 20 MHz PPDU 听到的、或以 40 MHz PPDU 听到的（且 RA 不是自己的）任何帧的 Duration/ID 字段来更新 NAV——但对于仅在辅信道或其他非主信道上听到的 20 MHz 帧，它无需设置 NAV。主信道是心跳；其余一切都是有条件的。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 150\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\"><rect x=\"40\" y=\"40\" width=\"150\" height=\"50\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/><rect x=\"190\" y=\"40\" width=\"150\" height=\"50\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-dasharray=\"6 4\"/><text x=\"115\" y=\"70\" text-anchor=\"middle\" fill=\"currentColor\" font-size=\"13\">Primary 20 MHz</text><text x=\"265\" y=\"70\" text-anchor=\"middle\" fill=\"currentColor\" font-size=\"13\">Secondary 20 MHz</text><text x=\"115\" y=\"108\" text-anchor=\"middle\" fill=\"currentColor\" font-size=\"11\">CCA full backoff + NAV</text><text x=\"265\" y=\"108\" text-anchor=\"middle\" fill=\"currentColor\" font-size=\"11\">CCA for PIFS/DIFS only</text><path d=\"M40 30 L340 30\" stroke=\"currentColor\" stroke-width=\"1\"/><text x=\"190\" y=\"22\" text-anchor=\"middle\" fill=\"currentColor\" font-size=\"12\">40 MHz channel</text></svg>",
+      "caption": {
+        "en": "The primary channel carries the BSS heartbeat — full CCA sensing and NAV. The secondary is only checked briefly (PIFS/DIFS) right before a 40 MHz transmission, and NAV need not be set from secondary-only frames.",
+        "zh": "主信道承载 BSS 的心跳——完整的 CCA 感知与 NAV。辅信道仅在 40 MHz 发送前被短暂检查（PIFS/DIFS），且无需根据仅在辅信道听到的帧设置 NAV。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each clause lives in this lesson",
+        "zh": "覆盖对照表：每条款在本课中的落点"
+      },
+      "en": "11.14 HT BSS Operation — basic HT-MCS support on start/join, and the Primary Channel = Current Channel consistency rule (p.2630). 11.15.1 Rules for operation in 20/40 MHz BSS — scope (STA 5G or STA 2G4), 40MC STA must support coexistence management (p.2630). 11.15.2 Basic 20/40 MHz functionality — Supported Channel Width Set, STA Channel Width vs SCA/SCB/SCN, no 40 MHz claim without full 40 MHz capability, no 20 MHz data PPDU on the secondary (p.2630-2631). 11.15.3 Channel scanning/selection — General (set operating-class MIBs, AP retreats on OBSS hitting its secondary), Scanning requirements (minimum OBSS scans before going wide, 5 GHz alignment, the 20/40 Operation Permitted variable and Equation 11-2), Channel management (moving/switching via Secondary Channel Offset and Extended Channel Switch Announcement) (p.2631-2634). 11.15.4 40 MHz PPDU transmission restrictions — fields used, the three-condition tests for infrastructure non-AP STAs, AP, and non-infrastructure STAs; the 40MHzOperatingClass variable; Channel Width = 0 pinning (p.2634-2637). 11.15.5 Scanning requirements for 40MC HT STA 2G4 — what an OBSS scan is, dwell/interval minimums, Overlapping BSS Scan Parameters element (p.2637-2638). 11.15.6 Exemption from OBSS scanning — ActivityFraction, Scanning Exemption Request/Grant, AP must not exempt the lone reporter (p.2638-2639). 11.15.8 Support of DSSS/CCK in 40 MHz — DSSS/CCK Mode in 40 MHz subfield and the consequences when it is 0 (p.2639). 11.15.9 STA CCA sensing in a 20/40 MHz BSS — primary + secondary sensing before a 40 MHz mask PPDU, PIFS/DIFS secondary check, fallback to 20 MHz or backoff restart (p.2639-2640). 11.15.10 NAV assertion in 20/40 MHz BSS — update NAV from primary 20 MHz or 40 MHz PPDUs, not from secondary-only 20 MHz frames (p.2640).",
+      "zh": "11.14 HT BSS 运行——启动/加入时的基本 HT-MCS 支持，以及 Primary Channel = Current Channel 的一致性规则（第 2630 页）。11.15.1 20/40 MHz BSS 运行规则——适用范围（STA 5G 或 STA 2G4），40MC STA 必须支持共存管理（第 2630 页）。11.15.2 基本 20/40 MHz 功能——Supported Channel Width Set、STA Channel Width 与 SCA/SCB/SCN，无完整 40 MHz 能力则不得声明 40 MHz，不得在辅信道上发送 20 MHz 数据 PPDU（第 2630-2631 页）。11.15.3 信道扫描/选择——通则（设置 operating-class MIB、OBSS 命中辅信道时 AP 退让）、扫描要求（变宽前的最少 OBSS 扫描、5 GHz 对齐、20/40 Operation Permitted 变量与公式 11-2）、信道管理（通过 Secondary Channel Offset 与 Extended Channel Switch Announcement 进行移动/切换）（第 2631-2634 页）。11.15.4 40 MHz PPDU 发送限制——所用字段，针对基础设施型非 AP STA、AP 和非基础设施 STA 的三条件判定；40MHzOperatingClass 变量；Channel Width = 0 锁定（第 2634-2637 页）。11.15.5 40MC HT STA 2G4 的扫描要求——何为 OBSS 扫描、驻留/间隔下限、Overlapping BSS Scan Parameters 元素（第 2637-2638 页）。11.15.6 OBSS 扫描豁免——ActivityFraction、扫描豁免请求/授予、AP 不得豁免唯一的报告者（第 2638-2639 页）。11.15.8 40 MHz 中的 DSSS/CCK 支持——DSSS/CCK Mode in 40 MHz 子字段及其为 0 时的后果（第 2639 页）。11.15.9 20/40 MHz BSS 中的 STA CCA 感知——发送 40 MHz 掩码 PPDU 前的主+辅信道感知、PIFS/DIFS 辅信道检查、回退到 20 MHz 或重启退避（第 2639-2640 页）。11.15.10 20/40 MHz BSS 中的 NAV 断言——根据主信道 20 MHz 或 40 MHz PPDU 更新 NAV，而非根据仅在辅信道听到的 20 MHz 帧（第 2640 页）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2630,
+          2631,
+          2632,
+          2633,
+          2634,
+          2635,
+          2636,
+          2637,
+          2638,
+          2639,
+          2640
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2630
+      ],
+      "note": "11.14 HT BSS Operation; 11.15.1 rules scope; start of 11.15.2 basic 20/40 functionality"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2631,
+        2632,
+        2633,
+        2634
+      ],
+      "note": "11.15.2 (secondary-channel restriction); 11.15.3.1-11.15.3.3 channel scanning/selection, 20/40 Operation Permitted (Eq 11-2), channel management"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2634,
+        2635,
+        2636,
+        2637
+      ],
+      "note": "11.15.4.1-11.15.4.4 40 MHz PPDU transmission restrictions, fields and three-condition tests, 40MHzOperatingClass"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2637,
+        2638,
+        2639
+      ],
+      "note": "11.15.5 OBSS scanning requirements for 40MC HT STA 2G4; 11.15.6 exemption (ActivityFraction); 11.15.8 DSSS/CCK in 40 MHz"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2639,
+        2640
+      ],
+      "note": "11.15.9 STA CCA sensing in 20/40 MHz BSS; 11.15.10 NAV assertion in 20/40 MHz BSS"
+    }
+  ],
+  "covers": [
+    "80211-2024:11.14",
+    "80211-2024:11.15.1",
+    "80211-2024:11.15.2",
+    "80211-2024:11.15.3",
+    "80211-2024:11.15.4",
+    "80211-2024:11.15.5",
+    "80211-2024:11.15.6",
+    "80211-2024:11.15.8",
+    "80211-2024:11.15.9",
+    "80211-2024:11.15.10"
+  ],
+  "track": "managing"
+}

@@ -1,0 +1,151 @@
+{
+  "id": "managing-36-spectrum-management-dfs",
+  "title": {
+    "en": "Sharing the Spectrum: Dynamic Frequency Selection and Radar Avoidance",
+    "zh": "共享频谱：动态频率选择（DFS）与雷达规避"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Large parts of the 5 GHz band that Wi-Fi uses are not Wi-Fi's alone — they are shared with weather, military, and aviation radar. Regulators let Wi-Fi in only on the condition that it never sits on top of a radar and that devices spread themselves evenly across the available channels. IEEE 802.11 meets that condition with a family of procedures called Dynamic Frequency Selection (DFS). The idea is simple to state: before and while you use a channel, listen for radar; if a radar appears, get off; and do it all without dropping your network if you can avoid it.",
+      "zh": "Wi-Fi 使用的 5 GHz 频段，有相当大一部分并非 Wi-Fi 专属，而是要与气象、军用和航空雷达共享。监管机构允许 Wi-Fi 进入这些频段，前提是它绝不能压在雷达信号之上，并且设备要把自己均匀地分散到可用信道上。IEEE 802.11 用一组被称为动态频率选择（DFS）的流程来满足这一要求。其核心思想很简单：在使用某信道之前和使用过程中，持续监听雷达；一旦出现雷达，就立即让出该信道；并且尽量在不中断网络的前提下完成这一切。"
+    },
+    {
+      "type": "prose",
+      "en": "DFS starts at the door. When DFS is required, a STA will only join a BSS whose Beacons and Probe Responses advertise the Spectrum Management bit, and it tells the AP exactly which channels it can use by carrying a Supported Channels element in its (Re)Association Request. The AP feeds those lists into its own channel-selection logic and may even refuse a STA whose channel list is too narrow — because if it later has to flee a radar, it must pick a channel that everyone can follow it to. There is a parallel rule for power: a mesh STA tells a candidate peer its minimum and maximum transmit-power capability in the Mesh Peering Open frame, and the peer may reject the peering if that capability would break local regulatory limits.",
+      "zh": "DFS 从“入网那一刻”就开始把关。当需要 DFS 时，STA 只会加入那些在 Beacon 与 Probe Response 中标明 Spectrum Management 位的 BSS，并通过在（重）关联请求中携带 Supported Channels（支持信道）元素，明确告诉 AP 自己能在哪些信道上工作。AP 会把这些信道列表纳入自己的选信道逻辑，甚至可以拒绝那些可用信道太少的 STA——因为一旦今后需要躲避雷达，AP 必须选一个所有成员都能跟过去的信道。功率方面有一条平行的规则：网状 STA 在 Mesh Peering Open 帧中告知候选对端自己的最小与最大发射功率能力，若该能力会违反本地法规限值，对端可以拒绝建立对等关系。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant S as STA\n  participant A as AP\n  A->>S: Beacon (Spectrum Mgmt bit = 1)\n  S->>A: (Re)Assoc Req + Supported Channels\n  A-->>S: Assoc Resp (accept / reject)\n  Note over A: Build channel-switch fallback set\n  A->>S: Quiet element (silence window)\n  Note over A,S: Channel tested for radar",
+      "zh": "sequenceDiagram\n  participant S as STA\n  participant A as AP\n  A->>S: Beacon（Spectrum Mgmt 位 = 1）\n  S->>A: （重）关联请求 + Supported Channels\n  A-->>S: 关联响应（接受／拒绝）\n  Note over A: 构建可切换的备用信道集合\n  A->>S: Quiet 元素（静默窗口）\n  Note over A,S: 对信道进行雷达检测"
+    },
+    {
+      "type": "prose",
+      "en": "To test a channel for radar cleanly, the network needs everyone to fall silent for a moment — otherwise Wi-Fi traffic would mask a faint radar pulse. The AP schedules these quiet intervals with Quiet elements (and, for a VHT AP on a wide channel, Quiet Channel elements) in its Beacons and Probe Responses. Only the most recent Beacon defines the schedule, so old quiet plans are discarded. At the start of a quiet interval a STA sets its NAV and stays off the air; before transmitting it must check there is enough time to finish the frame exchange before the silence begins, deferring with a fresh backoff if not.",
+      "zh": "要干净地检测某信道上是否有雷达，需要让网络中所有设备短暂地集体静默——否则 Wi-Fi 流量会掩盖微弱的雷达脉冲。AP 通过在 Beacon 与 Probe Response 中放入 Quiet 元素（对于工作在宽信道上的 VHT AP，还可使用 Quiet Channel 元素）来安排这些静默间隔。只有最近一帧 Beacon 所定义的安排才有效，旧的静默计划一律作废。静默间隔开始时，STA 会设置自己的 NAV 并停止发送；发送前它必须确认在静默开始之前有足够时间完成整个帧交换，若时间不够则重新退避并推迟发送。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Quieting the channel (11.8.3) and testing it for radar (11.8.4) are separate steps. Quieting just creates a clean listening window; the actual radar-detection method is left to the implementation and to local regulation — the standard deliberately does not specify how to recognize a radar pulse.",
+      "zh": "让信道静默（11.8.3）与对信道做雷达检测（11.8.4）是两个独立的步骤。静默只是创造一个干净的监听窗口；真正的雷达检测方法则交由具体实现和当地法规决定——标准有意不规定如何识别一段雷达脉冲。"
+    },
+    {
+      "type": "prose",
+      "en": "Radar detection is a team sport. A STA may measure channels itself, or ask other STAs to measure on its behalf using a Spectrum Measurement Request frame carrying Measurement Request elements; the results come back in Measurement Report elements inside Spectrum Measurement Report frames. The standard pins down who may ask whom: in an infrastructure BSS an AP can request any STA (individually or as a group), a STA can only request its AP, and STA-to-STA requests are not allowed. A measured STA can answer 'too late', 'refused', or 'incapable', and the dialog and measurement tokens tie each report back to its request.",
+      "zh": "雷达检测是一项团队运动。STA 可以自己测量信道，也可以用携带 Measurement Request（测量请求）元素的 Spectrum Measurement Request 帧请其他 STA 代为测量；测量结果则放在 Spectrum Measurement Report 帧中的 Measurement Report 元素里返回。标准明确规定了“谁可以请求谁”：在基础设施 BSS 中，AP 可以请求任意 STA（单播或组播），STA 只能请求自己的 AP，而 STA 之间的请求是不允许的。被请求的 STA 可以回答“为时已晚”“拒绝”或“无能力”，并通过 Dialog Token 与 Measurement Token 把每份报告与其对应请求精确对应起来。"
+    },
+    {
+      "type": "prose",
+      "en": "When radar shows up — or just for cleaner spectrum — the network moves. In an infrastructure BSS only the AP decides, and it must try to pick a new channel supported by every associated STA. It announces the move by repeating a Channel Switch Announcement (CSA) element in Beacons, Probe Responses, and dedicated CSA frames right up to the switch time, optionally setting the Channel Switch Mode to 1 to freeze transmissions until the move. A Max Channel Switch Time element bounds how long the gap can last. IBSS and mesh networks have no central AP, so they coordinate differently: an IBSS elects a DFS owner (with a recovery mechanism if it disappears), while a mesh carries a Mesh Channel Switch Parameters element with a precedence value and a time-to-live so the announcement floods the mesh without two STAs switching to different channels.",
+      "zh": "当雷达出现时——或仅仅为了获得更干净的频谱——网络就会迁移。在基础设施 BSS 中只有 AP 能做决定，而且它必须尽量选一个所有已关联 STA 都支持的新信道。它通过在 Beacon、Probe Response 以及专门的 CSA 帧中反复发送 Channel Switch Announcement（信道切换通告，CSA）元素来宣告这次迁移，一直持续到切换时刻，并可把 Channel Switch Mode 置 1 以在迁移前冻结发送。Max Channel Switch Time 元素则限定了这段空档最长能持续多久。IBSS 与网状网络没有中心 AP，因此采用不同的协调方式：IBSS 会推选一个 DFS 所有者（并配有所有者消失时的恢复机制），而网状网络则携带带有优先级值（precedence）和生存时间（TTL）的 Mesh Channel Switch Parameters 元素，使通告在整张网格中扩散，又避免两个 STA 切到不同信道。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Radar detected or<br/>better channel wanted] --> B{Network type?}\n  B -->|Infra BSS| C[AP picks channel<br/>all STAs support]\n  B -->|IBSS| D[DFS owner selects,<br/>recovery if it leaves]\n  B -->|Mesh| E[CSA + Mesh params<br/>flood by precedence/TTL]\n  C --> F[Repeat CSA in Beacons<br/>until switch time]\n  D --> F\n  E --> F\n  F --> G[All move; do CCA<br/>on new channel]",
+      "zh": "flowchart TD\n  A[检测到雷达或<br/>需要更优信道] --> B{网络类型？}\n  B -->|基础设施 BSS| C[AP 选取<br/>全员支持的信道]\n  B -->|IBSS| D[DFS 所有者选取，<br/>离开则触发恢复]\n  B -->|网状网| E[CSA + 网状参数<br/>按优先级/TTL 扩散]\n  C --> F[在 Beacon 中反复发 CSA<br/>直至切换时刻]\n  D --> F\n  E --> F\n  F --> G[全员迁移；在新信道<br/>上执行 CCA]"
+    },
+    {
+      "type": "prose",
+      "en": "A plain CSA can only move a BSS within the same operating class — it never names a new class, so it cannot change bands. Two extensions cover the rest. Future Channel Guidance (11.8.10) lets a Beaconing STA pre-announce, in (Re)Association Responses and optionally Beacons, where it will go if the current channel is cleared; in bands where a Beacon is an enabling signal, the moment Beacons stop is an implicit cue to jump to that pre-agreed channel. Extended Channel Switching (ECS, 11.9) goes further: by carrying an Extended CSA element together with a Supported Operating Classes element, an AP, DFS owner, or mesh STA can advertise both a new channel and a new operating class — the only mechanism that can hop the BSS to a different band.",
+      "zh": "普通的 CSA 只能在同一操作类（operating class）内迁移 BSS——它从不指明新的操作类，因此无法跨频段切换。两项扩展机制补足了其余场景。Future Channel Guidance（未来信道指引，11.8.10）允许发送 Beacon 的 STA 在（重）关联响应中（可选地也在 Beacon 中）预先告知：一旦当前信道被清空，它将迁往何处；在那些以 Beacon 作为“放行信号”的频段中，Beacon 一旦停止，就是一个隐含信号，提示设备跳转到事先约定的信道。扩展信道切换（ECS，11.9）则更进一步：通过同时携带 Extended CSA 元素与 Supported Operating Classes（支持操作类）元素，AP、DFS 所有者或网状 STA 可以同时通告新的信道与新的操作类——这是唯一能让 BSS 跨频段跳转的机制。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Because ECS can switch bands, the standard reminds us the security context cannot magically change with it: the RSN configuration stays the same across a switch, so jumping from 2.4/5 GHz into 6 GHz is only valid if the advertised security parameters are also valid there.",
+      "zh": "由于 ECS 可以跨频段切换，标准提醒我们：安全上下文不会随之凭空改变——RSN 配置在切换前后保持一致，因此从 2.4/5 GHz 跳到 6 GHz 只有在所通告的安全参数在新频段同样有效时才成立。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Clause-by-clause coverage map",
+        "zh": "逐条款覆盖对照表"
+      },
+      "en": "11.7.3 Peering based on transmit power capability — a mesh STA gives a candidate peer its min/max transmit-power capability in the Mesh Peering Open frame; the peer may reject the peering if that capability breaks local regulatory limits. 11.8.2 Association based on supported channels — a STA lists usable channels via a Supported Channels element when (re)associating; the AP may use or reject it. 11.8.3 Quieting channels for testing — Quiet / Quiet Channel elements in Beacons schedule silence windows; only the latest Beacon's schedule applies and STAs set NAV during the quiet interval. 11.8.4 Testing channels for radar — a STA does not transmit on a channel until that channel has been tested for radar per regulation. 11.8.7 Requesting and reporting of measurements — Spectrum Measurement Request/Report frames carry Measurement Request/Report elements; Table 11-11 fixes who may request whom; responses may be too-late / refused / incapable. 11.8.8 Selecting and advertising a new channel — the channel-switch procedure: AP-only decision in infra BSS, DFS owner in IBSS, Mesh Channel Switch Parameters in an MBSS; CSA elements repeated in Beacons/Probe Responses/CSA frames, Max Channel Switch Time bounds the gap. 11.8.10 Future Channel Guidance operation — the Future Channel Guidance element pre-announces the next channel in (Re)Assoc Responses and optionally Beacons; loss of Beacons is an implicit switch cue. 11.9.1 ECS general — when dot11ExtendedChannelSwitchActivated is true, APs/DFS owners/mesh STAs may send Extended CSA elements; RSN config is unchanged across the switch. 11.9.3 Selecting and advertising a new channel and/or operating class — the Extended CSA element advertises a new channel and/or operating class (in infra BSS, IBSS, and MBSS), the only path to changing bands.",
+      "zh": "11.7.3 基于发射功率能力的对等连接——网状 STA 在 Mesh Peering Open 帧中提供其最小/最大发射功率能力，若该能力违反本地法规限值，对端可拒绝对等连接。11.8.2 基于支持信道的关联——STA 在（重）关联时用 Supported Channels 元素列出可用信道，AP 可加以利用或据此拒绝。11.8.3 为检测而静默信道——Beacon 中的 Quiet / Quiet Channel 元素安排静默窗口；只有最新 Beacon 的安排有效，STA 在静默间隔内设置 NAV。11.8.4 对信道做雷达检测——在按法规完成雷达检测之前，STA 不在该信道上发送。11.8.7 测量的请求与报告——Spectrum Measurement Request/Report 帧携带 Measurement Request/Report 元素；表 11-11 规定了谁可请求谁；响应可为“为时已晚／拒绝／无能力”。11.8.8 选择并通告新信道——信道切换流程：基础设施 BSS 中仅 AP 决策，IBSS 中由 DFS 所有者决策，MBSS 中使用 Mesh Channel Switch Parameters 元素；CSA 元素在 Beacon/Probe Response/CSA 帧中反复发送，Max Channel Switch Time 限定空档时长。11.8.10 未来信道指引——Future Channel Guidance 元素在（重）关联响应中（可选 Beacon 中）预告下一个信道；Beacon 中断是隐含的切换提示。11.9.1 ECS 概述——当 dot11ExtendedChannelSwitchActivated 为真时，AP/DFS 所有者/网状 STA 可发送 Extended CSA 元素；切换前后 RSN 配置保持不变。11.9.3 选择并通告新信道和/或操作类——Extended CSA 元素通告新信道和/或新操作类（适用于基础设施 BSS、IBSS 与 MBSS），是改变频段的唯一途径。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2570,
+          2575,
+          2577,
+          2579,
+          2585,
+          2586,
+          2587
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2570
+      ],
+      "note": "11.7.3 Peering based on transmit power capability — mesh STA provides min/max TX power capability in Mesh Peering Open frame; peer may reject."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2575
+      ],
+      "note": "11.8.2 Association based on supported channels (Supported Channels element); 11.8.3 Quieting channels for testing (Quiet / Quiet Channel elements)."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2577
+      ],
+      "note": "11.8.4 Testing channels for radar; 11.8.7 Requesting and reporting of measurements (Spectrum Measurement Request/Report, Table 11-11)."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2578,
+        2579
+      ],
+      "note": "11.8.7 measurement report semantics (too-late/refused/incapable); 11.8.8.1/11.8.8.2 channel switch general + non-DMG infra BSS CSA."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2581,
+        2582,
+        2583
+      ],
+      "note": "11.8.8.3 IBSS DFS owner & recovery; 11.8.8.4 MBSS channel switching with Mesh Channel Switch Parameters."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2586
+      ],
+      "note": "11.8.10 Future Channel Guidance operation; 11.9.1 ECS general."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2587,
+        2588
+      ],
+      "note": "11.9.3 Selecting and advertising a new channel and/or operating class (Extended CSA + Supported Operating Classes)."
+    }
+  ],
+  "covers": [
+    "80211-2024:11.7.3",
+    "80211-2024:11.8.2",
+    "80211-2024:11.8.3",
+    "80211-2024:11.8.4",
+    "80211-2024:11.8.7",
+    "80211-2024:11.8.8",
+    "80211-2024:11.8.10",
+    "80211-2024:11.9.1",
+    "80211-2024:11.9.3"
+  ],
+  "track": "managing"
+}

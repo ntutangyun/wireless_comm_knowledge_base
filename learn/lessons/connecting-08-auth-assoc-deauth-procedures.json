@@ -1,0 +1,143 @@
+{
+  "id": "connecting-08-auth-assoc-deauth-procedures",
+  "title": {
+    "en": "Joining the Network: Authentication, Association and Deauthentication Procedures",
+    "zh": "加入网络：认证、关联与去认证流程"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Before a Wi-Fi station (STA) can send real data through an access point (AP), it has to climb a ladder of states. Clause 11.3 of IEEE 802.11-2024 describes this ladder in terms of the MLME — the management entity inside every STA and AP that drives connection setup. The big idea is simple: a STA must first authenticate, then associate, and only then is it allowed to exchange ordinary data frames. Leaving the network runs the same ladder in reverse, through disassociation and deauthentication. This lesson follows those procedural transitions step by step — not the cryptography behind them, but who sends what and how the state changes.",
+      "zh": "在 Wi-Fi 站点（STA）能够通过接入点（AP）收发真正的数据之前，它必须沿着一段“状态阶梯”逐级向上攀登。IEEE 802.11-2024 标准第 11.3 节正是用 MLME（每个 STA 和 AP 内部负责驱动连接建立的管理实体）来描述这段阶梯。核心思想很简单：站点必须先完成认证，再完成关联，之后才被允许收发普通数据帧。离开网络则沿着同一段阶梯反向走完，依次经过去关联与去认证。本课逐步跟随这些流程上的状态转换——重点不在背后的密码学，而在于谁发送了什么、状态又如何随之改变。"
+    },
+    {
+      "type": "prose",
+      "en": "The states are numbered. State 1 means unauthenticated and unassociated — a stranger. State 2 means authenticated but not yet associated. State 3 and State 4 mean associated, with State 4 being the fully operational state where protected data flows (State 3 is the intermediate stop while a security handshake completes). There is also State 1a, a special holding state used by PASN authentication. Each procedure in 11.3 is really a rule about which frame moves the STA between which two states.",
+      "zh": "这些状态都有编号。状态 1 表示未认证、未关联——形同陌生人。状态 2 表示已认证但尚未关联。状态 3 和状态 4 都表示已关联，其中状态 4 是完全可用的状态，受保护的数据可以正常流动（状态 3 则是安全握手完成前的中间停留点）。此外还有状态 1a，这是 PASN 认证使用的一个特殊过渡状态。第 11.3 节中的每一个流程，本质上都是一条规则：规定某个帧如何把站点在某两个状态之间移动。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n    [*] --> S1\n    S1: State 1 unauth unassoc\n    S2: State 2 auth\n    S3: State 3 assoc\n    S4: State 4 operational\n    S1 --> S2: Authentication\n    S2 --> S3: Association\n    S3 --> S4: 4-way handshake\n    S4 --> S2: Disassociation\n    S2 --> S1: Deauthentication\n    S4 --> S1: Deauth (implies disassoc)",
+      "zh": "stateDiagram-v2\n    [*] --> S1\n    S1: 状态1 未认证未关联\n    S2: 状态2 已认证\n    S3: 状态3 已关联\n    S4: 状态4 可用\n    S1 --> S2: 认证\n    S2 --> S3: 关联\n    S3 --> S4: 四次握手\n    S4 --> S2: 去关联\n    S2 --> S1: 去认证\n    S4 --> S1: 去认证(隐含去关联)"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.3.4 covers authentication and deauthentication. Authentication is driven by the non-AP STA: APs and PCPs never initiate it. The originating STA's SME issues an MLME-AUTHENTICATE.request, the MLME sends an Authentication frame, and on success the state for that peer rises from State 1 to State 2. The destination STA mirrors this: when it receives an Authentication frame with sequence number 1, its MLME raises an MLME-AUTHENTICATE.indication to the SME and, after a successful response, sets the originating STA to State 2. Deauthentication is the reset button — either side may deauthenticate a peer at any time, for any reason. A deauthentication notification drops the STA straight back to State 1, and if it happened from State 3 or State 4 it implies disassociation as well.",
+      "zh": "第 11.3.4 节涵盖认证与去认证。认证由非 AP 站点驱动：AP 与 PCP 从不主动发起。发起方站点的 SME 发出 MLME-AUTHENTICATE.request，MLME 随即发送一个认证帧，成功后该对端的状态便从状态 1 升至状态 2。目标站点的处理与之对应：当它收到序号为 1 的认证帧时，其 MLME 会向 SME 发出 MLME-AUTHENTICATE.indication，并在成功回应后把发起方站点置为状态 2。去认证则是“复位按钮”——任意一方都可以在任何时刻、出于任何原因对对端去认证。去认证通知会让站点直接退回状态 1；若发生在状态 3 或状态 4，则同时隐含去关联。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Open System 'authentication' does no real identity checking — in modern WPA2/WPA3 networks the genuine security work happens later, in the association and 4-way-handshake steps. The 802.11 authentication exchange here is mostly a procedural gate that moves the STA from State 1 to State 2. PASN authentication is the exception: it parks the STA in the special State 1a rather than State 2, and is only allowed from State 1.",
+      "zh": "开放系统“认证”并不做真正的身份核验——在现代 WPA2/WPA3 网络中，真正的安全工作发生在之后的关联与四次握手环节。这里的 802.11 认证交换主要是一道流程上的关卡，把站点从状态 1 推进到状态 2。PASN 认证是个例外：它把站点停泊在特殊的状态 1a，而非状态 2，且只允许从状态 1 发起。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA\n    participant AP\n    STA->>AP: Authentication (seq 1)\n    AP->>STA: Authentication (seq 2, SUCCESS)\n    Note over STA,AP: now State 2\n    STA->>AP: Association Request\n    AP->>STA: Association Response (SUCCESS)\n    Note over STA,AP: State 3 (or 4)\n    STA->>AP: 4-way handshake\n    Note over STA,AP: State 4 operational",
+      "zh": "sequenceDiagram\n    participant STA as 站点\n    participant AP as 接入点\n    STA->>AP: 认证帧 (序号1)\n    AP->>STA: 认证帧 (序号2, 成功)\n    Note over STA,AP: 进入状态2\n    STA->>AP: 关联请求\n    AP->>STA: 关联响应 (成功)\n    Note over STA,AP: 状态3 (或4)\n    STA->>AP: 四次握手\n    Note over STA,AP: 状态4 可用"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.3.5 covers association, reassociation, and disassociation. Association needs State 2 first — a STA in State 1 or State 1a cannot associate. The STA sends an Association Request carrying its RSNE (one pairwise cipher, one AKM suite); the AP's SME issues an MLME-ASSOCIATE.indication, decides, and responds. On a SUCCESS where security is active, the STA lands in State 3 and only reaches State 4 after the 4-way handshake enables protection. Reassociation (11.3.5.4 / 11.3.5.5) is the roaming variant: it is allowed only within the same ESS, and on success it moves the STA to State 3/4 with the new AP while dropping to State 2 with the old one. Disassociation (11.3.5.6 through 11.3.5.9) is the gentler exit: it returns the STA to State 2, so it stays authenticated and can re-associate without re-authenticating.",
+      "zh": "第 11.3.5 节涵盖关联、重关联与去关联。关联必须先处于状态 2——处于状态 1 或状态 1a 的站点无法关联。站点发送携带其 RSNE（一个成对密码套件、一个 AKM 套件）的关联请求；AP 的 SME 发出 MLME-ASSOCIATE.indication 进行裁决并作出响应。当返回成功且安全机制启用时，站点先落在状态 3，只有在四次握手启用保护之后才到达状态 4。重关联（11.3.5.4 / 11.3.5.5）是漫游变体：只允许在同一个 ESS 内进行，成功后会把站点对新 AP 置为状态 3/4，同时对旧 AP 降为状态 2。去关联（11.3.5.6 至 11.3.5.9）则是较温和的退出方式：它把站点退回状态 2，因此仍保持已认证，可以无需重新认证便重新关联。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Note the asymmetry: deauthentication knocks you all the way down to State 1 (you must re-authenticate), while disassociation only drops you to State 2 (you stay authenticated). That difference is why roaming and brief link drops use disassociation — re-joining is one step cheaper. When management frame protection (PMF) is active, a forged Disassociation or Deauthentication frame is discarded, and the AP can run an SA Query procedure to confirm a real client is still there before tearing anything down.",
+      "zh": "注意这种不对称：去认证会把你一路打回状态 1（必须重新认证），而去关联只把你降到状态 2（仍保持已认证）。正因如此，漫游和短暂掉线才使用去关联——重新加入少一个步骤。当启用管理帧保护（PMF）时，伪造的去关联或去认证帧会被丢弃，AP 还可以运行 SA 查询流程，在拆除任何连接之前确认真实客户端是否仍在线。"
+    },
+    {
+      "type": "prose",
+      "en": "Three smaller but real procedures round out the clause. Clause 11.3.6 handles the case where an AP is colocated with a mesh STA (a mesh gate): when such an AP would add a STA-to-AP mapping to the distribution system, the mesh gate must check that the STA's MAC address does not already belong to a mesh STA in the mesh BSS. If it does, the colocated AP must deauthenticate the STA with reason code MAC-ADDRESS-ALREADY-EXISTS-IN-MBSS — preventing an address collision between the infrastructure and mesh worlds. Clause 11.3.7 covers communicating PBSS information: after a STA associates with a PCP in a personal BSS, the PCP sends an unsolicited Information Response frame (broadcast and/or individually addressed) carrying the DMG Capabilities of itself and every associated STA, repeating this distribution at least once every dot11BroadcastSTAInfoDuration beacon intervals.",
+      "zh": "另有三个篇幅较小但确实存在的流程为本节收尾。第 11.3.6 节处理 AP 与网状站点同处一体（即网状网关）的情形：当这样的 AP 要向分布式系统添加一条“站点到 AP”的映射时，网状网关必须核查该站点的 MAC 地址是否已经属于网状 BSS 中的某个网状站点。若已存在，则该同处一体的 AP 必须以原因码 MAC-ADDRESS-ALREADY-EXISTS-IN-MBSS 对该站点去认证——以此避免基础设施世界与网状世界之间的地址冲突。第 11.3.7 节涵盖 PBSS 信息的通告：当站点在个人 BSS 中与 PCP 完成关联后，PCP 会主动发送一个 Information Response 帧（广播和/或单播），其中携带自身及每个已关联站点的 DMG 能力，并且至少每 dot11BroadcastSTAInfoDuration 个信标间隔重复一次该分发过程。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.3.9 covers authentication control — a throttling mechanism for the case where a huge number of stations all try to authenticate at nearly the same instant (think an IoT sensor field of S1G devices powering up together). Without control, every STA would fire an Authentication-Request into the same airtime and collide. There are two flavors. Centralized authentication control: the AP advertises an Authentication Control element carrying a threshold; each STA draws a random number v (uniform on 0..1022) and may transmit only if v is below the threshold. A targeted Probe Response can also tell one STA to defer for a stated time. Distributed authentication control: each STA backs off on its own, picking a random slot inside a transmission interval that doubles (up to a maximum) every time its Authentication-Request fails — a self-organizing spread of the access attempts.",
+      "zh": "第 11.3.9 节涵盖认证控制——一种应对“海量站点几乎同时发起认证”场景的限流机制（可设想一片 S1G 物联网传感器集体上电）。若无控制，每个站点都会把认证请求挤进同一段空口时间而发生碰撞。它有两种形态。集中式认证控制：AP 在 Authentication Control 元素中通告一个门限；每个站点抽取一个随机数 v（在 0 至 1022 上均匀分布），仅当 v 小于门限时才被允许发送。一个定向的探测响应还可以告知某个站点延迟一段指定的时间。分布式认证控制：每个站点自行退避，在一个传输间隔内挑选随机时隙，而该间隔在每次认证请求失败后都会翻倍（直至上限）——从而自组织地把接入尝试分散开来。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each clause is taught",
+        "zh": "覆盖映射：各条款的讲解位置"
+      },
+      "en": "11.3.4 (Authentication and deauthentication) — taught in the prose on the auth/deauth state transitions; the MLME-AUTHENTICATE primitive flow (.request / .indication / .response / .confirm) is in 11.3.4.2–11.3.4.3, deauthentication originating/destination in 11.3.4.4–11.3.4.5, with successful non-PASN auth setting State 2 and PASN setting State 1a from State 1. 11.3.5 (Association, reassociation, disassociation) — taught in the association/reassociation/disassociation prose: 11.3.5.2–11.3.5.3 (associate initiation/receipt, State 3 then State 4 via 4-way handshake), 11.3.5.4–11.3.5.5 (reassociation within the same ESS), 11.3.5.6–11.3.5.9 (disassociation returns to State 2), plus 11.3.5.10 (PBSS nonassociated RSNA: State 2 to State 4 on RSNA establishment) and 11.3.5.11 (service characteristic indication via the AID Request element). 11.3.6 (AP colocated with a mesh STA) — taught in the mesh-gate prose: the mesh gate verifies the STA MAC is not a mesh STA's, else deauthenticates with MAC-ADDRESS-ALREADY-EXISTS-IN-MBSS. 11.3.7 (Communicating PBSS information) — taught in the PBSS prose: PCP sends unsolicited Information Response frames carrying DMG Capabilities every dot11BroadcastSTAInfoDuration beacon intervals. 11.3.9 (Authentication control) — taught in the throttling prose: 11.3.9.2 centralized (threshold vs random v in 0..1022) and 11.3.9.3 distributed (random slot, interval doubling on failure) for S1G APs.",
+      "zh": "11.3.4（认证与去认证）——在认证/去认证状态转换的正文中讲解；MLME-AUTHENTICATE 原语流程（.request / .indication / .response / .confirm）见 11.3.4.2–11.3.4.3，去认证的发起方/目标方见 11.3.4.4–11.3.4.5，其中成功的非 PASN 认证置为状态 2，PASN 则从状态 1 置为状态 1a。11.3.5（关联、重关联、去关联）——在关联/重关联/去关联正文中讲解：11.3.5.2–11.3.5.3（关联发起/接收，先状态 3 再经四次握手到状态 4），11.3.5.4–11.3.5.5（同一 ESS 内的重关联），11.3.5.6–11.3.5.9（去关联退回状态 2），以及 11.3.5.10（PBSS 非关联 RSNA：建立 RSNA 后由状态 2 到状态 4）和 11.3.5.11（通过 AID Request 元素指示业务特征）。11.3.6（AP 与网状站点同处一体）——在网状网关正文中讲解：网状网关核验站点 MAC 不属于网状站点，否则以 MAC-ADDRESS-ALREADY-EXISTS-IN-MBSS 去认证。11.3.7（通告 PBSS 信息）——在 PBSS 正文中讲解：PCP 每 dot11BroadcastSTAInfoDuration 个信标间隔主动发送携带 DMG 能力的 Information Response 帧。11.3.9（认证控制）——在限流正文中讲解：11.3.9.2 集中式（门限对随机数 v∈0..1022）与 11.3.9.3 分布式（随机时隙、失败后间隔翻倍），面向 S1G AP。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2522,
+          2526,
+          2538,
+          2539,
+          2540
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Put together, clause 11.3 is the choreography of joining and leaving a BSS. Authentication lifts a stranger to State 2; association lifts a member to State 3 and then operational State 4; reassociation hands that membership smoothly to a new AP while roaming; disassociation steps back down one rung; and deauthentication resets all the way to State 1. The mesh-colocation, PBSS-information, and authentication-control rules are the extra mechanisms that keep these transitions clean in special deployments — mesh gateways, personal BSSs, and dense S1G fields where everyone wants on at once.",
+      "zh": "综合来看，第 11.3 节就是加入与离开一个 BSS 的“编舞”。认证把陌生人提升到状态 2；关联把成员提升到状态 3，再到可用的状态 4；重关联在漫游时把这一成员关系平滑地交接给新的 AP；去关联回退一级；去认证则一路复位到状态 1。网状同处一体、PBSS 信息通告与认证控制这些规则，则是在特殊部署中保持这些转换干净利落的附加机制——它们服务于网状网关、个人 BSS，以及人人都想同时上线的密集 S1G 场景。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2522,
+        2523,
+        2524,
+        2525
+      ],
+      "note": "11.3.4 Authentication and deauthentication (11.3.4.1 general states; 11.3.4.2 originating STA; 11.3.4.3 destination STA; 11.3.4.4-11.3.4.5 deauthentication originating/destination) — MLME-AUTHENTICATE/DEAUTHENTICATE primitive flow and State 1/1a/2 transitions"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2526,
+        2527,
+        2528,
+        2529,
+        2530,
+        2531,
+        2532,
+        2533,
+        2534,
+        2535,
+        2536,
+        2537,
+        2538
+      ],
+      "note": "11.3.5 Association, reassociation, and disassociation (11.3.5.1 general; .2-.3 associate initiation/receipt; .4-.5 reassociation; .6-.9 disassociation; .10 PBSS nonassociated; .11 service characteristic) — State 2/3/4 transitions, 4-way handshake, SA Query"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2538,
+        2539
+      ],
+      "note": "11.3.6 Additional mechanisms for an AP colocated with a mesh STA (mesh gate MAC verification, deauth with MAC-ADDRESS-ALREADY-EXISTS-IN-MBSS); 11.3.7 Communicating PBSS information (PCP unsolicited Information Response with DMG Capabilities)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2539,
+        2540,
+        2541
+      ],
+      "note": "11.3.9 Authentication control (11.3.9.1 general; 11.3.9.2 centralized control with threshold and random v in 0..1022; 11.3.9.3 distributed control with random slot and interval doubling) for S1G APs"
+    }
+  ],
+  "covers": [
+    "80211-2024:11.3.4",
+    "80211-2024:11.3.5",
+    "80211-2024:11.3.6",
+    "80211-2024:11.3.7",
+    "80211-2024:11.3.9"
+  ],
+  "track": "connecting"
+}

@@ -1,0 +1,147 @@
+{
+  "id": "qos-power-10-qmf-qload-hcca-timing",
+  "title": {
+    "en": "Tuning the Queues: QMF Policy, QLoad Reporting and HCCA Timing",
+    "zh": "调校队列：QMF 策略、QLoad 报告与 HCCA 定时"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "We usually think of QoS as something that applies to *data* — voice, video, best effort, background. But Management frames also compete for the air: probe requests, action frames, BSS-transition messages, and dozens more. By default many of them are sent at high priority, which can flood the voice queue with control chatter. IEEE 802.11 gives us three coordination tools to tidy this up. **QMF (QoS Management Frame)** lets a network decide which access category each Management frame should use. **QLoad reporting** lets neighbouring APs share how busy they are. And **HCCA timing synchronization** keeps the scheduled-access clocks of overlapping APs aligned. This lesson walks through all three.",
+      "zh": "我们通常把 QoS 看作只针对*数据*——语音、视频、尽力而为、后台。但管理帧同样要争夺空口：探测请求、动作帧、BSS 切换消息，还有几十种其他帧。默认情况下，其中很多帧以高优先级发送，这会让控制类的“闲聊”挤满语音队列。IEEE 802.11 提供了三种协调工具来整理这一切。**QMF（QoS 管理帧）**让网络决定每一种管理帧应使用哪个接入类别；**QLoad 报告**让相邻 AP 互相共享自身的繁忙程度；**HCCA 定时同步**则让相互重叠的 AP 的调度接入时钟保持对齐。本课将逐一讲解这三者。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with QMF. A QMF-capable STA assigns an **access category** (AC_VO, AC_VI, AC_BE, AC_BG) to every Management frame it sends, exactly the way EDCA assigns one to data. It advertises this capability by setting the QMFActivated subfield in its Extended Capabilities element. There are two flavours of QoS Management frame: an **IQMF** is sent to an individual (unicast) address, and a **GQMF** is sent to a group (broadcast/multicast) address. The standard is strict about when each is used — for example, a STA only sends IQMFs once it has confirmed, from a previously received Extended Capabilities element, that the peer is a QoS STA with QMFActivated set to 1.",
+      "zh": "先看 QMF。具备 QMF 能力的 STA 会为它发送的每一个管理帧分配一个**接入类别**（AC_VO、AC_VI、AC_BE、AC_BG），方式与 EDCA 为数据分配类别完全一样。它通过在扩展能力元素中将 QMFActivated 子字段置 1 来通告该能力。QoS 管理帧分两种：**IQMF** 发往单个（单播）地址，**GQMF** 发往组（广播/组播）地址。标准对何时使用哪一种规定得很严格——例如，只有当 STA 从此前收到的扩展能力元素确认对端是 QMFActivated 置 1 的 QoS STA 后，它才会发送 IQMF。"
+    },
+    {
+      "type": "prose",
+      "en": "What happens if no one configures anything? Then the **default QMF policy** (Table 11-22 in the standard) takes over. It maps each Management frame to an access category based on its subtype, category and action values. (Re)Association, individually addressed Probe Requests, Beacons, Disassociation, Authentication and most fast-roaming frames default to AC_VO so they move fast; group Probe Requests, Probe Responses, radio-measurement and many WNM frames default to AC_BE; anything not listed defaults to AC_BE. Also note: when the destination's QMFActivated bit is 0, or you have never heard an Extended Capabilities element from it, you simply send your unicast Management frames at AC_VO.",
+      "zh": "如果谁都没做配置呢？那就启用**默认 QMF 策略**（标准中的表 11-22）。它根据子类型、类别和动作字段，把每一种管理帧映射到一个接入类别。（重）关联、单播探测请求、信标、解除关联、认证以及大多数快速漫游帧默认归为 AC_VO，以便快速发出；组播探测请求、探测响应、无线测量和许多 WNM 帧默认归为 AC_BE；表中未列出的一律默认归为 AC_BE。还要注意：当目的端的 QMFActivated 位为 0，或你从未收到过它的扩展能力元素时，单播管理帧就直接以 AC_VO 发送。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A subtle but important rule: a QMF STA must **not** change the access category of an IQMF or GQMF after its first transmission, even if the QMF policy changes in between. A frame keeps the AC it was launched with for all of its retries. This keeps the ACI subfield in the sequence-number field consistent with how the frame is actually queued.",
+      "zh": "有一条不起眼但很重要的规则：QMF STA 在首次发送某个 IQMF 或 GQMF 之后，**不得**再更改它的接入类别，即使期间 QMF 策略发生了变化。一个帧在其所有重传过程中都保持首次发送时使用的 AC。这能确保序列号字段中的 ACI 子字段与该帧实际所在的队列保持一致。"
+    },
+    {
+      "type": "prose",
+      "en": "Policies are not frozen — they can be negotiated. A STA advertises its policy in a **QMF Policy element** and can ask a peer to change how it queues frames by sending a **QMF Policy Change** frame. The peer answers with a **QMF Policy** frame carrying SUCCESS or REQUEST_DECLINED. An associated non-AP STA may only send a Policy Change to its AP if the AP set its QMFReconfigurationActivated subfield to 1; if the AP declines, the STA must not re-request that same policy for the lifetime of the association. There is a timeout (dot11QMFPolicyChangeTimeout): if no answer arrives in time, the requester keeps using the old policy. In an infrastructure BSS the QMF AP includes its Policy element in Beacons; in an MBSS policy is set per-link; in an IBSS or OCB everyone simply uses the default policy.",
+      "zh": "策略并非一成不变——它们可以协商。STA 在 **QMF Policy 元素**中通告自己的策略，并可通过发送 **QMF Policy Change（策略变更）**帧，请求对端改变其帧入队方式。对端以携带 SUCCESS 或 REQUEST_DECLINED 的 **QMF Policy** 帧作答。已关联的非 AP STA 只有在 AP 将其 QMFReconfigurationActivated 子字段置 1 时，才可向 AP 发送策略变更请求；若 AP 拒绝，该 STA 在本次关联的整个生命周期内不得再次请求同一策略。这里有一个超时（dot11QMFPolicyChangeTimeout）：若超时仍无应答，请求方继续沿用旧策略。在基础结构 BSS 中，QMF AP 会在信标中包含其 Policy 元素；在 MBSS 中策略按链路逐对设置；在 IBSS 或 OCB 中，各方一律使用默认策略。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Non-AP QMF STA\n    participant AP as QMF AP\n    AP->>STA: Beacon (QMF Policy + QMFReconfigActivated=1)\n    STA->>AP: QMF Policy Change (dialog token)\n    Note over AP: Evaluate requested policy\n    AP->>STA: QMF Policy (SUCCESS or REQUEST_DECLINED)\n    Note over STA: On SUCCESS, queue future Mgmt frames per new policy",
+      "zh": "sequenceDiagram\n    participant STA as 非AP QMF STA\n    participant AP as QMF AP\n    AP->>STA: 信标 (QMF策略 + QMFReconfigActivated=1)\n    STA->>AP: QMF 策略变更 (对话令牌)\n    Note over AP: 评估请求的策略\n    AP->>STA: QMF 策略 (SUCCESS 或 REQUEST_DECLINED)\n    Note over STA: 若成功, 后续管理帧按新策略入队"
+    },
+    {
+      "type": "prose",
+      "en": "Now switch from frames-within-a-BSS to **coordination between overlapping BSSs (OBSS)**. Two APs overlap when they share a primary channel and can hear each other's Beacons — directly, or relayed via associated STAs that support Beacon measurement. The standard gives OBSS APs a toolkit (QLoad Report elements, HCCA TXOP Update Count elements, and HCCA TXOP Advertisement/Response frames) to advertise QoS load for channel selection, extend admission control into a distributed setting, and coordinate scheduled HCCA transmit opportunities so they don't collide. These procedures are aimed at stationary and portable APs, and may rely on unauthenticated Beacons and Public Action frames.",
+      "zh": "现在从“BSS 内部的帧”切换到**重叠 BSS（OBSS）之间的协调**。当两个 AP 共用同一主信道、并且能听到彼此的信标（直接听到，或经由支持信标测量的已关联 STA 转发）时，它们就构成重叠。标准为 OBSS 的 AP 提供了一套工具（QLoad Report 元素、HCCA TXOP Update Count 元素，以及 HCCA TXOP Advertisement/Response 帧），用于通告 QoS 负载以辅助信道选择、把准入控制扩展到分布式环境，并协调有调度的 HCCA 发送机会以免相互碰撞。这些流程面向固定式和便携式 AP，并且可能依赖未经认证的信标和公共动作帧。"
+    },
+    {
+      "type": "prose",
+      "en": "The **QLoad Report element** is how an AP publishes its load. It can ride in Beacons periodically (every dot11QLoadReportIntervalDTIM DTIMs when dot11QLoadReportActivated is true) and is also sent on demand in a QLoad Report frame answering a QLoad Request. Inside it carries fields such as **Allocated Traffic Self** (the admitted EDCA + HCCA traffic this AP has committed, plus its count of active AC_VI/AC_VO streams), **Potential Traffic Self** (its potential QoS traffic — always ≥ Allocated), **Allocated Traffic Shared** (the sum across all overlapping APs, including self), an **HCCA Peak** field (summed HCCA medium times), and a **Sharing Policy** field (Static, Dynamic or Vendor Specific). From these an AP derives an EDCA Access Factor and HCCA Access Factor — fractions, possibly greater than 1, expressing how loaded the shared medium really is.",
+      "zh": "**QLoad Report 元素**是 AP 公布自身负载的方式。当 dot11QLoadReportActivated 为真时，它可周期性地搭载在信标中（每隔 dot11QLoadReportIntervalDTIM 个 DTIM 一次）；它也可按需在 QLoad Report 帧中发送，以应答 QLoad Request。元素内部携带若干字段，例如 **Allocated Traffic Self**（本 AP 已承诺的、获准的 EDCA + HCCA 流量，以及其活跃 AC_VI/AC_VO 流的数量）、**Potential Traffic Self**（其潜在 QoS 流量——始终 ≥ Allocated）、**Allocated Traffic Shared**（所有重叠 AP 的总和，含自身）、**HCCA Peak** 字段（HCCA 介质占用时间之和），以及 **Sharing Policy** 字段（Static、Dynamic 或 Vendor Specific）。由这些字段，AP 可推导出 EDCA Access Factor 和 HCCA Access Factor——它们是分数（可能大于 1），表达共享介质实际的拥挤程度。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "What if two APs overlap but can't hear each other directly? An AP can borrow the ears of its associated STAs. It sends a Radio Measurement Request with a Beacon request (wildcard BSSID) whose Request subelement asks specifically for the QLoad Report element ID. The STA scans, and the returned Beacon reports carry the neighbour's QLoad Report element inside a Reported Frame Body subelement — letting the AP factor in load from APs it can't reach itself.",
+      "zh": "如果两个 AP 重叠却无法直接互听，怎么办？AP 可以借用其已关联 STA 的“耳朵”。它发送一个携带信标请求（通配 BSSID）的无线测量请求，请求子元素中专门索取 QLoad Report 元素的 ID。STA 完成扫描，返回的信标报告会在 Reported Frame Body 子元素中携带邻居的 QLoad Report 元素——从而让该 AP 把那些自己听不到的 AP 的负载也一并纳入考量。"
+    },
+    {
+      "type": "prose",
+      "en": "The last piece is **HCCA AP timing synchronization**. HCCA (HCF Controlled Channel Access) is the scheduled, polled access method where the AP hands out precisely timed TXOPs. When overlapping APs negotiate HCCA TXOPs, they must agree on *when* each reservation sits on the timeline — and that only works if their clocks agree. So HCCA APs with TXOP negotiation activated synchronize their TSF timers and must use a DTIM interval of exactly 2ⁿ × 100 TU (with n ≤ 5), a tidy size chosen so reservations can be verified not to overlap. Each AP computes a **timing offset** Toffset = T_T − T_R, where T_T is the Timestamp in a neighbour's received Beacon and T_R is its own TSF reception time, keeping the latest offset per neighbour.",
+      "zh": "最后一块是 **HCCA AP 定时同步**。HCCA（HCF 受控信道接入）是一种有调度的轮询接入方式，由 AP 精确定时地分配 TXOP。当重叠的 AP 协商 HCCA TXOP 时，它们必须就每个预约在时间轴上*何时*落位达成一致——而这只有在它们的时钟一致时才行得通。因此，启用了 TXOP 协商的 HCCA AP 会同步其 TSF 定时器，并且必须使用恰好为 2ⁿ × 100 TU（n ≤ 5）的 DTIM 间隔，这是一个精心选取的整齐数值，便于验证预约互不重叠。每个 AP 计算一个**定时偏移** Toffset = T_T − T_R，其中 T_T 是收到的邻居信标中的时间戳，T_R 是它用自身 TSF 测得的接收时刻；并为每个邻居保留最新的偏移值。"
+    },
+    {
+      "type": "prose",
+      "en": "Clocks also drift, so there is a **clock drift adjustment**. When dot11RobustAVStreamingImplemented and dot11PublicHCCATXOPNegotiationActivated are true, an AP compares the offset from a neighbour's previous Beacon against the offset from the current one to get a drift amount TClockDrift. It does this for every synchronized neighbour, picks the **largest positive** drift, and if it exceeds zero it briefly *suspends* its own TSF timer for that duration — effectively slowing itself to align with the slowest-counting overlapping AP. The suspension is applied frequently enough that the delay in any one beacon period never exceeds 0.08% of the beacon interval. The aim isn't perfect lockstep; it's to stop the TBTTs from drifting apart while tolerating some jitter.",
+      "zh": "时钟还会漂移，因此还有**时钟漂移调整**。当 dot11RobustAVStreamingImplemented 与 dot11PublicHCCATXOPNegotiationActivated 都为真时，AP 会把某邻居上一次信标的偏移与本次信标的偏移相比较，得到漂移量 TClockDrift。它对每个已同步的邻居都这样计算，选出**最大的正**漂移值；若该值大于零，它就将自己的 TSF 定时器短暂*挂起*相应时长——实质上是放慢自己，以与计数最慢的重叠 AP 对齐。挂起被足够频繁地施加，使任一信标周期内的延迟都不超过信标间隔的 0.08%。其目标不是做到完全的同步同步，而是在容忍一定抖动的同时，阻止各 AP 的 TBTT 渐行渐远。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each clause lives",
+        "zh": "覆盖对照：各子条款的归属"
+      },
+      "en": "11.24.1 (General) — defines a QMF STA, the QMFActivated bit, the IQMF/GQMF transmit conditions, the AC_VO fallback, the rule that a frame's AC is fixed at first transmission, and the default QMF policy in Table 11-22. 11.24.2 (QMF policy advertisement and configuration procedures) — the QMF Policy element exchange, QMF Policy Change request/response with SUCCESS or REQUEST_DECLINED, the QMFReconfigurationActivated gate, dot11QMFPolicyChangeTimeout, and the per-environment rules for infrastructure BSS, MBSS, IBSS/OCB. 11.26.1 (General) — the OBSS toolkit (QLoad Report, HCCA TXOP Update Count, HCCA TXOP Advertisement/Response) and the definition of OBSS APs sharing a primary channel. 11.26.2 (QLoad Report element) — when it is carried (Beacons / QLoad Report frames), the Allocated/Potential Traffic Self, Allocated Traffic Shared, HCCA Peak, Sharing Policy fields, EDCA/HCCA Access Factor derivation, and requesting reports via radio-measurement Beacon requests (11.26.2.3). 11.26.4 (HCCA AP timing synchronization) — TSF synchronization, the 2ⁿ × 100 TU DTIM constraint, the timing offset Toffset = T_T − T_R (11.26.4.2), and the clock-drift compensation that suspends the TSF by the largest positive drift, capped at 0.08% per beacon (11.26.4.3). (Clause 11.26.3, HCCA TXOP negotiation, was referenced only as context and is taught in a separate lesson.)",
+      "zh": "11.24.1（总则）——定义 QMF STA、QMFActivated 位、IQMF/GQMF 的发送条件、AC_VO 回退、帧的 AC 在首次发送时即固定的规则，以及表 11-22 中的默认 QMF 策略。11.24.2（QMF 策略通告与配置流程）——QMF Policy 元素的交换、带 SUCCESS 或 REQUEST_DECLINED 的 QMF 策略变更请求/应答、QMFReconfigurationActivated 门控、dot11QMFPolicyChangeTimeout，以及基础结构 BSS、MBSS、IBSS/OCB 各环境的规则。11.26.1（总则）——OBSS 工具集（QLoad Report、HCCA TXOP Update Count、HCCA TXOP Advertisement/Response）以及共用主信道的 OBSS AP 的定义。11.26.2（QLoad Report 元素）——其承载时机（信标 / QLoad Report 帧）、Allocated/Potential Traffic Self、Allocated Traffic Shared、HCCA Peak、Sharing Policy 字段、EDCA/HCCA Access Factor 的推导，以及通过无线测量信标请求索取报告（11.26.2.3）。11.26.4（HCCA AP 定时同步）——TSF 同步、2ⁿ × 100 TU 的 DTIM 约束、定时偏移 Toffset = T_T − T_R（11.26.4.2），以及按最大正漂移挂起 TSF、每信标上限 0.08% 的时钟漂移补偿（11.26.4.3）。（子条款 11.26.3 即 HCCA TXOP 协商，此处仅作背景引用，将在单独一课中讲解。）",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2811,
+          2812,
+          2814,
+          2815,
+          2816,
+          2823,
+          2824,
+          2825,
+          2826,
+          2830,
+          2831
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2811,
+        2812,
+        2813,
+        2814
+      ],
+      "note": "11.24.1 General + Table 11-22 default QMF policy: QMFActivated, IQMF/GQMF conditions, AC_VO fallback, AC fixed at first transmission"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2814,
+        2815,
+        2816,
+        2817
+      ],
+      "note": "11.24.2 QMF policy advertisement & configuration: QMF Policy / Policy Change frames, QMFReconfigurationActivated, dot11QMFPolicyChangeTimeout, BSS/MBSS/IBSS rules"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2823
+      ],
+      "note": "11.26.1 General: OBSS toolkit and definition of OBSS APs sharing a primary channel"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2824,
+        2825,
+        2826
+      ],
+      "note": "11.26.2 QLoad Report element: carriage, Allocated/Potential Traffic Self, Allocated Traffic Shared, HCCA Peak, Sharing Policy, Access Factors, radio-measurement requests (11.26.2.3)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2830,
+        2831
+      ],
+      "note": "11.26.4 HCCA AP timing synchronization: TSF sync, 2^n x 100 TU DTIM, timing offset Toffset = TT - TR, clock drift compensation by largest positive drift capped at 0.08%/beacon"
+    }
+  ],
+  "covers": [
+    "80211-2024:11.24.1",
+    "80211-2024:11.24.2",
+    "80211-2024:11.26.1",
+    "80211-2024:11.26.2",
+    "80211-2024:11.26.4"
+  ],
+  "track": "qos-power"
+}

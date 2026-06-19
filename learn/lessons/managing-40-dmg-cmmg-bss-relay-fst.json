@@ -1,0 +1,187 @@
+{
+  "id": "managing-40-dmg-cmmg-bss-relay-fst",
+  "title": {
+    "en": "60 GHz Networks: DMG/CMMG BSS Operation, Relay and Link Maintenance",
+    "zh": "60 GHz 网络：DMG/CMMG BSS 运行、中继与链路维护"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Welcome to the millimeter-wave (mmWave) corner of IEEE 802.11. At 60 GHz, signals are highly directional — they must be aimed with narrow beams instead of radiating in all directions. This changes almost everything about how a network is run. Two related PHYs live here: DMG (Directional Multi-Gigabit, the 802.11ad family) and CMMG (Centimeter-Wave Multi-Gigabit). This lesson is a guided survey of how such networks keep their beamformed links alive, hand off the role of network coordinator, change BSS parameters, set up relays, and run a CMMG BSS. Think of it as a coverage map with a few deep dives.",
+      "zh": "欢迎来到 IEEE 802.11 的毫米波（mmWave）领域。在 60 GHz，信号高度定向——必须用窄波束精确瞄准，而不是向四面八方辐射。这彻底改变了网络的运行方式。这里有两种相关的物理层：DMG（定向多吉比特，即 802.11ad 系列）和 CMMG（厘米波多吉比特）。本课是一次导览式的概览，讲解这类网络如何维持波束成形链路、移交网络协调者角色、变更 BSS 参数、建立中继，以及运行 CMMG BSS。可以把它看作一张带有若干深入讲解的覆盖地图。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with beamformed link maintenance (11.27.1). Once two DMG STAs aim their beams at each other and complete a sector level sweep (SLS) or beam refinement (BRP), they hold a beamformed link. Because beams are narrow, a link can silently rot if a device moves or the room changes. So each STA runs a per-link beam link maintenance timer set to dot11BeamLinkMaintenanceTime. The timer is reloaded every time a successful exchange (an Ack, BlockAck, DMG CTS, a Poll/Grant during the service period) confirms the beam still points correctly. If a STA has no data to send, it transmits QoS Null frames just to keep the timer alive. When the timer finally expires, the receiver falls back to a quasi-omni antenna pattern and the source may launch a fresh sweep to rebuild the link.",
+      "zh": "先看波束成形链路维护（11.27.1）。当两个 DMG STA 把波束对准彼此，并完成扇区级扫描（SLS）或波束细化（BRP）后，它们之间就建立了一条波束成形链路。由于波束很窄，一旦设备移动或环境改变，链路可能悄无声息地恶化。因此每个 STA 都为每条链路运行一个波束链路维护定时器，其值设为 dot11BeamLinkMaintenanceTime。每当一次成功的交互（Ack、BlockAck、DMG CTS，或服务期内的 Poll/Grant）确认波束仍然对准，定时器就被重新装载。如果 STA 没有数据要发，它会发送 QoS Null 帧，仅仅为了让定时器保持存活。一旦定时器最终超时，接收方会退回到准全向天线方向图，而源端可发起新的一轮扫描来重建链路。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant A as STA-A (source)\n  participant B as STA-B (dest)\n  A->>B: SLS / BRP success\n  Note over A,B: beam link timer = dot11BeamLinkMaintenanceTime\n  A->>B: Data + Ack\n  Note over A,B: timer reloaded\n  A->>B: QoS Null (no data)\n  Note over A,B: timer kept alive\n  Note over B: timer expires -> quasi-omni Rx\n  A->>B: new ISS (rebuild link)",
+      "zh": "sequenceDiagram\n  participant A as STA-A（源）\n  participant B as STA-B（目的）\n  A->>B: SLS / BRP 成功\n  Note over A,B: 波束链路定时器 = dot11BeamLinkMaintenanceTime\n  A->>B: 数据 + Ack\n  Note over A,B: 定时器重装载\n  A->>B: QoS Null（无数据）\n  Note over A,B: 维持定时器存活\n  Note over B: 定时器超时 -> 准全向接收\n  A->>B: 新的 ISS（重建链路）"
+    },
+    {
+      "type": "prose",
+      "en": "A PBSS has no fixed AP — one STA acts as the PCP (PBSS Control Point). Because that STA may leave or weaken, 802.11 defines PCP handover (11.27.2) so the coordinator role can move to another capable STA without tearing down the network. It comes in two flavors. In explicit handover the current PCP picks a candidate, exchanges Handover Request/Response frames, then announces a countdown (Remaining BIs) in its beacons; when the countdown reaches zero the candidate takes over. In implicit handover the PCP publishes a prioritized Next PCP List; if the PCP goes silent, the highest-priority candidate that stops hearing beacons steps up automatically. Either way the pseudo-static schedule is preserved so existing service periods survive the handover.",
+      "zh": "PBSS 没有固定的 AP——由某个 STA 充当 PCP（PBSS 控制点）。由于该 STA 可能离开或信号变弱，802.11 定义了 PCP 移交（11.27.2），使协调者角色可以转移到另一个有能力的 STA，而无需拆除整个网络。它有两种形式。在显式移交中，当前 PCP 选定一个候选者，交换 Handover Request/Response 帧，然后在信标中宣告倒计时（Remaining BIs）；当倒计时归零，候选者接管。在隐式移交中，PCP 发布一份带优先级的 Next PCP List；如果 PCP 沉默不再发声，那个最先收不到信标的最高优先级候选者会自动顶上。无论哪种方式，伪静态调度都被保留，使现有的服务期在移交后继续存活。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why preserve the pseudo-static schedule across a handover? In a beamformed network, re-negotiating every service period would mean re-running beamforming for every pair of STAs — expensive and slow. Keeping the schedule means traffic flows the instant the new PCP takes the baton; only outstanding allocation requests are lost and can simply be re-asked.",
+      "zh": "为什么移交时要保留伪静态调度？在波束成形网络中，重新协商每个服务期意味着要为每一对 STA 重新做一遍波束成形——既昂贵又缓慢。保留调度意味着新 PCP 一接棒，流量立刻继续流动；只有尚未完成的分配请求会丢失，而这些可以简单地重新申请。"
+    },
+    {
+      "type": "prose",
+      "en": "The AP or PCP can also reshape the BSS timeline itself (11.29.1). To move the TBTT (shift the whole beacon interval) or change the beacon interval duration, it inserts a DMG BSS Parameter Change element into its DMG Beacon or Announce frames, repeating it for dot11NbrOfChangeBeacons intervals so every STA — even those in power save or holding pseudo-static SPs — hears the change before it takes effect. A non-AP STA may even recommend new parameters back to the PCP by carrying the same element in an Information Request/Response. The element's Move and Size subfields say what is changing; the TBTT Offset field carries the new timing.",
+      "zh": "AP 或 PCP 还可以重塑 BSS 的时间线本身（11.29.1）。要移动 TBTT（整体平移信标间隔）或改变信标间隔时长，它会在 DMG Beacon 或 Announce 帧中插入一个 DMG BSS Parameter Change 元素，并连续重复 dot11NbrOfChangeBeacons 个间隔，确保每个 STA——哪怕处于省电模式或持有伪静态 SP——都能在变更生效前收到通知。非 AP 的 STA 甚至可以通过在 Information Request/Response 中携带同一元素，向 PCP 反过来推荐新参数。该元素的 Move 与 Size 子字段说明要改什么，TBTT Offset 字段携带新的时序。"
+    },
+    {
+      "type": "prose",
+      "en": "Two more BSS-level housekeeping tools round out the DMG management picture. Spatial sharing and interference mitigation (11.30.1) lets the PCP schedule service periods belonging to different STAs concurrently when their narrow beams point in different directions and do not collide — directional reuse that boosts capacity. And quieting adjacent DMG BSSs (11.35.1): an AP that supports QAB (Quiet Adjacent BSS) can ask a neighboring AP to stay silent during scheduled quiet intervals, scheduling them as service periods in which the AP itself does not transmit, so two close-by 60 GHz networks can interleave rather than clobber each other.",
+      "zh": "另外两项 BSS 级别的管理工具补全了 DMG 管理的全貌。空间共享与干扰缓解（11.30.1）允许 PCP 在不同 STA 的窄波束指向不同方向、互不碰撞时，并发地调度它们各自的服务期——这种定向复用能提升容量。还有抑制相邻 DMG BSS（11.35.1）：支持 QAB（抑制相邻 BSS）的 AP 可以请求邻近的 AP 在排定的安静间隔内保持沉默，并将这些间隔调度为该 AP 自身不发送的服务期，从而让两个相距很近的 60 GHz 网络交错运行，而不是互相干扰。"
+    },
+    {
+      "type": "prose",
+      "en": "When the direct path between two STAs is blocked — a common problem at 60 GHz, where a body or wall can fully shadow a beam — DMG relay procedures (11.34.1) route frames through a helper. A source REDS (Relay Endpoint DMG STA) reaches a destination REDS via an RDS (Relay DMG STA). The common relay setup procedures (11.34.2) run in a fixed order: discover relay-capable STAs and candidate RDSs, beamform and measure each candidate's two hops (source-to-RDS and RDS-to-destination), select the best RDS, then complete the RLS (Relay Link Setup) handshake of RLS Request/Response frames through the chosen RDS.",
+      "zh": "当两个 STA 之间的直接路径被阻挡时——这在 60 GHz 很常见，一个人体或一堵墙就能完全遮蔽波束——DMG 中继过程（11.34.1）会把帧经由一个帮手转发。源 REDS（中继端点 DMG STA）通过一个 RDS（中继 DMG STA）抵达目的 REDS。通用中继建立过程（11.34.2）按固定顺序进行：先发现具备中继能力的 STA 与候选 RDS，对每个候选者的两段链路（源到 RDS、RDS 到目的）做波束成形与测量，选出最佳 RDS，再经选定的 RDS 完成 RLS（中继链路建立）握手，即一来一回的 RLS Request/Response 帧。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  S[Source REDS] -->|blocked| D[Dest REDS]\n  S -.->|hop 1| R[RDS relay]\n  R -.->|hop 2| D\n  S ==>|1. discover + measure| R\n  S ==>|2. RLS Request| R\n  R ==>|RLS Request| D\n  D ==>|RLS Response| R\n  R ==>|RLS Response| S",
+      "zh": "flowchart LR\n  S[源 REDS] -->|被阻挡| D[目的 REDS]\n  S -.->|第1跳| R[RDS 中继]\n  R -.->|第2跳| D\n  S ==>|1. 发现+测量| R\n  S ==>|2. RLS 请求| R\n  R ==>|RLS 请求| D\n  D ==>|RLS 响应| R\n  R ==>|RLS 响应| S"
+    },
+    {
+      "type": "prose",
+      "en": "Underpinning all of this are the DMG MAC sublayer attributes (11.37) — a table of fixed constants every DMG STA shares so that beacons, sweeps and timers line up. A few examples: aMaxBIDuration is 1000 TUs (the largest beacon interval), aTSFResolution is 1 µs, aDMGPPMinListeningTime is 150 µs, aSSFramesPerSlot is 4, and aDMGTSFAccuracy is 20 ppm. These are not negotiated; they are the shared rulebook constants that make the directional dance synchronous.",
+      "zh": "支撑这一切的是 DMG MAC 子层属性（11.37）——一张固定常量表，每个 DMG STA 都共享它，使信标、扫描与定时器彼此对齐。举几个例子：aMaxBIDuration 为 1000 TU（最大信标间隔），aTSFResolution 为 1 µs，aDMGPPMinListeningTime 为 150 µs，aSSFramesPerSlot 为 4，aDMGTSFAccuracy 为 20 ppm。这些不需协商；它们是共享的规则常量，使这场定向之舞保持同步。"
+    },
+    {
+      "type": "prose",
+      "en": "Now switch lanes to CMMG (Centimeter-Wave Multi-Gigabit) BSS operation (11.48.1). A CMMG STA sets dot11CMMGOptionImplemented true. CMMG uses very wide channels — 540 MHz or 1080 MHz (11.48.2) — so a starting STA must first run at least dot11CMMGOBSSScanCount OBSS scans (11.48.3) to find existing networks before choosing a primary channel, and a 540 MHz PPDU must stay on the primary 540 MHz channel. The same channel-switch machinery as the rest of 802.11 applies: CMMG channel switching (11.48.4) announces moves with the Channel Switch Announcement or Extended CSA elements/frames, optionally bundling a new operating width, country string, operating classes, or TPC envelope.",
+      "zh": "现在切换到 CMMG（厘米波多吉比特）BSS 运行（11.48.1）。CMMG STA 将 dot11CMMGOptionImplemented 置为 true。CMMG 使用非常宽的信道——540 MHz 或 1080 MHz（11.48.2）——因此一个准备启动的 STA 必须先执行至少 dot11CMMGOBSSScanCount 次 OBSS 扫描（11.48.3）来发现已有网络，然后才选择主信道；而 540 MHz 的 PPDU 必须停留在主 540 MHz 信道上。与 802.11 其余部分相同的信道切换机制同样适用：CMMG 信道切换（11.48.4）用 Channel Switch Announcement 或 Extended CSA 元素/帧来宣告变更，并可顺带捆绑新的工作带宽、国家字符串、工作类别或 TPC 包络。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause in this lesson, with its exact rule",
+        "zh": "覆盖地图：本课涉及的每个条款及其确切规则"
+      },
+      "en": "Beamformed link & BSS maintenance: 11.27.1 beamformed link maintenance — per-link beam link maintenance timer set to dot11BeamLinkMaintenanceTime, halted during BTI/A-BFT, doze and non-participated SPs/CBAPs; on expiry receiver goes quasi-omni and source may restart an ISS; QoS Null frames keep it alive. 11.27.2 PCP handover — a STA is handover-capable per the DMG Capabilities PCP Handover field; explicit handover uses Handover Request/Response + a Remaining BIs countdown in beacons; implicit handover uses the prioritized Next PCP List; pseudo-static scheduling is preserved. Changing BSS parameters: 11.29.1 general — the DMG BSS Parameter Change element is repeated for dot11NbrOfChangeBeacons intervals; non-AP STAs may recommend parameters. Spatial sharing: 11.30.1 general — concurrent SPs on differently aimed beams plus interference mitigation, signaled via the SPSH and Interference Mitigation capability field. Relay: 11.34.1 general — REDS/RDS roles gated by dot11REDSActivated/dot11RDSActivated/dot11RelayActivated and the AP/PCP Relay permission field; 11.34.2 common relay setup — ordered discovery, per-hop beamforming/measurement, RDS selection, then RLS Request/Response handshake. Quieting: 11.35.1 general — QAB capability bit in Extended Capabilities; QAB-capable AP must support scheduling SPs. Attributes: 11.37 — Table 11-28 DMG MAC sublayer attribute values (aMaxBIDuration 1000 TUs, aTSFResolution 1 µs, aDMGPPMinListeningTime 150 µs, aSSFramesPerSlot 4, aDMGTSFAccuracy 20 ppm, aMinNAVTimersNumber 2, and more). CMMG BSS: 11.48.1 basic functionality (dot11CMMGOptionImplemented, basic vs supported CMMG-MCS/NSS sets); 11.48.2 channel selection (540/1080 MHz, primary-channel rules); 11.48.3 scanning (OBSS passive/active dwell and total-per-channel minimums); 11.48.4 channel switching (CSA/Extended CSA, Wide Bandwidth Channel Switch subelement rules, New CMMG Transmit Power Envelope); 11.48.5 NAV assertion (update NAV from Duration/ID of any non-matching-RA frame received on the primary 540 MHz channel or in a 1080 MHz PPDU); 11.48.6 antenna indication (Rx/Tx Antenna Pattern Consistency subfields); 11.48.7 BSS basic CMMG-MCS and NSS set (a STA must support all tuples in the basic set to join/associate).",
+      "zh": "波束成形链路与 BSS 维护：11.27.1 波束成形链路维护——每条链路的波束链路维护定时器设为 dot11BeamLinkMaintenanceTime，在 BTI/A-BFT、瞌睡态以及未参与的 SP/CBAP 期间暂停；超时后接收方转为准全向，源端可重启 ISS；QoS Null 帧用于维持其存活。11.27.2 PCP 移交——STA 是否具备移交能力由 DMG Capabilities 的 PCP Handover 字段决定；显式移交使用 Handover Request/Response 加信标中的 Remaining BIs 倒计时；隐式移交使用带优先级的 Next PCP List；伪静态调度予以保留。变更 BSS 参数：11.29.1 概述——DMG BSS Parameter Change 元素连续重复 dot11NbrOfChangeBeacons 个间隔；非 AP STA 可推荐参数。空间共享：11.30.1 概述——在不同指向的波束上并发调度 SP 并进行干扰缓解，通过 SPSH and Interference Mitigation 能力字段指示。中继：11.34.1 概述——REDS/RDS 角色受 dot11REDSActivated/dot11RDSActivated/dot11RelayActivated 及 AP/PCP 的 Relay permission 字段约束；11.34.2 通用中继建立——有序发现、逐跳波束成形/测量、RDS 选择，再做 RLS Request/Response 握手。抑制：11.35.1 概述——Extended Capabilities 中的 QAB 能力位；支持 QAB 的 AP 必须支持调度 SP。属性：11.37——表 11-28 DMG MAC 子层属性值（aMaxBIDuration 1000 TU、aTSFResolution 1 µs、aDMGPPMinListeningTime 150 µs、aSSFramesPerSlot 4、aDMGTSFAccuracy 20 ppm、aMinNAVTimersNumber 2 等）。CMMG BSS：11.48.1 基本功能（dot11CMMGOptionImplemented，基本与支持的 CMMG-MCS/NSS 集合）；11.48.2 信道选择（540/1080 MHz、主信道规则）；11.48.3 扫描（OBSS 被动/主动驻留与每信道总时长的最小值）；11.48.4 信道切换（CSA/Extended CSA、Wide Bandwidth Channel Switch 子元素规则、New CMMG Transmit Power Envelope）；11.48.5 NAV 断言（依据在主 540 MHz 信道或 1080 MHz PPDU 中收到、RA 不匹配的任意帧的 Duration/ID 更新 NAV）；11.48.6 天线指示（Rx/Tx Antenna Pattern Consistency 子字段）；11.48.7 BSS 基本 CMMG-MCS 与 NSS 集合（STA 须支持基本集合中所有元组方可加入/关联）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2831,
+          2835,
+          2838,
+          2841,
+          2871,
+          2874,
+          2882,
+          2922,
+          2925
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Three small but important CMMG rules finish the picture. NAV assertion (11.48.5): a CMMG STA updates its NAV from the Duration/ID field of any frame not addressed to it that arrives on the primary 540 MHz channel or in a 1080 MHz PPDU — ordinary virtual carrier sense, scoped to the wide channels. Antenna indication (11.48.6): a STA flags whether it keeps a steady receive or transmit antenna pattern after association via the Rx/Tx Antenna Pattern Consistency subfields, telling peers whether earlier beam measurements stay valid. And BSS basic CMMG-MCS and NSS set operation (11.48.7): the starting STA declares a basic set of <CMMG-MCS, NSS> tuples that every member must support — a STA cannot join or associate unless it can both transmit and receive all of them, guaranteeing a common rate floor for the whole BSS.",
+      "zh": "三条小而重要的 CMMG 规则收尾。NAV 断言（11.48.5）：CMMG STA 依据在主 540 MHz 信道或 1080 MHz PPDU 中收到、且并非发给自己的任意帧的 Duration/ID 字段来更新 NAV——这就是普通的虚拟载波侦听，只是限定在这些宽信道上。天线指示（11.48.6）：STA 通过 Rx/Tx Antenna Pattern Consistency 子字段标明自己在关联后是否保持稳定的接收或发送天线方向图，从而告知对端早先的波束测量是否仍然有效。BSS 基本 CMMG-MCS 与 NSS 集合运行（11.48.7）：启动 BSS 的 STA 声明一组基本的 <CMMG-MCS, NSS> 元组，每个成员都必须支持——STA 必须能够发送并接收其中全部元组，否则无法加入或关联，从而为整个 BSS 保证一个共同的速率底线。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The recurring theme across both DMG and CMMG: at very high frequencies the link is fragile and directional, so the standard layers in timers, fallbacks (quasi-omni patterns), relays, handovers, and shared constants to keep a 60 GHz network resilient even as devices move and beams break.",
+      "zh": "贯穿 DMG 与 CMMG 的共同主题是：在极高频率上，链路既脆弱又定向，因此标准叠加了定时器、回退手段（准全向方向图）、中继、移交以及共享常量，使 60 GHz 网络即便在设备移动、波束中断时也能保持韧性。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2831,
+        2832,
+        2833
+      ],
+      "note": "11.27.1 beamformed link maintenance + EDMG partial SLS"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2835,
+        2836
+      ],
+      "note": "11.27.2 PCP handover (explicit + implicit)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2838
+      ],
+      "note": "11.29.1 changing DMG BSS parameters - general"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2841
+      ],
+      "note": "11.30.1 spatial sharing and interference mitigation - general"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2871,
+        2872,
+        2873,
+        2874
+      ],
+      "note": "11.34.1/11.34.2 DMG relay general + common relay setup procedures"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2874
+      ],
+      "note": "11.35.1 quieting adjacent DMG BSSs - general (QAB)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2882,
+        2883
+      ],
+      "note": "11.37 DMG MAC sublayer attributes (Table 11-28)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2922,
+        2923,
+        2924,
+        2925
+      ],
+      "note": "11.48.1-11.48.7 CMMG BSS operation"
+    }
+  ],
+  "covers": [
+    "80211-2024:11.27.1",
+    "80211-2024:11.27.2",
+    "80211-2024:11.29.1",
+    "80211-2024:11.30.1",
+    "80211-2024:11.34.1",
+    "80211-2024:11.34.2",
+    "80211-2024:11.35.1",
+    "80211-2024:11.37",
+    "80211-2024:11.48.1",
+    "80211-2024:11.48.2",
+    "80211-2024:11.48.3",
+    "80211-2024:11.48.4",
+    "80211-2024:11.48.5",
+    "80211-2024:11.48.6",
+    "80211-2024:11.48.7"
+  ],
+  "track": "managing"
+}

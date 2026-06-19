@@ -1,0 +1,135 @@
+{
+  "id": "connecting-09-discovery-advertisement-gas-rnr",
+  "title": {
+    "en": "Advertising the Network: Public Action Frames, GAS Interworking and the Reduced Neighbor Report",
+    "zh": "对外宣告网络：公共 Action 帧、GAS 互通与精简邻居报告"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Before a station ever associates, it needs answers: Which networks are here? What services do they offer? Where are the other access points I can roam to? IEEE 802.11 answers all three with frames a STA can send and receive while still unassociated — and even unauthenticated. This lesson follows three of those mechanisms: how Public Action frames are addressed, how the Generic Advertisement Service (GAS) ferries network-selection queries to a back-end server, and how the Reduced Neighbor Report points a STA at colocated and other-band access points it cannot otherwise see.",
+      "zh": "在关联之前，一个站点（STA）需要先得到几个答案：这里有哪些网络？它们提供什么服务？我可以漫游到哪些接入点（AP）？IEEE 802.11 用一类站点在未关联——甚至未认证——状态下就能收发的帧来回答这三个问题。本课依次讲解其中三种机制：公共 Action 帧如何编址、通用通告服务（GAS）如何把网络选择查询转发到后端服务器，以及精简邻居报告如何把 STA 指向它本来看不到的同址 AP 和其他频段的 AP。"
+    },
+    {
+      "type": "prose",
+      "en": "Public Action frames are Class 1 management frames, so they may be exchanged outside any membership relationship — a STA need not belong to the recipient's BSS. Clause 11.17 governs the one field that gets tricky in that situation: the BSSID. The rule keys off whether the sender is a BSS member and whether the recipient's BSS is known. A member sending to a peer in the SAME BSS must put that BSS's BSSID in the frame. A member sending to someone in a DIFFERENT (or unknown) BSS uses either the known target BSSID or the wildcard BSSID. And a STA that is not a member of any BSS uses the target's BSSID if known, otherwise the wildcard.",
+      "zh": "公共 Action 帧属于第 1 类管理帧，因此可以在没有任何成员关系的情况下交换——发送方不必属于接收方的 BSS。第 11.17 条规定了这种场景下唯一棘手的字段：BSSID。规则取决于发送方是否为某 BSS 的成员，以及接收方的 BSS 是否已知。同一 BSS 内成员之间发送时，必须把该 BSS 的 BSSID 填入帧中；向不同（或未知）BSS 发送时，使用已知的目标 BSSID 或通配 BSSID；而不属于任何 BSS 的 STA，若已知目标 BSSID 则填它，否则填通配 BSSID。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 220\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" font-family=\"sans-serif\" font-size=\"12\"><rect x=\"10\" y=\"10\" width=\"440\" height=\"200\" rx=\"8\" fill=\"none\" stroke=\"currentColor\"/><text x=\"230\" y=\"30\" text-anchor=\"middle\" fill=\"currentColor\" font-weight=\"bold\">Public Action frame: which BSSID?</text><line x1=\"230\" y1=\"42\" x2=\"230\" y2=\"60\" stroke=\"currentColor\"/><rect x=\"150\" y=\"60\" width=\"160\" height=\"28\" rx=\"4\" fill=\"none\" stroke=\"currentColor\"/><text x=\"230\" y=\"78\" text-anchor=\"middle\" fill=\"currentColor\">Sender in a BSS?</text><line x1=\"150\" y1=\"74\" x2=\"80\" y2=\"110\" stroke=\"currentColor\"/><text x=\"95\" y=\"100\" fill=\"currentColor\">yes</text><line x1=\"310\" y1=\"74\" x2=\"385\" y2=\"110\" stroke=\"currentColor\"/><text x=\"350\" y=\"100\" fill=\"currentColor\">no</text><rect x=\"20\" y=\"112\" width=\"130\" height=\"44\" rx=\"4\" fill=\"none\" stroke=\"currentColor\"/><text x=\"85\" y=\"130\" text-anchor=\"middle\" fill=\"currentColor\">Same BSS peer:</text><text x=\"85\" y=\"146\" text-anchor=\"middle\" fill=\"currentColor\">use own BSSID</text><rect x=\"320\" y=\"112\" width=\"130\" height=\"44\" rx=\"4\" fill=\"none\" stroke=\"currentColor\"/><text x=\"385\" y=\"130\" text-anchor=\"middle\" fill=\"currentColor\">target BSSID</text><text x=\"385\" y=\"146\" text-anchor=\"middle\" fill=\"currentColor\">if known</text><rect x=\"165\" y=\"168\" width=\"130\" height=\"34\" rx=\"4\" fill=\"none\" stroke=\"currentColor\"/><text x=\"230\" y=\"189\" text-anchor=\"middle\" fill=\"currentColor\">else: wildcard BSSID</text><line x1=\"85\" y1=\"156\" x2=\"200\" y2=\"168\" stroke=\"currentColor\" stroke-dasharray=\"3 3\"/><line x1=\"385\" y1=\"156\" x2=\"260\" y2=\"168\" stroke=\"currentColor\" stroke-dasharray=\"3 3\"/></svg>",
+      "caption": {
+        "en": "Clause 11.17's BSSID selection logic, condensed: known target BSSID when possible, the wildcard BSSID as the fallback.",
+        "zh": "第 11.17 条 BSSID 选择逻辑的精简版：尽量使用已知的目标 BSSID，无法确定时回退到通配 BSSID。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Why does this matter? Public Action frames carry exactly the pre-association conversations we care about — including GAS. The Generic Advertisement Service (clause 11.22.3) gives a STA a way to ask a network questions while still unassociated (and even unauthenticated), so the user can pick the right network before committing to it. GAS is enabled when dot11InterworkingServiceActivated is true, and every GAS message rides inside Public Action frames. When management frame protection is in play, the individually addressed Protected Dual of Public Action frame is used instead.",
+      "zh": "这为什么重要？因为公共 Action 帧承载的正是我们关心的关联前对话——其中就包括 GAS。通用通告服务（第 11.22.3 条）让 STA 在仍未关联（甚至未认证）时就能向网络发问，从而在正式接入之前替用户挑选合适的网络。当 dot11InterworkingServiceActivated 为真时启用 GAS，每条 GAS 消息都封装在公共 Action 帧中。当启用管理帧保护时，则改用单播寻址的“公共 Action 帧受保护对偶帧”（Protected Dual of Public Action frame）。"
+    },
+    {
+      "type": "prose",
+      "en": "The key idea behind GAS is that the AP is just a courier. The actual answers live on an advertisement server, which may be colocated with the AP or sit in an external network. GAS is the transport; the advertisement protocol carried inside it (the most common being ANQP — Access Network Query Protocol) is the query language. A STA may only query an advertisement protocol if the AP listed that protocol's ID in an Advertisement Protocol element in its Beacon or Probe Response. The requesting STA sends a GAS Initial Request; the responding STA returns a GAS Initial Response. If the answer is too big for one frame, or the server needs time, the exchange continues with GAS Comeback Request / Response frames and a comeback delay.",
+      "zh": "GAS 的核心思想是：AP 只是一个信使。真正的答案存放在通告服务器（advertisement server）上，它可能与 AP 同址，也可能位于外部网络中。GAS 是传输通道，而封装在其中的通告协议（最常见的是 ANQP——接入网查询协议）才是查询语言。STA 只能查询那些 AP 已在其 Beacon 或 Probe Response 的“通告协议元素”（Advertisement Protocol element）中列出协议 ID 的通告协议。请求方 STA 发送 GAS 初始请求（GAS Initial Request），响应方 STA 回以 GAS 初始响应（GAS Initial Response）。如果答案太大一帧装不下，或服务器需要时间，交互就通过 GAS 回程请求/响应（GAS Comeback Request/Response）帧加上回程延迟来继续。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant S as STA\n  participant AP as AP (courier)\n  participant SV as Ad server\n  S->>AP: GAS Initial Request (Query Request)\n  AP->>SV: relay query\n  SV-->>AP: query response\n  AP-->>S: GAS Initial Response\n  Note over S,AP: if too big / not ready\n  S->>AP: GAS Comeback Request\n  AP-->>S: GAS Comeback Response (fragment)",
+      "zh": "sequenceDiagram\n  participant S as STA\n  participant AP as AP（信使）\n  participant SV as 通告服务器\n  S->>AP: GAS 初始请求（查询请求）\n  AP->>SV: 转发查询\n  SV-->>AP: 查询响应\n  AP-->>S: GAS 初始响应\n  Note over S,AP: 若过大／未就绪\n  S->>AP: GAS 回程请求\n  AP-->>S: GAS 回程响应（分片）"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "GAS also supports group-addressed exchanges: one STA can broadcast a Group Addressed GAS Request, and an AP that sees many STAs asking the same question can answer them all at once with a Group Addressed GAS Response, listing MAC-address/dialog-token pairs so each requester recognizes its reply. This keeps a crowded venue from drowning in identical query traffic.",
+      "zh": "GAS 还支持组播交互：一个 STA 可以广播“组播 GAS 请求”，而当 AP 发现许多 STA 在问同一个问题时，可以用一条“组播 GAS 响应”一次性回答所有人，并在其中列出 MAC 地址／对话令牌（dialog token）对，让每个请求方都能认出属于自己的回复。这样在拥挤的场所就不会被大量重复的查询流量淹没。"
+    },
+    {
+      "type": "prose",
+      "en": "GAS is deliberately protocol-agnostic, and clause 11.22.4 shows that off nicely: it carries IEEE 802.21 Media Independent Services (MIS) too. When a STA's dot11GASAdvertisementId names the MIS Information Service, the STA builds an IEEE 802.21 query, wraps it in an MIS protocol frame, and posts it as the Query Request inside a GAS Initial Request — the Advertisement Protocol ID simply selects MIS instead of ANQP. The same machinery supports MIS Command and Event Services capability discovery. This is how a Wi-Fi STA can negotiate handovers toward other IEEE 802 networks (e.g., cellular) before it has even joined the BSS.",
+      "zh": "GAS 刻意做成与具体协议无关，第 11.22.4 条很好地体现了这一点：它同样可以承载 IEEE 802.21 媒体无关服务（MIS）。当 STA 的 dot11GASAdvertisementId 指定为 MIS 信息服务时，STA 构造一条 IEEE 802.21 查询，将其封装成 MIS 协议帧，并作为查询请求放入 GAS 初始请求中发送——此时“通告协议 ID”只是选择了 MIS 而非 ANQP。同一套机制也支持 MIS 命令与事件服务的能力发现。正因如此，一个 Wi-Fi STA 甚至在尚未加入 BSS 之前，就能为面向其他 IEEE 802 网络（例如蜂窝网）的切换做准备。"
+    },
+    {
+      "type": "prose",
+      "en": "The third advertisement mechanism is the Reduced Neighbor Report (clause 11.49) — a compact element an AP places in Beacon, Probe Response, or FILS Discovery frames to describe other access points: colocated APs, neighboring APs, or both. For each reported AP it lists an operating class, primary channel, and TBTT (target beacon transmission time) information, so a STA learns roughly when and where to look. Crucially, this is how a STA discovers an affiliated 6 GHz AP without blindly scanning the huge 6 GHz band: a 2.4/5 GHz AP that shares a colocated AP set with a 6 GHz AP must advertise it, and must include a 20 MHz PSD subfield so the STA can pick a safe transmit-power limit before its first 6 GHz probe.",
+      "zh": "第三种通告机制是精简邻居报告（第 11.49 条）——AP 放入 Beacon、Probe Response 或 FILS Discovery 帧中的一个紧凑元素，用来描述其他接入点：同址 AP、邻居 AP，或两者兼有。对每个被报告的 AP，它列出工作类（operating class）、主信道和 TBTT（目标信标发送时间）信息，使 STA 大致知道何时、在哪里去找它。尤为关键的是，这正是 STA 在不盲扫庞大的 6 GHz 频段的情况下发现关联 6 GHz AP 的方式：与某 6 GHz AP 处于同一同址 AP 集合的 2.4/5 GHz AP 必须通告它，并且必须包含 20 MHz PSD 子字段，让 STA 在首次 6 GHz 探测之前就能选定一个安全的发射功率上限。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A Reduced Neighbor Report is explicitly allowed to be non-exhaustive — by choice or because the reporting AP simply doesn't know about every neighbor. And a STA that hits a Neighbor AP Information field with an unrecognized TBTT Information Field Type must stop processing the rest of that element. So treat it as a helpful hint to accelerate discovery, never as a guaranteed complete map of the RF neighborhood.",
+      "zh": "精简邻居报告被明确允许是不完整的——可能是出于选择，也可能仅仅因为报告方 AP 并不知道每一个邻居。而且，当 STA 遇到一个带有无法识别的 TBTT 信息字段类型的“邻居 AP 信息字段”时，必须停止处理该元素的其余部分。因此应把它当作加速发现的有用提示，而绝不能当作对射频邻域的完整保证地图。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each clause lives in this lesson",
+        "zh": "覆盖对照：每个条款在本课中的落点"
+      },
+      "en": "11.17 (Public Action frame addressing) — taught in the BSSID-selection prose and figure: a BSS member uses its own BSSID for same-BSS peers, the target's BSSID or wildcard for other/unknown BSSs; a non-member uses the target BSSID if known, otherwise the wildcard. 11.22.3 (Interworking procedures: GAS) — taught as the AP-as-courier model: GAS is enabled by dot11InterworkingServiceActivated, runs over Public Action frames (Protected Dual when MFP is negotiated), carries an advertisement protocol such as ANQP only if the AP advertised that protocol's ID, and uses Initial Request/Response plus Comeback frames, including group-addressed variants. 11.22.4 (Interworking procedures: IEEE 802.21 MIS support) — taught in the MIS prose: an MIS query is wrapped in an MIS protocol frame and posted as the Query Request of a GAS Initial Request, with the Advertisement Protocol ID set to the MIS Information Service (or MIS Command and Event Services capability discovery). 11.49 (Reduced Neighbor Report) — taught in the RNR prose and callout: a compact element in Beacon/Probe Response/FILS Discovery listing operating class, primary channel, and TBTT info for colocated/neighbor APs, mandatory for advertising a colocated 6 GHz AP (with a 20 MHz PSD subfield), and explicitly possibly non-exhaustive.",
+      "zh": "11.17（公共 Action 帧编址）——在 BSSID 选择的正文与示意图中讲解：BSS 成员对同一 BSS 内对端使用自身 BSSID，对其他／未知 BSS 使用目标 BSSID 或通配 BSSID；非成员若已知目标 BSSID 则使用它，否则使用通配 BSSID。11.22.3（互通过程：GAS）——以“AP 即信使”模型讲解：GAS 由 dot11InterworkingServiceActivated 启用，运行于公共 Action 帧之上（协商管理帧保护时使用受保护对偶帧），仅当 AP 已通告某通告协议（如 ANQP）的 ID 时才承载该协议，并使用初始请求/响应加回程帧，包括组播变体。11.22.4（互通过程：IEEE 802.21 MIS 支持）——在 MIS 正文中讲解：MIS 查询被封装为 MIS 协议帧，作为 GAS 初始请求的查询请求发送，通告协议 ID 设为 MIS 信息服务（或 MIS 命令与事件服务能力发现）。11.49（精简邻居报告）——在精简邻居报告的正文与提示中讲解：它是放入 Beacon/Probe Response/FILS Discovery 的紧凑元素，列出同址/邻居 AP 的工作类、主信道与 TBTT 信息；通告同址 6 GHz AP 时是强制的（并带 20 MHz PSD 子字段），且被明确允许可以不完整。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2643,
+          2779,
+          2802,
+          2926
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2643,
+        2644
+      ],
+      "note": "11.17 Public Action frame addressing — BSSID selection rules for members and non-members; wildcard fallback"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2779,
+        2780,
+        2781,
+        2782
+      ],
+      "note": "11.22.3.1-11.22.3.2 GAS introduction and protocol — Public Action frame transport, advertisement server/protocol, Initial/Comeback frames, group-addressed exchange"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2793
+      ],
+      "note": "11.22.3.2.6 group addressed GAS procedures (Response Map Duples) and 11.22.3.3.1 ANQP general"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2802,
+        2803
+      ],
+      "note": "11.22.4 IEEE 802.21 MIS support — MIS query wrapped as Query Request in a GAS Initial Request; MIS Information Service / Command and Event Services discovery"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2926,
+        2927,
+        2928
+      ],
+      "note": "11.49 Reduced Neighbor Report — colocated/neighbor AP info, operating class/primary channel/TBTT, mandatory 6 GHz colocated advertising with 20 MHz PSD, non-exhaustive and unrecognized-type handling"
+    }
+  ],
+  "covers": [
+    "80211-2024:11.17",
+    "80211-2024:11.22.3",
+    "80211-2024:11.22.4",
+    "80211-2024:11.49"
+  ],
+  "track": "connecting"
+}

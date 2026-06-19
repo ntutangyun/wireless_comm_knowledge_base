@@ -1,0 +1,162 @@
+{
+  "id": "managing-39-wireless-network-management",
+  "title": {
+    "en": "Managing the Network: WNM Events, Diagnostics, Location and BSS Transition",
+    "zh": "管理网络：WNM 事件、诊断、定位与 BSS 切换"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Wireless Network Management (WNM) is the standard's built-in toolbox for keeping a network healthy: letting an access point ask a station \"what happened to you?\", letting it measure where stations are, and letting it steer a station onto a better access point. None of this carries your data — it is the meta-layer that diagnoses, locates and load-balances the network. This lesson walks through the WNM procedures defined in clause 11.21: how they depend on each other, and the specific tools for events, diagnostics, location, ranging, transition steering, and interference reporting.",
+      "zh": "无线网络管理（WNM）是标准内置的网络健康维护工具箱：它让接入点（AP）能够询问某个站点（STA）\"你发生了什么？\"，能够测量站点所在的位置，还能够把站点引导到一个更合适的接入点上。这些机制本身并不承载你的业务数据，而是位于其上的\"元管理层\"，负责诊断、定位并均衡整个网络。本课将逐一讲解第 11.21 条定义的各项 WNM 流程：它们彼此之间的依赖关系，以及用于事件、诊断、定位、测距、切换引导和干扰上报的具体工具。"
+    },
+    {
+      "type": "prose",
+      "en": "Everything starts with a dependency rule (11.21.1). When dot11WirelessManagementImplemented is true the device is a \"WNM STA\", and both extended channel switching and radio measurement must also be enabled — WNM builds on top of those. A WNM STA advertises which individual WNM features it supports through bits in its Extended Capabilities element (carried in Beacons, (Re)Association and Probe frames). The golden rule: a station must never request a feature the peer has not advertised, and a station must reject any request for a feature it never advertised. Capability advertisement is the handshake that gates every other procedure in this lesson.",
+      "zh": "一切都从一条依赖规则开始（11.21.1）。当 dot11WirelessManagementImplemented 为真时，该设备就是一个\"WNM STA\"，并且扩展信道切换和无线电测量也必须同时启用——WNM 正是构建在这两项能力之上的。WNM STA 通过其\"扩展能力（Extended Capabilities）元素\"中的各个比特位来声明自己支持哪些具体的 WNM 功能（这些信息携带在信标帧、（重）关联帧和探测帧中）。黄金法则是：站点绝不能请求对端未声明支持的功能，并且站点必须拒绝任何针对自己从未声明过的功能的请求。能力声明就是为本课中所有后续流程把关的那一次握手。"
+    },
+    {
+      "type": "prose",
+      "en": "Event reporting (11.21.2) gives the network real-time diagnostics. In an infrastructure BSS only the AP sends an Event Request frame; the station replies with an Event Report frame carrying the same Dialog Token. A station logs and can report several event types: Transition events (its recent roam history — up to the last five), RSNA events (authentication outcomes), peer-to-peer link events (TDLS link up/down), WNM log events (human-readable ASCII text lines like \"802.1X Authentication Failed\"), Vendor Specific events, and — for HE stations — BSS color collision / color-in-use events. Each report returns a Status (Successful, Request failed, Request refused, or Request incapable), and the log survives a BSS transition but is wiped when the station moves to a new ESS.",
+      "zh": "事件上报（11.21.2）为网络提供实时诊断能力。在基础设施 BSS 中，只有 AP 才会发送\"事件请求（Event Request）\"帧；站点随后回复一个携带相同对话令牌（Dialog Token）的\"事件报告（Event Report）\"帧。站点会记录并可上报多种事件类型：切换事件（其近期的漫游历史——最多保留最近五次）、RSNA 事件（认证结果）、点对点链路事件（TDLS 链路的建立/断开）、WNM 日志事件（人类可读的 ASCII 文本行，例如\"802.1X 认证失败\"）、厂商自定义事件，以及——对于 HE 站点——BSS 颜色冲突 / 颜色使用中事件。每条报告都会返回一个状态（成功、请求失败、请求被拒绝或请求无能力处理），并且事件日志在一次 BSS 切换后仍会保留，但当站点迁移到一个新的 ESS 时则会被清空。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as AP\n    participant STA as non-AP STA\n    AP->>STA: Event Request (Dialog Token, Event Type)\n    Note over STA: Match against logged events\n    STA-->>AP: Event Report (same token, Status)\n    Note over AP: Diagnose roam / auth / link history",
+      "zh": "sequenceDiagram\n    participant AP as AP\n    participant STA as 非AP站点\n    AP->>STA: 事件请求 (对话令牌, 事件类型)\n    Note over STA: 与已记录的事件进行匹配\n    STA-->>AP: 事件报告 (相同令牌, 状态)\n    Note over AP: 诊断漫游/认证/链路历史"
+    },
+    {
+      "type": "prose",
+      "en": "Diagnostics (11.21.3) is a heavier debugging tool, again AP-initiated with a Dialog Token and per-element Diagnostic Tokens. Beyond a generic Diagnostic Request/Report it defines specific report types: a Configuration Profile report (which profile the station is running), a Manufacturer Information STA report (antenna types, colocated radios, device type), and two active tests — the Association diagnostic and the IEEE 802.1X authentication diagnostic. Those last two are remarkable: the AP can direct the station to actually deauthenticate, go associate (and authenticate) with a named target AP in the same ESS, report whether it worked, then come back. Both Event and Diagnostic frames can carry a Destination URI so a station that has lost BSS connectivity can deliver its report over another network interface.",
+      "zh": "诊断（11.21.3）是一种更重量级的调试工具，同样由 AP 发起，带有对话令牌以及每个元素各自的诊断令牌（Diagnostic Token）。除了通用的诊断请求/报告之外，它还定义了若干具体的报告类型：配置档案报告（站点当前运行的是哪个配置档案）、制造商信息站点报告（天线类型、共置无线电、设备类型），以及两项主动测试——关联诊断和 IEEE 802.1X 认证诊断。后两项尤为引人注目：AP 可以指挥站点真正地去解除认证，转而与同一 ESS 中指定的目标 AP 完成关联（及认证），上报是否成功，然后再回来。事件帧和诊断帧都可以携带一个目标 URI（Destination URI），这样当某个站点失去了 BSS 连接时，仍能通过另一个网络接口把报告投递出去。"
+    },
+    {
+      "type": "prose",
+      "en": "Location track (11.21.4) lets one station configure another to periodically beacon its presence so its location can be tracked. The configuring station sends a Location Configuration Request carrying Location Parameters subelements — which channels to use, how often (a Normal interval when stationary, an In-Motion interval when moving, each at least 500 ms), how many frames per channel, a target broadcast data rate, and a shared multicast address. The configured station replies with a Location Configuration Response (Success / Fail / Refused / Incapable) and then emits Location Track Notification frames accordingly. Optional add-ons include motion detection and a Time of Departure subelement measured by the PHY. The station stops when told (interval 0), when it loses the ESS beacons, or when it leaves the ESS.",
+      "zh": "位置跟踪（11.21.4）允许一个站点去配置另一个站点，使其周期性地\"广播\"自身的存在，从而让其位置可以被跟踪。配置方站点发送一个\"位置配置请求（Location Configuration Request）\"帧，其中携带位置参数子元素——使用哪些信道、上报频率（静止时采用正常间隔，移动时采用运动中间隔，二者均至少为 500 毫秒）、每个信道发送多少帧、目标广播数据速率，以及一个共享的组播地址。被配置的站点回复一个\"位置配置响应（Location Configuration Response）\"帧（成功/失败/拒绝/无能力），随后据此发出\"位置跟踪通知（Location Track Notification）\"帧。可选的附加项包括运动检测，以及一个由 PHY 测量的\"离开时刻（Time of Departure）\"子元素。当被告知停止（间隔设为 0）、当它收不到该 ESS 的信标，或者当它离开该 ESS 时，站点就会停止发送。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Don't confuse the two location mechanisms. Location track (11.21.4) is coarse \"where is this device beaconing from\" presence tracking. The FTM procedure (11.21.6) is precise distance — it times radio pulses down to the nanosecond to compute physical range. One says \"the device is somewhere in this room\"; the other says \"the device is 4.2 metres away.\"",
+      "zh": "不要混淆这两种定位机制。位置跟踪（11.21.4）是一种较为粗略的\"这台设备在从哪里发出信标\"式的存在性跟踪。而 FTM 流程（11.21.6）则用于精确测距——它把无线电脉冲的往返时间精确计时到纳秒级，进而计算出物理距离。前者说的是\"这台设备就在这个房间的某处\"；后者说的则是\"这台设备在 4.2 米之外\"。"
+    },
+    {
+      "type": "prose",
+      "en": "The Fine Timing Measurement procedure (11.21.6) is how Wi-Fi does ranging. An initiating station (ISTA) and a responding station (RSTA) exchange precisely timestamped frames; from the round-trip time of flight (TOF), time difference of arrival (TDOA) and phase, the ISTA computes its range and direction to the RSTA. Doing this against several RSTAs whose positions are known lets a device triangulate its own location. An FTM session has three phases — negotiation, measurement exchange, and termination — and the standard defines several flavours: EDCA-based ranging, trigger-based (TB) ranging, non-TB ranging, and passive TB ranging (where a silent passive station overhears others' exchanges and derives differential distances). Because an ISTA may be busy on another channel, the negotiation establishes time windows and the ISTA signals when it is actually available to range.",
+      "zh": "精细定时测量（Fine Timing Measurement，FTM）流程（11.21.6）是 Wi-Fi 实现测距的方式。一个发起站点（ISTA）与一个响应站点（RSTA）之间交换带有精确时间戳的帧；通过往返飞行时间（TOF）、到达时间差（TDOA）和相位，ISTA 便能计算出自己相对于 RSTA 的距离和方向。针对若干位置已知的 RSTA 重复执行此过程，设备就能通过三角定位推算出自身的位置。一次 FTM 会话包含三个阶段——协商、测量交换和终止——标准还定义了几种变体：基于 EDCA 的测距、基于触发（TB）的测距、非 TB 测距，以及被动 TB 测距（其中一个保持静默的被动站点通过\"偷听\"他人之间的测距交换来推导出差分距离）。由于 ISTA 可能正忙于在另一个信道上工作，协商阶段会确立若干时间窗口，并由 ISTA 在它真正可以进行测距时发出信号。"
+    },
+    {
+      "type": "prose",
+      "en": "BSS transition management (11.21.7) is the steering tool — the basis of what products call \"band steering\" and \"client steering.\" Three frames carry it. A station can send a BSS Transition Management Query asking for a candidate list (and to share its own preferences). The AP replies with a BSS Transition Management Request containing a candidate list of Neighbor Report elements, each with a Preference value (1–255, where 255 is most preferred and 0 means an excluded BSS the station should avoid). The Request can flag Disassociation Imminent with a countdown timer, or signal an upcoming BSS Termination. The station answers with a BSS Transition Management Response carrying a BTM Status Code — Accept, or one of several Reject reasons (insufficient capacity, no suitable candidate, leaving ESS, and so on). An AP can also advertise a Planned ESS via an ESS Report element, telling stations it is at the edge of coverage and recommending an RSSI threshold below which to start roaming.",
+      "zh": "BSS 切换管理（11.21.7）是\"引导\"工具——也就是各类产品所称的\"频段引导（band steering）\"和\"客户端引导（client steering）\"的基础。它由三种帧承载。站点可以发送一个\"BSS 切换管理查询（Query）\"帧，请求获取候选列表（并顺带分享自己的偏好）。AP 回复一个\"BSS 切换管理请求（Request）\"帧，其中包含一个由邻居报告（Neighbor Report）元素组成的候选列表，每个元素都带有一个偏好值（1–255，其中 255 表示最为偏好，而 0 表示这是一个应当避开的被排除 BSS）。该请求帧可以置位\"即将解除关联（Disassociation Imminent）\"标志并附带一个倒计时定时器，或者预告一次即将到来的 BSS 终止。站点随后用一个\"BSS 切换管理响应（Response）\"帧作答，其中携带一个 BTM 状态码——接受，或者若干种拒绝原因之一（容量不足、无合适候选、正在离开 ESS 等等）。AP 还可以通过一个 ESS 报告（ESS Report）元素来声明一个\"规划好的 ESS（Planned ESS）\"，告诉站点自己处于覆盖边缘，并推荐一个 RSSI 阈值，低于该阈值时站点就应开始漫游。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as non-AP STA\n    participant AP as serving AP\n    STA->>AP: BTM Query (my preferred candidates)\n    AP-->>STA: BTM Request (candidate list, Preference 1-255)\n    Note over AP: may set Disassociation Imminent + timer\n    STA->>AP: BTM Response (Accept / Reject reason)\n    Note over STA: roams to a nonexcluded candidate BSS",
+      "zh": "sequenceDiagram\n    participant STA as 非AP站点\n    participant AP as 服务AP\n    STA->>AP: BTM查询 (我偏好的候选)\n    AP-->>STA: BTM请求 (候选列表, 偏好值1-255)\n    Note over AP: 可置位\"即将解除关联\"+定时器\n    STA->>AP: BTM响应 (接受 / 拒绝原因)\n    Note over STA: 漫游到一个未被排除的候选BSS"
+    },
+    {
+      "type": "prose",
+      "en": "Colocated interference reporting (11.21.9) handles a very practical problem: a device often packs Wi-Fi alongside other radios (cellular, Bluetooth, GNSS) that share the same chassis and antennas. When one of those radios fires, it can swamp the Wi-Fi receiver. This procedure lets a requesting station ask a peer on the same channel to report the interference it is suffering, so the requester can schedule its transmissions around it. The Colocated Interference Request frame's Automatic Response Enabled subfield picks a mode: 0 disables it, 1 reports on significant change, 2 reports periodically, and 3 does both. Each distinct interference source gets a unique Interference Index; an index of 0 means \"no interference present.\" Reports are rate-limited by a Report Timeout, and all requests are canceled on a BSS transition or channel switch. Crucially, the interference characteristics are known a priori by the reporting device, so no live measurement is required.",
+      "zh": "共置干扰上报（11.21.9）解决的是一个非常实际的问题：一台设备往往会把 Wi-Fi 与其他无线电（蜂窝、蓝牙、卫星导航）一同塞进同一个机身、共用天线。当其中某个无线电开始工作时，它可能会淹没 Wi-Fi 接收机。该流程允许一个请求方站点要求同信道上的对端报告它正在遭受的干扰，从而使请求方能够把自己的发送时机错开来安排。\"共置干扰请求（Colocated Interference Request）\"帧中的\"自动响应使能（Automatic Response Enabled）\"子字段用于选择模式：0 表示禁用，1 表示在发生显著变化时上报，2 表示周期性上报，3 表示二者兼有。每一个不同的干扰源都会被赋予一个唯一的干扰索引（Interference Index）；索引为 0 表示\"当前不存在干扰\"。上报频率受一个上报超时（Report Timeout）的限制，并且所有请求都会在一次 BSS 切换或信道切换时被取消。关键在于，干扰特征是上报设备事先就已知的，因此无需进行实时测量。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: exactly where each clause lives",
+        "zh": "覆盖地图：每条子条款的确切位置"
+      },
+      "en": "All seven leaf clauses sit under 11.21 (Wireless network management procedures). 11.21.1 Wireless network management dependencies — defines the WNM STA, requires extended channel switch + radio measurement, and the Extended Capabilities advertise-before-request rule (p.2657). 11.21.2 Event request and report procedures — AP-initiated Event Request/Report with Dialog Token and Event Token; Transition / RSNA / peer-to-peer / WNM log / Vendor Specific / BSS color events; Status values; Destination URI fallback (p.2657–2661). 11.21.3 Diagnostic request and report procedures — Dialog/Diagnostic Tokens, Configuration Profile and Manufacturer Information reports, and the active Association and 802.1X authentication diagnostics (p.2661–2664). 11.21.4 Location track procedures — Location Configuration Request/Response, Location Parameters subelements, Normal vs In-Motion intervals (min 500 ms), Location Track Notification frames, Time of Departure (p.2665–2669). 11.21.6 FTM procedure — ISTA/RSTA ranging via TOF/TDOA/phase; negotiation, measurement exchange, termination; EDCA / TB / non-TB / passive TB ranging (p.2671–2675). 11.21.7 BSS transition management — BTM Query / Request / Response frames, Neighbor Report candidate lists with Preference 1–255 (0 = excluded), Disassociation Imminent timer, BTM Status Codes, Planned ESS / ESS Report element (p.2745–2748). 11.21.9 Colocated interference reporting — Colocated Interference Request/Report, Automatic Response Enabled modes 0–3, Interference Index, Report Timeout, cancel on transition/channel switch (p.2749–2751).",
+      "zh": "全部七条叶子级子条款都位于 11.21（无线网络管理流程）之下。11.21.1 无线网络管理依赖关系——定义了 WNM STA，要求启用扩展信道切换 + 无线电测量，以及\"先声明后请求\"的扩展能力规则（第 2657 页）。11.21.2 事件请求与报告流程——由 AP 发起、带对话令牌和事件令牌的事件请求/报告；切换 / RSNA / 点对点 / WNM 日志 / 厂商自定义 / BSS 颜色等事件；各种状态值；目标 URI 兜底机制（第 2657–2661 页）。11.21.3 诊断请求与报告流程——对话令牌/诊断令牌、配置档案报告与制造商信息报告，以及主动式的关联诊断和 802.1X 认证诊断（第 2661–2664 页）。11.21.4 位置跟踪流程——位置配置请求/响应、位置参数子元素、正常间隔与运动中间隔（最小 500 毫秒）、位置跟踪通知帧、离开时刻（第 2665–2669 页）。11.21.6 FTM 流程——通过 TOF/TDOA/相位由 ISTA/RSTA 进行测距；协商、测量交换、终止；EDCA / TB / 非 TB / 被动 TB 测距（第 2671–2675 页）。11.21.7 BSS 切换管理——BTM 查询/请求/响应帧、带偏好值 1–255（0 = 被排除）的邻居报告候选列表、即将解除关联定时器、BTM 状态码、规划好的 ESS / ESS 报告元素（第 2745–2748 页）。11.21.9 共置干扰上报——共置干扰请求/报告、自动响应使能模式 0–3、干扰索引、上报超时、在切换/信道切换时取消（第 2749–2751 页）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2657,
+          2661,
+          2664,
+          2665,
+          2671,
+          2745,
+          2749
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2657,
+        2658,
+        2659,
+        2660,
+        2661
+      ],
+      "note": "11.21.1 WNM dependencies and 11.21.2 event request/report procedures (event types, Status, Destination URI)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2661,
+        2662,
+        2663,
+        2664
+      ],
+      "note": "11.21.3 diagnostic request/report: Configuration Profile, Manufacturer Information, Association and 802.1X authentication diagnostics"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2665,
+        2666,
+        2667,
+        2668,
+        2669
+      ],
+      "note": "11.21.4 location track configuration and notification procedures (intervals, motion detection, Time of Departure)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2671,
+        2672,
+        2673,
+        2674,
+        2675
+      ],
+      "note": "11.21.6 FTM procedure: ISTA/RSTA ranging, session phases, EDCA/TB/non-TB/passive TB ranging"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2745,
+        2746,
+        2747,
+        2748
+      ],
+      "note": "11.21.7 BSS transition management: Query/Request/Response, candidate lists, Disassociation Imminent, Planned ESS"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2749,
+        2750,
+        2751
+      ],
+      "note": "11.21.9 colocated interference reporting: request/report modes, Interference Index, Report Timeout"
+    }
+  ],
+  "covers": [
+    "80211-2024:11.21.1",
+    "80211-2024:11.21.2",
+    "80211-2024:11.21.3",
+    "80211-2024:11.21.4",
+    "80211-2024:11.21.6",
+    "80211-2024:11.21.7",
+    "80211-2024:11.21.9"
+  ],
+  "track": "managing"
+}

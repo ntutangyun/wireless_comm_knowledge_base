@@ -1,0 +1,155 @@
+{
+  "id": "managing-42-efficiency-metrics-tdd-channel-usage",
+  "title": {
+    "en": "Operational Polish: Link Metrics, Energy-Limited STAs, Channel-Usage Coordination and TDD Access",
+    "zh": "运行层面的打磨：链路度量、受能量限制的 STA、信道使用协调与 TDD 接入"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Most of IEEE 802.11 is about the big moments: scan, authenticate, associate, exchange data. But a working network is also held together by dozens of smaller, quieter procedures that polish the experience — how a station reports how strong a beacon looked, how it predicts the throughput a link would deliver, how a battery-starved sensor warns its peer that it can only listen for a moment, and how two neighbouring networks negotiate which channel each one keeps. This lesson is a survey of six such refinements grouped near the end of Clause 11. None is glamorous on its own, but together they are the connective tissue of a polished WLAN.",
+      "zh": "IEEE 802.11 的大部分篇幅都在讲那些重要时刻：扫描、认证、关联、收发数据。但一个真正可用的网络，还要靠几十个更小、更安静的流程来维系体验——一个站点如何报告它看到的信标信号有多强、如何预测某条链路能提供的吞吐量、一个电量告急的传感器如何告诉对端自己只能短暂收听、以及两个相邻网络如何协商各自保留哪个信道。本课就是对第 11 章末尾这六类打磨性流程的一次综述。它们单看都不起眼，但合在一起，正是一张精致 WLAN 的连接组织。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the two metrics a station hands upward to help higher layers steer traffic. Beacon RSSI (Clause 11.43) is simple: on receiving a Beacon frame, a STA measures its received signal strength and may store it in dot11BeaconRssi, reported in dBm. If multiple receive chains were used, the value is averaged in the linear domain across all active chains; below 6 GHz it carries an accuracy of plus or minus 5 dB. Estimated Throughput (Clause 11.44) goes further: rather than raw signal, it predicts the MSDU throughput a link could actually deliver, per access category, using RSSI, spatial streams, channel bandwidth, an estimated air-time fraction, and the block-ack window. The MLME-ESTIMATED-THROUGHPUT request/confirm pair lets an external traffic-steering entity ask 'what would I get on this link?' before committing.",
+      "zh": "先看站点向上层递交、用于引导流量的两项度量。信标 RSSI（11.43 节）很简单：收到信标帧后，站点测量其接收信号强度，可存入 dot11BeaconRssi，以 dBm 报告。若使用了多条接收链路，该值会在线性域上对所有活跃链路取平均；在 6 GHz 以下其精度为正负 5 dB。估计吞吐量（11.44 节）则更进一步：它不报告原始信号，而是按接入类别预测某条链路实际能交付的 MSDU 吞吐量，依据包括 RSSI、空间流数、信道带宽、估计的空口时间占比以及块确认窗口。MLME-ESTIMATED-THROUGHPUT 的 request/confirm 原语对，让外部流量引导实体在选定之前先问一句：“这条链路我能得到多少？”"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Beacon RSSI says 'how loud the AP sounds'; Estimated Throughput says 'how much useful data this link would carry'. A loud beacon on a congested channel can still yield poor throughput — which is exactly why the standard reports both. Estimated Service Parameters elements (Inbound and Outbound) carry these predictions in Beacon and Probe Response frames so a STA can compare candidates before associating.",
+      "zh": "信标 RSSI 说的是“AP 听起来有多响”；估计吞吐量说的是“这条链路能搬运多少有用数据”。一个在拥塞信道上很响的信标，吞吐量仍可能很差——这正是标准要同时报告两者的原因。估计服务参数元素（入向与出向）把这些预测放进信标帧和探测响应帧，让站点在关联前就能比较候选目标。"
+    },
+    {
+      "type": "prose",
+      "en": "Next, two facilities for stations that are not ordinary, full-time radios. An Energy-Limited (EL) STA (Clause 11.46) is an S1G station running on a tiny energy supply — think a harvested-power sensor — that simply cannot transmit or receive at arbitrary moments. It signals these limits with an EL Operation element carried in Probe Request, TDLS Setup, and (Re)Association Request frames, and exchanges EL Operation or (when management-frame protection is negotiated) Protected EL Operation frames. Two timers, ELMaxAwakeTimer and ELRecoveryTimer, bound its awake windows. An S1G AP that supports only non-sensor STAs may even refuse association with the status code ENERGY_LIMITED_OPERATION_NOT_SUPPORTED. The point is to make frame exchanges with a power-starved peer succeed by telling the peer when it is actually reachable.",
+      "zh": "接着是两套面向“非普通、非全时”电台的机制。受能量限制（EL）的 STA（11.46 节）是一种靠极小能源供电的 S1G 站点——可以想象成靠能量收集供电的传感器——它根本无法在任意时刻收发。它通过在探测请求、TDLS 建立及（重）关联请求帧中携带 EL Operation 元素来表明这些限制，并交换 EL Operation 帧，或在协商了管理帧保护时交换受保护的 EL Operation 帧。两个定时器 ELMaxAwakeTimer 与 ELRecoveryTimer 限定它的清醒窗口。仅支持非传感器站点的 S1G AP 甚至可以用状态码 ENERGY_LIMITED_OPERATION_NOT_SUPPORTED 拒绝其关联。核心目的是：通过告诉对端自己何时真正可达，让与缺电节点的帧交换得以成功。"
+    },
+    {
+      "type": "prose",
+      "en": "Now a coordination dance between whole networks. The DCS (Dynamic Channel Selection) procedure for a CDMG BSS (Clause 11.47) exists because China's 60 GHz radio rules let an RLAN occupy a 1.08 GHz or 2.16 GHz channel — and when no idle channel is wide enough to start a new BSS, two neighbouring networks must negotiate. A 'DCS requester' AP/PCP that wants to start works through five sub-procedures: it assesses the current channel condition (11.47.2) by scanning, CCA, or listening to DMG Beacons; it requests measurements of candidate channels from a 'DCS responder' (11.47.3); the responder gathers reports from its own STAs and reports back which channel is clear (11.47.4); the requester then asks the existing BSS to migrate to the chosen channel (11.47.5), with the responder making the final switch decision and announcing it via Channel Switch Announcement elements; and finally the requester networks on the now-vacated target channel once CCA shows it idle (11.47.6).",
+      "zh": "接下来是整个网络之间的一支协调之舞。面向 CDMG BSS 的 DCS（动态信道选择）流程（11.47 节）之所以存在，是因为中国的 60 GHz 无线电规则允许 RLAN 占用一个 1.08 GHz 或 2.16 GHz 信道——当没有任何空闲信道足够宽来开启新 BSS 时，两个相邻网络就必须协商。想要开启新网络的“DCS 请求方”AP/PCP 要走完五个子流程：先评估当前信道状况（11.47.2），方式包括扫描、CCA 或监听 DMG 信标；接着向“DCS 响应方”请求对候选信道的测量（11.47.3）；响应方汇集自身各站点的报告，回报哪个信道是空闲的（11.47.4）；请求方随后请求既有 BSS 迁移到选定信道（11.47.5），由响应方做出最终切换决定并通过信道切换通告元素广播；最后，当 CCA 显示目标信道空闲后，请求方便在腾出的目标信道上组网（11.47.6）。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant R as DCS Requester AP/PCP\n  participant D as DCS Responder AP/PCP\n  Note over R: 11.47.2 Assess channel\n  R->>D: DCS Measurement Request (11.47.3)\n  Note over D: Measure candidate channels\n  D->>R: DCS Measurement Response (11.47.4)\n  R->>D: DCS Request migrate (11.47.5)\n  D->>R: DCS Response (responder decides)\n  Note over D: Announce switch to its STAs\n  Note over R: 11.47.6 Network on target channel",
+      "zh": "sequenceDiagram\n  participant R as DCS 请求方 AP/PCP\n  participant D as DCS 响应方 AP/PCP\n  Note over R: 11.47.2 评估信道\n  R->>D: DCS 测量请求 (11.47.3)\n  Note over D: 测量候选信道\n  D->>R: DCS 测量响应 (11.47.4)\n  R->>D: DCS 迁移请求 (11.47.5)\n  D->>R: DCS 响应 (由响应方决定)\n  Note over D: 向自身站点通告切换\n  Note over R: 11.47.6 在目标信道组网"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Although DCS is written for CDMG stations under Chinese 60 GHz regulations, the standard explicitly notes the same request/measure/report/migrate handshake can be used by other 802.11 STAs to negotiate operating channels between BSSs. It is a reusable pattern: never seize a channel a neighbour is using without asking — and let the neighbour, not you, make the final call to move.",
+      "zh": "尽管 DCS 是为中国 60 GHz 法规下的 CDMG 站点编写的，标准明确指出：同一套“请求—测量—报告—迁移”握手也可被其他 802.11 站点用于在 BSS 之间协商工作信道。这是一种可复用的范式：绝不在不打招呼的情况下抢占邻居正在使用的信道——而且做出迁移的最终决定权属于邻居，而非你自己。"
+    },
+    {
+      "type": "prose",
+      "en": "Two short facilities round out the link layer's housekeeping. GLK operation (Clause 11.50) lets GLK STAs form 'general links' usable inside an IEEE 802.1Q bridged network — links that can be mapped to the bridge's Internal Sublayer Service and, crucially, that report link metrics a bridge uses for routing decisions (11.50.1). Those reported general link metrics (11.50.2) are not a single number: a GLK STA keeps a sliding array of data-rate samples per link and derives the minimum, arithmetic mean, geometric mean, standard deviation, and a weighted composite rate, with hysteresis so the reported value does not jitter. Separately, EPD operation (Clause 11.51) governs Ethernet/802.3 payload protocol discrimination: a STA in the 5.9 GHz bands is an EPD STA (dot11EPDImplemented true), and an EPD STA outside those bands advertises EPD by setting the EPD subfield in its Capability Information — letting a receiver tell an EtherType-style 802.3 payload apart from a classic LLC-encapsulated one.",
+      "zh": "还有两套简短机制为链路层的“家务”收尾。GLK 操作（11.50 节）让 GLK 站点形成“通用链路”，可在 IEEE 802.1Q 桥接网络内部使用——这些链路能映射到桥的内部子层服务，并且关键在于，它们报告桥用于路由决策的链路度量（11.50.1）。这些被报告的通用链路度量（11.50.2）并非单一数字：GLK 站点为每条链路维护一个滑动的速率采样数组，并据此推导出最小值、算术平均、几何平均、标准差以及一个加权的复合速率，还带有迟滞，使报告值不至于抖动。另一方面，EPD 操作（11.51 节）管理以太网/802.3 载荷协议判别：处于 5.9 GHz 频段的站点即为 EPD 站点（dot11EPDImplemented 为真），而在这些频段之外的 EPD 站点则通过在能力信息中置位 EPD 子字段来表明 EPD——使接收方能把类 EtherType 的 802.3 载荷与经典的 LLC 封装载荷区分开。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, TDD channel access (Clause 11.54). In a TDD service period, mitigating co-channel interference means managing a TDD schedule — who transmits in which time slot — at every stage of the connection's life (11.54.1). That TDD channel-access life cycle (11.54.2) walks through clear phases: a STA begins Inactive, does unscheduled TDD beamforming, then receives a schedule for association and secure authentication, performs that association and 802.1X EAP authentication, and only after the 802.1X Controlled Port is unblocked does access become Active for data — after which it may be Suspended on missed acknowledgements. The schedule for the first stage is delivered by the AP/PCP in an Announce frame carrying a TDD Slot Structure element and a TDD Slot Schedule element (11.54.3). For ongoing data traffic (11.54.4), the schedule can be delivered locally inside one device (co-channel coordinated management), pushed by the AP in response to a TDD Bandwidth Request, or exchanged mutually so each side can mark slots it cannot use.",
+      "zh": "最后是 TDD 信道接入（11.54 节）。在一个 TDD 服务周期内，缓解同信道干扰意味着在连接生命周期的每个阶段都要管理 TDD 调度——即谁在哪个时隙发送（11.54.1）。这个 TDD 信道接入生命周期（11.54.2）经历若干清晰阶段：站点起始为非活动（Inactive），进行非调度的 TDD 波束成形，随后接收用于关联与安全认证的调度，执行该关联及 802.1X EAP 认证，只有在 802.1X 受控端口解锁之后，接入才对数据变为活动（Active）——此后若出现确认缺失，可能转入挂起（Suspended）。第一阶段的调度由 AP/PCP 通过携带 TDD 时隙结构元素与 TDD 时隙调度元素的 Announce 帧下发（11.54.3）。对于后续的数据流量（11.54.4），调度可以在单个设备内部本地下发（同信道协调管理），可由 AP 响应 TDD 带宽请求而推送，也可双方互相交换，使每一侧都能标注自己无法使用的时隙。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause taught here, with exact page citations",
+        "zh": "覆盖地图：本课所教每条子句及精确页码引用"
+      },
+      "en": "Link metrics: 11.43 Beacon RSSI — measured per received Beacon, stored in dot11BeaconRssi, linear-domain averaged across active receive chains, plus/minus 5 dB below 6 GHz (p.2907). 11.44 Estimated Throughput — ESP Inbound/Outbound STAs; MLME-ESTIMATED-THROUGHPUT request/confirm produces per-access-category estimates from RSSI, spatial streams, bandwidth, air-time fraction, block-ack window; carried in Estimated Service Parameters Inbound/Outbound elements in Beacon and Probe Response frames (pp.2907-2910).\n\nEnergy-limited: 11.46 Support for energy limited STAs — an EL STA is an S1G STA with dot11S1GELOperationActivated; sends EL Operation element in Probe/TDLS/(Re)Association Request; uses Protected EL Operation frames under MFP; timers ELMaxAwakeTimer and ELRecoveryTimer; AP may refuse with ENERGY_LIMITED_OPERATION_NOT_SUPPORTED (p.2918).\n\nChannel-usage coordination (DCS for CDMG BSS): 11.47.1 General — Chinese 60 GHz 1.08/2.16 GHz channels, dot11DynamicChannelTransferActivated, DCS capability element, five sub-procedures, reusable by other STAs (pp.2918-2919). 11.47.2 Assessing current channel condition — passive scan / CCA / DMG Beacon reception (p.2920). 11.47.3 Requesting measurements for new operating channel — DCS Measurement Request, mode 0/1 (p.2920). 11.47.4 Reporting measurements — DCS Measurement Response, Measurement Report Mode 0/1/2, matching Dialog Token, may refuse (p.2921). 11.47.5 Requesting existing BSS to migrate — DCS Request, responder decides, announces via Channel Switch Announcement (p.2921). 11.47.6 Networking on the target channel — requester listens, operates once PHY-CCA shows idle (p.2922).\n\nGeneral link metrics: 11.50.1 General — GLK STAs, general links for 802.1Q bridged networks, dot11GLKImplemented, GCR, mapped to Internal Sublayer Service (p.2928). 11.50.2 Reported general link metrics — dot11GLKLinkRawRate, sliding sample window R[0..N+1], minimum/arithmetic-mean/geometric-mean/standard-deviation, weighted composite Rcomposite, hysteresis to Rreported (pp.2929-2930).\n\nEPD: 11.51 EPD operation — 5.9 GHz STA is an EPD STA, dot11EPDImplemented, EPD subfield in Capability Information when outside 5.9 GHz, EPD selector if dot11EPDRequired (p.2930).\n\nTDD: 11.54.1 General — TDD SP, manage TDD schedule each stage, co-channel coordinated management (p.2933). 11.54.2 TDD channel access life cycle — Inactive to Active to Suspended; phases include unscheduled beamforming, scheduling, association, data; 802.1X Controlled Port; link loss via dot11MaxLostBeacons, MISSING_ACKS (pp.2933-2934). 11.54.3 Scheduling for association and secure authentication — Announce frame (Unprotected DMG) with TDD Slot Structure + TDD Slot Schedule elements; MLME-TDD-SLOT-ANNOUNCE (pp.2934-2935). 11.54.4 Scheduling for data traffic — local delivery (co-channel coordinated), AP delivery on TDD Bandwidth Request, mutual exchange marking unavailable slots (pp.2935-2936).",
+      "zh": "链路度量：11.43 信标 RSSI——按每个接收信标测量，存入 dot11BeaconRssi，在线性域上对活跃接收链路取平均，6 GHz 以下精度正负 5 dB（第 2907 页）。11.44 估计吞吐量——ESP 入向/出向站点；MLME-ESTIMATED-THROUGHPUT 的 request/confirm 依据 RSSI、空间流、带宽、空口时间占比、块确认窗口产生按接入类别的估计；通过信标帧与探测响应帧中的估计服务参数入向/出向元素携带（第 2907-2910 页）。\n\n受能量限制：11.46 对受能量限制 STA 的支持——EL STA 是 dot11S1GELOperationActivated 为真的 S1G 站点；在探测/TDLS/（重）关联请求中发送 EL Operation 元素；在 MFP 下使用受保护的 EL Operation 帧；定时器 ELMaxAwakeTimer 与 ELRecoveryTimer；AP 可用 ENERGY_LIMITED_OPERATION_NOT_SUPPORTED 拒绝（第 2918 页）。\n\n信道使用协调（面向 CDMG BSS 的 DCS）：11.47.1 总则——中国 60 GHz 的 1.08/2.16 GHz 信道、dot11DynamicChannelTransferActivated、DCS 能力元素、五个子流程、可被其他站点复用（第 2918-2919 页）。11.47.2 评估当前信道状况——被动扫描/CCA/接收 DMG 信标（第 2920 页）。11.47.3 请求对新工作信道的测量——DCS 测量请求，模式 0/1（第 2920 页）。11.47.4 报告测量——DCS 测量响应，测量报告模式 0/1/2，对话令牌一致，可拒绝（第 2921 页）。11.47.5 请求既有 BSS 迁移——DCS 请求，由响应方决定，通过信道切换通告广播（第 2921 页）。11.47.6 在目标信道组网——请求方监听，待 PHY-CCA 显示空闲后工作（第 2922 页）。\n\n通用链路度量：11.50.1 总则——GLK 站点、面向 802.1Q 桥接网络的通用链路、dot11GLKImplemented、GCR、映射到内部子层服务（第 2928 页）。11.50.2 被报告的通用链路度量——dot11GLKLinkRawRate、滑动采样窗 R[0..N+1]、最小值/算术平均/几何平均/标准差、加权复合 Rcomposite、迟滞得到 Rreported（第 2929-2930 页）。\n\nEPD：11.51 EPD 操作——5.9 GHz 站点为 EPD 站点、dot11EPDImplemented、在 5.9 GHz 之外时于能力信息置位 EPD 子字段、dot11EPDRequired 为真时加入 EPD 选择符（第 2930 页）。\n\nTDD：11.54.1 总则——TDD 服务周期、各阶段管理 TDD 调度、同信道协调管理（第 2933 页）。11.54.2 TDD 信道接入生命周期——非活动到活动再到挂起；阶段含非调度波束成形、调度、关联、数据；802.1X 受控端口；通过 dot11MaxLostBeacons 判定链路丢失、MISSING_ACKS（第 2933-2934 页）。11.54.3 关联与安全认证的调度——Announce 帧（Unprotected DMG）携带 TDD 时隙结构与 TDD 时隙调度元素；MLME-TDD-SLOT-ANNOUNCE（第 2934-2935 页）。11.54.4 数据流量的调度——本地下发（同信道协调）、AP 响应 TDD 带宽请求下发、双方互相交换以标注不可用时隙（第 2935-2936 页）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2907,
+          2908,
+          2909,
+          2910,
+          2918,
+          2919,
+          2920,
+          2921,
+          2922,
+          2928,
+          2929,
+          2930,
+          2933,
+          2934,
+          2935,
+          2936
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A theme runs through all six: 802.11 keeps adding ways for a station to describe its own situation honestly — how strong a beacon was, how much throughput it can offer, when it is too power-starved to listen, which channel it is willing to free, what rate a bridge should assume, and which TDD slots it can actually use. Good coordination starts with honest self-reporting.",
+      "zh": "六者贯穿着同一主题：802.11 不断增加让站点如实描述自身处境的手段——信标有多强、能提供多少吞吐、何时缺电到无法收听、愿意腾出哪个信道、桥应假定什么速率、以及自己实际能用哪些 TDD 时隙。良好的协调，始于诚实的自我报告。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2907,
+        2908,
+        2909,
+        2910
+      ],
+      "note": "11.43 Beacon RSSI; 11.44 Estimated throughput (ESP Inbound/Outbound, MLME-ESTIMATED-THROUGHPUT, air-time fraction assumptions)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2918,
+        2919,
+        2920,
+        2921,
+        2922
+      ],
+      "note": "11.46 Support for energy limited STAs; 11.47.1-11.47.6 DCS procedure for CDMG BSS (assess, request measurements, report, migrate, network on target channel)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2928,
+        2929,
+        2930
+      ],
+      "note": "11.50.1 GLK general; 11.50.2 Reported general link metrics (sample window, min/mean/geo/std, composite, hysteresis); 11.51 EPD operation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2933,
+        2934,
+        2935,
+        2936
+      ],
+      "note": "11.54.1 TDD general; 11.54.2 life cycle (Inactive/Active/Suspended, 802.1X port); 11.54.3 scheduling for association and secure authentication; 11.54.4 scheduling for data traffic"
+    }
+  ],
+  "covers": [
+    "80211-2024:11.43",
+    "80211-2024:11.44",
+    "80211-2024:11.46",
+    "80211-2024:11.47.1",
+    "80211-2024:11.47.2",
+    "80211-2024:11.47.3",
+    "80211-2024:11.47.4",
+    "80211-2024:11.47.5",
+    "80211-2024:11.47.6",
+    "80211-2024:11.50.1",
+    "80211-2024:11.50.2",
+    "80211-2024:11.51",
+    "80211-2024:11.54.1",
+    "80211-2024:11.54.2",
+    "80211-2024:11.54.3",
+    "80211-2024:11.54.4"
+  ],
+  "track": "managing"
+}
