@@ -1,0 +1,126 @@
+{
+  "id": "mesh-07",
+  "title": {
+    "en": "MCCA: Reserved, Collision-Free Airtime for Mesh STAs",
+    "zh": "MCCA：为网格站点预约的无冲突空口时段"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Earlier mesh lessons showed how HWMP picks a path across the mesh. But picking the path is only half the story: every relay hop still has to win the medium. By default a mesh STA uses EDCA — the same contention-based access as any Wi-Fi station — so a busy relay competes for airtime with all of its neighbors on every single frame. When several relays sit within radio range of each other, their backoffs collide, and the multi-hop path you so carefully selected stutters. MCCA is the fix: a way for neighboring mesh STAs to agree, ahead of time, on reserved windows during which one of them transmits collision-free.",
+      "zh": "前面几节网格课讲了 HWMP 如何在网格中选出一条路径。但选好路径只是故事的一半：每一个中继跳仍然要去“抢”信道。默认情况下，网格站点使用 EDCA——和任何 Wi-Fi 站点一样的基于竞争的接入方式——因此一个繁忙的中继在发送每一帧时，都要和它所有的邻居争抢空口时间。当多个中继处于彼此的射频覆盖范围之内时，它们的退避（backoff）会相互碰撞，于是你精心选出的那条多跳路径就会“卡顿”。MCCA 正是为此而生：它让相邻的网格站点提前约定一些预约时段，在这些时段内由其中一个站点进行无冲突的发送。"
+    },
+    {
+      "type": "prose",
+      "en": "MCCA is the controlled half of the Mesh Coordination Function (MCF). MCF hands out the right to transmit as TXOPs, and there are two kinds: an EDCA TXOP, won by ordinary contention, and an MCCA TXOP, obtained during a reserved window called an MCCAOP (an MCCA Opportunity). An MCCAOP is simply a periodic slice of time — an offset and a duration that repeats once per DTIM interval — that is owned by exactly one mesh STA. During its MCCAOP the owner still runs an EDCA backoff, but because every MCCA-aware neighbor has agreed to stay silent, that backoff faces no competition. MCCA is optional and per-STA: only stations with dot11MCCAActivated set true participate, and they must share the same channel.",
+      "zh": "MCCA 是网格协调功能（MCF, Mesh Coordination Function）中“受控”的那一半。MCF 以 TXOP 的形式分配发送权，TXOP 有两种：一种是靠普通竞争赢得的 EDCA TXOP；另一种是在被称为 MCCAOP（MCCA Opportunity，MCCA 机会）的预约时段中获得的 MCCA TXOP。一个 MCCAOP 就是一段周期性的时间切片——一个偏移量（offset）加一个时长（duration），每个 DTIM 间隔重复一次——并且只归唯一一个网格站点所有。在自己的 MCCAOP 期间，所有者仍然会执行 EDCA 退避，但由于每一个支持 MCCA 的邻居都已约定保持安静，这次退避不会遇到任何竞争。MCCA 是可选的、按站点启用的：只有 dot11MCCAActivated 置为 true 的站点才参与，而且它们必须工作在同一信道上。"
+    },
+    {
+      "type": "prose",
+      "en": "Before a reservation can be made, MCCA has to be turned on. When its management layer asks to activate MCCA, the mesh STA advertises the MCCA Enabled bit in its Beacons and Probe Responses, then deliberately waits for dot11MCCAScanDuration before it will set up or accept any reservation. During that quiet scan it just listens — to Beacons, Probe Responses, and MCCA Advertisement frames — and learns which time slices its neighbors have already reserved. Only after it has this neighborhood map does it start proposing windows of its own.",
+      "zh": "在能够建立预约之前，MCCA 必须先被激活。当网格站点的管理层请求激活 MCCA 时，该站点会在自己发出的 Beacon 与 Probe Response 帧中通告 MCCA Enabled（MCCA 已启用）位，随后会刻意等待一段 dot11MCCAScanDuration 时间，期间不发起也不接受任何预约。在这段安静的扫描期里，它只做监听——监听 Beacon、Probe Response 以及 MCCA Advertisement（MCCA 通告）帧——从而了解邻居们已经预约了哪些时间切片。只有在掌握了这张“邻域地图”之后，它才会开始提出属于自己的时段。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant O as Owner (proposer)\n    participant R as Responder (neighbor)\n    Note over O: build neighborhood MCCAOP map\n    Note over O: pick offset+duration that overlap nothing\n    Note over O: check MAF stays under MAF Limit\n    O->>R: MCCA Setup Request (MCCAOP Reservation ID + offset/duration/periodicity)\n    Note over R: no overlap? MAF ok? track limit ok?\n    alt all conditions met\n        R->>O: MCCA Setup Reply (Code 0 = Accept)\n        Note over O,R: reservation established; both advertise it\n    else conflict / MAF / track limit\n        R->>O: MCCA Setup Reply (Code 1/2/3 = Reject, maybe alt window)\n        Note over O: revise request and retry\n    end",
+      "zh": "sequenceDiagram\n    participant O as 所有者(发起方)\n    participant R as 响应者(邻居)\n    Note over O: 构建邻域 MCCAOP 地图\n    Note over O: 选一个互不重叠的 偏移+时长\n    Note over O: 校验 MAF 不超过 MAF Limit\n    O->>R: MCCA 建立请求 (预约ID + 偏移/时长/周期数)\n    Note over R: 无重叠? MAF 合规? 未超跟踪上限?\n    alt 全部条件满足\n        R->>O: MCCA 建立回复 (代码0 = 接受)\n        Note over O,R: 预约建立; 双方都开始通告它\n    else 冲突 / MAF / 跟踪上限\n        R->>O: MCCA 建立回复 (代码1/2/3 = 拒绝, 可附备选时段)\n        Note over O: 修改请求后重试\n    end"
+    },
+    {
+      "type": "prose",
+      "en": "The handshake is short. The would-be owner builds an MCCAOP Setup Request element carrying an 8-bit MCCAOP Reservation ID (0-127 for individually addressed traffic, 128-254 for group addressed) plus the MCCAOP Reservation field — three little numbers: Duration, Periodicity (how many MCCAOPs per DTIM interval), and Offset (where the first one starts). Before sending it, the owner checks the window overlaps none of its neighbors' reserved periods and that the extra airtime won't push anyone over their limit. The responder re-runs the same checks and answers with an MCCAOP Setup Reply: code 0 means Accept, and a nonzero code means reject — for a conflict, for exceeding the MAF limit, or for hitting the responder's reservation-tracking ceiling. On a conflict the responder may even suggest an alternative window the owner can try instead.",
+      "zh": "这套握手很简短。意向所有者构造一个 MCCAOP Setup Request（MCCAOP 建立请求）元素，其中携带一个 8 位的 MCCAOP Reservation ID（预约 ID，单播流量取 0~127，组播流量取 128~254），外加 MCCAOP Reservation（预约）字段——它由三个小数字组成：Duration（时长）、Periodicity（每个 DTIM 间隔内的 MCCAOP 个数）以及 Offset（第一个 MCCAOP 的起始位置）。在发送之前，所有者会检查这个时段是否与任何邻居已预约的时段不重叠，并确认新增的空口占用不会让任何人超出其上限。响应者会重新执行同样的检查，然后回以一个 MCCAOP Setup Reply（建立回复）：代码 0 表示接受，非零代码表示拒绝——可能是因为冲突、超出 MAF 上限，或触及响应者可跟踪预约数量的天花板。发生冲突时，响应者甚至可以附上一个备选时段，供所有者改用。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 420 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><line x1='10' y1='110' x2='410' y2='110'/><polygon points='410,110 402,106 402,114' fill='currentColor' stroke='none'/><line x1='40' y1='100' x2='40' y2='120'/><line x1='225' y1='100' x2='225' y2='120'/><line x1='410' y1='100' x2='410' y2='120'/><text x='40' y='138' fill='currentColor' stroke='none' font-size='11'>DTIM beacon</text><text x='225' y='138' fill='currentColor' stroke='none' font-size='11'>next DTIM</text><rect x='95' y='70' width='45' height='40' fill='currentColor' fill-opacity='0.25' stroke='currentColor'/><rect x='160' y='70' width='45' height='40' fill='currentColor' fill-opacity='0.25' stroke='currentColor'/><text x='100' y='62' fill='currentColor' stroke='none' font-size='10'>MCCAOP</text><text x='165' y='62' fill='currentColor' stroke='none' font-size='10'>MCCAOP</text><line x1='40' y1='40' x2='95' y2='40' stroke-dasharray='4 3'/><text x='45' y='34' fill='currentColor' stroke='none' font-size='10'>Offset</text><line x1='95' y1='118' x2='140' y2='118'/><text x='98' y='15' fill='currentColor' stroke='none' font-size='10'>Duration</text><line x1='95' y1='12' x2='140' y2='12' stroke-dasharray='4 3'/><line x1='140' y1='52' x2='160' y2='52' stroke-dasharray='4 3'/><text x='240' y='48' fill='currentColor' stroke='none' font-size='10'>spacing = DTIM / Periodicity</text></svg>",
+      "caption": {
+        "en": "An MCCAOP reservation with Periodicity = 2: two equal windows per DTIM interval, the first starting at Offset, each lasting Duration, repeating every interval.",
+        "zh": "一个 Periodicity（周期数）= 2 的 MCCAOP 预约：每个 DTIM 间隔内有两个等长时段，第一个从 Offset（偏移）处开始，每个持续 Duration（时长），并逐间隔重复。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "What happens inside an MCCAOP depends on who you are. The owner, at the window's start, swaps its normal EDCA parameters (AIFSN, CWmin, CWmax) for dedicated MCCA values and caps its TXOP at the MCCAOP Duration — then transmits, facing no MCCA-aware competition. Every other neighbor does the opposite: it stays off the medium. To enforce that, an MCCA STA keeps a Reservation Allocation Vector (RAV) — a NAV-like 'busy' indicator built not from a frame just heard but from reservations learned earlier. The RAV marks the medium busy for the whole MCCAOP until the neighbor actually hears the owner or responder start transmitting, at which point it clears and normal rules resume. That advance, reservation-based silencing is what makes the window collision-free.",
+      "zh": "在 MCCAOP 内部发生什么，取决于你的角色。所有者在时段开始时，会把自己平常的 EDCA 参数（AIFSN、CWmin、CWmax）换成专用的 MCCA 取值，并把自己的 TXOP 限制在 MCCAOP Duration（时长）以内——然后就开始发送，面对的是“零个”支持 MCCA 的竞争者。其余每一个邻居则恰恰相反：它们都让出信道。为强制实现这一点，MCCA 站点维护一个 Reservation Allocation Vector（RAV，预约分配向量）——一个类似 NAV 的“忙”指示，但它不是依据刚收到的某一帧、而是依据更早学到的预约信息建立的。RAV 会在整个 MCCAOP 期间把介质标记为忙，直到该邻居真正听到所有者或响应者开始发送，此时 RAV 被清零、常规规则恢复。这种提前的、基于预约的“静默”，正是让该时段无冲突的关键。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Reservations must never starve ordinary traffic. The MCCA Access Fraction (MAF) is the share of each DTIM interval a STA has reserved for MCCAOPs, and dot11MAFlimit caps it. Before proposing or accepting a window, a STA verifies the new reservation keeps both its own MAF and every neighbor's MAF under their MAF Limit — otherwise the setup is refused. That single rule keeps scheduled airtime from swallowing the contention-based traffic it sits alongside.",
+      "zh": "预约绝不能把普通流量“饿死”。MCCA Access Fraction（MAF，MCCA 接入比例）是一个站点在每个 DTIM 间隔中为 MCCAOP 预约出去的时间占比，由 dot11MAFlimit 设定上限。在提出或接受一个时段之前，站点会校验：这个新预约要让自己的 MAF 以及每一个邻居的 MAF 都保持在各自的 MAF Limit（MAF 上限）之下——否则本次建立会被拒绝。正是这一条规则，让“被调度的空口时间”不会吞掉与之并存的“基于竞争的流量”。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact offset/duration encoding and the owner-vs-neighbor access rules",
+        "zh": "偏移/时长的精确编码，以及所有者与邻居各自的接入规则"
+      },
+      "en": "The MCCAOP Reservation field (9.4.2.104.2) is just three subfields: MCCAOP Duration (1 octet, in units of 32 us), MCCAOP Periodicity (1 octet, MCCAOPs per DTIM interval), and MCCAOP Offset (3 octets, also in 32-us units), with the constraint that Offset + Duration is smaller than the DTIM interval divided by Periodicity. It travels inside the 5-octet MCCAOP Setup Request element behind an 8-bit MCCAOP Reservation ID, and the MCCAOP Setup Reply element carries the MCCA Reply Code (0 Accept; 1 conflict, optionally with an alternative reservation; 2 MAF limit exceeded; 3 track limit exceeded). For access (10.24.3.9), at MCCAOP start the owner's EDCAF sets AIFSN[AC]=dot11MCCAAIFSN, CW[AC]=dot11MCCACWmin, CWmax[AC]=dot11MCCACWmax, considers only frames whose RA matches the responder, and bounds its TXOP to the MCCAOP Duration; at the end it restores dot11EDCATable. Non-owners run the RAV mechanism (10.24.3.9.2): a per-MCCAOP counter that indicates busy from the start of an interference-period MCCAOP and counts down, cleared to zero on receiving a frame from the owner or responder. An owner with nothing to send may transmit a QoS Null to end the MCCAOP early.",
+      "zh": "MCCAOP Reservation（预约）字段（见 9.4.2.104.2）只有三个子字段：MCCAOP Duration（时长，1 字节，单位为 32 微秒）、MCCAOP Periodicity（周期数，1 字节，即每个 DTIM 间隔内的 MCCAOP 个数）、MCCAOP Offset（偏移，3 字节，同样以 32 微秒为单位），约束条件是 Offset 与 Duration 之和必须小于 DTIM 间隔除以 Periodicity 的结果。该字段位于 5 字节的 MCCAOP Setup Request（建立请求）元素之内，前置一个 8 位的 MCCAOP Reservation ID（预约 ID）；而 MCCAOP Setup Reply（建立回复）元素则携带 MCCA Reply Code（回复代码）（0=接受；1=冲突，可附备选预约；2=超出 MAF 上限；3=超出跟踪上限）。在接入方面（见 10.24.3.9），MCCAOP 开始时，所有者的 EDCAF 会设置 AIFSN[AC]=dot11MCCAAIFSN、CW[AC]=dot11MCCACWmin、CWmax[AC]=dot11MCCACWmax，仅考虑 RA 与响应者匹配的帧，并把 TXOP 限制在 MCCAOP Duration 以内；时段结束时恢复为 dot11EDCATable。非所有者则运行 RAV 机制（见 10.24.3.9.2）：这是一个按 MCCAOP 计的计数器，自干扰期 MCCAOP 开始时指示“忙”并向下计数，在收到来自所有者或响应者的帧时被清零。若所有者无数据可发，可发送一个 QoS Null 帧来提前结束该 MCCAOP。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1217,
+          2048,
+          2049
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.24.3.1",
+    "80211-2024:10.24.3.2",
+    "80211-2024:10.24.3.3",
+    "80211-2024:10.24.3.4",
+    "80211-2024:10.24.3.5",
+    "80211-2024:10.24.3.6",
+    "80211-2024:10.24.3.9.1",
+    "80211-2024:10.24.3.9.2",
+    "80211-2024:9.4.2.104",
+    "80211-2024:9.4.2.105"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2038,
+        2039
+      ],
+      "note": "10.24.1-10.24.3.3 MCF/MCCA general, EDCA vs MCCA TXOP, MCCA activation, MCCAOP reservation schedule (offset/duration/periodicity)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2040,
+        2041
+      ],
+      "note": "10.24.3.4-10.24.3.6 neighborhood MCCAOP periods, MCCA Access Fraction (MAF) and dot11MAFlimit, MCCAOP setup procedure conditions"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2042
+      ],
+      "note": "10.24.3.6 setup reply: MCCA Reply Code 0 Accept / 1 conflict (+alternative) / 2 MAF / 3 track limit"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2048,
+        2049
+      ],
+      "note": "10.24.3.9.1-10.24.3.9.2 access during MCCAOPs: owner EDCAF MCCA parameters and TXOP bound; non-owner RAV mechanism"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1216,
+        1217
+      ],
+      "note": "9.4.2.104 MCCAOP Setup Request element + Reservation field (Duration/Periodicity/Offset, 32-us units); 9.4.2.105 MCCAOP Setup Reply element"
+    }
+  ],
+  "track": "mesh"
+}

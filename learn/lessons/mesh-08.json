@@ -1,0 +1,126 @@
+{
+  "id": "mesh-08",
+  "title": {
+    "en": "Advertising and Tearing Down MCCAOP Reservations",
+    "zh": "MCCAOP预约的通告、传播与拆除"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "An MCCAOP reservation only stops collisions if everyone who could step on it knows it exists. In a mesh, the dangerous neighbours are not just your direct peers — a station two hops away, which you cannot hear directly, can still transmit into your reserved time. So a reservation has to become common knowledge across the whole two-hop neighbourhood. The mechanism is simple in spirit: every MCCA-activated mesh STA periodically broadcasts a summary of the reservations it knows about, and its peers re-broadcast what they learn. This lesson is about how that summary is built, kept fresh, requested when missing, and finally torn down.",
+      "zh": "一个 MCCAOP 预约只有在所有可能踩到它的站点都知道它存在时，才能真正避免冲突。在 mesh 网络里，危险的邻居不仅仅是你的直接对端——一个离你两跳、你根本听不见的站点，仍然可能在你预约的时段里发送数据。因此，预约必须成为整个两跳邻域内的“公共知识”。其机制在本质上很简单：每个启用了 MCCA 的 mesh 站点周期性地广播一份它所知道的预约摘要，它的对端再把学到的内容转发出去。本课讲的就是：这份摘要如何被构建、如何保持新鲜、缺失时如何索取、以及最终如何被拆除。"
+    },
+    {
+      "type": "prose",
+      "en": "What a STA broadcasts is its MCCAOP advertisement set — everything it currently tracks. The standard sorts these tracked reservations into three buckets. TX-RX periods are individually addressed reservations where this STA is the owner or responder. Broadcast periods are the group-addressed equivalent (plus, optionally, things like its own beacon times). Interference periods are reservations it merely overheard from neighbours — it is neither owner nor responder, but it must still keep clear of them. Together these three sets are the advertisement set. On the air it is carried by one MCCAOP Advertisement Overview element plus zero or more MCCAOP Advertisement elements, each Advertisement element holding one or more reservations.",
+      "zh": "一个站点广播的是它的 MCCAOP 通告集（advertisement set）——也就是它当前追踪的全部预约。标准把这些被追踪的预约分成三类。TX-RX 时段是“单播”预约，其中本站点是预约的拥有者（owner）或响应者（responder）。广播时段是其“组播”对应物（另外可选地包含诸如本站点自身的信标发送时刻等）。干扰时段则是它仅仅从邻居那里“偷听”到的预约——它既不是拥有者也不是响应者，但仍必须避开这些时段。这三类集合合在一起就构成了通告集。在空口上，它由一个 MCCAOP Advertisement Overview 元素加上零个或多个 MCCAOP Advertisement 元素承载，每个 Advertisement 元素中包含一条或多条预约。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 460 210' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='10' y='10' width='440' height='190' rx='8'/><text x='230' y='30' fill='currentColor' stroke='none' font-size='13' text-anchor='middle' font-weight='bold'>MCCAOP advertisement set</text><rect x='30' y='50' width='130' height='130' rx='6'/><text x='95' y='70' fill='currentColor' stroke='none' font-size='11' text-anchor='middle' font-weight='bold'>TX-RX periods</text><text x='95' y='90' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>own/responder</text><text x='95' y='104' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>individually addr.</text><rect x='168' y='50' width='130' height='130' rx='6'/><text x='233' y='70' fill='currentColor' stroke='none' font-size='11' text-anchor='middle' font-weight='bold'>Broadcast periods</text><text x='233' y='90' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>own/responder</text><text x='233' y='104' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>group addressed</text><rect x='306' y='50' width='130' height='130' rx='6'/><text x='371' y='70' fill='currentColor' stroke='none' font-size='11' text-anchor='middle' font-weight='bold'>Interference periods</text><text x='371' y='90' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>overheard from</text><text x='371' y='104' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>neighbours</text><text x='95' y='150' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>-&gt; TX-RX report</text><text x='233' y='150' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>-&gt; Broadcast report</text><text x='371' y='150' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>-&gt; Interference report</text></svg>",
+      "caption": {
+        "en": "The three buckets of tracked reservations. Each non-empty bucket becomes a report carried inside MCCAOP Advertisement elements.",
+        "zh": "被追踪预约的三个分类桶。每个非空的桶都会变成一份报告（report），承载在 MCCAOP Advertisement 元素内。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The clever part is the Advertisement Set Sequence Number, carried in the Overview element. It is a single modulo-256 counter that names the current packaging of the advertisement set across its Advertisement elements. Neighbours track the last sequence number (and the Advertisement Elements Bitmap) they saw from you. When you re-broadcast your Overview with the same sequence number and same bitmap, a neighbour knows nothing changed and can skip re-reading the bulky Advertisement elements. Bump the sequence number and the neighbour must treat everything as new and re-learn the whole set. That single byte is what lets advertisements be cheap most of the time.",
+      "zh": "其中精巧之处在于通告集序号（Advertisement Set Sequence Number），它承载在 Overview 元素里。它是一个单一的模 256 计数器，用来标识当前通告集在各 Advertisement 元素之间的“打包方式”。邻居会记下它从你这里看到的最后一个序号（以及 Advertisement Elements Bitmap 位图）。当你用相同的序号和相同的位图再次广播 Overview 时，邻居就知道什么都没变，可以跳过对那些笨重的 Advertisement 元素的重新解析。一旦你递增序号，邻居就必须把一切当作全新的，重新学习整个集合。正是这一个字节，让通告在大多数时候都很廉价。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant A as Mesh STA A (advertiser)\n    participant B as Neighbour B (tracker)\n    A->>B: Overview (SeqNo=7, Bitmap) + Advertisement elements\n    Note over B: record SeqNo=7, store reservations\n    A->>B: Overview (SeqNo=7, same Bitmap)\n    Note over B: SeqNo & Bitmap match -> current, do nothing\n    Note over A: a reservation changes -> SeqNo bumped\n    A->>B: Overview (SeqNo=8, new Bitmap)\n    Note over B: SeqNo differs -> COMPLETE update (discard + relearn)\n    Note over B: missed an element before NAV set?\n    B->>A: MCCA Advertisement Request (which elements)\n    A->>B: requested Advertisement elements",
+      "zh": "sequenceDiagram\n    participant A as Mesh STA A (通告方)\n    participant B as 邻居 B (追踪方)\n    A->>B: Overview (序号=7, 位图) + Advertisement 元素\n    Note over B: 记录序号=7, 存下预约\n    A->>B: Overview (序号=7, 位图相同)\n    Note over B: 序号与位图都匹配 -> 已是最新, 不做处理\n    Note over A: 某条预约变化 -> 序号递增\n    A->>B: Overview (序号=8, 新位图)\n    Note over B: 序号不同 -> 完整更新(丢弃后重学)\n    Note over B: 在设置 NAV 前漏收了某元素?\n    B->>A: MCCA Advertisement Request (索取哪些元素)\n    A->>B: 被请求的 Advertisement 元素"
+    },
+    {
+      "type": "prose",
+      "en": "When a neighbour receives your Overview, it compares against what it tracked. If the sequence number differs, it does a complete update: discard everything it held for you, record the new sequence number and source address, and store every reservation in the new Advertisement elements. If the sequence number matches but the Advertisement Elements Bitmap differs, it does a partial update — only the bits that flipped matter: a bit going 1->0 deletes that element's reservations, a bit going 0->1 adds the new element. If both sequence number and bitmap match, nothing is done. And if a station could not collect all the needed Advertisement elements before a frame exchange forced its NAV, it falls back to the advertisement request procedure: it sends an MCCA Advertisement Request frame naming, via the bitmap, exactly which elements it still wants.",
+      "zh": "当邻居收到你的 Overview 时，它会与自己追踪的内容做比较。如果序号不同，它执行完整更新（complete update）：丢弃它为你保存的一切，记录新的序号和源地址，并存下新 Advertisement 元素中的每一条预约。如果序号相同但 Advertisement Elements Bitmap 不同，它执行部分更新（partial update）——只有翻转的那些位才需要处理：某位从 1 变 0 就删除该元素的预约，从 0 变 1 就添加这个新元素。如果序号和位图都相同，则什么都不做。而如果某个站点在一次帧交换迫使它设置 NAV 之前还没能收齐所需的全部 Advertisement 元素，它就回退到通告请求流程：发送一个 MCCA Advertisement Request 帧，通过位图精确指明它仍想要哪些元素。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Reservations also disappear without anyone announcing it. An owner silently deletes an individually addressed reservation if it gets no acknowledgement for any transmission in those MCCAOPs for longer than dot11MCCAOPtimeout; a responder deletes one if it sees no frame in them for that long. Explicit teardown (below) is for the deliberate case — a reservation no longer needed, or a conflict that must be resolved.",
+      "zh": "预约也可能在无人宣告的情况下消失。如果拥有者在那些 MCCAOP 中的任何发送都得不到确认、且持续时间超过 dot11MCCAOPtimeout，它会悄悄删除该单播预约；如果响应者在这些时段中长时间收不到任何帧，它也会删除。下面要讲的显式拆除（teardown）则用于有意为之的情形——预约不再需要，或必须解决某个冲突。"
+    },
+    {
+      "type": "prose",
+      "en": "Explicit teardown is triggered when a reservation is no longer needed, or when a STA must resolve a conflict in its neighbourhood periods (for an overlap between its own TX-RX/broadcast period and an interference period, a deterministic tie-break on bit-reversed MAC addresses decides who tears down). The teardown itself is one MCCA Teardown frame carrying an MCCAOP Teardown element, whose MCCAOP Reservation ID names the reservation; if a responder initiates it, the element also carries the owner's MAC address so the reservation can be identified unambiguously. The transmitter deletes the reservation once the frame is sent; the receiver deletes it on receipt. Afterwards both owner and responder stop running the MCCAOP access procedure for that slot and stop advertising it in their TX-RX or Broadcast Periods Report — so the teardown propagates outward the same way the original advertisement did.",
+      "zh": "显式拆除在以下情况触发：预约不再需要，或站点必须解决其邻域时段中的冲突（当它自己的 TX-RX/广播时段与某个干扰时段重叠时，用对 MAC 地址做位序反转后的确定性比较来决定由谁来拆除）。拆除本身是一个 MCCA Teardown 帧，携带一个 MCCAOP Teardown 元素，其中的 MCCAOP Reservation ID 字段指明要拆除哪条预约；如果是由响应者发起的，该元素还会携带拥有者的 MAC 地址，以便无歧义地标识这条预约。发送方在帧发出后即删除该预约，接收方在收到后删除。此后，拥有者和响应者都会停止对该时隙执行 MCCAOP 接入流程，并停止在它们的 TX-RX 或 Broadcast Periods Report 字段中通告它——于是拆除便像最初的通告那样向外扩散开来。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The on-air elements and the exact sequence-number rule",
+        "zh": "空口元素与序号的精确规则"
+      },
+      "en": "Three elements carry all of this. The MCCAOP Advertisement Overview element (9.4.2.106) holds the Advertisement Set Sequence Number, a Flags field whose Accept Reservations bit reflects whether dot11MCCATrackStatesActive is below dot11MCCATrackStatesCapable, the MCCA Access Fraction and MAF Limit fields (each a 1/255-of-DTIM unit), and a 2-octet Advertisement Elements Bitmap. The MCCAOP Advertisement element (9.4.2.107) carries the same sequence number, an Element Information field (a 4-bit Advertisement Element Index plus TX-RX/Broadcast/Interference Report Present bits), and up to one of each report; each report (9.4.2.107.3) is a count plus n MCCAOP Reservation fields of 5 octets each. The MCCAOP Teardown element (9.4.2.108) is just a Reservation ID and an optional 6-octet Owner MAC, present only when a responder sends it. On the sequence number itself (10.24.3.7.3): the modulo-256 counter is incremented when a bitmap bit is set 0->1 that had already been 1 under the same sequence number, or when a bit that is 1 has its element's content change; it may stay unchanged when a bit goes 0->1 for the first time under that sequence number, or when a bit goes 1->0 — which is exactly what enables the limited (partial) advertisement and the partial-update request used by sleeping STAs.",
+      "zh": "三个元素承载了全部内容。MCCAOP Advertisement Overview 元素（9.4.2.106）包含：Advertisement Set Sequence Number；一个 Flags 字段，其 Accept Reservations 位反映 dot11MCCATrackStatesActive 是否小于 dot11MCCATrackStatesCapable；MCCA Access Fraction 与 MAF Limit 字段（各以 DTIM 间隔的 1/255 为单位）；以及一个 2 字节的 Advertisement Elements Bitmap。MCCAOP Advertisement 元素（9.4.2.107）携带相同的序号、一个 Element Information 字段（4 位的 Advertisement Element Index 加上 TX-RX/Broadcast/Interference 三个 Report Present 位），以及最多各一份的报告；每份报告（9.4.2.107.3）是一个计数值加上 n 个各 5 字节的 MCCAOP Reservation 字段。MCCAOP Teardown 元素（9.4.2.108）则只有一个 Reservation ID 和一个可选的 6 字节 Owner MAC，仅当由响应者发送时才出现。关于序号本身（10.24.3.7.3）：当某个位图位在同一序号下已经被置过 1、却再次从 0 置为 1 时，或当某个为 1 的位其对应元素内容发生变化时，这个模 256 计数器递增；而当某个位在该序号下第一次从 0 变 1、或某个位从 1 变 0 时，序号可以保持不变——这正是“受限（部分）通告”以及休眠站点所用的“部分更新请求”得以实现的关键。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1218,
+          1219,
+          1220,
+          1221,
+          2044
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2042,
+        2043,
+        2044
+      ],
+      "note": "10.24.3.7.2-10.24.3.7.3 — constructing the advertisement set (TX-RX/broadcast/interference); advertisement set sequence number rule"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2045,
+        2046,
+        2047
+      ],
+      "note": "10.24.3.7.5-10.24.3.7.8 — receipt, complete update, partial update, advertisement request procedure"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2047,
+        2048
+      ],
+      "note": "10.24.3.8.1-10.24.3.8.2 — teardown trigger conditions (incl. silent timeout deletion) and MCCAOP Teardown procedure"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1218,
+        1219,
+        1220,
+        1221
+      ],
+      "note": "9.4.2.106-9.4.2.108 — MCCAOP Advertisement Overview, Advertisement, and Teardown element formats"
+    }
+  ],
+  "covers": [
+    "80211-2024:10.24.3.7.2",
+    "80211-2024:10.24.3.7.3",
+    "80211-2024:10.24.3.7.5",
+    "80211-2024:10.24.3.7.6",
+    "80211-2024:10.24.3.7.7",
+    "80211-2024:10.24.3.7.8",
+    "80211-2024:10.24.3.8.1",
+    "80211-2024:10.24.3.8.2",
+    "80211-2024:9.4.2.106",
+    "80211-2024:9.4.2.107",
+    "80211-2024:9.4.2.108"
+  ],
+  "track": "mesh"
+}

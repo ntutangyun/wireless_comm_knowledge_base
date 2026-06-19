@@ -1,0 +1,124 @@
+{
+  "id": "mesh-09",
+  "title": {
+    "en": "Sleeping While Still Relaying: Mesh Power Management",
+    "zh": "边休眠边转发：网格站点的省电管理"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A battery-powered mesh node has a problem that an ordinary client never faces: it is also a relay. An infrastructure station can doze freely because nothing depends on it forwarding traffic — when it sleeps, only its own packets wait. But a mesh node carries other people's frames toward the rest of the network. If it just slept whenever it felt tired, it would punch holes in the mesh. 802.11 squares this circle with mesh power management: a mesh node can still sleep deeply, but it sleeps on a schedule its neighbours know about, so a relay path is always reachable.",
+      "zh": "一个用电池供电的网格（mesh）节点面临一个普通客户端从来不会遇到的难题：它同时还是一个中继。基础设施模式下的站点可以随意打盹，因为没有谁依赖它去转发流量——它睡着时，等待的只是它自己的数据包。但网格节点要替别人把帧转发到网络的其余部分。如果它一困就睡，就会在网格里捅出一个个窟窿。802.11 用“网格省电管理”化解了这个矛盾：网格节点照样可以深度休眠，但它是按一张邻居都知道的时间表来睡的，因此一条中继路径始终是可达的。"
+    },
+    {
+      "type": "prose",
+      "en": "The key idea is that power state is per-peering, not per-node. A mesh node keeps a separate power management mode for each of its mesh peerings, and can set each one independently with an MLME-MESHPOWERMGT.request. Three modes exist toward a peer: active (always awake), light sleep, and deep sleep. So a node can be wide awake toward a busy uphill neighbour while deep-sleeping toward a quiet one. Separately, it keeps one nonpeer mode (only active or deep sleep) that governs how it behaves toward strangers — nodes it has not peered with.",
+      "zh": "核心思想是：省电状态是“按对等关系（per-peering）”而非“按节点”来管理的。网格节点为它的每一条网格对等关系分别维护一个省电管理模式，并可用 MLME-MESHPOWERMGT.request 原语独立设置每一条。面向某个对端共有三种模式：active（始终清醒）、light sleep（浅休眠）和 deep sleep（深休眠）。于是一个节点可以对繁忙的上游邻居全程清醒，同时对一个安静的邻居深度休眠。此外，它还单独维护一个 nonpeer（非对等）模式（只有 active 或 deep sleep 两种），用来管理它面对“陌生节点”——尚未建立对等关系的节点——时的行为。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "How does a node announce its mode? Not with a separate control message — it is encoded in every data frame. The Power Management subfield in the Frame Control field plus the Mesh Power Save Level subfield in the QoS Control field together name the mode: active (PM=0), light sleep (PM=1, level=0), deep sleep (PM=1, level=1). To change to a higher activity level you can use any frame; to drop to a lower level you must use an acknowledged individually addressed frame, so the peer is guaranteed to have heard you before you go quiet.",
+      "zh": "节点如何宣告自己的模式？不是靠一条单独的控制消息——而是编码在每一个数据帧里。帧控制（Frame Control）字段中的 Power Management 子字段，再加上 QoS 控制（QoS Control）字段中的 Mesh Power Save Level 子字段，二者共同表示模式：active（PM=0）、light sleep（PM=1，level=0）、deep sleep（PM=1，level=1）。要切换到更高的活动级别，可以用任意帧；而要降到更低的级别，则必须使用经过确认（acknowledged）的单播帧，这样在你安静下来之前，对端一定已经收到了通知。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    B[\"Mesh STA B (battery)\"]\n    A[\"Mesh STA A (busy uphill)\"]\n    C[\"Mesh STA C (quiet)\"]\n    N[\"Nonpeer STAs (strangers)\"]\n    B -- \"light sleep peering\" --> A\n    B -- \"deep sleep peering\" --> C\n    B -- \"nonpeer = deep sleep\" --> N",
+      "zh": "graph LR\n    B[\"网格站点 B（电池供电）\"]\n    A[\"网格站点 A（繁忙上游）\"]\n    C[\"网格站点 C（安静）\"]\n    N[\"非对等站点（陌生节点）\"]\n    B -- \"浅休眠对等关系\" --> A\n    B -- \"深休眠对等关系\" --> C\n    B -- \"非对等 = 深休眠\" --> N"
+    },
+    {
+      "type": "prose",
+      "en": "Sleeping nodes need a guaranteed listening period, and that is the mesh awake window. A node in light or deep sleep advertises a Mesh Awake Window element in its beacon (and may in Probe Responses); the window opens at the end of that beacon and lasts for dot11MeshAwakeWindowDuration. During the window the node is awake and reachable. Meanwhile the TIM element in every beacon, coded as a partial virtual bitmap over peer AIDs, tells each sleeping peer whether the node is holding buffered frames for it — and a DTIM (sent every DTIMPeriod) signals pending group-addressed traffic via AID 0. A light-sleep node wakes for every peer beacon to read this; a deep-sleep node may skip beacons entirely and is not required to listen.",
+      "zh": "休眠中的节点需要一段有保证的“侦听时段”，这就是“网格清醒窗口（mesh awake window）”。处于浅休眠或深休眠的节点会在其信标（beacon）中通告一个 Mesh Awake Window 元素（也可在探测响应中通告）；窗口在该信标结束时开启，持续 dot11MeshAwakeWindowDuration。在窗口期内，节点是清醒且可达的。与此同时，每个信标里的 TIM 元素（以一张覆盖各对端 AID 的部分虚拟位图编码）告诉每个休眠对端：本节点是否为它缓存了帧——而 DTIM（每 DTIMPeriod 发送一次）则通过 AID 0 来标示有待发的组播流量。浅休眠节点会在每个对端信标到来时醒来读取这些信息；深休眠节点可以完全跳过信标，并不要求侦听。"
+    },
+    {
+      "type": "prose",
+      "en": "When a node actually has buffered frames for a sleeping peer, it does not just blast them — it runs a mesh peer service period (peer-PSP). A peer trigger frame (a mesh Data or QoS Null frame requiring acknowledgment) starts it, with two subfields steering the outcome: RSPI and EOSP. A light-sleep node that sees buffered traffic in a beacon sends a trigger with RSPI=1 to pull its frames. The trigger can even open two peer-PSPs at once — one in each direction — so both ends can deliver. During the peer-PSP both owner and recipient stay awake; the owner grabs TXOPs and sends, and the period ends when an acknowledged frame carries EOSP=1.",
+      "zh": "当一个节点确实为某个休眠对端缓存了帧时，它不会直接猛发——而是运行一段“网格对等服务期（mesh peer service period，peer-PSP）”。由一个“对等触发帧（peer trigger frame，即需要确认的网格 Data 帧或 QoS Null 帧）”来启动，并由两个子字段决定走向：RSPI 与 EOSP。浅休眠节点在信标中看到有缓存流量时，会发出一个 RSPI=1 的触发帧来把自己的帧拉过来。这个触发帧甚至可以一次开启两个 peer-PSP——每个方向一个——使两端都能投递。在 peer-PSP 期间，拥有者（owner）与接收者（recipient）都保持清醒；拥有者抢占 TXOP 并发送，当某个被确认的帧携带 EOSP=1 时，该服务期结束。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant O as Owner (had buffered frames)\n    participant R as Recipient (sleeping peer)\n    Note over O,R: 1. Initiation\n    O->>R: Mesh Data, RSPI=1, EOSP=0 (peer trigger)\n    R-->>O: Ack\n    Note over O,R: 2. Data transfer\n    O->>R: Mesh Data, EOSP=0\n    R-->>O: Ack\n    Note over O,R: 3. Termination\n    O->>R: Mesh Data, EOSP=1\n    R-->>O: Ack (peer-PSP ends)",
+      "zh": "sequenceDiagram\n    participant O as 拥有者（持有缓存帧）\n    participant R as 接收者（休眠对端）\n    Note over O,R: 1. 发起阶段\n    O->>R: 网格 Data, RSPI=1, EOSP=0（对等触发帧）\n    R-->>O: Ack\n    Note over O,R: 2. 数据传输阶段\n    O->>R: 网格 Data, EOSP=0\n    R-->>O: Ack\n    Note over O,R: 3. 终止阶段\n    O->>R: 网格 Data, EOSP=1\n    R-->>O: Ack（peer-PSP 结束）"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Sleep and reserved airtime coexist. If a node uses MCCA (the mesh coordinated channel access reservations) with a peer, it must stay in active or light sleep mode toward that peer — never deep sleep. A scheduled mesh peer service period then begins automatically at each MCCAOP start time, and the sleeping node wakes just before it. So a doze-prone node can still honour the airtime it reserved: the reservation schedule doubles as a wake schedule.",
+      "zh": "休眠与预留空口时间可以共存。如果一个节点对某个对端使用了 MCCA（网格协调信道访问预留机制），它对该对端就必须保持 active 或 light sleep 模式——绝不能是 deep sleep。于是每到一个 MCCAOP 起始时刻，就会自动开启一段“计划的网格对等服务期”，而休眠节点会在它之前醒来。这样，一个爱打盹的节点依然能兑现它预留的空口时间：预留时间表同时也充当了唤醒时间表。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact RSPI/EOSP trigger table and the doze conditions",
+        "zh": "精确的 RSPI/EOSP 触发表与进入打盹态的条件"
+      },
+      "en": "Table 14-33 (14.15.9.2) defines exactly what a peer trigger frame does by RSPI/EOSP: RSPI=0,EOSP=0 starts one peer-PSP owned by the trigger's transmitter; RSPI=0,EOSP=1 starts none; RSPI=1,EOSP=0 starts two peer-PSPs (both STAs become owners); RSPI=1,EOSP=1 starts one owned by the trigger's receiver. The peer-PSP is directional and only one runs per direction per peer at a time. It terminates (14.15.9.4) on an acknowledged QoS Null or mesh Data frame with EOSP=1 from the owner; if that last EOSP frame is not acked, the owner retransmits within the same period up to the lesser of Max Retry Limit and dot11MeshSTAMissingAckRetryLimit. A node may finally enter doze state (14.15.8.6) only when all are true: it is in light or deep sleep for every peering; no peer-PSP is ongoing; no peering-management, authentication, or passive-scan transaction is pending; its advertised mesh awake window has expired; and its post-DTIM group-addressed delivery has finished.",
+      "zh": "表 14-33（14.15.9.2）精确定义了对等触发帧按 RSPI/EOSP 取值的效果：RSPI=0、EOSP=0 启动一个 peer-PSP，拥有者是触发帧的发送方；RSPI=0、EOSP=1 不启动；RSPI=1、EOSP=0 启动两个 peer-PSP（两个站点都成为拥有者）；RSPI=1、EOSP=1 启动一个，拥有者是触发帧的接收方。peer-PSP 是有方向的，且每个对端在每个方向同一时刻只能有一个在运行。它在拥有者发出的、被确认的、EOSP=1 的 QoS Null 帧或网格 Data 帧之后终止（14.15.9.4）；若该最后的 EOSP 帧未被确认，拥有者将在同一服务期内重传，次数上限取 Max Retry Limit 与 dot11MeshSTAMissingAckRetryLimit 二者中的较小值。节点只有在以下全部条件满足时才最终进入打盹（doze）态（14.15.8.6）：对每一条对等关系都处于浅休眠或深休眠；没有正在进行的 peer-PSP；没有待处理的对等管理、认证或被动扫描事务；它通告的网格清醒窗口已到期；且它在 DTIM 之后的组播投递序列已结束。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3283,
+          3284,
+          3285
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:14.15.2.2",
+    "80211-2024:14.15.2.3",
+    "80211-2024:14.15.3.2",
+    "80211-2024:14.15.3.3",
+    "80211-2024:14.15.6",
+    "80211-2024:14.15.8.4",
+    "80211-2024:14.15.8.5",
+    "80211-2024:14.15.9.2",
+    "80211-2024:14.15.9.3",
+    "80211-2024:14.15.9.4",
+    "80211-2024:14.15.10"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3278,
+        3279
+      ],
+      "note": "14.15.2.2-14.15.2.3 - peer-specific modes (active/light/deep) and nonpeer modes; Table 14-32 subfield encoding"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3280
+      ],
+      "note": "14.15.3.2-14.15.3.3 - transition to higher activity level (any frame) vs lower (acknowledged individually addressed frame)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3281
+      ],
+      "note": "14.15.6 - mesh awake window; Mesh Awake Window element in beacon; dot11MeshAwakeWindowDuration"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3283
+      ],
+      "note": "14.15.8.4-14.15.8.5 - operation in light sleep (wake for every peer beacon) and deep sleep (may skip beacons)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3283,
+        3284,
+        3285
+      ],
+      "note": "14.15.9.2-14.15.9.4 and Table 14-33 - peer-PSP initiation by RSPI/EOSP, operation, termination on EOSP=1; 14.15.10 MCCA scheduled peer-PSP"
+    }
+  ],
+  "track": "mesh"
+}

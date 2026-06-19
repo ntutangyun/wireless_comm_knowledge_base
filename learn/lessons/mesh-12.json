@@ -1,0 +1,116 @@
+{
+  "id": "mesh-12",
+  "title": {
+    "en": "Mesh Gates, Proxies, and Reaching the Wired World",
+    "zh": "网格网关、代理与连接有线世界（DS 互通）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A mesh is only useful if it can reach the rest of the world — the internet, a wired LAN, the printer on Ethernet, the laptop bridged behind one node. But here is the catch: most of those real destinations are not mesh STAs at all. The mesh's own forwarding tables only know about addresses that belong to the mesh BSS (the MBSS). So the mesh needs an edge: a door to the outside, and a way to talk about devices that live beyond that door. This lesson is about that edge.",
+      "zh": "一张网格网络只有能连到外部世界才真正有用——互联网、有线局域网、接在以太网上的打印机、桥接在某个节点后面的笔记本。但问题在于：这些真正的目的地大多根本不是网格站点（mesh STA）。网格自身的转发表只认识属于本网格 BSS（MBSS）的地址。因此网格需要一个“边缘”：一扇通往外部的门，以及一套谈论门外设备的方法。本课讲的就是这个边缘。"
+    },
+    {
+      "type": "prose",
+      "en": "The door is a mesh gate: a mesh STA that has direct access to the distribution system (DS) or an attached bridge. Other mesh STAs reach the wired world by forwarding their frames toward a gate. The whole MBSS then behaves like a single IEEE 802 LAN segment — one access domain that happens to sit behind one or more gates. If there are several gates onto the same bridged network, that is several 'ports' into the DS, so gates are expected to cooperate with the bridge's loop-prevention (e.g. RSTP) to avoid broadcast loops.",
+      "zh": "这扇门就是网格网关（mesh gate）：一个直接接入分发系统（DS）或所连网桥的网格站点。其他网格站点通过把帧转发给网关来抵达有线世界。于是整个 MBSS 表现得就像一个单一的 IEEE 802 局域网段——一个恰好位于一个或多个网关之后的接入域。如果有多个网关接入同一个桥接网络，那就相当于通往 DS 的多个“端口”，因此各网关需要与网桥的防环协议（如 RSTP）协作，以避免广播环路。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Don't confuse the two roles. A 'mesh gate' has a path to the DS. A 'proxy mesh gate' goes one step further: it represents external (non-mesh) addresses to the rest of the mesh, so that the MBSS forwarding tables only ever contain mesh addresses. The device on Ethernet is reached by its proxy gate's mesh address plus the external address carried in extra address fields.",
+      "zh": "别把两个角色搞混。“网格网关（mesh gate）”是指有路径通往 DS 的节点。“代理网格网关（proxy mesh gate）”更进一步：它代表外部（非网格）地址，向网格其余部分“出面”，从而让 MBSS 的转发表中始终只包含网格地址。以太网上的那台设备，是通过其代理网关的网格地址、再加上额外地址字段中携带的外部地址来抵达的。"
+    },
+    {
+      "type": "prose",
+      "en": "First the mesh has to know where the exits are. When a gate is configured to announce itself, it periodically sends a Gate Announcement (GANN) element. Neighbours that accept it re-broadcast it (decrementing the TTL, bumping the hop count) so the news of 'a gate lives this way' floods across the MBSS. Acceptance is governed by a sequence number: a GANN is dropped if its sequence number is not newer than the last one accepted for that same gate address. Stored gate addresses let a node forward an MSDU even when it has no path to the actual destination — it just heads for a gate.",
+      "zh": "首先，网格必须知道出口在哪里。当一个网关被配置为宣告自身时，它会周期性地发送“网关宣告（GANN）元素”。接受该元素的邻居会将其再次广播出去（递减 TTL、增加跳数），于是“这个方向有一个网关”的消息便在整个 MBSS 中扩散开来。是否接受由序号决定：如果某个 GANN 的序号不比上次为同一网关地址接受的序号更新，就将其丢弃。保存下来的网关地址，使得节点即便对真正的目的地没有路径，也能转发 MSDU——直接朝某个网关去就行。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    EXT[\"External STA<br/>(laptop on Ethernet)\"] -.bridged.-> PG\n    PG[\"Proxy mesh gate\"] -->|GANN flood| M1[\"mesh STA\"]\n    M1 -->|GANN flood| M2[\"mesh STA\"]\n    M2 -->|GANN flood| SRC[\"Source mesh STA\"]\n    SRC -->|frame toward gate| M2\n    M2 --> M1\n    M1 --> PG\n    PG ==>|MSDU out to DS| DS[(\"DS / wired LAN\")]",
+      "zh": "graph LR\n    EXT[\"外部 STA<br/>(以太网上的笔记本)\"] -.桥接.-> PG\n    PG[\"代理网格网关\"] -->|GANN 扩散| M1[\"网格 STA\"]\n    M1 -->|GANN 扩散| M2[\"网格 STA\"]\n    M2 -->|GANN 扩散| SRC[\"源网格 STA\"]\n    SRC -->|朝网关转发的帧| M2\n    M2 --> M1\n    M1 --> PG\n    PG ==>|MSDU 送往 DS| DS[(\"DS / 有线 LAN\")]"
+    },
+    {
+      "type": "prose",
+      "en": "Once a frame reaches a proxy gate, the gate forwards in whichever direction the traffic is going. MBSS → DS: when a four-address mesh Data frame arrives whose Address 5 is an external address the gate proxies, it hands the MSDU out to the DS; if a different gate proxies that address, it re-sends it through the mesh toward that gate; if the address is unknown, it still pushes it to the DS (and may signal an error back). DS → MBSS: an inbound MSDU is rewrapped into a four-address mesh Data frame, with Address 5/6 carrying the true end-station addresses, and steered toward the destination mesh STA or the proxy gate that owns that external address.",
+      "zh": "一旦帧到达某个代理网关，网关便按流量的方向进行转发。MBSS → DS：当收到一个四地址网格数据帧、其 Address 5 是本网关所代理的外部地址时，它就把 MSDU 送往 DS；如果该地址由另一个网关代理，则将其经网格转发给那个网关；如果地址未知，它仍会把帧推往 DS（并可回送一个差错通知）。DS → MBSS：入站的 MSDU 会被重新封装成四地址网格数据帧，由 Address 5/6 携带真实的端站地址，并被引导至目的网格站点、或拥有该外部地址的代理网关。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Being a good neighbour: congestion control. If one node's links get overloaded, it can send a Congestion Control Notification frame to the source(s) of the offending traffic and its neighbours. Each Congestion Notification element names the traffic destination and how long the congestion is expected to last, per access category. Receivers may stop or slow forwarding to those destinations for that duration — and propagate the warning upstream so everyone's back-off timers expire together.",
+      "zh": "做个好邻居：拥塞控制。如果某个节点的链路过载，它可以向引发流量的源节点及其邻居发送“拥塞控制通知帧（Congestion Control Notification frame）”。其中每个“拥塞通知元素”都会指明引发拥塞的流量目的地，以及按接入类别（AC）估计的拥塞预计持续时长。收到的节点可以在该时长内停止或减缓朝这些目的地的转发，并把告警继续向上游传播，使大家的退避计时器同时到期。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Proxy information and the PXU / PXUC exchange",
+        "zh": "代理信息与 PXU / PXUC 交换"
+      },
+      "en": "Each proxy entry (14.12.4.2) is a tuple: external address, the proxy address (the gate's MAC), a proxy information sequence number, and a lifetime. The sequence number plus proxy address give a chronological order for an external STA at a given gate; it is incremented before each transmission and on invalidation, and when carried in HWMP elements it equals that element's HWMP SN, compared with circular modulo-2^32 arithmetic. To advertise reachability, a proxy gate sends a Proxy Update (PXU) element (14.12.4.3) in an individually addressed Proxy Update frame; each Per-Proxy-Information record carries flags (add/delete, whether the Proxy MAC Address field is present, whether a Lifetime field is present), the external MAC address, the sequence number, and optionally the proxy address and lifetime. A receiver adopts the entry if it is new, or if the PXU's sequence number is larger than what it holds; multiple PXU elements in one frame are all processed. The destination then returns a Proxy Update Confirmation (PXUC) element (14.12.4.4) echoing the PXU ID; the originator may keep retransmitting the same PXU until that PXUC arrives, after which it stops sending PXUs with that ID.",
+      "zh": "每条代理表项（14.12.4.2）是一个元组：外部地址、代理地址（网关的 MAC）、代理信息序号，以及生存期。序号加代理地址，为某个外部 STA 在某个网关处给出了时间先后顺序；它在每次发送前以及被作废时递增，当被携带在 HWMP 元素中时，其值等于该元素的 HWMP SN，并以循环模 2^32 算术进行比较。为了通告可达性，代理网关在一个单播的“代理更新帧（Proxy Update frame）”中发送“代理更新（PXU）元素”（14.12.4.3）；其中每条“逐代理信息”记录携带标志位（增/删、是否含 Proxy MAC Address 字段、是否含 Lifetime 字段）、外部 MAC 地址、序号，以及可选的代理地址和生存期。接收方在该表项为新、或 PXU 的序号大于其现有值时予以采纳；一帧中的多个 PXU 元素会全部处理。随后目的站点回送一个“代理更新确认（PXUC）元素”（14.12.4.4），回显该 PXU ID；发起方可以反复重传同一个 PXU，直到收到该 PXUC，此后便不再发送带该 ID 的 PXU。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3263,
+          3264,
+          3265,
+          3266
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:14.12.2.3",
+    "80211-2024:14.12.2.4",
+    "80211-2024:14.12.3.2",
+    "80211-2024:14.12.3.3",
+    "80211-2024:14.12.4.2",
+    "80211-2024:14.12.4.3",
+    "80211-2024:14.12.4.4",
+    "80211-2024:14.13.2"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3258,
+        3259,
+        3260
+      ],
+      "note": "14.12.2.3-14.12.2.4 GANN generation/sending and processing; sequence-number acceptance; stored gate addresses aid forwarding"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3260,
+        3261,
+        3262
+      ],
+      "note": "14.12.3.2-14.12.3.3 data forwarding at proxy mesh gates, MBSS->DS and DS->MBSS, four-address mesh Data frame addressing"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3262,
+        3263,
+        3264,
+        3265,
+        3266
+      ],
+      "note": "14.12.4.2-14.12.4.4 proxy information tuple, PXU element and frame, PXUC confirmation and retransmission rule"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3266,
+        3267
+      ],
+      "note": "14.13.2 congestion control signaling protocol; Congestion Control Notification frame and Congestion Notification elements"
+    }
+  ],
+  "track": "mesh"
+}

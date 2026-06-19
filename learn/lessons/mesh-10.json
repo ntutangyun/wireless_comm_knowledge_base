@@ -1,0 +1,123 @@
+{
+  "id": "mesh-10",
+  "title": {
+    "en": "Beacon Timing and Collision Avoidance in a Mesh (Neighbor-Offset Sync + MBCA)",
+    "zh": "网格中的信标定时与防撞：邻居偏移同步与 MBCA"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In an infrastructure Wi-Fi network there is one AP, and it is the clock — every station tunes its sense of time to the AP's beacons. A mesh BSS has no such anchor. It is a flat cloud of peer mesh STAs, each beaconing on the same channel, none of them in charge. That raises two awkward questions. Whose clock is the right time? And if everyone beacons periodically, what stops their beacons from landing on top of each other forever? 802.11 answers these with two cooperating mechanisms: neighbor-offset synchronization for the clock, and Mesh Beacon Collision Avoidance (MBCA) for the collisions.",
+      "zh": "在基础设施型 Wi-Fi 网络里只有一个 AP，它就是“时钟”——每个站点都把自己的时间感对齐到 AP 的信标。而网格 BSS（MBSS）没有这样的锚点。它是一片扁平的对等 mesh STA 云，每个节点都在同一信道上发信标，没有谁说了算。这就带来两个棘手的问题：谁的时钟才是正确时间？如果每个节点都周期性发信标，又是什么阻止它们的信标永远叠在一起？802.11 用两套相互配合的机制来回答：用于对时的“邻居偏移同步”，以及用于防撞的“网格信标防撞（MBCA）”。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the clock. Rather than forcing every node onto one shared TSF value (which would need a master), 802.11 defines an extensible synchronization framework whose default, mandatory method is neighbor-offset synchronization. The trick is simple: each mesh STA runs its own free TSF timer and, for every neighbor it syncs with, just remembers the offset between the two clocks. From a neighbor's beacon timestamp Tt and the local reception time Tr, it computes Toffset = Tt - Tr. Knowing the offset, a node can translate any neighbor's time into its own (Tself = Tneighbor - Toffset) without anyone ever being the master. Everybody stays aligned by bookkeeping, not by obedience.",
+      "zh": "先说对时。802.11 不强迫所有节点采用同一个共享 TSF 值（那就需要一个主节点），而是定义了一个可扩展的同步框架，其默认、强制的方法就是“邻居偏移同步”。诀窍很简单：每个 mesh STA 各跑各自由的 TSF 计时器，并对每一个与之同步的邻居，只记住两只时钟之间的偏移量。它从邻居信标里的时间戳 Tt 和本地接收时刻 Tr 算出 Toffset = Tt − Tr。知道了偏移量，节点就能把任意邻居的时间换算成自己的时间（Tself = Tneighbor − Toffset），而无需任何人当主节点。大家靠的是“记账”，而不是“服从”，从而保持对齐。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Offsets drift. Two free-running clocks slowly diverge, so each node compares the offset it measured last time with the one it measures now to estimate clock drift, then nudges its own TSF only to slow down — aligning to the most-delayed neighbor, and by no more than 0.04% of a beacon interval per period. The goal isn't perfect lockstep; it's to stop everyone's TBTTs from sliding apart.",
+      "zh": "偏移量会漂移。两只自由运行的时钟会缓慢分化，因此每个节点会把上次测得的偏移量与本次测得的偏移量相比较来估算时钟漂移，然后只把自己的 TSF 往“变慢”的方向微调——对齐到最“滞后”的那个邻居，且每个周期调整幅度不超过信标间隔的 0.04%。目标不是完美的步调一致，而是阻止大家的 TBTT（目标信标发送时刻）逐渐错开。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the collisions. Each mesh STA defines a series of TBTTs one beacon period apart and beacons at each. But beacons go out unacknowledged, and two mesh STAs may be hidden from each other — out of range — while a third can hear both. If two hidden nodes pick the same TBTT on the same channel, their beacons collide at that third node every single period, and neither offender ever notices. MBCA breaks this loop. Each node advertises a Beacon Timing element listing the TBTTs and beacon intervals of the neighbors it hears. Because that element travels one hop, a node effectively learns the beacon schedule of everything within two hops — including the hidden nodes it can't hear directly.",
+      "zh": "再说碰撞。每个 mesh STA 都定义出一系列相隔一个信标周期的 TBTT，并在每个 TBTT 发信标。但信标是无需确认就发出去的，而两个 mesh STA 可能彼此隐藏——互相不在通信范围内——却同时被第三个节点听到。如果两个隐藏节点在同一信道上选了相同的 TBTT，它们的信标就会在那第三个节点处每个周期都相撞，而两个“肇事者”谁也察觉不到。MBCA 打破了这个死循环：每个节点都广播一个“信标定时元素（Beacon Timing element）”，列出它所听到邻居的 TBTT 和信标间隔。由于该元素会被转发一跳，节点实际上就能获知两跳范围内所有节点的信标日程——包括那些它直接听不到的隐藏节点。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant A as Mesh STA A\n    participant B as Mesh STA B (relay)\n    participant C as Mesh STA C (hidden from A)\n    Note over A,C: A and C are out of range; B hears both\n    C->>B: Beacon (C's TBTT, interval)\n    Note over B: records C's beacon timing\n    B->>A: Beacon + Beacon Timing element (lists C)\n    Note over A: now knows C's TBTT — 2 hops away\n    A->>A: TBTT selection: pick a slot that avoids B and C\n    Note over A: if a later collision is detected, run TBTT adjustment",
+      "zh": "sequenceDiagram\n    participant A as Mesh STA A\n    participant B as Mesh STA B (中继)\n    participant C as Mesh STA C (对 A 隐藏)\n    Note over A,C: A 与 C 互不在范围内；B 能听到两者\n    C->>B: 信标 (C 的 TBTT、间隔)\n    Note over B: 记录 C 的信标定时\n    B->>A: 信标 + 信标定时元素 (含 C)\n    Note over A: 现已获知 C 的 TBTT —— 距 2 跳\n    A->>A: TBTT 选择：挑一个避开 B 和 C 的时隙\n    Note over A: 若之后检测到碰撞，执行 TBTT 调整"
+    },
+    {
+      "type": "prose",
+      "en": "With that two-hop picture, MBCA runs three jobs. (1) TBTT selection: before a node even starts beaconing, it scans, gathers everyone's timing, and picks a TBTT and beacon interval unlikely to collide within two hops. (2) TBTT adjustment: if a node later sees its beacons repeatedly colliding — and its own TBTT comes later than the other's — it runs a TBTT scanning procedure to find a free slot, sets the TBTT Adjusting flag, and slides its TSF (slowing only) over several beacon periods to the new slot. A node can also ask a neighbor whose beacon comes last to move, via a TBTT Adjustment Request frame, which the neighbor answers with SUCCESS or a refusal code. (3) Protecting other beacons: a node should not let a transmission run across a neighbor's TBTT, so it stays quiet around the moments its neighbors expect to receive beacons.",
+      "zh": "有了这张两跳全景图，MBCA 执行三项工作：(1) TBTT 选择——节点在开始发信标之前，先扫描、收集所有人的定时，挑出一个在两跳范围内不易碰撞的 TBTT 和信标间隔。(2) TBTT 调整——若节点之后发现自己的信标反复碰撞、且自身的 TBTT 晚于对方，它就执行“TBTT 扫描流程”寻找空闲时隙，置位 TBTT Adjusting 标志，并在若干信标周期内把自己的 TSF（只往慢里调）滑动到新时隙。节点也可以通过发送“TBTT 调整请求帧（TBTT Adjustment Request）”，请信标排在最后的那个邻居挪位，邻居则以 SUCCESS 或一个拒绝原因码作答。(3) 保护他人的信标——节点不应让一次发送跨越邻居的 TBTT，因此它会在邻居预期接收信标的时刻附近保持安静。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "One more safety valve: a node may occasionally delay its own beacon by a small pseudorandom time. If two nodes happen to have TBTTs very close together, this jitter lets them eventually hear each other's beacons instead of forever transmitting in lockstep and masking the collision.",
+      "zh": "还有一道保险：节点可以偶尔把自己的信标按一个小的伪随机时间延迟发送。如果两个节点的 TBTT 恰好靠得很近，这点抖动能让它们最终听到彼此的信标，而不是永远步调一致地发送、从而把碰撞一直掩盖下去。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact offset, drift, and TBTT-adjustment rules",
+        "zh": "精确的偏移、漂移与 TBTT 调整规则"
+      },
+      "en": "Neighbor-offset sync (14.14.2.2) keeps, per neighbor, Toffset = Tt - Tr from the latest Beacon/Probe Response, as a signed integer in µs. Drift adjustment (14.14.2.2.3) compares the previous and current offsets, TClockDrift = Toffset,p - Toffset,c, tracks the largest TMaxClockDrift among neighbors in the period, and before beaconing delays the next TBTT by that amount — but only ever slowing, capped at 0.04% of the beacon interval per period, aligning to the most-delayed neighbor. A node skips a neighbor whose TBTT Adjusting subfield is 1 and invalidates its offset. Beacon generation (14.14.3.1) sets TBTTs exactly dot11BeaconPeriod TUs apart with Address 1 = broadcast; reception (14.14.3.2) identifies an in-MBSS beacon by the Mesh ID element, not Address 3, and only uses a transmitter's timing if a mesh peering exists. For MBCA, a neighbor's TBTT is computed as TTBTT = Tr - (Tt mod (TBeaconInterval x 1024)) (14.14.4.2.2). TBTT selection (14.14.4.3) uses MLME-SCAN.confirm timing plus collected Beacon Timing elements to pick a 2-hop-clear slot. Self-determined adjustment (14.14.4.4.1) triggers only when the node's own TBTT comes later than the colliding STA's; requested adjustment (14.14.4.4.2) targets the STA whose TBTT comes last and is answered SUCCESS / REFUSED / CANNOT_FIND_ALTERNATIVE_TBTT. During adjustment (14.14.4.4.3) the node sets TBTT Adjusting = 1, suspends its TSF no more than half the Group Delivery Idle Time per period, and clears the flag on completion. Frame transmission should not cross a neighbor's reported TBTT (14.14.4.5), and beacons may be delayed pseudorandomly (14.14.4.6).",
+      "zh": "邻居偏移同步（14.14.2.2）对每个邻居，以有符号整数（单位 µs）保存来自最新信标/探测响应的 Toffset = Tt − Tr。漂移调整（14.14.2.2.3）比较上次与本次偏移量，TClockDrift = Toffset,p − Toffset,c，跟踪本周期内各邻居中最大的 TMaxClockDrift，并在发信标前把下一个 TBTT 延迟该数值——但只往慢里调，每周期上限为信标间隔的 0.04%，对齐到最滞后的邻居。若某邻居的 TBTT Adjusting 子字段为 1，节点会跳过它并作废其偏移量。信标生成（14.14.3.1）令各 TBTT 恰好相隔 dot11BeaconPeriod 个 TU，Address 1 置为广播地址；信标接收（14.14.3.2）依据 Mesh ID 元素（而非 Address 3）判定是否为同一 MBSS 的信标，且仅当存在 mesh peering 时才使用发送方的定时。对 MBCA 而言，邻居 TBTT 由 TTBTT = Tr − (Tt mod (TBeaconInterval × 1024)) 计算（14.14.4.2.2）。TBTT 选择（14.14.4.3）用 MLME-SCAN.confirm 提供的定时加上收集到的信标定时元素，挑出一个两跳无冲突的时隙。自决式调整（14.14.4.4.1）仅当本节点自身 TBTT 晚于碰撞 STA 时才触发；请求式调整（14.14.4.4.2）针对 TBTT 排在最后的那个 STA，对方以 SUCCESS / REFUSED / CANNOT_FIND_ALTERNATIVE_TBTT 作答。调整过程中（14.14.4.4.3）节点置 TBTT Adjusting = 1，每周期挂起 TSF 不超过组发送空闲时间（Group Delivery Idle Time）的一半，完成后清除标志。帧发送不应跨越邻居所报告的 TBTT（14.14.4.5），且信标可被伪随机延迟（14.14.4.6）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3268,
+          3269,
+          3270,
+          3275,
+          3276
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:14.14.2.2",
+    "80211-2024:14.14.3.1",
+    "80211-2024:14.14.3.2",
+    "80211-2024:14.14.4.2",
+    "80211-2024:14.14.4.3",
+    "80211-2024:14.14.4.4",
+    "80211-2024:14.14.4.5",
+    "80211-2024:14.14.4.6"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3267,
+        3268
+      ],
+      "note": "14.14.2 extensible synchronization framework; 14.14.2.2 neighbor offset synchronization method (default mandatory)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3268,
+        3269,
+        3270
+      ],
+      "note": "14.14.2.2.2 timing offset calc Toffset=Tt-Tr; 14.14.2.2.3 clock drift adjustment (slow only, 0.04% cap)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3270
+      ],
+      "note": "14.14.3.1 beacon generation in MBSS; 14.14.3.2 beacon reception (Mesh ID, not Address 3; peering required)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3271,
+        3272,
+        3273,
+        3274
+      ],
+      "note": "14.14.4.1 MBCA overview (2-hop hidden node); 14.14.4.2 Beacon Timing element advertisement and receiver procedure"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3275,
+        3276,
+        3277
+      ],
+      "note": "14.14.4.3 TBTT selection; 14.14.4.4 TBTT adjustment (self/requested/scanning); 14.14.4.5 tx across reported TBTT; 14.14.4.6 delayed beacons"
+    }
+  ],
+  "track": "mesh"
+}

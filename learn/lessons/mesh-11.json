@@ -1,0 +1,120 @@
+{
+  "id": "mesh-11",
+  "title": {
+    "en": "Authenticated Mesh Peering Exchange (AMPE) and Mesh Group Keys",
+    "zh": "经认证的网格对等交换(AMPE)与网格组密钥"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In an earlier lesson, SAE gave two neighbouring mesh stations a shared secret — the mesh PMK. But a shared secret is not the same as a protected link. AMPE, the Authenticated Mesh Peering Exchange, is the layer that takes that PMK and actually turns it into a working secure peering: it negotiates which ciphers the two peers will use, confirms that both sides really hold the same key, and derives the live keys that protect every frame they exchange. AMPE assumes the mesh PMKSA already exists before it starts.",
+      "zh": "在前面的课程里，SAE 已经让两个相邻的网格站点拿到了一个共享秘密——网格 PMK。但“拥有共享秘密”并不等于“拥有受保护的链路”。AMPE（经认证的网格对等交换）就是把这个 PMK 真正变成可用安全对等关系的那一层：它协商两个对端将使用哪些加密套件，确认双方确实持有同一把密钥，并推导出保护它们所交换的每一帧的实时密钥。AMPE 的前提是网格 PMKSA 在它启动之前就已经存在。"
+    },
+    {
+      "type": "prose",
+      "en": "AMPE rides on the same three mesh peering Management frames you already know — Open, Confirm, and Close — but adds security to each. Two things make this work: the RSNE (carrying each side's ordered list of supported ciphers) and a new element, the Authenticated Mesh Peering Exchange element, which carries the chosen cipher, the two nonces, and the group-key payload. The pairwise cipher is agreed by intersecting both ordered lists; if more than one survives, the tie is broken deterministically by the peer with the larger MAC address picking its most-preferred. The group data cipher must be identical for every STA in the same mesh BSS, since one broadcast has to be decryptable by all neighbours.",
+      "zh": "AMPE 复用了你已经熟悉的三种网格对等管理帧——Open、Confirm、Close——但给每一种都加上了安全保护。它依赖两样东西：RSNE（携带每一方按优先级排序的所支持加密套件列表）以及一个新元素——经认证的网格对等交换元素（Authenticated Mesh Peering Exchange element），它携带选定的加密套件、两个 nonce，以及组密钥载荷。成对（pairwise）加密套件通过对双方有序列表求交集来确定；若交集中不止一项，则由 MAC 地址较大的一方挑选其最偏好的套件，从而以确定性方式打破平局。组数据加密套件在同一个网格 BSS 内的所有站点必须完全一致，因为一次广播必须能被所有邻居解密。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Unlike infrastructure Wi-Fi, where the AP owns the one group key, in a mesh every mesh STA owns its own MGTK for the broadcast traffic it sends. There is no single hub. So neighbour A protects its broadcasts with A's MGTK and hands a copy to each neighbour; neighbour B does the same with B's MGTK. Each STA must therefore hold one transmit MGTK plus a receive MGTK for every peer.",
+      "zh": "与基础设施 Wi-Fi 中由 AP 独占唯一组密钥不同，在网格里每个网格站点都拥有自己的 MGTK，用于保护它所发送的广播流量。这里没有单一的中心节点。因此邻居 A 用 A 的 MGTK 保护自己的广播，并把副本分发给每个邻居；邻居 B 则用 B 的 MGTK 做同样的事。于是每个站点都必须持有一把发送用的 MGTK，外加为每个对端各保留一把接收用的 MGTK。"
+    },
+    {
+      "type": "prose",
+      "en": "Where do the protecting keys come from? AMPE runs a key-derivation algorithm over the shared PMK. Two keys come out. The AEK (Authenticated Encryption Key) is derived statically from the PMK — it depends only on the PMK, the selected AKM suite, and the two MAC addresses, sorted as min/max so both peers compute the same value. The AEK is the key that protects the peering and group-key frames themselves. The MTK (Mesh Temporal Key) is the pairwise key that protects actual mesh data traffic; it folds in the two nonces and the two link IDs, so it is fresh per peering instance and can be rekeyed.",
+      "zh": "那些起保护作用的密钥从何而来？AMPE 会对共享 PMK 运行一套密钥推导算法，得出两把密钥。AEK（认证加密密钥，Authenticated Encryption Key）是从 PMK 静态推导出来的——它只取决于 PMK、选定的 AKM 套件以及两个 MAC 地址（按 min/max 排序，以便双方算出相同的值）。AEK 正是用来保护对等帧和组密钥帧本身的密钥。MTK（网格临时密钥，Mesh Temporal Key）则是保护真正的网格数据流量的成对密钥；它把两个 nonce 和两个链路 ID 揉进推导，因而对每个对等实例都是全新的，并且可以重新生成密钥（rekey）。"
+    },
+    {
+      "type": "prose",
+      "en": "The peering frames themselves are protected with AES-SIV (RFC 5297), a deterministic authenticated-encryption mode. The key is the AEK; the plaintext is the Authenticated Mesh Peering Exchange element; and the additional authenticated data binds in the local and peer MAC addresses plus the frame body up to the MIC element. AES-SIV produces a synthetic IV that lands in the frame's MIC field, and the ciphertext forms the rest of the body. On receive, the same inputs either recover the plaintext or return the symbol FAIL — and a FAIL means the frame is rejected. Because the Open frame carries the sender's MGTK in its GTKdata, this is also how a peer's broadcast key first arrives.",
+      "zh": "对等帧本身用 AES-SIV（RFC 5297）保护，这是一种确定性的认证加密模式。其密钥就是 AEK；明文是经认证的网格对等交换元素；而附加认证数据（AAD）则把本端和对端的 MAC 地址，以及从帧体开头到 MIC 元素（不含）之间的内容绑定进来。AES-SIV 产生一个合成初始向量（synthetic IV），写入帧的 MIC 字段，密文则构成帧体的其余部分。在接收侧，相同的输入要么还原出明文，要么返回符号 FAIL——而 FAIL 意味着该帧被拒绝。由于 Open 帧在其 GTKdata 中携带了发送方的 MGTK，这也正是对端的广播密钥首次送达的方式。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant A as Mesh STA A\n    participant B as Mesh STA B\n    Note over A,B: mesh PMK already shared (via SAE)\n    Note over A,B: each derives AEK statically from PMK\n    A->>B: Mesh Peering Open (RSNE, nonce_A, A's MGTK) [AES-SIV]\n    B->>A: Mesh Peering Open (RSNE, nonce_B, B's MGTK) [AES-SIV]\n    Note over A,B: cipher agreed; MTK derived from nonces+linkIDs\n    A->>B: Mesh Peering Confirm (selected cipher, peer nonce) [AES-SIV]\n    B->>A: Mesh Peering Confirm (selected cipher, peer nonce) [AES-SIV]\n    Note over A,B: peering ESTABLISHED; MLME-SETKEYS installs MTK + peer MGTKs",
+      "zh": "sequenceDiagram\n    participant A as 网格站点 A\n    participant B as 网格站点 B\n    Note over A,B: 网格 PMK 已共享(经由 SAE)\n    Note over A,B: 各自从 PMK 静态推导出 AEK\n    A->>B: Mesh Peering Open (RSNE, nonce_A, A 的 MGTK) [AES-SIV]\n    B->>A: Mesh Peering Open (RSNE, nonce_B, B 的 MGTK) [AES-SIV]\n    Note over A,B: 加密套件达成一致; 由 nonce 与 linkID 推导 MTK\n    A->>B: Mesh Peering Confirm (选定套件, 对端 nonce) [AES-SIV]\n    B->>A: Mesh Peering Confirm (选定套件, 对端 nonce) [AES-SIV]\n    Note over A,B: 对等关系已建立; MLME-SETKEYS 安装 MTK 与各对端 MGTK"
+    },
+    {
+      "type": "prose",
+      "en": "AMPE reuses the mesh peering FSM but adds security hooks. The send actions sndOPN / sndCNF / sndClose now build the AES-SIV-protected variants. A new event, TOR3, fires when retries are exhausted but the shared PMKSA was never confirmed — the instance is closed, and notably no Close frame is sent. And when peering completes (the CNF_ACPT or OPN_ACPT transition), the STA signals key management done by calling MLME-SETKEYS.request to install the MTK and the received MGTK, then MLME-SETPROTECTION.request to switch protection on.",
+      "zh": "AMPE 复用了网格对等的有限状态机（FSM），但加入了安全相关的钩子。发送动作 sndOPN / sndCNF / sndClose 现在会构造经 AES-SIV 保护的版本。新增的事件 TOR3 在重试次数耗尽、但共享 PMKSA 始终未能确认时触发——此时实例被关闭，且值得注意的是不会发送 Close 帧。而当对等关系完成时（CNF_ACPT 或 OPN_ACPT 状态转移），站点会调用 MLME-SETKEYS.request 来安装 MTK 与收到的 MGTK，再调用 MLME-SETPROTECTION.request 来启用保护，以此宣告密钥管理完成。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Rekeying a broadcast key: the Mesh Group Key Handshake",
+        "zh": "重新生成广播密钥：网格组密钥握手"
+      },
+      "en": "After a secure peering exists, a mesh STA can update the MGTK it uses for its outbound broadcasts without redoing AMPE — for example when a peering is torn down. It runs the two-message Mesh Group Key Handshake separately with each current peer. Message 1, the Mesh Group Key Inform frame, is sent by the MGTK source: it carries the new MGTK in GTKdata, the same Local/Peer Nonce pair that identifies the established peering instance, and a Key Replay Counter incremented by one. The recipient verifies the AES-SIV protection (key = AEK), checks the nonces match the live mesh PTKSA, confirms the replay counter is strictly larger than any seen before, installs the MGTK via MLME-SETKEYS.request, and replies with Message 2, the Mesh Group Key Acknowledge frame, echoing that same replay counter (with no GTKdata). The source then checks the returned counter matches the one it used. The standard notes the source increments the counter on every Inform — even retries — because an Acknowledge to an earlier attempt may have been lost; without the increment the recipient would treat the retry as a replay and discard it, and no Acknowledge would ever arrive.",
+      "zh": "在安全对等关系建立之后，网格站点可以更新它用于对外广播的 MGTK，而无需重新执行 AMPE——例如在某个对等关系被拆除时。它会与当前每个对端分别运行这套两消息的网格组密钥握手。消息 1 即网格组密钥通知帧（Mesh Group Key Inform frame），由 MGTK 源发出：它在 GTKdata 中携带新的 MGTK，携带用于标识已建立对等实例的同一对 Local/Peer Nonce，以及一个加 1 后的密钥重放计数器（Key Replay Counter）。接收方验证 AES-SIV 保护（密钥 = AEK），核对 nonce 与当前有效的网格 PTKSA 一致，确认重放计数器严格大于此前见过的任何值，通过 MLME-SETKEYS.request 安装该 MGTK，并回复消息 2 即网格组密钥确认帧（Mesh Group Key Acknowledge frame），回显同一个重放计数器（且不含 GTKdata）。随后源端核对返回的计数器与自己所用的一致。标准特别指出：源端在每一个 Inform 上（包括重传）都要递增计数器，因为对早先尝试的 Acknowledge 可能已经丢失；若不递增，接收方就会把重传当作重放而丢弃，于是任何 Acknowledge 都将永远不会到达。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3219,
+          3221,
+          3222
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:14.6.2.1",
+    "80211-2024:14.6.2.2",
+    "80211-2024:14.6.3",
+    "80211-2024:14.6.4",
+    "80211-2024:14.6.5.2",
+    "80211-2024:14.6.5.3",
+    "80211-2024:14.6.5.4",
+    "80211-2024:14.6.7",
+    "80211-2024:14.7.3",
+    "80211-2024:14.7.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3210,
+        3211
+      ],
+      "note": "14.6.2.1-14.6.2.2 security capabilities selection — pairwise cipher intersection + MAC tie-break; identical group data/management cipher across the MBSS"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3211,
+        3212
+      ],
+      "note": "14.6.3 AES-SIV construction/processing of mesh peering Management frames; 14.6.4 MGTK/IGTK distribution via Mesh Peering Open GTKdata"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3213,
+        3214,
+        3215
+      ],
+      "note": "14.6.5.2-14.6.5.4 Mesh Peering Open/Confirm/Close for AMPE — fields, nonces, AES-SIV protection"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3218,
+        3219
+      ],
+      "note": "14.6.7 AMPE keys — AEK derived statically from PMK; MTK from PMK + nonces + linkIDs + MACs"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3221,
+        3222
+      ],
+      "note": "14.7.3-14.7.4 Mesh Group Key Inform/Acknowledge frame construction and processing; Key Replay Counter handling"
+    }
+  ],
+  "track": "mesh"
+}
