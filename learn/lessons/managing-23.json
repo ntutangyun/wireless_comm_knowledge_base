@@ -1,0 +1,136 @@
+{
+  "id": "managing-23",
+  "title": {
+    "en": "Power Management Mechanics: TIM, APSD, and the AP Buffer",
+    "zh": "省电机制详解：TIM、APSD 与 AP 缓冲"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A battery-powered phone cannot keep its radio on all the time, yet it must miss nothing. 802.11 solves this with a simple deal: the station tells the AP \"I am going to sleep,\" and the AP promises to hold any frames that arrive while the station dozes. Think of the AP as a post office. When mail arrives for a customer who is away, the clerk does not throw it out — it goes into a holding box behind the counter, waiting to be picked up. The whole of this lesson is about how that holding box works, how the station learns there is mail, and how it collects it without ever powering the radio on for longer than necessary.",
+      "zh": "一部靠电池供电的手机不可能一直开着射频，但它又不能漏掉任何数据。802.11 用一个简单的约定解决了这个矛盾：站点告诉 AP“我要睡觉了”，AP 则承诺：在站点打盹期间到达的帧，它会替你保管好。可以把 AP 想象成一个邮局。当某位顾客外出时寄来的信件并不会被丢掉——而是被放进柜台后面的一个暂存箱里，等顾客来取。本课讲的就是：这个暂存箱如何运作、站点如何得知“有信件”、以及它如何在尽量不长时间开启射频的前提下把信件取走。"
+    },
+    {
+      "type": "prose",
+      "en": "First, the modes. A non-AP station is in one of two power management modes. In active mode it keeps its receiver on and can be reached at any time. In power save (PS) mode it alternates between awake (fully powered) and doze (radio off, drawing almost no current). The station announces which mode it is in using a single Power Management bit in the Frame Control field of the frames it sends — and crucially, it may only change mode through a frame exchange the AP acknowledges. No Ack, no mode change. That handshake is what lets the AP know exactly when to start, and stop, buffering for that client.",
+      "zh": "先看“模式”。一个非 AP 站点处于两种电源管理模式之一。在“活动模式（active mode）”下，它保持接收机常开，随时可被联系到。在“省电模式（PS mode）”下，它在“清醒（awake，完全供电）”与“打盹（doze，关闭射频、几乎不耗电）”之间交替。站点通过它所发送帧的“帧控制（Frame Control）”字段中的一个“电源管理（Power Management）”比特来宣告自己所处的模式——而且关键在于：它只能通过一次得到 AP 确认（Ack）的帧交换来切换模式。没有 Ack，就没有模式切换。正是这个握手，让 AP 准确知道何时开始、又何时停止为该客户端缓冲数据。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The mode bit is sticky and atomic. The station stays in its current mode until an acknowledged exchange flips it, and the Power Management bit is identical for every MPDU in an A-MPDU. A PS-Poll frame is not a valid way to change mode, because its exchange does not necessarily produce an Ack from the AP.",
+      "zh": "这个模式比特是“黏性的”且“原子的”。站点会维持当前模式，直到一次被确认的帧交换将其翻转；并且在一个 A-MPDU 中，所有 MPDU 的“电源管理”比特都必须相同。PS-Poll 帧不能用来切换模式，因为它的交换不一定会换来 AP 的 Ack。"
+    },
+    {
+      "type": "prose",
+      "en": "How does a dozing station learn it has mail without listening to everything? Through the TIM — the Traffic Indication Map — an element the AP includes in every Beacon. Each associated station owns a number called an AID, assigned at association. The TIM is essentially a bitmap of AIDs: if your bit is set to 1, the post office is holding a package for you. The station wakes briefly before the beacon, reads just the one bit that is its own, and goes straight back to sleep if it is 0. This is the slip in the window that says \"you have a package\" — you do not have to open every drawer to find out.",
+      "zh": "一个打盹中的站点，如何在不监听一切的情况下得知“有信件”？靠的是 TIM——“流量指示图（Traffic Indication Map）”——AP 在每一个信标（Beacon）中都会包含的一个信息元素。每个已关联站点都拥有一个在关联时分配的编号，叫做 AID。TIM 本质上是一张关于 AID 的位图：如果你的那一位被置为 1，就说明邮局正替你保管着一个“包裹”。站点在信标前短暂醒来，只读取属于自己的那一位，若为 0 便立刻回到睡眠。这就是窗口上那张写着“你有包裹”的取件通知——你无需翻遍每一个抽屉就能知道。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as STA (dozing in PS mode)\n    participant AP as AP (post office)\n    Note over AP: BU for this STA arrives -> buffered, AID bit set\n    AP-->>STA: Beacon (TIM: your AID bit = 1)\n    Note over STA: wakes, reads its bit, sees mail waiting\n    STA->>AP: PS-Poll (legacy) OR trigger frame (U-APSD)\n    AP->>STA: buffered BU (More Data bit shows if more remains)\n    Note over STA: More Data = 0 -> back to doze",
+      "zh": "sequenceDiagram\n    participant STA as 站点（PS 模式打盹中）\n    participant AP as AP（邮局）\n    Note over AP: 该站点的 BU 到达 -> 进入缓冲，置位其 AID 比特\n    AP-->>STA: 信标（TIM：你的 AID 位 = 1）\n    Note over STA: 醒来，读取自己那一位，发现有信件在等\n    STA->>AP: PS-Poll（传统方式）或 触发帧（U-APSD）\n    AP->>STA: 缓冲的 BU（More Data 位指示是否还有更多）\n    Note over STA: More Data = 0 -> 回到打盹"
+    },
+    {
+      "type": "prose",
+      "en": "There are two flavours of TIM. An ordinary TIM only flags individually addressed buffered traffic. Every dot11DTIMPeriod beacons, the AP sends a DTIM instead — a special beacon that also signals buffered group-addressed (broadcast/multicast) traffic. Because group frames cannot be polled for individually, the AP transmits all of them right after a DTIM beacon, and any PS station that wants the broadcast must be awake for it. So a station tunes its sleep cycle to two rhythms: its own AID bit in ordinary TIMs for unicast, and the DTIM cadence for group traffic.",
+      "zh": "TIM 有两种类型。普通的 TIM 只标示“单播”（individually addressed）缓冲流量。每隔 dot11DTIMPeriod 个信标，AP 会发送一个 DTIM 来代替普通信标——这是一种特殊信标，它还会指示缓冲的“组播/广播”（group-addressed）流量。由于组播帧无法被逐个轮询取走，AP 会在每个 DTIM 信标之后立即把它们全部发出；任何想接收广播的 PS 站点都必须为此保持清醒。于是站点会按两种节奏来安排自己的睡眠周期：用普通 TIM 中自己的 AID 位来接收单播，用 DTIM 的节拍来接收组播流量。"
+    },
+    {
+      "type": "prose",
+      "en": "Now, retrieval — and here two eras coexist. The legacy way is PS-Poll: when the station sees its AID bit, it sends a tiny PS-Poll frame, and the AP hands back one buffered frame. If the More Data bit in that frame is 1, more is waiting, so the station polls again; when More Data is 0, it can sleep. The modern way is APSD (automatic power save delivery), which is trigger-driven. In unscheduled APSD (U-APSD) the station sends any uplink frame on a 'trigger-enabled' access category, and that opens a service period in which the AP pushes down its buffered frames, ending with a frame whose EOSP bit is set. In scheduled APSD (S-APSD) the wakeups happen at agreed fixed intervals with no polling at all. APSD turns the chatty poll-and-wait dance into one trigger, one burst, done.",
+      "zh": "接下来是“取件”——这里有两个时代并存。传统方式是 PS-Poll：当站点看到自己的 AID 位被置 1，它发送一个很小的 PS-Poll 帧，AP 便回送一帧缓冲数据。如果那一帧里的 More Data 位为 1，说明还有更多在等，于是站点继续轮询；当 More Data 为 0 时，它就可以睡了。现代方式是 APSD（自动省电交付，automatic power save delivery），它是“触发驱动”的。在“非调度 APSD（U-APSD）”中，站点在某个“可触发（trigger-enabled）”的接入类别（AC）上发送任意上行帧，这就开启了一个“服务周期（SP）”，在此期间 AP 把它缓冲的帧推送下来，并以一个置位了 EOSP 位的帧作为结束。在“调度 APSD（S-APSD）”中，唤醒按事先约定的固定间隔发生，完全无需轮询。APSD 把“轮询—等待”这套来回啰嗦的舞步，变成了“一次触发、一次突发、即告完成”。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The mailbox is not infinite. The AP runs an aging function and may delete a buffered frame if it sits too long — but never sooner than the Listen Interval the station declared at association. A station that promises to check in every N beacons is guaranteed its mail survives at least that long.",
+      "zh": "信箱并非无限大。AP 会运行一个“老化（aging）”函数，若某帧滞留过久，AP 可以将其删除——但绝不会早于站点在关联时声明的“监听间隔（Listen Interval）”。一个承诺每 N 个信标就来查看一次的站点，可以确保它的信件至少能保留这么长时间。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Buffering rules, the TIM bitmap, and TIM Broadcast outside the beacon",
+        "zh": "缓冲规则、TIM 位图，以及在信标之外的 TIM Broadcast"
+      },
+      "en": "The AP keeps per-STA power-management status and, for APSD-capable APs, an APSD/access-policy status and schedule (11.2.3.6). It buffers individually addressed BUs for PS STAs; nonbufferable MMPDUs and frames for active-mode STAs go out directly. Every beacon interval it assembles the partial virtual bitmap of per-destination buffer status into the TIM element, and AID 0 (signalled in the Traffic Indicator field when DTIM Count is zero) flags buffered group-addressed traffic. On a PS-Poll it returns one BU after SIFS, acknowledging and discarding duplicate PS-Polls until that BU is delivered or presumed failed. The aging function (11.2.3.10) shall not discard a BU before the STA's declared Listen Interval. On the receive side (11.2.3.7) a STA wakes for the beacon, sees its AID bit, sends a PS-Poll (or a trigger frame if using U-APSD with all ACs delivery-enabled) after a random DIFS-based backoff, and follows the More Data bit; APSD receive (11.2.3.8) wakes at the scheduled SP start or sends a trigger and stays awake until a frame with EOSP=1. TIM Broadcast (11.2.3.14) lets the AP send the TIM in short, optionally higher-rate TIM frames at negotiated target times — decoupled from the beacon and from the DTIM Period — so a STA can read the map with far less wake time; the AP transmits one or two TIM frames per TIM Broadcast Interval (high-rate first, then low-rate) and bumps a Check Beacon field on any critical Beacon update.",
+      "zh": "AP 为每个站点维护“电源管理状态”；对于支持 APSD 的 AP，还维护 APSD/接入策略状态与调度信息（11.2.3.6）。它为 PS 站点缓冲单播 BU；而不可缓冲的 MMPDU 以及发往活动模式站点的帧则直接发出。每个信标间隔，它把“按目的地的缓冲状态”汇成“部分虚拟位图（partial virtual bitmap）”放进 TIM 元素，其中 AID 0（当 DTIM Count 为零时在 Traffic Indicator 字段中指示）用于标示缓冲的组播流量。收到 PS-Poll 后，它在 SIFS 之后回送一帧 BU，并对重复的 PS-Poll 予以确认后丢弃，直到该 BU 成功交付或被判定失败。老化函数（11.2.3.10）不得在站点声明的监听间隔之前丢弃 BU。在接收侧（11.2.3.7），站点为信标醒来，看到自己的 AID 位，在基于 DIFS 的随机退避后发送 PS-Poll（若使用 U-APSD 且所有 AC 均为交付使能，则发送触发帧），并依据 More Data 位继续；APSD 接收（11.2.3.8）则在调度 SP 起始时醒来，或发送一个触发帧，并保持清醒直到收到 EOSP=1 的帧。TIM Broadcast（11.2.3.14）允许 AP 在协商好的目标时刻、用更短且可选更高速率的 TIM 帧来发送 TIM——与信标、也与 DTIM Period 解耦——从而让站点以远更短的清醒时间读取该图；AP 每个 TIM Broadcast Interval 发送一到两帧 TIM（先高速率、后低速率），并在信标发生任何关键更新时递增 Check Beacon 字段。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2477,
+          2478,
+          2481,
+          2482,
+          2491
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.2.3.2",
+    "80211-2024:11.2.3.3",
+    "80211-2024:11.2.3.4",
+    "80211-2024:11.2.3.5",
+    "80211-2024:11.2.3.6",
+    "80211-2024:11.2.3.7",
+    "80211-2024:11.2.3.8",
+    "80211-2024:11.2.3.10",
+    "80211-2024:11.2.3.14"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2470,
+        2471
+      ],
+      "note": "11.2.3.2 Non-AP STA power management modes; mode change via acknowledged frame exchange; Power Management subfield"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2472,
+        2473
+      ],
+      "note": "11.2.3.3 AP TIM transmissions (partial virtual bitmap, AID, AID 0); 11.2.3.4 TIM types (TIM vs DTIM, group-addressed delivery after DTIM)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2474,
+        2475
+      ],
+      "note": "11.2.3.5 APSD: U-APSD trigger-enabled/delivery-enabled ACs, unscheduled SP, EOSP; scheduled APSD service intervals"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2477,
+        2478,
+        2479
+      ],
+      "note": "11.2.3.6 AP operation: per-STA PM status, buffering rules, TIM assembly, PS-Poll response, More Data, aging mention"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2481,
+        2482,
+        2483
+      ],
+      "note": "11.2.3.7 Receive operation for STAs in PS mode; 11.2.3.8 Receive operation using APSD; 11.2.3.10 AP aging function (not before Listen Interval)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2491,
+        2492
+      ],
+      "note": "11.2.3.14 TIM Broadcast: short/higher-rate TIM frames at TTTTs, decoupled from beacon, Check Beacon critical-update field"
+    }
+  ],
+  "track": "managing"
+}

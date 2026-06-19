@@ -1,0 +1,129 @@
+{
+  "id": "managing-25",
+  "title": {
+    "en": "The STA State Machine: Authentication, Association, and Frame Filtering",
+    "zh": "STA 状态机：认证、关联与帧过滤"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every Wi-Fi connection is really a piece of bookkeeping. For each remote station it needs to talk to, a station keeps a small enumerated state variable that records the relationship between the two of them: are we strangers, have we exchanged IDs, or are we fully connected? Think of a station as a guest arriving at a building. First it must be recognised at the door (authentication), then handed a room key (association). Only then can it actually do anything inside. Each door opens only when you are in the right state — and the standard keeps a separate record for every pair of stations.",
+      "zh": "每一次 Wi-Fi 连接其实都是一份“记账”。对于每一个需要直接通信的远端站点，本地站点都会维护一个小小的枚举状态变量，用来记录两者之间的关系：我们还是陌生人？已经互验过证件？还是已经完全连上了？可以把站点想象成来到一栋大楼的访客：它先要在门口被识别（认证），再领到房卡（关联），之后才能真正在楼里做事。每一道门都只在你处于正确状态时才会打开——而且标准会为每一对站点分别记录各自的状态。"
+    },
+    {
+      "type": "prose",
+      "en": "For a nonmesh station, the state variable takes one of a handful of values. State 1 is the initial start state: unauthenticated and unassociated — total stranger. State 1a means authenticated only via PASN (used for things like secure ranging) but still not allowed to associate without a normal authentication. State 2 means authenticated but unassociated — recognised, but no room key yet. State 3 means authenticated and associated but with the security port still blocked (an RSNA 4-way handshake is pending). State 4 is the fully-connected state: authenticated, associated, and the IEEE 802.1X controlled port is unblocked (or not present). Crucially, this variable lives inside the MAC layer entity, the MLME; the higher management entity, the SME, can only read it through a primitive.",
+      "zh": "对于非 mesh 站点，状态变量取若干个值之一。State 1 是初始起点：未认证、未关联——彻底的陌生人。State 1a 表示仅通过 PASN 完成了认证（用于安全测距等场景），但在未做普通认证前仍不允许关联。State 2 表示已认证但未关联——已被识别，但还没拿到房卡。State 3 表示已认证且已关联，但安全端口仍被阻断（RSNA 四次握手尚未完成）。State 4 是完全连接状态：已认证、已关联，且 IEEE 802.1X 受控端口已放开（或本就不存在）。关键在于：这个变量保存在 MAC 层实体 MLME 中，上层管理实体 SME 只能通过一个原语去读取它。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 560 200' fill='none' stroke='currentColor' stroke-width='1.5' font-family='sans-serif' font-size='12'><rect x='10' y='80' width='90' height='44' rx='6'/><text x='55' y='100' text-anchor='middle' stroke='none' fill='currentColor'>State 1</text><text x='55' y='116' text-anchor='middle' stroke='none' fill='currentColor' font-size='10'>unauth/unassoc</text><rect x='160' y='80' width='90' height='44' rx='6'/><text x='205' y='100' text-anchor='middle' stroke='none' fill='currentColor'>State 2</text><text x='205' y='116' text-anchor='middle' stroke='none' fill='currentColor' font-size='10'>auth/unassoc</text><rect x='310' y='80' width='90' height='44' rx='6'/><text x='355' y='100' text-anchor='middle' stroke='none' fill='currentColor'>State 3</text><text x='355' y='116' text-anchor='middle' stroke='none' fill='currentColor' font-size='10'>port blocked</text><rect x='460' y='80' width='90' height='44' rx='6'/><text x='505' y='100' text-anchor='middle' stroke='none' fill='currentColor'>State 4</text><text x='505' y='116' text-anchor='middle' stroke='none' fill='currentColor' font-size='10'>port open</text><line x1='100' y1='95' x2='160' y2='95' marker-end='url(#a)'/><text x='130' y='88' text-anchor='middle' stroke='none' fill='currentColor' font-size='9'>auth</text><line x1='250' y1='95' x2='310' y2='95' marker-end='url(#a)'/><text x='280' y='88' text-anchor='middle' stroke='none' fill='currentColor' font-size='9'>assoc</text><line x1='400' y1='95' x2='460' y2='95' marker-end='url(#a)'/><text x='430' y='88' text-anchor='middle' stroke='none' fill='currentColor' font-size='9'>4-way</text><line x1='160' y1='112' x2='100' y2='112' marker-end='url(#a)'/><text x='130' y='128' text-anchor='middle' stroke='none' fill='currentColor' font-size='9'>deauth</text><text x='30' y='40' stroke='none' fill='currentColor' font-size='10'>Class 1 only</text><text x='180' y='40' stroke='none' fill='currentColor' font-size='10'>+ Class 2</text><text x='405' y='40' stroke='none' fill='currentColor' font-size='10'>+ Class 3 (all)</text><defs><marker id='a' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto'><path d='M0,0 L10,5 L0,10 z' fill='currentColor' stroke='none'/></marker></defs></svg>",
+      "caption": {
+        "en": "The nonmesh STA state ladder: each successful step unlocks a wider set of allowed frame classes; deauthentication drops you back to State 1.",
+        "zh": "非 mesh 站点的状态阶梯：每成功迈出一步，就解锁更多允许的帧类别；去认证则把你打回 State 1。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Why does the state matter so much? Because it acts as a filter on which frames are even allowed to be exchanged. Frames are grouped into classes, and the class you may use depends on the state between that specific pair of stations. In State 1, only Class 1 frames are allowed — the basics like Beacon, Probe, Authentication, and the control frames that keep the medium running. In State 2 you also unlock Class 2 frames: the Association, Reassociation, and Disassociation management frames. Only in State 3 and State 4 do Class 3 frames — ordinary data frames in an infrastructure BSS, plus most Action frames — become allowed. A station shall not transmit Class 2 frames unless it is in State 2, 3, or 4, and shall not transmit Class 3 frames unless in State 3 or 4. So the state machine literally gates what you can say.",
+      "zh": "状态为什么如此重要？因为它对“哪些帧才被允许交换”起到了过滤作用。帧被分成若干类别，而你能使用哪一类，取决于这一对特定站点之间的状态。在 State 1，只允许 Class 1 帧——诸如 Beacon、Probe、认证帧，以及维持信道运转的控制帧等基础内容。到了 State 2，你还会解锁 Class 2 帧：关联、重关联和解除关联这些管理帧。只有在 State 3 和 State 4，Class 3 帧——基础设施 BSS 中的普通数据帧，以及大多数 Action 帧——才被允许。除非处于 State 2、3 或 4，站点不得发送 Class 2 帧；除非处于 State 3 或 4，不得发送 Class 3 帧。所以状态机实实在在地“限定了你能说什么话”。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Non-AP STA\n    participant AP as AP\n    Note over STA,AP: State 1 (Class 1 only)\n    STA->>AP: Authentication (seq=1)\n    AP->>STA: Authentication (seq=2, SUCCESS)\n    Note over STA,AP: now State 2 (Class 1 + 2)\n    STA->>AP: Association Request\n    Note over AP: MLME-ASSOCIATE.indication to SME\n    AP->>STA: Association Response (SUCCESS)\n    Note over STA,AP: State 3 if RSNA, else State 4\n    AP-->>STA: 4-way handshake (if RSNA)\n    Note over STA,AP: State 4 - 802.1X port open, Class 3 allowed",
+      "zh": "sequenceDiagram\n    participant STA as 非 AP 站点\n    participant AP as AP\n    Note over STA,AP: State 1（仅 Class 1）\n    STA->>AP: 认证帧 (序号=1)\n    AP->>STA: 认证帧 (序号=2, SUCCESS)\n    Note over STA,AP: 现为 State 2（Class 1 + 2）\n    STA->>AP: 关联请求\n    Note over AP: 向 SME 发 MLME-ASSOCIATE.indication\n    AP->>STA: 关联响应 (SUCCESS)\n    Note over STA,AP: 若需 RSNA 则 State 3，否则 State 4\n    AP-->>STA: 四次握手（若需 RSNA）\n    Note over STA,AP: State 4 - 802.1X 端口放开，允许 Class 3"
+    },
+    {
+      "type": "prose",
+      "en": "Each transition is a two-sided procedure, and both sides keep their own copy of the state. On authentication, the originating STA acts on an MLME-AUTHENTICATE.request from its SME, runs the chosen algorithm, and on success sets the peer to State 2. The destination STA, on receiving an Authentication frame with sequence number 1, raises an MLME-AUTHENTICATE.indication to its SME and replies; on a SUCCESS response it sets the originator to State 2. Association mirrors this: the non-AP STA's MLME refuses to even send an Association Request if the AP is still in State 1 or 1a (you must authenticate first), while the AP, on receipt, will refuse with NOT_AUTHENTICATED if the requesting STA is in State 1. A successful Association Response, once acknowledged, moves the STA to State 3 (RSNA pending) or State 4. Reassociation follows the same shape but additionally tears down and resets a long list of per-association state — EDCA queues, block-ack agreements, sequence numbers — because you are re-homing the connection. And a deauthentication notification at any point snaps the state all the way back to State 1, implying disassociation too if you were in State 3 or 4.",
+      "zh": "每一次状态转移都是一个“双向”流程，而且两侧各自保存自己的那份状态。认证时，发起方站点根据其 SME 发来的 MLME-AUTHENTICATE.request 行动，执行所选算法，成功后将对端置为 State 2。目标方站点在收到序号为 1 的认证帧时，向其 SME 上报 MLME-AUTHENTICATE.indication 并回复；当响应为 SUCCESS 时，将发起方置为 State 2。关联与此对称：若 AP 仍处于 State 1 或 1a，非 AP 站点的 MLME 连关联请求都不会发出（你必须先认证）；而 AP 一方在收到请求时，若请求站点处于 State 1，则以 NOT_AUTHENTICATED 拒绝。一旦成功的关联响应被确认，站点便迁移到 State 3（等待 RSNA）或 State 4。重关联流程形状相同，但还会额外拆除并重置一长串与本次关联相关的状态——EDCA 队列、块确认协议、序列号等——因为你是在为连接“迁居”。而任何时刻收到的去认证通知，都会把状态一下子打回 State 1；若你原本处于 State 3 或 4，还隐含着解除关联。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the asymmetry of who decides. The AP and PCP never initiate authentication or association — they only respond. The non-AP STA drives the climb up the ladder; the AP is the gatekeeper that checks each request against its state record and security policy, and either grants the next state or refuses with a status code.",
+      "zh": "请注意“谁来决定”的不对称性。AP 和 PCP 从不主动发起认证或关联——它们只负责响应。沿着阶梯往上爬的动作由非 AP 站点驱动；AP 则是门卫，针对每个请求核对其状态记录与安全策略，要么放行进入下一状态，要么以状态码予以拒绝。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact State 1 gate at the AP, and what reassociation resets",
+        "zh": "AP 端 State 1 这道门的精确规则，以及重关联会重置什么"
+      },
+      "en": "Clause 11.3.5.3 spells out the AP/PCP association receipt gate precisely: the MLME issues an MLME-ASSOCIATE.indication to the SME, and if the state for a non-DMG STA is State 1 the SME refuses with ResultCode NOT_AUTHENTICATED; if it is State 1a it refuses with PASN_NOT_AUTHORIZED. Only once an Association Response with status SUCCESS is acknowledged by the STA is the state set to State 4, or State 3 if dot11RSNAActivated is true (State 4 follows after the 4-way handshake and MLME-SETPROTECTION.request(Rx_Tx)). Reassociation (11.3.5.4 / 11.3.5.5) is the same skeleton but tied to mobility within an ESS: it may only run if the originating STA is already associated in the same ESS, and on a same-AP reassociation it deletes or resets a precise list — all EDCAF state, non-GCR block ack agreements, sequence number, duplicate-detection caches, queued transmissions, fragmentation/reassembly buffers, power-management mode, TDLS agreements, and more — while explicitly leaving items such as GCR agreements, FTM sessions, and enablement untouched. A reassociation to a different AP deletes everything on both lists.",
+      "zh": "11.3.5.3 节精确规定了 AP/PCP 关联接收这道门：MLME 向 SME 发出 MLME-ASSOCIATE.indication；若非 DMG 站点处于 State 1，SME 以 ResultCode NOT_AUTHENTICATED 拒绝；若处于 State 1a，则以 PASN_NOT_AUTHORIZED 拒绝。只有当状态码为 SUCCESS 的关联响应被站点确认后，状态才被置为 State 4，或在 dot11RSNAActivated 为真时置为 State 3（随后经四次握手与 MLME-SETPROTECTION.request(Rx_Tx) 才进入 State 4）。重关联（11.3.5.4 / 11.3.5.5）骨架相同，但与 ESS 内的移动性绑定：仅当发起站点已在同一 ESS 中关联时才可运行；在“重关联到同一 AP”时，会删除或重置一份精确清单——所有 EDCAF 状态、非 GCR 的块确认协议、序列号、重复检测缓存、待发队列、分片/重组缓冲、功率管理模式、TDLS 协议等等——同时明确保持 GCR 协议、FTM 会话、使能状态等项目不受影响。重关联到不同 AP 则会删除两份清单上的所有内容。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2528,
+          2531,
+          2532
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.3.1",
+    "80211-2024:11.3.3",
+    "80211-2024:11.3.4.2",
+    "80211-2024:11.3.4.3",
+    "80211-2024:11.3.5.2",
+    "80211-2024:11.3.5.3",
+    "80211-2024:11.3.5.4",
+    "80211-2024:11.3.5.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2518,
+        2519
+      ],
+      "note": "11.3.1 State variables - State 1/1a/2/3/4 for nonmesh STAs; variable kept within the MLME, readable by SME via MLME-GETAUTHASSOCSTATE.request"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2519,
+        2520,
+        2521,
+        2522
+      ],
+      "note": "11.3.3 Frame filtering based on STA state - Class 1/2/3 membership; State gates which classes may be transmitted"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2523,
+        2524
+      ],
+      "note": "11.3.4.2 / 11.3.4.3 - originating and destination STA authentication procedures; success sets State 2"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2527,
+        2528,
+        2529,
+        2530,
+        2531
+      ],
+      "note": "11.3.5.2 / 11.3.5.3 - non-AP association initiation (refuse if AP in State 1/1a) and AP association receipt (NOT_AUTHENTICATED gate; SUCCESS sets State 3/4)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2531,
+        2532,
+        2533,
+        2534,
+        2535,
+        2536
+      ],
+      "note": "11.3.5.4 / 11.3.5.5 - non-AP reassociation initiation (same-ESS requirement, state reset list) and AP reassociation receipt"
+    }
+  ],
+  "track": "managing"
+}

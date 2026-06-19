@@ -1,0 +1,124 @@
+{
+  "id": "managing-26",
+  "title": {
+    "en": "TDLS in Depth: Direct Links, Channel Switching, and Peer Power Save",
+    "zh": "TDLS 详解：直连链路、信道切换与对等省电"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Picture two phones sitting at the same cafe, both joined to the cafe's Wi-Fi. One wants to send the other a big video. Normally every packet would go up to the access point (AP) and back down — two hops over the air, twice the airtime, and at whatever rate the AP can manage. Tunneled Direct Link Setup (TDLS) lets the two clients open a private side-channel and talk straight to each other, while still staying associated to the AP. The AP becomes the matchmaker: it introduces the pair and carries the setup paperwork, but the actual data flows directly between them.",
+      "zh": "想象两部手机坐在同一家咖啡馆里，都连上了咖啡馆的 Wi-Fi。其中一部想给另一部发一段很大的视频。通常每个数据包都得先上行到接入点（AP）再下行回来——空口要走两跳、占用双倍的空口时间，而且只能按 AP 能提供的速率传输。隧道直连建立（TDLS）让这两个客户端开辟一条私密的“旁路”，彼此直接对话，同时仍然保持与 AP 的关联。AP 在这里扮演“牵线人”：它负责撮合双方、传递建链的“手续文件”，但真正的数据则在两者之间直接流动。"
+    },
+    {
+      "type": "prose",
+      "en": "The lifecycle has four acts: discovery (do you even support TDLS?), setup (build the direct link), optional channel switching (move the pair to a quieter or wider channel), and teardown (close it cleanly). The clever trick is that the management of a TDLS link is encapsulated inside ordinary Data frames that ride through the AP. So discovery, setup, and teardown can all be done over the AP path — no special AP support is needed; the AP just sees normal data traffic it forwards. Only after setup succeeds does real user data start flowing on the direct path.",
+      "zh": "整个生命周期分四幕：发现（你到底支不支持 TDLS？）、建立（搭起直连链路）、可选的信道切换（把这对设备挪到更安静或更宽的信道上）、以及拆除（干净地关闭）。其中巧妙之处在于：TDLS 链路的管理信令被封装在普通的数据帧里，经由 AP 转发。因此发现、建立和拆除都可以走 AP 路径完成——无需 AP 做任何特殊支持，AP 看到的只是它照常转发的普通数据流量。只有在建立成功之后，真正的用户数据才开始在直连路径上流动。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant S1 as STA1 (initiator)\n    participant AP as AP (matchmaker)\n    participant S2 as STA2 (responder)\n    Note over S1,S2: Discovery (11.20.3)\n    S1->>AP: TDLS Discovery Request\n    AP->>S2: (forwarded)\n    S2-->>S1: TDLS Discovery Response (direct path)\n    Note over S1,S2: Setup (11.20.4) - all via AP\n    S1->>AP: TDLS Setup Request\n    AP->>S2: (forwarded)\n    S2->>AP: TDLS Setup Response (SUCCESS)\n    AP->>S1: (forwarded)\n    S1->>AP: TDLS Setup Confirm\n    AP->>S2: (forwarded)\n    Note over S1,S2: Direct link up - data flows directly\n    S1-->>S2: Data (direct path)",
+      "zh": "sequenceDiagram\n    participant S1 as STA1 (发起方)\n    participant AP as AP (牵线人)\n    participant S2 as STA2 (响应方)\n    Note over S1,S2: 发现 (11.20.3)\n    S1->>AP: TDLS Discovery Request\n    AP->>S2: (转发)\n    S2-->>S1: TDLS Discovery Response (直连路径)\n    Note over S1,S2: 建立 (11.20.4) - 全部经 AP\n    S1->>AP: TDLS Setup Request\n    AP->>S2: (转发)\n    S2->>AP: TDLS Setup Response (SUCCESS)\n    AP->>S1: (转发)\n    S1->>AP: TDLS Setup Confirm\n    AP->>S2: (转发)\n    Note over S1,S2: 直连链路建立 - 数据直接流动\n    S1-->>S2: Data (直连路径)"
+    },
+    {
+      "type": "prose",
+      "en": "Setup is a three-frame handshake: the initiator sends a TDLS Setup Request, the responder answers with a TDLS Setup Response (status code SUCCESS to accept), and the initiator closes with a TDLS Setup Confirm. All three travel through the AP. Until that Confirm carries SUCCESS, neither side may send user data on the direct link. There is even a tie-break rule: if both stations fire off Setup Requests at once, MAC-address comparison decides who yields, so two crossing requests cannot deadlock. To avoid reordering packets, once a station sends its Setup Request (or a successful Response) it stops sending that peer's data through the AP and switches to the direct path.",
+      "zh": "建立过程是一个三帧握手：发起方发送 TDLS Setup Request，响应方回以 TDLS Setup Response（状态码 SUCCESS 表示接受），发起方再以 TDLS Setup Confirm 收尾。这三帧都经由 AP 传递。在 Confirm 携带 SUCCESS 之前，任何一方都不得在直连链路上发送用户数据。这里还有一条“抢答”仲裁规则：如果两个站点同时发出 Setup Request，就用 MAC 地址比较来决定谁让步，因此两个交叉的请求不会陷入死锁。为避免数据包乱序，一旦某个站点发出了 Setup Request（或成功的 Response），它就停止经 AP 向该对端发送数据，转而走直连路径。"
+    },
+    {
+      "type": "prose",
+      "en": "Once a direct link exists, the pair may want a better channel than the busy one the AP sits on. TDLS channel switching lets them temporarily move the direct link to an off-channel — quieter, or wider (40/80/160 MHz) — while staying associated to the AP on the base channel. The initiator sends a TDLS Channel Switch Request naming the target channel; the responder replies with a TDLS Channel Switch Response. On SUCCESS both must be listening on the target channel within a negotiated SwitchTime. A Channel Switch Timing element carries SwitchTime and SwitchTimeout, and the larger of the two peers' requested values wins. If nothing is heard on the off-channel within SwitchTimeout, both fall back to the base channel automatically — so a lost peer never strands the link.",
+      "zh": "直连链路一旦建立，这对设备可能想换一个比 AP 所在的拥挤信道更好的信道。TDLS 信道切换允许它们把直连链路临时迁移到一个“离基信道（off-channel）”上——更安静，或更宽（40/80/160 MHz）——同时仍在基信道上与 AP 保持关联。发起方发送一个指明目标信道的 TDLS Channel Switch Request；响应方回以 TDLS Channel Switch Response。当状态为 SUCCESS 时，双方必须在协商好的 SwitchTime 之内开始在目标信道上侦听。Channel Switch Timing 元素携带 SwitchTime 和 SwitchTimeout，并取两个对端所请求值中较大者生效。如果在 SwitchTimeout 内在离基信道上什么也没听到，双方会自动回退到基信道——因此即便一方失联，链路也不会被“撂在半路”。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Off-channel does not mean leaving the network. On the off-channel both peers stay associated with their BSS — same BSSID. Before sending a Channel Switch Request or a SUCCESS Response, a peer must first go into power save mode with the AP, so the AP simply buffers its downlink traffic while the pair is away talking on the other channel. That is how a TDLS pair can be off chatting at 80 MHz and still not miss anything from the AP.",
+      "zh": "“离基信道”并不意味着离开网络。在离基信道上，两个对端仍与其 BSS 保持关联——BSSID 不变。在发送 Channel Switch Request 或携带 SUCCESS 的 Response 之前，对端必须先进入与 AP 的省电模式，这样当这对设备跑到另一个信道上对话时，AP 只是把发往它的下行流量缓存起来。这正是一对 TDLS 设备能跑到 80 MHz 上畅聊、却又不会漏掉来自 AP 任何消息的原因。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 420 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><circle cx='210' cy='40' r='22'/><text x='210' y='45' text-anchor='middle' stroke='none' fill='currentColor' font-size='12'>AP</text><circle cx='80' cy='150' r='22'/><text x='80' y='155' text-anchor='middle' stroke='none' fill='currentColor' font-size='12'>STA1</text><circle cx='340' cy='150' r='22'/><text x='340' y='155' text-anchor='middle' stroke='none' fill='currentColor' font-size='12'>STA2</text><line x1='98' y1='138' x2='192' y2='54' stroke-dasharray='5 4'/><line x1='322' y1='138' x2='228' y2='54' stroke-dasharray='5 4'/><line x1='102' y1='150' x2='318' y2='150'/><text x='210' y='143' text-anchor='middle' stroke='none' fill='currentColor' font-size='11'>direct link (data)</text><text x='130' y='95' text-anchor='middle' stroke='none' fill='currentColor' font-size='10'>assoc</text><text x='290' y='95' text-anchor='middle' stroke='none' fill='currentColor' font-size='10'>assoc</text><text x='210' y='185' text-anchor='middle' stroke='none' fill='currentColor' font-size='10'>setup/teardown signaling rides through AP (dashed)</text></svg>",
+      "caption": {
+        "en": "Both stations stay associated to the AP (dashed) while user data flows on the direct link (solid). The AP carries only the setup/teardown signaling.",
+        "zh": "两个站点都与 AP 保持关联（虚线），用户数据则在直连链路上流动（实线）。AP 只承载建链/拆链的信令。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Direct links also need power saving, since the AP is no longer managing the peers' sleep. TDLS offers two mechanisms. TDLS peer power save mode (peer PSM) sets up a periodic wakeup schedule between the two peers: awake windows recur at TSF values where TSF mod Interval = Offset, and outside those windows a peer may doze. TDLS peer U-APSD (TPU) instead works on demand: a TPU buffer STA holds traffic for a sleeping TPU sleep STA and sends a TDLS Peer Traffic Indication through the AP to wake it for an unscheduled service period — the buffer STA playing the role the AP plays in ordinary U-APSD. Teardown is the final act: either peer sends a TDLS Teardown frame (direct path normally, or via the AP if the peer is unreachable), both delete the link's security state, and any traffic streams over it are removed.",
+      "zh": "直连链路同样需要省电，因为此时 AP 不再为这两个对端管理睡眠。TDLS 提供两种机制。TDLS 对等省电模式（peer PSM）在两个对端之间建立一个周期性唤醒计划：唤醒窗口在满足 TSF mod Interval = Offset 的 TSF 时刻反复出现，在这些窗口之外对端可以打盹。TDLS 对等 U-APSD（TPU）则是按需工作的：TPU 缓存站点（buffer STA）为正在睡眠的 TPU 睡眠站点（sleep STA）暂存流量，并经由 AP 发送一个 TDLS Peer Traffic Indication 把它唤醒，开启一段非计划服务期——此时缓存站点扮演了普通 U-APSD 中 AP 的角色。拆除是最后一幕：任一对端发送 TDLS Teardown 帧（通常走直连路径，若对端不可达则经 AP），双方删除该链路的安全状态，其上承载的任何流量流（TS）也随之删除。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact channel-switch timing and off-channel power-save rules",
+        "zh": "信道切换的精确时序与离基信道省电规则"
+      },
+      "en": "Clause 11.20.6.1 nails down the choreography: after ACK2 (the Ack to the Channel Switch Response), if the Response carried SUCCESS, both peers shall be listening on the target channel no later than SwitchTime after the end of that PPDU. Each then performs CCA on the target channel until it detects a frame to set its NAV, or until dot11TDLSNavSync elapses — this combined interval is ProbeTime — and the first transmission must follow a random backoff starting at the end of ProbeTime and must not start before SwitchTime ends. If no successful exchange happens on the off-channel within SwitchTimeout, the STA returns to the base channel. The Channel Switch Timing element appears in both the Request and Response, and 11.20.6.1 forces the negotiated value to be the larger of the two peers' requirements. Per 11.20.6.2, off-channel peers remain associated (BSSID unchanged) and a secondary channel of an existing network shall not be chosen as an off-channel. Power-save interaction (11.20.6.4) is strict: a link shall not switch off-channel during a TPU service period and a peer shall not enter TPU on an off-channel, whereas peer PSM may continue off-channel — the awake windows occur on the off-channel exactly as they would have on the base channel, and suspending them implies a switch back.",
+      "zh": "11.20.6.1 节精确规定了这套“编舞”：在 ACK2（即对 Channel Switch Response 的 Ack）之后，若 Response 携带 SUCCESS，双方对端应在该 PPDU 结束后不迟于 SwitchTime 时开始在目标信道上侦听。随后各自在目标信道上执行 CCA，直到检测到可用于设置 NAV 的帧，或直到 dot11TDLSNavSync 时间耗尽——这段合并的时间称为 ProbeTime——而首次发送必须遵循一个从 ProbeTime 结束时开始的随机退避，且不得早于 SwitchTime 结束。如果在 SwitchTimeout 内离基信道上没有发生成功的帧交换，站点便返回基信道。Channel Switch Timing 元素同时出现在 Request 和 Response 中，11.20.6.1 强制协商值取两个对端要求中的较大者。依据 11.20.6.2，离基信道上的对端仍保持关联（BSSID 不变），且不得选择某个现有网络的辅信道作为离基信道。省电交互（11.20.6.4）很严格：在 TPU 服务期内不得切换到离基信道，对端也不得在离基信道上进入 TPU；而 peer PSM 则可在离基信道上继续——唤醒窗口在离基信道上的发生方式与在基信道上完全一致，暂停它们即意味着切回基信道。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2651,
+          2653,
+          2655
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.20.3",
+    "80211-2024:11.20.4",
+    "80211-2024:11.20.5",
+    "80211-2024:11.20.6.1",
+    "80211-2024:11.20.6.2",
+    "80211-2024:11.20.6.4",
+    "80211-2024:11.2.3.11",
+    "80211-2024:11.2.3.12"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2648
+      ],
+      "note": "11.20.3 TDLS discovery; 11.20.4 TDLS direct link establishment - Discovery/Setup Request through AP, Discovery Response on direct path"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2649,
+        2650
+      ],
+      "note": "11.20.4 three-frame Setup handshake, MAC-address tie-break, no direct MSDUs before Setup Confirm SUCCESS; 11.20.5 TDLS direct link teardown"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2651,
+        2653
+      ],
+      "note": "11.20.6.1 channel switch Request/Response, SwitchTime/SwitchTimeout, ProbeTime, larger-of-two timing; PS mode with AP before switch"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2654,
+        2655
+      ],
+      "note": "11.20.6.2 off-channel peers stay associated, no secondary channel as off-channel; 11.20.6.4 channel switching and power saving interaction (TPU vs peer PSM)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2483,
+        2486
+      ],
+      "note": "11.2.3.11 TDLS peer PSM periodic wakeup schedule (TSF mod Interval = Offset); 11.2.3.12 TDLS peer U-APSD (TPU) buffer/sleep STA roles"
+    }
+  ],
+  "track": "managing"
+}

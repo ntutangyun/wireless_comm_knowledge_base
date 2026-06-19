@@ -1,0 +1,118 @@
+{
+  "id": "managing-22",
+  "title": {
+    "en": "Scanning and Synchronization in Depth: Finding and Tracking a BSS",
+    "zh": "扫描与同步详解：发现并跟踪一个 BSS"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Before a station can use a Wi-Fi network, it has to do two things: find the network, and stay in step with it. Finding is scanning — sweeping the channels to discover which access points are out there. Staying in step is synchronization — keeping a local clock aligned with the AP's so that timed events (when to wake up, when a beacon is due) line up across everyone in the BSS. This lesson walks through both, in the order a real station experiences them: scan to discover, join, then track time forever after.",
+      "zh": "在一个站点能够使用 Wi-Fi 网络之前，它必须做两件事：找到网络，并与它保持同步。“找到”靠的是扫描——扫遍各个信道，发现周围有哪些接入点（AP）。“保持同步”靠的是同步机制——让本地时钟与 AP 的时钟对齐，这样各类定时事件（什么时候醒来、下一个信标何时到达）在整个 BSS 内的所有成员之间都能对得上。本课会按照真实站点经历的顺序讲清这两件事：先扫描发现，再加入，之后便永远地跟踪时间。"
+    },
+    {
+      "type": "prose",
+      "en": "Scanning comes in two flavours, and the intuition is simply 'listen versus ask'. In passive scanning the station says nothing — it just parks on each channel and listens for Beacon frames, which APs broadcast on a regular schedule (every dot11BeaconPeriod). It listens for no longer than MaxChannelTime per channel, then moves on. In active scanning the station takes the initiative: it transmits a Probe Request frame (carrying either a specific SSID, an SSID list, or a wildcard 'tell me anyone'), and any AP that matches the criteria answers with a Probe Response. Active is faster because you don't wait for the next scheduled beacon; passive is quieter and is sometimes the only option, because active scanning is restricted in some bands and regulatory domains.",
+      "zh": "扫描分两种，直觉上就是“被动听”与“主动问”。被动扫描时站点什么也不说——它只是停在每个信道上，监听 AP 按固定节奏（每隔 dot11BeaconPeriod）广播的信标帧（Beacon）。它在每个信道上监听不超过 MaxChannelTime，然后切换到下一个信道。主动扫描时站点则主动出击：它发送一个探测请求帧（Probe Request，携带指定 SSID、SSID 列表，或表示“有谁在就回我”的通配 SSID），凡是符合条件的 AP 都会用探测响应帧（Probe Response）回答。主动扫描更快，因为你不必等下一个预定信标；被动扫描更安静，而且有时是唯一选择——因为在某些频段和管制域中，主动扫描是受限的。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Station (scanning)\n    participant AP as Access Point\n    Note over STA: passive — just listen\n    AP-->>STA: Beacon (every beacon period)\n    Note over STA: active — ask\n    STA->>AP: Probe Request (SSID / wildcard)\n    AP->>STA: Probe Response (if criteria met)\n    Note over STA,AP: MLME-SCAN.confirm lists every BSS found",
+      "zh": "sequenceDiagram\n    participant STA as 站点 (扫描中)\n    participant AP as 接入点\n    Note over STA: 被动 — 只监听\n    AP-->>STA: 信标 (每个信标周期)\n    Note over STA: 主动 — 主动问\n    STA->>AP: 探测请求 (SSID / 通配)\n    AP->>STA: 探测响应 (符合条件时)\n    Note over STA,AP: MLME-SCAN.confirm 汇报所有发现的 BSS"
+    },
+    {
+      "type": "prose",
+      "en": "Once the station picks a BSS, it joins and starts tracking time. The AP is the timing master: it owns the timing synchronization function (TSF), a 64-bit microsecond counter, and stamps the current value into every Beacon's Timestamp field. On joining (the MLME-JOIN step), the station takes the AP's BSSID and, on the first Beacon it receives, sets its own TSF timer to the AP's timestamp. After that initial set, it keeps nudging: every Beacon carries a fresh timestamp, and if the station's clock differs, it re-adopts the received value. That is the whole intuition — 'set your clock once from a beacon, then keep correcting it from later beacons'.",
+      "zh": "一旦站点选定了某个 BSS，它就加入并开始跟踪时间。AP 是计时主控：它掌管定时同步功能（TSF）——一个以微秒计数的 64 位计数器，并把当前值盖进每个信标的时间戳（Timestamp）字段。在加入时（即 MLME-JOIN 步骤），站点采用 AP 的 BSSID，并在收到的第一个信标上，把自己的 TSF 计时器设为 AP 的时间戳。完成这次初始设定后，它便不断微调：每个信标都携带一个新的时间戳，若站点的时钟有偏差，就重新采用收到的值。这就是全部直觉——“先用一个信标对一次表，然后用之后的信标不断校正它”。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "An IBSS (ad-hoc, no AP) has no single timing master. Instead every member runs a distributed algorithm: each STA may transmit beacons, and a STA adopts a received TSF value only if it is later than its own. The clock effectively runs at the fastest member's pace — there is no boss, just a 'whoever is ahead wins' rule.",
+      "zh": "IBSS（自组织网络，无 AP）没有单一的计时主控。取而代之的是每个成员都运行一套分布式算法：每个站点都可以发送信标，而站点只在收到的 TSF 值晚于自己时才采用它。于是时钟实际上以最快成员的步调运行——没有“老板”，只有一条“谁更靠前谁说了算”的规则。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 420 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><line x1='20' y1='40' x2='400' y2='40'/><line x1='60' y1='34' x2='60' y2='46'/><line x1='150' y1='34' x2='150' y2='46'/><line x1='240' y1='34' x2='240' y2='46'/><line x1='330' y1='34' x2='330' y2='46'/><text x='20' y='25' font-size='11' stroke='none' fill='currentColor'>AP TSF (timing master)</text><text x='52' y='62' font-size='9' stroke='none' fill='currentColor'>Beacon</text><text x='142' y='62' font-size='9' stroke='none' fill='currentColor'>Beacon</text><text x='232' y='62' font-size='9' stroke='none' fill='currentColor'>Beacon</text><text x='322' y='62' font-size='9' stroke='none' fill='currentColor'>Beacon</text><line x1='20' y1='110' x2='400' y2='110'/><text x='20' y='132' font-size='11' stroke='none' fill='currentColor'>STA local TSF</text><line x1='60' y1='104' x2='60' y2='116' stroke-dasharray='3 2'/><path d='M150 95 v10 M150 105 l-4 -3 M150 105 l4 -3' stroke-dasharray='0'/><text x='112' y='90' font-size='8' stroke='none' fill='currentColor'>set from 1st beacon</text><path d='M240 100 q0 5 0 5 M330 100 q0 5 0 5'/><text x='205' y='132' font-size='8' stroke='none' fill='currentColor'>re-adopt timestamp on each later beacon</text></svg>",
+      "caption": {
+        "en": "The AP's TSF is the reference; the station sets its clock from the first beacon, then re-adopts the timestamp on every later beacon to stay aligned.",
+        "zh": "AP 的 TSF 是基准；站点用第一个信标对表，之后在每个信标上重新采用时间戳，以保持对齐。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Two special variants extend this picture. The multiple-BSSID procedure lets one radio advertise many virtual APs from a single beacon: one BSSID is the 'transmitted BSSID' that actually sends the Beacon frame, and the rest are 'nontransmitted BSSIDs' whose profiles ride inside a Multiple BSSID element in that same beacon — so a station can discover several networks from one transmission, with shared elements inherited rather than repeated. The S1G beacon is the sub-1-GHz long-range, low-power variant: an S1G AP sends S1G Beacon frames instead of ordinary beacons, and can additionally send shorter beacons on a dot11ShortBeaconPeriod for cheaper, more frequent presence with less airtime.",
+      "zh": "有两个特殊变体扩展了这幅图景。多 BSSID（multiple-BSSID）流程让一块射频用单个信标就能广播多个虚拟 AP：其中一个 BSSID 是真正发送信标帧的“传输 BSSID（transmitted BSSID）”，其余则是“非传输 BSSID（nontransmitted BSSID）”，它们的配置随同一信标里的 Multiple BSSID 元素一起携带——于是站点用一次传输就能发现多个网络，而共享的元素是继承而非重复携带。S1G 信标则是面向 1 GHz 以下、长距离、低功耗的变体：S1G AP 发送 S1G 信标帧而非普通信标，还可以按 dot11ShortBeaconPeriod 额外发送更短的信标，以更省空口、更频繁的方式宣示存在。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Where the standard pins each step: scan parameters, the join-time TSF rule, and the two variants",
+        "zh": "标准在何处规定每一步：扫描参数、加入时的 TSF 规则，以及两个变体"
+      },
+      "en": "Clause 11.1.4.1 says a STA scans in Passive or Active mode per the ScanMode parameter of MLME-SCAN.request, and notes active scanning is restricted in some bands/domains. Passive scanning (11.1.4.2.1) listens to each channel no longer than MaxChannelTime; active scanning (11.1.4.3) generates Probe Request frames (wildcard SSID, an SSID, or SSID List elements) and processes Probe Response frames. On the timing side, 11.1.2.1 makes the AP the TSF timing master that periodically transmits Beacon frames carrying the AP's TSF value; a receiving STA whose timer differs from the received Timestamp sets its local TSF to that value. The IBSS distributed case (11.1.2.2) adopts any beacon/probe-response TSF later than its own. At join (11.1.4.5), on MLME-JOIN.request a STA adopts the BSSID and, on the first Beacon, adopts the TSF per 11.1.3.9; if JoinFailureTimeout fires first, the join fails. Beacon reception (11.1.3.7) uses a beacon's info only if its BSSID matches the AP in use (or a nontransmitted BSSID). The multiple-BSSID procedure (11.1.3.8) defines the transmitted BSSID as the one carrying the Multiple BSSID element in its Beacon, with only that AP transmitting the beacon for the set. General S1G synchronization (11.1.3.10.1) schedules S1G Beacon frames at dot11BeaconPeriod (and optionally dot11ShortBeaconPeriod), where an S1G Beacon Compatibility element replaces the Beacon's Timestamp/Beacon Interval/Capability fields.",
+      "zh": "11.1.4.1 节规定，站点按 MLME-SCAN.request 的 ScanMode 参数以被动或主动模式扫描，并指出主动扫描在某些频段/管制域中受限。被动扫描（11.1.4.2.1）在每个信道上监听不超过 MaxChannelTime；主动扫描（11.1.4.3）产生探测请求帧（通配 SSID、某个 SSID 或 SSID List 元素）并处理探测响应帧。在计时一侧，11.1.2.1 节让 AP 充当 TSF 计时主控，周期性地发送携带 AP TSF 值的信标帧；接收站点若其计时器与收到的时间戳不同，就把本地 TSF 设为该值。IBSS 分布式情形（11.1.2.2）采用任何晚于自身的信标/探测响应 TSF 值。在加入时（11.1.4.5），收到 MLME-JOIN.request 后站点采用该 BSSID，并在第一个信标上按 11.1.3.9 采用 TSF；若 JoinFailureTimeout 先到，则加入失败。信标接收（11.1.3.7）只在信标的 BSSID 与正在使用的 AP（或某个非传输 BSSID）匹配时才使用其信息。多 BSSID 流程（11.1.3.8）将“传输 BSSID”定义为其信标中携带 Multiple BSSID 元素的那个，且该集合中只有这一个 AP 发送信标。通用 S1G 同步（11.1.3.10.1）按 dot11BeaconPeriod（并可选地按 dot11ShortBeaconPeriod）调度 S1G 信标帧，其中 S1G Beacon Compatibility 元素替代了信标的 Timestamp/Beacon Interval/Capability 字段。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2444,
+          2446,
+          2462
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.1.2.1",
+    "80211-2024:11.1.2.2",
+    "80211-2024:11.1.3.7",
+    "80211-2024:11.1.3.8",
+    "80211-2024:11.1.3.10.1",
+    "80211-2024:11.1.4.2",
+    "80211-2024:11.1.4.3",
+    "80211-2024:11.1.4.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2427,
+        2428
+      ],
+      "note": "11.1.2.1-11.1.2.2 — AP is TSF timing master; beacons carry TSF; receiving STA adopts timestamp; IBSS distributed TSF adopts later value"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2434,
+        2435
+      ],
+      "note": "11.1.3.7 beacon reception (BSSID match incl. nontransmitted BSSID); 11.1.3.8 multiple BSSID procedure — transmitted vs nontransmitted BSSID"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2443
+      ],
+      "note": "11.1.3.10.1 general S1G synchronization — S1G Beacon at dot11BeaconPeriod / dot11ShortBeaconPeriod; S1G Beacon Compatibility element"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2444,
+        2446
+      ],
+      "note": "11.1.4.1 scan mode (active restricted in some domains); 11.1.4.2.1 passive listen <= MaxChannelTime; 11.1.4.3 active scan Probe Request/Response"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2462
+      ],
+      "note": "11.1.4.5 synchronizing with a BSS — MLME-JOIN adopts BSSID, sets TSF from first Beacon, JoinFailureTimeout"
+    }
+  ],
+  "track": "managing"
+}

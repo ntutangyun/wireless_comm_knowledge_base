@@ -1,0 +1,127 @@
+{
+  "id": "managing-27",
+  "title": {
+    "en": "Fine Timing Measurement and Locating a STA",
+    "zh": "精细定时测量与终端定位"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Radio waves travel at the speed of light, which is fast but not infinitely fast: light covers about 30 cm in one nanosecond. That tiny, fixed delay is the trick behind Wi-Fi positioning. If two devices can timestamp when a frame leaves one antenna and when it arrives at the other, the gap is the time of flight — and time of flight times the speed of light is distance. This lesson is about how 802.11 turns the air between two stations into a tape measure, and how a network can keep following a station once it knows where it is.",
+      "zh": "无线电波以光速传播——很快，但并非无限快：光在一纳秒内大约前进 30 厘米。正是这个微小而恒定的延迟，构成了 Wi-Fi 定位的核心技巧。如果两台设备能分别记录一帧离开一根天线的时刻和到达另一根天线的时刻，二者之差就是“飞行时间（time of flight）”——飞行时间乘以光速，就是距离。本课讲的是 802.11 如何把两个站点之间的空气变成一把卷尺，以及网络在知道站点位置后如何持续地跟踪它。"
+    },
+    {
+      "type": "prose",
+      "en": "The simplest building block is the timing measurement procedure (11.21.5). A sending STA emits Timing Measurement frames in overlapping pairs. With the first frame, four timestamps get captured: t1 when the sender transmits, t2 when the receiver hears it, t3 when the receiver sends back its Ack, and t4 when the sender hears that Ack. The sender does not know t2 and t3 yet, so it puts its own t1 and t4 into a follow-up frame and hands them over. Now one side holds all four numbers — enough to compute the clock offset between the two devices, assuming the channel is symmetric. The standard's formula is offset = [(t2 - t1) - (t4 - t3)] / 2.",
+      "zh": "最简单的基本单元是“定时测量流程”（11.21.5）。发送方以成对、彼此重叠的方式发出定时测量帧。随第一帧会捕获四个时间戳：t1 是发送方发出的时刻，t2 是接收方听到的时刻，t3 是接收方回发 Ack 的时刻，t4 是发送方听到该 Ack 的时刻。发送方此时还不知道 t2 和 t3，于是把自己的 t1 和 t4 放进一个后续帧交给对方。如此一来，一方就掌握了全部四个数值——在信道对称的假设下，足以算出两台设备之间的时钟偏差。标准给出的公式是 偏移 = [(t2 - t1) - (t4 - t3)] / 2。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the same four timestamps that give a clock offset also give a distance. Subtract the receiver's turnaround (t3 - t2) from the sender's total wait (t4 - t1) and you are left with two one-way flight times; halve that and multiply by the speed of light. Timing Measurement frames the symmetric exchange; Fine Timing Measurement makes it precise enough to range.",
+      "zh": "请留意：给出时钟偏差的那同样四个时间戳，也能给出距离。用发送方的总等待时间（t4 - t1）减去接收方的处理周转时间（t3 - t2），剩下的就是两段单向飞行时间；将其折半再乘以光速即得距离。定时测量帧构建了这种对称交换，而精细定时测量（FTM）则让它精确到足以测距。"
+    },
+    {
+      "type": "prose",
+      "en": "Fine Timing Measurement (FTM, 11.21.6) is the precision version. It runs as a session between an initiating STA (ISTA, the one that wants its range) and a responding STA (RSTA, often an AP at a known location). First comes negotiation (11.21.6.3): the ISTA sends an initial FTM Request (IFTMR) carrying an FTM Parameters or Ranging Parameters element, and the RSTA replies within about 10 ms with an initial FTM (IFTM) frame whose Status Indication says yes or no and pins down format, bandwidth, and how the measurement bursts will be scheduled. Then comes the measurement exchange (11.21.6.4): inside scheduled burst instances the two sides trade FTM frames and Acks, capturing t1-t4 on each, and the RSTA carries the earlier t1/t4 forward in the next frame so the ISTA can compute the round-trip time and divide by two.",
+      "zh": "精细定时测量（FTM，11.21.6）是其精确版本。它以“会话”的形式运行在发起方站点（ISTA，想知道自身距离的一方）与响应方站点（RSTA，通常是位置已知的 AP）之间。首先是协商（11.21.6.3）：ISTA 发送携带 FTM 参数元素或测距参数元素的初始 FTM 请求帧（IFTMR），RSTA 在约 10 ms 内以初始 FTM 帧（IFTM）回应——其中的状态指示字段表示接受或拒绝，并确定格式、带宽以及测量突发（burst）如何调度。随后是测量交换（11.21.6.4）：在调度好的突发实例内，双方往返交换 FTM 帧与 Ack，每次都捕获 t1-t4，RSTA 把上一次的 t1/t4 带进下一帧，使 ISTA 能算出往返时间并除以二。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant ISTA as Initiating STA\n    participant RSTA as Responding STA (known location)\n    Note over ISTA,RSTA: Negotiation (11.21.6.3)\n    ISTA->>RSTA: IFTMR (FTM/Ranging Parameters, Trigger=1)\n    RSTA-->>ISTA: IFTM (Status=Success, schedule) within ~10 ms\n    Note over ISTA,RSTA: Measurement exchange (11.21.6.4)\n    RSTA->>ISTA: FTM frame  (capture t1, ISTA captures t2)\n    ISTA-->>RSTA: Ack        (ISTA captures t3, RSTA captures t4)\n    RSTA->>ISTA: next FTM carries t1, t4\n    Note over ISTA: RTT = (t4 - t1) - (t3 - t2)\n    Note over ISTA: distance = (RTT / 2) x c",
+      "zh": "sequenceDiagram\n    participant ISTA as 发起方站点\n    participant RSTA as 响应方站点 (位置已知)\n    Note over ISTA,RSTA: 协商 (11.21.6.3)\n    ISTA->>RSTA: IFTMR (FTM/测距参数, Trigger=1)\n    RSTA-->>ISTA: IFTM (状态=成功, 调度) 约 10 ms 内\n    Note over ISTA,RSTA: 测量交换 (11.21.6.4)\n    RSTA->>ISTA: FTM 帧 (记录 t1, ISTA 记录 t2)\n    ISTA-->>RSTA: Ack     (ISTA 记录 t3, RSTA 记录 t4)\n    RSTA->>ISTA: 下一帧携带 t1, t4\n    Note over ISTA: 往返时间 RTT = (t4 - t1) - (t3 - t2)\n    Note over ISTA: 距离 = (RTT / 2) x 光速"
+    },
+    {
+      "type": "prose",
+      "en": "Distance to one anchor only places you on a circle. To get an actual position the ISTA ranges against several RSTAs whose locations it knows, then trilaterates. But where do those known locations come from? FTM has a side channel for exactly this (11.21.6.7): the requester can bundle a Measurement Request element of type LCI (Location Configuration Information — a geospatial latitude/longitude/altitude) or type Location Civic (a human address like building and floor) into its FTM Request. A capable RSTA answers with the matching Measurement Report element in the IFTM frame, and an LCI report can even carry usage rules the receiver must honour. So one exchange yields both how far away the AP is and where the AP claims to be.",
+      "zh": "只对一个锚点测距，只能把你定位在一个圆上。要得到真正的位置，ISTA 需要对多个位置已知的 RSTA 分别测距，再做三边定位。可这些“已知位置”从何而来？FTM 为此提供了一条旁路通道（11.21.6.7）：请求方可以把一个“测量请求元素”塞进 FTM 请求帧——类型为 LCI（位置配置信息，即经纬度/海拔等地理坐标）或类型为 Location Civic（如楼栋、楼层这样的人类可读地址）。有能力的 RSTA 会在 IFTM 帧中以对应的“测量报告元素”作答；LCI 报告甚至可携带接收方必须遵守的使用规则。于是一次交换既给出了到 AP 的距离，也给出了 AP 自称所在的位置。"
+    },
+    {
+      "type": "prose",
+      "en": "Ranging answers \"where is the STA right now?\" The location track procedures (11.21.4) answer \"keep telling me where it goes.\" A STA that supports location can send a Location Configuration Request frame to configure another STA to emit Location Track Notification frames — public Action frames sprayed on a list of channels at a configured interval (minimum 500 ms), addressed to a shared multicast address so any AP in the ESS can overhear them. The notification procedure (11.21.4.2) lets the tracked STA report more when it is in motion versus stationary, and it stops automatically when, for example, it can no longer hear beacons from the ESS that configured it. The network listens; the STA broadcasts; the trail builds itself.",
+      "zh": "测距回答的是“站点此刻在哪里？”而位置跟踪流程（11.21.4）回答的是“持续告诉我它去了哪里。”一个支持定位的站点可以发送“位置配置请求帧”，把另一个站点配置为发出“位置跟踪通知帧”——这是一种公共 Action 帧，在一组配置好的信道上按设定间隔（最小 500 ms）播发，并以一个共享的组播地址为目的地，使 ESS 内任意 AP 都能听到。通知流程（11.21.4.2）允许被跟踪的站点在“运动中”比“静止”时上报得更频繁，并在诸如再也收不到配置它的那个 ESS 的信标帧等情况下自动停止。网络在倾听，站点在播发，轨迹便自行生成。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Burst instances, the IFTM 10 ms rule, and ASAP scheduling",
+        "zh": "突发实例、IFTM 的 10 ms 规则与 ASAP 调度"
+      },
+      "en": "The EDCA-based measurement exchange (11.21.6.4.2) confines TOD/TOA captures to time windows called burst instances, timed by three FTM Parameters fields: a Partial TSF Timer (when the first burst starts), a Burst Duration, and a Burst Period (start-to-start spacing). FTM frames carrying measurements shall not be sent outside a burst instance, and consecutive FTM frames to a peer are spaced at least Min Delta FTM apart. The ISTA opens a burst by sending an FTM Request with the Trigger field set to 1 as soon as it is on channel; the RSTA Acks and should send FTMs Per Burst FTM frames before the burst ends. Per 11.21.6.3, the RSTA should send the IFTM within 10 ms of the IFTMR; when ASAP=1 the Partial TSF Timer is set to under 10 ms from the IFTMR so bursts begin almost immediately (Figure 11-45 shows the ISTA can compute an RTT and clock offset right after the first ASAP=1 burst). The ISTA performs FTM on each FTM frame addressed to it except optionally the last one in a burst.",
+      "zh": "基于 EDCA 的测量交换（11.21.6.4.2）把 TOD/TOA 的捕获限定在称为“突发实例”的时间窗内，其时序由三个 FTM 参数字段确定：Partial TSF Timer（第一个突发的起始时刻）、Burst Duration（突发时长）和 Burst Period（相邻突发起点之间的间隔）。承载测量的 FTM 帧不得在突发实例之外发送，且发往同一对端的连续 FTM 帧至少相隔 Min Delta FTM。ISTA 一旦上信道，便通过发送 Trigger 字段置 1 的 FTM 请求帧来开启一个突发；RSTA 回以 Ack，并应在突发结束前发送 FTMs Per Burst 个 FTM 帧。依据 11.21.6.3，RSTA 应在收到 IFTMR 后约 10 ms 内发出 IFTM；当 ASAP=1 时，Partial TSF Timer 被设为距 IFTMR 不足 10 ms，使突发几乎立即开始（图 11-45 表明 ISTA 在首个 ASAP=1 突发后即可计算 RTT 与时钟偏差）。除一个突发中的最后一帧可选外，ISTA 对发给它的每一个 FTM 帧都执行 FTM 测量。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2689,
+          2690,
+          2691,
+          2692
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.21.4.1",
+    "80211-2024:11.21.4.2",
+    "80211-2024:11.21.5",
+    "80211-2024:11.21.6.3",
+    "80211-2024:11.21.6.4",
+    "80211-2024:11.21.6.7"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2665,
+        2666
+      ],
+      "note": "11.21.4.1 Location track configuration — Location Configuration Request/Response, 500 ms minimum interval, multicast notification address, termination conditions"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2666,
+        2667,
+        2668
+      ],
+      "note": "11.21.4.2 Location track notification — Location Track Notification frames on configured channels/interval, in-motion vs stationary reporting"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2669,
+        2670,
+        2671
+      ],
+      "note": "11.21.5 Timing measurement procedure — overlapping Timing Measurement frame pairs, t1-t4 capture, clock offset Equation (11-4)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2671,
+        2677,
+        2678
+      ],
+      "note": "11.21.6.1/11.21.6.3 FTM general and negotiation — ISTA/RSTA session, IFTMR and IFTM frames, ~10 ms response, Status Indication"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2689,
+        2690,
+        2691
+      ],
+      "note": "11.21.6.4 Measurement exchange — burst instances, FTM frame/Ack timestamps, RTT and distance"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2744
+      ],
+      "note": "11.21.6.7 LCI and Location Civic retrieval — Measurement Request/Report of type LCI or Location Civic in FTM frames, usage rules"
+    }
+  ],
+  "track": "managing"
+}

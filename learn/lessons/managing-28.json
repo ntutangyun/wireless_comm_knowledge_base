@@ -1,0 +1,122 @@
+{
+  "id": "managing-28",
+  "title": {
+    "en": "WNM Network Services: Proxy ARP, TFS, Channel Usage, and Group-Addressed Delivery",
+    "zh": "WNM 网络服务：代理 ARP、TFS、信道使用与组播交付"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A managed Wi-Fi network is full of little chores that the access point can quietly do on a client's behalf so the client's radio can stay asleep longer and the air stays less cluttered. Wireless Network Management (WNM) bundles a grab-bag of these services into clause 11.21. None of them is glamorous on its own, but together they make a busy BSS noticeably more efficient. The unifying idea: the AP acts like a smart secretary — answering routine questions, filtering junk, and advertising what's going on — so each sleepy client only has to wake for things that actually matter to it.",
+      "zh": "一个被管理的 Wi-Fi 网络里有很多琐碎的杂事，接入点（AP）可以悄悄替客户端代劳，好让客户端的射频睡得更久、让空中信道更清爽。无线网络管理（WNM）把这些服务打包进了第 11.21 条款。单看其中任何一个都不起眼，但合在一起，就能让一个繁忙的 BSS 明显更高效。贯穿其中的核心思想是：AP 就像一位聪明的秘书——替你回答例行问题、过滤垃圾、并广播当前的情况——这样每个昏昏欲睡的客户端只需在真正与自己相关的事情上醒来。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with Proxy ARP (11.21.14). When a device wants to send a packet to your phone, it first shouts an ARP request (IPv4) or an IPv6 Neighbor Discovery lookup — 'who has this address?' — as a group-addressed frame. Normally every sleeping client would have to wake up just to ignore it. Instead, an AP that advertises Proxy ARP keeps a table mapping each associated STA's hardware address to its IPv4/IPv6 addresses, and answers on the STA's behalf — or turns the noisy multicast into a single individually addressed frame to just the right STA. For a fixed device dozing in power save, the AP answering directly is preferable; for mobile devices, forwarding it as unicast avoids replying with stale information.",
+      "zh": "先看代理 ARP（11.21.14）。当某个设备想给你的手机发数据包时，它会先以组播帧的形式喊一声 ARP 请求（IPv4）或 IPv6 邻居发现查询——“谁拥有这个地址？”。正常情况下，每个睡着的客户端都得醒来，只为了忽略它。而一个声明支持代理 ARP 的 AP，会维护一张表，把每个已关联站点（STA）的硬件地址映射到它的 IPv4/IPv6 地址，并代替该 STA 应答——或者把这个嘈杂的组播帧转换成一个只发给正确 STA 的单播帧。对于在省电模式下打盹的固定设备，由 AP 直接应答更可取；对于移动设备，则以单播形式转发，以免回复了过时的信息。"
+    },
+    {
+      "type": "prose",
+      "en": "Next, Traffic Filtering Service (TFS, 11.21.12). A client tells the AP: 'while I'm asleep, only bother me with frames that match these rules.' The STA sends a TFS Request frame carrying one or more traffic filter sets — each a list of classifier (TCLAS) conditions ANDed together, with the sets ORed. The AP confirms with a TFS Response, and from then on it discards individually addressed frames destined for the STA until one matches a filter set. The STA can also ask for a TFS Notify frame so it learns when a match happened — useful because group-addressed frames are still delivered regardless of the filter, and a long-dozing STA might otherwise miss the fact that something interesting arrived.",
+      "zh": "接着是流量过滤服务（TFS，11.21.12）。客户端告诉 AP：“在我睡觉期间，只用符合这些规则的帧来打扰我。”STA 发送一个 TFS 请求帧，携带一个或多个流量过滤集——每个过滤集是一串以“与”关系组合的分类器（TCLAS）条件，而各过滤集之间是“或”关系。AP 用 TFS 响应帧确认，此后它会丢弃所有发往该 STA 的单播帧，直到某一帧匹配上某个过滤集为止。STA 还可以请求一个 TFS Notify（通知）帧，以便得知何时发生了匹配——这很有用，因为组播帧无论是否匹配过滤器都仍会照常送达，否则一个长时间打盹的 STA 可能根本不知道有有趣的东西到来过。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant Net as Wired side / DS\n    participant AP as AP (smart secretary)\n    participant STA as Sleepy STA\n    Note over STA,AP: STA sets up TFS filter, then dozes\n    Net->>AP: ARP/ND lookup for STA (group addressed)\n    Note over AP: Proxy ARP answers from its mapping table\n    AP-->>Net: reply on STA's behalf (STA stays asleep)\n    Net->>AP: uninteresting unicast for STA\n    Note over AP: no TFS filter match -> discard\n    Net->>AP: frame matching STA's TFS filter\n    Note over AP: match! optional TFS Notify\n    AP->>STA: deliver (and wake STA)",
+      "zh": "sequenceDiagram\n    participant Net as 有线侧 / DS\n    participant AP as AP（聪明的秘书）\n    participant STA as 打盹的 STA\n    Note over STA,AP: STA 先建立 TFS 过滤器，然后打盹\n    Net->>AP: 对 STA 的 ARP/ND 查询（组播）\n    Note over AP: 代理 ARP 用其映射表应答\n    AP-->>Net: 代替 STA 回复（STA 继续睡）\n    Net->>AP: 发往 STA 的无趣单播帧\n    Note over AP: 无 TFS 过滤匹配 -> 丢弃\n    Net->>AP: 匹配 STA TFS 过滤器的帧\n    Note over AP: 命中！可选发 TFS Notify\n    AP->>STA: 投递（并唤醒 STA）"
+    },
+    {
+      "type": "prose",
+      "en": "Two services let clients and APs talk about load and channels. The QoS Traffic capability procedure (11.21.10) lets a non-AP STA declare, per access category, whether it expects to generate traffic at a given user priority — for example a phone app that will produce voice (UP 6) traffic when a call starts. Building on that, AC Station Count (11.21.11) has the QoS AP advertise, in Beacons and Probe Responses, how many associated stations are active per access category. A client can read these counts to gauge how congested each AC is and factor that into association, reassociation, and BSS-transition decisions. The Channel usage procedures (11.21.15) round this out: a STA exchanges Channel Usage Request/Response frames with the AP to learn which channels are recommended (e.g. for setting up an off-channel TDLS link), to request a channel switch, or to notify capabilities after a switch.",
+      "zh": "有两项服务让客户端与 AP 能就负载和信道进行沟通。QoS 流量能力流程（11.21.10）允许非 AP STA 按接入类别（AC）声明：它是否预期会以某个用户优先级生成流量——例如，一个电话应用在通话开始时会产生语音（UP 6）流量。在此基础上，AC 站点计数（11.21.11）让 QoS AP 在信标帧和探测响应帧中广播：每个接入类别下有多少个已关联站点处于活跃状态。客户端可以读取这些计数，来判断各个 AC 的拥塞程度，并据此作出关联、重关联和 BSS 切换的决策。信道使用流程（11.21.15）则把这一切补全：STA 与 AP 交换信道使用请求/响应帧，以了解哪些信道被推荐（例如用于建立异频 TDLS 直连链路）、请求一次信道切换，或在切换后通报自身能力。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the recurring pattern: almost every WNM service is gated by a dot11...Activated flag and an Extended Capabilities bit the STA or AP sets to 1. Before two devices use a service, each checks that the peer's most recently received Extended Capabilities element advertised support. No surprise features — capability is always announced first, then used.",
+      "zh": "注意这个反复出现的模式：几乎每一项 WNM 服务都由一个 dot11...Activated 标志和一个“扩展能力（Extended Capabilities）”比特来开关，STA 或 AP 会把该比特置为 1。在两台设备使用某项服务之前，各自都会检查对端最近收到的扩展能力元素是否声明了支持。没有突如其来的功能——能力总是先被宣告，然后才被使用。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the group-addressed transmission service (11.21.16) tackles a hard problem: plain multicast is sent once at a low, robust rate with no acknowledgement, so it's unreliable. Two services improve it. Directed Multicast Service (DMS) converts a multicast stream into individually addressed frames (delivered as A-MSDUs) just for the clients that asked — reliable, but it doesn't scale well as the group grows. Groupcast with Retries (GCR) is the flexible big brother: it adds retransmission policies (unsolicited retry, or block-ack-driven retry) and delivery methods (including a scheduled service period, GCR-SP) so the AP can trade off delay, efficiency, and scalability for the group size at hand. A small companion, WNM notification (11.21.17), lets a STA push management tidbits to a peer — such as a firmware-upgrade notification or a beacon-protection-failure report.",
+      "zh": "最后，组播（组寻址）传输服务（11.21.16）攻克了一个棘手问题：普通组播只以一个低速、稳健的速率发送一次，且不带确认，因此并不可靠。有两项服务对其加以改进。定向组播服务（DMS）把一条组播流转换成单播帧（以 A-MSDU 形式投递），仅发给提出请求的客户端——可靠，但随着组的增大其扩展性不佳。带重传的组播（GCR）则是更灵活的“大哥”：它增加了重传策略（无请求重试，或由块确认驱动的重试）和投递方式（包括一种带调度服务周期的 GCR-SP），让 AP 能针对当前的组规模在时延、效率和可扩展性之间做权衡。还有一个小配角——WNM 通知（11.21.17），它让一个 STA 能向对端推送管理类小信息——例如固件升级通知或信标保护失败的报告。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "How the AP filters before waking a STA: TFS match actions and Proxy ARP exactness",
+        "zh": "AP 在唤醒 STA 之前如何过滤：TFS 匹配动作与代理 ARP 的精确规则"
+      },
+      "en": "The standard is precise about what 'filtering' means. Per 11.21.12.3, once a traffic filtering agreement exists the AP discards all individually addressed frames for the STA until one matches a traffic filter set; on a match it acts per the set's action. If the action specifies both Delete After Match and Notify, the AP sends a single individually addressed TFS Notify frame and then deletes the agreement; if Notify but not Delete, it sends a TFS Notify and keeps all filter sets, and only resumes notifications after receiving a TFS Notify Response frame carrying the relevant TFS IDs. The AP also always adds a filter set that matches the STA's individually addressed EAPOL-Key frames so key handshakes are never filtered out. For Proxy ARP (11.21.14), the AP maintains a Hardware-Address-to-Internet-Address mapping per associated STA for each IPv4 and IPv6 address, processing three message types as group addressed: IPv4 ARP requests, IPv6 ND address lookups, and IPv6 ND duplicate address detection. If the target isn't a known associated STA, the request is not forwarded into the BSS; if it is known, the AP either answers directly or rewrites it as an individually addressed frame, inserting the second STA's MAC as the sender in an IPv4 ARP response.",
+      "zh": "标准对“过滤”的含义有精确规定。依据 11.21.12.3，一旦流量过滤协议成立，AP 就会丢弃所有发往该 STA 的单播帧，直到某一帧匹配上某个流量过滤集；匹配时，按该集的动作处理。若动作同时指定了“匹配后删除（Delete After Match）”和“通知（Notify）”，AP 发送单个单播的 TFS Notify 帧，随后删除该协议；若只指定 Notify 而不删除，则发送一个 TFS Notify 并保留所有过滤集，且只有在收到携带相关 TFS ID 的 TFS Notify 响应帧后才恢复通知。AP 还总会额外加入一个匹配该 STA 单播 EAPOL-Key 帧的过滤集，确保密钥握手永不被过滤掉。对于代理 ARP（11.21.14），AP 为每个已关联 STA 的每个 IPv4 和 IPv6 地址维护一张“硬件地址到互联网地址”的映射，并处理三类以组播形式收到的消息：IPv4 ARP 请求、IPv6 ND 地址查询，以及 IPv6 ND 重复地址检测。若目标不是已知的已关联 STA，该请求不会被转发进 BSS；若目标已知，AP 要么直接应答，要么将其改写为单播帧，并在 IPv4 ARP 响应中把第二个 STA 的 MAC 填为发送方。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2753,
+          2755
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.21.10",
+    "80211-2024:11.21.11",
+    "80211-2024:11.21.12",
+    "80211-2024:11.21.14",
+    "80211-2024:11.21.15",
+    "80211-2024:11.21.16",
+    "80211-2024:11.21.17"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2751
+      ],
+      "note": "11.21.10 QoS Traffic capability and 11.21.11 AC Station Count — per-AC traffic-capability flags and station-count advertisement"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2752,
+        2753,
+        2754
+      ],
+      "note": "11.21.12 TFS procedures — traffic filter sets, TFS Request/Response/Notify, AP match actions"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2755,
+        2756
+      ],
+      "note": "11.21.14 Proxy ARP service — HW-to-IP mapping, IPv4 ARP / IPv6 ND handling, direct vs forwarded reply"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2757
+      ],
+      "note": "11.21.15 Channel usage procedures — Channel Usage Request/Response uses"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2763,
+        2766
+      ],
+      "note": "11.21.16 Group addressed transmission service — DMS vs GCR, retransmission policies and delivery methods"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2776,
+        2777
+      ],
+      "note": "11.21.17 WNM notification — firmware and beacon-protection-failure indications to a peer"
+    }
+  ],
+  "track": "managing"
+}

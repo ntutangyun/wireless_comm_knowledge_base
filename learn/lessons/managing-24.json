@@ -1,0 +1,120 @@
+{
+  "id": "managing-24",
+  "title": {
+    "en": "Sleeping Smarter: FMS, WNM-Sleep, and TXOP Power Save",
+    "zh": "更聪明地休眠：FMS、WNM 睡眠与 TXOP 省电"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Basic 802.11 power save already lets a station nap and wake up at every DTIM beacon to check whether anything is buffered for it. That works, but it is blunt: the station is forced onto the AP's clock, waking on a fixed cadence whether or not it actually has traffic. This lesson is about a set of services layered on top of basic power save that let a device negotiate exactly when it must be awake — so it can sleep through beacons it does not care about instead of waking for every one.",
+      "zh": "基础的 802.11 省电机制已经能让站点（STA）打个盹，并在每个 DTIM 信标到来时醒来，检查是否有为它缓存的数据。这能用，但很粗糙：站点被迫跟着 AP 的节拍走，无论它实际上有没有流量，都要按固定周期醒来。本课要讲的，是叠加在基础省电之上的一组服务——它们让设备能够协商出“到底什么时候必须醒着”，从而睡过那些它并不关心的信标，而不必每个都醒来。"
+    },
+    {
+      "type": "prose",
+      "en": "First, Flexible Multicast Service (FMS). Multicast (group-addressed) traffic is normally delivered right after a DTIM beacon, so a station that wants it must wake every DTIM interval. FMS lets a station ask the AP to deliver a specific multicast stream on a slower schedule — a delivery interval that is an integer multiple of the DTIM period. The AP keeps an FMS counter per delivery interval; it counts down once per DTIM beacon, and when it hits zero the buffered group frames go out right after the next DTIM beacon. So a station interested only in a once-per-10-DTIM stream can sleep through the nine DTIMs in between.",
+      "zh": "先看灵活组播服务（FMS, Flexible Multicast Service）。组播（组地址）流量通常在 DTIM 信标后立即下发，因此想接收它的站点必须每个 DTIM 间隔都醒来。FMS 允许站点请求 AP 以更慢的节奏来下发某个特定的组播流——一个为 DTIM 周期整数倍的“下发间隔”。AP 为每个下发间隔维护一个 FMS 计数器；它每个 DTIM 信标递减一次，归零时，被缓存的组帧便会在下一个 DTIM 信标之后下发。这样，只关心“每 10 个 DTIM 一次”的流量的站点，就能睡过中间那九个 DTIM。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "FMS also has a rate-processing side. When several stations subscribe to the same FMS stream, the AP picks one set of transmit parameters (modulation, MCS, bandwidth, guard interval) that every subscriber can decode — and it must pick a rate no higher than the slowest subscriber's capability. So FMS is not just about timing; the AP rate-processes a shared multicast stream to keep it decodable by the whole group.",
+      "zh": "FMS 还有“速率处理”的一面。当多个站点订阅同一条 FMS 流时，AP 会选取一组所有订阅者都能解调的发送参数（调制方式、MCS、带宽、保护间隔）——而且所选速率不得高于其中最慢订阅者的能力上限。所以 FMS 不只是关乎时机：AP 会对这条共享组播流做速率处理，以保证整组成员都能解出来。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Non-AP STA\n    participant AP as Access Point\n    STA->>AP: FMS Request (stream + delivery interval = 10 DTIM)\n    AP->>STA: FMS Response (Accept, FMSID assigned)\n    Note over STA,AP: STA wakes for next DTIM to sync the FMS Current Count\n    loop nine DTIM beacons\n        Note over STA: doze — nothing for this stream\n    end\n    Note over AP: FMS counter hits 0\n    AP->>STA: buffered group frames after the next DTIM beacon",
+      "zh": "sequenceDiagram\n    participant STA as 非 AP 站点\n    participant AP as 接入点\n    STA->>AP: FMS 请求 (流 + 下发间隔 = 10 个 DTIM)\n    AP->>STA: FMS 响应 (接受, 分配 FMSID)\n    Note over STA,AP: STA 醒来接收下一个 DTIM 以同步 FMS 当前计数\n    loop 九个 DTIM 信标\n        Note over STA: 打盹 —— 此流无数据\n    end\n    Note over AP: FMS 计数器归零\n    AP->>STA: 在下一个 DTIM 信标后下发缓存的组帧"
+    },
+    {
+      "type": "prose",
+      "en": "Next, WNM-Sleep Mode. FMS fine-tunes when multicast arrives, but a station that wants to sleep for minutes at a time faces a different problem: it would normally have to stay reachable for group-key (GTK/IGTK/BIGTK) rekeying, and it risks being aged out. WNM-Sleep Mode solves both. The station sends a WNM Sleep Mode Request carrying a sleep interval; while in WNM-sleep it need not wake every DTIM and need not participate in group-key updates — and crucially it keeps its association and its group-key state. It just wakes at intervals no longer than its sleep interval to peek at the TIM. To leave, it sends another request to exit, and the AP hands back the current (or pending) group keys in the response.",
+      "zh": "接下来是 WNM 睡眠模式（WNM-Sleep Mode）。FMS 微调的是组播何时到达，但想一次睡上几分钟的站点面临另一个问题：它本来必须保持可达，以参与组密钥（GTK/IGTK/BIGTK）的轮换，还有被“因闲置而踢出”的风险。WNM 睡眠模式同时解决了这两点。站点发送一个携带睡眠间隔的 WNM 睡眠模式请求；处于 WNM 睡眠期间，它无需每个 DTIM 都醒来，也无需参与组密钥更新——而且关键在于，它保留了自己的关联以及组密钥状态。它只需以不超过其睡眠间隔的周期醒来，瞄一眼 TIM 即可。要退出时，它再发一个“退出”请求，AP 则在响应中把当前（或待生效）的组密钥交还给它。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "These services interlock. A WNM-sleep request carries a sleep interval that must be shorter than the BSS max idle period, and it can ride alongside a Traffic Filtering Service request so the AP only wakes the station for traffic it actually cares about. Sleeping longer is only safe because the BSS max idle period (below) defines how long silence is tolerated before the AP may age the station out.",
+      "zh": "这些服务彼此咬合。WNM 睡眠请求携带的睡眠间隔必须短于 BSS 最大空闲周期，并且可以与流量过滤服务（TFS）请求一起捎带，使 AP 只为站点真正关心的流量唤醒它。之所以能更长时间地休眠，正是因为有 BSS 最大空闲周期（见下文）来界定：在 AP 可能将站点“因闲置而老化踢出”之前，能容忍多久的静默。"
+    },
+    {
+      "type": "prose",
+      "en": "Third, VHT TXOP power save. The two services above plan sleep across beacons; this one steals micro-naps inside a single transmit opportunity (TXOP). When a VHT AP grabs the medium for a TXOP, it can signal — by setting TXOP_PS_NOT_ALLOWED to 0 in a VHT PPDU — that stations are allowed to doze. A station then inspects each PPDU: if the GROUP_ID, PARTIAL_AID, or the receiver address show the frame is not for it, it dozes until the end of the TXOP. It keeps its NAV running while asleep and wakes when the NAV expires. The AP guards the start of such a TXOP with an RTS/CTS-style NAV set covering the whole duration, so napping stations stay protected.",
+      "zh": "第三是 VHT TXOP 省电（VHT TXOP power save）。上面两种服务规划的是跨信标的休眠；而这一种是在单次发送机会（TXOP）内部偷打“微盹”。当 VHT AP 抢占信道获得一个 TXOP 时，它可以通过在某个 VHT PPDU 中把 TXOP_PS_NOT_ALLOWED 置为 0 来示意：站点此时被允许打盹。站点随后检查每一个 PPDU：若 GROUP_ID、PARTIAL_AID 或接收地址表明这帧不是发给它的，它便打盹直到该 TXOP 结束。它在睡眠期间保持 NAV 计时，并在 NAV 到期时醒来。AP 会在这样一个 TXOP 的开头用类似 RTS/CTS 的、覆盖整个时长的 NAV 设置来加以保护，使打盹的站点仍受保护。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact rules: FMS counters, WNM-sleep key handling, TXOP doze conditions, and the idle timeout",
+        "zh": "精确规则：FMS 计数器、WNM 睡眠的密钥处理、TXOP 打盹条件，以及空闲超时"
+      },
+      "en": "FMS (11.2.3.13): an FMS AP includes an FMS Descriptor in every Beacon and supports one to eight delivery intervals (each an integer multiple of the DTIM period) with eight corresponding FMS counters; a counter decrements once per DTIM beacon and at zero schedules its buffered group BUs immediately after the next DTIM beacon. After accepting an FMS Request, the STA stays awake for the next DTIM beacon to synchronise with the FMS Current Count, after which it need not wake every DTIM (11.2.3.13.4). FMS multicast rate processing (11.21.8) requires the selected rate be no higher than the lowest rate of the existing and requesting STAs, with FORMAT, MCS, CH_BANDWIDTH, GI_TYPE and related TXVECTOR parameters compatible with all subscribers. WNM-Sleep (11.2.3.15): the SME issues MLME-SLEEPMODE.request with Action Type 'Enter WNM sleep mode' and a WNM Sleep Interval that shall be less than the BSS max idle period; while sleeping the STA need not wake every DTIM nor do GTK/IGTK/BIGTK updates, and to prevent key-reinstallation attacks it keeps a copy of the most recent GTK/IGTK/BIGTK and refuses to reinstall a matching key on exit (6.5.14). On exit the AP returns the current or pending group keys in the response. VHT TXOP power save (11.2.3.16): with dot11VHTTXOPPowerSaveOptionImplemented true, the AP may permit doze by transmitting a VHT PPDU with TXVECTOR TXOP_PS_NOT_ALLOWED = 0 (it may flip 1->0 mid-TXOP but never 0->1); a STA may doze to TXOP end when, e.g., the RXVECTOR GROUP_ID excludes it, PARTIAL_AID does not match, or the RA does not match its MAC; it operates its NAV through doze and wakes at NAV expiry. BSS max idle (11.21.13): if dot11BSSMaxIdlePeriod is nonzero the AP includes the BSS Max Idle Period element in the (Re)Association Response; the Max Idle Period field is the span a STA may refrain from transmitting without being disassociated for inactivity, and the STA sends at least one (protected or unprotected) keepalive per period as set by the Idle Options field.",
+      "zh": "FMS（11.2.3.13）：FMS AP 在每个信标中都包含 FMS Descriptor，支持 1 至 8 个下发间隔（每个均为 DTIM 周期的整数倍）及对应的 8 个 FMS 计数器；计数器每个 DTIM 信标递减一次，归零时把缓存的组 BU 安排在下一个 DTIM 信标之后立即下发。AP 接受 FMS 请求后，STA 会为下一个 DTIM 信标保持清醒以同步 FMS 当前计数，此后便无需每个 DTIM 都醒来（11.2.3.13.4）。FMS 组播速率处理（11.21.8）要求所选速率不高于既有 STA 与请求 STA 中的最低速率，且 FORMAT、MCS、CH_BANDWIDTH、GI_TYPE 等 TXVECTOR 参数须与所有订阅者兼容。WNM 睡眠（11.2.3.15）：SME 发出 MLME-SLEEPMODE.request，Action Type 为“进入 WNM 睡眠模式”，其 WNM 睡眠间隔须小于 BSS 最大空闲周期；睡眠期间 STA 无需每个 DTIM 醒来，也无需做 GTK/IGTK/BIGTK 更新，且为防范密钥重装攻击，它会保留最近的 GTK/IGTK/BIGTK 副本，并在退出时拒绝重装与之匹配的密钥（6.5.14）。退出时 AP 在响应中交还当前或待生效的组密钥。VHT TXOP 省电（11.2.3.16）：在 dot11VHTTXOPPowerSaveOptionImplemented 为真时，AP 可通过发送 TXVECTOR 中 TXOP_PS_NOT_ALLOWED = 0 的 VHT PPDU 来允许打盹（TXOP 中途可由 1 改 0，但绝不可由 0 改 1）；当 RXVECTOR 的 GROUP_ID 不含该 STA、PARTIAL_AID 不匹配，或 RA 与其 MAC 不符等情形时，STA 可打盹至 TXOP 结束；它在打盹期间维持 NAV 计时，并在 NAV 到期时醒来。BSS 最大空闲（11.21.13）：若 dot11BSSMaxIdlePeriod 非零，AP 在（重）关联响应中包含 BSS Max Idle Period 元素；其 Max Idle Period 字段是 STA 可不发送帧而不因闲置被解除关联的时长，STA 须按 Idle Options 字段设定，每个周期至少发送一个（受保护或不受保护的）保活帧。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2488,
+          2493,
+          2495,
+          2749,
+          2754
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.2.3.13",
+    "80211-2024:11.2.3.15",
+    "80211-2024:11.2.3.16",
+    "80211-2024:11.21.8",
+    "80211-2024:11.21.13"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2488,
+        2489,
+        2490,
+        2491
+      ],
+      "note": "11.2.3.13 FMS power management — FMS Descriptor in every Beacon, one-to-eight delivery intervals and FMS counters, counter decrement per DTIM, Request/Response procedures, Current Count sync"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2493,
+        2494,
+        2495
+      ],
+      "note": "11.2.3.15 WNM sleep mode — MLME-SLEEPMODE primitives, sleep interval < BSS max idle period, no per-DTIM wake, no GTK/IGTK/BIGTK updates, key-reinstall protection, key return on exit"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2495,
+        2496,
+        2497
+      ],
+      "note": "11.2.3.16 VHT TXOP power save — TXOP_PS_NOT_ALLOWED = 0 to permit doze, GROUP_ID/PARTIAL_AID/RA mismatch doze conditions, NAV operation through doze and wake at NAV expiry"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2749
+      ],
+      "note": "11.21.8 FMS multicast rate processing — AP selects shared TXVECTOR parameters no higher than the lowest-capability subscriber so the whole group can decode"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2754,
+        2755
+      ],
+      "note": "11.21.13 BSS max idle period management — BSS Max Idle Period element in (Re)Association Response, Max Idle Period meaning, keepalive frame per period via Idle Options"
+    }
+  ],
+  "track": "managing"
+}
