@@ -1,0 +1,110 @@
+{
+  "id": "frames-18",
+  "title": {
+    "en": "Block Ack & QoS/Resource Action Frames: setting up the aggregation and traffic contracts",
+    "zh": "块确认与 QoS/资源动作帧：建立聚合与流量契约"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Data frames carry your payload; a small family of management Action frames negotiate the rules for that payload before it ever flows. This tour covers two of those categories. The Block Ack category sets up how a burst of frames will be acknowledged in one shot — the control plane behind A-MPDU aggregation. The QoS category sets up how a stream of traffic will be admitted and prioritized — the traffic contract. In both, an Action frame is just a labeled message: a one-octet Category field says which family, and a second one-octet field (Block Ack Action or QoS Action) says exactly which job within that family.",
+      "zh": "数据帧承载你的有效载荷；而有一小族管理类“动作帧（Action frame）”负责在载荷真正流动之前，先把承载这些载荷的规则协商好。本课带你浏览其中两个类别。块确认（Block Ack）类负责约定一连串帧将如何被一次性确认——这正是 A-MPDU 聚合背后的控制面。QoS 类负责约定一条流量将如何被准入与优先调度——也就是流量契约。两者中，动作帧本质上都是一条带标签的消息：一个单字节的 Category 字段说明属于哪一族，第二个单字节字段（Block Ack Action 或 QoS Action）则精确指明这一族中的哪一项任务。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: ADDxx frames open something, DELxx frames tear it down, and the rest tune or report on it. ADDBA / DELBA open and close a Block Ack agreement; ADDTS / DELTS open and close a traffic stream. Spot the verb and you already know half the frame's purpose.",
+      "zh": "记忆模型：ADDxx 类帧用于“开启”某种约定，DELxx 类帧用于“拆除”它，其余的帧则负责微调或上报状态。ADDBA / DELBA 开启与关闭一个块确认协定；ADDTS / DELTS 开启与关闭一条流量流。先认出动词，你就已经掌握了这个帧一半的用途。"
+    },
+    {
+      "type": "diagram",
+      "en": "mindmap\n  root((Action frames))\n    Block Ack (9.6.4)\n      ADDBA Request: open agreement (TID, buffer, BA policy, SSN)\n      ADDBA Response: accept or reject, echo Dialog Token\n      DELBA: tear down the agreement\n      PBAC WinStart Update: nudge the receive window\n    QoS (9.6.3)\n      ADDTS Request: ask to admit a stream (TSPEC)\n      ADDTS Response: admit + return Schedule, or reject\n      DELTS: remove the stream\n      Schedule: announce HCCA service schedule\n      QoS Map Configure: push DSCP to UP mapping\n      ADDTS Reserve Request: AP reserves a stream\n      ADDTS Reserve Response: STA confirms completion",
+      "zh": "mindmap\n  root((动作帧))\n    块确认 (9.6.4)\n      ADDBA Request: 开启协定 (TID、缓冲、BA 策略、起始序号)\n      ADDBA Response: 接受或拒绝, 回显 Dialog Token\n      DELBA: 拆除协定\n      PBAC WinStart Update: 微调接收窗口\n    QoS (9.6.3)\n      ADDTS Request: 请求准入一条流 (TSPEC)\n      ADDTS Response: 准入并返回 Schedule, 或拒绝\n      DELTS: 删除该流\n      Schedule: 公告 HCCA 服务调度\n      QoS Map Configure: 下发 DSCP 到 UP 的映射\n      ADDTS Reserve Request: AP 预留一条流\n      ADDTS Reserve Response: STA 确认完成"
+    },
+    {
+      "type": "prose",
+      "en": "Start with Block Ack (clause 9.6.4) — the negotiation behind batching many MPDUs under one acknowledgment. The originator sends an ADDBA Request to propose an agreement: it carries a Dialog Token (to match the reply), a Block Ack Parameter Set (the TID, the buffer size, and the BA policy — immediate vs delayed), a Block Ack Timeout Value, and a Block Ack Starting Sequence Control that pins the first sequence number the window will cover. The recipient answers with an ADDBA Response, copying back the Dialog Token and adding a Status Code that accepts or rejects, plus the parameters it is willing to honor. When the burst is done — or either side wants out — a DELBA frame terminates the agreement, carrying just a DELBA Parameter Set and a Reason Code. For a protected block ack agreement, a PBAC WinStart Update lets the originator slide the recipient's receive window forward by handing it a fresh starting sequence number.",
+      "zh": "先看块确认（9.6.4 节）——把许多 MPDU 归入一次确认的那场协商。发起方发送 ADDBA Request 来提议一个协定：其中携带 Dialog Token（用于匹配回复）、Block Ack 参数集（包含 TID、缓冲区大小，以及 BA 策略——立即式还是延迟式）、Block Ack 超时值，以及一个 Block Ack 起始序列控制字段，用来钉住窗口将覆盖的第一个序列号。接收方以 ADDBA Response 作答，原样回显 Dialog Token，并附上一个表示接受或拒绝的状态码，以及它愿意接受的参数。当这一突发完成、或任一方想退出时，DELBA 帧便终止该协定，它只携带一个 DELBA 参数集和一个原因码（Reason Code）。对于受保护的块确认协定，PBAC WinStart Update 允许发起方通过给出一个新的起始序列号，把接收方的接收窗口向前滑动。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"40\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Originator</text><text x=\"360\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Recipient</text><line x1=\"60\" y1=\"28\" x2=\"60\" y2=\"140\"/><line x1=\"400\" y1=\"28\" x2=\"400\" y2=\"140\"/><line x1=\"60\" y1=\"45\" x2=\"398\" y2=\"45\" marker-end=\"url(#a)\"/><text x=\"100\" y=\"40\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">ADDBA Request (TID, buffer, SSN)</text><line x1=\"400\" y1=\"72\" x2=\"62\" y2=\"72\" marker-end=\"url(#a)\"/><text x=\"110\" y=\"67\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">ADDBA Response (Status Code)</text><line x1=\"60\" y1=\"99\" x2=\"398\" y2=\"99\" stroke-dasharray=\"4 3\" marker-end=\"url(#a)\"/><text x=\"95\" y=\"94\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">... aggregated A-MPDU burst flows ...</text><line x1=\"60\" y1=\"126\" x2=\"398\" y2=\"126\" marker-end=\"url(#a)\"/><text x=\"150\" y=\"121\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">DELBA (Reason Code)</text><defs><marker id=\"a\" markerWidth=\"8\" markerHeight=\"8\" refX=\"7\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6\" fill=\"currentColor\" stroke=\"none\"/></marker></defs></svg>",
+      "caption": {
+        "en": "A Block Ack agreement's lifecycle: ADDBA Request/Response open it, the aggregated burst flows, DELBA closes it.",
+        "zh": "一个块确认协定的生命周期：ADDBA Request/Response 开启协定，聚合突发随后流动，DELBA 关闭它。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now the QoS category (clause 9.6.3) — admitting and shaping a stream of traffic. The ADDTS Request carries a TSPEC element, the admission-control contract that describes the stream's rates, sizes, and service intervals; the AP weighs it and replies with an ADDTS Response carrying a Status Code, and when admitted, a Schedule element telling the station when it will be served. DELTS removes a stream (or a DMG allocation) when it is no longer needed. A standalone Schedule frame lets the HC announce its HCCA delivery schedule of data and polls. QoS Map Configure is the everyday one most clients see: the AP pushes a QoS Map element that maps DSCP values from the IP header onto 802.11 user priorities, so upper-layer markings translate into the right access category. Finally, the ADDTS Reserve Request / ADDTS Reserve Response pair handles AP-initiated setup: the AP reserves a stream on the station's behalf in response to a higher-layer protocol, and the station's Reserve Response signals the procedure is complete.",
+      "zh": "再看 QoS 类（9.6.3 节）——对一条流量进行准入与整形。ADDTS Request 携带一个 TSPEC 元素，即描述该流的速率、帧大小与服务间隔的准入控制契约；AP 据此权衡，并以携带状态码的 ADDTS Response 作答，一旦准入，还会附上一个 Schedule 元素，告诉站点何时会被服务。当某条流（或某个 DMG 分配）不再需要时，DELTS 将其删除。一个独立的 Schedule 帧让 HC 公告其 HCCA 数据与轮询的投递调度。QoS Map Configure 是大多数客户端日常都会遇到的那个：AP 下发一个 QoS Map 元素，把 IP 头部中的 DSCP 值映射到 802.11 的用户优先级（UP），从而把上层标记转换为正确的接入类别。最后，ADDTS Reserve Request / ADDTS Reserve Response 这一对负责由 AP 发起的建立流程：AP 响应某个上层协议、代表站点预留一条流，而站点的 Reserve Response 则表示该流程已完成。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why two ways to set up a stream? ADDTS is the classic non-AP-STA-initiated request (\"please admit my stream\"), while the ADDTS Reserve pair flips the direction — the AP initiates on behalf of a higher-layer protocol and the STA merely confirms. Both end in an admitted TSPEC; they differ only in who knocks first.",
+      "zh": "为什么有两种建立流的方式？ADDTS 是经典的由非 AP 站点发起的请求（“请准入我的流”），而 ADDTS Reserve 这一对则反转了方向——由 AP 代表某个上层协议发起，站点仅作确认。两者最终都会得到一个已准入的 TSPEC，差别只在于“谁先敲门”。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Where each frame is defined, and the one-octet field that names it",
+        "zh": "每个帧的定义位置，以及为其命名的那个单字节字段"
+      },
+      "en": "In the Block Ack category, the Block Ack Action field (Table 9-465) selects the format: 0 = ADDBA Request, 1 = ADDBA Response, 2 = DELBA, 3 = PBAC WinStart Update (values 128+ are the NDP and BAT variants). The ADDBA Request Action field (Table 9-466, 9.6.4.2) orders Category, Block Ack Action, Dialog Token, Block Ack Parameter Set, Block Ack Timeout Value, and Block Ack Starting Sequence Control; the ADDBA Response (Table 9-467, 9.6.4.3) inserts a Status Code after the copied Dialog Token; DELBA (Table 9-468, 9.6.4.4) carries a DELBA Parameter Set and Reason Code; PBAC WinStart Update (Table 9-469, 9.6.4.5) carries a Block Ack Parameter Set and a fresh Block Ack Starting Sequence Control. In the QoS category, the QoS Action field (Table 9-453) selects: 0 = ADDTS Request, 1 = ADDTS Response, 2 = DELTS, 3 = Schedule, 4 = QoS Map Configure, 5 = ADDTS Reserve Request, 6 = ADDTS Reserve Response. ADDTS Request (9.6.3.2) carries a TSPEC and optional TCLAS; ADDTS Response (9.6.3.3) adds Status Code, TS Delay, and a Schedule element present only on SUCCESS; DELTS (9.6.3.4) carries a TS Info field and Reason Code; the Schedule frame (9.6.3.5) carries just a Schedule element; QoS Map Configure (9.6.3.6) carries a QoS Map element; and the ADDTS Reserve Request/Response (9.6.3.7, 9.6.3.8) carry a TSPEC + Schedule + Higher Layer Stream ID, and a Higher Layer Stream ID + Status Code, respectively.",
+      "zh": "在块确认类中，Block Ack Action 字段（表 9-465）选择具体格式：0 = ADDBA Request，1 = ADDBA Response，2 = DELBA，3 = PBAC WinStart Update（128 及以上为 NDP 与 BAT 变体）。ADDBA Request 的 Action 字段（表 9-466，9.6.4.2）按序排列 Category、Block Ack Action、Dialog Token、Block Ack 参数集、Block Ack 超时值以及 Block Ack 起始序列控制；ADDBA Response（表 9-467，9.6.4.3）在回显的 Dialog Token 之后插入一个状态码；DELBA（表 9-468，9.6.4.4）携带 DELBA 参数集与原因码；PBAC WinStart Update（表 9-469，9.6.4.5）携带一个 Block Ack 参数集和一个新的 Block Ack 起始序列控制。在 QoS 类中，QoS Action 字段（表 9-453）选择：0 = ADDTS Request，1 = ADDTS Response，2 = DELTS，3 = Schedule，4 = QoS Map Configure，5 = ADDTS Reserve Request，6 = ADDTS Reserve Response。ADDTS Request（9.6.3.2）携带一个 TSPEC 与可选的 TCLAS；ADDTS Response（9.6.3.3）增加状态码、TS Delay，以及仅在 SUCCESS 时出现的 Schedule 元素；DELTS（9.6.3.4）携带一个 TS Info 字段与原因码；Schedule 帧（9.6.3.5）只携带一个 Schedule 元素；QoS Map Configure（9.6.3.6）携带一个 QoS Map 元素；而 ADDTS Reserve Request/Response（9.6.3.7、9.6.3.8）分别携带 TSPEC + Schedule + Higher Layer Stream ID，以及 Higher Layer Stream ID + 状态码。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1641,
+          1649,
+          1650,
+          1651,
+          1652,
+          1653
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.6.4.2",
+    "80211-2024:9.6.4.3",
+    "80211-2024:9.6.4.4",
+    "80211-2024:9.6.4.5",
+    "80211-2024:9.6.3.2",
+    "80211-2024:9.6.3.3",
+    "80211-2024:9.6.3.4",
+    "80211-2024:9.6.3.5",
+    "80211-2024:9.6.3.6",
+    "80211-2024:9.6.3.7",
+    "80211-2024:9.6.3.8"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1649,
+        1650,
+        1651,
+        1652,
+        1653
+      ],
+      "note": "9.6.4 Block Ack Action frame details — Table 9-465 action values; ADDBA Request/Response, DELBA, PBAC WinStart Update formats"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1641,
+        1642,
+        1644,
+        1646,
+        1647,
+        1648
+      ],
+      "note": "9.6.3 QoS Action frame details — Table 9-453 action values; ADDTS Request/Response, DELTS, Schedule, QoS Map Configure, ADDTS Reserve Request/Response"
+    }
+  ],
+  "track": "frames"
+}

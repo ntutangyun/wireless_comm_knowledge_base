@@ -1,0 +1,114 @@
+{
+  "id": "frames-19",
+  "title": {
+    "en": "HT, VHT & HE/EHT Action Frames: the PHY-generation control plane",
+    "zh": "HT、VHT 与 HE/EHT 动作帧：各代 PHY 的控制面"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every time Wi-Fi's PHY got fancier — wider channels, more spatial streams, multi-user MIMO — the stations needed a way to talk about it at runtime. Beacons advertise static capabilities, but PHY state is fluid: a channel widens or narrows, a receiver drops antennas to save power, a transmitter wants the steering matrix that makes MU-MIMO work. Action frames are that runtime control plane. Each PHY generation (HT in 802.11n, VHT in 802.11ac, HE in 802.11ax) carved out its own Action frame category, and the jobs cluster into two themes: announce a changed capability, and feed back a channel measurement.",
+      "zh": "Wi-Fi 的 PHY 每“升级”一次——更宽的信道、更多的空间流、多用户 MIMO——站点之间就需要一种在运行时讨论这些变化的手段。Beacon 只宣告静态能力，而 PHY 的状态却是动态的：信道时宽时窄，接收机为省电而关闭部分天线，发射机想要那张让 MU-MIMO 得以运转的导向矩阵（steering matrix）。动作帧（Action frame）正是这个运行时的“控制面”。每一代 PHY（802.11n 的 HT、802.11ac 的 VHT、802.11ax 的 HE）都划出了自己的动作帧类别，而它们的职责可归为两大主题：宣告能力变化，以及反馈信道测量。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "An Action frame is just a management frame whose body starts with a one-octet Category field, followed by a per-category Action field that selects the exact frame. So 'HT category, HT Action = 1' uniquely means an SM Power Save frame. The categories below (HT, VHT, HE, Protected HE) are simply different Category values; the table inside each picks the specific frame.",
+      "zh": "动作帧其实就是一种管理帧，其帧体以一个 1 字节的类别（Category）字段开头，紧跟一个该类别专属的动作（Action）字段来选定具体帧型。因此“HT 类别、HT Action = 1”唯一地表示一帧 SM Power Save。下文的几个类别（HT、VHT、HE、Protected HE）只是不同的 Category 取值；每个类别内部的表再挑出具体的帧。"
+    },
+    {
+      "type": "diagram",
+      "en": "mindmap\n  root((PHY Action frames))\n    HT (802.11n)\n      Notify Channel Width\n      SM Power Save\n      CSI\n      Noncompressed Beamforming\n      Compressed Beamforming\n      ASEL Indices Feedback\n    VHT (802.11ac)\n      VHT Compressed Beamforming\n      Group ID Management\n      Operating Mode Notification\n    HE (802.11ax)\n      HE Compressed Beamforming/CQI\n      Quiet Time Period\n      OPS\n    Protected HE\n      BSS Color Change Announcement\n      MU EDCA Reset",
+      "zh": "mindmap\n  root((各代 PHY 动作帧))\n    HT (802.11n)\n      通知信道宽度\n      SM 省电\n      CSI\n      非压缩波束成形\n      压缩波束成形\n      天线选择索引反馈\n    VHT (802.11ac)\n      VHT 压缩波束成形\n      组 ID 管理\n      工作模式通知\n    HE (802.11ax)\n      HE 压缩波束成形/CQI\n      静默时段\n      OPS\n    Protected HE\n      BSS 颜色变更通告\n      MU EDCA 复位"
+    },
+    {
+      "type": "prose",
+      "en": "Start with HT, the 802.11n category (HT Action 0–7). Two frames announce a state change: Notify Channel Width (9.6.11.2) tells a peer to start sending you 20 MHz or wider frames — sent by either a non-AP STA or an AP — and SM Power Save (9.6.11.3) toggles the spatial-multiplexing power-save state, letting a receiver wake or sleep extra antenna chains. The other four HT frames are pure channel-measurement feedback used by explicit beamforming: CSI (9.6.11.4) carries a raw channel-state-information report, Noncompressed Beamforming (9.6.11.5) and Compressed Beamforming (9.6.11.6) carry the beamforming matrices at two levels of compression, and ASEL Indices Feedback (9.6.11.7) returns the antenna-selection indices a beamformer should use.",
+      "zh": "先看 HT，即 802.11n 的类别（HT Action 0–7）。其中两帧用于宣告状态变化：Notify Channel Width（通知信道宽度，9.6.11.2）告诉对端今后给你发 20 MHz 或更宽的帧——非 AP 站点和 AP 都可发送；SM Power Save（SM 省电，9.6.11.3）切换空间复用省电状态，让接收机唤醒或休眠额外的天线链。其余四帧是纯粹的信道测量反馈，供显式波束成形使用：CSI（9.6.11.4）携带原始的信道状态信息报告，Noncompressed Beamforming（非压缩波束成形，9.6.11.5）与 Compressed Beamforming（压缩波束成形，9.6.11.6）以两种压缩程度携带波束成形矩阵，ASEL Indices Feedback（天线选择索引反馈，9.6.11.7）则返回波束成形发起方应使用的天线选择索引。"
+    },
+    {
+      "type": "prose",
+      "en": "VHT (802.11ac) trims the list to three (VHT Action 0–2) but raises the stakes. VHT Compressed Beamforming (9.6.22.2) is the single feedback frame that powers downlink MU-MIMO: the beamformee measures a sounding NDP and returns the compressed steering matrix the AP needs to separate users in space. Group ID Management (9.6.22.3) is sent by the AP to assign or change a STA's membership and user position within its MU-MIMO groups. And Operating Mode Notification (9.6.22.4) lets a STA announce a changed operating channel width, max receive spatial streams, or LDPC preference — a capability update without the cost of re-association.",
+      "zh": "VHT（802.11ac）把清单精简到三帧（VHT Action 0–2），但分量更重。VHT Compressed Beamforming（VHT 压缩波束成形，9.6.22.2）是驱动下行 MU-MIMO 的那一帧反馈：波束成形接收方测量探测用的 NDP，返回 AP 在空间上区分各用户所需的压缩导向矩阵。Group ID Management（组 ID 管理，9.6.22.3）由 AP 发送，用于分配或变更某站点在其 MU-MIMO 分组中的成员资格与用户位置。Operating Mode Notification（工作模式通知，9.6.22.4）则让站点宣告其工作信道宽度、最大接收空间流数或 LDPC 偏好的变化——一次能力更新，无需付出重新关联的代价。"
+    },
+    {
+      "type": "prose",
+      "en": "HE (802.11ax) keeps the same shape. The plain HE category (HE Action 0–2) holds HE Compressed Beamforming/CQI (9.6.31.2) — beamforming feedback plus a channel-quality indicator, now carrying HE MIMO Control and a sounding feedback segment; Quiet Time Period (9.6.31.3), which carries a Quiet Time Period element to schedule silent intervals; and OPS (9.6.31.4), the Opportunistic Power Save frame that bundles a TIM and an OPS element so STAs can doze opportunistically. Two HE control jobs are sensitive enough to demand protection, so they live in a separate Protected HE category (Protected HE Action 0–1): BSS Color Change Announcement (9.6.32.2) warns STAs that the AP's BSS color is about to change, and MU EDCA Reset (9.6.32.3) resets the MU EDCA timers for the affected access categories.",
+      "zh": "HE（802.11ax）沿用了同样的格局。普通的 HE 类别（HE Action 0–2）包含：HE Compressed Beamforming/CQI（HE 压缩波束成形/CQI，9.6.31.2）——波束成形反馈外加信道质量指示，现在携带 HE MIMO Control 与一个探测反馈段；Quiet Time Period（静默时段，9.6.31.3），携带 Quiet Time Period 元素来安排静默区间；以及 OPS（9.6.31.4），即机会式省电（Opportunistic Power Save）帧，把一个 TIM 与一个 OPS 元素打包，让站点可以见机休眠。还有两项 HE 控制任务因足够敏感而需要保护，于是独立成 Protected HE 类别（Protected HE Action 0–1）：BSS Color Change Announcement（BSS 颜色变更通告，9.6.32.2）提醒站点 AP 的 BSS 颜色即将改变，MU EDCA Reset（MU EDCA 复位，9.6.32.3）则把受影响接入类别的 MU EDCA 定时器复位。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the recurring 'Compressed Beamforming' frame in every generation — HT, VHT, then HE. It is the same idea each time (return a compressed steering matrix from a sounding measurement) re-cut for that PHY's MIMO Control format. When you see beamforming feedback across the standard, you are usually looking at one of these three frames.",
+      "zh": "留意每一代里都反复出现的“Compressed Beamforming”帧——HT、VHT，再到 HE。每一次都是同一个思路（把一次探测测量得到的压缩导向矩阵返回），只是按该代 PHY 的 MIMO Control 格式重新裁剪。当你在标准里看到波束成形反馈时，多半就是这三帧中的某一帧。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Where the Action-field tables actually live",
+        "zh": "动作字段表究竟出自何处"
+      },
+      "en": "Each category opens with an Action-field value table that maps a number to a frame. Table 9-517 lists the HT Action values: 0 Notify Channel Width, 1 SM Power Save, 4 CSI, 5 Noncompressed Beamforming, 6 Compressed Beamforming, 7 ASEL Indices Feedback (2–3 reserved). Table 9-605 lists the VHT values: 0 VHT Compressed Beamforming, 1 Group ID Management, 2 Operating Mode Notification. Table 9-643 lists the HE values: 0 HE Compressed Beamforming/CQI, 1 Quiet Time Period, 2 OPS; and Table 9-647 lists Protected HE: 0 BSS Color Change Announcement, 1 MU EDCA Reset. Each frame's own subclause then gives its Action field order — e.g. the VHT Compressed Beamforming frame (Table 9-606) is an Action No Ack frame carrying VHT MIMO Control, the VHT Compressed Beamforming Report, and an MU Exclusive Beamforming Report.",
+      "zh": "每个类别都以一张动作字段取值表开篇，把数值映射到具体帧。表 9-517 列出 HT Action 取值：0 Notify Channel Width、1 SM Power Save、4 CSI、5 Noncompressed Beamforming、6 Compressed Beamforming、7 ASEL Indices Feedback（2–3 保留）。表 9-605 列出 VHT 取值：0 VHT Compressed Beamforming、1 Group ID Management、2 Operating Mode Notification。表 9-643 列出 HE 取值：0 HE Compressed Beamforming/CQI、1 Quiet Time Period、2 OPS；表 9-647 列出 Protected HE：0 BSS Color Change Announcement、1 MU EDCA Reset。随后各帧的专属子条款再给出其动作字段的排列——例如 VHT 压缩波束成形帧（表 9-606）是一帧 Action No Ack，携带 VHT MIMO Control、VHT 压缩波束成形报告以及 MU 专属波束成形报告。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1729,
+          1810,
+          1832,
+          1834
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.6.11.2",
+    "80211-2024:9.6.11.3",
+    "80211-2024:9.6.11.4",
+    "80211-2024:9.6.11.5",
+    "80211-2024:9.6.11.6",
+    "80211-2024:9.6.11.7",
+    "80211-2024:9.6.22.2",
+    "80211-2024:9.6.22.3",
+    "80211-2024:9.6.22.4",
+    "80211-2024:9.6.31.2",
+    "80211-2024:9.6.31.3",
+    "80211-2024:9.6.31.4",
+    "80211-2024:9.6.32.2",
+    "80211-2024:9.6.32.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1728,
+        1729,
+        1730,
+        1731
+      ],
+      "note": "9.6.11 HT Action frame details — Table 9-517 HT Action values; Notify Channel Width, SM Power Save, CSI, Noncompressed/Compressed Beamforming, ASEL Indices Feedback"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1810,
+        1811,
+        1812
+      ],
+      "note": "9.6.22 VHT Action frame details — Table 9-605; VHT Compressed Beamforming, Group ID Management, Operating Mode Notification"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1832,
+        1833,
+        1834,
+        1835
+      ],
+      "note": "9.6.31 HE (Table 9-643: HE Compressed Beamforming/CQI, Quiet Time Period, OPS) and 9.6.32 Protected HE (Table 9-647: BSS Color Change Announcement, MU EDCA Reset)"
+    }
+  ],
+  "track": "frames"
+}

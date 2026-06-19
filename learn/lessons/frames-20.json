@@ -1,0 +1,121 @@
+{
+  "id": "frames-20",
+  "title": {
+    "en": "WNM Action Frames: the network-management toolbox",
+    "zh": "WNM 动作帧：网络管理工具箱"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Once a station has authenticated and associated, it is in for the long haul — and the relationship with its access point needs maintenance. That is what the Wireless Network Management (WNM) Action frame category, clause 9.6.13, is for. It is the biggest grab-bag of Action frames in the standard: a single Category value whose WNM Action field then selects one of nearly thirty little request/report and request/response exchanges. The intuition to hold onto is simple: most ongoing housekeeping between an associated STA and its AP — roam me, let me sleep, tell me about interference, report your health, keep our clocks in step — rides on WNM Action frames.",
+      "zh": "当一个站点（STA）完成认证与关联之后，它就进入了长期工作状态——而它与接入点（AP）之间的关系也需要日常维护。无线网络管理（WNM）动作帧这一类别（9.6.13 节）正是为此而生。它是整个标准中体量最大的动作帧“百宝箱”：用一个 Category 值，再由其后的 WNM Action 字段从近三十种小型的“请求/报告”或“请求/响应”交换中挑选一种。要把握的直觉很简单：已关联的 STA 与其 AP 之间绝大多数日常事务——帮我漫游、让我睡眠、告诉我干扰情况、汇报你的健康状态、保持我们时钟同步——都搭载在 WNM 动作帧上。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "How the demux works: every WNM frame starts with the same two octets — the Category field, then a WNM Action field whose value (0–27) names the exact frame (Table 9-536). A nonzero Dialog Token then pairs a request with its matching report or response. So the whole category is one common header plus a per-frame payload of elements.",
+      "zh": "分用（demux）机制是这样的：每个 WNM 帧都以相同的两个字节开头——先是 Category 字段，紧接着是 WNM Action 字段，其取值（0–27）精确指明是哪一种帧（见表 9-536）。随后一个非零的 Dialog Token（对话令牌）把一次请求与其对应的报告或响应配成一对。因此整个类别可以看作“一个公共帧头 + 每种帧各自的元素负载”。"
+    },
+    {
+      "type": "diagram",
+      "en": "mindmap\n  root((WNM Action<br/>9.6.13))\n    Mobility\n      BTM Query\n      BTM Request\n      BTM Response\n    Power_save\n      WNM Sleep Request\n      WNM Sleep Response\n      FMS Request\n      FMS Response\n    Interference\n      Coloc Interf Request\n      Coloc Interf Report\n    Monitoring\n      Event Request\n      Event Report\n      Diagnostic Request\n      Diagnostic Report\n    Maintenance\n      WNM Notif Request\n      WNM Notif Response\n      Timing Meas Request",
+      "zh": "mindmap\n  root((WNM 动作帧<br/>9.6.13))\n    移动性\n      BTM 查询\n      BTM 请求\n      BTM 响应\n    省电\n      WNM 睡眠请求\n      WNM 睡眠响应\n      FMS 请求\n      FMS 响应\n    干扰\n      同位干扰请求\n      同位干扰报告\n    监测\n      事件请求\n      事件报告\n      诊断请求\n      诊断报告\n    维护\n      WNM 通知请求\n      WNM 通知响应\n      定时测量请求"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the workhorse — steered roaming. BSS Transition Management (BTM) is a three-frame conversation. The STA may send a BTM Query (9.6.13.8) to ask the AP where it should go, optionally attaching candidate BSSs it already saw while scanning. The AP answers — or speaks first, unsolicited — with a BTM Request (9.6.13.9): a ranked Preferred Candidate List plus a Request Mode whose bits can say 'this is just advice,' 'ignore everyone not on the list' (Abridged), or the blunt 'Disassociation Imminent' with a countdown timer. The STA closes the loop with a BTM Response (9.6.13.10) carrying a status code — Accept and a Target BSSID, or one of several Reject reasons. The AP suggests; the STA accepts or declines.",
+      "zh": "先看主力——受引导的漫游。BSS 转换管理（BTM）是一段三帧对话。STA 可以发送一个 BTM 查询帧（9.6.13.8）询问 AP 自己该去哪里，并可选地附上它在扫描时已经发现的候选 BSS。AP 用一个 BTM 请求帧（9.6.13.9）回应——或主动开口、无需被请求：其中包含一份排好序的“首选候选列表”，以及一个 Request Mode 字段，其各比特位可表达“这只是建议”、“忽略列表之外的所有 BSS”（Abridged 简略位），或干脆是带倒计时定时器的“即将解关联”（Disassociation Imminent）。STA 用一个携带状态码的 BTM 响应帧（9.6.13.10）收尾——要么是 Accept 并给出目标 BSSID，要么是若干 Reject 理由之一。AP 提出建议，STA 接受或拒绝。"
+    },
+    {
+      "type": "prose",
+      "en": "Next, sleep and scheduled delivery. A WNM Sleep Mode Request (9.6.13.19) lets a STA tell the AP it wants to doze across many DTIM beacons — far longer than ordinary power save — and the AP replies with a WNM Sleep Mode Response (9.6.13.20) that, when protection is on, even hands back fresh group keys (GTK/IGTK/BIGTK) so the STA can decrypt broadcasts the moment it wakes. For group-addressed traffic specifically, an FMS Request (9.6.13.11) proposes flexible delivery intervals for multicast streams, and the FMS Response (9.6.13.12) confirms what the AP will actually schedule — so a sleepy STA only has to wake on the intervals it cares about.",
+      "zh": "接下来是睡眠与定时投递。WNM 睡眠模式请求帧（9.6.13.19）让 STA 告知 AP：它希望跨越多个 DTIM 信标长时间打盹——比普通省电模式久得多——AP 则用 WNM 睡眠模式响应帧（9.6.13.20）回应；当启用了帧保护时，该响应还会回传新的组密钥（GTK/IGTK/BIGTK），这样 STA 一醒来就能立刻解密广播。专门针对组寻址流量，FMS 请求帧（9.6.13.11）为组播流提出灵活的投递间隔，FMS 响应帧（9.6.13.12）确认 AP 实际将安排的调度——于是爱打盹的 STA 只需在它关心的那些间隔上醒来即可。"
+    },
+    {
+      "type": "prose",
+      "en": "Then the eyes and ears — interference, monitoring, and maintenance. A Colocated Interference Request (9.6.13.13) asks a peer to share interference its own colocated radios (think Bluetooth or cellular in the same handset) are generating, and the Colocated Interference Report (9.6.13.14) sends it back, once or periodically. For health checks, an Event Request (9.6.13.2) asks a STA to log events and an Event Report (9.6.13.3) returns them; a Diagnostic Request (9.6.13.4) asks it to run a self-test and a Diagnostic Report (9.6.13.5) carries the results. Finally, a WNM Notification Request (9.6.13.29) pushes an out-of-band notice — its Type field flags things like a firmware-update availability or a Beacon-protection failure — and the WNM Notification Response (9.6.13.30) simply acknowledges it; a Timing Measurement Request (9.6.13.28) is the one-bit trigger that starts (or stops) a fine clock-synchronisation exchange between the two STAs.",
+      "zh": "再看“眼睛和耳朵”——干扰、监测与维护。同位干扰请求帧（9.6.13.13）请求对端分享其自身同位无线电（想想同一部手机里的蓝牙或蜂窝模块）产生的干扰，同位干扰报告帧（9.6.13.14）则把这些信息回传，可一次性或周期性发送。在健康检查方面，事件请求帧（9.6.13.2）要求 STA 记录事件，事件报告帧（9.6.13.3）将其返回；诊断请求帧（9.6.13.4）要求其运行自检，诊断报告帧（9.6.13.5）携带结果。最后，WNM 通知请求帧（9.6.13.29）推送一条带外通告——其 Type 字段可标记诸如“固件更新可用”或“信标保护失败”等情形——WNM 通知响应帧（9.6.13.30）只是对其确认；而定时测量请求帧（9.6.13.28）则是一个单比特触发器，用来启动（或停止）两个 STA 之间的精细时钟同步交换。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Coverage is even bigger than this tour: the same category also holds Location Configuration, TFS (traffic filtering) Request/Response/Notify, TIM Broadcast, Channel Usage, DMS, and a QoS Traffic Capability update. Same pattern every time — Category + WNM Action + Dialog Token + a payload of elements. Learn the shape once and the whole grab-bag reads the same way.",
+      "zh": "实际覆盖范围比这趟“导览”还要大：同一类别中还包含位置配置（Location Configuration）、TFS（流量过滤）的请求/响应/通知、TIM 广播、信道使用（Channel Usage）、DMS，以及 QoS 流量能力更新。其模式始终如一——Category + WNM Action + Dialog Token + 一段元素负载。把这个结构学透一次，整个百宝箱读起来都是同一个套路。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "How the WNM Action field demultiplexes, and the BTM Request Mode bits",
+        "zh": "WNM Action 字段如何分用，以及 BTM 的 Request Mode 比特位"
+      },
+      "en": "Clause 9.6.13.1 defines the WNM Action field, the octet immediately after Category, whose value selects the frame format per Table 9-536 (Event Request=0, Event Report=1, Diagnostic Request=2, Diagnostic Report=3, … BTM Query=6, BTM Request=7, BTM Response=8, FMS Request=9, FMS Response=10, Colocated Interference Request=11, Report=12, … WNM Sleep Mode Request=16, Response=17, … Timing Measurement Request=25, WNM Notification Request=26, Response=27, 28–255 reserved). The BTM Request frame's Request Mode field (Figure 9-1276) is the steering control surface: bit 0 Preferred Candidate List Included, bit 1 Abridged (preference 0 for all BSSIDs not listed), bit 2 Disassociation Imminent (paired with a Disassociation Timer counted in TBTTs), bit 3 BSS Termination Included, bit 4 ESS Disassociation Imminent (with a Session Information URL). The BTM Response carries a BTM Status Code (Table 9-539): 0 Accept with a Target BSSID, 1–8 the Reject reasons. Every WNM frame pairs by Dialog Token — nonzero for solicited transactions, 0 for autonomous/unsolicited frames.",
+      "zh": "9.6.13.1 节定义了 WNM Action 字段，即紧跟 Category 之后的那个字节，其取值依据表 9-536 选定帧格式（事件请求=0、事件报告=1、诊断请求=2、诊断报告=3，……BTM 查询=6、BTM 请求=7、BTM 响应=8、FMS 请求=9、FMS 响应=10、同位干扰请求=11、报告=12，……WNM 睡眠模式请求=16、响应=17，……定时测量请求=25、WNM 通知请求=26、响应=27，28–255 保留）。BTM 请求帧的 Request Mode 字段（图 9-1276）是漫游引导的“操控面”：比特 0 为“含首选候选列表”，比特 1 为 Abridged（对所有未列出的 BSSID 赋予偏好值 0），比特 2 为“即将解关联”（配合一个以 TBTT 计数的解关联定时器），比特 3 为“含 BSS 终止”，比特 4 为“即将从 ESS 解关联”（附带一个会话信息 URL）。BTM 响应携带一个 BTM 状态码（表 9-539）：0 为 Accept 并给出目标 BSSID，1–8 为各类 Reject 理由。每个 WNM 帧都通过 Dialog Token 配对——被请求的事务用非零值，自发/未被请求的帧则用 0。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1742,
+          1748,
+          1750
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.6.13.8",
+    "80211-2024:9.6.13.9",
+    "80211-2024:9.6.13.10",
+    "80211-2024:9.6.13.19",
+    "80211-2024:9.6.13.20",
+    "80211-2024:9.6.13.11",
+    "80211-2024:9.6.13.12",
+    "80211-2024:9.6.13.13",
+    "80211-2024:9.6.13.14",
+    "80211-2024:9.6.13.2",
+    "80211-2024:9.6.13.3",
+    "80211-2024:9.6.13.4",
+    "80211-2024:9.6.13.5",
+    "80211-2024:9.6.13.28",
+    "80211-2024:9.6.13.29",
+    "80211-2024:9.6.13.30"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1742,
+        1743
+      ],
+      "note": "9.6.13.1 WNM Action field + Table 9-536 WNM Action field values (the per-frame demux), and 9.6.13.2-9.6.13.3 Event Request/Report"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1746,
+        1748,
+        1750
+      ],
+      "note": "9.6.13.8-9.6.13.10 BSS Transition Management Query/Request/Response; Request Mode bits (Fig 9-1276); BTM Status Code (Table 9-539)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1751,
+        1752,
+        1755
+      ],
+      "note": "9.6.13.11-9.6.13.14 FMS and Colocated Interference Request/Report; 9.6.13.19-9.6.13.20 WNM Sleep Mode Request/Response (group-key delivery)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1762,
+        1763,
+        1764
+      ],
+      "note": "9.6.13.28 Timing Measurement Request (Trigger bit); 9.6.13.29-9.6.13.30 WNM Notification Request/Response (Type, Response Status)"
+    }
+  ],
+  "track": "frames"
+}

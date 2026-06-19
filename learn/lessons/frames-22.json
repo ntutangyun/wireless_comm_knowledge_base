@@ -1,0 +1,141 @@
+{
+  "id": "frames-22",
+  "title": {
+    "en": "FT, SA Query, TDLS, Self-Protected & Mesh Action Frames: roaming, anti-spoof, peer & mesh control",
+    "zh": "FT、SA Query、TDLS、自保护与 Mesh 动作帧：漫游、防伪、对等与网格控制"
+  },
+  "estMinutes": 6,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Most 802.11 Action frames manage the plain STA-to-AP link. This lesson tours five categories that manage richer *relationships* — fast hand-off to a new AP, proof that you are really still there, a direct side-channel to another station, and the peerings and forwarding paths of a mesh. Each category owns one kind of relationship, and its Action frames are just that relationship's lifecycle messages: open it, confirm it, run it, tear it down. Read this as a guided tour, not a field dump — for each frame we name the one job it does and when it shows up.",
+      "zh": "大多数 802.11 动作帧（Action frame）管理的是普通的 STA-AP 链路。本课带你巡览五类管理更复杂“关系”的动作帧——快速切换到新 AP、证明你确实还在线、与另一台站点建立直连旁路，以及网格（mesh）中的对等关系与转发路径。每一类各负责一种关系，而它的动作帧不过是这种关系的生命周期消息：建立、确认、运行、拆除。请把它当作一次导览，而不是字段清单——对每一帧，我们只点出它做的那一件事，以及它何时出现。"
+    },
+    {
+      "type": "diagram",
+      "en": "mindmap\n  root((Relationship Action frames))\n    FT 9.6.8 fast roam\n      FT Request 9.6.8.2\n      FT Response 9.6.8.3\n      FT Confirm 9.6.8.4\n      FT Ack 9.6.8.5\n    SA Query 9.6.9 anti-spoof\n      SA Query Request 9.6.9.2\n      SA Query Response 9.6.9.3\n    TDLS 9.6.12 sidelink\n      Setup Request 9.6.12.2\n      Setup Response 9.6.12.3\n      Setup Confirm 9.6.12.4\n      Teardown 9.6.12.5\n    Self-Protected 9.6.15 mesh peering\n      Peering Open 9.6.15.2\n      Peering Confirm 9.6.15.3\n      Peering Close 9.6.15.4\n    Mesh + Multihop\n      HWMP Path Selection 9.6.16.3\n      Proxy Update 9.6.17.2",
+      "zh": "mindmap\n  root((关系类动作帧))\n    FT 9.6.8 快速漫游\n      FT Request 9.6.8.2\n      FT Response 9.6.8.3\n      FT Confirm 9.6.8.4\n      FT Ack 9.6.8.5\n    SA Query 9.6.9 防伪\n      SA Query Request 9.6.9.2\n      SA Query Response 9.6.9.3\n    TDLS 9.6.12 旁路直连\n      Setup Request 9.6.12.2\n      Setup Response 9.6.12.3\n      Setup Confirm 9.6.12.4\n      Teardown 9.6.12.5\n    Self-Protected 9.6.15 网格对等\n      Peering Open 9.6.15.2\n      Peering Confirm 9.6.15.3\n      Peering Close 9.6.15.4\n    Mesh + Multihop\n      HWMP 路径选择 9.6.16.3\n      Proxy Update 9.6.17.2"
+    },
+    {
+      "type": "prose",
+      "en": "Fast BSS Transition (FT, 9.6.8) is roaming without paying the full security tax. Normally hopping to a new AP means a fresh 4-way handshake; FT lets a station re-key at the target AP through its current AP, so the hand-off is fast. The over-the-DS exchange uses four frames carried as a transport between the STA and its current AP: the FT Request (9.6.8.2) the station sends to start the transition to a named target AP; the FT Response (9.6.8.3) the current AP returns with a status code; the FT Confirm (9.6.8.4) where the station confirms receipt of the AP's nonce and proves the key is live; and the FT Ack (9.6.8.5) the AP returns to close the round, optionally carrying the resource (RIC) response and a reassociation deadline.",
+      "zh": "快速 BSS 切换（FT，9.6.8）是一种“免去全套安全开销”的漫游。通常跳到新 AP 意味着重新做一次完整的四次握手；FT 则允许站点经由当前 AP、在目标 AP 上重新生成密钥，从而让切换变快。这套“经由 DS”的交换用四帧完成，它们作为站点与当前 AP 之间的传输载体：站点发出 FT Request（9.6.8.2）以发起向指定目标 AP 的切换；当前 AP 回以携带状态码的 FT Response（9.6.8.3）；站点用 FT Confirm（9.6.8.4）确认收到 AP 的 nonce 并证明密钥仍然有效；AP 再以 FT Ack（9.6.8.5）收尾，其中可选地携带资源（RIC）响应与重关联截止时间。"
+    },
+    {
+      "type": "prose",
+      "en": "SA Query (9.6.9) is a tiny two-frame liveness check that defeats spoofed deauth/disassoc. If an attacker forges a disconnect, the AP doesn't just drop you — it sends an SA Query Request (9.6.9.2) carrying a Transaction Identifier, and a genuinely-present, genuinely-keyed station answers with an SA Query Response (9.6.9.3) echoing that same identifier. No valid response means the request was bogus; a valid one proves you are still there and keeps the association alive. The standard notes this is what prevents the Association Lockout problem.",
+      "zh": "SA Query（9.6.9）是一次只有两帧的“存活性检查”，用来挫败伪造的去认证/解关联攻击。若攻击者伪造了断开消息，AP 不会直接把你踢掉——它会发出携带事务标识符（Transaction Identifier）的 SA Query Request（9.6.9.2），而一个真正在线、真正持有密钥的站点会回以 SA Query Response（9.6.9.3），并回显相同的标识符。收不到有效响应，说明那条断开请求是假的；收到有效响应，则证明你仍在线，从而保住关联。标准指出，这正是防止“关联锁定（Association Lockout）”问题的机制。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Station\n    participant AP as Access Point\n    Note over STA,AP: forged disassoc arrives at AP\n    AP->>STA: SA Query Request (Transaction ID = t)\n    STA->>AP: SA Query Response (Transaction ID = t)\n    Note over STA,AP: STA proved liveness -> association kept",
+      "zh": "sequenceDiagram\n    participant STA as 站点\n    participant AP as 接入点\n    Note over STA,AP: 伪造的解关联帧到达 AP\n    AP->>STA: SA Query Request (事务ID = t)\n    STA->>AP: SA Query Response (事务ID = t)\n    Note over STA,AP: 站点证明存活 -> 保留关联"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the shared grammar across categories: a Request opens, a Response/Confirm settles terms, and a Teardown/Close ends it. FT Request -> Response -> Confirm -> Ack, TDLS Setup Request -> Response -> Confirm -> Teardown, Mesh Peering Open -> Confirm -> Close. Once you see the request/confirm/teardown rhythm, a new category is mostly just new payload elements riding the same skeleton.",
+      "zh": "注意各类之间共享的“语法”：一个 Request 打开，一个 Response/Confirm 敲定条款，一个 Teardown/Close 结束。FT Request -> Response -> Confirm -> Ack，TDLS Setup Request -> Response -> Confirm -> Teardown，Mesh Peering Open -> Confirm -> Close。一旦你看出这种“请求/确认/拆除”的节奏，面对新的一类时，往往只是同一副骨架上换了新的载荷元素而已。"
+    },
+    {
+      "type": "prose",
+      "en": "TDLS (Tunneled Direct Link Setup, 9.6.12) builds a direct STA-to-STA link while both stations stay associated to the same AP. The setup frames are encapsulated in Data frames and tunneled through the AP: the TDLS Setup Request (9.6.12.2) proposes the direct link and advertises the initiator's capabilities; the TDLS Setup Response (9.6.12.3) carries the responder's status and capabilities; and the TDLS Setup Confirm (9.6.12.4) seals the negotiated parameters and the operating elements. When the side-link is no longer wanted, a TDLS Teardown (9.6.12.5) carries a reason code to dismantle it. (The same category also defines Channel Switch, Peer Traffic Indication/Response, and Peer PSM frames to steer and power-manage a live direct link — the same lifecycle idea applied to running, not just setting up.)",
+      "zh": "TDLS（隧道直连建立，9.6.12）在两台站点仍关联到同一 AP 的同时，建立一条 STA-到-STA 的直连链路。建立类帧被封装进数据帧、经由 AP 隧道转发：TDLS Setup Request（9.6.12.2）提议建立直连并通告发起方能力；TDLS Setup Response（9.6.12.3）携带响应方的状态与能力；TDLS Setup Confirm（9.6.12.4）则敲定协商好的参数与运行元素。当不再需要这条旁路时，TDLS Teardown（9.6.12.5）携带原因码将其拆除。（同一类还定义了 Channel Switch、Peer Traffic Indication/Response 与 Peer PSM 等帧，用于对已建立的直连链路做信道切换与功耗管理——同样的生命周期思路，只是用在“运行”而非“建立”阶段。）"
+    },
+    {
+      "type": "prose",
+      "en": "Self-Protected Action frames (9.6.15) manage mesh peerings, and they are called self-protected because, unlike robust Action frames, they cannot assume a security association already exists — they typically *create* one, carrying their own protection (the MIC and AMPE elements) when authenticated mesh peering exchange is enabled. The trio is Mesh Peering Open (9.6.15.2) to propose a peering, Mesh Peering Confirm (9.6.15.3) to confirm it, and Mesh Peering Close (9.6.15.4) to close it; the same category also defines Mesh Group Key Inform/Acknowledge to update the group key between peers. Once peered, the Mesh category proper takes over: the HWMP Mesh Path Selection frame (9.6.16.3) carries PREQ/PREP/PERR/RANN elements to establish, update, or delete forwarding paths across the mesh — and at the multihop layer, the Proxy Update frame (9.6.17.2) tells a peer about new, updated, or deleted proxy information for stations reachable beyond the mesh.",
+      "zh": "自保护动作帧（Self-Protected，9.6.15）管理网格对等关系；之所以叫“自保护”，是因为与健壮（robust）动作帧不同，它们不能假定安全关联已经存在——它们通常是去*创建*关联的，并在启用了“已认证网格对等交换（AMPE）”时自带保护（MIC 元素与 AMPE 元素）。这三件套是：Mesh Peering Open（9.6.15.2）提议对等、Mesh Peering Confirm（9.6.15.3）确认对等、Mesh Peering Close（9.6.15.4）关闭对等；同一类还定义了 Mesh Group Key Inform/Acknowledge，用于在对等节点间更新组密钥。一旦完成对等，Mesh 类本身接手：HWMP Mesh Path Selection 帧（9.6.16.3）携带 PREQ/PREP/PERR/RANN 元素，用于在网格中建立、更新或删除转发路径；而在多跳（Multihop）层，Proxy Update 帧（9.6.17.2）则把可经网格抵达的站点的代理信息——新增、更新或删除——告知对端。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "These categories also differ in *how* they reach the peer. FT and SA Query go over the air to the AP; TDLS and Proxy Update ride inside Data frames tunneled through (or sent directly to) a peer; mesh path selection may be individually or group addressed depending on what it carries. The category isn't just a label — it tells you the delivery path and the relationship being managed.",
+      "zh": "这几类的差异还体现在它们*如何*抵达对端。FT 与 SA Query 通过空口发给 AP；TDLS 与 Proxy Update 则封装在数据帧里，经隧道（或直接）发给对端；网格路径选择则视所携带的内容，可能用单播或组播地址。类别不只是个标签——它告诉你投递路径，以及正在管理的是哪种关系。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The Action-field tables that switch frame format within each category",
+        "zh": "在每一类内部切换帧格式的“动作字段”取值表"
+      },
+      "en": "Inside each category, the octet right after the Category field — the category's Action field — selects the exact frame format. The FT Action field (Table 9-510) maps 1=FT Request, 2=FT Response, 3=FT Confirm, 4=FT Ack; both FT Request and Response carry a STA Address and Target AP Address, and the Response/Ack add a 2-octet Status Code. The SA Query Action field (Table 9-515) maps 0=Request, 1=Response, each carrying a 2-octet Transaction Identifier and an optional OCI element. The TDLS Action field (Table 9-524) enumerates Setup Request/Response/Confirm, Teardown, Peer Traffic Indication, Channel Switch Request/Response, Peer PSM Request/Response, Peer Traffic Response, and Discovery Request; TDLS Setup frames are Data frames carrying the Action field tunneled through the AP (11.20.2). The Self-protected Action field (Table 9-546) maps 1=Mesh Peering Open, 2=Confirm, 3=Close, 4/5=Mesh Group Key Inform/Acknowledge. The Mesh Action field (Table 9-552) maps 1=HWMP Mesh Path Selection, whose frame (Table 9-554) carries optional PREQ/PREP/PERR/RANN elements. The Multihop Action field (Table 9-564) maps 0=Proxy Update, whose frame (Table 9-565) carries a Mesh Control field and one or more PXU elements.",
+      "zh": "在每一类内部，紧跟 Category 字段之后的那一个八位组——即该类的“动作字段”——决定具体的帧格式。FT 动作字段（表 9-510）：1=FT Request、2=FT Response、3=FT Confirm、4=FT Ack；FT Request 与 Response 都携带 STA Address 与 Target AP Address，而 Response/Ack 另加一个 2 字节的状态码。SA Query 动作字段（表 9-515）：0=Request、1=Response，二者都携带一个 2 字节的事务标识符与一个可选的 OCI 元素。TDLS 动作字段（表 9-524）列举了 Setup Request/Response/Confirm、Teardown、Peer Traffic Indication、Channel Switch Request/Response、Peer PSM Request/Response、Peer Traffic Response 与 Discovery Request；TDLS Setup 类帧是携带该动作字段、经由 AP 隧道转发的数据帧（11.20.2）。自保护动作字段（表 9-546）：1=Mesh Peering Open、2=Confirm、3=Close、4/5=Mesh Group Key Inform/Acknowledge。Mesh 动作字段（表 9-552）：1=HWMP Mesh Path Selection，其帧（表 9-554）携带可选的 PREQ/PREP/PERR/RANN 元素。Multihop 动作字段（表 9-564）：0=Proxy Update，其帧（表 9-565）携带一个 Mesh Control 字段与一个或多个 PXU 元素。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1722,
+          1726,
+          1732,
+          1767,
+          1772,
+          1778
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1722,
+        1723,
+        1724,
+        1725
+      ],
+      "note": "9.6.8.2-9.6.8.5 FT Request/Response/Confirm/Ack frames — over-the-DS fast BSS transition transport"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1726,
+        1727
+      ],
+      "note": "9.6.9.2-9.6.9.3 SA Query Request/Response frames — Transaction Identifier liveness check; prevents Association Lockout"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1732,
+        1737
+      ],
+      "note": "9.6.12.2-9.6.12.5 TDLS Setup Request/Response/Confirm and Teardown — Data frames tunneled through the AP (see 11.20)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1766,
+        1767,
+        1769
+      ],
+      "note": "9.6.15.2-9.6.15.4 Mesh Peering Open/Confirm/Close — self-protected mesh peering Management frames; AMPE protection"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1773,
+        1778
+      ],
+      "note": "9.6.16.3 HWMP Mesh Path Selection (PREQ/PREP/PERR/RANN) and 9.6.17.2 Proxy Update (Mesh Control + PXU)"
+    }
+  ],
+  "covers": [
+    "80211-2024:9.6.8.2",
+    "80211-2024:9.6.8.3",
+    "80211-2024:9.6.8.4",
+    "80211-2024:9.6.8.5",
+    "80211-2024:9.6.9.2",
+    "80211-2024:9.6.9.3",
+    "80211-2024:9.6.12.2",
+    "80211-2024:9.6.12.3",
+    "80211-2024:9.6.12.4",
+    "80211-2024:9.6.12.5",
+    "80211-2024:9.6.15.2",
+    "80211-2024:9.6.15.3",
+    "80211-2024:9.6.15.4",
+    "80211-2024:9.6.16.3",
+    "80211-2024:9.6.17.2"
+  ],
+  "track": "frames"
+}

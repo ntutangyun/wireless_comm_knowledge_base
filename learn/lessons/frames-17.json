@@ -1,0 +1,109 @@
+{
+  "id": "frames-17",
+  "title": {
+    "en": "Spectrum & Radio Measurement Action Frames: asking the medium questions",
+    "zh": "频谱与无线电测量动作帧：向信道发问"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Wi-Fi is not only about moving data — it is also about understanding the air it moves through. Two Action-frame categories let stations interrogate the RF environment: Spectrum Management (clause 9.6.2) and Radio Measurement (clause 9.6.6, the '11k' toolkit). Almost every frame here comes in a question-and-answer twin: one STA sends a Request, the peer replies with a Report. And the 'body' of each frame is rarely new — it is just a Measurement, TPC, or Neighbor element you already met in the element catalog, wrapped in an Action frame and given a Dialog Token so the requester can match the answer to its question.",
+      "zh": "Wi-Fi 不只是搬运数据，它也要理解数据所穿越的“空气”。有两类动作帧让站点得以审视射频环境：频谱管理（9.6.2 节）与无线电测量（9.6.6 节，即“11k”工具箱）。这里几乎每一种帧都成对出现，一问一答：一个站点发出“请求（Request）”，对端回以“报告（Report）”。而每个帧的“帧体”往往并不新鲜——它不过是你在元素目录里早已见过的测量元素、TPC 元素或邻居元素，被包进动作帧，再配上一个对话令牌（Dialog Token），好让发问方把回答和自己的问题对上号。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The mental model for this whole lesson: Request → Report, paired by a Dialog Token. The Category field says which family you are in, a second 'Action' byte says which exact frame, and the Dialog Token (a nonzero number chosen by the requester) stitches each reply back to its request. Learn the pairing and the rest is just naming.",
+      "zh": "整节课的心智模型就一句话：请求 → 报告，用对话令牌配对。Category 字段说明你属于哪个家族，紧随其后的第二个“Action”字节说明具体是哪一种帧，而对话令牌（由发问方选定的一个非零数字）把每个回复缝合回它对应的请求。掌握这套配对关系，剩下的无非是记名字而已。"
+    },
+    {
+      "type": "diagram",
+      "en": "mindmap\n  root((Measurement<br/>Action frames))\n    Spectrum Mgmt 9.6.2\n      Spectrum Meas Request 9.6.2.2\n      Spectrum Meas Report 9.6.2.3\n      TPC Request 9.6.2.4\n      TPC Report 9.6.2.5\n      Channel Switch Announce 9.6.2.6\n    Radio Meas 9.6.6\n      Radio Meas Request 9.6.6.2\n      Radio Meas Report 9.6.6.3\n      Link Meas Request 9.6.6.4\n      Link Meas Report 9.6.6.5\n      Neighbor Report Request 9.6.6.6\n      Neighbor Report Response 9.6.6.7",
+      "zh": "mindmap\n  root((测量类<br/>动作帧))\n    频谱管理 9.6.2\n      频谱测量请求 9.6.2.2\n      频谱测量报告 9.6.2.3\n      TPC 请求 9.6.2.4\n      TPC 报告 9.6.2.5\n      信道切换通告 9.6.2.6\n    无线电测量 9.6.6\n      无线电测量请求 9.6.6.2\n      无线电测量报告 9.6.6.3\n      链路测量请求 9.6.6.4\n      链路测量报告 9.6.6.5\n      邻居报告请求 9.6.6.6\n      邻居报告响应 9.6.6.7"
+    },
+    {
+      "type": "prose",
+      "en": "Start with Spectrum Management (9.6.2). The Spectrum Measurement Request frame (9.6.2.2) asks another STA to measure one or more channels — its body is one or more Measurement Request elements (basic, CCA, RPI-histogram). The Spectrum Measurement Report frame (9.6.2.3) carries the answers back as Measurement Report elements, and may also be sent autonomously. The TPC Request frame (9.6.2.4) asks a peer for its transmit power and link-margin information; the TPC Report frame (9.6.2.5) answers with a TPC Report element. Finally the Channel Switch Announcement frame (9.6.2.6) is the odd one out — not a question but a command: an AP, IBSS STA, or mesh STA uses it to tell the BSS 'we are all moving to a new channel,' carrying a Channel Switch Announcement element plus optional width/power elements.",
+      "zh": "先看频谱管理（9.6.2）。频谱测量请求帧（9.6.2.2）请求另一个站点测量一个或多个信道——它的帧体就是一个或多个测量请求元素（basic、CCA、RPI 直方图）。频谱测量报告帧（9.6.2.3）把答案以测量报告元素的形式送回，也可自主发送。TPC 请求帧（9.6.2.4）向对端询问其发射功率与链路余量信息；TPC 报告帧（9.6.2.5）则以一个 TPC 报告元素作答。最后，信道切换通告帧（9.6.2.6）是个例外——它不是提问，而是命令：AP、IBSS 站点或 mesh 站点用它告诉整个 BSS“我们要一起换到新信道了”，帧中携带一个信道切换通告元素，外加可选的带宽/功率元素。"
+    },
+    {
+      "type": "prose",
+      "en": "Radio Measurement (9.6.6) is the richer 11k toolkit, and adds one twist over the spectrum family: a Number of Repetitions field, so a single request can ask for a measurement to repeat. The Radio Measurement Request frame (9.6.6.2) carries Measurement Request elements for the 11k measurement types — beacon, channel-load, noise-histogram, frame, STA-statistics — and the Radio Measurement Report frame (9.6.6.3) returns the matching Measurement Report elements (and supports multiframe responses). The Link Measurement Request frame (9.6.6.4) is per-link: it carries the Transmit Power Used and Max Transmit Power so the peer can estimate path loss, and the Link Measurement Report frame (9.6.6.5) answers with a TPC Report element plus antenna IDs, RCPI (received power), and RSNI (signal-to-noise). Together they let two STAs reason about the quality of the link between them.",
+      "zh": "无线电测量（9.6.6）是更丰富的 11k 工具箱，比频谱家族多了一个花样：一个“重复次数（Number of Repetitions）”字段，于是单条请求就能要求测量反复执行。无线电测量请求帧（9.6.6.2）携带面向 11k 测量类型的测量请求元素——beacon、信道负载、噪声直方图、frame、STA 统计；无线电测量报告帧（9.6.6.3）返回相应的测量报告元素（并支持多帧响应）。链路测量请求帧（9.6.6.4）是“逐链路”的：它携带“已用发射功率（Transmit Power Used）”和“最大发射功率（Max Transmit Power）”，好让对端估算路径损耗；链路测量报告帧（9.6.6.5）则以一个 TPC 报告元素，外加天线 ID、RCPI（接收功率）和 RSNI（信噪比）作答。两者合在一起，让两个站点能够评估彼此之间链路的质量。"
+    },
+    {
+      "type": "prose",
+      "en": "The last pair is the one you feel most in daily roaming. The Neighbor Report Request frame (9.6.6.6) asks the AP 'which other BSSs are around me?' — optionally scoped to a specific SSID and optionally requesting location (LCI / civic) information. The Neighbor Report Response frame (9.6.6.7) answers with a curated list of Neighbor Report elements for validated nearby APs. That list is the AP's own recommendation, and it feeds a client's roaming decision: instead of blindly scanning every channel, the station can jump straight to the channels and BSSIDs the AP already vouched for. Same Request → Report pattern, same Dialog Token — but the payload is Neighbor Report elements instead of Measurement elements.",
+      "zh": "最后这一对，是你在日常漫游中感受最深的。邻居报告请求帧（9.6.6.6）向 AP 发问：“我周围还有哪些 BSS？”——可选地限定某个特定 SSID，也可选地请求位置（LCI / civic）信息。邻居报告响应帧（9.6.6.7）以一份经过筛选的邻居报告元素列表作答，列出已验证的邻近 AP。这份列表是 AP 自己给出的推荐，会喂给客户端的漫游决策：站点无需盲目扫描每一个信道，而可以径直跳向 AP 已经背书过的信道和 BSSID。还是那套请求 → 报告模式，还是那个对话令牌——只不过载荷换成了邻居报告元素，而非测量元素。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 150' xmlns='http://www.w3.org/2000/svg' role='img' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='10' y='35' width='90' height='34' rx='4'/><text x='55' y='56' text-anchor='middle' font-size='11' stroke='none' fill='currentColor'>Category</text><rect x='100' y='35' width='90' height='34' rx='4'/><text x='145' y='52' text-anchor='middle' font-size='10' stroke='none' fill='currentColor'>Action</text><text x='145' y='64' text-anchor='middle' font-size='10' stroke='none' fill='currentColor'>(which frame)</text><rect x='190' y='35' width='100' height='34' rx='4'/><text x='240' y='52' text-anchor='middle' font-size='10' stroke='none' fill='currentColor'>Dialog Token</text><text x='240' y='64' text-anchor='middle' font-size='10' stroke='none' fill='currentColor'>(pairs Q&amp;A)</text><rect x='290' y='35' width='160' height='34' rx='4' stroke-dasharray='4 3'/><text x='370' y='52' text-anchor='middle' font-size='10' stroke='none' fill='currentColor'>Measurement / TPC /</text><text x='370' y='64' text-anchor='middle' font-size='10' stroke='none' fill='currentColor'>Neighbor element(s)</text><path d='M30 100 H430' stroke-dasharray='2 4'/><text x='30' y='120' font-size='10' stroke='none' fill='currentColor'>fixed header, same for every frame in the family</text><text x='370' y='120' text-anchor='middle' font-size='10' stroke='none' fill='currentColor'>reused element</text></svg>",
+      "caption": {
+        "en": "The shared anatomy: a fixed Category + Action + Dialog Token header, then a body that is just an element you already know.",
+        "zh": "共有的解剖结构：固定的 Category + Action + 对话令牌 头部，随后的帧体不过是一个你早已熟识的元素。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "How the standard differentiates the frames, field by field",
+        "zh": "标准如何逐字段地区分这些帧"
+      },
+      "en": "Within Spectrum Management (9.6.2.1) a one-octet Spectrum Management Action field after the Category byte selects the format via Table 9-452: 0 = Spectrum Measurement Request, 1 = Spectrum Measurement Report, 2 = TPC Request, 3 = TPC Report, 4 = Channel Switch Announcement. The two measurement frames carry a Dialog Token plus variable Measurement Request/Report elements (9.4.2.19 / 9.4.2.20); TPC Request/Report carry a TPC Request element (9.4.2.14) or TPC Report element (9.4.2.15); CSA carries a Channel Switch Announcement element (9.4.2.17) and optional Secondary Channel Offset, Wide Bandwidth Channel Switch, New Transmit Power Envelope, and Max Channel Switch Time elements. Within Radio Measurement (9.6.6.1) a Radio Measurement Action field selects via Table 9-470: 0 = Radio Measurement Request, 1 = Report, 2 = Link Measurement Request, 3 = Link Measurement Report, 4 = Neighbor Report Request, 5 = Neighbor Report Response. The Radio Measurement Request uniquely adds a 2-octet Number of Repetitions field; the Link Measurement Request adds Transmit Power Used and Max Transmit Power octets; the Link Measurement Report carries a TPC Report element, Receive/Transmit Antenna IDs, RCPI (9.4.2.36) and RSNI (9.4.2.39). Every request uses a nonzero Dialog Token; every report echoes that token (or 0 if autonomous).",
+      "zh": "在频谱管理（9.6.2.1）中，Category 字节之后有一个 1 字节的“频谱管理 Action”字段，按表 9-452 选择具体格式：0 = 频谱测量请求，1 = 频谱测量报告，2 = TPC 请求，3 = TPC 报告，4 = 信道切换通告。两个测量帧携带对话令牌外加可变长的测量请求/报告元素（9.4.2.19 / 9.4.2.20）；TPC 请求/报告分别携带 TPC 请求元素（9.4.2.14）或 TPC 报告元素（9.4.2.15）；CSA 则携带信道切换通告元素（9.4.2.17），以及可选的次信道偏移、宽带信道切换、新发射功率包络、最大信道切换时间等元素。在无线电测量（9.6.6.1）中，“无线电测量 Action”字段按表 9-470 选择：0 = 无线电测量请求，1 = 报告，2 = 链路测量请求，3 = 链路测量报告，4 = 邻居报告请求，5 = 邻居报告响应。无线电测量请求独有一个 2 字节的“重复次数”字段；链路测量请求多出“已用发射功率”和“最大发射功率”两个字节；链路测量报告则携带 TPC 报告元素、接收/发射天线 ID、RCPI（9.4.2.36）与 RSNI（9.4.2.39）。每个请求都使用非零对话令牌；每个报告回显该令牌（若为自主发送则置 0）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1638,
+          1639,
+          1640,
+          1654,
+          1655,
+          1656,
+          1657,
+          1658
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.6.2.2",
+    "80211-2024:9.6.2.3",
+    "80211-2024:9.6.2.4",
+    "80211-2024:9.6.2.5",
+    "80211-2024:9.6.2.6",
+    "80211-2024:9.6.6.2",
+    "80211-2024:9.6.6.3",
+    "80211-2024:9.6.6.4",
+    "80211-2024:9.6.6.5",
+    "80211-2024:9.6.6.6",
+    "80211-2024:9.6.6.7"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1637,
+        1638,
+        1639,
+        1640
+      ],
+      "note": "9.6.2.2-9.6.2.6 Spectrum Management Action frames: Spectrum Measurement Request/Report, TPC Request/Report, Channel Switch Announcement; Table 9-452 action field values"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1654,
+        1655,
+        1656,
+        1657,
+        1658
+      ],
+      "note": "9.6.6.2-9.6.6.7 Radio Measurement Action frames: Radio Measurement Request/Report, Link Measurement Request/Report, Neighbor Report Request/Response; Table 9-470 action field values"
+    }
+  ],
+  "track": "frames"
+}

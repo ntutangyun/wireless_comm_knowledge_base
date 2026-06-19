@@ -1,0 +1,122 @@
+{
+  "id": "frames-21",
+  "title": {
+    "en": "Public & Protected-Dual Action Frames: talking before (and across) association",
+    "zh": "公共与受保护双重动作帧：关联前（及跨域）的对话"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Most Action frames assume you have already joined a BSS — you are associated, you have keys, the conversation is private. But some conversations have to happen before you are a member: a phone shopping for a Hotspot network, a station asking 'what services live behind this AP?', two devices arranging a direct link, an AP telling everyone 'I'm moving to a new channel'. The Public Action category (9.6.7) is exactly that small set of frames the standard allows you to send pre-association — to STAs you are not (yet) associated with. Because there is no shared key yet, they cannot assume encryption.",
+      "zh": "大多数动作帧都默认你已经加入了某个 BSS——你已关联、已持有密钥、对话是私密的。但有些对话必须在你成为成员之前发生：一部手机在挑选 Hotspot 网络、一个站点在询问“这个 AP 背后有哪些服务？”、两台设备在协商直连、或者一个 AP 向所有人宣布“我要换信道了”。公共动作（Public Action，9.6.7）类别正是标准允许你在关联之前发送的那一小组帧——发给你（尚）未关联的站点。由于此时还没有共享密钥，它们不能假定有加密保护。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The mental model: 'Public' = the few conversations allowed before you have joined, so they can't lean on an encryption key. 'Protected Dual of Public Action' (9.6.10) is their secured twin — the very same frames, but wrapped in robust-management-frame protection once a security association exists. Same content, two envelopes: one for the unjoined, one for the joined.",
+      "zh": "可以这样建立直觉：“公共（Public）”=在你加入之前被允许进行的那几类对话，因此它们无法依赖加密密钥。“受保护的公共动作双重帧（Protected Dual of Public Action，9.6.10）”就是它们的加密孪生体——内容完全相同的帧，只是在已建立安全关联之后，被裹进健壮管理帧保护（robust management frame protection）里。同样的内容，两个信封：一个给未加入者，一个给已加入者。"
+    },
+    {
+      "type": "diagram",
+      "en": "mindmap\n  root((Public Action 9.6.7))\n    GAS tunnel\n      GAS Initial Request 9.6.7.12\n      GAS Initial Response 9.6.7.13\n      GAS Comeback Request 9.6.7.14\n      Comeback Req Fragment 9.6.7.15\n      GAS Comeback Response 9.6.7.16\n    Direct & discovery\n      TDLS Discovery Response 9.6.7.17\n      FILS Discovery 9.6.7.36\n    Spectrum & coexistence\n      Extended CSA 9.6.7.7\n      20/40 BSS Coexistence 9.6.7.2\n    Ranging\n      FTM Request 9.6.7.32\n      FTM 9.6.7.33\n    Protected Dual 9.6.10\n      same frames, RMF-protected",
+      "zh": "mindmap\n  root((公共动作 9.6.7))\n    GAS 隧道\n      GAS 初始请求 9.6.7.12\n      GAS 初始响应 9.6.7.13\n      GAS 回程请求 9.6.7.14\n      回程请求分片 9.6.7.15\n      GAS 回程响应 9.6.7.16\n    直连与发现\n      TDLS 发现响应 9.6.7.17\n      FILS 发现 9.6.7.36\n    频谱与共存\n      扩展信道切换 9.6.7.7\n      20/40 BSS 共存 9.6.7.2\n    测距\n      FTM 请求 9.6.7.32\n      FTM 帧 9.6.7.33\n    受保护双重帧 9.6.10\n      同样的帧，受 RMF 保护"
+    },
+    {
+      "type": "prose",
+      "en": "The biggest job in the category is GAS — the Generic Advertisement Service — a five-frame family that tunnels a query (typically ANQP, the questions behind Hotspot 2.0 / Passpoint network selection) to an AP before you join. GAS Initial Request (9.6.7.12) carries the query out; GAS Initial Response (9.6.7.13) carries the answer back — or, if the AP needs time to fetch it from the network, returns a comeback delay instead. The station then sends GAS Comeback Request (9.6.7.14) to pick up the held answer. When the answer is too big for one frame, GAS Comeback Response (9.6.7.16) returns it as numbered fragments, and GAS Comeback Request Fragment (9.6.7.15) carries a fragmented query request the other direction. One dialog token threads all five together.",
+      "zh": "这个类别里最重要的工作是 GAS——通用广告服务（Generic Advertisement Service）——一个由五种帧组成的家族，它在你加入之前把一次查询（通常是 ANQP，即 Hotspot 2.0 / Passpoint 网络选择背后的问题）隧道传送给 AP。GAS 初始请求（9.6.7.12）把查询送出去；GAS 初始响应（9.6.7.13）把答案带回来——或者，若 AP 需要时间从网络侧获取答案，则改为返回一个回程延迟（comeback delay）。随后站点发送 GAS 回程请求（9.6.7.14）去取回这个被暂存的答案。当答案大到一帧装不下时，GAS 回程响应（9.6.7.16）会以带编号的分片返回它；而 GAS 回程请求分片（9.6.7.15）则在另一个方向上承载分片化的查询请求。一个对话令牌（dialog token）把这五种帧串成一条线。"
+    },
+    {
+      "type": "prose",
+      "en": "The rest of the category each does one small, well-scoped job. TDLS Discovery Response (9.6.7.17) answers a direct-link probe — relayed through the AP — so two clients can find each other before setting up a peer-to-peer TDLS link. FILS Discovery (9.6.7.36) is a compact, fast beacon-like advertisement an AP broadcasts so stations can discover and select it quickly. Extended Channel Switch Announcement (9.6.7.7) lets an AP, IBSS, or mesh STA move the BSS to a new operating class and channel — not just a new channel number, but a new band/width regime. 20/40 BSS Coexistence Management (9.6.7.2) negotiates whether 40 MHz operation is friendly to nearby 20 MHz BSSs. And FTM Request (9.6.7.32) kicks off fine-timing ranging, with the FTM frame (9.6.7.33) carrying the picosecond TOD/TOA timestamps that turn time-of-flight into distance for positioning.",
+      "zh": "类别里的其余帧各自只做一件范围明确的小事。TDLS 发现响应（9.6.7.17）回应一次直连探测——经由 AP 转发——让两个客户端在建立点对点 TDLS 直连之前能彼此找到。FILS 发现（9.6.7.36）是 AP 广播的一种紧凑、快速、类信标的通告，让站点能迅速发现并选择它。扩展信道切换通告（9.6.7.7）让 AP、IBSS 或 mesh 站点把整个 BSS 迁移到新的操作类（operating class）和信道——不只是换个信道号，而是换一套频段/带宽体系。20/40 BSS 共存管理（9.6.7.2）协商 40 MHz 运行是否对邻近的 20 MHz BSS 友好。而 FTM 请求（9.6.7.32）启动精细定时测距，FTM 帧（9.6.7.33）则承载皮秒级的 TOD/TOA 时间戳，把飞行时间换算成用于定位的距离。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why two flavours? A pre-association frame literally cannot be encrypted — the peer has no key. But once you DO have a security association, sending the same content in the clear would be a downgrade. The Protected Dual (9.6.10) closes that gap: it re-lists the protectable Public frames (GAS, Extended CSA, and more) with identical Action-field formats, just carried as robust Management frames. Note not every Public frame has a protected twin — FILS Discovery and FTM, by nature, stay public.",
+      "zh": "为什么要有两种风味？一个关联前的帧字面上就无法加密——对端根本没有密钥。但一旦你确实拥有了安全关联，再以明文发送同样的内容就成了一种降级。受保护双重帧（9.6.10）正是为了弥合这一缺口：它把那些可被保护的公共帧（GAS、扩展信道切换等）以完全相同的动作字段格式重新列出，只是改为以健壮管理帧承载。注意：并非每个公共帧都有受保护的孪生体——FILS 发现与 FTM 出于其本质，仍保持公共（明文）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What the standard actually says: the category's purpose, the GAS comeback mechanic, and the 'same format' rule",
+        "zh": "标准的原文要点：类别用途、GAS 回程机制，以及“格式相同”规则"
+      },
+      "en": "Clause 9.6.7.1 states the Public Action category's purpose explicitly: it allows inter-BSS and AP-to-unassociated-STA communications, intra-BSS communication, and GAS. Each frame begins with a Category octet followed by a Public Action field that selects the format from Table 9-471 (e.g. 20/40 BSS Coexistence = 0, Extended CSA = 4, GAS Initial Request = 10 … FTM Request = 32, FTM = 33, FILS Discovery = 34, and the GAS Comeback Request Fragment at value 60). The GAS comeback loop (9.6.7.13–9.6.7.16) is keyed by a Dialog Token and a GAS Query Fragment ID with a More GAS Fragments bit: a nonzero fragment ID with More=1 tells the peer another Comeback Request/Response exchange is needed to finish retrieving the query response; a nonzero GAS Comeback Delay in the Initial Response signals the answer is not ready yet. Clause 9.6.10 defines the Protected Dual of Public Action frame to allow robust STA-STA communication of the same information conveyed in Public Action frames, and states plainly that the Action fields of Protected Dual frames have the same format as their corresponding nonprotected Public Action frames (Table 9-516 enumerates which Public frames have a protected twin).",
+      "zh": "9.6.7.1 节明确陈述了公共动作类别的用途：它允许 BSS 间通信、AP 与未关联站点之间的通信、BSS 内通信，以及 GAS。每个帧都以一个 Category 八位字节开头，其后是一个 Public Action 字段，用以从表 9-471 中选定具体格式（例如：20/40 BSS 共存 = 0，扩展信道切换 = 4，GAS 初始请求 = 10……FTM 请求 = 32，FTM = 33，FILS 发现 = 34，而 GAS 回程请求分片取值为 60）。GAS 回程循环（9.6.7.13–9.6.7.16）由对话令牌（Dialog Token）与带 More GAS Fragments 位的 GAS 查询分片 ID（GAS Query Fragment ID）共同标定：一个非零的分片 ID 且 More=1，告知对端还需再进行一次回程请求/响应交换才能取完整个查询响应；初始响应中一个非零的 GAS 回程延迟则表示答案尚未就绪。9.6.10 节定义了受保护的公共动作双重帧，用以对公共动作帧所承载的同样信息进行健壮的站点间通信，并明确指出：受保护双重帧的动作字段与其对应的非受保护公共动作帧具有相同的格式（表 9-516 列举了哪些公共帧拥有受保护孪生体）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1658,
+          1659,
+          1672,
+          1727
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1658,
+        1659,
+        1660
+      ],
+      "note": "9.6.7.1 Public Action field purpose + Table 9-471 Public Action field values (20/40 BSS Coex, ECSA, GAS, TDLS Discovery Response, FTM Request/FTM, FILS Discovery, Comeback Request Fragment)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1668,
+        1669,
+        1670,
+        1671,
+        1672,
+        1673,
+        1674
+      ],
+      "note": "9.6.7.12-9.6.7.17 GAS Initial Request/Response, GAS Comeback Request, Comeback Request Fragment, Comeback Response, TDLS Discovery Response"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1664
+      ],
+      "note": "9.6.7.7 Extended Channel Switch Announcement frame (new operating class + channel)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1685,
+        1687,
+        1693
+      ],
+      "note": "9.6.7.32 FTM Request, 9.6.7.33 FTM (TOD/TOA picosecond ranging), 9.6.7.36 FILS Discovery"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1727
+      ],
+      "note": "9.6.10 Protected Dual of Public Action — same Action-field format, RMF-protected; Table 9-516 lists protected twins"
+    }
+  ],
+  "covers": [
+    "80211-2024:9.6.7.12",
+    "80211-2024:9.6.7.13",
+    "80211-2024:9.6.7.14",
+    "80211-2024:9.6.7.15",
+    "80211-2024:9.6.7.16",
+    "80211-2024:9.6.7.17",
+    "80211-2024:9.6.7.7",
+    "80211-2024:9.6.7.32",
+    "80211-2024:9.6.7.33",
+    "80211-2024:9.6.7.2",
+    "80211-2024:9.6.7.36"
+  ],
+  "track": "frames"
+}
