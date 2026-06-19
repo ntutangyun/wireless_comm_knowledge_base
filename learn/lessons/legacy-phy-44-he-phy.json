@@ -1,0 +1,165 @@
+{
+  "id": "legacy-phy-44-he-phy",
+  "title": {
+    "en": "The HE PHY: 802.11ax (Wi-Fi 6) Internals",
+    "zh": "HE PHY：802.11ax（Wi-Fi 6）内部机制"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 27 specifies the High Efficiency (HE) PHY — the air interface marketed as Wi-Fi 6. It defines an OFDM system that builds on the earlier OFDM/HT/VHT PHYs: in the 2.4 GHz band the HE PHY rests on the HT PHY (Clause 19), in 5 GHz on the VHT PHY (Clause 21), and in 6 GHz directly on the OFDM PHY (Clause 17). Its headline idea is efficiency in dense networks: instead of one station owning the whole channel for one frame, HE lets an AP split a channel among many stations at once, and orchestrate uplink from many stations in a single coordinated transmission.",
+      "zh": "第 27 条规定了高效率（HE）PHY，即市场上称为 Wi-Fi 6 的空中接口。它定义了一套 OFDM 系统，并构建在更早的 OFDM/HT/VHT PHY 之上：在 2.4 GHz 频段，HE PHY 以 HT PHY（第 19 条）为基础；在 5 GHz 频段以 VHT PHY（第 21 条）为基础；在 6 GHz 频段则直接以 OFDM PHY（第 17 条）为基础。它的核心思想是在密集网络中提升效率：与一个站点独占整个信道发送一帧不同，HE 允许 AP 把一个信道同时分给多个站点使用，并在一次协调传输中编排多个站点的上行发送。"
+    },
+    {
+      "type": "prose",
+      "en": "The PHY talks to the MAC through the service interface in 27.2: the TXVECTOR carries per-PPDU transmit parameters, the RXVECTOR reports what was received, the PHYCONFIG_VECTOR sets operating channel and width, and the TRIGVECTOR conveys the parameters of a solicited uplink transmission. A single FORMAT enumeration selects the PPDU shape — and crucially the HE PHY also still understands the legacy formats (NON_HT, HT, VHT), so an HE station can interoperate with everything that came before it.",
+      "zh": "PHY 通过 27.2 中的服务接口与 MAC 交互：TXVECTOR 携带每个 PPDU 的发送参数，RXVECTOR 报告接收到的内容，PHYCONFIG_VECTOR 设置工作信道与带宽，TRIGVECTOR 传递被触发的上行传输参数。一个 FORMAT 枚举值选定 PPDU 的形态——而且关键在于，HE PHY 仍然理解传统格式（NON_HT、HT、VHT），因此 HE 站点能与此前所有制式互操作。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 720 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"4\" y=\"30\" width=\"60\" height=\"40\"/><text x=\"34\" y=\"55\" font-size=\"11\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">L-STF</text><rect x=\"64\" y=\"30\" width=\"60\" height=\"40\"/><text x=\"94\" y=\"55\" font-size=\"11\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">L-LTF</text><rect x=\"124\" y=\"30\" width=\"54\" height=\"40\"/><text x=\"151\" y=\"55\" font-size=\"11\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">L-SIG</text><rect x=\"178\" y=\"30\" width=\"54\" height=\"40\"/><text x=\"205\" y=\"55\" font-size=\"10\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">RL-SIG</text><rect x=\"232\" y=\"30\" width=\"70\" height=\"40\"/><text x=\"267\" y=\"55\" font-size=\"10\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">HE-SIG-A</text><rect x=\"302\" y=\"30\" width=\"70\" height=\"40\" stroke-dasharray=\"4 3\"/><text x=\"337\" y=\"52\" font-size=\"10\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">HE-SIG-B</text><text x=\"337\" y=\"64\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">(MU only)</text><rect x=\"372\" y=\"30\" width=\"54\" height=\"40\"/><text x=\"399\" y=\"55\" font-size=\"10\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">HE-STF</text><rect x=\"426\" y=\"30\" width=\"60\" height=\"40\"/><text x=\"456\" y=\"55\" font-size=\"10\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">HE-LTF</text><rect x=\"486\" y=\"30\" width=\"180\" height=\"40\"/><text x=\"576\" y=\"55\" font-size=\"11\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Data</text><rect x=\"666\" y=\"30\" width=\"48\" height=\"40\" stroke-dasharray=\"4 3\"/><text x=\"690\" y=\"55\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">PE</text><line x1=\"4\" y1=\"82\" x2=\"302\" y2=\"82\"/><text x=\"153\" y=\"96\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">pre-HE modulated (legacy spacing)</text><line x1=\"372\" y1=\"82\" x2=\"714\" y2=\"82\"/><text x=\"543\" y=\"96\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">HE modulated (4x tone density)</text></svg>",
+      "caption": {
+        "en": "HE MU PPDU field layout. The pre-HE fields keep legacy 312.5 kHz subcarrier spacing so older devices can defer; the HE fields switch to 78.125 kHz spacing (4x finer tones, 12.8 us symbols). HE-SIG-B appears only in the MU format.",
+        "zh": "HE MU PPDU 的字段排布。pre-HE 字段沿用传统 312.5 kHz 子载波间隔，使旧设备可据此退避；HE 字段切换为 78.125 kHz 间隔（子载波密度提升 4 倍，符号长 12.8 us）。HE-SIG-B 仅出现在 MU 格式中。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "HE defines four PPDU formats. The HE SU PPDU carries a single PSDU and uses one RU spanning the whole bandwidth. The HE ER SU (Extended Range SU) is the SU format with its HE-SIG-A repeated and a 3 dB power boost on early fields, for reaching distant or weak stations. The HE MU PPDU is the downlink multi-user workhorse: it carries one or more PSDUs to one or more users via OFDMA, DL MU-MIMO, or a mix. The HE TB (Trigger-Based) PPDU is what a station sends on the uplink in response to a Trigger frame from the AP — its preamble before the HE-STF is identical to the SU PPDU, and many stations transmit their TB PPDUs simultaneously.",
+      "zh": "HE 定义了四种 PPDU 格式。HE SU PPDU 携带单个 PSDU，使用一个跨越整个带宽的 RU。HE ER SU（扩展距离 SU）是 SU 格式的变体，其 HE-SIG-A 被重复，且早期字段获得 3 dB 功率提升，用于触达远端或信号弱的站点。HE MU PPDU 是下行多用户的主力：它通过 OFDMA、下行 MU-MIMO 或二者混合，向一个或多个用户携带一个或多个 PSDU。HE TB（基于触发）PPDU 是站点在收到 AP 的触发帧后于上行发送的格式——其在 HE-STF 之前的前导与 SU PPDU 完全相同，而许多站点会同时发送各自的 TB PPDU。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Channel] --> B{HE PPDU format}\n  B --> C[HE SU<br/>one user, full BW]\n  B --> D[HE ER SU<br/>extended range]\n  B --> E[HE MU<br/>DL OFDMA / MU-MIMO]\n  B --> F[HE TB<br/>UL, replies to Trigger]\n  E --> G[Split into RUs]\n  F --> G",
+      "zh": "flowchart TD\n  A[信道] --> B{HE PPDU 格式}\n  B --> C[HE SU<br/>单用户，全带宽]\n  B --> D[HE ER SU<br/>扩展距离]\n  B --> E[HE MU<br/>下行 OFDMA / MU-MIMO]\n  B --> F[HE TB<br/>上行，响应触发帧]\n  E --> G[拆分为多个 RU]\n  F --> G"
+    },
+    {
+      "type": "prose",
+      "en": "The mechanism that makes all this possible is the resource unit (RU). An OFDM symbol's subcarriers are divided into groups, and each group is an RU assigned to one user (or shared by several in MU-MIMO). HE defines RU sizes of 26, 52, 106, 242, 484, 996, and 2x996 tones. A 26-tone RU, for example, has 24 data subcarriers plus 2 pilots; their exact subcarrier index ranges are tabulated per bandwidth. Small RUs let an AP serve many low-rate stations in parallel; a single 996-tone RU gives one station an entire 80 MHz channel. The HE-SIG-B field in an MU PPDU is the map that tells each station which RU and how many spatial streams are theirs.",
+      "zh": "让这一切成为可能的机制是资源单元（RU）。一个 OFDM 符号的子载波被划分为若干组，每组就是一个 RU，分配给一个用户（或在 MU-MIMO 中由多个用户共享）。HE 定义的 RU 规格为 26、52、106、242、484、996 和 2x996 个音调。例如一个 26 音调 RU 含 24 个数据子载波加 2 个导频；其精确的子载波索引范围按带宽分别列表给出。小 RU 让 AP 能并行服务许多低速率站点；单个 996 音调 RU 则把整个 80 MHz 信道交给一个站点。MU PPDU 中的 HE-SIG-B 字段就是那张地图，告诉每个站点哪个 RU 以及多少空间流属于它。"
+    },
+    {
+      "type": "widget",
+      "widget": "ofdma-ru",
+      "params": {}
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why two subcarrier spacings? The pre-HE fields (L-STF through HE-SIG-A/B) use the legacy 312.5 kHz spacing and 3.2 us DFT period so that non-HE devices can decode L-SIG and defer correctly. The HE-modulated fields (HE-STF, HE-LTF, Data) switch to 78.125 kHz spacing and a 12.8 us DFT period — four times as many tones per channel. Finer tones are what make small RUs and dense OFDMA practical.",
+      "zh": "为何要有两种子载波间隔？pre-HE 字段（从 L-STF 到 HE-SIG-A/B）使用传统的 312.5 kHz 间隔和 3.2 us DFT 周期，使非 HE 设备能解出 L-SIG 并正确退避。HE 调制字段（HE-STF、HE-LTF、Data）则切换为 78.125 kHz 间隔和 12.8 us DFT 周期——每信道的音调数量是原来的四倍。更细的音调正是让小 RU 与密集 OFDMA 切实可行的关键。"
+    },
+    {
+      "type": "prose",
+      "en": "On the transmit side (27.3.5), the chain assembles each field through blocks such as the scrambler, the FEC encoder (BCC for small/low-stream cases, LDPC otherwise), stream and segment parsers, constellation and DCM tone mappers, pilot insertion, CSD, the spatial mapper, frequency mapping, and the IDFT. The encoding overview (27.3.6) then walks field-by-field — building L-STF, L-LTF, L-SIG, RL-SIG, HE-SIG-A, HE-SIG-B, HE-STF, HE-LTF, and the Data field — using the timing constants of 27.3.9 and the signal mathematics of 27.3.10. The HE-LTF (the long training field) lets the receiver estimate the channel per spatial stream and per RU before decoding data.",
+      "zh": "在发送侧（27.3.5），处理链通过一系列模块逐字段组装：扰码器、FEC 编码器（小尺寸/少流情形用 BCC，其余用 LDPC）、流解析器与段解析器、星座映射器与 DCM 音调映射器、导频插入、CSD、空间映射器、频率映射，以及 IDFT。随后的编码概览（27.3.6）逐字段展开——构建 L-STF、L-LTF、L-SIG、RL-SIG、HE-SIG-A、HE-SIG-B、HE-STF、HE-LTF 与 Data 字段——并使用 27.3.9 的定时常数与 27.3.10 的信号数学描述。HE-LTF（长训练字段）让接收端在解码数据前，按每个空间流、每个 RU 估计信道。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause-27 unit taught in this lesson",
+        "zh": "覆盖地图：本课所讲第 27 条各单元"
+      },
+      "en": "Introduction & interface — 27.1.1 introduction to the HE PHY (band-by-band layering and mandatory features); 27.1.2 scope (PSDU-to-PPDU mapping and transmit/receive functions); 27.1.3 HE PHY functions (general, PLME, service-specification method). 27.2.1 service interface introduction (TXVECTOR/RXVECTOR/PHYCONFIG_VECTOR/TRIGVECTOR roles and the FORMAT enumeration); 27.2.5 PHYCONFIG_VECTOR parameters (OPERATING_CHANNEL, CHANNEL_WIDTH up to 160/80+80 MHz, center-frequency segments); 27.2.7 support for non-HT, HT, and VHT formats (the HE PHY logically contains the legacy PHYs and maps TXVECTOR/RXVECTOR to them). HE PHY core — 27.3.1 introduction (MU transmission DL/UL, OFDMA); 27.3.2 subcarrier and resource allocation (data/pilot/unused subcarriers, RU/guard/DC, RU sizes 26-2x996, resource indication and user identification, 20 MHz-operating STAs); 27.3.3 MU-MIMO (DL and UL MU-MIMO, supported RU sizes, max spatial streams); 27.3.5 transmitter block diagram; 27.3.6 overview of the PPDU encoding process (field-by-field construction). Signals & preamble — 27.3.9 timing-related parameters (subcarrier spacings 312.5/78.125 kHz, DFT periods, GI durations); 27.3.10 mathematical description of signals; 27.3.11 HE preamble (pre-HE vs HE modulated fields, L-STF/L-LTF/L-SIG/RL-SIG, HE-SIG-A content & CRC & modulation, HE-SIG-B content channels & user-specific fields, HE-STF, HE-LTF); 27.3.12 Data field (pre-FEC padding, SERVICE, scrambler, BCC/LDPC coding, stream parser). Advanced & specs — 27.3.14 non-HT duplicate transmission; 27.3.16 SU-MIMO and DL MU-MIMO beamforming; 27.3.19 HE Ranging NDP and HE TB Ranging NDP; 27.3.20 HE-LTF field using secure HE-LTF (randomized sequences for protected ranging); 27.3.21 transmit specification (spectral mask, spectral flatness, frequency tolerance, EVM/modulation accuracy, time-of-departure accuracy); 27.3.22 receiver specification (minimum sensitivity, adjacent/nonadjacent channel rejection, maximum input, CCA sensitivity); 27.3.25 channel numbering (2.4/5/6 GHz, with 6 GHz allocation defined here).",
+      "zh": "引言与接口——27.1.1 HE PHY 引言（逐频段的分层关系与强制特性）；27.1.2 范围（PSDU 到 PPDU 的映射及收发功能）；27.1.3 HE PHY 功能（总则、PLME、服务规范方法）。27.2.1 服务接口引言（TXVECTOR/RXVECTOR/PHYCONFIG_VECTOR/TRIGVECTOR 的职责与 FORMAT 枚举）；27.2.5 PHYCONFIG_VECTOR 参数（OPERATING_CHANNEL、最高至 160/80+80 MHz 的 CHANNEL_WIDTH、中心频率段）；27.2.7 对 non-HT、HT、VHT 格式的支持（HE PHY 在逻辑上包含传统 PHY，并将 TXVECTOR/RXVECTOR 映射到它们）。HE PHY 核心——27.3.1 引言（下行/上行 MU 传输、OFDMA）；27.3.2 子载波与资源分配（数据/导频/未用子载波、RU/保护/DC、26 至 2x996 的 RU 规格、资源指示与用户识别、20 MHz 工作站点）；27.3.3 MU-MIMO（下行与上行 MU-MIMO、支持的 RU 规格、最大空间流数）；27.3.5 发送框图；27.3.6 PPDU 编码过程概览（逐字段构建）。信号与前导——27.3.9 定时相关参数（312.5/78.125 kHz 子载波间隔、DFT 周期、GI 时长）；27.3.10 信号的数学描述；27.3.11 HE 前导（pre-HE 与 HE 调制字段、L-STF/L-LTF/L-SIG/RL-SIG、HE-SIG-A 内容与 CRC 与调制、HE-SIG-B 内容信道与用户专属字段、HE-STF、HE-LTF）；27.3.12 Data 字段（FEC 前填充、SERVICE、扰码器、BCC/LDPC 编码、流解析器）。进阶与规格——27.3.14 non-HT 重复传输；27.3.16 SU-MIMO 与下行 MU-MIMO 波束成形；27.3.19 HE 测距 NDP 与 HE TB 测距 NDP；27.3.20 使用安全 HE-LTF 的 HE-LTF 字段（用于受保护测距的随机化序列）；27.3.21 发送规格（频谱模板、频谱平坦度、频率容差、EVM/调制精度、发送时刻精度）；27.3.22 接收规格（最小灵敏度、相邻/非相邻信道抑制、最大输入、CCA 灵敏度）；27.3.25 信道编号（2.4/5/6 GHz，6 GHz 分配在此定义）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4133,
+          4138,
+          4139,
+          4160,
+          4162,
+          4166,
+          4168,
+          4178,
+          4183,
+          4191,
+          4199,
+          4200,
+          4210,
+          4216,
+          4231,
+          4247,
+          4267,
+          4297,
+          4301,
+          4303,
+          4307,
+          4318,
+          4332,
+          4351
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The clause closes with the engineering guardrails. The transmit specification (27.3.21) bounds the spectral mask, spectral flatness, carrier-frequency tolerance, modulation accuracy (EVM), and — for HE's ranging features — time-of-departure accuracy. The receiver specification (27.3.22) sets minimum input sensitivity, adjacent and nonadjacent channel rejection, maximum input level, and CCA sensitivity. Beamforming (27.3.16) steers space-time streams toward one station (SU-MIMO) or disjoint streams to several (DL MU-MIMO). The ranging NDPs (27.3.19) and the secure HE-LTF (27.3.20) support precise, protected distance measurement. Finally, channel numbering (27.3.25) ties everything to real spectrum, including the new 6 GHz band allocation.",
+      "zh": "本条以工程层面的约束收尾。发送规格（27.3.21）限定频谱模板、频谱平坦度、载频容差、调制精度（EVM），以及——针对 HE 的测距特性——发送时刻精度。接收规格（27.3.22）规定最小输入灵敏度、相邻与非相邻信道抑制、最大输入电平和 CCA 灵敏度。波束成形（27.3.16）将空时流导向单个站点（SU-MIMO），或把互不相交的流导向多个站点（下行 MU-MIMO）。测距 NDP（27.3.19）与安全 HE-LTF（27.3.20）支撑精确且受保护的距离测量。最后，信道编号（27.3.25）把上述一切对应到真实频谱，包括新增的 6 GHz 频段分配。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4133,
+        4138,
+        4139,
+        4160,
+        4162,
+        4166,
+        4167,
+        4168,
+        4183,
+        4191,
+        4199,
+        4210
+      ],
+      "note": "27.1 introduction/scope/functions, 27.2 service interface (PHYCONFIG_VECTOR, non-HT/HT/VHT support), 27.3.1-27.3.11 HE PHY core, RUs, transmitter chain, timing, preamble."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4216,
+        4231,
+        4247,
+        4267,
+        4297,
+        4301,
+        4303,
+        4307,
+        4318,
+        4332,
+        4351
+      ],
+      "note": "27.3.11 HE-SIG-A/B and training fields, 27.3.12 Data field, 27.3.14 non-HT duplicate, 27.3.16 beamforming, 27.3.19-27.3.20 ranging NDP and secure HE-LTF, 27.3.21 transmit spec, 27.3.22 receiver spec, 27.3.25 channel numbering."
+    }
+  ],
+  "covers": [
+    "80211-2024:27.1.1",
+    "80211-2024:27.1.2",
+    "80211-2024:27.1.3",
+    "80211-2024:27.2.1",
+    "80211-2024:27.2.5",
+    "80211-2024:27.2.7",
+    "80211-2024:27.3.1",
+    "80211-2024:27.3.2",
+    "80211-2024:27.3.3",
+    "80211-2024:27.3.5",
+    "80211-2024:27.3.6",
+    "80211-2024:27.3.9",
+    "80211-2024:27.3.10",
+    "80211-2024:27.3.11",
+    "80211-2024:27.3.12",
+    "80211-2024:27.3.14",
+    "80211-2024:27.3.16",
+    "80211-2024:27.3.19",
+    "80211-2024:27.3.20",
+    "80211-2024:27.3.21",
+    "80211-2024:27.3.22",
+    "80211-2024:27.3.25"
+  ],
+  "track": "legacy-phy"
+}

@@ -1,0 +1,134 @@
+{
+  "id": "phy-service-18-phy-service-interface",
+  "title": {
+    "en": "The PHY Service Interface: What the MAC Asks the Radio to Do",
+    "zh": "PHY 服务接口：MAC 让无线电做什么"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Wi-Fi has a clean division of labor. The MAC decides *what* to send and *when* to send it; the PHY (the radio) decides *how* to put bits on the air. Clause 8 of IEEE 802.11-2024 defines the contract between them: a generic, abstract PHY service that the MAC sees, no matter which physical layer (HT, VHT, HE, EHT, and so on) is actually underneath. This lesson walks through that service interface so you can read any PHY clause and know exactly where it plugs in.",
+      "zh": "Wi-Fi 的分工非常清晰。MAC 决定*发什么*以及*什么时候*发；PHY（无线电）决定*怎样*把比特送上空中。IEEE 802.11-2024 的第 8 章定义了二者之间的契约：一个通用、抽象的 PHY 服务，无论底层实际采用哪种物理层（HT、VHT、HE、EHT 等），MAC 看到的都是同一套接口。本课将带你走一遍这个服务接口，让你在阅读任何 PHY 章节时都清楚它接在什么位置。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 8.1 (Scope of PHY services) frames the whole chapter: the standard defines several different PHYs, and each one consists of two protocol functions — (a) a function that maps PSDUs into a PPDU format suitable for sending and receiving information between stations, and (b) a function that defines how to actually transmit and receive that data through the wireless medium. Clause 8.2 (PHY functions) then names the two functional entities almost every PHY contains: the PHY function itself, and a layer management function. The PHY service reaches the MAC through one well-defined door called the PHY SAP (service access point).",
+      "zh": "第 8.1 节（PHY 服务的范围）为整章定下基调：标准定义了若干不同的 PHY，每个 PHY 都由两个协议功能组成——(a) 把 PSDU 映射为适合在站点之间收发信息的 PPDU 格式的功能；(b) 定义如何通过无线介质真正发送和接收这些数据的功能。随后第 8.2 节（PHY 功能）指出几乎每个 PHY 都包含的两个功能实体：PHY 功能本身，以及层管理功能。PHY 服务通过一扇定义明确的门——称为 PHY SAP（服务接入点）——抵达 MAC。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 360 220\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"40\" y=\"20\" width=\"280\" height=\"50\" rx=\"6\"/><text x=\"180\" y=\"50\" fill=\"currentColor\" stroke=\"none\" font-size=\"15\" text-anchor=\"middle\">MAC sublayer</text><line x1=\"180\" y1=\"70\" x2=\"180\" y2=\"100\"/><text x=\"230\" y=\"90\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">PHY SAP</text><rect x=\"40\" y=\"100\" width=\"280\" height=\"50\" rx=\"6\"/><text x=\"180\" y=\"130\" fill=\"currentColor\" stroke=\"none\" font-size=\"15\" text-anchor=\"middle\">PHY function</text><rect x=\"40\" y=\"160\" width=\"280\" height=\"40\" rx=\"6\" stroke-dasharray=\"5 4\"/><text x=\"180\" y=\"185\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">Layer management function</text></svg>",
+      "caption": {
+        "en": "The MAC talks to the PHY only through the PHY SAP. Below it sit the PHY function and a layer management function.",
+        "zh": "MAC 只通过 PHY SAP 与 PHY 对话。其下是 PHY 功能与层管理功能。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 8.3.1 (Scope and field of application) makes an important promise: the services the PHY provides to the MAC are described in an *abstract* way and do not imply any particular implementation or exposed interface. In other words, the primitives below are a conceptual model, not wires on a chip. A real radio is free to implement them however it likes, as long as the observable behavior matches. The job of the PHY is simply stated (8.3.2): transfer PSDUs between two or more stations.",
+      "zh": "第 8.3.1 节（范围与适用领域）给出一个重要承诺：PHY 向 MAC 提供的服务以*抽象*方式描述，并不暗示任何特定实现或对外暴露的接口。换句话说，下面这些原语是概念模型，而非芯片上的某根引脚。只要可观察的行为相符，真实的无线电可以用任何方式实现它们。PHY 的职责一句话即可概括（8.3.2）：在两个或多个站点之间传递 PSDU。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 8.3.4 (Basic service and options) sorts the primitives into two families. The first (8.3.4.1) is *peer-to-peer*: primitives whose effect is ultimately felt by a remote station. There is essentially one — PHY-DATA, with its request, indication, and confirm forms — because data is the only thing that actually crosses the air to a peer. The second family (8.3.4.2) is *inter-(sub)layer*: primitives with purely local significance, coordinating the MAC and its own PHY. These include PHY-TXSTART, PHY-TXEND, PHY-RXSTART, PHY-RXEND, PHY-CCA, PHY-CCARESET, PHY-CONFIG, PHY-TRIGGER, and more.",
+      "zh": "第 8.3.4 节（基本服务与可选项）把原语分成两族。第一族（8.3.4.1）是*对等的*：其效果最终由远端站点感受到。实质上只有一个——PHY-DATA，及其 request、indication、confirm 形式——因为真正越过空中送达对端的只有数据。第二族（8.3.4.2）是*跨（子）层的*：纯本地意义的原语，用于协调 MAC 与其自身的 PHY，包括 PHY-TXSTART、PHY-TXEND、PHY-RXSTART、PHY-RXEND、PHY-CCA、PHY-CCARESET、PHY-CONFIG、PHY-TRIGGER 等。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The naming convention is consistent across the whole standard. A `.request` flows MAC → PHY (asking for something), a `.confirm` flows PHY → MAC (acknowledging the request completed), and an `.indication` flows PHY → MAC unsolicited (reporting that something happened on the medium). Learn this once and every primitive name tells you its direction.",
+      "zh": "这套命名约定贯穿整个标准。`.request` 由 MAC → PHY（请求做某事），`.confirm` 由 PHY → MAC（确认请求已完成），`.indication` 则是 PHY → MAC 的主动上报（报告介质上发生了某件事）。记住一次，每个原语的名字就能告诉你它的方向。"
+    },
+    {
+      "type": "prose",
+      "en": "How does the MAC tell the PHY everything it needs to know to build a PPDU — the rate, the bandwidth, the length, the spatial streams? Through a parameter vector. Clause 8.3.4.4 (Vector descriptions) defines the TXVECTOR (parameters the MAC hands the PHY to *transmit*) and the RXVECTOR (parameters the PHY reports back when it *receives*). The vector is a list whose contents vary by PHY: an HT PHY adds MCS, CH_BANDWIDTH, and GI_TYPE; VHT adds NUM_STS and STBC; HE adds RU_ALLOCATION and DCM. The generic interface stays the same; the vector simply grows to carry each PHY's extra knobs.",
+      "zh": "MAC 怎样把构建 PPDU 所需的一切——速率、带宽、长度、空间流——告诉 PHY？通过一个参数向量。第 8.3.4.4 节（向量描述）定义了 TXVECTOR（MAC 交给 PHY 用于*发送*的参数）和 RXVECTOR（PHY 在*接收*时上报的参数）。该向量是一个内容随 PHY 而变的列表：HT PHY 增加 MCS、CH_BANDWIDTH、GI_TYPE；VHT 增加 NUM_STS、STBC；HE 增加 RU_ALLOCATION、DCM。通用接口保持不变；向量只是随各 PHY 的额外旋钮而扩展。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 8.3.5 (PHY SAP detailed service specification) then nails down each primitive, one by one, in the familiar four-part shape: Function, Semantics, When generated, Effect of receipt. A transmit looks like this: the MAC issues PHY-TXSTART.request(TXVECTOR); the PHY replies PHY-TXSTART.confirm(TXSTATUS) when it is ready to accept data; the MAC then streams the frame as a series of PHY-DATA.request octets, each answered by a PHY-DATA.confirm; finally PHY-TXEND.request / .confirm closes the transmission — and that TXEND.confirm gives the MAC its time reference for the contention backoff. On the receive side the PHY raises PHY-RXSTART.indication(RXVECTOR) when it detects a valid PPDU start, delivers the payload as PHY-DATA.indication octets, and closes with PHY-RXEND.indication carrying the RXERROR status and (where applicable) the RCPI.",
+      "zh": "随后第 8.3.5 节（PHY SAP 详细服务规范）逐一敲定每个原语，采用熟悉的四段式结构：功能、语义、何时生成、收到后的效果。一次发送看起来是这样：MAC 发出 PHY-TXSTART.request(TXVECTOR)；当 PHY 准备好接收数据时回复 PHY-TXSTART.confirm(TXSTATUS)；MAC 随即以一连串 PHY-DATA.request 八位字节流式发送整帧，每个都由一个 PHY-DATA.confirm 应答；最后 PHY-TXEND.request / .confirm 结束本次发送——而这个 TXEND.confirm 为 MAC 提供竞争退避的时间基准。在接收侧，PHY 在检测到有效 PPDU 起始时抛出 PHY-RXSTART.indication(RXVECTOR)，以 PHY-DATA.indication 八位字节交付载荷，并以携带 RXERROR 状态及（适用时）RCPI 的 PHY-RXEND.indication 收尾。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant M as MAC\n  participant P as PHY\n  Note over M,P: Transmit\n  M->>P: PHY-TXSTART.request(TXVECTOR)\n  P->>M: PHY-TXSTART.confirm(TXSTATUS)\n  loop each octet\n    M->>P: PHY-DATA.request(DATA)\n    P->>M: PHY-DATA.confirm\n  end\n  M->>P: PHY-TXEND.request\n  P->>M: PHY-TXEND.confirm\n  Note over M,P: Receive\n  P->>M: PHY-RXSTART.indication(RXVECTOR)\n  loop each octet\n    P->>M: PHY-DATA.indication(DATA)\n  end\n  P->>M: PHY-RXEND.indication(RXERROR, RCPI)",
+      "zh": "sequenceDiagram\n  participant M as MAC\n  participant P as PHY\n  Note over M,P: 发送\n  M->>P: PHY-TXSTART.request(TXVECTOR)\n  P->>M: PHY-TXSTART.confirm(TXSTATUS)\n  loop 每个八位字节\n    M->>P: PHY-DATA.request(DATA)\n    P->>M: PHY-DATA.confirm\n  end\n  M->>P: PHY-TXEND.request\n  P->>M: PHY-TXEND.confirm\n  Note over M,P: 接收\n  P->>M: PHY-RXSTART.indication(RXVECTOR)\n  loop 每个八位字节\n    P->>M: PHY-DATA.indication(DATA)\n  end\n  P->>M: PHY-RXEND.indication(RXERROR, RCPI)"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A PHY-DATA.request can be issued only after a PHY-TXSTART.confirm — the MAC may not start pushing octets until the PHY says it is ready. That ordering rule is what makes the PHY SAP a true handshake rather than a one-way firehose.",
+      "zh": "PHY-DATA.request 只能在收到 PHY-TXSTART.confirm 之后发出——在 PHY 表示就绪之前，MAC 不得开始推送八位字节。正是这条顺序规则使 PHY SAP 成为一次真正的握手，而非单向喷射。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, Clause 8.4 (PHY management) covers the management half of the picture. Alongside the data path, the PHY exposes a set of managed objects, attributes, actions, and notifications — the MIB — that let a station configure and observe the radio (for example, the dot11 attributes you see sprinkled through the spec, such as dot11RadioMeasurementActivated). The detailed definition and structure of these managed objects lives in Annex C. Together, the data SAP and the management MIB are the complete, PHY-independent surface the rest of the standard builds on.",
+      "zh": "最后，第 8.4 节（PHY 管理）覆盖图景的管理一半。在数据通路之外，PHY 还暴露一组受管对象、属性、动作和通知——即 MIB——使站点能够配置和观察无线电（例如你在标准中随处可见的 dot11 属性，如 dot11RadioMeasurementActivated）。这些受管对象的详细定义与结构位于附录 C。数据 SAP 与管理 MIB 合在一起，构成了标准其余部分赖以构建的、与具体 PHY 无关的完整接口面。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each clause in this lesson lives",
+        "zh": "覆盖地图：本课各章节所在位置"
+      },
+      "en": "This lesson teaches Clause 8 (PHY service specification) of IEEE 802.11-2024. 8.1 (Scope of PHY services) lists the two protocol functions every PHY contains — PSDU↔PPDU mapping and transmit/receive through the medium. 8.2 (PHY functions) names the PHY function and the layer management function, and introduces the PHY SAP as the door to the MAC (Figure 4-27). 8.3.1 (Scope and field of application) states that the services are abstract and imply no particular implementation. 8.3.4 (Basic service and options) splits primitives into peer-to-peer (Table 8-1: PHY-DATA) and inter-(sub)layer (Table 8-2: PHY-TXSTART/TXEND/RXSTART/RXEND/CCA/CCARESET/CONFIG/TRIGGER), lists their parameters (Table 8-3: DATA, TXVECTOR, RXVECTOR, STATE, RCPI, RXERROR, TXSTATUS, …), and describes the vectors (Table 8-4). 8.3.5 (PHY SAP detailed service specification) gives the four-part Function / Semantics / When generated / Effect of receipt definition for each primitive (PHY-DATA, PHY-TXSTART, PHY-TXEND, PHY-RXSTART, PHY-RXEND, and the rest). 8.4 (PHY management) points to the MIB — managed objects, attributes, actions, notifications — defined in Annex C.",
+      "zh": "本课讲授 IEEE 802.11-2024 的第 8 章（PHY 服务规范）。8.1（PHY 服务的范围）列出每个 PHY 包含的两个协议功能——PSDU↔PPDU 映射、以及通过介质收发。8.2（PHY 功能）命名 PHY 功能与层管理功能，并引入作为通往 MAC 之门的 PHY SAP（图 4-27）。8.3.1（范围与适用领域）声明这些服务是抽象的、不暗示任何特定实现。8.3.4（基本服务与可选项）把原语分为对等的（表 8-1：PHY-DATA）与跨（子）层的（表 8-2：PHY-TXSTART/TXEND/RXSTART/RXEND/CCA/CCARESET/CONFIG/TRIGGER），列出其参数（表 8-3：DATA、TXVECTOR、RXVECTOR、STATE、RCPI、RXERROR、TXSTATUS 等），并描述各向量（表 8-4）。8.3.5（PHY SAP 详细服务规范）为每个原语给出四段式的功能 / 语义 / 何时生成 / 收到后的效果定义（PHY-DATA、PHY-TXSTART、PHY-TXEND、PHY-RXSTART、PHY-RXEND 等）。8.4（PHY 管理）指向附录 C 中定义的 MIB——受管对象、属性、动作、通知。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          635,
+          636,
+          637,
+          638,
+          656
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        635
+      ],
+      "note": "8.1 Scope of PHY services; 8.2 PHY functions; 8.3.1 Scope and field of application; 8.3.2/8.3.3 overview; 8.3.4.1 Table 8-1 PHY-DATA peer-to-peer primitives"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        636,
+        637
+      ],
+      "note": "8.3.4.2 Table 8-2 inter-(sub)layer primitives; 8.3.4.3 Table 8-3 parameters (TXVECTOR/RXVECTOR/STATE/RCPI/RXERROR/TXSTATUS); 8.3.4.4 Table 8-4 vector descriptions"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        638,
+        639,
+        640,
+        641,
+        642
+      ],
+      "note": "8.3.5 detailed service spec: PHY-DATA, PHY-TXSTART, PHY-TXEND primitives (Function/Semantics/When generated/Effect of receipt); TXEND.confirm gives backoff time reference"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        656
+      ],
+      "note": "8.4 PHY management — MIB managed objects/attributes/actions/notifications defined in Annex C"
+    }
+  ],
+  "covers": [
+    "80211-2024:8.1",
+    "80211-2024:8.2",
+    "80211-2024:8.3.1",
+    "80211-2024:8.3.4",
+    "80211-2024:8.3.5",
+    "80211-2024:8.4"
+  ],
+  "track": "phy-service"
+}

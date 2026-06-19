@@ -1,0 +1,179 @@
+{
+  "id": "mobility-08-fast-bss-transition",
+  "title": {
+    "en": "Roaming Without the Pause: Fast BSS Transition (802.11r)",
+    "zh": "无停顿漫游：快速 BSS 切换（802.11r）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "When a station (STA) walks across a building, it eventually must leave one access point (AP) and reassociate with a closer one. In a protected network this normally means re-running the whole security dance: 802.1X/EAP (or SAE) authentication, then the 4-way handshake. Those round trips take time, and during them voice and video stall. Fast BSS Transition (FT), defined in Clause 13 of IEEE 802.11-2024, fixes this. It lets a STA roam between APs that belong to the same mobility domain inside one ESS while reusing key material established at the first association, so the cryptographically expensive part happens once, not on every hop.",
+      "zh": "当一台站点（STA）在楼里走动时，它最终必须离开一个接入点（AP），并重新关联到更近的那个。在受保护的网络中，这通常意味着把整套安全流程从头跑一遍：先做 802.1X/EAP（或 SAE）认证，再做四次握手。这些往返很耗时，期间语音和视频会卡顿。IEEE 802.11-2024 第 13 章定义的快速 BSS 切换（FT）解决了这个问题。它让 STA 在同一个 ESS 内、属于同一移动域的多个 AP 之间漫游时，复用首次关联时建立的密钥材料，从而把开销最大的加密步骤只做一次，而不是每跳都做一次。"
+    },
+    {
+      "type": "prose",
+      "en": "The first step of FT is the FT initial mobility domain association: the first (re)association in the mobility domain, where the STA (acting as the FT Originator, or FTO) signals it wants to use FT later by including the Mobility Domain element (MDE). At this moment a four-level key hierarchy is set up across two kinds of key holders. On the AP infrastructure side, an R0KH derives the top-level PMK-R0 and, from it, a per-AP PMK-R1 for each R1KH; the R1KH (identified by an AP MAC address) holds that PMK-R1 and computes the per-link PTK. On the STA side, the matching S0KH and S1KH derive the same keys. PMK-R0 secrets never leave the R0KH; only authorized R1KHs receive their PMK-R1 over a secure channel whose distribution protocol is left outside the standard.",
+      "zh": "FT 的第一步是 FT 初始移动域关联：这是在移动域内的首次（重）关联，STA（充当 FT 发起方，即 FTO）通过携带移动域元素（MDE）来表明它今后想使用 FT。此时会在两类密钥持有者之间建立一个四级密钥层次。在 AP 基础设施一侧，R0KH 推导出顶层的 PMK-R0，并由它为每个 R1KH 推导出按 AP 区分的 PMK-R1；R1KH（用一个 AP 的 MAC 地址标识）保存该 PMK-R1 并计算按链路区分的 PTK。在 STA 一侧，对应的 S0KH 与 S1KH 推导出相同的密钥。PMK-R0 永远不离开 R0KH；只有获授权的 R1KH 才会通过一条安全通道收到各自的 PMK-R1，而该通道的分发协议被留在标准范围之外。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"20\" y=\"20\" width=\"180\" height=\"160\" rx=\"6\"/><text x=\"110\" y=\"40\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">STA (FTO)</text><rect x=\"50\" y=\"55\" width=\"120\" height=\"40\" rx=\"4\"/><text x=\"110\" y=\"80\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">S0KH: PMK-R0</text><rect x=\"50\" y=\"115\" width=\"120\" height=\"40\" rx=\"4\"/><text x=\"110\" y=\"140\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">S1KH: PTK</text><rect x=\"260\" y=\"20\" width=\"180\" height=\"160\" rx=\"6\"/><text x=\"350\" y=\"40\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">AP infrastructure</text><rect x=\"290\" y=\"55\" width=\"120\" height=\"40\" rx=\"4\"/><text x=\"350\" y=\"80\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">R0KH: PMK-R0</text><rect x=\"290\" y=\"115\" width=\"120\" height=\"40\" rx=\"4\"/><text x=\"350\" y=\"140\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">R1KH: PMK-R1 / PTK</text><line x1=\"170\" y1=\"75\" x2=\"290\" y2=\"75\"/><line x1=\"170\" y1=\"135\" x2=\"290\" y2=\"135\"/><line x1=\"350\" y1=\"95\" x2=\"350\" y2=\"115\"/><text x=\"230\" y=\"70\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">same PMK-R0</text></svg>",
+      "caption": {
+        "en": "The FT key-holder architecture: R0KH/S0KH hold PMK-R0; the per-AP R1KH/S1KH derive the link PTK. The R0KH pushes a separate PMK-R1 to each R1KH.",
+        "zh": "FT 密钥持有者架构：R0KH/S0KH 持有 PMK-R0；按 AP 区分的 R1KH/S1KH 推导出链路 PTK。R0KH 向每个 R1KH 推送各自独立的 PMK-R1。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "How does a STA know an AP supports FT at all? Through capability and policy advertisement. The AP broadcasts the MDE in its Beacon and Probe Response frames, carrying the Mobility Domain Identifier (MDID) plus two policy bits: whether over-the-DS FT is allowed (Fast BSS Transition over DS) and whether the resource-request protocol is supported (Resource Request Protocol Capability). These policy bits must be consistent across the whole mobility domain. Neighbor Report elements also advertise FT capability of nearby APs, helping the STA pick a good roaming target before it moves.",
+      "zh": "STA 又是怎么知道某个 AP 是否支持 FT 的呢？靠的是能力与策略通告。AP 在其 Beacon 和探测响应帧中广播 MDE，其中携带移动域标识符（MDID）以及两个策略位：是否允许经分布系统（over-the-DS）的 FT（Fast BSS Transition over DS），以及是否支持资源请求协议（Resource Request Protocol Capability）。这些策略位必须在整个移动域内保持一致。邻居报告元素也会通告附近 AP 的 FT 能力，帮助 STA 在移动之前就选好合适的漫游目标。"
+    },
+    {
+      "type": "prose",
+      "en": "Once the key hierarchy exists, the actual roam uses the FT authentication sequence: a fixed set of four FT messages (RSNE, MDE, FTE, optional RIC). The first two messages carry SNonce and ANonce so both sides can compute a fresh PTK in advance of reassociation; the third and fourth prove liveness, protect every element with a MIC, and complete the transition. This sequence can travel two ways. Over-the-air, the STA talks straight to the target AP using the FT authentication algorithm (FTAA). Over-the-DS, the STA stays on its current AP and the FT messages ride through it to the target AP. Either way the heavy authentication is skipped because the PMK-R1 already exists or can be fetched.",
+      "zh": "一旦密钥层次建立完毕，真正的漫游就使用 FT 认证序列：一组固定的四条 FT 消息（RSNE、MDE、FTE、可选的 RIC）。前两条消息携带 SNonce 和 ANonce，使双方能在重关联之前就算出全新的 PTK；第三、第四条则证明对端的活跃性、用 MIC 保护每个元素，并完成切换。这套序列可以走两条路。经空口（over-the-air）时，STA 用 FT 认证算法（FTAA）直接与目标 AP 通信。经分布系统（over-the-DS）时，STA 仍停留在当前 AP 上，FT 消息借道当前 AP 传给目标 AP。无论走哪条路，繁重的认证都被跳过，因为 PMK-R1 要么已存在、要么可以取回。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant S as STA (FTO)\n  participant T as Target AP\n  S->>T: Auth-Req FTAA (PMKR0Name, MDE, FTE[SNonce])\n  T->>S: Auth-Resp FTAA (MDE, FTE[ANonce])\n  Note over S,T: both compute fresh PTK\n  S->>T: Reassoc Req (FTE[MIC], RIC-Request?)\n  T->>S: Reassoc Resp (FTE[MIC, GTK..], RIC-Response?)\n  Note over S,T: Controlled Port opened",
+      "zh": "sequenceDiagram\n  participant S as STA (FTO)\n  participant T as 目标 AP\n  S->>T: 认证请求 FTAA (PMKR0Name, MDE, FTE[SNonce])\n  T->>S: 认证响应 FTAA (MDE, FTE[ANonce])\n  Note over S,T: 双方算出全新 PTK\n  S->>T: 重关联请求 (FTE[MIC], RIC 请求?)\n  T->>S: 重关联响应 (FTE[MIC, GTK..], RIC 响应?)\n  Note over S,T: 受控端口开启"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "There is a deadline. The target AP holds the freshly computed PTK only until the reassociation deadline; if the STA does not send its Reassociation Request in time, the PTKSA is deleted and the STA must start over. This timeout is administered consistently across the mobility domain.",
+      "zh": "存在一个截止时间。目标 AP 只在重关联截止期限之前保留新算出的 PTK；如果 STA 没能及时发出重关联请求，PTKSA 就会被删除，STA 必须重头再来。这个超时在整个移动域内被一致地管理。"
+    },
+    {
+      "type": "prose",
+      "en": "FT also works without RSN security. In a non-RSN network the STA simply includes the MDE in its (Re)Association (initial association) or in its over-the-air / over-the-DS FT messages, and the AP echoes the MDE back. There is no key hierarchy, no FTE, no MIC, so the exchange is just the MDE handshake. RSN and non-RSN variants exist for both the over-the-air and over-the-DS methods, and for the optional resource-request flavor. A third entry path, FT initial association over FILS in an RSN, folds key establishment into FILS authentication frames (authentication algorithm 4, 5, or 6), so the PTK is derived as part of FILS rather than via a separate 4-way handshake.",
+      "zh": "FT 在没有 RSN 安全的情况下也能工作。在非 RSN 网络中，STA 只需在它的（重）关联（初始关联）或在它经空口/经分布系统的 FT 消息中携带 MDE，AP 再把 MDE 回送即可。没有密钥层次、没有 FTE、没有 MIC，因此这次交互只是单纯的 MDE 握手。RSN 与非 RSN 两个变体在经空口和经分布系统两种方法下都存在，可选的资源请求形式也是如此。还有第三条入口路径——RSN 中经 FILS 的 FT 初始关联，它把密钥建立折叠进 FILS 认证帧（认证算法 4、5 或 6），因此 PTK 是作为 FILS 的一部分推导出来的，而不是经由单独的四次握手。"
+    },
+    {
+      "type": "prose",
+      "en": "When a STA needs guaranteed QoS at the new AP before committing, it can ask for it ahead of time. The optional FT resource request protocol inserts an extra exchange (Authentication-Confirm / Authentication-Ack over the air, or FT Confirm / FT Ack over the DS) carrying a Resource Information Container (RIC). The RIC is a list of Resource Requests, each an RDE followed by one or more alternative Resource Descriptors (for example a TSPEC plus TCLAS for an 802.11 QoS stream). In an RSN the request is protected by a MIC and processed only after the PTK exists; an AP discards any previous resource request from the same FTO once a new, authenticated one arrives. If no pre-transition reservation is needed, the STA can instead carry a RIC-Request directly in the Reassociation Request as part of the plain FT protocol.",
+      "zh": "当 STA 需要在正式切换前先确保新 AP 上的 QoS 时，它可以提前申请。可选的 FT 资源请求协议会插入一次额外的交互（经空口的 Authentication-Confirm / Authentication-Ack，或经分布系统的 FT Confirm / FT Ack），其中携带资源信息容器（RIC）。RIC 是一组资源请求，每个请求由一个 RDE 后跟一个或多个可选的资源描述符组成（例如为 802.11 QoS 流准备的 TSPEC 加 TCLAS）。在 RSN 中，该请求受 MIC 保护，且只有在 PTK 存在之后才被处理；一旦收到来自同一 FTO 的、经过认证的新请求，AP 就会丢弃此前的资源请求。如果不需要切换前预留，STA 也可以在普通 FT 协议中把 RIC 请求直接放进重关联请求里。"
+    },
+    {
+      "type": "prose",
+      "en": "The over-the-DS path needs a courier between APs. That courier is the Remote Request Broker (RRB), which lives in each AP's SME. When the FTO sends an FT Action frame naming a target AP's BSSID, the current AP's RRB acts as a forwarding agent: it wraps the FT Action frame in a Remote Request frame and ships it over the DS to the target AP (using EtherType 89-0d, the same delivery used for preauthentication). The target AP's RRB is the termination point: it processes the request and sends a Remote Response back through the current AP, which unwraps it into an FT Action frame for the STA. The Remote Request/Response payload is compact: an FT Packet Type (0 request, 1 response), an FT Action Length, the originating AP Address, and the embedded FT Action Frame.",
+      "zh": "经分布系统的路径需要在 AP 之间有一名信使。这名信使就是远程请求代理（RRB），它驻留在每个 AP 的 SME 中。当 FTO 发出一个指明目标 AP BSSID 的 FT Action 帧时，当前 AP 的 RRB 充当转发代理：它把该 FT Action 帧封装进一个 Remote Request 帧，经分布系统发往目标 AP（使用 EtherType 89-0d，与预认证所用的投递方式相同）。目标 AP 的 RRB 是终结点：它处理请求，并把 Remote Response 经由当前 AP 送回，当前 AP 再将其解封为一个 FT Action 帧交给 STA。Remote Request/Response 的载荷很紧凑：一个 FT Packet Type（0 表示请求、1 表示响应）、一个 FT Action Length、发起方 AP Address，以及内嵌的 FT Action Frame。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the four key-holder state machines and where every Clause 13 unit lives",
+        "zh": "覆盖地图：四个密钥持有者状态机，以及第 13 章每个条款的归属"
+      },
+      "en": "Behind the message flows sit four state machines (13.9.1 introduction) describing how RSNA key management interacts with the 802.11 architecture using MLME primitives (MLME-REMOTE-REQUEST over the DS, MLME-AUTHENTICATE / MLME-RESOURCE-REQUEST / MLME-REASSOCIATE over the air). On the AP side: the R0KH state machine (13.9.2) handles key-hierarchy instantiation, PMK-R1 derivation and push to R1KHs, and cleanup on PMK-R0 lifetime expiry (states such as CALC-PMK-R0, CALC-PMK-R1, FT-PMK-R1-SA-PUSH); the R1KH state machine (13.9.3) requests keys from the R0KH (FT-FULL-AUTH, FT-Transition-Auth) and runs the FT 4-way handshake. On the STA side the S0KH state machine (13.9.4) and S1KH state machine (13.9.5) mirror these, the S1KH tracking Over-the-Air vs Over-the-DS, Resource-request, the reassociation deadline timer, and computing the PTK (Calc-FT-PTK). Full unit map: capability/policy advertisement via the MDE (13.3); FT initial mobility domain association in a non-RSN (13.4.3) and over FILS in an RSN (13.4.4); FT protocol overview (13.5.1) with over-the-air (13.5.4) and over-the-DS (13.5.5) in a non-RSN; FT resource request protocol overview (13.6.1) with over-the-air (13.6.2) and over-the-DS (13.6.3) with resource request; FT reassociation in an RSN (13.7.1) and in a non-RSN (13.7.2); FT authentication sequence overview (13.8.1); the key-holder introduction (13.2.1); RRB communication (13.10.1), the RRB itself (13.10.2), and the Remote Request/Response frame definition (13.10.3); and resource request procedures general (13.11.1), the RIC (13.11.2), and creation/handling of a resource request (13.11.3).",
+      "zh": "在这些消息流背后是四个状态机（13.9.1 引言），它们描述 RSNA 密钥管理如何借助 MLME 原语（经分布系统用 MLME-REMOTE-REQUEST，经空口用 MLME-AUTHENTICATE / MLME-RESOURCE-REQUEST / MLME-REASSOCIATE）与 802.11 架构交互。AP 一侧：R0KH 状态机（13.9.2）负责密钥层次实例化、PMK-R1 推导与向各 R1KH 推送，以及在 PMK-R0 寿命到期时的清理（涉及 CALC-PMK-R0、CALC-PMK-R1、FT-PMK-R1-SA-PUSH 等状态）；R1KH 状态机（13.9.3）向 R0KH 请求密钥（FT-FULL-AUTH、FT-Transition-Auth）并运行 FT 四次握手。STA 一侧的 S0KH 状态机（13.9.4）与 S1KH 状态机（13.9.5）与之对应，S1KH 跟踪经空口与经分布系统之别、是否资源请求、重关联截止定时器，并计算 PTK（Calc-FT-PTK）。完整条款归属：经 MDE 的能力/策略通告（13.3）；非 RSN 中的 FT 初始移动域关联（13.4.3）与 RSN 中经 FILS 的初始关联（13.4.4）；FT 协议概述（13.5.1）及非 RSN 下的经空口（13.5.4）与经分布系统（13.5.5）；FT 资源请求协议概述（13.6.1）及带资源请求的经空口（13.6.2）与经分布系统（13.6.3）；RSN 中的 FT 重关联（13.7.1）与非 RSN 中的（13.7.2）；FT 认证序列概述（13.8.1）；密钥持有者引言（13.2.1）；RRB 通信（13.10.1）、RRB 本身（13.10.2）与 Remote Request/Response 帧定义（13.10.3）；以及资源请求过程总则（13.11.1）、RIC（13.11.2）与资源请求的生成与处理（13.11.3）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3142,
+          3145,
+          3148,
+          3149,
+          3151,
+          3156,
+          3157,
+          3158,
+          3161,
+          3163,
+          3165,
+          3166,
+          3171,
+          3172,
+          3174,
+          3178,
+          3179,
+          3183,
+          3184,
+          3185,
+          3186,
+          3188
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3142,
+        3143,
+        3144,
+        3145
+      ],
+      "note": "13.1 overview; 13.2.1 key-holder introduction; 13.3 capability and policy advertisement (MDE in Beacon/Probe Response, MDID, policy bits)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3148,
+        3149,
+        3150,
+        3151
+      ],
+      "note": "13.4.3 FT initial mobility domain association in a non-RSN; 13.4.4 over FILS in an RSN; 13.5.1 FT protocol overview"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3156,
+        3157,
+        3158,
+        3161,
+        3163,
+        3165,
+        3166
+      ],
+      "note": "13.5.4/13.5.5 non-RSN over-the-air/over-the-DS; 13.6.1-13.6.3 FT resource request protocol; 13.7.1/13.7.2 FT reassociation; 13.8.1 FT authentication sequence overview"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3171,
+        3172,
+        3174,
+        3178,
+        3179,
+        3183,
+        3184,
+        3185,
+        3186,
+        3188
+      ],
+      "note": "13.9.1-13.9.5 R0KH/R1KH/S0KH/S1KH state machines; 13.10.1-13.10.3 RRB and Remote Request/Response frame; 13.11.1-13.11.3 resource request and RIC"
+    }
+  ],
+  "covers": [
+    "80211-2024:13.2.1",
+    "80211-2024:13.3",
+    "80211-2024:13.4.3",
+    "80211-2024:13.4.4",
+    "80211-2024:13.5.1",
+    "80211-2024:13.5.4",
+    "80211-2024:13.5.5",
+    "80211-2024:13.6.1",
+    "80211-2024:13.6.2",
+    "80211-2024:13.6.3",
+    "80211-2024:13.7.1",
+    "80211-2024:13.7.2",
+    "80211-2024:13.8.1",
+    "80211-2024:13.9.1",
+    "80211-2024:13.9.2",
+    "80211-2024:13.9.3",
+    "80211-2024:13.9.4",
+    "80211-2024:13.9.5",
+    "80211-2024:13.10.1",
+    "80211-2024:13.10.2",
+    "80211-2024:13.10.3",
+    "80211-2024:13.11.1",
+    "80211-2024:13.11.2",
+    "80211-2024:13.11.3"
+  ],
+  "track": "mobility"
+}

@@ -1,0 +1,209 @@
+{
+  "id": "legacy-phy-42-ht-phy",
+  "title": {
+    "en": "The HT PHY: 802.11n Internals",
+    "zh": "HT PHY：802.11n 内部机制"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 19 specifies the High Throughput (HT) PHY — the OFDM physical layer introduced with 802.11n (Wi-Fi 4). It builds directly on the Clause 17 OFDM PHY but extends it to up to four spatial streams and an optional 40 MHz channel, pushing the peak rate to 600 Mb/s. Data subcarriers carry BPSK, QPSK, 16-QAM, or 64-QAM; forward error correction is convolutional coding at rate 1/2, 2/3, 3/4, or 5/6, with LDPC as an option. Other optional tools include a 400 ns short guard interval, transmit beamforming, the HT-greenfield preamble, and space-time block coding (STBC).",
+      "zh": "第 19 章规定了高吞吐量（HT）PHY —— 即随 802.11n（Wi-Fi 4）引入的 OFDM 物理层。它直接构建在第 17 章的 OFDM PHY 之上，但扩展到最多四条空间流以及可选的 40 MHz 信道，将峰值速率提升到 600 Mb/s。数据子载波采用 BPSK、QPSK、16-QAM 或 64-QAM；前向纠错使用码率为 1/2、2/3、3/4 或 5/6 的卷积编码，并可选 LDPC。其他可选特性包括 400 ns 短保护间隔、发射波束成形、HT-greenfield 前导以及空时分组编码（STBC）。"
+    },
+    {
+      "type": "prose",
+      "en": "The HT PHY offers the MAC two services (19.1.2): mapping PSDUs into a PPDU, and transmitting/receiving those PPDUs over the medium so that HT STAs can coexist with legacy Clause 15/16/17/18 stations. Internally it splits into the PHY data path and the PLME layer-management entity (19.1.3). A reduced “Class 2 HT PHY” variant is also defined for 2.4 GHz STAs that support only a mandatory subset of rates. Three PPDU formats exist: NON_HT (legacy), HT-mixed format (HT_MF, with a legacy-decodable preamble — mandatory), and HT-greenfield (HT_GF, all-HT preamble — optional).",
+      "zh": "HT PHY 向 MAC 提供两项服务（19.1.2）：将 PSDU 映射为 PPDU，以及在介质上收发这些 PPDU，使 HT STA 能与第 15/16/17/18 章的传统站点共存。其内部分为 PHY 数据通路与 PLME 层管理实体（19.1.3）。标准还为仅支持必选速率子集的 2.4 GHz 站点定义了精简的“Class 2 HT PHY”变体。共有三种 PPDU 格式：NON_HT（传统）、HT-mixed 格式（HT_MF，前导可被传统设备解码 —— 必选）以及 HT-greenfield（HT_GF，全 HT 前导 —— 可选）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 170\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"0\" y=\"22\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">HT-mixed format PPDU</text><rect x=\"0\" y=\"32\" width=\"70\" height=\"34\"/><text x=\"35\" y=\"53\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">L-STF</text><rect x=\"70\" y=\"32\" width=\"70\" height=\"34\"/><text x=\"105\" y=\"53\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">L-LTF</text><rect x=\"140\" y=\"32\" width=\"55\" height=\"34\"/><text x=\"167\" y=\"53\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">L-SIG</text><rect x=\"195\" y=\"32\" width=\"70\" height=\"34\"/><text x=\"230\" y=\"53\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">HT-SIG</text><rect x=\"265\" y=\"32\" width=\"50\" height=\"34\"/><text x=\"290\" y=\"53\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">HT-STF</text><rect x=\"315\" y=\"32\" width=\"110\" height=\"34\"/><text x=\"370\" y=\"53\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">HT-LTFs</text><rect x=\"425\" y=\"32\" width=\"130\" height=\"34\"/><text x=\"490\" y=\"53\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">Data</text><text x=\"0\" y=\"100\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">HT-greenfield format PPDU</text><rect x=\"0\" y=\"110\" width=\"90\" height=\"34\"/><text x=\"45\" y=\"131\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">HT-GF-STF</text><rect x=\"90\" y=\"110\" width=\"90\" height=\"34\"/><text x=\"135\" y=\"131\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">HT-LTF1</text><rect x=\"180\" y=\"110\" width=\"85\" height=\"34\"/><text x=\"222\" y=\"131\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">HT-SIG</text><rect x=\"265\" y=\"110\" width=\"160\" height=\"34\"/><text x=\"345\" y=\"131\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">HT-LTFs</text><rect x=\"425\" y=\"110\" width=\"130\" height=\"34\"/><text x=\"490\" y=\"131\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">Data</text></svg>",
+      "caption": {
+        "en": "The two HT PPDU formats. HT-mixed begins with a legacy-decodable preamble (L-STF / L-LTF / L-SIG) so Clause 17/18 STAs can defer; HT-greenfield drops it. Both then carry HT-SIG, an HT-STF, the HT-LTF training fields, and the Data field.",
+        "zh": "两种 HT PPDU 格式。HT-mixed 以可被传统设备解码的前导（L-STF / L-LTF / L-SIG）开头，使第 17/18 章站点能够退避；HT-greenfield 则去掉这部分。两者随后都包含 HT-SIG、HT-STF、HT-LTF 训练字段以及 Data 字段。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The MAC drives the PHY through four parameter vectors (19.2.1): the TXVECTOR sets per-PPDU transmit parameters, TXSTATUS reports transmit results, the RXVECTOR returns received-PPDU parameters, and the PHYCONFIG_VECTOR configures the PHY independent of any PPDU. Table 19-1 lists the TXVECTOR/RXVECTOR fields (19.2.2): FORMAT, MCS, CH_BANDWIDTH (HT_CBW20 / HT_CBW40), CH_OFFSET, LENGTH (up to 65 535 octets; 0 means a null data packet), STBC, FEC_CODING, GI_TYPE, SOUNDING, SMOOTHING, NUM_EXTEN_SS, and beamforming feedback matrices, among others.",
+      "zh": "MAC 通过四个参数向量驱动 PHY（19.2.1）：TXVECTOR 设置每个 PPDU 的发射参数，TXSTATUS 报告发射结果，RXVECTOR 返回接收 PPDU 的参数，PHYCONFIG_VECTOR 则在与任何 PPDU 无关的情况下配置 PHY。表 19-1 列出 TXVECTOR/RXVECTOR 字段（19.2.2）：FORMAT、MCS、CH_BANDWIDTH（HT_CBW20 / HT_CBW40）、CH_OFFSET、LENGTH（最多 65 535 字节；为 0 表示空数据包）、STBC、FEC_CODING、GI_TYPE、SOUNDING、SMOOTHING、NUM_EXTEN_SS 以及波束成形反馈矩阵等。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Service interface: PHYCONFIG, PPDU-format selection, NON_HT mapping, TXSTATUS (19.2.3–19.2.6)",
+        "zh": "服务接口：PHYCONFIG、PPDU 格式选择、NON_HT 映射、TXSTATUS（19.2.3–19.2.6）"
+      },
+      "en": "19.2.3 PHYCONFIG_VECTOR carries OPERATING_CHANNEL (sets dot11CurrentPrimaryChannel) and SECONDARY_CHANNEL_OFFSET (NONE / ABOVE / BELOW — placing the secondary channel at primary ±4). 19.2.4 Table 19-2 maps FORMAT × CH_BANDWIDTH × CH_OFFSET to a concrete PPDU shape: HT_CBW20 with CH_OFF_20 is a 20 MHz HT PPDU, CH_OFF_20U/20L put a 20 MHz PPDU in the upper/lower half of a 40 MHz channel, and HT_CBW40 with CH_OFF_40 is full 40 MHz. 19.2.5 Table 19-3 shows that when FORMAT is NON_HT, the HT PHY simply maps its parameters onto the Clause 15/16/17/18 PHY for the operating band; non-HT duplicate and 40 MHz-mask non-HT PPDUs are also defined here. 19.2.6 Table 19-4 defines the TXSTATUS parameters — TIME_OF_DEPARTURE, its clock rate, and TX_START_OF_FRAME_OFFSET — returned in PHY-TXSTART.confirm.",
+      "zh": "19.2.3 PHYCONFIG_VECTOR 携带 OPERATING_CHANNEL（设置 dot11CurrentPrimaryChannel）和 SECONDARY_CHANNEL_OFFSET（NONE / ABOVE / BELOW —— 将副信道置于主信道 ±4）。19.2.4 的表 19-2 将 FORMAT × CH_BANDWIDTH × CH_OFFSET 映射为具体的 PPDU 形态：HT_CBW20 配 CH_OFF_20 为 20 MHz HT PPDU，CH_OFF_20U/20L 将 20 MHz PPDU 放在 40 MHz 信道的上/下半部，HT_CBW40 配 CH_OFF_40 为完整 40 MHz。19.2.5 的表 19-3 表明当 FORMAT 为 NON_HT 时，HT PHY 只是把其参数映射到对应频段的第 15/16/17/18 章 PHY；这里还定义了 non-HT duplicate 与 40 MHz 掩模 non-HT PPDU。19.2.6 的表 19-4 定义在 PHY-TXSTART.confirm 中返回的 TXSTATUS 参数 —— TIME_OF_DEPARTURE、其时钟速率以及 TX_START_OF_FRAME_OFFSET。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3410,
+          3411,
+          3412,
+          3413
+        ]
+      }
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Scrambler] --> B[Encoder parser]\n  B --> C[FEC encoders BCC or LDPC]\n  C --> D[Stream parser]\n  D --> E[Interleaver]\n  E --> F[Constellation mapper]\n  F --> G[STBC]\n  G --> H[Spatial mapper]\n  H --> I[IDFT plus CSD]\n  I --> J[GI insert plus window]\n  J --> K[Analog and RF]",
+      "zh": "flowchart LR\n  A[加扰器] --> B[编码器分流]\n  B --> C[FEC 编码 BCC 或 LDPC]\n  C --> D[流解析器]\n  D --> E[交织器]\n  E --> F[星座映射]\n  F --> G[STBC]\n  G --> H[空间映射]\n  H --> I[IDFT 加 CSD]\n  I --> J[插入 GI 并加窗]\n  J --> K[模拟与射频]"
+    },
+    {
+      "type": "prose",
+      "en": "The transmitter block diagram (19.3.3) chains these stages: the scrambler whitens the data, an encoder parser feeds NES BCC encoders round-robin, the FEC encoders add redundancy, a stream parser splits coded bits into spatial streams, per-stream interleaving (BCC only) and constellation mapping follow, optional STBC spreads NSS streams into more space-time streams, and the spatial mapper maps those onto NTX transmit chains (direct mapping, spatial expansion, or beamforming). Cyclic shift diversity (CSD) prevents unintentional beamforming, then IDFT, guard-interval insertion, and windowing produce each OFDM symbol. The end-to-end encoding sequence is spelled out step by step in 19.3.4.",
+      "zh": "发射机框图（19.3.3）将这些阶段串联：加扰器使数据白化，编码器分流以轮询方式喂给 NES 个 BCC 编码器，FEC 编码器加入冗余，流解析器把编码比特分到各空间流，随后是逐流交织（仅 BCC）与星座映射，可选的 STBC 把 NSS 条流扩展为更多空时流，空间映射器再把它们映射到 NTX 条发射链（直接映射、空间扩展或波束成形）。循环移位分集（CSD）防止无意的波束成形，最后经 IDFT、保护间隔插入与加窗生成每个 OFDM 符号。端到端的编码步骤在 19.3.4 中逐步详述。"
+    },
+    {
+      "type": "prose",
+      "en": "The MCS index (19.3.5) is a compact code carried in HT-SIG that fixes modulation, coding rate, and stream count: MCS 0–7 are single-stream, 8–31 use equal modulation across multiple streams, 33–76 use unequal modulation, and MCS 32 is the lowest 40 MHz rate. A 20 MHz HT symbol carries 52 data subcarriers (vs. 48 in legacy), and 40 MHz carries 108, with NST totals of 56 and 114 (19.3.6). The OFDM symbol is 4 µs (3.6 µs with short GI), built on a 3.2 µs IDFT period and 0.8 µs guard interval. The mathematical signal model and per-field timing boundaries are in 19.3.7.",
+      "zh": "MCS 索引（19.3.5）是携带在 HT-SIG 中的紧凑编码，它确定调制方式、码率和流数：MCS 0–7 为单流，8–31 在多流上采用等调制，33–76 采用非等调制，MCS 32 是 40 MHz 下最低速率。20 MHz HT 符号承载 52 个数据子载波（传统为 48），40 MHz 承载 108，NST 总数分别为 56 和 114（19.3.6）。OFDM 符号长 4 µs（短 GI 下为 3.6 µs），基于 3.2 µs 的 IDFT 周期和 0.8 µs 保护间隔。信号的数学模型与各字段的时序边界见 19.3.7。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why 52 data subcarriers instead of legacy 48? The HT 20 MHz mode reuses the same 64-point IDFT but activates subcarriers –28…+28 instead of –26…+26, reclaiming four edge tones for data. That single change lifts the per-stream rate before any MIMO or 40 MHz gain even applies.",
+      "zh": "为什么是 52 个数据子载波而非传统的 48 个？HT 20 MHz 模式复用同样的 64 点 IDFT，但激活的子载波是 −28…+28 而非 −26…+26，从而把四个边缘子载波收回用于数据。仅这一处改动，就在 MIMO 或 40 MHz 增益尚未介入之前提升了每流速率。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "PHY internals coverage map: encoding, MIMO, sounding, PMD specs, MIB, MCS tables (19.3.10–19.5)",
+        "zh": "PHY 内部机制覆盖图：编码、MIMO、探测、PMD 规范、MIB、MCS 表（19.3.10–19.5）"
+      },
+      "en": "19.3.10 Transmission of NON_HT PPDUs with more than one transmit chain (applying CSD across chains so a multi-antenna HT device can send a legacy PPDU). 19.3.12 Beamforming — spatial steering with implicit feedback (19.3.12.2) and explicit feedback via CSI / compressed / noncompressed steering matrices (19.3.12.3). 19.3.13 HT preamble format for sounding PPDUs — staggered preambles add HT-ELTFs so the receiver can estimate channel dimensions beyond those used by the Data field. 19.3.15 Channel numbering and channelization — 20 MHz channels per Clause 16/17, plus 40 MHz channelization in 2.4 and 5 GHz with the center-frequency equations. 19.3.18 PHY transmit specification — the 20/40 MHz transmit spectrum masks, transmit power, modulation accuracy (EVM), and center-frequency/symbol-clock tolerances. 19.3.19 HT PHY receiver specification — minimum input sensitivity per MCS, adjacent and nonadjacent channel rejection, and maximum input level. 19.4.1 PLME SAP management primitives and Table 19-24 attribute list. 19.4.2 PHY MIB — dot11PHYType = HT, plus dot11FortyMHzOperation, dot11ShortGI, dot11LDPCCodingOption, dot11TxSTBCOption, dot11BeamFormingOption, and the supported HT-MCS tables (static vs. dynamic semantics). 19.4.3 TXTIME calculation (Equations 19-90–19-93 for mixed/greenfield × short/long GI). 19.4.4 HT PHY characteristics via PLME-CHARACTERISTICS (aRIFSTime, aSlotTime, aSIFSTime, aSignalExtension). 19.5 Parameters for HT-MCSs — Tables 19-26 onward give NSS, R, NBPSCS, NSD, NSP, NCBPS, NDBPS, and data rate for every MCS (e.g., MCS 0 = BPSK, R = 1/2, 6.5 Mb/s at 800 ns GI).",
+      "zh": "19.3.10 多发射链发送 NON_HT PPDU（跨链施加 CSD，使多天线 HT 设备能发送传统 PPDU）。19.3.12 波束成形 —— 通过隐式反馈（19.3.12.2）以及借助 CSI / 压缩 / 非压缩导向矩阵的显式反馈（19.3.12.3）进行空间导向。19.3.13 探测 PPDU 的 HT 前导格式 —— 交错前导加入 HT-ELTF，使接收机能估计 Data 字段所用维度之外的信道维度。19.3.15 信道编号与信道化 —— 20 MHz 信道沿用第 16/17 章，并在 2.4 与 5 GHz 定义 40 MHz 信道化及中心频率公式。19.3.18 PHY 发射规范 —— 20/40 MHz 发射频谱掩模、发射功率、调制精度（EVM）以及中心频率/符号时钟容差。19.3.19 HT PHY 接收规范 —— 各 MCS 的最小输入灵敏度、相邻与非相邻信道抑制以及最大输入电平。19.4.1 PLME SAP 管理原语及表 19-24 属性清单。19.4.2 PHY MIB —— dot11PHYType = HT，以及 dot11FortyMHzOperation、dot11ShortGI、dot11LDPCCodingOption、dot11TxSTBCOption、dot11BeamFormingOption 和受支持的 HT-MCS 表（静态与动态语义）。19.4.3 TXTIME 计算（式 19-90–19-93，对应 mixed/greenfield × 短/长 GI）。19.4.4 经 PLME-CHARACTERISTICS 提供的 HT PHY 特性（aRIFSTime、aSlotTime、aSIFSTime、aSignalExtension）。19.5 HT-MCS 参数 —— 表 19-26 及之后给出每个 MCS 的 NSS、R、NBPSCS、NSD、NSP、NCBPS、NDBPS 与数据速率（例如 MCS 0 = BPSK、R = 1/2、800 ns GI 下 6.5 Mb/s）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3442,
+          3459,
+          3467,
+          3470,
+          3471,
+          3477,
+          3487,
+          3490,
+          3492,
+          3493,
+          3494
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The whole of Clause 19 is the difference between Wi-Fi 3 and Wi-Fi 4: same OFDM heart, but now with MIMO spatial streams, 40 MHz bonding, a short guard interval, and optional beamforming/STBC/LDPC — each one a separately negotiated, MIB-gated capability rather than a mandatory leap.",
+      "zh": "整个第 19 章正是 Wi-Fi 3 与 Wi-Fi 4 之间的差别所在：OFDM 内核相同，但新增了 MIMO 空间流、40 MHz 绑定、短保护间隔以及可选的波束成形/STBC/LDPC —— 每一项都是单独协商、由 MIB 控制的能力，而非强制性的飞跃。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3401,
+        3402,
+        3403
+      ],
+      "note": "19.1 Introduction to HT PHY, scope, functions, PPDU formats, Class 2 HT PHY"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3403,
+        3404,
+        3405,
+        3406,
+        3407,
+        3408,
+        3409,
+        3410
+      ],
+      "note": "19.2.1–19.2.2 service interface and TXVECTOR/RXVECTOR Table 19-1"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3410,
+        3411,
+        3412,
+        3413
+      ],
+      "note": "19.2.3–19.2.6 PHYCONFIG, FORMAT/bandwidth interpretation, NON_HT mapping, TXSTATUS"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3414,
+        3415,
+        3416,
+        3417,
+        3418,
+        3419,
+        3420,
+        3421,
+        3422,
+        3423,
+        3424,
+        3425
+      ],
+      "note": "19.3.1–19.3.7 PPDU format, transmitter block diagram, encoding overview, MCS, timing, signal model"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3442,
+        3459,
+        3467,
+        3470,
+        3471,
+        3477
+      ],
+      "note": "19.3.10 multi-chain NON_HT, 19.3.12 beamforming, 19.3.13 sounding preamble, 19.3.15 channelization, 19.3.18 transmit spec, 19.3.19 receiver spec"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3487,
+        3490,
+        3491,
+        3492,
+        3493,
+        3494
+      ],
+      "note": "19.4.1–19.4.4 PLME primitives, PHY MIB Table 19-24, TXTIME, PHY characteristics; 19.5 HT-MCS parameter tables"
+    }
+  ],
+  "covers": [
+    "80211-2024:19.1.1",
+    "80211-2024:19.1.2",
+    "80211-2024:19.1.3",
+    "80211-2024:19.2.1",
+    "80211-2024:19.2.2",
+    "80211-2024:19.2.3",
+    "80211-2024:19.2.4",
+    "80211-2024:19.2.5",
+    "80211-2024:19.2.6",
+    "80211-2024:19.3.1",
+    "80211-2024:19.3.3",
+    "80211-2024:19.3.4",
+    "80211-2024:19.3.6",
+    "80211-2024:19.3.7",
+    "80211-2024:19.3.10",
+    "80211-2024:19.3.12",
+    "80211-2024:19.3.13",
+    "80211-2024:19.3.15",
+    "80211-2024:19.3.18",
+    "80211-2024:19.3.19",
+    "80211-2024:19.4.1",
+    "80211-2024:19.4.2",
+    "80211-2024:19.4.3",
+    "80211-2024:19.4.4",
+    "80211-2024:19.5"
+  ],
+  "track": "legacy-phy"
+}

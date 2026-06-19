@@ -1,0 +1,200 @@
+{
+  "id": "legacy-phy-41-ofdm-erp-phy-11a-g",
+  "title": {
+    "en": "The OFDM Foundation: the 802.11a/g OFDM and ERP PHYs",
+    "zh": "OFDM 的基石：802.11a/g 的 OFDM 与 ERP PHY"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 17 of IEEE 802.11-2024 specifies the OFDM PHY first introduced as 802.11a. It is the template every later OFDM PHY (HT, VHT, HE, EHT) builds on. The system carries data payloads at 6, 9, 12, 18, 24, 36, 48, and 54 Mb/s, with 6, 12, and 24 Mb/s mandatory. It uses 52 subcarriers modulated with BPSK, QPSK, 16-QAM, or 64-QAM, and convolutional coding at rate 1/2, 2/3, or 3/4. Beyond the normal 20 MHz channel spacing, it also defines half-clocked (10 MHz) and quarter-clocked (5 MHz) operation that double and quadruple the symbol and CCA timing respectively.",
+      "zh": "IEEE 802.11-2024 第 17 章规定了最早随 802.11a 出现的 OFDM PHY。它是后续所有 OFDM PHY（HT、VHT、HE、EHT）的模板。该系统支持 6、9、12、18、24、36、48 和 54 Mb/s 的数据载荷速率，其中 6、12 和 24 Mb/s 为强制速率。它使用 52 个子载波，调制方式为 BPSK、QPSK、16-QAM 或 64-QAM，并采用码率为 1/2、2/3 或 3/4 的卷积编码。除常规的 20 MHz 信道间隔外，它还定义了半速率（10 MHz）和四分之一速率（5 MHz）模式，分别将符号时长与 CCA 时间加倍和加四倍。"
+    },
+    {
+      "type": "prose",
+      "en": "The OFDM PHY exposes two protocol functions to the MAC (17.1.2): one that maps PSDUs into a PPDU format for sending and receiving, and one that defines how to actually transmit and receive over the wireless medium. Architecturally (17.1.3) the PHY splits into the PHY function itself and a layer management entity, the PLME, which manages local PHY state in concert with the MLME. Service is offered to the MAC through the abstract PHY service primitives, described using models and state diagrams that illustrate behavior without dictating any specific implementation.",
+      "zh": "OFDM PHY 向 MAC 提供两项协议功能（17.1.2）：一项把 PSDU 映射为可收发的 PPDU 格式，另一项定义如何在无线介质上实际收发数据。从体系结构看（17.1.3），PHY 分为 PHY 功能本身和层管理实体 PLME，后者与 MLME 协同管理本地 PHY 状态。服务通过抽象的 PHY 服务原语提供给 MAC，并以模型和状态图来说明行为，但不规定任何具体实现。"
+    },
+    {
+      "type": "prose",
+      "en": "Every transmission and reception is parameterized by a TXVECTOR and RXVECTOR (17.2). The TXVECTOR (17.2.2, Table 17-1) carries LENGTH (1–4095 octets), DATARATE, a null SERVICE field, TXPWR_LEVEL_INDEX (1–8), a TIME_OF_DEPARTURE_REQUESTED flag, and bandwidth/scrambler hints used by later PHYs. The RXVECTOR (17.2.3, Table 17-2) reports back LENGTH, RSSI (0–255, measured during the preamble), DATARATE, RCPI, antenna, and frame-offset values. When time-of-departure is requested, the result comes back in the TXSTATUS parameters (17.2.4) via PHY-TXSTART.confirm, reporting the precise instant the first PPDU energy left the transmit port.",
+      "zh": "每一次收发都由 TXVECTOR 和 RXVECTOR 参数化（17.2）。TXVECTOR（17.2.2，表 17-1）携带 LENGTH（1–4095 字节）、DATARATE、置空的 SERVICE 字段、TXPWR_LEVEL_INDEX（1–8）、TIME_OF_DEPARTURE_REQUESTED 标志，以及供后续 PHY 使用的带宽/扰码提示。RXVECTOR（17.2.3，表 17-2）回报 LENGTH、RSSI（0–255，在前导码期间测量）、DATARATE、RCPI、天线和帧偏移等值。当请求离开时刻时，结果通过 PHY-TXSTART.confirm 在 TXSTATUS 参数（17.2.4）中返回，报告第一段 PPDU 能量离开发射端口的精确时刻。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><rect x=\"4\" y=\"28\" width=\"120\" height=\"34\" stroke-width=\"2\"/><rect x=\"124\" y=\"28\" width=\"150\" height=\"34\" stroke-width=\"2\"/><rect x=\"274\" y=\"28\" width=\"80\" height=\"34\" stroke-width=\"2\"/><rect x=\"354\" y=\"28\" width=\"180\" height=\"34\" stroke-width=\"2\"/><rect x=\"534\" y=\"28\" width=\"50\" height=\"34\" stroke-width=\"2\"/><rect x=\"584\" y=\"28\" width=\"52\" height=\"34\" stroke-width=\"2\"/><text x=\"64\" y=\"49\" font-size=\"11\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">PHY preamble</text><text x=\"199\" y=\"45\" font-size=\"11\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">SIGNAL</text><text x=\"199\" y=\"58\" font-size=\"9\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">RATE+LENGTH+P</text><text x=\"314\" y=\"49\" font-size=\"10\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">SERVICE</text><text x=\"444\" y=\"49\" font-size=\"11\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">PSDU (DATA)</text><text x=\"559\" y=\"49\" font-size=\"10\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">TAIL</text><text x=\"610\" y=\"49\" font-size=\"10\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">PAD</text><text x=\"4\" y=\"18\" font-size=\"10\" fill=\"currentColor\" stroke=\"none\">BPSK R=1/2 (most robust)</text><text x=\"354\" y=\"18\" font-size=\"10\" fill=\"currentColor\" stroke=\"none\">rate from SIGNAL field</text></svg>",
+      "caption": {
+        "en": "The OFDM PPDU (Clause 17.3): a robust BPSK-rate-1/2 SIGNAL symbol carrying RATE and LENGTH precedes the SERVICE field plus PSDU (DATA), which is sent at the rate the SIGNAL field announces, followed by tail and pad bits.",
+        "zh": "OFDM PPDU（第 17.3 节）：一个鲁棒的 BPSK 码率 1/2 的 SIGNAL 符号携带 RATE 和 LENGTH，位于 SERVICE 字段加 PSDU（DATA）之前；DATA 按 SIGNAL 字段所宣告的速率发送，其后是尾比特和填充比特。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 17.3 is the PHY proper: a convergence procedure that turns PSDUs into PPDUs and back (17.3.1). On transmit, a PHY preamble and header are prepended; on receive they are processed to aid demodulation and deliver the PSDU. Three short clauses then state the PHY's reflexes: CCA (17.3.6) detects a medium-busy condition and reports it to the MAC via PHY-CCA.indication; the modulation-rate-change rule (17.3.7) says the SIGNAL field announces the modulation and coding rate, and the receiver switches its constellation and decoder to match the RATE it decodes there.",
+      "zh": "第 17.3 节是 PHY 本体：一套把 PSDU 转换为 PPDU 并还原的汇聚过程（17.3.1）。发送时在前面加上 PHY 前导码和头部；接收时对其进行处理，以辅助解调并交付 PSDU。随后三个短小的子条款规定了 PHY 的基本反应：CCA（17.3.6）检测介质繁忙状态并通过 PHY-CCA.indication 报告给 MAC；调制速率切换规则（17.3.7）指出 SIGNAL 字段宣告调制方式和编码速率，接收机据其解出的 RATE 切换星座图和译码器。"
+    },
+    {
+      "type": "prose",
+      "en": "The bulk of Clause 17.3 is the operating, transmit, and receive specifications. The general operating specs (17.3.8) list the major parameters: 52 subcarriers, a 4.0 us OFDM symbol with a 0.8 us guard interval and ~16.6 MHz occupied bandwidth at 20 MHz spacing; channel center frequencies on a 5 MHz grid; a 50 ohm antenna-connector impedance; and a slot time defined in Table 17-24. The transmit specs (17.3.9) cover power levels, the transmit spectrum mask (0 dBr to 18 MHz, -20 dBr at 11 MHz, -28 dBr at 20 MHz, -40 dBr beyond 30 MHz), frequency tolerance, modulation accuracy (EVM), and time-of-departure accuracy (RMS <= 80 ns). The receive specs (17.3.10) set minimum sensitivity per rate (e.g. -82 dBm for BPSK 1/2 at 20 MHz), adjacent and nonadjacent channel rejection, a -30 dBm maximum input level, the CCA energy-detect thresholds, and RCPI measurement.",
+      "zh": "第 17.3 节的主体是操作、发送和接收规范。通用操作规范（17.3.8）列出主要参数：52 个子载波；在 20 MHz 间隔下 OFDM 符号长 4.0 us、保护间隔 0.8 us、占用带宽约 16.6 MHz；信道中心频率落在 5 MHz 网格上；天线接口阻抗 50 欧姆；时隙时间在表 17-24 中给出。发送规范（17.3.9）涵盖功率电平、发送频谱模板（0 dBr 至 18 MHz、11 MHz 处 -20 dBr、20 MHz 处 -28 dBr、30 MHz 以外 -40 dBr）、频率容差、调制精度（EVM）以及离开时刻精度（RMS <= 80 ns）。接收规范（17.3.10）规定按速率的最小灵敏度（如 20 MHz 下 BPSK 1/2 为 -82 dBm）、邻道与非邻道抑制、-30 dBm 最大输入电平、CCA 能量检测门限以及 RCPI 测量。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The CCA energy-detect rule (17.3.10.6) is the heartbeat of fair sharing: a valid OFDM start at or above the minimum sensitivity (-82 dBm for 20 MHz) must be flagged busy with >90% probability within 4 us, and any signal 20 dB above that (-62 dBm) must be flagged within 4 us. When the symbol time doubles for 10/5 MHz operation, the detect time doubles too (8 us, 16 us).",
+      "zh": "CCA 能量检测规则（17.3.10.6）是公平共享的心跳：达到或高于最小灵敏度（20 MHz 下 -82 dBm）的有效 OFDM 起始信号，必须在 4 us 内以 >90% 的概率判为繁忙；任何高出该值 20 dB（-62 dBm）的信号也必须在 4 us 内判为繁忙。当 10/5 MHz 模式下符号时间加倍时，检测时间也相应加倍（8 us、16 us）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 17.4 is the OFDM PLME — the management half. 17.4.1 lists the MIB attributes reachable through PLME-GET/SET/RESET/CHARACTERISTICS (dot11PHYType = OFDM-5, the eight TxPowerLevel slots, supported data rates, dot11CurrentFrequency, dot11ChannelStartingFactor, etc.); 17.4.2 defines how those attributes live in the MIB as static or dynamic. 17.4.3 gives the TXTIME formula, TXTIME = TPREAMBLE + TSIGNAL + TSYM x NSYM, so the MAC can predict on-air duration. 17.4.4 publishes the PHY characteristics (Table 17-24): aSlotTime 9 us, aSIFSTime 16 us, aRxPHYStartDelay 20 us, aCWmin 15, aCWmax 1023 at 20 MHz spacing.",
+      "zh": "第 17.4 节是 OFDM PLME——管理侧。17.4.1 列出可通过 PLME-GET/SET/RESET/CHARACTERISTICS 访问的 MIB 属性（dot11PHYType = OFDM-5、八个 TxPowerLevel 槽位、支持的数据速率、dot11CurrentFrequency、dot11ChannelStartingFactor 等）；17.4.2 规定这些属性在 MIB 中以静态或动态形式存在。17.4.3 给出 TXTIME 公式 TXTIME = TPREAMBLE + TSIGNAL + TSYM x NSYM，使 MAC 能预测空口时长。17.4.4 公布 PHY 特性（表 17-24）：在 20 MHz 间隔下 aSlotTime 9 us、aSIFSTime 16 us、aRxPHYStartDelay 20 us、aCWmin 15、aCWmax 1023。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 18 is the Extended Rate PHY (ERP) — 802.11g — which brings OFDM into the crowded 2.4 GHz ISM band (18.1.1). The ERP builds on the DSSS 1/2 Mb/s of Clause 15 and the DSSS/CCK 1/2/5.5/11 Mb/s of Clause 16, then draws ERP-OFDM rates of 6–54 Mb/s straight from Clause 17; transmit and receive of 1, 2, 5.5, 6, 11, 12, and 24 Mb/s is mandatory (18.1.2). Crucially, ERP-OFDM is designed to coexist with the legacy DSSS/CCK stations already in the band, achieved through virtual carrier sense (RTS/CTS or CTS-to-self), CSMA/CA, and fragmentation.",
+      "zh": "第 18 章是扩展速率 PHY（ERP）——即 802.11g——它把 OFDM 带入拥挤的 2.4 GHz ISM 频段（18.1.1）。ERP 在第 15 章的 DSSS 1/2 Mb/s 和第 16 章的 DSSS/CCK 1/2/5.5/11 Mb/s 之上构建，再直接从第 17 章引入 6–54 Mb/s 的 ERP-OFDM 速率；1、2、5.5、6、11、12 和 24 Mb/s 的收发为强制（18.1.2）。关键在于，ERP-OFDM 被设计为与频段内已有的传统 DSSS/CCK 站点共存，这通过虚拟载波侦听（RTS/CTS 或 CTS-to-self）、CSMA/CA 和分片来实现。"
+    },
+    {
+      "type": "prose",
+      "en": "Like the OFDM PHY, the ERP exposes a map-to-PPDU function and a transmit/receive function to the MAC (18.1.4), splits into a PHY function and a layer management entity (18.1.5), and signals non-ERP stations of ERP traffic through carrier sense and the protection mechanism so they defer correctly. Its service parameter list (18.2, Table 18-1) wraps the earlier PHYs: the TXVECTOR adds a MODULATION selector (ERP-DSSS, ERP-CCK, ERP-OFDM) and PREAMBLE_TYPE, and pulls in the matching parameters from the Clause 15/16/17 TXVECTORs depending on which modulation is chosen.",
+      "zh": "与 OFDM PHY 一样，ERP 向 MAC 提供映射为 PPDU 的功能和收发功能（18.1.4），分为 PHY 功能和层管理实体（18.1.5），并通过载波侦听和保护机制告知非 ERP 站点存在 ERP 流量，使其正确退避。其服务参数列表（18.2，表 18-1）包裹了早期 PHY：TXVECTOR 增加了 MODULATION 选择器（ERP-DSSS、ERP-CCK、ERP-OFDM）和 PREAMBLE_TYPE，并根据所选调制方式引入第 15/16/17 章 TXVECTOR 中相应的参数。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 18.5 is the ERP PLME. 18.5.1 and 18.5.2 add ERP-specific MIB attributes (dot11PHYType = ERP, the rate codes for 1–54 Mb/s, dot11ShortSlotTimeOptionImplemented/Activated, dot11ShortPreambleOptionImplemented) on top of the inherited tables. 18.5.3 splits TXTIME: DSSS/CCK rates follow Clause 16, while ERP-OFDM uses Equation (18-1), which is the Clause 17 form plus a 6 us signal extension (TSE). 18.5.4 publishes the ERP characteristics (Table 18-5): short slot time 9 us vs long slot time 20 us, aSIFSTime 10 us, aSignalExtension 6 us, and two aCWmin values (31 and 15) reflecting the DSSS/OFDM split.",
+      "zh": "第 18.5 节是 ERP PLME。18.5.1 和 18.5.2 在继承的表之上增加了 ERP 专属 MIB 属性（dot11PHYType = ERP、1–54 Mb/s 的速率码、dot11ShortSlotTimeOptionImplemented/Activated、dot11ShortPreambleOptionImplemented）。18.5.3 将 TXTIME 分流：DSSS/CCK 速率遵循第 16 章，而 ERP-OFDM 使用公式（18-1），即第 17 章的形式再加 6 us 信号扩展（TSE）。18.5.4 公布 ERP 特性（表 18-5）：短时隙 9 us 对长时隙 20 us、aSIFSTime 10 us、aSignalExtension 6 us，以及反映 DSSS/OFDM 分流的两个 aCWmin 值（31 和 15）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: which subclause teaches what",
+        "zh": "覆盖图：各子条款分别讲什么"
+      },
+      "en": "OFDM PHY (Clause 17). 17.1.1 General — the 802.11a OFDM system, 6–54 Mb/s, 52 subcarriers, half/quarter-clocked modes. 17.1.2 Scope — the two protocol functions (PSDU-to-PPDU mapping; transmit/receive over the medium). 17.1.3 Functions — PHY function + PLME, abstract service-specification method. 17.2.1 Introduction — why TXVECTOR/RXVECTOR exist. 17.2.2 TXVECTOR (Table 17-1: LENGTH, DATARATE, SERVICE, TXPWR_LEVEL_INDEX, time-of-departure, bandwidth/scrambler params). 17.2.3 RXVECTOR (Table 17-2: LENGTH, RSSI, DATARATE, RCPI, antenna, offsets). 17.2.4 TXSTATUS (TIME_OF_DEPARTURE + clock rate via PHY-TXSTART.confirm). 17.3.1 Introduction — the PSDU-to-PPDU convergence procedure. 17.3.6 CCA — medium-busy detection to the MAC. 17.3.7 modulation-rate change — SIGNAL field sets constellation + coding rate. 17.3.8 PHY operating specs (Table 17-19; 52 subcarriers, 4 us symbol, 0.8 us GI; channel numbering on 5 MHz grid; 50 ohm impedance; slot time). 17.3.9 transmit specs (power, spectrum mask Fig 17-13, frequency/clock tolerance, EVM, ToD accuracy <= 80 ns). 17.3.10 receive specs (Table 17-21 sensitivity/rejection, -30 dBm max input, CCA thresholds, RCPI). 17.4.1 PLME SAP MIB attributes (Table 17-23). 17.4.2 OFDM PHY MIB (static vs dynamic). 17.4.3 OFDM TXTIME (Eq 17-29). 17.4.4 OFDM PHY characteristics (Table 17-24: aSlotTime 9 us, aSIFSTime 16 us, aCWmin 15, aCWmax 1023).\n\nERP PHY (Clause 18). 18.1.1 General — ERP in 2.4 GHz, plus Class 2 ERP. 18.1.2 Introduction — builds on Clause 15/16 DSSS/CCK and Clause 17 OFDM; mandatory rate set. 18.1.4 Scope of ERP services — the two protocol functions. 18.1.5 ERP functions — PHY + management entity, protection signaling to non-ERP STAs. 18.2 PHY-specific service parameter list (Table 18-1: MODULATION, PREAMBLE_TYPE, inherited TXVECTOR params). 18.5.1 PLME SAP. 18.5.2 MIB (Table 18-4: dot11PHYType = ERP, rate codes, short-slot/short-preamble flags). 18.5.3 TXTIME (DSSS/CCK via Clause 16; ERP-OFDM via Eq 18-1 with 6 us signal extension). 18.5.4 ERP characteristics (Table 18-5: short slot 9 us / long slot 20 us, aSIFSTime 10 us, aSignalExtension 6 us, aCWmin 31/15, aCWmax 1023).",
+      "zh": "OFDM PHY（第 17 章）。17.1.1 概述——802.11a OFDM 系统，6–54 Mb/s，52 子载波，半速率/四分之一速率模式。17.1.2 范围——两项协议功能（PSDU 到 PPDU 映射；介质上的收发）。17.1.3 功能——PHY 功能 + PLME，抽象服务规范方法。17.2.1 引言——TXVECTOR/RXVECTOR 存在的原因。17.2.2 TXVECTOR（表 17-1：LENGTH、DATARATE、SERVICE、TXPWR_LEVEL_INDEX、离开时刻、带宽/扰码参数）。17.2.3 RXVECTOR（表 17-2：LENGTH、RSSI、DATARATE、RCPI、天线、偏移）。17.2.4 TXSTATUS（经 PHY-TXSTART.confirm 返回 TIME_OF_DEPARTURE 及时钟速率）。17.3.1 引言——PSDU 到 PPDU 的汇聚过程。17.3.6 CCA——向 MAC 报告介质繁忙。17.3.7 调制速率切换——SIGNAL 字段设定星座图与编码速率。17.3.8 PHY 操作规范（表 17-19；52 子载波、4 us 符号、0.8 us GI；5 MHz 网格信道编号；50 欧姆阻抗；时隙时间）。17.3.9 发送规范（功率、频谱模板 图 17-13、频率/时钟容差、EVM、ToD 精度 <= 80 ns）。17.3.10 接收规范（表 17-21 灵敏度/抑制、-30 dBm 最大输入、CCA 门限、RCPI）。17.4.1 PLME SAP MIB 属性（表 17-23）。17.4.2 OFDM PHY MIB（静态与动态）。17.4.3 OFDM TXTIME（式 17-29）。17.4.4 OFDM PHY 特性（表 17-24：aSlotTime 9 us、aSIFSTime 16 us、aCWmin 15、aCWmax 1023）。\n\nERP PHY（第 18 章）。18.1.1 概述——2.4 GHz 中的 ERP，及 Class 2 ERP。18.1.2 引言——在第 15/16 章 DSSS/CCK 和第 17 章 OFDM 之上构建；强制速率集。18.1.4 ERP 服务范围——两项协议功能。18.1.5 ERP 功能——PHY + 管理实体，向非 ERP 站点的保护信令。18.2 PHY 专属服务参数列表（表 18-1：MODULATION、PREAMBLE_TYPE、继承的 TXVECTOR 参数）。18.5.1 PLME SAP。18.5.2 MIB（表 18-4：dot11PHYType = ERP、速率码、短时隙/短前导标志）。18.5.3 TXTIME（DSSS/CCK 走第 16 章；ERP-OFDM 走式 18-1，含 6 us 信号扩展）。18.5.4 ERP 特性（表 18-5：短时隙 9 us / 长时隙 20 us、aSIFSTime 10 us、aSignalExtension 6 us、aCWmin 31/15、aCWmax 1023）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3339,
+          3340,
+          3341,
+          3342,
+          3343,
+          3344,
+          3368,
+          3369,
+          3370,
+          3371,
+          3376,
+          3377,
+          3378,
+          3384,
+          3386,
+          3387,
+          3388,
+          3389,
+          3390,
+          3391,
+          3397,
+          3399,
+          3400
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3339,
+        3340,
+        3341,
+        3342,
+        3343,
+        3344
+      ],
+      "note": "17.1 Introduction (General, Scope, Functions); 17.2 service parameter list (TXVECTOR/RXVECTOR/TXSTATUS, Tables 17-1/2/3); 17.3.1 OFDM PHY introduction."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3368,
+        3369,
+        3370,
+        3371,
+        3372
+      ],
+      "note": "17.3.6 CCA; 17.3.7 modulation-rate change; 17.3.8 PHY operating specs (Table 17-19, channel numbering, slot time, impedance); 17.3.9 transmit specs (power, spectrum mask Fig 17-13/14)."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3376,
+        3377,
+        3378
+      ],
+      "note": "17.3.9.9 ToD accuracy; 17.3.10 receive specs (Table 17-21 sensitivity/rejection, -30 dBm max input, 17.3.10.6 CCA thresholds, RCPI)."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3384,
+        3385,
+        3386,
+        3387
+      ],
+      "note": "17.4 OFDM PLME: 17.4.1 PLME SAP MIB (Table 17-23), 17.4.2 MIB, 17.4.3 TXTIME (Eq 17-29), 17.4.4 PHY characteristics (Table 17-24)."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3388,
+        3389,
+        3390,
+        3391
+      ],
+      "note": "18.1 ERP overview (18.1.1 General, 18.1.2 Introduction, 18.1.4 Scope, 18.1.5 Functions); 18.2 PHY-specific service parameter list (Table 18-1)."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3397,
+        3398,
+        3399,
+        3400
+      ],
+      "note": "18.5 ERP PLME: 18.5.1 PLME SAP, 18.5.2 MIB (Table 18-4), 18.5.3 TXTIME (Eq 18-1), 18.5.4 ERP characteristics (Table 18-5)."
+    }
+  ],
+  "covers": [
+    "80211-2024:17.1.1",
+    "80211-2024:17.1.2",
+    "80211-2024:17.1.3",
+    "80211-2024:17.2.1",
+    "80211-2024:17.2.2",
+    "80211-2024:17.2.3",
+    "80211-2024:17.2.4",
+    "80211-2024:17.3.1",
+    "80211-2024:17.3.6",
+    "80211-2024:17.3.7",
+    "80211-2024:17.3.8",
+    "80211-2024:17.3.9",
+    "80211-2024:17.3.10",
+    "80211-2024:17.4.1",
+    "80211-2024:17.4.2",
+    "80211-2024:17.4.3",
+    "80211-2024:17.4.4",
+    "80211-2024:18.1.1",
+    "80211-2024:18.1.2",
+    "80211-2024:18.1.4",
+    "80211-2024:18.1.5",
+    "80211-2024:18.2",
+    "80211-2024:18.5.1",
+    "80211-2024:18.5.2",
+    "80211-2024:18.5.3",
+    "80211-2024:18.5.4"
+  ],
+  "track": "legacy-phy"
+}

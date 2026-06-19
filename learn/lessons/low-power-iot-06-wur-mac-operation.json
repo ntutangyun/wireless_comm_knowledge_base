@@ -1,0 +1,171 @@
+{
+  "id": "low-power-iot-06-wur-mac-operation",
+  "title": {
+    "en": "The Wake-Up Radio MAC: How WUR Sips Power",
+    "zh": "唤醒无线电的 MAC：WUR 如何省电"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "By now you know the Wake-Up Radio (WUR) idea: a station keeps a tiny always-on companion radio listening for a short page while its power-hungry main Wi-Fi radio sleeps. The earlier lessons covered the frame shape, the addressing, and the on-off-keying waveform. This lesson is about the rules that surround those frames — the MAC machinery. How does the access point grab the medium before sending a page? When does a station throw a page away without even waking? How does the AP keep WUR receivers time-synchronised, deliver buffered traffic, protect a page against forgery, and squeeze several pages onto different sub-channels at once? Those questions are the WUR MAC, and they are what lets WUR sip power instead of gulping it.",
+      "zh": "到现在你已经理解了唤醒无线电（Wake-Up Radio, WUR）的核心思路：站点让一个极小的、常开的“陪伴射频”侦听一条简短的寻呼信号，而耗电的主 Wi-Fi 射频则在休眠。前面几课讲过帧的结构、寻址方式，以及开关键控（OOK）波形。本课讲的是围绕这些帧的规则——也就是 MAC 层的机制。接入点（AP）在发送寻呼前如何抢占信道？站点在什么情况下连醒都不醒就把一条寻呼丢弃？AP 又如何让 WUR 接收机保持时间同步、投递缓存的流量、防止寻呼被伪造，并把多条寻呼一次性塞进不同的子信道？这些问题就是 WUR MAC 的内容，也正是让 WUR 能“小口省电”而非“大口耗电”的关键。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with channel access. A WUR frame still rides on a normal Wi-Fi PPDU, so before sending one a WUR AP must contend for the medium exactly like any other transmission — it runs EDCA, and it may use any access category. Two refinements matter. First, a page-sending AP does not update the contention window or retry counters for that AC because of the WUR transmission, so paging traffic never penalises ordinary data backoff. Second, where the AP listens depends on the channel layout: if the WUR primary channel is the BSS primary channel it reuses the same EDCAF and CCA; if the WUR primary channel is separate, it uses a dedicated EDCAF that does CCA on the WUR primary channel. The AP should also open the TXOP with a frame that sets NAV, so the airtime it has won for one or more WUR frames is protected.",
+      "zh": "先看信道接入。WUR 帧仍然搭载在普通的 Wi-Fi PPDU 上，因此 WUR AP 在发送之前必须像任何其他传输一样竞争信道——它运行 EDCA，并且可以使用任意接入类别（AC）。有两个细节值得注意。第一，发送寻呼的 AP 不会因为这次 WUR 传输而更新该 AC 的竞争窗口或重传计数器，因此寻呼流量绝不会拖累普通数据的退避。第二，AP 在何处侦听取决于信道布局：如果 WUR 主信道就是 BSS 主信道，它就复用同一个 EDCAF 和 CCA；如果 WUR 主信道是独立的，它就使用一个专用的 EDCAF，在 WUR 主信道上做 CCA。AP 还应当用一个会设置 NAV 的帧来开启 TXOP，从而保护它为一个或多个 WUR 帧赢得的空口时间。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the cheapest power-saving act of all: discarding a page early. A WUR receiver is deliberately dumb, and it should bail out the instant a frame is clearly not for it — before any heavier processing. Once the PHY reports a WUR PPDU, the MAC should discard the contained WUR frame if any of several quick checks fail: the frame Type is one the station does not support, the Frame Body Present or Protected subfields carry an unsupported value, or — most importantly — the ID field is not one this station maintains. There are also two ordering shortcuts for the variable-length (VL) wake-up frame, which lists per-station entries in increasing WUR-ID order: the station can stop and discard as soon as it sees a WUR ID past its own. Every discard here is a wake-up that never happened, which is the whole game.",
+      "zh": "接下来是所有省电动作中最廉价的一种：尽早丢弃寻呼。WUR 接收机被刻意设计得很“笨”，一旦发现某帧明显不是发给自己的，就应当在任何繁重处理之前立刻放弃。当 PHY 报告收到一个 WUR PPDU 后，只要下列几项快速检查中有任意一项不通过，MAC 就应当丢弃其中的 WUR 帧：帧的类型（Type）是该站点不支持的、帧体存在（Frame Body Present）或保护（Protected）子字段取了不支持的值，或者——最关键的——ID 字段不是该站点所维护的某个 ID。对于变长（VL）唤醒帧还有两条基于排序的捷径：VL 帧把各站点条目按 WUR ID 递增排列，因此站点一旦看到一个超过自己的 WUR ID，就可以立即停止并丢弃。这里每一次丢弃都意味着一次本不会发生的唤醒，而这正是 WUR 的全部精髓。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the asymmetry of effort. The AP does all the heavy lifting — contention, NAV, retries, key management. The station's job is reduced to a tiny sequence of cheap comparisons (FCS, Type, ID) that a microwatt-class receiver can run while the main radio is dark. WUR shifts complexity to the side that has wall power.",
+      "zh": "请注意付出努力的不对称性。重活全由 AP 承担——竞争信道、设置 NAV、重传、密钥管理。站点的任务被压缩成一小串廉价的比对（FCS、类型、ID），微瓦级的接收机在主射频熄灭时就能完成。WUR 把复杂度转移到了有市电供电的那一侧。"
+    },
+    {
+      "type": "prose",
+      "en": "A sleeping receiver still needs a clock, or it cannot know when to listen. That is the job of the WUR Beacon frame. A station in WUR mode expects a WUR Beacon every dot11WURBeaconPeriod, and the AP generates them on a strict cadence: it defines a series of target WUR beacon transmission times exactly one beacon period apart, derived from dot11WURBeaconPeriod and the Offset Of TWBTT. At each target time the AP schedules a WUR Beacon on the WUR primary channel — but only if it actually has WUR stations to serve and at least one of them is not merely in Active mode. The beacon carries a partial TSF timestamp so receivers can keep their own TSF timer aligned to within the same ±100 ppm accuracy as a normal station, which in turn lets them open very short, well-aimed listening windows.",
+      "zh": "一个在休眠的接收机仍然需要一个时钟，否则它无从知晓何时该侦听。这正是 WUR Beacon 帧的职责。处于 WUR 模式的站点期望每隔 dot11WURBeaconPeriod 收到一次 WUR Beacon，而 AP 以严格的节奏生成它们：AP 基于 dot11WURBeaconPeriod 和 TWBTT 偏移（Offset Of TWBTT）定义出一系列目标 WUR beacon 发送时刻，彼此恰好相隔一个 beacon 周期。在每个目标时刻，AP 会在 WUR 主信道上调度一个 WUR Beacon——但前提是它确实有需要服务的 WUR 站点，且其中至少有一个不只是处于 Active 模式。该 beacon 携带一个部分 TSF 时间戳，使接收机能把自己的 TSF 定时器对齐到与普通站点相同的 ±100 ppm 精度内，进而能够打开非常短、瞄得很准的侦听窗口。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as WUR AP\n    participant WUR as Companion radio\n    participant Main as Main radio (asleep)\n    loop every WUR beacon period\n        AP->>WUR: WUR Beacon (partial TSF)\n        Note over WUR: re-align TSF, stay dozing\n    end\n    Note over AP: buffered traffic arrives for this STA\n    AP->>WUR: WUR (Short) Wake-up, ID = my WUR ID\n    WUR->>Main: wake the main radio\n    Main->>AP: frame (I'm awake) + retrieve BUs via agreed PS",
+      "zh": "sequenceDiagram\n    participant AP as WUR AP\n    participant WUR as 陪伴射频\n    participant Main as 主射频(休眠)\n    loop 每个 WUR beacon 周期\n        AP->>WUR: WUR Beacon(部分 TSF)\n        Note over WUR: 重新对齐 TSF, 继续打盹\n    end\n    Note over AP: 有发给本站的缓存流量到达\n    AP->>WUR: WUR(Short)Wake-up, ID = 我的 WUR ID\n    WUR->>Main: 唤醒主射频\n    Main->>AP: 发帧(我醒了) + 按约定 PS 取回缓存数据"
+    },
+    {
+      "type": "prose",
+      "en": "When the AP does have data, it pages the station and then hands off to ordinary power-save delivery. A WUR AP may send a full WUR Wake-up frame or a compact WUR Short Wake-up frame (used only when both ends advertise support) to signal that buffered units are waiting. Crucially, the WUR frame is only the doorbell: actual delivery follows whatever power-save scheme the AP and station already agreed — active-mode change, U-APSD, TWT for individually addressed data, or DTIM/FMS for group-addressed data — and the station may keep dozing until the agreed service period arrives. After paging, the AP waits a timeout longer than the station's advertised transition delay; receiving any frame back means success, otherwise it may retransmit (Short Wake-up frames are not retransmitted — it falls back to a full Wake-up frame). The AP also maintains a BSS parameter update counter and rings a broadcast page when a critical Beacon parameter changes.",
+      "zh": "当 AP 确实有数据时，它会先寻呼站点，然后交给普通的省电投递流程。WUR AP 可以发送一个完整的 WUR Wake-up 帧，或一个紧凑的 WUR Short Wake-up 帧（仅当两端都声明支持时才使用），以示意有缓存的数据单元在等待。关键在于，WUR 帧只是“门铃”：真正的投递遵循 AP 与站点早已商定的省电方案——对个体寻址的数据采用 active 模式切换、U-APSD 或 TWT，对组寻址的数据采用 DTIM/FMS——而站点可以一直打盹，直到约定的服务周期到来。寻呼之后，AP 会等待一个比站点所声明的过渡时延更长的超时；只要收到任何回帧即视为成功，否则它可以重传（Short Wake-up 帧不重传——会退回到完整的 Wake-up 帧）。AP 还维护一个 BSS 参数更新计数器，当某个关键的 Beacon 参数发生变化时，便用一条广播寻呼来通知。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A subtle privacy move lives in the Short Wake-up path: on a secure link the AP picks the station's WUR ID randomly and rotates it to a fresh random value after each use. That stops an eavesdropper from tracking a device by a static page address — and the station can pre-empt an unsolicited wake with a WUR Wake-up Indication frame so the AP does not needlessly burn through ID values.",
+      "zh": "Short Wake-up 流程里藏着一个巧妙的隐私设计：在安全链路上，AP 会随机选取站点的 WUR ID，并在每次使用后将其轮换为一个新的随机值。这能阻止窃听者通过一个固定的寻呼地址来追踪某台设备——而且站点可以用一个 WUR Wake-up Indication 帧来抢先声明这是一次主动唤醒，从而避免 AP 不必要地消耗掉一批 ID 值。"
+    },
+    {
+      "type": "prose",
+      "en": "Because a page can boot an expensive radio, a forged page is a real attack — so WUR frames can be protected. Once the right keys exist (the WTK for individual pages and the WIGTK for broadcast/group pages), and both ends negotiated WUR frame protection during association, the AP protects every individually addressed WUR Wake-up frame with BIP-CMAC-128. Two clever tricks keep it cheap. The MIC is truncated to just 16 bits and carried in the very FCS field — no extra bytes on air. And the packet number (PN) used for replay protection is mostly never transmitted: the AP can derive the full PN from its TSF timer (Common PN mode) and send only a tiny partial PN, so the receiver reconstructs the full PN locally from its own synchronised clock. (Short Wake-up frames stay unprotected — they are too small to carry a MIC.)",
+      "zh": "由于一条寻呼就能启动一个耗电的射频，被伪造的寻呼便构成真实的攻击——因此 WUR 帧可以被保护。一旦正确的密钥就位（个体寻呼用 WTK，广播/组寻呼用 WIGTK），且两端在关联期间协商了 WUR 帧保护，AP 就会用 BIP-CMAC-128 保护每一个个体寻址的 WUR Wake-up 帧。有两个巧妙的手法让开销极低。其一，MIC 被截断到仅 16 位，并直接放进 FCS 字段——空口上不增加任何额外字节。其二，用于防重放的报文序号（PN）大部分根本不传输：AP 可以从它的 TSF 定时器推导出完整 PN（Common PN 模式），只发送一个极小的部分 PN，接收方便用自己已同步的时钟在本地重建出完整 PN。（Short Wake-up 帧不受保护——它们太小，装不下 MIC。）"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 170\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"320\" y=\"18\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"13\">AAD for a protected WUR frame (40 bits)</text><rect x=\"30\" y=\"40\" width=\"110\" height=\"44\"/><rect x=\"140\" y=\"40\" width=\"160\" height=\"44\"/><rect x=\"300\" y=\"40\" width=\"60\" height=\"44\"/><rect x=\"360\" y=\"40\" width=\"220\" height=\"44\"/><text x=\"85\" y=\"60\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Frame Ctrl</text><text x=\"85\" y=\"74\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">8 bits</text><text x=\"220\" y=\"60\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">ID</text><text x=\"220\" y=\"74\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">12 bits</text><text x=\"330\" y=\"60\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Counter</text><text x=\"330\" y=\"74\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">4 bits</text><text x=\"470\" y=\"60\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Embedded BSSID</text><text x=\"470\" y=\"74\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">16 bits (MSBs of compressed BSSID)</text><text x=\"320\" y=\"118\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">MIC = Truncate-16( CMAC over AAD + Frame Body + PN )</text><text x=\"320\" y=\"140\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">carried in the 16-bit FCS field</text></svg>",
+      "caption": {
+        "en": "The 40-bit AAD for a protected WUR frame (Frame Control, ID, Counter, Embedded BSSID). The 16-bit MIC is a truncated BIP-CMAC-128 output and is carried in the FCS field itself — protection adds no airtime.",
+        "zh": "受保护 WUR 帧的 40 位 AAD（帧控制、ID、Counter、嵌入式 BSSID）。16 位的 MIC 是被截断的 BIP-CMAC-128 输出，直接放进 FCS 字段——保护不增加任何空口时间。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Finally, WUR can serve many sleepers at once with FDMA. Instead of one page per transmission, a WUR AP may put multiple WUR Wake-up frames into a single WUR FDMA PPDU spread across 20 MHz sub-channels of a 40 or 80 MHz channel. To do this it first proves the wider channel is clear: the relevant secondary sub-channels must have been idle for a PIFS immediately before the TXOP, and the AP schedules at least one WUR frame on each occupied 20 MHz sub-channel (a punctured 80 MHz PPDU is allowed when only some sub-channels are free). If it has nothing to page on the WUR primary sub-channel, it still sends a harmless WUR frame there that does not wake anyone — keeping the primary occupied without waste. FDMA is how a dense deployment pages a roomful of low-power devices in one shot.",
+      "zh": "最后，WUR 可以借助 FDMA 一次性服务许多休眠者。WUR AP 不必每次传输只发一条寻呼，而可以把多个 WUR Wake-up 帧放进单个 WUR FDMA PPDU 中，分布在 40 或 80 MHz 信道的各个 20 MHz 子信道上。为此它先要证明更宽的信道是空闲的：相关的次级子信道必须在 TXOP 之前的一个 PIFS 内保持空闲，且 AP 要在每个被占用的 20 MHz 子信道上至少调度一个 WUR 帧（当只有部分子信道空闲时，允许使用打孔的 80 MHz PPDU）。如果它在 WUR 主子信道上没有任何东西要寻呼，它仍会在那里发送一个无害、不会唤醒任何人的 WUR 帧——既占住主信道又不浪费。FDMA 正是密集部署下“一次性寻呼满屋低功耗设备”的方式。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every WUR-MAC clause taught here, with exact citations",
+        "zh": "覆盖地图：本课所讲的每个 WUR-MAC 条款及精确引用"
+      },
+      "en": "Channel access (29.3): the WUR AP contends per 10.23.3 / 10.3.2 using any AC, does not bump CW/retry counters for WUR transmissions, should open the TXOP with a NAV-setting frame, and selects an EDCAF/CCA on the BSS primary channel if the WUR primary channel coincides with it, otherwise a separate EDCAF on the WUR primary channel; after a WUR channel move it does CCA until NAV is set or NAVSyncDelay elapses. Discarding (29.4): the MAC should discard a WUR frame on an unsupported Type / Frame Body Present / Protected value, on an ID it does not maintain, or on VL ordering conditions. Identifiers general (29.5.1): IDs are integers 0-4095 from one shared space. Synchronisation (29.6.1): WUR-mode stations expect a WUR Beacon every dot11WURBeaconPeriod, keep TSF to within ±100 ppm, and scan or go awake if beacons stop. WUR Beacon generation (29.6.2): target WUR beacon transmission times from dot11WURBeaconPeriod and Offset Of TWBTT; the AP schedules on the WUR primary channel only when WUR stations are being served. WUR mode general (29.8.1): the AP provides WUR power-management service per 29.8.2-29.8.4 and 29.9. Short Wake-up (29.9.2): used only when both advertise support; on a secure link the AP randomises and rotates the WUR ID, generally does not retransmit a Short Wake-up (uses a Wake-up frame instead), and the station may send an UNSOLICITED_WAKEUP indication. AP operation (29.9.3): paging hands off to the agreed PS scheme (active/U-APSD/TWT, DTIM/FMS), respects transition delay, maintains a BSS parameter update counter with a defined critical-update list, and times out then optionally retransmits. Non-AP STA operation (29.9.4): on a matching page the station follows the agreed PS scheme to retrieve individual or group BUs and may keep dozing until the service period/DTIM TBTT; it tracks the BSS parameter update counter. Protection general (29.10.1): needs PTKSA + WIGTKSA; negotiated alongside MFP; the AP protects all individually addressed Wake-up frames with the WTK and broadcast/group ones with the WIGTK; Short Wake-up frames are not protected. Protected transmission (29.10.2): follow 12.5.3.5 with the WUR key, 40-bit AAD (Figure 29-3), AES-128-CMAC truncated to a 16-bit MIC placed in the FCS. Protected reception (29.10.3): follow 12.5.3.6, build the PN locally, run replay protection with per-key replay counters (or a common one), verify the MIC, and update TSF/PN. PN generation (29.10.4): WIPN/WTPN; in Common PN mode PN = TSF timer[9:56] and only a partial PN (PPN) is sent; in non-common mode the PN increments per frame and the receiver concatenates the carried PPN with a locally stored BPN. FDMA channel access (29.11.1): 40/80 MHz (or punctured 80 MHz) WUR FDMA PPDU subject to PIFS-idle secondary sub-channels and at-least-one-frame-per-occupied-20-MHz scheduling, with a no-wake filler frame on an otherwise-empty primary sub-channel.",
+      "zh": "信道接入（29.3）：WUR AP 依 10.23.3 / 10.3.2 用任意 AC 竞争，不为 WUR 传输调整 CW/重传计数器，应以设置 NAV 的帧开启 TXOP；若 WUR 主信道与 BSS 主信道重合则复用其 EDCAF/CCA，否则在 WUR 主信道上用独立 EDCAF；移到新 WUR 信道后做 CCA 直至设置 NAV 或 NAVSyncDelay 到期。丢弃（29.4）：当类型 / 帧体存在 / 保护取值不被支持、ID 非本站维护、或满足 VL 排序条件时，MAC 应丢弃该 WUR 帧。标识符总则（29.5.1）：ID 是取自同一共享空间的 0–4095 整数。同步（29.6.1）：WUR 模式站点期望每 dot11WURBeaconPeriod 收到一次 WUR Beacon，TSF 保持在 ±100 ppm 内，beacon 中断则扫描或转入 awake。WUR Beacon 生成（29.6.2）：由 dot11WURBeaconPeriod 与 Offset Of TWBTT 确定目标 WUR beacon 发送时刻；仅当有 WUR 站点被服务时才在 WUR 主信道上调度。WUR 模式总则（29.8.1）：AP 按 29.8.2–29.8.4 及 29.9 提供 WUR 省电服务。Short Wake-up（29.9.2）：仅在两端均声明支持时使用；安全链路上 AP 随机化并轮换 WUR ID，一般不重传 Short Wake-up（改用 Wake-up 帧），站点可发送 UNSOLICITED_WAKEUP 指示。AP 操作（29.9.3）：寻呼后交给约定的 PS 方案（active/U-APSD/TWT、DTIM/FMS），遵守过渡时延，维护带有明确关键更新清单的 BSS 参数更新计数器，超时后可选择重传。非 AP STA 操作（29.9.4）：匹配到寻呼后，站点按约定 PS 方案取回个体或组数据，并可一直打盹到服务周期/DTIM TBTT；它跟踪 BSS 参数更新计数器。保护总则（29.10.1）：需 PTKSA + WIGTKSA，与 MFP 一并协商；AP 用 WTK 保护所有个体寻址 Wake-up 帧、用 WIGTK 保护广播/组帧；Short Wake-up 帧不受保护。受保护发送（29.10.2）：依 12.5.3.5 用 WUR 密钥、40 位 AAD（图 29-3）、AES-128-CMAC 截断为 16 位 MIC 放入 FCS。受保护接收（29.10.3）：依 12.5.3.6 在本地构建 PN，用按密钥（或共用）的重放计数器做防重放，校验 MIC，并更新 TSF/PN。PN 生成（29.10.4）：WIPN/WTPN；Common PN 模式下 PN = TSF 定时器[9:56] 且仅发送部分 PN（PPN）；非共用模式下 PN 逐帧递增，接收方把所携带的 PPN 与本地存储的 BPN 拼接。FDMA 信道接入（29.11.1）：40/80 MHz（或打孔 80 MHz）WUR FDMA PPDU，须满足次级子信道 PIFS 内空闲、并在每个被占用的 20 MHz 上至少调度一帧的条件；在原本空闲的主子信道上发送一个不唤醒任何人的填充帧。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4712,
+          4713,
+          4716,
+          4717,
+          4720,
+          4727,
+          4728,
+          4729,
+          4730,
+          4731,
+          4732,
+          4733,
+          4734,
+          4735,
+          4737
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4712,
+        4713
+      ],
+      "note": "29.3 Channel access (EDCA, any AC, no CW/retry update, NAV, EDCAF/CCA choice); 29.4 Discarding a WUR frame; 29.5.1 identifier space 0-4095"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4716,
+        4717
+      ],
+      "note": "29.6.1 Synchronization general (WUR Beacon cadence, ±100 ppm TSF); 29.6.2 WUR Beacon frame generation (target WUR beacon transmission times, scheduling conditions)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4720
+      ],
+      "note": "29.8.1 WUR power management procedure General"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4727,
+        4728,
+        4729,
+        4730
+      ],
+      "note": "29.9.2 WUR Short Wake-up frame operation (random/rotated WUR ID, no retransmit); 29.9.3 WUR AP operation (PS handoff, transition delay, BSS parameter update counter); 29.9.4 WUR non-AP STA operation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4730,
+        4731,
+        4732,
+        4733,
+        4734,
+        4735
+      ],
+      "note": "29.10.1 protection general; 29.10.2 protected transmission (40-bit AAD Figure 29-3, 16-bit truncated MIC in FCS); 29.10.3 protected reception (local PN, replay counters); 29.10.4 PN generation/construction (WIPN/WTPN, Common PN)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4737
+      ],
+      "note": "29.11.1 WUR FDMA channel access (40/80 MHz and punctured PPDU, PIFS-idle conditions, per-20-MHz scheduling, no-wake filler on primary)"
+    }
+  ],
+  "covers": [
+    "80211-2024:29.3",
+    "80211-2024:29.4",
+    "80211-2024:29.5.1",
+    "80211-2024:29.6.1",
+    "80211-2024:29.6.2",
+    "80211-2024:29.8.1",
+    "80211-2024:29.9.2",
+    "80211-2024:29.9.3",
+    "80211-2024:29.9.4",
+    "80211-2024:29.10.1",
+    "80211-2024:29.10.2",
+    "80211-2024:29.10.3",
+    "80211-2024:29.10.4",
+    "80211-2024:29.11.1"
+  ],
+  "track": "low-power-iot"
+}

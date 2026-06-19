@@ -1,0 +1,184 @@
+{
+  "id": "legacy-phy-49-s1g-phy",
+  "title": {
+    "en": "The S1G PHY: Sub-1 GHz Physical Layer (802.11ah)",
+    "zh": "S1G PHY：Sub-1 GHz 物理层（802.11ah）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 23 specifies the Sub-1 GHz (S1G) PHY — the physical layer behind Wi-Fi HaLow (802.11ah). Where 2.4 GHz and 5 GHz Wi-Fi chase peak throughput, S1G chases long range and low power: it puts an OFDM waveform into licence-exempt sub-1 GHz bands, where signals travel farther and penetrate walls better, to serve large fleets of low-rate IoT sensors and meters. The S1G PHY is built on the VHT PHY (Clause 21), which itself descends from the HT PHY (Clause 19) and the original OFDM PHY (Clause 17) — so much of its machinery is the familiar OFDM chain, scaled down.",
+      "zh": "第 23 章规定了 Sub-1 GHz（S1G）PHY，也就是 Wi-Fi HaLow（802.11ah）背后的物理层。2.4 GHz 与 5 GHz Wi-Fi 追求峰值吞吐，而 S1G 追求远距离和低功耗：它把 OFDM 波形放进免许可的 1 GHz 以下频段，那里信号传得更远、穿墙能力更强，从而服务于大规模、低速率的物联网传感器和电表。S1G PHY 构建在 VHT PHY（第 21 章）之上，后者又派生自 HT PHY（第 19 章）和最初的 OFDM PHY（第 17 章），因此它的大部分机制就是我们熟悉的 OFDM 链路，只是按比例缩小了。"
+    },
+    {
+      "type": "prose",
+      "en": "The defining trick is narrow channels at a 1/10 clock rate. S1G supports 1, 2, 4, 8, and 16 MHz contiguous channel widths, all using the same 31.25 kHz tone spacing. The 2/4/8/16 MHz PPDUs are modulated essentially like the 20/40/80/160 MHz modes of Clause 21 but at one tenth the clock — stretching every symbol tenfold for robustness — while the unique 1 MHz format is purpose-built for the longest reach. Data subcarriers use BPSK, QPSK, 16-/64-/256-/1024-QAM, with convolutional (BCC) or LDPC coding at rates 1/2, 2/3, 3/4, 5/6. Up to four space-time streams are supported, and a downlink multi-user (MU) transmission can serve up to four users with at most three streams each, four total.",
+      "zh": "其标志性手法是采用 1/10 时钟速率的窄信道。S1G 支持 1、2、4、8、16 MHz 连续信道带宽，全部使用相同的 31.25 kHz 子载波间隔。2/4/8/16 MHz 的 PPDU 在调制上基本等同于第 21 章的 20/40/80/160 MHz 模式，但时钟为其十分之一，把每个符号拉长十倍以增强鲁棒性；而独有的 1 MHz 格式则专为最远覆盖而设计。数据子载波采用 BPSK、QPSK、16/64/256/1024-QAM，配合卷积码（BCC）或 LDPC 码，码率为 1/2、2/3、3/4、5/6。最多支持四条空时流；下行多用户（MU）传输最多可服务四个用户，每用户至多三条流，总数不超过四。"
+    },
+    {
+      "type": "prose",
+      "en": "The MAC drives the PHY through the same service interface model as other clauses (23.2): the TXVECTOR carries per-PPDU transmit parameters into PHY-TXSTART.request, the RXVECTOR reports a received PPDU's parameters in PHY-RXSTART.indication, and the PHYCONFIG_VECTOR configures the PHY independently of any single PPDU. The FORMAT parameter (S1G, S1G_DUP_1M, S1G_DUP_2M) sets the overall structure; CH_BANDWIDTH (CBW1/2/4/8/16) sets the width; PREAMBLE_TYPE selects which of the three preambles is used.",
+      "zh": "MAC 通过与其他章节相同的服务接口模型来驱动 PHY（23.2）：TXVECTOR 把每个 PPDU 的发送参数送入 PHY-TXSTART.request，RXVECTOR 在 PHY-RXSTART.indication 中报告所接收 PPDU 的参数，PHYCONFIG_VECTOR 则独立于任一具体 PPDU 来配置 PHY。FORMAT 参数（S1G、S1G_DUP_1M、S1G_DUP_2M）确定整体结构；CH_BANDWIDTH（CBW1/2/4/8/16）确定带宽；PREAMBLE_TYPE 选择使用三种前导中的哪一种。"
+    },
+    {
+      "type": "prose",
+      "en": "Three PPDU formats cover the whole range. S1G_1M uses the 1 MHz preamble — mandatory, the longest-range workhorse, also used for any-bandwidth 1 MHz-duplicate transmissions. S1G_SHORT (2 MHz and up) has no legacy portion, resembling HT-greenfield, and is also mandatory. S1G_LONG (2 MHz and up) carries an extra SIG-A/SIG-B and a beam-changeable portion (D-STF/D-LTF), resembling HT-mixed; it is the only format that can be an MU PPDU, and it is mandatory once a STA supports widths above 2 MHz. Every S1G STA must at least detect and decode the SIG-A of an S1G_LONG preamble.",
+      "zh": "三种 PPDU 格式覆盖全部范围。S1G_1M 使用 1 MHz 前导——强制支持，是覆盖最远的主力，也用于任意带宽的 1 MHz 复制传输。S1G_SHORT（2 MHz 及以上）不含传统部分，类似 HT-greenfield，同样为强制支持。S1G_LONG（2 MHz 及以上）多出一个 SIG-A/SIG-B 以及可变波束部分（D-STF/D-LTF），类似 HT-mixed；它是唯一可作为 MU PPDU 的格式，且当 STA 支持 2 MHz 以上带宽时为强制支持。每个 S1G STA 至少必须能检测并解码 S1G_LONG 前导的 SIG-A 字段。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 680 220\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><text x=\"6\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">S1G_1M</text><rect x=\"90\" y=\"8\" width=\"70\" height=\"24\"/><text x=\"100\" y=\"24\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">STF</text><rect x=\"160\" y=\"8\" width=\"70\" height=\"24\"/><text x=\"168\" y=\"24\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">LTF1</text><rect x=\"230\" y=\"8\" width=\"80\" height=\"24\"/><text x=\"248\" y=\"24\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">SIG</text><rect x=\"310\" y=\"8\" width=\"110\" height=\"24\"/><text x=\"318\" y=\"24\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">LTF2..LTFn</text><rect x=\"420\" y=\"8\" width=\"110\" height=\"24\"/><text x=\"450\" y=\"24\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Data</text><text x=\"6\" y=\"96\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">S1G_SHORT</text><rect x=\"90\" y=\"82\" width=\"70\" height=\"24\"/><text x=\"100\" y=\"98\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">STF</text><rect x=\"160\" y=\"82\" width=\"70\" height=\"24\"/><text x=\"168\" y=\"98\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">LTF1</text><rect x=\"230\" y=\"82\" width=\"80\" height=\"24\"/><text x=\"248\" y=\"98\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">SIG</text><rect x=\"310\" y=\"82\" width=\"110\" height=\"24\"/><text x=\"318\" y=\"98\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">LTF2..LTFn</text><rect x=\"420\" y=\"82\" width=\"110\" height=\"24\"/><text x=\"450\" y=\"98\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Data</text><text x=\"6\" y=\"170\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">S1G_LONG</text><rect x=\"90\" y=\"156\" width=\"50\" height=\"24\"/><text x=\"98\" y=\"172\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">STF</text><rect x=\"140\" y=\"156\" width=\"50\" height=\"24\"/><text x=\"146\" y=\"172\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">LTF1</text><rect x=\"190\" y=\"156\" width=\"58\" height=\"24\"/><text x=\"198\" y=\"172\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">SIG-A</text><rect x=\"248\" y=\"156\" width=\"50\" height=\"24\"/><text x=\"254\" y=\"172\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">D-STF</text><rect x=\"298\" y=\"156\" width=\"86\" height=\"24\"/><text x=\"304\" y=\"172\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">D-LTF1..n</text><rect x=\"384\" y=\"156\" width=\"58\" height=\"24\"/><text x=\"392\" y=\"172\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">SIG-B</text><rect x=\"442\" y=\"156\" width=\"88\" height=\"24\"/><text x=\"470\" y=\"172\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Data</text></svg>",
+      "caption": {
+        "en": "The three S1G PPDU formats (Figures 23-1/23-2/23-3). S1G_1M and S1G_SHORT share STF / LTF1 / SIG / LTF2..n / Data; S1G_LONG inserts SIG-A plus a beam-changeable portion (D-STF / D-LTF) and SIG-B before Data, enabling MU and beamformed transmission.",
+        "zh": "三种 S1G PPDU 格式（图 23-1/23-2/23-3）。S1G_1M 与 S1G_SHORT 共享 STF / LTF1 / SIG / LTF2..n / Data；S1G_LONG 在 Data 之前插入 SIG-A 以及可变波束部分（D-STF / D-LTF）和 SIG-B，从而支持 MU 与波束成形传输。"
+      }
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[PSDU + SERVICE] --> B[Scrambler]\n  B --> C[FEC: BCC or LDPC]\n  C --> D[Stream parser]\n  D --> E[Constellation map]\n  E --> F[Pilots + IDFT]\n  F --> G[Add GI + window]\n  G --> H[RF: 1/10 clock]",
+      "zh": "flowchart LR\n  A[PSDU + SERVICE] --> B[扰码器]\n  B --> C[FEC：BCC 或 LDPC]\n  C --> D[流解析器]\n  D --> E[星座映射]\n  E --> F[导频 + IDFT]\n  F --> G[加保护间隔+加窗]\n  G --> H[射频：1/10 时钟]"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why 1 MHz MCS 10 is special: it is BPSK rate-1/2 with a 2x block-wise repetition, giving just 6 data bits per symbol (150 kb/s). That redundancy is what buys the extra few dB of link budget for the very-long-range, very-low-rate sensor links HaLow targets — the 1 MHz mandatory mode is the heart of S1G's range story.",
+      "zh": "为什么 1 MHz 的 MCS 10 与众不同：它是 BPSK 1/2 码率外加 2 倍逐块重复，每符号仅 6 个数据比特（150 kb/s）。正是这种冗余换来了额外几 dB 的链路预算，服务于 HaLow 所瞄准的超远距离、超低速率传感器链路——这个强制的 1 MHz 模式正是 S1G 远距离能力的核心。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause-23 unit this lesson teaches",
+        "zh": "覆盖地图：本课所讲的全部第 23 章条目"
+      },
+      "en": "Introduction (23.1.1) sets the S1G PHY's lineage (VHT/HT/OFDM), bands, widths, 31.25 kHz tone spacing, modulations, coding, and the mandatory/optional feature split; scope (23.1.2) names the two protocol functions — mapping PSDUs into a PPDU, and transmitting/receiving over the medium. The service interface (23.2): introduction (23.2.1) defines TXVECTOR/RXVECTOR/PHYCONFIG_VECTOR; the TXVECTOR/RXVECTOR parameter table (23.2.2) lists FORMAT, PREAMBLE_TYPE, MU_SU, NDP_INDICATION and more; CH_BANDWIDTH's effect on PPDU format (23.2.3, Table 23-2) maps CBW1..16 and the duplicate formats to transmissions and phase-rotation patterns; TXSTATUS (23.2.4) carries TIME_OF_DEPARTURE; PHYCONFIG_VECTOR (23.2.5) carries GROUP_ID_MANAGEMENT, partial-AID lists, LISTEN_TO_GID, and CCA_SENSITIVITY_TYPE. In the PHY layer (23.3): the encoding overview (23.3.4) walks the construction of STF/LTF1/SIG-A/D-STF/D-LTF/SIG-B for each preamble; the Data field (23.3.9) covers SERVICE, scrambler, BCC/LDPC coding, the 2x repetition for 1 MHz MCS 10, stream/segment parsing, interleaving, constellation mapping, pilots, OFDM modulation, and 1/2 MHz duplicate transmission. SU/MU beamforming (23.3.10) reuses the VHT method (up to 4 streams, feedback matrix V, group ID). NDP CMAC PPDUs (23.3.12) are Data-less S1G_1M/S1G_SHORT PPDUs (NDP indication = 1) carrying compact control frames (NDP CTS, CF-End, PS-Poll, Ack, BlockAck, etc.). The transmit spec (23.3.17) defines spectrum mask, spectral flatness, frequency tolerance, EVM, and ToD accuracy; the receiver spec (23.3.18) defines minimum sensitivity, adjacent/nonadjacent rejection, max input, CCA sensitivity, RSSI/RCPI. The PLME (23.4): SAP primitives and MIB attributes (23.4.1, dot11PHYType = s1g), PHY MIB semantics (23.4.2), TXTIME/PSDU_LENGTH equations (23.4.3), and PHY characteristics (23.4.4: aSlotTime 52 us, aSIFSTime 160 us). Finally, parameters for S1G-MCSs (23.5) give the rate-dependent tables (23-42..23-61) for 1/2/4/8/16 MHz and Nss 1..4, including which MCS/width/Nss combinations are mandatory vs optional.",
+      "zh": "引言（23.1.1）确立了 S1G PHY 的血统（VHT/HT/OFDM）、频段、带宽、31.25 kHz 子载波间隔、调制、编码以及强制/可选特性的划分；范围（23.1.2）指明两项协议功能——把 PSDU 映射为 PPDU，以及在介质上收发。服务接口（23.2）：引言（23.2.1）定义 TXVECTOR/RXVECTOR/PHYCONFIG_VECTOR；TXVECTOR/RXVECTOR 参数表（23.2.2）列出 FORMAT、PREAMBLE_TYPE、MU_SU、NDP_INDICATION 等；CH_BANDWIDTH 对 PPDU 格式的影响（23.2.3，表 23-2）把 CBW1..16 及复制格式映射到具体传输与相位旋转模式；TXSTATUS（23.2.4）携带 TIME_OF_DEPARTURE；PHYCONFIG_VECTOR（23.2.5）携带 GROUP_ID_MANAGEMENT、部分 AID 列表、LISTEN_TO_GID 与 CCA_SENSITIVITY_TYPE。PHY 层（23.3）：编码概述（23.3.4）逐步说明每种前导中 STF/LTF1/SIG-A/D-STF/D-LTF/SIG-B 的构造；数据字段（23.3.9）涵盖 SERVICE、扰码器、BCC/LDPC 编码、1 MHz MCS 10 的 2 倍重复、流/段解析、交织、星座映射、导频、OFDM 调制以及 1/2 MHz 复制传输。SU/MU 波束成形（23.3.10）复用 VHT 方法（至多 4 条流、反馈矩阵 V、组 ID）。NDP CMAC PPDU（23.3.12）是无数据字段的 S1G_1M/S1G_SHORT PPDU（NDP 指示=1），承载紧凑控制帧（NDP CTS、CF-End、PS-Poll、Ack、BlockAck 等）。发送规范（23.3.17）定义频谱模板、频谱平坦度、频率容差、EVM 与出发时间精度；接收规范（23.3.18）定义最小灵敏度、相邻/非相邻信道抑制、最大输入、CCA 灵敏度、RSSI/RCPI。PLME（23.4）：SAP 原语与 MIB 属性（23.4.1，dot11PHYType = s1g）、PHY MIB 语义（23.4.2）、TXTIME/PSDU_LENGTH 公式（23.4.3）以及 PHY 特性（23.4.4：aSlotTime 52 微秒、aSIFSTime 160 微秒）。最后，S1G-MCS 参数（23.5）给出 1/2/4/8/16 MHz、Nss 1..4 的速率相关表（23-42..23-61），包括哪些 MCS/带宽/Nss 组合为强制、哪些为可选。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3730,
+          3732,
+          3741,
+          3742,
+          3743,
+          3746,
+          3794,
+          3808,
+          3811,
+          3824,
+          3832,
+          3851,
+          3856
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Timing fingerprint: an S1G STA runs aSlotTime = 52 us and aSIFSTime = 160 us — far longer than mainstream Wi-Fi — a direct consequence of the 1/10 clock that stretches symbols for range. The PLME exposes dot11PHYType = s1g and a rich MIB (LDPC, STBC, traveling-pilot, short-GI options) so the MAC can negotiate exactly which optional features each peer supports.",
+      "zh": "时序指纹：S1G STA 的 aSlotTime = 52 微秒、aSIFSTime = 160 微秒，远长于主流 Wi-Fi——这正是 1/10 时钟拉长符号以换取距离的直接结果。PLME 暴露 dot11PHYType = s1g 以及丰富的 MIB（LDPC、STBC、行进导频、短保护间隔等选项），使 MAC 能精确协商各对端支持哪些可选特性。"
+    },
+    {
+      "type": "widget",
+      "widget": "channel-width",
+      "params": {}
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3730,
+        3731
+      ],
+      "note": "23.1.1 introduction, 23.1.2 scope, mandatory/optional features"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3732,
+        3733
+      ],
+      "note": "23.1.4 PPDU formats; 23.2.1 service interface; 23.2.2 TXVECTOR/RXVECTOR Table 23-1"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3741,
+        3742,
+        3743
+      ],
+      "note": "23.2.3 CH_BANDWIDTH effect (Table 23-2); 23.2.4 TXSTATUS; 23.2.5 PHYCONFIG_VECTOR; 23.3.2 PPDU format"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3744,
+        3745,
+        3746
+      ],
+      "note": "S1G_LONG/S1G_1M figures; 23.3.3 transmitter block diagram; 23.3.4 encoding overview"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3794,
+        3795
+      ],
+      "note": "23.3.9 Data field: SERVICE, scrambler, BCC/LDPC coding, MCS 10 repetition"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3808,
+        3809,
+        3810,
+        3811,
+        3812
+      ],
+      "note": "23.3.10 SU/MU beamforming; 23.3.12 NDP CMAC PPDUs"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3824,
+        3825,
+        3832,
+        3833
+      ],
+      "note": "23.3.17 transmit spec (spectrum mask); 23.3.18 receiver spec (sensitivity, rejection)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3851,
+        3853,
+        3856,
+        3857
+      ],
+      "note": "23.4.1-23.4.4 PLME/MIB/TXTIME/characteristics; 23.5 S1G-MCS parameter tables"
+    }
+  ],
+  "covers": [
+    "80211-2024:23.1.1",
+    "80211-2024:23.1.2",
+    "80211-2024:23.2.1",
+    "80211-2024:23.2.2",
+    "80211-2024:23.2.3",
+    "80211-2024:23.2.4",
+    "80211-2024:23.2.5",
+    "80211-2024:23.3.4",
+    "80211-2024:23.3.9",
+    "80211-2024:23.3.10",
+    "80211-2024:23.3.12",
+    "80211-2024:23.3.17",
+    "80211-2024:23.3.18",
+    "80211-2024:23.4.1",
+    "80211-2024:23.4.2",
+    "80211-2024:23.4.3",
+    "80211-2024:23.4.4",
+    "80211-2024:23.5"
+  ],
+  "track": "legacy-phy"
+}

@@ -1,0 +1,229 @@
+{
+  "id": "legacy-phy-46-edmg-phy",
+  "title": {
+    "en": "The EDMG PHY: 802.11ay at 60 GHz",
+    "zh": "EDMG PHY：60 GHz 的 802.11ay"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 28 specifies the Enhanced Directional Multi-Gigabit (EDMG) PHY — the 802.11ay layer that runs in the 60 GHz band. It is built directly on top of the DMG PHY (Clause 20): every EDMG station must still transmit and receive ordinary DMG PPDUs, so EDMG is an extension, not a replacement. What EDMG adds is the heavy machinery for tens of gigabits per second: multiple space-time streams (up to eight), downlink multi-user (MU) transmission to up to eight stations, and wide channels formed by bonding or aggregating the 2.16 GHz base channels into 4.32, 6.48, 8.64, 2.16+2.16, and 4.32+4.32 GHz widths.",
+      "zh": "第 28 章规定了增强型定向多吉比特（EDMG）PHY——即工作在 60 GHz 频段的 802.11ay 物理层。它直接构建在 DMG PHY（第 20 章）之上：每个 EDMG 站点仍必须能够发送和接收普通的 DMG PPDU，因此 EDMG 是扩展而非替代。EDMG 新增的是实现数十吉比特每秒的重型机制：多达八条空时流、面向最多八个站点的下行多用户（MU）传输，以及通过绑定或聚合 2.16 GHz 基础信道而形成的 4.32、6.48、8.64、2.16+2.16 和 4.32+4.32 GHz 宽信道。"
+    },
+    {
+      "type": "prose",
+      "en": "EDMG defines three operating modes, all selected through the PHY service interface. The control mode (28.4) is the robust, low-rate mode that spreads each symbol with a length-32 Golay sequence — used for management and beamforming setup. The single-carrier (SC) mode (28.5) is the mandatory workhorse, carrying the bulk of data with π/2-BPSK through higher constellations. The OFDM mode (28.6) is the optional high-throughput mode that splits the wide channel into many subcarriers. The MAC chooses among these per PPDU via the TXVECTOR parameters; the receiver reports what it found via the RXVECTOR.",
+      "zh": "EDMG 定义了三种工作模式，全部通过 PHY 服务接口选择。控制模式（28.4）是稳健的低速模式，用长度为 32 的 Golay 序列对每个符号进行扩展——用于管理帧和波束成形建立。单载波（SC）模式（28.5）是强制性的主力模式，从 π/2-BPSK 到更高阶星座承载绝大部分数据。OFDM 模式（28.6）是可选的高吞吐模式，将宽信道拆分为多个子载波。MAC 通过 TXVECTOR 参数为每个 PPDU 选择其中一种模式；接收机则通过 RXVECTOR 报告其检测到的结果。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 760 70\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><rect x=\"2\" y=\"20\" width=\"70\" height=\"30\"/><text x=\"37\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">L-STF</text><rect x=\"72\" y=\"20\" width=\"70\" height=\"30\"/><text x=\"107\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">L-CEF</text><rect x=\"142\" y=\"20\" width=\"78\" height=\"30\"/><text x=\"181\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">L-Header</text><rect x=\"220\" y=\"20\" width=\"96\" height=\"30\"/><text x=\"268\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">EDMG-Hdr-A</text><rect x=\"316\" y=\"20\" width=\"78\" height=\"30\"/><text x=\"355\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">EDMG-STF</text><rect x=\"394\" y=\"20\" width=\"78\" height=\"30\"/><text x=\"433\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">EDMG-CEF</text><rect x=\"472\" y=\"20\" width=\"96\" height=\"30\"/><text x=\"520\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">EDMG-Hdr-B</text><rect x=\"568\" y=\"20\" width=\"110\" height=\"30\"/><text x=\"623\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Data</text><rect x=\"678\" y=\"20\" width=\"80\" height=\"30\"/><text x=\"718\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">TRN</text><line x1=\"2\" y1=\"14\" x2=\"220\" y2=\"14\"/><text x=\"111\" y=\"10\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">non-EDMG portion (Clause 20 readable)</text></svg>",
+      "caption": {
+        "en": "EDMG PPDU format (28.3.2). The non-EDMG portion (L-STF, L-CEF, L-Header) is decodable by legacy Clause 20 stations; the EDMG portion adds Header-A, STF, CEF, optional Header-B (MU only), Data, and an optional TRN training field.",
+        "zh": "EDMG PPDU 格式（28.3.2）。非 EDMG 部分（L-STF、L-CEF、L-Header）可被传统第 20 章站点解码；EDMG 部分则新增 Header-A、STF、CEF、可选的 Header-B（仅 MU）、数据字段以及可选的 TRN 训练字段。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Backward compatibility is the design hinge. The non-EDMG portion of the preamble (everything before EDMG-Header-A) is built so any DMG station can decode it and defer. Specific reserved bits in the L-Header then signal that an EDMG portion follows: for control mode the receiver inspects L-Header bits 22/23 and the Scrambler Initialization field, while for SC and OFDM mode it checks L-Header bit 46. A single PPDU format covers all three modes — an SU PPDU omits EDMG-Header-B, an MU PPDU includes it, and an A-PPDU concatenates several PPDUs to one user.",
+      "zh": "向后兼容是整个设计的枢纽。前导码的非 EDMG 部分（EDMG-Header-A 之前的全部内容）的构造方式使任何 DMG 站点都能解码并据此退避。随后，L-Header 中特定的保留位用于指示后面跟有 EDMG 部分：在控制模式下接收机检查 L-Header 的第 22/23 位以及扰码器初始化字段，而在 SC 和 OFDM 模式下则检查 L-Header 的第 46 位。单一的 PPDU 格式覆盖全部三种模式——SU PPDU 省略 EDMG-Header-B，MU PPDU 包含它，而 A-PPDU 则将多个面向同一用户的 PPDU 串接在一起。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  TX[TXVECTOR FORMAT] -->|NON_EDMG| C20[Clause 20 DMG PHY]\n  TX -->|EDMG| MODE{EDMG_MODULATION}\n  MODE -->|C_MODE| CTRL[Control mode 28.4]\n  MODE -->|SC_MODE| SC[SC mode 28.5]\n  MODE -->|OFDM| OFDM[OFDM mode 28.6]",
+      "zh": "flowchart TD\n  TX[TXVECTOR FORMAT] -->|NON_EDMG| C20[第20章 DMG PHY]\n  TX -->|EDMG| MODE{EDMG_MODULATION}\n  MODE -->|C_MODE| CTRL[控制模式 28.4]\n  MODE -->|SC_MODE| SC[SC 模式 28.5]\n  MODE -->|OFDM| OFDM[OFDM 模式 28.6]"
+    },
+    {
+      "type": "prose",
+      "en": "Channel bonding is captured by the NCB parameter — the number of contiguous bonded 2.16 GHz channels: NCB = 1 for 2.16 and 2.16+2.16 GHz, 2 for 4.32 and 4.32+4.32 GHz, 3 for 6.48 GHz, and 4 for 8.64 GHz. NCB sets the chip rate: the EDMG-modulated fields run at Fc,EDMG = Fc × NCB, so a bonded channel literally clocks faster. The EDMG-STF and EDMG-CEF that begin the EDMG portion are sized by NCB and by the number of space-time streams iSTS — for a single stream on one 2.16 GHz channel the EDMG-CEF is even omitted, since the legacy L-CEF already estimated the channel.",
+      "zh": "信道绑定由 NCB 参数刻画——即相邻绑定的 2.16 GHz 信道数量：2.16 与 2.16+2.16 GHz 时 NCB = 1，4.32 与 4.32+4.32 GHz 时为 2，6.48 GHz 时为 3，8.64 GHz 时为 4。NCB 决定了码片速率：EDMG 调制字段以 Fc,EDMG = Fc × NCB 运行，因此绑定信道的时钟确实更快。开启 EDMG 部分的 EDMG-STF 和 EDMG-CEF 的大小由 NCB 和空时流数量 iSTS 决定——对于单条流、单个 2.16 GHz 信道的情形，EDMG-CEF 甚至会被省略，因为传统的 L-CEF 已完成信道估计。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "An EDMG station logically wraps two PHYs: the Clause 28 entity and the Clause 20 entity. The MAC always talks to the Clause 28 service interface, which forwards down to Clause 20 when a NON_EDMG (or non-EDMG duplicate) PPDU is requested. The TXVECTOR/RXVECTOR/TXSTATUS structurally include all the DMG fields, so legacy operation is a strict subset.",
+      "zh": "EDMG 站点在逻辑上封装了两个 PHY：第 28 章实体和第 20 章实体。MAC 始终与第 28 章服务接口对话，当请求 NON_EDMG（或非 EDMG 复制）PPDU 时，该接口再向下转发给第 20 章。TXVECTOR/RXVECTOR/TXSTATUS 在结构上包含全部 DMG 字段，因此传统操作是一个严格子集。"
+    },
+    {
+      "type": "prose",
+      "en": "All three modes share a familiar transmit chain: scrambler, LDPC encoder, constellation mapper, then mode-specific shaping. Control mode adds a length-32 Golay spreader for robustness. SC mode blocks symbols and inserts a guard interval (short, normal, or long) between blocks — normal GI is mandatory. OFDM mode replaces blocking with a stream parser, IDFT, and a cyclic-prefix guard interval, and scatters pilot and data tones across the subcarriers. LDPC parity matrices for the data field come from a shared family of rate-1/2, 5/8, 3/4, 13/16, and 7/8 codes over length-672 and length-1344 codewords.",
+      "zh": "三种模式共享一条熟悉的发射链：扰码器、LDPC 编码器、星座映射器，随后是各模式特有的成形处理。控制模式额外加入长度为 32 的 Golay 扩展以增强稳健性。SC 模式将符号分块，并在块之间插入保护间隔（短、正常或长）——其中正常保护间隔是强制的。OFDM 模式则以流解析器、IDFT 和循环前缀保护间隔取代分块，并将导频音和数据音分散到各子载波上。数据字段的 LDPC 校验矩阵来自一组共享的码族，包括 1/2、5/8、3/4、13/16 和 7/8 码率，码字长度为 672 和 1344。"
+    },
+    {
+      "type": "prose",
+      "en": "Beyond the bits, Clause 28 pins down the analog edge of each mode. A set of common requirements applies across all modes: received channel power indicator (RCPI) measurement, transmit center-frequency and symbol-clock tolerance, center-frequency leakage limits, ramp-up/ramp-down behavior, and receiver minimum-input sensitivity. The per-mode PPDU transmission subclauses then define exactly how the waveform maps onto the NTX transmit chains across each channel width, including spatial mapping for multiple streams and how a non-EDMG duplicate PPDU is replicated across bonded channels. The per-mode performance requirements set transmit modulation accuracy (EVM) per MCS and a time-of-departure accuracy of 80 ns or better — the precise timing that makes 60 GHz ranging viable. TXTIME, finally, lets the MAC predict PPDU airtime before it transmits, summing preamble, header, data, and any TRN training field.",
+      "zh": "在比特之外，第 28 章还固定了每种模式的模拟边界。一组公共要求适用于所有模式：接收信道功率指示（RCPI）测量、发射中心频率与符号时钟容差、中心频率泄漏限制、上升/下降斜坡行为，以及接收机最小输入灵敏度。随后，各模式的 PPDU 传输小节精确定义了波形如何在各信道宽度上映射到 NTX 条发射链，包括多流的空间映射，以及非 EDMG 复制 PPDU 如何在绑定信道上复制。各模式的性能要求规定了每个 MCS 的发射调制精度（EVM），以及优于 80 ns 的离开时间精度——正是这一精确定时使 60 GHz 测距成为可能。最后，TXTIME 让 MAC 在发射前即可预测 PPDU 的占空时间，方法是将前导码、报头、数据以及任何 TRN 训练字段相加。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each Clause 28 unit lives",
+        "zh": "覆盖图：第 28 章各单元的归属位置"
+      },
+      "en": "PHY overview and modes: 28.1.3 (EDMG PHY functions — PHY function plus PLME), 28.2.4 (support for NON_EDMG formats — the dual Clause 28/Clause 20 entity, transmit/receive configuration, channel-bandwidth configuration, CCA), 28.2.5 (TXSTATUS parameters). PPDU and common parameters: 28.3.2 (EDMG PPDU format and the EDMG A-PPDU), 28.3.6 (LDPC parity matrices — rate 1/2 through 7/8), 28.3.9 (common requirements — RCPI measurement, frequency/clock tolerance, center-frequency leakage, ramp-up/down, receiver sensitivity, applied across all modes). Control mode: 28.4.2 (transmitter block diagram, with the length-32 Golay spreader), 28.4.5 (EDMG portion of the control-mode PPDU — scrambler, encoder, modulation/spreading), 28.4.7 (PPDU transmission over each channel width). SC mode: 28.5.2 (signal/timing parameters and the NCB chip-rate scaling), 28.5.3 (transmitter block diagram), 28.5.5 (EDMG-CEF definition), 28.5.9 (Data field — guard intervals, symbol blocking, scrambler, encoding), 28.5.10 (PPDU transmission — spatial mapping, SU and MU), 28.5.11 (performance — EVM and 80 ns time-of-departure). OFDM mode: 28.6.2 (OFDM signal parameters — pilot and data tones), 28.6.3 (transmitter block diagram with IDFT and stream parser), 28.6.5 (EDMG-CEF definition), 28.6.9 (Data field — scrambler, encoding, modulation mapping), 28.6.10 (PPDU transmission), 28.6.11 (performance requirements). OFDM sequences: 28.11.1 (EDMG-STF sequence) and 28.11.2 (EDMG-CEF sequence). PLME: 28.12.3 (TXTIME calculation for control, SC, and OFDM modes, including the TRN field duration).",
+      "zh": "PHY 概览与模式：28.1.3（EDMG PHY 功能——PHY 功能加 PLME），28.2.4（对 NON_EDMG 格式的支持——第 28/20 章双实体、收发配置、信道带宽配置、CCA），28.2.5（TXSTATUS 参数）。PPDU 与公共参数：28.3.2（EDMG PPDU 格式与 EDMG A-PPDU），28.3.6（LDPC 校验矩阵——1/2 至 7/8 码率）。控制模式：28.4.2（发射机框图，含长度为 32 的 Golay 扩展器），28.4.5（控制模式 PPDU 的 EDMG 部分——扰码器、编码器、调制/扩展），28.4.7（各信道宽度下的 PPDU 传输）。SC 模式：28.5.2（信号/定时参数与 NCB 码片速率缩放），28.5.3（发射机框图），28.5.5（EDMG-CEF 定义），28.5.9（数据字段——保护间隔、符号分块、扰码器、编码），28.5.10（PPDU 传输——空间映射、SU 与 MU），28.5.11（性能——EVM 与 80 ns 离开时间）。OFDM 模式：28.6.2（OFDM 信号参数——导频音与数据音），28.6.3（含 IDFT 与流解析器的发射机框图），28.6.5（EDMG-CEF 定义），28.6.9（数据字段——扰码器、编码、调制映射），28.6.10（PPDU 传输），28.6.11（性能要求）。OFDM 序列：28.11.1（EDMG-STF 序列）与 28.11.2（EDMG-CEF 序列）。PLME：28.12.3（控制、SC 和 OFDM 模式的 TXTIME 计算，含 TRN 字段时长）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4399,
+          4419,
+          4425,
+          4461,
+          4475,
+          4482,
+          4495,
+          4549,
+          4571,
+          4668,
+          4683,
+          4704
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why both SC and OFDM at 60 GHz? Single carrier keeps the peak-to-average ratio low, which suits the cheap, power-hungry 60 GHz amplifiers and is the mandatory mode. OFDM is offered as an optional mode where frequency-selective channels and the very wide bonded bandwidths reward subcarrier-level adaptation. The control mode underpins both: every beamforming and management exchange rides on its length-32 Golay-spread, MCS 0 robustness.",
+      "zh": "为何 60 GHz 同时采用 SC 和 OFDM？单载波保持较低的峰均比，适合廉价且高功耗的 60 GHz 放大器，因而是强制模式。OFDM 作为可选模式提供，在频率选择性信道和极宽的绑定带宽下，子载波级自适应更具优势。控制模式则是二者的基础：每一次波束成形和管理交互都依托其长度为 32 的 Golay 扩展、MCS 0 的稳健性。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4398,
+        4399,
+        4400
+      ],
+      "note": "28.1.3 EDMG PHY functions; 28.1.4 PPDU formats; 28.2 service interface intro"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4419,
+        4420,
+        4421,
+        4422,
+        4423
+      ],
+      "note": "28.2.4 support for NON_EDMG formats (dual entity, TX/RX config, CCA); 28.2.5 TXSTATUS"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4425,
+        4426,
+        4427
+      ],
+      "note": "28.3.2 EDMG PPDU format and EDMG A-PPDU; Table 28-3 fields"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4461
+      ],
+      "note": "28.3.6 LDPC parity matrices intro"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4475,
+        4476
+      ],
+      "note": "28.3.9 common requirements (RCPI, frequency/clock tolerance, leakage, ramp, sensitivity)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4482,
+        4483,
+        4484,
+        4485,
+        4486
+      ],
+      "note": "28.4.2 control transmitter block diagram; 28.4.5 EDMG portion; 28.4.7 PPDU transmission"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4495,
+        4496,
+        4501,
+        4507
+      ],
+      "note": "28.5.2 SC signal params/NCB chip rate; 28.5.3 transmitter; 28.5.5 EDMG-CEF; 28.5.9 Data field/GI"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4545,
+        4549
+      ],
+      "note": "28.5.10 PPDU transmission/spatial mapping; 28.5.11 EVM and 80 ns time-of-departure"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4549,
+        4560,
+        4561,
+        4564,
+        4571
+      ],
+      "note": "28.6.2 OFDM signal params; 28.6.3 transmitter (IDFT, stream parser); 28.6.5 EDMG-CEF; 28.6.9 Data field"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4583,
+        4587
+      ],
+      "note": "28.6.10 OFDM PPDU transmission; 28.6.11 performance requirements"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4668,
+        4683
+      ],
+      "note": "28.11.1 EDMG-STF sequence; 28.11.2 EDMG-CEF sequence (OFDM)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4704,
+        4705
+      ],
+      "note": "28.12.3 TXTIME calculation for control/SC/OFDM modes and TRN duration"
+    }
+  ],
+  "covers": [
+    "80211-2024:28.1.3",
+    "80211-2024:28.2.4",
+    "80211-2024:28.2.5",
+    "80211-2024:28.3.2",
+    "80211-2024:28.3.6",
+    "80211-2024:28.3.9",
+    "80211-2024:28.4.2",
+    "80211-2024:28.4.5",
+    "80211-2024:28.4.7",
+    "80211-2024:28.5.2",
+    "80211-2024:28.5.3",
+    "80211-2024:28.5.5",
+    "80211-2024:28.5.9",
+    "80211-2024:28.5.10",
+    "80211-2024:28.5.11",
+    "80211-2024:28.6.2",
+    "80211-2024:28.6.3",
+    "80211-2024:28.6.5",
+    "80211-2024:28.6.9",
+    "80211-2024:28.6.10",
+    "80211-2024:28.6.11",
+    "80211-2024:28.11.1",
+    "80211-2024:28.11.2",
+    "80211-2024:28.12.3"
+  ],
+  "track": "legacy-phy"
+}

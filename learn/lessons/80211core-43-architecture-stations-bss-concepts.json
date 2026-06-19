@@ -1,0 +1,160 @@
+{
+  "id": "80211core-43-architecture-stations-bss-concepts",
+  "title": {
+    "en": "The Big Picture: 802.11 Architecture, Stations and BSS Concepts",
+    "zh": "全景图：802.11 体系结构、站点与 BSS 概念"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Before diving into frames, timers and modulation, IEEE Std 802.11 paints a conceptual map of what a Wi-Fi network is made of. Clause 4.1 is explicit that this is an architecture of functional components — a way to reason about how the pieces fit together — and is not meant to describe any one vendor's physical implementation. Everything that follows in the standard hangs off this picture, so it is worth getting the vocabulary straight first.",
+      "zh": "在深入帧格式、定时器和调制方式之前，IEEE Std 802.11 先描绘了一张概念地图，说明一个 Wi-Fi 网络由哪些部分构成。第 4.1 节明确指出：这是一套功能组件的体系结构——一种用来理清各部分如何协同的思维框架——而非对某一厂商物理实现的描述。标准后续的全部内容都挂靠在这张图上，因此先把术语理顺很有必要。"
+    },
+    {
+      "type": "prose",
+      "en": "Why does Wi-Fi need its own architecture at all? Clause 4.2 explains that wireless LANs are fundamentally different from wired ones. The addressable unit is a station (STA), and in a wireless network an address is no longer equivalent to a fixed physical location — a STA can be fixed, portable, or mobile (4.2.1, 4.2.2). The medium itself shapes the design: it has no clear boundaries, is unprotected from other signals, is less reliable than a cable, has dynamic topologies, and lacks full connectivity, so some STAs may be \"hidden\" from each other (4.2.3). Handling mobile STAs adds further demands — propagation effects blur the line between portable and mobile, and because STAs are often battery powered, power management is a first-class concern (4.2.4).",
+      "zh": "Wi-Fi 为何需要一套专属的体系结构？第 4.2 节解释道：无线局域网与有线局域网存在本质差异。可寻址的单元是站点（STA），而在无线网络中地址不再等同于一个固定的物理位置——STA 可以是固定的、便携的或移动的（4.2.1、4.2.2）。介质本身也塑造了设计：它没有清晰的边界、无法免受其他信号干扰、可靠性低于电缆、拓扑动态变化，且缺乏完全连通性，因此某些 STA 之间可能彼此“隐藏”（4.2.3）。处理移动 STA 又带来了更多要求——传播效应模糊了便携与移动之间的界限，而由于 STA 通常依靠电池供电，电源管理成为头等大事（4.2.4）。"
+    },
+    {
+      "type": "prose",
+      "en": "An 802.11 LAN must also fit into the wider IEEE 802 family. Clause 4.2.5 requires that 802.11 appear to higher layers (the LLC sublayer) as a general-purpose IEEE 802 LAN, which forces the MAC sublayer to absorb untraditional functionality such as mobility handling and QoS. In a robust security network association (RSNA), 802.11 protects Data frames while IEEE Std 802.1X provides authentication and key management collaboratively. Clause 4.2.6 notes that an RSNA also leans on non-IEEE-802 protocols — for authentication and key management (AKM), some of which come from other bodies such as the IETF.",
+      "zh": "一个 802.11 局域网还必须融入更广泛的 IEEE 802 家族。第 4.2.5 节要求 802.11 在高层（LLC 子层）看来等同于一个通用的 IEEE 802 局域网，这迫使 MAC 子层承担起诸如移动性处理和 QoS 等非传统功能。在健壮安全网络关联（RSNA）中，802.11 负责保护数据帧，而 IEEE Std 802.1X 协同提供认证与密钥管理。第 4.2.6 节指出，RSNA 还依赖非 IEEE-802 协议来完成认证与密钥管理（AKM），其中部分协议来自 IETF 等其他组织。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n  LLC[\"LLC / upper layers\"] --> MAC[\"802.11 MAC\"]\n  MAC --> PHY[\"802.11 PHY\"]\n  PHY --> WM[\"Wireless medium (WM)\"]\n  MAC -. RSNA .-> X[\"802.1X auth + key mgmt\"]\n  X -. AKM .-> NON[\"Non-802 protocols (e.g. IETF)\"]",
+      "zh": "graph TD\n  LLC[\"LLC / 高层\"] --> MAC[\"802.11 MAC\"]\n  MAC --> PHY[\"802.11 PHY\"]\n  PHY --> WM[\"无线介质 (WM)\"]\n  MAC -. RSNA .-> X[\"802.1X 认证与密钥管理\"]\n  X -. AKM .-> NON[\"非 802 协议 (如 IETF)\"]"
+    },
+    {
+      "type": "prose",
+      "en": "Now the building blocks. The basic service set (BSS) is the foundational unit of an 802.11 LAN: a set of STAs that can communicate, loosely bounded by a basic service area (BSA). A single BSS can stand alone, but PHY range limits how far STAs can reach. To extend coverage, infrastructure BSSs are interconnected by a distribution system (DS) — the architectural component that ties multiple BSSs together for non-general-link operation (4.3.5). An access point (AP) is any entity that has STA functionality plus a distribution system access function (DSAF), giving associated STAs access to the DS over the wireless medium. The standard deliberately separates the wireless medium (WM) from the distribution system medium (DSM): they are logically different and need not be the same physical medium. The union of infrastructure BSSs sharing one SSID over a single DS is the extended service set (ESS), and it appears to the LLC as a single 802 access domain — which is how mobile STAs roam between BSSs transparently to upper layers.",
+      "zh": "现在来看构成要素。基本服务集（BSS）是 802.11 局域网的基础单元：一组能够互相通信的 STA，由基本服务区（BSA）大致界定范围。单个 BSS 可以独立存在，但 PHY 的覆盖距离有限。为扩展覆盖，多个基础设施 BSS 通过分布系统（DS）互联——DS 正是在非通用链路运行模式下将多个 BSS 连接起来的体系结构组件（4.3.5）。接入点（AP）是任何同时具备 STA 功能和分布系统接入功能（DSAF）的实体，它让已关联的 STA 通过无线介质访问 DS。标准刻意将无线介质（WM）与分布系统介质（DSM）区分开：二者在逻辑上不同，且不必是同一种物理介质。共享同一 SSID、通过单个 DS 相连的多个基础设施 BSS 的并集即为扩展服务集（ESS），它在 LLC 看来就是单一的 802 接入域——移动 STA 正是借此在多个 BSS 之间漫游，且对高层透明。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 400 180\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><ellipse cx=\"95\" cy=\"70\" rx=\"70\" ry=\"45\"/><ellipse cx=\"305\" cy=\"70\" rx=\"70\" ry=\"45\"/><circle cx=\"95\" cy=\"70\" r=\"8\"/><text x=\"82\" y=\"95\" font-size=\"11\" stroke=\"none\" fill=\"currentColor\">AP</text><circle cx=\"60\" cy=\"55\" r=\"6\"/><circle cx=\"120\" cy=\"50\" r=\"6\"/><circle cx=\"305\" cy=\"70\" r=\"8\"/><text x=\"292\" y=\"95\" font-size=\"11\" stroke=\"none\" fill=\"currentColor\">AP</text><circle cx=\"270\" cy=\"55\" r=\"6\"/><circle cx=\"335\" cy=\"50\" r=\"6\"/><line x1=\"95\" y1=\"70\" x2=\"95\" y2=\"150\"/><line x1=\"305\" y1=\"70\" x2=\"305\" y2=\"150\"/><line x1=\"60\" y1=\"150\" x2=\"340\" y2=\"150\"/><text x=\"150\" y=\"168\" font-size=\"12\" stroke=\"none\" fill=\"currentColor\">Distribution System (DS)</text><text x=\"60\" y=\"25\" font-size=\"11\" stroke=\"none\" fill=\"currentColor\">BSS 1</text><text x=\"270\" y=\"25\" font-size=\"11\" stroke=\"none\" fill=\"currentColor\">BSS 2</text></svg>",
+      "caption": {
+        "en": "Two infrastructure BSSs, each with an AP and member STAs, joined by a distribution system (DS) to form an ESS. The DS lets a STA roam from BSS 1 to BSS 2 transparently to upper layers.",
+        "zh": "两个基础设施 BSS，各含一个 AP 和若干成员 STA，由分布系统（DS）相连构成 ESS。DS 使 STA 能从 BSS 1 漫游到 BSS 2，且对高层透明。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy mental model: a STA is the addressable unit; a BSS is the room it lives in; the DS is the hallway connecting rooms; and the ESS is the whole building that upper layers see as one network. STA membership in a BSS is dynamic — STAs power on, move into range, and drift out again.",
+      "zh": "一个便于记忆的模型：STA 是可寻址的单元；BSS 是它所处的房间；DS 是连接各房间的走廊；ESS 则是高层眼中视为单一网络的整栋大楼。STA 在 BSS 中的成员身份是动态的——STA 会开机、进入信号范围、又再次离开。"
+    },
+    {
+      "type": "prose",
+      "en": "The standard then recognizes a whole family of STA and BSS variants, each adding capabilities on top of the base. The QoS BSS (4.3.10) is central: its QoS facility lets QoS STAs and QoS APs differentiate traffic. For infrastructure BSS and IBSS it offers four mechanisms — EDCA (priority-based contention), HCCA (HC-scheduled TXOPs), service period access, and dynamic allocation — with the latter two specific to DMG STAs. Many other variants build on the QoS BSS: a mesh BSS, for instance, is explicitly defined as one type of QoS BSS.",
+      "zh": "标准随后定义了一整套 STA 与 BSS 的变体，每一种都在基础之上叠加能力。QoS BSS（4.3.10）居于核心：其 QoS 功能让 QoS STA 与 QoS AP 能够区分流量。针对基础设施 BSS 和 IBSS，它提供四种机制——EDCA（基于优先级的竞争）、HCCA（由 HC 调度的 TXOP）、服务周期接入和动态分配——其中后两者专用于 DMG STA。许多其他变体都建立在 QoS BSS 之上：例如，网状 BSS 被明确定义为 QoS BSS 的一种类型。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the BSS/STA variants the standard names",
+        "zh": "覆盖地图：标准命名的各类 BSS/STA 变体"
+      },
+      "en": "The standard catalogs many specialized capabilities, each scoped to a STA or BSS variant. Wireless LAN radio measurements (4.3.11) let a STA observe and gather data on its radio link and environment — Beacon, Frame, Channel Load, Noise Histogram, STA Statistics, Location, Neighbor Report, Link Measurement, Transmit Stream/Category, plus the request-only Measurement Pause and the report-only Measurement Pilot — feeding faster handoffs and smarter spectrum use. Operation in licensed frequency bands (4.3.12) covers dynamic STA enablement (DSE) for dependent STAs, contention-based protocol (CBP) in nonexclusively licensed bands, using DSE STA identification to resolve interference, and further coexistence enhancements. The Sub 1 GHz (S1G) STA (4.3.14) operates below 1 GHz (excluding TV White Space), with narrow 1/2 MHz channels and long-range, low-power MAC features such as extended BSS max idle periods. Wireless network management (4.3.22) lets STAs exchange operational data — BSS max idle period management, BSS transition management, WNM sleep mode, multiple BSSID capability, efficient group-addressed delivery, and more. The Mesh BSS (4.3.24) is an autonomous, multi-hop LAN where mesh STAs peer (rather than associate) and use the mesh coordination function (MCF) built on the core QoS facility. Robust audio video (AV) streaming (4.3.27) improves AV delivery via groupcast with retries (GCR), stream classification service (SCS), mirrored SCS (MSCS), overlapping BSS (OBSS) management, and SRP interworking. Finally, the General link (GLK) (4.3.31): GLK STAs establish point-to-point general links suitable for use inside an IEEE 802.1Q bridged network — GLK operation involves neither a DS nor an ESS, using an 802.1Q bridge instead to extend the network.",
+      "zh": "标准编目了众多专门能力，每一种都对应某个 STA 或 BSS 变体。无线局域网无线电测量（4.3.11）让 STA 能观测并采集其无线链路与环境的数据——包括 Beacon、Frame、信道负载、噪声直方图、STA 统计、位置、邻居报告、链路测量、发送流/类别测量，以及仅请求的测量暂停和仅报告的测量导频——为更快的切换与更智能的频谱使用提供依据。授权频段中的运行（4.3.12）涵盖面向从属 STA 的动态 STA 使能（DSE）、非排他授权频段中的竞争式协议（CBP）、利用 DSE STA 标识来化解干扰，以及进一步的共存增强。Sub 1 GHz（S1G）STA（4.3.14）工作在 1 GHz 以下（不含电视白频段），采用 1/2 MHz 窄信道以及诸如扩展 BSS 最大空闲周期等远距离、低功耗的 MAC 特性。无线网络管理（4.3.22）让 STA 交换运行数据——包括 BSS 最大空闲周期管理、BSS 过渡管理、WNM 睡眠模式、多 BSSID 能力、高效的组播帧投递等。网状 BSS（4.3.24）是一种自治的多跳局域网，其中网状 STA 通过对等（而非关联）相连，并使用建立在核心 QoS 功能之上的网状协调功能（MCF）。健壮音视频（AV）流（4.3.27）通过带重传的组播（GCR）、流分类服务（SCS）、镜像 SCS（MSCS）、重叠 BSS（OBSS）管理及与 SRP 的互通来提升 AV 投递质量。最后是通用链路（GLK）（4.3.31）：GLK STA 建立适用于 IEEE 802.1Q 桥接网络内部的点对点通用链路——GLK 运行既不涉及 DS 也不涉及 ESS，而是改用 802.1Q 桥来扩展网络。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          351,
+          352,
+          353,
+          354,
+          363,
+          368,
+          369,
+          376,
+          380,
+          381
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the layering: nearly every modern variant is a QoS BSS underneath. A mesh BSS, an HT/VHT/HE STA, a DMG STA — all are QoS STAs. So when you later study EDCA, you are studying the access engine that powers most of the 802.11 ecosystem, not just one corner of it.",
+      "zh": "请注意其层次关系：几乎每一种现代变体底层都是 QoS BSS。网状 BSS、HT/VHT/HE STA、DMG STA——它们都是 QoS STA。因此，当你日后学习 EDCA 时，研究的正是支撑整个 802.11 生态大部分运转的接入引擎，而非其中一隅。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        340,
+        341
+      ],
+      "note": "4.1 general description; 4.2.1-4.2.6 how WLANs differ, STA, medium, mobility, 802 and non-802 interaction"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        342,
+        343,
+        344
+      ],
+      "note": "4.3.1 general, 4.3.4 dynamic membership, 4.3.5 distribution system and ESS, AP/DSAF/WM/DSM"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        349,
+        350,
+        351
+      ],
+      "note": "4.3.10 QoS BSS and its four mechanisms; 4.3.11 radio measurements"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        352,
+        353,
+        354
+      ],
+      "note": "4.3.11 measurement types; 4.3.12 licensed-band operation; 4.3.14 S1G STA"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        363,
+        368,
+        369
+      ],
+      "note": "4.3.22 wireless network management; 4.3.24 mesh BSS"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        376,
+        377,
+        380,
+        381
+      ],
+      "note": "4.3.27 robust AV streaming; 4.3.31 general link (GLK)"
+    }
+  ],
+  "covers": [
+    "80211-2024:4.1",
+    "80211-2024:4.2.1",
+    "80211-2024:4.2.2",
+    "80211-2024:4.2.3",
+    "80211-2024:4.2.4",
+    "80211-2024:4.2.5",
+    "80211-2024:4.2.6",
+    "80211-2024:4.3.5",
+    "80211-2024:4.3.10",
+    "80211-2024:4.3.11",
+    "80211-2024:4.3.12",
+    "80211-2024:4.3.14",
+    "80211-2024:4.3.22",
+    "80211-2024:4.3.24",
+    "80211-2024:4.3.27",
+    "80211-2024:4.3.31"
+  ],
+  "track": "80211core"
+}

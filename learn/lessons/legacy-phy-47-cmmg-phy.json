@@ -1,0 +1,201 @@
+{
+  "id": "legacy-phy-47-cmmg-phy",
+  "title": {
+    "en": "The CMMG PHY: Centimeter-Wave Physical Layer",
+    "zh": "CMMG PHY：厘米波物理层"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 25 defines the China millimeter-wave multi-gigabit (CMMG) PHY. It is a multi-gigabit physical layer that supports 540 MHz and 1080 MHz channel widths, up to four space-time streams, and three distinct transmission modes that all share one common preamble. Data is carried with BPSK, QPSK, 16-QAM, and 64-QAM, protected by LDPC forward error correction at rates 1/2, 3/4, 5/8, and 13/16. This lesson is a coverage map: it walks the PHY's functions, its common machinery, the three modes' PPDU formats and fields, and the transmit/receive specifications.",
+      "zh": "第 25 章定义了中国毫米波多吉比特（CMMG）物理层。它是一种多吉比特物理层，支持 540 MHz 和 1080 MHz 两种信道带宽、最多四条空时流，以及三种共享同一前导的不同传输模式。数据采用 BPSK、QPSK、16-QAM 和 64-QAM 进行调制，并由码率为 1/2、3/4、5/8 和 13/16 的 LDPC 前向纠错保护。本课是一张覆盖地图：依次梳理该物理层的功能、公共机制、三种模式的 PPDU 格式与字段，以及发送/接收规范。"
+    },
+    {
+      "type": "prose",
+      "en": "The CMMG PHY (25.1.3) contains two functional entities: the PHY function itself and the physical-layer management entity (PLME), which manages local PHY functions together with the MLME. Service is offered to the MAC through the PHY service primitives, and the exact shape of each transmitted PPDU is determined by the TXVECTOR parameters. A CMMG PPDU is always one of three kinds: a control mode PPDU (MCS 0), an SC mode PPDU (MCS 1 to 8), or an OFDM mode PPDU (MCS 9 to 16).",
+      "zh": "CMMG 物理层（25.1.3）包含两个功能实体：物理层功能本身，以及物理层管理实体（PLME），后者与 MLME 协同管理本地物理层功能。物理层通过 PHY 服务原语向 MAC 提供服务，而每个发送 PPDU 的具体结构由 TXVECTOR 参数决定。CMMG PPDU 始终属于三类之一：控制模式 PPDU（MCS 0）、SC 模式 PPDU（MCS 1 到 8），或 OFDM 模式 PPDU（MCS 9 到 16）。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n  A[CMMG PHY] --> B[Common preamble: STF + CEF]\n  A --> C[Control mode<br/>MCS 0]\n  A --> D[SC mode<br/>MCS 1-8]\n  A --> E[OFDM mode<br/>MCS 9-16]\n  C --> F[pi/2-BPSK + Barker spreading]\n  D --> G[Single carrier + LDPC]\n  E --> H[OFDM + LDPC]",
+      "zh": "graph TD\n  A[CMMG 物理层] --> B[公共前导：STF + CEF]\n  A --> C[控制模式<br/>MCS 0]\n  A --> D[SC 模式<br/>MCS 1-8]\n  A --> E[OFDM 模式<br/>MCS 9-16]\n  C --> F[pi/2-BPSK + Barker 扩频]\n  D --> G[单载波 + LDPC]\n  E --> H[OFDM + LDPC]"
+    },
+    {
+      "type": "prose",
+      "en": "Three pieces of machinery are common to every mode (25.3). The common requirements (25.3.2) set the radio's tolerances: a center-frequency tolerance of plus/minus 20 ppm that must converge to within 1 ppm in 2.5 microseconds, the same plus/minus 20 ppm symbol-clock tolerance derived from one reference oscillator, transmit ramp-up and ramp-down each under 30 ns, and receive-sensitivity targets (for example -81 dBm for MCS 0 at 540 MHz) that must hold a packet error rate below 10% for a 4096-octet PSDU. The mathematical conventions (25.3.4) describe the transmitted complex-baseband signal, the in-use subcarrier indices, the per-bandwidth tone rotation, and the windowing function that smooths transitions between OFDM fields.",
+      "zh": "每种模式都共用三套机制（25.3）。公共要求（25.3.2）规定了射频容限：中心频率容限为 ±20 ppm，且须在 2.5 微秒内收敛至 1 ppm 以内；符号时钟容限同为 ±20 ppm，并须由同一参考振荡器导出；发送上升沿和下降沿各须小于 30 ns；接收灵敏度目标（例如 540 MHz 下 MCS 0 为 -81 dBm）须使 4096 字节 PSDU 的包错误率保持在 10% 以下。数学约定（25.3.4）描述了发送的复基带信号、所使用的子载波索引、按带宽确定的音调旋转，以及用于平滑各 OFDM 字段之间过渡的加窗函数。"
+    },
+    {
+      "type": "prose",
+      "en": "The third common piece is the preamble (25.3.5), shared by SC and OFDM PPDUs. It is used for packet detection, AGC, frequency-offset estimation, synchronization, and to signal the transmission mode and bandwidth. It is a Short Training field (STF) followed by a Channel Estimation field (CEF). The STF content is identical between SC and OFDM PPDUs, but the CEF differs by mode. The control-mode STF repeats a length-32 sequence 50 times; the SC/OFDM STF repeats it 17 times; the CEFs are built from concatenated, sign-assigned sequences for channel estimation.",
+      "zh": "第三套公共机制是前导（25.3.5），由 SC 和 OFDM PPDU 共享。它用于分组检测、AGC、频偏估计、同步，并指示传输模式与带宽。它由短训练字段（STF）和信道估计字段（CEF）组成。STF 内容在 SC 与 OFDM PPDU 之间相同，但 CEF 因模式而异。控制模式 STF 将一段长度为 32 的序列重复 50 次；SC/OFDM 模式 STF 重复 17 次；CEF 则由带符号拼接的序列构成，用于信道估计。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><rect x=\"4\" y=\"30\" width=\"70\" height=\"34\"/><text x=\"39\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">STF</text><rect x=\"74\" y=\"30\" width=\"70\" height=\"34\"/><text x=\"109\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">CEF</text><rect x=\"144\" y=\"30\" width=\"60\" height=\"34\"/><text x=\"174\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">SIG</text><rect x=\"204\" y=\"30\" width=\"70\" height=\"34\"/><text x=\"239\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">OSTF</text><rect x=\"274\" y=\"30\" width=\"70\" height=\"34\"/><text x=\"309\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">OCEF</text><rect x=\"344\" y=\"30\" width=\"168\" height=\"34\"/><text x=\"428\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">OFDM-Data</text><text x=\"4\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">CMMG OFDM mode PPDU</text></svg>",
+      "caption": {
+        "en": "A CMMG OFDM mode PPDU (per Figure 25-3): common preamble (STF, CEF) and SIG, then the OFDM-specific training fields OSTF and OCEF ahead of the OFDM Data field.",
+        "zh": "CMMG OFDM 模式 PPDU（依图 25-3）：公共前导（STF、CEF）与 SIG，随后是 OFDM 专用训练字段 OSTF 与 OCEF，再接 OFDM 数据字段。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Control mode (25.4) is the most robust mode, used for sector sweeps and control exchanges. Its SIG and Data are modulated with pi/2-BPSK and spread by Barker sequences (25.4.4); a selectable spreading factor (13, 7, 4, or none) trades rate for range. The Data field (25.4.5) reuses the common scrambler with no reset, encodes with rate-1/2 length-672 LDPC, and reuses the same pi/2-BPSK modulation and spreading. Its performance requirements (25.4.6) cover transmit EVM and a receive rule: a control-mode signal above the minimum sensitivity of -78 dBm must trigger a CCA-busy indication with probability over 90% within 3 microseconds.",
+      "zh": "控制模式（25.4）是最稳健的模式，用于扇区扫描和控制交互。其 SIG 与数据采用 pi/2-BPSK 调制并由 Barker 序列扩频（25.4.4）；可选的扩频因子（13、7、4 或不扩频）在速率与覆盖之间权衡。数据字段（25.4.5）沿用公共扰码器且不复位，使用码率 1/2、长度 672 的 LDPC 编码，并复用相同的 pi/2-BPSK 调制与扩频。其性能要求（25.4.6）涵盖发送 EVM 以及一条接收规则：高于最低灵敏度 -78 dBm 的控制模式信号，须在 3 微秒内以大于 90% 的概率触发 CCA 忙指示。"
+    },
+    {
+      "type": "prose",
+      "en": "SC mode (25.5) is the workhorse single-carrier mode (MCS 1 to 8). Its encoding overview (25.5.3) builds the SC SIG and then the PPDU through scrambling, LDPC encoding, block padding, a stream parser, constellation mapping (pi/2-BPSK through pi/2-64-QAM), and optional spatial expansion for MIMO. The SIG transmission (25.5.5) carries the parameters needed to interpret the PPDU and, at 1080 MHz, is sent in duplicate format. The Data field (25.5.6) defines block padding, the stream parser, constellation mapping, spatial expansion, and duplication; its performance requirements (25.5.7) specify transmit EVM, time-of-departure accuracy, and the receive CCA behavior.",
+      "zh": "SC 模式（25.5）是承担主力的单载波模式（MCS 1 到 8）。其编码概览（25.5.3）先构造 SC SIG，再经扰码、LDPC 编码、分块填充、流解析器、星座映射（pi/2-BPSK 直至 pi/2-64-QAM）以及用于 MIMO 的可选空间扩展来构造 PPDU。SIG 传输（25.5.5）携带解读 PPDU 所需的参数，并在 1080 MHz 下以复制格式发送。数据字段（25.5.6）定义分块填充、流解析器、星座映射、空间扩展与复制；其性能要求（25.5.7）规定发送 EVM、离开时间精度以及接收 CCA 行为。"
+    },
+    {
+      "type": "prose",
+      "en": "OFDM mode (25.6) is the high-throughput multicarrier mode (MCS 9 to 16). Its encoding overview (25.6.4) constructs the OFDM SIG, then the PPDU, the OSTF, and the OCEF; SIG handling, scrambling, CRC, phase rotation, IDFT, guard-interval insertion, and windowing are all spelled out. The SIG fields (25.6.5) reuse the control-mode pi/2-BPSK modulation, are duplicated at 1080 MHz, and undergo a 3/2 symbol-rate change because the preamble is specified at the SC chip rate. The Data field (25.6.8) covers scrambling, LDPC encoding, OFDM symbol padding, the stream parser, constellation mapping, pilots, and the spatial mapping matrix. The OFDM performance requirements (25.6.9) add transmit EVM, transmit flatness limits across subcarriers, time-of-departure accuracy, and receive CCA.",
+      "zh": "OFDM 模式（25.6）是高吞吐的多载波模式（MCS 9 到 16）。其编码概览（25.6.4）依次构造 OFDM SIG、PPDU、OSTF 与 OCEF；SIG 处理、扰码、CRC、相位旋转、IDFT、保护间隔插入和加窗均逐项说明。SIG 字段（25.6.5）复用控制模式的 pi/2-BPSK 调制，在 1080 MHz 下复制，并因前导以 SC 码片速率定义而经历 3/2 的符号速率变换。数据字段（25.6.8）涵盖扰码、LDPC 编码、OFDM 符号填充、流解析器、星座映射、导频以及空间映射矩阵。OFDM 性能要求（25.6.9）增加了发送 EVM、跨子载波的发送平坦度限制、离开时间精度以及接收 CCA。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "All three modes lean on one shared toolkit (25.3): the same preamble, the same length-127 scrambler with polynomial S(x) = x^7 + x^4 + 1, the same common LDPC parity matrices (25.3.8), and a common CMMG SIG field (25.3.9) that carries the information needed to interpret every PPDU. LDPC at codeword length 672 (expansion factor 42) is mandatory; length 2016 (expansion factor 126) is optional. Learn this common layer once and each mode becomes a variation on it.",
+      "zh": "三种模式都依赖同一套共享工具集（25.3）：相同的前导、相同的长度 127、多项式为 S(x) = x^7 + x^4 + 1 的扰码器、相同的公共 LDPC 校验矩阵（25.3.8），以及承载解读每个 PPDU 所需信息的公共 CMMG SIG 字段（25.3.9）。码字长度 672（扩展因子 42）的 LDPC 为强制要求；长度 2016（扩展因子 126）为可选。把这一公共层学透，每种模式就只是它的一种变体。"
+    },
+    {
+      "type": "prose",
+      "en": "Because CMMG operates at centimeter-wave frequencies with directional antennas, beamforming is part of the PHY. The analog beamforming PPDU formats (25.7) cover the TX sector sweep (which simply reuses control-mode packets) and beam refinement (25.7.2). Beam refinement lets a STA improve its antenna weight vectors for both transmit and receive: the BRP PPDU appends AGC subfields plus TRN-R and TRN-T training subfields after the data, and the transmitter may change its antenna weight vector configuration at the start of each AGC subfield, with transients required to settle before training begins.",
+      "zh": "由于 CMMG 工作在采用定向天线的厘米波频段，波束成形是物理层的一部分。模拟波束成形 PPDU 格式（25.7）涵盖 TX 扇区扫描（直接复用控制模式分组）与波束细化（25.7.2）。波束细化让 STA 改进其用于发送和接收的天线权重矢量：BRP PPDU 在数据之后追加 AGC 子字段以及 TRN-R 和 TRN-T 训练子字段，发送方可在每个 AGC 子字段起始处改变其天线权重矢量配置，并要求瞬态在训练开始前完全稳定。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each clause-25 unit lives",
+        "zh": "覆盖地图：第 25 章各单元的归属"
+      },
+      "en": "PHY functions and structure: 25.1.3 names the two functional entities (PHY function and PLME), the service-specification method, and that the PPDU shape is set by the TXVECTOR. Common machinery (25.3): 25.3.2 common requirements (frequency/symbol-clock tolerance, ramp times, receive sensitivity); 25.3.4 mathematical conventions (transmitted signal, subcarrier indices, tone rotation, windowing); 25.3.5 the shared STF+CEF preamble; 25.3.8 the common LDPC parity matrices (length 672 mandatory, 2016 optional); 25.3.9 the common CMMG SIG field (the fields that let a receiver interpret a PPDU, plus their encoding). Control mode (25.4): 25.4.4 SIG transmission (pi/2-BPSK + Barker spreading, CRC, scrambler, encoding, modulation), 25.4.5 the Data field, 25.4.6 transmit EVM and receive CCA (-78 dBm sensitivity, busy within 3 us). SC mode (25.5): 25.5.3 encoding overview, 25.5.5 SIG transmission, 25.5.6 the Data field (block padding, stream parser, constellation mapping, spatial expansion, duplication), 25.5.7 transmit EVM / time-of-departure / receive CCA. OFDM mode (25.6): 25.6.4 encoding overview (SIG, PPDU, OSTF, OCEF), 25.6.5 SIG fields (modulation, duplication, symbol-blocking, 3/2 rate change), 25.6.8 the Data field (scrambling, LDPC, OFDM symbol padding, stream parser, constellation, spatial mapping), 25.6.9 transmit EVM / TX flatness / receive CCA. Beamforming: 25.7.2 beam refinement (BRP PPDU structure, AGC + TRN-R/TRN-T subfields, channel measurement).",
+      "zh": "物理层功能与结构：25.1.3 给出两个功能实体（物理层功能与 PLME）、服务规范方法，以及 PPDU 结构由 TXVECTOR 决定。公共机制（25.3）：25.3.2 公共要求（频率/符号时钟容限、上升下降时间、接收灵敏度）；25.3.4 数学约定（发送信号、子载波索引、音调旋转、加窗）；25.3.5 共享的 STF+CEF 前导；25.3.8 公共 LDPC 校验矩阵（长度 672 强制、2016 可选）；25.3.9 公共 CMMG SIG 字段（让接收方解读 PPDU 的各字段及其编码）。控制模式（25.4）：25.4.4 SIG 传输（pi/2-BPSK + Barker 扩频、CRC、扰码、编码、调制）、25.4.5 数据字段、25.4.6 发送 EVM 与接收 CCA（-78 dBm 灵敏度、3 微秒内置忙）。SC 模式（25.5）：25.5.3 编码概览、25.5.5 SIG 传输、25.5.6 数据字段（分块填充、流解析器、星座映射、空间扩展、复制）、25.5.7 发送 EVM / 离开时间 / 接收 CCA。OFDM 模式（25.6）：25.6.4 编码概览（SIG、PPDU、OSTF、OCEF）、25.6.5 SIG 字段（调制、复制、符号分块、3/2 速率变换）、25.6.8 数据字段（扰码、LDPC、OFDM 符号填充、流解析器、星座、空间映射）、25.6.9 发送 EVM / 发送平坦度 / 接收 CCA。波束成形：25.7.2 波束细化（BRP PPDU 结构、AGC + TRN-R/TRN-T 子字段、信道测量）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3893,
+          3897,
+          3901,
+          3904,
+          3909,
+          3911,
+          3918,
+          3919,
+          3920,
+          3922,
+          3923,
+          3924,
+          3930,
+          3934,
+          3935,
+          3939,
+          3950,
+          3952,
+          3953
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3892,
+        3893
+      ],
+      "note": "25.1 CMMG PHY introduction, scope, and 25.1.3 PHY functions (PHY function, PLME, service-specification method, PPDU formats); modes and MCS ranges."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3897,
+        3898,
+        3899,
+        3901,
+        3903,
+        3904,
+        3905
+      ],
+      "note": "25.3 common parameters: 25.3.2 common requirements (tolerances, ramps, receive sensitivity), 25.3.4 mathematical conventions, 25.3.5 the shared STF+CEF preamble."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3909,
+        3911
+      ],
+      "note": "25.3.7 scrambler polynomial, 25.3.8 common LDPC parity matrices (length 672 mandatory, 2016 optional), and 25.3.9 the common CMMG SIG field."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3918,
+        3919,
+        3920,
+        3921
+      ],
+      "note": "25.4 control mode: 25.4.4 SIG transmission (pi/2-BPSK + Barker spreading), 25.4.5 Data field, 25.4.6 performance (EVM, CCA at -78 dBm)."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3922,
+        3923,
+        3924,
+        3925,
+        3926,
+        3930,
+        3931,
+        3932
+      ],
+      "note": "25.5 SC mode: 25.5.3 encoding overview, 25.5.5 SIG transmission, 25.5.6 Data field (block padding, stream parser, constellation, spatial expansion, duplication), 25.5.7 performance."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3934,
+        3935,
+        3936,
+        3939,
+        3940,
+        3950,
+        3951,
+        3952
+      ],
+      "note": "25.6 OFDM mode: 25.6.4 encoding overview, 25.6.5 SIG fields (modulation, duplication, 3/2 rate change), 25.6.8 Data field, 25.6.9 performance (EVM, TX flatness, CCA)."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3953,
+        3954
+      ],
+      "note": "25.7 analog beamforming PPDU formats; 25.7.2 beam refinement (BRP PPDU, AGC + TRN-R/TRN-T subfields, channel measurement)."
+    }
+  ],
+  "covers": [
+    "80211-2024:25.1.3",
+    "80211-2024:25.3.2",
+    "80211-2024:25.3.4",
+    "80211-2024:25.3.5",
+    "80211-2024:25.3.8",
+    "80211-2024:25.3.9",
+    "80211-2024:25.4.4",
+    "80211-2024:25.4.5",
+    "80211-2024:25.4.6",
+    "80211-2024:25.5.3",
+    "80211-2024:25.5.5",
+    "80211-2024:25.5.6",
+    "80211-2024:25.5.7",
+    "80211-2024:25.6.4",
+    "80211-2024:25.6.5",
+    "80211-2024:25.6.8",
+    "80211-2024:25.6.9",
+    "80211-2024:25.7.2"
+  ],
+  "track": "legacy-phy"
+}

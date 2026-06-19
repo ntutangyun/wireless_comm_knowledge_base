@@ -1,0 +1,177 @@
+{
+  "id": "legacy-phy-45-dmg-cdmg-phy",
+  "title": {
+    "en": "60 GHz PHYs: the DMG and CDMG Physical Layers",
+    "zh": "60 GHz 物理层：DMG 与 CDMG PHY"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Most of Wi-Fi lives in the 2.4 GHz and 5/6 GHz bands. But the standard also defines two physical layers that work way up at 60 GHz, where huge swaths of spectrum are available and beams are pencil-thin. Clause 20 specifies the Directional Multi-Gigabit (DMG) PHY — the 802.11ad PHY that uses 2.16 GHz-wide channels. Clause 24 specifies the China Directional Multi-Gigabit (CDMG) PHY, a close cousin that uses narrower 1.08 GHz channels. This lesson maps both clauses: their scope and PHY functions, the TXVECTOR/RXVECTOR parameters the MAC and PHY exchange, the PPDU formats and modulation modes, and the transmit/receive specs that real radios must meet.",
+      "zh": "Wi-Fi 的大部分流量都跑在 2.4 GHz 与 5/6 GHz 频段。但标准还定义了两套工作在 60 GHz 的物理层——那里有海量可用频谱，波束也极为狭窄。第 20 章规定了定向多吉比特（DMG）物理层，即采用 2.16 GHz 宽信道的 802.11ad 物理层；第 24 章规定了中国定向多吉比特（CDMG）物理层，它是一个近亲，采用更窄的 1.08 GHz 信道。本课将梳理这两章：它们的范围与物理层功能、MAC 与 PHY 之间交换的 TXVECTOR/RXVECTOR 参数、PPDU 格式与调制模式，以及真实设备必须满足的发送/接收指标。"
+    },
+    {
+      "type": "prose",
+      "en": "The DMG PHY (clause 20.1.1, 20.1.2) provides two services to the MAC: it maps PSDUs into a PPDU framing format, and it transmits/receives over the wireless medium. It supports two modulation methods organized as three modes — a Control mode (MCS 0), a Single Carrier (SC) mode (MCS 1-12 plus fractional MCSs), and a low-power SC mode (MCS 25-31). All three share a common preamble. Functionally the PHY is split into the PHY proper and a PHY management entity (PLME) that manages local PHY functions alongside the MLME. The CDMG PHY (clause 24.1.2) mirrors this structure exactly — same two functional entities, same Control / SC / low-power SC mode split — only its MCS ranges and channel width differ.",
+      "zh": "DMG 物理层（第 20.1.1、20.1.2 条）向 MAC 提供两项服务：把 PSDU 映射成 PPDU 帧格式，以及在无线媒介上收发数据。它支持两种调制方法，组织为三种模式——控制模式（MCS 0）、单载波（SC）模式（MCS 1–12 及若干分数 MCS），以及低功耗 SC 模式（MCS 25–31）。三种模式共用同一前导码。在功能上，物理层分为 PHY 本体和一个 PHY 管理实体（PLME），后者与 MLME 协同管理本地 PHY 功能。CDMG 物理层（第 24.1.2 条）完全沿用这一结构——同样的两个功能实体、同样的控制/SC/低功耗 SC 模式划分——只是 MCS 范围和信道宽度不同。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Think of CDMG as \"DMG, halved.\" The DMG channel is 2.16 GHz wide; the CDMG channel is 1.08 GHz. So CDMG runs at half the chip rate (880 MHz vs 1760 MHz) and a narrower transmit mask (0.94 GHz vs 1.88 GHz at 0 dBr). Clause 24 is written as a delta against clause 20: many of its subclauses literally say \"the same as that contained in 20.x.\"",
+      "zh": "可以把 CDMG 理解为「DMG 的一半」。DMG 信道宽 2.16 GHz，CDMG 信道为 1.08 GHz。因此 CDMG 的码片速率减半（880 MHz 对 1760 MHz），发送频谱模板也更窄（0 dBr 处为 0.94 GHz 对 1.88 GHz）。第 24 章是以第 20 章为基准写的增量：许多子条款直接写明「与第 20.x 条所述相同」。"
+    },
+    {
+      "type": "prose",
+      "en": "The PHY talks to the MAC through three vectors (clause 20.2.1, 24.2.1). On transmit the MAC hands the PHY a TXVECTOR with per-PPDU parameters; on receive the PHY reports an RXVECTOR; and a PHYCONFIG_VECTOR configures the PHY independently of any PPDU. The TXVECTOR/RXVECTOR parameter tables (clause 20.2.2, 24.2.2) list MCS, LENGTH (PSDU octets up to 262 143), ADD_PPDU (whether another PPDU follows with no gap), PPDU_TYPE and TRN_LEN (for beam-training subfields), AGGREGATION, and receive-side measurements like RSSI, SNR, and RCPI. The CDMG table adds a ROBUST_MODE parameter (present when MCS is 0) selecting between control mode and two robust PHY modes, plus an ENHANCED_BEAM_TRACKING_REQUEST. After a transmission the PHY returns a TXSTATUS (clause 20.2.4) carrying the TIME_OF_DEPARTURE used for timing measurement.",
+      "zh": "物理层通过三个向量与 MAC 交互（第 20.2.1、24.2.1 条）。发送时，MAC 把携带每 PPDU 参数的 TXVECTOR 交给物理层；接收时，物理层上报 RXVECTOR；而 PHYCONFIG_VECTOR 则独立于任何 PPDU 来配置物理层。TXVECTOR/RXVECTOR 参数表（第 20.2.2、24.2.2 条）列出了 MCS、LENGTH（PSDU 字节数，最多 262 143）、ADD_PPDU（是否紧接另一个无间隔的 PPDU）、PPDU_TYPE 与 TRN_LEN（用于波束训练子字段）、AGGREGATION，以及 RSSI、SNR、RCPI 等接收侧测量值。CDMG 表额外增加了 ROBUST_MODE 参数（当 MCS 为 0 时出现），用于在控制模式与两种鲁棒 PHY 模式之间选择，还增加了 ENHANCED_BEAM_TRACKING_REQUEST。一次发送完成后，物理层返回 TXSTATUS（第 20.2.4 条），其中携带用于定时测量的 TIME_OF_DEPARTURE。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  MAC[MAC] -- TXVECTOR --> PHY[DMG/CDMG PHY]\n  MAC -- PHYCONFIG_VECTOR --> PHY\n  PHY -- RXVECTOR --> MAC\n  PHY -- TXSTATUS --> MAC\n  PHY --- AIR((60 GHz air))",
+      "zh": "flowchart LR\n  MAC[MAC] -- TXVECTOR --> PHY[DMG/CDMG 物理层]\n  MAC -- PHYCONFIG_VECTOR --> PHY\n  PHY -- RXVECTOR --> MAC\n  PHY -- TXSTATUS --> MAC\n  PHY --- AIR((60 GHz 空口))"
+    },
+    {
+      "type": "prose",
+      "en": "All DMG modes share a common preamble (clause 20.3.6): a Short Training field (STF) made of repeated Golay sequences for detection, AGC and synchronization, followed by a Channel Estimation field (CEF) that also signals which modulation the Data field uses. Clause 20.3 also nails down the common parameters every mode obeys — common requirements (clause 20.3.3) such as a ±20 ppm center-frequency and symbol-clock tolerance, transmit center-frequency leakage below -23 dB, sub-10 ns power ramps, and a receiver minimum-input sensitivity table; the mathematical signal-description conventions (clause 20.3.5) that express each field as a complex baseband waveform; and the four common LDPC parity matrices (clause 20.3.8), each a 672-bit codeword at rate 1/2, 5/8, 3/4, or 13/16. The CDMG preamble (clause 24.3.6) is the same idea but adds a single-frequency sequence (SFS) inside the STF for I/Q-imbalance estimation, and CDMG's common requirements (clause 24.3.3) reuse the DMG values almost verbatim.",
+      "zh": "所有 DMG 模式共用一个公共前导码（第 20.3.6 条）：短训练字段（STF）由重复的 Golay 序列构成，用于检测、AGC 和同步；其后是信道估计字段（CEF），它同时指示数据字段所用的调制方式。第 20.3 条还规定了每种模式都要遵守的公共参数——公共要求（第 20.3.3 条），如 ±20 ppm 的中心频率与符号时钟容差、低于 -23 dB 的发送中心频率泄漏、小于 10 ns 的功率上升/下降沿，以及一张接收机最小输入灵敏度表；信号描述的数学约定（第 20.3.5 条），把每个字段表示为复基带波形；以及四个公共 LDPC 校验矩阵（第 20.3.8 条），每个均为 672 比特码字，码率分别为 1/2、5/8、3/4 或 13/16。CDMG 前导码（第 24.3.6 条）思路相同，但在 STF 内增加了一个单频序列（SFS）用于 I/Q 失衡估计；CDMG 的公共要求（第 24.3.3 条）几乎逐字沿用 DMG 的数值。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><rect x=\"10\" y=\"30\" width=\"150\" height=\"34\"/><text x=\"85\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">STF</text><rect x=\"160\" y=\"30\" width=\"120\" height=\"34\"/><text x=\"220\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">CEF</text><rect x=\"280\" y=\"30\" width=\"90\" height=\"34\"/><text x=\"325\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">Header</text><rect x=\"370\" y=\"30\" width=\"150\" height=\"34\"/><text x=\"445\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">Data</text><rect x=\"520\" y=\"30\" width=\"110\" height=\"34\" stroke-dasharray=\"5 4\"/><text x=\"575\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">AGC + TRN</text><text x=\"85\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">preamble</text><text x=\"220\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">preamble</text><text x=\"575\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">optional</text></svg>",
+      "caption": {
+        "en": "DMG/CDMG SC PPDU layout: a shared STF+CEF preamble, a Header, the Data field, and optional AGC + TRN (beam-training) subfields at the tail.",
+        "zh": "DMG/CDMG SC 模式 PPDU 结构：共享的 STF+CEF 前导码、Header、数据字段，以及尾部可选的 AGC + TRN（波束训练）子字段。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The DMG low-power SC mode (clause 20.6.2) is the lean option — flagged obsolete in 2024 but still specified. It reuses the SC preamble and header but swaps in MCS 25-31 with a concatenated outer Reed-Solomon RS(224,208) code and a short inner block code, modulated as pi/2-BPSK or pi/2-QPSK, to cut transceiver processing power. The CDMG low-power SC mode (clause 24.6.2) is the matching narrowband twin: same preamble as CDMG SC mode, header fields identical to CDMG SC, and MCS 17-23 using the same RS + inner-block-code recipe, with its header encoding pointing straight back at the DMG definition.",
+      "zh": "DMG 低功耗 SC 模式（第 20.6.2 条）是精简方案——在 2024 版中已标记为废弃，但仍保留规范。它复用 SC 前导码和头部，但换用 MCS 25–31，采用外层 Reed-Solomon RS(224,208) 码与一个短内层分组码级联，调制为 pi/2-BPSK 或 pi/2-QPSK，以降低收发机的处理功耗。CDMG 低功耗 SC 模式（第 24.6.2 条）是与之对应的窄带孪生：前导码与 CDMG SC 模式相同，头部字段与 CDMG SC 完全一致，MCS 17–23 采用同样的 RS + 内层分组码方案，其头部编码直接指向 DMG 的定义。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 24 then specifies CDMG's own transmit and receive behavior. The CDMG control mode (clause 24.4) is mandatory: a DBPSK MCS 0 PPDU with a 48-repetition STF, a header block carrying length / PPDU type / training length / robust-PHY-mode bits, and a receive requirement that a transmission above -71 dBm trips CCA busy within 3 us (clause 24.4.4 covers its transmit EVM and CCA). The CDMG SC mode (clause 24.5) carries the high rates: its header (clause 24.5.3) holds scrambler init, MCS, an 18-bit length and the ADD_PPDU bit, and the data field steps from pi/2-BPSK up through pi/2-16-QAM and pi/2-64-QAM. Its performance requirements (clause 24.5.4) set a per-MCS transmit-EVM table (from -6 dB at MCS 1 down to -28 dB at MCS 16), a time-of-departure accuracy of <=80 ns, and a 1 us CCA-busy response above the MCS 1 sensitivity of -71 dBm.",
+      "zh": "第 24 章接着规定了 CDMG 自身的发送与接收行为。CDMG 控制模式（第 24.4 条）是强制的：一个 DBPSK 的 MCS 0 PPDU，STF 重复 48 次，头部块携带长度/PPDU 类型/训练长度/鲁棒 PHY 模式等比特；接收要求规定，接收电平高于 -71 dBm 的发送须在 3 us 内将 CCA 置为忙（第 24.4.4 条涵盖其发送 EVM 与 CCA）。CDMG SC 模式（第 24.5 条）承载高速率：其头部（第 24.5.3 条）包含加扰器初始化、MCS、18 比特长度和 ADD_PPDU 比特，数据字段从 pi/2-BPSK 一路递进到 pi/2-16-QAM 和 pi/2-64-QAM。其性能要求（第 24.5.4 条）给出按 MCS 划分的发送 EVM 表（从 MCS 1 的 -6 dB 到 MCS 16 的 -28 dB）、出发时间精度 <=80 ns，以及在 MCS 1 灵敏度 -71 dBm 以上 1 us 内的 CCA 置忙响应。"
+    },
+    {
+      "type": "prose",
+      "en": "Because beams at 60 GHz are narrow, both PHYs lean on beamforming. CDMG's beamforming frame format (clause 24.9.2) defines the sector-level sweep — transmit-sweep PPDUs use CDMG control mode, receive-sweep PPDUs use control or SC mode — and beam refinement (BRP) PPDUs that append AGC + TRN subfields for antenna-weight-vector training. CDMG adds enhanced beam tracking: a BRP PPDU gets an extra STF + CE field at its tail (the e-TRN field) so a station can simultaneously measure and pre-train an alternative backup beam, letting it switch links quickly when the main beam is blocked or the device rotates.",
+      "zh": "由于 60 GHz 的波束很窄，这两套物理层都高度依赖波束赋形。CDMG 的波束赋形帧格式（第 24.9.2 条）定义了扇区级扫描——发送扫描 PPDU 使用 CDMG 控制模式，接收扫描 PPDU 使用控制或 SC 模式——以及波束细化（BRP）PPDU，后者在尾部附加 AGC + TRN 子字段用于天线权向量训练。CDMG 还增加了增强波束跟踪：BRP PPDU 在尾部追加一组额外的 STF + CE 字段（即 e-TRN 字段），使站点能够同时测量并预训练一条备用波束，以便在主波束被遮挡或设备转动时迅速切换链路。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause-20 and clause-24 unit this lesson teaches",
+        "zh": "覆盖图：本课讲解的全部第 20 章与第 24 章条款"
+      },
+      "en": "DMG PHY (clause 20): 20.1.1 scope of DMG PHY services (two modulation methods, three modes, shared preamble); 20.1.2 DMG PHY functions (PHY + PLME); 20.2.1 the service-interface intro (TXVECTOR / RXVECTOR / PHYCONFIG_VECTOR); 20.2.2 the TXVECTOR/RXVECTOR parameter table (MCS, LENGTH, ADD_PPDU, TRN_LEN, RSSI/SNR/RCPI ...); 20.2.3 the PHYCONFIG_VECTOR (OPERATING_CHANNEL); 20.2.4 the TXSTATUS table (TIME_OF_DEPARTURE); 20.3.3 common requirements (frequency/clock tolerance, leakage, ramps, sensitivity); 20.3.5 mathematical conventions in the signal description; 20.3.6 the common preamble (STF + CEF); 20.3.8 the four common LDPC parity matrices (672-bit codewords); 20.6.2 low-power SC mode transmission (MCS 25-31, RS + inner block code). CDMG PHY (clause 24): 24.1.2 CDMG PHY functions (mirrors 20.1.2); 24.3.3 common requirements; 24.3.6 common preamble (adds the SFS for I/Q-imbalance estimation); 24.4.3 control-mode transmission (preamble, header, data); 24.4.4 control-mode performance (transmit EVM, CCA); 24.5.3 SC-mode transmission (header, data, pi/2-BPSK through 64-QAM); 24.5.4 SC-mode performance (per-MCS EVM table, ToD accuracy, CCA); 24.6.2 low-power SC transmission (MCS 17-23); 24.9.2 beamforming frame format (sector sweep, BRP, enhanced beam tracking).",
+      "zh": "DMG 物理层（第 20 章）：20.1.1 DMG PHY 服务范围（两种调制方法、三种模式、共享前导码）；20.1.2 DMG PHY 功能（PHY + PLME）；20.2.1 服务接口引言（TXVECTOR / RXVECTOR / PHYCONFIG_VECTOR）；20.2.2 TXVECTOR/RXVECTOR 参数表（MCS、LENGTH、ADD_PPDU、TRN_LEN、RSSI/SNR/RCPI 等）；20.2.3 PHYCONFIG_VECTOR（OPERATING_CHANNEL）；20.2.4 TXSTATUS 表（TIME_OF_DEPARTURE）；20.3.3 公共要求（频率/时钟容差、泄漏、上升下降沿、灵敏度）；20.3.5 信号描述的数学约定；20.3.6 公共前导码（STF + CEF）；20.3.8 四个公共 LDPC 校验矩阵（672 比特码字）；20.6.2 低功耗 SC 模式发送（MCS 25–31，RS + 内层分组码）。CDMG 物理层（第 24 章）：24.1.2 CDMG PHY 功能（对应 20.1.2）；24.3.3 公共要求；24.3.6 公共前导码（增加用于 I/Q 失衡估计的 SFS）；24.4.3 控制模式发送（前导码、头部、数据）；24.4.4 控制模式性能（发送 EVM、CCA）；24.5.3 SC 模式发送（头部、数据、pi/2-BPSK 至 64-QAM）；24.5.4 SC 模式性能（按 MCS 的 EVM 表、出发时间精度、CCA）；24.6.2 低功耗 SC 发送（MCS 17–23）；24.9.2 波束赋形帧格式（扇区扫描、BRP、增强波束跟踪）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3503,
+          3504,
+          3506,
+          3507,
+          3511,
+          3513,
+          3535,
+          3866,
+          3870,
+          3873,
+          3875,
+          3877,
+          3883,
+          3885,
+          3888
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3503,
+        3504,
+        3505,
+        3506
+      ],
+      "note": "20.1.1-20.1.2 DMG scope/functions; 20.2.1-20.2.4 service interface, TXVECTOR/RXVECTOR/PHYCONFIG/TXSTATUS parameters"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3507,
+        3508,
+        3510,
+        3511,
+        3512,
+        3513,
+        3514
+      ],
+      "note": "20.3.3 common requirements; 20.3.5 signal-description conventions; 20.3.6 common preamble; 20.3.8 common LDPC parity matrices"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3535,
+        3536
+      ],
+      "note": "20.6.2 DMG low-power SC mode transmission (MCS 25-31, RS + inner block code)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3866,
+        3867,
+        3868,
+        3869,
+        3870,
+        3873
+      ],
+      "note": "24.1.2 CDMG PHY functions; 24.2.2 CDMG TXVECTOR/RXVECTOR; 24.3.3 common requirements; 24.3.6 common preamble (SFS)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3875,
+        3876,
+        3877,
+        3881,
+        3883,
+        3884,
+        3885,
+        3888,
+        3889
+      ],
+      "note": "24.4.3-24.4.4 CDMG control mode; 24.5.3-24.5.4 CDMG SC mode; 24.6.2 CDMG low-power SC; 24.9.2 beamforming frame format"
+    }
+  ],
+  "covers": [
+    "80211-2024:20.1.1",
+    "80211-2024:20.1.2",
+    "80211-2024:20.2.1",
+    "80211-2024:20.2.2",
+    "80211-2024:20.2.3",
+    "80211-2024:20.2.4",
+    "80211-2024:20.3.3",
+    "80211-2024:20.3.5",
+    "80211-2024:20.3.6",
+    "80211-2024:20.3.8",
+    "80211-2024:20.6.2",
+    "80211-2024:24.1.2",
+    "80211-2024:24.3.3",
+    "80211-2024:24.3.6",
+    "80211-2024:24.4.3",
+    "80211-2024:24.4.4",
+    "80211-2024:24.5.3",
+    "80211-2024:24.5.4",
+    "80211-2024:24.6.2",
+    "80211-2024:24.9.2"
+  ],
+  "track": "legacy-phy"
+}

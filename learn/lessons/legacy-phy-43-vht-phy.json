@@ -1,0 +1,175 @@
+{
+  "id": "legacy-phy-43-vht-phy",
+  "title": {
+    "en": "The VHT PHY: 802.11ac Internals",
+    "zh": "VHT PHY：802.11ac 内部机制"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 21 of IEEE 802.11-2024 defines the Very High Throughput (VHT) PHY — the layer the market knows as Wi-Fi 5 / 802.11ac. It is an OFDM system that operates only in the 5 GHz band, and it is built as a strict superset of the HT PHY (Clause 19), which itself extends the OFDM PHY (Clause 17). The headline gains over HT: channel widths up to 160 MHz (and noncontiguous 80+80 MHz), up to eight space-time streams, the new 256-QAM constellation, and — for the first time in 802.11 — downlink multi-user MIMO (MU-MIMO).",
+      "zh": "IEEE 802.11-2024 的第 21 章定义了超高吞吐量（VHT）PHY，也就是市场上熟知的 Wi-Fi 5 / 802.11ac。它是一种仅工作在 5 GHz 频段的 OFDM 系统，并被构建为 HT PHY（第 19 章）的严格超集，而 HT PHY 本身又扩展自 OFDM PHY（第 17 章）。相对于 HT 的主要提升包括：信道带宽最高可达 160 MHz（以及非连续的 80+80 MHz）、最多八条空时流、新增的 256-QAM 星座，以及 802.11 中首次出现的下行多用户 MIMO（MU-MIMO）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "MU-MIMO is the defining trick of 802.11ac. A downlink MU transmission serves up to four users at once, each getting up to four space-time streams, with the total across all users never exceeding eight. This is different from SU group-addressed transmission — MU spatially separates distinct user streams on the same time-frequency resource.",
+      "zh": "MU-MIMO 是 802.11ac 的标志性技术。一次下行 MU 传输最多可同时服务四个用户，每个用户最多分配四条空时流，所有用户合计不超过八条。它不同于 SU 组播传输——MU 是在同一时频资源上对不同用户的数据流进行空间分离。"
+    },
+    {
+      "type": "prose",
+      "en": "The MAC drives the PHY through three control structures (21.2.1). The TXVECTOR carries per-PPDU transmit parameters; the RXVECTOR reports what was received; and the PHYCONFIG_VECTOR configures the PHY independent of any single PPDU. Table 21-1 (21.2.2) lists every TXVECTOR/RXVECTOR field — the master switch is FORMAT, which selects NON_HT, HT_MF, HT_GF, or VHT. PHYCONFIG_VECTOR (21.2.3) holds the operating-channel state: CHANNEL_WIDTH (20/40/80/160/80+80 MHz), the two CENTER_FREQUENCY_SEGMENT indices, and the GROUP_ID_MANAGEMENT and partial-AID lists that make MU-MIMO addressing work. TXSTATUS (21.2.6) reuses HT's Table 19-4.",
+      "zh": "MAC 通过三个控制结构驱动 PHY（21.2.1）。TXVECTOR 携带每个 PPDU 的发送参数；RXVECTOR 报告接收到的内容；PHYCONFIG_VECTOR 则独立于任何单个 PPDU 来配置 PHY。表 21-1（21.2.2）列出了所有 TXVECTOR/RXVECTOR 字段——总开关是 FORMAT，用于选择 NON_HT、HT_MF、HT_GF 或 VHT。PHYCONFIG_VECTOR（21.2.3）保存工作信道状态：CHANNEL_WIDTH（20/40/80/160/80+80 MHz）、两个 CENTER_FREQUENCY_SEGMENT 索引，以及使 MU-MIMO 寻址生效的 GROUP_ID_MANAGEMENT 和部分 AID 列表。TXSTATUS（21.2.6）复用了 HT 的表 19-4。"
+    },
+    {
+      "type": "prose",
+      "en": "A single PPDU structure is defined: the VHT PPDU format (21.3.2). Its preamble splits into a pre-VHT portion that legacy Clause 17/19 stations can decode — L-STF, L-LTF, L-SIG, and VHT-SIG-A — followed by the VHT-modulated portion: VHT-STF, VHT-LTF, VHT-SIG-B, and Data. VHT-SIG-A carries the per-PPDU signalling (bandwidth, STBC, group ID, coding, and for SU the VHT-MCS); VHT-SIG-B carries per-user length and, for MU, the per-user MCS. The number of VHT-LTF symbols is 1, 2, 4, 6, or 8, set by the total space-time streams across all users.",
+      "zh": "本 PHY 只定义了一种 PPDU 结构：VHT PPDU 格式（21.3.2）。其前导码分为两部分：一部分是传统 Clause 17/19 站点可解码的 pre-VHT 部分——L-STF、L-LTF、L-SIG 和 VHT-SIG-A；随后是 VHT 调制部分：VHT-STF、VHT-LTF、VHT-SIG-B 和 Data。VHT-SIG-A 携带每个 PPDU 的信令（带宽、STBC、组 ID、编码，以及 SU 模式下的 VHT-MCS）；VHT-SIG-B 携带每用户长度，并在 MU 模式下携带每用户 MCS。VHT-LTF 符号数为 1、2、4、6 或 8，由所有用户的空时流总数决定。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 720 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><rect x=\"4\" y=\"30\" width=\"70\" height=\"34\"/><text x=\"39\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">L-STF</text><rect x=\"74\" y=\"30\" width=\"70\" height=\"34\"/><text x=\"109\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">L-LTF</text><rect x=\"144\" y=\"30\" width=\"55\" height=\"34\"/><text x=\"171\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">L-SIG</text><rect x=\"199\" y=\"30\" width=\"95\" height=\"34\"/><text x=\"246\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">VHT-SIG-A</text><rect x=\"294\" y=\"30\" width=\"55\" height=\"34\"/><text x=\"321\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">VHT-STF</text><rect x=\"349\" y=\"30\" width=\"100\" height=\"34\"/><text x=\"399\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">VHT-LTF×N</text><rect x=\"449\" y=\"30\" width=\"95\" height=\"34\"/><text x=\"496\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">VHT-SIG-B</text><rect x=\"544\" y=\"30\" width=\"170\" height=\"34\"/><text x=\"629\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Data</text><line x1=\"4\" y1=\"22\" x2=\"294\" y2=\"22\"/><text x=\"149\" y=\"16\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">pre-VHT (legacy-decodable)</text><line x1=\"294\" y1=\"22\" x2=\"714\" y2=\"22\"/><text x=\"504\" y=\"16\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">VHT-modulated</text></svg>",
+      "caption": {
+        "en": "The VHT PPDU format (21.3.2 / 21.3.3): a legacy-decodable preamble (L-STF, L-LTF, L-SIG, VHT-SIG-A) followed by the VHT-modulated fields (VHT-STF, VHT-LTF, VHT-SIG-B, Data).",
+        "zh": "VHT PPDU 格式（21.3.2 / 21.3.3）：先是传统可解码的前导码（L-STF、L-LTF、L-SIG、VHT-SIG-A），随后是 VHT 调制字段（VHT-STF、VHT-LTF、VHT-SIG-B、Data）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The transmitter block diagram (21.3.3) lays out the processing chain: PHY padding, scrambler, FEC encoder (BCC or LDPC), stream parser, a segment parser for 160 / 80+80 MHz, BCC interleaver, constellation mapper, pilot insertion, replication across 20 MHz subchannels, LDPC tone mapper, STBC encoder, per-STS and per-chain cyclic-shift diversity (CSD), spatial mapper, IDFT, guard-interval insertion, and windowing. The encoding overview (21.3.4) then walks field-by-field — L-STF, L-LTF, L-SIG, VHT-SIG-A, VHT-STF, VHT-LTF, VHT-SIG-B, and the SU vs MU Data field — showing how each is built from a subset of those blocks.",
+      "zh": "发射机框图（21.3.3）给出了处理链：PHY 填充、扰码器、FEC 编码器（BCC 或 LDPC）、流解析器、用于 160 / 80+80 MHz 的分段解析器、BCC 交织器、星座映射器、导频插入、跨 20 MHz 子信道的复制、LDPC 音调映射器、STBC 编码器、按 STS 和按链路的循环移位分集（CSD）、空间映射器、IDFT、保护间隔插入及加窗。编码概览（21.3.4）随后逐字段说明——L-STF、L-LTF、L-SIG、VHT-SIG-A、VHT-STF、VHT-LTF、VHT-SIG-B，以及 SU 与 MU 的 Data 字段——展示每个字段如何由这些模块的子集构建而成。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "VHT keeps the OFDM numerology you already know: 312.5 kHz subcarrier spacing, a 3.2 us IDFT period, a 4 us long symbol (0.8 us guard interval), and an optional 3.6 us short-GI symbol (0.4 us GI). What changes with bandwidth is the subcarrier count: 52 data tones at 20 MHz, 108 at 40, 234 at 80, and 468 at 160 MHz (21.3.5, 21.3.6, 21.3.7).",
+      "zh": "VHT 保留了你已熟悉的 OFDM 参数：312.5 kHz 子载波间隔、3.2 us 的 IDFT 周期、4 us 的长符号（0.8 us 保护间隔），以及可选的 3.6 us 短 GI 符号（0.4 us GI）。随带宽变化的是子载波数量：20 MHz 有 52 个数据载波，40 MHz 有 108 个，80 MHz 有 234 个，160 MHz 有 468 个（21.3.5、21.3.6、21.3.7）。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n  A[20 MHz: 52 data SC] --> B[40 MHz: 108]\n  B --> C[80 MHz: 234]\n  C --> D[160 MHz: 468]\n  D --> E[80+80 MHz: 2 segments]",
+      "zh": "graph LR\n  A[20 MHz: 52 数据SC] --> B[40 MHz: 108]\n  B --> C[80 MHz: 234]\n  C --> D[160 MHz: 468]\n  D --> E[80+80 MHz: 2 个分段]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: TXVECTOR/format handling, bandwidth, transmit/receive specs, PLME, and the VHT-MCS tables",
+        "zh": "覆盖图：TXVECTOR/格式处理、带宽、收发指标、PLME 及 VHT-MCS 表"
+      },
+      "en": "Introduction & functions: 21.1.1 introduces the VHT PHY (5 GHz OFDM, up to 8 streams, MU-MIMO, mandatory and optional feature lists); 21.1.2 scopes its services (mapping PSDUs to a PPDU; transmit/receive over the medium); 21.1.3 names its two entities — the PHY function and the PLME — and the service-specification method.\n\nService interface: 21.2.1 introduces TXVECTOR/RXVECTOR/PHYCONFIG_VECTOR; 21.2.2 is Table 21-1, the full parameter list (FORMAT, the MCS/coding/bandwidth fields, group ID, etc.); 21.2.3 defines PHYCONFIG_VECTOR (operating channel, CHANNEL_WIDTH, center-frequency segments, group-ID and partial-AID management); 21.2.4 gives Table 21-2, how FORMAT + NON_HT_MODULATION + CH_BANDWIDTH map to a concrete PPDU and CH_OFFSET (CBW20/40/80/160/80+80 and non-HT-duplicate); 21.2.5 specifies coexistence — a VHT STA logically contains Clause 17, 19, and 21 PHYs, with rules for NON_HT-OFDM and HT format support; 21.2.6 reuses HT's TXSTATUS (Table 19-4).\n\nVHT PHY body: 21.3.1 introduces PSDU-to-waveform processing and the pre-VHT vs VHT-modulated field split; 21.3.3 is the transmitter block diagram; 21.3.4 is the field-by-field PPDU encoding overview; 21.3.5 defines the VHT-MCS (indices 0-9, 1-8 streams, signalled in VHT-SIG-A for SU and VHT-SIG-B for MU); 21.3.6 gives the timing constants (Table 21-5: 312.5 kHz spacing, 3.2 us IDFT, 4 us / 3.6 us symbols, field durations) plus Table 21-6 frequently-used parameters; 21.3.7 is the mathematical signal description (notation, subcarrier indices per bandwidth, channel-frequency equations, transmitted signal); 21.3.9 covers transmitting NON_HT and HT PPDUs with multiple transmit chains (cyclic shifts from Table 21-10).\n\nTransmit & receive specs: 21.3.17 is the VHT transmit specification — spectral mask, spectral flatness, center-frequency and clock tolerance, modulation accuracy (EVM), and time-of-departure accuracy (<=80 ns RMS); 21.3.18 is the VHT receiver specification — minimum input sensitivity (Table 21-25, e.g. BPSK 1/2 at -82 dBm in 20 MHz), adjacent and nonadjacent channel rejection, maximum input level, CCA sensitivity, RSSI, and RCPI.\n\nPLME & parameters: 21.4.1 lists the PLME SAP MIB attributes (Table 21-27); 21.4.2 describes the PHY MIB (static vs dynamic attributes); 21.4.3 gives the TXTIME and PSDU_LENGTH calculation (Equations 21-109/21-110 for short/long GI); 21.4.4 lists the VHT PHY characteristics (Table 21-28: aPPDUMaxTime 5.484 ms, aPSDUMaxLength, etc.); and 21.5 holds the rate-dependent VHT-MCS parameter tables (Table 21-29 to 21-60) across all bandwidths, defining mandatory single-stream MCS 0-7 and optional MCS 8-9 and 160/80+80 MHz support.",
+      "zh": "引言与功能：21.1.1 介绍 VHT PHY（5 GHz OFDM、最多 8 条流、MU-MIMO、强制与可选特性列表）；21.1.2 界定其服务范围（将 PSDU 映射为 PPDU；在媒介上收发）；21.1.3 指明其两个实体——PHY 功能与 PLME——以及服务规范方法。\n\n服务接口：21.2.1 介绍 TXVECTOR/RXVECTOR/PHYCONFIG_VECTOR；21.2.2 即表 21-1，完整参数列表（FORMAT、MCS/编码/带宽字段、组 ID 等）；21.2.3 定义 PHYCONFIG_VECTOR（工作信道、CHANNEL_WIDTH、中心频率分段、组 ID 与部分 AID 管理）；21.2.4 给出表 21-2，说明 FORMAT + NON_HT_MODULATION + CH_BANDWIDTH 如何映射为具体的 PPDU 与 CH_OFFSET（CBW20/40/80/160/80+80 及非 HT 复制）；21.2.5 规定共存——VHT STA 逻辑上包含 Clause 17、19、21 三个 PHY，并给出 NON_HT-OFDM 与 HT 格式支持规则；21.2.6 复用 HT 的 TXSTATUS（表 19-4）。\n\nVHT PHY 主体：21.3.1 介绍从 PSDU 到波形的处理以及 pre-VHT 与 VHT 调制字段的划分；21.3.3 为发射机框图；21.3.4 为逐字段的 PPDU 编码概览；21.3.5 定义 VHT-MCS（索引 0-9、1-8 条流，SU 在 VHT-SIG-A 中、MU 在 VHT-SIG-B 中信令）；21.3.6 给出定时常数（表 21-5：312.5 kHz 间隔、3.2 us IDFT、4 us / 3.6 us 符号、各字段时长）以及表 21-6 常用参数；21.3.7 为信号数学描述（记号、各带宽的子载波索引、信道频率方程、发射信号）；21.3.9 涵盖使用多个发射链路传输 NON_HT 与 HT PPDU（循环移位见表 21-10）。\n\n收发指标：21.3.17 为 VHT 发送指标——频谱模板、频谱平坦度、中心频率与时钟容差、调制精度（EVM）、出发时间精度（RMS <=80 ns）；21.3.18 为 VHT 接收指标——最小输入灵敏度（表 21-25，例如 20 MHz 下 BPSK 1/2 为 -82 dBm）、邻道与非邻道抑制、最大输入电平、CCA 灵敏度、RSSI 与 RCPI。\n\nPLME 与参数：21.4.1 列出 PLME SAP 的 MIB 属性（表 21-27）；21.4.2 描述 PHY MIB（静态与动态属性）；21.4.3 给出 TXTIME 与 PSDU_LENGTH 计算（短/长 GI 对应式 21-109/21-110）；21.4.4 列出 VHT PHY 特性（表 21-28：aPPDUMaxTime 5.484 ms、aPSDUMaxLength 等）；21.5 收录跨所有带宽的速率相关 VHT-MCS 参数表（表 21-29 至 21-60），规定强制的单流 MCS 0-7 以及可选的 MCS 8-9 和 160/80+80 MHz 支持。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3551,
+          3552,
+          3553,
+          3560,
+          3561,
+          3563,
+          3566,
+          3567,
+          3583,
+          3637,
+          3645,
+          3646,
+          3657,
+          3661,
+          3663
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The transmit and receive conformance specs anchor what 'works in the field' means. On transmit (21.3.17): a spectral mask, spectral flatness, center-frequency and symbol-clock tolerance, modulation accuracy (EVM) tests, and a time-of-departure RMS accuracy of 80 ns or better. On receive (21.3.18): minimum input sensitivity scaling with both MCS and bandwidth (Table 21-25 ranges from -82 dBm for BPSK 1/2 at 20 MHz down toward -48 dBm for 256-QAM 5/6 at 160 MHz), adjacent / nonadjacent channel rejection, maximum input level, CCA sensitivity, RSSI, and RCPI.",
+      "zh": "收发一致性指标界定了“现场能用”的含义。发送侧（21.3.17）：频谱模板、频谱平坦度、中心频率与符号时钟容差、调制精度（EVM）测试，以及不超过 80 ns 的出发时间 RMS 精度。接收侧（21.3.18）：随 MCS 与带宽变化的最小输入灵敏度（表 21-25 从 20 MHz 下 BPSK 1/2 的 -82 dBm，到 160 MHz 下 256-QAM 5/6 接近 -48 dBm）、邻道/非邻道抑制、最大输入电平、CCA 灵敏度、RSSI 与 RCPI。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the PLME and parameter tables make the PHY usable by management. 21.4 defines the PLME SAP MIB attributes (21.4.1), the PHY MIB's static/dynamic semantics (21.4.2), the TXTIME and PSDU_LENGTH equations (21.4.3), and the VHT PHY characteristics such as aPPDUMaxTime = 5.484 ms (21.4.4). Clause 21.5 then provides the rate-dependent VHT-MCS tables (Table 21-29 through 21-60): single-stream MCS 0-7 is mandatory in every supported width, while MCS 8-9, multi-stream operation, and 160 / 80+80 MHz are optional — the levers a vendor pulls to reach 802.11ac's headline data rates.",
+      "zh": "最后，PLME 与参数表使该 PHY 可被管理实体使用。21.4 定义 PLME SAP 的 MIB 属性（21.4.1）、PHY MIB 的静态/动态语义（21.4.2）、TXTIME 与 PSDU_LENGTH 方程（21.4.3），以及诸如 aPPDUMaxTime = 5.484 ms 的 VHT PHY 特性（21.4.4）。第 21.5 节随后提供速率相关的 VHT-MCS 表（表 21-29 至 21-60）：单流 MCS 0-7 在每个受支持的带宽中均为强制，而 MCS 8-9、多流操作以及 160 / 80+80 MHz 为可选——这些正是厂商用以达到 802.11ac 标称速率的调节杠杆。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3551,
+        3552,
+        3553
+      ],
+      "note": "21.1 introduction/scope/functions; 21.2.1-21.2.2 TXVECTOR/RXVECTOR"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3560,
+        3561,
+        3563,
+        3566
+      ],
+      "note": "21.2.3 PHYCONFIG_VECTOR; 21.2.4 bandwidth/format table; 21.2.5-21.2.6"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3567,
+        3568,
+        3577,
+        3583,
+        3584,
+        3586,
+        3587
+      ],
+      "note": "21.3.1-21.3.7 PPDU format, transmitter blocks, MCS, timing, math"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3611,
+        3637,
+        3645,
+        3646
+      ],
+      "note": "21.3.9 multi-chain; 21.3.17 transmit spec; 21.3.18 receiver spec"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3657,
+        3661,
+        3662,
+        3663
+      ],
+      "note": "21.4.1-21.4.4 PLME/TXTIME/characteristics; 21.5 VHT-MCS tables"
+    }
+  ],
+  "covers": [
+    "80211-2024:21.1.1",
+    "80211-2024:21.1.2",
+    "80211-2024:21.1.3",
+    "80211-2024:21.2.1",
+    "80211-2024:21.2.2",
+    "80211-2024:21.2.3",
+    "80211-2024:21.2.4",
+    "80211-2024:21.2.5",
+    "80211-2024:21.2.6",
+    "80211-2024:21.3.1",
+    "80211-2024:21.3.3",
+    "80211-2024:21.3.4",
+    "80211-2024:21.3.5",
+    "80211-2024:21.3.6",
+    "80211-2024:21.3.7",
+    "80211-2024:21.3.9",
+    "80211-2024:21.3.17",
+    "80211-2024:21.3.18",
+    "80211-2024:21.4.1",
+    "80211-2024:21.4.2",
+    "80211-2024:21.4.3",
+    "80211-2024:21.4.4",
+    "80211-2024:21.5"
+  ],
+  "track": "legacy-phy"
+}

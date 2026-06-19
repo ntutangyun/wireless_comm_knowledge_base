@@ -1,0 +1,238 @@
+{
+  "id": "qos-power-11-he-mac-operation",
+  "title": {
+    "en": "Wi-Fi 6 at the MAC: HE Uplink MU, UORA, Trigger Info and Rate Selection",
+    "zh": "MAC 层的 Wi-Fi 6：HE 上行 MU、UORA、触发信息与速率选择"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 26 defines the High Efficiency (Wi-Fi 6 / HE) MAC. An HE STA reuses the generic MAC of Clause 10 and the MLME of Clause 11, except where Clause 26 supersedes them. The single biggest change is that the AP now schedules the uplink: instead of every station contending on its own, the AP sends a Trigger frame that tells a set of stations exactly when, where (which resource unit), and how to transmit a simultaneous HE trigger-based (TB) PPDU. This lesson walks the MAC-layer machinery behind that: uplink MU, OFDMA-based random access, the fields a Trigger frame carries, link adaptation, and how an HE STA picks its rate.",
+      "zh": "第 26 章定义了高效率（Wi-Fi 6 / HE）MAC。HE STA 沿用第 10 章的通用 MAC 和第 11 章的 MLME，仅在第 26 章另有规定处取代它们。最大的变化是：上行链路改由 AP 调度——不再让每个站点各自竞争信道，而是由 AP 发送一个触发帧（Trigger frame），告诉一组站点何时、在哪个资源单元（RU）以及如何同时发送一个 HE 基于触发的（TB）PPDU。本课讲解其背后的 MAC 层机制：上行 MU、基于 OFDMA 的随机接入、触发帧所携带的字段、链路自适应，以及 HE STA 如何选择速率。"
+    },
+    {
+      "type": "prose",
+      "en": "Uplink MU operation (26.5.2) lets an AP solicit simultaneous immediate responses from one or more non-AP HE STAs. A non-AP STA never sends a triggering frame — only the AP does. When the AP includes one or more User Info fields addressed to a station (AID12 = the 12 LSBs of that station's AID), each addressed station answers in an HE TB PPDU on its assigned RU. The exception is an MU-RTS Trigger frame, which is answered with a plain CTS in a non-HT PPDU. The AP must allocate enough resources for the expected response (e.g. at least a QoS Null carrying an HT Control field for a Basic/BSRP/BQRP trigger) and must pad the trigger so a slow station has enough processing time (MinTrigProcTime) before it has to transmit.",
+      "zh": "上行 MU 操作（26.5.2）允许 AP 向一个或多个非 AP 的 HE STA 征询同时的即时响应。非 AP 站点永远不会发送触发帧——只有 AP 才能发。当 AP 在帧中包含寻址到某站点的 User Info 字段（AID12 = 该站点 AID 的低 12 位）时，每个被寻址的站点都会在其分配的 RU 上以 HE TB PPDU 作答。例外是 MU-RTS 触发帧，它由一个以 non-HT PPDU 发送的普通 CTS 来响应。AP 必须为预期响应分配足够的资源（例如对 Basic/BSRP/BQRP 触发至少要够发一个携带 HT Control 字段的 QoS Null），并对触发帧做填充，使处理较慢的站点在必须发送前有足够的处理时间（MinTrigProcTime）。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant AP\n  participant S1 as STA1\n  participant S2 as STA2\n  AP->>S1: Trigger (User Info, RU a)\n  AP->>S2: Trigger (User Info, RU b)\n  Note over S1,S2: SIFS\n  S1-->>AP: HE TB PPDU on RU a\n  S2-->>AP: HE TB PPDU on RU b\n  AP->>S1: Multi-STA BlockAck\n  AP->>S2: Multi-STA BlockAck",
+      "zh": "sequenceDiagram\n  participant AP\n  participant S1 as 站点1\n  participant S2 as 站点2\n  AP->>S1: 触发帧 (User Info, RU a)\n  AP->>S2: 触发帧 (User Info, RU b)\n  Note over S1,S2: SIFS\n  S1-->>AP: 在 RU a 上的 HE TB PPDU\n  S2-->>AP: 在 RU b 上的 HE TB PPDU\n  AP->>S1: 多站点 BlockAck\n  AP->>S2: 多站点 BlockAck"
+    },
+    {
+      "type": "prose",
+      "en": "UL OFDMA-based random access (UORA, 26.5.4) handles stations the AP has NOT individually scheduled — for example a station with new traffic the AP doesn't yet know about, or an unassociated station trying to join. The AP marks some RUs as random-access RUs (RA-RUs) by setting AID12 to 0 (associated STAs) or 2045 (unassociated STAs) in a Basic, BSRP, or BQRP Trigger frame. Each UORA station keeps an OFDMA backoff (OBO) counter and an OFDMA contention window (OCW). On each trigger it decrements OBO by the number of eligible RA-RUs; when OBO reaches 0 it picks one of those RA-RUs at random and transmits. A successful transmission resets OCW to OCWmin; a collision doubles OCW (2 x OCW + 1, capped at OCWmax) — a familiar contention pattern, but played out in frequency rather than time.",
+      "zh": "基于 OFDMA 的上行随机接入（UORA，26.5.4）服务于那些 AP 尚未单独调度的站点——例如有新流量、AP 还不知情的站点，或试图加入网络的未关联站点。AP 在 Basic、BSRP 或 BQRP 触发帧中把某些 RU 标记为随机接入 RU（RA-RU），方法是将 AID12 置为 0（已关联站点）或 2045（未关联站点）。每个 UORA 站点维护一个 OFDMA 退避计数器（OBO）和一个 OFDMA 竞争窗口（OCW）。每收到一个触发帧，它就把 OBO 减去可用 RA-RU 的数量；当 OBO 减到 0 时，它从这些 RA-RU 中随机选一个发送。成功发送后将 OCW 重置为 OCWmin；发生冲突则将 OCW 加倍（2 x OCW + 1，上限为 OCWmax）——这是熟悉的竞争模式，只不过是在频域而非时域上展开。"
+    },
+    {
+      "type": "widget",
+      "widget": "ofdma-ru",
+      "params": {}
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A station that already has a dedicated (individually addressed) RU in the same Trigger frame does NOT contend on the RA-RUs and does NOT decrement its OBO — it just uses its assigned RU. UORA is only for the unscheduled remainder. Unassociated stations all share STA_ID 2045, which doesn't uniquely identify a sender, so an unassociated STA is not allowed to send a UL HE MU PPDU.",
+      "zh": "在同一触发帧中已经获得专用（单独寻址）RU 的站点不参与 RA-RU 竞争，也不会递减其 OBO——它直接使用分配给它的 RU。UORA 只服务于未被调度的那部分站点。未关联站点都共享 STA_ID 2045，无法唯一标识发送方，因此未关联站点不允许发送 UL HE MU PPDU。"
+    },
+    {
+      "type": "prose",
+      "en": "Two capability hooks help the AP schedule well. With 26.5.8 a non-AP HE STA can hand the AP a TSPEC inside a Basic ADDTS Request, describing its traffic characteristics and QoS needs so the AP can build a better UL/DL MU schedule (how the AP uses it is left open). With 26.5.9 a station can send a UL MU Power Capabilities element at association, declaring the relative maximum transmit power it can reach for each HE-MCS on RUs of 242 subcarriers or larger — useful input to the AP's scheduling algorithm so it doesn't ask a station to transmit at a rate it cannot power.",
+      "zh": "两个能力接口帮助 AP 更好地调度。依据 26.5.8，非 AP 的 HE STA 可以在 Basic ADDTS Request 中向 AP 提交一个 TSPEC，描述其流量特征和 QoS 需求，以便 AP 制定更优的上/下行 MU 调度（AP 如何使用这些信息不在标准范围内）。依据 26.5.9，站点可在关联时发送 UL MU Power Capabilities 元素，声明其在 242 子载波及更大 RU 上、对每个 HE-MCS 所能达到的相对最大发射功率——这是 AP 调度算法的有用输入，避免要求站点以其功率达不到的速率发送。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: what a Trigger frame's TXVECTOR fields actually carry (26.11.1-26.11.10)",
+        "zh": "覆盖地图：触发帧的 TXVECTOR 字段到底携带了什么（26.11.1-26.11.10）"
+      },
+      "en": "Clause 26.11 lists the rules for setting TXVECTOR parameters of PPDUs an HE STA sends, and these same notions populate the Common Info / User Info of a Trigger frame. STA_ID (26.11.1) identifies the RU recipient: the 11 LSBs of the AID for an individual RU, 2045 for unassociated STAs, 2046 for no user, 0 for a group of associated STAs, 2047 for multi-BSSID broadcast. UPLINK_FLAG (26.11.2) is 1 when the PPDU's frames are addressed to an AP, else 0 — this is how the receiver tells uplink from downlink. BEAM_CHANGE (26.11.3) flags a change in the spatial mapping between the pre-HE-STF portion and the first HE-LTF symbol, and is set to 1 for >2 spatial streams, the first PPDU of a TXOP, or a PPDU carrying a Trigger frame. BSS_COLOR (26.11.4) marks the PPDU as intra- or inter-BSS for spatial reuse; it is set to 0 (not discarded) when a recipient is outside the BSS and no trigger is carried. TXOP_DURATION (26.11.5) carries NAV/TXOP-protection duration (or UNSPECIFIED), capped at 8448; in the 6 GHz band a TXOP holder generally cannot leave it UNSPECIFIED. SPATIAL_REUSE (26.11.6) carries the per-subband spatial-reuse values (PSR_DISALLOW, SR_DELAYED, SR_RESTRICTED, etc.) that govern whether OBSS STAs may reuse the medium during this PPDU. INACTIVE_SUBCHANNELS and RU_ALLOCATION (26.11.7) describe puncturing in sounding NDPs / NDP Announcements via an 8-bit bitmap. TRIGGER_RESPONDING (26.11.8) is set true on a non-HT response to an MU-RTS Trigger. STBC and DCM (26.11.9) cannot be combined, and STBC requires exactly 2 space-time streams (and is barred in DL MU-MIMO). POWER_BOOST_FACTOR (26.11.10) scales per-RU power for OFDMA MU PPDUs ([1/2, 2] when supported, else [1/2, 2] reduced range; set to 1 for SU/non-OFDMA MU/ER SU, and not present for an HE TB PPDU).",
+      "zh": "第 26.11 节列出了 HE STA 发送 PPDU 时设置 TXVECTOR 参数的规则，这些概念同样填充了触发帧的 Common Info / User Info。STA_ID（26.11.1）标识 RU 的接收方：单独 RU 用 AID 的低 11 位，未关联站点用 2045，无用户用 2046，一组已关联站点用 0，多 BSSID 广播用 2047。UPLINK_FLAG（26.11.2）在 PPDU 帧寻址到 AP 时为 1，否则为 0——接收方据此区分上行与下行。BEAM_CHANGE（26.11.3）标记 pre-HE-STF 部分与首个 HE-LTF 符号之间空间映射的变化，在空间流大于 2、TXOP 的首个 PPDU、或携带触发帧的 PPDU 时置 1。BSS_COLOR（26.11.4）将 PPDU 标记为 BSS 内或 BSS 间以用于空间复用；当接收方在 BSS 之外且未携带触发帧时置 0（但不得据此丢弃）。TXOP_DURATION（26.11.5）携带 NAV/TXOP 保护时长（或 UNSPECIFIED），上限为 8448；在 6 GHz 频段，TXOP 持有者通常不能将其置为 UNSPECIFIED。SPATIAL_REUSE（26.11.6）携带各子带的空间复用取值（PSR_DISALLOW、SR_DELAYED、SR_RESTRICTED 等），决定 OBSS 站点在本 PPDU 期间能否复用信道。INACTIVE_SUBCHANNELS 与 RU_ALLOCATION（26.11.7）用 8 位位图描述探测 NDP / NDP 通告中的打孔。TRIGGER_RESPONDING（26.11.8）在对 MU-RTS 触发帧的 non-HT 响应中置真。STBC 与 DCM（26.11.9）不可同时使用，STBC 要求恰好 2 个空时流（并在 DL MU-MIMO 中被禁止）。POWER_BOOST_FACTOR（26.11.10）为 OFDMA MU PPDU 按 RU 缩放功率（支持时为 [1/2, 2]，否则取受限范围；SU/非 OFDMA MU/ER SU 置 1，HE TB PPDU 中不存在该参数）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4093,
+          4094,
+          4095,
+          4096,
+          4097,
+          4098,
+          4099,
+          4100
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Link adaptation in HE (26.13) rides on the HLA (HE Link Adaptation) Control subfield of the HE variant HT Control field. A requester sets MRQ=1 (with an MSI tag and the target RU index and BW) to ask a peer for feedback; the responder computes a recommended <HE-MCS, NSS, DCM> for that exact RU and bandwidth, based on the same RU of the PPDU that carried the request, and returns it as an MFB labelled with the MSI so the requester can match feedback to request. Stations advertise whether they support this via the HE Link Adaptation Support subfield (you can't send an MRQ to a STA that hasn't advertised value 3, nor an unsolicited MFB to one that hasn't advertised 2 or 3).",
+      "zh": "HE 的链路自适应（26.13）建立在 HE 变体 HT Control 字段中的 HLA（HE 链路自适应）Control 子字段之上。请求方将 MRQ 置 1（带一个 MSI 标签以及目标 RU 索引和带宽）来向对端请求反馈；响应方基于携带该请求的 PPDU 的同一 RU，针对那个确切的 RU 和带宽计算出推荐的 <HE-MCS, NSS, DCM>，并作为带有该 MSI 标签的 MFB 返回，使请求方能将反馈与请求一一对应。站点通过 HE Link Adaptation Support 子字段声明是否支持此功能（不能向未声明取值 3 的站点发送 MRQ，也不能向未声明取值 2 或 3 的站点发送非请求的 MFB）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model for rate selection (26.15): an HE STA may transmit an <HE-MCS, NSS> tuple only if it is in the RECEIVE HE-MCS and NSS set of the receiver (derived from the peer's HE Capabilities, possibly narrowed by its Operating Mode / OM Control). Picking a rate is really 'find the fastest tuple the other side has told me it can decode at this bandwidth and DCM setting.'",
+      "zh": "速率选择的思维模型（26.15）：HE STA 只能发送处于接收方“接收 HE-MCS 和 NSS 集合”内的 <HE-MCS, NSS> 组合（该集合由对端的 HE Capabilities 推导，可能再被其 Operating Mode / OM Control 收窄）。选速率本质上就是“找出对端已告诉我它能在当前带宽和 DCM 设置下解码的最快组合”。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: HE rate selection rules and midamble setting (26.15.1-26.15.8, 26.16)",
+        "zh": "覆盖地图：HE 速率选择规则与中导（midamble）设置（26.15.1-26.15.8、26.16）"
+      },
+      "en": "26.15.1 (General) states that an HE STA's choice of PPDU format, BW, MCS, NSS and DCM follows the rules of this subclause given the receiver's capabilities. 26.15.2 (PPDU format selection) builds on Clause 10.6: HE SU is the default; HE ER SU (242- or 106-tone) is gated on the peer not disabling ER SU and on Partial Bandwidth ER support; control responses must mirror the soliciting PPDU's format. 26.15.3 (MCS/NSS/BW/DCM selection) requires the chosen <HE-MCS, NSS> tuple to be supported by the receiver (or fall back to the basic/mandatory set), gates 1024-QAM on small RUs and DCM on the peer's DCM Max Constellation/RU/NSS subfields, and sets control-response bandwidth to match the eliciting PPDU. 26.15.4 (Rate selection constraints) defines the receive HE-MCS/NSS set (26.15.4.1) and transmit HE-MCS/NSS set (26.15.4.2) derived from the Supported HE-MCS And NSS Set field, the additional HE-PPDU constraints tied to a peer's HT Rx MCS bitmask (26.15.4.3, with the worked example of Table 26-14), and the Rx Supported VHT-MCS and NSS set (26.15.4.4). 26.15.5 covers ER beacons and group-addressed frames in an HE ER SU PPDU (mandatory HE-MCS, NSS=1, BCC, no STBC/DCM, CH_BANDWIDTH = ER-RU-242). 26.15.6 covers HE beacons and group-addressed frames in an HE SU PPDU (note: an HE beacon only occurs in 6 GHz; mandatory HE-MCS, NSS=1, CBW20 when any intended STA may be asleep/unassociated). 26.15.7 covers group-addressed frames in an HE MU PPDU (no Beacon allowed; the frame must ride a broadcast RU, mandatory HE-MCS, NSS=1, located on the primary 20 MHz channel for FILS Discovery/Probe Response). 26.15.8 adds 6 GHz rules: a non-TB PPDU must stay within the advertised BSS operating bandwidth, NSS, and minimum-rate floor (from FILS Discovery or the HE Operation element). Finally 26.16 (Midamble parameter setting) gates the TXVECTOR DOPPLER=1 (midambles, for high-mobility channel tracking) and the HE-LTF type (1x/2x/4x) on the peer's Doppler Rx/Tx and Midamble Tx/Rx HE-LTF capability subfields, and caps NUM_STS at the peer's Midamble Tx/Rx Max NSTS.",
+      "zh": "26.15.1（总则）规定 HE STA 对 PPDU 格式、带宽、MCS、NSS 和 DCM 的选择需在考虑接收方能力的前提下遵循本节规则。26.15.2（PPDU 格式选择）建立在第 10.6 节之上：默认用 HE SU；HE ER SU（242 或 106 子载波）取决于对端未禁用 ER SU 以及对 Partial Bandwidth ER 的支持；控制响应必须沿用征询 PPDU 的格式。26.15.3（MCS/NSS/BW/DCM 选择）要求所选 <HE-MCS, NSS> 组合被接收方支持（否则回退到 basic/mandatory 集合），将小 RU 上的 1024-QAM 以及 DCM 的使用约束于对端的 DCM Max Constellation/RU/NSS 子字段，并令控制响应带宽与触发它的 PPDU 一致。26.15.4（速率选择约束）定义了由 Supported HE-MCS And NSS Set 字段推导的接收 HE-MCS/NSS 集合（26.15.4.1）和发送 HE-MCS/NSS 集合（26.15.4.2），与对端 HT 接收 MCS 位掩码相关的额外 HE-PPDU 约束（26.15.4.3，附表 26-14 实例），以及接收 VHT-MCS/NSS 集合（26.15.4.4）。26.15.5 规定以 HE ER SU PPDU 发送的 ER 信标和组寻址帧（强制 HE-MCS、NSS=1、BCC、不用 STBC/DCM、CH_BANDWIDTH = ER-RU-242）。26.15.6 规定以 HE SU PPDU 发送的 HE 信标和组寻址帧（注意：HE 信标仅在 6 GHz 出现；强制 HE-MCS、NSS=1，当任一目标站点可能处于睡眠或未关联时用 CBW20）。26.15.7 规定 HE MU PPDU 中的组寻址帧（不允许含信标；该帧须置于广播 RU，强制 HE-MCS、NSS=1，FILS Discovery/Probe Response 须位于主 20 MHz 信道）。26.15.8 增加 6 GHz 规则：非 TB PPDU 必须保持在所通告的 BSS 工作带宽、NSS 和最低速率门限内（取自 FILS Discovery 或 HE Operation 元素）。最后，26.16（中导参数设置）将 TXVECTOR 的 DOPPLER=1（用于高移动性信道跟踪的中导）以及 HE-LTF 类型（1x/2x/4x）约束于对端的 Doppler Rx/Tx 和 Midamble Tx/Rx HE-LTF 能力子字段，并将 NUM_STS 限制在对端的 Midamble Tx/Rx Max NSTS 之内。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4108,
+          4109,
+          4110,
+          4111,
+          4112,
+          4113,
+          4114,
+          4115,
+          4116,
+          4117
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: HE introduction, UL MU, UORA and capability hooks (26.1, 26.5.2, 26.5.4, 26.5.8, 26.5.9)",
+        "zh": "覆盖地图：HE 引言、上行 MU、UORA 与能力接口（26.1、26.5.2、26.5.4、26.5.8、26.5.9）"
+      },
+      "en": "26.1 (Introduction) frames the HE MAC as Clause 10/11/12 plus the HE-specific functions, and notes that a frame a non-AP STA sends in response to a Basic Trigger frame counts as a STA-initiated frame exchange sequence. 26.5.2 (UL MU operation) is the AP-solicited simultaneous uplink: capability gating (Full/Partial Bandwidth UL MU-MIMO, TRS Support, 2x996-tone RU, HT/VHT trigger Rx), the three solicitation mechanisms (Trigger frame User Info with AID12, or a TRS Control subfield in an S-MPDU/A-MPDU/multi-TID A-MPDU), resource-allocation requirements, and the MinTrigProcTime padding equation. 26.5.4 (UORA) is the OFDMA random-access path: the OFDMA RA Support capability, the UORA Parameter Set element carrying OCWmin/OCWmax, the OBO/OCW state machine, the transmission procedure (decrement OBO by eligible RA-RU count, transmit when it hits 0 on a randomly chosen RA-RU), the retransmission procedure (double OCW on failure), and the special handling for unassociated STAs (HE PPDU required, broadcast TWT scheduling, AID12=2045). 26.5.8 (Use of TSPEC) lets a non-AP HE STA supply traffic characteristics via a Basic ADDTS Request to help the AP schedule MU operations. 26.5.9 (UL MU transmit power capabilities) lets a STA report, via the UL MU Power Capabilities element, its relative max transmit power per HE-MCS for RUs >= 242 subcarriers as scheduling input.",
+      "zh": "26.1（引言）将 HE MAC 界定为第 10/11/12 章加上 HE 专有功能，并指出非 AP 站点为响应 Basic 触发帧而发送的帧算作由站点发起的帧交换序列。26.5.2（上行 MU 操作）是由 AP 征询的同时上行：能力门控（全/部分带宽 UL MU-MIMO、TRS 支持、2x996 子载波 RU、HT/VHT 触发接收）、三种征询机制（带 AID12 的触发帧 User Info，或 S-MPDU/A-MPDU/多 TID A-MPDU 中的 TRS Control 子字段）、资源分配要求，以及 MinTrigProcTime 填充公式。26.5.4（UORA）是 OFDMA 随机接入路径：OFDMA RA Support 能力、携带 OCWmin/OCWmax 的 UORA Parameter Set 元素、OBO/OCW 状态机、发送过程（按可用 RA-RU 数递减 OBO，归零时在随机选中的 RA-RU 上发送）、重传过程（失败时 OCW 加倍），以及对未关联站点的特殊处理（须用 HE PPDU、广播 TWT 调度、AID12=2045）。26.5.8（TSPEC 的使用）允许非 AP 的 HE STA 通过 Basic ADDTS Request 提供流量特征，帮助 AP 调度 MU 操作。26.5.9（UL MU 发射功率能力）允许站点通过 UL MU Power Capabilities 元素报告其在 >=242 子载波 RU 上、对每个 HE-MCS 的相对最大发射功率，作为调度输入。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3978,
+          4008,
+          4009,
+          4025,
+          4026,
+          4028,
+          4029,
+          4036,
+          4037
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3978
+      ],
+      "note": "26.1 HE MAC introduction"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4008,
+        4009,
+        4010,
+        4011
+      ],
+      "note": "26.5.2 UL MU operation, soliciting rules, MinTrigProcTime padding"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4025,
+        4026,
+        4027,
+        4028,
+        4029,
+        4030
+      ],
+      "note": "26.5.4 UORA: OBO/OCW, transmission/retransmission, unassociated STAs"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4036,
+        4037
+      ],
+      "note": "26.5.8 TSPEC use; 26.5.9 UL MU transmit power capabilities"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4093,
+        4094,
+        4095,
+        4096,
+        4097,
+        4098,
+        4099,
+        4100
+      ],
+      "note": "26.11.1-26.11.10 Trigger / TXVECTOR fields"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4102
+      ],
+      "note": "26.13 link adaptation via HLA Control subfield"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4108,
+        4109,
+        4110,
+        4111,
+        4112,
+        4113,
+        4114,
+        4115,
+        4116
+      ],
+      "note": "26.15.1-26.15.8 PPDU format / MCS / NSS / BW / DCM selection rules"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4116,
+        4117
+      ],
+      "note": "26.16 midamble parameter setting rules"
+    }
+  ],
+  "covers": [
+    "80211-2024:26.1",
+    "80211-2024:26.5.2",
+    "80211-2024:26.5.4",
+    "80211-2024:26.5.8",
+    "80211-2024:26.5.9",
+    "80211-2024:26.11.1",
+    "80211-2024:26.11.2",
+    "80211-2024:26.11.3",
+    "80211-2024:26.11.4",
+    "80211-2024:26.11.5",
+    "80211-2024:26.11.6",
+    "80211-2024:26.11.7",
+    "80211-2024:26.11.8",
+    "80211-2024:26.11.9",
+    "80211-2024:26.11.10",
+    "80211-2024:26.13",
+    "80211-2024:26.15.1",
+    "80211-2024:26.15.2",
+    "80211-2024:26.15.3",
+    "80211-2024:26.15.4",
+    "80211-2024:26.15.5",
+    "80211-2024:26.15.6",
+    "80211-2024:26.15.7",
+    "80211-2024:26.15.8",
+    "80211-2024:26.16"
+  ],
+  "track": "qos-power"
+}

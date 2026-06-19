@@ -1,0 +1,200 @@
+{
+  "id": "legacy-phy-48-tvht-phy",
+  "title": {
+    "en": "The TVHT PHY: Wi-Fi in TV White Space (802.11af)",
+    "zh": "TVHT PHY：电视白空间里的 Wi-Fi（802.11af）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 22 of IEEE 802.11-2024 defines the Television Very High Throughput (TVHT) PHY — the OFDM PHY that lets Wi-Fi operate in television white space (TVWS), the sub-GHz spectrum freed up between broadcast TV channels (originally 802.11af). Instead of the 20/40/80/160 MHz channels of the VHT PHY, TVHT works in narrow TV channels called basic channel units (BCUs): 6 MHz, 7 MHz, or 8 MHz, depending on the regulatory domain. The big idea is reuse: the TVHT PHY is built directly on the VHT PHY (Clause 21) and Clause 17, taking the VHT 40 MHz design and slowing down the sampling clock so that the same tones, pilots, and processing fit inside a single narrow TV channel.",
+      "zh": "IEEE 802.11-2024 的第 22 章定义了电视超高吞吐量（TVHT）PHY——这是让 Wi-Fi 工作在电视白空间（TVWS）的 OFDM 物理层，也就是广播电视频道之间空出来的 1 GHz 以下频谱（最初源自 802.11af）。与 VHT PHY 的 20/40/80/160 MHz 信道不同，TVHT 工作在称为基本信道单元（BCU）的窄电视频道里：根据监管域为 6 MHz、7 MHz 或 8 MHz。其核心思想是复用：TVHT PHY 直接构建在 VHT PHY（第 21 章）和第 17 章之上，沿用 VHT 40 MHz 的设计，只是降低采样时钟，让同样的子载波、导频和处理流程装进一条窄电视频道。"
+    },
+    {
+      "type": "prose",
+      "en": "Because reuse is the whole strategy, scope and services (22.1.2) and PHY functions (22.1.3) simply point back to the VHT clause with \"TVHT\" replacing \"VHT.\" The PPDU formats (22.1.4) the TVHT PHY transmits are only two: the VHT format (mandatory for one BCU, called TVHT_W) and the NON_HT non-HT-duplicate format (mandatory). What changes is the channel geometry. A STA can combine BCUs into wider transmission modes: TVHT_MODE_1 (one BCU, mandatory), TVHT_MODE_2C (two contiguous BCUs), TVHT_MODE_2N (two noncontiguous BCUs), TVHT_MODE_4C (four contiguous), and TVHT_MODE_4N (two noncontiguous segments of two BCUs each).",
+      "zh": "由于复用就是全部策略，服务范围（22.1.2）和 PHY 功能（22.1.3）只是指回 VHT 那一章，把其中的“VHT”换成“TVHT”。TVHT PHY 发送的 PPDU 格式（22.1.4）只有两种：VHT 格式（单个 BCU 即 TVHT_W 强制支持）和 NON_HT 非 HT 复制格式（强制支持）。变化的是信道几何结构。STA 可以把多个 BCU 组合成更宽的传输模式：TVHT_MODE_1（单个 BCU，强制）、TVHT_MODE_2C（两个相邻 BCU）、TVHT_MODE_2N（两个不相邻 BCU）、TVHT_MODE_4C（四个相邻 BCU）以及 TVHT_MODE_4N（两段不相邻、每段两个 BCU）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why 144 tones and a slower clock? A single BCU reuses the VHT 40 MHz parameters (144 OFDM tones, data/pilots up to tone 58 each side of DC), but the sampling clock is scaled so the design fits a 6/7/8 MHz channel. The 6 and 8 MHz units use 144 tones; the 7 MHz unit is split into 168 tones to keep the same tone spacing (168/144 = 7/6). Using 144 (not 128) narrows the occupied bandwidth so sharper filtering can hit the strict 55 dB adjacent-channel-leakage target needed to coexist with TV broadcasters.",
+      "zh": "为什么是 144 个子载波加更慢的时钟？单个 BCU 复用 VHT 40 MHz 的参数（144 个 OFDM 子载波，数据/导频在 DC 两侧各到第 58 号子载波），但采样时钟经过缩放，使设计能装进 6/7/8 MHz 的频道。6 MHz 和 8 MHz 单元用 144 个子载波；7 MHz 单元拆成 168 个子载波以保持相同的子载波间距（168/144 = 7/6）。选 144（而非 128）会收窄占用带宽，从而用更陡的滤波满足与电视广播共存所需的 55 dB 邻道泄漏指标。"
+    },
+    {
+      "type": "prose",
+      "en": "The PHY service interface (22.2.1) is inherited from VHT, but the TXVECTOR/RXVECTOR parameters (22.2.2, Table 22-1) are retuned for TVWS. FORMAT is NON_HT or VHT. CH_BANDWIDTH is no longer a MHz number — it is an enumerated TVHT type (TVHT_W, TVHT_2W, TVHT_W+W, TVHT_4W, TVHT_2W+2W). For NON_HT, L_DATARATE values are the familiar 6–54 Mb/s legacy rates divided by 7.5 (for 6/7 MHz) or 5.625 (for 8 MHz) — the same clock-scaling factor X that stretches every timing. NUM_STS (1–4 for SU, 1–3 per user for MU, summed ≤ 4) appears only for VHT format.",
+      "zh": "PHY 服务接口（22.2.1）继承自 VHT，但 TXVECTOR/RXVECTOR 参数（22.2.2，表 22-1）针对 TVWS 重新调整。FORMAT 取 NON_HT 或 VHT。CH_BANDWIDTH 不再是 MHz 数值，而是枚举型的 TVHT 类型（TVHT_W、TVHT_2W、TVHT_W+W、TVHT_4W、TVHT_2W+2W）。对 NON_HT，L_DATARATE 取大家熟悉的 6–54 Mb/s 传统速率除以 7.5（6/7 MHz）或 5.625（8 MHz）——正是那个把所有时序拉长的时钟缩放因子 X。NUM_STS（SU 为 1–4，MU 每用户 1–3，总和 ≤ 4）只在 VHT 格式下出现。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 720 130\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><g stroke-width=\"1.5\"><rect x=\"5\" y=\"40\" width=\"70\" height=\"40\"/><rect x=\"75\" y=\"40\" width=\"70\" height=\"40\"/><rect x=\"145\" y=\"40\" width=\"70\" height=\"40\"/><rect x=\"215\" y=\"40\" width=\"95\" height=\"40\"/><rect x=\"310\" y=\"40\" width=\"60\" height=\"40\"/><rect x=\"370\" y=\"40\" width=\"95\" height=\"40\"/><rect x=\"465\" y=\"40\" width=\"95\" height=\"40\"/><rect x=\"560\" y=\"40\" width=\"155\" height=\"40\"/></g><g font-size=\"10\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\"><text x=\"40\" y=\"64\">L-STF</text><text x=\"110\" y=\"64\">L-LTF</text><text x=\"180\" y=\"64\">L-SIG</text><text x=\"262\" y=\"64\">TVHT-SIG-A</text><text x=\"340\" y=\"64\">TVHT-STF</text><text x=\"417\" y=\"64\">TVHT-LTF</text><text x=\"512\" y=\"64\">TVHT-SIG-B</text><text x=\"637\" y=\"64\">Data (PSDU)</text></g><g font-size=\"8\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\"><text x=\"40\" y=\"95\">45/60 us</text><text x=\"110\" y=\"95\">45/60 us</text><text x=\"180\" y=\"95\">45/60 us</text><text x=\"262\" y=\"95\">22.5/30 us</text><text x=\"340\" y=\"95\">22.5/30 us</text><text x=\"417\" y=\"95\">per LTF sym</text><text x=\"512\" y=\"95\">22.5/30 us</text></g><g font-size=\"9\" fill=\"currentColor\" stroke=\"none\"><text x=\"5\" y=\"25\">VHT PPDU format in TVWS bands (durations: 8 MHz / 6-7 MHz)</text><text x=\"5\" y=\"118\">Legacy preamble (Clause 17) + TVHT preamble (VHT-derived) + Data</text></g></svg>",
+      "caption": {
+        "en": "The VHT PPDU format in TVWS bands (Figure 22-1): a legacy preamble (L-STF, L-LTF, L-SIG) followed by the TVHT preamble (TVHT-SIG-A, TVHT-STF, one or more TVHT-LTF, TVHT-SIG-B) and the Data field. Field structure mirrors the VHT PPDU; only the per-field durations stretch with the slower TVWS clock.",
+        "zh": "TVWS 频段中的 VHT PPDU 格式（图 22-1）：传统前导（L-STF、L-LTF、L-SIG），随后是 TVHT 前导（TVHT-SIG-A、TVHT-STF、一个或多个 TVHT-LTF、TVHT-SIG-B），最后是数据字段。字段结构与 VHT PPDU 一致；只有各字段时长因 TVWS 较慢的时钟而被拉长。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The TVHT preamble (22.3.8) is the VHT preamble with two adjustments. First, the legacy fields (L-STF, L-LTF, L-SIG) and the TVHT fields are built by the VHT equations but with cyclic-shift (CSD) delays multiplied by the scaling factor (7.5 for 6/7 MHz, 5.625 for 8 MHz). Second, the phase-rotation parameter is replaced by a TVWS-specific value. TVHT-SIG-A reuses the VHT-SIG-A fields except that B0-B1 now signal the TVHT_MODE (Table 22-13). The PPDU encoding overview (22.3.4) walks construction field by field — each step says \"follow the Clause 21 / Clause 17 procedure, read Clause 22, and duplicate the field across the BCUs of the channel with the right phase rotation.\"",
+      "zh": "TVHT 前导（22.3.8）就是带两处调整的 VHT 前导。第一，传统字段（L-STF、L-LTF、L-SIG）和 TVHT 字段沿用 VHT 公式生成，但循环移位（CSD）时延要乘以缩放因子（6/7 MHz 为 7.5，8 MHz 为 5.625）。第二，相位旋转参数替换为 TVWS 专用取值。TVHT-SIG-A 复用 VHT-SIG-A 的各字段，只是 B0-B1 现在用来指示 TVHT_MODE（表 22-13）。PPDU 编码概览（22.3.4）逐字段说明构造过程——每一步都写明“按第 21 章/第 17 章的流程做，把其中的章号读作第 22 章，并按正确的相位旋转把该字段在信道的各 BCU 上复制”。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Scrambler] --> B[BCC/LDPC coding]\n  B --> C[Stream parser]\n  C --> D[Interleaver / LDPC tone map]\n  D --> E[Constellation map]\n  E --> F[Pilot insert + IDFT per BCU]\n  F --> G[Per-BCU OFDM symbols]",
+      "zh": "flowchart LR\n  A[加扰器] --> B[BCC/LDPC 编码]\n  B --> C[流分析器]\n  C --> D[交织器 / LDPC 子载波映射]\n  D --> E[星座映射]\n  E --> F[每 BCU 插入导频 + IDFT]\n  F --> G[每 BCU 的 OFDM 符号]"
+    },
+    {
+      "type": "prose",
+      "en": "The Data field (22.3.10) again reuses VHT processing per BCU, with notable simplifications: the number of encoders NES is always 1, and the segment parser/deparser is dropped — all modes use one common interleaver (BCC) or one common tone mapper (LDPC), so each BCU carries the full coded stream. For TVHT_MODE_1, six pilots sit at subcarriers ±11, ±25, ±53; multi-BCU modes repeat the same pilots in every BCU. Beamforming (22.3.11) — SU-MIMO and DL MU-MIMO sounding, the feedback matrix V, and Group ID handling — follows the VHT rules verbatim, with TVWS-specific CSD values and feedback-report format.",
+      "zh": "数据字段（22.3.10）同样按每个 BCU 复用 VHT 处理，但有明显简化：编码器数量 NES 恒为 1，且取消了分段解析/反解析——所有模式都使用同一个公共交织器（BCC）或同一个公共子载波映射器（LDPC），因此每个 BCU 承载完整的已编码流。对 TVHT_MODE_1，六个导频位于子载波 ±11、±25、±53；多 BCU 模式在每个 BCU 中重复相同导频。波束赋形（22.3.11）——SU-MIMO 与下行 MU-MIMO 探测、反馈矩阵 V、Group ID 处理——逐字沿用 VHT 规则，仅采用 TVWS 专用的 CSD 取值和反馈报告格式。"
+    },
+    {
+      "type": "prose",
+      "en": "The PMD transmit specification (22.3.17) defines the airwave-protecting limits. The transmit spectrum mask is the VHT 40 MHz mask (or 80+80 MHz mask for TVHT_MODE_4N) with the frequency axis scaled by ratios like 6/40 or 24/40 (Tables 22-18/22-19/22-20); noncontiguous W+W masks are summed/combined per the detailed construction with a −59 dBm/MHz floor. Center-frequency and symbol-clock tolerance are ±25 ppm. Spectral flatness, TX LO leakage, EVM, and Time of Departure tests are inherited from VHT, applied per BCU with the same scaling factor. The receiver specification (22.3.18) sets minimum sensitivity (e.g. −88 dBm for a BPSK 1/2 6 MHz channel), adjacent/nonadjacent channel rejection (Table 22-23), max input level −20 dBm, and CCA sensitivity thresholds per primary/secondary channel.",
+      "zh": "PMD 发送规范（22.3.17）定义保护空口的各项限值。发送频谱模板就是 VHT 40 MHz 模板（TVHT_MODE_4N 用 80+80 MHz 模板），其频率轴按 6/40 或 24/40 之类的比例缩放（表 22-18/22-19/22-20）；不相邻的 W+W 模板按详细构造方法叠加/合并，并设 −59 dBm/MHz 的下限。中心频率与符号时钟容差为 ±25 ppm。频谱平坦度、发射本振泄漏、EVM 和到达离开时间（Time of Departure）测试均继承自 VHT，按每个 BCU 用相同缩放因子施加。接收规范（22.3.18）规定最低灵敏度（如 6 MHz 信道 BPSK 1/2 为 −88 dBm）、邻道/非邻道抑制（表 22-23）、最大输入电平 −20 dBm，以及按主/次信道划分的 CCA 灵敏度门限。"
+    },
+    {
+      "type": "prose",
+      "en": "The TVHT PLME (22.4) closes the loop. PLME SAP primitives (22.4.1) and the PHY MIB (22.4.2) reuse VHT with name swaps (\"tvht(10)\" for \"vht(9)\", \"In4W\" for \"In80\"). TXTIME and PSDU_LENGTH calculation (22.4.3) follows VHT. The PHY characteristics table (22.4.4, Table 22-25) lists the stretched timing constants: slot time 24 µs (6/7 MHz) or 20 µs (8 MHz), SIFS 120/90 µs, aCCATime < 15/11.25 µs, max PPDU time 20 ms, and an aRxPHYStartDelay of 20 µs × the scaling factor. Finally, the TVHT-MCS tables (22.5, Tables 22-26 onward) give the rate-dependent parameters: MCS 0–9 (256-QAM at MCS 8-9), one to four spatial streams, and data rates such as 1.8 Mb/s up to roughly 26.7 Mb/s for a single BCU single stream — modest rates, but reaching far in the sub-GHz band.",
+      "zh": "TVHT PLME（22.4）收尾。PLME SAP 原语（22.4.1）和 PHY MIB（22.4.2）复用 VHT 并替换名称（“vht(9)”改为“tvht(10)”，“In80”改为“In4W”）。TXTIME 与 PSDU_LENGTH 计算（22.4.3）沿用 VHT。PHY 特性表（22.4.4，表 22-25）列出被拉长的时序常数：时隙 24 µs（6/7 MHz）或 20 µs（8 MHz）、SIFS 120/90 µs、aCCATime < 15/11.25 µs、最大 PPDU 时长 20 ms，以及 aRxPHYStartDelay 为 20 µs 乘以缩放因子。最后，TVHT-MCS 表（22.5，自表 22-26 起）给出与速率相关的参数：MCS 0–9（MCS 8-9 为 256-QAM）、一到四条空间流，单 BCU 单流的数据率从 1.8 Mb/s 到约 26.7 Mb/s——速率不高，但在 1 GHz 以下频段能传得很远。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each Clause 22 unit lives",
+        "zh": "覆盖地图：第 22 章各单元的归属"
+      },
+      "en": "Scope and functions: 22.1.2 scope of TVHT PHY services; 22.1.3 TVHT PHY functions (PLME, service-specification method, all referencing the VHT clause); 22.1.4 PPDU formats (NON_HT and VHT only). Service interface: 22.2.1 introduction (inherits VHT 21.2.1); 22.2.2 TXVECTOR/RXVECTOR parameters (Table 22-1, FORMAT/CH_BANDWIDTH/NUM_STS retuned for TVWS); 22.2.4 support for NON_HT and HT formats (HT not supported; non-HT duplicate only, Tables 22-2 to 22-6); 22.2.5 PHYCONFIG_VECTOR parameters (BASIC_CHANNEL_UNIT, CHANNEL_WIDTH, center-frequency segments, GROUP_ID management). PHY layer build: 22.3.4 overview of the PPDU encoding process (field-by-field construction); 22.3.8 TVHT preamble (legacy + TVHT portions, CSD scaling, TVHT-SIG-A mode bits, Table 22-13); 22.3.10 Data field (NES=1, no segment parser, common interleaver/tone mapper, pilots, OFDM modulation, non-HT duplicate); 22.3.11 SU/MU-MIMO beamforming (matrix V, Group ID); 22.3.17 TVHT transmit specification (spectrum mask scaling, spectral flatness, ±25 ppm tolerance, EVM, ToD); 22.3.18 TVHT receiver specification (min sensitivity Table 22-22, ACR/NACR Table 22-23, max input, CCA per primary/secondary). PLME and rates: 22.4.1 PLME SAP primitives; 22.4.2 PHY MIB (name swaps); 22.4.3 TXTIME/PSDU_LENGTH; 22.4.4 TVHT PHY characteristics (Table 22-25 timing constants); 22.5 parameters for TVHT-MCSs (Tables 22-26 onward, MCS 0–9, NSS 1–4, NES always 1).",
+      "zh": "范围与功能：22.1.2 TVHT PHY 服务范围；22.1.3 TVHT PHY 功能（PLME、服务规范方法，均引用 VHT 章）；22.1.4 PPDU 格式（仅 NON_HT 与 VHT）。服务接口：22.2.1 引言（继承 VHT 的 21.2.1）；22.2.2 TXVECTOR/RXVECTOR 参数（表 22-1，FORMAT/CH_BANDWIDTH/NUM_STS 针对 TVWS 重新调整）；22.2.4 对 NON_HT 与 HT 格式的支持（不支持 HT；仅非 HT 复制，表 22-2 至 22-6）；22.2.5 PHYCONFIG_VECTOR 参数（BASIC_CHANNEL_UNIT、CHANNEL_WIDTH、中心频率段、GROUP_ID 管理）。PHY 层构造：22.3.4 PPDU 编码过程概览（逐字段构造）；22.3.8 TVHT 前导（传统部分 + TVHT 部分、CSD 缩放、TVHT-SIG-A 模式位、表 22-13）；22.3.10 数据字段（NES=1、无分段解析、公共交织器/子载波映射、导频、OFDM 调制、非 HT 复制）；22.3.11 SU/MU-MIMO 波束赋形（矩阵 V、Group ID）；22.3.17 TVHT 发送规范（频谱模板缩放、频谱平坦度、±25 ppm 容差、EVM、ToD）；22.3.18 TVHT 接收规范（最低灵敏度表 22-22、邻道/非邻道抑制表 22-23、最大输入、按主/次信道的 CCA）。PLME 与速率：22.4.1 PLME SAP 原语；22.4.2 PHY MIB（名称替换）；22.4.3 TXTIME/PSDU_LENGTH；22.4.4 TVHT PHY 特性（表 22-25 时序常数）；22.5 TVHT-MCS 参数（表 22-26 起，MCS 0–9，NSS 1–4，NES 恒为 1）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3681,
+          3682,
+          3683,
+          3690,
+          3693,
+          3695,
+          3705,
+          3708,
+          3711,
+          3714,
+          3718,
+          3722,
+          3723
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3680,
+        3681,
+        3682
+      ],
+      "note": "22.1 introduction, scope (22.1.2), functions (22.1.3), PPDU formats (22.1.4); BCU definitions and transmission modes"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3682,
+        3683
+      ],
+      "note": "22.2.1 service-interface intro and 22.2.2 TXVECTOR/RXVECTOR parameters (Table 22-1)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3690,
+        3691,
+        3692,
+        3693,
+        3694
+      ],
+      "note": "22.2.4 NON_HT/HT support and 22.2.5 PHYCONFIG_VECTOR parameters; timing/tone tables 22-3 to 22-6"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3694,
+        3695
+      ],
+      "note": "22.3 TVHT PHY layer intro, Figure 22-1 PPDU format, 22.3.4 PPDU encoding overview"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3705,
+        3706,
+        3707,
+        3708
+      ],
+      "note": "22.3.8 TVHT preamble (legacy + TVHT portions, CSD scaling, TVHT-SIG-A, Table 22-13)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3708,
+        3709,
+        3710,
+        3711
+      ],
+      "note": "22.3.10 Data field (NES=1, no segment parser, pilots, OFDM modulation) and 22.3.11 SU/MU-MIMO beamforming"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3714,
+        3715,
+        3716,
+        3717,
+        3718
+      ],
+      "note": "22.3.17 TVHT transmit specification (spectrum mask scaling, spectral flatness, tolerance, EVM, ToD)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3718,
+        3719,
+        3720,
+        3721
+      ],
+      "note": "22.3.18 TVHT receiver specification (min sensitivity Table 22-22, ACR/NACR Table 22-23, max input, CCA)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3722,
+        3723
+      ],
+      "note": "22.4 TVHT PLME (22.4.1-22.4.4, Table 22-25) and 22.5 TVHT-MCS parameters (Table 22-26)"
+    }
+  ],
+  "covers": [
+    "80211-2024:22.1.2",
+    "80211-2024:22.1.3",
+    "80211-2024:22.1.4",
+    "80211-2024:22.2.1",
+    "80211-2024:22.2.2",
+    "80211-2024:22.2.4",
+    "80211-2024:22.2.5",
+    "80211-2024:22.3.4",
+    "80211-2024:22.3.8",
+    "80211-2024:22.3.10",
+    "80211-2024:22.3.11",
+    "80211-2024:22.3.17",
+    "80211-2024:22.3.18",
+    "80211-2024:22.4.1",
+    "80211-2024:22.4.2",
+    "80211-2024:22.4.3",
+    "80211-2024:22.4.4",
+    "80211-2024:22.5"
+  ],
+  "track": "legacy-phy"
+}

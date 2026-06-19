@@ -1,0 +1,182 @@
+{
+  "id": "legacy-phy-50-wur-ngv-lc-specialized-phys",
+  "title": {
+    "en": "Specialized PHYs: WUR, NGV (802.11bd) and the Low-Complexity PHY",
+    "zh": "专用 PHY：WUR、NGV（802.11bd）与低复杂度 PHY"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Most of the 802.11-2024 standard describes the mainstream OFDM data PHYs (HT, VHT, HE, EHT). But the back of the book holds a cluster of specialized PHYs and procedures built for very narrow jobs: waking a sleeping radio with a tiny ultra-low-power receiver, talking car-to-car at highway speed, carrying Wi-Fi over light, and broadcasting content without an association. This lesson is a guided tour of four of these niche clauses (30 through 34), giving each its place on the map.",
+      "zh": "802.11-2024 标准的大部分篇幅描述的是主流 OFDM 数据 PHY（HT、VHT、HE、EHT）。但标准末尾还集中了一批为非常专门的任务而设计的专用 PHY 与流程：用极低功耗的微型接收机唤醒处于休眠的射频、在高速公路车速下进行车与车之间的通信、用光来承载 Wi-Fi，以及在不建立关联的情况下广播内容。本课带你导览其中四个小众章节（第 30 至 34 章），为每一个找到它在版图上的位置。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "These PHYs are deliberately niche. You will almost never configure them by hand, and most products do not implement them at all. The goal here is orientation: know that they exist, what problem each solves, and where in the standard to look.",
+      "zh": "这些 PHY 本身就定位小众。你几乎不会手动配置它们，绝大多数产品也根本不实现它们。本课的目标是建立方位感：知道它们存在、各自解决什么问题，以及在标准中去哪里查找。"
+    },
+    {
+      "type": "prose",
+      "en": "The Wake-Up Radio (WUR) PHY in Clause 30 is the most unusual. Instead of an OFDM data stream, the WUR-Sync and WUR-Data fields are sent as On-Off Keying (OOK): a transmit chain simply switches between an On waveform generator and an Off waveform generator, so a coded bit '1' becomes an On symbol and '0' becomes an Off symbol. This lets a companion wake-up receiver be a tiny, milliwatt-class envelope detector that needs no OFDM demodulator. The WUR PPDU still begins with a legacy preamble (L-STF, L-LTF, L-SIG, plus BPSK-Mark1/Mark2) so ordinary STAs defer to it.",
+      "zh": "第 30 章的唤醒收发机（WUR）PHY 最为特别。它不采用 OFDM 数据流，而是用通断键控（OOK）发送 WUR-Sync 与 WUR-Data 字段：发射链只需在“开”波形发生器与“关”波形发生器之间切换，于是编码比特“1”对应一个“开”符号、“0”对应一个“关”符号。这使得配套的唤醒接收机可以是一颗微型的、毫瓦量级的包络检波器，完全不需要 OFDM 解调器。WUR PPDU 仍以传统前导（L-STF、L-LTF、L-SIG，外加 BPSK-Mark1/Mark2）开头，从而让普通 STA 对其退避避让。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 70\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><rect x=\"4\" y=\"20\" width=\"70\" height=\"30\"/><text x=\"39\" y=\"39\" font-size=\"10\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">L-STF</text><rect x=\"74\" y=\"20\" width=\"70\" height=\"30\"/><text x=\"109\" y=\"39\" font-size=\"10\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">L-LTF</text><rect x=\"144\" y=\"20\" width=\"60\" height=\"30\"/><text x=\"174\" y=\"39\" font-size=\"10\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">L-SIG</text><rect x=\"204\" y=\"20\" width=\"58\" height=\"30\"/><text x=\"233\" y=\"35\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">BPSK</text><text x=\"233\" y=\"45\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Mark1/2</text><rect x=\"262\" y=\"20\" width=\"90\" height=\"30\"/><text x=\"307\" y=\"39\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">WUR-Sync (OOK)</text><rect x=\"352\" y=\"20\" width=\"140\" height=\"30\"/><text x=\"422\" y=\"39\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">WUR-Data (OOK)</text><text x=\"110\" y=\"14\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">legacy OFDM preamble</text><text x=\"360\" y=\"14\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">On-Off Keying payload</text></svg>",
+      "caption": {
+        "en": "WUR Basic PPDU: an OFDM legacy preamble for coexistence, then an OOK-encoded WUR-Sync and WUR-Data that a low-power wake-up receiver can decode (Clause 30).",
+        "zh": "WUR Basic PPDU：先是用于共存的 OFDM 传统前导，随后是 OOK 编码的 WUR-Sync 与 WUR-Data，可由低功耗唤醒接收机解码（第 30 章）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 31 opens the Next Generation V2X (NGV) work — 802.11bd, the successor to 802.11p for vehicle-to-everything. Its MAC introduction (31.1) sets the frame: an NGV STA adds the NGV functions on top of the Clause 10/11 functions for communicating outside the context of a BSS (OCB) in the 5.9 GHz band. The matching PHY is Clause 32. Its scope (32.1.2) is the familiar PHY contract — map a PSDU into a PPDU for transmission and recover it on receive — but tuned for the vehicular channel: NGV is built on the VHT PHY (and HE preamble ideas), uses half the subcarrier spacing for robustness against Doppler, and supports both 10 MHz and 20 MHz channels with a single NGV PPDU format.",
+      "zh": "第 31 章开启了下一代车联网（NGV）的内容——即 802.11bd，是 802.11p 在车联网（V2X）领域的后继者。其 MAC 引言（31.1）确立了框架：NGV STA 在第 10/11 章的功能之上，增加用于在 5.9 GHz 频段进行 BSS 之外通信（OCB）的 NGV 功能。与之配套的 PHY 是第 32 章。其范围（32.1.2）是熟悉的 PHY 契约——发送时把 PSDU 映射成 PPDU、接收时再恢复出来——但针对车载信道做了调整：NGV 以 VHT PHY 为基础（并借鉴了 HE 前导思路），采用一半的子载波间隔以增强对多普勒频移的鲁棒性，并以单一的 NGV PPDU 格式同时支持 10 MHz 与 20 MHz 信道。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Clause 30\\nWUR PHY] --> B[Clause 31\\nNGV MAC]\n  B --> C[Clause 32\\nNGV PHY]\n  C --> D[Clause 33\\nLC MAC + PHY]\n  D --> E[Clause 34\\nEBCS MAC]",
+      "zh": "flowchart LR\n  A[第30章\\nWUR PHY] --> B[第31章\\nNGV MAC]\n  B --> C[第32章\\nNGV PHY]\n  C --> D[第33章\\nLC MAC+PHY]\n  D --> E[第34章\\nEBCS MAC]"
+    },
+    {
+      "type": "prose",
+      "en": "Like every modern PHY, NGV talks to the MAC through a service interface (32.2.1): a TXVECTOR carries per-PPDU transmit parameters down, an RXVECTOR reports received parameters up, and a PHYCONFIG_VECTOR sets standing configuration. The NGV PHY itself (32.3.1) constructs the PPDU by appending the data to a preamble of L-STF, L-LTF, L-SIG, RL-SIG, NGV-SIG, RNGV-SIG, NGV-STF and NGV-LTF — the repeated SIG fields (RL-SIG, RNGV-SIG) add the redundancy a fast-fading road link needs. The NGV preamble subclause (32.3.8) defines each of those fields, and the PLME side (32.4.1, 32.4.4) lists the MIB attributes and the static PHY characteristics (for example aSIFSTime of 32 µs) reported through PLME-CHARACTERISTICS.",
+      "zh": "与所有现代 PHY 一样，NGV 通过服务接口与 MAC 交互（32.2.1）：TXVECTOR 向下传递每个 PPDU 的发送参数，RXVECTOR 向上报告接收到的参数，PHYCONFIG_VECTOR 则设置常驻配置。NGV PHY 本身（32.3.1）通过把数据附加在由 L-STF、L-LTF、L-SIG、RL-SIG、NGV-SIG、RNGV-SIG、NGV-STF 与 NGV-LTF 组成的前导之后来构造 PPDU——其中重复的 SIG 字段（RL-SIG、RNGV-SIG）提供了快衰落道路链路所需的冗余。NGV 前导子条款（32.3.8）定义了上述各字段；PLME 一侧（32.4.1、32.4.4）则列出 MIB 属性以及通过 PLME-CHARACTERISTICS 报告的静态 PHY 特性（例如 aSIFSTime 为 32 µs）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 33 covers Light Communication (LC) — Wi-Fi over light instead of radio. An LC STA reuses the existing MAC: its MAC introduction (33.1.1) simply says it follows the Clause 10/11/12 MAC, MLME and security functions, and an LC STA mirrors whichever of HT/VHT/HE support it provides. The LC PHY (33.2.1) is an OFDM system with an intensity-modulation/direct-detection (IM/DD) optical front end: the same complex baseband waveform an RF chain would produce is upconverted to an optical intermediate frequency, DC-biased, and emitted as light. Its service interface (33.2.2) and PHY (33.2.3) are deliberately thin layers that supersede only the specific RF requirements that do not apply to an optical channel.",
+      "zh": "第 33 章涉及光通信（LC）——用光而非射频来承载 Wi-Fi。LC STA 复用既有的 MAC：其 MAC 引言（33.1.1）只是说明它沿用第 10/11/12 章的 MAC、MLME 与安全功能，并且 LC STA 会与它所提供的 HT/VHT/HE 支持级别相对应。LC PHY（33.2.1）是一个带有强度调制/直接检测（IM/DD）光学前端的 OFDM 系统：射频链路本会产生的同一复基带波形被上变频到一个光学中频，加上直流偏置，再以光的形式发射出去。其服务接口（33.2.2）与 PHY（33.2.3）刻意做得很薄，只覆盖那些对光信道不适用、需要被替换的特定射频要求。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 34 is the odd one out: it is not a PHY at all but the Enhanced Broadcast Services (EBCS) MAC. Its overview (34.1.1) describes procedures for broadcasting content with data-origin authenticity, both inside an infrastructure BSS and with no association at all. There are two directions. The EBCS DL procedure (34.3.1) lets an EBCS AP push multicast content out to associated and unassociated receivers. The EBCS UL procedure (34.4.1) goes the other way: a non-AP STA broadcasts a frame carrying a higher-layer payload that one or more relaying STAs forward toward a destination — a best-effort relaying service with no delivery guarantee.",
+      "zh": "第 34 章是其中的“另类”：它根本不是一个 PHY，而是增强广播服务（EBCS）MAC。其概述（34.1.1）描述了以“数据来源真实性”广播内容的流程，既适用于基础设施 BSS 内部，也适用于完全不建立关联的场景。它有两个方向。EBCS DL（下行）流程（34.3.1）让 EBCS AP 把多播内容推送给已关联与未关联的接收者。EBCS UL（上行）流程（34.4.1）则方向相反：非 AP STA 广播一个携带高层载荷的帧，由一个或多个中继 STA 朝目的地转发——这是一种尽力而为、不保证投递的中继服务。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each clause-30/31/32/33/34 unit lives",
+        "zh": "覆盖地图：第 30/31/32/33/34 章各单元的所在位置"
+      },
+      "en": "WUR PHY (Clause 30): 30.3.4 Transmitter block diagram — On/Off waveform generators and the WUR encoder switching between them; 30.3.5 Overview of the PPDU encoding process — constructing L-STF/L-LTF/L-SIG and the WUR-Sync/WUR-Data; 30.3.9 WUR preamble — the legacy non-WUR portion plus the WUR-Sync field, supporting WUR LDR (62.5 kb/s) and WUR HDR (250 kb/s); 30.3.10 WUR-Data field — OOK mapping where coded bit 1 is On and 0 is Off; 30.3.12 WUR transmit specification — spectrum mask, spectral flatness, frequency tolerance, On/Off power ratio; 30.3.13 (the WUR transmit-spec group continues with the remaining transmit conformance items).\n\nNGV (Clauses 31-32): 31.1 Introduction — the NGV MAC built on Clauses 10/11 for OCB operation; 32.1.1 Introduction to NGV PHY — OFDM PHY based on VHT with half subcarrier spacing, 10/20 MHz; 32.1.2 Scope — map PSDU to PPDU and back; 32.2.1 NGV PHY service interface introduction — TXVECTOR/RXVECTOR/PHYCONFIG_VECTOR; 32.3.1 NGV PHY introduction — building the NGV PPDU; 32.3.8 NGV preamble — L-STF/L-LTF/L-SIG/RL-SIG/NGV-SIG/RNGV-SIG/NGV-STF/NGV-LTF definitions; 32.4.1 PLME-SAP — NGV PHY MIB attributes; 32.4.4 NGV PHY — static PHY characteristics via PLME-CHARACTERISTICS.\n\nLC (Clause 33): 33.1.1 Introduction — LC MAC reuses Clause 10/11/12; 33.2.1 General — LC PHY as an IM/DD optical OFDM system with HT/VHT/HE support levels; 33.2.2 LC PHY service interface; 33.2.3 LC PHY — direct/up-down conversion to an optical IF and OFE.\n\nEBCS (Clause 34): 34.1.1 Introduction — EBCS overview with data-origin authenticity, associated and unassociated; 34.3.1 EBCS DL general — AP broadcasts multicast content; 34.4.1 EBCS UL general — non-AP STA broadcasts a payload relayed best-effort to a destination.",
+      "zh": "WUR PHY（第 30 章）：30.3.4 发射机框图——“开/关”波形发生器以及在两者之间切换的 WUR 编码器；30.3.5 PPDU 编码过程概述——构造 L-STF/L-LTF/L-SIG 以及 WUR-Sync/WUR-Data；30.3.9 WUR 前导——传统的非 WUR 部分加上 WUR-Sync 字段，支持 WUR LDR（62.5 kb/s）与 WUR HDR（250 kb/s）；30.3.10 WUR-Data 字段——OOK 映射，编码比特 1 为“开”、0 为“关”；30.3.12 WUR 发送规范——频谱模板、频谱平坦度、频率容差、开/关功率比；30.3.13（WUR 发送规范小节继续给出其余发送一致性条目）。\n\nNGV（第 31-32 章）：31.1 引言——构建在第 10/11 章之上、用于 OCB 运行的 NGV MAC；32.1.1 NGV PHY 引言——以 VHT 为基础、子载波间隔减半的 OFDM PHY，支持 10/20 MHz；32.1.2 范围——把 PSDU 映射为 PPDU 并反向恢复；32.2.1 NGV PHY 服务接口引言——TXVECTOR/RXVECTOR/PHYCONFIG_VECTOR；32.3.1 NGV PHY 引言——构造 NGV PPDU；32.3.8 NGV 前导——L-STF/L-LTF/L-SIG/RL-SIG/NGV-SIG/RNGV-SIG/NGV-STF/NGV-LTF 各字段定义；32.4.1 PLME-SAP——NGV PHY MIB 属性；32.4.4 NGV PHY——经由 PLME-CHARACTERISTICS 报告的静态 PHY 特性。\n\nLC（第 33 章）：33.1.1 引言——LC MAC 复用第 10/11/12 章；33.2.1 总则——作为 IM/DD 光学 OFDM 系统、带 HT/VHT/HE 支持级别的 LC PHY；33.2.2 LC PHY 服务接口；33.2.3 LC PHY——直接或上下变频到光学中频并经光学前端发射。\n\nEBCS（第 34 章）：34.1.1 引言——具备数据来源真实性、面向已关联与未关联接收者的 EBCS 概述；34.3.1 EBCS DL 总则——AP 广播多播内容；34.4.1 EBCS UL 总则——非 AP STA 广播一个载荷，由中继以尽力而为方式转发至目的地。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4746,
+          4751,
+          4758,
+          4763,
+          4764,
+          4777,
+          4785,
+          4786,
+          4796,
+          4807,
+          4837,
+          4839,
+          4842,
+          4852,
+          4862
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A quick way to remember the four: Clause 30 wakes radios cheaply (OOK WUR), Clauses 31-32 connect cars (NGV / 802.11bd), Clause 33 sends Wi-Fi over light (LC / IM-DD optical), and Clause 34 broadcasts authenticated content with or without association (EBCS).",
+      "zh": "记住这四者的简便方法：第 30 章以低成本唤醒射频（OOK 的 WUR），第 31-32 章连接车辆（NGV / 802.11bd），第 33 章用光发送 Wi-Fi（LC / IM-DD 光学），第 34 章在有无关联的情况下广播经认证的内容（EBCS）。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4741,
+        4746,
+        4747
+      ],
+      "note": "WUR PHY introduction, FDMA PPDU, transmitter block diagram with On/Off waveform generators (30.3.1, 30.3.4)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4751,
+        4758,
+        4763,
+        4764
+      ],
+      "note": "WUR PPDU encoding overview, WUR preamble (LDR/HDR rates), WUR-Data OOK mapping, transmit specification (30.3.5, 30.3.9, 30.3.10, 30.3.12)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4777
+      ],
+      "note": "NGV MAC introduction and OCB operation in the 5.9 GHz band (31.1)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4785,
+        4786
+      ],
+      "note": "NGV PHY introduction, scope, functions, and service interface introduction (32.1.1, 32.1.2, 32.2.1)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4796,
+        4807,
+        4837,
+        4839
+      ],
+      "note": "NGV PHY introduction and PPDU format, NGV preamble, PLME-SAP MIB attributes, NGV PHY characteristics (32.3.1, 32.3.8, 32.4.1, 32.4.4)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4842,
+        4843
+      ],
+      "note": "Light Communication MAC and PHY: LC MAC introduction, LC PHY general/service interface/PHY with IM/DD optical front end (33.1.1, 33.2.1, 33.2.2, 33.2.3)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4852,
+        4853,
+        4862
+      ],
+      "note": "Enhanced Broadcast Services MAC overview, EBCS DL general, EBCS UL general (34.1.1, 34.3.1, 34.4.1)"
+    }
+  ],
+  "covers": [
+    "80211-2024:30.3.4",
+    "80211-2024:30.3.5",
+    "80211-2024:30.3.9",
+    "80211-2024:30.3.10",
+    "80211-2024:30.3.12",
+    "80211-2024:30.3.13",
+    "80211-2024:31.1",
+    "80211-2024:32.1.1",
+    "80211-2024:32.1.2",
+    "80211-2024:32.2.1",
+    "80211-2024:32.3.1",
+    "80211-2024:32.3.8",
+    "80211-2024:32.4.1",
+    "80211-2024:32.4.4",
+    "80211-2024:33.1.1",
+    "80211-2024:33.2.1",
+    "80211-2024:33.2.2",
+    "80211-2024:33.2.3",
+    "80211-2024:34.1.1",
+    "80211-2024:34.3.1",
+    "80211-2024:34.4.1"
+  ],
+  "track": "legacy-phy"
+}
