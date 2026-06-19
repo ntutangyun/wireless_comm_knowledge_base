@@ -1,0 +1,106 @@
+{
+  "id": "privacy-06-bh-security-keys",
+  "title": {
+    "en": "Keeping It Secret: Device ID and IRM Security Machinery",
+    "zh": "保密机制：Device ID 与 IRM 的安全实现"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Here is the privacy paradox at the heart of 802.11bh. A station that randomly changes its MAC address becomes hard for eavesdroppers to track — good. But it also becomes unrecognisable to the very access point it wants to come back to, which can no longer reuse cached identity state from a previous visit — bad. bh resolves this with two recognition mechanisms, the device ID mechanism and the IRM mechanism. The catch is obvious: any identifier that lets the AP recognise you is, in the wrong hands, an identifier an eavesdropper could use to track you. So clause 12.2.13 wraps identity in cryptography. This lesson is about that security machinery.",
+      "zh": "这是 802.11bh 核心处的“隐私悖论”。一个随机更换 MAC 地址的站点，对窃听者来说变得难以追踪——这很好。但它对那个它想再次回访的接入点（AP）也变得无法识别，AP 再也无法复用上次到访时缓存的身份状态——这就糟了。bh 用两种识别机制来化解这一矛盾：device ID 机制与 IRM 机制。问题显而易见：任何能让 AP 认出你的标识符，落到坏人手里，也可能成为窃听者用来追踪你的标识符。因此 12.2.13 节把身份包裹进密码学之中。本课讲的正是这套安全机制。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the device ID side (12.2.13.1). The identifier is allocated by the AP, not the station: when you associate, the AP hands you an opaque device ID, and on a future visit you hand it back so the AP can recognise you. \"Opaque\" is the key word — the standard explicitly lets the AP keep the device ID content private from third parties when it is sent over the air, for example by having the AP encrypt the value itself so that only that AP (or its ESS) can decode it. A passive listener therefore sees ciphertext, while the AP recovers a stable handle. To make tracking even harder, when the AP recognises you it can rotate the value — returning a brand-new device ID for next time — or simply confirm recognition with a zero-length field meaning \"current device ID is maintained.\"",
+      "zh": "先看 device ID 这一侧（12.2.13.1）。这个标识符由 AP 分配，而非站点自选：当你关联时，AP 交给你一个不透明的 device ID；下次到访时你把它交回去，AP 据此认出你。“不透明”是关键词——标准明确允许 AP 在该值通过空口发送时，对第三方保持其内容的私密性，例如由 AP 自行加密该值，使得只有这台 AP（或其 ESS）才能解码。因此被动监听者看到的是密文，而 AP 却能还原出一个稳定的句柄。为了让追踪更难，当 AP 认出你时，它可以轮换这个值——为下次返回一个全新的 device ID——或者干脆用一个零长度字段确认识别，表示“维持当前 device ID 不变”。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Recognition is opt-in and confidential by design. The standard wants the AP to recognise you without anyone else being able to. The device ID is meaningful only to the issuing AP/ESS; to everyone else over the air it is opaque ciphertext that can change between visits. Recognition without trackability is the whole point.",
+      "zh": "识别在设计上是“可选加入且保密”的。标准希望 AP 能认出你，而其他任何人都不能。device ID 只对发放它的 AP/ESS 有意义；对空口上的其他人而言，它只是不透明的密文，而且可能在每次到访之间发生变化。“可识别但不可追踪”正是其全部要义。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the IRM side (12.2.13.2). Here the station, not the AP, is in control. IRM stands for Identifiable Random MAC address: the station constructs a random, locally-administered MAC address and shares it with the AP during association. On its next visit the station uses that same address as the transmitter address (TA) of its frames — Probe Requests, Authentication frames, (Re)Association frames — so the AP can recognise it even before association completes. Crucially the station can prove the address is its own, because it is the one that chose and delivered it. The standard recommends changing the IRM for each association, so the recognisable address is still a moving target to outsiders who were not told it means anything.",
+      "zh": "再看 IRM 这一侧（12.2.13.2）。这里掌握主动权的是站点，而非 AP。IRM 即 Identifiable Random MAC address（可识别随机 MAC 地址）：站点从本地管理地址空间构造一个随机 MAC 地址，并在关联时把它告知 AP。下次到访时，站点用这同一个地址作为其各帧的发送方地址（TA）——探测请求帧、认证帧、（重）关联帧——这样 AP 甚至在关联完成之前就能认出它。关键在于，站点能够证明这个地址确属自己，因为正是它选定并交付了这个地址。标准建议每次关联都更换 IRM，于是这个“可识别地址”对那些并不知道它含义的外人来说，仍是一个不断移动的目标。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Non-AP STA\n    participant AP as Access Point / ESS\n    Note over STA,AP: Device ID — AP issues an opaque, AP-encrypted handle\n    AP->>STA: msg 3 of 4-way handshake: Device ID KDE (opaque)\n    Note over STA: stores device ID; eavesdropper sees only ciphertext\n    STA->>AP: future visit, msg 2: Device ID KDE returned\n    Note over AP: decrypts -> recognises STA; may rotate to a new ID\n    Note over STA,AP: IRM — STA picks a random MAC it can prove is its own\n    STA->>AP: msg 4 of 4-way handshake: IRM KDE (chosen by STA)\n    Note over STA: next visit uses that IRM as its TA\n    STA->>AP: Auth / (Re)Assoc frames with TA = IRM\n    Note over AP: recognises STA pre-association",
+      "zh": "sequenceDiagram\n    participant STA as 非 AP 站点\n    participant AP as 接入点 / ESS\n    Note over STA,AP: Device ID — AP 发放一个不透明、由 AP 加密的句柄\n    AP->>STA: 4 次握手消息 3：Device ID KDE（不透明）\n    Note over STA: 存储 device ID；窃听者只看到密文\n    STA->>AP: 未来到访，消息 2：交回 Device ID KDE\n    Note over AP: 解密 -> 认出站点；可轮换为新的 ID\n    Note over STA,AP: IRM — 站点选定一个可证明属于自己的随机 MAC\n    STA->>AP: 4 次握手消息 4：IRM KDE（由站点选定）\n    Note over STA: 下次到访用该 IRM 作为其 TA\n    STA->>AP: 认证 /（重）关联帧，TA = IRM\n    Note over AP: 在关联前即认出站点"
+    },
+    {
+      "type": "prose",
+      "en": "Where do these identifiers actually travel? Through the key exchange. bh defines new Key Data Encapsulations (KDEs) — a Device ID KDE, an IRM KDE, and a PASN ID KDE (12.7.2) — that ride inside EAPOL-Key frames. The PDU construction and processing rules (12.7.3) and the PDU notation (12.7.4) slot these KDEs into the protocol's vocabulary. Then the 4-way handshake (12.7.6) carries them at well-defined moments: message 2 (12.7.6.3) may carry a Device ID KDE from the station, message 3 (12.7.6.4) may carry the AP's Device ID, PASN ID, and IRM KDEs back, and message 4 (12.7.6.5) carries the station's IRM KDE when IRM is active. Because they travel inside the handshake — after keys are established and with the message data encrypted — the identifiers are delivered confidentially rather than in the clear.",
+      "zh": "这些标识符究竟在哪里传输？答案是：在密钥交换过程中。bh 定义了若干新的密钥数据封装（KDE）——Device ID KDE、IRM KDE 和 PASN ID KDE（12.7.2）——它们承载于 EAPOL-Key 帧之内。PDU 构造与处理规则（12.7.3）以及 PDU 记法（12.7.4）把这些 KDE 纳入协议的“词汇表”。随后，4 次握手（12.7.6）在明确界定的时刻携带它们：消息 2（12.7.6.3）可携带来自站点的 Device ID KDE；消息 3（12.7.6.4）可回携 AP 的 Device ID、PASN ID 与 IRM KDE；消息 4（12.7.6.5）在 IRM 启用时携带站点的 IRM KDE。正因为它们在握手过程中传输——此时密钥已建立、消息数据已加密——这些标识符是被保密地交付的，而非明文传送。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two mechanisms, two owners, one goal. Device ID is allocated by the AP and kept opaque by AP-side encryption; IRM is chosen by the STA and provable as its own. They are independent and can run concurrently. Both wrap a recognisable identity so only the intended AP can read it — recognition without handing eavesdroppers a tracking handle.",
+      "zh": "两套机制、两个归属、一个目标。Device ID 由 AP 分配，并通过 AP 侧加密保持不透明；IRM 由站点选定，且可证明属于自己。二者相互独立，可并发运行。两者都把一个“可识别身份”包裹起来，使得只有目标 AP 才能读取它——既实现识别，又不把追踪句柄拱手交给窃听者。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact KDE plumbing and 4-way handshake placement",
+        "zh": "KDE 的精确管路与 4 次握手中的放置位置"
+      },
+      "en": "12.7.2 inserts three new KDE selectors under OUI 00-0F-AC: Device ID KDE (type 20), IRM KDE (type 21), and PASN ID KDE (type 22). The Device ID KDE format is a Device ID Status field (0 or 1 octet) plus a variable-length Device ID; the IRM KDE is an IRM Status field plus a 0- or 6-octet IRM. 12.7.6.1 gives the revised information flow: message 2 (Supplicant->Authenticator) may carry {Device ID}; message 3 (Authenticator->Supplicant) may carry {Device ID, IRM, PASN ID} alongside the GTK and other key data; message 4 (Supplicant->Authenticator) carries {IRM}. 12.7.6.3 states message 2 sets Encrypted Key Data = 1 when the Device ID KDE is included, and may include a Device ID KDE subject to 12.2.13.1. 12.7.6.4 says message 3 may include Device ID, PASN ID, and IRM KDEs subject to 12.2.13.1/12.2.13.2. 12.7.6.5 says message 4 includes an IRM KDE when dot11IRMActivated is true. Separately, 12.2.13.1 lets an AP keep a device ID opaque to third parties over the air (e.g., the AP encrypting it itself), which is what makes a recognisable handle non-trackable.",
+      "zh": "12.7.2 在 OUI 00-0F-AC 下插入三个新的 KDE 选择子：Device ID KDE（类型 20）、IRM KDE（类型 21）和 PASN ID KDE（类型 22）。Device ID KDE 的格式为一个 Device ID Status 字段（0 或 1 字节）加上一个变长的 Device ID；IRM KDE 则是一个 IRM Status 字段加上一个 0 或 6 字节的 IRM。12.7.6.1 给出修订后的信息流：消息 2（请求方->认证方）可携带 {Device ID}；消息 3（认证方->请求方）可在 GTK 等密钥数据之外携带 {Device ID, IRM, PASN ID}；消息 4（请求方->认证方）携带 {IRM}。12.7.6.3 规定：当包含 Device ID KDE 时，消息 2 将 Encrypted Key Data 置为 1，并可在符合 12.2.13.1 条件时包含 Device ID KDE。12.7.6.4 规定：消息 3 可在符合 12.2.13.1/12.2.13.2 条件时包含 Device ID、PASN ID 与 IRM KDE。12.7.6.5 规定：当 dot11IRMActivated 为真时，消息 4 包含一个 IRM KDE。另外，12.2.13.1 允许 AP 在空口上对第三方保持 device ID 的不透明性（例如由 AP 自行加密），这正是让一个“可识别句柄”变得不可追踪的原因。",
+      "cite": {
+        "pdf_id": "80211bh-2024",
+        "pages": [
+          40,
+          42,
+          43
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211bh-2024:12.2.13",
+    "80211bh-2024:12.2.13.1",
+    "80211bh-2024:12.2.13.2",
+    "80211bh-2024:12.7.2",
+    "80211bh-2024:12.7.3",
+    "80211bh-2024:12.7.4",
+    "80211bh-2024:12.7.6.1",
+    "80211bh-2024:12.7.6.3",
+    "80211bh-2024:12.7.6.4",
+    "80211bh-2024:12.7.6.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        35,
+        37,
+        38
+      ],
+      "note": "12.2.13 / 12.2.13.1 / 12.2.13.2 — privacy paradox; AP-allocated opaque device ID kept private over the air; STA-chosen IRM used as TA for pre-association recognition"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        40,
+        41,
+        42
+      ],
+      "note": "12.7.2 Device ID/IRM/PASN ID KDEs (selectors 20/21/22 + formats); 12.7.3 PDU construction; 12.7.4 PDU notation"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        42,
+        43
+      ],
+      "note": "12.7.6.1 revised 4-way handshake flow; 12.7.6.3 msg 2 (Device ID, Encrypted Key Data); 12.7.6.4 msg 3 (Device ID/PASN ID/IRM); 12.7.6.5 msg 4 (IRM)"
+    }
+  ],
+  "track": "privacy"
+}

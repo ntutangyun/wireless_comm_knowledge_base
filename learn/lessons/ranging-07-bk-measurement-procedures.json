@@ -1,0 +1,138 @@
+{
+  "id": "ranging-07-bk-measurement-procedures",
+  "title": {
+    "en": "The Dance Steps: TB, Non-TB, and Passive Ranging Phases",
+    "zh": "测距舞步：TB、非 TB 与被动测距各阶段"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A Wi-Fi round-trip-time measurement is choreography. Strip away the field names and every flavour of ranging is the same three beats. First poll — line everyone up and find out who is here. Then sound — exchange the two timestamped null data packets (NDPs) that actually carry the timing. Then report — share the timestamps so distance can be solved from the round-trip time. This lesson walks every variant of that dance as 802.11bk-2025 defines it in the MLME clause. The fields differ, but the rhythm never does.",
+      "zh": "Wi-Fi 的往返时间（RTT）测量本质上是一套“编舞”。把字段名都抹掉之后，你会发现每一种测距其实都是同样的三拍：先“轮询（poll）”——把所有人排好队，弄清谁在场；再“探测（sound）”——交换两个带时间戳的空数据包（NDP），真正的计时信息就在其中；最后“上报（report）”——把时间戳分享出去，从而由往返时间反解出距离。本课依照 802.11bk-2025 在 MLME 章节中的定义，逐一走过这套舞蹈的每一种变体。字段会变，但节奏始终不变。"
+    },
+    {
+      "type": "prose",
+      "en": "Before any dancing happens, the two parties negotiate. The initiating STA (ISTA) and responding STA (RSTA) trade an IFTMR / IFTM frame pair (11.21.6.3.1–.3) to agree on bandwidth, the number of space-time streams, LTF repetitions, and — new in this amendment — 320 MHz operation via a 320 MHz Ranging subelement. A separate negotiation (11.21.6.3.4) can switch on a secure HE-LTF mode that randomises the LTF sequences so the timing can't be spoofed. A small capability flag (11.21.6.2) advertises whether a STA even supports that secure mode. Negotiation settles the rules; the phases below play them out.",
+      "zh": "在跳舞之前，双方要先“谈条件”。发起方站点（ISTA）与响应方站点（RSTA）交换一对 IFTMR / IFTM 帧（11.21.6.3.1–.3），就带宽、空时流数量、LTF 重复次数，以及本修正案新增的——通过“320 MHz Ranging 子元素”启用的 320 MHz 操作——达成一致。另有一段单独的协商（11.21.6.3.4）可以开启“安全 HE-LTF”模式，对 LTF 序列做随机化，使计时无法被伪造。还有一个小小的能力标志位（11.21.6.2）用来宣告某个站点是否支持这种安全模式。协商敲定规则，下面的各阶段则把规则一一执行。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two names worth keeping straight: the ISTA is the one being located (often a phone or tag), and the RSTA is the anchor (often the AP). Confusingly, in trigger-based ranging the RSTA leads the dance even though the ISTA is the one whose position we want — the leader is not the one being measured.",
+      "zh": "有两个名字要分清楚：ISTA 是“被定位”的一方（往往是手机或标签），RSTA 是“锚点”（往往是 AP）。容易混淆的是：在基于触发（TB）的测距里，虽然我们想知道的是 ISTA 的位置，但领舞的却是 RSTA——领舞者并不是被测量的那一方。"
+    },
+    {
+      "type": "prose",
+      "en": "Trigger-based (TB) ranging (11.21.6.4.3) is the one-to-many dance. It runs inside scheduled availability windows, and each window is built from one or more triplets of polling → sounding → reporting. In the polling phase (11.21.6.4.3.2) the RSTA sends a Poll Ranging Trigger frame; every ISTA that wants in replies with a CTS-to-self in its assigned resource unit, so the RSTA learns who showed up. In the sounding phase (11.21.6.4.3.3) a Sounding Ranging Trigger frame solicits each ISTA's uplink I2R NDP, then the RSTA fires back a Ranging NDP Announcement frame followed by a single downlink R2I NDP heard by all. Four timestamps fall out — t1 (ISTA sends), t2 (RSTA receives), t3 (RSTA sends), t4 (ISTA receives) — and RTT = (t4 − t1) − (t3 − t2). Finally the reporting phase (11.21.6.4.3.4) carries those timestamps in Location Measurement Report (LMR) frames, optionally in both directions.",
+      "zh": "基于触发的（TB）测距（11.21.6.4.3）是“一对多”的舞蹈。它在预定的“可用窗口（availability window）”内进行，每个窗口由一个或多个“轮询 → 探测 → 上报”三元组构成。在轮询阶段（11.21.6.4.3.2），RSTA 发出 Poll Ranging Trigger 帧；每个想参与的 ISTA 都在分配给它的资源单元（RU）里回一个 CTS-to-self，于是 RSTA 就知道谁来了。在探测阶段（11.21.6.4.3.3），Sounding Ranging Trigger 帧征询每个 ISTA 的上行 I2R NDP，随后 RSTA 发出一个 Ranging NDP Announcement 帧，再发一个所有人都能听到的下行 R2I NDP。由此得到四个时间戳——t1（ISTA 发送）、t2（RSTA 接收）、t3（RSTA 发送）、t4（ISTA 接收）——且 RTT =（t4 − t1）−（t3 − t2）。最后，上报阶段（11.21.6.4.3.4）用 Location Measurement Report（LMR）帧承载这些时间戳，并可选地双向上报。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant R as RSTA (anchor)\n    participant I as ISTA (being located)\n    Note over R,I: TB ranging triplet\n    R->>I: Poll Ranging Trigger (polling)\n    I->>R: CTS-to-self (I'm here)\n    R->>I: Sounding Ranging Trigger (sounding)\n    I->>R: I2R NDP  (t1 sent, t2 recv)\n    R->>I: Ranging NDP Announcement\n    R->>I: R2I NDP  (t3 sent, t4 recv)\n    R->>I: R2I LMR frame (reporting: t2,t3)\n    Note over I: RTT = (t4-t1) - (t3-t2)",
+      "zh": "sequenceDiagram\n    participant R as RSTA（锚点）\n    participant I as ISTA（被定位方）\n    Note over R,I: TB 测距三元组\n    R->>I: Poll Ranging Trigger（轮询）\n    I->>R: CTS-to-self（我在）\n    R->>I: Sounding Ranging Trigger（探测）\n    I->>R: I2R NDP（t1 发送, t2 接收）\n    R->>I: Ranging NDP Announcement\n    R->>I: R2I NDP（t3 发送, t4 接收）\n    R->>I: R2I LMR 帧（上报: t2,t3）\n    Note over I: RTT =（t4-t1）-（t3-t2）"
+    },
+    {
+      "type": "prose",
+      "en": "Non-TB ranging (11.21.6.4.4) is the same three beats with a different leader. Here the ISTA drives. Whenever the medium is free, the ISTA opens the sounding phase (11.21.6.4.4.2) itself: it sends a Ranging NDP Announcement frame to a single RSTA, follows it a SIFS later with its I2R NDP, and the RSTA answers with an R2I NDP. The same t1–t4 quartet is captured. The reporting phase (11.21.6.4.4.3) then delivers the timestamps in an LMR frame — immediate (this round's results) or delayed (last round's), with bidirectional I2R feedback if negotiated. The RSTA can only throttle how often the ISTA initiates, via a minimum interval. It's a point-to-point conversation rather than a scheduled assembly.",
+      "zh": "非 TB 测距（11.21.6.4.4）是同样的三拍，只是换了领舞者——这里由 ISTA 主导。只要介质空闲，ISTA 就自己开启探测阶段（11.21.6.4.4.2）：它向单个 RSTA 发送一个 Ranging NDP Announcement 帧，间隔一个 SIFS 后紧跟自己的 I2R NDP，RSTA 则以 R2I NDP 作答。同样会捕获 t1–t4 这四个时间戳。随后上报阶段（11.21.6.4.4.3）用 LMR 帧送出时间戳——可以是即时反馈（本轮结果）或延迟反馈（上一轮结果），若有协商还可带双向的 I2R 反馈。RSTA 唯一能做的限制，是通过一个“最小间隔”来约束 ISTA 发起测量的频率。这是一对一的对话，而非一场预定的集会。"
+    },
+    {
+      "type": "prose",
+      "en": "Underneath the choreography sits one physical building block: the ranging NDP itself (11.21.6.4.6). This subclause is the bridge from MAC to PHY — it spells out exactly how each side fills in the TXVECTOR when it transmits a Ranging NDP. The FORMAT becomes HE_SU (or EHT_MU for 320 MHz), a RANGING_FLAG is present, NUM_STS and LTF_REP copy the values the preceding announcement or trigger frame negotiated, the LTF type is fixed to 2x with a 1.6 µs guard interval, and SECURE_LTF_FLAG flips to 1 only in the secure modes. Every dance step above ultimately resolves into one of these precisely parameterised NDP transmissions.",
+      "zh": "在这套编舞之下，有一个共同的物理“积木”：测距 NDP 本身（11.21.6.4.6）。这一子条款是从 MAC 通往 PHY 的桥梁——它精确规定了每一方在发送 Ranging NDP 时如何填写 TXVECTOR。FORMAT 被设为 HE_SU（320 MHz 时为 EHT_MU），带有 RANGING_FLAG，NUM_STS 与 LTF_REP 沿用前导的 announcement 或 trigger 帧所协商的值，LTF 类型固定为 2x 并配 1.6 µs 保护间隔，而 SECURE_LTF_FLAG 仅在安全模式下置 1。上面的每一个舞步，最终都归结为这样一次参数被精确设定的 NDP 发送。"
+    },
+    {
+      "type": "prose",
+      "en": "The most elegant variant is passive TB ranging (11.21.6.4.8). It reuses the entire TB dance (polling 11.21.6.4.8.1–.2, sounding 11.21.6.4.8.3, reporting 11.21.6.4.8.4) but adds a silent third dancer: a passive STA (PSTA) that never transmits. The PSTA simply overhears the I2R NDP (timestamp t5) and the R2I NDP (timestamp t6) flying between RSTA and ISTA. Afterwards the RSTA broadcasts everyone's timestamps in Broadcast Passive TB Ranging Measurement Report frames. Armed with t1–t6, the PSTA computes its own differential time-of-flight to the RSTA and ISTA — and thus its position — without ever keying its radio. Same three beats; one listener positions itself in total silence, and one trigger can serve many such listeners.",
+      "zh": "最优雅的变体是“被动 TB 测距”（11.21.6.4.8）。它完整复用了整套 TB 舞步（轮询 11.21.6.4.8.1–.2、探测 11.21.6.4.8.3、上报 11.21.6.4.8.4），却额外加入一个从不发射的“沉默舞者”：被动站点（PSTA）。PSTA 只是“偷听”在 RSTA 与 ISTA 之间飞来飞去的 I2R NDP（时间戳 t5）和 R2I NDP（时间戳 t6）。事后，RSTA 通过 Broadcast Passive TB Ranging Measurement Report 帧把所有人的时间戳广播出去。拿到 t1–t6 之后，PSTA 就能算出自己到 RSTA 和 ISTA 的“差分飞行时间”——进而得到自己的位置——而全程都无需开启自己的射频。还是那三拍；一个监听者在完全静默中完成自我定位，而一次触发就能服务许多这样的监听者。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Reading the exact timestamps and the PSTA's differential equation",
+        "zh": "精读时间戳定义与 PSTA 的差分公式"
+      },
+      "en": "In TB sounding (11.21.6.4.3.3) the standard fixes the four NDP timestamps: the ISTA records t1 = TOD(I2R NDP) and t4 = TOA(R2I NDP); the RSTA captures t2 = TOA(I2R NDP) and t3 = TOD(R2I NDP), measured on the RSTA's own clock without frequency-offset correction. The ISTA's round-trip time is RTT_ISTA = (t4 − t1) − (t3′ − t2′), where t3′ and t2′ are the RSTA's instants converted into the ISTA's time basis. In passive mode (11.21.6.4.8.3) the PSTA adds t5 = TOA(I2R NDP) and t6 = TOA(R2I NDP) for the two NDPs it overhears, then solves its differential time-of-flight DToF_PRI = t6 − t5 − 0.5·t3′ + 0.5·t2′ − 0.5·t4′ + 0.5·t1′ (Equation 11-12), where the primed values are the RSTA's and ISTA's timestamps each converted into the PSTA's time basis using reported CFO. Multiplying DToF_PRI by the speed of light yields the PSTA's differential distance to the RSTA and ISTA — all from passively received NDPs plus the broadcast report.",
+      "zh": "在 TB 探测（11.21.6.4.3.3）中，标准固定了四个 NDP 时间戳：ISTA 记录 t1 = TOD(I2R NDP) 和 t4 = TOA(R2I NDP)；RSTA 捕获 t2 = TOA(I2R NDP) 和 t3 = TOD(R2I NDP)，且按 RSTA 自身时钟测量、不做频偏校正。ISTA 的往返时间为 RTT_ISTA =（t4 − t1）−（t3′ − t2′），其中 t3′、t2′ 是把 RSTA 的两个时刻换算到 ISTA 时间基准后的值。在被动模式（11.21.6.4.8.3）中，PSTA 为它偷听到的两个 NDP 追加 t5 = TOA(I2R NDP) 与 t6 = TOA(R2I NDP)，再解出差分飞行时间 DToF_PRI = t6 − t5 − 0.5·t3′ + 0.5·t2′ − 0.5·t4′ + 0.5·t1′（式 11-12），其中带撇号的各值是把 RSTA 与 ISTA 的时间戳借助上报的 CFO 各自换算到 PSTA 时间基准后的结果。将 DToF_PRI 乘以光速，即得 PSTA 到 RSTA 与 ISTA 的差分距离——全部来自被动接收的 NDP 加上那份广播报告。",
+      "cite": {
+        "pdf_id": "80211bk-2025",
+        "pages": [
+          47,
+          79,
+          80
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211bk-2025:11.21.6.2",
+    "80211bk-2025:11.21.6.3.1",
+    "80211bk-2025:11.21.6.3.2",
+    "80211bk-2025:11.21.6.3.3",
+    "80211bk-2025:11.21.6.4.3.1",
+    "80211bk-2025:11.21.6.4.3.2",
+    "80211bk-2025:11.21.6.4.3.3",
+    "80211bk-2025:11.21.6.4.3.4",
+    "80211bk-2025:11.21.6.4.4.1",
+    "80211bk-2025:11.21.6.4.4.2",
+    "80211bk-2025:11.21.6.4.4.3",
+    "80211bk-2025:11.21.6.4.6",
+    "80211bk-2025:11.21.6.4.8.1",
+    "80211bk-2025:11.21.6.4.8.2",
+    "80211bk-2025:11.21.6.4.8.3",
+    "80211bk-2025:11.21.6.4.8.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        35,
+        39,
+        40
+      ],
+      "note": "11.21.6.2 FTM capabilities; 11.21.6.3.1-.4 FTM procedure negotiation incl. 320 MHz Ranging subelement and secure HE-LTF"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        39,
+        44,
+        47,
+        50
+      ],
+      "note": "11.21.6.4.3.1-.4 TB ranging: availability windows, polling, sounding (t1-t4), reporting via LMR"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        52,
+        53,
+        57
+      ],
+      "note": "11.21.6.4.4.1-.3 non-TB ranging: ISTA-driven sounding and immediate/delayed reporting"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        72,
+        74,
+        76
+      ],
+      "note": "11.21.6.4.6 Transmission of a Ranging NDP - TXVECTOR parameters bridging MAC to PHY"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        77,
+        78,
+        79,
+        80,
+        82
+      ],
+      "note": "11.21.6.4.8.1-.4 passive TB ranging: silent PSTA overhears NDPs (t5,t6) and computes differential ToF"
+    }
+  ],
+  "track": "ranging"
+}

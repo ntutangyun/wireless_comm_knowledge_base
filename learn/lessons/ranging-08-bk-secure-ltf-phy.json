@@ -1,0 +1,155 @@
+{
+  "id": "ranging-08-bk-secure-ltf-phy",
+  "title": {
+    "en": "Tamper-Proof Timing: Secure EHT-LTF and the Ranging NDP PHY",
+    "zh": "防篡改时间戳：安全 EHT-LTF 与测距 NDP 物理层"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Wi-Fi ranging measures distance from timing: a station and an access point bounce null data packets (NDPs) back and forth, capture four timestamps, and turn the round-trip time into metres. The training field at the front of each NDP — the LTF — is what the receiver locks onto to decide exactly when the packet arrived. That makes the LTF the soft underbelly. If an attacker can predict or replay the LTF, it can inject an early copy that the receiver mistakes for the real first arrival, and forge a distance shorter than the truth. The whole point of secure ranging is to make that LTF impossible to guess.",
+      "zh": "Wi-Fi 测距是用时间来测量距离的：站点与接入点（AP）来回发送空数据包（NDP），捕获四个时间戳，再把往返时间换算成米。每个 NDP 最前面的训练字段——也就是 LTF——正是接收端用来精确判定数据包到达时刻的锚点。这也使 LTF 成了最薄弱的环节。如果攻击者能够预测或重放 LTF，它就能注入一个提前到达的副本，让接收端误以为那是真正的首达信号，从而伪造出一个比真实距离更近的结果。安全测距的核心目的，就是让这个 LTF 变得无法被猜到。"
+    },
+    {
+      "type": "prose",
+      "en": "The defense is a per-session, per-NDP secret: instead of a fixed, publicly known LTF sequence, both sides generate a fresh randomized LTF that only they can reproduce. This amendment wires that idea in two halves. First, a negotiation and a key-and-counter machine in the MAC (11.21.6.3.4 and 11.21.6.4.5) so the two parties agree to use secure LTFs and independently derive identical secret material. Second, a PHY that actually paints those secret bits onto the waveform of a 320 MHz Ranging NDP (clause 36). Get both halves right and the timing reference becomes unforgeable.",
+      "zh": "防御手段是一份按会话、按 NDP 而变的秘密：双方不再使用固定且公开已知的 LTF 序列，而是各自生成一段全新的随机化 LTF，且只有它们彼此才能复现。本修正案把这一思路拆成两半来落实。第一半是 MAC 层中的协商机制与“密钥+计数器”状态机（11.21.6.3.4 与 11.21.6.4.5），让双方约定启用安全 LTF，并各自独立推导出完全相同的秘密材料。第二半是物理层（第 36 章），它真正把这些秘密比特刻画到 320 MHz 测距 NDP 的波形上。两半都做对，时间基准就变得无法伪造了。"
+    },
+    {
+      "type": "prose",
+      "en": "Negotiation comes first. An RSTA that implements secure LTF advertises it by setting the Secure HE-LTF Support field in the RSNXE; an initiating ISTA asks for it by carrying a Secure HE-LTF subelement in the Ranging Parameters element of its IFTMR frame with the Required field set to 1. The two also negotiate a Secure HE-LTF protocol version — each side converges on the highest mutually supported version. Once agreed (11.21.6.4.5.1), the frame choreography is unchanged from ordinary TB ranging (11.21.6.4.5.2) and non-TB ranging (11.21.6.4.5.3); only the LTFs inside the NDPs become secret. The RSTA seeds the session by sending a Validation SAC and a Secure HE-LTF Counter inside a protected IFTM frame.",
+      "zh": "首先是协商。实现了安全 LTF 的 RSTA 会在 RSNXE 中将 Secure HE-LTF Support 字段置 1 来对外宣告这一能力；发起方 ISTA 则在其 IFTMR 帧的 Ranging Parameters 元素中携带 Secure HE-LTF 子元素、并把 Required 字段置 1 来发出请求。双方还会协商一个 Secure HE-LTF 协议版本——各自收敛到双方共同支持的最高版本。一旦达成一致（11.21.6.4.5.1），帧的编排流程与普通的 TB 测距（11.21.6.4.5.2）和非 TB 测距（11.21.6.4.5.3）完全相同；唯一不同的是 NDP 内部的 LTF 变成了秘密。RSTA 通过在一个受保护的 IFTM 帧中发送 Validation SAC 与 Secure HE-LTF Counter，为本次会话播下种子。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the layering. Secrecy is not bolted onto the timestamp after the fact — it is baked into the very symbols the receiver uses to detect arrival time. Because the randomized sequence changes every NDP (driven by a counter) and is derived from key material an attacker never sees, last packet's recording is useless for forging this packet. Unpredictable per-session + per-packet is the whole trick.",
+      "zh": "请留意这里的分层思想。保密性并不是事后再附加到时间戳上的——它被直接烘焙进了接收端用来检测到达时刻的那些符号本身。由于随机化序列每个 NDP 都会变化（由计数器驱动），且派生自攻击者永远看不到的密钥材料，所以上一个数据包的录制对于伪造当前数据包毫无用处。“按会话且按包均不可预测”正是整套机制的精髓。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[\"PTKSA from the AKM\"] --> B[\"Secure-LTF-Key-Seed\\n(HMAC-Hash of KDK)\"]\n    B --> C[\"KDF-Hash-272(seed,\\n'Secure HE-LTF Expansion',\\nSecure-LTF-Counter)\"]\n    C --> D[\"SAC (16 bits)\"]\n    C --> E[\"ista-ltf-key (128 bits)\"]\n    C --> F[\"rsta-ltf-key (128 bits)\"]\n    E --> G[\"AES-128 counter mode\\nkey = ltf-key\\nIV = A2 | counter | block#\"]\n    F --> G\n    G --> H[\"pseudorandom octet stream\"]\n    H --> I[\"per-stream phase rotation\\n+ 64-QAM secure EHT-LTF\"]",
+      "zh": "flowchart TD\n    A[\"来自 AKM 的 PTKSA\"] --> B[\"Secure-LTF-Key-Seed\\n（KDK 的 HMAC-Hash）\"]\n    B --> C[\"KDF-Hash-272(种子,\\n'Secure HE-LTF Expansion',\\nSecure-LTF-Counter)\"]\n    C --> D[\"SAC（16 位）\"]\n    C --> E[\"ista-ltf-key（128 位）\"]\n    C --> F[\"rsta-ltf-key（128 位）\"]\n    E --> G[\"AES-128 计数器模式\\n密钥 = ltf-key\\nIV = A2 | 计数器 | 块号\"]\n    F --> G\n    G --> H[\"伪随机八位字节流\"]\n    H --> I[\"每流相位旋转\\n+ 64-QAM 安全 EHT-LTF\"]"
+    },
+    {
+      "type": "prose",
+      "en": "The octet-stream generator (11.21.6.4.5.4) is the cryptographic heart. For each secure measurement, both sides independently run a key derivation function over the Secure-LTF-Key-Seed, the literal string 'Secure HE-LTF Expansion', and the per-measurement Secure-LTF-Counter, producing 272 bits. The first 16 bits are the SAC (a Sounding AC value an attacker cannot predict), the next 128 are the ista-ltf-key, the last 128 are the rsta-ltf-key — one key per direction. Those keys feed an AES-128 counter-mode generator whose 16-octet IV is the transmitter MAC address (A2), the 6-octet counter, and a 4-octet block counter that starts at 0 and increments per AES block. The ISTA procedure (11.21.6.4.5.5) and the RSTA procedure (11.21.6.4.5.6) are mirror images, so both ends derive the identical octet stream and the identical SAC — without ever transmitting the keys.",
+      "zh": "八位字节流生成器（11.21.6.4.5.4）是整套密码学机制的核心。对每一次安全测量，双方都独立地对 Secure-LTF-Key-Seed、字面字符串“Secure HE-LTF Expansion”以及该次测量的 Secure-LTF-Counter 运行一个密钥派生函数，产生 272 位。前 16 位是 SAC（一个攻击者无法预测的探测 AC 值），接下来的 128 位是 ista-ltf-key，最后 128 位是 rsta-ltf-key——每个方向各一把密钥。这些密钥输入到一个 AES-128 计数器模式生成器，其 16 字节的 IV 由发送端 MAC 地址（A2）、6 字节计数器，以及一个从 0 开始、每输出一个 AES 块就加 1 的 4 字节块计数器构成。ISTA 流程（11.21.6.4.5.5）与 RSTA 流程（11.21.6.4.5.6）互为镜像，因此两端都能推导出完全相同的八位字节流和完全相同的 SAC——而且全程从不传输密钥本身。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the PHY (clause 36). An EHT Ranging NDP (36.3.19a.1) and an EHT TB Ranging NDP (36.3.19a.2) are the 320 MHz NDP formats; in secure mode the ordinary EHT-LTF is swapped for the secure EHT-LTF of 36.3.19b. The construction (36.3.19b.1-.4) is distinctive: the octet stream is segment-parsed across the four 80 MHz subblocks and mapped to pseudorandom 64-QAM values, a per-stream pseudorandom phase rotation is applied, no CSD is used, the conventional cyclic prefix becomes a zero-power GI, and the receiver may apply a frequency-domain flat-top window. Repetitions are mandatory (LTF_REP greater than 1) and every repetition block carries a different randomized sequence. The MAC hands the keys and IV to the PHY through TXVECTOR/LTFVECTOR parameters LTF_KEY, LTF_IV and SECURE_LTF_FLAG (36.2.2, 36.2.3a), and the PPDU-format selection rules route a 320 MHz NDPA to the right PPDU (35.14.2). The other pillar is an attested time of departure: 36.3.20.5 sets a time-of-departure accuracy test with an 80 ns threshold, so the timestamp the secure LTF anchors is itself held to spec.",
+      "zh": "现在来看物理层（第 36 章）。EHT 测距 NDP（36.3.19a.1）与 EHT TB 测距 NDP（36.3.19a.2）是 320 MHz 的 NDP 格式；在安全模式下，普通的 EHT-LTF 会被替换为 36.3.19b 所定义的安全 EHT-LTF。其构造方式（36.3.19b.1-.4）很有特色：八位字节流先经分段解析器分配到四个 80 MHz 子块，再映射为伪随机 64-QAM 值；对每条空间流施加伪随机相位旋转；不使用 CSD；常规的循环前缀被换成零功率 GI；接收端还可施加一个频域平顶窗。重复是强制性的（LTF_REP 大于 1），并且每个重复块都携带不同的随机化序列。MAC 通过 TXVECTOR/LTFVECTOR 参数 LTF_KEY、LTF_IV 和 SECURE_LTF_FLAG 将密钥与 IV 交给物理层（36.2.2、36.2.3a），而 PPDU 格式选择规则会把 320 MHz 的 NDPA 路由到正确的 PPDU（35.14.2）。另一根支柱是“经过认证的出发时间”：36.3.20.5 规定了一个以 80 ns 为阈值的出发时间精度测试，使安全 LTF 所锚定的那个时间戳本身也受到规范约束。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Detecting an attack from an SIR drop, plus the MIB and PICS hooks",
+        "zh": "通过 SIR 下降检测攻击，以及 MIB 与 PICS 挂钩点"
+      },
+      "en": "Even an unguessable LTF cannot stop an attacker from transmitting noise, so the standard adds a detection layer. Annex AE (informative) models the attack: an adversary observes a secure LTF symbol for a period Tob, computes an attack waveform over Tc, and transmits it over the attack period Ta to inject a false-first-path of relative power FFP. The intended receiver's signal-to-interference ratio then follows SIR(dB) = -FFP(dB) + 10*log10(rho^2*Ta) - 10*log10(1 - rho^2*Ta), where rho is the correlation of the attack signal with the true secure LTF. The smaller the correlation or the shorter the attack period, the deeper the SIR drop — so a receiver can flag an attack by watching for SIR drops across one or more LTF repetitions (the exact algorithm is left to the implementer; the PHY may use the repetitions to cross-check channel estimates). Conformance is pinned down by the MIB object dot11SecureLTFImplemented (C.3), a read-only TruthValue capability that is true when the secure HE-LTF protocol of 11.21.6.4.5 is implemented, and by the EP PHY feature rows in B.4.37.2 that list EHT Ranging NDP / EHT TB Ranging NDP with and without secure LTFs as distinct PICS items.",
+      "zh": "即便 LTF 无法被猜到，也阻止不了攻击者直接发射噪声，因此标准又加上了一层检测机制。附录 AE（资料性）对攻击进行了建模：攻击者先在观测期 Tob 内观察一个安全 LTF 符号，在计算期 Tc 内算出攻击波形，再在攻击期 Ta 内将其发射出去，以注入一个相对功率为 FFP 的虚假首达路径。此时目标接收端的信干比为 SIR(dB) = -FFP(dB) + 10*log10(rho^2*Ta) - 10*log10(1 - rho^2*Ta)，其中 rho 是攻击信号与真实安全 LTF 之间的相关系数。相关性越低或攻击期越短，SIR 下降得越深——因此接收端可以通过观察一个或多个 LTF 重复块上的 SIR 下降来标记攻击（具体算法留给实现者；物理层可利用这些重复块来交叉校验信道估计）。符合性由 MIB 对象 dot11SecureLTFImplemented（C.3）固定下来——这是一个只读的 TruthValue 能力变量，当实现了 11.21.6.4.5 的安全 HE-LTF 协议时其值为 true；同时也由 B.4.37.2 中的 EP PHY 特性条目固定，这些条目把“带/不带安全 LTF 的 EHT 测距 NDP / EHT TB 测距 NDP”列为彼此独立的 PICS 项。",
+      "cite": {
+        "pdf_id": "80211bk-2025",
+        "pages": [
+          101,
+          102,
+          100
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        39,
+        40
+      ],
+      "note": "11.21.6.3.4 — negotiation for secure HE-LTF; RSNXE Support field, Secure HE-LTF subelement, protocol version, Validation SAC / Secure HE-LTF Counter seeding"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        59,
+        65
+      ],
+      "note": "11.21.6.4.5.1 General; 11.21.6.4.5.2 TB and 11.21.6.4.5.3 non-TB secure HE-LTF exchange — frame choreography unchanged, only LTFs become secret"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        68,
+        69,
+        70
+      ],
+      "note": "11.21.6.4.5.4 overview of octet-stream generation (KDF-272 -> SAC + ista/rsta-ltf-key, AES-128 CTR, ltf-iv = A2 | counter | block#); .5.5 ISTA; .5.6 RSTA mirror procedures"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        84,
+        85,
+        86,
+        87,
+        88
+      ],
+      "note": "35.14.2 PPDU format selection for 320 MHz NDPA; 36.2.2 TXVECTOR/RXVECTOR (SECURE_LTF_FLAG, LTF_KEY, LTF_IV, TIME_OF_DEPARTURE_REQUESTED); 36.2.3a LTFVECTOR parameters"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96
+      ],
+      "note": "36.3.19a.1 EHT Ranging NDP and 36.3.19a.2 EHT TB Ranging NDP formats; 36.3.19b.1-.4 secure EHT-LTF (segment parser, 64-QAM, per-stream phase rotation, zero-power GI, flat-top window) for the 320 MHz secure NDP"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        97
+      ],
+      "note": "36.3.20.5 time of departure accuracy test (80 ns threshold) and TIME_OF_DEPARTURE reporting"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        100,
+        101,
+        102
+      ],
+      "note": "B.4.37.2 EP PHY feature PICS rows; C.3 MIB dot11SecureLTFImplemented; Annex AE SIR-based attack detection model"
+    }
+  ],
+  "covers": [
+    "80211bk-2025:11.21.6.3.4",
+    "80211bk-2025:11.21.6.4.5.1",
+    "80211bk-2025:11.21.6.4.5.2",
+    "80211bk-2025:11.21.6.4.5.3",
+    "80211bk-2025:11.21.6.4.5.4",
+    "80211bk-2025:11.21.6.4.5.5",
+    "80211bk-2025:11.21.6.4.5.6",
+    "80211bk-2025:8.3.5.18",
+    "80211bk-2025:35.14.2",
+    "80211bk-2025:36.2.2",
+    "80211bk-2025:36.2.3a",
+    "80211bk-2025:36.3.19a.1",
+    "80211bk-2025:36.3.19a.2",
+    "80211bk-2025:36.3.19b.1",
+    "80211bk-2025:36.3.19b.2",
+    "80211bk-2025:36.3.19b.3",
+    "80211bk-2025:36.3.19b.4",
+    "80211bk-2025:36.3.20.5",
+    "80211bk-2025:C.3",
+    "80211bk-2025:B.4.37.2"
+  ],
+  "track": "ranging"
+}

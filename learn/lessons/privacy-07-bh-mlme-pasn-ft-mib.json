@@ -1,0 +1,145 @@
+{
+  "id": "privacy-07-bh-mlme-pasn-ft-mib",
+  "title": {
+    "en": "Wiring It In: MLME, PASN, FT, and the bh MIB",
+    "zh": "接入系统：MLME、PASN、FT 与 bh MIB"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A new privacy identity scheme is useless on its own. Inventing a device ID, an IRM, or a PASN ID is the easy part — the hard part is teaching the rest of 802.11 that these identifiers exist. The state machine that gates who may talk, the management database that stores configuration, the roaming handshake, and the pre-association security exchange all have to be told. The bh amendment (IEEE 802.11bh-2024) does exactly this threading work: it presents itself in the service overview (4.5.4.10) as a MAC privacy enhancement, then carefully edits every dependent corner of the standard so the new identities flow end to end.",
+      "zh": "一个全新的隐私身份方案，单凭自己是没有用的。发明一个设备 ID、一个 IRM 或一个 PASN ID 是容易的部分——困难的部分在于，要让 802.11 的其余机制都知道这些标识符的存在。决定谁可以通信的状态机、保存配置的管理数据库、漫游握手，以及关联前的安全交换，全都得被“告知”。bh 修正案（IEEE 802.11bh-2024）做的正是这种“串接”工作：它在服务总览（4.5.4.10）中把自己定位为一种 MAC 隐私增强，然后逐一修订标准中每一个依赖它的角落，使新身份能够端到端地流动。"
+    },
+    {
+      "type": "prose",
+      "en": "Start at the top, where the management entity meets the MAC. When a station decides to associate, its SME hands the request down through the MLME-ASSOCIATE primitives. bh inserts the new identifiers into all four of them: the .request and .indication (6.5.7.2 and 6.5.7.4) carry a Device ID and an IRM up and across, while the .confirm and .response (6.5.7.3 and 6.5.7.5) add a PASN ID alongside them — and the rule is that the PASN ID is present exactly when the Device ID is. This is how the layers stay in sync: the SME above never has to peek inside frame bytes, because the primitives surface the identifiers as first-class parameters.",
+      "zh": "先从最上层看起——管理实体与 MAC 相遇的地方。当站点决定关联时，它的 SME 通过 MLME-ASSOCIATE 系列原语把请求向下传递。bh 把新标识符插入到全部四个原语之中：.request 与 .indication（6.5.7.2 和 6.5.7.4）向上、向对端携带 Device ID 与 IRM；.confirm 与 .response（6.5.7.3 和 6.5.7.5）则在它们旁边再加上 PASN ID——而且规则是：当 Device ID 存在时，PASN ID 恰好也存在。这就是各层保持同步的方式：上层的 SME 永远不必窥探帧的字节，因为这些原语把标识符作为“一等参数”直接呈现出来。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two small but crucial gates change in the MLME. Frame filtering by STA state (11.3.3) adds the IRM Action frame to the Class 1a frames a station may exchange once a PASN PTKSA exists — so identity can be updated even before full association. And the radio-measurement hook (11.10.9.1.1) lets an active Beacon request tell a station to put an IRM in the Probe Request's Address 2 and to echo a measurement ID, so it can be recognised mid-scan without leaking a stable address.",
+      "zh": "MLME 中有两道小而关键的“门”发生了变化。基于 STA 状态的帧过滤（11.3.3）把 IRM Action 帧加入到“一旦存在 PASN PTKSA 即可交换”的 Class 1a 帧集合中——这样在完全关联之前，身份就能被更新。而无线测量挂钩（11.10.9.1.1）允许一个主动式 Beacon 请求指示站点：把 IRM 放进 Probe Request 的 Address 2 字段、并回带一个测量 ID，从而在扫描途中即可被识别，又不暴露稳定地址。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    SVC[\"4.5.4.10 MAC privacy enhancement<br/>(why it exists)\"] --> SME\n    SME[\"SME\"] -->|\"6.5.7.2/.4 .request/.indication<br/>Device ID, IRM\"| MLME[\"MLME\"]\n    MLME -->|\"6.5.7.3/.5 .confirm/.response<br/>Device ID, IRM, PASN ID\"| SME\n    MLME --> FILT[\"11.3.3 frame filtering by state<br/>IRM Action as Class 1a\"]\n    MLME --> RM[\"11.10.9.1.1 active beacon req<br/>IRM in Probe Address 2\"]\n    SME --> PRE[\"Pre-association: PASN\"]\n    PRE --> PASN[\"9.4.2.319/.320 elements<br/>12.13.2/.3.2/.8/.11 procedures\"]\n    SME --> ROAM[\"13.4.2 FT handshake\"]\n    SME --> MIB[\"Annex C.3 MIB + B.4.3 PICS\"]",
+      "zh": "flowchart TD\n    SVC[\"4.5.4.10 MAC 隐私增强<br/>（为何存在）\"] --> SME\n    SME[\"SME\"] -->|\"6.5.7.2/.4 .request/.indication<br/>Device ID, IRM\"| MLME[\"MLME\"]\n    MLME -->|\"6.5.7.3/.5 .confirm/.response<br/>Device ID, IRM, PASN ID\"| SME\n    MLME --> FILT[\"11.3.3 按状态过滤帧<br/>IRM Action 归为 Class 1a\"]\n    MLME --> RM[\"11.10.9.1.1 主动 Beacon 请求<br/>Probe Address 2 放 IRM\"]\n    SME --> PRE[\"关联前：PASN\"]\n    PRE --> PASN[\"9.4.2.319/.320 元素<br/>12.13.2/.3.2/.8/.11 流程\"]\n    SME --> ROAM[\"13.4.2 FT 握手\"]\n    SME --> MIB[\"附录 C.3 MIB + B.4.3 PICS\"]"
+    },
+    {
+      "type": "prose",
+      "en": "The most interesting angle is pre-association. PASN (Pre-Association Security Negotiation) lets a station and AP establish keys before they associate — and bh teaches PASN to also re-establish identity. It adds two new elements: the PASN Encrypted Data element (9.4.2.319), a container whose Encrypted Data field holds a Robust Device ID, Robust IRM, or Robust PASN ID; and the PASN ID element (9.4.2.320) itself. The AP first advertises PASN capability (12.13.2). During the three-frame PASN exchange (12.13.3.2), the station offers its PASN ID in frame 1, both sides derive a PTKSA (12.13.8) — and when KEK-in-PASN is enabled the PTK now also yields a KEK — and the sensitive identifiers ride inside the PASN Encrypted Data element, encrypted with that KEK as specified in 12.13.11. So the network can recognise a returning device while a passive eavesdropper sees only ciphertext.",
+      "zh": "最有意思的角度是“关联前”。PASN（关联前安全协商）允许站点与 AP 在关联之前就建立密钥——而 bh 让 PASN 顺带把身份也重新建立起来。它新增了两个元素：PASN Encrypted Data 元素（9.4.2.319），其 Encrypted Data 字段是一个容器，可承载 Robust Device ID、Robust IRM 或 Robust PASN ID；以及 PASN ID 元素本身（9.4.2.320）。AP 先通告自己具备 PASN 能力（12.13.2）。在三帧的 PASN 交换（12.13.3.2）中，站点在第 1 帧给出它的 PASN ID，双方派生出 PTKSA（12.13.8）——当启用 KEK-in-PASN 时，PTK 现在还会额外产出一个 KEK——而那些敏感标识符则被装进 PASN Encrypted Data 元素中，按 12.13.11 的规定用该 KEK 加密传输。于是网络可以识别一个回访的设备，而被动窃听者只能看到密文。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Roaming gets the same treatment. Fast BSS Transition (13.4.2) is the handshake that moves a station between APs in a mobility domain without re-doing full authentication. bh edits its FT 4-way handshake so message 2 may carry a Device ID and message 3 may carry a Device ID, an IRM, and a PASN ID — meaning the privacy identity travels with you across a roam instead of being dropped at every hop.",
+      "zh": "漫游也得到了同等对待。快速 BSS 切换（13.4.2）是让站点在一个移动域内的多个 AP 之间切换、而无需重新做完整认证的握手。bh 修改了它的 FT 四次握手：第 2 条消息可携带 Device ID，第 3 条消息可携带 Device ID、IRM 和 PASN ID——这意味着隐私身份会随你一起跨越漫游，而不是在每一跳都被丢弃。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, none of this is real until it is manageable and testable. The MIB (Annex C.3) adds three control variables to the dot11StationConfig table — dot11KEKPASNActivated, dot11DeviceIDActivated, and dot11IRMActivated — each a read-write TruthValue defaulting to false, written by the SME or an external manager. These are the same flags you saw gating behaviour throughout the procedures. And the PICS proforma (Annex B.4.3) adds CFDID (Device ID) and CFIRM (IRM) configuration items so a tester can declare and check conformance. Database plus conformance statement: the loop is closed.",
+      "zh": "最后，在这一切变得“可管理、可测试”之前，它都还不算落地。MIB（附录 C.3）在 dot11StationConfig 表中加入了三个控制变量——dot11KEKPASNActivated、dot11DeviceIDActivated 和 dot11IRMActivated——每个都是读写的 TruthValue、默认值为 false，由 SME 或外部管理实体写入。这些正是你在各流程中看到、用来开关行为的那些标志位。而 PICS 一致性声明表（附录 B.4.3）则新增了 CFDID（Device ID）与 CFIRM（IRM）两个配置项，供测试者声明并核对一致性。数据库加上一致性声明：整个闭环就此合拢。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "How the PASN ID and Device ID actually ride inside an encrypted PASN exchange",
+        "zh": "PASN ID 与 Device ID 究竟如何在加密的 PASN 交换中传输"
+      },
+      "en": "Tracing 12.13.3.2 precisely: in the first PASN frame, if dot11DeviceIDActivated is true the non-AP STA includes a PASN ID element (9.4.2.320). Upon receiving the second PASN frame, if dot11DeviceIDActivated is true and the AP indicated device-ID support, the AP includes a PASN ID element and optionally a Device ID element inside the PASN Encrypted Data element (9.4.2.319), which shall be encrypted as defined in 12.13.11; if dot11IRMActivated is true an IRM element is likewise placed inside the encrypted container. The third PASN frame from the STA may carry an IRM element the same way. The KEK that performs this encryption is the one extracted from the PTK in 12.13.8 when dot11KEKPASNActivated is true and the peer's KEK-In-PASN bit is 1: KCK = ExtractBits(PTK,0,256), KEK = ExtractBits(PTK,256,KEK_bits). 12.13.11 then dictates the mechanics — encrypt the Encrypted Data field in the second and third frames with the negotiated key wrap algorithm, fragment per 10.28.11 if over 254 octets, and (for NIST AES key wrap) pad short fields with a 0xdd marker. The receiver silently discards a frame whose decryption fails. None of these conditionals fire unless the matching MIB TruthValue in Annex C.3 is set.",
+      "zh": "精确追踪 12.13.3.2：在第一帧 PASN 中，若 dot11DeviceIDActivated 为真，非 AP 站点包含一个 PASN ID 元素（9.4.2.320）。在收到第二帧 PASN 时，若 dot11DeviceIDActivated 为真且 AP 已表明支持设备 ID 机制，AP 会在 PASN Encrypted Data 元素（9.4.2.319）内部包含一个 PASN ID 元素以及可选的 Device ID 元素，该元素应按 12.13.11 进行加密；若 dot11IRMActivated 为真，IRM 元素同样被放入这个加密容器内。来自站点的第三帧 PASN 可以用同样方式携带一个 IRM 元素。执行此加密的 KEK，正是当 dot11KEKPASNActivated 为真且对端的 KEK-In-PASN 比特为 1 时、按 12.13.8 从 PTK 中提取出来的那个：KCK = ExtractBits(PTK,0,256)，KEK = ExtractBits(PTK,256,KEK_bits)。随后 12.13.11 规定了具体机制——用协商好的密钥包装算法加密第二、第三帧中的 Encrypted Data 字段，若超过 254 个八位组则按 10.28.11 分片，并（对 NIST AES 密钥包装）用 0xdd 标记对过短字段进行填充。解密失败的帧将被接收方静默丢弃。除非附录 C.3 中对应的 MIB TruthValue 被置位，否则这些条件分支都不会触发。",
+      "cite": {
+        "pdf_id": "80211bh-2024",
+        "pages": [
+          43,
+          44,
+          45,
+          46
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211bh-2024:4.5.4.10",
+    "80211bh-2024:6.5.7.2",
+    "80211bh-2024:6.5.7.3",
+    "80211bh-2024:6.5.7.4",
+    "80211bh-2024:6.5.7.5",
+    "80211bh-2024:11.3.3",
+    "80211bh-2024:11.10.9.1.1",
+    "80211bh-2024:9.4.2.319",
+    "80211bh-2024:9.4.2.320",
+    "80211bh-2024:12.13.2",
+    "80211bh-2024:12.13.3.2",
+    "80211bh-2024:12.13.8",
+    "80211bh-2024:12.13.11",
+    "80211bh-2024:13.4.2",
+    "80211bh-2024:C.3",
+    "80211bh-2024:B.4.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        19,
+        20
+      ],
+      "note": "4.5.4.10 MAC privacy enhancements — device ID / IRM / PASN ID / measurement ID framed as anti-tracking"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        20,
+        21,
+        22,
+        23
+      ],
+      "note": "6.5.7.2-.5 MLME-ASSOCIATE request/confirm/indication/response carry Device ID, IRM, PASN ID; PASN ID present iff Device ID present"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        34
+      ],
+      "note": "11.3.3 IRM Action as Class 1a frame when PASN PTKSA exists; 11.10.9.1.1 active beacon request puts IRM in Probe Address 2 and echoes measurement ID"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        30,
+        31
+      ],
+      "note": "9.4.2.319 PASN Encrypted Data element (Robust Device ID/IRM/PASN ID); 9.4.2.320 PASN ID element format"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        43,
+        44,
+        45,
+        46
+      ],
+      "note": "12.13.2 PASN-capable AP discovery; 12.13.3.2 frame construction; 12.13.8 PTKSA/KEK derivation; 12.13.11 encrypting the Encrypted Data field"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        47
+      ],
+      "note": "13.4.2 FT 4-way handshake messages 2 and 3 carry Device ID, IRM, PASN ID"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        48,
+        50
+      ],
+      "note": "Annex C.3 MIB dot11KEKPASNActivated/dot11DeviceIDActivated/dot11IRMActivated; B.4.3 PICS CFDID and CFIRM config items"
+    }
+  ],
+  "track": "privacy"
+}

@@ -1,0 +1,142 @@
+{
+  "id": "ranging-06-bk-frames-elements",
+  "title": {
+    "en": "The Ranging Vocabulary: bk Control Frames and Elements",
+    "zh": "测距词汇表：bk 的控制帧与信息元素"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Before two stations can measure the distance between them, they have to agree on two things: what to send, and exactly when to send it. 802.11bk — the '320 MHz Positioning' amendment — does not invent ranging from scratch; it extends the existing FTM (Fine Timing Measurement) machinery so it works over wider, punctured 320 MHz channels and with anti-spoofing protection. This lesson is the bk vocabulary list: the on-air messages that carry the agreement and then carry the answer. Two families do the work — information elements are the contract, and control frames are the conductor's baton.",
+      "zh": "在两个站点测量彼此距离之前，它们必须先就两件事达成一致：发送什么，以及在什么时刻发送。802.11bk——即“320 MHz 定位”修正案——并非从零发明测距，而是扩展现有的 FTM（精细定时测量）机制，使其能够工作在更宽、带打孔（punctured）的 320 MHz 信道上，并具备防欺骗保护。本课就是 bk 的词汇表：负责承载“约定”、随后又承载“答案”的那些空口消息。两大家族各司其职——信息元素是合同，控制帧是指挥棒。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the contract — the elements. The Ranging Parameters element (9.4.2.300) is the heart of the negotiation: it carries TOA types, AOA requests, the requested PPDU format and bandwidth, and the maximum LTF repetitions and space-time streams each side will use. The Secure HE-LTF Parameters element (9.4.2.301) arms the anti-spoofing layer, carrying the Secure HE-LTF Counter, a Validation SAC, and a Measurement SAC that ties the reported result to the exact LTF sequence the two stations used. The updated FTM Parameters element (9.4.2.166) governs the burst schedule. And bk adds the Puncture Pattern element (9.4.2.331) so a 320 MHz session can describe which subchannels are disabled — the same Disabled Subchannel Bitmap an EHT Operation element advertises.",
+      "zh": "先看合同——也就是信息元素。测距参数元素（Ranging Parameters element，9.4.2.300）是协商的核心：它携带 TOA 类型、AOA 请求、所请求的 PPDU 格式与带宽，以及双方将使用的最大 LTF 重复次数和空时流数。安全 HE-LTF 参数元素（Secure HE-LTF Parameters element，9.4.2.301）则武装了防欺骗这一层，携带 Secure HE-LTF Counter、一个 Validation SAC，以及一个把上报结果与双方实际使用的 LTF 序列绑定在一起的 Measurement SAC。更新后的 FTM 参数元素（9.4.2.166）管理突发（burst）调度。bk 还新增了打孔图样元素（Puncture Pattern element，9.4.2.331），让一个 320 MHz 会话能够描述哪些子信道被禁用——其内容与 EHT Operation 元素所通告的 Disabled Subchannel Bitmap 完全一致。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two housekeeping elements keep the vocabulary tidy. Table 9-130 under the General elements clause (9.4.2.1) assigns the new IDs — for example, Secure HE-LTF Parameters is Element ID 255 with Element ID Extension 94. And the Non-Inheritance element (9.4.2.239) lets a frame say 'ignore these elements you'd normally inherit' — bk also flips a related Extended RSN Capabilities bit, Secure HE-LTF Support, set to 1 when secure LTF is implemented.",
+      "zh": "两个“管家”元素让这套词汇保持整洁。位于通用元素条款（9.4.2.1）下的 Table 9-130 负责分配新的 ID——例如，Secure HE-LTF Parameters 的 Element ID 为 255、Element ID Extension 为 94。而非继承元素（Non-Inheritance element，9.4.2.239）让一个帧能够声明“请忽略这些你本会默认继承的元素”——bk 还翻转了一个相关的 Extended RSN Capabilities 比特位 Secure HE-LTF Support，当实现了安全 LTF 时将其置为 1。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the conductor's baton — the control frames that decide when. The NDP Announcement frame (9.3.1.19), in its Ranging variant, tells the receiver how to interpret the very next NDP (null data packet) sounding signal: how many spatial streams, how many LTF repetitions, and — in a secure exchange — it carries a 16-bit Sequence Authentication Code (SAC) in a special STA Info field. The Trigger frame (9.3.1.22) is the broader orchestrator; its Ranging Trigger subvariants (9.3.1.23) come in five flavours — Poll, Sounding, Secure Sounding, Report, and Passive Sounding — each one cueing a specific step of a trigger-based (TB) ranging measurement exchange.",
+      "zh": "再看指挥棒——决定“何时”的那些控制帧。NDP 通告帧（NDP Announcement frame，9.3.1.19）在其测距变体中，告诉接收方该如何解读紧随其后的那个 NDP（空数据分组）探测信号：使用多少空间流、多少次 LTF 重复，以及——在安全交换中——它会在一个特殊的 STA Info 字段里携带一个 16 比特的序列认证码（SAC）。触发帧（Trigger frame，9.3.1.22）则是更全局的编排者；它的测距触发子变体（9.3.1.23）共有五种——Poll、Sounding、Secure Sounding、Report 和 Passive Sounding——每一种都为一次基于触发（TB）的测距测量交换提示（cue）某个具体步骤。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    subgraph Elements[\"Elements — the contract\"]\n        RP[\"Ranging Parameters<br/>9.4.2.300\"]\n        SP[\"Secure HE-LTF Parameters<br/>9.4.2.301\"]\n        FP[\"FTM Parameters<br/>9.4.2.166\"]\n        PP[\"Puncture Pattern<br/>9.4.2.331\"]\n    end\n    subgraph Frames[\"Control frames — the baton\"]\n        NDPA[\"NDP Announcement<br/>9.3.1.19\"]\n        TRIG[\"Trigger + Ranging subvariants<br/>9.3.1.22 / 9.3.1.23\"]\n    end\n    subgraph Carriers[\"Carriers — negotiate then report\"]\n        FTM[\"FTM frame<br/>9.6.7.33\"]\n        LMR[\"LMR frame<br/>9.6.7.49\"]\n    end\n    Elements -->|carried in| Carriers\n    Frames -->|cue the sounding| Carriers\n    FTM -->|negotiated params| LMR\n    LMR -->|final timing result| Done([Distance])",
+      "zh": "graph TD\n    subgraph Elements[\"信息元素 — 合同\"]\n        RP[\"测距参数<br/>9.4.2.300\"]\n        SP[\"安全 HE-LTF 参数<br/>9.4.2.301\"]\n        FP[\"FTM 参数<br/>9.4.2.166\"]\n        PP[\"打孔图样<br/>9.4.2.331\"]\n    end\n    subgraph Frames[\"控制帧 — 指挥棒\"]\n        NDPA[\"NDP 通告帧<br/>9.3.1.19\"]\n        TRIG[\"触发帧 + 测距子变体<br/>9.3.1.22 / 9.3.1.23\"]\n    end\n    subgraph Carriers[\"载体 — 先协商再上报\"]\n        FTM[\"FTM 帧<br/>9.6.7.33\"]\n        LMR[\"LMR 帧<br/>9.6.7.49\"]\n    end\n    Elements -->|装入| Carriers\n    Frames -->|提示探测| Carriers\n    FTM -->|协商好的参数| LMR\n    LMR -->|最终定时结果| Done([距离])"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the two carrier frames that bracket the whole session. The FTM frame (9.6.7.33) is the negotiation vehicle: bk's Figure 9-1221 shows it carrying the Ranging Parameters, Secure HE-LTF Parameters, and now an optional Transmit Power Envelope as nested elements. After the NDP sounding signals fly, the Location Measurement Report — the LMR frame (9.6.7.49) — carries the answer: the TOD/TOA timestamps, error bounds, and (new in bk) an optional Puncture Pattern element so the report can describe the punctured 320 MHz channel it was measured on. Elements ride inside these two frames; the frames choose the moment; the LMR delivers the distance.",
+      "zh": "最后是夹住整个会话两端的两个载体帧。FTM 帧（9.6.7.33）是协商的载具：bk 的 Figure 9-1221 显示它把测距参数、安全 HE-LTF 参数，以及现在可选的发射功率包络（Transmit Power Envelope）作为嵌套元素一并携带。在 NDP 探测信号往返之后，定位测量报告——也就是 LMR 帧（Location Measurement Report，9.6.7.49）——承载答案：TOD/TOA 时间戳、误差界，以及（bk 新增的）一个可选的打孔图样元素，使报告能够描述其测量所基于的那条被打孔的 320 MHz 信道。信息元素乘坐在这两个帧之中；帧选择时机；LMR 最终交付距离。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Reading the Secure HE-LTF Parameters element field by field",
+        "zh": "逐字段读懂安全 HE-LTF 参数元素"
+      },
+      "en": "The Secure HE-LTF Parameters element (Figure 9-1051) is the anti-spoofing contract made concrete. After the standard Element ID (255) / Length / Element ID Extension (94) header, it carries a 6-octet Secure HE-LTF Counter that seeds the randomized LTF sequence for an I2R and R2I NDP pair; this Counter is meaningful in the IFTM and R2I LMR frames and reserved otherwise. A 2-octet Validation SAC is a nonzero value bound to that counter, used in the initial protected FTM frame and the R2I protected LMR frame to validate the sequence. A 2-octet Measurement SAC then ties the reported range to the exact sequence used: it must equal the SAC carried either in the Ranging NDP Announcement frame's AID-2043 STA Info field (non-TB exchange) or in the Secure Sounding Ranging Trigger frame's Trigger Dependent User Info (TB exchange). A 1-octet LTF Offset closes the element. This is why the element only makes sense as a pair with the control frames: the SAC the Trigger or NDP Announcement frame planted is the same SAC the LMR must echo back, proving the timing result came from an unspoofed sounding.",
+      "zh": "安全 HE-LTF 参数元素（Figure 9-1051）把防欺骗这份“合同”落到了实处。在标准的 Element ID（255）/ Length / Element ID Extension（94）头部之后，它携带一个 6 字节的 Secure HE-LTF Counter，用于为一对 I2R 与 R2I NDP 播种随机化的 LTF 序列；该 Counter 仅在 IFTM 帧和 R2I LMR 帧中有意义，其余情况保留。一个 2 字节的 Validation SAC 是与该计数器绑定的非零值，用于在初始受保护 FTM 帧和 R2I 受保护 LMR 帧中校验该序列。随后，一个 2 字节的 Measurement SAC 把上报的距离与实际使用的序列绑定起来：它必须等于以下两者之一所携带的 SAC——非 TB 交换中 Ranging NDP 通告帧里 AID 等于 2043 的 STA Info 字段，或 TB 交换中安全 Sounding 测距触发帧的 Trigger Dependent User Info。元素以一个 1 字节的 LTF Offset 收尾。这正是该元素必须与控制帧成对出现才有意义的原因：触发帧或 NDP 通告帧埋下的那个 SAC，正是 LMR 必须回送的那个 SAC，从而证明该定时结果来自一次未被欺骗的探测。",
+      "cite": {
+        "pdf_id": "80211bk-2025",
+        "pages": [
+          32,
+          33
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        21,
+        22
+      ],
+      "note": "9.3.1.19.4 Ranging NDP Announcement frame — R2I/I2R NSTS & Rep, LTF Offset, and the AID-2043 STA Info field carrying the 16-bit SAC"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        22,
+        23,
+        24
+      ],
+      "note": "9.3.1.22 Trigger frame & 9.3.1.22.14 Ranging Trigger variant; Table 9-56 lists the five Ranging Trigger subvariants"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "note": "9.3.1.23 subvariants — Poll, Sounding, Secure Sounding (carries SAC), Report, Passive Sounding"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        27
+      ],
+      "note": "9.4.2.1 General — Table 9-130 element IDs (Secure HE-LTF Parameters = 255 / ext 94); 9.4.2.166 FTM Parameters element field format"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        28
+      ],
+      "note": "9.4.2.239 Non-Inheritance element area — Extended RSN Capabilities bit 8 Secure HE-LTF Support; start of 9.4.2.300 Ranging Parameters field format"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        28,
+        29,
+        30,
+        31,
+        32
+      ],
+      "note": "9.4.2.300 Ranging Parameters element — Format And Bandwidth (incl. EHT 320), Max LTF Total, 320 MHz Ranging subelement"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        32,
+        33
+      ],
+      "note": "9.4.2.301 Secure HE-LTF Parameters element (Figure 9-1051) and 9.4.2.331 Puncture Pattern element (Figure 9-1074bma)"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        33,
+        34
+      ],
+      "note": "9.6.7.33 FTM frame Action field (Figure 9-1221) and 9.6.7.49 LMR frame Action field (Figure 9-1237) carrying Puncture Pattern"
+    }
+  ],
+  "covers": [
+    "80211bk-2025:9.3.1.19",
+    "80211bk-2025:9.3.1.22",
+    "80211bk-2025:9.3.1.23",
+    "80211bk-2025:9.4.2.1",
+    "80211bk-2025:9.4.2.166",
+    "80211bk-2025:9.4.2.239",
+    "80211bk-2025:9.4.2.300",
+    "80211bk-2025:9.4.2.301",
+    "80211bk-2025:9.4.2.331",
+    "80211bk-2025:9.6.7.33",
+    "80211bk-2025:9.6.7.49"
+  ],
+  "track": "ranging"
+}
