@@ -1,0 +1,112 @@
+{
+  "id": "80211core-21",
+  "title": {
+    "en": "Target Wake Time (TWT): scheduling when a station is allowed to be awake",
+    "zh": "目标唤醒时间(TWT)：调度站点何时允许醒来"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A radio that listens all the time burns power even when nothing is being sent to it. Classic Wi-Fi power saving handled this by letting a station doze and wake at beacons, but the timing was loose — everybody woke up around the same moments and then fought for the channel. Target Wake Time (TWT) replaces that with an appointment book: a station and the access point negotiate exact future windows, called TWT service periods (SPs), in which the station will be awake to exchange frames. Outside those windows the station can sleep with its radio off. Because each station is given different appointment times, they also stop colliding with one another.",
+      "zh": "一台一直在监听的无线电，即使没有数据发给它也在持续耗电。传统 Wi-Fi 省电机制让站点打盹、在信标处醒来，但时机很粗放——大家几乎在同一时刻醒来，然后争抢信道。目标唤醒时间（TWT）用一本“预约簿”取而代之：站点与接入点（AP）协商出未来精确的时间窗口，称为 TWT 服务周期（SP），站点将在这些窗口内醒来收发帧。窗口之外，站点可以关掉无线电睡觉。由于每个站点拿到的预约时间各不相同，它们彼此之间也不再发生碰撞。"
+    },
+    {
+      "type": "prose",
+      "en": "The deal is set up by a short exchange of TWT Setup frames carrying a TWT element. The station that asks is the TWT requesting STA; the one that schedules is the TWT responding STA (usually the AP). The requester signals how strongly it feels about its proposed parameters — Request TWT (you choose for me), Suggest TWT (I have a preference but I'm flexible), or Demand TWT (only these exact values). The responder answers with Accept TWT (agreement created), Alternate TWT or Dictate TWT (no agreement yet — here's a counter-offer), or Reject TWT (no). Once the requester sees Accept TWT, the agreement exists and it may doze until the next scheduled wake time. Up to 8 separate agreements can exist between any one pair of stations, each labelled by a 3-bit TWT Flow Identifier.",
+      "zh": "这笔“约定”由一段简短的 TWT Setup 帧交换建立，帧中携带 TWT 元素。发起请求的一方是 TWT 请求站（requesting STA）；负责排程的一方是 TWT 响应站（responding STA，通常是 AP）。请求方会表明它对所提参数的坚持程度——Request TWT（你替我决定）、Suggest TWT（我有偏好但可以让步）或 Demand TWT（只接受这些确切数值）。响应方则回以 Accept TWT（约定已建立）、Alternate TWT 或 Dictate TWT（尚未建立约定——这是反提案）或 Reject TWT（拒绝）。一旦请求方看到 Accept TWT，约定即告成立，它便可打盹，直到下一个排定的唤醒时刻。任意一对站点之间最多可同时存在 8 个独立约定，每个由 3 比特的 TWT Flow Identifier（流标识符）标记。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Requesting STA\n    participant AP as Responding STA (AP)\n    STA->>AP: TWT Setup (Suggest/Demand TWT, params)\n    AP-->>STA: TWT Setup (Accept TWT, Flow ID, Target Wake Time)\n    Note over STA,AP: agreement now exists\n    Note over STA: doze until next TWT\n    Note over STA: wake at TWT SP start\n    STA->>AP: frames during the SP\n    AP-->>STA: frames + Next TWT info\n    Note over STA: doze again until next TWT",
+      "zh": "sequenceDiagram\n    participant STA as 请求站\n    participant AP as 响应站 (AP)\n    STA->>AP: TWT Setup (Suggest/Demand TWT, 参数)\n    AP-->>STA: TWT Setup (Accept TWT, 流ID, 目标唤醒时间)\n    Note over STA,AP: 约定建立\n    Note over STA: 打盹直到下一个 TWT\n    Note over STA: 在 TWT SP 起点醒来\n    STA->>AP: 在 SP 内收发帧\n    AP-->>STA: 帧 + 下一个 TWT 信息\n    Note over STA: 再次打盹直到下一个 TWT"
+    },
+    {
+      "type": "prose",
+      "en": "There are two flavours of how the next wake time is decided. With explicit TWT, the responder hands the requester the time of the next SP during the current SP — it travels in a Next TWT Info field inside an acknowledgment frame (a TACK, STACK or BAT frame). The schedule can be periodic or irregular, and the station never has to guess. With implicit TWT, no next time is sent each round; instead the agreement carries a fixed TWT Wake Interval, and the station computes the next SP itself by adding that interval to the current SP start. Implicit is leaner on signalling for a steady cadence; explicit is more flexible when the schedule needs to move around.",
+      "zh": "“下一个唤醒时间”如何确定有两种风格。显式 TWT（explicit TWT）中，响应方在当前 SP 内就把下一个 SP 的时刻交给请求方——它放在某个确认帧（TACK、STACK 或 BAT 帧）里的 Next TWT Info 字段中传递。这个排程可以是周期性的，也可以是不规则的，站点无需自行猜测。隐式 TWT（implicit TWT）中，每轮不再单独下发下一个时刻；约定本身携带一个固定的 TWT Wake Interval（唤醒间隔），站点通过把该间隔加到当前 SP 起点上，自行算出下一个 SP。隐式方式在稳定节奏下信令更省；显式方式在排程需要灵活变动时更胜一筹。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "TWT is also a contention tool, not just a battery tool. Because the responder hands different stations different appointment times, it spreads traffic out across the timeline. A station can even ask to receive frames only after it polls (announced TWT) or to be served as soon as its window opens (unannounced TWT) — a knob that trades a little latency for even deeper sleep.",
+      "zh": "TWT 不只是省电工具，也是治理信道争用的工具。由于响应方给不同站点分配了不同的预约时刻，它把流量沿时间轴铺开。站点甚至可以要求只在自己轮询之后才接收帧（announced TWT，告知式），或在窗口一打开就被服务（unannounced TWT，非告知式）——这是一个用少许时延换取更深睡眠的旋钮。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 440 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><line x1='20' y1='110' x2='420' y2='110'/><polygon points='420,110 410,105 410,115' fill='currentColor' stroke='none'/><text x='20' y='135' stroke='none' fill='currentColor' font-size='12'>time</text><rect x='60' y='60' width='50' height='50'/><rect x='230' y='60' width='50' height='50'/><text x='62' y='52' stroke='none' fill='currentColor' font-size='11'>awake (SP)</text><text x='232' y='52' stroke='none' fill='currentColor' font-size='11'>awake (SP)</text><text x='130' y='95' stroke='none' fill='currentColor' font-size='11'>doze (radio off)</text><line x1='85' y1='25' x2='255' y2='25' stroke-dasharray='4 3'/><text x='120' y='18' stroke='none' fill='currentColor' font-size='11'>TWT Wake Interval</text><line x1='85' y1='20' x2='85' y2='30'/><line x1='255' y1='20' x2='255' y2='30'/></svg>",
+      "caption": {
+        "en": "A station is awake only during periodic TWT service periods; the gap between successive SP starts is the TWT Wake Interval.",
+        "zh": "站点仅在周期性的 TWT 服务周期内醒来；相邻 SP 起点之间的间隔即 TWT Wake Interval（唤醒间隔）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "A few extra mechanisms round out the picture. TWT grouping lets an AP put several S1G stations onto one shared schedule and signal their wake times compactly via a group assignment, so it doesn't have to compute each one separately. NDP paging layers an ultra-cheap presence signal on top of TWT: instead of waking to a full beacon, a station wakes briefly and a tiny NDP Paging frame tells it whether there is buffered data worth staying awake for. A TWT Sleep state lets the responder itself doze outside the SPs. And when either side is done, TWT teardown — a single TWT Teardown frame naming the Flow Identifier — deletes the agreement on both stations at once.",
+      "zh": "还有几个附加机制让整幅图景更完整。TWT 分组（grouping）允许 AP 把若干 S1G 站点放进一个共享排程，并通过一次性的“组分配”紧凑地下发它们的唤醒时刻，从而不必逐个计算。NDP 寻呼（NDP paging）在 TWT 之上叠加了一个极廉价的“在场”信号：站点不必为接收完整信标而醒来，只需短暂醒来，由一个极小的 NDP Paging 帧告诉它是否有值得继续保持清醒的缓存数据。TWT 睡眠状态（Sleep state）则允许响应方自己在 SP 之外打盹。当任一方结束时，TWT 拆除（teardown）——一个写明 Flow Identifier 的 TWT Teardown 帧——会同时在两端删除该约定。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Where the next wake time actually comes from, and the acknowledgment frames that carry it",
+        "zh": "下一个唤醒时刻究竟从何而来，以及承载它的确认帧"
+      },
+      "en": "Clause 10.46.2 defines the TWT acknowledgment procedure: a TWT responding STA must answer a NORMAL_RESPONSE frame with a STACK frame (non-A-MPDU, non-S-MPDU), a TACK frame (S-MPDU), or a BAT frame (A-MPDU) — frames chosen so a single response provides both the acknowledgment and the next-TWT information. Under explicit TWT (10.46.3), each next SP start is delivered in the Next TWT Info/Suspend Duration field; a requesting STA awake for an explicit SP shall not doze until it has received a nonzero Next TWT field and either stayed awake for the Nominal Minimum TWT Wake Duration or seen an EOSP equal to 1. Under implicit TWT (10.46.4), the next SP start is simply the current SP start plus the TWT Wake Interval (computed per 9.4.2.198 from its mantissa and exponent), unless a Next TWT in a received frame overrides it. The responder seeds both flavours by putting the initial Target Wake Time in the Accept-TWT TWT element, with the Implicit bit distinguishing the two.",
+      "zh": "10.46.2 节定义了 TWT 确认流程：TWT 响应站对一个 NORMAL_RESPONSE 帧必须以 STACK 帧（非 A-MPDU、非 S-MPDU）、TACK 帧（S-MPDU）或 BAT 帧（A-MPDU）作答——这样选择是为了让单个响应同时提供确认与“下一个 TWT”的信息。在显式 TWT（10.46.3）下，每个下一个 SP 起点都通过 Next TWT Info/Suspend Duration 字段下发；为某显式 SP 而清醒的请求站，在收到一个非零的 Next TWT 字段、且或者已保持清醒达 Nominal Minimum TWT Wake Duration、或者已看到 EOSP 等于 1 之前，不得进入打盹。在隐式 TWT（10.46.4）下，下一个 SP 起点就是当前 SP 起点加上 TWT Wake Interval（按 9.4.2.198 由其尾数与指数算出），除非收到帧中的 Next TWT 将其覆盖。响应方通过把初始 Target Wake Time 放入 Accept-TWT 的 TWT 元素中为两种风格“播种”，并以 Implicit 比特区分二者。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2359,
+          2360,
+          2361,
+          2362
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.46.1",
+    "80211-2024:10.46.2",
+    "80211-2024:10.46.3",
+    "80211-2024:10.46.4",
+    "80211-2024:10.46.5",
+    "80211-2024:10.46.6",
+    "80211-2024:10.46.7",
+    "80211-2024:10.46.8"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2354,
+        2355,
+        2356,
+        2357,
+        2358,
+        2359
+      ],
+      "note": "10.46.1 TWT overview — requesting/responding STA roles; TWT Setup command interpretation (Request/Suggest/Demand vs Accept/Alternate/Dictate/Reject); 8 agreements per pair via 3-bit Flow Identifier; announced vs unannounced"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2359,
+        2360,
+        2361,
+        2362
+      ],
+      "note": "10.46.2 acknowledgment (STACK/TACK/BAT), 10.46.3 explicit TWT (Next TWT Info), 10.46.4 implicit TWT (TWT Wake Interval), 10.46.5 TWT grouping"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2362,
+        2363,
+        2364
+      ],
+      "note": "10.46.6 NDP paging setup; 10.46.7 TWT Sleep setup (Responder PM Mode); 10.46.8 TWT teardown"
+    }
+  ],
+  "track": "80211core"
+}

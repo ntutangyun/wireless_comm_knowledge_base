@@ -1,0 +1,138 @@
+{
+  "id": "80211core-23",
+  "title": {
+    "en": "DMG/PCP channel access: dynamic allocation, truncation, extension, and multi-NAV",
+    "zh": "DMG/PCP 信道接入：动态分配、截断、扩展与多重 NAV"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In the 60 GHz DMG world (the millimetre-wave band that gives Wi-Fi its directional, beamformed links), time is not a free-for-all. The AP — here called a PCP, a PBSS control point — carves each beacon interval into named access periods, and a station may only talk during periods it is invited to. Think of the beacon interval as a daily schedule posted on the wall: some hours are for announcements, some are open contention, and some are reserved one-on-one slots. This lesson is about how those reserved slots can flex in real time.",
+      "zh": "在 60 GHz 的 DMG（毫米波）世界里——正是这个频段赋予了 Wi-Fi 定向、波束成形的链路——时间不是随便抢的。这里的 AP 被称为 PCP（PBSS 控制点），它把每个信标间隔切分成若干有名字的“接入期”，站点只能在被邀请的接入期里讲话。可以把信标间隔想象成贴在墙上的一张日程表：有些时段用于发布通告，有些是开放竞争，还有些是预留的一对一时隙。本课讲的就是：这些预留时隙如何能够实时地伸缩。"
+    },
+    {
+      "type": "prose",
+      "en": "A beacon interval splits into two halves. The BHI (beacon header interval) holds the BTI (beacon transmission), the optional A-BFT (beamforming training), and the optional ATI — a tightly choreographed request/response window where the PCP polls stations and they answer one SIFS later. After the BHI comes the DTI (data transfer interval), which is filled with two kinds of periods in any order: CBAPs (contention-based, EDCA-style competition) and SPs (service periods — a slot owned by one source/destination pair). The schedule is broadcast in the Extended Schedule element.",
+      "zh": "一个信标间隔分成两半。BHI（信标头间隔）包含 BTI（信标发送期）、可选的 A-BFT（波束成形训练期）和可选的 ATI——一个被严格编排的“请求/响应”窗口：PCP 轮询各站点，站点在一个 SIFS 之后作答。BHI 之后是 DTI（数据传输间隔），里面按任意顺序排布两类接入期：CBAP（基于竞争、类似 EDCA 的争用）和 SP（服务期——归属于某一对“源/目的”站点的时隙）。整张日程通过扩展调度元素（Extended Schedule element）广播出去。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 640 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='8' y='16' font-size='12' stroke='none' fill='currentColor'>Beacon Interval</text><line x1='8' y1='118' x2='632' y2='118'/><rect x='8' y='40' width='70' height='40'/><text x='14' y='64' font-size='11' stroke='none' fill='currentColor'>BTI</text><rect x='78' y='40' width='70' height='40'/><text x='86' y='64' font-size='11' stroke='none' fill='currentColor'>A-BFT</text><rect x='148' y='40' width='70' height='40'/><text x='168' y='64' font-size='11' stroke='none' fill='currentColor'>ATI</text><text x='60' y='100' font-size='11' stroke='none' fill='currentColor'>BHI</text><rect x='218' y='40' width='100' height='40'/><text x='240' y='64' font-size='11' stroke='none' fill='currentColor'>CBAP 1</text><rect x='318' y='40' width='90' height='40'/><text x='342' y='64' font-size='11' stroke='none' fill='currentColor'>SP 1</text><rect x='408' y='40' width='90' height='40'/><text x='432' y='64' font-size='11' stroke='none' fill='currentColor'>SP 2</text><rect x='498' y='40' width='126' height='40'/><text x='528' y='64' font-size='11' stroke='none' fill='currentColor'>CBAP 2</text><text x='400' y='100' font-size='11' stroke='none' fill='currentColor'>DTI</text></svg>",
+      "caption": {
+        "en": "One beacon interval: a BHI (BTI + A-BFT + ATI) followed by a DTI of CBAPs and SPs in any combination.",
+        "zh": "一个信标间隔：BHI（BTI + A-BFT + ATI）之后是由 CBAP 与 SP 按任意组合构成的 DTI。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now the interesting part: SPs are not frozen. Four runtime mechanisms let directional links bargain over the medium. (1) Dynamic allocation — the PCP runs an optional Polling Period (PP), sending Poll frames; stations answer with SPR frames stating how much time they want; then in the Grant Period (GP) the PCP hands out a service period with Grant frames. A dynamically allocated SP lives only within this beacon interval. (2) Dynamic truncation — a source STA done early sends a CF-End to give the medium back; the PCP can re-grant the reclaimed time, or the STA can broadcast a Grant to open it as a CBAP. (3) Dynamic extension — a STA running short on time sends an SPR asking for more; the PCP can borrow it from a following broadcast-AID SP. (4) Multi-NAV — because links are directional, a STA may need to track several pairwise reservations at once.",
+      "zh": "现在到了有意思的部分：SP 并非一成不变。有四种运行时机制，让定向链路对介质“讨价还价”。（1）动态分配——PCP 运行一个可选的轮询期（PP），发送 Poll 帧；站点用 SPR 帧作答，说明自己想要多少时间；随后在授权期（GP）里，PCP 用 Grant 帧分配一个服务期。这样动态分配出的 SP 只在本信标间隔内有效。（2）动态截断——提前完工的源站点发送一个 CF-End 帧把介质交还；PCP 可以把收回的时间重新授出，或者站点自己广播一个 Grant 帧把它开放为 CBAP。（3）动态扩展——时间快不够用的站点发送 SPR 帧请求更多时间；PCP 可以从紧随其后、源/目的都为广播 AID 的 SP 中“借”给它。（4）多重 NAV——因为链路是定向的，一个站点可能需要同时跟踪多个成对的预约。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant PCP as AP / PCP\n    participant S as Source STA\n    participant D as Destination STA\n    Note over PCP,D: Polling Period (PP)\n    PCP->>S: Poll\n    S->>PCP: SPR (I want N us)\n    Note over PCP,D: Grant Period (GP)\n    PCP->>S: Grant (SP allocated)\n    PCP->>D: Grant (SP allocated)\n    Note over S,D: data transfer in the SP\n    S->>D: data ... done early\n    S->>PCP: CF-End (truncate, give time back)\n    Note over PCP: re-grant reclaimed time",
+      "zh": "sequenceDiagram\n    participant PCP as AP / PCP\n    participant S as 源站点\n    participant D as 目的站点\n    Note over PCP,D: 轮询期 (PP)\n    PCP->>S: Poll\n    S->>PCP: SPR (我要 N us)\n    Note over PCP,D: 授权期 (GP)\n    PCP->>S: Grant (分配 SP)\n    PCP->>D: Grant (分配 SP)\n    Note over S,D: 在 SP 内传输数据\n    S->>D: 数据 …… 提前完工\n    S->>PCP: CF-End (截断, 交还时间)\n    Note over PCP: 重新授出收回的时间"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why does DMG need multiple NAVs when legacy Wi-Fi gets by with one? In a directional 60 GHz BSS a station can overhear reservations from several different transmitter/receiver pairs depending on where its antenna is pointed. A single NAV would let the loudest reservation mask the others. Instead, each NAV is keyed by a pair of MAC addresses (NAVSRC, NAVDST), so the STA tracks each pairwise medium reservation independently.",
+      "zh": "为什么 DMG 需要多个 NAV，而传统 Wi-Fi 一个就够？在定向的 60 GHz BSS 中，站点会因天线指向不同，听到来自多个“发送方/接收方”配对的预约。若只有单个 NAV，最“响亮”的那条预约就会把其他的全都盖住。因此每个 NAV 都以一对 MAC 地址（NAVSRC、NAVDST）作为键，站点便能各自独立地跟踪每一条成对的介质预约。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact Grant/SPR/CF-End rules and the multi-NAV update algorithm",
+        "zh": "Grant/SPR/CF-End 的精确规则与多重 NAV 更新算法"
+      },
+      "en": "Dynamic allocation (10.38.7): a STA advertises participation via the PP Available field in the STA Availability element; only broadcast-AID truncatable SPs (or broadcast-destination CBAP TXOPs) host a PP/GP. In the PP the PCP sends Poll frames whose Response Offset times each station's SPR so the answers arrive back-to-back; in the GP the Dynamic Allocation Info in every Grant of one GP must be identical — the PCP creates only one allocation per GP. Truncation (10.38.8): only the source STA may truncate (or the destination if it gets no expected start-of-SP frame); it sends a CF-End to the PCP to return time, then a CF-End to the peer to release the SP and reset third-party NAVs whose RA/TA match. Extension (10.38.9): a non-AP STA sends an SPR with Allocation Duration = extra time wanted; the PCP grants only if the following SP has broadcast AID as both source and destination and is long enough, replying with a Grant carrying a nonzero Allocation Duration (zero declines). Multi-NAV (10.38.10): a STA keeps at least aMinNAVTimersNumber NAVs, each identified by (NAVSRC, NAVDST) plus NAV_RTSCANCELABLE / NAV_DTSCANCELABLE. The NAV_TIMER_UPDATE pseudocode keys the incoming frame's RA/TA (or DMG DTS NAV-DA/NAV-SA, or just RA for an Ack) against stored pairs, reuses a matching or empty timer, and only raises the duration — a DMG DTS update is optional (UPDATE_OPTIONAL) and sets NAV_DTSCANCELABLE.",
+      "zh": "动态分配（10.38.7）：站点通过 STA Availability 元素中的 PP Available 字段表明参与意愿；只有源/目的均为广播 AID 的可截断 SP（或目的为广播的 CBAP TXOP）才承载 PP/GP。在 PP 中，PCP 发送的 Poll 帧用其 Response Offset 把各站点的 SPR 错开，使应答首尾相接地返回；在 GP 中，同一个 GP 内每个 Grant 帧里的 Dynamic Allocation Info 必须完全相同——即 PCP 每个 GP 只能创建一个分配。截断（10.38.8）：只有源站点可以截断（若在 SP 起始未收到预期帧，目的站点也可），它先向 PCP 发送 CF-End 交还时间，再向对端发送 CF-End 释放该 SP，并复位 RA/TA 相匹配的第三方 NAV。扩展（10.38.9）：非 AP 站点发送一个 Allocation Duration 等于所需额外时间的 SPR；只有当紧随其后的 SP 源/目的都是广播 AID 且足够长时，PCP 才会批准，并回以一个 Allocation Duration 非零的 Grant（为零则表示拒绝）。多重 NAV（10.38.10）：站点至少维护 aMinNAVTimersNumber 个 NAV，每个以 (NAVSRC, NAVDST) 加上 NAV_RTSCANCELABLE / NAV_DTSCANCELABLE 标识。NAV_TIMER_UPDATE 伪代码把收到帧的 RA/TA（或 DMG DTS 的 NAV-DA/NAV-SA，或 Ack 仅取 RA）与已存的地址对匹配，复用匹配或空闲的定时器，且只增大时长——DMG DTS 的更新是可选的（UPDATE_OPTIONAL），并会置位 NAV_DTSCANCELABLE。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2175,
+          2176,
+          2179,
+          2181,
+          2182,
+          2183
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.38.2",
+    "80211-2024:10.38.3",
+    "80211-2024:10.38.4",
+    "80211-2024:10.38.5",
+    "80211-2024:10.38.7",
+    "80211-2024:10.38.8",
+    "80211-2024:10.38.9",
+    "80211-2024:10.38.10"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2152,
+        2153
+      ],
+      "note": "10.38.2 Access periods within a beacon interval — BHI (BTI/A-BFT/ATI) + DTI (CBAPs/SPs)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2154,
+        2155
+      ],
+      "note": "10.38.3 ATI transmission rules — PCP-initiated request/response, SIFS response timing"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2156
+      ],
+      "note": "10.38.4 DTI transmission rules; 10.38.5 CBAP transmission rules — when a STA may initiate"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2175,
+        2176,
+        2177,
+        2178
+      ],
+      "note": "10.38.7 Dynamic allocation of service period — Polling Period and Grant Period"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2179,
+        2180
+      ],
+      "note": "10.38.8 Dynamic truncation of service period — CF-End to return/release time"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2181,
+        2182
+      ],
+      "note": "10.38.9 Dynamic extension of service period — SPR request, Grant with Allocation Duration"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2182,
+        2183,
+        2184,
+        2185,
+        2186
+      ],
+      "note": "10.38.10 Updating multiple NAVs — (NAVSRC, NAVDST) keyed timers, NAV_TIMER_UPDATE"
+    }
+  ],
+  "track": "80211core"
+}

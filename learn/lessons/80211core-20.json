@@ -1,0 +1,103 @@
+{
+  "id": "80211core-20",
+  "title": {
+    "en": "Operating across regulatory domains: operating classes, power envelopes, coverage classes",
+    "zh": "跨监管域运行：运行类别、功率包络与覆盖类别"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A Wi-Fi radio is a single piece of silicon, but the rules it must obey change the moment you cross a border. The channels you may use, how wide they may be, how much power you may radiate, and even how the air-interface timing is tuned all differ between, say, the United States, Europe, Japan, and China. The same chip therefore cannot just power on and transmit — it has to first learn which regulatory domain it is sitting in and then reconfigure itself to stay legal. Clause 10.22 of 802.11 is the MAC procedure that makes a device a good citizen wherever it roams.",
+      "zh": "一颗 Wi-Fi 芯片就是一块硅片，但只要你跨过一道国界，它必须遵守的规则就立刻变了。可用的信道、信道能有多宽、能辐射多大功率，乃至空口时序如何调校，在美国、欧洲、日本、中国之间都各不相同。因此，同一块芯片不能一上电就发射——它必须先弄清自己身处哪个监管域，再据此重新配置自身以保持合法。802.11 的 10.22 节正是这样一套 MAC 流程：让设备无论漫游到哪里都做一个守规矩的“好公民”。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "This mechanism only gives the device the information to identify its domain and behave correctly. It does NOT replace the legal duty to obtain type approval, certification, or equipment authorization in each country — the standard says so explicitly. The radio learns the rules; the manufacturer still has to be licensed to play.",
+      "zh": "这套机制只是为设备提供识别监管域、并据此正确行事所需的信息。它并不能替代在各国取得型号核准、认证或设备授权的法律义务——标准对此有明确声明。无线电学会了规则，厂商仍然必须先取得“入场资格”。"
+    },
+    {
+      "type": "prose",
+      "en": "So what does a station actually do upon entering a new domain? If it has multi-domain capability switched on and has lost its old network, it must keep quiet and use passive scanning first — listening only, never transmitting, which is always legal. It listens for Beacons (or DMG Beacon / Announce frames), because those carry the country code, the maximum allowable transmit power, and the channels permitted in this domain. Once it has heard enough to meet the local transmit requirements, it may finally send a Probe Request to pull any remaining regulatory detail from a Probe Response — and only then does it configure its PHY and begin normal operation.",
+      "zh": "那么，站点进入一个新监管域时究竟会做什么？如果它开启了多域能力、又丢失了原有网络，它必须先保持安静、采用被动扫描——只听不发，这在任何地方都是合法的。它会侦听 Beacon 帧（或 DMG Beacon／Announce 帧），因为这些帧携带了国家代码、最大允许发射功率以及本域允许使用的信道。一旦听到的信息足以满足本地发射要求，它才可以发出 Probe Request，从 Probe Response 中获取剩余的监管细节——直到此时，它才配置自己的 PHY 并开始正常工作。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[Enter new regulatory domain] --> B[Lost ESS connectivity?]\n    B -->|yes| C[Passive scan only - listen, do not transmit]\n    C --> D[Hear Beacon / DMG Beacon / Announce]\n    D --> E[Learn country code, max TX power, allowed channels]\n    E --> F{Enough to meet local TX rules?}\n    F -->|no| C\n    F -->|yes| G[Send Probe Request -> Probe Response]\n    G --> H[Configure PHY for this domain]\n    H --> I[Begin normal operation - legal & correctly timed]",
+      "zh": "flowchart TD\n    A[进入新监管域] --> B[已失去 ESS 连接?]\n    B -->|是| C[仅被动扫描 - 只听不发]\n    C --> D[听到 Beacon / DMG Beacon / Announce]\n    D --> E[获知国家代码、最大发射功率、允许信道]\n    E --> F{信息是否足以满足本地发射规则?}\n    F -->|否| C\n    F -->|是| G[发送 Probe Request -> Probe Response]\n    G --> H[为本域配置 PHY]\n    H --> I[开始正常工作 - 合法且时序正确]"
+    },
+    {
+      "type": "prose",
+      "en": "The country code alone is too coarse to drive a radio. The real encoding is the operating class: a single number that bundles together a legal channel set, a channel spacing (bandwidth), a starting frequency, and a set of behavior limits — all the things that vary by jurisdiction, packed into one identifier. Extended-spectrum-management-capable stations (VHT, HE, or anything advertising the capability) exchange these via the Country element and the Supported Operating Classes element. When talking to a peer that understands global operating classes, both sides use the global values, so two devices configured for different countries can still agree on exactly which channel/bandwidth combination is legal where they are.",
+      "zh": "仅凭国家代码来驱动无线电太过笼统。真正的编码方式是“运行类别（operating class）”：用一个数字把一组合法信道、一种信道间隔（带宽）、一个起始频率以及一组行为限制捆绑在一起——所有随辖区而异的要素，被压缩进一个标识符里。具备扩展频谱管理能力的站点（VHT、HE，或任何声明了该能力的站点）通过 Country 元素和 Supported Operating Classes 元素来交换这些信息。当与理解全局运行类别的对端通信时，双方都使用全局取值，于是两台为不同国家配置的设备，仍能就当地究竟哪种“信道／带宽”组合合法达成一致。"
+    },
+    {
+      "type": "prose",
+      "en": "Knowing the channel is not the same as knowing how loud you may be on it. That is the job of the Transmit Power Envelope element. Outside the 6 GHz band it carries a single local maximum EIRP. In the 6 GHz band it is far richer: it expresses an EIRP power spectral density that the station maps onto each 20 MHz subchannel of the BSS bandwidth, so a 160 MHz link can be capped differently across its eight 20 MHz pieces. A station orders multiple envelopes by interpretation type, ignores any category it cannot interpret for the current country, and — if it sees an unknown interpretation value — stops processing that and all later envelopes. The result is a per-subchannel power cap that precisely tracks local rules.",
+      "zh": "知道信道，并不等于知道在这条信道上你能“喊”多大声。这正是 Transmit Power Envelope（发射功率包络）元素的职责。在 6 GHz 频段之外，它携带单一的本地最大 EIRP。而在 6 GHz 频段，它丰富得多：它表达一个 EIRP 功率谱密度，站点将其映射到 BSS 带宽内的每一个 20 MHz 子信道上，于是一条 160 MHz 链路在它的八个 20 MHz 片段上可以被分别限幅。站点会按解释类型对多个包络排序，忽略当前国家无法解释的任何类别，并且——一旦遇到无法识别的解释值——就停止处理该包络及其后所有包络。最终得到的是一份逐子信道的功率上限，精确贴合本地法规。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why per-subchannel power? Regulators sometimes share spectrum with incumbents (radar, satellite, fixed links) that sit in only part of a wide channel. A per-20 MHz EIRP-PSD cap lets a 6 GHz AP stay quiet exactly where it must, while using full power on the rest of its bandwidth — far more efficient than throttling the whole channel.",
+      "zh": "为什么要做逐子信道功率控制？监管机构有时会让频谱与既有用户（雷达、卫星、固定链路）共享，而这些既有用户只占用宽信道的一部分。逐 20 MHz 的 EIRP-PSD 上限，能让 6 GHz 的 AP 恰好在必须安静的地方收敛功率，同时在带宽的其余部分仍以满功率工作——这比把整条信道都降功率高效得多。"
+    },
+    {
+      "type": "prose",
+      "en": "The last piece is timing. Radio waves travel at about 300 m per microsecond, so over a long-distance link the round-trip propagation delay becomes a real fraction of a slot — a 450 m BSS means ~900 m round trip, roughly 3 µs. If aSlotTime and the ACK timeout were left at their short-range defaults, a distant station's reply would arrive too late and the link would break. The Coverage Class field in the Country element solves this: it advertises a value of aAirPropagationTime, and every station that supports coverage classes uses it to stretch aSlotTime and related MAC timings so the link stays fair and reliable across the larger diameter — while short-range BSSs (coverage giving aAirPropagationTime = 0) keep full compatibility with existing gear.",
+      "zh": "最后一块拼图是时序。无线电波每微秒约传播 300 米，因此在长距离链路上，往返传播时延会占到一个时隙中相当可观的比例——450 米的 BSS 意味着约 900 米往返，大约 3 µs。如果 aSlotTime 和 ACK 超时仍停留在短距离的默认值，远端站点的回复就会姗姗来迟，链路随之中断。Country 元素中的 Coverage Class（覆盖类别）字段解决了这一点：它通告一个 aAirPropagationTime 取值，所有支持覆盖类别的站点据此把 aSlotTime 及相关 MAC 时序拉长，使链路在更大的覆盖直径上依然公平、可靠——而短距离 BSS（其覆盖类别给出 aAirPropagationTime = 0）则与现有设备保持完全兼容。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact entry procedure, operating-class gating, envelope ordering, and the coverage-class timing rule",
+        "zh": "精确的入域流程、运行类别的触发条件、包络排序与覆盖类别的时序规则"
+      },
+      "en": "Clause 10.22 hangs everything on the dot11MultiDomainCapabilityActivated and dot11OperatingClassesRequired attributes. 10.22.2: a multi-domain STA that has lost ESS connectivity passively scans to find at least one valid channel before transmitting, learns country code / max TX power / channels from Beacon, DMG Beacon, or Announce frames, then sends a Probe Request only if that information was not already received. 10.22.3: only a VHT STA, an HE STA, or a STA with dot11ExtendedSpectrumManagementImplemented = true is extended-spectrum-management-capable; when talking to a peer that supports global operating classes, all elements conveying operating classes use global values; when dot11OperatingClassesRequired is true the STA advertises current operating-class info in the Country and Supported Operating Classes elements (with narrow VHT/HE omission exceptions). 10.22.4: outside 6 GHz the STA reads a single EIRP local max; inside 6 GHz it derives local and regulatory-client maxima from Transmit Power Envelope element(s); multiple envelopes are ordered by increasing Maximum Transmit Power Interpretation, an unknown interpretation halts processing of that and later envelopes, and an EIRP-PSD envelope (interpretation 1 or 3) with count N for a 20/40/80/160 MHz BSS yields M = 1/2/4/8 per-20 MHz PSD values. 10.22.5: aSlotTime and other MAC timings derive from aAirPropagationTime; the Coverage Class field of the Country element indicates aAirPropagationTime (Table 9-133), and an associated/dependent/IBSS/MBSS STA uses the corresponding MAC timings when the relevant PHY clause says aSlotTime depends on it; aAirPropagationTime is 0 µs when dot11OperatingClassesRequired is false or no Coverage Class field has been received.",
+      "zh": "10.22 节的一切都挂在 dot11MultiDomainCapabilityActivated 与 dot11OperatingClassesRequired 这两个属性上。10.22.2：丢失 ESS 连接的多域 STA 在发射前先被动扫描，找到至少一条有效信道，从 Beacon、DMG Beacon 或 Announce 帧中获知国家代码／最大发射功率／信道，然后仅在尚未获得这些信息时才发送 Probe Request。10.22.3：只有 VHT STA、HE STA，或 dot11ExtendedSpectrumManagementImplemented = true 的 STA 才具备扩展频谱管理能力；与支持全局运行类别的对端通信时，所有承载运行类别的元素都使用全局取值；当 dot11OperatingClassesRequired 为真时，STA 在 Country 和 Supported Operating Classes 元素中通告当前运行类别信息（并有针对 VHT／HE 的少量省略例外）。10.22.4：在 6 GHz 之外，STA 读取单一的 EIRP 本地最大值；在 6 GHz 内，它从 Transmit Power Envelope 元素中推导本地与监管客户端最大值；多个包络按 Maximum Transmit Power Interpretation 递增排序，遇到无法识别的解释值即停止处理该包络及其后包络，而解释值为 1 或 3（EIRP-PSD）、计数为 N 的包络在 20/40/80/160 MHz BSS 下分别给出 M = 1/2/4/8 个逐 20 MHz 的 PSD 值。10.22.5：aSlotTime 及其他 MAC 时序源自 aAirPropagationTime；Country 元素的 Coverage Class 字段指示 aAirPropagationTime（见表 9-133），当相关 PHY 子句声明 aSlotTime 依赖于它时，已关联／从属／IBSS／MBSS 的 STA 采用对应的 MAC 时序；当 dot11OperatingClassesRequired 为假、或未收到含 Coverage Class 字段的 Country 元素时，aAirPropagationTime 为 0 µs。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1994,
+          1995,
+          1996,
+          1997
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.22.1",
+    "80211-2024:10.22.2",
+    "80211-2024:10.22.3",
+    "80211-2024:10.22.4",
+    "80211-2024:10.22.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1994
+      ],
+      "note": "10.22.1 General — framework for cross-domain operation; dot11MultiDomainCapabilityActivated; does not replace type approval/certification"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1995
+      ],
+      "note": "10.22.2 entering a domain (passive scan, learn from Beacon/DMG Beacon/Announce, Probe Request); 10.22.3 operating classes (capability gating, global classes, Country & Supported Operating Classes elements)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1996,
+        1997
+      ],
+      "note": "10.22.4 Transmit Power Envelope (EIRP local max; 6 GHz EIRP-PSD per-20 MHz; ordering & ignore rules); 10.22.5 coverage classes (aAirPropagationTime, Coverage Class field, aSlotTime stretching)"
+    }
+  ],
+  "track": "80211core"
+}

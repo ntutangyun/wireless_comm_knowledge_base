@@ -1,0 +1,115 @@
+{
+  "id": "80211core-24",
+  "title": {
+    "en": "Relay and clustering: extending reach in DMG, S1G, and dense-AP deployments",
+    "zh": "中继与成簇：在 DMG、S1G 与密集 AP 部署中扩展覆盖"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Two things break the simple picture of one station talking straight to one access point. First, the direct link can be too weak — a 60 GHz (DMG) beam gets blocked by a body, or a sub-1 GHz (S1G) sensor sits too far away. Second, in a crowded deployment too many access points share the air and step on each other. The MAC answers the first problem with relay procedures (route the traffic through a helper) and the second with clustering (independent APs agree on a timing schedule so they don't collide). This lesson is the topology-extension layer of clause 10.",
+      "zh": "两件事会打破“一个站点直接与一个接入点通信”的简单图景。其一，直连链路可能太弱——60 GHz（DMG）的波束被人体挡住，或者亚 1 GHz（S1G）的传感器距离太远。其二，在密集部署中，过多的接入点共享同一片空口、彼此干扰。MAC 层用中继（relay）流程回应第一个问题：把流量经由一个“帮手”转发；用成簇（clustering）流程回应第二个问题：让相互独立的 AP 就时间调度达成一致，从而互不冲突。本课讲的就是 clause 10 中的“拓扑扩展层”。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with DMG relay at 60 GHz, where a single obstacle can kill a link instantly. Three roles cooperate: a source REDS (the talker), a destination REDS (the listener), and an RDS — the relay device between them. After they negotiate a relay link, they can run in one of two modes. Link switching: while the direct link is good, traffic flows directly; the moment it is disrupted, the source redirects frames through the RDS, which forwards them on — and may switch back when the direct link recovers. Link cooperation: the RDS is not a backup but an active partner — it repeats the source's frame in parallel, so the destination hears two copies and combines them for a stronger signal.",
+      "zh": "先看 60 GHz 的 DMG 中继——在这里，一个障碍物就能瞬间掐断链路。三个角色协同工作：源 REDS（发话方）、目的 REDS（收听方），以及两者之间的 RDS（中继设备）。在它们协商出一条中继链路后，可以运行在两种模式之一。链路切换（link switching）：直连链路良好时，流量直接传输；一旦直连被打断，源端立刻把帧改道经 RDS 转发——并可在直连恢复后切回。链路协作（link cooperation）：此时 RDS 不是备份，而是积极的伙伴——它并行地重复源端的帧，于是目的端会收到两份副本并加以合并，得到更强的信号。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Switching vs cooperation is the key contrast. Switching is about availability — keep the link alive when the direct path fails. Cooperation is about quality — improve the received signal even when the direct path works, by having the relay transmit simultaneously. The negotiated Cooperation-Mode subfield (0 = switching, 1 = cooperation) chooses which one is in play.",
+      "zh": "“切换” 与 “协作” 的对比是关键。切换关乎可用性——当直连路径失效时让链路保持存活。协作关乎质量——即便直连路径可用，也通过让中继同时发送来提升接收信号。协商出的 Cooperation-Mode 子字段（0 = 切换，1 = 协作）决定启用哪一种。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n    subgraph DMG[\"DMG relay (60 GHz)\"]\n        S[\"Source REDS\"] -. direct link .-> D[\"Destination REDS\"]\n        S --> R[\"RDS (relay)\"]\n        R --> D\n    end\n    subgraph S1G[\"S1G relay tree (sub-1 GHz)\"]\n        ROOT[\"Root AP\"] --> R1[\"Relay 1: relay-STA + relay-AP\"]\n        R1 --> STA1[\"STA 1\"]\n        R1 --> R3[\"Relay 3\"]\n        R3 --> STA2[\"STA 2\"]\n    end",
+      "zh": "flowchart LR\n    subgraph DMG[\"DMG 中继 (60 GHz)\"]\n        S[\"源 REDS\"] -. 直连链路 .-> D[\"目的 REDS\"]\n        S --> R[\"RDS (中继)\"]\n        R --> D\n    end\n    subgraph S1G[\"S1G 中继树 (亚 1 GHz)\"]\n        ROOT[\"根 AP\"] --> R1[\"中继 1: 中继STA + 中继AP\"]\n        R1 --> STA1[\"STA 1\"]\n        R1 --> R3[\"中继 3\"]\n        R3 --> STA2[\"STA 2\"]\n    end"
+    },
+    {
+      "type": "prose",
+      "en": "S1G relay (sub-1 GHz, for long-range IoT) takes a different shape. Here a relay is a two-faced device: an S1G relay STA that associates upward toward the root AP, plus an S1G relay AP that its own children associate with — back to back, with a relay function between them. Relays can chain, forming a tree rooted at the S1G root AP. A station finds one by relay discovery: it sends a Probe Request carrying an S1G Relay Discovery element with its link-budget and QoS needs, and only relays that can meet those needs reply — which keeps the air from flooding with responses. Once traffic flows, the relay forwards frames using a four-address format (so both the original source and destination addresses survive the extra hop), and the root AP tracks who is reachable through which relay via Reachable Address updates.",
+      "zh": "S1G 中继（亚 1 GHz，面向远距离物联网）则是另一种形态。这里的中继是一个“两面”设备：一个向上朝根 AP 关联的 S1G 中继 STA，加上一个让自己的下级设备来关联的 S1G 中继 AP——两者背靠背，中间夹着一个中继功能（relay function）。中继之间可以级联，形成一棵以 S1G 根 AP 为根的树。站点通过中继发现（relay discovery）找到中继：它发送一个携带 S1G Relay Discovery 元素的探测请求帧（Probe Request），其中写明自己的链路预算与 QoS 需求，只有能满足这些需求的中继才会回复——这样就避免了空口被大量响应淹没。流量开始流动后，中继使用四地址格式转发帧（让原始的源地址与目的地址在额外一跳后依然保留），而根 AP 则通过 Reachable Address（可达地址）更新来追踪“谁可以经由哪个中继到达”。"
+    },
+    {
+      "type": "prose",
+      "en": "Relaying naively doubles the cost: every frame is sent twice (source→relay, then relay→destination), and if each hop grabs the channel separately, throughput is halved. S1G fixes this with TXOP-sharing: the originator marks a frame as a relayed frame (a Relayed Frame bit, or the Order bit in an S1G RTS), and the relay forwards it within the same transmit opportunity — using an explicit Ack or, when both ends are pre-arranged, an implicit Ack that skips a round-trip entirely. The relay must keep both hops on the same primary channel and at a channel width no wider than the originator's for the shared TXOP to be valid.",
+      "zh": "朴素的中继会让开销翻倍：每个帧都要发两次（源→中继，再中继→目的），如果每一跳都各自单独抢占信道，吞吐量就会减半。S1G 用 TXOP 共享（TXOP-sharing）来解决：发起方把帧标记为“被中继帧”（一个 Relayed Frame 比特，或 S1G RTS 帧中的 Order 比特），中继便在同一个发送机会（TXOP）内把它转发出去——可以用显式 Ack，或在两端事先约定好时用一个完全省去一次往返的隐式 Ack。要让这个共享的 TXOP 有效，中继必须把两跳保持在同一个主信道上，且信道带宽不宽于发起方的带宽。"
+    },
+    {
+      "type": "prose",
+      "en": "Clustering tackles the opposite problem: too many APs, not too few links. At 60 GHz, independent DMG APs or PCPs that hear each other can form a cluster. One becomes the S-AP (the timing anchor); the others join as members. The beacon interval is divided into ClusterMaxMem equally spaced Beacon SPs (slots), and each member transmits its own DMG Beacon only inside its own slot — so beacons never collide. New APs listen for an empty slot before claiming one; if the anchor disappears, the surviving members run a handover and the one with the lowest MAC address becomes the new S-AP. Members can even reschedule their service periods to dodge interference reported in a neighbour's Extended Schedule element, and stations help by sending Cluster Report elements about beacons they overhear from other BSSs.",
+      "zh": "成簇要应对的是相反的问题：AP 太多，而不是链路太少。在 60 GHz，彼此能听到的独立 DMG AP 或 PCP 可以组成一个簇（cluster）。其中一个成为 S-AP（时间锚点），其余作为成员加入。信标间隔被划分为 ClusterMaxMem 个等间距的 Beacon SP（信标时隙），每个成员只在自己的时隙内发送自己的 DMG 信标——这样信标之间永不冲突。新的 AP 在占用某个时隙前会先侦听到一个空闲时隙；如果锚点消失，存活的成员会执行交接（handover），由 MAC 地址最小者成为新的 S-AP。成员甚至可以重新调度自己的服务周期，以避开邻居 Extended Schedule 元素中报告的干扰；站点也会通过发送 Cluster Report 元素、报告它们偷听到的其他 BSS 的信标来提供帮助。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact role names, the Beacon SP timing formula, and S1G four-address forwarding",
+        "zh": "精确的角色命名、Beacon SP 时序公式，以及 S1G 四地址转发"
+      },
+      "en": "DMG relay (10.44.1) defines link switching (10.44.2) and link cooperation (10.44.3) over three roles — source REDS, destination REDS, and RDS — with the Cooperation-Mode subfield of the negotiated Relay Transfer Parameter Set element selecting the mode (0 = switching, 1 = cooperation). An FD-AF (full-duplex amplify-and-forward) RDS can run Normal or Alternation mode and switches links at each link change interval; an HD-DF (half-duplex decode-and-forward) RDS exchanges frames in a two-period structure. For S1G (10.53.2), a relay is an S1G relay STA (dot11RelaySTAOperationActivated = true) plus an S1G relay AP (dot11RelayAPOperationActivated = true) joined by a relay function; activation is driven by the S1G Relay Activation element. Forwarding (10.53.3) of individually addressed frames uses a four-address frame (A1 = receiver, A2 = relay STA, A3 = MSDU DA, A4 = MSDU SA) or an A-MSDU. TXOP sharing (10.53.5) lets a relay forward within the originator's TXOP via explicit (10.53.5.2) or implicit (10.53.5.3) Ack, marked by the Relayed Frame field or the S1G RTS Order field; the relay must not share if its STA and AP sides use different primary channels. Discovery (10.53.6) uses a Probe Request carrying an S1G Relay Discovery element with link-budget/QoS criteria. DMG/PCP clustering (10.39.1) elects an S-AP whose TBTT anchors ClusterMaxMem Beacon SPs at ClusterTimeOffset_{n-1} = 1024 x (dot11BeaconPeriod/ClusterMaxMem) x (n-1) microseconds; formation (10.39.2) requires a member to find an empty Beacon SP, and maintenance (10.39.3) triggers an S-AP handover (lowest-MAC-address wins) if beacons from the anchor are missed for 4 x aMinBTIPeriod beacon intervals.",
+      "zh": "DMG 中继（10.44.1）基于三个角色——源 REDS、目的 REDS 和 RDS——定义了链路切换（10.44.2）与链路协作（10.44.3），由所协商的 Relay Transfer Parameter Set 元素中的 Cooperation-Mode 子字段选择模式（0 = 切换，1 = 协作）。一个 FD-AF（全双工放大转发）RDS 可运行于 Normal 或 Alternation 模式，并在每个链路改变间隔（link change interval）处切换链路；而 HD-DF（半双工解码转发）RDS 则以“两段周期”结构交换帧。对于 S1G（10.53.2），一个中继由一个 S1G 中继 STA（dot11RelaySTAOperationActivated = true）加上一个 S1G 中继 AP（dot11RelayAPOperationActivated = true）经中继功能连接而成；其激活由 S1G Relay Activation 元素驱动。单播帧的转发（10.53.3）使用四地址帧（A1 = 接收方，A2 = 中继 STA，A3 = MSDU 的 DA，A4 = MSDU 的 SA）或 A-MSDU。TXOP 共享（10.53.5）让中继在发起方的 TXOP 内转发，使用显式（10.53.5.2）或隐式（10.53.5.3）Ack，并以 Relayed Frame 字段或 S1G RTS 的 Order 字段标记；若中继的 STA 侧与 AP 侧使用不同的主信道，则不得进行共享。发现（10.53.6）使用携带 S1G Relay Discovery 元素（含链路预算/QoS 准则）的探测请求帧。DMG/PCP 成簇（10.39.1）选举出一个 S-AP，其 TBTT 锚定 ClusterMaxMem 个 Beacon SP，时间偏移为 ClusterTimeOffset_{n-1} = 1024 x (dot11BeaconPeriod/ClusterMaxMem) x (n-1) 微秒；簇形成（10.39.2）要求成员找到一个空闲的 Beacon SP，而簇维护（10.39.3）会在连续 4 x aMinBTIPeriod 个信标间隔未收到锚点信标时触发 S-AP 交接（MAC 地址最小者胜出）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2342,
+          2392,
+          2394,
+          2397,
+          2400,
+          2198,
+          2200,
+          2204
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.44.1",
+    "80211-2024:10.44.2",
+    "80211-2024:10.44.3",
+    "80211-2024:10.53.2",
+    "80211-2024:10.53.3",
+    "80211-2024:10.53.5",
+    "80211-2024:10.53.6",
+    "80211-2024:10.39.1",
+    "80211-2024:10.39.2",
+    "80211-2024:10.39.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2342,
+        2346,
+        2347,
+        2349
+      ],
+      "note": "10.44.1-10.44.3 DMG relay: link switching vs link cooperation; source/destination REDS and RDS; FD-AF and HD-DF modes"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2392,
+        2394,
+        2397,
+        2400,
+        2401
+      ],
+      "note": "10.53.2-10.53.6 S1G relay: relay STA/AP roles and activation, four-address forwarding, TXOP sharing, relay discovery"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2198,
+        2200,
+        2204,
+        2207
+      ],
+      "note": "10.39.1-10.39.3 DMG/PCP clustering: S-AP and members, Beacon SP timing offsets, cluster formation and S-AP handover"
+    }
+  ],
+  "track": "80211core"
+}

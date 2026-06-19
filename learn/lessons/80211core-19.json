@@ -1,0 +1,115 @@
+{
+  "id": "80211core-19",
+  "title": {
+    "en": "Acknowledgment policies and MAC frame processing rules",
+    "zh": "确认策略与 MAC 帧处理规则"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Once a frame leaves the air and lands in a receiver, two questions arise. First: do I send an acknowledgment back, and if so, how? Second: now that I hold this frame, what do I actually do with it? This lesson walks the receiver's 'understand and respond' layer — the rules that decide acknowledgment behaviour, then the pipeline that parses a frame and reacts to it correctly even when parts of it are unfamiliar.",
+      "zh": "当一个帧离开空口、落入接收方手中时，会冒出两个问题。第一：我要不要回一个确认（Ack），如果要、又该怎么回？第二：既然这帧已经在我手上了，我究竟该拿它做什么？本课讲解接收方的“理解并响应”这一层——先是决定确认行为的规则，再是把一帧解析出来并正确做出反应的处理流水线，哪怕其中某些部分接收方并不认识。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with acknowledgment. Most data frames use an immediate-ack policy: the receiver replies with an Ack (or BlockAck) a fixed short interval after a correctly received frame, giving the sender MAC-level recovery — if no Ack comes back, the sender retransmits. But there is a deliberate opt-out called the No Ack policy. A QoS Data frame sent with No Ack tells the receiver 'do not acknowledge this one'. There is no MAC-level recovery, so a lost frame is simply gone — which is fine for traffic that values low latency over reliability, like real-time voice or video where a late retransmission is useless anyway.",
+      "zh": "先看确认。大多数数据帧采用即时确认（immediate-ack）策略：接收方在正确收到一帧后，经过一个固定的短间隔便回复一个 Ack（或 BlockAck），从而为发送方提供 MAC 层的恢复能力——如果迟迟收不到 Ack，发送方就重传。但标准还专门留了一个“退出”选项，叫做 No Ack（不确认）策略。带 No Ack 标志发出的 QoS Data 帧等于在告诉接收方“这一帧不用回确认”。此时没有 MAC 层恢复，丢了的帧就真的丢了——这对那些更看重低时延、而非可靠性的业务正合适，比如实时语音或视频，反正迟到的重传也没有意义。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "No Ack is a trade, not a free lunch. Because nobody answers, the standard recommends pairing No Ack traffic with a protection mechanism (HCCA, RTS/CTS, or similar) so other stations stay quiet during the TXOP — otherwise the already-unrecoverable frame is even more likely to be clobbered by a collision.",
+      "zh": "No Ack 是一种取舍，而非天上掉馅饼。由于没有人回应，标准建议给 No Ack 业务配上一种保护机制（HCCA、RTS/CTS 等），让其他站点在该 TXOP 期间保持安静——否则这个本就无法恢复的帧，会更容易被碰撞砸坏。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the processing pipeline. Before a receiver trusts a frame's contents, it runs a few gating checks. Revision-level check: if the frame carries a higher revision level than the MAC entity supports, it is silently discarded — no error sent back. Duration/ID handling: when the field (as an unsigned integer) is below 32768, it is a duration used to update the NAV; otherwise it is interpreted per frame type, or ignored if there is no defined meaning. Invalid Action frames: if an individually addressed Action or Action No Ack frame arrives with an unrecognised Category (MSB of Category equal to 0) or a syntax error, the receiver simply discards it.",
+      "zh": "再看处理流水线。在接收方信任一帧的内容之前，它会先跑几道闸门检查。修订级别检查：若帧携带的修订级别高于本 MAC 实体所支持的，便被静默丢弃——不会回任何错误。Duration/ID 处理：当该字段（按无符号整数解读）小于 32768 时，它是一个时长值，用于更新 NAV；否则按帧类型来解释，若没有定义好的含义就忽略。无效 Action 帧：若一个单播的 Action 或 Action No Ack 帧带着无法识别的 Category（Category 的最高位为 0）或语法错误抵达，接收方直接丢弃它。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[Frame received] --> B{Revision level too high?}\n    B -- yes --> D[Discard silently]\n    B -- no --> C{Read Duration/ID}\n    C -- < 32768 --> E[Update NAV]\n    C -- else --> F[Interpret by type or ignore]\n    E --> G{Action frame, unknown Category, MSB=0?}\n    F --> G\n    G -- yes --> D\n    G -- no --> H[Match Dialog Token, parse elements]\n    H --> I[Act on the frame]",
+      "zh": "flowchart TD\n    A[收到帧] --> B{修订级别过高?}\n    B -- 是 --> D[静默丢弃]\n    B -- 否 --> C{读取 Duration/ID}\n    C -- < 32768 --> E[更新 NAV]\n    C -- 其他 --> F[按类型解释或忽略]\n    E --> G{Action 帧, Category 未知, 最高位=0?}\n    F --> G\n    G -- 是 --> D\n    G -- 否 --> H[匹配 Dialog Token, 解析元素]\n    H --> I[处理该帧]"
+    },
+    {
+      "type": "prose",
+      "en": "Past the gates, the receiver makes sense of the body. The Dialog Token is a small integer that lets a station group Management frames exchanged at different times into the same conversation — a request and its later response carry a matching token, so the receiver knows which dialog a reply belongs to. Element parsing follows a forgiving rule: an element with an unknown or reserved element ID (or element ID extension) is ignored, and the receiver keeps scanning the rest of the body for elements it does recognise. This 'skip what you don't know, keep going' behaviour is what makes the format extensible across standard revisions.",
+      "zh": "过了这几道闸门，接收方开始理解帧体。Dialog Token（对话令牌）是一个小整数，让站点能把不同时间交换的管理帧归入同一段“对话”——一个请求和它稍后的响应携带相同的令牌，于是接收方就知道某个回复属于哪一段对话。元素解析遵循一条宽容的规则：遇到元素 ID（或元素 ID 扩展）未知或保留的元素就忽略它，接收方继续扫描帧体其余部分，寻找它认得的元素。这种“不认识就跳过、接着往下走”的行为，正是这套格式能跨标准修订版保持可扩展的原因。"
+    },
+    {
+      "type": "prose",
+      "en": "Some elements are marked extensible: future revisions may add fields at the end. So if an extensible element arrives with a Length longer than the known structure, the receiver keeps the part it understands and discards the trailing unknown bytes, then processes the element as if it had been that shorter length. The opposite problem is an element too big to fit: the general element format caps information at 255 octets (254 with an Element ID Extension). When information exceeds that, the sender fragments it — a leading element packed to the brim, immediately followed by one or more Fragment elements carrying the rest, all within the same MMPDU.",
+      "zh": "有些元素被标记为可扩展（extensible）：未来的修订版可能在其末尾追加字段。因此，若一个可扩展元素到来时其 Length 超过了已知结构的长度，接收方就保留自己能理解的那一部分，丢弃末尾未知的字节，然后把该元素当作那个较短长度来处理。相反的难题是元素太大装不下：通用元素格式将信息上限定为 255 字节（带元素 ID 扩展时为 254 字节）。当信息超过这个上限时，发送方就把它分片——一个被填满的“起始元素”，紧跟着一个或多个携带其余内容的 Fragment 元素，全部装在同一个 MMPDU 里。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 460 130' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='10' y='40' width='150' height='40'/><text x='85' y='30' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>Leading element</text><text x='85' y='65' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>EID | 255 | Data</text><rect x='170' y='40' width='130' height='40'/><text x='235' y='30' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>Fragment</text><text x='235' y='65' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>FID | 255 | Data</text><rect x='310' y='40' width='120' height='40'/><text x='370' y='30' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>Fragment</text><text x='370' y='65' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>FID | m | Data</text><path d='M10 100 H430' stroke-dasharray='4 3'/><text x='220' y='118' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>defragment: concatenate Data in order until a non-Fragment element or end of MMPDU</text></svg>",
+      "caption": {
+        "en": "Element fragmentation: a full 255-octet leading element, then Fragment elements; the receiver reassembles by concatenating their data in order.",
+        "zh": "元素分片：一个填满 255 字节的起始元素，后接若干 Fragment 元素；接收方按顺序拼接它们的数据来重组。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Reassembly is the mirror image. To defragment, the receiver concatenates the leading element's information, in order, with each following Fragment element's information. It stops as soon as it hits any element that is not a Fragment element, or reaches the end of the MMPDU. A couple of guard rails keep this unambiguous: a Fragment element never follows an element that held fewer than its maximum octets, and a Fragment element is itself never fragmented — so the boundary between 'still part of this element' and 'something new' is always clear.",
+      "zh": "重组则是镜像过程。要进行去分片（defragment），接收方按顺序把起始元素的信息与随后每个 Fragment 元素的信息拼接起来。一旦遇到任何不是 Fragment 元素的元素，或到达 MMPDU 末尾，就停止。有几条护栏让这个过程毫不含糊：Fragment 元素绝不会跟在一个未被填满（信息少于其最大字节数）的元素之后，而且 Fragment 元素本身绝不会再被分片——因此“仍属于本元素”与“开始了新东西”之间的边界始终清晰。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact fragmentation math and the silent-discard rules",
+        "zh": "精确的分片计算与静默丢弃规则"
+      },
+      "en": "Clause 10.28.11 makes the split precise. For an element without an Element ID Extension, the information of length L octets is divided into M + N portions, where M = floor(L / 255) and N = 1 if (L mod 255) > 0, else 0; with an Element ID Extension, M = floor((L+1) / 255) and N = 1 if ((L-254) mod 255) > 0. The leading element carries 255 octets (254 with an Element ID Extension), followed by M-1 Fragment elements of 255 octets each, and a final m-octet portion when N = 1. The discard rules are equally exact: 10.28.2 discards a frame whose revision level exceeds what the MAC supports with no indication; 10.28.4 discards an invalid individually addressed Action / Action No Ack frame when the Category MSB equals 0; 10.28.8 truncates an extensible element whose Length exceeds the known Information-field length, processing only the known part. Defragmentation (10.28.12) completes when any non-Fragment element is encountered or the MMPDU ends, and all fragments of one element must reside in the same MMPDU.",
+      "zh": "10.28.11 节把切分写得很精确。对于不带元素 ID 扩展的元素，长度为 L 字节的信息被分为 M + N 份，其中 M = floor(L / 255)，且当 (L mod 255) > 0 时 N = 1、否则 N = 0；带元素 ID 扩展时，M = floor((L+1) / 255)，当 ((L-254) mod 255) > 0 时 N = 1。起始元素携带 255 字节（带元素 ID 扩展时为 254 字节），其后是 M-1 个各为 255 字节的 Fragment 元素，当 N = 1 时再跟一个 m 字节的末尾片段。丢弃规则同样精确：10.28.2 对修订级别超出本 MAC 所支持的帧静默丢弃、不作任何告知；10.28.4 在 Category 最高位为 0 时丢弃无效的单播 Action / Action No Ack 帧；10.28.8 对 Length 超过已知 Information 字段长度的可扩展元素进行截断，只处理已知部分。去分片（10.28.12）在遇到任何非 Fragment 元素或 MMPDU 结束时完成，且一个元素的所有分片必须位于同一个 MMPDU 内。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2094,
+          2095,
+          2096
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.26",
+    "80211-2024:10.28.1",
+    "80211-2024:10.28.3",
+    "80211-2024:10.28.4",
+    "80211-2024:10.28.5",
+    "80211-2024:10.28.6",
+    "80211-2024:10.28.8",
+    "80211-2024:10.28.11",
+    "80211-2024:10.28.12"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2085
+      ],
+      "note": "10.26 No Ack — no MAC-level recovery; pair with a protection mechanism during the TXOP"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2093,
+        2094
+      ],
+      "note": "10.28.1-10.28.6, 10.28.8 — revision level, Duration/ID, invalid Action, Dialog Token, element parsing, extensible element"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2094,
+        2095,
+        2096
+      ],
+      "note": "10.28.11-10.28.12 — element fragmentation math and defragmentation"
+    }
+  ],
+  "track": "80211core"
+}

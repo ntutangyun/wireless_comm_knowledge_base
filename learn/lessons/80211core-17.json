@@ -1,0 +1,136 @@
+{
+  "id": "80211core-17",
+  "title": {
+    "en": "The MAC data plane: architecture, MSDU processing, and aggregation framing",
+    "zh": "MAC 数据平面：架构、MSDU 处理与聚合成帧"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Once you understand how a station wins airtime, a fair question follows: what exactly does it put on the air? Below the contention rules sits a quieter layer of plumbing that turns a higher-layer packet into something the radio can send. This lesson follows a packet down that path — from the MAC architecture that organises it, through the data unit it becomes, to the aggregation framing that bundles many of them into one transmission.",
+      "zh": "理解了站点如何竞争到发送机会之后，自然会问一个问题：它究竟把什么放到空口上？在竞争规则之下，还有一层更安静的“管道”，负责把上层数据包变成无线电真正能发送的东西。本课就沿着这条路径，跟随一个数据包向下走——从组织它的 MAC 架构，到它所变成的数据单元，再到把许多这样的单元打包进一次传输的聚合成帧。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the architecture. A single 802.11 MAC stacks several coordination functions on top of one another. At the base sits the DCF (Distributed Coordination Function) — the CSMA/CA carrier-sense engine that every station implements. On top of it the HCF (Hybrid Coordination Function) adds QoS-aware access (EDCA for contention, HCCA for polled), and the newer TUA (Triggered Uplink Access) lets an AP trigger several stations to transmit at once. They are layered deliberately: HCF and TUA use the services of the DCF underneath, and the standard says they may all operate within the same BSS, taking turns at intervals as short as a single frame exchange.",
+      "zh": "先看架构。单个 802.11 MAC 把若干协调功能层叠在一起。最底层是 DCF（分布式协调功能）——每个站点都实现的 CSMA/CA 载波侦听引擎。在它之上，HCF（混合协调功能）增加了支持 QoS 的接入（用 EDCA 做竞争接入，用 HCCA 做轮询接入），而更新的 TUA（触发式上行接入）则允许 AP 触发多个站点同时发送。它们是有意分层的：HCF 与 TUA 都使用其下方 DCF 的服务，标准还规定它们可以在同一个 BSS 内共存，以短至一次帧交换的时间间隔轮流工作。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    LLC[Higher layer / LLC] -->|MA-UNITDATA.request| MSDU[MSDU]\n    MSDU --> PROC[MSDU processing]\n    PROC --> AGG{Aggregate?}\n    AGG -->|pack MSDUs together| AMSDU[A-MSDU = one MPDU]\n    AGG -->|one MSDU per MPDU| MPDU[MPDU]\n    AMSDU --> AMPDU[A-MPDU: many MPDUs + delimiters]\n    MPDU --> AMPDU\n    AMPDU --> PPDU[One PPDU on the air]\n    HCF[HCF / EDCA wins TXOP] -.sends.-> PPDU",
+      "zh": "graph TD\n    LLC[上层 / LLC] -->|MA-UNITDATA.request| MSDU[MSDU]\n    MSDU --> PROC[MSDU 处理]\n    PROC --> AGG{是否聚合?}\n    AGG -->|多个 MSDU 打包| AMSDU[A-MSDU = 一个 MPDU]\n    AGG -->|每个 MPDU 一个 MSDU| MPDU[MPDU]\n    AMSDU --> AMPDU[A-MPDU: 多个 MPDU + 定界符]\n    MPDU --> AMPDU\n    AMPDU --> PPDU[空口上的一个 PPDU]\n    HCF[HCF / EDCA 赢得 TXOP] -.发送.-> PPDU"
+    },
+    {
+      "type": "prose",
+      "en": "The data unit itself is the MSDU — the payload the MAC receives from the layer above via an MA-UNITDATA.request and must deliver to a peer. Before it is sent, MSDU processing can adjust it: for example, after a negotiated ADDTS exchange a station may strip a fixed LLC header from the front of the MSDU and reinsert it on the receiving side, saving those octets over the air. The MAC data service is simply the promise to carry MSDUs between peers; one request may become one or more Data frames.",
+      "zh": "数据单元本身就是 MSDU——MAC 通过 MA-UNITDATA.request 从上层接收、并必须递交给对端的载荷。在发送之前，MSDU 处理可以对它做调整：例如，在协商好的 ADDTS 交换之后，站点可以从 MSDU 的开头剥除一段固定的 LLC 头部，并在接收侧重新插回，从而在空口上节省这些字节。MAC 数据服务本质上就是“在对端之间承载 MSDU”这一承诺；一个请求可能变成一个或多个数据帧。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the two kinds of aggregation, which are easy to confuse. A-MSDU aggregation packs several MSDUs into the body of a single MPDU — one frame, one header, one acknowledgement, with strict rules: every constituent MSDU must map to the same receiver (RA) and transmitter (TA) and share the same priority. A-MPDU aggregation works one level up: it strings several complete MPDUs together into one PPDU, each MPDU wrapped by an MPDU delimiter. The two compose — an A-MSDU is itself just one of the MPDUs that an A-MPDU can carry — so a single transmission can aggregate twice over.",
+      "zh": "接下来是两种容易混淆的聚合。A-MSDU 聚合把多个 MSDU 装进单个 MPDU 的帧体——一帧、一个头部、一次确认，并有严格规则：每个组成 MSDU 必须映射到相同的接收方（RA）与发送方（TA），且共享相同的优先级。A-MPDU 聚合则在更高一层工作：它把多个完整的 MPDU 串成一个 PPDU，每个 MPDU 都由一个 MPDU 定界符包裹。两者可以叠加——A-MSDU 本身就是 A-MPDU 所能承载的 MPDU 之一——因此一次传输可以经历两层聚合。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy mental model: A-MSDU saves overhead (one MAC header for many payloads) but is all-or-nothing — corrupt the MPDU and every MSDU inside is lost. A-MPDU keeps each MPDU separately delimited and separately acknowledgeable (via Block Ack), so one bad subframe doesn't sink the rest. Modern Wi-Fi usually does both: A-MSDU inside, A-MPDU outside.",
+      "zh": "一个好用的心智模型：A-MSDU 节省开销（多个载荷共用一个 MAC 头部），但它是“全有或全无”的——MPDU 一旦损坏，里面的每个 MSDU 都会丢失。A-MPDU 让每个 MPDU 单独定界、可单独确认（通过块确认 Block Ack），因此一个损坏的子帧不会拖累其余部分。现代 Wi-Fi 通常两者并用：内层 A-MSDU，外层 A-MPDU。"
+    },
+    {
+      "type": "prose",
+      "en": "Several limits gate how big and how dense a transmission may get. A receiver advertises a Maximum A-MPDU Length Exponent, and the sender must not exceed it; within an HT PPDU each MPDU is also capped at 4095 octets. A receiver also declares a Minimum MPDU Start Spacing — a floor on how close together two MPDUs may start — and the sender pads with zero-length MPDU delimiters to honour it. Each subframe's delimiter carries an EOF/Tag field; an MPDU that is the sole subframe tagged with EOF=1 is special, called an S-MPDU. Finally a hard ceiling sits over everything: a PPDU's on-air duration must not exceed aPPDUMaxTime for its PHY.",
+      "zh": "有若干限制约束着一次传输能达到多大、多密。接收方会通告一个“最大 A-MPDU 长度指数”，发送方不得超过它；在 HT PPDU 内，每个 MPDU 还被限制在 4095 字节以内。接收方还会声明一个“最小 MPDU 起始间隔”——两个 MPDU 起始之间的最小距离——发送方用长度为零的 MPDU 定界符进行填充以满足它。每个子帧的定界符都带有一个 EOF/Tag 字段；作为唯一子帧且被标记为 EOF=1 的 MPDU 比较特殊，称为 S-MPDU。最后，还有一个硬上限笼罩一切：一个 PPDU 的空口持续时间不得超过其 PHY 对应的 aPPDUMaxTime。"
+    },
+    {
+      "type": "prose",
+      "en": "Two more pieces gate what may be in flight. The MSDU transmission restrictions limit how many MSDUs a station may have outstanding at once — for a QoS station, no more than one MSDU or A-MSDU per TID per source — which is what keeps frames from being reordered or needlessly discarded. And the HT Control field, when present, carries control subfields (operating-mode changes, buffer-status reports, link adaptation, and more) but only toward a receiver that has declared it supports the relevant +HTC variant — a small negotiation that decides which control signalling may ride along.",
+      "zh": "还有两块内容约束着“在途”的帧。MSDU 传输限制规定了一个站点同时可以有多少 MSDU 处于“未完成”状态——对 QoS 站点而言，每个源、每个 TID 不超过一个 MSDU 或 A-MSDU——正是这一点防止了帧被重排或被无谓丢弃。而 HT Control 字段在出现时会携带控制子字段（操作模式变更、缓冲区状态报告、链路自适应等），但只会发往已声明支持相应 +HTC 变体的接收方——这是一个决定哪些控制信令可以“搭车”的小型协商。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The minimum-MPDU-start-spacing equation and the EOF/Tag rules",
+        "zh": "最小 MPDU 起始间隔公式与 EOF/Tag 规则"
+      },
+      "en": "Clause 10.12.3 makes the spacing concrete. The number of octets N between the start of two consecutive MPDUs in an A-MPDU, measured at the PHY SAP, must satisfy N >= tMMSS x r / 8 (and, when carried in an HE TB PPDU, N >= tMMSS x 2^MMSF x r / 8), where tMMSS is the time the receiver encoded in its Minimum MPDU Start Spacing field, r is the PHY data rate in Mb/s, and MMSF is the MPDU MU Spacing Factor from the soliciting Trigger frame. To meet it the sender inserts MPDU delimiters with the MPDU Length field set to 0. Clause 10.12.7 then governs the EOF/Tag field of those delimiters: it may be set to 1 only on a subframe with a nonzero MPDU Length that is the sole nonzero-length subframe, must be 0 on every nonzero-length subframe when there is more than one, and is always 0 for any subframe in an HT PPDU. An MPDU that is the only MPDU in an A-MPDU and carried with EOF/Tag = 1 is an S-MPDU; an S-MPDU is always a tagged MPDU, but a tagged MPDU is not necessarily an S-MPDU.",
+      "zh": "10.12.3 节把间隔规则具体化。A-MPDU 中两个相邻 MPDU 起始之间的字节数 N（在 PHY SAP 处测量）必须满足 N >= tMMSS x r / 8（当承载于 HE TB PPDU 时，N >= tMMSS x 2^MMSF x r / 8），其中 tMMSS 是接收方在其“最小 MPDU 起始间隔”字段中编码的时间，r 是以 Mb/s 计的 PHY 数据速率，MMSF 则是来自触发帧的 MPDU MU 间隔因子。为满足该条件，发送方插入 MPDU 长度字段置为 0 的 MPDU 定界符。随后 10.12.7 节规定这些定界符的 EOF/Tag 字段：仅当某子帧的 MPDU 长度非零且它是唯一一个长度非零的子帧时，该字段才可置为 1；当存在多个长度非零的子帧时，每个这样的子帧上该字段都必须为 0；在 HT PPDU 中任何子帧上该字段始终为 0。作为 A-MPDU 中唯一 MPDU 且以 EOF/Tag = 1 承载的 MPDU 即为 S-MPDU；S-MPDU 必定是被标记的 MPDU（tagged MPDU），但被标记的 MPDU 不一定是 S-MPDU。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1977,
+          1978,
+          1981,
+          1982
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.2.1",
+    "80211-2024:10.2.6",
+    "80211-2024:10.2.8",
+    "80211-2024:10.7",
+    "80211-2024:10.10",
+    "80211-2024:10.11",
+    "80211-2024:10.12.1",
+    "80211-2024:10.12.2",
+    "80211-2024:10.12.3",
+    "80211-2024:10.12.7",
+    "80211-2024:10.13",
+    "80211-2024:10.8"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1874,
+        1875,
+        1876,
+        1882
+      ],
+      "note": "10.2.1 MAC architecture (Figs 10-1/10-2/10-3; DCF/HCF/MCF/TUA stacking); 10.2.6 combined use of DCF, HCF and TUA within one BSS"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1883
+      ],
+      "note": "10.2.8 MAC data service — MSDU transport via MA-UNITDATA.request/.indication"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1968,
+        1969
+      ],
+      "note": "10.7 MSDU transmission restrictions — outstanding-MSDU limits per SA/TID; 10.8 HT Control field operation begins"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1971
+      ],
+      "note": "10.10 MSDU processing (U-PID / LLC header strip); 10.11 A-MSDU operation begins (single RA/TA, single priority)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1976,
+        1977,
+        1978
+      ],
+      "note": "10.12.1 A-MPDU contents; 10.12.2 A-MPDU length limit rules (Max A-MPDU Length Exponent, 4095-octet MPDU cap); 10.12.3 minimum MPDU start spacing"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1981,
+        1982
+      ],
+      "note": "10.12.7 EOF/Tag field of the MPDU delimiter and the S-MPDU definition; 10.13 PPDU duration constraint (aPPDUMaxTime)"
+    }
+  ],
+  "track": "80211core"
+}

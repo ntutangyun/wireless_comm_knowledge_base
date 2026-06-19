@@ -1,0 +1,100 @@
+{
+  "id": "80211core-18",
+  "title": {
+    "en": "HCF controlled channel access (HCCA): the AP polls instead of contending",
+    "zh": "HCF 受控信道接入(HCCA)：AP 轮询而非竞争"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "The Hybrid Coordination Function (HCF) has two faces. You have already met the contention side — EDCA, where every station backs off and competes for the medium with priority-tuned timers. HCCA is the other face: instead of letting stations fight it out, the access point reaches in and hands out turns. The AP wears a second hat here, acting as a Hybrid Coordinator (HC), and it has a privilege ordinary stations do not — it can grab the medium first and then explicitly grant a station the right to transmit. This is the polled, contention-free twin of EDCA, built for traffic that needs a schedule rather than a scramble.",
+      "zh": "混合协调功能（HCF）有两副面孔。竞争的那一面你已经见过了——EDCA：每个站点都要退避，用按优先级调好的计时器去争夺信道。HCCA 则是另一面：它不让站点彼此厮杀，而是由接入点（AP）出面、依次把发送机会分发出去。此时 AP 戴上了第二顶帽子，扮演“混合协调器”（Hybrid Coordinator，HC），并拥有普通站点没有的特权——它可以先抢到信道，再明确地把发送权授予某个站点。这就是 EDCA 那个“轮询式、无竞争”的孪生兄弟，专为需要“排班”而非“抢座”的业务而生。"
+    },
+    {
+      "type": "prose",
+      "en": "The shared currency of both faces is the TXOP — a transmit opportunity, defined by a start time and a maximum length. Under EDCA a station earns a TXOP by winning contention. Under HCCA the HC simply gives one away: it sends the station a QoS (+)CF-Poll frame carrying a TXOP limit, and that station is now allowed to transmit for that bounded slice of time. The first is an EDCA TXOP; the second is an HCCA (or polled) TXOP. Same unit of airtime — two completely different ways of acquiring it.",
+      "zh": "两副面孔共用的“货币”都是 TXOP——发送机会（transmit opportunity），由一个起始时刻和一个最大时长定义。在 EDCA 下，站点靠赢得竞争来挣得一个 TXOP；在 HCCA 下，HC 则直接“赏”给它一个：HC 向站点发送一帧携带 TXOP 限值的 QoS (+)CF-Poll，于是该站点便获准在这段有界的时间里发送。前者叫 EDCA TXOP，后者叫 HCCA TXOP（或称受轮询 TXOP）。同样一份空口时间——获取它的方式却截然不同。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "How does the HC win the race every time? Timing. Stations using EDCA must wait an AIFS (which is at least a DIFS) plus backoff before transmitting. The HC only waits a PIFS — a shorter interval. When the medium has been idle, the HC's shorter wait expires first, so it can seize the channel at the PIFS slot boundary before any contending station gets its chance. Shorter wait, guaranteed first move.",
+      "zh": "HC 凭什么每次都能抢先？靠的是“时间差”。使用 EDCA 的站点在发送前必须等待一个 AIFS（至少相当于一个 DIFS）再加退避；而 HC 只需等待一个 PIFS——一个更短的间隔。当信道空闲后，HC 那段更短的等待会先到期，于是它能在 PIFS 时隙边界上、抢在任何参与竞争的站点之前夺得信道。等待更短，先手必得。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant HC as AP / Hybrid Coordinator\n    participant STA as Station\n    Note over HC: medium idle, wait only a PIFS (shorter than any STA)\n    HC->>STA: QoS (+)CF-Poll (TXOP limit = N)\n    Note over STA: granted a polled TXOP of length N\n    STA->>HC: QoS Data (within the TXOP)\n    HC->>STA: Ack\n    Note over STA,HC: STA may run more frame exchanges (SIFS-separated) until TXOP limit\n    Note over HC: at TXOP end HC reclaims medium at PIFS for the next poll",
+      "zh": "sequenceDiagram\n    participant HC as AP / 混合协调器\n    participant STA as 站点\n    Note over HC: 信道空闲，仅等待一个 PIFS（短于任何站点）\n    HC->>STA: QoS (+)CF-Poll（TXOP 限值 = N）\n    Note over STA: 获授一个长度为 N 的受轮询 TXOP\n    STA->>HC: QoS Data（在 TXOP 内）\n    HC->>STA: Ack\n    Note over STA,HC: 站点可继续多次帧交换（以 SIFS 间隔）直至 TXOP 限值\n    Note over HC: TXOP 结束后 HC 在 PIFS 处收回信道发起下一次轮询"
+    },
+    {
+      "type": "prose",
+      "en": "But the HC cannot poll for traffic it knows nothing about — and it cannot promise airtime it does not have. That is where admission control comes in. Before a station expects scheduled service, it asks for it: it sends an ADDTS Request frame carrying a TSPEC (Traffic Specification) that describes the stream — things like mean data rate, nominal MSDU size, minimum PHY rate, and a service interval or delay bound. The HC, sitting in the AP, evaluates this against the channel capacity it can spare and its existing commitments, then replies with an ADDTS Response that either accepts or denies the stream. The accept/deny algorithm itself is left to the implementation — the standard fixes the handshake, not the policy.",
+      "zh": "可是 HC 无法去轮询它一无所知的业务——也不能承诺它根本没有的空口时间。这正是“准入控制”（admission control）登场之处。在站点期望获得排班服务之前，它得先提出申请：它发送一帧 ADDTS Request，携带一份 TSPEC（流量规格说明），描述这条数据流——例如平均数据率、标称 MSDU 大小、最小 PHY 速率，以及一个服务间隔或时延上限。位于 AP 中的 HC 会把这些需求与它能匀出的信道容量及现有承诺相权衡，随后回以一帧 ADDTS Response，对该流“接受”或“拒绝”。接受/拒绝的算法本身留给厂商实现——标准固定的是这套握手流程，而非具体策略。"
+    },
+    {
+      "type": "prose",
+      "en": "When the HC accepts a stream, it takes on a budgeting duty. From the TSPEC it derives a Medium Time and returns it in the ADDTS Response, and it commits to servicing that station during recurring Service Periods (SPs) — windows that start at fixed intervals and within which the station receives downlink frames and/or polled TXOPs. The minimum TXOP it grants must be at least long enough to send one MSDU at the negotiated minimum PHY rate, so the promise is meaningful. This is QoS with a scheduler behind it: where EDCA offers statistical priority, admitted HCCA streams aim at a guaranteed slice of airtime — as guaranteed as a shared radio medium ever allows.",
+      "zh": "一旦 HC 接受了某条流，它便担起“分配预算”的职责。它从 TSPEC 推导出一个 Medium Time（介质时间）并在 ADDTS Response 中回传，同时承诺在一系列周期性的服务期（Service Period，SP）内为该站点提供服务——这些时间窗以固定间隔启动，站点在其中接收下行帧和/或受轮询的 TXOP。它所授予的最小 TXOP，至少要足以按协商好的最小 PHY 速率发送一个 MSDU，从而让这份承诺切实可兑现。这就是“背后带着调度器的 QoS”：EDCA 给的是统计意义上的优先级，而被准入的 HCCA 流瞄准的是一份有保障的空口时间——当然，是共享无线介质所能给到的那种“有保障”。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A quick reality check: HCCA is the heavyweight, scheduler-driven option, and most modern devices never use it — the standard explicitly says HCCA is not used by DMG, S1G, or HE (Wi-Fi 6) stations, which lean on EDCA plus newer scheduling tools. HCCA matters most as the conceptual model of polled, admission-controlled QoS that later mechanisms echo.",
+      "zh": "一个现实提醒：HCCA 是那套“重量级、调度器驱动”的方案，而大多数现代设备从不使用它——标准明确指出，DMG、S1G 与 HE（Wi-Fi 6）站点都不使用 HCCA，它们依赖的是 EDCA 加上更新的调度工具。HCCA 的最大价值，在于它作为“轮询式、受准入控制的 QoS”这一概念模型——后来的诸多机制都在回响它的思路。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The PIFS seizure, the ADDTS/TSPEC budget, and the scheduler's SP guarantee — in the standard's own words",
+        "zh": "用标准的原话看：PIFS 抢占、ADDTS/TSPEC 预算，以及调度器的 SP 保障"
+      },
+      "en": "Clause 10.23.1 fixes the vocabulary: the TXOP is the basic unit of the right to transmit, won either by EDCA contention or by receiving a QoS (+)CF-Poll (the HCCA/polled TXOP) — and it states HCCA is not used by DMG, S1G, or HE STAs. Clause 10.23.3 (CAP generation, 10.23.3.2.2) gives the seizure rule: when the HC needs the medium it senses the WM, and when the WM is idle at the TxPIFS slot boundary it transmits a QoS (+)CF-Poll (duration set to cover the polled TXOP) or the first frame of a permitted exchange (duration set to cover the HCCA TXOP); a CAP shall not extend across a TBTT. The polled TXOP limit travels in the QoS Control field, and the medium is NAV-protected by the Duration field of the polling frame (10.23.3.3 / Figure 10-34). Admission control (10.23.4) makes this a budget: a STA transmits an ADDTS Request carrying a TSPEC with Nominal MSDU Size, Mean Data Rate, Minimum PHY Rate, Inactivity Interval, and Surplus Bandwidth Allowance; the AP responds with an ADDTS Response that accepts or denies, and on acceptance derives and specifies a Medium Time (the algorithm is implementation dependent — Annex K.2.2 is one example). For controlled access (10.23.4.3), once a TS is admitted the scheduler shall service the STA during an SP — a window of downlink frames and/or polled TXOPs starting at fixed Service Intervals — and the minimum TXOP duration shall be at least the time to send one (maximum, else nominal) MSDU at the TSPEC minimum PHY rate.",
+      "zh": "10.23.1 节确立了术语：TXOP 是发送权的基本单位，可由 EDCA 竞争赢得，或由接收一帧 QoS (+)CF-Poll 获得（即 HCCA/受轮询 TXOP）——并明确指出 DMG、S1G、HE 站点不使用 HCCA。10.23.3 节（CAP 生成，10.23.3.2.2）给出抢占规则：当 HC 需要信道时它会侦听 WM，当 WM 在 TxPIFS 时隙边界处空闲时，它发送一帧 QoS (+)CF-Poll（duration 设为覆盖受轮询 TXOP）或一次许可帧交换的首帧（duration 设为覆盖 HCCA TXOP）；一个 CAP 不得跨越 TBTT。受轮询 TXOP 的限值随 QoS Control 字段传递，介质则由轮询帧的 Duration 字段以 NAV 加以保护（10.23.3.3 / 图 10-34）。准入控制（10.23.4）把这一切变成“预算”：站点发送携带 TSPEC 的 ADDTS Request，其中含标称 MSDU 大小、平均数据率、最小 PHY 速率、非活动间隔与剩余带宽裕量；AP 回以 ADDTS Response 对其接受或拒绝，接受时还要推导并写明一个 Medium Time（算法由实现决定——附录 K.2.2 给出一种示例）。在受控接入（10.23.4.3）方面，一旦某条 TS 被准入，调度器须在 SP 期间为该站点提供服务——SP 是以固定服务间隔启动、包含下行帧和/或受轮询 TXOP 的时间窗——且最小 TXOP 时长至少要够按 TSPEC 最小 PHY 速率发送一个（最大，否则取标称）MSDU。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1998,
+          2020,
+          2023,
+          2027,
+          2028,
+          2029
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.23.1",
+    "80211-2024:10.23.3",
+    "80211-2024:10.23.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1998
+      ],
+      "note": "10.23.1 HCF General — TXOP as basic unit; EDCA TXOP vs HCCA/polled TXOP via QoS (+)CF-Poll; HCCA not used by DMG/S1G/HE STAs"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2020,
+        2023
+      ],
+      "note": "10.23.3 HCCA — HC has higher medium priority; CAP generation seizes WM at TxPIFS; QoS (+)CF-Poll grants polled TXOP with TXOP limit in QoS Control; NAV protection (Figure 10-34)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2027,
+        2028,
+        2029
+      ],
+      "note": "10.23.4 Admission control at the HC — ADDTS Request/TSPEC; AP accept/deny; Medium Time derivation; controlled-access scheduler services Service Periods with minimum TXOP duration"
+    }
+  ],
+  "track": "80211core"
+}

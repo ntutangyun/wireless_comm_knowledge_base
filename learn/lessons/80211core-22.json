@@ -1,0 +1,138 @@
+{
+  "id": "80211core-22",
+  "title": {
+    "en": "S1G BSS operation and the sub-1-GHz power-save toolkit",
+    "zh": "S1G BSS 运行与 Sub-1GHz 省电工具集"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "802.11ah — sub-1-GHz Wi-Fi, called S1G — is built for a very different crowd than the laptops and phones on 2.4/5/6 GHz. Picture a building with thousands of tiny battery-powered sensors: a single S1G access point may serve a huge number of stations, most of which want to sleep almost all the time and wake for a heartbeat of traffic. That scale changes the rules. The narrow sub-1-GHz channels (1, 2, 4, 8, 16 MHz) reach far but carry little, and a normal Wi-Fi BSS would drown in the beacon, paging, and contention overhead of so many sleepy clients. So S1G adds a whole layer of MAC procedures on top of the familiar BSS to keep airtime — and battery — under control.",
+      "zh": "802.11ah 是工作在 1 GHz 以下频段的 Wi-Fi，简称 S1G，它面向的群体和 2.4/5/6 GHz 上的笔记本、手机完全不同。设想一栋楼里有成千上万个微型电池供电的传感器：一个 S1G 接入点（AP）可能要服务海量站点，而这些站点大多希望几乎一直休眠，只在传一个“心跳”报文时才醒来。这种规模改变了游戏规则。Sub-1GHz 的窄信道（1、2、4、8、16 MHz）传得远但容量小，普通的 Wi-Fi BSS 会被如此众多瞌睡客户端的信标、寻呼和竞争开销淹没。因此 S1G 在我们熟悉的 BSS 之上叠加了一整层 MAC 流程，把空口时间和电量牢牢控制住。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the BSS basics. An S1G AP advertises one of a fixed table of width/primary-channel combinations, and every member transmits on the BSS primary channel for its width — you can't just blast a 1 MHz PPDU on any sub-channel. When something important inside the beacon changes (a channel-switch announcement, the EDCA parameters, or the S1G Operation element), the AP bumps a Change Sequence counter; a sleepy station that sees the number jump knows its cached system info is stale and either stays awake for the next beacon or fires off a Probe Request to pull a compact update. Channel switching itself reuses the Extended Channel Switch Announcement, and stations keep the NAV (virtual carrier sense) and RID up to date only from PPDUs received on the proper primary channels.",
+      "zh": "先看 BSS 的基础。S1G AP 会通告一张固定表里的某个“带宽/主信道”组合，每个成员都在与其带宽对应的 BSS 主信道上发送——你不能随意在任意子信道上发一个 1 MHz 的 PPDU。当信标里的重要内容发生变化时（信道切换通告、EDCA 参数，或 S1G Operation 元素），AP 会递增一个“变更序号（Change Sequence）”计数器；瞌睡的站点一旦发现这个数字跳变，就知道自己缓存的系统信息已过期，于是要么保持清醒等待下一个信标，要么发出一个探测请求（Probe Request）来拉取一份精简更新。信道切换本身复用扩展信道切换通告（Extended Channel Switch Announcement），而站点只根据在恰当主信道上收到的 PPDU 来更新 NAV（虚拟载波侦听）与 RID。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: the basic BSS procedures (functionality, system-info update, channel selection/switching, NAV/RID) keep the network coherent at IoT scale; the power-save toolkit (non-TIM, page slicing, SST, Sync frame, bidirectional TXOP) is what lets each individual station spend almost all its life asleep.",
+      "zh": "一个心智模型：基础 BSS 流程（基本功能、系统信息更新、信道选择/切换、NAV/RID）负责在物联网规模下维持网络的一致性；而省电工具集（非 TIM、页面切片、SST、Sync 帧、双向 TXOP）则让每一个站点几乎一生都在休眠中度过。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[S1G BSS power-save toolkit] --> B[Non-TIM operation: skip the TIM, self-schedule awake/doze]\n    A --> C[Page slicing: TIM split into slices, STA listens only to its slice]\n    A --> D[SST: STA camps on a narrow sub-channel subset]\n    A --> E[Sync frame: fast medium sync before an uplink burst]\n    A --> F[Bidirectional TXOP: UL+DL in one contention-free exchange]",
+      "zh": "flowchart TD\n    A[S1G BSS 省电工具集] --> B[非 TIM 运行：跳过 TIM，自行安排醒/睡]\n    A --> C[页面切片：TIM 被切成多片，站点只听自己那一片]\n    A --> D[SST：站点驻留在很窄的子信道子集上]\n    A --> E[Sync 帧：上行突发前快速完成介质同步]\n    A --> F[双向 TXOP：一次无竞争交换中同时完成上行+下行]"
+    },
+    {
+      "type": "prose",
+      "en": "Now the toolkit. Non-TIM operation lets a station opt out of scanning the TIM bitmap in every beacon and instead schedule its own awake/doze cycle (typically via TWT); the AP can even carve out RAWs so TIM-mode stations stay off the medium while non-TIM stations do their brief business, and it can reschedule a station's wake cycle through the PS-Poll Poll Type field. Page slicing attacks a different cost: with thousands of associated stations the TIM virtual bitmap balloons, so the AP splits a page into equal-size slices and sends one slice per beacon — a station only has to wake for the beacon carrying its slice. Subchannel selective transmission (SST) shrinks the radio's world in frequency: an SST station picks a narrow subset of the enabled channels to camp on, so it can run a cheaper, lower-bandwidth front end and still be reachable.",
+      "zh": "现在看工具集本身。非 TIM 运行（Non-TIM operation）允许站点选择不在每个信标里去扫描 TIM 位图，转而自行安排醒/睡周期（通常通过 TWT 实现）；AP 甚至可以划出 RAW，让 TIM 模式的站点暂时离开介质，好让非 TIM 站点处理完它们短暂的事务，AP 还能通过 PS-Poll 的 Poll Type 字段为站点重新安排唤醒周期。页面切片（Page slicing）解决的是另一种开销：当关联站点成千上万时，TIM 的虚拟位图会急剧膨胀，于是 AP 把一“页”切成若干等长的“切片”，每个信标只发一片——站点只需在携带它那一片的信标处醒来即可。子信道选择性传输（SST）则在频率维度上缩小了射频的“世界”：一个 SST 站点挑选已启用信道中很窄的一个子集来驻留，从而可以使用更廉价、更窄带宽的前端，同时仍能被联系到。"
+    },
+    {
+      "type": "prose",
+      "en": "Two more mechanisms attack the per-transaction overhead. The Sync frame lets a station that just woke to send uplink data ask a UL-Sync-capable AP for a quick frame that re-synchronises the medium and immediately solicits its buffered data, so it doesn't burn battery contending blind. The bidirectional TXOP (BDT) goes further: instead of separate uplink and downlink channel grabs, a single contention-won TXOP carries an interleaved burst of uplink and downlink PPDUs separated only by SIFS — fewer contention rounds, less awake time, lower power. Together these five mechanisms are why an S1G sensor can run for years on a coin cell while still belonging to a busy BSS.",
+      "zh": "还有两个机制专门压缩每次事务的开销。Sync 帧让一个刚醒来准备发上行数据的站点，向具备上行同步能力（UL-Sync）的 AP 索要一个快速帧，用来重新同步介质并立即索取属于它的缓存数据，这样它就不必盲目竞争、白白耗电。双向 TXOP（BDT）则更进一步：它不再分别为上行和下行各抢一次信道，而是在一次竞争赢得的 TXOP 中，承载上、下行 PPDU 交织、仅以 SIFS 分隔的突发——竞争轮次更少、清醒时间更短、功耗更低。正是这五个机制合在一起，才让一个 S1G 传感器在仍属于繁忙 BSS 的同时，靠一颗纽扣电池运行数年。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What the standard actually pins down: Change Sequence, page slices, and the BDT sequence",
+        "zh": "标准究竟钉死了哪些细节：变更序号、页面切片与 BDT 序列"
+      },
+      "en": "Clause 10.45.2 makes the system-info trigger concrete: the S1G AP increments the Change Sequence field (modulo 256) in the next S1G Beacon whenever a critical update occurs — explicitly an Extended Channel Switch Announcement, an EDCA parameter change, or a modified S1G Operation element — and a station seeing a changed value must either stay awake for the next beacon or queue a Probe Request (which may carry the Change Sequence element to ask for a compressed Probe Response). Clause 10.50 fixes the page-slicing geometry: all page slices for one Page Slice element are equal-size except the last, and a station processes only TIM elements whose Page Slice Number and Page Index match its own. Clause 10.49.2 defines a BDT sequence as three parts — a BDT Initiator PPDU signalling Long Response and setting the NAV, a BDT Responder burst of one-or-more SIFS-separated PPDUs (only the last may require an immediate response), and an optional BDT Initiator final PPDU — all fitting inside the TXOP/SP duration carried in the Duration/ID field.",
+      "zh": "10.45.2 节把系统信息的触发条件写得很具体：每当发生“关键更新（critical update）”时，S1G AP 就在下一个 S1G 信标中把变更序号字段递增（模 256）——明确列出的关键更新包括扩展信道切换通告、EDCA 参数变更、或 S1G Operation 元素被修改；站点一旦看到该值变化，就必须要么保持清醒等待下一个信标，要么排队发出探测请求（其中可携带变更序号元素，以索要一份压缩的探测响应）。10.50 节钉死了页面切片的几何关系：对应同一个 Page Slice 元素的所有切片，除最后一片外必须等长，且站点只处理其 Page Slice Number 与 Page Index 同时与自身匹配的 TIM 元素。10.49.2 节把一个 BDT 序列定义为三部分——一个标记 Long Response 并设置 NAV 的 BDT 发起方 PPDU、一个由一个或多个以 SIFS 分隔的 PPDU 组成的 BDT 响应方突发（只有最后一个可要求立即响应）、以及一个可选的 BDT 发起方收尾 PPDU——全部必须落在由 Duration/ID 字段所携带的 TXOP/SP 时长之内。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2351,
+          2371,
+          2373
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.45.1",
+    "80211-2024:10.45.2",
+    "80211-2024:10.45.4",
+    "80211-2024:10.45.6",
+    "80211-2024:10.47.1",
+    "80211-2024:10.47.2",
+    "80211-2024:10.48",
+    "80211-2024:10.49.2",
+    "80211-2024:10.50",
+    "80211-2024:10.51.1"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2349,
+        2350
+      ],
+      "note": "10.45.1 Basic S1G BSS functionality — width/primary-channel table, primary-channel transmit rules"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2351
+      ],
+      "note": "10.45.2 system information update (Change Sequence) and 10.45.4 S1G BSS channel switching (Extended Channel Switch Announcement)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2351,
+        2352
+      ],
+      "note": "10.45.6 NAV and RID assertion in an S1G BSS — update only from PPDUs on the proper primary channels"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2365,
+        2366,
+        2367
+      ],
+      "note": "10.47.1 resource protection for non-TIM STAs via RAW; 10.47.2 rescheduling awake/doze cycle via PS-Poll Poll Type"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2369,
+        2370
+      ],
+      "note": "10.48 Sync frame operation — UL-Sync capable AP, fast medium sync before uplink"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2371,
+        2372
+      ],
+      "note": "10.49.2 Rules for BDT — Initiator PPDU, response burst, final PPDU within the TXOP"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2373,
+        2374,
+        2375
+      ],
+      "note": "10.50 Page slicing — equal-size slices, Page Slice/Page Index matching, one slice per beacon"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2376
+      ],
+      "note": "10.51.1 SST overview — SST BSS conditions, enabled SST operating channels, SST STA camping on a sub-channel subset"
+    }
+  ],
+  "track": "80211core"
+}
