@@ -1,0 +1,125 @@
+{
+  "id": "v2x-light-10",
+  "title": {
+    "en": "Light Communication PHY in Full: OFDM-over-Light TX/RX, Channelization & CCA",
+    "zh": "光通信 PHY 全解：光上 OFDM 收发链、信道划分与 CCA"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "We have seen that 802.11 can ride visible and near-infrared light. This lesson finishes the Light Communication (LC) PHY end to end. The headline trick is that LC barely touches the MAC: an LC station simply reuses the existing HT, VHT, or HE MAC procedures — the same association, the same security, the same MLME from Clauses 10, 11, and 12. Whatever level the station supports (HT/VHT/HE), it follows that level's MAC, just running on top of an LC PHY instead of a radio.",
+      "zh": "我们已经知道 802.11 可以借助可见光和近红外光来传输。本课把光通信（LC）PHY 从头到尾讲完。最关键的一招是：LC 几乎不改动 MAC——一个 LC 站点直接复用既有的 HT、VHT 或 HE MAC 流程，沿用第 10、11、12 章中相同的关联、相同的安全、相同的 MLME。无论站点支持哪一档（HT/VHT/HE），它就遵循那一档的 MAC，只是运行在 LC PHY 之上，而不是无线电之上。"
+    },
+    {
+      "type": "prose",
+      "en": "So the cleverness is all in the PHY, and even there the LC PHY is deliberately parasitic on the RF designs. It is an OFDM system with an intensity-modulation / direct-detection (IM/DD) optical interface. The whole familiar transmit chain stays intact — FEC encoder, interleaving and mapping, IDFT, guard-interval insertion, windowing, I/Q modulation. The only swap is at the very end: instead of upconverting the complex baseband to an RF carrier and feeding an antenna, the LC PHY upconverts to an LC intermediate-frequency (IF) signal, adds a DC bias, and feeds an optical front end (OFE) that turns that biased waveform into a modulated light intensity.",
+      "zh": "因此真正的巧思都集中在 PHY，而即便在 PHY 内部，LC PHY 也刻意“寄生”在 RF 设计之上。它是一套采用强度调制／直接检测（IM/DD）光接口的 OFDM 系统。整条我们熟悉的发射链保持不变——FEC 编码器、交织与映射、IDFT、保护间隔插入、加窗、I/Q 调制。唯一被替换的只在最末端：LC PHY 不再把复基带上变频到射频载波并馈入天线，而是上变频到一个 LC 中频（IF）信号，叠加一个直流偏置，再馈入光前端（OFE），由它把这个带偏置的波形转换成被调制的光强度。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n    A[FEC Encoder] --> B[Interleave + Mapping]\n    B --> C[IDFT]\n    C --> D[Insert GI + Window]\n    D --> E[I/Q Mod -> LC IF]\n    E --> F[+ DC bias]\n    F --> G[TX OFE]\n    G --> H[((LC optical TX antenna))]\n    H -. intensity-modulated light .-> I[Receiver]",
+      "zh": "flowchart LR\n    A[FEC 编码器] --> B[交织 + 映射]\n    B --> C[IDFT]\n    C --> D[插入 GI + 加窗]\n    D --> E[I/Q 调制 -> LC IF]\n    E --> F[+ 直流偏置]\n    F --> G[发射 OFE]\n    G --> H[((LC 光发射天线))]\n    H -. 强度调制的光 .-> I[接收端]"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why the DC bias? A solid-state light (SSL) device — an LED — can only carry positive current; it cannot emit 'negative light'. OFDM, though, is a bipolar waveform that swings above and below zero. Adding a DC bias lifts the whole signal up so it stays positive, letting the LED's intensity faithfully trace the waveform. The bias is the price of doing OFDM on something that only knows how to be bright or dim.",
+      "zh": "为什么要加直流偏置？固态发光（SSL）器件——也就是 LED——只能通过正向电流，它无法发出“负的光”。而 OFDM 是一种在零上下双向摆动的双极性波形。叠加一个直流偏置，可把整个信号整体抬高，使其始终为正，从而让 LED 的光强忠实地复刻波形。这个偏置，就是在一个只懂“亮”或“暗”的器件上做 OFDM 所付出的代价。"
+    },
+    {
+      "type": "prose",
+      "en": "Mathematically nothing new is invented either: the LC IF signal is described by the very same baseband equations as HT, VHT, and HE OFDM — only the carrier fc is now reinterpreted as the LC IF rather than an RF carrier. Channelization works the same way. The LC IF band is carved into channels whose centers sit at 5 MHz multiples above a starting frequency, indexed nch = 1..64. Those channels map directly onto the RF plan: 16-176 MHz of LC IF corresponds to the 5 GHz band, and 176-336 MHz corresponds to the 6 GHz band — so a 5 GHz channel and a 6 GHz channel each find a home on the optical IF axis.",
+      "zh": "数学上同样没有发明任何新东西：LC IF 信号由与 HT、VHT、HE OFDM 完全相同的基带方程描述——只是把其中的载波 fc 重新解释为 LC 中频，而非射频载波。信道划分也照搬同一套规则。LC IF 频段被切分成若干信道，其中心频率位于起始频率之上的 5 MHz 整数倍处，编号为 nch = 1..64。这些信道与 RF 规划直接对应：16–176 MHz 的 LC IF 对应 5 GHz 频段，176–336 MHz 对应 6 GHz 频段——于是一个 5 GHz 信道与一个 6 GHz 信道各自在光中频轴上找到了归宿。"
+    },
+    {
+      "type": "prose",
+      "en": "Because it is light, the LC PHY gets a kind of MIMO that RF can only dream of. An LC PHY may use multiple transmit and receive chains, each connected to its own optical TX/RX antenna, in two flavours. Spatial multiplexing works when the emitters and detectors are aimed or separated so each beam is at least partly isolated at its own detector. Wavelength-division multiplexing (WDM) is the more exotic option: one chain emits, say, 950 nm and another 850 nm, and a dichroic beam splitter at the receiver routes each colour to its own detector. WDM tops out at 2 spatial streams, and an LC receiver must be sensitive somewhere in the 800-1000 nm band, with a minimum receive sensitivity of -15 dBm of optical power.",
+      "zh": "因为用的是光，LC PHY 得以拥有一种 RF 只能羡慕的 MIMO。LC PHY 可以使用多条发射链与多条接收链，每条各接一个光发射／接收天线，分为两种形态。空间复用：当各发射器与检测器经过定向或空间分隔，使每束光在各自的检测器处至少部分隔离时即可实现。波分复用（WDM）则更为奇特：一条链发射如 950 nm，另一条发射 850 nm，接收端用一片二向色分束镜把每种颜色分别导向各自的检测器。WDM 最多支持 2 条空间流；LC 接收机必须在 800–1000 nm 频段内的某处具有灵敏度，最低接收灵敏度为 -15 dBm 光功率。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 420 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><rect x='10' y='70' width='70' height='60' rx='4'/><text x='45' y='105' font-size='11' text-anchor='middle' stroke='none' fill='currentColor'>TX</text><circle cx='110' cy='80' r='8'/><circle cx='110' cy='120' r='8'/><text x='128' y='70' font-size='10' stroke='none' fill='currentColor'>950 nm</text><text x='128' y='150' font-size='10' stroke='none' fill='currentColor'>850 nm</text><line x1='118' y1='80' x2='250' y2='100' stroke-dasharray='4 3'/><line x1='118' y1='120' x2='250' y2='100' stroke-dasharray='4 3'/><line x1='250' y1='60' x2='270' y2='140'/><text x='240' y='50' font-size='9' stroke='none' fill='currentColor'>dichroic</text><line x1='260' y1='100' x2='350' y2='75'/><line x1='260' y1='100' x2='350' y2='125'/><circle cx='360' cy='75' r='8'/><circle cx='360' cy='125' r='8'/><text x='378' y='65' font-size='10' stroke='none' fill='currentColor'>RX1</text><text x='378' y='140' font-size='10' stroke='none' fill='currentColor'>RX2</text></svg>",
+      "caption": {
+        "en": "Wavelength-division multiplexing: two coloured beams (e.g. 950 nm and 850 nm) leave separate TX antennas; a dichroic beam splitter sends each wavelength to its own detector, giving up to 2 streams.",
+        "zh": "波分复用：两束不同颜色的光（如 950 nm 与 850 nm）从各自的发射天线射出；二向色分束镜将每个波长分别导向各自的检测器，可提供至多 2 条流。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clear-channel assessment (CCA) is the last surprise: the station listens to light, not RF. The CCA requirements are simply the HT/VHT/HE CCA rules applied to the LC IF signal measured at the antenna connector. But light is directional, so a station can be deaf to a peer it cannot 'see'. To patch this, an LC AP may offer LC repetition — it re-emits whatever it hears (within 1 us) so that stations across the cell sense the medium as busy and back off, much like RTS/CTS does in RF. Finally, because we are now shining light at people, an LC transmitter must meet regional regulatory limits and the optical-safety standard IEC 60825-1.",
+      "zh": "空闲信道评估（CCA）是最后一个惊喜：站点监听的是光，而不是射频。其 CCA 要求其实就是把 HT/VHT/HE 的 CCA 规则套用到在天线连接处测得的 LC IF 信号上。但光具有方向性，因此一个站点可能对它“看不见”的对端充耳不闻。为弥补这一点，LC AP 可以提供 LC 转发（repetition）——它把听到的信号在 1 微秒内重新发出，使整个小区内的站点都感知到介质繁忙并退避，作用很像 RF 中的 RTS/CTS。最后，由于现在是在向人照射光，LC 发射机必须满足各地区的法规限值以及光安全标准 IEC 60825-1。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact channel map, WDM constraints, and the LC repetition rule",
+        "zh": "精确的信道映射、WDM 约束与 LC 转发规则"
+      },
+      "en": "Clause 33.2.3.4 fixes LC IF channel center frequencies at integer multiples of 5 MHz above the LC IF starting frequency (Annex E), as in Equation (33-1): center = start + 5 x nch (MHz), nch = 1..64. This splits the LC IF spectrum into a 16-176 MHz segment mapping from the 5 GHz band and a 176-336 MHz segment mapping from the 6 GHz band (Table 33-1); a 5 GHz channel number shall not exceed 64 and a 6 GHz channel number shall not exceed 29. For WDM (33.2.3.5.3) an LC optical RX antenna shall be sensitive to one of 800-900 nm, 900-1000 nm, or 800-1000 nm; an LC PHY shall have at least one RX chain sensitive across 800-1000 nm, or two RX chains splitting 800-900 nm and 900-1000 nm, and WDM supports at most 2 spatial streams. Receive sensitivity (33.2.3.6) is at least -15 dBmopt as average incident optical power over 800-1000 nm. CCA (33.2.3.7.1) reuses 19.3.19.6 / 21.3.18.5 / 27.2.7 + 27.3.22 on the LC IF signal; LC repetition (33.2.3.7.2) lets an LC AP re-emit a received signal with under 1 us delay. Regulatory requirements (33.2.3.8) defer to Annex D and IEC 60825-1.",
+      "zh": "33.2.3.4 节将 LC IF 信道中心频率固定在 LC IF 起始频率（见附录 E）之上的 5 MHz 整数倍处，如式 (33-1)：中心 = 起始 + 5 × nch（MHz），nch = 1..64。这把 LC IF 频谱分为映射自 5 GHz 频段的 16–176 MHz 段，以及映射自 6 GHz 频段的 176–336 MHz 段（表 33-1）；5 GHz 信道号不得超过 64，6 GHz 信道号不得超过 29。对 WDM（33.2.3.5.3），LC 光接收天线须对 800–900 nm、900–1000 nm 或 800–1000 nm 之一敏感；LC PHY 须至少有一条覆盖 800–1000 nm 的接收链，或两条分别覆盖 800–900 nm 与 900–1000 nm 的接收链，且 WDM 最多支持 2 条空间流。接收灵敏度（33.2.3.6）为在 800–1000 nm 上以平均入射光功率计至少 -15 dBmopt。CCA（33.2.3.7.1）在 LC IF 信号上复用 19.3.19.6 / 21.3.18.5 / 27.2.7 + 27.3.22；LC 转发（33.2.3.7.2）允许 LC AP 以低于 1 微秒的时延重新发出收到的信号。法规要求（33.2.3.8）则交由附录 D 与 IEC 60825-1 规定。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4845,
+          4849,
+          4850
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4842
+      ],
+      "note": "33.1.2 LC MAC + 33.2.3.2 transmitter block diagram - LC STA reuses HT/VHT/HE MAC; baseband upconverted to LC IF instead of RF"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4843,
+        4844
+      ],
+      "note": "33.2.3.2-33.2.3.3 - DC bias into OFE; SSL positive-current constraint; mathematical description reuses Eq (19-1)/(21-11)/(27-1) with fc = LC IF"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4845,
+        4846
+      ],
+      "note": "33.2.3.4 channel numbering - Eq (33-1), nch=1..64, 5 GHz->16-176 MHz, 6 GHz->176-336 MHz mapping (Table 33-1)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4847,
+        4848,
+        4849
+      ],
+      "note": "33.2.3.5 multiple TX/RX chains - spatial multiplexing and WDM; dichroic beam splitter; 800-1000 nm RX bands; max 2 WDM streams"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4850,
+        4851
+      ],
+      "note": "33.2.3.6 receive sensitivity -15 dBmopt; 33.2.3.7 CCA on LC IF + LC repetition (<1 us); 33.2.3.8 regulatory (IEC 60825-1)"
+    }
+  ],
+  "covers": [
+    "80211-2024:33.1.2",
+    "80211-2024:33.2.3.2",
+    "80211-2024:33.2.3.3",
+    "80211-2024:33.2.3.4",
+    "80211-2024:33.2.3.5",
+    "80211-2024:33.2.3.6",
+    "80211-2024:33.2.3.7",
+    "80211-2024:33.2.3.8"
+  ],
+  "track": "v2x-light"
+}

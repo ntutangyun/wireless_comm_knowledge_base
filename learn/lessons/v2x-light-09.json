@@ -1,0 +1,133 @@
+{
+  "id": "v2x-light-09",
+  "title": {
+    "en": "Closing Out the NGV PHY: Data Field, DCM, TX/RX, and Ranging NDP",
+    "zh": "收官 NGV 物理层：数据字段、DCM、收发流程与测距 NDP"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "We have already seen the shape of an NGV PPDU and its rugged training symbols. This lesson closes out the physical layer proper: how the actual payload bits become a waveform, how NGV picks its modulation, how the transmitter and receiver walk through a packet step by step, and the one special packet that carries no data at all. Think of it as following a byte from the MAC all the way out the antenna, and back in again.",
+      "zh": "前面我们已经看过 NGV PPDU 的整体结构和它那套抗干扰的训练符号。本课要把物理层本身彻底收尾：真正的载荷比特是怎样变成波形的、NGV 如何选择调制方式、发射机与接收机如何一步步处理一个数据包，以及那个完全不携带数据的特殊数据包。可以把它想象成跟随一个字节，从 MAC 层一路走到天线发出去，再走回来。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the Data field. The MAC hands down a PSDU; the PHY prepends a 16-bit SERVICE field, then appends 0 to 7 PHY pad bits so the bit count lines up to a whole number of OFDM symbols. There are no tail bits, because NGV always uses LDPC coding rather than the older convolutional code. The padded stream is scrambled, LDPC-encoded, stream-parsed across the spatial streams, mapped to constellation points, given pilots, spatially mapped, and turned into time-domain samples by the IDFT. That assembly line is the whole job of the Data field.",
+      "zh": "先看数据字段。MAC 层递下一个 PSDU；物理层在前面加上 16 比特的 SERVICE 字段，再补 0 到 7 个 PHY 填充比特，使比特数恰好凑齐整数个 OFDM 符号。这里没有尾比特，因为 NGV 始终使用 LDPC 编码，而不是更老的卷积码。补齐后的比特流依次经过扰码、LDPC 编码、按空间流做流分解、星座点映射、插入导频、空间映射，最后由 IDFT 变成时域采样。这条流水线就是数据字段的全部工作。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The most robust scheme has its own name: NGV-MCS 15, which is BPSK with dual-carrier modulation (DCM). DCM copies each bit onto two subcarriers — the lower half and a phase-rotated upper half — so the same information rides two places in the spectrum. If a notch wipes out one subcarrier, the twin survives. The price is rate: NGV-MCS 15 in 10 MHz delivers only 1.6 Mb/s, half the 3.3 Mb/s of plain BPSK NGV-MCS 0, because half the data subcarriers now carry copies instead of new bits.",
+      "zh": "最稳健的方案有自己专门的名字：NGV-MCS 15，即带双载波调制（DCM）的 BPSK。DCM 把每个比特复制到两个子载波上——下半部分一个、经过相位旋转的上半部分一个——于是同一份信息在频谱里出现在两处。如果某个陷波抹掉了一个子载波，它的“双胞胎”还能幸存。代价是速率：10 MHz 下 NGV-MCS 15 只有 1.6 Mb/s，仅为普通 BPSK（NGV-MCS 0）3.3 Mb/s 的一半，因为现在有一半的数据子载波承载的是副本，而不是新比特。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n    MAC[MAC: PSDU] --> SVC[+ SERVICE 16b]\n    SVC --> PAD[+ PHY pad 0-7b]\n    PAD --> SCR[Scramble]\n    SCR --> LDPC[LDPC encode]\n    LDPC --> SP[Stream parser]\n    SP --> MAP[Constellation map<br/>incl. NGV-MCS 15 DCM]\n    MAP --> PIL[Insert pilots]\n    PIL --> Q[Spatial mapping Q]\n    Q --> IDFT[IDFT + GI]\n    IDFT --> RF[Analog & RF]",
+      "zh": "flowchart LR\n    MAC[MAC: PSDU] --> SVC[+ SERVICE 16比特]\n    SVC --> PAD[+ PHY 填充 0-7比特]\n    PAD --> SCR[扰码]\n    SCR --> LDPC[LDPC 编码]\n    LDPC --> SP[流分解]\n    SP --> MAP[星座映射<br/>含 NGV-MCS 15 DCM]\n    MAP --> PIL[插入导频]\n    PIL --> Q[空间映射 Q]\n    Q --> IDFT[IDFT + 保护间隔]\n    IDFT --> RF[模拟与射频]"
+    },
+    {
+      "type": "prose",
+      "en": "With more than one antenna, an NGV transmitter can send two spatial streams at once — SU-MIMO — to roughly double throughput. But there is a catch the standard openly admits: the vehicular channel changes too fast to sound reliably, so there is no explicit sounding protocol. The steering matrix is left entirely to the implementation. That single design note captures the whole philosophy of NGV: do not assume the channel will hold still, because at highway speed it will not.",
+      "zh": "当配备多于一根天线时，NGV 发射机可以同时发送两条空间流——即 SU-MIMO——使吞吐量大致翻倍。但标准坦率地承认了一个限制：车载信道变化太快，无法可靠地做信道探测（sounding），因此没有定义显式的探测协议。导向矩阵（steering matrix）完全交给具体实现。这一条设计说明浓缩了 NGV 的整体理念：不要假设信道会保持不变，因为在高速行驶下它绝不会。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the round trip. On transmit (32.3.13), the MAC issues PHY-TXSTART.request with a TXVECTOR; the PHY sends the preamble immediately, then scrambles and LDPC-encodes the data, inserting a midamble every M symbols if needed, until a PHY-TXEND.request stops it. On receive (32.3.14), the PHY measures RSSI, detects L-SIG and its repeat RL-SIG to tell an NGV packet apart from a legacy one, decodes NGV-SIG/RNGV-SIG, and — only if the packet overlaps the OCB primary 10 MHz channel — issues PHY-RXSTART.indication and decodes the data. There is even logic to combine repeated non-NGV duplicate packets for a better decode.",
+      "zh": "现在看这趟往返。发射时（32.3.13），MAC 发出携带 TXVECTOR 的 PHY-TXSTART.request；物理层立即发送前导码，然后对数据进行扰码和 LDPC 编码，必要时每 M 个符号插入一个中导码（midamble），直到收到 PHY-TXEND.request 才停止。接收时（32.3.14），物理层先测量 RSSI，检测 L-SIG 及其重复版 RL-SIG 以区分 NGV 包与传统包，解码 NGV-SIG/RNGV-SIG，并且——只有当数据包与 OCB 主 10 MHz 信道重叠时——才发出 PHY-RXSTART.indication 并解码数据。它甚至有逻辑来合并重复发送的非 NGV 副本包，以获得更好的解码效果。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "One special packet carries no payload: the NGV ranging NDP (Null Data Packet). It looks like an NGV PPDU but stops after the NGV-LTF — no Data field at all. NGV-MCS is forced to 0, the LTF must be NGV-LTF-2x, and a TXVECTOR parameter LTF_REP can repeat the training symbols (NNGV-LTF = NUM_SS × (LTF_REP + 1)) to sharpen the channel and timing estimate. Its only purpose is precise distance measurement between vehicles.",
+      "zh": "有一个特殊的数据包不携带任何载荷：NGV 测距 NDP（空数据包，Null Data Packet）。它看起来像一个 NGV PPDU，但在 NGV-LTF 之后就结束了——完全没有数据字段。NGV-MCS 被强制设为 0，LTF 必须是 NGV-LTF-2x，而 TXVECTOR 参数 LTF_REP 可以重复训练符号（NNGV-LTF = NUM_SS × (LTF_REP + 1)），以提升信道与时序估计的精度。它唯一的用途，就是车辆之间的精确距离测量。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "EVM/sensitivity limits, and how the PLME computes TXTIME and PSDU_LENGTH",
+        "zh": "EVM/灵敏度门限，以及 PLME 如何计算 TXTIME 与 PSDU_LENGTH"
+      },
+      "en": "The transmit and receive specs are blunt numbers. The relative constellation RMS error (EVM) ceiling tightens with the constellation: -5 dB for BPSK and BPSK-DCM, down to -32 dB for 256-QAM 5/6 (Table 32-15). Minimum receiver sensitivity mirrors this: a 10 MHz BPSK-DCM PPDU must decode at -88 dBm, the most forgiving of all, while 256-QAM 3/4 needs -62 dBm (Table 32-16). On the PLME side, 32.4.3 gives the exact closed forms: TXTIME sums the fixed preamble field durations (40 us legacy preamble + TRL-SIG + TNGV-SIG + TRNGV-SIG + TNGV-STF) plus NSYM symbols of TSYM, plus the NGV-LTF and midamble time (Equation 32-42); and PSDU_LENGTH = floor((NSYM_init x NDBPS - Nservice) / 8), with NSYM_init computed at mSTBC = 1 (Equation 32-43). The PHY MIB (32.4.2) records all of this through dot11 attributes — dot11PHYType = ngv, the per-level transmit-power table, and the dynamic dot11CurrentChannelWidth / primary / secondary channel entries (Table 32-19), split into Static attributes that never change and Dynamic ones the PLME updates at runtime.",
+      "zh": "收发指标就是一串直白的数字。相对星座 RMS 误差（EVM）上限随星座阶数收紧：BPSK 与 BPSK-DCM 为 -5 dB，一路降到 256-QAM 5/6 的 -32 dB（表 32-15）。接收机最低灵敏度与此对应：10 MHz 的 BPSK-DCM PPDU 必须能在 -88 dBm 下解码，这是所有方案中最宽容的，而 256-QAM 3/4 则需要 -62 dBm（表 32-16）。在 PLME 一侧，32.4.3 给出了精确的闭式公式：TXTIME 把固定的前导各字段时长（40 us 传统前导 + TRL-SIG + TNGV-SIG + TRNGV-SIG + TNGV-STF）、NSYM 个 TSYM 符号，再加上 NGV-LTF 与中导码时间加起来（式 32-42）；而 PSDU_LENGTH = floor((NSYM_init × NDBPS - Nservice) / 8)，其中 NSYM_init 在 mSTBC = 1 下计算（式 32-43）。物理层 MIB（32.4.2）通过一系列 dot11 属性记录这一切——dot11PHYType = ngv、各档发射功率表，以及动态的 dot11CurrentChannelWidth / 主信道 / 副信道条目（表 32-19），它们被分为永不改变的静态属性，和由 PLME 在运行时更新的动态属性。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4825,
+          4827,
+          4837,
+          4838
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4817,
+        4818
+      ],
+      "note": "32.3.9.1-32.3.9.6 Data field: SERVICE, PHY padding, scrambler, LDPC coding, stream parser, constellation mapping incl. NGV-MCS 15 DCM"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4801,
+        4841,
+        4842
+      ],
+      "note": "32.3.5 NGV-MCS and BPSK-DCM (NGV-MCS 15); 32.5 NGV-MCS rate tables 32-21 to 32-24"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4822
+      ],
+      "note": "32.3.10 SU-MIMO — two spatial streams, no explicit sounding in fast vehicular channel"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4830,
+        4833,
+        4834
+      ],
+      "note": "32.3.13 NGV transmit procedure; 32.3.14 NGV receive procedure (L-SIG/RL-SIG detection, OCB primary channel, RXTIME)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4836
+      ],
+      "note": "32.3.15 regulatory requirements; 32.3.16 NGV ranging NDP (no Data field, NGV-MCS 0, NGV-LTF-2x, LTF_REP)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4825,
+        4827,
+        4837,
+        4838
+      ],
+      "note": "32.3.11/32.3.12 TX EVM (Table 32-15) and RX sensitivity (Table 32-16); 32.4.2 PHY MIB; 32.4.3 TXTIME and PSDU_LENGTH calculation"
+    }
+  ],
+  "covers": [
+    "80211-2024:32.3.9",
+    "80211-2024:32.3.5",
+    "80211-2024:32.3.10",
+    "80211-2024:32.3.11",
+    "80211-2024:32.3.12",
+    "80211-2024:32.3.13",
+    "80211-2024:32.3.14",
+    "80211-2024:32.3.15",
+    "80211-2024:32.3.16",
+    "80211-2024:32.4.2",
+    "80211-2024:32.4.3",
+    "80211-2024:32.5"
+  ],
+  "track": "v2x-light"
+}

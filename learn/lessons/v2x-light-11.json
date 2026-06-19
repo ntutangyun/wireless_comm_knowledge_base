@@ -1,0 +1,145 @@
+{
+  "id": "v2x-light-11",
+  "title": {
+    "en": "Enhanced Broadcast Service Procedures: DL/UL, EBCS Info Frame, Negotiation & Lifecycle",
+    "zh": "增强广播服务流程：下行/上行、EBCS Info 帧、协商与生命周期"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Enhanced Broadcast Service (EBCS) lets an access point push the same content — a venue map, a stadium replay feed, an emergency notice — to a whole crowd of receivers at once. The twist: many of those receivers never associate. They simply listen. Clause 34 builds the machinery for a one-to-many broadcast that works whether the listener has joined the BSS or is just passing through, and it adds data-origin authenticity so a receiver can trust the content really came from the claimed AP.",
+      "zh": "增强广播服务（EBCS，Enhanced Broadcast Service）让接入点（AP）把同一份内容——场馆地图、体育场回放、紧急通知——一次性推送给一大群接收者。其中的巧妙之处在于：很多接收者根本不关联，它们只是“收听”。第 34 章构建了这样一套一对多广播机制：无论收听者是否已加入 BSS，甚至只是路过，它都能工作；同时它还加入了数据来源真实性（data-origin authenticity），让接收者可以确信内容确实来自其声称的那个 AP。"
+    },
+    {
+      "type": "prose",
+      "en": "First, addressing. EBCS does not use a single device MAC address; it uses content addresses. EBCS Data frames carry an EBCS content MAC address in Address 1, while EBCS Info frames carry an EBCS info MAC address in Address 3. Both are multicast addresses starting with 01-0F-AC. The info address is 01-0F-AC-xx-yy-00, where xx-yy is the EBCS AP group ID (or 00-00 if none). The content address is 01-0F-AC-xx-yy-zz, where the final octet zz is the content ID — a nonzero number that names one stream of content. So the address itself tells a receiver which group and which stream a frame belongs to, letting it filter early and skip work for streams it doesn't want.",
+      "zh": "先看寻址。EBCS 不使用单一的设备 MAC 地址，而是使用“内容地址”。EBCS Data 帧在 Address 1 中携带 EBCS 内容 MAC 地址，而 EBCS Info 帧在 Address 3 中携带 EBCS 信息 MAC 地址。两者都是以 01-0F-AC 开头的组播地址。信息地址为 01-0F-AC-xx-yy-00，其中 xx-yy 是 EBCS AP 组 ID（若无则为 00-00）。内容地址为 01-0F-AC-xx-yy-zz，其中末字节 zz 是内容 ID（content ID）——一个非零的编号，用来标识某一路内容流。这样，地址本身就告诉接收者一帧属于哪个组、哪条流，使它能尽早过滤、跳过自己不需要的流，省去无谓的处理。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as EBCS AP\n    participant RX as EBCS receiver\n    Note over AP,RX: discovery via Beacon / Probe Resp / ANQP (optional)\n    opt association-required streams\n        RX->>AP: Authentication / Association / 4-way handshake\n    end\n    opt request a stream\n        RX->>AP: EBCS Content Request\n        AP->>RX: EBCS Content Response\n    end\n    AP->>RX: EBCS Info (signed descriptor of all streams)\n    AP->>RX: EBCS Data (the content, RA = content MAC addr)\n    Note over AP: near end of life\n    AP->>RX: EBCS Termination Notice (optional)",
+      "zh": "sequenceDiagram\n    participant AP as EBCS AP\n    participant RX as EBCS 接收者\n    Note over AP,RX: 通过 Beacon / Probe Resp / ANQP 发现（可选）\n    opt 需要关联的流\n        RX->>AP: 认证 / 关联 / 四次握手\n    end\n    opt 请求某条流\n        RX->>AP: EBCS Content Request\n        AP->>RX: EBCS Content Response\n    end\n    AP->>RX: EBCS Info（对所有流的已签名描述）\n    AP->>RX: EBCS Data（内容本身，RA = 内容 MAC 地址）\n    Note over AP: 接近生命周期末尾\n    AP->>RX: EBCS Termination Notice（可选）"
+    },
+    {
+      "type": "prose",
+      "en": "The downlink (DL) procedure is the heart of clause 34. At the AP, EBCS DL turns on when there is at least one stream in its EBCS traffic stream table. The AP advertises its capability in the Extended Capabilities element of Beacons and Probe Responses, and periodically transmits an EBCS Info frame — the signed catalogue of every stream it offers. Crucially it does not announce that Info frame through the ordinary TIM; instead a countdown field tells receivers exactly when the next one is coming. EBCS Data frames then carry the real payload, with the receiver's MAC bypassing 802.1X filtering: the content flows even past a blocked controlled port, because an unassociated listener still needs to receive it. At the receiver, the station discovers the AP, caches the stream catalogue from the Info frame, configures an EBCS filter to admit only the content addresses it selected, and authenticates every Info and Data frame before passing the payload up.",
+      "zh": "下行（DL）流程是第 34 章的核心。在 AP 侧，只要其 EBCS 流表中至少有一条流，EBCS DL 就会启用。AP 在 Beacon 和 Probe Response 的扩展能力元素（Extended Capabilities element）中通告自身能力，并周期性发送 EBCS Info 帧——也就是它所提供的每一条流的“已签名目录”。关键在于：它并不用普通的 TIM 来宣告这个 Info 帧，而是用一个倒计时字段告诉接收者下一帧确切何时到来。随后 EBCS Data 帧承载真正的载荷，接收侧的 MAC 会绕过 802.1X 过滤：即使受控端口处于阻塞状态，内容依然能够流过，因为一个未关联的收听者仍然需要收到它。在接收者侧，站点发现 AP、从 Info 帧缓存流目录、配置 EBCS 过滤器只放行自己选中的内容地址，并在把载荷上交之前对每一个 Info 帧和 Data 帧进行认证。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why a separate Info frame at all? Because the content itself (the Data frames) carries no trust anchor. The EBCS Info frame is the signed descriptor: it lists every stream, carries the AP's certificate chain back to a CA, and names which authentication algorithm (PKFA, HCFA, or HLSA) protects each stream. A receiver validates the Info frame once, then uses what it learned to authenticate the cheap Data frames that follow.",
+      "zh": "为什么非要有一个独立的 Info 帧？因为内容本身（Data 帧）不携带任何信任锚点。EBCS Info 帧才是那份“已签名的描述”：它列出每一条流，携带可回溯到 CA 的 AP 证书链，并指明用哪种认证算法（PKFA、HCFA 或 HLSA）保护每条流。接收者只需校验一次 Info 帧，随后便可用所学到的信息去认证后续那些“廉价”的 Data 帧。"
+    },
+    {
+      "type": "prose",
+      "en": "An Info frame can grow large — a long stream catalogue plus a certificate and a signature easily overflow one beacon-sized frame. So clause 34 defines fragmentation. The AP builds the full Info frame, picks a fragment length so the hash-values, certificate, and signature all fit in fragment 0, splits the rest into n fragments indexed 0..n-1, hashes every fragment except the first, and signs the whole thing once in fragment 0. The trick is elegant: fragment 0 carries the signature plus the hashes of all the other fragments, so the receiver verifies one signature, then validates each later fragment by simply checking its hash matches. Data frames must not be sent until every fragment has gone out, and defragmentation reassembles them on the receiver side.",
+      "zh": "Info 帧可能变得很大——长长的流目录，外加一份证书和一段签名，很容易超出一个 beacon 大小的帧。于是第 34 章定义了分片（fragmentation）。AP 构造出完整的 Info 帧，选取一个分片长度使得哈希值字段、证书字段和签名字段都能放进第 0 片，再把其余部分切成 n 个分片（索引 0..n-1），对除第一片以外的每一片计算哈希，并对整体只签一次名、放进第 0 片。其巧妙之处在于：第 0 片携带签名以及其余所有分片的哈希值，因此接收者只需验证这一个签名，随后对每个后续分片只要核对其哈希是否匹配即可完成验证。在所有分片发完之前不得发送 Data 帧；接收侧的去分片（defragmentation）会把它们重新拼回。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><text x='10' y='20' stroke='none' fill='currentColor' font-size='13'>Full EBCS Info frame</text><rect x='10' y='30' width='110' height='28'/><text x='20' y='48' stroke='none' fill='currentColor' font-size='11'>Cert + Sig</text><rect x='120' y='30' width='100' height='28'/><text x='128' y='48' stroke='none' fill='currentColor' font-size='11'>Content List</text><rect x='220' y='30' width='100' height='28'/><text x='232' y='48' stroke='none' fill='currentColor' font-size='11'>... more</text><line x1='160' y1='66' x2='160' y2='86'/><polyline points='154,80 160,88 166,80'/><text x='10' y='110' stroke='none' fill='currentColor' font-size='13'>Fragments (each its own MMPDU)</text><rect x='10' y='120' width='130' height='34'/><text x='18' y='135' stroke='none' fill='currentColor' font-size='10'>Frag 0: Sig +</text><text x='18' y='148' stroke='none' fill='currentColor' font-size='10'>hashes(1..n-1)</text><rect x='150' y='120' width='90' height='34'/><text x='160' y='140' stroke='none' fill='currentColor' font-size='10'>Frag 1</text><rect x='250' y='120' width='90' height='34'/><text x='260' y='140' stroke='none' fill='currentColor' font-size='10'>Frag 2</text><text x='10' y='185' stroke='none' fill='currentColor' font-size='10'>Verify 1 signature in Frag 0, then hash-check each later fragment</text></svg>",
+      "caption": {
+        "en": "Fragmenting a large EBCS Info frame: fragment 0 holds the single signature plus the hashes of every other fragment, so one signature check anchors the whole set.",
+        "zh": "大型 EBCS Info 帧的分片：第 0 片保存唯一的签名以及其余每个分片的哈希值，因此一次签名校验即可为整组分片提供信任锚点。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Receivers can also negotiate. An associated station that wants a stream sends an EBCS Content Request frame; the AP answers with an EBCS Content Response carrying a per-content-ID status and, if accepted, a time-to-termination and an optional service-period schedule. Streams flagged as requiring association force the station to associate first. An unassociated station instead carries an EBCS Content Request ANQP-element — and can register, set a requested time-to-termination, or deregister (Broadcast Action bit set to 0) when it stops listening. Because ANQP from unassociated stations is unprotected, the AP is expected to apply local policy before honouring durations.",
+      "zh": "接收者还可以进行协商。一个已关联、想要某条流的站点发送 EBCS Content Request 帧；AP 以 EBCS Content Response 回应，其中按内容 ID 给出状态，若被接受还会带上一个终止时间（time-to-termination）以及可选的服务周期调度。被标记为“需要关联”的流会强制站点先关联。未关联的站点则改用携带 EBCS Content Request ANQP 元素的方式——它可以注册、设置期望的终止时间，或在停止收听时注销（把 Broadcast Action 位置 0）。由于来自未关联站点的 ANQP 不受保护，AP 在采信这些时长之前应当先施加本地策略。"
+    },
+    {
+      "type": "prose",
+      "en": "Every broadcast has a lifecycle. When a stream is about to end — within dot11EBCSTerminationNoticeTime — the broadcaster (an AP, in DL) starts sending EBCS Termination Notice frames. Each notice gives a Time To Termination counted in TBTTs, plus a Negotiation Method (and optional Negotiation Address) telling listeners how to ask for an extension. A receiver that wants the stream to continue uses that method to negotiate; if granted, the AP keeps transmitting and updates the Time To Termination (capped at 65535) in later notices. This is the orderly wind-down that lets listeners react before the content simply disappears.",
+      "zh": "每一次广播都有生命周期。当一条流即将结束——在 dot11EBCSTerminationNoticeTime 之内——广播方（在 DL 中即 AP）便开始发送 EBCS Termination Notice 帧。每条通知给出以 TBTT 计数的终止时间（Time To Termination），外加一个协商方法（Negotiation Method，以及可选的协商地址 Negotiation Address），告诉收听者如何申请延长。希望该流继续的接收者就用这个方法进行协商；若获准，AP 会继续发送，并在后续通知中更新终止时间（上限为 65535）。这正是一种有序的“收尾”机制，让收听者能在内容直接消失之前做出反应。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the uplink (UL) flips the direction. EBCS UL lets a non-AP station broadcast an EBCS UL frame carrying a higher-layer payload meant to be relayed onward to a named destination. Three roles cooperate. The relaying STA (which may or may not run its own BSS) advertises a relaying service via its affiliated EBCS proxy and can filter incoming UL frames by the content address in Address 3. The non-AP STA may transmit without ever hearing a Beacon — setting Address 1 to a group address, including its certificate, a frame-count to deter replay, and an optional signature. The EBCS proxy then applies its own criteria, decides whether to relay, and if so generates IP packets carrying the payload to the destination. Delivery is explicitly best-effort.",
+      "zh": "最后，上行（UL）把方向反转过来。EBCS UL 让一个非 AP 站点广播一帧 EBCS UL 帧，其中携带一份高层载荷（HLP payload），意在被中继转发到帧中指定的目的地。这里有三个角色协作。中继站点（relaying STA，可自建 BSS，也可不建）通过其关联的 EBCS 代理（EBCS proxy）通告中继服务，并可按 Address 3 中的内容地址过滤收到的 UL 帧。非 AP 站点甚至无需听到任何 Beacon 即可发送——将 Address 1 设为组地址，附上自己的证书、一个用于防重放的帧计数（frame-count），以及可选的签名。随后 EBCS 代理依据自身准则判断是否中继，若中继，则生成承载该载荷的 IP 包发往目的地。其投递被明确定义为“尽力而为”（best-effort）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact addressing, 802.1X bypass, and the fragment-hash chain",
+        "zh": "精确的寻址、802.1X 旁路与分片哈希链"
+      },
+      "en": "Clause 34.2 fixes the content/info addressing: EBCS info MAC address = 01-0F-AC-xx-yy-00 (xx-yy = AP group ID or 00-00); EBCS content MAC address = 01-0F-AC-xx-yy-zz, octet zz set by the EBCS traffic stream mapper to the (nonzero) content ID. At the AP (34.3.2), an MSDU with a non-null EBCS content ID in MA-UNITDATA.request bypasses 802.1X filtering, and one of PKFA (12.15.2), HCFA (12.15.3), or HLSA (12.15.4) authenticates the content per its content ID; the Data frame sets RA = content MAC address, TA = BSSID, SA = the assigned group address. At the receiver (34.3.3) an EBCS traffic stream passes the 802.1X Controlled Port even when blocked, generating MA-UNITDATA.indication. Info-frame generation (34.3.4) sets the EBCS Info Sequence Number to a random value, incrementing per frame; if any stream's content-auth is not HLSA, the Info Authentication Algorithm shall not be None. Fragmentation (34.3.5) chooses a fragment length so the Fragment Hash Values, Certificate, and Signature fit in fragment 0; sets Number of Fragments = n-1; hashes all fragments except the first (12.15.2.1); signs once in fragment 0; and forbids Data frames until all fragments are sent. Defragmentation is in 12.15.2.2. In UL (34.4.3) the non-AP STA may transmit with no Beacon, Address 1 = group address, Address 3 = content MAC address, including a certificate, and a Frame Count that starts at 1 and increments to deter replay; the EBCS proxy (34.4.4) relays by generating IP packets to the specified destination on a best-effort basis.",
+      "zh": "34.2 节固定了内容/信息寻址：EBCS 信息 MAC 地址 = 01-0F-AC-xx-yy-00（xx-yy = AP 组 ID 或 00-00）；EBCS 内容 MAC 地址 = 01-0F-AC-xx-yy-zz，末字节 zz 由 EBCS 流映射器设为（非零的）内容 ID。在 AP 侧（34.3.2），MA-UNITDATA.request 中带有非空 EBCS 内容 ID 的 MSDU 会绕过 802.1X 过滤，并按其内容 ID 用 PKFA（12.15.2）、HCFA（12.15.3）或 HLSA（12.15.4）之一进行内容认证；Data 帧将 RA 设为内容 MAC 地址、TA 设为 BSSID、SA 设为所分配的组地址。在接收侧（34.3.3），即使受控端口处于阻塞状态，EBCS 流仍能通过 802.1X 受控端口，并生成 MA-UNITDATA.indication。Info 帧生成（34.3.4）把 EBCS Info 序号设为随机初值并逐帧加一；若任一条流的内容认证不是 HLSA，则 Info 认证算法字段不得为 None。分片（34.3.5）选取分片长度使分片哈希值、证书与签名都装入第 0 片；将分片数设为 n-1；对除第一片外的所有分片计算哈希（12.15.2.1）；只在第 0 片签一次名；并规定所有分片发完前不得发送 Data 帧。去分片见 12.15.2.2。在 UL（34.4.3）中，非 AP STA 可无需 Beacon 即发送，Address 1 = 组地址，Address 3 = 内容 MAC 地址，附上证书，并带一个起始为 1、逐次递增以防重放的帧计数；EBCS 代理（34.4.4）以尽力而为的方式生成发往指定目的地的 IP 包来完成中继。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4852,
+          4854,
+          4855,
+          4856,
+          4857,
+          4862,
+          4863
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:34.2",
+    "80211-2024:34.3.2",
+    "80211-2024:34.3.3",
+    "80211-2024:34.3.4",
+    "80211-2024:34.3.5",
+    "80211-2024:34.3.6",
+    "80211-2024:34.3.7",
+    "80211-2024:34.3.8",
+    "80211-2024:34.3.9",
+    "80211-2024:34.4.2",
+    "80211-2024:34.4.3",
+    "80211-2024:34.4.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4852
+      ],
+      "note": "34.2 EBCS addressing — content/info MAC addresses 01-0F-AC-xx-yy-zz, content ID encoding"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4853,
+        4854,
+        4855
+      ],
+      "note": "34.3.1-34.3.3 EBCS DL frame sequence; DL procedure at AP (802.1X bypass, PKFA/HCFA/HLSA) and at receiver"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4856,
+        4857
+      ],
+      "note": "34.3.4-34.3.6 EBCS Info frame generation/usage, fragmentation steps, defragmentation pointer"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4858,
+        4859,
+        4860,
+        4861
+      ],
+      "note": "34.3.7-34.3.9 negotiation for associated and unassociated STAs; termination notice and extension negotiation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4862,
+        4863
+      ],
+      "note": "34.4.2-34.4.4 EBCS UL at relaying STA, non-AP STA, and EBCS proxy"
+    }
+  ],
+  "track": "v2x-light"
+}

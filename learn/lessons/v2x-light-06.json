@@ -1,0 +1,110 @@
+{
+  "id": "v2x-light-06",
+  "title": {
+    "en": "NGV MAC Remainder: OCB Channel Access, Aggregation, Ranging & Measurement",
+    "zh": "NGV MAC 余篇：OCB 信道接入、聚合、测距与无线环境测量"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A car on the road has no time to join a network. There is no scan, no authentication, no association — by the time a handshake finished, the car ahead has already braked. So Next Generation V2X (NGV) talks 'outside the context of a BSS' (OCB): stations just transmit and listen on the 5.9 GHz safety band with no membership ritual at all. This lesson finishes the NGV MAC story — how a vehicle actually grabs that channel, packs its frames, ranges its neighbours, and reports on the RF traffic jam around it.",
+      "zh": "路上的车没有时间去“加入”一个网络。没有扫描，没有认证，没有关联——等一套握手做完，前车早就刹停了。于是下一代车联网（NGV）采用“在 BSS 语境之外（OCB）”通信：站点直接在 5.9 GHz 安全频段上收发，完全没有入网仪式。本课补完 NGV MAC 的故事——车辆究竟如何抢占这个信道、如何打包帧、如何对邻居测距，以及如何报告自己周围的射频“堵车”状况。"
+    },
+    {
+      "type": "prose",
+      "en": "First, coexistence. The 5.9 GHz band already carries legacy 11p (non-NGV) radios, and NGV STAs must not trample them. The trick is quietly clever: an NGV STA marks its non-NGV PPDUs by stuffing a specific value into the Duration/ID field of the MAC header. An Ack with Duration/ID = 2, or a data frame whose Duration/ID equals the SIFS-plus-Ack arithmetic, tells a listening NGV STA 'the transmitter is one of us.' Legacy stations just see ordinary timing; NGV stations read it as a quiet identity badge. (NGV mode is gated on OCB being active in the first place.)",
+      "zh": "首先是共存。5.9 GHz 频段上早已运行着传统的 11p（非 NGV）电台，NGV 站点绝不能把它们碾过去。这里的手法相当巧妙：NGV 站点通过往 MAC 头的 Duration/ID 字段里塞入一个特定值，来给自己发出的非 NGV PPDU 打标记。一个 Duration/ID = 2 的 Ack，或者一个 Duration/ID 恰好等于“SIFS 加 Ack 时长”那套算式的数据帧，就在告诉正在监听的 NGV 站点：“发送方是自己人。”传统站点只会把它看成普通的时序值；而 NGV 站点把它读作一枚安静的身份徽章。（NGV 模式本身的前提是 OCB 已经处于激活状态。）"
+    },
+    {
+      "type": "prose",
+      "en": "Now the channel grab. An NGV 20 MHz channel is built from two contiguous 10 MHz halves — an OCB primary and an OCB secondary. To send a 20 MHz PPDU the STA contends with EDCA, but it only calls the medium idle when the primary is idle (physical + virtual carrier sense) AND the secondary is idle by CCA. If either half is busy it backs off. And there is a graceful fallback: if only the secondary is busy and the request allows it, the STA can drop to a 10 MHz transmission on the primary instead of waiting. Reach over rigidity — a safety message half-wide still gets through.",
+      "zh": "接下来是抢信道。一个 NGV 20 MHz 信道由两个相邻的 10 MHz 半信道拼成——OCB 主信道与 OCB 副信道。要发送 20 MHz 的 PPDU，站点用 EDCA 竞争，但只有当主信道空闲（物理 + 虚拟载波侦听）**且**副信道经 CCA 判定空闲时，它才认定介质空闲。任一半信道繁忙就退避。这里还有一个优雅的退路：若仅副信道繁忙、且请求允许，站点可以降到主信道上做 10 MHz 发送，而不必干等。可达性优先于刻板——一条只占半宽的安全消息照样能送出去。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[Want to send 20 MHz NGV PPDU] --> B{OCB primary idle?<br/>phys + virtual CS}\n    B -- no --> Z[Random backoff]\n    B -- yes --> C{OCB secondary idle?<br/>CCA}\n    C -- yes --> D[Transmit 20 MHz]\n    C -- no --> E{Fallback enabled?}\n    E -- yes --> F[Transmit 10 MHz on primary]\n    E -- no --> Z",
+      "zh": "flowchart TD\n    A[准备发送 20 MHz NGV PPDU] --> B{OCB 主信道空闲?<br/>物理 + 虚拟载波侦听}\n    B -- 否 --> Z[随机退避]\n    B -- 是 --> C{OCB 副信道空闲?<br/>CCA}\n    C -- 是 --> D[以 20 MHz 发送]\n    C -- 否 --> E{允许回退?}\n    E -- 是 --> F[在主信道以 10 MHz 发送]\n    E -- 否 --> Z"
+    },
+    {
+      "type": "prose",
+      "en": "Safety frames are short, so NGV tunes aggregation accordingly — and freezes the parameters so nobody has to negotiate them on the road. An NGV STA can send A-MSDUs and A-MPDUs entirely outside a BSS, with a fixed maximum MPDU length (most NGV-MCS top out at 7991 octets) and at least 2 µs between adjacent MPDUs. Block Ack is mandatory and works with no capability exchange and no BA agreement: it is simply HT-immediate, no timeout, 32 buffers of up to 7935 octets, acknowledged with a Compressed BlockAck. Everything that would normally be a setup handshake is hard-wired.",
+      "zh": "安全帧很短，于是 NGV 据此调校聚合策略——并把这些参数固定下来，免得在路上还要协商。NGV 站点可以完全在 BSS 之外发送 A-MSDU 和 A-MPDU，最大 MPDU 长度是固定的（多数 NGV-MCS 上限为 7991 字节），相邻 MPDU 之间至少间隔 2 µs。块确认（Block Ack）是强制的，且无需能力交换、无需建立 BA 协议：它就是 HT 立即式、无超时、32 个缓冲区、每个最多 7935 字节，用压缩块确认帧（Compressed BlockAck）回应。凡是平时需要一段建立握手的环节，这里统统被硬编码写死。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Reliability for broadcasts comes from raw repetition. In NON_NGV_10 repetition mode an NGV STA simply sends the same NON_NGV_10 PPDU several times, SIFS apart, so both NGV and legacy receivers get more chances to catch a group-addressed safety message. Separately, non-NGV duplication lets a 20 MHz STA protect its transmission with RTS/CTS carried in non-NGV duplicate PPDUs — picking CBW20 or CBW10 for the CTS based on whether the secondary 10 MHz half is clear.",
+      "zh": "广播的可靠性靠最朴素的“重复”来换取。在 NON_NGV_10 重复模式下，NGV 站点只是把同一个 NON_NGV_10 PPDU 隔着 SIFS 连发若干次，让 NGV 和传统接收方都有更多机会接住一条组播安全消息。另外，非 NGV 复制（non-NGV duplication）让 20 MHz 站点能用承载于非 NGV 复制 PPDU 里的 RTS/CTS 来保护自己的发送——并依据副 10 MHz 半信道是否干净，为 CTS 选择 CBW20 还是 CBW10。"
+    },
+    {
+      "type": "prose",
+      "en": "Two more roles round out the NGV MAC. NGV ranging lets two vehicles measure the distance between them: it is a slimmed subset of FTM (the Fine Timing Measurement machinery), using non-TB ranging with NGV ranging NDPs and a Ranging NDP Announcement — no PHY security on the 5.9 GHz path, with capability discovery pushed up to higher layers. And radio environment measurement turns each car into a sensor of the road's RF congestion: on request it periodically measures the channel-busy percentage and counts neighbouring stations (both NGV and non-NGV), reporting upward so higher layers can adapt. Underpinning all of it, the NGV MAC data service simply obeys a per-MSDU 'radio environment request vector' — PPDU format, MCS, spatial streams, channel, power — handed down from above.",
+      "zh": "还有两个角色让 NGV MAC 更完整。NGV 测距让两辆车测量彼此之间的距离：它是 FTM（精细定时测量机制）的一个精简子集，使用非 TB 测距、NGV 测距 NDP 与“测距 NDP 通告（Ranging NDP Announcement）”——在 5.9 GHz 路径上不设 PHY 安全，能力发现则上推给高层处理。而无线环境测量把每辆车变成路面射频拥塞的传感器：按请求周期性地测量信道繁忙百分比，并统计邻居站点数量（NGV 与非 NGV 都算），上报给高层以便自适应。支撑这一切的，是 NGV MAC 数据服务：它只是逐 MSDU 地遵循一份自上层下发的“无线环境请求向量”——PPDU 格式、MCS、空间流、信道、功率，照单执行。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact 20 MHz idle test, the fixed BA config, and how the data service reads the request vector",
+        "zh": "精确的 20 MHz 空闲判定、固定的 BA 配置，以及数据服务如何读取请求向量"
+      },
+      "en": "Clause 31.2.2 defines the 20 MHz OCB channel as two contiguous 10 MHz channels (OCB primary + OCB secondary) and declares the medium idle only when the CS mechanism shows the primary idle, PHY-CCA shows the secondary idle, and (if dot11VirtualCSonOCBSecondaryImplemented) virtual CS shows the secondary idle; otherwise busy, triggering 10.23.2.2 backoff with a redefined set of slot boundaries (a–h). 31.2.3 fixes the aggregation: receive up to the maximum NGV MPDU length of Table 31-1 (7991 octets for most NGV-MCS, dropping for MCS 15), ≥ 2 µs between adjacent MPDUs, and Block Ack with no capability/agreement exchange — A-MSDU supported, HT-immediate policy, no timeout, 32 buffers of 7935 octets, Compressed BlockAck. 31.5 ties it together: per-MSDU, the NGV STA obeys the radio environment request vector for PPDU format, data rate/NGV-MCS (retransmissions no higher than the initial), spatial streams, A-MPDU permission, MSDU lifetime, channel/primary/width (with a 20→10 MHz fallback), and transmit PSD; 31.6 adds periodic channel-busy-percentage and neighbour-count measurement reporting per 6.5.27.",
+      "zh": "31.2.2 节将 20 MHz OCB 信道定义为两个相邻的 10 MHz 信道（OCB 主 + OCB 副），并规定只有当载波侦听机制判定主信道空闲、PHY-CCA 判定副信道空闲、且（若 dot11VirtualCSonOCBSecondaryImplemented 为真）虚拟载波侦听也判定副信道空闲时，介质才算空闲；否则即为繁忙，触发 10.23.2.2 退避，并采用一套重新定义的时隙边界（a–h）。31.2.3 节固定了聚合：接收时不超过表 31-1 的最大 NGV MPDU 长度（多数 NGV-MCS 为 7991 字节，MCS 15 降低），相邻 MPDU 之间 ≥ 2 µs，块确认无需能力/协议交换——支持 A-MSDU、HT 立即式策略、无超时、32 个各 7935 字节的缓冲区、压缩块确认帧。31.5 节把它们串起来：逐 MSDU 地，NGV 站点遵循无线环境请求向量来确定 PPDU 格式、数据速率/NGV-MCS（重传不高于初次发送）、空间流、A-MPDU 许可、MSDU 生存期、信道/主信道/带宽（含 20→10 MHz 回退）以及发射功率谱密度；31.6 节再加上按 6.5.27 周期性上报信道繁忙百分比与邻居数量的测量。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4778,
+          4779,
+          4783
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:31.2.1",
+    "80211-2024:31.2.2",
+    "80211-2024:31.2.3",
+    "80211-2024:31.2.4",
+    "80211-2024:31.2.5",
+    "80211-2024:31.3.1",
+    "80211-2024:31.4",
+    "80211-2024:31.5",
+    "80211-2024:31.6"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4777
+      ],
+      "note": "31.2.1 Coexistence with non-NGV STAs — Duration/ID marking; 31.2.2 intro: NGV 20 MHz = OCB primary + secondary"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4778,
+        4779
+      ],
+      "note": "31.2.2 20 MHz idle test + slot boundaries + 10 MHz fallback; 31.2.3 A-MSDU/A-MPDU/BA fixed config and Table 31-1"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4780,
+        4781
+      ],
+      "note": "31.2.4 NON_NGV_10 repetition; 31.2.5 non-NGV duplication (RTS/CTS CBW20/CBW10); 31.3.1 DMG beamforming OCB"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4782,
+        4783,
+        4784
+      ],
+      "note": "31.4 NGV ranging (FTM subset, non-TB, NDP announcement); 31.5 NGV MAC data service (radio environment request vector); 31.6 radio environment measurement"
+    }
+  ],
+  "track": "v2x-light"
+}

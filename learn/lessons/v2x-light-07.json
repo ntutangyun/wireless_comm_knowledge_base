@@ -1,0 +1,145 @@
+{
+  "id": "v2x-light-07",
+  "title": {
+    "en": "NGV PHY Service Interface & PPDU Encoding Pipeline",
+    "zh": "NGV PHY 服务接口与 PPDU 编码流水线"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "802.11bd's NGV (Next Generation V2X) PHY is the radio that lets cars keep talking at highway speeds. Before diving into bits and constellations, it helps to look at the outer shell: what the PHY is, the shape of the packets it sends, and how the MAC above it asks for a transmission. The NGV PHY contains two pieces — a PHY function that actually moves bits over the air, and a management function (the PLME) that the MLME drives to configure the radio. Everything the MAC needs flows through a small, well-defined service interface.",
+      "zh": "802.11bd 的 NGV（下一代车联网，Next Generation V2X）PHY，是让车辆在高速行驶中仍能持续通信的那一层无线电。在深入比特与星座图之前，先看看它的“外壳”会很有帮助：这个 PHY 是什么、它发送的数据包是什么形状、以及它上面的 MAC 如何请求一次发送。NGV PHY 包含两个部分——真正把比特送上空口的 PHY 功能，以及由 MLME 驱动、用于配置无线电的管理功能（PLME）。MAC 所需的一切都通过一个小而定义清晰的服务接口来流转。"
+    },
+    {
+      "type": "prose",
+      "en": "An NGV station can emit two top-level packet shapes, chosen by the FORMAT parameter. NON_NGV_10 is the classic 10 MHz Clause-17-style packet — this is the all-important backward-compatibility path that keeps NGV radios able to talk to legacy 802.11p devices already on the road (it even covers a non-NGV duplicate format). NGV is the new native format defined in Clause 32. So one radio, two personalities: it can speak the old dialect to legacy vehicles or the new one to NGV peers.",
+      "zh": "NGV 站点可以发出两种顶层数据包形状，由 FORMAT 参数选择。NON_NGV_10 是经典的 10 MHz、Clause 17 风格的数据包——这是至关重要的向后兼容通道，它让 NGV 无线电仍能与道路上已有的传统 802.11p 设备通信（甚至涵盖一种 non-NGV 复制格式）。NGV 则是 Clause 32 中定义的全新原生格式。于是一台无线电拥有两副面孔：既能用旧方言与传统车辆交谈，也能用新语言与 NGV 对端通信。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Think of the service interface as three forms the MAC fills in. TXVECTOR carries per-packet transmit settings handed down with PHY-TXSTART.request; RXVECTOR is how the PHY reports back what it just received; and PHYCONFIG_VECTOR sets standing configuration (like the operating channel) that has nothing to do with any single packet. Same idea as ordinary 802.11 — NGV just adds its own parameters.",
+      "zh": "可以把这个服务接口想象成 MAC 要填写的三张表单。TXVECTOR 随 PHY-TXSTART.request 下发，携带每个数据包的发送设置；RXVECTOR 是 PHY 用来回报它刚刚收到了什么；而 PHYCONFIG_VECTOR 设置的是与任何单个数据包都无关的常驻配置（例如工作信道）。思路与普通 802.11 一致——NGV 只是加入了自己的参数。"
+    },
+    {
+      "type": "prose",
+      "en": "The single most reshaping knob in the TXVECTOR is CH_BANDWIDTH: CBW10 selects a 10 MHz NGV packet, CBW20 a 20 MHz one. That one enumerated value, together with FORMAT and NON_NGV_MODULATION, decides the entire over-the-air structure — whether the radio sends a native NGV PPDU, a plain legacy OFDM packet, or a non-NGV duplicate spanning two adjacent 10 MHz channels. Other TXVECTOR fields fill in the detail: NGV-MCS picks modulation and coding, NUM_SS the spatial streams, NGV_LTF_TYPE the training-field flavour, and TXPWR_LEVEL_INDEX the power. On receive, the PHY fills the matching RXVECTOR fields plus RSSI.",
+      "zh": "TXVECTOR 中最能“重塑”数据包的旋钮是 CH_BANDWIDTH：CBW10 选择 10 MHz 的 NGV 数据包，CBW20 选择 20 MHz 的。这一个枚举值，连同 FORMAT 和 NON_NGV_MODULATION，决定了整个空口结构——无线电究竟是发送原生 NGV PPDU、普通的传统 OFDM 数据包，还是横跨两个相邻 10 MHz 信道的 non-NGV 复制包。TXVECTOR 中的其他字段补充细节：NGV-MCS 选择调制与编码，NUM_SS 选择空间流数，NGV_LTF_TYPE 选择训练字段的类型，TXPWR_LEVEL_INDEX 选择发射功率。在接收侧，PHY 填写对应的 RXVECTOR 字段，并附上 RSSI。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 660 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='20' stroke='none' fill='currentColor' font-size='13' font-weight='bold'>NGV PPDU</text><rect x='10' y='40' width='70' height='40'/><text x='45' y='64' stroke='none' fill='currentColor' font-size='11' text-anchor='middle'>L-STF</text><rect x='80' y='40' width='70' height='40'/><text x='115' y='64' stroke='none' fill='currentColor' font-size='11' text-anchor='middle'>L-LTF</text><rect x='150' y='40' width='55' height='40'/><text x='177' y='64' stroke='none' fill='currentColor' font-size='10' text-anchor='middle'>L-SIG</text><rect x='205' y='40' width='55' height='40'/><text x='232' y='64' stroke='none' fill='currentColor' font-size='10' text-anchor='middle'>RL-SIG</text><rect x='260' y='40' width='60' height='40'/><text x='290' y='61' stroke='none' fill='currentColor' font-size='10' text-anchor='middle'>NGV-</text><text x='290' y='73' stroke='none' fill='currentColor' font-size='10' text-anchor='middle'>SIG</text><rect x='320' y='40' width='60' height='40'/><text x='350' y='61' stroke='none' fill='currentColor' font-size='10' text-anchor='middle'>RNGV-</text><text x='350' y='73' stroke='none' fill='currentColor' font-size='10' text-anchor='middle'>SIG</text><rect x='380' y='40' width='60' height='40'/><text x='410' y='61' stroke='none' fill='currentColor' font-size='10' text-anchor='middle'>NGV-</text><text x='410' y='73' stroke='none' fill='currentColor' font-size='10' text-anchor='middle'>STF</text><rect x='440' y='40' width='80' height='40'/><text x='480' y='64' stroke='none' fill='currentColor' font-size='10' text-anchor='middle'>NGV-LTF</text><rect x='520' y='40' width='120' height='40'/><text x='580' y='64' stroke='none' fill='currentColor' font-size='11' text-anchor='middle'>Data (PSDU)</text><line x1='10' y1='100' x2='320' y2='100'/><line x1='10' y1='95' x2='10' y2='105'/><line x1='320' y1='95' x2='320' y2='105'/><text x='165' y='118' stroke='none' fill='currentColor' font-size='10' text-anchor='middle'>non-NGV / legacy-readable preamble</text><line x1='320' y1='100' x2='640' y2='100'/><line x1='640' y1='95' x2='640' y2='105'/><text x='480' y='118' stroke='none' fill='currentColor' font-size='10' text-anchor='middle'>NGV-specific fields</text></svg>",
+      "caption": {
+        "en": "The NGV PPDU: a legacy-readable opening (L-STF/L-LTF/L-SIG/RL-SIG) then NGV-specific fields, ending in the Data field that carries the PSDU. The RNGV-SIG is a repeat of NGV-SIG for robustness.",
+        "zh": "NGV PPDU：先是传统设备可读的开头（L-STF/L-LTF/L-SIG/RL-SIG），随后是 NGV 专用字段，最后以承载 PSDU 的 Data 字段结束。RNGV-SIG 是 NGV-SIG 的重复，用以增强鲁棒性。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "How does a PSDU — the bag of bytes the MAC hands down — become that over-the-air packet? The transmitter runs a pipeline of building blocks: PHY padding and a scrambler, an FEC encoder (BCC for the signalling fields, LDPC for data), a stream parser, constellation mapping with pilot insertion, replication across two 10 MHz channels when the bandwidth is 20 MHz, cyclic-shift diversity, spatial mapping, the IDFT that turns frequency-domain tones into a time-domain waveform, and finally guard-interval insertion and windowing before the RF up-conversion. Each preamble field (L-STF, L-LTF, the SIG fields, NGV-STF, NGV-LTF) and the Data field is constructed by walking the relevant subset of these blocks.",
+      "zh": "MAC 交下来的那一袋字节（PSDU），是如何变成空口数据包的？发射机会运行一条由若干构件组成的流水线：PHY 填充与加扰器、FEC 编码器（信令字段用 BCC，数据用 LDPC）、流分配器（stream parser）、带导频插入的星座映射、当带宽为 20 MHz 时在两个 10 MHz 信道上的复制、循环移位分集（CSD）、空间映射、把频域音调变成时域波形的 IDFT，最后在射频上变频之前插入保护间隔（GI）并加窗。每个前导字段（L-STF、L-LTF、各 SIG 字段、NGV-STF、NGV-LTF）以及 Data 字段，都是通过走这些构件中相关的子集来构造的。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n    A[PSDU + SERVICE] --> B[PHY padding]\n    B --> C[Scrambler]\n    C --> D[LDPC encoder]\n    D --> E[Stream parser]\n    E --> F[Constellation mapper + pilots]\n    F --> G[CSD per stream]\n    G --> H[Spatial mapping Q]\n    H --> I[IDFT]\n    I --> J[Insert GI + window]\n    J --> K[Analog & RF up-convert]\n    K --> L((over-the-air NGV PPDU))",
+      "zh": "flowchart LR\n    A[PSDU + SERVICE] --> B[PHY 填充]\n    B --> C[加扰器]\n    C --> D[LDPC 编码器]\n    D --> E[流分配器]\n    E --> F[星座映射 + 导频]\n    F --> G[每流 CSD]\n    G --> H[空间映射 Q]\n    H --> I[IDFT]\n    I --> J[插入 GI + 加窗]\n    J --> K[模拟与射频上变频]\n    K --> L((空口 NGV PPDU))"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the timing and the maths tie it together. Each field has a fixed duration — the legacy training fields are 16 µs each, the SIG fields 8 µs each, and an NGV-LTF symbol is 8 µs (2x), 4.8 µs (1x), or 14.4 µs (repeated 2x). The standard then stacks these fields on a common time axis: the whole transmitted signal is the sum of each field's waveform, shifted to its own start time relative to t = 0 at the L-STF. Each subfield, in turn, is an inverse DFT over the active subcarriers, scaled, windowed, spatially mapped, and cyclically shifted — the same recipe applied field by field until the packet is complete.",
+      "zh": "最后，时序与数学把这一切串联起来。每个字段都有固定时长——传统训练字段各为 16 µs，各 SIG 字段各为 8 µs，而一个 NGV-LTF 符号则为 8 µs（2x）、4.8 µs（1x）或 14.4 µs（重复 2x）。标准随后把这些字段叠放在同一条时间轴上：整个发送信号是各字段波形之和，每个字段都相对于 L-STF 的 t = 0 平移到它自己的起始时刻。而每个子字段又是在活跃子载波上的逆 DFT（IDFT），经过功率缩放、加窗、空间映射与循环移位——同一套配方逐字段地施加，直到整个数据包构造完成。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact summation that defines the transmitted signal",
+        "zh": "定义发送信号的精确求和式"
+      },
+      "en": "Clause 32.3.7.3 makes the layering explicit. The signal on transmit chain iTX, r_PPDU(t), is the sum of eight field waveforms — r_L-STF, r_L-LTF, r_L-SIG, r_RL-SIG, r_NGV-SIG, r_RNGV-SIG, r_NGV-STF, r_NGV-LTF, and r_NGV-Data — each evaluated at (t minus its own field start offset t_Field). Those offsets cascade: t_L-LTF = T_L-STF, t_L-SIG = t_L-LTF + T_L-LTF, and so on through to t_NGV-Data = t_NGV-LTF + N_NGV-LTF x T_NGV-LTF. Each field is itself a sum of subfields, where every subfield (Equation 32-3) is an inverse DFT over subcarriers k from -N_SR to N_SR, scaled by 1/sqrt(N_Tone x N_Norm), shaped by a windowing function, multiplied by the spatial-mapping matrix Q_k and the tone-rotation term, and offset by the guard interval and the per-stream cyclic shift. The actual RF signal is the real part of this complex baseband signal up-converted to the centre frequency f_c (Equation 32-1).",
+      "zh": "32.3.7.3 节把这种分层叠加写得很明确。发射链 iTX 上的信号 r_PPDU(t)，是八个字段波形之和——r_L-STF、r_L-LTF、r_L-SIG、r_RL-SIG、r_NGV-SIG、r_RNGV-SIG、r_NGV-STF、r_NGV-LTF 与 r_NGV-Data——每一个都在 (t 减去它自己的字段起始偏移 t_Field) 处取值。这些偏移逐级累加：t_L-LTF = T_L-STF，t_L-SIG = t_L-LTF + T_L-LTF，依此类推，直到 t_NGV-Data = t_NGV-LTF + N_NGV-LTF x T_NGV-LTF。每个字段本身又是若干子字段之和，其中每个子字段（式 32-3）都是在子载波 k（从 -N_SR 到 N_SR）上的逆 DFT，按 1/sqrt(N_Tone x N_Norm) 缩放，由窗函数整形，乘以空间映射矩阵 Q_k 与音调旋转项，并按保护间隔与每流循环移位进行偏移。实际的射频信号，是这个复基带信号上变频到中心频率 f_c 后取实部（式 32-1）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4803,
+          4804,
+          4805
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:32.1.3",
+    "80211-2024:32.1.4",
+    "80211-2024:32.2.2",
+    "80211-2024:32.2.3",
+    "80211-2024:32.2.4",
+    "80211-2024:32.2.5",
+    "80211-2024:32.3.2",
+    "80211-2024:32.3.3",
+    "80211-2024:32.3.4",
+    "80211-2024:32.3.6",
+    "80211-2024:32.3.7"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4786
+      ],
+      "note": "32.1.3 NGV PHY functions (PHY function + PLME); 32.1.4 PPDU Formats (FORMAT = NON_NGV_10 or NGV)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4787,
+        4788,
+        4789,
+        4790,
+        4791
+      ],
+      "note": "32.2.2 TXVECTOR/RXVECTOR parameters (FORMAT, CH_BANDWIDTH, NGV-MCS, NUM_SS, RSSI, etc.); 32.2.3 PHYCONFIG_VECTOR; 32.2.4 effect of CH_BANDWIDTH"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4792,
+        4793,
+        4794,
+        4795
+      ],
+      "note": "32.2.5 Support for NON_NGV format - Clause 17 / Clause 32 coexistence, Table 32-3 mapping, NON_NGV_10 repetition"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4796,
+        4797,
+        4798
+      ],
+      "note": "32.3.2 NGV PPDU format (Table 32-5, Figure 32-5); 32.3.3 transmitter block diagram building blocks"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4798,
+        4799,
+        4800,
+        4801
+      ],
+      "note": "32.3.4 overview of the PPDU encoding process - construction of each field from PSDU through RF"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4802,
+        4803,
+        4804,
+        4805
+      ],
+      "note": "32.3.6 timing related parameters (Table 32-6 durations); 32.3.7 mathematical description of the transmitted signal (Eq 32-1, 32-2, 32-3)"
+    }
+  ],
+  "track": "v2x-light"
+}
