@@ -1,0 +1,119 @@
+{
+  "id": "security-04-sae-dragonfly-and-wpa3",
+  "title": {
+    "en": "SAE / Dragonfly: How WPA3 Fixes the Password Problem",
+    "zh": "SAE / 蜻蜓握手：WPA3 如何解决密码难题"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "WPA2-Personal left one stubborn weakness open. With a shared password, the station and AP derive the same master key (the PMK) directly from that password, then run the 4-way handshake you saw in the previous lesson to prove they both hold it. The catch: an eavesdropper who captures that 4-way handshake can take it home and guess passwords offline — try a word, recompute the key, check whether it matches the captured handshake, repeat millions of times a second. The network never sees those guesses. A weak password falls in minutes.",
+      "zh": "WPA2-Personal 遗留了一个顽固的弱点。在共享密码（口令）模式下，站点和 AP 直接由这个密码推导出相同的主密钥（PMK），然后运行你在上一课中看到的四次握手，来证明双方都持有它。问题在于：偷听者只要抓到那次四次握手，就能把它带回家离线猜密码——试一个词、重新算一遍密钥、看是否与抓到的握手匹配，如此每秒重复数百万次。网络对这些猜测毫无察觉。弱密码几分钟内就会被攻破。"
+    },
+    {
+      "type": "prose",
+      "en": "SAE — Simultaneous Authentication of Equals, the handshake nicknamed 'Dragonfly' — is the fix, and it is what makes WPA3-Personal an upgrade over WPA2-Personal. Instead of deriving the master key straight from the password, the two sides run a short interactive exchange that proves each one knows the password without ever revealing it, and produces a fresh shared PMK as a by-product. The key property: an attacker gets only one password guess per live interaction. There is no captured transcript that can be ground through a dictionary offline.",
+      "zh": "SAE——对等实体同时认证（Simultaneous Authentication of Equals），即绰号“蜻蜓（Dragonfly）”的握手——正是这个修复方案，也正是 WPA3-Personal 相对 WPA2-Personal 的升级所在。它不再直接由密码推导主密钥，而是让双方运行一段简短的交互式交换：既证明各自都知道密码、又从不泄露密码，并顺带产出一把全新的共享 PMK。关键特性是：攻击者每次实时交互只能猜一次密码。不存在可被拿去离线字典爆破的交互记录。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "SAE has no fixed 'client' and 'server' roles. The standard calls the two parties STA-A and STA-B and treats them as equals — either side may start, and in a mesh both can start at once, each seeing itself as the initiator. That symmetry is exactly why it is called authentication of *equals*.",
+      "zh": "SAE 没有固定的“客户端”和“服务器”角色。标准把双方称为 STA-A 与 STA-B，并将它们视为对等实体——任意一方都可以发起，在 Mesh 网络里双方甚至可以同时发起，各自都把自己看作发起者。正是这种对称性，才让它被称为“对等实体（equals）”的认证。"
+    },
+    {
+      "type": "prose",
+      "en": "Intuitively, the trick is to turn the password into a secret point in math-land. Both sides deterministically convert the shared password into the same element of a finite cyclic group — a large elliptic-curve group, by default group 19 (a 256-bit prime curve). This element is the PWE, the password element. Because the password maps to a real point on a hard curve, you cannot run faster than the curve's arithmetic — and each verification needs a fresh live message from your peer, so there is no free offline grinding.",
+      "zh": "直观地说，诀窍是把密码变成“数学世界”里的一个秘密点。双方都以确定性方式，把共享密码转换成同一个有限循环群中的元素——一个大型椭圆曲线群，默认是 19 号群（256 位素数曲线）。这个元素就是 PWE（password element，密码元素）。因为密码被映射到一条困难曲线上的真实点，你跑不过该曲线的运算速度——而且每次验证都需要对端发来一条全新的实时消息，所以没有“免费”的离线爆破可言。"
+    },
+    {
+      "type": "prose",
+      "en": "From the PWE, each side picks two random secrets and runs two exchanges. First the Commit exchange: each sends a scalar and an element (a commitment built from its randoms and the PWE), forcing it to lock in a single password guess. From the peer's commitment plus its own secret, each side computes the same shared secret K, and from K derives a key-confirmation key (SAE-KCK) and the master key, the PMK. Then the Confirm exchange: each sends a hash that proves it really computed the right keys. If both confirmations verify, authentication succeeds — and that freshly minted PMK is fed into the very same 4-way handshake from the previous lesson.",
+      "zh": "从 PWE 出发，双方各自挑选两个随机秘密，并运行两轮交换。先是 Commit（承诺）交换：各方发送一个标量和一个元素（由自己的随机数与 PWE 构造出的承诺），从而被迫锁定唯一的一次密码猜测。利用对端的承诺加上自己的秘密，双方算出相同的共享秘密 K，再由 K 推导出密钥确认密钥（SAE-KCK）和主密钥 PMK。接着是 Confirm（确认）交换：各方发送一个哈希值，证明自己确实算出了正确的密钥。若双方的确认都校验通过，认证即告成功——而这把崭新产出的 PMK，会被送入上一课里完全相同的那次四次握手。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant A as STA-A\n    participant B as STA-B\n    Note over A,B: password -> same PWE (point in group 19)\n    Note over A: pick randoms; build commit (scalar, element)\n    Note over B: pick randoms; build commit (scalar, element)\n    A->>B: SAE Commit (scalar, element)\n    B->>A: SAE Commit (scalar, element)\n    Note over A,B: each derives shared K -> SAE-KCK + PMK\n    A->>B: SAE Confirm (hash over keys & commits)\n    B->>A: SAE Confirm (hash over keys & commits)\n    Note over A,B: both verify -> authenticated, PMK ready\n    Note over A,B: PMK feeds the same 4-way handshake",
+      "zh": "sequenceDiagram\n    participant A as STA-A\n    participant B as STA-B\n    Note over A,B: 密码 -> 相同 PWE (19 号群中的点)\n    Note over A: 选随机数; 构造承诺 (标量, 元素)\n    Note over B: 选随机数; 构造承诺 (标量, 元素)\n    A->>B: SAE Commit (标量, 元素)\n    B->>A: SAE Commit (标量, 元素)\n    Note over A,B: 各自推导共享 K -> SAE-KCK + PMK\n    A->>B: SAE Confirm (对密钥与承诺的哈希)\n    B->>A: SAE Confirm (对密钥与承诺的哈希)\n    Note over A,B: 双方校验通过 -> 认证成功, PMK 就绪\n    Note over A,B: PMK 送入相同的四次握手"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "SAE also gives forward secrecy. Each run uses fresh random values that are never reused, so the PMK changes every time. Capturing today's traffic — even cracking one session's keys later — gives no leverage over yesterday's or tomorrow's sessions. Compromising the password does not retroactively expose a past PMK.",
+      "zh": "SAE 还提供前向保密（forward secrecy）。每次运行都使用从不复用的全新随机值，因此 PMK 每次都不同。抓取今天的流量——哪怕事后破解了某一会话的密钥——也无法撬动昨天或明天的会话。即便密码被泄露，也不会回溯性地暴露过去的某个 PMK。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Commit, Confirm, and how K becomes the PMK",
+        "zh": "Commit、Confirm，以及 K 如何变成 PMK"
+      },
+      "en": "Clause 12.4.5.1 defines SAE as two exchanges: a commitment exchange that forces each party to commit to a single password guess, and a confirmation exchange that proves the guess was correct; both are carried in Authentication frames. The Commit message (12.4.5.3) carries commit-scalar = (rand + mask) mod r and COMMIT-ELEMENT = inverse-op(scalar-op(mask, PWE)). On receiving the peer's Commit (12.4.5.4), a STA validates the scalar (1 < scalar < r) and the element (a valid point on the curve, not the identity), then derives the shared secret K = scalar-op(rand, elem-op(scalar-op(peer-commit-scalar, PWE), PEER-COMMIT-ELEMENT)); if K is the identity element it rejects. From k = F(K) it extracts keyseed via H, then KDF-derives the SAE-KCK and the PMK (for the default AKM, a 256-bit PMK). The Confirm message (12.4.5.5) is confirm = CN(SAE-KCK, send-confirm, commit-scalar, COMMIT-ELEMENT, peer-commit-scalar, PEER-COMMIT-ELEMENT); processing the peer's Confirm (12.4.5.6) recomputes the same function as a verifier and fails authentication if it differs. The dictionary-attack resistance is stated up front in 12.4.1: password authentication 'needs to be resistant to off-line dictionary attacks,' and an attacker 'is unable to make more than one guess at the password per attack.'",
+      "zh": "12.4.5.1 节将 SAE 定义为两轮交换：承诺交换迫使各方锁定唯一的一次密码猜测，确认交换则证明猜测正确；两者都通过认证帧承载。Commit 消息（12.4.5.3）携带 commit-scalar = (rand + mask) mod r 以及 COMMIT-ELEMENT = inverse-op(scalar-op(mask, PWE))。收到对端 Commit 时（12.4.5.4），站点先校验标量（1 < 标量 < r）和元素（曲线上的有效点，且非单位元），再推导共享秘密 K = scalar-op(rand, elem-op(scalar-op(peer-commit-scalar, PWE), PEER-COMMIT-ELEMENT))；若 K 为单位元则拒绝。由 k = F(K) 经 H 提取出 keyseed，再用 KDF 推导出 SAE-KCK 与 PMK（默认 AKM 下 PMK 为 256 位）。Confirm 消息（12.4.5.5）为 confirm = CN(SAE-KCK, send-confirm, commit-scalar, COMMIT-ELEMENT, peer-commit-scalar, PEER-COMMIT-ELEMENT)；处理对端 Confirm 时（12.4.5.6）用同一函数重算出 verifier，若不一致则认证失败。抗字典攻击的特性在 12.4.1 节开宗明义地点明：密码认证“需要能抵抗离线字典攻击”，且攻击者“每次攻击至多只能对密码猜测一次”。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2961,
+          2971,
+          2972,
+          2973,
+          2974,
+          2975
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:12.4.1",
+    "80211-2024:12.4.3",
+    "80211-2024:12.4.5.1",
+    "80211-2024:12.4.5.3",
+    "80211-2024:12.4.5.4",
+    "80211-2024:12.4.5.5",
+    "80211-2024:12.4.5.6"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2961,
+        2962
+      ],
+      "note": "12.4.1 SAE overview — resistance to off-line dictionary attack, one guess per attack, forward secrecy, equals (STA-A/STA-B)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2962,
+        2963
+      ],
+      "note": "12.4.3 Representation of a password; 12.4.4 finite cyclic groups — PWE as group element, default group 19 (256-bit prime ECC)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2971,
+        2972
+      ],
+      "note": "12.4.5.1 message exchanges (commit/confirm rules); 12.4.5.3 construction of SAE Commit (commit-scalar, COMMIT-ELEMENT)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2973,
+        2974
+      ],
+      "note": "12.4.5.4 processing peer Commit — scalar/element validation, shared secret K, SAE-KCK and PMK derivation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2975
+      ],
+      "note": "12.4.5.5 construction of SAE Confirm; 12.4.5.6 processing peer Confirm — verifier recomputation"
+    }
+  ],
+  "track": "security"
+}

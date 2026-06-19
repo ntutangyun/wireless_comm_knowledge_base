@@ -1,0 +1,101 @@
+{
+  "id": "security-01-why-open-wifi-is-unsafe-and-rsna",
+  "title": {
+    "en": "Why Open Wi-Fi Is Unsafe, and What an RSNA Is",
+    "zh": "为什么开放 Wi-Fi 不安全，以及什么是 RSNA"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Wi-Fi is radio. Every frame a laptop or phone sends rides through the air, and anyone with a receiver in range hears it — you cannot aim radio at just one listener. On an open (unencrypted) network this is exactly as bad as it sounds: your frames travel in the clear. A stranger sitting nearby can read what you send, can forge frames that look like they came from you, and can even pretend to be the access point you think you are talking to. There is no cryptography in the way, so there is nothing stopping any of it.",
+      "zh": "Wi-Fi 本质上是无线电。笔记本或手机发出的每一帧都在空中传播，附近任何带接收器的人都能听到——你无法把无线电只对准一个听众。在开放（不加密）网络上，情况正如字面所示那样糟糕：你的帧以明文传输。坐在旁边的陌生人能读到你发送的内容，能伪造看起来像是你发出的帧，甚至能假装成你以为正在与之通信的那个接入点。没有任何密码学挡在中间，因此这些行为都无从阻止。"
+    },
+    {
+      "type": "prose",
+      "en": "It is worth naming the three distinct threats, because good security has to defeat all three. First, eavesdropping — passively listening to traffic that was never hidden. Second, forgery and injection — an attacker manufactures frames and the receiver has no way to tell they are fake. Third, impersonation — an attacker stands up a rogue AP with the same name, and your device cannot prove which AP is the real one. Open Wi-Fi fails all three at once: it offers neither confidentiality, nor integrity, nor authenticity.",
+      "zh": "有必要把三种各不相同的威胁逐一点名，因为合格的安全机制必须把这三者全部击败。其一，窃听——被动地监听本就未加隐藏的流量。其二，伪造与注入——攻击者凭空制造帧，而接收方无从分辨它们是假的。其三，冒充——攻击者架起一个同名的恶意 AP，而你的设备无法证明哪一个 AP 才是真的。开放 Wi-Fi 一次性在这三方面全部失守：它既不提供机密性，也不提供完整性，更不提供真实性。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The classic first attempt to fix this was WEP (Wired Equivalent Privacy). It is now obsolete — the standard has removed it as a standalone mechanism, keeping its description only because the later (also discouraged) TKIP cipher reused parts of it. WEP failed because its design let attackers recover keys from captured traffic, so 'looks encrypted' turned out to mean 'not actually safe.' The lesson stuck: a security framework has to be designed to resist attack, not merely to scramble bits.",
+      "zh": "最初修补这一切的经典尝试是 WEP（有线等效保密）。它现在已经过时——标准已将其作为独立机制移除，只保留其描述，因为后来的（同样不被推荐的）TKIP 加密算法复用了它的一部分。WEP 之所以失败，是因为其设计让攻击者能从抓取的流量中还原出密钥，于是“看起来加密了”实际上等于“并不真正安全”。这个教训被牢牢记住：安全框架必须被设计成能抵御攻击，而不仅仅是把比特打乱。"
+    },
+    {
+      "type": "prose",
+      "en": "To organise all this, 802.11 splits its security algorithms into just two classes. Pre-RSNA algorithms are the legacy, insecure world: Open System authentication and the obsolete WEP/TKIP lineage. RSNA algorithms are the modern world, built around one central idea — the Robust Security Network Association, or RSNA. Everything you actually want from Wi-Fi security (real encryption like CCMP/GCMP, protected management frames via BIP, and proper key management) lives in the RSNA class. A station that can only do pre-RSNA is, by definition, incapable of forming a secure association at all.",
+      "zh": "为了把这一切组织起来，802.11 把它的安全算法仅分为两大类。Pre-RSNA（前 RSNA）算法属于过时、不安全的世界：开放系统认证以及已过时的 WEP/TKIP 这一脉。RSNA 算法属于现代世界，围绕一个核心理念构建——稳健安全网络关联（Robust Security Network Association，RSNA）。你真正想从 Wi-Fi 安全中得到的一切（如 CCMP/GCMP 这样的真实加密、通过 BIP 实现的受保护管理帧，以及妥善的密钥管理）都属于 RSNA 这一类。一个只能做 Pre-RSNA 的站点，按定义就根本无法建立安全关联。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    A[802.11 security algorithms] --> B[Pre-RSNA: legacy, insecure]\n    A --> C[RSNA: modern, robust]\n    B --> B1[Open System auth]\n    B --> B2[WEP / TKIP - obsolete]\n    C --> C1[Authentication: SAE / 802.1X / OWE / FILS]\n    C --> C2[Key management - fresh keys]\n    C --> C3[Data protection: CCMP / GCMP]\n    C --> C4[Mgmt-frame protection: BIP]\n    style B fill:none,stroke:currentColor,stroke-dasharray:4\n    style C fill:none,stroke:currentColor",
+      "zh": "graph TD\n    A[802.11 安全算法] --> B[Pre-RSNA：过时、不安全]\n    A --> C[RSNA：现代、稳健]\n    B --> B1[开放系统认证]\n    B --> B2[WEP / TKIP - 已过时]\n    C --> C1[认证：SAE / 802.1X / OWE / FILS]\n    C --> C2[密钥管理 - 新鲜密钥]\n    C --> C3[数据保护：CCMP / GCMP]\n    C --> C4[管理帧保护：BIP]\n    style B fill:none,stroke:currentColor,stroke-dasharray:4\n    style C fill:none,stroke:currentColor"
+    },
+    {
+      "type": "prose",
+      "en": "So what does 'establishing an RSNA' actually mean, before we get into any maths? At a high level it is a sequence the two parties run before a single byte of your data is allowed to flow: they discover that the other side supports RSNA (advertised in a beacon or probe response), they prove who they are to each other through an authentication method, they derive fresh per-session keys via a key-management exchange, and only then do they program those keys into the MAC and switch on protection. The standard advertises this capability through a Robust Security Network Element (RSNE) and even bounds how long the whole setup may take. Crucially, RSNA establishment is a procedure, not a single packet — the rest of this track simply walks through its steps.",
+      "zh": "那么在我们深入任何数学之前，“建立 RSNA”究竟意味着什么？从高层来看，它是双方在你哪怕一个字节的数据被允许流动之前所运行的一段序列：它们发现对方支持 RSNA（在信标或探测响应中通告），通过某种认证方法相互证明各自的身份，经由一次密钥管理交换派生出新鲜的每会话密钥，然后才把这些密钥写入 MAC 并开启保护。标准通过一个稳健安全网络元素（RSNE）来通告这一能力，甚至还为整个建立过程规定了时限。关键在于，RSNA 的建立是一个流程，而非单个数据包——本系列接下来的内容就是逐步走完它的各个步骤。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Keep one mental model for the whole track: authenticate (prove identity), then key (agree on fresh secret keys), then protect (encrypt and integrity-check every frame). Open Wi-Fi does none of these. An RSNA does all three — and the lessons that follow zoom into each one in turn.",
+      "zh": "在整个系列中请记住一个心智模型：先认证（证明身份），再生成密钥（约定新鲜的秘密密钥），最后保护（对每一帧加密并做完整性校验）。开放 Wi-Fi 这三件事一件都不做。而 RSNA 三件都做——后续的各节课会依次放大讲解其中每一步。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact framework wording: two algorithm classes, the seven RSNA paths, and the PASN caveat",
+        "zh": "框架的精确措辞：两类算法、七种 RSNA 建立路径，以及 PASN 的限制"
+      },
+      "en": "Clause 12.2.1 defines exactly two classes of security algorithm: RSNA algorithms (for creating and using an RSNA) and pre-RSNA algorithms, and states flatly that the use of TKIP is obsolete. Clause 12.2.2 lists what each comprises: pre-RSNA is just 802.11 entity authentication, while RSNA spans TKIP (still not a robust mechanism), CCMP, GCMP, BIP, the RSNA establishment/termination procedures (802.1X, SAE, OWE), and key-management procedures. Clause 12.2.3 says a STA advertises RSNA support using the RSNE when dot11RSNAActivated is true, and that a pre-RSNA STA is not capable of creating RSNAs. Clause 12.2.4 enumerates seven ways an SME can establish an RSNA (802.1X/FILS in a BSS; PSK/password via SAE; the IBSS variants; OWE confidentiality-only; PBSS; and PASN), each ending by programming temporal keys into the MAC and invoking protection; it also bounds setup time by dot11RSNAConfigSATimeout and warns that an RSNA STA shall allow association only if authentication other than PASN was invoked prior to association. On the pre-RSNA side, 12.3.1 states the only pre-RSNA security method is Open System authentication, and 12.3.2 documents WEP purely as an obsolete cipher retained for TKIP's definition.",
+      "zh": "12.2.1 节恰好定义了两类安全算法：RSNA 算法（用于创建和使用 RSNA）与 Pre-RSNA 算法，并直截了当地指出 TKIP 的使用已经过时。12.2.2 节列出了每一类所涵盖的内容：Pre-RSNA 仅包含 802.11 实体认证；而 RSNA 则横跨 TKIP（仍非稳健机制）、CCMP、GCMP、BIP、RSNA 建立/终止流程（802.1X、SAE、OWE）以及密钥管理流程。12.2.3 节规定，当 dot11RSNAActivated 为真时，STA 使用 RSNE 通告对 RSNA 的支持，并且 Pre-RSNA STA 不具备创建 RSNA 的能力。12.2.4 节列举了 SME 建立 RSNA 的七种方式（BSS 中的 802.1X/FILS；经 SAE 的 PSK/口令；IBSS 的若干变体；仅保密的 OWE；PBSS；以及 PASN），每一种都以把临时密钥写入 MAC 并启用保护作为收尾；它还以 dot11RSNAConfigSATimeout 限定建立时长，并告诫 RSNA STA 仅当在关联之前调用了 PASN 以外的认证时才允许关联。在 Pre-RSNA 一侧，12.3.1 节说明唯一的 Pre-RSNA 安全方法是开放系统认证，而 12.3.2 节将 WEP 纯粹作为为 TKIP 定义而保留的过时密码予以记录。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2937,
+          2940,
+          2944,
+          2945
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:12.2.1",
+    "80211-2024:12.2.2",
+    "80211-2024:12.2.3",
+    "80211-2024:12.2.4",
+    "80211-2024:12.3.1",
+    "80211-2024:12.3.2"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2937
+      ],
+      "note": "12.2.1-12.2.4 Framework — two classes of security algorithm (RSNA vs pre-RSNA), security methods, RSNA STA capabilities (RSNE), and the start of the seven RSNA establishment paths"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2938,
+        2939,
+        2940
+      ],
+      "note": "12.2.4 RSNA establishment — the seven SME paths (802.1X/FILS, PSK/SAE, IBSS variants, OWE, PBSS, PASN); dot11RSNAConfigSATimeout; PASN-before-association caveat"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2944,
+        2945
+      ],
+      "note": "12.3.1-12.3.2 Pre-RSNA — Open System is the only pre-RSNA method; WEP retained only as an obsolete cipher for TKIP's definition"
+    }
+  ],
+  "track": "security"
+}

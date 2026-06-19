@@ -1,0 +1,131 @@
+{
+  "id": "security-06-pmf-bip-and-sa-query",
+  "title": {
+    "en": "Protecting Management Frames: PMF, BIP, and SA Query",
+    "zh": "保护管理帧：PMF、BIP 与 SA Query"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Across this track we locked down the data: WPA2/WPA3 authentication, the 4-way handshake, and CCMP/GCMP all protect the payload that carries your traffic. But one category of frame was historically left in the open — management frames. A Deauthentication or Disassociation frame is just a short, unencrypted notice that says \"this session is over.\" Because nothing proved who sent it, an attacker could spoof one with your address and knock you off the network. Sent in a loop, that is a classic deauthentication denial-of-service attack — and it worked even on a fully WPA2-secured BSS.",
+      "zh": "在这一系列课程里，我们一路把“数据”保护了起来：WPA2/WPA3 认证、四次握手、以及 CCMP/GCMP，都保护了承载你流量的载荷。但有一类帧在历史上一直处于“裸奔”状态——管理帧。一个去认证（Deauthentication）帧或解除关联（Disassociation）帧，本质上就是一条简短、未加密的通知，意思是“这次会话到此结束”。由于没有任何东西能证明它是谁发的，攻击者只要伪造一个带上你 MAC 地址的这种帧，就能把你踢下网。循环发送，就构成了经典的“去认证拒绝服务（DoS）攻击”——哪怕在一个完整启用了 WPA2 的 BSS 中，它依然奏效。"
+    },
+    {
+      "type": "prose",
+      "en": "Protected Management Frames (PMF) close this gap. The standard names a specific set of robust Management frames that must be protected once PMF is negotiated: Disassociation, Deauthentication, and robust Action / robust Action No Ack frames. Not every management frame qualifies — Action frames marked \"No\" in the robustness column are explicitly left unprotected. PMF splits the work in two: individually addressed (unicast) robust management frames are protected exactly like data, while group-addressed (broadcast/multicast) ones get a different, integrity-only treatment called BIP.",
+      "zh": "受保护管理帧（PMF，Protected Management Frames）正是用来堵上这个缺口的。标准明确点名了一组“健壮管理帧（robust Management frames）”：一旦协商启用 PMF，它们就必须被保护——包括解除关联帧、去认证帧，以及健壮 Action / 健壮 Action No Ack 帧。并不是每一种管理帧都算在内——在健壮性列中标注为“No”的 Action 帧被明确规定不予保护。PMF 把工作分成两路：单播（individually addressed）健壮管理帧的保护方式与数据帧完全相同；而组播/广播（group-addressed）帧则采用另一种“只保完整性”的处理方式，称为 BIP。"
+    },
+    {
+      "type": "prose",
+      "en": "Unicast robust management frames don't need a new cipher — they ride inside the pairwise cipher suite you already negotiated, the same CCMP or GCMP that protects your data. The frame's Protected Frame field is set to 1 and the body is encrypted and integrity-protected under the PTK. So a spoofed unicast deauth simply fails the MIC check and is dropped: the attacker can't forge it without the pairwise key. Group-addressed frames are the harder case — many stations share one key, so you can't get per-sender confidentiality. Here the standard chooses integrity and replay protection over encryption, and that is what BIP delivers.",
+      "zh": "单播健壮管理帧不需要新的密码算法——它们直接“搭乘”你已经协商好的成对密码套件（pairwise cipher suite），也就是保护你数据的那同一套 CCMP 或 GCMP。帧的“受保护帧（Protected Frame）”字段被置为 1，帧体在 PTK 下被加密并施加完整性保护。于是一个伪造的单播去认证帧会直接通不过 MIC 校验而被丢弃：没有成对密钥，攻击者就无法伪造它。组播帧则是更棘手的情形——多个站点共享同一把密钥，因此无法实现“按发送者区分”的机密性。在这里，标准选择了完整性与防重放保护，而非加密——这正是 BIP 所提供的。"
+    },
+    {
+      "type": "prose",
+      "en": "BIP — the Broadcast/Multicast Integrity Protocol — does not hide the contents of a group-addressed management frame; it stamps the frame with a cryptographic integrity check so a forgery is detected. It uses a dedicated group key, the IGTK (Integrity GTK), which the Authenticator hands out alongside the GTK during the 4-way or group key handshake. The transmitter appends a Management MIC element (MME) holding a key ID, a strictly increasing packet number (IPN), and a MIC computed (with AES-CMAC or AES-GMAC) over the frame. A receiver checks the IPN against a 48-bit replay counter — a stale number is discarded — then recomputes and compares the MIC. Any mismatch, and the frame is dropped.",
+      "zh": "BIP——广播/组播完整性协议（Broadcast/Multicast Integrity Protocol）——并不隐藏组播管理帧的内容；它给帧打上一个密码学完整性校验，使得任何伪造都能被检测出来。它使用一把专门的组密钥，即 IGTK（完整性 GTK），由认证者（Authenticator）在四次握手或组密钥握手中与 GTK 一并下发。发送方会附加一个“管理 MIC 元素（MME，Management MIC element）”，其中包含密钥 ID、一个严格递增的包号（IPN），以及对整帧计算出的 MIC（用 AES-CMAC 或 AES-GMAC）。接收方先用一个 48 位的重放计数器核对 IPN——陈旧的号码会被丢弃——再重新计算并比对 MIC。一旦不匹配，该帧就被丢弃。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 520 120' xmlns='http://www.w3.org/2000/svg' role='img' aria-label='BIP-protected group-addressed management frame layout'><g fill='none' stroke='currentColor' stroke-width='1.5'><rect x='8' y='40' width='90' height='40'/><rect x='98' y='40' width='250' height='40'/><rect x='348' y='40' width='110' height='40' stroke-dasharray='5 3'/><rect x='458' y='40' width='54' height='40'/></g><g fill='currentColor' font-family='sans-serif' font-size='11' text-anchor='middle'><text x='53' y='64'>MAC header</text><text x='223' y='64'>Management frame body</text><text x='403' y='58'>MME</text><text x='403' y='72'>(KeyID,IPN,MIC)</text><text x='485' y='64'>FCS</text></g><g fill='currentColor' font-family='sans-serif' font-size='10' text-anchor='middle'><text x='403' y='100'>last element in body</text></g></svg>",
+      "caption": {
+        "en": "BIP encapsulation: the Management MIC element (MME) is appended as the last element of the frame body, before the FCS. It carries the IGTK key ID, the IPN replay counter, and the integrity MIC.",
+        "zh": "BIP 封装：管理 MIC 元素（MME）作为帧体的最后一个元素附加在 FCS 之前。它携带 IGTK 的密钥 ID、用于防重放的 IPN，以及完整性 MIC。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "BIP protects integrity, not secrecy — and only against outsiders. The standard is explicit that a station which has left the BSS can still forge group-addressed robust management frames until the IGTK is rotated, since it still holds the shared key. Protection against insiders comes from rekeying, not from BIP itself.",
+      "zh": "BIP 保护的是完整性，而非保密性——而且只防外部攻击者。标准明确指出：一个已经离开 BSS 的站点，在 IGTK 被轮换之前，仍能伪造组播健壮管理帧，因为它手里还握着那把共享密钥。对“内部人”的防护来自重新密钥（rekeying），而不是 BIP 本身。"
+    },
+    {
+      "type": "prose",
+      "en": "PMF stops a spoofed deauth — but it raises a subtler question. Suppose an attacker spoofs an unprotected (Re)Association Request using your address. A real client is already associated and happy; should the AP tear down that good session because an unprotected request arrived? That would be a new denial of service. The answer is the SA Query procedure. Instead of trusting the request, the AP challenges the client that is already there: it asks it to prove it still holds the security association (SA) before anything is torn down.",
+      "zh": "PMF 挡住了伪造的去认证帧——但它带出了一个更微妙的问题。假设攻击者伪造了一个未受保护、带上你地址的（重）关联请求（(Re)Association Request）。此时一个真实的客户端早已关联、运行正常；AP 是否应该仅仅因为来了一个未受保护的请求，就拆掉这个正常会话？那将构成一种新的拒绝服务。答案就是 SA Query 流程。AP 不会轻信这个请求，而是去“盘问”那个已经在线的客户端：在拆除任何东西之前，要求它证明自己仍然持有那份安全关联（SA）。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant Atk as Attacker (spoofed addr)\n    participant AP as Access Point\n    participant STA as Real STA (associated)\n    Atk->>AP: (Re)Association Request (unprotected, your MAC)\n    Note over AP: existing SA found - do not tear down yet\n    AP->>STA: SA Query Request (protected)\n    Note over STA,AP: protected with the PTK\n    STA->>AP: SA Query Response (protected)\n    Note over AP: SA proven valid -> keep session, ignore spoof\n    Note over AP,STA: if NO valid response in timeout -> SA may be deleted",
+      "zh": "sequenceDiagram\n    participant Atk as 攻击者 (伪造地址)\n    participant AP as 接入点\n    participant STA as 真实站点 (已关联)\n    Atk->>AP: （重）关联请求 (未保护, 你的MAC)\n    Note over AP: 发现已有 SA - 先别拆\n    AP->>STA: SA Query 请求 (受保护)\n    Note over STA,AP: 用 PTK 保护\n    STA->>AP: SA Query 响应 (受保护)\n    Note over AP: SA 证明有效 -> 保留会话, 忽略伪造\n    Note over AP,STA: 若超时内无有效响应 -> 可删除 SA"
+    },
+    {
+      "type": "prose",
+      "en": "The SA Query exchange is itself a pair of protected robust Action frames, so an attacker can neither forge a valid response nor read the challenge. The AP issues an SA Query Request every retry-timeout interval until it gets a matching response or a maximum timeout elapses. If the real client answers, its SA is proven and the spoofed request is ignored — the good session survives. The procedure runs the other way too: a client that receives an unprotected deauth or disassociation with reason INVALID_CLASS2/3_FRAME can initiate its own SA Query against the AP to test whether the association is really gone before reacting. Only after no valid response within the timeout does either side delete the SA.",
+      "zh": "SA Query 交换本身就是一对“受保护的健壮 Action 帧”，因此攻击者既无法伪造有效的响应，也读不到这次盘问。AP 会每隔一个重试超时（retry-timeout）间隔发送一次 SA Query 请求，直到收到匹配的响应，或达到最大超时为止。如果真实客户端做出了应答，它的 SA 就被证明有效，伪造的请求随即被忽略——正常会话得以存活。这个流程也可以反向运行：当客户端收到一个未受保护、原因码为 INVALID_CLASS2/3_FRAME 的去认证或解除关联帧时，它可以反过来向 AP 发起自己的 SA Query，在做出反应前先验证关联是否真的已经断开。只有在超时内仍未收到有效响应时，任何一方才会删除该 SA。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact clause rules: what must be protected, how BIP processes a frame, and when SA Query deletes an SA",
+        "zh": "精确的条款规则：哪些必须保护、BIP 如何处理一帧、以及 SA Query 何时删除 SA"
+      },
+      "en": "Clause 12.2.7 fixes the set: the robust Management frames are Disassociation, Deauthentication, robust Action, and robust Action No Ack; Action frames marked No in Table 9-81 shall not be protected. When PMF is negotiated, individually addressed robust Management frames are encapsulated with the pairwise cipher suite (12.6.17) and group-addressed ones using the BIP procedures of 11.12 / 12.5.3. BIP (12.5.3.1) provides integrity and replay protection — not confidentiality — for group-addressed robust Management frames after an IGTKSA is established, using BIP-CMAC-128/256 or BIP-GMAC-128/256. On transmit (12.5.3.5) the STA builds the MME with a strictly increasing IPN and a MIC over the AAD plus frame body, appended as the last element before the FCS. On receive (12.5.3.6) the STA identifies the IGTK by MME Key ID, compares the IPN against a 48-bit replay counter (discarding stale frames and incrementing dot11RSNAStatsCMACReplays), recomputes the MIC and drops the frame on any mismatch. 12.6.17 also lets a STA discard unprotected individually addressed Deauthentication/Disassociation frames once PMF is negotiated. The SA Query procedure (11.13) is mandatory when PMF is negotiated: a STA receiving an SA Query Request responds with an SA Query Response unless e.g. it is not associated, the request was group-addressed, or it is mid-reassociation; and a non-AP STA that gets an unprotected Deauth/Disassoc with reason INVALID_CLASS2_FRAME or INVALID_CLASS3_FRAME may issue an MLME-SA-QUERY.request every dot11AssociationSAQueryRetryTimeout TUs until a matching confirm arrives or dot11AssociationSAQueryMaximumTimeout elapses — after which the SME may delete the SA and move to State 1.",
+      "zh": "12.2.7 节固定了这个集合：健壮管理帧为解除关联、去认证、健壮 Action 与健壮 Action No Ack；在表 9-81 中标注为 No 的 Action 帧不得被保护。协商启用 PMF 后，单播健壮管理帧用成对密码套件封装（12.6.17），组播帧则用 11.12 / 12.5.3 的 BIP 流程封装。BIP（12.5.3.1）在建立 IGTKSA 之后，为组播健壮管理帧提供完整性与防重放保护——而非机密性——可用 BIP-CMAC-128/256 或 BIP-GMAC-128/256。发送时（12.5.3.5），站点构造 MME，写入严格递增的 IPN，并对 AAD 加帧体计算 MIC，作为 FCS 之前的最后一个元素附加。接收时（12.5.3.6），站点依据 MME 的 Key ID 识别 IGTK，将 IPN 与一个 48 位重放计数器比对（丢弃陈旧帧并将 dot11RSNAStatsCMACReplays 计数加一），重新计算 MIC，一旦不匹配即丢弃该帧。12.6.17 还规定：一旦协商启用 PMF，站点可丢弃未受保护的单播去认证/解除关联帧。SA Query 流程（11.13）在协商启用 PMF 时为强制：收到 SA Query 请求的站点应回以 SA Query 响应，除非例如它未关联、请求是组播的、或它正处于重关联途中；而收到原因码为 INVALID_CLASS2_FRAME 或 INVALID_CLASS3_FRAME 的未受保护去认证/解除关联帧的非 AP 站点，可每隔 dot11AssociationSAQueryRetryTimeout 个 TU 发起一次 MLME-SA-QUERY.request，直到收到匹配的 confirm 或经过 dot11AssociationSAQueryMaximumTimeout——此后其 SME 可删除该 SA 并退回 State 1。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2941,
+          2997,
+          3001,
+          3002,
+          3003,
+          3034,
+          2628,
+          2629
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The full RSNA arc, recapped: identity and keys come from WPA2/WPA3 authentication (PSK, SAE, or 802.1X); the 4-way handshake derives the fresh PTK and installs the GTK and IGTK; CCMP/GCMP then protect every data frame; and PMF — unicast under the PTK, group-addressed under BIP with the IGTK, backstopped by SA Query — finally extends that protection to the management frames that decide whether you stay connected at all. Data, keys, and control are now all covered.",
+      "zh": "完整的 RSNA 脉络，回顾一遍：身份与密钥来自 WPA2/WPA3 认证（PSK、SAE 或 802.1X）；四次握手派生出全新的 PTK，并安装 GTK 与 IGTK；随后 CCMP/GCMP 保护每一个数据帧；最后由 PMF——单播帧在 PTK 下、组播帧在 IGTK 的 BIP 下，并以 SA Query 兜底——把这层保护延伸到那些决定“你是否还连得上网”的管理帧上。至此，数据、密钥与控制，都被覆盖。"
+    }
+  ],
+  "covers": [
+    "80211-2024:12.2.7",
+    "80211-2024:12.6.17",
+    "80211-2024:12.5.3.1",
+    "80211-2024:12.5.3.5",
+    "80211-2024:12.5.3.6",
+    "80211-2024:11.13"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2941
+      ],
+      "note": "12.2.7 Requirements for management frame protection - robust Management frames (Disassociation, Deauthentication, robust Action/Action No Ack); unicast via pairwise cipher, group-addressed via BIP (11.12)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2997,
+        3001,
+        3002,
+        3003
+      ],
+      "note": "12.5.3.1 BIP overview (integrity + replay, IGTK, CMAC/GMAC); 12.5.3.5 BIP transmission (MME, strictly increasing IPN, MIC); 12.5.3.6 BIP reception (replay counter, MIC verify, discard on mismatch)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3034
+      ],
+      "note": "12.6.17 Protection of robust Management frames - discard/never-transmit unprotected robust mgmt frames once PMF negotiated; pointer to SA Query (11.13)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2628,
+        2629
+      ],
+      "note": "11.13 SA Query procedures - mandatory under PMF; SA Query Request/Response; INVALID_CLASS2/3_FRAME trigger; retry/maximum timeouts; SA deletion and move to State 1"
+    }
+  ],
+  "track": "security"
+}

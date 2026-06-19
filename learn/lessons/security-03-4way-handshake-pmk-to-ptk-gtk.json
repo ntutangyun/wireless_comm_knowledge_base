@@ -1,0 +1,139 @@
+{
+  "id": "security-03-4way-handshake-pmk-to-ptk-gtk",
+  "title": {
+    "en": "The 4-Way Handshake: Turning One Secret Into Fresh Session Keys",
+    "zh": "四次握手：把一个共享密钥变成全新的会话密钥"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "By the time a station reaches this point, it and the access point already share one long-lived secret: the Pairwise Master Key, or PMK. (It may come from an enterprise login over 802.1X, from SAE, or simply from the network passphrase as a pre-shared key.) So why not just encrypt traffic with the PMK directly? Because reusing one fixed key across every session is dangerous — capture enough traffic and the key leaks. What we actually want is a fresh, unique set of keys for this association, derived from the PMK but never equal to it, and never sent over the air. That is exactly what the 4-way handshake produces.",
+      "zh": "当站点走到这一步时，它和接入点（AP）其实已经共享了一个长期保存的密钥：成对主密钥（Pairwise Master Key，PMK）。（它可能来自企业网中通过 802.1X 的登录、来自 SAE，或者干脆就是由网络口令派生出来的预共享密钥。）那为什么不直接用 PMK 来加密数据呢？因为在每一次会话里反复使用同一个固定密钥非常危险——只要截获足够多的流量，密钥就可能泄露。我们真正想要的是：为这一次关联生成一套全新的、独一无二的密钥，它由 PMK 派生而来，却永远不等于 PMK，也永远不会在空口上传输。这正是四次握手所要完成的事。"
+    },
+    {
+      "type": "prose",
+      "en": "The trick is a key hierarchy. From the shared PMK, both sides independently compute a Pairwise Transient Key (PTK) by running a pseudorandom function (PRF) over the two MAC addresses plus two fresh random numbers — a nonce from each side (ANonce from the AP, SNonce from the station). Because each side picks a brand-new nonce every time, the PTK is different for every association even though the PMK never changes. The PTK is then sliced into purpose-built pieces: a Key Confirmation Key (KCK) to prove messages are genuine, a Key Encryption Key (KEK) to protect key material in transit, and the Temporal Key (TK) that actually encrypts your data frames.",
+      "zh": "其中的诀窍是一套密钥层级（key hierarchy）。从共享的 PMK 出发，双方各自独立地计算出一个成对临时密钥（Pairwise Transient Key，PTK）：把两端的 MAC 地址再加上两个全新的随机数——双方各贡献一个 nonce（AP 提供 ANonce，站点提供 SNonce）——一起喂进一个伪随机函数（PRF）。由于每次双方都选取全新的 nonce，因此即便 PMK 始终不变，每一次关联得到的 PTK 都不一样。随后 PTK 被切分成几段专用密钥：密钥确认密钥（KCK）用于证明消息真实可信，密钥加密密钥（KEK）用于保护传输中的密钥材料，而临时密钥（TK）才是真正用来加密你的数据帧的那把钥匙。"
+    },
+    {
+      "type": "prose",
+      "en": "Unicast traffic is protected by the per-station PTK, but broadcast and multicast frames go to everyone at once, so they cannot use a key that is unique to one station. For that the AP maintains a single Group Temporal Key (GTK), shared with every associated station. The AP generates the GTK as a random value and refreshes it when needed — for example when a station leaves — and it must deliver that group key to each station securely. The 4-way handshake is also the vehicle for that first GTK delivery.",
+      "zh": "单播流量由每个站点各自的 PTK 来保护，但广播和组播帧是同时发给所有人的，因此不能使用只属于某一个站点的密钥。为此，AP 维护一把所有已关联站点共用的组临时密钥（Group Temporal Key，GTK）。AP 把 GTK 生成为一个随机值，并在需要时刷新它——例如某个站点离开时——而且必须把这把组密钥安全地分发给每一个站点。四次握手同时也是首次分发 GTK 的载体。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice what never travels over the air: the PMK and the PTK. Only the two nonces are exchanged in the clear. Since an eavesdropper can see both nonces and both MAC addresses but not the PMK, they still cannot compute the PTK. The shared secret stays secret; only fresh, non-secret ingredients are sent.",
+      "zh": "请留意哪些东西从不在空口上传输：PMK 和 PTK。真正以明文交换的只有两个 nonce。由于窃听者能看到两个 nonce 和两个 MAC 地址，却看不到 PMK，所以他依然无法算出 PTK。共享的秘密始终保持秘密；被发送出去的只是全新的、非秘密的“配料”而已。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant S as Station (Supplicant)\n    participant A as Access Point (Authenticator)\n    Note over S,A: both already share the PMK\n    A->>S: Msg 1: ANonce\n    Note over S: has both nonces + MACs -> derives PTK\n    S->>A: Msg 2: SNonce + MIC\n    Note over A: now derives the same PTK, checks MIC\n    A->>S: Msg 3: MIC + GTK (encrypted) + Install\n    Note over S: verifies MIC, installs PTK + GTK\n    S->>A: Msg 4: MIC (confirm)\n    Note over S,A: keys installed, encrypted data can flow",
+      "zh": "sequenceDiagram\n    participant S as 站点 (Supplicant)\n    participant A as 接入点 (Authenticator)\n    Note over S,A: 双方已共享 PMK\n    A->>S: 消息1: ANonce\n    Note over S: 已有两个 nonce + MAC -> 派生 PTK\n    S->>A: 消息2: SNonce + MIC\n    Note over A: 派生出相同的 PTK, 校验 MIC\n    A->>S: 消息3: MIC + GTK(加密) + 安装标志\n    Note over S: 校验 MIC, 安装 PTK + GTK\n    S->>A: 消息4: MIC(确认)\n    Note over S,A: 密钥安装完成, 加密数据可流通"
+    },
+    {
+      "type": "prose",
+      "en": "Walk the four EAPOL-Key messages in order. Message 1 (AP to station) carries the ANonce; once the station has it, the station owns both nonces and both MAC addresses, so it computes the PTK right away. Message 2 (station to AP) carries the SNonce plus a Message Integrity Code (MIC) — now the AP has the same ingredients, derives the identical PTK, and the MIC it just received proves the station truly holds the PMK. Message 3 (AP to station) carries its own MIC (proving the AP also holds the PMK) and delivers the GTK, wrapped so only the holder of the key-encryption key can read it; it also tells the station to install the keys. Message 4 (station to AP) is a short MIC-protected acknowledgement that the keys are in place. After that, every data frame is encrypted.",
+      "zh": "我们按顺序走一遍这四条 EAPOL-Key 消息。消息1（AP 发往站点）携带 ANonce；站点一旦收到，就同时拥有了两个 nonce 和两个 MAC 地址，于是立刻算出 PTK。消息2（站点发往 AP）携带 SNonce 以及一个消息完整性码（MIC）——此时 AP 也凑齐了相同的配料，派生出完全一致的 PTK，而它刚收到的这个 MIC 证明了站点确实持有 PMK。消息3（AP 发往站点）携带 AP 自己的 MIC（证明 AP 同样持有 PMK），并分发 GTK——GTK 经过封装，只有持有密钥加密密钥的一方才能读取；这条消息还告诉站点去安装这些密钥。消息4（站点发往 AP）是一条简短的、受 MIC 保护的确认，表示密钥已就位。在那之后，每一个数据帧都被加密。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why four messages and not two? The MIC in each direction is what makes it safe. Because the MIC is computed with a key only the real PMK-holder can derive, an attacker in the middle cannot forge it. Message 2's MIC proves the station is real; message 3's MIC proves the AP is real and that nobody tampered with the GTK. The handshake authenticates both parties and confirms a live, matching PTK before a single byte of user data is trusted.",
+      "zh": "为什么是四条消息而不是两条？正是每个方向上的 MIC 让它变得安全。由于 MIC 是用一把只有真正持有 PMK 的一方才能派生出来的密钥计算的，处于中间的攻击者无法伪造它。消息2 的 MIC 证明站点是真实的；消息3 的 MIC 证明 AP 是真实的、且没有人篡改过 GTK。这套握手在信任任何一个字节的用户数据之前，先对双方都完成了认证，并确认了一把鲜活、彼此匹配的 PTK。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact PTK derivation and the four EAPOL-Key field settings",
+        "zh": "PTK 的精确派生公式与四条 EAPOL-Key 的字段取值"
+      },
+      "en": "Clause 12.7.1.3 gives the formula precisely: PTK = PRF-Length(PMK, \"Pairwise key expansion\", Min(AA,SPA) || Max(AA,SPA) || Min(ANonce,SNonce) || Max(ANonce,SNonce)), where AA is the Authenticator (AP) address and SPA the Supplicant (station) address. Sorting each pair with Min/Max means both sides reach the same bit string regardless of who is who. The PTK is then partitioned by ExtractBits into PTK-KCK (data-origin authenticity for handshake messages), PTK-KEK (confidentiality of key data), the temporal key TK (cipher-suite dependent), and optionally a KDK. Clause 12.7.1.4 derives the GTK from a group master key as GTK = PRF-TK_bits(GMK, \"Group key expansion\", AA || GNonce). The four EAPOL-Key PDUs (12.7.6.2-12.7.6.5) differ only in their Key Information bits: message 1 sets Key Ack=1 and carries ANonce with no MIC; message 2 sets Key MIC Present=1 and carries SNonce; message 3 sets Install=1, Key Ack=1, Secure=1, Encrypted Key Data=1 and carries the GTK (and IGTK/BIGTK/WIGTK KDEs as negotiated); message 4 is the MIC-protected confirmation with Key Length=0 and no key data. Each MIC is computed over the EAPOL-Key body using PTK-KCK (with the MIC field zeroed first), and the Key Replay Counter ties each reply to its request to defeat replay and reflection attacks.",
+      "zh": "12.7.1.3 节给出了精确的公式：PTK = PRF-Length(PMK, \"Pairwise key expansion\", Min(AA,SPA) || Max(AA,SPA) || Min(ANonce,SNonce) || Max(ANonce,SNonce))，其中 AA 是认证者（AP）地址，SPA 是申请者（站点）地址。对每一对取值做 Min/Max 排序，意味着无论谁是谁，双方都会得到完全相同的比特串。随后 PTK 通过 ExtractBits 被切分为 PTK-KCK（为握手消息提供数据源真实性）、PTK-KEK（保护密钥数据的机密性）、临时密钥 TK（长度取决于密码套件），以及可选的 KDK。12.7.1.4 节则把 GTK 从组主密钥派生出来：GTK = PRF-TK_bits(GMK, \"Group key expansion\", AA || GNonce)。四条 EAPOL-Key PDU（12.7.6.2 至 12.7.6.5）的差别只在其 Key Information 位上：消息1 置 Key Ack=1、携带 ANonce 且不带 MIC；消息2 置 Key MIC Present=1、携带 SNonce；消息3 置 Install=1、Key Ack=1、Secure=1、Encrypted Key Data=1，并携带 GTK（以及按协商结果携带 IGTK/BIGTK/WIGTK 等 KDE）；消息4 是受 MIC 保护的确认，Key Length=0 且不带密钥数据。每个 MIC 都用 PTK-KCK 在 EAPOL-Key 帧体上计算（计算前先把 MIC 字段清零），而 Key Replay Counter 把每条回复与其对应的请求绑定在一起，以挫败重放和反射攻击。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3042,
+          3043,
+          3044,
+          3045,
+          3067,
+          3069,
+          3072
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:12.7.1.1",
+    "80211-2024:12.7.1.3",
+    "80211-2024:12.7.1.4",
+    "80211-2024:12.7.6.2",
+    "80211-2024:12.7.6.3",
+    "80211-2024:12.7.6.4",
+    "80211-2024:12.7.6.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3040
+      ],
+      "note": "12.7.1.1 General - RSNA key hierarchies: pairwise key hierarchy for unicast, single GTK for group-addressed traffic"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3042,
+        3043,
+        3044
+      ],
+      "note": "12.7.1.3 Pairwise key hierarchy - PTK = PRF over PMK, MACs, ANonce/SNonce; partition into PTK-KCK, PTK-KEK, TK"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3045,
+        3046
+      ],
+      "note": "12.7.1.4 Group key hierarchy - GTK as random value / PRF over GMK; protects group-addressed communication"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3066,
+        3067
+      ],
+      "note": "12.7.6.1-12.7.6.2 - 4-way handshake information flow and message 1 (ANonce, Key Ack), Supplicant derives PTK"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3068,
+        3069
+      ],
+      "note": "12.7.6.3 message 2 - SNonce + MIC; Authenticator derives PTK and verifies MIC"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3069,
+        3070,
+        3071,
+        3072
+      ],
+      "note": "12.7.6.4 message 3 - Install/Secure/Encrypted bits, MIC, GTK delivery; Supplicant installs keys"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3072,
+        3073
+      ],
+      "note": "12.7.6.5 message 4 - MIC-protected confirmation, Key Length 0, no key data; Authenticator installs PTK"
+    }
+  ],
+  "track": "security"
+}

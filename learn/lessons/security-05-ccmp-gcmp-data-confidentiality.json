@@ -1,0 +1,137 @@
+{
+  "id": "security-05-ccmp-gcmp-data-confidentiality",
+  "title": {
+    "en": "CCMP and GCMP: Encrypting Every Data Frame",
+    "zh": "CCMP 与 GCMP：为每一个数据帧加密"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "By the time a station and an access point finish the handshake, they share fresh secret keys: a PTK for the unicast traffic between this pair, and a GTK for the AP's broadcast and multicast frames. But keys on their own protect nothing — they are just material waiting to be used. This lesson is about what actually consumes those keys: the cipher that wraps every single data frame before it goes on the air. In 802.11 that cipher is CCMP, or its faster sibling GCMP.",
+      "zh": "当一个站点与接入点（AP）完成握手时，它们已经共享了一批新鲜的密钥：用于这对设备之间单播流量的 PTK，以及用于 AP 广播和组播帧的 GTK。但密钥本身并不能保护任何东西——它们只是等待被使用的原料。本课要讲的，正是真正“消费”这些密钥的东西：在每一个数据帧上线前对它进行封装的那套加密算法。在 802.11 里，这套算法就是 CCMP，或者它更快的兄弟 GCMP。"
+    },
+    {
+      "type": "prose",
+      "en": "Both ciphers do three jobs at once — this is what \"authenticated encryption\" means. First, confidentiality: the frame body is encrypted with AES so an eavesdropper sees only ciphertext. Second, integrity: a Message Integrity Code (MIC) is computed over the frame and its header, so if even one bit is altered in flight the receiver's MIC check fails and the frame is dropped. Third, anti-replay: every frame carries a Packet Number (PN), a 48-bit counter that strictly increases, so an attacker cannot record a valid frame and re-inject it later — the receiver simply discards any frame whose PN it has already seen.",
+      "zh": "这两种算法都同时承担三项工作——这正是“认证加密（authenticated encryption）”的含义。其一，机密性：帧体用 AES 加密，窃听者只能看到密文。其二，完整性：算法对帧及其部分头部计算一个消息完整性码（MIC），因此哪怕在传输途中只被改动了一个比特，接收方的 MIC 校验就会失败，该帧被丢弃。其三，防重放：每一帧都携带一个分组号（PN）——一个严格递增的 48 位计数器，使得攻击者无法录下一个合法帧、稍后再重新注入；接收方只会直接丢弃任何它已见过其 PN 的帧。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The key insight: the temporal key (TK) that CCMP and GCMP feed into AES is exactly the part of the PTK or GTK produced by the handshake you just learned. The handshake's only purpose was to deliver these keys; CCMP/GCMP is where they finally get spent, frame after frame.",
+      "zh": "关键点在于：CCMP 和 GCMP 喂给 AES 的临时密钥（TK），正是你上一课学到的握手所生成的 PTK 或 GTK 中的那一部分。握手的唯一目的就是把这些密钥交付到位；而 CCMP/GCMP 就是它们最终被一帧一帧花掉的地方。"
+    },
+    {
+      "type": "prose",
+      "en": "CCMP (Counter mode with CBC-MAC Protocol) is the mandatory default. It builds on AES in CCM mode, which is really two passes stitched together: AES in Counter (CTR) mode does the encryption, while AES-CBC-MAC produces the integrity tag. CCMP-128 uses a 128-bit key and an 8-octet MIC. Notice what is and isn't protected: the frame body is both encrypted and authenticated, but the MAC header is only authenticated (it must stay readable so radios can route the frame). The header bytes feed into the MIC as Additional Authentication Data (AAD), with volatile fields like Retry and Power Management masked out so a legitimate retransmission doesn't break the check.",
+      "zh": "CCMP（Counter 模式配合 CBC-MAC 协议）是强制性的默认算法。它构建在 CCM 模式下的 AES 之上，而 CCM 实际上是把两趟运算缝在一起：AES 的计数器（CTR）模式负责加密，AES-CBC-MAC 负责生成完整性标签。CCMP-128 使用 128 位密钥和 8 字节的 MIC。注意哪些被保护、哪些没有：帧体既被加密又被认证，而 MAC 头部只被认证（它必须保持可读，电台才能据此转发该帧）。头部字节作为附加认证数据（AAD）参与 MIC 计算，其中像 Retry、Power Management 这类易变字段会被屏蔽掉，这样一次合法的重传就不会破坏校验。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 520 150' fill='none' stroke='currentColor' stroke-width='1.5' font-family='sans-serif' font-size='12'><rect x='10' y='40' width='150' height='34' fill='none'/><text x='85' y='61' text-anchor='middle' stroke='none' fill='currentColor'>MAC Header</text><text x='85' y='30' text-anchor='middle' stroke='none' fill='currentColor' font-size='10'>authenticated (AAD)</text><rect x='160' y='40' width='90' height='34' fill='none'/><text x='205' y='57' text-anchor='middle' stroke='none' fill='currentColor' font-size='11'>CCMP Hdr</text><text x='205' y='69' text-anchor='middle' stroke='none' fill='currentColor' font-size='9'>PN | KeyID</text><rect x='250' y='40' width='150' height='34' fill='currentColor' fill-opacity='0.18'/><text x='325' y='61' text-anchor='middle' stroke='none' fill='currentColor'>Data (PDU)</text><rect x='400' y='40' width='70' height='34' fill='currentColor' fill-opacity='0.18'/><text x='435' y='61' text-anchor='middle' stroke='none' fill='currentColor'>MIC</text><text x='435' y='30' text-anchor='middle' stroke='none' fill='currentColor' font-size='10'>integrity</text><line x1='250' y1='90' x2='470' y2='90'/><text x='360' y='104' text-anchor='middle' stroke='none' fill='currentColor' font-size='11'>encrypted</text><text x='8' y='130' stroke='none' fill='currentColor' font-size='10'>8-octet CCMP header carries the 48-bit Packet Number (PN5..PN0) and Key ID; ExtIV bit set.</text></svg>",
+      "caption": {
+        "en": "Expanded CCMP MPDU: the header stays in the clear but is authenticated; the data and MIC are encrypted. The CCMP header adds 8 octets (PN + Key ID); the MIC adds 8 more for CCMP-128.",
+        "zh": "扩展后的 CCMP MPDU：头部保持明文但被认证；数据与 MIC 被加密。CCMP 头部增加 8 字节（PN + Key ID），CCMP-128 的 MIC 再增加 8 字节。"
+      }
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    A[Plaintext MPDU] --> B[Increment PN]\n    B --> C[Construct AAD<br/>from MAC header]\n    B --> D[Construct nonce<br/>PN + A2 + priority]\n    C --> E[CCM / GCM<br/>AES processing]\n    D --> E\n    F[Temporal Key TK] --> E\n    E --> G[Encrypted data + MIC]\n    G --> H[Encrypted MPDU<br/>= header + cipher header + data + MIC]",
+      "zh": "graph LR\n    A[明文 MPDU] --> B[递增 PN]\n    B --> C[由 MAC 头部<br/>构造 AAD]\n    B --> D[构造 nonce<br/>PN + A2 + 优先级]\n    C --> E[CCM / GCM<br/>AES 运算]\n    D --> E\n    F[临时密钥 TK] --> E\n    E --> G[加密数据 + MIC]\n    G --> H[加密后的 MPDU<br/>= 头部 + 密码头部 + 数据 + MIC]"
+    },
+    {
+      "type": "prose",
+      "en": "GCMP (Galois/Counter Mode Protocol) follows the same shape but swaps the engine. It uses AES in GCM mode, where a single combined pass produces both ciphertext and a 128-bit authentication tag using fast Galois-field arithmetic. That speed is the point: GCMP is what high-throughput links lean on, and it is the cipher associated with the highest data rates and with 6 GHz operation, where 802.11 mandates the stronger protections. The encapsulate flow is nearly identical — increment PN, build AAD from the header (reusing CCMP's AAD construction), build the GCM nonce from PN and the sender's address, then run AES-GCM over the data — but GCMP always uses a 24-octet overhead (8-octet header + 16-octet MIC) and its MIC, unlike CCM's, is not itself encrypted.",
+      "zh": "GCMP（Galois/计数器模式协议）沿用同样的结构，但换掉了引擎。它使用 GCM 模式下的 AES：用快速的伽罗瓦域算术，在一趟合并运算中同时产出密文和一个 128 位的认证标签。这种速度正是关键所在：GCMP 是高吞吐链路所依赖的算法，也是与最高数据速率以及 6 GHz 频段运行相关联的算法——而 802.11 在 6 GHz 上强制要求采用更强的保护。其封装流程几乎一模一样——递增 PN、由头部构造 AAD（直接复用 CCMP 的 AAD 构造方式）、由 PN 和发送方地址构造 GCM nonce，然后对数据运行 AES-GCM——但 GCMP 始终带来 24 字节开销（8 字节头部 + 16 字节 MIC），并且它的 MIC 与 CCM 不同，本身不被加密。"
+    },
+    {
+      "type": "prose",
+      "en": "Decapsulation runs the same machinery in reverse and adds one guard at the front. The receiver parses the encrypted frame, rebuilds the AAD and nonce, and asks AES to decrypt and verify in one step: the plaintext is released only if the recomputed MIC matches the one in the frame — otherwise the frame is silently dropped and a failure counter ticks up. Before all of that, the PN is checked against a per-session replay counter (kept per security association and per traffic identifier); any frame whose PN is less than or equal to the highest already accepted is discarded as a replay. Encrypt, authenticate, number — and on receipt, check the number, verify the tag, then decrypt. That trio is what keeps every data frame private, untampered, and fresh.",
+      "zh": "解封装就是把同一套机制反向运行，并在最前面加上一道关卡。接收方解析加密帧，重建 AAD 和 nonce，然后让 AES 在一步内完成解密与校验：只有当重新计算出的 MIC 与帧中携带的 MIC 相符时，明文才会被放行——否则该帧被静默丢弃，并让一个失败计数器加一。在这一切之前，PN 会先与一个按会话维护的重放计数器比对（该计数器按安全关联、按流量标识分别维护）；任何 PN 小于等于已接受最高值的帧都会被当作重放而丢弃。加密、认证、编号——接收时则反过来：先查编号、再验标签、最后解密。正是这三件事，让每一个数据帧都保持私密、未被篡改、且新鲜。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "CCM/GCM parameters, the PN-as-nonce, and AAD masking",
+        "zh": "CCM/GCM 参数、用作 nonce 的 PN，以及 AAD 屏蔽"
+      },
+      "en": "Per 12.5.2.1, CCMP is built on AES-CCM (RFC 3610), combining CTR for confidentiality with CBC-MAC for integrity; CCMP-128 sets the CCM parameters M=8 (8-octet MIC) and L=2, and a non-DMG RSNA STA shall support CCMP-128. The CCMP header (12.5.2.2) is 8 octets carrying a 48-bit PN (PN5 most significant), the ExtIV bit (always 1), and a 2-bit Key ID. Encapsulation (12.5.2.3.1) increments the PN to a fresh nonzero value per MPDU so a nonce never repeats under one temporal key, builds the AAD from masked header fields (12.5.2.3.3 — Retry, Power Management, More Data and others muted so retransmission doesn't break the MIC), and constructs the CCM nonce (12.5.2.3.4) from the priority, the A2 address, and the PN. GCMP (12.5.4.1) instead uses AES-GCM (NIST SP 800-38D) with a 128-bit MIC; GCMP processing always expands the MPDU by 24 octets, and crucially the GCM-produced MIC is not encrypted, unlike CCM's. GCMP reuses CCMP's AAD construction (12.5.4.3.3) and builds its GCM nonce (12.5.4.3.4) from A2 and the PN. On receipt, both ciphers release plaintext only if the recomputed MIC matches, and discard any MPDU whose PN is less than or equal to the per-SA, per-TID replay counter.",
+      "zh": "依据 12.5.2.1，CCMP 构建在 AES-CCM（RFC 3610）之上，用 CTR 实现机密性、用 CBC-MAC 实现完整性；CCMP-128 将 CCM 参数设为 M=8（8 字节 MIC）、L=2，且非 DMG 的 RSNA 站点应支持 CCMP-128。CCMP 头部（12.5.2.2）为 8 字节，携带 48 位 PN（PN5 为最高位）、ExtIV 位（恒为 1）以及 2 位 Key ID。封装时（12.5.2.3.1），每个 MPDU 都把 PN 递增到一个新鲜的非零值，使得同一临时密钥下 nonce 永不重复；由经过屏蔽的头部字段构造 AAD（12.5.2.3.3——Retry、Power Management、More Data 等被屏蔽，使重传不破坏 MIC）；并由优先级、A2 地址和 PN 构造 CCM nonce（12.5.2.3.4）。GCMP（12.5.4.1）则改用 AES-GCM（NIST SP 800-38D），MIC 为 128 位；GCMP 处理始终把 MPDU 扩大 24 字节，并且关键的一点是，GCM 产出的 MIC 不被加密，这与 CCM 不同。GCMP 复用 CCMP 的 AAD 构造方式（12.5.4.3.3），并由 A2 和 PN 构造其 GCM nonce（12.5.4.3.4）。接收时，两种算法都只在重算 MIC 相符时才放行明文，并丢弃任何 PN 小于等于该安全关联、该 TID 重放计数器的 MPDU。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2986,
+          2987,
+          2988,
+          2991,
+          3004,
+          3006,
+          3007
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:12.5.1",
+    "80211-2024:12.5.2.1",
+    "80211-2024:12.5.2.2",
+    "80211-2024:12.5.2.3",
+    "80211-2024:12.5.2.4",
+    "80211-2024:12.5.4.1",
+    "80211-2024:12.5.4.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2986
+      ],
+      "note": "12.5.1 Overview + 12.5.2.1 CCMP general — CCMP/GCMP are the RSNA data confidentiality and integrity protocols; CCM = AES-CTR + CBC-MAC; CCMP-128 M=8, L=2; fresh TK and unique nonce per frame"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2986,
+        2987
+      ],
+      "note": "12.5.2.2 CCMP MPDU format — 8-octet CCMP header (PN, ExtIV, Key ID), MIC; header authenticated, data+MIC encrypted"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2988,
+        2989,
+        2991
+      ],
+      "note": "12.5.2.3.1-12.5.2.3.4 CCMP encapsulation — increment PN, construct AAD (masked header fields), CCM nonce from priority/A2/PN, CCM originator processing"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2993,
+        2994,
+        2995
+      ],
+      "note": "12.5.2.4 CCMP decapsulation — parse, MIC check (plaintext only if MIC matches), PN/replay detection per PTKSA/GTKSA and TID"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3004,
+        3005
+      ],
+      "note": "12.5.4.1 GCMP overview — AES-GCM, 128-bit MIC, fresh TK + unique nonce; selected at high data rates and 6 GHz"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3006,
+        3007
+      ],
+      "note": "12.5.4.3 GCMP encapsulation — increment PN, reuse CCMP AAD, GCM nonce from A2+PN, GCM originator processing; MIC not encrypted"
+    }
+  ],
+  "track": "security"
+}

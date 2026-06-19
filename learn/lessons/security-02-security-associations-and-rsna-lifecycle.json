@@ -1,0 +1,110 @@
+{
+  "id": "security-02-security-associations-and-rsna-lifecycle",
+  "title": {
+    "en": "Security Associations: the Trust Records Behind a Secure Link",
+    "zh": "安全关联：安全连接背后的信任记录"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Once two devices have proven who they are, they still need somewhere to write down the terms of their secure conversation: which cipher they agreed to use, which keys to encrypt with, and how far the message counters have advanced. Wi-Fi security is, at heart, this kind of bookkeeping. The standard gives the record a name — a Security Association (SA). It is a small bundle of policy and keys that each side stores, and the standard is blunt about it: secure communication is possible only inside the context of a security association. No SA, no protected traffic.",
+      "zh": "当两台设备彼此证明了身份之后，它们还需要一个地方来记录这场安全对话的“约定条款”：双方商定使用哪种加密算法、用哪些密钥来加密、以及消息计数器已经走到了哪一步。Wi-Fi 安全的本质，其实就是这样一种“记账”。标准给这份记录起了个名字——安全关联（Security Association，简称 SA）。它是一小束策略与密钥的集合，由通信双方各自保存。标准对此说得很直白：只有在安全关联的上下文之中，安全通信才成为可能。没有 SA，就没有受保护的数据流量。"
+    },
+    {
+      "type": "prose",
+      "en": "Why a record and not a single key? Because a secure link has moving parts. Each SA holds the negotiated policy (the cipher suite and the AKM — the authentication-and-key-management method), the actual key material, an identity so it can be looked up in a table or named inside a frame, and the counters and sequence spaces that stop an attacker from replaying old packets. Different jobs need different records, so 802.11 defines several SA types — and a single secure session usually juggles more than one at the same time.",
+      "zh": "为什么要用一份“记录”，而不是单单一把密钥？因为一条安全链路是有许多活动部件的。每个 SA 都保存着：协商好的策略（加密套件以及 AKM——即认证与密钥管理方法）、真正的密钥材料、一个可供在表格中索引或写进帧里的身份标识，以及用来阻止攻击者重放旧数据包的计数器和序列空间。不同的任务需要不同的记录，因此 802.11 定义了多种 SA 类型——而且一次安全会话通常会同时管理着不止一个 SA。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200' fill='none' stroke='currentColor' stroke-width='2'><rect x='20' y='20' width='360' height='160' rx='8'/><line x1='20' y1='52' x2='380' y2='52'/><text x='200' y='42' fill='currentColor' stroke='none' font-size='15' text-anchor='middle' font-weight='bold'>Security Association (SA)</text><text x='35' y='80' fill='currentColor' stroke='none' font-size='12'>Identity (PMKID / Key ID) — name it in a table</text><text x='35' y='108' fill='currentColor' stroke='none' font-size='12'>Policy (cipher suite + AKM) — the agreed rules</text><text x='35' y='136' fill='currentColor' stroke='none' font-size='12'>Key material (PMK / PTK / GTK)</text><text x='35' y='164' fill='currentColor' stroke='none' font-size='12'>Counters &amp; sequence spaces — anti-replay</text></svg>",
+      "caption": {
+        "en": "An SA is a record, not just a key: it pairs an identity and a policy with the keys and the replay counters that keep the link honest.",
+        "zh": "SA 是一份记录，而不仅仅是一把密钥：它把身份标识、策略与密钥，以及让链路保持可信的防重放计数器捆绑在一起。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Three SA types carry most of the everyday load. The PMKSA is the master record: it comes out of a successful authentication (an 802.1X/EAP exchange, SAE, FILS, OWE, or a configured PSK) and holds the Pairwise Master Key plus a PMKID that names it. The PMKSA can be cached, which is what makes fast roaming possible. From the PMKSA, the 4-way handshake derives the PTKSA — the per-session record holding the Pairwise Transient Key that actually encrypts your unicast traffic; it lasts as long as the PMKSA it was born from. Finally the GTKSA holds the Group Temporal Key for broadcast and multicast frames. In an infrastructure BSS there is one GTKSA, owned by the AP, used to protect everything it sends to the whole group — and it is unidirectional, because only the AP transmits group traffic.",
+      "zh": "有三种 SA 类型承担了日常的大部分工作。PMKSA 是“主记录”：它产生于一次成功的认证（802.1X/EAP 交换、SAE、FILS、OWE，或配置好的 PSK），保存着成对主密钥（PMK）以及一个用来标识它的 PMKID。PMKSA 可以被缓存，这正是快速漫游得以实现的基础。从 PMKSA 出发，四次握手推导出 PTKSA——这是“每会话记录”，保存着真正用来加密你单播流量的成对临时密钥（PTK）；它的生命周期与孕育它的 PMKSA 相同。最后，GTKSA 保存着用于广播和组播帧的组临时密钥（GTK）。在基础结构 BSS 中只有一个 GTKSA，由 AP 所有，用来保护它发给整个组的所有内容——而且它是单向的，因为只有 AP 才发送组流量。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the asymmetry: a PTKSA is bidirectional (both peers send and receive with it), but a GTKSA in an infrastructure BSS is unidirectional — the AP encrypts group frames, every station only decrypts. That single direction is why losing the GTK only blinds you to broadcast traffic, not your own private link.",
+      "zh": "请注意这种不对称：PTKSA 是双向的（两端都用它来收发），而基础结构 BSS 中的 GTKSA 却是单向的——AP 负责加密组帧，每个站点只负责解密。正因为是单向的，丢失 GTK 只会让你“看不见”广播流量，而不会影响你自己那条私有链路。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n    [*] --> Created: authentication succeeds (PMKSA)\n    Created --> Derived: 4-way handshake (PTKSA / GTKSA)\n    Derived --> InUse: keys installed, port opened\n    InUse --> InUse: protected data + group traffic\n    InUse --> TornDown: MLME-DELETEKEYS / deauth / lifetime expires\n    TornDown --> [*]",
+      "zh": "stateDiagram-v2\n    [*] --> 已创建: 认证成功 (PMKSA)\n    已创建 --> 已派生: 四次握手 (PTKSA / GTKSA)\n    已派生 --> 使用中: 密钥安装、端口开放\n    使用中 --> 使用中: 受保护的数据 + 组流量\n    使用中 --> 已拆除: MLME-DELETEKEYS / 解除认证 / 生命周期到期\n    已拆除 --> [*]"
+    },
+    {
+      "type": "prose",
+      "en": "Every SA has a life cycle: it is created, used, and eventually torn down. In an ESS (the usual home/office network) initial contact runs in a fixed order. First the station picks an AP advertising the right SSID. Then it does 802.11 authentication followed by association — and crucially, the actual cipher suite and AKM are not just announced, they are negotiated and confirmed here. The station copies into its (Re)Association Request RSNE exactly one pairwise cipher and one AKM from the menu the AP advertised; if nothing overlaps, it simply declines to associate. The last step is key management — the 4-way handshake (or, with FILS, the association frames themselves) — which proves both sides hold the right key and signals that the link is finally cleared for normal data and protected management frames.",
+      "zh": "每个 SA 都有生命周期：被创建、被使用，最终被拆除。在 ESS（常见的家庭/办公网络）中，初次接入是按固定顺序进行的。首先，站点挑选一个广播着正确 SSID 的 AP；然后它执行 802.11 认证，紧接着进行关联——关键在于，真正使用的加密套件与 AKM 并非只是“宣告”，而是在这一步被协商并确认下来。站点会从 AP 所宣告的“菜单”中，恰好选出一种成对加密套件和一种 AKM，写进它的（重）关联请求帧中的 RSNE；如果双方没有任何交集，它就干脆拒绝关联。最后一步是密钥管理——四次握手（若使用 FILS，则是关联帧本身）——它证明双方都持有正确的密钥，并发出信号：链路终于被放行，可以承载正常数据和受保护的管理帧了。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Policy selection rules and the RSNA establishment ordering",
+        "zh": "策略选择规则与 RSNA 建立的次序"
+      },
+      "en": "Clause 12.6.3 governs RSNA policy selection in an infrastructure BSS: the AP advertises its policies, and selection is performed by the associating STA, which inserts an RSNE into its (Re)Association Request and includes exactly one authentication (AKM) and one pairwise cipher suite from among those the AP advertised, plus the AP's group data and group management cipher suites. If any RSNE field from the AP fails to overlap a value the STA supports, the STA shall decline to associate. An HT STA must eliminate TKIP as a pairwise choice when CCMP is offered. The AP, accepting a secure association, shall use the cipher/AKM from the request — unless it supplies an optional second RSNE in message 3 of the 4-way handshake, in which case that pairwise cipher wins. Management-frame protection is resolved jointly from the MFPC/MFPR subfields via Table 12-5. Clause 12.6.8.1 fixes the ordering: when establishing an RSNA in a non-FT environment, a STA shall use SAE, FILS, or Open System authentication prior to (re)association (PASN may be used without (re)association) — so authentication precedes association, and key management follows. The SA definitions in 12.6.1.1 and the ESS life cycle in 12.6.1.2 close the loop: a PMKSA from authentication seeds a PTKSA via the 4-way handshake (no PTKSA exists until message 3 is validated by the Supplicant and message 4 by the Authenticator), and MLME-DELETEKEYS.request tears the temporal keys down.",
+      "zh": "12.6.3 节规定了基础结构 BSS 中的 RSNA 策略选择：由 AP 宣告其可用策略，而选择动作由发起关联的 STA 完成——它在（重）关联请求中插入一个 RSNE，从 AP 所宣告的集合中恰好选出一种认证方法（AKM）和一种成对加密套件，并附上 AP 指定的组数据加密套件和组管理加密套件。只要 AP 的 RSNE 中有任一字段与 STA 所支持的值没有交集，STA 就应拒绝关联。当 AP 提供 CCMP 时，HT STA 必须把 TKIP 从成对加密套件的候选中剔除。接受安全关联的 AP 应使用请求中携带的加密套件/AKM——除非它在四次握手的消息 3 中提供了可选的第二个 RSNE，此时以该 RSNE 中的成对加密套件为准。管理帧保护则依据表 12-5，由双方的 MFPC/MFPR 子字段共同决定。12.6.8.1 节确定了次序：在非 FT 环境中建立 RSNA 时，STA 应在（重）关联之前使用 SAE、FILS 或 Open System 认证（PASN 可以不经（重）关联即使用）——即认证先于关联，密钥管理随后进行。12.6.1.1 中的 SA 定义与 12.6.1.2 中的 ESS 生命周期把整个闭环连起来：来自认证的 PMKSA 经由四次握手孕育出 PTKSA（在请求方验证消息 3、认证方验证消息 4 之前，并不存在 PTKSA），而 MLME-DELETEKEYS.request 则负责拆除这些临时密钥。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3011,
+          3013,
+          3017,
+          3020,
+          3026
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:12.6.1.1",
+    "80211-2024:12.6.1.2",
+    "80211-2024:12.6.3",
+    "80211-2024:12.6.8.1"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3011,
+        3013,
+        3014
+      ],
+      "note": "12.6.1.1 Security association definitions — SA holds policy/keys/identity/counters; PMKSA, PTKSA, GTKSA types and their contents; GTKSA unidirectional in an infrastructure BSS"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3017,
+        3018
+      ],
+      "note": "12.6.1.2 Security association life cycle — ESS initial contact: select AP, authenticate then associate, key management last; MLME-DELETEKEYS deletes temporal keys"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3020,
+        3021
+      ],
+      "note": "12.6.3 RSNA policy selection in an infrastructure BSS — STA picks one AKM + one pairwise cipher from the AP's RSNE; declines if no overlap; Table 12-5 MFP selection"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3026
+      ],
+      "note": "12.6.8.1 RSNA establishment in an infrastructure BSS (General) — SAE/FILS/Open System authentication prior to (re)association; PASN may be used without (re)association"
+    }
+  ],
+  "track": "security"
+}
