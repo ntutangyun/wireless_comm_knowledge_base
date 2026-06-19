@@ -1,0 +1,201 @@
+{
+  "id": "ranging-09-bk-enhanced-ranging-eht-sounding",
+  "title": {
+    "en": "Sharper Distance: 802.11bk Enhanced Ranging and EHT Sounding",
+    "zh": "更精准的距离：802.11bk 增强测距与 EHT 探测"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Wi-Fi can measure distance by timing how long a sounding signal takes to fly between two devices (Fine Timing Measurement, FTM). The earlier 802.11az ranging work built this on the HE (Wi-Fi 6) PHY, topping out around 160 MHz of bandwidth. 802.11bk, titled \"320 MHz Positioning,\" carries that same ranging machinery onto the EHT (Wi-Fi 7) PHY and the full 320 MHz channel. Wider bandwidth means a sharper time-of-arrival edge, and a sharper edge means a more accurate distance. This lesson teaches only what 802.11bk ADDS on top of the base ranging — the new EHT sounding packets, the control-frame and element extensions that schedule them, the PHY-SAP and TRIGVECTOR plumbing that drives them, and an informative annex on spotting spoofing attacks.",
+      "zh": "Wi-Fi 可以通过测量探测信号在两台设备之间往返飞行的时间来计算距离（精细定时测量，FTM）。早期的 802.11az 测距把这套机制建立在 HE（Wi-Fi 6）物理层上，带宽最高约 160 MHz。802.11bk 的标题是“320 MHz 定位”，它把同一套测距机制搬到了 EHT（Wi-Fi 7）物理层以及完整的 320 MHz 信道上。带宽越宽，到达时间的边沿就越锐利；边沿越锐利，距离就越精准。本课只讲 802.11bk 在基础测距之上新增的内容——新的 EHT 探测包、用于调度它们的控制帧与元素扩展、驱动它们的 PHY-SAP 与 TRIGVECTOR 接口，以及一个关于识别欺骗攻击的资料性附录。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: 802.11bk is a \"port\" of FTM ranging from the HE PHY to the EHT PHY. Wherever the base text said \"HE Ranging NDP\" or \"HE-LTF,\" bk inserts an EHT twin — \"EHT Ranging NDP,\" \"EHT-LTF\" — and extends every parameter, element, and trigger so the same sounding handshake works at 320 MHz.",
+      "zh": "思维模型：802.11bk 相当于把 FTM 测距从 HE 物理层“移植”到 EHT 物理层。凡是基础文本里写着“HE 测距 NDP”或“HE-LTF”的地方，bk 都插入一个 EHT 孪生体——“EHT 测距 NDP”“EHT-LTF”——并扩展每一个参数、元素和触发帧，让同一套探测握手能在 320 MHz 下工作。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant I as ISTA (initiator)\n  participant R as RSTA (responder)\n  R->>I: Ranging Trigger (Sounding / Secure Sounding)\n  I->>R: I2R EHT (TB) Ranging NDP\n  R->>I: Ranging NDP Announcement\n  R->>I: R2I EHT Ranging NDP\n  R->>I: LMR (distance report)\n  Note over I,R: time-of-flight at 320 MHz",
+      "zh": "sequenceDiagram\n  participant I as ISTA（发起方）\n  participant R as RSTA（响应方）\n  R->>I: 测距触发帧（探测 / 安全探测）\n  I->>R: I2R EHT（TB）测距 NDP\n  R->>I: 测距 NDP 通告帧\n  R->>I: R2I EHT 测距 NDP\n  R->>I: LMR（距离报告）\n  Note over I,R: 320 MHz 下的飞行时间"
+    },
+    {
+      "type": "prose",
+      "en": "At the heart of bk are two new sounding packets: the EHT Ranging NDP and the EHT TB Ranging NDP (clause 36.3.19a, the home of the new PHY waveforms referenced throughout this lesson). An EHT Ranging NDP is an EHT MU PPDU with a single EHT-SIG symbol and no data — pure training. It is flagged by setting the U-SIG PPDU Type field to 1, and its only allowed bandwidth signals are 320 MHz-1 and 320 MHz-2. The training body is the EHT-LTF field, built from EHT-LTF User Blocks, each holding one or more EHT-LTF Repetition Blocks; repetitions let the receiver average out noise for a cleaner timing estimate. When secure operation is on, the LTF symbols carry randomized sequences with a zero-power guard interval, so an eavesdropper cannot predict or forge them.",
+      "zh": "bk 的核心是两个新的探测包：EHT 测距 NDP 与 EHT TB 测距 NDP（36.3.19a 子句，本课多处引用的新物理层波形就定义在这里）。EHT 测距 NDP 是一个只含单个 EHT-SIG 符号、没有数据字段的 EHT MU PPDU——纯训练包。它通过把 U-SIG 的 PPDU 类型字段置 1 来标识，且唯一允许的带宽指示值是 320 MHz-1 与 320 MHz-2。训练主体是 EHT-LTF 字段，由若干 EHT-LTF 用户块构成，每个用户块包含一个或多个 EHT-LTF 重复块；重复让接收端对噪声取平均，从而得到更干净的定时估计。当启用安全模式时，LTF 符号携带随机化序列并配以零功率保护间隔，使窃听者无法预测或伪造它们。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 480 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"6\" y=\"40\" width=\"42\" height=\"40\"/><text x=\"27\" y=\"64\" font-size=\"9\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">L-STF</text><rect x=\"48\" y=\"40\" width=\"42\" height=\"40\"/><text x=\"69\" y=\"64\" font-size=\"9\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">L-LTF</text><rect x=\"90\" y=\"40\" width=\"34\" height=\"40\"/><text x=\"107\" y=\"64\" font-size=\"8\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">U-SIG</text><rect x=\"124\" y=\"40\" width=\"40\" height=\"40\"/><text x=\"144\" y=\"64\" font-size=\"8\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">EHT-SIG</text><rect x=\"164\" y=\"40\" width=\"36\" height=\"40\"/><text x=\"182\" y=\"64\" font-size=\"8\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">EHT-STF</text><rect x=\"200\" y=\"40\" width=\"190\" height=\"40\" stroke-dasharray=\"4 3\"/><text x=\"295\" y=\"58\" font-size=\"9\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">EHT-LTF 1 ... EHT-LTF n</text><text x=\"295\" y=\"72\" font-size=\"7\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">(secure: zero-power GI)</text><rect x=\"390\" y=\"40\" width=\"40\" height=\"40\"/><text x=\"410\" y=\"64\" font-size=\"9\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">PE</text><text x=\"6\" y=\"30\" font-size=\"9\" fill=\"currentColor\" stroke=\"none\">EHT Ranging NDP (no Data field)</text></svg>",
+      "caption": {
+        "en": "The EHT Ranging NDP: a data-less EHT MU PPDU whose EHT-LTF field carries the ranging training symbols. In secure mode the LTF sequences are randomized and the guard interval (and first 1.6 us of the PE) carries zero power.",
+        "zh": "EHT 测距 NDP：一个不含数据字段的 EHT MU PPDU，其 EHT-LTF 字段承载测距训练符号。在安全模式下，LTF 序列被随机化，保护间隔（以及 PE 字段的前 1.6 微秒）发送零功率。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "To schedule and decode these new packets, bk extends the control frames in clause 9.3.1 and the elements in clause 9.4.2. The Ranging Trigger frame keeps its five subvariants — Poll, Sounding, Secure Sounding, Report, Passive Sounding — but each now learns to solicit an EHT TB Ranging NDP as well as the HE one, choosing EHT-MCS power and EHT-LTF configuration where the base used HE. On the element side, the Ranging Parameters element gains a Format And Bandwidth value of 8 meaning \"EHT, 320 MHz,\" plus a brand-new 320 MHz Ranging subelement carrying per-direction max NSS, LTF repetition, LTF totals, and a puncturing pattern. A separate Puncture Pattern element reuses the EHT Operation element's disabled-subchannel bitmap so a 320 MHz sounding can dodge busy subchannels. The Secure HE-LTF subelement and Secure HE-LTF Parameters element carry the counters and authentication codes that make secure sounding tamper-evident.",
+      "zh": "为了调度并解码这些新包，bk 扩展了 9.3.1 子句中的控制帧与 9.4.2 子句中的元素。测距触发帧保留其五个子变体——轮询、探测、安全探测、报告、被动探测——但每一个现在既能征询 HE TB 测距 NDP，也能征询 EHT 的，并在基础文本用 HE 的地方改用 EHT-MCS 功率与 EHT-LTF 配置。元素方面，测距参数元素新增了取值为 8 的“格式与带宽”值，表示“EHT，320 MHz”，还新增了一个全新的 320 MHz 测距子元素，携带各方向的最大 NSS、LTF 重复次数、LTF 总数以及打孔图样。另有一个独立的打孔图样元素，复用 EHT 操作元素的禁用子信道位图，使 320 MHz 探测能够避开繁忙的子信道。安全 HE-LTF 子元素与安全 HE-LTF 参数元素携带计数器与鉴权码，使安全探测具备防篡改特性。"
+    },
+    {
+      "type": "prose",
+      "en": "Underneath the frames, bk threads new parameters through the PHY service interface (clause 8.3.5) and the EHT TRIGVECTOR/LTFVECTOR tables (clause 36.2.3). PHY-RXEND.indication adds an IntegrityCheckError result so the PHY can flag a failed integrity check on a received EHT (TB) Ranging NDP. PHY-RXLTFSEQUENCE.request now also configures the PHY to receive EHT Ranging NDPs, passing the LTFVECTOR — LTF_NSTS, LTF_REP, the secure-LTF key/IV/offset, and the Tx-window flag — because those values are not carried in the SIG and must come from the preceding NDP Announcement. The TRIGVECTOR table gains EHT-side entries: a RANGING_FLAG marking the PPDU as an EHT Ranging or EHT TB Ranging NDP, plus LTF_REP, SECURE_LTF_FLAG, and TX_WINDOW_FLAG.",
+      "zh": "在帧的下层，bk 把新参数贯穿到 PHY 服务接口（8.3.5 子句）与 EHT 的 TRIGVECTOR/LTFVECTOR 表（36.2.3 子句）。PHY-RXEND.indication 新增了 IntegrityCheckError 结果，使 PHY 能在收到的 EHT（TB）测距 NDP 完整性校验失败时予以标记。PHY-RXLTFSEQUENCE.request 现在也用于配置 PHY 接收 EHT 测距 NDP，并传入 LTFVECTOR——LTF_NSTS、LTF_REP、安全 LTF 的密钥/IV/偏移以及 Tx 窗口标志——因为这些值不在 SIG 中携带，必须来自前面的 NDP 通告帧。TRIGVECTOR 表新增了 EHT 侧条目：标识该 PPDU 为 EHT 测距或 EHT TB 测距 NDP 的 RANGING_FLAG，以及 LTF_REP、SECURE_LTF_FLAG 和 TX_WINDOW_FLAG。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why accuracy improves: bk tightens the EHT transmit specification (36.3.20.5) with a Time-of-Departure accuracy test that samples across the 320 MHz channel set and holds aTxPHYTxStartRMS to an 80 ns threshold. Knowing exactly when the first frame energy leaves the antenna is half of any time-of-flight distance measurement.",
+      "zh": "精度为何提升：bk 在 EHT 发射规范中新增了出发时间（ToD）精度测试（36.3.20.5），它跨整个 320 MHz 信道集采样，并把 aTxPHYTxStartRMS 约束在 80 纳秒门限内。准确知道第一段帧能量何时离开天线，是任何飞行时间距离测量的一半。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Attacker observes secure LTF] --> B[Computes early false path]\n  B --> C[Injects attack signal]\n  C --> D[Adds interference at receiver]\n  D --> E[SIR drops across LTF repetitions]\n  E --> F[Receiver flags spoofing]",
+      "zh": "flowchart TD\n  A[攻击者观测安全 LTF] --> B[计算提前的伪首径]\n  B --> C[注入攻击信号]\n  C --> D[在接收端引入干扰]\n  D --> E[SIR 在多次 LTF 重复间下降]\n  E --> F[接收端识别出欺骗]"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, bk hardens ranging against spoofing. A distance-shortening attacker tries to inject a fake \"first path\" that arrives earlier than the true signal, tricking the receiver into reporting a closer-than-real distance. The informative Annex AE shows that this attack is not free: forging an early path also adds interference, so the receiver's signal-to-interference ratio (SIR) drops. The annex gives a closed-form SIR expression in terms of the false-first-path power, the attacker's correlation with the true secure LTF, and the attack duration, and concludes that a receiver can detect an attacker by watching for SIR drops across one or more LTF repetitions — the exact algorithm left to the implementer. This is exactly why the secure EHT-LTF uses randomized, repeated sequences: they give the receiver the consistency check that makes the SIR drop visible.",
+      "zh": "最后，bk 强化了测距对欺骗攻击的防护。一个意图缩短距离的攻击者会试图注入一条比真实信号更早到达的伪“首径”，骗使接收端报告比实际更近的距离。资料性附录 AE 表明这种攻击并非没有代价：伪造提前到达的首径同时会引入干扰，因此接收端的信号与干扰比（SIR）会下降。该附录给出了一个以伪首径功率、攻击者与真实安全 LTF 的相关性以及攻击持续时间为变量的 SIR 闭式表达式，并得出结论：接收端可以通过在一次或多次 LTF 重复中观察 SIR 的下降来检测攻击者——具体算法留给实现者。这正是安全 EHT-LTF 采用随机化、重复序列的原因：它们为接收端提供了一致性校验，使 SIR 的下降变得可见。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every 802.11bk clause this lesson teaches",
+        "zh": "覆盖图——本课讲解的每一个 802.11bk 子句"
+      },
+      "en": "PHY-SAP service additions (8.3.5): PHY-RXEND.indication gains an IntegrityCheckError result for a failed integrity check on a received HE/EHT (TB) Ranging NDP; PHY-RXLTFSEQUENCE.request is extended to provide the LTFVECTOR for receiving EHT Ranging and EHT TB Ranging NDPs (the LTF config and secure-LTF generation info that are not signaled in the PPDU header). Control frames (9.3.1): the NDP Announcement (9.3.1.19) LTF Offset / NSTS / Rep subfields now also describe EHT-LTF configuration; the Trigger frame (9.3.1.22) UL Target Receive Power table and Ranging Trigger variant gain EHT-MCS rules; the five Ranging Trigger subvariants (9.3.1.23 — Poll, Sounding, Secure Sounding, Report, Passive Sounding) each learn to solicit EHT TB Ranging NDPs. Elements (9.4.2): FTM Parameters (9.4.2.166), Ranging Parameters (9.4.2.300) with Format And Bandwidth value 8 = EHT/320 MHz and the new 320 MHz Ranging subelement, Secure HE-LTF subelement/Parameters element (9.4.2.301), and the new Puncture Pattern element (9.4.2.331) reusing the EHT Operation disabled-subchannel bitmap. EHT TRIGVECTOR/LTFVECTOR (36.2.3, 36.2.3a): RANGING_FLAG, LTF_REP, SECURE_LTF_FLAG, TX_WINDOW_FLAG for EHT_MU/EHT_TB ranging PPDUs, plus the LTFVECTOR (LTF_NSTS, LTF_KEY, LTF_IV, LTF_OFFSET). EHT transmit specification (36.3.20): new 36.3.20.5 Time-of-Departure accuracy test (320 MHz multichannel sampling, 80 ns threshold). EHT transmit procedure (36.3.22): TIME_OF_DEPARTURE_REQUESTED gating and the TXSTATUS TIME_OF_DEPARTURE timestamp. EHT receive procedure (36.3.23): the receive state machine note that EHT Ranging NDP and EHT TB Ranging NDP are optional features handled outside the base state machine. Annex B (normative PICS): the EPP abbreviation (enhanced positioning PHY), IUT configuration items (CFTB/CFNTB/CFPTB/CFPSEC), and EP PHY feature rows EPP1.5-EPP1.8 for EHT (TB) ranging NDPs with and without secure LTFs. Annex C (normative MIB): dot11SecureLTFImplemented capability object for the secure HE-LTF exchange. Annex AE (informative): the SIR-based attack-detection analysis — observation/computation/attack periods, the SIR expression, and detecting an attacker via SIR drops over LTF repetitions.",
+      "zh": "PHY-SAP 服务新增（8.3.5）：PHY-RXEND.indication 新增 IntegrityCheckError 结果，用于标记收到的 HE/EHT（TB）测距 NDP 完整性校验失败；PHY-RXLTFSEQUENCE.request 被扩展为提供接收 EHT 测距与 EHT TB 测距 NDP 所需的 LTFVECTOR（这些 LTF 配置与安全 LTF 生成信息不在 PPDU 头中携带）。控制帧（9.3.1）：NDP 通告帧（9.3.1.19）的 LTF Offset / NSTS / Rep 子字段现在也描述 EHT-LTF 配置；触发帧（9.3.1.22）的 UL 目标接收功率表与测距触发变体新增 EHT-MCS 规则；五个测距触发子变体（9.3.1.23——轮询、探测、安全探测、报告、被动探测）各自学会征询 EHT TB 测距 NDP。元素（9.4.2）：FTM 参数（9.4.2.166）、测距参数（9.4.2.300，新增取值 8 的“格式与带宽”=EHT/320 MHz 及新的 320 MHz 测距子元素）、安全 HE-LTF 子元素/参数元素（9.4.2.301），以及复用 EHT 操作禁用子信道位图的新打孔图样元素（9.4.2.331）。EHT TRIGVECTOR/LTFVECTOR（36.2.3、36.2.3a）：用于 EHT_MU/EHT_TB 测距 PPDU 的 RANGING_FLAG、LTF_REP、SECURE_LTF_FLAG、TX_WINDOW_FLAG，以及 LTFVECTOR（LTF_NSTS、LTF_KEY、LTF_IV、LTF_OFFSET）。EHT 发射规范（36.3.20）：新增 36.3.20.5 出发时间精度测试（320 MHz 多信道采样，80 纳秒门限）。EHT 发射过程（36.3.22）：TIME_OF_DEPARTURE_REQUESTED 的门控与 TXSTATUS 中的 TIME_OF_DEPARTURE 时间戳。EHT 接收过程（36.3.23）：接收状态机注明 EHT 测距 NDP 与 EHT TB 测距 NDP 为可选特性，由基础状态机之外处理。附录 B（规范性 PICS）：EPP 缩写（增强定位物理层）、IUT 配置项（CFTB/CFNTB/CFPTB/CFPSEC）以及针对带/不带安全 LTF 的 EHT（TB）测距 NDP 的 EP PHY 特性行 EPP1.5–EPP1.8。附录 C（规范性 MIB）：用于安全 HE-LTF 交换的 dot11SecureLTFImplemented 能力对象。附录 AE（资料性）：基于 SIR 的攻击检测分析——观测/计算/攻击周期、SIR 表达式，以及通过 LTF 重复间的 SIR 下降来检测攻击者。",
+      "cite": {
+        "pdf_id": "80211bk-2025",
+        "pages": [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          87,
+          88,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        20,
+        21
+      ],
+      "note": "8.3.5 PHY SAP: PHY-RXEND.indication IntegrityCheckError for EHT (TB) Ranging NDP; PHY-RXLTFSEQUENCE.request extended to EHT Ranging NDP / LTFVECTOR"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27
+      ],
+      "note": "9.3.1 Control frames: Ranging NDP Announcement EHT-LTF config; Trigger frame UL Target Receive Power & Ranging Trigger variant; 9.3.1.23 five subvariants soliciting EHT TB Ranging NDP"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33
+      ],
+      "note": "9.4.2 Elements: FTM Parameters (9.4.2.166), Ranging Parameters (9.4.2.300) Format And Bandwidth=8 EHT/320 MHz & 320 MHz Ranging subelement, Secure HE-LTF Parameters (9.4.2.301), Puncture Pattern element (9.4.2.331)"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        87,
+        88,
+        89,
+        90,
+        91
+      ],
+      "note": "36.2.3 / 36.2.3a TRIGVECTOR & LTFVECTOR parameters (RANGING_FLAG, LTF_REP, SECURE_LTF_FLAG, TX_WINDOW_FLAG, LTF_NSTS/KEY/IV/OFFSET); 36.3.19a EHT Ranging NDP & EHT TB Ranging NDP waveforms"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        97
+      ],
+      "note": "36.3.20.5 Time of Departure accuracy test (320 MHz multichannel sampling, 80 ns threshold); start of 36.3.22 EHT transmit procedure"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        97,
+        98
+      ],
+      "note": "36.3.22 EHT transmit procedure (TIME_OF_DEPARTURE_REQUESTED, TXSTATUS timestamp); 36.3.23 EHT receive procedure (EHT Ranging NDP optional handling)"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        99,
+        100
+      ],
+      "note": "Annex B (normative PICS): EPP abbreviation, IUT configuration CFTB/CFNTB/CFPTB/CFPSEC, EP PHY features EPP1.5-EPP1.8 EHT (TB) ranging NDPs"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        101
+      ],
+      "note": "Annex C (normative MIB): dot11SecureLTFImplemented capability object for secure HE-LTF measurement exchange"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        102,
+        103
+      ],
+      "note": "Annex AE (informative): SIR-based attack detection — observation/computation/attack periods, SIR expression, detection via SIR drop over LTF repetitions"
+    }
+  ],
+  "covers": [
+    "80211bk-2025:8.3.5",
+    "80211bk-2025:9.3.1",
+    "80211bk-2025:9.4.2",
+    "80211bk-2025:36.2.3",
+    "80211bk-2025:36.3.20",
+    "80211bk-2025:36.3.22",
+    "80211bk-2025:36.3.23",
+    "80211bk-2025:Annex_B",
+    "80211bk-2025:Annex_C",
+    "80211bk-2025:Annex_AE"
+  ],
+  "track": "ranging"
+}

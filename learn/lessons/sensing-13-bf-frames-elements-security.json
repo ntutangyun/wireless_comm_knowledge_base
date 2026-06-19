@@ -1,0 +1,218 @@
+{
+  "id": "sensing-13-bf-frames-elements-security",
+  "title": {
+    "en": "Sensing on the Air: WLAN Sensing Frames, Elements and Protection",
+    "zh": "空口上的感知：WLAN 感知帧、元素与保护"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE 802.11bf turns ordinary Wi-Fi radios into a radar-like sensing system. Instead of just moving data, the same PHY and MAC features are reused to measure the channel and estimate the range, velocity, and motion of objects in an area — enabling presence detection, motion detection, and gesture recognition. The amendment defines this as **WLAN sensing**, built from four procedures: the sensing procedure, sensing by proxy (SBP), DMG sensing (for 60 GHz directional links), and DMG SBP. This lesson walks the **frame-level delta**: what new definitions, fields, elements, action frames, and security rules bf adds on top of the base standard.",
+      "zh": "IEEE 802.11bf 把普通的 Wi-Fi 射频变成了一套类雷达的感知系统。它不再只是传输数据，而是复用同样的 PHY 与 MAC 特性来测量信道，估计目标区域内物体的距离、速度和运动——从而实现存在检测、运动检测和手势识别。该修正案将其定义为 **WLAN 感知（WLAN sensing）**，由四个过程构成：感知过程、代理感知（SBP）、DMG 感知（用于 60 GHz 定向链路）以及 DMG 代理感知。本课沿着**帧层面的增量**展开：bf 在基准标准之上新增了哪些定义、字段、元素、动作帧以及安全规则。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "This is an **amendment**. Every clause text below describes only what 802.11bf ADDS or CHANGES — the new sensing roles, frames, elements and protections. The unchanged base behavior of a normal Wi-Fi link is assumed, not repeated.",
+      "zh": "这是一份**修正案**。下文每一条款文字只描述 802.11bf 所**新增或改动**的内容——新的感知角色、帧、元素与保护机制。普通 Wi-Fi 链路中未改动的基准行为被默认沿用，不再重复。"
+    },
+    {
+      "type": "prose",
+      "en": "First, bf adds vocabulary (clause 3.2) so the standard can talk about sensing roles: a **sensing initiator** starts a procedure, a **sensing responder** answers it, and the actual measurement always flows between a **sensing transmitter** (sends the sounding PPDU) and a **sensing receiver** (measures it). For requests routed through an AP there is an **SBP initiator** and **SBP responder**. Each has a DMG (60 GHz) twin. New acronyms (clause 3.4) name the link directions — SI2SR, SR2SI, SR2SR — plus SBP, NDPA, USID, and two privacy-policy abbreviations (USNM-MFPR and its 20 MHz-exempt variant) that govern whether sensing frames must be protected even without association.",
+      "zh": "首先，bf 新增了术语（条款 3.2），让标准能够描述感知角色：**感知发起者（sensing initiator）**启动过程，**感知响应者（sensing responder）**应答，而真正的测量始终发生在**感知发送者（sensing transmitter，发出探测 PPDU）**与**感知接收者（sensing receiver，对其测量）**之间。对于经由 AP 转发的请求，则有 **SBP 发起者**与 **SBP 响应者**。每个角色都有对应的 DMG（60 GHz）孪生版本。新缩写（条款 3.4）命名了链路方向——SI2SR、SR2SI、SR2SR——以及 SBP、NDPA、USID 和两个隐私策略缩写（USNM-MFPR 及其 20 MHz 豁免变体），后者规定即便未建立关联，感知帧是否也必须受保护。"
+    },
+    {
+      "type": "prose",
+      "en": "Next, bf touches the **frame plumbing across all frame classes**. On the PHY side (clause 8.3.4) a new vector parameter, EDMG_MS_SENSING_NSTA, tells the radio how many stations are the intended recipients of the next EDMG multistatic sensing PPDU. In Control frames (clause 9.3.1) the NDP Announcement frame gains a fifth **Sensing variant**, and the Trigger frame gains a Sensing Trigger variant — these schedule and address the sounding exchanges. Management frames (clause 9.3.3) — Association, Reassociation, Probe Request/Response — and Extension frames (clause 9.3.4, the DMG Beacon) carry new capability elements so peers can advertise that they support sensing before any measurement begins.",
+      "zh": "接着，bf 改动了**贯穿所有帧类的帧管线**。在 PHY 侧（条款 8.3.4），新增向量参数 EDMG_MS_SENSING_NSTA，告诉射频下一个 EDMG 多基地感知 PPDU 的目标接收站点数量。在控制帧中（条款 9.3.1），NDP 通告帧新增第五种 **Sensing 变体**，触发帧新增 Sensing Trigger 变体——它们用于调度并寻址探测交换。管理帧（条款 9.3.3）——关联、重关联、探测请求/响应——以及扩展帧（条款 9.3.4，即 DMG Beacon）携带新的能力元素，使对端在任何测量开始前即可声明自己支持感知。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n  I[Sensing initiator] -->|Measurement Request| R[Sensing responder]\n  T[Sensing transmitter] -->|sounding PPDU| RX[Sensing receiver]\n  RX -->|Measurement Report| I\n  SBPi[SBP initiator] -->|SBP Request| AP[SBP responder / AP]\n  AP -->|runs sensing on behalf| R",
+      "zh": "graph LR\n  I[感知发起者] -->|测量请求| R[感知响应者]\n  T[感知发送者] -->|探测 PPDU| RX[感知接收者]\n  RX -->|测量报告| I\n  SBPi[SBP 发起者] -->|SBP 请求| AP[SBP 响应者 / AP]\n  AP -->|代为执行感知| R"
+    },
+    {
+      "type": "prose",
+      "en": "The measurement results themselves ride in a new **non-element field** (clause 9.4.1): the Sensing Measurement Report Container field, which packs a Container Length, a Segmentation Control (so a large report can be split across frames), a Report Control, and the actual CSI-bearing Report. The standard also adds a status code (REJECTED_WITH_SUGGESTED_SENSING_PARAMETERS) and a new Action-frame category value for the Protected Sensing frame. Alongside these fields, bf registers a whole family of new **elements** (clause 9.4.2): Sensing Measurement Parameters, Sensing Capabilities, SBP Parameters, and a DMG set (DMG Sensing Capabilities, Beam Descriptor, Short Capabilities, Measurement Session, Report Control, Report, and Image LUTs) — each assigned an Element ID Extension under Element ID 255.",
+      "zh": "测量结果本身承载在一个新的**非元素字段**中（条款 9.4.1）：感知测量报告容器字段（Sensing Measurement Report Container），它打包了容器长度、分段控制（使大型报告可拆分到多帧）、报告控制以及真正携带 CSI 的报告体。标准还新增了一个状态码（REJECTED_WITH_SUGGESTED_SENSING_PARAMETERS）和一个用于受保护感知帧的新动作帧类别值。除这些字段外，bf 还注册了一整族新**元素**（条款 9.4.2）：感知测量参数、感知能力、SBP 参数，以及一组 DMG 元素（DMG 感知能力、波束描述符、简短能力、测量会话、报告控制、报告及图像查找表）——每个都在元素 ID 255 之下分配了一个元素 ID 扩展值。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 70\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><rect x=\"4\" y=\"20\" width=\"80\" height=\"30\"/><rect x=\"84\" y=\"20\" width=\"110\" height=\"30\"/><rect x=\"194\" y=\"20\" width=\"130\" height=\"30\"/><rect x=\"324\" y=\"20\" width=\"130\" height=\"30\"/><text x=\"44\" y=\"39\" font-size=\"10\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Container Len</text><text x=\"139\" y=\"39\" font-size=\"10\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Segmentation Ctrl</text><text x=\"259\" y=\"39\" font-size=\"10\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Report Control</text><text x=\"389\" y=\"39\" font-size=\"10\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Report (CSI)</text><text x=\"44\" y=\"15\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">2 oct</text><text x=\"139\" y=\"15\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">5 oct</text><text x=\"259\" y=\"15\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">0/4/8 oct</text><text x=\"389\" y=\"15\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">variable</text></svg>",
+      "caption": {
+        "en": "Sensing Measurement Report Container field (clause 9.4.1.81): length, segmentation, control, then the variable CSI report.",
+        "zh": "感知测量报告容器字段（条款 9.4.1.81）：长度、分段、控制，最后是可变长的 CSI 报告。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "For 60 GHz directional sensing, bf reuses the existing **BRP Request field** (clause 9.5.4) by adding one bit: the **DMG Sensing** bit. When set to 1, it signals that the PPDU carrying the BRP frame is being used in a DMG sensing procedure rather than for ordinary beamforming training — letting the same beam-refinement machinery double as a sensing sounding.",
+      "zh": "对于 60 GHz 定向感知，bf 复用现有的 **BRP 请求字段**（条款 9.5.4），新增一个比特：**DMG Sensing** 比特。当该位置 1 时，表示承载该 BRP 帧的 PPDU 用于 DMG 感知过程，而非普通的波束赋形训练——使同一套波束精调机制可兼作感知探测。"
+    },
+    {
+      "type": "prose",
+      "en": "The negotiation and reporting exchanges themselves are new **Action frames**, and bf spreads them across four action-frame families so they work for both sub-7 GHz and 60 GHz, protected and unprotected. **Public Action frames** (clause 9.6.7) carry the unprotected Sensing Measurement Request/Response/Report, Termination, Query, and SBP Request/Response/Termination. Their protected twins are listed as **Protected Dual of Public Action frames** (clause 9.6.10). For DMG there is a **DMG Action** set of protected frames (clause 9.6.19) and an **Unprotected DMG Action** set (clause 9.6.21). Finally, a brand-new robust category, the **Protected Sensing frame** (clause 9.6.39), carries the report and termination frames that must be protected — its body simply reuses the matching Public/DMG frame format after a one-octet Protected Sensing Action field.",
+      "zh": "协商与上报交换本身就是新的**动作帧**，bf 把它们分散到四个动作帧族中，以同时适配 7 GHz 以下与 60 GHz、受保护与不受保护的场景。**公共动作帧**（条款 9.6.7）承载不受保护的感知测量请求/响应/报告、终止、查询以及 SBP 请求/响应/终止。它们受保护的孪生版本列在**公共动作受保护对偶帧**（条款 9.6.10）中。对于 DMG，则有一组受保护的 **DMG 动作**帧（条款 9.6.19）和一组**不受保护 DMG 动作**帧（条款 9.6.21）。最后，一个全新的鲁棒类别——**受保护感知帧（Protected Sensing frame）**（条款 9.6.39）——承载那些必须受保护的报告与终止帧；它的帧体只是在一个单字节的受保护感知动作字段之后，复用对应的公共/DMG 帧格式。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n  A[Sensing Action frames] --> P[Public Action 9.6.7]\n  A --> PD[Protected Dual of Public 9.6.10]\n  A --> D[DMG Action protected 9.6.19]\n  A --> U[Unprotected DMG Action 9.6.21]\n  A --> PS[Protected Sensing 9.6.39]\n  PS -->|reuses body of| P",
+      "zh": "graph TD\n  A[感知动作帧] --> P[公共动作 9.6.7]\n  A --> PD[公共受保护对偶 9.6.10]\n  A --> D[DMG 动作 受保护 9.6.19]\n  A --> U[不受保护 DMG 动作 9.6.21]\n  A --> PS[受保护感知 9.6.39]\n  PS -->|复用帧体| P"
+    },
+    {
+      "type": "prose",
+      "en": "Because sensing reveals where people and objects are, the exchanges deserve confidentiality and replay protection. bf extends both data-protection protocols: **CCMP** (clause 12.5.2) and **GCMP** (clause 12.5.4). In each, bits 2–4 of the Key ID octet now form a **Replay Counter Index** subfield that flags whether a protected individually addressed Action frame is a Protected Fine Timing frame or a **Protected Sensing frame**. The receiver keeps a separate replay counter for Protected Sensing frames and uses that counter — driven by the PN in the received frame — only when the Replay Counter Index signals a Protected Sensing frame, so sensing reports can't be reordered, forged, or replayed against the normal management-frame counter.",
+      "zh": "由于感知会暴露人和物体的位置，这些交换理应具备机密性与防重放保护。bf 同时扩展了两套数据保护协议：**CCMP**（条款 12.5.2）与 **GCMP**（条款 12.5.4）。在每一套中，Key ID 字节的第 2–4 比特现在构成一个**重放计数器索引（Replay Counter Index）**子字段，用于标记某个受保护的单播动作帧究竟是受保护精细测距帧还是**受保护感知帧**。接收方为受保护感知帧维护一个独立的重放计数器，并且只有当重放计数器索引指示为受保护感知帧时，才使用该计数器（由收到帧中的 PN 驱动）——从而保证感知报告无法被重排、伪造或针对普通管理帧计数器进行重放。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every 802.11bf unit taught in this lesson, with exact clause numbers and pages.",
+        "zh": "覆盖地图：本课所讲授的每个 802.11bf 单元，附精确条款号与页码。"
+      },
+      "en": "Definitions & acronyms — **3.2** sensing roles (initiator/responder/transmitter/receiver, SBP initiator/responder, DMG twins, USNM-MFPR privacy policies) and **3.4** acronyms (SBP, NDPA, SI2SR/SR2SI/SR2SR, USID, USNM-MFPR/-X20). PHY — **8.3.4** the EDMG_MS_SENSING_NSTA vector parameter (number of recipients of an EDMG multistatic sensing PPDU). Frame types — **9.3.1** Control frames (Sensing NDP Announcement variant, Sensing Trigger); **9.3.3** PV0 Management frames (Sensing/DMG Sensing Capabilities elements added to Association/Reassociation/Probe Request/Response); **9.3.4** Extension frames (DMG Sensing Capabilities in the DMG Beacon). Frame body components — **9.4.1** non-element fields (Status code 144, Protected Sensing category 38, Sensing Measurement Report Container field 9.4.1.81); **9.4.2** new elements (Sensing Measurement Parameters .331, Sensing Capabilities .332, SBP Parameters .333, plus the DMG Sensing element family .334–.341). DMG sounding — **9.5.4** the DMG Sensing bit added to the BRP Request field. Action frames — **9.6.7** Public Action (Sensing Measurement Request/Response/Report, Termination, Query, SBP Request/Response/Termination); **9.6.10** Protected Dual of Public Action (the protected twins, values 35–41); **9.6.19** DMG Action protected frames (values 24–29); **9.6.21** Unprotected DMG Action (DMG Sensing Measurement Request/Response/Report etc.); **9.6.39** the new Protected Sensing frame category and its Report/Termination formats. Security — **12.5.2** CCMP and **12.5.4** GCMP add the Replay Counter Index subfield and a separate replay counter for Protected Sensing frames.",
+      "zh": "定义与缩写——**3.2** 感知角色（发起者/响应者/发送者/接收者、SBP 发起者/响应者、DMG 孪生版、USNM-MFPR 隐私策略）与 **3.4** 缩写（SBP、NDPA、SI2SR/SR2SI/SR2SR、USID、USNM-MFPR/-X20）。PHY——**8.3.4** EDMG_MS_SENSING_NSTA 向量参数（EDMG 多基地感知 PPDU 的接收方数量）。帧类型——**9.3.1** 控制帧（Sensing NDP 通告变体、Sensing Trigger）；**9.3.3** PV0 管理帧（向关联/重关联/探测请求/响应新增感知能力、DMG 感知能力元素）；**9.3.4** 扩展帧（DMG Beacon 中的 DMG 感知能力）。帧体组件——**9.4.1** 非元素字段（状态码 144、受保护感知类别 38、感知测量报告容器字段 9.4.1.81）；**9.4.2** 新元素（感知测量参数 .331、感知能力 .332、SBP 参数 .333，以及 DMG 感知元素族 .334–.341）。DMG 探测——**9.5.4** BRP 请求字段新增的 DMG Sensing 比特。动作帧——**9.6.7** 公共动作（感知测量请求/响应/报告、终止、查询、SBP 请求/响应/终止）；**9.6.10** 公共受保护对偶动作（其受保护孪生版，取值 35–41）；**9.6.19** DMG 动作受保护帧（取值 24–29）；**9.6.21** 不受保护 DMG 动作（DMG 感知测量请求/响应/报告等）；**9.6.39** 全新的受保护感知帧类别及其报告/终止格式。安全——**12.5.2** CCMP 与 **12.5.4** GCMP 新增重放计数器索引子字段及面向受保护感知帧的独立重放计数器。",
+      "cite": {
+        "pdf_id": "80211bf-2025",
+        "pages": [
+          25,
+          26,
+          32,
+          33,
+          50,
+          53,
+          54,
+          70,
+          113,
+          114,
+          121,
+          122,
+          123,
+          133,
+          203,
+          205
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        25,
+        26
+      ],
+      "note": "3.2 sensing definitions (initiator/responder/transmitter/receiver, SBP, USNM-MFPR) and 3.4 acronyms"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        32
+      ],
+      "note": "8.3.4 Basic service and options — EDMG_MS_SENSING_NSTA vector parameter"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        33,
+        34
+      ],
+      "note": "9.3.1 Control frames — Sensing NDP Announcement variant and Sensing Trigger"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        50,
+        51,
+        52,
+        53
+      ],
+      "note": "9.3.3 Management frames and 9.3.4 Extension frames — sensing capability elements added"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        54,
+        55
+      ],
+      "note": "9.4.1 non-element fields — Status code, Protected Sensing category, Sensing Measurement Report Container field"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        70,
+        75,
+        82
+      ],
+      "note": "9.4.2 Elements — Sensing Measurement Parameters/Capabilities/SBP Parameters and Element IDs"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        113
+      ],
+      "note": "9.5.4 BRP Request field — DMG Sensing bit"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        114
+      ],
+      "note": "9.6.7 Public Action sensing frames and values"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        121
+      ],
+      "note": "9.6.10 Protected Dual of Public Action frames (values 35-41)"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        122,
+        123
+      ],
+      "note": "9.6.19 DMG Action protected frames and 9.6.21 Unprotected DMG Action frames"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        133,
+        134
+      ],
+      "note": "9.6.39 Protected Sensing frame details"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        203,
+        204,
+        205,
+        206
+      ],
+      "note": "12.5.2 CCMP and 12.5.4 GCMP — Replay Counter Index and Protected Sensing replay counter"
+    }
+  ],
+  "covers": [
+    "80211bf-2025:3.2",
+    "80211bf-2025:3.4",
+    "80211bf-2025:8.3.4",
+    "80211bf-2025:9.3.1",
+    "80211bf-2025:9.3.3",
+    "80211bf-2025:9.3.4",
+    "80211bf-2025:9.4.1",
+    "80211bf-2025:9.4.2",
+    "80211bf-2025:9.5.4",
+    "80211bf-2025:9.6.7",
+    "80211bf-2025:9.6.10",
+    "80211bf-2025:9.6.19",
+    "80211bf-2025:9.6.21",
+    "80211bf-2025:9.6.39",
+    "80211bf-2025:12.5.2",
+    "80211bf-2025:12.5.4"
+  ],
+  "track": "sensing"
+}

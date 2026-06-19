@@ -1,0 +1,206 @@
+{
+  "id": "sensing-14-bf-sensing-procedure-mac",
+  "title": {
+    "en": "The Sensing Session: Measurement Setup, Sounding and Reporting",
+    "zh": "感知会话：测量建立、探测与报告"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Earlier lessons covered the new sensing frames and elements that 802.11bf adds. This lesson assembles them into a working procedure. Clause 11.55.1 — WLAN sensing — is the heart of the amendment: it defines how two stations agree to sense each other's radio channel and turn the result into a usable measurement. The flow has four stages that always run in the same order: capabilities exchange, measurement-session setup, one or more measurement exchanges (sounding + reporting), and session termination. Everything else the amendment adds at the MAC layer — new MLME-SAP service primitives, frame-filtering rules, trigger-frame carrier-sense rules, and MLD delivery rules — exists to support this one procedure.",
+      "zh": "前面的课程介绍了 802.11bf 新增的感知帧和信息元素，本课把它们组装成一个完整可运行的流程。第 11.55.1 节——WLAN 感知——是该修正案的核心：它规定了两个站点如何商定相互感知对方的无线信道，并把结果转化为可用的测量数据。整个流程有四个始终按相同顺序执行的阶段：能力交换、测量会话建立、一次或多次测量交换（探测+报告）、以及会话终止。该修正案在 MAC 层新增的其它内容——新的 MLME-SAP 服务原语、帧过滤规则、触发帧载波侦听规则、以及多链路（MLD）投递规则——都是为支撑这一个流程而存在的。"
+    },
+    {
+      "type": "prose",
+      "en": "The two roles are sensing initiator and sensing responder. A sensing STA must support both roles. Before anything else, the two STAs exchange Sensing Capabilities elements (carried in Probe/Association frames or a Measurement Query frame) so each learns the other's supported bandwidth, spatial streams, LTF repetitions, maximum number of concurrent sessions, and whether threshold-based reporting is available. Only then does the initiator establish a session. A single Measurement Session ID pins down a frozen set of operational parameters; the <initiator MAC address, Measurement Session ID> tuple uniquely identifies the session. An initiator can run multiple sessions in parallel, each with its own ID and parameter set.",
+      "zh": "两种角色分别是感知发起者（initiator）和感知响应者（responder）。一个感知站点必须同时支持这两种角色。在做任何事之前，两站先交换感知能力元素（承载于探测/关联帧或测量查询帧中），使彼此了解对方支持的带宽、空间流数、LTF 重复次数、最大并发会话数，以及是否支持基于阈值的报告。之后发起者才建立会话。一个测量会话 ID（Measurement Session ID）锁定一组冻结的操作参数；<发起者 MAC 地址，测量会话 ID> 二元组唯一标识该会话。发起者可并行运行多个会话，每个会话拥有各自的 ID 和参数集。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant I as Initiator (AP)\n    participant R as Responder (STA)\n    I-->>R: Sensing Capabilities (in Probe/Assoc)\n    R-->>I: Sensing Capabilities\n    I->>R: Sensing Measurement Request\n    R->>I: Sensing Measurement Response (SUCCESS)\n    Note over I,R: session up (timer running)\n    I->>R: Sounding (NDPA / Trigger / NDP)\n    R->>I: Sensing Measurement Report\n    I->>R: Sensing Measurement Termination",
+      "zh": "sequenceDiagram\n    participant I as 发起者(AP)\n    participant R as 响应者(STA)\n    I-->>R: 感知能力(随探测/关联)\n    R-->>I: 感知能力\n    I->>R: 感知测量请求\n    R->>I: 感知测量响应(成功)\n    Note over I,R: 会话建立(计时器运行)\n    I->>R: 探测(NDPA/触发/NDP)\n    R->>I: 感知测量报告\n    I->>R: 感知测量终止"
+    },
+    {
+      "type": "prose",
+      "en": "Setting up a session (11.55.1.4) is a Request/Response handshake. The initiator's SME issues an MLME-SENSMSMTSESSION.request, which sends a Sensing Measurement Request frame carrying the assigned role (sensing transmitter, sensing receiver, or both), the requested bandwidth, spatial streams and LTF repetitions, and the Measurement Session ID. The responder validates it and answers with a Sensing Measurement Response: SUCCESS to accept, REJECTED_WITH_SUGGESTED_SENSING_PARAMETERS to counter-propose, or REQUEST_DECLINED to refuse for a stated Decline Duration. The exchange must complete within aSensingFrameExchangeExpiry (20 ms). On success, both ends start a session expiry timer set to aMeasurementSessionExpiry and reset it on every measurement exchange — so a session that goes idle is reclaimed automatically.",
+      "zh": "建立会话（11.55.1.4）是一次请求/响应握手。发起者的 SME 发出 MLME-SENSMSMTSESSION.request，由此发送一个感知测量请求帧，其中携带分配的角色（感知发送者、感知接收者，或两者兼任）、请求的带宽、空间流数与 LTF 重复次数，以及测量会话 ID。响应者校验后以感知测量响应帧作答：SUCCESS 表示接受，REJECTED_WITH_SUGGESTED_SENSING_PARAMETERS 表示给出建议参数反提议，REQUEST_DECLINED 表示在所述拒绝时长（Decline Duration）内拒绝。该交换须在 aSensingFrameExchangeExpiry（20 毫秒）内完成。成功后，双方各启动一个会话过期计时器，设为 aMeasurementSessionExpiry，并在每次测量交换时复位——因此空闲会话会被自动回收。"
+    },
+    {
+      "type": "prose",
+      "en": "Once a session is up, the work happens in measurement exchanges, each tagged with a Measurement Exchange ID. There are two variants. In a Trigger-based (TB) exchange the AP is the initiator and one or more non-AP STAs respond; it can include a polling phase (a Sensing Polling Trigger asks who is awake; STAs answer CTS-to-self), an NDPA sounding phase or a TF sounding phase (the AP or responders send NDPs the receivers measure), and a reporting phase. In a non-TB exchange a non-AP STA is the initiator and the AP responds: the STA sends a Sensing NDP Announcement, then an SI2SR NDP, the AP replies with an SR2SI NDP, and — if reporting was requested — the AP sends a Sensing Measurement Report a SIFS later. On receiving any sounding NDP the receiver's MAC issues an MLME-SENSREPORT.indication carrying the quantized CSI.",
+      "zh": "会话建立后，实际工作发生在测量交换中，每次交换都带一个测量交换 ID（Measurement Exchange ID）。有两种变体。在基于触发（TB）的交换中，AP 为发起者，一个或多个非 AP 站点作为响应者；它可包含轮询阶段（感知轮询触发帧询问谁醒着，站点以 CTS-to-self 应答）、NDPA 探测阶段或 TF 探测阶段（由 AP 或响应者发送供接收方测量的 NDP），以及报告阶段。在非 TB 交换中，非 AP 站点为发起者，AP 为响应者：站点先发感知 NDP 通告帧，再发 SI2SR NDP，AP 以 SR2SI NDP 应答；若请求了报告，AP 在一个 SIFS 后发送感知测量报告帧。接收方 MAC 收到任一探测 NDP 时，会发出携带量化 CSI 的 MLME-SENSREPORT.indication。"
+    },
+    {
+      "type": "prose",
+      "en": "Reporting comes in two flavours. In the basic reporting phase the initiator sends one Sensing Reporting Trigger frame allocating uplink resources, and each receiver replies with a Sensing Measurement Report frame (built from an MLME-SENSREPORTRQ.request). In the optional threshold-based reporting phase the initiator first sends a Sensing Threshold-Based Reporting Trigger to collect a small CSI-variation value from each responder; only responders whose variation meets or exceeds the per-STA CSI Variation Threshold (0–10, set at setup) are then triggered for a full report. This cuts feedback overhead when the channel is quiet — the whole point of sensing-aware reporting. A session ends explicitly via a Sensing Measurement Termination frame (MLME-SENSMSMTTERMINATION) or implicitly when the expiry timer fires.",
+      "zh": "报告有两种形式。在基本报告阶段，发起者发送一个感知报告触发帧分配上行资源，每个接收方以感知测量报告帧（由 MLME-SENSREPORTRQ.request 构造）应答。在可选的基于阈值的报告阶段，发起者先发送感知基于阈值报告触发帧，收集每个响应者的一个小的 CSI 变化值；只有变化值达到或超过其各自 CSI 变化阈值（CSI Variation Threshold，取值 0–10，在建立时设定）的响应者才会被触发上报完整报告。当信道平静时，这能削减反馈开销——这正是感知感知报告的核心目的。会话可通过感知测量终止帧（MLME-SENSMSMTTERMINATION）显式结束，或在过期计时器触发时隐式结束。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy mental model: capabilities tell you what's possible, the session freezes what's agreed, the exchange does the actual sounding, and reporting carries the CSI back. The Measurement Session ID is the contract; the Measurement Exchange ID is one transaction under that contract.",
+      "zh": "一个好记的心智模型：能力告诉你“能做什么”，会话冻结“已商定的内容”，交换执行实际探测，报告把 CSI 送回。测量会话 ID 是“合同”，测量交换 ID 是该合同下的“一次交易”。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"55\" width=\"80\" height=\"40\" rx=\"4\"/><text x=\"50\" y=\"79\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Capabilities</text><rect x=\"110\" y=\"55\" width=\"80\" height=\"40\" rx=\"4\"/><text x=\"150\" y=\"73\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Session</text><text x=\"150\" y=\"86\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">ID frozen</text><rect x=\"210\" y=\"55\" width=\"90\" height=\"40\" rx=\"4\"/><text x=\"255\" y=\"73\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Exchange</text><text x=\"255\" y=\"86\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">sound+report</text><rect x=\"320\" y=\"55\" width=\"90\" height=\"40\" rx=\"4\"/><text x=\"365\" y=\"79\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Terminate</text><path d=\"M90 75 L110 75 M190 75 L210 75 M300 75 L320 75\"/><path d=\"M205 75 L210 75 L207 72 M207 78 L210 75\"/><path d=\"M255 95 C255 120 255 120 255 95\"/><text x=\"320\" y=\"125\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">timer expiry = implicit end</text></svg>",
+      "caption": {
+        "en": "The four stages of the 802.11bf sensing procedure; the measurement exchange can repeat many times under one frozen session.",
+        "zh": "802.11bf 感知流程的四个阶段；测量交换可在同一个冻结的会话下重复多次。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the MAC-layer machinery 11.55 depends on (6.4, 11.3.3, 11.24.1, 26.5.2, 35.3.14)",
+        "zh": "覆盖图：11.55 所依赖的 MAC 层机制（6.4、11.3.3、11.24.1、26.5.2、35.3.14）"
+      },
+      "en": "The sensing procedure (11.55.1) leans on several smaller edits elsewhere in the standard. **6.4 — MLME-SAP table.** New rows in Table 6-1 register the service primitives this lesson used: SENSMSMTSESSION (session setup, see 11.55.1.4), SENSMSMTQUERY (unassociated-STA solicitation), SENSMSMTTERMINATION (teardown), SENSTBMSMTRQ / SENSNONTBMSMTRQ (the two exchange variants), and SENSREPORT / SENSREPORTRQ (carrying CSI up to the SME). **11.3.3 — frame filtering based on STA state.** Class 1a is amended so that, once a PTKSA from PASN exists, Protected Sensing frames (9.6.39) and the Protected Dual of Public Action sensing frames (Public Action values 51–58) are permitted — this is how an unassociated STA can run protected sensing before association. **11.24.1.2 — default QMF policy.** New Table 11-21 rows map the Public Action Sensing frame, Protected Dual of Public Action Sensing frame, and Protected Sensing frame to access category AC_VO, so sensing management frames get voice-grade scheduling. **26.5.2.5 — UL MU CS mechanism.** When an AP sends a Sensing Trigger frame it must set CS Required to 1, except for Sensing Polling / SR2SI Sounding / SR2SR Sounding subvariants, or for short Sensing Reporting / Threshold-Based Reporting triggers (UL Length ≤ 418) — letting time-critical soundings skip carrier sense. **35.3.14 — MLD individually addressed Management frame delivery.** The Public Action Sensing Measurement Report frame and the Protected Sensing Measurement Report frame are added to the list of management frames an MLD may deliver on any of its setup links, so reports work across a multi-link device.",
+      "zh": "感知流程（11.55.1）依赖标准中别处的若干较小改动。**6.4——MLME-SAP 表。** 表 6-1 新增的行登记了本课用到的服务原语：SENSMSMTSESSION（会话建立，见 11.55.1.4）、SENSMSMTQUERY（未关联站点发起请求）、SENSMSMTTERMINATION（拆除）、SENSTBMSMTRQ / SENSNONTBMSMTRQ（两种交换变体）、以及 SENSREPORT / SENSREPORTRQ（把 CSI 上送给 SME）。**11.3.3——基于站点状态的帧过滤。** 第 1a 类被修改为：一旦存在由 PASN 建立的 PTKSA，受保护感知帧（9.6.39）以及受保护公共动作对偶（Protected Dual of Public Action）感知帧（公共动作值 51–58）即被允许——这正是未关联站点能在关联前运行受保护感知的方式。**11.24.1.2——默认 QMF 策略。** 表 11-21 新增的行把公共动作感知帧、受保护公共动作对偶感知帧、受保护感知帧映射到接入类别 AC_VO，使感知管理帧获得语音级调度。**26.5.2.5——UL MU 载波侦听机制。** AP 发送感知触发帧时须将 CS Required 置 1，但下列情况除外：感知轮询/SR2SI 探测/SR2SR 探测子变体，或短的感知报告/基于阈值报告触发帧（UL Length ≤ 418）——使时间敏感的探测可跳过载波侦听。**35.3.14——MLD 单播管理帧投递。** 公共动作感知测量报告帧与受保护感知测量报告帧被加入 MLD 可在其任一建立链路上投递的管理帧列表，使报告能跨多链路设备工作。",
+      "cite": {
+        "pdf_id": "80211bf-2025",
+        "pages": [
+          28,
+          135,
+          207,
+          216
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The informative example (Annex AI) and the conformance/MIB anchors (Annex B, Annex C)",
+        "zh": "信息性示例（附录 AI）与一致性/MIB 锚点（附录 B、附录 C）"
+      },
+      "en": "**Annex AI (informative) — sensing procedure example.** Figure AI-1 walks through an AP sensing three non-AP STAs (STA A = AID 1, STA B = USID 2, STA C = AID 3). It shows the AP first establishing Session ID 1 with STA A, running exchanges (each with its own Measurement Exchange ID), then opening a second Session ID 2 with STA A using a different parameter set, then terminating Session 1. Crucially, because STA B is given the same operational parameters as STA A's Session 2, the AP reuses Measurement Session ID 2 for STA B — so one exchange under ID 2 can sound STA A, STA B, or both. After every STA sharing an ID terminates, that ID becomes free for reuse. This is the concrete grounding for the abstract <MAC address, Session ID> tuple and the one-to-many / many-to-one sounding patterns. **Annex B (normative) — PICS proforma.** Adds the abbreviation WS (wireless sensing), the IUT-configuration item CFSSTA (sensing STA, referencing 11.55.1.2), and protocol-capability items PC50 / PC51 — mandatory support for the sensing-initiator and sensing-responder roles for any sensing STA. **Annex C (normative) — ASN.1 MIB.** Adds the dot11SENSStationConfigTable (dot11smt 49) with the managed objects that gate the whole procedure: dot11SensingImplemented (true ⇒ this is a sensing STA), dot11SBPImplemented, dot11DMGSensingMsmtImplemented, dot11DMGSBPImplemented, and the control object dot11APRequiresPMFActivated, which decides whether management-frame protection (and hence a PASN PTKSA) is required for the capability exchange, session setup, and reporting.",
+      "zh": "**附录 AI（信息性）——感知流程示例。** 图 AI-1 演示一个 AP 感知三个非 AP 站点（STA A = AID 1、STA B = USID 2、STA C = AID 3）。它展示 AP 先与 STA A 建立会话 ID 1，运行若干交换（各有自己的测量交换 ID），再与 STA A 用另一组参数开启第二个会话 ID 2，然后终止会话 1。关键在于：由于给 STA B 的操作参数与 STA A 的会话 2 相同，AP 对 STA B 复用测量会话 ID 2——于是 ID 2 下的一次交换可探测 STA A、STA B 或两者。当共享某 ID 的所有站点都终止后，该 ID 即可被复用。这为抽象的 <MAC 地址，会话 ID> 二元组以及一对多/多对一探测模式提供了具体落地。**附录 B（规范性）——PICS 一致性声明。** 新增缩写 WS（无线感知）、被测实现配置项 CFSSTA（感知 STA，引用 11.55.1.2），以及协议能力项 PC50 / PC51——任何感知 STA 都必须支持感知发起者与感知响应者角色。**附录 C（规范性）——ASN.1 MIB。** 新增 dot11SENSStationConfigTable（dot11smt 49），包含统管整个流程的受管对象：dot11SensingImplemented（为真 ⇒ 这是感知 STA）、dot11SBPImplemented、dot11DMGSensingMsmtImplemented、dot11DMGSBPImplemented，以及控制对象 dot11APRequiresPMFActivated，它决定能力交换、会话建立与报告是否需要管理帧保护（进而需要 PASN PTKSA）。",
+      "cite": {
+        "pdf_id": "80211bf-2025",
+        "pages": [
+          227,
+          218,
+          224,
+          225,
+          226
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        28,
+        29
+      ],
+      "note": "6.4 / 6.5 — new MLME-SAP interface rows (SENSMSMTSESSION, SENSMSMTQUERY, SENSMSMTTERMINATION, SENSTBMSMTRQ, SENSNONTBMSMTRQ, SENSREPORT, SENSREPORTRQ)"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        135
+      ],
+      "note": "11.3.3 frame filtering by STA state (Protected Sensing frames in Class 1a after PASN PTKSA); 11.24.1.2 default QMF policy rows mapping sensing frames to AC_VO"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        136,
+        137,
+        138,
+        139
+      ],
+      "note": "11.55.1.1 overview; 11.55.1.2 dependencies/timers; 11.55.1.3 capabilities exchange; 11.55.1.4 session setup begins"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        140,
+        143,
+        144
+      ],
+      "note": "11.55.1.4 Request/Response status codes, Measurement Session ID tuple, session expiry timer (aMeasurementSessionExpiry)"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        145,
+        146,
+        149,
+        150,
+        151
+      ],
+      "note": "11.55.1.5 measurement exchange; TB variant phases (polling, NDPA sounding); MLME-SENSREPORT.indication on NDP receipt"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        156,
+        157,
+        158,
+        159,
+        160
+      ],
+      "note": "11.55.1.5.2.6 basic vs threshold-based reporting; 11.55.1.5.3 non-TB exchange (NDPA, SI2SR/SR2SI NDP, report)"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        164
+      ],
+      "note": "11.55.1.6 sensing measurement session termination (explicit via Termination frame / MLME-SENSMSMTTERMINATION, implicit via expiry timer)"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        207
+      ],
+      "note": "26.5.2.5 UL MU CS mechanism — CS Required rules for Sensing Trigger frames"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        216
+      ],
+      "note": "35.3.14.1 MLD individually addressed Management frame delivery adds Sensing Measurement Report frames"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        218
+      ],
+      "note": "Annex B (normative) PICS proforma — WS abbreviation, CFSSTA config item, PC50/PC51 initiator/responder capabilities"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        224,
+        225,
+        226
+      ],
+      "note": "Annex C (normative) ASN.1 MIB — dot11SENSStationConfigTable, dot11SensingImplemented, dot11APRequiresPMFActivated"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        227
+      ],
+      "note": "Annex AI (informative) sensing procedure example — AP sensing STA A/B/C, Session ID reuse, one-to-many sounding"
+    }
+  ],
+  "covers": [
+    "80211bf-2025:6.4",
+    "80211bf-2025:11.3.3",
+    "80211bf-2025:11.24.1",
+    "80211bf-2025:11.55.1",
+    "80211bf-2025:26.5.2",
+    "80211bf-2025:35.3.14",
+    "80211bf-2025:Annex_AI",
+    "80211bf-2025:Annex_B",
+    "80211bf-2025:Annex_C"
+  ],
+  "track": "sensing"
+}

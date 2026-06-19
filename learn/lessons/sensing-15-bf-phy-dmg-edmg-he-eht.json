@@ -1,0 +1,166 @@
+{
+  "id": "sensing-15-bf-phy-dmg-edmg-he-eht",
+  "title": {
+    "en": "Sensing in the PHY: Monostatic and Multistatic Sounding from DMG to EHT",
+    "zh": "PHY 层的感知：从 DMG 到 EHT 的单基/多基探测"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Most of 802.11bf lives in the MAC: setup, scheduling, reporting. But sensing ultimately rides on a radio waveform, so the amendment also reaches down into the PHY chapters of the base standard and extends each one. This lesson is the coverage map for those PHY edits across three families: HE (clause 27), EHT (clause 36), and the 60 GHz DMG/EDMG PHYs (clause 28). The pattern is consistent — bf does not invent a new PHY, it inserts a handful of new TXVECTOR/RXVECTOR parameters and a few new PPDU shapes into PHYs that already exist.",
+      "zh": "802.11bf 的大部分内容位于 MAC 层：建立、调度、上报。但感知最终要承载在射频波形上，因此该修正案也深入到基准标准的 PHY 章节并对每一个加以扩展。本课就是这些 PHY 改动的覆盖地图，涵盖三大家族：HE（第 27 章）、EHT（第 36 章），以及 60 GHz 的 DMG/EDMG PHY（第 28 章）。其模式是一致的——bf 并未发明新的 PHY，而是在已有的 PHY 中插入若干新的 TXVECTOR/RXVECTOR 参数和几种新的 PPDU 结构。"
+    },
+    {
+      "type": "prose",
+      "en": "First, two words you will see everywhere. Monostatic sensing means one device transmits a sounding signal and the same device listens to its own echoes — like a radar that hears itself bounce off a wall. Multistatic (and its two-node special case, bistatic) sensing means one device transmits and one or more separate devices receive — the transmitter and the listener(s) are different radios. bf adds PHY machinery for both: a relaxed monostatic waveform at 60 GHz, and a single PPDU that several receivers can each measure from at once.",
+      "zh": "首先是两个随处可见的术语。单基（monostatic）感知指同一台设备发射探测信号，并由这同一台设备监听自身回波——就像雷达听到自己从墙上反射回来的信号。多基（multistatic，其双节点特例称为双基 bistatic）感知指一台设备发射，由一台或多台不同的设备接收——发射方与监听方是不同的射频设备。bf 为两者都增加了 PHY 机制：在 60 GHz 上一种放宽约束的单基波形，以及一个可供多个接收方同时各自测量的 PPDU。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  subgraph Mono[Monostatic]\n    A[Device A TX] -->|echo| A\n  end\n  subgraph Multi[Multistatic / Bistatic]\n    B[Device B TX] --> C[Device C RX]\n    B --> D[Device D RX]\n  end",
+      "zh": "flowchart LR\n  subgraph Mono[单基]\n    A[设备 A 发射] -->|回波| A\n  end\n  subgraph Multi[多基 / 双基]\n    B[设备 B 发射] --> C[设备 C 接收]\n    B --> D[设备 D 接收]\n  end"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the OFDM PHYs that carry sub-7 GHz Wi-Fi sensing. For HE (clause 27.2.2) and EHT (clause 36.2.2), bf inserts the very same three RXVECTOR parameters into the PHY service interface tables. They appear only when the received frame is a Ranging null data packet (NDP) — the condition is PSDU_LENGTH is 0, meaning there is no data payload, just training symbols to measure the channel from. CSI_ESTIMATE carries the array of channel state information measured during those training symbols; its size is the number of receive chains times transmit chains times subcarriers. RX_OP_Gain_Type and RX_OP_Gain_Index record which receiver gain or operating-point setting was in force when the CSI was captured, so the measurement can be calibrated.",
+      "zh": "先看承载 7 GHz 以下 Wi-Fi 感知的 OFDM PHY。对 HE（27.2.2 节）和 EHT（36.2.2 节），bf 在 PHY 服务接口表中插入了完全相同的三个 RXVECTOR 参数。它们仅在接收到的帧为测距空数据包（Ranging NDP）时出现——条件是 PSDU_LENGTH 为 0，即没有数据净荷，只有用于测量信道的训练符号。CSI_ESTIMATE 承载在这些训练符号期间测得的信道状态信息数组，其大小为接收链数乘发射链数乘子载波数。RX_OP_Gain_Type 与 RX_OP_Gain_Index 记录捕获该 CSI 时所采用的接收增益或工作点设置，以便对测量结果进行校准。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The only real difference between the HE and EHT versions is the gating condition. HE allows the FORMAT to be HE_SU or HE_TB; EHT requires FORMAT EHT_MU with a 320 MHz channel (CBW320-1 or CBW320-2). The CSI array meaning is identical — bf simply reuses the OFDM Ranging NDP that 802.11az already defined, and exposes its channel measurement as a sensing output.",
+      "zh": "HE 版本与 EHT 版本之间唯一实质的区别是触发条件。HE 允许 FORMAT 为 HE_SU 或 HE_TB；EHT 则要求 FORMAT 为 EHT_MU 且信道为 320 MHz（CBW320-1 或 CBW320-2）。CSI 数组的含义完全相同——bf 只是复用了 802.11az 已定义的 OFDM 测距 NDP，并将其信道测量作为感知输出对外暴露。"
+    },
+    {
+      "type": "prose",
+      "en": "Now jump to 60 GHz. The DMG/EDMG PHY (clause 28) is directional and beamformed, so sensing there is built on the training (TRN) field used for beam refinement rather than on OFDM subcarriers. Clause 28.2.2 inserts three new TXVECTOR parameters: EDMG_MS_SENSING flags a frame as an EDMG multistatic sensing PPDU, EDMG_MS_SENSING_NSTA carries how many receiving STAs that PPDU serves (the number of Sync subfields), and EDMG_SENS_MULTIPLE_GOLAY turns on a mode where the TRN field uses a chosen Golay sequence. Clause 28.3.3 then writes those same controls into the over-the-air EDMG-Header-A: a 1-bit Multistatic Sensing field, a 3-bit Multistatic Sensing NSTA field, a 1-bit Sense Multiple Golay field, and a 3-bit Sense Golay Index field. TXVECTOR is the software side; the header is what actually travels in the PPDU.",
+      "zh": "现在切到 60 GHz。DMG/EDMG PHY（第 28 章）是定向波束成形的，因此那里的感知建立在用于波束细化的训练（TRN）字段之上，而非建立在 OFDM 子载波上。28.2.2 节插入了三个新的 TXVECTOR 参数：EDMG_MS_SENSING 将帧标记为 EDMG 多基感知 PPDU，EDMG_MS_SENSING_NSTA 携带该 PPDU 服务的接收 STA 数量（即 Sync 子字段的数量），EDMG_SENS_MULTIPLE_GOLAY 开启 TRN 字段使用指定 Golay 序列的模式。28.3.3 节随后将这些同样的控制写入空口的 EDMG-Header-A：1 比特的 Multistatic Sensing 字段、3 比特的 Multistatic Sensing NSTA 字段、1 比特的 Sense Multiple Golay 字段以及 3 比特的 Sense Golay Index 字段。TXVECTOR 是软件侧；而头部才是真正在 PPDU 中传输的内容。"
+    },
+    {
+      "type": "prose",
+      "en": "The headline new 60 GHz structure is the EDMG multistatic sensing PPDU (clause 28.9.4). It is built from an EDMG BRP (beam refinement protocol) PPDU, with one clever insertion: a Sync field is placed between the Data field and the TRN field. That Sync field contains two or more Sync subfields plus a Sync PAD subfield. Each Sync subfield is made of 18 Golay sequences and is steered with a beam (AWV) optimized toward one particular receiving STA. A receiver that is not interested in the data can ignore everything before its Sync subfield, lock on to its own Sync subfield, and then measure the shared TRN field. That is how a single transmitted PPDU lets N different STAs each obtain a sensing measurement at once — true multistatic operation.",
+      "zh": "60 GHz 最重磅的新结构是 EDMG 多基感知 PPDU（28.9.4 节）。它由一个 EDMG BRP（波束细化协议）PPDU 构建，并加入了一处巧妙的插入：在 Data 字段与 TRN 字段之间放置一个 Sync 字段。该 Sync 字段包含两个或更多 Sync 子字段以及一个 Sync PAD 子字段。每个 Sync 子字段由 18 个 Golay 序列构成，并以面向某一特定接收 STA 优化的波束（AWV）发射。对数据不感兴趣的接收方可以忽略其 Sync 子字段之前的一切，锁定到属于自己的 Sync 子字段，然后测量共享的 TRN 字段。一个被发射的 PPDU 由此让 N 个不同的 STA 同时各自获得一次感知测量——这就是真正的多基操作。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><g stroke-width=\"1.5\"><rect x=\"4\" y=\"30\" width=\"60\" height=\"30\"/><rect x=\"64\" y=\"30\" width=\"60\" height=\"30\"/><rect x=\"124\" y=\"30\" width=\"70\" height=\"30\"/><rect x=\"194\" y=\"30\" width=\"60\" height=\"30\"/><rect x=\"254\" y=\"20\" width=\"180\" height=\"50\"/><rect x=\"434\" y=\"30\" width=\"120\" height=\"30\"/></g><g fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\"><text x=\"34\" y=\"49\">L-STF/CEF</text><text x=\"94\" y=\"49\">L-Header</text><text x=\"159\" y=\"49\">EDMG-Hdr-A</text><text x=\"224\" y=\"49\">Data</text><text x=\"344\" y=\"14\">Sync field (new)</text><text x=\"300\" y=\"49\">Sync1..N</text><text x=\"400\" y=\"49\">Sync PAD</text><text x=\"494\" y=\"49\">TRN</text></g></svg>",
+      "caption": {
+        "en": "EDMG multistatic sensing PPDU: an EDMG BRP PPDU with a new Sync field (per-STA Sync subfields + Sync PAD) inserted between Data and TRN (clause 28.9.4.2).",
+        "zh": "EDMG 多基感知 PPDU：在 Data 与 TRN 之间插入了新的 Sync 字段（每 STA 的 Sync 子字段 + Sync PAD）的 EDMG BRP PPDU（28.9.4.2 节）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Two supporting edits make that PPDU work. Beam refinement (clause 28.9.2) gains a paragraph defining the basic SC TRN subfield waveform when EDMG_SENS_MULTIPLE_GOLAY is set, selecting the Golay pair by the EDMG_SENS_GOLAY_INDEX value — this is the multiple-Golay TRN that lets sensing TRN subfields be distinguished. And TXTIME (clause 28.12.3) is patched: when EDMG_MS_SENSING is 1, the Data-field duration formula adds the Sync field's airtime so the on-air length is computed correctly. A legacy EDMG STA that does not understand the Multistatic Sensing field still reads a consistent Data-field duration from the header, so the medium stays protected.",
+      "zh": "两处配套改动让该 PPDU 得以运作。波束细化（28.9.2 节）新增一段，定义当 EDMG_SENS_MULTIPLE_GOLAY 置位时基本 SC TRN 子字段的波形，并按 EDMG_SENS_GOLAY_INDEX 的取值选择 Golay 序列对——这就是让各感知 TRN 子字段可被区分的多 Golay TRN。而 TXTIME（28.12.3 节）也被修补：当 EDMG_MS_SENSING 为 1 时，Data 字段时长公式会加上 Sync 字段的占空时间，从而正确计算空口长度。不理解 Multistatic Sensing 字段的传统 EDMG STA 仍能从头部读到一致的 Data 字段时长，于是介质得以保持受保护。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "For monostatic at 60 GHz, bf takes the opposite approach (clause 28.9.5): instead of a new structure, it relaxes the rules. Any DMG or EDMG PPDU may be used, and almost any waveform may fill its TRN field — provided it is no longer than the declared TRN length, no stronger in power and spectral density, obeys the same transmit mask, and avoids more than 6 consecutive identical Golay sequences. Since one device both sends and hears its own echo, it already knows the waveform, so the standard can afford this freedom.",
+      "zh": "对于 60 GHz 的单基感知，bf 采取相反的思路（28.9.5 节）：不是引入新结构，而是放宽规则。可以使用任意 DMG 或 EDMG PPDU，且其 TRN 字段几乎可由任意波形填充——只要不超过所声明的 TRN 长度、功率与频谱密度不更高、遵守相同的发射模板，并避免出现超过 6 个连续相同的 Golay 序列即可。由于同一台设备既发射又监听自身回波，它本就知道波形，因此标准可以给予这份自由。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: which clause adds what to each PHY",
+        "zh": "覆盖地图：每个 PHY 中各子条款分别新增了什么"
+      },
+      "en": "OFDM PHYs — 27.2.2 (HE): inserts CSI_ESTIMATE, RX_OP_Gain_Type, RX_OP_Gain_Index RXVECTOR rows into Table 27-1, present when FORMAT is HE_SU/HE_TB and PSDU_LENGTH is 0 (an HE Ranging NDP). 36.2.2 (EHT): the same three rows into Table 36-1, gated on FORMAT EHT_MU, PSDU_LENGTH 0, and a 320 MHz channel — exposing the EHT Ranging NDP's CSI as a sensing output. DMG/EDMG PHY — 28.2.2: adds TXVECTOR parameters EDMG_MS_SENSING, EDMG_MS_SENSING_NSTA, and EDMG_SENS_MULTIPLE_GOLAY to Table 28-1. 28.3.3: maps those to over-the-air EDMG-Header-A subfields (Multistatic Sensing, Multistatic Sensing NSTA, Sense Multiple Golay, Sense Golay Index) in Table 28-13. 28.9.2: defines the basic SC TRN subfield waveform for the multiple-Golay sensing mode (selected by EDMG_SENS_GOLAY_INDEX). 28.9.4: the new EDMG multistatic sensing PPDU — an EDMG BRP PPDU with a Sync field (≥2 per-STA Sync subfields of 18 Golay sequences each, plus a Sync PAD) inserted between Data and TRN, letting NSTA receivers each measure from one PPDU; subclauses cover the structure, header fields, the Sync field/subfield/pad definitions, and the TRN field. 28.9.5: the DMG monostatic sensing PPDU — any DMG/EDMG PPDU with a relaxed TRN waveform (constraints a–e on length, power, spectral density, mask, and consecutive Golay sequences). 28.12.3: TXTIME calculation for EDMG SC mode, extended so that when EDMG_MS_SENSING is 1 the Data-field duration includes the Sync field airtime.",
+      "zh": "OFDM PHY —— 27.2.2（HE）：向表 27-1 插入 CSI_ESTIMATE、RX_OP_Gain_Type、RX_OP_Gain_Index 三个 RXVECTOR 行，当 FORMAT 为 HE_SU/HE_TB 且 PSDU_LENGTH 为 0（即 HE 测距 NDP）时出现。36.2.2（EHT）：向表 36-1 插入相同的三行，触发条件为 FORMAT EHT_MU、PSDU_LENGTH 0 且 320 MHz 信道——将 EHT 测距 NDP 的 CSI 作为感知输出暴露。DMG/EDMG PHY —— 28.2.2：向表 28-1 增加 TXVECTOR 参数 EDMG_MS_SENSING、EDMG_MS_SENSING_NSTA 和 EDMG_SENS_MULTIPLE_GOLAY。28.3.3：在表 28-13 中将其映射为空口 EDMG-Header-A 子字段（Multistatic Sensing、Multistatic Sensing NSTA、Sense Multiple Golay、Sense Golay Index）。28.9.2：为多 Golay 感知模式定义基本 SC TRN 子字段波形（由 EDMG_SENS_GOLAY_INDEX 选择）。28.9.4：全新的 EDMG 多基感知 PPDU——在 Data 与 TRN 之间插入 Sync 字段（≥2 个每 STA 的 Sync 子字段，每个由 18 个 Golay 序列构成，外加一个 Sync PAD）的 EDMG BRP PPDU，使 NSTA 个接收方可从一个 PPDU 中各自测量；其子条款涵盖结构、头部字段、Sync 字段/子字段/PAD 定义以及 TRN 字段。28.9.5：DMG 单基感知 PPDU——任意 DMG/EDMG PPDU 配以放宽的 TRN 波形（约束 a–e 涉及长度、功率、频谱密度、模板及连续 Golay 序列数）。28.12.3：EDMG SC 模式的 TXTIME 计算，经扩展后当 EDMG_MS_SENSING 为 1 时，Data 字段时长会计入 Sync 字段占空时间。",
+      "cite": {
+        "pdf_id": "80211bf-2025",
+        "pages": [
+          208,
+          209,
+          210,
+          211,
+          212,
+          213,
+          214,
+          215,
+          217
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The takeaway: bf's PHY footprint is small but surgical. Below 7 GHz it borrows the Ranging NDP and simply surfaces its CSI (HE 27.2.2, EHT 36.2.2). At 60 GHz it does more, because directional beamforming needs its own answer — relaxing the TRN waveform for monostatic (28.9.5), and inventing a Sync-field-bearing PPDU for multistatic (28.9.4), with the TXVECTOR/header parameters (28.2.2, 28.3.3), the multiple-Golay TRN (28.9.2), and the corrected TXTIME (28.12.3) all in support. Every new sensing sounding fits into a PHY that already existed.",
+      "zh": "要点：bf 在 PHY 上的足迹虽小却精准。7 GHz 以下，它借用测距 NDP 并直接暴露其 CSI（HE 27.2.2、EHT 36.2.2）。在 60 GHz，它做得更多，因为定向波束成形需要专门的方案——为单基放宽 TRN 波形（28.9.5），为多基发明携带 Sync 字段的 PPDU（28.9.4），并以 TXVECTOR/头部参数（28.2.2、28.3.3）、多 Golay TRN（28.9.2）及修正后的 TXTIME（28.12.3）作为配套支撑。每一种新的感知探测都嵌入到一个本已存在的 PHY 之中。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        208
+      ],
+      "note": "27.2.2 HE TXVECTOR/RXVECTOR: CSI_ESTIMATE, RX_OP_Gain_Type/Index added for HE Ranging NDP (PSDU_LENGTH 0)"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        209
+      ],
+      "note": "28.2.2 EDMG TXVECTOR/RXVECTOR: EDMG_MS_SENSING, EDMG_MS_SENSING_NSTA, EDMG_SENS_MULTIPLE_GOLAY"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        210
+      ],
+      "note": "28.3.3 EDMG preamble / EDMG-Header-A: Multistatic Sensing, NSTA, Sense Multiple Golay, Sense Golay Index subfields (Table 28-13)"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        211
+      ],
+      "note": "28.9.2 Beam refinement: multiple-Golay basic SC TRN subfield waveform; 28.9.4.1 multistatic sensing PPDU general"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        212,
+        213,
+        214
+      ],
+      "note": "28.9.4 EDMG multistatic sensing PPDU structure, header fields, Sync field/subfield/pad, TRN field"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        214,
+        215
+      ],
+      "note": "28.9.5 DMG monostatic sensing PPDU: relaxed TRN waveform constraints a-e"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        215
+      ],
+      "note": "28.12.3 TXTIME calculation for EDMG SC mode: adds Sync field duration when EDMG_MS_SENSING is 1"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        217
+      ],
+      "note": "36.2.2 EHT TXVECTOR/RXVECTOR: CSI_ESTIMATE etc. for EHT Ranging NDP at CBW320"
+    }
+  ],
+  "covers": [
+    "80211bf-2025:27.2.2",
+    "80211bf-2025:28.2.2",
+    "80211bf-2025:28.3.3",
+    "80211bf-2025:28.9.2",
+    "80211bf-2025:28.9.4",
+    "80211bf-2025:28.9.5",
+    "80211bf-2025:28.12.3",
+    "80211bf-2025:36.2.2"
+  ],
+  "track": "sensing"
+}

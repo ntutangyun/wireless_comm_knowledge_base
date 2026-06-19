@@ -1,0 +1,236 @@
+{
+  "id": "privacy-08-bh-device-id-irm-mac-privacy",
+  "title": {
+    "en": "Staying Recognizable While Private: Device ID and Identifiable Random MAC (IRM)",
+    "zh": "既保护隐私又可被识别：设备 ID 与可识别随机 MAC（IRM）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "MAC-address randomization is great for privacy: a phone that changes its MAC before every connection is hard for a third party to track across networks. But it created a problem for the network the device actually wants to use. When a returning client shows up with a brand-new, never-seen MAC, the access point (AP) cannot tell it apart from a stranger, so any state the network had built up — your saved preferences, your access tier, prior pre-association transactions — is lost. IEEE 802.11bh is the amendment that fixes exactly this: it lets a network re-recognize a returning client without letting outsiders track it. This lesson teaches only what bh ADDS to the base 802.11 standard.",
+      "zh": "MAC 地址随机化对隐私很有帮助：一部手机在每次连接前更换 MAC，第三方就很难跨网络追踪它。但这给设备真正想使用的那个网络带来了麻烦。当一个老客户带着全新的、从未见过的 MAC 出现时，接入点（AP）无法把它和陌生人区分开，于是网络此前积累的状态——你保存的偏好、你的接入等级、关联前的历史交互——全都丢失了。IEEE 802.11bh 修正案正是为解决这一问题而生：它让网络能够重新识别返回的客户端，同时不让外部人员追踪到它。本课只讲 bh 在基础 802.11 标准之上新增的内容。"
+    },
+    {
+      "type": "prose",
+      "en": "802.11bh introduces two independent, opt-in recognition mechanisms (clause 3.2 adds the formal definitions; clause 3.4 adds the acronym IRM). The first is the device ID mechanism: the AP hands a non-AP STA an identifier during association or PASN authentication, and the STA quietly hands it back next time. The second is the Identifiable Random MAC (IRM): the STA itself picks a random local MAC address, registers it with the network, and then uses that exact address as its transmitter address on a future visit so the network recognizes it on sight. A device ID is allocated by the AP; an IRM is chosen by the STA. They can be used together. A measurement ID is a transient cousin of the device ID used during beacon-report measurements.",
+      "zh": "802.11bh 引入了两种相互独立、需用户选择启用的识别机制（条款 3.2 新增了正式定义，条款 3.4 新增缩写 IRM）。第一种是设备 ID 机制：AP 在关联或 PASN 认证期间给非 AP STA 分配一个标识符，STA 在下次到访时悄悄把它交回。第二种是可识别随机 MAC（IRM）：STA 自己挑选一个随机的本地 MAC 地址，向网络登记，下次到访时就用这个地址作为发送方地址，网络一眼就能认出它。设备 ID 由 AP 分配，IRM 由 STA 选择，两者可以同时使用。测量 ID 则是设备 ID 的临时表亲，用于信标报告测量过程中。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The whole point is asymmetry: the network can recognize you, but a passive eavesdropper cannot. Both mechanisms are opt-in (typically under user control), require the base MAC privacy enhancements (a STA sets dot11PrivacyActivated true to use them), and let a recognized STA reuse its prior shared identity state instead of re-establishing it from scratch.",
+      "zh": "核心在于不对称性：网络能认出你，而被动窃听者不能。两种机制都需选择启用（通常由用户控制），都依赖基础的 MAC 隐私增强（STA 须将 dot11PrivacyActivated 置为 true 才能使用），并让被识别的 STA 复用此前的共享身份状态，而不必从零重新建立。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant STA as non-AP STA\n  participant AP1 as AP-1\n  participant AP2 as AP-2 (same ESS)\n  Note over STA,AP1: First visit (MAC1)\n  STA->>AP1: Assoc Req (Device ID Support=1)\n  AP1->>STA: 4WH msg3: Device ID=devID\n  Note over STA,AP2: Return with new MAC2\n  STA->>AP2: 4WH msg2: Device ID=devID\n  AP2->>STA: 4WH msg3: Status=Recognized",
+      "zh": "sequenceDiagram\n  participant STA as 非AP STA\n  participant AP1 as AP-1\n  participant AP2 as AP-2（同一ESS）\n  Note over STA,AP1: 首次到访（MAC1）\n  STA->>AP1: 关联请求（设备ID支持=1）\n  AP1->>STA: 四次握手消息3：设备ID=devID\n  Note over STA,AP2: 换用新MAC2返回\n  STA->>AP2: 四次握手消息2：设备ID=devID\n  AP2->>STA: 四次握手消息3：状态=已识别"
+    },
+    {
+      "type": "prose",
+      "en": "Where do these identifiers travel? 802.11bh threads them through the connection setup paths that already exist. New Device ID, IRM, and PASN ID elements (and a Measurement ID element) are added to the Association Request/Response and Probe Request frames. A new IRM Action frame lets a STA resolve a collision after the fact. And for security, the same identifiers ride inside the RSNA 4-way handshake (as new KDEs) and inside PASN key establishment (encrypted). The capability bits live in the RSNXE Extended RSN Capabilities field (Device ID Support, IRM Support, KEK In PASN), so both peers advertise support in Beacons, Probe Responses, and association frames before anything is exchanged.",
+      "zh": "这些标识符在哪里传输？802.11bh 把它们穿插进已有的连接建立路径中。新增的设备 ID、IRM、PASN ID 元素（以及测量 ID 元素）被加入关联请求/响应帧和探测请求帧。新增的 IRM Action 帧让 STA 能在事后解决地址冲突。出于安全考虑，相同的标识符还会搭载在 RSNA 四次握手中（作为新的 KDE），以及 PASN 密钥建立过程中（加密传输）。能力比特位于 RSNXE 的扩展 RSN 能力字段（设备 ID 支持、IRM 支持、KEK In PASN），因此双方在交换任何内容之前，都会在信标、探测响应和关联帧中通告各自的支持情况。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"8\" y=\"40\" width=\"60\" height=\"34\" rx=\"3\"/><rect x=\"68\" y=\"40\" width=\"50\" height=\"34\" rx=\"3\"/><rect x=\"118\" y=\"40\" width=\"80\" height=\"34\" rx=\"3\"/><rect x=\"198\" y=\"40\" width=\"70\" height=\"34\" rx=\"3\"/><rect x=\"268\" y=\"40\" width=\"60\" height=\"34\" rx=\"3\"/><rect x=\"328\" y=\"40\" width=\"104\" height=\"34\" rx=\"3\"/><text x=\"38\" y=\"61\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Element ID</text><text x=\"93\" y=\"61\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Length</text><text x=\"158\" y=\"61\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">ID Extension</text><text x=\"233\" y=\"56\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">DevID</text><text x=\"233\" y=\"68\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Length</text><text x=\"298\" y=\"56\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">DevID</text><text x=\"298\" y=\"68\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Status</text><text x=\"380\" y=\"61\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Device ID (variable)</text><text x=\"38\" y=\"92\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">255</text><text x=\"298\" y=\"92\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">0/1 (AP only)</text><text x=\"158\" y=\"92\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">138</text><text x=\"220\" y=\"24\" font-size=\"10\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Device ID element (Figure 9-1074a)</text></svg>",
+      "caption": {
+        "en": "The Device ID element: a 255/138 extension element carrying an opaque device ID. The Device ID Status field (Recognized / Not Recognized / Not Applicable) is present only when the AP sends it; a zero-length Device ID field means 'keep the current ID'. The IRM element (255/139) is similar but carries a 6-octet MAC address from STA to AP.",
+        "zh": "设备 ID 元素：一个 255/138 扩展元素，携带不透明的设备 ID。设备 ID 状态字段（已识别 / 未识别 / 不适用）仅在 AP 发送时存在；长度为零的设备 ID 字段表示“沿用当前 ID”。IRM 元素（255/139）结构类似，但由 STA 向 AP 携带一个 6 字节的 MAC 地址。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The IRM mechanism has a twist the device ID does not: because the STA picks the random MAC itself, two different STAs in the same ESS could accidentally pick the same one. 802.11bh handles this with the IRM Action frame (category 39). After association, if a newly provided IRM collides with one already stored, the AP sends a Duplicate IRM frame (IRM Action field = 0), and the STA answers with a New IRM frame (IRM Action field = 1) carrying a fresh 6-octet MAC. On a return visit the STA simply uses its registered IRM as the transmitter address of its Probe Request, Authentication, or (Re)Association frames, and the recognizing AP replies with IRM Status = Recognized.",
+      "zh": "IRM 机制有一个设备 ID 所没有的小麻烦：因为随机 MAC 是 STA 自己挑的，同一 ESS 中的两个不同 STA 可能碰巧选到同一个。802.11bh 用 IRM Action 帧（类别 39）来处理：关联后，若新提供的 IRM 与已存储的某个冲突，AP 发送 Duplicate IRM 帧（IRM Action 字段=0），STA 则以 New IRM 帧（IRM Action 字段=1）回应，携带一个全新的 6 字节 MAC。返回到访时，STA 只需把已登记的 IRM 用作其探测请求、认证或（重）关联帧的发送方地址，识别出它的 AP 便回复 IRM 状态=已识别。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n  A[STA provides IRM in 4WH msg4] --> B{AP: already in use?}\n  B -->|No| C[AP stores IRM]\n  B -->|Yes| D[AP: Duplicate IRM frame]\n  D --> E[STA: New IRM frame with fresh MAC]\n  E --> C",
+      "zh": "graph LR\n  A[STA在四次握手msg4提供IRM] --> B{AP：是否已被占用？}\n  B -->|否| C[AP存储IRM]\n  B -->|是| D[AP：Duplicate IRM帧]\n  D --> E[STA：New IRM帧含全新MAC]\n  E --> C"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: how the identifiers are carried in the 4-way handshake and in PASN, plus the service and MLME additions",
+        "zh": "覆盖地图：标识符如何在四次握手与 PASN 中传输，以及服务与 MLME 的新增内容"
+      },
+      "en": "This consolidates the carriage and plumbing clauses of 802.11bh.\n\n4-way handshake (12.7.6): three new KDEs are defined — Device ID KDE (00-0F-AC:20), IRM KDE (21), PASN ID KDE (22). A returning STA sends its device ID in a Device ID KDE in message 2; the AP returns device ID / PASN ID / IRM status in message 3; and the STA provides a (possibly new) IRM in an IRM KDE in message 4. Because message 2 may now carry a Device ID KDE, its Encrypted Key Data flag is set so the KDE is protected.\n\nPASN key establishment (12.13.3): for ranging/FTM sessions established via PASN, the STA puts a PASN ID element in the first PASN frame; the AP returns Robust Device ID / Robust PASN ID elements inside a PASN Encrypted Data element in the second PASN frame; the STA may add a Robust IRM in the third PASN frame. These travel encrypted under a KEK derived in PASN (the new KEK In PASN capability and dot11KEKPASNActivated enable this).\n\nServices and MIB: 4.5.4.10 (MAC privacy enhancements) is the service-level home — it now states that a returning STA may present a device ID, PASN ID, or its prior IRM so the network can map a previously established shared identity state. The new MIB control variables dot11DeviceIDActivated, dot11IRMActivated, and dot11KEKPASNActivated gate all of this.\n\nMLME-SAP and primitives (6.4, 6.5.7): Table 6-1 gains an IRMDUPLICATE service row pointing at the IRM Action frame. The MLME-ASSOCIATE.request / .confirm / .indication / .response primitives each gain Device ID and IRM parameters (and PASN ID on confirm/response), so the SME can drive and observe the recognition handshake.\n\nFrame formats (9.3.3, 9.4.2, 9.6.36): the Association Request/Response bodies gain Device ID, IRM, and PASN ID entries; the Probe Request gains a Measurement ID; the Beacon request gains an IRM Recommendation subelement and a Measurement ID subelement. Clause 9.4.2 defines the Device ID element (255/138), IRM element (255/139), Measurement ID, PASN Encrypted Data, and PASN ID elements, plus the RSNXE capability bits. Clause 9.6.36 defines the Duplicate IRM and New IRM Action frames.",
+      "zh": "本节汇总 802.11bh 的标识符传输与底层管道相关条款。\n\n四次握手（12.7.6）：定义了三个新 KDE——设备 ID KDE（00-0F-AC:20）、IRM KDE（21）、PASN ID KDE（22）。返回的 STA 在消息 2 中以设备 ID KDE 发送其设备 ID；AP 在消息 3 中返回设备 ID / PASN ID / IRM 状态；STA 在消息 4 中以 IRM KDE 提供（可能为新的）IRM。由于消息 2 现在可能携带设备 ID KDE，其加密密钥数据标志被置位以保护该 KDE。\n\nPASN 密钥建立（12.13.3）：对于经由 PASN 建立的测距/FTM 会话，STA 在第一个 PASN 帧中放入 PASN ID 元素；AP 在第二个 PASN 帧的 PASN 加密数据元素内返回 Robust 设备 ID / Robust PASN ID 元素；STA 可在第三个 PASN 帧中加入 Robust IRM。这些内容在 PASN 中派生的 KEK 下加密传输（新增的 KEK In PASN 能力与 dot11KEKPASNActivated 启用此机制）。\n\n服务与 MIB：4.5.4.10（MAC 隐私增强）是服务层的归属——它现在指出返回的 STA 可出示设备 ID、PASN ID 或此前的 IRM，使网络能够映射先前建立的共享身份状态。新的 MIB 控制变量 dot11DeviceIDActivated、dot11IRMActivated、dot11KEKPASNActivated 控制这一切。\n\nMLME-SAP 与原语（6.4、6.5.7）：表 6-1 新增一行 IRMDUPLICATE 服务，指向 IRM Action 帧。MLME-ASSOCIATE.request / .confirm / .indication / .response 原语各自新增设备 ID 与 IRM 参数（confirm/response 还含 PASN ID），使 SME 能驱动并观测识别握手。\n\n帧格式（9.3.3、9.4.2、9.6.36）：关联请求/响应帧体新增设备 ID、IRM、PASN ID 条目；探测请求新增测量 ID；信标请求新增 IRM Recommendation 子元素与测量 ID 子元素。条款 9.4.2 定义设备 ID 元素（255/138）、IRM 元素（255/139）、测量 ID、PASN 加密数据、PASN ID 元素，以及 RSNXE 能力比特。条款 9.6.36 定义 Duplicate IRM 与 New IRM Action 帧。",
+      "cite": {
+        "pdf_id": "80211bh-2024",
+        "pages": [
+          19,
+          20,
+          21,
+          24,
+          26,
+          28,
+          32,
+          40,
+          42,
+          43,
+          44
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Informative annexes: opaque identifiers (AF) and worked device-ID / IRM examples (AG), plus conformance (B) and MIB (C)",
+        "zh": "资料性附录：不透明标识符（AF）与设备 ID / IRM 实例（AG），以及一致性（B）与 MIB（C）"
+      },
+      "en": "Annex AF (informative) gives an example opaque-identifier scheme for the device ID / PASN ID. Rather than emit a raw stable identifier (which a third party could itself track), an AP wraps the real identity with AES-SIV in deterministic mode under a single ESS-wide secret k. The input is the identity prepended with a one-octet pad-length, random padding, and a variable-length random 'tweak'; the tweak length n sets the baseline collision resistance (~1/2^(n/2)). Each time the identity is re-wrapped the AP varies the padding, so the over-the-air bytes change every visit even though the underlying identity is constant. Overhead is 17 octets plus tweak plus padding; identities over 233 octets cannot be made opaque this way. To a STA the result is indistinguishable from a random string.\n\nAnnex AG (informative) walks through worked examples: device ID over a 4-way handshake (AG.1, Figure AG-1 — STA gets devID at AP-1 with MAC1, returns to AP-2 with MAC2, presents devID, AP-2 replies Recognized), device ID over FILS (Figure AG-2), device ID + PASN ID over PASN for chained FTM sessions across MAC1/MAC2/MAC3 (Figure AG-3), and IRM exchanges over the 4-way handshake and FILS (AG.2) including the IRM1 -> IRM2 rotation on each visit, and a combined device-ID + IRM example (AG.3).\n\nAnnex B (normative, PICS) adds the CFDID (Device ID, 12.2.13.1) and CFIRM (IRM, 12.2.13.2) configuration items and the FT74 / FR75 IRM Action frame conformance entries, plus the ID and IRM abbreviations. Annex C (normative) adds the three new MIB control variables — dot11KEKPASNActivated, dot11DeviceIDActivated, dot11IRMActivated — to the dot11StationConfigTable, each a read-write TruthValue defaulting to false.",
+      "zh": "附录 AF（资料性）给出设备 ID / PASN ID 的不透明标识符示例方案。AP 不直接发出原始的稳定标识符（那样第三方反而能追踪），而是用确定性模式的 AES-SIV、以全 ESS 共享的单一密钥 k 包裹真实身份。输入为：身份前置一个字节的填充长度、随机填充，以及一段变长随机“tweak”；tweak 长度 n 决定基础抗碰撞性（约 1/2^(n/2)）。每次重新包裹身份时 AP 都改变填充量，因此即便底层身份不变，空口字节每次到访都不同。开销为 17 字节加 tweak 加填充；超过 233 字节的身份无法用此方式做成不透明。对 STA 而言，结果与随机字符串无异。\n\n附录 AG（资料性）演示了若干实例：四次握手中的设备 ID（AG.1，图 AG-1——STA 以 MAC1 在 AP-1 处获得 devID，以 MAC2 返回 AP-2 出示 devID，AP-2 回复已识别）、FILS 中的设备 ID（图 AG-2）、PASN 中跨 MAC1/MAC2/MAC3 串联 FTM 会话的设备 ID + PASN ID（图 AG-3），以及四次握手与 FILS 中的 IRM 交换（AG.2，含每次到访 IRM1 -> IRM2 的轮换），还有设备 ID + IRM 组合示例（AG.3）。\n\n附录 B（规范性，PICS）新增 CFDID（设备 ID，12.2.13.1）与 CFIRM（IRM，12.2.13.2）配置项，以及 FT74 / FR75 这两个 IRM Action 帧一致性条目，并新增 ID 与 IRM 缩写。附录 C（规范性）向 dot11StationConfigTable 新增三个 MIB 控制变量——dot11KEKPASNActivated、dot11DeviceIDActivated、dot11IRMActivated——均为读写 TruthValue，默认值为 false。",
+      "cite": {
+        "pdf_id": "80211bh-2024",
+        "pages": [
+          48,
+          50,
+          51,
+          52,
+          53,
+          54,
+          56,
+          58
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: device ID = a coat-check ticket the venue gives you and you show on return; IRM = a recognizable nickname you choose and reuse so the venue knows you on arrival; the opaque-identifier scheme of Annex AF = printing that ticket so only the venue can read it, with a fresh-looking stamp every time. All three keep you recognizable to the network while staying private from everyone else.",
+      "zh": "记忆模型：设备 ID = 场馆发给你、你返回时出示的存衣牌；IRM = 你自选并复用的可识别昵称，让场馆在你一进门就认出你；附录 AF 的不透明标识符方案 = 把那张牌印成只有场馆能读懂、且每次盖章都看似全新的样子。三者都让你对网络保持可识别，同时对其他所有人保持隐私。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        19
+      ],
+      "note": "3.2 definitions (device ID, IRM, measurement ID, PASN ID); 3.4 acronym IRM; 4.5.4.10 MAC privacy enhancements"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        20,
+        21,
+        22,
+        23
+      ],
+      "note": "6.4 Table 6-1 IRMDUPLICATE row; 6.5.7 MLME-ASSOCIATE primitives gain Device ID / IRM / PASN ID parameters"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        24,
+        25
+      ],
+      "note": "9.3.3 Association Req/Resp and Probe Request frame bodies add Device ID / IRM / PASN ID / Measurement ID"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        26,
+        28,
+        29,
+        30,
+        31
+      ],
+      "note": "9.4.2 Device ID element (255/138), IRM element (255/139), Measurement ID, PASN Encrypted Data, PASN ID elements; RSNXE capability bits; category 39 IRM"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        32,
+        33
+      ],
+      "note": "9.6.36 IRM Action frame details: Duplicate IRM and New IRM"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        35,
+        36,
+        37,
+        38,
+        39,
+        40
+      ],
+      "note": "12.2.13 device ID and IRM mechanisms (recognition, status fields, opt-in)"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        40,
+        41,
+        42,
+        43
+      ],
+      "note": "12.7.6 4-way handshake: Device ID / IRM / PASN ID KDEs across messages 2-4"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        43,
+        44,
+        45,
+        46
+      ],
+      "note": "12.13.3 PASN key establishment carries Robust Device ID / IRM / PASN ID in PASN Encrypted Data; KEK derivation"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        48,
+        49
+      ],
+      "note": "Annex B PICS: CFDID, CFIRM, FT74/FR75 IRM Action conformance items"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        50
+      ],
+      "note": "Annex C MIB: dot11KEKPASNActivated, dot11DeviceIDActivated, dot11IRMActivated"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        51,
+        52
+      ],
+      "note": "Annex AF informative opaque-identifier scheme (AES-SIV, tweak, padding)"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        53,
+        54,
+        56,
+        58
+      ],
+      "note": "Annex AG informative device ID and IRM usage examples (Figures AG-1 to AG-5)"
+    }
+  ],
+  "covers": [
+    "80211bh-2024:3.2",
+    "80211bh-2024:3.4",
+    "80211bh-2024:4.5.4",
+    "80211bh-2024:6.4",
+    "80211bh-2024:6.5.7",
+    "80211bh-2024:9.3.3",
+    "80211bh-2024:9.4.2",
+    "80211bh-2024:9.6.36",
+    "80211bh-2024:12.7.6",
+    "80211bh-2024:12.13.3",
+    "80211bh-2024:Annex_B",
+    "80211bh-2024:Annex_C",
+    "80211bh-2024:Annex_AF",
+    "80211bh-2024:Annex_AG"
+  ],
+  "track": "privacy"
+}
