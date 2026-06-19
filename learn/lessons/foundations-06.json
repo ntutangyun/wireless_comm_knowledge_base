@@ -1,0 +1,107 @@
+{
+  "id": "foundations-06",
+  "title": {
+    "en": "Scaling up: the Distribution System, the ESS, and reaching the wired world",
+    "zh": "规模化扩展：分布式系统（DS）、扩展服务集（ESS）与连接有线世界"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A single access point can only cover so much floor space — the laws of radio propagation cap how far a station can be from the AP and still talk to it. For a home that one AP is plenty. But an office, a campus, or an airport needs a network of arbitrary size. IEEE 802.11 builds that by gluing many BSSs together into one larger network. The piece of architecture that does the gluing is the Distribution System, or DS.",
+      "zh": "单个接入点（AP）能覆盖的范围终归有限——无线电传播的物理规律限制了站点离 AP 多远还能正常通信。对一户家庭来说，一个 AP 绰绰有余。但办公楼、园区或机场需要的是一个规模可以任意扩展的网络。IEEE 802.11 通过把多个 BSS 黏合成一个更大的网络来实现这一点。负责“黏合”的那块架构组件，就是分布式系统（Distribution System，DS）。"
+    },
+    {
+      "type": "prose",
+      "en": "Here is the mental model for the whole lesson: the AP is the local door into one room, the DS is the hallways that connect all the rooms, the ESS is the whole building seen as one address, and the portal is the exit out onto the street — the wired world. Keep that picture in mind and every term below slots into place.",
+      "zh": "先建立贯穿全课的心智模型：AP 是通往某个房间的“本地门”，DS 是连接所有房间的“走廊”，ESS 是把整栋楼当作一个地址来看的“整座建筑”，而 portal（门户）则是通往街道——也就是有线世界——的“出口”。记住这幅画面，下面每个术语都能各就各位。"
+    },
+    {
+      "type": "prose",
+      "en": "The DS rides on its own logical medium called the distribution system medium (DSM), which 802.11 keeps deliberately separate from the air — the wireless medium (WM). The two are logically distinct on purpose: the standard neither demands nor forbids that they be the same physical wire or radio underneath. An AP straddles both. It is a station with a distribution system access function (DSAF), so frames from associated stations arrive over the WM and then transit into the DS. Crucially, the address an AP uses on the WM need not be the address it uses on the DSM.",
+      "zh": "DS 运行在它自己的逻辑介质上，称为分布式系统介质（DSM），802.11 有意将其与“空中”——即无线介质（WM）——分开。两者在逻辑上被刻意区分：标准既不要求、也不禁止它们底层是同一根线或同一段射频。AP 横跨两者。它本身是一个站点，但带有分布式系统访问功能（DSAF），因此来自已关联站点的帧先经 WM 到达，再进入 DS。关键在于：AP 在 WM 上使用的地址，未必就是它在 DSM 上使用的地址。"
+    },
+    {
+      "type": "prose",
+      "en": "Why does the DS exist at all? Address-to-destination mapping. When a station associates, the AP tells the DS \"this MAC address now lives behind me.\" When the station roams to another AP on the same DS and reassociates, the new AP updates that mapping. The station's location is therefore known only inside the DS — it is hidden from the layers above. That is what makes mobility transparent: upper layers never see the move.",
+      "zh": "那 DS 究竟为什么存在？为了“地址到目的地的映射”。当一个站点完成关联时，AP 会告诉 DS：“这个 MAC 地址现在归我后面管。”当该站点漫游到同一 DS 上的另一个 AP 并重新关联（reassociate）时，新的 AP 会更新这条映射。于是站点的位置信息只存在于 DS 内部——对上层是隐藏的。正因如此，移动性才是透明的：上层永远看不到这次迁移。"
+    },
+    {
+      "type": "prose",
+      "en": "Now stack several BSSs that share the same SSID and connect them with a single DS. That union is an Extended Service Set (ESS). All BSSs in an ESS carry the same SSID, and — a subtle point — the ESS is the union of the BSSs but does not itself include the DS. The payoff: the entire ESS appears to the LLC sublayer above as one single IEEE 802 access domain. A device can roam from BSS to BSS within the ESS and the layer above never notices; it thinks it is sitting on one flat network the whole time.",
+      "zh": "现在，把若干共享同一 SSID 的 BSS 叠在一起，用同一个 DS 把它们连起来。这个并集就是扩展服务集（Extended Service Set，ESS）。ESS 中的所有 BSS 都使用相同的 SSID——还有个微妙之处——ESS 是这些 BSS 的并集，但它本身并不包含 DS。回报是：整个 ESS 在其上方的 LLC 子层看来，就是一个单一的 IEEE 802 接入域。设备可以在 ESS 内部从一个 BSS 漫游到另一个 BSS，而上层毫无察觉；它自始至终都以为自己待在一个扁平的网络里。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Same SSID is necessary but not sufficient. If two APs advertise the same SSID but are NOT joined by a common DS, there is no guarantee of seamless mobility between them. They might still share an LLC interconnection (so they look like one access domain), but a station moving between them could see its traffic disrupted. The single shared DS is what makes roaming truly invisible.",
+      "zh": "相同的 SSID 是必要条件，但并不充分。如果两个 AP 广播相同的 SSID，却没有由同一个公共 DS 连接，那么它们之间的无缝移动性就得不到保证。它们或许仍共享一条 LLC 互连（因而看起来像一个接入域），但在两者间移动的站点其流量可能会被中断。真正让漫游隐形的，是那个唯一共享的 DS。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    subgraph ESS[\"ESS — same SSID, one DS\"]\n        AP1[\"AP 1 (door)\"] --- BSS1[\"BSS 1\"]\n        AP2[\"AP 2 (door)\"] --- BSS2[\"BSS 2\"]\n        AP1 -- DSM --- DS[\"Distribution System (hallways)\"]\n        AP2 -- DSM --- DS\n    end\n    STA[\"STA roams BSS1 -> BSS2\\n(invisible to upper layers)\"] -. WM .-> AP1\n    STA -. WM .-> AP2\n    DS --- Portal[\"Portal (exit to street)\\n+ Integration Service\"]\n    Portal --- LAN[\"Wired IEEE 802 LAN\"]",
+      "zh": "graph TD\n    subgraph ESS[\"ESS — 同一 SSID，单一 DS\"]\n        AP1[\"AP 1（门）\"] --- BSS1[\"BSS 1\"]\n        AP2[\"AP 2（门）\"] --- BSS2[\"BSS 2\"]\n        AP1 -- DSM --- DS[\"分布式系统 DS（走廊）\"]\n        AP2 -- DSM --- DS\n    end\n    STA[\"站点漫游 BSS1 -> BSS2\\n（对上层不可见）\"] -. WM .-> AP1\n    STA -. WM .-> AP2\n    DS --- Portal[\"门户 Portal（通往街道的出口）\\n+ 集成服务\"]\n    Portal --- LAN[\"有线 IEEE 802 LAN\"]"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, how does an 802.11 network reach the ordinary wired world — an Ethernet LAN, the rest of IEEE 802? Through a portal. The portal is the single logical point where the integration service is provided: all data flowing between an 802.11 network and a non-802.11 LAN enters or leaves through it. The integration service handles any address translation or logical mapping needed when frames cross between the DS and the wired LAN. One physical box can play both roles at once — a typical home/office router is simultaneously an AP (the door) and a portal (the exit to the street).",
+      "zh": "最后，一个 802.11 网络如何连接到普通的有线世界——以太网 LAN，乃至其余的 IEEE 802 网络？通过门户（portal）。门户是提供“集成服务（integration service）”的那个唯一逻辑点：在 802.11 网络与非 802.11 LAN 之间流动的所有数据，都经由它进出。当帧在 DS 与有线 LAN 之间穿越时，集成服务负责处理所需的任何地址转换或逻辑映射。同一台物理设备可以同时扮演两个角色——一台典型的家用/办公路由器，既是 AP（门），也是 portal（通往街道的出口）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "These DS / ESS / portal concepts apply to classic infrastructure (\"non-GLK\") 802.11. The newer general link (GLK) operation does not use the portal concept at all; an IEEE 802.1Q bridge is used instead to build an extended network. And a mesh BSS has no central AP, so the ESS concept does not apply to it — though a mesh BSS can itself serve as part of the DS that connects an ESS.",
+      "zh": "这些 DS / ESS / portal 概念适用于经典的基础设施型（即“非 GLK”）802.11。较新的通用链路（GLK）模式根本不使用门户概念，而是改用 IEEE 802.1Q 网桥来构建扩展网络。此外，网状 BSS（mesh BSS）没有中心 AP，因此 ESS 概念对它不适用——不过网状 BSS 本身可以充当连接某个 ESS 的 DS 的一部分。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact wording: DSM vs WM, the ESS definition, and the portal",
+        "zh": "标准原文：DSM 与 WM 之分、ESS 的定义、以及门户"
+      },
+      "en": "Clause 4.3.5.1 states that 802.11 logically separates the WM from the distribution system medium (DSM), and that recognising the media are logically different is key to the architecture's flexibility — the definitions neither preclude nor demand that the multiple media be the same. The DS provides address-to-destination mapping and seamless integration of multiple BSSs; an AP is any entity with STA functionality plus a distribution system access function (DSAF). The addresses an AP uses on the WM and on the DSM are not necessarily the same. Clause 4.3.5.2 defines an ESS as the union of the infrastructure BSSs with the same SSID connected by a single DS, notes the ESS does not include the DS, and states the ESS appears as a single IEEE 802 access domain to the LLC sublayer; same-SSID APs not joined by a common DS give no guarantee of seamless mobility. Clause 4.3.7 introduces the portal as the logical point at which the integration service is provided — the single place all data to/from non-802.11 LANs enters or leaves — with the integration service responsible for any addressing changes or logical mappings as MSDUs pass between the DS and the integrated LAN; one device can be both an AP and a portal.",
+      "zh": "4.3.5.1 节指出，802.11 在逻辑上将 WM 与分布式系统介质（DSM）分开，而认识到这些介质在逻辑上的不同，是理解该架构灵活性的关键——其定义既不排除、也不要求多种介质底层相同。DS 提供地址到目的地的映射以及多个 BSS 的无缝集成；AP 是任何兼具 STA 功能和分布式系统访问功能（DSAF）的实体。AP 在 WM 与 DSM 上使用的地址未必相同。4.3.5.2 节将 ESS 定义为：由单一 DS 连接、且 SSID 相同的若干基础设施型 BSS 的并集；并指出 ESS 不包含 DS，且 ESS 在 LLC 子层看来表现为单一的 IEEE 802 接入域；若 SSID 相同的 AP 未由公共 DS 连接，则不保证无缝移动性。4.3.7 节引入门户（portal），作为提供集成服务的逻辑点——所有进出非 802.11 LAN 的数据都经此唯一位置进出——当 MSDU 在 DS 与被集成的 LAN 之间穿越时，集成服务负责任何地址变更或逻辑映射；同一台设备可同时充当 AP 与 portal。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          343,
+          344,
+          346,
+          347
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:4.3.5.1",
+    "80211-2024:4.3.5.2",
+    "80211-2024:4.3.7"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        343,
+        344
+      ],
+      "note": "4.3.5.1 DS overview — WM vs DSM logical separation; DSAF; address-to-destination mapping; AP WM/DSM addresses may differ; mobility transparent to upper layers"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        344
+      ],
+      "note": "4.3.5.2 ESS — union of same-SSID infrastructure BSSs joined by one DS; ESS excludes DS; appears as single 802 access domain to LLC; same-SSID without common DS gives no seamless mobility"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        346,
+        347
+      ],
+      "note": "4.3.7 Integration with non-802.11 LANs — portal as the logical point for the integration service; address/logical mapping between DS and wired LAN; one device may be both AP and portal"
+    }
+  ],
+  "track": "foundations"
+}

@@ -1,0 +1,102 @@
+{
+  "id": "foundations-07",
+  "title": {
+    "en": "Services, not implementations: station service vs distribution-system service",
+    "zh": "只定义服务，不规定实现：站点服务与分布式系统服务"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Here is the single most important habit to pick up about 802.11: the standard tells you what behaviour must happen, not how to build the box that makes it happen. It says so in plain words — IEEE Std 802.11 explicitly does not specify the details of implementations. Instead it defines a set of services, each one a promise about behaviour, and leaves vendors free to realise that promise however they like. So when you read 'Authentication' or 'Distribution' in the standard, read it as a contract, not a chip.",
+      "zh": "学习 802.11 最该养成的一个习惯是：标准只规定“必须发生什么行为”，而不规定“用什么样的盒子去实现它”。标准白纸黑字地写着——IEEE Std 802.11 明确不规定实现细节。取而代之，它定义了一组“服务（service）”，每个服务都是对某种行为的承诺，至于厂商用什么方式兑现这个承诺，则完全自由。所以当你在标准里读到“认证（Authentication）”或“分发（Distribution）”时，要把它理解成一份契约，而不是一块芯片。"
+    },
+    {
+      "type": "prose",
+      "en": "There is one master list of all the architectural services — fifteen of them, from Authentication and Association down through Distribution, Integration, Data confidentiality, MSDU delivery, DFS, TPC, Radio measurement, and more. That single list is then split into groups by where the service lives. Two of those groups carry most of the everyday weight: the station service, which is part of every STA, and the distribution system service (DSS), which is provided by the DS. (A third group, the PCP service, applies only inside a PBSS and is just a subset of the other two — set it aside for now.)",
+      "zh": "所有体系结构服务被列在同一张“总清单”上——一共十五项，从认证、关联，到分发、集成、数据保密、MSDU 投递、DFS、TPC、无线电测量等等。这张清单随后按“服务住在哪里”分成几组。其中两组承担了日常的大部分工作：站点服务（station service），它存在于每一个 STA 之中；以及分布式系统服务（DSS），它由 DS（分布式系统）提供。（还有第三组——PCP 服务，只在 PBSS 内部出现，且只是前两组的一个子集，这里先按下不表。）"
+    },
+    {
+      "type": "diagram",
+      "en": "mindmap\n  root((802.11 services))\n    Station service\n      lives in every STA / AP\n      Authentication\n      Deauthentication\n      Data confidentiality\n      MSDU delivery\n      DFS / TPC\n      Radio measurement\n    DSS\n      provided by the DS\n      Association\n      Disassociation\n      Reassociation\n      Distribution\n      Integration",
+      "zh": "mindmap\n  root((802.11 服务))\n    站点服务\n      存在于每个 STA / AP\n      认证\n      解除认证\n      数据保密\n      MSDU 投递\n      DFS / TPC\n      无线电测量\n    DSS\n      由 DS 提供\n      关联\n      解除关联\n      重关联\n      分发\n      集成"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "An easy mental split: the station service is everything a single radio can do on its own — prove who you are (Authentication), keep frames private (Data confidentiality), and actually hand off MSDUs (MSDU delivery). The DSS is everything that only makes sense across a network of APs — tracking which AP serves you (Association / Reassociation / Disassociation) and getting your data to the right exit (Distribution / Integration).",
+      "zh": "一个好记的划分：站点服务是单个无线电凭一己之力就能完成的事——证明你是谁（认证）、让帧保持私密（数据保密）、以及真正把 MSDU 投递出去（MSDU 投递）。而 DSS 是只有放在“多个 AP 组成的网络”里才有意义的事——记录是哪个 AP 在为你服务（关联／重关联／解除关联），并把你的数据送到正确的出口（分发／集成）。"
+    },
+    {
+      "type": "prose",
+      "en": "Now watch one MSDU travel, because it makes the DSS concrete. Picture an ESS with STA 1 wanting to send to STA 4. STA 1 transmits frames to its AP — call it the 'input' AP. That input AP packages the MSDU into a MAC service tuple and hands it to the DSS. The DS's only job is to deliver that tuple to the right 'output' AP — here the AP serving STA 4 — which then sends the MSDU over the air to STA 4. Crucially, how the tuple crosses the DS is left totally unspecified: it might traverse a wired backbone, it might never physically move at all if input and output AP are the same. That is the service-not-implementation rule in action.",
+      "zh": "现在来看一个 MSDU 的旅程，这能把 DSS 讲得很具体。设想一个 ESS，STA 1 想把数据发给 STA 4。STA 1 把帧发给它所属的 AP——称之为“输入（input）”AP。这个输入 AP 把 MSDU 打包成一个 MAC 服务元组（MAC service tuple），交给 DSS。DS 唯一的任务，就是把这个元组送到正确的“输出（output）”AP——这里就是为 STA 4 服务的那个 AP——再由它通过空口把 MSDU 发给 STA 4。关键在于：元组如何穿越 DS 完全不被规定——它可能走有线骨干网，也可能在输入与输出 AP 是同一个时根本不发生物理移动。这正是“只定义服务、不规定实现”原则的现场演示。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><rect x='20' y='150' width='70' height='34' rx='4'/><text x='55' y='172' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>STA 1</text><rect x='130' y='150' width='70' height='34' rx='4'/><text x='165' y='172' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>input AP</text><rect x='270' y='150' width='70' height='34' rx='4'/><text x='305' y='172' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>output AP</text><rect x='380' y='150' width='60' height='34' rx='4'/><text x='410' y='172' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>STA 4</text><rect x='130' y='30' width='210' height='44' rx='6' stroke-dasharray='6 4'/><text x='235' y='57' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>Distribution System (DSS)</text><line x1='90' y1='167' x2='128' y2='167'/><polygon points='128,167 120,163 120,171' fill='currentColor' stroke='none'/><line x1='165' y1='150' x2='165' y2='76'/><polygon points='165,76 161,84 169,84' fill='currentColor' stroke='none'/><line x1='305' y1='74' x2='305' y2='148'/><polygon points='305,148 301,140 309,140' fill='currentColor' stroke='none'/><line x1='340' y1='167' x2='378' y2='167'/><polygon points='378,167 370,163 370,171' fill='currentColor' stroke='none'/><text x='235' y='100' fill='currentColor' stroke='none' font-size='10' text-anchor='middle' font-style='italic'>how the tuple crosses = unspecified</text></svg>",
+      "caption": {
+        "en": "One MSDU from STA 1 to STA 4: the input AP hands a MAC service tuple to the DSS, which delivers it to the output AP. The path through the DS is an implementation matter the standard never pins down.",
+        "zh": "一个 MSDU 从 STA 1 到 STA 4：输入 AP 把 MAC 服务元组交给 DSS，DSS 再把它送到输出 AP。元组穿越 DS 的路径属于实现细节，标准从不加以规定。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "This raises the obvious question: how does the DS know which AP is the right output for STA 4? It cannot route the tuple without that answer. And here the standard closes the loop beautifully — it says all 802.11 is required to do is give the DS enough information to determine the output point, and that information is supplied by exactly three services: association, reassociation, and disassociation. Those three are the breadcrumbs. When STA 4 associates, the DS learns 'STA 4 is reachable via this AP'; reassociation moves that mapping as STA 4 roams; disassociation erases it. So the three association-related services in the DSS exist precisely to feed the distribution service its routing table — which is why they are grouped together.",
+      "zh": "这就引出一个显而易见的问题：DS 怎么知道哪个 AP 才是 STA 4 的正确出口？没有这个答案，它就无法转发元组。标准在这里把闭环收得很漂亮——它说，802.11 需要做的全部，就是给 DS 提供足够的信息以确定输出点，而这份信息恰好由三个服务提供：关联（association）、重关联（reassociation）和解除关联（disassociation）。这三者就是“面包屑”。当 STA 4 完成关联时，DS 就得知“STA 4 可经由这个 AP 到达”；重关联在 STA 4 漫游时更新这个映射；解除关联则把它抹除。因此，DSS 中这三个与关联相关的服务，存在的意义正是为分发服务喂养它的“路由表”——这也正是它们被归在一组的原因。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact wording: integration, group addresses, and 'enough information'",
+        "zh": "原文精确措辞：集成、组播地址与“足够的信息”"
+      },
+      "en": "Clause 4.4.1 lists three service categories — station service, PCPS, and DSS — drawn from one set of fifteen architectural services. 4.4.2 fixes the station service membership (Authentication, Deauthentication, Data confidentiality, MSDU delivery, DFS, TPC, higher-layer timer sync and QoS scheduling for the QoS facility, Radio measurement, DSE) and stresses it is present in every STA, APs included. 4.4.4 gives the DSS membership (Association, Disassociation, Distribution, Integration, Reassociation, plus QoS scheduling, DSE, and mesh interworking) and repeats that the DS is not constrained to be data-link or network layer, centralized or distributed. 4.5.2.1 walks the STA 1 -> STA 4 example and states the input/output AP collapse to the same AP for an intra-BSS recipient; for a group-addressed tuple the DS must deliver to all appropriate APs in the ESS. 4.5.2.1/4.5.2.2 then state the routing rule: 802.11 need only provide the DS enough information to determine the output point, supplied by association, reassociation, and disassociation — and when the recipient sits on an integrated LAN, the output point is a portal and the Integration function performs any media or address-space translation, itself outside the scope of the standard.",
+      "zh": "4.4.1 节列出三类服务——站点服务、PCPS 和 DSS——它们都取自同一张共十五项的体系结构服务清单。4.4.2 节确定了站点服务的成员（认证、解除认证、数据保密、MSDU 投递、DFS、TPC，以及 QoS 设施下的高层定时同步与 QoS 流量调度、无线电测量、DSE），并强调它存在于每一个 STA 中，AP 也不例外。4.4.4 节给出 DSS 的成员（关联、解除关联、分发、集成、重关联，外加 QoS 调度、DSE 和网状网互通），并再次声明 DS 不被限定于数据链路层或网络层、集中式或分布式。4.5.2.1 节走了一遍 STA 1 → STA 4 的例子，指出当收件方在同一 BSS 内时，输入 AP 与输出 AP 合二为一；而对于组播地址元组，DS 必须投递给 ESS 中所有合适的 AP。4.5.2.1／4.5.2.2 节随后给出转发规则：802.11 只需向 DS 提供足以确定输出点的信息，而这由关联、重关联、解除关联提供——当收件方位于一个集成 LAN 上时，输出点是一个门户（portal），由集成（Integration）功能完成任何介质或地址空间的转换，而该功能本身不在标准范围之内。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          388,
+          389,
+          391,
+          392
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:4.4.1",
+    "80211-2024:4.4.2",
+    "80211-2024:4.4.4",
+    "80211-2024:4.5.1",
+    "80211-2024:4.5.2.1",
+    "80211-2024:4.5.2.2"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        388,
+        389
+      ],
+      "note": "4.4.1 General + 4.4.2 Station service + 4.4.4 DSS — three service categories from one master list; station-service vs DSS membership; 'does not specify implementation details'"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        390
+      ],
+      "note": "4.5.1 General — services support MSDU delivery / access control / spectrum mgmt; Figure 4-17 places station service and DSS in the architecture"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        391,
+        392
+      ],
+      "note": "4.5.2.1 Distribution + 4.5.2.2 Integration — STA1->STA4 input/output AP example; DS needs 'enough information' from association/reassociation/disassociation; portal + Integration translation out of scope"
+    }
+  ],
+  "track": "foundations"
+}

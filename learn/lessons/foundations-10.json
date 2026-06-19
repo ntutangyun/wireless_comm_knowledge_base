@@ -1,0 +1,106 @@
+{
+  "id": "foundations-10",
+  "title": {
+    "en": "The blueprint view: layers, the management plane, and the multi-link reference model",
+    "zh": "蓝图视角：分层、管理平面与多链路参考模型"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every other lesson quietly assumes one diagram: the architect's blueprint of where each piece of 802.11 lives. Zoom all the way out and the whole standard splits into just two stacked parts. The MAC sits in the data-link layer; the PHY sits below it. These map deliberately onto the lowest layers of the classic OSI reference model. Almost every feature you will ever study — scanning, authentication, block ack, OFDMA — is really just a question of 'which of these two parts owns it, and how do they talk?'",
+      "zh": "其它每一课其实都默默依赖着同一张图：一张说明 802.11 各部分各自归属何处的“架构蓝图”。把视角拉到最远，整个标准就只分成上下叠放的两大块。MAC 位于数据链路层；PHY 在其下方。这两层是有意对应到经典 OSI 参考模型最底部的那几层。你今后要学的几乎每一个特性——扫描、认证、块确认、OFDMA——归根结底都只是在问：“这两块里哪一块负责它，它们又如何彼此通信？”"
+    },
+    {
+      "type": "prose",
+      "en": "Between those two parts run well-defined doorways called Service Access Points (SAPs). Data flows up and down through the MAC SAP and the PHY SAP. But there is a second, quieter set of plumbing running alongside the data path: the management plane. Here a Station Management Entity (the SME) acts as the brain making policy decisions, the MLME is the MAC's own manager, and the PLME is the PHY's manager. The data plane carries your packets; the management plane decides when to scan, when to authenticate, when to switch channels.",
+      "zh": "这两块之间有一些定义清晰的“门”，称为服务接入点（SAP）。数据通过 MAC SAP 与 PHY SAP 上下流动。但在数据通路旁，还有第二套更安静的“管道系统”：管理平面。这里，站点管理实体（SME）扮演做策略决定的“大脑”，MLME 是 MAC 自己的管理器，PLME 则是 PHY 的管理器。数据平面承载你的数据包；管理平面则决定何时扫描、何时认证、何时切换信道。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TB\n    subgraph DataPlane[\"data plane\"]\n      LLC[\"upper layers / LLC\"] -->|MAC SAP| MAC[\"MAC sublayer (DLL)\"]\n      MAC -->|PHY SAP| PHY[\"PHY\"]\n    end\n    subgraph MgmtPlane[\"management plane\"]\n      SME[\"SME — the brain\"] -->|MLME SAP| MLME[\"MLME (MAC manager)\"]\n      SME -->|PLME SAP| PLME[\"PLME (PHY manager)\"]\n      MSGCF[\"MSGCF — synthesises events<br/>for mobility-aware upper layers\"]\n    end\n    MLME -.observes.-> MSGCF\n    PLME -.observes.-> MSGCF\n    MAC --- MLME\n    PHY --- PLME",
+      "zh": "graph TB\n    subgraph DataPlane[\"数据平面\"]\n      LLC[\"上层 / LLC\"] -->|MAC SAP| MAC[\"MAC 子层（数据链路层）\"]\n      MAC -->|PHY SAP| PHY[\"PHY\"]\n    end\n    subgraph MgmtPlane[\"管理平面\"]\n      SME[\"SME — 大脑\"] -->|MLME SAP| MLME[\"MLME（MAC 管理器）\"]\n      SME -->|PLME SAP| PLME[\"PLME（PHY 管理器）\"]\n      MSGCF[\"MSGCF — 为感知移动性的<br/>上层合成事件\"]\n    end\n    MLME -.观察.-> MSGCF\n    PLME -.观察.-> MSGCF\n    MAC --- MLME\n    PHY --- PLME"
+    },
+    {
+      "type": "prose",
+      "en": "There is one more management actor worth meeting: the MAC State Generic Convergence Function (MSGCF). Mobility-aware upper layers — think of a Mobility Manager handing a connection between Wi-Fi and another medium — don't want to watch raw MLME and PLME chatter. The MSGCF sits above both, observes the interactions between MLME, PLME and SME, correlates the low-level events, and synthesises clean indications upward. It can even report an 'ESS link' as up whenever a station is associated to any AP within one ESS, hiding which specific AP is currently serving it.",
+      "zh": "还有一个值得认识的管理角色：MAC 状态通用汇聚功能（MSGCF）。感知移动性的上层——比如负责在 Wi-Fi 与另一种介质之间交接连接的“移动性管理器”——并不想去盯着 MLME 和 PLME 之间原始的、琐碎的交互。MSGCF 凌驾于两者之上，观察 MLME、PLME 与 SME 之间的互动，将这些底层事件做关联，再向上合成出干净的指示。它甚至可以把“ESS 链路”报告为“up”——只要站点关联到某个 ESS 中的任意一个 AP 即可，从而隐藏当前究竟是哪一个 AP 在为它服务。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A useful boundary fact: 802.11 only ever owns the WM (wireless medium) address space. Each PHY operates in a single medium — the WM — and the MAC operates in a single address space, using IEEE 802 48-bit addresses. Because everything on the air is a WM address, the standard never bothers to say so explicitly. The DS (distribution system) can live in an entirely different address space, and that's deliberately left outside 802.11's scope.",
+      "zh": "一个有用的边界事实：802.11 永远只“拥有” WM（无线介质）地址空间。每个 PHY 只工作在单一介质——也就是 WM——之上；MAC 也只工作在单一地址空间中，使用 IEEE 802 的 48 位地址。正因为空口上的一切都是 WM 地址，标准索性从不显式声明这一点。DS（分布式系统）完全可以处于另一个地址空间，而这被有意地留在了 802.11 的范围之外。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the part that powers modern Wi-Fi. The reference model lets several MAC sublayers share one PHY, coordinated by an MM-SME (a multiple-MAC SME). Each MAC keeps its own MAC SAP, its own MLME SAP, and its own single MAC address — so coordinating multiple MACs really means coordinating multiple STAs that share antennas and one PHY. Because they share the PHY, their transmit attempts can collide internally and a backoff is invoked, and they can't directly exchange frames with each other. A separate reference model handles multi-band operation, where one device works across several bands/channels. This exact scaffolding — many MAC-address-bearing links under one coordinating brain — is precisely what modern Multi-Link Operation (MLO) is built on.",
+      "zh": "现在来看驱动现代 Wi-Fi 的那部分。参考模型允许多个 MAC 子层共享同一个 PHY，由一个 MM-SME（多 MAC 的 SME）来协调。每个 MAC 都保留自己的 MAC SAP、自己的 MLME SAP 以及自己唯一的 MAC 地址——因此“协调多个 MAC”实际上意味着协调共享天线与同一个 PHY 的多个 STA。由于它们共享 PHY，其发送尝试可能在内部相撞，此时会启动退避，而且它们彼此之间无法直接交换帧。还有一个独立的参考模型用于多频段操作，即一个设备跨多个频段/信道工作。正是这套脚手架——在一个协调“大脑”之下、多条各自带 MAC 地址的链路——构成了现代多链路操作（MLO）的根基。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Where does feature X live? That single question is what this blueprint answers. Frame building → MLME. Channel/radio parameters → PLME. Policy (when to scan, authenticate, roam) → SME. Cross-medium mobility indications → MSGCF. Coordinating several links that share a radio → MM-SME. Keep this map handy; the rest of the course is just filling in the boxes.",
+      "zh": "“特性 X 住在哪里？”——这张蓝图回答的正是这一个问题。构造帧 → MLME。信道/射频参数 → PLME。策略（何时扫描、认证、漫游）→ SME。跨介质移动性指示 → MSGCF。协调共享同一射频的多条链路 → MM-SME。把这张地图随手放在手边；课程余下的部分无非是在往这些框里填内容。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact wording: two-part split, MM-SME coordination, and the WM-only address rule",
+        "zh": "原文措辞：两部分划分、MM-SME 协调与“仅 WM”的地址规则"
+      },
+      "en": "Clause 4.9.1 states the architectural view 'emphasizing the separation of the system into two major parts: the MAC of the data link layer (DLL) and the PHY,' intended to correspond closely to the lowest layers of the ISO/IEC OSI reference model (Figure 4-27). Clause 4.9.2 defines the MSGCF: it 'observes the interactions between the MLME and SME, and between the PLME and SME' and 'might synthesize indications to higher layer entities' such as Mobility Managers, and reports an ESS link as up when the non-AP STA is associated with any AP comprising the ESS. Clause 4.9.3 specifies that under an MM-SME 'each MAC sublayer has a separate MAC SAP and MLME SAP,' each retains a single MAC address, the coordinated STAs 'share the same antennas and PHY,' transmit attempts 'can collide internally' invoking a backoff, and the STAs 'cannot directly exchange frames with each other.' Clause 4.9.4 adds the multi-band reference model (the MM-SME model applies within each PHY of a multi-band device). And clause 4.6 fixes the boundary: 'IEEE Std 802.11 uses and specifies only the use of the WM address space,' each PHY operating in a single medium (the WM) with the MAC in a single IEEE 802 48-bit address space.",
+      "zh": "4.9.1 节给出的架构观“强调将系统划分为两大部分：数据链路层（DLL）的 MAC 与 PHY”，并意在与 ISO/IEC OSI 参考模型最底部的层次密切对应（图 4-27）。4.9.2 节定义了 MSGCF：它“观察 MLME 与 SME 之间、以及 PLME 与 SME 之间的交互”，并“可向更高层实体（如移动性管理器）合成指示”，且当非 AP STA 关联到构成该 ESS 的任意 AP 时，将 ESS 链路报告为“up”。4.9.3 节规定，在 MM-SME 协调下“每个 MAC 子层都有独立的 MAC SAP 与 MLME SAP”，各自保留唯一 MAC 地址，被协调的各 STA“共享相同的天线与 PHY”，其发送尝试“可能在内部相撞”从而启动退避，且这些 STA“彼此之间无法直接交换帧”。4.9.4 节补充了多频段参考模型（MM-SME 模型在多频段设备的每个 PHY 内部适用）。4.6 节则锁定了边界：“IEEE Std 802.11 仅使用并仅规定对 WM 地址空间的使用”，每个 PHY 工作在单一介质（WM）之中，MAC 处于单一的 IEEE 802 48 位地址空间内。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          409,
+          412,
+          413,
+          414
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:4.6",
+    "80211-2024:4.9.1",
+    "80211-2024:4.9.2",
+    "80211-2024:4.9.3",
+    "80211-2024:4.9.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        409
+      ],
+      "note": "4.6 Multiple logical address spaces — 802.11 uses and specifies only the WM address space; each PHY single medium, MAC single IEEE 802 48-bit address space"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        412
+      ],
+      "note": "4.9.1 General — two-part split (MAC of the DLL over the PHY) mapping to OSI lowest layers, Figure 4-27; 4.9.2 MSGCF observes MLME/PLME-SME interactions and synthesizes indications"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        413,
+        414
+      ],
+      "note": "4.9.2 ESS link concept (Figure 4-29); 4.9.3 multiple-MAC reference model — MM-SME, separate MAC SAP and MLME SAP per MAC, shared antennas/PHY, internal collision + backoff"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        415,
+        416
+      ],
+      "note": "4.9.4 Reference model for multi-band operation — multi-band capable device, MM-SME applies within each PHY; FST sessions across bands/channels"
+    }
+  ],
+  "track": "foundations"
+}

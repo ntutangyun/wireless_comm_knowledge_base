@@ -1,0 +1,107 @@
+{
+  "id": "foundations-09",
+  "title": {
+    "en": "Keeping it safe and smooth: confidentiality, key management, and QoS/timing services",
+    "zh": "又安全又顺畅：保密性、密钥管理与 QoS／定时服务"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "By now you've seen how a station discovers a network, knocks on the door (authentication), and gets a seat at the table (association). All of that just moves MSDUs — the chunks of data your apps hand down — across the air. This lesson is a quick, intuition-first tour of the service families that wrap around that delivery core to make it safe and smooth. None of them change what a frame fundamentally is; they're optional layers bolted onto the same MSDU-delivery machine. The deep cryptographic maths lives in the Security track — here we just want the shape of the picture.",
+      "zh": "到现在你已经看过站点如何发现网络、敲门（认证）、入座（关联）。这一整套动作其实只做了一件事：把 MSDU——也就是上层应用交下来的一块块数据——搬过空中。本课是一次直觉优先的快速巡览，看看哪些“服务家族”包裹在这个传输内核之外，让它既安全又顺畅。它们都不改变一个帧本质上是什么；它们只是螺在同一台 MSDU 传输机器上的可选层。密码学的深层数学留给“安全”专题——这里我们只想先看清整张图的轮廓。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with why protection is even needed. A wired LAN borrows security from the physics of the cable: only a device plugged into the wire can send or hear traffic. Radio throws that assumption away — every station and even nearby RF devices can receive, transmit, or interfere. So the standard's default for every station is blunt: traffic goes out 'in the clear,' unprotected. The data confidentiality service is what you opt into to encrypt frame contents (TKIP, CCMP, GCMP for data; CCMP, GCMP, BIP for management) and bring the WLAN back up to the privacy level a wired LAN got for free.",
+      "zh": "先想清楚为什么需要保护。有线局域网把安全寄托在电缆的物理特性上：只有插在线缆上的设备才能收发流量。无线把这个假设彻底丢掉了——每一个站点、甚至附近的 RF 设备都可能接收、发送或干扰。所以标准给每个站点的默认状态非常直白：流量是“明文（in the clear）”发出去的，不加保护。数据保密性服务（data confidentiality）就是你主动开启的那一层，用来加密帧内容（数据帧用 TKIP、CCMP、GCMP；管理帧用 CCMP、GCMP、BIP），把无线局域网的隐私水平拉回到有线网天生就有的程度。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Confidentiality is a station service with three friends. Encrypting the bytes is just one job. Riding alongside it are data origin authenticity (proving which station actually sent an MPDU, so nobody can masquerade as you) and replay detection (spotting a frame that an attacker captured and re-sent). These are why a real network needs more than just 'scramble the payload.'",
+      "zh": "保密性是一个站点服务，还带着三个伙伴。把字节加密只是其中一项工作。与它并肩的还有数据来源真实性（data origin authenticity，证明某个 MPDU 确实是哪个站点发的，别人就无法冒充你）和重放检测（replay detection，识别攻击者截获后再次发出的帧）。正因如此，一个真正的网络需要的远不止“把负载打乱”这么简单。"
+    },
+    {
+      "type": "prose",
+      "en": "Encryption is useless without fresh keys, and that's the key management service. The enhanced confidentiality, data authentication, and replay-protection mechanisms all need fresh cryptographic keys and matching security associations. The standard mints those through named protocols — the 4-way handshake, the FT 4-way handshake, the group key handshake, and the FILS authentication protocol among them. Think of authentication as proving who you are, and key management as the follow-up step that hands both sides the temporary keys they'll actually encrypt with.",
+      "zh": "没有新鲜的密钥，加密就毫无意义，这正是密钥管理服务（key management）要做的。增强的保密性、数据认证和重放保护机制都需要新鲜的密钥以及与之匹配的安全关联。标准用一组有名字的协议来“铸造”这些密钥——其中包括四次握手（4-way handshake）、FT 四次握手、组密钥握手（group key handshake）以及 FILS 认证协议。可以把认证理解为“证明你是谁”，而密钥管理则是紧随其后的一步：把双方真正用来加密的临时密钥交到两边手里。"
+    },
+    {
+      "type": "prose",
+      "en": "Two more pieces round out the safety side. Management frame protection extends encryption and integrity to a subset of management frames called robust Management frames, so an attacker can't forge, say, a fake deauth to knock you off. And speaking of deauth: because authentication is a prerequisite for association, deauthentication cascades — the moment a station is deauthenticated, it is also disassociated. Deauth isn't a polite request you can decline; it's a one-way notification (refusable only when management frame protection is on and the integrity check fails). Finally, MAC privacy enhancements let a station randomly rotate its MAC address and reset sequence counters and PHY scrambler seeds, so trackers can't stitch its movements together from a fixed address.",
+      "zh": "安全这一侧还有两块拼图。管理帧保护（management frame protection）把加密与完整性扩展到一类被称为“健壮管理帧（robust Management frames）”的管理帧上，这样攻击者就无法伪造比如一条假的解除认证帧把你踢下线。说到解除认证：由于认证是关联的前提，解除认证会发生级联——一旦站点被解除认证，它同时也被解除关联。解除认证不是一条你可以拒绝的礼貌请求，而是一条单向通知（只有在开启了管理帧保护且完整性校验失败时才能拒绝）。最后，MAC 隐私增强（MAC privacy enhancements）允许站点随机轮换自己的 MAC 地址，并重置序列号计数器与 PHY 扰码种子，让追踪者无法靠一个固定地址把它的行踪串联起来。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    CORE[\"MSDU delivery core\"]\n    CORE --> SAFE[\"Safety services\"]\n    CORE --> SMOOTH[\"Comfort services\"]\n    SAFE --> DC[\"Data confidentiality (encrypt frames)\"]\n    SAFE --> DOA[\"Data origin authenticity\"]\n    SAFE --> RP[\"Replay detection\"]\n    SAFE --> KM[\"Key management (4-way / group / FILS handshakes)\"]\n    SAFE --> MFP[\"Management frame protection\"]\n    SAFE --> PRIV[\"MAC privacy (address randomization)\"]\n    SMOOTH --> QOS[\"QoS traffic differentiation (airtime priority)\"]\n    SMOOTH --> TS[\"Higher-layer timer sync (shared clock)\"]\n    DEAUTH[\"Deauthentication\"] -.->|cascades| DISASSOC[\"Disassociation\"]",
+      "zh": "graph TD\n    CORE[\"MSDU 传输内核\"]\n    CORE --> SAFE[\"安全类服务\"]\n    CORE --> SMOOTH[\"舒适类服务\"]\n    SAFE --> DC[\"数据保密性（加密帧）\"]\n    SAFE --> DOA[\"数据来源真实性\"]\n    SAFE --> RP[\"重放检测\"]\n    SAFE --> KM[\"密钥管理（四次/组/FILS 握手）\"]\n    SAFE --> MFP[\"管理帧保护\"]\n    SAFE --> PRIV[\"MAC 隐私（地址随机化）\"]\n    SMOOTH --> QOS[\"QoS 流量区分（空口时间优先级）\"]\n    SMOOTH --> TS[\"高层定时同步（共享时钟）\"]\n    DEAUTH[\"解除认证\"] -.->|级联| DISASSOC[\"解除关联\"]"
+    },
+    {
+      "type": "prose",
+      "en": "Now the comfort side — the services that make the link pleasant rather than merely private. The QoS facility gives differentiated control of access to the shared medium, so traffic with timing needs wins airtime over traffic that can wait. Tag each MSDU with a traffic category and a low-latency video frame beats a bulk file download to the antenna, even though both are 'just MSDUs' to the core. The last service is subtler: higher-layer timer synchronization. Some apps — synchronized audio or video rendering across several stations — need a shared clock finer than the BSS's own timing function. The standard provides a MAC service where every station's MAC fires an indication at essentially the same instant: the end of the PPDU carrying particular group-addressed Data frames. That common moment in time is the building block apps use to align their own clocks.",
+      "zh": "再看舒适这一侧——让链路不只是私密，而是用起来舒服的那些服务。QoS 设施对共享介质的接入提供差异化控制，让有时延需求的流量在抢占空口时间时胜过那些可以等一等的流量。给每个 MSDU 打上一个流量类别（traffic category）标签，一帧低时延视频就能在通往天线的路上压过一次大文件批量下载——尽管在内核眼里两者都“不过是 MSDU”。最后一个服务更微妙：高层定时同步（higher layer timer synchronization）。有些应用——比如多个站点之间同步渲染音频或视频——需要一个比 BSS 自身定时功能（TSF）更精细的共享时钟。标准为此提供了一个 MAC 服务：每个站点的 MAC 几乎在同一瞬间发出一个指示——也就是承载特定组地址数据帧的那个 PPDU 的结束时刻。这个共同的时间点，就是各应用用来对齐自身时钟的基石。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact 'in the clear' default and the end-of-PPDU sync anchor",
+        "zh": "精确的“明文”默认状态与“PPDU 结束”同步锚点"
+      },
+      "en": "Clause 4.5.4.4 states the default flatly: the default data confidentiality state for all IEEE 802.11 STAs is 'in the clear,' i.e., without protection — if the service is not invoked, all frames are sent unprotected. A STA configured for mandatory confidentiality discards unprotected Data and robust Management frames (and protected frames whose key it lacks) without indicating to LLC, but still acknowledges them on the medium if FCS is good, to avoid wasting bandwidth on pointless retries. On the timing side, clause 4.5.7 defines the shared-clock anchor precisely: the MAC indicates the occurrence of the end of the PPDU[+SigExt] containing particular Data frames, where those frames are identified by their MAC header Address 1 field carrying a group address previously registered with the MAC. The delay between that on-air observation and the delivery of the indication is known within a MAC by design, so the end-of-PPDU instant becomes a common reference point on which application-dependent synchronization methods are built.",
+      "zh": "4.5.4.4 节把默认状态说得很直白：所有 IEEE 802.11 站点的数据保密性默认状态都是“明文（in the clear）”，即不加保护——如果不调用该服务，所有帧都以未受保护的方式发出。被配置为强制保密的站点会丢弃未受保护的数据帧和健壮管理帧（以及那些它没有对应密钥的受保护帧），且不向 LLC 上报；但只要 FCS 无误，它仍会在介质上对这些帧回 ACK，以免在注定被丢弃的帧上浪费带宽重传。在定时这一侧，4.5.7 节精确定义了共享时钟的锚点：MAC 指示承载特定数据帧的那个 PPDU[+SigExt] 的结束时刻，而这些帧由其 MAC 头部 Address 1 字段所携带的、事先在 MAC 中注册过的组地址来标识。从空口上观测到这一时刻，到该指示被递交之间的延迟，在 MAC 内部按设计是已知的——于是“PPDU 结束”这一瞬间就成了共同的参考点，各种依赖应用的同步方法都建立在其上。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          397,
+          398,
+          401
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:4.5.4.1",
+    "80211-2024:4.5.4.4",
+    "80211-2024:4.5.4.5",
+    "80211-2024:4.5.4.9",
+    "80211-2024:4.5.4.10",
+    "80211-2024:4.5.6.1",
+    "80211-2024:4.5.7"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        395
+      ],
+      "note": "4.5.4.1 General — authentication and data confidentiality bring WLAN up to wired-LAN security; RSNA key management via EAPOL-Key"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        397,
+        398
+      ],
+      "note": "4.5.4.3 Deauthentication cascades to disassociation; 4.5.4.4 Data confidentiality default 'in the clear', cipher suites, discard rules"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        398,
+        399
+      ],
+      "note": "4.5.4.5 Key management handshakes; 4.5.4.6 data origin authenticity; 4.5.4.7 replay detection; 4.5.4.9 management frame protection; 4.5.4.10 MAC privacy enhancements"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        400,
+        401
+      ],
+      "note": "4.5.6.1 QoS traffic differentiation over shared medium; 4.5.7 higher layer timer synchronization via end-of-PPDU indication"
+    }
+  ],
+  "track": "foundations"
+}

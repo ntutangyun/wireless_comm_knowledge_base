@@ -1,0 +1,102 @@
+{
+  "id": "foundations-08",
+  "title": {
+    "en": "Joining and moving: association, reassociation, and the frame-class gate",
+    "zh": "加入与移动：关联、重关联与帧类别门槛"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Powering on your Wi-Fi radio does not put you on the network. Before a station (STA) can move real data through an access point (AP), the standard makes it earn membership step by step. The job of the MAC sublayer is to move data units (MSDUs) between stations — but for that to work, the distribution system (DS) behind the APs needs to know where you are. That knowledge is supplied by a small family of connectivity services: association, reassociation, and disassociation. This lesson follows a STA as it becomes a usable network member, and ends with the single idea that ties the whole sequence together.",
+      "zh": "打开 Wi-Fi 无线电并不等于你已经接入网络。在一个站点（STA）能够通过接入点（AP）真正传输数据单元（MSDU）之前，标准要求它一步步“挣得”成员资格。MAC 子层的职责是在站点之间搬运数据单元（MSDU）——但要做到这一点，AP 背后的分布式系统（DS）必须知道你在哪里。这份“知道”由一小组连通性服务来提供：关联、重关联和去关联。本课将跟随一个站点逐步成为可用的网络成员，并在结尾揭示把整个流程串起来的那个核心思想。"
+    },
+    {
+      "type": "prose",
+      "en": "First, why it matters where you are. The standard frames everything in terms of mobility. There are two transition types. No-transition means you are not moving between cells: you are either static, or making local movement inside one basic service area (one AP's coverage). BSS-transition means you physically move from one AP's cell to another AP's cell within the same extended network (ESS). Plain association is enough for the no-transition case; the moving case needs more help — and that is exactly what reassociation provides.",
+      "zh": "首先，为什么“你在哪里”很重要。标准用“移动性（mobility）”来组织这一切，定义了两种转移类型。无转移（no-transition）意味着你没有在小区之间移动：你要么静止不动，要么只是在同一个基本服务区（一个 AP 的覆盖范围）内做局部移动。BSS 转移（BSS-transition）意味着你在同一个扩展服务集（ESS）内，从一个 AP 的小区物理地移动到另一个 AP 的小区。对于无转移的情形，普通关联就足够了；而移动的情形需要更多帮助——这正是重关联（reassociation）所提供的。"
+    },
+    {
+      "type": "prose",
+      "en": "Association is the moment you pick one AP and the network records it. A STA learns which APs are present and what each can do, then invokes the association service; the service hands the DS a STA-to-AP mapping so the DS can answer one crucial question — 'which AP is serving STA X?' Three rules make this clean: a STA is associated with at most one AP at any instant (so the answer is unique), association is always initiated by the non-AP STA (never the AP), and an AP may be associated with many STAs at once. Only after this mapping exists may the STA send an MSDU through the AP into the DS.",
+      "zh": "关联，就是你选定一个 AP、网络把这件事记录下来的那一刻。站点先了解周围有哪些 AP、各自能做什么，然后调用关联服务；该服务把一条“站点到 AP”的映射交给 DS，使 DS 能回答一个关键问题——“现在是哪个 AP 在服务站点 X？”三条规则让这件事保持清晰：在任一时刻，一个站点最多只与一个 AP 关联（因此答案唯一）；关联始终由非 AP 站点发起（绝不由 AP 发起）；而一个 AP 可以同时与许多站点关联。只有在这条映射建立之后，站点才可以通过 AP 把 MSDU 送入 DS。"
+    },
+    {
+      "type": "prose",
+      "en": "Reassociation is the same idea applied while you are on the move. When a STA roams from one AP to another inside the same ESS, the reassociation service tells the DS the new AP-to-STA mapping so traffic is rerouted to where you now are. The standard adds a quietly useful detail: reassociation can also change the attributes of an existing association while you stay on the same AP. A fast BSS transition is the optimised version that sets up the state needed for data connectivity before the reassociation rather than after — so the handoff feels seamless. Like association, reassociation is always initiated by the non-AP STA.",
+      "zh": "重关联，是把同样的思路用在你移动的过程中。当站点在同一个 ESS 内从一个 AP 漫游到另一个 AP 时，重关联服务会把新的“AP 到站点”映射告知 DS，从而把流量重新路由到你现在所在的位置。标准还补充了一个不起眼但很实用的细节：重关联也可以在你仍停留在同一个 AP 上时，更改一条既有关联的属性。快速 BSS 转移（fast BSS transition）则是它的优化版本——在重关联之前（而不是之后）就建立起数据连通所需的状态，因此切换过程几乎让人察觉不到。和关联一样，重关联也始终由非 AP 站点发起。"
+    },
+    {
+      "type": "prose",
+      "en": "Disassociation is the exit. It voids the STA-to-AP mapping the DS was holding. Two things make it different from the join services. First, either party may invoke it — the STA leaving the network, or the AP shedding clients (for example, to be taken offline for service). Second, and most importantly, disassociation is a notification, not a request: the receiver cannot refuse it (the one exception is when management frame protection is in force and the integrity check fails). The MAC does not even depend on STAs bothering to send it — management is designed to cope with a STA that simply vanishes.",
+      "zh": "去关联，是出口。它会作废 DS 此前持有的“站点到 AP”映射。有两点让它不同于加入类服务。第一，任何一方都可以发起它——可能是离开网络的站点，也可能是要甩掉客户端的 AP（例如为了下线检修）。第二，也是最重要的一点：去关联是一种通知，而不是请求——接收方无法拒绝它（唯一的例外是启用了管理帧保护、且完整性校验失败时）。MAC 甚至并不依赖站点真的去发送它——管理机制本就被设计为能够应对一个直接“消失”的站点。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n    [*] --> S1\n    S1: State 1 - unauthenticated, unassociated\\n(only Class 1 frames allowed)\n    S2: State 2 - authenticated, not associated\\n(Class 1 + Class 2 frames)\n    S3: State 3 - authenticated, associated\\n(Class 1 + 2 + 3 frames - data flows)\n    S1 --> S2: successful authentication\n    S2 --> S3: successful (re)association\n    S3 --> S2: disassociation\n    S2 --> S1: deauthentication\n    S3 --> S1: deauthentication",
+      "zh": "stateDiagram-v2\n    [*] --> S1\n    S1: 状态1 - 未认证、未关联\\n(只允许 第1类 帧)\n    S2: 状态2 - 已认证、未关联\\n(第1类 + 第2类 帧)\n    S3: 状态3 - 已认证、已关联\\n(第1+2+3类 帧 - 数据可流动)\n    S1 --> S2: 认证成功\n    S2 --> S3: (重)关联成功\n    S3 --> S2: 去关联\n    S2 --> S1: 去认证\n    S3 --> S1: 去认证"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Here is the unifying intuition — the velvet rope. The standard never lets you skip ahead because it gates which frames you are even allowed to send based on your current state. Class 1 frames work from the very start (the basic frames that let you authenticate and discover). Class 2 frames open up only after you authenticate. Class 3 frames — the ones that carry your actual data — are permitted only once you are associated. Association, reassociation, and disassociation are simply the events that move you across those gates. This is why you cannot talk the instant you power on: the rope is up until you have done the steps.",
+      "zh": "这里就是把一切串起来的核心直觉——那道“天鹅绒围栏”。标准之所以不允许你“插队”，是因为它会依据你当前的状态，限定你究竟被允许发送哪些帧。第1类帧从一开始就可用（即那些让你能进行认证与发现的基础帧）。第2类帧只有在你完成认证之后才会开放。而第3类帧——也就是承载你真正数据的那些帧——只有在你完成关联之后才被允许。关联、重关联与去关联，不过是带你跨越这些门槛的事件而已。这正是为什么你一开机并不能立刻“说话”：在你走完这些步骤之前，那道围栏一直拦着。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What the standard actually says about each service",
+        "zh": "标准对每项服务的确切表述"
+      },
+      "en": "Clause 4.5.3 groups association, reassociation, and disassociation as the connectivity-related services and ties them to mobility (4.5.3.2). Association (4.5.3.3) is 'necessary, but not sufficient' for BSS-transition mobility and 'sufficient' for no-transition mobility; it is one of the distribution system services (DSS), provides the STA-to-AP mapping to the DS, and the standard deliberately leaves how the DS stores that mapping unspecified. It also pins the uniqueness rule: a STA associates with at most one AP at a time, association is always initiated by the non-AP STA, and an AP may serve many STAs. Reassociation (4.5.3.4) moves a current association from one AP to another within an ESS, can also alter attributes of an association on the same AP, and notes that a fast BSS transition establishes data-connectivity state before reassociation rather than after. Disassociation (4.5.3.5) voids the STA-to-AP mapping, may be invoked by either party, and is explicitly a notification that cannot be refused except when management frame protection is negotiated and the integrity check fails. The frame-class gate that makes these services meaningful (Class 1/2/3 frames vs. State 1/2/3) is specified in detail later, in 11.3.",
+      "zh": "4.5.3 节把关联、重关联与去关联归为“连通性相关服务”，并将它们与移动性（4.5.3.2）联系起来。关联（4.5.3.3）对 BSS 转移移动性而言是“必要但不充分”的，对无转移移动性而言则是“充分”的；它是分布式系统服务（DSS）之一，向 DS 提供“站点到 AP”的映射，而标准刻意没有规定 DS 如何存储这条映射。它还确立了唯一性规则：一个站点在同一时刻最多只与一个 AP 关联，关联始终由非 AP 站点发起，而一个 AP 可以服务许多站点。重关联（4.5.3.4）把一条现有关联从一个 AP 迁移到同一 ESS 内的另一个 AP，也可以更改同一 AP 上某条关联的属性，并指出快速 BSS 转移会在重关联之前（而非之后）建立数据连通所需的状态。去关联（4.5.3.5）会作废“站点到 AP”的映射，可由任一方发起，并被明确定义为一种无法被拒绝的通知——唯一例外是协商了管理帧保护且完整性校验失败时。使这些服务真正有意义的“帧类别门槛”（第1/2/3类帧对应状态1/2/3）将在稍后的 11.3 节中详细规定。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          393,
+          394,
+          395
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:4.5.3.2",
+    "80211-2024:4.5.3.3",
+    "80211-2024:4.5.3.4",
+    "80211-2024:4.5.3.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        393
+      ],
+      "note": "4.5.3.2 Mobility types - no-transition (static / local movement) vs BSS-transition within an ESS; fast BSS transition"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        393,
+        394
+      ],
+      "note": "4.5.3.3 Association - DSS, STA-to-AP mapping to the DS, one AP at a time, always initiated by non-AP STA"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        394
+      ],
+      "note": "4.5.3.4 Reassociation - move association between APs in an ESS, change attributes on same AP, fast BSS transition"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        395
+      ],
+      "note": "4.5.3.5 Disassociation - voids STA-to-AP mapping, either party, notification not a request"
+    }
+  ],
+  "track": "foundations"
+}

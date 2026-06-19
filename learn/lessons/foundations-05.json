@@ -1,0 +1,98 @@
+{
+  "id": "foundations-05",
+  "title": {
+    "en": "The building blocks: STA, AP, and the BSS",
+    "zh": "搭建积木：站点（STA）、接入点（AP）与基本服务集（BSS）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every Wi-Fi network, no matter how large, is built from one tiny piece: the station, or STA. A STA is simply any radio that can speak 802.11 — your phone, your laptop, a smart speaker, a doorbell camera. That's the whole definition. Some STAs do something extra: an access point (AP) is a STA that also owns a door into a wired backbone. The standard gives that door a name — the distribution system access function, or DSAF — and it's the one feature that turns an ordinary station into an AP. So an AP is not a different kind of device; it's a STA with a job.",
+      "zh": "无论一张 Wi-Fi 网络规模多大，它都是由一块最小的积木搭起来的：站点（STA）。STA 其实就是任何会说 802.11 的无线电——你的手机、笔记本、智能音箱、门铃摄像头都是。定义就这么简单。有些 STA 还多干一件事：接入点（AP）就是一个额外拥有“通往有线骨干网的门”的 STA。标准给这道门起了个名字——分布式系统接入功能（DSAF）——正是这一项能力把一个普通站点变成了 AP。所以 AP 并不是另一种设备，而是一个“身兼要职”的 STA。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the next layer up. The basic building block of an 802.11 LAN is the basic service set, or BSS. A BSS is nothing more than a set of STAs — the members that can reach each other and talk. When there is an AP, the BSS is simply the AP plus the stations it serves. Architectural diagrams draw a BSS as a tidy oval, but remember the oval is a stand-in for an idea: 'these STAs are in communication with each other.' The membership is what's real; the shape is just convenient.",
+      "zh": "再往上一层。802.11 LAN 的基本积木就是“基本服务集（BSS）”。BSS 不过就是一组 STA——这些彼此能够通达、可以交谈的成员。当存在一个 AP 时，BSS 就是这个 AP 加上它所服务的那些站点。架构图常把 BSS 画成一个干净的椭圆，但要记住：椭圆只是一个想法的替身——“这些 STA 彼此处于可通信状态”。真正实在的是“成员关系”，那个形状只是为了方便而已。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    subgraph BSS [\"BSS = a set of STAs\"]\n        AP[\"AP\\n(a STA with a DSAF)\"]\n        S1[\"STA 1\"]\n        S2[\"STA 2\"]\n        S3[\"STA 3\"]\n        AP --- S1\n        AP --- S2\n        AP --- S3\n    end\n    DS[(\"wired backbone\")]\n    AP -. DSAF .-> DS",
+      "zh": "graph TD\n    subgraph BSS [\"BSS = 一组 STA\"]\n        AP[\"AP\\n（带 DSAF 的 STA）\"]\n        S1[\"STA 1\"]\n        S2[\"STA 2\"]\n        S3[\"STA 3\"]\n        AP --- S1\n        AP --- S2\n        AP --- S3\n    end\n    DS[(\"有线骨干网\")]\n    AP -. DSAF .-> DS"
+    },
+    {
+      "type": "prose",
+      "en": "A BSS does not have to have an AP. The standard defines two AP-less flavours. The first is the independent BSS (IBSS) — the most basic 802.11 LAN of all, where STAs simply talk directly to one another, peer to peer, often thrown together with no preplanning at all. This is the classic 'ad-hoc' network. The second is the personal BSS (PBSS): the STAs still talk directly, but now one of them volunteers as the PBSS control point (PCP), handing out timing and access slots. A PBSS can only be formed by DMG (directional, 60 GHz) stations, so it's the specialist of the family.",
+      "zh": "BSS 并不一定要有 AP。标准定义了两种“无 AP”的变体。第一种是独立 BSS（IBSS）——这是所有 802.11 LAN 中最基础的一种：STA 之间直接对等通信，常常事先毫无规划、临时凑在一起就成网了，也就是经典的“自组织（ad-hoc）”网络。第二种是个人 BSS（PBSS）：STA 之间同样直接通信，但其中一个会自告奋勇担任 PBSS 控制点（PCP），负责分发时序和接入时隙。PBSS 只能由 DMG（定向、60 GHz）站点组建，因此它是这个家族里的“专才”。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Easy way to keep the three apart: IBSS = peers, no boss. PBSS = peers, but one of them is the timekeeper (the PCP). Infrastructure BSS = everyone goes through the AP, and the AP has a door to the wired world.",
+      "zh": "记住三者区别的简单办法：IBSS = 大家平等，没有“老大”。PBSS = 大家平等，但其中一个当“计时员”（PCP）。基础设施 BSS（infrastructure BSS）= 所有人都经由 AP，而且 AP 还有一道通往有线世界的门。"
+    },
+    {
+      "type": "prose",
+      "en": "Here's the key intuition: membership in a BSS is fluid. STAs turn on and off, walk into range and wander out of it, so the set is never frozen. A STA becomes a member of an infrastructure BSS by joining and then associating with the AP — and the moment association completes, the AP tells the rest of the network where this STA now lives, so traffic can find it. Move to a new AP on the same backbone and you reassociate; the AP again updates that 'where to find me' mapping. The network doesn't track you by location — it tracks you by who you're associated with right now.",
+      "zh": "关键的直觉在这里：BSS 的成员关系是流动的。STA 会开机、关机，会走进信号范围、又走出范围，所以这组成员永远不是冻结不变的。一个 STA 通过“加入”再“关联（associate）”到 AP，才成为某个基础设施 BSS 的成员——而一旦关联完成，AP 就会告诉网络其余部分：这个 STA 现在落脚在何处，于是流量才能找到它。当你移动到同一骨干网上的另一个 AP 时，你会“重关联（reassociate）”；AP 会再次更新这份“去哪里找我”的映射。网络并不是靠位置来追踪你，而是靠“你此刻关联在谁那里”来追踪你。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 320 160' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><rect x='8' y='8' width='304' height='144' rx='6' stroke-dasharray='4 4'/><rect x='30' y='110' width='40' height='28' fill='currentColor' stroke='none'/><path d='M276 8 L276 40' stroke-dasharray='3 3'/><text x='250' y='22' fill='currentColor' stroke='none' font-size='11'>doorway</text><circle cx='150' cy='80' r='6' fill='currentColor' stroke='none'/><circle cx='150' cy='80' r='26'/><circle cx='150' cy='80' r='52'/><circle cx='150' cy='80' r='82'/><text x='140' y='100' fill='currentColor' stroke='none' font-size='10'>STA</text></svg>",
+      "caption": {
+        "en": "A real coverage 'area' is a shifting blob, not a clean circle. Signal strength bends around a metal desk (solid block) and leaks through a doorway; small moves can swing strength by tens of dB. The standard admits the neat ovals in its diagrams are an artifact of drawing, not physics — it only keeps the word 'area' for historical convenience.",
+        "zh": "真实的覆盖“区域”是一团不断变化的斑块，而不是一个干净的圆。信号会绕过金属办公桌（实心块），又从门口漏出去；微小的位移就可能让信号强度摆动几十 dB。标准坦承：图中那些整齐的椭圆只是绘图产物，并非物理实情——它保留“区域（area）”这个词，纯属历史与方便的缘故。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What the standard actually says about membership and 'area'",
+        "zh": "标准对“成员关系”与“区域”究竟是怎么说的"
+      },
+      "en": "Clause 4.3.1 names the BSS as the basic building block of an 802.11 LAN and pictures it as an oval coverage region — the basic service area (BSA) — within which members stay in communication, while warning that 'the concept of area, while not precise, is often good enough.' Clause 4.3.2 calls the IBSS the most basic type of 802.11 LAN, formed by STAs that communicate directly, often without preplanning. Clause 4.3.3 defines the PBSS as a direct-communication LAN in which one STA assumes the PBSS control point (PCP) role, providing timing via DMG Beacon/Announce frames and allocating service/contention periods — and notes a PBSS can be established only by DMG STAs. Clause 4.3.4 states membership is dynamic (STAs turn on/off, come and go out of range): a STA joins an infrastructure BSS or IBSS via the synchronization procedure (11.1.4.5), and to reach all services of an infrastructure BSS it becomes associated; associations are dynamic and use the distribution system service. Clause 4.3.6 ('Area concepts') is blunt: for wireless PHYs well-defined coverage areas do not exist — propagation is dynamic, small position changes can swing field strength by up to 50 dB — and the sharp BSS boundaries in the diagrams are an artifact of the drawing, not a physical reality.",
+      "zh": "4.3.1 节把 BSS 称为 802.11 LAN 的基本积木，并将其描绘成一个椭圆形覆盖区域——即基本服务区（BSA）——成员在其中保持通信，同时提醒道：“区域这一概念虽不精确，但往往已经够用。”4.3.2 节称 IBSS 为最基础的 802.11 LAN 类型，由能够直接通信的 STA 组成，且常常无需事先规划。4.3.3 节将 PBSS 定义为一种直接通信的 LAN，其中一个 STA 承担 PBSS 控制点（PCP）角色，通过 DMG Beacon/Announce 帧提供时序，并分配服务期与竞争接入期——并指出 PBSS 只能由 DMG STA 建立。4.3.4 节指出成员关系是动态的（STA 会开关机、进出信号范围）：STA 通过同步流程（11.1.4.5）加入基础设施 BSS 或 IBSS，要访问基础设施 BSS 的全部服务则需变为“已关联”；关联是动态的，并使用分布式系统服务。4.3.6 节（“区域概念”）说得很直白：对无线 PHY 而言，界限分明的覆盖区域根本不存在——传播是动态的，位置的微小变化可使场强摆动多达 50 dB——图中 BSS 那些清晰的边界只是绘图产物，并非物理实情。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          341,
+          342,
+          345
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:4.3.1",
+    "80211-2024:4.3.2",
+    "80211-2024:4.3.3",
+    "80211-2024:4.3.4",
+    "80211-2024:4.3.6"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        341
+      ],
+      "note": "4.3.1 General — BSS is the basic building block; oval = basic service area (BSA); 'area, while not precise, is often good enough'"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        342
+      ],
+      "note": "4.3.2 IBSS (most basic LAN, direct peer comms, no preplanning); 4.3.3 PBSS (one STA is the PCP; DMG-only); 4.3.4 membership is dynamic — join via synchronization, then associate"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        345
+      ],
+      "note": "4.3.6 Area concepts — well-defined coverage areas do not exist; up to 50 dB swing; sharp BSS boundaries are a drawing artifact"
+    }
+  ],
+  "track": "foundations"
+}
