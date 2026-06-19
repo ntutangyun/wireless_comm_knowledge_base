@@ -1,0 +1,144 @@
+{
+  "id": "wifi7-42",
+  "title": {
+    "en": "EHT PHY Constants: TXTIME, PHY MIB & Receiver/EVM Limits",
+    "zh": "EHT PHY 常量：TXTIME、PHY MIB 与接收机/EVM 限值"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every Wi-Fi 7 radio ships with a calibration sheet. Beyond the headline features — 320 MHz channels, 4096-QAM, multi-link — Clause 36 of 802.11be pins down the unglamorous numbers a compliant EHT radio must hit: how cleanly it transmits, how faint a signal it must still decode, and how it bookkeeps exactly how long a frame will sit on the air. This lesson is a tour of those hard floors and the formula that turns a frame into a duration.",
+      "zh": "每一台 Wi-Fi 7 电台出厂时都附带一张“校准表”。除了那些抢眼的特性——320 MHz 信道、4096-QAM、多链路——802.11be 的第 36 章还钉死了一组并不光鲜却必须满足的数字：合规的 EHT 电台要发得多干净、能解出多微弱的信号，以及它如何精确记账一帧会在空口上占用多久。本课就是带你巡览这些“硬底线”，以及把一帧换算成时长的那道公式。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the most-used calculation of all: TXTIME. Before the MAC sends a frame it can ask the PHY, via the PLME-TXTIME primitive, exactly how many microseconds the PPDU will occupy. The answer is a simple sum: a fixed 20 µs of legacy preamble, the EHT preamble, then the data symbols (number of symbols times the symbol duration), plus any packet extension and signal extension. Get this right and the MAC can set its NAV, schedule TXOPs, and avoid colliding with its own airtime budget.",
+      "zh": "先从最常用的计算说起：TXTIME。MAC 在发送一帧之前，可以通过 PLME-TXTIME 原语向 PHY 询问这个 PPDU 究竟会占用多少微秒。答案是一个简单的求和：固定的 20 µs 传统前导码、EHT 前导码、随后的数据符号（符号数乘以符号时长），再加上可能存在的包扩展（packet extension）与信号扩展（signal extension）。算准这一项，MAC 才能设置 NAV、调度 TXOP，并避免超出自己的空口时间预算。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 560 120' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='10' y='40' width='50' height='40'/><text x='35' y='100' font-size='11' text-anchor='middle' stroke='none' fill='currentColor'>20 us</text><text x='35' y='30' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>L-preamble</text><rect x='60' y='40' width='80' height='40'/><text x='100' y='30' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>EHT-preamble</text><rect x='140' y='40' width='280' height='40'/><text x='280' y='30' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>N_SYM x T_SYM (Data)</text><text x='280' y='65' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>... data symbols ...</text><rect x='420' y='40' width='60' height='40' stroke-dasharray='4 3'/><text x='450' y='30' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>PE</text><rect x='480' y='40' width='60' height='40' stroke-dasharray='4 3'/><text x='510' y='30' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>Sig Ext</text><line x1='10' y1='95' x2='540' y2='95' stroke-dasharray='2 2'/><text x='275' y='115' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>TXTIME = sum of all segments</text></svg>",
+      "caption": {
+        "en": "TXTIME (Eq 36-110) is a sum of fixed and variable segments: 20 µs legacy preamble + EHT preamble + data symbols + packet/signal extensions.",
+        "zh": "TXTIME（式 36-110）是固定段与可变段之和：20 µs 传统前导码 + EHT 前导码 + 数据符号 + 包扩展/信号扩展。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now the transmit-quality floors. The transmit spectral mask says how fast power must roll off outside the channel — for a 20 MHz EHT PPDU, 0 dBr across the inner 19.5 MHz, dropping to −20 dBr, −28 dBr, and −40 dBr at progressively wider offsets — and the same shape scales up to 320 MHz. Spectral flatness limits how much the per-subcarrier power may wander: at most ±4 dB across the bulk of the subcarriers (and +4/−6 dB at the edges). The clock has to be accurate too: ±20 ppm in 5/6 GHz and ±25 ppm in 2.4 GHz. And modulation accuracy (EVM) tightens as the constellation grows — BPSK only needs −5 dB, but 4096-QAM demands −38 dB of relative constellation error.",
+      "zh": "再看发射质量底线。发射频谱模板（transmit spectral mask）规定了功率在信道之外必须多快地衰减——对于 20 MHz 的 EHT PPDU，内部 19.5 MHz 维持 0 dBr，随着频偏增大依次跌到 −20 dBr、−28 dBr 和 −40 dBr——同样的形状一路放大到 320 MHz。频谱平坦度（spectral flatness）限制各子载波功率的漂移：大部分子载波最多 ±4 dB（边缘处为 +4/−6 dB）。时钟也必须精准：5/6 GHz 频段 ±20 ppm，2.4 GHz 频段 ±25 ppm。而调制精度（EVM）随星座增大而收紧——BPSK 只需 −5 dB，但 4096-QAM 要求相对星座误差达到 −38 dB。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why does 4096-QAM need such a clean transmitter? With 4096 constellation points crammed into the same I/Q plane, neighbouring points sit very close together. A −38 dB error vector means the transmitted symbol must land within roughly 1.3% of the ideal point — otherwise the receiver can't tell which of the 4096 points you meant. Each jump in QAM order buys more bits per symbol but charges a tax in transmitter and receiver precision.",
+      "zh": "为什么 4096-QAM 需要如此干净的发射机？把 4096 个星座点挤进同一个 I/Q 平面后，相邻点彼此非常接近。−38 dB 的误差矢量意味着发射出的符号必须落在理想点约 1.3% 的范围内——否则接收机就分不清你到底想发 4096 个点中的哪一个。QAM 阶数每跳一级，每符号能多载几比特，却要以发射机和接收机的精度为“税”来交换。"
+    },
+    {
+      "type": "prose",
+      "en": "On the receive side, the spec sets equally hard floors. Minimum input sensitivity says the radio must still hit under 10% packet error rate at very faint signals — as low as −82 dBm for 20 MHz BPSK, sliding up to −34 dBm for the hardest 4096-QAM at 320 MHz. Adjacent and nonadjacent channel rejection say how much louder an interferer in a neighbouring channel can be before it breaks reception. Maximum input level caps how strong a signal the receiver must tolerate (−30 dBm in 5/6 GHz). And CCA sensitivity sets the listen-before-talk thresholds: detect any EHT PPDU on the primary 20 MHz at −82 dBm, and treat the medium as busy for arbitrary signals at −62 dBm.",
+      "zh": "在接收侧，标准设下了同样苛刻的底线。最小输入灵敏度（minimum input sensitivity）规定：在极微弱的信号下电台仍须将丢包率压到 10% 以下——20 MHz BPSK 低至 −82 dBm，一路收紧到 320 MHz 下最难的 4096-QAM 的 −34 dBm。相邻与非相邻信道抑制（adjacent / nonadjacent channel rejection）规定：邻信道里的干扰可以比有用信号响多少而仍不破坏接收。最大输入电平（maximum input level）则给出接收机必须能承受的最强信号上限（5/6 GHz 为 −30 dBm）。而 CCA 灵敏度（CCA sensitivity）设定了“先听后说”的门限：在主 20 MHz 上以 −82 dBm 检测任何 EHT PPDU，并在 −62 dBm 时把信道视为忙。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the 20 dB gap: −82 dBm to detect an EHT preamble, but −62 dBm to call the medium busy for any energy. That 20 dB is deliberate — the standard even spells it out (−82 + 20 = −62). It lets a station decode a properly-formed Wi-Fi frame from far away, while only deferring to non-Wi-Fi energy when it's much stronger — the core of spatial-reuse efficiency.",
+      "zh": "注意这 20 dB 的落差：检测 EHT 前导码用 −82 dBm，但对任意能量判定信道忙却用 −62 dBm。这 20 dB 是刻意为之——标准甚至直接写明（−82 + 20 = −62）。它让站点能在很远处解出一个格式正确的 Wi-Fi 帧，却只在非 Wi-Fi 能量强得多时才退避——这正是空间复用（spatial reuse）效率的核心。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The PHY MIB, 320 MHz channelization, and the airtime ceiling",
+        "zh": "PHY MIB、320 MHz 信道划分与空口时长上限"
+      },
+      "en": "All of these capabilities are bookkept in the EHT PHY MIB (Table 36-69), reached through the PLME-GET/SET/RESET/CHARACTERISTICS primitives. Each attribute is marked Static (fixed for an implementation) or Dynamic. Examples: dot11PHYType = eht, dot11EHTSupportFor320MHzImplemented (a Boolean defaulting to false — 320 MHz is optional), dot11EHTCurrentChannelWidth (Dynamic), and the EHT-MCS-15-per-MRU implemented flags. The 320 MHz channel itself (36.3.24.2) is two adjacent 160 MHz channels in 6 GHz, in two flavours: 320 MHz-1 (center-frequency indices 31, 95, 159) and 320 MHz-2 (63, 127, 191). Finally, the static PHY characteristics (Table 36-70) cap the airtime: aPPDUMaxTime = 5.484 ms and aPSDUMaxLength = 15 523 198 bytes — the longest a single EHT PPDU may legally sit on the air, which is exactly why TXTIME (Eq 36-110) and the PSDU_LENGTH equations (36-111 onward) matter: they let the MAC plan a frame against that hard ceiling before transmitting.",
+      "zh": "所有这些能力都记录在 EHT PHY MIB（表 36-69）里，并通过 PLME-GET/SET/RESET/CHARACTERISTICS 原语访问。每个属性标注为 Static（对某一实现固定不变）或 Dynamic（动态）。例如：dot11PHYType = eht、dot11EHTSupportFor320MHzImplemented（布尔，默认 false——可见 320 MHz 是可选项）、dot11EHTCurrentChannelWidth（Dynamic），以及若干“按 MRU 支持 EHT-MCS 15”的实现标志。320 MHz 信道本身（36.3.24.2）是 6 GHz 中两个相邻的 160 MHz 信道，分两种：320 MHz-1（信道中心频率编号 31、95、159）与 320 MHz-2（63、127、191）。最后，静态 PHY 特性（表 36-70）给出空口时长上限：aPPDUMaxTime = 5.484 ms，aPSDUMaxLength = 15 523 198 字节——即单个 EHT PPDU 合法占用空口的最长时间。这正是 TXTIME（式 36-110）与 PSDU_LENGTH 系列公式（36-111 及其后）的意义所在：它们让 MAC 在发射前就能对照这道硬上限来规划一帧。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          886,
+          887,
+          888,
+          892
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        849,
+        850,
+        851,
+        852
+      ],
+      "note": "36.3.20.1 Transmit spectral mask — 20/40/80/160/320 MHz EHT PPDU mask breakpoints (0/-20/-28/-40 dBr)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        861,
+        864
+      ],
+      "note": "36.3.20.2 Spectral flatness (Table 36-63, +/-4 and +4/-6 dB); 36.3.20.3 center-frequency & symbol-clock tolerance (+/-20 / +/-25 ppm)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        865,
+        866
+      ],
+      "note": "36.3.20.4 Modulation accuracy — Table 36-65 EVM limits, BPSK -5 dB to 4096-QAM -38 dB; transmit center frequency leakage"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        873,
+        874,
+        875,
+        876
+      ],
+      "note": "36.3.21 Receiver spec — min sensitivity (Table 36-67), adjacent/nonadjacent rejection (Table 36-68), max input level, CCA sensitivity (-82/-62/-72 dBm)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        877,
+        878,
+        881
+      ],
+      "note": "36.3.22 EHT transmit procedure (Figs 36-75/76); 36.3.23 EHT receive procedure (Figs 36-78/79)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        886,
+        887,
+        888,
+        892
+      ],
+      "note": "36.3.24.2 320 MHz channelization (320-1/320-2); 36.4.1-36.4.4 PLME SAP, PHY MIB (Table 36-69), TXTIME/PSDU_LENGTH (Eq 36-110), PHY characteristics (aPPDUMaxTime 5.484 ms)"
+    }
+  ],
+  "covers": [
+    "80211be-2024:36.4.1",
+    "80211be-2024:36.4.2",
+    "80211be-2024:36.4.3",
+    "80211be-2024:36.3.20.1",
+    "80211be-2024:36.3.20.2",
+    "80211be-2024:36.3.20.3",
+    "80211be-2024:36.3.20.4",
+    "80211be-2024:36.3.21.2",
+    "80211be-2024:36.3.21.3",
+    "80211be-2024:36.3.21.4",
+    "80211be-2024:36.3.21.5",
+    "80211be-2024:36.3.21.6",
+    "80211be-2024:36.3.22",
+    "80211be-2024:36.3.23",
+    "80211be-2024:36.3.24.2"
+  ],
+  "track": "wifi7-eht"
+}

@@ -1,0 +1,130 @@
+{
+  "id": "wifi7-39",
+  "title": {
+    "en": "MLO TDLS, Proxy ARP, BTM & Multi-BSSID Hosting",
+    "zh": "MLO 中的 TDLS、代理 ARP、BTM 与多 BSSID 承载"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Once every Wi-Fi 7 device becomes a multi-link device (MLD) — an AP MLD or a non-AP MLD identified by a single MLD MAC address with several radios affiliated underneath it — the classic WLAN services have to learn new manners. Peer-to-peer direct links, having the AP answer on behalf of sleeping clients, steering a client toward a better neighbour, and hosting many virtual APs on one radio were all designed for single-radio stations. This lesson walks through how 802.11be (EHT) re-anchors each of these four services at the MLD level.",
+      "zh": "在 Wi-Fi 7 中，每台设备都成了“多链路设备”（MLD）——无论是 AP MLD 还是非 AP MLD，都由一个唯一的 MLD MAC 地址来标识，下面挂着若干个无线电（affiliated STA/AP）。这样一来，那些经典的 WLAN 业务就得重新学规矩。点对点直连、由 AP 替休眠的客户端代答、把客户端引导到更优的邻居、以及在一个无线电上承载多个虚拟 AP，这些机制当初都是为单无线电站点设计的。本课就来看看 802.11be（EHT）如何把这四项业务统统重新锚定到 MLD 这一层级。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with TDLS — a direct link that lets two clients talk to each other without bouncing every frame through the AP. In MLO, EHT keeps this deliberately simple: a non-AP STA affiliated with a non-AP MLD shall establish only a single-link TDLS direct link. The setup choreography is unchanged (Discovery Request and Setup frames travel via the AP as Data frames; the Discovery Response goes direct as a Public Action frame), but each TDLS frame now carries a tiny new TDLS Multi-Link element whose Common Info field holds just the AP MLD MAC address — so a peer can confirm both ends sit under the same AP MLD before responding.",
+      "zh": "先看 TDLS——它让两个客户端之间直连通话，而不必把每一帧都经 AP 转一圈。在 MLO 中，EHT 有意把它保持得很简单：隶属于非 AP MLD 的非 AP STA 只能建立单链路 TDLS 直连。建链的“编舞”动作不变（Discovery Request 与 Setup 帧作为数据帧经 AP 传递，Discovery Response 则作为公共动作帧走直连），但现在每个 TDLS 帧都携带一个小巧的新元素——TDLS Multi-Link 元素，其 Common Info 字段里只放一个 AP MLD MAC 地址，这样对端在回应前就能确认两端确实挂在同一个 AP MLD 之下。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    subgraph APMLD[AP MLD - one MLD MAC]\n      AP1[AP link 1]\n      AP2[AP link 2]\n    end\n    STA1[non-AP MLD A] -->|setup via AP, Data frame| AP1\n    STA2[peer STA B] -->|setup via AP, Data frame| AP1\n    STA1 -.->|single-link TDLS direct link| STA2\n    STA1 -->|TDLS Multi-Link element carries AP MLD MAC| STA2",
+      "zh": "graph TD\n    subgraph APMLD[AP MLD - 单一 MLD MAC]\n      AP1[AP 链路 1]\n      AP2[AP 链路 2]\n    end\n    STA1[非 AP MLD A] -->|经 AP 建链, 数据帧| AP1\n    STA2[对端 STA B] -->|经 AP 建链, 数据帧| AP1\n    STA1 -.->|单链路 TDLS 直连| STA2\n    STA1 -->|TDLS Multi-Link 元素携带 AP MLD MAC| STA2"
+    },
+    {
+      "type": "prose",
+      "en": "Next, proxy ARP. When clients doze to save power they can't answer ARP / IPv6-ND lookups, so the AP answers for them from a Hardware-Address-to-Internet-Address table. EHT lifts this whole service to the MLD level: an AP MLD that supports proxy ARP keeps an MLD-MAC-address to Internet-address mapping per associated non-AP MLD, and when it forms a reply it inserts the second non-AP MLD's MLD MAC address as the sender. All affiliated APs must advertise the same Proxy ARP bit, so the service looks identical no matter which link a client is on.",
+      "zh": "接下来是代理 ARP（proxy ARP）。客户端为省电进入打盹（doze）状态时无法回应 ARP / IPv6-ND 查询，于是 AP 依据一张“硬件地址到互联网地址”的映射表替它们代答。EHT 把整个业务上提到 MLD 层级：支持代理 ARP 的 AP MLD 为每个已关联的非 AP MLD 维护一张“MLD MAC 地址到互联网地址”的映射，并在构造回复时把第二个非 AP MLD 的 MLD MAC 地址填作发送方地址。所有隶属的 AP 必须公告相同的 Proxy ARP 比特，因此无论客户端在哪条链路上，这项服务看起来都一模一样。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why the MLD MAC and not a per-link address? Because a non-AP MLD's identity on the network is its MLD MAC address — its individual radios are an internal detail. Answering ARP, steering, and TDLS peer-matching all key off the MLD MAC so the rest of the network never has to care which physical link a frame happened to use.",
+      "zh": "为什么用 MLD MAC，而不是某条链路的地址？因为一个非 AP MLD 在网络上的身份就是它的 MLD MAC 地址——下面各个无线电只是内部细节。代答 ARP、引导切换、以及 TDLS 对端匹配，统统以 MLD MAC 为索引，这样网络其余部分就完全不必关心某一帧到底走了哪条物理链路。"
+    },
+    {
+      "type": "prose",
+      "en": "Third is BSS Transition Management (BTM), the polite way an AP steers a client toward a better AP. For MLDs the conversation happens SME-to-SME between an AP MLD and a non-AP MLD (carried by an affiliated AP and STA on the wire). The clever part is the candidate list: a Neighbor Report that includes a Basic Multi-Link element now expresses a preference for a target AP MLD rather than a single BSS. New Request Mode bits also appear — the Link Removal Imminent bit lets an AP MLD warn that just one of its links is going away, distinct from a full disassociation, so the client can drop a link without leaving the network.",
+      "zh": "第三项是 BSS 过渡管理（BTM）——AP 礼貌地把客户端引导到更优 AP 的方式。对 MLD 而言，这段对话发生在 AP MLD 与非 AP MLD 的 SME 与 SME 之间（在空口上由隶属的 AP 与 STA 承载）。巧妙之处在候选列表：当一个邻居报告（Neighbor Report）中包含 Basic Multi-Link 元素时，它表达的是对某个目标 AP MLD 的偏好，而非对单个 BSS 的偏好。同时还出现了新的 Request Mode 比特——Link Removal Imminent 比特让 AP MLD 可以提示“只有它的某一条链路即将消失”，这与整体解除关联不同，于是客户端可以撤掉一条链路而不必离开整个网络。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, hosting. A multiple-BSSID set or co-hosted-BSSID set packs many virtual APs onto one radio sharing one Beacon. The key MLO rule is a constraint: an AP MLD shall not have more than one affiliated AP within the same multiple-BSSID set or co-hosted set. Each affiliated AP is independently configured (transmitted or nontransmitted BSSID, co-hosted, or neither) and gets its own Link ID. And because every AP's Basic Multi-Link element differs (each carries a different AP MLD MAC), the usual Beacon inheritance trick is forbidden — a Multi-Link element is never inherited from a transmitted to a nontransmitted BSSID profile.",
+      "zh": "最后是“承载”。多 BSSID 集合（multiple-BSSID set）或共宿 BSSID 集合（co-hosted-BSSID set）把许多虚拟 AP 塞进一个无线电、共享一个 Beacon。MLO 的关键规则是一条约束：在同一个多 BSSID 集合或共宿集合内，一个 AP MLD 不得拥有超过一个隶属 AP。每个隶属 AP 都独立配置（充当 transmitted 或 nontransmitted BSSID、共宿、或两者皆非），并各自分得一个 Link ID。又因为每个 AP 的 Basic Multi-Link 元素都不相同（各自携带不同的 AP MLD MAC），常用的 Beacon“继承”技巧被禁止——Multi-Link 元素绝不会从 transmitted BSSID 继承到 nontransmitted BSSID 的 profile。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Single-link TDLS context, the TDLS Multi-Link element, and proxy ARP at the MLD level",
+        "zh": "单链路 TDLS 上下文、TDLS Multi-Link 元素，以及 MLD 层级的代理 ARP"
+      },
+      "en": "Clause 35.3.21 requires that an EHT non-AP STA affiliated with a non-AP MLD establish only a single-link TDLS, following 11.20 plus extra rules in 35.3.21.2: the non-AP MLD sets the TDLS context (security, SN/PN, BA) with respect to its MLD MAC address, sets the TA of direct-path frames to the MLD MAC, and includes a TDLS Multi-Link element carrying only the associated AP MLD MAC in its Common Info field on Discovery/Setup frames. A peer shall not respond if that AP MLD MAC does not match the AP MLD it set up with. The TDLS Multi-Link element format (9.4.2.322.5) has a reserved Presence Bitmap, a Common Info Length octet plus a 6-octet AP MLD MAC Address, and no Link Info field; Tables 9-525/9-526/9-527 (9.6.12.2/9.6.12.3) add the Multi-Link entry to TDLS Setup Request/Response/Confirm frames, present only when the non-AP STA is affiliated with a non-AP MLD. For proxy ARP, 35.3.22 makes the service optional but MLD-level, and 11.21.14 specifies that an AP MLD maintains an MLD-MAC-to-Internet-address mapping per associated non-AP MLD and inserts the second non-AP MLD's MLD MAC address as the Sender's MAC Address in an IPv4 ARP response (with parallel IPv6 ND behaviour). 35.3.23 anchors BTM SME-to-SME at the MLD level and makes a Neighbor Report with a Basic Multi-Link element express AP-MLD preference, while 9.6.13.9's Request Mode adds the Link Removal Imminent bit (encoded jointly with BSS Termination Included in Table 9-538a). 35.3.20 forbids more than one affiliated AP per multiple/co-hosted BSSID set and bars Multi-Link element inheritance.",
+      "zh": "35.3.21 节要求：隶属于非 AP MLD 的 EHT 非 AP STA 只能建立单链路 TDLS，遵循 11.20 并附加 35.3.21.2 的额外规则：非 AP MLD 以其 MLD MAC 地址为基准设置 TDLS 上下文（安全、SN/PN、BA），把直连路径帧的 TA 置为 MLD MAC，并在 Discovery/Setup 帧中携带 TDLS Multi-Link 元素，其 Common Info 字段里只放所关联的 AP MLD MAC。若该 AP MLD MAC 与对端所做 ML setup 的 AP MLD 不匹配，对端不得回应。TDLS Multi-Link 元素格式（9.4.2.322.5）的 Presence Bitmap 为保留，含一个 Common Info Length 字节加 6 字节 AP MLD MAC Address，且无 Link Info 字段；表 9-525/9-526/9-527（9.6.12.2/9.6.12.3）在 TDLS Setup Request/Response/Confirm 帧中加入 Multi-Link 条目，仅当非 AP STA 隶属于非 AP MLD 时才存在。对于代理 ARP，35.3.22 规定该业务可选但运行在 MLD 层级，11.21.14 规定 AP MLD 为每个已关联非 AP MLD 维护“MLD MAC 到互联网地址”的映射，并在 IPv4 ARP 回复中把第二个非 AP MLD 的 MLD MAC 地址填作 Sender 的 MAC 地址（IPv6 ND 行为与之平行）。35.3.23 把 BTM 的 SME-到-SME 交互锚定在 MLD 层级，并使含 Basic Multi-Link 元素的邻居报告表达对 AP MLD 的偏好；而 9.6.13.9 的 Request Mode 新增 Link Removal Imminent 比特（在表 9-538a 中与 BSS Termination Included 联合编码）。35.3.20 则禁止在同一多/共宿 BSSID 集合内拥有超过一个隶属 AP，并禁止 Multi-Link 元素的继承。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          580,
+          581,
+          582,
+          251,
+          377
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.3.20",
+    "80211be-2024:35.3.21.1",
+    "80211be-2024:35.3.21.2",
+    "80211be-2024:35.3.22",
+    "80211be-2024:35.3.23",
+    "80211be-2024:9.4.2.322.5",
+    "80211be-2024:9.6.12.2",
+    "80211be-2024:9.6.12.3",
+    "80211be-2024:9.6.13.9",
+    "80211be-2024:11.20.1",
+    "80211be-2024:11.21.14"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        580,
+        581,
+        582
+      ],
+      "note": "35.3.21 TDLS in MLO (single-link TDLS, TDLS Multi-Link element rules); 35.3.22 proxy ARP at AP MLD; 35.3.23 BTM for MLDs"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        578
+      ],
+      "note": "35.3.20 MLO in a multiple BSSID set or co-hosted BSSID set; one affiliated AP per set; no Multi-Link element inheritance"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        251
+      ],
+      "note": "9.4.2.322.5 TDLS Multi-Link element format — Common Info Length + AP MLD MAC Address, no Link Info"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        293,
+        294
+      ],
+      "note": "9.6.12.2 / 9.6.12.3 TDLS Setup Request/Response Action fields add Multi-Link element when non-AP STA is affiliated with a non-AP MLD"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        296,
+        297,
+        298
+      ],
+      "note": "9.6.13.9 BSS Transition Management Request frame — Request Mode Link Removal Imminent bit; Table 9-538a encoding"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        373,
+        377
+      ],
+      "note": "11.20.1 TDLS general (Table 11-15a frame pathways); 11.21.14 Proxy ARP service at the MLD level"
+    }
+  ],
+  "track": "wifi7-eht"
+}

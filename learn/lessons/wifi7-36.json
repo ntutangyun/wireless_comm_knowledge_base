@@ -1,0 +1,137 @@
+{
+  "id": "wifi7-36",
+  "title": {
+    "en": "MLD Power Management, Idle & Traffic Indication",
+    "zh": "MLD 省电管理、空闲与流量指示"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "An EHT client is often a multi-link device (MLD): one logical station that owns two or three radios, one per link. Power saving gets interesting here, because a phone wants to nap most of its radios while still hearing 'you have a packet waiting' instantly. The trick 802.11be uses is to keep almost everything at the MLD level: each affiliated radio still has its own awake/doze state, but idle timers, traffic indication, and sleep agreements are tracked once for the whole device. So the question becomes — how does a multi-radio client nap without dropping packets, and how does the AP MLD know which link to wake?",
+      "zh": "EHT 客户端通常是一个多链路设备（MLD）：它是一个逻辑站点，拥有两到三个射频，每条链路对应一个。省电在这里变得有趣，因为手机希望让大部分射频打盹，同时又能立刻听到“有一个数据包在等你”。802.11be 用的诀窍是：几乎所有东西都放在 MLD 级别管理——每个隶属射频仍各自维护自己的清醒/打盹（awake/doze）状态，但空闲计时器、流量指示和睡眠协定都按整个设备只跟踪一份。于是问题变成了——一个多射频客户端如何打盹却不丢包，而 AP MLD 又如何知道该唤醒哪条链路？"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the floor: basic BSS operation. A non-AP MLD can do all the housekeeping it needs — receive a traffic indication, stay time-synchronised, pick up BSS parameter updates — by monitoring just one of its setup links, while its other radios doze. This works because each AP affiliated with the AP MLD signals a critical-update indication when another link's BSS parameters change, so the one awake radio learns about all of them. Two device-level timers ride on top: the MLD max idle period (the keepalive deadline before the AP MLD may disassociate you) and the MLD listen interval (negotiated once, in the (Re)Association Request, governing how long the AP buffers your frames).",
+      "zh": "先看最底层：基本 BSS 操作。一个非 AP MLD 只需监听其中一条已建立（setup）链路，就能完成所有必要的日常事务——接收流量指示、保持时间同步、获取 BSS 参数更新——而其余射频继续打盹。这之所以可行，是因为隶属于 AP MLD 的每个 AP 在另一条链路的 BSS 参数发生变化时都会给出关键更新指示（critical-update indication），于是那一个清醒的射频就能知晓所有链路的变化。在此之上还有两个设备级计时器：MLD 最大空闲周期（在 AP MLD 可以解除关联之前的保活截止时限）和 MLD 监听间隔（在（重）关联请求中协商一次，决定 AP 为你缓存帧的时长）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Everything is per-MLD, not per-radio. The Max Idle Period element, the listen interval, and the WNM sleep interval all 'apply at the MLD level'. A single keepalive sent from ANY one affiliated radio on ANY enabled link resets the whole device's idle timer — you don't have to keep every link alive separately.",
+      "zh": "一切都按 MLD 计、而非按射频计。最大空闲周期元素、监听间隔和 WNM 睡眠间隔都“在 MLD 级别生效”。从任意一个隶属射频、在任意一条已启用链路上发出的一个保活帧，就能重置整个设备的空闲计时器——你不必为每条链路单独维持保活。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the heart of it: traffic indication. The AP MLD buffers a frame (a 'BU', bufferable unit) for the device whenever its TID isn't mapped to a link the client keeps active, and sets the device's AID bit to 1 in the TIM element of the Beacon. The classic TIM only says 'something is waiting' — it can't say which link. EHT adds the Multi-Link Traffic Indication element: a compact list of Per-Link Traffic Indication Bitmaps, one per addressed MLD, where bit i means link i. If the device runs a non-default TID-to-link mapping, bit i = 1 means 'buffered traffic for a TID mapped to link i'; if it maps all TIDs everywhere, bit i = 1 is a recommendation — 'come fetch it on link i'. The same element, carried in an AID Bitmap inside a Link Recommendation frame, can steer both downlink and uplink.",
+      "zh": "现在进入核心：流量指示。每当某帧（一个“BU”，可缓存单元）的 TID 没有映射到客户端保持活跃的链路上时，AP MLD 就会把它缓存起来，并在 Beacon 的 TIM 元素中把该设备的 AID 比特置 1。传统 TIM 只能说“有东西在等你”——却说不出在哪条链路。EHT 增加了多链路流量指示元素（Multi-Link Traffic Indication element）：它是一个紧凑的“每链路流量指示位图（Per-Link Traffic Indication Bitmap）”列表，每个被寻址的 MLD 一份，其中第 i 比特代表链路 i。如果设备使用非默认的 TID-到-链路映射，第 i 比特=1 表示“有映射到链路 i 的某 TID 的缓存流量”；如果它把所有 TID 映射到所有链路，第 i 比特=1 则是一条建议——“到链路 i 来取”。同一个元素若装入链路推荐帧（Link Recommendation frame）里的 AID 位图（AID Bitmap）中，还能同时引导下行与上行。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA1 as STA on link 1 (awake)\n    participant STA2 as STA on link 2 (doze)\n    participant AP as AP MLD\n    Note over AP: DL frame for a TID mapped only to link 2\n    AP->>AP: buffer BU; set this MLD's AID bit = 1 in TIM\n    AP->>STA1: Beacon (TIM bit=1 + ML Traffic Indication: link2=1)\n    Note over STA1: reads bitmap -> traffic is on link 2\n    Note over STA2: wake link 2\n    STA2->>AP: PS-Poll on link 2\n    AP->>STA2: buffered BU (More Data subfield = 1 if more)\n    STA2->>AP: PS-Poll again\n    AP->>STA2: last BU (More Data = 0)",
+      "zh": "sequenceDiagram\n    participant STA1 as 链路1上的STA(清醒)\n    participant STA2 as 链路2上的STA(打盹)\n    participant AP as AP MLD\n    Note over AP: 下行帧的TID仅映射到链路2\n    AP->>AP: 缓存BU; 在TIM中将此MLD的AID比特置1\n    AP->>STA1: Beacon(TIM比特=1 + 多链路流量指示:链路2=1)\n    Note over STA1: 读取位图 -> 流量在链路2\n    Note over STA2: 唤醒链路2\n    STA2->>AP: 在链路2发PS-Poll\n    AP->>STA2: 缓存的BU(若还有则More Data子字段=1)\n    STA2->>AP: 再次PS-Poll\n    AP->>STA2: 最后一个BU(More Data=0)"
+    },
+    {
+      "type": "prose",
+      "en": "Once the device knows which link, it wakes that radio and pulls the frames the ordinary way: a PS-Poll, or a U-APSD trigger if all ACs are delivery-enabled. The AP MLD then uses the More Data subfield exactly as in legacy power save, but at MLD scope — set to 1 it means 'more BUs are still buffered for this MLD on a TID mapped to this link'. There are two more power-state rules worth holding onto. When a brand-new link is enabled by an association exchange carried on that link, the radio comes up in active mode; if the exchange happened on another link (or the link was re-enabled via TID-to-link mapping on another link), the new radio comes up in power-save / doze. And when a link is disabled, its APSD scheduled service periods and TWT agreements are torn down, and the radio may stop maintaining a power state at all.",
+      "zh": "一旦设备知道是哪条链路，它就唤醒那个射频，并用常规方式取回帧：发 PS-Poll，或者在所有 AC 都启用投递时发一个 U-APSD 触发帧。随后 AP MLD 使用 More Data 子字段，用法与传统省电完全一致，只是作用在 MLD 范围——置 1 表示“此 MLD 在映射到本链路的某 TID 上仍有更多 BU 被缓存”。还有两条值得记住的电源状态规则。当一条全新链路通过在该链路上承载的关联交换被启用时，该射频以活跃模式（active mode）上线；如果交换发生在另一条链路上（或该链路是通过另一条链路上的 TID-到-链路映射被重新启用的），新射频则以省电/打盹（doze）模式上线。而当一条链路被禁用时，其 APSD 计划服务周期和 TWT 协定会被拆除，该射频甚至可以完全停止维护电源状态。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, deep sleep: WNM sleep mode in MLO. A device that wants to nap for a long stretch — skipping most DTIM beacons and group-key updates — exchanges WNM Sleep Mode Request/Response frames through any one affiliated STA over a setup link. As with everything else here, the WNM sleep state is maintained by the MLD and applies to all its affiliated radios at once, even though each radio still owns its own awake/doze state underneath. The capability must be advertised identically by every affiliated STA, so the AP MLD sees one consistent answer.",
+      "zh": "最后是深度睡眠：MLO 中的 WNM 睡眠模式。一个想要长时间打盹的设备——跳过大多数 DTIM Beacon 和组密钥更新——会通过任意一个隶属 STA、在一条已建立链路上交换 WNM 睡眠模式请求/响应帧。与这里的其他一切一样，WNM 睡眠状态由 MLD 维护，并一次性应用到它的所有隶属射频上，尽管每个射频在底层仍各自拥有自己的清醒/打盹状态。该能力必须由每个隶属 STA 以相同方式通告，这样 AP MLD 看到的就是一个一致的答案。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact buffering, bitmap, and idle-period rules",
+        "zh": "精确的缓存、位图与空闲周期规则"
+      },
+      "en": "35.3.12.4 makes the buffering rule precise: the AP MLD buffers a BU with a TID if that TID is not mapped to any link on which the corresponding non-AP STA is in active mode, and sets the MLD's AID bit in the TIM partial virtual bitmap to 1. The AP MLD includes the Multi-Link Traffic Indication element (9.4.2.325) only when an associated MLD lacks all-TID-to-all-link mapping with buffered non-mapped traffic, or when it wants to give a link recommendation to a fully-mapped MLD with buffered traffic. Each Per-Link Traffic Indication Bitmap subfield is m+1 bits where Bitmap Size = m, and bit position i tracks the link with Link ID i; the bitmaps follow the order of the 1-bits in the TIM partial virtual bitmap, starting at AID Offset. For idle handling, 35.3.12.3 and 11.21.13 push the BSS Max Idle Period element value to the MLD level — one keepalive from any affiliated STA on any enabled link within the period prevents disassociation — while 11.2.3.10's AP-MLD aging function shall not discard a buffered BU sooner than the MLD's signalled Listen Interval (35.3.12.6). The More Data subfield (35.3.12.9, referencing 11.2.3.6) signals more buffered BUs for the MLD on TIDs mapped to that link.",
+      "zh": "35.3.12.4 精确给出了缓存规则：若某 BU 的 TID 没有映射到对应非 AP STA 处于活跃模式的任何链路，AP MLD 就缓存该 BU，并把 TIM 部分虚拟位图中该 MLD 的 AID 比特置 1。只有在以下情形 AP MLD 才包含多链路流量指示元素（9.4.2.325）：某关联 MLD 未把所有 TID 映射到所有链路且存在未映射的缓存流量，或它想给一个全映射且有缓存流量的 MLD 一条链路推荐。每个“每链路流量指示位图”子字段为 m+1 比特（其中 Bitmap Size=m），第 i 比特位对应链路 ID 为 i 的链路；这些位图按 TIM 部分虚拟位图中为 1 的比特顺序排列，并从 AID Offset 起始。在空闲处理方面，35.3.12.3 和 11.21.13 把 BSS 最大空闲周期元素的值推到 MLD 级别——在该周期内由任意隶属 STA 在任意已启用链路上发出的一个保活帧即可避免被解除关联——同时 11.2.3.10 的 AP MLD 老化函数不得在早于该 MLD 所通告的监听间隔（35.3.12.6）之前丢弃缓存的 BU。More Data 子字段（35.3.12.9，引用 11.2.3.6）则表示该 MLD 在映射到本链路的 TID 上还有更多被缓存的 BU。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          545,
+          546,
+          547,
+          550
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        544,
+        545
+      ],
+      "note": "35.3.12.2-35.3.12.4 — basic BSS operation, MLD max idle period, traffic indication and ML Traffic Indication element use"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        546,
+        547,
+        548,
+        549,
+        550
+      ],
+      "note": "35.3.12.4-35.3.12.9 — bitmap interpretation, WNM sleep in MLO, listen interval, power state after link enable/disable, More Data subfield"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        277,
+        278,
+        279
+      ],
+      "note": "9.4.2.325 Multi-Link Traffic Indication element format; Per-Link Traffic Indication Bitmap; 9.4.2.328 AID Bitmap element"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        284,
+        285
+      ],
+      "note": "9.4.2.328 AID Bitmap element format and Bitmap Control"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        346,
+        347,
+        348,
+        349
+      ],
+      "note": "11.2.3.6 AP operation, 11.2.3.10 AP and AP MLD aging function, 11.2.3.15.1 WNM sleep mode capability for MLO"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        376
+      ],
+      "note": "11.21.13 BSS max idle period management — values apply at MLD level, follow 35.3.12.3"
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.3.12.2",
+    "80211be-2024:35.3.12.3",
+    "80211be-2024:35.3.12.4",
+    "80211be-2024:35.3.12.5",
+    "80211be-2024:35.3.12.6",
+    "80211be-2024:35.3.12.7",
+    "80211be-2024:35.3.12.8",
+    "80211be-2024:35.3.12.9",
+    "80211be-2024:9.4.2.325",
+    "80211be-2024:9.4.2.328",
+    "80211be-2024:11.2.3.6",
+    "80211be-2024:11.2.3.10",
+    "80211be-2024:11.2.3.15.1",
+    "80211be-2024:11.21.13"
+  ],
+  "track": "wifi7-eht"
+}

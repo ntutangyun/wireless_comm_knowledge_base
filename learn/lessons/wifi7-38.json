@@ -1,0 +1,149 @@
+{
+  "id": "wifi7-38",
+  "title": {
+    "en": "MLO Critical Update, Channel Switch, Quieting & NSTR Mobile AP",
+    "zh": "MLO 关键更新、信道切换、静默与 NSTR 移动 AP"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A Wi-Fi 7 access point is often not a single radio but an AP MLD — one logical network with several affiliated APs, each on its own link (say 5 GHz and 6 GHz). A client (a non-AP MLD) sets up two or more of those links at once. That raises a coordination problem: when something changes on one link — a parameter is updated, a channel is about to switch, the radio needs to go quiet for a radar test — how does the client find out without having to camp on the beacon of every single link? EHT answers this by letting each link carry a compact summary of every other link, so one beacon tells the whole story.",
+      "zh": "Wi-Fi 7 的接入点往往不是单一射频，而是一个 AP MLD——一个逻辑网络下挂着若干个隶属 AP，每个 AP 工作在自己的链路上（比如 5 GHz 和 6 GHz）。客户端（non-AP MLD）会同时建立其中两条或更多链路。这就带来一个协调难题：当某条链路上发生变化时——某个参数被更新、信道即将切换、射频需要为雷达检测而静默——客户端如何在不必死守每条链路信标的前提下及时获知？EHT 的答案是：让每条链路都携带其它所有链路的紧凑摘要，于是一个信标就能讲完整个故事。"
+    },
+    {
+      "type": "prose",
+      "en": "The first mechanism is the BSS parameter critical update procedure. Every beacon and probe response from an AP MLD carries a BSS Parameters Change Count for each affiliated AP — a small counter (it wraps modulo 256, skipping the value 255). When a critical parameter on some AP changes, that AP's counter is incremented by one. A client keeps the last counter value it saw for each AP. If the value it now reads differs from what it remembered, it knows that AP's parameters changed and goes to refresh them — by listening for that AP's beacon, or by sending a probe request. There is also a Critical Update Flag bit, set until the next DTIM beacon, that flags 'something changed, go look' even faster.",
+      "zh": "第一个机制是 BSS 参数关键更新流程（BSS parameter critical update procedure）。AP MLD 的每个信标和探测响应都会为每个隶属 AP 携带一个“BSS 参数变更计数（BSS Parameters Change Count）”——一个小计数器（按模 256 回绕，并跳过数值 255）。当某个 AP 的关键参数发生变化时，该 AP 的计数器加一。客户端会记住它为每个 AP 看到的上一个计数值。如果现在读到的值与记住的不同，它就知道该 AP 的参数变了，于是去刷新——办法是收听该 AP 的信标，或发送一个探测请求。此外还有一个“关键更新标志（Critical Update Flag）”位，会一直置 1 直到下一个 DTIM 信标，能更快地提示“有东西变了，去看看”。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "There's a clever shortcut. If the new counter is exactly the old value plus one, AND the matching 'All Updates Included' bit is set, then the changed elements are already inside the very frame the client just received — so no extra beacon or probe is needed. The update travelled with the announcement.",
+      "zh": "这里有个巧妙的捷径。如果新的计数值恰好是旧值加一，并且对应的“全部更新已包含（All Updates Included）”位被置 1，那么发生变化的那些元素其实已经放在客户端刚收到的这一帧里了——因此无需再额外收信标或发探测。更新随公告一起送达了。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[Client reads beacon on link 1] --> B{Change Count for AP-2 differs from stored?}\n    B -- no --> Z[Nothing to do]\n    B -- yes --> C{count = old+1 AND All Updates Included = 1?}\n    C -- yes --> D[Updated elements already in this frame: just apply]\n    C -- no --> E[Refresh: listen for AP-2 beacon OR send Probe Request]",
+      "zh": "flowchart TD\n    A[客户端在链路1读取信标] --> B{AP-2 的变更计数与已存值不同?}\n    B -- 否 --> Z[无需处理]\n    B -- 是 --> C{计数=旧值+1 且 全部更新已包含=1?}\n    C -- 是 --> D[更新元素已在本帧内: 直接应用]\n    C -- 否 --> E[刷新: 收听 AP-2 信标 或 发送探测请求]"
+    },
+    {
+      "type": "prose",
+      "en": "The second mechanism is multi-link (extended) channel switching and channel quieting. When one affiliated AP (the 'affected AP') is going to move channel or schedule a quiet period, the standard does not make the client discover this only on the affected link. Instead, another affiliated AP (the 'reporting AP') carries the affected AP's Channel Switch Announcement, Extended Channel Switch Announcement, Max Channel Switch Time, Quiet, or Quiet Channel elements inside the affected AP's per-STA profile in the Basic Multi-Link element of its own beacons and probe responses. So a client sitting on the 5 GHz link learns that the 6 GHz link is about to switch — without ever tuning to 6 GHz. Crucially, the timing fields are interpreted against the affected AP's own TBTT and beacon interval, not the reporting AP's.",
+      "zh": "第二个机制是多链路（扩展）信道切换与信道静默。当某个隶属 AP（即“受影响 AP”，affected AP）准备切换信道或安排一段静默期时，标准并不要求客户端只能在受影响链路上发现这件事。取而代之的是，另一个隶属 AP（即“报告 AP”，reporting AP）会把受影响 AP 的信道切换公告（CSA）、扩展信道切换公告、最大信道切换时间、静默（Quiet）、静默信道（Quiet Channel）等元素，放进它自己信标和探测响应的 Basic Multi-Link 元素中、属于受影响 AP 的 per-STA profile 里携带出来。于是守在 5 GHz 链路上的客户端，无需切到 6 GHz，就能得知 6 GHz 链路即将切换。关键在于：其中的时间字段是相对受影响 AP 自己的 TBTT 和信标间隔来解读，而非报告 AP 的。"
+    },
+    {
+      "type": "prose",
+      "en": "A special, battery-powered case is the NSTR mobile AP MLD — think of a phone acting as a Wi-Fi 7 hotspot. It has at most two links forming an NSTR (non-simultaneous transmit/receive) link pair, and it designates one as the primary link. Only the primary link beacons, responds to probe requests, and carries group-addressed data; the nonprimary link stays quiet. Discovery reflects this: the primary link advertises the nonprimary AP in a Reduced Neighbor Report (with several subfields omitted), and a client must use a multi-link probe request to the primary link — never a direct probe to the nonprimary link — to fetch the nonprimary AP's full profile. Authentication, (re)association and the 4-way handshake all happen on the primary link only.",
+      "zh": "一个特殊的、靠电池供电的情形是 NSTR 移动 AP MLD——可以想象成一部手机充当 Wi-Fi 7 热点。它最多有两条链路，构成一个 NSTR（非同时收发）链路对，并指定其中一条为主链路（primary link）。只有主链路发送信标、响应探测请求并承载组播数据；非主链路则保持安静。发现过程也据此调整：主链路在精简邻居报告（Reduced Neighbor Report）中通告非主链路 AP（其中若干子字段被省略），而客户端必须向主链路发送一个多链路探测请求——绝不能直接探测非主链路——才能取回非主链路 AP 的完整 profile。认证、（重）关联以及四次握手也全部只在主链路上进行。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Because the nonprimary link never beacons, it has no TBTT or beacon interval of its own. So its channel-switch timing is anchored to the primary link's TBTT, and its Max Channel Switch Time field instead estimates when the nonprimary AP will resume BSS operation on the new channel. When that AP stops including the Max Channel Switch Time element, the client knows it is back up.",
+      "zh": "由于非主链路从不发送信标，它没有自己的 TBTT 或信标间隔。因此它的信道切换时间锚定在主链路的 TBTT 上，而它的“最大信道切换时间”字段转而估计非主链路 AP 何时在新信道上恢复 BSS 运行。当该 AP 不再包含“最大信道切换时间”元素时，客户端就知道它已经恢复了。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact counter rules, the carried elements, and the EHT quiet-count cap",
+        "zh": "精确的计数规则、被携带的元素，以及 EHT 静默计数上限"
+      },
+      "en": "Per 35.3.10, the BSS Parameters Change Count for each AP starts at 0 and increments modulo 256 (excluding 255) on a critical update per 11.2.3.14; for other affiliated APs the count is carried in the MLD Parameters subfield of the Reduced Neighbor Report element, and for the reporting AP in the Common Info field of the Basic Multi-Link element. A non-AP MLD records the latest count per associated AP; on a difference it either receives that AP's beacon/probe response or sends a probe request — unless count == old+1 and All Updates Included == 1, in which case the updated elements are already present. 35.3.11 lists the five elements a reporting AP carries for an affected AP (Channel Switch Announcement, Extended Channel Switch Announcement, Max Channel Switch Time, Quiet not protecting R-TWT SPs, and Quiet Channel), with timing fields referenced to the affected AP's TBTT/BI; during a switch the CSA/ECSA (nonzero count) plus Max Channel Switch Time appear on all links until the target switch time. 35.3.19.1-35.3.19.3 fix the NSTR mobile AP MLD's at-most-two-link NSTR pair, primary-only beaconing, primary-only discovery via multi-link probe, and the nonprimary link's switch timing anchored to the primary TBTT with the Max Channel Switch Time element estimating BSS-operation resumption (9.4.2.216). The carried frames and elements are defined in 9.6.2.6 / 9.6.7.7 (CSA / ECSA Action frames, now able to carry the Bandwidth Indication element 9.4.2.329, whose information field mirrors the EHT Operation element 9.4.2.321). Finally 11.8.3 caps an EHT AP's Quiet Count field at 127.",
+      "zh": "依据 35.3.10，每个 AP 的 BSS 参数变更计数从 0 起，按 11.2.3.14 在发生关键更新时模 256（排除 255）递增；对其它隶属 AP，该计数携带于精简邻居报告元素的 MLD Parameters 子字段中，对报告 AP 本身则携带于 Basic Multi-Link 元素的 Common Info 字段中。non-AP MLD 为每个已关联 AP 记录最新计数；一旦出现差异，它要么接收该 AP 的信标/探测响应，要么发送探测请求——除非计数 == 旧值+1 且“全部更新已包含”== 1，此时更新元素已随帧到达。35.3.11 列出报告 AP 为受影响 AP 携带的五种元素（信道切换公告、扩展信道切换公告、最大信道切换时间、非保护 R-TWT SP 的静默元素、静默信道元素），其时间字段相对受影响 AP 的 TBTT/BI 解读；切换期间，CSA/ECSA（计数非零）连同最大信道切换时间元素会出现在所有链路上，直至目标切换时刻。35.3.19.1 至 35.3.19.3 规定了 NSTR 移动 AP MLD 的至多两条链路的 NSTR 链路对、仅主链路发信标、仅经主链路用多链路探测进行发现，以及非主链路的切换时间锚定在主链路 TBTT、由最大信道切换时间元素估计 BSS 运行恢复时刻（9.4.2.216）。所涉帧与元素定义于 9.6.2.6 / 9.6.7.7（CSA / ECSA 动作帧，现可携带带宽指示元素 9.4.2.329，其信息字段与 EHT 操作元素 9.4.2.321 一致）。最后，11.8.3 将 EHT AP 的静默计数字段上限定为 127。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          538,
+          539,
+          541,
+          575,
+          577,
+          227,
+          286,
+          370
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.3.10",
+    "80211be-2024:35.3.11",
+    "80211be-2024:35.3.19.1",
+    "80211be-2024:35.3.19.2",
+    "80211be-2024:35.3.19.3",
+    "80211be-2024:9.4.2.321",
+    "80211be-2024:9.4.2.329",
+    "80211be-2024:9.6.2.6",
+    "80211be-2024:9.6.7.7",
+    "80211be-2024:9.4.2.216",
+    "80211be-2024:11.8.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        538,
+        539,
+        540,
+        541
+      ],
+      "note": "35.3.10 BSS parameter critical update procedure - Change Count subfield, modulo-256 (excl. 255), Critical Update Flag, All Updates Included, non-AP MLD refresh rule"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        541,
+        542,
+        543,
+        544
+      ],
+      "note": "35.3.11 ML procedures for (extended) channel switching and channel quieting - five carried elements, per-STA profile, affected AP TBTT/BI timing reference"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        575,
+        576,
+        577,
+        578
+      ],
+      "note": "35.3.19.1-3 NSTR mobile AP MLD - two-link NSTR pair, primary link only beaconing, multi-link probe discovery, nonprimary switch timing"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        227
+      ],
+      "note": "9.4.2.216 Max Channel Switch Time element - Switch Time field meaning inside Basic Multi-Link, NSTR mobile AP case estimates BSS-operation resumption"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        229,
+        230,
+        231
+      ],
+      "note": "9.4.2.321 EHT Operation element - channel width/CCFS0/CCFS1, Disabled Subchannel Bitmap"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        285,
+        286,
+        287,
+        288
+      ],
+      "note": "9.4.2.329 Bandwidth Indication element; 9.6.2.6 CSA and 9.6.7.7 ECSA Action frame formats carrying the Bandwidth Indication element for EHT"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        370
+      ],
+      "note": "11.8.3 Quieting channels for testing - EHT AP shall not schedule a Quiet Count higher than 127"
+    }
+  ],
+  "track": "wifi7-eht"
+}

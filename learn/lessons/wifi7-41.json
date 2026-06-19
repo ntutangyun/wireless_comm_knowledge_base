@@ -1,0 +1,157 @@
+{
+  "id": "wifi7-41",
+  "title": {
+    "en": "EHT MU Operation, Packet Extension & Nominal Padding",
+    "zh": "EHT 多用户操作、包扩展与标称填充"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Wi-Fi 7's headline trick is serving many stations at once. In an EHT MU PPDU the AP slices the channel into resource units (RUs and multi-RUs) and hands each chunk to a different station downlink. For the uplink, the AP sends a Trigger frame and several stations answer simultaneously in EHT TB PPDUs, with bandwidths up to 320 MHz. This lesson is about packing that multi-user transmission correctly — and, just as important, about giving every receiver enough time at the end to finish decoding.",
+      "zh": "Wi-Fi 7 的招牌本领是同时服务许多站点。在一个 EHT MU PPDU（多用户物理帧）中，AP 把信道切成一个个资源单元（RU 与多资源单元 MRU），下行时把每一块分给不同的站点。上行时，AP 发出一个触发帧（Trigger frame），多个站点便用 EHT TB PPDU 同时应答，带宽最高可达 320 MHz。本课讲的就是如何把这种多用户传输正确地“打包”——同样重要的是，如何在帧尾给每个接收方留出足够的时间把数据解码完。"
+    },
+    {
+      "type": "prose",
+      "en": "Downlink allocation comes with guard-rails. An AP cannot hand a station an RU or MRU it has not advertised support for — for example, a 242-tone RU to a 20 MHz-only station, or a 320 MHz wide allocation in 6 GHz, only goes out once the relevant EHT Capabilities subfield from that station says yes. Uplink is symmetric: an EHT AP solicits the response by Trigger frame, sets each User Info field (HE-variant vs EHT-variant decides whether the station answers with an HE or EHT TB PPDU), and never mixes an HE-TB and EHT-TB solicitation in the same Trigger. A non-AP station only ever sends an EHT TB PPDU when explicitly triggered.",
+      "zh": "下行分配带着“护栏”。AP 不能把某个站点未声明支持的 RU 或 MRU 分给它——例如把 242 子载波 RU 分给只工作在 20 MHz 的站点，或在 6 GHz 分出 320 MHz 宽的分配，都必须先从该站点收到对应的 EHT Capabilities 子字段表示“支持”才行。上行是对称的：EHT AP 用触发帧征询应答，设置每个 User Info 字段（HE 变体还是 EHT 变体，决定站点用 HE 还是 EHT TB PPDU 应答），并且绝不在同一个触发帧里同时征询 HE-TB 与 EHT-TB。非 AP 站点只有在被显式触发时才会发送 EHT TB PPDU。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as EHT AP\n    participant S1 as STA 1\n    participant S2 as STA 2\n    Note over AP: build EHT MU PPDU\n    AP->>S1: DL data in RU/MRU A\n    AP->>S2: DL data in RU/MRU B\n    Note over AP: now solicit uplink\n    AP->>S1: Trigger (User Info, padding)\n    AP->>S2: Trigger (User Info, padding)\n    Note over S1,S2: UL MU CS during SIFS\n    par simultaneous\n        S1->>AP: EHT TB PPDU\n        S2->>AP: EHT TB PPDU\n    end",
+      "zh": "sequenceDiagram\n    participant AP as EHT AP\n    participant S1 as 站点 1\n    participant S2 as 站点 2\n    Note over AP: 构造 EHT MU PPDU\n    AP->>S1: 下行数据于 RU/MRU A\n    AP->>S2: 下行数据于 RU/MRU B\n    Note over AP: 接着征询上行\n    AP->>S1: 触发帧 (User Info, 填充)\n    AP->>S2: 触发帧 (User Info, 填充)\n    Note over S1,S2: SIFS 期间执行上行 MU 载波侦听\n    par 同时发送\n        S1->>AP: EHT TB PPDU\n        S2->>AP: EHT TB PPDU\n    end"
+    },
+    {
+      "type": "prose",
+      "en": "Before answering, each triggered station performs the UL MU carrier-sense (CS) check. If the Trigger's CS Required bit is 1, the station senses the medium with energy detect during the SIFS after the Trigger, looking at the 20 MHz subchannels that carry its own allocation; it may transmit only if all those occupied channels are idle. The AP can also pad the Trigger frame so a station has enough preparation time to turn around a response a SIFS later — and a station with 320 MHz support may report channel availability in two BQR Control subfields, giving the AP a fuller picture across the wide channel before it allocates.",
+      "zh": "在应答之前，每个被触发的站点要做一次上行 MU 载波侦听（CS）检查。如果触发帧的 CS Required 比特为 1，站点就在触发帧之后的 SIFS 期间用能量检测侦听介质，关注承载自己分配的那些 20 MHz 子信道；只有当这些被占用的信道全部空闲时，它才可以发送。AP 还可以给触发帧加“填充”，让站点有足够的准备时间在一个 SIFS 之后把应答“倒转”发出；而支持 320 MHz 的站点可以在两个 BQR Control 子字段中上报信道可用性，使 AP 在分配之前对整个宽信道有更完整的了解。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Aggregation rule of thumb: inside an EHT PPDU, ordinary data still rides as an A-MPDU (capped by the smallest max-A-MPDU-length the recipient advertised across its HT/VHT/HE/EHT capabilities), but certain class-1 and class-2 management/control frames must go as a single S-MPDU, never aggregated.",
+      "zh": "聚合的经验法则：在 EHT PPDU 内部，普通数据仍以 A-MPDU 方式承载（其上限取接收方在 HT/VHT/HE/EHT 各能力中声明的最小“最大 A-MPDU 长度”），但某些 1 类和 2 类管理/控制帧必须以单个 S-MPDU 形式发送，绝不聚合。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='10' y='40' width='70' height='40'/><text x='45' y='64' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>Preamble</text><rect x='80' y='40' width='190' height='40'/><text x='175' y='58' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>Data field</text><text x='175' y='72' font-size='8' text-anchor='middle' stroke='none' fill='currentColor'>(A-MPDU + post-FEC pad)</text><rect x='270' y='40' width='90' height='40' stroke-dasharray='4 3'/><text x='315' y='58' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>PE field</text><text x='315' y='72' font-size='8' text-anchor='middle' stroke='none' fill='currentColor'>0..20 us</text><path d='M270 95 L270 110 M360 95 L360 110'/><path d='M270 103 L360 103'/><text x='315' y='126' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>extra decode time</text><text x='315' y='139' font-size='8' text-anchor='middle' stroke='none' fill='currentColor'>= f(nominal packet padding)</text></svg>",
+      "caption": {
+        "en": "The Packet Extension (PE) field sits after the Data field and gives the receiver extra processing time; its duration is derived from the nominal packet padding value.",
+        "zh": "包扩展（PE）字段位于数据字段之后，为接收方提供额外的处理时间；其时长由标称包填充值推导得出。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "So how long is that PE field? Every EHT PPDU ends with a PE field of 0, 4, 8, 12, 16, or 20 us (20 us only in cases like 4096-QAM, very wide RUs, or a TB PPDU). The transmitter does not pick freely: it looks up a nominal packet padding value the receiver advertised in its EHT Capabilities, then combines it with the pre-FEC padding factor of the last data symbol to land on the right PE duration. The whole point is to guarantee the receiver — which may be running a heavy MCS or a wide RU — enough wall-clock time to finish decoding before it must reply.",
+      "zh": "那么这个 PE 字段到底多长？每个 EHT PPDU 都以一个时长为 0、4、8、12、16 或 20 us 的 PE 字段结尾（20 us 仅出现在诸如 4096-QAM、极宽 RU 或 TB PPDU 等情形）。发送方并非随意挑选：它先查出接收方在其 EHT Capabilities 中声明的标称包填充（nominal packet padding）值，再结合最后一个数据符号的 pre-FEC 填充因子，得出正确的 PE 时长。其全部目的，是保证接收方——它可能正在跑很重的 MCS 或很宽的 RU——有足够的实际时间在必须应答之前把数据解码完。"
+    },
+    {
+      "type": "prose",
+      "en": "Where does the nominal padding value itself come from? It depends on which PPE-Thresholds case applies. If the PPE Thresholds Present subfield is 0 in both the EHT and HE Capabilities, the value falls back to a single Common Nominal Packet Padding subfield (0, 8, 16, or 20 us, by table). If it is 0 in EHT but 1 in HE, the station inherits the HE PPE thresholds for the overlapping modes and uses the common value elsewhere. If it is 1 in EHT, the fine-grained EHT PPE Thresholds field decides everything — a per-(NSS, RU-allocation-index) pair of PPET8 and PPETmax thresholds that the constellation index is compared against to yield 0, 8, 16, or 20 us.",
+      "zh": "标称填充值本身又从何而来？这取决于适用哪一种 PPE-Thresholds（PPET）情形。若 EHT 与 HE Capabilities 中的 PPE Thresholds Present 子字段都为 0，则该值回退到单一的 Common Nominal Packet Padding 子字段（按表为 0、8、16 或 20 us）。若 EHT 中为 0、HE 中为 1，则站点对重叠模式继承 HE 的 PPE 门限，其余模式用公共值。若 EHT 中为 1，则由更细粒度的 EHT PPE Thresholds 字段决定一切——它为每个（NSS, RU 分配索引）对给出一对 PPET8 与 PPETmax 门限，把星座索引与之比较，得出 0、8、16 或 20 us。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "PPET8 / PPETmax thresholds and the PE-duration table",
+        "zh": "PPET8 / PPETmax 门限与 PE 时长查表"
+      },
+      "en": "Clause 9.4.2.323.5 lays out the EHT PPE Thresholds field: an NSS_PE subfield (scope of NSS, value < 8), a 5-bit RU Index Bitmask selecting which of five RU allocation indices (0=242, 1=484, 2=484+242/996, 3=996+484.../2x996, 4=2x996+484.../4x996, per Table 9-417v) carry thresholds, and a variable PPE Thresholds Info field holding 3-bit PPET8 and PPETmax pairs per (NSS, RU) in increasing order. The constellation index runs 0 (BPSK) to 6 (4096-QAM), 7 = None (Table 9-417u). Clause 35.13.4 then maps thresholds to padding (Table 35-6): if the PPDU's constellation index c >= PPET8 and c < PPETmax, the nominal padding is 8 us; if c >= PPETmax, it is 16 us when c <= 5 and (b+DCM) <= 3, else 20 us; otherwise 0 us. DCM = 1 if b < 3 and EHT-MCS 14/15 is used. When NSS exceeds NSS_PE+1, padding is forced to 16 us for all RUs. The transmitter passes the chosen value as TXVECTOR NOMINAL_PACKET_PADDING, and the PE duration T_PE is computed from it per 36.3.14 (for an EHT MU PPDU T_PE = T_PE,nominal = max over users of the per-user nominal value mapped through Table 36-61).",
+      "zh": "9.4.2.323.5 节给出 EHT PPE Thresholds 字段的格式：一个 NSS_PE 子字段（NSS 的作用范围，取值 < 8）、一个 5 比特的 RU Index Bitmask（选择五个 RU 分配索引中哪些携带门限：0=242、1=484、2=484+242/996、3=996+484.../2×996、4=2×996+484.../4×996，见表 9-417v），以及一个可变长度的 PPE Thresholds Info 字段，按递增顺序为每个（NSS, RU）放置一对 3 比特的 PPET8 与 PPETmax。星座索引从 0（BPSK）到 6（4096-QAM），7 表示 None（表 9-417u）。35.13.4 节随后把门限映射为填充（表 35-6）：若 PPDU 的星座索引 c >= PPET8 且 c < PPETmax，标称填充为 8 us；若 c >= PPETmax，则在 c <= 5 且 (b+DCM) <= 3 时为 16 us，否则为 20 us；其余情况为 0 us。其中当 b < 3 且使用 EHT-MCS 14/15 时 DCM = 1。当 NSS 超过 NSS_PE+1 时，对所有 RU 一律强制为 16 us。发送方把选定值作为 TXVECTOR 参数 NOMINAL_PACKET_PADDING 传下去，PE 时长 T_PE 再按 36.3.14 据此算出（对 EHT MU PPDU，T_PE = T_PE,nominal = 各用户标称值经表 36-61 映射后的最大值）。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          274,
+          275,
+          633,
+          634,
+          838,
+          839
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        589,
+        590,
+        591
+      ],
+      "note": "35.5.1.2 RU allocation in an EHT MU PPDU; 35.5.2.2 rules for soliciting UL MU frames; capability-gated DL/UL allocation"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        593,
+        594,
+        596
+      ],
+      "note": "35.5.2.3 non-AP STA behavior (HE vs EHT variant User Info -> HE/EHT TB PPDU); 35.5.2.4 UL MU CS mechanism; 35.5.3 two BQR Control subfields"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        596,
+        597
+      ],
+      "note": "35.6 A-MPDU operation in an EHT PPDU; S-MPDU for class-1/class-2 frames; max A-MPDU length derivation"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        631,
+        632,
+        633,
+        634
+      ],
+      "note": "35.13.2/35.13.3/35.13.4 nominal packet padding selection: PPET absent in both, absent in EHT but present in HE, present in EHT (Table 35-6)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        635,
+        636,
+        637,
+        638
+      ],
+      "note": "35.14.2 PPDU format selection; 35.14.3 MCS/NSS/BW selection; 35.14.4.3 additional rate selection constraints for EHT PPDUs"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        838,
+        839,
+        840
+      ],
+      "note": "36.3.14 packet extension: PE field 0..20 us; T_PE derived from NOMINAL_PACKET_PADDING; Table 36-61 nominal T_PE values"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        274,
+        275
+      ],
+      "note": "9.4.2.323.5 EHT PPE Thresholds field format; NSS_PE, RU Index Bitmask, PPET8/PPETmax; Table 9-417u constellation index; Table 9-417v RU allocation index"
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.5.1.2",
+    "80211be-2024:35.5.2.2",
+    "80211be-2024:35.5.2.3",
+    "80211be-2024:35.5.2.4",
+    "80211be-2024:35.5.3",
+    "80211be-2024:35.6",
+    "80211be-2024:35.13.2",
+    "80211be-2024:35.13.3",
+    "80211be-2024:35.13.4",
+    "80211be-2024:35.14.2",
+    "80211be-2024:35.14.3",
+    "80211be-2024:35.14.4.3",
+    "80211be-2024:36.3.14",
+    "80211be-2024:9.4.2.323.5"
+  ],
+  "track": "wifi7-eht"
+}

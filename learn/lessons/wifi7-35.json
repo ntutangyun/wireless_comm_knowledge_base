@@ -1,0 +1,133 @@
+{
+  "id": "wifi7-35",
+  "title": {
+    "en": "EHT Channel Access, TXOP Sharing & MU-RTS Protection",
+    "zh": "EHT 信道接入、TXOP 共享与 MU-RTS 保护"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Wi-Fi is a shared medium: only one device can talk at a time over a given channel, so before anyone transmits they must win the air. In 802.11be (EHT), the question \"who gets to talk, and over how wide a channel?\" gets richer than ever — channels can be 320 MHz wide, some 20 MHz subchannels may be punctured (switched off), and for the first time an access point can lend a slice of the airtime it won to one of its clients. This lesson walks through how an EHT STA grabs the medium, signals bandwidth, lends airtime, and protects a wide (possibly punctured) channel before a multi-user burst.",
+      "zh": "Wi-Fi 是一种共享介质：在同一信道上同一时刻只能有一台设备发送，因此谁要发送，就得先“抢到”空口。在 802.11be（EHT）中，“谁可以发言、能用多宽的信道？”这个问题比以往任何时候都更丰富——信道可宽达 320 MHz，部分 20 MHz 子信道可能被打孔（关闭），而且接入点（AP）首次可以把自己抢到的一部分空口时间借给它的某个客户端。本课将逐步讲解 EHT 站点如何抢占介质、如何指示带宽、如何出借空口时间，以及在多用户突发传输前如何保护一条（可能被打孔的）宽信道。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with bandwidth signaling. When an EHT STA in the 6 GHz band sends a short Control frame (like an RTS or CTS) in the legacy \"non-HT duplicate\" format, it needs a way to tell receivers how wide the transmission really is — those legacy frames have no rich PHY header. So the bandwidth is carried in the scrambling sequence and the SERVICE field. If the BSS has punctured subchannels (advertised in the EHT Operation element's Disabled Subchannel Bitmap), the STA marks those subchannels inactive too, so nobody tries to use a hole in the channel.",
+      "zh": "先从带宽指示说起。当 6 GHz 频段中的 EHT 站点以传统的“非 HT 复制（non-HT duplicate）”格式发送简短的控制帧（如 RTS 或 CTS）时，它需要一种方式告诉接收方这次传输实际有多宽——而这些传统帧没有丰富的 PHY 头部。于是带宽信息被承载在加扰序列和 SERVICE 字段中。如果该 BSS 存在被打孔的子信道（在 EHT Operation 元素的 Disabled Subchannel Bitmap 子字段中通告），站点还会把这些子信道也标记为非激活，这样就没有人会试图使用信道中的“空洞”。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Punctured channel = a wide channel with one or more 20 MHz subchannels switched off (e.g. because a radar or incumbent occupies them). EHT lets you keep using the rest of a 160 or 320 MHz channel instead of falling all the way back to a narrow one — but every protection and bandwidth-signaling step has to carefully exclude the punctured holes.",
+      "zh": "打孔信道 = 一条关闭了一个或多个 20 MHz 子信道的宽信道（例如因为雷达或既有用户占用了它们）。EHT 让你能继续使用 160 或 320 MHz 信道的其余部分，而不必一路退回到窄信道——但每一个保护步骤和带宽指示步骤都必须小心地排除这些被打孔的“空洞”。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the headline feature: Triggered TXOP Sharing (TXS). Normally, when an AP wins a transmit opportunity (TXOP), that airtime is the AP's to use. TXS lets the AP hand a portion of its won TXOP to one associated non-AP EHT STA so that station can send its own (non-trigger-based) PPDUs. The AP signals this with an MU-RTS TXS Trigger frame carrying exactly one User Info field addressed to that one client, plus an Allocation Duration field (in units of 16 µs) saying how much time it is lending. Two modes exist: Mode 1 lets the client transmit only to its AP; Mode 2 also lets the client transmit to another STA (e.g. a peer-to-peer link).",
+      "zh": "现在来看重头戏：触发式 TXOP 共享（Triggered TXOP Sharing, TXS）。通常情况下，当 AP 赢得一次发送机会（TXOP）时，这段空口时间归 AP 使用。TXS 则允许 AP 把它赢得的 TXOP 的一部分交给某个已关联的非 AP EHT 站点，让该站点发送自己的（非触发式）PPDU。AP 通过一个 MU-RTS TXS Trigger 帧来发出这一信号，该帧恰好携带一个指向那一个客户端的 User Info 字段，外加一个 Allocation Duration 字段（以 16 µs 为单位），表明它出借了多少时间。共享有两种模式：模式 1 仅允许客户端向其 AP 发送；模式 2 还允许客户端向另一个站点发送（例如点对点链路）。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as EHT AP (TXOP holder)\n    participant STA1 as Non-AP STA 1 (scheduled)\n    Note over AP: AP wins a TXOP via EDCA\n    AP->>STA1: MU-RTS TXS Trigger (Mode 1/2, Allocation Duration)\n    STA1->>AP: CTS (locks in bandwidth, sets NAV)\n    Note over STA1: STA owns the allocated time now\n    STA1->>AP: DATA in non-TB PPDU\n    AP->>STA1: BlockAck\n    Note over AP,STA1: at end of allocation, airtime returns to AP",
+      "zh": "sequenceDiagram\n    participant AP as EHT AP (TXOP 持有者)\n    participant STA1 as 非 AP 站点 1 (被调度)\n    Note over AP: AP 通过 EDCA 赢得一次 TXOP\n    AP->>STA1: MU-RTS TXS Trigger (模式 1/2, 分配时长)\n    STA1->>AP: CTS (锁定带宽, 设置 NAV)\n    Note over STA1: 该站点现在拥有这段被分配的时间\n    STA1->>AP: 在 non-TB PPDU 中发送 DATA\n    AP->>STA1: BlockAck\n    Note over AP,STA1: 分配时间结束后, 空口时间归还给 AP"
+    },
+    {
+      "type": "prose",
+      "en": "Whether sharing airtime or not, an EHT multi-user burst over a wide channel is usually fenced off first with an MU-RTS / CTS exchange. The AP sends an MU-RTS Trigger frame; each addressed STA that finds the medium idle replies with a CTS in the indicated channel, excluding any punctured 20 MHz subchannels. This RTS/CTS round nails down the exact (punctured) bandwidth and sets neighbors' NAV so they stay quiet. A nice detail: a STA addressed by an EHT-variant User Info field must transmit its later non-TB PPDUs at a bandwidth equal to or narrower than the CTS it sent — you can shrink, but never spill into subchannels you didn't reserve.",
+      "zh": "无论是否共享空口时间，EHT 在宽信道上的多用户突发传输通常都会先用一次 MU-RTS / CTS 交换来“圈地”。AP 发送一个 MU-RTS Trigger 帧；每个被寻址、且发现介质空闲的站点都会在指示的信道上回复一个 CTS，并排除任何被打孔的 20 MHz 子信道。这一轮 RTS/CTS 确定了精确的（已打孔的）带宽，并设置邻居的 NAV，使它们保持静默。一个巧妙的细节是：被 EHT 变体 User Info 字段寻址的站点，其后续发送的 non-TB PPDU 带宽必须等于或窄于它发出的那个 CTS——你可以收窄，但绝不能溢出到你没有预留的子信道上。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, every EHT STA must tell apart frames from its own network (intra-BSS) and from neighboring networks (inter-BSS) — this drives whether it treats a detected transmission as \"my BSS, defer politely\" or \"someone else, apply spatial-reuse rules\". EHT reuses the existing classification rules from the HE clause, with one added twist for an AP: an AP classifies a received EHT MU PPDU that is not an EHT SU transmission with the uplink flag clear as an inter-BSS PPDU. Together, bandwidth signaling, TXS, MU-RTS protection, and BSS classification answer the core question: who talks, how wide, and how the AP lends airtime.",
+      "zh": "最后，每个 EHT 站点都必须区分来自本网络（intra-BSS，BSS 内）和来自相邻网络（inter-BSS，BSS 间）的帧——这决定了它是把侦测到的传输当作“我的 BSS，礼貌避让”，还是“别人的，套用空间复用规则”。EHT 复用了 HE 章节中已有的分类规则，并为 AP 增加了一条：当 AP 收到的某个 EHT MU PPDU 不是上行标志为 0 的 EHT SU 传输时，AP 将其分类为 inter-BSS PPDU。带宽指示、TXS、MU-RTS 保护与 BSS 分类合在一起，回答了核心问题：谁来发言、用多宽的信道、以及 AP 如何出借空口时间。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact TXS rules, the Allocation Duration field, and the CTS bandwidth constraint",
+        "zh": "精确的 TXS 规则、Allocation Duration 字段与 CTS 带宽约束"
+      },
+      "en": "Clause 35.2.1.2 defines TXS precisely. The AP signals it with a TXS Mode subfield in the MU-RTS Common Info field (Table 9-46n: 0 = no TXS; 1 = scheduled STA may transmit only to its associated AP; 2 = it may also transmit to another STA), making the frame an \"MU-RTS TXS Trigger frame\" (9.3.1.22.9). The frame must carry exactly one non-Special User Info field addressed to an AID12 in range 1..2006, and the AP may only use Mode 1 (or Mode 2) toward a STA whose EHT Capabilities advertised the matching TXS Mode 1 (or Mode 2) Support subfield. The Allocation Duration subfield in the User Info field carries the lent time in units of 16 µs (35.2.1.2.2, 9.3.1.22.9). The scheduled STA's first PPDU must carry a CTS; its allocation starts at the end of the MU-RTS PPDU; and it shall set every non-TB PPDU's CH_BANDWIDTH / CH_BANDWIDTH_IN_NON_HT to be the same or narrower than that of its responding CTS, never using subchannels (or punctured 20 MHz subchannels) not in the CTS (35.2.1.2.3). For MU-RTS protection of EHT STAs, 35.2.2.2 requires the CTS to be sent in the RU indicated by the EHT-variant User Info field excluding punctured subchannels, and 35.2.3 adds the AP-side inter-BSS classification rule for EHT MU PPDUs.",
+      "zh": "35.2.1.2 节精确地定义了 TXS。AP 通过 MU-RTS Common Info 字段中的 TXS Mode 子字段发出信号（表 9-46n：0 = 不进行 TXS；1 = 被调度站点只能向其关联 AP 发送；2 = 还可向另一个站点发送），从而使该帧成为“MU-RTS TXS Trigger 帧”（9.3.1.22.9）。该帧必须恰好携带一个非 Special 的 User Info 字段，且其 AID12 取值范围为 1..2006；并且 AP 只能对那些在 EHT Capabilities 中通告了相应 TXS Mode 1（或 Mode 2）Support 子字段的站点使用模式 1（或模式 2）。User Info 字段中的 Allocation Duration 子字段以 16 µs 为单位承载所出借的时间（35.2.1.2.2、9.3.1.22.9）。被调度站点的首个 PPDU 必须携带 CTS；其分配时间从 MU-RTS PPDU 结束时开始；并且它发送的每个 non-TB PPDU 的 CH_BANDWIDTH / CH_BANDWIDTH_IN_NON_HT 都必须等于或窄于它所回复的那个 CTS，绝不能使用未包含在该 CTS 中的子信道（或被打孔的 20 MHz 子信道）（35.2.1.2.3）。对于 EHT 站点的 MU-RTS 保护，35.2.2.2 要求 CTS 在 EHT 变体 User Info 字段所指示的 RU 上发送，并排除被打孔的子信道；35.2.3 则为 EHT MU PPDU 增加了 AP 侧的 inter-BSS 分类规则。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          485,
+          486,
+          488,
+          489,
+          168,
+          170
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.2.1.1",
+    "80211be-2024:35.2.1.2",
+    "80211be-2024:35.2.2.1",
+    "80211be-2024:35.2.2.2",
+    "80211be-2024:35.2.3",
+    "80211be-2024:10.3.2.7",
+    "80211be-2024:10.3.2.9",
+    "80211be-2024:10.23.2.5",
+    "80211be-2024:10.23.2.9",
+    "80211be-2024:10.27.8",
+    "80211be-2024:9.3.1.22.9"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        485
+      ],
+      "note": "35.2.1.1 Bandwidth signaling (6 GHz Control/CTS in non-HT duplicate, scrambling+SERVICE, disabled subchannels); 35.2.1.2.1 TXS general + capability subfields"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        485,
+        486,
+        488,
+        489
+      ],
+      "note": "35.2.1.2 Triggered TXOP Sharing — AP behavior (Mode 1/2), non-AP STA behavior, CTS-first, CH_BANDWIDTH same-or-narrower than CTS, punctured-subchannel exclusion"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        489,
+        490
+      ],
+      "note": "35.2.2.1 MU-RTS Trigger frame transmission; 35.2.2.2 CTS response (EHT-variant User Info, RU excluding punctured subchannels); 35.2.3 intra-/inter-BSS PPDU classification for EHT STA"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        320,
+        321
+      ],
+      "note": "10.3.2.7 VHT/HE/S1G RTS procedure; 10.3.2.9 CTS procedure with EHT-STA additions for bandwidth-signaling TA and dynamic/static bandwidth"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        341,
+        343
+      ],
+      "note": "10.23.2.5 EDCA channel access in VHT/HE/EHT BSS (EHT MU PPDU / punctured non-HT duplicate on idle non-punctured subchannels); 10.23.2.9 TXOP limits; 10.27.8 Protection rules for EHT STAs"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        168,
+        169,
+        170
+      ],
+      "note": "9.3.1.22.9 MU-RTS Trigger frame format — TXS Mode subfield (Table 9-46n), EHT/HE variant User Info, RU Allocation incl. 320 MHz/PS160, Allocation Duration in 16 us units"
+    }
+  ],
+  "track": "wifi7-eht"
+}

@@ -1,0 +1,135 @@
+{
+  "id": "wifi7-37",
+  "title": {
+    "en": "MLD Frame Delivery: Group-Addressed, Management & TWT",
+    "zh": "MLD 帧投递：组播、管理帧与 TWT"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Most Wi-Fi 7 multi-link lessons follow ordinary unicast data: a frame with a block-ack agreement, sprayed across two or three links. But an MLD also carries traffic that doesn't fit that mould — broadcast and multicast frames that every station should hear, management frames that steer the connection, and Target Wake Time (TWT) negotiations that schedule sleep. This lesson is about how those non-ordinary flows move through an MLD: across many links, without duplicates, and without gaps.",
+      "zh": "大多数 Wi-Fi 7 多链路课程讲的都是普通单播数据：一个带块确认（block ack）协商的帧，被分散到两三条链路上发送。但 MLD 还要承载不属于这种模式的流量——每个站点都应该听到的广播与组播帧、用来引导连接的管理帧，以及安排休眠的目标唤醒时间（TWT）协商。本课讲的就是这些“非普通”流量如何在 MLD 内部流动：跨越多条链路、不产生重复、也不留下空隙。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the simplest non-block-ack case: an MLD can deliver individually addressed QoS Data for a TID without ever negotiating a block-ack session. Because the same logical flow may ride different links, the MLD reuses the multi-link sequence-numbering rules to stamp each frame and to throw away duplicates the peer might see. A retry-bounded discipline keeps order honest: while one such frame is still in flight (not yet succeeded, not yet hit the retry limit, not yet aged out by its MSDU lifetime timer), the MLD will not send the next frame of that TID through any of its affiliated stations. One-at-a-time, so the receiver never reassembles out of order.",
+      "zh": "先看最简单的“无块确认”情形：MLD 可以在从不协商块确认会话的前提下，投递属于某个 TID 的单播 QoS 数据帧。由于同一条逻辑流可能走不同的链路，MLD 复用多链路的序号编排规则来给每个帧打标号，并丢弃对端可能看到的重复帧。一套受重传次数约束的纪律保证了顺序的可靠：只要这样一个帧还在传输途中（尚未成功、尚未达到重传上限、也尚未被其 MSDU 生存期定时器淘汰），MLD 就不会通过任何隶属站点发送该 TID 的下一个帧。一次只发一个，接收端因此永远不会乱序重组。"
+    },
+    {
+      "type": "prose",
+      "en": "Management frames get the same multi-link discipline, with a twist: an MMPDU can be intended for a single affiliated station or for the MLD as a whole. Frames that define the multi-link relationship — an Authentication or (Re)Association frame carrying a Basic Multi-Link element, Deauthentication, Disassociation, TID-To-Link Mapping, EML Operating Mode Notification, and more — are intended for the MLD. Everything else is intended for one specific affiliated station unless stated otherwise. When the AP MLD has to send a station-specific MMPDU over a link other than that station's own, it tags the frame with an MLO Link Info element so the receiver knows which link the frame was really meant for.",
+      "zh": "管理帧也遵循同样的多链路纪律，但多了一个转折：一个 MMPDU 既可能是发给某个隶属站点的，也可能是发给整个 MLD 的。那些定义多链路关系的帧——携带 Basic Multi-Link 元素的认证帧或（重）关联帧、去认证帧、解除关联帧、TID-到-链路映射帧、EML 操作模式通知帧等等——都是发给 MLD 的。除非另有说明，其余的帧都只发给某一个特定的隶属站点。当 AP MLD 不得不在某站点自身链路之外的链路上发送一个面向该站点的 MMPDU 时，它会用一个 MLO Link Info 元素给该帧打上标记，让接收方知道这个帧真正想要送达的是哪条链路。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[\"MMPDU to send from AP MLD\"] --> B{\"Intended for the MLD\\nor one affiliated STA?\"}\n    B -->|\"MLD-level\\ne.g. Deauth, TTLM\"| C[\"Deliver on any setup link\\nno MLO Link Info element\"]\n    B -->|\"One STA, on its own link\"| D[\"Deliver normally\"]\n    B -->|\"One STA, via a different link\"| E[\"Add MLO Link Info element\\nidentifying the intended link\"]\n    E --> F{\"Indicated link enabled?\"}\n    F -->|yes| G[\"Receiver accepts\"]\n    F -->|no| H[\"Receiver discards MMPDU\"]",
+      "zh": "flowchart TD\n    A[\"AP MLD 待发送的 MMPDU\"] --> B{\"发给整个 MLD\\n还是某个隶属 STA？\"}\n    B -->|\"MLD 级\\n如去认证、TTLM\"| C[\"可在任一建立链路上投递\\n不带 MLO Link Info 元素\"]\n    B -->|\"单个 STA，走其自身链路\"| D[\"正常投递\"]\n    B -->|\"单个 STA，借道其他链路\"| E[\"加入 MLO Link Info 元素\\n标明目标链路\"]\n    E --> F{\"所标明链路已启用？\"}\n    F -->|是| G[\"接收方接受\"]\n    F -->|否| H[\"接收方丢弃该 MMPDU\"]"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Some management frames carry QoS too. Under QMF (QoS Management Frame), all affiliated stations of an MLD share one QMF activation state, so the whole MLD is either a QMF MLD or it isn't. A QMF MLD picks an access category for each management frame from the advertised QMF policy — and it must send management frames to a non-QMF peer at the high-priority AC_VO, so legacy peers still get them promptly.",
+      "zh": "有些管理帧也带 QoS。在 QMF（QoS 管理帧）机制下，一个 MLD 的所有隶属站点共享同一个 QMF 激活状态，因此整个 MLD 要么是 QMF MLD、要么不是。QMF MLD 会依据所通告的 QMF 策略为每个管理帧选取一个接入类别——而且它必须以高优先级的 AC_VO 把管理帧发给非 QMF 的对端，这样旧式对端依然能及时收到。"
+    },
+    {
+      "type": "prose",
+      "en": "Group-addressed frames — broadcast and multicast — are the opposite problem: no single recipient, so they can't simply be balanced across links. Each affiliated AP schedules its own buffered group-addressed traffic, and the trick that ties it together is a cross-link indication in the TIM element of the DTIM beacon. Beyond the bit for AID 0, an AP sets a contiguous run of bits — sized by the Group Addressed BU Indication Exponent in the EHT Operation element — to flag which of the AP MLD's other affiliated APs currently have group-addressed frames buffered. A station that is awake on its link then elects to receive all the group-addressed frames scheduled there, and the MLD silently drops any group frame whose source address equals its own MLD MAC address — that's its own broadcast echoing back.",
+      "zh": "组播帧——广播与多播——则是相反的难题：没有单一接收者，因此无法简单地在各链路间做均衡。每个隶属 AP 各自调度自己缓存的组播流量，而把它们串联起来的诀窍，是在 DTIM 信标的 TIM 元素中放入一个跨链路指示。在对应 AID 0 的比特之后，AP 会置位一段连续的比特——其长度由 EHT Operation 元素中的 Group Addressed BU Indication Exponent 决定——用来标明该 AP MLD 的其他隶属 AP 当前哪些缓存了组播帧。于是，在自己链路上保持唤醒的站点会选择接收该链路上调度的全部组播帧；同时 MLD 会悄悄丢弃任何源地址等于自身 MLD MAC 地址的组播帧——那是它自己发出的广播又绕回来了。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, sleep scheduling goes multi-link. TWT lets a station and its peer agree on when to wake. In an MLD, a TWT element can carry a Link ID Bitmap subfield (exactly one bit set) so a single agreement is pinned to a specific link, with its Target Wake Time read against that link's TSF clock. Stations can even request that TWT service periods on several links be aligned (overlapping wake windows) or deliberately non-aligned (never overlapping) — useful for a single-radio MLD that can only listen to one link at a time. Broadcast TWT schedules can likewise be marked aligned across links, and flexible wake time lets a station's power-state change be triggered by a TWT Information frame received on a different setup link, taking effect as soon as practical. Holding all of this consistent — capability flags, state, agreement parameters — across the affiliated stations is the job of the MLD synchronization service.",
+      "zh": "最后，休眠调度也走向了多链路。TWT 让站点与其对端约定何时唤醒。在 MLD 中，TWT 元素可以携带一个 Link ID Bitmap 子字段（恰好置位一个比特），从而把单个 TWT 协议钉在某条特定链路上，其目标唤醒时间按该链路的 TSF 时钟来解读。站点甚至可以请求多条链路上的 TWT 服务周期彼此对齐（唤醒窗口重叠）或刻意不对齐（永不重叠）——这对一次只能监听一条链路的单射频 MLD 很有用。广播 TWT 调度同样可以被标记为跨链路对齐；而灵活唤醒时间则允许站点的功率状态变更由在另一条建立链路上收到的 TWT Information 帧触发，并尽快生效。要让这一切——能力标志、状态、协议参数——在各隶属站点之间保持一致，正是 MLD 同步服务的职责。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact rules: intended-STA tagging, cross-link group indication, and pinned TWT",
+        "zh": "精确规则：目标 STA 标记、跨链路组播指示与钉定链路的 TWT"
+      },
+      "en": "Clause 35.3.14.3 is precise about the intended-STA tag: an individually addressed MMPDU (other than a TWT Setup frame whose TWT element includes a Link ID Bitmap subfield) that an MLD relays to a station other than the intended one, over a setup link, shall include an MLO Link Info element as the last element before any Vendor Specific element(s); exactly one bit in its Link ID Bitmap is set; and if the indicated link is not an enabled link, the receiving MLD discards the MMPDU. An MMPDU intended for the MLD itself shall not include this element. For group-addressed frames (35.3.15.1), an AP MLD relaying a non-AP MLD's group-addressed Data frame sets the SA field to that non-AP MLD's MLD MAC address; bits 1..N of the TIM Partial Virtual Bitmap (with N = 2^(Group Addressed BU Indication Exponent + 1) − 1, from the EHT Operation Parameters) indicate other affiliated APs' buffered group traffic, and those AIDs are not allocated to stations. On receive (35.3.15.2), a non-AP MLD discards any group-addressed MPDU whose SA equals its own MLD MAC address. For TWT (35.3.24.1.1), only one bit in a TWT element's Link ID Bitmap subfield is set; the Target Wake Time is referenced to the TSF of that link; and a TWT Setup frame that includes a Link ID Bitmap subfield shall not carry an MLO Link Info element. The TWT Information Extension element (9.4.2.330) carries a Control field with a B-TWT Info Present bit and an optional B-TWT Info field whose Broadcast TWT ID identifies the schedule.",
+      "zh": "35.3.14.3 节对“目标 STA 标记”规定得很精确：当一个 MLD 在某条建立链路上把一个单播 MMPDU（TWT 元素含 Link ID Bitmap 子字段的 TWT Setup 帧除外）转发给非目标站点时，该帧应把一个 MLO Link Info 元素作为任何 Vendor Specific 元素之前的最后一个元素加入；其 Link ID Bitmap 中恰好置位一个比特；若所标明的链路并非已启用链路，接收 MLD 应丢弃该 MMPDU。而面向 MLD 自身的 MMPDU 则不应包含此元素。对组播帧（35.3.15.1），AP MLD 在转发某非 AP MLD 的组播数据帧时，会把 SA 字段置为该非 AP MLD 的 MLD MAC 地址；TIM 部分虚拟位图的第 1..N 个比特（N = 2^(Group Addressed BU Indication Exponent + 1) − 1，取自 EHT Operation Parameters）用来指示其他隶属 AP 缓存的组播流量，且这些 AID 不分配给站点。在接收侧（35.3.15.2），非 AP MLD 会丢弃任何 SA 等于自身 MLD MAC 地址的组播 MPDU。对 TWT（35.3.24.1.1），TWT 元素的 Link ID Bitmap 子字段只置位一个比特；目标唤醒时间以该链路的 TSF 为参照；且含 Link ID Bitmap 子字段的 TWT Setup 帧不应携带 MLO Link Info 元素。TWT Information Extension 元素（9.4.2.330）带有一个含 B-TWT Info Present 比特的 Control 字段，以及一个可选的 B-TWT Info 字段，其 Broadcast TWT ID 标识对应的调度。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          554,
+          555,
+          585,
+          285
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.3.13",
+    "80211be-2024:35.3.14.1",
+    "80211be-2024:35.3.14.2",
+    "80211be-2024:35.3.14.3",
+    "80211be-2024:35.3.15.1",
+    "80211be-2024:35.3.15.2",
+    "80211be-2024:35.3.24.1",
+    "80211be-2024:35.3.24.2",
+    "80211be-2024:35.3.24.3",
+    "80211be-2024:35.3.25",
+    "80211be-2024:9.4.2.330",
+    "80211be-2024:11.24.1.2"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        550,
+        551
+      ],
+      "note": "35.3.13 — MLD individually addressed data delivery without block ack negotiation; sequence numbering, duplicate discard, retry-bounded one-at-a-time rule"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        551,
+        552,
+        553,
+        554,
+        555
+      ],
+      "note": "35.3.14.1-35.3.14.3 — individually addressed Management frame delivery, MLD- vs STA-intended MMPDUs, QMF, MLO Link Info element / intended-STA identification"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        555,
+        556,
+        557
+      ],
+      "note": "35.3.15.1-35.3.15.2 — AP MLD group-addressed scheduling, cross-link TIM bitmap indication, non-AP MLD receive and own-SA discard"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        583,
+        584,
+        585,
+        586
+      ],
+      "note": "35.3.24.1-35.3.24.3 and 35.3.25 — individual / broadcast / flexible-wake TWT pinned by Link ID Bitmap, aligned vs non-aligned SPs, MLD synchronization service"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        285,
+        286
+      ],
+      "note": "9.4.2.330 — TWT Information Extension element: Control field, B-TWT Info Present, Broadcast TWT ID"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        381
+      ],
+      "note": "11.24.1.2 — Default QMF policy table row (EPCS Priority Access -> AC_VO)"
+    }
+  ],
+  "track": "wifi7-eht"
+}
