@@ -1,0 +1,143 @@
+{
+  "id": "modern-phy-23",
+  "title": {
+    "en": "Decoding the HE Preamble: RL-SIG, HE-SIG-A and HE-SIG-B",
+    "zh": "解码 HE 前导码：RL-SIG、HE-SIG-A 与 HE-SIG-B"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Before a single bit of data arrives, a Wi-Fi 6 (HE) receiver has already read a small stack of signalling fields at the front of the frame — the preamble. Think of it as the cover letter of a packet: it announces 'this is an HE frame', tells the radio how wide the channel is, which modulation and coding to expect, and — for a multi-user frame — exactly which slice of spectrum belongs to whom. Get the cover letter wrong and the whole packet is unreadable, so the preamble is engineered to be detected and decoded with extreme reliability.",
+      "zh": "在第一个数据比特到来之前，Wi-Fi 6（HE）接收机其实已经读完了帧最前面的一小叠信令字段——也就是前导码（preamble）。可以把它想象成数据包的“封面信”：它宣告“这是一个 HE 帧”，告诉射频电路信道有多宽、应该预期哪种调制与编码方式，而对于多用户帧，它还精确说明哪一段频谱属于哪个用户。封面信读错了，整个数据包就无法解读，因此前导码被特意设计成能以极高的可靠性被检测和解码。"
+    },
+    {
+      "type": "prose",
+      "en": "An HE preamble splits into two halves. The pre-HE modulated fields use the old 312.5 kHz subcarrier spacing so that legacy devices can still hear them: L-STF, L-LTF and L-SIG (inherited from the very first OFDM Wi-Fi), then RL-SIG and HE-SIG-A, plus HE-SIG-B for a multi-user (HE MU) frame. After that come the HE modulated fields on the finer 78.125 kHz grid: HE-STF and HE-LTF. This lesson walks the signalling spine of the pre-HE part — RL-SIG, HE-SIG-A and HE-SIG-B.",
+      "zh": "HE 前导码分为两半。前 HE 调制字段（pre-HE modulated fields）沿用旧的 312.5 kHz 子载波间隔，以便传统设备仍能听懂它们：L-STF、L-LTF 和 L-SIG（继承自最早的 OFDM Wi-Fi），随后是 RL-SIG 和 HE-SIG-A，对于多用户（HE MU）帧还有 HE-SIG-B。之后才是采用更精细的 78.125 kHz 栅格的 HE 调制字段：HE-STF 和 HE-LTF。本课讲解前 HE 部分的信令主干——RL-SIG、HE-SIG-A 与 HE-SIG-B。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n    LSTF[L-STF] --> LLTF[L-LTF]\n    LLTF --> LSIG[L-SIG]\n    LSIG --> RLSIG[RL-SIG]\n    RLSIG --> SIGA[HE-SIG-A]\n    SIGA -->|HE MU only| SIGB[HE-SIG-B]\n    SIGB --> HESTF[HE-STF]\n    SIGA -.->|SU / ER / TB| HESTF\n    HESTF --> HELTF[HE-LTF]\n    HELTF --> DATA[Data]\n    subgraph preHE[Pre-HE fields - 312.5 kHz, legacy-readable]\n      LSTF\n      LLTF\n      LSIG\n      RLSIG\n      SIGA\n      SIGB\n    end\n    subgraph HE[HE fields - 78.125 kHz]\n      HESTF\n      HELTF\n    end",
+      "zh": "flowchart LR\n    LSTF[L-STF] --> LLTF[L-LTF]\n    LLTF --> LSIG[L-SIG]\n    LSIG --> RLSIG[RL-SIG]\n    RLSIG --> SIGA[HE-SIG-A]\n    SIGA -->|仅 HE MU| SIGB[HE-SIG-B]\n    SIGB --> HESTF[HE-STF]\n    SIGA -.->|SU / ER / TB| HESTF\n    HESTF --> HELTF[HE-LTF]\n    HELTF --> DATA[数据]\n    subgraph preHE[前 HE 字段 - 312.5 kHz，传统设备可读]\n      LSTF\n      LLTF\n      LSIG\n      RLSIG\n      SIGA\n      SIGB\n    end\n    subgraph HE[HE 字段 - 78.125 kHz]\n      HESTF\n      HELTF\n    end"
+    },
+    {
+      "type": "prose",
+      "en": "RL-SIG is the cleverest trick of the bunch: it is simply a bit-for-bit repeat of the L-SIG field, transmitted immediately after it. A legacy 802.11a/n/ac device ignores the duplicate, but an HE receiver recognises the repetition as a flag that says 'I am an HE PPDU'. The repeat also gives the receiver two identical copies of the same OFDM symbol to average, improving the reliability of the rate/length read at the very moment it matters most. Both L-SIG and RL-SIG carry a RATE set to 6 Mb/s and a LENGTH computed so that even legacy stations defer correctly for the airtime the HE frame will occupy.",
+      "zh": "RL-SIG 是其中最巧妙的一招：它就是把 L-SIG 字段逐比特原样重复一遍，紧跟在 L-SIG 之后发送。传统的 802.11a/n/ac 设备会忽略这个重复，而 HE 接收机却把这种重复识别为一个标志，宣告“我是一个 HE PPDU”。这个重复还给接收机提供了同一个 OFDM 符号的两份完全相同的副本以供平均，从而在最关键的时刻提升了对速率/长度读取的可靠性。L-SIG 与 RL-SIG 都携带设为 6 Mb/s 的 RATE，以及一个经过计算的 LENGTH，使得即便是传统站点也能为 HE 帧将占用的空口时间正确退避。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why two subcarrier spacings? The legacy fields keep the original 312.5 kHz grid so a Wi-Fi 5 or older device can still decode L-SIG, read the duration, and back off — that is what protects the medium. The HE fields then switch to 78.125 kHz (exactly one quarter), packing four times as many subcarriers into the same channel for finer, more efficient data transport.",
+      "zh": "为什么要用两种子载波间隔？传统字段保留原始的 312.5 kHz 栅格，这样 Wi-Fi 5 或更老的设备仍能解码 L-SIG、读出持续时间并退避——正是这一点保护了信道介质。随后 HE 字段切换到 78.125 kHz（恰好是四分之一），在同一信道里塞进四倍数量的子载波，以实现更精细、更高效的数据传输。"
+    },
+    {
+      "type": "prose",
+      "en": "HE-SIG-A is the per-PPDU control header — the field that carries everything a receiver needs to interpret the rest of the frame. Its exact bit layout depends on the PPDU type (SU, ER SU, MU or TB), but the idea is constant: bandwidth, MCS, GI + LTF size, STBC, DCM, BSS Color, the four Spatial Reuse fields, and so on. For an SU/MU/TB frame it is two 26-bit subfields, HE-SIG-A1 and HE-SIG-A2, sent as two BPSK OFDM symbols. A CRC computed over bits 0 to 41 lets the receiver reject a corrupted header outright rather than mis-decode the whole packet.",
+      "zh": "HE-SIG-A 是每个 PPDU 的控制头——它携带接收机解读帧其余部分所需的一切。它的精确比特布局取决于 PPDU 类型（SU、ER SU、MU 或 TB），但思路始终如一：带宽、MCS、GI + LTF 长度、STBC、DCM、BSS Color、四个 Spatial Reuse 字段等等。对于 SU/MU/TB 帧，它由两个 26 比特的子字段 HE-SIG-A1 与 HE-SIG-A2 组成，作为两个 BPSK 的 OFDM 符号发送。在第 0 到 41 比特上计算出的 CRC，让接收机能够直接丢弃损坏的头部，而不是把整个数据包错误地解码。"
+    },
+    {
+      "type": "prose",
+      "en": "HE-SIG-B only appears in a multi-user (HE MU) frame, and it is where OFDMA gets organised. A 20 MHz frame has one HE-SIG-B content channel; 40 MHz and wider carry two, sent on alternating 20 MHz subchannels. Each content channel holds a Common field — the RU Allocation map saying how the channel is carved into resource units and how many users sit in each — followed by a User Specific field. That User Specific field is a list of per-user User fields, each tagging a STA by its 11-bit STA-ID and telling that one station its NSTS, HE-MCS, DCM and coding choice. The whole field is modulated with its own HE-SIG-B-MCS (range 0 to 5, signalled back in HE-SIG-A), letting the AP trade robustness against overhead.",
+      "zh": "HE-SIG-B 只出现在多用户（HE MU）帧中，它正是 OFDMA 得以组织起来的地方。20 MHz 帧只有一个 HE-SIG-B 内容信道（content channel）；40 MHz 及更宽的帧携带两个，在相邻的 20 MHz 子信道上交替发送。每个内容信道包含一个 Common 字段——即 RU 分配图，说明信道如何被切分为资源单元（RU）以及每个 RU 中有多少用户——其后跟随一个 User Specific 字段。该 User Specific 字段是一串按用户排列的 User 字段，每个字段用 11 比特的 STA-ID 标识一个站点，并告诉那一个站点它的 NSTS、HE-MCS、DCM 与编码方式。整个字段以其自身的 HE-SIG-B-MCS（取值 0 到 5，在 HE-SIG-A 中回传）进行调制，使 AP 能够在鲁棒性与开销之间权衡。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='20' stroke='none' fill='currentColor' font-size='13'>HE-SIG-B content channel</text><rect x='10' y='35' width='150' height='40'/><text x='85' y='60' stroke='none' fill='currentColor' font-size='11' text-anchor='middle'>Common field</text><text x='85' y='90' stroke='none' fill='currentColor' font-size='10' text-anchor='middle'>RU Allocation + CRC + Tail</text><rect x='170' y='35' width='280' height='40'/><text x='310' y='60' stroke='none' fill='currentColor' font-size='11' text-anchor='middle'>User Specific field</text><line x1='240' y1='35' x2='240' y2='75'/><line x1='310' y1='35' x2='310' y2='75'/><line x1='380' y1='35' x2='380' y2='75'/><text x='205' y='90' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>User field</text><text x='275' y='90' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>User field</text><text x='345' y='90' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>...</text><text x='415' y='90' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>+CRC+Tail</text><rect x='10' y='120' width='440' height='55'/><text x='230' y='138' stroke='none' fill='currentColor' font-size='11' text-anchor='middle'>One User field (non-MU-MIMO)</text><line x1='90' y1='145' x2='90' y2='175'/><line x1='160' y1='145' x2='160' y2='175'/><line x1='230' y1='145' x2='230' y2='175'/><line x1='300' y1='145' x2='300' y2='175'/><line x1='370' y1='145' x2='370' y2='175'/><text x='50' y='163' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>STA-ID</text><text x='125' y='163' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>NSTS</text><text x='195' y='163' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>Bmfd</text><text x='265' y='163' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>HE-MCS</text><text x='335' y='163' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>DCM</text><text x='410' y='163' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>Coding</text></svg>",
+      "caption": {
+        "en": "An HE-SIG-B content channel: a Common field (the RU allocation map) followed by a User Specific field of per-user User fields. Each non-MU-MIMO User field carries STA-ID, NSTS, Beamformed, HE-MCS, DCM and Coding bits.",
+        "zh": "一个 HE-SIG-B 内容信道：Common 字段（RU 分配图）之后跟随由按用户排列的 User 字段组成的 User Specific 字段。每个非 MU-MIMO 的 User 字段携带 STA-ID、NSTS、Beamformed、HE-MCS、DCM 与 Coding 比特。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A neat detail: cyclic shifts (CSD) are applied across transmit chains for the pre-HE fields too, not just the data. When the same signal goes out on several antennas, applying a different small time shift per chain prevents the chains from accidentally beamforming into an unwanted pattern — keeping the legacy-readable preamble robust in every direction.",
+      "zh": "一个精巧的细节：循环移位（CSD）不仅应用于数据，也应用于前 HE 字段的各个发射链。当同一信号从多根天线发出时，对每条链施加一个不同的微小时移，可以防止这些链意外地形成不想要的波束方向图——从而让传统设备可读的前导码在各个方向上都保持稳健。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Bit-level: HE-SIG-A symbols, the CRC span, and the User field layout",
+        "zh": "比特级：HE-SIG-A 符号、CRC 覆盖范围与 User 字段布局"
+      },
+      "en": "Per 27.3.11.7.4, an SU/MU/TB HE-SIG-A is two 26-data-bit subfields (HE-SIG-A1, HE-SIG-A2) sent as two OFDM symbols, HE-SIG-A-sym-1 then HE-SIG-A-sym-2, both BCC-encoded at R=1/2 and BPSK-mapped; the HE ER SU variant adds repeated symbols (the second carried as QBPSK). The CRC of 27.3.11.7.3 is computed over bits 0 to 41 of HE-SIG-A — bits 0-25 of HE-SIG-A1 followed by bits 0-15 of HE-SIG-A2 — and the same CRC machinery covers the Common field and each User Block field of HE-SIG-B. In the User Specific field (27.3.11.8.4), a non-MU-MIMO User field (Table 27-29) is exactly: STA-ID (B0-B10, 11 bits), NSTS (B11-B13, value = streams minus 1), Beamformed (B14), HE-MCS (B15-B18, 0-11), DCM (B19) and Coding (B20, 0=BCC / 1=LDPC). A STA-ID of 2046 marks an RU that no real user occupies. HE-SIG-B itself (27.3.11.8.5) BCC-encodes the Common field and each User Block field at R=1/2 and modulates with MCS_SIG_B from the TXVECTOR. HE-MCS values for the data are detailed in 27.3.7, and the HE-SIG-B-MCS set (0 to 5) in 27.3.8.",
+      "zh": "依据 27.3.11.7.4，SU/MU/TB 的 HE-SIG-A 由两个各含 26 个数据比特的子字段（HE-SIG-A1、HE-SIG-A2）组成，作为两个 OFDM 符号 HE-SIG-A-sym-1、HE-SIG-A-sym-2 依次发送，两者都以 R=1/2 进行 BCC 编码并做 BPSK 映射；HE ER SU 变体增加了重复符号（其中第二个以 QBPSK 承载）。27.3.11.7.3 中的 CRC 在 HE-SIG-A 的第 0 到 41 比特上计算——即 HE-SIG-A1 的第 0-25 比特后接 HE-SIG-A2 的第 0-15 比特——同一套 CRC 机制也覆盖 HE-SIG-B 的 Common 字段和每个 User Block 字段。在 User Specific 字段中（27.3.11.8.4），一个非 MU-MIMO 的 User 字段（表 27-29）恰好是：STA-ID（B0-B10，11 比特）、NSTS（B11-B13，取值 = 空时流数减 1）、Beamformed（B14）、HE-MCS（B15-B18，0-11）、DCM（B19）以及 Coding（B20，0=BCC / 1=LDPC）。STA-ID 取值 2046 标记一个无真实用户占用的 RU。HE-SIG-B 本身（27.3.11.8.5）对 Common 字段和每个 User Block 字段以 R=1/2 进行 BCC 编码，并以来自 TXVECTOR 的 MCS_SIG_B 调制。数据的 HE-MCS 取值在 27.3.7 中详述，HE-SIG-B-MCS 集合（0 到 5）见 27.3.8。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4198,
+          4216,
+          4228,
+          4242
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4198
+      ],
+      "note": "27.3.7 HE-MCS and 27.3.8 HE-SIG-B-MCS (range 0 to 5); DCM applicability"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4210
+      ],
+      "note": "27.3.11.1 HE preamble pre-HE vs HE modulated fields; 27.3.11.2 cyclic shift for pre-HE and HE modulated fields"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4213,
+        4215
+      ],
+      "note": "27.3.11.5 L-SIG (RATE=6 Mb/s, LENGTH); 27.3.11.6 RL-SIG repeat to differentiate HE from non-HT/HT/VHT"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4216,
+        4217,
+        4228,
+        4229
+      ],
+      "note": "27.3.11.7 HE-SIG-A General/Content; 27.3.11.7.3 CRC over bits 0-41; 27.3.11.7.4 two 26-bit subfields, two BPSK OFDM symbols"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4231,
+        4232,
+        4239,
+        4242,
+        4244
+      ],
+      "note": "27.3.11.8 HE-SIG-B General; content channels; Common field (RU Allocation); 27.3.11.8.4 User Specific field + Table 27-29; 27.3.11.8.5 encoding/modulation"
+    }
+  ],
+  "covers": [
+    "80211-2024:27.3.11.1",
+    "80211-2024:27.3.11.2.1",
+    "80211-2024:27.3.11.2.2",
+    "80211-2024:27.3.11.5",
+    "80211-2024:27.3.11.6",
+    "80211-2024:27.3.11.7.1",
+    "80211-2024:27.3.11.7.2",
+    "80211-2024:27.3.11.7.3",
+    "80211-2024:27.3.11.7.4",
+    "80211-2024:27.3.11.8.1",
+    "80211-2024:27.3.11.8.2",
+    "80211-2024:27.3.11.8.3",
+    "80211-2024:27.3.11.8.4",
+    "80211-2024:27.3.11.8.5",
+    "80211-2024:27.3.7",
+    "80211-2024:27.3.8"
+  ],
+  "track": "modern-phy"
+}

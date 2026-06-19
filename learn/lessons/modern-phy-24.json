@@ -1,0 +1,122 @@
+{
+  "id": "modern-phy-24",
+  "title": {
+    "en": "HE Transmit Specification, Packet Extension and TXTIME",
+    "zh": "HE 发射规范、包扩展与 TXTIME"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A Wi-Fi 6 (HE) transmitter is not free to put any waveform on the air. The standard pins it down on three fronts: where its energy is allowed to sit in frequency (the spectral mask and spectral flatness), how stable its clock and carrier must be (frequency tolerance), and how clean its constellation must look (modulation accuracy / EVM). Then it adds two timing rules: packet extension — a little extra tail of signal so slow receivers can finish decoding — and TXTIME, the exact on-air duration the MAC plans around. This lesson walks the RF and timing envelope that keeps an HE PPDU legal and predictable.",
+      "zh": "Wi-Fi 6（HE）的发射机并不能把任意波形随意放到空口上。标准从三个方面对它加以约束：能量在频率上允许落在哪里（发射频谱模板与频谱平坦度）、它的时钟与载波必须有多稳定（频率容差），以及它的星座图必须有多干净（调制精度 / EVM）。在此之上还加了两条时序规则：包扩展——在信号尾部多加一小段，让较慢的接收机能完成解码；以及 TXTIME，也就是 MAC 据以规划的精确空口时长。本课带你走一遍这套让 HE PPDU 既合法又可预测的射频与时序边界。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the spectral mask. The HE transmit spectral mask sets a ceiling on how much power may spill outside the channel at each frequency offset. It is built from two pieces and then the higher of the two is taken at every offset: an interim mask defined relative to the signal's own peak spectral density (in dBr), and an absolute floor in dBm/MHz tied to the band. So a transmitter must satisfy both 'don't be more than X dB below your own peak' and 'don't exceed this absolute level' — whichever is the looser limit wins at each point. Spectral flatness is the companion rule: across the occupied subcarriers, no tone's average energy may deviate more than a few dB (roughly +/- 4 dB on the inner tones, +4/-6 dB on the edges) from the average, so the channel response the transmitter presents is even.",
+      "zh": "先看频谱模板。HE 发射频谱模板规定了在每个频率偏移处，信号允许向信道之外溢出的功率上限。它由两部分构成，并在每个偏移处取两者中较高的一个：一是相对于信号自身峰值频谱密度定义的临时模板（以 dBr 为单位），二是与频段绑定的绝对下限（以 dBm/MHz 为单位）。因此发射机必须同时满足“不得比自身峰值低于 X dB 还多”和“不得超过这个绝对电平”——在每一点上取约束较宽松的那个。频谱平坦度是它的搭档规则：在被占用的子载波上，任何一个音调的平均能量相对其平均值的偏差都不得超过几 dB（内侧音调约 ±4 dB，边缘音调为 +4/-6 dB），从而让发射机呈现的信道响应保持平坦。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Three accuracy knobs travel together. (1) Frequency tolerance: the transmit center frequency and the symbol clock must come from the same reference oscillator, within +/- 20 ppm in the 5/6 GHz bands and +/- 25 ppm in 2.4 GHz. (2) Center-frequency leakage: the LO spike at the channel center is capped at max(P - 32, -20) dBm. (3) Constellation error (EVM): the relative RMS error must stay below a value that gets stricter as the modulation gets denser — for example around -27 dB for 64-QAM 5/6 and down to about -35 dB for 1024-QAM. Denser constellations leave less room for error, so the EVM bar rises with the MCS.",
+      "zh": "三个精度旋钮总是结伴出现。（1）频率容差：发射中心频率与符号时钟必须来自同一个参考振荡器，在 5/6 GHz 频段内为 ±20 ppm，在 2.4 GHz 为 ±25 ppm。（2）中心频率泄漏：信道中心处的本振（LO）尖峰被限制在 max(P − 32, −20) dBm。（3）星座误差（EVM）：相对均方根误差必须低于某个门限，而这个门限随调制越密集而越严格——例如 64-QAM 5/6 约为 −27 dB，到 1024-QAM 则收紧到约 −35 dB。星座越密，容错越小，所以 EVM 门槛会随 MCS 升高而提高。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the timing tail. After the Data field, an HE PPDU may carry a Packet Extension (PE) field whose duration is one of 0, 4, 8, 12, or 16 us. Its job is to buy a slow receiver more processing time before it must produce an acknowledgment. The PE must be sent at the same average power as the Data field and must not leak outside the Data field's spectrum. How long it is depends on two things: the pre-FEC padding factor of the last OFDM symbol(s), and the TXVECTOR parameter NOMINAL_PACKET_PADDING — a per-link hint (0, 8, or 16 us) that a receiver advertises via its PPE Thresholds so transmitters know how much slack it needs. A lookup table turns (padding factor, nominal padding) into the nominal PE duration; the transmitter should use exactly that to minimise overhead.",
+      "zh": "再看时序的尾巴。在 Data 字段之后，HE PPDU 可以携带一个包扩展（PE）字段，其时长取 0、4、8、12 或 16 us 之一。它的作用是为较慢的接收机争取更多处理时间，使其在必须发出确认之前能完成解码。PE 必须以与 Data 字段相同的平均功率发送，且不得泄漏到 Data 字段所占频谱之外。它的长度取决于两件事：最后一个（或几个）OFDM 符号的预 FEC 填充因子，以及 TXVECTOR 参数 NOMINAL_PACKET_PADDING——这是一个按链路给出的提示值（0、8 或 16 us），接收机通过其 PPE Thresholds 通告出来，好让发射机知道它需要多少余量。一张查找表把（填充因子、标称填充）映射为标称 PE 时长；发射机应当恰好采用该值，以把开销降到最低。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n    A[Data field<br/>pre-FEC padding factor a] --> B{NOMINAL_PACKET_PADDING<br/>0 / 8 / 16 us}\n    B --> C[Table 27-47<br/>lookup nominal TPE]\n    C --> D[PE field<br/>0 / 4 / 8 / 12 / 16 us]\n    D --> E[TXTIME = preamble + Data + PE + SignalExtension]\n    E --> F[MAC plans NAV, SIFS, BlockAck]",
+      "zh": "flowchart LR\n    A[Data 字段<br/>预FEC填充因子 a] --> B{NOMINAL_PACKET_PADDING<br/>0 / 8 / 16 us}\n    B --> C[表 27-47<br/>查标称 TPE]\n    C --> D[PE 字段<br/>0 / 4 / 8 / 12 / 16 us]\n    D --> E[TXTIME = 前导 + Data + PE + 信号扩展]\n    E --> F[MAC 据此规划 NAV、SIFS、BlockAck]"
+    },
+    {
+      "type": "prose",
+      "en": "Why does the MAC care about a few microseconds of padding? Because everything downstream is scheduled off TXTIME. TXTIME is the total on-air duration of the PPDU, and for an HE PPDU it sums the preamble duration, the data symbols (number of symbols times the symbol time), any midamble symbols, the PE field, and a signal extension — all in microseconds. The MAC uses TXTIME to set the Duration/ID it puts in frames (which drives every other station's NAV), to know exactly when a SIFS-spaced response is expected, and to fit transmissions inside a TXOP. The companion quantity PSDU_LENGTH translates a target airtime back into how many payload bytes actually fit at a given MCS, RU size, and guard interval — the inverse calculation a scheduler runs when it has a time budget and wants to know the byte budget.",
+      "zh": "MAC 为什么要在意这几微秒的填充？因为下游的一切都按 TXTIME 来调度。TXTIME 是 PPDU 在空口上的总时长，对 HE PPDU 而言，它等于前导时长、数据符号（符号数乘以符号时间）、若干中导（midamble）符号、PE 字段和信号扩展之和——单位都是微秒。MAC 用 TXTIME 来设置它写入帧中的 Duration/ID（这会驱动其他所有站点的 NAV），来精确知道何时应当收到一个相隔 SIFS 的回应，以及把传输安排在一个 TXOP 之内。与之配套的量 PSDU_LENGTH 则把目标空口时间反算回来：在给定 MCS、RU 大小和保护间隔下，实际能装下多少负载字节——这正是调度器在拿到时间预算、想知道字节预算时所做的逆运算。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "There is also a MAC-side rule that closes the loop. When a transmitter has never seen the receiver's HE Capabilities (so it doesn't know its PPE Thresholds yet) — for example an AP talking to an unassociated station — it must play it safe and set NOMINAL_PACKET_PADDING to the maximum 16 us. Broadcast frames also get the full 16 us. Once capabilities are exchanged, the transmitter can trim the padding to exactly what that receiver needs.",
+      "zh": "还有一条 MAC 侧规则把这个环路闭合起来。当发射机从未见过接收机的 HE Capabilities（因而尚不知道它的 PPE Thresholds）时——例如 AP 与一个尚未关联的站点通信——它必须保守行事，把 NOMINAL_PACKET_PADDING 设为最大的 16 us。广播帧同样取满 16 us。一旦双方交换了能力信息，发射机就可以把填充裁剪到该接收机恰好所需的量。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact PE/TXTIME equations and the EVM test method",
+        "zh": "PE/TXTIME 的精确公式与 EVM 测试方法"
+      },
+      "en": "For an HE SU or HE ER SU PPDU the nominal PE duration TPE,nominal comes from Table 27-47, indexed by the pre-FEC padding factor a (1-4) and NOMINAL_PACKET_PADDING (0/8/16 us); for an HE MU PPDU it is the maximum nominal TPE over all users (Equation 27-113). TPE may be 0, 4, 8, 12, or 16 us, and shall not be less than TPE,nominal. TXTIME for an HE PPDU is given by Equation (27-149): TXTIME = 20 + THE-PREAMBLE + NSYM*TSYM + NMA*NHE-LTF*THE-LTF-SYM + TPE + SignalExtension, with the 20 us covering the legacy/HE preamble portion and SignalExtension taking aSignalExtension from Table 27-61. PSDU_LENGTH for an HE SU/ER SU/HE TB PPDU is computed from NSYM, the STBC factor, and NDBPS via Equation (27-153). Modulation accuracy is verified by the EVM test of 27.3.21.4.4: capture at least 20 PPDUs (each at least 16 data symbols, or 32 if the occupied RU is 26 tones), demodulate as a receiver would (timing/frequency offset estimation, per-symbol pilot phase tracking, zero-forcing equalisation), exclude the +/-3 subcarriers around the LO leakage point, and average the RMS error per Equation (27-140) against the Table 27-56 limit. Center-frequency leakage (27.3.21.4.2) is separately capped at max(P-32,-20) dBm measured in a 78.125 kHz resolution bandwidth.",
+      "zh": "对于 HE SU 或 HE ER SU PPDU，标称 PE 时长 TPE,nominal 来自表 27-47，以预 FEC 填充因子 a（1-4）和 NOMINAL_PACKET_PADDING（0/8/16 us）为索引；对于 HE MU PPDU，它取所有用户标称 TPE 的最大值（式 27-113）。TPE 可为 0、4、8、12 或 16 us，且不得小于 TPE,nominal。HE PPDU 的 TXTIME 由式（27-149）给出：TXTIME = 20 + THE-PREAMBLE + NSYM·TSYM + NMA·NHE-LTF·THE-LTF-SYM + TPE + SignalExtension，其中 20 us 对应传统/HE 前导部分，SignalExtension 取自表 27-61 的 aSignalExtension。HE SU/ER SU/HE TB PPDU 的 PSDU_LENGTH 由 NSYM、STBC 因子和 NDBPS 通过式（27-153）算出。调制精度由 27.3.21.4.4 的 EVM 测试验证：采集至少 20 个 PPDU（每个至少 16 个数据符号，若占用 RU 为 26 音调则为 32 个），像接收机那样解调（时频偏估计、逐符号导频相位跟踪、迫零均衡），剔除 LO 泄漏点附近 ±3 个子载波，再按式（27-140）对 RMS 误差求平均，与表 27-56 的限值比较。中心频率泄漏（27.3.21.4.2）单独以 78.125 kHz 分辨率带宽测量，上限为 max(P−32,−20) dBm。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4293,
+          4327,
+          4356
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:27.3.21.1",
+    "80211-2024:27.3.21.2",
+    "80211-2024:27.3.21.3",
+    "80211-2024:27.3.21.4.1",
+    "80211-2024:27.3.21.4.2",
+    "80211-2024:27.3.21.4.3",
+    "80211-2024:27.3.21.4.4",
+    "80211-2024:27.3.13",
+    "80211-2024:26.12",
+    "80211-2024:27.4.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4293
+      ],
+      "note": "27.3.13 Packet extension - PE field 0/4/8/12/16 us, nominal TPE from Table 27-47, NOMINAL_PACKET_PADDING and pre-FEC padding factor"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4319,
+        4324,
+        4325
+      ],
+      "note": "27.3.21.1 transmit spectral mask (interim + absolute); 27.3.21.2 spectral flatness Table 27-55; 27.3.21.3 +/-20/25 ppm center-frequency and symbol-clock tolerance"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4326,
+        4327,
+        4328
+      ],
+      "note": "27.3.21.4.1-4.4 modulation accuracy: center-frequency leakage max(P-32,-20) dBm, constellation error Table 27-56, EVM test method and Equation 27-140"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4099,
+        4101
+      ],
+      "note": "26.12 HE PPDU post-FEC padding and packet extension - PPE Thresholds, nominal packet padding, 16 us default before HE Capabilities exchange and for broadcast"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4356,
+        4357,
+        4358
+      ],
+      "note": "27.4.3 TXTIME and PSDU_LENGTH calculation - Equation 27-149 TXTIME sum and Equation 27-153 PSDU_LENGTH"
+    }
+  ],
+  "track": "modern-phy"
+}

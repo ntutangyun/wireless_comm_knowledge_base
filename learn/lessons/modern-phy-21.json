@@ -1,0 +1,141 @@
+{
+  "id": "modern-phy-21",
+  "title": {
+    "en": "HE TWT: Scheduling When Stations Wake Up (Individual and Broadcast)",
+    "zh": "HE TWT：调度站点何时醒来（单播与广播）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A battery-powered Wi-Fi device wastes most of its energy listening to a medium that has nothing for it. Classic power save keeps a station dozing and waking at every beacon to peek at a buffer-map bit. Target Wake Time (TWT) flips this from always-listening to appointment-based: the access point and the station agree, in advance, on specific windows — called service periods (SPs) — during which the station will be awake and frames will flow. Outside those windows the station can switch its radio off completely. By spreading stations across non-overlapping times (and even frequencies), the AP also cuts contention.",
+      "zh": "靠电池供电的 Wi-Fi 设备，大部分能量都浪费在“监听一个其实没有任何东西要发给它的信道”上。传统省电模式让站点不停地打盹、又在每个信标处醒来，只为瞥一眼缓存映射位。目标唤醒时间（Target Wake Time，TWT）把这种“始终监听”改成了“按约定办事”：接入点（AP）与站点提前商定好若干具体的时间窗口——称为服务期（service period，SP）——在这些窗口内站点保持清醒、帧在此期间收发。窗口之外，站点可以把射频完全关掉。通过把多个站点分散到互不重叠的时间（甚至不同频率）上，AP 同时也降低了竞争。"
+    },
+    {
+      "type": "prose",
+      "en": "TWT comes in two flavours. An individual TWT agreement is negotiated one-to-one: a requesting station and a responding station (usually the AP) exchange TWT request/response frames carrying a TWT element, and settle on a target wake time, a wake interval, and a minimum wake duration just for that pair. A broadcast TWT is the AP advertising a shared schedule — carried in a broadcast TWT element inside Beacon frames — that many low-power stations can join. Each broadcast schedule is named by a <Broadcast TWT ID, AP MAC address> tuple, so a station picks the schedule that matches its traffic and follows it.",
+      "zh": "TWT 有两种形态。单播 TWT 协定是一对一协商的：请求方站点与响应方站点（通常是 AP）交换携带 TWT 元素（TWT element）的 TWT 请求/响应帧，专门为这一对设备敲定一个目标唤醒时间、一个唤醒间隔以及一个最小唤醒时长。广播 TWT 则是 AP 公布一个共享的时间表——它装在信标帧（Beacon）里的广播 TWT 元素中——许多低功耗站点都可以加入。每个广播时间表由一个 <广播 TWT ID，AP 的 MAC 地址> 二元组来命名，于是站点挑选与自身流量相匹配的那个时间表并加以遵循。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Trigger-enabled vs not. If the Trigger subfield is set, the AP will send a Trigger frame inside each SP and the station replies in an uplink HE TB PPDU — handy for low-latency uplink. Announced vs unannounced (the Flow Type) decides whether the station must first signal it is awake (e.g. a PS-Poll) before the AP delivers buffered data, or whether the AP can just send it.",
+      "zh": "触发使能与否。若 Trigger 子字段被置位，AP 会在每个 SP 内发送触发帧（Trigger frame），站点则用上行 HE TB PPDU 回应——很适合低时延上行。announced（声明式）与 unannounced（非声明式）（由 Flow Type 决定）则确定：站点是否必须先发信号表明自己已醒（例如发一个 PS-Poll）AP 才投递缓存数据，还是 AP 可以直接发送。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Non-AP STA (requester)\n    participant AP as AP (responder / scheduler)\n    Note over STA,AP: setup\n    STA->>AP: TWT request (TWT element: wake time, interval, duration)\n    AP->>STA: TWT response (Accept TWT)\n    Note over STA: doze until next target wake time\n    Note over STA,AP: service period (SP) begins\n    AP->>STA: Basic Trigger frame\n    STA->>AP: HE TB PPDU (PS-Poll / QoS Null = I'm awake)\n    AP->>STA: DL buffered data\n    STA->>AP: BlockAck\n    Note over STA: SP ends -> back to doze",
+      "zh": "sequenceDiagram\n    participant STA as 非AP站点 (请求方)\n    participant AP as AP (响应方/调度方)\n    Note over STA,AP: 建立协定\n    STA->>AP: TWT 请求 (TWT元素: 唤醒时间、间隔、时长)\n    AP->>STA: TWT 响应 (Accept TWT)\n    Note over STA: 打盹直到下一个目标唤醒时间\n    Note over STA,AP: 服务期 (SP) 开始\n    AP->>STA: 基本触发帧 (Basic Trigger)\n    STA->>AP: HE TB PPDU (PS-Poll / QoS Null = 我醒着)\n    AP->>STA: 下行缓存数据\n    STA->>AP: 块确认 (BlockAck)\n    Note over STA: SP 结束 -> 重新打盹"
+    },
+    {
+      "type": "prose",
+      "en": "Schedules are not frozen. The AP can evolve a broadcast schedule by setting the TWT Setup Command to Alternate TWT (parameters change at a future TBTT) or Reject TWT (the schedule terminates), and it counts down the change with a Broadcast TWT Persistence value so stations that miss a beacon still know when it lands. For ad-hoc adjustments without renegotiating, either side sends a TWT Information frame: its Next TWT subfield suspends the current schedule and names the next wake instant to resume at; an All TWT bit applies the suspend/resume to every agreement at once. A flexible TWT even lets a station name a one-off wake time independent of any standing agreement.",
+      "zh": "时间表并非一成不变。AP 可以演进一个广播时间表：把 TWT Setup Command 设为 Alternate TWT（参数在未来某个 TBTT 处变更）或 Reject TWT（时间表终止），并用 Broadcast TWT Persistence（广播 TWT 持续度）数值来倒计时，这样即使错过了某个信标的站点也仍能知道变更何时生效。若想临时调整而不必重新协商，任意一方都可以发送 TWT 信息帧（TWT Information frame）：其 Next TWT 子字段会挂起当前时间表、并指明在哪个下一个唤醒时刻恢复；而 All TWT 位则把这次挂起/恢复一次性应用到全部协定上。灵活 TWT（flexible TWT）甚至允许站点指定一个与任何既有协定无关的一次性唤醒时刻。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 170\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">\n  <line x1=\"30\" y1=\"40\" x2=\"440\" y2=\"40\"/>\n  <text x=\"30\" y=\"24\" stroke=\"none\" fill=\"currentColor\" font-size=\"13\">STA radio state over time</text>\n  <rect x=\"30\" y=\"50\" width=\"60\" height=\"24\"/>\n  <text x=\"60\" y=\"66\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">awake</text>\n  <line x1=\"90\" y1=\"62\" x2=\"180\" y2=\"62\" stroke-dasharray=\"4 4\"/>\n  <text x=\"135\" y=\"56\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">doze</text>\n  <rect x=\"180\" y=\"50\" width=\"60\" height=\"24\"/>\n  <text x=\"210\" y=\"66\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">SP</text>\n  <line x1=\"240\" y1=\"62\" x2=\"330\" y2=\"62\" stroke-dasharray=\"4 4\"/>\n  <text x=\"285\" y=\"56\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">doze</text>\n  <rect x=\"330\" y=\"50\" width=\"60\" height=\"24\"/>\n  <text x=\"360\" y=\"66\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">SP</text>\n  <line x1=\"180\" y1=\"90\" x2=\"330\" y2=\"90\"/>\n  <line x1=\"180\" y1=\"86\" x2=\"180\" y2=\"94\"/>\n  <line x1=\"330\" y1=\"86\" x2=\"330\" y2=\"94\"/>\n  <text x=\"255\" y=\"108\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">wake interval</text>\n  <line x1=\"180\" y1=\"120\" x2=\"240\" y2=\"120\"/>\n  <line x1=\"180\" y1=\"116\" x2=\"180\" y2=\"124\"/>\n  <line x1=\"240\" y1=\"116\" x2=\"240\" y2=\"124\"/>\n  <text x=\"210\" y=\"138\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">min wake duration</text>\n</svg>",
+      "caption": {
+        "en": "TWT turns a station's radio into a series of scheduled appointments: it sleeps, wakes for a service period of at least the minimum wake duration, then sleeps again until the next wake interval elapses.",
+        "zh": "TWT 把站点的射频变成一连串预定好的“约会”：它先休眠，在每个服务期内醒来（至少持续到最小唤醒时长），随后再次休眠，直到下一个唤醒间隔到期。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Two finer mechanisms round out HE TWT. First, power-save behavior during an SP is governed by precise wake/doze rules: a station must stay awake at least an adjusted minimum wake duration, but may doze early when it detects a TWT SP termination event — for example, acknowledging a frame that had the End-Of-Service-Period (EOSP) bit set, or seeing a final Trigger frame not addressed to it. Second, HE subchannel-selective transmission (SST) confines a station to part of the band: by negotiating a trigger-enabled TWT whose TWT Channel field names a secondary 20/80 MHz subchannel, the station only needs to keep that slice awake during its SPs and can sleep across the rest of the band — saving power while the AP serves it on a dedicated subchannel.",
+      "zh": "还有两项更精细的机制让 HE TWT 趋于完整。其一，服务期内的省电行为受精确的“醒/睡”规则约束：站点必须至少保持清醒一个“调整后最小唤醒时长”，但当它检测到“TWT SP 终止事件”时可以提前打盹——例如，对一个置位了服务期结束位（EOSP）的帧作出确认，或者看到一个并非发给自己的最后一个触发帧。其二，HE 子信道选择性传输（subchannel selective transmission，SST）把站点限定在频段的一部分上：通过协商一个其 TWT Channel 字段指明某个次级 20/80 MHz 子信道的触发使能 TWT，站点在其 SP 期间只需让那一片频谱保持清醒，而可以在频段其余部分上睡眠——在 AP 用一个专用子信道为其服务的同时省下功耗。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What the SP termination events and SST channel rules actually say",
+        "zh": "SP 终止事件与 SST 信道规则的精确措辞"
+      },
+      "en": "Clause 26.8.5 lists the exact TWT SP termination events: a STA may doze once AdjustedMinimumTWTWakeDuration has elapsed from the SP start, or earlier on an event such as acknowledging an individually addressed QoS Data/QoS Null frame with EOSP=1 from the responding STA/scheduling AP, acknowledging a non-QoS frame sent with More Data=0, receiving such a frame that solicits no immediate response, or receiving a final Trigger frame (More TF=0) not addressed to it. For SST (26.8.7), SST is set up as a trigger-enabled TWT where the TWT Channel field carries up to one bit (a 20 MHz STA's secondary channel) or all-4-LSBs/all-4-MSBs (an 80 MHz STA's primary vs secondary 80 MHz). During SPs the AP must keep that STA's individually addressed RUs within the indicated subchannel; the STA shall be available on that subchannel at TWT start, shall not access it with DCF/EDCAF, and shall not respond to Trigger frames until it has performed CCA or NAVSyncDelay has elapsed. If the AP's operating channel changes so the secondary channel falls outside it, both sides implicitly terminate the trigger-enabled TWT.",
+      "zh": "26.8.5 节列出了精确的 TWT SP 终止事件：站点在自 SP 起始算起经过 AdjustedMinimumTWTWakeDuration 后可以打盹，或在更早的某个事件上提前打盹——例如对响应方站点/调度方 AP 发来的、置位了 EOSP=1 的单播 QoS Data/QoS Null 帧作出确认，对一个以 More Data=0 发送的非 QoS 帧作出确认，收到这样一个不索要即时响应的帧，或收到一个并非发给自己的最后触发帧（More TF=0）。就 SST 而言（26.8.7），SST 被建立为一个触发使能 TWT，其中 TWT Channel 字段携带至多一个置位的比特（20 MHz 站点的次级信道），或全部 4 个 LSB / 全部 4 个 MSB（80 MHz 站点的主用 80 MHz 与次级 80 MHz 之别）。在 SP 期间，AP 必须把发给该站点的单播 RU 保持在所指明的子信道内；站点应在 TWT 起始时刻于该子信道上就绪，不得用 DCF/EDCAF 接入该子信道，并且在完成 CCA 或经过 NAVSyncDelay 之前不应响应触发帧。若 AP 的工作信道发生变化以致次级信道落到其之外，双方便隐式终止该触发使能 TWT。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4072,
+          4073,
+          4074,
+          4075,
+          4076
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:26.8.1",
+    "80211-2024:26.8.2",
+    "80211-2024:26.8.3",
+    "80211-2024:26.8.4",
+    "80211-2024:26.8.5",
+    "80211-2024:26.8.6",
+    "80211-2024:26.8.7"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4053,
+        4054
+      ],
+      "note": "26.8.1 General / 26.8.2 start — TWT minimizes contention and awake time; requester/responder roles; capability subfields; individual TWT negotiation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4054,
+        4055,
+        4058,
+        4059
+      ],
+      "note": "26.8.2 individual TWT (trigger-enabled, announced, Figure 26-9) and 26.8.3 broadcast TWT (broadcast TWT element in Beacons, <Broadcast TWT ID, MAC> tuple, Figure 26-10)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4060,
+        4061
+      ],
+      "note": "26.8.3.2 Alternate/Reject TWT Setup Command and Broadcast TWT Persistence countdown for schedule change/termination"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4068,
+        4069,
+        4071
+      ],
+      "note": "26.8.4 TWT Information frame — Next TWT subfield suspend/resume, All TWT bit, flexible TWT independent of standing agreements"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4072,
+        4073
+      ],
+      "note": "26.8.5 power save during TWT SPs — AdjustedMinimumTWTWakeDuration and the list of TWT SP termination events (EOSP, More Data=0, final Trigger)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4073,
+        4074
+      ],
+      "note": "26.8.6 negotiation of wake TBTT and wake interval — Negotiation Type 1, first wake TBTT, wake interval, nominal minimum wake duration"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4074,
+        4075,
+        4076
+      ],
+      "note": "26.8.7 HE subchannel selective transmission — trigger-enabled TWT with TWT Channel field; subchannel availability and CCA/NAV rules; implicit termination on channel change"
+    }
+  ],
+  "track": "modern-phy"
+}

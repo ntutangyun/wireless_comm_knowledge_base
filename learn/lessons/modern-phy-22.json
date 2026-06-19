@@ -1,0 +1,168 @@
+{
+  "id": "modern-phy-22",
+  "title": {
+    "en": "HE Spatial Reuse, Power Save and BSS Operation",
+    "zh": "HE 空间复用、节能与 BSS 运行"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Cram more Wi-Fi networks into the same room and they spend most of their time politely waiting for each other — one transmits, everyone else hears the medium as busy and backs off, even when they are far enough apart to talk at the same time. HE (Wi-Fi 6) spatial reuse attacks exactly this waste: it lets a station recognise that a busy signal belongs to a *neighbouring* network (an overlapping BSS, or OBSS) and decide that this particular neighbour is too quiet to actually collide with — so it transmits anyway. The goal, in the standard's own words, is to reuse the medium more often in dense deployments through early identification of OBSS signals.",
+      "zh": "把越来越多的 Wi-Fi 网络塞进同一个房间，它们大部分时间都在客气地互相等待——一个在发，其他人就把信道听成“忙”而退避，哪怕彼此距离足够远、本可以同时通话。HE（Wi-Fi 6）的空间复用正是针对这种浪费：它让站点识别出某个“忙”信号其实来自一个相邻网络（重叠基本服务集，OBSS），并判断这个邻居信号弱到不会真正发生冲突——于是照样发送。用标准自己的话说，目标是在密集部署中，通过对 OBSS 信号的早期识别，更频繁地复用信道。"
+    },
+    {
+      "type": "prose",
+      "en": "There are two independent reuse modes, and they coexist. The first is OBSS PD-based spatial reuse: a station that detects an inter-BSS PPDU whose received signal sits below an OBSS Packet-Detect (OBSS PD) level may simply ignore it — it skips the CCA-busy and does not update its basic NAV — and contend for the medium. The catch is fairness: if you raise your detection threshold so you hear neighbours less, you must lower your own transmit power so you bother them less. The standard ties the two together in one equation, so a higher OBSS PD level is only allowed in exchange for a reduced TX_PWR.",
+      "zh": "存在两种相互独立、又能并存的复用模式。第一种是基于 OBSS PD 的空间复用：当站点检测到一个跨 BSS 的 PPDU，且其接收信号低于某个 OBSS 包检测（OBSS PD）门限时，它可以干脆忽略它——跳过 CCA 忙、也不更新基础 NAV——转而去竞争信道。代价是公平性：如果你抬高检测门限、从而更少地“听见”邻居，你就必须相应降低自己的发射功率、从而更少地打扰邻居。标准用一个等式把两者绑定，因此只有以降低 TX_PWR 为交换，才被允许使用更高的 OBSS PD 门限。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 420 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.6'><line x1='40' y1='20' x2='40' y2='180'/><line x1='40' y1='180' x2='400' y2='180'/><text x='8' y='24' stroke='none' fill='currentColor' font-size='11'>level</text><text x='350' y='196' stroke='none' fill='currentColor' font-size='11'>TX_PWR</text><line x1='40' y1='60' x2='400' y2='60' stroke-dasharray='4 4'/><text x='44' y='55' stroke='none' fill='currentColor' font-size='10'>OBSS_PD max (-62 dBm)</text><line x1='40' y1='150' x2='400' y2='150' stroke-dasharray='4 4'/><text x='44' y='145' stroke='none' fill='currentColor' font-size='10'>OBSS_PD min (-82 dBm)</text><line x1='110' y1='150' x2='340' y2='60'/><circle cx='110' cy='150' r='4' fill='currentColor'/><circle cx='340' cy='60' r='4' fill='currentColor'/><text x='150' y='130' stroke='none' fill='currentColor' font-size='10'>higher PD level &#8594; lower TX_PWR</text><text x='86' y='170' stroke='none' fill='currentColor' font-size='10'>low</text><text x='318' y='170' stroke='none' fill='currentColor' font-size='10'>ref</text></svg>",
+      "caption": {
+        "en": "The OBSS PD / TX_PWR trade-off (Equation 26-5): raising the OBSS PD level above its minimum is only permitted if transmit power is dropped from the reference, bounded between OBSS_PDmin (-82 dBm) and OBSS_PDmax (-62 dBm).",
+        "zh": "OBSS PD 与 TX_PWR 的取舍（式 26-5）：只有在发射功率从参考值下调的前提下，才允许把 OBSS PD 门限抬高于其最小值，且门限被限制在 OBSS_PDmin（-82 dBm）与 OBSS_PDmax（-62 dBm）之间。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The second mode is PSR-based (parameterised spatial reuse) reuse, and it is more cooperative. When an AP sends a Trigger frame to solicit an uplink transmission, it can advertise a UL Spatial Reuse budget — effectively saying \"a nearby network may transmit during my uplink as long as it stays under this power.\" An OBSS station that hears such a trigger and has a frame queued may transmit a PSRT PPDU *inside* the ongoing transmission opportunity, provided its power obeys the signalled budget: TxPower minus a per-subchannel term must stay below the PSR level minus the received power of the trigger. Where OBSS PD says \"ignore the weak ones,\" PSR says \"squeeze in under a power ceiling the other network handed you.\"",
+      "zh": "第二种模式是基于 PSR（参数化空间复用）的复用，更具协作性。当 AP 发送触发帧（Trigger frame）来征集上行传输时，它可以广播一个 UL 空间复用预算——实际上是在说“只要功率不超过此值，附近网络可以在我的上行期间发送”。听到这样的触发帧、且有帧排队的 OBSS 站点，可以在正在进行的传输机会（TXOP）之内发送一个 PSRT PPDU，前提是其功率遵守所信令的预算：发射功率减去每子信道项，必须低于 PSR 门限减去触发帧的接收功率。如果说 OBSS PD 是“忽略弱信号”，那么 PSR 就是“在对方网络递给你的功率上限之下挤进去发送”。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant APb as Other-BSS AP\n    participant STAb as Other-BSS STAs\n    participant Aobss as OBSS STA (reuser)\n    participant Robss as OBSS peer\n    APb->>STAb: Trigger (PSRR PPDU, UL Spatial Reuse budget)\n    Note over Aobss: hears trigger, frame queued\n    Note over Aobss: TxPower - 10log10(N) <= PSRmin - RPL ?\n    Aobss->>Robss: PSRT PPDU (inside the ongoing TXOP)\n    Robss-->>Aobss: BlockAck\n    Note over Aobss,Robss: must end within the triggered HE TB PPDU",
+      "zh": "sequenceDiagram\n    participant APb as 另一 BSS 的 AP\n    participant STAb as 另一 BSS 的站点\n    participant Aobss as OBSS 站点(复用方)\n    participant Robss as OBSS 对端\n    APb->>STAb: 触发帧(PSRR PPDU, UL 空间复用预算)\n    Note over Aobss: 听到触发帧, 有帧排队\n    Note over Aobss: TxPower - 10log10(N) <= PSRmin - RPL ?\n    Aobss->>Robss: PSRT PPDU(在进行中的 TXOP 内)\n    Robss-->>Aobss: BlockAck\n    Note over Aobss,Robss: 必须在被触发的 HE TB PPDU 内结束"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The two modes have a deliberate hand-off. A station that supports PSR and hears an inter-BSS PPDU which is NOT marked PSR_DISALLOW first tries to find a PSR opportunity; only if it fails to find one does it fall back to disabling/using OBSS PD reuse on that PPDU. So PSR is tried first, OBSS PD is the fallback — they don't both fire on the same frame.",
+      "zh": "两种模式之间有刻意设计的衔接。支持 PSR 的站点，在听到一个未被标记为 PSR_DISALLOW 的跨 BSS PPDU 时，会先尝试寻找 PSR 机会；只有在找不到 PSR 机会时，才回退到对该 PPDU 关闭或使用 OBSS PD 复用。因此是先试 PSR、OBSS PD 作为后备——两者不会对同一帧同时触发。"
+    },
+    {
+      "type": "prose",
+      "en": "Talking more aggressively only helps if the radio can also sleep aggressively, so HE pairs reuse with several power-save tricks. Intra-PPDU power save lets a non-AP station doze for the rest of a PPDU the moment it can tell the frame is not for it — for example an intra-BSS downlink MU PPDU whose STA_ID list doesn't include it — while still keeping its NAV timers running. Power save with UORA and TWT lets a station sleep through everything except scheduled trigger-enabled TWT service periods that carry random-access RUs. Opportunistic power save (OPS) lets the AP broadcast, via an OPS or FILS Discovery frame, a window during which unscheduled stations may simply be unavailable. And HE dynamic SM power save keeps extra receive chains powered down until a Trigger frame announces an imminent MIMO exchange.",
+      "zh": "更主动地“说话”，只有在收发机也能更主动地“睡觉”时才划算，因此 HE 把复用与若干节能手段配对。PPDU 内节能（intra-PPDU power save）让非 AP 站点一旦判断出某个 PPDU 与自己无关——例如某个 STA_ID 列表中不含自己的 BSS 内下行 MU PPDU——就可以在该 PPDU 剩余时间里打盹，同时仍保持其 NAV 计时器运行。基于 UORA 与 TWT 的节能让站点睡过除被调度的、携带随机接入 RU 的触发使能 TWT 服务期之外的一切时间。机会式节能（OPS）让 AP 通过 OPS 帧或 FILS Discovery 帧广播一个窗口，未被调度的站点在该窗口内可直接处于不可用状态。而 HE 动态 SM 节能则让额外的接收链保持下电，直到一个触发帧预告即将到来的 MIMO 交换。"
+    },
+    {
+      "type": "prose",
+      "en": "All of this hangs on the glue of HE BSS operation. Every Beacon in an HE BSS carries an HE Operation element advertising the basic HE-MCS/NSS set and the operating channel; a station won't even join unless it supports every tuple in that basic set. The 6 GHz band gets special rules: a 6 GHz station behaves as a VHT STA but must use HE PPDU formats and must not transmit the legacy HT/VHT operation elements. The reuse and doze decisions above all key off the BSS color — a 1-to-63 identifier chosen at start-up and carried in the PHY header so a receiver can tell intra-BSS from inter-BSS in microseconds; when two neighbours collide on the same color, the AP can disable color or advertise a new one. AID assignment can be constrained by the color, optional quiet time periods (QTPs) carve out protected peer-to-peer windows, ER beacons extend downlink reach, and APs sharing a channel and antennas but lacking a multiple-BSSID structure form a co-hosted BSSID set.",
+      "zh": "这一切都靠 HE BSS 运行这层“粘合剂”支撑。HE BSS 中的每个信标都携带一个 HE Operation 元素，宣告基本 HE-MCS/NSS 集合与工作信道；站点必须支持该基本集合中的每一个元组，否则连加入都不允许。6 GHz 频段有专门规则：6 GHz 站点表现为 VHT STA，但必须使用 HE PPDU 格式，且不得发送传统的 HT/VHT 操作元素。上述复用与打盹决策全都以 BSS color 为依据——这是一个在启动时选定、取值 1 到 63、携带在 PHY 头部的标识，使接收方能在数微秒内分辨帧来自本 BSS 还是其他 BSS；当两个邻居撞上同一颜色时，AP 可以关闭颜色或宣告一个新颜色。AID 分配可受颜色约束，可选的安静时段（QTP）划出受保护的点对点窗口，ER 信标延伸下行覆盖，而共享信道与天线、但不具备多 BSSID 结构的 AP 则组成一个共宿 BSSID 集（co-hosted BSSID set）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact OBSS PD / TX_PWR equation and the PSR opportunity condition",
+        "zh": "精确的 OBSS PD / TX_PWR 等式与 PSR 机会条件"
+      },
+      "en": "26.10.2.4 fixes the fairness trade-off with Equation (26-5): OBSS_PDlevel <= max( OBSS_PDmin, min( OBSS_PDmax, OBSS_PDmin + (TX_PWRref - TX_PWR) ) ) + 10*log10(PPDU_BW / 20 MHz), with OBSS_PDmin = -82 dBm, OBSS_PDmax = -62 dBm, and TX_PWRref = 21 dBm for non-AP STAs (25 dBm for higher-stream APs). So every dB you raise the detect level you must pay back in transmit power, and the level scales up by 10*log10 with PPDU bandwidth. PSR is governed by 26.10.3.2: an OBSS STA identifies a PSR opportunity only if it receives a PSRR PPDU identified as inter-BSS and has a PSRT PPDU queued whose power satisfies TxPowerPSRT - 10*log10(N_PSRT,nonpunc) <= PSRmin - RPL_PSRR,20MHz, where PSRmin comes from the UL Spatial Reuse subfield of the trigger (Table 27-24). The PSRT PPDU must not extend beyond the triggered HE TB PPDU. 26.10.4 sequences the two: a PSR-capable STA that fails to find a PSR opportunity disables OBSS PD on that PPDU. Power save: 26.14.1 lets a non-AP STA doze until a PPDU's end once it identifies the frame is not addressed to it (e.g. its STA_ID is absent from an intra-BSS MU PPDU) while still running NAV; 26.14.4 keeps extra Rx chains off until a single-stream Trigger (MU-RTS/BSRP/BQRP) addressed to it announces a MIMO exchange. BSS operation: 26.17.3.2 fixes the initial BSS color to 1..63; 26.17.4 constrains AID(5:8) to the color via Equation (26-8); 26.17.7 defines the co-hosted BSSID set by shared operating class, channel, and antenna connectors.",
+      "zh": "26.10.2.4 用式 (26-5) 固定了这一公平取舍：OBSS_PDlevel <= max( OBSS_PDmin, min( OBSS_PDmax, OBSS_PDmin + (TX_PWRref - TX_PWR) ) ) + 10*log10(PPDU_BW / 20 MHz)，其中 OBSS_PDmin = -82 dBm，OBSS_PDmax = -62 dBm，非 AP 站点 TX_PWRref = 21 dBm（多流 AP 为 25 dBm）。因此检测门限每抬高 1 dB，都必须以发射功率偿还，且门限随 PPDU 带宽按 10*log10 放大。PSR 由 26.10.3.2 管辖：OBSS 站点只有在收到被识别为跨 BSS 的 PSRR PPDU、且队列中有一个 PSRT PPDU 满足 TxPowerPSRT - 10*log10(N_PSRT,nonpunc) <= PSRmin - RPL_PSRR,20MHz 时，才识别出一个 PSR 机会，其中 PSRmin 来自触发帧的 UL Spatial Reuse 子字段（表 27-24）。PSRT PPDU 不得超出被触发的 HE TB PPDU。26.10.4 给两者排序：支持 PSR 的站点若未能找到 PSR 机会，则对该 PPDU 关闭 OBSS PD。节能方面：26.14.1 允许非 AP 站点在判明某帧不发给自己（例如其 STA_ID 不在某 BSS 内 MU PPDU 中）后打盹至该 PPDU 结束，同时仍运行 NAV；26.14.4 让额外接收链保持关闭，直到一个发给它的单流触发帧（MU-RTS/BSRP/BQRP）预告 MIMO 交换。BSS 运行方面：26.17.3.2 把初始 BSS color 固定在 1..63；26.17.4 通过式 (26-8) 将 AID(5:8) 约束到颜色；26.17.7 以共享的操作类、信道与天线连接器来定义共宿 BSSID 集。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4085,
+          4090,
+          4093,
+          4104,
+          4107,
+          4126,
+          4129,
+          4132
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:26.10.1",
+    "80211-2024:26.10.2",
+    "80211-2024:26.10.3",
+    "80211-2024:26.10.4",
+    "80211-2024:26.14.1",
+    "80211-2024:26.14.2",
+    "80211-2024:26.14.3",
+    "80211-2024:26.14.4",
+    "80211-2024:26.17.1",
+    "80211-2024:26.17.2",
+    "80211-2024:26.17.3",
+    "80211-2024:26.17.4",
+    "80211-2024:26.17.5",
+    "80211-2024:26.17.6",
+    "80211-2024:26.17.7"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4081,
+        4082
+      ],
+      "note": "26.10.1 General + 26.10.2.1 - objective of HE spatial reuse; two independent modes (OBSS PD and PSR)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4085,
+        4086,
+        4087
+      ],
+      "note": "26.10.2.4 - Equation (26-5) OBSS PD / TX_PWR adjustment; OBSS_PDmin -82, OBSS_PDmax -62, TX_PWRref 21/25 dBm"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4089,
+        4090,
+        4093
+      ],
+      "note": "26.10.3 - PSR-based reuse; PSR opportunity power condition; UL Spatial Reuse subfield of Trigger"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4093,
+        4094
+      ],
+      "note": "26.10.4 - interaction: PSR tried first, OBSS PD disabled on a PPDU if no PSR opportunity found"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4104,
+        4105,
+        4106,
+        4107
+      ],
+      "note": "26.14.1-26.14.4 - intra-PPDU power save; power save with UORA and TWT; opportunistic power save; HE dynamic SM power save"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4117,
+        4121
+      ],
+      "note": "26.17.1 basic HE BSS operation (HE Operation element, basic HE-MCS/NSS set) + 26.17.2.1 6 GHz rules"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4126,
+        4127,
+        4128,
+        4129
+      ],
+      "note": "26.17.3 BSS color (initial 1..63, disabling, new color, collision) + 26.17.4 AID assignment Equation (26-8)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4129,
+        4131,
+        4132
+      ],
+      "note": "26.17.5 quiet time periods (QTP) + 26.17.6 ER beacon + 26.17.7 co-hosted BSSID set"
+    }
+  ],
+  "track": "modern-phy"
+}

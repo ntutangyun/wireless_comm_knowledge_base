@@ -1,0 +1,125 @@
+{
+  "id": "modern-phy-20",
+  "title": {
+    "en": "HE Sounding Protocol and NDP Feedback Report at the MAC Level",
+    "zh": "HE 探测协议与 MAC 层 NDP 反馈报告"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Beamforming is how an AP focuses energy toward a client instead of spraying it everywhere, and DL MU-MIMO is how it serves several clients on the same time-frequency resource. Both need the same ingredient: an up-to-date picture of the channel. That picture cannot just be guessed — the AP has to ask for it. The HE sounding protocol is the MAC-layer choreography for that asking: the beamformer sends a known training signal, the beamformee measures the channel and sends back a compressed estimate, and the beamformer turns that estimate into a steering matrix.",
+      "zh": "波束成形（beamforming）让 AP 把能量聚焦到某个客户端，而不是向四面八方乱撒；下行 MU-MIMO 则让它在同一时频资源上同时服务多个客户端。两者都需要同一样东西：一份最新的信道画像。这份画像不能靠猜——AP 必须主动去“要”。HE 探测协议（HE sounding protocol）就是这个“索要”动作在 MAC 层的编排：波束成形发起方（beamformer）发出一个已知的训练信号，被成形方（beamformee）测量信道并回传一份压缩后的估计，发起方再把这份估计转换成导向矩阵（steering matrix）。"
+    },
+    {
+      "type": "prose",
+      "en": "There are two flavours. In non-TB (non-trigger-based) sounding, the AP talks to a single client: it sends an individually addressed HE NDP Announcement (one STA Info field), then a SIFS later an HE sounding NDP, and the client answers a SIFS after that with an HE Compressed Beamforming/CQI frame. In TB (trigger-based) sounding, the AP sounds many clients at once: it broadcasts an NDP Announcement with two or more STA Info fields, sends the sounding NDP, then sends a BFRP (Beamforming Report Poll) Trigger frame, and every solicited client replies simultaneously inside an HE TB PPDU. Three feedback types can be requested — SU, MU, and CQI.",
+      "zh": "它有两种形态。在非触发式（non-TB）探测中，AP 对单个客户端发话：发送一个单播寻址的 HE NDP 通告帧（仅含一个 STA Info 字段），一个 SIFS 后发送 HE 探测 NDP，客户端再在其后一个 SIFS 回复一个 HE Compressed Beamforming/CQI 帧。在触发式（TB）探测中，AP 一次性探测多个客户端：广播一个含两个或更多 STA Info 字段的 NDP 通告帧，发送探测 NDP，再发送一个 BFRP（波束成形报告轮询）触发帧，所有被点名的客户端便在一个 HE TB PPDU 内同时回复。可索取三种反馈类型——SU、MU 和 CQI。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant BFR as HE beamformer (AP)\n    participant B1 as Beamformee 1\n    participant Bn as Beamformee n\n    Note over BFR: TB sounding (many clients)\n    BFR->>B1: HE NDP Announcement (broadcast, >=2 STA Info)\n    BFR->>Bn: (same broadcast frame)\n    Note over BFR,Bn: SIFS\n    BFR->>B1: HE sounding NDP\n    BFR->>Bn: (training signal)\n    Note over BFR,Bn: SIFS\n    BFR->>B1: BFRP Trigger\n    BFR->>Bn: (poll for reports)\n    Note over B1,Bn: SIFS\n    B1-->>BFR: HE Compressed Beamforming/CQI (in HE TB PPDU)\n    Bn-->>BFR: HE Compressed Beamforming/CQI (simultaneous)",
+      "zh": "sequenceDiagram\n    participant BFR as HE 发起方 (AP)\n    participant B1 as 被成形方 1\n    participant Bn as 被成形方 n\n    Note over BFR: TB 探测 (多客户端)\n    BFR->>B1: HE NDP 通告 (广播, >=2 个 STA Info)\n    BFR->>Bn: (同一广播帧)\n    Note over BFR,Bn: SIFS\n    BFR->>B1: HE 探测 NDP\n    BFR->>Bn: (训练信号)\n    Note over BFR,Bn: SIFS\n    BFR->>B1: BFRP 触发帧\n    BFR->>Bn: (轮询报告)\n    Note over B1,Bn: SIFS\n    B1-->>BFR: HE Compressed Beamforming/CQI (置于 HE TB PPDU)\n    Bn-->>BFR: HE Compressed Beamforming/CQI (同时回复)"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The NDP Announcement does the addressing, the sounding NDP carries no data at all — it is pure training symbols (HE-LTF) — and on the TB side the BFRP Trigger is what actually pulls the reports out. Partial-bandwidth feedback (sounding only a slice of a wide channel) can only be solicited in a TB sequence, never in non-TB; that is a deliberate rule, not an accident.",
+      "zh": "NDP 通告帧负责寻址；探测 NDP 完全不携带数据——它纯粹是训练符号（HE-LTF）；而在 TB 一侧，真正把报告“拉”出来的是 BFRP 触发帧。部分带宽反馈（只探测宽信道的一段）只能在 TB 序列中索取，绝不能在非 TB 序列中索取；这是一条有意为之的规则，并非偶然。"
+    },
+    {
+      "type": "prose",
+      "en": "Wide channels make one report huge. A 160 MHz MU report can reach roughly 30 kB, but a single beamforming/CQI frame is capped at 11,454 octets. So the standard segments the report: it is split into K equal-length segments (the last one possibly shorter), each carried in its own frame, all bundled into one A-MPDU in descending order of remaining segments. If the AP misses some segments, the BFRP Trigger carries a Feedback Segment Retransmission Bitmap so it can ask for exactly the missing pieces — but only in TB sounding. In non-TB, a lost segment means repeating the whole sequence.",
+      "zh": "宽信道会让单份报告变得巨大。一份 160 MHz 的 MU 报告大约可达 30 kB，但单个 beamforming/CQI 帧的上限是 11454 字节。于是标准对报告进行分段：把它切成 K 个等长分段（最后一段可能更短），每段放进各自的帧，再全部打包进一个 A-MPDU，按剩余分段数降序排列。如果 AP 漏收了某些分段，BFRP 触发帧携带一个“反馈分段重传位图”（Feedback Segment Retransmission Bitmap），可精确地只索要缺失的那几段——但仅限于 TB 探测。在非 TB 探测中，丢一段就意味着要重做整个序列。"
+    },
+    {
+      "type": "prose",
+      "en": "Not every poll needs channel state. The trigger-response toolkit also carries three lightweight reports. A Buffer Status Report (BSR) tells the AP how many octets a client has queued per AC, so the AP can size uplink MU allocations. A Bandwidth Query Report (BQR) tells the AP which 20 MHz subchannels the client sees as available. And the NDP Feedback Report Procedure is the cheapest of all: in response to an NFRP Trigger, each scheduled client sends back exactly one bit — packed by spatial-stream-and-tone-set into a shared HE TB feedback NDP — so the AP can probe dozens of clients in a single SIFS-spaced exchange and receive no acknowledgement back.",
+      "zh": "并非每次轮询都需要信道状态信息。这套触发—响应工具箱还包含三种轻量级报告。缓冲状态报告（BSR）告诉 AP 每个接入类别（AC）的客户端排队了多少字节，便于 AP 规划上行 MU 资源分配的大小。带宽查询报告（BQR）告诉 AP 客户端认为哪些 20 MHz 子信道可用。而 NDP 反馈报告流程则是其中最省的：在收到 NFRP 触发帧后，每个被调度的客户端只回传恰好一个比特——按空间流与音调集（tone set）打包进一个共享的 HE TB 反馈 NDP——于是 AP 能在一次以 SIFS 间隔的交互中探测数十个客户端，且无需回复任何确认。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 440 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><text x='10' y='24' stroke='none' fill='currentColor' font-size='13'>NFRP Trigger schedules AIDs [start .. start+NSTA)</text><rect x='10' y='40' width='150' height='34'/><text x='20' y='62' stroke='none' fill='currentColor' font-size='12'>AP: NFRP Trigger</text><line x1='160' y1='57' x2='210' y2='57' stroke-dasharray='4 3'/><text x='168' y='50' stroke='none' fill='currentColor' font-size='10'>SIFS</text><text x='10' y='100' stroke='none' fill='currentColor' font-size='13'>Each STA = 1 bit at its own STS x tone-set:</text><rect x='10' y='112' width='60' height='28'/><text x='28' y='131' stroke='none' fill='currentColor' font-size='12'>STA1=0</text><rect x='80' y='112' width='60' height='28'/><text x='98' y='131' stroke='none' fill='currentColor' font-size='12'>STA2=1</text><rect x='150' y='112' width='60' height='28'/><text x='168' y='131' stroke='none' fill='currentColor' font-size='12'>STA3=1</text><rect x='220' y='112' width='60' height='28'/><text x='238' y='131' stroke='none' fill='currentColor' font-size='12'>STA4=0</text><text x='290' y='131' stroke='none' fill='currentColor' font-size='14'>...</text><rect x='10' y='112' width='320' height='28' stroke-dasharray='6 3'/><text x='10' y='170' stroke='none' fill='currentColor' font-size='12'>one shared HE TB feedback NDP -- no Ack returned</text></svg>",
+      "caption": {
+        "en": "NDP Feedback Report: many clients answer an NFRP Trigger with one bit each, all inside one HE TB feedback NDP. Bit=1 means 'awake and buffered octets exceed the threshold'; the AP sends no acknowledgement.",
+        "zh": "NDP 反馈报告：众多客户端各以一个比特回应 NFRP 触发帧，全部置于同一个 HE TB 反馈 NDP 中。比特为 1 表示“处于唤醒态且缓冲字节数超过阈值”；AP 不发送任何确认。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact sequence rules, the 11,454-octet cap, and how the NFRP bit is placed",
+        "zh": "精确的序列规则、11454 字节上限，以及 NFRP 比特的放置方式"
+      },
+      "en": "Clause 26.7.3 fixes the two sequences precisely. A non-TB sequence is an individually addressed HE NDP Announcement with exactly one STA Info field (AID11 set to the target's AID, or 0 for a mesh/AP/IBSS STA, and never 2047), then a SIFS, then an HE sounding NDP; the beamformee replies a SIFS later. A TB sequence uses a broadcast NDP Announcement with two or more STA Info fields, a sounding NDP, then a BFRP Trigger; an optional first STA Info field with AID11 = 2047 carries the Disallowed Subchannel Bitmap for punctured sounding. Per 26.7.4, a report that would exceed 11,454 octets is split into K = Ceil(L_HCBCR / L) segments identified by the Remaining Feedback Segments and First Feedback Segment subfields of the HE MIMO Control field, sent in one A-MPDU in descending segment order; the BFRP Trigger's Feedback Segment Retransmission Bitmap is all-1s on first solicitation and selective on retransmission. Per 26.5.7.2, an NFRP-scheduled STA derives RU_TONE_SET_INDEX = 1 + ((AID - Starting AID) mod (18 x 2^BW)) and STARTING_STS_NUM = (AID - Starting AID) / 18 / 2^BW, with NSTA = 18 x 2^BW x (Number Of Spatially Multiplexed Users + 1); the single FEEDBACK_STATUS bit (Table 26-3) is 0 if buffered octets do not exceed 2^(threshold exponent) octets and 1 if they do, and the AP sends no acknowledgement (26.5.7.3). The sounding NDP itself (26.7.5) is FORMAT = HE_SU with APEP_LENGTH = 0 — pure HE-LTF training, no payload.",
+      "zh": "26.7.3 节精确地固定了这两种序列。非 TB 序列是一个单播寻址、仅含一个 STA Info 字段的 HE NDP 通告帧（AID11 置为目标的 AID，若对端为 mesh/AP/IBSS STA 则置 0，且绝不为 2047），其后一个 SIFS，再发 HE 探测 NDP；被成形方在其后一个 SIFS 回复。TB 序列使用含两个或更多 STA Info 字段的广播 NDP 通告帧、一个探测 NDP，然后是 BFRP 触发帧；可选的首个 STA Info 字段（AID11 = 2047）携带用于打孔探测的“禁用子信道位图”。按 26.7.4 节，若报告将超过 11454 字节，则切分为 K = Ceil(L_HCBCR / L) 段，由 HE MIMO Control 字段中的“剩余反馈分段”与“首个反馈分段”子字段标识，置于一个 A-MPDU 内按分段降序发送；BFRP 触发帧的“反馈分段重传位图”在首次索取时全置 1，重传时则按需选择。按 26.5.7.2 节，被 NFRP 调度的 STA 推导出 RU_TONE_SET_INDEX = 1 + ((AID - Starting AID) mod (18 x 2^BW))、STARTING_STS_NUM = (AID - Starting AID) / 18 / 2^BW，其中 NSTA = 18 x 2^BW x (空间复用用户数 + 1)；那个单一的 FEEDBACK_STATUS 比特（表 26-3）在缓冲字节数不超过 2^(阈值指数) 字节时为 0、超过时为 1，且 AP 不发送任何确认（26.5.7.3 节）。探测 NDP 本身（26.7.5 节）为 FORMAT = HE_SU 且 APEP_LENGTH = 0——纯粹的 HE-LTF 训练符号，无净荷。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4034,
+          4035,
+          4045,
+          4051,
+          4052
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:26.7.1",
+    "80211-2024:26.7.2",
+    "80211-2024:26.7.3",
+    "80211-2024:26.7.4",
+    "80211-2024:26.7.5",
+    "80211-2024:26.5.5",
+    "80211-2024:26.5.6",
+    "80211-2024:26.5.7"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4031,
+        4032,
+        4033
+      ],
+      "note": "26.5.5 Buffer status report operation and 26.5.6 Bandwidth query report operation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4033,
+        4034,
+        4035,
+        4036
+      ],
+      "note": "26.5.7 NDP feedback report procedure - STA/AP behavior, resource-request bit, Table 26-3 FEEDBACK_STATUS"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4042
+      ],
+      "note": "26.7.1 General - sounding rationale, SU/MU/CQI feedback types, 11454-octet segmentation threshold"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4045,
+        4046
+      ],
+      "note": "26.7.3 rules for sequences; Figure 26-7 (non-TB) and Figure 26-8 (TB) sounding examples"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4051,
+        4052,
+        4053
+      ],
+      "note": "26.7.4 segmented feedback and retransmission bitmap; 26.7.5 HE sounding NDP transmission (HE_SU, APEP_LENGTH=0)"
+    }
+  ],
+  "track": "modern-phy"
+}

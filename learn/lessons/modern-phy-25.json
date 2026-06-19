@@ -1,0 +1,140 @@
+{
+  "id": "modern-phy-25",
+  "title": {
+    "en": "The HE Receiver, PHY Constants and TXVECTOR/TRIGVECTOR Interface",
+    "zh": "HE 接收机、PHY 常量与 TXVECTOR/TRIGVECTOR 接口"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Most of the glamour in Wi-Fi 6 goes to the transmitter — wider channels, OFDMA, 1024-QAM. But a radio is only as good as its ears. The HE receiver specification is the quiet contract that says: a compliant chip must be able to hear a faint signal, ignore a loud neighbour one channel over, survive a strong signal without clipping, and honestly report how busy the air is. This lesson walks the receiver side, then the bookkeeping that ties the PHY to the MAC.",
+      "zh": "Wi-Fi 6 的风头大多被发射机抢去了——更宽的信道、OFDMA、1024-QAM。但一台无线电的水平，取决于它的“耳朵”。HE 接收机规范就是那份不显眼却关键的契约：一颗合规芯片必须能听清微弱的信号、忽略隔壁信道里吵闹的邻居、在强信号下不被削顶，并如实报告空口有多繁忙。本课先走一遍接收侧，再讲把 PHY 与 MAC 绑在一起的那套“记账”机制。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with sensitivity. The standard pins a minimum input level to each modulation-and-rate point: a chip must keep packet error rate (PER) under 10% when the signal is at or above that floor. The floor scales with both robustness and width — BPSK rate-1/2 must work down to about -82 dBm in a 20 MHz channel, while greedy 1024-QAM rate-5/6 needs roughly -52 dBm. Every doubling of channel width raises the floor by ~3 dB, because the same total power is now spread over twice the bandwidth.",
+      "zh": "先看灵敏度。标准为每个“调制+码率”组合规定了一个最小输入电平：当信号处于该地板值或更高时，芯片必须把误包率（PER）维持在 10% 以下。这个地板值同时随鲁棒性和带宽变化——BPSK 1/2 在 20 MHz 信道下要能工作到约 -82 dBm，而贪婪的 1024-QAM 5/6 大约需要 -52 dBm。信道带宽每翻一倍，地板值约抬高 3 dB，因为同样的总功率此时被摊到了两倍的带宽上。"
+    },
+    {
+      "type": "prose",
+      "en": "Next, rejection — the ability to decode a wanted signal while a strong unwanted one sits nearby. The receiver is fed a desired signal 3 dB above its sensitivity, then an interferer is cranked up until 10% PER appears; the power gap is the rejection figure. Adjacent channel rejection (the interferer is one channel-width away) is the harder case; nonadjacent rejection (at least two widths away) allows a much larger gap. Beyond rejection, a maximum input level rule says the receiver must still hit 10% PER even when blasted with -30 dBm (5/6 GHz) or -20 dBm (2.4 GHz) — the front end must not saturate.",
+      "zh": "接着是抑制能力——在附近存在强干扰时仍能解出期望信号的本领。测试时先把期望信号设为高于灵敏度 3 dB，再把干扰功率一路抬高，直到出现 10% PER；两者的功率差就是抑制指标。邻道抑制（干扰偏移一个信道宽度）是更难的情形；非邻道抑制（至少偏移两个宽度）则允许大得多的功率差。除了抑制，还有一条最大输入电平规则：即便被 -30 dBm（5/6 GHz）或 -20 dBm（2.4 GHz）的强信号轰击，接收机仍须保持 10% PER——前端不能饱和。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "CCA (Clear Channel Assessment) sensitivity is layered, not a single number. The primary 20 MHz channel has the strictest rule: a decodable HE/VHT preamble at or above -82 dBm marks the medium busy, while any energy at -62 dBm does too. Secondary channels use looser thresholds (-72 dBm preamble detect for 20 MHz, relaxing as the secondary block widens), and a per-20-MHz bitmap reports the busy/idle status of each subchannel so the MAC can decide which slices it may still use.",
+      "zh": "CCA（空闲信道评估）灵敏度是分层的，而非单一数值。主 20 MHz 信道规则最严：可解调的 HE/VHT 前导只要达到或超过 -82 dBm 即判忙，任何能量达到 -62 dBm 也判忙。次信道使用更宽松的门限（20 MHz 前导检测为 -72 dBm，随次级块变宽而放宽），并用一个“逐 20 MHz”位图报告每个子信道的忙/闲状态，让 MAC 决定还能用哪些频段切片。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 460 220' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='18' font-size='13' stroke='none' fill='currentColor'>CCA thresholds across a 80 MHz operating channel</text><rect x='20' y='60' width='90' height='90'/><rect x='110' y='60' width='90' height='90'/><rect x='200' y='60' width='180' height='90'/><text x='40' y='110' font-size='11' stroke='none' fill='currentColor'>Primary</text><text x='40' y='126' font-size='11' stroke='none' fill='currentColor'>20 MHz</text><text x='118' y='110' font-size='11' stroke='none' fill='currentColor'>Secondary</text><text x='130' y='126' font-size='11' stroke='none' fill='currentColor'>20 MHz</text><text x='250' y='110' font-size='11' stroke='none' fill='currentColor'>Secondary 40 MHz</text><text x='28' y='175' font-size='10' stroke='none' fill='currentColor'>-82 dBm pre /</text><text x='38' y='189' font-size='10' stroke='none' fill='currentColor'>-62 dBm ED</text><text x='120' y='175' font-size='10' stroke='none' fill='currentColor'>-72 dBm pre /</text><text x='130' y='189' font-size='10' stroke='none' fill='currentColor'>-62 dBm ED</text><text x='240' y='175' font-size='10' stroke='none' fill='currentColor'>-72 dBm pre /</text><text x='250' y='189' font-size='10' stroke='none' fill='currentColor'>-59 dBm ED</text><text x='20' y='210' font-size='10' stroke='none' fill='currentColor'>Stricter near the primary; thresholds relax outward. (pre = preamble detect, ED = energy detect)</text></svg>",
+      "caption": {
+        "en": "The primary 20 MHz channel is guarded most tightly; secondary channels use progressively looser detect thresholds.",
+        "zh": "主 20 MHz 信道守护得最严；次信道则采用逐级放宽的检测门限。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Two more receiver outputs matter to higher layers. RCPI (Received Channel Power Indicator) is a calibrated estimate of received RF power, measured over the HE-STF or HE-LTF training fields and accurate to within +/-5 dB. It is what feeds the radio-measurement reports the MAC uses for roaming and link management. And quietly underneath all of this, the PHY hands the MAC an RXVECTOR full of parameters about every PPDU it decodes — the mirror image of the TXVECTOR the MAC supplies on transmit.",
+      "zh": "还有两个接收机输出对上层很重要。RCPI（接收信道功率指示）是对接收 RF 功率的一种校准估计，在 HE-STF 或 HE-LTF 训练字段上测量，精度在 ±5 dB 以内。它正是 MAC 用于漫游与链路管理的无线电测量报告的数据来源。而在这一切之下默默运转的，是 PHY 把一个装满参数的 RXVECTOR 交给 MAC——它描述每一个被解出的 PPDU，正是 MAC 在发射时提供的 TXVECTOR 的镜像。"
+    },
+    {
+      "type": "prose",
+      "en": "This vector interface is the seam between MAC and PHY. On transmit, the TXVECTOR carries per-PPDU instructions — FORMAT (HE_SU, HE_MU, HE_ER_SU, HE_TB), MCS, CH_BANDWIDTH, BSS_COLOR, GI type, and dozens more. On receive, the RXVECTOR returns what was actually heard, including RSSI, RCPI and SNR. There is also a TRIGVECTOR: when an AP sends a Trigger frame to solicit an uplink HE TB PPDU, it hands its own PHY a TRIGVECTOR (bandwidth, UL length, GI/LTF type, per-station AID list) so the PHY knows exactly how to receive each station's response on its assigned RU.",
+      "zh": "这套矢量接口是 MAC 与 PHY 之间的接缝。发射时，TXVECTOR 携带逐 PPDU 的指令——FORMAT（HE_SU、HE_MU、HE_ER_SU、HE_TB）、MCS、CH_BANDWIDTH、BSS_COLOR、GI 类型，以及其余数十项。接收时，RXVECTOR 回送实际听到的内容，包括 RSSI、RCPI 和 SNR。此外还有一个 TRIGVECTOR：当 AP 发送触发帧征召上行 HE TB PPDU 时，它会向自己的 PHY 递交一个 TRIGVECTOR（带宽、UL 长度、GI/LTF 类型、逐站点的 AID 列表），让 PHY 准确知道如何在各自分配的 RU 上接收每个站点的响应。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant MAC as MAC\n    participant PHY as HE PHY\n    Note over MAC,PHY: Downlink transmit\n    MAC->>PHY: PHY-TXSTART.request(TXVECTOR)\n    Note over PHY: FORMAT, MCS, CH_BANDWIDTH, BSS_COLOR ...\n    Note over MAC,PHY: Uplink trigger-based\n    MAC->>PHY: PHY-TRIGGER.request(TRIGVECTOR)\n    Note over PHY: per-RU receive setup for HE TB PPDUs\n    PHY-->>MAC: PHY-RXSTART.indication(RXVECTOR)\n    Note over PHY: RSSI, RCPI, SNR, decoded params",
+      "zh": "sequenceDiagram\n    participant MAC as MAC\n    participant PHY as HE PHY\n    Note over MAC,PHY: 下行发射\n    MAC->>PHY: PHY-TXSTART.request(TXVECTOR)\n    Note over PHY: FORMAT、MCS、CH_BANDWIDTH、BSS_COLOR ...\n    Note over MAC,PHY: 上行触发式\n    MAC->>PHY: PHY-TRIGGER.request(TRIGVECTOR)\n    Note over PHY: 为 HE TB PPDU 做逐 RU 接收配置\n    PHY-->>MAC: PHY-RXSTART.indication(RXVECTOR)\n    Note over PHY: RSSI、RCPI、SNR、解出的参数"
+    },
+    {
+      "type": "prose",
+      "en": "One TXVECTOR field deserves a closer look: CH_BANDWIDTH. It is not just a number of megahertz — its allowed values, and how the PHY interprets them, depend on FORMAT. For an HE SU PPDU it is a plain CBW20/40/80/160. For an HE MU PPDU it grows a whole family of preamble-puncturing values (e.g. HE-CBW-PUNC80-PRI) that mark which 20 MHz subchannels are punched out. The PHYCONFIG_VECTOR, set once via PHY-CONFIG.request, fixes the operating primary channel and width independent of any single PPDU.",
+      "zh": "有一个 TXVECTOR 字段值得细看：CH_BANDWIDTH。它不只是一个兆赫数——其允许取值以及 PHY 如何解释它，取决于 FORMAT。对 HE SU PPDU，它就是普通的 CBW20/40/80/160。对 HE MU PPDU，它会衍生出一整族前导打孔取值（如 HE-CBW-PUNC80-PRI），用来标记哪些 20 MHz 子信道被打掉。而 PHYCONFIG_VECTOR 通过 PHY-CONFIG.request 一次性设置，独立于任何单个 PPDU 地固定工作主信道与带宽。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact CCA layering and the vector primitives, by clause",
+        "zh": "精确的 CCA 分层与矢量原语（按条款）"
+      },
+      "en": "Clause 27.3.22.6.3 sets the primary-20-MHz rule: an HE STA must detect, with >90% probability, the start of a PPDU occupying at least the primary 20 MHz and issue PHY-CCA.indication(BUSY) within aCCATime when a non-HT-duplicate/VHT/HE PPDU is at or above -82 dBm in the primary, or when any signal is at or above -62 dBm. Clause 27.3.22.6.4 layers secondary detection: the secondary 20 MHz uses -62 dBm energy or max(-72 dBm, OBSS_PDlevel) preamble detect; the secondary 40 MHz uses -59 dBm / max(-72 dBm, OBSS_PDlevel+3 dB); the secondary 80 MHz uses -56 dBm / max(-69 dBm, OBSS_PDlevel+6 dB). Clause 27.3.22.6.5 requires a per20bitmap marking each 20 MHz subchannel busy or idle. Clause 27.3.22.7 fixes RCPI as the power averaged over HE-STF/HE-LTF, accurate to +/-5 dB (95% CI), with a 3 dB subtraction for HE ER SU PPDUs because their training fields are boosted 3 dB. On the interface side, Table 27-1 (27.2.2) lists every TXVECTOR/RXVECTOR parameter and which of the four HE FORMATs each applies to; Table 27-2 (27.2.3) lists the TRIGVECTOR; Table 27-3 (27.2.4) the LTFVECTOR for ranging NDPs; and Table 27-4 (27.2.6) gives the valid FORMAT/CH_BANDWIDTH/CH_OFFSET combinations that shape the PPDU.",
+      "zh": "27.3.22.6.3 节规定了主 20 MHz 规则：HE STA 须以 >90% 的概率检测到至少占用主 20 MHz 的 PPDU 起始，并在 aCCATime 内发出 PHY-CCA.indication(BUSY)——条件是主信道内的 non-HT-duplicate/VHT/HE PPDU 达到或超过 -82 dBm，或任何信号达到或超过 -62 dBm。27.3.22.6.4 节叠加次信道检测：次 20 MHz 用 -62 dBm 能量或 max(-72 dBm, OBSS_PDlevel) 前导检测；次 40 MHz 用 -59 dBm / max(-72 dBm, OBSS_PDlevel+3 dB)；次 80 MHz 用 -56 dBm / max(-69 dBm, OBSS_PDlevel+6 dB)。27.3.22.6.5 节要求用 per20bitmap 标记每个 20 MHz 子信道的忙/闲。27.3.22.7 节将 RCPI 定为在 HE-STF/HE-LTF 上平均的功率，精度 ±5 dB（95% 置信区间）；对 HE ER SU PPDU 要减去 3 dB，因为其训练字段被增强了 3 dB。在接口侧，表 27-1（27.2.2）列出每个 TXVECTOR/RXVECTOR 参数及其适用于四种 HE FORMAT 中的哪些；表 27-2（27.2.3）列出 TRIGVECTOR；表 27-3（27.2.4）列出用于测距 NDP 的 LTFVECTOR；表 27-4（27.2.6）给出塑造 PPDU 的有效 FORMAT/CH_BANDWIDTH/CH_OFFSET 组合。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4336,
+          4337,
+          4338
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4139,
+        4140
+      ],
+      "note": "27.2.1-27.2.2 HE PHY service interface; Table 27-1 TXVECTOR/RXVECTOR parameters (FORMAT enumerations)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4157,
+        4158,
+        4159
+      ],
+      "note": "27.2.3 TRIGVECTOR (Table 27-2) and 27.2.4 LTFVECTOR (Table 27-3)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4160
+      ],
+      "note": "27.2.6 Effects of CH_BANDWIDTH parameter on PPDU format (Table 27-4)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4332,
+        4333,
+        4334,
+        4335
+      ],
+      "note": "27.3.22.1 General; 27.3.22.2 minimum input sensitivity (Table 27-58); 27.3.22.3-4 adjacent/nonadjacent rejection (Table 27-59)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4335,
+        4336,
+        4337,
+        4338
+      ],
+      "note": "27.3.22.5 maximum input level; 27.3.22.6.1/.3/.4/.5 CCA sensitivity layering; 27.3.22.7 RCPI measurement"
+    }
+  ],
+  "covers": [
+    "80211-2024:27.3.22.1",
+    "80211-2024:27.3.22.2",
+    "80211-2024:27.3.22.3",
+    "80211-2024:27.3.22.4",
+    "80211-2024:27.3.22.5",
+    "80211-2024:27.3.22.6.1",
+    "80211-2024:27.3.22.6.3",
+    "80211-2024:27.3.22.6.4",
+    "80211-2024:27.3.22.6.5",
+    "80211-2024:27.3.22.7",
+    "80211-2024:27.2.2",
+    "80211-2024:27.2.3",
+    "80211-2024:27.2.4",
+    "80211-2024:27.2.6"
+  ],
+  "track": "modern-phy"
+}

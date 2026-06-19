@@ -1,0 +1,126 @@
+{
+  "id": "modern-phy-19",
+  "title": {
+    "en": "HE Acknowledgment and A-MPDU: Multi-STA BlockAck and PPDU Padding",
+    "zh": "HE 确认与 A-MPDU：多站 BlockAck 与 PPDU 填充"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "When an AP runs an OFDMA uplink, many stations finish their data inside one trigger-based PPDU at the same instant. The AP would waste airtime if it had to send a separate Ack to each one. HE solves this with a single control frame — the Multi-STA BlockAck — that acknowledges a whole crowd at once. Inside it, the AP carries one 'Per AID TID Info' field per station-and-traffic-stream, so a single transmission tells STA #3 'your TID 0 is fully received', STA #7 'I got 5 of your 8 frames', and so on.",
+      "zh": "当 AP 运行 OFDMA 上行时，许多站点会在同一个触发式 PPDU 中同时发完自己的数据。如果要给每个站点单独回一个 Ack，就会白白浪费空口时间。HE 用一个控制帧——多站 BlockAck（Multi-STA BlockAck）——来一次性确认一大群站点。它内部为“每个站点 + 每条业务流”携带一个“Per AID TID Info”字段，于是一次发送就能告诉 3 号站“你的 TID 0 已全收”、告诉 7 号站“你的 8 帧我收到了 5 帧”，以此类推。"
+    },
+    {
+      "type": "prose",
+      "en": "Each Per AID TID Info field is addressed by an AID (the station's association id, or 2045 for an unassociated station) and a TID (which traffic stream). Two small flags decide what kind of receipt it carries. The Ack Type field plus the TID value select a context: 'all ack' (TID 14) is shorthand for 'every MPDU in your A-MPDU arrived — no bitmap needed'; 'block ack' (TID 0–7, Ack Type 0) carries a full bitmap of which sequence numbers made it; and 'ack' (TID 15 or a tagged QoS TID) acknowledges a single tagged frame such as a Management frame. The AP picks the most compact context that still conveys the truth.",
+      "zh": "每个 Per AID TID Info 字段由 AID（站点的关联标识，未关联站点用 2045）和 TID（哪条业务流）来寻址。两个小标志决定它携带哪种回执。Ack Type 字段加上 TID 值共同选出一种“上下文”：“all ack”（TID 14）是“你 A-MPDU 里的每个 MPDU 都收到了——无需位图”的简写；“block ack”（TID 0–7，Ack Type 0）携带一张完整位图，标明哪些序号收到了；“ack”（TID 15 或某个被标记的 QoS TID）则确认单个被标记帧，例如一个管理帧。AP 会挑选既能表达真实情况、又最紧凑的上下文。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    BA[\"Multi-STA BlockAck frame\"]\n    BA --> P1[\"Per AID TID Info: AID=3, TID=14<br/>Ack Type=1 (all ack) — every MPDU received\"]\n    BA --> P2[\"Per AID TID Info: AID=7, TID=0<br/>Ack Type=0 (block ack) + 64-bit bitmap\"]\n    BA --> P3[\"Per AID TID Info: AID=12, TID=15<br/>Ack Type=1 (ack) — Management frame acked\"]\n    BA --> P4[\"Per AID TID Info: AID=2045, RA=MAC<br/>preassociation ack — unassociated STA\"]",
+      "zh": "graph TD\n    BA[\"多站 BlockAck 帧\"]\n    BA --> P1[\"Per AID TID Info: AID=3, TID=14<br/>Ack Type=1（all ack）——所有 MPDU 已收\"]\n    BA --> P2[\"Per AID TID Info: AID=7, TID=0<br/>Ack Type=0（block ack）+ 64 位位图\"]\n    BA --> P3[\"Per AID TID Info: AID=12, TID=15<br/>Ack Type=1（ack）——管理帧已确认\"]\n    BA --> P4[\"Per AID TID Info: AID=2045, RA=MAC<br/>预关联确认——未关联站点\"]"
+    },
+    {
+      "type": "prose",
+      "en": "The bitmap length is negotiable. A bigger block ack window needs more bits — but a station that reordered only a handful of frames does not want to spend airtime on 256 bits of mostly-zeros. So the recipient may send a Block Ack Bitmap shorter than the maximum, as long as it still covers from WinStartR up through the highest successfully received sequence number. The negotiated buffer size sets the allowed lengths: a 1–64 buffer permits a 32- or 64-bit bitmap in a Multi-STA BlockAck, while a 129–256 buffer permits 32, 64, 128, or 256 bits. The 32-bit length is only legal if the originator advertised support for it.",
+      "zh": "位图长度是可协商的。更大的块确认窗口需要更多比特——但一个只乱序了少量帧的站点，并不想为一张大部分是零的 256 位位图浪费空口时间。因此接收方可以发送一张短于上限的块确认位图，只要它仍覆盖从 WinStartR 到最高已成功接收序号的范围即可。协商出的缓冲区大小决定允许的长度：缓冲区为 1–64 时，多站 BlockAck 中允许 32 或 64 位位图；缓冲区为 129–256 时，允许 32、64、128 或 256 位。32 位长度仅在发起方声明支持时才合法。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Where does the bitmap length live? Not in a length field — it is encoded in the Fragment Number subfield of the Block Ack Starting Sequence Control. That same subfield does double duty: its least-significant bit also signals level-3 dynamic fragmentation, which is why a recipient must not set that LSB to 1 unless the originator advertised Dynamic Fragmentation Support = 3.",
+      "zh": "位图长度藏在哪里？不在某个专门的长度字段里——它编码在“块确认起始序列控制”里的“分片号（Fragment Number）”子字段中。这个子字段身兼两职：它的最低有效位还用于指示三级动态分片，因此接收方除非收到发起方声明的“动态分片支持 = 3”，否则不得将该最低位置 1。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the aggregate itself. Inside an HE PPDU the data rides as an A-MPDU — a chain of subframes, each fronted by an MPDU delimiter whose EOF/Tag field marks frame boundaries. Two padding ideas matter. EOF padding is a zero-length subframe (EOF/Tag = 1, MPDU Length = 0) added immediately after the last real subframe, so the receiver cleanly detects end-of-frame. Pre-EOF padding is the bulk filler used in trigger-based uplinks: the HE TB PPDU must end at a length the AP dictated, so the STA first tops up the final subframe to a 4-octet boundary, then adds whole EOF padding subframes, then trickles in leftover octets — filling exactly the AP-allocated airtime even when the STA has little real data to send.",
+      "zh": "再来看聚合体本身。在 HE PPDU 内部，数据以 A-MPDU 形式传输——一串子帧，每个子帧前都有一个 MPDU 定界符，其 EOF/Tag 字段标记帧边界。这里有两类填充很关键。EOF 填充是一个零长度子帧（EOF/Tag = 1、MPDU 长度 = 0），紧跟在最后一个真实子帧之后，让接收方干净地检测到帧结束。Pre-EOF 填充则是触发式上行中用到的大块填充：HE TB PPDU 必须按 AP 指定的长度结束，于是站点先把最后一个子帧补齐到 4 字节边界，再加入整数个 EOF 填充子帧，最后零散补上剩余字节——即使站点没多少真实数据要发，也能恰好填满 AP 分配的空口时间。"
+    },
+    {
+      "type": "prose",
+      "en": "Aggregation also goes multi-stream. An ack-enabled single-TID A-MPDU carries one tagged frame that solicits acknowledgment plus untagged companions; a multi-TID A-MPDU mixes frames from two or more TIDs in one shot — both acknowledged by a single Multi-STA BlockAck. This is exactly the lever level-3 dynamic fragmentation pulls: it lets up to four fragments of the same MSDU sit in one A-MPDU, so a station can slice a large packet to fill the leftover trigger-allocated airtime instead of leaving it empty, then have all the pieces acked together in one bitmap.",
+      "zh": "聚合还能跨多条业务流。支持确认的单 TID A-MPDU（ack-enabled single-TID A-MPDU）携带一个请求确认的被标记帧外加若干未标记的“同伴帧”；多 TID A-MPDU（multi-TID A-MPDU）则在一次传输中混合来自两条或更多 TID 的帧——两者都由单个多站 BlockAck 一并确认。这正是三级动态分片所拉动的杠杆：它允许同一个 MSDU 的多达四个分片放进同一个 A-MPDU，于是站点可以把一个大包切片，用来填满触发分配的剩余空口时间而不让它空着，再让所有分片在一张位图里被一起确认。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact HE TB PPDU padding loop and the level-3 fragment-to-bitmap mapping",
+        "zh": "HE TB PPDU 精确填充循环与三级分片到位图的映射"
+      },
+      "en": "26.6.2.3 specifies the HE TB PPDU padding loop precisely. The STA computes PSDU_LENGTH, then: while A-MPDU_Length < PSDU_LENGTH and A-MPDU_Length mod 4 != 0, add one octet to the final subframe's Padding subfield; then while A-MPDU_Length + 4 <= PSDU_LENGTH, add an EOF padding subframe (incrementing by 4); finally while A-MPDU_Length < PSDU_LENGTH, add one octet to the EOF Padding Octets subfield. 26.6.2.1 adds the structural rule: a STA must not place an EOF/Tag = 1, MPDU Length = 0 subframe before a nonzero-length subframe, and should place exactly one immediately after the last real subframe. For level-3 fragmentation (26.3.3.4), each received fragment's scoreboard bit B is computed as B = 4 x (SN - SSN) + FN modulo 4096, where FN is the Fragment Number — packing four fragment slots per sequence number into the bitmap. Correspondingly 26.3.2.4 requires the A-MPDU's sequence-number span and WinSizeO to not exceed BL/4, where BL is the Block Ack Bitmap length, since each sequence number now consumes four bitmap positions.",
+      "zh": "26.6.2.3 精确规定了 HE TB PPDU 的填充循环。站点先算出 PSDU_LENGTH，然后：当 A-MPDU_Length < PSDU_LENGTH 且 A-MPDU_Length mod 4 != 0 时，向最后一个子帧的 Padding 子字段加一个字节；接着当 A-MPDU_Length + 4 <= PSDU_LENGTH 时，加入一个 EOF 填充子帧（长度加 4）；最后当 A-MPDU_Length < PSDU_LENGTH 时，向 EOF Padding Octets 子字段加一个字节。26.6.2.1 补充了结构性规则：站点不得在某个非零长度子帧之前放置 EOF/Tag = 1、MPDU 长度 = 0 的子帧，而应恰好在最后一个真实子帧之后放一个。对于三级分片（26.3.3.4），每个已收分片的记分牌位 B 计算为 B = 4 x (SN - SSN) + FN（对 4096 取模），其中 FN 是分片号——这样位图中每个序号打包了四个分片槽位。相应地，26.3.2.4 要求 A-MPDU 的序号跨度与 WinSizeO 都不超过 BL/4，其中 BL 是块确认位图长度，因为现在每个序号要占用四个位图位置。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3994,
+          4038,
+          3991
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:26.3.1",
+    "80211-2024:26.3.2",
+    "80211-2024:26.3.3",
+    "80211-2024:26.4.1",
+    "80211-2024:26.4.2",
+    "80211-2024:26.4.3",
+    "80211-2024:26.4.4",
+    "80211-2024:26.4.5",
+    "80211-2024:26.6.1",
+    "80211-2024:26.6.2",
+    "80211-2024:26.6.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3988,
+        3990,
+        3992
+      ],
+      "note": "26.3.1-26.3.3 dynamic fragmentation levels 1/2/3 and defragmentation; level-3 allows up to four fragments of one MSDU in an A-MPDU"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3995,
+        3996,
+        3997,
+        3998
+      ],
+      "note": "26.4.1-26.4.2 Multi-STA BlockAck extensions and per-STA Per AID TID Info acknowledgment contexts (all ack / ack / block ack / preassociation)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3999,
+        4000
+      ],
+      "note": "26.4.3 Block Ack Bitmap length negotiation (Table 26-1); length carried in Fragment Number subfield; LSB also flags level-3 fragmentation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4000,
+        4001,
+        4004
+      ],
+      "note": "26.4.4 per-PPDU acknowledgment selection rules; 26.4.5 HE BlockAckReq / MU-BAR response rules"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4037,
+        4038,
+        4039,
+        4040
+      ],
+      "note": "26.6.1-26.6.3 A-MPDU operation: EOF and pre-EOF padding, HE TB PPDU padding loop, multi-TID and ack-enabled single-TID A-MPDU"
+    }
+  ],
+  "track": "modern-phy"
+}

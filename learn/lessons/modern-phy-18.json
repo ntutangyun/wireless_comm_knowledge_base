@@ -1,0 +1,120 @@
+{
+  "id": "modern-phy-18",
+  "title": {
+    "en": "HE Channel Access: Two NAVs, MU-RTS/CTS and MU EDCA",
+    "zh": "HE 信道接入：双 NAV、MU-RTS/CTS 与 MU EDCA"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "High-efficiency (HE) Wi-Fi was designed for crowded places — apartment blocks, stadiums, open-plan offices — where many access points overlap on the same channel. The old rule was simple and brutal: if you hear any transmission long enough to read its Duration field, you stay quiet for that whole time. In a dense world that means a STA spends most of its life muted by neighbors it will never talk to. HE channel access is a set of refinements that let a STA tell 'my network' apart from 'someone else's network' and behave accordingly, so the channel gets reused instead of wasted.",
+      "zh": "高效率（HE）Wi-Fi 是为拥挤环境设计的——公寓楼、体育场、开放式办公室——在这些场景里大量接入点（AP）在同一信道上彼此重叠。旧规则简单而粗暴：只要你听到任何一帧、能读出它的 Duration 字段，你就得在那段时间里保持安静。在密集环境下，这意味着一个站点（STA）大部分时间都被它根本不会与之通信的邻居“噤声”了。HE 信道接入是一组改良机制，让 STA 能把“自己的网络”和“别人的网络”区分开来并区别对待，从而让信道被复用、而不是被浪费。"
+    },
+    {
+      "type": "prose",
+      "en": "The first building block is classification. When an HE STA receives a PPDU, it labels it as intra-BSS (belongs to my own BSS) or inter-BSS (belongs to a neighbor). It can decide this two ways: cheaply, from the BSS Color carried in the PHY preamble — if the color matches mine it is intra-BSS, if it is a different nonzero color it is inter-BSS — or, more reliably, from the MAC addresses (BSSID/RA/TA) once a frame is decoded. If a PPDU matches both, intra-BSS wins; and an address-based judgement overrides a color-based one. A PPDU that fits neither test stays 'undetermined'.",
+      "zh": "第一块基石是分类。当一个 HE STA 收到一个 PPDU 时，它会把它标记为 intra-BSS（属于我自己的 BSS）或 inter-BSS（属于邻居的 BSS）。判定方式有两种：一种是低成本的——依据 PHY 前导中携带的 BSS Color，颜色与我相同就是 intra-BSS，是不同的非零颜色就是 inter-BSS；另一种更可靠——在帧被解码后依据 MAC 地址（BSSID/RA/TA）判定。如果一个 PPDU 同时满足两种条件，则按 intra-BSS 处理；并且基于地址的判定会覆盖基于颜色的判定。两种测试都不满足的 PPDU 则保持“无法确定”状态。"
+    },
+    {
+      "type": "prose",
+      "en": "Why bother labeling? Because an HE STA keeps two separate NAVs (Network Allocation Vectors — the virtual carrier-sense countdown timers). The intra-BSS NAV is set only by frames from my own network; the basic NAV is set by inter-BSS frames and by frames that cannot be classified. The medium is treated as busy if either timer is nonzero, idle only when both are zero. The payoff: my own AP can park me with the intra-BSS NAV during a trigger-based uplink without that same neighbor noise on the basic NAV blocking me — and a neighbor's chatter on the basic NAV no longer blindly silences traffic inside my BSS.",
+      "zh": "为什么要费力打这个标签？因为一个 HE STA 维护两个独立的 NAV（网络分配矢量——虚拟载波侦听的倒计时定时器）。intra-BSS NAV 只由来自我自己网络的帧设置；basic NAV 则由 inter-BSS 帧以及无法分类的帧设置。只要任一定时器非零，介质就被视为忙；只有两者都为零时才视为空闲。好处是：在一次基于触发帧（Trigger）的上行传输中，我自己的 AP 可以用 intra-BSS NAV 把我“暂停”住，而不必让来自邻居的同类噪声占用 basic NAV 来阻塞我；同时，邻居在 basic NAV 上的喧哗也不再盲目地让我 BSS 内部的流量噤声。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[Received PPDU] --> B{Classify: 26.2.2}\n    B -->|BSS Color matches / my BSSID| C[intra-BSS]\n    B -->|different color / other BSSID| D[inter-BSS]\n    B -->|fits neither| E[undetermined]\n    C --> F[update intra-BSS NAV]\n    D --> G[update basic NAV]\n    E --> G\n    F --> H{either NAV > 0?}\n    G --> H\n    H -->|yes| I[medium BUSY]\n    H -->|no| J[medium IDLE]",
+      "zh": "flowchart TD\n    A[收到 PPDU] --> B{分类: 26.2.2}\n    B -->|BSS Color 匹配 / 我的 BSSID| C[intra-BSS]\n    B -->|不同颜色 / 其他 BSSID| D[inter-BSS]\n    B -->|两者都不满足| E[无法确定]\n    C --> F[更新 intra-BSS NAV]\n    D --> G[更新 basic NAV]\n    E --> G\n    F --> H{任一 NAV > 0?}\n    G --> H\n    H -->|是| I[介质 忙]\n    H -->|否| J[介质 空闲]"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "There is a third label layered on top: an inter-BSS PPDU can also be an SRG PPDU (Spatial Reuse Group). If my AP has told me, via a Spatial Reuse Parameter Set element, which neighbor colors and partial BSSIDs are in my 'reuse group', I can identify those neighbors specifically and later apply a more aggressive OBSS_PD threshold to them — ignoring their weak signals and transmitting anyway. SRG identification is the on-ramp to spatial reuse, covered in its own lesson.",
+      "zh": "在此之上还叠了第三个标签：一个 inter-BSS PPDU 还可以是 SRG PPDU（Spatial Reuse Group，空间复用组）。如果我的 AP 通过 Spatial Reuse Parameter Set 元素告诉了我哪些邻居颜色与部分 BSSID 属于我的“复用组”，我就能专门识别出这些邻居，进而对它们施加更激进的 OBSS_PD 门限——忽略它们的弱信号并照样发送。SRG 识别是空间复用的入口，将在专门的课程中展开。"
+    },
+    {
+      "type": "prose",
+      "en": "On top of two NAVs sit the protection and fairness tools. TXOP duration-based RTS/CTS lets the AP arm RTS protection by transmit-opportunity length (in units of 32 µs) rather than by frame byte-count, which suits the long aggregated bursts HE uses. The MU-RTS Trigger frame is the multi-user upgrade of RTS: one AP frame addresses several STAs at once, and all of them fire their CTS responses simultaneously (a SIFS later, in non-HT duplicate at 6 Mb/s on their assigned 20 MHz subchannels), reserving the whole wide channel in a single shot. A CF-End frame the other way performs TXOP truncation — handing leftover reserved time back so others can contend early.",
+      "zh": "在双 NAV 之上是保护与公平性工具。基于 TXOP 时长的 RTS/CTS 让 AP 以发送机会的时长（以 32 µs 为单位）而非以帧的字节数来武装 RTS 保护，这更契合 HE 所采用的长聚合突发。MU-RTS Trigger 帧是 RTS 的多用户升级版：AP 用一帧同时寻址多个 STA，它们随后（一个 SIFS 之后，在各自分配的 20 MHz 子信道上以 6 Mb/s 的 non-HT duplicate 形式）同时发出各自的 CTS 响应，从而一次性预留整个宽信道。反方向上的 CF-End 帧则执行 TXOP 截断——把用不完的预留时间归还出去，让其他设备能更早地开始竞争。"
+    },
+    {
+      "type": "prose",
+      "en": "The last piece is MU EDCA — a gentle penalty that keeps trigger-based access orderly. Normally a STA contends for the channel using its EDCA parameters (contention window, AIFSN). After a STA successfully sends data inside an HE TB PPDU in response to a Basic Trigger frame, it switches the affected access categories to the AP-advertised MU EDCA parameters for the length of a MUEDCATimer. Those parameters are deliberately less aggressive (often AIFSN = 0, which suspends that category's contention entirely until the timer expires). The effect: a STA that just got served by a trigger backs off from grabbing the channel on its own, leaving room for the AP's scheduled, trigger-based uplink to dominate — and when the timer counts down to zero, the STA reverts to its ordinary EDCA behavior.",
+      "zh": "最后一块是 MU EDCA——一种温和的惩罚机制，用来让基于触发帧的接入保持有序。通常情况下，STA 使用它的 EDCA 参数（竞争窗口、AIFSN）来竞争信道。当一个 STA 在响应 Basic Trigger 帧、于 HE TB PPDU 中成功发送数据之后，它会在一个 MUEDCATimer 的时长内，把相关接入类别（AC）切换到 AP 通告的 MU EDCA 参数上。这些参数被刻意设得不那么激进（常见 AIFSN = 0，这会让该类别的竞争完全挂起，直到定时器到期）。其效果是：一个刚被触发帧服务过的 STA 会主动收敛、不再自行抢占信道，从而把空间留给 AP 调度的、基于触发的上行传输来主导；而当定时器倒计时归零后，STA 便恢复其常规的 EDCA 行为。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact two-NAV update rules and the MUEDCATimer suspension trick",
+        "zh": "精确的双 NAV 更新规则与 MUEDCATimer 挂起技巧"
+      },
+      "en": "Clause 26.2.4 makes the split precise: a non-AP HE STA shall maintain two NAVs (an HE AP may). The intra-BSS NAV is updated by an intra-BSS PPDU; the basic NAV by an inter-BSS PPDU or a PPDU that cannot be classified. The virtual CS indication is busy if at least one NAV timer is nonzero and idle only if both are zero. A worked example: in an AP-initiated TXOP for an HE TB PPDU, the AP sets the STA's intra-BSS NAV to keep it from contending, but does not touch the basic NAV — so if the basic NAV is nonzero and the STA receives a Trigger frame with CS Required = 1, the STA does not respond (26.5.2.5). Duration may also come from the RXVECTOR TXOP_DURATION parameter rather than a Duration field, with parallel update conditions per NAV; a TXOP holder never updates the intra-BSS NAV from TXOP_DURATION. For MU EDCA (26.2.7), after a STA sends a QoS Data frame successfully in an HE TB PPDU in response to a Basic Trigger frame, it loads CWmin/CWmax/AIFSN/MUEDCATimer for those ACs from dot11MUEDCATable; if AIFSN[AC] = 0 the EDCAF for that AC is suspended until MUEDCATimer[AC] reaches or is reset to 0, at which point CWmin/CWmax/AIFSN revert to the most recently received EDCA Parameter Set values. The timer counts down without suspension once nonzero; an MU EDCA Reset frame can zero it early.",
+      "zh": "26.2.4 节精确地划分了这道界线：non-AP HE STA 应当维护两个 NAV（HE AP 可以维护两个）。intra-BSS NAV 由 intra-BSS PPDU 更新；basic NAV 由 inter-BSS PPDU 或无法分类的 PPDU 更新。虚拟载波侦听指示：只要至少一个 NAV 定时器非零即为忙，仅当两者都为零时才为空闲。一个具体例子：在 AP 为 HE TB PPDU 发起的 TXOP 中，AP 设置该 STA 的 intra-BSS NAV 以阻止它竞争，但不触碰 basic NAV——因此若 basic NAV 非零且该 STA 收到一个 CS Required = 1 的 Trigger 帧，该 STA 不予响应（26.5.2.5）。时长信息也可能来自 RXVECTOR 的 TXOP_DURATION 参数而非 Duration 字段，每个 NAV 都有相应的并行更新条件；TXOP 持有者永远不会用 TXOP_DURATION 更新 intra-BSS NAV。对于 MU EDCA（26.2.7），当 STA 响应 Basic Trigger 帧、在 HE TB PPDU 中成功发送一个 QoS Data 帧后，它会为这些 AC 从 dot11MUEDCATable 加载 CWmin/CWmax/AIFSN/MUEDCATimer；若 AIFSN[AC] = 0，则该 AC 对应的 EDCAF 被挂起，直至 MUEDCATimer[AC] 倒计时到零或被重置为零，届时 CWmin/CWmax/AIFSN 恢复为最近收到的 EDCA Parameter Set 值。定时器一旦非零便不挂起地持续倒计时；一个 MU EDCA Reset 帧可以提前将其清零。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3980,
+          3981,
+          3986,
+          3987
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:26.2.1",
+    "80211-2024:26.2.2",
+    "80211-2024:26.2.3",
+    "80211-2024:26.2.4",
+    "80211-2024:26.2.5",
+    "80211-2024:26.2.6",
+    "80211-2024:26.2.7",
+    "80211-2024:26.2.8"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3978
+      ],
+      "note": "26.2.1 TXOP duration-based RTS/CTS — RTS armed by TXOP duration in units of 32 us via TXOP Duration RTS Threshold"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3979,
+        3980
+      ],
+      "note": "26.2.2 intra-BSS vs inter-BSS PPDU classification (BSS Color and MAC address) and 26.2.3 SRG PPDU identification"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3980,
+        3981,
+        3982
+      ],
+      "note": "26.2.4 updating two NAVs (intra-BSS NAV vs basic NAV; virtual CS busy/idle rule) and 26.2.5 truncation of TXOP via CF-End"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3983,
+        3984,
+        3985
+      ],
+      "note": "26.2.6 MU-RTS Trigger/CTS frame exchange sequence — simultaneous CTS at 6 Mb/s non-HT duplicate on assigned 20 MHz subchannels"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3986,
+        3987,
+        3988
+      ],
+      "note": "26.2.7 EDCA operation using MU EDCA parameters (MUEDCATimer, AIFSN=0 suspension) and 26.2.8 multiple frame exchanges in a 6 GHz EDCA TXOP"
+    }
+  ],
+  "track": "modern-phy"
+}
