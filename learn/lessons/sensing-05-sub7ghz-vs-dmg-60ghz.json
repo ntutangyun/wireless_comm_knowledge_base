@@ -1,0 +1,132 @@
+{
+  "id": "sensing-05-sub7ghz-vs-dmg-60ghz",
+  "title": {
+    "en": "Wide vs Sharp: Sub-7 GHz vs 60 GHz (DMG) Sensing",
+    "zh": "广域与锐利：Sub-7 GHz 与 60 GHz(DMG)感知"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "802.11bf carries one idea — turn a Wi-Fi radio into a sensor — onto two very different bands, and the radio physics reshapes everything. Down in the sub-7 GHz bands (the 2.4/5/6 GHz channels your phone normally uses), sensing rides on the channel state information (CSI) the receiver already estimates across many OFDM subcarriers. The antennas are nearly omnidirectional, so the coverage is wide and forgiving: signals diffract around furniture and even leak through walls, which is why sub-7 GHz sensing is the natural fit for whole-room presence and motion detection.",
+      "zh": "802.11bf 把同一个想法——让 Wi-Fi 射频兼当传感器——搬到了两个截然不同的频段上，而射频物理特性会彻底重塑实现方式。在 Sub-7 GHz 频段（也就是手机平时使用的 2.4/5/6 GHz 信道）里，感知依托于接收端本就会在众多 OFDM 子载波上估计出的信道状态信息（CSI）。这里的天线近似全向，因此覆盖范围广、容错性强：信号会绕过家具、甚至穿透墙体，这正是 Sub-7 GHz 感知天然适合做整屋人体存在与运动检测的原因。"
+    },
+    {
+      "type": "prose",
+      "en": "Up at 60 GHz the world is different. This is the DMG band (Directional Multi-Gigabit, the 802.11ad/ay millimetre-wave domain), and 802.11bf adds a dedicated DMG sensing procedure for it. Two things change the game: the bandwidth is enormous (giving very fine range resolution), and the antenna arrays form pencil-thin steerable beams instead of an omni glow. A device sweeps a list of transmit beams, listens for echoes, and builds something close to a radar image — range, Doppler (velocity), and direction. The trade-off is coverage: a 60 GHz beam is sharp but short-ranged and blocked by walls, so DMG sensing is about precise imaging in one room, not whole-home awareness.",
+      "zh": "到了 60 GHz，情况完全不同。这就是 DMG 频段（Directional Multi-Gigabit，定向多吉比特，即 802.11ad/ay 的毫米波领域），802.11bf 为它新增了专门的 DMG 感知流程。有两点改变了游戏规则：带宽极大（带来非常精细的距离分辨率），而且天线阵列会形成铅笔般细的可转向波束，而非全向的弥散辐射。设备会扫过一组发射波束、聆听回波，并构建出接近雷达图像的结果——距离、多普勒（速度）和方向。代价是覆盖：60 GHz 波束锐利但作用距离短、会被墙体阻挡，因此 DMG 感知擅长的是在单个房间内做精确成像，而非全屋感知。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A useful mental image: sub-7 GHz sensing is a floodlight — wide, soft, sees motion everywhere in the room and beyond. DMG (60 GHz) sensing is a laser pointer on a gimbal — narrow, precise, you sweep it to scan a scene and read back exact range and velocity.",
+      "zh": "一个好用的心理画面：Sub-7 GHz 感知像一盏泛光灯——光面宽、边缘柔和，能看到房间内乃至更远处的各种动作；DMG（60 GHz）感知则像装在云台上的激光笔——光束窄、精度高，你通过转动它来扫描场景，并读回精确的距离与速度。"
+    },
+    {
+      "type": "prose",
+      "en": "Because the beams are directional, DMG sensing has to be explicit about who transmits and who receives. The standard names three geometries. In monostatic sensing the transmitter and receiver are the same station — it sends a sounding signal and listens to its own echo, exactly like a classic radar. In bistatic sensing they are two distinct stations — one sounds, the other receives. In multistatic sensing one transmitter sounds and two or more receivers listen at once, so several viewing angles are captured in a single exchange. (There are also coordinated monostatic and bistatic variants where an AP orchestrates several responders.)",
+      "zh": "由于波束是定向的，DMG 感知必须明确谁发射、谁接收。标准给出了三种几何结构。在单基（monostatic）感知中，发射机和接收机是同一个站点——它发出探测信号并聆听自己的回波，与经典雷达完全一样。在双基（bistatic）感知中，二者是两个不同的站点——一个发射探测信号，另一个负责接收。在多基（multistatic）感知中，一个发射机发出探测信号，两个或更多接收机同时聆听，从而在一次交换中捕获多个观测视角。（此外还有协同单基与协同双基的变体，由一个 AP 来编排多个响应方。）"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    subgraph Mono[Monostatic]\n        A[STA: TX and RX] -- sounds + hears own echo --> A\n    end\n    subgraph Bi[Bistatic]\n        B[STA: TX] -- sounding PPDU --> C[STA: RX]\n    end\n    subgraph Multi[Multistatic]\n        D[STA: TX] -- sounding PPDU --> E[RX 1]\n        D -- sounding PPDU --> F[RX 2]\n    end",
+      "zh": "graph TD\n    subgraph Mono[单基 Monostatic]\n        A[站点: 收发一体] -- 发探测信号并聆听自身回波 --> A\n    end\n    subgraph Bi[双基 Bistatic]\n        B[站点: 发射] -- 探测 PPDU --> C[站点: 接收]\n    end\n    subgraph Multi[多基 Multistatic]\n        D[站点: 发射] -- 探测 PPDU --> E[接收方 1]\n        D -- 探测 PPDU --> F[接收方 2]\n    end"
+    },
+    {
+      "type": "prose",
+      "en": "The DMG procedure is layered. First a capabilities exchange: a DMG STA advertises which sensing types and roles it supports, and crucially which image products it can deliver, via the DMG Sensing Capabilities element. Once a session and its parameters are negotiated, measurement happens inside a DMG sensing burst — a set of scheduled measurement exchanges spaced so the whole burst fits within timing limits. Bursts exist because you cannot squeeze enough repeated looks into one channel access: low-velocity Doppler needs measurements spread over a longer span, so the burst schedules multiple medium accesses to gather them. Each exchange has an initiation phase (request/response), a mandatory sounding phase (the sensing PPDUs that actually probe the scene), and an optional reporting phase where the responder is polled for its results.",
+      "zh": "DMG 流程是分层的。首先是能力交换：一个 DMG 站点通过 DMG Sensing Capabilities 元素，声明它支持哪些感知类型与角色，尤其是它能交付哪些图像产物。一旦会话及其参数协商完成，测量便在 DMG 感知突发（sensing burst）内进行——这是一组经过调度、间隔安排得当的测量交换，使整个突发能落在时序限制之内。之所以需要突发，是因为单次信道接入塞不下足够多的重复观测：低速多普勒需要在较长时间跨度上展开测量，于是突发会调度多次媒介接入来收集它们。每次交换包含一个发起阶段（请求/响应）、一个必备的探测阶段（真正探测场景的感知 PPDU），以及一个可选的报告阶段——发起方轮询响应方索取其结果。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant I as Sensing Initiator\n    participant R as Sensing Responder\n    Note over I,R: Capabilities exchanged, session negotiated\n    rect rgb(230,240,255)\n    Note over I,R: DMG sensing burst, exchange SN = 1\n    I->>R: DMG Sensing Request (beams, schedule)\n    R->>I: DMG Sensing Response (delays, params)\n    Note over I,R: Sounding phase: DMG sensing PPDUs sweep TX beams\n    I->>R: DMG Sensing Poll\n    R->>I: DMG Sensing Measurement Report (range / Doppler / image)\n    end\n    Note over I,R: next exchange SN = 2 ... (repeat across the burst)",
+      "zh": "sequenceDiagram\n    participant I as 感知发起方\n    participant R as 感知响应方\n    Note over I,R: 已交换能力，已协商会话\n    rect rgb(230,240,255)\n    Note over I,R: DMG 感知突发，交换序号 = 1\n    I->>R: DMG Sensing Request（波束、调度）\n    R->>I: DMG Sensing Response（延迟、参数）\n    Note over I,R: 探测阶段：DMG 感知 PPDU 扫过各发射波束\n    I->>R: DMG Sensing Poll（轮询）\n    R->>I: DMG Sensing Measurement Report（距离 / 多普勒 / 图像）\n    end\n    Note over I,R: 下一交换 序号 = 2 ……（在突发内重复）"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 320 180' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><line x1='20' y1='150' x2='300' y2='150'/><line x1='20' y1='150' x2='20' y2='20'/><text x='150' y='172' fill='currentColor' stroke='none' font-size='11'>Range</text><text x='6' y='90' fill='currentColor' stroke='none' font-size='11' transform='rotate(-90 6 90)'>Doppler</text><circle cx='110' cy='100' r='9' fill='currentColor' stroke='none'/><circle cx='200' cy='60' r='6' fill='currentColor' stroke='none'/><circle cx='250' cy='120' r='4' fill='currentColor' stroke='none'/><text x='118' y='100' fill='currentColor' stroke='none' font-size='9'>target A</text><text x='208' y='58' fill='currentColor' stroke='none' font-size='9'>target B</text></svg>",
+      "caption": {
+        "en": "A DMG range-Doppler report places each reflector by distance and velocity — radar-style imaging that the wide-beam sub-7 GHz CSI cannot produce on its own.",
+        "zh": "DMG 的距离-多普勒报告按距离和速度定位每个反射体——这种类雷达成像是宽波束的 Sub-7 GHz CSI 自身无法产生的。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What the DMG Sensing Capabilities element actually advertises",
+        "zh": "DMG Sensing Capabilities 元素究竟声明了什么"
+      },
+      "en": "The DMG Sensing Capabilities element (9.4.2.334) is where the imaging ambition becomes concrete. Beyond role bits (DMG Coordinated Monostatic, DMG Bistatic RX, DMG Bistatic TX, DMG Coordinated Bistatic, DMG Multistatic RX), it carries explicit image-product bits: DMG Sensing Image Range-Doppler, Range-Direction, Doppler-Direction, Direction, and Range-Doppler-Direction, plus a DMG Sensing Targets bit. It then quantifies the radio with Maximum Range, Best Range Resolution, Maximum Doppler, and Best Doppler Resolution fields, alongside Maximum Number Of TX/RX Directions and Golay-sequence support. This is the structural reason DMG sensing reports look like radar images while sub-7 GHz sensing typically hands back raw CSI: the 60 GHz capability set is explicitly written in the language of range, Doppler, and direction.",
+      "zh": "DMG Sensing Capabilities 元素（9.4.2.334）正是成像雄心落到实处的地方。除了角色比特（DMG 协同单基、DMG 双基接收、DMG 双基发射、DMG 协同双基、DMG 多基接收）之外，它还携带明确的图像产物比特：DMG Sensing Image 的 Range-Doppler、Range-Direction、Doppler-Direction、Direction 以及 Range-Doppler-Direction，外加一个 DMG Sensing Targets 比特。随后它用 Maximum Range、Best Range Resolution、Maximum Doppler、Best Doppler Resolution 等字段量化射频能力，并配以 Maximum Number Of TX/RX Directions 与 Golay 序列支持。这正是 DMG 感知报告呈现为雷达式图像、而 Sub-7 GHz 感知通常回传原始 CSI 的结构性原因：60 GHz 的能力集合是直接用距离、多普勒、方向的语言书写的。",
+      "cite": {
+        "pdf_id": "80211bf-2025",
+        "pages": [
+          86
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        173
+      ],
+      "note": "11.55.3.1 Overview — DMG sensing types (monostatic/bistatic/multistatic/coordinated/passive); procedure composed of capabilities exchange, session, burst, measurement exchange, termination; bursts enable Doppler over multiple channel accesses"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        176
+      ],
+      "note": "11.55.3.3 DMG sensing capabilities exchange — DMG Sensing Capabilities / Short Capabilities / Beam Descriptor elements; initiator/responder roles; session established at association"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        180
+      ],
+      "note": "11.55.3.5 DMG sensing burst — scheduled set of measurement exchanges; enables low-velocity Doppler over repeated measurements"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        182,
+        183
+      ],
+      "note": "11.55.3.6 / 11.55.3.6.2.1 — measurement exchange phases (initiation, mandatory sounding, optional reporting); coordinated monostatic exchange general; beam sweeping via Number TX Beams Per Exchange"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        190
+      ],
+      "note": "11.55.3.6.3 Bistatic DMG sensing measurement exchange — single TX STA and single RX STA; roles set by RX Initiator field"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        193
+      ],
+      "note": "11.55.3.6.5.1 Multistatic initiation — initiator sounds two or more responders; STA ID indexing; reporting via polling"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        86
+      ],
+      "note": "9.4.2.334 DMG Sensing Capabilities element — role bits and image-product bits (Range-Doppler/Direction), Maximum Range/Doppler and resolution fields"
+    }
+  ],
+  "covers": [
+    "80211bf-2025:11.55.3.1",
+    "80211bf-2025:11.55.3.3",
+    "80211bf-2025:11.55.3.5",
+    "80211bf-2025:11.55.3.6.2.1",
+    "80211bf-2025:11.55.3.6.3",
+    "80211bf-2025:11.55.3.6.5.1",
+    "80211bf-2025:9.4.2.334"
+  ],
+  "track": "sensing"
+}

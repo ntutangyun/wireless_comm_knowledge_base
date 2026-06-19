@@ -1,0 +1,111 @@
+{
+  "id": "sensing-03-measurement-procedure-ndp-sounding-reports",
+  "title": {
+    "en": "The Measurement Dance: NDP Sounding & CSI Reports",
+    "zh": "测量之舞：NDP 探测与 CSI 报告"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Wi-Fi sensing turns a radio link into a radar of sorts: by watching how a known signal is distorted as it crosses a room, a device can infer motion, presence, or even breathing. But before any of that analysis can happen, one concrete thing has to occur — a single measurement. This lesson is about that measurement: how the channel actually gets probed once, and how the result gets fed back. In 802.11bf this is the sensing measurement exchange, and it has a tidy three-beat rhythm: announce, sound, report.",
+      "zh": "Wi-Fi 感知把通信链路变成了某种意义上的“雷达”：通过观察一个已知信号穿过房间后被如何扭曲，设备就能推断出运动、人员存在、甚至呼吸。但在做任何这类分析之前，必须先发生一件具体的事——一次测量。本课讲的正是这一次测量：信道究竟是如何被探测一次的，以及测量结果又是如何被反馈回来的。在 802.11bf 中，这叫作“感知测量交换（sensing measurement exchange）”，它有一段干净利落的三拍节奏：宣告、探测、报告。"
+    },
+    {
+      "type": "prose",
+      "en": "The first beat is the announcement. The initiator sends a Sensing NDP Announcement (NDPA) frame — a heads-up that says 'a sounding signal is coming, and here is who it concerns'. It reuses the familiar HE NDP Announcement frame format, but marks itself as the sensing variant: the STA Info field carrying AID11 = 2045 is always present and sent first. Inside, the Sounding Dialog Token carries a Measurement Exchange ID (0–63) that ties this announcement to the exchange it belongs to, so everyone can match the pieces up later.",
+      "zh": "第一拍是“宣告”。发起方发送一个“感知 NDP 宣告帧（Sensing NDP Announcement，NDPA）”——它相当于一句预告：“一个探测信号马上就来，而且这是它涉及的对象。”它复用了我们熟悉的 HE NDP 宣告帧格式，但把自己标记为感知变体：携带 AID11 = 2045 的 STA Info 字段始终存在，并且作为第一个 STA Info 字段发送。在帧内部，Sounding Dialog Token 携带一个“测量交换 ID（Measurement Exchange ID，取值 0–63）”，把这个宣告与它所属的那次交换绑定起来，方便各方之后把各个片段对应上。"
+    },
+    {
+      "type": "prose",
+      "en": "The second beat is the sounding itself. A SIFS after the announcement, the initiator transmits a null data packet (NDP) — a PPDU that carries a preamble but no data payload. Its only job is to be a known reference waveform. As that NDP propagates, every reflection, attenuation, and phase shift in the room imprints itself onto the signal. The receiver compares what it knows was sent against what actually arrived, and out of that comparison falls the channel state information (CSI): a per-subcarrier, per-antenna-pair complex number describing exactly how the channel reshaped the signal.",
+      "zh": "第二拍是“探测”本身。在宣告之后的一个 SIFS，发起方发送一个“空数据包（null data packet，NDP）”——这是一种带有前导码、但不携带任何数据载荷的 PPDU。它唯一的任务就是充当一段已知的参考波形。当这个 NDP 传播时，房间里的每一次反射、衰减和相位变化都会在信号上留下印记。接收方把“它已知被发送的内容”与“实际收到的内容”做对比，从这次对比中得出“信道状态信息（channel state information，CSI）”：一组按子载波、按收发天线对划分的复数，精确刻画了信道是如何重塑了信号的。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why a *null* data packet? Because the sensing measurement does not need to send any user data — it only needs a clean, predictable waveform that both ends agree on. Stripping out the payload leaves a pure probe. The same NDP idea is borrowed from beamforming sounding; 802.11bf just repurposes it to measure the environment instead of steering a beam.",
+      "zh": "为什么要用“空（null）”数据包？因为感知测量并不需要传输任何用户数据——它只需要一段干净、可预测、收发双方都认可的波形。把载荷去掉，剩下的就是一个纯粹的探针。这个 NDP 的思路是从波束成形探测那里借来的；802.11bf 只是把它改用于测量环境，而不是用于调控波束指向。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant SI as Sensing Initiator (AP)\n    participant SR as Sensing Responder (STA)\n    Note over SI: SME requests a TB sensing measurement exchange\n    SI->>SR: Sensing NDP Announcement (NDPA) — Measurement Exchange ID\n    Note over SI,SR: SIFS\n    SI->>SR: SI2SR NDP (null data packet — known waveform)\n    Note over SR: receiver derives CSI, then encodes (scale + quantize)\n    Note over SR: MAC issues MLME-SENSREPORT.indication\n    SR->>SI: Sensing Measurement Report frame (CSI in report container)\n    Note over SI: analyse CSI → motion / presence / etc.",
+      "zh": "sequenceDiagram\n    participant SI as 感知发起方 (AP)\n    participant SR as 感知响应方 (STA)\n    Note over SI: SME 请求一次 TB 感知测量交换\n    SI->>SR: 感知 NDP 宣告帧 (NDPA) — 测量交换 ID\n    Note over SI,SR: SIFS\n    SI->>SR: SI2SR NDP (空数据包 — 已知波形)\n    Note over SR: 接收方求出 CSI，再编码 (缩放 + 量化)\n    Note over SR: MAC 发出 MLME-SENSREPORT.indication\n    SR->>SI: 感知测量报告帧 (CSI 装入报告容器)\n    Note over SI: 分析 CSI → 运动 / 人员存在 / 等等"
+    },
+    {
+      "type": "prose",
+      "en": "The third beat is reporting. Raw CSI is bulky, so before it goes on the air it is compressed by the CSI encoding procedure. For each receive/transmit chain pair the receiver picks a positive 12-bit scaling factor, then scales and quantizes the real and imaginary parts of each CSI value down to 8 bits each (stored as 2's-complement integers). The scaling factor is sent alongside the data so the initiator can rescale it back. All of this — the per-chain scaling factors followed by the quantized CSI samples — is laid out in the Sensing Measurement Report field.",
+      "zh": "第三拍是“报告”。原始 CSI 体量庞大，因此在上空之前要先经过“CSI 编码流程”压缩。对每一对收发链路，接收方选取一个正的 12 比特缩放因子，然后把每个 CSI 值的实部和虚部分别缩放并量化到各 8 比特（以二进制补码整数存储）。缩放因子会与数据一同发送，以便发起方可以把它还原回去。所有这些内容——先是逐链路的缩放因子，随后是量化后的 CSI 采样——都按顺序排布在“感知测量报告字段（Sensing Measurement Report field）”中。"
+    },
+    {
+      "type": "prose",
+      "en": "That report field doesn't fly alone. It is wrapped inside a Sensing Measurement Report Container, alongside a Segmentation Control field (which says which session and which exchange this belongs to, and whether the CSI is split across multiple segments) and a Report Control field (describing bandwidth, number of antennas, subcarrier grouping). The whole container is then carried in a Sensing Measurement Report frame — an Action No Ack frame of category Public — which the responder sends back to the initiator. With that, one full measurement is complete, and the initiator finally holds the CSI it can analyse.",
+      "zh": "这个报告字段并不会单独“起飞”。它被包裹在一个“感知测量报告容器（Sensing Measurement Report Container）”里，与之并列的还有一个“分段控制字段（Segmentation Control field）”（说明这属于哪个会话、哪次交换，以及 CSI 是否被拆成多个分段）和一个“报告控制字段（Report Control field）”（描述带宽、天线数量、子载波分组）。整个容器随后被装入一个“感知测量报告帧（Sensing Measurement Report frame）”——一种类别为 Public 的 Action No Ack 帧——由响应方发回给发起方。至此，一次完整的测量就完成了，发起方终于拿到了可供分析的 CSI。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "From NDP reception to encoded CSI in the report — the exact primitive and field plumbing",
+        "zh": "从收到 NDP 到报告中的已编码 CSI——精确的原语与字段链路"
+      },
+      "en": "Clause 11.55.1.5.1 ties the beats together: on receipt of an SI2SR, SR2SI, or SR2SR NDP, the sensing receiver's MAC issues an MLME-SENSREPORT.indication that includes the sensing measurements, where the scaled and quantized CSI values in the Sensing Measurement Report field (9.4.1.81.4) are generated from the CSI_ESTIMATE RXVECTOR using the procedure in 9.4.1.81.2.2. That encoding procedure (9.4.1.81.2.2) is explicit: for each (Nr, Nt) chain tuple a positive 12-bit scaling factor is chosen to avoid overflow, then each real and imaginary CSI part is scaled and quantized to 8 bits via Equations (9-5b)/(9-5c), stored as 2's-complement. The Sensing Measurement Report field (9.4.1.81.4) then lays out those 12-bit scaling factors per receive/transmit chain pair (with 0/4-bit padding for octet alignment) followed by the encoded CSI samples; the whole field is omitted when the Segmentation Control field's Invalid Indication = 1. The Sensing NDP Announcement frame (9.3.1.19.6) reuses the HE NDP Announcement format, always carries the AID11 = 2045 STA Info field first, and its Sounding Dialog Token Number holds the Measurement Exchange ID (0–63). Finally the Sensing Measurement Report frame (9.6.7.58) is an Action No Ack frame of category Public whose Action field is Category + Public Action + one or more Sensing Measurement Report Container fields (defined in 9.4.1.81).",
+      "zh": "11.55.1.5.1 节把这几拍串了起来：在收到 SI2SR、SR2SI 或 SR2SR NDP 时，感知接收方的 MAC 会发出一个 MLME-SENSREPORT.indication 原语，其中包含感知测量结果；而“感知测量报告字段（9.4.1.81.4）”中那些经过缩放和量化的 CSI 值，是依据 9.4.1.81.2.2 的流程、从 CSI_ESTIMATE RXVECTOR 生成的。该编码流程（9.4.1.81.2.2）写得很明确：对每一个 (Nr, Nt) 链路元组，选取一个正的 12 比特缩放因子以避免溢出，然后通过式 (9-5b)/(9-5c) 把每个 CSI 的实部与虚部缩放并量化到 8 比特，以二进制补码存储。“感知测量报告字段（9.4.1.81.4）”随后按收发链路对依次排布这些 12 比特缩放因子（并以 0 或 4 比特的 Padding 做八位字节对齐），其后才是已编码的 CSI 采样；当“分段控制字段”的 Invalid Indication = 1 时，整个该字段被省略。“感知 NDP 宣告帧（9.3.1.19.6）”复用 HE NDP 宣告帧格式，始终把 AID11 = 2045 的 STA Info 字段排在最前，其 Sounding Dialog Token Number 装载着“测量交换 ID（0–63）”。最后，“感知测量报告帧（9.6.7.58）”是一种类别为 Public 的 Action No Ack 帧，其 Action 字段由 Category + Public Action + 一个或多个“感知测量报告容器字段”（定义见 9.4.1.81）构成。",
+      "cite": {
+        "pdf_id": "80211bf-2025",
+        "pages": [
+          145,
+          60,
+          56,
+          35,
+          117
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211bf-2025:11.55.1.5.1",
+    "80211bf-2025:9.3.1.19.6",
+    "80211bf-2025:9.4.1.81.4",
+    "80211bf-2025:9.4.1.81.2.2",
+    "80211bf-2025:9.6.7.58"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        145
+      ],
+      "note": "11.55.1.5.1 General — sensing measurement exchange (TB / non-TB); on NDP receipt the MAC issues MLME-SENSREPORT.indication with scaled/quantized CSI"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        35
+      ],
+      "note": "9.3.1.19.6 Sensing NDP Announcement frame format — reuses HE NDPA; AID11=2045 STA Info first; Sounding Dialog Token holds Measurement Exchange ID 0-63"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        56
+      ],
+      "note": "9.4.1.81.2.2 CSI encoding procedure — 12-bit scaling factor per (Nr,Nt) tuple; real/imag scaled and quantized to 8 bits via Eq. (9-5b)/(9-5c), 2's complement"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        60
+      ],
+      "note": "9.4.1.81.4 Sensing Measurement Report field — measured CSI: per-chain 12-bit scaling factors (Table 9-129k), padding, then encoded CSI samples"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        117
+      ],
+      "note": "9.6.7.58 Sensing Measurement Report frame format — Action No Ack, category Public; Action field = Category + Public Action + Sensing Measurement Report Container(s)"
+    }
+  ],
+  "track": "sensing"
+}

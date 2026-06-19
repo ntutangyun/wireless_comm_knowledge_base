@@ -1,0 +1,119 @@
+{
+  "id": "sensing-02-sessions-roles-capabilities",
+  "title": {
+    "en": "Who Talks to Whom: Sessions, Roles & Capability Exchange",
+    "zh": "谁与谁对话：会话、角色与能力协商"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "802.11bf turns Wi-Fi radios into a radar. But before any device can measure the way a body or a hand perturbs the wireless channel, the participants have to agree on a simple thing: who is sounding the air, who is listening, and what knobs the measurement will use. That agreement is a sensing measurement session — a negotiated contract between two sensing STAs that says \"here is how we will probe the channel together.\"",
+      "zh": "802.11bf 把 Wi-Fi 收发机变成了一部雷达。但在任何设备能够测量人体或手势如何扰动无线信道之前，参与方必须先就一件很简单的事达成一致：谁来探测空中信道、谁来接收，以及这次测量会使用哪些参数。这份约定就是“感知测量会话（sensing measurement session）”——两个感知站点之间协商出的一份合同，写明“我们将如何一起探测信道”。"
+    },
+    {
+      "type": "prose",
+      "en": "First, the cast. 802.11bf defines two pairs of roles, and they are orthogonal. The first pair is about control: the sensing initiator is the STA that sets up and tears down the session, and the sensing responder is the STA it negotiates with. The second pair is about the physics of a single measurement: the sensing transmitter emits the sounding signal, and the sensing receiver captures it and measures the channel. A single STA can wear several hats at once — an initiator might also be the transmitter, or the receiver, or both, or neither (it can still collect reports without touching the air itself).",
+      "zh": "先看“角色”。802.11bf 定义了两对角色，而且这两对是相互正交的。第一对关乎“控制”：感知发起者（sensing initiator）是负责建立和拆除会话的站点，感知响应者（sensing responder）是与它协商的对端。第二对关乎单次测量的“物理过程”：感知发送者（sensing transmitter）发出探测信号，感知接收者（sensing receiver）捕获该信号并测量信道。同一个站点可以同时身兼数职——发起者也可以同时是发送者、或接收者、或两者皆是、甚至两者皆非（它仍可以只收集测量报告，而本身不碰空口）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 420 200' fill='none' stroke='currentColor' stroke-width='2'><rect x='20' y='30' width='150' height='60' rx='8'/><text x='95' y='55' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>Sensing Initiator</text><text x='95' y='75' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>(sets up / tears down)</text><rect x='250' y='30' width='150' height='60' rx='8'/><text x='325' y='55' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>Sensing Responder</text><text x='325' y='75' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>(negotiated peer)</text><line x1='170' y1='60' x2='250' y2='60' stroke-dasharray='5 4'/><text x='210' y='52' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>session</text><rect x='20' y='120' width='150' height='55' rx='8'/><text x='95' y='143' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>Sensing Transmitter</text><text x='95' y='162' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>(emits sounding)</text><rect x='250' y='120' width='150' height='55' rx='8'/><text x='325' y='143' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>Sensing Receiver</text><text x='325' y='162' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>(measures channel)</text><line x1='170' y1='147' x2='250' y2='147'/><text x='210' y='139' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>sounding</text><line x1='95' y1='90' x2='95' y2='120' stroke-dasharray='3 3'/><line x1='325' y1='90' x2='325' y2='120' stroke-dasharray='3 3'/></svg>",
+      "caption": {
+        "en": "Two orthogonal role pairs: control (initiator/responder) and physics (transmitter/receiver). One STA can play several at once.",
+        "zh": "两对正交的角色：控制层面（发起者/响应者）与物理层面（发送者/接收者）。同一站点可同时扮演多个角色。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Before anyone commits to a session, the two STAs swap business cards. Each advertises a Sensing Capabilities element so the other knows what it can do — for example how many concurrent sessions it supports (the Max Supported Sessions field), or whether it can only transmit in a narrow 20 MHz channel. An AP carries this element in its Probe Response and (Re)Association Response frames; a non-AP STA carries it in its (Re)Association Request and Measurement Query frames. There's even a courtesy flag: an AP can set a Responder Needed bit in a Probe Response to advertise that it is short on sensing partners and would welcome new ones.",
+      "zh": "在任何一方承诺建立会话之前，两个站点会先交换“名片”。每一方都会通告一个“感知能力元素（Sensing Capabilities element）”，让对端知道自己能做什么——例如它支持多少个并发会话（Max Supported Sessions 字段），或者它是否只能在窄带 20 MHz 信道上发送。AP 会把这个元素放进它的探测响应（Probe Response）和（重）关联响应帧中；非 AP 站点则把它放进（重）关联请求和测量查询（Measurement Query）帧中。这里甚至还有一个“礼貌性”标志：AP 可以在探测响应中置位 Responder Needed 比特，表明自己缺少感知伙伴、欢迎新成员加入。"
+    },
+    {
+      "type": "prose",
+      "en": "With capabilities known, the session is opened by an exchange of two Public Action frames. The initiator's management entity (its SME) issues an MLME-SENSMSMTSESSION.request, which the MAC turns into a (Protected) Sensing Measurement Request frame. Crucially, that Request carries a Sensing Measurement Parameters element — the heart of the contract. Its fields pin down exactly how each future measurement will be taken: which side is the Sensing Transmitter, which is the Sensing Receiver, the bandwidth (BW), how many spatial streams (TX STS / RX STS) and receive chains, how many LTF repetitions, and how long the session may live (the Measurement Session Expiry Exponent). The responder answers with a (Protected) Sensing Measurement Response frame, and the session is born.",
+      "zh": "在彼此能力都已知晓后，会话通过交换两个公共动作帧（Public Action frame）来开启。发起者的管理实体（SME）发出 MLME-SENSMSMTSESSION.request 原语，MAC 层把它转化为一个（受保护的）感知测量请求帧（Sensing Measurement Request frame）。关键在于，这个请求帧携带了一个“感知测量参数元素（Sensing Measurement Parameters element）”——这正是整份合同的核心。它的各个字段精确锁定了今后每一次测量将如何进行：哪一方是感知发送者、哪一方是感知接收者、带宽（BW）、多少条空间流（TX STS / RX STS）与接收链、LTF 重复次数，以及会话可以存活多久（Measurement Session Expiry Exponent）。响应者回以一个（受保护的）感知测量响应帧（Sensing Measurement Response frame），会话由此诞生。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant I as Sensing Initiator\n    participant R as Sensing Responder\n    Note over I,R: 1. Capabilities exchange (in Probe/Assoc/Query frames)\n    I-->>R: Sensing Capabilities element\n    R-->>I: Sensing Capabilities element\n    Note over I: SME issues MLME-SENSMSMTSESSION.request\n    I->>R: (Protected) Sensing Measurement Request\n    Note right of I: carries Sensing Measurement Parameters element\\n(roles, BW, STS, LTF reps, expiry)\n    R->>I: (Protected) Sensing Measurement Response (SUCCESS)\n    Note over I,R: 2. Session established -> measurement exchanges follow",
+      "zh": "sequenceDiagram\n    participant I as 感知发起者\n    participant R as 感知响应者\n    Note over I,R: 1. 能力交换（在探测/关联/查询帧中）\n    I-->>R: 感知能力元素\n    R-->>I: 感知能力元素\n    Note over I: SME 发出 MLME-SENSMSMTSESSION.request\n    I->>R: （受保护的）感知测量请求帧\n    Note right of I: 携带感知测量参数元素\\n（角色、带宽、空间流、LTF重复、过期时间）\n    R->>I: （受保护的）感知测量响应帧（SUCCESS）\n    Note over I,R: 2. 会话已建立 -> 随后进行测量交换"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Sensing isn't only for devices that have joined the network. An unassociated non-AP STA can also sense — it sends a Sensing Measurement Query frame to the AP to solicit a Request, and is identified by a USID instead of an AID. To keep things orderly the AP may answer with the Comeback bit set, telling the STA \"not now, come back within this time window\" rather than opening a session immediately.",
+      "zh": "感知并不只面向已经入网的设备。未关联的非 AP 站点同样可以感知——它向 AP 发送一个感知测量查询帧（Sensing Measurement Query frame）来请求对方下发请求帧，并且用 USID（而非 AID）来标识自己。为了保持秩序，AP 可以在回复中置位 Comeback 比特，告诉该站点“现在不行，请在这个时间窗口内再来”，而不是立刻开启会话。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact rules: role flexibility, capability-element placement, and the Comeback mechanism",
+        "zh": "精确规则：角色的灵活性、能力元素的放置位置与 Comeback 机制"
+      },
+      "en": "Clause 11.55.1.3 fixes where the Sensing Capabilities element (9.4.2.332) must appear: a sensing STA shall include it in Probe Response, (Re)Association Response, (Re)Association Request, and Measurement Query frames, and may include it in a Probe Request. An AP can set the Responder Needed field in a Probe Response to 1 to solicit new responders; an associated non-AP STA ignores that field, while an unassociated one may respond with a Sensing Measurement Query. Session setup (11.55.1.4.1) begins when the initiator's SME issues MLME-SENSMSMTSESSION.request, producing a Sensing Measurement Request frame; an initiator shall not exceed the responder's advertised Max Supported Sessions. The Comeback field of the Sensing Comeback Info field is set to 0 when an AP sends the Request to a non-AP STA and includes the Sensing Measurement Parameters element (9.4.2.331), but is set to 1 — and the Parameters element omitted — when the Request is addressed to an unassociated non-AP STA per 11.55.1.4.2. The Sensing Measurement Parameters element itself (9.4.2.331) carries the Sensing Transmitter and Sensing Receiver role bits plus BW, Measurement Session Expiry Exponent, TX/RX LTF Repetition, TX/RX STS and Number Of RX Chains fields. The frames that carry all this are the (Protected) Sensing Measurement Request (9.6.7.56, Public Action value 61) and Response (9.6.7.57, value 62).",
+      "zh": "11.55.1.3 节固定了感知能力元素（9.4.2.332）必须出现的位置：感知站点应将其包含在探测响应、（重）关联响应、（重）关联请求和测量查询帧中，并且可以包含在探测请求帧中。AP 可将探测响应中的 Responder Needed 字段置 1 以招募新的响应者；已关联的非 AP 站点会忽略该字段，而未关联的站点则可以用感知测量查询帧作出回应。会话建立（11.55.1.4.1）始于发起者 SME 发出 MLME-SENSMSMTSESSION.request 原语，从而产生一个感知测量请求帧；发起者建立的并发会话数不得超过响应者所通告的 Max Supported Sessions。当 AP 向非 AP 站点发送请求帧并包含感知测量参数元素（9.4.2.331）时，Sensing Comeback Info 字段中的 Comeback 字段置为 0；但当请求帧按 11.55.1.4.2 发往未关联的非 AP 站点时，Comeback 字段置为 1 且省略参数元素。感知测量参数元素本身（9.4.2.331）携带 Sensing Transmitter 与 Sensing Receiver 角色比特，以及 BW、Measurement Session Expiry Exponent、TX/RX LTF Repetition、TX/RX STS 与 Number Of RX Chains 等字段。承载这一切的帧分别是（受保护的）感知测量请求帧（9.6.7.56，公共动作值 61）与响应帧（9.6.7.57，值 62）。",
+      "cite": {
+        "pdf_id": "80211bf-2025",
+        "pages": [
+          138,
+          139,
+          75,
+          114,
+          115
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211bf-2025:11.55.1.3",
+    "80211bf-2025:11.55.1.4.1",
+    "80211bf-2025:11.55.1.4.2",
+    "80211bf-2025:9.4.2.332",
+    "80211bf-2025:9.4.2.331",
+    "80211bf-2025:9.6.7.56",
+    "80211bf-2025:9.6.7.57"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        136
+      ],
+      "note": "11.55.1.1 Overview — sensing procedure flow; initiator/responder may act as transmitter and/or receiver"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        138
+      ],
+      "note": "11.55.1.3 Sensing capabilities exchange — Sensing Capabilities element placement; Responder Needed field"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        139,
+        144
+      ],
+      "note": "11.55.1.4.1 / 11.55.1.4.2 — session establishment via MLME-SENSMSMTSESSION.request; Max Supported Sessions; unassociated-STA Comeback flow"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        75,
+        79
+      ],
+      "note": "9.4.2.331 Sensing Measurement Parameters element and 9.4.2.332 Sensing Capabilities element formats"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        114,
+        115
+      ],
+      "note": "9.6.7.56 / 9.6.7.57 (Protected) Sensing Measurement Request and Response frame formats; Sensing Comeback Info / Comeback field"
+    }
+  ],
+  "track": "sensing"
+}

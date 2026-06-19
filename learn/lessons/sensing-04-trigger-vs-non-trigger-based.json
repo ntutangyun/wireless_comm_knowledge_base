@@ -1,0 +1,120 @@
+{
+  "id": "sensing-04-trigger-vs-non-trigger-based",
+  "title": {
+    "en": "Conducted vs Casual: Trigger-Based vs Non-Trigger-Based Sensing",
+    "zh": "指挥式与随性式：基于触发与非触发的感知"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In 802.11bf, Wi-Fi sensing is a measurement exchange: someone sends a known sounding signal, someone else measures how the channel distorted it, and the result (channel state information, or CSI) reveals motion, presence, or gestures in the room. But who decides when this dance happens, and who leads it? The standard offers two styles. In the trigger-based (TB) style, the access point is the conductor: it initiates and choreographs everyone with explicit Trigger frames. In the non-trigger-based (non-TB) style, a single non-AP station strikes up a quieter, two-party duet with the AP. Same goal — a CSI measurement — but two very different ways to schedule it.",
+      "zh": "在 802.11bf 中，Wi-Fi 感知本质上是一次“测量交换”：一方发出一个已知的探测信号，另一方测量信道如何把它扭曲，得到的结果（信道状态信息，即 CSI）就能揭示房间里的运动、人员存在或手势。但是，由谁来决定这场舞蹈何时开始、又由谁来领舞？标准给出了两种风格。在“基于触发（TB）”的风格里，接入点（AP）是指挥：它用明确的触发帧（Trigger frame）发起并调度所有参与者。在“非触发（non-TB）”的风格里，则是某一个非 AP 站点与 AP 之间安静的二人合奏。目标相同——都是一次 CSI 测量——但调度方式截然不同。"
+    },
+    {
+      "type": "prose",
+      "en": "Trigger-based sensing is built for crowds. The AP is the sensing initiator and one or more non-AP stations are the sensing responders. Because the AP holds the baton, it can poll many stations at once, sound them together, and gather their reports on uplink resources it allocates — exactly the multi-station, uplink-measurement scenarios that a single device cannot organise on its own. A full TB exchange is assembled from up to four phases: an optional polling phase, an NDPA sounding phase, a TF sounding phase, and a reporting phase. The AP picks which phases to include for the job at hand.",
+      "zh": "基于触发的感知是为“多人场景”设计的。AP 是感知发起方（sensing initiator），一个或多个非 AP 站点是感知响应方（sensing responder）。由于 AP 手握指挥棒，它可以一次轮询多个站点、把它们一起探测、并在自己分配的上行资源上收集它们的报告——这正是单个设备无法自行组织的“多站点、上行测量”场景。一次完整的 TB 交换由最多四个阶段组成：可选的轮询阶段（polling phase）、NDPA 探测阶段（NDPA sounding phase）、TF 探测阶段（TF sounding phase）以及报告阶段（reporting phase）。AP 会根据手头任务挑选要包含哪些阶段。"
+    },
+    {
+      "type": "prose",
+      "en": "Walk through the phases. In the polling phase the AP sends a Sensing Polling Trigger frame to ask which assigned stations are actually awake and present; each willing station answers with a CTS-to-self in its allocated resource unit, and silence means \"skip me.\" In the NDPA sounding phase the AP announces and then transmits a null data packet (NDP) downlink, and the responders measure it. The TF sounding phase flips the direction: the AP triggers stations to send their own NDPs uplink, so the AP can measure them. Finally the reporting phase collects the CSI: the AP sends a Sensing Reporting Trigger frame allocating uplink room, and the responders return Sensing Measurement Report frames.",
+      "zh": "我们逐个阶段走一遍。在轮询阶段，AP 发送一个 Sensing Polling Trigger 帧，询问哪些被指派的站点确实醒着并在场；每个愿意参与的站点会在分配给它的资源单元（RU）里回一个 CTS-to-self 帧，而保持沉默就表示“跳过我”。在 NDPA 探测阶段，AP 先公告、再向下行发送一个空数据包（NDP），由响应方对其进行测量。TF 探测阶段则把方向反过来：AP 触发各站点向上行发送各自的 NDP，使 AP 能够测量它们。最后在报告阶段收集 CSI：AP 发送一个 Sensing Reporting Trigger 帧分配上行空间，响应方返回 Sensing Measurement Report 帧。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as AP (sensing initiator / conductor)\n    participant S1 as STA 1 (responder)\n    participant S2 as STA 2 (responder)\n    Note over AP,S2: TB sensing measurement exchange\n    AP->>S1: Sensing Polling Trigger\n    AP->>S2: Sensing Polling Trigger\n    S1-->>AP: CTS-to-self (in my RU)\n    S2-->>AP: CTS-to-self (in my RU)\n    Note over AP,S2: NDPA sounding phase\n    AP->>S1: Sensing NDP Announcement\n    AP->>S2: Sensing NDP Announcement\n    AP->>S2: SI2SR NDP (downlink sounding)\n    Note over AP,S2: reporting phase\n    AP->>S1: Sensing Reporting Trigger (UL alloc)\n    S1-->>AP: Sensing Measurement Report (CSI)\n    S2-->>AP: Sensing Measurement Report (CSI)",
+      "zh": "sequenceDiagram\n    participant AP as AP（感知发起方/指挥）\n    participant S1 as 站点1（响应方）\n    participant S2 as 站点2（响应方）\n    Note over AP,S2: 基于触发(TB)的感知测量交换\n    AP->>S1: Sensing Polling Trigger（轮询触发）\n    AP->>S2: Sensing Polling Trigger（轮询触发）\n    S1-->>AP: CTS-to-self（在我的RU内）\n    S2-->>AP: CTS-to-self（在我的RU内）\n    Note over AP,S2: NDPA 探测阶段\n    AP->>S1: Sensing NDP Announcement（NDP公告）\n    AP->>S2: Sensing NDP Announcement（NDP公告）\n    AP->>S2: SI2SR NDP（下行探测）\n    Note over AP,S2: 报告阶段\n    AP->>S1: Sensing Reporting Trigger（分配上行资源）\n    S1-->>AP: Sensing Measurement Report（CSI）\n    S2-->>AP: Sensing Measurement Report（CSI）"
+    },
+    {
+      "type": "prose",
+      "en": "Non-trigger-based sensing is the lightweight alternative, and it inverts the roles: here a non-AP station is the sensing initiator and the AP is the sensing responder. Whenever the medium is free, the station can simply start. There are no Trigger frames and no polling — just two phases. In the measurement sounding phase the station sends a Sensing NDP Announcement to the AP followed by its own NDP (SI2SR), and a SIFS later the AP replies with an NDP of its own (SR2SI), giving both sides material to measure. If a report was requested, a short reporting phase follows: the AP sends a single Sensing Measurement Report frame back. No conductor, no queue — just one station and its AP.",
+      "zh": "非触发的感知是更轻量的替代方案，而且它把角色对调了：这里是非 AP 站点充当感知发起方，AP 充当感知响应方。只要信道空闲，站点就可以直接开始。没有触发帧，也没有轮询——只有两个阶段。在测量探测阶段（measurement sounding phase），站点先向 AP 发送一个 Sensing NDP Announcement、紧接着发送自己的 NDP（SI2SR），一个 SIFS 之后 AP 回以它自己的 NDP（SR2SI），让双方都有可供测量的素材。如果请求了报告，则跟随一个简短的报告阶段：AP 回送一个 Sensing Measurement Report 帧即可。没有指挥、没有排队——只有一个站点和它的 AP。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><text x='115' y='20' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>Trigger-based (TB)</text><text x='345' y='20' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>Non-trigger-based (non-TB)</text><circle cx='115' cy='55' r='16'/><text x='115' y='59' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>AP</text><text x='115' y='90' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>initiator</text><circle cx='55' cy='150' r='13'/><circle cx='115' cy='150' r='13'/><circle cx='175' cy='150' r='13'/><text x='55' y='154' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>STA</text><text x='115' y='154' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>STA</text><text x='175' y='154' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>STA</text><line x1='115' y1='71' x2='55' y2='137'/><line x1='115' y1='71' x2='115' y2='137'/><line x1='115' y1='71' x2='175' y2='137'/><text x='115' y='185' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>AP polls + sounds many</text><circle cx='300' cy='100' r='16'/><text x='300' y='104' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>STA</text><text x='300' y='130' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>initiator</text><circle cx='400' cy='100' r='16'/><text x='400' y='104' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>AP</text><line x1='316' y1='100' x2='384' y2='100'/><text x='350' y='150' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>two-party duet</text></svg>",
+      "caption": {
+        "en": "TB: the AP conducts many stations through polling and sounding. Non-TB: one station and the AP exchange NDPs directly.",
+        "zh": "TB：AP 通过轮询与探测指挥多个站点。Non-TB：单个站点与 AP 直接交换 NDP。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Sensing can be chatty — sending a CSI report after every sounding burns airtime, especially with many responders. 802.11bf adds an optional threshold-based reporting mode for TB exchanges: the AP gives each responder a CSI Variation Threshold, and a responder only reports back when its channel has changed by at least that much. A still, empty room produces little CSI variation and therefore little traffic; the AP only pays for reports when something actually moved. It is a simple knob that trades a little sensitivity for a lot of saved airtime.",
+      "zh": "感知可能很“话痨”——每次探测后都回一份 CSI 报告会消耗大量空口时间，尤其在响应方众多时。802.11bf 为 TB 交换增加了一个可选的“基于阈值的报告（threshold-based reporting）”模式：AP 给每个响应方一个 CSI 变化阈值（CSI Variation Threshold），响应方只有当其信道变化达到或超过该阈值时才回报。一个安静、空无一人的房间产生的 CSI 变化很小，因而几乎没有流量；只有真的有东西移动时，AP 才需要为报告“买单”。这是一个简单的旋钮，用一点点灵敏度换取大量节省的空口时间。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What the clauses actually mandate about phases and roles",
+        "zh": "各子条款对阶段与角色的实际强制规定"
+      },
+      "en": "Clause 11.55.1.5.2.1 defines the TB sensing measurement exchange as the trigger-based variant where an AP is the sensing initiator and one or more non-AP STAs are the responders; it may include a polling phase, an NDPA sounding phase, a TF sounding phase, and a reporting phase, but the standard forbids degenerate forms (a reporting phase alone, an NDPA sounding phase alone, an SR2SR TF sounding phase alone with a receiver responder, or only a polling-plus-reporting pair). In the polling phase (11.55.1.5.2.2) the AP sends a Sensing Polling Trigger frame, sets the Polled Assigned field to 1 for stations it wants polled, allocates each RU to exactly one STA, and a participating STA answers with a CTS-to-self in its RU. The NDPA sounding phase (11.55.1.5.2.3) has the AP transmit a Sensing NDP Announcement followed a SIFS later by an SI2SR NDP that the addressed receivers measure. The threshold-based reporting phase (11.55.1.5.2.6.2) is optional; it applies when the CSI Variation Threshold field in the TB Sensing Specific subelement is set to 0–10, and lets the initiator solicit reports only from responders whose CSI variation meets the threshold, reducing the overhead of the basic reporting phase. For non-TB (11.55.1.5.3.2) a non-AP STA initiates by sending a Sensing NDP Announcement to the AP followed by an SI2SR NDP, and the AP replies a SIFS later with an SR2SI NDP; the reporting phase (11.55.1.5.3.3) is present only if the Sensing Measurement Report Requested field equals 1, in which case the AP sends a Sensing Measurement Report frame a SIFS after the SR2SI NDP. The Trigger frames that drive the TB flow share a Sensing Trigger frame format (9.3.1.22.15.1) whose Trigger Dependent Common Info field carries a Sensing Trigger Subtype and a Sensing Token, covering the Sensing Polling, SR2SI Sounding, Threshold-Based Reporting, and Reporting trigger variants.",
+      "zh": "11.55.1.5.2.1 节将 TB 感知测量交换定义为基于触发的变体：AP 为感知发起方，一个或多个非 AP 站点为响应方；它可以包含轮询阶段、NDPA 探测阶段、TF 探测阶段和报告阶段，但标准禁止若干退化形式（仅有报告阶段、仅有 NDPA 探测阶段、仅有响应方为接收者的 SR2SR TF 探测阶段、或只有“轮询加报告”这一对）。在轮询阶段（11.55.1.5.2.2），AP 发送 Sensing Polling Trigger 帧，对希望轮询的站点将 Polled Assigned 字段置 1，把每个 RU 恰好分配给一个站点，参与的站点在其 RU 内回以 CTS-to-self。NDPA 探测阶段（11.55.1.5.2.3）由 AP 发送 Sensing NDP Announcement、一个 SIFS 后再发送 SI2SR NDP，由被寻址的接收者对其测量。基于阈值的报告阶段（11.55.1.5.2.6.2）是可选的；当 TB Sensing Specific 子元素中的 CSI Variation Threshold 字段被置为 0–10 时适用，它让发起方只向 CSI 变化达到阈值的响应方索取报告，从而降低基本报告阶段的开销。对于 non-TB（11.55.1.5.3.2），非 AP 站点通过向 AP 发送 Sensing NDP Announcement、紧接着发送 SI2SR NDP 来发起，AP 在一个 SIFS 后回以 SR2SI NDP；报告阶段（11.55.1.5.3.3）仅在 Sensing Measurement Report Requested 字段等于 1 时存在，此时 AP 在 SR2SI NDP 后一个 SIFS 发送 Sensing Measurement Report 帧。驱动 TB 流程的触发帧共享一种 Sensing Trigger 帧格式（9.3.1.22.15.1），其 Trigger Dependent Common Info 字段携带 Sensing Trigger Subtype 与 Sensing Token，涵盖 Sensing Polling、SR2SI Sounding、Threshold-Based Reporting 与 Reporting 各触发变体。",
+      "cite": {
+        "pdf_id": "80211bf-2025",
+        "pages": [
+          146,
+          149,
+          151,
+          156,
+          159,
+          160,
+          39
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211bf-2025:11.55.1.5.2.1",
+    "80211bf-2025:11.55.1.5.2.2",
+    "80211bf-2025:11.55.1.5.2.3",
+    "80211bf-2025:11.55.1.5.2.6.2",
+    "80211bf-2025:11.55.1.5.3.2",
+    "80211bf-2025:11.55.1.5.3.3",
+    "80211bf-2025:9.3.1.22.15.1"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        146,
+        149
+      ],
+      "note": "11.55.1.5.2.1 General + 11.55.1.5.2.2 Polling phase — TB exchange: AP initiator, one+ STA responders; four phases; forbidden degenerate forms; Sensing Polling Trigger + CTS-to-self per RU"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        151
+      ],
+      "note": "11.55.1.5.2.3 NDPA sounding phase — AP transmits Sensing NDP Announcement then SI2SR NDP a SIFS later; receivers measure"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        156
+      ],
+      "note": "11.55.1.5.2.6.2 Threshold-based reporting phase — optional; CSI Variation Threshold 0-10; report only on large CSI variation to cut overhead"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        159,
+        160
+      ],
+      "note": "11.55.1.5.3.2 Measurement sounding phase + 11.55.1.5.3.3 Reporting phase — non-TB: non-AP STA initiator, AP responder; NDPA + SI2SR NDP, AP replies SR2SI NDP; report only if requested"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        39
+      ],
+      "note": "9.3.1.22.15.1 Sensing Trigger frame format General — Trigger Dependent Common Info: Sensing Trigger Subtype + Sensing Token; Polling/SR2SI Sounding/Threshold-Based Reporting/Reporting variants"
+    }
+  ],
+  "track": "sensing"
+}

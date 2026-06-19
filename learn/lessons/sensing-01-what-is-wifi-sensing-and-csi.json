@@ -1,0 +1,87 @@
+{
+  "id": "sensing-01-what-is-wifi-sensing-and-csi",
+  "title": {
+    "en": "Wi-Fi as a Sensor: The CSI Idea",
+    "zh": "把 Wi-Fi 当作传感器：CSI 的核心思想"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Here is a surprising idea: the same Wi-Fi radio that carries your video calls can also tell whether someone just walked across the room — with no camera, no wearable, nothing but the radio waves already in the air. The trick is that radio signals don't travel from transmitter to receiver in a single clean line. They bounce off walls, furniture, and people, arriving as a tangle of echoes. When a person moves, those echoes shift. If you can measure how the channel reshapes a known signal, and watch that measurement change over time, you are effectively watching the room move.",
+      "zh": "这里有一个出人意料的想法：那台为你承载视频通话的 Wi-Fi 无线电，同样能判断是否刚有人从房间走过——不需要摄像头，不需要可穿戴设备，仅凭空气中本就存在的无线电波即可做到。其中的奥妙在于：无线电信号并不是沿一条干净的直线从发射端走到接收端的。它会在墙壁、家具和人体上反射，以一团回声的形式抵达。当有人移动时，这些回声随之改变。如果你能测出信道是如何重塑一个已知信号的，并观察这一测量随时间的变化，那么你实际上就是在“看”这个房间的动静。"
+    },
+    {
+      "type": "prose",
+      "en": "The measurement at the heart of this is Channel State Information (CSI). The transmitter sends a signal whose shape the receiver already knows — a sounding waveform. By comparing what arrived against what it expected, the receiver computes, for each tiny slice of the channel, a complex number: an amplitude (how much the signal was weakened) and a phase (how much it was delayed or rotated). A modern OFDM link measures this per subcarrier, per transmit antenna, per receive antenna — producing a rich, high-dimensional fingerprint of the radio environment at one instant. Take a stream of these fingerprints and the small, repeating wiggle of a breathing chest or the sweep of a waving hand stands out from the static background.",
+      "zh": "这一切的核心测量量叫做“信道状态信息”（Channel State Information，CSI）。发射端发送一个接收端早已知晓其形状的信号——即探测波形（sounding waveform）。接收端把实际收到的与预期的进行比较，从而为信道的每一个细小切片计算出一个复数：幅度（信号被削弱了多少）与相位（信号被延迟或旋转了多少）。现代 OFDM 链路会逐子载波、逐发射天线、逐接收天线地测量这一信息——在某一瞬间生成一份丰富的、高维的无线环境“指纹”。把一连串这样的指纹串起来，呼吸时胸腔那细微而周期性的起伏、或挥手时手掌的扫动，就会从静止的背景中凸显出来。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "CSI is not new — Wi-Fi has always estimated the channel to decode data and steer beams. What 802.11bf adds is a standard way to ask for these measurements on purpose, package them, and report them, so sensing becomes a first-class feature rather than a clever hack on top of data frames.",
+      "zh": "CSI 并非新事物——Wi-Fi 为了解码数据和进行波束赋形，本来就一直在估计信道。802.11bf 新增的，是一套标准化的机制：让你能够有目的地请求这些测量、把它们打包、并加以上报，从而使“感知”成为一项一等公民式的功能，而不再是叠加在数据帧之上的小聪明。"
+    },
+    {
+      "type": "prose",
+      "en": "That is exactly what IEEE 802.11bf-2025, the WLAN Sensing amendment, standardises. Its stated goal is to use existing 802.11 PHY and MAC features to make environmental measurements that estimate the range, velocity, and motion of objects in an area of interest — enabling applications like presence detection, motion detection, and gesture classification. The amendment defines four sensing procedures, and they form the roadmap for the rest of this track.",
+      "zh": "这正是 IEEE 802.11bf-2025（即 WLAN 感知修正案）所要标准化的内容。它明确的目标是：利用现有的 802.11 PHY 与 MAC 特性进行环境测量，从而估计目标区域内物体的距离（range）、速度（velocity）与运动（motion）——并支撑诸如存在检测、运动检测、手势分类等应用。该修正案定义了四种感知流程（sensing procedures），它们构成了本系列后续课程的路线图。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 320 180' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><rect x='10' y='10' width='300' height='160' rx='8'/><circle cx='55' cy='90' r='12'/><text x='55' y='120' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>AP (Tx)</text><circle cx='265' cy='90' r='12'/><text x='265' y='120' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>STA (Rx)</text><line x1='67' y1='88' x2='253' y2='88' stroke-dasharray='2 4'/><path d='M67 92 Q160 150 253 92' stroke-dasharray='2 4'/><path d='M67 84 Q160 30 253 84' stroke-dasharray='2 4'/><circle cx='160' cy='135' r='8' fill='currentColor' stroke='none'/><text x='160' y='168' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>moving person reshapes the echoes</text></svg>",
+      "caption": {
+        "en": "A known sounding signal travels direct and via reflections; a moving body changes those reflected paths, and the receiver sees it as a change in CSI.",
+        "zh": "一个已知的探测信号既走直达路径，也经反射到达；移动的人体改变了这些反射路径，接收端便将其看作 CSI 的变化。"
+      }
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant Tx as Sensing Transmitter\n    participant CH as Radio Channel (the room)\n    participant Rx as Sensing Receiver\n    Note over Tx: send a known sounding waveform (NDP)\n    Tx->>CH: known signal\n    Note over CH: walls + furniture + people reshape it\n    CH->>Rx: altered signal arrives\n    Note over Rx: compare received vs known -> estimate CSI\n    Note over Rx: amplitude + phase, per subcarrier / antenna\n    Rx-->>Tx: report measurement (CSI feedback)\n    Note over Tx,Rx: repeat over time -> motion, range, velocity",
+      "zh": "sequenceDiagram\n    participant Tx as 感知发射端\n    participant CH as 无线信道（房间）\n    participant Rx as 感知接收端\n    Note over Tx: 发送已知的探测波形 (NDP)\n    Tx->>CH: 已知信号\n    Note over CH: 墙壁+家具+人体对其重塑\n    CH->>Rx: 被改变的信号抵达\n    Note over Rx: 收到的与已知的比较 -> 估计 CSI\n    Note over Rx: 每子载波/每天线的 幅度+相位\n    Rx-->>Tx: 上报测量结果 (CSI 反馈)\n    Note over Tx,Rx: 随时间重复 -> 运动、距离、速度"
+    },
+    {
+      "type": "prose",
+      "en": "The four procedures differ by who measures and on what kind of link. The plain sensing procedure lets HE (Wi-Fi 6) or EHT (Wi-Fi 7) stations perform sensing measurements directly. Sensing by proxy (SBP) lets a non-AP station ask the AP to do the measuring on its behalf — useful when the small device cannot drive the whole exchange itself. The DMG sensing procedure and DMG SBP procedure are the equivalents for directional millimetre-wave (DMG, 60 GHz) links, where the fine time resolution makes range and gesture sensing especially sharp. The lessons ahead unpack each of these in turn.",
+      "zh": "这四种流程的区别在于：由谁来测量，以及在何种链路上测量。普通的感知流程允许 HE（Wi-Fi 6）或 EHT（Wi-Fi 7）站点直接执行感知测量。代理感知（Sensing by Proxy，SBP）允许一个非 AP 站点请求 AP 代其完成测量——当小型设备无法自行驱动整个交换流程时尤为有用。DMG 感知流程与 DMG SBP 流程则是面向定向毫米波（DMG，60 GHz）链路的对应版本；在那里，更精细的时间分辨率使得距离与手势感知格外锐利。后续课程将逐一展开这四者。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What the standard actually says, and how raw CSI becomes a report",
+        "zh": "标准的原文表述，以及原始 CSI 如何变成一份报告"
+      },
+      "en": "Clause 4.11 defines WLAN sensing as using certain 802.11 PHY and MAC features to make environmental measurements useful to estimate the range, velocity, and motion of objects in an area of interest, supporting applications such as presence detection, motion detection, and gesture classification. It enumerates exactly four procedures: the sensing procedure (11.55.1), the sensing-by-proxy (SBP) procedure (11.55.2), the DMG sensing procedure (11.55.3), and the DMG SBP procedure (11.55.4). On the data side, the measured CSI for a given receive chain r, transmit chain t, and subcarrier k is a complex value whose real and imaginary parts are represented as two's-complement binary integers (9.4.1.81.2.1). Before it can be carried in a Sensing Measurement Report field, that CSI is encoded — each real and imaginary part is scaled by a positive 12-bit per-(r,t) scaling factor and quantized to 8 bits, chosen to avoid overflow — and the receiver later decodes and rescales it. So the intuitive 'fingerprint' is, concretely, a per-chain, per-subcarrier array of quantized complex numbers packaged for reporting.",
+      "zh": "4.11 节将 WLAN 感知定义为：利用特定的 802.11 PHY 与 MAC 特性进行环境测量，以估计目标区域内物体的距离、速度与运动，从而支撑存在检测、运动检测、手势分类等应用。它明确列举了四种流程：感知流程（11.55.1）、代理感知（SBP）流程（11.55.2）、DMG 感知流程（11.55.3）以及 DMG SBP 流程（11.55.4）。在数据层面，对于给定的接收链 r、发射链 t 与子载波 k，所测得的 CSI 是一个复数，其实部与虚部均以二进制补码整数表示（9.4.1.81.2.1）。在被装入 Sensing Measurement Report 字段之前，该 CSI 会被编码——每个实部与虚部都按一个针对 (r,t) 的正 12 比特缩放因子进行缩放、并量化为 8 比特，缩放因子的选取以避免溢出为准——接收端随后再对其解码并重新缩放。于是，那份直观的“指纹”，具体而言就是一组逐链路、逐子载波、为上报而打包的量化复数。",
+      "cite": {
+        "pdf_id": "80211bf-2025",
+        "pages": [
+          27,
+          56
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211bf-2025:4.11",
+    "80211bf-2025:9.4.1.81.2.1"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        27
+      ],
+      "note": "4.11 WLAN sensing — definition; range/velocity/motion goal; presence/motion/gesture applications; the four procedures (sensing, SBP, DMG sensing, DMG SBP)"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        56
+      ],
+      "note": "9.4.1.81.2.1 CSI encoding and decoding (General) — measured CSI as complex per receive/transmit chain and subcarrier; real/imag as two's-complement; encode/scale/quantize to 8 bits for the Sensing Measurement Report field"
+    }
+  ],
+  "track": "sensing"
+}
