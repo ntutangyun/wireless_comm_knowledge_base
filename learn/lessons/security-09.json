@@ -1,0 +1,110 @@
+{
+  "id": "security-09",
+  "title": {
+    "en": "Onboarding in a Blink: FILS Authentication",
+    "zh": "瞬间入网：FILS 快速初始链路建立认证"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Picture a stadium gate after the final whistle, or an airport terminal at boarding time: thousands of phones all reaching for the same Wi-Fi at once. The normal way in is slow — authenticate, then associate, then run a 4-way handshake to set up keys. That is a lot of back-and-forth frames per device, and at that scale the air clogs up. Fast Initial Link Setup (FILS) is the express lane: it folds authentication AND key establishment into the existing frame pairs, so a station goes from a cold start to connected-and-keyed in far fewer round trips.",
+      "zh": "想象一座体育场在终场哨响后的出口，或者登机时段的机场航站楼：成千上万部手机同时去抢同一个 Wi-Fi。常规的入网方式很慢——先认证，再关联，然后跑一次四次握手来建立密钥。每台设备都要来回收发大量帧，在这种规模下空口很快就被塞满了。FILS（快速初始链路建立）就是那条快速通道：它把认证和密钥建立都折叠进已有的帧交换里，让一个站点从冷启动到“已连接且已派发密钥”只需远少于平常的往返次数。"
+    },
+    {
+      "type": "prose",
+      "en": "The trick is where the work happens. In FILS the STA and AP do key establishment inside the Authentication frame pair, and key confirmation inside the (Re)Association Request/Response pair. There is no separate EAPOL 4-way handshake afterward — by the time the association response comes back, the link is already keyed. And because the association frames carry the keys' confirmation, those frames are themselves encrypted and authenticated with an AEAD cipher, so an eavesdropper cannot read or tamper with them.",
+      "zh": "诀窍在于“活儿”发生的位置。在 FILS 中，STA 与 AP 在“认证帧（Authentication frame）”这一对帧里完成密钥建立，在“（重）关联请求/响应”这一对帧里完成密钥确认。之后不再需要单独的 EAPOL 四次握手——当关联响应返回时，链路其实已经派发好密钥了。又因为关联帧本身承载着密钥确认，这些帧会用一种 AEAD 密码进行加密和认证，所以窃听者既读不到、也篡改不了它们。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "FILS comes in two flavors. FILS Shared Key leans on a secret you already share — either a PMK cached from a prior connection, or an rRK held by a trusted third party reached via EAP-RP — and can optionally add a Diffie-Hellman exchange for perfect forward secrecy (PFS). FILS Public Key is certificate-based: each side trusts the other's public key, and PFS via Diffie-Hellman is always used. In both, the result is a PTKSA — fresh session keys.",
+      "zh": "FILS 有两种风味。FILS 共享密钥（Shared Key）依赖你已经持有的某个秘密——要么是上次连接缓存下来的 PMK，要么是由可信第三方（TTP）持有、通过 EAP-RP 触达的 rRK——并可选地再加一次 Diffie-Hellman 交换来获得完美前向保密（PFS）。FILS 公钥（Public Key）则基于证书：双方各自信任对端的公钥，并且总是通过 Diffie-Hellman 启用 PFS。两种方式的结果都是一个 PTKSA——也就是全新的会话密钥。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Non-AP STA\n    participant AP as Access Point\n    participant TTP as Key server / TTP\n    Note over STA,AP: AP advertises FILS support in Beacon / Probe Response\n    STA->>AP: Authentication (alg 4/5/6, seq=1)<br/>SNonce, FILS Session, [pubkey / EAP-Initiate]\n    AP->>TTP: forward EAP-RP (shared key only, out of scope)\n    TTP-->>AP: EAP-Finish + rMSK\n    AP->>STA: Authentication (seq=2)<br/>ANonce, FILS Session, [pubkey / EAP-Finish]\n    Note over STA,AP: both derive DHss, then PMK -> PTK (ICK, PTK-KEK, TK)\n    STA->>AP: (Re)Association Request (AEAD-encrypted)<br/>FILS Key Confirmation (Key-Auth)\n    AP->>STA: (Re)Association Response (AEAD-encrypted)<br/>Key-Auth + Key Delivery (GTK/IGTK...)\n    Note over STA,AP: keys confirmed -> connected and keyed",
+      "zh": "sequenceDiagram\n    participant STA as 非 AP 站点\n    participant AP as 接入点\n    participant TTP as 密钥服务器 / TTP\n    Note over STA,AP: AP 在 Beacon / 探测响应中通告支持 FILS\n    STA->>AP: 认证帧 (算法 4/5/6, 序号=1)<br/>SNonce、FILS Session、[公钥 / EAP-Initiate]\n    AP->>TTP: 转发 EAP-RP (仅共享密钥, 不在本标准范围)\n    TTP-->>AP: EAP-Finish + rMSK\n    AP->>STA: 认证帧 (序号=2)<br/>ANonce、FILS Session、[公钥 / EAP-Finish]\n    Note over STA,AP: 双方推导 DHss, 再 PMK -> PTK (ICK、PTK-KEK、TK)\n    STA->>AP: (重)关联请求 (AEAD 加密)<br/>FILS 密钥确认 (Key-Auth)\n    AP->>STA: (重)关联响应 (AEAD 加密)<br/>Key-Auth + 密钥派发 (GTK/IGTK...)\n    Note over STA,AP: 密钥确认通过 -> 已连接且已派发密钥"
+    },
+    {
+      "type": "prose",
+      "en": "How do the keys get built? After the Authentication frames are exchanged, both sides hold the same raw ingredients: the two nonces (SNonce from the STA, ANonce from the AP) and a shared secret — the rMSK from an EAP-RP exchange, and/or DHss, the Diffie-Hellman shared secret, when PFS is used. From these they derive a PMK (the master key for this PMKSA) and then run a key derivation function to expand the PMK into the PTKSA's working keys: an integrity check key (ICK), a key-encryption key (PTK-KEK), and the temporal key (TK) that actually protects data frames. Crucially, the moment the PMK and PTK are formed, the raw DHss and rMSK are irretrievably deleted — used once, then erased.",
+      "zh": "密钥是怎么造出来的？在认证帧交换之后，双方手上握着相同的“原料”：两个随机数（来自 STA 的 SNonce 和来自 AP 的 ANonce），以及一个共享秘密——可能是 EAP-RP 交换得到的 rMSK，和/或在启用 PFS 时由 Diffie-Hellman 得到的共享秘密 DHss。由这些原料先推导出 PMK（本 PMKSA 的主密钥），再跑一个密钥派生函数把 PMK 扩展成 PTKSA 的工作密钥：完整性校验密钥（ICK）、密钥加密密钥（PTK-KEK），以及真正用于保护数据帧的临时密钥（TK）。关键在于：一旦 PMK 和 PTK 生成，原始的 DHss 与 rMSK 就会被不可恢复地删除——用过一次便抹去。"
+    },
+    {
+      "type": "prose",
+      "en": "Then comes confirmation, and it rides on the association exchange. The STA puts a FILS Key Confirmation element into its (Re)Association Request: a Key-Auth value computed with the ICK over the nonces, the two MAC identities (STA-MAC and AP-BSSID), and — when Diffie-Hellman was used — the public values. The AP recomputes the same value and checks it matches; then it replies with its own Key-Auth and a Key Delivery element carrying the group keys (GTK, IGTK, and so on). Both association frames are sealed with the AEAD cipher under PTK-KEK, so the very frames that confirm the keys are themselves protected. If either side's check fails, all the keys are wiped and the STA never reaches the network.",
+      "zh": "接下来是确认，而它就搭在关联交换上完成。STA 在它的（重）关联请求里放入一个“FILS 密钥确认元素”：其中的 Key-Auth 值用 ICK 对两个随机数、双方的 MAC 身份（STA-MAC 与 AP-BSSID）、以及（当使用了 Diffie-Hellman 时）双方公钥值计算得到。AP 重新算出同一个值并核对是否一致；随后回复它自己的 Key-Auth，以及一个携带组密钥（GTK、IGTK 等）的“密钥派发元素”。两个关联帧都用 PTK-KEK 通过 AEAD 密码封装，因此“用来确认密钥的那两帧”本身也受到保护。一旦任何一方的核对失败，所有密钥都会被抹除，该 STA 也就进不了网络。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Algorithm numbers, the exact PTK split, and the AEAD choice",
+        "zh": "算法编号、PTK 的精确切分，以及 AEAD 的选择"
+      },
+      "en": "The Authentication frame's algorithm number selects the flavor: 4 = FILS Shared Key without PFS, 5 = FILS Shared Key with PFS, 6 = FILS Public Key (always PFS). Key derivation (12.11.2.5.2-3) is precise. The PMK is PMK = HMAC-Hash(SNonce || ANonce, rMSK [|| DHss]) for Shared Key, or HMAC-Hash(SNonce || ANonce, DHss) for Public Key, at 256 or 384 bits per the negotiated AKM. The PTK is then PRF-X(PMK, \"FILS PTK Derivation\", SPA || AA || SNonce || ANonce [|| DHss]) and is sliced with ExtractBits into ICK, PTK-KEK, and TK (with optional FILS-FT and KDK for fast-transition or secure-LTF/WUR cases). Confirmation (12.11.2.6) uses Key-Auth = HMAC-Hash(ICK, SNonce || ANonce || STA-MAC || AP-BSSID [|| gSTA || gAP]) for the request (the response swaps the order to put the AP first), or a digital signature for Public Key without PMKSA caching. The AEAD cipher (12.11.2.7) is AES-SIV-256 for AKM 00-0F-AC:14/16 and AES-SIV-512 for 00-0F-AC:15/17.",
+      "zh": "认证帧的算法编号决定风味：4 = 无 PFS 的 FILS 共享密钥，5 = 带 PFS 的 FILS 共享密钥，6 = FILS 公钥（始终带 PFS）。密钥派生（12.11.2.5.2-3）十分精确。PMK 在共享密钥下为 PMK = HMAC-Hash(SNonce || ANonce, rMSK [|| DHss])，在公钥下为 HMAC-Hash(SNonce || ANonce, DHss)，长度按协商的 AKM 取 256 或 384 比特。随后 PTK = PRF-X(PMK, \"FILS PTK Derivation\", SPA || AA || SNonce || ANonce [|| DHss])，再用 ExtractBits 切分成 ICK、PTK-KEK 和 TK（在快速切换或安全 LTF/WUR 场景下还可选地切出 FILS-FT 与 KDK）。确认（12.11.2.6）在请求中使用 Key-Auth = HMAC-Hash(ICK, SNonce || ANonce || STA-MAC || AP-BSSID [|| gSTA || gAP])（响应则调换顺序把 AP 放在前面），或在“无 PMKSA 缓存的公钥”情形下使用数字签名。AEAD 密码（12.11.2.7）：AKM 为 00-0F-AC:14/16 时用 AES-SIV-256，为 00-0F-AC:15/17 时用 AES-SIV-512。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3109,
+          3110,
+          3111,
+          3112,
+          3116
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why fewer frames matters: each round trip across the air costs time and airtime, and at a packed venue that multiplies across thousands of joining devices. By collapsing authentication, key establishment, and key confirmation into the two frame pairs a station already has to send to join, FILS removes the separate handshake entirely — the difference between a network that buckles under a crowd and one that onboards everyone in a blink.",
+      "zh": "为什么“更少的帧”很重要：每一次空口往返都要消耗时间和空口资源，在拥挤场馆里这个开销会乘以成千上万台正在入网的设备。FILS 把认证、密钥建立和密钥确认全都折叠进站点入网本来就要发的那两对帧里，从而彻底省去了单独的握手——这正是“人一多就崩”的网络，与“一眨眼把所有人接入”的网络之间的差别。"
+    }
+  ],
+  "covers": [
+    "80211-2024:12.11.2.2",
+    "80211-2024:12.11.2.3.1",
+    "80211-2024:12.11.2.4.1",
+    "80211-2024:12.11.2.5.2",
+    "80211-2024:12.11.2.5.3",
+    "80211-2024:12.11.2.6.1",
+    "80211-2024:12.11.2.7"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3103
+      ],
+      "note": "12.11.2.2 Discovery of a FILS AP; 12.11.2.3.1 overview of FILS Shared Key establishment"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3107
+      ],
+      "note": "12.11.2.4.1 General - FILS Public Key authentication initiates via public key or cached PMKSA"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3109,
+        3110,
+        3111
+      ],
+      "note": "12.11.2.5.2 PMKSA key derivation (PMK/PMKID formulas); 12.11.2.5.3 PTKSA derivation (ICK/PTK-KEK/TK)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3112,
+        3116
+      ],
+      "note": "12.11.2.6.1 key confirmation via (Re)Association frames; 12.11.2.7 AEAD cipher mode (AES-SIV-256/512)"
+    }
+  ],
+  "track": "security"
+}

@@ -1,0 +1,108 @@
+{
+  "id": "security-07",
+  "title": {
+    "en": "Refreshing the Group Key: The Group Key Handshake & Rekeying",
+    "zh": "刷新组密钥：组密钥握手与重新密钥"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In a Wi-Fi network, unicast traffic to a single station is protected with that station's own pairwise key (the PTK). But broadcast and multicast frames — a beacon-borne notice, an ARP for everyone, a multicast video stream — go out once and must be readable by every station in the BSS. So the access point hands every associated station the same shared key: the Group Temporal Key, or GTK. One key, held by all, protecting all group-addressed traffic.",
+      "zh": "在 Wi-Fi 网络中，发往单个站点的单播流量由该站点专属的成对密钥（PTK）保护。但广播和组播帧——比如一条通知、面向所有人的 ARP、一路组播视频流——只发送一次，却必须能被 BSS 内的每一个站点解读。因此 AP 会把同一把共享密钥交给每个已关联的站点：这就是组临时密钥（Group Temporal Key，简称 GTK）。一把密钥，人人持有，保护所有面向组地址的流量。"
+    },
+    {
+      "type": "prose",
+      "en": "A shared key has an awkward property: it is only as private as its smallest holder. The moment a station leaves the network — it disassociates, gets deauthenticated, or is simply kicked off — it still knows the GTK. If nothing changes, that departed device can keep decrypting every broadcast and multicast frame the AP sends. The fix is rekeying: rotate the GTK so the old one becomes worthless. The AP also rotates on a timer, as a hygiene measure, so no single key is used for too long.",
+      "zh": "共享密钥有一个尴尬的特性：它的私密性取决于持有它的“最弱一环”。一旦某个站点离开网络——无论是主动解除关联、被取消认证，还是被直接踢下线——它手里仍然握着那把 GTK。如果什么都不做，这个已离开的设备就能继续解密 AP 发出的每一个广播和组播帧。解决之道就是“重新密钥（rekeying）”：轮换 GTK，让旧密钥彻底作废。AP 还会按定时器周期性轮换，作为一种安全卫生措施，避免任何一把密钥被使用太久。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The 4-way handshake already delivers a GTK — it is bundled into message 3 when a station first joins. So why a separate handshake? Because redoing the full 4-way handshake with every station just to push a fresh group key would be wasteful. The group key handshake is a lean, standalone, 2-message exchange that updates the GTK on an already-keyed station, reusing the pairwise keys (PTK) the two sides already share.",
+      "zh": "其实 4 次握手本身就会下发一把 GTK——站点首次入网时，它被打包在第 3 条消息里。那为什么还要一个独立的握手呢？因为仅仅为了推送一把新的组密钥，就对每个站点重做完整的 4 次握手实在太浪费了。组密钥握手是一种精简、独立、仅含两条消息的交换，用来在“已经完成密钥协商”的站点上更新 GTK，并复用双方已经共享的成对密钥（PTK）。"
+    },
+    {
+      "type": "prose",
+      "en": "The exchange is just two EAPOL-Key messages. In message 1 the Authenticator (the AP) sends the new GTK to the Supplicant (the station). The GTK is not sent in the clear: it is wrapped (encrypted) using the PTK-KEK, a key-encryption key derived from the pairwise PTK, and the whole message carries a MIC computed with the PTK-KCK so the station can verify nothing was altered. If management frame protection, beacon protection, or WUR frame protection is enabled, the same message also carries the matching IGTK, BIGTK, and WIGTK. In message 2 the station, having installed the new key, sends a MIC-protected acknowledgment back. Two messages, and the group is rekeyed.",
+      "zh": "整个交换只有两条 EAPOL-Key 消息。在消息 1 中，认证方（AP）把新的 GTK 发给请求方（站点）。GTK 不是明文传输的：它使用 PTK-KEK（一把从成对 PTK 派生出来的密钥加密密钥）进行封装（加密），并且整条消息都带有用 PTK-KCK 计算出的 MIC，让站点能够验证内容未被篡改。如果启用了管理帧保护、信标保护或 WUR 帧保护，这条消息还会一并携带对应的 IGTK、BIGTK 和 WIGTK。在消息 2 中，站点在安装好新密钥后，回送一条受 MIC 保护的确认。两条消息，组密钥即完成轮换。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as Authenticator (AP)\n    participant STA as Supplicant (STA)\n    Note over AP: generates a fresh GTK (and IGTK / BIGTK / WIGTK if enabled)\n    AP->>STA: Msg 1  EAPOL-Key(Group, Key Ack=1, MIC, RSC, {wrapped GTK[N] ...})\n    Note over STA: verify replay counter, then MIC\n    Note over STA: decapsulate GTK, MLME-SETKEYS.request installs it\n    STA->>AP: Msg 2  EAPOL-Key(Group, Key Ack=0, MIC, same replay counter)\n    Note over AP: verify replay counter + MIC\n    Note over AP,STA: every associated STA now holds the new GTK; old key retired",
+      "zh": "sequenceDiagram\n    participant AP as 认证方 (AP)\n    participant STA as 请求方 (STA)\n    Note over AP: 生成新的 GTK（启用时还有 IGTK / BIGTK / WIGTK）\n    AP->>STA: 消息1  EAPOL-Key(组, Key Ack=1, MIC, RSC, {已封装的 GTK[N] ...})\n    Note over STA: 先校验重放计数器，再校验 MIC\n    Note over STA: 解封 GTK，用 MLME-SETKEYS.request 安装\n    STA->>AP: 消息2  EAPOL-Key(组, Key Ack=0, MIC, 相同的重放计数器)\n    Note over AP: 校验重放计数器与 MIC\n    Note over AP,STA: 每个已关联站点现已持有新 GTK；旧密钥作废"
+    },
+    {
+      "type": "prose",
+      "en": "Why every detail matters. Message 1 sets the Key Ack bit to 1 (message 2 sets it to 0) — that single bit is how the two messages are told apart. The Key Type bit is 0 (Group), which distinguishes group-key-handshake frames from 4-way-handshake frames. The Key Replay Counter ties message 2 back to the specific message 1 it answers; the AP increments it on every attempt — even retries — because if a reply to an earlier message 1 was lost, the station would otherwise discard the retry as stale and no message 2 would ever arrive. And critically, message 1 must be both integrity-protected (the MIC) and have its key material wrapped — an unauthenticated or plaintext GTK push would let an attacker inject a key they control.",
+      "zh": "为什么每个细节都重要。消息 1 把 Key Ack 位置为 1（消息 2 置为 0）——正是这一个比特用来区分两条消息。Key Type 位为 0（组），用以把组密钥握手帧与 4 次握手帧区分开来。Key Replay Counter（重放计数器）把消息 2 与它所应答的那条具体的消息 1 关联起来；AP 在每次尝试时都会递增它——哪怕是重传也不例外——因为如果对某条更早的消息 1 的应答丢失了，站点会把重传当作过期消息丢弃，从而永远等不到消息 2。尤为关键的是，消息 1 必须既受完整性保护（MIC），又对其密钥材料进行封装——一次未经认证或明文传输的 GTK 推送，会让攻击者得以注入一把由其控制的密钥。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Rekeying fits a broader RSNA policy. Pairwise and group keys rotate on different triggers: a pairwise key (PTK) is refreshed by redoing a 4-way handshake (or FT/FILS) when a PTKSA is deleted, while the group key gets its own lightweight 2-message handshake. The standard even requires that if both a 4-way handshake and a group key handshake are pending, the 4-way handshake runs first — the group handshake relies on the PTK-derived KEK and KCK, which the 4-way handshake establishes.",
+      "zh": "重新密钥隶属于更宏观的 RSNA 策略。成对密钥与组密钥由不同的触发条件来轮换：成对密钥（PTK）在 PTKSA 被删除时，通过重做 4 次握手（或 FT/FILS）来刷新；而组密钥则有它自己那套轻量的两条消息握手。标准甚至规定，如果 4 次握手和组密钥握手都待执行，必须先做 4 次握手——因为组密钥握手依赖于从 PTK 派生的 KEK 和 KCK，而这正是 4 次握手所建立的。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The sample exchange, replay-counter discipline, and key-reinstallation defence",
+        "zh": "示例交换、重放计数器纪律与抗密钥重装防护"
+      },
+      "en": "The sample handshake (12.7.7.5, Figure 12-52) runs in four steps: (a) the Authenticator generates a fresh GTK — plus IGTK when management frame protection is negotiated and BIGTK when beacon protection is enabled — encapsulates them, and sends message 1 carrying the wrapped keys along with the last RSC/IPN/BIPN used; (b) on receipt the Supplicant validates the MIC, decapsulates the keys, and uses MLME-SETKEYS.request to configure each key and its replay counter into the MAC; (c) the Supplicant constructs and sends message 2 as acknowledgment; (d) the Authenticator validates the MIC and, once it has delivered the keys to all associated STAs, installs them via MLME-SETKEYS.request. On reception of message 1 the Supplicant first checks the Key Replay Counter is strictly larger than any seen this session, then verifies the MIC (or AEAD decryption) before installing anything (12.7.7.2). Implementation considerations (12.7.7.4) add timeout/retry behaviour — dot11RSNAConfigGroupUpdateCount transmits plus a final timeout, after which the AP may deauthenticate the STA — and a key-reinstallation defence: the Supplicant keeps a copy of the most recent GTK/IGTK/BIGTK/WIGTK and shall not reinstall a key matching any of them, closing the door on attacks that resend an old message 1 to force a counter/nonce reset.",
+      "zh": "示例握手（12.7.7.5，图 12-52）分四步进行：(a) 认证方生成一把新的 GTK——若协商了管理帧保护还包括 IGTK，若启用了信标保护还包括 BIGTK——对它们进行封装，并发送消息 1，携带这些被封装的密钥以及最近使用的 RSC/IPN/BIPN；(b) 收到后，请求方校验 MIC，解封各密钥，并用 MLME-SETKEYS.request 把每把密钥及其重放计数器配置进 MAC；(c) 请求方构造并发送消息 2 作为确认；(d) 认证方校验 MIC，并在把密钥交付给所有已关联站点之后，通过 MLME-SETKEYS.request 安装它们。收到消息 1 时，请求方先检查 Key Replay Counter 严格大于本会话内见过的任何值，再校验 MIC（或 AEAD 解密），之后才安装任何东西（12.7.7.2）。实现考量（12.7.7.4）补充了超时/重传行为——发送 dot11RSNAConfigGroupUpdateCount 次再加一次最终超时，此后 AP 可对该站点取消认证——以及抗密钥重装防护：请求方保留最近的 GTK/IGTK/BIGTK/WIGTK 各一份副本，且不得重装与其中任何一把相匹配的密钥，从而堵住那类“重发旧消息 1 以迫使计数器/随机数重置”的攻击。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3078,
+          3079,
+          3080
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:12.7.7.1",
+    "80211-2024:12.7.7.2",
+    "80211-2024:12.7.7.3",
+    "80211-2024:12.7.7.4",
+    "80211-2024:12.7.7.5",
+    "80211-2024:12.6.19"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3035
+      ],
+      "note": "12.6.19 RSNA rekeying — when a PTKSA is deleted, a STA may re-establish a PTK via 4-way / FT / FILS; sets the broader rekeying context"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3076,
+        3077
+      ],
+      "note": "12.7.7.1 General + message 1/2 EAPOL-Key formats; Key Ack/Key Type distinguish messages; 4-way handshake must precede group key handshake"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3077,
+        3078,
+        3079
+      ],
+      "note": "12.7.7.2 message 1 fields (GTK wrapped via PTK-KEK, MIC via PTK-KCK) and Supplicant reception; 12.7.7.3 message 2 fields and Authenticator reception"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3079,
+        3080
+      ],
+      "note": "12.7.7.4 implementation considerations (retry/timeout, key-reinstallation defence) and 12.7.7.5 sample group key handshake (Figure 12-52)"
+    }
+  ],
+  "track": "security"
+}

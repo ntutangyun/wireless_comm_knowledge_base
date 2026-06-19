@@ -1,0 +1,87 @@
+{
+  "id": "security-11",
+  "title": {
+    "en": "Encrypting Open Networks: Opportunistic Wireless Encryption (OWE)",
+    "zh": "为开放网络加密：机会式无线加密 (OWE)"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Picture the Wi-Fi at a coffee shop: no password, you just tap and connect. That convenience hides a problem. A classic open network is also an unencrypted network — every frame goes out over the air in the clear, so anyone nearby with a laptop in monitor mode can read your traffic. The password isn't just a gate to keep strangers out; on protected networks it's also what seeds the encryption. Take the password away and, historically, you took the encryption away with it.",
+      "zh": "想象一下咖啡馆里的 Wi-Fi：没有密码，轻轻一点就连上了。这份便利背后藏着一个问题。传统的开放网络同时也是不加密的网络——每一帧都明文在空中传播，因此附近任何一个把网卡切到监听模式的人都能读到你的流量。密码不仅仅是把陌生人挡在门外的“门”；在受保护的网络里，它还充当了加密的“种子”。一旦去掉密码，过去也就连带把加密一起去掉了。"
+    },
+    {
+      "type": "prose",
+      "en": "Opportunistic Wireless Encryption (OWE) breaks that link. It lets an open network stay open — no password, nothing new for the user to type or tap — while still encrypting each client's traffic with its own key. The trick is to run an unauthenticated Diffie-Hellman key exchange during association. The station and the AP each pick a secret, swap public values, and independently compute the same shared secret. From that secret each side derives a Pairwise Master Key (PMK), which then feeds the ordinary RSN 4-way handshake — exactly as on a password-protected network. The result: 'open but encrypted' instead of 'open and unencrypted'.",
+      "zh": "机会式无线加密（OWE）打破了这种捆绑。它让开放网络依旧保持开放——没有密码，用户无需输入或点击任何新东西——同时仍为每个客户端用各自独立的密钥加密流量。诀窍在于：在关联过程中执行一次“未经认证的” Diffie-Hellman 密钥交换。站点与 AP 各自挑选一个秘密值，交换公开值，再各自独立算出相同的共享秘密。双方都从这个秘密派生出一个成对主密钥（PMK），随后它会喂给普通的 RSN 四次握手——与受密码保护的网络一模一样。结果就是“开放但加密”，而不再是“开放且不加密”。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "OWE protects against passive eavesdropping, not active impersonation. Because the Diffie-Hellman exchange is unauthenticated, nobody proves who they are — so an attacker who actively sets up a rogue AP with the same SSID can still get a client to encrypt to it. The standard is blunt about this: the handshake 'does not provide true authentication' but does 'enable encryption', and is meant for cases where access control is unnecessary or handled elsewhere.",
+      "zh": "OWE 防的是“被动窃听”，而不是“主动冒充”。由于这次 Diffie-Hellman 交换是未经认证的，没有任何一方证明自己的身份——因此，主动架设一个同名 SSID 的伪造 AP 的攻击者，仍可能诱使客户端对它加密。标准对此直言不讳：这套握手“不提供真正的认证”，但确实“启用了加密”，适用于那些无需访问控制、或访问控制在别处处理的场景。"
+    },
+    {
+      "type": "prose",
+      "en": "How does the network signal that it speaks OWE? Through the AKM (Authentication and Key Management) selector advertised in the RSN element. OWE is its own AKM suite, sitting alongside familiar selectors like PSK and SAE. When both the (Re)Association Request and the matching Response carry a Diffie-Hellman Parameter element, that is the on-the-air marker that this association is doing OWE. That element carries two things: a Group field (which finite cyclic group the Diffie-Hellman runs in, from the IANA registry) and a Public Key field.",
+      "zh": "网络如何示意自己支持 OWE 呢？通过在 RSN 元素中通告的 AKM（认证与密钥管理）选择子。OWE 是一个独立的 AKM 套件，与我们熟悉的 PSK、SAE 等选择子并列。当（重）关联请求与对应的响应都携带一个 Diffie-Hellman 参数元素（Diffie-Hellman Parameter element）时，这就是空口上“此次关联正在执行 OWE”的标志。该元素携带两样东西：一个 Group 字段（Diffie-Hellman 在哪个有限循环群中运行，取自 IANA 注册表）和一个 Public Key 字段。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Non-AP STA\n    participant AP as Access Point\n    Note over STA: pick group, private m, public M = scalar-op(m, G)\n    STA->>AP: (Re)Association Request + DH Param (Group, M)\n    Note over AP: validate M; pick private n, public N = scalar-op(n, G)\n    Note over AP: S = scalar-op(n, M); PMK, PMKID from HKDF(S)\n    AP->>STA: (Re)Association Response + DH Param (Group, N)\n    Note over STA: validate N; S = scalar-op(m, N); same PMK, PMKID\n    Note over STA,AP: shared PMK installed -> proceed to RSN 4-way handshake",
+      "zh": "sequenceDiagram\n    participant STA as 非 AP 站点\n    participant AP as 接入点\n    Note over STA: 选群、私钥 m、公钥 M = scalar-op(m, G)\n    STA->>AP: （重）关联请求 + DH 参数 (Group, M)\n    Note over AP: 校验 M；选私钥 n、公钥 N = scalar-op(n, G)\n    Note over AP: S = scalar-op(n, M)；由 HKDF(S) 得 PMK、PMKID\n    AP->>STA: （重）关联响应 + DH 参数 (Group, N)\n    Note over STA: 校验 N；S = scalar-op(m, N)；得相同 PMK、PMKID\n    Note over STA,AP: 已装入共享 PMK -> 继续 RSN 四次握手"
+    },
+    {
+      "type": "prose",
+      "en": "Walking the exchange: the station chooses a group and a random private key m (with 1 < m < r, where r is the group's prime order), derives its public key M, and puts the Group and M into a Diffie-Hellman Parameter element inside its (Re)Association Request. The AP validates M, picks its own private key n and public key N, and computes the shared point S = scalar-op(n, M). The station, on receiving N in the Response, computes the same S = scalar-op(m, N) — the heart of Diffie-Hellman is that both routes land on the same S. Each side maps S to a scalar s, runs HKDF-Extract then HKDF-Expand with the label 'OWE Key Generation' to get the PMK, and derives a PMKID. A PMKSA is created from the PMK and PMKID, and the intermediate S is irretrievably deleted.",
+      "zh": "逐步走一遍这次交换：站点选定一个群以及一个随机私钥 m（满足 1 < m < r，其中 r 是该群的素数阶），由此派生出公钥 M，并把 Group 和 M 放进（重）关联请求里的 Diffie-Hellman 参数元素中。AP 校验 M，挑选自己的私钥 n 和公钥 N，并计算共享点 S = scalar-op(n, M)。站点在响应中收到 N 后，计算出相同的 S = scalar-op(m, N)——Diffie-Hellman 的精髓正在于：两条路径最终落到同一个 S。双方都把 S 映射为标量 s，先做 HKDF-Extract、再以标签 “OWE Key Generation” 做 HKDF-Expand 得到 PMK，并派生出 PMKID。随后用 PMK 与 PMKID 创建一个 PMKSA，并把中间值 S 不可恢复地删除。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "OWE also plays nicely with PMKSA caching for fast reconnects. If the station already has a cached PMKSA, it includes a PMKID in its (Re)Association Request. When the AP finds a matching PMKID it skips the Diffie-Hellman entirely and jumps straight to the 4-way handshake, ignoring the Diffie-Hellman parameter — just like a normal cached reconnection.",
+      "zh": "OWE 还能与 PMKSA 缓存很好地配合，实现快速重连。如果站点已缓存了 PMKSA，它会在（重）关联请求中带上一个 PMKID。当 AP 找到匹配的 PMKID 时，就会完全跳过 Diffie-Hellman，直接进入四次握手，并忽略其中的 Diffie-Hellman 参数——就跟普通的缓存重连一样。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact OWE key schedule and where it sits",
+        "zh": "OWE 精确的密钥派生流程及其所处位置"
+      },
+      "en": "Clause 12.14.1 frames OWE as a handshake between a non-AP STA and an AP that 'establishes a PMKSA using a simple Diffie-Hellman key exchange' and explicitly notes it 'does not provide true authentication' but 'does enable encryption'. Clause 12.14.2 ties it to association: both parties indicate the OWE AKM and carry a Diffie-Hellman Parameter element in the (Re)Association Request and Response. The AP validates the STA's public key with the element-validation technique of 12.4.5.4; an unacceptable Group is rejected with UNSUPPORTED_FINITE_CYCLIC_GROUP and a bad public key with REQUEST_DECLINED. The shared-secret-to-key path is precise: S = scalar-op(n, M) (AP side) or scalar-op(m, N) (STA side); s = F(S); prk = HKDF-Extract(C || A || group, s); PMK = HKDF-Expand(prk, 'OWE Key Generation', n); PMKID = Truncate-128(Hash(C || A)) — where C and A are the STA's and AP's public keys and the hash comes from Table 12-1. S and s are irretrievably deleted once the PMK exists. With the PMKSA in hand, association proceeds to the normal RSN 4-way handshake.",
+      "zh": "12.14.1 节把 OWE 定位为非 AP 站点与 AP 之间的一次握手，它“用一次简单的 Diffie-Hellman 密钥交换建立 PMKSA”，并明确指出它“不提供真正的认证”但“确实启用了加密”。12.14.2 节把它绑定到关联流程：双方都示意 OWE 的 AKM，并在（重）关联请求与响应中携带 Diffie-Hellman 参数元素。AP 用 12.4.5.4 的元素校验技术验证站点的公钥；不可接受的 Group 以 UNSUPPORTED_FINITE_CYCLIC_GROUP 拒绝，无效公钥以 REQUEST_DECLINED 拒绝。从共享秘密到密钥的路径很精确：S = scalar-op(n, M)（AP 侧）或 scalar-op(m, N)（STA 侧）；s = F(S)；prk = HKDF-Extract(C || A || group, s)；PMK = HKDF-Expand(prk, “OWE Key Generation”, n)；PMKID = Truncate-128(Hash(C || A))——其中 C、A 分别是站点与 AP 的公钥，哈希取自 Table 12-1。一旦 PMK 生成，S 与 s 即被不可恢复地删除。拿到 PMKSA 后，关联便进入正常的 RSN 四次握手。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3128,
+          3129,
+          3130
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:12.14.1",
+    "80211-2024:12.14.2"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3128
+      ],
+      "note": "12.14.1 General — OWE establishes a PMKSA via unauthenticated Diffie-Hellman; enables encryption without true authentication"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3129,
+        3130
+      ],
+      "note": "12.14.2 OWE exchange — DH Parameter element in (Re)Association Request/Response; group/public-key validation; S->s->prk->PMK/PMKID key schedule; PMKSA feeds 4-way handshake"
+    }
+  ],
+  "track": "security"
+}

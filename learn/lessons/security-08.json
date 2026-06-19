@@ -1,0 +1,117 @@
+{
+  "id": "security-08",
+  "title": {
+    "en": "How a Network Advertises Its Security: RSNE, RSNXE & Suite Selectors",
+    "zh": "网络如何宣告其安全能力：RSNE、RSNXE 与套件选择符"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Long before any keys are exchanged, an access point and a station have to agree on WHICH kind of security they will use. That negotiation isn't a conversation — it's an advertisement. The AP broadcasts its security menu inside its Beacon and Probe Response frames, and the station replies by ordering exactly one allowed combination from that menu in its (Re)Association Request. The data structure that carries this menu is the Robust Security Network element, the RSNE. When people say 'this network is WPA2' or 'that one is WPA3', what they really mean is which bytes appear inside the RSNE.",
+      "zh": "在任何密钥被交换之前很久，接入点（AP）和站点就必须先就“使用哪一种安全机制”达成一致。这个协商过程并不是一来一回的对话，而更像是一张“菜单公告”：AP 在它的 Beacon 和 Probe Response 帧里广播自己的安全菜单，而站点则在它的（重）关联请求中从这张菜单里精确地点出一种被允许的组合。承载这张菜单的数据结构就是健壮安全网络元素（Robust Security Network element），即 RSNE。当人们说“这个网络是 WPA2”或“那个是 WPA3”时，真正的含义其实是 RSNE 里出现了哪些字节。"
+    },
+    {
+      "type": "prose",
+      "en": "The RSNE has a fixed skeleton followed by optional, variable-length lists. After the Element ID, Length, and a 2-octet Version field come three security choices: one Group Data Cipher Suite (how broadcast/multicast traffic is encrypted), a counted list of Pairwise Cipher Suites (how your individually addressed traffic is encrypted), and a counted list of AKM suites (Authentication and Key Management — HOW you prove who you are and derive keys). Then come RSN Capabilities, an optional PMKID list (for fast reconnection), and a Group Management Cipher Suite for protecting broadcast management frames. The standard makes every field after Version optional — and if one is absent, all the fields after it are absent too.",
+      "zh": "RSNE 由一个固定的骨架，加上其后可选的、变长的列表组成。在 Element ID、Length 和一个 2 字节的 Version 字段之后，紧跟着三类安全选择：一个组数据密码套件（Group Data Cipher Suite，规定广播/组播流量如何加密）、一个带计数的成对密码套件列表（Pairwise Cipher Suites，规定你的单播流量如何加密），以及一个带计数的 AKM 套件列表（Authentication and Key Management，即“如何证明你是谁、如何派生密钥”）。再往后是 RSN Capabilities、一个可选的 PMKID 列表（用于快速重连），以及一个用于保护广播管理帧的组管理密码套件。标准规定 Version 之后的每个字段都是可选的——而且只要某个字段缺席，它之后的所有字段也一并缺席。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 760 150' font-family='sans-serif' font-size='12' fill='currentColor' stroke='currentColor'><g fill='none' stroke-width='1.5'><rect x='5' y='40' width='55' height='34'/><rect x='60' y='40' width='55' height='34'/><rect x='115' y='40' width='70' height='34'/><rect x='185' y='40' width='95' height='34'/><rect x='280' y='40' width='75' height='34'/><rect x='355' y='40' width='95' height='34'/><rect x='450' y='40' width='65' height='34'/><rect x='515' y='40' width='85' height='34'/><rect x='600' y='40' width='75' height='34'/><rect x='675' y='40' width='80' height='34'/></g><g fill='currentColor' stroke='none' text-anchor='middle'><text x='32' y='61'>Element ID</text><text x='87' y='61'>Length</text><text x='150' y='61'>Version</text><text x='232' y='55'>Group Data</text><text x='232' y='69'>Cipher</text><text x='317' y='55'>Pairwise</text><text x='317' y='69'>Count</text><text x='402' y='55'>Pairwise</text><text x='402' y='69'>Suite List</text><text x='482' y='55'>AKM</text><text x='482' y='69'>Count</text><text x='557' y='55'>AKM</text><text x='557' y='69'>Suite List</text><text x='637' y='55'>RSN</text><text x='637' y='69'>Caps</text><text x='715' y='55'>PMKID +</text><text x='715' y='69'>Grp Mgmt</text></g><g fill='currentColor' stroke='none' text-anchor='middle' font-size='10'><text x='32' y='90'>1</text><text x='87' y='90'>1</text><text x='150' y='90'>2</text><text x='232' y='90'>0 or 4</text><text x='317' y='90'>0 or 2</text><text x='402' y='90'>4 x m</text><text x='482' y='90'>0 or 2</text><text x='557' y='90'>4 x n</text><text x='637' y='90'>0 or 2</text><text x='715' y='90'>opt.</text></g><g fill='currentColor' stroke='none'><text x='5' y='25' font-weight='bold'>RSNE field layout (octets)</text><text x='115' y='120' font-size='11'>fixed skeleton</text><text x='450' y='120' font-size='11'>everything after Version is optional</text></g><line x1='115' y1='100' x2='185' y2='100' stroke-width='1'/><line x1='185' y1='100' x2='755' y2='100' stroke-width='1' stroke-dasharray='4 3'/></svg>",
+      "caption": {
+        "en": "The RSNE: a fixed header (Element ID, Length, Version) followed by the group data cipher, a counted pairwise cipher list, a counted AKM list, capabilities, and optional PMKID and group management cipher fields. Each cipher and AKM entry is a 4-octet suite selector.",
+        "zh": "RSNE：固定头部（Element ID、Length、Version）之后，依次是组数据密码套件、带计数的成对密码套件列表、带计数的 AKM 列表、能力字段，以及可选的 PMKID 与组管理密码套件字段。其中每个密码套件和 AKM 条目都是一个 4 字节的套件选择符。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Each entry in those cipher and AKM lists is a 4-octet suite selector: a 3-octet OUI followed by a 1-octet Suite Type. For suites defined by 802.11 the OUI is 00-0F-AC, so a selector is written compactly as 00-0F-AC:type. On the cipher side, 00-0F-AC:4 is CCMP-128 (the workhorse AES cipher), 00-0F-AC:8 is GCMP-128, and 00-0F-AC:6 is BIP-CMAC-128 used to protect management frames. On the AKM side the type byte is what actually distinguishes the 'WPA generations': 00-0F-AC:2 is PSK (classic WPA2 Personal), 00-0F-AC:8 is SAE (WPA3 Personal), 00-0F-AC:1 is 802.1X/EAP (Enterprise), 00-0F-AC:18 is OWE (Opportunistic Wireless Encryption, for open networks), and 00-0F-AC:14 / :15 are FILS for fast initial link setup.",
+      "zh": "上述密码套件列表和 AKM 列表中的每个条目，都是一个 4 字节的套件选择符：3 字节的 OUI，再加 1 字节的套件类型（Suite Type）。对于 802.11 定义的套件，OUI 固定为 00-0F-AC，因此选择符通常简写为 00-0F-AC:类型。在密码套件一侧：00-0F-AC:4 是 CCMP-128（基于 AES 的主力密码），00-0F-AC:8 是 GCMP-128，00-0F-AC:6 是用于保护管理帧的 BIP-CMAC-128。在 AKM 一侧，正是这个类型字节真正区分了所谓的“WPA 各代”：00-0F-AC:2 是 PSK（经典的 WPA2 个人版），00-0F-AC:8 是 SAE（WPA3 个人版），00-0F-AC:1 是 802.1X/EAP（企业版），00-0F-AC:18 是 OWE（机会式无线加密，用于开放网络），而 00-0F-AC:14 / :15 则是用于快速初始链路建立的 FILS。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy mental model: the cipher selectors answer 'how is the data scrambled?' and the AKM selectors answer 'how do we prove identity and grow the keys?'. WPA2-Personal vs WPA3-Personal is literally the difference between AKM 00-0F-AC:2 (PSK) and 00-0F-AC:8 (SAE) appearing in the AKM list — the cipher can be the very same CCMP-128 in both.",
+      "zh": "一个好用的心智模型：密码套件选择符回答“数据是怎么被加扰的？”，而 AKM 选择符回答“我们如何证明身份、如何派生出密钥？”。WPA2 个人版与 WPA3 个人版的区别，本质上就是 AKM 列表里出现的是 00-0F-AC:2（PSK）还是 00-0F-AC:8（SAE）——而两者的密码套件完全可以都是同一个 CCMP-128。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Station\n    participant AP as Access Point\n    Note over AP: policy: enabled suites only\n    AP-->>STA: Beacon / Probe Response\n    Note over STA,AP: RSNE = {group cipher, pairwise list, AKM list, caps}\n    Note over STA: pick ONE allowed combo:\\none pairwise + one AKM\n    STA->>AP: (Re)Association Request with chosen RSNE\n    Note over AP: verify the choice is from its advertised set\n    AP-->>STA: (Re)Association Response (accept / decline)\n    Note over STA,AP: agreed suites now feed the key handshake",
+      "zh": "sequenceDiagram\n    participant STA as 站点\n    participant AP as 接入点\n    Note over AP: 策略：只宣告已启用的套件\n    AP-->>STA: Beacon / Probe Response\n    Note over STA,AP: RSNE = {组密码, 成对列表, AKM 列表, 能力}\n    Note over STA: 选出唯一一种被允许的组合：\\n一个成对密码 + 一个 AKM\n    STA->>AP: 携带所选 RSNE 的（重）关联请求\n    Note over AP: 校验该选择确实来自其已宣告集合\n    AP-->>STA: （重）关联响应（接受 / 拒绝）\n    Note over STA,AP: 商定的套件随后送入密钥握手"
+    },
+    {
+      "type": "prose",
+      "en": "Newer capabilities didn't fit neatly into the original RSNE, so the standard added two companions. The RSN Extension element (RSNXE) carries extra capability bits — for example signalling SAE Hash-to-Element (H2E) support or beacon/management-frame protection options — and a STA includes it alongside the RSNE in Beacons, Probe Responses, and (Re)Association Requests. There is also a small AKM Suite Selector element, which simply carries one 4-octet AKM suite selector and is used to indicate the intended AKM during SAE. Together with the RSNE, these let an AP advertise modern WPA3-era features without breaking the original element's layout.",
+      "zh": "一些较新的能力无法整齐地塞进原有的 RSNE，于是标准又增加了两个“伙伴”元素。RSN 扩展元素（RSNXE）携带额外的能力位——例如用于标示对 SAE Hash-to-Element（H2E）的支持，或信标/管理帧保护相关的选项——站点会把它与 RSNE 一起放进 Beacon、Probe Response 和（重）关联请求中。此外还有一个小巧的 AKM Suite Selector 元素，它仅携带一个 4 字节的 AKM 套件选择符，用于在 SAE 过程中指明所期望使用的 AKM。这些元素与 RSNE 配合，使得 AP 既能宣告 WPA3 时代的现代特性，又不必破坏原有 RSNE 的布局。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "How policy selection resolves to one combination",
+        "zh": "策略选择如何收敛到唯一一种组合"
+      },
+      "en": "Clause 12.6.3 governs RSNA policy selection in an infrastructure BSS. The AP advertises the available policies, and selection is performed by the associating STA via the normal association procedure: it includes an RSNE (and, if WUR frame protection is enabled, an RSNXE with Protected WUR Frame Support set to 1) in its (Re)Association Request. The initiating STA's RSNE shall include one authentication (AKM) and one pairwise cipher suite from among those the AP advertised in its Beacon and Probe Response frames, and shall also specify the group data cipher suite and group management cipher suite the AP specified. If any field from the AP's RSNE fails to overlap with a value the STA supports, the STA shall decline to associate. An AP in an RSN shall not associate with a pre-RSNA STA, i.e. one that omits the RSNE from its (Re)Association Request. The 4-octet selector format itself (a 3-octet OUI or CID plus a 1-octet Suite Type) is defined in 9.4.2.23.2; the cipher selector values are in Table 9-188 and the AKM selector values in Table 9-190.",
+      "zh": "12.6.3 节规定了基础结构 BSS 中的 RSNA 策略选择。AP 宣告可用的策略，而真正的选择由发起关联的站点通过常规关联流程完成：它在（重）关联请求中放入一个 RSNE（如果启用了 WUR 帧保护，还要放入一个将 Protected WUR Frame Support 置 1 的 RSNXE）。发起方站点的 RSNE 必须从 AP 在其 Beacon 和 Probe Response 帧中所宣告的集合里，选出一个认证（AKM）套件和一个成对密码套件，并且还须指明 AP 所规定的组数据密码套件与组管理密码套件。只要 AP 的 RSNE 中有任何一个字段无法与站点支持的取值产生交集，站点就必须拒绝关联。处于 RSN 中的 AP 不得与 pre-RSNA 站点关联——即那些在（重）关联请求中省略了 RSNE 的站点。4 字节选择符的格式本身（3 字节 OUI 或 CID 加 1 字节套件类型）定义于 9.4.2.23.2；密码套件选择符取值见表 9-188，AKM 选择符取值见表 9-190。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3020,
+          3021
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.4.2.23.2",
+    "80211-2024:9.4.2.23.3",
+    "80211-2024:9.4.2.240",
+    "80211-2024:9.4.2.295",
+    "80211-2024:12.6.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1046,
+        1048,
+        1049
+      ],
+      "note": "9.4.2.23.1-9.4.2.23.2 RSNE format (Fig 9-367), suite selector format (Fig 9-368), and cipher suite selectors (Table 9-188: CCMP-128=4, BIP-CMAC-128=6, GCMP-128=8)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1050,
+        1051,
+        1053,
+        1054
+      ],
+      "note": "9.4.2.23.3 AKM suites (Table 9-190): 802.1X=1, PSK=2, SAE=8, FILS SHA-256/384=14/15, OWE=18"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1432
+      ],
+      "note": "9.4.2.240 RSNXE — RSN extension element carrying additional capabilities"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1555
+      ],
+      "note": "9.4.2.295 AKM Suite Selector element — indicates intended AKM in SAE"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3020,
+        3021
+      ],
+      "note": "12.6.3 RSNA policy selection in an infrastructure BSS — STA picks one AKM + one pairwise from the AP's advertised set in the (Re)Association Request"
+    }
+  ],
+  "track": "security"
+}

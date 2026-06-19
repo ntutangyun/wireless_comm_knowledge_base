@@ -1,0 +1,128 @@
+{
+  "id": "security-12",
+  "title": {
+    "en": "Why We Left WEP and TKIP Behind: The Pre-RSNA Legacy",
+    "zh": "我们为何抛弃 WEP 与 TKIP：前 RSNA 的历史包袱"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Modern Wi-Fi mandates strong ciphers (CCMP/GCMP) and flatly forbids the old ones. To understand why, it helps to see what came before. The standard groups everything older than RSNA (Robust Security Network Association) under one heading: pre-RSNA security. There are really only three pieces here — Open System authentication, WEP, and TKIP — and each one is a study in how a security mechanism can look reasonable and still be broken. This lesson walks through all three so the modern rules feel inevitable rather than arbitrary.",
+      "zh": "现代 Wi-Fi 强制使用强加密算法（CCMP/GCMP），并彻底禁用旧的算法。要理解原因，先看看它们之前的东西会很有帮助。标准把所有早于 RSNA（健壮安全网络关联）的机制归在一个名目下：前 RSNA 安全。这里其实只有三样东西——Open System 认证、WEP 和 TKIP——而每一样都是一个范例，展示一个安全机制如何看似合理却依然形同虚设。本课把这三者依次讲清楚，让现代的规则显得理所当然，而非凭空规定。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with Open System authentication. The standard calls it exactly what it is: a null authentication algorithm. It is a two-message exchange — the first frame asserts identity and requests authentication, the second returns a result — and if the result is 'successful', the two stations are 'declared mutually authenticated'. But nothing is actually verified: no password, no key, no proof of anything. Any station can be authenticated as long as the peer has Open System enabled. It authenticates nothing. It survives in modern Wi-Fi only as the framing step before the real cryptographic handshake (SAE, for example) runs on top.",
+      "zh": "先从 Open System 认证说起。标准对它的称呼一点不含糊：它是一个空认证算法（null authentication algorithm）。它是一次两帧交换——第一帧声明身份并请求认证，第二帧返回结果——若结果为“成功”，两个站点便被“宣告为相互认证”。但实际上什么都没被验证：没有密码、没有密钥、没有任何证明。只要对端启用了 Open System，任何站点都能通过认证。它什么也没认证。它在现代 Wi-Fi 中之所以保留，仅仅是作为真正的密码学握手（例如 SAE）运行之前的一个“框架步骤”。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Don't confuse 'authentication' the frame exchange with 'authentication' the security guarantee. Open System completes the 802.11 authentication state machine (State 1 to State 2) while proving nothing about identity. The real assurance comes later, from keying. That naming overlap is a frequent source of confusion when reading the standard.",
+      "zh": "不要把作为帧交换的“认证”与作为安全保证的“认证”混为一谈。Open System 完成了 802.11 的认证状态机（从 State 1 到 State 2），却并未证明任何关于身份的事。真正的保证来自之后的密钥协商。这个命名上的重叠，在阅读标准时常常造成混淆。"
+    },
+    {
+      "type": "prose",
+      "en": "Next, WEP — Wired Equivalent Privacy. The standard itself now calls WEP 'an obsolete cipher that has been removed as a standalone mechanism', kept on the page only to define TKIP. WEP encrypts with the ARC4 stream cipher: it builds a per-frame seed by concatenating a long-lived key with a short 24-bit Initialization Vector (IV), then XORs the ARC4 keystream over the data. Two fatal weaknesses follow. First, the IV is only 24 bits and is sent in the clear, so it repeats quickly; reused IVs with the same key mean reused keystream, which leaks plaintext and ultimately the key. Second, integrity is just a CRC-32 checksum (the ICV) — a linear, unkeyed function an attacker can adjust to match a forged payload, so frames can be silently altered.",
+      "zh": "接下来是 WEP——有线等效保密（Wired Equivalent Privacy）。如今标准本身都称 WEP 为“一个已被移除的过时密码，不再作为独立机制”，留在文档里仅仅是为了定义 TKIP。WEP 使用 ARC4 流密码加密：它把一个长期使用的密钥与一个 24 位的短初始向量（IV）拼接成每帧的种子（seed），再用 ARC4 密钥流对数据做异或。由此带来两个致命弱点。第一，IV 只有 24 位且以明文发送，因而很快就会重复；同一密钥下重用的 IV 意味着重用的密钥流，这会泄露明文，并最终泄露密钥。第二，完整性保护仅仅是一个 CRC-32 校验值（ICV）——这是一个线性的、无密钥的函数，攻击者可以调整它以匹配伪造的载荷，从而悄无声息地篡改帧。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='12' y='20' width='90' height='30' rx='3'/><text x='57' y='40' font-size='11' text-anchor='middle' fill='currentColor' stroke='none'>Plaintext</text><rect x='12' y='70' width='90' height='30' rx='3'/><text x='57' y='90' font-size='11' text-anchor='middle' fill='currentColor' stroke='none'>CRC-32 ICV</text><rect x='12' y='120' width='90' height='30' rx='3'/><text x='57' y='140' font-size='11' text-anchor='middle' fill='currentColor' stroke='none'>24-bit IV</text><rect x='150' y='70' width='100' height='40' rx='3'/><text x='200' y='88' font-size='11' text-anchor='middle' fill='currentColor' stroke='none'>ARC4 PRNG</text><text x='200' y='102' font-size='9' text-anchor='middle' fill='currentColor' stroke='none'>seed = IV + key</text><circle cx='320' cy='90' r='15'/><text x='320' y='95' font-size='14' text-anchor='middle' fill='currentColor' stroke='none'>XOR</text><rect x='370' y='70' width='80' height='40' rx='3'/><text x='410' y='94' font-size='11' text-anchor='middle' fill='currentColor' stroke='none'>Ciphertext</text><line x1='102' y1='35' x2='305' y2='82'/><line x1='102' y1='85' x2='145' y2='88'/><line x1='102' y1='135' x2='148' y2='98'/><line x1='250' y1='90' x2='303' y2='90'/><line x1='335' y1='90' x2='368' y2='90'/></svg>",
+      "caption": {
+        "en": "WEP encapsulation: a short, reused IV feeds the ARC4 keystream, and a linear CRC-32 ICV is the only integrity check — both exploitable.",
+        "zh": "WEP 封装：短且重复的 IV 喂入 ARC4 密钥流，而唯一的完整性校验是线性的 CRC-32 ICV——两者都可被利用。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "TKIP — Temporal Key Integrity Protocol — was the WPA1 stopgap. The constraint was brutal: it had to run on the same legacy hardware that only knew ARC4, so it could not replace the cipher, only wrap it. TKIP adds three patches on top of WEP. (1) A per-packet key-mixing function combines a temporal key, the transmitter address, and a sequence counter into the WEP seed, defeating the weak-key and IV-reuse attacks. (2) A 48-bit TKIP Sequence Counter (TSC) strictly increases per frame, so a receiver can discard out-of-order frames — replay protection. (3) A keyed message integrity code called Michael replaces the broken CRC, giving real (if weak) forgery resistance.",
+      "zh": "TKIP——临时密钥完整性协议（Temporal Key Integrity Protocol）——是 WPA1 的过渡方案。约束极为苛刻：它必须运行在那些只认识 ARC4 的旧硬件上，因此无法替换密码本身，只能把它包起来。TKIP 在 WEP 之上打了三个补丁。（1）一个逐包密钥混合函数，把临时密钥、发送方地址和一个序列计数器混合成 WEP 种子，从而挫败弱密钥攻击与 IV 重用攻击。（2）一个 48 位的 TKIP 序列计数器（TSC）逐帧严格递增，使接收方能够丢弃乱序的帧——这就是重放保护。（3）一个名为 Michael 的带密钥消息完整性码（MIC）取代了已被攻破的 CRC，提供了真正的（尽管薄弱的）抗伪造能力。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant TX as Transmitter (TKIP)\n    participant RX as Receiver (TKIP)\n    Note over TX: compute Michael MIC over SA,DA,Priority,Data\n    Note over TX: assign next TSC; mix TK+TA+TSC into WEP seed\n    TX->>RX: MPDU (WEP IV + Ext IV carry TSC, ARC4 ciphertext)\n    Note over RX: check FCS, ICV, TSC order first\n    Note over RX: decrypt, defragment, verify Michael MIC\n    alt MIC fails\n        Note over RX: log event, start 60 s timer\n        Note over RX: 2nd failure in 60 s -> shut TKIP down for 60 s\n    else MIC ok\n        Note over RX: advance TSC replay counter, deliver MSDU\n    end",
+      "zh": "sequenceDiagram\n    participant TX as 发送方 (TKIP)\n    participant RX as 接收方 (TKIP)\n    Note over TX: 对 SA,DA,优先级,数据 计算 Michael MIC\n    Note over TX: 分配下一个 TSC; 把 TK+TA+TSC 混合成 WEP 种子\n    TX->>RX: MPDU (WEP IV + 扩展IV 携带 TSC, ARC4 密文)\n    Note over RX: 先校验 FCS、ICV、TSC 顺序\n    Note over RX: 解密、重组、验证 Michael MIC\n    alt MIC 失败\n        Note over RX: 记录事件, 启动 60 秒计时器\n        Note over RX: 60 秒内第二次失败 -> 关闭 TKIP 达 60 秒\n    else MIC 通过\n        Note over RX: 推进 TSC 重放计数器, 交付 MSDU\n    end"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The Michael countermeasure is the tell-tale sign that TKIP was a patch, not a fix. Because Michael is a deliberately weak 64-bit MIC, the standard backs it with an active defense: any STA or AP that sees two MIC failures within 60 seconds must shut down all TKIP traffic for at least 60 seconds. That self-imposed denial-of-service exists precisely because the integrity check alone could not be trusted to stop an attacker.",
+      "zh": "Michael 的“反制措施”正是 TKIP 只是补丁、而非真正修复的明证。由于 Michael 是一个有意做得很弱的 64 位 MIC，标准为它配上了主动防御：任何站点或 AP 只要在 60 秒内发现两次 MIC 失败，就必须把所有 TKIP 流量关停至少 60 秒。这种自我施加的拒绝服务之所以存在，恰恰是因为单凭完整性校验本身已无法被信任去阻止攻击者。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Michael, the 60-second countermeasure, and TSC replay rules in the standard's own words",
+        "zh": "标准原文中的 Michael、60 秒反制措施与 TSC 重放规则"
+      },
+      "en": "Clause 12.3.4.3.3 defines Michael as a 64-bit MIC built from a 64-bit key (two 32-bit words K0, K1), computed over the MSDU's DA, SA, Priority, three reserved octets, and Data via an iterative Feistel-type block function with alternating adds and XORs. The standard openly states (12.3.4.1.1, 12.3.4.3.1) that Michael 'offers only weak defenses against message forgeries, but it constitutes the best that can be achieved with the majority of legacy hardware'. Clause 12.3.4.4.1 specifies the countermeasure: MIC failures are logged, the rate must be kept below two per minute, and a STA/AP detecting two MIC failure events within 60 s must disable all TKIP receptions for at least 60 s, deauthenticate, and refuse new TKIP associations during that window. Clause 12.3.4.6 specifies replay protection: each MPDU carries a unique 48-bit TSC implemented as a strictly increasing counter initialized to 1 on (re)keying, with a separate replay counter per PTKSA/GTKSA and per priority; crucially, replay detection happens after MIC verification, so the receiver delays advancing the TSC replay counter until an MSDU passes the MIC check, preventing injection of frames with valid ICVs and TSCs but invalid MICs.",
+      "zh": "12.3.4.3.3 节将 Michael 定义为一个 64 位 MIC，由一个 64 位密钥（两个 32 位字 K0、K1）生成，计算范围覆盖 MSDU 的 DA、SA、优先级、3 个保留字节以及数据，采用一个交替进行加法与异或的迭代式 Feistel 型块函数。标准坦言（12.3.4.1.1、12.3.4.3.1），Michael “只对消息伪造提供薄弱的防御，但这是在大多数旧硬件上所能达到的最好结果”。12.3.4.4.1 节规定了反制措施：MIC 失败须被记录，失败速率必须保持在每分钟两次以下；站点/AP 一旦在 60 秒内检测到两次 MIC 失败事件，就必须关闭所有 TKIP 接收至少 60 秒、解除认证，并在该窗口内拒绝新的 TKIP 关联。12.3.4.6 节规定了重放保护：每个 MPDU 携带唯一的 48 位 TSC，它被实现为一个严格递增的计数器，在（重新）密钥时初始化为 1，并为每个 PTKSA/GTKSA 及每个优先级维护独立的重放计数器；关键在于，重放检测发生在 MIC 验证之后，因此接收方会推迟推进 TSC 重放计数器，直到某个 MSDU 通过 MIC 校验，从而防止攻击者注入那些 ICV 与 TSC 合法、但 MIC 无效的帧。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2952,
+          2953,
+          2954,
+          2961
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The lesson of pre-RSNA is that bolting integrity and freshness onto a broken cipher buys time, not safety. WEP's reused IV and unkeyed CRC let attackers recover keys and forge frames outright; TKIP's per-packet mixing, TSC, and Michael MIC raised the bar but still leaned on ARC4 and a deliberately weak MIC propped up by an emergency shutdown. That is why today's standard mandates CCMP/GCMP and forbids WEP and TKIP entirely — and why the 6 GHz band, with no legacy hardware to accommodate, refuses them outright.",
+      "zh": "前 RSNA 的教训是：把完整性与新鲜性硬生生拴到一个已被攻破的密码上，只能换来时间，换不来安全。WEP 重用的 IV 与无密钥的 CRC，让攻击者得以直接恢复密钥并伪造帧；TKIP 的逐包混合、TSC 与 Michael MIC 抬高了门槛，却仍然依赖 ARC4 和一个靠紧急关停撑着的、有意做弱的 MIC。这正是当今标准强制使用 CCMP/GCMP 并彻底禁用 WEP 与 TKIP 的原因——也是没有旧硬件包袱的 6 GHz 频段对它们直接说不的原因。"
+    }
+  ],
+  "covers": [
+    "80211-2024:12.3.2.1",
+    "80211-2024:12.3.2.2.2",
+    "80211-2024:12.3.3.2.1",
+    "80211-2024:12.3.4.1.1",
+    "80211-2024:12.3.4.3.3",
+    "80211-2024:12.3.4.4.1",
+    "80211-2024:12.3.4.6"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2945
+      ],
+      "note": "12.3.2.1 WEP overview (obsolete, kept only to define TKIP); 12.3.2.2.2 WEP encryption uses ARC4 stream cipher with IV+key seed"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2947
+      ],
+      "note": "12.3.3.2.1 Open System authentication is a null algorithm, two-message exchange; 12.3.4.1.1 TKIP overview - MIC, TSC replay, key mixing on pre-RSNA hardware"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2952,
+        2953
+      ],
+      "note": "12.3.4.3.3 Definition of the TKIP MIC (Michael): 64-bit MIC, K0/K1, Feistel-type block function over DA/SA/Priority/Data"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2953,
+        2954
+      ],
+      "note": "12.3.4.4.1 TKIP countermeasures: log MIC failures, keep below two per minute, two failures within 60 s disable TKIP for 60 s"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2961
+      ],
+      "note": "12.3.4.6 TKIP replay protection: unique 48-bit strictly-increasing TSC, per-PTKSA/GTKSA/priority replay counters, replay detection after MIC verification"
+    }
+  ],
+  "track": "security"
+}

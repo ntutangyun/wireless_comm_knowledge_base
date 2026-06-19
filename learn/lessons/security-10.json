@@ -1,0 +1,130 @@
+{
+  "id": "security-10",
+  "title": {
+    "en": "Keys Before You Join: PASN (Pre-Association Security Negotiation)",
+    "zh": "入网之前先建密钥：PASN 预关联安全协商"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Normally a Wi-Fi device only gets a cryptographic key with an access point after it has authenticated and associated — the key falls out of the 4-way handshake once you are a full member of the network. But some features need a key earlier, or with an AP you have no intention of ever joining. The clearest example is secure FTM ranging: measuring the distance to an AP by timing radio round-trips. To trust that distance you must protect the timing frames with a key, yet you may just want to measure — not join. PASN, Pre-Association Security Negotiation, is the standalone key-agreement built for exactly this: a fresh shared key with no prior association and no shared password required.",
+      "zh": "通常情况下，Wi-Fi 设备只有在完成认证和关联之后，才会与某个接入点（AP）建立加密密钥——密钥是在你成为网络正式成员后、由 4 次握手派生出来的。但有些功能需要更早拿到密钥，或者需要与一个你根本不打算加入的 AP 共享密钥。最典型的例子就是安全 FTM 测距：通过对无线信号往返计时来测量到某个 AP 的距离。要相信这个距离，你必须用密钥保护这些计时帧，可你也许只是想测量——并不想入网。PASN（预关联安全协商）正是为此而生的独立密钥协商机制：无需事先关联、也无需共享口令，就能建立一把全新的共享密钥。"
+    },
+    {
+      "type": "prose",
+      "en": "The core idea is an ephemeral Diffie-Hellman exchange wrapped in just three Authentication frames. Each side generates a throwaway private key, derives a public key with the group's scalar operation, and sends the public key to the peer. Combining your own private key with the peer's public key yields a shared secret (DHss) that no eavesdropper can compute. From DHss the two sides derive a PTKSA — a pairwise key — without ever associating. Because the keys are ephemeral, every PASN run gives perfect forward secrecy: capturing today's frames buys an attacker nothing tomorrow.",
+      "zh": "其核心思想，是把一次临时性的 Diffie-Hellman 交换塞进区区三个认证帧里。双方各自生成一个用完即弃的私钥，用所选群的标量运算导出公钥，再把公钥发给对端。把自己的私钥与对端的公钥结合，就得到一个窃听者无法算出的共享秘密（DHss）。两方从 DHss 派生出一个 PTKSA（成对密钥），全程无需关联。由于密钥都是临时的，每次 PASN 运行都具备完美前向保密性（PFS）：即便攻击者截获了今天的帧，对破解明天的通信也毫无帮助。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "PASN can run two ways. With no shared trust at all (an 'unauthenticated' mode, allowed only when the AP permits keying without authentication), DHss alone seeds the key — handy but with no proof of who the peer is. Or it can wrap an existing trust method — SAE, FILS shared key, or FT — as the 'base AKMP', tunnelling that method's messages inside the PASN frames so the resulting key is mutually authenticated. Same 3 frames either way.",
+      "zh": "PASN 有两种运行方式。一种是完全没有任何既有信任（即“非认证”模式，只有当 AP 允许在不认证的情况下建密钥时才可用），此时仅用 DHss 来播种密钥——方便，但无法证明对端身份。另一种是把一个既有的信任方法——SAE、FILS 共享密钥或 FT——作为“基础 AKMP”包进来，把该方法的消息隧道封装进 PASN 帧中，使最终密钥具备双向认证。无论哪种方式，都是同样的 3 个帧。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as non-AP STA (initiator)\n    participant AP as AP (PASN capable)\n    Note over AP: Beacon: RSNE advertises PASN AKMP + base AKMP\n    Note over STA: pick base AKMP, group, ephemeral keypair\n    STA->>AP: Auth (PASN, seq=1): RSNE+PMKIDs, S-Ephemeral Pub, Wrapped Data\n    Note over AP: compute DHss, derive PTKSA (KCK, TK)\n    AP->>STA: Auth (PASN, seq=2): A-Ephemeral Pub, Status, MIC (KCK)\n    Note over STA: compute DHss, derive PTKSA, verify MIC\n    STA->>AP: Auth (PASN, seq=3): Status=SUCCESS, MIC (KCK)\n    Note over STA,AP: both install temporal key via MLME-SETKEYS.request",
+      "zh": "sequenceDiagram\n    participant STA as 非 AP 站点 (发起方)\n    participant AP as AP (支持 PASN)\n    Note over AP: Beacon：RSNE 通告 PASN AKMP + 基础 AKMP\n    Note over STA: 选定基础 AKMP、群、临时密钥对\n    STA->>AP: 认证帧 (PASN, 序号=1)：RSNE+PMKID、S 临时公钥、封装数据\n    Note over AP: 算出 DHss，派生 PTKSA（KCK、TK）\n    AP->>STA: 认证帧 (PASN, 序号=2)：A 临时公钥、状态码、MIC (KCK)\n    Note over STA: 算出 DHss，派生 PTKSA，校验 MIC\n    STA->>AP: 认证帧 (PASN, 序号=3)：状态码=SUCCESS、MIC (KCK)\n    Note over STA,AP: 双方通过 MLME-SETKEYS.request 安装临时密钥"
+    },
+    {
+      "type": "prose",
+      "en": "Notice where the integrity protection lives. The first frame is unprotected — the initiator has no key yet, so it just offers its ephemeral public key and any base-AKMP material. But once the AP receives frame 1 it can already compute DHss and derive the PTKSA, including a Key Confirmation Key (KCK). So frame 2 carries a MIC computed with the KCK, and frame 3 does too. Those MICs are mutual key confirmation: each side proves to the other that it derived the very same key. The frame-2 MIC even folds in the Beacon's RSNE and RSNXE, so a forged Beacon that downgraded the security parameters would make the MIC mismatch and the whole exchange fail.",
+      "zh": "注意完整性保护的“落点”在哪里。第一个帧是不受保护的——发起方此时还没有密钥，所以它只是抛出自己的临时公钥以及任何基础 AKMP 材料。但 AP 一收到第 1 帧，就已经能算出 DHss 并派生出 PTKSA，其中包括一把密钥确认密钥（KCK）。于是第 2 帧带上了用 KCK 算出的 MIC，第 3 帧也是如此。这些 MIC 实现了双向密钥确认：双方各自向对方证明自己派生出了完全相同的那把密钥。第 2 帧的 MIC 甚至把 Beacon 里的 RSNE 与 RSNXE 也算了进去，这样一来，若有人伪造 Beacon 来降级安全参数，就会导致 MIC 不匹配，整个交换随即失败。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='12'><rect x='10' y='30' width='120' height='40' rx='6' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='70' y='48' text-anchor='middle' fill='currentColor'>Frame 1</text><text x='70' y='63' text-anchor='middle' fill='currentColor'>no MIC (no key yet)</text><rect x='170' y='30' width='120' height='40' rx='6' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='230' y='48' text-anchor='middle' fill='currentColor'>Frame 2</text><text x='230' y='63' text-anchor='middle' fill='currentColor'>MIC with KCK</text><rect x='330' y='30' width='120' height='40' rx='6' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='390' y='48' text-anchor='middle' fill='currentColor'>Frame 3</text><text x='390' y='63' text-anchor='middle' fill='currentColor'>MIC with KCK</text><line x1='130' y1='50' x2='168' y2='50' stroke='currentColor' stroke-width='1.5' marker-end='url(#a)'/><line x1='290' y1='50' x2='328' y2='50' stroke='currentColor' stroke-width='1.5' marker-end='url(#a)'/><text x='230' y='110' text-anchor='middle' fill='currentColor'>DHss + PTKSA known after frame 1 reaches AP</text><text x='230' y='128' text-anchor='middle' fill='currentColor'>frames 2 and 3 confirm the shared key</text><defs><marker id='a' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 Z' fill='currentColor'/></marker></defs></svg>",
+      "caption": {
+        "en": "Where the MIC sits: frame 1 is bare, frames 2 and 3 are MIC-protected with the freshly derived KCK.",
+        "zh": "MIC 的位置：第 1 帧是“裸”的，第 2、3 帧用刚派生出的 KCK 加上 MIC 保护。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Two practical wrinkles round out the design. First, anti-clogging: validating frame 1 forces the AP to do real cryptographic work, so an attacker could flood it with spoofed source addresses. To defend, the AP can answer with REFUSED_TEMPORARILY plus a Comeback time and an opaque cookie; the STA must echo that cookie on its retry, much like the SAE anti-clogging token. Second, the key is deliberately short-lived: a PASN PTKSA is bound to the lifetime of any base PMKSA, is never used for group-addressed traffic, and — by design — is deleted the moment the STA actually associates. PASN is the key you build to do something specific without joining; once you join, the normal lifecycle takes over.",
+      "zh": "还有两处实际的设计细节让整套机制更完整。其一是防拥塞（anti-clogging）：校验第 1 帧会迫使 AP 做真正的密码学运算，因此攻击者可以伪造大量源地址来淹没它。为防御此类攻击，AP 可以回复 REFUSED_TEMPORARILY，并附上一个 Comeback 重试时间和一个不透明的 cookie；STA 在重试时必须把该 cookie 原样带回，这与 SAE 的防拥塞令牌（anti-clogging token）如出一辙。其二是密钥被刻意设计为短命：PASN PTKSA 受任何基础 PMKSA 寿命的约束，从不用于组播流量，并且按设计——在 STA 真正关联的那一刻就被删除。PASN 是你为“不入网也能做某件具体事”而建立的密钥；一旦你真的入网，常规的生命周期就接管一切。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "How the PTKSA is derived, and how SAE tunnels inside PASN",
+        "zh": "PTKSA 如何派生，以及 SAE 如何在 PASN 中隧道封装"
+      },
+      "en": "The pairwise key comes from a single PRF call: PTK = KDF-HASH-NNN(PMK, \"PASN PTK Derivation\", SPA || BSSID || DHss), where SPA is the non-AP STA's MAC and BSSID is the AP's. When there is no base AKMP (unauthenticated PASN), the PMK is the constant string \"PMKz\" padded with 28 zero octets, so the security rests entirely on DHss. The PTK splits into KCK = bits[0,256), TK = bits[256, 256+TK_len), and an optional KDK after that (256 bits when secure-LTF ranging needs it, else 0). The hash is SHA-256, or SHA-384 for the 00-0F-AC:9/10 ciphers. To get mutual authentication, a trust method can be tunnelled as the base AKMP: with SAE the STA runs an SAE protocol instance and carries its Commit (and later Confirm) Authentication-frame bodies inside the Wrapped Data element of the PASN frames — the AP relays them to its SAE parent process — establishing an SAE PMKSA that then feeds the PTK derivation above. The standard notes the tunnelling cannot carry SAE anti-clogging tokens or message retries, so in those cases SAE may have to run first to set up the PMKSA.",
+      "zh": "成对密钥来自单次 PRF 调用：PTK = KDF-HASH-NNN(PMK, \"PASN PTK Derivation\", SPA || BSSID || DHss)，其中 SPA 是非 AP 站点的 MAC，BSSID 是 AP 的标识。当不存在基础 AKMP（即非认证 PASN）时，PMK 取常量字符串 \"PMKz\" 并补 28 个零字节填充，因此安全性完全依赖于 DHss。PTK 被切分为 KCK = bits[0,256)、TK = bits[256, 256+TK 长度)，其后还有一个可选的 KDK（当安全 LTF 测距需要时为 256 位，否则为 0）。哈希算法为 SHA-256，对 00-0F-AC:9/10 这两种密码套件则用 SHA-384。要获得双向认证，可以把一个信任方法作为基础 AKMP 隧道封装进来：以 SAE 为例，STA 运行一个 SAE 协议实例，并把它的 Commit（以及随后的 Confirm）认证帧体放进 PASN 帧的封装数据（Wrapped Data）元素中——AP 再把它们转交给自己的 SAE 父进程——从而建立一个 SAE PMKSA，进而喂给上面的 PTK 派生。标准指出这种隧道封装无法携带 SAE 防拥塞令牌或消息重传，因此在那些情形下，可能要先单独跑完 SAE 以建立 PMKSA。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3124,
+          3125,
+          3126,
+          3127
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:12.13.2",
+    "80211-2024:12.13.3.1",
+    "80211-2024:12.13.3.2",
+    "80211-2024:12.13.5",
+    "80211-2024:12.13.8",
+    "80211-2024:12.13.9.1",
+    "80211-2024:12.13.10"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3118,
+        3119
+      ],
+      "note": "12.13.1-12.13.3.1 General + Discovery of PASN-capable AP (RSNE advertises PASN AKMP) + Overview of the three-frame Authentication exchange (Figure 12-59)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3120,
+        3121,
+        3122,
+        3123,
+        3124
+      ],
+      "note": "12.13.3.2 PASN frame construction and processing — frames 1/2/3 contents, ephemeral public keys, DHss, MIC-protected frames 2 and 3"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3124,
+        3125,
+        3126
+      ],
+      "note": "12.13.5 PASN authentication with SAE — tunnelling SAE Commit/Confirm in Wrapped Data; anti-clogging/retry limits"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3126,
+        3127
+      ],
+      "note": "12.13.8 PTKSA derivation — PTK = KDF(PMK, label, SPA||BSSID||DHss); KCK/TK/KDK split; PMKz for unauthenticated PASN"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3127
+      ],
+      "note": "12.13.9.1 MIC computation for second PASN frame using KCK; Beacon RSNE/RSNXE folded in for downgrade protection"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3128
+      ],
+      "note": "12.13.10 Comeback cookies — REFUSED_TEMPORARILY + opaque cookie for denial-of-service / anti-clogging protection"
+    }
+  ],
+  "track": "security"
+}
