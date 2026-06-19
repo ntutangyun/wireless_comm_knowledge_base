@@ -1,0 +1,131 @@
+{
+  "id": "modern-phy-32-eht-receiver-channelization-regulatory",
+  "title": {
+    "en": "Completing the EHT PHY: Receiver, 320 MHz Channelization and Regulatory Limits",
+    "zh": "补全 EHT PHY：接收机、320 MHz 信道化与法规限制"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "We have spent most of the EHT PHY tour on the transmit side — how a Wi-Fi 7 radio builds a 4096-QAM, multi-RU, up-to-320 MHz waveform. A radio link only works if the receiver on the other end can demodulate it, the two ends agree on which slice of spectrum they sit in, and both stay inside what the regulator allows. This lesson closes the loop: the EHT receiver specification, the channel numbering that defines the new 320 MHz channels, the regulatory hook, and the PHY MIB that advertises which of these EHT capabilities a device actually implements.",
+      "zh": "在 EHT PHY 的学习中，我们的大部分篇幅都放在发射侧——一台 Wi-Fi 7 电台如何构建 4096-QAM、多 RU、最高 320 MHz 的波形。但一条无线链路只有在对端接收机能够解调该波形、收发双方对所处频谱片段达成一致、并且双方都工作在监管机构允许的范围之内时，才能真正成立。本课将这个闭环补全：EHT 接收机规范、定义全新 320 MHz 信道的信道编号、法规接口，以及用来声明设备究竟实现了哪些 EHT 能力的 PHY MIB。"
+    },
+    {
+      "type": "prose",
+      "en": "The EHT receiver specification (clause 36.3.21) is a set of bench tests that any compliant Wi-Fi 7 receiver must pass. Levels are measured at the antenna connector as average power per receive antenna, and the number of spatial streams under test equals the number of transmit and receive antenna ports actually used. It covers five things: minimum input sensitivity, adjacent channel rejection, nonadjacent channel rejection, maximum input level, and clear channel assessment (CCA) sensitivity. The new wrinkles versus Wi-Fi 6 are simply that every table now extends out to the 320 MHz column and adds rows for 4096-QAM and the new EHT-MCS 14/15 dual-carrier-modulation (DCM) modes.",
+      "zh": "EHT 接收机规范（条款 36.3.21）是一组任何合规 Wi-Fi 7 接收机都必须通过的台架测试。功率电平在天线接口处测量，以每根接收天线的平均功率为基准；被测空间流数等于实际使用的发射与接收天线端口数。它涵盖五项内容：最小输入灵敏度、相邻信道抑制、非相邻信道抑制、最大输入电平，以及空闲信道评估（CCA）灵敏度。相对 Wi-Fi 6 而言的新增之处其实很简单：每张表格现在都延伸出了 320 MHz 这一列，并新增了 4096-QAM 以及全新的 EHT-MCS 14/15 双载波调制（DCM）模式对应的行。"
+    },
+    {
+      "type": "prose",
+      "en": "Receiver minimum input sensitivity (36.3.21.2) is the weakest signal at which the receiver still keeps the packet error rate below 10%. The harder the modulation, the more signal it needs: a robust BPSK rate-1/2 packet decodes down to about -82 dBm in a 20 MHz channel, while the new 4096-QAM rate-5/6 mode needs roughly -46 dBm in the same channel. Widening the channel spreads the same total power over more spectrum, so each step up in bandwidth — 20 to 40 to 80 to 160 to 320 MHz — costs about 3 dB of sensitivity. That is the quiet price of the 320 MHz headline number: you trade reach for raw throughput.",
+      "zh": "接收机最小输入灵敏度（36.3.21.2）是指接收机仍能将分组错误率保持在 10% 以下时所能接收的最弱信号。调制越复杂，所需的信号就越强：在 20 MHz 信道下，稳健的 BPSK 1/2 速率分组可低至约 -82 dBm 仍能解调，而全新的 4096-QAM 5/6 速率模式在同一信道下大约需要 -46 dBm。带宽变宽会把相同的总功率铺到更多的频谱上，因此带宽每提升一档——20 到 40 到 80 到 160 再到 320 MHz——灵敏度大约要付出 3 dB 的代价。这正是 320 MHz 这一亮眼数字背后悄然付出的成本：用覆盖距离换取原始吞吐量。"
+    },
+    {
+      "type": "widget",
+      "widget": "mcs-snr",
+      "params": {}
+    },
+    {
+      "type": "prose",
+      "en": "Adjacent and nonadjacent channel rejection (36.3.21.3 and 36.3.21.4) measure how well the receiver ignores a strong neighbour. The desired signal is set 3 dB above its sensitivity floor, then an EHT-compliant interferer one channel away (adjacent) or at least two channels away (nonadjacent) is raised until 10% error appears; the power gap is the rejection figure. The standard explicitly notes that rejection testing for 160 MHz and 320 MHz only needs to be done where the regulatory domain actually permits such a wide band plan — a direct link from receiver design to regional spectrum rules. CCA sensitivity (36.3.21.6) governs when the PHY declares the medium busy, including the per-20 MHz subchannel busy bitmap that lets a Wi-Fi 7 radio decide which slices of a wide channel are clear enough to use.",
+      "zh": "相邻与非相邻信道抑制（36.3.21.3 和 36.3.21.4）衡量接收机忽略强邻道干扰的能力。测试时把期望信号设在其灵敏度门限之上 3 dB，然后逐步抬高位于相邻一个信道（相邻）或至少相隔两个信道（非相邻）处、符合 EHT 规范的干扰信号，直到出现 10% 错误率；两者的功率差即为抑制值。标准明确指出，160 MHz 与 320 MHz 的抑制测试仅在监管域确实允许如此宽的频段规划时才需要进行——这是接收机设计与区域频谱规则之间的直接关联。CCA 灵敏度（36.3.21.6）则规定 PHY 何时判定信道忙，其中包括每 20 MHz 子信道的忙/闲位图，使 Wi-Fi 7 电台能够判断一个宽信道中哪些片段足够空闲、可以使用。"
+    },
+    {
+      "type": "prose",
+      "en": "Channel numbering and channelization (36.3.24) tells two radios how to name the same spectrum. The general rules (36.3.24.1) simply reuse the existing band allocations for 2.4, 5 and 6 GHz. The genuinely new EHT content is the 320 MHz channel (36.3.24.2): it lives only in the 6 GHz band and is formed from any two adjacent 160 MHz channels. To keep neighbouring networks from carving the band identically and colliding, two interleaved griddings are defined — 320 MHz-1 (centre-frequency indices 31, 95, 159) and 320 MHz-2 (indices 63, 127, 191) — so that two overlapping deployments can offset their channels.",
+      "zh": "信道编号与信道化（36.3.24）告诉两台电台如何为同一段频谱命名。其总体规则（36.3.24.1）只是沿用 2.4、5 与 6 GHz 既有的频段分配。真正属于 EHT 的新内容是 320 MHz 信道（36.3.24.2）：它只存在于 6 GHz 频段，由任意两个相邻的 160 MHz 信道拼接而成。为避免相邻网络以完全相同的方式划分频段而相互碰撞，标准定义了两套交错的栅格——320 MHz-1（中心频率序号 31、95、159）和 320 MHz-2（序号 63、127、191）——使两个相互重叠的部署能够错开各自的信道。"
+    },
+    {
+      "type": "widget",
+      "widget": "channel-width",
+      "params": {}
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 480 160\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><text x=\"10\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">6 GHz band</text><rect x=\"10\" y=\"40\" width=\"100\" height=\"22\"/><rect x=\"110\" y=\"40\" width=\"100\" height=\"22\"/><rect x=\"210\" y=\"40\" width=\"100\" height=\"22\"/><rect x=\"310\" y=\"40\" width=\"100\" height=\"22\"/><text x=\"40\" y=\"55\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">160 MHz</text><text x=\"140\" y=\"55\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">160 MHz</text><text x=\"240\" y=\"55\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">160 MHz</text><text x=\"340\" y=\"55\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">160 MHz</text><rect x=\"10\" y=\"80\" width=\"200\" height=\"22\" stroke-dasharray=\"5 3\"/><text x=\"70\" y=\"95\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">320 MHz-1 (idx 31)</text><rect x=\"110\" y=\"112\" width=\"200\" height=\"22\" stroke-dasharray=\"5 3\"/><text x=\"165\" y=\"127\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">320 MHz-2 (idx 63)</text></svg>",
+      "caption": {
+        "en": "A 320 MHz channel is any two adjacent 160 MHz channels in 6 GHz. The 320 MHz-1 and 320 MHz-2 grids are offset by one 160 MHz step so overlapping networks need not align identically.",
+        "zh": "一个 320 MHz 信道由 6 GHz 内任意两个相邻的 160 MHz 信道组成。320 MHz-1 与 320 MHz-2 两套栅格相互错开一个 160 MHz 步长，使相互重叠的网络无需完全对齐。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Regulatory requirements (36.3.25) is short but load-bearing. The standard sets minimum technical requirements for interoperability based on regulations at the time of publication, but it explicitly defers to regional and national administrations for equipment certification and operating rules — power limits, allowed channels, and which bands a 320 MHz channel may actually use. Requirements that depend on local geography are annotated throughout the PHY clause, and implementers are pointed to the regulatory annexes. In practice this is why a Wi-Fi 7 device that supports 320 MHz on paper may only offer it where 6 GHz is open and wide enough.",
+      "zh": "法规要求（36.3.25）篇幅简短却举足轻重。标准基于发布时的法规设定了实现互操作所需的最低技术要求，但在设备认证与运行规则方面——发射功率限值、允许的信道、以及 320 MHz 信道究竟可用于哪些频段——则明确交由区域和国家级监管机构裁定。凡是依赖本地地理的要求，都会在 PHY 条款中逐处标注，并将实现者引向相应的法规附录。这在实践中正是为什么一台纸面上支持 320 MHz 的 Wi-Fi 7 设备，可能只在 6 GHz 开放且足够宽的地区才真正提供该能力。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A useful mental split: the receiver spec says what your radio must be able to hear, channelization says where it may listen, and the regulatory clause says where the local law lets it actually transmit. All three must line up before 320 MHz operation is real, not just declared.",
+      "zh": "一个有用的思维划分：接收机规范规定电台必须能够听到什么，信道化规定它可以在哪里收听，而法规条款规定本地法律允许它真正在哪里发射。只有这三者对齐，320 MHz 运行才是真实可用的，而不仅仅是纸面声明。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, how does a device tell the rest of the system which of these capabilities it has? Through the EHT PHY MIB. Clause 36.4 defines the EHT PLME, and Table 36-69 (in 36.4.1/36.4.2) is the EHT PHY MIB table — a long list of attributes such as dot11EHTSupportFor320MHzImplemented, dot11EHTRx1024QAMand4096QAMLessThan242ToneRUImplemented, the beamforming-support flags, and dynamic items like dot11EHTCurrentChannelWidth and dot11EHTDisabledSubchannelBitmap. Static attributes are fixed for a given implementation; dynamic ones can be read or written by management entities. Clause 36.4.4 (EHT PHY) then anchors the static PHY characteristics delivered through the PLME-CHARACTERISTICS primitive — aPPDUMaxTime of 5.484 ms, aPSDUMaxLength of about 15.5 MB, and the receive-start delays — the constants that bound everything the EHT PHY can do.",
+      "zh": "最后，一台设备如何向系统的其余部分告知它具备上述哪些能力？通过 EHT PHY MIB。条款 36.4 定义了 EHT PLME，而表 36-69（位于 36.4.1/36.4.2 中）就是 EHT PHY MIB 表——它列出一长串属性，例如 dot11EHTSupportFor320MHzImplemented、dot11EHTRx1024QAMand4096QAMLessThan242ToneRUImplemented、各项波束成形支持标志，以及 dot11EHTCurrentChannelWidth 和 dot11EHTDisabledSubchannelBitmap 这类动态项。静态属性对于给定实现是固定不变的；动态项则可由管理实体读取或写入。条款 36.4.4（EHT PHY）随后锚定了通过 PLME-CHARACTERISTICS 原语提供的静态 PHY 特性——5.484 ms 的 aPPDUMaxTime、约 15.5 MB 的 aPSDUMaxLength，以及接收启动时延——这些常量界定了 EHT PHY 所能完成的一切。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the four clauses this lesson teaches",
+        "zh": "覆盖映射：本课讲授的四个条款"
+      },
+      "en": "36.3.21 Receiver specification — the bench tests every EHT receiver must pass: minimum input sensitivity (36.3.21.2, Table 36-67, extended to a 320 MHz column and 4096-QAM / EHT-MCS 14/15 rows), adjacent and nonadjacent channel rejection (36.3.21.3/36.3.21.4, Table 36-68, with the explicit note that 160/320 MHz testing is required only where the regulatory domain permits that band plan), receiver maximum input level (36.3.21.5: -30 dBm in 5/6 GHz, -20 dBm in 2.4 GHz), and CCA sensitivity (36.3.21.6, including the primary-20 MHz rule and the per-20 MHz busy bitmap). 36.3.24 Channel numbering and channelization — 36.3.24.1 reuses the 2.4/5/6 GHz band allocations; 36.3.24.2 defines the 320 MHz channel as two adjacent 160 MHz channels in 6 GHz, with the 320 MHz-1 (indices 31/95/159) and 320 MHz-2 (indices 63/127/191) grids. 36.3.25 Regulatory requirements — interoperability minimums set by the standard, with certification, power and band rules deferred to regional/national administrations and the regulatory annexes. 36.4.4 EHT PHY — the static PHY characteristics (aPPDUMaxTime 5.484 ms, aPSDUMaxLength ~15.5 MB, aRxPHYStartDelay) delivered via PLME-CHARACTERISTICS, sitting alongside the EHT PHY MIB attributes of Table 36-69 in 36.4.1/36.4.2.",
+      "zh": "36.3.21 接收机规范——每台 EHT 接收机都必须通过的台架测试：最小输入灵敏度（36.3.21.2，表 36-67，已扩展出 320 MHz 列以及 4096-QAM / EHT-MCS 14/15 各行）、相邻与非相邻信道抑制（36.3.21.3/36.3.21.4，表 36-68，并明确注明 160/320 MHz 测试仅在监管域允许该频段规划时才需进行）、接收机最大输入电平（36.3.21.5：5/6 GHz 为 -30 dBm，2.4 GHz 为 -20 dBm），以及 CCA 灵敏度（36.3.21.6，包含主 20 MHz 规则与每 20 MHz 忙位图）。36.3.24 信道编号与信道化——36.3.24.1 沿用 2.4/5/6 GHz 频段分配；36.3.24.2 将 320 MHz 信道定义为 6 GHz 内两个相邻的 160 MHz 信道，并给出 320 MHz-1（序号 31/95/159）与 320 MHz-2（序号 63/127/191）两套栅格。36.3.25 法规要求——标准设定互操作最低要求，而认证、功率与频段规则交由区域/国家级监管机构及法规附录裁定。36.4.4 EHT PHY——通过 PLME-CHARACTERISTICS 提供的静态 PHY 特性（aPPDUMaxTime 5.484 ms、aPSDUMaxLength 约 15.5 MB、aRxPHYStartDelay），与 36.4.1/36.4.2 中表 36-69 的 EHT PHY MIB 属性并列。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          872,
+          873,
+          874,
+          875,
+          876,
+          886,
+          887,
+          888,
+          892
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        872,
+        873,
+        874,
+        875,
+        876,
+        877
+      ],
+      "note": "36.3.21 EHT receiver specification: general, minimum input sensitivity (Table 36-67), adjacent/nonadjacent channel rejection (Table 36-68), maximum input level, CCA sensitivity and per-20 MHz bitmap"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        886
+      ],
+      "note": "36.3.24 channel numbering and channelization (320 MHz-1 / 320 MHz-2 grids in 6 GHz); 36.3.25 regulatory requirements"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        886,
+        887,
+        888,
+        892
+      ],
+      "note": "36.4 EHT PLME, 36.4.2 PHY MIB (Table 36-69 EHT PHY MIB attributes), and 36.4.4 EHT PHY static characteristics (Table 36-70)"
+    }
+  ],
+  "covers": [
+    "80211be-2024:36.3.21",
+    "80211be-2024:36.3.24",
+    "80211be-2024:36.3.25",
+    "80211be-2024:36.4.4"
+  ],
+  "track": "modern-phy"
+}

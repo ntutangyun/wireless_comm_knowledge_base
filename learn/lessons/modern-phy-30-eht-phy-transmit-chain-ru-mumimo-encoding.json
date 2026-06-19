@@ -1,0 +1,179 @@
+{
+  "id": "modern-phy-30-eht-phy-transmit-chain-ru-mumimo-encoding",
+  "title": {
+    "en": "Inside the EHT Transmitter: RUs, Multi-RU, MU-MIMO and the Encoding Pipeline",
+    "zh": "EHT 发射机内部：RU、多 RU、MU-MIMO 与编码流程"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Wi-Fi 7's Extremely High Throughput (EHT) PHY takes a stream of bits (the PSDU) and turns it into a radio waveform. Clause 36.3.1 frames the whole job: during transmission one PSDU (single-user) or several PSDUs (multi-user) are scrambled, coded, and appended to a PHY preamble to form the PPDU; the receiver reverses the process. This lesson walks the transmit side from the bottom up — how the channel is sliced into resource units, how several users share it, the block diagram that does the work, and the step-by-step field construction.",
+      "zh": "Wi-Fi 7 的极高吞吐量（EHT）物理层负责把一串比特（PSDU）变成无线电波形。36.3.1 节给出整体框架：发送时，单用户的一个 PSDU 或多用户的多个 PSDU 经过加扰、编码，再拼接到物理层前导码上构成 PPDU；接收端则反向还原。本课从底层出发讲解发送侧——信道如何被切分为资源单元、多用户如何共享、完成这些工作的框图，以及逐字段的构造流程。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the spectrum. Clause 36.3.2 keeps EHT's subcarrier spacing identical to Wi-Fi 6 (78.125 kHz for the EHT-modulated fields), and the 20/40 MHz tone plans are inherited from HE. What is new is scale: an 80 MHz PPDU has its own tone plan (Figure 36-4), and anything 160 MHz or wider is built by stacking 80 MHz frequency subblocks. A full 320 MHz PPDU therefore reaches a 4x996-tone RU. Tables 36-5, 36-6 and 36-7 fix the exact subcarrier ranges of every RU at 80, 160 and 320 MHz.",
+      "zh": "先看频谱。36.3.2 节让 EHT 的子载波间隔与 Wi-Fi 6 保持一致（EHT 调制字段为 78.125 kHz），20/40 MHz 的子载波分布沿用 HE。新增的是规模：80 MHz PPDU 拥有自己的子载波分布（图 36-4），而 160 MHz 及更宽的带宽都由多个 80 MHz 频率子块堆叠而成。因此完整的 320 MHz PPDU 可达 4×996 子载波 RU。表 36-5、36-6、36-7 分别固定了 80、160、320 MHz 下每个 RU 的精确子载波范围。"
+    },
+    {
+      "type": "widget",
+      "widget": "ofdma-ru",
+      "params": {}
+    },
+    {
+      "type": "prose",
+      "en": "A single user need not be confined to one rectangular RU. Clause 36.3.2.2 introduces the Multi-RU (MRU): selected combinations of RUs assigned to one user. RUs split into small (< 242 tones) and large (>= 242 tones), and the rule is strict — small only combines with small, large only with large. The small-MRU set is 52+26 and 106+26 tones (36.3.2.2.2). The large MRUs (36.3.2.2.3) exist mainly to rescue throughput when a 20 or 40 MHz subchannel is punctured: 484+242, 996+484, 996+484+242, 2x996+484, 3x996, and 3x996+484 tones. An MRU's data and pilot subcarriers are simply the union of its component RUs.",
+      "zh": "单个用户不必局限于一个矩形 RU。36.3.2.2 节引入多 RU（MRU）：分配给一个用户的若干 RU 的特定组合。RU 分为小尺寸（< 242 子载波）和大尺寸（>= 242 子载波），规则很严格——小只能与小组合，大只能与大组合。小 MRU 集合为 52+26 和 106+26 子载波（36.3.2.2.2）。大 MRU（36.3.2.2.3）主要用于在某个 20 或 40 MHz 子信道被打孔时挽回吞吐量：484+242、996+484、996+484+242、2×996+484、3×996 和 3×996+484 子载波。MRU 的数据与导频子载波就是其各组成 RU 的并集。"
+    },
+    {
+      "type": "widget",
+      "widget": "channel-width",
+      "params": {}
+    },
+    {
+      "type": "prose",
+      "en": "An RU or MRU can also be shared by several users at once through MU-MIMO (36.3.3), where spatially separated streams reuse the same subcarriers. EHT splits this into downlink (36.3.3.1) and uplink (36.3.3.2). MU-MIMO is only allowed on RUs/MRUs of 242 tones or larger. A cap runs through both directions and is stated in 36.3.3.3: at most 8 users may be multiplexed on one RU or MRU, in either direction. Uplink adds its own constraint — the total spatial streams summed across all users in an EHT TB PPDU must be <= 8 (36.3.3.2.4).",
+      "zh": "一个 RU 或 MRU 也可以通过 MU-MIMO（36.3.3）同时被多个用户共享，让空间上可分离的数据流复用相同的子载波。EHT 将其分为下行（36.3.3.1）和上行（36.3.3.2）。MU-MIMO 只允许用于 242 子载波及以上的 RU/MRU。一条上限贯穿两个方向，写在 36.3.3.3 中：每个 RU 或 MRU 最多可复用 8 个用户，上下行皆然。上行还有自己的约束——一个 EHT TB PPDU 中所有用户的空间流总数必须 <= 8（36.3.3.2.4）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "UL MU-MIMO is conceptually SU-MIMO with the streams sourced from different stations instead of one (36.3.3.2.1): the AP separates them spatially just the same. That is why a station's MU stream count is capped by its own SU capability (min(N_ss,SU, max(4, N_ss,SU))), and why the AP must support at least four spatial streams to advertise MU-beamformer support.",
+      "zh": "上行 MU-MIMO 在概念上就是流来自不同站点（而非同一站点）的 SU-MIMO（36.3.3.2.1）：接入点同样在空间上把它们分离开。这正是为何站点的 MU 流数受其自身 SU 能力限制（min(N_ss,SU, max(4, N_ss,SU))），也是为何接入点必须支持至少四条空间流才能宣告 MU 波束成形能力。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 36.3.6 lists the transmitter building blocks. In order, the major ones are: pre-FEC PHY padding, scrambler, FEC encoder (BCC or LDPC), post-FEC padding, stream parser, segment parser (only for RU/MRU larger than 996 tones), BCC interleaver, constellation mapper, DCM tone mapper, pilot insertion, 20 MHz replication, LDPC tone mapper, segment deparser, frequency-domain duplication (only when EHT-MCS = 14), CSD per spatial stream, spatial mapper, frequency mapping, IDFT, CSD per chain, GI insertion and windowing. Figures 36-19 through 36-28 chain these blocks differently depending on what is being built — a control field, a single-user data field, or a MU-MIMO data field.",
+      "zh": "36.3.6 节列出了发射机的构建模块。主要模块依次为：FEC 前物理层填充、加扰器、FEC 编码器（BCC 或 LDPC）、FEC 后填充、流解析器、段解析器（仅用于大于 996 子载波的 RU/MRU）、BCC 交织器、星座映射器、DCM 子载波映射器、导频插入、20 MHz 复制、LDPC 子载波映射器、段反解析器、频域复制（仅当 EHT-MCS = 14 时）、每空间流 CSD、空间映射器、频率映射、IDFT、每链路 CSD、GI 插入与加窗。图 36-19 至 36-28 根据所构建的对象（控制字段、单用户数据字段或 MU-MIMO 数据字段）以不同方式串接这些模块。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Scrambler] --> B[FEC encoder<br/>BCC or LDPC]\n  B --> C[Stream parser]\n  C --> D[Constellation<br/>mapper]\n  D --> E[Tone mapper<br/>+ pilots]\n  E --> F[Spatial mapper]\n  F --> G[IDFT]\n  G --> H[GI + window<br/>RF]",
+      "zh": "flowchart LR\n  A[加扰器] --> B[FEC 编码<br/>BCC 或 LDPC]\n  B --> C[流解析器]\n  C --> D[星座<br/>映射器]\n  D --> E[子载波映射<br/>+ 导频]\n  E --> F[空间映射器]\n  F --> G[IDFT]\n  G --> H[GI + 加窗<br/>射频]"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 36.3.7 walks the construction field by field, in transmit order: L-STF, L-LTF, L-SIG, RL-SIG, U-SIG, EHT-SIG, EHT-STF, EHT-LTF and finally the Data field. The legacy and U-SIG fields share a common spine — BCC encode, interleave, BPSK map, insert pilots, duplicate over each 20 MHz, IDFT, CSD per chain, add GI and window — because every receiver must decode them. The training fields (EHT-STF/LTF) skip the encoder and go straight to sequence generation, spatial Q-matrix mapping, then IDFT. This is the recipe that produces the actual waveform.",
+      "zh": "36.3.7 节按发送顺序逐字段讲解构造：L-STF、L-LTF、L-SIG、RL-SIG、U-SIG、EHT-SIG、EHT-STF、EHT-LTF，最后是数据字段。传统字段与 U-SIG 共用一条主线——BCC 编码、交织、BPSK 映射、插入导频、在每个 20 MHz 上复制、IDFT、每链路 CSD、加 GI 并加窗——因为每个接收机都必须解出它们。训练字段（EHT-STF/LTF）跳过编码器，直接进行序列生成、空间 Q 矩阵映射，再做 IDFT。这就是产生实际波形的配方。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "EHT-MCS 14 is the special-case branch you keep seeing. It is EHT DUP mode: BPSK with dual-carrier modulation (DCM), rate-1/2 LDPC, one spatial stream, 80/160/320 MHz only. The waveform is built on the lower half (e.g. a 484-tone RU at 80 MHz), then frequency-domain duplicated to the upper half with a partial sign change to lower PAPR — which is exactly why the block diagram inserts 'frequency-domain duplication if EHT-MCS = 14' (Figures 36-27/36-28).",
+      "zh": "EHT-MCS 14 是你反复看到的特例分支。它就是 EHT DUP 模式：BPSK 配双载波调制（DCM）、1/2 码率 LDPC、单空间流，仅用于 80/160/320 MHz。波形先在低半部分（如 80 MHz 时的 484 子载波 RU）上构造，再频域复制到高半部分并做部分符号翻转以降低峰均比——这正是框图中插入“若 EHT-MCS = 14 则频域复制”的原因（图 36-27/36-28）。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the preamble carries its own coding choices. Clause 36.3.9 defines the EHT-SIG-MCS — the modulation and coding used for the EHT-SIG field of an EHT MU PPDU. It is signalled in the EHT-SIG MCS subfield of the U-SIG field and may take EHT-MCS 0, 1, 3, or 15. A higher EHT-SIG-MCS packs the per-user allocation table into fewer OFDM symbols (shorter overhead) at the cost of needing a cleaner channel — the same SNR-vs-rate trade-off the data field makes, applied to the signalling that tells every station where its RU is.",
+      "zh": "最后，前导码也有自己的编码选择。36.3.9 节定义了 EHT-SIG-MCS——用于 EHT MU PPDU 中 EHT-SIG 字段的调制与编码。它由 U-SIG 字段中的 EHT-SIG MCS 子字段指示，可取 EHT-MCS 0、1、3 或 15。更高的 EHT-SIG-MCS 把每用户分配表压缩进更少的 OFDM 符号（开销更短），代价是需要更干净的信道——这与数据字段所做的信噪比与速率权衡相同，只是应用在告诉每个站点其 RU 位置的信令上。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the six EHT-PHY transmit-chain clauses",
+        "zh": "覆盖地图：六个 EHT 物理层发送链路子句"
+      },
+      "en": "This lesson teaches six units of 802.11be-2024, clause 36.3 (EHT PHY). 36.3.1 Introduction: PSDU(s) -> scramble + code -> append preamble -> PPDU (single- vs multi-user). 36.3.2 Subcarrier and resource allocation: spacing inherited from HE; 80 MHz tone plan (Fig 36-4); 160/320 MHz built from 80 MHz subblocks up to 4x996 tones; RU subcarrier tables 36-5/36-6/36-7; and Multi-RU rules (36.3.2.2: small=52+26/106+26, large=484+242 ... 3x996+484, union of component subcarriers). 36.3.3 MU-MIMO: DL (36.3.3.1) and UL (36.3.3.2) on RU/MRU >= 242 tones, max 8 users per RU/MRU (36.3.3.3), UL total streams <= 8. 36.3.6 Transmitter block diagram: the ordered block list (pre-FEC padding ... windowing) and Figures 36-19..36-28. 36.3.7 Overview of the PPDU encoding process: field-by-field construction (L-STF/L-LTF/L-SIG/RL-SIG/U-SIG/EHT-SIG/EHT-STF/EHT-LTF/Data). 36.3.9 EHT-SIG-MCS: carried in U-SIG's EHT-SIG MCS subfield, supports EHT-MCS 0/1/3/15. (EHT-MCS 14 = EHT DUP, BPSK+DCM, single stream, per 36.3.5 and 36.3.8.)",
+      "zh": "本课讲解 802.11be-2024 第 36.3 节（EHT 物理层）的六个单元。36.3.1 引言：PSDU -> 加扰+编码 -> 拼接前导码 -> PPDU（单用户与多用户）。36.3.2 子载波与资源分配：间隔沿用 HE；80 MHz 子载波分布（图 36-4）；160/320 MHz 由 80 MHz 子块堆叠，最高至 4×996 子载波；RU 子载波表 36-5/36-6/36-7；以及多 RU 规则（36.3.2.2：小=52+26/106+26，大=484+242 … 3×996+484，取各组成子载波的并集）。36.3.3 MU-MIMO：下行（36.3.3.1）与上行（36.3.3.2），用于 >= 242 子载波的 RU/MRU，每 RU/MRU 最多 8 用户（36.3.3.3），上行流总数 <= 8。36.3.6 发射机框图：有序模块清单（FEC 前填充 … 加窗）及图 36-19..36-28。36.3.7 PPDU 编码流程概览：逐字段构造（L-STF/L-LTF/L-SIG/RL-SIG/U-SIG/EHT-SIG/EHT-STF/EHT-LTF/数据）。36.3.9 EHT-SIG-MCS：由 U-SIG 的 EHT-SIG MCS 子字段携带，支持 EHT-MCS 0/1/3/15。（EHT-MCS 14 = EHT DUP，BPSK+DCM，单流，见 36.3.5 与 36.3.8。）",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          687,
+          695,
+          704,
+          718,
+          721,
+          723,
+          731,
+          736
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        687
+      ],
+      "note": "36.3.1 Introduction (PSDU->PPDU, SU vs MU) and 36.3.2.1 subcarrier/resource allocation in EHT PPDUs; 80 MHz tone plan Fig 36-4; 160/320 MHz from 80 MHz subblocks"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        688,
+        689,
+        690,
+        691,
+        692,
+        693,
+        694
+      ],
+      "note": "36.3.2.1 RU subcarrier index Tables 36-5 (80 MHz), 36-6 (160 MHz, incl 2x996), 36-7 (320 MHz, incl 4x996)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        695,
+        696,
+        704,
+        705
+      ],
+      "note": "36.3.2.2 Multi-RU: general small/large rule; 36.3.2.2.2 small MRUs 52+26/106+26; 36.3.2.2.3 large MRUs 484+242, 996+484, 996+484+242 for puncturing"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        718,
+        719,
+        720,
+        721
+      ],
+      "note": "36.3.3 MU-MIMO: DL (36.3.3.1) and UL (36.3.3.2) on RU/MRU>=242 tones; 36.3.3.2.1 UL vs SU-MIMO; 36.3.3.2.4 UL total streams <=8; 36.3.3.3 max 8 users per RU/MRU"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        723,
+        724,
+        725,
+        726,
+        727,
+        728,
+        729,
+        730,
+        731
+      ],
+      "note": "36.3.6 Transmitter block diagram: ordered block list and Figures 36-19..36-28 (incl MU-MIMO BCC/LDPC, >996-tone segment parsing, EHT-MCS 14 freq-domain duplication)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        731,
+        732,
+        733,
+        734,
+        735
+      ],
+      "note": "36.3.7 Overview of the PPDU encoding process: field-by-field construction of L-STF/L-LTF/L-SIG/RL-SIG/U-SIG/EHT-SIG/EHT-STF/EHT-LTF/Data"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        736
+      ],
+      "note": "36.3.8 EHT-MCS (MCS 14/15 enable DCM, single stream) and 36.3.9 EHT-SIG-MCS carried in U-SIG EHT-SIG MCS subfield, supports EHT-MCS 0/1/3/15"
+    }
+  ],
+  "covers": [
+    "80211be-2024:36.3.1",
+    "80211be-2024:36.3.2",
+    "80211be-2024:36.3.3",
+    "80211be-2024:36.3.6",
+    "80211be-2024:36.3.7",
+    "80211be-2024:36.3.9"
+  ],
+  "track": "modern-phy"
+}

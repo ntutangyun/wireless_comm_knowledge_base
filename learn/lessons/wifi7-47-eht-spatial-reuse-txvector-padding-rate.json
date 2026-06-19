@@ -1,0 +1,158 @@
+{
+  "id": "wifi7-47-eht-spatial-reuse-txvector-padding-rate",
+  "title": {
+    "en": "EHT Airtime Details: Spatial Reuse, the TXVECTOR, Packet Padding and Rate Selection",
+    "zh": "EHT 空口细节：空间复用、TXVECTOR、报文填充与速率选择"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Once an EHT (Wi-Fi 7) station decides to send a frame, a flurry of MAC-to-PHY decisions happen at the boundary between the two layers. The MAC hands the PHY a structure called the TXVECTOR — a bundle of transmit parameters that tells the radio exactly how to build the PPDU on air. This lesson walks through four of those decisions: whether a neighbouring transmission may overlap in time (spatial reuse), how key TXVECTOR parameters are filled in, how much silence to append at the end (packet padding), and which modulation-and-coding rates are even legal to use. These are the fine-grained rules that turn a queued frame into actual radio symbols.",
+      "zh": "当一个 EHT（Wi-Fi 7）站点决定发送一帧时，MAC 与 PHY 之间的边界上会瞬间触发一连串决策。MAC 会把一个名为 TXVECTOR 的结构交给 PHY——它是一组发送参数，告诉射频电路究竟如何在空口上构造 PPDU。本课讲解其中四类决策：相邻的发送是否可以在时间上重叠（空间复用）、关键 TXVECTOR 参数如何填写、帧尾要附加多少静默（报文填充），以及哪些调制编码速率才是合法可用的。正是这些精细规则把一帧排队报文变成了真实的射频符号。"
+    },
+    {
+      "type": "prose",
+      "en": "Spatial reuse lets a station transmit even while it overhears a neighbouring BSS already on air, as long as it transmits at low enough power not to disturb that neighbour's receiver. EHT PSR-based spatial reuse (Parameterized Spatial Reuse) builds directly on the HE mechanism. An EHT STA identifies a PSR opportunity only when two things hold: it received the start indication of a PSRR PPDU identified as inter-BSS, and it has a PSRT PPDU queued whose intended transmit power satisfies a power budget. That budget ties together the number of non-punctured 20 MHz subchannels, the received power level of the overheard PPDU per 20 MHz, and a PSR_min value the neighbouring AP advertised — so the responder's energy stays under the interference the neighbour declared it can tolerate.",
+      "zh": "空间复用允许一个站点在听到相邻 BSS 已经在空口上发送时仍然发送，只要它的发送功率足够低、不会干扰那个邻居的接收机。EHT 的基于 PSR（参数化空间复用）的空间复用直接构建在 HE 机制之上。EHT STA 只有在两个条件同时成立时才认定存在 PSR 机会：它收到了被识别为 BSS 间（inter-BSS）的 PSRR PPDU 的起始指示，并且它有一个排队待发的 PSRT PPDU，其预期发送功率满足一项功率预算。该预算把非打孔的 20 MHz 子信道数量、所听到 PPDU 每 20 MHz 的接收功率电平，以及相邻 AP 通告的 PSR_min 值绑定在一起——从而使响应方的能量保持在邻居声明可容忍的干扰之下。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Where does PSR_min come from? It is carried per 20 MHz in the Trigger frame: from the UL Spatial Reuse subfields of the Common Info field, or — when present — the EHT Spatial Reuse subfields of the Special User Info field, or from the Spatial Reuse value of the TB PPDU that follows. An EHT AP that does not implement PSR (or wants to forbid it) sets every EHT Spatial Reuse subfield to PSR_DISALLOW.",
+      "zh": "PSR_min 从哪里来？它在 Trigger 帧中按每 20 MHz 携带：来自 Common Info 字段的 UL Spatial Reuse 子字段，或者——当存在时——来自 Special User Info 字段的 EHT Spatial Reuse 子字段，或者来自其后 TB PPDU 的 Spatial Reuse 值。不实现 PSR（或希望禁止 PSR）的 EHT AP 会把每个 EHT Spatial Reuse 子字段都设为 PSR_DISALLOW。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Overhear PSRR PPDU] --> B{Identified as inter-BSS?}\n  B -- no --> X[No PSR opportunity]\n  B -- yes --> C{PSRT PPDU queued and<br/>power budget met?}\n  C -- no --> X\n  C -- yes --> D[Transmit PSRT PPDU<br/>at reduced power]",
+      "zh": "flowchart TD\n  A[听到 PSRR PPDU] --> B{识别为 BSS 间?}\n  B -- 否 --> X[无 PSR 机会]\n  B -- 是 --> C{已排队 PSRT PPDU 且<br/>满足功率预算?}\n  C -- 否 --> X\n  C -- 是 --> D[以降低功率<br/>发送 PSRT PPDU]"
+    },
+    {
+      "type": "prose",
+      "en": "Now the TXVECTOR itself. For an EHT PPDU, most parameters inherit the HE rules with one recurring addition: the rules that applied to an HE MU PPDU now also apply to an EHT MU PPDU. That pattern covers STA_ID, UPLINK_FLAG, BSS_COLOR, TXOP_DURATION and TRIGGER_RESPONDING. A few are genuinely EHT-specific: POWER_BOOST_FACTOR must be 1 for a non-OFDMA EHT MU PPDU (including SU) and for a sounding NDP, but for OFDMA it may range over [0.5, 2] or a narrower set depending on each recipient's Power Boost Factor Support. A non-AP STA also sets BSS_COLOR to 0 when its EHT MU PPDU is addressed to a STA outside its own BSS.",
+      "zh": "现在来看 TXVECTOR 本身。对于 EHT PPDU，大多数参数沿用 HE 规则，只多了一条反复出现的补充：原先适用于 HE MU PPDU 的规则现在也适用于 EHT MU PPDU。这一模式覆盖了 STA_ID、UPLINK_FLAG、BSS_COLOR、TXOP_DURATION 和 TRIGGER_RESPONDING。少数参数是 EHT 特有的：对于非 OFDMA 的 EHT MU PPDU（包括 SU 传输）以及探测 NDP，POWER_BOOST_FACTOR 必须为 1；而对于 OFDMA，它可在 [0.5, 2] 或更窄的范围内取值，具体取决于每个接收方的 Power Boost Factor Support 能力。此外，当非 AP 站点的 EHT MU PPDU 寻址给本 BSS 之外的站点时，要把 BSS_COLOR 设为 0。"
+    },
+    {
+      "type": "prose",
+      "en": "The SPATIAL_REUSE TXVECTOR parameter carries the spatial-reuse field contents for an EHT PPDU. For an EHT TB PPDU it is an array of one or two values that map onto the channel's lower and upper halves — and at 320 MHz (CBW320-1 / CBW320-2) the two values apply to the two lowest 160 MHz subbands. Key values: PSR_DISALLOW prohibits PSR-based reuse for that PPDU, and PSR_AND_NON_SRG_OBSS_PD_PROHIBITED prohibits both PSR and non-SRG OBSS PD reuse. Sounding NDPs and NDP-Announcement exchanges must use the PROHIBITED value; an EHT SU transmission must not use SR_RESTRICTED, and a PPDU that carries no Trigger frame must use neither SR_DELAYED nor SR_RESTRICTED.",
+      "zh": "SPATIAL_REUSE TXVECTOR 参数为 EHT PPDU 携带空间复用字段的内容。对于 EHT TB PPDU，它是一个含一或两个值的数组，分别映射到信道的下半部分和上半部分——在 320 MHz（CBW320-1 / CBW320-2）下，这两个值分别作用于最低的两个 160 MHz 子带。关键取值：PSR_DISALLOW 禁止该 PPDU 期间基于 PSR 的复用，而 PSR_AND_NON_SRG_OBSS_PD_PROHIBITED 同时禁止 PSR 复用与 non-SRG OBSS PD 复用。探测 NDP 与 NDP Announcement 交互必须使用 PROHIBITED 取值；EHT SU 传输不得使用 SR_RESTRICTED；而不携带 Trigger 帧的 PPDU 既不得使用 SR_DELAYED，也不得使用 SR_RESTRICTED。"
+    },
+    {
+      "type": "prose",
+      "en": "CENTER_FREQUENCY_SEGMENT tells the PHY where to centre the transmission. The interesting EHT delta is for narrow-operating stations using subchannel selective transmission. A 20 MHz-operating non-AP EHT STA normally centres on the primary 20 MHz, but with HE subchannel selective transmission enabled it may centre on any 20 MHz channel within a 40/80/160 MHz BSS — and, when the BSS is 320 MHz, on any 20 MHz within the primary 160 MHz. Likewise an 80 MHz-operating STA normally centres on the primary 80 MHz, but may move to any 80 MHz within the primary 160 MHz when parked without preamble puncturing. This lets a low-bandwidth client listen and respond on a flexible slice of a very wide channel.",
+      "zh": "CENTER_FREQUENCY_SEGMENT 告诉 PHY 把发送中心放在哪里。EHT 引入的有趣变化针对使用子信道选择性传输的窄带工作站点。一个工作于 20 MHz 的非 AP EHT STA 通常以主 20 MHz 为中心，但在启用 HE 子信道选择性传输后，它可以在 40/80/160 MHz 的 BSS 内以任意 20 MHz 信道为中心——并且当 BSS 为 320 MHz 时，可在主 160 MHz 内的任意 20 MHz 为中心。同理，工作于 80 MHz 的站点通常以主 80 MHz 为中心，但在无前导打孔的情况下驻留时，可移动到主 160 MHz 内的任意 80 MHz。这让低带宽客户端能够在一条很宽信道的灵活片段上侦听并响应。"
+    },
+    {
+      "type": "prose",
+      "en": "Packet padding (the packet extension at the end of a PPDU) gives a slow receiver extra time to finish processing the last OFDM symbol. The NOMINAL_PACKET_PADDING TXVECTOR parameter feeds the minimal-PE calculation. The headline EHT behaviour: when a STA transmits an EHT MU PPDU to a peer whose EHT Capabilities it has never seen — for example an AP sending to a non-associated STA — it must assume the worst and set NOMINAL_PACKET_PADDING to 20 us if the RU/MRU uses 4096-QAM or is larger than 2x996-tone, and 16 us otherwise. The same 20-us-or-16-us rule governs broadcast RUs, and the sender must never pick a value below what any recipient in the group requires.",
+      "zh": "报文填充（PPDU 末尾的报文扩展）给较慢的接收机额外时间来处理完最后一个 OFDM 符号。NOMINAL_PACKET_PADDING TXVECTOR 参数会喂给最小 PE 计算。EHT 的核心行为是：当一个站点向尚未见过其 EHT Capabilities 的对端发送 EHT MU PPDU 时——例如 AP 向未关联站点发送——它必须做最坏假设：若 RU/MRU 使用 4096-QAM 或大于 2x996-tone，则把 NOMINAL_PACKET_PADDING 设为 20 us，否则设为 16 us。同样的 20-us-或-16-us 规则也适用于广播 RU，且发送方绝不能取低于该组中任一接收方所需的值。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "After choosing NOMINAL_PACKET_PADDING, the transmitter adds post-FEC padding driven by the pre-FEC padding factor, then appends a packet extension whose duration is computed from the nominal padding value. The padding you advertise is a budget, not the literal trailing time — the PHY turns it into the real packet extension.",
+      "zh": "在选定 NOMINAL_PACKET_PADDING 之后，发送方先按 pre-FEC 填充因子加入 post-FEC 填充，再附加一段报文扩展，其时长由标称填充值计算得出。你所通告的填充是一项预算，而非字面上的尾部时间——PHY 会把它转换为真实的报文扩展。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, rate selection. An EHT STA must not transmit an EHT PPDU unless the <EHT-MCS, NSS> tuple and bandwidth are in the receiving STA's receive EHT-MCS and NSS set — the set of tuples the receiver advertised it can decode at 20 / <=80 / <=160 / <=320 MHz, derived from the Supported EHT-MCS And NSS Set field and refined by any Operating Mode, OM Control or EHT OM Control updates. There is a symmetric transmit EHT-MCS and NSS set describing what the peer can send. Two extra constraints tie EHT back to HE: any <HE-MCS, NSS, bandwidth> combination disallowed in the BSS also disallows the equal EHT-MCS at that bandwidth, and if EHT-MCS 0 / NSS=1 is disallowed at a bandwidth, then EHT-MCS 15 is disallowed there too.",
+      "zh": "最后是速率选择。EHT STA 不得发送 EHT PPDU，除非所用的 <EHT-MCS, NSS> 元组与带宽落在接收站点的“接收 EHT-MCS 与 NSS 集合”中——该集合是接收方通告其能在 20 / <=80 / <=160 / <=320 MHz 解码的元组集合，来源于 Supported EHT-MCS And NSS Set 字段，并经任何 Operating Mode、OM Control 或 EHT OM Control 更新加以细化。与之对称，还有一个“发送 EHT-MCS 与 NSS 集合”描述对端能发送的内容。两条附加约束把 EHT 与 HE 关联起来：BSS 中被禁止的任一 <HE-MCS, NSS, 带宽> 组合，会同样禁止该带宽下相等的 EHT-MCS；并且若某带宽下 EHT-MCS 0 / NSS=1 被禁止，则该带宽下的 EHT-MCS 15 也被禁止。"
+    },
+    {
+      "type": "widget",
+      "widget": "mcs-snr",
+      "params": {}
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each clause lives",
+        "zh": "覆盖映射：每个条款的位置"
+      },
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          624,
+          625,
+          626,
+          627,
+          629,
+          630,
+          635,
+          638,
+          639
+        ]
+      },
+      "en": "This lesson teaches seven EHT subclauses. 35.10.3 (EHT PSR-based spatial reuse operation) defines PSR-opportunity initiation and the EHT Spatial Reuse subfields of the Trigger frame, including the PSRT power budget and the per-20-MHz PSR_min sources. 35.11.1 (Setting TXVECTOR parameters for an EHT PPDU) walks STA_ID, POWER_BOOST_FACTOR, UPLINK_FLAG, BSS_COLOR, TXOP_DURATION and TRIGGER_RESPONDING — mostly inheriting HE rules plus the EHT-MU-equals-HE-MU addition. 35.11.2 (SPATIAL_REUSE) defines the TXVECTOR parameter's array structure (one/two values, mapped to subbands up to two 160 MHz halves at 320 MHz) and the PSR_DISALLOW / PSR_AND_NON_SRG_OBSS_PD_PROHIBITED / SR_DELAYED / SR_RESTRICTED rules. 35.11.4 (CENTER_FREQUENCY_SEGMENT) covers subchannel-selective centring for 20 MHz- and 80 MHz-operating non-AP EHT STAs. 35.13.1 (General) sets the PPE Thresholds Present subfield per dot11EHTPPEThresholdsRequired. 35.13.5 (STA behavior related to nominal packet padding) gives the 20-us/16-us NOMINAL_PACKET_PADDING rules for broadcast RUs and unknown-capability peers, plus the post-FEC padding and packet-extension chain. 35.14.4 (Rate selection constraints for EHT STAs) defines the receive and transmit EHT-MCS and NSS sets (35.14.4.1, 35.14.4.2) and the additional constraints tying EHT-MCS back to disallowed HE combinations and EHT-MCS 0/NSS=1 to EHT-MCS 15 (35.14.4.3).",
+      "zh": "本课讲授七个 EHT 子条款。35.10.3（EHT 基于 PSR 的空间复用操作）定义 PSR 机会的发起与 Trigger 帧的 EHT Spatial Reuse 子字段，包括 PSRT 功率预算与每 20 MHz 的 PSR_min 来源。35.11.1（为 EHT PPDU 设置 TXVECTOR 参数）逐一说明 STA_ID、POWER_BOOST_FACTOR、UPLINK_FLAG、BSS_COLOR、TXOP_DURATION 与 TRIGGER_RESPONDING——大多沿用 HE 规则并加上“EHT MU 等同 HE MU”的补充。35.11.2（SPATIAL_REUSE）定义该 TXVECTOR 参数的数组结构（一或两个值，在 320 MHz 下映射到两个 160 MHz 半带）以及 PSR_DISALLOW / PSR_AND_NON_SRG_OBSS_PD_PROHIBITED / SR_DELAYED / SR_RESTRICTED 规则。35.11.4（CENTER_FREQUENCY_SEGMENT）涵盖 20 MHz 与 80 MHz 工作的非 AP EHT STA 的子信道选择性中心化。35.13.1（总则）依据 dot11EHTPPEThresholdsRequired 设置 PPE Thresholds Present 子字段。35.13.5（与标称报文填充相关的 STA 行为）给出广播 RU 与能力未知对端的 20-us/16-us NOMINAL_PACKET_PADDING 规则，以及 post-FEC 填充与报文扩展链。35.14.4（EHT STA 的速率选择约束）定义接收与发送 EHT-MCS 与 NSS 集合（35.14.4.1、35.14.4.2），以及把 EHT-MCS 关联回被禁止的 HE 组合、并把 EHT-MCS 0/NSS=1 关联到 EHT-MCS 15 的附加约束（35.14.4.3）。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        624,
+        625
+      ],
+      "note": "35.10.3 EHT PSR-based spatial reuse operation: PSR opportunity initiation conditions, PSRT power budget, PSR_min sources, EHT Spatial Reuse subfields of the Trigger frame"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        625,
+        626
+      ],
+      "note": "35.11.1 Setting TXVECTOR parameters for an EHT PPDU: STA_ID, POWER_BOOST_FACTOR, UPLINK_FLAG, BSS_COLOR, TXOP_DURATION, TRIGGER_RESPONDING"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        626,
+        627,
+        628
+      ],
+      "note": "35.11.2 SPATIAL_REUSE TXVECTOR parameter: array structure across CBW20..CBW320, PSR_DISALLOW / PSR_AND_NON_SRG_OBSS_PD_PROHIBITED / SR_DELAYED / SR_RESTRICTED rules"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        629,
+        630
+      ],
+      "note": "35.11.4 CENTER_FREQUENCY_SEGMENT: subchannel selective transmission centring for 20 MHz- and 80 MHz-operating non-AP EHT STAs"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        630
+      ],
+      "note": "35.13.1 General: PPE Thresholds Present subfield set per dot11EHTPPEThresholdsRequired"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        635
+      ],
+      "note": "35.13.5 STA behavior related to nominal packet padding: NOMINAL_PACKET_PADDING 20us/16us rules for broadcast RUs and unknown-capability peers, post-FEC padding and packet extension"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        638,
+        639
+      ],
+      "note": "35.14.4 Rate selection constraints for EHT STAs: receive/transmit EHT-MCS and NSS sets and additional constraints (35.14.4.1-3)"
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.10.3",
+    "80211be-2024:35.11.1",
+    "80211be-2024:35.11.2",
+    "80211be-2024:35.11.4",
+    "80211be-2024:35.13.1",
+    "80211be-2024:35.13.5",
+    "80211be-2024:35.14.4"
+  ],
+  "track": "wifi7-eht"
+}

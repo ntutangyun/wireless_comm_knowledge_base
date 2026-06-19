@@ -1,0 +1,142 @@
+{
+  "id": "wifi7-45-mlo-data-plane-blockack-fragmentation-channel-access",
+  "title": {
+    "en": "Traffic Across Links: Block Ack, Fragmentation and ML Channel Access",
+    "zh": "跨链路的流量：Block Ack、分片与多链路信道接入"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Once a non-AP MLD has set up its links with an AP MLD, traffic has to actually move. In Wi-Fi 7 that traffic is owned by the MLD as a whole, while transmission happens on individual links. This lesson follows a frame from queue to air: how Block Ack works with one shared scoreboard across links, why fragmentation changes, how management and group-addressed frames are delivered, and how each link contends for the medium on its own.",
+      "zh": "当一个非 AP MLD 与 AP MLD 完成各条链路的建立后，流量就要真正地流动起来。在 Wi-Fi 7 中，这些流量由整个 MLD 拥有，而发送则在各条独立链路上进行。本课跟随一帧数据从队列走到空口：Block Ack 如何用一套跨链路共享的记分牌工作、分片为何发生变化、管理帧与组寻址帧如何投递，以及每条链路如何各自竞争介质。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Key idea: there is exactly one Block Ack agreement per TID between two MLDs, and it applies to every link that TID is mapped to — there are no separate per-link agreements. The originator keeps a single transmit buffer (WinStartO / WinSizeO) and the recipient keeps a single receive reordering buffer per <peer MLD, TID>, no matter how many links are up.",
+      "zh": "核心思想：两个 MLD 之间针对每个 TID 只有一个 Block Ack 协议，它适用于该 TID 映射到的所有链路——不存在按链路分开的协议。无论建立了多少条链路，发起方都维护单一发送缓冲（WinStartO / WinSizeO），接收方都为每个 <对端 MLD, TID> 维护单一的接收重排序缓冲。"
+    },
+    {
+      "type": "prose",
+      "en": "Block Ack setup follows the familiar ADDBA Request / ADDBA Response handshake, but at MLD scope: the originator MLD may send the ADDBA Request through any affiliated STA on an enabled link, and the recipient may answer through any affiliated STA. Once accepted, QoS Data frames for that TID may flow on any link the TID is mapped to. Because two MLDs are involved, the transmission window may be up to 1024 (not just the value the recipient signalled), and the originator releases a buffered MPDU as soon as a BlockAck confirms it.",
+      "zh": "Block Ack 的建立沿用熟悉的 ADDBA 请求 / ADDBA 响应握手，但作用在 MLD 层面：发起方 MLD 可以通过任一处于启用链路上的隶属 STA 发送 ADDBA 请求，接收方也可以通过任一隶属 STA 回应。一旦被接受，该 TID 的 QoS 数据帧就可以在该 TID 所映射的任何链路上流动。由于涉及的是两个 MLD，发送窗口最大可达 1024（而不仅是接收方所示的数值），并且发起方一收到确认该 MPDU 的 BlockAck 就释放对应的发送缓冲。"
+    },
+    {
+      "type": "prose",
+      "en": "The recipient MLD keeps one common receive reordering buffer per <peer MLD, TID>, which orders MSDUs by sequence number and discards duplicates regardless of which link they arrived on. The scoreboard context control — the per-agreement bitmap that tracks which sequence numbers have been received — is what makes this work across links. A recipient may keep one common scoreboard for the agreement, or keep an independent scoreboard at each affiliated STA; an independent scoreboard runs in partial-state mode and is expected to discard its temporary record at the end of each TXOP, because it may be out of sync with the other affiliated STAs.",
+      "zh": "接收方 MLD 为每个 <对端 MLD, TID> 维护一个公共接收重排序缓冲，它按序列号对 MSDU 排序，并丢弃重复帧——无论它们从哪条链路到达。让这一切跨链路工作的关键是记分牌上下文控制（scoreboard context control）：这是按协议维护、用于追踪哪些序列号已被接收的位图。接收方可以为该协议维护一份公共记分牌，也可以在每个隶属 STA 上各维护一份独立记分牌；独立记分牌以部分状态（partial-state）模式运行，并应在每个 TXOP 结束时丢弃其临时记录，因为它可能与其他隶属 STA 失去同步。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 220\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"30\" width=\"120\" height=\"160\" rx=\"6\"/><text x=\"70\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Originator MLD</text><rect x=\"30\" y=\"50\" width=\"80\" height=\"34\" rx=\"4\"/><text x=\"70\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">One TX buffer</text><text x=\"70\" y=\"77\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">WinStartO</text><rect x=\"30\" y=\"110\" width=\"80\" height=\"20\" rx=\"3\"/><text x=\"70\" y=\"124\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Link 1</text><rect x=\"30\" y=\"150\" width=\"80\" height=\"20\" rx=\"3\"/><text x=\"70\" y=\"164\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Link 2</text><rect x=\"330\" y=\"30\" width=\"120\" height=\"160\" rx=\"6\"/><text x=\"390\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Recipient MLD</text><rect x=\"350\" y=\"50\" width=\"80\" height=\"34\" rx=\"4\"/><text x=\"390\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">One reorder buf</text><text x=\"390\" y=\"77\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">+ scoreboard</text><rect x=\"350\" y=\"110\" width=\"80\" height=\"20\" rx=\"3\"/><text x=\"390\" y=\"124\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Link 1</text><rect x=\"350\" y=\"150\" width=\"80\" height=\"20\" rx=\"3\"/><text x=\"390\" y=\"164\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Link 2</text><line x1=\"110\" y1=\"120\" x2=\"350\" y2=\"120\" marker-end=\"url(#a)\"/><line x1=\"110\" y1=\"160\" x2=\"350\" y2=\"160\" marker-end=\"url(#a)\"/><defs><marker id=\"a\" markerWidth=\"8\" markerHeight=\"8\" refX=\"6\" refY=\"3\" orient=\"auto\"><path d=\"M0 0 L6 3 L0 6\" fill=\"currentColor\" stroke=\"none\"/></marker></defs></svg>",
+      "caption": {
+        "en": "One Block Ack agreement spans every mapped link: a single transmit buffer feeds frames onto multiple links, and a single reordering buffer + scoreboard reassembles them at the recipient.",
+        "zh": "一个 Block Ack 协议覆盖所有映射链路：单一发送缓冲将帧送到多条链路上，接收方用单一重排序缓冲与记分牌将它们重新组装。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Fragmentation gets simpler in MLO. A STA affiliated with an MLD shall not use the nondynamic fragmentation procedure of base clause 10.4 (MSDU, A-MSDU, and MMPDU fragmentation). In practice, with wide channels and multiple links available, static fragmentation thresholds are the wrong tool — so the legacy nondynamic path is simply removed for MLDs, leaving the dynamic fragmentation behaviour as the only option.",
+      "zh": "在 MLO 中分片变得更简单。隶属于 MLD 的 STA 不得使用基础标准第 10.4 节中的非动态分片流程（MSDU、A-MSDU 与 MMPDU 分片）。实际上，在拥有宽信道和多条链路的情况下，静态的分片门限并不合适——因此对 MLD 而言，传统的非动态分片路径被直接移除，只保留动态分片行为这一选项。"
+    },
+    {
+      "type": "prose",
+      "en": "Management frames are delivered at MLD scope too. Most individually addressed Management frames share one sequence-number space and one in-flight rule: while one such frame is still in flight on any setup link, no other affiliated STA may send another from the same space. Some frames are addressed to a STA (a specific link) and some to the MLD as a whole — Deauthentication, Disassociation, Block Ack Action, (Re)Association, TID-To-Link Mapping and others are intended for the MLD. When a frame meant for one link is sent over a different link, it carries an MLO Link Info element naming the intended link; the receiver discards it if that link is not enabled.",
+      "zh": "管理帧同样在 MLD 层面投递。大多数单播管理帧共用一个序列号空间和一条在途规则：当一帧仍在任一已建立链路上在途时，其他隶属 STA 不得从同一序列号空间发送另一帧。有些帧是发给某个 STA（某条具体链路）的，有些则是发给整个 MLD 的——去认证、解除关联、Block Ack Action、（重）关联、TID 到链路映射等帧都是面向 MLD 的。当一帧本应发往某条链路却经由另一条链路发送时，它会携带 MLO Link Info 元素来标明目标链路；若该链路未启用，接收方将丢弃该帧。"
+    },
+    {
+      "type": "prose",
+      "en": "Group-addressed frames (broadcast/multicast) are handled per affiliated AP. Each AP schedules its own buffered group-addressed Management frames independently, while group-addressed Data frames are delivered on all enabled links set up with a non-AP MLD. To avoid loops, an AP MLD sets the SA of a relayed group-addressed Data frame to the non-AP MLD's MLD MAC address, and a non-AP MLD discards any group-addressed MPDU whose SA equals its own MLD MAC address. A cross-link bit in the TIM's Partial Virtual Bitmap lets one AP signal that another affiliated AP has group-addressed traffic buffered.",
+      "zh": "组寻址帧（广播/组播）按隶属 AP 分别处理。每个 AP 独立调度自己缓存的组寻址管理帧，而组寻址数据帧则在与某非 AP MLD 建立的所有启用链路上投递。为避免环路，AP MLD 会把转发的组寻址数据帧的 SA 设为该非 AP MLD 的 MLD MAC 地址，而非 AP MLD 会丢弃任何 SA 等于自身 MLD MAC 地址的组寻址 MPDU。TIM 的部分虚拟位图中有一个跨链路比特，让一个 AP 能告知另一隶属 AP 缓存了组寻址流量。"
+    },
+    {
+      "type": "widget",
+      "widget": "mlo-links"
+    },
+    {
+      "type": "prose",
+      "en": "Channel access is the part that stays per-link: a STA affiliated with an MLD contends for the medium on its own link independently of the other affiliated STAs, unless a subclause says otherwise. So the MLD owns the buffers and the Block Ack state, but each link runs its own EDCA backoff. The big distinction within ML channel access is STR vs NSTR. An STR (Simultaneous Transmit and Receive) link pair can transmit on one link while receiving on the other with no self-interference — every link pair of a normal AP MLD operating on more than one link is STR. An NSTR (Nonsimultaneous Transmit and Receive) link pair cannot, because the two radios are too close in frequency; a device announces each pair as STR or NSTR via the NSTR Indication Bitmap during association. On an NSTR pair, a STA that wins a TXOP may decline to transmit if doing so would interfere with the other link's reception, and there are extra rules (covered in later subclauses) to align PPDU end times so the device can listen on both links cleanly.",
+      "zh": "信道接入是保持按链路独立的部分：除非某子条款另有规定，隶属于 MLD 的 STA 在自己的链路上独立于其他隶属 STA 竞争介质。因此 MLD 拥有缓冲和 Block Ack 状态，但每条链路各自运行自己的 EDCA 退避。ML 信道接入中最大的区分是 STR 与 NSTR。STR（同时收发）链路对可以在一条链路上发送的同时在另一条链路上接收而不产生自干扰——一个工作在多条链路上的普通 AP MLD，其每个链路对都是 STR。NSTR（非同时收发）链路对则做不到，因为两个射频在频率上靠得太近；设备在关联时通过 NSTR 指示位图（NSTR Indication Bitmap）将每个链路对标注为 STR 或 NSTR。在 NSTR 链路对上，赢得 TXOP 的 STA 如果发送会干扰另一条链路的接收，可以选择不发送；并且还有额外规则（在后续子条款中说明）用于对齐 PPDU 的结束时刻，使设备能够干净地在两条链路上侦听。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD; A[STA gets data for a TID] --> B[One BA agreement, single TX buffer]; B --> C{Which link?}; C --> D[Link 1 - own EDCA backoff]; C --> E[Link 2 - own EDCA backoff]; D --> F{STR or NSTR pair?}; E --> F; F -->|STR| G[Tx and Rx freely]; F -->|NSTR| H[Defer if it would self-interfere]; G --> I[Recipient: one reorder buffer + scoreboard]; H --> I",
+      "zh": "graph TD; A[STA 收到某 TID 的数据] --> B[一个 BA 协议, 单一发送缓冲]; B --> C{走哪条链路?}; C --> D[链路1 - 各自 EDCA 退避]; C --> E[链路2 - 各自 EDCA 退避]; D --> F{STR 还是 NSTR 链路对?}; E --> F; F -->|STR| G[自由收发]; F -->|NSTR| H[若会自干扰则推迟]; G --> I[接收方: 单一重排序缓冲+记分牌]; H --> I"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the five MLO data-plane clauses",
+        "zh": "覆盖映射：五个 MLO 数据面子条款"
+      },
+      "en": "This lesson teaches IEEE 802.11be-2024 clauses 35.3.8, 35.3.9, 35.3.14, 35.3.15 and 35.3.16. 35.3.8 (Block ack procedures in MLO) defines the one-agreement-per-TID rule, the single common transmit buffer (WinStartO/WinSizeO), the single common receive reordering buffer per <peer MLD, TID>, and the scoreboard context control modes (common vs independent partial-state). 35.3.9 (Fragmentation in MLO) prohibits the nondynamic fragmentation procedure of clause 10.4 for MLD-affiliated STAs. 35.3.14 (MLD individually addressed Management frame delivery) covers the shared sequence-number space, the single-in-flight rule, the list of MMPDUs intended for an MLD vs a STA, QMF handling, and the MLO Link Info element that identifies the intended link. 35.3.15 (MLO group addressed frames) covers per-AP scheduling of group-addressed Management frames, delivery of group-addressed Data on all enabled links, the SA = MLD-MAC loop-avoidance rule, and the cross-link TIM bitmap indication. 35.3.16 (ML channel access) establishes independent per-link contention and the STR (35.3.16.3) vs NSTR (35.3.16.4) operation distinction, including STR/NSTR signalling and the deferral behaviour on NSTR link pairs.",
+      "zh": "本课讲授 IEEE 802.11be-2024 的 35.3.8、35.3.9、35.3.14、35.3.15 与 35.3.16 子条款。35.3.8（MLO 中的 Block Ack 流程）定义了每 TID 一个协议的规则、单一公共发送缓冲（WinStartO/WinSizeO）、每个 <对端 MLD, TID> 的单一公共接收重排序缓冲，以及记分牌上下文控制的几种模式（公共 vs 独立部分状态）。35.3.9（MLO 中的分片）禁止隶属于 MLD 的 STA 使用第 10.4 节的非动态分片流程。35.3.14（MLD 单播管理帧投递）涵盖共享序列号空间、单帧在途规则、面向 MLD 与面向 STA 的 MMPDU 清单、QMF 处理，以及标明目标链路的 MLO Link Info 元素。35.3.15（MLO 组寻址帧）涵盖组寻址管理帧的按 AP 调度、组寻址数据帧在所有启用链路上的投递、SA = MLD-MAC 的防环路规则，以及跨链路 TIM 位图指示。35.3.16（ML 信道接入）确立了按链路独立竞争，以及 STR（35.3.16.3）与 NSTR（35.3.16.4）操作的区分，包括 STR/NSTR 的信令以及 NSTR 链路对上的推迟行为。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          536,
+          537,
+          538,
+          551,
+          552,
+          553,
+          554,
+          555,
+          557,
+          559
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        536,
+        537,
+        538
+      ],
+      "note": "35.3.8 Block ack procedures in MLO (one agreement per TID, single TX buffer WinStartO/WinSizeO, single receive reordering buffer, scoreboard context control modes); 35.3.9 Fragmentation in MLO (nondynamic fragmentation prohibited)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        551,
+        552,
+        553,
+        554,
+        555
+      ],
+      "note": "35.3.14 MLD individually addressed Management frame delivery (shared SN space, single-in-flight rule, MMPDUs intended for MLD vs STA, QMF, MLO Link Info element identifying intended STA)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        555,
+        556,
+        557
+      ],
+      "note": "35.3.15 MLO group addressed frames (per-AP scheduling, delivery on all enabled links, SA=MLD-MAC loop avoidance, cross-link TIM bitmap indication)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        557,
+        558,
+        559,
+        560
+      ],
+      "note": "35.3.16 ML channel access (independent per-link contention; 35.3.16.2 STR/NSTR signalling; 35.3.16.3 STR operation; 35.3.16.4 NSTR operation and deferral)"
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.3.8",
+    "80211be-2024:35.3.9",
+    "80211be-2024:35.3.14",
+    "80211be-2024:35.3.15",
+    "80211be-2024:35.3.16"
+  ],
+  "track": "wifi7-eht"
+}

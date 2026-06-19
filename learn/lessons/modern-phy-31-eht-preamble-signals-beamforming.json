@@ -1,0 +1,155 @@
+{
+  "id": "modern-phy-31-eht-preamble-signals-beamforming",
+  "title": {
+    "en": "The EHT Preamble and Signals: Structure, Beamforming and SU Transmission",
+    "zh": "EHT 前导码与信号：结构、波束成形与 SU 发送"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "When a Wi-Fi 7 (EHT) device puts a packet on the air, what actually leaves the antenna is a complex baseband waveform shifted up to the channel's center frequency. Clause 36.3 of 802.11be-2024 describes this shape mathematically — and then builds the on-air structure on top of it: the legacy and EHT preamble fields the receiver uses to lock on, the signaling that tells it how to decode, and the rules for steering energy and answering a trigger. This lesson walks the shape of an EHT transmission from the equations up to a single-user (SU) packet.",
+      "zh": "当一台 Wi-Fi 7（EHT）设备把数据包发到空中时，真正离开天线的是一个复基带波形，并被搬移到信道的中心频率上。802.11be-2024 的 36.3 条款用数学方式描述了这个形状，并在其之上构建空口结构：接收机用来同步的传统字段与 EHT 前导码字段、告诉它如何解码的信令，以及波束成形和响应触发帧的规则。本节课将沿着 EHT 发送的「形状」，从公式一路讲到单用户（SU）数据包。"
+    },
+    {
+      "type": "prose",
+      "en": "The mathematical description of signals (36.3.11) is the foundation. It fixes the notation used throughout Clause 36 — number of data bits per OFDM symbol, coded bits per subcarrier per spatial stream, number of spatial streams per RU, transmit and receive chains — then lays out which subcarrier indices are in use, the channel center frequencies (including how the primary and secondary 160 MHz channels are located inside 320 MHz), and finally the transmitted signal itself: each transmit chain emits a complex baseband signal up-converted to the PPDU's center frequency f_c, which depends on the operating channel width and CH_BANDWIDTH.",
+      "zh": "信号的数学描述（36.3.11）是基础。它固定了整个第 36 条款使用的记号——每个 OFDM 符号的数据比特数、每子载波每空间流的编码比特数、每个 RU 的空间流数、发射与接收链数——然后给出哪些子载波索引被使用、各信道中心频率（包括 320 MHz 内主、辅 160 MHz 信道的定位方式），最后是发送信号本身：每条发射链发出一个复基带信号，被上变频到该 PPDU 的中心频率 f_c，而 f_c 取决于工作信道带宽和 CH_BANDWIDTH。"
+    },
+    {
+      "type": "prose",
+      "en": "The EHT preamble (36.3.12) is what every receiver decodes first. It splits into two groups. The pre-EHT modulated fields are the legacy-compatible front end — L-STF, L-LTF, L-SIG, RL-SIG, and the new U-SIG — sent so that a legacy device defers correctly and an EHT device learns how to read the rest. The EHT modulated fields are the EHT-STF and EHT-LTF that follow. A clever design goal: for bandwidths above 80 MHz, an EHT station only needs to process one 80 MHz subblock of the pre-EHT fields to recover all of its own assignment information.",
+      "zh": "EHT 前导码（36.3.12）是每个接收机最先解码的部分。它分为两组。pre-EHT 调制字段是与传统兼容的前端——L-STF、L-LTF、L-SIG、RL-SIG 以及新增的 U-SIG——发送它们是为了让传统设备正确退避，也让 EHT 设备学会如何读取后续内容。紧随其后的 EHT 调制字段是 EHT-STF 和 EHT-LTF。一个巧妙的设计目标是：对于 80 MHz 以上的带宽，一台 EHT 站点只需处理 pre-EHT 字段中的一个 80 MHz 子块，就能恢复出属于自己的全部分配信息。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[L-STF] --> B[L-LTF] --> C[L-SIG] --> D[RL-SIG] --> E[U-SIG] --> F[EHT-SIG] --> G[EHT-STF] --> H[EHT-LTFs] --> I[Data + PE]\n  subgraph preEHT[pre-EHT modulated]\n    A;B;C;D;E;F\n  end\n  subgraph EHT[EHT modulated]\n    G;H\n  end",
+      "zh": "flowchart LR\n  A[L-STF] --> B[L-LTF] --> C[L-SIG] --> D[RL-SIG] --> E[U-SIG] --> F[EHT-SIG] --> G[EHT-STF] --> H[EHT-LTF 多个] --> I[数据 + PE]\n  subgraph preEHT[pre-EHT 调制]\n    A;B;C;D;E;F\n  end\n  subgraph EHT[EHT 调制]\n    G;H\n  end"
+    },
+    {
+      "type": "prose",
+      "en": "Two signaling fields carry the decode instructions. U-SIG carries the information needed to interpret any EHT PPDU and is built for forward compatibility: it groups version-independent fields (PHY Version Identifier, Bandwidth, UL/DL, BSS Color, TXOP) that keep a fixed location and meaning across every IEEE 802.11 PHY clause from Clause 36 onward, followed by version-dependent fields and a CRC/Tail. It is two OFDM symbols long for EHT MU and EHT TB PPDUs. EHT-SIG (present in an EHT MU PPDU) adds U-SIG overflow bits common to all users plus the per-user resource-allocation map, organized into content channels.",
+      "zh": "两个信令字段承载解码指令。U-SIG 携带解释任何 EHT PPDU 所需的信息，并为前向兼容而设计：它把版本无关字段（PHY 版本标识、带宽、上/下行、BSS Color、TXOP）归为一组，这些字段从第 36 条款起在每个 IEEE 802.11 PHY 条款中都保持固定的位置和含义，随后是版本相关字段以及 CRC/Tail。对 EHT MU 和 EHT TB PPDU，U-SIG 长度为两个 OFDM 符号。EHT-SIG（存在于 EHT MU PPDU 中）增加了对所有用户共有的 U-SIG 溢出比特，以及按用户划分的资源分配映射，并组织为内容信道。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The version-independent fields in U-SIG are why Wi-Fi 7 sets up clean coexistence with future PHYs: a device from a later amendment can read Bandwidth, BSS Color and TXOP from a Clause-36-style preamble even if it does not understand the version-dependent part, so it still defers correctly during the TXOP.",
+      "zh": "U-SIG 中的版本无关字段，正是 Wi-Fi 7 与未来 PHY 实现良好共存的原因：来自后续修正案的设备即使看不懂版本相关部分，也能从 Clause 36 风格的前导码中读出带宽、BSS Color 和 TXOP，因此在该 TXOP 期间仍能正确退避。"
+    },
+    {
+      "type": "prose",
+      "en": "The two training fields do the radio housekeeping. EHT-STF improves automatic gain control for MIMO; it sits right after EHT-SIG in an EHT MU PPDU and right after U-SIG in an EHT TB PPDU. EHT-LTF lets the receiver estimate the MIMO channel — an N_RX by N_STS matrix per subcarrier — by multiplying each EHT-LTF symbol's tones with a known mapping matrix; single-stream pilots in 2x or 4x EHT-LTF let the receiver track residual phase and frequency offset during channel estimation. The number of EHT-LTF symbols scales with the total number of spatial streams.",
+      "zh": "两个训练字段负责无线层的「内务」。EHT-STF 改善 MIMO 的自动增益控制；在 EHT MU PPDU 中它紧跟 EHT-SIG，在 EHT TB PPDU 中紧跟 U-SIG。EHT-LTF 让接收机估计 MIMO 信道——每个子载波是一个 N_RX × N_STS 矩阵——做法是把每个 EHT-LTF 符号的子载波与一个已知映射矩阵相乘；在 2x 或 4x EHT-LTF 中的单流导频，让接收机在信道估计期间跟踪残余相位和频偏。EHT-LTF 符号的数量随总空间流数而增加。"
+    },
+    {
+      "type": "prose",
+      "en": "Not every transmission is a full EHT packet. Non-HT duplicate transmission (36.3.15) reaches non-HT, HT, VHT, HE and EHT stations spread across parts of a 40, 80, 160 or 320 MHz channel by replicating a legacy waveform per 20 MHz: FORMAT is NON_HT and NON_HT_MODULATION is NON_HT_DUP_OFDM, so RL-SIG, U-SIG, EHT-SIG, EHT-STF, EHT-LTF and PE are not sent. L-STF and L-LTF go out as in EHT; L-SIG follows the legacy Rate/Length rules. For 320 MHz, the duplicated data field is defined by a dedicated equation, and preamble-punctured 20 MHz subchannels are marked through the INACTIVE_SUBCHANNELS parameter. This is the workhorse format for things like an MU-RTS solicited CTS.",
+      "zh": "并非每次发送都是完整的 EHT 数据包。非 HT 重复发送（36.3.15）通过在每个 20 MHz 上复制传统波形，触达分布在 40、80、160 或 320 MHz 信道各部分中的 non-HT、HT、VHT、HE 和 EHT 站点：此时 FORMAT 为 NON_HT 且 NON_HT_MODULATION 为 NON_HT_DUP_OFDM，因此不发送 RL-SIG、U-SIG、EHT-SIG、EHT-STF、EHT-LTF 和 PE。L-STF 与 L-LTF 的发送方式与 EHT 相同；L-SIG 遵循传统的 Rate/Length 规则。对于 320 MHz，复制的数据字段由专门的公式定义，前导码打孔的 20 MHz 子信道通过 INACTIVE_SUBCHANNELS 参数标记。这是诸如 MU-RTS 触发的 CTS 等场景的主力格式。"
+    },
+    {
+      "type": "prose",
+      "en": "When several stations answer one trigger at the same time (36.3.16), their signals must arrive at the AP aligned. The standard requires each non-AP station to pre-correct timing, frequency, sampling clock and — for an EHT TB PPDU — transmit power. Power pre-correction sets Tx power from the downlink pathloss plus the UL Target Receive Power the trigger requested; the station derives pathloss from the AP Tx Power subfield minus the measured receive power. Accuracy bounds (e.g. Class A vs Class B absolute Tx power and RSSI accuracy), residual carrier-frequency-offset limits (350 Hz for an EHT TB PPDU, 2 kHz for a non-HT duplicate), and a transmission-start window of ±0.4 µs around SIFS all keep the simultaneous responses from interfering.",
+      "zh": "当多个站点同时响应一个触发帧时（36.3.16），它们的信号必须对齐地到达 AP。标准要求每个非 AP 站点对时序、频率、采样时钟，以及（对 EHT TB PPDU）发送功率进行预校正。功率预校正根据下行路损加上触发帧请求的上行目标接收功率来设定发送功率；站点用 AP Tx Power 子字段减去测得的接收功率来推导路损。精度边界（例如 A 类与 B 类的绝对发送功率和 RSSI 精度）、残余载波频偏限制（EHT TB PPDU 为 350 Hz，非 HT 重复为 2 kHz），以及围绕 SIFS 的 ±0.4 µs 发送起始窗口，共同确保这些同时响应互不干扰。"
+    },
+    {
+      "type": "prose",
+      "en": "Beamforming (36.3.17) lets a multi-antenna beamformer steer energy using channel knowledge. For SU-MIMO, all spatial streams target one station; for DL MU-MIMO, disjoint stream subsets target different stations in an RU/MRU of at least 242 tones. After an EHT sounding NDP, the beamformee computes a beamforming feedback matrix V, removes the spatial-stream cyclic shift first, then compresses V into quantized angles (using the compressed feedback format, the only Clause 36 feedback matrix defined). The beamformer reconstructs V and derives its steering matrix Q. Optionally the NDP Announcement can request EHT CQI feedback — per-RU, per-spatial-stream quantized SNRs the beamformer uses to pick the best RUs or MCS.",
+      "zh": "波束成形（36.3.17）让多天线波束成形器利用信道知识来引导能量。对 SU-MIMO，所有空间流指向一个站点；对 DL MU-MIMO，互不相交的流子集指向同一个 RU/MRU（至少 242 个子载波）内的不同站点。在一次 EHT 探测 NDP 之后，波束成形受体计算波束成形反馈矩阵 V，先移除空间流循环移位，再把 V 压缩为量化角度（使用压缩反馈格式，这是第 36 条款定义的唯一反馈矩阵）。波束成形器重建 V 并导出其导向矩阵 Q。NDP 通告还可选择请求 EHT CQI 反馈——按 RU、按空间流量化的 SNR，波束成形器据此挑选最佳 RU 或 MCS。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, EHT SU transmission (36.3.19) is the everyday single-user case — and notably it reuses the EHT MU PPDU format rather than defining a separate one. It is signaled in U-SIG by setting the PPDU Type And Compression Mode subfield to 1, with either an EHT-SIG MCS greater than 0, or an EHT-SIG MCS of 0 together with a Number Of EHT-SIG Symbols greater than 0. In other words, a one-receiver Wi-Fi 7 packet is just the multi-user machinery configured for a single user.",
+      "zh": "最后，EHT SU 发送（36.3.19）是日常的单用户情形——值得注意的是它复用 EHT MU PPDU 格式，而不是另行定义一种格式。它通过在 U-SIG 中把 PPDU Type And Compression Mode 子字段置为 1 来指示，并满足以下之一：EHT-SIG MCS 大于 0，或者 EHT-SIG MCS 为 0 且 EHT-SIG 符号数大于 0。换言之，一个面向单接收机的 Wi-Fi 7 数据包，只是把多用户机制配置成了单用户而已。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the six Clause 36.3 units in this lesson",
+        "zh": "覆盖映射：本节课涉及的六个 36.3 单元"
+      },
+      "en": "This lesson teaches: 36.3.11 Mathematical description of signals (notation, subcarrier indices in use, channel frequencies, transmitted signal and center frequency f_c per CH_BANDWIDTH); 36.3.12 EHT preamble (pre-EHT modulated fields L-STF/L-LTF/L-SIG/RL-SIG/U-SIG/EHT-SIG and EHT modulated fields EHT-STF/EHT-LTF, cyclic shift, the U-SIG version-independent vs version-dependent design, EHT-SIG content channels, EHT-STF AGC role, EHT-LTF MIMO channel estimation); 36.3.15 Non-HT duplicate transmission (NON_HT_DUP_OFDM, which fields are dropped, 320 MHz duplicate data field, INACTIVE_SUBCHANNELS puncturing); 36.3.16 Transmit requirements for PPDUs sent in response to a triggering frame (power pre-correction equation, pre-correction accuracy, residual CFO and start-time windows); 36.3.17 Beamforming (SU-MIMO vs DL MU-MIMO, EHT beamforming feedback matrix V, steering matrix Q, EHT CQI feedback); and 36.3.19 EHT SU transmission (reuse of the EHT MU PPDU format, U-SIG PPDU Type And Compression Mode = 1 signaling).",
+      "zh": "本节课讲授：36.3.11 信号的数学描述（记号、使用中的子载波索引、信道频率、发送信号及按 CH_BANDWIDTH 确定的中心频率 f_c）；36.3.12 EHT 前导码（pre-EHT 调制字段 L-STF/L-LTF/L-SIG/RL-SIG/U-SIG/EHT-SIG 与 EHT 调制字段 EHT-STF/EHT-LTF、循环移位、U-SIG 的版本无关与版本相关设计、EHT-SIG 内容信道、EHT-STF 的 AGC 作用、EHT-LTF 的 MIMO 信道估计）；36.3.15 非 HT 重复发送（NON_HT_DUP_OFDM、被省略的字段、320 MHz 重复数据字段、INACTIVE_SUBCHANNELS 打孔）；36.3.16 响应触发帧的 PPDU 发送要求（功率预校正公式、预校正精度、残余 CFO 与起始时间窗口）；36.3.17 波束成形（SU-MIMO 与 DL MU-MIMO、EHT 波束成形反馈矩阵 V、导向矩阵 Q、EHT CQI 反馈）；以及 36.3.19 EHT SU 发送（复用 EHT MU PPDU 格式、U-SIG 中 PPDU Type And Compression Mode = 1 的信令）。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          741,
+          751,
+          755,
+          770,
+          801,
+          805,
+          842,
+          844,
+          846,
+          848
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        741,
+        742,
+        744
+      ],
+      "note": "36.3.11 Mathematical description of signals: notation, subcarrier indices, channel frequencies, transmitted signal and center frequency table"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        751,
+        752,
+        755,
+        770,
+        801,
+        805
+      ],
+      "note": "36.3.12 EHT preamble: pre-EHT vs EHT modulated fields, cyclic shift, U-SIG general/content, EHT-SIG general, EHT-STF, EHT-LTF"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        842,
+        843
+      ],
+      "note": "36.3.15 Non-HT duplicate transmission: NON_HT_DUP_OFDM, dropped fields, 320 MHz duplicate data, INACTIVE_SUBCHANNELS"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        844,
+        845,
+        846
+      ],
+      "note": "36.3.16 Transmit requirements for PPDUs sent in response to a triggering frame: power pre-correction, accuracy, residual CFO and start-time window"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        846,
+        847
+      ],
+      "note": "36.3.17 Beamforming: SU/DL MU-MIMO, EHT beamforming feedback matrix V, steering matrix, EHT CQI feedback"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        848
+      ],
+      "note": "36.3.19 EHT SU transmission: reuse of EHT MU PPDU format, U-SIG PPDU Type And Compression Mode signaling"
+    }
+  ],
+  "covers": [
+    "80211be-2024:36.3.11",
+    "80211be-2024:36.3.12",
+    "80211be-2024:36.3.15",
+    "80211be-2024:36.3.16",
+    "80211be-2024:36.3.17",
+    "80211be-2024:36.3.19"
+  ],
+  "track": "modern-phy"
+}

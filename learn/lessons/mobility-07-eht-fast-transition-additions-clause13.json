@@ -1,0 +1,230 @@
+{
+  "id": "mobility-07-eht-fast-transition-additions-clause13",
+  "title": {
+    "en": "What EHT Adds to Roaming: Wi-Fi 7 Fast BSS Transition Extensions",
+    "zh": "EHT 给漫游带来了什么：Wi-Fi 7 快速 BSS 切换扩展"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Fast BSS Transition (FT, base clause 13) lets a client keep its security context warm so a roam between access points takes milliseconds instead of a full re-authentication. IEEE 802.11be does not rewrite this machinery — it generalizes it for Multi-Link Devices (MLDs). The single biggest change is terminology: where the base text said \"STA\" and \"AP\", the amendment introduces the neutral roles FT Originator (FTO) and FT Responder (FTR). An FTO can be a non-AP STA or a non-AP MLD; an FTR can be an AP or an AP MLD. This lesson surveys every Wi-Fi 7 delta that flows from that one idea.",
+      "zh": "快速 BSS 切换（FT，基础标准第 13 章）让客户端把安全上下文预先\"焐热\"，使其在不同接入点之间漫游时只需毫秒级时间，而不必重新完整认证一次。IEEE 802.11be 没有重写这套机制，而是把它推广到多链路设备（MLD）。最大的变化是术语：基础文本中称为 \"STA\" 和 \"AP\" 的地方，本修正案引入了中性角色——FT 发起方（FTO）和 FT 响应方（FTR）。FTO 可以是非 AP STA，也可以是非 AP MLD；FTR 可以是 AP，也可以是 AP MLD。本课将梳理由这一思路衍生出的每一处 Wi-Fi 7 增量。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why the rename matters: in MLO the security association is anchored on the MLD MAC address, not on a single radio's link address. By calling both endpoints \"FTO\" and \"FTR\", the amendment can carry one mobility-domain identity across all of an MLD's links — the Basic Multi-Link element rides in every FT frame to advertise that MLD MAC address (13.4.1).",
+      "zh": "为何改名很重要：在 MLO 中，安全关联锚定在 MLD MAC 地址上，而不是某一个射频的链路地址上。把两端都称作 \"FTO\" 和 \"FTR\" 后，本修正案就能让一个移动域身份贯穿 MLD 的所有链路——基本多链路元素（Basic Multi-Link element）随每一帧 FT 帧携带，用以通告该 MLD MAC 地址（13.4.1）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  FTO[\"FTO\\n(non-AP MLD)\"] -->|Over-the-Air| TGT[\"Target FTR\\n(AP MLD)\"]\n  FTO -->|Over-the-DS| CUR[\"Current FTR\"]\n  CUR -->|RRB over DS| TGT\n  TGT -->|PMK-R1 + MLO keys| FTO",
+      "zh": "flowchart LR\n  FTO[\"FTO\\n（非 AP MLD）\"] -->|空口| TGT[\"目标 FTR\\n（AP MLD）\"]\n  FTO -->|经 DS| CUR[\"当前 FTR\"]\n  CUR -->|RRB 经 DS| TGT\n  TGT -->|PMK-R1 + MLO 密钥| FTO"
+    },
+    {
+      "type": "prose",
+      "en": "The key-holder architecture (13.2) is unchanged in shape but extended in duties. The R0KH and R1KH still live in the AP/AP MLD SME and the S0KH/S1KH in the STA/non-AP MLD SME (13.2.1, 13.2.3). What grows is the R1KH's distribution job (13.2.2): for MLO it must hand out the GTKs and IGTKs — and, when enabled, the BIGTKs — for every setup link to the connected non-AP MLD, not just one set per STA. Capability advertisement (13.3) adds an MLD rule: via the MLD synchronization service, all APs affiliated with an AP MLD must advertise the same MDE and at least one common FT AKM.",
+      "zh": "密钥持有者架构（13.2）形态未变，但职责扩展了。R0KH 和 R1KH 仍位于 AP/AP MLD 的 SME 中，S0KH/S1KH 仍位于 STA/非 AP MLD 的 SME 中（13.2.1、13.2.3）。增加的是 R1KH 的分发任务（13.2.2）：在 MLO 下，它必须为每条建立的链路向所连接的非 AP MLD 下发 GTK 和 IGTK——并在启用时下发 BIGTK——而不再是每个 STA 仅一组密钥。能力通告（13.3）新增一条 MLD 规则：通过 MLD 同步服务，隶属于同一 AP MLD 的所有 AP 必须通告相同的 MDE，以及至少一个共同的 FT AKM。"
+    },
+    {
+      "type": "prose",
+      "en": "The FT initial mobility-domain association (13.4) is the first handshake that arms FT. In an RSN (13.4.2), the non-AP MLD includes the Basic Multi-Link element in every Authentication and (Re)Association frame, then runs an FT 4-way handshake whose message 3 now carries per-link MLO GTK / MLO IGTK / MLO BIGTK subelements keyed to the MLD MAC address. An AP MLD rejects a mismatched MDE with STATUS_INVALID_MDE, or a non-FT AKM with STATUS_INVALID_AKMP. In a non-RSN (13.4.3) the same Multi-Link element rides along, but no keys are derived — the parties simply reach State 4 for data.",
+      "zh": "FT 初始移动域关联（13.4）是激活 FT 的第一次握手。在 RSN 中（13.4.2），非 AP MLD 在每一帧认证帧和（重）关联帧中都包含基本多链路元素，随后执行 FT 四次握手，其第 3 条消息如今携带按链路区分、并以 MLD MAC 地址为密钥索引的 MLO GTK / MLO IGTK / MLO BIGTK 子元素。AP MLD 对不匹配的 MDE 回以 STATUS_INVALID_MDE，对非 FT 的 AKM 回以 STATUS_INVALID_AKMP。在非 RSN 中（13.4.3），同样携带该多链路元素，但不派生任何密钥——双方只需进入 State 4 即可传输数据。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant F as FTO\n  participant T as Target FTR\n  F->>T: 1. Auth-Req (FTAA, RSNE[PMKR0Name], MDE, FTE[SNonce,R0KH-ID], ML elem)\n  T->>F: 2. Auth-Resp (FTE[ANonce,SNonce,R1KH-ID,R0KH-ID], ML elem)\n  F->>T: 3. Reassoc-Req (FTE[MIC], RIC-Request, ML elem)\n  T->>F: 4. Reassoc-Resp (FTE[MIC, MLO GTK/IGTK/BIGTK], RIC-Response, ML elem)",
+      "zh": "sequenceDiagram\n  participant F as FTO\n  participant T as 目标 FTR\n  F->>T: 1. 认证请求 (FTAA, RSNE[PMKR0Name], MDE, FTE[SNonce,R0KH-ID], 多链路元素)\n  T->>F: 2. 认证响应 (FTE[ANonce,SNonce,R1KH-ID,R0KH-ID], 多链路元素)\n  F->>T: 3. 重关联请求 (FTE[MIC], RIC-Request, 多链路元素)\n  T->>F: 4. 重关联响应 (FTE[MIC, MLO GTK/IGTK/BIGTK], RIC-Response, 多链路元素)"
+    },
+    {
+      "type": "prose",
+      "en": "After arming, a roam runs one of two protocols. The FT protocol (13.5) is used when no resource reservation is needed; the FT resource request protocol (13.6) is used when the FTO wants resources (e.g. QoS TSPECs) reserved before it arrives. Each can travel Over-the-Air (FTO talks directly to the target FTR) or Over-the-DS (FTO talks through its current FTR, which the Remote Request Broker forwards over the distribution system). Across all four variants the Wi-Fi 7 additions are the same shape: the Basic Multi-Link element is present when the target FTR is an AP MLD, and the final Reassociation Response delivers the per-link MLO GTK / MLO IGTK / MLO BIGTK.",
+      "zh": "激活之后，一次漫游会运行两种协议之一。FT 协议（13.5）用于无需预留资源的场景；FT 资源请求协议（13.6）用于 FTO 希望在到达之前预留资源（如 QoS 的 TSPEC）的场景。两者都可以走空口（FTO 直接与目标 FTR 通信）或经 DS（FTO 通过其当前 FTR 通信，再由远程请求代理在分发系统上转发）。在全部四种变体中，Wi-Fi 7 的新增内容形态一致：当目标 FTR 为 AP MLD 时携带基本多链路元素，且最终的重关联响应交付按链路区分的 MLO GTK / MLO IGTK / MLO BIGTK。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Address rule for MLO FT frames: when an FT Authentication, Reassociation, Authentication-Confirm, or Authentication-Ack frame includes the Basic Multi-Link element, its Address 1 (RA) and Address 2 (TA) are set as defined in clause 35.3.2 (the EHT MLD addressing rules) — not the simple SA/DA-to-BSSID mapping used for a single STA. Over-the-DS, the Target AP Address now carries the MAC address of the target FTR (the AP MLD MAC), not a per-BSS BSSID (13.5.3, 13.10).",
+      "zh": "MLO 下 FT 帧的地址规则：当 FT 认证帧、重关联帧、Authentication-Confirm 或 Authentication-Ack 帧包含基本多链路元素时，其 Address 1（RA）与 Address 2（TA）按第 35.3.2 章（EHT MLD 寻址规则）设置，而非单个 STA 使用的那种简单的 SA/DA 映射到 BSSID。经 DS 时，目标 AP 地址字段如今承载目标 FTR 的 MAC 地址（即 AP MLD 的 MAC），而不是某个 BSS 的 BSSID（13.5.3、13.10）。"
+    },
+    {
+      "type": "prose",
+      "en": "FT reassociation in an RSN (13.7.1) is where the FTO lands on the target. Wi-Fi 7 tightens validation to be per-link: when the target is an AP MLD, the FTO must check that each link's RSNE and RSNXE in the Reassociation Response match that link's Beacon/Probe Response (or the multi-link probe response), and that each affiliated AP MAC address matches too — otherwise the S1KH discards the response. Operating Channel Information (OCI) is verified against the link on which the frames were exchanged. On success the FTO opens its 802.1X Controlled Port and moves to State 4 with the new FTR while dropping to State 1 with the old one.",
+      "zh": "RSN 中的 FT 重关联（13.7.1）是 FTO 落到目标的环节。Wi-Fi 7 把校验收紧为按链路进行：当目标为 AP MLD 时，FTO 必须核对重关联响应中每条链路的 RSNE 与 RSNXE 是否与该链路的信标/探测响应（或多链路探测响应）一致，并核对每个隶属 AP 的 MAC 地址是否匹配——否则 S1KH 丢弃该响应。工作信道信息（OCI）则针对收发这些帧的链路进行校验。成功后，FTO 打开其 802.1X 受控端口并对新 FTR 进入 State 4，同时对旧 FTR 退回 State 1。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the four-message sequence, the S1KH state machine, the RRB, and the RIC",
+        "zh": "覆盖图：四消息序列、S1KH 状态机、RRB 与 RIC"
+      },
+      "en": "FT authentication sequence (13.8): four sets of FT elements form the four \"messages\". 13.8.1 (Overview) reframes the sequence as always FTO-initiated and target-FTR-answered, and adds the over-the-air MLO address-swap rule (message 3 mirrors message 1's Address 1/2; messages 2 and 4 swap them). 13.8.2 (first message) — the MDE's MDID and FT Capability/Policy come from the target AP or any AP affiliated with the target AP MLD. 13.8.3 (second message) — RSNE/MDE/FTE contents echo the target AP MLD's advertised values; R1KH-ID is the target FTR's. 13.8.4 (third message) — the MIC is computed over FTO MAC, target FTR MAC, transaction sequence number, RSNE, MDE, FTE, RIC-Request, RSNXE, and the non-AP STA MAC of each requested link in link-ID order when the Basic Multi-Link element is present. 13.8.5 (fourth message) — adds the MLO GTK / MLO IGTK / MLO BIGTK subelements (key-wrapped), and computes the MIC over the per-link RSNEs, RSNXEs, and AP MAC addresses in increasing link-ID order.\n\nState machines (13.9): 13.9.1 (Introduction) notes R0KH/R1KH/S1KH interactions with 802.1X occur within the SME and the Controlled Port opens without an EAP exchange; both refer to the target FTR and the FTO. 13.9.5 (S1KH state machine) — the Init variable restarts the S1KH when transitioning to a new FTR.\n\nRemote Request Broker (13.10): 13.10.1 (Overview) — the FTO reaches a target FTR through its current FTR; the FT Action frame now carries the target FTR MAC. 13.10.2 (RRB) — the RRB lives in each FTR's SME, forwarding at the current FTR and terminating at the target FTR; FTRs sharing an MDID must be reachable over the DS. 13.10.3 (Remote Request/Response frame) — transported current-FTR-to-target-FTR over the DS as an MSDU with EtherType 89-0d; the AP Address field is the current FTR MAC.\n\nResource request (13.11): 13.11.1 (General) — the FTO builds a Resource Information Container (RIC); in an RSNA, requests/responses are exchanged only after the PTK exists and are MIC-protected. 13.11.2 (RIC) — the RIC-Response lists one Resource Response per Resource Request, RDEs in request order; resource procedures may follow 11.5 or the EHT clause 35.3.8. 13.11.3 (creation/handling) — FTO and FTR procedures for requesting and allocating resources, all retargeted to the FTO/target-FTR roles.",
+      "zh": "FT 认证序列（13.8）：四组 FT 元素构成四条\"消息\"。13.8.1（概述）将该序列重新表述为始终由 FTO 发起、由目标 FTR 应答，并新增空口 MLO 地址互换规则（消息 3 沿用消息 1 的 Address 1/2；消息 2 和 4 互换之）。13.8.2（第一条消息）——MDE 的 MDID 及 FT 能力/策略取自目标 AP 或隶属目标 AP MLD 的任一 AP。13.8.3（第二条消息）——RSNE/MDE/FTE 内容回显目标 AP MLD 通告的值；R1KH-ID 为目标 FTR 的标识。13.8.4（第三条消息）——MIC 在 FTO MAC、目标 FTR MAC、事务序号、RSNE、MDE、FTE、RIC-Request、RSNXE，以及（当存在基本多链路元素时）按链路 ID 顺序排列的各请求链路非 AP STA MAC 之上计算。13.8.5（第四条消息）——新增（经密钥包裹的）MLO GTK / MLO IGTK / MLO BIGTK 子元素，并在按链路 ID 递增排列的各链路 RSNE、RSNXE 和 AP MAC 地址之上计算 MIC。\n\n状态机（13.9）：13.9.1（引言）指出 R0KH/R1KH/S1KH 与 802.1X 的交互发生在 SME 内，且受控端口无需 EAP 交换即可打开；二者均指向目标 FTR 与 FTO。13.9.5（S1KH 状态机）——Init 变量在转移到新 FTR 时重启 S1KH。\n\n远程请求代理（13.10）：13.10.1（概述）——FTO 通过其当前 FTR 触达目标 FTR；FT Action 帧如今携带目标 FTR 的 MAC。13.10.2（RRB）——RRB 位于每个 FTR 的 SME 中，在当前 FTR 处转发、在目标 FTR 处终结；共享同一 MDID 的各 FTR 必须可经 DS 触达。13.10.3（远程请求/响应帧）——以 EtherType 89-0d 的 MSDU 在 DS 上从当前 FTR 传至目标 FTR；AP Address 字段为当前 FTR 的 MAC。\n\n资源请求（13.11）：13.11.1（总则）——FTO 构建资源信息容器（RIC）；在 RSNA 中，请求/响应仅在 PTK 存在后交换并受 MIC 保护。13.11.2（RIC）——RIC-Response 为每个 Resource Request 列出一个 Resource Response，RDE 顺序与请求一致；资源过程可遵循 11.5 或 EHT 的 35.3.8 章。13.11.3（创建与处理）——FTO 与 FTR 用于请求和分配资源的过程，全部改写到 FTO/目标 FTR 角色之上。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          464,
+          465,
+          466,
+          467,
+          468,
+          469,
+          470,
+          471,
+          472
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The throughline for the whole clause: 802.11be keeps the FT key hierarchy, the four-message authentication, the RRB, and the RIC exactly as they were — it just teaches them to speak MLD. Every frame can now carry a Basic Multi-Link element, identities are anchored on the MLD MAC address, group keys become per-link MLO GTK / MLO IGTK / MLO BIGTK, and validation goes per-link. That is the entire Wi-Fi 7 delta to roaming.",
+      "zh": "贯穿整章的主线：802.11be 完整保留了 FT 密钥层级、四消息认证、RRB 与 RIC——只是教会它们\"说\"MLD。如今每一帧都可携带基本多链路元素，身份锚定在 MLD MAC 地址上，组密钥变为按链路的 MLO GTK / MLO IGTK / MLO BIGTK，校验也改为按链路进行。这就是 Wi-Fi 7 给漫游带来的全部增量。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        447
+      ],
+      "note": "13.1 Overview (FTO/FTR roles, two FT protocols, over-the-air vs over-the-DS); 13.2.1 key holder introduction"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        448
+      ],
+      "note": "13.2.2 authenticator key holders (R1KH distributes MLO GTK/IGTK/BIGTK per setup link); 13.2.3 supplicant key holders; 13.3 capability/policy advertisement (common MDE+FT AKM across AP MLD); 13.4.1 overview (Basic ML element in all FT frames)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        449,
+        450,
+        451
+      ],
+      "note": "13.4.2 FT initial mobility-domain association in an RSN (Multi-Link element, FT 4-way handshake with MLO keys, STATUS_INVALID_MDE/AKMP)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        451,
+        452
+      ],
+      "note": "13.4.3 FT initial mobility-domain association in a non-RSN (Multi-Link element, State 4)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        452,
+        453,
+        454
+      ],
+      "note": "13.5.1 FT protocol overview; 13.5.2 over-the-air FT protocol in an RSN (Figure 13-5, address rules via 35.3.2)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        455,
+        456,
+        457
+      ],
+      "note": "13.5.3 over-the-DS FT protocol in an RSN (Figure 13-6/13-7, MLME-REMOTE-REQUEST, target FTR MAC); 13.6.1 resource request overview"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        458,
+        459
+      ],
+      "note": "13.6.2 over-the-air FT with resource request (Authentication-Confirm/Ack, RIC-Request/Response, MLO keys)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        460,
+        461
+      ],
+      "note": "13.6.3 over-the-DS FT with resource request (FT Confirm/FT Ack); 13.7.1 FT reassociation in an RSN"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        462,
+        463,
+        464
+      ],
+      "note": "13.7.1 FT reassociation per-link RSNE/RSNXE/AP-MAC validation, OCI, State 4/State 1"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        464,
+        465,
+        466,
+        467,
+        468
+      ],
+      "note": "13.8.1 overview + MLO address swap; 13.8.2 first message; 13.8.3 second message; 13.8.4 third message MIC; 13.8.5 fourth message MLO GTK/IGTK/BIGTK + per-link MIC"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        468,
+        469
+      ],
+      "note": "13.9.1 state machine introduction (Controlled Port without EAP); 13.9.5 S1KH state machine (Init restarts on new FTR)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        469,
+        470,
+        471
+      ],
+      "note": "13.10.1 RRB overview; 13.10.2 RRB (forwarding/termination, MDID reachability); 13.10.3 Remote Request/Response frame (EtherType 89-0d, current FTR MAC)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        471,
+        472
+      ],
+      "note": "13.11.1 RIC general; 13.11.2 RIC (RIC-Response, 35.3.8); 13.11.3 creation/handling FTO+FTR procedures"
+    }
+  ],
+  "covers": [
+    "80211be-2024:13.1",
+    "80211be-2024:13.2.1",
+    "80211be-2024:13.2.2",
+    "80211be-2024:13.2.3",
+    "80211be-2024:13.3",
+    "80211be-2024:13.4.1",
+    "80211be-2024:13.4.2",
+    "80211be-2024:13.4.3",
+    "80211be-2024:13.5.1",
+    "80211be-2024:13.5.2",
+    "80211be-2024:13.5.3",
+    "80211be-2024:13.6.1",
+    "80211be-2024:13.6.2",
+    "80211be-2024:13.6.3",
+    "80211be-2024:13.7.1",
+    "80211be-2024:13.8.1",
+    "80211be-2024:13.8.2",
+    "80211be-2024:13.8.3",
+    "80211be-2024:13.8.4",
+    "80211be-2024:13.8.5",
+    "80211be-2024:13.9.1",
+    "80211be-2024:13.9.5",
+    "80211be-2024:13.10.1",
+    "80211be-2024:13.10.2",
+    "80211be-2024:13.10.3",
+    "80211be-2024:13.11.1",
+    "80211be-2024:13.11.2",
+    "80211be-2024:13.11.3"
+  ],
+  "track": "mobility"
+}

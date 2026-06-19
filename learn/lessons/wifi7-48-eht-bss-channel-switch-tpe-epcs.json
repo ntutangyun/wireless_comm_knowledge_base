@@ -1,0 +1,130 @@
+{
+  "id": "wifi7-48-eht-bss-channel-switch-tpe-epcs",
+  "title": {
+    "en": "Running an EHT BSS: Channel Switching, Transmit Power Envelope and EPCS Priority Access",
+    "zh": "运行 EHT BSS：信道切换、发射功率包络与 EPCS 优先接入"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "An EHT (Wi-Fi 7) BSS reuses the operational machinery of earlier amendments but stretches it to fit much wider channels and multi-link devices. This lesson covers three day-to-day operational topics for running an EHT BSS: how an EHT AP moves its BSS to a new channel (including up to 320 MHz and with punctured subchannels), how it advertises transmit-power limits with the Transmit Power Envelope element, and how Emergency Preparedness Communications Services (EPCS) priority access lets authorized users get faster medium access when the network is congested.",
+      "zh": "EHT（Wi-Fi 7）BSS 沿用了早期修订版的运行机制，但将其扩展到更宽的信道和多链路设备。本课讲解运行 EHT BSS 的三个日常操作主题：EHT AP 如何把它的 BSS 迁移到新信道（包括最高 320 MHz 以及带打孔子信道的情形）、它如何用发射功率包络元素（Transmit Power Envelope element）通告发射功率上限，以及紧急准备通信服务（EPCS）优先接入如何让获授权的用户在网络拥塞时更快接入介质。"
+    },
+    {
+      "type": "prose",
+      "en": "Channel switching for an EHT BSS (35.15.3) builds on the VHT rules in 11.38.4 and adds a key requirement: when an AP announces a switch to a width wider than 160 MHz, or to a channel that includes at least one punctured 20 MHz subchannel, the announcement must carry a Bandwidth Indication. In a Channel Switch Announcement (CSA) or Extended CSA frame this is the Bandwidth Indication element; when the switch is carried inside a Channel Switch Wrapper element, it is the Bandwidth Indication subelement. Either way, the new, wider bandwidth could not be expressed by the legacy Wide Bandwidth Channel Switch field alone, so a Wi-Fi 7-aware indicator is required.",
+      "zh": "EHT BSS 的信道切换（35.15.3）建立在 11.38.4 的 VHT 规则之上，并新增一条关键要求：当 AP 通告切换到宽于 160 MHz 的带宽，或切换到含有至少一个打孔的 20 MHz 子信道的信道时，该通告必须携带带宽指示（Bandwidth Indication）。在信道切换通告（CSA）帧或扩展 CSA 帧中，这是带宽指示元素；当切换信息封装在信道切换包裹元素（Channel Switch Wrapper element）中时，则是带宽指示子元素。无论哪种方式，这种新的更宽带宽无法仅靠传统的宽带宽信道切换字段表达，因此需要一个支持 Wi-Fi 7 的指示器。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Precedence rule: if both a Bandwidth Indication and a legacy Wide Bandwidth Channel Switch field are present, an EHT STA that reads bandwidth from the Bandwidth Indication must ignore the Wide Bandwidth field. The legacy field then only advertises the maximum bandwidth that includes the primary channel and excludes any punctured 20 MHz subchannels, it is always less than the true BSS bandwidth, and the BSS must not operate as 80+80 MHz.",
+      "zh": "优先级规则：若带宽指示与传统宽带宽信道切换字段同时存在，从带宽指示读取带宽的 EHT STA 必须忽略宽带宽字段。此时该传统字段仅通告包含主信道、且不覆盖任何打孔 20 MHz 子信道的最大带宽，它始终小于真实的 BSS 带宽，并且该 BSS 不得以 80+80 MHz 方式运行。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[EHT AP plans channel switch] --> B{Width > 160 MHz<br/>or punctured?}\n  B -- No --> C[Legacy CSA / Wide BW field only]\n  B -- Yes --> D[Must include Bandwidth Indication]\n  D --> E[STA reads width from<br/>Bandwidth Indication]\n  E --> F[Ignore Wide BW field<br/>for bandwidth]",
+      "zh": "flowchart TD\n  A[EHT AP 计划信道切换] --> B{带宽 > 160 MHz<br/>或有打孔?}\n  B -- 否 --> C[仅用传统 CSA / 宽带宽字段]\n  B -- 是 --> D[必须包含带宽指示]\n  D --> E[STA 从带宽指示<br/>读取带宽]\n  E --> F[忽略宽带宽字段<br/>用于带宽判断]"
+    },
+    {
+      "type": "widget",
+      "widget": "channel-width",
+      "params": {}
+    },
+    {
+      "type": "prose",
+      "en": "EHT operation with the Transmit Power Envelope (TPE) element (35.15.4) extends the base rules in 10.22.4 to describe the regulatory power limits for very wide channels. The new piece is the Extension Maximum Transmit Power field. An AP must include it when operating in the 6 GHz band with a 320 MHz BSS and a Maximum Transmit Power Interpretation of 0 or 2 (local-max / regulatory EIRP), in which case the Maximum Transmit Power Count is set to 3 so the element carries a 'Maximum Transmit Power For X MHz' entry for every width X (20, 40, 80, 160/80+80, 320) up to the operating width.",
+      "zh": "EHT 与发射功率包络（TPE）元素的配合（35.15.4）扩展了 10.22.4 的基础规则，用于描述超宽信道的法规功率上限。新增的部分是扩展最大发射功率字段（Extension Maximum Transmit Power field）。当 AP 在 6 GHz 频段以 320 MHz BSS 运行、且最大发射功率解读子字段为 0 或 2（本地最大值／法规 EIRP）时，必须包含该字段；此时最大发射功率计数字段（Maximum Transmit Power Count）置为 3，使该元素为不超过工作带宽的每个带宽 X（20、40、80、160/80+80、320）携带一条“X MHz 的最大发射功率”条目。"
+    },
+    {
+      "type": "prose",
+      "en": "The TPE element also handles a subtler case (Interpretation 1 or 3, the PSD-based forms). When an AP in 5 GHz or 6 GHz advertises a wider BSS bandwidth to EHT STAs than the non-EHT bandwidth it advertises to legacy STAs, the Extension Maximum Transmit Power field carries the per-subchannel maximum transmit PSD for exactly the extra 20 MHz subchannels, those inside the EHT operating channel but outside the non-EHT operating channel. The base Transmit Power Information and Maximum Transmit Power fields are computed for the non-EHT width, so a legacy STA reads only what applies to it while an EHT STA gets the full picture.",
+      "zh": "TPE 元素还处理一种更细微的情形（解读值 1 或 3，即基于功率谱密度 PSD 的形式）。当 5 GHz 或 6 GHz 的 AP 向 EHT STA 通告的 BSS 带宽宽于它向传统 STA 通告的非 EHT 带宽时，扩展最大发射功率字段恰好为这些额外的 20 MHz 子信道（位于 EHT 工作信道内但在非 EHT 工作信道之外）携带逐子信道的最大发射 PSD。基础的发射功率信息字段与最大发射功率字段按非 EHT 带宽计算，因此传统 STA 只读取适用于自身的部分，而 EHT STA 则获得完整信息。"
+    },
+    {
+      "type": "prose",
+      "en": "EPCS priority access (35.16.1) gives authorized users a better chance of getting on the air during congestion, for example emergency responders. It is a multi-link-device (MLD) feature: an EPCS AP MLD and an EPCS non-AP MLD both set dot11EHTEPCSPriorityAccessActivated to true and advertise the EPCS Priority Access Support subfield in their EHT Capabilities element. Authorization is checked during (re)association, optionally via the SSPN interface and interworking procedures, and the result is recorded so it follows the device across an ESS during reassociation.",
+      "zh": "EPCS 优先接入（35.16.1）让获授权的用户（例如应急救援人员）在拥塞期间有更高几率接入介质。它是一项多链路设备（MLD）特性：EPCS AP MLD 与 EPCS non-AP MLD 都把 dot11EHTEPCSPriorityAccessActivated 置为 true，并在各自的 EHT 能力元素（EHT Capabilities element）中通告 EPCS 优先接入支持子字段。授权在（重）关联期间核验，可选地经由 SSPN 接口与互通流程完成，结果会被记录，使其在 ESS 内重关联时随设备一同迁移。"
+    },
+    {
+      "type": "prose",
+      "en": "EPCS priority access operation (35.16.2) is a two-state setup, enabled or torn down, started by the SME on demand from a higher layer. After ML setup it begins torn down. Either side may initiate: an EPCS Priority Access Enable Request is sent over any enabled link (only after RSNA with management frame protection is in place), the peer replies with an Enable Response, and on SUCCESS both MLDs move to enabled across all setup links. The AP MLD verifies the non-AP MLD's authority before responding, returning status codes such as SUCCESS, EPCS_DENIED_UNAUTHORIZED, or EPCS_DENIED_VERIFICATION_FAILURE. Teardown, by either side or on disassociation, returns both ends to the torn-down state.",
+      "zh": "EPCS 优先接入操作（35.16.2）是一种二态建立机制——已启用或已拆除——由 SME 在更高层按需发起。多链路（ML）建立完成后初始为已拆除态。任何一方均可发起：在任一已启用链路上发送 EPCS 优先接入启用请求帧（仅在已建立带管理帧保护的 RSNA 之后），对端回复启用响应帧，状态为 SUCCESS 时双方 MLD 在所有已建立链路上转为已启用态。AP MLD 在响应前核验 non-AP MLD 的授权，返回如 SUCCESS、EPCS_DENIED_UNAUTHORIZED 或 EPCS_DENIED_VERIFICATION_FAILURE 等状态码。拆除（由任一方发起或在去关联时）使两端回到已拆除态。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant N as EPCS non-AP MLD\n  participant A as EPCS AP MLD\n  N->>A: Enable Request (over enabled link)\n  A->>A: Verify authority\n  A-->>N: Enable Response (SUCCESS)\n  Note over N,A: Both enabled on all setup links\n  N->>A: Teardown frame\n  Note over N,A: Both torn down",
+      "zh": "sequenceDiagram\n  participant N as EPCS non-AP MLD\n  participant A as EPCS AP MLD\n  N->>A: 启用请求（经已启用链路）\n  A->>A: 核验授权\n  A-->>N: 启用响应（SUCCESS）\n  Note over N,A: 双方在所有已建立链路启用\n  N->>A: 拆除帧\n  Note over N,A: 双方已拆除"
+    },
+    {
+      "type": "prose",
+      "en": "Once enabled, the EPCS priority access procedure (35.16.3) is where the priority actually happens. An enabled non-AP STA updates its dot11EDCATable and dot11MUEDCATable to the EDCA and MU EDCA parameter sets the AP MLD supplied in the EPCS Priority Access Multi-Link element (or the Table 9-194 defaults), then runs normal EDCA contention with those values while ignoring the EDCA parameters carried in Beacons and Probe Responses. The AP MLD, for its part, must announce EDCA parameters that actually give enabled STAs higher priority, typically lower CWmin/CWmax, so their odds of winning the medium rise. A maintenance procedure lets the AP MLD push unsolicited parameter updates to STAs that advertised support for them.",
+      "zh": "一旦启用，EPCS 优先接入流程（35.16.3）才真正产生优先级。已启用的 non-AP STA 把它的 dot11EDCATable 与 dot11MUEDCATable 更新为 AP MLD 在 EPCS 优先接入多链路元素（EPCS Priority Access Multi-Link element）中提供的 EDCA 与 MU EDCA 参数集（或 Table 9-194 默认值），随后用这些值进行常规 EDCA 竞争，同时忽略 Beacon 和探测响应帧中携带的 EDCA 参数。AP MLD 一方则必须通告能切实赋予已启用 STA 更高优先级的 EDCA 参数（通常是更低的 CWmin/CWmax），从而提高它们争得介质的几率。维护流程允许 AP MLD 向已通告支持的 STA 主动推送非请求式参数更新。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the five EHT BSS-operation clauses taught here",
+        "zh": "覆盖映射：本课讲解的五个 EHT BSS 运行条款"
+      },
+      "en": "35.15.3 (Channel switching methods for an EHT BSS) layers onto VHT's 11.38.4 and mandates a Bandwidth Indication element/subelement when announcing widths above 160 MHz or with punctured subchannels, with precedence over the legacy Wide Bandwidth Channel Switch field. 35.15.4 (EHT operation with the Transmit Power Envelope element) extends 10.22.4 with the Extension Maximum Transmit Power field: mandatory for 6 GHz 320 MHz operation (Count=3, Interpretation 0/2) and for advertising the extra subchannels in PSD modes (Interpretation 1/3) when the EHT width exceeds the non-EHT width. 35.16.1 (General) defines EPCS as a congestion-time priority mechanism for authorized MLDs, gated by dot11EHTEPCSPriorityAccessActivated and the EHT Capabilities subfield, with authorization checked during (re)association. 35.16.2 (EPCS priority access operation) is the enabled/torn-down state machine, with setup procedures at the initiating non-AP MLD, initiating AP MLD, receiving AP MLD, and receiving non-AP MLD, all using Enable Request/Response and Teardown frames over RSNA-protected links. 35.16.3 (EPCS priority access procedure) is the actual priority treatment: EDCA/MU EDCA parameter management from the EPCS Priority Access Multi-Link element, the AP MLD's duty to announce higher-priority parameters, and unsolicited maintenance updates.",
+      "zh": "35.15.3（EHT BSS 的信道切换方法）叠加在 VHT 的 11.38.4 之上，规定在通告高于 160 MHz 的带宽或含打孔子信道时必须使用带宽指示元素／子元素，并优先于传统宽带宽信道切换字段。35.15.4（EHT 与发射功率包络元素的配合）以扩展最大发射功率字段扩展 10.22.4：在 6 GHz 320 MHz 运行时（计数=3，解读 0/2）以及在 PSD 模式下（解读 1/3）当 EHT 带宽超过非 EHT 带宽以通告额外子信道时为强制要求。35.16.1（概述）将 EPCS 定义为面向获授权 MLD 的拥塞期优先机制，由 dot11EHTEPCSPriorityAccessActivated 与 EHT 能力子字段把关，授权在（重）关联期间核验。35.16.2（EPCS 优先接入操作）是已启用／已拆除状态机，含发起方 non-AP MLD、发起方 AP MLD、接收方 AP MLD 与接收方 non-AP MLD 的建立流程，均在受 RSNA 保护的链路上使用启用请求／响应帧与拆除帧。35.16.3（EPCS 优先接入流程）是真正的优先级处理：依据 EPCS 优先接入多链路元素进行 EDCA/MU EDCA 参数管理、AP MLD 通告更高优先级参数的职责，以及非请求式维护更新。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          645,
+          646,
+          647,
+          651,
+          653
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        645,
+        646
+      ],
+      "note": "35.15.3 channel switching for EHT BSS (Bandwidth Indication element/subelement, precedence over Wide Bandwidth Channel Switch); 35.15.4 EHT operation with Transmit Power Envelope (Extension Maximum Transmit Power field, 320 MHz, PSD modes)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        647
+      ],
+      "note": "35.16.1 EPCS general framing; 35.16.2.1 enabled/torn-down states and RSNA precondition"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        648,
+        649,
+        650,
+        651
+      ],
+      "note": "35.16.2.2 setup procedures: initiating non-AP MLD, initiating AP MLD, receiving AP MLD, receiving non-AP MLD; Enable Request/Response, Teardown, status codes"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        651,
+        652,
+        653
+      ],
+      "note": "35.16.3 EPCS priority access procedure: EDCA/MU EDCA parameter management, AP higher-priority announcement, unsolicited maintenance updates"
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.15.3",
+    "80211be-2024:35.15.4",
+    "80211be-2024:35.16.1",
+    "80211be-2024:35.16.2",
+    "80211be-2024:35.16.3"
+  ],
+  "track": "wifi7-eht"
+}

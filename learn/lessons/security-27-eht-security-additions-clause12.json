@@ -1,0 +1,269 @@
+{
+  "id": "security-27-eht-security-additions-clause12",
+  "title": {
+    "en": "What EHT Adds to Security: Wi-Fi 7 RSNA, SAE and Key-Management Extensions",
+    "zh": "EHT 给安全带来了什么：Wi-Fi 7 RSNA、SAE 与密钥管理扩展"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 12 (Security) is one of the most stable parts of IEEE 802.11. The Wi-Fi 7 amendment (802.11be-2024) does not rewrite it — it inserts and edits paragraphs to answer one question: when two Multi-Link Devices (MLDs) talk over several links at once, how does the existing RSNA security machinery still work? The unifying rule is set in 12.1: for Multi-Link Operation (MLO), security associations are negotiated between peer MLDs, not between individual STAs, and the term 'STA or MLD' captures whether a requirement applies to a single STA or to a whole MLD. The entity that manages an MLD is its SME. This lesson surveys exactly which clause-12 subclauses 802.11be touches and what each one adds.",
+      "zh": "第 12 条（安全）是 IEEE 802.11 中最稳定的部分之一。Wi-Fi 7 修正案（802.11be-2024）并没有重写它，而是通过插入和修改段落来回答一个问题：当两个多链路设备（MLD）同时在多条链路上通信时，现有的 RSNA 安全机制如何继续工作？统一规则写在 12.1 中：对于多链路操作（MLO），安全关联是在对等 MLD 之间协商的，而不是在单个 STA 之间；术语“STA 或 MLD”用于表明某项要求是针对单个 STA 还是针对整个 MLD。管理 MLD 的实体是它的 SME。本课将梳理 802.11be 究竟改动了第 12 条的哪些子条款，以及每一处的新增内容。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The single biggest idea: in MLO, security binds to the MLD MAC address, not to a per-link STA address. RSNA establishment (12.2.4) requires that the MAC address in the body of authentication/association frames and inside EAPOL-Key frames be the MLD MAC address, and EAPOL PDUs between Supplicant and Authenticator use MLD MAC addresses as SA/DA. One 4-way handshake on one link protects traffic on all setup links.",
+      "zh": "最核心的思想是：在 MLO 中，安全绑定到 MLD MAC 地址，而不是每条链路的 STA 地址。RSNA 建立（12.2.4）要求：认证/关联帧帧体以及 EAPOL-Key 帧内部出现的 MAC 地址必须是 MLD MAC 地址；Supplicant 与 Authenticator 之间的 EAPOL PDU 以 MLD MAC 地址作为 SA/DA。在一条链路上完成的一次 4 次握手即可保护所有已建立链路上的流量。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Non-AP MLD SME] -->|one 4-way handshake| B[AP MLD SME]\n  B --> C[PTKSA per MLD pair]\n  C --> D[Link 1 GTKSA]\n  C --> E[Link 2 GTKSA]\n  C --> F[Link 3 GTKSA]\n  D --> G[Encrypt with MLD MAC in AAD/nonce]\n  E --> G\n  F --> G",
+      "zh": "flowchart TD\n  A[非 AP MLD 的 SME] -->|一次 4 次握手| B[AP MLD 的 SME]\n  B --> C[每对 MLD 一个 PTKSA]\n  C --> D[链路 1 GTKSA]\n  C --> E[链路 2 GTKSA]\n  C --> F[链路 3 GTKSA]\n  D --> G[加密时 AAD/nonce 用 MLD MAC]\n  E --> G\n  F --> G"
+    },
+    {
+      "type": "prose",
+      "en": "Several framework subclauses gain MLD wording. Operating Channel Validation (12.2.10): an MLD advertises OCVC through all of its affiliated STAs, determines channel information from the OCI on the link used for the 4-way handshake, and afterwards validates from protected Beacons on each setup link. MAC privacy (12.2.11): when dot11MACPrivacyActivated is true, the non-AP MLD's SME manages randomized addresses for each affiliated STA, must not change them while associated, and resets sequence-number and scrambler state when an address does change. Identifying a changing-MAC device (12.2.13) extends both recognition mechanisms — the device ID (assigned by the AP MLD during the 4-way handshake or FILS) and the identifiable random MAC address / IRM (a fresh random MLD MAC the non-AP MLD supplies) — so an AP MLD can still recognise a returning client whose MLD MAC address has changed for privacy.",
+      "zh": "若干框架子条款增加了 MLD 措辞。操作信道验证（12.2.10）：MLD 通过其所有附属 STA 通告 OCVC，从用于 4 次握手的链路上的 OCI 确定信道信息，此后在每条已建立链路上从受保护信标中验证。MAC 隐私（12.2.11）：当 dot11MACPrivacyActivated 为真时，非 AP MLD 的 SME 为每个附属 STA 管理随机化地址，关联期间不得更改，并在地址确实更改时重置序列号空间和扰码器状态。识别 MAC 地址变化的设备（12.2.13）扩展了两种识别机制——设备 ID（由 AP MLD 在 4 次握手或 FILS 期间分配）和可识别随机 MAC 地址（IRM，由非 AP MLD 提供的新随机 MLD MAC）——使得 AP MLD 即便客户端为隐私而更换了 MLD MAC 地址，仍能识别返回的客户端。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "SAE was reworded for MLO too. 12.4.1 renames the parties to 'SAE entities': between two STAs they are identified by STA MAC addresses, between two MLDs by MLD MAC addresses. The password representation (12.4.3), finite cyclic groups (12.4.4, still mandating group 19), the SAE protocol (12.4.5), anti-clogging tokens (12.4.6) and the SAE state machine (12.4.8) all simply swap 'STA' for the more general 'SAE entity' — the cryptography is unchanged, only who the endpoints are.",
+      "zh": "SAE 也为 MLO 做了措辞调整。12.4.1 将参与方更名为“SAE 实体”：两个 STA 之间用 STA MAC 地址标识，两个 MLD 之间用 MLD MAC 地址标识。密码表示（12.4.3）、有限循环群（12.4.4，仍强制要求群 19）、SAE 协议（12.4.5）、防拥塞令牌（12.4.6）以及 SAE 有限状态机（12.4.8）都只是把“STA”替换为更通用的“SAE 实体”——密码学本身不变，变的只是端点是谁。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 170\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"20\" y=\"30\" width=\"150\" height=\"110\" rx=\"6\"/><text x=\"95\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">Non-AP MLD</text><rect x=\"290\" y=\"30\" width=\"150\" height=\"110\" rx=\"6\"/><text x=\"365\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">AP MLD</text><line x1=\"170\" y1=\"55\" x2=\"290\" y2=\"55\"/><line x1=\"170\" y1=\"85\" x2=\"290\" y2=\"85\"/><line x1=\"170\" y1=\"115\" x2=\"290\" y2=\"115\"/><text x=\"230\" y=\"50\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Link 1</text><text x=\"230\" y=\"80\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Link 2</text><text x=\"230\" y=\"110\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Link 3</text><text x=\"230\" y=\"158\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">One PTKSA per MLD pair; per-link GTKSA/IGTKSA/BIGTKSA</text></svg>",
+      "caption": {
+        "en": "Per-MLD pairwise security with per-link group keys: a single PTKSA covers the MLD pair, while each setup link keeps its own GTKSA, IGTKSA and BIGTKSA.",
+        "zh": "每对 MLD 共用一个成对安全关联，组密钥按链路区分：单个 PTKSA 覆盖整对 MLD，而每条已建立链路保留各自的 GTKSA、IGTKSA 和 BIGTKSA。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map A — framework, pre-RSNA auth, SAE and the data ciphers (12.1, 12.2.4, 12.2.10, 12.2.11, 12.2.13, 12.3.3, 12.4.1, 12.4.3, 12.4.4, 12.4.5, 12.4.6, 12.4.8, 12.5.2, 12.5.4)",
+        "zh": "覆盖地图 A——框架、Pre-RSNA 认证、SAE 与数据加密协议（12.1、12.2.4、12.2.10、12.2.11、12.2.13、12.3.3、12.4.1、12.4.3、12.4.4、12.4.5、12.4.6、12.4.8、12.5.2、12.5.4）"
+      },
+      "en": "12.1 Conventions — adds the MLO rule that SAs are negotiated between peer MLDs and that the SME manages the MLD. 12.2.4 RSNA establishment — MLD MAC address used in auth/association frame bodies and EAPOL-Key frames; EAPOL PDUs use MLD MAC SA/DA. 12.2.10 OCV — MLD advertises OCVC via all affiliated STAs; OCI taken from the handshake link, later from protected Beacons per setup link. 12.2.11 MAC privacy — non-AP MLD SME manages affiliated-STA randomized addresses, no change while associated, sequence/scrambler reset on change. 12.2.13 changing-MAC identification — device ID and IRM mechanisms extended to AP MLD / non-AP MLD using the 4-way handshake or FILS. 12.3.3 pre-RSNA authentication — Open System authentication exchange done between affiliated STA and affiliated AP, MLD MAC carried in the Basic Multi-Link element. 12.4.1 SAE overview, 12.4.3 password representation, 12.4.4 finite cyclic groups (group 19 mandatory), 12.4.5 SAE protocol, 12.4.6 anti-clogging tokens, 12.4.8 SAE state machine — all reworded from 'STA' to 'SAE entity' (MLD MAC addresses between MLDs). 12.5.2 CCMP and 12.5.4 GCMP — for an individually addressed Data frame between an AP MLD and non-AP MLD, the transmitting MLD MAC address is used to build the AAD and CCM/GCM nonce, a single PN space per PTKSA spans all affiliated STAs, and a single replay-counter set per PTKSA; an EHT RSNA STA shall support GCMP-256.",
+      "zh": "12.1 约定——新增 MLO 规则：SA 在对等 MLD 之间协商，SME 管理 MLD。12.2.4 RSNA 建立——认证/关联帧体和 EAPOL-Key 帧中使用 MLD MAC 地址；EAPOL PDU 以 MLD MAC 作为 SA/DA。12.2.10 OCV——MLD 经所有附属 STA 通告 OCVC，OCI 取自握手所在链路，之后取自每条已建立链路的受保护信标。12.2.11 MAC 隐私——非 AP MLD 的 SME 管理附属 STA 的随机地址，关联期间不变，地址变化时重置序列号/扰码器。12.2.13 MAC 变化识别——设备 ID 与 IRM 机制扩展到 AP MLD / 非 AP MLD，借助 4 次握手或 FILS。12.3.3 Pre-RSNA 认证——开放系统认证在附属 STA 与附属 AP 之间完成，MLD MAC 携带于基本多链路元素中。12.4.1 SAE 概述、12.4.3 口令表示、12.4.4 有限循环群（强制群 19）、12.4.5 SAE 协议、12.4.6 防拥塞令牌、12.4.8 SAE 状态机——均把“STA”改为“SAE 实体”（MLD 之间用 MLD MAC 地址）。12.5.2 CCMP 与 12.5.4 GCMP——对于 AP MLD 与非 AP MLD 之间的单播数据帧，用发送方 MLD MAC 地址构造 AAD 和 CCM/GCM nonce，每个 PTKSA 跨所有附属 STA 共用单一 PN 空间和单一重放计数器集合；EHT RSNA STA 应支持 GCMP-256。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          385,
+          386,
+          387,
+          395,
+          396,
+          397,
+          398,
+          399,
+          400,
+          401,
+          402,
+          403,
+          404,
+          405,
+          406,
+          407,
+          408
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Security associations and policy (12.6) become per-MLD. The PMKSA (12.6.1.1.2) is now between the AP MLD and the non-AP MLD, with the Authenticator's MAC being the AP MLD MAC address; there is one PTKSA per MLD setup (12.6.1.1.6). Group-key associations stay per link: each setup link has its own GTKSA (12.6.1.1.8), IGTKSA and BIGTKSA, each recording the MAC address of the AP operating on that link. RSNA selection (12.6.2) requires all affiliated APs to advertise the same RSNE/RSNXE (except the AKM Suite List and MFPR), and RSNA policy selection (12.6.3) adds 12.6.3.2 'RSNA policy selection for MLO': the non-AP MLD sends one RSNE with one AKM, one pairwise cipher and one group cipher common to all affiliated APs — and MFP is mandatory for EHT STAs that use RSNA. The AP MLD manages the PTKSA while affiliated APs manage their GTKSAs.",
+      "zh": "安全关联与策略（12.6）变为按 MLD 维度。PMKSA（12.6.1.1.2）现在位于 AP MLD 与非 AP MLD 之间，Authenticator 的 MAC 为 AP MLD MAC 地址；每次 MLD 建立对应一个 PTKSA（12.6.1.1.6）。组密钥关联仍按链路：每条已建立链路有各自的 GTKSA（12.6.1.1.8）、IGTKSA 和 BIGTKSA，并记录该链路上工作的 AP 的 MAC 地址。RSNA 选择（12.6.2）要求所有附属 AP 通告相同的 RSNE/RSNXE（AKM 套件列表和 MFPR 除外）；RSNA 策略选择（12.6.3）新增 12.6.3.2“面向 MLO 的 RSNA 策略选择”：非 AP MLD 发送一个 RSNE，其中包含所有附属 AP 共有的一个 AKM、一个成对加密套件和一个组加密套件——且对使用 RSNA 的 EHT STA 强制启用 MFP。AP MLD 管理 PTKSA，而附属 AP 管理各自的 GTKSA。"
+    },
+    {
+      "type": "prose",
+      "en": "The key hierarchy and handshakes (12.7) follow the same per-MLD logic. In 12.7.1 the Authenticator address AA and Supplicant address SPA are the AP MLD and non-AP MLD MAC addresses; an MLD supports one pairwise key per <transmitter MLD MAC, receiver MLD MAC> pair. EAPOL-Key frames (12.7.2) gain four new KDEs — MLO GTK, MLO IGTK, MLO BIGTK and MLO Link — each carrying a LinkID so per-link group keys and per-link RSNE/RSNXE travel inside one handshake; the RSC field is set to 0 for MLO. The notation (12.7.4) and nonce generation (12.7.5) are updated to use MLD MAC addresses for AA/SPA. The group key handshake (12.7.7) lets an AP MLD push new MLO GTK/IGTK/BIGTK KDEs for any setup link in message 1. TDLS PeerKey (12.7.8) adds a second TPK derivation that mixes in the AP MLD MAC address when both peers include a TDLS Multi-Link element.",
+      "zh": "密钥层次与握手（12.7）遵循同样的按 MLD 逻辑。在 12.7.1 中，Authenticator 地址 AA 和 Supplicant 地址 SPA 分别为 AP MLD 与非 AP MLD 的 MAC 地址；MLD 对每个 <发送方 MLD MAC，接收方 MLD MAC> 对支持一个成对密钥。EAPOL-Key 帧（12.7.2）新增四种 KDE——MLO GTK、MLO IGTK、MLO BIGTK 和 MLO Link——每种都携带 LinkID，使按链路的组密钥及按链路的 RSNE/RSNXE 在一次握手中传递；MLO 时 RSC 字段置 0。记法（12.7.4）和 nonce 生成（12.7.5）更新为对 AA/SPA 使用 MLD MAC 地址。组密钥握手（12.7.7）允许 AP MLD 在消息 1 中为任意已建立链路下发新的 MLO GTK/IGTK/BIGTK KDE。TDLS PeerKey（12.7.8）新增第二种 TPK 派生方式：当双方都包含 TDLS 多链路元素时，派生中混入 AP MLD MAC 地址。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map B — associations, policy, key management, key hierarchy, handshakes, AP PeerKey and FILS (12.6.1, 12.6.2, 12.6.3, 12.6.8, 12.6.12, 12.6.19, 12.7.1, 12.7.2, 12.7.4, 12.7.5, 12.7.7, 12.7.8, 12.10.2, 12.11.1, 12.11.2)",
+        "zh": "覆盖地图 B——安全关联、策略、密钥管理、密钥层次、握手、AP PeerKey 与 FILS（12.6.1、12.6.2、12.6.3、12.6.8、12.6.12、12.6.19、12.7.1、12.7.2、12.7.4、12.7.5、12.7.7、12.7.8、12.10.2、12.11.1、12.11.2）"
+      },
+      "en": "12.6.1 security associations — PMKSA between AP MLD/non-AP MLD; one PTKSA per MLD setup; per-link GTKSA/IGTKSA/BIGTKSA each record the link AP's MAC. 12.6.2 RSNA selection — affiliated APs advertise identical RSNE/RSNXE (except AKM list, MFPR). 12.6.3 RSNA policy selection — adds 12.6.3.2 for MLO: one RSNE with one common AKM/pairwise/group cipher; MFP mandatory for EHT; AP MLD manages PTKSA, affiliated APs the GTKSA. 12.6.8 RSNA establishment — non-AP MLD may preauthenticate via an EAPOL-Start to the AP MLD over the DS. 12.6.12 RSNA key management — 4-way and group key handshakes run between AP MLD and non-AP MLD; affiliated APs handle their links' group keys. 12.6.19 RSNA rekeying — non-AP MLD reassociates / establishes a new RSNA with the AP MLD; AP MLD manages PN assignment for the PTKSA, affiliated AP for the IGTKSA/GTKSA/BIGTKSA. 12.7.1 key hierarchy — AA/SPA are MLD MAC addresses; one pairwise key per MLD-MAC pair; group key hierarchy NOTE uses the link AP MAC for AA. 12.7.2 EAPOL-Key frames — MLO GTK/IGTK/BIGTK/Link KDEs, RSC=0 for MLO. 12.7.4 EAPOL-Key PDU notation — defines MLO GTK/IGTK/BIGTK/Link tokens and the 'an' multi-link repetition. 12.7.5 nonce generation — AA/SPA are MLD MAC addresses. 12.7.7 group key handshake — message 1 may carry per-link MLO group-key KDEs; RSC=0 for MLO. 12.7.8 TDLS PeerKey — second TPK formula adds AP MLD MAC; messages carry an optional TDLS Multi-Link element. 12.10.2 AP PeerKey protocol — reuses SAE-style discrete-log key agreement, group 19 support. 12.11.1 / 12.11.2 FILS authentication — FILSO/FILSR may be MLDs; AKM, shared-key or public-key, optional PFS; all affiliated APs advertise the same FILS Indication element with a common FILS AKM.",
+      "zh": "12.6.1 安全关联——PMKSA 位于 AP MLD/非 AP MLD 之间；每次 MLD 建立一个 PTKSA；按链路的 GTKSA/IGTKSA/BIGTKSA 各记录链路 AP 的 MAC。12.6.2 RSNA 选择——附属 AP 通告相同 RSNE/RSNXE（AKM 列表、MFPR 除外）。12.6.3 RSNA 策略选择——新增面向 MLO 的 12.6.3.2：一个 RSNE，含一个共有的 AKM/成对/组加密套件；EHT 强制 MFP；AP MLD 管理 PTKSA，附属 AP 管理 GTKSA。12.6.8 RSNA 建立——非 AP MLD 可经 DS 向 AP MLD 发 EAPOL-Start 进行预认证。12.6.12 RSNA 密钥管理——4 次握手和组密钥握手在 AP MLD 与非 AP MLD 之间进行；附属 AP 处理各自链路的组密钥。12.6.19 RSNA 重新密钥——非 AP MLD 与 AP MLD 重新关联/建立新 RSNA；AP MLD 管理 PTKSA 的 PN 分配，附属 AP 管理 IGTKSA/GTKSA/BIGTKSA。12.7.1 密钥层次——AA/SPA 为 MLD MAC 地址；每个 MLD-MAC 对一个成对密钥；组密钥层次注释中 AA 用链路 AP 的 MAC。12.7.2 EAPOL-Key 帧——MLO GTK/IGTK/BIGTK/Link KDE，MLO 时 RSC=0。12.7.4 EAPOL-Key PDU 记法——定义 MLO GTK/IGTK/BIGTK/Link 记号及多链路重复记号“an”。12.7.5 nonce 生成——AA/SPA 为 MLD MAC 地址。12.7.7 组密钥握手——消息 1 可携带按链路的 MLO 组密钥 KDE；MLO 时 RSC=0。12.7.8 TDLS PeerKey——第二种 TPK 公式加入 AP MLD MAC；消息携带可选 TDLS 多链路元素。12.10.2 AP PeerKey 协议——复用 SAE 式离散对数密钥协商，支持群 19。12.11.1 / 12.11.2 FILS 认证——FILSO/FILSR 可为 MLD；AKM、共享密钥或公钥、可选 PFS；所有附属 AP 通告相同 FILS Indication 元素及共有的 FILS AKM。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          408,
+          409,
+          410,
+          411,
+          412,
+          413,
+          414,
+          415,
+          416,
+          417,
+          418,
+          419,
+          427,
+          428,
+          429,
+          430,
+          431,
+          432,
+          433
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Takeaway: 802.11be does not invent new cryptography for Wi-Fi 7. SAE, CCMP, GCMP and the 4-way handshake are the same primitives as before. What changes is the binding: identities become MLD MAC addresses, one pairwise security association covers an MLD pair across all links, group keys remain per link and travel in new MLO KDEs, and policy/key-management/rekeying all operate between the AP MLD and non-AP MLD SMEs.",
+      "zh": "要点：802.11be 并未为 Wi-Fi 7 发明新的密码学。SAE、CCMP、GCMP 和 4 次握手仍是原有原语。改变的是绑定关系：身份变为 MLD MAC 地址，一个成对安全关联跨所有链路覆盖整对 MLD，组密钥仍按链路区分并通过新的 MLO KDE 传递，而策略、密钥管理与重新密钥都在 AP MLD 与非 AP MLD 的 SME 之间进行。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        385
+      ],
+      "note": "12.1 Conventions (MLO SA between peer MLDs); 12.2.4 RSNA establishment (MLD MAC in frame body / EAPOL); 12.2.10 OCV start"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        386,
+        387
+      ],
+      "note": "12.2.10 OCV validation; 12.2.11 MAC privacy enhancements for non-AP MLD; 12.2.13 title + device ID / IRM intro"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        395,
+        396
+      ],
+      "note": "12.3.3 pre-RSNA / Open System authentication for MLO; 12.4.1 SAE overview reworded to SAE entities"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        397,
+        398,
+        399,
+        400,
+        401
+      ],
+      "note": "12.4.3 password representation; 12.4.4 finite cyclic groups (group 19); 12.4.5 SAE protocol; 12.4.6 anti-clogging tokens; 12.4.8 SAE state machine"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        401,
+        402,
+        403,
+        404,
+        405
+      ],
+      "note": "12.5.2 CCMP — MLD MAC in AAD/nonce, single PN space and replay counter per PTKSA across affiliated STAs"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        406,
+        407,
+        408
+      ],
+      "note": "12.5.4 GCMP — GCMP-256 mandatory for EHT RSNA STA; MLD MAC nonce/AAD; single PN/replay per PTKSA"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        408,
+        409,
+        410,
+        411
+      ],
+      "note": "12.6.1 PMKSA/PTKSA/GTKSA/IGTKSA/BIGTKSA per MLD/per link; 12.6.2 RSNA selection for MLO; 12.6.3 RSNA policy selection + 12.6.3.2 for MLO"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        412,
+        413
+      ],
+      "note": "12.6.8 preauthentication via DS; 12.6.12 RSNA key management between AP MLD/non-AP MLD; 12.6.19 RSNA rekeying; 12.7.1 key hierarchy AA/SPA = MLD MAC"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        414,
+        415,
+        416,
+        417,
+        418,
+        419
+      ],
+      "note": "12.7.2 EAPOL-Key frames + MLO GTK/IGTK/BIGTK/Link KDEs; 12.7.4 EAPOL-Key PDU notation; 12.7.5 nonce generation"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        427,
+        428
+      ],
+      "note": "12.7.7 group key handshake — per-link MLO group-key KDEs in message 1, RSC=0 for MLO"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        429,
+        430,
+        431
+      ],
+      "note": "12.7.8 TDLS PeerKey (TPK) — second TPK derivation with AP MLD MAC; 12.10.2 AP PeerKey protocol"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        432,
+        433
+      ],
+      "note": "12.11.1 FILS general (FILSO/FILSR may be MLDs); 12.11.2 FILS authentication protocol; FILS Indication element common across affiliated APs"
+    }
+  ],
+  "covers": [
+    "80211be-2024:12.1",
+    "80211be-2024:12.2.4",
+    "80211be-2024:12.2.10",
+    "80211be-2024:12.2.11",
+    "80211be-2024:12.2.13",
+    "80211be-2024:12.3.3",
+    "80211be-2024:12.4.1",
+    "80211be-2024:12.4.3",
+    "80211be-2024:12.4.4",
+    "80211be-2024:12.4.5",
+    "80211be-2024:12.4.6",
+    "80211be-2024:12.4.8",
+    "80211be-2024:12.5.2",
+    "80211be-2024:12.5.4",
+    "80211be-2024:12.6.1",
+    "80211be-2024:12.6.2",
+    "80211be-2024:12.6.3",
+    "80211be-2024:12.6.8",
+    "80211be-2024:12.6.12",
+    "80211be-2024:12.6.19",
+    "80211be-2024:12.7.1",
+    "80211be-2024:12.7.2",
+    "80211be-2024:12.7.4",
+    "80211be-2024:12.7.5",
+    "80211be-2024:12.7.7",
+    "80211be-2024:12.7.8",
+    "80211be-2024:12.10.2",
+    "80211be-2024:12.11.1",
+    "80211be-2024:12.11.2"
+  ],
+  "track": "security"
+}

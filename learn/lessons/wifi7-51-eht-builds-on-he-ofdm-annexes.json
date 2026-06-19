@@ -1,0 +1,237 @@
+{
+  "id": "wifi7-51-eht-builds-on-he-ofdm-annexes",
+  "title": {
+    "en": "Standing on HE: How EHT Builds on Wi-Fi 6, the OFDM Vectors, and the Annexes",
+    "zh": "立足于 HE：EHT 如何在 Wi-Fi 6 之上构建，以及 OFDM 矢量与附录"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Wi-Fi 7 (IEEE 802.11be, the EHT amendment) does not start from a blank page. EHT is layered on top of the High Efficiency (HE / Wi-Fi 6) machinery: an EHT station reuses the HE MAC of Clause 26 and the legacy OFDM PHY of Clause 17, and only adds or changes the pieces it needs for 320 MHz channels, 4096-QAM (4K-QAM), multi-RU, and Multi-Link Operation (MLO). This lesson is a coverage map of those touchpoints — the OFDM TXVECTOR/RXVECTOR and DATA-field edits, the HE features EHT extends, and the relevant annexes.",
+      "zh": "Wi-Fi 7（IEEE 802.11be，即 EHT 修正案）并非从零开始。EHT 是叠加在高效率（HE / Wi-Fi 6）机制之上的：一个 EHT 站点复用第 26 章的 HE MAC 和第 17 章的传统 OFDM PHY，只针对 320 MHz 信道、4096-QAM（4K-QAM）、多资源单元（multi-RU）和多链路操作（MLO）所需之处进行新增或修改。本课是这些衔接点的覆盖地图——OFDM 的 TXVECTOR/RXVECTOR 与 DATA 字段改动、EHT 所扩展的 HE 特性，以及相关附录。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "802.11be is an amendment. For clauses below 35 (here Clause 17 OFDM and Clause 26 HE), the text says only what EHT ADDS or CHANGES relative to the base standard. So when you read 'Change row X' or 'Insert a new subclause', that delta IS the Wi-Fi 7 content. EHT's own brand-new behavior lives in Clause 35 (MAC) and Clause 36 (PHY), which other lessons cover.",
+      "zh": "802.11be 是一份修正案。对于编号低于 35 的章节（这里指第 17 章 OFDM 与第 26 章 HE），文本只描述 EHT 相对基准标准所“新增”或“更改”的内容。因此当你读到“更改第 X 行”或“插入新子条款”时，那段增量本身就是 Wi-Fi 7 的内容。EHT 自己全新的行为位于第 35 章（MAC）与第 36 章（PHY），由其他课程讲解。"
+    },
+    {
+      "type": "prose",
+      "en": "Start at the OFDM PHY. Clause 17 defines the legacy (non-HT) waveform that every device still uses for control frames like RTS/CTS. EHT adds exactly one new bandwidth notion here: a 320 MHz non-HT duplicate. In 17.2.2 (TXVECTOR parameters), the CH_BANDWIDTH_IN_NON_HT parameter gains the value CBW320 — but only when dot11EHTOptionImplemented is true AND the station is a 6 GHz station with 320 MHz support. 17.2.3 (RXVECTOR parameters) mirrors this on receive. The base CBW20/40/80/160 set is unchanged; CBW320 is the pure Wi-Fi 7 addition.",
+      "zh": "从 OFDM PHY 说起。第 17 章定义了每台设备至今仍用于 RTS/CTS 等控制帧的传统（non-HT）波形。EHT 在这里恰好新增了一个带宽概念：320 MHz 的 non-HT 复制帧。在 17.2.2（TXVECTOR 参数）中，CH_BANDWIDTH_IN_NON_HT 参数获得了 CBW320 取值——但仅当 dot11EHTOptionImplemented 为真，且该站点是支持 320 MHz 的 6 GHz 站点时才成立。17.2.3（RXVECTOR 参数）在接收侧做了对应处理。基准的 CBW20/40/80/160 取值集合保持不变；CBW320 是纯粹的 Wi-Fi 7 新增项。"
+    },
+    {
+      "type": "prose",
+      "en": "How does a legacy-looking frame signal 320 MHz? Through the DATA field. 17.3.5 covers the DATA field; within it, 17.3.5.2 (SERVICE field) and 17.3.5.5 (PHY DATA scrambler and descrambler) are edited so that bit 7 of the 16-bit SERVICE field — together with the first 7 scrambling-sequence bits — carries the bandwidth. For an EHT 6 GHz station, SERVICE bit 7 = 1 means CBW320 (and the bits 0/1 pattern distinguishes 20/40/80/160). A non-EHT receiver simply treats those bits as part of the random scrambler init, so the trick is backward compatible.",
+      "zh": "一个看似传统的帧如何标示 320 MHz？通过 DATA 字段。17.3.5 涵盖 DATA 字段；其中 17.3.5.2（SERVICE 字段）和 17.3.5.5（PHY DATA 扰码器与解扰器）被修改，使 16 比特 SERVICE 字段的第 7 位——连同扰码序列的前 7 个比特——携带带宽信息。对于 EHT 6 GHz 站点，SERVICE 第 7 位 = 1 表示 CBW320（而第 0/1 位的取值组合区分 20/40/80/160）。non-EHT 接收机只是把这些比特当作随机扰码初值的一部分，因此该技巧向后兼容。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 130\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"6\" y=\"16\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">SERVICE field (16 bits), transmitted LSB first</text><g><rect x=\"6\" y=\"30\" width=\"196\" height=\"34\"/><text x=\"104\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">bits 0-6: scrambler init</text></g><g><rect x=\"202\" y=\"30\" width=\"40\" height=\"34\"/><text x=\"222\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">bit 7</text><text x=\"222\" y=\"58\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">BW</text></g><g><rect x=\"242\" y=\"30\" width=\"212\" height=\"34\"/><text x=\"348\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">bits 8-15: reserved</text></g><text x=\"6\" y=\"92\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">EHT 6 GHz STA: bit 7 = 1 -&gt; CBW320</text><text x=\"6\" y=\"110\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">otherwise bit 7 = 0 (20/40/80/160 from bits 0/1)</text></svg>",
+      "caption": {
+        "en": "EHT reuses the legacy SERVICE field, adding bit 7 as a 320 MHz indicator (17.3.5.2 / 17.3.5.5).",
+        "zh": "EHT 复用传统 SERVICE 字段，将第 7 位新增为 320 MHz 指示位（17.3.5.2 / 17.3.5.5）。"
+      }
+    },
+    {
+      "type": "widget",
+      "widget": "channel-width",
+      "params": {}
+    },
+    {
+      "type": "prose",
+      "en": "Moving up to the HE MAC (Clause 26), EHT extends five HE features rather than reinventing them. (1) 26.2.6 — the MU-RTS Trigger / CTS exchange that protects a transmission gains a new rule: an NSTR-limited station (one that cannot transmit and receive simultaneously across its links, an MLO concept) may, but is not required to, send the CTS. (2) 26.5.1 and 26.5.2 — HE DL MU and UL MU operation: the old blanket RU rules are deleted and re-inserted as cleaner subclauses (26.5.1.1a, 26.5.1.3a minimum RU allocation, 26.5.2.2.1a), and a non-EHT HE AP is forbidden from sending a Trigger frame with an EHT-variant User Info field — drawing a clear line between HE and EHT triggering.",
+      "zh": "上升到 HE MAC（第 26 章），EHT 是扩展五个 HE 特性，而非重新发明它们。(1) 26.2.6——用于保护一次传输的 MU-RTS Trigger / CTS 交互新增一条规则：受 NSTR 限制的站点（即无法在其各链路上同时收发的站点，这是一个 MLO 概念）可以、但不要求发送 CTS。(2) 26.5.1 与 26.5.2——HE 下行 MU 与上行 MU 操作：旧的笼统 RU 规则被删除并以更清晰的子条款重新插入（26.5.1.1a、26.5.1.3a 最小 RU 分配、26.5.2.2.1a），且 non-EHT 的 HE AP 被禁止发送带有 EHT 变体 User Info 字段的 Trigger 帧——在 HE 与 EHT 触发之间划出清晰界线。"
+    },
+    {
+      "type": "prose",
+      "en": "(3) 26.8.3 — Broadcast TWT operation: the rules for assigning a unique Broadcast TWT ID are amended to carve out the value 31, reserved for a Restricted TWT Parameter Set (the latency-sensitive 'r-TWT' EHT relies on). (4) 26.10.2 — OBSS PD-based spatial reuse: the conditions under which a station may ignore an overlapping-BSS PPDU and keep its NAV are reworded to also account for the new PHY-RXEARLYSIG.indication primitive. (5) 26.17.2 — HE BSS operation in the 6 GHz band: a 6 GHz station still must not advertise HT/VHT elements, and a new NOTE explains how an EHT 6 GHz device instead carries those legacy elements inside the Per-STA Profile of a Basic Multi-Link element — the MLO bridge to 2.4/5 GHz reporting.",
+      "zh": "(3) 26.8.3——广播 TWT 操作：分配唯一 Broadcast TWT ID 的规则被修改，专门划出取值 31，保留给受限 TWT 参数集（即 EHT 所依赖的对时延敏感的 r-TWT）。(4) 26.10.2——基于 OBSS PD 的空间复用：站点可以忽略重叠 BSS 的 PPDU 并保持其 NAV 的条件被重新表述，以同时考虑新增的 PHY-RXEARLYSIG.indication 原语。(5) 26.17.2——6 GHz 频段的 HE BSS 操作：6 GHz 站点仍不得通告 HT/VHT 元素，新增的一条 NOTE 说明 EHT 6 GHz 设备改为把这些传统元素携带在基本多链路元素的 Per-STA Profile 内——这是通向 2.4/5 GHz 上报的 MLO 桥梁。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n  A[EHT STA] --> B[Clause 17 OFDM PHY<br/>reuse + CBW320]\n  A --> C[Clause 26 HE MAC<br/>reuse + EHT rules]\n  A --> D[Clause 35/36<br/>new EHT MAC+PHY]\n  C --> C1[26.2.6 MU-RTS/CTS]\n  C --> C2[26.5 DL/UL MU]\n  C --> C3[26.8.3 Bcast TWT]\n  C --> C4[26.10.2 OBSS PD SR]\n  C --> C5[26.17.2 6 GHz BSS]",
+      "zh": "graph TD\n  A[EHT 站点] --> B[第17章 OFDM PHY<br/>复用 + CBW320]\n  A --> C[第26章 HE MAC<br/>复用 + EHT 规则]\n  A --> D[第35/36章<br/>全新 EHT MAC+PHY]\n  C --> C1[26.2.6 MU-RTS/CTS]\n  C --> C2[26.5 下行/上行 MU]\n  C --> C3[26.8.3 广播 TWT]\n  C --> C4[26.10.2 OBSS PD 空间复用]\n  C --> C5[26.17.2 6 GHz BSS]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the exact OFDM (Clause 17) and HE (Clause 26) clauses EHT edits",
+        "zh": "覆盖地图：EHT 所修改的确切 OFDM（第 17 章）与 HE（第 26 章）条款"
+      },
+      "en": "OFDM PHY — 17.2.2 TXVECTOR parameters: adds CBW320 to CH_BANDWIDTH_IN_NON_HT for a 320 MHz-capable 6 GHz EHT STA (Table 17-1, new Table 17-8 maps CBW320 to bits-0/1 = 0 and bit-2 = 1). 17.2.3 RXVECTOR parameters: same CBW320 addition on receive (Table 17-2). 17.3.5 DATA field, via 17.3.5.2 SERVICE field (bit 7 = 1 signals CBW320; Figure 17-6) and 17.3.5.5 scrambler/descrambler (new Table 17-10a maps the indicator bits to CH_BANDWIDTH_IN_NON_HT for an EHT STA). HE MAC — 26.2.6 MU-RTS Trigger/CTS sequence (26.2.6.3): an NSTR-limited non-AP STA may send CTS. 26.5.1 HE DL MU operation: 26.5.1.1a additional HE MU PPDU rules and 26.5.1.3a minimum RU allocation. 26.5.2 UL MU operation: non-EHT HE AP must not send an EHT-variant User Info field; 26.5.2.2.1a additional soliciting rules. 26.8.3 Broadcast TWT operation: Broadcast TWT ID 31 reserved for Restricted TWT. 26.10.2 OBSS PD-based spatial reuse (non-SRG 26.10.2.2, SRG 26.10.2.3) updated for PHY-RXEARLYSIG.indication. 26.17.2 HE BSS operation in the 6 GHz band: STA 6G element restrictions plus an MLO Per-STA Profile NOTE.",
+      "zh": "OFDM PHY——17.2.2 TXVECTOR 参数：为支持 320 MHz 的 6 GHz EHT 站点在 CH_BANDWIDTH_IN_NON_HT 中新增 CBW320（表 17-1，新增表 17-8 将 CBW320 映射为 第0/1位=0、第2位=1）。17.2.3 RXVECTOR 参数：接收侧同样新增 CBW320（表 17-2）。17.3.5 DATA 字段，经由 17.3.5.2 SERVICE 字段（第 7 位=1 标示 CBW320；图 17-6）与 17.3.5.5 扰码器/解扰器（新增表 17-10a 将指示位映射为 EHT 站点的 CH_BANDWIDTH_IN_NON_HT）。HE MAC——26.2.6 MU-RTS Trigger/CTS 序列（26.2.6.3）：受 NSTR 限制的非 AP 站点可以发送 CTS。26.5.1 HE 下行 MU 操作：26.5.1.1a 附加 HE MU PPDU 规则与 26.5.1.3a 最小 RU 分配。26.5.2 上行 MU 操作：non-EHT 的 HE AP 不得发送 EHT 变体 User Info 字段；26.5.2.2.1a 附加征询规则。26.8.3 广播 TWT 操作：Broadcast TWT ID 31 保留给受限 TWT。26.10.2 基于 OBSS PD 的空间复用（非 SRG 见 26.10.2.2，SRG 见 26.10.2.3）针对 PHY-RXEARLYSIG.indication 更新。26.17.2 6 GHz 频段的 HE BSS 操作：STA 6G 元素限制，外加一条 MLO Per-STA Profile 的 NOTE。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          474,
+          475,
+          476,
+          478,
+          479,
+          480,
+          482,
+          484
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the seven annexes EHT touches (B, C, E, R, Z, AA, AH)",
+        "zh": "覆盖地图：EHT 所触及的七个附录（B、C、E、R、Z、AA、AH）"
+      },
+      "en": "Annex B (normative, PICS proforma): adds EHT abbreviations (EHTM, EHTP, MLD, NSTR) and new conformance rows — CFEHT (EHT operation, Clause 36), CFEHT6G, CFEHT20, CFEHTMLD (EHT MLD operation, Clause 35), plus EHT Action and TID-To-Link Mapping frame items. Annex C (normative, ASN.1 MIB encoding): registers new MIB tables (dot11EHTStationConfigTable as dot11smt 46, dot11PhyEHTTable as dot11phy 35) and attributes such as dot11EHTOptionImplemented, dot11EHTTXSTFOptionImplemented, dot11EHTNSTRMobileAPMLDImplemented — the capability switches the clauses above test. Annex E (normative, country/operating classes): adds global operating class 137 for 320 MHz channels at 5.950 GHz starting frequency in Table E-4. Annex R (informative, interworking with external networks): adds Authorized EPCS Priority Access Type to the SSPN interface parameters (Table R-3, R.4.2.14), deriving non-AP STA capability from the EHT Capabilities element for EPCS priority access. Annex Z (informative): retitled to 'HE-SIG-B and EHT-SIG content examples' and gains EHT-SIG worked examples (U-SIG overflow, multi-RU/MRU resource allocation such as a 484+242-tone MRU, Tables Z-8 to Z-10). Annex AA (informative, multiple BSSID configuration examples): extended with AA.3 examples relating an AP MLD to a multiple-BSSID set and a co-hosted BSSID set (Figures AA-6, AA-7). Annex AH (informative, new): worked Examples of MLO — Basic Multi-Link element advertisement and per-STA-profile inheritance (Figures AH-1, AH-2).",
+      "zh": "附录 B（规范性，PICS 形式表）：新增 EHT 缩写（EHTM、EHTP、MLD、NSTR）与新的一致性条目行——CFEHT（EHT 操作，第 36 章）、CFEHT6G、CFEHT20、CFEHTMLD（EHT MLD 操作，第 35 章），以及 EHT Action 帧与 TID-To-Link Mapping 帧条目。附录 C（规范性，ASN.1 MIB 编码）：登记新的 MIB 表（dot11EHTStationConfigTable 为 dot11smt 46，dot11PhyEHTTable 为 dot11phy 35）及诸如 dot11EHTOptionImplemented、dot11EHTTXSTFOptionImplemented、dot11EHTNSTRMobileAPMLDImplemented 等属性——正是上述各章节所检测的能力开关。附录 E（规范性，国家/操作类别）：在表 E-4 中新增全局操作类别 137，用于起始频率 5.950 GHz 的 320 MHz 信道。附录 R（信息性，与外部网络互通）：在 SSPN 接口参数中新增 Authorized EPCS Priority Access Type（表 R-3，R.4.2.14），并为 EPCS 优先接入从 EHT Capabilities 元素推导非 AP 站点能力。附录 Z（信息性）：标题改为“HE-SIG-B 与 EHT-SIG 内容示例”，并新增 EHT-SIG 实例（U-SIG 溢出、多 RU/MRU 资源分配，如 484+242-tone MRU，见表 Z-8 至 Z-10）。附录 AA（信息性，多 BSSID 配置示例）：以 AA.3 示例扩展，阐述 AP MLD 与多 BSSID 集合及共宿 BSSID 集合之间的关系（图 AA-6、AA-7）。附录 AH（信息性，全新）：MLO 实例——基本多链路元素的通告与 per-STA-profile 继承（图 AH-1、AH-2）。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          910,
+          911,
+          927,
+          928,
+          961,
+          962,
+          963,
+          964,
+          982,
+          983,
+          984,
+          985,
+          986
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The throughline: every EHT addition in Clauses 17 and 26 is gated by a capability — usually dot11EHTOptionImplemented or a related MIB attribute (Annex C) and a matching PICS item (Annex B). That is what keeps a Wi-Fi 7 device interoperable with Wi-Fi 6 and earlier: legacy peers never see the new behavior unless both ends advertise it.",
+      "zh": "贯穿全篇的主线：第 17 章与第 26 章中每一项 EHT 新增都由某个能力开关把关——通常是 dot11EHTOptionImplemented 或相关 MIB 属性（附录 C）以及对应的 PICS 条目（附录 B）。这正是让 Wi-Fi 7 设备与 Wi-Fi 6 及更早设备互通的关键：除非两端都通告该能力，传统对端绝不会看到新行为。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        474
+      ],
+      "note": "17.2.2 TXVECTOR parameters — CBW320 added to CH_BANDWIDTH_IN_NON_HT for 320 MHz-capable 6 GHz EHT STA (Table 17-1)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        475
+      ],
+      "note": "17.2.3 RXVECTOR parameters (Table 17-2 CBW320); 17.3.5 DATA field and 17.3.5.2 SERVICE field bit 7 = 1 -> CBW320"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        476,
+        478
+      ],
+      "note": "17.3.5.5 PHY DATA scrambler/descrambler; Figure 17-6 SERVICE field; new Table 17-8 and Table 17-10a (EHT CH_BANDWIDTH_IN_NON_HT)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        479
+      ],
+      "note": "26.2.6 MU-RTS Trigger/CTS exchange (NSTR-limited STA may send CTS); 26.5.1 HE DL MU operation + 26.5.1.1a"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        480,
+        481
+      ],
+      "note": "26.5.1.3a minimum RU allocation; 26.5.2 UL MU operation (non-EHT HE AP must not send EHT-variant User Info); 26.5.2.2.1a"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        482,
+        483,
+        484
+      ],
+      "note": "26.8.3 Broadcast TWT (ID 31 reserved for Restricted TWT); 26.10.2 OBSS PD spatial reuse; 26.17.2 HE BSS in 6 GHz band"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        910,
+        911
+      ],
+      "note": "Annex B PICS proforma — EHT abbreviations and conformance rows (CFEHT, CFEHTMLD, EHT Action / TID-To-Link Mapping frames)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        927,
+        928
+      ],
+      "note": "Annex C ASN.1 MIB encoding — dot11EHTStationConfigTable, dot11PhyEHTTable, dot11EHTOptionImplemented and related attributes"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        961
+      ],
+      "note": "Annex E country elements/operating classes — global operating class 137 (320 MHz, 5.950 GHz start) in Table E-4"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        962
+      ],
+      "note": "Annex R interworking with external networks — Authorized EPCS Priority Access Type SSPN parameter (R.4.2.14, Table R-3)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        963,
+        964
+      ],
+      "note": "Annex Z retitled HE-SIG-B and EHT-SIG content examples; Z.6 EHT-SIG example (U-SIG overflow, MRU allocation, Tables Z-8 to Z-10)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        982,
+        983,
+        984
+      ],
+      "note": "Annex AA multiple BSSID configuration examples — AA.3 relating MLO to multiple-BSSID and co-hosted BSSID sets (Figures AA-6, AA-7)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        985,
+        986
+      ],
+      "note": "Annex AH (new, informative) Examples of MLO — Basic Multi-Link element advertisement and inheritance (Figures AH-1, AH-2)"
+    }
+  ],
+  "covers": [
+    "80211be-2024:17.2.2",
+    "80211be-2024:17.2.3",
+    "80211be-2024:17.3.5",
+    "80211be-2024:26.2.6",
+    "80211be-2024:26.5.1",
+    "80211be-2024:26.5.2",
+    "80211be-2024:26.8.3",
+    "80211be-2024:26.10.2",
+    "80211be-2024:26.17.2",
+    "80211be-2024:Annex_B",
+    "80211be-2024:Annex_C",
+    "80211be-2024:Annex_E",
+    "80211be-2024:Annex_R",
+    "80211be-2024:Annex_Z",
+    "80211be-2024:Annex_AA",
+    "80211be-2024:Annex_AH"
+  ],
+  "track": "wifi7-eht"
+}

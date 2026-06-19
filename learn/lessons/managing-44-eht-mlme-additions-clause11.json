@@ -1,0 +1,257 @@
+{
+  "id": "managing-44-eht-mlme-additions-clause11",
+  "title": {
+    "en": "What EHT Adds to Network Management: Wi-Fi 7 MLME Extensions",
+    "zh": "EHT 给网络管理带来了什么：Wi-Fi 7 MLME 扩展"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 11 of IEEE 802.11 is the MLME — the rulebook for how stations synchronize, scan, manage power, authenticate, associate, measure, and run the dozens of management procedures that keep a BSS alive. Wi-Fi 7 (802.11be) does not rewrite this clause; as an amendment it inserts targeted edits. Almost every edit answers one question: how does a procedure that was written for a single STA on a single link now behave when one side is a Multi-Link Device (MLD) spanning several links at once, or when a link runs at 320 MHz with 4096-QAM? This lesson is a guided tour of those deltas.",
+      "zh": "IEEE 802.11 的第 11 章是 MLME——它规定了站点如何同步、扫描、管理功耗、认证、关联、测量，以及维持一个 BSS 运转所需的几十种管理流程。Wi-Fi 7（802.11be）作为一个修正案并没有重写这一章，而是插入了有针对性的修改。几乎每一处修改都在回答同一个问题：原本为单链路上的单个 STA 编写的流程，当一端变成横跨多条链路的多链路设备（MLD），或某条链路运行在 320 MHz、采用 4096-QAM 时，应当如何运作？本课就是对这些增量改动的一次导览。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The recurring pattern: 'non-MLO behaves as before; for MLO, the procedure now operates at the MLD level.' Power save intervals, BSS max-idle timers, WNM sleep mode, event logs, proxy ARP mappings, and interworking capabilities are all lifted from the per-STA level up to the per-MLD level so that the multi-link group acts as one logical peer.",
+      "zh": "反复出现的模式是：'非 MLO 情况下行为照旧；对于 MLO，流程现在在 MLD 层面运作。'功耗节省间隔、BSS 最大空闲计时、WNM 睡眠模式、事件日志、代理 ARP 映射、互通能力等，都从每个 STA 的层面上移到每个 MLD 的层面，使整个多链路组表现为一个逻辑对端。"
+    },
+    {
+      "type": "widget",
+      "widget": "mlo-links",
+      "params": {}
+    },
+    {
+      "type": "prose",
+      "en": "Start with discovery and synchronization. In multiple-BSSID procedures (11.1.3), the Reduced Neighbor Report element is now special: it is neither inherited nor non-inherited by a nontransmitted BSSID profile, and the Multi-Link element is exempt from the inheritance rules entirely (those live in clause 35). In active scanning (11.1.4), a FILS Probe Request can carry a PHY Support Criterion that lets an EHT-capable AP decide whether to answer, and a non-FILS EHT AP affiliated with an AP MLD may send a multi-link probe response with a broadcast Address 1.",
+      "zh": "先看发现与同步。在多 BSSID 流程（11.1.3）中，精简邻居报告（Reduced Neighbor Report）元素现在很特殊：它对于非传输 BSSID 配置文件既不被继承也不被'非继承'，而多链路（Multi-Link）元素则完全不受继承规则约束（这些规则在第 35 章）。在主动扫描（11.1.4）中，FILS 探测请求可携带 PHY 支持判据，让具备 EHT 能力的 AP 决定是否应答；而隶属于 AP MLD 的非 FILS EHT AP 可发送 Address 1 为广播地址的多链路探测响应。"
+    },
+    {
+      "type": "prose",
+      "en": "Power management (11.2) gains MLD awareness throughout. The bufferable-MMPDU table (11.2.2) now classifies frames differently under MLO — TPC Request and Link Measurement Request frames become bufferable in the multi-link case. WNM sleep mode, the AP aging function, the receive rules for PS-mode STAs, and active-mode operation (11.2.3) all defer to the MLD-level rules in clause 35, and the WNM Sleep Mode Response now carries per-link GTK/IGTK/BIGTK keyed by Link ID so the whole MLD can sleep and refresh keys on every setup link at once.",
+      "zh": "功耗管理（11.2）全面引入 MLD 感知。可缓冲 MMPDU 表（11.2.2）在 MLO 下对帧的分类有所不同——在多链路情形下 TPC 请求帧和链路测量请求帧变为可缓冲。WNM 睡眠模式、AP 老化函数、PS 模式 STA 的接收规则以及活动模式操作（11.2.3）都改为遵从第 35 章的 MLD 层规则；WNM 睡眠模式响应帧现在按 Link ID 携带每条链路的 GTK/IGTK/BIGTK，使整个 MLD 可一次性在所有建立的链路上睡眠并刷新密钥。"
+    },
+    {
+      "type": "prose",
+      "en": "The heart of clause 11 is the state machine (11.3). 802.11be adds a parallel set of state variables that describe the relationship between two MLDs, not just two STAs, and renames the state-transition diagram to cover 'nonmesh STAs or nonmesh MLDs.' Frame filtering (11.3.3) becomes MLD-aware: a STA affiliated with an MLD may transmit Class 2 frames only if the MLD is in State 2/3/4, and Class 3 frames only in State 3/4. Authentication, deauthentication, association, reassociation, and disassociation (11.3.4, 11.3.5) all gain MLD branches — for example, a non-AP STA affiliated with a non-AP MLD must include a Basic Multi-Link element in its Association Request, or the AP MLD rejects it.",
+      "zh": "第 11 章的核心是状态机（11.3）。802.11be 增加了一套并行的状态变量，用来描述两个 MLD（而不仅是两个 STA）之间的关系，并将状态转移图改名为覆盖'非 mesh STA 或非 mesh MLD'。帧过滤（11.3.3）变得 MLD 感知：隶属于 MLD 的 STA 仅当该 MLD 处于状态 2/3/4 时才可发送 Class 2 帧，仅当处于状态 3/4 时才可发送 Class 3 帧。认证、去认证、关联、重关联与去关联（11.3.4、11.3.5）都新增了 MLD 分支——例如，隶属于非 AP MLD 的非 AP STA 在关联请求中必须包含 Basic Multi-Link 元素，否则 AP MLD 将予以拒绝。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n    [*] --> S1\n    S1: State 1 Unauth/Unassoc\n    S2: State 2 Auth\n    S3: State 3 Assoc (RSNA pending)\n    S4: State 4 Assoc (RSNA done)\n    S1 --> S2: 802.11 auth (STA or MLD)\n    S2 --> S3: (Re)Assoc w/ Basic ML elem\n    S3 --> S4: 4-way handshake\n    S4 --> S1: Deauth",
+      "zh": "stateDiagram-v2\n    [*] --> S1\n    S1: 状态1 未认证/未关联\n    S2: 状态2 已认证\n    S3: 状态3 已关联(RSNA待定)\n    S4: 状态4 已关联(RSNA完成)\n    S1 --> S2: 802.11认证(STA或MLD)\n    S2 --> S3: 带Basic ML元素的(重)关联\n    S3 --> S4: 四次握手\n    S4 --> S1: 去认证"
+    },
+    {
+      "type": "prose",
+      "en": "Several procedures absorb the new 320 MHz width and the EHT punctured/wide-bandwidth signaling. Radio measurement reports (11.10.9) and the Measurement Pilot frame (11.10.15) gate the new Bandwidth Indication subelement on whether the peer is extended-spectrum-management capable. TDLS channel switching (11.20.6) now lets EHT peers set up off-channel direct links up to 320 MHz, with primary-channel rules for 40/80/160/320 MHz PPDUs and a renamed CCA/NAV subclause that lists 320 MHz. The FILS Discovery frame (11.45.2) and the Reduced Neighbor Report (11.49) both add guidance to pick an operating class that legacy STAs still understand even when the BSS runs 320 MHz in 6 GHz.",
+      "zh": "若干流程吸收了新的 320 MHz 带宽以及 EHT 的打孔/宽带信令。无线测量报告（11.10.9）和测量导频帧（11.10.15）将新的带宽指示（Bandwidth Indication）子元素是否包含，取决于对端是否具备扩展频谱管理能力。TDLS 信道切换（11.20.6）现在允许 EHT 对端建立最高 320 MHz 的离信道直连，并给出 40/80/160/320 MHz PPDU 的主信道规则，相应的 CCA/NAV 子条款也改名以列入 320 MHz。FILS 发现帧（11.45.2）和精简邻居报告（11.49）都新增了指导：即便 BSS 在 6 GHz 运行 320 MHz，也应选择旧 STA 仍能理解的操作类别。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Backward compatibility is a theme. A 320 MHz EHT AP using operating class 137 is advised to advertise class 131-134 in its FILS Discovery and Reduced Neighbor Report so that older stations, which may not recognize the new wide classes, can still find and connect to it.",
+      "zh": "向后兼容是一条主线。使用操作类别 137 的 320 MHz EHT AP 被建议在其 FILS 发现帧和精简邻居报告中通告类别 131–134，这样那些可能不识别新宽带类别的旧站点仍能发现并连接到它。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause-11 unit this lesson teaches and its EHT delta",
+        "zh": "覆盖地图：本课讲解的每个第 11 章单元及其 EHT 增量"
+      },
+      "en": "Synchronization & scanning: 11.1.3 multiple-BSSID inheritance exempts the Reduced Neighbor Report and Multi-Link elements; 11.1.4 adds FILS PHY-support criteria and the AP-MLD multi-link probe response. Power management: 11.2.2 reclassifies bufferable MMPDUs for MLO; 11.2.3 lifts WNM sleep mode, aging, PS-mode receive, active mode and per-link key delivery to the MLD level. State machine: 11.3.1 adds MLD state variables; 11.3.2 renames the transition diagram for MLDs; 11.3.3 makes Class 2/3 frame filtering MLD-aware; 11.3.4 adds MLD authentication/deauthentication branches; 11.3.5 requires a Basic Multi-Link element for MLD (re)association/disassociation. Measurement: 11.10.9 and 11.10.15 gate the Bandwidth Indication subelement and 40 MHz-spacing rule on extended-spectrum-management capability. SA Query: 11.13 adds an MLD-level SA Query using dot11MLDAssociationSAQueryMaximumTimeout. TDLS: 11.20.6 extends off-channel direct links to 320 MHz with EHT primary-channel rules. WNM: 11.21.2 makes transition/RSNA/WNM-log event reports MLD-aware; 11.21.15 adds gratuitous channel-usage elements and trusted/untrusted channel usage. Interworking/GAS: 11.22.2 requires all affiliated STAs to advertise the same interworking capability; 11.22.3 notes the TDLS-Capability ANQP frame uses the non-AP MLD address. QMF: 11.24.1 adds the EPCS Priority Access row to the default QMF policy table. SCS: 11.25.2 routes EHT STAs to extra rules in 35.17 and constrains non-EHT SCS responses. FILS Discovery: 11.45.2 adds operating-class selection guidance. Reduced Neighbor Report: 11.49 adds 320 MHz class-selection guidance, a 16-octet TBTT processing alternative for EHT STAs, and MLD-aware Neighbor AP Information grouping. Beacon protection: 11.52 extends BIP-validated operating-channel checks to every setup link of an MLD.",
+      "zh": "同步与扫描：11.1.3 多 BSSID 继承规则将精简邻居报告和多链路元素排除在外；11.1.4 新增 FILS PHY 支持判据与 AP MLD 多链路探测响应。功耗管理：11.2.2 为 MLO 重新分类可缓冲 MMPDU；11.2.3 将 WNM 睡眠模式、老化、PS 模式接收、活动模式及每链路密钥下发上移至 MLD 层。状态机：11.3.1 新增 MLD 状态变量；11.3.2 为 MLD 改名状态转移图；11.3.3 使 Class 2/3 帧过滤 MLD 感知；11.3.4 新增 MLD 认证/去认证分支；11.3.5 要求 MLD（重）关联/去关联携带 Basic Multi-Link 元素。测量：11.10.9 与 11.10.15 将带宽指示子元素及 40 MHz 间隔规则取决于扩展频谱管理能力。SA 查询：11.13 新增使用 dot11MLDAssociationSAQueryMaximumTimeout 的 MLD 级 SA 查询。TDLS：11.20.6 将离信道直连扩展到 320 MHz 并给出 EHT 主信道规则。WNM：11.21.2 使转移/RSNA/WNM 日志事件报告 MLD 感知；11.21.15 新增无偿信道使用元素及可信/不可信信道使用。互通/GAS：11.22.2 要求所有隶属 STA 通告相同互通能力；11.22.3 指出 TDLS 能力 ANQP 帧使用非 AP MLD 地址。QMF：11.24.1 在默认 QMF 策略表中新增 EPCS 优先接入行。SCS：11.25.2 将 EHT STA 导向 35.17 的附加规则并约束非 EHT 的 SCS 响应。FILS 发现：11.45.2 新增操作类别选择指导。精简邻居报告：11.49 新增 320 MHz 类别选择指导、面向 EHT STA 的 16 字节 TBTT 处理选项，以及 MLD 感知的邻居 AP 信息分组。信标保护：11.52 将经 BIP 验证的操作信道检查扩展到 MLD 的每条建立链路。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          345,
+          346,
+          347,
+          348,
+          349,
+          350,
+          351,
+          352,
+          371,
+          372,
+          373,
+          374,
+          375,
+          376,
+          378,
+          380,
+          381,
+          382,
+          383,
+          384
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the security and policy procedures close the loop at MLD scope. SA Query (11.13) gains an MLD-level variant: a non-AP MLD that receives an unprotected deauth/disassociation on a setup link can run an SA Query against the whole AP MLD using dot11MLDAssociationSAQueryMaximumTimeout. The QMF default-policy table (11.24.1) adds an EPCS Priority Access row, SCS (11.25.2) sends EHT STAs to extra rules in clause 35, and beacon protection (11.52) now verifies the BIP-validated operating channel on every setup link of the MLD — disassociating the entire MLD if any link mismatches. Across all 22 units the message is consistent: EHT keeps the base clause-11 machinery and re-expresses it so a multi-link, wide-bandwidth device behaves as one coherent peer.",
+      "zh": "最后，安全与策略流程在 MLD 范围内形成闭环。SA 查询（11.13）新增 MLD 级变体：非 AP MLD 若在某条建立链路上收到未受保护的去认证/去关联帧，可使用 dot11MLDAssociationSAQueryMaximumTimeout 对整个 AP MLD 发起 SA 查询。QMF 默认策略表（11.24.1）新增 EPCS 优先接入行，SCS（11.25.2）将 EHT STA 导向第 35 章的附加规则，信标保护（11.52）现在对 MLD 的每条建立链路验证经 BIP 验证的操作信道——任一链路不匹配即令整个 MLD 去关联。贯穿全部 22 个单元，主旨一致：EHT 保留了第 11 章的基础机制，并将其重新表述，使一个多链路、宽带宽的设备表现为一个连贯一致的对端。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        345
+      ],
+      "note": "11.1.3 multiple-BSSID inheritance (RNR/Multi-Link exemptions); 11.1.4 FILS PHY-support criterion, AP-MLD multi-link probe response"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        346,
+        347
+      ],
+      "note": "11.2.2 bufferable MMPDU table for MLO; 11.2.3 power management, AP aging, PS-mode receive, active mode at MLD level"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        348,
+        349
+      ],
+      "note": "11.2.3.14/15 critical-update events, WNM sleep mode MLO and per-link GTK/IGTK/BIGTK"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        350,
+        351,
+        352
+      ],
+      "note": "11.3.1 MLD state variables; 11.3.2 renamed transition diagram; 11.3.3 MLD-aware Class 2/3 frame filtering"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        353,
+        354,
+        355,
+        356
+      ],
+      "note": "11.3.4 authentication/deauthentication MLD branches"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        356,
+        357,
+        358,
+        359,
+        360
+      ],
+      "note": "11.3.5 association/reassociation/disassociation, Basic Multi-Link element requirement"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        371,
+        372
+      ],
+      "note": "11.10.9 measurement reports and 11.10.15 Measurement Pilot — Bandwidth Indication subelement gating"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        372,
+        373
+      ],
+      "note": "11.13 SA Query procedures, MLD-level SA Query"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        374,
+        375
+      ],
+      "note": "11.20.6 TDLS channel switching to 320 MHz; renamed CCA/NAV subclause"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        375,
+        376
+      ],
+      "note": "11.21.2 event request/report MLD-aware (transition/RSNA/WNM-log)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        378,
+        379,
+        380
+      ],
+      "note": "11.21.15 channel usage procedures, gratuitous and trusted/untrusted channel usage"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        380,
+        381
+      ],
+      "note": "11.22.2 interworking capability consistency across affiliated STAs; 11.22.3 GAS/ANQP TDLS-Capability non-AP MLD address"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        381,
+        382
+      ],
+      "note": "11.24.1 default QMF policy EPCS row; 11.25.2 SCS procedures and EHT rules in 35.17"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        382
+      ],
+      "note": "11.45.2 FILS Discovery frame operating-class selection guidance"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        382,
+        383,
+        384
+      ],
+      "note": "11.49 Reduced Neighbor Report — 320 MHz class selection, 16-octet TBTT processing, MLD-aware grouping"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        384
+      ],
+      "note": "11.52 beacon protection per-setup-link operating-channel verification for MLO"
+    }
+  ],
+  "covers": [
+    "80211be-2024:11.1.3",
+    "80211be-2024:11.1.4",
+    "80211be-2024:11.2.2",
+    "80211be-2024:11.2.3",
+    "80211be-2024:11.3.1",
+    "80211be-2024:11.3.2",
+    "80211be-2024:11.3.3",
+    "80211be-2024:11.3.4",
+    "80211be-2024:11.3.5",
+    "80211be-2024:11.10.9",
+    "80211be-2024:11.10.15",
+    "80211be-2024:11.13",
+    "80211be-2024:11.20.6",
+    "80211be-2024:11.21.2",
+    "80211be-2024:11.21.15",
+    "80211be-2024:11.22.2",
+    "80211be-2024:11.22.3",
+    "80211be-2024:11.24.1",
+    "80211be-2024:11.25.2",
+    "80211be-2024:11.45.2",
+    "80211be-2024:11.49",
+    "80211be-2024:11.52"
+  ],
+  "track": "managing"
+}

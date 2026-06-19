@@ -1,0 +1,145 @@
+{
+  "id": "wifi7-43-mlo-multi-link-devices-addressing",
+  "title": {
+    "en": "The Multi-Link Idea: MLDs, Addressing and Discovery",
+    "zh": "多链路理念：MLD、寻址与发现"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Wi-Fi 7 is built on IEEE 802.11be-2024, the amendment that adds Extremely High Throughput (EHT) to the standard. An EHT station reuses most of the existing MAC and PHY machinery, but Clause 35 layers new behavior on top: wider channels (up to 320 MHz), denser modulation (4096-QAM), multiple resource units per user, and — the headline feature — Multi-Link Operation (MLO). This lesson focuses on the multi-link idea itself: what a Multi-Link Device is, how it is addressed, how an AP advertises its links, and how a client discovers them.",
+      "zh": "Wi-Fi 7 基于 IEEE 802.11be-2024 修正案，该修正案为标准引入了超高吞吐量（EHT，Extremely High Throughput）。EHT 站点复用了现有的大部分 MAC 与 PHY 机制，但第 35 章在其之上叠加了新行为：更宽的信道（最高 320 MHz）、更密集的调制（4096-QAM）、每用户多资源单元，以及最具代表性的特性——多链路操作（MLO，Multi-Link Operation）。本课聚焦于多链路理念本身：什么是多链路设备、它如何寻址、AP 如何通告其链路，以及客户端如何发现它们。"
+    },
+    {
+      "type": "prose",
+      "en": "An EHT STA's MAC and MLME comprise the functions of Clause 35 plus the base MAC functions of Clauses 10 and 26, the MLME functions of Clause 11, and the security functions of Clause 12 — except where Clause 35 supersedes them. In other words, 802.11be is a delta on top of the existing standard. MLO is defined in 35.3 and lets an AP MLD and a non-AP MLD set up multiple links between each other, each link operating on its own channel (for example 2.4, 5 and 6 GHz simultaneously).",
+      "zh": "EHT 站点的 MAC 与 MLME 由第 35 章的功能，加上第 10、26 章的基础 MAC 功能、第 11 章的 MLME 功能以及第 12 章的安全功能共同构成——除非第 35 章对它们做了取代。换言之，802.11be 是在现有标准之上的增量。MLO 在 35.3 中定义，它让 AP MLD 与非 AP MLD 之间建立多条链路，每条链路工作在各自的信道上（例如同时使用 2.4、5 与 6 GHz）。"
+    },
+    {
+      "type": "prose",
+      "en": "A Multi-Link Device (MLD) is the new top-level entity. An MLD operates with one or more affiliated STAs, and each affiliated STA is itself an ordinary EHT STA bound to a single link. An access point that supports MLO is an AP MLD with one or more affiliated APs; a client is a non-AP MLD with one or more affiliated non-AP STAs. Every STA affiliated with an MLD must be an EHT STA. All APs affiliated with the same AP MLD are members of the same ESS, connect to the same distribution system, and advertise the same SSID — so to the upper layers the multi-link AP looks like one network, while underneath it spans several radios.",
+      "zh": "多链路设备（MLD，Multi-Link Device）是新的顶层实体。一个 MLD 由一个或多个隶属（affiliated）站点构成，每个隶属站点本身就是一个绑定到单条链路的普通 EHT 站点。支持 MLO 的接入点是一个 AP MLD，下辖一个或多个隶属 AP；客户端是一个非 AP MLD，下辖一个或多个隶属非 AP 站点。隶属于 MLD 的每个站点都必须是 EHT 站点。隶属于同一 AP MLD 的所有 AP 同属一个 ESS、连接到同一分布式系统、并通告相同的 SSID——因此在上层看来这个多链路 AP 就是一张网络，而在底层它横跨多个射频。"
+    },
+    {
+      "type": "widget",
+      "widget": "mlo-links"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n  APMLD[AP MLD<br/>one MLD MAC addr] --> A1[Affiliated AP<br/>link 0 / 2.4 GHz]\n  APMLD --> A2[Affiliated AP<br/>link 1 / 5 GHz]\n  APMLD --> A3[Affiliated AP<br/>link 2 / 6 GHz]\n  STAMLD[non-AP MLD<br/>one MLD MAC addr] --> S1[Affiliated STA<br/>link 0]\n  STAMLD --> S2[Affiliated STA<br/>link 1]\n  S1 -.- A1\n  S2 -.- A2",
+      "zh": "graph TD\n  APMLD[AP MLD<br/>一个 MLD MAC 地址] --> A1[隶属 AP<br/>链路0 / 2.4 GHz]\n  APMLD --> A2[隶属 AP<br/>链路1 / 5 GHz]\n  APMLD --> A3[隶属 AP<br/>链路2 / 6 GHz]\n  STAMLD[非 AP MLD<br/>一个 MLD MAC 地址] --> S1[隶属站点<br/>链路0]\n  STAMLD --> S2[隶属站点<br/>链路1]\n  S1 -.- A1\n  S2 -.- A2"
+    },
+    {
+      "type": "prose",
+      "en": "Addressing is where the two-level structure shows up on the wire. An MLD has a single MLD MAC address that uniquely identifies it, and each affiliated STA additionally has its own per-link MAC address — STAs affiliated with the same MLD must use different MAC addresses. The MLD MAC address may coincide with one affiliated STA's address or be entirely separate. On an actual link, the per-link addresses do the work: in an individually addressed frame between two MLDs, Address 2 (TA) is the transmitting affiliated STA's MAC address and Address 1 (RA) is the receiving affiliated STA's MAC address. The MLD MAC address is the higher-layer identity (for example, the SA/DA carrying EAPOL-Key PDUs is the MLD MAC address).",
+      "zh": "寻址正是这种两级结构在空口上的体现。MLD 拥有唯一标识自身的单个 MLD MAC 地址，而每个隶属站点另有自己的每链路 MAC 地址——隶属于同一 MLD 的各站点必须使用不同的 MAC 地址。MLD MAC 地址可以与某个隶属站点的地址相同，也可以完全独立。在实际链路上，干活的是每链路地址：在两个 MLD 之间的单播帧中，Address 2（TA，发送地址）是发送方隶属站点的 MAC 地址，Address 1（RA，接收地址）是接收方隶属站点的 MAC 地址。MLD MAC 地址则是更高层的身份标识（例如承载 EAPOL-Key PDU 的 SA/DA 就设为 MLD MAC 地址）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: think of the MLD MAC address as the device's identity and the per-link MAC addresses as the identities of its individual radios. Security associations and the data path to the upper layers key off the MLD MAC address, so a single packet stream can be balanced across links transparently. But each frame on the air still uses the link-local TA/RA so that ordinary 802.11 frame exchange, ACKs and BSSID semantics keep working per link.",
+      "zh": "思维模型：把 MLD MAC 地址想象成设备的身份，把每链路 MAC 地址想象成它各个射频的身份。安全关联以及通往上层的数据通路都以 MLD MAC 地址为锚点，因此单个数据流可在各链路间透明地负载均衡。但空口上的每个帧仍使用链路本地的 TA/RA，从而让普通的 802.11 帧交互、ACK 与 BSSID 语义在每条链路上照常工作。"
+    },
+    {
+      "type": "prose",
+      "en": "How does an AP MLD tell clients about all its links? It uses the Multi-Link element. The Basic Multi-Link element appears in Beacon and Probe Response frames and carries a Common Info field (the MLD-level information, such as the MLD MAC address) plus an optional Link Info field built from Per-STA Profile subelements — one per reported affiliated AP. A profile can be complete (everything that AP would put in its own Beacon/Probe Response) or partial; the reporting AP sets the Complete Profile subfield accordingly. To keep these elements compact, 802.11be relies on inheritance (a reported AP inherits common elements from the reporting AP rather than repeating them) and subelement fragmentation when a profile exceeds 255 octets. Each affiliated AP is also tagged with a Link ID, an integer 0–14 that uniquely and permanently identifies it within the AP MLD.",
+      "zh": "AP MLD 如何把它所有链路的信息告诉客户端？它使用多链路元素（Multi-Link element）。基本多链路元素出现在 Beacon 与 Probe Response 帧中，携带一个 Common Info 字段（MLD 级信息，例如 MLD MAC 地址），外加一个可选的 Link Info 字段——由若干 Per-STA Profile 子元素构成，每个被报告的隶属 AP 对应一个。某个配置可以是完整的（即该 AP 在自己的 Beacon/Probe Response 中会放的全部内容），也可以是部分的；报告 AP 据此设置 Complete Profile 子字段。为保持这些元素紧凑，802.11be 依赖继承机制（被报告 AP 从报告 AP 处继承公共元素而非重复列出），并在配置超过 255 字节时使用子元素分片。每个隶属 AP 还被打上一个 Link ID，它是 0–14 的整数，在该 AP MLD 内唯一且永久地标识该 AP。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 220\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"10\" width=\"440\" height=\"200\" rx=\"6\"/><text x=\"20\" y=\"30\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">Basic Multi-Link element</text><rect x=\"20\" y=\"42\" width=\"160\" height=\"40\" rx=\"4\"/><text x=\"28\" y=\"60\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Multi-Link Control</text><text x=\"28\" y=\"75\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">(Type, Presence Bitmap)</text><rect x=\"190\" y=\"42\" width=\"250\" height=\"40\" rx=\"4\"/><text x=\"198\" y=\"60\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Common Info</text><text x=\"198\" y=\"75\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">MLD MAC address, AP MLD ID ...</text><rect x=\"20\" y=\"95\" width=\"420\" height=\"100\" rx=\"4\"/><text x=\"28\" y=\"113\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Link Info (optional)</text><rect x=\"32\" y=\"122\" width=\"190\" height=\"62\" rx=\"4\"/><text x=\"40\" y=\"140\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Per-STA Profile (link 0)</text><text x=\"40\" y=\"156\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">STA Control: Link ID,</text><text x=\"40\" y=\"170\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Complete Profile bit</text><rect x=\"238\" y=\"122\" width=\"190\" height=\"62\" rx=\"4\"/><text x=\"246\" y=\"140\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Per-STA Profile (link 1)</text><text x=\"246\" y=\"156\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">STA Info, STA Profile</text><text x=\"246\" y=\"170\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">(inherited + specific)</text></svg>",
+      "caption": {
+        "en": "The Basic Multi-Link element: a Common Info field carries MLD-level data, and an optional Link Info field carries one Per-STA Profile subelement per affiliated AP, each tagged with its Link ID.",
+        "zh": "基本多链路元素：Common Info 字段承载 MLD 级数据，可选的 Link Info 字段为每个隶属 AP 承载一个 Per-STA Profile 子元素，每个子元素都标有其 Link ID。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Discovery is the client's side of the story. A non-AP MLD discovers an AP MLD and its affiliated APs in several ways: by receiving a Basic Multi-Link element in a Beacon or Probe Response; by reading a Reduced Neighbor Report (RNR) element whose TBTT Information field includes MLD Parameters (the AP MLD ID and Link ID subfields tell it which reported APs belong to the same AP MLD); or by Neighbor Report elements that share the same MLD MAC address. When a client wants the full picture in one shot, it sends a multi-link probe request — a Probe Request carrying a Probe Request Multi-Link element that names the targeted AP MLD (via AP MLD ID) and optionally specific links (via Link ID in Per-STA Profiles). The AP replies with a multi-link probe response carrying a Basic Multi-Link element with complete or partial profiles for the requested APs. The client then uses everything it gathered to decide whether to perform ML setup.",
+      "zh": "发现是故事中客户端的一面。非 AP MLD 通过若干方式发现 AP MLD 及其隶属 AP：在 Beacon 或 Probe Response 中收到基本多链路元素；读取精简邻居报告（RNR，Reduced Neighbor Report）元素——其 TBTT Information 字段中包含 MLD Parameters（其中 AP MLD ID 与 Link ID 子字段表明哪些被报告 AP 属于同一 AP MLD）；或通过共享相同 MLD MAC 地址的邻居报告（Neighbor Report）元素。当客户端希望一次性获得全貌时，它会发送多链路探测请求（multi-link probe request）——一个携带 Probe Request Multi-Link 元素的 Probe Request，该元素通过 AP MLD ID 指明目标 AP MLD，并可选地通过 Per-STA Profile 中的 Link ID 指明具体链路。AP 则以多链路探测响应（multi-link probe response）回复，其中的基本多链路元素携带所请求各 AP 的完整或部分配置。客户端随后利用所收集的全部信息来决定是否执行 ML 建立（ML setup）。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant C as non-AP MLD\n  participant A as AP MLD\n  A-->>C: Beacon (Basic ML elem + RNR)\n  C->>A: Multi-link Probe Request (AP MLD ID, Link IDs)\n  A->>C: Multi-link Probe Response (per-link profiles)\n  Note over C,A: client decides whether to do ML setup",
+      "zh": "sequenceDiagram\n  participant C as 非 AP MLD\n  participant A as AP MLD\n  A-->>C: Beacon（基本多链路元素 + RNR）\n  C->>A: 多链路探测请求（AP MLD ID、Link ID）\n  A->>C: 多链路探测响应（各链路配置）\n  Note over C,A: 客户端决定是否进行 ML 建立"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: exactly which 802.11be-2024 clauses this lesson teaches",
+        "zh": "覆盖映射：本课所讲授的 802.11be-2024 具体条款"
+      },
+      "en": "35.1 (Introduction) frames Clause 35 as the EHT MAC specification, states that an EHT STA reuses Clauses 10/11/12/26 except where Clause 35 supersedes them, and points to 35.3 for MLO. 35.3.1 (General) establishes that MLO operates between two MLDs, that every affiliated STA must be an EHT STA, that an MLD operates with one or more affiliated STAs, and that all APs of an AP MLD share one ESS/DS/SSID. 35.3.2 (MLD addressing) defines the single MLD MAC address that uniquely identifies an MLD, requires distinct per-link MAC addresses, and specifies how Address 1 (RA) and Address 2 (TA) are set per link for individually and group addressed frames. 35.3.3 (Advertisement of ML information in Multi-Link element) covers the Basic Multi-Link element's Common Info and Link Info fields, the Per-STA Profile subelement, complete vs partial profiles (35.3.3.3), the Link ID (35.3.3.2, integer 0–14), inheritance (35.3.3.5) and subelement fragmentation (35.3.3.7). 35.3.4 (Discovery of an AP MLD) covers AP behavior with the Reduced Neighbor Report (35.3.4.1), the multi-link probe request/response (35.3.4.2), and non-AP MLD behavior — the ways a client discovers an AP MLD and decides on ML setup (35.3.4.3, 35.3.4.4).",
+      "zh": "35.1（引言）将第 35 章定位为 EHT MAC 规范，指出 EHT 站点复用第 10/11/12/26 章——除非被第 35 章取代，并指向 35.3 中的 MLO。35.3.1（概述）确立 MLO 在两个 MLD 之间运行、每个隶属站点必须是 EHT 站点、一个 MLD 至少有一个隶属站点，且同一 AP MLD 的所有 AP 共享一个 ESS/DS/SSID。35.3.2（MLD 寻址）定义了唯一标识 MLD 的单个 MLD MAC 地址，要求各链路使用不同的 MAC 地址，并规定单播帧与组播帧在每条链路上如何设置 Address 1（RA）与 Address 2（TA）。35.3.3（在多链路元素中通告 ML 信息）涵盖基本多链路元素的 Common Info 与 Link Info 字段、Per-STA Profile 子元素、完整与部分配置（35.3.3.3）、Link ID（35.3.3.2，整数 0–14）、继承（35.3.3.5）与子元素分片（35.3.3.7）。35.3.4（AP MLD 的发现）涵盖 AP 借助精简邻居报告的行为（35.3.4.1）、多链路探测请求/响应（35.3.4.2），以及非 AP MLD 的行为——客户端发现 AP MLD 并决定是否进行 ML 建立的各种方式（35.3.4.3、35.3.4.4）。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          485,
+          491,
+          492,
+          493,
+          494,
+          500,
+          501,
+          504
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        485
+      ],
+      "note": "35.1 Introduction — EHT MAC comprises Clause 35 plus base Clauses 10/11/12/26 except where superseded; MLO defined in 35.3"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        491,
+        492
+      ],
+      "note": "35.3.1 General — MLO between two MLDs; every affiliated STA is an EHT STA; one ESS/DS/SSID per AP MLD; an MLD operates with one or more affiliated STAs"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        492,
+        493
+      ],
+      "note": "35.3.2 MLD addressing — single MLD MAC address; distinct per-link MAC addresses; Address 1 (RA) / Address 2 (TA) settings per link"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        493,
+        494,
+        499
+      ],
+      "note": "35.3.3 Advertisement of ML information — Basic Multi-Link element, Common Info / Link Info, Per-STA Profile, complete vs partial profile (35.3.3.3), Link ID (35.3.3.2), fragmentation (35.3.3.7)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        500,
+        501,
+        502,
+        503,
+        504,
+        505
+      ],
+      "note": "35.3.4 Discovery of an AP MLD — RNR/MLD Parameters (35.3.4.1), multi-link probe request/response (35.3.4.2), non-AP MLD discovery behavior (35.3.4.3, 35.3.4.4)"
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.1",
+    "80211be-2024:35.3.1",
+    "80211be-2024:35.3.2",
+    "80211be-2024:35.3.3",
+    "80211be-2024:35.3.4"
+  ],
+  "track": "wifi7-eht"
+}

@@ -1,0 +1,184 @@
+{
+  "id": "wifi7-50-eht-mlme-sap-primitives",
+  "title": {
+    "en": "Driving an EHT MLD: the MLME-SAP Primitives (including Per-Link Enable/Disable)",
+    "zh": "驱动 EHT MLD：MLME-SAP 原语（含逐链路启用/禁用）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Above the MAC sits the SME (station management entity) — the software that decides what the radio should do. It talks to the MAC layer through a tidy list of named calls called the MLME-SAP (MAC sublayer management entity service access point) primitives: Scan, Join, Authenticate, Associate, Start, Stop, and so on. IEEE 802.11be does not rewrite this interface; it is an amendment, so clause 6 only describes what Multi-Link Operation (MLO) and Extremely High Throughput (EHT) ADD on top of the existing primitives. This lesson is a coverage map of those additions: a few new fields threaded into old calls, plus three brand-new calls that let an AP MLD turn individual links on and off.",
+      "zh": "MAC 之上是 SME（站点管理实体）——决定无线电该做什么的软件。它通过一组命名调用与 MAC 层对话，这组调用称为 MLME-SAP（MAC 子层管理实体服务接入点）原语：扫描、加入、认证、关联、启动、停止等等。IEEE 802.11be 并不重写这个接口；它是一份修正案，因此第 6 章只描述多链路操作（MLO）和极高吞吐量（EHT）在现有原语之上“新增”了什么。本课是这些新增内容的覆盖地图：在旧调用里穿入若干新字段，再加上三条全新调用，让 AP MLD 能够逐个开关链路。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The big conceptual shift in 802.11be is the MLD (multi-link device): one logical device that operates several radio links at once. Clause 6.1 adds a note that the MAC MIB inside an MLD is subject to synchronization rules, and clause 6.3.1 adds the key rule of the whole chapter — for MLO the MLD's SME invokes the primitives through one MLME-SAP, and when a primitive targets one affiliated STA, that STA is identified by its Link ID. Almost every addition below is a consequence of that one idea.",
+      "zh": "802.11be 最大的概念转变是 MLD（多链路设备）：一个同时运行多条无线链路的逻辑设备。第 6.1 章新增一条注释，说明 MLD 内部的 MAC MIB 受同步规则约束；第 6.3.1 章则新增了整章的关键规则——对于 MLO，MLD 的 SME 通过同一个 MLME-SAP 调用原语，当某原语针对单个隶属 STA 时，该 STA 由其 Link ID（链路标识）来标识。下文几乎每一项新增都是这一个思想的推论。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n  SME[\"MLD SME\"] -->|\"MLME-SAP primitives\"| MLME[\"MLME of the MLD\"]\n  MLME --> L1[\"Affiliated STA, Link ID 0\"]\n  MLME --> L2[\"Affiliated STA, Link ID 1\"]\n  MLME --> L3[\"Affiliated STA, Link ID 2\"]",
+      "zh": "graph TD\n  SME[\"MLD SME\"] -->|\"MLME-SAP 原语\"| MLME[\"MLD 的 MLME\"]\n  MLME --> L1[\"隶属 STA，Link ID 0\"]\n  MLME --> L2[\"隶属 STA，Link ID 1\"]\n  MLME --> L3[\"隶属 STA，Link ID 2\"]"
+    },
+    {
+      "type": "prose",
+      "en": "The first family of additions is connection setup. Scan (MLME-SCAN) gains an EHTCapabilities parameter and a new MULTI-LINK PROBE scan type, and the scan results can now carry the EHT Capabilities, EHT Operation, and Multi-Link elements describing each discovered MLD. Synchronization (MLME-JOIN) gains EHTCapabilities and a MultiLink parameter so the joining STA records the MLD's link parameters. Authenticate (MLME-AUTHENTICATE, all four sub-primitives) gains a MultiLink parameter plus a Recommended Link parameter (a Link ID, 0–15) so a non-AP MLD can suggest which link should carry the Authentication frame; its text is reworded throughout to say 'STA or MLD'. Deauthenticate (MLME-DEAUTHENTICATE) is reworded the same way for MLD-to-MLD teardown.",
+      "zh": "第一组新增是连接建立。扫描（MLME-SCAN）新增 EHTCapabilities 参数和一种新的 MULTI-LINK PROBE 扫描类型，扫描结果现在可携带描述每个被发现 MLD 的 EHT Capabilities、EHT Operation 与 Multi-Link 元素。同步（MLME-JOIN）新增 EHTCapabilities 与 MultiLink 参数，使加入的 STA 记录该 MLD 的链路参数。认证（MLME-AUTHENTICATE，四个子原语全部）新增 MultiLink 参数以及 Recommended Link 参数（一个 0–15 的 Link ID），使非 AP MLD 能建议由哪条链路承载认证帧；其文字通篇改写为“STA 或 MLD”。去认证（MLME-DEAUTHENTICATE）也以同样方式改写，用于 MLD 到 MLD 的拆除。"
+    },
+    {
+      "type": "prose",
+      "en": "The second family is association. Associate (MLME-ASSOCIATE), Reassociate (MLME-REASSOCIATE), and Disassociate (MLME-DISASSOCIATE) are all extended for MLDs. They carry a MultiLink parameter and an optional TTLM (TID-to-link mapping) parameter, and their semantics are reworded so an association is now between two MLDs, not just two STAs. Start (MLME-START) — used to bring up a BSS — now accepts EHTCapabilities, EHTOperation, MultiLink, and a TTLM parameter so an AP affiliated with an MLD launches an EHT BSS with its multi-link advertisement in place. Stop (MLME-STOP) is reworded to terminate a BSS run by an AP affiliated with an MLD.",
+      "zh": "第二组是关联。关联（MLME-ASSOCIATE）、重关联（MLME-REASSOCIATE）与解除关联（MLME-DISASSOCIATE）都为 MLD 做了扩展。它们携带 MultiLink 参数以及可选的 TTLM（TID 到链路映射）参数，其语义被改写为关联现在发生在两个 MLD 之间，而不仅仅是两个 STA 之间。启动（MLME-START）——用于建立 BSS——现在接受 EHTCapabilities、EHTOperation、MultiLink 与 TTLM 参数，使隶属于 MLD 的 AP 在启动 EHT BSS 时就带上其多链路通告。停止（MLME-STOP）则被改写为终止由隶属 MLD 的 AP 运行的 BSS。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant SME as MLD SME\n  participant MLME\n  SME->>MLME: MLME-SCAN.request (EHTCapabilities, MULTI-LINK PROBE)\n  MLME-->>SME: MLME-SCAN.confirm (EHT + Multi-Link elements)\n  SME->>MLME: MLME-JOIN.request (MultiLink)\n  SME->>MLME: MLME-AUTHENTICATE.request (Recommended Link)\n  SME->>MLME: MLME-ASSOCIATE.request (MultiLink, TTLM)",
+      "zh": "sequenceDiagram\n  participant SME as MLD SME\n  participant MLME\n  SME->>MLME: MLME-SCAN.request（EHTCapabilities、MULTI-LINK PROBE）\n  MLME-->>SME: MLME-SCAN.confirm（EHT 与 Multi-Link 元素）\n  SME->>MLME: MLME-JOIN.request（MultiLink）\n  SME->>MLME: MLME-AUTHENTICATE.request（Recommended Link）\n  SME->>MLME: MLME-ASSOCIATE.request（MultiLink、TTLM）"
+    },
+    {
+      "type": "prose",
+      "en": "The third family is genuinely new: three primitives that let an AP MLD manage its links individually. Link disable (MLME-BSS-LINK-DISABLE) asks the AP MLD to temporarily cease one affiliated AP's BSS — the request carries the BSSID, a DisableTimer (TUs until the link goes down), and an ExpectedDuration. During disablement that AP transmits and receives nothing: no Beacons, no Probe Responses, no DS access, and associated non-AP MLDs are told that no TIDs map to that link. Link enable (MLME-BSS-LINK-ENABLE) reverses it with a BSSID and an EnableTimer, resuming Beacons, Probe Responses, and DS access. AP removal (MLME-BSS-AP-REMOVAL) goes further: it removes an affiliated AP from the AP MLD entirely, carrying a BSSID and an APRemovalTimer counted in TBTTs. Each of the three has matching .request and .confirm primitives.",
+      "zh": "第三组是真正全新的：三条让 AP MLD 逐个管理其链路的原语。链路禁用（MLME-BSS-LINK-DISABLE）请求 AP MLD 临时停止某个隶属 AP 的 BSS——请求携带 BSSID、DisableTimer（链路停用前的 TU 数）与 ExpectedDuration。禁用期间该 AP 既不发送也不接收任何帧：没有信标、没有探测响应、没有 DS 接入，并且会告知已关联的非 AP MLD 没有任何 TID 映射到该链路。链路启用（MLME-BSS-LINK-ENABLE）以 BSSID 和 EnableTimer 将其逆转，恢复信标、探测响应与 DS 接入。AP 移除（MLME-BSS-AP-REMOVAL）更进一步：它把某个隶属 AP 整体从 AP MLD 中移除，携带 BSSID 与以 TBTT 计数的 APRemovalTimer。这三者各自都有配套的 .request 与 .confirm 原语。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why disable a link instead of just removing the AP? A disabled link is paused and reversible — handy for saving power or dodging interference on one band while keeping the AP in the MLD's setup. AP removal is permanent reconfiguration of the MLD. The MLME-SAP gives the SME both a soft switch (disable/enable) and a hard one (removal). The actual on-air procedures live in clause 35 (35.3.7.5 for disable/enable, 35.3.6.3 for removal); clause 6 only defines the management-plane call.",
+      "zh": "为什么要禁用链路，而不是干脆移除 AP？被禁用的链路只是暂停且可逆——便于在某个频段省电或规避干扰，同时仍把该 AP 保留在 MLD 的配置中。AP 移除则是对 MLD 的永久性重配置。MLME-SAP 给了 SME 一个软开关（禁用/启用）和一个硬开关（移除）。真正的空口流程位于第 35 章（禁用/启用见 35.3.7.5，移除见 35.3.6.3）；第 6 章只定义管理面的调用。"
+    },
+    {
+      "type": "widget",
+      "widget": "mlo-links",
+      "params": {}
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause-6 unit this lesson teaches",
+        "zh": "覆盖地图：本课讲授的每个第 6 章单元"
+      },
+      "en": "Management model and interface — 6.1 Overview of management model (adds the note that an MLD's MAC MIBs follow the synchronization rules of 35.3.26); 6.3.1 Introduction to the MLME-SAP interface (the MLD SME invokes primitives through one MLME-SAP; an affiliated STA is identified by its Link ID); 6.4 Table of MLME SAP interfaces (Table 6-1 gains EPCS, TTLM, EML, and the three new BSS-LINK/AP rows). Connection setup — 6.5.3 Scan (EHTCapabilities, MULTI-LINK PROBE, EHT/Multi-Link result elements); 6.5.4 Synchronization / JOIN (EHTCapabilities, MultiLink); 6.5.5 Authenticate (MultiLink, Recommended Link Link ID); 6.5.6 Deauthenticate (MLD-to-MLD wording). Association — 6.5.7 Associate, 6.5.8 Reassociate, 6.5.9 Disassociate (MultiLink, TTLM, MLD-to-MLD semantics); 6.5.11 Start (EHTCapabilities, EHTOperation, MultiLink, TTLM); 6.5.12 Stop (AP-affiliated-with-MLD wording). New MLO primitives — 6.5.30 Link disable (MLME-BSS-LINK-DISABLE: BSSID, DisableTimer, ExpectedDuration); 6.5.31 Link enable (MLME-BSS-LINK-ENABLE: BSSID, EnableTimer); 6.5.32 AP removal (MLME-BSS-AP-REMOVAL: BSSID, APRemovalTimer in TBTTs). Each new primitive defines paired .request and .confirm calls.",
+      "zh": "管理模型与接口 —— 6.1 管理模型概述（新增注释：MLD 的 MAC MIB 遵循 35.3.26 的同步规则）；6.3.1 MLME-SAP 接口引言（MLD 的 SME 通过同一个 MLME-SAP 调用原语；隶属 STA 由其 Link ID 标识）；6.4 MLME SAP 接口表（表 6-1 新增 EPCS、TTLM、EML 以及三条新的 BSS-LINK/AP 行）。连接建立 —— 6.5.3 扫描（EHTCapabilities、MULTI-LINK PROBE、EHT/Multi-Link 结果元素）；6.5.4 同步 / JOIN（EHTCapabilities、MultiLink）；6.5.5 认证（MultiLink、Recommended Link 链路 ID）；6.5.6 去认证（MLD 到 MLD 的措辞）。关联 —— 6.5.7 关联、6.5.8 重关联、6.5.9 解除关联（MultiLink、TTLM、MLD 到 MLD 语义）；6.5.11 启动（EHTCapabilities、EHTOperation、MultiLink、TTLM）；6.5.12 停止（隶属 MLD 的 AP 的措辞）。全新 MLO 原语 —— 6.5.30 链路禁用（MLME-BSS-LINK-DISABLE：BSSID、DisableTimer、ExpectedDuration）；6.5.31 链路启用（MLME-BSS-LINK-ENABLE：BSSID、EnableTimer）；6.5.32 AP 移除（MLME-BSS-AP-REMOVAL：BSSID、以 TBTT 计的 APRemovalTimer）。每条新原语都定义成对的 .request 与 .confirm 调用。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          85,
+          86,
+          89,
+          92,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The takeaway: 802.11be touches the management plane lightly but precisely. Existing connection-setup and association primitives gain a handful of EHT and Multi-Link parameters so the SME can describe an MLD instead of a lone STA, and a Link ID becomes the way to point a primitive at one specific link. On top of that, three new primitives — link disable, link enable, and AP removal — give an AP MLD a clean management-plane handle to reshape itself link by link while the rest of the device keeps serving traffic. Everything here is the call interface; the over-the-air mechanics it triggers are defined in EHT's own MAC clause, clause 35.",
+      "zh": "要点：802.11be 对管理面的改动轻巧而精确。现有的连接建立与关联原语新增了少量 EHT 和 Multi-Link 参数，使 SME 能够描述一个 MLD 而非单个 STA，而 Link ID 成为把原语指向某条具体链路的方式。在此之上，三条全新原语——链路禁用、链路启用与 AP 移除——给了 AP MLD 一个干净的管理面手柄，可在设备其余部分继续承载流量的同时逐链路地重塑自身。这里的一切都是调用接口；它所触发的空口机制定义在 EHT 自有的 MAC 章节，即第 35 章。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        85
+      ],
+      "note": "6.1 management-model note; 6.3.1 MLME-SAP intro (MLD SME, Link ID); 6.4 Table 6-1 new rows incl. BSS-LINK-DISABLE/ENABLE, BSS-AP-REMOVAL"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        86,
+        87
+      ],
+      "note": "6.5.3 Scan: EHTCapabilities param, MULTI-LINK PROBE scan type, EHT/Multi-Link result elements"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        88
+      ],
+      "note": "6.5.4 Synchronization / MLME-JOIN.request: EHTCapabilities, MultiLink"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        89,
+        90,
+        91
+      ],
+      "note": "6.5.5 Authenticate: MultiLink, Recommended Link (Link ID 0-15); STA-or-MLD wording"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        92
+      ],
+      "note": "6.5.6 Deauthenticate MLD wording; 6.5.7 Associate intro and MLME-ASSOCIATE.request"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        96,
+        97,
+        98
+      ],
+      "note": "6.5.7 Associate (MultiLink, TTLM); 6.5.8 Reassociate"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        103,
+        104
+      ],
+      "note": "6.5.9 Disassociate; 6.5.11 Start (EHTCapabilities, EHTOperation, MultiLink, TTLM); 6.5.12 Stop; 6.5.30 Link disable intro"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        105
+      ],
+      "note": "6.5.30 MLME-BSS-LINK-DISABLE.request/confirm: BSSID, DisableTimer, ExpectedDuration"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        106,
+        107
+      ],
+      "note": "6.5.31 MLME-BSS-LINK-ENABLE: BSSID, EnableTimer; 6.5.32 AP removal intro"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        108
+      ],
+      "note": "6.5.32 MLME-BSS-AP-REMOVAL.request/confirm: BSSID, APRemovalTimer in TBTTs"
+    }
+  ],
+  "covers": [
+    "80211be-2024:6.1",
+    "80211be-2024:6.3.1",
+    "80211be-2024:6.4",
+    "80211be-2024:6.5.3",
+    "80211be-2024:6.5.4",
+    "80211be-2024:6.5.5",
+    "80211be-2024:6.5.6",
+    "80211be-2024:6.5.7",
+    "80211be-2024:6.5.8",
+    "80211be-2024:6.5.9",
+    "80211be-2024:6.5.11",
+    "80211be-2024:6.5.12",
+    "80211be-2024:6.5.30",
+    "80211be-2024:6.5.31",
+    "80211be-2024:6.5.32"
+  ],
+  "track": "wifi7-eht"
+}

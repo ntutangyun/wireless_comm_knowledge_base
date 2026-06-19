@@ -1,0 +1,136 @@
+{
+  "id": "wifi7-46-mlo-advanced-nstr-tdls-twt",
+  "title": {
+    "en": "Advanced MLO: NSTR Mobile AP MLDs, TDLS and MLD TWT",
+    "zh": "进阶 MLO：NSTR 移动 AP MLD、TDLS 与 MLD TWT"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Multi-Link Operation (MLO) lets a Wi-Fi 7 device speak on several links at once. But not every multi-link device is a big mains-powered router with cleanly isolated radios. A phone acting as a hotspot, a laptop reaching a peer directly, or a power-saving client all need MLO behaviors tuned to their constraints. This lesson covers four of those specialized cases: the NSTR mobile AP MLD, TDLS direct links inside MLO, and Target Wake Time (TWT) scheduling for a multi-link device.",
+      "zh": "多链路操作（MLO）让 Wi-Fi 7 设备能在多条链路上同时通信。但并非每个多链路设备都是供电充足、射频彼此干净隔离的大型路由器。作为热点的手机、直连对端的笔记本、以及需要省电的客户端，都需要根据自身约束来调整 MLO 行为。本课讲解其中四个专门场景：NSTR 移动 AP MLD、MLO 中的 TDLS 直连链路，以及面向多链路设备的目标唤醒时间（TWT）调度。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with NSTR. \"Non-Simultaneous Transmit and Receive\" describes a link pair where the two radios are physically too close (think a phone) to transmit on one link while receiving on the other — the device's own transmission would deafen its own receiver. An NSTR mobile AP MLD is exactly that: a battery-powered hotspot whose at most two links form an NSTR link pair. It designates one as the primary link; Beacons, Probe Responses, and group-addressed Data frames go only on the primary link, and the nonprimary link can be disabled or removed to save power without disturbing legacy or single-link clients.",
+      "zh": "先看 NSTR。“非同时收发”（Non-Simultaneous Transmit and Receive）指的是这样一对链路：两个射频在物理上挨得太近（想象一部手机），无法在一条链路发送的同时在另一条链路接收——设备自己的发射会把自己的接收机“震聋”。NSTR 移动 AP MLD 正是如此：一个电池供电的热点，其最多两条链路构成一个 NSTR 链路对。它把其中一条指定为主链路；信标帧、探测响应帧和组播数据帧只在主链路上发送，而非主链路可以被禁用或移除以省电，且不会影响传统设备或单链路客户端。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n  subgraph Phone[\"NSTR mobile AP MLD\"]\n    P[\"Primary link\\nBeacons + group data\"]\n    N[\"Nonprimary link\\nmay be disabled\"]\n  end\n  STA[\"Associated non-AP MLD\"]\n  STA -->|auth / assoc / 4-way| P\n  STA -.->|only paired with primary TXOP| N",
+      "zh": "graph LR\n  subgraph Phone[\"NSTR 移动 AP MLD\"]\n    P[\"主链路\\n信标 + 组播数据\"]\n    N[\"非主链路\\n可被禁用\"]\n  end\n  STA[\"已关联的非 AP MLD\"]\n  STA -->|认证 / 关联 / 四次握手| P\n  STA -.->|仅在主链路 TXOP 配对时| N"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The NSTR rule is the key intuition: because the hotspot cannot transmit on one link while receiving on the other, a frame exchange on the nonprimary link is only allowed when the primary link is also active with the same start time. Authentication, (re)association, and the 4-way handshake therefore happen only on the primary link, and PPDUs that go out simultaneously on both links must align their end times.",
+      "zh": "NSTR 规则是关键直觉：由于热点无法在一条链路发送的同时在另一条链路接收，只有当主链路在相同起始时刻也处于活动状态时，才允许在非主链路上进行帧交换。因此认证、（重）关联和四次握手都只在主链路上完成，而同时在两条链路上发出的 PPDU 必须对齐结束时刻。"
+    },
+    {
+      "type": "prose",
+      "en": "Discovery is adapted too. An AP on the primary link sets the AP MLD Type Indication subfield to 1 so a client recognizes an NSTR mobile AP MLD, and it advertises the nonprimary link through a Reduced Neighbor Report rather than letting that link beacon on its own. Clients never send a Probe Request to the nonprimary link and the MLD never answers one there — to learn the nonprimary profile, a station sends a multi-link probe request to the primary link. Channel switching and quieting for the nonprimary link are also driven from the primary link's Beacons, since the nonprimary link has no TBTT of its own.",
+      "zh": "发现过程也做了适配。主链路上的 AP 将 AP MLD 类型指示子字段置为 1，使客户端能识别出 NSTR 移动 AP MLD，并通过精简邻居报告（Reduced Neighbor Report）来通告非主链路，而不让该链路自行发送信标。客户端绝不向非主链路发送探测请求，MLD 也绝不在该链路上应答——要获取非主链路的配置，站点须向主链路发送多链路探测请求。非主链路的信道切换与静默同样由主链路的信标驱动，因为非主链路本身没有 TBTT。"
+    },
+    {
+      "type": "prose",
+      "en": "Next, TDLS in MLO. A Tunneled Direct Link Setup (TDLS) link lets two clients talk directly instead of relaying every frame through the AP. In Wi-Fi 7 the rule is deliberately simple: an EHT non-AP STA affiliated with a non-AP MLD shall establish only a single-link TDLS direct link — TDLS does not itself become multi-link. Discovery and setup frames travel either through the intermediate AP MLD or directly, and the direct-link context (security, sequence/packet numbers, Block Ack) is kept with respect to the non-AP MLD's MLD MAC address, with TA and RA fields set to that MLD MAC address.",
+      "zh": "接下来是 MLO 中的 TDLS。隧道直接链路建立（TDLS）让两个客户端直接通信，而不必把每一帧都经由 AP 中转。在 Wi-Fi 7 中，规则被刻意保持简单：隶属于非 AP MLD 的 EHT 非 AP STA 只能建立单链路 TDLS 直连链路——TDLS 本身不会变成多链路。发现与建立帧既可经由中间 AP MLD 传递，也可直接传递；而直连链路的上下文（安全、序列号/分组号、块确认）按非 AP MLD 的 MLD MAC 地址来维护，TA 与 RA 字段也设为该 MLD MAC 地址。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "TDLS still gains an MLO flavor in two ways. A TDLS Multi-Link element carries only the MLD MAC address of the associated AP MLD (no Link Info field), and two TDLS peers can coordinate over a broadcast TWT schedule using TDLS Broadcast TWT Request/Response frames so a peer stays awake during the shared TWT service periods.",
+      "zh": "TDLS 仍然以两种方式带上了 MLO 的色彩。TDLS 多链路元素仅携带所关联 AP MLD 的 MLD MAC 地址（不含链路信息字段）；此外，两个 TDLS 对端可以借助 TDLS 广播 TWT 请求/响应帧，围绕一个广播 TWT 调度进行协调，使对端在共享的 TWT 服务期内保持唤醒。"
+    },
+    {
+      "type": "prose",
+      "en": "Third, MLD TWT operation. Target Wake Time lets a station and AP agree on scheduled wake windows so the station can doze in between. For a multi-link device, each TWT element can name exactly one link via the Link ID Bitmap subfield (only one bit set), and the Target Wake Time value is interpreted against that link's TSF clock. A request can carry several TWT elements — one per link — and may explicitly ask for aligned or non-aligned service periods across links via the Aligned TWT Bitmap subfield, with the wake intervals required to be multiples of a common denominator. Broadcast TWT adds an Aligned subfield so a schedule can be marked as aligned across multiple links, and a primary-link AP can even advertise the nonprimary link's broadcast TWT schedule on its behalf.",
+      "zh": "第三是 MLD TWT 操作。目标唤醒时间让站点与 AP 约定计划好的唤醒窗口，使站点在间隙中休眠。对多链路设备而言，每个 TWT 元素可通过链路 ID 位图子字段精确指定一条链路（只置一位），其目标唤醒时间数值按该链路的 TSF 时钟来解释。一次请求可携带多个 TWT 元素——每条链路一个——并可通过对齐 TWT 位图子字段显式请求跨链路的服务期对齐或非对齐，且要求各唤醒间隔为同一公分母的整数倍。广播 TWT 增加了一个“对齐”子字段，使某个调度可被标记为跨多链路对齐；主链路上的 AP 甚至可以代为通告非主链路的广播 TWT 调度。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 400 160\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><text x=\"4\" y=\"24\" stroke=\"none\" fill=\"currentColor\" font-size=\"13\">Link 1 TSF</text><line x1=\"100\" y1=\"30\" x2=\"390\" y2=\"30\"/><rect x=\"130\" y=\"18\" width=\"40\" height=\"24\" fill=\"currentColor\" opacity=\"0.3\"/><rect x=\"250\" y=\"18\" width=\"40\" height=\"24\" fill=\"currentColor\" opacity=\"0.3\"/><text x=\"4\" y=\"104\" stroke=\"none\" fill=\"currentColor\" font-size=\"13\">Link 2 TSF</text><line x1=\"100\" y1=\"110\" x2=\"390\" y2=\"110\"/><rect x=\"130\" y=\"98\" width=\"40\" height=\"24\" fill=\"currentColor\" opacity=\"0.3\"/><rect x=\"250\" y=\"98\" width=\"40\" height=\"24\" fill=\"currentColor\" opacity=\"0.3\"/><line x1=\"150\" y1=\"42\" x2=\"150\" y2=\"98\" stroke-dasharray=\"4 3\"/><line x1=\"270\" y1=\"42\" x2=\"270\" y2=\"98\" stroke-dasharray=\"4 3\"/><text x=\"120\" y=\"150\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">aligned TWT service periods</text></svg>",
+      "caption": {
+        "en": "Aligned TWT: the wake service periods on Link 1 and Link 2 line up in time (each in its own link's TSF), letting the MLD wake both radios together and doze together.",
+        "zh": "对齐 TWT：链路 1 与链路 2 的唤醒服务期在时间上对齐（各自以本链路的 TSF 为参照），让 MLD 能同时唤醒、同时休眠两个射频。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the framing for these EHT features. Beamforming and DL MU-MIMO need to know the channel before steering energy at a receiver, so EHT STAs run the EHT sounding protocol to gather channel state information. The beamformer sends an EHT sounding NDP, the beamformee measures it and returns an EHT compressed beamforming/CQI report — in SU, MU, or CQI feedback form — and the beamformer turns that estimate into a steering matrix. Both non-trigger-based and trigger-based sounding sequences exist; together they are the channel-knowledge foundation that the rest of EHT's high-throughput operation builds on.",
+      "zh": "最后是这些 EHT 特性的总体框架。波束成形与下行 MU-MIMO 需要先了解信道，才能把能量定向送往接收方，因此 EHT STA 运行 EHT 探测协议来采集信道状态信息。波束成形端发送一个 EHT 探测 NDP，被成形端对其进行测量并返回一份 EHT 压缩波束成形/CQI 报告——可为 SU、MU 或 CQI 反馈形式——波束成形端再把该估计转换为导向矩阵。非触发式与触发式两种探测序列都存在；它们共同构成了 EHT 其余高吞吐操作所依赖的信道认知基础。"
+    },
+    {
+      "type": "widget",
+      "widget": "mlo-links",
+      "params": {}
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Clause coverage map",
+        "zh": "条款覆盖图"
+      },
+      "en": "This lesson teaches four clauses of IEEE 802.11be-2024. 35.3.19 NSTR mobile AP MLD operation — at most two links forming an NSTR link pair, a designated primary link carrying Beacons/Probe Responses/group data, primary-only authentication and association, paired transmissions with aligned end times (35.3.19.1), discovery via AP MLD Type Indication and Reduced Neighbor Report with multi-link probe requests to the primary link (35.3.19.2), and channel switch/quiet driven from the primary link since the nonprimary link has no TBTT (35.3.19.3). 35.3.21 TDLS procedure in MLO — single-link TDLS only, context kept against the non-AP MLD MAC address, TDLS Multi-Link element carrying only the associated AP MLD MAC, and TDLS broadcast TWT coordination (35.3.21.1, 35.3.21.2). 35.3.24 MLD TWT operation — individual TWT agreements with per-link Link ID Bitmap and per-link TSF reference (35.3.24.1), alignment/non-alignment of TWTs across links via Aligned TWT Bitmap and common-denominator wake intervals (35.3.24.1.2), aligned broadcast TWT and primary-link advertisement of the nonprimary link's schedule (35.3.24.2), and flexible wake time over setup links (35.3.24.3). 35.7.1 EHT sounding operation general — the EHT sounding protocol, sounding NDP, and SU/MU/CQI compressed beamforming feedback used to derive the steering matrix.",
+      "zh": "本课讲解 IEEE 802.11be-2024 的四个条款。35.3.19 NSTR 移动 AP MLD 操作——最多两条链路构成 NSTR 链路对，指定一条主链路承载信标/探测响应/组播数据，认证与关联仅在主链路进行，配对发送时对齐结束时刻（35.3.19.1）；通过 AP MLD 类型指示和精简邻居报告进行发现，并向主链路发送多链路探测请求（35.3.19.2）；由于非主链路没有 TBTT，信道切换/静默由主链路驱动（35.3.19.3）。35.3.21 MLO 中的 TDLS 过程——仅支持单链路 TDLS，上下文按非 AP MLD MAC 地址维护，TDLS 多链路元素仅携带所关联 AP MLD MAC，以及 TDLS 广播 TWT 协调（35.3.21.1、35.3.21.2）。35.3.24 MLD TWT 操作——单独 TWT 协议带逐链路的链路 ID 位图与逐链路 TSF 参照（35.3.24.1），通过对齐 TWT 位图与公分母唤醒间隔实现跨链路 TWT 的对齐/非对齐（35.3.24.1.2），对齐广播 TWT 及由主链路代为通告非主链路调度（35.3.24.2），以及在建立链路上的灵活唤醒时间（35.3.24.3）。35.7.1 EHT 探测操作总则——EHT 探测协议、探测 NDP，以及用于推导导向矩阵的 SU/MU/CQI 压缩波束成形反馈。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          575,
+          576,
+          577,
+          580,
+          583,
+          584,
+          585,
+          586,
+          598
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        575,
+        576,
+        577
+      ],
+      "note": "35.3.19 NSTR mobile AP MLD operation: NSTR link pair, primary/nonprimary link, primary-only auth/assoc, paired transmissions and end-time alignment, discovery and channel switching"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        580
+      ],
+      "note": "35.3.21 TDLS procedure in MLO: single-link TDLS only, context vs non-AP MLD MAC address, TDLS Multi-Link element, TDLS broadcast TWT"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        583,
+        584,
+        585,
+        586
+      ],
+      "note": "35.3.24 MLD TWT operation: individual TWT with Link ID Bitmap and per-link TSF, aligned/non-aligned TWT across links, broadcast TWT, flexible wake time"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        598
+      ],
+      "note": "35.7.1 EHT sounding operation general: EHT sounding protocol, sounding NDP, SU/MU/CQI compressed beamforming feedback, steering matrix"
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.3.19",
+    "80211be-2024:35.3.21",
+    "80211be-2024:35.3.24",
+    "80211be-2024:35.7.1"
+  ],
+  "track": "wifi7-eht"
+}

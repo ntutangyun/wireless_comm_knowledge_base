@@ -1,0 +1,203 @@
+{
+  "id": "frames-48-eht-frame-format-additions",
+  "title": {
+    "en": "What EHT Adds to the Frame: Wi-Fi 7 Frame-Format Extensions",
+    "zh": "EHT 给帧带来了什么：Wi-Fi 7 帧格式扩展"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE 802.11be (Wi-Fi 7) is an amendment, not a fresh standard. Clause 9 of the base 802.11 standard already defines every frame: the MAC header, control/data/management frame types, the elements they carry, the Action frames, and aggregation. 802.11be does not rewrite that — it surgically patches it. Throughout clause 9 you see edit instructions like \"Change the following paragraph\" or \"Insert the following row,\" each adding just enough to carry the new EHT (Extremely High Throughput) and MLO (Multi-Link Operation) machinery: 320 MHz, multi-RU, 4096-QAM, and operation across multiple links at once. This lesson is a guided tour of those deltas — what EHT adds to the frame, clause by clause.",
+      "zh": "IEEE 802.11be（Wi-Fi 7）是一个修正案，而不是全新的标准。基础 802.11 标准的第 9 章已经定义了所有帧：MAC 头、控制/数据/管理帧类型、它们携带的元素（element）、Action 帧以及聚合机制。802.11be 并不重写这些内容，而是对其进行精准的局部修补。在整个第 9 章中，你会看到诸如“修改下列段落”或“插入下列行”这样的编辑指令，每一处都恰好补充了承载新的 EHT（极高吞吐量）与 MLO（多链路操作）机制所需的内容：320 MHz、多资源单元（multi-RU）、4096-QAM，以及同时跨多条链路工作。本课就是对这些增量改动的逐章导览——看看 EHT 究竟给帧带来了什么。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Reading tip: when an amendment clause is numbered below 35 (like clause 9), it never restates base behavior. Every sentence is a change. So the question to ask of each subclause is not \"what does this frame do?\" but \"what did EHT/MLO add here, and why?\" Clauses 35 and 36 are EHT's own brand-new MAC and PHY clauses — those define behavior in full; clause 9 only carries the field-level footprint of it.",
+      "zh": "阅读小贴士：当修正案中的某个章节编号小于 35（例如第 9 章）时，它从不复述基础行为，每一句都是一处改动。因此对每个子条款要问的不是“这个帧做什么”，而是“EHT/MLO 在这里加了什么、为什么加”。第 35 章和第 36 章才是 EHT 自己全新的 MAC 与 PHY 章节——那里完整定义行为；第 9 章只承载这些行为在字段层面的落点。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n  A[Clause 9 EHT deltas] --> B[9.1-9.2 fields and Duration/ID]\n  A --> C[9.3 control/data/mgmt frames]\n  A --> D[9.4 fields and elements]\n  A --> E[9.6 Action frames]\n  A --> F[9.7 A-MPDU]\n  D --> D1[Multi-Link element]\n  D --> D2[EHT Capabilities/Operation]\n  E --> E1[MLO across 8 categories]",
+      "zh": "graph TD\n  A[第9章 EHT 增量] --> B[9.1-9.2 字段与 Duration/ID]\n  A --> C[9.3 控制/数据/管理帧]\n  A --> D[9.4 字段与元素]\n  A --> E[9.6 Action 帧]\n  A --> F[9.7 A-MPDU]\n  D --> D1[多链路元素]\n  D --> D2[EHT 能力/操作]\n  E --> E1[MLO 横跨 8 个类别]"
+    },
+    {
+      "type": "prose",
+      "en": "Start at the MAC header (9.2.4). The Frame Control field's type/subtype table gains an EHT NDP Announcement entry, and the More Data subfield grows a whole new meaning for MLDs: an AP affiliated with an AP MLD uses it to tell a non-AP MLD that buffered units exist for TIDs mapped to this particular link by the current TID-to-link mapping. The HT Control field's A-Control region adds a new EHT OM Control variant (a compact EHT operating-mode signal) and an ELA Control (EHT link adaptation) variant. The Compressed BlockAck variant (9.3.1.8) stretches its bitmap so an EHT STA can acknowledge up to 1024 MSDUs in one frame — a direct consequence of EHT's far larger aggregates.",
+      "zh": "先看 MAC 头（9.2.4）。帧控制字段的类型/子类型表新增了一个 EHT NDP Announcement 条目，而 More Data 子字段则为 MLD 增添了全新含义：隶属于 AP MLD 的 AP 用它告诉非 AP MLD，针对当前 TID 到链路映射分配到这条具体链路的那些 TID，仍有缓存的数据单元。HT 控制字段的 A-Control 区新增了 EHT OM Control 变体（一个紧凑的 EHT 操作模式信令）和 ELA Control（EHT 链路自适应）变体。压缩 BlockAck 变体（9.3.1.8）扩展了其位图，使 EHT STA 能在一帧中确认多达 1024 个 MSDU——这正是 EHT 大得多的聚合所带来的直接结果。"
+    },
+    {
+      "type": "prose",
+      "en": "The biggest single addition is the elements list (9.4.2). Table 9-130 gains a cluster of new Element ID Extensions: EHT Operation, the Multi-Link element, EHT Capabilities, TID-To-Link Mapping, Multi-Link Traffic Indication, plus Bandwidth Indication and others. Of these, the Multi-Link element is the keystone of Wi-Fi 7: it is how an MLD advertises and negotiates its set of links and per-link profiles. Because these elements are new, every management frame that should carry them gets a row inserted: the Beacon (9.3.3.2) gains Multi-Link, EHT Capabilities, EHT Operation, Multi-Link Traffic Indication and TID-To-Link Mapping rows; Association Request/Response (9.3.3.5/9.3.3.6) gain Basic Multi-Link and EHT Capabilities rows.",
+      "zh": "最大的单项新增是元素列表（9.4.2）。表 9-130 新增了一批新的 Element ID Extension：EHT Operation、多链路元素（Multi-Link）、EHT Capabilities、TID 到链路映射（TID-To-Link Mapping）、多链路流量指示（Multi-Link Traffic Indication），以及 Bandwidth Indication 等。其中，多链路元素是 Wi-Fi 7 的基石：MLD 正是通过它来通告并协商自己的链路集合以及每条链路的配置档（profile）。由于这些元素都是新增的，凡是应携带它们的管理帧都被插入了相应的行：信标帧（9.3.3.2）新增了 Multi-Link、EHT Capabilities、EHT Operation、Multi-Link Traffic Indication 和 TID-To-Link Mapping 行；关联请求/响应帧（9.3.3.5/9.3.3.6）新增了 Basic Multi-Link 与 EHT Capabilities 行。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"20\" stroke=\"none\" fill=\"currentColor\" font-size=\"13\">Beacon frame body (EHT-inserted rows)</text><rect x=\"10\" y=\"35\" width=\"120\" height=\"30\"/><text x=\"22\" y=\"54\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Multi-Link</text><rect x=\"130\" y=\"35\" width=\"120\" height=\"30\"/><text x=\"140\" y=\"54\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">EHT Capabilities</text><rect x=\"250\" y=\"35\" width=\"120\" height=\"30\"/><text x=\"262\" y=\"54\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">EHT Operation</text><rect x=\"10\" y=\"75\" width=\"160\" height=\"30\"/><text x=\"18\" y=\"94\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">ML Traffic Indication</text><rect x=\"170\" y=\"75\" width=\"160\" height=\"30\"/><text x=\"178\" y=\"94\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">TID-To-Link Mapping</text><text x=\"10\" y=\"135\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Existing base elements unchanged; only the EHT rows are added.</text></svg>",
+      "caption": {
+        "en": "The EHT amendment inserts rows into existing frame-body tables rather than redefining the frame — these new elements ride alongside the base ones.",
+        "zh": "EHT 修正案是向既有帧体表中插入若干行，而不是重新定义整个帧——这些新元素与基础元素并列承载。"
+      }
+    },
+    {
+      "type": "widget",
+      "widget": "mlo-links",
+      "params": {}
+    },
+    {
+      "type": "prose",
+      "en": "Two cross-cutting themes drive the Action-frame edits (9.6). First, wider/punctured bandwidth: a new Bandwidth Indication element is slotted into the Channel Switch Announcement (9.6.2) and the Public Action Extended CSA / Measurement Pilot (9.6.7), because a CSA must now be able to say \"switching to 320 MHz\" or \"switching to a channel with a punctured 20 MHz subchannel.\" Second, MLO reaches into protocols that predate it: FT (fast transition, 9.6.8) inserts a Basic Multi-Link element into FT Request/Response/Confirm/Ack so a roam can target an AP MLD; TDLS (9.6.12) adds TDLS Multi-Link and EHT Capabilities rows and two new Broadcast TWT action fields; WNM (9.6.13) teaches BSS Transition Management about AP MLDs and adds a Link Removal Imminent bit, and WNM Sleep Mode Response carries new MLO GTK/IGTK/BIGTK subelements for per-link group keys.",
+      "zh": "两条贯穿性主线驱动了 Action 帧的修改（9.6）。其一是更宽/打孔的带宽：新的 Bandwidth Indication 元素被嵌入信道切换通告（CSA，9.6.2）以及 Public Action 的扩展 CSA / 测量导频（Measurement Pilot，9.6.7），因为 CSA 现在必须能表达“正在切换到 320 MHz”或“正在切换到含有被打孔的 20 MHz 子信道的信道”。其二是 MLO 渗透进早于它出现的各类协议：FT（快速转换，9.6.8）在 FT Request/Response/Confirm/Ack 中插入 Basic Multi-Link 元素，使漫游能够以 AP MLD 为目标；TDLS（9.6.12）新增 TDLS Multi-Link 与 EHT Capabilities 行以及两个新的 Broadcast TWT action 字段；WNM（9.6.13）让 BSS 转换管理理解 AP MLD 并新增 Link Removal Imminent 位，而 WNM Sleep Mode Response 则携带新的 MLO GTK/IGTK/BIGTK 子元素以承载每条链路的组密钥。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause 9 unit this lesson teaches",
+        "zh": "覆盖地图：本课讲到的每一个第 9 章单元"
+      },
+      "en": "General (9.1): adds a status-code-validity rule for EHT STAs. Frame fields (9.2.4): EHT NDP Announcement type/subtype, MLD-aware More Data, EHT OM Control and ELA Control A-Control variants, Queue Size / Ack Policy edits for EHT TB PPDUs. Duration/ID (9.2.5): EDCA single/multiple protection edits and the EHT PPDU column in the max-size/duration table. Control frames (9.3.1): RTS/PS-Poll/CF-End/BlockAckReq bandwidth-signaling-TA wording, Compressed BlockAck up to 1024 MSDUs, EHT NDP Announcement, EHT variant Trigger User Info, MU-RTS TXS. Data frames (9.3.2): Address/BSSID rules for individually addressed frames sent on an MLD-to-MLD link, plus Dynamic/Basic A-MSDU cases. Management frames (9.3.3): MMPDU sizing for EHT PPDUs and the inserted Beacon / (Re)Association element rows. Fields not elements (9.4.1): Critical Update Flag in Capability Information, MLD-aware Current AP Address and Listen Interval, and the EHT MIMO Control / EHT Compressed Beamforming Report / EML Control / Link ID Info family. Elements (9.4.2): the new Element IDs — Multi-Link, EHT Capabilities, EHT Operation, TID-To-Link Mapping, Multi-Link Traffic Indication, Bandwidth Indication — and the MLD-aware TIM. Action frames: Spectrum Management (9.6.2) Bandwidth Indication in CSA; Public (9.6.7) Extended CSA / Measurement Pilot / FILS Discovery EHT rows; FT (9.6.8) Basic Multi-Link in all four FT frames; TDLS (9.6.12) Multi-Link + EHT Capabilities + Broadcast TWT; WNM (9.6.13) AP-MLD BSS transition + MLO group-key subelements; Self-protected (9.6.15) EHT Capabilities/Operation in Mesh Peering Open/Confirm; Robust AV Streaming (9.6.18) MLD-conditional SCS Descriptor List; S1G (9.6.24) multi-link TWT Setup carrying more than one TWT element. A-MPDU (9.7.1, 9.7.3): EHT PPDU added to EOF-padding and A-MPDU-length rules, max pre-EOF length 15 523 200 octets, MPDU Length two-subfield encoding extended to EHT, and EHT_MU/EHT_TB added to the permitted A-MPDU formats and contexts.",
+      "zh": "总则（9.1）：为 EHT STA 增加了一条状态码有效性规则。帧字段（9.2.4）：EHT NDP Announcement 类型/子类型、感知 MLD 的 More Data、EHT OM Control 与 ELA Control 这两个 A-Control 变体，以及针对 EHT TB PPDU 的 Queue Size / Ack Policy 改动。Duration/ID（9.2.5）：EDCA 单次/多次保护的改动，以及最大尺寸/时长表中新增的 EHT PPDU 列。控制帧（9.3.1）：RTS/PS-Poll/CF-End/BlockAckReq 的带宽信令 TA 措辞、压缩 BlockAck 可达 1024 个 MSDU、EHT NDP Announcement、EHT 变体 Trigger 用户信息以及 MU-RTS TXS。数据帧（9.3.2）：在 MLD 间链路上发送单播帧时的地址/BSSID 规则，以及 Dynamic/Basic A-MSDU 情形。管理帧（9.3.3）：EHT PPDU 的 MMPDU 尺寸规则，以及插入信标 /（重）关联帧的元素行。非元素字段（9.4.1）：能力信息中的 Critical Update Flag、感知 MLD 的 Current AP Address 与 Listen Interval，以及 EHT MIMO Control / EHT Compressed Beamforming Report / EML Control / Link ID Info 这一系列字段。元素（9.4.2）：新增的 Element ID——Multi-Link、EHT Capabilities、EHT Operation、TID-To-Link Mapping、Multi-Link Traffic Indication、Bandwidth Indication——以及感知 MLD 的 TIM。Action 帧：频谱管理（9.6.2）在 CSA 中新增 Bandwidth Indication；Public（9.6.7）的扩展 CSA / 测量导频 / FILS Discovery 的 EHT 行；FT（9.6.8）在全部四种 FT 帧中加入 Basic Multi-Link；TDLS（9.6.12）的 Multi-Link + EHT Capabilities + Broadcast TWT；WNM（9.6.13）的面向 AP MLD 的 BSS 转换以及 MLO 组密钥子元素；自保护（9.6.15）在 Mesh Peering Open/Confirm 中的 EHT Capabilities/Operation；鲁棒 AV 流（9.6.18）以 MLD 为条件的 SCS Descriptor List；S1G（9.6.24）携带多个 TWT 元素的多链路 TWT Setup。A-MPDU（9.7.1、9.7.3）：把 EHT PPDU 加入 EOF 填充与 A-MPDU 长度规则、最大 pre-EOF 长度 15 523 200 字节、把 MPDU Length 的双子字段编码扩展到 EHT，并把 EHT_MU/EHT_TB 加入允许的 A-MPDU 格式与上下文。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          114,
+          128,
+          129,
+          171,
+          172,
+          181,
+          200,
+          286,
+          290,
+          293,
+          296,
+          302,
+          303,
+          314,
+          315
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Finally, aggregation (9.7). EHT's headline throughput needs much larger A-MPDUs, so 9.7.1 simply adds \"EHT\" everywhere VHT/HE appeared: EOF padding and EOF-padding subframes apply to EHT PPDUs, the maximum A-MPDU pre-EOF length jumps to 15 523 200 octets, and the two-subfield MPDU Length encoding (low 12 bits + high 2 bits, total 14) now covers EHT. Then 9.7.3 adds EHT_MU and EHT_TB to the list of PPDU formats that may carry an A-MPDU, extends the same-Duration/ID rule to EHT MU PPDUs, and adds EHT to the Control Response and S-MPDU contexts. Nothing here is conceptually new — it is the base aggregation machine stretched to EHT scale. That is the recurring shape of the whole clause: small, precise insertions that let existing frames carry Wi-Fi 7's wider channels, higher modulation, and multi-link reality.",
+      "zh": "最后是聚合（9.7）。EHT 标志性的吞吐量需要大得多的 A-MPDU，因此 9.7.1 只是在凡是出现 VHT/HE 的地方都补上“EHT”：EOF 填充及 EOF 填充子帧适用于 EHT PPDU，A-MPDU 的最大 pre-EOF 长度跃升到 15 523 200 字节，而双子字段的 MPDU Length 编码（低 12 位 + 高 2 位，共 14 位）现在也覆盖 EHT。接着 9.7.3 把 EHT_MU 与 EHT_TB 加入可携带 A-MPDU 的 PPDU 格式列表，把“同一 Duration/ID”的规则扩展到 EHT MU PPDU，并把 EHT 加入 Control Response 与 S-MPDU 上下文。这里没有任何概念上的新东西——只是把基础聚合机制拉伸到 EHT 的规模。这正是整章反复出现的模式：以小而精准的插入，让既有帧得以承载 Wi-Fi 7 更宽的信道、更高阶的调制以及多链路这一现实。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        114,
+        115,
+        116,
+        117,
+        118
+      ],
+      "note": "9.1 status-code rule; 9.2.4 Frame Control/More Data, HT Control, EHT OM/ELA Control variants"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        128,
+        129,
+        130,
+        131
+      ],
+      "note": "9.2.5 Duration/ID & max-size table; 9.3.1 control frames, Compressed BlockAck up to 1024 MSDUs"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        171,
+        172,
+        173,
+        174
+      ],
+      "note": "9.3.2 Data frame addresses; 9.3.3 Management frames, Beacon/(Re)Association element rows"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        181,
+        182,
+        186,
+        194,
+        198
+      ],
+      "note": "9.4.1 Capability Info Critical Update Flag, Current AP Address, Listen Interval, EHT MIMO Control / EML Control / Link ID Info"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        200
+      ],
+      "note": "9.4.2 new Element IDs: Multi-Link, EHT Capabilities/Operation, TID-To-Link Mapping, Bandwidth Indication"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        286,
+        287,
+        288,
+        289,
+        290
+      ],
+      "note": "9.6.2 CSA Bandwidth Indication; 9.6.7 Public Action Ext CSA/Measurement Pilot/FILS; 9.6.8 FT Basic Multi-Link"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        293,
+        294,
+        295,
+        296,
+        297,
+        298,
+        299,
+        300
+      ],
+      "note": "9.6.12 TDLS Multi-Link/Broadcast TWT; 9.6.13 WNM BSS transition for AP MLD + MLO group-key subelements"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        302,
+        303
+      ],
+      "note": "9.6.15 Self-protected EHT Cap/Op; 9.6.18 Robust AV SCS Descriptor List; 9.6.24 multi-link TWT Setup"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        314,
+        315,
+        316
+      ],
+      "note": "9.7.1 A-MPDU EHT padding/length/MPDU Length encoding; 9.7.3 EHT_MU/EHT_TB formats & contexts"
+    }
+  ],
+  "covers": [
+    "80211be-2024:9.1",
+    "80211be-2024:9.2.4",
+    "80211be-2024:9.2.5",
+    "80211be-2024:9.3.1",
+    "80211be-2024:9.3.2",
+    "80211be-2024:9.3.3",
+    "80211be-2024:9.4.1",
+    "80211be-2024:9.4.2",
+    "80211be-2024:9.6.2",
+    "80211be-2024:9.6.7",
+    "80211be-2024:9.6.8",
+    "80211be-2024:9.6.12",
+    "80211be-2024:9.6.13",
+    "80211be-2024:9.6.15",
+    "80211be-2024:9.6.18",
+    "80211be-2024:9.6.24",
+    "80211be-2024:9.7.1",
+    "80211be-2024:9.7.3"
+  ],
+  "track": "frames"
+}

@@ -1,0 +1,218 @@
+{
+  "id": "managing-43-eht-mac-additions-clause10",
+  "title": {
+    "en": "What EHT Adds to the MAC: Wi-Fi 7 Channel-Access and Aggregation Extensions",
+    "zh": "EHT 给 MAC 带来了什么：Wi-Fi 7 信道接入与聚合扩展"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 10 of the base IEEE 802.11 standard is the MAC sublayer functional description: how a station senses the medium, backs off, picks a rate, aggregates frames, and acknowledges them. IEEE 802.11be-2024 (Wi-Fi 7, Extremely High Throughput / EHT) does NOT rewrite this clause. As an amendment it only inserts small deltas: a sentence here, a new table row there, a new EHT-specific rule appended to a procedure that VHT and HE already shared. This lesson is a guided tour of every one of those deltas, so each touched sub-clause has a clear home.",
+      "zh": "基础 IEEE 802.11 标准的第 10 章是 MAC 子层功能描述：站点如何侦听信道、退避、选择速率、聚合帧并进行确认。IEEE 802.11be-2024（Wi-Fi 7，超高吞吐量 / EHT）并没有重写这一章。作为修正案，它只是插入了一些小的增量：这里加一句话，那里加一个表行，在 VHT 和 HE 早已共享的某个流程后面追加一条 EHT 专属规则。本课将逐一游览这些增量，让每个被改动的子条款都有清晰的归属。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Reading an amendment: each EHT block in clause 10 begins with an editing instruction like \"Change the fifth paragraph as follows\" or \"Insert the following paragraph at the end of the subclause.\" The base behavior stays; EHT just adds the EHT_MU / EHT_TB PPDU formats, the EHT-MCS set (now reaching 4096-QAM), 320 MHz with punctured subchannels, multi-link MLD rules, and EHT capability fields to the existing machinery.",
+      "zh": "阅读修正案的方法：第 10 章中每个 EHT 段落都以编辑指令开头，例如\"按如下方式修改第五段\"或\"在本子条款末尾插入以下段落\"。基础行为保持不变；EHT 只是把 EHT_MU / EHT_TB PPDU 格式、EHT-MCS 集合（现已达到 4096-QAM）、带有打孔子信道的 320 MHz、多链路 MLD 规则以及 EHT 能力字段加入到既有机制之中。"
+    },
+    {
+      "type": "prose",
+      "en": "Architecture and channel access (10.1, 10.2.1, 10.3.1, 10.3.2). The introduction (10.1) now lists Triggered Uplink Access alongside DCF/HCF/MCF and points to the new EHT MAC clause 35. Figure 10-1 (10.2.1) is redrawn so the DCF/EDCA stack sits on top of an 'or EHT' PHY. The big new idea in 10.3.1 is the NSTR-limited STA: when a non-AP MLD has a non-simultaneous-transmit-and-receive (NSTR) link pair, a STA receiving an RTS on one link is 'NSTR limited' if the other link's STA is busy as a TXOP holder/responder. The common DCF/EDCAF procedures (10.3.2) then thread this through CTS, Ack, and the duplicate-detection caches.",
+      "zh": "架构与信道接入（10.1、10.2.1、10.3.1、10.3.2）。引言（10.1）现在把触发式上行接入（TUA）与 DCF/HCF/MCF 并列，并指向新增的 EHT MAC 第 35 章。图 10-1（10.2.1）被重绘，使 DCF/EDCA 栈位于一个\"或 EHT\"的 PHY 之上。10.3.1 中最重要的新概念是 NSTR 受限站点：当一个非 AP MLD 拥有非同时收发（NSTR）链路对时，在其中一条链路上收到 RTS 的站点，如果另一条链路上的关联站点正作为 TXOP 持有者/响应者而忙碌，则该站点处于\"NSTR 受限\"状态。随后，DCF/EDCAF 的公共流程（10.3.2）将这一概念贯穿到 CTS、Ack 以及重复检测缓存中。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"40\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">non-AP MLD</text><text x=\"320\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">AP MLD</text><rect x=\"30\" y=\"40\" width=\"90\" height=\"34\" rx=\"4\"/><text x=\"52\" y=\"62\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">STA link 1</text><rect x=\"30\" y=\"120\" width=\"90\" height=\"34\" rx=\"4\"/><text x=\"52\" y=\"142\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">STA link 2</text><rect x=\"340\" y=\"40\" width=\"90\" height=\"34\" rx=\"4\"/><text x=\"362\" y=\"62\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">AP link 1</text><rect x=\"340\" y=\"120\" width=\"90\" height=\"34\" rx=\"4\"/><text x=\"362\" y=\"142\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">AP link 2</text><line x1=\"120\" y1=\"57\" x2=\"340\" y2=\"57\"/><text x=\"150\" y=\"50\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">RTS received</text><line x1=\"120\" y1=\"137\" x2=\"340\" y2=\"137\" stroke-dasharray=\"4 3\"/><text x=\"150\" y=\"172\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">link 2 busy -&gt; link 1 STA is NSTR limited</text></svg>",
+      "caption": {
+        "en": "NSTR-limited STA (10.3.1): on an NSTR link pair, activity on one link constrains whether the STA on the other link may answer an RTS with a CTS or send an Ack.",
+        "zh": "NSTR 受限站点（10.3.1）：在 NSTR 链路对上，一条链路的活动会约束另一条链路上的站点能否用 CTS 回应 RTS 或发送 Ack。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Rate selection and modulation (10.6.1, 10.6.6, 10.6.10, 10.6.11). EHT slots into the multirate machinery as just one more PHY. 10.6.1 adds Clause 36 (EHT) to the list of PHYs whose PPDU duration is computed via PLME-TXTIME. 10.6.6 says a control frame addressed to multiple recipients carried in an EHT PPDU must use an <EHT-MCS, NSS> tuple every recipient supports. 10.6.10 adds an 'EHT' row to the modulation-class table, selected when FORMAT is EHT_MU or EHT_TB. 10.6.11 extends the non-HT-basic-rate lookup to map an EHT-MCS through Table 10-10 (which now carries 4096-QAM rows) to a legacy reference rate for sizing response frames.",
+      "zh": "速率选择与调制（10.6.1、10.6.6、10.6.10、10.6.11）。EHT 只是作为又一个 PHY 接入多速率机制。10.6.1 把第 36 章（EHT）加入到通过 PLME-TXTIME 计算 PPDU 时长的 PHY 列表中。10.6.6 规定：在 EHT PPDU 中承载、面向多个接收者的控制帧，必须使用所有接收者都支持的 <EHT-MCS, NSS> 元组。10.6.10 在调制类别表中新增一行\"EHT\"，当 FORMAT 为 EHT_MU 或 EHT_TB 时选用。10.6.11 扩展了非 HT 基础速率查表：通过表 10-10（现已包含 4096-QAM 行）把 EHT-MCS 映射到传统参考速率，用于确定响应帧的尺寸。"
+    },
+    {
+      "type": "widget",
+      "widget": "mcs-snr",
+      "params": {}
+    },
+    {
+      "type": "prose",
+      "en": "Aggregation: A-MSDU and A-MPDU (10.11, 10.12.2-10.12.7). A-MSDU operation (10.11) gains new A-Control subfield variants used inside the EHT HT Control field, including EHT link adaptation (ELA), the EHT operating-mode (EHT OM) control, and multi-link helpers (SRS, AAR). For A-MPDUs, 10.12.2 spells out which Maximum A-MPDU Length Exponent fields combine to compute the EHT pre-EOF padding limit across the 2.4/5/6 GHz bands; 10.12.3 extends the minimum MPDU start-spacing equation to EHT TB PPDUs; 10.12.4 carries the group-addressed exponent/spacing rules into EHT PPDUs; 10.12.6 simply widens the padding sub-clause title to include EHT; and 10.12.7 lets the EOF/Tag delimiter bit be set in an EHT PPDU.",
+      "zh": "聚合：A-MSDU 与 A-MPDU（10.11、10.12.2-10.12.7）。A-MSDU 操作（10.11）新增了若干在 EHT HT Control 字段内使用的 A-Control 子字段变体，包括 EHT 链路自适应（ELA）、EHT 工作模式（EHT OM）控制，以及多链路辅助项（SRS、AAR）。对于 A-MPDU，10.12.2 详细说明了在 2.4/5/6 GHz 各频段中，哪些\"最大 A-MPDU 长度指数\"字段组合用于计算 EHT 的 EOF 前填充上限；10.12.3 把最小 MPDU 起始间隔公式扩展到 EHT TB PPDU；10.12.4 把组播地址帧的指数/间隔规则带入 EHT PPDU；10.12.6 只是把填充子条款的标题加上 EHT；10.12.7 则允许在 EHT PPDU 中设置 EOF/Tag 定界符位。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause-10 sub-clause EHT touches, and the one-line delta",
+        "zh": "覆盖地图：EHT 改动的每个第 10 章子条款及其一句话增量"
+      },
+      "en": "10.1 Introduction - adds Triggered Uplink Access and pointers to clause 35 (EHT MAC). 10.2.1 General - Figure 10-1 redrawn with 'or EHT' PHY under the DCF/EDCA stack. 10.3.1 General - defines the NSTR-limited STA on an NSTR link pair. 10.3.2 Procedures common to DCF and EDCAF - EHT RTS/CTS responses gated on punctured nonprimary 20 MHz subchannels (per 36.3.21.6.4) and NSTR-limited status; Ack/BlockAck NSTR rule; new sequence-number spaces SNS9-SNS12 and receiver caches RC14-RC17 for MLD-to-MLD frames. 10.6.1 Overview - Clause 36 added for EHT TXTIME. 10.6.6 Rate selection for Control frames - EHT-MCS/NSS tuple supported by all recipients in an EHT PPDU. 10.6.10 Modulation classes - new EHT row (FORMAT EHT_MU/EHT_TB) in Table 10-9. 10.6.11 Non-HT basic rate calculation - EHT-MCS mapped via Table 10-10 (with 4096-QAM rows) to a non-HT reference rate. 10.8 HT Control field operation - dot11EHTMCSFeedbackOptionImplemented and the EHT TRS variant added to the HE Control field conditions (Table 10-12). 10.11 A-MSDU operation - new A-Control variants ELA, EHT OM, SRS, AAR; A-MSDU length limited by recipient max MPDU size for EHT PPDUs. 10.12.2 A-MPDU length limit rules - new Tables 10-12a/12b list which capability-element exponent fields size the EHT pre-EOF padding per band. 10.12.3 Minimum MPDU start spacing rules - Equation (10-12) extended to EHT TB PPDUs (MMSF factor). 10.12.4 A-MPDU aggregation of group addressed Data frames - exponent/spacing minima/maxima defined for EHT PPDUs in 2.4/5/6 GHz. 10.12.6 A-MPDU padding for VHT, HE, EHT or S1G PPDU - title widened to include EHT. 10.12.7 Setting the EOF/Tag field - EOF/Tag may be set in an EHT PPDU subframe. 10.13 PPDU duration constraint - EHT STA must not exceed aPPDUMaxTime (Table 36-70). 10.15 LDPC operation - EHT PPDU LDPC gated on dot11HELDPCCodingInPayloadImplemented and recipient capability. 10.23.2 HCF contention based channel access (EDCA) - backoff triggers reference 35.3.16.4; EHT MU PPDU / punctured non-HT duplicate allowed if non-punctured 20 MHz subchannels were idle a PIFS before the TXOP; TXOP-limit exceptions add EHT sounding NDP sequences. 10.25.1 Introduction - block ack between MLDs follows 35.3.8; between STAs follows 10.25.2. 10.25.2 Setup and modification - EHT buffer size via Buffer Size + Extended Buffer Size (ADDBA Extension element); transmission window up to 1024 between two EHT STAs. 10.25.7 Protected block ack agreement - PBAC extended to MLDs (PBAC MLD); affiliated STAs advertise the same PBAC capability. 10.27.6 Protection rules for HE STAs - clarified, and a new 10.27.8 lets an EHT_MU PPDU substitute for HT_MF (2.4 GHz) or VHT (5 GHz). 10.28.5 Operation of the Dialog Token field - dialog grouping now spans two STAs or two MLDs. 10.29.4 Rules for RD responder - RD responder affiliated with an MLD honors the nondefault TID-to-link mapping (TTLM, 35.3.7.2). 10.46.1 TWT overview - Request TWT may carry a target wake time for TWT alignment across links (35.3.24).",
+      "zh": "10.1 引言——新增触发式上行接入并指向第 35 章（EHT MAC）。10.2.1 概述——图 10-1 重绘，DCF/EDCA 栈下方加入\"或 EHT\"PHY。10.3.1 概述——定义 NSTR 链路对上的 NSTR 受限站点。10.3.2 DCF 与 EDCAF 公共流程——EHT 的 RTS/CTS 响应取决于未打孔的非主 20 MHz 子信道（依 36.3.21.6.4）与 NSTR 受限状态；Ack/BlockAck 的 NSTR 规则；为 MLD 间帧新增序列号空间 SNS9-SNS12 与接收缓存 RC14-RC17。10.6.1 概述——为 EHT TXTIME 加入第 36 章。10.6.6 控制帧速率选择——EHT PPDU 中使用所有接收者都支持的 EHT-MCS/NSS 元组。10.6.10 调制类别——表 10-9 新增 EHT 行（FORMAT 为 EHT_MU/EHT_TB）。10.6.11 非 HT 基础速率计算——经表 10-10（含 4096-QAM 行）把 EHT-MCS 映射到非 HT 参考速率。10.8 HT Control 字段操作——条件表 10-12 加入 dot11EHTMCSFeedbackOptionImplemented 与 EHT TRS 变体。10.11 A-MSDU 操作——新增 A-Control 变体 ELA、EHT OM、SRS、AAR；EHT PPDU 中 A-MSDU 长度受接收方最大 MPDU 尺寸限制。10.12.2 A-MPDU 长度上限规则——新增表 10-12a/12b，列出各频段中哪些能力元素的指数字段用于确定 EHT 的 EOF 前填充。10.12.3 最小 MPDU 起始间隔规则——式（10-12）扩展到 EHT TB PPDU（MMSF 因子）。10.12.4 组播地址数据帧的 A-MPDU 聚合——为 2.4/5/6 GHz 的 EHT PPDU 定义指数/间隔的最小值与最大值。10.12.6 VHT、HE、EHT 或 S1G PPDU 的 A-MPDU 填充——标题加入 EHT。10.12.7 设置 MPDU 定界符的 EOF/Tag 字段——EHT PPDU 子帧中可设置 EOF/Tag。10.13 PPDU 时长约束——EHT 站点不得超过 aPPDUMaxTime（表 36-70）。10.15 LDPC 操作——EHT PPDU 的 LDPC 取决于 dot11HELDPCCodingInPayloadImplemented 与接收方能力。10.23.2 HCF 基于竞争的信道接入（EDCA）——退避触发引用 35.3.16.4；若 TXOP 前一个 PIFS 内未打孔的 20 MHz 子信道空闲，则允许发送 EHT MU PPDU / 打孔的非 HT 复制 PPDU；TXOP 上限例外新增 EHT 探测 NDP 序列。10.25.1 引言——MLD 间的块确认遵循 35.3.8，站点间遵循 10.25.2。10.25.2 设置与修改——EHT 缓存大小由 Buffer Size + Extended Buffer Size（ADDBA 扩展元素）给出；两个 EHT 站点间发送窗口可达 1024。10.25.7 受保护块确认协议——PBAC 扩展到 MLD（PBAC MLD）；同一 MLD 的从属站点声明相同 PBAC 能力。10.27.6 HE 站点保护规则——经澄清，并新增 10.27.8，允许用 EHT_MU PPDU 替代 HT_MF（2.4 GHz）或 VHT（5 GHz）。10.28.5 对话令牌字段操作——对话分组现可跨两个站点或两个 MLD。10.29.4 RD 响应者规则——从属于 MLD 的 RD 响应者遵循非默认的 TID 到链路映射（TTLM，35.3.7.2）。10.46.1 TWT 概述——请求型 TWT 可携带目标唤醒时间用于跨链路 TWT 对齐（35.3.24）。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          319,
+          320,
+          321,
+          322,
+          323,
+          324,
+          328,
+          333,
+          334,
+          335,
+          338,
+          340,
+          341,
+          342,
+          343,
+          344
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "PPDU duration, LDPC, EDCA and block ack (10.13, 10.15, 10.23.2, 10.25.1, 10.25.2, 10.25.7). Three short transmit constraints: an EHT STA must not send an EHT PPDU longer than aPPDUMaxTime (10.13), and may only use LDPC in an EHT PPDU when both ends declare the capability (10.15). EDCA (10.23.2) gains EHT-aware backoff triggers and lets an EHT MU PPDU or a punctured non-HT duplicate PPDU start a TXOP when the non-punctured 20 MHz subchannels were idle for a PIFS - the channel-access face of 320 MHz with puncturing. Block ack grows up too: agreements between MLDs follow clause 35 (10.25.1), two EHT STAs can negotiate a reordering window up to 1024 via the ADDBA Extension element (10.25.2), and protected block ack now applies at MLD granularity (10.25.7).",
+      "zh": "PPDU 时长、LDPC、EDCA 与块确认（10.13、10.15、10.23.2、10.25.1、10.25.2、10.25.7）。三条简短的发送约束：EHT 站点发送的 EHT PPDU 不得超过 aPPDUMaxTime（10.13），且只有当收发双方都声明能力时才能在 EHT PPDU 中使用 LDPC（10.15）。EDCA（10.23.2）新增了 EHT 感知的退避触发，并允许在未打孔的 20 MHz 子信道空闲一个 PIFS 时，用 EHT MU PPDU 或打孔的非 HT 复制 PPDU 发起 TXOP——这正是带打孔的 320 MHz 在信道接入层面的体现。块确认也随之升级：MLD 间的协议遵循第 35 章（10.25.1），两个 EHT 站点可经 ADDBA 扩展元素协商出最高 1024 的重排序窗口（10.25.2），受保护块确认现已适用于 MLD 粒度（10.25.7）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A reordering window of 1024 is double HE's 256 and sixteen times legacy 64. With 4096-QAM, 320 MHz and multi-link all pushing far more frames in flight per round trip, the receiver needs a much larger window to hold out-of-order MPDUs without stalling - which is exactly why 10.25.2 widens it and why the sequence-number counter in 10.3.2.14 stays modulo 4096.",
+      "zh": "1024 的重排序窗口是 HE 的 256 的两倍，是传统 64 的十六倍。在 4096-QAM、320 MHz 与多链路共同推动每次往返中飞行帧数大幅增加时，接收方需要更大的窗口来缓存乱序的 MPDU 而不至于停顿——这正是 10.25.2 将其加宽的原因，也是 10.3.2.14 中序列号计数器保持模 4096 的原因。"
+    },
+    {
+      "type": "prose",
+      "en": "Protection, frame processing, reverse direction and TWT (10.27.6, 10.28.5, 10.29.4, 10.46.1). The protection rules clarified for HE in 10.27.6 set up a new EHT companion rule (10.27.8) where an EHT_MU PPDU may stand in for the HT/VHT format that legacy protection expects. Frame processing: the dialog-token grouping in 10.28.5 now explicitly spans two MLDs as well as two STAs. The reverse-direction responder (10.29.4) must respect a non-default TID-to-link mapping when it is part of an MLD - it may only send a TID's data on a link that TID is mapped to. Finally, the TWT overview (10.46.1) notes that a Request-TWT can now carry an explicit target wake time so an MLD can align its wake schedules across links.",
+      "zh": "保护、帧处理、反向传输与 TWT（10.27.6、10.28.5、10.29.4、10.46.1）。10.27.6 对 HE 保护规则的澄清为新增的 EHT 配套规则（10.27.8）铺路：EHT_MU PPDU 可替代传统保护所期望的 HT/VHT 格式。帧处理方面：10.28.5 中的对话令牌分组现明确既涵盖两个站点，也涵盖两个 MLD。反向传输响应者（10.29.4）在从属于某个 MLD 时必须遵守非默认的 TID 到链路映射——只能在某 TID 所映射到的链路上发送该 TID 的数据。最后，TWT 概述（10.46.1）指出，请求型 TWT 现可携带显式的目标唤醒时间，使 MLD 能够跨链路对齐其唤醒调度。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[EHT clause 10 deltas] --> B[Channel access<br/>10.1 10.2.1 10.3.1 10.3.2]\n  A --> C[Rate and modulation<br/>10.6.1 10.6.6 10.6.10 10.6.11]\n  A --> D[Aggregation<br/>10.11 10.12.2-10.12.7]\n  A --> E[PHY constraints<br/>10.13 10.15]\n  A --> F[EDCA and block ack<br/>10.23.2 10.25.1 10.25.2 10.25.7]\n  A --> G[Protection / processing / RD / TWT<br/>10.27.6 10.28.5 10.29.4 10.46.1]",
+      "zh": "flowchart TD\n  A[EHT 第10章增量] --> B[信道接入<br/>10.1 10.2.1 10.3.1 10.3.2]\n  A --> C[速率与调制<br/>10.6.1 10.6.6 10.6.10 10.6.11]\n  A --> D[聚合<br/>10.11 10.12.2-10.12.7]\n  A --> E[PHY约束<br/>10.13 10.15]\n  A --> F[EDCA与块确认<br/>10.23.2 10.25.1 10.25.2 10.25.7]\n  A --> G[保护/处理/RD/TWT<br/>10.27.6 10.28.5 10.29.4 10.46.1]"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        319
+      ],
+      "note": "10.1 introduction (TUA, clause 35 pointers); 10.2.1 Figure 10-1 redrawn with EHT PHY"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        320,
+        321,
+        322
+      ],
+      "note": "10.3.1 NSTR-limited STA; 10.3.2 RTS/CTS/Ack EHT + NSTR rules"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        322,
+        323,
+        324
+      ],
+      "note": "10.3.2.14 sequence number spaces SNS9-12 and receiver caches RC14-17 for MLDs"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        328,
+        329
+      ],
+      "note": "10.6.1 EHT TXTIME (clause 36); 10.6.6 EHT-MCS/NSS control-frame rate; 10.6.10 modulation classes"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        332,
+        333
+      ],
+      "note": "10.6.11 non-HT basic rate (EHT-MCS, 4096-QAM rows in Table 10-10); 10.8 HT Control field EHT variant"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        334,
+        335
+      ],
+      "note": "10.11 A-MSDU operation, EHT A-Control variants; 10.12.2 A-MPDU length tables 10-12a/b"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        337,
+        338,
+        339
+      ],
+      "note": "10.12.2-10.12.4 EHT A-MPDU exponent/spacing rules"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        340
+      ],
+      "note": "10.12.6/10.12.7 padding+EOF; 10.13 PPDU duration (aPPDUMaxTime); 10.15 LDPC; 10.23.2 EDCA"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        341,
+        342
+      ],
+      "note": "10.23.2.5 EHT MU PPDU/punctured access; 10.25.1/10.25.2 block ack setup, window up to 1024"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        343
+      ],
+      "note": "10.25.7 protected block ack (PBAC MLD); 10.27.6 protection rules (and new 10.27.8 for EHT)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        344
+      ],
+      "note": "10.28.5 dialog token (MLDs); 10.29.4 RD responder TTLM; 10.46.1 TWT overview cross-link alignment"
+    }
+  ],
+  "covers": [
+    "80211be-2024:10.1",
+    "80211be-2024:10.2.1",
+    "80211be-2024:10.3.1",
+    "80211be-2024:10.3.2",
+    "80211be-2024:10.6.1",
+    "80211be-2024:10.6.6",
+    "80211be-2024:10.6.10",
+    "80211be-2024:10.6.11",
+    "80211be-2024:10.8",
+    "80211be-2024:10.11",
+    "80211be-2024:10.12.2",
+    "80211be-2024:10.12.3",
+    "80211be-2024:10.12.4",
+    "80211be-2024:10.12.6",
+    "80211be-2024:10.12.7",
+    "80211be-2024:10.13",
+    "80211be-2024:10.15",
+    "80211be-2024:10.23.2",
+    "80211be-2024:10.25.1",
+    "80211be-2024:10.25.2",
+    "80211be-2024:10.25.7",
+    "80211be-2024:10.27.6",
+    "80211be-2024:10.28.5",
+    "80211be-2024:10.29.4",
+    "80211be-2024:10.46.1"
+  ],
+  "track": "managing"
+}

@@ -1,0 +1,189 @@
+{
+  "id": "wifi7-44-mlo-setup-reconfiguration-link-management",
+  "title": {
+    "en": "Building the Multi-Link Connection: ML Setup, Reconfiguration and Link Management",
+    "zh": "建立多链路连接：ML 建立、重配置与链路管理"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In Wi-Fi 7, a Multi-Link Device (MLD) — a non-AP MLD (the client) and an AP MLD (the router) — can talk over several radio links at once (for example 2.4 GHz, 5 GHz and 6 GHz). The key idea is that all of those links are covered by a *single* association. This lesson follows the lifecycle of that connection: how it is first established (ML setup), how links can be added or removed afterwards (ML reconfiguration), and how individual links are switched on and off during the connection (link management).",
+      "zh": "在 Wi-Fi 7 中，一个多链路设备（MLD）——包括非 AP MLD（客户端）和 AP MLD（路由器）——可以同时通过多条无线链路通信（例如 2.4 GHz、5 GHz 和 6 GHz）。其核心思想是：所有这些链路都由*一次*关联统一承载。本课跟随这条连接的生命周期：它如何首次建立（ML 建立）、之后如何增删链路（ML 重配置），以及在连接期间如何逐条开关各链路（链路管理）。"
+    },
+    {
+      "type": "prose",
+      "en": "ML (re)setup is the entry point. The non-AP MLD and AP MLD exchange (Re)Association Request and (Re)Association Response frames, and the exchange counts as ML setup only if *both* frames carry a Basic Multi-Link element. In the Request, the client lists every link it wants to set up — one Per-STA Profile subelement per additional link — describing the capabilities and operating parameters of each affiliated STA. The link on which the Request is actually transmitted is implied by the frame itself, so it does not need its own Per-STA Profile. A client may request only a subset of the AP MLD's links.",
+      "zh": "ML（重）建立是入口。非 AP MLD 与 AP MLD 交换（重）关联请求帧和（重）关联响应帧，并且只有当*两个*帧都携带基本多链路元素（Basic Multi-Link element）时，该交换才算作 ML 建立。在请求帧中，客户端列出它想建立的每一条链路——每条额外链路对应一个 Per-STA Profile 子元素——描述每个所属 STA 的能力和操作参数。请求帧所在的那条链路由帧本身隐含表示，因此无需单独的 Per-STA Profile。客户端可以只请求 AP MLD 链路集合中的一个子集。"
+    },
+    {
+      "type": "prose",
+      "en": "The AP MLD must do exactly one of three things: accept all requested links, accept a subset that includes the link the Request arrived on, or reject everything. The pivotal rule is that the link carrying the Request must be accepted — if the AP MLD cannot accept that one link, the whole ML setup fails and no links are accepted. On success the AP MLD assigns a *single AID* to the entire non-AP MLD; every affiliated non-AP STA shares that one AID, and the MLD pair moves to the associated state (State 3 or State 4). Each setup link also establishes its own GTK/IGTK/BIGTK, while a single PTKSA protects individually addressed frames across all links.",
+      "zh": "AP MLD 必须从三种处理中恰好选择一种：接受所有请求的链路；接受一个子集（且该子集必须包含请求帧到达的那条链路）；或全部拒绝。关键规则是：承载请求帧的那条链路必须被接受——如果 AP MLD 无法接受这条链路，整个 ML 建立失败，不接受任何链路。成功时，AP MLD 为整个非 AP MLD 分配*单一 AID*；所有所属非 AP STA 共享这一个 AID，MLD 双方进入关联态（State 3 或 State 4）。每条建立的链路还各自建立 GTK/IGTK/BIGTK，而单一 PTKSA 在所有链路上保护单播帧。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "One association, one AID, many links. After ML setup the Distribution System (DS) sees just the mapping between the non-AP MLD and the AP MLD — not the per-link STA pairs. Per-link teardown is handled later by reconfiguration; sending a Disassociation frame on any one setup link tears the whole MLD association down at once.",
+      "zh": "一次关联、一个 AID、多条链路。ML 建立后，分发系统（DS）只看到非 AP MLD 与 AP MLD 之间的映射——而非逐链路的 STA 配对。逐链路的拆除由后续的重配置处理；在任意一条建立的链路上发送一个解关联帧，即可一次性拆除整个 MLD 关联。"
+    },
+    {
+      "type": "widget",
+      "widget": "mlo-links",
+      "params": {
+        "mode": "STR",
+        "links": [
+          {
+            "band": "2.4 GHz",
+            "width": "40 MHz"
+          },
+          {
+            "band": "5 GHz",
+            "width": "160 MHz"
+          },
+          {
+            "band": "6 GHz",
+            "width": "320 MHz"
+          }
+        ]
+      }
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant C as non-AP MLD\n  participant A as AP MLD\n  C->>A: (Re)Assoc Request + Basic ML element (links 1,2,3)\n  A->>C: (Re)Assoc Response + Basic ML element (accept/reject per link)\n  Note over C,A: single AID assigned; State 4\n  C->>A: Link Reconfig Request (add link / delete link)\n  A->>C: Link Reconfig Response (status per link)\n  A-->>C: Advertised TTLM in Beacon (enable/disable links)",
+      "zh": "sequenceDiagram\n  participant C as 非 AP MLD\n  participant A as AP MLD\n  C->>A: （重）关联请求 + 基本 ML 元素（链路 1,2,3）\n  A->>C: （重）关联响应 + 基本 ML 元素（逐链路接受/拒绝）\n  Note over C,A: 分配单一 AID；State 4\n  C->>A: 链路重配置请求（增加/删除链路）\n  A->>C: 链路重配置响应（逐链路状态）\n  A-->>C: Beacon 中通告 TTLM（启用/禁用链路）"
+    },
+    {
+      "type": "prose",
+      "en": "Once associated, the link set is not frozen. **ML reconfiguration** lets the topology change without a fresh association. On the infrastructure side, the AP MLD's SME may *add* an affiliated AP (announced by incrementing the Maximum Number Of Simultaneous Links subfield and adding a Reduced Neighbor Report entry) or *remove* one. AP removal is announced ahead of time using a Reconfiguration Multi-Link element carrying an AP Removal Timer (counted in TBTTs) so that even clients whose STAs are in power save get at least one chance to hear about it before the BSS terminates.",
+      "zh": "一旦关联，链路集合并非固定不变。**ML 重配置**允许在不重新关联的情况下改变拓扑。在基础设施侧，AP MLD 的 SME 可以*增加*一个所属 AP（通过将“最大同时链路数”子字段加一并在精简邻居报告中增加一条条目来通告）或*移除*一个 AP。AP 移除会提前通过承载 AP 移除计时器（以 TBTT 计数）的重配置多链路元素（Reconfiguration Multi-Link element）通告，这样即使 STA 处于省电模式的客户端，也至少有一次机会在该 BSS 终止前获知这一变化。"
+    },
+    {
+      "type": "prose",
+      "en": "On the client side, a non-AP MLD with link-reconfiguration activated can change its *own* setup links with a Link Reconfiguration Request / Response exchange — no re-association needed. Each operation is one Per-STA Profile subelement: Reconfiguration Operation Type 2 to add a link (carrying the complete profile of the new STA), or type 3 to delete one. A single request can mix adds and deletes; using the same STA MAC address for a delete and an add effectively moves that radio from one affiliated AP to another. A client must never request a delete that would remove all of its setup links — to leave entirely it sends a Disassociation or Deauthentication frame instead. The AP MLD may also *recommend* changes with a Link Reconfiguration Notify frame, and a client can update operation parameters with a Multi-Link Operation Update Request.",
+      "zh": "在客户端侧，启用了链路重配置的非 AP MLD 可以通过链路重配置请求/响应（Link Reconfiguration Request / Response）交换来改变*自己*的建立链路——无需重新关联。每个操作对应一个 Per-STA Profile 子元素：重配置操作类型 2 表示增加链路（携带新 STA 的完整 profile），类型 3 表示删除链路。单个请求可以同时混合增加与删除；对同一 STA MAC 地址同时执行删除和增加，实际上就是把该射频从一个所属 AP 切换到另一个。客户端绝不能请求会删除其全部建立链路的删除操作——若要完全离开，应改为发送解关联帧或去认证帧。AP MLD 也可以用链路重配置通知帧（Link Reconfiguration Notify）来*建议*变更，客户端则可用多链路操作更新请求（Multi-Link Operation Update Request）更新操作参数。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Adding a link delivers fresh keys. When the AP MLD accepts an add-link request under RSN, the Link Reconfiguration Response carries an MLO GTK KDE, MLO IGTK KDE and MLO BIGTK KDE for each new link's Link ID. Conversely, when an affiliated AP is removed, any STR/NSTR constraints involving that link stop applying and the link's bit is cleared in NSTR Indication Bitmaps.",
+      "zh": "增加链路会下发全新密钥。当 AP MLD 在 RSN 下接受增加链路请求时，链路重配置响应会为每条新链路的 Link ID 携带 MLO GTK KDE、MLO IGTK KDE 和 MLO BIGTK KDE。反之，当一个所属 AP 被移除时，涉及该链路的所有 STR/NSTR 约束随即失效，并在 NSTR 指示位图中将该链路对应的位清零。"
+    },
+    {
+      "type": "prose",
+      "en": "Day-to-day, **link management** decides how the setup links actually carry traffic. The central tool is TID-To-Link Mapping (TTLM): it assigns each traffic identifier (TID 0–7) plus Management frames to a subset of links, separately for downlink and uplink. By default every TID maps to every setup link in both directions. A link is *enabled* if at least one TID is mapped to it (DL or UL) and *disabled* if no TID is mapped to it in either direction. A hard invariant protects the connection: every TID must always map to at least one link in each direction, so a TTLM change that would orphan a TID is invalid.",
+      "zh": "在日常运行中，**链路管理**决定建立的链路如何实际承载流量。核心工具是 TID-到-链路映射（TTLM）：它把每个流量标识（TID 0–7）以及管理帧分配到链路的某个子集上，且下行和上行分别独立映射。默认情况下，每个 TID 在两个方向上都映射到所有建立的链路。如果至少有一个 TID 映射到某条链路（下行或上行），则该链路为*启用*；如果两个方向都没有任何 TID 映射到它，则该链路为*禁用*。一个硬性不变量保护着连接：每个 TID 在每个方向上都必须始终至少映射到一条链路，因此任何会使某个 TID 失去映射的 TTLM 变更都是无效的。"
+    },
+    {
+      "type": "prose",
+      "en": "TTLM can be reached two ways. A non-AP MLD *negotiates* a TTLM — embedded in the (Re)Association exchange, or later via TID-To-Link Mapping Request/Response frames — where the peer may accept (SUCCESS), reject (DENIED_TID_TO_LINK_MAPPING), or counter-propose (PREFERRED_TID_TO_LINK_MAPPING_SUGGESTED). Separately, an AP MLD can *advertise* a mandatory TTLM in Beacon and Probe Response frames; it carries a Mapping Switch Time so all clients — even those in power save — switch in unison, and it maps all TIDs to the same link set. Disabling a link for everyone is just an advertised TTLM that maps no TIDs to that link; a STA on an advertised-disabled link suspends operations there until it is enabled again. A non-AP MLD can also use the power states of its STAs to dynamically transition between enabled links.",
+      "zh": "TTLM 可通过两种途径达成。非 AP MLD 可以*协商*一个 TTLM——既可嵌入（重）关联交换中，也可稍后通过 TID-到-链路映射请求/响应帧进行——对端可以接受（SUCCESS）、拒绝（DENIED_TID_TO_LINK_MAPPING）或反向建议（PREFERRED_TID_TO_LINK_MAPPING_SUGGESTED）。另一方面，AP MLD 也可以在 Beacon 和探测响应帧中*通告*一个强制 TTLM；它携带映射切换时间（Mapping Switch Time），使所有客户端——即使处于省电模式——同步切换，并将所有 TID 映射到同一链路集合。为所有人禁用某条链路，本质上就是通告一个不把任何 TID 映射到该链路的 TTLM；位于被通告禁用链路上的 STA 会在该链路上暂停操作，直到它再次被启用。非 AP MLD 还可以利用其所属 STA 的省电状态，在已启用的链路之间动态切换。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: which sub-clause defines what",
+        "zh": "覆盖映射：各子条款定义了什么"
+      },
+      "en": "This lesson teaches three sibling sub-clauses of 35.3 (MLO). **35.3.5 ML (re)setup** — the (Re)Association Request/Response procedure with the Basic Multi-Link element (35.3.5.1, 35.3.5.4), the accept-subset/accept-the-arrival-link/reject-all rule, single-AID assignment, ML security key hierarchy across links (35.3.5.2), and the ML tear down procedure via a single Disassociation frame (35.3.5.3). **35.3.6 ML reconfiguration** — adding affiliated APs (35.3.6.2), removing them with the AP Removal Timer and BTM notification (35.3.6.3), client-driven link add/delete via Link Reconfiguration Request/Response with per-link group keys (35.3.6.4), AP-MLD recommendation via Link Reconfiguration Notify (35.3.6.5), and operation parameter updates (35.3.6.6). **35.3.7 link management** — the general framework (35.3.7.1), TTLM defining enabled vs disabled links plus negotiated and advertised mapping (35.3.7.2), dynamic link transitions via power states (35.3.7.3), AP link recommendation (35.3.7.4), and affiliated-AP link disablement/enablement (35.3.7.5).",
+      "zh": "本课讲授 35.3（MLO）下的三个并列子条款。**35.3.5 ML（重）建立**——使用基本多链路元素的（重）关联请求/响应流程（35.3.5.1、35.3.5.4）、接受子集/必须接受到达链路/全部拒绝的规则、单一 AID 分配、跨链路的 ML 安全密钥体系（35.3.5.2），以及通过单个解关联帧的 ML 拆除流程（35.3.5.3）。**35.3.6 ML 重配置**——增加所属 AP（35.3.6.2）、用 AP 移除计时器和 BTM 通知移除 AP（35.3.6.3）、客户端通过链路重配置请求/响应并附带逐链路组密钥进行链路增删（35.3.6.4）、AP MLD 通过链路重配置通知进行建议（35.3.6.5），以及操作参数更新（35.3.6.6）。**35.3.7 链路管理**——总体框架（35.3.7.1）、定义启用/禁用链路并涵盖协商式与通告式映射的 TTLM（35.3.7.2）、通过省电状态进行动态链路切换（35.3.7.3）、AP 链路建议（35.3.7.4），以及所属 AP 链路的禁用/启用（35.3.7.5）。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          509,
+          514,
+          518,
+          524,
+          525,
+          526,
+          530,
+          532
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        509,
+        510,
+        511
+      ],
+      "note": "35.3.5.1 ML (re)setup procedure: Basic ML element in both (Re)Assoc frames, accept-subset/reject-all rule, must accept arrival link, single AID assignment, associated state"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        512,
+        513
+      ],
+      "note": "35.3.5.2 ML security (PTKSA across links, per-link GTK/IGTK/BIGTK); 35.3.5.3 ML tear down via Disassociation; 35.3.5.4 Basic ML element usage with Per-STA Profile subelements"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        514,
+        515,
+        516,
+        517,
+        518
+      ],
+      "note": "35.3.6.1 general; 35.3.6.2 adding affiliated APs; 35.3.6.3 removing affiliated APs with AP Removal Timer and BTM notification"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        519,
+        520,
+        521,
+        522,
+        523
+      ],
+      "note": "35.3.6.4 link reconfiguration to setup links (add/delete, Reconfiguration Operation Type 2/3, MLO GTK/IGTK/BIGTK KDEs, no deleting all links)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        523,
+        524,
+        525
+      ],
+      "note": "35.3.6.5 AP MLD recommendation via Link Reconfiguration Notify; 35.3.6.6 non-AP MLD operation parameter update"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        525,
+        526,
+        527
+      ],
+      "note": "35.3.7.1 link management general; 35.3.7.2.1 TTLM, enabled vs disabled link definition, always-one-link invariant; default mapping"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        528,
+        529,
+        530
+      ],
+      "note": "35.3.7.2.3 TTLM negotiation, status codes 133/134; 35.3.7.2.4 advertised TTLM Mapping Switch Time"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        531,
+        532,
+        533
+      ],
+      "note": "35.3.7.2.4 advertised TTLM effect; 35.3.7.3 dynamic link transitions; 35.3.7.4 link recommendation; 35.3.7.5 affiliated AP link disablement/enablement"
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.3.5",
+    "80211be-2024:35.3.6",
+    "80211be-2024:35.3.7"
+  ],
+  "track": "wifi7-eht"
+}
