@@ -1,0 +1,108 @@
+{
+  "id": "managing-21",
+  "title": {
+    "en": "TDD Beamforming and Beam Measurement: Time-Sliced Directional Links in DMG/EDMG",
+    "zh": "TDD 波束成形与波束测量：DMG/EDMG 中的时分定向链路"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "At 60 GHz, a Wi-Fi link is not a balloon that fills the room — it is a flashlight beam. To stay connected, the two ends must keep their beams pointed at each other, picking the right antenna sector out of many. Most 60 GHz (DMG/EDMG) links train those beams by taking turns listening: one side sweeps and contends for airtime in a sector-level sweep. This lesson is about a different style — the kind used for steady, backhaul-grade point-to-point links — where the two ends instead agree on a fixed metronome and aim on the beat. That metronome is TDD: time-division duplex.",
+      "zh": "在 60 GHz 频段，一条 Wi-Fi 链路不像一只充满整个房间的气球，而更像一束手电筒光。为了保持连接，两端必须让各自的波束始终对准彼此，从众多天线扇区中挑出正确的那一个。大多数 60 GHz（DMG/EDMG）链路通过“轮流监听”的方式来训练波束：一方做扇区级扫描并竞争空口时间。本课讲的是另一种风格——用于稳定、达到回传级别的点对点链路——两端不再轮流监听，而是约定一个固定的“节拍器”，踩着节拍对准方向。这个节拍器就是 TDD：时分双工。"
+    },
+    {
+      "type": "prose",
+      "en": "Recall from the beacon-interval lesson that the DTI (data transfer interval) can be carved into service periods (SPs). A TDD SP further chops that time into deterministic, equal-length slots, and each slot is pre-assigned a direction: this slot is the initiator transmitting, that slot is the responder transmitting. Because the schedule is rigid and known in advance, neither side has to contend — they just transmit and receive on cue. All TDD beamforming procedures happen inside a TDD SP. This is what makes TDD distinct from the contention-style sector sweep: the timing is fixed, so the antenna aiming can be slaved to the slot boundaries.",
+      "zh": "回想信标间隔那一课：DTI（数据传输间隔）可以被划分为服务周期（SP）。一个 TDD SP 进一步把这段时间切成确定的、等长的时隙，每个时隙都预先指定了方向：这个时隙归发起方发送，那个时隙归响应方发送。由于这套时间表是刚性的、事先已知的，双方都无需竞争——只需按节拍收发即可。所有 TDD 波束成形过程都发生在一个 TDD SP 之内。这正是 TDD 区别于竞争式扇区扫描之处：时序是固定的，因此天线对准动作可以与时隙边界严格同步。"
+    },
+    {
+      "type": "prose",
+      "en": "Training a TDD link uses three frame types that fly inside the assigned slots. The initiator transmits a series of TDD SSW (sector sweep) frames, one batch per transmit sector, while the responder sweeps its receive sectors, dwelling on each one. When the responder finds the sector that heard a TDD SSW best, it replies with a TDD SSW Feedback frame carrying that sector pairing and the measured SNR. The initiator confirms with a TDD SSW Ack frame. When the initiator sets the End of Training bit to 1 in its Ack, both ends lock onto the chosen antenna and sector and use it for everything afterwards — until a new sector is negotiated. A group variant lets one initiator train several responders at once, telling them apart by a scrambled Responder ID.",
+      "zh": "训练一条 TDD 链路用到三类帧，它们都在被分配的时隙内传输。发起方发送一系列 TDD SSW（扇区扫描）帧，每个发射扇区发送一批；与此同时，响应方扫过自己的各个接收扇区，在每个扇区上停留一段时间。当响应方找到接收某个 TDD SSW 质量最佳的扇区时，它回复一个 TDD SSW Feedback 帧，携带该扇区配对关系和测得的 SNR。发起方再用 TDD SSW Ack 帧确认。当发起方在 Ack 中把 End of Training 位置为 1 时，两端便锁定所选的天线与扇区，并在此后一直使用它——直到协商出新的扇区为止。还有一种组播变体，允许一个发起方同时训练多个响应方，并通过加扰后的 Responder ID 把它们区分开。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant I as Initiator (PCP/AP)\n    participant R as Responder\n    Note over I,R: inside a TDD SP — fixed slots, no contention\n    I->>R: TDD SSW (TX Sector ID 1, sweep)\n    Note over R: sweeps RX sectors, dwells per sector\n    R->>I: TDD SSW Feedback (best RX/TX pair, SNR)\n    I->>R: TDD SSW Ack (Decoded TX Sector)\n    I->>R: TDD SSW Ack (End of Training = 1)\n    Note over I,R: both lock chosen antenna + sector\n    Note over I,R: ...later, link drifts...\n    I->>R: Announce (TDD Sector Setting, Set Sector Request=1)\n    R->>I: Ack\n    R->>I: Announce (Set Sector Response=1)\n    I->>R: Announce (Set Sector Acknowledge=1)\n    Note over I,R: at Switch Timestamp both flip sectors in lockstep",
+      "zh": "sequenceDiagram\n    participant I as 发起方 (PCP/AP)\n    participant R as 响应方\n    Note over I,R: 处于一个 TDD SP 内——时隙固定，无需竞争\n    I->>R: TDD SSW (发射扇区 ID 1, 扫描)\n    Note over R: 扫过各接收扇区，逐扇区停留\n    R->>I: TDD SSW Feedback (最佳收/发扇区对, SNR)\n    I->>R: TDD SSW Ack (Decoded 发射扇区)\n    I->>R: TDD SSW Ack (End of Training = 1)\n    Note over I,R: 双方锁定所选天线 + 扇区\n    Note over I,R: ……之后，链路发生漂移……\n    I->>R: Announce (TDD Sector Setting, Set Sector Request=1)\n    R->>I: Ack\n    R->>I: Announce (Set Sector Response=1)\n    I->>R: Announce (Set Sector Acknowledge=1)\n    Note over I,R: 在 Switch Timestamp 时刻双方同步切换扇区"
+    },
+    {
+      "type": "prose",
+      "en": "Once a link is up, the world moves: a person walks through the beam, the gear shifts slightly, the best sector changes. The TDD sector switch procedure lets the pair flip to new sectors together without a full retrain. Only a PCP or AP may start it. It carries a TDD Sector Setting subelement that names the new TX/RX antenna and sector for both ends, plus two timestamps: a Switch Timestamp (when to flip) and a Revert Timestamp (when to give up and roll back if it failed). The handshake is request -> response -> acknowledge, each retransmittable. At the Switch Timestamp both ends switch in lockstep; if the acknowledge never lands, both revert to the old sectors at the Revert Timestamp and, if still broken, fall back to full TDD beamforming.",
+      "zh": "链路一旦建立，环境却在变化：有人走过波束、设备轻微移动、最佳扇区随之改变。TDD 扇区切换过程让这一对设备一起切换到新扇区，而无需完整重训。只有 PCP 或 AP 才能发起它。该过程携带一个 TDD Sector Setting 子元素，为两端指定新的收/发天线与扇区，外加两个时间戳：Switch Timestamp（何时切换）与 Revert Timestamp（若失败何时放弃并回滚）。握手为 请求 -> 响应 -> 确认，每一步都可重传。到 Switch Timestamp 时刻，两端同步切换；若确认始终未送达，双方在 Revert Timestamp 时刻回退到旧扇区，若仍不通，则退回到完整的 TDD 波束成形。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "TDD beam measurement is the lightweight cousin of TDD beamforming. The initiator sweeps TDD SSW frames just like in training, but sends no TDD SSW Ack and counts down a TDD Slot CDOWN to zero to mark the end. The responder only talks back if Feedback Requested is set — otherwise it simply reports what it measured up to the SME. It is a way to keep the chosen sectors verified over time within the rigid schedule, rather than to negotiate a fresh link.",
+      "zh": "TDD 波束测量是 TDD 波束成形的轻量级“表亲”。发起方像训练时一样扫描 TDD SSW 帧，但不发送 TDD SSW Ack，而是用一个 TDD Slot CDOWN 倒数到零来标记结束。响应方只有在 Feedback Requested 被置位时才回话——否则它只是把测量结果上报给 SME。它的用途是在刚性时间表内持续核验所选扇区是否依旧有效，而不是去协商一条全新的链路。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 360 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><text x='8' y='20' fill='currentColor' stroke='none' font-size='12'>TDD SP timeline (one period)</text><line x1='10' y1='60' x2='350' y2='60'/><rect x='10' y='45' width='70' height='30'/><text x='20' y='65' fill='currentColor' stroke='none' font-size='11'>I-&gt;R slot</text><rect x='80' y='45' width='70' height='30'/><text x='92' y='65' fill='currentColor' stroke='none' font-size='11'>R-&gt;I slot</text><rect x='150' y='45' width='70' height='30'/><text x='160' y='65' fill='currentColor' stroke='none' font-size='11'>I-&gt;R slot</text><rect x='220' y='45' width='70' height='30'/><text x='232' y='65' fill='currentColor' stroke='none' font-size='11'>R-&gt;I slot</text><rect x='290' y='45' width='60' height='30' stroke-dasharray='4 3'/><text x='300' y='65' fill='currentColor' stroke='none' font-size='11'>...</text><text x='8' y='105' fill='currentColor' stroke='none' font-size='11'>Direction pre-assigned per slot; aiming is slaved to slot edges.</text><text x='8' y='125' fill='currentColor' stroke='none' font-size='11'>No contention - both ends transmit and receive on the beat.</text></svg>",
+      "caption": {
+        "en": "A TDD SP splits the DTI into fixed, direction-assigned slots; sector switching is timed to the slot boundaries rather than won by contention.",
+        "zh": "一个 TDD SP 把 DTI 切成方向固定、预先指派的时隙；扇区切换的时机对齐到时隙边界，而非靠竞争获得。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The MLME primitives and the timestamp-driven switch contract",
+        "zh": "MLME 原语与由时间戳驱动的切换约定"
+      },
+      "en": "11.36.2 says that on an MLME-TDD-BF-TRAINING.request a DMG STA becomes the TDD beamforming initiator and runs TDD individual or group BF per 10.41.11, starting at the BeamformingStartTimestamp; it issues MLME-TDD-BF-TRAINING.confirm after sending the last TDD SSW Ack with End of Training = 1, and a peer trained on request issues .indication. 11.36.3 governs the sector switch: only a PCP or AP initiates, sending an Announce (subtype Action) carrying a TDD Sector Setting subelement with Set Sector Request = 1; the responder Acks, sets its antenna at the Switch Timestamp, and replies with Set Sector Response = 1; the initiator answers Set Sector Acknowledge = 1. The Switch Timestamp must allow at least three retransmissions of the Announce and its Ack; the Revert Timestamp must allow at least three retransmissions of both the response and the acknowledge. If the acknowledge does not arrive by the Revert Timestamp, both ends issue MLME-TDD-SECTOR-SWITCH.confirm with FAILURE and revert to the start-of-procedure antenna configuration, then fall back to TDD beamforming. 11.36.4 says an MLME-TDD-BEAM-MEASUREMENT.request makes the STA initiator or responder per the BFRole parameter, running the measurement per 10.41.11 from BeamMeasurementStartTimestamp; the responder reports DecodedRXAntennaID, DecodedRXSectorID and SNR Report from the initiator's TDD SSW frames.",
+      "zh": "11.36.2 规定：收到 MLME-TDD-BF-TRAINING.request 后，DMG STA 成为 TDD 波束成形发起方，按 10.41.11 执行 TDD 单点或组播 BF，并在 BeamformingStartTimestamp 指定的时刻开始；在发送出最后一个 End of Training = 1 的 TDD SSW Ack 之后发出 MLME-TDD-BF-TRAINING.confirm，而应请求被训练的对端则发出 .indication。11.36.3 管辖扇区切换：只有 PCP 或 AP 可发起，发送一个携带 TDD Sector Setting 子元素（Set Sector Request = 1）的 Announce 帧（Action 子类型）；响应方回 Ack，在 Switch Timestamp 时刻设置天线，并以 Set Sector Response = 1 回复；发起方再以 Set Sector Acknowledge = 1 应答。Switch Timestamp 必须留出至少三次 Announce 及其 Ack 的重传时间；Revert Timestamp 必须留出响应与确认各至少三次重传的时间。若确认在 Revert Timestamp 之前仍未到达，两端均发出 ResultCode 为 FAILURE 的 MLME-TDD-SECTOR-SWITCH.confirm，回退到过程开始时的天线配置，随后退回 TDD 波束成形。11.36.4 规定：MLME-TDD-BEAM-MEASUREMENT.request 依据 BFRole 参数把 STA 设为发起方或响应方，从 BeamMeasurementStartTimestamp 起按 10.41.11 执行测量；响应方根据来自发起方的 TDD SSW 帧上报 DecodedRXAntennaID、DecodedRXSectorID 与 SNR Report。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2876,
+          2878,
+          2880,
+          2882
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.36.2",
+    "80211-2024:11.36.3",
+    "80211-2024:11.36.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2320,
+        2321
+      ],
+      "note": "10.41.11 TDD beamforming general — TDD individual/group BF and TDD beam measurement; all TDD BF performed during a TDD SP"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2876
+      ],
+      "note": "11.36.2 TDD beamforming — MLME-TDD-BF-TRAINING.request/.confirm/.indication; BeamformingStartTimestamp; End of Training Ack"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2878,
+        2880,
+        2881
+      ],
+      "note": "11.36.3 TDD sector switch — PCP/AP-only initiation; TDD Sector Setting subelement; Switch/Revert Timestamp; request/response/acknowledge; revert and fallback to TDD beamforming"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2881,
+        2882
+      ],
+      "note": "11.36.4 TDD beam measurement — MLME-TDD-BEAM-MEASUREMENT.request per BFRole; DecodedRXAntennaID/DecodedRXSectorID/SNR Report reporting"
+    }
+  ],
+  "track": "managing"
+}

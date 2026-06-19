@@ -1,0 +1,101 @@
+{
+  "id": "managing-16",
+  "title": {
+    "en": "Keeping the Beam Alive: DMG Beamformed Link Maintenance, Beam Tracking, and the BeamLink Timer",
+    "zh": "维持波束存活：DMG 波束成形链路维护、波束跟踪与 BeamLink 计时器"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A 60 GHz DMG link does not spread its energy in all directions like an ordinary 2.4 or 5 GHz Wi-Fi signal. It is a pencil beam — both ends point a narrow antenna pattern (an AWV, antenna weight vector) straight at each other to overcome the brutal path loss of millimetre waves. That beam buys enormous data rates, but it is fragile: turn your head, let someone walk between the two devices, or simply drift a few degrees, and the link can collapse in milliseconds. So a DMG pair needs a way to notice the beam is dying and re-aim before the connection drops. That is what beamformed link maintenance is for.",
+      "zh": "60 GHz 的 DMG 链路不像普通 2.4 或 5 GHz Wi-Fi 那样把能量向四面八方扩散。它是一束“铅笔波束”——两端各自把一个很窄的天线方向图（AWV，天线加权矢量）笔直地对准对方，以此克服毫米波极其严重的路径损耗。这束波束换来了惊人的数据速率，却也异常脆弱：转一下头、让人从两台设备之间走过，甚至只是偏移几度，链路就可能在几毫秒内崩溃。因此 DMG 设备对需要一种机制，在波束彻底失效之前察觉它正在衰退并重新对准。这正是“波束成形链路维护”的用途。"
+    },
+    {
+      "type": "prose",
+      "en": "The core idea is a watchdog: a beam link maintenance timer. Each DMG station keeps one such timer per beamformed link. When a link is set up (after the sector level sweep, or SLS, and the optional beam refinement phase, BRP), the station loads the timer with a negotiated value — dot11BeamLinkMaintenanceTime — and lets it count down. The trick is that every time the two stations exchange a frame successfully, the timer is reloaded back to its full value. As long as traffic keeps flowing, the timer never reaches zero. Only when the link goes quiet — because the beam has actually broken and frames stop getting through — does the countdown run out, and that lapse is taken as proof the beam is lost.",
+      "zh": "核心思路是一个“看门狗”：波束链路维护计时器。每个 DMG 站点为每条波束成形链路维护一个这样的计时器。链路建立后（即完成扇区级扫描 SLS，以及可选的波束细化阶段 BRP），站点把计时器装载为一个协商好的值——dot11BeamLinkMaintenanceTime——并让它倒数。关键在于：两个站点每成功交换一次帧，计时器就被重置回满值。只要流量持续流动，计时器就永远到不了零。只有当链路安静下来——因为波束确实断了、帧不再被收到——倒数才会归零，而这次“计时耗尽”就被当作波束已丢失的证据。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "What counts as a 'successful exchange'? The standard is specific. The initiator reloads its timer when it receives an immediate response — an Ack, BlockAck, DMG CTS, or DMG DTS — from the recipient. The recipient reloads its timer just after it finishes sending that same Ack/BlockAck/DMG CTS/DMG DTS. During the ATI, an AP/PCP reloads on a response from the STA or an SPR frame, and the STA reloads when it receives a Poll or Grant frame. The timer is also halted (not counting down) during the BTI and A-BFT, during SPs/CBAPs the station does not take part in, and whenever either end is dozing.",
+      "zh": "什么才算“一次成功交换”？标准说得很具体。发起方在收到接收方发来的即时响应——Ack、BlockAck、DMG CTS 或 DMG DTS——时重置自己的计时器。接收方则在发完这同一个 Ack/BlockAck/DMG CTS/DMG DTS 之后立刻重置计时器。在 ATI 期间，AP/PCP 在收到 STA 的响应或一个 SPR 帧时重置，STA 在收到 Poll 或 Grant 帧时重置。此外，计时器在 BTI 与 A-BFT 期间、在站点未参与的 SP/CBAP 期间、以及任一端处于打盹（doze）状态时都会被暂停（不再倒数）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><text x='30' y='24' fill='currentColor' stroke='none' font-size='13' font-weight='bold'>beam link maintenance timer</text><line x1='30' y1='160' x2='430' y2='160'/><line x1='30' y1='40' x2='30' y2='160'/><text x='6' y='46' fill='currentColor' stroke='none' font-size='11'>full</text><text x='14' y='164' fill='currentColor' stroke='none' font-size='11'>0</text><polyline points='30,46 110,120 110,46 200,120 200,46 300,150 300,46 360,90'/><circle cx='110' cy='46' r='3' fill='currentColor' stroke='none'/><circle cx='200' cy='46' r='3' fill='currentColor' stroke='none'/><circle cx='300' cy='46' r='3' fill='currentColor' stroke='none'/><line x1='360' y1='90' x2='420' y2='160' stroke-dasharray='5 4'/><circle cx='420' cy='160' r='4' fill='currentColor' stroke='none'/><text x='70' y='140' fill='currentColor' stroke='none' font-size='9'>Ack</text><text x='160' y='140' fill='currentColor' stroke='none' font-size='9'>BlockAck</text><text x='250' y='168' fill='currentColor' stroke='none' font-size='9'>DMG CTS</text><text x='360' y='185' fill='currentColor' stroke='none' font-size='10'>beam lost -&gt; re-run SLS</text><text x='120' y='190' fill='currentColor' stroke='none' font-size='9'>each success reloads to dot11BeamLinkMaintenanceTime</text></svg>",
+      "caption": {
+        "en": "Every successful exchange (Ack / BlockAck / DMG CTS / DMG DTS) reloads the timer to its full value. When traffic stops and the countdown finally reaches zero, the beam is presumed lost.",
+        "zh": "每一次成功交换（Ack / BlockAck / DMG CTS / DMG DTS）都把计时器重置回满值。当流量停止、倒数最终归零时，波束被判定为已丢失。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "What happens when the timer expires? The receiving station widens its antenna back out to a quasi-omni pattern (it gives up on the narrow beam, which is no longer working), and the source station may restart an initiator sector sweep (ISS) to rebuild the link from scratch following the normal SLS rules. There is also a neat detail for keeping the timer fed: if a station has no data to send but wants to hold the beam, it transmits QoS Null frames purely to draw out the Acks that reset the timer — a heartbeat that proves the beam still points the right way.",
+      "zh": "计时器到期会发生什么？接收侧站点会把天线方向图重新放宽到准全向（quasi-omni）模式（它放弃了那束已经失效的窄波束），而源站点则可以按照常规 SLS 规则重新发起一次发起方扇区扫描（ISS），从头重建链路。还有一个用于“喂饱”计时器的巧妙细节：如果一个站点没有数据要发，却又想保住波束，它会发送 QoS Null 帧，纯粹为了引出那些能重置计时器的 Ack——这相当于一次心跳，证明波束仍然指向正确的方向。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant I as Initiator DMG STA\n    participant R as Recipient DMG STA\n    Note over I,R: beamformed link up; timers loaded to dot11BeamLinkMaintenanceTime\n    I->>R: Data PPDU (+ TRN-R subfields appended)\n    R->>I: Ack / BlockAck\n    Note over I: reload timer on receiving Ack\n    Note over R: reload timer after sending Ack\n    Note over I,R: body blocks the beam - no Ack returns\n    Note over I,R: timer counts down ... reaches 0 = beam lost\n    Note over R: widen RX to quasi-omni\n    I->>R: Initiator Sector Sweep (re-run SLS, or EDMG partial SLS)\n    R->>I: link restored",
+      "zh": "sequenceDiagram\n    participant I as 发起方 DMG STA\n    participant R as 接收方 DMG STA\n    Note over I,R: 波束链路已建立；计时器装载为 dot11BeamLinkMaintenanceTime\n    I->>R: 数据 PPDU（尾部附加 TRN-R 子字段）\n    R->>I: Ack / BlockAck\n    Note over I: 收到 Ack 时重置计时器\n    Note over R: 发完 Ack 后重置计时器\n    Note over I,R: 人体挡住波束——没有 Ack 返回\n    Note over I,R: 计时器倒数……归零 = 波束丢失\n    Note over R: 把接收天线放宽到准全向\n    I->>R: 发起方扇区扫描（重跑 SLS，或 EDMG 部分 SLS）\n    R->>I: 链路恢复"
+    },
+    {
+      "type": "prose",
+      "en": "Re-running a full sweep is expensive, so two cheaper mechanisms keep the beam aligned without ever letting the timer lapse. The first is beam tracking: instead of pausing to do a separate training procedure, a station appends short TRN (training) subfields to the tail of an ordinary data PPDU. The receiver measures those known subfields and nudges its antenna weights to follow slow drift — a continuous, in-band correction that rides on traffic the link was already sending. The second, for newer EDMG (802.11ay) stations, is partial SLS: when the timer does expire, the pair re-trains only the handful of sectors flagged in the EDMG Partial Sector Level Sweep element they exchanged, rather than sweeping every sector — escalating to a full sweep only if that shortcut fails to recover within the agreed time.",
+      "zh": "重跑一次完整扫描代价高昂，于是有两种更廉价的机制能在不让计时器耗尽的前提下保持波束对准。第一种是波束跟踪（beam tracking）：站点不必停下来执行单独的训练流程，而是在一个普通数据 PPDU 的尾部附加若干短小的 TRN（训练）子字段。接收方测量这些已知子字段，微调自己的天线加权以跟随缓慢漂移——这是一种带内的、连续的校正，搭在链路本来就要发送的流量上。第二种针对较新的 EDMG（802.11ay）站点，是部分 SLS：当计时器确实到期时，设备对只重训它们交换的 EDMG 部分扇区级扫描元素中标记的少数几个扇区，而不是扫描每一个扇区——只有当这条捷径在约定时间内未能恢复链路时，才升级为完整扫描。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exactly which events reload dot11BeamLinkMaintenanceTime, and how EDMG partial SLS escalates",
+        "zh": "究竟哪些事件会重置 dot11BeamLinkMaintenanceTime，以及 EDMG 部分 SLS 如何升级"
+      },
+      "en": "Per 11.27.1.1, a DMG STA keeps one beam link maintenance timer per beamformed link; once set it counts down and stops at zero, and it is halted during BTI/A-BFT, during SPs/CBAPs the STA does not participate in, and while either end is in doze. It is set to dot11BeamLinkMaintenanceTime on completing BRP (or SLS if BRP is skipped); a DMG AP/PCP reloads it on a response from the non-AP/PCP STA during the ATI or on an SPR frame answering a Poll; the non-AP/PCP STA reloads on a request during the ATI or on a Poll/Grant frame; the initiator reloads on receiving an Ack/BlockAck/DMG CTS/DMG DTS; the recipient reloads after completing transmission of that Ack/BlockAck/DMG CTS/DMG DTS. To avoid lapse with no data, the STA sends QoS Null frames. On expiry the destination configures its receive antenna to quasi-omni and the source may initiate an ISS per 10.41.2. Beam tracking (10.41.7) lets a station append TRN subfields to PPDUs to track AWV (analog) or the spatial mapping matrix Q (baseband) drift without a full BRP, bounded by the beam tracking time limit. Under 11.27.1.2, partial-SLS-ready EDMG STAs (more than one DMG antenna plus a successfully exchanged EDMG Partial Sector Level Sweep element) re-train only the Partial Number of Sectors on expiry; if the Time to Switch to Full Sector Sweep elapses without a successful SLS, they escalate to sweeping the Total Number of Sectors.",
+      "zh": "依据 11.27.1.1，DMG 站点为每条波束成形链路维护一个波束链路维护计时器；一旦设置便倒数并在归零时停止，且在 BTI/A-BFT 期间、在站点未参与的 SP/CBAP 期间、以及任一端处于打盹状态时被暂停。它在完成 BRP（若跳过 BRP 则为完成 SLS）时被设为 dot11BeamLinkMaintenanceTime；DMG AP/PCP 在 ATI 期间收到非 AP/PCP STA 的响应、或收到回应 Poll 的 SPR 帧时重置；非 AP/PCP STA 在 ATI 期间收到请求、或收到 Poll/Grant 帧时重置；发起方在收到 Ack/BlockAck/DMG CTS/DMG DTS 时重置；接收方在发完该 Ack/BlockAck/DMG CTS/DMG DTS 之后重置。为避免无数据时计时器耗尽，站点发送 QoS Null 帧。到期时，目标方把接收天线配置为准全向，源站点可按 10.41.2 发起一次 ISS。波束跟踪（10.41.7）允许站点在 PPDU 尾部附加 TRN 子字段，无需完整 BRP 即可跟踪 AWV（模拟）或空间映射矩阵 Q（基带）的漂移，并受波束跟踪时限约束。依据 11.27.1.2，具备部分 SLS 能力的 EDMG 站点（拥有多于一个 DMG 天线，且已成功交换 EDMG 部分扇区级扫描元素）在到期时只重训“部分扇区数”所指的扇区；若“切换到完整扇区扫描的时间”过去仍未成功完成 SLS，则升级为扫描“总扇区数”。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2831,
+          2832,
+          2833,
+          2834
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.27.1.1",
+    "80211-2024:11.27.1.2",
+    "80211-2024:10.41.7"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2831,
+        2832
+      ],
+      "note": "11.27.1.1 Beamformed link maintenance - one timer per link; reload on Ack/BlockAck/DMG CTS/DMG DTS, Poll/Grant/SPR during ATI; halt conditions; QoS Null heartbeat; on expiry quasi-omni + ISS per 10.41.2"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2833,
+        2834
+      ],
+      "note": "11.27.1.2 EDMG partial SLS - re-train only Partial Number of Sectors on expiry; escalate to Total Number of Sectors after Time to Switch to Full Sector Sweep"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2266,
+        2267,
+        2270
+      ],
+      "note": "10.41.7 Beam tracking - append TRN subfields to data PPDUs to track AWV (analog) / spatial mapping matrix Q (baseband) without a full BRP; beam tracking time limit"
+    }
+  ],
+  "track": "managing"
+}

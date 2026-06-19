@@ -1,0 +1,137 @@
+{
+  "id": "managing-17",
+  "title": {
+    "en": "Finding Peers and Tuning the BSS Clock: DMG Service Discovery and Changing BSS Parameters",
+    "zh": "发现对端与调整 BSS 节拍：DMG 服务发现与变更 BSS 参数"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "At 60 GHz, radios talk in narrow beams. Before a DMG (directional multi-gigabit) station can aim a beam at a peer and train the link, it first has to answer two ordinary-sounding questions: who else is here, and what can they do? In a normal Wi-Fi band you might just shout a Probe Request omnidirectionally and listen. In a directional band the BSS gives stations a tidier tool: a short request/response exchange that asks the AP or PCP (PBSS control point) about one specific peer — or about everyone — and gets back exactly the capability and measurement elements you asked for.",
+      "zh": "在 60 GHz 频段，无线电是用窄波束“说话”的。一个 DMG（定向多吉比特）站点要把波束对准某个对端并完成链路训练之前，必须先回答两个听上去很朴素的问题：这里还有谁？它们能做什么？在普通 Wi-Fi 频段，你也许只要全向地喊一声 Probe Request 然后竖起耳朵听。但在定向频段，BSS 给站点提供了一件更整洁的工具：一段简短的请求/响应交换——向 AP 或 PCP（PBSS 控制点）询问某一个特定对端，或者询问全部成员，并精确地取回你所请求的能力与测量信息单元（element）。"
+    },
+    {
+      "type": "prose",
+      "en": "The exchange runs on Information Request and Information Response frames. A station sets a Subject Address field to the MAC address of the single peer it cares about, or to the broadcast address to ask about everyone in the BSS — in which case it sends the request to the AP and PCP. There's a neat trick hidden here: a station can send an Information Request with an empty Request element (Length = 0) just to ask 'are you still there and in range?' — a directional liveness ping. The responder replies with an Information Response containing exactly the elements that were both requested and supported; anything it doesn't support is simply left out.",
+      "zh": "这套交换运行在“信息请求帧（Information Request）”与“信息响应帧（Information Response）”之上。站点把 Subject Address 字段设为它关心的那个单一对端的 MAC 地址；如果想询问 BSS 中的全部成员，则把该字段设为广播地址——此时请求会发往 AP 和 PCP。这里藏着一个巧妙的用法：站点可以发送一个 Request element 长度为 0 的信息请求帧，仅仅是为了问一句“你还在、并且仍在我的覆盖范围内吗？”——这是一种定向的存活探测。响应方回以信息响应帧，其中只包含“既被请求、又被支持”的那些信息单元；凡是它不支持的，直接略去不放。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why not just use Probe Request/Response? You can — but the Information Request and Information Response frames are robust Management frames (they can be protected), while Probe frames are not. For querying a peer's services inside an established BSS, the Information exchange is the durable, protectable channel; Probe is the lighter, unprotected fallback.",
+      "zh": "为什么不干脆用 Probe Request/Response？也可以——但信息请求帧和信息响应帧属于健壮管理帧（robust Management frame，可被保护），而 Probe 系列帧则不是。在已建立的 BSS 内查询某个对端的服务时，信息交换是那条可持久、可被保护的通道；Probe 则是更轻量、不受保护的备选项。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as non-AP/non-PCP STA\n    participant PCP as AP / PCP\n    Note over STA: wants to discover peer services\n    STA->>PCP: Information Request (Subject Addr, requested elements)\n    Note over PCP: check SSID, BSSID, DA all match me\n    PCP->>STA: Information Response (supported requested elements)\n    Note over STA,PCP: STA now knows peer capabilities -> can beam-train",
+      "zh": "sequenceDiagram\n    participant STA as 非AP/非PCP 站点\n    participant PCP as AP / PCP\n    Note over STA: 想发现对端的服务\n    STA->>PCP: 信息请求帧 (Subject 地址, 所请求的元素)\n    Note over PCP: 校验 SSID、BSSID、DA 是否都指向我\n    PCP->>STA: 信息响应帧 (被支持且被请求的元素)\n    Note over STA,PCP: 站点已掌握对端能力 -> 可开始波束训练"
+    },
+    {
+      "type": "prose",
+      "en": "Discovery is only half the story. The BSS also has a heartbeat — the beacon interval, anchored at each TBTT (target beacon transmission time). In a directional network this heartbeat matters more than usual: a station has aimed its receive beam to catch the beacon at a predicted moment, so if the AP or PCP suddenly shifts that moment, the station can miss it entirely and lose sync. That's why a DMG AP or PCP never changes its timing silently. It announces the change ahead of time by inserting a DMG BSS Parameter Change element into its DMG Beacon or Announce frames, repeating it in every such frame until the change takes effect.",
+      "zh": "发现只是故事的一半。BSS 还有自己的“心跳”——信标间隔（beacon interval），它锚定在每一个 TBTT（目标信标发送时刻）上。在定向网络里，这个心跳比平常更要紧：站点已经把接收波束对准了它预测的信标到达时刻，因此一旦 AP 或 PCP 突然挪动这个时刻，站点就可能彻底错过它、丢失同步。这正是 DMG 的 AP 或 PCP 从不“悄悄”改变其时序的原因。它会提前宣告变更——在自己的 DMG Beacon 帧或 Announce 帧中插入一个 DMG BSS Parameter Change 信息单元，并在此后的每一个这类帧里持续重复，直到变更真正生效为止。"
+    },
+    {
+      "type": "prose",
+      "en": "Two kinds of timing change use the same machinery. To move the TBTT (shift where the beacon sits, keeping the interval length the same), the AP or PCP sets the Move field to 1 and writes the lower 4 octets of the intended new TBTT into the TBTT Offset field. To change the beacon-interval duration (make the heartbeat itself longer or shorter), it sets the Size field to 1 and writes the new length into the BI Duration field. In both cases the element is sent at each TBTT for dot11NbrOfChangeBeacons beacons before the change — and crucially that count must exceed dot11MaxLostBeacons, so even a station that missed a few beacons still hears the warning before its clock jumps.",
+      "zh": "两种时序变更复用同一套机制。要移动 TBTT（在保持间隔长度不变的前提下挪动信标的位置），AP 或 PCP 把 Move 字段置为 1，并把目标新 TBTT 的低 4 个字节写入 TBTT Offset 字段。要改变信标间隔时长（让心跳本身变长或变短），则把 Size 字段置为 1，并把新的长度写入 BI Duration 字段。两种情形下，该信息单元都会在变更前于每个 TBTT 连续发送 dot11NbrOfChangeBeacons 次——关键在于这个次数必须大于 dot11MaxLostBeacons，这样即便某个站点漏掉了几个信标，它仍能在自己的时钟“跳变”之前听到预警。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 460 150' stroke='currentColor' fill='currentColor'><line x1='20' y1='70' x2='440' y2='70' stroke-width='1.5'/><polygon points='440,70 432,66 432,74' /><g stroke-width='1.5'><line x1='60' y1='62' x2='60' y2='78'/><line x1='130' y1='62' x2='130' y2='78'/><line x1='200' y1='62' x2='200' y2='78'/><line x1='270' y1='62' x2='270' y2='78'/></g><g stroke-width='1.5' stroke-dasharray='4 3'><line x1='360' y1='55' x2='360' y2='85'/></g><circle cx='130' cy='40' r='5' fill='currentColor'/><line x1='130' y1='45' x2='130' y2='62' stroke-width='1.5'/><text x='100' y='32' font-size='10' stroke='none'>first announcement</text><text x='305' y='48' font-size='10' stroke='none'>new TBTT</text><text x='30' y='100' font-size='9' stroke='none'>TBTT</text><text x='100' y='100' font-size='9' stroke='none'>TBTT</text><text x='170' y='100' font-size='9' stroke='none'>TBTT</text><text x='240' y='100' font-size='9' stroke='none'>TBTT</text><text x='338' y='100' font-size='9' stroke='none'>moved</text><text x='30' y='130' font-size='9' stroke='none'>Parameter Change element repeated each beacon until it takes effect</text></svg>",
+      "caption": {
+        "en": "Moving the TBTT: the DMG BSS Parameter Change element is repeated at each beacon for several intervals before the beacon actually shifts to its new position, so directional stations are never surprised.",
+        "zh": "移动 TBTT：DMG BSS Parameter Change 信息单元会在信标真正挪到新位置之前，连续若干个信标间隔在每个信标中重复出现，因此定向站点绝不会被打个措手不及。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Synchronization is also a cluster affair. When several APs or PCPs form a cluster, the synchronization AP/PCP (S-AP/S-PCP) owns the schedule of Beacon SPs. If a parameter change reshuffles that allocation, the S-AP/S-PCP updates the Clustering Control field in every beacon carrying the change, and member APs/PCPs immediately mirror the appropriate Parameter Change element into their own beacons — so the whole cluster moves its clock together rather than drifting apart.",
+      "zh": "同步也是“整个集群”的事。当若干 AP 或 PCP 组成一个集群时，同步 AP/PCP（S-AP/S-PCP）掌管着 Beacon SP 的调度安排。如果某次参数变更重新洗牌了这一分配，S-AP/S-PCP 会在每一个携带该变更的信标中更新 Clustering Control 字段，而成员 AP/PCP 则立即把相应的 Parameter Change 信息单元镜像进自己的信标——这样整个集群会一起挪动时钟，而不是各自漂移、走散。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the timing isn't only the AP's prerogative. A plain non-AP/non-PCP station can recommend parameters to the AP or PCP by putting a DMG BSS Parameter Change element into an Information Request or Information Response frame: set Move and supply a TBTT Offset to suggest shifting the beacon, or set Size and a BI Duration to suggest a different heartbeat length. The station is expected to choose an offset that leaves the AP enough time to act. The AP or PCP may honour the recommendation — and if it does, it carries out the actual change using the very same announce-ahead procedures, so nobody loses the beacon.",
+      "zh": "最后，时序并非 AP 的专属权力。一个普通的非 AP/非 PCP 站点可以向 AP 或 PCP 提出参数建议：把一个 DMG BSS Parameter Change 信息单元放进信息请求帧或信息响应帧中即可——置位 Move 并给出 TBTT Offset 来建议挪动信标，或置位 Size 并给出 BI Duration 来建议另一种心跳长度。站点应当选择一个能给 AP 留出充分动作时间的偏移值。AP 或 PCP 可以采纳这一建议——一旦采纳，它会用完全相同的“提前宣告”流程来执行真正的变更，从而保证谁也不会丢失信标。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact rules: who answers, and the change-beacon count",
+        "zh": "精确规则：由谁应答，以及变更信标的计数"
+      },
+      "en": "11.28.1 specifies that a STA may scope an Information Request to one peer (Subject Address = that MAC) or to all (Subject Address = broadcast, sent to the AP and PCP), and that a zero-length Request element with no Extended Request element is a presence/range check. A responder includes each requested element it supports (omitting unsupported ones), plus RCPI/RSNI elements when dot11RadioMeasurementActivated is true and they were requested. 11.28.2 makes the AP/PCP answer a service query only if the SSID matches (or is wildcard), the BSSID matches (or is wildcard), and the DA equals the AP/PCP's MAC. For timing, 11.29.2 (Move=1, TBTT Offset = low 4 octets of the new TBTT) and 11.29.3 (Size=1, BI Duration in TUs) both require the element be sent at each TBTT dot11NbrOfChangeBeacons times, with dot11NbrOfChangeBeacons > dot11MaxLostBeacons; the change and TSF reset land at the dot11NbrOfChangeBeacons+1 TBTT. 11.29.4 covers S-AP/S-PCP Clustering Control updates and member mirroring; 11.29.5 lets a non-AP/non-PCP STA recommend Move/Size via an Information Request/Response, which the AP/PCP may then enact via 11.29.2/11.29.3.",
+      "zh": "11.28.1 规定：站点可把信息请求的范围限定到单个对端（Subject Address = 该 MAC）或全部成员（Subject Address = 广播，发往 AP 和 PCP）；而一个长度为 0、且不含 Extended Request element 的 Request element，是一次存活/距离探测。响应方会包含它所支持的每个被请求元素（不支持的则略去）；当 dot11RadioMeasurementActivated 为真且被请求时，还会附上 RCPI/RSNI 元素。11.28.2 规定：仅当 SSID 匹配（或为通配）、BSSID 匹配（或为通配）、且 DA 等于 AP/PCP 的 MAC 时，AP/PCP 才应答服务查询。在时序方面，11.29.2（Move=1，TBTT Offset = 新 TBTT 的低 4 个字节）与 11.29.3（Size=1，BI Duration 以 TU 计）都要求该元素在每个 TBTT 发送 dot11NbrOfChangeBeacons 次，且 dot11NbrOfChangeBeacons > dot11MaxLostBeacons；变更与 TSF 复位落在第 dot11NbrOfChangeBeacons+1 个 TBTT。11.29.4 涵盖 S-AP/S-PCP 的 Clustering Control 更新与成员镜像；11.29.5 则允许非 AP/非 PCP 站点经由信息请求/响应建议 Move/Size，AP/PCP 随后可借 11.29.2/11.29.3 付诸实施。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2837,
+          2838,
+          2839,
+          2840,
+          2841
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.28.1",
+    "80211-2024:11.28.2",
+    "80211-2024:11.29.2",
+    "80211-2024:11.29.3",
+    "80211-2024:11.29.4",
+    "80211-2024:11.29.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2837,
+        2838
+      ],
+      "note": "11.28.1 Information Request and Response — Subject Address single vs broadcast, zero-length Request element as presence/range check, supported-elements-only response, RCPI/RSNI inclusion"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2838
+      ],
+      "note": "11.28.2 Peer Service Discovery — Information vs Probe (robust Management frames); AP/PCP responds only if SSID, BSSID, DA criteria met"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2838,
+        2839
+      ],
+      "note": "11.29.2 Moving the TBTT — Move=1, TBTT Offset = low 4 octets of new TBTT, repeated dot11NbrOfChangeBeacons times (> dot11MaxLostBeacons); Figure 11-86"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2839,
+        2840
+      ],
+      "note": "11.29.3 Changing beacon interval duration — Size=1, BI Duration in TUs; TSF reset at dot11NbrOfChangeBeacons+1 TBTT; Figure 11-87"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2840,
+        2841
+      ],
+      "note": "11.29.4 Maintaining synchronization in an AP or PCP cluster — S-AP/S-PCP Clustering Control update and member AP/PCP mirroring of the Parameter Change element"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2841
+      ],
+      "note": "11.29.5 Recommending DMG BSS parameters — non-AP/non-PCP STA sets Move/Size with TBTT Offset/BI Duration in an Information Request/Response; AP/PCP may enact via 11.29.2/11.29.3"
+    }
+  ],
+  "track": "managing"
+}

@@ -1,0 +1,133 @@
+{
+  "id": "managing-15",
+  "title": {
+    "en": "Aiming Pencil Beams: DMG Sector-Level Sweep, BRP, and the BTI/A-BFT/ATI/DTI Beacon Interval",
+    "zh": "瞄准铅笔波束：DMG 扇区级扫描、波束精化与 BTI/A-BFT/ATI/DTI 信标间隔"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "At 60 GHz (the DMG band — Directional Multi-Gigabit), radio waves carry huge bandwidth but pay for it brutally: free-space path loss is enormous, oxygen absorbs energy, and a signal barely bends around obstacles. A plain omnidirectional antenna would never close the link. The fix is to stop spraying energy everywhere and instead focus it into a pencil-thin beam using a phased-array antenna — many tiny elements whose phases are tuned so the wavefronts add up in exactly one direction. The catch: a pencil beam only works if it is pointed at the other radio. So before any data flows, two DMG stations must find each other's best beam direction. That discovery process is beamforming, and it is the beating heart of 60 GHz MAC.",
+      "zh": "在 60 GHz 频段（即 DMG——定向多吉比特），无线电波带宽巨大，但代价极其惨烈：自由空间路径损耗极大，氧气会吸收能量，信号也几乎无法绕过障碍物。普通的全向天线根本无法建立可用链路。解决办法是不再向四面八方乱撒能量，而是用相控阵天线把能量聚成一束铅笔般纤细的波束——阵列由许多微小单元组成，调节它们的相位，使波前恰好在某一个方向上叠加增强。问题在于：铅笔波束只有正对另一台设备时才有效。因此在任何数据传输之前，两个 DMG 站点必须先找到彼此的最佳波束方向。这个发现过程就是波束赋形（beamforming），它是 60 GHz MAC 的核心命脉。"
+    },
+    {
+      "type": "prose",
+      "en": "Everything in a DMG BSS hangs on a clock called the beacon interval, which is sliced into named access periods, each with its own access rules. The first three together form the Beacon Header Interval (BHI): BTI, where the AP (or PCP) sweeps DMG Beacon frames through every transmit sector; A-BFT, a contention period where stations sweep their beams back toward the AP; and ATI, a request-response management window the AP fully controls. After the BHI comes the DTI — the Data Transfer Interval — itself a sequence of CBAPs (contention-based access periods) and SPs (scheduled service periods) where the actual traffic flows. One BHI plus one DTI per beacon interval, every interval.",
+      "zh": "DMG BSS 中的一切都挂在一个名为信标间隔（beacon interval）的时钟上，它被切成若干带名字的接入周期（access period），每个周期有各自的接入规则。前三个周期合起来构成信标头间隔（BHI）：BTI，AP（或 PCP）在此通过每一个发送扇区轮扫 DMG 信标帧；A-BFT，这是一个竞争周期，站点在此朝 AP 方向反向轮扫自己的波束；ATI，一个由 AP 完全掌控的请求-响应管理窗口。BHI 之后是 DTI——数据传输间隔——它本身又是一连串 CBAP（基于竞争的接入周期）与 SP（调度服务周期），真正的业务流量在此传输。每个信标间隔里都有且仅有一个 BHI 加一个 DTI。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 640 120' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='13'><line x1='10' y1='95' x2='630' y2='95' stroke='currentColor' stroke-width='1.5'/><polygon points='630,95 620,90 620,100' fill='currentColor'/><text x='560' y='112' fill='currentColor'>time</text><rect x='10' y='55' width='90' height='30' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='55' y='74' fill='currentColor' text-anchor='middle'>BTI</text><rect x='100' y='55' width='90' height='30' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='145' y='74' fill='currentColor' text-anchor='middle'>A-BFT</text><rect x='190' y='55' width='90' height='30' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='235' y='74' fill='currentColor' text-anchor='middle'>ATI</text><rect x='280' y='55' width='130' height='30' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='345' y='74' fill='currentColor' text-anchor='middle'>CBAP 1</text><rect x='410' y='55' width='100' height='30' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='460' y='74' fill='currentColor' text-anchor='middle'>SP 1</text><rect x='510' y='55' width='110' height='30' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='565' y='74' fill='currentColor' text-anchor='middle'>CBAP 2</text><line x1='10' y1='40' x2='280' y2='40' stroke='currentColor' stroke-width='1.5'/><text x='145' y='32' fill='currentColor' text-anchor='middle'>BHI</text><line x1='280' y1='40' x2='620' y2='40' stroke='currentColor' stroke-width='1.5'/><text x='450' y='32' fill='currentColor' text-anchor='middle'>DTI</text><line x1='10' y1='15' x2='620' y2='15' stroke='currentColor' stroke-width='1'/><text x='315' y='8' fill='currentColor' text-anchor='middle'>one beacon interval</text></svg>",
+      "caption": {
+        "en": "A DMG beacon interval: the BHI (BTI + A-BFT + ATI) sets up beams and management, then the DTI carries data in CBAPs and SPs. Mirrors Figure 10-60 of the standard.",
+        "zh": "一个 DMG 信标间隔：BHI（BTI + A-BFT + ATI）完成波束训练与管理，随后 DTI 在 CBAP 与 SP 中承载数据。对应标准中的图 10-60。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Beam discovery itself runs as the Sector Level Sweep (SLS) — a coarse, brute-force search for the best transmit-sector pair. It has two halves. First the Initiator Sector Sweep (ISS): the initiator fans its beam through every sector one frame at a time (each frame stamped with a Sector ID and a CDOWN counter ticking down to 0), while the responder simply listens with a wide quasi-omni pattern and notes which sector arrived strongest. Then the Responder Sector Sweep (RSS): roles flip — the responder sweeps its sectors while the initiator listens. Finally SSW Feedback closes the loop: each side tells the other the winning Sector ID it heard, so both ends end up knowing which beam to point at the other.",
+      "zh": "波束发现本身以扇区级扫描（SLS）的形式运行——一次粗粒度、暴力搜索式地寻找最佳发送扇区对。它分为两半。先是发起方扇区扫描（ISS）：发起方逐帧地把波束扫过每一个扇区（每帧都打上扇区 ID 和一个递减到 0 的 CDOWN 计数器），而响应方只是用宽广的准全向（quasi-omni）方向图静静接收，记下哪个扇区信号最强。接着是响应方扇区扫描（RSS）：角色互换——响应方扫描自己的扇区，发起方接收。最后由 SSW 反馈（SSW Feedback）闭环：双方各自把听到的最佳扇区 ID 告诉对端，于是两端都知道该用哪个波束指向对方。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant I as Initiator (e.g. AP)\n    participant R as Responder (STA)\n    Note over I,R: SLS phase begins\n    rect rgb(240,240,240)\n    Note over I: ISS - sweep all TX sectors\n    I->>R: SSW (Sector 1, CDOWN=N-1)\n    I->>R: SSW (Sector 2, CDOWN=N-2)\n    I->>R: SSW (Sector k, CDOWN=0)\n    Note over R: listens quasi-omni, picks best sector\n    end\n    rect rgb(240,240,240)\n    Note over R: RSS - sweep all TX sectors\n    R->>I: SSW (Sector x, Sector Select=best ISS sector)\n    R->>I: SSW (Sector y, CDOWN=0)\n    Note over I: listens quasi-omni, picks best sector\n    end\n    I->>R: SSW-Feedback (winning responder Sector ID + SNR)\n    R->>I: SSW-Ack (winning initiator Sector ID)\n    Note over I,R: both ends now know the best TX sector pair",
+      "zh": "sequenceDiagram\n    participant I as 发起方 (如 AP)\n    participant R as 响应方 (STA)\n    Note over I,R: SLS 阶段开始\n    rect rgb(240,240,240)\n    Note over I: ISS - 扫过所有发送扇区\n    I->>R: SSW (扇区 1, CDOWN=N-1)\n    I->>R: SSW (扇区 2, CDOWN=N-2)\n    I->>R: SSW (扇区 k, CDOWN=0)\n    Note over R: 准全向接收，挑出最佳扇区\n    end\n    rect rgb(240,240,240)\n    Note over R: RSS - 扫过所有发送扇区\n    R->>I: SSW (扇区 x, Sector Select=ISS 最佳扇区)\n    R->>I: SSW (扇区 y, CDOWN=0)\n    Note over I: 准全向接收，挑出最佳扇区\n    end\n    I->>R: SSW-Feedback (响应方最佳扇区 ID + SNR)\n    R->>I: SSW-Ack (发起方最佳扇区 ID)\n    Note over I,R: 两端现已知最佳发送扇区对"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "SLS is deliberately coarse — it picks the best of a fixed set of pre-defined sectors. Beam Refinement Protocol (BRP) is the fine-tuning pass that follows. Using TRN (training) subfields appended to BRP frames, the two stations iteratively probe transmit and receive antenna weight vectors (AWVs) to sharpen the beam beyond what the quasi-omni-limited sweep could find. SLS gets you in the right neighbourhood; BRP finds the exact address.",
+      "zh": "SLS 刻意做得很粗——它只是从一组固定的预定义扇区里挑出最好的那个。波束精化协议（BRP）则是随后进行的细调环节。它借助附加在 BRP 帧上的 TRN（训练）子字段，让两个站点迭代地探测发送与接收的天线权重向量（AWV），把波束磨得比受准全向限制的扫描所能达到的更锐利。SLS 把你带到正确的街区，BRP 找到确切的门牌号。"
+    },
+    {
+      "type": "prose",
+      "en": "Where does the AP's beacon fit? In the BTI the AP performs its ISS not with SSW frames but by sweeping DMG Beacon frames through each sector — so the very beacon a station hears is also a beamforming probe. The station then completes the responder half during the A-BFT, contending for an SSW slot to sweep back. This is how a fresh station joining a 60 GHz BSS first acquires a usable beam: BTI gives it the AP's best sector, A-BFT lets it report its own. Only after a trained link exists can the over-the-air association exchange even succeed.",
+      "zh": "AP 的信标帧落在哪里？在 BTI 中，AP 执行它的 ISS 时用的不是 SSW 帧，而是把 DMG 信标帧扫过每一个扇区——因此站点听到的那一帧信标，本身也是一次波束赋形探测。随后站点在 A-BFT 中完成响应方那一半：竞争一个 SSW 时隙，把波束反扫回去。这正是一个刚加入 60 GHz BSS 的新站点如何首次获得可用波束的方式：BTI 给它 AP 的最佳扇区，A-BFT 让它上报自己的最佳扇区。只有在已存在一条经过训练的链路之后，空口的关联交换才有可能成功。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The MLME trigger, the four SLS components, and when BRP setup is mandatory",
+        "zh": "MLME 触发、SLS 的四个组成部分，以及何时必须执行 BRP setup"
+      },
+      "en": "Clause 11.36.1 (Non-TDD beamforming) states that on an MLME-BF-TRAINING.request a STA undertakes training per 10.41, and the training may be an SLS alone, an SLS followed by a BRP (when RequestBRP is true), or a BRP alone. The SLS phase (10.41.2) has up to four components: an ISS (10.41.2.2) to train the initiator link, an RSS (10.41.2.3) to train the responder link, an SSW feedback procedure (10.41.2.4), and an SSW ack procedure. During the ISS the initiator may use DMG Beacon, SSW, or Short SSW frames, sets the SSW Direction subfield to 0, and sets each frame's CDOWN so the last transmission is 0; the responder keeps a quasi-omni receive pattern. In the RSS the responder sets Direction to 1 and reports the best ISS sector it heard via the Sector Select and DMG Antenna Select fields plus an SNR Report. In SSW feedback the initiator names the best responder sector (Sector Select / DMG Antenna Select + SNR Report) and may request transmit training (TX-TRN-REQ=1) or a MID/BC subphase (MID-REQ / BC-REQ). The BRP setup subphase (10.41.3.2) is mandatory in defined cases — notably when the RSS occurred in an A-BFT (so no SSW-Ack was part of the SLS), or when either side set MID-REQ or BC-REQ in the SSW-Feedback / SSW-Ack frame. The beacon interval's access periods are enumerated in 10.38.2: BTI, A-BFT, ATI, CBAP, and SP, with the BHI = BTI + A-BFT + ATI and the DTI = CBAPs + SPs, one BHI and one DTI per beacon interval.",
+      "zh": "11.36.1 节（非 TDD 波束赋形）规定：收到 MLME-BF-TRAINING.request 后，站点按 10.41 进行训练，训练可以是单独的 SLS、SLS 后跟一个 BRP（当 RequestBRP 为真时），或单独的 BRP。SLS 阶段（10.41.2）至多含四个组成部分：训练发起方链路的 ISS（10.41.2.2）、训练响应方链路的 RSS（10.41.2.3）、SSW 反馈流程（10.41.2.4），以及 SSW ack 流程。在 ISS 中发起方可使用 DMG 信标、SSW 或 Short SSW 帧，将 SSW 的 Direction 子字段置 0，并设置每帧的 CDOWN 使最后一次发送为 0；响应方保持准全向接收方向图。在 RSS 中响应方将 Direction 置 1，并通过 Sector Select 和 DMG Antenna Select 字段加上 SNR Report 上报它在 ISS 中听到的最佳扇区。在 SSW 反馈中发起方指明响应方的最佳扇区（Sector Select / DMG Antenna Select + SNR Report），并可请求发送训练（TX-TRN-REQ=1）或 MID/BC 子阶段（MID-REQ / BC-REQ）。BRP setup 子阶段（10.41.3.2）在若干规定情形下是必需的——尤其是当 RSS 发生在 A-BFT 中时（此时 SSW-Ack 不属于该次 SLS），或任一方在 SSW-Feedback / SSW-Ack 帧中置位了 MID-REQ 或 BC-REQ 时。信标间隔的接入周期在 10.38.2 中列举：BTI、A-BFT、ATI、CBAP 与 SP，其中 BHI = BTI + A-BFT + ATI，DTI = CBAP + SP，每个信标间隔含一个 BHI 和一个 DTI。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2875,
+          2227,
+          2229,
+          2232,
+          2236,
+          2152
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.36.1",
+    "80211-2024:10.41.2.2",
+    "80211-2024:10.41.2.3",
+    "80211-2024:10.41.2.4",
+    "80211-2024:10.41.3.2",
+    "80211-2024:10.38.2"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2875,
+        2876
+      ],
+      "note": "11.36.1 Non-TDD beamforming - MLME-BF-TRAINING.request triggers SLS / SLS+BRP / BRP per 10.41; link must be trained before association can succeed"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2227,
+        2228,
+        2229
+      ],
+      "note": "10.41.2.2 Initiator sector sweep (ISS) - DMG Beacon/SSW/Short SSW frames, Direction=0, Sector ID, CDOWN to 0; responder listens quasi-omni"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2229,
+        2230,
+        2231,
+        2232
+      ],
+      "note": "10.41.2.3 Responder sector sweep (RSS) - Direction=1, Sector Select / DMG Antenna Select + SNR Report of best ISS sector"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2232,
+        2233
+      ],
+      "note": "10.41.2.4 SSW feedback - initiator names best responder sector + SNR; may request TX-TRN / MID / BC"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2236,
+        2237,
+        2238
+      ],
+      "note": "10.41.3.2 BRP setup subphase - mandatory cases (RSS in A-BFT; MID-REQ/BC-REQ set); Capability Request exchange"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2152,
+        2153
+      ],
+      "note": "10.38.2 Access periods within a beacon interval - BTI, A-BFT, ATI, CBAP, SP; BHI = BTI+A-BFT+ATI; DTI = CBAPs+SPs; Figure 10-60"
+    }
+  ],
+  "track": "managing"
+}

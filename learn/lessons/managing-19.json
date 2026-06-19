@@ -1,0 +1,109 @@
+{
+  "id": "managing-19",
+  "title": {
+    "en": "Routing Around the Block: DMG Relay Procedures (RDS Discovery, Selection, RLS, Operation Change, Teardown)",
+    "zh": "绕过遮挡：DMG 中继流程（RDS 发现、选择、RLS、操作类型变更与拆除）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "At 60 GHz, a multi-gigabit Wi-Fi link lives and dies by line of sight. The beams are narrow and pencil-thin, and millimetre waves do not bend around obstacles — so the moment a person walks between two devices, the direct path can be severed instantly and the stream stalls. DMG (directional multi-gigabit) relay is the escape hatch the standard builds for exactly this: a third station, a relay DMG STA (RDS), that the source and destination can hop through to bypass the blocked direct path. Think of it as a detour sign on a closed road that keeps traffic flowing.",
+      "zh": "在 60 GHz 频段，一条多吉比特的 Wi-Fi 链路完全依赖视距。波束又窄又尖，毫米波又不会绕过障碍物——所以只要有人走到两台设备之间，直连路径就可能瞬间被切断，数据流随之卡住。DMG（定向多吉比特）中继正是标准为这种情形准备的“逃生通道”：引入第三个站点——中继 DMG 站点（RDS），让源端和目的端可以经它“绕一跳”，避开被遮挡的直连路径。可以把它想象成封路时的一块改道指示牌，让车流继续通行。"
+    },
+    {
+      "type": "prose",
+      "en": "Three roles appear in the choreography. The source and destination are both relay endpoint DMG STAs (REDS) — the two ends that want to keep talking. Between them sits the RDS, the helper that forwards frames. A station advertises which roles it can play in its Relay Capabilities element: a REDS sets the Relay Client field, an RDS sets the Relay Supporter field, and these elements ride along in (Re)Association, Probe, and Information frames so peers can discover one another. Relay only works inside a BSS whose AP or PCP actually permits it.",
+      "zh": "整个流程中有三个角色。源端和目的端都是中继端点 DMG 站点（REDS）——也就是想要持续通信的两端。它们之间是 RDS，负责转发帧的“帮手”。站点通过 Relay Capabilities 元素声明自己能扮演哪些角色：REDS 置位 Relay Client 字段，RDS 置位 Relay Supporter 字段；这些元素会随 （重）关联、探测、信息类帧一同发送，便于各端互相发现。中继只能在其 AP 或 PCP 明确允许的 BSS 内工作。"
+    },
+    {
+      "type": "prose",
+      "en": "The lifecycle runs in a fixed order. First, capabilities and RDS discovery: the source REDS asks the AP/PCP — via a Relay Search Request — for the list of candidate RDSs that can reach the destination. Second, RDS selection: the candidates beamform with both ends, the source gathers Multi-Relay Channel Measurement reports for the source-relay and relay-destination links, and then picks the single best relay (the choice is implementation-dependent). Third, RLS (Relay Link Setup): a three-way RLS Request/Response handshake threads source -> RDS -> destination and back, wiring the trio together. Only after RLS succeeds is the relay path usable.",
+      "zh": "这套生命周期按固定顺序进行。第一步，能力与 RDS 发现：源 REDS 通过 Relay Search Request 向 AP/PCP 索要能够触达目的端的候选 RDS 列表。第二步，RDS 选择：候选 RDS 分别与两端做波束成形，源端收集“源-中继”与“中继-目的”两段链路的 Multi-Relay Channel Measurement 报告，然后挑选出唯一最佳中继（具体选择规则由实现决定）。第三步，RLS（中继链路建立）：通过 源 -> RDS -> 目的 再返回的三方 RLS Request/Response 握手，把三者“接线”连成一体。只有 RLS 成功之后，中继路径才可用。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant S as Source REDS\n    participant AP as AP / PCP\n    participant R as RDS (relay)\n    participant D as Dest REDS\n    Note over S,D: 1. RDS discovery\n    S->>AP: Relay Search Request (dest AID)\n    AP->>S: Relay Search Response (list of RDSs)\n    AP-->>D: unsolicited Relay Search Response\n    Note over S,D: 2. RDS selection (BF + channel measurement)\n    R-->>S: Multi-Relay Channel Measurement Report\n    D-->>S: Multi-Relay Channel Measurement Report\n    Note over S: pick single best RDS\n    Note over S,D: 3. RLS setup\n    S->>R: RLS Request\n    R->>D: RLS Request (same body)\n    D->>R: RLS Response (SUCCESS)\n    R->>S: RLS Response (SUCCESS)\n    S->>AP: RLS Announcement\n    Note over S,D: relay path now live",
+      "zh": "sequenceDiagram\n    participant S as 源 REDS\n    participant AP as AP / PCP\n    participant R as RDS (中继)\n    participant D as 目的 REDS\n    Note over S,D: 1. RDS 发现\n    S->>AP: Relay Search Request (目的 AID)\n    AP->>S: Relay Search Response (RDS 列表)\n    AP-->>D: 非请求的 Relay Search Response\n    Note over S,D: 2. RDS 选择 (波束成形 + 信道测量)\n    R-->>S: Multi-Relay Channel Measurement Report\n    D-->>S: Multi-Relay Channel Measurement Report\n    Note over S: 选出唯一最佳 RDS\n    Note over S,D: 3. RLS 建立\n    S->>R: RLS Request\n    R->>D: RLS Request (内容相同)\n    D->>R: RLS Response (SUCCESS)\n    R->>S: RLS Response (SUCCESS)\n    S->>AP: RLS Announcement\n    Note over S,D: 中继路径已生效"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "There are two flavours of relay. Link switching means the RDS only steps in when the direct link breaks — the source reroutes frames through the RDS, which forwards them, and reverts to the direct path once it recovers. Link cooperation is more aggressive: the RDS actively repeats each transmission at the same time as the direct path, so the destination receives two copies and combines them for better signal quality. The negotiated Cooperation-Mode subfield (0 = switching, 1 = cooperation) decides which one is in play.",
+      "zh": "中继有两种风格。链路切换（link switching）是指 RDS 只在直连链路中断时才介入——源端把帧改道经 RDS 转发，待直连恢复后再切回直连路径。链路协作（link cooperation）更主动：RDS 与直连路径同时重复每一次传输，目的端因而收到两份副本并加以合并，从而提升信号质量。协商得到的 Cooperation-Mode 子字段（0 = 切换，1 = 协作）决定采用哪一种。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 420 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><circle cx='50' cy='150' r='22'/><text x='50' y='155' text-anchor='middle' stroke='none' fill='currentColor' font-size='13'>S</text><circle cx='370' cy='150' r='22'/><text x='370' y='155' text-anchor='middle' stroke='none' fill='currentColor' font-size='13'>D</text><circle cx='210' cy='40' r='22'/><text x='210' y='45' text-anchor='middle' stroke='none' fill='currentColor' font-size='13'>R</text><line x1='72' y1='150' x2='348' y2='150' stroke-dasharray='6 5'/><text x='210' y='170' text-anchor='middle' stroke='none' fill='currentColor' font-size='11'>direct S-D (blocked)</text><line x1='130' y1='150' x2='150' y2='150'/><line x1='140' y1='110' x2='140' y2='190' stroke-width='3'/><text x='140' y='205' text-anchor='middle' stroke='none' fill='currentColor' font-size='11'>blockage</text><line x1='66' y1='133' x2='192' y2='56'/><line x1='228' y1='56' x2='354' y2='133'/><text x='120' y='90' text-anchor='middle' stroke='none' fill='currentColor' font-size='11'>S-R</text><text x='300' y='90' text-anchor='middle' stroke='none' fill='currentColor' font-size='11'>R-D</text></svg>",
+      "caption": {
+        "en": "When the direct S-D path is blocked, the relay R provides a two-hop detour (S-R then R-D) that routes around the obstruction.",
+        "zh": "当直连的 S-D 路径被遮挡时，中继 R 提供一条两跳的改道路径（先 S-R 再 R-D），绕过障碍物。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Two procedures close the loop. The relay operation-type change procedure lets the source flip between switching and cooperation mid-session — for example, if the S-D link dies it sends a ROC (Relay Operation Change) Request through the RDS asking the destination to commit to switching, and on a SUCCESS ROC Response it immediately routes through the relay. And when the direct path finally recovers and the relay is no longer needed, relay teardown ends it cleanly: the source (or the RDS) sends an RLS Teardown frame to all parties — the other REDS, the RDS, and the AP/PCP — naming the source, destination, and relay AIDs so everyone drops the relay state together.",
+      "zh": "两个流程为整个生命周期收尾。中继操作类型变更流程允许源端在会话中途在“切换”与“协作”之间切换——例如当 S-D 链路中断时，源端经 RDS 发送 ROC（Relay Operation Change，中继操作变更）Request，请求目的端确认改用切换模式；收到 SUCCESS 的 ROC Response 后，立即改走中继路径。而当直连路径最终恢复、不再需要中继时，中继拆除（teardown）会干净地结束它：源端（或 RDS）向所有相关方——另一个 REDS、RDS 以及 AP/PCP——发送 RLS Teardown 帧，并在其中标明源、目的、中继三方的 AID，让各方一同释放中继状态。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "How discovery, selection, RLS, ROC, and teardown map onto frames and MLME primitives",
+        "zh": "发现、选择、RLS、ROC 与拆除如何映射到帧和 MLME 原语"
+      },
+      "en": "Discovery (11.34.2.2) is AP/PCP-mediated: on an MLME-RELAY-SEARCH.request the source sends a Relay Search Request with the destination REDS AID; the AP/PCP returns a Relay Search Response listing RDSs and also pushes an unsolicited copy to the destination. Selection (11.34.2.3) has the AP/PCP schedule beamforming SPs for each candidate RDS with both ends; the source collects Multi-Relay Channel Measurement Reports for the S-R and R-D links and then picks a single RDS (implementation-dependent). RLS (11.34.2.4) is driven by MLME-RLS.request: the source's RLS Request (carrying capabilities, the three AIDs, and the Relay Transfer Parameter Set) is relayed S -> R -> D; the destination's RLS Response (destination status code) returns D -> R -> S, with the RDS adding its own relay status code; both SUCCESS means the link is up, after which the source may send an RLS Announcement to the AP/PCP. The operation-type change (11.34.3) uses ROC Request/Response frames whose Link Cooperation and relay-link subfields select the target mode; switching-to-cooperation requires the TPA procedure first if it has not run. Teardown (11.34.4) is a single RLS Teardown frame, sent by the source or the RDS to the other REDS, the RDS, and the AP/PCP, carrying source/destination/relay AIDs.",
+      "zh": "发现（11.34.2.2）由 AP/PCP 居中完成：收到 MLME-RELAY-SEARCH.request 后，源端发送携带目的 REDS AID 的 Relay Search Request；AP/PCP 回以列出各 RDS 的 Relay Search Response，并向目的端额外推送一份非请求副本。选择（11.34.2.3）中，AP/PCP 为每个候选 RDS 与两端调度波束成形 SP；源端收集 S-R 与 R-D 链路的 Multi-Relay Channel Measurement Report，然后选出唯一一个 RDS（由实现决定）。RLS（11.34.2.4）由 MLME-RLS.request 驱动：源端的 RLS Request（携带能力、三方 AID 以及 Relay Transfer Parameter Set）按 源 -> R -> 目的 转发；目的端的 RLS Response（含 destination status code）按 目的 -> R -> 源 返回，RDS 在其中追加自己的 relay status code；两者皆为 SUCCESS 即表示链路建立，之后源端可向 AP/PCP 发送 RLS Announcement。操作类型变更（11.34.3）使用 ROC Request/Response 帧，其 Link Cooperation 与 relay-link 子字段选择目标模式；从切换转为协作时，若 TPA 流程尚未执行则需先执行。拆除（11.34.4）是一帧 RLS Teardown，由源端或 RDS 发往另一个 REDS、RDS 及 AP/PCP，携带 源/目的/中继 三方 AID。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2871,
+          2872,
+          2873,
+          2874
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.34.2.2",
+    "80211-2024:11.34.2.3",
+    "80211-2024:11.34.2.4",
+    "80211-2024:11.34.3",
+    "80211-2024:11.34.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2342,
+        2347
+      ],
+      "note": "10.44.1 / 10.44.2 / 10.44.3 — link switching vs link cooperation; RDS roles and relay operation types underpinning 11.34"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2871,
+        2872
+      ],
+      "note": "11.34.1-11.34.2.3 — REDS/RDS roles and Relay Capabilities; RDS discovery via Relay Search; RDS selection via Multi-Relay Channel Measurement"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2872,
+        2873
+      ],
+      "note": "11.34.2.4 / 11.34.3 — RLS Request/Response three-way handshake; relay operation-type change (ROC) between switching and cooperation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2874
+      ],
+      "note": "11.34.4 — relay teardown via RLS Teardown frame to RDS, destination REDS, and AP/PCP"
+    }
+  ],
+  "track": "managing"
+}

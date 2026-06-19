@@ -1,0 +1,109 @@
+{
+  "id": "managing-18",
+  "title": {
+    "en": "Beams That Don't Step on Each Other: DMG Spatial Sharing, Interference Mitigation, and Quieting Neighbors",
+    "zh": "互不干扰的波束：DMG 空间复用、干扰抑制与静默邻居"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "At 60 GHz, a DMG (Directional Multi-Gigabit) radio doesn't shout in every direction — it aims a narrow beam at exactly one partner. That directionality is a gift. If station A is beaming east to B while C beams west to D, the two conversations barely hear each other. So instead of forcing them to take turns (sharing time), the access point can let them talk at the same instant on the same channel (sharing space). More simultaneous beams pointing different ways means more total capacity from the same airtime.",
+      "zh": "在 60 GHz 频段，DMG（定向多吉比特）射频并不向四面八方“喊话”——它把一束很窄的波束精确地对准唯一的通信对端。这种定向性其实是一份礼物。如果站点 A 向东对 B 发射，而 C 向西对 D 发射，这两段对话几乎听不到彼此。于是接入点不必强迫它们轮流占用时间（时间复用），而是可以让它们在同一时刻、同一信道上同时通信（空间复用）。在同一段空口时间里，朝不同方向的并发波束越多，总容量就越大。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two pieces of vocabulary to anchor the rest of the lesson. An SP (service period) is a scheduled chunk of time the AP/PCP grants to a pair of STAs. An existing SP is one already scheduled; a candidate SP is a new one the AP is evaluating to run concurrently with it. The whole game of spatial sharing is: can this candidate SP overlap an existing SP in time without the beams colliding?",
+      "zh": "先记住两个词，后面就好懂了。SP（服务周期）是 AP/PCP 分配给某一对站点的一段调度好的时间。已存在的 SP 是已经排好的；候选 SP 是 AP 正在评估、想让它与前者并发运行的新 SP。空间复用要解决的核心问题就是：这个候选 SP 能不能在时间上与某个已存在的 SP 重叠，而波束又不会“撞车”？"
+    },
+    {
+      "type": "prose",
+      "en": "But how does the AP know two beams won't interfere? It can't just guess from geometry — reflections off walls are unpredictable. So it asks the STAs to measure. Before anything else, the two STAs in a candidate SP must have beamforming-trained with each other (the AP can infer this if their TSPEC's Beamforming Training bit was set and a beacon interval has passed). Then the AP sends a Directional Channel Quality request to a STA, naming the peer STA it should listen toward and setting the measurement method to ANIPI — essentially, \"while your neighbor is transmitting, how much of their energy actually lands on you with your beam pointed where it normally points?\" The STA measures and answers with a Directional Channel Quality report.",
+      "zh": "可是 AP 怎么知道两束波不会互相干扰？它无法仅凭几何位置猜测——墙面反射本身就不可预测。于是它让站点去实测。在做任何事之前，候选 SP 中的两个站点必须已经彼此完成波束成形训练（如果它们的 TSPEC 中“波束成形训练”位被置 1，且已过去至少一个 beacon interval，AP 即可据此推断）。随后 AP 向某个站点发送“定向信道质量请求（Directional Channel Quality request）”，在其中指明它应朝向哪个对端站点侦听，并把测量方法字段设为 ANIPI——本质上是在问：“当你的邻居正在发射时，在你的波束指向其平常方向的情况下，对方的能量究竟有多少落到了你身上？”站点完成测量后，用“定向信道质量报告（Directional Channel Quality report）”作答。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as AP / PCP (scheduler)\n    participant A as STA A (candidate SP)\n    participant C as STA C (existing SP)\n    Note over AP: assess: can candidate SP overlap existing SP?\n    AP->>A: Directional Channel Quality request (Target = peer, Method = ANIPI)\n    AP->>C: Directional Channel Quality request (Target = peer, Method = ANIPI)\n    Note over A,C: each measures neighbor's energy with its normal RX beam\n    A-->>AP: Directional Channel Quality report\n    C-->>AP: Directional Channel Quality report\n    Note over AP: low mutual interference -> schedule SPs to OVERLAP in time\n    AP->>A: EDMG Extended Schedule (time-overlapped SP)\n    AP->>C: EDMG Extended Schedule (time-overlapped SP)\n    Note over AP: later, periodic RSNI checks; stop sharing if a link degrades",
+      "zh": "sequenceDiagram\n    participant AP as AP / PCP（调度者）\n    participant A as 站点 A（候选 SP）\n    participant C as 站点 C（已存在 SP）\n    Note over AP: 评估：候选 SP 能否与已存在 SP 时间重叠？\n    AP->>A: 定向信道质量请求（目标=对端，方法=ANIPI）\n    AP->>C: 定向信道质量请求（目标=对端，方法=ANIPI）\n    Note over A,C: 各自以平常的接收波束测量邻居的能量\n    A-->>AP: 定向信道质量报告\n    C-->>AP: 定向信道质量报告\n    Note over AP: 互扰低 -> 调度两个 SP 在时间上重叠\n    AP->>A: EDMG 扩展调度元素（时间重叠 SP）\n    AP->>C: EDMG 扩展调度元素（时间重叠 SP）\n    Note over AP: 此后周期性做 RSNI 复核；若链路恶化则停止复用"
+    },
+    {
+      "type": "prose",
+      "en": "Once the reports come back showing low mutual interference, the AP schedules the candidate SP to overlap the existing one in time — now it's a time-overlapped SP. For EDMG radios the AP can even hint whether each overlapping SP should run SISO or SU-MIMO via the Recommended Transmission Scheme subfield. The exact decision logic (\"is this interference low enough?\") is deliberately left to the implementation. After sharing starts, the AP doesn't walk away: it periodically re-requests measurements (now with method RSNI) and, if any shared link's quality drops below acceptable levels, it stops the sharing. The standard also defines a Directional transmit activity report, so a STA can proactively tell neighbors when and where it intends to beam — letting them anticipate interference rather than only measure it after the fact.",
+      "zh": "一旦报告显示互扰很低，AP 就把候选 SP 调度成与已存在 SP 在时间上重叠——此时它被称为“时间重叠 SP（time-overlapped SP）”。对 EDMG 射频，AP 甚至可以通过 EDMG 扩展调度元素中的“推荐传输方案（Recommended Transmission Scheme）”子字段提示每个重叠 SP 应采用 SISO 还是 SU-MIMO。至于具体的判定逻辑（“干扰到底够不够低？”）则被有意留给厂商实现。复用开始后，AP 并不会就此撒手：它会周期性地再次请求测量（此时方法改为 RSNI），一旦任一被复用链路的质量跌破可接受水平，就停止复用。标准还定义了“定向发射活动报告（Directional transmit activity report）”，使站点能主动告知邻居自己打算在何时、朝哪个方向发射波束——让邻居能够预判干扰，而不必事后才靠测量发现。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Stability matters too. In an OBSS (overlapping BSS) scenario, if every PBSS/infrastructure BSS hopped channels whenever it saw interference, the network would ripple into chaos. So 11.30.4 makes channel switches reluctant: after a switch, the AP/PCP picks a random N in [0, SwitchInterval-1] and won't switch again for N beacon intervals, and SwitchInterval doubles on each switch (from aMinSwitchInterval up to aMaxSwitchInterval). Keeping the schedule stable lets a BSS learn its neighbors' interference pattern and plan SPs around it.",
+      "zh": "稳定性同样重要。在 OBSS（重叠 BSS）场景下，如果每个 PBSS/基础设施 BSS 一看到干扰就跳信道，整个网络就会像涟漪一样扩散成混乱。因此 11.30.4 让信道切换变得“迟疑”：每次切换后，AP/PCP 会在 [0, SwitchInterval-1] 区间内随机取一个 N，在 N 个 beacon interval 内不再切换；而 SwitchInterval 每切换一次就翻倍（从 aMinSwitchInterval 起，最高至 aMaxSwitchInterval）。保持调度稳定，能让 BSS 学习到邻居的干扰规律，并据此规划 SP 的时段。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 420 200' fill='none' stroke='currentColor' stroke-width='2'><circle cx='70' cy='60' r='8' fill='currentColor' stroke='none'/><text x='70' y='45' font-size='12' fill='currentColor' stroke='none' text-anchor='middle'>A</text><circle cx='350' cy='60' r='8' fill='currentColor' stroke='none'/><text x='350' y='45' font-size='12' fill='currentColor' stroke='none' text-anchor='middle'>B</text><path d='M82 60 L338 60' stroke-dasharray='2 4'/><polygon points='338,60 326,54 326,66' fill='currentColor' stroke='none'/><text x='210' y='52' font-size='11' fill='currentColor' stroke='none' text-anchor='middle'>SP1: A beams to B (east)</text><circle cx='70' cy='150' r='8' fill='currentColor' stroke='none'/><text x='70' y='175' font-size='12' fill='currentColor' stroke='none' text-anchor='middle'>D</text><circle cx='350' cy='150' r='8' fill='currentColor' stroke='none'/><text x='350' y='175' font-size='12' fill='currentColor' stroke='none' text-anchor='middle'>C</text><path d='M338 150 L82 150' stroke-dasharray='2 4'/><polygon points='82,150 94,144 94,156' fill='currentColor' stroke='none'/><text x='210' y='168' font-size='11' fill='currentColor' stroke='none' text-anchor='middle'>SP2: C beams to D (west)</text><text x='210' y='105' font-size='12' fill='currentColor' stroke='none' text-anchor='middle' font-style='italic'>same channel, same instant — beams miss each other</text></svg>",
+      "caption": {
+        "en": "Spatial sharing intuition: two SPs run concurrently on one channel because their narrow beams point in opposite directions and barely illuminate each other.",
+        "zh": "空间复用的直观图示：两个 SP 在同一信道上并发运行，因为它们的窄波束指向相反方向，几乎不会照到对方。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The flip side of \"share the air\" is \"please hush.\" Sometimes a BSS needs genuinely clean airtime — for a sensitive measurement or a delicate schedule — and a neighboring DMG BSS is the source of noise. The QAB (Quiet Adjacent BSS) mechanism lets one AP politely ask another AP to go silent. The requester AP sends a QAB Request frame naming the duration, period, offset, and count of quiet intervals; the responder AP, if it accepts, schedules SPs in which it is both source and destination and simply does not transmit. A matching QAB Response confirms the deal. It's the inverse of spatial sharing: there, you fit more beams into the same space; here, you buy a moment of total quiet from the neighbor next door.",
+      "zh": "“共享空口”的另一面是“请安静一下”。有时一个 BSS 确实需要一段干净的空口时间——用于敏感测量或精细调度——而噪声恰恰来自相邻的 DMG BSS。QAB（静默相邻 BSS，Quiet Adjacent BSS）机制让一个 AP 可以礼貌地请求另一个 AP 保持静默。请求方 AP 发送一个 QAB 请求帧，其中指明静默区间的时长、周期、偏移和数量；响应方 AP 若接受，便调度一些以自身同时作为源和目的的 SP，并在其间干脆不发射。一个相匹配的 QAB 响应帧确认这笔“约定”。它正是空间复用的反面：在那里，你把更多波束塞进同一片空间；在这里，你向隔壁邻居“买下”一段彻底的安静。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "ANIPI vs RSNI, the assessment-then-schedule rule, and the QAB request/responder handshake",
+        "zh": "ANIPI 与 RSNI、先评估再调度的规则，以及 QAB 请求/响应方握手"
+      },
+      "en": "Clause 11.30.2 specifies the assessment: for a candidate SP, the AP/PCP sets the Directional Channel Quality request's Target STA to the peer in the candidate SP and the Measurement Method to ANIPI; if the candidate already has channel time, it additionally requests the existing-SP STAs to measure (Target = their peer, Method = ANIPI) — each side gauges the other's energy. A recipient already beamform-trained with the target uses its normal RX antenna configuration toward that target; with a broadcast or unknown AID it falls back to a quasi-omni pattern. Clause 11.30.3 ties scheduling to evidence: the AP/PCP should schedule a candidate SP overlapping an existing SP only after receiving the relevant Directional Channel Quality report(s); EDMG schedulers may set the Recommended Transmission Scheme (SISO/SU-MIMO) in the EDMG Extended Schedule element; once overlapped it is a time-overlapped SP; ongoing it periodically re-requests with Method = RSNI and stops sharing if link quality falls below acceptable levels. 11.30.4 governs OBSS stability via the random-N / doubling-SwitchInterval channel-switch back-off, and 11.30.5 defines the DMG STA Directional Transmit Activity Report frame for STAs whose dot11DMGSTATxActivityReportImplemented is true. For QAB, 11.35.2 (requester AP, on MLME-QAB.request) sends a QAB Request — duration, period, offset, number of quiet intervals, possibly several Quiet Period Request elements for multiple responders — and confirms success/failure by matching dialog token; 11.35.3 (responder AP) raises MLME-QAB.indication on a BSSID-matching QAB Request, and on MLME-QAB.response transmits a QAB Response and schedules SPs with itself as both source and destination during which it shall not transmit, terminating when quiet intervals exceed the Repetition Count.",
+      "zh": "11.30.2 节规定了评估过程：对候选 SP，AP/PCP 把定向信道质量请求的“目标 STA”设为候选 SP 中的对端、把测量方法设为 ANIPI；若候选 SP 已分配信道时间，还需另外请求已存在 SP 的站点进行测量（目标=其对端，方法=ANIPI）——双方各自衡量对方的能量。若接收方已与目标完成波束成形训练，则采用它平常朝该目标的接收天线配置；若 AID 为广播或未知，则退回到准全向（quasi-omni）天线方向图。11.30.3 节把调度与证据绑定：AP/PCP 只应在收到相关定向信道质量报告后，才把候选 SP 调度成与已存在 SP 时间重叠；EDMG 调度器可在 EDMG 扩展调度元素中设置“推荐传输方案”（SISO/SU-MIMO）；一旦重叠即称为时间重叠 SP；运行期间会周期性地以方法 RSNI 复核，若链路质量跌破可接受水平则停止复用。11.30.4 节通过“随机 N / SwitchInterval 翻倍”的信道切换退避来管理 OBSS 稳定性；11.30.5 节为 dot11DMGSTATxActivityReportImplemented 为真的站点定义了 DMG STA 定向发射活动报告帧。对 QAB：11.35.2 节（请求方 AP，在收到 MLME-QAB.request 后）发送 QAB 请求帧——含静默区间的时长、周期、偏移与数量，并可包含针对多个响应方的多个 Quiet Period Request 元素——并通过匹配 dialog token 确认成败；11.35.3 节（响应方 AP）在收到 BSSID 匹配的 QAB 请求帧时上报 MLME-QAB.indication，在收到 MLME-QAB.response 后发送 QAB 响应帧，并调度以自身同时作为源和目的的 SP，其间不得发射，当静默区间数超过 Repetition Count 字段值时终止。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2842,
+          2844,
+          2845,
+          2874
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.30.2",
+    "80211-2024:11.30.3",
+    "80211-2024:11.30.4",
+    "80211-2024:11.30.5",
+    "80211-2024:11.35.2",
+    "80211-2024:11.35.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2842,
+        2843
+      ],
+      "note": "11.30.2 Spatial sharing and interference assessment — Directional Channel Quality request, Target STA, ANIPI method, beamforming-training prerequisite, quasi-omni fallback"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2844,
+        2845
+      ],
+      "note": "11.30.3 Achieving spatial sharing (time-overlapped SP, Recommended Transmission Scheme, periodic RSNI re-check, stop on degradation); 11.30.4 PBSS/infrastructure BSS stability in OBSS (random-N channel-switch back-off); 11.30.5 Directional transmit activity report"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2874,
+        2875
+      ],
+      "note": "11.35.2 requester AP and 11.35.3 responder AP QAB procedures; Figure 11-96 QAB sequence (MLME-QAB.request/indication/response/confirm, QAB Request/Response frames)"
+    }
+  ],
+  "track": "managing"
+}
