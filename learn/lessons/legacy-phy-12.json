@@ -1,0 +1,132 @@
+{
+  "id": "legacy-phy-12",
+  "title": {
+    "en": "Inside the S1G PHY (Clause 23): 1 MHz vs >=2 MHz PPDUs, S1G-SIG, and the MCS 10 long-range mode",
+    "zh": "深入 S1G 物理层(第23章):1 MHz 与 >=2 MHz PPDU、S1G-SIG 与 MCS 10 远距模式"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "802.11ah (the S1G PHY, defined in Clause 23) does something almost no other Wi-Fi PHY does: it takes the familiar OFDM machinery and downclocks it by 10x into the sub-1-GHz bands. A '20 MHz' Wi-Fi channel becomes a 2 MHz S1G channel; the subcarrier spacing shrinks by the same factor; symbols get longer. The payoff is range and battery life for IoT, not megabits. This lesson opens up the PHY internals: the three native PPDU formats, the narrow channel grid, the S1G-SIG signalling field, and the special 1 MHz MCS 10 mode that trades rate for reach.",
+      "zh": "802.11ah(即第23章定义的 S1G 物理层)做了一件几乎其他任何 Wi-Fi 物理层都没做的事:它把人们熟悉的 OFDM 机制整体降频 10 倍,搬到 1 GHz 以下的频段。一个“20 MHz”的 Wi-Fi 信道变成 2 MHz 的 S1G 信道;子载波间隔按同样的倍数缩小;符号变得更长。换来的回报是面向物联网的覆盖距离与电池续航,而不是吞吐速率。本课将拆开这套物理层的内部:三种原生 PPDU 格式、窄信道栅格、S1G-SIG 信令字段,以及用速率换取距离的特殊 1 MHz MCS 10 模式。"
+    },
+    {
+      "type": "prose",
+      "en": "The band is sliced into a ladder of narrow channels: 1, 2, 4, 8, and 16 MHz. To carry traffic across them the standard defines three native PPDU formats. S1G_SHORT is the everyday single-user format for >=2 MHz channels. S1G_LONG adds the beam-changeable portion (D-STF, D-LTF, SIG-B) so it can carry multi-user and beamformed transmissions at >=2 MHz. S1G_1M is the odd one out: a single-spatial-stream, single-user format that lives only in a 1 MHz channel, built for maximum range. Two duplicate variants, S1G_DUP_2M and S1G_DUP_1M, take the SHORT or 1M preamble and replicate it in frequency to fill a wider channel.",
+      "zh": "频段被切成一组窄信道阶梯:1、2、4、8 和 16 MHz。为了在这些信道上承载业务,标准定义了三种原生 PPDU 格式。S1G_SHORT 是面向 >=2 MHz 信道的日常单用户格式。S1G_LONG 增加了波束可变部分(D-STF、D-LTF、SIG-B),从而可以在 >=2 MHz 上承载多用户与波束成形传输。S1G_1M 则是特立独行的一种:单空间流、单用户格式,只存在于 1 MHz 信道中,专为极限覆盖距离而生。此外还有两种复制变体 S1G_DUP_2M 和 S1G_DUP_1M,它们取用 SHORT 或 1M 前导码,并在频率上复制以填满更宽的信道。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    subgraph S1G_SHORT[\"S1G_SHORT (>=2 MHz, SU)\"]\n        A1[STF] --> A2[LTF1] --> A3[SIG] --> A4[LTF2..LTFn] --> A5[Data]\n    end\n    subgraph S1G_LONG[\"S1G_LONG (>=2 MHz, SU/MU)\"]\n        B1[STF] --> B2[LTF1] --> B3[SIG-A] --> B4[D-STF] --> B5[D-LTF] --> B6[SIG-B] --> B7[Data]\n    end\n    subgraph S1G_1M[\"S1G_1M (1 MHz, SU, long range)\"]\n        C1[\"STF (4 sym)\"] --> C2[\"LTF1 (4 sym)\"] --> C3[\"SIG (6 sym)\"] --> C4[LTF2..LTFn] --> C5[Data]\n    end",
+      "zh": "graph LR\n    subgraph S1G_SHORT[\"S1G_SHORT (>=2 MHz, 单用户)\"]\n        A1[STF] --> A2[LTF1] --> A3[SIG] --> A4[LTF2..LTFn] --> A5[数据]\n    end\n    subgraph S1G_LONG[\"S1G_LONG (>=2 MHz, 单/多用户)\"]\n        B1[STF] --> B2[LTF1] --> B3[SIG-A] --> B4[D-STF] --> B5[D-LTF] --> B6[SIG-B] --> B7[数据]\n    end\n    subgraph S1G_1M[\"S1G_1M (1 MHz, 单用户, 远距)\"]\n        C1[\"STF (4 符号)\"] --> C2[\"LTF1 (4 符号)\"] --> C3[\"SIG (6 符号)\"] --> C4[LTF2..LTFn] --> C5[数据]\n    end"
+    },
+    {
+      "type": "prose",
+      "en": "Look closely at the S1G_1M preamble and you can see the range trick built right into the structure. Where the >=2 MHz STF and LTF1 each take 2 OFDM symbols, the 1 MHz STF and LTF1 each take 4 symbols -- twice the duration, because the training fields are repeated. The 1 MHz SIG field is six symbols long (versus two for the S1G_SHORT SIG). Longer, repeated preamble fields give the receiver far more energy to detect and synchronise on, which is exactly what you need when the link is operating tens of decibels into the noise at the edge of its range.",
+      "zh": "仔细看 S1G_1M 前导码,就能发现远距技巧已经直接内建在其结构中。>=2 MHz 的 STF 和 LTF1 各占 2 个 OFDM 符号,而 1 MHz 的 STF 和 LTF1 各占 4 个符号——时长翻倍,因为训练字段被重复了。1 MHz 的 SIG 字段长达 6 个符号(相比之下 S1G_SHORT 的 SIG 只有 2 个符号)。更长、被重复的前导字段给接收机提供了多得多的能量来完成检测与同步,而这正是链路工作在覆盖边缘、深入噪声数十分贝时所需要的。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The preambles are also designed to be told apart on sight. The S1G_SHORT SIG symbols are rotated 90 degrees (QBPSK) relative to BPSK; S1G_LONG rotates only its first SIG-A symbol; and the S1G_1M 1 MHz LTF sequence is deliberately chosen to be orthogonal to both halves of the 2 MHz LTF. A receiver can therefore decide which of the three formats it is hearing very early in the preamble, before it has decoded any SIG bits.",
+      "zh": "这些前导码还被特意设计成“一眼可辨”。S1G_SHORT 的 SIG 符号相对 BPSK 旋转了 90 度(QBPSK);S1G_LONG 只旋转其第一个 SIG-A 符号;而 S1G_1M 的 1 MHz LTF 序列被刻意选取为与 2 MHz LTF 的两个半段都正交。因此接收机能够在前导码很早的阶段、还未解码任何 SIG 比特之前,就判断出自己听到的是三种格式中的哪一种。"
+    },
+    {
+      "type": "prose",
+      "en": "The SIG field is the per-PPDU control header -- the S1G equivalent of L-SIG / HE-SIG. Its layout depends on the format. The S1G_SHORT SIG packs two 24-bit symbols carrying STBC, bandwidth, NSTS, partial AID, short GI, coding, MCS, length, response indication and a 4-bit CRC. S1G_LONG splits this into a SIG-A (in the omnidirectional portion) plus a per-user SIG-B (in the beam-changeable portion), so it can describe up to four MU users. The S1G_1M SIG is the most stripped-down: six tiny 6-bit symbols, no group ID and no beam-change bit, because a 1 MHz PPDU is always single-stream and single-user.",
+      "zh": "SIG 字段是每个 PPDU 的控制头——相当于 S1G 版的 L-SIG / HE-SIG。它的布局取决于格式。S1G_SHORT 的 SIG 用两个 24 比特符号打包了 STBC、带宽、NSTS、部分 AID、短保护间隔、编码方式、MCS、长度、响应指示以及一个 4 比特 CRC。S1G_LONG 把这些拆成位于全向部分的 SIG-A,加上位于波束可变部分的逐用户 SIG-B,从而能描述最多四个多用户。S1G_1M 的 SIG 则最为精简:六个微小的 6 比特符号,没有组 ID、也没有波束变更位,因为 1 MHz 的 PPDU 永远是单流、单用户的。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">S1G_SHORT SIG: 2 symbols x 24 bits = 48 bits</text><rect x=\"10\" y=\"28\" width=\"230\" height=\"22\"/><line x1=\"125\" y1=\"28\" x2=\"125\" y2=\"50\"/><text x=\"45\" y=\"43\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">SIG-1 (24b)</text><text x=\"158\" y=\"43\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">SIG-2 (24b)</text><text x=\"10\" y=\"82\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">S1G_1M SIG: 6 symbols x 6 bits = 36 bits</text><rect x=\"10\" y=\"92\" width=\"300\" height=\"22\"/><line x1=\"60\" y1=\"92\" x2=\"60\" y2=\"114\"/><line x1=\"110\" y1=\"92\" x2=\"110\" y2=\"114\"/><line x1=\"160\" y1=\"92\" x2=\"160\" y2=\"114\"/><line x1=\"210\" y1=\"92\" x2=\"210\" y2=\"114\"/><line x1=\"260\" y1=\"92\" x2=\"260\" y2=\"114\"/><text x=\"22\" y=\"107\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">S1</text><text x=\"72\" y=\"107\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">S2</text><text x=\"122\" y=\"107\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">S3</text><text x=\"172\" y=\"107\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">S4</text><text x=\"222\" y=\"107\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">S5</text><text x=\"272\" y=\"107\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">S6</text><text x=\"10\" y=\"140\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Each 1 MHz SIG symbol carries only 6 bits and is BCC R=1/2 + 2x repeated -> spread thinner, decoded farther.</text></svg>",
+      "caption": {
+        "en": "The S1G_SHORT SIG (two 24-bit symbols) versus the S1G_1M SIG (six 6-bit symbols). The 1 MHz SIG spreads less information over more symbols and is repeated for robustness at long range.",
+        "zh": "S1G_SHORT 的 SIG(两个 24 比特符号)对比 S1G_1M 的 SIG(六个 6 比特符号)。1 MHz 的 SIG 把更少的信息摊在更多符号上,并通过重复来获得远距离下的稳健性。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now the headline feature: 1 MHz MCS 10. The MCS set runs MCS 0-9 (the usual BPSK..256-QAM ladder) plus 1024-QAM at MCS 11-12 for the high-rate end. MCS 10 sits below MCS 0: it is the lowest-rate, longest-range mode, and it only exists in the 1 MHz format. Its secret is block-wise 2x repetition. After the R=1/2 BCC encoder produces 12 coded bits per OFDM symbol, those bits are repeated -- the second copy XORed with a fixed 12-bit pattern -- to make 24 bits, then BPSK mapped. Effectively a ~3 dB coding gain (plus the standard's 3 dB STF power boost) buys extra link margin, at the cost of halving an already-slow rate. That is the whole 802.11ah bargain in one mode: a 10x downclock plus repetition trades megabits for kilometres and battery life.",
+      "zh": "现在来看重头戏:1 MHz MCS 10。MCS 集合包含 MCS 0-9(常规的 BPSK..256-QAM 阶梯),外加位于高速端、MCS 11-12 的 1024-QAM。MCS 10 位于 MCS 0 之下:它是速率最低、距离最远的模式,且只存在于 1 MHz 格式中。它的秘诀是逐块的 2 倍重复。R=1/2 的 BCC 编码器为每个 OFDM 符号产生 12 个编码比特后,这些比特被重复——第二份副本与一个固定的 12 比特模式做异或——形成 24 比特,再进行 BPSK 映射。这实际上以约 3 dB 的编码增益(再叠加标准规定的 3 dB STF 功率提升)换来额外的链路余量,代价是把本已很慢的速率再砍一半。整个 802.11ah 的交易就浓缩在这一个模式里:10 倍降频再加重复,用兆比特换取公里级覆盖与电池续航。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact MCS 10 repetition rule, and why the 1 MHz SIG borrows it",
+        "zh": "MCS 10 重复规则的精确定义,以及 1 MHz SIG 为何沿用它"
+      },
+      "en": "Clause 23.3.9.5 defines the repetition precisely. For a 1 MHz PPDU at MCS 10, the 6 information bits of each OFDM symbol are R=1/2 BCC encoded into 12 bits [C1..C12], then block-wise repeated as Cout = [[C1..C12], [C1..C12] XOR s] with the fixed pattern s = [1 0 0 0 0 1 0 1 0 1 1 1]. The 24 output bits then go to the BCC interleaver (if BCC) or straight to the constellation mapper (if LDPC). The constellation mapping for 1 MHz MCS 10 is identical to the BPSK mapping of MCS 0 (23.3.9.9.1), and neither STBC nor more than one spatial stream may be applied. The 1 MHz SIG field reuses this same MCS 10 transmission flow: 23.3.8.3.5 says the 6-bit-per-symbol SIG is R=1/2 BCC encoded, the encoded bits within each OFDM symbol are repeated two times, then interleaved and BPSK mapped -- which is why the SIG itself is as robust as the most rugged data mode. The full MCS 10 Data-field construction (BCC and LDPC paths) is given in 23.3.4.7.",
+      "zh": "第 23.3.9.5 节精确地定义了这一重复。对于工作在 MCS 10 的 1 MHz PPDU,每个 OFDM 符号的 6 个信息比特先经 R=1/2 的 BCC 编码成 12 个比特 [C1..C12],随后逐块重复为 Cout = [[C1..C12], [C1..C12] XOR s],其中固定模式 s = [1 0 0 0 0 1 0 1 0 1 1 1]。这 24 个输出比特随后送往 BCC 交织器(若为 BCC 编码)或直接送往星座映射器(若为 LDPC 编码)。1 MHz MCS 10 的星座映射与 MCS 0 的 BPSK 映射完全相同(23.3.9.9.1),且既不可应用 STBC、也不可使用多于一个空间流。1 MHz 的 SIG 字段沿用了同一套 MCS 10 传输流程:23.3.8.3.5 规定,每符号 6 比特的 SIG 先经 R=1/2 BCC 编码,每个 OFDM 符号内的编码比特重复两次,再交织并 BPSK 映射——这正是 SIG 本身能像最稳健的数据模式一样可靠的原因。完整的 MCS 10 数据字段构造(BCC 与 LDPC 两条路径)见 23.3.4.7。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3797,
+          3798,
+          3792,
+          3755
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:23.3.4.2",
+    "80211-2024:23.3.4.4",
+    "80211-2024:23.3.4.7",
+    "80211-2024:23.3.8.2",
+    "80211-2024:23.3.8.3",
+    "80211-2024:23.3.9.5",
+    "80211-2024:23.3.9.9"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3743,
+        3744
+      ],
+      "note": "23.3.2 S1G PPDU formats -- S1G_SHORT, S1G_LONG, S1G_1M; Figures 23-1/23-2/23-3 field order and symbol counts"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3746,
+        3751
+      ],
+      "note": "23.3.4.2 / 23.3.4.4 -- construction of the S1G_LONG and S1G_1M preambles (STF/LTF1/SIG); 1 MHz STF and LTF1 are 4 symbols, SIG is 6 symbols"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3771,
+        3772
+      ],
+      "note": "23.3.8.2.2.5 -- S1G_SHORT SIG: two 24-bit symbols SIG-1/SIG-2, QBPSK rotation to differentiate formats"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3791,
+        3792
+      ],
+      "note": "23.3.8.3.5 -- S1G_1M SIG: six 6-bit symbols, R=1/2 BCC + 2x repetition, BPSK"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3797,
+        3798
+      ],
+      "note": "23.3.9.5 repetition for 1 MHz MCS 10 (block-wise 2x with pattern s); 23.3.9.9.1 constellation mapping (MCS 0-9, 10=BPSK, 11-12=1024-QAM)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3755
+      ],
+      "note": "23.3.4.7 -- construction of the Data field for the 1 MHz MCS 10 mode (BCC and LDPC paths)"
+    }
+  ],
+  "track": "legacy-phy"
+}

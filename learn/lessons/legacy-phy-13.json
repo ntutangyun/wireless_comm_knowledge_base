@@ -1,0 +1,150 @@
+{
+  "id": "legacy-phy-13",
+  "title": {
+    "en": "Inside the EDMG PHY (Clause 28): 802.11ay channel bonding, EDMG-Header-A/B and EDMG training",
+    "zh": "深入 EDMG 物理层(第28章):802.11ay 信道绑定、EDMG-Header-A/B 与 EDMG 训练"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "802.11ad gave the 60 GHz band a single 2.16 GHz-wide channel (the DMG PHY). 802.11ay's EDMG PHY (Enhanced Directional Multi-Gigabit, Clause 28) multiplies that throughput two ways at once: it glues several of those 2.16 GHz channels together — channel bonding and aggregation up to 4.32, 6.48 and 8.64 GHz — and it adds MIMO with up to eight space-time streams. The trick to getting both is a preamble that stays backward-compatible with legacy DMG receivers while carrying the extra signalling and training a wideband MIMO receiver needs.",
+      "zh": "802.11ad 给 60 GHz 频段定义了一个 2.16 GHz 宽的单信道(即 DMG 物理层)。802.11ay 的 EDMG 物理层(增强型定向多吉比特,第28章)同时从两个方向把吞吐量翻倍:一是把多个 2.16 GHz 信道粘合在一起——信道绑定与聚合,可达 4.32、6.48、8.64 GHz;二是引入最多八条空时流的 MIMO。要同时实现这两点,关键在于一段既向后兼容传统 DMG 接收机、又能携带宽带 MIMO 接收机所需的额外信令和训练的前导码。"
+    },
+    {
+      "type": "prose",
+      "en": "An EDMG PPDU is built in two halves. First comes the non-EDMG portion — the legacy L-STF, L-CEF and L-Header, transmitted exactly at the DMG single-carrier chip rate so any 802.11ad device can detect the packet and read its duration. Then comes the EDMG portion: an EDMG-Header-A, then the new EDMG-STF and EDMG-CEF training fields, an optional per-user EDMG-Header-B, the Data field, and an optional TRN field for beam tracking. The L-Header's reserved bit 46 is set to 1 precisely to announce 'an EDMG-Header-A follows' — that single bit is what tells a capable receiver the legacy header is only the front door.",
+      "zh": "一个 EDMG PPDU 分两段构建。前一段是非 EDMG 部分——传统的 L-STF、L-CEF 与 L-Header,完全以 DMG 单载波码片速率发送,这样任何 802.11ad 设备都能检测到该数据包并读出其时长。后一段是 EDMG 部分:先是 EDMG-Header-A,然后是新增的 EDMG-STF 与 EDMG-CEF 训练字段、可选的逐用户 EDMG-Header-B、Data 字段,以及用于波束跟踪的可选 TRN 字段。L-Header 中的保留比特 46 被置为 1,正是用来宣告“后面跟着一个 EDMG-Header-A”——这一个比特就告诉支持 EDMG 的接收机:传统头部只是入口的“大门”。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    subgraph NON[Non-EDMG portion - legacy DMG rate]\n        A[L-STF] --> B[L-CEF] --> C[L-Header<br/>bit46=1]\n    end\n    subgraph EDMG[EDMG portion]\n        D[EDMG-Header-A<br/>wideband/MIMO common] --> E[EDMG-STF] --> F[EDMG-CEF<br/>MIMO ch. est.] --> G[EDMG-Header-B<br/>per-user, MU only] --> H[Data] --> I[TRN optional]\n    end\n    C --> D",
+      "zh": "graph LR\n    subgraph NON[非EDMG部分 - 传统DMG速率]\n        A[L-STF] --> B[L-CEF] --> C[L-Header<br/>比特46=1]\n    end\n    subgraph EDMG[EDMG部分]\n        D[EDMG-Header-A<br/>宽带/MIMO通用头] --> E[EDMG-STF] --> F[EDMG-CEF<br/>MIMO信道估计] --> G[EDMG-Header-B<br/>逐用户, 仅MU] --> H[Data] --> I[TRN 可选]\n    end\n    C --> D"
+    },
+    {
+      "type": "prose",
+      "en": "EDMG-Header-A is the wideband/MIMO common header — the same content for SC and OFDM modes, carried right after the legacy L-Header. Its SU form (Table 28-12) is a fixed two SC symbol blocks: 112 data bits plus a 16-bit CRC. The bits that make EDMG work live here. An 8-bit BW field is a bitmap of which 2.16 GHz channels (1..8) the PPDU occupies — that is channel bonding expressed directly in the header. A Primary Channel Number, a Number of SS field (streams minus one), an EDMG-MCS field, and a Number of Transmit Chains field together tell the receiver how wide the signal is and how many spatial streams and TRN sequences to expect. An SU/MU Format bit at the very front decides whether per-user EDMG-Header-B fields will appear.",
+      "zh": "EDMG-Header-A 是宽带/MIMO 通用头——对 SC 和 OFDM 模式内容相同,紧跟在传统 L-Header 之后。它的 SU 形式(表 28-12)固定为两个 SC 符号块:112 个数据比特加 16 比特 CRC。让 EDMG 真正运转的字段都在这里。一个 8 比特的 BW 字段是一个位图,标明该 PPDU 占用哪些 2.16 GHz 信道(1..8)——这就是直接在头部里表达的信道绑定。Primary Channel Number、Number of SS 字段(流数减一)、EDMG-MCS 字段以及 Number of Transmit Chains 字段共同告诉接收机信号有多宽、要预期多少条空时流和 TRN 序列。最前面的 SU/MU Format 比特则决定是否会出现逐用户的 EDMG-Header-B 字段。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "EDMG-Header-A vs EDMG-Header-B: Header-A is the one common header that every receiver reads — bandwidth, primary channel, stream count, transmit chains. Header-B exists only in MU PPDUs and is transmitted per STA, so each scheduled user gets its own PSDU length, MCS and scrambler seed (Table 28-19). One Header-A describes the shared wideband framing; many Header-Bs split the airtime among users.",
+      "zh": "EDMG-Header-A 与 EDMG-Header-B 的区别:Header-A 是每个接收机都要读的那个“通用头”——带宽、主信道、流数、发射链。Header-B 只出现在 MU PPDU 中,并按每个 STA 发送,因此每个被调度的用户都有自己的 PSDU 长度、MCS 和扰码种子(表 28-19)。一个 Header-A 描述共享的宽带成帧方式;多个 Header-B 则把空口时间在用户之间划分。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='18' fill='currentColor' stroke='none' font-size='12' font-weight='bold'>Channel bonding: glue 2.16 GHz channels</text><rect x='20' y='40' width='60' height='28'/><text x='50' y='58' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>1</text><rect x='80' y='40' width='60' height='28'/><text x='110' y='58' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>2</text><rect x='140' y='40' width='60' height='28'/><text x='170' y='58' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>3</text><rect x='200' y='40' width='60' height='28'/><text x='230' y='58' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>4</text><text x='280' y='58' fill='currentColor' stroke='none' font-size='11'>... 8</text><line x1='20' y1='90' x2='80' y2='90'/><text x='50' y='105' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>2.16</text><line x1='90' y1='110' x2='200' y2='110'/><text x='145' y='125' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>4.32 (NCB=2)</text><line x1='20' y1='135' x2='260' y2='135'/><text x='140' y='148' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>8.64 GHz (NCB=4)</text></svg>",
+      "caption": {
+        "en": "Bonding contiguous 2.16 GHz channels into 4.32 / 6.48 / 8.64 GHz. NCB (1..4) is the integer number of contiguous channels; data rate scales roughly with NCB.",
+        "zh": "把相邻的 2.16 GHz 信道绑定为 4.32 / 6.48 / 8.64 GHz。NCB(1..4)是相邻信道的整数个数;数据速率大致随 NCB 线性增长。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Bonding and aggregation are slightly different glues. Bonding takes contiguous 2.16 GHz channels and runs one wider waveform across them — NCB (the number of contiguous channels, 1 to 4) drives the chip rate up to NCB x 1.76 GHz and the data rate up with it. Aggregation (the 2.16+2.16 GHz and 4.32+4.32 GHz modes) uses two separated channels at once: the transmit chains are split, the lower half driving the primary channel and the upper half the secondary, with a per-channel carrier shift. Both SC mode (Clause 28.5) and OFDM mode (Clause 28.6) support these widths; the EDMG-STF and EDMG-CEF are what let a MIMO receiver actually separate the streams across whatever width was bonded.",
+      "zh": "绑定与聚合是两种略有不同的“粘合”。绑定取相邻的 2.16 GHz 信道,在它们之上运行一条更宽的波形——NCB(相邻信道数,1 到 4)把码片速率推高到 NCB×1.76 GHz,数据速率随之提升。聚合(即 2.16+2.16 GHz 与 4.32+4.32 GHz 模式)则同时使用两段不相邻的信道:发射链被一分为二,下半部分驱动主信道,上半部分驱动次信道,并对每段信道做载波频移。SC 模式(28.5 节)与 OFDM 模式(28.6 节)都支持这些带宽;而 EDMG-STF 与 EDMG-CEF 正是让 MIMO 接收机能在所绑定的任意带宽上真正分离出各条空时流的字段。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "How EDMG-CEF trains a wideband MIMO channel: the mapping matrix",
+        "zh": "EDMG-CEF 如何训练宽带 MIMO 信道:映射矩阵"
+      },
+      "en": "For a single space-time stream over a single 2.16 GHz channel the EDMG-CEF is absent (the L-CEF already estimated the channel). Otherwise the EDMG-CEF is what enables SU-/MU-MIMO over the bonded width. In SC mode (28.5.5.2) the field is a sequence of N_EDMG-CEF subfields built from pairs of Golay complementary sequences (Ga/Gb of length 128/256/384/512 x NCB, scaled to the bonded width), pi/2-BPSK modulated. The key object is the EDMG-CEF mapping matrix P_EDMG-CEF together with the spatial mapping matrix Q: each subfield n carries r_CE^{i_STS} weighted by Q[m,n] and P[m,n], so the orthogonal columns of P let the receiver solve for every space-time stream's channel response independently across the subfields. Distinct mapping matrices are defined for NSTS = 1,2 / 3,4 / 5,6,7,8. OFDM mode (28.6.5.2) builds the same idea in the frequency domain with its own per-subcarrier spatial mapping matrix Q_k and an OFDM EDMG-CEF mapping matrix whose number of symbols grows with NSTS. That orthogonal training across multiple subfields/symbols is precisely what turns one bonded 60 GHz pipe into several spatially-multiplexed ones.",
+      "zh": "对于单条空时流且仅占用单个 2.16 GHz 信道的情形,EDMG-CEF 不存在(L-CEF 已完成信道估计)。否则,EDMG-CEF 正是在绑定带宽上实现 SU-/MU-MIMO 的关键。在 SC 模式(28.5.5.2)中,该字段是一串 N_EDMG-CEF 个子字段,由成对的 Golay 互补序列(长度为 128/256/384/512 × NCB 的 Ga/Gb,随绑定带宽缩放)构成,采用 π/2-BPSK 调制。核心对象是 EDMG-CEF 映射矩阵 P_EDMG-CEF 连同空间映射矩阵 Q:每个子字段 n 携带的 r_CE^{i_STS} 都被 Q[m,n] 与 P[m,n] 加权,因此 P 的正交列使接收机能在各子字段上独立解出每条空时流的信道响应。针对 NSTS = 1,2 / 3,4 / 5,6,7,8 分别定义了不同的映射矩阵。OFDM 模式(28.6.5.2)在频域以同样的思路构建,使用其自身的逐子载波空间映射矩阵 Q_k 以及一个 OFDM EDMG-CEF 映射矩阵,其符号数随 NSTS 增长。这种跨多个子字段/符号的正交训练,正是把一条绑定后的 60 GHz 管道变成多条空间复用管道的关键。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4501,
+          4502,
+          4564,
+          4565
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:28.3.2.1",
+    "80211-2024:28.3.3.2",
+    "80211-2024:28.3.3.3",
+    "80211-2024:28.3.4",
+    "80211-2024:28.5.4.2",
+    "80211-2024:28.5.5.2",
+    "80211-2024:28.5.7",
+    "80211-2024:28.6.5.2"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4426
+      ],
+      "note": "28.3.2.1 General + Figure 28-4 EDMG PPDU format: non-EDMG portion then EDMG portion (EDMG-Header-A/STF/CEF/Header-B)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4428
+      ],
+      "note": "28.3.3.2 Non-EDMG portion (L-STF/L-CEF/L-Header at DMG chip rate); L-Header bit 46 = 1 indicates EDMG-Header-A present"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4434,
+        4437,
+        4438
+      ],
+      "note": "28.3.3.3 EDMG portion; EDMG-Header-A SU structure (Table 28-12): SU/MU Format, BW bitmap, Primary Channel, Number of SS, EDMG-MCS, Number of Transmit Chains"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4448,
+        4449
+      ],
+      "note": "28.3.3.3.5 EDMG-Header-B (Table 28-19) per-STA in MU PPDUs: PSDU length, Base/Differential MCS, scrambler seed"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4450,
+        4451
+      ],
+      "note": "28.3.3.4.2 Channel aggregation (split transmit chains, primary/secondary carriers) and 28.3.4 Channelization (2.16/4.32/6.48/8.64 and 2.16+2.16/4.32+4.32)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4499
+      ],
+      "note": "28.5.4.2 EDMG-STF definition (SC): spatial mapping matrix Q over NSTS streams"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4501,
+        4502
+      ],
+      "note": "28.5.5.2 EDMG-CEF definition (SC): Golay-based subfields, EDMG-CEF mapping matrix P with Q for SU-/MU-MIMO over bonded channels"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4541
+      ],
+      "note": "28.5.7 Encoding of EDMG-Header-A for EDMG A-PPDU transmission (per-PPDU header in an A-PPDU)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4564,
+        4565
+      ],
+      "note": "28.6.5.2 EDMG-CEF definition (OFDM): frequency-domain CEF, per-subcarrier Q_k and OFDM EDMG-CEF mapping matrix scaling with NSTS"
+    }
+  ],
+  "track": "legacy-phy"
+}

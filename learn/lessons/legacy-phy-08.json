@@ -1,0 +1,138 @@
+{
+  "id": "legacy-phy-08",
+  "title": {
+    "en": "Inside the OFDM PHY (Clause 17): L-STF, L-LTF, L-SIG and the 64-tone symbol",
+    "zh": "深入 OFDM 物理层(第17章):L-STF、L-LTF、L-SIG 与 64 子载波符号"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every Wi-Fi packet you have ever sent — even an 802.11be Wi-Fi 7 frame — opens with the same classic 802.11a/g OFDM preamble defined in Clause 17. It is the universal 'hello' that lets any receiver wake up, lock onto the signal, and measure the channel before a single data bit arrives. This lesson opens that preamble and the OFDM symbol that follows, walking the PHY protocol data unit (PPDU) from its first microsecond to the tones that carry your bytes.",
+      "zh": "你发出的每一个 Wi-Fi 数据包——哪怕是一帧 802.11be Wi-Fi 7——都以第 17 章定义的那段经典 802.11a/g OFDM 前导码开场。它就像一句通用的“你好”，让任何接收机都能在第一个数据比特到来之前先苏醒过来、锁定信号、测量信道。本课就把这段前导码以及紧随其后的 OFDM 符号拆开，沿着 PHY 协议数据单元(PPDU)从它的第一微秒一路走到承载你字节的那些子载波(tone)。"
+    },
+    {
+      "type": "prose",
+      "en": "The preamble is two training fields back to back. First comes the L-STF (legacy short training field): ten repetitions of a short pattern that uses only 12 subcarriers, lasting 8 microseconds. Because the pattern repeats every 0.8 microseconds, the receiver sees a steady, periodic burst — perfect for settling its automatic gain control (AGC), picking the best antenna, and grabbing coarse timing and frequency. Then comes the L-LTF (legacy long training field): two copies of a known 52-subcarrier pattern, also 8 microseconds. Because the receiver knows exactly what was sent, it can divide what it heard by what it expected and read off the channel response on every subcarrier — fine sync and channel estimation in one shot.",
+      "zh": "前导码由两个紧挨着的训练字段组成。先是 L-STF(传统短训练字段):一个仅用 12 个子载波的短序列重复 10 次，持续 8 微秒。由于这个序列每 0.8 微秒就重复一次，接收机会看到一段平稳、周期性的脉冲串——非常适合用来稳定自动增益控制(AGC)、挑选最佳天线，并完成粗定时与粗频率捕获。接着是 L-LTF(传统长训练字段):一个已知的 52 子载波序列发送两遍，同样占 8 微秒。因为接收机完全知道发了什么，它就能用“收到的”除以“预期的”，从而读出每个子载波上的信道响应——精同步与信道估计一气呵成。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Intuition: a repeated short pattern finds the packet (its periodicity stands out from noise and lets the receiver detect arrival and lock its gain); a single known long pattern measures the channel (knowing the exact transmitted symbol turns the received symbol into a per-subcarrier ruler). Detection wants repetition; estimation wants knowledge.",
+      "zh": "直觉:重复的短序列负责“找到包”(它的周期性从噪声中凸显出来，让接收机能检测到信号到达并锁定增益);单个已知的长序列负责“测信道”(因为完全知道发出的符号，收到的符号就变成了一把逐子载波的标尺)。检测靠重复，估计靠已知。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    STF[\"L-STF\\n10 short symbols\\n8 us — AGC + coarse sync\"] --> LTF[\"L-LTF\\n2 long symbols\\n8 us — channel est. + fine sync\"]\n    LTF --> SIG[\"SIGNAL (L-SIG)\\n1 BPSK-OFDM symbol\\n4 us — RATE + LENGTH\"]\n    SIG --> DATA[\"DATA\\nN OFDM symbols\\nSERVICE + PSDU + Tail + Pad\"]",
+      "zh": "graph LR\n    STF[\"L-STF\\n10 个短符号\\n8 微秒 — AGC + 粗同步\"] --> LTF[\"L-LTF\\n2 个长符号\\n8 微秒 — 信道估计 + 精同步\"]\n    LTF --> SIG[\"SIGNAL (L-SIG)\\n1 个 BPSK-OFDM 符号\\n4 微秒 — RATE + LENGTH\"]\n    SIG --> DATA[\"DATA\\nN 个 OFDM 符号\\nSERVICE + PSDU + 尾比特 + 填充\"]"
+    },
+    {
+      "type": "prose",
+      "en": "Right after the L-LTF comes the SIGNAL field (L-SIG): a single OFDM symbol, always BPSK at coding rate 1/2 so even the weakest receiver can read it. Its 24 bits carry two things the receiver desperately needs: a 4-bit RATE field naming the modulation and coding of the rest of the packet, and a 12-bit LENGTH field giving the number of octets in the payload. From RATE and LENGTH alone a receiver computes exactly how many OFDM symbols follow and how long the medium will stay busy — even if it cannot itself decode that rate. A parity bit and six zero tail bits round out the field.",
+      "zh": "紧接 L-LTF 之后是 SIGNAL 字段(L-SIG):单个 OFDM 符号，恒定采用 BPSK、码率 1/2，这样即使最弱的接收机也能读懂它。它的 24 个比特携带接收机急需的两样东西:一个 4 比特的 RATE 字段，指明数据包其余部分的调制与编码方式;以及一个 12 比特的 LENGTH 字段，给出负载的八位组(字节)数。仅凭 RATE 和 LENGTH，接收机就能算出后面还有多少个 OFDM 符号、信道还会忙多久——哪怕它自己并不能解调那个速率。再加上一个奇偶校验位和 6 个为零的尾比特，便构成完整字段。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 520 120' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='16' fill='currentColor' stroke='none' font-size='11'>SIGNAL field — 24 bits (transmit order, LSB first within each subfield)</text><rect x='10' y='30' width='90' height='34'/><text x='55' y='50' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>RATE</text><text x='55' y='61' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>R1-R4 (4)</text><rect x='100' y='30' width='40' height='34'/><text x='120' y='50' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>Rsvd</text><text x='120' y='61' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>(1)</text><rect x='140' y='30' width='200' height='34'/><text x='240' y='50' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>LENGTH</text><text x='240' y='61' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>(12)</text><rect x='340' y='30' width='40' height='34'/><text x='360' y='50' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>Parity</text><text x='360' y='61' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>(1)</text><rect x='380' y='30' width='130' height='34'/><text x='445' y='50' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>SIGNAL TAIL</text><text x='445' y='61' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>000000 (6)</text><text x='10' y='90' fill='currentColor' stroke='none' font-size='10'>RATE 1101=6, 1111=9, 0101=12 ... 0011=54 Mb/s</text><text x='10' y='106' fill='currentColor' stroke='none' font-size='10'>Whole symbol: BPSK, R=1/2, not scrambled</text></svg>",
+      "caption": {
+        "en": "The 24-bit SIGNAL field: a 4-bit RATE code, a reserved bit, a 12-bit LENGTH, one parity bit, and six zero tail bits — carried in one BPSK rate-1/2 OFDM symbol.",
+        "zh": "24 比特的 SIGNAL 字段:4 比特 RATE 码、1 个保留位、12 比特 LENGTH、1 个奇偶校验位以及 6 个为零的尾比特——由一个 BPSK、码率 1/2 的 OFDM 符号承载。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now the data. The PHY turns bits into tones along an assembly line: scramble the bits, run them through a rate-1/2 convolutional encoder (puncture it to reach 2/3 or 3/4), interleave them so a fade cannot wipe out a run of neighbours, then map groups of 1/2/4/6 bits onto BPSK, QPSK, 16-QAM, or 64-QAM constellation points using Gray coding. The resulting complex numbers are sliced into groups of 48 and handed to a 64-point inverse FFT. Of those 64 bins, the standard uses 52: 48 carry data, 4 (at subcarriers -21, -7, +7, +21) are BPSK pilots that track residual phase and frequency drift, and the DC bin plus the band edges are left empty. Add a cyclic-prefix guard interval and you have one OFDM symbol on the air.",
+      "zh": "现在轮到数据。PHY 像一条流水线一样把比特变成子载波:先加扰，再送入码率 1/2 的卷积编码器(通过打孔可得到 2/3 或 3/4),接着进行交织，使一次衰落无法连续抹掉相邻的一串比特，然后用格雷编码把每 1/2/4/6 个比特一组映射到 BPSK、QPSK、16-QAM 或 64-QAM 的星座点上。得到的复数被切成每 48 个一组，交给一个 64 点的逆 FFT。在这 64 个频点中，标准用到 52 个:48 个承载数据，4 个(位于子载波 -21、-7、+7、+21)是 BPSK 导频，用来跟踪残余的相位与频率漂移，而直流(DC)频点连同频带边缘则留空。再加上一段循环前缀作为保护间隔，一个 OFDM 符号便登上了无线信道。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "This pipeline is exactly why the rate set is 6 / 9 / 12 / 18 / 24 / 36 / 48 / 54 Mb/s. Each rate is just a (modulation, coding-rate) pair feeding the same 48-data-subcarrier, 4-microsecond symbol: BPSK 1/2 gives 24 data bits per symbol = 6 Mb/s; 64-QAM 3/4 gives 216 bits per symbol = 54 Mb/s. Same machine, different settings.",
+      "zh": "正是这条流水线决定了速率集合为 6 / 9 / 12 / 18 / 24 / 36 / 48 / 54 Mb/s。每个速率不过是一对(调制方式、码率),共用同一个 48 数据子载波、4 微秒的符号:BPSK 1/2 每符号给出 24 个数据比特 = 6 Mb/s;64-QAM 3/4 每符号给出 216 个比特 = 54 Mb/s。同一台机器，不同档位而已。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact subcarrier map, the training sequences, and how a rate becomes a bit count",
+        "zh": "精确的子载波映射、训练序列，以及一个速率如何换算成比特数"
+      },
+      "en": "Clause 17.3.5.10 fixes the 64-tone layout precisely: the 48 data values d0..d47 are mapped by M(k) onto frequency offsets -26..26, skipping pilots at -21, -7, 7, 21 and the DC (0) subcarrier, for NST = 52 total (NSD = 48 data + NSP = 4 pilots). Subcarrier spacing is delta-F = 0.3125 MHz (= 20 MHz / 64) and the FFT period is 3.2 microseconds. The L-STF (17.3.3) is generated from the 12-nonzero-subcarrier sequence S scaled by sqrt(13/6); its spectral lines spaced every 4th index produce the 0.8-microsecond periodicity, and ten of them give T_SHORT = 8 microseconds. The L-LTF uses the 52-element +/-1 sequence L sent twice with a 1.6-microsecond guard (T_LONG = 1.6 + 2*3.2 = 8 microseconds). The pilots (17.3.5.9) sit at -21, -7, 7, 21 with polarity from a 127-length sequence p_n. For the data rate, Table 17-4 ties each (modulation, R) to NBPSC, NCBPS and NDBPS: e.g. 64-QAM R=3/4 has NBPSC=6, NCBPS=288, NDBPS=216 -> 216 bits / 4 microseconds = 54 Mb/s, while BPSK R=1/2 has NDBPS=24 -> 6 Mb/s. The interleaver (17.3.5.7) is a two-permutation block interleaver over NCBPS bits, and the convolutional code (17.3.5.6) uses generator polynomials g0=133(oct), g1=171(oct) at R=1/2 with puncturing for the higher rates.",
+      "zh": "17.3.5.10 节精确锁定了 64 子载波布局:48 个数据值 d0..d47 通过映射 M(k) 落到频率偏移 -26..26 上，跳过 -21、-7、7、21 处的导频以及直流(0)子载波，总计 NST = 52(NSD = 48 个数据 + NSP = 4 个导频)。子载波间隔 delta-F = 0.3125 MHz(= 20 MHz / 64),FFT 周期为 3.2 微秒。L-STF(17.3.3)由仅 12 个非零子载波的序列 S 经 sqrt(13/6) 缩放生成;它的谱线每隔 4 个索引出现一次，由此产生 0.8 微秒的周期性，10 个这样的周期合计 T_SHORT = 8 微秒。L-LTF 使用 52 元素的 +/-1 序列 L，发送两遍并带 1.6 微秒保护间隔(T_LONG = 1.6 + 2*3.2 = 8 微秒)。导频(17.3.5.9)位于 -21、-7、7、21,其极性由一个长度 127 的序列 p_n 给出。至于数据速率，表 17-4 把每对(调制方式、R)与 NBPSC、NCBPS、NDBPS 关联起来:例如 64-QAM、R=3/4 时 NBPSC=6、NCBPS=288、NDBPS=216 -> 216 比特 / 4 微秒 = 54 Mb/s,而 BPSK、R=1/2 时 NDBPS=24 -> 6 Mb/s。交织器(17.3.5.7)是对 NCBPS 个比特进行两步置换的块交织器，卷积码(17.3.5.6)采用生成多项式 g0=133(八进制)、g1=171(八进制)、码率 R=1/2，更高速率则通过打孔得到。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3347,
+          3348,
+          3351,
+          3366,
+          3367
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:17.3.2.2",
+    "80211-2024:17.3.3",
+    "80211-2024:17.3.4.2",
+    "80211-2024:17.3.4.3",
+    "80211-2024:17.3.5.6",
+    "80211-2024:17.3.5.7",
+    "80211-2024:17.3.5.8",
+    "80211-2024:17.3.5.9",
+    "80211-2024:17.3.5.10"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3346,
+        3347
+      ],
+      "note": "17.3.2.2 overview of the PPDU encoding process (preamble, PHY header, encode/interleave/map/FFT steps a)-n); Table 17-4 modulation-dependent parameters"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3351,
+        3352
+      ],
+      "note": "17.3.3 PHY preamble (SYNC): 10 short + 2 long symbols, S and L training sequences, T_SHORT/T_LONG = 8 us each"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3352,
+        3353
+      ],
+      "note": "17.3.4.1-17.3.4.4 SIGNAL field: 24 bits, BPSK R=1/2 not scrambled; 17.3.4.2 RATE field (Table 17-6); 17.3.4.3 PHY LENGTH 12-bit field"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3361,
+        3363
+      ],
+      "note": "17.3.5.6 convolutional encoder g0=133/g1=171 oct R=1/2 + puncturing; 17.3.5.7 two-permutation block interleaver over NCBPS"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3364,
+        3365,
+        3366
+      ],
+      "note": "17.3.5.8 subcarrier modulation mapping BPSK/QPSK/16-QAM/64-QAM Gray coding + KMOD; 17.3.5.9 four pilots at -21/-7/7/21"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3366,
+        3367
+      ],
+      "note": "17.3.5.10 OFDM modulation: 48 data subcarriers, M(k) mapping to -26..26 skipping pilots and DC, 64-point FFT, pilot polarity sequence"
+    }
+  ],
+  "track": "legacy-phy"
+}

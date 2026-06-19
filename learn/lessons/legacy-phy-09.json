@@ -1,0 +1,130 @@
+{
+  "id": "legacy-phy-09",
+  "title": {
+    "en": "Inside the HT PHY (Clause 19): mixed vs greenfield, HT-SIG, HT-LTF and MCS 0-31",
+    "zh": "深入 HT 物理层（第19章）：混合模式与绿场模式、HT-SIG、HT-LTF 与 MCS 0-31"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "802.11n (the HT PHY, Clause 19) takes the OFDM machinery of 802.11a/g and bolts MIMO onto it — sending several independent data streams over several antennas at once. The trick is that the radio waveform barely changes; what changes is the preamble. A receiver now has to learn a whole matrix of channels (every transmit antenna to every receive antenna), and that knowledge has to be paid for up front with extra training symbols. This lesson opens up the HT PPDU to see exactly what those extra fields are and what each one buys you.",
+      "zh": "802.11n（即第19章定义的 HT 物理层）在 802.11a/g 的 OFDM 机制之上加装了 MIMO——同时用多根天线发送多路相互独立的数据流。其中的巧妙之处在于：射频波形几乎没变，真正变化的是前导码。接收机现在必须学习一整个信道矩阵（每根发射天线到每根接收天线），而这份“知识”必须在数据之前用额外的训练符号来“预付”。本课将剖开 HT PPDU，看清这些额外字段究竟是什么、各自换来了什么。"
+    },
+    {
+      "type": "prose",
+      "en": "HT defines two preamble flavors. HT-mixed format puts the legacy fields first — L-STF, L-LTF, L-SIG — exactly as an 802.11a/g radio expects, so an old radio that cannot decode HT still hears the L-SIG, reads its length, and politely defers for the whole transmission. Only after that legacy front matter come the HT-specific fields: HT-SIG, HT-STF, then the HT-LTFs. HT-greenfield format throws away the legacy fields entirely — it begins straight with an HT-GF-STF, an HT-LTF1, and the HT-SIG. Greenfield is leaner and faster, but invisible to legacy radios, so it is only safe in a network with no old stations present.",
+      "zh": "HT 定义了两种前导码风格。HT 混合模式（HT-mixed）把传统字段放在最前面——L-STF、L-LTF、L-SIG——其格式与 802.11a/g 设备的预期完全一致，这样一台无法解码 HT 的老设备仍能听到 L-SIG、读出其长度字段，并礼貌地为整个传输退避让路。只有在这段“传统开场白”之后，才轮到 HT 专用字段：HT-SIG、HT-STF，然后是若干 HT-LTF。HT 绿场模式（HT-greenfield）则彻底丢弃传统字段——它直接以 HT-GF-STF、HT-LTF1 和 HT-SIG 开场。绿场模式更精简、更快，但对传统设备而言是“隐形”的，因此只有在网络中确实没有老设备时使用才安全。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    subgraph MIXED[HT-mixed format PPDU]\n        A[L-STF] --> B[L-LTF] --> C[L-SIG] --> D[HT-SIG<br/>2 symbols] --> E[HT-STF] --> F[HT-LTF1..n] --> G[Data]\n    end\n    subgraph GF[HT-greenfield format PPDU]\n        H[HT-GF-STF] --> I[HT-LTF1<br/>double length] --> J[HT-SIG] --> K[HT-LTF2..n] --> L[Data]\n    end",
+      "zh": "graph LR\n    subgraph MIXED[HT 混合模式 PPDU]\n        A[L-STF] --> B[L-LTF] --> C[L-SIG] --> D[HT-SIG<br/>两个符号] --> E[HT-STF] --> F[HT-LTF1..n] --> G[数据]\n    end\n    subgraph GF[HT 绿场模式 PPDU]\n        H[HT-GF-STF] --> I[HT-LTF1<br/>双倍长度] --> J[HT-SIG] --> K[HT-LTF2..n] --> L[数据]\n    end"
+    },
+    {
+      "type": "prose",
+      "en": "The HT-SIG is the brains of the preamble: two BPSK-modulated OFDM symbols (8 us total) carrying everything a receiver needs to interpret the rest of the frame. Among its fields are a 7-bit Modulation and Coding Scheme (MCS) index, a CBW 20/40 bit (is this a 40 MHz frame?), a 16-bit HT Length in octets, an FEC Coding bit (1 = LDPC, 0 = BCC), a Short GI bit, an STBC field, a Smoothing hint, and an 8-bit CRC that protects bits 0-33 so a corrupt header is caught rather than misread. Cleverly, the HT-SIG is sent with its constellation rotated 90 degrees (QBPSK) relative to the L-SIG — that rotation is how an HT receiver detects 'an HT frame starts here' versus a plain legacy frame.",
+      "zh": "HT-SIG 是前导码的“大脑”：两个以 BPSK 调制的 OFDM 符号（共 8 微秒），携带接收机解读整帧所需的一切信息。其字段包括：7 位的调制与编码方案（MCS）索引、一个 CBW 20/40 比特（这是否是 40 MHz 帧？）、16 位的 HT 长度（以字节计）、一个 FEC 编码比特（1 表示 LDPC，0 表示 BCC）、一个 Short GI 比特、一个 STBC 字段、一个 Smoothing（平滑）提示位，以及一个保护第 0~33 比特的 8 位 CRC，使损坏的头部能被检出而不是被误读。巧妙的是，HT-SIG 的星座相对 L-SIG 旋转了 90 度（即 QBPSK）——正是这个旋转让 HT 接收机得以判断“一帧 HT 从这里开始”，而不是一帧普通的传统帧。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why so many training symbols? To invert an N-by-N MIMO channel you need N linearly independent observations. So the number of Data HT-LTFs tracks the number of space-time streams: 1 stream needs 1 LTF, 2 needs 2, 3 needs 4, and 4 needs 4. The HT-LTFs are made orthogonal across streams by an internal mapping matrix (a Hadamard-like P matrix) so the receiver can cleanly separate each stream's channel from one set of training symbols.",
+      "zh": "为什么需要这么多训练符号？要对一个 N×N 的 MIMO 信道求逆，你需要 N 组线性无关的观测。因此“数据用 HT-LTF”的数量随空时流数量而定：1 流需要 1 个 LTF，2 流需要 2 个，3 流需要 4 个，4 流需要 4 个。这些 HT-LTF 通过一个内部映射矩阵（类似哈达玛矩阵的 P 矩阵）在各流之间被构造为相互正交，从而让接收机能从同一组训练符号中干净地分离出每一条流的信道。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='18' fill='currentColor' stroke='none' font-size='12'>20 MHz: 56 used tones (52 data + 4 pilot)</text><line x1='10' y1='40' x2='220' y2='40'/><rect x='10' y='30' width='210' height='20' fill='currentColor' opacity='0.18' stroke='none'/><text x='10' y='72' fill='currentColor' stroke='none' font-size='12'>40 MHz: 114 used tones (108 data + 6 pilot)</text><line x1='10' y1='94' x2='440' y2='94'/><rect x='10' y='84' width='430' height='20' fill='currentColor' opacity='0.18' stroke='none'/><text x='10' y='135' fill='currentColor' stroke='none' font-size='11'>Bonding two 20 MHz halves opens the guard tones near the seam,</text><text x='10' y='148' fill='currentColor' stroke='none' font-size='11'>so 40 MHz carries more than double the 20 MHz data tones.</text></svg>",
+      "caption": {
+        "en": "20 vs 40 MHz tone budget: bonding reclaims the inner guard/DC tones, so 40 MHz (108 data tones) carries slightly more than double the 52 data tones of 20 MHz.",
+        "zh": "20 与 40 MHz 的子载波预算：信道捆绑回收了内侧的保护/直流子载波，因此 40 MHz（108 个数据子载波）能承载略多于 20 MHz（52 个数据子载波）两倍的数据。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the MCS index packs three choices into one number. MCS 0-7 are a single spatial stream sweeping from BPSK rate-1/2 up to 64-QAM rate-5/6. MCS 8-15 repeat that same modulation-and-coding ladder but across 2 streams, MCS 16-23 across 3 streams, and MCS 24-31 across 4 streams — all using equal modulation (every stream identical). So MCS 0-31 is essentially the cross product of {modulation x coding rate} times {1, 2, 3, 4 streams}. (MCS 32 is a special low-rate 40 MHz duplicate mode, and 33-76 are unequal-modulation combinations.) Pair the MCS with 20 or 40 MHz and a 800 ns or 400 ns guard interval, and you have the full HT rate.",
+      "zh": "最后，MCS 索引把三种选择压缩进一个数字。MCS 0~7 是单条空间流，从 BPSK 速率 1/2 一路扫到 64-QAM 速率 5/6。MCS 8~15 在 2 条流上重复同一套“调制+编码”阶梯，MCS 16~23 在 3 条流上，MCS 24~31 在 4 条流上——全部采用等调制（每条流完全相同）。因此 MCS 0~31 本质上就是 {调制 × 编码率} 与 {1、2、3、4 条流} 的笛卡尔积。（MCS 32 是一种特殊的低速率 40 MHz 复制模式，33~76 则是不等调制的组合。）再把 MCS 与 20 或 40 MHz 带宽、以及 800 纳秒或 400 纳秒的保护间隔相配，就得到完整的 HT 速率。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact field bits, LTF counts, and what the standard mandates",
+        "zh": "确切的字段比特、LTF 数量与标准的强制要求"
+      },
+      "en": "Clause 19.3.9.4.3 specifies the HT-SIG fields exactly: 7-bit MCS, 1-bit CBW 20/40, 16-bit HT Length, 1-bit Smoothing, 1-bit Not Sounding, 1 reserved, 1-bit Aggregation, 2-bit STBC, 1-bit FEC Coding, 1-bit Short GI, 2-bit Number of Extension Spatial Streams, an 8-bit CRC over bits 0-33, and 6 tail bits — split as HT-SIG1 and HT-SIG2 of 24 bits each, sent LSB first, BPSK rotated 90 degrees (QBPSK) so the start of the HT portion is detectable (19.3.9.4.4 gives the CRC polynomial D^8+D^2+D+1). The HT-LTF count is mandated by Table 19-13: 1 space-time stream needs 1 HT-DLTF, 2 needs 2, 3 needs 4, 4 needs 4 — the orthogonalizing P_HT-LTF matrix is in Equation (19-27). Per 19.3.5, MCS 0-7 are single-stream, 8-31 are equal-modulation multi-stream, 33-76 unequal; an HT STA must support MCS 0-7 in 20 MHz, an HT AP must support MCS 8-15, and everything else (40 MHz, 400 ns GI, MCS 16-76) is optional. Tone counts come from Table 19-6: 20 MHz HT uses N_SD=52 data + 4 pilots (pilots at +-21, +-7); 40 MHz uses 108 data + 6 pilots (at +-53, +-25, +-11).",
+      "zh": "第 19.3.9.4.3 节精确规定了 HT-SIG 各字段：7 位 MCS、1 位 CBW 20/40、16 位 HT 长度、1 位 Smoothing、1 位 Not Sounding、1 位保留、1 位 Aggregation、2 位 STBC、1 位 FEC 编码、1 位 Short GI、2 位扩展空间流数、覆盖第 0~33 比特的 8 位 CRC，以及 6 位尾比特——拆分为 HT-SIG1 与 HT-SIG2，各 24 位，按 LSB 先行发送，采用旋转 90 度的 BPSK（即 QBPSK），使 HT 部分的起点可被检出（19.3.9.4.4 给出 CRC 生成多项式 D^8+D^2+D+1）。HT-LTF 的数量由表 19-13 强制规定：1 条空时流需 1 个 HT-DLTF，2 条需 2 个，3 条需 4 个，4 条需 4 个——用于正交化的 P_HT-LTF 矩阵见式 (19-27)。依据 19.3.5，MCS 0~7 为单流，8~31 为等调制多流，33~76 为不等调制；HT 站点必须支持 20 MHz 下的 MCS 0~7，HT AP 必须支持 MCS 8~15，其余（40 MHz、400 纳秒 GI、MCS 16~76）均为可选。子载波数量取自表 19-6：20 MHz HT 使用 N_SD=52 个数据子载波 + 4 个导频（位于 ±21、±7）；40 MHz 使用 108 个数据子载波 + 6 个导频（位于 ±53、±25、±11）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3420,
+          3430,
+          3431,
+          3435,
+          3436
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:19.3.2",
+    "80211-2024:19.3.5",
+    "80211-2024:19.3.9.2",
+    "80211-2024:19.3.9.3",
+    "80211-2024:19.3.9.4",
+    "80211-2024:19.3.9.5",
+    "80211-2024:19.3.11.9",
+    "80211-2024:19.3.11.10"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3414,
+        3415
+      ],
+      "note": "19.3.2 PPDU format - HT-mixed vs HT-greenfield field order; HT-DLTFs vs HT-ELTFs (Table 19-5, Figure 19-1)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3420
+      ],
+      "note": "19.3.5 MCS - MCS 0-7 single stream, 8-31 equal-modulation multi-stream, 33-76 unequal; mandatory/optional support rules"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3425,
+        3426
+      ],
+      "note": "19.3.9.2 HT-mixed format preamble; 19.3.9.5 HT-greenfield preamble omits non-HT fields"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3430,
+        3431,
+        3432
+      ],
+      "note": "19.3.9.4.3-19.3.9.4.4 HT-SIG fields (Table 19-11), HT-SIG1/HT-SIG2, QBPSK 90-degree rotation, CRC over bits 0-33"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3435,
+        3436,
+        3437
+      ],
+      "note": "19.3.9.4.6 HT-LTF - one LTF per space-time stream to estimate MIMO channel; Table 19-13 DLTF counts; P_HT-LTF matrix Eq (19-27)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3421
+      ],
+      "note": "19.3.6 Table 19-6 timing/tone constants - 20 MHz NSD=52 + 4 pilots, 40 MHz NSD=108 + 6 pilots"
+    }
+  ],
+  "track": "legacy-phy"
+}

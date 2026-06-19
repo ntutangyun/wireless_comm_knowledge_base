@@ -1,0 +1,129 @@
+{
+  "id": "legacy-phy-10",
+  "title": {
+    "en": "Inside the VHT PHY (Clause 21): VHT-SIG-A/B, per-user MU groups and 256-QAM to 160 MHz",
+    "zh": "深入 VHT 物理层(第21章):VHT-SIG-A/B、多用户分组与 256-QAM 至 160 MHz"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "802.11ac's Very High Throughput (VHT) PHY had to do two new things at once: open the channel out to 80, 160 and 80+80 MHz, and pour a single transmission into several stations at the same time (downlink MU-MIMO). Both jobs live in the VHT preamble. After the legacy fields (L-STF, L-LTF, L-SIG) that keep older radios from stepping on the air, the VHT-specific fields begin — and they are where the wideband, multi-user magic is signalled. This lesson walks the VHT preamble field by field and shows how the signalling splits into a shared part and a per-user part.",
+      "zh": "802.11ac 的甚高吞吐量(VHT)物理层要同时做两件新事:把信道拓宽到 80、160 与 80+80 MHz,并让一次发送同时服务多个站点(下行 MU-MIMO)。这两件事都体现在 VHT 前导码里。在传统字段(L-STF、L-LTF、L-SIG,用来让老旧设备避让信道)之后,VHT 专属字段才登场——宽带、多用户的关键信令正是在这里传达。本课逐字段走一遍 VHT 前导码,展示信令是如何拆成“共享部分”和“每用户部分”的。"
+    },
+    {
+      "type": "prose",
+      "en": "The order is fixed: L-STF, L-LTF, L-SIG, then VHT-SIG-A, VHT-STF, the VHT-LTFs, VHT-SIG-B, and finally the Data field. VHT-SIG-A is two OFDM symbols (8 us total) of common signalling that every recipient must read: channel bandwidth, whether STBC is on, the Group ID, coding, and — for a single-user frame — the VHT-MCS. The VHT-STF then gives the wideband receiver a fresh shot at automatic gain control across the full channel, and the VHT-LTFs train the MIMO channel for every space-time stream in the PPDU.",
+      "zh": "字段顺序是固定的:L-STF、L-LTF、L-SIG,然后是 VHT-SIG-A、VHT-STF、若干个 VHT-LTF、VHT-SIG-B,最后才是数据字段。VHT-SIG-A 是两个 OFDM 符号(共 8 微秒)的公共信令,每个接收者都必须读取:信道带宽、是否启用 STBC、Group ID、编码方式,以及(对单用户帧而言)VHT-MCS。随后的 VHT-STF 让宽带接收机在整个信道上重新做一次自动增益控制(AGC),而 VHT-LTF 则为 PPDU 中的每条空时流训练 MIMO 信道。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    A[L-STF<br/>8 us] --> B[L-LTF<br/>8 us]\n    B --> C[L-SIG<br/>4 us]\n    C --> D[VHT-SIG-A<br/>2 symbols / 8 us<br/>shared envelope]\n    D --> E[VHT-STF<br/>4 us<br/>wideband AGC]\n    E --> F[VHT-LTF x N<br/>4 us each<br/>MIMO training]\n    F --> G[VHT-SIG-B<br/>1 symbol / 4 us<br/>per-user label]\n    G --> H[Data]",
+      "zh": "graph LR\n    A[L-STF<br/>8 微秒] --> B[L-LTF<br/>8 微秒]\n    B --> C[L-SIG<br/>4 微秒]\n    C --> D[VHT-SIG-A<br/>2 符号 / 8 微秒<br/>共享外层]\n    D --> E[VHT-STF<br/>4 微秒<br/>宽带 AGC]\n    E --> F[VHT-LTF x N<br/>每个 4 微秒<br/>MIMO 训练]\n    F --> G[VHT-SIG-B<br/>1 符号 / 4 微秒<br/>每用户标签]\n    G --> H[数据]"
+    },
+    {
+      "type": "prose",
+      "en": "Here is the core idea worth holding onto: VHT-SIG-A is the shared envelope and VHT-SIG-B is each user's personal label. VHT-SIG-A carries a single 6-bit Group ID. A Group ID of 0 or 63 means the frame is single-user (SU); any other value flags a multi-user (MU) frame and names which group of stations it is for. In an MU frame VHT-SIG-A no longer carries one MCS — instead its NSTS field is split into four 3-bit slots, one per user position, telling each station how many space-time streams it owns. The actual MCS and length for each user are pushed down into VHT-SIG-B.",
+      "zh": "有一个核心思想值得记住:VHT-SIG-A 是“共享外层”,而 VHT-SIG-B 是“每个用户的专属标签”。VHT-SIG-A 携带一个 6 比特的 Group ID。Group ID 为 0 或 63 表示这是单用户(SU)帧;其他任何取值都标记为多用户(MU)帧,并指明它发给哪一组站点。在 MU 帧中,VHT-SIG-A 不再携带单一的 MCS——它的 NSTS 字段被切成四个 3 比特的槽位,每个用户位置一个,告诉各站点自己拥有几条空时流。每个用户真正的 MCS 和长度则被下放到 VHT-SIG-B 中。"
+    },
+    {
+      "type": "prose",
+      "en": "VHT-SIG-B is one OFDM symbol, encoded and transmitted per user, and it is short: 26 bits in 20 MHz, 27 in 40 MHz, and 29 in 80/160/80+80 MHz. For an MU frame it holds a VHT-SIG-B Length (the user's payload size in 4-octet units) and a 4-bit VHT-MCS; for an SU frame the MCS already rode in VHT-SIG-A, so SIG-B carries only the length plus reserved bits. To survive the wide channel, the bits are simply repeated — twice across 40 MHz, four times across 80 MHz, and four-then-doubled to fill 160/80+80 MHz — so a station decoding any 20 MHz slice still recovers its own label.",
+      "zh": "VHT-SIG-B 是一个 OFDM 符号,按每个用户分别编码发送,而且很短:20 MHz 时 26 比特,40 MHz 时 27 比特,80/160/80+80 MHz 时 29 比特。对 MU 帧而言,它包含一个 VHT-SIG-B 长度(该用户载荷大小,以 4 字节为单位)和一个 4 比特的 VHT-MCS;对 SU 帧而言,MCS 已经在 VHT-SIG-A 里传过了,所以 SIG-B 只携带长度加保留比特。为了在宽信道上可靠传输,这些比特会被简单重复——40 MHz 重复两次、80 MHz 重复四次、160/80+80 MHz 先重复四次再翻倍以填满——这样任何站点哪怕只解出某一个 20 MHz 片段,仍能恢复出属于自己的标签。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 480 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='20' fill='currentColor' stroke='none' font-size='13'>256-QAM: 8 bits per tone (4 bits per axis)</text><line x1='240' y1='40' x2='240' y2='185' stroke='currentColor' stroke-width='1'/><line x1='95' y1='112' x2='385' y2='112' stroke='currentColor' stroke-width='1'/><g fill='currentColor' stroke='none'><circle cx='110' cy='55' r='2'/><circle cx='128' cy='55' r='2'/><circle cx='146' cy='55' r='2'/><circle cx='164' cy='55' r='2'/><circle cx='182' cy='55' r='2'/><circle cx='200' cy='55' r='2'/><circle cx='218' cy='55' r='2'/><circle cx='236' cy='55' r='2'/><circle cx='262' cy='55' r='2'/><circle cx='280' cy='55' r='2'/><circle cx='298' cy='55' r='2'/><circle cx='316' cy='55' r='2'/><circle cx='334' cy='55' r='2'/><circle cx='352' cy='55' r='2'/><circle cx='370' cy='55' r='2'/><circle cx='388' cy='55' r='2'/></g><g fill='currentColor' stroke='none'><circle cx='110' cy='73' r='2'/><circle cx='146' cy='73' r='2'/><circle cx='182' cy='73' r='2'/><circle cx='218' cy='73' r='2'/><circle cx='262' cy='73' r='2'/><circle cx='298' cy='73' r='2'/><circle cx='334' cy='73' r='2'/><circle cx='370' cy='73' r='2'/><circle cx='128' cy='91' r='2'/><circle cx='164' cy='91' r='2'/><circle cx='200' cy='91' r='2'/><circle cx='236' cy='91' r='2'/><circle cx='280' cy='91' r='2'/><circle cx='316' cy='91' r='2'/><circle cx='352' cy='91' r='2'/><circle cx='388' cy='91' r='2'/><circle cx='110' cy='133' r='2'/><circle cx='146' cy='133' r='2'/><circle cx='182' cy='133' r='2'/><circle cx='218' cy='133' r='2'/><circle cx='262' cy='133' r='2'/><circle cx='298' cy='133' r='2'/><circle cx='334' cy='133' r='2'/><circle cx='370' cy='133' r='2'/><circle cx='128' cy='151' r='2'/><circle cx='164' cy='151' r='2'/><circle cx='200' cy='151' r='2'/><circle cx='236' cy='151' r='2'/><circle cx='280' cy='151' r='2'/><circle cx='316' cy='151' r='2'/><circle cx='352' cy='151' r='2'/><circle cx='388' cy='151' r='2'/><circle cx='110' cy='169' r='2'/><circle cx='146' cy='169' r='2'/><circle cx='182' cy='169' r='2'/><circle cx='218' cy='169' r='2'/><circle cx='262' cy='169' r='2'/><circle cx='298' cy='169' r='2'/><circle cx='334' cy='169' r='2'/><circle cx='370' cy='169' r='2'/></g><text x='250' y='52' fill='currentColor' stroke='none' font-size='10'>Q</text><text x='374' y='108' fill='currentColor' stroke='none' font-size='10'>I</text></svg>",
+      "caption": {
+        "en": "256-QAM (MCS 8-9) packs 8 bits onto every data tone — a 16x16 grid of points, vs 64 points for 64-QAM. The normalization factor K_MOD is 1/sqrt(170).",
+        "zh": "256-QAM(MCS 8-9)在每个数据子载波上承载 8 比特——一个 16x16 的星座点网格,而 64-QAM 只有 64 个点。其归一化因子 K_MOD 为 1/sqrt(170)。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "How the wide channels are built: a 20 MHz channel uses subcarriers -28..+28 around DC; 40 MHz uses +-58; 80 MHz uses +-122; and 160 MHz uses two 80 MHz halves (+-250). 80+80 MHz is two non-adjacent 80 MHz segments, each with its own IDFT, stitched by a segment parser/deparser. 256-QAM (MCS 8 and 9) is the new top rung that 64-QAM-capped 802.11n could not reach — eight bits per tone instead of six.",
+      "zh": "宽信道是怎么搭起来的:20 MHz 信道使用 DC 两侧的子载波 -28..+28;40 MHz 使用 +-58;80 MHz 使用 +-122;160 MHz 由两个 80 MHz 半边组成(+-250)。80+80 MHz 是两个不相邻的 80 MHz 频段,各有自己的 IDFT,通过分段解析/解分段器(segment parser/deparser)拼接。256-QAM(MCS 8 与 9)是封顶于 64-QAM 的 802.11n 所达不到的新档位——每子载波 8 比特而非 6 比特。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact VHT-SIG-A/B bit layout and the SU vs MU split",
+        "zh": "VHT-SIG-A/B 的精确比特布局与 SU/MU 的分野"
+      },
+      "en": "VHT-SIG-A is two 24-bit halves (VHT-SIG-A1, VHT-SIG-A2), each BCC R=1/2 encoded, interleaved and BPSK-mapped; the second symbol is rotated 90 degrees counter-clockwise (QBPSK) so a receiver can tell a VHT PPDU from HT and non-HT PPDUs. In VHT-SIG-A1, B0-B1 = BW (0/1/2/3 for 20/40/80/160 and 80+80 MHz), B3 = STBC, B4-B9 = Group ID (0 or 63 => SU), and B10-B21 = NSTS/Partial AID. For an MU frame those 12 bits are four 3-bit user-position slots (each 0-4 space-time streams, 5-7 reserved); for an SU frame B10-B12 give NSTS and B13-B21 the Partial AID. VHT-SIG-A2 B2 is the SU/MU[0] coding bit and B4-B7 carry the SU VHT-MCS (in MU these become per-user coding bits). VHT-SIG-B is one symbol carrying a VHT-SIG-B Length = ceil(APEP_LENGTH/4) plus, in MU, a 4-bit VHT-MCS; its bits are repeated per bandwidth (x2 at 40 MHz, x4 at 80 MHz, x4-then-doubled at 160/80+80 MHz). The Data-field constellation mapper adds 256-QAM (MCS 8-9) on top of the 17.3.5.8 BPSK/QPSK/16-/64-QAM set, with K_MOD = 1/sqrt(170).",
+      "zh": "VHT-SIG-A 由两个 24 比特的半部分(VHT-SIG-A1、VHT-SIG-A2)组成,各自经 BCC R=1/2 编码、交织并 BPSK 映射;第二个符号逆时针旋转 90 度(QBPSK),使接收机能把 VHT PPDU 与 HT、non-HT PPDU 区分开。在 VHT-SIG-A1 中,B0-B1 = BW(0/1/2/3 对应 20/40/80/160 与 80+80 MHz),B3 = STBC,B4-B9 = Group ID(0 或 63 表示 SU),B10-B21 = NSTS/Partial AID。对 MU 帧,这 12 比特是四个 3 比特的用户位置槽(每个 0-4 条空时流,5-7 保留);对 SU 帧,B10-B12 给出 NSTS,B13-B21 给出 Partial AID。VHT-SIG-A2 的 B2 是 SU/MU[0] 编码比特,B4-B7 携带 SU 的 VHT-MCS(在 MU 中变为每用户编码比特)。VHT-SIG-B 是一个符号,携带 VHT-SIG-B 长度 = ceil(APEP_LENGTH/4),并在 MU 中附带一个 4 比特的 VHT-MCS;其比特按带宽重复(40 MHz x2、80 MHz x4、160/80+80 MHz 先 x4 再翻倍)。数据字段的星座映射器在 17.3.5.8 的 BPSK/QPSK/16-/64-QAM 集合之上新增 256-QAM(MCS 8-9),归一化因子 K_MOD = 1/sqrt(170)。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3598,
+          3599,
+          3600,
+          3607,
+          3626
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:21.3.4.5",
+    "80211-2024:21.3.4.6",
+    "80211-2024:21.3.4.7",
+    "80211-2024:21.3.4.8",
+    "80211-2024:21.3.8.3.3",
+    "80211-2024:21.3.8.3.6",
+    "80211-2024:21.3.10.9"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3566,
+        3567
+      ],
+      "note": "21.3.2 VHT PPDU format and Table 21-4 / Figure 21-4 - field order: L-STF/L-LTF/L-SIG/VHT-SIG-A/VHT-STF/VHT-LTF/VHT-SIG-B/Data; VHT-LTF count 1/2/4/6/8"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3579,
+        3580
+      ],
+      "note": "21.3.4.5-21.3.4.8 - construction of VHT-SIG-A (TXVECTOR: BW, STBC, GROUP_ID, NUM_STS, MCS), VHT-STF (wideband AGC), VHT-LTF, and per-user VHT-SIG-B"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3598,
+        3599,
+        3600
+      ],
+      "note": "21.3.8.3.3 / Table 21-12 - VHT-SIG-A1/A2 bit fields: BW, STBC, Group ID (0/63 = SU), NSTS/Partial AID four 3-bit MU slots, SU VHT-MCS, coding"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3607,
+        3608
+      ],
+      "note": "21.3.8.3.6 / Table 21-14 / Figure 21-22 - VHT-SIG-B fields (Length, VHT-MCS), 26/27/29 bits per BW, and the per-bandwidth bit repetition"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3621,
+        3626
+      ],
+      "note": "21.3.10.9 - constellation mapping; 256-QAM (MCS 8-9) Figures 21-24..21-27 and K_MOD = 1/sqrt(170)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3586
+      ],
+      "note": "21.3.7.2 subcarrier indices per bandwidth: 20 MHz +-28, 40 MHz +-58, 80 MHz +-122, 160 MHz +-250; 80+80 MHz two 80 MHz segments"
+    }
+  ],
+  "track": "legacy-phy"
+}

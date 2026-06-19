@@ -1,0 +1,122 @@
+{
+  "id": "legacy-phy-11",
+  "title": {
+    "en": "Inside the DMG PHY (Clause 20): Control, SC and OFDM modes, Golay preambles and beam training",
+    "zh": "深入 DMG 物理层(第20章)：控制/单载波/OFDM 三模、Golay 前导与波束训练"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "The DMG PHY is the 60 GHz layer behind 802.11ad. At those frequencies a signal travels in a narrow pencil beam rather than spraying in all directions, and the air is far more hostile than at 2.4 or 5 GHz. To cope, Clause 20 packs three coexisting transmission modes into one band: a slow but rugged Control mode used to get a link off the ground, a high-rate Single-Carrier (SC) mode for everyday data, and an OFDM mode. They all share one common preamble, so a receiver can lock onto any of them before it knows which mode is coming.",
+      "zh": "DMG 物理层就是 802.11ad 背后的 60 GHz 层。在这个频段，信号是以一束很窄的“铅笔波束”定向传播，而不是向四面八方扩散，而且空口环境比 2.4 GHz 或 5 GHz 恶劣得多。为应对这一点，第20章在同一个频段里塞进了三种共存的传输模式：慢但极其健壮、用来把链路先建立起来的控制（Control）模式；用于日常数据传输的高速单载波（SC）模式；以及 OFDM 模式。它们共用同一个公共前导，因此接收机在还不知道来的是哪种模式之前，就能先锁定信号。"
+    },
+    {
+      "type": "prose",
+      "en": "Every DMG PPDU opens with the same common preamble, and it is built not from a few tones but from Golay complementary sequences — short ±1 patterns whose autocorrelation is almost a perfect spike. First comes the Short Training field (STF): in SC mode it is 16 repetitions of the 128-chip sequence Ga128 followed by one inverted copy, giving the receiver a long, repetitive run to detect the packet, set its gain (AGC) and estimate the frequency offset. Then comes the Channel Estimation field (CEF): the concatenation Gu512 + Gv512 (plus a trailing Gv128), built from Ga128/Gb128, whose sharp autocorrelation lets the receiver measure the multipath channel. The CEF also quietly signals which modulation the rest of the PPDU will use.",
+      "zh": "每个 DMG PPDU 都以相同的公共前导开头，而这个前导不是由几个子载波音调拼成的，而是由 Golay 互补序列构成——这是一些很短的 ±1 模式，它们的自相关几乎是一个完美的尖峰。最先到来的是短训练字段（STF）：在 SC 模式下，它由 128 码片序列 Ga128 重复 16 次、再接一个取反的副本组成，为接收机提供一段长而重复的信号，用于检测分组、设置增益（AGC）并估计频偏。接着是信道估计字段（CEF）：它是 Gu512 + Gv512 的级联（末尾再加一个 Gv128），由 Ga128/Gb128 构造，其锐利的自相关让接收机得以测量多径信道。CEF 同时还悄悄地指示了 PPDU 余下部分将采用哪种调制。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    subgraph Preamble\n    STF[\"STF<br/>Ga128 x16, -Ga128<br/>sync + AGC\"] --> CEF[\"CEF<br/>Gu512 + Gv512 + Gv128<br/>channel estimation\"]\n    end\n    CEF --> HDR[\"Header<br/>+ HCS (CRC-16)\"]\n    HDR --> DATA[\"Data<br/>LDPC, n=672\"]\n    DATA --> AGC[\"AGC subfields\"]\n    AGC --> TRN[\"TRN field<br/>beam training\"]",
+      "zh": "graph LR\n    subgraph 前导\n    STF[\"STF<br/>Ga128 x16, -Ga128<br/>同步 + 增益控制\"] --> CEF[\"CEF<br/>Gu512 + Gv512 + Gv128<br/>信道估计\"]\n    end\n    CEF --> HDR[\"头部<br/>+ HCS (CRC-16)\"]\n    HDR --> DATA[\"数据<br/>LDPC, n=672\"]\n    DATA --> AGC[\"AGC 子字段\"]\n    AGC --> TRN[\"TRN 字段<br/>波束训练\"]"
+    },
+    {
+      "type": "prose",
+      "en": "After the preamble comes a mode-specific header that tells the receiver exactly how to demodulate the rest. The Control mode header is tiny — it carries a differential-encoder seed, a short scrambler seed, a 10-bit Length, a PPDU Type and Training Length, ending in a 16-bit HCS (a CRC-16-CCITT over the header bits). The SC mode header is richer: a 7-bit scrambler seed, a Base MCS, an 18-bit Length, Aggregation, Beam Tracking Request, Last RSSI and an Extended SC MCS Indication that unlocks higher constellations, again sealed by a 16-bit HCS. If the HCS check fails, the receiver throws the whole PPDU away — the header is the map for everything that follows it.",
+      "zh": "前导之后是一个与模式相关的头部，它精确地告诉接收机如何解调余下的内容。控制模式头部很小——它携带差分编码器种子、一个短的扰码器种子、10 位的长度（Length）、PPDU 类型与训练长度（Training Length），最后以 16 位 HCS 收尾（HCS 是对头部比特做的 CRC-16-CCITT）。SC 模式头部则更丰富：7 位扰码器种子、基础 MCS、18 位长度、聚合标志、波束跟踪请求（Beam Tracking Request）、Last RSSI，以及一个可解锁更高阶星座的扩展 SC MCS 指示位，同样以 16 位 HCS 封口。如果 HCS 校验失败，接收机会丢弃整个 PPDU——因为这个头部是它解读后续所有内容的地图。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The three modes are chosen for different jobs. Control mode is MCS 0 only — DBPSK, an effective code rate of about 1/2, spread by the Golay sequence Ga32, reaching only ~27.5 Mb/s. That ruggedness is the point: it is used before the beam is found, when the link budget is worst. SC mode then climbs from π/2-BPSK up through π/2-64-QAM (over 8 Gb/s) once a good beam exists.",
+      "zh": "三种模式各司其职。控制模式只用 MCS 0——DBPSK 调制、有效码率约 1/2、由 Golay 序列 Ga32 扩频，速率仅约 27.5 Mb/s。这种健壮性正是它的意义所在：它用在波束尚未找到、链路预算最差的阶段。一旦建立起良好的波束，SC 模式便从 π/2-BPSK 一路攀升到 π/2-64-QAM（超过 8 Gb/s）。"
+    },
+    {
+      "type": "prose",
+      "en": "All of this is wrapped in coding designed for a noisy 60 GHz channel. The data field is protected by LDPC block codes with a common codeword size of 672 bits at rates 1/2, 5/8, 3/4 and 13/16, and a separate small set of rate-1/2-ish matrices serves the Control mode header and data. A length-127 scrambler whitens the bits before coding. The result: even Control mode, despite its low rate, survives a link that single-carrier data could not yet close.",
+      "zh": "所有这些都被包裹在一套为嘈杂的 60 GHz 信道设计的编码之中。数据字段由 LDPC 分组码保护，码字长度统一为 672 比特，码率有 1/2、5/8、3/4 和 13/16；另有一组独立的、约 1/2 码率的矩阵专门用于控制模式的头部与数据。一个长度为 127 的扰码器在编码前对比特做白化处理。结果是：控制模式尽管速率很低，却能在单载波数据尚无法建立的链路上存活下来。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 170\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><text x=\"10\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">BRP PPDU: data, then beam-training fields</text><rect x=\"10\" y=\"40\" width=\"40\" height=\"34\"/><text x=\"30\" y=\"61\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">STF</text><rect x=\"50\" y=\"40\" width=\"32\" height=\"34\"/><text x=\"66\" y=\"61\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">CE</text><rect x=\"82\" y=\"40\" width=\"56\" height=\"34\"/><text x=\"110\" y=\"61\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Header</text><rect x=\"138\" y=\"40\" width=\"60\" height=\"34\"/><text x=\"168\" y=\"61\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Data</text><rect x=\"198\" y=\"40\" width=\"44\" height=\"34\"/><text x=\"220\" y=\"61\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">AGC</text><rect x=\"242\" y=\"40\" width=\"208\" height=\"34\"/><text x=\"346\" y=\"61\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">TRN field (N TRN Units)</text><line x1=\"242\" y1=\"90\" x2=\"450\" y2=\"90\"/><line x1=\"242\" y1=\"86\" x2=\"242\" y2=\"94\"/><line x1=\"450\" y1=\"86\" x2=\"450\" y2=\"94\"/><rect x=\"242\" y=\"110\" width=\"28\" height=\"30\"/><text x=\"256\" y=\"129\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">CE</text><rect x=\"270\" y=\"110\" width=\"30\" height=\"30\"/><text x=\"285\" y=\"129\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">TRN1</text><rect x=\"300\" y=\"110\" width=\"30\" height=\"30\"/><text x=\"315\" y=\"129\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">TRN2</text><rect x=\"330\" y=\"110\" width=\"30\" height=\"30\"/><text x=\"345\" y=\"129\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">TRN3</text><rect x=\"360\" y=\"110\" width=\"30\" height=\"30\"/><text x=\"375\" y=\"129\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">TRN4</text><text x=\"410\" y=\"129\" fill=\"currentColor\" stroke=\"none\" font-size=\"14\">...</text><text x=\"242\" y=\"160\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">one TRN Unit = CE + 4 TRN subfields; AWV may change per subfield</text></svg>",
+      "caption": {
+        "en": "A beam-refinement (BRP) PPDU appends an AGC field and a TRN field after the data. Each TRN Unit is a CE subfield plus four TRN subfields; the transmitter may steer a new antenna weight vector (AWV) at the start of each subfield so the pair can sweep and compare beams.",
+        "zh": "波束细化（BRP）PPDU 在数据之后追加一个 AGC 字段和一个 TRN 字段。每个 TRN 单元由一个 CE 子字段加四个 TRN 子字段组成；发射机可以在每个子字段开头切换一个新的天线权重向量（AWV），从而让收发双方能够逐一扫描并比较各个波束。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "This is the part that makes mmWave actually work. A pencil beam carries data only if it points the right way, and at first neither side knows where the other is. So beamforming runs in two stages. The sector-level sweep (SLS) sends a burst of Control-mode PPDUs, each on a different coarse direction (sector), so the peer can pick the strongest. Then beam refinement (BRP) sharpens it: BRP-RX PPDUs append TRN fields the receiver uses to train its receive beam, while BRP-TX PPDUs let the transmitter change its antenna weight vector on each TRN subfield so the receiver can score every candidate. The Golay sequences' clean autocorrelation is what lets the receiver isolate individual channel taps per beam. Only after this sweep-and-refine does high-rate SC or OFDM data flow.",
+      "zh": "这正是让毫米波真正可用的关键所在。一束铅笔波束只有指对方向才能承载数据，而一开始双方都不知道对方在哪里。于是波束成形分两个阶段进行。扇区级扫描（SLS）发送一连串控制模式 PPDU，每个朝向一个不同的粗略方向（扇区），让对端挑出最强的那个。随后波束细化（BRP）将其磨锐：BRP-RX PPDU 在末尾追加 TRN 字段，供接收机训练其接收波束；而 BRP-TX PPDU 则让发射机在每个 TRN 子字段切换天线权重向量，使接收机能够给每个候选波束打分。Golay 序列纯净的自相关，正是接收机得以为每个波束分离出各条信道抽头的依据。只有在这套“扫描—细化”完成之后，高速的 SC 或 OFDM 数据才会开始流动。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact preamble construction and the BRP TRN field",
+        "zh": "前导的精确构造与 BRP TRN 字段"
+      },
+      "en": "Clause 20.3.6.2 specifies the SC STF as 16 repetitions of Ga128(n) followed by one -Ga128(n), each chip rotated by exp(jπn/2); 20.3.6.3 builds the CEF as Gu512 + Gv512 (each defined from Gb128/Ga128) with a trailing Gv128, where the last 128 samples of Gu512 and Gv512 match the STF tail. The Control-mode header (20.4.3.2) packs Differential Encoder Init, Scrambler Init, a 10-bit Length (14-1023), PPDU Type, Training Length, Turnaround and a 16-bit HCS over bits 0-23; the SC header (20.5.3.1) extends this to a 7-bit scrambler seed, 5-bit Base MCS, 18-bit Length, Additional PPDU, PPDU Type, Training Length, Aggregation, Beam Tracking Request, Last RSSI, Extended SC MCS Indication and a 16-bit HCS over bits 0-47. Per 20.9.2.1 the transmit sector sweep uses Control-mode PPDUs; 20.9.2.2 defines the BRP PPDU as STF/CE/Header/Data/AGC/TRN, where the TRN field is N TRN Units, each a CE subfield plus four TRN subfields, every TRN subfield being [Ga128 -Gb128 Ga128 Gb128 Ga128] in rotated pi/2-BPSK, with a Training Length value of N meaning 4xN AGC subfields and N TRN Units.",
+      "zh": "20.3.6.2 节规定 SC STF 由 Ga128(n) 重复 16 次、再接一个 -Ga128(n) 组成，每个码片乘以 exp(jπn/2) 旋转；20.3.6.3 节将 CEF 构造为 Gu512 + Gv512（二者均由 Gb128/Ga128 定义）末尾再加 Gv128，其中 Gu512 与 Gv512 的最后 128 个样本与 STF 尾部相同。控制模式头部（20.4.3.2）打包了差分编码器初始化、扰码器初始化、10 位长度（14-1023）、PPDU 类型、训练长度、Turnaround，以及对第 0-23 位计算的 16 位 HCS；SC 头部（20.5.3.1）将其扩展为 7 位扰码器种子、5 位基础 MCS、18 位长度、附加 PPDU、PPDU 类型、训练长度、聚合、波束跟踪请求、Last RSSI、扩展 SC MCS 指示，以及对第 0-47 位计算的 16 位 HCS。依据 20.9.2.1 节，发射扇区扫描使用控制模式 PPDU；20.9.2.2 节将 BRP PPDU 定义为 STF/CE/头部/数据/AGC/TRN，其中 TRN 字段由 N 个 TRN 单元组成，每个单元为一个 CE 子字段加四个 TRN 子字段，每个 TRN 子字段为旋转 π/2-BPSK 的 [Ga128 -Gb128 Ga128 Gb128 Ga128]；训练长度取值 N 表示 4×N 个 AGC 子字段与 N 个 TRN 单元。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3512,
+          3517,
+          3521,
+          3542,
+          3544
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:20.3.6.2",
+    "80211-2024:20.3.6.3",
+    "80211-2024:20.4.2",
+    "80211-2024:20.4.3.2",
+    "80211-2024:20.5.2",
+    "80211-2024:20.5.3.1",
+    "80211-2024:20.9.2.1",
+    "80211-2024:20.9.2.2"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3511,
+        3512
+      ],
+      "note": "20.3.6.2-20.3.6.3 — common preamble: STF (16x Ga128 + -Ga128) and CEF (Gu512 + Gv512 + Gv128) from Golay sequences"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3516,
+        3517
+      ],
+      "note": "20.4.2 / 20.4.3.2 — DMG Control mode PPDU format and header fields (MCS 0 DBPSK, 16-bit HCS)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3520,
+        3521,
+        3522,
+        3524
+      ],
+      "note": "20.5.2 / 20.5.3.1 — DMG SC mode PPDU format, header fields and MCS table (pi/2-BPSK to pi/2-64-QAM)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3542,
+        3544,
+        3546
+      ],
+      "note": "20.9.2.1 / 20.9.2.2 — sector-level sweep (Control-mode PPDUs) and beam refinement BRP PPDU with AGC + TRN fields"
+    }
+  ],
+  "track": "legacy-phy"
+}
