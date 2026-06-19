@@ -1,0 +1,123 @@
+{
+  "id": "managing-02-measurement-report-toolbox",
+  "title": {
+    "en": "The Measurement Report Toolbox: Beacon, Channel-Load, Noise, STA-Statistics, Link & Neighbor Reports",
+    "zh": "测量报告工具箱：信标、信道负载、噪声、STA 统计、链路与邻居报告"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A Wi-Fi network runs better when it knows what the radio environment actually looks like — not from the access point's vantage point, but from where the clients are sitting. 802.11 radio measurement gives the AP a way to ask a station a question and get a structured answer back: a Measurement Request frame goes out, and the station replies with a Measurement Report frame. This lesson tours the most useful report types. The trick to keeping them straight is to remember that each one answers a single plain-English question.",
+      "zh": "当 Wi-Fi 网络真正了解无线环境的实际样貌时，它就能运行得更好——而且不是从接入点（AP）的视角去看，而是从客户端所在的位置去看。802.11 的无线测量（radio measurement）让 AP 能够向站点提出一个问题，并得到一份结构化的回答：AP 发出一个测量请求帧（Measurement Request），站点回以一个测量报告帧（Measurement Report）。本课带你逐一参观最有用的几种报告类型。要把它们记清楚，诀窍在于：每一种报告都只回答一个用大白话能说清的问题。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the four reports that describe the world around a station. The Beacon report answers \"what other APs and BSSs can I hear?\" — the station listens (or actively probes) on the requested channels and lists every BSS it observed, along with how strong each one was (RCPI). The Channel Load report answers \"how busy is the air?\" — it is a single number: the percentage of time the medium was sensed busy over the measurement window, scaled so that 255 means 100%. The Noise Histogram report answers \"how much non-Wi-Fi interference is there?\" — it buckets the idle-channel power into IPI levels and reports an average noise figure (ANPI), measured only during the gaps when nobody is transmitting. And the STA Statistics report answers \"what do my own counters say?\" — the station hands back its accumulated MAC/PHY counters, either the current values or the change over a window.",
+      "zh": "先看描述站点周围世界的四种报告。信标报告（Beacon report）回答“我还能听到哪些 AP 和 BSS？”——站点在被请求的信道上侦听（或主动探测），列出它观测到的每一个 BSS，以及各自的信号强度（RCPI）。信道负载报告（Channel Load report）回答“空中有多忙？”——它就是一个数字：在测量窗口内介质被探测为忙的时间百分比，并按 255 代表 100% 进行缩放。噪声直方图报告（Noise Histogram report）回答“非 Wi-Fi 干扰有多少？”——它把空闲信道的功率分到若干 IPI 档位中，并报告一个平均噪声值（ANPI），而且只在无人发送的间隙里测量。STA 统计报告（STA Statistics report）回答“我自己的计数器怎么说？”——站点把它累积的 MAC/PHY 计数器交回去，要么是当前值，要么是某个窗口内的变化量。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Same envelope, different filling. Beacon, Channel Load, Noise Histogram and STA Statistics all travel inside the very same Radio Measurement Report frame — only the Measurement Type field and the report body differ. Learn the exchange once and it works for all of them.",
+      "zh": "同一个信封，不同的内容物。信标、信道负载、噪声直方图和 STA 统计都装在完全相同的无线测量报告帧（Radio Measurement Report）里——区别只在于“测量类型（Measurement Type）”字段和报告主体。把这套交换流程学会一次，对所有这些报告都通用。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as AP / requester\n    participant STA as Station (measurer)\n    AP->>STA: Radio Measurement Request (e.g. Channel Load)\n    Note over STA: sense medium for MeasurementDuration\n    STA->>AP: Radio Measurement Report (Channel Load = busy%)\n    AP->>STA: Radio Measurement Request (Beacon, active/passive)\n    Note over STA: scan requested channels, collect BSSs + RCPI\n    STA->>AP: Radio Measurement Report (one Beacon report per BSSID)\n    Note over AP: if STA cannot/won't do it -> Incapable or Refused bit set",
+      "zh": "sequenceDiagram\n    participant AP as AP / 请求方\n    participant STA as 站点 (测量方)\n    AP->>STA: 无线测量请求 (例如 信道负载)\n    Note over STA: 在测量时长内探测介质\n    STA->>AP: 无线测量报告 (信道负载 = 忙占比%)\n    AP->>STA: 无线测量请求 (信标, 主动/被动)\n    Note over STA: 扫描被请求信道, 收集 BSS + RCPI\n    STA->>AP: 无线测量报告 (每个 BSSID 一份信标报告)\n    Note over AP: 若 STA 不能/不愿执行 -> 置 Incapable 或 Refused 位"
+    },
+    {
+      "type": "prose",
+      "en": "The fifth report is about a single link rather than the whole environment. A Link Measurement asks \"how good is the path between just the two of us?\" One STA sends a Link Measurement Request frame; the peer replies with a Link Measurement Report carrying a TPC Report element (the transmit power it used), an antenna ID, and the signal quality it saw — RCPI and RSNI. Because both sides learn the transmit power and the received strength, they can estimate path loss and tune their own power. This is a directed, peer-to-peer probe, not a survey of the neighbourhood.",
+      "zh": "第五种报告关注的是单条链路，而不是整个环境。链路测量（Link Measurement）问的是“仅仅我们俩之间的这条路径有多好？”一个站点发出链路测量请求帧（Link Measurement Request），对端回以链路测量报告（Link Measurement Report），其中携带一个 TPC 报告元素（它使用的发送功率）、一个天线 ID，以及它观测到的信号质量——RCPI 和 RSNI。由于双方都得知了发送功率与接收强度，它们就能估算路径损耗并调整各自的功率。这是一次定向的、点对点的探测，而不是对周边环境的普查。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the neighbor report flips the direction: instead of the AP asking the STA, the STA asks the AP \"which other APs should I consider?\" The station sends a Neighbor Report Request frame to its associated AP, and the AP replies with a Neighbor Report Response carrying zero or more Neighbor Report elements — a curated list of nearby APs in the same ESS, each with its BSSID, operating channel and capabilities. This is the data that powers smart roaming: rather than blindly scanning every channel, a station can jump straight to the AP's short-list of good hand-off candidates. The standard is careful to call this list advisory — it may be stale, so fresh scan results can override it.",
+      "zh": "最后，邻居报告（neighbor report）把方向反了过来：不是 AP 问 STA，而是 STA 问 AP“我还应该考虑哪些其他 AP？”站点向其关联的 AP 发送邻居报告请求帧（Neighbor Report Request），AP 回以邻居报告响应（Neighbor Report Response），其中携带零个或多个邻居报告元素（Neighbor Report element）——一份经过整理的、同一 ESS 内附近 AP 的清单，每个都带有 BSSID、工作信道与能力信息。正是这份数据驱动了智能漫游：站点无需盲目地扫描每一个信道，而是可以直接跳到 AP 给出的优质切换候选短名单。标准特意把这份清单称为“仅供参考（advisory）”——它可能已经过时，因此新鲜的扫描结果可以将其覆盖。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "\"Incapable\" and \"Refused\" are valid answers. Every report type has an off switch: a station that does not support a measurement (or whose policy forbids it) replies with the Incapable bit set; one that could but chooses not to sets Refused. A request is never an order — it is a question the peer is allowed to decline.",
+      "zh": "“Incapable（无能力）”和“Refused（拒绝）”也是合法的回答。每种报告类型都有一个“关闭开关”：不支持某项测量的站点（或其策略禁止该测量的站点）会在回复中置位 Incapable；能做却选择不做的站点则置位 Refused。请求从来不是命令——它只是一个对端有权拒绝的问题。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact definitions: busy-time formula, ANPI gating, statistics deltas, and the neighbor list's origin",
+        "zh": "精确定义：忙时公式、ANPI 门控、统计差值，以及邻居清单的来源"
+      },
+      "en": "Clause 11.10.9.3 defines Channel Load as a linearly scaled busy fraction: Channel Load = (channel busy time / (MeasurementDuration x 1024)) x 255, where busy time counts microseconds the CS mechanism (virtual or physical carrier sense, per 10.3.2.1) indicated busy on the requested channel width. The Noise Histogram (11.10.9.4) computes IPI densities only over intervals where the NAV is 0 and no transmit/receive is occurring — the densities sum to roughly 255 — and reports ANPI, the average noise-plus-interference power at the antenna connector with RCPI-grade accuracy. STA Statistics (11.10.9.5): with Requested Measurement Duration 0 the report carries current counter values; with a nonzero duration it carries the delta (value at end minus value at start) of the requested Statistics Group; triggered variants fire when a threshold is crossed and then honour a Trigger Timeout. Link Measurement (11.10.11): a Link Measurement Report carries a TPC Report element plus antenna ID and signal quality (RCPI and RSNI); if dot11RMLinkMeasurementActivated is false an AP/PCP simply ignores the request. Neighbor reports (11.10.10.2/11.10.10.3): the STA sends a Neighbor Report Request to its associated AP; an AP with dot11RMNeighborReportActivated true responds with a Neighbor Report Response of zero or more Neighbor Report elements, scoped to the ESS named by the SSID element (or wildcard for all neighbours, or the requesting STA's own ESS if SSID is omitted). The list's contents come from the NeighborListSet of the MLME-NEIGHBORREPRESP.request primitive; how that table is populated is outside the standard's scope, and the report is explicitly advisory.",
+      "zh": "11.10.9.3 节将信道负载定义为线性缩放的忙时占比：Channel Load =（信道忙时 /（MeasurementDuration x 1024））x 255，其中“忙时”统计的是在被请求信道带宽上、CS 机制（虚拟或物理载波侦听，依据 10.3.2.1）指示为忙的微秒数。噪声直方图（11.10.9.4）仅在 NAV 为 0 且没有发送/接收发生的时段内计算 IPI 密度——这些密度之和约为 255——并报告 ANPI，即天线接口处的平均噪声加干扰功率，精度等同于 RCPI。STA 统计（11.10.9.5）：当请求的测量时长为 0 时，报告携带计数器的当前值；当时长非零时，携带所请求统计组的差值（结束时的值减去开始时的值）；其触发式（triggered）变体在越过阈值时触发，随后遵守一个 Trigger Timeout（触发超时）。链路测量（11.10.11）：链路测量报告携带一个 TPC 报告元素，外加天线 ID 与信号质量（RCPI 和 RSNI）；若 dot11RMLinkMeasurementActivated 为 false，AP/PCP 会直接忽略该请求。邻居报告（11.10.10.2/11.10.10.3）：站点向其关联 AP 发送邻居报告请求；dot11RMNeighborReportActivated 为 true 的 AP 回以包含零个或多个邻居报告元素的邻居报告响应，范围限定为 SSID 元素所指定的 ESS（或用通配符表示所有邻居，或在省略 SSID 时为请求 STA 自己的 ESS）。清单内容来自 MLME-NEIGHBORREPRESP.request 原语的 NeighborListSet；该表如何填充超出标准范围，且该报告被明确定性为“仅供参考”。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2602,
+          2603,
+          2604,
+          2613,
+          2616
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.10.9.1",
+    "80211-2024:11.10.9.3",
+    "80211-2024:11.10.9.4",
+    "80211-2024:11.10.9.5",
+    "80211-2024:11.10.10.2",
+    "80211-2024:11.10.10.3",
+    "80211-2024:11.10.11"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2597
+      ],
+      "note": "11.10.9.1 Beacon report — set of frames responding to a Beacon request; lists observed BSSs with RCPI"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2602
+      ],
+      "note": "11.10.9.3 Channel load report — busy-time percentage formula scaled to 255"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2603,
+        2604
+      ],
+      "note": "11.10.9.4 Noise Histogram report — IPI densities (NAV=0, no TX/RX) and ANPI"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2604
+      ],
+      "note": "11.10.9.5 STA Statistics report — current values vs delta over Measurement Duration; triggered variant"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2613,
+        2614
+      ],
+      "note": "11.10.10.2/11.10.10.3 — requesting and responding to a neighbor report; advisory candidate-AP list"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2616
+      ],
+      "note": "11.10.11 Link measurement — TPC Report element, antenna ID, RCPI/RSNI between two peers"
+    }
+  ],
+  "track": "managing"
+}

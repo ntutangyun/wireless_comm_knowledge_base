@@ -1,0 +1,113 @@
+{
+  "id": "managing-03-wnm-bss-transition-steering",
+  "title": {
+    "en": "Steering Clients & Letting Them Nap: WNM and BSS Transition Management (802.11v)",
+    "zh": "引导客户端与让它们小憩：WNM 与 BSS 过渡管理（802.11v）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In a big network with many access points, leaving every client to decide for itself which AP to use leads to lopsided cells: one AP overloaded, a better one next door sitting idle. Wireless Network Management (WNM, the feature set introduced by 802.11v) gives the network a polite vocabulary for nudging clients. Instead of yanking a station off, the AP suggests: 'there's a better cell over here, and here's a ranked list of candidates.' The station still makes the final call, but now it's an informed one.",
+      "zh": "在一个拥有许多接入点（AP）的大型网络里，如果让每个客户端自行决定连哪个 AP，结果往往是负载失衡：一个 AP 被挤爆，而旁边更好的 AP 却闲着。无线网络管理（WNM，即 802.11v 引入的功能集）给了网络一套“客气”的措辞来引导客户端。AP 不会粗暴地把站点踢走，而是建议：“这边有个更好的小区，这是一份按偏好排序的候选列表。”最终决定权仍在站点手里，但此时它的选择是有依据的。"
+    },
+    {
+      "type": "prose",
+      "en": "The backbone of band and AP steering is BSS Transition Management (BTM). It's a three-frame conversation. A station can send a BSS Transition Management Query to ask 'where should I go?' The AP replies — or speaks up on its own at any time — with a BSS Transition Management Request: a recommendation that may carry a candidate list (each entry a neighbour with a preference value from 1 to 255, where 255 is most preferred and 0 means 'excluded, don't go there'). The station then sends a BSS Transition Management Response saying Accept or Reject with a reason. Crucially, the request can be a gentle hint or a hard shove.",
+      "zh": "频段与 AP 引导的核心是 BSS 过渡管理（BTM）。它是一段“三帧对话”。站点可以发送一个 BSS 过渡管理查询（Query）帧来询问“我该去哪儿？”AP 则回复——或在任意时刻主动开口——一个 BSS 过渡管理请求（Request）帧：一条建议，其中可能携带候选列表（每个条目是一个邻居 BSS，带有 1 到 255 的偏好值，255 表示最优先，而 0 表示“已排除，别去那里”）。随后站点发送一个 BSS 过渡管理响应（Response）帧，表明“接受”或带原因的“拒绝”。关键在于，这个请求既可以是温和的提示，也可以是强硬的推搡。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Non-AP STA\n    participant AP as Access Point\n    Note over STA: optional — STA asks first\n    STA->>AP: BTM Query (Reason, my preferred candidates)\n    Note over AP: AP evaluates load / neighbours (out of scope)\n    AP->>STA: BTM Request (candidate list, preferences 1..255)\n    Note over STA: SME picks a target from the list\n    STA->>AP: BTM Response (Status = Accept, Target BSSID)\n    Note over STA,AP: STA (re)associates to the chosen AP",
+      "zh": "sequenceDiagram\n    participant STA as 非AP站点\n    participant AP as 接入点\n    Note over STA: 可选——站点先询问\n    STA->>AP: BTM 查询 (原因, 我偏好的候选)\n    Note over AP: AP 评估负载/邻居 (标准之外)\n    AP->>STA: BTM 请求 (候选列表, 偏好 1..255)\n    Note over STA: SME 从列表中挑选目标\n    STA->>AP: BTM 响应 (状态 = 接受, 目标BSSID)\n    Note over STA,AP: 站点 (重)关联到所选 AP"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two request flags turn a hint into a shove. When the AP sets Disassociation Imminent to 1, it starts a Disassociation Timer (counted down one per Beacon); the station is being told 'move soon or I'll cut you loose.' The standard binds the AP to its own warning: once it has sent an imminent-disassociation request, it must not actually send the Disassociation frame until that timer hits 0. The Abridged flag is the sweeping version — any BSS in the ESS not on the candidate list is treated as preference 0 (excluded).",
+      "zh": "两个请求标志位能把“提示”变成“推搡”。当 AP 把“即将解除关联”（Disassociation Imminent）置为 1 时，它会启动一个解除关联计时器（每发一个 Beacon 递减 1）；这相当于告诉站点“赶紧走，否则我就断开你”。标准还约束 AP 信守自己的警告：一旦发出了“即将解除关联”的请求，在该计时器归零之前，它就不得真的发送解除关联（Disassociation）帧。而“简略”（Abridged）标志是“一刀切”版本——ESS 中任何未出现在候选列表里的 BSS，都被当作偏好值 0（已排除）来对待。"
+    },
+    {
+      "type": "prose",
+      "en": "Steering is only half the story; the other half is letting quiet clients save power gracefully. WNM-Sleep mode lets a non-AP station doze for far longer than a normal beacon interval — it need not wake for every DTIM beacon, and it need not run the group-key (GTK/IGTK/BIGTK) update dance while asleep. The station names how long it wants to nap in the WNM Sleep Interval field of its WNM Sleep Mode Request. To stay secure across such a long nap, the standard requires the station to keep a copy of its most recent group keys and refuse to reinstall a matching key on wake-up — that's how it sleeps long while keeping its keys fresh, instead of being vulnerable to a key-reinstallation trick.",
+      "zh": "引导只是故事的一半；另一半是让安静的客户端优雅地省电。WNM 休眠模式（WNM-Sleep mode）允许一个非 AP 站点睡得远比普通信标间隔更久——它无需为每个 DTIM 信标醒来，也无需在睡眠期间进行组密钥（GTK/IGTK/BIGTK）更新这套动作。站点在其 WNM 休眠模式请求帧的“WNM 休眠间隔”（WNM Sleep Interval）字段中声明自己想睡多久。为了在如此长的小憩中保持安全，标准要求站点保留其最近一组组密钥的副本，并在唤醒时拒绝重新安装与之匹配的密钥——正是借此，它既能长睡，又能让密钥保持“新鲜”，从而不被密钥重装的伎俩所利用。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "But if a client goes quiet, how does the AP know it's napping versus gone? That's the BSS Max Idle Period. In the (Re)Association Response the AP tells the station a Max Idle Period — the longest it may stay silent before risking disassociation for inactivity. To stay 'alive,' a station that has nothing to send just emits a tiny keepalive frame once per period. So WNM-Sleep says how long you may nap; BSS Max Idle says how long you may stay silent before getting kicked — together they let dozing clients linger without being mistaken for disconnected.",
+      "zh": "可问题是，如果一个客户端安静了下来，AP 怎么分辨它是在小憩还是已经离开？这就是“BSS 最大空闲周期”（BSS Max Idle Period）的作用。AP 在（重）关联响应帧里告诉站点一个最大空闲周期——即它在因“不活动”而面临被解除关联之前，最长能保持沉默多久。为了表明自己还“活着”，一个没东西可发的站点只需每个周期发一个极小的保活（keepalive）帧即可。所以，WNM 休眠规定你能睡多久；BSS 最大空闲规定你在被踢之前能沉默多久——两者结合，让打盹的客户端可以滞留而不被误判为已断开。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 480 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><rect x='20' y='80' width='60' height='40' rx='4'/><text x='50' y='105' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>STA</text><rect x='180' y='30' width='70' height='40' rx='4'/><text x='215' y='55' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>AP A</text><rect x='180' y='130' width='70' height='40' rx='4'/><text x='215' y='155' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>AP B</text><line x1='80' y1='95' x2='180' y2='55' stroke-dasharray='5 4'/><text x='120' y='62' fill='currentColor' stroke='none' font-size='11'>weak / busy</text><line x1='80' y1='105' x2='180' y2='150'/><text x='120' y='148' fill='currentColor' stroke='none' font-size='11'>preferred</text><path d='M300 50 L380 50' marker-end='url(#a)'/><text x='340' y='42' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>BTM Request</text><text x='340' y='66' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>candidate list:</text><text x='340' y='80' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>B = 255, A = 1</text><defs><marker id='a' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='currentColor' stroke='none'/></marker></defs></svg>",
+      "caption": {
+        "en": "The AP ranks neighbours by preference (255 = most preferred, 0 = excluded) and recommends the station move from a weak or busy cell to a better one.",
+        "zh": "AP 按偏好值给邻居排序（255 = 最优先，0 = 已排除），并建议站点从弱信号或拥塞的小区迁移到更好的小区。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The BTM frames, the SME primitives behind them, and Planned ESS",
+        "zh": "BTM 帧、其背后的 SME 原语，以及“规划型 ESS”"
+      },
+      "en": "Clause 11.21.7.2 lets a non-AP STA solicit a candidate list with a BSS Transition Management Query, optionally carrying its own ranked Neighbor Report elements (preference 1..255). 11.21.7.3 obliges a BTM-capable AP to answer a query with a Request, and lets it send unsolicited or broadcast Requests; it also defines the Disassociation Timer behaviour and the rule that the AP shall not send a Disassociation frame while an imminent timer is still nonzero. Underneath, the AP's SME drives this via MLME-BTM.request and the STA's SME reacts to MLME-BTM.indication. 11.21.7.4 defines the Response: the STA's SME issues MLME-BTM.response with a BTM Status Code — 0 = Accept, or rejects such as 2 (insufficient Beacon/Probe responses from candidates), 6 (STA provides its own candidate list), 7 (no suitable candidates), 8 (leaving ESS). 11.21.7.5 adds the Planned ESS hint via the ESS Report element: a Planned ESS subfield, an Edge Of ESS subfield, and a Recommended BSS Transition RSSI Threshold so a STA knows when to start scanning. Separately, 11.2.3.15 governs WNM sleep mode (the WNM Sleep Interval and the requirement to retain recent GTK/IGTK/BIGTK to block key reinstallation), and 11.21.13 governs BSS max idle: the AP carries a BSS Max Idle Period element in the (Re)Association Response and may disassociate a STA that sends neither data, PS-Poll, nor management frames within that period — a keepalive per period keeps it associated.",
+      "zh": "11.21.7.2 节允许非 AP 站点用 BSS 过渡管理查询帧来征求候选列表，并可选地携带自己排序的邻居报告（Neighbor Report）元素（偏好 1..255）。11.21.7.3 节规定支持 BTM 的 AP 必须以请求帧回应查询，并允许其发送非请求式（unsolicited）或广播式的请求帧；该节还定义了解除关联计时器的行为，以及“在‘即将解除关联’计时器尚未归零前，AP 不得发送解除关联帧”这条规则。在底层，AP 的 SME 通过 MLME-BTM.request 驱动此流程，而站点的 SME 则对 MLME-BTM.indication 作出反应。11.21.7.4 节定义了响应帧：站点的 SME 发出携带 BTM 状态码的 MLME-BTM.response——0 = 接受，或各类拒绝，如 2（从各候选收到的 Beacon/Probe 响应不足）、6（站点自带候选列表）、7（无合适候选）、8（正离开 ESS）。11.21.7.5 节通过 ESS 报告（ESS Report）元素补充了“规划型 ESS”提示：包含“规划型 ESS”子字段、“ESS 边缘”子字段，以及一个“推荐 BSS 过渡 RSSI 阈值”，让站点知道何时该开始扫描。另外，11.2.3.15 节规范了 WNM 休眠模式（WNM 休眠间隔，以及为阻止密钥重装而保留最近 GTK/IGTK/BIGTK 的要求）；11.21.13 节规范了 BSS 最大空闲：AP 在（重）关联响应帧中携带 BSS 最大空闲周期元素，并可解除关联在该周期内既不发数据帧、也不发 PS-Poll、也不发管理帧的站点——每周期一个保活帧即可保持关联。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2745,
+          2746,
+          2747,
+          2748,
+          2749
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.21.7.2",
+    "80211-2024:11.21.7.3",
+    "80211-2024:11.21.7.4",
+    "80211-2024:11.21.7.5",
+    "80211-2024:11.2.3.15",
+    "80211-2024:11.21.13"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2745,
+        2746
+      ],
+      "note": "11.21.7.2-11.21.7.3 — BTM Query and Request; candidate list preferences 1..255; Disassociation Imminent / timer; Abridged; broadcast/unsolicited Requests; MLME-BTM.request"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2747,
+        2748,
+        2749
+      ],
+      "note": "11.21.7.4-11.21.7.5 — BTM Response and BTM Status Codes (Accept/Reject reasons); MLME-BTM.indication/.response; Planned ESS / ESS Report element / Recommended RSSI threshold"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2493
+      ],
+      "note": "11.2.3.15 — WNM sleep mode: WNM Sleep Interval, sleep beyond DTIM, retain recent GTK/IGTK/BIGTK to prevent key reinstallation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2754,
+        2755
+      ],
+      "note": "11.21.13 — BSS Max Idle Period element in (Re)Association Response; inactivity disassociation; keepalive frames"
+    }
+  ],
+  "track": "managing"
+}

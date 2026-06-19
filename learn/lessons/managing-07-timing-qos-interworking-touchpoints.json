@@ -1,0 +1,134 @@
+{
+  "id": "managing-07-timing-qos-interworking-touchpoints",
+  "title": {
+    "en": "Telling Time & Tagging Traffic: Timing Advertisement, QoS-Management & Interworking Touchpoints",
+    "zh": "播报时间与标记流量：时间广播、QoS 管理帧与互通触点"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This is the closing stop on the management-procedures track — a grab-bag of three higher-level touchpoints that connect an in-network AP to time, to traffic priority, and to the outside world. None of them are about joining or leaving a BSS; instead they answer three different questions. How does an AP broadcast the correct time? When management frames compete for the air, which lane do they ride in? And before I even join an AP, how do I ask what's behind it? We'll stay at intuition level on all three, then drill into one with a verified citation.",
+      "zh": "这是“管理流程”这条学习轨道的收尾站——它把三个更上层的“触点”打包在一起，将一个已经在网络中的 AP 连向时间、流量优先级和外部世界。它们都不是关于加入或离开某个 BSS 的；相反，它们回答三个不同的问题：AP 如何播报正确的时间？当管理帧在空口上相互竞争时，它们走哪条“车道”？以及，在我还没加入某个 AP 之前，怎么先打听它背后连着什么？我们会在这三点上都保持直觉层面的讲解，然后挑一个深入，并配上经过核对的引用。"
+    },
+    {
+      "type": "prose",
+      "en": "First, telling time. An AP can advertise a time standard by transmitting a Timing Advertisement element — carried in a dedicated Timing Advertisement frame, or piggybacked in a Beacon, Probe Response, or DMG Beacon. The element carries a Time Value (how far a time standard is from the timestamp in this very frame) plus a Time Error estimate. When a station receives it, its MAC reports the timestamp, its own local time, and a propagation-delay estimate up to the SME, which can then align its idea of the time standard to the AP's. The beauty is that this works without full association — a client (or even a non-Wi-Fi system listening in) can pick up time over the air.",
+      "zh": "首先是播报时间。AP 可以通过发送一个“时间广播元素（Timing Advertisement element）”来广播某个时间标准——它可以放在专门的 Timing Advertisement 帧里，也可以搭载在 Beacon、Probe Response 或 DMG Beacon 中。该元素携带一个 Time Value（某个时间标准与本帧时间戳之间的差值）以及一个 Time Error 误差估计。站点收到后，它的 MAC 会把时间戳、自己的本地时间和传播时延估计上报给 SME，SME 便能据此把自己对时间标准的估计对齐到 AP 的估计。妙处在于：这一切无需完成关联即可生效——客户端（甚至一台在旁边监听的非 Wi-Fi 系统）都能从空口上获取时间。"
+    },
+    {
+      "type": "prose",
+      "en": "When the AP wants to advertise wall-clock time, UTC TSF Offset kicks in. With this activated, the AP includes the Time Advertisement and Time Zone elements in every Probe Response, drops the Time Advertisement element into Beacons every so many DTIM intervals, and is expected to periodically re-sync to a UTC reference clock so the offset tracks drift — bumping a Time Update Counter each time it does. The exact way it talks to a UTC source is left outside the standard; 802.11 only specifies how the result is announced.",
+      "zh": "当 AP 想要广播“挂钟时间”（绝对时间）时，UTC TSF Offset 机制就会登场。一旦启用，AP 会在每个 Probe Response 中包含 Time Advertisement 和 Time Zone 元素，并每隔若干个 DTIM 间隔在 Beacon 中放入 Time Advertisement 元素；同时它应当定期与某个 UTC 参考时钟重新同步，使偏移量跟得上时钟漂移——每次同步都会让 Time Update Counter 字段加一。它究竟如何与 UTC 源对话，标准并不规定；802.11 只规定结果如何被播报出来。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the recurring pattern: 802.11 standardises the announcement, not the source. The AP's link to an external UTC clock — and the advertisement server behind GAS later in this lesson — are both explicitly out of scope. The standard cares about the frames on the air, not the systems they reach back to.",
+      "zh": "注意这里反复出现的一个模式：802.11 规范化的是“播报”，而不是“源头”。AP 与外部 UTC 时钟之间的连接，以及本课后面 GAS 背后的广告服务器（advertisement server），都被明确划在标准范围之外。标准关心的是空口上的帧，而不是这些帧最终连回的那些系统。"
+    },
+    {
+      "type": "prose",
+      "en": "Second, tagging the management traffic itself. We're used to thinking of QoS access categories (Voice, Video, Best-Effort, Background) as something that applies to data. The QoS Management Frame (QMF) feature extends that idea to management frames: a QMF station assigns each management frame an access category according to a QMF policy, so a time-critical channel-switch announcement can ride AC_VO while a bulky WNM exchange sits in AC_BE. If no policy has been exchanged, a default QMF policy (a big lookup table keyed by frame subtype, category, and action value) decides the lane. The chosen access category is even stamped into the ACI subfield of the sequence-number field so the receiver knows.",
+      "zh": "其次，是给管理流量本身打标签。我们习惯把 QoS 访问类别（语音 Voice、视频 Video、尽力而为 Best-Effort、后台 Background）看作只对数据生效的东西。而 QoS 管理帧（QMF, QoS Management Frame）特性把这一思路延伸到了管理帧上：一个 QMF 站点会按照某个 QMF 策略为每个管理帧分配一个访问类别，于是时间敏感的信道切换通告可以走 AC_VO，而臃肿的 WNM 交换则待在 AC_BE。如果双方还没交换过策略，就用“默认 QMF 策略”（一张以帧子类型、类别和 action 值为索引的大查找表）来决定走哪条车道。所选的访问类别甚至会被写进序号字段中的 ACI 子字段里，好让接收方知晓。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 460 200' role='img' aria-label='Management frames sorted into access-category lanes'><g fill='none' stroke='currentColor' stroke-width='1.5'><rect x='12' y='16' width='150' height='28' rx='4'/><rect x='12' y='52' width='150' height='28' rx='4'/><rect x='12' y='88' width='150' height='28' rx='4'/><rect x='12' y='124' width='150' height='28' rx='4'/></g><g fill='currentColor' font-family='sans-serif' font-size='11'><text x='20' y='34'>Channel-Switch Announce</text><text x='20' y='70'>Deauthentication</text><text x='20' y='106'>Radio Measurement</text><text x='20' y='142'>WNM exchange</text></g><g fill='none' stroke='currentColor' stroke-width='1.2'><path d='M162 30 L300 30'/><path d='M162 66 L300 30'/><path d='M162 102 L300 168'/><path d='M162 138 L300 168'/></g><g fill='none' stroke='currentColor' stroke-width='1.5'><rect x='300' y='16' width='148' height='28' rx='4'/><rect x='300' y='154' width='148' height='28' rx='4'/></g><g fill='currentColor' font-family='sans-serif' font-size='12' font-weight='bold'><text x='312' y='34'>AC_VO (urgent lane)</text><text x='312' y='172'>AC_BE (default lane)</text></g><g fill='currentColor' font-family='sans-serif' font-size='10'><text x='210' y='100'>QMF policy</text></g></svg>",
+      "caption": {
+        "en": "QMF assigns each management frame an access-category lane: urgent frames (channel-switch, deauth) ride AC_VO; bulkier ones fall back to AC_BE per the policy.",
+        "zh": "QMF 为每个管理帧分配一条访问类别“车道”：紧急帧（信道切换、解除认证）走 AC_VO；较臃肿的帧则按策略落到 AC_BE。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Third, the outside world. Generic Advertisement Service (GAS) and its main payload, the Access Network Query Protocol (ANQP), let a station ask 'what's behind this AP?' before joining. GAS rides Public Action frames — Class 1 frames a station can send while still unassociated. The station fires a GAS Initial Request carrying an ANQP query list (venue name, roaming consortium, NAI realm, domain name, 3GPP cellular network…); the AP either answers immediately, or — because the real answer may live on an external advertisement server out beyond the AP — replies with a comeback delay and the station fetches it later via GAS Comeback Request frames. The AP relays the query to the advertisement server, whose protocol is, again, outside the standard.",
+      "zh": "第三，是连向外部世界。通用广告服务（GAS, Generic Advertisement Service）及其主要载荷——接入网查询协议（ANQP, Access Network Query Protocol）——让站点在加入之前就能打听“这个 AP 背后是什么？”。GAS 搭载在 Public Action 帧上，这是一类站点在尚未关联时就能发送的 Class 1 帧。站点发出一个 GAS Initial Request，携带一份 ANQP 查询列表（场所名称、漫游联盟、NAI Realm、域名、3GPP 蜂窝网络……）；AP 要么立即回答，要么——因为真正的答案可能位于 AP 之外的一台外部广告服务器上——先回一个 comeback delay，让站点稍后通过 GAS Comeback Request 帧来取。AP 把查询转发给广告服务器，而该服务器所用的协议同样在标准范围之外。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Non-AP STA (unassociated)\n    participant AP as AP (responding STA)\n    participant SRV as Advertisement server\n    STA->>AP: GAS Initial Request (ANQP Query List, Dialog Token)\n    Note over AP: posts query to server (out of scope)\n    AP->>SRV: Query Request\n    SRV-->>AP: Query Response\n    AP->>STA: GAS Initial Response (Comeback Delay, Status=SUCCESS)\n    Note over STA: wait out the comeback delay\n    STA->>AP: GAS Comeback Request (same Dialog Token)\n    AP->>STA: GAS Comeback Response (ANQP-elements)\n    Note over STA: decide whether to join before associating",
+      "zh": "sequenceDiagram\n    participant STA as 非AP站点 (未关联)\n    participant AP as AP (应答站点)\n    participant SRV as 广告服务器\n    STA->>AP: GAS Initial Request (ANQP 查询列表, Dialog Token)\n    Note over AP: 把查询投递给服务器 (范围之外)\n    AP->>SRV: Query Request\n    SRV-->>AP: Query Response\n    AP->>STA: GAS Initial Response (Comeback Delay, 状态=SUCCESS)\n    Note over STA: 等过 comeback delay\n    STA->>AP: GAS Comeback Request (相同 Dialog Token)\n    AP->>STA: GAS Comeback Response (ANQP 元素)\n    Note over STA: 在关联之前决定是否加入"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact frame paths and lookup rules behind these three touchpoints",
+        "zh": "这三个触点背后的精确帧路径与查找规则"
+      },
+      "en": "Timing (11.19.2-11.19.3): the SME hands a Time Advertisement element to the MLME to send in a Timing Advertisement frame; on reception a TSF-keeping STA records Local Time as its TSF value at the start of the frame's Timestamp field. When dot11UTCTSFOffsetActivated is true the Time Advertisement and Time Zone elements are mandatory in every Probe Response, present in Beacons every dot11TimeAdvertisementDTIMInterval DTIMs, and the AP increments the Time Update Counter on each UTC re-sync. QMF (11.24.1.2, 11.24.2.3): the default policy in Table 11-22 keys access category off management subtype, Category value (Table 9-81) and Action field — e.g. Spectrum-management channel-switch announcement (subtype 1101, cat 0, action 4) maps to AC_VO, Public-Interworking (cat 4, actions 43-44) to AC_VI, and unlisted QMFs default to AC_BE. In an infrastructure BSS a QMF AP must carry the QMF Policy element in Beacons; non-AP STAs read policy from Beacon, (Re)Association Response, Probe Response and QMF Policy frames, applying the most recent unsolicited/changed policy ahead of the (Re)Association-Response policy, and falling back to the default table when none has been received. GAS/ANQP (11.22.3.2-11.22.3.3): a STA shall not send a GAS query for an advertisement protocol unless that protocol's ID appears in the Advertisement Protocol element of a Beacon or Probe Response; the request carries a Dialog Token; if dot11GASPauseForServerResponse is true the AP returns a Comeback Delay and the STA retrieves the response via GAS Comeback Request/Response (matching Dialog Token), and an ANQP request is a list of Query-type ANQP-elements ordered by nondecreasing Info ID.",
+      "zh": "时间（11.19.2-11.19.3）：SME 把 Time Advertisement 元素交给 MLME，由后者放进 Timing Advertisement 帧中发送；接收侧若是维护 TSF 的站点，会把 Local Time 记为该帧 Timestamp 字段起始处的 TSF 值。当 dot11UTCTSFOffsetActivated 为真时，Time Advertisement 与 Time Zone 元素在每个 Probe Response 中是强制的，并每隔 dot11TimeAdvertisementDTIMInterval 个 DTIM 出现在 Beacon 中，AP 每次重新与 UTC 同步都会让 Time Update Counter 加一。QMF（11.24.1.2、11.24.2.3）：表 11-22 的默认策略按管理子类型、Category 值（表 9-81）和 Action 字段来确定访问类别——例如频谱管理的信道切换通告（子类型 1101、类别 0、action 4）映射到 AC_VO，Public-Interworking（类别 4、action 43-44）映射到 AC_VI，而未列出的 QMF 默认走 AC_BE。在基础设施 BSS 中，QMF AP 必须在 Beacon 中携带 QMF Policy 元素；非 AP 站点从 Beacon、(重)关联响应、Probe Response 和 QMF Policy 帧中读取策略，并按优先级先采用最近的“主动下发/变更后”的策略，再退到 (重)关联响应中的策略，若都没收到则回落到默认表。GAS/ANQP（11.22.3.2-11.22.3.3）：站点不得为某个广告协议发送 GAS 查询，除非该协议的 ID 出现在 Beacon 或 Probe Response 的 Advertisement Protocol 元素中；请求携带一个 Dialog Token；若 dot11GASPauseForServerResponse 为真，AP 返回一个 Comeback Delay，站点再通过 GAS Comeback Request/Response（Dialog Token 相匹配）取回响应；而 ANQP 请求是一份按 Info ID 非递减排序的 Query 型 ANQP 元素列表。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2644,
+          2645,
+          2812,
+          2815,
+          2779,
+          2793
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.19.2",
+    "80211-2024:11.19.3",
+    "80211-2024:11.24.1.2",
+    "80211-2024:11.24.2.3",
+    "80211-2024:11.22.3.2",
+    "80211-2024:11.22.3.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2644
+      ],
+      "note": "11.19.2 Timing advertisement frame procedures — SME hands Time Advertisement element to MLME; receiver reports Timestamp/Local Time/propagation delay to SME"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2645
+      ],
+      "note": "11.19.3 UTC TSF Offset procedures — Time Advertisement/Time Zone elements in Probe Response and Beacons; periodic UTC re-sync; Time Update Counter increment"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2812,
+        2813,
+        2814
+      ],
+      "note": "11.24.1.2 Default QMF policy — Table 11-22 keys access category off subtype, category, and action value; unlisted QMFs default to AC_BE"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2815,
+        2816
+      ],
+      "note": "11.24.2.3 QMF policy configuration in an infrastructure BSS — QMF Policy element in Beacons; precedence of received policies; default fallback"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2779,
+        2780,
+        2788
+      ],
+      "note": "11.22.3.2 GAS Protocol — Public Action (Class 1) transport; Advertisement Protocol element gate; Dialog Token; comeback delay and advertisement-server posting"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2793,
+        2794
+      ],
+      "note": "11.22.3.3 ANQP procedures — ANQP request is a list of Query-type ANQP-elements ordered by nondecreasing Info ID; transported in GAS Query Request/Response"
+    }
+  ],
+  "track": "managing"
+}

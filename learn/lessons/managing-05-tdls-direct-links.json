@@ -1,0 +1,115 @@
+{
+  "id": "managing-05-tdls-direct-links",
+  "title": {
+    "en": "Two Clients Talking Directly: Tunneled Direct Link Setup (TDLS)",
+    "zh": "两个客户端直接对话：隧道直连建立（TDLS）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Picture two laptops on the same Wi-Fi network — a phone streaming video to a TV across the room, say. Normally every frame between them takes the long way: client up to the access point (AP), then AP back down to the other client. Two hops over the air for traffic that only needs to travel a few metres. Tunneled Direct Link Setup (TDLS) lets the two clients build a direct link to each other and skip the AP for that traffic, while both of them stay fully associated with the BSS.",
+      "zh": "想象同一个 Wi-Fi 网络里的两台设备——比如一部手机要把视频投到房间另一头的电视上。通常它们之间的每一帧都得绕远路：客户端先上行到接入点（AP），AP 再下行到另一个客户端。明明只需要走几米的流量，却要经过两跳无线传输。隧道直连建立（TDLS）让这两个客户端彼此建立一条直接链路，让这部分流量绕开 AP，而两台设备始终保持与 BSS 的完整关联。"
+    },
+    {
+      "type": "prose",
+      "en": "The clever part is the word 'tunneled'. The setup frames are not new management frames the AP has to understand — they are ordinary Data frames carrying a TDLS payload (an MSDU with EtherType 89-0d). So the AP just forwards them like any other data, completely transparently. That is why TDLS needs no special AP support: the AP does not even have to be 'direct link capable'. To send a setup frame through the AP, a client sets the frame's receiver address (RA) to the BSSID; to send over the direct path, it sets the RA to the peer's own MAC address.",
+      "zh": "精妙之处就在“隧道”二字。建立链路用的帧并不是 AP 必须看懂的新型管理帧——它们其实是普通的数据帧，里面装着 TDLS 净荷（一个 EtherType 为 89-0d 的 MSDU）。于是 AP 只是像转发任何普通数据那样把它们转发出去，完全透明。这正是 TDLS 无需 AP 特殊支持的原因：AP 甚至不必“具备直连能力”。要让建链帧经过 AP，客户端把帧的接收地址（RA）设为 BSSID；要走直接路径，则把 RA 设为对端自己的 MAC 地址。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "TDLS is a non-AP STA feature for the same infrastructure BSS only. Both peers must be associated with the same AP; TDLS is not used in an IBSS or a mesh BSS, and a DMG STA does not use it. The AP can also forbid it outright by setting the TDLS Prohibited bit in the Extended Capabilities element of the (Re)Association Response.",
+      "zh": "TDLS 是仅面向同一基础设施 BSS 内非 AP 站点的功能。两个对端必须关联到同一个 AP；TDLS 不用于 IBSS 或 mesh BSS，DMG 站点也不使用它。AP 还可以直接禁止它——只要在（重）关联响应的扩展能力元素里把 TDLS Prohibited 位置 1 即可。"
+    },
+    {
+      "type": "prose",
+      "en": "The lifecycle has four phases. First, discovery: a would-be initiator sends a TDLS Discovery Request through the AP to a specific peer; a TDLS-capable peer with a matching BSSID answers with a TDLS Discovery Response sent back over the direct path, so the initiator learns the peer is reachable directly. Second, establishment: the initiator sends a TDLS Setup Request through the AP, the responder replies with a TDLS Setup Response (status SUCCESS to accept, REQUEST_DECLINED to refuse), and the initiator closes the three-way handshake with a TDLS Setup Confirm. After a SUCCESS confirm the two are TDLS peer STAs and may carry data on the direct link.",
+      "zh": "整个生命周期分为四个阶段。第一是发现：意图发起的一方通过 AP 向某个特定对端发送 TDLS 发现请求（Discovery Request）；具备 TDLS 能力且 BSSID 匹配的对端会通过直接路径回送一个 TDLS 发现响应（Discovery Response），于是发起方得知该对端可以被直接到达。第二是建立：发起方通过 AP 发送 TDLS 建立请求（Setup Request），响应方回以 TDLS 建立响应（Setup Response，状态码 SUCCESS 表示接受、REQUEST_DECLINED 表示拒绝），最后发起方用一个 TDLS 建立确认（Setup Confirm）完成这次三步握手。当确认为 SUCCESS 后，双方即成为 TDLS 对端站点，可以在直接链路上承载数据。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant I as Initiator STA\n    participant AP as Access Point\n    participant R as Responder STA\n    Note over I,R: Discovery (through AP, then direct)\n    I->>AP: TDLS Discovery Request (RA = BSSID)\n    AP->>R: forwarded as Data\n    R-->>I: TDLS Discovery Response (direct path)\n    Note over I,R: Establishment (3-way, through AP)\n    I->>AP: TDLS Setup Request (RA = BSSID)\n    AP->>R: forwarded\n    R->>AP: TDLS Setup Response (Status = SUCCESS)\n    AP->>I: forwarded\n    I->>AP: TDLS Setup Confirm\n    AP->>R: forwarded\n    Note over I,R: now TDLS peers — data flows on the direct link\n    I-->>R: Data (RA = peer MAC, no AP)",
+      "zh": "sequenceDiagram\n    participant I as 发起方站点\n    participant AP as 接入点\n    participant R as 响应方站点\n    Note over I,R: 发现（先经 AP，再走直接路径）\n    I->>AP: TDLS 发现请求 (RA = BSSID)\n    AP->>R: 作为数据帧转发\n    R-->>I: TDLS 发现响应 (直接路径)\n    Note over I,R: 建立（三步握手，经 AP）\n    I->>AP: TDLS 建立请求 (RA = BSSID)\n    AP->>R: 转发\n    R->>AP: TDLS 建立响应 (状态 = SUCCESS)\n    AP->>I: 转发\n    I->>AP: TDLS 建立确认\n    AP->>R: 转发\n    Note over I,R: 现已成为 TDLS 对端——数据走直接链路\n    I-->>R: 数据 (RA = 对端 MAC, 不经 AP)"
+    },
+    {
+      "type": "prose",
+      "en": "Two more phases round it out. Channel switching lets the peers move their direct traffic off the AP's channel (the 'base channel') to a quieter 'off-channel' — useful when the BSS channel is congested or narrow. One peer sends a TDLS Channel Switch Request over the direct link naming a target channel and timing; the other answers with a Channel Switch Response, and on SUCCESS both must be listening on the target channel within SwitchTime. Crucially, before going off-channel a peer must be in power-save (PS) mode with the AP, so the AP buffers its BSS traffic while it is away. Finally, teardown: either peer sends a TDLS Teardown frame — over the direct path normally, or through the AP with reason PEER_UNREACHABLE if the direct link has gone — and the link plus its security state is deleted.",
+      "zh": "另外两个阶段使流程更完整。信道切换让对端把直连流量从 AP 所在的信道（“基础信道”）挪到更安静的“离开信道（off-channel）”——当 BSS 信道拥塞或带宽偏窄时很有用。一方在直接链路上发送 TDLS 信道切换请求（Channel Switch Request），指明目标信道和时间参数；另一方回以信道切换响应（Channel Switch Response），若为 SUCCESS，双方必须在 SwitchTime 之内都切到目标信道收听。关键在于：在离开基础信道之前，对端必须先与 AP 进入省电（PS）模式，这样它离开期间 AP 会替它缓存 BSS 流量。最后是拆除：任一对端发送一个 TDLS 拆除帧（Teardown）——通常走直接路径；若直接链路已不可达，则经 AP 发送并将原因码设为 PEER_UNREACHABLE——随后该链路连同其安全状态一并删除。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why off-channel at all? On the base channel a TDLS link must obey the BSS rules and may not exceed the BSS channel width. Off-channel, the peers are free to use a wider, cleaner channel just between themselves — even features the BSS does not support — so two modern clients on a crowded narrow AP can still talk to each other fast.",
+      "zh": "为什么要切到离开信道？在基础信道上，TDLS 链路必须遵守 BSS 的规则，且带宽不得超过 BSS 的信道宽度。而到了离开信道，两个对端可以在它们之间自由使用更宽、更干净的信道——甚至使用 BSS 并不支持的特性——于是即便挂在一个拥挤又窄带的 AP 上，两台新型客户端之间仍能高速通信。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Setup race resolution, MSDU reordering, and the off-channel/PS rules",
+        "zh": "建链竞争的裁决、MSDU 重排序，以及离开信道/省电规则"
+      },
+      "en": "The standard nails down the awkward cases. If two STAs send TDLS Setup Requests at the same time (11.20.4), the tie is broken by MAC address: a responder that has already sent a request discards an incoming request from a higher address and stays silent, but on a lower address it terminates its own attempt and answers normally — so exactly one setup survives. To avoid MSDU reordering, the initiator stops sending MSDUs to the peer through the AP after the Setup Request, and the responder stops after a SUCCESS Setup Response; no MSDU may go over the direct link until a SUCCESS Setup Confirm. For channel switching (11.20.6.1), a switch may only be initiated if both peers set the TDLS Channel Switching capability to 1; the Channel Switch Response carries the larger of the two requested SwitchTime/SwitchTimeout values, and after switching each peer performs CCA (the ProbeTime) before transmitting. The off-channel and power-save rules (11.20.6.2, 11.20.6.4) require that a secondary channel of an existing network not be chosen as the off-channel, that peers stay associated (BSSID unchanged) while off-channel, that a link not be switched off-channel during a TPU service period, and that PSM wakeup windows simply occur on the off-channel as they would have on the base channel.",
+      "zh": "标准把这些棘手的边角情形都钉死了。如果两个站点同时发送 TDLS 建立请求（11.20.4），由 MAC 地址来裁决：已经发出过请求的响应方，对来自更高地址的入站请求予以丢弃并保持沉默，而对更低地址则终止自己的尝试、转为正常应答——这样最终恰好只有一次建链存活。为避免 MSDU 重排序，发起方在发出建立请求后即停止通过 AP 向对端发送 MSDU，响应方在发出 SUCCESS 的建立响应后亦然；在收到 SUCCESS 的建立确认之前，任何 MSDU 都不得走直接链路。就信道切换而言（11.20.6.1），只有当双方都把 TDLS 信道切换能力位置 1 时才允许发起切换；信道切换响应会采用两侧请求的 SwitchTime/SwitchTimeout 中较大的那一组数值，切换完成后每个对端在发送前都要先做 CCA（即 ProbeTime）。离开信道与省电规则（11.20.6.2、11.20.6.4）要求：不得选取既有网络的次信道作为离开信道；离开信道期间双方仍保持关联（BSSID 不变）；不得在 TPU 服务周期内将链路切到离开信道；并且 PSM 的唤醒窗口会原样在离开信道上出现，就像它们仍在基础信道上一样。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2649,
+          2651,
+          2653,
+          2655
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.20.3",
+    "80211-2024:11.20.4",
+    "80211-2024:11.20.5",
+    "80211-2024:11.20.6.1",
+    "80211-2024:11.20.6.2",
+    "80211-2024:11.20.6.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2648
+      ],
+      "note": "11.20.3 TDLS discovery — Discovery Request through AP, Discovery Response over the direct path"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2648,
+        2649,
+        2650
+      ],
+      "note": "11.20.4 TDLS direct link establishment — Setup Request/Response/Confirm three-way handshake, status codes, setup race, MSDU reordering"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2650
+      ],
+      "note": "11.20.5 TDLS direct link teardown — Teardown frame over direct path or via AP with PEER_UNREACHABLE"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2651,
+        2653
+      ],
+      "note": "11.20.6.1 general channel switching and 11.20.6.2 off-channel behavior — base/off-channel, target channel, SwitchTime, CCA, secondary-channel restriction"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2655
+      ],
+      "note": "11.20.6.4 TDLS channel switching and power saving — TPU/PSM interaction, off-channel wakeup windows"
+    }
+  ],
+  "track": "managing"
+}

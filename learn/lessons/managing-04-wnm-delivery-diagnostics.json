@@ -1,0 +1,131 @@
+{
+  "id": "managing-04-wnm-delivery-diagnostics",
+  "title": {
+    "en": "Smarter Delivery & Self-Diagnosis: Directed Multicast, FMS, TFS, Proxy ARP, Event & Diagnostic Reports",
+    "zh": "更聪明的投递与自我诊断：定向组播、FMS、TFS、代理 ARP、事件与诊断报告"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Wireless Network Management (WNM) is a grab-bag of small procedures that quietly make a Wi-Fi network more efficient and more observable. The flashy ones (roaming hints, sleep mode) get the attention, but a second tier of tools does the unglamorous work: getting group traffic to clients without waking them needlessly, keeping sleeping clients reachable, and letting a client tell the network what just happened to it. This lesson walks through that toolbox — first the delivery optimisations, then the self-diagnosis reports.",
+      "zh": "无线网络管理（WNM）其实是一组小型流程的集合，它们悄无声息地让 Wi-Fi 网络更高效、也更易观测。那些“显眼”的功能（漫游提示、睡眠模式）总能吸引注意力，但还有第二梯队的工具在默默干着不起眼的活：在不必要地唤醒客户端的前提下把组播流量送达、让正在睡眠的客户端依然可达、以及让客户端把刚刚发生在自己身上的事告诉网络。本课就来逐一走一遍这个工具箱——先讲投递优化，再讲自我诊断报告。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the most wasteful thing a Wi-Fi network does: broadcast. A group-addressed (multicast/broadcast) frame is sent once at a low, robust rate that every station can hear — even the ones that don't care about it. The Group Addressed Transmission Service tackles this with two cousins. Directed Multicast Service (DMS) lets a client say 'send me this multicast stream as individually addressed frames instead.' The AP then delivers those MSDUs as A-MSDU subframes inside a unicast MPDU — one efficient, high-rate, acknowledged copy per interested client. Groupcast with Retries (GCR) is the more scalable sibling: instead of converting to unicast, it keeps the frame group-addressed but adds retransmission policies (unsolicited retry, block ack) to make group delivery reliable for many members at once.",
+      "zh": "先从 Wi-Fi 网络里最浪费的动作说起：广播。组地址帧（组播/广播）只发送一次，且使用一个低速、稳健、人人都能听到的速率——哪怕那些根本不关心它的站点也得听。组地址传输服务（Group Addressed Transmission Service）用两个“表亲”来解决这个问题。定向组播服务（DMS）让客户端可以说：“请把这条组播流改用单播帧发给我。”于是 AP 把这些 MSDU 作为 A-MSDU 子帧装进单播 MPDU 里——为每个感兴趣的客户端发一份高效、高速率且带确认的副本。带重传的组播（GCR）则是更具可扩展性的兄弟：它不转成单播，而是让帧保持组地址，但加上重传策略（非请求式重传、块确认），从而让面向众多成员的组播投递同时变得可靠。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "DMS trades scalability for reliability: each member gets its own acknowledged unicast copy, so efficiency drops as the group grows. The standard notes DMS suits small groups; GCR is built for many listeners. They share the same DMS Request/Response setup machinery — and if a client supports both DMS and FMS, it must not request both for the same group-addressed frames at once.",
+      "zh": "DMS 是用可扩展性换可靠性：每个成员都拿到一份带确认的单播副本，因此组越大、效率越低。标准指出 DMS 适合小规模组；GCR 则是为众多收听者设计的。它们共用同一套 DMS Request/Response 建立机制——而且如果一个客户端同时支持 DMS 和 FMS，它不得对同一批组地址帧同时请求这两种服务。"
+    },
+    {
+      "type": "prose",
+      "en": "Two more tools help a sleepy client. Flexible Multicast Service (FMS) lets a station negotiate alternate delivery intervals for group traffic — so a power-saving client doesn't have to wake at every single DTIM to catch multicast it cares about; it can also ask the AP for a higher multicast rate. Traffic Filtering Service (TFS) flips the problem around: the client installs a filter (built from TCLAS traffic classifiers) at the AP describing exactly which downlink frames matter to it. The AP then discards individually addressed frames that don't match, so the station is only woken for traffic it actually wants. The client can even ask for a TFS Notify frame when a group-addressed frame matched while it was dozing.",
+      "zh": "还有两个工具是为“爱睡觉”的客户端服务的。灵活组播服务（FMS）让站点可以为组播流量协商不同的投递间隔——这样省电的客户端就不必在每一个 DTIM 都醒来去接收它关心的组播；它还能向 AP 请求更高的组播速率。流量过滤服务（TFS）则把问题反过来：客户端在 AP 上安装一个过滤器（由 TCLAS 流量分类器构成），精确描述哪些下行帧对自己才是重要的。之后 AP 会丢弃不匹配的单播帧，于是站点只会因为它真正想要的流量而被唤醒。客户端甚至可以要求：当某个组地址帧在它打盹期间命中过滤器时，给它发一个 TFS Notify 帧。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 220\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"180\" y=\"20\" width=\"100\" height=\"40\" rx=\"6\"/><text x=\"230\" y=\"45\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">AP</text><circle cx=\"60\" cy=\"160\" r=\"22\"/><text x=\"60\" y=\"165\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">STA A</text><circle cx=\"230\" cy=\"160\" r=\"22\"/><text x=\"230\" y=\"165\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">STA B</text><circle cx=\"400\" cy=\"160\" r=\"22\"/><text x=\"400\" y=\"165\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">STA C</text><line x1=\"205\" y1=\"60\" x2=\"75\" y2=\"140\" stroke-dasharray=\"5 4\"/><line x1=\"230\" y1=\"60\" x2=\"230\" y2=\"138\" stroke-dasharray=\"5 4\"/><line x1=\"255\" y1=\"60\" x2=\"385\" y2=\"140\" stroke-dasharray=\"5 4\"/><text x=\"110\" y=\"95\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">broadcast: one low-rate copy, all hear</text><line x1=\"205\" y1=\"66\" x2=\"75\" y2=\"144\"/><text x=\"112\" y=\"128\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">DMS: per-member unicast</text></svg>",
+      "caption": {
+        "en": "Broadcast (dashed) reaches every STA at a low robust rate; DMS (solid) converts the stream into an efficient acknowledged unicast for each interested member.",
+        "zh": "广播（虚线）以低速稳健速率到达每个站点；DMS（实线）把这条流转换为面向每个感兴趣成员的高效、带确认的单播。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Proxy ARP closes the last gap for sleeping clients. Address-resolution traffic — IPv4 ARP requests and IPv6 Neighbor Discovery lookups — is group-addressed and would otherwise wake every client to answer 'are you 192.0.2.5?'. An AP advertising Proxy ARP maintains a hardware-address-to-IP mapping for each associated STA and answers these lookups on the client's behalf, so a fixed device in doze state never has to wake just to say 'yes, that's me.' The standard prefers a direct AP response for stationary low-power devices, and for IPv6 it leans on a registration-based backbone-router function so the mapping stays accurate even as clients form and deprecate addresses.",
+      "zh": "代理 ARP（Proxy ARP）补上了睡眠客户端的最后一块短板。地址解析流量——IPv4 ARP 请求和 IPv6 邻居发现（ND）查询——是组地址的，否则就会把每个客户端都唤醒去回答“你是 192.0.2.5 吗？”。一个广告了代理 ARP 的 AP 会为每个已关联站点维护一份“硬件地址到 IP 地址”的映射，并代客户端回答这些查询，于是处于打盹状态的固定设备永远不必仅仅为了说一句“对，那是我”而醒来。标准建议对静止的低功耗设备由 AP 直接应答；对于 IPv6，它依赖基于注册的骨干路由器功能，使得即便客户端不断生成和弃用地址，该映射仍能保持准确。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the visibility half. Two request/report protocols let a STA tell the network what happened to it. Event reporting (active when dot11EventsActivated is true) logs and returns discrete things that occurred — BSS transitions, RSNA (security) events, peer-to-peer link events, and free-form WNM log messages like 'Authentication success'. An AP sends an Event Request frame carrying Event Tokens; the STA replies with an Event Report frame matching the Dialog Token. Diagnostic reporting (active when dot11DiagnosticsActivated is true) is the deeper debugging tool: an AP can pull a STA's configuration profile, manufacturer information, or even direct it to run an association or 802.1X authentication test against a designated BSS and report the result.",
+      "zh": "再说“可观测性”这一半。有两套请求/报告协议让站点能把发生在自己身上的事告诉网络。事件报告（当 dot11EventsActivated 为 true 时启用）会记录并返回一件件离散发生的事——BSS 切换、RSNA（安全）事件、点对点链路事件，以及像“认证成功”这样自由格式的 WNM 日志消息。AP 发出携带 Event Token 的 Event Request 帧；站点回以一个 Dialog Token 相匹配的 Event Report 帧。诊断报告（当 dot11DiagnosticsActivated 为 true 时启用）则是更深入的调试工具：AP 可以拉取站点的配置档案、制造商信息，甚至指示它对一个指定 BSS 跑一次关联或 802.1X 认证测试并报告结果。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as Access Point\n    participant STA as Non-AP STA\n    Note over AP: SME issues MLME-DIAGREQUEST.request\n    AP->>STA: Diagnostic Request (Dialog Token, Diagnostic Token, Type=Config Profile)\n    Note over STA: gather requested diagnostic\n    STA->>AP: Diagnostic Report (matching Dialog/Diagnostic Token, Status=Successful)\n    Note over AP,STA: if a report won't fit one MMPDU,\\nremaining elements follow in more frames",
+      "zh": "sequenceDiagram\n    participant AP as 接入点\n    participant STA as 非 AP 站点\n    Note over AP: SME 发出 MLME-DIAGREQUEST.request\n    AP->>STA: 诊断请求 (Dialog Token, Diagnostic Token, 类型=配置档案)\n    Note over STA: 收集所请求的诊断信息\n    STA->>AP: 诊断报告 (Dialog/Diagnostic Token 相匹配, 状态=Successful)\n    Note over AP,STA: 若一个报告装不进单个 MMPDU,\\n剩余元素将在后续帧中续传"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact procedure rules: DMS conversion, the FMS/TFS/DMS ordering constraints, and report transaction mechanics",
+        "zh": "精确的流程规则：DMS 转换、FMS/TFS/DMS 的排序约束，以及报告事务的机制"
+      },
+      "en": "Clause 11.21.16.2 defines DMS precisely: a recipient sends a DMS Request (or Reassociation Request) carrying DMS Descriptors with Request Type 'Add' per flow; the TCLAS Destination Address subfield is set to the flow's multicast address. On Accept the provider assigns a nonzero DMSID and thereafter delivers matching group-addressed MSDUs as A-MSDU subframes inside an individually addressed MPDU (each subframe header's DA set to the multicast address), while still transmitting them group-addressed if any associated STA has not requested DMS. Two ordering rules: a STA must not request DMS and FMS for the same group-addressed frames simultaneously (11.21.16.2, p.2766), and a provider supporting both DMS and TFS must apply TFS first, then DMS. GCR (11.21.16.3.1) reuses the same DMS Request/Response setup and state machine but keeps frames group-addressed, adding GCR unsolicited retry and GCR block ack retransmission policies. For TFS (11.21.12.2) the non-AP STA issues MLME-TFS.request; setting the Notify subfield asks for a TFS Notify frame on a match, and Delete After Match removes the filter once matched. For event/diagnostic reporting, only one request from a given STA is outstanding at a time, the report echoes the request's Dialog Token (and Event/Diagnostic Token per element), reports that overflow one MMPDU continue in additional frames without fragmenting an element, and outstanding requests are cancelled on BSS transition.",
+      "zh": "11.21.16.2 节精确定义了 DMS：接收方发送一个 DMS Request（或 Reassociation Request），其中按流携带 Request Type 为“Add”的 DMS 描述符，TCLAS 的目的地址子字段设为该流的组播地址。一旦 Accept，提供方分配一个非零 DMSID，此后把匹配的组地址 MSDU 作为 A-MSDU 子帧装进单播 MPDU 投递（每个子帧头部的 DA 设为该组播地址）；只要还有任何已关联站点未请求 DMS，这些帧仍会以组地址方式继续发送。两条排序规则：站点不得对同一批组地址帧同时请求 DMS 和 FMS（11.21.16.2，第 2766 页）；同时支持 DMS 与 TFS 的提供方必须先应用 TFS、再应用 DMS。GCR（11.21.16.3.1）复用同一套 DMS Request/Response 建立流程与状态机，但保持帧为组地址，并新增 GCR 非请求式重传与 GCR 块确认两种重传策略。对于 TFS（11.21.12.2），非 AP 站点发出 MLME-TFS.request；置位 Notify 子字段表示请求在命中时发 TFS Notify 帧，Delete After Match 表示命中后即删除该过滤器。对于事件/诊断报告，同一站点在某一时刻只能有一个未完成的请求，报告会回显请求的 Dialog Token（每个元素再带 Event/Diagnostic Token），超出单个 MMPDU 的报告会在后续帧中续传且不得拆分某个元素，未完成的请求在 BSS 切换时被取消。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2763,
+          2764,
+          2766
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.21.16.2",
+    "80211-2024:11.21.16.3",
+    "80211-2024:11.21.8",
+    "80211-2024:11.21.12.2",
+    "80211-2024:11.21.14",
+    "80211-2024:11.21.2.1",
+    "80211-2024:11.21.3.1"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2657,
+        2658
+      ],
+      "note": "11.21.2.1 Event request and event report — Event Request/Report frames, Event/Dialog Tokens, single outstanding request, BSS-transition cancellation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2661,
+        2662
+      ],
+      "note": "11.21.3.1 Diagnostic request and diagnostic report — Diagnostic Request/Report frames, Dialog/Diagnostic Tokens, multi-MMPDU continuation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2750
+      ],
+      "note": "11.21.8 FMS multicast rate processing — alternate delivery intervals and higher multicast rate via FMS Request/Response"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2753
+      ],
+      "note": "11.21.12.2 TFS non-AP STA operation — MLME-TFS.request, Notify and Delete After Match subfields, TFS Notify Response"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2755,
+        2756
+      ],
+      "note": "11.21.14 Proxy ARP service — HW-to-IP mapping, AP answers IPv4 ARP / IPv6 ND on behalf of sleeping STAs"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2763,
+        2764,
+        2766
+      ],
+      "note": "11.21.16.1/2/3 Group addressed transmission service — DMS group-to-unicast A-MSDU conversion, DMS/FMS and DMS/TFS ordering, GCR retry/block-ack policies"
+    }
+  ],
+  "track": "managing"
+}

@@ -1,0 +1,119 @@
+{
+  "id": "managing-01-radio-measurement-rrm",
+  "title": {
+    "en": "How the Network Measures Itself: Radio Measurement & RRM (802.11k)",
+    "zh": "网络如何自我感知：无线资源测量与 RRM（802.11k）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A Wi-Fi network is more than a single link — it is a whole BSS of stations sharing the air with neighbours, microwaves, radar, and each other. To manage that air sensibly, the network needs eyes and ears: it has to know how busy a channel is, how strong its neighbours are, and where a quieter channel might be. Radio measurement (the heart of 802.11k / RRM) is the machinery that gives a BSS those senses. Instead of guessing, an AP can ask the stations around it to actually measure the air and report back.",
+      "zh": "Wi-Fi 网络远不止一条链路——它是一整个 BSS，许多站点与邻居、微波炉、雷达以及彼此共享同一片空中频谱。要把这片空中资源管理好，网络就需要“眼睛和耳朵”：它必须知道某个信道有多繁忙、邻居的信号有多强、哪里可能存在更安静的信道。无线资源测量（802.11k / RRM 的核心）正是赋予一个 BSS 这些感官的机制。AP 不必凭猜测，而是可以请它周围的站点真正去测量空中状况，再把结果报告回来。"
+    },
+    {
+      "type": "prose",
+      "en": "The basic unit is a request/report pair. One STA (often the AP, but a non-AP STA can ask its AP too) sends a Radio Measurement Request frame carrying one or more Measurement Request elements — each naming a measurement type, a channel, a start time, and a duration. The measuring STA does the work and answers with a Radio Measurement Report frame carrying matching Measurement Report elements. A STA only does this if it has switched on the capability (dot11RadioMeasurementActivated) and advertises what it can measure in its RM Enabled Capabilities element.",
+      "zh": "最基本的单位是一对“请求/报告”。一个站点（通常是 AP，但非 AP 站点也可以向它的 AP 发起）发送一个无线测量请求帧（Radio Measurement Request frame），其中携带一个或多个测量请求元素（Measurement Request element）——每个元素指明测量类型、信道、开始时间和持续时长。被请求的站点完成测量，再用一个无线测量报告帧（Radio Measurement Report frame）作答，其中携带相对应的测量报告元素。站点只有在开启了相应能力（dot11RadioMeasurementActivated）、并在其 RM Enabled Capabilities 元素中声明了自己能测量哪些项目时，才会执行这些测量。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Measuring is never mandatory. The measured STA always weighs the request against its own situation — its traffic load, power state, and scheduling — and may simply refuse. It answers by setting the Refused subfield in the Measurement Report Mode field, or the Incapable subfield if it never supported that measurement at all. The network gets to ask; the station gets to say no.",
+      "zh": "测量从来不是强制的。被测量的站点总会结合自身处境——业务负载、功耗状态、调度安排——来权衡这个请求，并且完全可以直接拒绝。它通过把测量报告模式（Measurement Report Mode）字段中的 Refused 子字段置 1 来作答；如果它根本不支持该测量，则置 Incapable 子字段。网络有权发问，站点也有权说“不”。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as AP (requester)\n    participant STA as Station (measurer)\n    Note over AP: pick type, channel, start time, duration\n    AP->>STA: Radio Measurement Request (Measurement Request elements)\n    Note over STA: weigh load / power / capability\n    alt accepts\n        Note over STA: wait out randomization delay, then measure\n        STA->>AP: Radio Measurement Report (matching Measurement Token)\n    else refuses / incapable\n        STA->>AP: Radio Measurement Report (Refused or Incapable = 1)\n    end",
+      "zh": "sequenceDiagram\n    participant AP as AP（请求方）\n    participant STA as 站点（测量方）\n    Note over AP: 选定类型、信道、开始时间、时长\n    AP->>STA: 无线测量请求（携带测量请求元素）\n    Note over STA: 权衡负载 / 功耗 / 能力\n    alt 接受\n        Note over STA: 等待随机化延迟后再开始测量\n        STA->>AP: 无线测量报告（携带相同的测量令牌）\n    else 拒绝 / 不支持\n        STA->>AP: 无线测量报告（Refused 或 Incapable = 1）\n    end"
+    },
+    {
+      "type": "prose",
+      "en": "Where a measurement runs matters enormously. On the operating channel — the one the BSS is actually using — a STA can measure while still carrying data, so these requests can be frequent and long. On a nonoperating (off-channel) measurement, the STA must temporarily leave its channel, which interrupts its data service; it is responsible for keeping its association alive and returning afterwards, and it limits how long it spends away. Off-channel windows are precious: they are how a network discovers a quieter place to move the whole BSS to, which is why the noisier the operating channel, the more urgent off-channel measurement becomes.",
+      "zh": "测量在哪里进行，影响极大。在工作信道（operating channel，即 BSS 当前正在使用的信道）上，站点可以一边承载数据一边测量，所以这类请求可以频繁且持续较久。而对于非工作信道（off-channel，离开当前信道）的测量，站点必须暂时离开本信道，这会中断它的数据业务；站点有责任在此期间维持其关联、并在测量后返回，同时它会限制离开信道的总时长。离信道窗口非常宝贵：网络正是借此发现一个更安静、可供整个 BSS 迁移过去的位置——这也是为什么工作信道越嘈杂，离信道测量就越紧迫。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 150' width='400' height='150' fill='none' stroke='currentColor' stroke-width='2'><line x1='20' y1='40' x2='380' y2='40'/><line x1='20' y1='110' x2='380' y2='110'/><text x='20' y='28' fill='currentColor' stroke='none' font-size='12'>Operating channel</text><text x='20' y='130' fill='currentColor' stroke='none' font-size='12'>Off-channel</text><rect x='20' y='32' width='120' height='16' fill='currentColor' stroke='none' opacity='0.5'/><rect x='240' y='32' width='140' height='16' fill='currentColor' stroke='none' opacity='0.5'/><rect x='150' y='102' width='80' height='16' fill='currentColor' stroke='none' opacity='0.8'/><line x1='140' y1='40' x2='160' y2='110' stroke-dasharray='4 3'/><line x1='230' y1='110' x2='250' y2='40' stroke-dasharray='4 3'/><text x='150' y='98' fill='currentColor' stroke='none' font-size='10'>switch + measure</text></svg>",
+      "caption": {
+        "en": "On the operating channel the STA carries data while measuring; for an off-channel measurement it switches away for a bounded window, then returns and resumes service.",
+        "zh": "在工作信道上，站点可一边承载数据一边测量；进行离信道测量时，它在一段有限的时间窗内切走，随后返回并恢复业务。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Two details keep the loop honest and orderly. First, start time and randomization: an accepting STA begins as soon as practical, but a request may carry a randomization interval, and the STA waits a random delay (0 to that interval) before starting. This prevents a group-addressed request from making every STA leap to measure at the same instant and creating a traffic storm. Second, duration: the request states how long, and a Duration Mandatory flag says whether that length is firm. If mandatory and the STA cannot commit to the whole window, it must refuse; if not mandatory, it may measure for less and report the actual duration it achieved.",
+      "zh": "有两个细节让这个闭环既诚实又有序。其一是开始时间与随机化：接受请求的站点会尽快开始，但请求中可能携带一个随机化区间（randomization interval），站点会先等待一个随机延迟（取值在 0 到该区间之间）再开始。这可以避免一个群组寻址的请求让所有站点在同一瞬间一拥而上去测量，从而引发流量风暴。其二是持续时长：请求会给出测量多久，并用一个 Duration Mandatory（时长强制）标志说明这个长度是否是硬性要求。若为强制且站点无法承诺完成整个时间窗，它就必须拒绝；若不强制，它可以测得更短，并报告自己实际达到的时长。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the loop does not have to be poll-only. Beyond on-demand requests, a STA can be enabled for triggered autonomous reporting: instead of waiting to be asked each time, it runs a background measurement continuously and volunteers a report the moment a trigger condition is crossed — for example, a metric drifting past a threshold, or a radar signal appearing. The requester enables this once (by sending a Measurement Request element with the Enable and Report subfields set), the STA reports only when the condition fires, and disassociating turns it off. Together, on-demand and triggered reporting close the measurement loop: the network can both pull a snapshot and be pushed an alert.",
+      "zh": "最后，这个闭环并不一定只能靠轮询。除了按需请求之外，站点还可以被使能为“触发式自主报告”（triggered autonomous reporting）：它不必每次都等人来问，而是持续运行后台测量，一旦某个触发条件被越过，就主动上报一份报告——例如某项指标漂移越过阈值，或出现雷达信号。请求方只需使能一次（发送一个将 Enable 与 Report 子字段置位的测量请求元素），站点便仅在条件触发时上报，而一旦解除关联即停止。按需报告与触发式报告相结合，便闭合了整个测量闭环：网络既能主动“拉取”一份快照，也能被“推送”一条告警。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Duration rules, precedence, tokens, and how triggers are enabled",
+        "zh": "时长规则、优先级、令牌，以及触发如何被使能"
+      },
+      "en": "Clause 11.10.4 ties acceptance to dot11RMMaxMeasurementDuration via Maximum Measurement Duration = 2^(dot11RMMaxMeasurementDuration - 4) x BeaconInterval (TUs); Table 11-12 maps that, the requested duration, and Duration Mandatory onto accept / shorten / refuse outcomes, with off-channel limits set by dot11RMNonOperatingChannelMaxMeasurementDuration. Requests have a precedence order (11.10.6): individually addressed > multicast-group > broadcast, and a higher-or-equal-precedence frame supersedes pending requests while lower-precedence ones are discarded. Each Measurement Report element echoes the Measurement Token of its request, and each Radio Measurement Report frame echoes the Dialog Token of its request frame. Triggered autonomous reporting (11.10.8) is enabled by a Measurement Request element with Enable and Report both set to 1 (Report = 0 disables it); autonomous reports carry Measurement Token and Dialog Token both set to 0, and reporting ceases on disassociation or reassociation to a different BSS.",
+      "zh": "11.10.4 节把“是否接受”与 dot11RMMaxMeasurementDuration 绑定，最大测量时长（TU）= 2^(dot11RMMaxMeasurementDuration − 4) × BeaconInterval；表 11-12 则把该值、请求时长与 Duration Mandatory 映射为接受 / 缩短 / 拒绝三种结果，离信道的时长上限由 dot11RMNonOperatingChannelMaxMeasurementDuration 决定。请求之间存在优先级顺序（11.10.6）：个体寻址 > 组播组寻址 > 广播；优先级更高或相等的帧会取代仍在挂起的请求，而优先级更低的请求则被丢弃。每个测量报告元素都回带其请求中的测量令牌（Measurement Token），每个无线测量报告帧都回带其请求帧的对话令牌（Dialog Token）。触发式自主报告（11.10.8）通过把 Enable 与 Report 子字段都置 1 的测量请求元素来使能（Report = 0 则关闭）；自主报告中的测量令牌与对话令牌均置 0，并在解除关联或重关联到不同 BSS 时停止上报。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2591,
+          2592,
+          2593,
+          2596
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.10.1",
+    "80211-2024:11.10.2",
+    "80211-2024:11.10.3",
+    "80211-2024:11.10.4",
+    "80211-2024:11.10.5",
+    "80211-2024:11.10.6",
+    "80211-2024:11.10.7",
+    "80211-2024:11.10.8"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2590
+      ],
+      "note": "11.10.1-11.10.2 General; dot11RadioMeasurementActivated; operating vs nonoperating channel measurement; STA may refuse"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2590,
+        2591,
+        2592
+      ],
+      "note": "11.10.3-11.10.5 measurement start time + randomization; Table 11-12 duration / Duration Mandatory; STA responsibility to decode, refuse, or measure for reduced duration"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2592,
+        2593,
+        2594
+      ],
+      "note": "11.10.6 requesting and reporting; Table 11-13 allowed requests; precedence order; Measurement Token / Dialog Token echo"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2595,
+        2596
+      ],
+      "note": "11.10.7 repeated measurement requests; 11.10.8 triggered autonomous reporting via Enable+Report subfields, tokens set to 0, ceases on disassociation"
+    }
+  ],
+  "track": "managing"
+}

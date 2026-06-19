@@ -1,0 +1,127 @@
+{
+  "id": "managing-06-obss-coexistence",
+  "title": {
+    "en": "Being a Good Neighbor: OBSS Management & 20/40 MHz Coexistence",
+    "zh": "做个好邻居：OBSS 管理与 20/40 MHz 共存"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Wi-Fi is a shared apartment block: the air is the hallway, and your BSS is rarely the only tenant on a channel. When two BSSs use overlapping channels they form an overlapping BSS (OBSS) — neither one owns the air, so they have to be polite. This is especially touchy in the crowded 2.4 GHz band, where a 40 MHz-wide BSS literally stretches across two 20 MHz channels and can flatten a quiet 20 MHz neighbour. Clause 11 gives the rules of etiquette: scan before you go wide, listen for neighbours who say 'please stay narrow', and exchange management frames to coordinate instead of collide.",
+      "zh": "Wi-Fi 就像一栋合租公寓：空气是走廊，而在一个信道上，你的 BSS 很少是唯一的住户。当两个 BSS 使用相互重叠的信道时，它们就构成了重叠 BSS（OBSS）——谁都不独占这片空气，所以必须讲礼貌。这在拥挤的 2.4 GHz 频段尤其敏感：一个 40 MHz 宽的 BSS 实际上横跨两个 20 MHz 信道，可能把一个安静的 20 MHz 邻居直接压垮。第 11 章给出了这套礼仪规则：变宽之前先扫描，留意那些说“请保持窄带”的邻居，并通过交换管理帧来协调，而不是硬碰硬。"
+    },
+    {
+      "type": "prose",
+      "en": "The first rule is look before you leap. Before an AP starts a 20/40 MHz BSS, it must run a minimum number of OBSS scans to discover BSSs already living on those channels (the count is set by dot11BSSWidthChannelTransitionDelayFactor). A 40 MHz-capable AP in 2.4 GHz that is already running a 20 MHz BSS must likewise scan before it dares widen to 40 MHz — and it tracks the verdict in a MAC variable called 20/40 Operation Permitted. If that variable is false, it simply is not allowed to go wide. Associated stations help out by doing OBSS scans on the AP's behalf and reporting what they find.",
+      "zh": "第一条规则是三思而后行。在 AP 启动一个 20/40 MHz BSS 之前，它必须执行最少次数的 OBSS 扫描，以发现已经“居住”在这些信道上的 BSS（次数由 dot11BSSWidthChannelTransitionDelayFactor 决定）。一个已在运行 20 MHz BSS 的 2.4 GHz 40MC AP，在敢于扩宽到 40 MHz 之前同样必须先扫描——并把结论记录在一个名为“20/40 Operation Permitted（允许 20/40 操作）”的 MAC 变量里。如果这个变量为 false，它就根本不被允许变宽。关联的站点会代替 AP 执行 OBSS 扫描，并上报扫描结果，从中帮忙。"
+    },
+    {
+      "type": "prose",
+      "en": "The second rule gives the little guy a voice. A 2.4 GHz station that cannot tolerate a wide neighbour sets a Forty MHz Intolerant field to 1 — in its HT Capabilities and in a 20/40 BSS Coexistence element. A station can also push harder by sending a 20/40 BSS Coexistence Management frame carrying a 20 MHz BSS Width Request, plus a 20/40 BSS Intolerant Channel Report element listing exactly which channels are off-limits for going wide. (In the 5 GHz band there is so much room that the Forty MHz Intolerant bit is always 0 — this politeness is a 2.4 GHz concern.)",
+      "zh": "第二条规则给“弱势一方”发声的机会。一个无法容忍宽带邻居的 2.4 GHz 站点会把 Forty MHz Intolerant（40 MHz 不容忍）字段置为 1——既在它的 HT Capabilities 中，也在 20/40 BSS Coexistence 元素中。站点还可以更进一步：发送一个携带 20 MHz BSS Width Request（20 MHz 带宽请求）的 20/40 BSS Coexistence Management 帧，再附上一个 20/40 BSS Intolerant Channel Report 元素，明确列出哪些信道禁止变宽。（在 5 GHz 频段空间充裕，因此 Forty MHz Intolerant 位始终为 0——这份礼貌只是 2.4 GHz 的事。）"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as 40MC STA (2.4 GHz)\n    participant AP as 40MC AP (2.4 GHz)\n    Note over STA: runs OBSS scan each dot11BSSWidthTriggerScanInterval\n    Note over STA: detects intolerant neighbour / legacy Beacon (trigger events)\n    STA->>AP: 20/40 BSS Coexistence Mgmt frame\n    Note right of STA: 20 MHz BSS Width Request = 1\n    Note right of STA: + 20/40 BSS Intolerant Channel Report element\n    Note over AP: recompute 20/40 Operation Permitted\n    Note over AP: false -> set Secondary Channel Offset = SCN (revert to 20 MHz)\n    AP-->>STA: Beacon (Secondary Channel Offset = SCN)",
+      "zh": "sequenceDiagram\n    participant STA as 40MC 站点 (2.4 GHz)\n    participant AP as 40MC AP (2.4 GHz)\n    Note over STA: 每 dot11BSSWidthTriggerScanInterval 执行一次 OBSS 扫描\n    Note over STA: 检测到不容忍邻居 / 旧式 Beacon（触发事件）\n    STA->>AP: 20/40 BSS Coexistence 管理帧\n    Note right of STA: 20 MHz BSS Width Request = 1\n    Note right of STA: + 20/40 BSS Intolerant Channel Report 元素\n    Note over AP: 重新计算 20/40 Operation Permitted\n    Note over AP: 为 false -> 把 Secondary Channel Offset 置为 SCN（退回 20 MHz）\n    AP-->>STA: Beacon（Secondary Channel Offset = SCN）"
+    },
+    {
+      "type": "prose",
+      "en": "When does the AP fall back to narrow? Clause 11.15.12 defines BSS channel width trigger events: hearing a legacy (non-HT) Beacon (TE-A), hearing any frame with the Forty MHz Intolerant bit set (TE-B), receiving a 20 MHz BSS Width Request from an associated station (TE-C), or receiving an Intolerant Channel Report (TE-D). On TE-B or TE-C, or whenever 20/40 Operation Permitted flips to false, the AP sets the Secondary Channel Offset field to SCN (no secondary channel) in its HT Operation element at the next DTIM beacon — collapsing the BSS back to 20 MHz. To go wide again it must wait out a quiet period with no TE-B/TE-C events and confirm 20/40 Operation Permitted is true again.",
+      "zh": "AP 什么时候退回窄带？11.15.12 节定义了 BSS 信道带宽触发事件：听到旧式（非 HT）Beacon（TE-A）、听到任何带有 Forty MHz Intolerant 位的帧（TE-B）、收到关联站点发来的 20 MHz BSS Width Request（TE-C），或收到 Intolerant Channel Report（TE-D）。一旦发生 TE-B 或 TE-C，或者只要 20/40 Operation Permitted 翻转为 false，AP 就会在下一个 DTIM beacon 时把 HT Operation 元素中的 Secondary Channel Offset 字段置为 SCN（无副信道）——使 BSS 收缩回 20 MHz。要想再次变宽，它必须熬过一段没有 TE-B/TE-C 事件的安静期，并确认 20/40 Operation Permitted 重新变为 true。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the trick: the 20/40 BSS Coexistence Management frame is a Class 1 frame, so a station can send it to an AP it isn't even associated with — using the wildcard BSSID. That's how truly independent neighbours, who never join each other's networks, can still negotiate who gets to be wide.",
+      "zh": "注意这里的巧妙之处：20/40 BSS Coexistence Management 帧是一种 Class 1 帧，因此站点甚至可以把它发给一个它根本没有关联的 AP——使用通配 BSSID。正是靠这一点，那些从不加入彼此网络的真正独立的邻居，仍然能协商谁可以使用宽带。"
+    },
+    {
+      "type": "prose",
+      "en": "Width is only half the story; the other half is airtime. Neighbouring QoS BSSs that run scheduled (HCCA) traffic — think low-latency audio/video — can trample each other's reserved slots. Clause 11.26 lets OBSS APs cooperate. Each AP advertises a QLoad Report element (in Beacons or on request) describing its allocated and potential QoS traffic, its HCCA peak, and a sharing policy, so neighbours can compute how loaded the shared medium really is. Then, before granting a new HCCA reservation, an AP sends an HCCA TXOP Advertisement to each 'collaboration candidate' (a reachable peer AP) proposing the time slot it wants — and waits for an HCCA TXOP Response.",
+      "zh": "带宽只是故事的一半；另一半是空口时间（airtime）。运行调度型（HCCA）流量的相邻 QoS BSS——想想低时延的音视频——会互相踩踏对方预留的时隙。11.26 节让 OBSS 的各 AP 互相协作。每个 AP 都会通告一个 QLoad Report 元素（在 Beacon 中或按请求发送），描述它已分配的和潜在的 QoS 流量、它的 HCCA 峰值以及一个共享策略，这样邻居就能算出共享媒介实际有多繁忙。随后，在批准一个新的 HCCA 预留之前，AP 会向每个“协作候选者”（可达的对端 AP）发送一个 HCCA TXOP Advertisement，提出它想要的时隙——并等待一个 HCCA TXOP Response。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Inside the QLoad report fields and the HCCA TXOP advertise/respond handshake",
+        "zh": "深入 QLoad 报告字段与 HCCA TXOP 通告/响应握手"
+      },
+      "en": "Clause 11.26.2.2 defines the QLoad arithmetic. The Potential Traffic Self Mean must be >= the Allocated Traffic Self Mean; Allocated Traffic Self carries the mean/std-dev of all accepted, undeleted EDCA-admission and HCCA TSPECs plus the count of AC_VI/AC_VO streams. Allocated Traffic Shared sums Allocated Traffic Self across all overlapping APs (including self). The EDCA Access Factor is built by summing Potential Traffic Self over all OBSSs, subtracting the summed HCCA Peak, multiplying by an EDCA Overhead Factor derived from the stream count, and rounding down to a 1/64 fraction; the HCCA Access Factor sums HCCA Peak across OBSSs the same way. Clause 11.26.3: when an AP with TXOP negotiation activated receives an HCCA/HEMM TSPEC request, it sends an HCCA TXOP Advertisement (Public Action frame, or Protected variant when both peers support it) to each collaboration candidate, then withholds the ADDTS Response until it hears SUCCESS responses from all peers, sees two Beacons or an HCCA TXOP Update Count change from each, or three beacon periods elapse. A peer that finds no conflict replies SUCCESS and records a dot11APCEntry; on conflict it replies TS_SCHEDULE_CONFLICT with an Alternate Schedule (a non-conflicting period). Simultaneous-request ties are broken deterministically by comparing MIX(MAC) values, where MIX reorders the six MAC octets as bytes 4,5,0,1,2,3 and compares them as a big-endian integer.",
+      "zh": "11.26.2.2 节定义了 QLoad 的算术。Potential Traffic Self 的 Mean 必须 >= Allocated Traffic Self 的 Mean；Allocated Traffic Self 承载所有已接受、未删除的 EDCA 准入与 HCCA TSPEC 的均值/标准差，外加 AC_VI/AC_VO 流的数量。Allocated Traffic Shared 把所有重叠 AP（含自身）的 Allocated Traffic Self 相加。EDCA Access Factor 的构造方法是：对所有 OBSS（含自身）的 Potential Traffic Self 求和，减去求和后的 HCCA Peak，再乘以一个由流数量推导出的 EDCA Overhead Factor，然后向下取整为 1/64 的分数；HCCA Access Factor 则以同样方式对各 OBSS 的 HCCA Peak 求和。11.26.3 节：当一个启用了 TXOP 协商的 AP 收到 HCCA/HEMM 的 TSPEC 请求时，它会向每个协作候选者发送一个 HCCA TXOP Advertisement（Public Action 帧，或当双方都支持时使用受保护变体），然后扣住 ADDTS Response 不发，直到出现以下情形之一：从所有对端都收到 SUCCESS 响应、从每个对端都看到两个 Beacon 或一次 HCCA TXOP Update Count 变化、或经过了三个 beacon 周期。未发现冲突的对端回复 SUCCESS 并记录一条 dot11APCEntry；若有冲突则回复 TS_SCHEDULE_CONFLICT，并附上一个 Alternate Schedule（不冲突的时间段）。同时请求造成的平局，通过比较 MIX(MAC) 值来确定性地打破——MIX 把 MAC 的六个字节重排为字节 4,5,0,1,2,3，并按大端整数比较。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2824,
+          2825,
+          2826,
+          2827,
+          2828
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.15.3.2",
+    "80211-2024:11.15.7",
+    "80211-2024:11.15.11",
+    "80211-2024:11.15.12",
+    "80211-2024:11.16",
+    "80211-2024:11.26.2.2",
+    "80211-2024:11.26.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2631,
+        2632,
+        2633
+      ],
+      "note": "11.15.3.2 Scanning requirements for a 20/40 MHz BSS; 20/40 Operation Permitted MAC variable and Equation (11-2)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2639
+      ],
+      "note": "11.15.7 Communicating 20/40 BSS coexistence information via 20/40 BSS Coexistence element in Beacon/Probe/(Re)Association frames"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2640,
+        2641
+      ],
+      "note": "11.15.11 Signaling 40 MHz intolerance (Forty MHz Intolerant field, 2G4 vs 5G); 11.15.12 trigger events TE-A..TE-D and revert to SCN"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2642,
+        2643
+      ],
+      "note": "11.15.12 building/transmitting the 20/40 BSS Coexistence Management frame; 11.16 frame usage, Class 1, wildcard BSSID, Information Request"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2824,
+        2825
+      ],
+      "note": "11.26.2.2 Calculating field values: Potential/Allocated Traffic Self/Shared, EDCA Access Factor, HCCA Peak/Access Factor"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2826,
+        2827,
+        2828
+      ],
+      "note": "11.26.3 HCCA TXOP negotiation: Advertisement/Response frames, collaboration candidates, ADDTS hold conditions, MIX(MAC) tie-break"
+    }
+  ],
+  "track": "managing"
+}
