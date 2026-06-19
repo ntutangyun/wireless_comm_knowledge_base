@@ -1,0 +1,106 @@
+{
+  "id": "connecting-05-association-joining-the-bss",
+  "track": "connecting",
+  "title": {
+    "en": "Becoming a Member: Association and Reassociation",
+    "zh": "成为成员：关联与重关联"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "You have found a network and proven your identity through authentication. But you still are not a full member of the basic service set (BSS): you cannot yet send ordinary data through the access point (AP). Association is the final handshake that registers you with the AP and lets your traffic flow onto the wider network behind it.",
+      "zh": "你已经找到了网络，并通过认证证明了身份。但此时你还不是基本服务集（BSS）的正式成员：你还不能通过接入点（AP）发送普通数据。关联（Association）就是最后这一步握手——它把你登记到 AP 上，让你的流量得以进入 AP 背后更大的网络。"
+    },
+    {
+      "type": "prose",
+      "en": "Why does the AP need this step? Behind the AP sits a distribution system (DS) — the wired backbone connecting all the APs in an extended service set (ESS). For a frame to reach you, the DS must know exactly which AP is currently serving you. Association creates that station-to-AP mapping and hands it to the DS. A station is associated with at most one AP at any instant, so the DS always has a single, unambiguous answer to 'which AP serves station X?'",
+      "zh": "AP 为什么需要这一步？AP 背后是分布式系统（DS）——它是连接扩展服务集（ESS）中所有 AP 的有线骨干。要让一个帧送达你，DS 必须确切知道当前是哪个 AP 在为你服务。关联正是建立了这个“站点到 AP 的映射”，并把它交给 DS。任一时刻一个站点最多只与一个 AP 关联，因此对于“哪个 AP 在服务站点 X？”这个问题，DS 总能得到唯一、明确的答案。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Association is always initiated by the non-AP station — never by the AP. The station sends an Association Request; the AP replies with an Association Response carrying a Status Code and, on success, an Association Identifier (AID).",
+      "zh": "关联始终由非 AP 站点发起——绝不会由 AP 发起。站点发送“关联请求”（Association Request）；AP 回以“关联响应”（Association Response），其中带有状态码（Status Code），成功时还会带上一个关联标识符（AID）。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Station (State 2: authenticated)\n    participant AP as Access Point\n    participant DS as Distribution System\n    STA->>AP: Association Request (Capabilities, Listen Interval, SSID, Supported Rates...)\n    Note over AP: Check rates, security policy, capacity\n    AP->>STA: Association Response (Status = SUCCESS, AID)\n    Note over STA,AP: State 3 reached — Class 3 frames allowed\n    AP->>DS: Update station-to-AP mapping\n    Note over STA: If RSN: 4-way handshake -> State 4, data protected",
+      "zh": "sequenceDiagram\n    participant STA as 站点 (State 2: 已认证)\n    participant AP as 接入点\n    participant DS as 分布式系统\n    STA->>AP: 关联请求 (能力信息, 监听间隔, SSID, 支持速率...)\n    Note over AP: 检查速率/安全策略/容量\n    AP->>STA: 关联响应 (状态=SUCCESS, AID)\n    Note over STA,AP: 进入 State 3 — 允许第3类帧\n    AP->>DS: 更新“站点-AP”映射\n    Note over STA: 若为 RSN: 四次握手 -> State 4, 数据受保护"
+    },
+    {
+      "type": "prose",
+      "en": "What is inside the request? The Association Request frame opens with Capability Information, a Listen Interval (how often the station will wake to check for buffered traffic), the SSID it wants to join, and its Supported Rates — plus a long tail of optional capability elements (HT/VHT/HE, security, QoS, and more). The AP checks these: if the station cannot support the required basic rates or its security parameters do not match policy, the AP refuses. On success the AP picks an AID for the station and returns it in the response alongside Status Code and Capability Information.",
+      "zh": "请求里装了什么？关联请求帧以能力信息（Capability Information）开头，随后是监听间隔（Listen Interval，站点多久醒来一次查看缓存流量）、想加入的 SSID，以及自己的支持速率（Supported Rates）——后面还跟着一长串可选的能力元素（HT/VHT/HE、安全、QoS 等）。AP 会逐项核对：若站点不支持要求的基本速率，或其安全参数与策略不符，AP 就会拒绝。成功时，AP 为该站点分配一个 AID，并在响应中连同状态码、能力信息一起返回。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "State 3 vs State 4: a successful association puts a plain (non-RSN) station into State 3, where Class 3 data frames are allowed. In a robust security network (RSN), association reaches State 3 and a 4-way handshake must still complete — enabling encryption — before the station advances to State 4 and protected data can flow.",
+      "zh": "State 3 与 State 4 的区别：关联成功后，普通（非 RSN）站点进入 State 3，此时已允许第 3 类数据帧。在健壮安全网络（RSN）中，关联先到 State 3，还需完成四次握手（启用加密），站点才会进入 State 4，受保护的数据才能开始传输。"
+    },
+    {
+      "type": "prose",
+      "en": "Now you move. Walk from your desk to a meeting room and a nearer AP in the same ESS gives a stronger signal. Rather than tearing down and rebuilding from scratch, the station uses reassociation: it sends a Reassociation Request to the new AP, which (unlike a plain Association Request) carries the Current AP address. This lets the new AP — through the DS — tell the old AP to hand over and forward any buffered frames. Reassociation is also initiated only by the non-AP station, and only when it is already associated within the same ESS.",
+      "zh": "现在你移动了。从工位走到会议室，同一 ESS 内更近的一个 AP 信号更强。站点不会推倒重来，而是使用重关联（Reassociation）：它向新 AP 发送“重关联请求”（Reassociation Request），与普通关联请求不同，该请求里带有当前 AP 地址（Current AP address）。这让新 AP 能通过 DS 通知旧 AP 完成交接，并转发任何缓存的帧。重关联同样只由非 AP 站点发起，且仅当它已在同一 ESS 内关联时才可进行。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact rules: requests, responses, AID, and state transitions",
+        "zh": "精确规则：请求、响应、AID 与状态转换"
+      },
+      "en": "The station-side procedure (11.3.5.2): if the AP's state is State 1/1a the request fails immediately; otherwise the MLME transmits an Association Request and, on receiving a SUCCESS status code, sets the state to State 4, or to State 3 if dot11RSNAActivated is true. The state for any other AP that was State 3/4 is dropped to State 2 — enforcing the one-AP rule. The AP-side procedure (11.3.5.3) refuses with NOT_AUTHENTICATED if the station is only in State 1, checks basic rates and security policy, allocates the AID, and informs the DS of the change. Successful association (and reassociation) enables Class 3 frames (11.3.5.1); reassociation (4.5.3.4) is the same machinery but moves an existing association between APs in one ESS, and is the basis for BSS-transition mobility. The Association Request body (Table 9-64) begins with Capability Information, Listen Interval, SSID, and Supported Rates; the Association Response body (Table 9-65) begins with Capability Information, Status Code, and AID.",
+      "zh": "站点侧流程（11.3.5.2）：若该 AP 的状态为 State 1/1a，请求立即失败；否则 MLME 发送关联请求，收到 SUCCESS 状态码后将状态置为 State 4，若 dot11RSNAActivated 为真则置为 State 3。此前处于 State 3/4 的任何其他 AP 的状态都会被降到 State 2——以此落实“只与一个 AP 关联”的规则。AP 侧流程（11.3.5.3）：若站点仅处于 State 1，则以 NOT_AUTHENTICATED 拒绝；并核对基本速率与安全策略、分配 AID、将变更通知 DS。关联（及重关联）成功即允许第 3 类帧（11.3.5.1）；重关联（4.5.3.4）使用同一套机制，但作用是在一个 ESS 内的多个 AP 之间迁移已有的关联，它是 BSS 间漫游移动的基础。关联请求帧体（表 9-64）以能力信息、监听间隔、SSID、支持速率开头；关联响应帧体（表 9-65）以能力信息、状态码、AID 开头。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2526,
+          2527,
+          2528,
+          787,
+          791
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:4.5.3.3",
+    "80211-2024:4.5.3.4",
+    "80211-2024:11.3.5.1",
+    "80211-2024:11.3.5.2",
+    "80211-2024:11.3.5.3",
+    "80211-2024:9.3.3.5",
+    "80211-2024:9.3.3.6"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        393,
+        394
+      ],
+      "note": "Association and reassociation concepts: station-to-AP mapping to the DS, one AP at a time, always initiated by the non-AP STA (4.5.3.3, 4.5.3.4)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2526,
+        2527,
+        2528,
+        2529,
+        2530
+      ],
+      "note": "Association/reassociation procedures and State 3/State 4 transitions (11.3.5.1-11.3.5.3)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        787,
+        791
+      ],
+      "note": "Association Request body Table 9-64 and Association Response body Table 9-65 incl. AID (9.3.3.5, 9.3.3.6)"
+    }
+  ]
+}

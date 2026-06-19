@@ -1,0 +1,103 @@
+{
+  "id": "connecting-02-passive-discovery-beacons",
+  "track": "connecting",
+  "title": {
+    "en": "Listening for the Network: Beacons and Passive Scanning",
+    "zh": "聆听网络：信标帧与被动扫描"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Before a phone can join a Wi-Fi network, it first has to find out the network is even there. The simplest way is to do nothing but listen: an access point (AP) keeps announcing itself, so a station just has to tune to a channel and wait for the announcement to arrive.",
+      "zh": "手机要加入某个 Wi-Fi 网络，首先得知道这个网络确实存在。最简单的办法就是“只听不说”：接入点（AP）会不断地自报家门，于是station只需把收音机调到某个信道上、静静等待这则通告到来即可。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "That periodic announcement is the Beacon frame. In an infrastructure BSS the AP is the timing master and periodically transmits Beacon frames — one roughly every beacon interval (dot11BeaconPeriod), with a default near 100 TUs (~102.4 ms).",
+      "zh": "这则周期性的通告就是信标帧（Beacon frame）。在基础设施 BSS 中，AP 是计时主控，会周期性地发送信标帧——大约每个信标间隔（dot11BeaconPeriod）发一次，默认值约为 100 TU（约 102.4 毫秒）。"
+    },
+    {
+      "type": "prose",
+      "en": "A Beacon does double duty. It carries a Timestamp so every station in the BSS can keep its clock aligned with the AP (the Timing Synchronization Function, or TSF), and it carries a description of the network: the SSID (the name), the Beacon Interval, the Capability Information, supported rates, security info, and much more. By reading one Beacon, a station already knows almost everything it needs to decide whether to join.",
+      "zh": "信标帧身兼两职。它携带一个时间戳（Timestamp），让 BSS 内的每个station都能把自己的时钟与 AP 对齐（这就是计时同步功能 TSF）；同时它还携带对网络的描述：SSID（网络名）、信标间隔、能力信息（Capability Information）、支持的速率、安全信息等等。一台station只要读到一帧信标，就几乎掌握了决定是否加入所需的全部信息。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as Access Point\n    participant STA as Station (listening)\n    Note over AP: TBTT — every beacon interval\n    AP-->>STA: Beacon (Timestamp, SSID, capabilities...)\n    Note over AP: ~100 TUs later\n    AP-->>STA: Beacon\n    Note over AP: ~100 TUs later\n    AP-->>STA: Beacon\n    Note over STA: STA was just listening —<br/>now it knows the network exists",
+      "zh": "sequenceDiagram\n    participant AP as 接入点 AP\n    participant STA as 站点（聆听中）\n    Note over AP: TBTT —— 每个信标间隔\n    AP-->>STA: 信标帧（时间戳、SSID、能力信息……）\n    Note over AP: 约 100 TU 后\n    AP-->>STA: 信标帧\n    Note over AP: 约 100 TU 后\n    AP-->>STA: 信标帧\n    Note over STA: 站点只是在聆听——<br/>现在它知道这个网络存在了"
+    },
+    {
+      "type": "prose",
+      "en": "This 'just listen' approach is called passive scanning. The station never transmits anything; it simply parks on a channel and collects whatever Beacons (and Probe Responses) drift in. To survey the whole band it visits each channel in turn, dwelling on each one long enough to be likely to catch a Beacon, then hops to the next.",
+      "zh": "这种“只管聆听”的做法叫作被动扫描（passive scanning）。station自己不发送任何东西，只是停留在某个信道上，把飘进来的信标帧（以及探测响应帧）统统收集起来。要把整个频段都查一遍，它就逐个信道地切换，在每个信道上停留足够长的时间以大概率抓到一帧信标，然后再跳到下一个信道。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Trade-off: passive scanning is silent and works even where transmitting first is restricted by regulation — but it is slow. A station must wait out a full dwell time per channel (bounded by MaxChannelTime) on the off chance a Beacon shows up. Active scanning (sending a Probe Request to prompt an immediate reply) is the faster alternative, covered in another lesson.",
+      "zh": "权衡取舍：被动扫描全程静默，即便在法规限制“先发射”的频段也能工作——但它慢。station必须在每个信道上耗满一段停留时间（上限为 MaxChannelTime），以期等到一帧信标出现。主动扫描（发送探测请求帧以促使对方立即回应）则是更快的替代方案，将在另一课中介绍。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 360 150' xmlns='http://www.w3.org/2000/svg' stroke='currentColor' fill='none' stroke-width='2'><line x1='20' y1='120' x2='340' y2='120'/><text x='150' y='142' fill='currentColor' stroke='none' font-size='11'>channel dwell time →</text><rect x='30' y='95' width='70' height='25'/><text x='44' y='112' fill='currentColor' stroke='none' font-size='10'>ch 1</text><rect x='115' y='95' width='70' height='25'/><text x='128' y='112' fill='currentColor' stroke='none' font-size='10'>ch 6</text><rect x='200' y='95' width='70' height='25'/><text x='211' y='112' fill='currentColor' stroke='none' font-size='10'>ch 11</text><line x1='55' y1='60' x2='55' y2='95'/><polygon points='55,95 51,86 59,86' fill='currentColor' stroke='none'/><line x1='150' y1='60' x2='150' y2='95'/><polygon points='150,95 146,86 154,86' fill='currentColor' stroke='none'/><line x1='235' y1='70' x2='235' y2='95'/><polygon points='235,95 231,86 239,86' fill='currentColor' stroke='none'/><text x='40' y='50' fill='currentColor' stroke='none' font-size='10'>Beacon</text><text x='135' y='50' fill='currentColor' stroke='none' font-size='10'>Beacon</text><text x='305' y='112' fill='currentColor' stroke='none' font-size='10'>...</text></svg>",
+      "caption": {
+        "en": "A passive scan hops channel to channel, dwelling on each long enough to catch the periodic Beacons that arrive on it.",
+        "zh": "被动扫描在各信道间跳转，在每个信道上停留足够久，以捕获在该信道上周期性到达的信标帧。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What the standard actually says",
+        "zh": "标准的原文是怎么说的"
+      },
+      "en": "Clause 11.1 makes the AP the TSF timing master of an infrastructure BSS: it periodically transmits Beacon frames every dot11BeaconPeriod TUs, and a receiving STA adopts the Timestamp to align its own TSF timer. Scanning is governed by MLME-SCAN.request, whose ScanMode selects Passive or Active. To join an ESS by passive scanning, a STA scans for Beacon frames carrying the target SSID and returns them in the BSSDescriptionSet; for a non-DMG STA the rule is simply to listen on each scanned channel for no longer than MaxChannelTime. The Beacon frame body itself (Table 9-62) begins with Timestamp, Beacon Interval, Capability Information, and SSID — so a single received Beacon already conveys the network's identity, timing, and capabilities.",
+      "zh": "第 11.1 节将 AP 定为基础设施 BSS 的 TSF 计时主控：它每隔 dot11BeaconPeriod 个 TU 周期性地发送信标帧，接收到的station则采用其中的时间戳来对齐自己的 TSF 计时器。扫描由 MLME-SCAN.request 原语控制，其 ScanMode 参数在被动与主动之间二选一。要通过被动扫描加入某个 ESS，station会搜寻携带目标 SSID 的信标帧，并将其放入 BSSDescriptionSet 返回；对于非 DMG station，规则很简单——在每个被扫描的信道上聆听的时间不超过 MaxChannelTime。信标帧的帧体本身（表 9-62）以 Timestamp、Beacon Interval、Capability Information、SSID 开头——因此单单收到一帧信标，就已传达了网络的身份、计时与能力信息。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2427,
+          2429,
+          2444,
+          2446,
+          779
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2427,
+        2429
+      ],
+      "note": "11.1.1 / 11.1.3.1 — AP as TSF timing master; periodic Beacon transmission every dot11BeaconPeriod; expected nominal beacon rate"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2444,
+        2446
+      ],
+      "note": "11.1.4.1 / 11.1.4.2.1 — passive vs active scan via MLME-SCAN.request; scanning for Beacons with target SSID; listen per channel no longer than MaxChannelTime"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        779
+      ],
+      "note": "9.3.3.2 Table 9-62 — Beacon frame body: Timestamp, Beacon Interval, Capability Information, SSID"
+    }
+  ],
+  "covers": [
+    "80211-2024:11.1.1",
+    "80211-2024:11.1.3.1",
+    "80211-2024:11.1.4.1",
+    "80211-2024:11.1.4.2.1",
+    "80211-2024:9.3.3.2"
+  ]
+}

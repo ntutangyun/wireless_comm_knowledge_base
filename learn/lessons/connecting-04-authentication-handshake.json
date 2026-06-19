@@ -1,0 +1,99 @@
+{
+  "id": "connecting-04-authentication-handshake",
+  "track": "connecting",
+  "title": {
+    "en": "Knocking on the Door: The Authentication Exchange",
+    "zh": "敲门：认证交换流程"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Before a station can join a Wi-Fi network, it has to knock on the door. That knock is the 802.11 authentication exchange — a short handshake of management frames between the station and the access point. Think of it as showing an ID at the entrance: it doesn't get you a seat at the table yet, but it lets the AP recognise you as a valid candidate to talk to.",
+      "zh": "在一个站点加入 Wi-Fi 网络之前，它得先敲门。这个“敲门”动作就是 802.11 的认证交换——站点与接入点（AP）之间用管理帧完成的一段简短握手。可以把它想象成在门口出示证件：此时你还没有真正入座，但 AP 已经把你识别为一个有效、可以继续交谈的候选者。"
+    },
+    {
+      "type": "prose",
+      "en": "A station moves through a small state machine on its way in. It starts in State 1 — unauthenticated and unassociated, allowed to send only a handful of basic frames. Authentication is the step that, when it succeeds, lifts the station to State 2: authenticated, but still not associated. Association is a separate later step. The standard is explicit that authentication is a prerequisite for association — you cannot associate first and authenticate later.",
+      "zh": "站点入网时会经历一个小型状态机。它从 State 1 出发——未认证、未关联，此时只被允许发送少数几类基础帧。认证就是那一步：一旦成功，就把站点提升到 State 2——已认证，但仍未关联。关联是之后另一个独立的步骤。标准明确规定，认证是关联的前提——你不能先关联、再认证。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "This lesson is about the gate, not the lock. 802.11 defines several authentication methods (Open System, FT, SAE, FILS, PASN) and most of them carry cryptography. Here we care only about the frame exchange and the State 1 → State 2 transition — the choreography, not the maths inside it.",
+      "zh": "本课讲的是“门”，不是“锁”。802.11 定义了多种认证方法（Open System、FT、SAE、FILS、PASN），其中大多数都携带密码学内容。这里我们只关心帧的交换以及 State 1 → State 2 的状态跃迁——也就是这套“编舞动作”，而不是其中的数学细节。"
+    },
+    {
+      "type": "prose",
+      "en": "The exchange is driven by Authentication frames. Each one carries three small fields that matter for the choreography: an authentication algorithm number (which method is being used), an authentication transaction sequence number (which step of the handshake this is — 1, 2, 3 …), and a status code (did it succeed?). Open System is the simplest case: the station sends a frame with sequence number 1, and the AP replies with sequence number 2 carrying a status code. Two frames, done.",
+      "zh": "整个交换由“认证帧（Authentication frame）”驱动。每个认证帧都携带三个对编舞至关重要的小字段：认证算法编号（正在使用哪种方法）、认证事务序号（这是握手的第几步——1、2、3……）以及状态码（是否成功）。Open System 是最简单的情形：站点发送一个序号为 1 的帧，AP 回复一个序号为 2、携带状态码的帧。两帧即可完成。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Station (State 1)\n    participant AP as Access Point\n    Note over STA: SME issues MLME-AUTHENTICATE.request\n    STA->>AP: Authentication (seq=1, algorithm)\n    Note over AP: MLME-AUTHENTICATE.indication to SME\n    AP->>STA: Authentication (seq=2, Status Code = SUCCESS)\n    Note over STA,AP: both set state for the peer to State 2\n    Note over STA: now authenticated, ready to associate",
+      "zh": "sequenceDiagram\n    participant STA as 站点 (State 1)\n    participant AP as 接入点\n    Note over STA: SME 发出 MLME-AUTHENTICATE.request\n    STA->>AP: 认证帧 (序号=1, 算法)\n    Note over AP: 向 SME 发 MLME-AUTHENTICATE.indication\n    AP->>STA: 认证帧 (序号=2, 状态码 = SUCCESS)\n    Note over STA,AP: 双方将对端状态置为 State 2\n    Note over STA: 现已认证，可进行关联"
+    },
+    {
+      "type": "prose",
+      "en": "Under the hood, two layers cooperate. The station's management entity (the SME) decides to authenticate and hands the request down to the MAC layer (the MLME), which actually builds and sends the Authentication frame. On the receiving side the AP's MLME hands the request up to its SME for a decision, then sends the reply. When the reply says SUCCESS, both sides flip their record of the peer from State 1 to State 2. If it fails, nothing changes — the station simply stays in State 1 and can try again.",
+      "zh": "在底层，有两层在协作。站点的管理实体（SME）决定发起认证，把请求下交给 MAC 层（MLME），由 MLME 真正构造并发送认证帧。在接收侧，AP 的 MLME 把请求上交给它的 SME 做决定，然后发送回复。当回复为 SUCCESS 时，双方都把对端的记录从 State 1 翻转到 State 2。如果失败，则一切不变——站点仍停留在 State 1，可以再次尝试。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Authentication and association are decoupled on purpose. Because authentication can be slow (some methods involve a back-and-forth with an authentication server), the standard lets a station authenticate ahead of time — even while still associated to another AP — so the time-critical hand-off later is faster.",
+      "zh": "认证与关联是有意解耦的。由于认证可能较慢（某些方法需要与认证服务器来回交互），标准允许站点提前完成认证——甚至在仍与另一个 AP 保持关联时——这样之后对时间敏感的切换就能更快完成。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact state rule and the two-sided procedure",
+        "zh": "精确的状态规则与双向流程"
+      },
+      "en": "Clause 11.3.4.1 states the gate precisely: successful authentication other than PASN sets a STA's state to State 2 if it was State 1 or State 1a; unsuccessful authentication leaves the state unchanged. The originating-STA procedure (11.3.4.2) begins on an MLME-AUTHENTICATE.request, runs the chosen algorithm, and on success within the timeout sets the peer's state to State 2 and issues an MLME-AUTHENTICATE.confirm. The destination-STA procedure (11.3.4.3) triggers on receiving an Authentication frame with transaction sequence number 1, raises an MLME-AUTHENTICATE.indication to the SME, and on an MLME-AUTHENTICATE.response of SUCCESS transmits a reply Authentication frame with status code SUCCESS and sets the originating STA to State 2. The frame body (9.3.3.11) always begins with the algorithm number, the transaction sequence number, and a Status Code; later fields are method-specific.",
+      "zh": "11.3.4.1 节精确地描述了这道门：除 PASN 外，认证成功会在站点原本处于 State 1 或 State 1a 时将其置为 State 2；认证失败则状态保持不变。发起方流程（11.3.4.2）始于 MLME-AUTHENTICATE.request，执行所选算法，若在超时内成功，则将对端状态置为 State 2 并发出 MLME-AUTHENTICATE.confirm。目标方流程（11.3.4.3）在收到事务序号为 1 的认证帧时触发，向 SME 上报 MLME-AUTHENTICATE.indication；当 MLME-AUTHENTICATE.response 为 SUCCESS 时，发送一个状态码为 SUCCESS 的回复认证帧，并将发起方置为 State 2。认证帧体（9.3.3.11）始终以算法编号、事务序号和状态码开头，其后的字段则因方法而异。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2522,
+          2523,
+          2524
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        395,
+        396
+      ],
+      "note": "4.5.4.2 Authentication — link-level station service; prerequisite for association; five methods"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2522,
+        2523,
+        2524
+      ],
+      "note": "11.3.4.1-11.3.4.3 — State 1/1a -> State 2 rule; originating and destination STA authentication procedures"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        815
+      ],
+      "note": "9.3.3.11 Authentication frame body — algorithm number, transaction sequence number, Status Code"
+    }
+  ],
+  "covers": [
+    "80211-2024:4.5.4.2",
+    "80211-2024:11.3.4.1",
+    "80211-2024:11.3.4.2",
+    "80211-2024:11.3.4.3",
+    "80211-2024:9.3.3.11"
+  ]
+}

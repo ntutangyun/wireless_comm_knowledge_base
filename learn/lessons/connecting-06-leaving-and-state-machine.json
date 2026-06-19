@@ -1,0 +1,132 @@
+{
+  "id": "connecting-06-leaving-and-state-machine",
+  "track": "connecting",
+  "title": {
+    "en": "Putting It Together: The State Machine and Leaving Gracefully",
+    "zh": "融会贯通：状态机与优雅地离开"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Everything you've learned about joining a network — scanning, authentication, association, the 4-way handshake — can be summarized by a single idea: between any two stations, the link is always in one of a few well-defined states. The state decides what kinds of frames you're even allowed to send. Joining walks you UP this ladder; leaving walks you back DOWN it.",
+      "zh": "你之前学到的关于加入网络的所有内容——扫描、认证、关联、四次握手——都可以归结为一个核心思想：任意两个站点之间的链路，始终处于若干个明确定义的状态之一。当前状态决定了你“被允许”发送哪些类型的帧。加入网络是沿着这架阶梯向上攀登；而离开则是沿着它一步步退回来。"
+    },
+    {
+      "type": "prose",
+      "en": "There are four main states. State 1: unauthenticated and unassociated — a stranger. State 2: authenticated but not yet associated. State 3: authenticated and associated, but RSNA security (the 4-way handshake) is still pending, so the IEEE 802.1X controlled port stays blocked. State 4: fully authenticated, associated, and secured — the port is open and your data flows. Each rung unlocks more.",
+      "zh": "主要有四个状态。状态 1：未认证且未关联——相当于一个陌生人。状态 2：已认证但尚未关联。状态 3：已认证且已关联，但 RSNA 安全（即四次握手）仍待完成，因此 IEEE 802.1X 受控端口保持阻塞。状态 4：完全认证、已关联且已加密——端口打开，你的数据得以正常传输。每上一级阶梯，就解锁更多能力。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The state isn't global — it exists per pair of stations. Your laptop can be in State 4 with the AP while a brand-new device is still in State 1 with that same AP. The state variable lives inside the MLME, the management machinery of the MAC layer.",
+      "zh": "状态不是全局的——它是“每一对站点”各自维护的。你的笔记本可能与 AP 处于状态 4，而一台全新设备与同一个 AP 之间却仍处于状态 1。这个状态变量保存在 MLME（MAC 层的管理机制）内部。"
+    },
+    {
+      "type": "prose",
+      "en": "Why does the state matter so concretely? Because frames are sorted into classes, and your state gates which classes you may send. Class 1 frames (probes, beacons, authentication, RTS/CTS, ACK) work in any state — that's how a stranger can even start talking. Class 2 adds association management frames (Association, Reassociation, Disassociation). Class 3 — your actual data frames — requires State 3 or 4. Try to send a Class 3 data frame in State 1, and it's simply rejected.",
+      "zh": "为什么状态如此实在地重要？因为帧被划分为不同的类别，而你当前的状态决定了你可以发送哪些类别。第 1 类帧（探测帧、信标帧、认证帧、RTS/CTS、ACK）在任何状态下都可用——陌生人正是靠它才能开口说话。第 2 类增加了关联类管理帧（关联、重关联、解关联）。第 3 类——也就是你真正的数据帧——则要求处于状态 3 或 4。如果你试图在状态 1 下发送第 3 类数据帧，它会被直接拒绝。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n    [*] --> S1\n    S1: State 1\\nUnauth, Unassoc\\n(Class 1 only)\n    S2: State 2\\nAuth, Unassoc\\n(Class 1+2)\n    S3: State 3\\nAssoc, RSNA pending\\n(802.1X port blocked)\n    S4: State 4\\nAssoc + secured\\n(port open, data flows)\n    S1 --> S2: Successful authentication\n    S2 --> S3: Successful (Re)Association (RSNA)\n    S3 --> S4: 4-way handshake OK\n    S2 --> S4: (Re)Assoc that is not an RSNA\n    S4 --> S2: Disassociation\n    S3 --> S2: Disassociation\n    S4 --> S1: Deauthentication\n    S3 --> S1: Deauthentication\n    S2 --> S1: Deauthentication",
+      "zh": "stateDiagram-v2\n    [*] --> S1\n    S1: 状态1\\n未认证未关联\\n(仅第1类)\n    S2: 状态2\\n已认证未关联\\n(第1+2类)\n    S3: 状态3\\n已关联, RSNA待定\\n(802.1X端口阻塞)\n    S4: 状态4\\n已关联且加密\\n(端口打开, 数据可传)\n    S1 --> S2: 认证成功\n    S2 --> S3: (重)关联成功(RSNA)\n    S3 --> S4: 四次握手完成\n    S2 --> S4: 非RSNA的(重)关联\n    S4 --> S2: 解关联\n    S3 --> S2: 解关联\n    S4 --> S1: 去认证\n    S3 --> S1: 去认证\n    S2 --> S1: 去认证"
+    },
+    {
+      "type": "prose",
+      "en": "Now the leaving. There are two ways down, and they unwind different amounts. Disassociation ends the association only: it drops you from State 3 or 4 back to State 2. You're still authenticated — you could re-associate without re-authenticating. Deauthentication is the bigger reset: it knocks you all the way back to State 1, tearing down both association and authentication. Note that disassociation is a notification, not a request — the receiver can't refuse it (except when the management-frame-protection integrity check fails).",
+      "zh": "现在来看“离开”。下行有两条路径，它们各自回退的程度不同。解关联（Disassociation）只终止关联：把你从状态 3 或 4 拉回状态 2。你仍然处于已认证状态——可以无需重新认证就再次关联。去认证（Deauthentication）则是更彻底的重置：把你一路打回状态 1，同时拆除关联与认证。注意：解关联是一种“通知”，而非“请求”——接收方无法拒绝它（除非启用了管理帧保护且完整性校验失败）。"
+    },
+    {
+      "type": "prose",
+      "en": "What actually happens on the wire when a station leaves cleanly? Its SME asks the MLME to disassociate with a Reason Code. If the link is in State 3 or 4, the MLME sends a single Disassociation frame to the AP, sets the local state back to State 2, and then deletes all the security keys (the PTKSA, GTKSA, and friends) that were protecting the link. The AP mirrors this and frees the AID it had assigned you. A Deauthentication frame works the same way but takes you to State 1.",
+      "zh": "当一个站点干净利落地离开时，空口上究竟发生了什么？它的 SME 请求 MLME 携带一个原因码（Reason Code）执行解关联。若链路处于状态 3 或 4，MLME 会向 AP 发送一帧解关联帧，将本地状态退回状态 2，随后删除所有曾用于保护该链路的安全密钥（PTKSA、GTKSA 等）。AP 也做镜像处理，并释放此前分配给你的 AID。去认证帧的处理方式相同，只是会把你带回状态 1。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Both the Disassociation frame and the Deauthentication frame are tiny: their body is essentially just a Reason Code (plus optional vendor elements and, under management-frame protection, an MME). That single code is the 'why' — codes distinguish 'leaving the network' from 'inactivity', 'invalid credentials', and dozens more.",
+      "zh": "解关联帧和去认证帧都非常小巧：它们的帧体本质上只包含一个原因码（外加可选的厂商专属元素，以及在管理帧保护下的 MME）。这个小小的编码就是“原因”所在——不同的编码用以区分“主动离开网络”“长时间不活动”“凭据无效”等数十种情形。"
+    },
+    {
+      "type": "prose",
+      "en": "One last design insight: the MAC doesn't actually depend on you saying goodbye. A station should try to disassociate when it leaves, but the protocol is built to tolerate a client that simply vanishes — walks out of range, runs out of battery — so the AP eventually times the silent station out on its own. Graceful leaving is courtesy that saves resources; the network survives without it.",
+      "zh": "最后一点设计上的洞见：MAC 协议其实并不依赖你说“再见”。站点离开时应当尝试解关联，但协议本身被设计为能够容忍客户端的“凭空消失”——走出覆盖范围、电量耗尽——因此 AP 最终会凭借超时机制自行清除这个沉默的站点。优雅地离开是一种节省资源的礼貌之举；即便没有它，网络依然能正常运转。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact unwinding procedure and frame bodies",
+        "zh": "精确的退出流程与帧体格式"
+      },
+      "en": "Per 11.3.5.6, a non-AP STA's SME issues MLME-DISASSOCIATE.request with a Reason Code (Table 9-79). If the state is State 3 or 4, the MLME transmits a Disassociation frame, sets state to State 2, issues MLME-DISASSOCIATE.confirm, and the SME then deletes the PTKSA/GTKSA/IGTKSA/BIGTKSA/WIGTKSA/WTKSA/TPKSA via MLME-DELETEKEYS.request and calls MLME-SETPROTECTION.request(None). Class gating (11.3.3): Class 3 frames require State 3 or 4; Class 2 require State 2/3/4. The Disassociation frame body (9.3.3.4, Table 9-63) and Deauthentication frame body (9.3.3.12, Table 9-72) each carry just a Reason Code, optional Vendor Specific elements, and an MME under management-frame protection for group-addressed frames. Per 4.5.3.5, disassociation is a DSS notification (not a request) and the MAC does not depend on STAs invoking it.",
+      "zh": "依据 11.3.5.6，非 AP 站点的 SME 发出携带原因码（见表 9-79）的 MLME-DISASSOCIATE.request。若状态为状态 3 或 4，MLME 发送一帧解关联帧，将状态置为状态 2，发出 MLME-DISASSOCIATE.confirm，随后 SME 通过 MLME-DELETEKEYS.request 删除 PTKSA/GTKSA/IGTKSA/BIGTKSA/WIGTKSA/WTKSA/TPKSA，并调用 MLME-SETPROTECTION.request(None)。类别门控（11.3.3）：第 3 类帧要求状态 3 或 4；第 2 类要求状态 2/3/4。解关联帧帧体（9.3.3.4，表 9-63）与去认证帧帧体（9.3.3.12，表 9-72）各自仅携带一个原因码、可选的厂商专属元素，以及在管理帧保护下针对组播帧的 MME。依据 4.5.3.5，解关联是一种 DSS 通知（而非请求），且 MAC 协议并不依赖站点主动调用它。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2520,
+          2521,
+          2536,
+          395,
+          786,
+          821
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.3.3",
+    "80211-2024:4.5.3.5",
+    "80211-2024:11.3.5.6",
+    "80211-2024:9.3.3.4",
+    "80211-2024:9.3.3.12"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2520
+      ],
+      "note": "Figure 11-23 state transition diagram (States 1-4); deauth/disassoc transitions"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2520,
+        2521,
+        2522
+      ],
+      "note": "11.3.3 frame classes 1/2/3 and state-based filtering rules"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        395
+      ],
+      "note": "4.5.3.5 disassociation service: notification not request; MAC tolerates loss of STA"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2536
+      ],
+      "note": "11.3.5.6 non-AP STA disassociation initiation procedure and key deletion"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        786
+      ],
+      "note": "9.3.3.4 Disassociation frame body (Table 9-63): Reason Code"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        821
+      ],
+      "note": "9.3.3.12 Deauthentication frame body (Table 9-72): Reason Code"
+    }
+  ]
+}

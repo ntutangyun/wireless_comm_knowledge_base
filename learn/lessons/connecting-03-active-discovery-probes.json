@@ -1,0 +1,108 @@
+{
+  "id": "connecting-03-active-discovery-probes",
+  "track": "connecting",
+  "title": {
+    "en": "Asking Out Loud: Probe Requests and Active Scanning",
+    "zh": "主动询问：探测请求与主动扫描"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Before a phone can join a Wi-Fi network, it has to find out which networks are nearby. There are two ways to do this. In passive scanning, the device just sits on a channel and listens for Beacon frames that access points (APs) broadcast on a timer — typically about every 100 ms. In active scanning, the device doesn't wait: it shouts a question and listens for answers.",
+      "zh": "手机要加入 Wi-Fi 网络之前，必须先弄清楚附近有哪些网络。做法有两种。被动扫描时，设备只是停在某个信道上，静静等待接入点（AP）按定时器周期性广播的信标帧（Beacon）——通常约每 100 毫秒一次。主动扫描则不等待：设备会主动“喊一声”问出去，然后听回应。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The core idea: instead of waiting for an AP to announce itself, the station sends a Probe Request frame asking \"who's out there?\", and any matching AP replies right away with a Probe Response. Asking is faster than waiting.",
+      "zh": "核心思想：与其等 AP 自报家门，站点（STA）干脆发出一个探测请求帧（Probe Request），问一句“有谁在？”，符合条件的 AP 会立刻用探测响应帧（Probe Response）回答。主动问，比被动等更快。"
+    },
+    {
+      "type": "prose",
+      "en": "Active scanning works channel by channel. On each channel the station first waits a short ProbeDelay (or until it hears a transmission), then contends for the air using the normal access procedure and sends its Probe Request — usually to the broadcast address. The SSID field decides who should answer: a specific SSID asks only for that named network, while the wildcard SSID (an empty SSID) invites every AP on the channel to reply.",
+      "zh": "主动扫描是逐信道进行的。在每个信道上，站点先等待一小段 ProbeDelay（或直到听到有人发送），再按正常的信道接入流程竞争介质，然后发出探测请求——通常发往广播地址。请求里的 SSID 字段决定谁该回答：填入具体 SSID 时只询问那一个指定网络，而填入通配 SSID（空 SSID）则邀请该信道上的所有 AP 都来回应。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Station (scanning)\n    participant AP as Access Point\n    Note over STA: Move to channel,<br/>wait ProbeDelay\n    STA->>AP: Probe Request (SSID or wildcard)\n    Note over AP: Do I match the<br/>request criteria?\n    AP-->>STA: Probe Response (capabilities, rates, SSID...)\n    Note over STA: Build a BSS description,<br/>then scan next channel",
+      "zh": "sequenceDiagram\n    participant STA as 站点(扫描中)\n    participant AP as 接入点\n    Note over STA: 切到该信道，<br/>等待 ProbeDelay\n    STA->>AP: 探测请求(指定SSID或通配SSID)\n    Note over AP: 我符合<br/>请求条件吗?\n    AP-->>STA: 探测响应(能力/速率/SSID...)\n    Note over STA: 构建 BSS 描述，<br/>再扫描下一个信道"
+    },
+    {
+      "type": "prose",
+      "en": "After sending the probe, the station starts a timer and listens. If it hears nothing busy by MinChannelTime, the channel is probably empty and it moves on. If the channel is active, it keeps collecting Probe Response and Beacon frames until MaxChannelTime, building a description of each network (BSS) it found. That is why active scanning is faster than passive: instead of waiting a full beacon interval on every channel, a quiet channel can be dismissed in a couple of milliseconds.",
+      "zh": "发出探测后，站点会启动一个计时器并开始侦听。如果到了 MinChannelTime 仍没有侦测到信道忙，说明这个信道大概是空的，便继续扫下一个。如果信道有活动，它就持续收集探测响应帧和信标帧，直到 MaxChannelTime 为止，并为发现的每个网络（BSS）构建一份描述。这正是主动扫描比被动扫描快的原因：无需在每个信道上苦等一整个信标间隔，一个安静的信道只要几毫秒就能排除。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Not every device answers a probe. An AP only replies if it meets strict criteria — chiefly that the requested SSID is either the wildcard or matches its own. This keeps a Probe Request for one network from triggering a storm of irrelevant replies from every nearby AP.",
+      "zh": "并非每台设备都会回应探测。AP 只有在满足严格条件时才回答——最关键的一条是：请求中的 SSID 要么是通配 SSID，要么与它自身的 SSID 匹配。这样可以避免针对某一个网络的探测请求，引来附近每个 AP 一拥而上的无关回应。"
+    },
+    {
+      "type": "prose",
+      "en": "A Probe Response looks a lot like a Beacon: it carries the timestamp, beacon interval, capability information, supported rates, and a long, optional list of elements describing the network (security, HT/VHT/HE/EHT capabilities, country and power limits, and more). The station uses exactly this information to decide which network and which channel are worth joining.",
+      "zh": "探测响应在内容上与信标帧非常相似：它携带时间戳、信标间隔、能力信息、支持的速率，以及一长串描述该网络的可选元素（安全配置、HT/VHT/HE/EHT 能力、国家与功率限制等等）。站点正是依据这些信息，来判断哪个网络、哪个信道值得加入。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact rules: active scan procedure, response criteria, and response contents",
+        "zh": "精确规则：主动扫描流程、回应条件与响应内容"
+      },
+      "en": "Per 11.1.4.3.2, for each channel a non-DMG STA waits out ProbeDelay, performs the basic access procedure (10.3.4.2), sends a broadcast Probe Request carrying the SSID/BSSID from the MLME-SCAN.request, then starts the ActiveScanningTimer. If no PHY-CCA.indication(BUSY) arrives before MinChannelTime, it abandons the channel; otherwise it gathers Probe Response and Beacon frames until MaxChannelTime and builds BSSDescriptions. The response criteria (11.1.4.3.4) say a STA shall NOT respond unless it is an AP/IBSS/mesh STA and the probe's SSID is the wildcard SSID or matches its own SSID, with extra address and Multiple-BSSID conditions. When a STA does respond (11.1.4.3.9), it sends a Probe Response (or Beacon) addressed to the requester, honoring any Request/Extended Request elements. The Probe Response frame body itself (Table 9-69, 9.3.3.10) begins with Timestamp, Beacon Interval, and Capability Information, then SSID, Supported Rates, and a large conditional element list.",
+      "zh": "依据 11.1.4.3.2，非 DMG 站点在每个信道上先等过 ProbeDelay，执行基本接入流程（10.3.4.2），发出携带 MLME-SCAN.request 中 SSID/BSSID 的广播探测请求，随后启动 ActiveScanningTimer。若在 MinChannelTime 之前未收到 PHY-CCA.indication(BUSY)，便放弃该信道；否则持续收集探测响应帧与信标帧直到 MaxChannelTime，并构建 BSSDescriptions。回应条件（11.1.4.3.4）规定：除非站点是 AP/IBSS/mesh 站点，且探测请求中的 SSID 为通配 SSID 或与自身 SSID 匹配（并满足额外的地址与多 BSSID 条件），否则“不得”回应。当站点确实回应时（11.1.4.3.9），它向请求方发送探测响应帧（或信标帧），并满足其中的 Request/Extended Request 元素。探测响应帧体本身（表 9-69，9.3.3.10）以时间戳、信标间隔、能力信息开头，随后是 SSID、支持速率，以及一长串带条件的元素列表。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2446,
+          2447,
+          2450,
+          2457,
+          807
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2446,
+        2447
+      ],
+      "note": "11.1.4.3.1-11.1.4.3.2 active scanning introduction and non-DMG STA procedure (ProbeDelay, MinChannelTime, MaxChannelTime)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2450,
+        2451
+      ],
+      "note": "11.1.4.3.4 criteria for sending a Probe Response (wildcard/matching SSID, AP/IBSS/mesh)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2457
+      ],
+      "note": "11.1.4.3.9 contents of a probe response"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        806,
+        807
+      ],
+      "note": "9.3.3.10 Probe Response frame body, Table 9-69"
+    }
+  ],
+  "covers": [
+    "80211-2024:11.1.4.3.1",
+    "80211-2024:11.1.4.3.2",
+    "80211-2024:11.1.4.3.4",
+    "80211-2024:11.1.4.3.9",
+    "80211-2024:9.3.3.10"
+  ]
+}
