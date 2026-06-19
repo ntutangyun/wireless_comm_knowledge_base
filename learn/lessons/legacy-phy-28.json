@@ -1,0 +1,175 @@
+{
+  "id": "legacy-phy-28",
+  "title": {
+    "en": "DMG PHY Clause 20 Remainder I: Common Front-End, Control / SC / Low-Power-SC Transmit-Receive Chains",
+    "zh": "DMG 物理层第 20 章余部之一：公共前端与控制/SC/低功耗-SC 模式收发链"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "The 60 GHz DMG PHY (Clause 20) is the millimetre-wave single-carrier family behind 802.11ad. Before any of its three modulation modes diverge, they share a single front-end — the same channels, the same transmit spectrum mask, the same RF tolerances, the same preamble, the same scrambler and error-correcting codes. This lesson walks that common spine first, then follows the three single-carrier-family modes (control, SC, low-power SC) from preamble to data field. The goal is intuition and a map of which subclause does which job, not every equation.",
+      "zh": "60 GHz 的 DMG 物理层（第 20 章）是 802.11ad 背后的毫米波单载波家族。在它的三种调制模式各自分道扬镳之前，它们共用同一套前端——相同的信道、相同的发射频谱模板、相同的射频容差、相同的前导、相同的扰码器与纠错码。本课先走一遍这条公共主干，再依次跟随三种单载波家族模式（控制、SC、低功耗 SC）从前导走到数据字段。目标是建立直觉、画出“哪个子条款做哪件事”的地图，而不是堆砌每一条公式。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the common parameters (20.3). Channelization (20.3.1) places channels on a 56.16 GHz starting grid, with channel 2 mandatory. The transmit mask (20.3.2) bounds the spectrum to a 0 dBr bandwidth of at most 1.88 GHz, falling off to -30 dBr past a 3.06 GHz offset. The common requirements (20.3.3) then list the RF discipline shared by all three modes: a center-frequency tolerance of plus or minus 20 ppm (20.3.3.2) and matching symbol-clock tolerance (20.3.3.3), center-frequency leakage below -23 dB (20.3.3.4), transmit ramp-up and ramp-down each under 10 ns (20.3.3.5), a fixed antenna setting per PPDU (20.3.3.6), a maximum receive input level (20.3.3.7), and minimum receive sensitivity per MCS (20.3.3.8, where MCS 0 must hit a 5% PER at the listed levels).",
+      "zh": "先看公共参数（20.3）。信道化（20.3.1）把信道排在以 56.16 GHz 为起点的栅格上，其中信道 2 为必选。发射频谱模板（20.3.2）将频谱限制在 0 dBr 带宽不超过 1.88 GHz，并在 3.06 GHz 偏移之外衰减到 -30 dBr。公共要求（20.3.3）随后列出三种模式共享的射频纪律：中心频率容差正负 20 ppm（20.3.3.2）以及与之匹配的符号时钟容差（20.3.3.3）、中心频率泄漏低于 -23 dB（20.3.3.4）、发射上升沿与下降沿各自小于 10 ns（20.3.3.5）、每个 PPDU 内固定的天线设置（20.3.3.6）、接收机最大输入电平（20.3.3.7），以及按 MCS 给出的最小接收灵敏度（20.3.3.8，其中 MCS 0 必须在所列电平下达到 5% 的误包率）。"
+    },
+    {
+      "type": "prose",
+      "en": "Next come the timing and math conventions and the shared front-of-PPDU machinery. Timing-related parameters (20.3.4) fix the chip rate at 1760 MHz and define the STF, CE, and header durations. The math conventions (20.3.5.1) describe the transmitted signal as a complex baseband waveform up-converted to the carrier. The common preamble (20.3.6) is a Short Training field — 16 repeats of a length-128 Golay sequence Ga128 plus one inverted copy, used for detection, AGC, and synchronisation (20.3.6.2) — followed by a Channel Estimation field built from the Gu512 and Gv512 Golay sequences (20.3.6.3), which both estimates the channel and signals which modulation the PPDU uses.",
+      "zh": "接下来是时序与数学约定，以及共享的 PPDU 前部机制。时序相关参数（20.3.4）把码片速率定在 1760 MHz，并定义 STF、CE 与帧头的持续时间。数学约定（20.3.5.1）把发射信号描述为一个复基带波形并上变频到载波。公共前导（20.3.6）由一个短训练字段——长度为 128 的 Golay 序列 Ga128 重复 16 次再加一个取反副本，用于检测、自动增益控制与同步（20.3.6.2）——后接一个由 Gu512 与 Gv512 Golay 序列构成的信道估计字段（20.3.6.3），后者既估计信道，又指示该 PPDU 使用哪种调制。"
+    },
+    {
+      "type": "prose",
+      "en": "Three more shared primitives finish the spine. The header check sequence (20.3.7) protects the control- and SC-mode headers with a CRC-16-CCITT over the header bits. The common LDPC parity matrices (20.3.8) define four codes — rates 1/2, 5/8, 3/4, and 13/16 (20.3.8.2 through 20.3.8.5) — all sharing a 672-bit codeword built from cyclically-permuted 42x42 identity submatrices. The scrambler (20.3.9) XORs the bit stream with a length-127 sequence from the polynomial x^7 + x^4 + 1, seeded per PPDU. And RCPI (20.3.10) is the received-power measurement taken over the preamble, accurate to plus or minus 5 dB.",
+      "zh": "还有三个共享原语收尾这条主干。帧头校验序列（20.3.7）用对帧头比特做 CRC-16-CCITT 来保护控制模式与 SC 模式的帧头。公共 LDPC 校验矩阵（20.3.8）定义了四种码——码率 1/2、5/8、3/4 与 13/16（20.3.8.2 至 20.3.8.5）——它们共享 672 比特的码字，由循环移位的 42×42 单位子矩阵拼成。扰码器（20.3.9）用多项式 x^7 + x^4 + 1 生成的长度 127 序列对比特流做异或，每个 PPDU 单独播种。而 RCPI（20.3.10）是在前导上测得的接收功率，精度为正负 5 dB。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    subgraph Common[\"20.3 Common front-end\"]\n        CH[\"20.3.1-20.3.3 channels / mask / RF reqs\"]\n        PRE[\"20.3.6 preamble: STF + CE field\"]\n        SCR[\"20.3.9 scrambler\"]\n        LDPC[\"20.3.8 LDPC 1/2, 5/8, 3/4, 13/16\"]\n        HCS[\"20.3.7 header CRC\"]\n    end\n    Common --> CM[\"20.4 Control mode<br/>MCS 0, DBPSK + spreading\"]\n    Common --> SC[\"20.5 SC mode<br/>pi/2 BPSK..64-QAM, blocks + GI\"]\n    Common --> LP[\"20.6 Low-power SC mode<br/>RS + short inner code (obsolete)\"]",
+      "zh": "flowchart TD\n    subgraph Common[\"20.3 公共前端\"]\n        CH[\"20.3.1-20.3.3 信道 / 模板 / 射频要求\"]\n        PRE[\"20.3.6 前导：STF + CE 字段\"]\n        SCR[\"20.3.9 扰码器\"]\n        LDPC[\"20.3.8 LDPC 1/2, 5/8, 3/4, 13/16\"]\n        HCS[\"20.3.7 帧头 CRC\"]\n    end\n    Common --> CM[\"20.4 控制模式<br/>MCS 0, DBPSK + 扩频\"]\n    Common --> SC[\"20.5 SC 模式<br/>pi/2 BPSK..64-QAM, 分块 + GI\"]\n    Common --> LP[\"20.6 低功耗 SC 模式<br/>RS + 短内码（已废弃）\"]"
+    },
+    {
+      "type": "prose",
+      "en": "DMG control mode (20.4) is the rugged, mandatory beacon-and-control path — it is what gets sent at MCS 0. Its PPDU (20.4.2) carries a control-mode preamble whose STF uses 48 repeats of Gb128 (20.4.3.1) and a header (20.4.3.2) with fields like Length, PPDU Type, and Training Length protected by an HCS. The data field (20.4.3.3) scrambles, then LDPC-encodes (an effective rate of at most 1/2 derived from the rate-3/4 matrix with shortening), differentially modulates with DBPSK (20.4.3.3.4), and finally spreads each symbol with the length-32 Golay sequence Ga32 for extra robustness. Its performance section (20.4.4) sets a transmit EVM of -6 dB and a CCA-busy requirement above -68 dBm.",
+      "zh": "DMG 控制模式（20.4）是稳健的、必选的信标与控制通道——它是在 MCS 0 上发送的内容。它的 PPDU（20.4.2）携带一个控制模式前导，其 STF 使用 Gb128 重复 48 次（20.4.3.1），以及一个帧头（20.4.3.2），含 Length、PPDU Type、Training Length 等字段并由 HCS 保护。数据字段（20.4.3.3）先扰码，再做 LDPC 编码（由码率 3/4 矩阵经缩短得到的有效码率不超过 1/2），用 DBPSK 做差分调制（20.4.3.3.4），最后用长度 32 的 Golay 序列 Ga32 对每个符号扩频以获得额外稳健性。其性能章节（20.4.4）规定发射 EVM 为 -6 dB，并要求在高于 -68 dBm 时 CCA 置忙。"
+    },
+    {
+      "type": "prose",
+      "en": "DMG SC mode (20.5) is the high-throughput workhorse — mandatory for MCS 4 and below, optional above. Its header (20.5.3.1) is richer than control mode's, carrying Base MCS, an 18-bit Length, Aggregation, Beam Tracking Request, and an Extended SC MCS Indication that, when set, lets the receiver recover the true PSDU length from a clever (X6, X7, Length) mapping (20.5.3.1.5). The data field (20.5.3.2) is a full chain: scramble (20.5.3.2.2), LDPC-encode with optional shortening/puncturing/repetition (20.5.3.2.3), map to a pi/2-rotated constellation from BPSK up to 64-QAM (20.5.3.2.4), then block the symbols into 448-symbol groups each prefixed by a 64-symbol Golay guard interval (20.5.3.2.5). Performance (20.5.4) tightens EVM per MCS (down to -31 dB for the densest) and adds a Time-of-Departure accuracy target.",
+      "zh": "DMG SC 模式（20.5）是高吞吐的主力——对 MCS 4 及以下必选，以上可选。它的帧头（20.5.3.1）比控制模式更丰富，携带 Base MCS、18 比特的 Length、Aggregation、Beam Tracking Request，以及一个 Extended SC MCS Indication；该位置位时，接收机可借助巧妙的（X6, X7, Length）映射恢复真实的 PSDU 长度（20.5.3.1.5）。数据字段（20.5.3.2）是一条完整链路：扰码（20.5.3.2.2）、带可选缩短/打孔/重复的 LDPC 编码（20.5.3.2.3）、映射到从 BPSK 到 64-QAM 的 pi/2 旋转星座（20.5.3.2.4），再把符号分块成每组 448 符号、每组前置 64 符号 Golay 保护间隔（20.5.3.2.5）。性能（20.5.4）按 MCS 收紧 EVM（最稠密的低至 -31 dB），并新增到达时间精度目标。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the reuse: low-power SC mode (20.6) borrows the SC preamble (20.6.2.1), the SC header fields and header encoding (20.6.2.2), and the same pi/2-BPSK / pi/2-QPSK mappers. What changes is the data field's coding — an outer Reed-Solomon RS(224,208) plus a short inner block code (16,8), (12,8), or (9,8) SPC — and the blocking, which uses 512-chip blocks of eight 64-symbol subblocks (20.6.2.3). The standard itself marks this mode obsolete, so treat it as a historical low-complexity option, not a target for new designs.",
+      "zh": "注意这里的复用：低功耗 SC 模式（20.6）借用了 SC 前导（20.6.2.1）、SC 帧头字段与帧头编码（20.6.2.2），以及相同的 pi/2-BPSK / pi/2-QPSK 映射器。变化的是数据字段的编码——外层 Reed-Solomon RS(224,208) 加上一个短内层分组码 (16,8)、(12,8) 或 (9,8) 单奇偶校验——以及分块方式，它使用由八个 64 符号子块组成的 512 码片块（20.6.2.3）。标准本身已将该模式标记为废弃，因此应把它当作历史上的低复杂度选项，而不是新设计的目标。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Why pi/2 rotation, and how SC symbol blocking actually works",
+        "zh": "为何要做 pi/2 旋转，以及 SC 符号分块到底如何运作"
+      },
+      "en": "In SC mode the constellation mappers (20.5.3.2.4) all apply a per-symbol pi/2 phase rotation: each base symbol s-tilde-k is multiplied by exp(j*pi*k/2). The standard notes that with appropriate transmit filtering, pi/2-BPSK is equivalent to a precoded pulse-shaped MSK (e.g. GMSK), which keeps the envelope nearly constant and is friendly to the cheap, power-limited 60 GHz amplifiers. Symbol blocking and guard insertion (20.5.3.2.5) then groups NCBPB coded bits per block — 448 symbols for pi/2-BPSK, 896 for QPSK, 1792 for 16-QAM, 2688 for 64-QAM (Table 20-19) — and prepends each block with a 64-symbol Golay Ga64 guard interval, closing the final block with the same Golay sequence when no additional PPDU follows. This Golay guard doubles as both a cyclic-prefix-like inter-block buffer and a known sequence the receiver can use for per-block channel tracking — a single-carrier analogue of an OFDM cyclic prefix.",
+      "zh": "在 SC 模式中，星座映射器（20.5.3.2.4）都施加逐符号的 pi/2 相位旋转：每个基础符号 s-tilde-k 乘以 exp(j*pi*k/2)。标准指出，在适当的发射滤波下，pi/2-BPSK 等价于一个预编码的脉冲成形 MSK（例如 GMSK），这能保持包络近乎恒定，对廉价、功率受限的 60 GHz 放大器很友好。符号分块与保护间隔插入（20.5.3.2.5）随后把每块按 NCBPB 个编码比特分组——pi/2-BPSK 为 448 符号、QPSK 为 896、16-QAM 为 1792、64-QAM 为 2688（表 20-19）——并在每块前置一个 64 符号的 Golay Ga64 保护间隔；当其后没有附加 PPDU 时，用同样的 Golay 序列收尾最后一块。这个 Golay 保护间隔身兼两职：既是类似循环前缀的块间缓冲，又是接收机可用于逐块信道跟踪的已知序列——堪称 OFDM 循环前缀的单载波对应物。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3529,
+          3531,
+          3532
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3507,
+        3508
+      ],
+      "note": "20.3.1-20.3.3 channelization, transmit mask, common RF requirements (frequency/clock tolerance, leakage, ramp, antenna, max input, sensitivity)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3510,
+        3511,
+        3512
+      ],
+      "note": "20.3.4-20.3.6 timing parameters, math conventions, common preamble (STF, CE field)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3513,
+        3514,
+        3515
+      ],
+      "note": "20.3.7-20.3.10 HCS CRC, common LDPC parity matrices (1/2, 5/8, 3/4, 13/16), scrambler, RCPI"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3516,
+        3517,
+        3518,
+        3519,
+        3520
+      ],
+      "note": "20.4 DMG control mode: PPDU, preamble, header, data field (scrambler/LDPC/DBPSK/spreading), performance (EVM, CCA)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3521,
+        3525,
+        3529,
+        3532,
+        3533
+      ],
+      "note": "20.5 DMG SC mode: header, length recovery, data field chain (scramble/encode/map/block+GI), performance"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3535,
+        3536,
+        3538
+      ],
+      "note": "20.6 DMG low-power SC mode (obsolete): SC preamble/header reuse, RS+inner block coding, 512-chip blocking"
+    }
+  ],
+  "covers": [
+    "80211-2024:20.3.1",
+    "80211-2024:20.3.2",
+    "80211-2024:20.3.3.1",
+    "80211-2024:20.3.3.2",
+    "80211-2024:20.3.3.3",
+    "80211-2024:20.3.3.4",
+    "80211-2024:20.3.3.5",
+    "80211-2024:20.3.3.6",
+    "80211-2024:20.3.3.7",
+    "80211-2024:20.3.3.8",
+    "80211-2024:20.3.4",
+    "80211-2024:20.3.5.1",
+    "80211-2024:20.3.6.1",
+    "80211-2024:20.3.6.2",
+    "80211-2024:20.3.6.3",
+    "80211-2024:20.3.7",
+    "80211-2024:20.3.8.1",
+    "80211-2024:20.3.8.2",
+    "80211-2024:20.3.8.3",
+    "80211-2024:20.3.8.4",
+    "80211-2024:20.3.8.5",
+    "80211-2024:20.3.9",
+    "80211-2024:20.3.10",
+    "80211-2024:20.4.1",
+    "80211-2024:20.4.2",
+    "80211-2024:20.4.3.1",
+    "80211-2024:20.4.3.2",
+    "80211-2024:20.4.3.3",
+    "80211-2024:20.4.4.1",
+    "80211-2024:20.4.4.2",
+    "80211-2024:20.5.1",
+    "80211-2024:20.5.2",
+    "80211-2024:20.5.3.1",
+    "80211-2024:20.5.3.2.1",
+    "80211-2024:20.5.3.2.2",
+    "80211-2024:20.5.3.2.3",
+    "80211-2024:20.5.3.2.4",
+    "80211-2024:20.5.3.2.5",
+    "80211-2024:20.5.4.1",
+    "80211-2024:20.5.4.2",
+    "80211-2024:20.6.1",
+    "80211-2024:20.6.2.1",
+    "80211-2024:20.6.2.2",
+    "80211-2024:20.6.2.3"
+  ],
+  "track": "legacy-phy"
+}

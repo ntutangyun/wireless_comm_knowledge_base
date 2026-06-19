@@ -1,0 +1,143 @@
+{
+  "id": "legacy-phy-30",
+  "title": {
+    "en": "VHT PHY Clause 21 Remainder: SU/MU Beamforming & Sounding PHY, VHT Spectral Mask / EVM, Receiver Limits, and the Transmit/Receive Procedures",
+    "zh": "VHT 物理层第 21 章余部:SU/MU 波束成形与探测物理层、VHT 频谱模板/EVM、接收机限值,以及收发流程"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "By now you've met the heart of the VHT (802.11ac) PHY — its OFDM symbols, preamble fields, and MCS tables. This lesson sweeps up the uncovered tail of Clause 21: how a multi-antenna transmitter steers energy (beamforming and sounding), the housekeeping clauses (regulatory, channelization, slot time, port impedance), the bench-test rulebook that says when a radio is 'good enough' to transmit and receive, and finally the two state machines that actually drive a packet out the antenna and pull one back in. Think of it as the radio's spec sheet plus its operating instructions.",
+      "zh": "到目前为止,你已经接触了 VHT(802.11ac)物理层的核心——它的 OFDM 符号、前导字段和 MCS 速率表。本课收尾 Clause 21 尚未覆盖的部分:多天线发射机如何把能量定向(波束成形与信道探测)、那些“家务事”条款(法规、信道划分、时隙时间、端口阻抗)、规定一台收发机“合格”与否的测试规则手册,以及最后真正把一个数据包推出天线、又把一个包接回来的两台状态机。可以把它看作这部电台的“规格书”加“操作说明书”。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with beamforming (21.3.11). A transmitter with several antennas — the beamformer — can shape its signal so it lands strongest where the receiver is. In SU-MIMO all the streams go to one station; in downlink MU-MIMO disjoint subsets of streams go to different stations at once. To do this the beamformer needs to know the channel, so it sends a sounding packet and the beamformee replies with a feedback matrix V, compressed as angles (φ, ψ) so it fits in a frame. The beamformer reconstructs V and computes a steering matrix Q — and crucially the standard leaves how Q is computed up to the implementation. 21.3.11.3 caps the total space-time streams an MU PPDU may carry, and 21.3.11.4 ties each MU recipient to its streams via the Group ID field carried in VHT-SIG-A.",
+      "zh": "先看波束成形(21.3.11)。一台拥有多根天线的发射机——即“波束成形器(beamformer)”——可以塑形信号,让能量在接收机所在方向最强。在 SU-MIMO 中,所有空时流都发给单个站点;在下行 MU-MIMO 中,互不相交的若干流子集同时发给不同站点。要做到这点,波束成形器需要知道信道,于是它发送一个探测包,被成形方(beamformee)回以反馈矩阵 V——以角度(φ、ψ)压缩,以便塞进一帧。波束成形器据此重建 V 并算出导向矩阵 Q;关键在于:标准把 Q 的具体算法留给实现自行决定。21.3.11.3 对一个 MU PPDU 可承载的空时流总数设上限;21.3.11.4 则通过 VHT-SIG-A 中的 Group ID 字段把每个 MU 接收者与它的流对应起来。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Sounding (21.3.12) is deliberately minimal: the only VHT sounding format is the NDP (Null Data Packet) — it reuses the full VHT preamble but carries no Data field. It exists purely to let the beamformee measure the channel and send back V. No payload, no waste.",
+      "zh": "信道探测(21.3.12)刻意做得极简:VHT 唯一的探测格式就是 NDP(空数据包,Null Data Packet)——它沿用完整的 VHT 前导,但不带 Data 字段。它存在的唯一目的,就是让被成形方测量信道并回送 V。没有载荷,毫不浪费。"
+    },
+    {
+      "type": "prose",
+      "en": "Several short clauses set the radio's ground rules. Regulatory requirements (21.3.13) defer to each country's rules and only specify what affects interoperability. Channelization (21.3.14) maps MIB fields like dot11CurrentChannelCenterFrequencyIndex0/1 to actual center frequencies — including the 80+80 MHz case with two separate frequency segments. Slot time (21.3.15) is a flat 9 µs across all widths. And transmit/receive port impedance (21.3.16) simply points back to the Clause 17 antenna-connector definition. These are the un-glamorous parameters that let independently built radios agree on the same air.",
+      "zh": "几条简短的条款为这部电台定下基本规矩。法规要求(21.3.13)服从各国规定,只规定影响互操作性的内容。信道划分(21.3.14)把诸如 dot11CurrentChannelCenterFrequencyIndex0/1 这样的 MIB 字段映射到实际的中心频率——包括 80+80 MHz 这种带两个独立频段的情形。时隙时间(21.3.15)在所有带宽下统一为 9 µs。收发端口阻抗(21.3.16)则直接指回 Clause 17 的天线连接器定义。这些都是不起眼的参数,却让各自独立设计的电台能在同一片空中达成一致。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the conformance rulebook. The transmit specification (21.3.17) bounds what a 'clean' transmitter may emit: a spectral mask (21.3.17.1) shaped per bandwidth (20/40/80/160/80+80 MHz) so you don't splatter into neighbours; spectral flatness (21.3.17.2) so no subcarrier is too loud or soft; center-frequency and symbol-clock tolerance (21.3.17.3) of ±20 ppm from a shared reference oscillator; modulation accuracy / EVM (21.3.17.4) where the relative constellation error must beat a per-MCS limit (e.g. −32 dB for 256-QAM 5/6); and Time-of-Departure accuracy (21.3.17.5) of ≤80 ns RMS, which underpins ranging. The receiver specification (21.3.18) mirrors this from the other end: minimum sensitivity (21.3.18.1), adjacent and nonadjacent channel rejection (21.3.18.2–3), a maximum input of −30 dBm before it must still work (21.3.18.4), CCA sensitivity thresholds per primary/secondary subchannel (21.3.18.5), and the RSSI (21.3.18.6) and RCPI (21.3.18.7) power-report definitions.",
+      "zh": "接下来是合规规则手册。发射规范(21.3.17)界定一台“干净”的发射机可以发出什么:按带宽(20/40/80/160/80+80 MHz)成形的频谱模板(21.3.17.1),让你不致溢出干扰邻道;频谱平坦度(21.3.17.2),使任一子载波不会过强或过弱;中心频率与符号时钟容差(21.3.17.3)为 ±20 ppm,且须取自同一参考振荡器;调制精度/EVM(21.3.17.4),其相对星座误差须优于每种 MCS 的限值(例如 256-QAM 5/6 须达 −32 dB);以及离开时间(Time of Departure)精度(21.3.17.5)须 ≤80 ns 均方根,这是测距的基础。接收规范(21.3.18)从另一端对应映射:最小灵敏度(21.3.18.1)、邻道与非邻道抑制(21.3.18.2–3)、在 −30 dBm 最大输入下仍须工作(21.3.18.4)、按主/辅子信道划分的 CCA 灵敏度门限(21.3.18.5),以及 RSSI(21.3.18.6)与 RCPI(21.3.18.7)这两种功率报告的定义。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy intuition: sensitivity numbers worsen as you widen the channel — BPSK 1/2 is −82 dBm at 20 MHz but only −73 dBm at 160 MHz. Spread the same energy over four times the bandwidth and each part is weaker, so the receiver needs a stronger signal to hear it. The mask and EVM limits then say 'and don't be sloppy while you transmit it.'",
+      "zh": "一个好用的直觉:信道越宽,灵敏度数值越差——BPSK 1/2 在 20 MHz 是 −82 dBm,而在 160 MHz 只有 −73 dBm。把同样的能量摊到四倍的带宽上,每一份就更弱,接收机因此需要更强的信号才听得见。频谱模板与 EVM 限值则补上一句:“而且发的时候别马虎。”"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[PHY-TXSTART.request TXVECTOR] --> B[Initialize, set TX params]\n    B --> C[TX L-Preamble: L-STF, L-LTF, L-SIG]\n    C --> D[TX VHT-Preamble: VHT-SIG-A, VHT-STF, VHT-LTFs, VHT-SIG-B]\n    D --> E[PHY-TXSTART.confirm, set symbol count = NSYM]\n    E --> F{symbol count > 0?}\n    F -- yes --> G[TX PSDU octet: scramble, encode, buffer symbol]\n    G --> F\n    F -- no --> H[Padding & tail bits]\n    H --> I[Switch to RX state]\n    F -. PHY-TXEND.request any stage .-> I",
+      "zh": "flowchart TD\n    A[PHY-TXSTART.request TXVECTOR] --> B[初始化,设置发送参数]\n    B --> C[发 L 前导:L-STF、L-LTF、L-SIG]\n    C --> D[发 VHT 前导:VHT-SIG-A、VHT-STF、VHT-LTFs、VHT-SIG-B]\n    D --> E[PHY-TXSTART.confirm,符号计数 = NSYM]\n    E --> F{符号计数 > 0?}\n    F -- 是 --> G[发 PSDU 字节:加扰、编码、缓冲一个符号]\n    G --> F\n    F -- 否 --> H[填充位与尾比特]\n    H --> I[切换到接收状态]\n    F -. 任意阶段收到 PHY-TXEND.request .-> I"
+    },
+    {
+      "type": "prose",
+      "en": "Finally the two procedures. The transmit procedure (21.3.19) is the choreography above: the MAC issues PHY-TXSTART.request, the PHY sends the legacy then VHT preamble, scrambles and encodes the PSDU symbol by symbol, appends 0–7 padding bits plus tail, and switches to receive when done — and a PHY-TXEND.request can cut it short at any stage. The receive procedure (21.3.20) is the mirror: on energy in the primary channel the PHY raises PHY-CCA.indication(BUSY), checks L-SIG parity and rate, evaluates VHT-SIG-A for a supported mode, optionally decodes VHT-SIG-B (mandatory for an MU beamformee), may filter the PPDU out by Group ID / Partial AID, then hands decoded octets up via PHY-DATA.indication and ends with PHY-RXEND.indication(NoError). Format violations, unsupported rates, and carrier-loss each have their own error indication.",
+      "zh": "最后是两套流程。发送流程(21.3.19)就是上面那段“编舞”:MAC 发出 PHY-TXSTART.request,物理层先发传统前导再发 VHT 前导,逐个符号地对 PSDU 加扰、编码,追加 0–7 个填充位加尾比特,完成后切换到接收;而 PHY-TXEND.request 可在任意阶段将其提前终止。接收流程(21.3.20)则是镜像:当主信道上出现能量,物理层发出 PHY-CCA.indication(BUSY),检查 L-SIG 的奇偶校验与速率,评估 VHT-SIG-A 是否为受支持模式,可选地解码 VHT-SIG-B(对 MU 被成形方为必做),可依据 Group ID / Partial AID 把该 PPDU 滤除,然后通过 PHY-DATA.indication 把解码后的字节上交,最终以 PHY-RXEND.indication(NoError) 收尾。格式违规、不支持的速率、载波丢失各自对应一种错误指示。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "How the receiver decides a VHT PPDU vs HT vs non-HT — the QBPSK trick",
+        "zh": "接收机如何区分 VHT、HT 与非 HT —— QBPSK 这一招"
+      },
+      "en": "Inside 21.3.20, the PHY must tell three preamble families apart with no explicit 'this is VHT' flag in L-SIG. The rule: after a valid L-SIG (parity OK, RATE = 6 Mb/s, length implying ≥6 OFDM symbols), it inspects the modulation of the symbols following L-LTF. If the first OFDM symbol after L-LTF is BPSK it issues PHY-RXEARLYSIG.indication; the discriminator is then the third symbol — VHT marks VHT-SIG-A by rotating its second symbol to QBPSK (the constellation is rotated 90°), whereas HT-greenfield/mixed and non-HT use different patterns. Concretely, the first two symbols after L-LTF in BPSK and the third in QBPSK signals a VHT PPDU. On a supported VHT-SIG-A the PHY commits to holding CCA busy for RXTIME and reads VHT-SIG-A's Group ID: a VHT SU value lets it skip VHT-SIG-B decoding, while a VHT MU value (1–62) forces an MU-beamformee-capable STA to decode VHT-SIG-B and, via MembershipStatusInGroupID and the MU[u] NSTS fields, learn how many streams (if any) are its own. A Reserved VHT-SIG-A indication, a CRC failure, or an L-SIG Length not divisible by 3 each yield PHY-RXEND.indication(FormatViolation).",
+      "zh": "在 21.3.20 内部,物理层必须在 L-SIG 里没有任何显式“这是 VHT”标志的情况下,把三种前导家族区分开。规则是:在 L-SIG 有效(奇偶正确、RATE = 6 Mb/s、长度意味着 ≥6 个 OFDM 符号)之后,它检查 L-LTF 之后各符号的调制方式。若 L-LTF 之后的第一个 OFDM 符号是 BPSK,便发出 PHY-RXEARLYSIG.indication;真正的判别依据是第三个符号——VHT 通过把它的第二个符号旋转为 QBPSK(星座旋转 90°)来标记 VHT-SIG-A,而 HT-greenfield/mixed 与非 HT 使用不同的模式。具体而言:L-LTF 之后头两个符号为 BPSK、第三个符号为 QBPSK,即标示这是一个 VHT PPDU。在收到受支持的 VHT-SIG-A 后,物理层承诺在 RXTIME 期间保持 CCA 忙,并读取 VHT-SIG-A 的 Group ID:VHT SU 值允许它跳过 VHT-SIG-B 解码,而 VHT MU 值(1–62)则强制一个具备 MU 被成形能力的 STA 解码 VHT-SIG-B,并经由 MembershipStatusInGroupID 与 MU[u] NSTS 字段,得知有多少流(若有的话)属于自己。保留的 VHT-SIG-A 指示、CRC 失败,或 L-SIG Length 不能被 3 整除,各自都会产生 PHY-RXEND.indication(FormatViolation)。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3652,
+          3653,
+          3656
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3633,
+        3634,
+        3635
+      ],
+      "note": "21.3.11 SU/MU-MIMO beamforming (V matrix, max total STS, Group ID) and 21.3.12 VHT NDP sounding format"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3635,
+        3636,
+        3637
+      ],
+      "note": "21.3.13 regulatory, 21.3.14 channelization, 21.3.15 slot time (9 us), 21.3.16 port impedance"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3637,
+        3642,
+        3645
+      ],
+      "note": "21.3.17 VHT transmit spec: spectral mask, flatness, +/-20 ppm tolerance, EVM/constellation error, 80 ns ToD accuracy"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3645,
+        3646,
+        3650
+      ],
+      "note": "21.3.18 VHT receiver spec: sensitivity table, adjacent/nonadjacent rejection, -30 dBm max input, CCA thresholds, RSSI, RCPI"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3650,
+        3652,
+        3656
+      ],
+      "note": "21.3.19 PHY transmit procedure/state machine and 21.3.20 PHY receive procedure/state machine"
+    }
+  ],
+  "covers": [
+    "80211-2024:21.3.11.1",
+    "80211-2024:21.3.11.2",
+    "80211-2024:21.3.11.3",
+    "80211-2024:21.3.11.4",
+    "80211-2024:21.3.12",
+    "80211-2024:21.3.13",
+    "80211-2024:21.3.14",
+    "80211-2024:21.3.15",
+    "80211-2024:21.3.16",
+    "80211-2024:21.3.17.1",
+    "80211-2024:21.3.17.2",
+    "80211-2024:21.3.17.3",
+    "80211-2024:21.3.17.4",
+    "80211-2024:21.3.17.5",
+    "80211-2024:21.3.18.1",
+    "80211-2024:21.3.18.2",
+    "80211-2024:21.3.18.3",
+    "80211-2024:21.3.18.4",
+    "80211-2024:21.3.18.5",
+    "80211-2024:21.3.18.6",
+    "80211-2024:21.3.18.7",
+    "80211-2024:21.3.19",
+    "80211-2024:21.3.20"
+  ],
+  "track": "legacy-phy"
+}

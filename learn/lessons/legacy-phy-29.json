@@ -1,0 +1,114 @@
+{
+  "id": "legacy-phy-29",
+  "title": {
+    "en": "DMG PHY Clause 20 Remainder II: Transmit/Receive Procedures, Beamforming (SLS & Beam Refinement) PHY, Golay Sequences, and the DMG PLME/MIB",
+    "zh": "DMG 物理层第 20 章余部之二：收发流程、波束成形（SLS 与波束精修）物理层、Golay 序列与 DMG PLME/MIB"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "We have already met the DMG (directional multi-gigabit) modulation modes — control, single-carrier, and OFDM — that carry bits over a 60 GHz link. This lesson is the back half of Clause 20: the machinery wrapped around those modes. It answers four practical questions. How does the PHY actually clock a frame out and in (the transmit and receive procedures)? How do two 60 GHz radios find each other's beam in the first place (the beamforming PHY)? What waveform underpins every DMG preamble and training field (the Golay sequences)? And how does management software see and steer the PHY (the DMG PLME and its MIB)?",
+      "zh": "我们已经认识了 DMG（定向多吉比特）的几种调制模式——控制模式、单载波模式与 OFDM 模式——它们负责把比特承载到 60 GHz 链路上。本课讲的是第 20 章的后半部分：包裹在这些调制模式外围的“机件”。它回答四个实际问题：物理层究竟如何把一帧时序化地发出去、收回来（收发流程）？两台 60 GHz 收发机最初又如何彼此对准波束（波束成形物理层）？是什么波形支撑了每一个 DMG 前导码与训练字段（Golay 序列）？以及管理软件如何观察并操控物理层（DMG PLME 及其 MIB）？"
+    },
+    {
+      "type": "prose",
+      "en": "The transmit procedure (20.7) and receive procedure (20.8) are small state machines, driven entirely by PHY-SAP primitives. On transmit: a PHY-TXSTART.request puts the PHY into the transmit state, the PLME has already tuned it to the right 60 GHz channel, and the TXVECTOR carries MCS and power. The PHY sends the preamble, encodes and transmits the header, then streams the PSDU octets from the MAC. If no training (TRN) fields are requested it ends with PHY-TXEND.confirm; if TRN units are requested it keeps going through the AGC and TRN fields first. On receive: detecting the short training field (STF) triggers PHY-CCA.indication(BUSY), the PHY locks onto the channel-estimation field, decodes the header to learn MCS and length, optionally raises PHY-RXSTART.indication, and finishes with PHY-RXEND.indication once the data — and any trailing training fields — are done.",
+      "zh": "发送流程（20.7）与接收流程（20.8）都是小型状态机，完全由 PHY-SAP 原语驱动。发送侧：PHY-TXSTART.request 把物理层置入发送态，此前 PLME 已经把它调谐到正确的 60 GHz 信道，TXVECTOR 携带 MCS 与发射功率。物理层先发前导码，再编码并发送头部，然后从 MAC 逐字节流出 PSDU。若未请求训练（TRN）字段，则以 PHY-TXEND.confirm 结束；若请求了 TRN 单元，则会先继续发完 AGC 与 TRN 字段。接收侧：检测到短训练字段（STF）触发 PHY-CCA.indication(BUSY)，物理层锁定信道估计字段，解码头部以获知 MCS 与长度，可选地发出 PHY-RXSTART.indication，待数据——以及任何拖尾的训练字段——结束后以 PHY-RXEND.indication 收尾。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Watch the TRN tail. The thing that makes the DMG transmit/receive procedures different from a normal Wi-Fi PHY is that a frame can carry training fields *after* the data. Those AGC + TRN fields are not payload — they are beam-training symbols appended to a real (or null) data frame, which is exactly what the beamforming PHY relies on.",
+      "zh": "留意 TRN 尾部。DMG 收发流程与普通 Wi-Fi 物理层最大的不同，在于一帧可以在数据*之后*携带训练字段。这些 AGC + TRN 字段并非载荷——它们是附加在真实（或空）数据帧之后的波束训练符号，而这正是波束成形物理层所依赖的东西。"
+    },
+    {
+      "type": "prose",
+      "en": "That brings us to the beamforming PHY (20.9). At 60 GHz, signals are highly directional and attenuate fast, so two STAs cannot just talk omni-directionally — they must first train their antenna arrays to point at each other. The standard splits this into two PPDU families. Sector-level sweep (SLS, 20.9.2.1) is the coarse first pass: a transmitter sweeps through its antenna sectors (using DMG control-mode PPDUs, or control/SC-mode on the receive sweep) so the peer can pick the best one. Beam refinement (BRP, 20.9.2.2) is the fine-tuning pass: BRP PPDUs append an AGC field and a TRN field of training units, and come in two flavours — BRP-RX (Training Length > 0, PPDU Type 0) trains the receiver's antenna weight vectors, and BRP-TX (PPDU Type 1) lets the transmitter vary its weights per subfield so the receiver can measure and feed back the best.",
+      "zh": "由此引出波束成形物理层（20.9）。在 60 GHz，信号高度定向且衰减极快，因此两台站点无法直接全向通信——它们必须先训练各自的天线阵列，使之彼此指向。标准把这件事拆成两类 PPDU。扇区级扫描（SLS，20.9.2.1）是粗略的第一遍：发送方逐个遍历其天线扇区（发送扫描使用 DMG 控制模式 PPDU，接收扫描则用控制或 SC 模式），以便对端从中挑出最佳扇区。波束精修（BRP，20.9.2.2）是精细调优的一遍：BRP PPDU 在数据之后附加一个 AGC 字段和一个由训练单元组成的 TRN 字段，并分为两种——BRP-RX（训练长度 > 0、PPDU 类型为 0）训练接收方的天线权重矢量；BRP-TX（PPDU 类型为 1）则让发送方在每个子字段逐一改变权重，由接收方测量并反馈出最佳配置。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[\"DMG link setup at 60 GHz\"] --> B[\"SLS: sector-level sweep<br/>coarse — pick best antenna sector\"]\n    B --> C{\"Need finer<br/>antenna weights?\"}\n    C -->|yes| D[\"BRP: beam refinement\"]\n    D --> E[\"BRP-RX PPDU<br/>train receiver AWVs<br/>(PPDU Type 0)\"]\n    D --> F[\"BRP-TX PPDU<br/>train transmitter AWVs<br/>(PPDU Type 1)\"]\n    E --> G[\"Beamformed link established\"]\n    F --> G\n    C -->|no| G",
+      "zh": "flowchart TD\n    A[\"60 GHz DMG 链路建立\"] --> B[\"SLS：扇区级扫描<br/>粗调——挑选最佳天线扇区\"]\n    B --> C{\"是否需要更精细的<br/>天线权重？\"}\n    C -->|是| D[\"BRP：波束精修\"]\n    D --> E[\"BRP-RX PPDU<br/>训练接收方 AWV<br/>（PPDU 类型 0）\"]\n    D --> F[\"BRP-TX PPDU<br/>训练发送方 AWV<br/>（PPDU 类型 1）\"]\n    E --> G[\"波束成形链路建立\"]\n    F --> G\n    C -->|否| G"
+    },
+    {
+      "type": "prose",
+      "en": "Underneath all of this — every DMG preamble, the single-carrier guard interval, and the AGC and TRN training subfields — sits one family of waveforms: the Golay complementary sequences (20.10). There are three complementary pairs, named by length: Ga128/Gb128, Ga64/Gb64, Ga32/Gb32, each generated by a short recursive procedure with fixed delay and weight vectors. Their defining property is near-perfect autocorrelation: a receiver correlating against them gets a sharp, clean peak even in a multipath channel. That is what makes the TRN fields useful for channel measurement — the receiver finds the strongest tap during the CE subfield and measures the surrounding taps in each TRN subfield to refine the beam.",
+      "zh": "支撑以上一切——每一个 DMG 前导码、单载波保护间隔，以及 AGC 与 TRN 训练子字段——的，是同一族波形：Golay 互补序列（20.10）。共有三对互补序列，按长度命名：Ga128/Gb128、Ga64/Gb64、Ga32/Gb32，每一对都由一段带固定延迟与权重矢量的简短递归过程生成。它们的决定性特性是近乎完美的自相关：接收机对其做相关时，即便在多径信道中也能得到一个尖锐、干净的峰。正因如此，TRN 字段才可用于信道测量——接收机在 CE 子字段中找出最强的抽头，再在每个 TRN 子字段中测量其周边抽头，从而精修波束。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the DMG PLME (20.11) is the management face of this PHY. The PLME SAP primitives (20.11.1) — PLME-GET, PLME-SET, PLME-RESET, PLME-CHARACTERISTICS — let higher-layer management read and write the PHY. Those reads and writes land in the DMG PHY MIB (20.11.2), a table of attributes each marked static (fixed for an implementation, e.g. dot11PHYType = DMG) or dynamic (changeable, e.g. dot11LowPowerSCPHYActivated). The TXTIME calculation (20.11.3) gives the PLME a formula to predict how long a PPDU will occupy the medium — summing the STF, CE, header, data, and any TRN-unit time — which the MAC needs for airtime accounting. And the DMG PHY characteristics table (20.11.4) lists the fixed constants the PLME-CHARACTERISTICS primitive returns: aSIFSTime = 3 µs, aSlotTime = 5 µs, aPPDUMaxTime = 2 ms, aPSDUMaxLength = 262 143 octets, and the beam-refinement constants like aBRPminSCblocks = 18.",
+      "zh": "最后，DMG PLME（20.11）是这一物理层面向管理的“脸面”。PLME SAP 原语（20.11.1）——PLME-GET、PLME-SET、PLME-RESET、PLME-CHARACTERISTICS——让高层管理实体得以读写物理层。这些读写落在 DMG PHY MIB（20.11.2）上，那是一张属性表，每个属性被标注为静态（对某实现固定不变，如 dot11PHYType = DMG）或动态（可更改，如 dot11LowPowerSCPHYActivated）。TXTIME 计算（20.11.3）给 PLME 一个公式来预测一个 PPDU 将占用信道多久——把 STF、CE、头部、数据，以及任何 TRN 单元的时间相加——这是 MAC 进行空口时间核算所需的。而 DMG PHY 特性表（20.11.4）列出 PLME-CHARACTERISTICS 原语返回的固定常量：aSIFSTime = 3 µs、aSlotTime = 5 µs、aPPDUMaxTime = 2 ms、aPSDUMaxLength = 262 143 字节，以及如 aBRPminSCblocks = 18 这样的波束精修常量。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What a TRN unit actually contains, and the constants that pin it down",
+        "zh": "一个 TRN 单元究竟包含什么，以及钉死它的那些常量"
+      },
+      "en": "The TRN field (20.9.2.2.6) is composed of N TRN Units; each TRN Unit is one CE subfield plus 4 TRN subfields. The 4N subfields TRN1…TRN4N each carry the sequence [Ga128 −Gb128 Ga128 Gb128 Ga128] transmitted with rotated π/2-BPSK, while the AGC field (20.9.2.2.5) is 4N AGC subfields each carrying [Ga64 ×5] (SC mode) or [Gb64 ×5] (control mode). A Training Length value N means 4×N AGC subfields and N TRN Units. In a BRP-TX PPDU the transmitter may change its AWV at the start of each TRN subfield, with transients required to settle within the first 64 samples; the receiver uses the Golay autocorrelation to reconstruct the channel impulse response and feeds back the relative amplitude/phase of the strongest tap across repetitions. The DMG PHY characteristics table (20.11.4, Table 20-30) anchors the timing: aSIFSTime = 3 µs, aRIFSTime = 1 µs, aSBIFSTime = 1 µs, aBRPIFS = 40 µs, aSlotTime = 5 µs, aBRPminSCblocks = 18, aBRPTRNBlock = 4992, aSCGILength = 64, aSCBlockSize = 512, aPPDUMaxTime = 2 ms, aPSDUMaxLength = 262 143 octets, aDMGDetectionThres = −48 dBm.",
+      "zh": "TRN 字段（20.9.2.2.6）由 N 个 TRN 单元组成；每个 TRN 单元是一个 CE 子字段加 4 个 TRN 子字段。4N 个子字段 TRN1…TRN4N 各承载序列 [Ga128 −Gb128 Ga128 Gb128 Ga128]，以旋转 π/2-BPSK 发送；而 AGC 字段（20.9.2.2.5）是 4N 个 AGC 子字段，各承载 [Ga64 ×5]（SC 模式）或 [Gb64 ×5]（控制模式）。训练长度取值 N 表示 4×N 个 AGC 子字段与 N 个 TRN 单元。在 BRP-TX PPDU 中，发送方可在每个 TRN 子字段开头改变其 AWV，瞬态须在前 64 个采样内稳定；接收方利用 Golay 自相关重建信道冲激响应，并反馈最强抽头在各次重复间的相对幅度/相位。DMG PHY 特性表（20.11.4，表 20-30）锚定了时序：aSIFSTime = 3 µs、aRIFSTime = 1 µs、aSBIFSTime = 1 µs、aBRPIFS = 40 µs、aSlotTime = 5 µs、aBRPminSCblocks = 18、aBRPTRNBlock = 4992、aSCGILength = 64、aSCBlockSize = 512、aPPDUMaxTime = 2 ms、aPSDUMaxLength = 262 143 字节、aDMGDetectionThres = −48 dBm。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3546,
+          3549,
+          3550
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:20.7",
+    "80211-2024:20.8",
+    "80211-2024:20.9.1",
+    "80211-2024:20.9.2.1",
+    "80211-2024:20.9.2.2",
+    "80211-2024:20.10",
+    "80211-2024:20.11.1",
+    "80211-2024:20.11.2",
+    "80211-2024:20.11.3",
+    "80211-2024:20.11.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3539,
+        3540,
+        3542
+      ],
+      "note": "20.7 PHY transmit procedure and 20.8 PHY receive procedure — TXSTART/TXEND, STF detection, CCA/RXEND indications, TRN-field tail"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3542,
+        3544,
+        3546
+      ],
+      "note": "20.9 Beamforming — concept; 20.9.2.1 sector-level sweep; 20.9.2.2 beam refinement (BRP-RX vs BRP-TX), AGC and TRN fields, channel measurement"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3547,
+        3548
+      ],
+      "note": "20.10 Golay sequences — three complementary pairs Ga/Gb 128/64/32, recursive generation, autocorrelation property"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3548,
+        3549,
+        3550
+      ],
+      "note": "20.11 DMG PLME — PLME SAP primitives, DMG PHY MIB (static/dynamic), TXTIME calculation, DMG PHY characteristics constants (Table 20-30)"
+    }
+  ],
+  "track": "legacy-phy"
+}

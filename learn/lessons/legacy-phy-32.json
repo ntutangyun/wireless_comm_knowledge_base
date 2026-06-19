@@ -1,0 +1,220 @@
+{
+  "id": "legacy-phy-32",
+  "title": {
+    "en": "EDMG PHY Clause 28 Remainder I: Common Front-End, Control / SC / OFDM Mode Transmit Chains, and Channelization / Spectral Mask",
+    "zh": "EDMG 物理层第 28 章余部之一：公共前端、控制/SC/OFDM 模式发射链与信道化/频谱模板"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "EDMG is the 60 GHz Wi-Fi PHY introduced by 802.11ay — the enhanced successor to the DMG PHY of 802.11ad. Clause 28 is enormous, so this lesson takes the survey path through its modulation core. First a shared front-end that every transmission reuses: how channels are stacked into wide bonded pipes, the spectral mask that contains them, the family of LDPC parity matrices, the small 'control trailer' appended to control frames, and a long list of common RF requirements. Then the three modulation modes — control, single-carrier (SC), and OFDM — each described as a transmit chain you can follow block by block.",
+      "zh": "EDMG 是 802.11ay 引入的 60 GHz Wi-Fi 物理层，是 802.11ad 中 DMG 物理层的增强后继者。第 28 章篇幅巨大，因此本课以“概览”的方式穿过它的调制核心。先看一个所有发射都复用的公共前端：信道如何叠加成更宽的绑定通道、约束它们的频谱模板、LDPC 校验矩阵家族、附加在控制帧后的小小“控制尾部（control trailer）”，以及一长串公共射频要求。然后再看三种调制模式——控制模式、单载波（SC）模式与 OFDM 模式——每一种都被描述成一条可以逐块跟随的发射链。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with channelization (28.3.4). The base channel is 2.16 GHz wide. EDMG bonds 2, 3 or 4 of them into 4.32, 6.48 and 8.64 GHz channels, and can also aggregate two non-adjacent pieces into 2.16+2.16 or 4.32+4.32 GHz combinations. A channel is fully described by four MIB fields — width, two centre-frequency indices, and which 2.16 GHz slice is the primary. The transmit mask (28.3.5) then says how sharply power must fall off outside each width: a 0 dBr core, stepping down to −17, −22 and finally −30 dBr at defined offsets, with a special construction for aggregated (non-adjacent) transmissions where two single-channel masks are combined.",
+      "zh": "先看信道化（28.3.4）。基础信道宽 2.16 GHz。EDMG 把 2、3 或 4 个基础信道绑定成 4.32、6.48 与 8.64 GHz 信道，也可以把两段不相邻的频谱聚合成 2.16+2.16 或 4.32+4.32 GHz 组合。一个信道由四个 MIB 字段完整描述——带宽、两个中心频率索引，以及哪一个 2.16 GHz 片段是主信道。发射模板（28.3.5）随后规定功率在各带宽之外必须多陡地衰减：以 0 dBr 为核心，在规定的频偏处逐级降到 −17、−22，最终降到 −30 dBr；对于聚合（不相邻）发射还有一种特殊构造，把两个单信道模板组合起来。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 420 200' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='16' font-size='11' stroke='none' fill='currentColor'>EDMG transmit spectral mask (per width)</text><line x1='30' y1='170' x2='410' y2='170'/><line x1='30' y1='30' x2='30' y2='170'/><text x='4' y='40' font-size='9' stroke='none' fill='currentColor'>0</text><text x='0' y='80' font-size='9' stroke='none' fill='currentColor'>-17</text><text x='0' y='110' font-size='9' stroke='none' fill='currentColor'>-22</text><text x='0' y='150' font-size='9' stroke='none' fill='currentColor'>-30</text><text x='2' y='185' font-size='8' stroke='none' fill='currentColor'>dBr</text><polyline points='150,40 270,40'/><line x1='150' y1='40' x2='120' y2='80'/><line x1='270' y1='40' x2='300' y2='80'/><line x1='120' y1='80' x2='90' y2='110'/><line x1='300' y1='80' x2='330' y2='110'/><line x1='90' y1='110' x2='60' y2='150'/><line x1='330' y1='110' x2='360' y2='150'/><line x1='60' y1='150' x2='30' y2='150'/><line x1='360' y1='150' x2='410' y2='150'/><text x='185' y='55' font-size='9' stroke='none' fill='currentColor'>0 dBr core</text><text x='150' y='190' font-size='9' stroke='none' fill='currentColor'>frequency offset from centre</text></svg>",
+      "caption": {
+        "en": "The EDMG transmit mask shape: a flat 0 dBr core that steps down through −17, −22 and −30 dBr at width-dependent frequency offsets. Wider bonded channels simply scale the offsets outward.",
+        "zh": "EDMG 发射模板的形状：平坦的 0 dBr 核心，在依带宽而定的频偏处逐级降到 −17、−22 与 −30 dBr。更宽的绑定信道只是把这些频偏向外按比例放大。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The shared coding toolkit is the LDPC parity-matrix set (28.3.6). EDMG keeps the DMG codes and adds more: a rate-7/8 code over the 672-bit DMG codeword, plus a whole family of 1344-bit codewords (rates 1/2, 5/8, 3/4, 13/16, 7/8) built by 'lifting' the existing 672-bit matrices — a lifting matrix expands each Z×Z permutation block into a 2Z×2Z block. The control trailer (28.3.7) is a separate small payload: one LDPC codeword of 18 data + 21 parity octets that can ride immediately after a control-mode Data field, carrying next-transmission hints (bandwidth, SISO/MIMO, beamforming sector indices) and ending in a CRC-16 check sequence.",
+      "zh": "共享的编码工具箱是 LDPC 校验矩阵集合（28.3.6）。EDMG 保留 DMG 的码并新增更多：在 672 比特 DMG 码字之上新增一个 7/8 码率的码，再加上一整族 1344 比特码字（码率 1/2、5/8、3/4、13/16、7/8），它们通过对现有 672 比特矩阵做“提升（lifting）”而构造——提升矩阵把每个 Z×Z 置换块扩展成 2Z×2Z 块。控制尾部（28.3.7）是一段独立的小净荷：一个由 18 个数据字节加 21 个校验字节构成的 LDPC 码字，可紧跟在控制模式 Data 字段之后传输，携带下一次传输的提示（带宽、SISO/MIMO、波束成形扇区索引），并以一个 CRC-16 校验序列结尾。"
+    },
+    {
+      "type": "prose",
+      "en": "Before the modes, Clause 28 lists common requirements (28.3.8–28.3.9) that every EDMG transmission must satisfy. CCA sensitivity (28.3.8) sets when the receiver must declare the medium busy — relative to the 2.16 GHz SC MCS-1 sensitivity, per primary/secondary channel. The common-requirements block then covers RCPI measurement, centre-frequency and symbol-clock tolerance (all chains derived from one reference oscillator), centre-frequency leakage (≤ −23 dB per chain when not aggregated), ramp up/down, a constant antenna setting per PPDU, maximum input level, receiver minimum-input sensitivity tables per MCS, the OFDM spectral-flatness test, and co-channel-interference resilience (decode the wanted PPDU as long as it is 3 dB above sensitivity and the interferer is 6 dB below it).",
+      "zh": "在进入三种模式之前，第 28 章列出了每一次 EDMG 发射都必须满足的公共要求（28.3.8–28.3.9）。CCA 灵敏度（28.3.8）规定接收机何时必须判定介质忙——以 2.16 GHz SC MCS-1 灵敏度为基准，按主/次信道分别判定。随后的公共要求部分涵盖：RCPI 测量、中心频率与符号时钟容限（所有发射链都从同一参考振荡器导出）、中心频率泄漏（非聚合时每链 ≤ −23 dB）、上升/下降斜坡、整个 PPDU 内保持恒定的天线设置、最大输入电平、按 MCS 列出的接收机最小输入灵敏度表、OFDM 频谱平坦度测试，以及同信道干扰抗扰度（只要期望 PPDU 高出灵敏度 3 dB 且干扰低于它 6 dB 就应能解码）。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the modulation modes. Control mode (28.4) is the most robust and always-mandatory low-rate mode used for beamforming setup. Its transmit chain is scrambler → LDPC encoder → constellation mapper → spreader (each symbol spread to 32 chips with a Golay Ga sequence), with a Golay builder for the STF/CEF/TRN fields and CSD + pulse shaping per chain. The PPDU carries L-STF, L-CEF, L-Header and (for EDMG) an EDMG-Header-A, encoded at MCS 0. SC mode (28.5) is the workhorse single-carrier mode: timing parameters with short/normal/long guard intervals, EDMG-STF/CEF training fields, header and MCS tables (π/2-BPSK through π/2-16/64-QAM, plus NUC and DCM variants), and a data-field chain — guard-interval insertion, symbol blocking, scrambler, LDPC encoding, modulation mapping — feeding SU and MU PPDU transmission.",
+      "zh": "现在看调制模式。控制模式（28.4）是最稳健、始终强制的低速模式，用于波束成形建立。它的发射链是 加扰器 → LDPC 编码器 → 星座映射器 → 扩频器（每个符号用 Golay Ga 序列扩展为 32 个 chip），并用 Golay 构造器生成 STF/CEF/TRN 字段，每条链加 CSD 与脉冲整形。PPDU 携带 L-STF、L-CEF、L-Header 以及（对 EDMG）一个 EDMG-Header-A，以 MCS 0 编码。SC 模式（28.5）是主力单载波模式：带短/正常/长保护间隔的定时参数、EDMG-STF/CEF 训练字段、头部与 MCS 表（从 π/2-BPSK 到 π/2-16/64-QAM，外加 NUC 与 DCM 变体），以及一条数据字段链——保护间隔插入、符号分块、加扰、LDPC 编码、调制映射——馈入 SU 与 MU PPDU 发射。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  subgraph FE[Common front-end 28.3]\n    CH[Channelization 28.3.4]\n    MASK[Transmit mask 28.3.5]\n    LDPC[LDPC matrices 28.3.6]\n    CT[Control trailer 28.3.7]\n    CR[CCA + common reqs 28.3.8-28.3.9]\n  end\n  FE --> CTRL[Control mode 28.4: scrambler-LDPC-mapper-spreader, MCS 0]\n  FE --> SC[SC mode 28.5: GI + symbol blocking + LDPC + pi/2 mapping, SU/MU]\n  FE --> OFDM[OFDM mode 28.6: scrambler-LDPC-stream parser-mapper-interleaver-STBC-IFFT, SU/MU]",
+      "zh": "flowchart TD\n  subgraph FE[公共前端 28.3]\n    CH[信道化 28.3.4]\n    MASK[发射模板 28.3.5]\n    LDPC[LDPC 矩阵 28.3.6]\n    CT[控制尾部 28.3.7]\n    CR[CCA 与公共要求 28.3.8-28.3.9]\n  end\n  FE --> CTRL[控制模式 28.4: 加扰-LDPC-映射-扩频, MCS 0]\n  FE --> SC[SC 模式 28.5: 保护间隔+符号分块+LDPC+pi/2 映射, SU/MU]\n  FE --> OFDM[OFDM 模式 28.6: 加扰-LDPC-流解析-映射-交织-STBC-IFFT, SU/MU]"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A useful mental model: the three modes are not three separate radios but three back-ends sharing one front-end. Channelization, mask, LDPC matrices, the control trailer and the common RF requirements are written once in 28.3, then 28.4/28.5/28.6 each describe only what is unique to that mode's transmit chain. OFDM mode (28.6) is the one that looks like classic Wi-Fi — data and pilot tones, STF/CEF, stream parser, interleaver, optional STBC and a spatial mapper feeding an IFFT.",
+      "zh": "一个有用的心智模型：这三种模式不是三套独立的电台，而是共享同一前端的三个后端。信道化、模板、LDPC 矩阵、控制尾部与公共射频要求在 28.3 里只写一次，随后 28.4/28.5/28.6 各自只描述该模式发射链所独有的部分。OFDM 模式（28.6）最像经典 Wi-Fi——有数据音与导频音、STF/CEF、流解析器、交织器、可选 STBC，以及一个把数据馈入 IFFT 的空间映射器。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "How the OFDM-mode data field is built, tone by tone",
+        "zh": "OFDM 模式数据字段如何逐音构建"
+      },
+      "en": "The EDMG OFDM transmitter (28.6.3) runs scrambler → LDPC encoder (data padded to whole codewords and symbols) → stream parser (splitting coded bits across spatial streams) → constellation mapper → interleaver (within one OFDM symbol) → optional STBC encoder (NSTS = 2 × NSS) → spatial mapper (direct, indirect, or digital-beamforming per subcarrier). The OFDM signal parameters (28.6.2) define data tones Md(k) and pilot tones per bonded width: a 2.16 GHz channel (NCB = 1) places data tones across indices roughly −177…+177 with the DC region and pilots excluded, and the tone arrays widen for NCB = 2 (≈ ±386), 3 (≈ ±596) and 4. Pilot sequences P16/P12 are fixed per space-time stream. The data field then carries the PSDU through these blocks; SU and MU PPDU transmission (28.6.10) apply the spatial-mapping matrix Qk, and performance (28.6.11) is verified by an EVM test plus a Time-of-Departure accuracy requirement of ≤ 80 ns RMS.",
+      "zh": "EDMG OFDM 发射机（28.6.3）的流程是 加扰器 → LDPC 编码器（数据补零至整数个码字与符号）→ 流解析器（把编码比特分到各空间流）→ 星座映射器 → 交织器（在一个 OFDM 符号内）→ 可选 STBC 编码器（NSTS = 2 × NSS）→ 空间映射器（按子载波做直接、间接或数字波束成形映射）。OFDM 信号参数（28.6.2）按绑定带宽定义数据音 Md(k) 与导频音：2.16 GHz 信道（NCB = 1）把数据音分布在大致 −177…+177 的索引上，排除 DC 区与导频，而当 NCB = 2（约 ±386）、3（约 ±596）、4 时音的数组随之变宽。导频序列 P16/P12 按空间流固定。数据字段随后让 PSDU 经过这些模块；SU 与 MU PPDU 发射（28.6.10）施加空间映射矩阵 Qk，性能（28.6.11）则由 EVM 测试加上 ≤ 80 ns RMS 的离开时间（Time of Departure）精度要求来验证。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4555,
+          4560,
+          4589
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4451,
+        4452,
+        4453
+      ],
+      "note": "28.3.4 Channelization (2.16/4.32/6.48/8.64 and aggregated channels; four MIB fields) and 28.3.5 Transmit mask (0/-17/-22/-30 dBr steps)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4461,
+        4466,
+        4469,
+        4470
+      ],
+      "note": "28.3.6 LDPC parity matrices (lifting 672->1344-bit codewords) and 28.3.7 Control trailer (18 data + 21 parity octets, CRC-16 CTCS)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4475,
+        4476,
+        4480,
+        4481
+      ],
+      "note": "28.3.8 CCA sensitivity and 28.3.9 common requirements (RCPI, clock tolerance, leakage, sensitivity, spectral flatness, CCI resilience)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4481,
+        4482,
+        4483,
+        4484
+      ],
+      "note": "28.4 EDMG and non-EDMG control mode: transmitter block diagrams, PPDU format, data-field encoding chain, MCS 0"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4494,
+        4495,
+        4505,
+        4545
+      ],
+      "note": "28.5 EDMG and non-EDMG SC mode: signal/timing parameters, MCS table, data-field chain, SU/MU PPDU transmission and performance"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4555,
+        4560,
+        4585,
+        4589
+      ],
+      "note": "28.6 EDMG OFDM mode: data tones, transmitter block diagram, SU PPDU waveform, EVM and Time-of-Departure performance"
+    }
+  ],
+  "covers": [
+    "80211-2024:28.3.4",
+    "80211-2024:28.3.5",
+    "80211-2024:28.3.6.1",
+    "80211-2024:28.3.6.2",
+    "80211-2024:28.3.6.3",
+    "80211-2024:28.3.6.4",
+    "80211-2024:28.3.6.5",
+    "80211-2024:28.3.6.6",
+    "80211-2024:28.3.6.7",
+    "80211-2024:28.3.7",
+    "80211-2024:28.3.8",
+    "80211-2024:28.3.9.1",
+    "80211-2024:28.3.9.2",
+    "80211-2024:28.3.9.3",
+    "80211-2024:28.3.9.4",
+    "80211-2024:28.3.9.5",
+    "80211-2024:28.3.9.6",
+    "80211-2024:28.3.9.7",
+    "80211-2024:28.3.9.8",
+    "80211-2024:28.3.9.9",
+    "80211-2024:28.3.9.10",
+    "80211-2024:28.4.1",
+    "80211-2024:28.4.2.1",
+    "80211-2024:28.4.2.2",
+    "80211-2024:28.4.2.3",
+    "80211-2024:28.4.3",
+    "80211-2024:28.4.4",
+    "80211-2024:28.4.5.1",
+    "80211-2024:28.4.5.2",
+    "80211-2024:28.4.6",
+    "80211-2024:28.4.7.1",
+    "80211-2024:28.4.7.2",
+    "80211-2024:28.4.7.3",
+    "80211-2024:28.4.8",
+    "80211-2024:28.5.1",
+    "80211-2024:28.5.2.1",
+    "80211-2024:28.5.2.2",
+    "80211-2024:28.5.3.1",
+    "80211-2024:28.5.3.2",
+    "80211-2024:28.5.3.3",
+    "80211-2024:28.5.4.1",
+    "80211-2024:28.5.4.2",
+    "80211-2024:28.5.5.1",
+    "80211-2024:28.5.5.2",
+    "80211-2024:28.5.6",
+    "80211-2024:28.5.7",
+    "80211-2024:28.5.8",
+    "80211-2024:28.5.9.1",
+    "80211-2024:28.5.9.2",
+    "80211-2024:28.5.9.3",
+    "80211-2024:28.5.9.4",
+    "80211-2024:28.5.9.5",
+    "80211-2024:28.5.10.1",
+    "80211-2024:28.5.10.2",
+    "80211-2024:28.5.10.3",
+    "80211-2024:28.5.10.4",
+    "80211-2024:28.5.10.5",
+    "80211-2024:28.5.11.1",
+    "80211-2024:28.5.11.2",
+    "80211-2024:28.6.1",
+    "80211-2024:28.6.2.1",
+    "80211-2024:28.6.2.2",
+    "80211-2024:28.6.2.3",
+    "80211-2024:28.6.2.4",
+    "80211-2024:28.6.2.5",
+    "80211-2024:28.6.2.6",
+    "80211-2024:28.6.3.1",
+    "80211-2024:28.6.3.2",
+    "80211-2024:28.6.4.1",
+    "80211-2024:28.6.4.2",
+    "80211-2024:28.6.5.1",
+    "80211-2024:28.6.5.2",
+    "80211-2024:28.6.6",
+    "80211-2024:28.6.7",
+    "80211-2024:28.6.8",
+    "80211-2024:28.6.9.1",
+    "80211-2024:28.6.9.2",
+    "80211-2024:28.6.9.3",
+    "80211-2024:28.6.10.1",
+    "80211-2024:28.6.10.2",
+    "80211-2024:28.6.10.3",
+    "80211-2024:28.6.10.4",
+    "80211-2024:28.6.11.1",
+    "80211-2024:28.6.11.2"
+  ],
+  "track": "legacy-phy"
+}

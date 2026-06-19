@@ -1,0 +1,155 @@
+{
+  "id": "legacy-phy-26",
+  "title": {
+    "en": "OFDM PHY Clause 17 Remainder: Operating Spec, Transmit & Receiver RF Limits, and the Transmit/Receive PHY State Machines",
+    "zh": "OFDM 物理层第 17 章余部：操作规范、发射与接收射频限值，以及收发 PHY 状态机"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Earlier lessons built up the OFDM (Clause 17) signal: subcarriers, the preamble, coding, the SIGNAL field. This lesson covers the unglamorous-but-essential back half of the clause — the RF rulebook. These are the numbers a radio must hit to be a polite citizen of the spectrum: how cleanly it must transmit, how faint a signal it must still hear, and what it is allowed to leak into the neighbour's channel. The clause organises them into three groups (operating, transmit, receive) plus two prose state machines that wire the chip's transmit and receive flows to the PHY service primitives.",
+      "zh": "前面的课程已经搭建起 OFDM（第 17 章）信号的方方面面：子载波、前导码、编码、SIGNAL 字段。本课讲的是该章节不那么光鲜、却必不可少的后半部分——射频规则手册。这些数字规定了一台收发机要想做频谱中“讲文明的公民”必须满足的指标：它发出的信号要多干净、能听到多微弱的信号、以及允许向邻居信道泄漏多少能量。本章把它们组织成三组（操作、发射、接收），外加两个用文字描述的状态机，把芯片的收发流程与 PHY 服务原语连接起来。"
+    },
+    {
+      "type": "prose",
+      "en": "The PHY operating-specifications group (17.3.8) is the shared housekeeping that applies to both transmit and receive. After a general outline (17.3.8.1) and the parameter overview (17.3.8.2, e.g. 52 subcarriers, the 6-54 Mb/s rate set), it hooks the radio into regulation: 17.3.8.3 defers equipment certification to regional regulators; 17.3.8.4 defines operating channel frequencies via a tidy formula — channel centre = starting frequency + 5 x n_ch MHz — so every domain's channels map onto a common 5 MHz grid; 17.3.8.5 says spurious emissions must obey regulatory masks; 17.3.8.6 points to the slot-time table; and 17.3.8.7 fixes the antenna-connector impedance at 50 ohms when the connector is exposed.",
+      "zh": "PHY 操作规范组（17.3.8）是收发两侧共用的“后勤事务”。在总体概述（17.3.8.1）和参数一览（17.3.8.2，例如 52 个子载波、6-54 Mb/s 速率集）之后，它把收发机挂接到法规上：17.3.8.3 把设备认证交给各地区监管机构；17.3.8.4 用一个简洁公式定义操作信道频率——信道中心 = 起始频率 + 5 x n_ch MHz——使各管制域的信道都落到统一的 5 MHz 栅格上；17.3.8.5 规定杂散发射须遵守法规掩模；17.3.8.6 指向时隙时间表；17.3.8.7 则规定当天线接头暴露在外时，其阻抗固定为 50 欧姆。"
+    },
+    {
+      "type": "prose",
+      "en": "The transmit-specifications group (17.3.9) bounds how the radio is allowed to shout. 17.3.9.2 sets power per regulator; 17.3.9.3 is the headline transmit spectrum mask — for a 20 MHz channel the spectrum must be 0 dBr out to 18 MHz, fall to -20 dBr at 11 MHz offset, -28 dBr at 20 MHz, and -40 dBr by 30 MHz — the shoulder that protects adjacent channels. 17.3.9.5 and 17.3.9.6 demand the centre frequency and symbol clock both stay within +/-20 ppm (+/-10 ppm at 5 MHz) and share one reference oscillator. 17.3.9.7 sets modulation accuracy (the relative constellation error / EVM, e.g. -25 dB for 64-QAM rate 3/4), 17.3.9.8 is its test procedure (>= 20 PPDUs, >= 16 symbols each), and 17.3.9.9 caps Time-of-Departure accuracy at 80 ns RMS for ranging.",
+      "zh": "发射规范组（17.3.9）约束收发机“能喊多大声、喊得多干净”。17.3.9.2 把功率交给监管机构；17.3.9.3 是重头戏——发射频谱掩模：对 20 MHz 信道，频谱在 18 MHz 内须为 0 dBr，在 11 MHz 偏移处降到 -20 dBr，20 MHz 处 -28 dBr，30 MHz 处 -40 dBr——这道“肩部”保护着相邻信道。17.3.9.5 与 17.3.9.6 要求中心频率与符号时钟都保持在 +/-20 ppm 内（5 MHz 信道为 +/-10 ppm），并共用同一个参考振荡器。17.3.9.7 规定调制精度（相对星座误差 / EVM，例如 64-QAM 3/4 码率为 -25 dB），17.3.9.8 是其测试流程（至少 20 个 PPDU、每个至少 16 个符号），17.3.9.9 则把用于测距的离开时间（ToD）精度限制在 80 ns RMS 以内。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why do neighbours and regulators care? The transmit mask, spurious limits and frequency tolerance are about not polluting other channels and other users; the receiver sensitivity, adjacent-channel rejection and maximum-input limits are about your radio coping with a weak wanted signal sitting next to a loud unwanted one. Together they let independently designed radios share the air without a central referee.",
+      "zh": "邻居和监管机构为什么在意这些？发射掩模、杂散限值和频率容差，关乎的是不去污染其他信道、不去干扰其他用户；而接收灵敏度、邻道抑制和最大输入限值，关乎的是你的收发机能否在“强干扰旁边的微弱有用信号”中正常工作。两者合在一起，让各家独立设计的收发机无需中央裁判即可共享空口。"
+    },
+    {
+      "type": "prose",
+      "en": "The receiver-specifications group (17.3.10) bounds how well the radio must listen. 17.3.10.2 sets minimum input sensitivity for 10% PER on a 1000-octet PSDU (e.g. -82 dBm for the most robust 20 MHz rate, down to -65 dBm for 64-QAM 3/4). 17.3.10.3 and 17.3.10.4 define adjacent and nonadjacent channel rejection — how much louder an interferer in a neighbouring channel may be before it breaks you. 17.3.10.5 caps the maximum input the receiver must tolerate at -30 dBm. 17.3.10.6 sets the CCA requirement: detect a busy medium with >90% probability within 4 us (20 MHz) for a signal at or above the minimum sensitivity. 17.3.10.7 defines RCPI — the received-power readout — accurate to +/-5 dB.",
+      "zh": "接收规范组（17.3.10）约束收发机“能听得多好”。17.3.10.2 规定最小输入灵敏度，要求在 1000 字节 PSDU 上达到 10% 或更低的 PER（例如最稳健的 20 MHz 速率为 -82 dBm，到 64-QAM 3/4 时为 -65 dBm）。17.3.10.3 与 17.3.10.4 定义邻道与非邻道抑制——相邻信道里的干扰信号可以比有用信号强多少而不致破坏接收。17.3.10.5 规定接收机须容忍的最大输入为 -30 dBm。17.3.10.6 给出 CCA 要求：对处于最小灵敏度及以上的信号，须在 4 us 内（20 MHz）以 >90% 的概率检测出忙信道。17.3.10.7 定义 RCPI——接收功率读数——精度为 +/-5 dB。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 220\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><line x1=\"40\" y1=\"180\" x2=\"420\" y2=\"180\"/><line x1=\"230\" y1=\"180\" x2=\"230\" y2=\"30\"/><polyline points=\"40,170 150,170 180,120 230,40 280,120 310,170 420,170\" stroke-dasharray=\"5 4\"/><polyline points=\"175,55 285,55 285,40 175,40 175,55\" stroke-width=\"1\"/><line x1=\"40\" y1=\"100\" x2=\"160\" y2=\"100\"/><line x1=\"300\" y1=\"100\" x2=\"420\" y2=\"100\"/><line x1=\"40\" y1=\"135\" x2=\"180\" y2=\"135\"/><line x1=\"280\" y1=\"135\" x2=\"420\" y2=\"135\"/><line x1=\"40\" y1=\"160\" x2=\"310\" y2=\"160\" stroke-dasharray=\"2 3\"/><text x=\"232\" y=\"28\" font-size=\"11\" stroke=\"none\" fill=\"currentColor\">power spectral density</text><text x=\"234\" y=\"50\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\">0 dBr</text><text x=\"44\" y=\"96\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\">-20 dBr (11 MHz)</text><text x=\"44\" y=\"131\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\">-28 dBr (20 MHz)</text><text x=\"44\" y=\"156\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\">-40 dBr (30 MHz)</text><text x=\"218\" y=\"196\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\">fc</text><text x=\"380\" y=\"196\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\">freq</text></svg>",
+      "caption": {
+        "en": "The 20 MHz transmit spectrum mask (17.3.9.3): the signal (dashed) must stay under the stepped envelope, dropping to -20/-28/-40 dBr at 11/20/30 MHz offsets so it does not spill into neighbouring channels.",
+        "zh": "20 MHz 发射频谱掩模（17.3.9.3）：信号（虚线）必须落在阶梯形包络之下，在 11/20/30 MHz 偏移处分别降至 -20/-28/-40 dBr，从而不会外溢到相邻信道。"
+      }
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[PHY-TXSTART.request TXVECTOR] --> B[Initialize: set TX params]\n  B --> C[TX Preamble + training]\n  C --> D[TX encoded PHY header + SIGNAL]\n  D --> E[Setup PSDU TX: set length count]\n  E --> F[TX PSDU octet/symbol: scramble + encode]\n  F -->|length > 0| F\n  F -->|length = 0| G[Append tail + pad, switch to RX state]\n  G --> H[PHY-TXEND.confirm]",
+      "zh": "flowchart TD\n  A[PHY-TXSTART.request TXVECTOR] --> B[初始化：设置发射参数]\n  B --> C[发射前导码 + 训练符号]\n  C --> D[发射编码后的 PHY 头部 + SIGNAL]\n  D --> E[建立 PSDU 发射：设置长度计数]\n  E --> F[发射 PSDU 字节/符号：加扰 + 编码]\n  F -->|length > 0| F\n  F -->|length = 0| G[追加尾比特 + 填充，切换到接收态]\n  G --> H[PHY-TXEND.confirm]"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, two prose state machines tie everything together. The Transmit PHY (17.3.11) describes the chip's life from a PHY-TXSTART.request: it must first see a clear channel (PHY-CCA.indication(IDLE)), then send preamble, training, the encoded header and SIGNAL, then stream PSDU octets via PHY-DATA exchanges until LENGTH is exhausted, append tail/pad, and drop back to receive. The Receive PHY (17.3.12) is the mirror image: measure signal strength and raise PHY-CCA.indication(BUSY), decode SIGNAL to learn rate and length, issue PHY-RXSTART.indication, deliver octets via PHY-DATA.indication, and end with PHY-RXEND.indication — or flag UnsupportedRate / FormatViolation / CarrierLost when something goes wrong.",
+      "zh": "最后，两个文字状态机把一切串联起来。发射 PHY（17.3.11）描述芯片从 PHY-TXSTART.request 开始的“一生”：它须先确认信道空闲（PHY-CCA.indication(IDLE)），然后发送前导码、训练符号、编码后的头部与 SIGNAL，再通过 PHY-DATA 交换逐字节发送 PSDU，直到 LENGTH 耗尽，追加尾比特/填充，最后切回接收态。接收 PHY（17.3.12）则是镜像：测量信号强度并发出 PHY-CCA.indication(BUSY)，解码 SIGNAL 以获知速率与长度，发出 PHY-RXSTART.indication，通过 PHY-DATA.indication 交付字节，并以 PHY-RXEND.indication 结束——若出错则标记为 UnsupportedRate / FormatViolation / CarrierLost。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact mask, tolerance, sensitivity and ToD numbers — and how the RX state machine reports errors",
+        "zh": "精确的掩模、容差、灵敏度与 ToD 数字——以及接收状态机如何上报错误"
+      },
+      "en": "Concrete figures from the standard. Transmit mask (17.3.9.3): 20 MHz -> 0 dBr to 18 MHz, -20 dBr at 11 MHz, -28 dBr at 20 MHz, max(-40 dBr, -39 dBm/MHz) at >=30 MHz, measured with 100 kHz RBW / 30 kHz VBW. Frequency tolerance (17.3.9.5-6): +/-20 ppm (20/10 MHz) and +/-10 ppm (5 MHz), centre frequency and symbol clock from the same reference oscillator. Modulation accuracy (17.3.9.7.4, Table 17-20): relative constellation RMS error from -5 dB (BPSK 1/2) to -25 dB (64-QAM 3/4), with centre-frequency leakage <= +2 dB relative to the rest of the subcarriers (17.3.9.7.2) and spectral flatness +/-4 dB across lines -16..+16 (17.3.9.7.3). ToD accuracy (17.3.9.9): <= 80 ns RMS. Receiver (Table 17-21): minimum sensitivity -82 dBm (BPSK 1/2, 20 MHz) to -65 dBm (64-QAM 3/4); adjacent-channel rejection 16 dB down to -1 dB across rates; maximum input -30 dBm (17.3.10.5). CCA (17.3.10.6.1): detect busy with >90% probability within 4 us (20 MHz) at the -82 dBm sensitivity, and within 4 us for any signal >= 20 dB above sensitivity (-62 dBm). RCPI (17.3.10.7): +/-5 dB at 95% confidence. The Receive PHY (17.3.12) issues PHY-RXEND.indication(UnsupportedRate) when the SIGNAL rate is not receivable, (FormatViolation) when the parity check fails or RATE is undefined, and (CarrierLost) when RSSI drops to IDLE before LENGTH is satisfied — in each case holding CCA busy for the calculated PPDU duration.",
+      "zh": "标准中的具体数字。发射掩模（17.3.9.3）：20 MHz -> 18 MHz 内为 0 dBr，11 MHz 处 -20 dBr，20 MHz 处 -28 dBr，>=30 MHz 处取 max(-40 dBr, -39 dBm/MHz)，以 100 kHz 分辨带宽 / 30 kHz 视频带宽测量。频率容差（17.3.9.5-6）：+/-20 ppm（20/10 MHz）与 +/-10 ppm（5 MHz），中心频率与符号时钟须来自同一参考振荡器。调制精度（17.3.9.7.4，表 17-20）：相对星座 RMS 误差从 -5 dB（BPSK 1/2）到 -25 dB（64-QAM 3/4），中心频率泄漏相对其余子载波 <= +2 dB（17.3.9.7.2），谱平坦度在 -16..+16 谱线上为 +/-4 dB（17.3.9.7.3）。ToD 精度（17.3.9.9）：<= 80 ns RMS。接收机（表 17-21）：最小灵敏度从 -82 dBm（BPSK 1/2，20 MHz）到 -65 dBm（64-QAM 3/4）；邻道抑制随速率从 16 dB 降至 -1 dB；最大输入 -30 dBm（17.3.10.5）。CCA（17.3.10.6.1）：对处于 -82 dBm 灵敏度的信号须在 4 us 内（20 MHz）以 >90% 概率检出忙，对高于灵敏度 20 dB 以上（-62 dBm）的任意信号也须在 4 us 内检出。RCPI（17.3.10.7）：95% 置信度下精度 +/-5 dB。接收 PHY（17.3.12）：当 SIGNAL 速率不可接收时发出 PHY-RXEND.indication(UnsupportedRate)，奇偶校验失败或 RATE 未定义时发出 (FormatViolation)，RSSI 在满足 LENGTH 之前跌回 IDLE 时发出 (CarrierLost)——每种情况下都会按推算的 PPDU 时长保持 CCA 为忙。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3371,
+          3372,
+          3374,
+          3375,
+          3376,
+          3378,
+          3383
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:17.3.8.1",
+    "80211-2024:17.3.8.2",
+    "80211-2024:17.3.8.3",
+    "80211-2024:17.3.8.4",
+    "80211-2024:17.3.8.5",
+    "80211-2024:17.3.8.6",
+    "80211-2024:17.3.8.7",
+    "80211-2024:17.3.9.1",
+    "80211-2024:17.3.9.2",
+    "80211-2024:17.3.9.3",
+    "80211-2024:17.3.9.4",
+    "80211-2024:17.3.9.5",
+    "80211-2024:17.3.9.6",
+    "80211-2024:17.3.9.7",
+    "80211-2024:17.3.9.8",
+    "80211-2024:17.3.9.9",
+    "80211-2024:17.3.10.1",
+    "80211-2024:17.3.10.2",
+    "80211-2024:17.3.10.3",
+    "80211-2024:17.3.10.4",
+    "80211-2024:17.3.10.5",
+    "80211-2024:17.3.10.6",
+    "80211-2024:17.3.10.7",
+    "80211-2024:17.3.11",
+    "80211-2024:17.3.12"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3368,
+        3369,
+        3370
+      ],
+      "note": "17.3.8 PHY operating specifications - outline (Table 17-19), regulatory, operating channel frequencies (Eq 17-27), spurious emissions, slot time, 50 ohm antenna-connector impedance"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3370,
+        3371,
+        3372,
+        3373,
+        3374,
+        3375
+      ],
+      "note": "17.3.9 PHY transmit specifications - power, transmit spectrum mask (Fig 17-13/14/15), spurious, +/-20/+/-10 ppm centre-frequency and symbol-clock tolerance, modulation accuracy (Table 17-20) and test, ToD <= 80 ns"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3376,
+        3377,
+        3378,
+        3379
+      ],
+      "note": "17.3.10 PHY receiver specifications - minimum sensitivity (Table 17-21), adjacent/nonadjacent rejection, max input -30 dBm, CCA requirements, RCPI +/-5 dB"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3379,
+        3380,
+        3381
+      ],
+      "note": "17.3.11 Transmit PHY - PHY-TXSTART.request flow and PHY transmit state machine (Fig 17-17/17-18)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3382,
+        3383,
+        3384
+      ],
+      "note": "17.3.12 Receive PHY - CCA/RXSTART/RXEND flow and PHY receive state machine (Fig 17-19/17-20)"
+    }
+  ],
+  "track": "legacy-phy"
+}

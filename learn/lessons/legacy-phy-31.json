@@ -1,0 +1,149 @@
+{
+  "id": "legacy-phy-31",
+  "title": {
+    "en": "HE PHY Clause 27 Remainder: Secure HE-LTF, TB-Response Power Precorrection, Spectral Mask / EVM, Receiver Limits, Transmit/Receive Procedures, and 6 GHz Regulatory",
+    "zh": "HE 物理层第 27 章余部：安全 HE-LTF、TB 响应功率预校正、频谱模板/EVM、接收机限值、收发流程与 6 GHz 规管"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "We have walked through most of the High Efficiency (HE / Wi-Fi 6) PHY in Clause 27. This lesson sweeps up the remaining tail — a set of subclauses that look unrelated but together answer one question: once you have the HE waveform, what makes a real radio behave well enough to interoperate? Five themes: keeping many uplink stations aligned, hardening ranging against spoofing, bounding how clean the transmitter must be, bounding how sensitive the receiver must be, and the housekeeping of procedure state machines, channel numbers, and regulation.",
+      "zh": "我们已经走过了第 27 章中高效率（HE / Wi-Fi 6）物理层的大部分内容。本课把剩下的“尾巴”一并扫清——这些子条款乍看互不相关，但合起来回答了同一个问题：当你已经有了 HE 波形之后，要让一台真实的无线电“守规矩”到能够互通，还需要什么？共有五个主题：让众多上行站点保持对齐、加固测距以抵御欺骗、约束发射机必须有多“干净”、约束接收机必须有多“灵敏”，以及流程状态机、信道编号和规管这些“后勤”事务。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with uplink alignment (27.3.15). When an AP fires a Trigger frame, several stations answer at once in the same OFDMA slot. They are different radios at different distances, so the AP would receive them at wildly different power, and their carriers and clocks would drift apart. So each responder pre-corrects. Power precorrection (27.3.15.2) is the headline: the station estimates the downlink pathloss from the AP's advertised Tx power minus the received power, then sets its own transmit power so it arrives at the AP near the requested target receive power. Precorrection-accuracy requirements (27.3.15.3) then bound how tightly it must hit that target — including absolute and relative power accuracy and an RSSI-measurement accuracy, split between Class A and Class B devices, plus residual carrier-frequency-offset limits (350 Hz on HE TB data subcarriers) and a tight transmit-start timing window.",
+      "zh": "先看上行对齐（27.3.15）。当 AP 发出触发帧（Trigger frame）时，多个站点会在同一个 OFDMA 时隙里同时应答。它们是处于不同距离的不同无线电，因此若不处理，AP 收到它们的功率会相差悬殊，载波和时钟也会各自漂移。于是每个应答者都要做“预校正”。功率预校正（27.3.15.2）是重头戏：站点先用“AP 通告的发射功率减去自己收到的功率”估算下行路径损耗，再据此设置自身发射功率，使信号到达 AP 时接近请求的目标接收功率。预校正精度要求（27.3.15.3）则约束它必须多精确地命中该目标——包括绝对/相对功率精度与 RSSI 测量精度（按 Class A、Class B 两类器件分别规定），还有残余载波频偏限值（HE TB 数据子载波为 350 Hz）以及一个很紧的发射起始时间窗。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The mental model for the whole TB-response group is 'the AP is the conductor'. Every responder bends its own power, frequency, clock, and timing toward a common reference the AP dictates, so the simultaneous uplink arrives as one coherent ensemble rather than a pile-up.",
+      "zh": "理解整个“TB 响应”子条款组的心智模型是：“AP 是指挥”。每个应答者都把自己的功率、频率、时钟和时序向 AP 规定的共同基准“掰齐”，从而让同时发出的上行信号汇成一支协调的“合奏”，而不是相互踩踏。"
+    },
+    {
+      "type": "prose",
+      "en": "Next, the secure HE-LTF (27.3.20), used by ranging NDPs to make distance measurement hard to spoof. A normal HE-LTF is a fixed, public training sequence — an attacker who knows it can forge an earlier-looking copy and pull the measured distance shorter. The secure version replaces that fixed sequence with a randomized one (27.3.20.2): pseudorandom octets from an AES-128 counter-mode stream are mapped, bandwidth by bandwidth, onto the nonzero subcarriers and turned into 64-QAM values, so each ranging exchange uses a fresh, secret sequence. On top of that, each spatial stream gets a per-stream phase rotation (27.3.20.3) built from a pseudorandom part plus a deterministic-per-repetition part; an optional frequency-domain flat-top window (27.3.20.4) shapes the tones; and the math description (27.3.20.5) and step-by-step symbol construction (27.3.20.6) — sequence, window, mapping matrix, phase rotation, IDFT, zero-power guard interval — pin down exactly how the secure symbol is built.",
+      "zh": "接下来是安全 HE-LTF（27.3.20），由测距 NDP 使用，让距离测量难以被欺骗。普通 HE-LTF 是固定且公开的训练序列——知道它的攻击者可以伪造一份“看起来更早到达”的副本，从而把测得的距离“拉短”。安全版本用一个随机化序列替换该固定序列（27.3.20.2）：来自 AES-128 计数器模式流的伪随机字节，按带宽逐一映射到非零子载波上并转换成 64-QAM 值，使每次测距交互都使用一段全新且保密的序列。在此之上，每条空间流还要施加逐流的相位旋转（27.3.20.3），它由伪随机分量加上“逐重复确定性”分量构成；可选的频域平顶窗（27.3.20.4）对各音调进行整形；而数学描述（27.3.20.5）与逐步的符号构造流程（27.3.20.6）——序列、加窗、映射矩阵、相位旋转、IDFT、零功率保护间隔——则精确地钉死了安全符号究竟如何生成。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[\"27.3.15 TB-response precorrection<br/>power / freq / clock / timing\"] --> B[\"aligned uplink OFDMA\"]\n    C[\"27.3.20 secure HE-LTF<br/>randomized seq + phase rotation + window\"] --> D[\"spoof-resistant ranging\"]\n    E[\"27.3.21 transmit spec<br/>mask, flatness, tolerance, EVM, ToD\"] --> F[\"clean enough TX\"]\n    G[\"27.3.22 receiver spec<br/>sensitivity, rejection, max input, CCA, RCPI\"] --> H[\"sensitive enough RX\"]\n    I[\"27.3.23/24 TX & RX procedures<br/>PHY-SAP primitive state machines\"] --> J[\"MAC <-> PHY choreography\"]\n    K[\"27.3.25 channel numbering<br/>incl. 6 GHz allocation\"] --> L[\"27.3.26 regulatory hooks\"]",
+      "zh": "flowchart TD\n    A[\"27.3.15 TB 响应预校正<br/>功率/频率/时钟/时序\"] --> B[\"对齐的上行 OFDMA\"]\n    C[\"27.3.20 安全 HE-LTF<br/>随机化序列+相位旋转+加窗\"] --> D[\"抗欺骗测距\"]\n    E[\"27.3.21 发射规范<br/>模板、平坦度、容差、EVM、ToD\"] --> F[\"足够干净的发射\"]\n    G[\"27.3.22 接收规范<br/>灵敏度、抑制、最大输入、CCA、RCPI\"] --> H[\"足够灵敏的接收\"]\n    I[\"27.3.23/24 收发流程<br/>PHY-SAP 原语状态机\"] --> J[\"MAC <-> PHY 编舞\"]\n    K[\"27.3.25 信道编号<br/>含 6 GHz 分配\"] --> L[\"27.3.26 规管挂钩\"]"
+    },
+    {
+      "type": "prose",
+      "en": "Then come the two specification groups that define 'good enough hardware'. The transmit specification (27.3.21) is the cleanliness budget: a spectral mask (27.3.21.1) that bounds how much energy may leak into neighbours, scaled per bandwidth (20/40/80/160 and 80+80 MHz) and even per punctured subchannel; spectral flatness (27.3.21.2) limiting how much the tones may vary in level; center-frequency and symbol-clock tolerance (27.3.21.3, ±20 ppm at 5/6 GHz); modulation accuracy / EVM (27.3.21.4), the famous error-vector table where 1024-QAM demands roughly -35 dB; and time-of-departure accuracy (27.3.21.5, RMS ≤ 80 ns) that ranging leans on. The receiver specification (27.3.22) is the mirror image — what the radio must still decode: minimum input sensitivity (27.3.22.2), adjacent (27.3.22.3) and nonadjacent (27.3.22.4) channel rejection, a maximum input level it must survive (27.3.22.5, -30 dBm), CCA sensitivity thresholds (27.3.22.6, e.g. -82 dBm for an HE signal on the primary 20 MHz) that decide when the channel is 'busy', and the received-channel-power indicator RCPI (27.3.22.7).",
+      "zh": "随后是定义“硬件够不够好”的两个规范组。发射规范（27.3.21）是“干净度预算”：频谱模板（27.3.21.1）限定可向相邻信道泄漏多少能量，按带宽（20/40/80/160 与 80+80 MHz）甚至按打孔子信道分别缩放；频谱平坦度（27.3.21.2）限制各音调的电平起伏；中心频率与符号时钟容差（27.3.21.3，5/6 GHz 为 ±20 ppm）；调制精度/EVM（27.3.21.4），即那张著名的误差矢量表，其中 1024-QAM 要求约 -35 dB；以及测距所依赖的离开时间精度（27.3.21.5，RMS ≤ 80 ns）。接收规范（27.3.22）则是镜像——规定无线电仍必须解出什么：最小输入灵敏度（27.3.22.2）、相邻（27.3.22.3）与非相邻（27.3.22.4）信道抑制、必须能承受的最大输入电平（27.3.22.5，-30 dBm）、决定信道何时“忙”的 CCA 灵敏度门限（27.3.22.6，例如主 20 MHz 上 HE 信号为 -82 dBm），以及接收信道功率指示 RCPI（27.3.22.7）。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally the housekeeping. The transmit procedure (27.3.23) and receive procedure (27.3.24) are state machines written in PHY-SAP primitives — on transmit, PHY-TXSTART.request → confirm, a run of PHY-DATA.request/confirm, then PHY-TXEND; on receive, PHY-CCA.indication marks the medium busy, PHY-RXSTART.indication begins a frame, RCPI is measured, PHY-DATA.indication hands octets up, and PHY-RXEND.indication closes it (or reports CarrierLost / Filtered / FormatViolation). There are separate flows for HE SU, MU, ER SU, and TB formats. Channel numbering (27.3.25) lists the legal channels, and the 6 GHz allocation (27.3.25.2) is delightfully simple: center frequency = starting frequency + 5 × n_ch MHz, with n_ch from 1 to 233. And regulatory requirements (27.3.26) is the disclaimer: the standard sets only the minimum interoperability floor; local certification and band rules sit on top and may be stricter.",
+      "zh": "最后是“后勤”。发射流程（27.3.23）与接收流程（27.3.24）是用 PHY-SAP 原语写成的状态机——发射侧：PHY-TXSTART.request → confirm，一连串 PHY-DATA.request/confirm，再到 PHY-TXEND；接收侧：PHY-CCA.indication 标记介质忙，PHY-RXSTART.indication 启动一帧，测量 RCPI，PHY-DATA.indication 向上递交字节，PHY-RXEND.indication 收尾（或报告 CarrierLost / Filtered / FormatViolation）。HE SU、MU、ER SU 与 TB 各种格式各有独立流程。信道编号（27.3.25）列出合法信道，而 6 GHz 分配（27.3.25.2）非常简洁：中心频率 = 起始频率 + 5 × n_ch（MHz），n_ch 取 1 到 233。规管要求（27.3.26）则是免责声明：标准只规定互通的最低底线；本地认证与频段规则叠加其上，且可能更严格。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "How a secure HE-LTF symbol is actually constructed, step by step",
+        "zh": "安全 HE-LTF 符号究竟如何逐步构造"
+      },
+      "en": "Clause 27.3.20.6 lists the construction of the nth secure HE-LTF symbol as an ordered pipeline: (a) generate the nth randomized HE-LTF sequence in the frequency domain over the CH_BANDWIDTH, using pseudorandom 64-QAM values built from the AES-128 CTR pseudorandom octet stream of 11.21.6.4.5.4 (the first seven octets, Octet0-Octet6, are reserved for phase rotation, and construction of the 64-QAM tones starts at Octet7); (b) apply the frequency-domain window — rectangular when TX_WINDOW_FLAG = 0 or the flat-top window of 27.3.20.4 when it is 1; (c) apply the P_HE-LTF mapping matrix to all tones; (d) apply the per-spatial-stream phase rotation Theta(r,s) = alpha_s + beta(r,s), where alpha_s is the pseudorandom component (stream 1 fixed at zero) and beta(r,s) is the deterministic-per-repetition component from Table 27-54; (e) apply zero CSD per space-time stream; (f) apply the spatial mapping matrix Q (a permutation matrix, or a P x D matrix when NSTS < NTX); (g) take the IDFT; (h) prepend a zero-power guard interval; and (i) upconvert to RF. Only 2x HE-LTF with 1.6 us GI is supported, and at least two HE-LTF repetition blocks per user block are required, so a receiver can compare repetitions and notice the consistency drop an injection attack would cause.",
+      "zh": "27.3.20.6 节将第 n 个安全 HE-LTF 符号的构造列为一条有序流水线：（a）在 CH_BANDWIDTH 指定的带宽上、于频域生成第 n 个随机化 HE-LTF 序列，使用由 11.21.6.4.5.4 的 AES-128 CTR 伪随机字节流构造的伪随机 64-QAM 值（前七个字节 Octet0–Octet6 预留用于相位旋转，64-QAM 音调的构造从 Octet7 开始）；（b）施加频域窗——TX_WINDOW_FLAG=0 时为矩形窗，=1 时为 27.3.20.4 的平顶窗；（c）对所有音调施加 P_HE-LTF 映射矩阵；（d）施加逐空间流相位旋转 Theta(r,s)=alpha_s+beta(r,s)，其中 alpha_s 是伪随机分量（流 1 固定为零），beta(r,s) 是来自表 27-54 的“逐重复确定性”分量；（e）对每条空时流施加零 CSD；（f）施加空间映射矩阵 Q（置换矩阵，或当 NSTS<NTX 时为 P×D 矩阵）；（g）做 IDFT；（h）前置零功率保护间隔；（i）上变频到射频。仅支持带 1.6 us GI 的 2x HE-LTF，且每个用户块至少要有两个 HE-LTF 重复块，使接收机能比较各重复块、察觉注入攻击会导致的一致性下降。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4306,
+          4307,
+          4318
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4298,
+        4299,
+        4300
+      ],
+      "note": "27.3.15.1-27.3.15.3 TB-response transmit requirements: power precorrection (Eq 27-124/125) and precorrection-accuracy (Table 27-48, CFO/timing)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4306,
+        4307,
+        4308,
+        4318
+      ],
+      "note": "27.3.20.1-27.3.20.6 secure HE-LTF: randomized sequence, per-stream phase rotation, frequency-domain windowing, math description, symbol construction"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4318,
+        4324,
+        4325,
+        4331
+      ],
+      "note": "27.3.21.1-27.3.21.5 transmit spec: spectral mask, spectral flatness (Table 27-55), center-freq/clock tolerance, EVM (Table 27-56), time-of-departure accuracy"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4332,
+        4333,
+        4335
+      ],
+      "note": "27.3.22.1-27.3.22.7 receiver spec: minimum sensitivity (Table 27-58), adjacent/nonadjacent rejection (Table 27-59), max input, CCA sensitivity, RCPI"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4341,
+        4346,
+        4350
+      ],
+      "note": "27.3.23/27.3.24 HE transmit & receive procedures: PHY-SAP primitive flows and receive state machine for HE SU/MU/ER SU/TB"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4351
+      ],
+      "note": "27.3.25.1-27.3.25.2 channel numbering incl. 6 GHz allocation (Eq 27-148, n_ch 1..233); 27.3.26 regulatory requirements"
+    }
+  ],
+  "covers": [
+    "80211-2024:27.3.15.1",
+    "80211-2024:27.3.15.2",
+    "80211-2024:27.3.15.3",
+    "80211-2024:27.3.20.1",
+    "80211-2024:27.3.20.2",
+    "80211-2024:27.3.20.3",
+    "80211-2024:27.3.20.4",
+    "80211-2024:27.3.20.5",
+    "80211-2024:27.3.20.6",
+    "80211-2024:27.3.21.1",
+    "80211-2024:27.3.21.2",
+    "80211-2024:27.3.21.3",
+    "80211-2024:27.3.21.4",
+    "80211-2024:27.3.21.5",
+    "80211-2024:27.3.22.1",
+    "80211-2024:27.3.22.2",
+    "80211-2024:27.3.22.3",
+    "80211-2024:27.3.22.4",
+    "80211-2024:27.3.22.5",
+    "80211-2024:27.3.22.6",
+    "80211-2024:27.3.22.7",
+    "80211-2024:27.3.23",
+    "80211-2024:27.3.24",
+    "80211-2024:27.3.25.1",
+    "80211-2024:27.3.25.2",
+    "80211-2024:27.3.26"
+  ],
+  "track": "legacy-phy"
+}

@@ -1,0 +1,163 @@
+{
+  "id": "legacy-phy-27",
+  "title": {
+    "en": "HT PHY Clause 19 Remainder: Beamforming & Sounding PHY, HT Spectral Mask / Modulation Accuracy, Receiver Limits, and the Transmit/Receive Procedures",
+    "zh": "HT 物理层第 19 章余部：波束成形与探测物理层、HT 频谱模板/调制精度、接收机限值，以及收发流程"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "We have walked the HT (Clause 19) PHY through its preamble, modulation, and OFDM signal generation. This lesson sweeps up the tail of the clause — the parts that turn a single transmitted symbol into a real, certifiable radio: how a transmitter learns the channel and steers energy (beamforming and sounding), the regulatory and channel-numbering housekeeping, the transmit and receive quality limits a chip must meet on the bench, and finally the two state machines that choreograph a PPDU out the antenna and back in. None of this is new signal maths; it is the contract a real HT radio signs.",
+      "zh": "我们已经带着 HT（第 19 章）物理层走过了它的前导、调制以及 OFDM 信号生成。本课收尾这一章余下的部分——那些把单个发射符号变成一个真实、可认证电台的内容：发射机如何获知信道并把能量定向（波束成形与探测）、监管与信道编号方面的杂务、芯片必须在测试台上满足的收发质量限值，以及最后那两个把 PPDU 编排出天线再收回来的状态机。这里没有新的信号数学，它是一台真实 HT 电台所签署的“契约”。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with beamforming (19.3.12). A beamformer uses knowledge of the MIMO channel to build a steering matrix Q that concentrates energy toward the beamformee. There are two families. Implicit feedback (19.3.12.2) leans on TDD reciprocity: STA B sends a sounding PPDU, STA A estimates the reverse channel, and — because the over-the-air forward channel is the transpose of the reverse — A computes Q itself. The catch is that a STA's own transmit and receive chains are not identical, so a calibration procedure derives correction matrices to restore reciprocity. Explicit feedback (19.3.12.3) skips reciprocity entirely: the beamformee measures the channel and sends it back, either as CSI matrices, a noncompressed feedback matrix, or a compressed (Givens-angle) feedback matrix that trades a little fidelity for far fewer bits on the air.",
+      "zh": "先看波束成形（19.3.12）。波束成形方利用对 MIMO 信道的了解，构造一个导向矩阵 Q，把能量集中投向被波束成形方。它有两个家族。隐式反馈（19.3.12.2）依赖 TDD 互易性：STA B 发出一个探测 PPDU，STA A 估计反向信道，又因为空口正向信道是反向信道的转置，A 便能自行算出 Q。难点在于一台 STA 自身的发射链与接收链并不完全一致，因此需要一套校准流程导出修正矩阵，恢复互易性。显式反馈（19.3.12.3）则完全绕开互易性：被波束成形方测量信道并反馈回来——可以是 CSI 矩阵、未压缩反馈矩阵，或压缩（Givens 角度）反馈矩阵；后者牺牲少许保真度，换取空口上少得多的比特数。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n    subgraph IMP[Implicit 19.3.12.2]\n      B1[STA B sends sounding PPDU] --> A1[STA A estimates reverse channel]\n      A1 --> A2[Use TDD reciprocity + calibration] --> Q1[STA A builds Q itself]\n    end\n    subgraph EXP[Explicit 19.3.12.3]\n      M1[Beamformee measures channel] --> M2{Feedback type}\n      M2 -->|CSI| Q2[Beamformer builds Q]\n      M2 -->|Noncompressed V| Q2\n      M2 -->|Compressed angles| Q2\n    end",
+      "zh": "flowchart LR\n    subgraph IMP[隐式 19.3.12.2]\n      B1[STA B 发探测 PPDU] --> A1[STA A 估计反向信道]\n      A1 --> A2[利用 TDD 互易性 + 校准] --> Q1[STA A 自行构造 Q]\n    end\n    subgraph EXP[显式 19.3.12.3]\n      M1[被波束成形方测量信道] --> M2{反馈类型}\n      M2 -->|CSI| Q2[波束成形方构造 Q]\n      M2 -->|未压缩 V| Q2\n      M2 -->|压缩角度| Q2\n    end"
+    },
+    {
+      "type": "prose",
+      "en": "How does the channel get measured in the first place? Through sounding PPDUs (19.3.13). Every PPDU already measures the channel via its HT-LTFs, but when there are more antennas than space-time streams, the ordinary preamble underdetermines the channel. A sounding PPDU (Not Sounding field = 0) adds extra HT-LTFs (or HT-ELTFs) to characterise the full dimensionality. Three flavours appear: an NDP (null data packet, HT Length = 0) carries training symbols with no Data field at all (19.3.13.2); a calibration sounding PPDU uses a fixed unitary antenna-mapping matrix so both STAs can estimate channels for reciprocity correction (19.3.13.3); and a channel-quality-assessment sounding PPDU rides with an MRQ so the responder can pick a recommended MCS (19.3.13.4).",
+      "zh": "信道一开始是怎么测出来的？靠探测 PPDU（19.3.13）。其实每个 PPDU 都会通过它的 HT-LTF 测量信道，但当天线数多于空时流数时，普通前导对信道是欠定的。探测 PPDU（Not Sounding 字段 = 0）会加入额外的 HT-LTF（或 HT-ELTF）来刻画信道的全部维度。它有三种形态：NDP（空数据包，HT Length = 0）只携带训练符号、完全没有 Data 字段（19.3.13.2）；校准探测 PPDU 采用固定的酉天线映射矩阵，使两台 STA 都能估计信道以做互易性修正（19.3.13.3）；信道质量评估探测 PPDU 则伴随一个 MRQ，让响应方据此挑选推荐的 MCS（19.3.13.4）。"
+    },
+    {
+      "type": "prose",
+      "en": "Between the radio internals and the test bench sits a thin layer of housekeeping (19.3.14–19.3.17): operation is subject to regional regulatory certification; 20 MHz channels reuse the 2.4/5 GHz numbering of earlier clauses while 40 MHz channels are named by (primary channel, secondary above/below); slot time inherits the legacy values and is identical for 40 MHz and 20 MHz spacing; and antenna-connector impedance just points back to the Clause 17 definition. Small print, but it is what lets an HT radio share spectrum legally and predictably with everything else in the band.",
+      "zh": "在电台内部机制与测试台之间，夹着薄薄一层杂务（19.3.14–19.3.17）：设备运行须接受各地区的监管认证；20 MHz 信道沿用早前各章的 2.4/5 GHz 编号，而 40 MHz 信道以（主信道，副信道在上/在下）来命名；时隙时间沿袭旧有取值，且 40 MHz 与 20 MHz 间隔下完全相同；天线接口阻抗则直接指回第 17 章的定义。都是细则，但正是它们让一台 HT 电台能够合法、可预期地与频段内其它所有设备共享频谱。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the two big quality contracts. The transmit specification (19.3.18) bounds what may leave the antenna: a spectral mask (the 0/-20/-28/-40 dBr stair-step that confines out-of-band energy), spectral flatness (per-subcarrier energy must stay within ±4 dB / +4/-6 dB windows), transmit power, ±20/±25 ppm center-frequency and symbol-clock tolerances, PPDU timing alignment to the 4 µs boundary, modulation accuracy as an EVM (relative constellation error, e.g. 64-QAM 5/6 must hit -27 dB), and an 80 ns Time-of-Departure accuracy. The receiver specification (19.3.19) bounds what must be heard: minimum input sensitivity per MCS (BPSK 1/2 down to -82 dBm), adjacent and nonadjacent channel rejection, a maximum input level the receiver must tolerate, CCA sensitivity thresholds, the RCPI power readout (±5 dB), and RIFS-separated PPDU decoding.",
+      "zh": "接下来是两份重头的质量契约。发射规范（19.3.18）约束允许离开天线的内容：频谱模板（0/-20/-28/-40 dBr 的阶梯，用来限制带外能量）、频谱平坦度（各子载波能量须落在 ±4 dB / +4/-6 dB 的窗口内）、发射功率、±20/±25 ppm 的中心频率与符号时钟容差、PPDU 对齐到 4 µs 边界、以 EVM 表示的调制精度（相对星座误差，例如 64-QAM 5/6 须达到 -27 dB），以及 80 ns 的离开时间（ToD）精度。接收规范（19.3.19）则约束必须能听到的内容：各 MCS 的最小输入灵敏度（BPSK 1/2 低至 -82 dBm）、相邻与非相邻信道抑制、接收机须容忍的最大输入电平、CCA 灵敏度门限、RCPI 功率读数（±5 dB），以及对以 RIFS 间隔的 PPDU 的解码。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A useful mental split: 19.3.18 is 'don't be a bad neighbour or a sloppy source' (clean spectrum, accurate constellation, disciplined clock), while 19.3.19 is 'be a competent listener' (hear weak signals, reject interferers, survive strong ones, and report power honestly). Together they are the conformance checklist a Wi-Fi 4 chip passes before it ships.",
+      "zh": "一个有用的记忆划分：19.3.18 是“别当坏邻居、也别当马虎的信源”（干净的频谱、准确的星座、有纪律的时钟），而 19.3.19 是“当一个称职的倾听者”（听得到弱信号、抑制得住干扰、扛得住强信号，并如实上报功率）。两者合起来，就是一颗 Wi-Fi 4 芯片出货前要通过的一致性核对清单。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the choreography. The PHY transmit procedure (19.3.20) is driven by PHY-TXSTART.request(TXVECTOR): the FORMAT field selects HT-mixed, HT-greenfield, or a fall-back to a legacy clause; the PHY sends the preamble, then scrambles, encodes, and streams PSDU octets via PHY-DATA primitives until LENGTH is exhausted, ending on PHY-TXEND.confirm at the 4 µs boundary (after any signal extension). The PHY receive procedure (19.3.21) is the mirror: detect a signal and raise PHY-CCA.indication(BUSY), measure RSSI, parse L-SIG / HT-SIG and check its CRC, issue PHY-RXSTART.indication(RXVECTOR), decode symbols up to the declared length, measure RCPI, and return to RX IDLE with PHY-RXEND.indication(NoError) — or bail with FormatViolation / UnsupportedRate / CarrierLost on a bad header or lost carrier.",
+      "zh": "最后是这套“编舞”。物理层发射流程（19.3.20）由 PHY-TXSTART.request(TXVECTOR) 驱动：FORMAT 字段在 HT-mixed、HT-greenfield 或回退到旧章之间做选择；物理层发送前导，然后加扰、编码，并通过 PHY-DATA 原语逐个流式发出 PSDU 字节，直到 LENGTH 耗尽，在 4 µs 边界（在任何信号扩展之后）以 PHY-TXEND.confirm 结束。物理层接收流程（19.3.21）是它的镜像：检测到信号并发出 PHY-CCA.indication(BUSY)、测量 RSSI、解析 L-SIG / HT-SIG 并校验其 CRC、发出 PHY-RXSTART.indication(RXVECTOR)、按声明的长度解码符号、测量 RCPI，再以 PHY-RXEND.indication(NoError) 回到 RX IDLE——或在头部出错、载波丢失时以 FormatViolation / UnsupportedRate / CarrierLost 退出。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Why a sounding PPDU adds HT-LTFs, and what NDP / calibration / channel-quality sounding each do",
+        "zh": "为何探测 PPDU 要追加 HT-LTF，以及 NDP / 校准 / 信道质量三种探测各自的职责"
+      },
+      "en": "Clause 19.3.13.1 makes the dimensionality argument explicit: the number of HT-LTFs normally equals the number of space-time streams, which is enough to equalise the Data field but not enough to characterise the full MIMO channel when NSTS is less than the number of transmit antennas (or less than min(NTX,NRX)). A sounding PPDU therefore satisfies NHT-LTF >= NSTS, adding HT-ELTFs to sound the extra dimensions. 19.3.13.2: an NDP is signalled by HT Length = 0 with Not Sounding = 0; its LTFs imply two or more spatial streams and the last HT-LTF is not followed by a Data field — processing an NDP is optional for a STA. 19.3.13.3: for calibration the antenna mapping matrix is Q_k = C_CSD(k) * P_CAL, where P_CAL is a fixed unitary matrix chosen by NTX (1, 2, 3, or 4), letting both STAs estimate channels cleanly enough to compute reciprocity-correction matrices. 19.3.13.4: a channel-quality-assessment sounding PPDU accompanies an MRQ so the responder (STA B) can run a channel-quality assessment and return a recommended MCS (MFB) to STA A; the requester chooses how many HT-LTFs / HT-ELTFs / whether to use an NDP based on its Transmit Beamforming Capabilities and chain counts.",
+      "zh": "19.3.13.1 节把维度论证讲得很明白：HT-LTF 的数量通常等于空时流数，这足以均衡 Data 字段，但当 NSTS 小于发射天线数（或小于 min(NTX,NRX)）时，就不足以刻画完整的 MIMO 信道。因此探测 PPDU 满足 NHT-LTF >= NSTS，并追加 HT-ELTF 来探测多出的维度。19.3.13.2：NDP 以 HT Length = 0 且 Not Sounding = 0 来标识；其 LTF 隐含两个或更多空间流，且最后一个 HT-LTF 之后没有 Data 字段——一台 STA 是否处理 NDP 是可选的。19.3.13.3：校准时天线映射矩阵为 Q_k = C_CSD(k) * P_CAL，其中 P_CAL 是按 NTX（1、2、3 或 4）选取的固定酉矩阵，使两台 STA 都能足够干净地估计信道，进而计算互易性修正矩阵。19.3.13.4：信道质量评估探测 PPDU 伴随一个 MRQ，使响应方（STA B）能进行信道质量评估，并向 STA A 返回一个推荐 MCS（MFB）；请求方依据自身的 Transmit Beamforming Capabilities 与链路数量，决定发送多少 HT-LTF / HT-ELTF、以及是否使用 NDP。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3467,
+          3468,
+          3469
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3459,
+        3460,
+        3463
+      ],
+      "note": "19.3.12.1-19.3.12.3 Beamforming: general steering matrix Q, implicit feedback (TDD reciprocity + calibration), explicit feedback (CSI / noncompressed / compressed)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3467,
+        3468,
+        3469
+      ],
+      "note": "19.3.13.1-19.3.13.4 Sounding PPDUs (HT-LTF dimensionality, NDP, calibration sounding, channel-quality-assessment sounding); 19.3.14 regulatory"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3469,
+        3470,
+        3471
+      ],
+      "note": "19.3.15 channel numbering/channelization (2.4/5 GHz, 40 MHz), 19.3.16 slot time, 19.3.17 antenna impedance, 19.3.18.1 transmit spectrum mask"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3473,
+        3474,
+        3475,
+        3476
+      ],
+      "note": "19.3.18.2-19.3.18.8 spectral flatness, transmit power, frequency/symbol-clock tolerance, PPDU alignment, modulation accuracy (EVM, Table 19-22), Time of Departure accuracy"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3477,
+        3478,
+        3479,
+        3480
+      ],
+      "note": "19.3.19.1-19.3.19.8 receiver sensitivity (Table 19-23), adjacent/nonadjacent rejection, max input, CCA sensitivity, RCPI, RIFS"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3480,
+        3482,
+        3483,
+        3486
+      ],
+      "note": "19.3.20 PHY transmit procedure + state machine; 19.3.21 PHY receive procedure + state machine (PHY-CCA/RXSTART/RXEND)"
+    }
+  ],
+  "covers": [
+    "80211-2024:19.3.12.1",
+    "80211-2024:19.3.12.2",
+    "80211-2024:19.3.12.3",
+    "80211-2024:19.3.13.1",
+    "80211-2024:19.3.13.2",
+    "80211-2024:19.3.13.3",
+    "80211-2024:19.3.13.4",
+    "80211-2024:19.3.14",
+    "80211-2024:19.3.15.1",
+    "80211-2024:19.3.15.2",
+    "80211-2024:19.3.15.3",
+    "80211-2024:19.3.15.4",
+    "80211-2024:19.3.16",
+    "80211-2024:19.3.17",
+    "80211-2024:19.3.18.1",
+    "80211-2024:19.3.18.2",
+    "80211-2024:19.3.18.3",
+    "80211-2024:19.3.18.4",
+    "80211-2024:19.3.18.5",
+    "80211-2024:19.3.18.6",
+    "80211-2024:19.3.18.7",
+    "80211-2024:19.3.18.8",
+    "80211-2024:19.3.19.1",
+    "80211-2024:19.3.19.2",
+    "80211-2024:19.3.19.3",
+    "80211-2024:19.3.19.4",
+    "80211-2024:19.3.19.5",
+    "80211-2024:19.3.19.6",
+    "80211-2024:19.3.19.7",
+    "80211-2024:19.3.19.8",
+    "80211-2024:19.3.20",
+    "80211-2024:19.3.21"
+  ],
+  "track": "legacy-phy"
+}

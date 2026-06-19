@@ -1,0 +1,170 @@
+{
+  "id": "legacy-phy-33",
+  "title": {
+    "en": "EDMG PHY Clause 28 Remainder II: TX/RX Procedures, Beamforming (Short SSW, BRP, Secure Ranging), Golay/OFDM Sequences, and the PLME",
+    "zh": "EDMG 物理层第 28 章余部之二：收发流程、波束成形（短 SSW、BRP、安全测距）、Golay/OFDM 序列与 PLME"
+  },
+  "estMinutes": 6,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "We have already met the EDMG (Enhanced Directional Multi-Gigabit, 802.11ay) PHY's modulation modes — control, single-carrier, and OFDM — riding on 2.16 GHz channels in the 60 GHz band. This lesson walks the back half of Clause 28: how those bits actually get pushed onto the air and pulled back off (the transmit and receive procedures), how the radio aims its pencil-thin beams (EDMG beamforming), the mathematical sequences that anchor the preamble, and finally the management interface (the PLME) that lets the upper layers ask 'how long will this frame take?'. Think of it as the operating manual for an already-built radio.",
+      "zh": "我们此前已经认识了 EDMG（增强型定向多吉比特，802.11ay）物理层的几种调制模式——控制模式、单载波模式与 OFDM 模式——它们都运行在 60 GHz 频段的 2.16 GHz 信道上。本课带你走完第 28 章的后半部分：这些比特究竟如何被推上空口、又如何被取回（即发送流程与接收流程）；射频前端如何把铅笔般纤细的波束对准目标（EDMG 波束成形）；锚定前导码的那些数学序列；以及最后的管理接口（PLME）——它让上层能够询问“这一帧要发多久？”。可以把它看成一台已经造好的电台的操作手册。"
+    },
+    {
+      "type": "prose",
+      "en": "The transmit procedure (28.7) is a state machine that fires when the MAC issues PHY-TXSTART.request(TXVECTOR). The TXVECTOR's FORMAT parameter picks one of two paths: an EDMG path (control / SC / OFDM mode) or a non-EDMG-duplicate path that reuses Clause 20 DMG formats. The PHY then streams out the preamble (L-STF, L-CEF, L-Header, EDMG-Header-A, and for SC/OFDM the EDMG-STF and EDMG-CEF), exchanges PSDU octets via PHY-DATA primitives, and finishes on PHY-TXEND. The receive procedure (28.8) is the mirror image: a PHY-CCA.indication(BUSY) flags incoming energy, the headers are decoded and CRC-checked (a bad L-Header or EDMG-Header-A CRC raises FormatViolation, an unsupported mode raises UnsupportedRate), and a clean decode yields PHY-RXSTART.indication followed by PHY-DATA.indication octets and finally PHY-RXEND. The receiver also computes RXTIME from the L-Header so it knows exactly how long to hold the medium busy.",
+      "zh": "发送流程（28.7）是一个状态机，当 MAC 发出 PHY-TXSTART.request(TXVECTOR) 时被触发。TXVECTOR 中的 FORMAT 参数会在两条路径中二选一：EDMG 路径（控制 / SC / OFDM 模式），或复用第 20 章 DMG 格式的“非 EDMG 重复”路径。随后物理层依次发出前导码（L-STF、L-CEF、L-Header、EDMG-Header-A，对于 SC/OFDM 还包括 EDMG-STF 与 EDMG-CEF），通过 PHY-DATA 原语交换 PSDU 字节，最后以 PHY-TXEND 收尾。接收流程（28.8）则是它的镜像：先以 PHY-CCA.indication(BUSY) 标记到来的能量，对各头部解码并校验 CRC（L-Header 或 EDMG-Header-A 的 CRC 出错会触发 FormatViolation，遇到不支持的模式则触发 UnsupportedRate），解码无误后给出 PHY-RXSTART.indication，再依次送出 PHY-DATA.indication 字节，最终以 PHY-RXEND 结束。接收方还会依据 L-Header 计算 RXTIME，从而精确知道应将信道占用标记保持多久。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant MAC\n    participant PHY\n    Note over MAC,PHY: 28.7 EDMG transmit procedure\n    MAC->>PHY: PHY-TXSTART.request(TXVECTOR)\n    Note over PHY: build L-Header + EDMG-Header-A, emit preamble\n    PHY-->>MAC: PHY-TXSTART.confirm(TXSTATUS)\n    loop PSDU octets\n        MAC->>PHY: PHY-DATA.request(DATA)\n        PHY-->>MAC: PHY-DATA.confirm\n    end\n    MAC->>PHY: PHY-TXEND.request\n    PHY-->>MAC: PHY-TXEND.confirm\n    Note over PHY: 28.8 receive is the mirror: CCA(BUSY) -> header CRC -> RXSTART -> DATA -> RXEND",
+      "zh": "sequenceDiagram\n    participant MAC\n    participant PHY\n    Note over MAC,PHY: 28.7 EDMG 发送流程\n    MAC->>PHY: PHY-TXSTART.request(TXVECTOR)\n    Note over PHY: 构造 L-Header + EDMG-Header-A，发出前导码\n    PHY-->>MAC: PHY-TXSTART.confirm(TXSTATUS)\n    loop PSDU 字节\n        MAC->>PHY: PHY-DATA.request(DATA)\n        PHY-->>MAC: PHY-DATA.confirm\n    end\n    MAC->>PHY: PHY-TXEND.request\n    PHY-->>MAC: PHY-TXEND.confirm\n    Note over PHY: 28.8 接收为镜像：CCA(BUSY) -> 头部 CRC -> RXSTART -> DATA -> RXEND"
+    },
+    {
+      "type": "prose",
+      "en": "EDMG beamforming (28.9) is where 802.11ay earns its keep, because a 60 GHz link only works if both ends point their antenna arrays at each other. Three tools do the aiming. First, the Short SSW PPDU (28.9.1) — a tiny DMG control-mode frame with a 6-octet payload used during sector sweeps; it packs a PPDU Type, Direction (initiator vs responder), Source/Destination AID, a CDOWN counter, an RF Chain ID, and a clever 10-bit Short Scrambled BSSID. That subfield is built by scrambling the 48-bit BSSID with a seed from the L-Header scrambler-init field, taking a CRC-16-CCITT, and keeping the 10 MSBs — a compact, collision-resistant network fingerprint that fits in a frame too small for a full BSSID.",
+      "zh": "EDMG 波束成形（28.9）正是 802.11ay 大显身手之处，因为一条 60 GHz 链路只有在两端都把天线阵列对准彼此时才能工作。完成对准靠三件工具。第一件是短 SSW PPDU（28.9.1）——一种载荷仅 6 字节的微型 DMG 控制模式帧，用于扇区扫描；它打包了 PPDU 类型、方向（发起方还是响应方）、源/目的 AID、一个 CDOWN 倒计数器、一个 RF 链 ID，以及一个精巧的 10 比特“短加扰 BSSID”。该子字段的生成方式是：用 L-Header 加扰器初始化字段提供的种子对 48 比特 BSSID 进行加扰，计算 CRC-16-CCITT，再取其高 10 位——这便得到一个紧凑且抗碰撞的网络指纹，恰好能塞进这个连完整 BSSID 都放不下的小帧里。"
+    },
+    {
+      "type": "prose",
+      "en": "Second, beam refinement via the EDMG BRP PPDU (28.9.2). A BRP PPDU appends a TRN (training) field whose repeated TRN subfields let the two ends sweep antenna weight vectors (AWVs). Three flavours exist: BRP-RX (receiver trains its receive AWV, all subfields use one AWV), BRP-TX (transmitter changes AWV across the last M subfields of each TRN-Unit so the receiver can measure each), and BRP-RX/TX (both train at once). The EDMG-Header-A carries the EDMG TRN-Unit P / M / N fields that shape how many subfields are AGC settling, how many are for training, and how often the AWV changes — the choreography that makes MIMO beam-tracking possible at 60 GHz. Third, the EDMG secure-ranging PPDU (28.9.3) repurposes that TRN machinery for secure round-trip-time measurement: it is a single-stream BRP-TX PPDU flagged by setting the Secure TRN field to 1, whose Secure TRN subfields each carry a GI, a zero prefix, a 384×N pseudorandom π/2-BPSK Secure Ranging field, a zero postfix, and a closing GI — the randomness is what makes a spoofed distance hard to forge.",
+      "zh": "第二件是经由 EDMG BRP PPDU（28.9.2）进行的波束精细化。BRP PPDU 会追加一个 TRN（训练）字段，其重复的 TRN 子字段让两端得以扫描各自的天线权重向量（AWV）。它有三种类型：BRP-RX（接收方训练其接收 AWV，所有子字段使用同一 AWV）、BRP-TX（发送方在每个 TRN-Unit 的最后 M 个子字段上变更 AWV，以便接收方逐一测量）以及 BRP-RX/TX（两端同时训练）。EDMG-Header-A 携带 EDMG TRN-Unit P / M / N 字段，规定有多少子字段用于 AGC 稳定、有多少用于训练、以及 AWV 多久变更一次——正是这套编排让 60 GHz 下的 MIMO 波束跟踪成为可能。第三件是 EDMG 安全测距 PPDU（28.9.3），它把上述 TRN 机制改用于安全的往返时延（RTT）测量：它是一个单流的 BRP-TX PPDU，通过将 Secure TRN 字段置 1 来标识，其每个 Secure TRN 子字段依次包含一个 GI、一段零前缀、一个长度为 384×N 的伪随机 π/2-BPSK 安全测距字段、一段零后缀和一个收尾 GI——正是这份随机性使得伪造的距离难以仿冒。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='20' stroke='none' fill='currentColor' font-size='12'>Secure TRN subfield (28.9.3.6)</text><rect x='10' y='40' width='50' height='40'/><text x='35' y='64' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>GI</text><text x='35' y='98' stroke='none' fill='currentColor' font-size='8' text-anchor='middle'>64xNcb</text><rect x='60' y='40' width='80' height='40'/><text x='100' y='60' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>zero</text><text x='100' y='72' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>prefix</text><text x='100' y='98' stroke='none' fill='currentColor' font-size='8' text-anchor='middle'>128xNcb</text><rect x='140' y='40' width='160' height='40' stroke-width='2.5'/><text x='220' y='60' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>Secure Ranging</text><text x='220' y='72' stroke='none' fill='currentColor' font-size='8' text-anchor='middle'>pseudorandom pi/2-BPSK</text><text x='220' y='98' stroke='none' fill='currentColor' font-size='8' text-anchor='middle'>384xNcb</text><rect x='300' y='40' width='80' height='40'/><text x='340' y='60' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>zero</text><text x='340' y='72' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>postfix</text><text x='340' y='98' stroke='none' fill='currentColor' font-size='8' text-anchor='middle'>128xNcb</text><rect x='380' y='40' width='50' height='40'/><text x='405' y='64' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>GI</text><text x='405' y='98' stroke='none' fill='currentColor' font-size='8' text-anchor='middle'>64xNcb</text><text x='10' y='130' stroke='none' fill='currentColor' font-size='9'>Five segments; the random middle resists distance spoofing.</text></svg>",
+      "caption": {
+        "en": "The five-segment Secure TRN subfield: the pseudorandom Secure Ranging field in the middle is what a spoofer cannot predict.",
+        "zh": "五段式 Secure TRN 子字段：中间那段伪随机的安全测距字段，正是攻击者无法预测的部分。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "All of that aiming and decoding rests on carefully designed sequences. The Golay sequence tables (28.10) supply the complementary pairs used by the STF/CEF/TRN fields: 28.10.2 covers lengths 32, 64, 128, 256, 512, and 1024 (generated from a DK/WK recipe inherited from the DMG PLME, indexed per space-time stream), while 28.10.3 adds lengths 96, 192, 384, and 768 derived from base sequences. Golay pairs are chosen because their autocorrelation sums to a single clean spike — perfect for timing and channel estimation. The OFDM sequences (28.11) cover the frequency-domain side: 28.11.1 defines the EDMG-STF sequence and 28.11.2 the EDMG-CEF sequence, each given for the four channel widths (lengths N = 176, 385, 595, 804 for 2.16 / 4.32 / 6.48 / 8.64 GHz) using a {±1, ±j} alphabet. STF anchors automatic gain control and coarse timing; CEF anchors channel estimation.",
+      "zh": "上述所有对准与解码都建立在精心设计的序列之上。Golay 序列表（28.10）提供了 STF/CEF/TRN 字段所用的互补序列对：28.10.2 涵盖长度 32、64、128、256、512 与 1024（由继承自 DMG PLME 的 DK/WK 配方生成，并按空时流分别编号），而 28.10.3 又补充了由基序列推导而来的长度 96、192、384 与 768。之所以选用 Golay 序列对，是因为它们的自相关之和会汇成一个干净的尖峰——这对定时与信道估计再合适不过。OFDM 序列（28.11）则负责频域一侧：28.11.1 定义 EDMG-STF 序列，28.11.2 定义 EDMG-CEF 序列，二者针对四种信道带宽分别给出（2.16 / 4.32 / 6.48 / 8.64 GHz 对应长度 N = 176、385、595、804），采用 {±1, ±j} 符号字母表。STF 锚定自动增益控制与粗定时，CEF 锚定信道估计。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why Golay complementary pairs? A single sequence has annoying autocorrelation sidelobes. But a complementary pair is designed so that the sidelobes of one cancel the sidelobes of the other when their autocorrelations are summed, leaving an ideal impulse. That clean impulse is exactly what a receiver needs to pin down packet timing and to estimate the channel's impulse response for beam refinement.",
+      "zh": "为什么要用 Golay 互补序列对？单条序列的自相关会带有讨厌的旁瓣；而互补序列对经过专门设计，使得当两者的自相关相加时，其中一条的旁瓣恰好抵消另一条的旁瓣，只留下一个理想的冲激。正是这个干净的冲激，让接收方既能精确锁定数据包定时，又能估计出用于波束精细化的信道冲激响应。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the EDMG PLME (28.12) is the management plane of the PHY. 28.12.1 lists the PLME SAP primitives the station management entity uses to drive the radio; 28.12.2 points the PHY MIB attributes at Annex C with EDMG-specific default values. The heart of it for upper layers is the TXTIME calculation (28.12.3): given a TXVECTOR, a PLME-TXTIME.request returns — via PLME-TXTIME.confirm — exactly how many microseconds the PPDU will occupy the air, with separate formulas per mode (28.12.3.2 control, .3 SC, .4 OFDM, .5 non-EDMG control, .6 non-EDMG SC). The MAC needs this for NAV, TXOP, and ACK timing. And 28.12.4 lists the EDMG PHY characteristics constants surfaced through PLME-CHARACTERISTICS — the fixed numbers (slot times, turnaround times, and friends) that the rest of the protocol budgets against.",
+      "zh": "最后，EDMG PLME（28.12）是物理层的管理平面。28.12.1 列出了站点管理实体用以驱动射频的 PLME SAP 原语；28.12.2 将 PHY MIB 属性指向附录 C，并赋予 EDMG 专属的默认值。对上层而言最关键的是 TXTIME 计算（28.12.3）：给定一个 TXVECTOR，一次 PLME-TXTIME.request 会通过 PLME-TXTIME.confirm 精确返回该 PPDU 将占用空口多少微秒，且每种模式各有公式（28.12.3.2 控制模式、.3 SC、.4 OFDM、.5 非 EDMG 控制、.6 非 EDMG SC）。MAC 需要这个数值来计算 NAV、TXOP 与 ACK 定时。而 28.12.4 列出了通过 PLME-CHARACTERISTICS 暴露的 EDMG 物理层特性常量——也就是协议其余部分据以做预算的那些固定数值（时隙时长、收发转换时间等）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The Short Scrambled BSSID recipe and the worked payload example",
+        "zh": "短加扰 BSSID 的生成配方与一个完整的载荷算例"
+      },
+      "en": "28.9.1.2 spells out the Short Scrambled BSSID exactly: split the 48-bit BSSID into three 16-bit words (word0 = MSBs), compute scrambled_word_i = (word_i + scramble_pattern) mod 2^16, where scramble_pattern = (0x5795 x seed) mod 2^15 and seed is the L-Header Scrambler Initialization value; concatenate the three scrambled words; take CRC-16-CCITT over the 48-bit scrambled BSSID; keep the 10 MSBs (discard the 6 LSBs). The standard then gives a fully worked example in 28.9.1.3: BSSID = 0B-25-4D-00-B8-6A with Scrambler Initialization = 1 yields Short Scrambled BSSID = 0x02D, and with PPDU Type = 0, Direction = 0, Addressing Mode = 0, Source AID = 0x15, Destination AID = 1, CDOWN = 0x3F, RF Chain ID = 3, Unassociated = 0, FCS = 0xE, the 48-bit Short SSW Payload encodes (per the 9.2.2 bit convention) as 00010101 00010000 00011111 10000011 01011010 00000111.",
+      "zh": "28.9.1.2 精确给出了短加扰 BSSID 的算法：把 48 比特 BSSID 拆成三个 16 比特字（word0 为最高位字），对每个字计算 scrambled_word_i = (word_i + scramble_pattern) mod 2^16，其中 scramble_pattern = (0x5795 x seed) mod 2^15，seed 取自 L-Header 的加扰器初始化值；将三个加扰后的字拼接；对这 48 比特加扰 BSSID 计算 CRC-16-CCITT；保留其高 10 位（丢弃低 6 位）。随后标准在 28.9.1.3 给出了一个完整算例：当 BSSID = 0B-25-4D-00-B8-6A、加扰器初始化 = 1 时，得到短加扰 BSSID = 0x02D；再取 PPDU 类型 = 0、方向 = 0、寻址模式 = 0、源 AID = 0x15、目的 AID = 1、CDOWN = 0x3F、RF 链 ID = 3、未关联 = 0、FCS = 0xE，则这 48 比特的短 SSW 载荷（依 9.2.2 的比特约定）编码为 00010101 00010000 00011111 10000011 01011010 00000111。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4602,
+          4603
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4589,
+        4592,
+        4593
+      ],
+      "note": "28.7 EDMG transmit procedure — two FORMAT paths; PHY-TXSTART/DATA/TXEND primitives; preamble fields"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4593,
+        4595,
+        4596
+      ],
+      "note": "28.8 EDMG receive procedure — CCA(BUSY), L-Header/EDMG-Header-A CRC checks, FormatViolation/UnsupportedRate, RXSTART/RXEND, RXTIME"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4599,
+        4600,
+        4601,
+        4602,
+        4603
+      ],
+      "note": "28.9.1 Short SSW PPDU — payload subfields, Short Scrambled BSSID generation, worked example"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4603,
+        4604,
+        4605,
+        4606,
+        4615
+      ],
+      "note": "28.9.2 beam refinement / EDMG BRP PPDU (RX/TX/RX-TX, TRN-Unit P/M/N) and 28.9.3 EDMG secure ranging PPDU (Secure TRN subfield)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4616,
+        4650,
+        4683
+      ],
+      "note": "28.10 Golay sequences (lengths 32-1024 and 96-768) and 28.11 OFDM sequences (EDMG-STF, EDMG-CEF; N=176/385/595/804)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4708,
+        4709,
+        4710,
+        4711
+      ],
+      "note": "28.12 EDMG PLME — PLME SAP primitives, PHY MIB, TXTIME calculations per mode, EDMG PHY characteristics"
+    }
+  ],
+  "covers": [
+    "80211-2024:28.7",
+    "80211-2024:28.8",
+    "80211-2024:28.9.1.1",
+    "80211-2024:28.9.1.2",
+    "80211-2024:28.9.1.3",
+    "80211-2024:28.9.2.1",
+    "80211-2024:28.9.2.2",
+    "80211-2024:28.9.3.1",
+    "80211-2024:28.9.3.2",
+    "80211-2024:28.9.3.3",
+    "80211-2024:28.9.3.4",
+    "80211-2024:28.9.3.5",
+    "80211-2024:28.9.3.6",
+    "80211-2024:28.9.3.7",
+    "80211-2024:28.10.1",
+    "80211-2024:28.10.2",
+    "80211-2024:28.10.3",
+    "80211-2024:28.11.1.1",
+    "80211-2024:28.11.1.2",
+    "80211-2024:28.11.2.1",
+    "80211-2024:28.11.2.2",
+    "80211-2024:28.12.1",
+    "80211-2024:28.12.2",
+    "80211-2024:28.12.3.1",
+    "80211-2024:28.12.3.2",
+    "80211-2024:28.12.3.3",
+    "80211-2024:28.12.3.4",
+    "80211-2024:28.12.3.5",
+    "80211-2024:28.12.3.6",
+    "80211-2024:28.12.4"
+  ],
+  "track": "legacy-phy"
+}
