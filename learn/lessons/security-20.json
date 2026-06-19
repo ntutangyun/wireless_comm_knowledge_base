@@ -1,0 +1,130 @@
+{
+  "id": "security-20",
+  "title": {
+    "en": "RSNA Establishment & Policy Selection Across BSS Types",
+    "zh": "RSNA 的建立与策略选择：各种网络类型下如何谈定安全"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Two Wi-Fi devices do not just 'turn on encryption.' Before any encrypted traffic flows they have to agree on a deal: which authentication method (AKM) they will use, which cipher will protect data, which cipher will protect group traffic and management frames. That agreed-upon deal is what the standard calls an RSNA — a Robust Security Network Association. This lesson is about how that deal gets struck. The recurring question to keep in mind is simple: who proposes, who decides, and what happens if they disagree?",
+      "zh": "两台 Wi-Fi 设备并不是简单地“打开加密”就完事了。在任何加密流量传输之前，它们必须先谈成一笔“交易”：用哪种认证方法（AKM）、用哪种密码算法保护数据、用哪种密码算法保护组播流量和管理帧。这笔谈成的“交易”，标准称之为 RSNA——健壮安全网络关联（Robust Security Network Association）。本课讲的就是这笔交易是怎么谈成的。请始终记住一个简单的问题：谁来提议、谁来拍板、谈不拢又会怎样？"
+    },
+    {
+      "type": "prose",
+      "en": "The opening move is advertising. A device prepared for RSNAs broadcasts its capabilities in an element called the RSNE, carried in Beacons, Probe Responses and Information Responses. The rule is strict: it must advertise every cipher and AKM its policy enables, and it must NOT advertise anything it has not enabled. So the menu you see on the air is exactly the menu on offer — no bait, no hidden items. A peer reading that menu may simply decline to talk to anyone whose RSNE doesn't include an acceptable suite.",
+      "zh": "开场动作是“广播能力”。一台准备建立 RSNA 的设备，会把自己的能力放进一个叫 RSNE 的信息元素里，通过 Beacon、Probe Response 和 Information Response 帧对外发布。规则很严格：它必须公告策略所启用的每一种密码算法和 AKM，并且绝不能公告任何尚未启用的内容。所以你在空口里看到的“菜单”，就恰好是它真正提供的菜单——没有诱饵，也没有暗藏的选项。读到这份菜单的对端，完全可以拒绝与任何 RSNE 里不含可接受套件的设备通信。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Who decides depends on the network type. In an infrastructure BSS the AP advertises the menu, but the associating station is the one that PICKS — it copies exactly one AKM and one pairwise cipher (plus the AP's group ciphers) into its (Re)Association Request. The AP either honours that choice or rejects the association. The client orders; the kitchen confirms or refuses.",
+      "zh": "“谁拍板”取决于网络类型。在基础结构 BSS（infrastructure BSS）里，AP 负责公告菜单，但真正“点单”的是发起关联的站点——它会从 AP 的菜单里精确挑出一个 AKM 和一个成对密码套件（再加上 AP 指定的组播密码套件），写进自己的（重）关联请求帧里。AP 要么认可这个选择，要么拒绝关联。客户点单，后厨确认或拒绝。"
+    },
+    {
+      "type": "prose",
+      "en": "Different network types shift who proposes and who decides. In an IBSS (ad-hoc) there is no AP, so all stations must share one group cipher and AKM, and each PAIR negotiates its own pairwise cipher inside two 4-way handshakes; the pairwise key actually used comes from the handshake started by the station with the higher MAC address. In a mesh BSS, peers discover each other from Beacons and form authenticated peerings via the AMPE protocol (and PASN authentication is forbidden there). In a PBSS, a station that chooses to associate with the PCP follows the infrastructure rules with the PCP playing the AP's role; a station that doesn't associate falls back to the IBSS-style peer negotiation.",
+      "zh": "不同网络类型会改变“谁提议、谁拍板”。在 IBSS（自组织网络）里没有 AP，因此所有站点必须共用同一个组播密码套件和 AKM，而每一对站点各自通过两次四次握手协商自己的成对密码套件；最终真正使用的成对密钥，取自由 MAC 地址较大的那一方所发起的握手。在 mesh BSS（网状网络）里，节点通过 Beacon 互相发现，并借助 AMPE 协议建立经过认证的对等连接（这里禁止使用 PASN 认证）。在 PBSS 里，选择与 PCP 关联的站点遵循基础结构规则、由 PCP 扮演 AP 的角色；而选择不关联的站点，则退回到类似 IBSS 的对等协商方式。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[AP advertises RSNE menu in Beacon/Probe Response] --> B{STA finds an acceptable AKM + cipher?}\n    B -- no overlap --> C[STA declines to associate]\n    B -- yes --> D[STA picks ONE AKM + pairwise cipher in Assoc Request]\n    D --> E{AP accepts the choice?}\n    E -- no --> F[Association rejected]\n    E -- yes --> G[Association succeeds: link 'available']\n    G --> H[802.1X Controlled Port is BLOCKED]\n    H --> I[Authentication + 4-way handshake over Uncontrolled Port]\n    I --> J{Keys installed?}\n    J -- yes --> K[Controlled Port OPENS: data may flow]\n    J -- no --> L[Port stays blocked: only EAPOL allowed]",
+      "zh": "flowchart TD\n    A[AP 在 Beacon/Probe Response 中公告 RSNE 菜单] --> B{STA 找到可接受的 AKM + 密码套件?}\n    B -- 无交集 --> C[STA 拒绝关联]\n    B -- 有 --> D[STA 在关联请求中挑选唯一一个 AKM + 成对密码套件]\n    D --> E{AP 接受该选择?}\n    E -- 否 --> F[关联被拒绝]\n    E -- 是 --> G[关联成功: 链路 '可用']\n    G --> H[802.1X 受控端口被阻断]\n    H --> I[在非受控端口上进行认证 + 四次握手]\n    I --> J{密钥已安装?}\n    J -- 是 --> K[受控端口开启: 数据可流通]\n    J -- 否 --> L[端口保持阻断: 仅允许 EAPOL]"
+    },
+    {
+      "type": "prose",
+      "en": "Association is not the same as 'allowed to send data.' This is the heart of an RSN: the IEEE 802.1X Controlled Port. Think of it as a door that stays shut. The moment a station associates, the link is reported as 'available' — but the Controlled Port is blocked, so no ordinary data may pass. Only 802.1X authentication traffic (EAPOL) flows, over a separate Uncontrolled Port. The door opens ONLY after authentication completes and cryptographic keys are installed in the MAC. Until then, any forged data written to the channel is simply discarded — the gate protects the upper layers while the link is still being set up.",
+      "zh": "“关联成功”并不等于“可以发数据”。这正是 RSN 的核心：IEEE 802.1X 受控端口（Controlled Port）。可以把它想象成一扇始终紧闭的门。站点一旦关联，链路就被上报为“可用”——但受控端口仍处于阻断状态，普通数据无法通过。此时只有 802.1X 认证流量（EAPOL）能够流动，而且走的是另一条独立的非受控端口（Uncontrolled Port）。这扇门只有在认证完成、且密码密钥被安装进 MAC 之后才会打开。在此之前，任何被伪造并写入信道的数据都会被直接丢弃——这道门在链路尚未建立完成时保护着上层。"
+    },
+    {
+      "type": "prose",
+      "en": "Two more agreements ride along on the same negotiation. Management frame protection (MFP) is selected from the MFPC/MFPR bits both sides advertise: if both set MFPC=1, protected management frames are negotiated; a station that requires it (MFPR=1) facing a peer that can't do it will refuse to associate (status ROBUST_MANAGEMENT_POLICY_VIOLATION). Beacon protection is a separate option — once a BIGTKSA exists, an AP transmits protected Beacons and the client validates them, defeating fake-Beacon attacks. And one RSNA can even span several bands at once: a multi-band RSNA reuses a single PMKSA and, in the transparent case, a single PTKSA negotiated by one 4-way handshake to cover the current band plus other supported bands.",
+      "zh": "在同一次协商中，还会“搭车”谈定另外两件事。管理帧保护（MFP）由双方公告的 MFPC/MFPR 比特来选择：若双方都把 MFPC 置 1，则协商启用受保护的管理帧；一个要求强制启用（MFPR=1）的站点，遇到无法支持的对端时会拒绝关联（状态码 ROBUST_MANAGEMENT_POLICY_VIOLATION）。Beacon 保护是另一个独立选项——一旦建立了 BIGTKSA，AP 就会发送受保护的 Beacon，客户端则对其进行校验，从而挫败伪造 Beacon 的攻击。此外，一个 RSNA 甚至可以同时覆盖多个频段：多频段 RSNA 复用同一个 PMKSA，并且在“透明”情形下复用由单次四次握手协商出的单个 PTKSA，来覆盖当前频段及其他受支持的频段。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, deals don't last forever. An RSNA is torn down when the relationship changes — a fresh (non-FT) (re)association, a disassociation or deauthentication all cause both sides to delete the relevant security associations (PTKSA, GTKSA, IGTKSA, and so on) and then drop the temporal keys. Rekeying is the gentler cousin: rather than tearing everything down, an Authenticator can run a new 4-way handshake or group key handshake to renew a key before its lifetime or packet-number space runs out, so the secure session continues uninterrupted.",
+      "zh": "最后，交易不会永远有效。当“关系”发生变化时，RSNA 就会被拆除——一次全新的（非 FT）（重）关联、一次去关联或去认证，都会导致双方删除相关的安全关联（PTKSA、GTKSA、IGTKSA 等），随后再删除临时密钥。重新生成密钥（rekeying）则是它温和的“表亲”：不必把一切推倒重来，认证方（Authenticator）可以在密钥的生命周期或包号空间耗尽之前，运行一次新的四次握手或组密钥握手来续上密钥，从而让安全会话不中断地延续下去。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact infrastructure-BSS selection rule and the Controlled Port gate",
+        "zh": "基础结构 BSS 选择规则与受控端口门禁的精确表述"
+      },
+      "en": "Clause 12.6.3 fixes the infrastructure-BSS procedure: RSNA policy selection rides the normal association procedure and is performed by the associating STA, which inserts an RSNE into its (Re)Association Request including one authentication and pairwise cipher suite from those the AP advertised, plus the AP's group data and group management cipher suites; if any RSNE field fails to overlap a value the STA supports, the STA declines to associate. An HT STA must drop TKIP as a pairwise choice if CCMP is advertised. MFP is resolved via Table 12-5 from the MFPC/MFPR bits, with MFPR=1 vs an incapable peer yielding ROBUST_MANAGEMENT_POLICY_VIOLATION. Clause 12.6.7 then states the gate: the 802.1X Controlled Port stays blocked from general data traffic until an 802.1X authentication completes over the Uncontrolled Port, and each Controlled Port remains blocked until the state variables portValid and keyDone both become true — i.e. until cryptographic keys are installed into the MAC.",
+      "zh": "12.6.3 节确定了基础结构 BSS 的流程：RSNA 策略选择搭载在普通关联流程之上，由发起关联的站点执行——它在（重）关联请求中插入一个 RSNE，从 AP 公告的套件中选出一个认证套件和一个成对密码套件，并带上 AP 指定的组播数据密码套件和组播管理密码套件；只要 RSNE 中有任何字段与站点支持的取值没有交集，站点就拒绝关联。若 AP 公告了 CCMP，HT 站点必须把 TKIP 从成对密码候选中剔除。MFP 则依据表 12-5、由 MFPC/MFPR 比特决定，其中 MFPR=1 遇到无此能力的对端会产生 ROBUST_MANAGEMENT_POLICY_VIOLATION。随后 12.6.7 节给出门禁规则：在 802.1X 认证经由非受控端口成功完成之前，802.1X 受控端口对一般数据流量始终保持阻断；并且每个受控端口会一直阻断，直到状态变量 portValid 与 keyDone 都变为真——也就是密码密钥被安装进 MAC 之后。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3020,
+          3021,
+          3025
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:12.6.2",
+    "80211-2024:12.6.3",
+    "80211-2024:12.6.4",
+    "80211-2024:12.6.5",
+    "80211-2024:12.6.6",
+    "80211-2024:12.6.7",
+    "80211-2024:12.6.16",
+    "80211-2024:12.6.17",
+    "80211-2024:12.6.18",
+    "80211-2024:12.6.19",
+    "80211-2024:12.6.20.1",
+    "80211-2024:12.6.20.2",
+    "80211-2024:12.6.20.3",
+    "80211-2024:12.6.20.4",
+    "80211-2024:12.6.21"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3020
+      ],
+      "note": "12.6.2 RSNA selection; 12.6.3 RSNA policy selection in an infrastructure BSS"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3021
+      ],
+      "note": "12.6.3 cont. + Table 12-5 robust management frame selection (MFPC/MFPR)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3023,
+        3024,
+        3025
+      ],
+      "note": "12.6.4 IBSS, 12.6.5 MBSS, 12.6.6 PBSS policy selection; 12.6.7 RSN management of the 802.1X Controlled Port"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3033,
+        3034,
+        3035
+      ],
+      "note": "12.6.16 RSNA SA termination; 12.6.17 protection of robust Management frames; 12.6.18 robust management frame selection; 12.6.19 RSNA rekeying"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3037,
+        3038,
+        3039
+      ],
+      "note": "12.6.20.1-12.6.20.4 multi-band RSNA (transparent/nontransparent/TDLS); 12.6.21 protection of Beacon frames"
+    }
+  ],
+  "track": "security"
+}

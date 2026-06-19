@@ -1,0 +1,134 @@
+{
+  "id": "security-24",
+  "title": {
+    "en": "Key-Management State Machines & the TDLS PeerKey Handshake",
+    "zh": "密钥管理状态机与 TDLS PeerKey (TPK) 握手"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Earlier lessons sketched the 4-way and group-key handshakes as a sequence of EAPOL-Key messages. But who keeps track of where each side is in that sequence — which key has been calculated, which has been installed, whether a reply is still owed? The answer is a pair of formal state machines: one on the station (the Supplicant) and one on the AP (the Authenticator). They turn the loose 'send message 1, wait for message 2' description into deterministic, event-driven logic. This lesson opens up those two machines, then looks at a third 'who-holds-which-key' question: how two clients can derive a fresh key to talk directly to each other, off the AP path, with the TDLS PeerKey handshake.",
+      "zh": "之前的课程把 4 次握手和组密钥握手描绘成一连串 EAPOL-Key 消息。但究竟是谁在记录双方各自走到了哪一步——哪个密钥已经算出、哪个已经装载、是否还欠着一条回复？答案是一对形式化的状态机：一个位于站点端（Supplicant，请求方），一个位于 AP 端（Authenticator，认证方）。它们把“发送消息 1、等待消息 2”这种松散描述，变成了确定性的、由事件驱动的逻辑。本课先打开这两台状态机，再看第三个“谁持有哪把密钥”的问题：两个客户端如何绕过 AP 路径、直接为彼此通信派生一把全新密钥——这就是 TDLS PeerKey 握手。"
+    },
+    {
+      "type": "prose",
+      "en": "The Supplicant machine is the simpler of the two. It has four states. It reinitialises at boot into INITIALIZE, where it zeroes its key state and deletes any installed PTK/GTK/IGTK. When the management entity asks it to authenticate a peer, it moves to AUTHENTICATION; if 802.1X authentication fails it drops into DISCONNECTED and tears the link down. The interesting state is STAKEYSTART: it is entered every time an EAPOL-Key PDU arrives, and all the work of validating the MIC, deriving the PTK, decrypting and installing the GTK/IGTK, and sending the right reply (M2, M4, or G2) happens inside one procedure called StaProcessEAPOL-Key. Notably, this machine has no timeouts of its own — recovery from a stuck handshake is left to the 802.1X layer above it.",
+      "zh": "Supplicant 状态机是两者中较简单的一个，共有四个状态。它在开机时重新初始化进入 INITIALIZE 状态，在这里把密钥状态清零，并删除任何已装载的 PTK/GTK/IGTK。当管理实体要求它对某个对端进行认证时，它进入 AUTHENTICATION 状态；若 802.1X 认证失败，则跌入 DISCONNECTED 状态并拆除链路。最关键的是 STAKEYSTART 状态：每当收到一条 EAPOL-Key PDU 就会进入它，而校验 MIC、派生 PTK、解密并装载 GTK/IGTK、以及发出正确回复（M2、M4 或 G2）的全部工作，都在一个名为 StaProcessEAPOL-Key 的过程内完成。值得注意的是，这台状态机自身没有任何超时——卡住的握手由其上层的 802.1X 负责恢复。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n    [*] --> INITIALIZE\n    INITIALIZE --> AUTHENTICATION: AuthenticationRequest\n    AUTHENTICATION --> STAKEYSTART: EAPOL-Key PDU received\n    STAKEYSTART --> STAKEYSTART: next EAPOL-Key PDU\n    STAKEYSTART --> DISCONNECTED: AuthenticationFailed\n    AUTHENTICATION --> DISCONNECTED: AuthenticationFailed\n    DISCONNECTED --> INITIALIZE: StaDisconnect()\n    note right of STAKEYSTART\n      StaProcessEAPOL-Key:\n      check MIC, derive PTK,\n      install GTK/IGTK, reply\n    end note",
+      "zh": "stateDiagram-v2\n    [*] --> INITIALIZE\n    INITIALIZE --> AUTHENTICATION: 收到认证请求\n    AUTHENTICATION --> STAKEYSTART: 收到 EAPOL-Key PDU\n    STAKEYSTART --> STAKEYSTART: 下一条 EAPOL-Key PDU\n    STAKEYSTART --> DISCONNECTED: 认证失败\n    AUTHENTICATION --> DISCONNECTED: 认证失败\n    DISCONNECTED --> INITIALIZE: 执行 StaDisconnect()\n    note right of STAKEYSTART\n      StaProcessEAPOL-Key：\n      校验 MIC、派生 PTK、\n      装载 GTK/IGTK、回复\n    end note"
+    },
+    {
+      "type": "prose",
+      "en": "The Authenticator machine, living on the AP, is much bigger because it does the driving. It is split into three groups of states. The per-STA 4-way handshake group (AUTHENTICATION, AUTHENTICATION2, INITPMK/INITPSK/INITSAE, PTKSTART, PTKCALCNEGOTIATING, PTKINITNEGOTIATING, PTKINITDONE …) walks each associated station through deriving and installing the PTK; PTKSTART is where it sends message 1 with a fresh ANonce, and it carries a TimeoutCtr so it can retransmit and eventually give up. A per-STA group-key group (IDLE, REKEYNEGOTIATING, REKEYESTABLISHED, KEYERROR) hands the GTK to one client. And a set of global states (GTK_INIT, SETKEYS, SETKEYSDONE) generates a new GTK and fans it out to every associated STA, swapping the key index (GN/GM) on each rekey. A subtle replay rule threads through both machines: every reply must echo the Key Replay Counter of the message it answers, and the counter is incremented on each transmission — that is the deterministic anti-replay state the RSNA relies on.",
+      "zh": "位于 AP 上的 Authenticator 状态机要大得多，因为它是主导方，被划分为三组状态。每站点的 4 次握手组（AUTHENTICATION、AUTHENTICATION2、INITPMK/INITPSK/INITSAE、PTKSTART、PTKCALCNEGOTIATING、PTKINITNEGOTIATING、PTKINITDONE 等）带领每个已关联站点完成 PTK 的派生与装载；PTKSTART 正是它携带全新 ANonce 发出消息 1 的地方，并维护一个 TimeoutCtr 以便重传并最终放弃。每站点的组密钥组（IDLE、REKEYNEGOTIATING、REKEYESTABLISHED、KEYERROR）负责把 GTK 交给某一个客户端。还有一组全局状态（GTK_INIT、SETKEYS、SETKEYSDONE），用于生成新的 GTK 并分发给所有已关联站点，且在每次重密钥时交换密钥索引（GN/GM）。一条微妙的防重放规则贯穿这两台状态机：每条回复都必须回显它所应答消息的 Key Replay Counter，且该计数器在每次发送时递增——这正是 RSNA 所依赖的确定性防重放状态。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A useful mental model: the Authenticator is the conductor and the Supplicant is the musician. The AP's machine decides when to start the 4-way handshake, when to rekey the group, and when to give up and disconnect; the station's machine mostly reacts — each EAPOL-Key PDU is self-describing, so the Supplicant can process it in one pass without keeping much of its own timing state.",
+      "zh": "一个有用的心智模型：Authenticator 是指挥，Supplicant 是乐手。AP 的状态机决定何时启动 4 次握手、何时为组密钥重密钥、何时放弃并断开；而站点的状态机主要是在“响应”——每条 EAPOL-Key PDU 都是自描述的，因此 Supplicant 可以一趟处理完，无需自己维护太多时序状态。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the third machine. Sometimes two clients on the same AP want a direct link to each other — a TDLS (Tunneled Direct-Link Setup) link — so their data does not have to bounce through the AP. They still want that direct link encrypted, but they emphatically do not want to trust the AP with the key. The TDLS PeerKey (TPK) protocol solves this with a three-message handshake carried inside the ordinary TDLS Setup Request, Response, and Confirm frames. The initiator picks a random SNonce; the responder picks a random ANonce; both compute the same TPK from a hash of the two nonces mixed with both MAC addresses and the BSSID. The first two messages carry no key-confirmation MIC for the SNonce, but messages 2 and 3 carry a MIC computed with the TPK-KCK, so each side proves it derived the same key.",
+      "zh": "现在来看第三台状态机。有时同一个 AP 下的两个客户端希望彼此建立一条直连链路——即 TDLS（隧道式直连建立）链路——这样它们的数据就不必再经 AP 中转。它们依然希望这条直连链路是加密的，但又坚决不想把密钥托付给 AP。TDLS PeerKey（TPK）协议用一段嵌入在普通 TDLS Setup Request、Response、Confirm 帧中的三条消息握手解决了这个问题。发起方随机选取一个 SNonce，响应方随机选取一个 ANonce；双方都用“两个 nonce 的哈希 + 两端 MAC 地址 + BSSID”派生出同一把 TPK。前两条消息中针对 SNonce 并不携带密钥确认 MIC，但消息 2 和消息 3 携带了用 TPK-KCK 计算的 MIC，于是双方各自证明自己派生出了相同的密钥。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant I as TDLS Initiator STA\n    participant R as TDLS Responder STA\n    Note over I: pick random SNonce\n    I->>R: Msg 1 (TDLS Setup Request)<br/>RSNE, FTE(SNonce, ANonce=0, MIC=0), TIE\n    Note over R: pick ANonce, derive TPK<br/>install TK before reply\n    R->>I: Msg 2 (TDLS Setup Response)<br/>FTE(SNonce, ANonce, MIC=KCK)\n    Note over I: derive TPK, verify MIC,<br/>install TK, create TPKSA\n    I->>R: Msg 3 (TDLS Setup Confirm)<br/>FTE(MIC=KCK over seq=3)\n    Note over I,R: TPKSA established — direct link secured,<br/>AP never holds the TPK",
+      "zh": "sequenceDiagram\n    participant I as TDLS 发起方 STA\n    participant R as TDLS 响应方 STA\n    Note over I: 随机选取 SNonce\n    I->>R: 消息 1 (TDLS Setup Request)<br/>RSNE、FTE(SNonce, ANonce=0, MIC=0)、TIE\n    Note over R: 选取 ANonce、派生 TPK<br/>回复前先装载 TK\n    R->>I: 消息 2 (TDLS Setup Response)<br/>FTE(SNonce, ANonce, MIC=KCK)\n    Note over I: 派生 TPK、校验 MIC、<br/>装载 TK、创建 TPKSA\n    I->>R: 消息 3 (TDLS Setup Confirm)<br/>FTE(对 seq=3 计算的 MIC=KCK)\n    Note over I,R: TPKSA 建立——直连链路已加密，<br/>AP 始终不持有 TPK"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why can the AP not just snoop the TPK? Because the TPK is derived only from the two nonces and the two STA MAC addresses (plus the BSSID) — never sent on the air in the clear, and never handed to the AP. The protocol's stated security assumptions even spell this out: both peers must already have an RSNA with the same AP, and neither the peers nor the AP may expose the nonces or derived key to a third party. The protocol also refuses to run over a weak link — if the STA-to-AP link uses TKIP or is unsecured, a STA may decline TDLS, because a weak path could leak the nonces.",
+      "zh": "为什么 AP 无法直接窃取 TPK？因为 TPK 仅由两个 nonce 和两端 STA 的 MAC 地址（再加 BSSID）派生——这些素材从不以明文在空口传输，也从不交给 AP。该协议明列的安全假设正说明了这一点：两个对端都必须已与同一个 AP 建立 RSNA，且无论对端还是 AP 都不得把 nonce 或派生密钥泄露给第三方。协议还拒绝在弱链路上运行——若 STA 到 AP 的链路使用 TKIP 或未加密，站点可以拒绝建立 TDLS，因为弱路径可能泄露这些 nonce。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact TPK derivation, the MIC inputs, and the state-machine procedures",
+        "zh": "TPK 的精确派生、MIC 输入字段与状态机过程"
+      },
+      "en": "The standard fixes the derivation as TPK-Key-Input = Hash(min(SNonce,ANonce) || max(SNonce,ANonce)), then TPK = KDF-Hash-Length(TPK-Key-Input, \"TDLS PMK\", min(MAC_I,MAC_R) || max(MAC_I,MAC_R) || BSSID), with Length = TK_bits + 128. The first 128 bits are the TPK-KCK (key confirmation) and the rest are the TPK-TK (the temporal key for direct-link data). For messages 2 and 3 the MIC is an AES-128-CMAC over the concatenation, in order, of initiator MAC (6 octets), responder MAC (6 octets), a 1-octet transaction sequence number (2 or 3), the Link Identifier element, RSNE, TIE, and the FTE with its MIC field zeroed. On the state-machine side, the Supplicant's single STAKEYSTART workhorse is the StaProcessEAPOL-Key pseudocode, which branches on key type P (pairwise) vs G (group) and emits M2/M4/G2; the Authenticator drives PTKSTART → PTKCALCNEGOTIATING → PTKINITNEGOTIATING → PTKINITDONE for the 4-way handshake and GTK_INIT/SETKEYS/SETKEYSDONE for the global GTK update, with TimeoutCtr/GTimeoutCtr governing retransmission and the Key Replay Counter incremented on every transmission.",
+      "zh": "标准把派生过程固定为：TPK-Key-Input = Hash(min(SNonce,ANonce) || max(SNonce,ANonce))，随后 TPK = KDF-Hash-Length(TPK-Key-Input, \"TDLS PMK\", min(MAC_I,MAC_R) || max(MAC_I,MAC_R) || BSSID)，其中 Length = TK_bits + 128。前 128 位为 TPK-KCK（密钥确认密钥），其余为 TPK-TK（用于直连数据的临时密钥）。对于消息 2 与消息 3，MIC 是对以下内容按序拼接后的 AES-128-CMAC：发起方 MAC（6 字节）、响应方 MAC（6 字节）、1 字节事务序号（2 或 3）、Link Identifier 元素、RSNE、TIE，以及 MIC 字段置零后的 FTE。在状态机一侧，Supplicant 在 STAKEYSTART 中唯一的主力即 StaProcessEAPOL-Key 伪代码，它按密钥类型 P（成对密钥）与 G（组密钥）分支，并发出 M2/M4/G2；Authenticator 则以 PTKSTART → PTKCALCNEGOTIATING → PTKINITNEGOTIATING → PTKINITDONE 驱动 4 次握手，以 GTK_INIT/SETKEYS/SETKEYSDONE 驱动全局 GTK 更新，由 TimeoutCtr/GTimeoutCtr 管理重传，并在每次发送时递增 Key Replay Counter。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3081,
+          3082,
+          3084,
+          3085,
+          3088,
+          3089
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:12.7.8.1",
+    "80211-2024:12.7.8.2",
+    "80211-2024:12.7.8.3",
+    "80211-2024:12.7.8.4",
+    "80211-2024:12.7.9.1",
+    "80211-2024:12.7.9.2",
+    "80211-2024:12.7.9.3",
+    "80211-2024:12.7.9.4",
+    "80211-2024:12.7.10.1",
+    "80211-2024:12.7.10.2",
+    "80211-2024:12.7.10.3",
+    "80211-2024:12.7.10.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3080,
+        3081,
+        3082
+      ],
+      "note": "12.7.8.1-12.7.8.3 — TPK security protocol: general, three-message TPK handshake, TPK derivation, and security assumptions"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3082,
+        3083,
+        3084,
+        3085
+      ],
+      "note": "12.7.8.4 — TPK handshake messages 1/2/3 carried in TDLS Setup Request/Response/Confirm; MIC inputs and validation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3085,
+        3086,
+        3087,
+        3088,
+        3089
+      ],
+      "note": "12.7.9.1-12.7.9.4 — RSNA Supplicant key management state machine: states, variables, StaProcessEAPOL-Key procedure"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3090,
+        3091,
+        3092,
+        3093,
+        3094,
+        3095,
+        3096,
+        3097
+      ],
+      "note": "12.7.10.1-12.7.10.4 — RSNA Authenticator key management state machine: 4-way and group-key states, variables, procedures"
+    }
+  ],
+  "track": "security"
+}

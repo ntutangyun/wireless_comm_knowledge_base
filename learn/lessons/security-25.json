@@ -1,0 +1,84 @@
+{
+  "id": "security-25",
+  "title": {
+    "en": "Constraints on Allowed Security Parameters: Which Ciphers Are Legal Where",
+    "zh": "允许的安全参数约束：哪些加密套件在哪里才合法"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "By now you know why WEP and TKIP broke: the maths underneath them was weak, and once that's true no amount of careful configuration can save you. So the natural next question is — if a setting is dangerous, why leave it on the menu at all? The 802.11 standard's answer, gathered in clause 12.12, is to stop trusting configuration and instead hard-code the rules. It writes down, as 'shall not' requirements, which old ciphers a modern device is simply forbidden from using. This lesson is a tour of that rulebook: a short set of guardrails that keep high-throughput gear from quietly falling back to broken crypto.",
+      "zh": "到现在你已经明白 WEP 和 TKIP 为什么会被攻破：它们底层的数学本就脆弱，而一旦如此，再小心的配置也救不了你。于是自然会问——既然某个设置很危险，为什么还要把它留在菜单里？802.11 标准在第 12.12 节给出的答案是：不再信任配置，而是把规则写死。它以“不得（shall not）”这样的强制条款，明确规定了一台现代设备被直接禁止使用哪些老旧加密套件。本课就是带你逛一遍这本“规则手册”：一组简短的护栏，专门防止高吞吐设备悄悄退回到已被破解的加密上。"
+    },
+    {
+      "type": "prose",
+      "en": "The framing matters. Clause 12.12.1 admits up front that the standard still defines deprecated and obsolete mechanisms — WEP, TKIP, PSK without protection — purely so new gear can interoperate with very old legacy devices. They are kept for compatibility, not because they are safe. Everything that follows in 12.12 is the standard drawing a line: these legacy bits may exist, but here are the exact use cases where you are not allowed to reach for them.",
+      "zh": "这种表述方式本身很关键。12.12.1 节开门见山地承认：标准之所以仍然定义那些已被弃用、过时的机制——WEP、TKIP、无保护的 PSK——纯粹是为了让新设备能与非常老旧的传统设备互通。保留它们是为了兼容性，而不是因为它们安全。12.12 节后面的所有内容，都是标准在划清界线：这些遗留部分可以存在，但以下这些具体场景里，你不得动用它们。"
+    },
+    {
+      "type": "prose",
+      "en": "Most of the constraints share one mechanism: a 'shall not use' list of pairwise cipher suite selectors. Two selectors keep recurring — TKIP (the broken stream-cipher patch over WEP) and the special selector 'Use group data cipher suite', which is even weaker because it means a station has no private pairwise key at all and shares the broadcast key. The high-throughput PHYs each ban exactly these two. An HT STA shall not use either to talk to another HT STA (12.12.3). A VHT STA shall not use them with an HT or VHT peer (12.12.4). An HE STA — Wi-Fi 6 — extends the ban across HT, VHT, and HE peers (12.12.5). And an S1G STA (the sub-1-GHz long-range PHY) is flatly forbidden from TKIP or the group-key selector (12.12.6). The pattern is deliberate: if your radio is fast or modern, you may not pair it with the crypto we already know is broken.",
+      "zh": "大多数约束都共用同一种机制：一份“不得使用”的成对加密套件选择子（pairwise cipher suite selector）清单。其中有两个选择子反复出现——TKIP（在 WEP 之上打的、已被破解的流密码补丁），以及一个特殊选择子“使用组数据加密套件（Use group data cipher suite）”，后者甚至更弱，因为它意味着站点根本没有自己的私有成对密钥、而是共用广播密钥。各个高吞吐 PHY 都恰好禁止这两者。HT 站点与另一个 HT 站点通信时，两者皆不得使用（12.12.3）。VHT 站点与 HT 或 VHT 对端通信时不得使用（12.12.4）。HE 站点（Wi-Fi 6）则把禁令扩展到 HT、VHT、HE 所有对端（12.12.5）。而 S1G 站点（亚 1 GHz 的远距离 PHY）则被直接禁止使用 TKIP 或组密钥选择子（12.12.6）。这个规律是刻意的：只要你的射频又快又新，就不准把它和我们已知被破解的加密配在一起。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    subgraph Banned[\"Forbidden pairwise ciphers\"]\n        TKIP[\"TKIP (00-0F-AC:2)\"]\n        GRP[\"Use group data cipher suite (00-0F-AC:0)\"]\n    end\n    HT[\"HT STA — 12.12.3\"] -->|shall not| Banned\n    VHT[\"VHT STA — 12.12.4\"] -->|shall not| Banned\n    HE[\"HE STA — 12.12.5\"] -->|shall not| Banned\n    S1G[\"S1G STA — 12.12.6\"] -->|shall not| Banned\n    MESH[\"Mesh STA — 12.12.7\"] -->|shall not TKIP| TKIP\n    PMF[\"STA with PMF enabled — 12.12.8\"] -->|shall not| Banned",
+      "zh": "graph TD\n    subgraph Banned[\"被禁止的成对加密套件\"]\n        TKIP[\"TKIP (00-0F-AC:2)\"]\n        GRP[\"使用组数据加密套件 (00-0F-AC:0)\"]\n    end\n    HT[\"HT 站点 — 12.12.3\"] -->|不得使用| Banned\n    VHT[\"VHT 站点 — 12.12.4\"] -->|不得使用| Banned\n    HE[\"HE 站点 — 12.12.5\"] -->|不得使用| Banned\n    S1G[\"S1G 站点 — 12.12.6\"] -->|不得使用| Banned\n    MESH[\"Mesh 站点 — 12.12.7\"] -->|不得使用 TKIP| TKIP\n    PMF[\"启用 PMF 的站点 — 12.12.8\"] -->|不得使用| Banned"
+    },
+    {
+      "type": "prose",
+      "en": "Two more constraints round out the same idea from different angles. A mesh STA shall not use TKIP at all (12.12.7) — mesh links are encrypted point-to-point peer relationships with no excuse for the legacy patch. And any STA that has associated with management frame protection (PMF) enabled shall not use TKIP or the group-key selector either (12.12.8). That last one is the cleanest statement of the principle: if you've already opted into protecting your management frames, it would be incoherent to leave your data frames sitting on broken crypto, so the standard simply won't let the two coexist.",
+      "zh": "另外两条约束从不同角度补全了同一个思路。Mesh 站点完全不得使用 TKIP（12.12.7）——mesh 链路是点对点加密的对等关系，没有任何理由再用那个遗留补丁。而任何在关联时启用了管理帧保护（PMF）的站点，同样不得使用 TKIP 或组密钥选择子（12.12.8）。最后这一条最干净地表达了整个原则：如果你已经选择保护自己的管理帧，那再让数据帧停留在被破解的加密上就毫无逻辑可言，所以标准干脆不允许二者并存。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The 6 GHz band (Wi-Fi 6E/7) is the strictest of all. There is no transition mode and no legacy compromise: a 6 GHz STA shall not use Open System authentication without encryption, shall not use TKIP or the group-key selector, and shall not use any PSK-based AKM — it is effectively WPA3-only. Stations must use Opportunistic Wireless Encryption for open networks, should use SAE instead of PSK for passwords, and PMF is mandatory: a STA shall support it (MFPC = 1) and an AP shall require it (MFPR = 1). The 6 GHz band launched clean, so the standard kept it clean.",
+      "zh": "6 GHz 频段（Wi-Fi 6E/7）是其中最严格的。这里没有过渡模式，也没有对遗留方案的妥协：6 GHz 站点不得使用无加密的 Open System 认证，不得使用 TKIP 或组密钥选择子，也不得使用任何基于 PSK 的 AKM——实际上只允许 WPA3。开放网络必须使用机会式无线加密（OWE），口令场景应使用 SAE 取代 PSK，并且 PMF 是强制的：站点必须支持（MFPC = 1）、AP 必须要求（MFPR = 1）。6 GHz 频段是“干净起步”的，所以标准让它一直保持干净。"
+    },
+    {
+      "type": "prose",
+      "en": "Step back and the architecture is elegant. Rather than publishing advice and hoping installers configure things well, the standard turns 'don't do this' into a protocol-level 'shall not'. A conformant Wi-Fi 6 or 6 GHz chip cannot be talked into TKIP no matter what the GUI offers, because refusing it is part of what makes the chip conformant. The lessons of why WEP and TKIP broke are baked into silicon as guardrails — the standard remembers the mistakes so the configuration never has to.",
+      "zh": "退一步看，这套架构相当优雅。标准没有选择只发布建议、然后寄望于安装人员把配置做对，而是把“别这么做”升级为协议层面的“不得（shall not）”。一颗合规的 Wi-Fi 6 或 6 GHz 芯片，无论界面上提供了什么选项，都无法被诱导去使用 TKIP，因为“拒绝它”本身就是这颗芯片合规的一部分。WEP 与 TKIP 被攻破的教训，被作为护栏固化进了芯片——由标准来记住这些错误，于是配置层面就再也不必去记。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact selectors and the 6 GHz 'shall not' list",
+        "zh": "精确的选择子与 6 GHz 的“不得”清单"
+      },
+      "en": "Clause 12.12.1 frames the constraints as covering mechanisms that are deprecated or obsolete and not suitable for new uses without legacy support. The two recurring pairwise cipher suite selectors are 00-0F-AC:0 ('Use group data cipher suite') and 00-0F-AC:2 (TKIP); these are what 12.12.3-12.12.8 forbid (HT, VHT, HE, S1G, mesh — mesh bans TKIP specifically — and any STA associated with management frame protection enabled). For the 6 GHz band, 12.12.2 enumerates a fuller list: a STA shall not use Open System authentication without encryption; shall not use cipher suite selectors 00-0F-AC:0 or 00-0F-AC:2; shall use Opportunistic Wireless Encryption (12.14) when connecting without authentication; shall not use the PSK-family AKM selectors 00-0F-AC:2 (PSK), :4 (FT/PSK), :6 (PSK SHA-256), :19 (FT/PSK SHA-384), :20 (PSK SHA-384); should use SAE (AKM 00-0F-AC:8/:9/:24/:25) for password authentication where 802.1X is not used; and when using RSN a STA shall support MFP (MFPC = 1) while an AP shall require it (MFPR = 1).",
+      "zh": "12.12.1 节把这些约束界定为：针对那些已被弃用或过时、在无需遗留支持的新用途中不再适用的机制。反复出现的两个成对加密套件选择子是 00-0F-AC:0（“使用组数据加密套件”）与 00-0F-AC:2（TKIP）；这正是 12.12.3 至 12.12.8 所禁止的对象（HT、VHT、HE、S1G、mesh——mesh 专门禁 TKIP——以及任何在关联时启用了管理帧保护的站点）。对于 6 GHz 频段，12.12.2 列出了更完整的清单：站点不得使用无加密的 Open System 认证；不得使用加密套件选择子 00-0F-AC:0 或 00-0F-AC:2；在无认证连接时应使用机会式无线加密（12.14）；不得使用 PSK 系列 AKM 选择子 00-0F-AC:2（PSK）、:4（FT/PSK）、:6（PSK SHA-256）、:19（FT/PSK SHA-384）、:20（PSK SHA-384）；在不使用 802.1X 的口令认证场景下应使用 SAE（AKM 00-0F-AC:8/:9/:24/:25）；并且在使用 RSN 时，站点必须支持 MFP（MFPC = 1），AP 必须要求 MFP（MFPR = 1）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3116,
+          3117
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:12.12.1",
+    "80211-2024:12.12.2",
+    "80211-2024:12.12.3",
+    "80211-2024:12.12.4",
+    "80211-2024:12.12.5",
+    "80211-2024:12.12.6",
+    "80211-2024:12.12.7",
+    "80211-2024:12.12.8"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3116,
+        3117
+      ],
+      "note": "12.12 Constraints on allowed security parameters — 12.12.1 intro; 12.12.2 6 GHz (WPA3-only, OWE, no PSK AKMs, mandatory MFP); 12.12.3-12.12.6 HT/VHT/HE/S1G bans on TKIP and group-data-cipher selector; 12.12.7 mesh STA TKIP ban; 12.12.8 PMF-enabled STA bans"
+    }
+  ],
+  "track": "security"
+}

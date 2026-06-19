@@ -1,0 +1,98 @@
+{
+  "id": "security-22",
+  "title": {
+    "en": "The FT Key Hierarchy: R0KH, R1KH and the PMK-R0/PMK-R1 Tree",
+    "zh": "FT 密钥层级：R0KH、R1KH 与 PMK-R0/PMK-R1 密钥树"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "When a station roams from one access point to another inside the same network, you don't want it to redo a full EAP or SAE authentication every time — that means a round trip to the authentication server and a noticeable pause in your voice call or video. Fast BSS Transition (FT) solves this by reorganising the keys. Instead of one flat pairwise master key (PMK) per AP, the whole mobility domain grows a key *tree*: one root, branched into per-AP children, so the new AP already has (or can quickly get) the material to re-key you in milliseconds.",
+      "zh": "当一个站点在同一张网络里从一个接入点（AP）漫游到另一个 AP 时，你并不希望它每次都重新做一次完整的 EAP 或 SAE 认证——那意味着要往返一次认证服务器，并在你的语音通话或视频里带来明显的卡顿。快速 BSS 切换（Fast BSS Transition，FT）通过重新组织密钥来解决这个问题：它不再为每个 AP 维护一把扁平的成对主密钥（PMK），而是让整个移动域（mobility domain）长出一棵密钥*树*——一个根，向下分叉成每个 AP 各自的子密钥，于是新 AP 早已持有（或能很快取得）为你重新生成密钥所需的材料，从而在毫秒级完成切换。"
+    },
+    {
+      "type": "prose",
+      "en": "The tree has exactly three levels. At the top sits PMK-R0, the first-level key, derived once from whatever the initial authentication produced (the MSK from 802.1X, the PSK, or the PMK from SAE/FILS). PMK-R0 is held by a single role called the R0 key holder (R0KH). From PMK-R0 the R0KH derives a separate PMK-R1 for each AP, and ships each one to that AP's R1 key holder (R1KH). Finally, at the AP the station actually lands on, the PMK-R1 and the station jointly derive the PTK — the third-level key that carries the real encryption and integrity keys.",
+      "zh": "这棵树正好有三层。最顶端是 PMK-R0，即第一层密钥，它由初始认证产生的材料一次性派生而来（来自 802.1X 的 MSK、来自 PSK，或来自 SAE/FILS 的 PMK）。PMK-R0 由一个被称为 R0 密钥持有者（R0KH）的角色保管。R0KH 从 PMK-R0 出发，为每个 AP 派生出各自独立的 PMK-R1，并把每一把都分发给该 AP 的 R1 密钥持有者（R1KH）。最后，在站点真正落脚的那个 AP 上，PMK-R1 与站点共同派生出 PTK——这第三层密钥承载着真正的加密与完整性密钥。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Every key in the FT tree has a name as well as a value: PMKR0Name, PMKR1Name, PTKName. These short identifiers let a STA and an AP point at exactly which key they intend to use without ever sending the secret itself — essential when many APs each hold a different PMK-R1 for the same station.",
+      "zh": "FT 树中的每一把密钥都既有“值”也有“名字”：PMKR0Name、PMKR1Name、PTKName。这些简短的标识符让站点和 AP 能够精确地指明双方打算使用哪一把密钥，而无需传输密钥本身——当众多 AP 各自为同一个站点持有不同的 PMK-R1 时，这一点至关重要。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    A[\"Initial auth result<br/>MSK / PSK / SAE-PMK / FILS-PMK\"] --> M[\"MPMK (Master PMK)\"]\n    M -->|R0KH derives, label FT-R0| R0[\"PMK-R0<br/>held by R0KH / S0KH\"]\n    R0 -->|label FT-R1| R1a[\"PMK-R1 -> R1KH @ AP-1\"]\n    R0 -->|label FT-R1| R1b[\"PMK-R1 -> R1KH @ AP-2\"]\n    R0 -->|label FT-R1| R1c[\"PMK-R1 -> R1KH @ AP-3\"]\n    R1b -->|label FT-PTK, S1KH+R1KH| P[\"PTK at AP-2<br/>KCK,KEK,TK,KCK2,KEK2\"]",
+      "zh": "graph TD\n    A[\"初始认证结果<br/>MSK / PSK / SAE-PMK / FILS-PMK\"] --> M[\"MPMK（主 PMK）\"]\n    M -->|R0KH 派生, 标签 FT-R0| R0[\"PMK-R0<br/>由 R0KH / S0KH 保管\"]\n    R0 -->|标签 FT-R1| R1a[\"PMK-R1 -> AP-1 的 R1KH\"]\n    R0 -->|标签 FT-R1| R1b[\"PMK-R1 -> AP-2 的 R1KH\"]\n    R0 -->|标签 FT-R1| R1c[\"PMK-R1 -> AP-3 的 R1KH\"]\n    R1b -->|标签 FT-PTK, S1KH+R1KH| P[\"AP-2 处的 PTK<br/>KCK,KEK,TK,KCK2,KEK2\"]"
+    },
+    {
+      "type": "prose",
+      "en": "Naming the holders matters because the names go *into* the key derivation, which is what binds each branch to one specific place. PMK-R0 is derived with the label \"FT-R0\" and a context that includes the SSID, the mobility-domain identifier (MDID), the R0KH-ID, and the station's address as the S0KH-ID. Each PMK-R1 is then derived with the label \"FT-R1\" over the R1KH-ID (a MAC address of the holder at the AP) and the S1KH-ID (the station). Because the R1KH-ID is baked in, a PMK-R1 handed to AP-2 is cryptographically useless at AP-3 — compromise of one AP does not hand an attacker the keys to its neighbours.",
+      "zh": "为持有者命名之所以重要，是因为这些名字会被*纳入*密钥派生过程，正是这一点把每个分支绑定到某个特定位置。PMK-R0 使用标签 \"FT-R0\" 以及包含 SSID、移动域标识符（MDID）、R0KH-ID 和作为 S0KH-ID 的站点地址的上下文派生而来。随后每把 PMK-R1 都使用标签 \"FT-R1\"、在 R1KH-ID（AP 处持有者的一个 MAC 地址）与 S1KH-ID（站点）之上派生。由于 R1KH-ID 被“烤进”了派生过程，分发给 AP-2 的 PMK-R1 在 AP-3 上从密码学上看毫无用处——攻破一个 AP 并不会把它邻居的密钥拱手交给攻击者。"
+    },
+    {
+      "type": "prose",
+      "en": "The bottom level is the PTK, derived at the target AP with the label \"FT-PTK\" over the two fresh nonces (SNonce from the station, ANonce from the AP), the BSSID, and the station's address. The PTK is then sliced into component keys — KCK, KEK, the temporal key, and the extra KCK2/KEK2 — and those very keys protect the FT four-way handshake and the FT authentication sequence (clause 13.8). So the hierarchy isn't an abstraction parked off to the side: its leaves are exactly the keys that authenticate and encrypt the roaming exchange that re-admits the station at the new AP.",
+      "zh": "最底层是 PTK，它在目标 AP 上使用标签 \"FT-PTK\"，在两个新鲜的 nonce（来自站点的 SNonce、来自 AP 的 ANonce）、BSSID 以及站点地址之上派生。随后 PTK 被切分为若干分量密钥——KCK、KEK、临时密钥（TK），以及额外的 KCK2/KEK2——而正是这些密钥保护着 FT 四次握手与 FT 认证序列（第 13.8 节）。因此这套层级并非搁在一旁的抽象概念：它的叶子节点恰恰就是那些用于认证和加密漫游交换的密钥，而这些交换正是站点在新 AP 上重新入网的过程。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The FT key hierarchy is one member of a small family of clause-12 key hierarchies. Sitting beside it as siblings are the Beacon protection key hierarchy (the BIGTK that signs protected Beacons) and the Wake-up Radio integrity hierarchy (the WIGTK that protects WUR frames). They share the same machinery — an Authenticator picks a random group key, may rotate it on disassociation, and configures it via MLME-SETKEYS — but they protect group/management traffic rather than a roaming station's pairwise keys.",
+      "zh": "FT 密钥层级只是第 12 章一小族密钥层级中的一员。与它并列的“兄弟”包括信标保护密钥层级（用于为受保护信标签名的 BIGTK）以及唤醒无线电完整性层级（用于保护 WUR 帧的 WIGTK）。它们共享同一套机制——由认证者（Authenticator）选取一个随机的组密钥，可在去关联时轮换，并通过 MLME-SETKEYS 进行配置——但它们保护的是组播/管理流量，而非某个漫游站点的成对密钥。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact labels, contexts, and what binds a branch to one AP",
+        "zh": "精确的标签、上下文，以及把分支绑定到单个 AP 的机制"
+      },
+      "en": "Clause 12.7.1.6.3 derives the first level as R0-Key-Data = KDF-Hash-Length(XXKey, \"FT-R0\", SSIDlength || SSID || MDID || R0KHlength || R0KH-ID || S0KH-ID), then PMK-R0 = ExtractBits(R0-Key-Data, 0, Q) and a 128-bit PMK-R0Name-Salt; PMKR0Name = Truncate-128(Hash(\"FT-R0N\" || PMK-R0Name-Salt)). XXKey is the MPMK (or FILS-FT for FILS AKMs 00-0F-AC:16/17). Clause 12.7.1.6.4 derives the second level as PMK-R1 = KDF-Hash-Length(PMK-R0, \"FT-R1\", R1KH-ID || S1KH-ID), where R1KH-ID is a MAC address of the PMK-R1 holder in the AP and S1KH-ID is the SPA; PMKR1Name = Truncate-128(Hash(\"FT-R1N\" || PMKR0Name || R1KH-ID || S1KH-ID)). Clause 12.7.1.6.5 derives the third level as PTK = KDF-Hash-Length(PMK-R1, \"FT-PTK\", SNonce || ANonce || BSSID || STA-ADDR), mutually computed by the S1KH and the target AP's R1KH; the PTK is split into PTK-KCK, PTK-KEK, TK, KCK2, KEK2 (and a KDK when secure-LTF or WUR protection is negotiated), with KCK2/KEK2 used in the FT authentication sequence of clause 13.8. The R0KH generates the PMK-R1s and distributes them to R1KHs in the same mobility domain (distribution itself is outside the standard's scope, per 13.2.2), and may delete PMK-R0 once the PMK-R1s exist.",
+      "zh": "第 12.7.1.6.3 节这样派生第一层：R0-Key-Data = KDF-Hash-Length(XXKey, \"FT-R0\", SSIDlength || SSID || MDID || R0KHlength || R0KH-ID || S0KH-ID)，再取 PMK-R0 = ExtractBits(R0-Key-Data, 0, Q) 以及一个 128 比特的 PMK-R0Name-Salt；PMKR0Name = Truncate-128(Hash(\"FT-R0N\" || PMK-R0Name-Salt))。XXKey 为 MPMK（对 FILS 的 AKM 00-0F-AC:16/17 则为 FILS-FT）。第 12.7.1.6.4 节这样派生第二层：PMK-R1 = KDF-Hash-Length(PMK-R0, \"FT-R1\", R1KH-ID || S1KH-ID)，其中 R1KH-ID 是 AP 中 PMK-R1 持有者的一个 MAC 地址，S1KH-ID 即 SPA；PMKR1Name = Truncate-128(Hash(\"FT-R1N\" || PMKR0Name || R1KH-ID || S1KH-ID))。第 12.7.1.6.5 节这样派生第三层：PTK = KDF-Hash-Length(PMK-R1, \"FT-PTK\", SNonce || ANonce || BSSID || STA-ADDR)，由 S1KH 与目标 AP 的 R1KH 共同计算；PTK 被切分为 PTK-KCK、PTK-KEK、TK、KCK2、KEK2（当协商了 secure-LTF 或 WUR 保护时还包括一个 KDK），其中 KCK2/KEK2 用于第 13.8 节的 FT 认证序列。R0KH 生成各 PMK-R1 并将其分发给同一移动域内的各 R1KH（分发机制本身不在本标准范围内，见 13.2.2），并可在 PMK-R1 生成之后删除 PMK-R0。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3050,
+          3051,
+          3052
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:12.7.1.6",
+    "80211-2024:12.7.1.7",
+    "80211-2024:12.7.1.8"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3046,
+        3047,
+        3048
+      ],
+      "note": "12.7.1.6.1 Overview — three-level FT key hierarchy (PMK-R0 -> PMK-R1 -> PTK); R0KH/S0KH and R1KH/S1KH roles; R0KH generates and distributes PMK-R1s within the mobility domain"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3050,
+        3051,
+        3052
+      ],
+      "note": "12.7.1.6.3-12.7.1.6.5 — PMK-R0/PMK-R1/PTK derivations with labels FT-R0/FT-R1/FT-PTK; R0KH-ID/R1KH-ID/S0KH-ID/S1KH-ID contexts; PTK component keys KCK/KEK/TK/KCK2/KEK2 feeding the FT authentication sequence (13.8)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3053
+      ],
+      "note": "12.7.1.7 Beacon protection key hierarchy (BIGTK) and 12.7.1.8 WIGTK hierarchy — sibling group-key hierarchies in the same clause-12 family"
+    }
+  ],
+  "track": "security"
+}

@@ -1,0 +1,113 @@
+{
+  "id": "security-21",
+  "title": {
+    "en": "PMKSA Caching & Pre-authentication: Skipping the Slow Part of Reconnecting",
+    "zh": "PMKSA 缓存与预认证：重连时如何跳过最慢的那一步"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "When you walk back into the office and your laptop rejoins the Wi-Fi, the slow part is almost never the radio. It is the security setup. To form a Robust Security Network Association (RSNA), the station and the AP have to agree on a shared secret called the Pairwise Master Key (PMK). On a fresh connection using enterprise 802.1X/EAP, earning that PMK means a full back-and-forth between the station, the AP, and a separate authentication server (AS) — that round trip across the network is the real bottleneck on every reconnect.",
+      "zh": "当你回到办公室、笔记本电脑重新接入 Wi-Fi 时，最慢的那一步几乎从来都不是无线电本身，而是安全建立过程。要建立一个鲁棒安全网络关联（RSNA），站点和 AP 必须商定出一个共享密钥——成对主密钥（PMK）。在使用企业级 802.1X/EAP 的全新连接里，要“挣到”这个 PMK，就意味着站点、AP 和一台独立的认证服务器（AS）之间要来回交互一整轮——这趟跨越整个网络的往返，才是每次重连时真正的瓶颈。"
+    },
+    {
+      "type": "prose",
+      "en": "The trick the standard uses is to treat that hard-won PMK like a season pass. Once 802.1X/EAP succeeds, both the station's Supplicant and the AP's Authenticator store the PMK (bundled with metadata) as a PMKSA in a local cache. Next time the station returns to the same AP, it does not redo EAP at all: it does cheap Open System authentication, then puts the PMKID — a short identifier naming the cached PMKSA — in its (re)association request. If the AP still holds that PMKSA, it skips straight to the 4-way handshake. That is PMKSA caching: clause 12.6.8.3.",
+      "zh": "标准采用的诀窍，就是把这把来之不易的 PMK 当作一张“季卡”来用。一旦 802.1X/EAP 成功，站点的请求方（Supplicant）和 AP 的认证方（Authenticator）就会把这个 PMK（连同元数据一起）作为一个 PMKSA 存进本地缓存。下次站点回到同一个 AP 时，它根本不会重做 EAP：它只做开销很小的 Open System 认证，然后在（重）关联请求里放上一个 PMKID——这是一个用来指明所缓存 PMKSA 的简短标识。如果 AP 仍然持有那个 PMKSA，它就直接跳到 4 次握手。这就是 PMKSA 缓存：12.6.8.3 节。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The cached PMK is a frozen, long-lived secret — but the per-session keys are not. The 4-way handshake always runs and always derives a fresh Pairwise Transient Key (PTK) from the PMK, so two visits never reuse the same traffic keys. Caching skips the expensive EAP step, not the freshness guarantee. A cached PMKSA also must not be modified while cached, and is deleted once its lifetime expires.",
+      "zh": "被缓存的 PMK 是一把冻结的、长期有效的密钥——但每次会话用的密钥并不是。4 次握手每次都会运行，并且每次都会从 PMK 派生出一把全新的成对临时密钥（PTK），因此两次到访绝不会复用同一组流量密钥。缓存跳过的是昂贵的 EAP 步骤，而不是“新鲜性”保证。此外，PMKSA 在缓存期间不得被修改，一旦其生存期到期就会被删除。"
+    },
+    {
+      "type": "prose",
+      "en": "Caching helps when you return to an AP you already know. Pre-authentication (clause 12.6.8.2) solves the other case: arriving somewhere new. While still associated to your current AP, your Supplicant can run full 802.1X/EAP with a different AP in the same ESS — even one you cannot yet hear over the air — by sending EAPOL-Start through the distribution system. It does this using a dedicated EtherType (88-C7) so your current AP just forwards the frames like any other traffic. The result, if EAP succeeds, is a PMKSA sitting ready at the future AP, so the moment you roam there the 4-way handshake can start immediately. The standard now marks pre-authentication as deprecated, but it remains the textbook illustration of earning the pass before you need it.",
+      "zh": "缓存在你回到一个已经认识的 AP 时很有用。预认证（12.6.8.2 节）则解决另一种情形：到一个全新的地方。在仍与当前 AP 保持关联的同时，你的 Supplicant 可以通过分发系统（DS）发送 EAPOL-Start，与同一 ESS 内的另一个 AP 跑完整的 802.1X/EAP——哪怕那个 AP 你目前还收不到它的无线信号。它使用一个专用的 EtherType（88-C7）来做这件事，于是你当前的 AP 只会像转发其他流量一样转发这些帧。如果 EAP 成功，结果就是在那个“未来的 AP”上预先放好了一个 PMKSA，这样你一旦漫游过去，4 次握手就能立刻开始。标准现在已将预认证标记为“已弃用”，但它仍是“在需要之前先把通行证挣到手”的教科书式范例。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Station\n    participant AP as AP (same one)\n    participant AS as Auth Server\n    Note over STA,AS: FIRST VISIT — earn the PMK\n    STA->>AP: Open System auth + (Re)Assoc\n    STA->>AS: 802.1X / EAP (via AP) — the SLOW part\n    AS-->>AP: PMK (inside MSK)\n    Note over STA,AP: both cache the PMKSA\n    STA->>AP: 4-way handshake -> fresh PTK\n    Note over STA,AS: RETURN VISIT — pass cached\n    STA->>AP: Open System auth + (Re)Assoc (PMKID)\n    Note over AP: PMKID hit in cache -> skip EAP\n    STA->>AP: 4-way handshake -> fresh PTK",
+      "zh": "sequenceDiagram\n    participant STA as 站点\n    participant AP as AP (同一个)\n    participant AS as 认证服务器\n    Note over STA,AS: 首次到访 —— 挣到 PMK\n    STA->>AP: Open System 认证 + (重)关联\n    STA->>AS: 802.1X / EAP (经 AP) —— 慢的那一步\n    AS-->>AP: PMK (含于 MSK 中)\n    Note over STA,AP: 双方缓存 PMKSA\n    STA->>AP: 4 次握手 -> 全新 PTK\n    Note over STA,AS: 再次到访 —— 通行证已缓存\n    STA->>AP: Open System 认证 + (重)关联 (PMKID)\n    Note over AP: 命中缓存中的 PMKID -> 跳过 EAP\n    STA->>AP: 4 次握手 -> 全新 PTK"
+    },
+    {
+      "type": "prose",
+      "en": "All of this assumes there is a central Authenticator and an AS — true in an infrastructure BSS, but not everywhere. In an IBSS (ad-hoc, peer-to-peer), there is no AP: authentication is driven by each STA, and any pair that wants to talk runs two separate 4-way handshakes (one initiated by each side) so each can distribute its own group key; the pairwise key actually used is the one from the handshake initiated by the higher MAC address. A mesh BSS (MBSS) uses SAE (or optionally 802.1X) to form a mesh PMKSA, which the Authenticated Mesh Peering Exchange (AMPE) then turns into a mesh PTKSA. A PBSS (the DMG point-to-point case) leans on the PCP, which plays the AP's role. The intuition is the same everywhere — establish a PMK, then confirm fresh per-session keys — but who drives it and how the keys flow changes with the topology.",
+      "zh": "上述这一切都假设存在一个中心化的认证方和一台 AS——这在基础设施 BSS 中成立，但并非处处如此。在 IBSS（自组织、点对点）里没有 AP：认证由每个 STA 各自驱动，任何想要通信的一对 STA 都会跑两次独立的 4 次握手（每一侧各发起一次），以便各自分发自己的组密钥；真正使用的成对密钥，来自 MAC 地址较大的一方所发起的那次握手。网状 BSS（MBSS）使用 SAE（或可选 802.1X）来形成一个网状 PMKSA，再由认证网状对等交换（AMPE）把它变成网状 PTKSA。PBSS（DMG 点对点场景）则依靠 PCP，由它扮演 AP 的角色。各处的直觉是一致的——先建立一个 PMK，再确认出每次会话全新的密钥——但由谁来驱动、密钥如何流动，会随拓扑而变化。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Caching is a hint, never a guarantee. A PMKID in your (re)association request is the STA saying \"I think we already know each other.\" If the AP's Authenticator has purged that PMKSA (resources, timeout, the STA took too long to come back), it falls back to a full exchange. With SAE the AP rejects with STATUS_INVALID_PMKID so the STA can redo SAE; with 802.1X it simply runs full EAP after association. The cached AKM must also match the AKM the STA now claims, or the same fallback happens.",
+      "zh": "缓存只是一种“提示”，绝非保证。（重）关联请求里带上 PMKID，相当于站点在说“我觉得我们已经认识了”。如果 AP 的认证方已经清除了那个 PMKSA（资源不足、超时、站点太久才回来），它就会退回到一次完整的交换。对于 SAE，AP 会以 STATUS_INVALID_PMKID 拒绝，好让站点重新跑 SAE；对于 802.1X，则在关联之后直接执行完整的 EAP。此外，缓存中的 AKM 必须与站点此刻声明的 AKM 相匹配，否则会发生同样的回退。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "How the AP decides to honour a cached PMKSA",
+        "zh": "AP 如何决定是否认可一个缓存的 PMKSA"
+      },
+      "en": "Per 12.6.8.3, when a STA in an infrastructure BSS knows it has a valid PMKSA with the AP it is about to (re)associate to, it does Open System authentication (or FILS Authentication, or — only for a DMG STA — no 802.11 authentication) and includes the PMKID in the RSNE of the (re)association request. Unless the PMKSA came from pre-authentication, the AKM advertised in that RSNE must be identical to the AKM used when the cached PMKSA was first established. On receipt, the AP checks whether its Authenticator cached a PMKSA for those PMKIDs and whether the cached AKM matches; if so it asserts possession by beginning the 4-way handshake after association completes, including the PMKID in message 1 (12.7.6.2). If there is no match, the fallback depends on origin: SAE-established PMKSAs cause a STATUS_INVALID_PMKID rejection (letting the STA fall back to full SAE), while 802.1X-established PMKSAs cause a full 802.1X authentication after association. If both sides assert a cached PMKSA but the 4-way handshake (or FILS authentication) fails, both may delete that PMKSA. Pre-authentication (12.6.8.2) yields a PMKSA whose AKM is fixed at 00-0F-AC:1, may run with multiple APs at once, and even after pre-authenticating a STA can still face a full EAP if the target AP purged the PMKSA.",
+      "zh": "依据 12.6.8.3 节，当基础设施 BSS 中的某个 STA 知道自己与即将（重）关联的 AP 之间存在一个有效 PMKSA 时，它会做 Open System 认证（或 FILS 认证，或者——仅对 DMG STA——不做 802.11 认证），并在（重）关联请求的 RSNE 中包含该 PMKID。除非该 PMKSA 来自预认证，否则该 RSNE 中所通告的 AKM 必须与当初建立该缓存 PMKSA 时所用的 AKM 完全一致。AP 收到后，会检查其认证方是否为这些 PMKID 缓存了 PMKSA、且缓存中的 AKM 是否匹配；若匹配，它便在关联完成后启动 4 次握手以表明“我持有此密钥”，并在消息 1 中包含该 PMKID（12.7.6.2 节）。若不匹配，回退方式取决于来源：由 SAE 建立的 PMKSA 会触发 STATUS_INVALID_PMKID 拒绝（让 STA 退回到完整 SAE），而由 802.1X 建立的 PMKSA 则会在关联后触发一次完整的 802.1X 认证。若双方都声称持有某个缓存 PMKSA 但 4 次握手（或 FILS 认证）失败，则双方都可删除该 PMKSA。预认证（12.6.8.2 节）产生的 PMKSA，其 AKM 固定为 00-0F-AC:1，可同时与多个 AP 进行，而且即便完成了预认证，若目标 AP 已清除该 PMKSA，STA 仍可能要面对一次完整的 EAP。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3028,
+          3029
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:12.6.8.1",
+    "80211-2024:12.6.8.2",
+    "80211-2024:12.6.8.3",
+    "80211-2024:12.6.9",
+    "80211-2024:12.6.10",
+    "80211-2024:12.6.11",
+    "80211-2024:12.6.12",
+    "80211-2024:12.6.13",
+    "80211-2024:12.6.14",
+    "80211-2024:12.6.15"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3026,
+        3027
+      ],
+      "note": "12.6.8.1-12.6.8.2 General RSNA establishment in infrastructure BSS; preauthentication via DS with EtherType 88-C7, deprecated"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3028,
+        3029
+      ],
+      "note": "12.6.8.3 Cached PMKSAs — PMKID in RSNE, AKM match, AP asserts possession via 4-way handshake; STATUS_INVALID_PMKID fallback"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3029,
+        3030,
+        3031
+      ],
+      "note": "12.6.9-12.6.11 RSNA authentication in IBSS (two 4-way handshakes), MBSS (SAE + mesh PMKSA), PBSS (PCP as AP)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3031,
+        3032,
+        3033
+      ],
+      "note": "12.6.12-12.6.15 RSNA key management in infrastructure BSS (4-way handshake purposes), IBSS, MBSS (AMPE), PBSS"
+    }
+  ],
+  "track": "security"
+}

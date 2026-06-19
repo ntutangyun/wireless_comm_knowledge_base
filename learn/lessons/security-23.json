@@ -1,0 +1,131 @@
+{
+  "id": "security-23",
+  "title": {
+    "en": "Mesh Security: Authenticated Peering Exchange & Group-Key Distribution",
+    "zh": "Mesh 安全：认证的对等建链交换与组密钥分发"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In a normal Wi-Fi network there is a clear boss: the AP authenticates clients and hands out keys. A mesh is different. Two mesh stations meet as equals — neither one is the 'AP' — and they have to bootstrap a secure link between peers. The protocol that does this is the Authenticated Mesh Peering Exchange (AMPE). It assumes both sides already share a mesh PMK (a pairwise master key, set up earlier), and on top of that it builds a mesh peering, derives a pairwise temporal key, and lets each side hand the other the group key it uses for its own broadcast traffic.",
+      "zh": "在普通 Wi-Fi 网络里有一个明确的“老板”：AP 负责认证客户端并下发密钥。但 Mesh 不一样。两个 Mesh 站点是以对等的身份相遇的——谁都不是“AP”——它们必须在两个平等节点之间从零建立一条安全链路。完成这件事的协议叫“认证的 Mesh 对等建链交换”（AMPE）。它假定双方此前已经共享了一个 Mesh PMK（成对主密钥），并在此基础上建立 Mesh 对等关系、派生成对临时密钥，并让每一方把自己用于广播流量的组密钥交给对方。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The key intuition: AMPE is symmetric. There's no request/response asymmetry like client-to-AP. Each side independently proves it holds the same PMK, and the same three frame types (Open, Confirm, Close) flow in both directions. Because there's no server to arbitrate, ties are broken by rule — for example, when both sides support several pairwise ciphers, the one chosen is the most-preferred cipher of whichever station has the larger MAC address.",
+      "zh": "核心直觉：AMPE 是对称的。它没有“客户端对 AP”那种请求/响应的不对称关系。双方各自独立地证明自己持有同一个 PMK，并且同样的三种帧（Open、Confirm、Close）在两个方向上都会流动。由于没有服务器来仲裁，平局要靠规则打破——例如当双方都支持多个成对加密套件时，最终选中的是 MAC 地址较大的那个站点最偏好的那个套件。"
+    },
+    {
+      "type": "prose",
+      "en": "Every AMPE frame is wrapped in AES-SIV — a deterministic authenticated-encryption mode. The encryption key is the AEK (authenticated encryption key), derived statically from the shared PMK. The clever part is that proving you hold the PMK and protecting the frame are the same act: if your peer's AES-SIV verification of an incoming frame returns 'FAIL', that frame simply didn't come from someone holding the right PMK, and it's rejected. So 'key confirmation' isn't a separate step — it's a side effect of the frame surviving decryption. The MAC addresses of both peers are folded into the AES-SIV additional-authenticated-data, binding each frame to the specific pair of stations.",
+      "zh": "每一个 AMPE 帧都用 AES-SIV 包裹——这是一种确定性的认证加密模式。其加密密钥是 AEK（认证加密密钥），它由共享的 PMK 静态派生而来。巧妙之处在于：“证明你持有 PMK”和“保护这一帧”其实是同一个动作——如果对端对收到的帧做 AES-SIV 校验返回了“FAIL”，那就说明这一帧并非出自持有正确 PMK 的人，于是被直接拒绝。因此“密钥确认”不是一个独立步骤，而是帧能够通过解密的副产品。双方的 MAC 地址都被纳入 AES-SIV 的“附加认证数据（AAD）”，把每一帧绑定到这一对特定站点上。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant A as Mesh STA A (has PMK)\n    participant B as Mesh STA B (has PMK)\n    Note over A,B: both derived AEK + nonces from shared PMK\n    A->>B: Mesh Peering Open (AES-SIV; RSNE, nonce, MGTK)\n    B->>A: Mesh Peering Open (AES-SIV; RSNE, nonce, MGTK)\n    Note over A,B: AES-SIV verify = key confirmation; pick pairwise cipher\n    A->>B: Mesh Peering Confirm (AES-SIV; selected cipher, peer nonce)\n    B->>A: Mesh Peering Confirm (AES-SIV; selected cipher, peer nonce)\n    Note over A,B: derive MTK; MLME-SETKEYS + SETPROTECTION\n    Note over A,B: ESTAB - each can decrypt the other's group traffic",
+      "zh": "sequenceDiagram\n    participant A as Mesh 站点 A (持有 PMK)\n    participant B as Mesh 站点 B (持有 PMK)\n    Note over A,B: 双方已从共享 PMK 派生 AEK 与随机数\n    A->>B: Mesh Peering Open (AES-SIV; RSNE、随机数、MGTK)\n    B->>A: Mesh Peering Open (AES-SIV; RSNE、随机数、MGTK)\n    Note over A,B: AES-SIV 校验即密钥确认; 选定成对套件\n    A->>B: Mesh Peering Confirm (AES-SIV; 选定套件、对端随机数)\n    B->>A: Mesh Peering Confirm (AES-SIV; 选定套件、对端随机数)\n    Note over A,B: 派生 MTK; MLME-SETKEYS + SETPROTECTION\n    Note over A,B: ESTAB - 各自可解密对方的组播流量"
+    },
+    {
+      "type": "prose",
+      "en": "Notice that the Mesh Peering Open frame doesn't just carry a nonce — it also carries the sender's own group key (the MGTK), tucked inside the GTKdata field of the Authenticated Mesh Peering Exchange element. That's how group keys get distributed in a mesh: there's no central key server, so each peer simply ships its broadcast key to the other inside the already-encrypted Open frame. When AMPE completes, each station installs the peer's MGTK so it can decrypt that peer's group/broadcast frames. If management-frame protection is on, the IGTK rides along the same way for protecting broadcast management frames.",
+      "zh": "注意，Mesh Peering Open 帧携带的不仅是一个随机数——它还携带发送方自己的组密钥（MGTK），藏在“认证的 Mesh 对等建链交换元素”里的 GTKdata 字段中。这正是组密钥在 Mesh 中的分发方式：没有中心化的密钥服务器，于是每个对端只是把自己的广播密钥装进那个已经被加密的 Open 帧里发给对方。AMPE 完成后，每个站点都会安装对端的 MGTK，从而能解密那个对端的组播/广播帧。如果开启了管理帧保护，IGTK 也会以同样方式随帧附带，用于保护广播管理帧。"
+    },
+    {
+      "type": "prose",
+      "en": "AMPE doesn't reinvent the peering state machine — it extends the existing Mesh Peering Management (MPM) machine with security flavour. It keeps all the same states (IDLE, OPN_SNT, OPN_RCVD, CNF_RCVD, ESTAB, HOLDING) and adds security-aware events. The decisive moment is in OPN_RCVD or CNF_RCVD: when the peer's Confirm (or Open) is accepted, the station calls MLME-SETKEYS.request to load the agreed mesh temporal key (MTK), then MLME-SETPROTECTION.request to switch encryption on — and the link reaches ESTAB. The MTK itself is derived from the PMK plus both nonces, both link IDs, both MAC addresses and the AKM suite, with min()/max() ordering so both peers compute the identical key regardless of who started.",
+      "zh": "AMPE 并没有重新发明建链状态机——它在已有的“Mesh 对等建链管理（MPM）”状态机上加了一层“安全味道”。它保留了所有原有状态（IDLE、OPN_SNT、OPN_RCVD、CNF_RCVD、ESTAB、HOLDING），并增加了若干安全相关的事件。决定性的时刻发生在 OPN_RCVD 或 CNF_RCVD 状态：当对端的 Confirm（或 Open）被接受时，站点调用 MLME-SETKEYS.request 加载双方商定的 Mesh 临时密钥（MTK），再调用 MLME-SETPROTECTION.request 开启加密——链路随即进入 ESTAB。MTK 本身由 PMK 加上双方随机数、双方 LinkID、双方 MAC 地址以及 AKM 套件派生而来，并采用 min()/max() 排序，使得无论谁先发起，双方都能算出完全相同的密钥。"
+    },
+    {
+      "type": "prose",
+      "en": "What about rekeying a group key later — say after a peer leaves? For that there's a lightweight two-message mesh group key handshake (Mesh Group Key Inform + Mesh Group Key Acknowledge), again AES-SIV-protected with the AEK. It carries a new MGTK and a Key Replay Counter that strictly increases on every send, even on retries, so an old captured Inform frame can never be replayed. A mesh STA runs this handshake separately with each current peer to push out a fresh MGTK — that's how a mesh refreshes group keys without tearing the whole network down.",
+      "zh": "那之后要给组密钥换密（比如某个对端离开后）怎么办？为此有一套轻量的、两条消息的 Mesh 组密钥握手（Mesh Group Key Inform + Mesh Group Key Acknowledge），同样用 AEK 做 AES-SIV 保护。它携带一个新的 MGTK 以及一个“密钥重放计数器（Key Replay Counter）”，该计数器在每次发送时（包括重传）都严格递增，因此一个被截获的旧 Inform 帧永远无法被重放。Mesh 站点会分别与当前每一个对端运行这套握手，以推送新的 MGTK——这就是 Mesh 在不拆毁整张网络的前提下刷新组密钥的方式。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Pairwise-cipher tie-break, the AES-SIV AAD, and the MTK derivation",
+        "zh": "成对套件平局规则、AES-SIV 的 AAD，以及 MTK 派生"
+      },
+      "en": "Clause 14.6.2.1 specifies that each STA advertises an ordered pairwise-cipher list in the RSNE of its Mesh Peering Open frame, and the selection is the intersection of the two ordered lists; if more than one survives, the chosen suite is the entry most preferred by the STA holding the larger MAC address (lexicographic). Clause 14.6.3 defines the AES-SIV construction: the input key is the AEK, the plaintext is the Authenticated Mesh Peering Exchange element, and the AAD is three components — localMAC, peerMAC, and the frame body from the Category field (inclusive) up to the MIC element (exclusive); the synthetic IV goes into the MIC field. On the receive side the AAD swaps to peerMAC, localMAC, and the same body, and a return of 'FAIL' is a verification failure. Clause 14.6.7 gives AEK = KDF-Hash-256(PMK, \"AEK Derivation\", Selected AKM Suite || min(localMAC,peerMAC) || max(localMAC,peerMAC)) and MTK = KDF-Hash-Length(PMK, \"Temporal Key Derivation\", min(localNonce,peerNonce) || max(localNonce,peerNonce) || min(localLinkID,peerLinkID) || max(localLinkID,peerLinkID) || Selected AKM Suite || min(localMAC,peerMAC) || max(localMAC,peerMAC)). The min/max ordering of nonces, link IDs and MAC addresses is what makes the derivation order-independent, so both equal peers land on the same MTK.",
+      "zh": "14.6.2.1 节规定，每个 STA 在其 Mesh Peering Open 帧的 RSNE 中通告一个有序的成对加密套件列表，最终选择取两个有序列表的交集；若交集中剩下不止一项，则选中的套件是 MAC 地址较大（按字典序）的那个 STA 最偏好的那一项。14.6.3 节定义了 AES-SIV 的构造：输入密钥是 AEK，明文是“认证的 Mesh 对等建链交换元素”，AAD 由三部分组成——localMAC、peerMAC，以及从 Category 字段（含）到 MIC 元素（不含）的帧体；合成初始向量被写入 MIC 字段。在接收侧，AAD 调换为 peerMAC、localMAC 与相同的帧体，返回“FAIL”即表示校验失败。14.6.7 节给出 AEK = KDF-Hash-256(PMK, \"AEK Derivation\", 选定 AKM 套件 || min(localMAC,peerMAC) || max(localMAC,peerMAC))，以及 MTK = KDF-Hash-Length(PMK, \"Temporal Key Derivation\", min(localNonce,peerNonce) || max(localNonce,peerNonce) || min(localLinkID,peerLinkID) || max(localLinkID,peerLinkID) || 选定 AKM 套件 || min(localMAC,peerMAC) || max(localMAC,peerMAC))。正是对随机数、LinkID 和 MAC 地址做 min/max 排序，使得派生与顺序无关，因此两个平等的对端会得到同一个 MTK。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3210,
+          3211,
+          3212,
+          3218
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:12.6.10",
+    "80211-2024:14.6.1",
+    "80211-2024:14.6.2.1",
+    "80211-2024:14.6.2.2",
+    "80211-2024:14.6.3",
+    "80211-2024:14.6.4",
+    "80211-2024:14.6.5.2.1",
+    "80211-2024:14.6.5.2.2",
+    "80211-2024:14.6.5.3.1",
+    "80211-2024:14.6.5.3.2",
+    "80211-2024:14.6.6.2",
+    "80211-2024:14.6.6.3",
+    "80211-2024:14.6.7"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3210
+      ],
+      "note": "14.6.1 AMPE overview; 14.6.2.1 instance pairwise cipher suite selection (intersection + larger-MAC tie-break)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3211,
+        3212
+      ],
+      "note": "14.6.2.2 group cipher selection; 14.6.3 AES-SIV construction/processing (AEK, AAD, MIC); 14.6.4 MGTK/IGTK distribution in an MBSS"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3213,
+        3214
+      ],
+      "note": "14.6.5.2 Mesh Peering Open for AMPE; 14.6.5.3 Mesh Peering Confirm for AMPE (generation + processing)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3215,
+        3216,
+        3217
+      ],
+      "note": "14.6.6 AMPE finite state machine — added events (TOR3), updated send actions, state transitions, MLME-SETKEYS/SETPROTECTION on completion"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3218,
+        3219
+      ],
+      "note": "14.6.7 keys and key derivation — AEK and MTK derivation from the shared PMK with min/max ordering"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3220,
+        3221
+      ],
+      "note": "14.7 mesh group key handshake — Inform/Acknowledge frames, AES-SIV protection, Key Replay Counter for group-key rekey"
+    }
+  ],
+  "track": "security"
+}
