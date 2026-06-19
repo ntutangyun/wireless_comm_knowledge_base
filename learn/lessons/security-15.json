@@ -1,0 +1,129 @@
+{
+  "id": "security-15",
+  "title": {
+    "en": "BIP in Detail: Protecting Management Frames with the MME",
+    "zh": "BIP 细节：用 MME 保护管理帧"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Data frames get the full treatment — they are encrypted so nobody can read them. But robust management frames (deauthentication, disassociation, action frames, protected Beacons) get something different. They are sent in the clear and merely stamped with a tag that proves they are authentic and fresh. That stamp is the job of BIP — the Broadcast/Multicast Integrity Protocol. The receiver does not care about hiding the contents of a deauth frame; it cares that the deauth really came from its AP and is not a replay an attacker recorded earlier.",
+      "zh": "数据帧享受“全套待遇”——它们被加密，任何人都读不到内容。但稳健管理帧（解认证、解关联、Action 帧、受保护的 Beacon）得到的待遇不同。它们以明文发送，只是被盖上一个标记，用来证明它们是真实且新鲜的。这个标记正是 BIP——广播/组播完整性协议（Broadcast/Multicast Integrity Protocol）——的职责。接收方并不在意把一个解认证帧的内容藏起来；它在意的是：这个解认证帧确实来自它的 AP，而不是攻击者早先录下来重放的旧帧。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A one-line intuition: BIP is 'CCMP/GCMP's integrity half, applied to group-addressed management traffic.' It reuses the same AES authenticator machinery you know from data encryption, but throws away the confidentiality step — there is no ciphertext, only a Message Integrity Code (MIC).",
+      "zh": "一句话直觉：BIP 就是“CCMP/GCMP 的完整性那一半，专门用在组播管理帧上”。它复用了你在数据加密里熟悉的同一套 AES 认证机制，但丢掉了机密性这一步——没有密文，只有一个消息完整性码（MIC）。"
+    },
+    {
+      "type": "prose",
+      "en": "The carrier for all of this is one extra element appended to the management frame body: the Management MIC Element (MME). The MME shows up after every other element but before the FCS. Inside it are three things that matter: a Key ID (which group key signed this frame), a 48-bit IPN/BIPN field (the packet number used as a replay counter), and the MIC itself (the integrity tag). Compute the MIC, drop it into the MME, send the frame — that is the whole encapsulation.",
+      "zh": "承载这一切的，是附加在管理帧体上的一个额外元素：管理 MIC 元素（Management MIC Element，MME）。MME 出现在所有其他元素之后、FCS 之前。它内部有三样关键内容：一个 Key ID（指明是哪个组密钥为该帧签名）、一个 48 位的 IPN/BIPN 字段（用作重放计数器的报文序号），以及 MIC 本身（完整性标签）。计算出 MIC，放进 MME，发送帧——这就是整个封装过程。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    A[Management frame body] --> B[Append MME: Key ID + IPN]\n    B --> C[Build AAD from header: masked FC, A1, A2, A3]\n    C --> D[AES authenticator over AAD plus body incl. MME, MIC masked]\n    D --> E{Cipher suite}\n    E -->|BIP-CMAC-128| F[64-bit MIC: Truncate-64 of AES-CMAC]\n    E -->|BIP-CMAC-256| G[128-bit MIC: AES-CMAC]\n    E -->|BIP-GMAC-128/256| H[128-bit MIC: AES-GMAC]\n    F --> I[Insert MIC into MME, transmit]\n    G --> I\n    H --> I",
+      "zh": "graph LR\n    A[管理帧体] --> B[追加 MME：Key ID + IPN]\n    B --> C[由帧头构造 AAD：掩码后的 FC、A1、A2、A3]\n    C --> D[对 AAD 加上帧体含MME做 AES 认证，MIC 字段先置零]\n    D --> E{密码套件}\n    E -->|BIP-CMAC-128| F[64 位 MIC：AES-CMAC 截断为 64 位]\n    E -->|BIP-CMAC-256| G[128 位 MIC：AES-CMAC]\n    E -->|BIP-GMAC-128/256| H[128 位 MIC：AES-GMAC]\n    F --> I[把 MIC 写入 MME，发送]\n    G --> I\n    H --> I"
+    },
+    {
+      "type": "prose",
+      "en": "Two families of cipher do the actual signing. BIP-CMAC uses AES in CMAC mode: BIP-CMAC-128 (AES-128) truncates its output to a 64-bit MIC, while BIP-CMAC-256 (AES-256) keeps the full 128-bit MIC. BIP-GMAC uses AES in GMAC mode — the GCM authenticator running with no encryption — and both BIP-GMAC-128 and -256 produce a full 128-bit MIC. GMAC needs an initialization vector, which BIP builds by concatenating the transmitter's address (Address 2, or the SA for S1G Beacons) with the IPN. That IPN reuse is the elegant part: the same 48-bit counter that stops replays also keeps every GMAC tag unique.",
+      "zh": "真正负责签名的有两大密码族。BIP-CMAC 用 AES 的 CMAC 模式：BIP-CMAC-128（AES-128）把输出截断为 64 位 MIC，而 BIP-CMAC-256（AES-256）保留完整的 128 位 MIC。BIP-GMAC 用 AES 的 GMAC 模式——即不做加密、只运行 GCM 认证器——BIP-GMAC-128 和 -256 都产生完整的 128 位 MIC。GMAC 需要一个初始化向量，BIP 通过把发送方地址（Address 2，对 S1G Beacon 则是 SA）与 IPN 拼接来构造它。IPN 的这种复用很巧妙：同一个 48 位计数器既用来阻止重放，又让每个 GMAC 标签保持唯一。"
+    },
+    {
+      "type": "prose",
+      "en": "What exactly gets signed? Not the whole frame — BIP first builds Additional Authentication Data (AAD) from a few header fields: the Frame Control field (with the Retry, Power Management, and More Data bits masked out, since those legitimately change in flight), plus addresses A1, A2 and A3. The MIC is then computed over this AAD concatenated with the full management frame body including the MME (but with the MME's own MIC field zeroed during the computation). Masking those volatile bits is what lets the same authentic frame verify even if it was retried.",
+      "zh": "到底是哪些内容被签名？并不是整帧——BIP 先用几个帧头字段构造附加认证数据（AAD）：帧控制（Frame Control）字段（其中 Retry、Power Management、More Data 这三位被掩码掉，因为它们在传输途中会合法地变化），再加上地址 A1、A2、A3。随后在“这段 AAD”与“包含 MME 的完整管理帧体（计算时把 MME 自己的 MIC 字段先置零）”拼接而成的数据上计算 MIC。把那几个易变位掩码掉，正是为什么同一个真实帧即使被重传也仍能通过校验。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 520 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='10' y='40' width='110' height='40'/><text x='65' y='64' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>MAC header</text><rect x='120' y='40' width='150' height='40'/><text x='195' y='64' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>frame body (elements)</text><rect x='270' y='40' width='160' height='40' stroke-dasharray='5 3'/><text x='350' y='58' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>MME (last element)</text><text x='350' y='73' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>Key ID | IPN(48b) | MIC</text><rect x='430' y='40' width='60' height='40'/><text x='460' y='64' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>FCS</text><line x1='10' y1='105' x2='430' y2='105'/><line x1='10' y1='100' x2='10' y2='110'/><line x1='430' y1='100' x2='430' y2='110'/><text x='220' y='123' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>MIC computed over AAD + this span (MME MIC field zeroed)</text></svg>",
+      "caption": {
+        "en": "BIP encapsulation: the MME is the last element in the management frame body, just before the FCS. The MIC inside it authenticates the masked header (AAD) plus the body.",
+        "zh": "BIP 封装：MME 是管理帧体中的最后一个元素，紧挨在 FCS 之前。其中的 MIC 对掩码后的帧头（AAD）以及帧体进行认证。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "On receive, the station runs the mirror image. It reads the MME Key ID to pick the right group key (the IGTK for ordinary robust management frames, the BIGTK for protected Beacons). First it checks freshness: the received IPN must be strictly greater than the stored 48-bit replay counter, or the frame is dropped as a replay. Then it recomputes the MIC the same way the sender did and compares; a mismatch means the frame is forged or corrupt and is discarded. Only a frame that passes both tests updates the replay counter and is accepted — that is the machinery quietly running behind PMF every time your AP de-authenticates a client.",
+      "zh": "在接收端，站点执行镜像操作。它读取 MME 的 Key ID 来挑选正确的组密钥（普通稳健管理帧用 IGTK，受保护的 Beacon 用 BIGTK）。它首先检查新鲜度：收到的 IPN 必须严格大于已保存的 48 位重放计数器，否则该帧会被当作重放丢弃。然后它按发送方相同的方式重新计算 MIC 并比对；不匹配就意味着该帧是伪造或损坏的，予以丢弃。只有同时通过这两项检验的帧才会更新重放计数器并被接受——这正是每次你的 AP 解认证某个客户端时，在 PMF 背后默默运转的机制。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact transmit and receive procedures, step by step",
+        "zh": "精确的发送与接收流程，逐步拆解"
+      },
+      "en": "Clause 12.5.3.5 (BIP transmission) spells it out: select the active IGTK or BIGTK and build the MME with the MIC field masked out and the Key ID set; insert a strictly increasing integer into the MME IPN/BIPN field; for BIP-GMAC the GMAC initialization vector is Address 2 (or SA for S1G Beacons) concatenated with that IPN; compute AAD per 12.5.3.3 (FC with Retry/PM/More-Data masked, plus A1/A2/A3); compute the integrity value over AAD concatenated with the frame body including the MME (Timestamp masked for Beacons), insert it into the MME MIC field, and transmit with the MME last. BIP-CMAC-128 yields a 64-bit MIC (Truncate-64 of AES-128-CMAC); BIP-CMAC-256, BIP-GMAC-128 and BIP-GMAC-256 all yield 128-bit MICs. Clause 12.5.3.6 (BIP reception) mirrors it: identify the key from the MME Key ID (silently discard if none); enforce replay protection by treating the MME IPN/BIPN as a 48-bit unsigned integer and discarding (incrementing dot11RSNAStatsCMACReplays) if it is less than or equal to the stored counter; recompute the verifier over AAD plus body with the MME MIC field masked and discard (incrementing dot11RSNAStatsBIPMICErrors) on mismatch; only then update the replay counter. Per 12.5.3.4 the IPN is a 48-bit strictly increasing integer initialized to 1 when the IGTK is initialized, and the receiver maintains one 48-bit replay counter per IGTK (and per BIGTK).",
+      "zh": "12.5.3.5 节（BIP 发送）写得很清楚：选择当前活跃的 IGTK 或 BIGTK，构造 MME，先把 MIC 字段置零、设好 Key ID；向 MME 的 IPN/BIPN 字段写入一个严格递增的整数；对 BIP-GMAC，其 GMAC 初始化向量是 Address 2（S1G Beacon 则为 SA）与该 IPN 的拼接；按 12.5.3.3 计算 AAD（掩码掉 Retry/PM/More-Data 的 FC，加上 A1/A2/A3）；在 AAD 与“含 MME 的帧体”（Beacon 还要掩码 Timestamp）的拼接上计算完整性值，写入 MME 的 MIC 字段，并把 MME 放在最后发送。BIP-CMAC-128 产生 64 位 MIC（AES-128-CMAC 截断为 64 位）；BIP-CMAC-256、BIP-GMAC-128、BIP-GMAC-256 都产生 128 位 MIC。12.5.3.6 节（BIP 接收）则是镜像：用 MME 的 Key ID 识别密钥（无对应密钥则静默丢弃）；把 MME IPN/BIPN 当作 48 位无符号整数做重放保护，若小于或等于已存计数器则丢弃（并把 dot11RSNAStatsCMACReplays 加 1）；在 AAD 加上把 MME MIC 字段置零的帧体上重算校验值，不匹配则丢弃（并把 dot11RSNAStatsBIPMICErrors 加 1）；只有都通过后才更新重放计数器。按 12.5.3.4，IPN 是 48 位严格递增整数，在 IGTK 初始化时置为 1，接收方为每个 IGTK（以及每个 BIGTK）维护一个 48 位重放计数器。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3000,
+          3001,
+          3002,
+          3003
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2998
+      ],
+      "note": "12.5.3.2 BIP encapsulation format — MME follows all other elements but precedes the FCS (Figure 12-23)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2998,
+        2999
+      ],
+      "note": "12.5.3.3 BIP AAD construction — FC with Retry/PM/More-Data masked, plus A1/A2/A3 (Figure 12-25)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3000
+      ],
+      "note": "12.5.3.4 BIP replay counters and packet numbers — 48-bit IPN/BIPN strictly increasing, initialized to 1; per-IGTK replay counter"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3001,
+        3002
+      ],
+      "note": "12.5.3.5 BIP transmission — build MME, insert IPN, compute MIC; BIP-CMAC-128 64-bit vs CMAC-256/GMAC 128-bit MIC; GMAC IV"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3002,
+        3003,
+        3004
+      ],
+      "note": "12.5.3.6 BIP reception — key selection by MME Key ID, replay check, MIC verify, counter update"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2997
+      ],
+      "note": "12.5.3.1 BIP overview — BIP-CMAC-128/256 (AES-CMAC) and BIP-GMAC-128/256 (AES-GMAC) MIC sizes"
+    }
+  ],
+  "covers": [
+    "80211-2024:12.5.3.2",
+    "80211-2024:12.5.3.3",
+    "80211-2024:12.5.3.4",
+    "80211-2024:12.5.3.5",
+    "80211-2024:12.5.3.6"
+  ],
+  "track": "security"
+}

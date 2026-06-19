@@ -1,0 +1,108 @@
+{
+  "id": "security-17",
+  "title": {
+    "en": "Inside the EAPOL-Key Frame: The Key Information Bits",
+    "zh": "深入 EAPOL-Key 帧：Key Information 比特位"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "The 4-way handshake and the group-key handshake you met earlier do all their talking inside one carrier: the EAPOL-Key PDU. Every nonce, every key, every \"your turn now\" signal travels in this single frame format. In this lesson we stop watching the handshake from the outside and instead open the envelope — laying out the fields of the EAPOL-Key PDU and, most importantly, reading the Key Information field bit by bit. Once you can read those bits, you can tell at a glance which message of which handshake any captured frame is.",
+      "zh": "你之前接触过的四次握手和组密钥握手，所有的对话其实都装在同一个载体里：EAPOL-Key PDU。每一个随机数、每一把密钥、每一个“轮到你了”的信号，都在这种统一的帧格式中传输。本课我们不再从外部观察握手，而是直接拆开信封——铺开 EAPOL-Key PDU 的各个字段，并且最关键地，逐比特解读 Key Information 字段。一旦你能读懂这些比特，看一眼抓到的帧，就能立刻判断它是哪种握手的第几条消息。"
+    },
+    {
+      "type": "prose",
+      "en": "An EAPOL-Key PDU is a list of fixed and variable fields. After the EAPOL header (Protocol Version, Packet Type, Packet Body Length) comes the IEEE 802.11 Key Descriptor: a 1-octet Descriptor Type, a 2-octet Key Information field, a 2-octet Key Length, an 8-octet Key Replay Counter, a 32-octet Key Nonce (carrying the ANonce or SNonce), a 16-octet EAPOL-Key IV, an 8-octet RSC, an 8-octet Reserved field, a variable-length Key MIC, a 2-octet Key Data Length, and finally the variable-length Key Data field. Key Data is where the bulky payload lives — the encrypted GTK, the RSNE, and other key data encapsulations (KDEs).",
+      "zh": "一个 EAPOL-Key PDU 就是一串定长与变长字段的清单。在 EAPOL 头部（Protocol Version、Packet Type、Packet Body Length）之后，是 IEEE 802.11 Key Descriptor：1 字节的 Descriptor Type、2 字节的 Key Information、2 字节的 Key Length、8 字节的 Key Replay Counter、32 字节的 Key Nonce（承载 ANonce 或 SNonce）、16 字节的 EAPOL-Key IV、8 字节的 RSC、8 字节的 Reserved、变长的 Key MIC、2 字节的 Key Data Length，最后是变长的 Key Data 字段。Key Data 正是承载大块负载的地方——加密后的 GTK、RSNE 以及其他密钥数据封装（KDE）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 560 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='8' y='18' font-size='12' stroke='none' fill='currentColor'>Key Information field (2 octets, 16 bits) — read low to high</text><g font-size='9' stroke='none' fill='currentColor' text-anchor='middle'><rect x='8' y='34' width='90' height='40' stroke='currentColor'/><text x='53' y='52'>Key Desc.</text><text x='53' y='64'>Version (b0-2)</text><rect x='98' y='34' width='44' height='40' stroke='currentColor'/><text x='120' y='52'>Key</text><text x='120' y='64'>Type (b3)</text><rect x='142' y='34' width='44' height='40' stroke='currentColor'/><text x='164' y='52'>Resvd</text><text x='164' y='64'>(b4-5)</text><rect x='186' y='34' width='40' height='40' stroke='currentColor'/><text x='206' y='52'>Install</text><text x='206' y='64'>(b6)</text><rect x='226' y='34' width='44' height='40' stroke='currentColor'/><text x='248' y='52'>Key Ack</text><text x='248' y='64'>(b7)</text><rect x='270' y='34' width='50' height='40' stroke='currentColor'/><text x='295' y='49'>Key MIC</text><text x='295' y='61'>Present</text><text x='295' y='72'>(b8)</text><rect x='320' y='34' width='44' height='40' stroke='currentColor'/><text x='342' y='52'>Secure</text><text x='342' y='64'>(b9)</text><rect x='364' y='34' width='40' height='40' stroke='currentColor'/><text x='384' y='52'>Error</text><text x='384' y='64'>(b10)</text><rect x='404' y='34' width='50' height='40' stroke='currentColor'/><text x='429' y='52'>Request</text><text x='429' y='64'>(b11)</text><rect x='454' y='34' width='54' height='40' stroke='currentColor'/><text x='481' y='49'>Encrypted</text><text x='481' y='61'>Key Data</text><text x='481' y='72'>(b12)</text><rect x='508' y='34' width='44' height='40' stroke='currentColor'/><text x='530' y='52'>Resvd</text><text x='530' y='64'>(b13-15)</text></g><text x='8' y='100' font-size='11' stroke='none' fill='currentColor'>Each labelled bit is a tiny state-control flag telling the peer this message's role.</text><text x='8' y='120' font-size='10' stroke='none' fill='currentColor'>Key Type: 1 = Pairwise (4-way / PTK)  ·  0 = Group (group-key handshake)</text></svg>",
+      "caption": {
+        "en": "The 16-bit Key Information field, drawn per Figure 12-36. The named single-bit flags (Install, Key Ack, Secure, Error, Request, Encrypted Key Data) plus the Key Type bit form a compact control header for the handshake.",
+        "zh": "依据 Figure 12-36 绘制的 16 比特 Key Information 字段。这些具名的单比特标志（Install、Key Ack、Secure、Error、Request、Encrypted Key Data）加上 Key Type 比特，共同构成握手的紧凑控制头部。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now the heart of the lesson — the Key Information bits, each a small switch. Key Type (bit 3) says whether this PDU is part of a PTK derivation: 1 means Pairwise (a 4-way handshake message), 0 means Group (a group-key handshake message). Install (bit 6) tells the receiver whether to plumb the freshly derived temporal key into the MAC. Key Ack (bit 7) is set to 1 by the Authenticator to mean \"reply to me\", and 0 otherwise. Key MIC Present (bit 8) flags that a MIC is carried (it is set to 0 when an AEAD cipher is used, since AEAD integrates its own integrity). Secure (bit 9) announces that both sides now share a PTKSA — it flips to 1 once the security association is established. Error (bit 10) and Request (bit 11) are Supplicant-only: Error reports a TKIP MIC failure, and Request asks the Authenticator to start a fresh handshake. Encrypted Key Data (bit 12) is set to 1 whenever the Key Data field is encrypted — and it must be 1 if any key material such as the GTK is inside.",
+      "zh": "现在进入本课的核心——Key Information 比特位，每一位都是一个小开关。Key Type（bit 3）表明此 PDU 是否属于 PTK 推导：1 表示 Pairwise（四次握手消息），0 表示 Group（组密钥握手消息）。Install（bit 6）告诉接收方是否把刚推导出的临时密钥装入 MAC。Key Ack（bit 7）由 Authenticator 置 1 表示“请回复我”，否则为 0。Key MIC Present（bit 8）标志帧中是否携带 MIC（使用 AEAD 密码时置 0，因为 AEAD 自带完整性保护）。Secure（bit 9）宣告双方现已共享一个 PTKSA——安全关联建立后即翻转为 1。Error（bit 10）和 Request（bit 11）仅由 Supplicant 使用：Error 报告 TKIP MIC 失败，Request 请求 Authenticator 重新发起握手。Encrypted Key Data（bit 12）在 Key Data 字段被加密时置 1——只要帧内含有诸如 GTK 之类的密钥材料，它就必须为 1。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Three keys, three jobs. The PTK is split into a KCK, a KEK, and a TK. The KCK (key confirmation key) computes the Key MIC that protects each EAPOL-Key PDU from the Protocol Version field through the Key Data field, with the MIC field zeroed during the calculation. The KEK (key encryption key) wraps the Key Data — that is how the GTK travels confidentially. And the Key Replay Counter, an 8-octet sequence number tracked per security association and incremented by the Authenticator on each PDU, lets a peer reject any replayed or reordered message.",
+      "zh": "三把密钥，三种职责。PTK 被拆分为 KCK、KEK 和 TK。KCK（密钥确认密钥）计算 Key MIC，保护每个 EAPOL-Key PDU——计算范围从 Protocol Version 字段直到 Key Data 字段，且计算时把 MIC 字段先置零。KEK（密钥加密密钥）封装 Key Data——GTK 正是借此被机密地传输。而 Key Replay Counter，是一个按安全关联跟踪、由 Authenticator 在每个 PDU 上递增的 8 字节序列号，让对端能够拒绝任何被重放或被乱序的消息。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant A as Authenticator (AP)\n    participant S as Supplicant (STA)\n    A->>S: Msg1 KeyInfo: Type=P, Ack=1, MIC=0, Secure=0 (ANonce)\n    S->>A: Msg2 KeyInfo: Type=P, MIC=1, Secure=0 (SNonce, RSNE)\n    Note over A: KCK checks MIC; KEK ready to wrap\n    A->>S: Msg3 KeyInfo: Type=P, Install=1, Ack=1, MIC=1, Secure=1, Enc=1 (GTK, RSNE)\n    S->>A: Msg4 KeyInfo: Type=P, MIC=1, Secure=1 (empty)\n    Note over A,S: Replay Counter rises each step; reorders rejected",
+      "zh": "sequenceDiagram\n    participant A as Authenticator (AP)\n    participant S as Supplicant (STA)\n    A->>S: 消息1 KeyInfo: Type=P, Ack=1, MIC=0, Secure=0 (ANonce)\n    S->>A: 消息2 KeyInfo: Type=P, MIC=1, Secure=0 (SNonce, RSNE)\n    Note over A: KCK 校验 MIC；KEK 准备封装\n    A->>S: 消息3 KeyInfo: Type=P, Install=1, Ack=1, MIC=1, Secure=1, Enc=1 (GTK, RSNE)\n    S->>A: 消息4 KeyInfo: Type=P, MIC=1, Secure=1 (空)\n    Note over A,S: Replay Counter 每步递增；乱序被拒绝"
+    },
+    {
+      "type": "prose",
+      "en": "The 32-octet Key Nonce field carries the ANonce (from the Authenticator) or SNonce (from the Supplicant) that seed PTK derivation. These nonces must be unpredictable, and the standard is specific about how to produce them. Every STA keeps a 256-bit global key counter, seeded at boot from a fresh cryptographic-quality random number — recommended as PRF-256(Random number, \"Init Counter\", Local MAC Address || Time) — so that even across reboots, with or without a real-time clock, two devices land on different counter values. A STA then derives a fresh random nonce for each new use. Unpredictable nonces are what make replay protection real: because each PTK folds in a never-before-used nonce, an attacker cannot resurrect an old session by replaying frames.",
+      "zh": "32 字节的 Key Nonce 字段承载 ANonce（来自 Authenticator）或 SNonce（来自 Supplicant），它们为 PTK 推导提供种子。这些随机数必须不可预测，标准对如何生成它们有明确规定。每个 STA 都维护一个 256 比特的全局密钥计数器，在启动时用一个新鲜的、密码学质量的随机数初始化——推荐为 PRF-256(随机数, \"Init Counter\", 本地 MAC 地址 || 时间)——这样即使跨越重启，无论是否有实时时钟，两台设备也会落在不同的计数器值上。随后 STA 为每次新用途派生一个新鲜的随机随机数。不可预测的随机数正是让重放保护名副其实的关键：因为每个 PTK 都揉入了一个从未用过的随机数，攻击者无法靠重放旧帧来复活一个旧会话。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Reading the standard's EAPOL-Key( ) notation",
+        "zh": "读懂标准的 EAPOL-Key( ) 记法"
+      },
+      "en": "Clause 12.7.4 defines a compact notation reused throughout the rest of clause 12.7 and clause 13.4: EAPOL-Key(S, M, A, I, K, Reserved, RSC, ANonce/SNonce, MIC, {Key Data}). Here S is the Secure bit, M is the Key MIC Present bit, A is the Key Ack bit, I is the Install bit, K is the key type (P for Pairwise, G for Group), RSC is the receive sequence counter, the nonce slot holds the ANonce or SNonce, MIC is the integrity value generated with the PTK-KCK, and {Key Data} is the sequence of elements and KDEs (RSNE, GTK[N], IGTK[M], and so on). With this key, the 4-way handshake reads directly: message 1 is EAPOL-Key(0 or 1, 0, 1, 0, P, 0, 0, ANonce, 0, {PMKID}) and message 3 is EAPOL-Key(1, 1, 1, 1, P, 0, RSC, ANonce, MIC, {RSNE [, RSNXE] [, OCI], GTK(N) ...}). Note the ANonce is identical in message 1 and message 3, and the MIC is computed over the EAPOL-Key PDU body with the Key MIC field first zeroed, using the PTK-KCK from 12.7.1.3.",
+      "zh": "12.7.4 节定义了一套贯穿 12.7 节其余部分与 13.4 节复用的紧凑记法：EAPOL-Key(S, M, A, I, K, Reserved, RSC, ANonce/SNonce, MIC, {Key Data})。其中 S 是 Secure 比特，M 是 Key MIC Present 比特，A 是 Key Ack 比特，I 是 Install 比特，K 是密钥类型（P 表示 Pairwise，G 表示 Group），RSC 是接收序列计数器，随机数槽位放置 ANonce 或 SNonce，MIC 是用 PTK-KCK 生成的完整性值，{Key Data} 则是元素与 KDE 的序列（RSNE、GTK[N]、IGTK[M] 等）。有了这把钥匙，四次握手便可直接读出：消息 1 是 EAPOL-Key(0 或 1, 0, 1, 0, P, 0, 0, ANonce, 0, {PMKID})，消息 3 是 EAPOL-Key(1, 1, 1, 1, P, 0, RSC, ANonce, MIC, {RSNE [, RSNXE] [, OCI], GTK(N) ...})。注意 ANonce 在消息 1 与消息 3 中完全相同，且 MIC 是在把 Key MIC 字段先置零后、用 12.7.1.3 的 PTK-KCK 对 EAPOL-Key PDU 主体计算得出的。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3064,
+          3065,
+          3066
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:12.7.2",
+    "80211-2024:12.7.4",
+    "80211-2024:12.7.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3053,
+        3054,
+        3055
+      ],
+      "note": "12.7.2 EAPOL-Key frames — PDU format (Fig 12-35), Key Information bit format (Fig 12-36), Key Type/Install/Key Ack/Key MIC Present/Secure/Error/Request/Encrypted Key Data subfields"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3056,
+        3057
+      ],
+      "note": "12.7.2 — Key Length, Key Replay Counter, Key Nonce, EAPOL-Key IV, RSC, Key MIC (KCK over PDU body with MIC zeroed), Key Data Length, Key Data with KDEs"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3064,
+        3065
+      ],
+      "note": "12.7.4 EAPOL-Key PDU notation — EAPOL-Key(S, M, A, I, K, Reserved, RSC, ANonce/SNonce, MIC, {Key Data}) parameter meanings"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3065,
+        3066
+      ],
+      "note": "12.7.5 Nonce generation — 256-bit global key counter, PRF-256 init recommendation, fresh random nonce per use"
+    }
+  ],
+  "track": "security"
+}

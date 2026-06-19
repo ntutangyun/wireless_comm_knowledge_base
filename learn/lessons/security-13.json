@@ -1,0 +1,109 @@
+{
+  "id": "security-13",
+  "title": {
+    "en": "CCMP Step by Step: Building the Nonce, the AAD, and the MIC",
+    "zh": "CCMP 逐步拆解：构造 Nonce、AAD 与 MIC"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "CCMP — Counter mode with CBC-MAC Protocol — is the workhorse that protects almost every Wi-Fi data frame. It does three things at once with a single key: it keeps the payload secret, it proves nobody tampered with the frame, and it stops an attacker from replaying an old captured frame. Underneath it is AES running in CCM mode (CTR for secrecy + CBC-MAC for integrity), and every protected frame carries an 8-octet CCMP header so the receiver can undo it. Let's open the envelope and follow one frame all the way through.",
+      "zh": "CCMP——即“计数器模式配合 CBC-MAC 的协议”——是保护几乎每一个 Wi-Fi 数据帧的主力。它用一把密钥同时完成三件事：让载荷保密、证明没有人篡改过这一帧、并阻止攻击者重放一个旧的截获帧。它的底层是运行在 CCM 模式下的 AES（用 CTR 做保密、用 CBC-MAC 做完整性），每个受保护的帧都携带一个 8 字节的 CCMP 头，让接收方能够把它逆向还原。让我们打开这个“信封”，跟随一个帧走完全程。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the CCMP header. It is 8 octets and its star is the Packet Number (PN) — a 48-bit counter spread across six octets (PN0 is least significant, PN5 most significant). The PN is a strictly increasing integer, set to 0 when the temporal key is installed and incremented before every frame. The header also carries the ExtIV bit (always 1 for CCMP) and a 2-bit Key ID. The third octet sits reserved. CCMP-128 expands the frame by 16 octets total: 8 for this header plus 8 for the MIC that lands after the data.",
+      "zh": "先看 CCMP 头。它有 8 字节，主角是“分组号（PN）”——一个分布在六个字节上的 48 位计数器（PN0 最低位，PN5 最高位）。PN 是一个严格递增的整数，在临时密钥安装时置 0，并在每一帧发送前递增。头部还携带 ExtIV 位（对 CCMP 恒为 1）和一个 2 位的 Key ID。第三个字节保留。CCMP-128 总共把帧扩大 16 字节：8 字节给这个头，再加 8 字节给紧随数据之后的 MIC。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><g font-family=\"sans-serif\" font-size=\"12\" fill=\"currentColor\" stroke=\"none\"><text x=\"8\" y=\"18\">8-octet CCMP header</text></g><g stroke=\"currentColor\"><rect x=\"8\" y=\"28\" width=\"70\" height=\"40\"/><rect x=\"78\" y=\"28\" width=\"70\" height=\"40\"/><rect x=\"148\" y=\"28\" width=\"70\" height=\"40\"/><rect x=\"218\" y=\"28\" width=\"90\" height=\"40\"/><rect x=\"308\" y=\"28\" width=\"70\" height=\"40\"/><rect x=\"378\" y=\"28\" width=\"70\" height=\"40\"/><rect x=\"448\" y=\"28\" width=\"70\" height=\"40\"/><rect x=\"518\" y=\"28\" width=\"70\" height=\"40\"/></g><g font-family=\"sans-serif\" font-size=\"11\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\"><text x=\"43\" y=\"52\">PN0</text><text x=\"113\" y=\"52\">PN1</text><text x=\"183\" y=\"52\">Rsvd</text><text x=\"263\" y=\"52\">Key ID</text><text x=\"263\" y=\"64\" font-size=\"9\">(ExtIV=1)</text><text x=\"343\" y=\"52\">PN2</text><text x=\"413\" y=\"52\">PN3</text><text x=\"483\" y=\"52\">PN4</text><text x=\"553\" y=\"52\">PN5</text></g><g font-family=\"sans-serif\" font-size=\"10\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\"><text x=\"43\" y=\"82\">1</text><text x=\"113\" y=\"82\">1</text><text x=\"183\" y=\"82\">1</text><text x=\"263\" y=\"82\">1</text><text x=\"343\" y=\"82\">1</text><text x=\"413\" y=\"82\">1</text><text x=\"483\" y=\"82\">1</text><text x=\"553\" y=\"82\">1 octet</text></g><g font-family=\"sans-serif\" font-size=\"11\" fill=\"currentColor\" stroke=\"none\"><text x=\"8\" y=\"118\">48-bit PN = PN5 PN4 PN3 PN2 PN1 PN0 (PN5 most significant) — strictly increasing, never reused per key</text></g></svg>",
+      "caption": {
+        "en": "The CCMP header: a 48-bit Packet Number split across six octets, plus the ExtIV bit and Key ID. The PN is what makes every frame under one key unique.",
+        "zh": "CCMP 头：一个分散在六个字节上的 48 位分组号，加上 ExtIV 位与 Key ID。正是 PN 让同一把密钥下的每一帧都唯一。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now the two inputs CCM needs besides the key and payload. First the CCM nonce: 13 octets built as one Flags octet, then the transmitter's Address 2 (A2), then the 6-octet PN. The Flags octet carries the frame's priority (the QoS TID, or 0 if none) plus a Management bit. Because A2 differs per transmitter and the PN never repeats, the nonce is unique for every frame — exactly the never-reuse guarantee CCM demands. Second the AAD (Additional Authentication Data): it is the immutable part of the MAC header — Frame Control, A1, A2, A3, Sequence Control, and A4/QoS Control when present. These fields are authenticated but NOT encrypted, so the receiver can read the header and still detect any tampering.",
+      "zh": "现在看 CCM 除密钥和载荷之外所需的两个输入。第一是 CCM nonce：共 13 字节，由一个 Flags 字节、发送方的 Address 2（A2）、再加 6 字节的 PN 组成。Flags 字节携带帧的优先级（QoS 的 TID，无则为 0）以及一个 Management 位。由于 A2 因发送方而异、PN 又永不重复，所以 nonce 对每一帧都是唯一的——这正是 CCM 所要求的“绝不重用”保证。第二是 AAD（附加认证数据）：它是 MAC 头中不可变的部分——Frame Control、A1、A2、A3、Sequence Control，以及存在时的 A4／QoS Control。这些字段被认证但不被加密，因此接收方既能读取头部，又能检测出任何篡改。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why mask some header bits? Fields that legitimately change on retransmission — the Retry, Power Management, More Data bits in Frame Control, and the Sequence Number — are masked to zero before the AAD is computed. Otherwise a normal retransmit would flip a bit and fail the integrity check. The Duration/ID and HT Control fields are left out of the AAD entirely for the same reason.",
+      "zh": "为什么要屏蔽部分头部比特？那些在重传时会合法变化的字段——Frame Control 中的 Retry、Power Management、More Data 位以及 Sequence Number——在计算 AAD 前会被置零。否则一次正常的重传只要翻转一位就会导致完整性校验失败。出于同样的原因，Duration/ID 和 HT Control 字段被完全排除在 AAD 之外。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    PN[Increment PN<br/>48-bit, never reused] --> NONCE[Construct nonce<br/>Flags + A2 + PN]\n    HDR[MPDU header] --> AAD[Construct AAD<br/>mask mutable fields]\n    TK[Temporal key] --> CCM\n    NONCE --> CCM[AES-CCM originator processing]\n    AAD --> CCM\n    PT[Plaintext frame body] --> CCM\n    CCM --> CT[CTR mode:<br/>encrypted data]\n    CCM --> MIC[CBC-MAC:<br/>8-octet MIC over AAD + plaintext]\n    CT --> OUT[Encrypted MPDU =<br/>header + CCMP header + ciphertext + MIC]\n    MIC --> OUT",
+      "zh": "graph TD\n    PN[递增 PN<br/>48 位，永不重用] --> NONCE[构造 nonce<br/>Flags + A2 + PN]\n    HDR[MPDU 头] --> AAD[构造 AAD<br/>屏蔽可变字段]\n    TK[临时密钥] --> CCM\n    NONCE --> CCM[AES-CCM 发起方处理]\n    AAD --> CCM\n    PT[明文帧体] --> CCM\n    CCM --> CT[CTR 模式：<br/>加密后的数据]\n    CCM --> MIC[CBC-MAC：<br/>对 AAD + 明文计算 8 字节 MIC]\n    CT --> OUT[加密 MPDU =<br/>头 + CCMP 头 + 密文 + MIC]\n    MIC --> OUT"
+    },
+    {
+      "type": "prose",
+      "en": "Inside AES-CCM the magic is that one key does two jobs at once. CTR mode turns AES into a keystream generator and XORs it onto the frame body — that's the confidentiality. In parallel, CBC-MAC chains AES blocks over the AAD followed by the plaintext to produce the 8-octet MIC — that's the integrity seal. The transmitter then assembles the wire frame: original MAC header, the CCMP header, the encrypted data, and the encrypted MIC. Confidentiality and integrity, one key, one pass.",
+      "zh": "在 AES-CCM 内部，妙处在于一把密钥同时干两件活。CTR 模式把 AES 变成一个密钥流生成器，并将其与帧体异或——这就是保密性。与此同时，CBC-MAC 把 AES 分组依次链接，覆盖 AAD 再覆盖明文，产生 8 字节的 MIC——这就是完整性印章。随后发送方拼装出空口帧：原始 MAC 头、CCMP 头、加密后的数据，以及加密后的 MIC。保密与完整，一把密钥，一遍处理。"
+    },
+    {
+      "type": "prose",
+      "en": "Decapsulation runs the same machinery in reverse. The receiver parses the frame, rebuilds the nonce (from A2 and the PN in the CCMP header) and the AAD (from the received header with the same masking), then runs CCM recipient processing with the temporal key. CCM decrypts the body AND recomputes the MIC over AAD+plaintext — the plaintext is only released if the recomputed MIC matches the received one. Finally, replay detection: the receiver keeps a per-key, per-TID replay counter and discards any frame whose PN is less than or equal to the counter. Only a strictly larger PN is accepted, and the counter advances to it. A replayed old frame has a stale PN, so it is silently dropped.",
+      "zh": "解封装就是把同一套机制反过来跑。接收方解析帧，重建 nonce（用 A2 和 CCMP 头中的 PN）和 AAD（用收到的头部、施加相同的屏蔽），然后用临时密钥执行 CCM 接收方处理。CCM 既解密帧体，又对 AAD+明文重新计算 MIC——只有当重算出的 MIC 与收到的 MIC 相符时，明文才会被放行。最后是重放检测：接收方为每把密钥、每个 TID 维护一个重放计数器，并丢弃任何 PN 小于或等于该计数器的帧。只有严格更大的 PN 才被接受，计数器随之前移到它。被重放的旧帧带着过时的 PN，于是被悄悄丢弃。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact replay rule and the per-SA, per-TID counters",
+        "zh": "精确的重放规则与每个安全关联、每个 TID 的计数器"
+      },
+      "en": "Clause 12.5.2.4.4 is precise about replay. The receiver maintains a separate set of replay counters for each PTKSA, TPKSA, GTKSA, mesh PTKSA, and mesh GTKSA, initialised to 0 when the TK is reset, and within each it keeps a separate counter per TID (bounded by the number of replay counters advertised in RSN Capabilities). Non-QoS Data frames are treated as TID 0. The receiver discards any Data frame whose PN is less than or equal to the replay counter associated with the TA, RA and priority, and discards fragmented MSDUs/A-MSDUs/MMPDUs whose constituent PNs do not increment in steps of 1. Each discard increments dot11RSNAStatsCCMPReplays (or the robust-management variant). On the originator side (12.5.2.3.7) each transmitter maintains a single 48-bit strictly-increasing PN per PTKSA/GTKSA for PV0 frames, initialised to 0 at key install and incremented before transmission. The nonce (12.5.2.3.4) is a 1-octet Flags field (Priority, Management, PV1, Zeros) followed by the A2 MAC address and the 6-octet PN, with PN0 in the last octet.",
+      "zh": "12.5.2.4.4 节对重放有精确规定。接收方为每个 PTKSA、TPKSA、GTKSA、mesh PTKSA 和 mesh GTKSA 维护一组独立的重放计数器，在重置 TK 时初始化为 0；在每组之内，又为每个 TID 维护一个独立计数器（其数量受 RSN Capabilities 中所通告的重放计数器数目限制）。非 QoS 数据帧按 TID 0 处理。接收方丢弃任何 PN 小于或等于其 TA、RA 与优先级所对应重放计数器的数据帧，并丢弃那些组成 MPDU 的 PN 未以步长 1 递增的分片 MSDU／A-MSDU／MMPDU。每次丢弃都会令 dot11RSNAStatsCCMPReplays（或健壮管理帧对应的统计量）加 1。在发起方一侧（12.5.2.3.7），对 PV0 帧，每个发送方为每个 PTKSA／GTKSA 维护单一的 48 位严格递增 PN，在密钥安装时初始化为 0 并在发送前递增。nonce（12.5.2.3.4）由 1 字节的 Flags 字段（Priority、Management、PV1、Zeros）、其后的 A2 MAC 地址和 6 字节的 PN 组成，PN0 位于该子字段的最后一个字节。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2991,
+          2992,
+          2994,
+          2995
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:12.5.2.2",
+    "80211-2024:12.5.2.3",
+    "80211-2024:12.5.2.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2986,
+        2987
+      ],
+      "note": "12.5.2.2 CCMP MPDU format — 8-octet CCMP header, 48-bit PN (PN0..PN5), ExtIV, Key ID; CCMP-128 expands MPDU by 16 octets"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2988,
+        2989,
+        2990,
+        2991,
+        2992
+      ],
+      "note": "12.5.2.3 CCMP cryptographic encapsulation — PN increment, AAD construction with masked mutable fields, CCM nonce (Flags + A2 + PN), CCM originator processing"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2993,
+        2994,
+        2995
+      ],
+      "note": "12.5.2.4 CCMP decapsulation — CCM recipient processing, MIC verification, PN/replay detection with per-SA per-TID replay counters"
+    }
+  ],
+  "track": "security"
+}

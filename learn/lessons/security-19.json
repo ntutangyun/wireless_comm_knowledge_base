@@ -1,0 +1,124 @@
+{
+  "id": "security-19",
+  "title": {
+    "en": "Why WEP and TKIP Broke: ICV, Michael, and Per-Packet Key Mixing",
+    "zh": "WEP 与 TKIP 为何被攻破：ICV、Michael 与逐包密钥混合"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "To appreciate why modern Wi-Fi uses CCMP and GCMP, it helps to see what they replaced and why those mechanisms failed. The standard itself now calls WEP \"an obsolete cipher\" and keeps it in the text only to define TKIP, which is also deprecated. Both are worth tracing because every break in them motivates a design choice in what came after. WEP wrapped each frame with the ARC4 stream cipher: it built a per-frame seed by simply concatenating a 24-bit Initialization Vector (IV) with the WEP key, ran ARC4 to make a keystream, and XORed that keystream over the data.",
+      "zh": "要理解现代 Wi-Fi 为何采用 CCMP 与 GCMP，先看清它们取代了什么、那些旧机制又是如何失败的，会很有帮助。标准本身如今已把 WEP 称为“一种已废弃的密码算法”，保留相关文字只是为了定义 TKIP——而 TKIP 同样已被弃用。这两者都值得梳理，因为它们的每一处被攻破，都成为后续设计的动机。WEP 用 ARC4 流密码包裹每一帧：它把 24 位的初始化向量（IV）与 WEP 密钥简单拼接，构造出每帧的种子（seed），用 ARC4 生成密钥流，再把该密钥流逐比特异或（XOR）到数据上。"
+    },
+    {
+      "type": "prose",
+      "en": "WEP had two fatal weaknesses. First, integrity: its Integrity Check Value (ICV) is just a CRC-32 over the plaintext. CRC is linear, so an attacker who flips a bit in the ciphertext can compute exactly which ICV bits to flip to keep the checksum valid — forging frames without ever knowing the key. CRC was built to catch random noise, not deliberate tampering. Second, keystream reuse: a 24-bit IV is tiny. On a busy link it wraps within hours, and once two frames share an IV (and key), XORing their ciphertexts cancels the keystream and leaks the plaintext relationship — the foundation of the classic key-recovery attacks.",
+      "zh": "WEP 有两处致命弱点。其一是完整性：它的完整性校验值（ICV）只是对明文做的 CRC-32。CRC 是线性的，因此攻击者在密文中翻转某一比特后，可以精确算出该把 ICV 的哪些比特一并翻转，使校验仍然通过——于是无需知晓密钥即可伪造帧。CRC 本是为发现随机噪声而设计，并非为对抗蓄意篡改。其二是密钥流复用：24 位的 IV 太短了。在繁忙链路上数小时内就会回绕，一旦两帧共用同一 IV（与同一密钥），把它们的密文异或便会抵消密钥流，泄露明文之间的关系——这正是经典密钥恢复攻击的基础。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The deep problem isn't ARC4 itself — it's how WEP fed it. A short, openly transmitted IV concatenated straight onto a static key means the same weak keys appear over and over. TKIP and then CCMP/GCMP all attack this exact issue: give every frame a fresh, unpredictable key and real cryptographic integrity, not a checksum.",
+      "zh": "真正的深层问题不在于 ARC4 本身，而在于 WEP 喂给它的方式。一个短小、明文传输的 IV 直接拼接到静态密钥上，意味着相同的弱密钥反复出现。TKIP 乃至后来的 CCMP/GCMP 攻克的正是这一点：让每一帧都拥有新鲜、不可预测的密钥，并提供真正的密码学完整性，而非一个校验和。"
+    },
+    {
+      "type": "prose",
+      "en": "TKIP was the emergency retrofit. Its constraint was brutal: it had to run on WEP-era silicon that could only do ARC4 and CRC, with no firmware room for a real block cipher. So TKIP wrapped WEP rather than replacing it, adding three things. (1) A per-packet key mixing function that turns the temporal key (TK), the transmitter address (TA), and a 48-bit TKIP Sequence Counter (TSC) into a fresh ARC4 seed for every frame. (2) A keyed message integrity code called Michael, computed over the MSDU's source and destination addresses, its priority, and the payload — real integrity, unlike CRC. (3) The TSC doubling as a replay counter, encoded as the WEP IV plus a new 4-octet Extended IV.",
+      "zh": "TKIP 是一次应急改造。它的约束极为严苛：必须运行在 WEP 时代、只会做 ARC4 和 CRC 的硅片上，固件里没有空间容纳一个真正的分组密码。于是 TKIP 选择包裹 WEP 而非取而代之，并加入三样东西。(1) 一个逐包密钥混合函数，把临时密钥（TK）、发送方地址（TA）和一个 48 位的 TKIP 序列计数器（TSC）转换为每一帧新鲜的 ARC4 种子。(2) 一个带密钥的消息完整性校验码，名为 Michael，覆盖 MSDU 的源地址、目的地址、优先级和载荷——这才是真正的完整性，不同于 CRC。(3) TSC 同时充当重放计数器，编码为 WEP IV 外加一个新的 4 字节扩展 IV（Extended IV）。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n  TK[Temporal Key TK 128b] --> P1[Phase 1 mixing]\n  TA[Transmitter Addr TA] --> P1\n  TSCu[TSC upper 32b] --> P1\n  P1 -->|TTAK 80b| P2[Phase 2 mixing]\n  TK --> P2\n  TSCl[TSC lower 16b] --> P2\n  P2 -->|WEP seed = per-frame key| ARC4[ARC4 keystream]\n  MSDU[MSDU + Michael MIC] --> ICV[append CRC-32 ICV]\n  ICV --> ARC4\n  ARC4 -->|XOR| CT[encrypted MPDU]",
+      "zh": "graph LR\n  TK[临时密钥 TK 128位] --> P1[Phase 1 混合]\n  TA[发送方地址 TA] --> P1\n  TSCu[TSC 高 32 位] --> P1\n  P1 -->|TTAK 80位| P2[Phase 2 混合]\n  TK --> P2\n  TSCl[TSC 低 16 位] --> P2\n  P2 -->|WEP 种子 = 逐帧密钥| ARC4[ARC4 密钥流]\n  MSDU[MSDU + Michael MIC] --> ICV[追加 CRC-32 ICV]\n  ICV --> ARC4\n  ARC4 -->|XOR| CT[加密后的 MPDU]"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 520 120' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='8' y='40' width='70' height='34'/><text x='43' y='61' font-size='11' text-anchor='middle' stroke='none' fill='currentColor'>WEP IV</text><text x='43' y='90' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>3 oct</text><rect x='78' y='40' width='40' height='34'/><text x='98' y='58' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>Key</text><text x='98' y='69' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>ID</text><rect x='118' y='40' width='90' height='34'/><text x='163' y='58' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>Extended IV</text><text x='163' y='90' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>4 oct (ExtIV=1)</text><rect x='208' y='40' width='150' height='34' stroke-dasharray='4 3'/><text x='283' y='61' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>encrypted Data</text><rect x='358' y='40' width='100' height='34' stroke-dasharray='4 3'/><text x='408' y='58' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>Michael MIC</text><text x='408' y='90' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>8 oct (encrypted)</text><rect x='458' y='40' width='54' height='34' stroke-dasharray='4 3'/><text x='485' y='61' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>ICV</text><text x='283' y='22' font-size='11' text-anchor='middle' stroke='none' fill='currentColor'>Expanded TKIP MPDU layout</text></svg>",
+      "caption": {
+        "en": "The expanded TKIP MPDU: TKIP reuses the WEP IV but adds a 4-octet Extended IV (ExtIV bit set) to carry the upper bits of the 48-bit TSC. The 8-octet Michael MIC rides at the end of the MSDU data and is itself encrypted, alongside the legacy CRC-32 ICV.",
+        "zh": "扩展后的 TKIP MPDU：TKIP 复用 WEP IV，但增加了一个 4 字节的扩展 IV（置 ExtIV 位）以承载 48 位 TSC 的高位部分。8 字节的 Michael MIC 位于 MSDU 数据末尾且本身也被加密，同时仍保留传统的 CRC-32 ICV。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Michael adds genuine integrity, but the standard is candid that it \"offers only weak defenses against message forgeries\" — it was the best achievable on legacy hardware, so its security margin is low. TKIP compensates with countermeasures that effectively admit Michael can't withstand a sustained attack: a single MIC failure is logged as a probable active attack, and if a second MIC failure occurs within 60 seconds, the device must shut down all TKIP traffic for 60 seconds (an AP also refuses new TKIP associations during that window). That deliberate slowdown caps an attacker's forgery attempts at roughly two per minute. Replay protection is separate: the strictly increasing 48-bit TSC lets a receiver discard any out-of-order MPDU, and the replay counter is only advanced after the Michael check passes — so an attacker can't poison the counter with a frame that has a valid ICV/TSC but a bad MIC.",
+      "zh": "Michael 带来了真正的完整性，但标准坦言它“对消息伪造仅提供薄弱的防御”——这是在旧硬件上所能做到的极限，因而安全裕度很低。TKIP 通过一套对策来弥补，而这套对策实际上等于承认 Michael 无法抵御持续攻击：单次 MIC 失败即被记录为一次可能的主动攻击；若在 60 秒内发生第二次 MIC 失败，设备必须将所有 TKIP 流量关停 60 秒（AP 在此期间还会拒绝新的 TKIP 关联）。这种有意为之的减速，把攻击者的伪造尝试限制在大约每分钟两次。重放保护则是独立的：严格递增的 48 位 TSC 使接收方可丢弃任何乱序的 MPDU，且重放计数器只有在 Michael 校验通过之后才推进——这样攻击者就无法用一个 ICV/TSC 有效但 MIC 错误的帧来污染该计数器。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The two-phase mixing function and why the MIC check gates the replay counter",
+        "zh": "两阶段混合函数，以及为何 MIC 校验要先于重放计数器"
+      },
+      "en": "The mixing function (12.3.4.5) runs in two phases. Phase 1 mixes the 128-bit TK, the 6-octet TA, and the upper 32 bits of the TSC through an S-box loop (PHASE1_LOOP_COUNT = 8) into an 80-bit intermediate key, TTAK := Phase1(TK, TA, TSC); a STA may cache this for the 65 536 frames that share the same upper TSC. Phase 2 then mixes TTAK with the TK and the lower 16 bits of the TSC into the 128-bit per-frame WEP seed, whose first 24 bits become the transmitted WEP IV. Crucially, Phase 2 STEP3 sets WEPSeed1 = (TSC1 | 0x20) & 0x7F — a construction chosen specifically \"to preclude the use of known ARC4 weak keys,\" directly addressing WEP's weak-key flaw. For replay (12.3.4.6), the TSC is a 48-bit strictly increasing counter initialized to 1 on (re)key, with a separate replay counter per PTKSA/GTKSA and per priority; rule (f) requires the receiver to delay advancing the counter until the MSDU passes its MIC check, because if an attacker alters the TSC the seed changes and both ICV and MIC decrypt wrong — so the frame is dropped before it can disturb replay state.",
+      "zh": "混合函数（12.3.4.5）分两阶段运行。Phase 1 把 128 位的 TK、6 字节的 TA 以及 TSC 的高 32 位，经一个 S-box 循环（PHASE1_LOOP_COUNT = 8）混合为 80 位的中间密钥：TTAK := Phase1(TK, TA, TSC)；站点可将其缓存，供共享同一高位 TSC 的 65 536 帧复用。Phase 2 再把 TTAK 与 TK、TSC 的低 16 位混合为 128 位的逐帧 WEP 种子，其前 24 位即为发送的 WEP IV。关键在于，Phase 2 的 STEP3 设定 WEPSeed1 = (TSC1 | 0x20) & 0x7F——这一构造正是为“排除已知的 ARC4 弱密钥”而选取，直接针对 WEP 的弱密钥缺陷。在重放方面（12.3.4.6），TSC 是一个 48 位、在（重新）设密钥时初始化为 1 的严格递增计数器，每个 PTKSA/GTKSA、每个优先级各维护一个独立的重放计数器；规则 (f) 要求接收方推迟推进计数器，直到该 MSDU 通过 MIC 校验——因为若攻击者改动 TSC，种子随之改变，ICV 与 MIC 都会解密错误，于是该帧在能扰动重放状态之前就被丢弃。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2956,
+          2960,
+          2961
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:12.3.2.1",
+    "80211-2024:12.3.2.2",
+    "80211-2024:12.3.4.2",
+    "80211-2024:12.3.4.3",
+    "80211-2024:12.3.4.4",
+    "80211-2024:12.3.4.5",
+    "80211-2024:12.3.4.6"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2945
+      ],
+      "note": "12.3.2.1-12.3.2.2 WEP overview (obsolete, kept only to define TKIP), WEP ICV = CRC-32, ARC4, seed = IV concatenated with key"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2950
+      ],
+      "note": "12.3.4.2 TKIP MPDU formats: 4-octet Extended IV, ExtIV bit, 48-bit TSC encoding (TSC0/TSC1 in IV, TSC2-5 in Extended IV)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2951,
+        2952
+      ],
+      "note": "12.3.4.3 TKIP MIC (michael): computed over MSDU DA/SA/Priority/Data; 'offers only weak defenses against message forgeries'; bit-flip/forgery attacks it counters"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2953,
+        2954
+      ],
+      "note": "12.3.4.4 TKIP countermeasures: log MIC failures; two failures within 60 s -> disable TKIP for 60 s; AP refuses new TKIP associations"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2956,
+        2960
+      ],
+      "note": "12.3.4.5 TKIP mixing function Phase 1 (TTAK from TK/TA/upper TSC) and Phase 2 (per-frame WEP seed); WEPSeed1 construction precludes ARC4 weak keys"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2961
+      ],
+      "note": "12.3.4.6 TKIP replay protection: 48-bit strictly increasing TSC, per-PTKSA/GTKSA/priority replay counters, advance only after MIC check passes"
+    }
+  ],
+  "track": "security"
+}

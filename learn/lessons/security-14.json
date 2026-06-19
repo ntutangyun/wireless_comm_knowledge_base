@@ -1,0 +1,115 @@
+{
+  "id": "security-14",
+  "title": {
+    "en": "GCMP and AES-GCM: Why High-Throughput Wi-Fi Switched Ciphers",
+    "zh": "GCMP 与 AES-GCM：高吞吐 Wi-Fi 为何更换密码算法"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "CCMP — the AES-CCM cipher that protected Wi-Fi for years — is cryptographically solid. So why does Wi-Fi 6 and the 6 GHz era reach for a different cipher, GCMP? The answer is not security; it is speed. CCMP builds its message integrity check with CBC-MAC, and CBC-MAC is inherently serial: you cannot start computing the authentication tag for block N until block N-1 is finished, because each step feeds the next. At a few hundred megabits that chain is invisible. At multi-gigabit 802.11ac/ax/be rates it becomes a bottleneck the silicon cannot pipeline its way out of.",
+      "zh": "CCMP——多年来守护 Wi-Fi 的 AES-CCM 密码算法——在密码学上是稳固的。那么为什么 Wi-Fi 6 以及 6 GHz 时代要改用另一种算法 GCMP 呢？答案不是安全性，而是速度。CCMP 用 CBC-MAC 来生成消息完整性校验（MIC），而 CBC-MAC 本质上是串行的：在第 N-1 块算完之前，你无法开始计算第 N 块的认证标签，因为每一步都要喂给下一步。在几百兆比特的速率下，这条链是看不见的；但在多吉比特的 802.11ac/ax/be 速率下，它就成了硅片无法靠流水线绕过的瓶颈。"
+    },
+    {
+      "type": "prose",
+      "en": "GCMP keeps the exact same security model as CCMP but swaps the authenticator. It is built on AES-GCM (Galois/Counter Mode). GCM does the encryption with CTR mode — the same counter-driven, parallel-friendly idea CCMP already used for confidentiality — and does the authentication with GHASH, a multiply-and-add over a finite field (GF(2^128)). Galois-field multiplication is associative and pipelines beautifully: a hardware engine can fold many blocks through it at once instead of waiting in a serial chain. That single change is what lets the authenticator keep pace with the data path at line rate.",
+      "zh": "GCMP 完全沿用了 CCMP 的安全模型，只替换了认证器。它构建在 AES-GCM（伽罗瓦/计数器模式）之上。GCM 用 CTR 模式做加密——这正是 CCMP 早已用于机密性的、由计数器驱动、对并行友好的思路——再用 GHASH 做认证：GHASH 是在有限域 GF(2^128) 上的“乘加”运算。伽罗瓦域乘法满足结合律，非常适合流水线：硬件引擎可以一次把许多数据块同时折叠进去，而不必在串行链上排队等待。正是这一处改动，让认证器能在线速下跟上数据通路的节奏。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The intuition in one line: GCMP did not make Wi-Fi more secure — it made the same security cheap to compute at 802.11ac/ax/be speeds. That is precisely why GCMP-256 is the cipher of the high-rate, 6 GHz generation.",
+      "zh": "一句话直觉：GCMP 并没有让 Wi-Fi 更安全——它让“同样的安全性”在 802.11ac/ax/be 速率下变得廉价可算。这正是 GCMP-256 成为高速率、6 GHz 世代专属密码算法的原因。"
+    },
+    {
+      "type": "prose",
+      "en": "Framing stays familiar. A GCMP MPDU expands the original by 24 octets: an 8-octet GCMP Header — the same PN-plus-Key-ID layout CCMP uses — and a 16-octet MIC at the tail. The header carries a 48-bit Packet Number (PN5 most significant, PN0 least), the ExtIV bit always set, and the Key ID. The data field is encrypted; the MAC header is not. If you already know the CCMP header, you already know the GCMP header.",
+      "zh": "帧格式仍然熟悉。GCMP MPDU 在原始帧基础上扩展 24 个八位组：一个 8 八位组的 GCMP 头部——与 CCMP 完全相同的“PN 加 Key ID”布局——以及帧尾 16 八位组的 MIC。头部携带一个 48 位的分组号 PN（PN5 最高、PN0 最低）、始终置 1 的 ExtIV 位，以及 Key ID。数据字段被加密，而 MAC 头部不加密。如果你已经懂 CCMP 头部，那你也就已经懂 GCMP 头部了。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 720 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='10' y='40' width='110' height='40'/><text x='65' y='64' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>MAC Header</text><rect x='120' y='40' width='130' height='40'/><text x='185' y='58' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>GCMP Header</text><text x='185' y='73' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>8 octets</text><rect x='250' y='40' width='240' height='40' stroke-dasharray='5 3'/><text x='370' y='58' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>Data (encrypted)</text><text x='370' y='73' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>&#8805; 1 octet</text><rect x='490' y='40' width='130' height='40' stroke-dasharray='5 3'/><text x='555' y='58' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>MIC</text><text x='555' y='73' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>16 octets</text><rect x='620' y='40' width='80' height='40'/><text x='660' y='64' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>FCS</text><line x1='120' y1='90' x2='120' y2='110'/><line x1='250' y1='90' x2='250' y2='110'/><text x='185' y='128' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>PN0..PN5 + Rsvd + Key ID octet</text><text x='300' y='30' fill='currentColor' stroke='none' font-size='10' text-anchor='start'>+24 octets vs. plaintext (8 header + 16 MIC)</text></svg>",
+      "caption": {
+        "en": "Expanded GCMP MPDU: an 8-octet GCMP header (carrying the 48-bit PN and Key ID) and a 16-octet MIC bracket the encrypted data field — the MAC header stays in the clear.",
+        "zh": "扩展后的 GCMP MPDU：8 八位组的 GCMP 头部（携带 48 位 PN 与 Key ID）和 16 八位组的 MIC 夹住被加密的数据字段——MAC 头部保持明文。"
+      }
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    A[Plaintext MPDU] --> B[Increment PN]\n    B --> C[Construct nonce<br/>A2 + PN]\n    A --> D[Construct AAD<br/>from MAC header]\n    B --> E[Construct GCMP header<br/>PN + Key ID]\n    C --> F[GCM encryption<br/>CTR + GHASH]\n    D --> F\n    TK[Temporal Key] --> F\n    F --> G[Cipher text C + MIC T]\n    E --> H[Encrypted MPDU]\n    G --> H",
+      "zh": "graph LR\n    A[明文 MPDU] --> B[递增 PN]\n    B --> C[构造 nonce<br/>A2 + PN]\n    A --> D[构造 AAD<br/>取自 MAC 头部]\n    B --> E[构造 GCMP 头部<br/>PN + Key ID]\n    C --> F[GCM 加密<br/>CTR + GHASH]\n    D --> F\n    TK[临时密钥] --> F\n    F --> G[密文 C + MIC T]\n    E --> H[加密后的 MPDU]\n    G --> H"
+    },
+    {
+      "type": "prose",
+      "en": "Encapsulation walks a tidy pipeline. Increment the PN so it never repeats for this temporal key. Build the AAD from the MAC header (fields that may change on retransmission are masked out). Build the 96-bit GCM nonce as A2 (6 octets) concatenated with the PN (6 octets). Then GCM originator processing takes the temporal key, nonce, AAD and plaintext and emits cipher text C plus a 16-octet tag T, which becomes the MIC. Note one difference from CCM: in GCM the MIC is not itself encrypted. Decapsulation runs the same machine in reverse — parse out AAD and nonce, extract the MIC, run GCM recipient processing, and release the plaintext only if the MIC check passes.",
+      "zh": "封装走的是一条整洁的流水线。先递增 PN，确保它在当前临时密钥下永不重复。从 MAC 头部构造 AAD（在重传时可能变化的字段会被屏蔽掉）。把 96 位的 GCM nonce 构造为 A2（6 八位组）拼接 PN（6 八位组）。随后 GCM 发起方处理以临时密钥、nonce、AAD 和明文为输入，输出密文 C 加上 16 八位组的标签 T，T 即为 MIC。请注意与 CCM 的一处差异：在 GCM 中 MIC 本身并不加密。解封装则反向运行同一台“机器”——解析出 AAD 与 nonce、提取 MIC、执行 GCM 接收方处理，只有在 MIC 校验通过时才放行明文。"
+    },
+    {
+      "type": "prose",
+      "en": "Replay protection is identical in spirit to CCMP. The transmitter keeps one 48-bit PN per security association, a strictly increasing integer reset to 0 only when the temporal key is (re)keyed. The receiver keeps a replay counter per association and accepts an MPDU only if its PN is greater than the stored counter; on acceptance it advances the counter to that PN. Same discipline, same rule.",
+      "zh": "重放保护在精神上与 CCMP 完全一致。发送方为每个安全关联维护一个 48 位的 PN，它是一个严格递增的整数，只有在临时密钥（重新）派生时才复位为 0。接收方为每个关联维护一个重放计数器，仅当 MPDU 的 PN 大于已存计数器值时才接受；一旦接受，就把计数器推进到该 PN。规矩相同，规则相同。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Here is the sharp edge. GCM is catastrophic if a nonce ever repeats under the same key — a single reuse can leak the authentication subkey and let an attacker forge frames, voiding all security guarantees. Because the nonce is A2 + PN, the strictly-increasing PN discipline is not just about replay here; it is what keeps the cipher safe at all. The standard says it plainly: reuse of a nonce value with the same temporal key voids all security guarantees.",
+      "zh": "这里有一个锋利的边缘。在 GCM 中，如果某个 nonce 在同一密钥下重复出现，后果是灾难性的——仅仅一次重用就可能泄露认证子密钥，使攻击者得以伪造帧，从而让所有安全保证归零。由于 nonce 是 A2 + PN，这里严格递增的 PN 纪律就不只是为了防重放——它是这套算法得以安全的根本。标准说得很直白：在同一临时密钥下重用 nonce 值会使所有安全保证作废。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What the standard pins down: GCMP-128/256, the AAD/nonce inputs, and GCM originator/recipient processing",
+        "zh": "标准的确切规定：GCMP-128/256、AAD/nonce 输入，以及 GCM 发起方/接收方处理"
+      },
+      "en": "Clause 12.5.4.1 defines GCMP over AES-GCM (FIPS 197 for AES, NIST SP 800-38D for GCM) with a 128-bit key (GCMP-128) or 256-bit key (GCMP-256); a DMG STA shall support GCMP-128. It states that GCM requires a fresh temporal key per session and a unique nonce per frame, and that nonce reuse under one key voids all guarantees. 12.5.4.2 fixes the MPDU expansion at 24 octets (8-octet header + 16-octet MIC), the 48-bit PN encoding (PN5 MSB), and the always-1 ExtIV bit. The encapsulation steps (12.5.4.3.1) and PN processing (12.5.4.3.2) require a strictly increasing 48-bit PN per PTKSA/GTKSA, initialized to 0 at (re)keying. The nonce (12.5.4.3.4) is A2 concatenated with the PN; AAD reuses 12.5.2.3.3. GCM originator processing (12.5.4.3.6) takes K, IV, P, A and yields cipher text C and tag T = MIC, and notes the MIC is not encrypted (unlike CCM). Decapsulation (12.5.4.4) parses AAD/nonce, extracts the MIC, runs GCM recipient processing (K, IV, C, A, T → plaintext P or FAIL), and returns plaintext only on a successful MIC check; replay detection (12.5.4.4.4) accepts an MPDU only if its PN exceeds the per-SA replay counter.",
+      "zh": "12.5.4.1 节将 GCMP 定义为基于 AES-GCM（AES 见 FIPS 197，GCM 见 NIST SP 800-38D），密钥为 128 位（GCMP-128）或 256 位（GCMP-256）；DMG STA 应支持 GCMP-128。该节规定 GCM 要求每会话使用全新临时密钥、每帧使用唯一 nonce，并指出在同一密钥下重用 nonce 会使所有保证作废。12.5.4.2 节确定 MPDU 扩展为 24 八位组（8 八位组头部 + 16 八位组 MIC）、48 位 PN 编码（PN5 为最高位）以及始终置 1 的 ExtIV 位。封装步骤（12.5.4.3.1）与 PN 处理（12.5.4.3.2）要求每个 PTKSA/GTKSA 使用严格递增的 48 位 PN，在（重新）派生密钥时初始化为 0。nonce（12.5.4.3.4）为 A2 拼接 PN；AAD 复用 12.5.2.3.3。GCM 发起方处理（12.5.4.3.6）以 K、IV、P、A 为输入，产出密文 C 与标签 T（即 MIC），并指出 MIC 不被加密（与 CCM 不同）。解封装（12.5.4.4）解析 AAD/nonce、提取 MIC、执行 GCM 接收方处理（K、IV、C、A、T → 明文 P 或 FAIL），仅在 MIC 校验成功时返回明文；重放检测（12.5.4.4.4）仅当 MPDU 的 PN 超过该安全关联的重放计数器时才接受。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3004,
+          3005,
+          3006,
+          3007,
+          3008,
+          3009
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:12.5.4.1",
+    "80211-2024:12.5.4.2",
+    "80211-2024:12.5.4.3",
+    "80211-2024:12.5.4.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3004,
+        3005
+      ],
+      "note": "12.5.4.1 GCMP overview + 12.5.4.2 GCMP MPDU format — AES-GCM basis, GCMP-128/256, fresh key + unique nonce, 24-octet expansion, 8-octet header, 16-octet MIC, 48-bit PN"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3006,
+        3007,
+        3008
+      ],
+      "note": "12.5.4.3 GCMP cryptographic encapsulation — PN increment, AAD, A2+PN nonce, GCMP header, GCM originator processing (MIC not encrypted), strictly increasing per-SA PN"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3008,
+        3009
+      ],
+      "note": "12.5.4.4 GCMP decapsulation — parse AAD/nonce, extract MIC, GCM recipient processing, plaintext only on MIC pass, PN-based replay detection"
+    }
+  ],
+  "track": "security"
+}

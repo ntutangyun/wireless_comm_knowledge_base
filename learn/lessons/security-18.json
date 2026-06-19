@@ -1,0 +1,113 @@
+{
+  "id": "security-18",
+  "title": {
+    "en": "The Handshake as a State Machine: Supplicant and Authenticator",
+    "zh": "作为状态机的握手：申请者与认证者"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "You have probably seen the 4-way handshake drawn as four arrows: M1, M2, M3, M4. But four messages are only half the picture. Each side of the link runs a formal state machine — a controller that decides when to send, when to wait, when to compute a key, when to install it, and when to tear the whole thing down. The cryptography defines what a valid message is; the state machine defines what happens next. That is what makes the handshake survive lost, delayed, replayed, or forged frames. This lesson reads both controllers: the RSNA Supplicant (the client) and the RSNA Authenticator (the AP).",
+      "zh": "你大概见过用四条箭头画出来的四次握手：M1、M2、M3、M4。但这四条消息只是故事的一半。链路两端各自运行着一台形式化的状态机——一个“控制器”，由它决定何时发送、何时等待、何时计算密钥、何时安装密钥，以及何时把整条链路拆除。密码学定义了“什么样的消息算合法”，状态机则定义了“接下来会发生什么”。正是状态机让握手能够在帧丢失、延迟、重放或伪造的情况下依然存活。本课要读的就是这两个控制器：RSNA 申请者（客户端）与 RSNA 认证者（AP）。"
+    },
+    {
+      "type": "prose",
+      "en": "The Supplicant lives on the non-AP STA. Its machine has just four states. INITIALIZE clears the key variables. AUTHENTICATION is entered when the STA's management entity asks for an SSID to be authenticated. STAKEYSTART is entered every time an EAPOL-Key PDU arrives — this is where all the real work happens, inside a procedure called StaProcessEAPOL-Key. DISCONNECTED is entered when 802.1X authentication fails, after which it loops back to INITIALIZE. Notably, the Supplicant machine itself has no timers or retries — recovery from a stalled handshake is delegated to the underlying 802.1X machine. The Supplicant is reactive: it answers what it is sent.",
+      "zh": "申请者位于非 AP 站点（STA）上。它的状态机只有四个状态。INITIALIZE 负责清空各密钥变量；当 STA 的管理实体要求对某个 SSID 进行认证时，进入 AUTHENTICATION；每当收到一个 EAPOL-Key PDU，就进入 STAKEYSTART——所有真正的处理都在这里、在一个名为 StaProcessEAPOL-Key 的过程中完成；当 802.1X 认证失败时进入 DISCONNECTED，随后再绕回 INITIALIZE。值得注意的是，申请者状态机本身没有定时器，也不重传——从卡住的握手中恢复这件事被委托给了底层的 802.1X 状态机。申请者是被动反应式的：你发什么，它答什么。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two variables make the Supplicant robust. SNonce is its own random nonce. TPTK is a 'tentative' PTK: when M1 or M3 arrives, the Supplicant computes the PTK into TPTK first and only promotes it to the real PTK once the MIC verifies. This is deliberate — it stops an attacker who forges message 1 from overwriting the live key. The note in the standard says so explicitly.",
+      "zh": "有两个变量让申请者变得稳健。SNonce 是它自己的随机数。TPTK 则是一个“暂定”的 PTK：当 M1 或 M3 到达时，申请者先把 PTK 算进 TPTK，只有在 MIC 校验通过之后，才把它“扶正”成真正的 PTK。这是有意为之的设计——它能阻止那种伪造第一条消息的攻击者覆盖掉正在使用的密钥。标准中的注释对此有明确说明。"
+    },
+    {
+      "type": "prose",
+      "en": "The Authenticator lives on the AP and is far busier — it runs one machine per associated STA, plus a global group-key machine. Coming out of PSK, SAE, or an 802.1X PMK, it enters PTKSTART and sends M1 with the ANonce. It moves through PTKCALCNEGOTIATING when M2 arrives, verifies M2's MIC in PTKCALCNEGOTIATING2, sends M3 (carrying the wrapped GTK and IGTK) in PTKINITNEGOTIATING, and reaches PTKINITDONE when M4 lands and the PTK is installed. Crucially, unlike the Supplicant, the Authenticator owns the clock: a TimeoutCtr counts unanswered EAPOL-Key sends, a TimeoutEvt fires when no reply comes, and exceeding N retries pushes it back to start the handshake again or to disconnect.",
+      "zh": "认证者位于 AP 上，要忙碌得多——它为每个已关联的 STA 各跑一台状态机，外加一台全局的组密钥状态机。在从 PSK、SAE 或 802.1X 提供的 PMK 出来后，它进入 PTKSTART 并发送携带 ANonce 的 M1。M2 到达时它转入 PTKCALCNEGOTIATING，在 PTKCALCNEGOTIATING2 中校验 M2 的 MIC，在 PTKINITNEGOTIATING 中发送 M3（其中封装了 GTK 和 IGTK），当 M4 落地、PTK 安装完成后到达 PTKINITDONE。关键在于：与申请者不同，认证者掌握着“时钟”——TimeoutCtr 统计未获应答的 EAPOL-Key 发送次数，当迟迟收不到回复时触发 TimeoutEvt，重试次数超过 N 就会把它推回去重新开始握手，或直接断开连接。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant S as Supplicant (STA)\n    participant A as Authenticator (AP)\n    Note over A: PTKSTART (TimeoutCtr=0)\n    A->>S: M1 (ANonce)\n    Note over S: STAKEYSTART: TPTK = CalcPTK(PMK,ANonce,SNonce)\n    S->>A: M2 (SNonce, MIC)\n    Note over A: PTKCALCNEGOTIATING -> verify MIC -> PTKCALCNEGOTIATING2\n    A->>S: M3 (ANonce, wrapped GTK+IGTK, MIC)\n    Note over S: MIC ok -> PTK = TPTK; install PTK, then GTK/IGTK\n    S->>A: M4 (MIC)\n    Note over A: PTKINITDONE: SetKeys, port valid\n    Note over S,A: PTKSA established; data now protected",
+      "zh": "sequenceDiagram\n    participant S as 申请者 (STA)\n    participant A as 认证者 (AP)\n    Note over A: PTKSTART (TimeoutCtr=0)\n    A->>S: M1 (ANonce)\n    Note over S: STAKEYSTART: TPTK = CalcPTK(PMK,ANonce,SNonce)\n    S->>A: M2 (SNonce, MIC)\n    Note over A: PTKCALCNEGOTIATING -> 校验 MIC -> PTKCALCNEGOTIATING2\n    A->>S: M3 (ANonce, 封装的 GTK+IGTK, MIC)\n    Note over S: MIC 通过 -> PTK = TPTK; 先装 PTK, 再装 GTK/IGTK\n    S->>A: M4 (MIC)\n    Note over A: PTKINITDONE: SetKeys, 端口置 valid\n    Note over S,A: PTKSA 建立; 数据自此受保护"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Watch the install order. When the Supplicant processes M3 it decrypts and installs the GTK and IGTK (and BIGTK/WIGTK if present) — but the standard requires the PTK to be installed BEFORE the GTK and IGTK. Get the order wrong and a frame could arrive that you have a group key for but no pairwise protection state, opening a window the design is built to close.",
+      "zh": "请留意安装顺序。申请者处理 M3 时会解密并安装 GTK 与 IGTK（若存在还有 BIGTK/WIGTK）——但标准要求必须先安装 PTK，再安装 GTK 和 IGTK。一旦顺序弄反，就可能出现这样的窗口：你已经有了组密钥，却还没有成对密钥的保护状态，而这正是该设计要堵住的漏洞。"
+    },
+    {
+      "type": "prose",
+      "en": "Both machines share one defensive reflex: the Key Replay Counter. The Authenticator increments it on every EAPOL-Key it transmits; a reply from the Supplicant must echo back the exact same value, and mismatched counters are discarded. Any PDU whose MIC fails is silently dropped (and on the Authenticator side, a MIC failure routes the per-STA machine to DISCONNECT, which deauthenticates the STA). This is the whole point of modelling the handshake as a state machine rather than a script: every state names exactly which events are legal, so out-of-order, replayed, or forged frames simply find no transition to follow.",
+      "zh": "两台状态机共享同一种防御性“本能”：密钥重放计数器（Key Replay Counter）。认证者每发出一个 EAPOL-Key 就把它加一；申请者的回复必须原样回传这个值，计数器不匹配的消息会被丢弃。任何 MIC 校验失败的 PDU 都会被静默丢弃（在认证者一侧，MIC 失败会把该 STA 的状态机导向 DISCONNECT，从而对该 STA 解除认证）。这正是把握手建模成状态机、而不是一段顺序脚本的全部意义：每个状态都精确地规定了哪些事件是合法的，于是乱序、重放或伪造的帧根本找不到可走的迁移路径。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Inside StaProcessEAPOL-Key and the Authenticator's timeout discipline",
+        "zh": "深入 StaProcessEAPOL-Key 与认证者的超时机制"
+      },
+      "en": "The Supplicant's StaProcessEAPOL-Key pseudocode (12.7.9.4) is the heart of the client. It opens with State = UNKNOWN and TPTK = PTK. If the PDU has a MIC and CheckMIC fails, State becomes FAILED; otherwise MICOK. For a Pairwise key (K = P) it derives PMK from the PSK or from ExtractBits(MSK,...), and if ANonce differs from PrevANonce it recomputes TPTK = CalcPTK(PMK, ANonce, TSNonce). Only when State = MICOK does it promote PTK = TPTK and call MLME-SETKEYS to install it, then the GTK/IGTK. It then emits M2 (K=P, M=0, A=1), M4 (K=P, M=1, A=1), or the group-handshake reply G2 (K=G, A=1) depending on the flags. On the Authenticator side (12.7.10.2–12.7.10.4), the per-STA states AUTHENTICATION, AUTHENTICATION2, INITPMK/INITPSK/INITSAE, PTKSTART, PTKCALCNEGOTIATING(2), PTKINITNEGOTIATING, PTKINITDONE, DISCONNECT, DISCONNECTED, INITIALIZE drive the 4-way handshake; IDLE, REKEYNEGOTIATING, REKEYESTABLISHED, KEYERROR handle the per-STA group-key handshake; and GTK_INIT, SETKEYS, SETKEYSDONE coordinate the global GTK update across all STAs. TimeoutCtr/TimeoutEvt (with GTimeoutCtr for the group machine) and the per-transmission increment of the Key Replay Counter give the Authenticator the retransmission and replay-protection discipline the Supplicant deliberately lacks.",
+      "zh": "申请者的 StaProcessEAPOL-Key 伪代码（12.7.9.4）是客户端的核心。它以 State = UNKNOWN、TPTK = PTK 开始。如果该 PDU 带有 MIC 且 CheckMIC 失败，State 置为 FAILED，否则置为 MICOK。对于成对密钥（K = P），它从 PSK 或 ExtractBits(MSK,...) 导出 PMK；若 ANonce 与 PrevANonce 不同，则重新计算 TPTK = CalcPTK(PMK, ANonce, TSNonce)。只有当 State = MICOK 时，它才把 PTK = TPTK 扶正并调用 MLME-SETKEYS 安装，随后再安装 GTK/IGTK。接着，它根据各标志位发出 M2（K=P, M=0, A=1）、M4（K=P, M=1, A=1），或组握手回复 G2（K=G, A=1）。在认证者一侧（12.7.10.2–12.7.10.4），每 STA 状态 AUTHENTICATION、AUTHENTICATION2、INITPMK/INITPSK/INITSAE、PTKSTART、PTKCALCNEGOTIATING(2)、PTKINITNEGOTIATING、PTKINITDONE、DISCONNECT、DISCONNECTED、INITIALIZE 驱动四次握手；IDLE、REKEYNEGOTIATING、REKEYESTABLISHED、KEYERROR 处理每 STA 的组密钥握手；GTK_INIT、SETKEYS、SETKEYSDONE 则协调面向所有 STA 的全局 GTK 更新。TimeoutCtr/TimeoutEvt（组状态机用 GTimeoutCtr）以及每次发送时对密钥重放计数器的递增，赋予了认证者重传与防重放的纪律——而这恰是申请者刻意不具备的。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3088,
+          3089,
+          3090,
+          3094,
+          3095,
+          3096
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:12.7.9.2",
+    "80211-2024:12.7.9.3",
+    "80211-2024:12.7.9.4",
+    "80211-2024:12.7.10.2",
+    "80211-2024:12.7.10.3",
+    "80211-2024:12.7.10.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3087,
+        3088
+      ],
+      "note": "12.7.9.2-12.7.9.3 RSNA Supplicant state machine states (INITIALIZE/AUTHENTICATION/STAKEYSTART/DISCONNECTED) and variables (SNonce, PTK, TPTK, GTK[], IGTK[], MICVerified)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3088,
+        3089,
+        3090
+      ],
+      "note": "12.7.9.4 Supplicant procedures: StaProcessEAPOL-Key pseudocode; PTK installed before GTK/IGTK; TPTK promoted to PTK only on MICOK"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3094,
+        3095
+      ],
+      "note": "12.7.10.2 Authenticator state machine states: per-STA 4-way (PTKSTART..PTKINITDONE), per-STA group key, and global GTK states"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3095,
+        3096,
+        3097
+      ],
+      "note": "12.7.10.3-12.7.10.4 Authenticator variables (TimeoutCtr, TimeoutEvt, Key Replay Counter, ANonce) and procedures (STADisconnect, CalcGTK, MIC)"
+    }
+  ],
+  "track": "security"
+}

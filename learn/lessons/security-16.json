@@ -1,0 +1,120 @@
+{
+  "id": "security-16",
+  "title": {
+    "en": "The Key Hierarchy: From PMK to PTK with PRF/KDF",
+    "zh": "密钥层次结构：用 PRF/KDF 从 PMK 推导出 PTK"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Here is a question worth pausing on: the key that CCMP or GCMP actually uses to encrypt your packets — where does it come from? It is never sent over the air. Not in the handshake, not anywhere. Both sides instead derive it independently from a shared master secret plus some public context, and arrive at the exact same bytes. This lesson is about that derivation engine — the part of clause 12 that turns one master key into a whole family of purpose-specific keys.",
+      "zh": "有一个问题值得停下来想一想：CCMP 或 GCMP 真正用来加密数据包的那把密钥，到底从哪来？它从来不会在空口上传输——握手里没有，任何地方都没有。相反，通信双方各自从一个共享的主密钥再加上一些公开的上下文，独立地推导出完全相同的字节。本课讲的就是这套推导引擎——也就是 clause 12 中把一把主密钥变成一整族专用密钥的那部分。"
+    },
+    {
+      "type": "prose",
+      "en": "The engine is a pseudorandom function (PRF). Feed it a key K, a label A (an ASCII string naming the purpose, e.g. \"Pairwise key expansion\"), and a context B (a bit string), and it stretches them into as many output bits as you ask for — 128, 256, 384, 512, 704, whatever the keys need. Internally it just chains a keyed hash (HMAC) over (K, A, B, counter), concatenating block after block until it has enough bits, then truncates. Modern cipher suites use a near-identical construction called the KDF, built on HMAC-SHA-256 or HMAC-SHA-384 instead of the legacy SHA-1.",
+      "zh": "这套引擎就是一个伪随机函数（PRF）。给它一把密钥 K、一个标签 A（一个标明用途的 ASCII 字符串，比如 \"Pairwise key expansion\"）以及一段上下文 B（一个比特串），它就能把这些拉伸成你所需要的任意多比特输出——128、256、384、512、704，看密钥需要多少就给多少。其内部不过是对 (K, A, B, 计数器) 反复调用带密钥的哈希（HMAC），一块接一块地拼接，直到比特数足够，再截断到所需长度。现代加密套件使用一种几乎相同的构造，称为 KDF，它建立在 HMAC-SHA-256 或 HMAC-SHA-384 之上，而非早期的 SHA-1。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The label A and context B are what make derivation safe to reuse. Same master key, different label -> guaranteed-different output keys (key separation). And because the context folds in both MAC addresses and both nonces, the resulting keys are cryptographically bound to this exact STA pair and this exact session — replaying old material on a new session derives the wrong keys and simply fails.",
+      "zh": "标签 A 与上下文 B 正是让“推导”可以安全复用的关键。同一把主密钥、不同的标签 → 必然得到不同的输出密钥（密钥分离）。而由于上下文里揉进了双方的 MAC 地址和双方的 nonce，推导出的密钥就在密码学意义上被绑定到这一对特定的 STA 和这一次特定的会话——把旧的材料拿到新会话里重放，只会推导出错误的密钥，从而直接失败。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the pairwise hierarchy itself. With IEEE 802.1X authentication the master session key (MSK) comes down from the authentication server, and the PMK is just its leading bits: PMK = ExtractBits(MSK, 0, PMK_bits). With SAE or PSK the PMK is established differently, but from there everything is the same. The 4-way handshake supplies the two fresh nonces (the AP's ANonce and the station's SNonce), and the PTK is derived in one shot: PTK = PRF-Length(PMK, \"Pairwise key expansion\", Min(AA,SPA) || Max(AA,SPA) || Min(ANonce,SNonce) || Max(ANonce,SNonce)). The Min/Max ordering means both ends compute the identical input without having to agree who is \"first\".",
+      "zh": "现在来看成对密钥层次本身。在采用 IEEE 802.1X 认证时，主会话密钥（MSK）由认证服务器下发，而 PMK 不过是它的前若干比特：PMK = ExtractBits(MSK, 0, PMK_bits)。在 SAE 或 PSK 中，PMK 的建立方式不同，但从这里往后一切都一样。4 次握手提供了两个新鲜的 nonce（AP 的 ANonce 与站点的 SNonce），随后 PTK 一步推导而成：PTK = PRF-Length(PMK, \"Pairwise key expansion\", Min(AA,SPA) || Max(AA,SPA) || Min(ANonce,SNonce) || Max(ANonce,SNonce))。这里的 Min/Max 排序意味着双方无需事先约定谁“在前”，就能算出完全一致的输入。"
+    },
+    {
+      "type": "prose",
+      "en": "That single PTK is then sliced — not hashed again, just sliced — into purpose-specific pieces. The first KCK_bits become the PTK-KCK (the Key Confirmation Key, which signs the handshake messages themselves so they cannot be forged). The next KEK_bits become the PTK-KEK (the Key Encryption Key, which encrypts the GTK and other key material carried inside the handshake). The next TK_bits become the temporal key (TK) — and this is the one CCMP/GCMP hand to the MAC to actually protect your data frames. So the key that secures every packet is literally a window of bytes cut out of the PTK.",
+      "zh": "随后，这一把 PTK 被切分——不是再次哈希，仅仅是切分——成若干各有用途的片段。最前面的 KCK_bits 比特成为 PTK-KCK（密钥确认密钥，用来对握手消息本身签名，使其无法被伪造）。接下来的 KEK_bits 比特成为 PTK-KEK（密钥加密密钥，用来加密握手中携带的 GTK 等密钥材料）。再接下来的 TK_bits 比特成为临时密钥（TK）——而这正是 CCMP/GCMP 交给 MAC 用来真正保护你数据帧的那把密钥。所以，守护每一个数据包的密钥，实质上就是从 PTK 里切出来的一段字节窗口。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 250' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='150' y='14' width='160' height='30' rx='4'/><text x='230' y='33' text-anchor='middle' fill='currentColor' stroke='none' font-size='12'>PMK (master secret)</text><line x1='230' y1='44' x2='230' y2='70'/><text x='244' y='62' fill='currentColor' stroke='none' font-size='9'>PRF/KDF( PMK, \"Pairwise key expansion\",</text><text x='244' y='73' fill='currentColor' stroke='none' font-size='9'>MACs || nonces )</text><rect x='150' y='80' width='160' height='30' rx='4'/><text x='230' y='99' text-anchor='middle' fill='currentColor' stroke='none' font-size='12'>PTK (Length bits)</text><line x1='110' y1='110' x2='70' y2='150'/><line x1='200' y1='110' x2='195' y2='150'/><line x1='290' y1='110' x2='320' y2='150'/><rect x='14' y='150' width='112' height='42' rx='4'/><text x='70' y='168' text-anchor='middle' fill='currentColor' stroke='none' font-size='11'>PTK-KCK</text><text x='70' y='184' text-anchor='middle' fill='currentColor' stroke='none' font-size='8'>signs handshake</text><rect x='140' y='150' width='112' height='42' rx='4'/><text x='196' y='168' text-anchor='middle' fill='currentColor' stroke='none' font-size='11'>PTK-KEK</text><text x='196' y='184' text-anchor='middle' fill='currentColor' stroke='none' font-size='8'>wraps key material</text><rect x='266' y='150' width='112' height='42' rx='4'/><text x='322' y='168' text-anchor='middle' fill='currentColor' stroke='none' font-size='11'>TK</text><text x='322' y='184' text-anchor='middle' fill='currentColor' stroke='none' font-size='8'>CCMP/GCMP data</text><text x='230' y='224' text-anchor='middle' fill='currentColor' stroke='none' font-size='9'>one PTK, sliced by ExtractBits into purpose-specific keys</text></svg>",
+      "caption": {
+        "en": "The pairwise key hierarchy: one PRF/KDF call expands the PMK into the PTK, which is then sliced into KCK, KEK, and TK. None of these keys ever crosses the air.",
+        "zh": "成对密钥层次：一次 PRF/KDF 调用把 PMK 拉伸成 PTK，再将 PTK 切分为 KCK、KEK 和 TK。这些密钥没有一把会经过空口传输。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Fast roaming (FT) reuses the very same machinery, just with more levels: the master key (MPMK) feeds the KDF to produce a first-level PMK-R0, which produces a second-level PMK-R1 per target AP, which produces the PTK. Three KDF steps with different labels (\"FT-R0\", \"FT-R1\", \"FT-PTK\") give clean key separation, so a station can pre-establish keys across a whole mobility domain without re-authenticating at every AP.",
+      "zh": "快速漫游（FT）复用的正是同一套机制，只是多了几层：主密钥（MPMK）喂入 KDF，产生第一级的 PMK-R0；它再为每个目标 AP 产生第二级的 PMK-R1；后者再产生 PTK。三步 KDF 配上不同的标签（\"FT-R0\"、\"FT-R1\"、\"FT-PTK\"）带来干净的密钥分离，于是站点可以在整个移动域内预先建立好密钥，而无需在每个 AP 上重新认证。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact PRF/KDF construction, key lifetimes, and PMKSA caching",
+        "zh": "PRF/KDF 的精确构造、密钥生存期与 PMKSA 缓存"
+      },
+      "en": "12.7.1.2 defines the PRF as PRF(K, A, B, Len) = the first Len bits of the concatenation of H-SHA-1(K, A, B, i) for i = 0, 1, ..., where H-SHA-1(K, A, B, X) = HMAC-SHA-1(K, A || Y || B || X) and Y is a zero octet. Modern AKMs substitute the KDF of 12.7.1.6.2: Output = first Length bits of HMAC-Hash(K, i || Label || Context || Length) chained over i = 1..ceil(Length/Hashlen), with i and Length encoded as 16-bit integers; Hash is SHA-256 or SHA-384 per the negotiated AKM. 12.7.1.3 fixes PTK = PRF-Length(PMK, \"Pairwise key expansion\", Min(AA,SPA) || Max(AA,SPA) || Min(ANonce,SNonce) || Max(ANonce,SNonce)) with Length = KCK_bits + KEK_bits + TK_bits + KDK_bits, and PMK = ExtractBits(MSK, 0, PMK_bits) under 802.1X. The PTK must not be used longer than the PMK lifetime (e.g. RADIUS Session-Timeout, or dot11RSNAConfigPMKLifetime); if unspecified the PMK lifetime is infinite. For FT, 12.7.1.6 derives MPMK -> PMK-R0 (R0-Key-Data = KDF over XXKey with label \"FT-R0\" and context SSID/MDID/R0KH-ID/S0KH-ID) -> PMK-R1 (KDF label \"FT-R1\", context R1KH-ID || S1KH-ID) -> PTK (KDF label \"FT-PTK\", context SNonce || ANonce || BSSID || STA-ADDR); the lifetimes of MPMK, PMK-R0, PMK-R1 and PTK are all bound to the lifetime of the PMK/PSK/MSK they descend from, and each key holder deletes its keys on expiry. The MPMK is the cacheable constituent of a PMKSA, named by a PMKID = Truncate-128(HMAC-Hash(PMK, \"PMK Name\" || AA || SPA)); caching it lets a returning station skip a full authentication, while bounding exposure to the master key's lifetime.",
+      "zh": "12.7.1.2 把 PRF 定义为 PRF(K, A, B, Len) = 取 H-SHA-1(K, A, B, i)（i = 0, 1, ...）拼接结果的前 Len 比特，其中 H-SHA-1(K, A, B, X) = HMAC-SHA-1(K, A || Y || B || X)，Y 为一个零字节。现代 AKM 改用 12.7.1.6.2 的 KDF：Output = 取 HMAC-Hash(K, i || Label || Context || Length) 在 i = 1..ceil(Length/Hashlen) 上拼接结果的前 Length 比特，其中 i 与 Length 编码为 16 位整数，Hash 依协商的 AKM 取 SHA-256 或 SHA-384。12.7.1.3 确定 PTK = PRF-Length(PMK, \"Pairwise key expansion\", Min(AA,SPA) || Max(AA,SPA) || Min(ANonce,SNonce) || Max(ANonce,SNonce))，其中 Length = KCK_bits + KEK_bits + TK_bits + KDK_bits；在 802.1X 下 PMK = ExtractBits(MSK, 0, PMK_bits)。PTK 的使用时长不得超过 PMK 生存期（例如 RADIUS 的 Session-Timeout，或 dot11RSNAConfigPMKLifetime）；若未指定，则 PMK 生存期视为无限。对 FT，12.7.1.6 依次推导 MPMK → PMK-R0（R0-Key-Data = 以 XXKey 为密钥、标签 \"FT-R0\"、上下文为 SSID/MDID/R0KH-ID/S0KH-ID 的 KDF）→ PMK-R1（KDF 标签 \"FT-R1\"、上下文 R1KH-ID || S1KH-ID）→ PTK（KDF 标签 \"FT-PTK\"、上下文 SNonce || ANonce || BSSID || STA-ADDR）；MPMK、PMK-R0、PMK-R1 与 PTK 的生存期都被绑定到它们所源自的 PMK/PSK/MSK 的生存期，到期时各密钥持有者删除各自的密钥。MPMK 是 PMKSA 中可缓存的组成部分，由 PMKID = Truncate-128(HMAC-Hash(PMK, \"PMK Name\" || AA || SPA)) 命名；缓存它可让回访的站点跳过一次完整认证，同时把暴露面限定在主密钥的生存期之内。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3040,
+          3041,
+          3042,
+          3043,
+          3047,
+          3048,
+          3050,
+          3051
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:12.7.1.2",
+    "80211-2024:12.7.1.3",
+    "80211-2024:12.7.1.6",
+    "80211-2024:12.7.1.7"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3040,
+        3041,
+        3042
+      ],
+      "note": "12.7.1.2 PRF — PRF-128..704 over HMAC-SHA-1; KDF substitution on HMAC-SHA-256/384 for modern AKMs"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3042,
+        3043,
+        3044,
+        3045
+      ],
+      "note": "12.7.1.3 Pairwise key hierarchy — PMK from MSK; PTK = PRF-Length over MACs+nonces; split into PTK-KCK/PTK-KEK/TK; PTK lifetime bound to PMK lifetime; PMKID/PMKSA"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3046,
+        3047,
+        3048,
+        3050,
+        3051,
+        3052
+      ],
+      "note": "12.7.1.6 FT key hierarchy — MPMK -> PMK-R0 -> PMK-R1 -> PTK via KDF (12.7.1.6.2); FT labels and lifetimes"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3053
+      ],
+      "note": "12.7.1.7 Beacon protection key hierarchy — BIGTK selected as a random value, configured via MLME-SETKEYS.request"
+    }
+  ],
+  "track": "security"
+}
