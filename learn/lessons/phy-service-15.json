@@ -1,0 +1,86 @@
+{
+  "id": "phy-service-15",
+  "title": {
+    "en": "Link forecasting and service advertisement: the Estimated-Throughput & Update primitives",
+    "zh": "链路预估与服务广告：吞吐量预估与 Update 原语"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Not every MLME-SAP primitive moves a frame. Some are quiet housekeeping knobs the station management entity (SME) reaches for between the headline events of scanning, authenticating and associating. This lesson tours two such families that happen to sit side by side in the standard — and that have almost nothing to do with each other. One is a what-if calculator the SME consults locally; the other is an editor for the service hints an AP broadcasts. Pairing them is a good way to see how varied 'service interface' work really is.",
+      "zh": "并非每个 MLME-SAP 原语都会把一帧数据送上空口。有些只是站点管理实体（SME）在扫描、认证、关联这些“主线事件”之间随手调用的、安静的“家务”开关。本课带你浏览标准中恰好相邻、却几乎毫不相关的两个原语家族：一个是 SME 在本地查询的“假设计算器”，另一个是用来编辑 AP 广播的服务提示的“编辑器”。把它们放在一起，正好能看清“服务接口”这类工作的形态有多么多样。"
+    },
+    {
+      "type": "prose",
+      "en": "First, the what-if calculator. The SME issues MLME-ESTIMATED-THROUGHPUT.request, naming a PeerSTAAddress and the average MSDU size it expects to send and receive (per access category: AC_VO, AC_VI, AC_BE, AC_BK). It is asking the MAC a single question: 'If I had a link to that peer, how fast could it go?' The link need not even exist yet — the estimate assumes an association if there isn't one. The MAC answers with MLME-ESTIMATED-THROUGHPUT.confirm, returning estimated outbound and inbound throughput in MSDU bits per second. The SME then uses those numbers to make link, association and forwarding decisions — for example, to compare two candidate bands before committing to one.",
+      "zh": "先看“假设计算器”。SME 发出 MLME-ESTIMATED-THROUGHPUT.request，给出对端地址 PeerSTAAddress，以及它预期收发的平均 MSDU 大小（按接入类别分别给出：AC_VO、AC_VI、AC_BE、AC_BK）。它向 MAC 抛出的其实是一个问题：“如果我和那个对端有一条链路，它能跑多快？”这条链路甚至不必已经存在——若当前没有关联，预估会假设建立一个关联。MAC 用 MLME-ESTIMATED-THROUGHPUT.confirm 回答，返回以“MSDU 比特/秒”为单位的出向与入向预估吞吐量。SME 随后用这些数字来做链路、关联与转发决策——例如在正式选定之前，比较两个候选频段。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The key intuition: ESTIMATED-THROUGHPUT puts NOTHING on the air. It is a purely local prediction computed inside your own MAC. No frame is sent to the peer, the peer never learns it was 'measured', and the medium stays untouched. It is a calculator, not a probe.",
+      "zh": "关键直觉：ESTIMATED-THROUGHPUT 不会向空口发送任何东西。它是在你自己的 MAC 内部完成的、纯本地的预测。不会有任何帧发给对端，对端也永远不会知道自己被“测量”了，介质完全不受影响。它是一个计算器，而不是一次探测。"
+    },
+    {
+      "type": "prose",
+      "en": "Second, the advertisement editor. An AP (or a PCP) constantly broadcasts hints about what services live behind it — carried as a Service Hint element and a Service Hash element inside its Beacon and Probe Response frames (and, for a PCP, inside DMG Beacon, Announce and Probe Response frames). MLME-UPDATE.request lets the SME re-paint those hints without tearing down and restarting the BSS: pass new ServiceHint / ServiceHash (plus optional VendorSpecificInfo) to change them, or pass a null value to ask that the element be removed entirely. The MAC reports back with MLME-UPDATE.confirm, whose ResultCode is SUCCESS, BSS_NOT_STARTED, NOT_SUPPORTED, or UPDATE_FAILED.",
+      "zh": "再看“广告编辑器”。AP（或 PCP）会持续广播关于其背后承载哪些服务的提示——这些提示以 Service Hint 元素和 Service Hash 元素的形式，装载在它的 Beacon 与 Probe Response 帧中（对 PCP 而言，则装载在 DMG Beacon、Announce 与 Probe Response 帧中）。MLME-UPDATE.request 让 SME 在不拆除、不重启 BSS 的前提下重新“涂改”这些提示：传入新的 ServiceHint / ServiceHash（外加可选的 VendorSpecificInfo）即可更新它们，或者传入空值（null）请求把该元素整个移除。MAC 通过 MLME-UPDATE.confirm 回报结果，其 ResultCode 取值为 SUCCESS、BSS_NOT_STARTED、NOT_SUPPORTED 或 UPDATE_FAILED。"
+    },
+    {
+      "type": "diagram",
+      "en": "mindmap\n  root((MLME-SAP housekeeping))\n    Estimated Throughput<br/>local what-if, no air\n      ESTIMATED-THROUGHPUT.request<br/>SME asks: speed to PeerSTAAddress?\n      ESTIMATED-THROUGHPUT.confirm<br/>MAC returns in/out MSDU b/s per AC\n    Update<br/>repaint broadcast service hints\n      UPDATE.request<br/>set/remove Service Hint & Hash\n      UPDATE.confirm<br/>ResultCode of the BSS update",
+      "zh": "mindmap\n  root((MLME-SAP 家务开关))\n    Estimated Throughput<br/>本地假设计算·不上空口\n      ESTIMATED-THROUGHPUT.request<br/>SME 问：到对端能跑多快？\n      ESTIMATED-THROUGHPUT.confirm<br/>MAC 返回各 AC 的收发 MSDU b/s\n    Update<br/>重绘广播的服务提示\n      UPDATE.request<br/>设置/移除 Service Hint 与 Hash\n      UPDATE.confirm<br/>BSS 更新的 ResultCode"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mapping to the medium: ESTIMATED-THROUGHPUT touches nothing — it is a calculation. UPDATE is the one that reaches the air: after a successful request, the very next Beacon and Probe Response the AP emits carry the new (or removed) Service Hint and Service Hash elements. The BSS keeps running the whole time; nothing restarts.",
+      "zh": "落到空口上看：ESTIMATED-THROUGHPUT 什么都不碰——它只是一次计算。真正触达空口的是 UPDATE：在一次成功的请求之后，AP 紧接着发出的 Beacon 与 Probe Response 就会携带更新后的（或被移除的）Service Hint 与 Service Hash 元素。整个过程中 BSS 持续运行，不会重启。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What the standard actually says about each primitive",
+        "zh": "标准对每个原语的确切表述"
+      },
+      "en": "Clause 6.5.23 frames Estimated Throughput as primitives that 'support the transport of an estimate of the achievable throughput for a potential or an existing link between two STAs'. MLME-ESTIMATED-THROUGHPUT.request (6.5.23.2) carries PeerSTAAddress, AverageMSDUSizeOutbound and AverageMSDUSizeInbound (each an ordered set of integers, -1 to 7920, per access category in the order AC_VO, AC_VI, AC_BE, AC_BK; -1 = unspecified, 0 = none expected); on receipt the MLME generates the estimates. MLME-ESTIMATED-THROUGHPUT.confirm (6.5.23.3) returns EstimatedThroughputOutbound and EstimatedThroughputInbound as ordered sets of non-negative reals in MSDU b/s (0 = no estimate available), and the SME 'may use the reported estimates to make link, association, and forwarding decisions'. Clause 6.5.24 (Update) supports 'updating one or more parameters used in the BSS without restarting the BSS'. MLME-UPDATE.request (6.5.24.2) carries ServiceHint, ServiceHash and VendorSpecificInfo; a null ServiceHint/ServiceHash requests removal of that element from Beacon and Probe Response frames, otherwise it sets the advertised services (parameters optionally present only if dot11UnsolicitedPADActivated is true). On receipt the AP/PCP 'shall use these parameters to update or remove the Service Hint element and/or Service Hash element in Beacon and Probe Response frames that the AP transmits or in DMG Beacon, Announce, and Probe Response frames that the PCP STA transmits'. MLME-UPDATE.confirm (6.5.24.3) returns a single ResultCode: SUCCESS, BSS_NOT_STARTED, NOT_SUPPORTED, or UPDATE_FAILED.",
+      "zh": "6.5.23 节把 Estimated Throughput 定义为“支持传递两个 STA 之间某条潜在或既有链路可达吞吐量预估”的一组原语。MLME-ESTIMATED-THROUGHPUT.request（6.5.23.2）携带 PeerSTAAddress、AverageMSDUSizeOutbound 与 AverageMSDUSizeInbound（每个都是一组有序整数，取值 -1 到 7920，按 AC_VO、AC_VI、AC_BE、AC_BK 的顺序逐接入类别给出；-1 表示未指定，0 表示预期无 MSDU）；收到后 MLME 即生成这些预估。MLME-ESTIMATED-THROUGHPUT.confirm（6.5.23.3）返回 EstimatedThroughputOutbound 与 EstimatedThroughputInbound，为一组以 MSDU b/s 为单位的非负实数（0 表示无可用预估），SME“可以使用所报告的预估来做链路、关联与转发决策”。6.5.24 节（Update）支持“在不重启 BSS 的前提下更新 BSS 中使用的一个或多个参数”。MLME-UPDATE.request（6.5.24.2）携带 ServiceHint、ServiceHash 与 VendorSpecificInfo；ServiceHint/ServiceHash 为空（null）表示请求把该元素从 Beacon 与 Probe Response 帧中移除，否则即设置所广告的服务（仅当 dot11UnsolicitedPADActivated 为真时这些参数才可选地存在）。收到后 AP/PCP“应使用这些参数，去更新或移除 AP 所发送的 Beacon 与 Probe Response 帧中的，或 PCP STA 所发送的 DMG Beacon、Announce 与 Probe Response 帧中的 Service Hint 元素和/或 Service Hash 元素”。MLME-UPDATE.confirm（6.5.24.3）返回单一的 ResultCode：SUCCESS、BSS_NOT_STARTED、NOT_SUPPORTED 或 UPDATE_FAILED。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          594,
+          595,
+          596,
+          597
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:6.5.23.2",
+    "80211-2024:6.5.23.3",
+    "80211-2024:6.5.24.2",
+    "80211-2024:6.5.24.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        594,
+        595
+      ],
+      "note": "6.5.23.2-6.5.23.3 MLME-ESTIMATED-THROUGHPUT.request/.confirm — local estimate of achievable throughput for a potential or existing link; per-AC MSDU sizes in, MSDU b/s out"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        596,
+        597
+      ],
+      "note": "6.5.24.2-6.5.24.3 MLME-UPDATE.request/.confirm — update/remove Service Hint & Service Hash elements in Beacon/Probe Response (and PCP DMG Beacon/Announce) without restarting the BSS; ResultCode set"
+    }
+  ],
+  "track": "phy-service"
+}

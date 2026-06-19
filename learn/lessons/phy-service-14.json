@@ -1,0 +1,127 @@
+{
+  "id": "phy-service-14",
+  "title": {
+    "en": "Training the pencil beam: the DMG beamforming primitives (SLS, SU/MU-MIMO, hybrid)",
+    "zh": "训练铅笔波束：DMG 波束成形原语（SLS、SU/MU-MIMO、混合）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "At 60 GHz — the directional multi-gigabit (DMG / mmWave) band — you cannot just shout omnidirectionally and hope a peer hears you. The signal is so easily blocked and so quickly attenuated that a station has to focus its energy into a narrow 'pencil beam' and physically aim it at whoever it wants to talk to. But neither side knows in advance which way to point. So before any data flows, the two STAs run an antenna-training handshake: they sweep through candidate beam directions, measure which ones land best, and lock onto the winning pair. This lesson surveys the SME's control panel for that handshake — clause 6.5.22's DMG beamforming primitives — and how it scales up as you add spatial streams and users.",
+      "zh": "在 60 GHz——也就是定向多吉比特（DMG / 毫米波）频段——你不能像传统 Wi-Fi 那样全向“喊话”、指望对端能听见。该频段信号极易被遮挡、衰减又极快，因此站点必须把能量聚成一束很窄的“铅笔波束”，并在物理上对准它想通信的对端。但通信双方事先都不知道该往哪个方向指。于是在任何数据流动之前，两个站点要先跑一段天线训练握手：扫过若干候选波束方向，测量哪些方向效果最好，然后锁定胜出的那一对。本课带你纵览 SME 控制这套握手的“控制面板”——即 6.5.22 节的 DMG 波束成形原语——以及当流数和用户数增加时它如何逐级扩展。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the family's shape: it is one idea repeated at four scales. Every subfamily is the same .request / .confirm / .indication trio — the SME asks the MLME to train ('.request'), the MLME reports the outcome back to the initiator ('.confirm'), and on the responder side the MLME signals 'a peer trained with me, it's done' ('.indication'). What changes between subfamilies is only how many streams and how many users the training covers.",
+      "zh": "请注意这个原语族的“形状”：它其实是同一个想法在四种规模上的重复。每个子族都是同样的 .request / .confirm / .indication 三件套——SME 请 MLME 发起训练（.request），MLME 把结果回报给发起方（.confirm），而在响应方一侧，MLME 则示意“有对端和我完成了训练”（.indication）。子族之间真正变化的，只是这次训练覆盖了多少条空间流、面向多少个用户。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the basic, single-stream case — SISO beamforming. MLME-BF-TRAINING.request asks the MAC to run training toward one peer (carrying its address, and a RequestBRP flag choosing whether to do just the sector-level sweep or also the finer beam-refinement protocol). On air this fires the SLS sector sweep — both sides try each antenna sector in turn — optionally followed by the BRP beam-refinement exchange that polishes the chosen beam. MLME-BF-TRAINING.confirm reports the result back to the initiating SME (SUCCESS or BF_TIMEOUT, plus measurement feedback). MLME-BF-TRAINING.indication is the mirror image: the responder's MLME tells its SME that a peer-requested training just completed.",
+      "zh": "先看最基础的单流情形——SISO 波束成形。MLME-BF-TRAINING.request 请 MAC 向某一个对端发起训练（携带对端地址，以及一个 RequestBRP 标志，用来选择是只做扇区级扫描，还是再加上更精细的波束细化协议）。在空口上，它触发 SLS 扇区扫描——双方依次尝试每一个天线扇区——并可选地接着进行 BRP 波束细化交换，把选中的波束打磨得更准。MLME-BF-TRAINING.confirm 把结果回报给发起方的 SME（SUCCESS 或 BF_TIMEOUT，并附带测量反馈）。MLME-BF-TRAINING.indication 则是它的镜像：响应方的 MLME 告诉自己的 SME，一次由对端发起的训练刚刚完成。"
+    },
+    {
+      "type": "prose",
+      "en": "Now scale up. MLME-SU-MIMO-BF-TRAINING (.request/.confirm/.indication) trains a single peer but across multiple spatial streams at once — its request carries a RequestMIMOBRP flag (MIMO BRP vs. SISO feedback) and a MIMOSetupControl block, and on air it drives the SU-MIMO training frame exchange defined in 10.41.10.2.2. MLME-MU-MIMO-BF-TRAINING (.request/.confirm/.indication) goes wider still: instead of one PeerSTAAddress its request takes an EDMGGroupID, so the AP trains beams toward a whole group of users simultaneously (the MAC procedure in 10.41.10.2.3). Same three-primitive rhythm; the confirm/indication now carry per-group feedback and MIMO selection control naming which streams won.",
+      "zh": "现在往上扩展。MLME-SU-MIMO-BF-TRAINING（.request/.confirm/.indication）仍然只面向单个对端，但一次性训练多条空间流——它的 request 携带 RequestMIMOBRP 标志（选择 MIMO BRP 还是 SISO 反馈）以及一个 MIMOSetupControl 信息块，在空口上驱动 10.41.10.2.2 定义的 SU-MIMO 训练帧交换。MLME-MU-MIMO-BF-TRAINING（.request/.confirm/.indication）则更进一步：它的 request 不再是单个 PeerSTAAddress，而是一个 EDMGGroupID，于是 AP 可以同时向一整组用户训练波束（对应 10.41.10.2.3 的 MAC 流程）。三原语的节奏不变；只是此时 confirm/indication 携带的是按组的反馈，以及指明哪些流胜出的 MIMO 选择控制信息。"
+    },
+    {
+      "type": "diagram",
+      "en": "mindmap\n  root((DMG beamforming<br/>6.5.22))\n    SISO (6.5.22.1)\n      MLME-BF-TRAINING.request : start SLS sweep + opt. BRP\n      MLME-BF-TRAINING.confirm : result to initiator SME\n      MLME-BF-TRAINING.indication : peer trained with me\n    SU-MIMO (6.5.22.2)\n      .request : train multi-stream to one peer\n      .confirm : SU-MIMO result + feedback\n      .indication : peer SU-MIMO done\n    MU-MIMO (6.5.22.3)\n      .request : train to a group (EDMGGroupID)\n      .confirm : per-group result\n      .indication : peer MU-MIMO done\n    SU-MIMO hybrid (6.5.22.4)\n      .request : analog+digital protocol, one peer\n      .confirm : + DigitalBFFeedback\n      .indication : peer hybrid done\n    MU-MIMO hybrid (6.5.22.5)\n      .request : hybrid protocol to a group\n      .confirm : + DigitalBFFeedback\n      .indication : peer hybrid done",
+      "zh": "mindmap\n  root((DMG 波束成形<br/>6.5.22))\n    SISO 单流 (6.5.22.1)\n      MLME-BF-TRAINING.request : 启动 SLS 扫描 + 可选 BRP\n      MLME-BF-TRAINING.confirm : 结果回报发起方 SME\n      MLME-BF-TRAINING.indication : 对端与我完成训练\n    SU-MIMO 单用户多流 (6.5.22.2)\n      .request : 向单个对端训练多流\n      .confirm : SU-MIMO 结果+反馈\n      .indication : 对端 SU-MIMO 完成\n    MU-MIMO 多用户 (6.5.22.3)\n      .request : 向一组训练 (EDMGGroupID)\n      .confirm : 按组结果\n      .indication : 对端 MU-MIMO 完成\n    SU-MIMO 混合 (6.5.22.4)\n      .request : 模拟+数字协议, 单对端\n      .confirm : 附 DigitalBFFeedback\n      .indication : 对端混合完成\n    MU-MIMO 混合 (6.5.22.5)\n      .request : 向一组跑混合协议\n      .confirm : 附 DigitalBFFeedback\n      .indication : 对端混合完成"
+    },
+    {
+      "type": "prose",
+      "en": "The last two subfamilies add the digital dimension. Pure DMG beamforming is analog — you pick antenna phases to steer one beam. Hybrid beamforming combines that analog steering with a digital precoder, so it needs richer feedback. MLME-SU-MIMO-HYBRID-BF-PROTOCOL (.request/.confirm/.indication) runs the hybrid protocol toward one peer; its request carries a SoundingType flag (use BRP frames, or use channel tracking) and the confirm/indication add a DigitalBFFeedback element on top of the usual measurement feedback. MLME-MU-MIMO-HYBRID-BF-PROTOCOL (.request/.confirm/.indication) does the same for a group (request keyed by EDMGGroupID). Both invoke the MAC hybrid procedures in 10.41.10.2.4. Across all five subfamilies the pattern holds: request to start, confirm to the initiator, indication to the responder.",
+      "zh": "最后两个子族引入了数字维度。纯 DMG 波束成形是模拟的——通过选择天线相位来指向单一波束。混合波束成形把这种模拟指向与数字预编码结合起来，因此需要更丰富的反馈。MLME-SU-MIMO-HYBRID-BF-PROTOCOL（.request/.confirm/.indication）向单个对端运行混合协议；它的 request 携带一个 SoundingType 标志（用 BRP 帧，还是用信道跟踪），而 confirm/indication 在常规测量反馈之上增加了一个 DigitalBFFeedback 元素。MLME-MU-MIMO-HYBRID-BF-PROTOCOL（.request/.confirm/.indication）则对一整组做同样的事（request 以 EDMGGroupID 为键）。两者都调用 10.41.10.2.4 的 MAC 混合流程。贯穿全部五个子族，模式始终如一：request 发起、confirm 回报发起方、indication 通知响应方。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Where each subfamily hooks into the MAC, and how the parameters shift",
+        "zh": "每个子族挂接到 MAC 的位置，以及参数如何变化"
+      },
+      "en": "Clause 6.5.22 organises the family by escalating scope. 6.5.22.1 (SISO): MLME-BF-TRAINING.request carries PeerSTAAddress, RequestBRP, BRPRequest, and EDMG elements; on receipt the MLME invokes the MAC beamforming-training procedures in 10.41, and the .confirm/.indication return a ResultCode of SUCCESS or BF_TIMEOUT with DMGBeamRefinement / MeasFeedback / EDMGMeasFeedback elements. 6.5.22.2 (SU-MIMO): the .request adds RequestMIMOBRP and MIMOSetupControl (9.4.2.272) and invokes 10.41.10.2.2. 6.5.22.3 (MU-MIMO): the .request is keyed by EDMGGroupID (9.4.2.268) with RequestInitiatorTXSS, invoking 10.41.10.2.3; the .indication carries MIMOSelectionControl and an EDMGGroupIDSet. 6.5.22.4 / 6.5.22.5 (hybrid SU / MU): the .request carries SoundingType (SU) or just EDMGGroupID (MU) plus a ControlTrailer (28.3.7), invokes 10.41.10.2.4, and the .confirm/.indication add a DigitalBFFeedback element (9.4.2.283). Note the result enumeration differs by subfamily — BF_TIMEOUT for SISO versus SUCCESS/FAILURE for the MIMO and hybrid variants.",
+      "zh": "6.5.22 节按“覆盖范围逐级升级”来组织整个原语族。6.5.22.1（SISO）：MLME-BF-TRAINING.request 携带 PeerSTAAddress、RequestBRP、BRPRequest 及若干 EDMG 元素；MLME 收到后调用 10.41 中的 MAC 波束成形训练流程，.confirm/.indication 返回 SUCCESS 或 BF_TIMEOUT 的 ResultCode，并附带 DMGBeamRefinement / MeasFeedback / EDMGMeasFeedback 元素。6.5.22.2（SU-MIMO）：.request 增加 RequestMIMOBRP 与 MIMOSetupControl（9.4.2.272），调用 10.41.10.2.2。6.5.22.3（MU-MIMO）：.request 以 EDMGGroupID（9.4.2.268）为键并带 RequestInitiatorTXSS，调用 10.41.10.2.3；其 .indication 携带 MIMOSelectionControl 和一个 EDMGGroupIDSet。6.5.22.4 / 6.5.22.5（SU / MU 混合）：.request 携带 SoundingType（SU）或仅 EDMGGroupID（MU）外加一个 ControlTrailer（28.3.7），调用 10.41.10.2.4，.confirm/.indication 增加一个 DigitalBFFeedback 元素（9.4.2.283）。注意结果枚举因子族而异——SISO 用 BF_TIMEOUT，而 MIMO 与混合变体用 SUCCESS/FAILURE。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          580,
+          583,
+          585,
+          588,
+          591
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:6.5.22.1.2",
+    "80211-2024:6.5.22.1.3",
+    "80211-2024:6.5.22.1.4",
+    "80211-2024:6.5.22.2.2",
+    "80211-2024:6.5.22.2.3",
+    "80211-2024:6.5.22.2.4",
+    "80211-2024:6.5.22.3.2",
+    "80211-2024:6.5.22.3.3",
+    "80211-2024:6.5.22.3.4",
+    "80211-2024:6.5.22.4.2",
+    "80211-2024:6.5.22.4.3",
+    "80211-2024:6.5.22.4.4",
+    "80211-2024:6.5.22.5.2",
+    "80211-2024:6.5.22.5.3",
+    "80211-2024:6.5.22.5.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        580,
+        581,
+        582
+      ],
+      "note": "6.5.22.1 SISO beamforming — MLME-BF-TRAINING .request/.confirm/.indication; SLS + BRP; invokes 10.41"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        583,
+        584,
+        585
+      ],
+      "note": "6.5.22.2 SU-MIMO beamforming — MLME-SU-MIMO-BF-TRAINING; RequestMIMOBRP, MIMOSetupControl; 10.41.10.2.2"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        585,
+        586,
+        587,
+        588
+      ],
+      "note": "6.5.22.3 MU-MIMO beamforming — MLME-MU-MIMO-BF-TRAINING; EDMGGroupID, MIMOSelectionControl; 10.41.10.2.3"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        588,
+        589,
+        590
+      ],
+      "note": "6.5.22.4 SU-MIMO hybrid — MLME-SU-MIMO-HYBRID-BF-PROTOCOL; SoundingType, DigitalBFFeedback; 10.41.10.2.4"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        591,
+        592,
+        593
+      ],
+      "note": "6.5.22.5 MU-MIMO hybrid — MLME-MU-MIMO-HYBRID-BF-PROTOCOL; EDMGGroupID, DigitalBFFeedback; 10.41.10.2.4"
+    }
+  ],
+  "track": "phy-service"
+}

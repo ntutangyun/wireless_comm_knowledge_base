@@ -1,0 +1,79 @@
+{
+  "id": "phy-service-11",
+  "title": {
+    "en": "Security counter alarms: the PN-exhaustion & PN-warning indications",
+    "zh": "安全计数器告警：PN 耗尽与 PN 预警指示原语"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every encrypted Wi-Fi frame burns one number off a counter called the packet number (PN). Each temporal key has its own PN odometer, and it only ever counts up — never back. The one rule that must never be broken is this: a key may never reuse a PN. CCMP and GCMP fold the PN into the encryption as a nonce, so the moment the same key encrypts two frames with the same PN, the confidentiality guarantee collapses. The PN space is large but finite, so a busy link can, over time, drive that odometer toward its limit.",
+      "zh": "每发送一个加密的 Wi-Fi 帧，都会从一个叫“包号（PN, packet number）”的计数器上消耗掉一个数值。每个临时密钥（temporal key）都有自己的 PN 里程表，而且它只会向上累加，绝不回退。有一条永远不能违反的铁律：同一个密钥绝不能复用同一个 PN。CCMP 与 GCMP 会把 PN 作为一次性随机数（nonce）参与加密，因此一旦同一密钥用同一个 PN 加密了两个帧，机密性保证就会瞬间崩塌。PN 空间虽大但有限，所以一条繁忙的链路随着时间推移，可能会把这块里程表逼近上限。"
+    },
+    {
+      "type": "prose",
+      "en": "This little primitive family is the MAC's low-fuel light. Notice what is missing: there is no .request and no .confirm here. These are not actions the upper layer asks for — they are two MLME-to-SME indications that the MAC fires upward entirely on its own, watching the odometer on every key as frames go out. The MAC is the only entity that sees the PN tick by frame-by-frame, so it is the natural place for the alarm to live. The two indications mark two different levels of the same gauge.",
+      "zh": "这一小撮原语是 MAC 层的“油量不足”指示灯。请注意这里缺了什么：没有 .request，也没有 .confirm。它们并不是上层主动请求的动作，而是两个由 MAC（MLME）完全自主向上发给 SME 的指示（indication）——MAC 在每个密钥上随着帧的发出逐一盯着里程表。MAC 是唯一能逐帧看到 PN 跳动的实体，因此告警天然就该住在这里。这两个指示标记的是同一只量表上的两个不同档位。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two thresholds, two alarms. MLME-PN-WARNING.indication is the yellow light: the tank is getting low — schedule a rekey. MLME-PN-EXHAUSTION.indication is the red light: the odometer is about to roll over — stop using this key now. Each is governed by its own pair of MIB thresholds (dot11PNWarningThresholdLow/High and dot11PNExhaustionThresholdLow/High), so the warning level always trips before the exhaustion level.",
+      "zh": "两个阈值，两种告警。MLME-PN-WARNING.indication 是黄灯：油箱快空了——该安排换钥（rekey）了。MLME-PN-EXHAUSTION.indication 是红灯：里程表即将翻转归零——立刻停用这个密钥。二者各自由一对 MIB 阈值控制（dot11PNWarningThresholdLow/High 与 dot11PNExhaustionThresholdLow/High），因此预警档位总会先于耗尽档位触发。"
+    },
+    {
+      "type": "prose",
+      "en": "Crucially, neither primitive sends a frame on the air by itself. They are purely a nudge to the SME. What goes on the air is whatever the SME decides to do in response — and the standard is explicit about that response. On a WARNING, the SME can create a new temporal key before the PN space is exhausted. On an EXHAUSTION, the SME deletes the temporal key associated with that PN. In practice both lead back to the key-management primitives a prior lesson covered (the SetKeys / DeleteKeys family): the SME drives a rekey so a fresh key — with a fresh PN starting from zero — takes over before the old counter can wrap. That handoff is what prevents the catastrophic PN reuse.",
+      "zh": "关键在于：这两个原语本身都不会在空中发出任何帧。它们纯粹是对 SME 的一记提醒。真正上到空中的，是 SME 据此决定要做的动作——而标准对这个动作有明确规定。收到 WARNING 时，SME 可以在 PN 空间耗尽之前创建一个新的临时密钥；收到 EXHAUSTION 时，SME 会删除与该 PN 关联的那个临时密钥。实践中两者最终都回到前一课讲过的密钥管理原语（SetKeys / DeleteKeys 家族）：SME 驱动一次换钥，让一个全新的密钥（其 PN 从零重新开始）在旧计数器翻转之前接管。正是这次交接，避免了灾难性的 PN 复用。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[MAC encrypts frame:<br/>PN++ on temporal key] --> B{compare PN<br/>to thresholds}\n    B -->|past warning threshold| W[MLME-PN-WARNING.indication<br/>Key ID, Key Type, Address]\n    B -->|past exhaustion threshold| X[MLME-PN-EXHAUSTION.indication<br/>Key ID, Key Type, Address]\n    W --> SW[SME: create a NEW temporal key<br/>before PN space runs out]\n    X --> SX[SME: DELETE this temporal key]\n    SW --> R[rekey via SetKeys / DeleteKeys<br/>fresh key, fresh PN from 0]\n    SX --> R\n    R --> G[catastrophic PN reuse avoided]",
+      "zh": "flowchart TD\n    A[MAC 加密一帧:<br/>临时密钥的 PN++] --> B{将 PN 与<br/>阈值比较}\n    B -->|越过预警阈值| W[MLME-PN-WARNING.indication<br/>Key ID, Key Type, Address]\n    B -->|越过耗尽阈值| X[MLME-PN-EXHAUSTION.indication<br/>Key ID, Key Type, Address]\n    W --> SW[SME: 在 PN 空间耗尽前<br/>创建一个新的临时密钥]\n    X --> SX[SME: 删除该临时密钥]\n    SW --> R[经 SetKeys / DeleteKeys 换钥<br/>新密钥, PN 从 0 重新计]\n    SX --> R\n    R --> G[避免灾难性的 PN 复用]"
+    },
+    {
+      "type": "prose",
+      "en": "Both indications carry the same three small parameters, and they read like a label on the gauge: a Key ID (which of the installed keys is running low — slots 0-3 are the CCMP/GCMP data keys, higher slots are the various integrity-protection keys), a Key Type (is this a pairwise key, a group key, a PeerKey, or one of the BIP keys), and an Address (the peer MAC, meaningful for pairwise/PeerKey and for group keys in an IBSS/PBSS). That triple is exactly enough for the SME to point the rekey at the right key.",
+      "zh": "两个指示携带的是同样的三个小参数，读起来就像量表上的一张标签：Key ID（究竟是哪一个已安装的密钥快用尽了——槽位 0-3 是 CCMP/GCMP 的数据密钥，更高的槽位是各类完整性保护密钥），Key Type（这是成对密钥、组密钥、PeerKey，还是某个 BIP 密钥），以及 Address（对端 MAC，对成对/PeerKey 以及 IBSS/PBSS 中的组密钥才有意义）。这三元组恰好足以让 SME 把换钥动作对准正确的那个密钥。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "This is where this family closes the loop with key management. The PN alarms don't change keys themselves — they only ring the bell. The actual key swap is done by the primitives you met earlier. Think of PN-WARNING/EXHAUSTION as the sensor and SetKeys/DeleteKeys as the actuator: the MAC senses the counter, the SME acts on the key.",
+      "zh": "正是在这里，这个家族与密钥管理闭环对接。PN 告警本身并不更换密钥——它们只负责拉响警铃。真正的密钥替换由你之前学过的那些原语完成。可以把 PN-WARNING/EXHAUSTION 看作传感器，把 SetKeys/DeleteKeys 看作执行器：MAC 感知计数器，SME 据此操作密钥。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact wording: thresholds and the SME's effect-of-receipt",
+        "zh": "原文精确措辞：阈值与 SME 的“收到后效果”"
+      },
+      "en": "Clause 6.5.17 groups these under 'PN event report'. 6.5.17.2 MLME-PN-EXHAUSTION.indication is generated by the MLME when the PN associated with a temporal key exceeds the threshold defined in dot11PNExhaustionThresholdLow and dot11PNExhaustionThresholdHigh; on receipt, the SME deletes the temporal key associated with the PN. 6.5.17.3 MLME-PN-WARNING.indication is generated when the PN exceeds dot11PNWarningThresholdLow and dot11PNWarningThresholdHigh; on receipt, the SME can create a new temporal key before the PN space is exhausted. Both primitives carry identical parameters — Key ID (0-3 for CCMP/GCMP; 4-5 IGTK, 6-7 BIGTK, 8-9 WIGTK under BIP; 10-4095 reserved), Key Type (Group, Pairwise, PeerKey, IGTK, BIGTK, WIGTK), and Address (valid for Pairwise, PeerKey, or Group in an IBSS/PBSS but not an MBSS). Note there is no .request/.response/.confirm in this family: the MLME originates both indications autonomously.",
+      "zh": "6.5.17 节把它们归在“PN 事件报告（PN event report）”之下。6.5.17.2 的 MLME-PN-EXHAUSTION.indication 由 MLME 在临时密钥关联的 PN 超过 dot11PNExhaustionThresholdLow 与 dot11PNExhaustionThresholdHigh 所定义的阈值时生成；SME 收到后会删除与该 PN 关联的临时密钥。6.5.17.3 的 MLME-PN-WARNING.indication 则在 PN 超过 dot11PNWarningThresholdLow 与 dot11PNWarningThresholdHigh 时生成；SME 收到后可以在 PN 空间耗尽之前创建一个新的临时密钥。两个原语携带完全相同的参数——Key ID（0-3 用于 CCMP/GCMP；BIP 下 4-5 为 IGTK、6-7 为 BIGTK、8-9 为 WIGTK；10-4095 保留）、Key Type（Group、Pairwise、PeerKey、IGTK、BIGTK、WIGTK）以及 Address（对 Pairwise、PeerKey，或 IBSS/PBSS（而非 MBSS）中的 Group 才有效）。注意这一家族里没有 .request/.response/.confirm：两个指示都是 MLME 自主发起的。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          571,
+          572
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:6.5.17.2",
+    "80211-2024:6.5.17.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        571,
+        572
+      ],
+      "note": "6.5.17 PN event report — 6.5.17.2 MLME-PN-EXHAUSTION.indication and 6.5.17.3 MLME-PN-WARNING.indication: function, when generated, effect of receipt (SME deletes / SME creates new temporal key), and the Key ID / Key Type / Address parameters"
+    }
+  ],
+  "track": "phy-service"
+}

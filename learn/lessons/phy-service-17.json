@@ -1,0 +1,103 @@
+{
+  "id": "phy-service-17",
+  "title": {
+    "en": "Vehicular sensing & emergency broadcast: the NGV radio-environment and EBCS primitives",
+    "zh": "车载感知与紧急广播：NGV 无线环境测量与 EBCS 原语"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Most of the MLME-SAP is about one station talking to one peer. This lesson visits two of its newest, most domain-specific corners — both born for the road. NGV (Next-Generation V2X, 802.11bd) adds a primitive family that lets a vehicle take the pulse of its own radio environment, and EBCS (Enhanced Broadcast Service) adds primitives for one-to-many delivery with no association at all. Together they show how the service interface stretches to cover congested road-side spectrum and emergency one-to-many messaging.",
+      "zh": "MLME-SAP 的绝大部分内容都在描述“一个站点与一个对端”的通信。本课要拜访的是它最新、也最具领域特色的两个角落——它们都是为“路上”而生的。NGV（下一代 V2X，802.11bd）新增了一族原语，让车辆能够为自身所处的无线环境“把脉”；而 EBCS（增强广播服务）则新增了用于“一对多、完全免关联”投递的原语。两者合在一起，展示了服务接口如何延伸去覆盖拥塞的路侧频谱以及紧急的一对多消息。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with NGV radio-environment measurement. The SME issues MLME-RADIOENVIRONMENT.request to switch on measurement, telling the MAC how long to sample (a channel-busy window and a neighbour-counting window). From then on the MAC fires MLME-RADIOENVIRONMENT.indication on its own — once every dot11RadioEnvironmentMeasurementPeriod — carrying three numbers: StationCount (how many distinct neighbours it heard), NGVCapabilityPercentage (what fraction of them are NGV-capable), and ChannelBusyPercentage (how saturated the channel is). No frame goes over the air for the indication: it is a self-generated snapshot the SME uses to adapt to crowded V2X spectrum.",
+      "zh": "先看 NGV 无线环境测量。SME 发出 MLME-RADIOENVIRONMENT.request 来开启测量，并告诉 MAC 采样多久（一个“信道忙占比”窗口和一个“邻居计数”窗口）。此后，MAC 会自行触发 MLME-RADIOENVIRONMENT.indication——每隔一个 dot11RadioEnvironmentMeasurementPeriod 触发一次——携带三个数值：StationCount（听到了多少个不同的邻居）、NGVCapabilityPercentage（其中具备 NGV 能力的比例）以及 ChannelBusyPercentage（信道有多拥挤）。这个 indication 不会发出任何空口帧：它只是一份“自生成的快照”，供 SME 据此适应拥挤的 V2X 频谱。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the asymmetry: the .request just arms the measurement once, but the .indication keeps arriving periodically all by itself. That periodic, self-generated indication — no peer frame involved — is the unusual part. It turns the MLME into a steady sensor feed rather than a one-shot question-and-answer.",
+      "zh": "注意这里的不对称：.request 只是“一次性地”把测量开启，而 .indication 之后会自行周期性地不断送达。这种“周期性、自生成、且不涉及任何对端帧”的 indication 正是它的特别之处——它把 MLME 变成了一路持续的传感数据流，而不是一问一答的一次性交互。"
+    },
+    {
+      "type": "prose",
+      "en": "Now switch to EBCS — Enhanced Broadcast Service — which is about advertising and delivering content to many listeners without anyone associating. Two primitive families do the work. MLME-EBCSINFO.request (valid only at an EBCS transmitter) tells the MAC to build and broadcast an EBCS Info frame: a service advertisement listing the content on offer, optionally signed with a certificate and private key. On a receiver, MLME-EBCSINFO.indication fires when that EBCS Info frame arrives, handing the SME the sender's address, a sequence number, a timestamp, and the advertised content set.",
+      "zh": "现在切换到 EBCS——增强广播服务——它讲的是“向众多收听者通告并投递内容，且任何人都无需关联”。完成这件事的是两族原语。MLME-EBCSINFO.request（仅在 EBCS 发送方有效）让 MAC 构造并广播一个 EBCS Info 帧：这是一则“服务通告”，列出所提供的内容，并可选地用证书与私钥进行签名。在接收方，当该 EBCS Info 帧到达时，MLME-EBCSINFO.indication 会触发，把发送方地址、一个序列号、一个时间戳以及所通告的内容集合交给 SME。"
+    },
+    {
+      "type": "prose",
+      "en": "EBCS also has a return path. MLME-EBCSUL.request (valid only at an EBCS non-AP STA) asks the MAC to send an EBCS uplink frame, carrying a destination URI and a higher-layer payload to be relayed — the uplink/relaying leg of the broadcast service. At a relaying STA, MLME-EBCSUL.indication fires when an EBCS UL frame is received, surfacing the destination URI and payload so the SME can carry the relay forward. Where EBCSINFO advertises downstream, EBCSUL feeds upstream.",
+      "zh": "EBCS 还有一条回程通道。MLME-EBCSUL.request（仅在 EBCS 的非 AP 站点有效）请求 MAC 发送一个 EBCS 上行帧，其中携带目的 URI 和一份待中继的高层载荷——这是广播服务的“上行/中继”一支。在中继站点上，当收到 EBCS UL 帧时，MLME-EBCSUL.indication 会触发，把目的 URI 与载荷呈现给 SME，使其能够继续完成中继转发。如果说 EBCSINFO 负责向下游“通告”，那么 EBCSUL 就负责向上游“回送”。"
+    },
+    {
+      "type": "diagram",
+      "en": "mindmap\n  root((Road-side MLME-SAP))\n    NGV radio environment\n      RADIOENVIRONMENT.request<br/>arm measurement windows\n      RADIOENVIRONMENT.indication<br/>periodic self-generated snapshot<br/>StationCount / NGVCap% / ChannelBusy%\n    EBCS advertise\n      EBCSINFO.request<br/>broadcast EBCS Info frame<br/>(transmitter only)\n      EBCSINFO.indication<br/>EBCS Info frame received\n    EBCS uplink / relay\n      EBCSUL.request<br/>send EBCS UL frame<br/>(non-AP STA only)\n      EBCSUL.indication<br/>EBCS UL frame received<br/>(relaying STA)",
+      "zh": "mindmap\n  root((路侧 MLME-SAP))\n    NGV 无线环境\n      RADIOENVIRONMENT.request<br/>开启测量窗口\n      RADIOENVIRONMENT.indication<br/>周期性自生成快照<br/>StationCount / NGV能力% / 信道忙%\n    EBCS 通告\n      EBCSINFO.request<br/>广播 EBCS Info 帧<br/>(仅发送方)\n      EBCSINFO.indication<br/>收到 EBCS Info 帧\n    EBCS 上行 / 中继\n      EBCSUL.request<br/>发送 EBCS UL 帧<br/>(仅非 AP 站点)\n      EBCSUL.indication<br/>收到 EBCS UL 帧<br/>(中继站点)"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Map each primitive to its on-air action and the picture is simple: RADIOENVIRONMENT = a local channel-occupancy snapshot (no frame); EBCSINFO = the broadcast service-advertisement frame; EBCSUL = the broadcast uplink/relay frame. One family senses the road, the other family talks to everyone on it without a handshake.",
+      "zh": "把每个原语对应到它的空口动作，画面就很清晰了：RADIOENVIRONMENT = 一份本地信道占用快照（无帧）；EBCSINFO = 那个广播服务通告帧；EBCSUL = 那个广播上行/中继帧。一族在“感知”道路，另一族则在“免握手”地向道路上的所有人喊话。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What each primitive actually carries, per clause 6.5.27-6.5.29",
+        "zh": "依据 6.5.27–6.5.29，每个原语究竟携带什么"
+      },
+      "en": "Clause 6.5.27.2 gives MLME-RADIOENVIRONMENT.request two parameters — RadioEnvironmentMeasurementPeriod (the channel-busy sampling window) and StationMeasurementPeriod (the neighbour-counting window), each 0 or 100-1000 ms, where 0 means no measurement. Clause 6.5.27.3 says the MLME generates MLME-RADIOENVIRONMENT.indication every dot11RadioEnvironmentMeasurementPeriod when dot11NGVOptionImplemented is true, reporting StationCount (0-65535), NGVCapabilityPercentage (0-100, set to 0 when StationCount is 0), and ChannelBusyPercentage (0-100). For EBCS, 6.5.28.2's MLME-EBCSINFO.request (EBCS transmitter only) carries an authentication algorithm, a private key, a certificate, an EBCS TIM, and a ContentInformationSet; the MLME then constructs and broadcasts an EBCS Info frame. 6.5.28.3's MLME-EBCSINFO.indication (only where dot11EBCSSupportActivated is true) delivers PeerSTAAddress, EBCSInfoSequenceNumber, Timestamp, the algorithm, the EBCS TIM and the content set, after which the SME follows 34.3.4. Clause 6.5.29.2's MLME-EBCSUL.request (EBCS non-AP STA only) carries DestinationURI, HLPPayload, an optional STACertificate, FrameTxTime, FrameCount and PrivateKey; the MLME builds and transmits an EBCS UL frame. 6.5.29.3's MLME-EBCSUL.indication (EBCS relaying STA only) surfaces DestinationURI, HLPPayload, FrameTxTime and FrameCount, after which the SME follows 34.4.3.",
+      "zh": "6.5.27.2 节给出 MLME-RADIOENVIRONMENT.request 的两个参数——RadioEnvironmentMeasurementPeriod（信道忙采样窗口）与 StationMeasurementPeriod（邻居计数窗口），二者取值均为 0 或 100–1000 毫秒，其中 0 表示不进行测量。6.5.27.3 节规定：当 dot11NGVOptionImplemented 为真时，MLME 每隔一个 dot11RadioEnvironmentMeasurementPeriod 生成一次 MLME-RADIOENVIRONMENT.indication，报告 StationCount（0–65535）、NGVCapabilityPercentage（0–100，当 StationCount 为 0 时置 0）以及 ChannelBusyPercentage（0–100）。在 EBCS 方面，6.5.28.2 节的 MLME-EBCSINFO.request（仅 EBCS 发送方有效）携带认证算法、私钥、证书、EBCS TIM 和一个 ContentInformationSet，随后 MLME 构造并广播一个 EBCS Info 帧。6.5.28.3 节的 MLME-EBCSINFO.indication（仅在 dot11EBCSSupportActivated 为真处有效）送出 PeerSTAAddress、EBCSInfoSequenceNumber、Timestamp、认证算法、EBCS TIM 与内容集合，之后 SME 按 34.3.4 处理。6.5.29.2 节的 MLME-EBCSUL.request（仅 EBCS 非 AP 站点有效）携带 DestinationURI、HLPPayload、可选的 STACertificate、FrameTxTime、FrameCount 与 PrivateKey，MLME 据此构造并发送一个 EBCS UL 帧。6.5.29.3 节的 MLME-EBCSUL.indication（仅 EBCS 中继站点有效）呈现 DestinationURI、HLPPayload、FrameTxTime 与 FrameCount，之后 SME 按 34.4.3 处理。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          601,
+          602,
+          603,
+          604,
+          605
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:6.5.27.2",
+    "80211-2024:6.5.27.3",
+    "80211-2024:6.5.28.2",
+    "80211-2024:6.5.28.3",
+    "80211-2024:6.5.29.2",
+    "80211-2024:6.5.29.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        601,
+        602
+      ],
+      "note": "6.5.27.2-6.5.27.3 MLME-RADIOENVIRONMENT.request/.indication — NGV radio-environment measurement; StationCount, NGVCapabilityPercentage, ChannelBusyPercentage every dot11RadioEnvironmentMeasurementPeriod"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        602,
+        603,
+        604
+      ],
+      "note": "6.5.28.2-6.5.28.3 MLME-EBCSINFO.request/.indication — transmit/receive the EBCS Info service-advertisement frame"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        604,
+        605
+      ],
+      "note": "6.5.29.2-6.5.29.3 MLME-EBCSUL.request/.indication — transmit/receive the EBCS uplink/relay frame"
+    }
+  ],
+  "track": "phy-service"
+}

@@ -1,0 +1,101 @@
+{
+  "id": "phy-service-12",
+  "title": {
+    "en": "The diagnostic logbook: event request / report / log primitives (WNM event reporting)",
+    "zh": "诊断日志簿：事件请求/上报/记录原语（WNM 事件上报）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Imagine a network operator who wants every station to keep a little flight recorder — noting things like transition attempts, failed associations, RSNA key handshakes — and then mail the recording back when asked. That is exactly what the WNM event-reporting machinery does. A station collects events into a logbook; a peer can ask for that logbook over the air; the station ships it back. This lesson is a guided tour of the three MLME-SAP primitive families that drive that workflow, and crucially of which ones cross the air and which stay inside one box.",
+      "zh": "设想一位网络运营者，希望每个站点都自带一个小小的“飞行记录仪”——记录诸如切换尝试、关联失败、RSNA 密钥握手之类的事件——然后在被询问时把记录寄回来。这正是 WNM（无线网络管理）事件上报机制所做的事。站点把事件收集进一本日志簿；对端可以隔空索要这本日志；站点再把它寄回去。本课将带你逐一走访驱动这一流程的三组 MLME-SAP 原语，并重点厘清：哪些原语跨越空口传输，哪些只在一台设备内部流转。"
+    },
+    {
+      "type": "prose",
+      "en": "There are two over-the-air management frames involved — an Event Request frame and an Event Report frame — plus one purely local hook between a station's management entity (SME) and its own MAC (MLME). Keep three verbs in mind: REQUEST (please log and report these event types), REPORT (here is what I recorded), and LOG (the local 'go collect the events' instruction the SME gives its own MAC). Every transaction is tagged with a Dialog Token so request and report can be matched up.",
+      "zh": "其中涉及两种隔空传输的管理帧——事件请求帧（Event Request frame）和事件上报帧（Event Report frame）——再加上一个纯本地的钩子，连接站点的管理实体（SME）与它自己的 MAC（MLME）。记住三个动词即可：REQUEST（请记录并上报这些事件类型）、REPORT（这是我记录到的内容）、LOG（SME 给自己 MAC 下达的“去收集事件”这一本地指令）。每一次事务都贴有一个对话令牌（Dialog Token），以便把请求与上报一一对应起来。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    subgraph STA_A[\"STA A (asks)\"]\n      A_SME[\"SME\"] -->|\"MLME-EVLREQUEST.request\"| A_MLME[\"MLME\"]\n      A_MLME -->|\"MLME-EVLREPORT.indication\"| A_SME\n    end\n    subgraph STA_B[\"STA B (logs &amp; answers)\"]\n      B_MLME[\"MLME\"] -->|\"MLME-EVLREQUEST.indication\"| B_SME[\"SME\"]\n      B_SME -->|\"MLME-EVLOG.request\"| B_MLME\n      B_MLME -->|\"MLME-EVLOG.confirm\"| B_SME\n      B_SME -->|\"MLME-EVLREPORT.request\"| B_MLME\n    end\n    A_MLME -->|\"Event Request frame (air)\"| B_MLME\n    B_MLME -->|\"Event Report frame (air)\"| A_MLME",
+      "zh": "graph TD\n    subgraph STA_A[\"STA A（提问方）\"]\n      A_SME[\"SME\"] -->|\"MLME-EVLREQUEST.request\"| A_MLME[\"MLME\"]\n      A_MLME -->|\"MLME-EVLREPORT.indication\"| A_SME\n    end\n    subgraph STA_B[\"STA B（记录并应答方）\"]\n      B_MLME[\"MLME\"] -->|\"MLME-EVLREQUEST.indication\"| B_SME[\"SME\"]\n      B_SME -->|\"MLME-EVLOG.request\"| B_MLME\n      B_MLME -->|\"MLME-EVLOG.confirm\"| B_SME\n      B_SME -->|\"MLME-EVLREPORT.request\"| B_MLME\n    end\n    A_MLME -->|\"事件请求帧（空口）\"| B_MLME\n    B_MLME -->|\"事件上报帧（空口）\"| A_MLME"
+    },
+    {
+      "type": "prose",
+      "en": "Walk the request side first. MLME-EVLREQUEST.request is what STA A's SME issues to send an Event Request frame to a peer; it carries the Peer MAC Address, a Dialog Token, an Event Request Set (the list of event types being asked for), and optionally a Destination URI saying where the eventual report should ultimately go. When that frame lands at STA B, B's MLME raises MLME-EVLREQUEST.indication to B's SME — same parameters, now describing the request just received. B's SME then either rejects it or commences the transaction.",
+      "zh": "先看请求侧。MLME-EVLREQUEST.request 是 STA A 的 SME 用来向对端发送事件请求帧的原语；它携带对端 MAC 地址、一个对话令牌、一个事件请求集合（Event Request Set，即所请求的事件类型清单），以及可选的目标 URI（Destination URI，指明最终上报应送往何处）。当该帧抵达 STA B，B 的 MLME 便向 B 的 SME 上报 MLME-EVLREQUEST.indication——参数相同，只是此刻描述的是刚收到的这条请求。随后 B 的 SME 要么拒绝它，要么启动该事务。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The easy trap is treating LOG as something that travels on the air. It does not. MLME-EVLOG.request / .confirm are a purely local conversation inside STA B between its SME and its own MAC — 'start identifying these events' / 'here is the Event Report Set I gathered, with this Dialog Token'. EVLREQUEST and EVLREPORT are the over-the-air pair; EVLOG never leaves the device.",
+      "zh": "最容易踩的坑，是把 LOG 当成会在空口上传输的东西。它并不会。MLME-EVLOG.request / .confirm 是 STA B 内部、SME 与自己 MAC 之间的纯本地对话——“开始识别这些事件”／“这是我收集到的事件上报集合（Event Report Set），附带这个对话令牌”。EVLREQUEST 与 EVLREPORT 才是跨越空口的那一对；EVLOG 从不离开本设备。"
+    },
+    {
+      "type": "prose",
+      "en": "So inside STA B the sequence is: on the incoming request, the SME fires MLME-EVLOG.request (Dialog Token, Event Request Set) telling its own MLME to begin identifying the named events. When collection completes, the MLME answers back with MLME-EVLOG.confirm (Dialog Token, Event Report Set) — the recorded results. The SME evaluates them and may store them pending communication. To actually mail the logbook back, STA B's SME issues MLME-EVLREPORT.request (Peer MAC Address, Dialog Token, Event Report Set), which makes B's MLME build and send the Event Report frame. At STA A, the arriving frame raises MLME-EVLREPORT.indication, handing the event data up to A's SME — the logbook delivered.",
+      "zh": "于是 STA B 内部的次序是：在收到请求后，SME 触发 MLME-EVLOG.request（对话令牌、事件请求集合），命令自己的 MLME 开始识别所指定的事件。收集完成后，MLME 以 MLME-EVLOG.confirm（对话令牌、事件上报集合）作答——即记录到的结果。SME 对其评估，并可暂存起来等待上报。要真正把日志簿寄回去，STA B 的 SME 再发出 MLME-EVLREPORT.request（对端 MAC 地址、对话令牌、事件上报集合），由 B 的 MLME 构造并发送事件上报帧。在 STA A 一侧，到达的帧触发 MLME-EVLREPORT.indication，把事件数据上交给 A 的 SME——日志簿至此送达。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Quick recap of all six: EVLREQUEST.request (ask a peer to log+report), EVLREQUEST.indication (peer's MLME tells its SME a request arrived), EVLOG.request (local: SME tells its MAC to start collecting), EVLOG.confirm (local: MAC returns the Event Report Set), EVLREPORT.request (send the report frame back), EVLREPORT.indication (asker's MLME delivers the report up to its SME).",
+      "zh": "六个原语速记：EVLREQUEST.request（请求对端记录并上报）、EVLREQUEST.indication（对端 MLME 告知其 SME 收到了请求）、EVLOG.request（本地：SME 命令自己的 MAC 开始收集）、EVLOG.confirm（本地：MAC 返回事件上报集合）、EVLREPORT.request（把上报帧发回去）、EVLREPORT.indication（提问方 MLME 把上报上交给其 SME）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What the standard actually says about each primitive",
+        "zh": "标准对每个原语的确切表述"
+      },
+      "en": "Clause 6.5.18 (Event request) and Figure 6-14 frame the whole exchange. 6.5.18.2 MLME-EVLREQUEST.request 'requests the transmission of an event request to a peer STA'; on receipt the MLME 'constructs an Event Request frame containing the set of event elements specified' and schedules it. 6.5.18.3 MLME-EVLREQUEST.indication is generated 'when an Event Request frame is received', and its receipt has the SME 'either rejects the request or commences the event transaction'. In 6.5.19 (Event report): 6.5.19.2 MLME-EVLREPORT.request 'supports the signaling of event reports between peer SMEs', causing the MLME to construct and schedule an Event Report frame; 6.5.19.3 MLME-EVLREPORT.indication fires 'when an Event Report frame is received', after which 'the event data can be made available for SME processes'. In 6.5.20 (Event): 6.5.20.2 MLME-EVLOG.request is 'generated by the SME to request that the MLME identify specific events' (parameters Dialog Token, Event Request Set), and on receipt 'the MLME commences the identification of events'. 6.5.20.3 MLME-EVLOG.confirm 'reports the result of an event' (Dialog Token, Event Report Set), generated 'when event identification completes'; the SME then 'evaluates the result and, if appropriate, stores the events pending communication to the requesting entity or for local use'. Note the data types: the Event Request/Report Sets are sets of event elements, the Destination URI element is defined in 9.4.2.88, and VendorSpecificInfo per 9.4.2.24.",
+      "zh": "第 6.5.18 节（事件请求）与图 6-14 勾勒了整个交换。6.5.18.2 MLME-EVLREQUEST.request“请求向对端 STA 发送一个事件请求”；MLME 收到后“构造一个包含所指定事件元素集合的事件请求帧”并安排发送。6.5.18.3 MLME-EVLREQUEST.indication 在“收到事件请求帧时”生成，其被收到后由 SME“要么拒绝该请求，要么启动事件事务”。在 6.5.19 节（事件上报）中：6.5.19.2 MLME-EVLREPORT.request“支持对端 SME 之间的事件上报信令”，促使 MLME 构造并安排发送事件上报帧；6.5.19.3 MLME-EVLREPORT.indication 在“收到事件上报帧时”触发，此后“事件数据可供 SME 进程使用”。在 6.5.20 节（事件）中：6.5.20.2 MLME-EVLOG.request“由 SME 生成，请求 MLME 识别特定事件”（参数为对话令牌、事件请求集合），收到后“MLME 开始识别事件”。6.5.20.3 MLME-EVLOG.confirm“报告事件的结果”（对话令牌、事件上报集合），在“事件识别完成时”生成；随后 SME“评估结果，并在适当时存储这些事件，以待向请求方通信或供本地使用”。注意各数据类型：事件请求集合／上报集合均为事件元素的集合，目标 URI 元素定义于 9.4.2.88，VendorSpecificInfo 依据 9.4.2.24。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          573,
+          574,
+          575,
+          576,
+          577
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:6.5.18.2",
+    "80211-2024:6.5.18.3",
+    "80211-2024:6.5.19.2",
+    "80211-2024:6.5.19.3",
+    "80211-2024:6.5.20.2",
+    "80211-2024:6.5.20.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        573,
+        574
+      ],
+      "note": "6.5.18 Event request — Figure 6-14 event protocol exchange; MLME-EVLREQUEST.request/.indication parameters and generation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        575,
+        576
+      ],
+      "note": "6.5.19 Event report — MLME-EVLREPORT.request/.indication; 6.5.20.2 MLME-EVLOG.request (local SME->MLME)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        577
+      ],
+      "note": "6.5.20.3 MLME-EVLOG.confirm — local result of event identification (Dialog Token, Event Report Set)"
+    }
+  ],
+  "track": "phy-service"
+}
