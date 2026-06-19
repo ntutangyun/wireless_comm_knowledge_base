@@ -55,6 +55,14 @@ def check_lesson(lesson, valid_pdf_ids):
                 for kk, vv in v.items():
                     if isinstance(vv, str):
                         _scan_banned(vv, where + f".{k}.{kk}", errs)
+    # coverage claims: each "covers" entry is "<pdf_id>:<clause>" with a known pdf_id
+    for c in lesson.get("covers", []):
+        if not isinstance(c, str) or ":" not in c:
+            errs.append(f"{lid}: covers entry '{c}' must be '<pdf_id>:<clause>'")
+            continue
+        std = c.split(":", 1)[0]
+        if std not in valid_pdf_ids:
+            errs.append(f"{lid}: covers pdf_id '{std}' not in allowlist")
     return errs
 
 
