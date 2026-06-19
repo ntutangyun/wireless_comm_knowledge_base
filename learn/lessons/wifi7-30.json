@@ -1,0 +1,114 @@
+{
+  "id": "wifi7-30",
+  "title": {
+    "en": "EHT Stream Management: SCS, MSCS, QoS Characteristics, and ELA Link Adaptation",
+    "zh": "EHT 流管理：SCS、MSCS、QoS Characteristics 与 ELA 链路自适应"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A video call and a file download share the same Wi-Fi link, but they want completely different things. The download just wants to finish; the call wants every packet to arrive within tens of milliseconds, every time. Wi-Fi 7 (EHT) gives an application a way to say so. Instead of dumping all traffic into one undifferentiated pipe, a station can describe a particular flow's needs to the AP, ask the AP to recognise and prioritise that flow, and even tell the AP what data rate to use. This lesson walks through the four EHT mechanisms that make that conversation possible.",
+      "zh": "一通视频通话和一次文件下载共用同一条 Wi-Fi 链路，但它们想要的东西截然不同。下载只求尽快完成；通话却要求每一个数据包都在几十毫秒内、每一次都准时到达。Wi-Fi 7（EHT）为应用提供了一种“把话说清楚”的方式。站点不再把所有流量一股脑塞进同一根不加区分的管道，而是可以向 AP 描述某条具体业务流的需求、请求 AP 识别并优先处理这条流，甚至直接告诉 AP 该用多高的速率。本课就来梳理让这场“对话”成为可能的四个 EHT 机制。"
+    },
+    {
+      "type": "prose",
+      "en": "The first piece is the QoS Characteristics element — a compact form that states what a single traffic flow needs. It carries a direction (uplink, downlink, or direct link between two stations), the TID and user priority of the matching frames, and a set of numeric bounds: minimum and maximum service interval (how often the flow should be served), minimum and mean data rate, a delay bound in microseconds, maximum MSDU size, and an MSDU delivery ratio (e.g. 99.99% of packets delivered within the delay bound). It is the application's wish-list, expressed in units the MAC can schedule against.",
+      "zh": "第一块拼图是 QoS Characteristics 元素（QoS 特征元素）——一张紧凑的“表单”，用来声明单条业务流的需求。它携带一个方向（上行、下行，或两个站点之间的直连），匹配帧的 TID 与用户优先级，以及一组数值边界：最小与最大服务间隔（这条流应被服务的频率）、最小与平均数据速率、以微秒为单位的时延上限、最大 MSDU 大小，以及 MSDU 投递率（例如 99.99% 的数据包要在时延上限内送达）。它就是应用的“愿望清单”，用 MAC 层能据以调度的单位表达出来。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The QoS Characteristics element is advisory, not a hard contract. The standard says the AP *should* schedule so the delay bound and data rate are met — but exactly how it uses the numbers (and what it does when it can't meet them) is left to the implementation. Think of it as a well-specified request, not a guaranteed reservation.",
+      "zh": "QoS Characteristics 元素是“建议性”的，而非硬性合约。标准规定 AP *应当（should）* 这样调度，以满足时延上限与数据速率——但它究竟如何使用这些数值（以及在无法满足时怎么办）则交由具体实现决定。可以把它理解为一份描述清晰的请求，而不是一份必然兑现的预约。"
+    },
+    {
+      "type": "prose",
+      "en": "How does the AP know which packets belong to the flow? Two classification mechanisms. SCS (Stream Classification Service) is the station saying \"here is a flow I am about to send or receive — here are its traffic rules and its QoS Characteristics.\" The station sends an SCS Request frame carrying an SCS Descriptor (with the QoS Characteristics element inside), each stream tagged by a unique SCSID, and the AP replies with an SCS Response that accepts, declines, or counter-offers with suggested parameter changes. MSCS (Mirrored SCS) is a lighter shortcut: the station asks the AP to mirror the classification it already applies to the station's uplink traffic back onto the matching downlink, so the AP sets the user priority of those downlink packets correctly without a full per-stream description.",
+      "zh": "那么 AP 如何知道哪些数据包属于这条流？依靠两种分类机制。SCS（流分类服务）相当于站点说：“这是一条我即将发送或接收的流——这是它的流量规则和 QoS 特征。”站点发送一个 SCS Request 帧，其中携带 SCS Descriptor（内含 QoS Characteristics 元素），每条流用唯一的 SCSID 标识；AP 则回以 SCS Response，表示接受、拒绝，或给出带有“建议参数修改”的还价。MSCS（镜像 SCS）则是更轻量的捷径：站点请求 AP 把它已经施加于上行流量的分类“镜像”回对应的下行流量上，于是 AP 无需完整的逐流描述，便能为这些下行数据包正确设置用户优先级。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Non-AP EHT STA\n    participant AP as EHT AP\n    Note over STA: App needs a low-latency flow\n    STA->>AP: SCS Request (SCSID, QoS Characteristics: dir, delay bound, data rate, delivery ratio)\n    Note over AP: Can I schedule this?\n    AP-->>STA: SCS Response (Accept) / (Reject + suggested changes)\n    Note over STA,AP: AP classifies matching MSDUs into the stream\n    STA->>AP: ELA Control (MRQ) - please recommend MCS/NSS\n    AP-->>STA: ELA Control (MFB) - recommended EHT-MCS + NSS\n    Note over STA,AP: link adaptation converges faster",
+      "zh": "sequenceDiagram\n    participant STA as 非 AP EHT 站点\n    participant AP as EHT AP\n    Note over STA: 应用需要一条低时延流\n    STA->>AP: SCS Request（SCSID、QoS 特征：方向、时延上限、数据速率、投递率）\n    Note over AP: 我能调度得了吗？\n    AP-->>STA: SCS Response（接受）/（拒绝 + 建议修改）\n    Note over STA,AP: AP 将匹配的 MSDU 归入该流\n    STA->>AP: ELA Control（MRQ）——请推荐 MCS/NSS\n    AP-->>STA: ELA Control（MFB）——推荐的 EHT-MCS 与 NSS\n    Note over STA,AP: 链路自适应更快收敛"
+    },
+    {
+      "type": "prose",
+      "en": "The last piece tunes the radio itself. Link adaptation is the ongoing job of picking the right modulation-and-coding scheme (MCS) and number of spatial streams (NSS) for current channel conditions — too aggressive and frames fail, too conservative and you waste airtime. EHT adds the ELA (EHT Link Adaptation) Control subfield, carried in the HE-variant HT Control field. One side can send an MRQ (a request) asking the peer to measure the link and recommend an EHT-MCS/NSS; the peer replies with MFB (feedback) labelled by an MSI tag so requests and responses can be matched up even when answers are delayed. A station can also send *unsolicited* MFB to volunteer its preferred rate. Because the receiver — who actually sees the channel — does the measuring, the transmitter converges on a good rate faster than guessing from ACKs alone.",
+      "zh": "最后一块拼图调的是“电台”本身。链路自适应是一项持续进行的工作：为当前信道条件挑选合适的调制编码方案（MCS）与空间流数量（NSS）——太激进则丢帧，太保守则浪费空口时间。EHT 新增了 ELA（EHT 链路自适应）Control 子字段，承载于 HE 变体的 HT Control 字段中。一方可以发送 MRQ（请求），让对端测量链路并推荐一个 EHT-MCS/NSS；对端回以 MFB（反馈），并用 MSI 标签加以标记，这样即使回复有延迟，请求与响应也能正确配对。站点还可以主动发送*非请求型（unsolicited）* MFB，自荐其偏好的速率。由于真正“看得见”信道的是接收方，由它来测量，发送方便能比仅凭 ACK 猜测更快地收敛到合适的速率。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "These mechanisms compose. A flow's QoS Characteristics can ask the AP to align service intervals with negotiated TWT / restricted TWT wake times, so a latency-sensitive stream is served inside a scheduled, low-contention window — and ELA keeps the rate dialled in. Classification (SCS/MSCS), scheduling (QoS Characteristics + TWT), and rate (ELA) are three knobs working together.",
+      "zh": "这些机制是可以叠加组合的。一条流的 QoS 特征可以请求 AP 将服务间隔与已协商的 TWT / 受限 TWT（restricted TWT）唤醒时刻对齐，从而让对时延敏感的流在一个已调度、低竞争的窗口内得到服务——而 ELA 则持续把速率“调准”。分类（SCS/MSCS）、调度（QoS 特征 + TWT）、速率（ELA）这三个旋钮是协同工作的。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact EHT rules: SCS capability gating, ELA support levels, and TWT alignment",
+        "zh": "精确的 EHT 规则：SCS 能力门控、ELA 支持等级与 TWT 对齐"
+      },
+      "en": "Clause 35.17 (EHT SCS) gates the feature: a STA may include a QoS Characteristics element in an SCS Request (Request Type Add or Change) only if it received an EHT Capabilities element with the SCS Traffic Description Support subfield equal to 1, and SCSIDs are unique at the MLD level. An AP that rejects with REJECTED_WITH_SUGGESTED_CHANGES must echo a QoS Characteristics element carrying its counter-offer (only Minimum/Maximum Service Interval, Service Start Time, and Medium Time may differ). The element itself (9.4.2.326) starts with a Control Info field — Direction (Table 9-417w: 0 UL, 1 DL, 2 direct link), TID, User Priority, a Presence Bitmap of optional fields, and LinkID — followed by Minimum/Maximum Service Interval, Minimum Data Rate, Delay Bound, and optional fields whose presence the bitmap signals. Clause 35.18 (EHT MSCS) makes MSCS an MLD-level service, signalled by the Mirrored SCS field of the Extended Capabilities element. Clause 35.19 (ELA) defines support levels via the EHT Link Adaptation Support subfield: a STA must not send an MRQ to a peer that has not advertised 3, and must not send unsolicited MFB to a peer that advertised neither 2 nor 3; the HLA/ELA subfield set to 1 marks the Control Information as an ELA Control subfield, and a solicited MFB sets EHT-MCS=15, NSS=7 to decline. The recommended EHT-MCS targets a 10% frame error rate for a 3895-octet MPDU. Per 35.17 the AP should align service intervals with negotiated TWT/R-TWT SPs; 35.20 says an EHT TWT STA follows 26.8 and 10.46.1 except a trigger-enabled SP's Trigger frame may be an MU-RTS TXS Trigger frame.",
+      "zh": "35.17 节（EHT SCS）对该特性设置了门控：只有当站点收到的 EHT Capabilities 元素中 SCS Traffic Description Support 子字段等于 1 时，它才可以在 SCS Request（Request Type 为 Add 或 Change）中包含 QoS Characteristics 元素，且 SCSID 在 MLD 级别上唯一。AP 若以 REJECTED_WITH_SUGGESTED_CHANGES 拒绝，必须回带一个携带其还价的 QoS Characteristics 元素（仅最小/最大服务间隔、Service Start Time 与 Medium Time 可不同）。元素本身（9.4.2.326）以 Control Info 字段开头——方向（表 9-417w：0 上行、1 下行、2 直连）、TID、用户优先级、可选字段的存在位图（Presence Bitmap）以及 LinkID——其后是最小/最大服务间隔、最小数据速率、时延上限，以及由位图指示其存在与否的可选字段。35.18 节（EHT MSCS）将 MSCS 定为 MLD 级服务，由 Extended Capabilities 元素的 Mirrored SCS 字段指示。35.19 节（ELA）通过 EHT Link Adaptation Support 子字段定义支持等级：站点不得向未声明值为 3 的对端发送 MRQ，也不得向既非 2 又非 3 的对端发送非请求型 MFB；HLA/ELA 子字段置 1 表示该 Control Information 为 ELA Control 子字段，而被请求的 MFB 以 EHT-MCS=15、NSS=7 表示拒绝。推荐的 EHT-MCS 以 3895 字节 MPDU 达到 10% 帧错误率为目标。依 35.17 节，AP 应使服务间隔与已协商的 TWT/R-TWT 服务周期对齐；35.20 节规定 EHT TWT 站点遵循 26.8 与 10.46.1，但触发使能服务周期内的 Trigger 帧可以是 MU-RTS TXS Trigger 帧。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          653,
+          654,
+          655,
+          656,
+          658
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.17",
+    "80211be-2024:35.18",
+    "80211be-2024:35.19",
+    "80211be-2024:35.20",
+    "80211be-2024:9.4.2.326",
+    "80211be-2024:9.2.4.7.11"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        279,
+        280,
+        281,
+        282,
+        283
+      ],
+      "note": "9.4.2.326 QoS Characteristics element — Control Info (Direction/TID/UP/LinkID), service intervals, data rates, delay bound, MSDU delivery info"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        653,
+        654,
+        655
+      ],
+      "note": "35.17 EHT SCS procedure — SCS Traffic Description Support gating, SCSID at MLD level, REJECTED_WITH_SUGGESTED_CHANGES, TWT/R-TWT alignment"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        656
+      ],
+      "note": "35.18 EHT MSCS procedure (MLD-level, Mirrored SCS capability) and 35.19 ELA Control subfield — EHT Link Adaptation Support levels 2/3, HLA/ELA, MRQ"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        656,
+        657,
+        658
+      ],
+      "note": "35.19 ELA MRQ/MFB, MSI tagging, solicited vs unsolicited MFB, EHT-MCS=15/NSS=7 decline, 10% FER target; 35.20 EHT TWT operation (MU-RTS TXS)"
+    }
+  ],
+  "track": "wifi7-eht"
+}

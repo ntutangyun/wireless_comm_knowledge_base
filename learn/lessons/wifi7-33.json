@@ -1,0 +1,129 @@
+{
+  "id": "wifi7-33",
+  "title": {
+    "en": "The EHT PHY Service Interface: TXVECTOR, RXVECTOR, TRIGVECTOR, and Talking to Older Formats",
+    "zh": "EHT PHY 服务接口：TXVECTOR、RXVECTOR、TRIGVECTOR 与对旧格式的兼容"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A Wi-Fi 7 chip has two halves that have to talk to each other: the MAC, which decides what to send and to whom, and the PHY, which actually turns bits into radio waves. They don't share variables — they pass each other a structured parameter list across a defined boundary called the PHY service interface. When the MAC wants to transmit a packet, it doesn't hand the PHY a finished waveform; it hands it a recipe. That recipe is the TXVECTOR.",
+      "zh": "一颗 Wi-Fi 7 芯片有两个必须互相对话的部分：MAC 负责决定发什么、发给谁；PHY 负责把比特真正变成无线电波。它们并不共享变量——而是通过一个被明确定义的边界（称为 PHY 服务接口）互相传递一份结构化的参数列表。当 MAC 想要发送一个数据包时，它并不会把一段成品波形交给 PHY，而是交给它一份“配方”。这份配方就是 TXVECTOR。"
+    },
+    {
+      "type": "prose",
+      "en": "The EHT PHY exposes four such parameter lists, and each has a clear job. The TXVECTOR carries the per-PPDU transmit parameters the MAC supplies for one outgoing packet. The RXVECTOR is the mirror image: when a packet arrives, the PHY fills in an RXVECTOR to tell the MAC what it just received. The TRIGVECTOR is used only by an AP: it describes what an uplink EHT trigger-based (TB) PPDU response should look like, so the PHY knows how to receive the burst it solicited. And PHYCONFIG_VECTOR sets the slow-changing, static configuration of the radio — things that are independent of any single packet.",
+      "zh": "EHT PHY 暴露了四份这样的参数列表，每一份职责清晰。TXVECTOR 携带 MAC 为某个待发数据包提供的逐 PPDU 发送参数。RXVECTOR 则是它的镜像：当一个数据包到达时，PHY 填写一份 RXVECTOR，告诉 MAC 它刚刚收到了什么。TRIGVECTOR 仅由 AP 使用：它描述上行 EHT 触发式（TB）PPDU 响应应该是什么样子，以便 PHY 知道如何接收它所索取的那一段突发。而 PHYCONFIG_VECTOR 设置无线电的慢变、静态配置——这些参数与任何单个数据包无关。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n    subgraph MAC\n      A[transmit a PPDU]\n      B[receive a PPDU]\n      C[solicit a TB PPDU]\n      D[configure the radio]\n    end\n    subgraph PHY[EHT PHY]\n      P[Clause 36 PHY]\n    end\n    A -- TXVECTOR --> P\n    P -- RXVECTOR --> B\n    C -- TRIGVECTOR --> P\n    D -- PHYCONFIG_VECTOR --> P",
+      "zh": "flowchart LR\n    subgraph MAC\n      A[发送一个 PPDU]\n      B[接收一个 PPDU]\n      C[索取一个 TB PPDU]\n      D[配置无线电]\n    end\n    subgraph PHY[EHT PHY]\n      P[第 36 章 PHY]\n    end\n    A -- TXVECTOR --> P\n    P -- RXVECTOR --> B\n    C -- TRIGVECTOR --> P\n    D -- PHYCONFIG_VECTOR --> P"
+    },
+    {
+      "type": "prose",
+      "en": "What's inside a TXVECTOR? The single most important field is FORMAT, which decides the entire shape of the packet — it can be EHT_MU (a downlink packet to one or more users), EHT_TB (an uplink burst sent in response to a trigger), or, crucially, an older format like VHT, HT, or plain non-HT. After FORMAT come the knobs that define the transmission: CH_BANDWIDTH (20 up to 320 MHz, with two 320 MHz variants), MCS (the modulation-and-coding index 0–15), NUM_STS (spatial streams), GI_TYPE (the guard interval, 0.8 / 1.6 / 3.2 µs), RU_ALLOCATION (which resource units a user occupies), and INACTIVE_SUBCHANNELS (the puncturing bitmap that marks which 20 MHz subchannels are blanked out). On receive, the RXVECTOR reports many of the same fields back, plus measurements the MAC can't know in advance like RSSI and SNR.",
+      "zh": "TXVECTOR 里有什么？最重要的单个字段是 FORMAT，它决定了整个数据包的形态——它可以是 EHT_MU（发往一个或多个用户的下行数据包）、EHT_TB（响应触发而发送的上行突发），或者关键的是某种旧格式，如 VHT、HT 或纯 non-HT。FORMAT 之后是一系列定义本次发送的“旋钮”：CH_BANDWIDTH（20 一直到 320 MHz，含两种 320 MHz 变体）、MCS（调制与编码索引 0–15）、NUM_STS（空间流数）、GI_TYPE（保护间隔，0.8 / 1.6 / 3.2 µs）、RU_ALLOCATION（用户占用哪些资源单元），以及 INACTIVE_SUBCHANNELS（穿孔位图，标记哪些 20 MHz 子信道被打孔置空）。在接收侧，RXVECTOR 把许多相同字段回报上来，再加上 MAC 无法预先知道的测量值，如 RSSI 和 SNR。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Forward compatibility hides in the RXVECTOR. If an EHT radio receives a preamble whose U-SIG PHY Version Identifier is a future, unknown version, it doesn't just drop it — it reports FORMAT = PHY_VER_UNKNOWN and fills in only the six version-independent fields it could still read (FORMAT, RSSI_LEGACY, CH_BANDWIDTH, TXOP_DURATION, BSS_COLOR, UPLINK_FLAG). That lets a Wi-Fi 7 device defer to and avoid colliding with a Wi-Fi 8 transmission it doesn't otherwise understand.",
+      "zh": "前向兼容性就藏在 RXVECTOR 里。如果一台 EHT 无线电收到一段前导码，其 U-SIG 中的 PHY 版本标识符是某个未来的、未知的版本，它并不会直接丢弃——而是回报 FORMAT = PHY_VER_UNKNOWN，并只填入它仍能读出的那六个与版本无关的字段（FORMAT、RSSI_LEGACY、CH_BANDWIDTH、TXOP_DURATION、BSS_COLOR、UPLINK_FLAG）。这让一台 Wi-Fi 7 设备能够对一段它本来无法理解的 Wi-Fi 8 传输进行退避、避免碰撞。"
+    },
+    {
+      "type": "prose",
+      "en": "The TRIGVECTOR deserves its own mention because it captures something subtle: when an AP sends a Trigger frame asking several stations to transmit at once, the AP's PHY needs to be told in advance exactly what those simultaneous uplink bursts will look like. The TRIGVECTOR is that briefing — it lists the expected CH_BANDWIDTH, the L-SIG UL_LENGTH, the EHT-LTF/GI combination, and per-station lists (AID12_LIST, RU_ALLOCATION_LIST, FEC_CODING_LIST, EHT_MCS_LIST, SS_ALLOCATION_LIST) so the PHY can correctly demodulate each user's slice of the air. PHYCONFIG_VECTOR, by contrast, is the static setup: operating channel, channel width (up to 320 MHz), center frequency, and the disabled-subchannel bitmap for the BSS.",
+      "zh": "TRIGVECTOR 值得单独一提，因为它捕捉了一件微妙的事：当 AP 发送一个 Trigger 帧、要求多个站点同时发送时，AP 的 PHY 需要被预先告知这些同时到达的上行突发究竟长什么样。TRIGVECTOR 就是这份“简报”——它列出预期的 CH_BANDWIDTH、L-SIG 的 UL_LENGTH、EHT-LTF 与 GI 的组合，以及逐站点的列表（AID12_LIST、RU_ALLOCATION_LIST、FEC_CODING_LIST、EHT_MCS_LIST、SS_ALLOCATION_LIST），从而让 PHY 能够正确解调每个用户在空口上的那一份。相比之下，PHYCONFIG_VECTOR 是静态设置：工作信道、信道带宽（最高 320 MHz）、中心频率，以及该 BSS 的禁用子信道位图。"
+    },
+    {
+      "type": "prose",
+      "en": "Here's the part that keeps Wi-Fi 7 polite to its elders. The same Clause 36 interface that sends EHT packets must also still emit and recognize non-HT, HT, VHT, and HE PPDUs — otherwise a Wi-Fi 7 radio couldn't coexist with the Wi-Fi 5 laptop or Wi-Fi 4 printer next to it. The standard handles this by saying the EHT PHY logically contains all the older PHYs (Clauses 15–27). When the MAC sets FORMAT to, say, VHT, the EHT interface simply maps the EHT TXVECTOR parameters onto the corresponding Clause 21 parameters and behaves as if it were a VHT PHY. On receive, a format-detection step looks at the preamble and routes the packet to the right legacy receive procedure. One modern interface, many compatible behaviors underneath.",
+      "zh": "下面这部分让 Wi-Fi 7 对它的前辈们保持礼貌。同一个发送 EHT 数据包的第 36 章接口，也必须仍能发出并识别 non-HT、HT、VHT 和 HE 的 PPDU——否则一台 Wi-Fi 7 无线电就无法与旁边那台 Wi-Fi 5 笔记本或 Wi-Fi 4 打印机共存。标准的处理方式是规定 EHT PHY 在逻辑上包含所有旧 PHY（第 15 至 27 章）。当 MAC 把 FORMAT 设为比如 VHT 时，EHT 接口只是把 EHT 的 TXVECTOR 参数映射到对应的第 21 章参数上，并表现得就像一台 VHT PHY。在接收侧，一个格式检测步骤会查看前导码，并把数据包路由到正确的旧式接收流程。一个现代接口，底下却有许多兼容的行为。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 420 220' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='150' y='10' width='120' height='34' rx='5'/><text x='210' y='32' font-size='12' text-anchor='middle' stroke='none' fill='currentColor'>Clause 36 interface</text><text x='210' y='62' font-size='11' text-anchor='middle' stroke='none' fill='currentColor'>FORMAT routes the packet</text><line x1='210' y1='44' x2='40' y2='110'/><line x1='210' y1='44' x2='125' y2='110'/><line x1='210' y1='44' x2='210' y2='110'/><line x1='210' y1='44' x2='295' y2='110'/><line x1='210' y1='44' x2='380' y2='110'/><rect x='10' y='110' width='60' height='40' rx='4'/><text x='40' y='134' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>non-HT</text><rect x='95' y='110' width='60' height='40' rx='4'/><text x='125' y='134' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>HT</text><rect x='180' y='110' width='60' height='40' rx='4'/><text x='210' y='134' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>VHT</text><rect x='265' y='110' width='60' height='40' rx='4'/><text x='295' y='134' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>HE</text><rect x='350' y='110' width='60' height='40' rx='4' stroke-width='2.5'/><text x='380' y='134' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>EHT</text><text x='210' y='195' font-size='11' text-anchor='middle' stroke='none' fill='currentColor'>one interface, many PHY behaviors underneath</text></svg>",
+      "caption": {
+        "en": "The EHT PHY logically contains the older PHYs; the TXVECTOR FORMAT parameter selects which behavior runs.",
+        "zh": "EHT PHY 在逻辑上包含旧的各代 PHY；TXVECTOR 的 FORMAT 参数选择由哪种行为来执行。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact four-vector split and the legacy-mapping rules",
+        "zh": "四种向量的精确划分与旧格式映射规则"
+      },
+      "en": "Clause 36.2.1 names the four lists: the EHT MAC uses TXVECTOR (in PHY-TXSTART.request) for per-PPDU transmit parameters, the PHY uses RXVECTOR (in PHY-RXSTART.indication / PHY-RXEND.indication) to report received parameters, PHYCONFIG_VECTOR (in PHY-CONFIG.request) configures operation independent of any PPDU, and TRIGVECTOR (in PHY-TRIGGER.request) configures the AP PHY to receive an EHT TB PPDU over each assigned RU or MRU. Table 36-1 (36.2.2) is the full parameter catalogue with per-parameter TXVECTOR/RXVECTOR presence (Y/N/O, MU = per user, MR = per RU/MRU); it also defines the PHY_VER_UNKNOWN forward-compatibility case carrying only six fields. Table 36-2 (36.2.3) lists the TRIGVECTOR parameters (CH_BANDWIDTH, UL_LENGTH, GI_AND_EHT_LTF_TYPE, and the per-STA AID12/RU/FEC/MCS/SS lists). 36.2.4 defines PHYCONFIG_VECTOR (OPERATING_CHANNEL, CHANNEL_WIDTH up to 320 MHz, CENTER_FREQUENCY_SEGMENT_0, DISABLED_SUBCHANNEL_BITMAP). 36.2.5 (Table 36-3) maps FORMAT / NON_HT_MODULATION / CH_BANDWIDTH to a concrete PPDU format. 36.2.6.1 states the EHT PHY logically contains the Clause 15/16/17/18/19/21/27 PHYs and routes through them (Figures 36-1/2/3 show TX, RX, and CONFIG/CCA interaction); 36.2.6.2–36.2.6.5 give the parameter-mapping rules for non-HT, HT, VHT, and HE respectively (e.g. for VHT and HE a CHANNEL_WIDTH of 320 MHz is replaced by 160 MHz and the disabled-subchannel bitmap is ignored).",
+      "zh": "36.2.1 节命名了这四份列表：EHT MAC 使用 TXVECTOR（位于 PHY-TXSTART.request）提供逐 PPDU 的发送参数；PHY 使用 RXVECTOR（位于 PHY-RXSTART.indication / PHY-RXEND.indication）回报所接收的参数；PHYCONFIG_VECTOR（位于 PHY-CONFIG.request）配置与任何 PPDU 无关的运行；TRIGVECTOR（位于 PHY-TRIGGER.request）配置 AP 的 PHY，使其能在每个被分配的 RU 或 MRU 上接收 EHT TB PPDU。表 36-1（36.2.2）是完整的参数目录，标注了每个参数在 TXVECTOR/RXVECTOR 中是否出现（Y/N/O，MU = 逐用户，MR = 逐 RU/MRU）；它还定义了 PHY_VER_UNKNOWN 前向兼容情形，此时仅携带六个字段。表 36-2（36.2.3）列出 TRIGVECTOR 参数（CH_BANDWIDTH、UL_LENGTH、GI_AND_EHT_LTF_TYPE，以及逐 STA 的 AID12/RU/FEC/MCS/SS 列表）。36.2.4 定义 PHYCONFIG_VECTOR（OPERATING_CHANNEL、最高 320 MHz 的 CHANNEL_WIDTH、CENTER_FREQUENCY_SEGMENT_0、DISABLED_SUBCHANNEL_BITMAP）。36.2.5（表 36-3）将 FORMAT / NON_HT_MODULATION / CH_BANDWIDTH 映射到具体的 PPDU 格式。36.2.6.1 规定 EHT PHY 在逻辑上包含第 15/16/17/18/19/21/27 章的各 PHY 并经由它们路由（图 36-1/2/3 分别展示发送、接收、以及 CONFIG/CCA 的交互）；36.2.6.2 至 36.2.6.5 分别给出 non-HT、HT、VHT、HE 的参数映射规则（例如对 VHT 与 HE，320 MHz 的 CHANNEL_WIDTH 会被替换为 160 MHz，且禁用子信道位图被忽略）。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          665,
+          666,
+          680,
+          681,
+          682,
+          684,
+          685,
+          686,
+          687
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:36.2.1",
+    "80211be-2024:36.2.2",
+    "80211be-2024:36.2.3",
+    "80211be-2024:36.2.4",
+    "80211be-2024:36.2.5",
+    "80211be-2024:36.2.6.1",
+    "80211be-2024:36.2.6.2",
+    "80211be-2024:36.2.6.3",
+    "80211be-2024:36.2.6.4",
+    "80211be-2024:36.2.6.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        665
+      ],
+      "note": "36.2.1 Introduction — TXVECTOR/RXVECTOR/PHYCONFIG_VECTOR/TRIGVECTOR roles; 36.2.2 PHY_VER_UNKNOWN six-field forward-compat case"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        666,
+        670,
+        671,
+        675
+      ],
+      "note": "Table 36-1 TXVECTOR/RXVECTOR parameters — FORMAT, CH_BANDWIDTH, MCS, NUM_STS, GI_TYPE, RU_ALLOCATION, INACTIVE_SUBCHANNELS, RSSI"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        680,
+        681
+      ],
+      "note": "36.2.3 Table 36-2 TRIGVECTOR parameters; 36.2.4 PHYCONFIG_VECTOR"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        682,
+        684,
+        685,
+        686,
+        687
+      ],
+      "note": "36.2.5 Table 36-3 FORMAT/CH_BANDWIDTH interpretation; 36.2.6.1-36.2.6.5 support for non-HT/HT/VHT/HE and legacy parameter mapping"
+    }
+  ],
+  "track": "wifi7-eht"
+}

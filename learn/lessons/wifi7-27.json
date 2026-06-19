@@ -1,0 +1,132 @@
+{
+  "id": "wifi7-27",
+  "title": {
+    "en": "Advertising a Multi-Link AP: Per-STA Profiles, Inheritance, and Multi-Link Probing",
+    "zh": "广播一个多链路 AP：Per-STA Profile、继承机制与多链路探测"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "An EHT access point that runs several radios at once is an AP MLD: one logical device, multiple affiliated APs, each on its own link (2.4, 5, 6 GHz). The hard part of discovery is that a single Beacon — heard on just one of those links — must describe ALL of them at once, compactly enough to fit in a frame. 802.11be solves this with the Multi-Link element: a Common Info field for what is shared, plus one Per-STA Profile subelement per other link. This lesson is about how that element is packed and how a client asks about specific links.",
+      "zh": "一个同时运行多个射频的 EHT 接入点就是一个 AP MLD：它是一个逻辑设备，下面挂着多个隶属 AP，每个 AP 各占一条链路（2.4、5、6 GHz）。发现过程的难点在于：一帧 Beacon——只在其中某一条链路上被听到——必须一次性描述出全部链路，而且要紧凑到能装进一帧里。802.11be 用「多链路元素（Multi-Link element）」来解决这个问题：一个承载共享信息的 Common Info 字段，外加每条其他链路一个 Per-STA Profile 子元素。本课讲的就是这个元素如何被打包，以及客户端如何就特定链路发起询问。"
+    },
+    {
+      "type": "prose",
+      "en": "Each affiliated AP gets a Link ID — an integer 0–14 that uniquely names it within the AP MLD and never changes for the lifetime of that AP's BSS, even if the AP later switches channel. That stable ID is the handle everyone uses: the AP stamps it into each Per-STA Profile, and a client later uses it to say 'tell me about THAT link.' Value 15 is reserved (it marks an unknown/non-MLD AP in a Reduced Neighbor Report), so an AP MLD never assigns it.",
+      "zh": "每个隶属 AP 都会分到一个 Link ID——一个 0 到 14 之间的整数，在该 AP MLD 内部唯一地标识它，并且在该 AP 的 BSS 整个生命周期内都不会改变，即便这个 AP 之后切换了信道也是如此。这个稳定的 ID 是各方都依赖的「把手」：AP 把它打进每一个 Per-STA Profile，客户端之后就用它来说「告诉我关于那条链路的信息」。数值 15 是保留的（它在 Reduced Neighbor Report 中标记一个未知的、非 MLD 的 AP），所以 AP MLD 绝不会把它分配出去。"
+    },
+    {
+      "type": "prose",
+      "en": "The trick that keeps the element small is inheritance. APs on the same MLD usually share most capabilities, so a Per-STA Profile carrying a complete profile does NOT repeat fields it shares with the reporting AP — it inherits them. The profile lists only what differs: an element is 'specific' to a reported link (and so must be carried) when its value would differ, or when it applies to that link but not the reporting one. To DROP an element the reporting AP carries but this link does not want, the profile ends with a Non-Inheritance element listing those Element IDs. A few fields are never carried per-STA at all — Timestamp, Beacon Interval, AID, TIM, and others live at the MLD level or per-link elsewhere.",
+      "zh": "让这个元素保持小巧的诀窍是「继承（inheritance）」。同一个 MLD 上的各 AP 通常共享大部分能力，所以一个携带完整 profile 的 Per-STA Profile 并不会重复它与报告 AP 共享的字段——它「继承」这些字段。profile 只列出有差异的部分：当某个元素的取值会不同、或者它适用于被报告链路却不适用于报告链路时，这个元素就被认为是该被报告链路「特有的」（因而必须被携带）。如果要「丢弃」一个报告 AP 携带、但本链路并不需要的元素，profile 会以一个 Non-Inheritance 元素结尾，里面列出这些 Element ID。还有少数字段根本不会被逐 STA 携带——Timestamp、Beacon Interval、AID、TIM 等，它们要么处于 MLD 层级，要么以逐链路的方式存放在别处。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 520 250' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='10' y='15' width='500' height='220' rx='6'/><text x='20' y='35' stroke='none' fill='currentColor' font-size='13' font-weight='bold'>Multi-Link element (in a Beacon on link 0)</text><rect x='25' y='50' width='150' height='40' rx='4'/><text x='100' y='68' stroke='none' fill='currentColor' font-size='11' text-anchor='middle'>Multi-Link Control</text><text x='100' y='82' stroke='none' fill='currentColor' font-size='10' text-anchor='middle'>(Type, presence bitmap)</text><rect x='185' y='50' width='150' height='40' rx='4'/><text x='260' y='68' stroke='none' fill='currentColor' font-size='11' text-anchor='middle'>Common Info</text><text x='260' y='82' stroke='none' fill='currentColor' font-size='10' text-anchor='middle'>(shared: MLD MAC...)</text><text x='40' y='115' stroke='none' fill='currentColor' font-size='11' font-weight='bold'>Link Info: one Per-STA Profile per OTHER link</text><rect x='25' y='125' width='220' height='95' rx='4'/><text x='35' y='143' stroke='none' fill='currentColor' font-size='11'>Per-STA Profile (Link ID = 1)</text><text x='35' y='160' stroke='none' fill='currentColor' font-size='10'>STA Control: Complete=1</text><text x='35' y='176' stroke='none' fill='currentColor' font-size='10'>STA Info: link MAC, beacon int...</text><text x='35' y='192' stroke='none' fill='currentColor' font-size='10'>STA Profile: only the DIFFs</text><text x='35' y='208' stroke='none' fill='currentColor' font-size='10'>+ Non-Inheritance (drop list)</text><rect x='260' y='125' width='220' height='95' rx='4'/><text x='270' y='143' stroke='none' fill='currentColor' font-size='11'>Per-STA Profile (Link ID = 2)</text><text x='270' y='160' stroke='none' fill='currentColor' font-size='10'>inherits shared fields</text><text x='270' y='176' stroke='none' fill='currentColor' font-size='10'>from the reporting AP</text><text x='270' y='192' stroke='none' fill='currentColor' font-size='10'>if &gt; 255 octets -&gt; fragment</text><text x='270' y='208' stroke='none' fill='currentColor' font-size='10'>into Fragment subelements</text></svg>",
+      "caption": {
+        "en": "One Beacon, all links: Common Info holds the shared parts; each other link rides in its own Per-STA Profile keyed by Link ID, listing only its differences plus a Non-Inheritance drop list.",
+        "zh": "一帧 Beacon，承载全部链路：Common Info 存放共享部分；每条其他链路坐进它自己的、以 Link ID 为索引的 Per-STA Profile，只列出它的差异，再加一份 Non-Inheritance 丢弃清单。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A Per-STA Profile is a subelement, and subelements are capped at 255 octets of content. When one link's complete profile overflows that, the AP fragments it: the Per-STA Profile subelement is filled with the first 255 octets, then immediately followed by one or more Fragment subelements (ID 254) carrying the rest, with the final fragment holding (length mod 255) octets. A Fragment subelement is never the first or only subelement, and only follows a subelement that was full at 255.",
+      "zh": "Per-STA Profile 是一个「子元素」，而子元素的内容上限是 255 个八位组。当某条链路的完整 profile 超出这个上限时，AP 会对它进行分片：Per-STA Profile 子元素先装满前 255 个八位组，紧接着跟上一个或多个 Fragment 子元素（ID 254）来承载其余部分，最后一个分片装 (长度 mod 255) 个八位组。Fragment 子元素永远不会是第一个或唯一的子元素，并且只会跟在一个已被装满到 255 的子元素后面。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the other direction. Instead of waiting for a Beacon or probing each link separately, a non-AP MLD can send ONE multi-link probe request: a Probe Request carrying a Probe Request Multi-Link element. With no per-STA profiles inside, it asks for every affiliated AP's complete profile at once. With Per-STA Profile subelements, each keyed by a Link ID, it asks about exactly those links — and can request only a partial profile (specific elements) via a (Extended) Request element. The targeted AP MLD is named by the AP MLD ID subfield. The AP replies with a multi-link probe response: a Probe Response whose Basic Multi-Link element carries the requested complete or partial profiles.",
+      "zh": "现在看另一个方向。与其等待 Beacon、或逐条链路分别探测，一个非 AP MLD 可以发送「一次」多链路探测请求：一个携带 Probe Request Multi-Link element 的 Probe Request 帧。如果里面不含任何 per-STA profile，它就是一次性请求每一个隶属 AP 的完整 profile。如果含有 Per-STA Profile 子元素（每个以一个 Link ID 为索引），它就只询问那几条链路——并且可以通过 (Extended) Request 元素只请求一个部分 profile（指定的若干元素）。被询问的目标 AP MLD 由 AP MLD ID 子字段指明。AP 则以一次多链路探测响应回复：一个 Probe Response，其 Basic Multi-Link element 承载所请求的完整或部分 profile。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as non-AP MLD (STA on 2.4 GHz)\n    participant AP as AP MLD (AP1 on 2.4 GHz)\n    Note over STA,AP: discover all links from one link\n    AP-->>STA: Beacon [B] (Basic ML element: Link IDs of other APs)\n    STA->>AP: (ML) Probe Request [IB] (Probe Request ML element, Link IDs asked)\n    AP-->>STA: (ML) Probe Response [cB] (Basic ML element: requested profiles)\n    Note over STA,AP: now ML setup proceeds\n    STA->>AP: Authentication [I]\n    AP-->>STA: Authentication [I]\n    STA->>AP: (Re)Association Request [I]\n    AP-->>STA: (Re)Association Response [I]\n    Note over STA,AP: 4-way handshake [I]",
+      "zh": "sequenceDiagram\n    participant STA as 非AP MLD (2.4 GHz 上的 STA)\n    participant AP as AP MLD (2.4 GHz 上的 AP1)\n    Note over STA,AP: 从一条链路发现全部链路\n    AP-->>STA: Beacon [B]（Basic ML 元素：其他 AP 的 Link ID）\n    STA->>AP: (ML) Probe Request [IB]（Probe Request ML 元素，询问的 Link ID）\n    AP-->>STA: (ML) Probe Response [cB]（Basic ML 元素：所请求的 profile）\n    Note over STA,AP: 随后进入 ML setup\n    STA->>AP: Authentication [I]\n    AP-->>STA: Authentication [I]\n    STA->>AP: (Re)Association Request [I]\n    AP-->>STA: (Re)Association Response [I]\n    Note over STA,AP: 四次握手 [I]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact inheritance rule, fragmentation math, and discovery sequence",
+        "zh": "精确的继承规则、分片算法与发现时序"
+      },
+      "en": "Clause 35.3.3.5.1 makes inheritance precise: it applies only when the Per-STA Profile carries a complete profile (Complete Profile subfield = 1). An element carried outside the Basic Multi-Link element, with no same-ID element inside the reported STA's complete profile, is taken to be part of that STA's profile with the same value — UNLESS it is listed in a Non-Inheritance element (9.4.2.239) or excluded by 35.3.3.4. If a same-ID element IS present inside the profile, that one wins and the outside copy is not part of the reported STA's profile. 35.3.3.7 fragments a Per-STA Profile whose content exceeds 255 octets into P + Q portions where P = ceil(L/255) and Q = 1 iff (L mod 255) > 0: the subelement holds the first 255, then P-1 Fragment subelements of 255, then if Q=1 a final Fragment of (L mod 255) octets; defragmentation stops at any non-Fragment subelement or the end of the last element fragment. 35.3.4.6 specifies the discovery-to-setup exchange (Figure 35-5): Beacon -> optional (non-ML or ML) Probe Request/Response to gather other links -> Authentication -> (Re)Association Request/Response -> 4-way handshake, with the ML setup performable on any link.",
+      "zh": "35.3.3.5.1 节把继承讲得很精确：它只在 Per-STA Profile 携带完整 profile（Complete Profile 子字段 = 1）时才适用。一个携带在 Basic Multi-Link element 之外、且在被报告 STA 的完整 profile 内部没有同 ID 元素的元素，会被视为该 STA profile 的一部分并沿用相同取值——除非它被列在 Non-Inheritance 元素（9.4.2.239）里，或被 35.3.3.4 排除。如果 profile 内部确实存在一个同 ID 的元素，则以内部的为准，外部那份不属于被报告 STA 的 profile。35.3.3.7 节对内容超过 255 个八位组的 Per-STA Profile 进行分片，分成 P + Q 段，其中 P = ceil(L/255)、当 (L mod 255) > 0 时 Q = 1：子元素装前 255，随后是 P-1 个各 255 字节的 Fragment 子元素，若 Q=1 再加一个 (L mod 255) 字节的末尾 Fragment；解分片在遇到任何非 Fragment 子元素或最后一个元素分片结束时停止。35.3.4.6 节规定了从发现到 setup 的交换（图 35-5）：Beacon -> 可选的 (非 ML 或 ML) Probe Request/Response 以收集其他链路 -> Authentication -> (Re)Association Request/Response -> 四次握手，而 ML setup 可在任意一条链路上完成。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          496,
+          499,
+          500,
+          506
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.3.3.1",
+    "80211be-2024:35.3.3.2",
+    "80211be-2024:35.3.3.3",
+    "80211be-2024:35.3.3.4",
+    "80211be-2024:35.3.3.5.1",
+    "80211be-2024:35.3.3.5.2",
+    "80211be-2024:35.3.3.6",
+    "80211be-2024:35.3.3.7",
+    "80211be-2024:35.3.4.1",
+    "80211be-2024:35.3.4.2",
+    "80211be-2024:35.3.4.3",
+    "80211be-2024:35.3.4.4",
+    "80211be-2024:35.3.4.5",
+    "80211be-2024:35.3.4.6"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        493,
+        494
+      ],
+      "note": "35.3.3.1-35.3.3.3 General; Link ID (0-14, stable for BSS lifetime, 15 reserved); complete vs partial per-link info"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        495,
+        496,
+        497
+      ],
+      "note": "35.3.3.4 fields never carried per-STA; 35.3.3.5.1/5.2 inheritance and Non-Inheritance element"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        499,
+        500
+      ],
+      "note": "35.3.3.6 processing; 35.3.3.7 subelement fragmentation P+Q portions, 255-octet Fragment subelements"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        500,
+        501,
+        502,
+        503,
+        504
+      ],
+      "note": "35.3.4.1-35.3.4.4 AP/non-AP discovery behavior; multi-link probe request/response and AP MLD ID"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        505,
+        506,
+        507
+      ],
+      "note": "35.3.4.5 EHT Probe Request content; 35.3.4.6 frame-exchange sequence Figure 35-5 (discovery -> ML setup)"
+    }
+  ],
+  "track": "wifi7-eht"
+}

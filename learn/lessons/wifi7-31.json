@@ -1,0 +1,111 @@
+{
+  "id": "wifi7-31",
+  "title": {
+    "en": "The A-Control Toolbox: EHT OM, BQR, SRS, AAR, and TRS Control Subfields",
+    "zh": "A-Control 工具箱：EHT OM、BQR、SRS、AAR 与 TRS 控制子字段"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Most of the time a Wi-Fi station changes how it operates by sending a dedicated management or control frame. But that costs a whole frame and its overhead. 802.11 has a cheaper trick: the HT Control field of an ordinary data or QoS frame carries a small Aggregate Control (A-Control) field, and inside it you can pack one or more tiny Control subfields. Each subfield is a piggybacked micro-message — a few bits riding along on a frame the STA was already sending. EHT (Wi-Fi 7) adds several new ones to this toolbox.",
+      "zh": "大多数情况下，Wi-Fi 站点要改变自己的工作方式，会专门发一帧管理帧或控制帧。但这要付出整整一帧及其开销的代价。802.11 有个更省的办法：普通数据帧或 QoS 帧的 HT Control 字段里携带了一个聚合控制（A-Control）字段，在它内部可以塞进一个或多个微小的“控制子字段（Control subfield）”。每个子字段都是一条搭便车的微型消息——几个比特，搭着站点本来就要发的帧一起捎带过去。EHT（Wi-Fi 7）给这个工具箱新增了好几件工具。"
+    },
+    {
+      "type": "prose",
+      "en": "Each Control subfield starts with a Control ID that says which tool it is, followed by a Control Information payload whose length and meaning depend on that ID. This lesson walks through five members of the toolbox: EHT OM (change your operating mode mid-flight), BQR (report which 20 MHz subchannels are clean), SRS (schedule the duration of the control response that follows), AAR (ask sibling APs to help an NSTR link recover), and TRS (solicit a short triggered response without a full Trigger frame).",
+      "zh": "每个控制子字段都以一个 Control ID 开头，表明它是哪件工具，后面跟着一段 Control Information 载荷，其长度和含义取决于该 ID。本课会带你认识工具箱里的五位成员：EHT OM（在传输途中改变工作模式）、BQR（上报哪些 20 MHz 子信道是干净的）、SRS（为紧随其后的控制响应安排时长）、AAR（请同属一个 AP 的兄弟链路帮助 NSTR 链路恢复）以及 TRS（无需完整 Trigger 帧即可索取一个简短的触发响应）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='20' fill='currentColor' stroke='none' font-size='13'>A data / QoS frame the STA is already sending</text><rect x='10' y='35' width='110' height='34'/><text x='65' y='57' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>MAC header</text><rect x='120' y='35' width='130' height='34'/><text x='185' y='52' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>HT Control</text><text x='185' y='64' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>(A-Control)</text><rect x='250' y='35' width='260' height='34'/><text x='380' y='57' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>Frame body (your data) ...</text><line x1='120' y1='69' x2='40' y2='110'/><line x1='250' y1='69' x2='560' y2='110'/><rect x='40' y='110' width='520' height='38'/><text x='300' y='102' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>Inside A-Control: one or more Control subfields</text><rect x='50' y='116' width='84' height='26'/><text x='92' y='133' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>EHT OM</text><rect x='138' y='116' width='84' height='26'/><text x='180' y='133' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>BQR</text><rect x='226' y='116' width='84' height='26'/><text x='268' y='133' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>SRS</text><rect x='314' y='116' width='84' height='26'/><text x='356' y='133' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>AAR</text><rect x='402' y='116' width='84' height='26'/><text x='444' y='133' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>TRS</text><text x='300' y='175' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>Each = Control ID + Control Information (a few bits, no extra frame)</text></svg>",
+      "caption": {
+        "en": "Control subfields ride inside the A-Control of the HT Control field on a frame the STA already had to send — no separate frame needed.",
+        "zh": "控制子字段搭载在站点本就要发送的帧的 HT Control 字段中的 A-Control 内——无需单独发帧。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "EHT OM Control is the headline tool. The original (HE) OM Control could nudge a STA's bandwidth, receive spatial streams, and transmit streams. EHT extends that ceiling: a single-bit Channel Width Extension reaches 320 MHz, a Rx NSS Extension bit and a Tx NSTS Extension bit each combine with the older OM Control field to push the stream count beyond 8, and an MCS15 Disable bit lets a non-AP STA turn off EHT-MCS 15. Crucially, the EHT OM Control subfield is never sent alone — it must be concatenated with the legacy OM Control subfield in the same A-Control, with OM Control placed after it, so the two are read together.",
+      "zh": "EHT OM Control 是头号工具。原来的（HE）OM Control 已经可以微调站点的带宽、接收空间流和发送空间流。EHT 把上限往上抬：一个单比特的 Channel Width Extension 可达 320 MHz；一个 Rx NSS Extension 比特和一个 Tx NSTS Extension 比特各自与旧的 OM Control 字段组合，把流数推到 8 以上；还有一个 MCS15 Disable 比特，让非 AP 站点关闭 EHT-MCS 15。关键在于：EHT OM Control 子字段从不单独发送——它必须与旧的 OM Control 子字段拼接在同一个 A-Control 中，且 OM Control 放在其后，两者要合在一起解读。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[A frame I am sending anyway] --> B{What do I want to say?}\n    B -->|Change my mode: go to 320 MHz / more streams| C[EHT OM Control + OM Control]\n    B -->|Tell peer which 20 MHz are idle| D[BQR Control: Available Channel Bitmap]\n    B -->|Set duration of the non-TB response that follows| E[SRS Control: PPDU Response Duration]\n    B -->|Ask sibling APs to help my NSTR link recover| F[AAR Control: Assisting AP Link ID Bitmap]\n    B -->|Solicit a short TB response, no Trigger frame| G[TRS Control: RU + MCS + power]",
+      "zh": "flowchart TD\n    A[一帧我本来就要发的帧] --> B{我想表达什么?}\n    B -->|改变模式: 切到 320 MHz / 增加流数| C[EHT OM Control + OM Control]\n    B -->|告诉对端哪些 20 MHz 空闲| D[BQR Control: Available Channel Bitmap]\n    B -->|设定紧随其后的 non-TB 响应时长| E[SRS Control: PPDU Response Duration]\n    B -->|请兄弟 AP 帮我的 NSTR 链路恢复| F[AAR Control: Assisting AP Link ID Bitmap]\n    B -->|索取简短 TB 响应, 无需 Trigger 帧| G[TRS Control: RU + MCS + 功率]"
+    },
+    {
+      "type": "prose",
+      "en": "The other four are narrower but just as handy. BQR (Bandwidth Query Report) carries an Available Channel Bitmap: each bit maps to a 20 MHz subchannel, set to 1 when that subchannel is idle per CCA — for a 320 MHz EHT BSS two BQR subfields cover the primary and secondary 160 MHz. TRS (Triggered Response Scheduling) lets a frame solicit a short uplink TB PPDU response by carrying its RU allocation, MCS, and target power — a lightweight alternative to sending a full Trigger frame. SRS (Scheduled Response Sounding/Scheduling) carries a PPDU Response Duration that sets the length of the non-TB control response that immediately follows. AAR (Assisted AP Recovery) carries an Assisting AP Link ID Bitmap asking which sibling APs of an AP MLD should help a non-AP STA on an NSTR link pair recover medium synchronization.",
+      "zh": "另外四件工具更专一，但同样实用。BQR（Bandwidth Query Report，带宽查询报告）携带一个 Available Channel Bitmap：每个比特对应一个 20 MHz 子信道，当该子信道按 CCA 判定为空闲时置 1——对一个 320 MHz 的 EHT BSS，用两个 BQR 子字段分别覆盖主、次 160 MHz。TRS（Triggered Response Scheduling，触发响应调度）让一帧通过携带 RU 分配、MCS 和目标功率来索取一个简短的上行 TB PPDU 响应——这是发送完整 Trigger 帧的轻量替代方案。SRS（响应调度）携带一个 PPDU Response Duration，用来设定紧随其后的 non-TB 控制响应帧的时长。AAR（Assisted AP Recovery，辅助 AP 恢复）携带一个 Assisting AP Link ID Bitmap，请求 AP MLD 中哪些兄弟 AP 来帮助 NSTR 链路对上的某个非 AP 站点恢复媒介同步。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why piggyback at all? On a busy link, every separately transmitted frame competes for the medium and burns airtime on preamble and headers. Stuffing a mode change or a channel report into the HT Control of a frame you were already going to send means the message arrives essentially for free — no extra contention, no extra preamble. That is the whole appeal of the A-Control toolbox.",
+      "zh": "为什么非要搭便车？在繁忙的链路上，每一帧单独发送都要竞争媒介，并在前导码和帧头上消耗空口时间。把一次模式变更或一份信道报告塞进你本就要发送的那一帧的 HT Control 里，意味着这条消息几乎是“免费”送达的——不增加竞争，也不增加前导码。这正是 A-Control 工具箱的全部魅力所在。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact subfield layouts and the EHT OM concatenation rule",
+        "zh": "各子字段的精确布局与 EHT OM 拼接规则"
+      },
+      "en": "Per 9.2.4.7.8, the EHT OM Control's Control Information is six bits: Rx NSS Extension (1), Channel Width Extension (1), Tx NSTS Extension (1), MCS15 Disable (1), Reserved (2). Channel Width Extension = 1 with the OM Control Channel Width = 0 encodes 320 MHz; the Rx NSS/Tx NSTS Extension bits combine with the OM Control NSS/NSTS subfields per Tables 9-33a and 9-33c to indicate NSS-1 / NSTS-1. Clause 35.9 makes the binding explicit: a STA shall not include an EHT OM Control field unless OM Control is present in the same A-Control field, the EHT OM Control subfield is concatenated with OM Control located after it, and the sender is the OMI initiator. SRS (9.2.4.7.9) is an 8-bit PPDU Response Duration in units of 4 microseconds plus 2 reserved bits. AAR (9.2.4.7.10) is a 16-bit Assisting AP Link ID Bitmap (bit i = link ID i requested to assist; the bit for the addressed AP is 0; bit 15 reserved) plus 4 reserved bits. TRS (9.2.4.7.1) carries UL Data Symbols, RU Allocation, AP Tx Power, UL Target Receive Power, and UL MCS; for an EHT MU PPDU the UL MCS field maps 0/1/2/3 to EHT-MCS 0/1/3/15. BQR (9.2.4.7.6) reports idle 20 MHz subchannels (bit X = 1 means subchannel X+1 idle) based on PHY-CCA.indication.",
+      "zh": "依据 9.2.4.7.8，EHT OM Control 的 Control Information 共六比特：Rx NSS Extension（1）、Channel Width Extension（1）、Tx NSTS Extension（1）、MCS15 Disable（1）、保留（2）。当 Channel Width Extension = 1 且 OM Control 的 Channel Width = 0 时编码为 320 MHz；Rx NSS / Tx NSTS Extension 比特按表 9-33a 和表 9-33c 与 OM Control 的 NSS / NSTS 子字段组合，指示 NSS-1 / NSTS-1。35.9 节把这一绑定写得很明确：除非同一个 A-Control 字段中存在 OM Control，否则站点不得包含 EHT OM Control 字段；EHT OM Control 子字段须与其后的 OM Control 拼接，且发送方即为 OMI 发起者。SRS（9.2.4.7.9）是一个 8 比特、以 4 微秒为单位的 PPDU Response Duration，外加 2 个保留比特。AAR（9.2.4.7.10）是一个 16 比特的 Assisting AP Link ID Bitmap（比特 i = 请求链路 ID i 协助；被寻址 AP 对应的比特置 0；比特 15 保留），外加 4 个保留比特。TRS（9.2.4.7.1）携带 UL Data Symbols、RU Allocation、AP Tx Power、UL Target Receive Power 和 UL MCS；对 EHT MU PPDU，UL MCS 字段将 0/1/2/3 映射为 EHT-MCS 0/1/3/15。BQR（9.2.4.7.6）上报空闲的 20 MHz 子信道（比特 X = 1 表示子信道 X+1 空闲），依据 PHY-CCA.indication。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          120,
+          121,
+          122,
+          123
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:9.2.4.7.1",
+    "80211be-2024:9.2.4.7.6",
+    "80211be-2024:9.2.4.7.8",
+    "80211be-2024:9.2.4.7.9",
+    "80211be-2024:9.2.4.7.10",
+    "80211be-2024:35.9"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        118,
+        119
+      ],
+      "note": "9.2.4.7.1 TRS Control (solicits HE/EHT TB PPDU; RU Allocation, AP Tx Power, UL Target Receive Power, UL MCS) and 9.2.4.7.6 BQR Control (Available Channel Bitmap of idle 20 MHz subchannels)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        120,
+        121
+      ],
+      "note": "9.2.4.7.8 EHT OM Control — Rx NSS / Channel Width / Tx NSTS Extension, MCS15 Disable; Figure 9-33a and Tables 9-33a/b/c encodings"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        122,
+        123
+      ],
+      "note": "9.2.4.7.9 SRS Control (PPDU Response Duration) and 9.2.4.7.10 AAR Control (Assisting AP Link ID Bitmap, NSTR medium-sync recovery)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        622,
+        623
+      ],
+      "note": "35.9 Operating mode indication — EHT OM Control concatenation rule and OMI initiator/responder, NSS computation"
+    }
+  ],
+  "track": "wifi7-eht"
+}

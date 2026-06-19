@@ -1,0 +1,121 @@
+{
+  "id": "wifi7-29",
+  "title": {
+    "en": "MLO Meets the Rest of the MAC: Multiple-BSSID, TDLS, Proxy-ARP, BTM, and MLD MIBs",
+    "zh": "MLO 与旧 MAC 机制的融合：Multiple-BSSID、TDLS、Proxy-ARP、BTM 与 MLD MIB"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Multi-link operation (MLO) was bolted onto a MAC layer that, for two decades, assumed one device meant one link. So the EHT amendment had to walk back through every pre-existing MAC service and ask the same question: what does this feature mean now that one logical device (an MLD) owns several radios at once? This lesson tours the answers for five long-standing services — sharing a BSSID set, direct station-to-station links (TDLS), proxy-ARP, BSS-steering (BTM), and the MAC counters in the MIB. The recurring trick is the same: re-map each feature from 'per link' onto 'one MLD with many links'.",
+      "zh": "多链路操作（MLO）是被嫁接到一个二十年来都默认“一台设备就是一条链路”的 MAC 层之上的。因此 EHT 修正案不得不回过头去审视每一个早已存在的 MAC 服务，并反复追问同一个问题：当一个逻辑设备（MLD）同时拥有多个射频时，这项功能究竟意味着什么？本课带你巡览五项老牌服务给出的答案——共享 BSSID 集合、站点间直连链路（TDLS）、代理 ARP、BSS 引导（BTM）以及 MIB 中的 MAC 计数器。其中反复出现的同一套手法是：把每个功能从“按链路”重新映射到“一个 MLD 拥有多条链路”。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the BSSID sets. A multiple-BSSID set lets one radio advertise many virtual APs from a single Beacon; a co-hosted BSSID set is a looser grouping of independent BSSIDs sharing a radio. EHT's rule is deliberately strict: an AP MLD may have at most one affiliated AP inside any given multiple-BSSID set or co-hosted set. Each affiliated AP is configured independently (transmitted BSSID, nontransmitted BSSID, co-hosted member, or none), and each gets its own Link ID. Crucially, a Multi-Link element is never inherited from the transmitted BSSID to a nontransmitted profile — every AP's MLD MAC address differs, so the element simply can't be shared.",
+      "zh": "先从 BSSID 集合说起。Multiple-BSSID 集合允许一个射频用单个 Beacon 通告多个虚拟 AP；co-hosted BSSID 集合则是共享同一射频的多个独立 BSSID 的较松散分组。EHT 的规则刻意从严：在任意一个 multiple-BSSID 集合或 co-hosted 集合中，一个 AP MLD 最多只能有一个隶属 AP。每个隶属 AP 都独立配置（发送 BSSID、非发送 BSSID、co-hosted 成员，或都不是），并各自获得一个 Link ID。关键在于：Multi-Link 元素绝不会从发送 BSSID 继承到非发送配置——因为每个 AP 的 MLD MAC 地址都不同，该元素根本无法共享。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    MLD[\"AP MLD\"] -->|Link 0| AP_A[\"affiliated AP A<br/>transmitted BSSID<br/>of mBSSID set X\"]\n    MLD -->|Link 1| AP_B[\"affiliated AP B<br/>standalone (no set)\"]\n    AP_A -. at most ONE affiliated AP .-> SET[\"multiple-BSSID set X<br/>other members belong to<br/>OTHER MLDs / non-MLD APs\"]\n    NOTE[\"Multi-Link element is NEVER<br/>inherited tx -> nontx profile\"]",
+      "zh": "graph TD\n    MLD[\"AP MLD\"] -->|链路 0| AP_A[\"隶属 AP A<br/>mBSSID 集合 X 的<br/>发送 BSSID\"]\n    MLD -->|链路 1| AP_B[\"隶属 AP B<br/>独立（不属于任何集合）\"]\n    AP_A -. 每个集合最多一个隶属 AP .-> SET[\"multiple-BSSID 集合 X<br/>其余成员属于<br/>其他 MLD / 非 MLD 的 AP\"]\n    NOTE[\"Multi-Link 元素绝不会<br/>从发送配置继承到非发送配置\"]"
+    },
+    {
+      "type": "prose",
+      "en": "Next, direct links. TDLS lets two stations talk to each other directly, off-loading the AP. Under MLO, EHT keeps it simple: an EHT non-AP STA affiliated with an MLD establishes only a single-link TDLS direct link — no multi-link tunnels between MLDs. The MLD-ness is still visible on the wire, though. TDLS discovery, setup and the security context are all anchored to the non-AP MLD's MLD MAC address: frames over the direct path carry that MLD MAC in their address fields, and a TDLS Multi-Link element advertises the associated AP MLD's MAC so a peer can confirm both stations sit under the same AP MLD before responding.",
+      "zh": "接下来是直连链路。TDLS 让两个站点彼此直接通信，从而为 AP 分流。在 MLO 之下，EHT 把它保持得很简单：隶属于某 MLD 的 EHT 非 AP 站点只建立单链路 TDLS 直连链路——不在 MLD 之间建立多链路隧道。不过 MLD 的身份在空口上依然可见。TDLS 的发现、建立以及安全上下文都锚定在非 AP MLD 的 MLD MAC 地址上：经直连路径发送的帧在其地址字段中携带该 MLD MAC，而 TDLS Multi-Link 元素则通告所关联 AP MLD 的 MAC，以便对端在回应前确认两个站点确实归属于同一个 AP MLD。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why anchor TDLS to the MLD MAC and not the link MAC? Because when a frame traverses an AP MLD it gets relabelled with the MLD's address, so a receiver genuinely can't tell which link a peer's data came in on. Pinning the TDLS context to the stable MLD MAC keeps security keys, sequence/packet numbers and Block-Ack state consistent even as the underlying links shuffle.",
+      "zh": "为什么要把 TDLS 锚定到 MLD MAC 而不是链路 MAC？因为当一帧经由 AP MLD 转发时，它会被重新标注上 MLD 的地址，于是接收方实际上根本无法判断对端的数据是从哪条链路进来的。把 TDLS 上下文钉在稳定的 MLD MAC 上，可以在底层链路不断变动时仍让安全密钥、序号/分组号以及块确认（Block-Ack）状态保持一致。"
+    },
+    {
+      "type": "prose",
+      "en": "Proxy-ARP and BTM both move up to the MLD level. Proxy-ARP — where the AP answers ARP requests on behalf of sleeping clients so they don't have to wake — is implemented by an AP MLD at the MLD level, and all affiliated APs must advertise the same Proxy-ARP capability bit. BSS Transition Management, the standard's way of steering a client to a better AP, now runs SME-to-SME between an AP MLD and a non-AP MLD (not between individual affiliated APs). A neat addition: if a BTM candidate's Neighbor Report carries a Basic Multi-Link element, the preference value describes a whole target AP MLD rather than a single BSS — so the network can recommend 'move to that whole multi-link AP', optionally narrowing to a subset of its links.",
+      "zh": "代理 ARP 与 BTM 都被上移到 MLD 层级。代理 ARP——即 AP 代替正在休眠的客户端应答 ARP 请求，让它们无需醒来——由 AP MLD 在 MLD 层级实现，且所有隶属 AP 必须通告相同的 Proxy-ARP 能力位。BSS 过渡管理（BTM），即标准用来把客户端引导到更优 AP 的机制，如今在 AP MLD 与非 AP MLD 之间以 SME 对 SME 的方式运行（而非在各隶属 AP 之间）。一个巧妙的补充：如果 BTM 候选的邻居报告（Neighbor Report）携带了 Basic Multi-Link 元素，则其偏好值描述的是整个目标 AP MLD，而非单个 BSS——这样网络就能推荐“迁移到那整台多链路 AP”，并可选择性地收窄到它的某个链路子集。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the bookkeeping. An MLD contains one MAC MIB per affiliated STA, but some MIB variables — and capabilities, and state variables — are genuinely MLD-wide rather than per-link. To reconcile those, EHT defines the MLD synchronization service: a mechanism that distributes and coordinates MLD-level MIB variables, capability values, and other shared state across an MLD and all its affiliated STAs. So a counter or capability that must read the same on every link is kept coherent by this service, while truly per-link counters stay in each affiliated STA's own MIB.",
+      "zh": "最后是“记账”问题。一个 MLD 为每个隶属 STA 各保有一份 MAC MIB，但某些 MIB 变量——以及能力变量、状态变量——确实是 MLD 全局级的，而非按链路区分的。为了协调这些，EHT 定义了 MLD 同步服务：一种在 MLD 与其所有隶属 STA 之间分发并协调 MLD 级 MIB 变量、能力值及其他共享状态的机制。因此，一个必须在每条链路上读数一致的计数器或能力，由该服务保持一致；而真正按链路计的计数器则留在各隶属 STA 自己的 MIB 中。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact MLO overlays for BSSID sets, TDLS, BTM, and the MIB split",
+        "zh": "BSSID 集合、TDLS、BTM 及 MIB 拆分的精确 MLO 叠加规则"
+      },
+      "en": "Per 35.3.20, an AP MLD shall not have more than one affiliated AP among members of the same multiple-BSSID or co-hosted BSSID set; each affiliated AP is independently configured and independently assigned a Link ID, and because every AP's MLD MAC differs, no variant of the Multi-Link element may be inherited from a transmitted to a nontransmitted BSSID profile (35.3.20). TDLS in MLO (35.3.21.1) restricts an EHT non-AP MLD to a single-link TDLS direct link; 35.3.21.2 sets context (security, SN/PN, BA) against the non-AP MLD's MLD MAC address, requires a TDLS Multi-Link element carrying the associated AP MLD MAC, and lets an initiator probe multiple BSSIDs to locate the peer. Proxy-ARP (35.3.22) is implemented at the MLD level with a uniform Proxy-ARP capability bit across affiliated APs. BTM for MLDs (35.3.23) runs SME-to-SME between AP MLD and non-AP MLD; a Neighbor Report carrying a Basic Multi-Link element expresses preference for a target AP MLD, optionally constrained to a recommended subset of affiliated APs. The MLD synchronization service (35.3.25) distributes MLD-level MIB variables, non-MIB capability variables and other state; 35.3.26 notes an MLD holds one MAC MIB per affiliated STA while MLO-level MIB variables are kept synchronized via that service.",
+      "zh": "依据 35.3.20，在同一 multiple-BSSID 或 co-hosted BSSID 集合的成员中，一个 AP MLD 最多只能有一个隶属 AP；每个隶属 AP 独立配置并独立分配 Link ID，且由于每个 AP 的 MLD MAC 各不相同，Multi-Link 元素的任何变体都不得从发送 BSSID 继承到非发送 BSSID 配置（35.3.20）。MLO 下的 TDLS（35.3.21.1）将 EHT 非 AP MLD 限制为单链路 TDLS 直连链路；35.3.21.2 规定上下文（安全、SN/PN、BA）针对非 AP MLD 的 MLD MAC 地址设定，要求携带所关联 AP MLD MAC 的 TDLS Multi-Link 元素，并允许发起方探测多个 BSSID 以定位对端。代理 ARP（35.3.22）在 MLD 层级实现，各隶属 AP 的 Proxy-ARP 能力位须保持一致。面向 MLD 的 BTM（35.3.23）在 AP MLD 与非 AP MLD 之间以 SME 对 SME 运行；携带 Basic Multi-Link 元素的邻居报告表达对某目标 AP MLD 的偏好，并可选择性地约束到所推荐的隶属 AP 子集。MLD 同步服务（35.3.25）分发 MLD 级 MIB 变量、与 MIB 无关的能力变量及其他状态；35.3.26 指出 MLD 为每个隶属 STA 保有一份 MAC MIB，而 MLO 级的 MIB 变量则通过该服务保持同步。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          578,
+          579,
+          580,
+          581,
+          582,
+          583,
+          586,
+          587
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.3.20",
+    "80211be-2024:35.3.21.1",
+    "80211be-2024:35.3.21.2",
+    "80211be-2024:35.3.22",
+    "80211be-2024:35.3.23",
+    "80211be-2024:35.3.25",
+    "80211be-2024:35.3.26"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        578,
+        579
+      ],
+      "note": "35.3.20 MLO in a multiple BSSID set or co-hosted BSSID set — at most one affiliated AP per set; independent Link IDs; Multi-Link element not inherited"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        580,
+        581,
+        582
+      ],
+      "note": "35.3.21.1/35.3.21.2 TDLS procedure in MLO — single-link TDLS; context anchored to non-AP MLD MAC; TDLS Multi-Link element with AP MLD MAC"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        582
+      ],
+      "note": "35.3.22 Proxy ARP service in AP MLDs — implemented at MLD level; uniform Proxy ARP capability across affiliated APs"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        582,
+        583
+      ],
+      "note": "35.3.23 BSS transition management for MLDs — SME-to-SME between AP MLD and non-AP MLD; Basic Multi-Link element makes preference target an AP MLD"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        586,
+        587
+      ],
+      "note": "35.3.25 MLD synchronization service and 35.3.26 Operation of MAC MIBs in an MLD — one MAC MIB per affiliated STA; MLD-level variables synchronized"
+    }
+  ],
+  "track": "wifi7-eht"
+}

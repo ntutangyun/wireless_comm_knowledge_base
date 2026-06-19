@@ -1,0 +1,114 @@
+{
+  "id": "wifi7-32",
+  "title": {
+    "en": "EHT Spatial Reuse and the Acknowledgment / Rate-Selection Rulebook",
+    "zh": "EHT 空间复用与确认 / 速率选择规则手册"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Two everyday questions sit at the heart of EHT (802.11be) MAC behaviour: \"Can I transmit right now?\" and \"If I do, which format and rate are legal, and how do I get acknowledged?\" In a crowded apartment block, your access point and a neighbour's overlap. The default answer to the first question is \"wait — the medium is busy.\" But if your transmission is weak enough that it won't actually hurt the neighbour's ongoing exchange, EHT lets you reuse the medium instead of waiting. That is spatial reuse. The rate-selection rulebook then answers the second question by pinning down exactly which PPDU format, MCS, and number of spatial streams (NSS) you are allowed to use for that particular receiver.",
+      "zh": "EHT（802.11be）MAC 行为的核心有两个日常问题：“我现在能发送吗？”以及“如果能发，哪种格式和速率是合法的，又该如何获得确认？”在一栋拥挤的公寓楼里，你的接入点和邻居的接入点会相互重叠。对第一个问题，默认答案是“等一等——介质正忙”。但如果你的发送足够微弱、不会真正干扰邻居正在进行的交换，EHT 就允许你复用介质，而不必干等。这就是空间复用。随后，速率选择规则手册回答第二个问题：精确地框定你针对某个特定接收方所能使用的 PPDU 格式、MCS 以及空间流数量（NSS）。"
+    },
+    {
+      "type": "prose",
+      "en": "EHT defines two flavours of spatial reuse. OBSS PD-based reuse raises your clear-channel threshold: a frame from an overlapping BSS (OBSS) that arrives below an adjusted preamble-detection (PD) level can be ignored, letting you start a transmission \"on top of\" it as long as you trade away some transmit power to keep it polite. PSR-based reuse (parameterized spatial reuse) is invited rather than unilateral: an AP sends a Trigger frame carrying spatial-reuse fields that say, in effect, \"a nearby device may reuse the medium during my upcoming TB exchange, up to this much received-power budget.\" A station that hears such a PSRR PPDU and has something queued may seize a PSR opportunity if its planned transmit power stays under the advertised limit.",
+      "zh": "EHT 定义了两种空间复用方式。基于 OBSS PD 的复用会抬高你的空闲信道判定门限：来自重叠 BSS（OBSS）的帧，若其到达功率低于经过调整的前导检测（PD）门限，便可被忽略，从而允许你“叠加”在其之上开始发送——前提是你要相应地降低发射功率以保持“礼貌”。基于 PSR 的复用（参数化空间复用）则是被邀请的，而非单方面的：AP 发送一个携带空间复用字段的 Trigger 帧，相当于宣告“在我即将进行的 TB 交换期间，附近的设备可以复用介质，但接收功率预算不得超过此值”。一个站点若听到这样的 PSRR PPDU 且有数据排队等待，只要其计划的发射功率保持在所宣告的上限之下，便可抓住一次 PSR 机会。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP1 as Neighbour AP\n    participant STA as Your STA\n    participant AP2 as Your AP\n    AP1->>STA: PSRR PPDU (Trigger w/ EHT Spatial Reuse, PSR budget)\n    Note over STA: inter-BSS PPDU detected\n    Note over STA: check RPL & intended TX power vs PSR budget\n    alt TX power within PSR limit\n        STA->>AP2: PSRT PPDU (reuse the medium now)\n        Note over STA,AP2: transmission \"under\" the neighbour's TXOP\n    else over budget\n        Note over STA: no PSR opportunity, defer\n    end",
+      "zh": "sequenceDiagram\n    participant AP1 as 邻居 AP\n    participant STA as 你的 STA\n    participant AP2 as 你的 AP\n    AP1->>STA: PSRR PPDU（携带 EHT 空间复用字段、PSR 预算的 Trigger）\n    Note over STA: 检测到跨 BSS（inter-BSS）PPDU\n    Note over STA: 比对 RPL 与计划发射功率是否在 PSR 预算内\n    alt 发射功率在 PSR 上限内\n        STA->>AP2: PSRT PPDU（立即复用介质）\n        Note over STA,AP2: 在邻居 TXOP “之下”发送\n    else 超出预算\n        Note over STA: 无 PSR 机会，退避等待\n    end"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "PSR is opt-in and bounded. The AP can also slam the door: if its PSR option is not implemented, it must set every EHT Spatial Reuse subfield of the Trigger's Special User Info field to PSR_DISALLOW. So a station never reuses the medium unless an AP has explicitly advertised a usable power budget.",
+      "zh": "PSR 是“可选加入”且有边界的。AP 也可以把门关死：若其未实现 PSR 选项，就必须把 Trigger 帧 Special User Info 字段中的每一个 EHT Spatial Reuse 子字段都置为 PSR_DISALLOW。因此，除非某个 AP 明确宣告了可用的功率预算，否则站点绝不会复用介质。"
+    },
+    {
+      "type": "prose",
+      "en": "Once you have decided to transmit, the EHT acknowledgment procedure governs how it gets confirmed. It builds directly on HE block-ack, with one headline addition: BlockAck bitmaps can now be 512 or 1024 bits long, matching the larger 1024-frame transmission windows EHT allows. A negotiated buffer size maps to a small menu of legal bitmap lengths (for example, a 513–1024 buffer permits 64/256/512/1024-bit bitmaps in a Compressed BlockAck), so both sides agree on exactly how many MPDUs a single acknowledgment can cover. This is what keeps a very wide, very fast EHT pipe from drowning in per-frame acks.",
+      "zh": "一旦你决定发送，EHT 确认流程便负责管理如何获得确认。它直接构建在 HE 块确认（block-ack）之上，并带来一个重磅新增：BlockAck 位图现在可以长达 512 或 1024 比特，以匹配 EHT 所允许的更大的 1024 帧发送窗口。协商出的缓冲区大小会对应一份合法位图长度的小菜单（例如，513–1024 的缓冲区在 Compressed BlockAck 中允许 64/256/512/1024 比特的位图），从而让双方就单次确认能覆盖多少个 MPDU 达成一致。正是这一点，使得极宽、极快的 EHT 管道不会被逐帧确认所淹没。"
+    },
+    {
+      "type": "prose",
+      "en": "The format / MCS / NSS / DCM rulebook (clause 35.14) is the strict bookkeeping that keeps two devices interoperable. An EHT STA must transmit using an <EHT-MCS, NSS> tuple the receiver has declared it can receive, via the Supported EHT-MCS And NSS Set in its EHT Capabilities element. The standard splits this into a receive set (what the peer can decode) and a transmit set (what the peer can send), each derived per bandwidth — 20, ≤80, ≤160, ≤320 MHz — and per NSS from 1 to 8. There are also guard rails: 1024-QAM/4096-QAM on tiny 26/52/106-tone RUs is only allowed if the peer opted in, EHT-MCS 15 can be disabled by the peer's OM Control, and certain EHT-MCS/NSS combinations are disallowed if the equivalent HE combination is barred in the BSS.",
+      "zh": "格式 / MCS / NSS / DCM 规则手册（第 35.14 节）是让两台设备保持互操作的严格簿记。一个 EHT STA 必须使用接收方已声明其能接收的 <EHT-MCS, NSS> 元组进行发送——这一声明通过接收方 EHT Capabilities 元素中的 Supported EHT-MCS And NSS Set 给出。标准将其拆分为接收集（对端能解码什么）和发送集（对端能发送什么），二者均按带宽（20、≤80、≤160、≤320 MHz）以及 NSS（1 到 8）逐项推导。此外还有若干护栏：在极小的 26/52/106 子载波 RU 上使用 1024-QAM/4096-QAM，仅当对端选择加入时才被允许；EHT-MCS 15 可被对端的 OM Control 禁用；若 BSS 中禁止了等价的 HE 组合，则对应的某些 EHT-MCS/NSS 组合也被禁止。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Group-addressed frames get the cautious treatment. When an AP sends a non-Beacon broadcast/multicast frame in an EHT MU PPDU (EHT_PPDU_TYPE = 1), it must use a mandatory EHT-MCS with NSS = 1 — the slowest, most robust setting — because there is no single receiver to negotiate with and the frame must be decodable by everyone it targets.",
+      "zh": "组播 / 广播帧受到的是“谨慎对待”。当 AP 在 EHT MU PPDU 中（EHT_PPDU_TYPE = 1）发送非 Beacon 的广播 / 组播帧时，必须使用强制（mandatory）EHT-MCS 且 NSS = 1——也就是最慢、最稳健的设置——因为此时没有单一接收方可供协商，而该帧必须能被它所针对的每一个对象解码。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact PSR initiation test and the receive/transmit EHT-MCS-and-NSS-set derivation",
+        "zh": "精确的 PSR 发起判据，以及接收 / 发送 EHT-MCS-and-NSS-set 的推导"
+      },
+      "en": "Clause 35.10.3.1 defines a PSR opportunity by two conditions: (1) the STA gets a PHY-RXSTART.indication for a PSRR PPDU identified as inter-BSS, and (2) a PSRT PPDU is queued whose intended transmit power satisfies Equation (35-6): TxPower_PSRT,total - 10·log10(N_PSRT,nonpunc) <= PSR_min - RPL_PSRR,20MHz. Here RPL is the normalized received power per 20 MHz measured where both preambles overlap, and PSR_min is the smallest PSR value advertised within the PSRT bandwidth — taken from the Trigger's UL Spatial Reuse subfields, or the per-20-MHz EHT Spatial Reuse n subfield of the Special User Info field, or the TB PPDU's Spatial Reuse RXVECTOR (35.10.3.2). On the rate side, clause 35.14.4.1 builds the receive EHT-MCS and NSS set per bandwidth and per NSS (1..8) from the Supported EHT-MCS And NSS Set field, honouring any Operating Mode / OM Control / EHT OM Control overrides; 35.14.4.2 builds the transmit set the same way. A STA shall not transmit an EHT PPDU unless the <EHT-MCS, NSS> tuple and bandwidth are in the receiver's receive set (35.14.4.1), and 35.14.4.3 disallows EHT-MCS 15 at a bandwidth whenever EHT-MCS 0 / NSS = 1 is disallowed there.",
+      "zh": "第 35.10.3.1 节用两个条件定义 PSR 机会：(1) STA 收到一个被识别为跨 BSS 的 PSRR PPDU 的 PHY-RXSTART.indication；(2) 有一个 PSRT PPDU 排队等待，其计划发射功率满足式 (35-6)：TxPower_PSRT,total - 10·log10(N_PSRT,nonpunc) <= PSR_min - RPL_PSRR,20MHz。其中 RPL 是在两段前导重叠处按每 20 MHz 测得的归一化接收功率，PSR_min 是 PSRT 带宽内所宣告的最小 PSR 值——取自 Trigger 帧的 UL Spatial Reuse 子字段，或 Special User Info 字段中按每 20 MHz 给出的 EHT Spatial Reuse n 子字段，或随后 TB PPDU 的 Spatial Reuse RXVECTOR 参数（35.10.3.2）。在速率一侧，第 35.14.4.1 节从 Supported EHT-MCS And NSS Set 字段出发，按带宽与 NSS（1..8）逐项构建接收 EHT-MCS-and-NSS-set，并遵从 Operating Mode / OM Control / EHT OM Control 的任何覆盖；35.14.4.2 以同样方式构建发送集。除非 <EHT-MCS, NSS> 元组与带宽都在接收方的接收集内，STA 不得发送 EHT PPDU（35.14.4.1）；而 35.14.4.3 规定：只要某带宽下 EHT-MCS 0 / NSS = 1 被禁止，则该带宽下的 EHT-MCS 15 也一并被禁止。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          624,
+          625,
+          638,
+          639
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.10.1",
+    "80211be-2024:35.10.2",
+    "80211be-2024:35.10.3.1",
+    "80211be-2024:35.10.3.2",
+    "80211be-2024:35.4.1",
+    "80211be-2024:35.4.2",
+    "80211be-2024:35.14.1",
+    "80211be-2024:35.14.2",
+    "80211be-2024:35.14.3",
+    "80211be-2024:35.14.4.1",
+    "80211be-2024:35.14.4.2",
+    "80211be-2024:35.14.4.3",
+    "80211be-2024:35.14.5",
+    "80211be-2024:35.14.6"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        587,
+        588
+      ],
+      "note": "35.4.1-35.4.2 EHT acknowledgment procedure and block ack procedures; 512/1024-bit BlockAck bitmaps; Table 35-1 buffer size vs bitmap length"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        623,
+        624,
+        625
+      ],
+      "note": "35.10.1-35.10.3.2 EHT spatial reuse: general, OBSS PD-based, PSR-based initiation Eq (35-6), and EHT Spatial Reuse subfields of the Trigger frame / PSR_DISALLOW"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        635,
+        636,
+        637,
+        638,
+        639,
+        640
+      ],
+      "note": "35.14.1-35.14.6 PPDU format / MCS / NSS / DCM selection; Tx & Rx EHT-MCS-and-NSS-set derivation; group-addressed-frame rules (mandatory MCS, NSS=1)"
+    }
+  ],
+  "track": "wifi7-eht"
+}
