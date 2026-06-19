@@ -1,0 +1,125 @@
+{
+  "id": "modern-phy-14",
+  "title": {
+    "en": "Inside the HE data field: constellation mapping, DCM, and the tone mapper",
+    "zh": "HE 数据字段内部：星座映射、DCM 与 Tone Mapper"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "By the time bits reach this stage they have already been scrambled, coded (LDPC or BCC), and split across spatial streams. Now comes the part where the payload is actually painted onto the air. The constellation mapper turns small groups of coded bits into complex QAM points; a tone mapper (for LDPC) or an interleaver (for BCC) decides which subcarrier each point lands on; pilots are sprinkled in; and finally OFDM modulation turns the whole comb of subcarriers into a time-domain waveform. This lesson follows the bits through that pipeline — the layer that sits underneath the MCS tables you may already know.",
+      "zh": "当比特流走到这一步时，它们已经被加扰、编码（LDPC 或 BCC）、并拆分到各个空间流上了。接下来才是把净荷真正“画”到空中的环节。星座映射器把一小组一小组的编码比特变成复数 QAM 点；Tone Mapper（用于 LDPC）或交织器（用于 BCC）决定每个点落在哪个子载波上；导频被穿插进来；最后由 OFDM 调制把整排子载波变成时域波形。本课就沿着这条流水线一路跟着比特走——它正是你也许已经熟悉的 MCS 速率表下面那一层。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    A[Coded bits per stream] --> B[Constellation mapper<br/>up to 1024-QAM]\n    B --> C{coding?}\n    C -->|LDPC| D[LDPC tone mapper]\n    C -->|BCC| E[BCC interleaver]\n    D --> F[Pilot insertion]\n    E --> F\n    F --> G[OFDM modulation<br/>IFFT + GI]\n    G --> H[HE Data field waveform]",
+      "zh": "graph LR\n    A[每流的编码比特] --> B[星座映射<br/>最高 1024-QAM]\n    B --> C{编码方式?}\n    C -->|LDPC| D[LDPC Tone Mapper]\n    C -->|BCC| E[BCC 交织器]\n    D --> F[导频插入]\n    E --> F\n    F --> G[OFDM 调制<br/>IFFT + 保护间隔]\n    G --> H[HE 数据字段波形]"
+    },
+    {
+      "type": "prose",
+      "en": "The constellation mapper is the simplest idea here: take a fixed number of bits and pick one point in a QAM grid. BPSK uses 1 bit, QPSK 2, then 16-/64-/256-QAM, all the way up to 1024-QAM, which packs 10 bits into a single 32x32 point. Denser grids carry more bits per symbol but sit closer together, so they need a cleaner signal (higher SNR) to be told apart. Each constellation is scaled by a normalization factor so the average transmit power stays the same regardless of which QAM order you choose — for 1024-QAM that factor is 1/sqrt(682).",
+      "zh": "星座映射器是这里最简单的概念：取固定数量的比特，在 QAM 网格中挑出一个点。BPSK 用 1 比特，QPSK 用 2 比特，往上是 16/64/256-QAM，一直到 1024-QAM——它把 10 个比特塞进一个 32×32 网格中的单点。网格越密，每个符号携带的比特越多，但点与点挨得越近，因此需要更干净的信号（更高的 SNR）才能区分开。每种星座都会乘以一个归一化因子，使得无论选哪种 QAM 阶数，平均发射功率都保持一致——对 1024-QAM 而言，这个因子是 1/√682。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mapping order vs. fragility: 1024-QAM gives the headline data rate, but a point is only 1/32 of the axis away from its neighbour. A small phase or amplitude error flips bits. That is exactly why the standard also defines robustness tools — DCM and the tone mapper — for the lower MCS levels where you would rather trade rate for resilience.",
+      "zh": "映射阶数与脆弱性的权衡：1024-QAM 带来了最亮眼的数据速率，但相邻两点在每条轴上只相差 1/32。一点点相位或幅度误差就会翻转比特。这正是标准为较低 MCS 等级额外定义鲁棒性工具（DCM 与 Tone Mapper）的原因——在这些等级上，你宁愿用速率去换取抗扰能力。"
+    },
+    {
+      "type": "prose",
+      "en": "Dual carrier modulation (DCM) is the headline robustness trick. Instead of sending a symbol on one subcarrier, DCM copies the same information onto a pair of widely separated subcarriers: the lower-half tone k and an upper-half tone offset by half the data tones. To maximise frequency diversity the two copies are placed far apart in the band, so a narrow fade that wipes out one copy is very unlikely to also hit the other — the receiver still has a clean version. The cost is obvious: you are spending two subcarriers to carry one symbol's worth of information, so DCM halves the data rate. The standard limits it to the robust low-rate cases (HE-MCS 0, 1, 3, 4) with one or two spatial streams, and forbids it with MU-MIMO or STBC.",
+      "zh": "双载波调制（DCM, Dual Carrier Modulation）是最具代表性的鲁棒性技巧。DCM 不在单个子载波上发送一个符号，而是把同一份信息复制到一对相距很远的子载波上：低半区的子载波 k，以及偏移了一半数据子载波数的上半区子载波。为了最大化频率分集，两份副本被放置在频带中相隔很远的位置，这样一个抹掉其中一份副本的窄带衰落，几乎不可能同时击中另一份——接收机仍然握有一份干净的版本。代价显而易见：你用两个子载波只承载了一个符号的信息量，因此 DCM 把数据速率减半。标准把它限制在鲁棒的低速率场景（HE-MCS 0、1、3、4）、且仅用于 1 或 2 个空间流，并禁止与 MU-MIMO 或 STBC 同用。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 420 180' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><line x1='20' y1='150' x2='400' y2='150'/><text x='200' y='172' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>subcarrier index (frequency)</text><rect x='70' y='60' width='16' height='90' fill='currentColor' stroke='none' opacity='0.85'/><text x='78' y='52' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>tone k</text><rect x='300' y='60' width='16' height='90' fill='currentColor' stroke='none' opacity='0.85'/><text x='308' y='52' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>tone k + N/2</text><path d='M70 35 C 160 5, 230 5, 308 35' stroke-dasharray='4 3'/><text x='189' y='22' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>same symbol, two copies</text><ellipse cx='180' cy='110' rx='42' ry='30' stroke-dasharray='3 3' opacity='0.6'/><text x='180' y='114' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>narrow</text><text x='180' y='126' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>fade</text></svg>",
+      "caption": {
+        "en": "DCM duplicates each symbol onto two subcarriers a half-RU apart. A localized fade can take one copy; the distant copy survives.",
+        "zh": "DCM 把每个符号复制到相隔半个 RU 的两个子载波上。局部衰落可能毁掉一份副本，但相距较远的另一份得以幸存。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "DCM protects against a fade you happen to land on; the LDPC tone mapper and BCC interleaver protect against a fade that hits any one stretch of the band. After mapping, the complex points for one codeword are naturally adjacent in frequency — so a fade over a few neighbouring tones would damage a concentrated burst of one codeword. The LDPC tone mapper permutes the points by a fixed tone-mapping distance (larger for bigger RUs), spreading each codeword's symbols across the RU. The BCC interleaver does the analogous job for convolutionally coded streams using its own row/column/rotation parameters. Either way, a localized fade now only nicks a few bits from each codeword — which the error-correcting code can repair — instead of wiping one codeword out entirely.",
+      "zh": "DCM 防的是“你恰好落在”的那处衰落；而 LDPC Tone Mapper 与 BCC 交织器防的是“击中频带上任意一段”的衰落。映射之后，同一个码字的复数点在频率上天然相邻——因此跨越几个相邻子载波的衰落，会集中损坏某个码字的一连串比特。LDPC Tone Mapper 按一个固定的 Tone Mapping 距离（RU 越大、距离越大）对这些点做置换，把每个码字的符号铺散到整个 RU 上。BCC 交织器则用它自己的行/列/旋转参数，对卷积编码流做类似的工作。无论哪种方式，局部衰落如今都只会从每个码字上“啃掉”几个比特——而这是纠错码能够修复的——而不再是把整个码字彻底抹掉。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally the subcarriers are assembled and modulated. Before the waveform is built, pilot subcarriers are inserted at fixed positions within each RU (two pilots in a 26-tone RU, scaling up to sixteen in a 996-tone RU), carrying a known polarity sequence so the receiver can track residual phase and amplitude drift across the symbol. The OFDM modulation step then sums every data and pilot subcarrier as a complex exponential, applies the cyclic-shift and guard-interval timing, and emits the time-domain HE Data field per transmit chain. That waveform is what a spectrum analyser actually sees on the air.",
+      "zh": "最后，所有子载波被组装并完成调制。在生成波形之前，导频子载波会被插入到每个 RU 内的固定位置（26-tone RU 有 2 个导频，一路扩展到 996-tone RU 的 16 个），它们携带一段已知极性的序列，使接收机能够跟踪整个符号期间残余的相位与幅度漂移。随后的 OFDM 调制步骤把每一个数据子载波和导频子载波都作为复指数累加起来，施加循环移位与保护间隔的定时，并按每条发射链输出时域的 HE 数据字段。这段波形正是频谱分析仪在空中实际看到的东西。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact DCM subcarrier pairing and tone-mapping distances",
+        "zh": "DCM 子载波配对与 Tone Mapping 距离的精确规则"
+      },
+      "en": "Clause 27.3.12.15 states DCM simply 'modulates the same information on a pair of subcarriers' and reuses the constellation mapper (27.3.12.9), LDPC tone mapper (27.3.12.10), and BCC interleaver (27.3.12.8). The pairing in 27.3.12.9: for a 996-tone or smaller RU the partner of data tone k is q(k) = k + N_SD, where N_SD here is the DCM count (half the non-DCM value); for a 2x996-tone RU it is q(k) = k + N_SD/2 to bound implementation complexity. For QPSK-with-DCM the upper-half sample is the complex conjugate of the lower-half symbol; for 16-QAM-with-DCM the upper copy re-maps a bit permutation (B4k+1, B4k, B4k+3, B4k+2). The LDPC tone mapper (27.3.12.10, Eq. 27-95/27-96) permutes points by distance D_TM (e.g. 9 for a 242-tone RU, 20 for 996-tone), with a separate D_TM_DCM when DCM is on; BCC interleaver parameters N_COL/N_ROW/N_ROT come from Table 27-36. Pilots (27.3.12.13) and the OFDM summation (27.3.12.14, Eq. 27-108) close out the data-field chain.",
+      "zh": "27.3.12.15 节明确指出，DCM 只是“在一对子载波上调制相同的信息”，并复用星座映射器（27.3.12.9）、LDPC Tone Mapper（27.3.12.10）与 BCC 交织器（27.3.12.8）。配对规则见 27.3.12.9：对 996-tone 及更小的 RU，数据子载波 k 的配对子载波为 q(k) = k + N_SD，此处 N_SD 为 DCM 情形下的数量（是非 DCM 值的一半）；对 2×996-tone RU 则为 q(k) = k + N_SD/2，以控制实现复杂度。对 QPSK+DCM，上半区样点取下半区符号的复共轭；对 16-QAM+DCM，上半区副本对比特做一次重排（B4k+1, B4k, B4k+3, B4k+2）后再映射。LDPC Tone Mapper（27.3.12.10，式 27-95/27-96）按距离 D_TM 置换各点（例如 242-tone RU 取 9，996-tone 取 20），开启 DCM 时另用 D_TM_DCM；BCC 交织器的 N_COL/N_ROW/N_ROT 参数取自表 27-36。导频（27.3.12.13）与 OFDM 求和（27.3.12.14，式 27-108）收尾整条数据字段链路。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4281,
+          4282,
+          4291
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:27.3.12.9",
+    "80211-2024:27.3.12.10",
+    "80211-2024:27.3.12.15",
+    "80211-2024:27.3.12.13",
+    "80211-2024:27.3.12.14",
+    "80211-2024:27.3.12.8"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4278
+      ],
+      "note": "27.3.12.8 BCC interleavers - Table 27-36 N_COL/N_ROW/N_ROT, DCM vs non-DCM"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4279,
+        4281,
+        4282
+      ],
+      "note": "27.3.12.9 Constellation mapping - 1024-QAM bit encoding, 1/sqrt(682) normalization, DCM subcarrier pairing q(k)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4282,
+        4283,
+        4284
+      ],
+      "note": "27.3.12.10 LDPC tone mapper - Table 27-37 D_TM/D_TM_DCM, permutation Eq. 27-95/27-96"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4284,
+        4285,
+        4289
+      ],
+      "note": "27.3.12.13 Pilot subcarriers - 2 pilots (26-tone) up to 16 pilots (996-tone), pilot index tables/values"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4290,
+        4291
+      ],
+      "note": "27.3.12.14 OFDM modulation Eq. 27-108; 27.3.12.15 Dual carrier modulation - same info on a pair of subcarriers, HE-MCS 0/1/3/4"
+    }
+  ],
+  "track": "modern-phy"
+}

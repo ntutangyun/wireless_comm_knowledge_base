@@ -1,0 +1,106 @@
+{
+  "id": "modern-phy-17",
+  "title": {
+    "en": "HE Sounding and Beamforming Feedback: NDP Announcement, the V Matrix, and CQI",
+    "zh": "HE 探测与波束成形反馈：NDP 通告、V 矩阵与 CQI"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "To aim energy at a station — to beamform — an access point first has to know what the channel between its antennas and that station actually looks like. Wi-Fi 6 (HE) learns this through an explicit, three-beat handshake called sounding. The beamformer (usually the AP) measures nothing on its own; instead it asks the stations to measure a known reference signal and report back what they saw. This lesson follows that loop: who is asked, what they listen to, and what they send home.",
+      "zh": "要把能量瞄准某个站点——也就是做波束成形——接入点（AP）首先得知道它的天线与该站点之间的信道究竟长什么样。Wi-Fi 6（HE）通过一套明确的、分三拍完成的握手来获取这一信息，这个过程叫“探测（sounding）”。波束成形发起方（通常是 AP）自己并不直接测量信道；它转而请求各站点去测量一个已知的参考信号，再把测得的结果报告回来。本课就沿着这个闭环展开：谁被点名、它们听的是什么、又把什么送了回来。"
+    },
+    {
+      "type": "prose",
+      "en": "The first beat is the HE NDP Announcement: a short management frame that names exactly which stations should measure and how. It hands out an addressing token (an AID) to each beamformee and flags whether plain steering feedback is enough or whether per-subcarrier channel quality (CQI) is also requested. The second beat is the HE sounding NDP — a \"null data packet\": a full HE preamble carrying training symbols (HE-LTF) but no Data field at all. There is nothing to decode; the symbols exist only so each named beamformee can measure the channel against a reference it already knows. The third beat is each beamformee transmitting its feedback report back to the beamformer.",
+      "zh": "第一拍是 HE NDP 通告（HE NDP Announcement）：一个简短的管理帧，明确点名哪些站点应当测量、以及如何测量。它给每个被测方（beamformee）分配一个寻址标识（AID），并标明是只需要普通的导向反馈，还是同时还要逐子载波的信道质量（CQI）。第二拍是 HE 探测 NDP（HE sounding NDP）——一个“空数据包”：它带有完整的 HE 前导（含 HE-LTF 训练符号），但完全没有数据字段。这里没有任何东西需要解码；这些训练符号存在的唯一目的，就是让每个被点名的被测方对照它早已知晓的参考来测量信道。第三拍则是每个被测方把自己的反馈报告发回给发起方。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as Beamformer (AP)\n    participant STA as Beamformee(s)\n    AP->>STA: HE NDP Announcement (AIDs, +CQI?)\n    Note over AP,STA: SIFS\n    AP->>STA: HE sounding NDP (HE-LTF, no Data)\n    Note over STA: measure channel H, compress V to angles\n    STA->>AP: HE compressed beamforming feedback (+ optional CQI)\n    Note over AP: reconstruct V, compute steering matrix Q",
+      "zh": "sequenceDiagram\n    participant AP as 发起方 (AP)\n    participant STA as 被测方\n    AP->>STA: HE NDP 通告 (AID 列表, 是否要 CQI)\n    Note over AP,STA: SIFS\n    AP->>STA: HE 探测 NDP (含 HE-LTF, 无数据)\n    Note over STA: 测量信道 H, 把 V 压缩成角度\n    STA->>AP: HE 压缩波束成形反馈 (可选附 CQI)\n    Note over AP: 重建 V, 计算导向矩阵 Q"
+    },
+    {
+      "type": "prose",
+      "en": "What does the beamformee actually compute? From the sounding NDP it estimates the channel matrix H, then derives a beamforming feedback matrix V that captures the spatial structure the beamformer needs to steer toward it. But V is enormous — a separate complex matrix for every used subcarrier across the whole RU. Sending it raw would swamp the medium. So the standard never sends V directly: the beamformee decomposes V into a set of rotation angles (the φ and ψ angles) and quantizes them with a bit-width chosen from the NDP Announcement's Codebook setting. That compressed angle set is the HE compressed beamforming feedback. The beamformer later rebuilds V from the angles and, from V, computes its own steering matrix Q (the exact recipe is left to the implementation).",
+      "zh": "被测方到底算了些什么？它先从探测 NDP 估计出信道矩阵 H，再据此导出一个波束成形反馈矩阵 V——这个 V 刻画了发起方朝它做导向所需的空间结构。但 V 极其庞大：整个 RU 中每个被用到的子载波都对应一个独立的复数矩阵。原封不动地发回去会把信道淹没。因此标准从不直接发送 V：被测方把 V 分解成一组旋转角度（即 φ 与 ψ 角），并按 NDP 通告中“码本（Codebook）”设置所选定的比特位宽对这些角度进行量化。这组压缩后的角度就是“HE 压缩波束成形反馈”。发起方随后从这些角度重建出 V，再由 V 计算出自己的导向矩阵 Q（具体算法由实现自行决定，标准不作规定）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The rows of V tie the loop back to spatial streams: the beamformee builds the feedback matrices with a number of rows equal to the NSTS of the HE sounding NDP. So how many HE-LTF symbols the AP put in the NDP directly sets how many spatial dimensions it can later steer. For DL MU-MIMO, the AP fuses several beamformees' V matrices into one Q that nulls the crosstalk between simultaneous streams — which is exactly how the MU-MIMO grouping you met earlier gets the channel knowledge it needs.",
+      "zh": "V 的“行数”把这个闭环又系回到空间流：被测方生成反馈矩阵时，其行数等于 HE 探测 NDP 的 NSTS（空时流数）。也就是说，AP 在 NDP 里放了多少个 HE-LTF 符号，直接决定了它日后能导向的空间维度有多少。对于下行 MU-MIMO，AP 会把多个被测方的 V 矩阵融合成一个统一的 Q，用以抵消同时发送的各路数据流之间的串扰——这正是你之前学过的 MU-MIMO 分组所需信道知识的来源。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 460 200' role='img'><g fill='none' stroke='currentColor' stroke-width='2'><rect x='14' y='40' width='150' height='120'/><rect x='300' y='40' width='150' height='120'/></g><text x='89' y='32' fill='currentColor' font-size='13' text-anchor='middle'>full V matrix</text><text x='375' y='32' fill='currentColor' font-size='13' text-anchor='middle'>compressed angles</text><g fill='currentColor' font-size='11' text-anchor='middle'><text x='89' y='70'>per-subcarrier</text><text x='89' y='90'>complex matrix</text><text x='89' y='110'>(huge, raw)</text><text x='89' y='138'>Nr = NSTS rows</text></g><g fill='currentColor' font-size='11' text-anchor='middle'><text x='375' y='75'>&#966; , &#968; angles</text><text x='375' y='98'>quantized by</text><text x='375' y='116'>Codebook b&#966; / b&#968;</text><text x='375' y='140'>+ optional CQI</text></g><g stroke='currentColor' stroke-width='2' fill='none'><path d='M168 100 H296'/><path d='M286 92 L296 100 L286 108'/></g><text x='232' y='92' fill='currentColor' font-size='11' text-anchor='middle'>compress</text><text x='232' y='124' fill='currentColor' font-size='10' text-anchor='middle'>(19.3.12.3.6)</text></svg>",
+      "caption": {
+        "en": "The beamformee never ships the full per-subcarrier V matrix; it sends a small set of quantized rotation angles the beamformer reconstructs V from, plus optional per-RU CQI.",
+        "zh": "被测方从不发送完整的逐子载波 V 矩阵，而是发回一小组量化后的旋转角度，发起方据此重建 V，并可附带逐 RU 的 CQI。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "CQI is the optional extra. If the NDP Announcement asked for it, the beamformee also reports channel quality — quantized SNRs, per space-time stream and per RU — so the AP can judge which slices of spectrum are best for which station and assign RUs accordingly in a later MU transmission. Finally, two NDP variants close the picture: the HE sounding NDP itself is just an HE SU PPDU stripped of its Data field with a 4 µs PE, while the HE TB feedback NDP is the trigger-based, uplink counterpart used to carry NDP feedback report information when the AP solicits feedback from many stations at once.",
+      "zh": "CQI 是可选的附加项。如果 NDP 通告请求了它，被测方还会报告信道质量——按空时流、按 RU 给出的量化信噪比（SNR）——这样 AP 就能判断哪段频谱最适合哪个站点，并据此在后续 MU 传输中分配 RU。最后，两个 NDP 变体把整幅图补全：HE 探测 NDP 本身就是去掉数据字段、带 4 µs PE 的 HE SU PPDU；而 HE TB 反馈 NDP 则是基于触发的上行对应物，当 AP 同时向多个站点征集反馈时，用它来承载 NDP 反馈报告信息。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Where the standard pins down V, CQI, and the two NDPs",
+        "zh": "标准在何处确定 V、CQI 与两个 NDP"
+      },
+      "en": "Clause 27.3.16.2 says that on receipt of an HE sounding NDP the beamformee computes the feedback matrices, removes the space-time-stream CSD from the measured channel first, and compresses V(k,u) into the angles φ(k,u) and ψ(k,u), quantized per Table 9-92 with bit-widths bφ and bψ taken from the Codebook Information field of the HE MIMO Control field. The number of rows Nr of the feedback matrices equals the NSTS of the HE sounding NDP; the beamformer reconstructs V(k,u) from the angles and, from V, derives the steering matrix Q (implementation specific). Clause 27.3.16.3 adds that if the NDP Announcement requests CQI, the beamformee feeds back quantized SNRs (Table 9-129) for space-time streams 1…Nc per requested RU. Clause 27.3.17 defines the HE sounding NDP as an HE SU PPDU without a Data field, with a 4 µs PE; and clause 27.3.18 defines the HE TB feedback NDP — an HE TB PPDU without a Data field, 0 µs PE, two 4x HE-LTF symbols — carrying NDP feedback report information per 26.5.7.",
+      "zh": "27.3.16.2 节规定：被测方在收到 HE 探测 NDP 后计算反馈矩阵，先从所测信道中去除空时流的 CSD（循环移位分集），再把 V(k,u) 压缩成 φ(k,u) 与 ψ(k,u) 角度，按表 9-92 量化，其位宽 bφ 与 bψ 取自 HE MIMO Control 字段中的 Codebook Information 子字段。反馈矩阵的行数 Nr 等于 HE 探测 NDP 的 NSTS；发起方据角度重建 V(k,u)，再由 V 导出导向矩阵 Q（算法由实现决定）。27.3.16.3 节补充：若 NDP 通告请求 CQI，被测方按表 9-129 反馈空时流 1…Nc 在各请求 RU 上的量化 SNR。27.3.17 节将 HE 探测 NDP 定义为去掉数据字段、PE 为 4 µs 的 HE SU PPDU；27.3.18 节定义 HE TB 反馈 NDP——去掉数据字段、PE 为 0 µs、含两个 4x HE-LTF 符号的 HE TB PPDU——按 26.5.7 承载 NDP 反馈报告信息。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4301,
+          4302,
+          4303
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:27.3.16.2",
+    "80211-2024:27.3.16.3",
+    "80211-2024:27.3.17",
+    "80211-2024:27.3.18"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4301,
+        4302
+      ],
+      "note": "27.3.16.2 Beamforming feedback matrix V — compute on sounding NDP, remove CSD, compress to angles per 19.3.12.3.6, Nr = NSTS, reconstruct V then steering matrix Q"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4302
+      ],
+      "note": "27.3.16.3 CQI feedback — quantized SNRs (Table 9-129) per space-time stream and RU, requested via the NDP Announcement"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4302,
+        4303
+      ],
+      "note": "27.3.17 HE sounding NDP — HE SU PPDU without Data field, 4 us PE; mandatory 2x HE-LTF support"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4303
+      ],
+      "note": "27.3.18 HE TB feedback NDP — HE TB PPDU without Data field, 0 us PE, two 4x HE-LTF symbols, carries NDP feedback report info per 26.5.7"
+    }
+  ],
+  "track": "modern-phy"
+}

@@ -1,0 +1,101 @@
+{
+  "id": "modern-phy-11",
+  "title": {
+    "en": "The four HE PPDU formats: SU, ER-SU, MU, and TB",
+    "zh": "四种 HE PPDU 格式：SU、ER-SU、MU 与 TB"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every Wi-Fi 6 (HE, high-efficiency) packet that leaves an antenna takes one of exactly four over-the-air shapes. The standard calls them PPDU formats — the full bundle of training symbols, signalling fields, and data that make up one transmission. There are four of them: HE SU, HE ER SU, HE MU, and HE TB. Each is tuned for a different job, and once you know which job each one does, a busy channel stops looking like noise and starts looking like a conversation with clear turns.",
+      "zh": "Wi-Fi 6（HE，高效率）每一个离开天线的数据包，都恰好采用四种空口“形状”之一。标准把它们称为 PPDU 格式——也就是构成一次传输的整套训练符号、信令字段与数据的总和。一共四种：HE SU、HE ER SU、HE MU 和 HE TB。每一种都为不同的任务量身打造；一旦你知道每种格式各司其职，繁忙信道就不再像一团噪声，而像一场轮次分明的对话。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the simplest. HE SU (single user) is one frame from one transmitter to one receiver — the everyday 'AP sends a packet to your laptop' shape. HE ER SU (extended range) is its tougher cousin: same single-user job, but built to reach a station sitting at the very edge of coverage. HE MU (multi-user) is the downlink workhorse the AP uses to talk to several stations at once by carving up the channel. And HE TB (trigger-based) is the uplink reply a station fires back only after the AP sends it a Trigger frame telling it exactly how and when to transmit.",
+      "zh": "先从最简单的说起。HE SU（单用户）是一个发送方向一个接收方发出的单个帧——也就是日常中“AP 给你的笔记本发一个包”那种形状。HE ER SU（扩展距离）是它更“扛造”的表亲：同样是单用户任务，但专为触达处于覆盖边缘的站点而设计。HE MU（多用户）是 AP 的下行主力，它通过切分信道同时与多个站点通信。而 HE TB（基于触发）则是站点发回的上行回复——只有在 AP 先发来一个触发帧、明确告诉它如何与何时发送之后，它才会发出。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A common trap: HE ER SU looks like 'just a long-range HE SU', but the standard is explicit that it is NOT a variant of HE SU — the two are specified separately. The giveaway is HE-SIG-A: in ER SU it is sent twice (doubled in length) so the signalling itself survives at low signal levels. That doubled, more-robust preamble is exactly what buys the extra range.",
+      "zh": "一个常见误区：HE ER SU 看起来像是“只是远距离版的 HE SU”，但标准明确指出它并不是 HE SU 的变体——两者是分别规定的。破绽就在 HE-SIG-A：在 ER SU 中它被发送两次（长度翻倍），这样信令本身才能在很低的信号电平下存活下来。正是这段翻倍、更稳健的前导，换来了额外的覆盖距离。"
+    },
+    {
+      "type": "prose",
+      "en": "Why do MU and TB look different from SU? Because they serve many stations, not one. HE MU is downlink: the AP can split the channel into resource units (OFDMA) and/or stack spatial streams (DL MU-MIMO), so it needs an extra field — HE-SIG-B — to tell each station which slice is theirs. HE TB is the mirror image on the uplink: many stations transmit at the same instant, but the AP dictated every parameter in the preceding Trigger, so each station's frame doesn't need to carry per-user assignment signalling — the AP already knows the plan.",
+      "zh": "为什么 MU 和 TB 看起来和 SU 不一样？因为它们服务的是多个站点，而非一个。HE MU 是下行：AP 可以把信道切成若干资源单元（OFDMA），并／或叠加多条空间流（下行 MU-MIMO），因此它需要一个额外字段——HE-SIG-B——来告诉每个站点哪一份是属于它的。HE TB 则是上行方向的镜像：多个站点在同一时刻发送，但所有参数都由之前的触发帧由 AP 指定，因此每个站点的帧无需再携带各用户的分配信令——AP 早已知道整个方案。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    subgraph SU[\"HE SU / HE ER SU\"]\n        A1[L-STF]-->A2[L-LTF]-->A3[L-SIG]-->A4[RL-SIG]-->A5[HE-SIG-A]-->A6[HE-STF]-->A7[HE-LTF...]-->A8[Data]-->A9[PE]\n    end\n    subgraph MU[\"HE MU (adds HE-SIG-B)\"]\n        B1[L-STF]-->B2[L-LTF]-->B3[L-SIG]-->B4[RL-SIG]-->B5[HE-SIG-A]-->B6[HE-SIG-B]-->B7[HE-STF]-->B8[HE-LTF...]-->B9[Data]-->B10[PE]\n    end\n    subgraph TB[\"HE TB (longer HE-STF)\"]\n        C1[L-STF]-->C2[L-LTF]-->C3[L-SIG]-->C4[RL-SIG]-->C5[HE-SIG-A]-->C6[\"HE-STF (2x)\"]-->C7[HE-LTF...]-->C8[Data]-->C9[PE]\n    end",
+      "zh": "graph LR\n    subgraph SU[\"HE SU / HE ER SU\"]\n        A1[L-STF]-->A2[L-LTF]-->A3[L-SIG]-->A4[RL-SIG]-->A5[HE-SIG-A]-->A6[HE-STF]-->A7[HE-LTF...]-->A8[数据]-->A9[PE]\n    end\n    subgraph MU[\"HE MU（多出 HE-SIG-B）\"]\n        B1[L-STF]-->B2[L-LTF]-->B3[L-SIG]-->B4[RL-SIG]-->B5[HE-SIG-A]-->B6[HE-SIG-B]-->B7[HE-STF]-->B8[HE-LTF...]-->B9[数据]-->B10[PE]\n    end\n    subgraph TB[\"HE TB（HE-STF 更长）\"]\n        C1[L-STF]-->C2[L-LTF]-->C3[L-SIG]-->C4[RL-SIG]-->C5[HE-SIG-A]-->C6[\"HE-STF（2 倍）\"]-->C7[HE-LTF...]-->C8[数据]-->C9[PE]\n    end"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 460 200' width='460' height='200' fill='none' stroke='currentColor'><text x='8' y='28' font-size='13' fill='currentColor' stroke='none'>HE-STF duration tells SU and TB apart</text><line x1='8' y1='40' x2='452' y2='40' stroke='currentColor' stroke-width='0.5'/><text x='8' y='78' font-size='12' fill='currentColor' stroke='none'>HE SU</text><rect x='90' y='62' width='40' height='22'/><text x='110' y='78' font-size='10' text-anchor='middle' fill='currentColor' stroke='none'>STF</text><text x='110' y='98' font-size='9' text-anchor='middle' fill='currentColor' stroke='none'>4 us</text><text x='140' y='78' font-size='11' fill='currentColor' stroke='none'>then HE-LTF, Data, PE...</text><text x='8' y='150' font-size='12' fill='currentColor' stroke='none'>HE TB</text><rect x='90' y='134' width='80' height='22'/><text x='130' y='150' font-size='10' text-anchor='middle' fill='currentColor' stroke='none'>STF (2x)</text><text x='130' y='170' font-size='9' text-anchor='middle' fill='currentColor' stroke='none'>8 us</text><text x='180' y='150' font-size='11' fill='currentColor' stroke='none'>longer STF for UL power capture</text></svg>",
+      "caption": {
+        "en": "HE TB is identical to HE SU except its HE-STF lasts twice as long (8 us vs 4 us) — the extra training helps the AP lock onto many stations arriving at once. (HE ER SU instead doubles HE-SIG-A, and stretches its HE-STF to 16 us.)",
+        "zh": "HE TB 与 HE SU 几乎完全相同，唯一区别是它的 HE-STF 时长翻倍（8 微秒对 4 微秒）——额外的训练帮助 AP 锁定同时到达的多个站点。（而 HE ER SU 则是把 HE-SIG-A 翻倍，并将其 HE-STF 拉长到 16 微秒。）"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Notice what stays constant. All four formats open with the legacy preamble (L-STF, L-LTF, L-SIG) so that older Wi-Fi devices can still measure the packet's length and back off politely. Right after it comes RL-SIG (a repeated L-SIG) and HE-SIG-A — present in every HE format — which is the first hint to an HE receiver that this is an HE packet at all. The differences are surgical: MU adds HE-SIG-B, ER SU doubles HE-SIG-A, TB lengthens HE-STF. Everything else — HE-LTF, Data, and the packet-extension (PE) tail — is shared scaffolding.",
+      "zh": "注意看哪些部分是恒定不变的。四种格式都以传统前导（L-STF、L-LTF、L-SIG）开头，这样较老的 Wi-Fi 设备仍能测出这个包的长度并礼貌地退避。紧随其后的是 RL-SIG（重复的 L-SIG）和 HE-SIG-A——它们出现在每一种 HE 格式中——这是给 HE 接收机的第一个提示：这压根就是一个 HE 包。差异则是“外科手术式”的精准：MU 多了 HE-SIG-B，ER SU 把 HE-SIG-A 翻倍，TB 把 HE-STF 加长。其余部分——HE-LTF、数据，以及末尾的包扩展（PE）——都是共享的“骨架”。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What the standard actually says about each format",
+        "zh": "标准对每种格式的确切表述"
+      },
+      "en": "Clause 27.3.4 defines exactly four HE PPDU formats: HE SU, HE MU, HE ER SU, and HE TB (sounding/ranging NDPs are listed as variants of SU and TB). The text is emphatic that the HE ER SU PPDU is NOT a variant of the HE SU PPDU, with their requirements specified separately. HE SU (Figure 27-8) is for single-user transmission with HE-SIG-A not repeated. HE MU (Figure 27-9) is used for transmission to one or more users when the PPDU is not a response to a Trigger frame, and is the only format in which HE-SIG-B is present. HE ER SU (Figure 27-10) is single-user with an HE-SIG-A that is twice as long as in other HE formats. HE TB (Figure 27-11) is used for a transmission responding to a triggering frame and is identical to HE SU except its HE-STF is twice as long. RL-SIG, HE-SIG-A, HE-STF, HE-LTF, and PE are present in all four formats. Earlier subclauses tie the formats to multi-user roles: DL MU-MIMO is carried in the HE MU PPDU (27.3.3.1) while UL MU-MIMO is carried in the HE TB PPDU (27.3.3.2), and a UL MU transmission is always preceded by a triggering frame from the AP (27.3.1.1).",
+      "zh": "27.3.4 节恰好定义了四种 HE PPDU 格式：HE SU、HE MU、HE ER SU 和 HE TB（探测／测距 NDP 被列为 SU 和 TB 的变体）。标准明确强调，HE ER SU PPDU 并不是 HE SU PPDU 的变体，二者的要求是分别规定的。HE SU（图 27-8）用于单用户传输，其 HE-SIG-A 不重复。HE MU（图 27-9）用于在 PPDU 不是触发帧的回复时向一个或多个用户传输，并且是唯一存在 HE-SIG-B 字段的格式。HE ER SU（图 27-10）为单用户，其 HE-SIG-A 长度是其他 HE 格式的两倍。HE TB（图 27-11）用于作为触发帧回复的传输，除 HE-STF 时长翻倍外与 HE SU 完全相同。RL-SIG、HE-SIG-A、HE-STF、HE-LTF 和 PE 在四种格式中都存在。前面的子条款将这些格式与多用户角色绑定：下行 MU-MIMO 承载于 HE MU PPDU 中（27.3.3.1），而上行 MU-MIMO 承载于 HE TB PPDU 中（27.3.3.2），并且上行 MU 传输总是以来自 AP 的触发帧为前导（27.3.1.1）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4180,
+          4181
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:27.3.4",
+    "80211-2024:27.3.1.1",
+    "80211-2024:27.3.1.2",
+    "80211-2024:27.3.3.1",
+    "80211-2024:27.3.3.2"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4180,
+        4181
+      ],
+      "note": "27.3.4 HE PPDU formats — four formats (SU/MU/ER-SU/TB); ER SU NOT a variant of SU; Figures 27-8..27-11; field presence; ER SU doubled HE-SIG-A; TB doubled HE-STF"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4166,
+        4167
+      ],
+      "note": "27.3.1.1 MU transmission (DL MU uses HE MU PPDU; UL MU uses HE TB PPDU, preceded by a triggering frame) and 27.3.1.2 OFDMA"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4177,
+        4178,
+        4179
+      ],
+      "note": "27.3.3.1 DL MU-MIMO carried in HE MU PPDU; 27.3.3.2 UL MU-MIMO carried in HE TB PPDU"
+    }
+  ],
+  "track": "modern-phy"
+}

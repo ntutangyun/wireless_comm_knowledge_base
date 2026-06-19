@@ -1,0 +1,108 @@
+{
+  "id": "modern-phy-13",
+  "title": {
+    "en": "HE-STF and HE-LTF: the training fields that tune the receiver",
+    "zh": "HE-STF 与 HE-LTF：为接收机校准的训练字段"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Lesson 10 walked you through the HE preamble field by field. Two of those fields exist purely to get the receiver ready before the real payload arrives: the HE Short Training Field (HE-STF) and the HE Long Training Field (HE-LTF). They carry no data. They are the warm-up — known patterns the transmitter sends so the receiver can adjust itself and measure the channel before it has to decode anything. Get these two right and the rest of the PPDU has a fighting chance; get them wrong and even a perfect MCS choice (lesson 03) decodes to noise.",
+      "zh": "第 10 课带你逐字段走过了 HE 前导码。其中有两个字段的唯一作用，是在真正的载荷到来之前让接收机做好准备：HE 短训练字段（HE-STF）与 HE 长训练字段（HE-LTF）。它们不携带任何数据，而是“热身”——发射端发送的一段已知图样，接收机据此先调整自身、并测量信道，然后才需要去解码任何内容。把这两个字段处理好，PPDU 的其余部分才有机会被正确接收；处理不好，即便选了完美的 MCS（第 03 课），解出来的也只是噪声。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the HE-STF. Its one job is automatic gain control (AGC): the receiver does not know in advance how strong the incoming signal is, so its amplifier could be set too high (clipping) or too low (lost in quantisation). The HE-STF is a short, strongly periodic burst of energy — five repetitions of the same little pattern — so the receiver's gain loop can lock onto a steady amplitude and set the front-end gain just before the heavier preamble fields and the data arrive. In a MIMO transmission, where several streams add up at each antenna, getting this level right is exactly what the HE-STF is built to do.",
+      "zh": "先看 HE-STF。它只有一个任务：自动增益控制（AGC）。接收机事先并不知道来波信号有多强，因此放大器可能设得过高（削顶失真）或过低（淹没在量化误差里）。HE-STF 是一段短促而高度周期化的能量脉冲——同一小段图样重复五次——使接收机的增益环路能够锁定到一个稳定的幅度，并在更重的前导字段和数据到来之前把前端增益设定好。在 MIMO 传输中，多条流会在每根天线上叠加，把这个电平调准正是 HE-STF 的设计初衷。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Same idea, two flavours. In an ordinary downlink PPDU the HE-STF repeats with a 0.8 µs period (4 µs total). In a Trigger-Based (TB) uplink PPDU — where many stations transmit at once after a Trigger frame — the period is stretched to 1.6 µs (8 µs total). The wider, longer HE-STF gives the AP's AGC more room to settle across multiple uplink users that may arrive with slightly different timing and very different power levels.",
+      "zh": "同一个思路，两种规格。在普通的下行 PPDU 中，HE-STF 以 0.8 µs 的周期重复（共 4 µs）。而在基于触发的（TB）上行 PPDU 中——许多站点在收到触发帧后同时发送——周期被拉长到 1.6 µs（共 8 µs）。更宽、更长的 HE-STF 给了 AP 的 AGC 更多时间去稳定，以应对多个上行用户：它们到达的时序可能略有差异，功率电平也可能相差很大。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    A[L-STF / L-LTF / L-SIG] --> B[RL-SIG]\n    B --> C[HE-SIG-A / HE-SIG-B]\n    C --> D[HE-STF<br/>set the gain AGC]\n    D --> E[HE-LTF<br/>measure the channel]\n    E --> F[HE-Data]\n    style D fill:none,stroke:currentColor,stroke-width:2px\n    style E fill:none,stroke:currentColor,stroke-width:2px",
+      "zh": "graph LR\n    A[L-STF / L-LTF / L-SIG] --> B[RL-SIG]\n    B --> C[HE-SIG-A / HE-SIG-B]\n    C --> D[HE-STF<br/>设定增益 AGC]\n    D --> E[HE-LTF<br/>测量信道]\n    E --> F[HE-Data]\n    style D fill:none,stroke:currentColor,stroke-width:2px\n    style E fill:none,stroke:currentColor,stroke-width:2px"
+    },
+    {
+      "type": "prose",
+      "en": "Now the HE-LTF. Once the gain is set, the receiver needs a ruler to measure the radio channel — how the signal was twisted in amplitude and phase on its way through the air, for every subcarrier. The HE-LTF is that known reference. Crucially, MIMO sends several spatial streams at once, so the receiver must untangle an NRX × NSTS channel matrix — one column per stream. The HE-LTF does this by repeating across several symbols and multiplying each stream's tones by a special orthogonal pattern (the P matrix), so streams that overlap in the same airspace can still be told apart and estimated independently. More spatial streams simply require more HE-LTF symbols.",
+      "zh": "再看 HE-LTF。增益设定好之后，接收机还需要一把“尺子”来测量无线信道——信号在空中传播时，每个子载波的幅度和相位被如何扭曲。HE-LTF 就是这把已知的参考尺。关键在于：MIMO 同时发送多条空间流，因此接收机必须解出一个 NRX × NSTS 的信道矩阵——每条流对应一列。HE-LTF 通过跨多个符号重复、并把每条流的子载波乘以一组特殊的正交图样（P 矩阵）来做到这一点，于是在同一片空域里相互叠加的多条流仍能被区分开、并各自独立地估计出来。空间流越多，所需的 HE-LTF 符号就越多。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='12' fill='currentColor' stroke='currentColor'><text x='10' y='20' stroke='none'>4x HE-LTF: every tone, full 12.8 us symbol</text><line x1='10' y1='35' x2='250' y2='35' stroke-width='1'/><g stroke-width='1'><line x1='10' y1='33' x2='10' y2='37'/><line x1='34' y1='33' x2='34' y2='37'/><line x1='58' y1='33' x2='58' y2='37'/><line x1='82' y1='33' x2='82' y2='37'/><line x1='106' y1='33' x2='106' y2='37'/><line x1='130' y1='33' x2='130' y2='37'/><line x1='154' y1='33' x2='154' y2='37'/><line x1='178' y1='33' x2='178' y2='37'/><line x1='202' y1='33' x2='202' y2='37'/><line x1='226' y1='33' x2='226' y2='37'/><line x1='250' y1='33' x2='250' y2='37'/></g><text x='300' y='39' stroke='none'>finest ruler</text><text x='10' y='90' stroke='none'>2x HE-LTF: every 2nd tone, half symbol (6.4 us)</text><line x1='10' y1='105' x2='250' y2='105' stroke-width='1'/><g stroke-width='1'><line x1='10' y1='103' x2='10' y2='107'/><line x1='58' y1='103' x2='58' y2='107'/><line x1='106' y1='103' x2='106' y2='107'/><line x1='154' y1='103' x2='154' y2='107'/><line x1='202' y1='103' x2='202' y2='107'/><line x1='250' y1='103' x2='250' y2='107'/></g><text x='300' y='109' stroke='none'>shorter symbol</text><text x='10' y='160' stroke='none'>1x HE-LTF: every 4th tone, quarter symbol (3.2 us)</text><line x1='10' y1='175' x2='250' y2='175' stroke-width='1'/><g stroke-width='1'><line x1='10' y1='173' x2='10' y2='177'/><line x1='106' y1='173' x2='106' y2='177'/><line x1='202' y1='173' x2='202' y2='177'/></g><text x='300' y='179' stroke='none'>shortest, coarsest</text></svg>",
+      "caption": {
+        "en": "The three HE-LTF modes trade symbol duration against how large a channel they can resolve. Each tick is a populated subcarrier. 1x modulates every 4th tone and sends only the first quarter of the 12.8 µs base symbol (3.2 µs) — fast but coarse; 4x populates every tone over the full symbol — the finest, longest ruler.",
+        "zh": "三种 HE-LTF 模式在“符号时长”与“能分辨多大的信道”之间做权衡。每一根刻度代表一个被占用的子载波。1x 每隔 4 个子载波调制一个，只发送 12.8 µs 基本符号的前四分之一（3.2 µs）——快但粗；4x 在整个符号上占满每个子载波——最精细、也最长的尺子。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Why three modes? It is a trade-off. A longer HE-LTF symbol resolves a longer channel delay spread and supports more spatial streams or a wider resource unit, but costs airtime. 1x HE-LTF is the quick, coarse ruler; 4x is the slow, fine one; 2x sits between. The mode is also paired with a guard interval (the cyclic prefix that absorbs echoes): 1x and 2x pair with the 0.8 µs or 1.6 µs GI, while 4x can additionally use the long 3.2 µs GI for the harshest multipath. The transmitter picks the combination that just covers the channel it expects, then stops paying for accuracy it does not need.",
+      "zh": "为什么要有三种模式？这是一种权衡。更长的 HE-LTF 符号能够分辨更长的信道时延扩展，并支持更多的空间流或更宽的资源单元（RU），但要付出空口时间的代价。1x HE-LTF 是快而粗的尺子；4x 是慢而精的尺子；2x 居于两者之间。模式还会与保护间隔（吸收回波的循环前缀）配对：1x 与 2x 可配 0.8 µs 或 1.6 µs 的 GI，而 4x 还可额外使用 3.2 µs 的长 GI，以应对最严酷的多径。发射端选取恰好能覆盖其预期信道的组合，从而不再为用不上的精度买单。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "How 1x/2x/4x are actually generated, and what the P and R matrices do",
+        "zh": "1x/2x/4x 究竟是如何生成的，以及 P、R 矩阵的作用"
+      },
+      "en": "Clause 27.3.11.10 defines the modes via the 12.8 µs base OFDM symbol. A 1x HE-LTF is equivalent to modulating every 4th subcarrier and then transmitting only the first 1/4 of the time-domain symbol — hence its 3.2 µs body. A 2x HE-LTF modulates every other subcarrier and transmits the first half (6.4 µs); a 4x populates all tones over the full 12.8 µs. The number of HE-LTF symbols NHE-LTF follows the per-stream table (1, 2, 4, 6, or 8 symbols for increasing NSTS). On the channel-estimation side, the data tones of each symbol are multiplied by the orthogonal PHE-LTF matrix so the NRX × NSTS,total matrix is separable; when single-stream pilots are used, the pilot tones are multiplied by the RHE-LTF matrix so the receiver can track residual phase/frequency offset during the estimate. For the HE-STF (27.3.11.9), the M sequence M = {–1,–1,–1,1,1,1,–1,1,1,1,–1,1,1,–1,1} is mapped onto each 242-tone RU; the non-TB field has a 0.8 µs periodicity over 5 periods, the TB field a 1.6 µs periodicity over 5 periods.",
+      "zh": "27.3.11.10 节用 12.8 µs 的基本 OFDM 符号来定义这三种模式。1x HE-LTF 等价于每隔 4 个子载波调制一个，然后只发送时域符号的前 1/4——因此其主体为 3.2 µs。2x HE-LTF 每隔一个子载波调制一个，发送前一半（6.4 µs）；4x 则在整个 12.8 µs 上占满所有子载波。HE-LTF 符号数 NHE-LTF 遵循按流数取值的表格（随 NSTS 增大依次为 1、2、4、6 或 8 个符号）。在信道估计一侧，每个符号的数据子载波都乘以正交矩阵 PHE-LTF，使得 NRX × NSTS,total 矩阵可被分离求解；当使用单流导频时，导频子载波乘以矩阵 RHE-LTF，使接收机能在估计过程中跟踪残余的相位/频率偏移。对于 HE-STF（27.3.11.9），M 序列 M = {–1,–1,–1,1,1,1,–1,1,1,1,–1,1,1,–1,1} 被映射到每个 242 子载波的 RU 上；非 TB 字段以 0.8 µs 为周期重复 5 个周期，TB 字段以 1.6 µs 为周期重复 5 个周期。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4247,
+          4251,
+          4265,
+          4266
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:27.3.11.9",
+    "80211-2024:27.3.11.10",
+    "80211-2024:27.3.6.8",
+    "80211-2024:27.3.6.9"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4195,
+        4196
+      ],
+      "note": "27.3.6.8 / 27.3.6.9 — construction steps for the HE-STF and HE-LTF fields, including the 0.8 us (SU/MU) vs 1.6 us (TB) HE-STF GI and the GI_TYPE-indicated HE-LTF GI"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4247
+      ],
+      "note": "27.3.11.9 HE-STF field — AGC purpose for MIMO; non-TB 0.8 us periodicity (5 periods) vs TB 1.6 us periodicity; M sequence mapped per 242-tone RU"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4251,
+        4252
+      ],
+      "note": "27.3.11.10 HE-LTF field — NRX x NSTS MIMO channel estimation, PHE-LTF / RHE-LTF matrices, single-stream pilots, NHE-LTF symbol count vs NSTS, and 1x/2x/4x x GI mode table 27-32"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4265,
+        4266
+      ],
+      "note": "Figures 27-34 / 27-35 — 1x HE-LTF = modulate every 4 tones + transmit first 1/4 of 12.8 us symbol; 2x = every other tone + first half"
+    }
+  ],
+  "track": "modern-phy"
+}

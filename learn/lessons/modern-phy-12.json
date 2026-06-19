@@ -1,0 +1,121 @@
+{
+  "id": "modern-phy-12",
+  "title": {
+    "en": "Resource units, tones, and pilots: how the channel is carved up",
+    "zh": "资源单元、子载波与导频：信道是如何被切分的"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Lesson 01 taught that OFDMA lets an AP serve several stations at once by splitting one channel into pieces. This lesson goes down one floor to look at the actual floor plan. An HE OFDM symbol is built from hundreds of tightly spaced tones called subcarriers, and the channel is carved into blocks of them called Resource Units (RUs). Picture a 20 MHz channel as a long shelf of 256 slots: some hold data, a few hold tracking signals, and the rest are deliberately left empty at the edges and in the middle. Understanding which slot does what is the key to reading any HE transmission.",
+      "zh": "第 01 课讲过，OFDMA 让 AP 把一条信道切成几块，从而同时服务多个站点。本课再往下走一层，看看真正的“户型图”。一个 HE OFDM 符号由数百个密集排列的小载波——子载波（subcarrier，又称 tone，子音/音调）——构成，而信道又被切分成若干由子载波组成的块，称为资源单元（Resource Unit，RU）。可以把一条 20 MHz 信道想象成一个有 256 个格子的长货架：有些格子放数据，少数格子放跟踪信号，其余的格子则被特意留空，分布在边缘和中央。弄清每个格子各司其职，是读懂任何 HE 传输的关键。"
+    },
+    {
+      "type": "prose",
+      "en": "Subcarriers come in three jobs. Data subcarriers carry the actual payload. Pilot subcarriers carry no payload — they carry a known reference so the receiver can track phase and frequency drift across the symbol. And unused subcarriers carry nothing at all: these are the DC subcarriers right at the centre, the guard subcarriers at the two band edges, and the null subcarriers tucked between small RUs. Every tone in an HE PPDU is one of these three.",
+      "zh": "子载波承担三种职责。数据子载波（data subcarrier）承载真正的有效载荷；导频子载波（pilot subcarrier）不承载载荷——它承载一个已知的参考信号，让接收机能跟踪整个符号上的相位与频率漂移；未使用子载波（unused subcarrier）则什么都不承载：包括位于正中央的直流（DC）子载波、位于频带两端的保护（guard）子载波，以及夹在小型 RU 之间的空（null）子载波。HE PPDU 中的每一个子载波，都必属这三类之一。"
+    },
+    {
+      "type": "prose",
+      "en": "RUs come in a fixed ladder of sizes: 26, 52, 106, 242, 484, 996, and 2x996 tones. The smallest, a 26-tone RU, is 24 data + 2 pilot subcarriers; the 242-tone RU (a whole 20 MHz worth) is 234 data + 8 pilot. A wider channel simply offers more RUs: a 20 MHz channel fits up to nine 26-tone RUs, while a 160 MHz channel fits up to seventy-four. The AP mixes sizes freely inside one downlink PPDU — a few users on tiny 26-tone RUs and one user on a fat 484-tone RU, all in the same transmission.",
+      "zh": "RU 的尺寸构成一个固定的“阶梯”：26、52、106、242、484、996 与 2×996 个子载波。最小的 26-tone RU 由 24 个数据子载波 + 2 个导频子载波组成；242-tone RU（相当于整整 20 MHz）则是 234 个数据 + 8 个导频。信道越宽，可用的 RU 就越多：一条 20 MHz 信道最多容纳 9 个 26-tone RU，而 160 MHz 信道最多可容纳 74 个。AP 可以在一个下行 PPDU 内自由混搭不同尺寸——几个用户用极小的 26-tone RU，另一个用户用宽阔的 484-tone RU，全部在同一次传输里完成。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 520 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11'><text x='10' y='16' fill='currentColor'>20 MHz HE PPDU — subcarrier indices -128 ... +127</text><rect x='10' y='30' width='28' height='34' fill='none' stroke='currentColor'/><text x='12' y='50' fill='currentColor' font-size='9'>guard</text><rect x='38' y='30' width='200' height='34' fill='none' stroke='currentColor'/><text x='90' y='50' fill='currentColor'>data + pilots</text><rect x='238' y='30' width='44' height='34' fill='currentColor' opacity='0.25' stroke='currentColor'/><text x='245' y='50' fill='currentColor' font-size='9'>DC</text><rect x='282' y='30' width='200' height='34' fill='none' stroke='currentColor'/><text x='330' y='50' fill='currentColor'>data + pilots</text><rect x='482' y='30' width='28' height='34' fill='none' stroke='currentColor'/><text x='484' y='50' fill='currentColor' font-size='9'>guard</text><line x1='10' y1='80' x2='510' y2='80' stroke='currentColor'/><text x='10' y='100' fill='currentColor'>left band edge</text><text x='225' y='100' fill='currentColor'>k = 0 (centre)</text><text x='430' y='100' fill='currentColor'>right band edge</text><text x='10' y='130' fill='currentColor' font-size='10'>6 guard low / 5 guard high; 7 DC tones at [-3:+3] when small RUs present; nulls sit between 26/52/106-tone RUs</text></svg>",
+      "caption": {
+        "en": "The floor plan of a 20 MHz HE channel: guard tones hug the two edges, DC tones sit dead centre, and data + pilot tones fill the rest. Small RUs add null tones between them.",
+        "zh": "一条 20 MHz HE 信道的“户型图”：保护子载波紧贴两端，直流子载波居于正中，数据与导频子载波填满其余空间。小型 RU 之间还会插入空子载波。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why leave tones empty on purpose? The DC and edge tones aren't wasted — they're insurance. Guard tones at the band edges keep your signal from spilling into the neighbouring channel. DC tones at the centre dodge the receiver's own DC offset and the transmitter's local-oscillator leakage. And the null tones between small RUs give each little block breathing room so neighbours don't bleed into one another.",
+      "zh": "为什么要特意留空一些子载波？直流子载波和边缘子载波并非浪费——它们是“保险”。频带两端的保护子载波能阻止你的信号溢出到相邻信道；正中央的直流子载波则用于规避接收机自身的直流偏移以及发射机本振（LO）的泄漏；而小型 RU 之间的空子载波，则给每个小块留出“呼吸空间”，避免相邻 RU 互相串扰。"
+    },
+    {
+      "type": "prose",
+      "en": "Two HE transmission types decide RU ownership in opposite ways. In a downlink HE MU PPDU, the AP advertises the layout in the HE-SIG-B field: an RU Allocation subfield lists which RUs exist, and each User field carries a STA-ID that names the station owning that RU and its spatial streams. The receiver reads HE-SIG-B to learn 'which slot is mine'. In an uplink HE TB (trigger-based) PPDU, there is no such self-description — a Trigger frame the AP sent earlier already dictated each station's RU, duration, target RSSI, and MCS. The station simply transmits in the RU it was told to use.",
+      "zh": "两种 HE 传输类型以相反的方式决定 RU 的归属。在下行 HE MU PPDU 中，AP 在 HE-SIG-B 字段里公布整体布局：RU 分配（RU Allocation）子字段列出存在哪些 RU，而每个用户字段（User field）携带一个 STA-ID，指明拥有该 RU 及其空间流的站点。接收机通过读取 HE-SIG-B 来弄清“哪个格子是我的”。而在上行 HE TB（基于触发，trigger-based）PPDU 中，并没有这种自我描述——AP 此前发送的触发帧（Trigger frame）已经规定了每个站点的 RU、持续时间、目标 RSSI 与 MCS。站点只需在被指定的 RU 上发送即可。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    A[Channel carved into RUs] --> B{Which direction?}\n    B -->|Downlink| C[HE MU PPDU]\n    C --> D[HE-SIG-B: RU Allocation subfield<br/>+ per-user STA-ID]\n    D --> E[STA reads HE-SIG-B<br/>to find its own RU]\n    B -->|Uplink| F[HE TB PPDU]\n    F --> G[Trigger frame from AP<br/>dictates RU, duration, RSSI, MCS]\n    G --> H[STA transmits in the<br/>assigned RU - no self-description]",
+      "zh": "graph TD\n    A[信道被切分为多个 RU] --> B{哪个方向?}\n    B -->|下行| C[HE MU PPDU]\n    C --> D[HE-SIG-B: RU 分配子字段<br/>+ 每用户 STA-ID]\n    D --> E[站点读取 HE-SIG-B<br/>找到自己的 RU]\n    B -->|上行| F[HE TB PPDU]\n    F --> G[来自 AP 的触发帧<br/>规定 RU/时长/RSSI/MCS]\n    G --> H[站点在被指定的 RU 上发送<br/>无需自我描述]"
+    },
+    {
+      "type": "prose",
+      "en": "Narrow-capability stations get special treatment. A 20 MHz-only non-AP HE station can be placed inside a wider PPDU, but because its 20 MHz tone map doesn't line up with the wider map, certain RUs that straddle the seams are off-limits — the AP must never assign them. Likewise an 80 MHz-only station can only be given RUs inside the primary 80 MHz of a 160 / 80+80 MHz PPDU unless it has explicitly negotiated subchannel-selective operation. The rule of thumb: the AP is responsible for never handing a station an RU it physically cannot use.",
+      "zh": "能力受限的站点会得到特殊照顾。一个仅支持 20 MHz 的非 AP HE 站点（20 MHz-only non-AP HE STA）可以被安排进更宽的 PPDU，但由于它的 20 MHz 子载波映射与更宽的映射并不对齐，某些跨越“接缝”的 RU 是禁用的——AP 绝不能把它们分配出去。同理，一个仅支持 80 MHz 的站点，在 160 / 80+80 MHz PPDU 中只能被分配主 80 MHz 之内的 RU，除非它已明确协商了子信道选择性（subchannel-selective）操作。可以记住一条经验法则：AP 有责任绝不把站点物理上无法使用的 RU 分配给它。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact tone counts, DC/guard placements, and the 20 MHz RU exclusion list",
+        "zh": "精确的子载波数、DC/保护子载波位置，以及 20 MHz 的 RU 排除清单"
+      },
+      "en": "Per 27.3.2.2, the RUs are 26 / 52 / 106 / 242 / 484 / 996 / 2x996 tones, with pilot counts of 2 / 4 / 4 / 8 / 16 / 16 respectively (a 26-tone RU = 24 data + 2 pilot; a 996-tone RU = 980 data + 16 pilot). Table 27-7 caps RU counts per width (nine 26-tone RUs in 20 MHz, seventy-four in 160 MHz). DC placement depends on RU mix: a 20 MHz PPDU carrying any sub-242 RU uses 7 DC tones at [-3:3], but a full 242-tone RU uses only 3 DC at [-1:1]; 80 MHz with sub-996 RUs uses 7 DC, a full 996-tone RU uses 5. The 20 MHz PPDU has 11 guard tones (6 low [-128:-123], 5 high [123:127]). 27.3.2.3 places null tones near DC and edges to suppress LO leakage, receiver DC offset, and inter-RU interference; 27.3.2.4 puts pilots in the Data field (and optionally HE-LTF, where a 1x HE-LTF keeps only pilots whose index is a multiple of 4). For ownership: 27.3.2.5 has the AP set UL/DL=0 in HE-SIG-A and convey each user's RU and spatial streams via the HE-SIG-B RU Allocation subfield and per-User STA-ID; 27.3.2.6 has the Trigger frame dictate the HE TB PPDU's RU, duration, target RSSI and HE-MCS. 27.3.2.8 forbids the AP from assigning seam-straddling RUs to a 20 MHz operating STA — e.g. 26-tone RU 5 and 14 in a 40 MHz PPDU, and 26-tone RUs 5/10/14/19/24/28/33 plus 52-tone RU 5/12 and 106-tone RU 3/6 in an 80 MHz PPDU. 27.3.2.9 forbids assigning an 80 MHz-only STA any RU outside the primary 80 MHz of a 160 / 80+80 MHz PPDU unless SST has been set up.",
+      "zh": "依据 27.3.2.2，RU 尺寸为 26 / 52 / 106 / 242 / 484 / 996 / 2×996 个子载波，导频数分别为 2 / 4 / 4 / 8 / 16 / 16（26-tone RU = 24 数据 + 2 导频；996-tone RU = 980 数据 + 16 导频）。表 27-7 规定了每种带宽下 RU 数量上限（20 MHz 最多 9 个 26-tone RU，160 MHz 最多 74 个）。DC 子载波的位置取决于 RU 组合：20 MHz PPDU 若含任何小于 242 的 RU，则用 7 个 DC，位于 [-3:3]；而完整的 242-tone RU 只用 3 个 DC，位于 [-1:1]；80 MHz 含小于 996 的 RU 用 7 个 DC，完整 996-tone RU 用 5 个。20 MHz PPDU 有 11 个保护子载波（低端 6 个 [-128:-123]，高端 5 个 [123:127]）。27.3.2.3 将空子载波置于 DC 与边缘附近，以抑制本振泄漏、接收机直流偏移及 RU 间干扰；27.3.2.4 将导频置于数据字段（也可选地置于 HE-LTF，其中 1x HE-LTF 仅保留索引为 4 的倍数的导频）。关于归属：27.3.2.5 规定 AP 在 HE-SIG-A 中置 UL/DL=0，并通过 HE-SIG-B 的 RU 分配子字段与每用户 STA-ID 传达各用户的 RU 与空间流；27.3.2.6 规定由触发帧指定 HE TB PPDU 的 RU、时长、目标 RSSI 与 HE-MCS。27.3.2.8 禁止 AP 把跨接缝的 RU 分配给 20 MHz 工作站点——例如 40 MHz PPDU 中的 26-tone RU 5 与 14，以及 80 MHz PPDU 中的 26-tone RU 5/10/14/19/24/28/33、52-tone RU 5/12 与 106-tone RU 3/6。27.3.2.9 则禁止把 160 / 80+80 MHz PPDU 中主 80 MHz 之外的任何 RU 分配给仅支持 80 MHz 的站点，除非已建立 SST。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4168,
+          4169,
+          4174,
+          4175,
+          4176,
+          4177,
+          4178
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:27.3.2.2",
+    "80211-2024:27.3.2.3",
+    "80211-2024:27.3.2.4",
+    "80211-2024:27.3.2.5",
+    "80211-2024:27.3.2.6",
+    "80211-2024:27.3.2.8",
+    "80211-2024:27.3.2.9"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4168,
+        4169,
+        4174
+      ],
+      "note": "27.3.2.2 Resource unit, guard, and DC subcarriers - RU ladder 26/52/106/242/484/996/2x996, data+pilot counts, Table 27-7 max RU counts, DC and guard placements"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4174,
+        4175
+      ],
+      "note": "27.3.2.3 Null subcarriers (zero energy, suppress LO leakage / DC offset / inter-RU interference) and 27.3.2.4 Pilot subcarriers (Data field, HE-LTF)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4175,
+        4176
+      ],
+      "note": "27.3.2.5 Resource indication and User identification in an HE MU PPDU - HE-SIG-B RU Allocation subfield and per-User STA-ID; 27.3.2.6 Resource allocation for an HE TB PPDU - Trigger frame dictates RU/duration/RSSI/MCS"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4177,
+        4178
+      ],
+      "note": "27.3.2.8 RU restrictions for 20 MHz operation (exclusion list) and 27.3.2.9 80 MHz operating non-AP HE STAs (primary-80 MHz limitation unless SST)"
+    }
+  ],
+  "track": "modern-phy"
+}

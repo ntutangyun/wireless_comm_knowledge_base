@@ -1,0 +1,113 @@
+{
+  "id": "modern-phy-15",
+  "title": {
+    "en": "LDPC vs BCC and the padding puzzle: pre-FEC padding and packet extension",
+    "zh": "LDPC 与 BCC 之争，以及补位难题：Pre-FEC 填充与包扩展"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every bit you send over the air gets wrapped in an error-correcting code (FEC) before it hits the antenna, so the receiver can repair the damage that noise and multipath inflict. Wi-Fi 6 (the HE PHY) carries two such codes and lets the transmitter pick one per packet: the legacy binary convolutional code (BCC) inherited from earlier 802.11 generations, and the modern low-density parity-check code (LDPC). This lesson is about why two codes coexist, when each is used, and then the unglamorous-but-essential housekeeping that finishes a packet: padding and packet extension.",
+      "zh": "你通过空口发送的每一个比特，在抵达天线之前都会被裹上一层纠错码（FEC），这样接收端才能修复噪声和多径造成的损伤。Wi-Fi 6（即 HE PHY）携带了两种这样的码，并允许发送端为每个数据包二选一：一种是从早期 802.11 世代继承下来的传统二进制卷积码（BCC），另一种是现代的低密度奇偶校验码（LDPC）。本课要讲的是：为什么两种码会并存、各自在何时使用，以及那项不光彩却必不可少的收尾工作——填充（padding）与包扩展（packet extension）。"
+    },
+    {
+      "type": "prose",
+      "en": "BCC is the simpler, older code: a single rate-1/2 convolutional encoder whose output is then punctured to reach the rate the chosen MCS needs. It is cheap to implement and decodes well at modest rates. LDPC is an iterative block code — the decoder bounces estimates back and forth across a sparse parity-check graph until they settle — and it pulls noticeably ahead at high coding rates, large blocks, and the big resource units (RUs) used in OFDMA. The standard reflects this: LDPC is the only allowed code for 484-, 996-, and 2×996-tone RUs and for the top rungs HE-MCS 10 and 11, while BCC is capped at four spatial streams and MCS 0–9.",
+      "zh": "BCC 是较简单、较老的码：一个码率为 1/2 的卷积编码器，其输出再经过打孔（puncturing）以达到所选 MCS 所需的码率。它实现成本低，在中等码率下解码效果也不错。LDPC 则是一种迭代式分组码——解码器在一张稀疏的奇偶校验图上来回传递估计值，直到收敛——它在高码率、大分组以及 OFDMA 所用的大资源单元（RU）下明显领先。标准也体现了这一点：对于 484、996 和 2×996 子载波的 RU，以及最高档的 HE-MCS 10 和 11，LDPC 是唯一允许的码；而 BCC 被限制在不超过 4 条空间流、MCS 0–9 的范围内。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "One quick tell: if the Data field uses BCC, the standard appends tail bits to flush the convolutional encoder; if it uses LDPC, there are no tail bits. The Data field of an HE PPDU is always the SERVICE field, then the PSDU, then pre-FEC PHY padding, then padding (plus tail bits for BCC only).",
+      "zh": "一个快速辨别的小窍门：如果数据字段使用 BCC，标准会追加尾比特（tail bits）来清空卷积编码器；如果使用 LDPC，则没有尾比特。HE PPDU 的数据字段始终由 SERVICE 字段、PSDU、Pre-FEC PHY 填充、后续填充（BCC 才有的尾比特）依次组成。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    A[SERVICE 16 bits] --> B[PSDU]\n    B --> C[pre-FEC padding]\n    C --> D{coding}\n    D -->|BCC| E[tail + post-FEC pad]\n    D -->|LDPC| F[post-FEC pad, no tail]\n    E --> G[OFDM symbols]\n    F --> G\n    G --> H[PE field 0/4/8/12/16 us]",
+      "zh": "graph LR\n    A[SERVICE 16 比特] --> B[PSDU]\n    B --> C[Pre-FEC 填充]\n    C --> D{编码}\n    D -->|BCC| E[尾比特 + Post-FEC 填充]\n    D -->|LDPC| F[Post-FEC 填充, 无尾比特]\n    E --> G[OFDM 符号]\n    F --> G\n    G --> H[PE 字段 0/4/8/12/16 微秒]"
+    },
+    {
+      "type": "prose",
+      "en": "Now the padding puzzle. OFDM ships data in whole symbols, but your PSDU almost never ends exactly on a symbol boundary. The HE PHY solves this in two stages. First, pre-FEC padding tops up the bit stream before coding so the last symbol is filled: the MAC adds whole octets of pad toward one of four pre-FEC padding boundaries (captured by a 'pre-FEC padding factor' a ∈ {1,2,3,4}), and the PHY then adds 0–7 more bits to finish the byte. Second, after coding, post-FEC padding fills the coded bits out to the full NCBPS of the last symbol. The padding factor a is not just bookkeeping — it is signaled in HE-SIG-A so the receiver knows exactly how the last symbol was built.",
+      "zh": "现在来看填充难题。OFDM 以整个符号为单位发送数据，但你的 PSDU 几乎从不会恰好落在符号边界上。HE PHY 分两步解决这个问题。第一步，Pre-FEC 填充在编码之前补足比特流，使最后一个符号被填满：MAC 朝着四个 Pre-FEC 填充边界之一（由“Pre-FEC 填充因子” a ∈ {1,2,3,4} 表示）添加整字节的填充，随后 PHY 再补 0–7 个比特来凑齐这个字节。第二步，编码之后，Post-FEC 填充把编码比特补足到最后一个符号的完整 NCBPS。填充因子 a 不只是记账用——它会在 HE-SIG-A 中被信令通知，好让接收端确切知道最后一个符号是怎么构造出来的。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 170' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11'><rect x='10' y='30' width='80' height='34' fill='none' stroke='currentColor'/><rect x='90' y='30' width='150' height='34' fill='none' stroke='currentColor'/><rect x='240' y='30' width='60' height='34' fill='currentColor' opacity='0.18' stroke='currentColor'/><rect x='300' y='30' width='40' height='34' fill='currentColor' opacity='0.35' stroke='currentColor'/><rect x='350' y='30' width='90' height='34' fill='none' stroke='currentColor' stroke-dasharray='4 3'/><text x='50' y='52' text-anchor='middle' fill='currentColor'>SERVICE</text><text x='165' y='52' text-anchor='middle' fill='currentColor'>PSDU</text><text x='270' y='48' text-anchor='middle' fill='currentColor' font-size='9'>pre-FEC</text><text x='270' y='59' text-anchor='middle' fill='currentColor' font-size='9'>pad</text><text x='320' y='48' text-anchor='middle' fill='currentColor' font-size='9'>post-FEC</text><text x='320' y='59' text-anchor='middle' fill='currentColor' font-size='9'>pad</text><text x='395' y='52' text-anchor='middle' fill='currentColor'>PE field</text><line x1='10' y1='80' x2='340' y2='80' stroke='currentColor'/><text x='175' y='95' text-anchor='middle' fill='currentColor' font-size='10'>last OFDM symbol filled to boundary a</text><line x1='350' y1='80' x2='440' y2='80' stroke='currentColor' stroke-dasharray='4 3'/><text x='395' y='95' text-anchor='middle' fill='currentColor' font-size='10'>extra decode time</text><text x='10' y='130' fill='currentColor' font-size='10'>Padding fills the last symbol; the PE field then</text><text x='10' y='146' fill='currentColor' font-size='10'>buys the receiver more time to decode it.</text></svg>",
+      "caption": {
+        "en": "How an HE Data field ends: pre-FEC padding tops up the bits, post-FEC padding completes the last symbol, and the Packet Extension (PE) field appends decode time after it.",
+        "zh": "HE 数据字段如何收尾：Pre-FEC 填充补足比特，Post-FEC 填充补满最后一个符号，随后的包扩展（PE）字段在其后追加解码时间。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Filling the last symbol cleanly isn't enough on its own. A low-power or slow receiver may need more wall-clock time to finish decoding that final symbol than the symbol itself lasts — especially with LDPC's iterative loop. That is what the Packet Extension (PE) field is for: an interval of 0, 4, 8, 12, or 16 µs appended after the Data field, carrying arbitrary content at the same power, purely to give the receiver extra processing time. Its length is derived jointly from the pre-FEC padding factor a and the transmitter's NOMINAL_PACKET_PADDING capability, and the PE Disambiguity bit in HE-SIG-A resolves a rounding ambiguity so the receiver can reconstruct the exact symbol count.",
+      "zh": "仅仅把最后一个符号填干净还不够。低功耗或较慢的接收端，解码这最后一个符号所需的实际时间，可能比符号本身的时长还长——在 LDPC 的迭代循环下尤其如此。这正是包扩展（PE）字段的用途：在数据字段之后追加一段时长为 0、4、8、12 或 16 微秒的间隔，以相同功率携带任意内容，纯粹是为了给接收端额外的处理时间。它的长度由 Pre-FEC 填充因子 a 和发送端的 NOMINAL_PACKET_PADDING 能力共同推导得出；而 HE-SIG-A 中的 PE Disambiguity（消歧）比特用于解决一处取整歧义，使接收端能够重建出确切的符号数。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two small framing details wrap all of this. The 16-bit SERVICE field sits at the very front of the Data field and initializes the scrambler. The scrambler then whitens the SERVICE field, the PSDU, and the pre-FEC PHY padding together — using a 7-bit nonzero pseudorandom seed (which may differ per user in a multi-user PPDU) so long runs of identical bits don't create spectral spikes.",
+      "zh": "有两个小小的成帧细节把这一切包裹起来。16 比特的 SERVICE 字段位于数据字段最前端，用于初始化扰码器（scrambler）。扰码器随后把 SERVICE 字段、PSDU 和 Pre-FEC PHY 填充一并白化——使用一个 7 比特的非零伪随机种子（在多用户 PPDU 中各用户可不同），从而避免长串相同比特产生频谱尖峰。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact mechanics: padding factor a, the LDPC extra symbol segment, and the PE table",
+        "zh": "精确机理：填充因子 a、LDPC 额外符号段，以及 PE 取值表"
+      },
+      "en": "Clause 27.3.12.2 defines four pre-FEC padding boundaries partitioning the last OFDM symbol (or last two, under STBC) into segments, represented by the pre-FEC padding factor a. The transmitter computes NExcess = (8·APEP_LENGTH + NTail + Nservice) mod (mSTBC·NDBPS) (Eq 27-60), derives ainit from it (Eq 27-61), and splits the resulting pre-FEC pad between MAC (whole octets, ⌊NPAD/8⌋·8) and PHY (NPAD mod 8, i.e. 0–7 bits) per Eq 27-65. For LDPC (27.3.12.5.2), the encoder may detect from puncturing/shortening thresholds that it needs an extra OFDM symbol segment; if so it sets the LDPC Extra Symbol Segment field in HE-SIG-A to 1 and recomputes a and NSYM via Eq 27-71, otherwise 0 with a = ainit (Eq 27-72). BCC instead keeps a = ainit and appends tail bits (27.3.12.5.1). Post-FEC padding (27.3.12.5.3) is NPAD,Post-FEC = NCBPS − NCBPS,last per symbol. Packet extension (27.3.13) reads off Table 27-47: for a given a (1–4) and NOMINAL_PACKET_PADDING (0/8/16 µs) the nominal TPE is 0–16 µs, and TPE must be ≥ TPE,nominal (a sounding NDP fixes TPE = 4 µs). The PE Disambiguity bit (Eq 27-118) is set when the rounded PE interval would otherwise make the receiver miscount NSYM.",
+      "zh": "27.3.12.2 节定义了四个 Pre-FEC 填充边界，把最后一个 OFDM 符号（STBC 时为最后两个）划分为若干段，以 Pre-FEC 填充因子 a 表示。发送端计算 NExcess = (8·APEP_LENGTH + NTail + Nservice) mod (mSTBC·NDBPS)（式 27-60），由此导出 ainit（式 27-61），并按式 27-65 把得到的 Pre-FEC 填充在 MAC（整字节，⌊NPAD/8⌋·8）与 PHY（NPAD mod 8，即 0–7 比特）之间分配。对于 LDPC（27.3.12.5.2），编码器可能根据打孔/缩短阈值判断需要一个额外的 OFDM 符号段；若是，则把 HE-SIG-A 中的 LDPC Extra Symbol Segment 字段置 1 并经式 27-71 重算 a 与 NSYM，否则置 0 且 a = ainit（式 27-72）。BCC 则保持 a = ainit 并追加尾比特（27.3.12.5.1）。Post-FEC 填充（27.3.12.5.3）为每符号 NPAD,Post-FEC = NCBPS − NCBPS,last。包扩展（27.3.13）查 Table 27-47：对给定的 a（1–4）与 NOMINAL_PACKET_PADDING（0/8/16 微秒），名义 TPE 取 0–16 微秒，且 TPE 必须 ≥ TPE,nominal（探测 NDP 固定 TPE = 4 微秒）。当取整后的 PE 间隔会使接收端误算 NSYM 时，置位 PE Disambiguity 比特（式 27-118）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4268,
+          4269,
+          4271,
+          4272,
+          4273,
+          4293
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:27.3.12.5",
+    "80211-2024:27.3.12.2",
+    "80211-2024:27.3.13",
+    "80211-2024:27.3.12.3",
+    "80211-2024:27.3.12.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4267,
+        4268,
+        4269,
+        4270
+      ],
+      "note": "27.3.12.2 Pre-FEC padding process; Data field composition (SERVICE, PSDU, pre-FEC/post-FEC pad, tail bits for BCC only); NExcess and ainit (Eq 27-60/27-61); MAC vs PHY pad split (Eq 27-65)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4271,
+        4272,
+        4273
+      ],
+      "note": "27.3.12.3 SERVICE field; 27.3.12.4 Scrambler; 27.3.12.5 Coding — BCC vs LDPC selection, LDPC-only for large RUs and MCS 10/11, BCC capped at 4 SS and MCS 0-9; LDPC Extra Symbol Segment; post-FEC padding"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4293,
+        4294
+      ],
+      "note": "27.3.13 Packet extension — PE field 0/4/8/12/16 us for extra receive processing time; Table 27-47 nominal TPE from a and NOMINAL_PACKET_PADDING"
+    }
+  ],
+  "track": "modern-phy"
+}
