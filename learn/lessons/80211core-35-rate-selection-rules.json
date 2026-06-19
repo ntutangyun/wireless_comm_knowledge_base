@@ -1,0 +1,115 @@
+{
+  "id": "80211core-35-rate-selection-rules",
+  "title": {
+    "en": "Picking the rate: data, management, and the basic-rate safety net",
+    "zh": "速率选择：数据、管理帧与基本速率安全网"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every frame a station sends has to be sent at some speed — a modulation and coding scheme that trades robustness for throughput. Send too fast and the receiver hears garbage; send too slow and you waste airtime. So 802.11 gives a STA a single guiding instinct: speak fast to one good listener, but broadcast at the pace the whole room can follow. This lesson is about how that instinct is turned into concrete rules for Data and Management frames.",
+      "zh": "站点发送的每一帧都得选定某个速度——也就是一套在“鲁棒性”和“吞吐量”之间权衡的调制与编码方案。发得太快，接收方只会听到一片噪声；发得太慢，又白白浪费了空口时间。于是 802.11 给站点定下了一条核心直觉：对着一个听得清的对象就尽管讲快点，但向全场广播时，要按整个房间都能跟上的节奏来。本课讲的就是这条直觉如何被落实为针对数据帧与管理帧的具体规则。"
+    },
+    {
+      "type": "prose",
+      "en": "The room's pace is the Basic Rate Set. When a BSS starts, it advertises a set of rates (BSSBasicRateSet) — and for HT/VHT/S1G PHYs, a Basic HT-MCS Set or a basic VHT-MCS and NSS set — that every member is required to be able to receive. Think of it as the floor everyone in the BSS can hear. Anything that must reach more than one listener at once (a beacon, a group-addressed frame, a protection frame) is pinned to this floor. Anything aimed at a single, known receiver can climb as high as that receiver's capabilities allow.",
+      "zh": "这里的“全场节奏”就是基本速率集（Basic Rate Set）。BSS 启动时，会广播一组速率（BSSBasicRateSet）——对于 HT/VHT/S1G PHY，还会有基本 HT-MCS 集或基本 VHT-MCS 与 NSS 集——并要求 BSS 中的每个成员都必须能接收这组速率。可以把它理解为“BSS 里所有人都能听见”的下限。凡是必须一次同时送达多个听众的帧（信标、组播帧、保护帧），都被钉死在这个下限上；而凡是只发给某个已知接收方的帧，则可以一路爬升到该接收方能力所允许的最高点。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[Frame to send] --> B{One known<br/>receiver?}\n    B -->|Yes| C[Climb to receiver's<br/>best supported rate/MCS]\n    B -->|No: group-addressed| D{Beacon?}\n    D -->|Yes, non-STBC| E[Use a BSSBasicRateSet rate<br/>in a non-HT PPDU]\n    D -->|No| F{Part of an<br/>FMS stream?}\n    F -->|Yes| G[Rate negotiated when<br/>the FMS stream was set up]\n    F -->|No| H[Use a Basic Rate /<br/>Basic HT-MCS / basic VHT-MCS]\n    E --> I[The whole room can hear it]\n    H --> I\n    G --> I",
+      "zh": "flowchart TD\n    A[要发送的帧] --> B{是否发给单个<br/>已知接收方?}\n    B -->|是| C[爬升到接收方<br/>支持的最佳速率/MCS]\n    B -->|否：组播地址| D{是信标吗?}\n    D -->|是，非STBC| E[在 non-HT PPDU 中<br/>使用 BSSBasicRateSet 中的速率]\n    D -->|否| F{属于某条<br/>FMS 流吗?}\n    F -->|是| G[速率在建立 FMS<br/>流时已协商好]\n    F -->|否| H[使用基本速率 /<br/>基本 HT-MCS / 基本 VHT-MCS]\n    E --> I[全场都能听见]\n    H --> I\n    G --> I"
+    },
+    {
+      "type": "prose",
+      "en": "Beacons are the clearest case. A non-STBC Beacon frame, when the BSSBasicRateSet is not empty, must go out in a non-HT PPDU at one of the basic rates — the slowest-common-denominator so that even the weakest associated STA can decode it. If the basic rate set happens to be empty (for example, a scanning STA not yet in a BSS), the frame falls back to one of the PHY's mandatory rates. The same 'reach everyone' logic governs other group-addressed Data and Management frames.",
+      "zh": "信标是最清楚的例子。当 BSSBasicRateSet 非空时，一个非 STBC 的信标帧必须在 non-HT PPDU 中、以某个基本速率发送——取“最小公分母”，从而让即使是信号最弱的已关联站点也能解出它。如果基本速率集恰好为空（例如一个尚未加入任何 BSS 的扫描站点），信标帧就退回到使用该 PHY 的某个强制速率。同样的“覆盖到所有人”逻辑，也支配着其他组播地址的数据帧与管理帧。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two special cases bend the group-addressed rule rather than breaking it. A Data +CF-Poll frame (polling, without a piggybacked Ack) is rated as if it were group-addressed, so a polled STA on the slow edge can still hear it. And Data frames inside an FMS (Flexible Multicast Service) stream skip the basic-rate floor entirely — they ride a rate negotiated up front when the FMS stream was established, because the AP already knows exactly who is listening.",
+      "zh": "有两种特殊情形是“弯曲”而非“打破”组播规则。一个 Data +CF-Poll 帧（轮询帧，且未捎带 Ack）按“组播地址”来定速，这样即使处在弱信号边缘的被轮询站点也仍能听见。而 FMS（灵活组播服务）流中的数据帧则完全跳过基本速率下限——它们使用建立 FMS 流时预先协商好的速率，因为此时 AP 已经确切知道是谁在收听。"
+    },
+    {
+      "type": "prose",
+      "en": "There is a second floor layered on top, for spatial-stream diversity. When STBC (Space-Time Block Coding) protection is in play, the BSS designates a basic STBC MCS — the lowest single-stream MCS in the Basic HT-MCS Set. A STA with dot11TxSTBCOptionActivated uses it for STBC beacons and STBC group-addressed frames. The standard is careful about the corner cases: if dual-beacon and dual-CTS protection are both off, or no HT Operation element was received, the basic STBC MCS is simply null, and the STA falls back to a mandatory MCS of its PHY.",
+      "zh": "在此之上还叠加了第二道下限，用于空间流分集。当 STBC（空时分组编码）保护启用时，BSS 会指定一个基本 STBC MCS——即基本 HT-MCS 集中最低的单空间流 MCS。当站点的 dot11TxSTBCOptionActivated 为真时，它会在发送 STBC 信标与 STBC 组播帧时使用这个 MCS。标准对边界情况处理得很谨慎：如果双信标与双 CTS 保护都关闭、或者根本没收到 HT Operation 元素，那么基本 STBC MCS 就直接为 null，此时站点退回到使用其 PHY 的某个强制 MCS。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 460 220' fill='none' stroke='currentColor' stroke-width='2'><text x='230' y='22' text-anchor='middle' stroke='none' fill='currentColor' font-size='14' font-weight='bold'>Two floors and one ceiling</text><line x1='40' y1='180' x2='420' y2='180'/><text x='430' y='184' stroke='none' fill='currentColor' font-size='10'>slow</text><line x1='40' y1='50' x2='420' y2='50' stroke-dasharray='5 4'/><text x='430' y='54' stroke='none' fill='currentColor' font-size='10'>fast</text><rect x='60' y='150' width='80' height='30'/><text x='100' y='169' text-anchor='middle' stroke='none' fill='currentColor' font-size='10'>Basic rate</text><text x='100' y='198' text-anchor='middle' stroke='none' fill='currentColor' font-size='9'>(beacons,</text><text x='100' y='210' text-anchor='middle' stroke='none' fill='currentColor' font-size='9'>group frames)</text><rect x='170' y='130' width='90' height='50'/><text x='215' y='152' text-anchor='middle' stroke='none' fill='currentColor' font-size='10'>Basic STBC</text><text x='215' y='166' text-anchor='middle' stroke='none' fill='currentColor' font-size='10'>MCS</text><text x='215' y='198' text-anchor='middle' stroke='none' fill='currentColor' font-size='9'>(STBC group</text><text x='215' y='210' text-anchor='middle' stroke='none' fill='currentColor' font-size='9'>frames)</text><rect x='300' y='60' width='100' height='120'/><text x='350' y='118' text-anchor='middle' stroke='none' fill='currentColor' font-size='10'>Receiver's</text><text x='350' y='132' text-anchor='middle' stroke='none' fill='currentColor' font-size='10'>best rate</text><text x='350' y='198' text-anchor='middle' stroke='none' fill='currentColor' font-size='9'>(unicast to one</text><text x='350' y='210' text-anchor='middle' stroke='none' fill='currentColor' font-size='9'>known STA)</text></svg>",
+      "caption": {
+        "en": "Group-addressed traffic is pinned near the floor so the whole room hears it; unicast to one known STA climbs toward that receiver's ceiling.",
+        "zh": "组播流量被钉在接近下限处，以便全场都能听见；而发给单个已知站点的单播则可向该接收方的“天花板”爬升。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "How does a STA even talk about rates? Through modulation classes — the vocabulary of rate selection. Table 10-9 maps each PHY's PPDU format and modulation (DSSS/HR-DSSS, ERP-OFDM, OFDM, HT, VHT, S1G, HE, and the DMG variants) to a named class. The response-rate rules earlier in 10.6 lean on these class names to decide, for instance, that a control response to a non-HT frame must itself stay in an OFDM or ERP-OFDM class. The class is the common ground that lets a fast HT/VHT/HE transmission be answered at a comparable, decodable rate.",
+      "zh": "站点究竟靠什么来“谈论”速率呢？靠的是调制类（modulation class）——速率选择的词汇表。表 10-9 把每种 PHY 的 PPDU 格式与调制方式（DSSS/HR-DSSS、ERP-OFDM、OFDM、HT、VHT、S1G、HE 以及各种 DMG 变体）映射到一个带名字的类。10.6 中前面那些响应速率规则就依赖这些类名来做判断，例如：对一个 non-HT 帧的控制响应，自身也必须停留在 OFDM 或 ERP-OFDM 类中。调制类就是那块公共地基，它让一次高速的 HT/VHT/HE 传输能以一个相称、可解码的速率得到回应。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Turning a rich PPDU into a non-HT basic rate",
+        "zh": "把一个高阶 PPDU 折算成 non-HT 基本速率"
+      },
+      "en": "Clause 10.6.11 defines the bridge between modern and legacy rates: how to convert an HT-MCS, VHT-MCS, or HE-MCS into a non-HT basic rate so a response frame can be priced. It is two steps. First, take the modulation and coding rate of the received MCS (for a UEQM MCS, use stream 1's modulation) and look it up in Table 10-10 to get a non-HT reference rate — e.g. 64-QAM at R=3/4 maps to 54 Mb/s, BPSK at R=1/2 maps to 6 Mb/s. Second, the non-HT basic rate is the highest rate in the BSSBasicRateSet that is less than or equal to that reference rate. This is exactly the mechanism the control-response rules elsewhere in 10.6 invoke when they say 'at the rate or non-HT reference rate of the previous frame' — it lets a STA answer an 802.11n/ac/ax frame with a plain legacy-rate Ack or CTS that both ends can decode. Note 1 adds that DCM encoding in an HE PPDU does not influence this selection.",
+      "zh": "10.6.11 节定义了现代速率与传统速率之间的“桥梁”：如何把一个 HT-MCS、VHT-MCS 或 HE-MCS 折算成 non-HT 基本速率，从而为响应帧定速。它分两步。第一步，取所收到 MCS 的调制方式与编码率（对于 UEQM 类 MCS，使用第 1 条流的调制方式），在表 10-10 中查得一个 non-HT 参考速率——例如 64-QAM、R=3/4 对应 54 Mb/s，BPSK、R=1/2 对应 6 Mb/s。第二步，non-HT 基本速率取 BSSBasicRateSet 中小于或等于该参考速率的最高速率。这正是 10.6 中其他控制响应规则所说“以前一帧的速率或 non-HT 参考速率”时所调用的机制——它让站点能用一个两端都能解码的、普通的传统速率 Ack 或 CTS 来回应一个 802.11n/ac/ax 帧。注 1 补充说明：HE PPDU 中的 DCM 编码不会影响这一选择。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1962,
+          1963
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.6.2",
+    "80211-2024:10.6.3",
+    "80211-2024:10.6.5.1",
+    "80211-2024:10.6.5.5",
+    "80211-2024:10.6.5.6",
+    "80211-2024:10.6.5.7",
+    "80211-2024:10.6.10",
+    "80211-2024:10.6.11"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1938,
+        1939
+      ],
+      "note": "10.6.2 Basic HT-MCS Set field; 10.6.3 Basic STBC MCS (null conditions and fallback to a mandatory MCS); 10.6.5.1 non-STBC Beacon rate via BSSBasicRateSet or mandatory PHY rates"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1940
+      ],
+      "note": "10.6.5.5 polling (CF-Poll, no CF-Ack) rated as group-addressed; 10.6.5.6 +CF-Ack frames; 10.6.5.7 FMS-stream Data frames at FMS-negotiated rate"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1960,
+        1961
+      ],
+      "note": "10.6.10 Modulation classes — Table 10-9 maps PHY format/modulation to a named class used by the response-rate rules"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1962,
+        1963
+      ],
+      "note": "10.6.11 Non-HT basic rate calculation — Table 10-10 reference-rate lookup, then highest BSSBasicRateSet rate at or below it"
+    }
+  ],
+  "track": "80211core"
+}

@@ -1,0 +1,102 @@
+{
+  "id": "80211core-36-control-frame-rates-and-width",
+  "title": {
+    "en": "Control-frame rates and channel width: making RTS/CTS/ACK heard everywhere",
+    "zh": "控制帧速率与信道宽度：让RTS/CTS/ACK处处可达"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Control frames — RTS, CTS, ACK, BlockAck, CF-End — are the traffic signals of the wireless medium. They reserve airtime, set everyone's NAV, and confirm receipt. For that job to work, they must be heard by every station nearby, including the oldest and slowest one parked in the narrowest lane. So 802.11 deliberately strips them of the speed tricks it lavishes on data: a fast, wide, fancy data frame is fine, but a control frame that nobody can decode is worse than useless. The picture to hold: a cop directing traffic has to be visible to every car, even the rusty one with one working headlight.",
+      "zh": "控制帧——RTS、CTS、ACK、BlockAck、CF-End——是无线介质上的交通信号灯。它们预约空口时间、为所有人设置 NAV、并确认收到数据。要让这套机制奏效，附近的每一个站点都必须能听懂它们，包括停在最窄车道里那台最老、最慢的设备。因此 802.11 有意剥夺了控制帧在数据帧上大肆使用的各种提速手段：一个又快、又宽、又花哨的数据帧没问题，但一个谁都解不出来的控制帧比没有还糟。请记住这个画面：指挥交通的警察必须让每一辆车都看得见他，哪怕是那辆只有一只车灯还亮着的老爷车。"
+    },
+    {
+      "type": "prose",
+      "en": "The default is simple: a control frame goes at a basic rate. The transmitter picks from the BSSBasicRateSet — the set of rates the network has declared every member must support — or, if that set is empty, from the PHY's mandatory rates. That alone guarantees broad reach. But three situations get special handling. A frame that initiates a TXOP (an RTS, or a CTS-to-self) still uses a basic rate, because it is establishing protection for the whole burst and absolutely must reach the neighbourhood. A CF-End that closes a TXOP normally uses a basic rate too — except when it is the second half of a dual-CTS protected TXOP, where it must mirror the exact STBC/MCS/RATE of the frame that opened the TXOP so it cannot outrun what already worked.",
+      "zh": "默认规则很简单：控制帧以一个基本速率（basic rate）发送。发送方从 BSSBasicRateSet——网络声明的、每个成员都必须支持的那组速率——中挑选；若该集合为空，则从 PHY 的强制速率中挑选。仅这一点就保证了广覆盖。但有三类情形需要特殊处理。发起一个 TXOP 的帧（RTS，或 CTS-to-self）仍使用基本速率，因为它是在为整段突发建立保护，必须确保能传遍周围邻居。结束 TXOP 的 CF-End 通常也使用基本速率——除非它是双 CTS（dual-CTS）保护型 TXOP 的后半段，此时它必须完全沿用开启该 TXOP 那一帧的 STBC/MCS/RATE，以免跑得比已经被验证可行的速率更快。"
+    },
+    {
+      "type": "prose",
+      "en": "The third case is a control frame that is neither a control response nor a TXOP boundary — for example a BlockAckReq sent mid-burst. The rule there is 'no faster than the conversation so far': pick the highest basic rate that is still less than or equal to the rate (or non-HT reference rate) of the previous frame sent to that same receiver. The recurring theme is a ceiling, never a floor — control frames are always pulled down toward what is robustly decodable, never pushed up for throughput.",
+      "zh": "第三类情形，是既非控制响应、又不是 TXOP 边界的控制帧——例如在突发中途发送的 BlockAckReq。这里的规则是“不快于此前的对话”：选取仍小于或等于此前发往同一接收方那一帧的速率（或非 HT 参考速率，non-HT reference rate）的最高基本速率。反复出现的主题是一个上限、而绝非下限——控制帧总是被拉低到能稳健解码的水平，绝不会为了吞吐量而被推高。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[About to send a Control frame] --> B{What role?}\n    B -->|Initiates a TXOP\\n RTS / CTS-to-self| C[Basic rate\\n reach the whole BSS]\n    B -->|CF-End\\n ends a TXOP| D{Dual-CTS TXOP?}\n    D -->|No| C\n    D -->|Yes| E[Mirror STBC / MCS / RATE\\n of the opening frame]\n    B -->|Not a response,\\n not a boundary\\n e.g. BlockAckReq| F[No faster than the\\n previous frame to that STA]\n    B -->|Control response\\n CTS / ACK / BlockAck| G[Match the eliciting frame:\\n rate + channel width\\n 10.6.6.5 / 10.6.6.6]",
+      "zh": "flowchart TD\n    A[准备发送一个控制帧] --> B{扮演什么角色?}\n    B -->|发起 TXOP\\n RTS / CTS-to-self| C[基本速率\\n 覆盖整个 BSS]\n    B -->|CF-End\\n 结束 TXOP| D{双 CTS 型 TXOP?}\n    D -->|否| C\n    D -->|是| E[沿用开启帧的\\n STBC / MCS / RATE]\n    B -->|非响应、\\n 非边界\\n 如 BlockAckReq| F[不快于发往该站点的\\n 上一帧]\n    B -->|控制响应\\n CTS / ACK / BlockAck| G[匹配触发帧:\\n 速率 + 信道宽度\\n 10.6.6.5 / 10.6.6.6]"
+    },
+    {
+      "type": "prose",
+      "en": "Rate is half the story; channel width is the other half. A wide TXOP (40/80/160 MHz) is only protected if the RTS/CTS/ACK guarding it are heard across that whole width — yet a legacy or narrow-band neighbour may only listen on a 20 MHz primary channel. 802.11 solves this with the non-HT duplicate PPDU: the same legacy-decodable waveform copied across each 20 MHz sub-channel, so a wideband STA reads it everywhere and a narrowband STA still reads it on the primary. A response control frame generally copies the channel width of the frame that elicited it (matching an HT/VHT eliciting frame exactly), and it must never respond wider than it received.",
+      "zh": "速率只是故事的一半，信道宽度是另一半。一个宽 TXOP（40/80/160 MHz）只有在守护它的 RTS/CTS/ACK 能跨越整个宽度被听见时，才算真正受到保护——然而某个传统或窄带的邻居也许只在一个 20 MHz 的主信道（primary channel）上监听。802.11 用非 HT 重复 PPDU（non-HT duplicate PPDU）来解决：把同一个传统设备可解码的波形复制到每一个 20 MHz 子信道上，于是宽带站点处处都能读到它，窄带站点也仍能在主信道上读到它。响应类控制帧通常复制触发它的那一帧的信道宽度（对 HT/VHT 触发帧则精确匹配），并且其响应宽度绝不能比收到的更宽。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Static vs dynamic bandwidth lives in the TA. When a VHT/HE STA sends a wide non-HT-duplicate control frame, it can use a 'bandwidth signaling TA' (a specially encoded transmitter address) to carry the CH_BANDWIDTH_IN_NON_HT hint — telling the receiver how wide the exchange really is. A plain RTS with a dynamic-bandwidth indication lets the CTS responder shrink the reservation to whatever sub-band is actually clear; a static one demands the full width or nothing. Crucially, none of this machinery is shown to a non-VHT STA: against a legacy peer the bandwidth-signaling TA is simply never set, so the old device sees an ordinary frame it can decode.",
+      "zh": "静态与动态带宽藏在 TA 字段里。当一个 VHT/HE 站点发送宽的非 HT 重复控制帧时，它可以使用“带宽信令 TA”（bandwidth signaling TA，一种经特殊编码的发送方地址）来携带 CH_BANDWIDTH_IN_NON_HT 提示——告诉接收方这次交换实际有多宽。一个带动态带宽指示的普通 RTS，允许 CTS 响应方把预约收缩到任何实际空闲的子频带；而静态指示则要求要么占满整个宽度、要么作罢。关键在于：这套机制绝不会展示给非 VHT 站点——面对传统对端时，带宽信令 TA 根本不会被设置，于是老设备看到的只是一个它能解码的普通帧。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, a thin but important rule trims what the TXVECTOR may carry. A control frame that initiates a TXOP must not use Short Guard Interval and must not use LDPC coding; a control response frame likewise may only use SHORT_GI or LDPC if the frame it answers used them, and must never use HT Greenfield format. These restrictions exist for one reason: every fancy PHY option is one more thing a receiver might not implement. Stripping them keeps the traffic cop universally legible.",
+      "zh": "最后，有一条不起眼但很重要的规则，限定了 TXVECTOR 里能携带什么。发起 TXOP 的控制帧不得使用短保护间隔（Short Guard Interval），也不得使用 LDPC 编码；控制响应帧同样只有在其所应答的帧使用了 SHORT_GI 或 LDPC 时才可使用，并且绝不能使用 HT Greenfield 格式。这些限制的存在只有一个理由：每一项花哨的 PHY 选项，都多了一件接收方可能并未实现的东西。把它们剥离掉，才能让这位“交通警察”对所有人都清晰可辨。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact clauses: basic-rate default, the TXOP/CF-End/non-response splits, and the bandwidth-signaling TA",
+        "zh": "精确条款：基本速率默认、TXOP/CF-End/非响应的分流，以及带宽信令 TA"
+      },
+      "en": "10.6.6.2 requires a Control frame that initiates a TXOP and is carried in a non-HT PPDU to use a rate from the BSSBasicRateSet (or the PHY's mandatory rate set if that is empty); the standard notes this exists to ensure 'maximum possible coverage and receivability'. 10.6.6.3 sends a CF-End at a basic rate, except a CF-End ending a dual-CTS-mechanism TXOP must reuse the TXVECTOR STBC, MCS, and RATE of the matching opening Control frame. 10.6.6.4 caps a non-response, non-boundary Control frame at the highest basic rate that is no higher than the rate (or non-HT reference rate, 10.6.11) of the previous frame to that receiver. 10.6.6.6 governs channel width: a STA responding to an HT/VHT frame shall set CH_BANDWIDTH equal to the eliciting RXVECTOR CH_BANDWIDTH, and shall not respond wider than it received; a VHT/HE STA sending a wide non-HT-duplicate control frame sets a bandwidth signaling TA and makes CH_BANDWIDTH_IN_NON_HT equal CH_BANDWIDTH. 10.6.6.7 forbids SHORT_GI and LDPC_CODING on a TXOP-initiating Control frame. 10.6.12 confines the bandwidth-signaling TA and the CH_BANDWIDTH_IN_NON_HT / DYN_BANDWIDTH_IN_NON_HT parameters to non-HT and non-HT duplicate PPDUs, and bars a VHT STA from ever showing them to a non-VHT STA — the dynamic-bandwidth parameter appears only on RTS frames carrying a bandwidth signaling TA.",
+      "zh": "10.6.6.2 要求：以非 HT PPDU 承载、发起 TXOP 的控制帧，必须使用 BSSBasicRateSet 中的速率（若该集合为空，则用 PHY 的强制速率集）；标准还附注说明，此规则的存在是为了确保“尽可能大的覆盖与可接收性”。10.6.6.3 规定 CF-End 以基本速率发送，但结束双 CTS 机制型 TXOP 的 CF-End 必须复用其匹配的开启控制帧所用的 TXVECTOR 中的 STBC、MCS 与 RATE。10.6.6.4 将非响应、非边界的控制帧速率上限设为：不超过此前发往该接收方那一帧的速率（或非 HT 参考速率，见 10.6.11）的最高基本速率。10.6.6.6 管辖信道宽度：响应 HT/VHT 帧的站点应将 CH_BANDWIDTH 设为触发帧 RXVECTOR 的 CH_BANDWIDTH，且其响应宽度不得超过所收到的宽度；发送宽的非 HT 重复控制帧的 VHT/HE 站点应设置带宽信令 TA，并令 CH_BANDWIDTH_IN_NON_HT 等于 CH_BANDWIDTH。10.6.6.7 禁止在发起 TXOP 的控制帧上使用 SHORT_GI 与 LDPC_CODING。10.6.12 将带宽信令 TA 以及 CH_BANDWIDTH_IN_NON_HT / DYN_BANDWIDTH_IN_NON_HT 参数限定在非 HT 与非 HT 重复 PPDU 中，并禁止 VHT 站点向非 VHT 站点展示它们——其中动态带宽参数仅出现在携带带宽信令 TA 的 RTS 帧上。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1943,
+          1944,
+          1951,
+          1952,
+          1953,
+          1962
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.6.6.2",
+    "80211-2024:10.6.6.3",
+    "80211-2024:10.6.6.4",
+    "80211-2024:10.6.6.6",
+    "80211-2024:10.6.6.7",
+    "80211-2024:10.6.12"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1943,
+        1944
+      ],
+      "note": "10.6.6.2-10.6.6.4 - basic-rate default for TXOP-initiating Control frames; CF-End rate (incl. dual-CTS mirroring); non-response Control frame rate ceiling"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1951,
+        1952,
+        1953
+      ],
+      "note": "10.6.6.6 channel width selection (response matches eliciting frame; bandwidth signaling TA; non-HT duplicate) and 10.6.6.7 TXVECTOR restrictions (no SHORT_GI / LDPC on TXOP initiator)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1962
+      ],
+      "note": "10.6.12 Channel Width in non-HT and non-HT duplicate PPDUs - bandwidth signaling TA and CH_BANDWIDTH_IN_NON_HT / DYN_BANDWIDTH_IN_NON_HT confined to non-HT PPDUs; never exposed to non-VHT STAs"
+    }
+  ],
+  "track": "80211core"
+}

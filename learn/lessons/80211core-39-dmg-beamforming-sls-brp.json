@@ -1,0 +1,145 @@
+{
+  "id": "80211core-39-dmg-beamforming-sls-brp",
+  "title": {
+    "en": "DMG beamforming: sector-level sweep and beam refinement in 60 GHz",
+    "zh": "DMG波束成形：60 GHz的扇区级扫描与波束细化"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "At 60 GHz (the DMG band — directional multi-gigabit), radio waves are tiny and fade fast. To close the link at all, both ends focus their energy into a narrow beam, like a flashlight rather than a bare bulb. But a flashlight only helps if it points the right way. Before a 60 GHz station can exchange a single data frame, it must first discover which direction to point — and so must the other end. That discovery is what DMG beamforming does, and it is the MAC layer, not the application, that drives it.",
+      "zh": "在 60 GHz（即 DMG 频段——定向多吉比特）上，电磁波波长极短、衰减极快。要让链路根本能建立起来，两端都必须把能量聚成一束窄波束，就像手电筒而非裸灯泡。但手电筒只有照对方向才有用。在一个 60 GHz 站点能交换哪怕一帧数据之前，它必须先弄清楚该朝哪个方向照——而对端也一样。这种“找方向”的工作正是 DMG 波束成形所做的，而且驱动它的是 MAC 层，不是应用层。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental picture: two people in a dark room, each holding a flashlight. First they sweep their beams across the room, one sector at a time, watching for when the other's light looks brightest (the coarse Sector-Level Sweep). Then each nudges the aim a little to sharpen it (the fine Beam Refinement Protocol). Only after that can they 'see' each other well enough to talk.",
+      "zh": "形象比喻：两个人在黑屋里，各拿一支手电筒。他们先把光束在屋里逐个扇区地扫一遍，留意对方的光在哪个方向看起来最亮（粗调的“扇区级扫描”）；然后各自微调瞄准方向，把光照得更精准（精调的“波束细化协议”）。只有在这之后，他们才能足够清楚地“看见”彼此，从而交谈。"
+    },
+    {
+      "type": "prose",
+      "en": "The coarse step is the Sector-Level Sweep (SLS). It has up to four parts. First the initiator sector sweep (ISS): the initiator transmits a beamforming frame (a DMG Beacon or an SSW frame) once through each of its candidate transmit sectors, while the responder listens. Then the responder sector sweep (RSS): roles reverse, the responder sweeps its sectors. Each swept frame carries a CDOWN counter that counts down to zero on the last sector and a Sector ID identifying which sector it was sent through, so the listener can later name the sector that arrived strongest.",
+      "zh": "粗调这一步就是“扇区级扫描（SLS）”。它最多包含四个部分。首先是“发起方扇区扫描（ISS）”：发起方依次用自己的每个候选发送扇区各发一帧波束成形帧（DMG Beacon 帧或 SSW 帧），同时接收方监听。接着是“响应方扇区扫描（RSS）”：角色互换，响应方扫描自己的扇区。每一个被扫描的帧都携带一个 CDOWN 计数器（在最后一个扇区上递减到 0）和一个 Sector ID（标明这一帧是通过哪个扇区发出的），这样监听一方稍后就能说出哪个扇区收到的信号最强。"
+    },
+    {
+      "type": "prose",
+      "en": "After the RSS comes SSW feedback: the initiator sends an SSW-Feedback frame telling the responder which of the responder's sectors arrived best (it copies that sector into the Sector Select and DMG Antenna Select fields, plus an SNR report). Finally SSW-ACK: when the responder swept its transmit sectors, it replies with an SSW-Ack frame, transmitted through the best sector the initiator just named, to confirm the choice. At the end of a successful SLS each side knows its best transmit sector toward the other — a coarse beam is locked.",
+      "zh": "RSS 之后是“SSW 反馈”：发起方发送一帧 SSW-Feedback，告诉响应方它的哪个扇区收得最好（把该扇区填入 Sector Select 与 DMG Antenna Select 字段，并附上一份 SNR 报告）。最后是“SSW-ACK”：当响应方扫描了它的发送扇区时，它会回一帧 SSW-Ack，并通过发起方刚才指定的最佳扇区发出，以确认这一选择。一次成功的 SLS 结束时，双方都知道了朝向对端的最佳发送扇区——一束粗波束就此锁定。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant I as Initiator\n    participant R as Responder\n    Note over I,R: SLS phase (coarse beam)\n    I->>R: ISS - sweep each TX sector (CDOWN, Sector ID)\n    R->>I: RSS - sweep each TX sector (CDOWN, Sector ID)\n    I->>R: SSW-Feedback (best responder sector + SNR)\n    R->>I: SSW-Ack (confirm, sent via chosen sector)\n    Note over I,R: BRP phase (fine tune)\n    I->>R: BRP setup (Capability Request, request MID/BC/TRN)\n    R->>I: BRP setup response (grant subphases)\n    Note over I,R: now a sharp beam - data can flow",
+      "zh": "sequenceDiagram\n    participant I as 发起方\n    participant R as 响应方\n    Note over I,R: SLS 阶段（粗波束）\n    I->>R: ISS - 逐个扫描发送扇区 (CDOWN, Sector ID)\n    R->>I: RSS - 逐个扫描发送扇区 (CDOWN, Sector ID)\n    I->>R: SSW-Feedback (响应方最佳扇区 + SNR)\n    R->>I: SSW-Ack (确认, 经选定扇区发出)\n    Note over I,R: BRP 阶段（精调）\n    I->>R: BRP setup (Capability Request, 请求 MID/BC/TRN)\n    R->>I: BRP setup 响应 (授予各子阶段)\n    Note over I,R: 此时波束已锐利 - 数据可以流动"
+    },
+    {
+      "type": "prose",
+      "en": "The coarse SLS beam is usually not sharp enough — it was found through wide, quasi-omni receive patterns. The Beam Refinement Protocol (BRP) phase nudges it sharper. It opens with a BRP setup subphase: the initiator sends a BRP frame with the Capability Request subfield set to 1, and the two ends exchange what refinement they need — a Multiple-sector-ID Detection (MID) subphase, a Beam Combining (BC) subphase, and/or training-field (TRN) transactions — by setting the MID-REQ, BC-REQ, L-RX, and TX-TRN-REQ fields and granting them. After setup, the negotiated refinement runs and the beam tightens.",
+      "zh": "粗调出来的 SLS 波束通常还不够锐利——它是在很宽的准全向接收方向图下找到的。“波束细化协议（BRP）”阶段会把它调得更尖。它以一个“BRP setup 子阶段”开场：发起方发出一帧把 Capability Request 子字段置 1 的 BRP 帧，两端借此协商各自需要的细化方式——“多扇区 ID 检测（MID）子阶段”、“波束合并（BC）子阶段”，以及/或“训练字段（TRN）事务”——通过设置 MID-REQ、BC-REQ、L-RX 与 TX-TRN-REQ 字段并予以授予来完成。setup 之后，协商好的细化流程便运行起来，波束随之收紧。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Where in time does this happen? The beacon interval has slots for it. The initiator's coarse sweep (ISS) can run inside the BTI on DMG Beacons; a contending station does its RSS and gets feedback in the A-BFT (association beamforming training) period — but never the SSW-ACK there. The SSW-ACK and the whole BRP phase happen later, in the data-transfer interval (DTI), inside a scheduled service period or a contention-based access period.",
+      "zh": "这些事在时间轴上发生在哪里？信标间隔里专门留了时隙。发起方的粗扫描（ISS）可以在 BTI 内借助 DMG Beacon 进行；一个竞争接入的站点在 A-BFT（关联波束成形训练）时段完成它的 RSS 并拿到反馈——但 SSW-ACK 绝不在那里发生。SSW-ACK 以及整个 BRP 阶段都放到稍后的数据传输间隔（DTI）里，在一个被调度的服务周期或基于竞争的接入周期内完成。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact four SLS components, and why A-BFT defers the ACK",
+        "zh": "SLS 的四个确切组成部分，以及 A-BFT 为何推迟 ACK"
+      },
+      "en": "Clause 10.41.2.1 names the SLS components precisely: an ISS (10.41.2.2) to train the initiator link, an RSS (10.41.2.3) to train the responder link, an SSW feedback procedure (10.41.2.4), and an SSW ack procedure (10.41.2.5). An initiator shall begin the SLS by transmitting the ISS; a responder shall not begin its RSS before the ISS completes (except when the ISS is in the BTI). During the ISS the initiator's only beamforming frames are the DMG Beacon, SSW, and SSW-Feedback; during the RSS the responder's only beamforming frames are the SSW and SSW-Ack. Each swept frame's CDOWN field is set so the last transmission is CDOWN = 0, and the Sector ID uniquely identifies the transmit sector. In SSW feedback (10.41.2.4) the initiator sets the Sector Select and DMG Antenna Select fields to the best-quality frame from the responder's TXSS and reports the SNR. For the A-BFT (10.41.5.2), beamforming training there consists only of the RSS and SSW feedback procedures between AP/PCP and STA, with the AP/PCP as initiator and the STA as responder; the BRP phase shall not be performed in the A-BFT, and the responder shall not initiate an SSW ack procedure there — that ack occurs in the DTI (10.41.6.2). The BRP setup subphase (10.41.3.2) starts with a BRP PPDU whose Capability Request subfield is 1, repeating until both ends send Capability Request = 0.",
+      "zh": "10.41.2.1 节精确地列出了 SLS 的组成部分：用于训练发起方链路的 ISS（10.41.2.2）、用于训练响应方链路的 RSS（10.41.2.3）、一个 SSW 反馈过程（10.41.2.4），以及一个 SSW ack 过程（10.41.2.5）。发起方应以发送 ISS 来开始 SLS；除非 ISS 处于 BTI 中，否则响应方在 ISS 完成前不得开始其 RSS。ISS 期间发起方可发的波束成形帧只有 DMG Beacon、SSW 和 SSW-Feedback；RSS 期间响应方可发的波束成形帧只有 SSW 和 SSW-Ack。每个被扫描帧的 CDOWN 字段都被设置为使最后一帧 CDOWN = 0，而 Sector ID 唯一标识所用的发送扇区。在 SSW 反馈（10.41.2.4）中，发起方把 Sector Select 与 DMG Antenna Select 字段设为响应方 TXSS 中质量最佳的那一帧，并报告其 SNR。对于 A-BFT（10.41.5.2），那里的波束成形训练只包含 AP/PCP 与 STA 之间的 RSS 与 SSW 反馈过程，其中 AP/PCP 为发起方、STA 为响应方；BRP 阶段不得在 A-BFT 内执行，且响应方不得在那里发起 SSW ack 过程——该 ack 发生在 DTI 中（10.41.6.2）。BRP setup 子阶段（10.41.3.2）以一帧 Capability Request 子字段为 1 的 BRP PPDU 开始，反复进行，直到两端都发送 Capability Request = 0 为止。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2224,
+          2225,
+          2232,
+          2236,
+          2242,
+          2246
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.41.2.2",
+    "80211-2024:10.41.2.3",
+    "80211-2024:10.41.2.4",
+    "80211-2024:10.41.2.5",
+    "80211-2024:10.41.3.2",
+    "80211-2024:10.41.5.2",
+    "80211-2024:10.41.6.2"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2224,
+        2225
+      ],
+      "note": "10.41.2.1 General - SLS phase has up to four components: ISS, RSS, SSW feedback, SSW ack; ordering rules and allowed BF frames"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2227,
+        2228,
+        2229
+      ],
+      "note": "10.41.2.2 ISS - initiator TXSS/RXSS; Sector ID and CDOWN fields in each swept BF frame"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2229,
+        2230,
+        2231,
+        2232
+      ],
+      "note": "10.41.2.3 RSS - responder TXSS/RXSS; Sector Select set to best-received sector from ISS"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2232,
+        2233
+      ],
+      "note": "10.41.2.4 SSW feedback - initiator's SSW-Feedback frame carries Sector Select, DMG Antenna Select, SNR Report"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2233,
+        2234
+      ],
+      "note": "10.41.2.5 SSW ack - responder's SSW-Ack frame sent through the initiator-selected sector to confirm"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2236,
+        2237
+      ],
+      "note": "10.41.3.2 BRP setup subphase - starts with BRP PPDU Capability Request = 1; negotiates MID/BC/TRN refinement"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2242
+      ],
+      "note": "10.41.5.2 Operation during the A-BFT - RSS + SSW feedback only; no BRP, no SSW ack in A-BFT"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2246
+      ],
+      "note": "10.41.6.2 SLS phase execution - SSW ack procedure occurs within the DTI, not in the A-BFT"
+    }
+  ],
+  "track": "80211core"
+}

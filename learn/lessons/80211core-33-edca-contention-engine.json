@@ -1,0 +1,124 @@
+{
+  "id": "80211core-33-edca-contention-engine",
+  "title": {
+    "en": "EDCA: the QoS contention engine — backoff, AC priorities, and TXOPs",
+    "zh": "EDCA：服务质量竞争引擎——退避、接入类别优先级与发送机会"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Plain DCF treats every frame the same: when the medium is busy, you wait a fixed gap (DIFS), then count down a random backoff, and whoever reaches zero first transmits. That is fair, but it is not smart — a voice packet and a background file download contend with identical patience. HCF's contention-based access, called EDCA, fixes this. It splits one station's single contention engine into four parallel ones, one per access category (AC): Voice (VO), Video (VI), Best Effort (BE), and Background (BK). Picture four lanes merging onto a single-lane road: each lane has its own patience before it may move, and the lane carrying urgent traffic is tuned to merge ahead of the rest.",
+      "zh": "普通的 DCF 对每一帧一视同仁：介质忙时先等一段固定间隔（DIFS），再倒数一个随机退避值，谁先数到零谁就发送。这很公平，但并不“聪明”——一个语音包和一个后台文件下载用的是完全相同的耐心去竞争。HCF 中基于竞争的接入方式——EDCA——解决了这个问题。它把一个站点原本单一的竞争引擎拆成四个并行引擎，每个接入类别（AC）一个：语音（VO）、视频（VI）、尽力而为（BE）和后台（BK）。可以把它想象成四条车道并入一条单车道公路：每条车道在可以前进之前都有自己的耐心，而承载紧急流量的那条车道被调校得能抢在其余车道前面汇入。"
+    },
+    {
+      "type": "prose",
+      "en": "Each AC runs its own enhanced distributed channel access function (EDCAF), and each EDCAF has its own tuning knobs. Instead of one DIFS for everyone, each AC waits AIFS[AC] = AIFSN[AC] × slotTime + SIFS — a per-AC arbitration gap, where a smaller AIFSN means a shorter wait and thus higher priority. Each AC also keeps its own contention window bounded by CWmin[AC] and CWmax[AC]: high-priority ACs get small windows (so they pick small random backoffs and tend to win), low-priority ACs get large ones. The AP advertises all of these values — AIFSN, CWmin, CWmax, and TXOP limit per AC — in the EDCA Parameter Set element inside its Beacons.",
+      "zh": "每个 AC 都运行自己的增强型分布式信道接入函数（EDCAF），每个 EDCAF 都有自己的调节旋钮。不再是所有人共用一个 DIFS，而是每个 AC 等待 AIFS[AC] = AIFSN[AC] × 时隙时间 + SIFS——这是每个 AC 专属的仲裁间隔，AIFSN 越小等待越短，优先级也就越高。每个 AC 还维护自己的竞争窗口，受 CWmin[AC] 与 CWmax[AC] 约束：高优先级 AC 拿到小窗口（于是抽到的随机退避值小、更容易抢赢），低优先级 AC 则拿到大窗口。AP 会在其 Beacon 帧中的 EDCA 参数集元素里通告所有这些数值——每个 AC 的 AIFSN、CWmin、CWmax 和 TXOP 限值。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 220' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='16' stroke='none' fill='currentColor' font-size='12'>Four ACs, one radio</text><g font-size='11' stroke='none' fill='currentColor'><text x='10' y='52'>VO</text><text x='10' y='90'>VI</text><text x='10' y='128'>BE</text><text x='10' y='166'>BK</text></g><rect x='40' y='40' width='150' height='18'/><rect x='40' y='78' width='200' height='18'/><rect x='40' y='116' width='280' height='18'/><rect x='40' y='154' width='340' height='18'/><g font-size='9' stroke='none' fill='currentColor'><text x='44' y='53'>short AIFS + small CW</text><text x='44' y='91'>medium AIFS/CW</text><text x='44' y='129'>larger AIFS/CW</text><text x='44' y='167'>longest AIFS + largest CW</text></g><line x1='400' y1='30' x2='400' y2='185'/><polygon points='400,185 394,173 406,173' stroke='none' fill='currentColor'/><text x='360' y='205' stroke='none' fill='currentColor' font-size='10'>to the medium</text><line x1='190' y1='49' x2='400' y2='49'/><line x1='240' y1='87' x2='400' y2='87'/><line x1='320' y1='125' x2='400' y2='125'/><line x1='380' y1='163' x2='400' y2='163'/></svg>",
+      "caption": {
+        "en": "Four per-AC EDCAFs contend independently into one radio. Shorter bars = shorter wait before transmitting; Voice merges ahead of Background.",
+        "zh": "四个按 AC 划分的 EDCAF 各自独立竞争同一个无线收发机。条形越短，发送前等待越短；语音会抢在后台之前汇入。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Here is the twist that pure DCF never has to deal with: because four EDCAFs live inside one station and share one radio, two of them can reach a backoff value of zero on the very same slot boundary. That is an internal collision — the station collides with itself. The rule is simple and priority-based: the higher-priority AC wins the (virtual) TXOP and transmits; the loser does not get to transmit, treats it as a failed attempt, and invokes its backoff procedure (its CW doubles and its retry counter increments, just as if it had collided over the air). So priority is enforced twice: softly, through AIFS and CW that bias who reaches zero first, and hard, through the internal-collision tie-break.",
+      "zh": "下面是纯 DCF 永远不必处理的一个微妙之处：由于四个 EDCAF 共存于同一个站点、共用同一个无线收发机，它们中的两个可能在同一个时隙边界上同时把退避值数到零。这就是内部碰撞——站点与自己发生了碰撞。规则简单且基于优先级：优先级更高的 AC 赢得（虚拟的）TXOP 并发送；输的一方不能发送，将其视为一次失败尝试，并启动自己的退避流程（其 CW 翻倍、重试计数器递增，就好像它在空口上真的发生了碰撞一样）。因此优先级被强制执行了两次：软性地，通过 AIFS 和 CW 来左右谁先数到零；以及硬性地，通过内部碰撞的优先级裁决。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[Medium goes idle] --> B[Wait AIFS-AC]\n    B --> C{Backoff counter}\n    C -->|> 0, slot idle| D[Decrement by 1]\n    D --> C\n    C -->|reaches 0| E{Higher-priority AC also at 0?}\n    E -->|Yes| F[Internal collision:\\nlose, double CW, retry++]\n    F --> B\n    E -->|No| G[Win EDCA TXOP]\n    G --> H[Burst: frame exchanges\\nseparated by SIFS,\\nwithin TXOP limit]\n    H --> I{Queue empty early?}\n    I -->|Yes| J[Send CF-End:\\ntruncate TXOP]\n    I -->|No| K[Stop at TXOP limit]",
+      "zh": "flowchart TD\n    A[介质变为空闲] --> B[等待 AIFS-AC]\n    B --> C{退避计数器}\n    C -->|> 0 且时隙空闲| D[减 1]\n    D --> C\n    C -->|数到 0| E{更高优先级 AC 也为 0？}\n    E -->|是| F[内部碰撞：\\n落败、CW 翻倍、重试++]\n    F --> B\n    E -->|否| G[赢得 EDCA TXOP]\n    G --> H[突发：以 SIFS 分隔的\\n多次帧交换，\\n限制在 TXOP 限值内]\n    H --> I{队列提前清空？}\n    I -->|是| J[发送 CF-End：\\n截断 TXOP]\n    I -->|否| K[到达 TXOP 限值即停]"
+    },
+    {
+      "type": "prose",
+      "en": "Winning grants an EDCA TXOP — a block of medium time defined by a start and a maximum length (the TXOP limit for that AC). Inside one TXOP the winner does not stop at a single frame: it may fire off multiple frame-exchange sequences of its AC, each separated by just a SIFS, as long as each one plus its expected acknowledgment still fits inside the remaining TXOP time. This burst is the throughput payoff — you won the medium once, so you amortise that cost over several exchanges. A TXOP limit of 0 is a special case meaning 'one frame exchange only'. Crucially, the TXOP belongs to the EDCAF, not the station: you may only burst frames of the AC that won, except for the narrowly defined TXOP-sharing cases.",
+      "zh": "胜出会授予一个 EDCA TXOP——一段由起始时刻和最大长度（该 AC 的 TXOP 限值）界定的介质时间。在一个 TXOP 内部，胜者不会只发一帧就停下：只要每次交换加上其预期的确认仍能装进剩余的 TXOP 时间里，它就可以连发多次属于本 AC 的帧交换序列，彼此之间仅以一个 SIFS 分隔。这种突发正是吞吐量上的回报——你只赢得了一次介质，于是把这次代价分摊到多次交换上。TXOP 限值为 0 是一种特殊情形，表示“只能进行一次帧交换”。关键在于，TXOP 属于 EDCAF 而非整个站点：除了少数被明确定义的 TXOP 共享情形外，你只能突发那个胜出 AC 的帧。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Good citizens finish early. If a station empties its queue before the TXOP limit runs out, it can transmit a CF-End frame to explicitly hand the medium back — this truncates the TXOP. Stations hearing the CF-End reset their NAV and may contend again immediately, instead of idling until the original reservation would have expired. Truncation turns wasted reserved-but-unused airtime back into usable airtime for everyone.",
+      "zh": "好公民会提前收尾。如果一个站点在 TXOP 限值用完之前就清空了队列，它可以发送一个 CF-End 帧来显式地把介质交还出去——这就是截断 TXOP。听到该 CF-End 的站点会重置自己的 NAV，并可立即重新竞争，而不必空等到原本的预约时间到期为止。截断把那段被预留却未使用、原本会浪费掉的空口时间，重新变成了对所有人可用的空口时间。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exactly when CW doubles, and when QSRC counts",
+        "zh": "CW 究竟何时翻倍，以及 QSRC 何时计数"
+      },
+      "en": "The EDCA backoff procedure (10.23.2.2) keys everything off why backoff was invoked. Each EDCAF holds CW[AC], initialised to CWmin[AC]. If backoff is invoked because a new frame simply arrived to an idle EDCAF (reason a), or because the EDCAF chose not to transmit (reason h), CW[AC] and the QoS short retry counter QSRC[AC] are left unchanged. If invoked because a TXOP completed normally (reasons b/e), CW[AC] is reset to CWmin[AC] and QSRC[AC] to 0 — success forgives. But on a real failure — an initial-PPDU transmission failure, or an internal collision (reasons c, d, f, i, j) — the standard updates them together: if QSRC[AC] < dot11ShortRetryLimit, QSRC[AC] increments and CW[AC] is set to the lesser of CWmax[AC] and 2^QSRC[AC] × (CWmin[AC] + 1) − 1, i.e. it roughly doubles toward CWmax; otherwise QSRC[AC] resets to 0 and CW[AC] returns to CWmin[AC]. The retransmit procedure (10.23.2.12) maintains a separate per-frame retry count, increments it on each failed acknowledgment (including for an internal collision), and stops retrying — discarding the MSDU/A-MSDU/MMPDU — when the retry count hits dot11ShortRetryLimit or the MSDU lifetime timer expires. Note an HE station that sent an HE TB PPDU leaves QSRC[AC] unchanged.",
+      "zh": "EDCA 退避流程（10.23.2.2）的一切都取决于退避因何被触发。每个 EDCAF 持有 CW[AC]，初始化为 CWmin[AC]。如果退避是因为有新帧到达了一个空闲的 EDCAF（原因 a），或因为该 EDCAF 选择不发送（原因 h），则 CW[AC] 与 QoS 短重试计数器 QSRC[AC] 保持不变。如果是因为一次 TXOP 正常完成（原因 b/e）而触发，则 CW[AC] 重置为 CWmin[AC]、QSRC[AC] 置 0——成功即既往不咎。但若是真正的失败——初始 PPDU 发送失败，或内部碰撞（原因 c、d、f、i、j）——标准会把二者一并更新：若 QSRC[AC] < dot11ShortRetryLimit，则 QSRC[AC] 递增，且 CW[AC] 取 CWmax[AC] 与 2^QSRC[AC] × (CWmin[AC] + 1) − 1 中的较小者，即大致朝 CWmax 翻倍；否则 QSRC[AC] 归零、CW[AC] 退回 CWmin[AC]。重传流程（10.23.2.12）另外维护一个按帧计的重试计数，在每次确认失败时（包括内部碰撞）将其递增，并在重试计数达到 dot11ShortRetryLimit 或 MSDU 生存期定时器到期时停止重传——丢弃该 MSDU/A-MSDU/MMPDU。注意，发送了 HE TB PPDU 的 HE 站点会保持 QSRC[AC] 不变。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2000,
+          2001,
+          2016,
+          2017
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.23.2.2",
+    "80211-2024:10.23.2.3",
+    "80211-2024:10.23.2.4",
+    "80211-2024:10.23.2.7",
+    "80211-2024:10.23.2.8",
+    "80211-2024:10.23.2.9",
+    "80211-2024:10.23.2.10",
+    "80211-2024:10.23.2.11",
+    "80211-2024:10.23.2.12"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2000,
+        2001
+      ],
+      "note": "10.23.2.2 EDCA backoff procedure; 10.23.2.3 EDCA TXOPs — CW[AC] init, invoke reasons a-j, CW/QSRC update on success vs failure, the three TXOP modes"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2001,
+        2002,
+        2003
+      ],
+      "note": "10.23.2.4 Obtaining an EDCA TXOP — AIFS[AC] = AIFSN[AC] x slotTime + SIFS, slot-boundary decisions, internal-collision tie-break by higher UP"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2007,
+        2010,
+        2012
+      ],
+      "note": "10.23.2.7 Sharing an EDCA TXOP (primary AC); 10.23.2.8 Multiple frame exchange sequences (SIFS-separated burst, EDCAF not STA); 10.23.2.9 TXOP limits (advertised in EDCA Parameter Set, limit 0)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2014,
+        2015
+      ],
+      "note": "10.23.2.10 Truncation of TXOP (CF-End, NAV reset); 10.23.2.11 Termination of TXOP (final short Control frame)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2016,
+        2017
+      ],
+      "note": "10.23.2.12 Retransmit procedures — per-frame retry count, QSRC[AC], dot11ShortRetryLimit / MSDU lifetime discard, internal-collision retry increment"
+    }
+  ],
+  "track": "80211core"
+}

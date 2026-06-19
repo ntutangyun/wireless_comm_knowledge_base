@@ -1,0 +1,123 @@
+{
+  "id": "80211core-38-link-adaptation-and-ppdu-id",
+  "title": {
+    "en": "Link adaptation and PPDU identity: MCS feedback, Group ID, and AID/COLOR",
+    "zh": "链路自适应与 PPDU 身份：MCS 反馈、组 ID 与 AID/COLOR"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Two quiet housekeeping jobs keep a Wi-Fi link fast and a radio's battery happy, and neither needs a heavyweight management exchange. The first is link adaptation: a receiver scribbles a tiny note onto an ordinary data frame that says 'next time, try this speed.' The second is PPDU identity: before a station fully decodes an incoming transmission, it reads a small name-tag in the PHY header to decide 'is this even for me?' — and if not, it can stop listening early and save power. Think of one as a speed coach whispering during the game, and the other as a bouncer reading the name on the door.",
+      "zh": "有两件不起眼的“后勤”工作，让 Wi-Fi 链路保持高速、让收发机的电池更省心，而且二者都不需要一次笨重的管理帧交换。第一件是链路自适应：接收方在一个普通的数据帧上潦草地附上一张小纸条，写着“下次试试这个速率”。第二件是 PPDU 身份识别：站点在彻底解码一段进来的传输之前，先读取 PHY 头部里的一个小“名牌”，判断“这到底是不是发给我的？”——如果不是，它就可以提前停止接收，从而省电。可以把前者想成比赛中悄悄耳语的速率教练，把后者想成在门口看名字的门卫。"
+    },
+    {
+      "type": "prose",
+      "en": "Link adaptation rides inside the HT Control field that can be piggybacked on a frame (a +HTC frame). The requester sets an MRQ (MCS Request) bit and tags it with an MSI (a sequence identifier) so it can later match the answer to its question. The responder measures the sounding it received and replies with MFB (MCS Feedback) — a recommended MCS, and in the VHT variant also the number of spatial streams and an SNR estimate — echoing the MSI back in an MFSI field so the requester knows which request this answers. Feedback can be immediate (same TXOP), delayed (a later TXOP), or unsolicited (sent with no preceding request at all).",
+      "zh": "链路自适应搭载在可以附加到帧上的 HT Control 字段里（即 +HTC 帧）。请求方置位 MRQ（MCS 请求）比特，并用 MSI（一个序列标识）给它打上标签，以便之后把答复和自己的问题对上号。响应方测量它收到的探测（sounding），用 MFB（MCS 反馈）回复——一个推荐的 MCS，在 VHT 变体里还包括空间流数目和 SNR 估计——并在 MFSI 字段里把 MSI 原样回送，让请求方知道这是在回答哪一次请求。反馈可以是即时的（同一个 TXOP 内）、延迟的（之后的 TXOP），或非请求式的（根本没有先前请求就主动发出）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Capability gating is strict: a STA must advertise its MCS Feedback (HT) or VHT Link Adaptation (VHT) capability as 'Unsolicited' or 'Both', and you must never send an MRQ to a peer that hasn't advertised 'Both'. Special sentinel values mark 'no feedback available': in the VHT variant, VHT-MCS = 15 with NUM_STS = 7 (in a VHT PPDU) means the responder has nothing to report or abandoned the computation.",
+      "zh": "能力门槛很严格：站点必须在能力字段中把它的 MCS Feedback（HT）或 VHT Link Adaptation（VHT）能力声明为 “Unsolicited” 或 “Both”，而且绝不能向一个没有声明 “Both” 的对端发送 MRQ。还有专门的哨兵值用来表示“没有可用反馈”：在 VHT 变体里，VHT-MCS = 15 且 NUM_STS = 7（在 VHT PPDU 中）表示响应方无可上报，或已放弃该次计算。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant R as MFB Requester\n    participant P as MFB Responder\n    Note over R: piggyback HT Control on a data frame\n    R->>P: +HTC frame (MRQ=1, MSI=k) + sounding\n    Note over P: measure channel, compute MCS estimate, label with MSI=k\n    P->>R: +HTC frame (MFB=recommended MCS, MFSI=k)\n    Note over R: match MFSI=k to its MRQ, adapt rate next TX\n    Note over P: or send unsolicited MFB (Unsolicited=1, MFSI=7)",
+      "zh": "sequenceDiagram\n    participant R as MFB 请求方\n    participant P as MFB 响应方\n    Note over R: 把 HT Control 附在数据帧上\n    R->>P: +HTC 帧 (MRQ=1, MSI=k) + 探测\n    Note over P: 测量信道，计算 MCS 估计，标注 MSI=k\n    P->>R: +HTC 帧 (MFB=推荐 MCS, MFSI=k)\n    Note over R: 用 MFSI=k 对上 MRQ，下次发送时自适应速率\n    Note over P: 或发送非请求式 MFB (Unsolicited=1, MFSI=7)"
+    },
+    {
+      "type": "prose",
+      "en": "Now the name-tag. In VHT and CMMG PPDUs the PHY header carries a Group ID and a partial AID — both in the TXVECTOR, not the MAC body. The partial AID is a short, nonunique 9-bit hint computed from the BSSID and the station's AID. The Group ID distinguishes single-user from multi-user: GROUP_ID = 0 with a partial AID derived from the BSSID means 'uplink to the AP'; GROUP_ID = 63 means downlink to an associated STA (with the STA's partial AID) or a group-addressed frame (partial AID = 0). A receiver can glance at these in the preamble and decide early whether to keep decoding — saving the cost of processing a frame that was never meant for it.",
+      "zh": "现在说说那个“名牌”。在 VHT 与 CMMG PPDU 中，PHY 头部携带一个 Group ID 和一个 partial AID（部分 AID）——二者都在 TXVECTOR 里，而不在 MAC 帧体里。partial AID 是一个简短、非唯一的 9 比特提示，由 BSSID 和站点的 AID 计算得出。Group ID 用来区分单用户与多用户：GROUP_ID = 0 且 partial AID 由 BSSID 推导，表示“上行发往 AP”；GROUP_ID = 63 表示下行发往某个已关联的站点（携带该站点的 partial AID），或者是一个组播帧（partial AID = 0）。接收方只需在前导码里瞥一眼这些字段，就能尽早决定是否继续解码——省下处理一个本不该属于自己的帧的开销。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 520 180' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='10' y='40' width='500' height='40' rx='4'/><line x1='130' y1='40' x2='130' y2='80'/><line x1='250' y1='40' x2='250' y2='80'/><line x1='380' y1='40' x2='380' y2='80'/><text x='70' y='65' font-size='12' text-anchor='middle' stroke='none' fill='currentColor'>Group ID</text><text x='190' y='65' font-size='12' text-anchor='middle' stroke='none' fill='currentColor'>partial AID</text><text x='315' y='65' font-size='12' text-anchor='middle' stroke='none' fill='currentColor'>Uplink Ind.</text><text x='445' y='65' font-size='12' text-anchor='middle' stroke='none' fill='currentColor'>COLOR</text><text x='260' y='25' font-size='13' text-anchor='middle' stroke='none' fill='currentColor'>PHY-header name-tag fields (read before full decode)</text><text x='260' y='115' font-size='11' text-anchor='middle' stroke='none' fill='currentColor'>GID=0: uplink to AP | GID=63: downlink to STA, or group-addressed</text><text x='260' y='135' font-size='11' text-anchor='middle' stroke='none' fill='currentColor'>COLOR mismatch -> not my BSS -> stop receiving, save power</text></svg>",
+      "caption": {
+        "en": "The early-identity fields a station reads before fully decoding a VHT/S1G PPDU: Group ID, partial AID, Uplink Indication, and COLOR.",
+        "zh": "站点在彻底解码 VHT/S1G PPDU 之前先读取的“早期身份”字段：Group ID、partial AID、Uplink Indication 与 COLOR。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "S1G (sub-1-GHz, low-power IoT) adds two twists. First, dynamic AID assignment: because S1G groups stations by listen interval to schedule TIM wakeups, a station whose traffic or battery situation changes can send an AID Switch Request and the AP replies with an AID Switch Response carrying a new AID — moving the STA into a better wakeup group without re-associating. Second, the S1G PPDU header carries the same family of early-identity fields plus an explicit Uplink Indication (set to 1 for frames to the AP) and a COLOR value. COLOR identifies the originating BSS so a receiver can drop other-BSS frames early — the same power-saving 'is this my network?' check, baked into the preamble.",
+      "zh": "S1G（亚 1 GHz、低功耗物联网）增加了两个变化。其一是动态 AID 分配：由于 S1G 按 listen interval（侦听间隔）把站点分组以安排 TIM 唤醒，当某个站点的流量或电池状况发生变化时，它可以发送 AID Switch Request，AP 用携带新 AID 的 AID Switch Response 回复——从而把该站点移入更合适的唤醒分组，而无需重新关联。其二是 S1G PPDU 头部携带同一族“早期身份”字段，外加一个显式的 Uplink Indication（发往 AP 的帧置 1）和一个 COLOR 值。COLOR 标识发起方所属的 BSS，使接收方能尽早丢弃其他 BSS 的帧——这正是“这是我的网络吗？”这种省电判断，被固化进了前导码。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact field rules: MFB sentinels, the GROUP_ID/PARTIAL_AID table, and COLOR semantics",
+        "zh": "精确的字段规则：MFB 哨兵值、GROUP_ID/PARTIAL_AID 取值表，以及 COLOR 语义"
+      },
+      "en": "In the VHT variant HT Control field (10.31.3), a solicited MFB responder may report VHT-MCS = 15, NUM_STS = 7, MFSI = 7 in a VHT PPDU (or NUM_STS = 3 in an S1G PPDU) to signal 'no information for any pending request'; the same sentinel with MFSI in 0–6 declines a specific request. A STA sending unsolicited MFB sets the Unsolicited MFB subfield to 1, and the GID-L/GID-H, Coding Type, STBC Indication and FB Tx Type fields describe which received PPDU the estimate is based on. For PPDU identity (10.19), Table 10-13 fixes GROUP_ID/PARTIAL_AID: addressed to AP -> GID 0, PARTIAL_AID = int(BSSID[39:47]) mod (2^9 - 1) + 1; AP-to-associated-STA -> GID 63, STA_Partial_AID_VHT per Equation (10-13); otherwise GID 63, PARTIAL_AID 0. In S1G PPDUs (10.21) the analogous Table 10-15/10-16 apply, UPLINK_INDICATION = 1 for non-1-MHz non-NDP frames to the AP, and COLOR lets a receiver report a busy medium for likely intra-BSS PPDUs (reducing intra-BSS collisions) while terminating reception of clearly other-BSS PPDUs (saving power). S1G dynamic AID (10.20) is driven by AID Switch Request/Response frames between D-AID STAs, with protected variants when management frame protection is negotiated.",
+      "zh": "在 VHT 变体 HT Control 字段（10.31.3）中，被请求的 MFB 响应方可以在 VHT PPDU 中上报 VHT-MCS = 15、NUM_STS = 7、MFSI = 7（或在 S1G PPDU 中 NUM_STS = 3），以表示“对任何待处理请求都没有信息”；同一哨兵值配合 MFSI 取 0–6 则表示拒绝某个特定请求。发送非请求式 MFB 的站点将 Unsolicited MFB 子字段置 1，而 GID-L/GID-H、Coding Type、STBC Indication 和 FB Tx Type 字段描述该估计是基于哪一个收到的 PPDU。对于 PPDU 身份（10.19），表 10-13 规定了 GROUP_ID/PARTIAL_AID：发往 AP -> GID 0，PARTIAL_AID = int(BSSID[39:47]) mod (2^9 − 1) + 1；AP 发往已关联站点 -> GID 63，按式 (10-13) 计算 STA_Partial_AID_VHT；其他情况 -> GID 63，PARTIAL_AID 0。在 S1G PPDU（10.21）中，类似的表 10-15/10-16 适用，发往 AP 的非 1 MHz 非 NDP 帧 UPLINK_INDICATION = 1，而 COLOR 让接收方对可能属于本 BSS 的 PPDU 上报介质忙（减少 BSS 内冲突），同时尽早终止对明显属于其他 BSS 的 PPDU 的接收（省电）。S1G 动态 AID（10.20）由 D-AID 站点之间的 AID Switch Request/Response 帧驱动，在协商了管理帧保护时使用受保护的变体帧。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2108,
+          2109,
+          1988,
+          1994
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.31.2",
+    "80211-2024:10.31.3",
+    "80211-2024:10.19",
+    "80211-2024:10.20",
+    "80211-2024:10.21"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2105,
+        2106,
+        2107
+      ],
+      "note": "10.31.1-10.31.2 link adaptation intro; HT variant HT Control field MRQ/MSI/MFB/MFSI; immediate/delayed/unsolicited feedback"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2108,
+        2109,
+        2110
+      ],
+      "note": "10.31.3 link adaptation using the VHT variant HT Control field; VHT-MCS/NUM_STS/SNR feedback; sentinel VHT-MCS=15/NUM_STS=7; unsolicited MFB fields"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1987,
+        1988,
+        1989
+      ],
+      "note": "10.19 Group ID and partial AID in VHT and CMMG PPDUs; Table 10-13 GROUP_ID/PARTIAL_AID settings; CMMG Uplink Indication and COLOR"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1990,
+        1991,
+        1992
+      ],
+      "note": "10.20 S1G dynamic AID assignment; D-AID STA; AID Switch Request/Response; listen-interval grouping and TIM/non-TIM mode switch"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1992,
+        1993,
+        1994
+      ],
+      "note": "10.21 Group ID, partial AID, Uplink Indication and COLOR in S1G PPDUs; Tables 10-15/10-16; UPLINK_INDICATION; COLOR early-drop power saving"
+    }
+  ],
+  "track": "80211core"
+}

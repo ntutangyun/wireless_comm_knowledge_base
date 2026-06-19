@@ -1,0 +1,133 @@
+{
+  "id": "80211core-34-block-ack-core",
+  "title": {
+    "en": "Block Ack core: agreement setup, scoreboards, and the reorder buffer",
+    "zh": "块确认核心：协商建立、记分牌与重排序缓冲"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Imagine mailing thirty letters and waiting for a reply card after every single one before sending the next. That is the cost of acknowledging Wi-Fi frames one at a time: a SIFS gap and a whole Ack frame per data frame, even though the air is fast and the data frames are tiny by comparison. Block Ack flips this around. The sender (the originator) fires a burst of frames back-to-back, then the receiver (the recipient) returns ONE acknowledgment that ticks off exactly which frames in the burst landed. One reply card for the whole batch.",
+      "zh": "想象你要寄三十封信，却要在寄出每一封后都等一张回执卡，收到才能寄下一封。这正是逐帧确认 Wi-Fi 数据的代价：每一个数据帧都要一个 SIFS 间隔加上一整个 Ack 帧，哪怕空口很快、数据帧本身相比之下很小。块确认（Block Ack）把这套流程反了过来：发送方（originator，发起方）把一连串帧背靠背地连发出去，接收方（recipient，接收方）只回一个确认，逐一勾出这批帧里到底哪些收到了。整批只需一张回执卡。"
+    },
+    {
+      "type": "prose",
+      "en": "Before any burst flies, the two sides negotiate a Block Ack agreement. The originator sends an ADDBA Request naming the traffic identifier (TID) it wants to cover, plus advisory hints: a Buffer Size (how many outstanding frames) and a Block Ack Timeout. The recipient replies with an ADDBA Response — it may accept or reject, and if it accepts it pins down the real buffer size it will allocate and an inactivity timeout. From then on, frames of that TID flow as A-MPDUs and are acknowledged with BlockAck frames solicited by BlockAckReq frames. When the originator is done, it sends a DELBA to tear the agreement down; the agreement also dies on its own if nothing is heard for the inactivity timeout.",
+      "zh": "在任何突发发送之前，双方要先协商一个块确认协议（Block Ack agreement）。发起方发送 ADDBA Request，指明它想覆盖的流标识（TID），并附上两个仅供参考的提示：缓冲区大小 Buffer Size（允许多少未确认的帧）和块确认超时 Block Ack Timeout。接收方用 ADDBA Response 回应——它可以接受或拒绝；若接受，则敲定它真正会分配的缓冲区大小以及一个不活动超时。此后，该 TID 的帧以 A-MPDU 形式流动，并由 BlockAckReq 帧索取、用 BlockAck 帧来确认。发起方发完数据后，发送 DELBA 拆除协议；若在不活动超时内毫无往来，协议也会自行失效。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The Buffer Size and Block Ack Timeout in the ADDBA Request are explicitly advisory — only the recipient's ADDBA Response decides the real allocation. A Block Ack window is also bounded by the device generation: up to 64 frames if either side is pre-HE, up to 256 between HE (Wi-Fi 6) stations. A burst is never unbounded.",
+      "zh": "ADDBA Request 中的 Buffer Size 和 Block Ack Timeout 被明确规定为“仅供参考”——真正的分配由接收方的 ADDBA Response 决定。块确认窗口的大小还受设备代际限制：只要任一方是 HE 之前的设备，窗口至多 64 帧；两端都是 HE（Wi-Fi 6）站点时可达 256 帧。突发永远不是无界的。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the heart of it: how the recipient keeps track. For each agreement it runs a scoreboard — a bitmap indexed by sequence number, with a window defined by WinStartR (the lowest sequence number in the bitmap) and WinEndR (the highest). Each arriving data frame sets its bit to 1; a frame whose sequence number jumps past the window slides the whole window forward. The recipient has a choice of two ways to hold this state. Under full-state operation it keeps a dedicated scoreboard per agreement in statically reserved memory. Under partial-state operation it keeps the scoreboard in a small cache that it is free to evict the moment a frame from a different originator needs the room — cheaper, but the state can be thrown away between bursts. The originator never learns which one the recipient chose.",
+      "zh": "现在来看核心：接收方如何记账。对每一个协议，它都维护一块记分牌（scoreboard）——一个以序号为索引的位图，其窗口由 WinStartR（位图中最低的序号）和 WinEndR（最高的序号）界定。每收到一个数据帧就把对应位置 1；若某帧的序号跳到窗口之外，整个窗口就向前滑动。接收方有两种方式来保存这份状态。在“全状态（full-state）”操作下，它在静态预留的内存里为每个协议保留一块专用记分牌。在“部分状态（partial-state）”操作下，它把记分牌放在一小块缓存里，一旦有来自另一个发起方的帧需要这块空间，它随时可以将其逐出——更省资源，但状态可能在两次突发之间被丢弃。发起方永远不知道接收方选了哪一种。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='20' stroke='none' fill='currentColor' font-size='12'>Scoreboard bitmap (window WinStartR..WinEndR)</text><g font-size='13' stroke='none' fill='currentColor'><rect x='10' y='40' width='40' height='34' stroke='currentColor'/><text x='24' y='62'>1</text><rect x='50' y='40' width='40' height='34' stroke='currentColor'/><text x='64' y='62'>1</text><rect x='90' y='40' width='40' height='34' stroke='currentColor'/><text x='104' y='62'>0</text><rect x='130' y='40' width='40' height='34' stroke='currentColor'/><text x='144' y='62'>1</text><rect x='170' y='40' width='40' height='34' stroke='currentColor'/><text x='184' y='62'>0</text><rect x='210' y='40' width='40' height='34' stroke='currentColor'/><text x='224' y='62'>1</text><rect x='250' y='40' width='40' height='34' stroke='currentColor'/><text x='264' y='62'>1</text></g><text x='14' y='90' stroke='none' fill='currentColor' font-size='11'>SN=10</text><text x='254' y='90' stroke='none' fill='currentColor' font-size='11'>SN=16</text><text x='10' y='120' stroke='none' fill='currentColor' font-size='12'>BlockAck carries this bitmap + Starting Sequence Number.</text><text x='10' y='150' stroke='none' fill='currentColor' font-size='12'>Holes (0 at SN=12, SN=14) tell the originator exactly</text><text x='10' y='168' stroke='none' fill='currentColor' font-size='12'>which frames to retransmit; the rest are done.</text></svg>",
+      "caption": {
+        "en": "The recipient's scoreboard is a bitmap of received/missing frames; the BlockAck ships it back so the originator retransmits only the gaps.",
+        "zh": "接收方的记分牌是一张“已收/缺失”帧的位图；BlockAck 把它带回去，发起方便只重传那些缺口帧。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "There is a subtlety the scoreboard alone cannot solve: frames can arrive out of order (a retransmit fills a gap late), but the layer above wants its MSDUs in strict sequence-number order. So the recipient runs a second, independent structure: the receive reorder buffer, with its own window WinStartB..WinEndB. It holds frames that arrived early, releases a run up to the upper layer only when the next-expected sequence number is finally present, and discards duplicates. The scoreboard answers 'what do I tell the sender I got'; the reorder buffer answers 'what can I safely hand up, and in what order'. They are deliberately kept separate.",
+      "zh": "有一个微妙之处是单靠记分牌解决不了的：帧可能乱序到达（某次重传姗姗来迟地填上了缺口），但上层却要求按序号严格有序地拿到 MSDU。于是接收方还运行第二个、相互独立的结构：接收重排序缓冲（receive reorder buffer），它有自己的窗口 WinStartB..WinEndB。它暂存提前到达的帧，只有当“下一个待收序号”终于齐备时，才把连续的一段交付给上层，并丢弃重复帧。记分牌回答的是“我该告诉发送方我收到了什么”；重排序缓冲回答的是“我能安全地、按什么顺序往上交付什么”。两者被有意分开维护。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n    A[A-MPDU burst] --> D[Deaggregation]\n    D --> SB[Scoreboard\\nWinStartR..WinEndR\\nfull or partial state]\n    D --> RB[Reorder buffer\\nWinStartB..WinEndB]\n    SB --> BA[BlockAck:\\nbitmap + SSN]\n    BA -.-> O[Originator updates\\ntransmit buffer\\nWinStartO]\n    RB --> UP[MSDUs handed up\\nin order]",
+      "zh": "flowchart LR\n    A[A-MPDU 突发] --> D[解聚合]\n    D --> SB[记分牌\\nWinStartR..WinEndR\\n全状态或部分状态]\n    D --> RB[重排序缓冲\\nWinStartB..WinEndB]\n    SB --> BA[BlockAck:\\n位图 + SSN]\n    BA -.-> O[发起方更新\\n发送缓冲\\nWinStartO]\n    RB --> UP[按序上交\\nMSDU]"
+    },
+    {
+      "type": "prose",
+      "en": "On the originator's side the bookkeeping mirrors this with its own transmit window (WinStartO, WinSizeO). When a BlockAck comes back, the originator walks the bitmap: every frame between the BlockAck's Starting Sequence Number and the window end whose bit is 1 is marked acknowledged and its buffer freed; the rest are candidates for retransmission. It may send frames in any order within the window, and pushing a frame beyond the window simply drags the window — and the recipient's — forward. The originator also has to be graceful about partial state: because it cannot know the recipient threw its scoreboard away, the standard tells it not to needlessly retry frames a 0-bit might falsely suggest are missing, and to solicit a final BlockAck at the end of a TXOP so partial-state loss does not cause wasted retransmissions.",
+      "zh": "在发起方一侧，记账方式与此对应，它维护自己的发送窗口（WinStartO、WinSizeO）。当 BlockAck 返回时，发起方遍历位图：凡是序号介于 BlockAck 的起始序号（SSN）与窗口末端之间、且对应位为 1 的帧，都标记为已确认并释放其缓冲；其余则成为重传候选。它可以在窗口内以任意顺序发送帧；而把某帧推到窗口之外，只会把它自己的窗口——以及接收方的窗口——一并向前拖动。发起方还必须对“部分状态”保持宽容：由于它无从得知接收方是否已丢弃了记分牌，标准规定它不要因为某个为 0 的位而被误导、去无谓地重传那些其实已送达的帧，并建议在 TXOP 末尾索取一个收尾的 BlockAck，使部分状态的丢失不至于引发徒劳的重传。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact window arithmetic: scoreboard update and the originator's two acknowledgment rules",
+        "zh": "精确的窗口运算：记分牌更新与发起方的两条确认规则"
+      },
+      "en": "All Block Ack arithmetic is modulo the counter space (typically 4096), with the window split into an 'old' and 'new' half by adding half the range. In full-state scoreboard operation (10.25.6.3), for a received data frame with sequence number SN: if WinStartR ≤ SN ≤ WinEndR, set bit SN to 1; if WinEndR < SN < WinStartR+2^11, clear the freshly exposed bits, set WinStartR = SN − WinSizeR + 1, WinEndR = SN, and set bit SN; otherwise leave the record unchanged. Partial-state operation (10.25.6.4) builds the same record lazily from a cache, retaining it only as long as data keeps arriving from the same originator. When generating a BlockAck (10.25.6.5), the recipient may set the Starting Sequence Number anywhere in (WinEndR − BitmapLength + 1) to WinStartR and fills the bitmap from WinStartR to WinEndR. The originator (10.25.6.8) then applies two rules: it does NOT update status for sequence numbers between WinStartO and SSN−1 (SSN can exceed WinStartO when a partial-state recipient lost early frames), and for any unacknowledged MPDU between SSN and WinStartO+WinSizeO−1 whose bitmap bit is 1, it marks the frame acknowledged. The reorder buffer (10.25.6.6) maintains WinStartB/WinEndB independently and passes MSDUs up only in increasing sequence-number order.",
+      "zh": "所有块确认运算都对计数空间（通常为 4096）取模，并通过加上半个范围把窗口划分为“旧”半与“新”半。在全状态记分牌操作（10.25.6.3）中，对序号为 SN 的接收数据帧：若 WinStartR ≤ SN ≤ WinEndR，则将 SN 位置 1；若 WinEndR < SN < WinStartR+2^11，则清除新暴露出的各位，令 WinStartR = SN − WinSizeR + 1、WinEndR = SN，并将 SN 位置 1；否则记录保持不变。部分状态操作（10.25.6.4）以惰性方式从缓存里构建出同样的记录，且仅在同一发起方持续有数据到达期间予以保留。生成 BlockAck 时（10.25.6.5），接收方可把起始序号设在 (WinEndR − BitmapLength + 1) 到 WinStartR 之间的任意值，并按 WinStartR 到 WinEndR 填充位图。随后发起方（10.25.6.8）应用两条规则：对于序号介于 WinStartO 与 SSN−1 之间的帧，它不更新其状态（当部分状态接收方丢失了早期帧时，SSN 可能大于 WinStartO）；对于序号介于 SSN 与 WinStartO+WinSizeO−1 之间、且位图对应位为 1 的任何未确认 MPDU，它将该帧标记为已确认。重排序缓冲（10.25.6.6）独立维护 WinStartB/WinEndB，且只按序号递增的顺序向上交付 MSDU。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2060,
+          2061,
+          2071,
+          2073
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.25.2",
+    "80211-2024:10.25.3",
+    "80211-2024:10.25.4",
+    "80211-2024:10.25.5",
+    "80211-2024:10.25.6.3",
+    "80211-2024:10.25.6.4",
+    "80211-2024:10.25.6.5",
+    "80211-2024:10.25.6.6",
+    "80211-2024:10.25.6.7",
+    "80211-2024:10.25.6.8"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2050,
+        2051,
+        2052,
+        2056
+      ],
+      "note": "10.25.2-10.25.4 — ADDBA/DELBA setup, advisory Buffer Size/Timeout, window bounds (64/256), teardown and inactivity timeout"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2056,
+        2057,
+        2059
+      ],
+      "note": "10.25.5 BlockAck/BlockAckReq variant selection; 10.25.6.2 HT-immediate architecture (Figure 10-40) showing scoreboard vs reorder buffer"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2060,
+        2061
+      ],
+      "note": "10.25.6.3-10.25.6.4 — full-state and partial-state scoreboard context control and window arithmetic"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2062,
+        2063,
+        2064
+      ],
+      "note": "10.25.6.5-10.25.6.6 — BlockAck generation (SSN range, bitmap fill) and receive reorder buffer operation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2068,
+        2071,
+        2073
+      ],
+      "note": "10.25.6.7-10.25.6.8 — originator transmit window WinStartO, the two BlockAck status-update rules, partial-state grace"
+    }
+  ],
+  "track": "80211core"
+}

@@ -1,0 +1,140 @@
+{
+  "id": "80211core-37-sounding-beamforming-asel",
+  "title": {
+    "en": "Sounding, beamforming feedback, and antenna selection in the MAC",
+    "zh": "探测、波束成形反馈与天线选择的MAC流程"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A transmitter with several antennas can do far better than shouting in every direction at once. If it knows the channel to a particular receiver, it can shape its transmission so the energy arrives in phase at that receiver — beamforming. But to aim, you first have to measure. The MAC layer is what orchestrates that measurement: it defines the short handshakes — called sounding — that let one device probe the channel to another and learn how to steer. Think of it as a quick echo test before you start the real conversation.",
+      "zh": "拥有多根天线的发送端，远不必朝四面八方一齐喊。如果它知道到某个特定接收端的信道，就能对发送信号进行整形，让能量在该接收端同相到达——这就是波束成形（beamforming）。但要瞄准，必先测量。MAC 层正是负责编排这次测量的角色：它定义了一系列简短的握手——称为“探测（sounding）”——让一台设备探查到另一台设备的信道，从而学会如何“指向”。可以把它想象成在正式交谈之前先做一次快速的回声测试。"
+    },
+    {
+      "type": "prose",
+      "en": "There are two big families of how the steering information is obtained. With implicit beamforming, the transmitter (the beamformer) relies on channel reciprocity: it assumes the channel it sees on receive is the same as the channel it will use on transmit. It just needs the other side to send back a sounding PPDU it can measure. Because a device's own transmit and receive chains differ slightly, implicit beamforming usually needs a calibration exchange first to restore reciprocity. With explicit feedback, the receiver (the beamformee) does the measuring itself and reports the result — either raw channel coefficients (CSI), or a computed steering matrix — back to the beamformer.",
+      "zh": "如何获得“指向信息”，大致分为两大类。在隐式波束成形（implicit beamforming）中，发送端（波束成形发起方，beamformer）依赖信道互易性：它假设自己在接收方向上看到的信道，与它将用于发送的信道相同。它只需让对方发回一个可供测量的探测 PPDU 即可。由于设备自身的发送链与接收链存在细微差异，隐式波束成形通常需要先做一次“校准（calibration）”交换以恢复互易性。而在显式反馈（explicit feedback）中，接收端（波束成形受益方，beamformee）亲自完成测量，并把结果回报给发起方——可以是原始信道系数（CSI），也可以是已算好的导向矩阵（steering matrix）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A sounding PPDU is just an ordinary-looking frame whose PHY is told (via the SOUNDING parameter in the TXVECTOR) to carry clean, known training symbols across all antennas, so the receiver can estimate the full channel. The MAC's job isn't the maths of the estimate — it's choreographing who sends what, and when, so both sides agree on which training symbols to measure.",
+      "zh": "探测 PPDU 其实只是一个外观普通的帧，只不过 PHY 被告知（通过 TXVECTOR 中的 SOUNDING 参数）要在所有天线上承载干净、已知的训练符号，以便接收端估计完整信道。MAC 的职责并不是估计的数学运算，而是编排“谁在何时发送什么”，让双方就该测量哪些训练符号达成一致。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant BF as Beamformer (VHT)\n    participant BE as Beamformee\n    Note over BF: explicit feedback, single client\n    BF->>BE: VHT NDP Announcement (lists beamformee AID)\n    Note over BF,BE: SIFS\n    BF->>BE: VHT NDP (training symbols)\n    Note over BE: measures channel, computes report\n    Note over BF,BE: SIFS\n    BE->>BF: VHT Compressed Beamforming (steering report)\n    Note over BF: builds steering matrix, aims next data",
+      "zh": "sequenceDiagram\n    participant BF as 波束成形发起方 (VHT)\n    participant BE as 波束成形受益方\n    Note over BF: 显式反馈，单客户端\n    BF->>BE: VHT NDP 通告帧 (列出受益方 AID)\n    Note over BF,BE: SIFS\n    BF->>BE: VHT NDP (训练符号)\n    Note over BE: 测量信道，计算反馈报告\n    Note over BF,BE: SIFS\n    BE->>BF: VHT 压缩波束成形帧 (导向反馈)\n    Note over BF: 构造导向矩阵，瞄准下一帧数据"
+    },
+    {
+      "type": "prose",
+      "en": "The VHT sounding protocol is the cleanest example of explicit feedback. The beamformer kicks it off with a VHT NDP Announcement frame, then a SIFS later sends the VHT NDP itself — a Null Data PPDU, i.e. all training symbols and no payload. The announcement carries one STA Info field per beamformee it wants feedback from, each naming a beamformee by its AID. With a single client, the beamformee just measures the NDP and replies a SIFS later with a VHT Compressed Beamforming frame. With several clients, the first beamformee answers immediately and the rest are pulled out one at a time by Beamforming Report Poll frames — that's how one sounding serves a whole DL MU-MIMO group.",
+      "zh": "VHT 探测协议是显式反馈最清晰的范例。发起方以一帧 VHT NDP 通告帧（VHT NDP Announcement）启动流程，间隔一个 SIFS 后发送 VHT NDP 本身——即空数据 PPDU（Null Data PPDU），也就是只有训练符号、没有净荷的帧。通告帧为每个它想要反馈的受益方携带一个 STA Info 字段，并用 AID 逐一指明各受益方。在单客户端情形下，受益方只需测量该 NDP，并在一个 SIFS 后回复一帧 VHT 压缩波束成形帧（VHT Compressed Beamforming）。在多客户端情形下，第一个受益方立即应答，其余则由“波束成形报告轮询帧（Beamforming Report Poll）”逐个“点名”取出——这正是一次探测如何服务于整个下行 MU-MIMO 用户组的方式。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Feedback reports can be large. If a single VHT Compressed Beamforming frame would exceed the beamformer's maximum MPDU length, the feedback is split into up to 8 feedback segments, each in its own frame, all sent in one A-MPDU in descending order of remaining segments. If some segments are lost, the beamformer asks for just the missing ones with a Beamforming Report Poll whose retransmission bitmap flags exactly which segments to resend.",
+      "zh": "反馈报告可能很大。若单帧 VHT 压缩波束成形帧会超过发起方的最大 MPDU 长度，反馈就会被拆分为最多 8 个反馈分段（feedback segment），每段各自成帧，并按“剩余分段数”降序全部装入一个 A-MPDU 发送。若某些分段丢失，发起方会用一帧“波束成形报告轮询帧”只索要缺失的部分——其重传位图精确标出需要重发哪些分段。"
+    },
+    {
+      "type": "prose",
+      "en": "Antenna selection (ASEL) solves a related but distinct problem: a device may have more antenna elements than RF chains, and wants to pick the best subset to connect. To choose well it must train the full-size channel across every antenna, so the ASEL transmitter sends a burst of consecutive sounding PPDUs — separated by SIFS, each over a different antenna set, within one TXOP so the channel doesn't drift. For transmit ASEL the responder then either returns the full CSI, or does the selection itself and reports the chosen antenna indices. Receive ASEL is the mirror image: the device that wants to choose its receive antennas asks a peer to send the sounding burst, and listens on different antenna sets. Either way: sound across all antennas, measure, then commit to the best mapping.",
+      "zh": "天线选择（ASEL）解决一个相关但不同的问题：设备的天线单元数可能多于射频链路数，于是希望挑出最优子集来连接。要选得好，就必须在每根天线上训练完整尺寸的信道，因此 ASEL 发送方会发出一连串连续的探测 PPDU——彼此以 SIFS 间隔，每帧经由不同的天线集，且都在同一个 TXOP 内完成，以免信道发生漂移。对于发送 ASEL，响应方随后或者返回完整 CSI，或者自行完成选择并回报选定的天线索引。接收 ASEL 则是其镜像：想要选择自身接收天线的设备请求对端发送探测序列，并在不同天线集上侦听。无论哪种方式，套路都一样：在所有天线上探测、测量，再确定到最佳映射。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact sounding sequences: implicit calibration, the VHT NDP handshake, and HT NDP addressing",
+        "zh": "精确的探测序列：隐式校准、VHT NDP 握手与 HT NDP 寻址"
+      },
+      "en": "Implicit beamforming with calibration (10.33.2.4.3) runs a three-frame Step 1: the initiator sends a Calibration Start frame (Calibration Position = 1, TRQ = 1, a QoS Null with Normal Ack); the responder replies a SIFS later with a Calibration Sounding Response (Position = 2, an Ack+HTC) in a sounding PPDU; the initiator then sends a Calibration Sounding Complete (Position = 3, CSI/Steering = 1) in a sounding PPDU, after which the responder returns CSI frames (Step 2). For explicit VHT sounding (10.35.5.2) the beamformer transmits a VHT NDP Announcement, then a VHT NDP a SIFS later; a non-AP beamformee named in the first STA Info field transmits its VHT Compressed Beamforming feedback a SIFS after the NDP, while beamformees in later STA Info fields wait for a Beamforming Report Poll. Fragmented feedback (10.35.5.3) is split into up to 8 segments carried in one A-MPDU, identified by the Remaining Feedback Segments and First Feedback Segment subfields of the VHT MIMO Control field. For HT NDP sounding (10.35.1), an HT STA processes an HT NDP only if it set Receive NDP Capable = 1 and the NDP's destination (10.35.3 — the RA of an MPDU in the HT NDP announcement) and source (10.35.4 — the TA, or the RA of the frame the announcement answers) can be determined; the announcement always begins the NDP sequence and only one PPDU in it may carry the announcement.",
+      "zh": "带校准的隐式波束成形（10.33.2.4.3）以三帧构成的 Step 1 运行：发起方发送一帧 Calibration Start（Calibration Position=1、TRQ=1，为采用 Normal Ack 的 QoS Null）；响应方在一个 SIFS 后以一个探测 PPDU 回复 Calibration Sounding Response（Position=2，为 Ack+HTC）；发起方随后以探测 PPDU 发送 Calibration Sounding Complete（Position=3、CSI/Steering=1），之后响应方返回 CSI 帧（Step 2）。对于显式 VHT 探测（10.35.5.2），发起方发送一帧 VHT NDP 通告帧，间隔一个 SIFS 后发送 VHT NDP；被列于第一个 STA Info 字段中的非 AP 受益方，在 NDP 之后一个 SIFS 发送其 VHT 压缩波束成形反馈，而位于后续 STA Info 字段中的受益方则等待波束成形报告轮询帧。分段反馈（10.35.5.3）被拆分为最多 8 段、装入一个 A-MPDU，并由 VHT MIMO Control 字段中的“剩余反馈分段数”与“首个反馈分段”子字段加以标识。对于 HT NDP 探测（10.35.1），HT 站点仅在其已置 Receive NDP Capable=1，且能确定该 NDP 的目的地（10.35.3——HT NDP 通告帧中某 MPDU 的 RA）与来源（10.35.4——TA，或该通告所应答帧的 RA）时，才会将一个 HT NDP 当作探测 PPDU 处理；通告帧总是 NDP 序列的开端，且序列中只有一个 PPDU 可携带该通告。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2119,
+          2133,
+          2136,
+          2140
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2115,
+        2116,
+        2117
+      ],
+      "note": "10.33.2.2-10.33.2.3 unidirectional and bidirectional implicit transmit beamforming PPDU exchanges (reciprocity, TRQ, sounding PPDU response)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2118,
+        2119,
+        2120,
+        2121
+      ],
+      "note": "10.33.2.4.3 sounding exchange for calibration — Calibration Start/Sounding Response/Sounding Complete, Calibration Position 1/2/3"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2122,
+        2123,
+        2124,
+        2125,
+        2126
+      ],
+      "note": "10.33.3 explicit feedback (CSI / noncompressed / compressed; immediate vs delayed) and 10.33.4 VHT MU beamforming"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2129,
+        2130,
+        2131,
+        2132,
+        2133
+      ],
+      "note": "10.34.2 ASEL frame exchange procedure — transmit and receive ASEL consecutive sounding PPDUs, TXASSR/TXASSI/RXASSR"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2133,
+        2134
+      ],
+      "note": "10.35.1 HT NDP sounding protocol; 10.35.3/10.35.4 HT NDP destination and source determination"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2136,
+        2137,
+        2138,
+        2139,
+        2140
+      ],
+      "note": "10.35.5.2 VHT sounding sequence rules (NDP Announcement, NDP, STA Info/AID, Beamforming Report Poll) and 10.35.5.3 fragmented feedback into up to 8 segments"
+    }
+  ],
+  "covers": [
+    "80211-2024:10.33.2.2",
+    "80211-2024:10.33.2.3",
+    "80211-2024:10.33.2.4.3",
+    "80211-2024:10.33.3",
+    "80211-2024:10.33.4",
+    "80211-2024:10.34.2",
+    "80211-2024:10.35.1",
+    "80211-2024:10.35.5.2",
+    "80211-2024:10.35.5.3"
+  ],
+  "track": "80211core"
+}
