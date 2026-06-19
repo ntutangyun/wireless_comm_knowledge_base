@@ -1,0 +1,129 @@
+{
+  "id": "legacy-phy-04-ht-11n-mimo-40mhz",
+  "title": {
+    "en": "Multiple Antennas, Wider Pipes: HT MIMO and 40 MHz in 802.11n",
+    "zh": "多天线、更宽管道：802.11n 的 HT MIMO 与 40 MHz"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "802.11a/g had already settled the question of how to pack bits onto the air: OFDM, dozens of narrow subcarriers, one stream of data. 802.11n — the HT (High Throughput) PHY — got dramatically faster without inventing a new way to shape those tones. Instead it did two simple-sounding things: it used space (several antennas sending at once) and it used width (gluing two channels together). This lesson builds the intuition for both, then walks the HT preamble that makes them work.",
+      "zh": "802.11a/g 早已解决了“如何把比特装上空口”这个问题：OFDM、几十个窄子载波、一条数据流。802.11n——也就是 HT（High Throughput，高吞吐）PHY——在没有发明新的子载波调制方式的前提下，速率却大幅提升。它只做了两件听起来很简单的事：利用空间（多根天线同时发送）和利用带宽（把两个信道拼成一个）。本课先帮你建立对这两点的直觉，再走一遍让它们得以运转的 HT 前导码。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with MIMO — multiple-input, multiple-output. Put two antennas on the transmitter and two on the receiver. Each receive antenna hears a different mixture of the two transmitted signals, because the radio waves take slightly different paths (reflections off walls, furniture, people). In a single-antenna world that multipath is the enemy — it smears the signal. With multiple antennas it becomes a gift: the receiver has two equations and two unknowns, so it can mathematically separate two independent data streams that were sent in the same channel, at the same time, on the same frequency. Two antennas → roughly double the throughput. Four antennas → up to four parallel streams. These parallel streams are called spatial streams.",
+      "zh": "先看 MIMO——多输入多输出。在发射端放两根天线，接收端也放两根。由于电波走的路径略有不同（在墙壁、家具、人体上反射），每根接收天线听到的是两路发射信号的不同混合。在单天线世界里，这种多径是敌人——它会把信号涂抹模糊。但有了多天线，它反而成了礼物：接收端有两个方程、两个未知数，于是可以从数学上把两路在同一信道、同一时间、同一频率上发出的独立数据流分离开来。两根天线 → 吞吐量大致翻倍；四根天线 → 最多四条并行流。这些并行的数据流就叫做空间流（spatial stream）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 420 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><text x='40' y='30' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>TX</text><text x='380' y='30' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>RX</text><circle cx='40' cy='70' r='6'/><circle cx='40' cy='140' r='6'/><circle cx='380' cy='70' r='6'/><circle cx='380' cy='140' r='6'/><line x1='46' y1='70' x2='374' y2='70'/><line x1='46' y1='70' x2='374' y2='140'/><line x1='46' y1='140' x2='374' y2='70'/><line x1='46' y1='140' x2='374' y2='140'/><text x='210' y='60' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>stream 1</text><text x='210' y='155' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>stream 2</text><text x='210' y='185' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>4 path mixtures = 2 equations, 2 unknowns</text></svg>",
+      "caption": {
+        "en": "A 2x2 MIMO link. Each of the two receive antennas hears a mixture of both spatial streams over distinct paths; the receiver inverts the mixing to recover both streams sent in the same channel at the same time.",
+        "zh": "一条 2x2 MIMO 链路。两根接收天线各自通过不同路径听到两路空间流的混合；接收端反解这种混合，从而恢复出在同一信道、同一时刻发出的两路数据流。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now the second trick: channel bonding. A legacy 802.11a/g channel is 20 MHz wide. HT lets a STA glue two adjacent 20 MHz channels into a single 40 MHz pipe — a primary channel plus a secondary one immediately above or below it. Wider pipe, more subcarriers, more throughput. Concretely: a 20 MHz HT symbol carries 52 data subcarriers, while a 40 MHz HT symbol carries 108 — slightly more than double, because the gap between the two halves is reclaimed for data. The TXVECTOR carries this as CH_BANDWIDTH (HT_CBW20 vs HT_CBW40) plus a CH_OFFSET that says which 20 MHz slice, or the whole 40 MHz, is in use.",
+      "zh": "再看第二招：信道绑定（channel bonding）。传统 802.11a/g 信道宽 20 MHz。HT 允许站点把两个相邻的 20 MHz 信道拼成一根 40 MHz 的管道——一个主信道，加上紧邻其上方或下方的一个辅信道。管道更宽、子载波更多、吞吐量更高。具体来说：一个 20 MHz 的 HT 符号承载 52 个数据子载波，而一个 40 MHz 的 HT 符号承载 108 个——略多于两倍，因为原本两个 20 MHz 之间的间隙也被收回用于承载数据。TXVECTOR 用 CH_BANDWIDTH（HT_CBW20 还是 HT_CBW40）来表示带宽，再用一个 CH_OFFSET 说明用的是哪个 20 MHz 片段，还是整段 40 MHz。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Throughput multiplies, but the room doesn't get bigger. MIMO multiplies streams only when the channel is rich enough (good SNR, real multipath) to keep them separable; in a clean line-of-sight corridor the streams can collapse toward each other. And a 40 MHz channel occupies the airtime of two 20 MHz channels — great where spectrum is free (5 GHz), often antisocial in the crowded 2.4 GHz band.",
+      "zh": "吞吐量会翻倍，但“房间”并没有变大。只有当信道足够丰富（信噪比好、有真实的多径）使各路流可被分离时，MIMO 才能真正成倍提升；在干净的视距走廊里，各路流可能会彼此“塌缩”到一起难以区分。而一个 40 MHz 信道占用的是两个 20 MHz 信道的空口资源——在频谱充裕处（5 GHz）非常好用，但在拥挤的 2.4 GHz 频段往往很“不合群”。"
+    },
+    {
+      "type": "prose",
+      "en": "All this extra structure has to be announced in the preamble — the training and signalling fields at the front of every transmission. HT defines two PPDU formats. HT-mixed format begins with the legacy fields (L-STF, L-LTF, L-SIG) exactly as an 802.11a/g radio expects, so old stations can still detect the transmission and back off even though they cannot decode the rest. After those comes the HT part. HT-greenfield format drops the legacy fields entirely for efficiency — faster, but only safe when no legacy stations share the channel.",
+      "zh": "所有这些额外结构都必须在前导码里宣告出来——也就是每次传输最前面的训练字段和信令字段。HT 定义了两种 PPDU 格式。HT-mixed（混合）格式以传统字段（L-STF、L-LTF、L-SIG）开头，与 802.11a/g 设备所期望的完全一致，因此老旧站点即便无法解码后续内容，仍能检测到这次传输并退避让出信道。这些字段之后才是 HT 部分。HT-greenfield（绿地）格式为提升效率干脆完全省去传统字段——更快，但只有在信道上没有传统站点共享时才安全。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    subgraph HTmixed[\"HT-mixed format PPDU\"]\n        A[L-STF] --> B[L-LTF] --> C[L-SIG] --> D[HT-SIG] --> E[HT-STF] --> F[HT-LTFs] --> G[Data]\n    end\n    subgraph HTgf[\"HT-greenfield format PPDU\"]\n        H[HT-GF-STF] --> I[HT-LTF1] --> J[HT-SIG] --> K[HT-LTFs] --> L[Data]\n    end\n    C -.legacy can decode up to here.-> D",
+      "zh": "graph LR\n    subgraph HTmixed[\"HT-mixed 格式 PPDU\"]\n        A[L-STF] --> B[L-LTF] --> C[L-SIG] --> D[HT-SIG] --> E[HT-STF] --> F[HT-LTF 们] --> G[数据]\n    end\n    subgraph HTgf[\"HT-greenfield 格式 PPDU\"]\n        H[HT-GF-STF] --> I[HT-LTF1] --> J[HT-SIG] --> K[HT-LTF 们] --> L[数据]\n    end\n    C -.传统设备只能解码到这里.-> D"
+    },
+    {
+      "type": "prose",
+      "en": "Two new HT preamble pieces do the heavy lifting. The HT-SIG field carries everything a receiver needs to interpret the rest of the PPDU: the MCS index, the CBW 20/40 bit, the PSDU length, whether short guard interval is in use, the STBC and FEC choices, and a CRC so a corrupt header is caught rather than mis-decoded. The HT-LTFs (HT Long Training Fields) are the part that actually makes MIMO possible — each one sounds the channel for one spatial dimension, so the receiver can build the channel matrix it needs to pull the streams apart. The number of these training symbols scales with the number of space-time streams (one stream needs one, four streams need four). An MCS index, finally, is just a compact code that bundles streams x modulation x coding rate into a single number.",
+      "zh": "两个新的 HT 前导码部件承担了主要工作。HT-SIG 字段携带接收端解读后续 PPDU 所需的一切：MCS 索引、CBW 20/40 比特、PSDU 长度、是否启用短保护间隔、STBC 与 FEC 选择，以及一个 CRC——这样若头部损坏便能被发现，而不会被误解码。HT-LTF（HT 长训练字段）才是真正让 MIMO 成为可能的部分——每一个 HT-LTF 为一个空间维度“探测”信道，于是接收端能构建出分离各路流所需的信道矩阵。这些训练符号的数量随空间时间流的数量而增加（一路流需要一个，四路流需要四个）。至于 MCS 索引，说到底只是一个紧凑编码，把“流数 × 调制方式 × 编码率”打包成一个数字。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What the HT-SIG fields actually carry, and how training symbols scale",
+        "zh": "HT-SIG 字段究竟承载了什么，以及训练符号如何随流数增加"
+      },
+      "en": "Per Table 19-11, HT-SIG is split across two OFDM symbols (HT-SIG1/HT-SIG2) and carries: a 7-bit MCS index, a 1-bit CBW 20/40 (0 for 20 MHz or a 20 MHz slice of a 40 MHz channel, 1 for full 40 MHz), a 16-bit HT Length (PSDU octets; 0 marks an NDP sounding PPDU), Smoothing, Not Sounding, Aggregation (A-MPDU), a 2-bit STBC field encoding the difference between space-time streams and spatial streams, a 1-bit FEC Coding (1 = LDPC, 0 = BCC), a 1-bit Short GI (the short guard interval is 0.4 us versus the normal 0.8 us, shaving symbol overhead), a 2-bit Number of Extension Spatial Streams, and an 8-bit CRC over the header followed by tail bits. The HT-LTFs come in two kinds: HT-DLTFs (data) are mandatory and let the receiver estimate the MIMO channel for the streams carrying the PSDU, while HT-ELTFs (extension) optionally sound extra dimensions in sounding PPDUs. The count of HT-DLTFs tracks the number of space-time streams via Table 19-13 — 1, 2, or 4 symbols — with the quirk that three space-time streams still require four training symbols.",
+      "zh": "依据 Table 19-11，HT-SIG 被拆分到两个 OFDM 符号中（HT-SIG1/HT-SIG2），承载：7 比特的 MCS 索引、1 比特的 CBW 20/40（0 表示 20 MHz 或 40 MHz 信道中的某个 20 MHz 片段，1 表示完整 40 MHz）、16 比特的 HT Length（PSDU 字节数；为 0 标记 NDP 探测 PPDU）、Smoothing、Not Sounding、Aggregation（A-MPDU）、一个 2 比特的 STBC 字段（编码空间时间流数与空间流数之差）、1 比特的 FEC Coding（1=LDPC，0=BCC）、1 比特的 Short GI（短保护间隔为 0.4 微秒，对应常规的 0.8 微秒，可削减符号开销）、2 比特的扩展空间流数量，以及一个覆盖头部的 8 比特 CRC，其后是尾比特。HT-LTF 有两类：HT-DLTF（数据）是强制的，让接收端估计承载 PSDU 各路流的 MIMO 信道；HT-ELTF（扩展）则在探测 PPDU 中可选地探测额外维度。HT-DLTF 的数量依据 Table 19-13 随空间时间流数变化——1、2 或 4 个符号——其中有个小怪癖：三路空间时间流仍需四个训练符号。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3431,
+          3432,
+          3438
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:19.1.4",
+    "80211-2024:19.3.2",
+    "80211-2024:19.3.5",
+    "80211-2024:19.3.8",
+    "80211-2024:19.3.9",
+    "80211-2024:19.3.11"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3402,
+        3403
+      ],
+      "note": "19.1.4 PPDU formats - FORMAT parameter: NON_HT, HT-mixed (HT_MF, legacy coexistence), HT-greenfield (HT_GF)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3414,
+        3415
+      ],
+      "note": "19.3.2 PPDU format - Figure 19-1 field layout; Table 19-5 elements; HT-DLTFs vs HT-ELTFs"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3420,
+        3421
+      ],
+      "note": "19.3.5 MCS - index bundles streams x modulation x coding (0-7 single stream, 8-31 EQM multi-stream); Table 19-6 short GI 0.4 us"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3426
+      ],
+      "note": "19.3.8 transmission in upper/lower 20 MHz of a 40 MHz channel; 19.3.9.1 HT preamble introduction"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3431,
+        3432
+      ],
+      "note": "19.3.9.4.3 HT-SIG definition - Table 19-11 fields (MCS, CBW 20/40, HT Length, Short GI, STBC, FEC, CRC)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3438
+      ],
+      "note": "19.3.9.4.6 HT-LTF definition - HT-DLTFs sound spatial streams; count tracks space-time streams (Table 19-13)"
+    }
+  ],
+  "track": "legacy-phy"
+}

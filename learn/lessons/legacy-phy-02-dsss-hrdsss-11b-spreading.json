@@ -1,0 +1,125 @@
+{
+  "id": "legacy-phy-02-dsss-hrdsss-11b-spreading",
+  "title": {
+    "en": "Spreading the Signal: DSSS and the 11 Mbit/s Leap of 802.11b",
+    "zh": "把信号摊开：DSSS 与 802.11b 的 11 Mbit/s 飞跃"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "The 2.4 GHz ISM band is a noisy, crowded neighbourhood — microwaves, cordless phones, and a hundred other gadgets all share it, licence-free. Early Wi-Fi had to survive there. Its answer was direct-sequence spread spectrum (DSSS): instead of sending each data bit as one tidy pulse, the transmitter multiplies that bit by a fast, fixed chip sequence, smearing one bit of information across many sub-pulses (chips) and across a much wider slice of spectrum. The receiver, which knows the same sequence, correlates against it to pull the bit back out — even when noise has chewed up part of the signal.",
+      "zh": "2.4 GHz 的 ISM 频段是个嘈杂拥挤的“街区”——微波炉、无绳电话，还有上百种免许可设备都挤在这里。早期 Wi-Fi 必须在这种环境里存活下来。它的答案是直接序列扩频（DSSS）：发射端不再把每个数据比特发成一个干净利落的脉冲，而是把这个比特乘以一段固定的高速“码片序列”，从而把一个比特的信息摊开成许多子脉冲（码片），也摊开到一段宽得多的频谱上。接收端知道同一条序列，于是用它做相关运算把比特“捞”回来——即便噪声已经啃掉了信号的一部分。"
+    },
+    {
+      "type": "prose",
+      "en": "The spreading code 802.11 uses is an 11-chip Barker sequence: +1, -1, +1, +1, -1, +1, +1, +1, -1, -1, -1. Each symbol lasts exactly 11 chips, the chip clock runs at 11 MHz, and the leftmost chip goes out first. Spreading one bit over 11 chips is what buys the robustness: a narrowband interferer that wipes out part of the band only dents the correlation, and the bit usually still survives. The cost is bandwidth — you spend roughly 11x the spectrum to carry the same bit. That trade is the whole point: robustness bought with bandwidth. On top of Barker, 802.11 layers the modulation: DBPSK gives the basic 1 Mbit/s rate, and DQPSK (two bits per symbol) gives the enhanced 2 Mbit/s rate.",
+      "zh": "802.11 使用的扩频码是一段 11 位的 Barker（巴克）序列：+1, -1, +1, +1, -1, +1, +1, +1, -1, -1, -1。每个符号恰好持续 11 个码片，码片时钟跑在 11 MHz，最左边的码片最先发出。把一个比特摊到 11 个码片上，正是稳健性的来源：一个窄带干扰源即使抹掉了频段的一部分，也只是削弱了相关结果，比特通常仍能存活。代价是带宽——你要花大约 11 倍的频谱去承载同一个比特。这个取舍正是 DSSS 的精髓：用带宽换稳健。在 Barker 之上，802.11 再叠加调制：DBPSK 给出基础的 1 Mbit/s 速率，DQPSK（每符号两比特）给出增强的 2 Mbit/s 速率。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Watch the two clocks: the chip clock (11 MHz) is fixed, but the symbol rate changes. At 1 Mbit/s, 11 chips carry 1 bit; at 2 Mbit/s, the same 11 chips carry a 2-bit dibit via DQPSK. The chipping rate never moves — only how much information each symbol carries does. Hold that thought, because it is exactly the lever HR/DSSS pulls next.",
+      "zh": "盯住两个时钟：码片时钟（11 MHz）是固定的，而符号速率会变。1 Mbit/s 时，11 个码片承载 1 个比特；2 Mbit/s 时，同样的 11 个码片用 DQPSK 承载一个 2 比特的“双比特组（dibit）”。码片速率从不改变——改变的只是每个符号携带多少信息。记住这一点，因为这正是 HR/DSSS 接下来要拨动的“杠杆”。"
+    },
+    {
+      "type": "prose",
+      "en": "Reaching 5.5 and 11 Mbit/s — the leap that made 802.11b a household name — did not change the band, the 11 MHz chipping rate, or the occupied bandwidth. The high-rate extension (HR/DSSS) keeps the same preamble family so old and new radios coexist in one BSS, and instead swaps in a smarter symbol: 8-chip Complementary Code Keying (CCK). Where Barker uses one fixed code, CCK chooses among a rich set of complementary 8-chip codewords, packing several bits into each symbol. Same band, same chip rate, same width — smarter symbols. That is how 11 Mbit/s rides on the same RF plumbing as the original 1 Mbit/s.",
+      "zh": "达到 5.5 与 11 Mbit/s——正是这次飞跃让 802.11b 家喻户晓——并没有改变频段、11 MHz 的码片速率，也没有改变占用带宽。高速率扩展（HR/DSSS）保留了同一套前导（preamble）家族，让新旧设备能在同一个 BSS 中共存，转而换上了更聪明的符号：8 码片的互补码键控（CCK，Complementary Code Keying）。Barker 只用一条固定的码，而 CCK 则在一组丰富的 8 码片互补码字中做选择，把好几个比特塞进每个符号。同样的频段、同样的码片速率、同样的带宽——只是符号更聪明了。11 Mbit/s 正是这样骑在与最初 1 Mbit/s 相同的射频“管道”之上。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    subgraph LONG[\"Long PPDU — 192 us, interoperable\"]\n      A[\"SYNC<br/>128 bits<br/>scrambled 1s\"] --> B[\"SFD<br/>16 bits\"] --> C[\"SIGNAL<br/>8 bits\"] --> D[\"SERVICE<br/>8 bits\"] --> E[\"LENGTH<br/>16 bits\"] --> F[\"CRC-16<br/>16 bits\"] --> G[\"PSDU<br/>2 / 5.5 / 11 Mbit/s\"]\n    end\n    A -.->|1 Mbit/s DBPSK| F\n    G -.->|payload rate set by SIGNAL| G",
+      "zh": "graph LR\n    subgraph LONG[\"长 PPDU — 192 us，可互通\"]\n      A[\"SYNC<br/>128 比特<br/>加扰的 1\"] --> B[\"SFD<br/>16 比特\"] --> C[\"SIGNAL<br/>8 比特\"] --> D[\"SERVICE<br/>8 比特\"] --> E[\"LENGTH<br/>16 比特\"] --> F[\"CRC-16<br/>16 比特\"] --> G[\"PSDU<br/>2 / 5.5 / 11 Mbit/s\"]\n    end\n    A -.->|1 Mbit/s DBPSK| F\n    G -.->|载荷速率由 SIGNAL 决定| G"
+    },
+    {
+      "type": "prose",
+      "en": "The PPDU above shows how the rates coexist. The long PHY preamble and header are always sent at the slow, rugged 1 Mbit/s DBPSK so any legacy radio can decode them — the SYNC field lets the receiver lock on, the SFD marks where the header begins, and the SIGNAL field announces which rate (1, 2, 5.5, or 11 Mbit/s) the PSDU payload will use. Only after the CRC-protected header is safely read does the radio switch up to CCK for the fast payload. There is also an optional short preamble (HR/DSSS/short): it shortens SYNC and sends the header at 2 Mbit/s, trimming overhead from 192 us down to 96 us. The catch is compatibility — only radios that understand the short format can talk to it, so it trades interoperability for a little more throughput.",
+      "zh": "上面的 PPDU 展示了这些速率如何共存。长 PHY 前导与头部总是以又慢又坚固的 1 Mbit/s DBPSK 发送，好让任何老设备都能解码——SYNC 字段让接收端完成锁定，SFD 标出头部从哪里开始，而 SIGNAL 字段则宣告 PSDU 载荷将采用哪种速率（1、2、5.5 还是 11 Mbit/s）。只有在受 CRC 保护的头部被安全读出之后，无线电才会切换到 CCK 去跑高速载荷。还有一个可选的短前导（HR/DSSS/short）：它缩短了 SYNC，并以 2 Mbit/s 发送头部，把开销从 192 us 砍到 96 us。它的代价是兼容性——只有理解短格式的设备才能与之通信，因此它是用互通性换取一点额外的吞吐量。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 360 150' fill='none' stroke='currentColor' stroke-width='2'><text x='8' y='20' fill='currentColor' stroke='none' font-size='11'>1 data bit</text><rect x='8' y='28' width='44' height='20' /><text x='60' y='42' fill='currentColor' stroke='none' font-size='13'>x  11-chip Barker code</text><line x1='8' y1='70' x2='352' y2='70' stroke='currentColor' stroke-width='1'/><g stroke-width='1'><rect x='8' y='95' width='28' height='18'/><rect x='36' y='95' width='28' height='18' fill='currentColor'/><rect x='64' y='95' width='28' height='18'/><rect x='92' y='95' width='28' height='18'/><rect x='120' y='95' width='28' height='18' fill='currentColor'/><rect x='148' y='95' width='28' height='18'/><rect x='176' y='95' width='28' height='18'/><rect x='204' y='95' width='28' height='18'/><rect x='232' y='95' width='28' height='18' fill='currentColor'/><rect x='260' y='95' width='28' height='18' fill='currentColor'/><rect x='288' y='95' width='28' height='18' fill='currentColor'/></g><text x='8' y='133' fill='currentColor' stroke='none' font-size='11'>11 chips = 1 symbol  (chip clock 11 MHz)</text></svg>",
+      "caption": {
+        "en": "One data bit is spread across the 11-chip Barker sequence (+1/-1 shown as empty/filled chips). The bit now occupies 11x the bandwidth — that wideband smear is what lets the receiver recover it through narrowband noise.",
+        "zh": "一个数据比特被摊开到 11 位 Barker 序列上（+1/-1 用空心/实心码片表示）。该比特现在占用了 11 倍的带宽——正是这种宽带“涂抹”让接收端能在窄带噪声中把它恢复出来。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact codes, rates, and why the header stays slow",
+        "zh": "精确的码、速率，以及头部为何保持低速"
+      },
+      "en": "The standard nails the numbers. Clause 15.4.4.4 fixes the spreading code as the 11-chip Barker sequence (+1, -1, +1, +1, -1, +1, +1, +1, -1, -1, -1), leftmost chip first, symbol exactly 11 chips long. Clause 15.4.4.5 defines the two DSSS rates: 1 Mbit/s DBPSK (basic) and 2 Mbit/s DQPSK (enhanced). The HR/DSSS overview (16.1.1) states that 8-chip CCK adds 5.5 and 11 Mbit/s at the same 11 MHz chipping rate and the same occupied bandwidth, and that one HR/DSSS mode reuses the DSSS preamble/header so both PHYs coexist in a BSS. The long PPDU (16.2.2.2) carries SYNC (128 bits of scrambled 1s), SFD, SIGNAL, SERVICE, LENGTH, and CRC-16; the preamble/header always go at 1 Mbit/s DBPSK while the SIGNAL field words X'0A'/X'14'/X'37'/X'6E' select 1/2/5.5/11 Mbit/s for the PSDU. The optional short PPDU (16.2.2.3) uses a shorter SYNC and a 2 Mbit/s DQPSK header, cutting the preamble+header time from 192 us to 96 us, but only short-capable receivers can decode it. Per 16.2.5, the HR/DSSS transmit procedures are identical to the DSSS Transmit/Receive PHY of 15.3.6 / 15.3.7, differing only in the ability to carry the 5.5 and 11 Mbit/s rates.",
+      "zh": "标准把这些数字钉得很死。15.4.4.4 节把扩频码定为 11 位 Barker 序列（+1, -1, +1, +1, -1, +1, +1, +1, -1, -1, -1），最左码片先发，符号恰好 11 个码片长。15.4.4.5 节定义了两种 DSSS 速率：1 Mbit/s DBPSK（基础）与 2 Mbit/s DQPSK（增强）。HR/DSSS 概述（16.1.1）说明：8 码片 CCK 在相同的 11 MHz 码片速率与相同的占用带宽下新增了 5.5 与 11 Mbit/s，并且 HR/DSSS 的一种模式复用了 DSSS 的前导/头部，使两种 PHY 能在一个 BSS 中共存。长 PPDU（16.2.2.2）携带 SYNC（128 比特加扰的 1）、SFD、SIGNAL、SERVICE、LENGTH 与 CRC-16；前导/头部始终以 1 Mbit/s DBPSK 发送，而 SIGNAL 字段的码字 X'0A'/X'14'/X'37'/X'6E' 分别为 PSDU 选择 1/2/5.5/11 Mbit/s。可选的短 PPDU（16.2.2.3）使用更短的 SYNC 与 2 Mbit/s DQPSK 头部，把前导加头部的时间从 192 us 砍到 96 us，但只有支持短格式的接收端才能解码它。依据 16.2.5，HR/DSSS 的发送流程与 15.3.6 / 15.3.7 的 DSSS 发送/接收 PHY 完全一致，唯一的区别在于能够承载 5.5 与 11 Mbit/s 速率。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3303,
+          3312,
+          3313,
+          3314,
+          3319
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:15.3.6",
+    "80211-2024:15.3.7",
+    "80211-2024:16.2.2",
+    "80211-2024:16.2.3",
+    "80211-2024:16.2.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3294,
+        3296
+      ],
+      "note": "15.3.6 Transmit PHY / 15.3.7 Receive PHY — DSSS PPDU send/receive procedures and primitives"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3303
+      ],
+      "note": "15.4.4.4 Spreading sequence (11-chip Barker); 15.4.4.5 modulation and data rates (1 Mbit/s DBPSK, 2 Mbit/s DQPSK)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3312
+      ],
+      "note": "16.1.1 HR/DSSS overview — 8-chip CCK adds 5.5 and 11 Mbit/s at the same 11 MHz chip rate; preamble reuse for coexistence; HR/DSSS/short"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3313,
+        3314
+      ],
+      "note": "16.2.2 PPDU format — long (192 us) and short (96 us) preambles/headers; SIGNAL field rate selection"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3315,
+        3316,
+        3318
+      ],
+      "note": "16.2.3 PPDU field definitions — SYNC/SFD/SIGNAL/SERVICE/LENGTH/CRC-16, long and short variants, rate words"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3319
+      ],
+      "note": "16.2.5 Transmit PHY — HR/DSSS transmit reuses 15.3.6/15.3.7 procedures, adding 5.5 and 11 Mbit/s"
+    }
+  ],
+  "track": "legacy-phy"
+}

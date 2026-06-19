@@ -1,0 +1,115 @@
+{
+  "id": "legacy-phy-07-s1g-11ah-long-range-iot",
+  "title": {
+    "en": "Going the Distance: Sub-1-GHz S1G (802.11ah) for Long-Range Low-Power IoT",
+    "zh": "走得更远：面向远距离低功耗物联网的 Sub-1-GHz S1G（802.11ah）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This track opened by chasing gigabits — wider channels, denser modulation, more spatial streams. S1G (Sub-1-GHz, the PHY behind Wi-Fi HaLow / 802.11ah) chases the opposite goal. A battery-powered sensor on a farm or in a basement does not need a gigabit; it needs to send a handful of bytes a few times an hour, from far away, on a coin cell that must last for years. So S1G keeps the same OFDM toolbox you already know and re-tunes every dial toward reach and battery life instead of speed.",
+      "zh": "本课程的开篇一直在追逐千兆——更宽的信道、更密的调制、更多的空间流。而 S1G（Sub-1-GHz，即 Wi-Fi HaLow / 802.11ah 背后的 PHY）追逐的是相反的目标。农场里或地下室中一个靠电池供电的传感器并不需要千兆速率；它需要的是在远处、用一颗必须撑好几年的纽扣电池，每小时发送几次、每次几个字节的数据。于是 S1G 沿用了你已经熟悉的那套 OFDM 工具箱，但把每一个旋钮都重新拧向了“覆盖距离”和“电池寿命”，而不是速度。"
+    },
+    {
+      "type": "prose",
+      "en": "Why drop below 1 GHz? Lower-frequency radio waves simply travel farther and punch through walls and foliage better than 2.4 or 5 GHz signals — the same reason an AM radio station reaches across a whole region. Operating in the sub-1-GHz ISM bands buys S1G dramatically better range and obstacle penetration for free, before any clever PHY tricks. The trade-off is that these bands are narrow, so S1G must make do with very little spectrum.",
+      "zh": "为什么要降到 1 GHz 以下？低频无线电波就是比 2.4 GHz 或 5 GHz 的信号传得更远、更容易穿透墙体和植被——这和一个 AM 调幅广播电台能覆盖整个地区是同一个道理。工作在 Sub-1-GHz 的 ISM 频段，让 S1G 还没用上任何精巧的 PHY 技巧，就先“白赚”到了大幅提升的覆盖距离和穿透能力。代价是这些频段很窄，所以 S1G 必须在极少的频谱里精打细算。"
+    },
+    {
+      "type": "prose",
+      "en": "The headline trick is downclocking. Take the proven 11ac OFDM design and run it 10× slower in frequency: subcarrier spacing shrinks from 312.5 kHz to 31.25 kHz, the IDFT period stretches from 3.2 us to 32 us, and a symbol grows to 40 us. The 20 MHz 11ac channel becomes a 2 MHz S1G channel, and a further sub-channel gives the 1 MHz mode. Squeezing into a narrow channel concentrates the transmit power into fewer hertz and lowers the noise floor the receiver has to fight — both of which directly buy link budget, and therefore range, for kilometer-scale links.",
+      "zh": "最核心的招数叫“降频时钟”（downclocking）。把成熟的 11ac OFDM 设计在频率上放慢 10 倍：子载波间隔从 312.5 kHz 缩小到 31.25 kHz，IDFT 周期从 3.2 us 拉长到 32 us，一个符号也增长到 40 us。20 MHz 的 11ac 信道就变成了 2 MHz 的 S1G 信道，再进一步细分出一个子信道就得到了 1 MHz 模式。把信号塞进更窄的信道，意味着把发射功率集中到更少的赫兹里，同时也降低了接收机需要对抗的噪声底——这两点都直接转化为链路预算的提升，从而把链路距离拉到公里级。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    subgraph AC[\"802.11ac (speed-first)\"]\n      A1[\"Subcarrier spacing 312.5 kHz\"]\n      A2[\"Symbol 3.2 + 0.8 us\"]\n      A3[\"Channel 20 MHz wide\"]\n    end\n    subgraph S1G[\"S1G / 802.11ah (range-first)\"]\n      B1[\"Subcarrier spacing 31.25 kHz\"]\n      B2[\"Symbol 32 + 8 us\"]\n      B3[\"Channel 2 MHz wide, plus 1 MHz sub-channel\"]\n    end\n    AC -->|\"downclock 10x\"| S1G",
+      "zh": "graph TD\n    subgraph AC[\"802.11ac（速度优先）\"]\n      A1[\"子载波间隔 312.5 kHz\"]\n      A2[\"符号 3.2 + 0.8 us\"]\n      A3[\"信道宽 20 MHz\"]\n    end\n    subgraph S1G[\"S1G / 802.11ah（距离优先）\"]\n      B1[\"子载波间隔 31.25 kHz\"]\n      B2[\"符号 32 + 8 us\"]\n      B3[\"信道宽 2 MHz，外加 1 MHz 子信道\"]\n    end\n    AC -->|\"降频时钟 10 倍\"| S1G"
+    },
+    {
+      "type": "prose",
+      "en": "S1G defines three PPDU formats, and the smallest is built for tiny sensors. S1G_1M is the 1 MHz format — mandatory for every S1G device — used when you want maximum reach for just a few bytes. S1G_SHORT is the short (greenfield-style) preamble for 2 MHz and wider, with no legacy portion to waste airtime on, ideal for a sensor sending a quick burst. S1G_LONG adds a longer preamble carrying SIG-A/SIG-B for the heavier features such as MU and beamforming. The pattern mirrors the rate-vs-range arc the whole track has been tracing: the same field toolbox, here stripped down to its lightest, longest-reaching form.",
+      "zh": "S1G 定义了三种 PPDU 格式，其中最小的那种正是为微型传感器打造的。S1G_1M 是 1 MHz 格式——每台 S1G 设备都必须支持——用于只发几个字节却想要最大覆盖距离的场景。S1G_SHORT 是用于 2 MHz 及更宽信道的短前导（greenfield 风格），不带浪费空口时间的传统兼容部分，非常适合传感器快速发一小串数据。S1G_LONG 则用更长的前导携带 SIG-A/SIG-B，以支撑 MU、波束赋形等更重的功能。这个格局恰好呼应了整个课程一直在勾勒的“速率—距离”取舍：同一套字段工具箱，在这里被精简成了最轻、传得最远的形态。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"24\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">S1G_1M (1 MHz) - maximum-range sensor format</text><rect x=\"10\" y=\"34\" width=\"70\" height=\"30\"/><text x=\"45\" y=\"54\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">STF</text><rect x=\"80\" y=\"34\" width=\"70\" height=\"30\"/><text x=\"115\" y=\"54\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">LTF1</text><rect x=\"150\" y=\"34\" width=\"90\" height=\"30\"/><text x=\"195\" y=\"54\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">SIG (6 sym)</text><rect x=\"240\" y=\"34\" width=\"70\" height=\"30\"/><text x=\"275\" y=\"54\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">LTF2..N</text><rect x=\"310\" y=\"34\" width=\"110\" height=\"30\" stroke-dasharray=\"4 3\"/><text x=\"365\" y=\"54\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Data (a few bytes)</text><text x=\"10\" y=\"100\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">S1G_SHORT (>=2 MHz) - no legacy preamble</text><rect x=\"10\" y=\"110\" width=\"70\" height=\"30\"/><text x=\"45\" y=\"130\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">STF</text><rect x=\"80\" y=\"110\" width=\"70\" height=\"30\"/><text x=\"115\" y=\"130\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">LTF1</text><rect x=\"150\" y=\"110\" width=\"70\" height=\"30\"/><text x=\"185\" y=\"130\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">SIG</text><rect x=\"220\" y=\"110\" width=\"70\" height=\"30\"/><text x=\"255\" y=\"130\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">LTF2..N</text><rect x=\"290\" y=\"110\" width=\"130\" height=\"30\" stroke-dasharray=\"4 3\"/><text x=\"355\" y=\"130\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Data</text></svg>",
+      "caption": {
+        "en": "The two lightweight S1G PPDU layouts. The mandatory 1 MHz format reaches farthest for a few-byte payload; the short >=2 MHz format drops any legacy preamble to save airtime.",
+        "zh": "两种轻量级 S1G PPDU 结构。强制的 1 MHz 格式在几字节负载下传得最远；>=2 MHz 的短格式则去掉了所有传统前导以节省空口时间。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Range gets one more notch: MCS10. For the 1 MHz mode only (single spatial stream), S1G adds an extra-rugged scheme on top of the usual MCS0-9. MCS10 takes the lowest BPSK rate and applies 2x block-wise repetition — sending each coded block twice so the receiver can combine the copies. It is the slowest, most robust setting in the whole S1G toolbox, reserved for the very edge of coverage where every decibel of link budget counts.",
+      "zh": "覆盖距离还能再上一档：MCS10。仅在 1 MHz 模式（单空间流）下，S1G 在常规的 MCS0-9 之上额外增加了一种超级稳健的方案。MCS10 取最低的 BPSK 速率，并施加 2 倍块级重复——把每个编码块发送两次，让接收机可以合并这两份副本。它是整个 S1G 工具箱里最慢、最稳健的档位，专门留给覆盖范围最边缘、每一分贝链路预算都至关重要的场景。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The numbers behind the 10x downclock, and where MCS10 lives",
+        "zh": "10 倍降频时钟背后的数字，以及 MCS10 的位置"
+      },
+      "en": "23.1.4 lists three FORMAT values (S1G, S1G_DUP_2M, S1G_DUP_1M) and three preamble types: the mandatory S1G_1M preamble (1 MHz), the mandatory S1G_SHORT preamble (>=2 MHz, greenfield-like, no legacy portion), and the S1G_LONG preamble (>=2 MHz, HT-mixed-like, carrying SIG-A and optionally SIG-B for MU). 23.3.2 shows the three PPDU structures in Figures 23-1 to 23-3. The downclock is explicit in the Table 23-5 timing constants of 23.3.6: subcarrier spacing DeltaF = 31.25 kHz, T_DFT = 32 us (= 1/DeltaF), and a normal-GI symbol T_SYML = 40 us = 1.25 x T_DFT — each value 10x the corresponding 11ac figure (312.5 kHz, 3.2 us, 4 us). The CBW1 column also shows just 24 data subcarriers in a 1 MHz channel versus 468 at 16 MHz. 23.3.5 defines the S1G-MCS set as indices 0-9 for all widths, plus index 10 solely for 1 MHz, NSS = 1; the transmitter realises MCS10 with a 2x block-wise repetition stage (23.3.3 / Figure 23-4).",
+      "zh": "23.1.4 列出了三种 FORMAT 取值（S1G、S1G_DUP_2M、S1G_DUP_1M）和三种前导类型：强制的 S1G_1M 前导（1 MHz）、强制的 S1G_SHORT 前导（>=2 MHz，类 greenfield，无传统兼容部分），以及 S1G_LONG 前导（>=2 MHz，类 HT-mixed，携带 SIG-A 并可选携带用于 MU 的 SIG-B）。23.3.2 在图 23-1 到 23-3 中给出了这三种 PPDU 结构。降频时钟在 23.3.6 的表 23-5 时序常数中表述得很明确：子载波间隔 DeltaF = 31.25 kHz，T_DFT = 32 us（= 1/DeltaF），普通保护间隔的符号 T_SYML = 40 us = 1.25 x T_DFT——每个数值都是对应 11ac 数值（312.5 kHz、3.2 us、4 us）的 10 倍。CBW1 那一列还显示，1 MHz 信道里只有 24 个数据子载波，而 16 MHz 时有 468 个。23.3.5 把 S1G-MCS 集合定义为对所有带宽适用的索引 0-9，外加仅用于 1 MHz、NSS = 1 的索引 10；发射机通过一个 2 倍块级重复阶段来实现 MCS10（见 23.3.3 / 图 23-4）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3732,
+          3743,
+          3744,
+          3756,
+          3757
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:23.1.3",
+    "80211-2024:23.1.4",
+    "80211-2024:23.3.2",
+    "80211-2024:23.3.5",
+    "80211-2024:23.3.8"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3731
+      ],
+      "note": "23.1.3 S1G PHY features - PHY function and PLME; list of supported S1G features"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3732
+      ],
+      "note": "23.1.4 PPDU formats - S1G_1M (mandatory, 1 MHz), S1G_SHORT (mandatory, >=2 MHz greenfield-like), S1G_LONG (>=2 MHz, SIG-A/SIG-B); FORMAT and PREAMBLE_TYPE"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3743,
+        3744
+      ],
+      "note": "23.3.2 S1G PPDU format - Figures 23-1/23-2/23-3 (S1G_SHORT, S1G_LONG, S1G_1M) and Table 23-4 field list"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3756
+      ],
+      "note": "23.3.5 Modulation and coding scheme - S1G-MCS indices 0-9 all widths, index 10 solely for 1 MHz NSS=1; 23.3.3 / Figure 23-4 MCS10 2x block-wise repetition"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3757
+      ],
+      "note": "23.3.6 Table 23-5 timing constants - DeltaF 31.25 kHz, T_DFT 32 us, T_SYML 40 us (the 10x downclock of the 11ac OFDM numerology); CBW1 24 data subcarriers"
+    }
+  ],
+  "track": "legacy-phy"
+}

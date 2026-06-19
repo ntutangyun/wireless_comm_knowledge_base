@@ -1,0 +1,129 @@
+{
+  "id": "legacy-phy-03-ofdm-11a-erp-11g",
+  "title": {
+    "en": "Many Tones at Once: OFDM in 802.11a and 802.11g",
+    "zh": "同时用很多音调：802.11a 与 802.11g 中的 OFDM"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "The early Wi-Fi PHYs sent one fast stream of symbols across the whole channel. That works until the signal bounces off walls and furniture: the echoes arrive a little late and smear into the next symbol — multipath distortion. The faster you push the single stream, the shorter each symbol is, and the worse the smearing gets. The OFDM PHY (Clause 17, the engine behind 802.11a) makes a bold architectural pivot: instead of one fast stream, split the data across many slow tones carried in parallel inside the same 20 MHz channel. Each tone is slow enough to shrug off the echoes, and a little guard interval at the front of every symbol soaks up whatever delay spread is left.",
+      "zh": "早期的 Wi-Fi 物理层（PHY）在整个信道上发送一条很快的符号流。这在信号没碰到障碍前都没问题：可一旦信号撞到墙壁和家具反射回来，这些回声就会晚到一点、糊进下一个符号——这就是多径失真。你把这条单一码流推得越快，每个符号就越短，糊得也就越严重。OFDM 物理层（第 17 章，也就是 802.11a 背后的引擎）做了一个大胆的架构转变：不再用一条快流，而是把数据拆分到许多条“慢”音调上，在同一个 20 MHz 信道里并行传输。每条音调都足够慢，能从容地抵御回声；而每个符号前面的一小段保护间隔（guard interval）则吸收掉剩下的那点时延扩展。"
+    },
+    {
+      "type": "prose",
+      "en": "Inside a 20 MHz channel the OFDM PHY lays down 52 subcarriers spaced 0.3125 MHz apart — 48 of them carry data and 4 are pilots used to track phase. The subcarriers are orthogonal: their spacing is chosen so that at the centre of each tone all the others sum to zero, so they can be packed tightly without interfering. The receiver recovers all 52 in one shot with a Fourier transform. Because each symbol spans a comfortable 4 microseconds (3.2 us of useful Fourier-transform time plus a 0.8 us guard interval), a stray echo that arrives within that guard window lands harmlessly before the useful part of the next symbol.",
+      "zh": "在一个 20 MHz 信道里，OFDM 物理层铺下 52 条子载波，彼此间隔 0.3125 MHz——其中 48 条承载数据，4 条是用来跟踪相位的导频（pilot）。这些子载波是相互正交的：它们的间隔经过精心选择，使得在每条音调的中心点上，其它所有音调的贡献正好相加为零，于是可以密集排布而互不干扰。接收端用一次傅里叶变换就能一举恢复全部 52 条。由于每个符号占据从容的 4 微秒（3.2 微秒有用的傅里叶变换时间，加上 0.8 微秒保护间隔），一个落在该保护窗口内到达的杂散回声会无害地落在下一个符号有用部分之前。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    A[\"PHY Preamble<br/>12 training symbols (16 us)\"] --> B[\"SIGNAL<br/>1 OFDM symbol<br/>BPSK, r=1/2\"]\n    B --> C[\"DATA<br/>variable # of OFDM symbols\"]\n    subgraph SIG[\"SIGNAL field = RATE + LENGTH\"]\n      D[\"RATE<br/>4 bits\"]\n      E[\"Reserved<br/>1 bit\"]\n      F[\"LENGTH<br/>12 bits\"]\n      G[\"Parity<br/>1 bit\"]\n      H[\"Tail<br/>6 bits\"]\n    end\n    B -.-> SIG",
+      "zh": "graph LR\n    A[\"PHY 前导码<br/>12 个训练符号 (16 微秒)\"] --> B[\"SIGNAL<br/>1 个 OFDM 符号<br/>BPSK, r=1/2\"]\n    B --> C[\"DATA<br/>可变数量的 OFDM 符号\"]\n    subgraph SIG[\"SIGNAL 字段 = RATE + LENGTH\"]\n      D[\"RATE<br/>4 比特\"]\n      E[\"保留<br/>1 比特\"]\n      F[\"LENGTH<br/>12 比特\"]\n      G[\"奇偶校验<br/>1 比特\"]\n      H[\"尾比特<br/>6 比特\"]\n    end\n    B -.-> SIG"
+    },
+    {
+      "type": "prose",
+      "en": "Every OFDM frame (PPDU) opens with a preamble of training symbols for synchronisation, then a single, ultra-robust SIGNAL symbol, then the DATA. The SIGNAL symbol is the announcement: it carries a 4-bit RATE field saying how the rest of the frame is modulated and coded, and a 12-bit LENGTH field saying how many octets follow. SIGNAL itself is always sent the safe way — BPSK at coding rate 1/2 — so even a distant receiver can decode the header and, crucially, predict how long the medium will be busy even if it cannot decode the data rate being used.",
+      "zh": "每个 OFDM 帧（PPDU）都以一段用于同步的训练符号前导码开头，接着是单个极其稳健的 SIGNAL 符号，然后才是 DATA。这个 SIGNAL 符号就是“通告”：它携带一个 4 比特的 RATE 字段，说明帧的其余部分用什么调制和编码；还有一个 12 比特的 LENGTH 字段，说明后面跟着多少个字节。SIGNAL 本身始终用最稳妥的方式发送——BPSK、编码率 1/2——这样即便是较远的接收端也能解出帧头，而且关键在于：哪怕它无法解出对方所用的数据速率，也能预测出媒介将被占用多久。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Where do the eight rates (6, 9, 12, 18, 24, 36, 48, 54 Mbit/s) come from? Two knobs. The first is how many bits each subcarrier carries: BPSK (1 bit) -> QPSK (2) -> 16-QAM (4) -> 64-QAM (6). The second is the convolutional coding rate (1/2, 2/3, 3/4) — how much of the transmitted bandwidth is parity rather than payload. Pick a hardy combination (BPSK, 1/2) when the link is weak; pick an aggressive one (64-QAM, 3/4) when it is strong. The mandatory rates a STA must always support are 6, 12, and 24 Mbit/s.",
+      "zh": "那八种速率（6、9、12、18、24、36、48、54 Mbit/s）是怎么来的？靠两个旋钮。第一个是每条子载波携带多少比特：BPSK（1 比特）→ QPSK（2）→ 16-QAM（4）→ 64-QAM（6）。第二个是卷积编码率（1/2、2/3、3/4）——也就是在发送出去的带宽里，有多少是校验位而不是有效载荷。当链路较弱时，选一个皮实的组合（BPSK、1/2）；当链路很强时，选一个激进的组合（64-QAM、3/4）。站点必须始终支持的强制速率是 6、12 和 24 Mbit/s。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 150' fill='none' stroke='currentColor' stroke-width='1.5'><line x1='20' y1='120' x2='380' y2='120'/><line x1='20' y1='120' x2='20' y2='20'/><text x='200' y='145' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>frequency (52 subcarriers across 20 MHz)</text><text x='8' y='70' fill='currentColor' stroke='none' font-size='10' transform='rotate(-90 8 70)' text-anchor='middle'>power</text><path d='M40 120 Q50 40 60 120' /><path d='M55 120 Q65 40 75 120'/><path d='M70 120 Q80 40 90 120'/><path d='M85 120 Q95 40 105 120'/><path d='M115 120 Q125 40 135 120'/><path d='M130 120 Q140 40 150 120'/><path d='M145 120 Q155 40 165 120'/><path d='M175 120 Q185 40 195 120'/><path d='M190 120 Q200 40 210 120'/><path d='M205 120 Q215 40 225 120'/><path d='M235 120 Q245 40 255 120'/><path d='M250 120 Q260 40 270 120'/><path d='M265 120 Q275 40 285 120'/><path d='M295 120 Q305 40 315 120'/><path d='M310 120 Q320 40 330 120'/><path d='M325 120 Q335 40 345 120'/><circle cx='110' cy='75' r='3' fill='currentColor' stroke='none'/><circle cx='170' cy='75' r='3' fill='currentColor' stroke='none'/><circle cx='230' cy='75' r='3' fill='currentColor' stroke='none'/><circle cx='290' cy='75' r='3' fill='currentColor' stroke='none'/><text x='200' y='30' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>overlapping orthogonal tones; filled dots = pilots</text></svg>",
+      "caption": {
+        "en": "Many narrow, overlapping subcarriers fill the 20 MHz channel. Their 0.3125 MHz spacing makes them orthogonal — each tone peaks where its neighbours are zero — so 48 data tones plus 4 pilots pack in without mutual interference.",
+        "zh": "许多窄而相互交叠的子载波填满 20 MHz 信道。它们 0.3125 MHz 的间隔使其相互正交——每条音调的峰值正好落在邻居为零之处——于是 48 条数据音调加 4 条导频音调可以密集排布而互不干扰。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "So where does 802.11g fit? That is the ERP (Extended Rate PHY, Clause 18), and its punchline is reuse. ERP takes 802.11a's entire OFDM engine — the same preamble, SIGNAL field, subcarriers, and 6-to-54 Mbit/s rate ladder — and runs it in the crowded 2.4 GHz band instead of 5 GHz, on the same channels as the older 802.11b DSSS/CCK devices. An ERP station still speaks the legacy 1/2/5.5/11 Mbit/s DSSS rates too, so a 2.4 GHz network can be all-OFDM, all-legacy, or a mix.",
+      "zh": "那么 802.11g 处在什么位置？它就是 ERP（Extended Rate PHY，扩展速率物理层，第 18 章），而它的精髓就是“复用”。ERP 把 802.11a 的整套 OFDM 引擎——同样的前导码、SIGNAL 字段、子载波，以及 6 到 54 Mbit/s 的速率阶梯——搬到拥挤的 2.4 GHz 频段（而非 5 GHz）里运行，使用与较老的 802.11b DSSS/CCK 设备相同的信道。一个 ERP 站点同时仍会讲传统的 1/2/5.5/11 Mbit/s DSSS 速率，因此一个 2.4 GHz 网络可以是全 OFDM、全传统，或两者混合。"
+    },
+    {
+      "type": "prose",
+      "en": "The catch: a legacy 802.11b device cannot demodulate an OFDM frame at all — to it, the channel just looks busy with noise, so it might transmit on top and collide. ERP solves this with protection mechanisms. Before an OFDM exchange, the ERP station sends a short frame the legacy devices can understand — an RTS/CTS handshake or a CTS-to-self — at a legacy rate. That frame's Duration field sets the legacy devices' network allocation vector (their idea of how long to stay quiet), so they back off for the whole OFDM burst even though they never decode it. It costs airtime, but it lets fast 802.11g and slow 802.11b coexist on the same channel.",
+      "zh": "问题在于：传统的 802.11b 设备根本无法解调 OFDM 帧——在它看来，信道只是被噪声占用着，于是它可能在上面照样发送而发生碰撞。ERP 用保护机制（protection mechanism）来解决这一点。在一次 OFDM 交互之前，ERP 站点会用一个传统速率发送一个传统设备能听懂的短帧——一次 RTS/CTS 握手，或一个 CTS-to-self。这个短帧的 Duration（持续时间）字段会设置传统设备的网络分配向量（NAV，即它们认为应保持安静多久），于是它们会在整个 OFDM 突发期间退避，尽管自己从未解出该突发的内容。这会消耗一些空口时间，但能让高速的 802.11g 与低速的 802.11b 在同一信道上共存。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact OFDM numerology and how ERP inherits it",
+        "zh": "OFDM 的精确参数取值，以及 ERP 如何继承它"
+      },
+      "en": "Clause 17 fixes the numbers. The PPDU is preamble + SIGNAL + DATA (Figure 17-1); SIGNAL is one BPSK, r=1/2 OFDM symbol carrying RATE (4 bits), a reserved bit, LENGTH (12 bits), a parity bit, and 6 tail bits. Table 17-5 gives the 20 MHz numerology: 48 data subcarriers + 4 pilots = 52 total (NST), subcarrier spacing 0.3125 MHz (= 20 MHz/64), TFFT = 3.2 us, guard interval TGI = 0.8 us, symbol interval TSYM = 4 us. Table 17-4 maps modulation and coding to the eight 20 MHz rates: BPSK r=1/2 -> 6, BPSK 3/4 -> 9, QPSK 1/2 -> 12, QPSK 3/4 -> 18, 16-QAM 1/2 -> 24, 16-QAM 3/4 -> 36, 64-QAM 2/3 -> 48, 64-QAM 3/4 -> 54 Mbit/s. Clause 18 (ERP) layers on top: 18.1.2 makes 6, 12, and 24 Mbit/s ERP-OFDM mandatory, and 18.3.2.4 states the ERP-OFDM PPDU format simply is the one described in 17.3.2 to 17.3.5, operating per 18.4 in the 2.4 GHz band. 18.1.5 anchors coexistence on the CS mechanism and the protection mechanism so non-ERP STAs defer to OFDM traffic they cannot demodulate.",
+      "zh": "第 17 章把这些数字固定下来。PPDU 由前导码 + SIGNAL + DATA 组成（图 17-1）；SIGNAL 是一个 BPSK、编码率 1/2 的 OFDM 符号，携带 RATE（4 比特）、一个保留比特、LENGTH（12 比特）、一个奇偶校验比特和 6 个尾比特。表 17-5 给出 20 MHz 的参数取值：48 条数据子载波 + 4 条导频 = 共 52 条（NST），子载波间隔 0.3125 MHz（= 20 MHz/64），TFFT = 3.2 微秒，保护间隔 TGI = 0.8 微秒，符号间隔 TSYM = 4 微秒。表 17-4 把调制与编码映射到八种 20 MHz 速率：BPSK r=1/2 → 6，BPSK 3/4 → 9，QPSK 1/2 → 12，QPSK 3/4 → 18，16-QAM 1/2 → 24，16-QAM 3/4 → 36，64-QAM 2/3 → 48，64-QAM 3/4 → 54 Mbit/s。第 18 章（ERP）叠加于其上：18.1.2 规定 6、12、24 Mbit/s 的 ERP-OFDM 为强制；18.3.2.4 直接声明 ERP-OFDM 的 PPDU 格式就是 17.3.2 至 17.3.5 所描述的那一套，并依 18.4 在 2.4 GHz 频段运行。18.1.5 则把共存性建立在载波侦听（CS）机制与保护机制之上，使非 ERP 站点对自己无法解调的 OFDM 流量进行退避。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3346,
+          3347,
+          3348,
+          3388,
+          3390,
+          3393
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:17.3.2",
+    "80211-2024:17.3.3",
+    "80211-2024:17.3.4",
+    "80211-2024:17.3.5",
+    "80211-2024:18.3",
+    "80211-2024:18.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3345,
+        3346,
+        3347,
+        3348
+      ],
+      "note": "17.3.2 PPDU format and modulation/timing parameters - SIGNAL = RATE+LENGTH, Table 17-4 eight rates BPSK..64-QAM, Table 17-5 52 subcarriers, 0.3125 MHz spacing, 4 us symbol with 0.8 us GI"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3351,
+        3352,
+        3353
+      ],
+      "note": "17.3.3 PHY preamble (10 short + 2 long training symbols, 16 us); 17.3.4 SIGNAL field bits and RATE field (Table 17-6)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3354
+      ],
+      "note": "17.3.5 DATA field - SERVICE, PSDU, tail, pad bits, scrambled"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3388,
+        3389,
+        3390
+      ],
+      "note": "18.1 ERP overview - 2.4 GHz band, OFDM rates 6-54 (6/12/24 mandatory), coexistence via RTS/CTS, CTS-to-self, CSMA/CA; 18.1.5 CS + protection mechanism so non-ERP STAs defer"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3393,
+        3395
+      ],
+      "note": "18.3.2.4 ERP-OFDM PPDU format = 17.3.2-17.3.5; 18.4 ERP operating specs in 2.4 GHz, SIFS 10 us, CCA"
+    }
+  ],
+  "track": "legacy-phy"
+}
