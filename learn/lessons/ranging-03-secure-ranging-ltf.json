@@ -1,0 +1,102 @@
+{
+  "id": "ranging-03-secure-ranging-ltf",
+  "title": {
+    "en": "Making the Measurement Hard to Fake: Secure LTF and Distance-Reduction Attacks",
+    "zh": "让测量难以伪造：安全 LTF 与缩短距离攻击"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Wi-Fi ranging measures how far apart two devices are by timing how long a radio signal takes to fly between them. Multiply that flight time by the speed of light and you get a distance. That number is increasingly trusted to make real decisions: a keyless car asks 'is the phone-key within 1 metre of the door?' before it unlocks, and a phone-as-key for a building does the same. If the distance can be forged, the trust collapses — so the question for 802.11bk is not just 'how do we measure distance?' but 'how do we make a forged distance fail?'",
+      "zh": "Wi-Fi 测距通过测量无线信号在两台设备之间往返所需的时间，来推算它们之间的距离：把飞行时间乘以光速，就得到距离。如今这个数字越来越被用来做出真实的决策：无钥匙汽车在开锁前会问“手机钥匙是否在车门 1 米以内？”，把手机当作门禁钥匙的楼宇系统也是如此。一旦距离可以被伪造，这份信任就会崩塌——因此对 802.11bk 而言，问题不只是“如何测量距离”，而是“如何让伪造的距离失败”。"
+    },
+    {
+      "type": "prose",
+      "en": "Here is the attack. In a ranging exchange the two stations send each other special sounding packets (NDPs) and note four timestamps — t1 (initiator sends), t2 (responder receives), t3 (responder sends back), t4 (initiator receives). The round-trip, minus the responder's turnaround, gives the time-of-flight. An attacker who can predict what the sounding signal will look like can inject an earlier-looking copy of it, so the receiver detects a 'first arrival' sooner than the real one. That shaves time off the round-trip and makes the two devices look closer than they are — a distance-reduction attack that could pop a car lock from across the street.",
+      "zh": "攻击是这样的。在一次测距交换中，两个站点互相发送专门的探测包（NDP），并记录四个时间戳——t1（发起方发送）、t2（响应方接收）、t3（响应方回发）、t4（发起方接收）。往返时间减去响应方的处理转向时间，就得到飞行时间。如果攻击者能够预测探测信号长什么样，他就可以注入一个“看起来更早到达”的副本，让接收机把“首径到达”判定得比真实情况更早。这样一来往返时间被削掉一截，使两台设备看起来比实际更近——这就是缩短距离攻击，可能让攻击者在马路对面就把车锁打开。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant ISTA as Initiator (ISTA)\n    participant RSTA as Responder (RSTA)\n    Note over ISTA,RSTA: secure LTF setup shares a secret bit sequence\n    ISTA->>RSTA: I2R NDP (secure LTF)  -- record t1 at send\n    Note over RSTA: t2 = arrival of I2R NDP\n    RSTA->>ISTA: R2I NDP (secure LTF)  -- record t3 at send\n    Note over ISTA: t4 = arrival of R2I NDP\n    RSTA->>ISTA: R2I LMR frame (reports t2, t3)\n    Note over ISTA: time-of-flight = ((t4 - t1) - (t3 - t2)) / 2\n    Note over ISTA,RSTA: SIR-based check: a tampered LTF shows an SIR drop",
+      "zh": "sequenceDiagram\n    participant ISTA as 发起方 (ISTA)\n    participant RSTA as 响应方 (RSTA)\n    Note over ISTA,RSTA: 安全 LTF 协商：共享一段秘密比特序列\n    ISTA->>RSTA: I2R NDP（安全 LTF）-- 发送时记录 t1\n    Note over RSTA: t2 = I2R NDP 的到达时刻\n    RSTA->>ISTA: R2I NDP（安全 LTF）-- 发送时记录 t3\n    Note over ISTA: t4 = R2I NDP 的到达时刻\n    RSTA->>ISTA: R2I LMR 帧（上报 t2、t3）\n    Note over ISTA: 飞行时间 = ((t4 - t1) - (t3 - t2)) / 2\n    Note over ISTA,RSTA: 基于 SIR 的检测：被篡改的 LTF 会出现 SIR 下降"
+    },
+    {
+      "type": "prose",
+      "en": "The defence has a simple idea at its heart: make the timing signal unpredictable. The part of the packet used to pin down the exact arrival time is the LTF — the Long Training Field, a known pattern of symbols the receiver correlates against to find the leading edge of the signal. In ordinary ranging that pattern is public, so an attacker knows exactly what to re-inject. Secure ranging replaces it with a secure LTF (secure HE-LTF for the 802.11az/HE path, secure EHT-LTF for the 320 MHz EHT path) whose symbols are randomised from a secret, per-measurement pseudorandom sequence that only the two legitimate stations share.",
+      "zh": "防御的核心其实很简单：让用于计时的信号变得不可预测。数据包中用来精确锁定到达时刻的那一部分叫做 LTF——长训练字段（Long Training Field），它是一段接收机已知的符号样式，接收机通过与之做相关运算来找到信号的前沿。在普通测距中这段样式是公开的，攻击者因此清楚地知道该重放什么。安全测距则用安全 LTF 取而代之（在 802.11az/HE 路径上是 secure HE-LTF，在 320 MHz EHT 路径上是 secure EHT-LTF），它的符号由一段秘密的、每次测量都不同的伪随机序列随机化生成，而这段序列只有两个合法站点共享。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why randomising the LTF stops the attack: to forge an earlier arrival, the attacker must transmit a copy of the LTF before the real one finishes — but with a secret, per-block randomised sequence the attacker cannot predict the symbols in time. Each EHT-LTF repetition block uses a different randomised sequence, and the guard interval is replaced by a zero-power gap, leaving nothing public to copy.",
+      "zh": "为什么随机化 LTF 能挫败攻击：要伪造更早的到达，攻击者必须在真实 LTF 还没发完之前就发出它的副本——但面对一段秘密的、逐块随机化的序列，攻击者根本来不及预测这些符号。每个 EHT-LTF 重复块都使用不同的随机化序列，且保护间隔被替换为零功率间隙，使得没有任何公开内容可供复制。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 480 170\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><line x1=\"30\" y1=\"120\" x2=\"460\" y2=\"120\"/><polygon points=\"460,120 452,116 452,124\" fill=\"currentColor\" stroke=\"none\"/><text x=\"30\" y=\"140\" font-size=\"11\" stroke=\"none\" fill=\"currentColor\">time</text><rect x=\"60\" y=\"60\" width=\"70\" height=\"60\"/><text x=\"95\" y=\"95\" font-size=\"10\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">observe</text><text x=\"95\" y=\"50\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Tob</text><rect x=\"130\" y=\"60\" width=\"70\" height=\"60\"/><text x=\"165\" y=\"95\" font-size=\"10\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">compute</text><text x=\"165\" y=\"50\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Tc</text><rect x=\"200\" y=\"60\" width=\"60\" height=\"60\" stroke-dasharray=\"5 3\"/><text x=\"230\" y=\"95\" font-size=\"10\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">attack</text><text x=\"230\" y=\"50\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Ta</text><line x1=\"230\" y1=\"60\" x2=\"230\" y2=\"30\" stroke-dasharray=\"3 3\"/><text x=\"300\" y=\"33\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">forged early first-path</text><path d=\"M300 95 q40 -25 90 0\" stroke-dasharray=\"4 3\"/><text x=\"345\" y=\"112\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">SIR drops</text></svg>",
+      "caption": {
+        "en": "To forge an earlier first path, an attacker needs an observation window, a computation window, then an attack burst (Ta). Because the secure LTF is secret, the forged signal correlates poorly with the real one — injecting it raises interference and drives the measured SIR down, which a receiver can flag.",
+        "zh": "要伪造更早的首径，攻击者需要一段观察窗、一段计算窗，再发出一段攻击突发（Ta）。由于安全 LTF 是保密的，伪造信号与真实信号的相关性很差——注入它会抬高干扰、压低测得的 SIR，接收机据此即可发出告警。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Randomising the signal is the first line of defence; the second is catching an attack when someone tries anyway. 802.11bk adds an informative SIR-based attack-detection analysis: because the attacker's injected burst does not match the secret LTF, it acts as interference rather than signal. The standard gives a closed-form relation between the forged first-path power, the correlation of the attack signal, and the attack duration, showing that any attempt to plant a false early arrival drives the signal-to-interference ratio (SIR) down. A receiver that watches its SIR can therefore flag a measurement that looks tampered, on top of the protections already built into the secure LTF itself.",
+      "zh": "随机化信号是第一道防线；第二道防线是在有人仍要硬来时把攻击抓出来。802.11bk 增加了一份资料性（informative）的、基于 SIR 的攻击检测分析：由于攻击者注入的突发与秘密 LTF 并不匹配，它表现为干扰而非有用信号。标准给出了伪造首径功率、攻击信号相关性与攻击持续时长之间的闭式关系，表明任何想植入虚假早到达的尝试都会拉低信号干扰比（SIR）。因此，除了安全 LTF 本身已有的保护之外，一个持续监测自身 SIR 的接收机还能据此把疑似被篡改的测量标记出来。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Note the layering. Secure HE-LTF and secure EHT-LTF live in the PHY (how the training symbols are generated and demodulated), while the negotiation that shares the pseudorandom sequences — and decides who is triggered when — lives in the MAC ranging protocol. The SIR check is informative guidance, not a mandatory PHY mechanism, so vendors can implement detection as they see fit.",
+      "zh": "注意这里的分层。secure HE-LTF 与 secure EHT-LTF 位于 PHY 层（决定训练符号如何生成与解调），而共享伪随机序列、以及决定何时触发哪个站点的协商，则位于 MAC 层的测距协议中。SIR 检测属于资料性指引，并非强制的 PHY 机制，因此厂商可以按自己的方式实现检测。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Where the standard puts the pieces: secure LTF protocol, secure EHT-LTF generation, and the SIR analysis",
+        "zh": "标准把各部分放在哪里：安全 LTF 协议、secure EHT-LTF 生成与 SIR 分析"
+      },
+      "en": "Clause 11.21.6.4.5 ('Secure HE-LTF in the TB and non-TB ranging measurement exchange protocol') states that both trigger-based and non-trigger-based exchanges may use secure HE-LTF once the ISTA and RSTA establish a secure HE-LTF measurement setup (per 11.21.6.3.4); the frame sequences stay nominally the same except the HE Ranging I2R NDP and HE TB Ranging R2I NDP carry secure HE-LTF, and the two stations must share and communicate pseudorandom bit sequences used to generate and demodulate it. At PHY, 36.3.19b ('EHT-LTF field using secure EHT-LTF') specifies that the secure variant replaces the LTF sequence with a randomised sequence (36.3.19b.2, pseudorandom 64-QAM built from the octets defined in 11.21.6.4.5.4), replaces the conventional guard interval with a zero-power GI, maps all subcarriers with the P matrix (no single-stream pilots), applies no CSD, and gives each spatial stream a per-stream pseudorandom phase rotation; each EHT-LTF Repetition Block uses a different randomised sequence (SECURE_LTF_FLAG = 1). Annex AE (informative, 'SIR-based attack detection') models an attacker observing the secure LTF over Tob, computing over Tc, and transmitting over Ta to create a false early first path; with correlation rho and false-first-path power FFP it gives SIR(dB) = -FFP(dB) + 10·log10(rho^2·Ta) - 10·log10(1 - rho^2·Ta), so the attack inevitably depresses the measured SIR.",
+      "zh": "11.21.6.4.5 节（“TB 与非 TB 测距测量交换协议中的 secure HE-LTF”）规定：一旦 ISTA 与 RSTA 按 11.21.6.3.4 建立了 secure HE-LTF 测量设置，基于触发（TB）和非触发（non-TB）的交换都可以使用 secure HE-LTF；帧序列名义上保持不变，只是 HE Ranging I2R NDP 与 HE TB Ranging R2I NDP 改用 secure HE-LTF，且两个站点必须共享并传达用于生成与解调它的伪随机比特序列。在 PHY 层，36.3.19b 节（“使用 secure EHT-LTF 的 EHT-LTF 字段”）规定：安全变体把 LTF 序列替换为随机化序列（36.3.19b.2，用 11.21.6.4.5.4 定义的八位组构造的伪随机 64-QAM），把常规保护间隔替换为零功率 GI，用 P 矩阵映射所有子载波（无单流导频），不施加 CSD，并为每条空间流施加逐流的伪随机相位旋转；每个 EHT-LTF 重复块使用不同的随机化序列（SECURE_LTF_FLAG = 1）。附录 AE（资料性，“基于 SIR 的攻击检测”）建模了攻击者在 Tob 内观察 secure LTF、在 Tc 内计算、在 Ta 内发射以制造虚假早到达首径；在相关性 rho 与虚假首径功率 FFP 下，给出 SIR(dB) = -FFP(dB) + 10·log10(rho^2·Ta) - 10·log10(1 - rho^2·Ta)，因此攻击不可避免地会压低测得的 SIR。",
+      "cite": {
+        "pdf_id": "80211bk-2025",
+        "pages": [
+          59,
+          93,
+          102
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211bk-2025:11.21.6.4.5",
+    "80211bk-2025:36.3.19b",
+    "80211bk-2025:Annex AE"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        59
+      ],
+      "note": "11.21.6.4.5 Secure HE-LTF in TB/non-TB ranging measurement exchange protocol — secure setup per 11.21.6.3.4; NDPs carry secure HE-LTF; shared pseudorandom bit sequences"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        93
+      ],
+      "note": "36.3.19b EHT-LTF field using secure EHT-LTF — randomised sequence, zero-power GI, per-stream pseudorandom phase rotation; SECURE_LTF_FLAG=1; different randomised sequence per repetition block"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        102
+      ],
+      "note": "Annex AE (informative) SIR-based attack detection — observation/computation/attack periods; SIR(dB) closed form; attack depresses measured SIR"
+    }
+  ],
+  "track": "ranging"
+}

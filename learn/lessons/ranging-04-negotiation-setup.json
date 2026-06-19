@@ -1,0 +1,111 @@
+{
+  "id": "ranging-04-negotiation-setup",
+  "title": {
+    "en": "Agreeing How to Measure: Ranging Negotiation and Capabilities",
+    "zh": "协商如何测量：测距协商与能力交换"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Before two Wi-Fi devices can measure the distance between them, they have to agree on the rules. Fine Timing Measurement (FTM) ranging is a timestamp exchange: one side sends a frame, the other records when it arrives and replies, and the round-trip time reveals the distance. But none of those timestamps mean anything unless both devices first agree on how the measurement will run — which mode, how wide the channel is, how many measurements to take, and whether the sounding signal is cryptographically protected. That agreement is what the negotiation phase produces.",
+      "zh": "在两个 Wi-Fi 设备测量彼此距离之前，它们必须先就规则达成一致。精细时间测量（FTM）测距本质上是一次时间戳交换：一方发出一帧，另一方记录它到达的时刻并回复，往返时间便揭示了距离。但如果两个设备没有事先商定好测量该如何进行——用哪种模式、信道有多宽、测量多少次、探测信号是否经过密码保护——那么这些时间戳就毫无意义。协商阶段产出的正是这份“约定”。"
+    },
+    {
+      "type": "prose",
+      "en": "The two roles have names. The device that wants to know where it is — the one that initiates — is the ISTA (Initiating STA). The device it measures against, usually an access point, is the RSTA (Responding STA). Negotiation is a short exchange of two management frames: the ISTA sends an Initial FTM Request (IFTMR) carrying everything it is capable of, and the RSTA answers with an Initial FTM (IFTM) frame that picks the actual session parameters. The IFTM never asks for more than the IFTMR offered — the responder narrows the request down to what both sides can support.",
+      "zh": "两个角色各有名称。想知道自己位置、主动发起测量的设备称为 ISTA（发起方站点，Initiating STA）；与之配对、被用作参照（通常是接入点）的设备称为 RSTA（响应方站点，Responding STA）。协商是一段简短的、由两个管理帧构成的交换：ISTA 发送一个初始 FTM 请求帧（IFTMR），其中携带它所具备的全部能力；RSTA 则以一个初始 FTM 帧（IFTM）作答，从中选定本次会话真正采用的参数。IFTM 绝不会要求超出 IFTMR 所提供的范围——响应方只是把请求收敛到双方都能支持的交集。"
+    },
+    {
+      "type": "prose",
+      "en": "The heart of the offer is the Ranging Parameters element. It is a compact bit-packed field where the ISTA states its limits: the Format And Bandwidth subfield (which PHY format and how wide a channel, up to the new 320 MHz option this amendment adds), the maximum number of spatial streams and LTF repetitions it can transmit and receive, and feedback options. The RSTA replies with its own Ranging Parameters element, choosing each value as the smaller of what it supports and what the ISTA asked for. The element is also where bandwidth — the single biggest lever on ranging resolution — gets pinned down before any sounding happens.",
+      "zh": "整个“报价”的核心是测距参数元素（Ranging Parameters element）。它是一个紧凑的按位打包字段，ISTA 在其中声明自己的各项上限：Format And Bandwidth 子字段（采用哪种 PHY 格式、信道有多宽，包括本修正案新增的 320 MHz 选项）、它在发送和接收方向上所能支持的最大空时流数与 LTF 重复次数，以及反馈选项。RSTA 则用它自己的测距参数元素回应，每个取值都取“自身能力”与“ISTA 所请求值”二者中的较小者。带宽——这是影响测距分辨率的最大杠杆——也正是在这个元素里、在任何探测开始之前被敲定下来的。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Three modes, one negotiation. EDCA-based ranging contends for the medium like ordinary traffic — simple, no central scheduling. Trigger-based (TB) ranging lets the RSTA send a Trigger frame that schedules and coordinates the exchange, so one AP can efficiently range many clients at once using uplink OFDMA. Non-trigger-based (non-TB) ranging is the simpler one-to-one variant without that scheduling. The negotiation frames carry the subfields that select which of these you get.",
+      "zh": "三种模式，一次协商搞定。基于 EDCA 的测距像普通流量一样竞争信道——简单、无需集中调度。基于触发（TB，Trigger-Based）的测距由 RSTA 发送触发帧来调度并协调整个交换，从而让一个 AP 能借助上行 OFDMA 高效地同时对多个客户端测距。非触发（non-TB）测距则是没有这种调度、更简单的一对一变体。协商帧携带的子字段正是用来选定你最终采用其中哪一种模式的。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant I as ISTA (Initiating STA)\n    participant R as RSTA (Responding AP)\n    Note over I,R: Phase 1 - Negotiation\n    I->>R: IFTMR (Ranging Parameters: capabilities, BW, mode, secure-LTF request)\n    R->>I: IFTM (Ranging Parameters: chosen mode + BW + reps, Status = Successful)\n    Note over I,R: Phase 2 - Measurement (timestamp exchange)\n    R->>I: I2R sounding -> records t1 (depart), t4 (return)\n    I->>R: R2I sounding -> records t2 (arrive), t3 (depart)\n    R->>I: LMR (reports t1, t4 back to ISTA)\n    Note over I: RTT = (t4 - t1) - (t3 - t2); distance = c x RTT / 2",
+      "zh": "sequenceDiagram\n    participant I as ISTA (发起方站点)\n    participant R as RSTA (响应方 AP)\n    Note over I,R: 阶段一 - 协商\n    I->>R: IFTMR (测距参数: 能力, 带宽, 模式, 安全 LTF 请求)\n    R->>I: IFTM (测距参数: 选定模式 + 带宽 + 重复次数, 状态 = 成功)\n    Note over I,R: 阶段二 - 测量 (时间戳交换)\n    R->>I: I2R 探测 -> 记录 t1(发出), t4(返回)\n    I->>R: R2I 探测 -> 记录 t2(到达), t3(发出)\n    R->>I: LMR (将 t1, t4 回报给 ISTA)\n    Note over I: RTT = (t4 - t1) - (t3 - t2); 距离 = c x RTT / 2"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 520 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='20' fill='currentColor' stroke='none' font-size='13' font-weight='bold'>Ranging Parameters element (negotiated subfields)</text><rect x='10' y='40' width='110' height='40'/><text x='65' y='58' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>Format And</text><text x='65' y='72' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>Bandwidth</text><rect x='120' y='40' width='110' height='40'/><text x='175' y='58' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>Max R2I / I2R</text><text x='175' y='72' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>STS</text><rect x='230' y='40' width='110' height='40'/><text x='285' y='58' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>Max LTF</text><text x='285' y='72' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>Repetition / Total</text><rect x='340' y='40' width='80' height='40'/><text x='380' y='58' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>Feedback</text><text x='380' y='72' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>I2R / R2I</text><rect x='420' y='40' width='90' height='40' stroke-dasharray='4 3'/><text x='465' y='58' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>Secure HE-LTF</text><text x='465' y='72' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>subelement</text><text x='10' y='115' fill='currentColor' stroke='none' font-size='11'>ISTA states its maxima in the IFTMR ; RSTA assigns min(own, requested) in the IFTM.</text><path d='M65 130 L65 160' marker-end='url(#a)'/><path d='M285 130 L285 160' marker-end='url(#a)'/><text x='10' y='180' fill='currentColor' stroke='none' font-size='11'>Bandwidth (320 MHz option) sets the ranging resolution before any sounding begins.</text><defs><marker id='a' markerWidth='8' markerHeight='8' refX='4' refY='6' orient='auto'><path d='M1 1 L4 6 L7 1' stroke='currentColor'/></marker></defs></svg>",
+      "caption": {
+        "en": "The negotiated subfields of the Ranging Parameters element: the ISTA declares its maxima, the RSTA picks the per-subfield minimum, and the optional Secure HE-LTF subelement is itself part of the agreement.",
+        "zh": "测距参数元素中需要协商的各子字段：ISTA 声明各项上限，RSTA 逐字段取较小值，而可选的 Secure HE-LTF 子元素本身也是这份约定的一部分。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Protecting the sounding signal is also negotiated, not assumed. Secure HE-LTF replaces the predictable LTF training symbols with a randomized sequence so an attacker cannot forge an early echo and spoof a shorter distance — the topic of Lesson 3. But it only switches on if both ends opt in: a STA advertises support through the Secure HE-LTF Support bit in its RSNXE capabilities, and the ISTA then includes a Secure HE-LTF subelement inside the Ranging Parameters element of its IFTMR with the Required field set. The RSTA confirms by echoing that subelement with the Required field set in its IFTM. No matching handshake, no secure sounding — security here is opt-in on both sides.",
+      "zh": "对探测信号的保护同样是协商出来的，而非默认开启。安全 HE-LTF（Secure HE-LTF）用随机化序列替换掉可预测的 LTF 训练符号，使攻击者无法伪造一个提前到达的回波、从而谎报出更短的距离——这正是第 3 课讨论的问题。但它只在两端都选择启用时才会开启：站点通过其 RSNXE 能力字段中的 Secure HE-LTF Support 位来宣告支持，随后 ISTA 在其 IFTMR 帧的测距参数元素内包含一个 Secure HE-LTF 子元素，并将 Required 字段置位；RSTA 则在自己的 IFTM 帧中回应同样置位了 Required 字段的该子元素以确认。没有相互匹配的握手，就没有安全探测——这里的安全性需要双方共同选择加入。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What the IFTMR offers and the IFTM assigns, clause by clause",
+        "zh": "逐条看 IFTMR 的“报价”与 IFTM 的“指派”"
+      },
+      "en": "11.21.6.3.2 covers EDCA-based ranging negotiation: among other things the ISTA sets a Ranging Priority for DMG/EDMG formats, and an unassociated ISTA capable of receiving a Transmit Power Envelope sets TPE Update Capable to 1 (an associated ISTA sets it to 0). 11.21.6.3.3 covers TB and non-TB ranging: in the IFTMR the ISTA states maxima such as the 160 MHz Max R2I/I2R STS > 80 MHz subfields and the Immediate I2R Feedback bit, and may add a 320 MHz Ranging subelement (Max R2I/I2R NSS, Puncturing Pattern Support, Max R2I/I2R Repetition, Max LTF Total). On success the RSTA returns a Ranging Parameters element assigning, for each subfield, the smaller of its own capability and the IFTMR value (e.g., 'RSTA assigned R2I STS', RSTA assigned bandwidth not greater than requested); a 320 MHz request is answered with Format And Bandwidth value 8. 11.21.6.3.4 is the secure HE-LTF negotiation: with dot11SecureLTFImplemented true, the RSTA sets the Secure HE-LTF Support bit in the RSNXE and the ISTA includes a Secure HE-LTF subelement with Required = 1 in the IFTMR; the RSTA then echoes the subelement with Required = 1 in its IFTM to assign the secure mode. 9.4.2.300 defines the Ranging Parameters element format these procedures fill in, including the TPE Update Capable subfield.",
+      "zh": "11.21.6.3.2 规定基于 EDCA 的测距协商：例如 ISTA 针对 DMG/EDMG 格式设置 Ranging Priority；未关联且具备接收发射功率包络（TPE）能力的 ISTA 将 TPE Update Capable 置为 1（已关联的 ISTA 则置为 0）。11.21.6.3.3 规定 TB 与 non-TB 测距：ISTA 在 IFTMR 中声明各项上限，如 160 MHz Max R2I/I2R STS > 80 MHz 子字段、Immediate I2R Feedback 位，并可附加一个 320 MHz Ranging 子元素（Max R2I/I2R NSS、Puncturing Pattern Support、Max R2I/I2R Repetition、Max LTF Total）。协商成功时，RSTA 返回的测距参数元素会对每个子字段取“自身能力”与“IFTMR 取值”中的较小者（例如“RSTA 指派的 R2I STS”、RSTA 指派的带宽不得大于所请求值）；对 320 MHz 请求则以 Format And Bandwidth 取值 8 作答。11.21.6.3.4 为安全 HE-LTF 协商：在 dot11SecureLTFImplemented 为真时，RSTA 在 RSNXE 中置位 Secure HE-LTF Support，ISTA 在 IFTMR 中包含 Required=1 的 Secure HE-LTF 子元素；RSTA 随后在其 IFTM 中回应同样 Required=1 的该子元素以指派安全模式。9.4.2.300 则定义了上述流程所填写的测距参数元素格式，其中包括 TPE Update Capable 子字段。",
+      "cite": {
+        "pdf_id": "80211bk-2025",
+        "pages": [
+          28,
+          35,
+          36,
+          37,
+          38,
+          39
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211bk-2025:11.21.6.3.2",
+    "80211bk-2025:11.21.6.3.3",
+    "80211bk-2025:11.21.6.3.4",
+    "80211bk-2025:9.4.2.300"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        28
+      ],
+      "note": "9.4.2.300 Ranging Parameters element format - Format And Bandwidth, Max STS/LTF subfields, TPE Update Capable"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        35,
+        36
+      ],
+      "note": "11.21.6.3.2 Negotiation for EDCA based ranging - Ranging Priority, TPE Update Capable in IFTMR/IFTM"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        36,
+        37,
+        38,
+        39
+      ],
+      "note": "11.21.6.3.3 Negotiation for TB and non-TB ranging - ISTA maxima vs RSTA assigned values, 320 MHz Ranging subelement"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        39
+      ],
+      "note": "11.21.6.3.4 Negotiation for secure HE-LTF - Secure HE-LTF Support bit, Secure HE-LTF subelement Required field opt-in"
+    }
+  ],
+  "track": "ranging"
+}

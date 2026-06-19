@@ -1,0 +1,100 @@
+{
+  "id": "ranging-01-time-of-flight-ftm-basics",
+  "title": {
+    "en": "How Wi-Fi Measures Distance: Time-of-Flight and the FTM Exchange",
+    "zh": "Wi-Fi 如何测距：飞行时间与 FTM 帧交换"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "When your phone tells an app how far away another device is, it usually is not guessing from signal strength. It is timing light. Radio waves travel at the speed of light — about 30 cm every nanosecond — so if two devices can agree on exactly how long a signal took to fly between them, they can multiply that time by the speed of light and read off the distance. Wi-Fi's name for this measurement is ranging, and the protocol that does it is Fine Timing Measurement, or FTM.",
+      "zh": "当你的手机告诉某个 App 另一台设备有多远时，它通常并不是靠信号强度去“猜”，而是在为光计时。无线电波以光速传播——大约每纳秒 30 厘米——所以只要两台设备能就“信号在它们之间飞行了多久”达成一致，就能用这段时间乘以光速，直接读出距离。Wi-Fi 把这种测量称为测距（ranging），完成测距的协议叫做精细时间测量（Fine Timing Measurement，简称 FTM）。"
+    },
+    {
+      "type": "prose",
+      "en": "Two roles drive the exchange. The side that wants the distance is the initiating station (ISTA) — think of your phone asking \"how far am I?\". The side that answers is the responding station (RSTA), often an access point or another anchor with a known position. The ISTA starts the conversation; the RSTA replies. Once the four timestamps are collected, the ISTA does the arithmetic.",
+      "zh": "整个交换由两个角色驱动。想要知道距离的一方叫发起站（initiating STA，ISTA）——可以想象成你的手机在问“我离它多远？”。回答的一方叫响应站（responding STA，RSTA），通常是接入点（AP）或位置已知的某个锚点。由 ISTA 发起对话，RSTA 作出回应；当四个时间戳收集齐全后，由 ISTA 完成计算。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why round-trip and not one-way? Because the two devices do not share a clock. If the ISTA stamped \"sent at 10:00:00.000000000\" and the RSTA stamped \"received at 10:00:00.000000004\", those two clocks could be off by far more than the few nanoseconds we are trying to measure. Round-trip timing sidesteps this: each device only ever subtracts two of its own timestamps, so the clocks never have to agree.",
+      "zh": "为什么用往返而不用单程？因为这两台设备并不共享同一个时钟。如果 ISTA 标记“于 10:00:00.000000000 发出”，而 RSTA 标记“于 10:00:00.000000004 收到”，这两个时钟之间的偏差可能远大于我们想测量的那区区几纳秒。往返计时巧妙地绕开了这个问题：每台设备永远只做“自己两个时间戳相减”，因此两个时钟根本不需要对齐。"
+    },
+    {
+      "type": "prose",
+      "en": "Here is the heart of it. The ISTA sends a sounding signal and records the moment it leaves as t1. The RSTA records the moment that signal arrives as t2. The RSTA then sends its own reply, recording the moment it leaves as t3, and the ISTA records the moment the reply arrives as t4. Four timestamps: t1 and t4 measured on the ISTA's clock, t2 and t3 measured on the RSTA's clock.",
+      "zh": "下面是它的核心。ISTA 发出一个探测信号，并把信号离开的那一刻记为 t1。RSTA 把该信号到达的那一刻记为 t2。随后 RSTA 发出自己的回复，把回复离开的那一刻记为 t3，而 ISTA 把回复到达的那一刻记为 t4。四个时间戳：t1 和 t4 用 ISTA 的时钟测量，t2 和 t3 用 RSTA 的时钟测量。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant ISTA as ISTA (your phone)\n    participant RSTA as RSTA (AP / anchor)\n    Note over ISTA: stamp t1 = signal departs\n    ISTA->>RSTA: sounding signal (I2R)\n    Note over RSTA: stamp t2 = signal arrives\n    Note over RSTA: stamp t3 = reply departs\n    RSTA->>ISTA: reply signal (R2I)\n    Note over ISTA: stamp t4 = reply arrives\n    Note over ISTA,RSTA: RTT = (t4 - t1) - (t3 - t2)\n    Note over ISTA: distance = (RTT / 2) x speed of light",
+      "zh": "sequenceDiagram\n    participant ISTA as ISTA（你的手机）\n    participant RSTA as RSTA（AP / 锚点）\n    Note over ISTA: 记录 t1 = 信号发出\n    ISTA->>RSTA: 探测信号 (I2R)\n    Note over RSTA: 记录 t2 = 信号到达\n    Note over RSTA: 记录 t3 = 回复发出\n    RSTA->>ISTA: 回复信号 (R2I)\n    Note over ISTA: 记录 t4 = 回复到达\n    Note over ISTA,RSTA: 往返时间 RTT = (t4 - t1) - (t3 - t2)\n    Note over ISTA: 距离 = (RTT / 2) × 光速"
+    },
+    {
+      "type": "prose",
+      "en": "Now the arithmetic. The total time from t1 to t4 (that is, t4 − t1) includes two things: the signal actually flying out and back, plus the time the RSTA spent thinking before it replied — the turnaround, which is exactly t3 − t2. Subtract the turnaround and what remains is pure flight time, there and back: RTT = (t4 − t1) − (t3 − t2). Halve it to get one-way flight time, then multiply by the speed of light, and you have the distance. The standard writes this same round-trip definition for the FTM measurement sounding phase.",
+      "zh": "现在来算。从 t1 到 t4 的总时间（即 t4 − t1）包含两部分：信号真正飞出去又飞回来的时间，加上 RSTA 在回复前“思考”所花的时间——也就是周转时间，正好等于 t3 − t2。把周转时间减掉，剩下的就是纯粹的往返飞行时间：RTT = (t4 − t1) − (t3 − t2)。再除以二得到单程飞行时间，乘以光速，就是距离了。标准在 FTM 的测量探测阶段给出了完全相同的往返时间定义。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 420 170' xmlns='http://www.w3.org/2000/svg' role='img'><line x1='40' y1='35' x2='40' y2='150' stroke='currentColor' stroke-width='1.5'/><line x1='380' y1='35' x2='380' y2='150' stroke='currentColor' stroke-width='1.5'/><text x='40' y='25' fill='currentColor' font-size='12' text-anchor='middle'>ISTA</text><text x='380' y='25' fill='currentColor' font-size='12' text-anchor='middle'>RSTA</text><line x1='40' y1='55' x2='380' y2='80' stroke='currentColor' stroke-width='1.5'/><polygon points='380,80 369,73 371,82' fill='currentColor'/><line x1='380' y1='110' x2='40' y2='135' stroke='currentColor' stroke-width='1.5'/><polygon points='40,135 51,128 49,137' fill='currentColor'/><circle cx='40' cy='55' r='3' fill='currentColor'/><circle cx='40' cy='135' r='3' fill='currentColor'/><circle cx='380' cy='80' r='3' fill='currentColor'/><circle cx='380' cy='110' r='3' fill='currentColor'/><text x='30' y='58' fill='currentColor' font-size='12' text-anchor='end'>t1</text><text x='30' y='138' fill='currentColor' font-size='12' text-anchor='end'>t4</text><text x='390' y='83' fill='currentColor' font-size='12'>t2</text><text x='390' y='113' fill='currentColor' font-size='12'>t3</text><text x='210' y='60' fill='currentColor' font-size='10' text-anchor='middle'>signal out (I2R)</text><text x='210' y='128' fill='currentColor' font-size='10' text-anchor='middle'>reply back (R2I)</text></svg>",
+      "caption": {
+        "en": "The four FTM timestamps. t1 and t4 are read on the ISTA's clock; t2 and t3 on the RSTA's clock. The gap t3 − t2 is the RSTA's turnaround, removed to leave pure flight time.",
+        "zh": "FTM 的四个时间戳。t1 与 t4 取自 ISTA 的时钟，t2 与 t3 取自 RSTA 的时钟。t3 − t2 这段间隔是 RSTA 的周转时间，将其减去后即得到纯飞行时间。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice what the equation never does: it never compares an ISTA timestamp directly against an RSTA timestamp. (t4 − t1) uses only the ISTA's clock; (t3 − t2) uses only the RSTA's clock. That is the whole trick of round-trip ranging — and it is the foundation that 802.11bk builds on when it scales FTM up to 320 MHz channels for sharper distance resolution.",
+      "zh": "请注意这个公式从不做的事：它从不把 ISTA 的时间戳与 RSTA 的时间戳直接相比较。(t4 − t1) 只用 ISTA 的时钟，(t3 − t2) 只用 RSTA 的时钟。这正是往返测距的全部诀窍——也是 802.11bk 在把 FTM 扩展到 320 MHz 信道、以获得更精细的距离分辨率时所依托的基础。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact round-trip definition and the I2R / R2I directions",
+        "zh": "精确的往返时间定义与 I2R / R2I 方向"
+      },
+      "en": "In the non-TB ranging measurement sounding phase (11.21.6.4.4), the standard names the outbound sounding the I2R NDP (initiator-to-responder null data PPDU) and the reply the R2I NDP. The four timestamps are: t1 = TOD (time of departure) of the I2R NDP, t2 = TOA (time of arrival) of the I2R NDP at the RSTA, t3 = TOD of the R2I NDP, t4 = TOA of the R2I NDP back at the ISTA. The round-trip time observed by the ISTA is defined as RTT_ISTA = (t4 − t1) − (t3′ − t2′), where t3′ and t2′ are t3 and t2 converted from the RSTA's time basis into the ISTA's time basis — confirming the clocks need not be synchronised, only reported. The directions and TOA types are negotiated through the Ranging Parameters element (9.4.2.300), and the ISTA/RSTA roles and FTM vocabulary are fixed in the definitions clause (3.2).",
+      "zh": "在非 TB 测距的测量探测阶段（11.21.6.4.4）中，标准把外发的探测信号命名为 I2R NDP（发起方到响应方的空数据 PPDU），把回复命名为 R2I NDP。四个时间戳为：t1 = I2R NDP 的发出时间（TOD），t2 = I2R NDP 到达 RSTA 的到达时间（TOA），t3 = R2I NDP 的发出时间（TOD），t4 = R2I NDP 回到 ISTA 的到达时间（TOA）。ISTA 观测到的往返时间定义为 RTT_ISTA = (t4 − t1) − (t3′ − t2′)，其中 t3′ 与 t2′ 是把 t3、t2 从 RSTA 的时基换算到 ISTA 时基后的值——这印证了两个时钟无需同步，只需上报即可。方向与 TOA 类型通过测距参数元素（Ranging Parameters element，9.4.2.300）协商，而 ISTA/RSTA 角色及 FTM 术语则固定于定义条款（3.2）。",
+      "cite": {
+        "pdf_id": "80211bk-2025",
+        "pages": [
+          56
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211bk-2025:3.2",
+    "80211bk-2025:11.21.6.4",
+    "80211bk-2025:9.4.2.300"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        19
+      ],
+      "note": "3.2 Definitions specific to IEEE 802.11 — ranging / FTM / ISTA / RSTA vocabulary (HE-LTF repetitions, Null-SAC-HE-LTF reference ISTA-to-RSTA ranging)"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        56
+      ],
+      "note": "11.21.6.4.4 Non-TB ranging measurement sounding phase — Figure 11-59 t1..t4 (TOD/TOA of I2R/R2I NDP) and RTT_ISTA = (t4-t1)-(t3'-t2')"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        28
+      ],
+      "note": "9.4.2.300 Ranging Parameters element — Figure 9-1044 fields incl. R2I/I2R TOA Type negotiated for the FTM session"
+    }
+  ],
+  "track": "ranging"
+}

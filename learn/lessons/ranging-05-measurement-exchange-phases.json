@@ -1,0 +1,123 @@
+{
+  "id": "ranging-05-measurement-exchange-phases",
+  "title": {
+    "en": "The Measurement in Motion: Polling, Sounding, and Reporting",
+    "zh": "测量的完整流程：轮询、探测与上报"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In Lesson 4 the initiating station (ISTA) and the responding station (RSTA) negotiated the terms of a ranging session: timing, bandwidth, feedback type. Now the session actually runs. In trigger-based (TB) ranging the RSTA is in charge, and one round of measurement is a tidy three-act play — a polling/sounding/reporting triplet. Act one checks who's ready, act two flies the actual ranging signals back and forth, and act three ships the timestamps home so a distance can finally be computed.",
+      "zh": "在第 4 课里，发起站（ISTA）与响应站（RSTA）协商了一次测距会话的各项条件：时序、带宽、反馈类型。现在，会话要真正运行起来了。在基于触发（TB，trigger-based）的测距中，RSTA 是“导演”，一轮测量就像一出工整的三幕剧——一个“轮询/探测/上报三元组”（polling/sounding/reporting triplet）。第一幕确认谁已就绪，第二幕让真正的测距信号往返飞行，第三幕把时间戳送回来，最终算出距离。"
+    },
+    {
+      "type": "prose",
+      "en": "Act one is the Polling phase. The RSTA sends a Poll Ranging Trigger frame that allocates a separate resource unit (RU) to each client it wants to range. Every addressed ISTA that intends to take part answers with a tiny CTS-to-self in its own RU — that is its way of saying \"present and ready.\" An ISTA that stays silent is simply skipped this round. If there are too many clients for one poll, the RSTA flags More TF and schedules extra triplets, so unaddressed clients can even doze until their turn.",
+      "zh": "第一幕是轮询阶段（Polling phase）。RSTA 发送一帧 Poll Ranging Trigger，为每个它想测距的客户端各分配一个独立的资源单元（RU，resource unit）。每个被点名、且打算参与的 ISTA 都在自己的 RU 里回一个小小的 CTS-to-self——这就是它在说“我在，已就绪”。保持沉默的 ISTA，本轮直接被跳过。如果客户端太多、一次轮询装不下，RSTA 就会置位 More TF 并安排额外的三元组，未被点名的客户端甚至可以先打盹，等轮到自己再醒来。"
+    },
+    {
+      "type": "prose",
+      "en": "Act two is the Measurement sounding phase — the heart of the whole thing, beginning a SIFS after polling. The RSTA sends a Sounding Ranging Trigger frame, and each ready ISTA fires an uplink ranging null data packet (the I2R NDP, ISTA-to-RSTA). A SIFS after the RSTA hears the last one, it sends a Ranging NDP Announcement frame and then its own downlink R2I NDP back to the clients. These NDPs carry no data — they exist purely to be timed. Four timestamps are captured: t1 (ISTA sends I2R), t2 (RSTA receives it), t3 (RSTA sends R2I), t4 (ISTA receives it).",
+      "zh": "第二幕是测量探测阶段（Measurement sounding phase）——整出戏的核心，在轮询之后一个 SIFS 开始。RSTA 发送一帧 Sounding Ranging Trigger，每个就绪的 ISTA 随即打出一个上行测距空数据包（I2R NDP，即 ISTA 到 RSTA 方向）。RSTA 收到最后一个 I2R NDP 后一个 SIFS，发出一帧 Ranging NDP Announcement，紧接着把自己的下行 R2I NDP 回送给各客户端。这些 NDP 不承载任何数据——它们存在的唯一目的就是被“计时”。整个过程捕获四个时间戳：t1（ISTA 发出 I2R）、t2（RSTA 收到）、t3（RSTA 发出 R2I）、t4（ISTA 收到）。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant ISTA as ISTA (client)\n    participant RSTA as RSTA (AP)\n    Note over ISTA,RSTA: Polling phase\n    RSTA->>ISTA: Poll Ranging Trigger (one RU per client)\n    ISTA->>RSTA: CTS-to-self (\"present & ready\")\n    Note over ISTA,RSTA: Measurement sounding phase (SIFS later)\n    RSTA->>ISTA: Sounding Ranging Trigger\n    Note over ISTA: capture t1 = TOD(I2R NDP)\n    ISTA->>RSTA: I2R NDP\n    Note over RSTA: capture t2 = TOA(I2R NDP)\n    RSTA->>ISTA: Ranging NDP Announcement\n    Note over RSTA: capture t3 = TOD(R2I NDP)\n    RSTA->>ISTA: R2I NDP\n    Note over ISTA: capture t4 = TOA(R2I NDP)\n    Note over ISTA,RSTA: Measurement reporting phase (SIFS later)\n    RSTA->>ISTA: R2I LMR (carries t2, t3)\n    Note over ISTA: RTT = (t4 - t1) - (t3 - t2) -> distance",
+      "zh": "sequenceDiagram\n    participant ISTA as ISTA（客户端）\n    participant RSTA as RSTA（AP）\n    Note over ISTA,RSTA: 轮询阶段\n    RSTA->>ISTA: Poll Ranging Trigger（每客户端一个 RU）\n    ISTA->>RSTA: CTS-to-self（“我在，已就绪”）\n    Note over ISTA,RSTA: 测量探测阶段（一个 SIFS 后）\n    RSTA->>ISTA: Sounding Ranging Trigger\n    Note over ISTA: 捕获 t1 = TOD(I2R NDP)\n    ISTA->>RSTA: I2R NDP\n    Note over RSTA: 捕获 t2 = TOA(I2R NDP)\n    RSTA->>ISTA: Ranging NDP Announcement\n    Note over RSTA: 捕获 t3 = TOD(R2I NDP)\n    RSTA->>ISTA: R2I NDP\n    Note over ISTA: 捕获 t4 = TOA(R2I NDP)\n    Note over ISTA,RSTA: 测量上报阶段（一个 SIFS 后）\n    RSTA->>ISTA: R2I LMR（携带 t2、t3）\n    Note over ISTA: RTT = (t4 - t1) - (t3 - t2) -> 距离"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why two clocks and four timestamps? t1 and t4 are read on the ISTA's clock; t2 and t3 on the RSTA's. By subtracting the RSTA's own processing gap (t3 - t2) from the ISTA's observed round-trip (t4 - t1), the formula cancels out the unknown clock offset between the two devices. What remains is twice the time of flight — and that, times the speed of light, is the distance.",
+      "zh": "为什么要两套时钟、四个时间戳？t1 和 t4 是按 ISTA 的时钟读出的，t2 和 t3 按 RSTA 的时钟读出。用 ISTA 观测到的往返时间（t4 - t1）减去 RSTA 自身的处理间隔（t3 - t2），公式恰好抵消了两台设备之间未知的时钟偏差。剩下的就是两倍的飞行时间——再乘以光速，就得到了距离。"
+    },
+    {
+      "type": "prose",
+      "en": "Act three is the Measurement reporting phase, a SIFS after sounding. The catch is that the ISTA only knows t1 and t4; the RSTA holds t2 and t3. So the RSTA transmits an R2I LMR (Location Measurement Report) frame carrying its timestamps down to the ISTA, which now has all four values and can solve the round-trip equation. If bidirectional feedback was negotiated, the RSTA also sends a Report Ranging Trigger frame, and each ISTA replies with its own I2R LMR so the RSTA can compute distance too. LMRs ride in Action No-Ack frames — fire-and-forget, never retransmitted.",
+      "zh": "第三幕是测量上报阶段（Measurement reporting phase），在探测之后一个 SIFS 开始。关键在于：ISTA 只知道 t1 和 t4，t2 和 t3 攥在 RSTA 手里。于是 RSTA 发送一帧 R2I LMR（位置测量报告，Location Measurement Report），把自己的时间戳下发给 ISTA；至此 ISTA 凑齐了四个值，就能求解往返方程。如果协商了双向反馈，RSTA 还会发一帧 Report Ranging Trigger，每个 ISTA 回送自己的 I2R LMR，这样 RSTA 也能算出距离。LMR 承载在 Action No-Ack 帧里——发完即忘，从不重传。"
+    },
+    {
+      "type": "prose",
+      "en": "Non-TB ranging is the simpler cousin: there is no Polling phase and no AP-driven scheduling. A single ISTA, whenever the medium is free, just kicks off its own Ranging NDP Announcement frame followed by its I2R NDP; the RSTA replies with an R2I NDP and an LMR. Same t1..t4, same round-trip math — only two phases (sounding + reporting) and one client at a time. TB ranging is what you reach for when one AP must locate many clients efficiently; non-TB is the lightweight one-on-one path.",
+      "zh": "非 TB 测距（Non-TB ranging）是它更简单的“表亲”：没有轮询阶段，也没有 AP 主导的调度。单个 ISTA 只要信道空闲，就自行发起——先发一帧 Ranging NDP Announcement，紧接着发出 I2R NDP；RSTA 回以一个 R2I NDP 和一帧 LMR。同样的 t1..t4，同样的往返计算——只是只有两个阶段（探测 + 上报），且一次只服务一个客户端。当一个 AP 需要高效地定位众多客户端时，就用 TB 测距；非 TB 则是轻量的一对一路径。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "There is even a passive variant. In passive TB ranging, a quiet bystander (a PSTA) never transmits at all — it just listens to an ISTA-RSTA exchange, records when the I2R and R2I NDPs arrive (t5 and t6), and combines those with the broadcast timestamps to compute its own differential distance to the pair. Locating yourself without ever keying the radio: handy when many devices need positions but the air is busy.",
+      "zh": "甚至还有一种“被动”变体。在被动 TB 测距（passive TB ranging）中，一个安静的旁观者（PSTA）完全不发射任何信号——它只是“偷听”某次 ISTA–RSTA 交换，记录 I2R 与 R2I NDP 到达自己的时刻（t5 和 t6），再把它们与广播出来的时间戳结合，算出自己到这一对设备的差分距离。不开口（不发射）就能给自己定位：当大量设备都需要位置、而空中又很拥挤时，这非常实用。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact t1..t4 capture rule and the RTT formula",
+        "zh": "t1..t4 的精确捕获规则与 RTT 公式"
+      },
+      "en": "Clause 11.21.6.4.3.3 states it precisely: the ISTA records the time the I2R NDP is transmitted (t1 = TOD), the RSTA captures the I2R NDP's arrival (t2 = TOA) and records the R2I NDP's transmit time (t3 = TOD), and the ISTA finally captures the R2I NDP's arrival (t4 = TOA). t2 and t3 are measured on the RSTA's clock without frequency-offset correction. The ISTA computes RTT_ISTA = [(t4 - t1) - (t3' - t2')], where t2' and t3' are t2 and t3 converted from the RSTA's time basis to the ISTA's (the conversion is implementation-dependent, using the CFO when present). If I2R LMR feedback was negotiated, the RSTA symmetrically computes RTT_RSTA = [(t4' - t1') - (t3 - t2)]. The reporting phase (11.21.6.4.3.4) carries these results in LMR frames, whose Dialog Token matches the Sounding Dialog Token Number of the sounding instance they came from; LMRs are Action No-Ack and are neither acknowledged nor retransmitted. Non-TB ranging (11.21.6.4.4.2 / 11.21.6.4.4.3) uses the identical t1..t4 capture and RTT definition but drops the polling/scheduling layer. In passive TB ranging (11.21.6.4.8) the PSTA adds t5 = TOA(I2R NDP) and t6 = TOA(R2I NDP) and computes a differential time-of-flight DToF_PRI = t6 - t5 - 0.5*t3' + 0.5*t2' - 0.5*t4' + 0.5*t1', which times the speed of light yields its differential distance to the RSTA and ISTA.",
+      "zh": "11.21.6.4.3.3 节给出了精确定义：ISTA 记录 I2R NDP 的发出时刻（t1 = TOD），RSTA 捕获 I2R NDP 的到达时刻（t2 = TOA）并记录 R2I NDP 的发出时刻（t3 = TOD），ISTA 最后捕获 R2I NDP 的到达时刻（t4 = TOA）。t2、t3 按 RSTA 的时钟测量，不做频偏校正。ISTA 计算 RTT_ISTA = [(t4 - t1) - (t3' - t2')]，其中 t2'、t3' 是 t2、t3 从 RSTA 时基转换到 ISTA 时基后的值（转换方式与实现相关，存在 CFO 时会用到它）。若协商了 I2R LMR 反馈，RSTA 对称地计算 RTT_RSTA = [(t4' - t1') - (t3 - t2)]。上报阶段（11.21.6.4.3.4）把这些结果装入 LMR 帧，其 Dialog Token 与对应探测实例的 Sounding Dialog Token Number 一致；LMR 是 Action No-Ack 帧，既不被确认也不重传。非 TB 测距（11.21.6.4.4.2 / 11.21.6.4.4.3）采用完全相同的 t1..t4 捕获与 RTT 定义，只是去掉了轮询/调度这一层。在被动 TB 测距（11.21.6.4.8）中，PSTA 额外测得 t5 = TOA(I2R NDP) 与 t6 = TOA(R2I NDP)，并计算差分飞行时间 DToF_PRI = t6 - t5 - 0.5*t3' + 0.5*t2' - 0.5*t4' + 0.5*t1'，乘以光速即得它到 RSTA 与 ISTA 的差分距离。",
+      "cite": {
+        "pdf_id": "80211bk-2025",
+        "pages": [
+          47,
+          50,
+          80
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        44
+      ],
+      "note": "11.21.6.4.3.2 Polling phase of TB ranging — Poll Ranging Trigger frame, per-ISTA RU, CTS-to-self, More TF / extra triplets"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        45,
+        46,
+        47
+      ],
+      "note": "11.21.6.4.3.3 Measurement sounding phase — Sounding Ranging Trigger, I2R NDP, Ranging NDP Announcement, R2I NDP; t1..t4 capture and RTT_ISTA / RTT_RSTA formulas"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        50,
+        51
+      ],
+      "note": "11.21.6.4.3.4 Measurement reporting phase — R2I/I2R LMR frames, Report Ranging Trigger, Dialog Token = Sounding Dialog Token Number, Action No-Ack"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        53,
+        55,
+        57
+      ],
+      "note": "11.21.6.4.4.2 / 11.21.6.4.4.3 Non-TB ranging measurement sounding and reporting — ISTA-initiated NDP Announcement + I2R NDP, R2I NDP, LMR; same t1..t4; immediate vs delayed reporting"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        77,
+        79,
+        80
+      ],
+      "note": "11.21.6.4.8 Passive TB ranging — Passive Sounding Ranging Trigger, PSTA listening, t5/t6, differential time-of-flight DToF_PRI"
+    }
+  ],
+  "covers": [
+    "80211bk-2025:11.21.6.4.3.2",
+    "80211bk-2025:11.21.6.4.3.3",
+    "80211bk-2025:11.21.6.4.3.4",
+    "80211bk-2025:11.21.6.4.4.2",
+    "80211bk-2025:11.21.6.4.4.3",
+    "80211bk-2025:11.21.6.4.8"
+  ],
+  "track": "ranging"
+}

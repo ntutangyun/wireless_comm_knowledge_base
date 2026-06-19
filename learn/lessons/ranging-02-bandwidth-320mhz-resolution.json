@@ -1,0 +1,99 @@
+{
+  "id": "ranging-02-bandwidth-320mhz-resolution",
+  "title": {
+    "en": "Why Wider Channels Mean Sharper Distance: 320 MHz and the EHT Ranging NDP",
+    "zh": "为什么更宽的信道带来更精确的距离：320 MHz 与 EHT 测距 NDP"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Wi-Fi ranging measures distance with a stopwatch, not a tape measure. Two devices time-stamp a known signal as it leaves one antenna and arrives at the other; multiply that flight time by the speed of light and you have a distance. Radio waves travel about 30 cm every nanosecond, so the whole game comes down to one question: how precisely can a receiver pin down the exact instant a pulse arrived?",
+      "zh": "Wi-Fi 测距是用“秒表”而不是“卷尺”来测量距离。两台设备给一个已知信号打上时间戳——记录它离开一根天线、到达另一根天线的时刻；把这段飞行时间乘以光速，就得到了距离。无线电波每纳秒大约传播 30 厘米，所以整件事归结为一个问题：接收机到底能多精确地确定某个脉冲“到达的那一瞬间”？"
+    },
+    {
+      "type": "prose",
+      "en": "Here is the key intuition: a wider channel makes a shorter, sharper pulse. Think of the channel bandwidth as how fast you are allowed to wave a flashlight on and off — more bandwidth lets you make a crisper, narrower flash, and a narrow flash has an obvious, well-defined edge you can time. A signal spread over 320 MHz produces a time-domain pulse roughly half as wide as one over 160 MHz, so its leading edge — the moment of arrival — can be located about twice as precisely. The rough rule of thumb: doubling the bandwidth roughly halves the timing ambiguity, and since time is distance, it roughly halves the distance error too.",
+      "zh": "核心直觉是这样的：信道越宽，脉冲就越短、越尖锐。可以把信道带宽想象成你被允许“开关手电筒”的速度上限——带宽越大，你就能打出越干脆、越窄的闪光，而越窄的闪光有越明确的边沿，便于精确计时。一个铺展在 320 MHz 上的信号，其时域脉冲宽度大约只有 160 MHz 信号的一半，因此它的前沿——也就是到达时刻——可以被定位得大约精确一倍。一个粗略的经验法则是：带宽翻一倍，定时的模糊度大约减半；而时间即距离，所以距离误差也大约减半。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "802.11az already brought fine timing measurement (FTM) ranging up to 160 MHz channels using HE (Wi-Fi 6) sounding signals. What 802.11bk adds is reach into the wider 320 MHz channels of Wi-Fi 7 by defining EHT-format ranging sounding signals — so the same stopwatch idea now runs at double the bandwidth, for finer time and distance resolution. The amendment's own title says it plainly: '320 MHz Positioning'.",
+      "zh": "802.11az 已经把精细定时测量（FTM）测距带到了最高 160 MHz 的信道，使用的是 HE（Wi-Fi 6）探测信号。802.11bk 新增的，是把测距延伸到 Wi-Fi 7 更宽的 320 MHz 信道——它定义了 EHT 格式的测距探测信号，于是同样的“秒表”思路如今能在双倍带宽上运行，从而获得更精细的时间与距离分辨率。这份修正案的标题就直白地写着：“320 MHz Positioning（320 MHz 定位）”。"
+    },
+    {
+      "type": "prose",
+      "en": "The sounding signal itself is a null data packet (NDP) — a packet with a preamble but no payload, present only so the receiver can measure its arrival time. 802.11bk defines two new ones carried in the EHT (Wi-Fi 7) PHY format: the EHT Ranging NDP, sent as an EHT MU PPDU whose only supported channel widths are 320 MHz-1 and 320 MHz-2, and the EHT TB Ranging NDP, an EHT trigger-based PPDU used when the access point solicits several stations at once. Both strip out the data field and rely on EHT long training fields (EHT-LTFs) — the precise reference symbols a receiver lines up against to find the exact moment of arrival.",
+      "zh": "探测信号本身是一个空数据包（NDP）——一个只有前导码、没有有效载荷的帧，它存在的唯一目的就是让接收机测量它的到达时间。802.11bk 定义了两种用 EHT（Wi-Fi 7）物理层格式承载的新 NDP：EHT 测距 NDP，以 EHT MU PPDU 形式发送，其唯一支持的信道带宽就是 320 MHz-1 和 320 MHz-2；以及 EHT TB 测距 NDP，一种基于触发（trigger-based）的 EHT PPDU，用于接入点同时召集多个站点测距的场景。两者都去掉了数据字段，依赖 EHT 长训练字段（EHT-LTF）——接收机正是借助这些精确的参考符号来对齐、找出确切的到达时刻。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant ISTA as Initiating STA\n    participant RSTA as Responding STA (AP)\n    Note over ISTA,RSTA: negotiated to use 320 MHz EHT ranging\n    ISTA->>RSTA: EHT Ranging NDP (departs at t1)\n    Note over RSTA: arrives at t2 (timed via EHT-LTF)\n    RSTA->>ISTA: EHT (TB) Ranging NDP (departs at t3)\n    Note over ISTA: arrives at t4 (timed via EHT-LTF)\n    Note over ISTA,RSTA: RTT = (t4 - t1) - (t3 - t2)\n    Note over ISTA,RSTA: distance = (RTT / 2) x c",
+      "zh": "sequenceDiagram\n    participant ISTA as 发起站点 (ISTA)\n    participant RSTA as 响应站点 (AP)\n    Note over ISTA,RSTA: 已协商使用 320 MHz EHT 测距\n    ISTA->>RSTA: EHT 测距 NDP（t1 发出）\n    Note over RSTA: t2 到达（借 EHT-LTF 计时）\n    RSTA->>ISTA: EHT (TB) 测距 NDP（t3 发出）\n    Note over ISTA: t4 到达（借 EHT-LTF 计时）\n    Note over ISTA,RSTA: 往返时延 RTT = (t4 - t1) - (t3 - t2)\n    Note over ISTA,RSTA: 距离 = (RTT / 2) x 光速"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 420 230' fill='none' stroke='currentColor' stroke-width='2'><line x1='30' y1='100' x2='400' y2='100' stroke-width='1'/><line x1='30' y1='200' x2='400' y2='200' stroke-width='1'/><text x='30' y='25' fill='currentColor' stroke='none' font-size='13'>160 MHz: wider, blurrier pulse</text><path d='M30 90 L150 90 Q175 90 187 45 Q200 0 212 45 Q225 90 250 90 L400 90' fill='none'/><line x1='200' y1='100' x2='200' y2='112' stroke-width='1'/><text x='185' y='128' fill='currentColor' stroke='none' font-size='11'>arrival?</text><text x='30' y='160' fill='currentColor' stroke='none' font-size='13'>320 MHz: narrower, sharper pulse</text><path d='M30 190 L190 190 Q198 190 200 150 Q202 110 204 150 Q206 190 214 190 L400 190' fill='none'/><line x1='202' y1='200' x2='202' y2='212' stroke-width='1'/><text x='190' y='226' fill='currentColor' stroke='none' font-size='11'>arrival</text></svg>",
+      "caption": {
+        "en": "Same energy, more bandwidth: the 320 MHz pulse is narrower, so its leading edge — the moment of arrival — is far easier to time precisely than the broad 160 MHz pulse.",
+        "zh": "相同能量、更大带宽：320 MHz 的脉冲更窄，其前沿（即到达时刻）远比宽阔的 160 MHz 脉冲更容易被精确计时。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "None of this happens by accident — the wider bandwidth has to be negotiated and then explicitly signaled in the packet. When a 320 MHz ranging exchange is set up, the announcement that kicks it off (the Ranging NDP Announcement frame) is itself sent at 320 MHz in a non-HT duplicate or EHT MU PPDU, and the EHT Ranging NDP signals its width by carrying only the 320 MHz-1 or 320 MHz-2 value in its U-SIG bandwidth field. At the PHY service interface, the transmit and receive descriptors — the TXVECTOR and RXVECTOR parameters — carry the knobs that make ranging work, including the secure-LTF flag, the LTF repetition count, and the channel width. That is where 'use 320 MHz, EHT ranging format' is actually written down for the radio.",
+      "zh": "这一切都不是偶然发生的——更宽的带宽必须先经过协商，再在帧中被明确地信令出来。当一次 320 MHz 测距交换被建立时，启动它的那条公告帧（Ranging NDP Announcement 帧）本身就以 320 MHz、用 non-HT duplicate 或 EHT MU PPDU 发送；而 EHT 测距 NDP 通过在其 U-SIG 带宽字段中只携带 320 MHz-1 或 320 MHz-2 取值来标明自己的带宽。在物理层服务接口上，发送与接收描述符——即 TXVECTOR 与 RXVECTOR 参数——承载着让测距得以运转的各个“旋钮”，包括安全 LTF 标志、LTF 重复次数以及信道带宽。正是在这里，“使用 320 MHz、采用 EHT 测距格式”被真正写下来交给无线电去执行。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What the PHY clauses actually specify for the EHT Ranging NDPs",
+        "zh": "物理层条款对 EHT 测距 NDP 究竟规定了什么"
+      },
+      "en": "Clause 36.3.19a.1 defines the EHT Ranging NDP as an EHT MU PPDU with a single EHT-SIG symbol (EHT-MCS 0) and no Data field; an EHT Ranging NDP is indicated by setting the U-SIG PPDU Type And Compression Mode field to 1, and the only supported U-SIG Bandwidth field values are 320 MHz-1 and 320 MHz-2. The only supported LTF mode is 2x EHT-LTF with a 1.6 us guard interval, and an 8 us Packet Extension follows. Clause 36.3.19a.2 defines the EHT TB Ranging NDP, which uses the EHT TB PPDU format without the Data field (U-SIG UL/DL = 1, PPDU Type And Compression Mode = 0). On the MAC side, clause 35.14.2 (PPDU format selection) requires that a Ranging NDP Announcement frame with 320 MHz bandwidth be transmitted in a non-HT duplicate PPDU or an EHT MU PPDU that is an EHT SU transmission. Clause 36.2.2 places the controlling knobs into the TX/RXVECTOR (Table 36-1) parameters at the EHT PHY service interface.",
+      "zh": "36.3.19a.1 节将 EHT 测距 NDP 定义为一种 EHT MU PPDU：只含单个 EHT-SIG 符号（EHT-MCS 0），且没有 Data 字段；通过把 U-SIG 的 PPDU Type And Compression Mode 字段置为 1 来标识 EHT 测距 NDP，而 U-SIG 带宽字段唯一支持的取值就是 320 MHz-1 与 320 MHz-2。唯一支持的 LTF 模式是带 1.6 us 保护间隔的 2x EHT-LTF，其后跟随一个 8 us 的 Packet Extension。36.3.19a.2 节定义了 EHT TB 测距 NDP，它采用去掉 Data 字段的 EHT TB PPDU 格式（U-SIG 的 UL/DL = 1、PPDU Type And Compression Mode = 0）。在 MAC 侧，35.14.2 节（PPDU 格式选择）要求：带宽为 320 MHz 的 Ranging NDP Announcement 帧必须以 non-HT duplicate PPDU、或作为 EHT SU 传输的 EHT MU PPDU 来发送。36.2.2 节则把这些控制旋钮放进了 EHT 物理层服务接口的 TX/RXVECTOR（表 36-1）参数中。",
+      "cite": {
+        "pdf_id": "80211bk-2025",
+        "pages": [
+          84,
+          89,
+          92
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211bk-2025:36.3.19a.1",
+    "80211bk-2025:36.3.19a.2",
+    "80211bk-2025:35.14.2",
+    "80211bk-2025:36.2.2"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        89,
+        90,
+        91
+      ],
+      "note": "36.3.19a.1 EHT Ranging NDP — EHT MU PPDU, no Data field, U-SIG bandwidth only 320 MHz-1/320 MHz-2, 2x EHT-LTF with 1.6 us GI"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        92
+      ],
+      "note": "36.3.19a.2 EHT TB Ranging NDP — EHT TB PPDU format without Data field"
+    },
+    {
+      "pdf_id": "80211bk-2025",
+      "pages": [
+        84
+      ],
+      "note": "35.14.2 PPDU format selection (320 MHz Ranging NDPA in non-HT dup / EHT MU PPDU) and 36.2.2 TX/RXVECTOR parameters at the EHT PHY service interface"
+    }
+  ],
+  "track": "ranging"
+}
