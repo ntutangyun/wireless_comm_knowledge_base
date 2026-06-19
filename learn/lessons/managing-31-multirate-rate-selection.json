@@ -1,0 +1,184 @@
+{
+  "id": "managing-31-multirate-rate-selection",
+  "title": {
+    "en": "Picking a Rate: Multirate Support and Rate Selection",
+    "zh": "选择速率：多速率支持与速率选择"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every Wi-Fi PHY offers many data rates and MCS values, from a slow, rugged rate that almost any station can decode to a fast one that only works at close range with a clean channel. Picking which one to use for each frame is the job of rate selection. The exact rate-adaptation algorithm is left to the implementer, but IEEE 802.11-2024 clause 10.6 ('Multirate support') defines a firm set of rules every station must obey so that devices from different vendors still interoperate. This lesson walks through how a station chooses a rate for Data, Management and Control frames.",
+      "zh": "每一种 Wi-Fi 物理层都提供多种数据速率和 MCS 取值：从几乎任何站点都能解调的慢速、抗扰速率，到只有在近距离、信道干净时才可用的高速速率。为每一帧选定使用哪一个，正是速率选择要做的事。具体的速率自适应算法由实现者决定，但 IEEE 802.11-2024 第 10.6 节（“多速率支持”）规定了一套所有站点都必须遵守的硬性规则，从而保证不同厂商的设备依然能够互通。本课讲解站点如何为数据帧、管理帧和控制帧选择速率。"
+    },
+    {
+      "type": "prose",
+      "en": "The cornerstone concept is the basic rate set. When a BSS starts, it advertises a BSSBasicRateSet (and, for newer PHYs, a basic HT-MCS set, a basic VHT-MCS and NSS set, or a basic S1G-MCS and NSS set). These are the rates that every member of the BSS is required to support. Frames that everyone must be able to hear — Beacons and group-addressed (broadcast/multicast) frames — are sent at a basic rate, because there is no single 'fastest rate the receiver supports' when the receiver is everyone.",
+      "zh": "核心概念是基本速率集（basic rate set）。当一个 BSS 启动时，它会通告 BSSBasicRateSet（对较新的物理层，还有基本 HT-MCS 集、基本 VHT-MCS 与 NSS 集，或基本 S1G-MCS 与 NSS 集）。这些是 BSS 中每个成员都必须支持的速率。所有成员都必须能够听到的帧——信标帧和组播/广播帧——会以某个基本速率发送，因为当接收方是“所有人”时，并不存在唯一的“接收方支持的最快速率”。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.6.5 covers Data and Management frames. A non-STBC Beacon, or a group-addressed Data or Management frame, is transmitted using a rate from the BSSBasicRateSet (or, if that is empty, a basic HT/VHT/S1G MCS, falling back to a mandatory PHY rate when nothing is configured — for example a scanning station not yet joined to any BSS). An individually addressed Data or Management frame, by contrast, may use any rate, MCS or <MCS, NSS> tuple that the specific receiver has reported as supported — that is where a rate-adaptation algorithm is free to chase throughput. The same clause also forbids using a channel width, spatial-stream count or MCS the receiver did not advertise.",
+      "zh": "第 10.6.5 节针对数据帧和管理帧。非 STBC 信标帧，或组播/广播的数据帧、管理帧，要使用 BSSBasicRateSet 中的某个速率发送（若该集合为空，则使用基本 HT/VHT/S1G MCS；若什么都未配置——例如尚未加入任何 BSS 的扫描站点——则回退到某个强制物理层速率）。相比之下，单播的数据帧或管理帧可以使用该特定接收方上报为已支持的任意速率、MCS 或 <MCS, NSS> 元组——速率自适应算法正是在这里自由地追求吞吐量。该节同时禁止使用接收方未通告的信道带宽、空间流数量或 MCS。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Frame to send] --> B{Group addressed or Beacon?}\n  B -->|Yes| C[Use a basic rate / basic MCS]\n  B -->|No, individually addressed| D{Receiver rates known?}\n  D -->|Yes| E[Any rate the receiver supports]\n  D -->|No| F[Fall back to basic / mandatory rate]",
+      "zh": "flowchart TD\n  A[待发送的帧] --> B{组播帧或信标帧?}\n  B -->|是| C[使用基本速率 / 基本 MCS]\n  B -->|否, 单播帧| D{已知接收方速率?}\n  D -->|是| E[接收方支持的任意速率]\n  D -->|否| F[回退到 基本 / 强制 速率]"
+    },
+    {
+      "type": "prose",
+      "en": "Control frames (clause 10.6.6) are trickier, because many of them resolve contention or set the NAV (network allocation vector) for nearby stations, so they need to be widely receivable. A Control frame that initiates a TXOP — such as an RTS — is sent using a BSSBasicRateSet rate (or mandatory rate). A control response frame — a CTS answering an RTS, an Ack answering Data, a BlockAck answering a BlockAckReq — is sent at a 'primary rate': the highest basic rate that is less than or equal to the rate of the frame it is responding to. This keeps the answer no faster than the question, so both ends can decode it. Stations may also use a permitted alternate rate, and the clause spells out exactly when a response rides in a non-HT, HT or VHT PPDU.",
+      "zh": "控制帧（第 10.6.6 节）更为微妙，因为其中许多帧用于解决竞争或为附近站点设置 NAV（网络分配向量），因此必须能被广泛接收。发起 TXOP 的控制帧（例如 RTS）使用 BSSBasicRateSet 中的速率（或强制速率）发送。控制响应帧——回应 RTS 的 CTS、回应数据帧的 Ack、回应 BlockAckReq 的 BlockAck——以“主速率（primary rate）”发送：即不超过其所响应帧速率的最高基本速率。这使得应答的速率不快于发问的速率，从而保证两端都能解调。站点也可以使用某个允许的备用速率，该节还明确规定了响应应在何时承载于 non-HT、HT 或 VHT PPDU 中。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why send Acks 'no faster than the question'? The original sender computed its Duration/ID (and thus the NAV everyone honors) assuming the response would take a predictable time. If the responder picked an arbitrarily fast rate, the timing math would break and the medium reservation could be wrong. Capping the response rate keeps the SIFS-separated exchange predictable.",
+      "zh": "为什么 Ack 要“不快于发问”？原始发送方在计算 Duration/ID（也就是大家都遵守的 NAV）时，假定响应会占用一段可预测的时间。如果响应方挑选了任意高的速率，时序计算就会出错，介质预留也可能不准确。对响应速率设上限，能让以 SIFS 间隔的这次交互保持可预测。"
+    },
+    {
+      "type": "prose",
+      "en": "The millimeter-wave PHYs play by their own rules. Clause 10.6.7 covers DMG (60 GHz, 802.11ad) and its EDMG successor (802.11ay): control and beamforming frames use the single-MCS 'DMG Control modulation class' (DMG MCS 0), Acks/BlockAcks pick the shortest-duration MCS that does not exceed the rate they answer, and directional transmissions to multiple beam-covered receivers must use an MCS all of them support. Clause 10.6.8 mirrors this for CMMG STAs (802.11aj at 45 GHz), with a CMMG Control modulation class and analogous group-/individually-addressed and BRP-PPDU rate rules.",
+      "zh": "毫米波物理层遵循自己的规则。第 10.6.7 节针对 DMG（60 GHz，802.11ad）及其后继 EDMG（802.11ay）：控制帧与波束成形帧使用只含单一 MCS 的“DMG 控制调制类”（DMG MCS 0）；Ack/BlockAck 在不超过被响应帧速率的前提下，挑选传输时长最短的 MCS；面向多个被波束覆盖接收方的定向传输，必须使用它们全都支持的 MCS。第 10.6.8 节为 CMMG 站点（45 GHz 的 802.11aj）做了对应规定，设有 CMMG 控制调制类，以及类似的组播/单播帧和 BRP PPDU 速率规则。"
+    },
+    {
+      "type": "prose",
+      "en": "Two more pieces complete the selection picture. Clause 10.6.4 handles the mesh case: a mesh STA must not peer with a neighbor that uses a different BSSBasicRateSet, and it should default its basic rate set (and basic HT / basic VHT-MCS-and-NSS sets) to the mandatory PHY rates to reduce the risk of a mismatch. Clause 10.6.9 handles multiple BSSID: when one radio advertises several co-hosted BSSs, Beacons must use a basic rate valid for all of them, or — if no such common basic rate exists — any mandatory PHY rate common to every BSS.",
+      "zh": "还有两块拼图补全了速率选择的全貌。第 10.6.4 节处理 mesh 场景：mesh 站点不得与使用不同 BSSBasicRateSet 的邻居建立 mesh 对等连接，并且应将其基本速率集（以及基本 HT、基本 VHT-MCS-与-NSS 集）默认设为强制物理层速率，以降低不匹配的风险。第 10.6.9 节处理多 BSSID：当一个射频通告多个共同承载的 BSS 时，信标帧必须使用对所有这些 BSS 都有效的某个基本速率；若不存在这样的公共基本速率，则使用每个 BSS 都共有的任一强制物理层速率。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the high-throughput PHYs add rate-selection constraints that build a precise per-receiver 'allowed set'. Clause 10.6.13 (VHT, 802.11ac), 10.6.14 (S1G, 802.11ah) and 10.6.15 (CMMG) each define an Rx Supported and a Tx Supported <MCS, NSS> set, derived from the capability fields the peer advertised. A station shall not transmit a VHT / S1G / CMMG PPDU using a <MCS, NSS> tuple and bandwidth that is not in the receiver's Rx Supported set. VHT and S1G add extra 'should not' refinements (e.g. VHT avoids low MCS values the receiver marked unsupported via its HT MCS bitmap; S1G respects the receiver's minimum-MCS hints), so the chosen rate is always one the receiver has genuinely promised it can decode.",
+      "zh": "最后，高吞吐物理层增加了速率选择约束，为每个接收方构建出精确的“允许集合”。第 10.6.13 节（VHT，802.11ac）、10.6.14 节（S1G，802.11ah）和 10.6.15 节（CMMG）各自定义了“接收支持”和“发送支持”的 <MCS, NSS> 集合，它们由对端通告的能力字段推导得出。站点不得使用不在接收方“接收支持集合”中的 <MCS, NSS> 元组和带宽来发送 VHT / S1G / CMMG PPDU。VHT 和 S1G 还增加了额外的“不宜（should not）”细化规则（例如 VHT 会避开接收方在其 HT MCS 位图中标记为不支持的低 MCS 值；S1G 会尊重接收方的最小 MCS 提示），从而保证选中的速率始终是接收方确实承诺能够解调的。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Clause coverage map (10.6.4–10.6.15)",
+        "zh": "条款覆盖对照表（10.6.4–10.6.15）"
+      },
+      "en": "10.6.4 — Basic rate set / basic HT-MCS set / basic VHT-MCS and NSS set for a mesh STA: no peering across differing BSSBasicRateSets; default to mandatory PHY rates (p.1938-1939). 10.6.5 — Rate selection for Data and Management frames: Beacons and group-addressed frames use a basic rate, individually addressed frames may use any receiver-supported rate, with channel-width / NSS / MCS support constraints (p.1939-1942). 10.6.6 — Rate selection for Control frames: TXOP-initiating frames use a basic rate; control response frames use a primary (or alternate) rate no faster than the eliciting frame; rules for non-HT/HT/VHT carriage (p.1942-1945). 10.6.7 — Multirate support for DMG/EDMG STAs: DMG Control modulation class (MCS 0), control-response and group/individual rate rules, BRP PPDU MCS rules (p.1953-1957). 10.6.8 — Multirate support for CMMG STAs: CMMG Control modulation class, group/individual and BRP rate rules (p.1957-1960). 10.6.9 — Multiple BSSID rate selection: Beacons use a basic rate valid for all co-hosted BSSs, else a common mandatory PHY rate (p.1960). 10.6.13 — Rate selection constraints for VHT STAs: Rx/Tx Supported VHT-MCS and NSS sets, plus additional VHT-PPDU constraints (p.1964-1966). 10.6.14 — Rate selection constraints for S1G STAs: Rx/Tx Supported S1G-MCS and NSS sets, plus additional S1G-PPDU constraints (p.1966-1967). 10.6.15 — Rate selection constraints for CMMG STAs: Rx/Tx Supported CMMG-MCS and NSS sets (p.1967-1968).",
+      "zh": "10.6.4——mesh 站点的基本速率集 / 基本 HT-MCS 集 / 基本 VHT-MCS 与 NSS 集：不与 BSSBasicRateSet 不同者建立对等连接；默认采用强制物理层速率（第 1938-1939 页）。10.6.5——数据帧与管理帧的速率选择：信标帧和组播帧用基本速率，单播帧可用接收方支持的任意速率，并受带宽 / NSS / MCS 支持约束（第 1939-1942 页）。10.6.6——控制帧的速率选择：发起 TXOP 的帧用基本速率；控制响应帧用不快于触发帧的主速率（或备用速率）；non-HT/HT/VHT 承载规则（第 1942-1945 页）。10.6.7——DMG/EDMG 站点的多速率支持：DMG 控制调制类（MCS 0）、控制响应与组播/单播速率规则、BRP PPDU 的 MCS 规则（第 1953-1957 页）。10.6.8——CMMG 站点的多速率支持：CMMG 控制调制类、组播/单播与 BRP 速率规则（第 1957-1960 页）。10.6.9——多 BSSID 速率选择：信标帧使用对所有共载 BSS 均有效的基本速率，否则使用公共强制物理层速率（第 1960 页）。10.6.13——VHT 站点的速率选择约束：接收/发送支持的 VHT-MCS 与 NSS 集，以及额外的 VHT-PPDU 约束（第 1964-1966 页）。10.6.14——S1G 站点的速率选择约束：接收/发送支持的 S1G-MCS 与 NSS 集，以及额外的 S1G-PPDU 约束（第 1966-1967 页）。10.6.15——CMMG 站点的速率选择约束：接收/发送支持的 CMMG-MCS 与 NSS 集（第 1967-1968 页）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1938,
+          1939,
+          1942,
+          1945,
+          1953,
+          1957,
+          1960,
+          1964,
+          1966,
+          1967,
+          1968
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A useful mental model: 'broadcast slow, unicast smart, response polite.' Frames everyone must hear go at a guaranteed basic rate; frames to one known peer can chase the fastest rate that peer admits to supporting; and responses stay no faster than what they answer so the timing and NAV reservations everyone relies on remain accurate.",
+      "zh": "一个有用的心智模型：“广播求稳、单播求智、响应讲礼”。所有人都必须听到的帧以有保障的基本速率发送；发给某个已知对端的帧可以追求该对端承认支持的最快速率；而响应帧的速率不超过其所应答帧，从而让大家依赖的时序与 NAV 预留保持准确。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1937,
+        1938
+      ],
+      "note": "10.6.1 Overview and 10.6.2/10.6.3 basic HT-MCS / basic STBC MCS; routing of Data/Mgmt/Control to 10.6.5/10.6.6/10.6.7/10.6.8"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1938,
+        1939
+      ],
+      "note": "10.6.4 mesh basic rate set / basic HT-MCS / basic VHT-MCS-NSS set; 10.6.5.1 Beacon rate selection"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1939,
+        1940,
+        1941,
+        1942
+      ],
+      "note": "10.6.5.2-10.6.5.8 rate selection for group and individually addressed Data/Management frames, channel-width/NSS/MCS constraints"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1942,
+        1943,
+        1944,
+        1945
+      ],
+      "note": "10.6.6 Control-frame rate selection: TXOP-initiating, CF-End, non-response, and control-response primary/alternate rate rules"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1953,
+        1954,
+        1955,
+        1956,
+        1957
+      ],
+      "note": "10.6.7 multirate support for DMG/EDMG STAs: DMG Control modulation class, control-response, group/individual, BRP PPDU rules"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1957,
+        1958,
+        1959,
+        1960
+      ],
+      "note": "10.6.8 multirate support for CMMG STAs; 10.6.9 multiple BSSID rate selection (p.1960)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1964,
+        1965,
+        1966
+      ],
+      "note": "10.6.13 VHT Rx/Tx Supported VHT-MCS and NSS sets and additional VHT-PPDU constraints"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1966,
+        1967
+      ],
+      "note": "10.6.14 S1G Rx/Tx Supported S1G-MCS and NSS sets and additional S1G-PPDU constraints"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1967,
+        1968
+      ],
+      "note": "10.6.15 CMMG Rx/Tx Supported CMMG-MCS and NSS sets"
+    }
+  ],
+  "covers": [
+    "80211-2024:10.6.4",
+    "80211-2024:10.6.5",
+    "80211-2024:10.6.6",
+    "80211-2024:10.6.7",
+    "80211-2024:10.6.8",
+    "80211-2024:10.6.9",
+    "80211-2024:10.6.13",
+    "80211-2024:10.6.14",
+    "80211-2024:10.6.15"
+  ],
+  "track": "managing"
+}

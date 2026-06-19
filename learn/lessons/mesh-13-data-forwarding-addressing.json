@@ -1,0 +1,150 @@
+{
+  "id": "mesh-13-data-forwarding-addressing",
+  "title": {
+    "en": "Carrying Frames Across the Mesh: Forwarding and Addressing",
+    "zh": "在 Mesh 中转发帧：转发与寻址"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In an infrastructure Wi-Fi network, the AP is the center of the world — every frame goes to it or comes from it in a single hop. A mesh BSS (MBSS) is different: there is no single central AP, so a frame may have to travel through several mesh STAs before it reaches its destination. Each mesh STA along the way acts as a relay. The framework that decides how those relays carry a frame, hop by hop, is called mesh forwarding (clause 10.37). This lesson walks through how a mesh STA stores the information it needs, how it fills in the address fields, and what it does when a frame arrives.",
+      "zh": "在基础设施 Wi-Fi 网络中，AP 是整个世界的中心——每个帧都在一跳之内发往 AP 或来自 AP。Mesh BSS（MBSS）则不同：这里没有单一的中心 AP，因此一个帧可能要穿过多个 mesh STA 才能到达目的地。沿途的每个 mesh STA 都充当中继。决定这些中继如何一跳一跳地搬运帧的机制，称为 mesh 转发（第 10.37 条）。本课将讲解 mesh STA 如何保存它所需的信息、如何填写地址字段，以及帧到达时它会做什么。"
+    },
+    {
+      "type": "prose",
+      "en": "Mesh forwarding means relaying MSDUs (user data) and MMPDUs (management content) along paths chosen by the mesh path selection protocol — at the link layer, between mesh STAs. Those paths live in a per-STA store called the forwarding information (10.37.2). For each known destination it holds four things: the destination mesh STA address, the next-hop address (where to send the frame next), a precursor list (who is allowed to send frames toward this destination through me), and a lifetime. A mesh STA must only forward using forwarding information that the active path selection protocol has marked valid; if the lifetime expires or a path error invalidates it, the next hop becomes unknown and the STA must find another way (see 10.37.8).",
+      "zh": "Mesh 转发是指在链路层、在 mesh STA 之间，沿 mesh 路径选择协议所选的路径中继 MSDU（用户数据）和 MMPDU（管理内容）。这些路径保存在每台 STA 的一份存储中，称为转发信息（10.37.2）。对每个已知目的地，它保存四样东西：目的 mesh STA 地址、下一跳地址（接下来把帧发往哪里）、前驱列表（谁被允许经由我向该目的地发送帧）以及生存期。mesh STA 只能使用活动路径选择协议标记为有效的转发信息进行转发；一旦生存期到期或路径错误使其失效，下一跳就变为未知，STA 必须另寻他法（见 10.37.8）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The precursor list is the security-minded twist. When an intermediate STA receives an individually addressed frame, it checks that the transmitter (Address 2) is actually a known precursor for that destination. If it is not, the frame is discarded — this stops random neighbors from injecting traffic onto a path they are not part of.",
+      "zh": "前驱列表是出于安全考虑的一个巧妙设计。当中间 STA 收到一个单播帧时，它会检查发送方（地址 2）是否确实是该目的地的已知前驱。若不是，则丢弃该帧——这能防止无关邻居把流量注入到它本不属于的路径上。"
+    },
+    {
+      "type": "prose",
+      "en": "Individually addressed mesh Data frames use a four-address MAC header (10.37.3.1). The four addresses separate the per-hop link from the end-to-end path: Address 1 is the next-hop mesh STA, Address 2 is the transmitter (me), Address 3 is the destination mesh STA, and Address 4 is the source mesh STA. Address 1 and Address 2 change at every hop; Address 3 and Address 4 stay constant from source to destination. The source also sets the Mesh TTL (to dot11MeshTTL) so the frame cannot loop forever, and a Mesh Sequence Number from a modulo-2^32 counter, incremented once per new MSDU/A-MSDU or per new MMPDU sent in a Multihop Action frame.",
+      "zh": "单播 mesh 数据帧使用四地址 MAC 头（10.37.3.1）。四个地址把逐跳链路与端到端路径区分开：地址 1 是下一跳 mesh STA，地址 2 是发送方（我），地址 3 是目的 mesh STA，地址 4 是源 mesh STA。地址 1 和地址 2 每跳都会变化；地址 3 和地址 4 从源到目的地始终不变。源还会设置 Mesh TTL（设为 dot11MeshTTL），使帧不会无限循环，并设置一个取自模 2^32 计数器的 Mesh 序列号，每发送一个新的 MSDU/A-MSDU 或一个用 Multihop Action 帧承载的新 MMPDU 时加 1。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 150\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" font-family=\"sans-serif\" font-size=\"13\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><circle cx=\"70\" cy=\"75\" r=\"26\"/><circle cx=\"250\" cy=\"75\" r=\"26\"/><circle cx=\"430\" cy=\"75\" r=\"26\"/><circle cx=\"570\" cy=\"75\" r=\"26\"/></g><g fill=\"currentColor\" text-anchor=\"middle\"><text x=\"70\" y=\"80\">Src</text><text x=\"250\" y=\"80\">Relay</text><text x=\"430\" y=\"80\">Relay</text><text x=\"570\" y=\"80\">Dst</text></g><g stroke=\"currentColor\" stroke-width=\"1.5\" fill=\"none\" marker-end=\"url(#a)\"><line x1=\"98\" y1=\"75\" x2=\"222\" y2=\"75\"/><line x1=\"278\" y1=\"75\" x2=\"402\" y2=\"75\"/><line x1=\"458\" y1=\"75\" x2=\"542\" y2=\"75\"/></g><defs><marker id=\"a\" markerWidth=\"8\" markerHeight=\"8\" refX=\"7\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6\" fill=\"currentColor\"/></marker></defs><g fill=\"currentColor\" text-anchor=\"middle\" font-size=\"11\"><text x=\"160\" y=\"45\">A1=Relay A2=Src</text><text x=\"340\" y=\"45\">A1=Relay A2=Relay</text><text x=\"500\" y=\"45\">A1=Dst A2=Relay</text></g><text x=\"320\" y=\"130\" fill=\"currentColor\" text-anchor=\"middle\" font-size=\"11\">A3=Dst and A4=Src stay fixed every hop · TTL decrements per hop</text></svg>",
+      "caption": {
+        "en": "Per-hop link addresses (A1/A2) change at every relay, while the end-to-end addresses (A3 destination, A4 source) stay fixed across the whole path.",
+        "zh": "逐跳链路地址（A1/A2）在每个中继处变化，而端到端地址（A3 目的、A4 源）在整条路径上保持不变。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "When an intermediate or destination mesh STA receives an individually addressed mesh Data frame (10.37.3.2), it first deciphers and authenticates it — frames not from a peer mesh STA are silently discarded. It then checks Address 3: if the destination is unknown, the STA may discard the frame, trigger a path discovery, or tell Address 2 the destination is unreachable. It also verifies Address 2 is a precursor for that destination. If Address 3 is a known destination that is not itself, the STA refreshes the relevant lifetimes, decrements the Mesh TTL (discarding the MSDU if it hits zero), and forwards it onward with Address 1 set to the next hop and Address 2 set to itself. If Address 3 matches its own address, the frame has arrived: the MSDU is delivered up to the LLC via MA-UNITDATA.indication. Proxied frames (Address Extension Mode Address5&6) carry the real end-station addresses in Address 5/6.",
+      "zh": "当中间或目的 mesh STA 收到单播 mesh 数据帧时（10.37.3.2），它首先解密并验证真实性——非来自对等 mesh STA 的帧将被静默丢弃。随后它检查地址 3：若目的地未知，STA 可以丢弃该帧、触发路径发现，或告知地址 2 该目的地不可达。它还会核实地址 2 是该目的地的前驱。若地址 3 是一个并非自身的已知目的地，STA 会刷新相关生存期、将 Mesh TTL 减 1（若减到零则丢弃该 MSDU），并将其继续转发，地址 1 设为下一跳、地址 2 设为自身。若地址 3 与自身地址匹配，则帧已到达：MSDU 经 MA-UNITDATA.indication 上交给 LLC。代理帧（地址扩展模式为 Address5&6）在地址 5/6 中携带真实端站地址。"
+    },
+    {
+      "type": "prose",
+      "en": "Group addressed (broadcast/multicast) mesh Data frames work differently (10.37.4). At the source (10.37.4.1) the frame uses only three meaningful addresses: Address 1 is the group address, Address 2 is the transmitter, and Address 3 is the source mesh STA. Mesh TTL again bounds how many hops it travels (TTL=1 reaches only immediate neighbors). At each recipient (10.37.4.2), the STA authenticates, optionally drops duplicates, decrements the Mesh TTL, and — only if the TTL is still nonzero and dot11MeshForwarding is true — rebroadcasts it with Address 2 set to itself. Because group transmissions are inherently unreliable, an implementation may instead convert them into multiple individually acknowledged unicast frames, though the policy for doing so is outside the standard.",
+      "zh": "组播（广播/多播）mesh 数据帧的处理方式不同（10.37.4）。在源端（10.37.4.1），帧只使用三个有意义的地址：地址 1 是组地址，地址 2 是发送方，地址 3 是源 mesh STA。Mesh TTL 同样限制传播跳数（TTL=1 时只到达直接邻居）。在每个接收方（10.37.4.2），STA 进行真实性验证，可选地丢弃重复帧，将 Mesh TTL 减 1，并且——仅当 TTL 仍非零且 dot11MeshForwarding 为真时——以地址 2 设为自身的方式再次广播。由于组播本身不可靠，实现可以改为将其转换为多个逐一确认的单播帧，但采用此法的策略不在标准范围内。"
+    },
+    {
+      "type": "prose",
+      "en": "Management content can travel multiple hops too, but only when wrapped in a Multihop Action frame (10.37.5). All other MMPDUs go just one hop to a peer. Individually addressed Multihop Action frames (10.37.5.2) reuse exactly the receive, address-match, lifetime-update, and TTL-decrement logic of 10.37.3.2 — intermediate STAs need not even look past the Mesh Control field. Group addressed Multihop Action frames (10.37.5.3) follow the group rules of 10.37.4.2. The standard is careful to distinguish forwarding (relaying the same MMPDU onward) from propagation (receiving an Action frame and generating a fresh one of the same type), which path-selection elements use.",
+      "zh": "管理内容也能跨多跳传输，但仅当封装在 Multihop Action 帧中时（10.37.5）。所有其他 MMPDU 只跨一跳发往对等方。单播 Multihop Action 帧（10.37.5.2）完全复用 10.37.3.2 的接收、地址匹配、生存期更新与 TTL 递减逻辑——中间 STA 甚至无需查看 Mesh Control 字段之后的内容。组播 Multihop Action 帧（10.37.5.3）遵循 10.37.4.2 的组播规则。标准特别区分了转发（将同一 MMPDU 继续中继）与传播（收到一个 Action 帧后生成一个同类型的新帧），后者为路径选择元素所采用。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Mesh frame received] --> B{From peer mesh STA?}\n  B -- No --> X[Discard silently]\n  B -- Yes --> C{Duplicate? check Mesh SA + Seq}\n  C -- Yes --> X\n  C -- No --> D{Addr3 = my address?}\n  D -- Yes --> E[Deliver up to LLC]\n  D -- No --> F[Decrement Mesh TTL]\n  F --> G{TTL = 0 or no forwarding?}\n  G -- Yes --> X\n  G -- No --> H[Forward to next hop]",
+      "zh": "flowchart TD\n  A[收到 mesh 帧] --> B{来自对等 mesh STA?}\n  B -- 否 --> X[静默丢弃]\n  B -- 是 --> C{重复帧? 查 Mesh SA + 序列号}\n  C -- 是 --> X\n  C -- 否 --> D{地址3 = 本机地址?}\n  D -- 是 --> E[上交 LLC]\n  D -- 否 --> F[Mesh TTL 减 1]\n  F --> G{TTL = 0 或不转发?}\n  G -- 是 --> X\n  G -- 否 --> H[转发到下一跳]"
+    },
+    {
+      "type": "prose",
+      "en": "Because mesh frames can take more than one path, a STA may receive several copies of the same MSDU or MMPDU from different neighbors. Duplicate detection (10.37.6) handles this: every receiving mesh STA keeps a cache of recent <Mesh SA, Mesh Sequence Number> tuples. The Mesh SA is Address 4 for individually addressed frames and Address 3 for group addressed frames. Any frame whose tuple already sits in the cache is rejected as a duplicate. The ordinary same-transmitter duplicate-filtering rules (10.3.2.14) apply on top of this.",
+      "zh": "由于 mesh 帧可能走多条路径，一台 STA 可能从不同邻居收到同一 MSDU 或 MMPDU 的多个副本。重复检测（10.37.6）处理这一情况：每台接收 mesh STA 维护一个最近 <Mesh SA, Mesh 序列号> 元组的缓存。单播帧的 Mesh SA 取自地址 4，组播帧的 Mesh SA 取自地址 3。凡是其元组已在缓存中的帧都会被作为重复帧拒绝。常规的同发送方重复过滤规则（10.3.2.14）也在此之上叠加生效。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Not every mesh STA has to be a relay. A STA with dot11MeshForwarding set to false (10.37.7) forwards neither MSDUs nor Multihop Action frames — it participates in the mesh as an endpoint only. Whether a STA may opt out of forwarding, and who has the authority to set that flag, depends on the path selection protocol (HWMP provides such a mechanism) and is otherwise outside the standard.",
+      "zh": "并非每台 mesh STA 都必须充当中继。dot11MeshForwarding 设为 false 的 STA（10.37.7）既不转发 MSDU，也不转发 Multihop Action 帧——它仅作为端点参与 mesh。STA 是否可以选择不转发、以及谁有权设置该标志，取决于路径选择协议（HWMP 提供了这种机制），其余情形不在标准范围内。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, what if a source mesh STA gets an MSDU for a destination it simply cannot find — no valid forwarding information and no proxy entry? Clause 10.37.8 says: assume the destination lives outside the MBSS and hand the MSDU to known mesh gates. The STA sends it as a four-address frame in proxied form (Address Extension Mode = Address5&6), where Address 3 is the known mesh gate, Address 5 is the unknown destination end station, and Address 6 equals Address 4 (the source). If no mesh gate is available at all, the MSDU is silently discarded. Mesh gates are discovered via propagated elements such as a GANN, or HWMP-specific mechanisms (proactive PREQ/RANN with the Gate Announcement bit set).",
+      "zh": "最后，如果源 mesh STA 收到一个发往它根本找不到的目的地的 MSDU——既无有效转发信息，也无代理表项——该怎么办？第 10.37.8 条规定：假定该目的地位于 MBSS 之外，并将该 MSDU 交给已知的 mesh 网关。STA 以代理形式的四地址帧发送它（地址扩展模式 = Address5&6），其中地址 3 是已知的 mesh 网关，地址 5 是未知的目的端站，地址 6 等于地址 4（源）。若根本没有可用的 mesh 网关，则静默丢弃该 MSDU。mesh 网关通过传播的元素（如 GANN）发现，或通过 HWMP 特有机制发现（设置了网关通告位的主动式 PREQ/RANN）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each 10.37 sub-clause lives in this lesson",
+        "zh": "覆盖映射：10.37 各子条款在本课中的位置"
+      },
+      "en": "10.37.1 General — mesh forwarding defined as relaying MSDUs/MMPDUs along path-selected routes (intro + forwarding-info prose). 10.37.2 Forwarding information — destination address, next hop, precursor list, lifetime; validity rules (forwarding-info prose + precursor callout). 10.37.3 Individually addressed mesh Data frames: .3.1 at source (four-address header A1=next hop, A2=transmitter, A3=destination, A4=source; Mesh TTL; Mesh Sequence Number) and .3.2 at intermediate/destination (authenticate, precursor check, lifetime refresh, TTL decrement, deliver vs forward) — covered in the four-address prose, the figure, and the receive prose. 10.37.4 Group addressed mesh Data frames: .4.1 source (A1=group, A2=transmitter, A3=source) and .4.2 recipients (dup check, TTL decrement, rebroadcast only if TTL>0 and dot11MeshForwarding=true) — group-addressed prose. 10.37.5 Management/MMPDU forwarding: .5.1 general (one hop unless Multihop Action; forwarding vs propagation), .5.2 individually addressed Multihop Action (reuses 10.37.3.2), .5.3 group addressed Multihop Action (reuses 10.37.4.2) — MMPDU prose. 10.37.6 Duplicate detection — <Mesh SA, Mesh Sequence Number> cache (duplicate prose + flowchart). 10.37.7 Non-forwarding STAs — dot11MeshForwarding=false (callout). 10.37.8 Unknown destination — forward to known mesh gates as proxied A5&6 frames, else discard (final prose).",
+      "zh": "10.37.1 概述——mesh 转发定义为沿路径选择的路由中继 MSDU/MMPDU（引言 + 转发信息正文）。10.37.2 转发信息——目的地址、下一跳、前驱列表、生存期及有效性规则（转发信息正文 + 前驱旁注）。10.37.3 单播 mesh 数据帧：.3.1 源端（四地址头 A1=下一跳、A2=发送方、A3=目的、A4=源；Mesh TTL；Mesh 序列号），.3.2 中间/目的端（验证真实性、前驱检查、刷新生存期、TTL 递减、上交还是转发）——见四地址正文、图示与接收正文。10.37.4 组播 mesh 数据帧：.4.1 源端（A1=组地址、A2=发送方、A3=源），.4.2 接收方（去重、TTL 递减、仅当 TTL>0 且 dot11MeshForwarding=true 时再广播）——组播正文。10.37.5 管理/MMPDU 转发：.5.1 概述（除 Multihop Action 外仅一跳；转发与传播之别），.5.2 单播 Multihop Action（复用 10.37.3.2），.5.3 组播 Multihop Action（复用 10.37.4.2）——MMPDU 正文。10.37.6 重复检测——<Mesh SA, Mesh 序列号> 缓存（去重正文 + 流程图）。10.37.7 不转发的 STA——dot11MeshForwarding=false（旁注）。10.37.8 未知目的地——以代理 A5&6 帧转发给已知 mesh 网关，否则丢弃（结尾正文）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2144,
+          2145,
+          2146,
+          2147,
+          2148,
+          2149,
+          2150,
+          2151
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2144
+      ],
+      "note": "10.37.1 General and 10.37.2 Forwarding information — mesh forwarding definition; forwarding-info contents (destination, next hop, precursor list, lifetime)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2145,
+        2146
+      ],
+      "note": "10.37.3.1 / 10.37.3.2 — individually addressed mesh Data frames: four-address header at source, receive/forward/deliver logic at intermediate and destination STAs"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2147,
+        2148
+      ],
+      "note": "10.37.4.1 / 10.37.4.2 group addressed mesh Data frames; 10.37.5.1 general management/MMPDU addressing"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2149,
+        2150
+      ],
+      "note": "10.37.5.2 / 10.37.5.3 Multihop Action MMPDU forwarding; 10.37.6 duplicate detection; 10.37.7 non-forwarding STAs"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2150,
+        2151
+      ],
+      "note": "10.37.8 MSDU forwarding to unknown destination — forward to known mesh gates as proxied frames, else discard"
+    }
+  ],
+  "covers": [
+    "80211-2024:10.37.1",
+    "80211-2024:10.37.2",
+    "80211-2024:10.37.3",
+    "80211-2024:10.37.4",
+    "80211-2024:10.37.5",
+    "80211-2024:10.37.6",
+    "80211-2024:10.37.7",
+    "80211-2024:10.37.8"
+  ],
+  "track": "mesh"
+}

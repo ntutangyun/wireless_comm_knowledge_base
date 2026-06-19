@@ -1,0 +1,112 @@
+{
+  "id": "modern-phy-26-phy-operating-modes-ldpc-stbc-shortgi-greenfield",
+  "title": {
+    "en": "PHY Operating Modes: LDPC, STBC, Short GI and Greenfield",
+    "zh": "PHY 工作模式：LDPC、STBC、Short GI 与 Greenfield"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Modern Wi-Fi PHYs ship with a handful of optional performance tricks: a stronger error-correcting code (LDPC), a transmit-diversity scheme (STBC), a way to shrink per-symbol overhead (the short guard interval), and a slimmer preamble format unique to HT (greenfield). None of these are free to assume — a transmitter may only switch one on once it knows the receiver supports it. Clauses 10.15 through 10.18 of IEEE 802.11-2024 are the MAC-level rulebook: they say exactly when a STA is allowed to set the matching TXVECTOR parameter, and they tie every decision back to a capability bit the peer advertised.",
+      "zh": "现代 Wi-Fi 物理层（PHY）带来了一组可选的性能增强手段：更强的纠错码（LDPC）、一种发送分集方案（STBC）、缩短每符号开销的短保护间隔（short GI），以及 HT 专属的精简前导码格式（greenfield）。这些都不能想当然地启用——发送方只有在确知接收方支持时才可以打开某一项功能。IEEE 802.11-2024 的 10.15 至 10.18 条就是这套 MAC 层规则手册：它们精确规定了 STA 在何种条件下才允许设置对应的 TXVECTOR 参数，并把每个决定都绑定到对端所通告的某个能力位上。"
+    },
+    {
+      "type": "prose",
+      "en": "The shared pattern across all four clauses is 'capability handshake first, transmit second.' Each STA announces what it can receive inside an information element it sends during association — the HT Capabilities, VHT Capabilities, HE Capabilities or S1G Capabilities element. The transmitter then inspects the most recent capabilities it received from the intended receiver. Only if the relevant subfield reads 1 — and the transmitter's own local dot11 option is activated — may it set the corresponding TXVECTOR parameter. When a PPDU has more than one intended receiver, the rule must hold for every one of them.",
+      "zh": "这四条规则共享同一个模式：先完成能力握手，再决定如何发送。每个 STA 在关联阶段通过它发出的信息元素——HT Capabilities、VHT Capabilities、HE Capabilities 或 S1G Capabilities 元素——声明自己能接收什么。发送方随后查阅它从目标接收方处收到的最新能力信息。只有当相关子字段为 1，且发送方本地对应的 dot11 选项已激活时，它才可以设置相应的 TXVECTOR 参数。若一个 PPDU 有多个目标接收方，则该规则必须对每一个接收方都成立。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant TX as Transmitter\n  participant RX as Receiver\n  RX->>TX: Capabilities element (LDPC/STBC/SGI/GF bits)\n  Note over TX: Check subfield == 1\n  Note over TX: Check local dot11 option active\n  TX->>RX: PPDU with matching TXVECTOR param\n  Note over TX,RX: If any check fails, fall back",
+      "zh": "sequenceDiagram\n  participant TX as 发送方\n  participant RX as 接收方\n  RX->>TX: 能力元素（LDPC/STBC/SGI/GF 位）\n  Note over TX: 检查子字段是否为 1\n  Note over TX: 检查本地 dot11 选项是否激活\n  TX->>RX: 带匹配 TXVECTOR 参数的 PPDU\n  Note over TX,RX: 任一检查失败则回退"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.15 governs LDPC (low-density parity-check) coding. LDPC is a stronger forward error-correcting code than the default binary convolutional code, giving a coding-gain boost at the same MCS. A transmitter sets FEC_CODING to LDPC_CODING only toward a peer whose Capabilities element advertised LDPC reception (the LDPC Coding Capability subfield for HT, the Rx LDPC subfield for VHT/S1G, or LDPC Coding In Payload for HE) and whose local dot11 LDPC option is activated. There is also a dynamic override: a STA should stop sending LDPC to a peer if the most recent Operating Mode field it received from that peer had the No LDPC subfield set to 1.",
+      "zh": "10.15 条规定 LDPC（低密度奇偶校验）编码。LDPC 是比默认二进制卷积码更强的前向纠错码，在相同 MCS 下提供额外的编码增益。发送方只有在对端的能力元素通告了 LDPC 接收能力（HT 的 LDPC Coding Capability 子字段、VHT/S1G 的 Rx LDPC 子字段，或 HE 的 LDPC Coding In Payload）且本地 dot11 LDPC 选项已激活时，才将 FEC_CODING 设置为 LDPC_CODING。此外还有一个动态覆盖机制：如果某 STA 从对端收到的最新 Operating Mode 字段中 No LDPC 子字段被置为 1，则它应停止向该对端发送 LDPC。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.16 covers STBC (space-time block coding), a transmit-diversity technique that spreads each spatial stream across multiple antennas to improve robustness at low SNR. Two gates apply. First, a STA may only set the TXVECTOR STBC parameter to a nonzero value if it itself set the Tx STBC subfield to 1 in its own HT/VHT/S1G/CMMG Capabilities element. Second, it may only send an STBC PPDU to a recipient whose Rx STBC field indicates support for receiving STBC with a number of spatial streams greater than or equal to the number in the PPDU. So STBC needs both a willing transmitter and a receiver able to decode that many streams.",
+      "zh": "10.16 条规定 STBC（空时分组编码），这是一种发送分集技术，将每条空间流分散到多根天线上发送，以在低信噪比下提升健壮性。它有两道门槛。第一，STA 只有在自己的 HT/VHT/S1G/CMMG Capabilities 元素中把 Tx STBC 子字段置为 1，才可以将 TXVECTOR 的 STBC 参数设为非零值。第二，它只能向某接收方发送 STBC PPDU，前提是该接收方的 Rx STBC 字段表明其支持接收的 STBC 空间流数大于或等于该 PPDU 中的空间流数。因此 STBC 既需要一个愿意发送的发送方，也需要一个能解出相应流数的接收方。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the asymmetry between LDPC and STBC. LDPC keys off a single receive-capability bit per peer. STBC needs two things checked: the transmitter's own Tx STBC subfield AND the receiver's Rx STBC stream count. STBC is the only one of the four where the transmitter gates on its own advertised capability, not just the peer's.",
+      "zh": "请留意 LDPC 与 STBC 之间的不对称性。LDPC 只取决于对端的单个接收能力位。而 STBC 需要检查两样东西：发送方自己的 Tx STBC 子字段，以及接收方的 Rx STBC 空间流数。在这四项功能中，STBC 是唯一一个发送方还要以自身通告的能力为前提的功能，而不仅仅看对端。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.17 handles the short guard interval (short GI). The guard interval is the cyclic-prefix gap between OFDM symbols that absorbs multipath delay spread; shrinking it from 800 ns to 400 ns squeezes out about 10% more throughput, at the cost of less tolerance to long echoes. The clause is essentially a long table indexed by channel bandwidth: HT 20/40 MHz, VHT 20/40/80/160/80+80 MHz, and S1G 1/2/4/8/16 MHz each have their own Short GI subfield in the relevant Capabilities element and their own dot11 activation variable. The transmitter may set GI_TYPE to SHORT_GI only when the bandwidth-specific subfield is 1 and the matching dot11 variable is present and true. For multi-user PPDUs, every recipient's bandwidth-specific subfield must qualify.",
+      "zh": "10.17 条处理短保护间隔（short GI）。保护间隔是 OFDM 符号之间用于吸收多径时延扩展的循环前缀间隙；把它从 800 ns 缩短到 400 ns，大约可多挤出 10% 的吞吐量，代价是对长回波的容忍度下降。这一条本质上是一张按信道带宽索引的长表：HT 的 20/40 MHz、VHT 的 20/40/80/160/80+80 MHz，以及 S1G 的 1/2/4/8/16 MHz，各自在相关能力元素中都有自己的 Short GI 子字段，也各有自己的 dot11 激活变量。发送方只有在该带宽对应的子字段为 1 且匹配的 dot11 变量存在且为真时，才能将 GI_TYPE 设为 SHORT_GI。对于多用户 PPDU，每一个接收方对应带宽的子字段都必须满足条件。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.18 is the shortest: greenfield (HT_GF) operation. The greenfield PPDU format drops the legacy-compatible preamble that mixed-format (HT_MF) frames carry, trimming preamble overhead — but legacy stations cannot decode it, so it is only safe where every device is HT-aware. A STA may transmit a frame with FORMAT set to HT_GF only if the receiver's HT-Greenfield subfield is 1 and dot11HTGreenfieldOptionActivated is true. There is also a sharp edge that lives in the short-GI clause: an HT STA must not combine HT_GF with SHORT_GI when the MCS indicates a single spatial stream.",
+      "zh": "10.18 条最为简短：greenfield（HT_GF）工作模式。greenfield PPDU 格式去掉了混合格式（HT_MF）帧所携带的、与传统设备兼容的前导码，从而削减前导码开销——但传统站点无法解码它，因此它只有在所有设备都支持 HT 的场景下才安全。STA 只有在接收方的 HT-Greenfield 子字段为 1 且 dot11HTGreenfieldOptionActivated 为真时，才能发送 FORMAT 为 HT_GF 的帧。此外，短 GI 那一条里还藏着一个尖锐的约束：当 MCS 表示单条空间流时，HT STA 不得把 HT_GF 与 SHORT_GI 组合使用。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 480 150\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" font-family=\"sans-serif\" font-size=\"12\"><text x=\"10\" y=\"24\" fill=\"currentColor\">HT_MF (mixed):</text><rect x=\"130\" y=\"12\" width=\"70\" height=\"18\" fill=\"none\" stroke=\"currentColor\"/><text x=\"137\" y=\"25\" fill=\"currentColor\">legacy</text><rect x=\"200\" y=\"12\" width=\"60\" height=\"18\" fill=\"none\" stroke=\"currentColor\"/><text x=\"210\" y=\"25\" fill=\"currentColor\">HT</text><rect x=\"260\" y=\"12\" width=\"150\" height=\"18\" fill=\"currentColor\" opacity=\"0.25\" stroke=\"currentColor\"/><text x=\"310\" y=\"25\" fill=\"currentColor\">data</text><text x=\"10\" y=\"74\" fill=\"currentColor\">HT_GF (green):</text><rect x=\"130\" y=\"62\" width=\"60\" height=\"18\" fill=\"none\" stroke=\"currentColor\"/><text x=\"140\" y=\"75\" fill=\"currentColor\">HT</text><rect x=\"190\" y=\"62\" width=\"220\" height=\"18\" fill=\"currentColor\" opacity=\"0.25\" stroke=\"currentColor\"/><text x=\"280\" y=\"75\" fill=\"currentColor\">data</text><text x=\"130\" y=\"112\" fill=\"currentColor\" opacity=\"0.8\">Greenfield drops the legacy preamble</text><text x=\"130\" y=\"130\" fill=\"currentColor\" opacity=\"0.8\">→ less overhead, no legacy compatibility</text></svg>",
+      "caption": {
+        "en": "HT mixed-format keeps a legacy-readable preamble; greenfield omits it for lower overhead but only works where no legacy STA must decode the frame.",
+        "zh": "HT 混合格式保留了传统设备可读的前导码；greenfield 则省去它以降低开销，但仅在没有传统 STA 需要解码该帧的场景下才可用。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A unifying mental model: each feature is 'opt-in by the receiver.' The receiver volunteers a bit saying 'I can decode this,' and the standard forbids the transmitter from using the mode otherwise. This keeps interoperability safe — a STA never has to guess whether its peer can handle a stronger code, extra streams, a tighter symbol, or a slimmer preamble.",
+      "zh": "一个统一的思维模型是：每项功能都由接收方主动选择启用。接收方主动给出一个表示“我能解码这个”的能力位，而标准禁止发送方在没有该位时使用对应模式。这保障了互操作的安全性——STA 永远不必去猜测对端能否处理更强的编码、更多的流、更紧凑的符号或更精简的前导码。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: clauses 10.15–10.18 with exact gates",
+        "zh": "覆盖映射：10.15–10.18 条及其精确门槛"
+      },
+      "en": "10.15 LDPC operation (p.1983): HT sets FEC_CODING=LDPC_CODING toward a peer only if that peer's HT Capabilities LDPC Coding Capability subfield = 1 and dot11LDPCCodingOptionActivated is true; VHT keys on the Rx LDPC subfield + dot11VHTLDPCCodingOptionActivated; S1G on its Rx LDPC subfield + dot11S1GLDPCCodingOptionActivated; HE on LDPC Coding In Payload + dot11HELDPCCodingInPayloadImplemented. A STA should stop LDPC if the peer's most recent Operating Mode field had No LDPC = 1.\n\n10.16 STBC operation (p.1984): a STA may set TXVECTOR STBC nonzero only if it set Tx STBC = 1 in its own HT/VHT/S1G/CMMG Capabilities element, AND the recipient's Rx STBC field indicates support for ≥ the number of spatial streams in the PPDU.\n\n10.17 Short GI operation (pp.1984–1987): GI_TYPE=SHORT_GI is permitted per bandwidth — HT 20/40 (Short GI for 20/40 MHz subfield + dot11ShortGIOptionInTwenty/FortyActivated), VHT 20/40/80/160/80+80 (corresponding VHT Capabilities Short GI subfields + dot11VHTShortGI… variables), and S1G 1/2/4/8/16 MHz (per-bandwidth subfields + dot11ShortGIOptionIn1M/2M/4M/8M/16MActivated). Multi-user PPDUs require every recipient to qualify per their bandwidth. An HT STA shall not use HT_GF + SHORT_GI with a single spatial stream.\n\n10.18 Greenfield operation (p.1987): an HT STA may set FORMAT=HT_GF only if the receiver's HT-Greenfield subfield = 1 and dot11HTGreenfieldOptionActivated is true. Further restrictions in 10.27, 10.6 and 11.8.8.5.",
+      "zh": "10.15 LDPC 操作（第 1983 页）：HT 仅在对端 HT Capabilities 的 LDPC Coding Capability 子字段为 1 且 dot11LDPCCodingOptionActivated 为真时，才将 FEC_CODING 设为 LDPC_CODING；VHT 取决于 Rx LDPC 子字段 + dot11VHTLDPCCodingOptionActivated；S1G 取决于其 Rx LDPC 子字段 + dot11S1GLDPCCodingOptionActivated；HE 取决于 LDPC Coding In Payload + dot11HELDPCCodingInPayloadImplemented。若对端最新的 Operating Mode 字段中 No LDPC = 1，STA 应停止使用 LDPC。\n\n10.16 STBC 操作（第 1984 页）：STA 仅在自己的 HT/VHT/S1G/CMMG Capabilities 元素中设置 Tx STBC = 1，且接收方的 Rx STBC 字段表明其支持的空间流数 ≥ 该 PPDU 中的空间流数时，才可将 TXVECTOR 的 STBC 设为非零值。\n\n10.17 短 GI 操作（第 1984–1987 页）：GI_TYPE=SHORT_GI 按带宽分别许可——HT 20/40（Short GI for 20/40 MHz 子字段 + dot11ShortGIOptionInTwenty/FortyActivated）、VHT 20/40/80/160/80+80（对应的 VHT Capabilities Short GI 子字段 + dot11VHTShortGI… 变量）、S1G 1/2/4/8/16 MHz（按带宽的子字段 + dot11ShortGIOptionIn1M/2M/4M/8M/16MActivated）。多用户 PPDU 要求每个接收方都按其带宽满足条件。HT STA 在单条空间流时不得使用 HT_GF + SHORT_GI。\n\n10.18 Greenfield 操作（第 1987 页）：HT STA 仅在接收方 HT-Greenfield 子字段为 1 且 dot11HTGreenfieldOptionActivated 为真时，才能将 FORMAT 设为 HT_GF。10.27、10.6 与 11.8.8.5 中还有进一步限制。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1983,
+          1984,
+          1985,
+          1986,
+          1987
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1983,
+        1984
+      ],
+      "note": "10.15 LDPC operation (HT/VHT/S1G/HE capability gates + No LDPC override) and start of 10.16 STBC operation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1984,
+        1985,
+        1986,
+        1987
+      ],
+      "note": "10.16 STBC operation, 10.17 Short GI operation (per-bandwidth HT/VHT/S1G tables, MU rules, HT_GF single-stream restriction), and 10.18 Greenfield operation"
+    }
+  ],
+  "covers": [
+    "80211-2024:10.15",
+    "80211-2024:10.16",
+    "80211-2024:10.17",
+    "80211-2024:10.18"
+  ],
+  "track": "modern-phy"
+}

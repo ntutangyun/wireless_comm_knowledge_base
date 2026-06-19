@@ -1,0 +1,139 @@
+{
+  "id": "managing-32-ampdu-aggregation-control-wrapper",
+  "title": {
+    "en": "Aggregation on the Wire: A-MPDU Transport and the Control Wrapper",
+    "zh": "空口上的聚合：A-MPDU 传输与 Control Wrapper"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "We've seen how an A-MPDU bundles several MPDUs back-to-back behind a single PHY preamble. This lesson zooms in on the last mile: how that bundle gets handed to the radio, how it is padded so the receiver can parse it, the special case of group-addressed frames, the degenerate one-MPDU case (the S-MPDU), and a small but clever trick that lets a control frame carry an HT Control field — the Control Wrapper.",
+      "zh": "我们已经了解到 A-MPDU 会把多个 MPDU 紧挨着排在同一个 PHY 前导码之后。本课聚焦于最后一步：这个聚合体如何交给射频发送、如何填充以便接收方能够正确解析、组播帧的特殊规则、只有单个 MPDU 的退化情形（即 S-MPDU），以及一个虽小却巧妙的技巧——让控制帧也能携带 HT Control 字段的 Control Wrapper。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with who is allowed to aggregate group-addressed Data frames (clause 10.12.4). Broadcast and multicast traffic flows from the infrastructure outward, so the rule is straightforward: only an AP, a mesh STA, or an NGV STA may transmit an A-MPDU that contains an MPDU whose RA is a group address. An ordinary client never sends a group-addressed A-MPDU. Because VHT and HE STAs are also HT STAs, this allowance extends to VHT/HE APs and mesh STAs, to APs offering GCR service, and to S1G and DMG APs as well.",
+      "zh": "先看谁有资格聚合组播 Data 帧（10.12.4 节）。广播和组播流量是从基础设施向外发送的，因此规则很直接：只有 AP、mesh STA 或 NGV STA 才能发送 RA 为组地址的 A-MPDU。普通客户端永远不会发送组播 A-MPDU。由于 VHT 和 HE STA 本质上也是 HT STA，这一许可同样适用于 VHT/HE 的 AP 和 mesh STA、提供 GCR 服务的 AP，以及 S1G 和 DMG 的 AP。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Group-addressed frames have no single recipient, so there is no per-link negotiation to fall back on. When an AP builds a group-addressed A-MPDU, it must use parameters that work for everyone listening: the maximum A-MPDU length exponent becomes the minimum advertised across all associated STAs, and the minimum MPDU start spacing becomes the maximum advertised across them. The slowest, most conservative limits win.",
+      "zh": "组播帧没有唯一的接收方，因此无法依赖任何逐链路的协商。当 AP 构建组播 A-MPDU 时，必须采用对所有听众都适用的参数：A-MPDU 最大长度指数取所有关联 STA 通告值中的最小值，最小 MPDU 起始间隔则取它们通告值中的最大值。也就是说，最慢、最保守的限制说了算。"
+    },
+    {
+      "type": "prose",
+      "en": "Once the A-MPDU is assembled, it must be handed to the PHY (clause 10.12.5). The MAC does this by issuing a PHY-TXSTART.request whose TXVECTOR sets AGGREGATION to 1, or whose FORMAT is set to VHT. On the receiving side, a PSDU is recognized as an A-MPDU when its PHY-RXSTART.indication carries RXVECTOR AGGREGATION equal to 1, or RXVECTOR FORMAT equal to VHT. In other words, the PHY itself flags 'this PSDU is a bundle' through the vector — the receiver doesn't have to guess. (For S1G, the STA also sets AGGREGATION to 1 whenever the PSDU is longer than aPSDUMaxLengthWithNoAggregation.)",
+      "zh": "A-MPDU 组装完成后，必须交给 PHY（10.12.5 节）。MAC 通过发出 PHY-TXSTART.request 来完成交接，其 TXVECTOR 把 AGGREGATION 置为 1，或把 FORMAT 置为 VHT。在接收侧，当某个 PSDU 对应的 PHY-RXSTART.indication 中 RXVECTOR 的 AGGREGATION 等于 1、或 RXVECTOR 的 FORMAT 等于 VHT 时，该 PSDU 即被识别为 A-MPDU。换言之，PHY 通过向量本身标明“这个 PSDU 是一个聚合体”，接收方无需猜测。（对 S1G 而言，只要 PSDU 长度超过 aPSDUMaxLengthWithNoAggregation，STA 也会把 AGGREGATION 置为 1。）"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant MAC\n  participant PHY_TX as TX PHY\n  participant PHY_RX as RX PHY\n  participant RX as RX MAC\n  MAC->>PHY_TX: PHY-TXSTART.request\n  Note over MAC,PHY_TX: TXVECTOR AGGREGATION=1\n  PHY_TX-->>PHY_RX: PPDU over the air\n  PHY_RX->>RX: PHY-RXSTART.indication\n  Note over PHY_RX,RX: RXVECTOR AGGREGATION=1\n  RX->>RX: parse as A-MPDU",
+      "zh": "sequenceDiagram\n  participant MAC\n  participant PHY_TX as 发送 PHY\n  participant PHY_RX as 接收 PHY\n  participant RX as 接收 MAC\n  MAC->>PHY_TX: PHY-TXSTART.request\n  Note over MAC,PHY_TX: TXVECTOR AGGREGATION=1\n  PHY_TX-->>PHY_RX: PPDU 经空口传输\n  PHY_RX->>RX: PHY-RXSTART.indication\n  Note over PHY_RX,RX: RXVECTOR AGGREGATION=1\n  RX->>RX: 按 A-MPDU 解析"
+    },
+    {
+      "type": "prose",
+      "en": "Now the padding rules for VHT, HE, and S1G PPDUs (clause 10.12.6). Here the PHY tells the MAC exactly how many octets it must produce. The MAC first builds the useful content — a 'pre-EOF padding' region of real A-MPDU subframes (plus optional zero-length filler subframes) — and uses its length as APEP_LENGTH for a PLME-TXTIME.request. The PHY answers with PSDU_LENGTH per user. The MAC may then add more subframes (subject to content, length, and spacing limits) as long as A-MPDU_Length stays at or below PSDU_LENGTH. Finally it pads to hit PSDU_LENGTH exactly.",
+      "zh": "接下来是 VHT、HE 和 S1G PPDU 的填充规则（10.12.6 节）。这里由 PHY 告诉 MAC 它必须产生多少字节。MAC 首先构建有效内容——一段“pre-EOF padding”区域，由真正的 A-MPDU 子帧（外加可选的零长度填充子帧）组成——并把它的长度作为 APEP_LENGTH 发起 PLME-TXTIME.request。PHY 则按用户返回 PSDU_LENGTH。随后，只要 A-MPDU_Length 不超过 PSDU_LENGTH，MAC 可以继续添加子帧（受内容、长度和间隔限制约束），最后通过填充把长度精确补到 PSDU_LENGTH。"
+    },
+    {
+      "type": "prose",
+      "en": "That final padding follows a precise three-step recipe so any receiver reconstructs the same byte count. While A-MPDU_Length is below PSDU_LENGTH and not yet a multiple of 4, add single octets to the last subframe's Padding subfield. Then, while four more octets still fit, append whole EOF padding subframes (4 octets each). Finally, top off with single EOF padding octets until A-MPDU_Length equals PSDU_LENGTH exactly. The result fills the time the PHY reserved without ever exceeding it.",
+      "zh": "这一最终填充遵循精确的三步流程，使任何接收方都能重建出相同的字节数。当 A-MPDU_Length 小于 PSDU_LENGTH 且尚未对齐到 4 的倍数时，向最后一个子帧的 Padding 子字段逐字节添加。然后，只要还能放下 4 个字节，就追加完整的 EOF padding 子帧（每个 4 字节）。最后，再逐字节添加 EOF padding 字节，直到 A-MPDU_Length 恰好等于 PSDU_LENGTH。这样既填满 PHY 预留的时长，又绝不超出。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 480 120\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" font-family=\"sans-serif\" font-size=\"11\"><rect x=\"6\" y=\"40\" width=\"120\" height=\"34\" fill=\"none\" stroke=\"currentColor\"/><text x=\"66\" y=\"61\" fill=\"currentColor\" text-anchor=\"middle\">A-MPDU subframes</text><rect x=\"126\" y=\"40\" width=\"60\" height=\"34\" fill=\"none\" stroke=\"currentColor\"/><text x=\"156\" y=\"61\" fill=\"currentColor\" text-anchor=\"middle\">pad to 4</text><rect x=\"186\" y=\"40\" width=\"150\" height=\"34\" fill=\"none\" stroke=\"currentColor\"/><text x=\"261\" y=\"61\" fill=\"currentColor\" text-anchor=\"middle\">EOF padding subframes</text><rect x=\"336\" y=\"40\" width=\"100\" height=\"34\" fill=\"none\" stroke=\"currentColor\"/><text x=\"386\" y=\"61\" fill=\"currentColor\" text-anchor=\"middle\">EOF octets</text><line x1=\"6\" y1=\"92\" x2=\"436\" y2=\"92\" stroke=\"currentColor\"/><line x1=\"6\" y1=\"86\" x2=\"6\" y2=\"98\" stroke=\"currentColor\"/><line x1=\"436\" y1=\"86\" x2=\"436\" y2=\"98\" stroke=\"currentColor\"/><text x=\"221\" y=\"112\" fill=\"currentColor\" text-anchor=\"middle\">PSDU_LENGTH (exact)</text><text x=\"66\" y=\"30\" fill=\"currentColor\" text-anchor=\"middle\">useful data</text><text x=\"330\" y=\"30\" fill=\"currentColor\" text-anchor=\"middle\">padding region</text></svg>",
+      "caption": {
+        "en": "The padding recipe: real subframes, then octets to a 4-byte boundary, then whole EOF padding subframes, then single EOF octets — landing on PSDU_LENGTH exactly.",
+        "zh": "填充流程：先是真实子帧，再补字节对齐到 4 字节边界，接着是完整的 EOF padding 子帧，最后是单个 EOF 字节——恰好补到 PSDU_LENGTH。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Sometimes a 'bundle' carries just one frame. When an A-MPDU contains a single MPDU whose subframe has the EOF/Tag field set to 1, that lone MPDU is an S-MPDU. Clause 10.12.8 keeps its behavior pleasantly simple: an S-MPDU follows the same rules as an ordinary non-A-MPDU frame. So it may carry an MSDU/MMPDU fragment, its control-response rate is chosen as usual, a QoS Data frame may use Normal Ack (soliciting an immediate Ack with no Block Ack agreement) but cannot use Implicit BAR, and it may even be a Management frame that solicits an Ack. The A-MPDU wrapper buys uniform framing on the wire without changing the frame's semantics.",
+      "zh": "有时一个“聚合体”只承载一帧。当 A-MPDU 中只有一个 MPDU、且其子帧的 EOF/Tag 字段置为 1 时，这个孤立的 MPDU 就是 S-MPDU。10.12.8 节让它的行为保持简洁：S-MPDU 遵循与普通非 A-MPDU 帧相同的规则。因此它可以承载 MSDU/MMPDU 的分片，其控制响应速率按常规选取，QoS Data 帧可使用 Normal Ack（请求立即回复 Ack，无需 Block Ack 协商）但不能使用 Implicit BAR，它甚至可以是请求 Ack 响应的管理帧。A-MPDU 这层外壳带来了空口上统一的封装格式，却不改变帧本身的语义。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the Control Wrapper (clause 10.9). The HT Control field carries link-adaptation and channel-feedback signaling, but control frames like RTS, CTS, or BlockAckReq have rigid formats with no room for it. The Control Wrapper solves this by wrapping a control frame so it can also carry an HT Control field. A receiver that supports the HT Control field and receives a Control Wrapper frame simply processes it as though it had received a frame of the wrapped subtype — the wrapper is transparent. One restriction: an HE STA shall not send a Control Wrapper frame to another HE STA (HE STAs carry that signaling by other means).",
+      "zh": "最后是 Control Wrapper（10.9 节）。HT Control 字段承载链路自适应和信道反馈信令，但 RTS、CTS、BlockAckReq 这类控制帧格式固定，没有空间容纳它。Control Wrapper 通过把一个控制帧“包裹”起来解决了这个问题，使其也能携带 HT Control 字段。支持 HT Control 字段的接收方在收到 Control Wrapper 帧时，只需把它当作收到了所包裹子类型的帧来处理——这层包裹是透明的。一条限制：HE STA 不得向另一个 HE STA 发送 Control Wrapper 帧（HE STA 以其他方式承载该信令）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Think of the Control Wrapper as an envelope. The control frame inside acts exactly as it always would; the envelope simply adds a slot for the HT Control field that the bare frame format had no place to put. Because the receiver unwraps and treats it as the inner subtype, no new control-frame behavior has to be defined.",
+      "zh": "可以把 Control Wrapper 想象成一个信封。里面的控制帧的行为与平时完全一致；信封只是额外提供了一个槽位，用来放置裸帧格式无处安放的 HT Control 字段。由于接收方会拆封并按内层子类型处理，因此无需为此定义任何新的控制帧行为。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Clause coverage map",
+        "zh": "条款覆盖对照表"
+      },
+      "en": "10.9 Control Wrapper operation — a STA supporting the HT Control field that receives a Control Wrapper frame processes it as if it were a frame of the wrapped subtype; an HE STA shall not send a Control Wrapper frame to another HE STA. 10.12.4 A-MPDU aggregation of group addressed Data frames — only an AP, mesh STA, or NGV STA may transmit an A-MPDU with a group-address RA; an AP/mesh STA shall not do so under non-HT mixed mode HT Protection; the maximum A-MPDU length exponent uses the minimum, and the minimum MPDU start spacing uses the maximum, advertised across the relevant associated/peer STAs. 10.12.5 Transport of A-MPDU by the PHY data service — transmit via PHY-TXSTART.request with TXVECTOR AGGREGATION=1 or FORMAT=VHT; a received PSDU is an A-MPDU when RXVECTOR AGGREGATION=1 or FORMAT=VHT; S1G sets AGGREGATION=1 above aPSDUMaxLengthWithNoAggregation. 10.12.6 A-MPDU padding for VHT, HE or S1G PPDU — build pre-EOF padding, get PSDU_LENGTH from PLME-TXTIME, then pad in three steps (octets to a 4-byte boundary, whole EOF padding subframes, single EOF octets) to reach PSDU_LENGTH exactly. 10.12.8 Transport of S-MPDUs — an S-MPDU follows the same rules as a non-A-MPDU frame (fragments, control-response rate, Normal Ack but not Implicit BAR, may be an Ack-soliciting Management frame).",
+      "zh": "10.9 Control Wrapper 操作——支持 HT Control 字段的 STA 收到 Control Wrapper 帧时，将其当作所包裹子类型的帧处理；HE STA 不得向另一个 HE STA 发送 Control Wrapper 帧。10.12.4 组播 Data 帧的 A-MPDU 聚合——只有 AP、mesh STA 或 NGV STA 可发送 RA 为组地址的 A-MPDU；当 HT Protection 为 non-HT mixed mode 时，AP/mesh STA 不得发送；A-MPDU 最大长度指数取相关关联/对等 STA 通告值的最小值，最小 MPDU 起始间隔取最大值。10.12.5 由 PHY 数据服务传输 A-MPDU——通过 TXVECTOR AGGREGATION=1 或 FORMAT=VHT 的 PHY-TXSTART.request 发送；当 RXVECTOR AGGREGATION=1 或 FORMAT=VHT 时，接收 PSDU 被判定为 A-MPDU；S1G 在超过 aPSDUMaxLengthWithNoAggregation 时置 AGGREGATION=1。10.12.6 VHT、HE 或 S1G PPDU 的 A-MPDU 填充——构建 pre-EOF padding，由 PLME-TXTIME 取得 PSDU_LENGTH，再分三步填充（补字节到 4 字节边界、完整 EOF padding 子帧、单个 EOF 字节）以精确达到 PSDU_LENGTH。10.12.8 S-MPDU 的传输——S-MPDU 遵循与非 A-MPDU 帧相同的规则（分片、控制响应速率、可用 Normal Ack 但不可用 Implicit BAR、可为请求 Ack 的管理帧）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1971,
+          1978,
+          1979,
+          1980,
+          1981,
+          1982
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1971
+      ],
+      "note": "10.9 Control Wrapper operation — process as wrapped subtype; HE STA restriction"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1978,
+        1979
+      ],
+      "note": "10.12.4 A-MPDU aggregation of group addressed Data frames (AP/mesh/NGV only; min/max parameter selection) and start of 10.12.5"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1979,
+        1980
+      ],
+      "note": "10.12.5 Transport of A-MPDU by the PHY data service (TXVECTOR/RXVECTOR AGGREGATION/FORMAT, S1G) and 10.12.6 padding intro"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1980,
+        1981
+      ],
+      "note": "10.12.6 A-MPDU padding for VHT/HE/S1G PPDU — pre-EOF padding, PSDU_LENGTH, three-step padding recipe"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1982
+      ],
+      "note": "10.12.8 Transport of S-MPDUs — same rules as non-A-MPDU frames"
+    }
+  ],
+  "covers": [
+    "80211-2024:10.9",
+    "80211-2024:10.12.4",
+    "80211-2024:10.12.5",
+    "80211-2024:10.12.6",
+    "80211-2024:10.12.8"
+  ],
+  "track": "managing"
+}

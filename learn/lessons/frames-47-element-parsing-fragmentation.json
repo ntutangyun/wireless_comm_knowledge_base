@@ -1,0 +1,122 @@
+{
+  "id": "frames-47-element-parsing-fragmentation",
+  "title": {
+    "en": "Reading the Fine Print: Element Parsing, Fragmentation and Defragmentation",
+    "zh": "读懂细则：元素解析、分片与重组"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A management frame body is just a stream of information elements packed one after another. The transmitter and receiver may run different revisions of the standard, may understand different vendor extensions, and may need to carry chunks of data far larger than a single element can hold. The 802.11 receiver therefore needs a small but precise rulebook for reading this 'fine print' — so that an old radio talking to a brand-new one never crashes, never misreads, and never silently corrupts what it parses. This lesson walks through that receiver-side rulebook.",
+      "zh": "一个管理帧的帧体，本质上就是一连串紧挨着排列的信息元素（element）。收发双方可能运行着不同版本的标准、能识别不同的厂商扩展，还可能需要传输远超单个元素容量的大块数据。因此，802.11 接收端需要一套简短而精确的“读细则”规则——确保一台老设备和一台全新设备对话时，永远不会崩溃、不会误读、也不会在解析时悄悄损坏数据。本课就来梳理这套接收端的规则。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the coarsest filter of all: the revision level. Every MAC entity advertises which revision of the standard it implements. Clause 10.28.2 gives a blunt rule — if you receive a frame carrying a revision level HIGHER than you support, you discard the frame, with no indication sent back to the originating STA and nothing handed up to LLC. There is no negotiation, no error frame, no log to the peer. The frame simply vanishes from your perspective, because a newer revision could mean fields you have no safe way to interpret.",
+      "zh": "先从最粗粒度的过滤说起：版本级别（revision level）。每个 MAC 实体都会声明自己实现了哪个版本的标准。10.28.2 节给出了一条直截了当的规则——如果你收到一帧，其携带的版本级别高于你所支持的版本，就直接丢弃该帧，既不向发送方回复任何指示，也不向上层 LLC 上报任何内容。没有协商、没有错误帧、也不会通知对端。从你的视角看，这帧就这样凭空消失了，因为更高的版本可能包含你无法安全解读的字段。"
+    },
+    {
+      "type": "prose",
+      "en": "Next come the elements themselves. Clause 10.28.7 handles the most common extension point: Vendor Specific elements. These carry proprietary content keyed by an Organizationally Unique Identifier. The rule is gracefully simple — a STA receiving a Vendor Specific element that it does not support shall simply ignore it, then keep parsing the rest of the frame body. One vendor's private extension never blocks a different receiver from reading everything else.",
+      "zh": "接下来是元素本身。10.28.7 节处理最常见的扩展点：厂商特定元素（Vendor Specific element）。这类元素通过组织唯一标识符（OUI）来标记，携带各家私有的内容。规则非常优雅简单——接收方若收到一个自己不支持的厂商特定元素，只需忽略它，然后继续解析帧体的其余部分。某一家厂商的私有扩展，绝不会妨碍另一台接收设备读取所有其他内容。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the recurring theme: 'ignore and keep going.' Whether it is an unknown element ID, an unsupported vendor element, or an unrecognized subelement, the receiver skips the unreadable piece and continues parsing for the next recognizable one. This forward-compatibility by skipping is what lets the standard grow new elements for decades without breaking older devices.",
+      "zh": "请注意这里反复出现的主题：“忽略，然后继续往下走”。无论是未知的元素 ID、不支持的厂商元素，还是无法识别的子元素，接收方都会跳过这段读不懂的内容，继续解析下一个能识别的部分。这种“靠跳过来实现的前向兼容”，正是标准能够数十年间不断新增元素、却不会让老设备失灵的根本原因。"
+    },
+    {
+      "type": "prose",
+      "en": "Elements can nest: a subelement (defined in 9.4.3) lives inside an element or another subelement, with its own locally-numbered ID space. Clause 10.28.9 gives subelements the same skip-and-continue treatment. A STA that meets an unknown, unsupported, or reserved subelement ID ignores just that subelement and keeps scanning the body for more recognizable subelements; the same applies to an unsupported vendor-specific subelement. There is also a length-safety rule: if an extensible subelement that is NOT extensible-by-subelements arrives with a Length longer than the structure this standard defines, the receiver discards the excess bytes beyond that defined length and processes the rest as if a correctly-sized (truncated) subelement had arrived.",
+      "zh": "元素可以嵌套：子元素（subelement，定义见 9.4.3 节）存在于某个元素或另一个子元素之内，并拥有自己局部编号的 ID 空间。10.28.9 节对子元素采用了同样的“跳过并继续”的处理方式。接收方遇到未知、不支持或保留的子元素 ID 时，只忽略该子元素，并继续扫描帧体寻找其他可识别的子元素；对不支持的厂商特定子元素也是如此。此外还有一条长度安全规则：如果一个“可扩展但不是通过子元素来扩展”的子元素，其 Length 长度超出了本标准所定义的结构长度，接收方就丢弃超出该长度的多余字节，并将剩余部分当作一个长度正确（被截断）的子元素来处理。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.28.10 covers a narrower case: extensible TLV (Type-Length-Value) parsing for TVHT STAs. When such a STA receives a frame containing a TLV tuple whose Type value it does not recognize, it discards that one tuple and continues processing the next tuple. Same philosophy, applied to a TLV stream instead of an element stream — an unknown type never derails the parse of the tuples that follow.",
+      "zh": "10.28.10 节涵盖一个更窄的场景：面向 TVHT STA 的可扩展 TLV（类型-长度-值）解析。当这类 STA 收到一帧、其中某个 TLV 三元组的 Type 值它无法识别时，它就丢弃这一个三元组，并继续处理下一个三元组。理念完全相同，只不过应用在 TLV 流而非元素流上——未知的类型绝不会让后续三元组的解析脱轨。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the harder problem. A single element caps its payload at 255 octets (254 if it carries an Element ID Extension), because the Length field is one octet. To send more, the transmitter fragments: it fills a 'leading element' to the brim, then appends one or more Fragment elements, each carrying the next 255-octet portion, until the remainder fits. The receiver reverses this — concatenating the leading portion with each following Fragment element's portion, in order, stopping when it hits any element that is not a Fragment element or reaches the end of the MMPDU. That is plain fragmentation. But what happens when the element you want to fragment is itself buried inside a subelement of an element that is NOT allowed to be fragmented?",
+      "zh": "现在来看更棘手的问题。单个元素的载荷上限是 255 个八位字节（若携带 Element ID Extension 则为 254 个），因为 Length 字段只有一个八位字节。要发送更多数据，发送方就进行分片（fragment）：它把一个“引导元素（leading element）”填满，然后追加一个或多个 Fragment 元素，每个携带下一段 255 个八位字节的内容，直到剩余部分能装下为止。接收方则反向操作——按顺序把引导元素的那一段，与后续每个 Fragment 元素的那一段拼接起来，直到遇到任何非 Fragment 元素、或到达 MMPDU 末尾为止。这是基本的分片。但是，如果你想分片的那个元素，本身被埋在一个“不允许分片”的元素的子元素里，又会怎样呢？"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.28.13 answers exactly this. Suppose a nonfragmentable element (marked 'No' in the Fragmentable column of Table 9-130) contains a fragmentable element as a subelement. The fragmentable element's room is now bounded by the remaining length inside the subelement. If that remaining space is too small, the element fragments — but the carrier itself cannot grow. So the nonfragmentable element is FOLLOWED by another element with the same Element ID (and Element ID Extension, if any), whose first subelement is the same subelement, now carrying a Fragment element with the leftover content. The fragmentable element can thus spill across subelements carried in several successive nonfragmentable elements. The classic example is a fragmentable element inside a Nontransmitted BSSID Profile subelement spanning multiple Multiple BSSID elements (Figure 10-49).",
+      "zh": "10.28.13 节正是回答这个问题的。假设一个不可分片元素（在表 9-130 的 Fragmentable 列中标为“否”）以子元素的形式包含了一个可分片元素。此时这个可分片元素的空间，受限于子元素内部的剩余长度。如果剩余空间太小，元素就进行分片——但承载它的元素本身不能变大。于是，这个不可分片元素后面会紧跟另一个 Element ID（以及 Element ID Extension，若有）相同的元素，其第一个子元素就是同一个子元素，现在携带一个装着剩余内容的 Fragment 元素。这样，可分片元素就可以分散到若干个连续的不可分片元素所承载的子元素中。经典例子是：一个可分片元素位于跨越多个 Multiple BSSID 元素的“非传输 BSSID 配置（Nontransmitted BSSID Profile）子元素”之内（见图 10-49）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[\"Multiple BSSID element #1<br/>(nonfragmentable)\"] --> B[\"Nontransmitted BSSID<br/>Profile subelement\"]\n  B --> C[\"Fragmentable element M<br/>(first 250 octets)\"]\n  A --> D[\"Multiple BSSID element #2<br/>same Element ID\"]\n  D --> E[\"same subelement,<br/>first position\"]\n  E --> F[\"Fragment element<br/>(remaining p octets)\"]\n  C -. concatenate in order .-> G[\"Reassembled element M<br/>(249 + p octets)\"]\n  F -. concatenate in order .-> G",
+      "zh": "flowchart TD\n  A[\"Multiple BSSID 元素 #1<br/>（不可分片）\"] --> B[\"非传输 BSSID<br/>配置子元素\"]\n  B --> C[\"可分片元素 M<br/>（前 250 个八位字节）\"]\n  A --> D[\"Multiple BSSID 元素 #2<br/>相同 Element ID\"]\n  D --> E[\"同一子元素，<br/>位于首位\"]\n  E --> F[\"Fragment 元素<br/>（剩余 p 个八位字节）\"]\n  C -. 按序拼接 .-> G[\"重组后的元素 M<br/>（249 + p 个八位字节）\"]\n  F -. 按序拼接 .-> G"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.28.14 is the receiver's mirror image of 10.28.13. Defragmentation here follows the same procedure as ordinary element defragmentation (10.28.12) — concatenate the leading portion with the following Fragment portions in order — with one extra consideration: the fragments are spread across subelements that live inside MULTIPLE successive nonfragmentable elements, not within a single element. So the receiver must walk from one carrier element to the next, pull the same subelement out of each, and stitch their fragments together to recover the original oversized element.",
+      "zh": "10.28.14 节是接收端对 10.28.13 节的镜像。这里的重组遵循与普通元素重组（10.28.12 节）相同的流程——按序把引导部分与后续各 Fragment 部分拼接起来——但多了一项考量：这些分片分散在多个连续的不可分片元素内部的子元素中，而不是在单个元素之内。因此，接收方必须从一个承载元素走到下一个，从每个里面取出同一个子元素，再把它们的分片缝合起来，从而恢复出原始的超大元素。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 400 150\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" font-family=\"sans-serif\" font-size=\"11\" fill=\"currentColor\"><rect x=\"10\" y=\"20\" width=\"60\" height=\"30\" fill=\"none\" stroke=\"currentColor\"/><text x=\"40\" y=\"39\" text-anchor=\"middle\">EID 255</text><rect x=\"70\" y=\"20\" width=\"60\" height=\"30\" fill=\"none\" stroke=\"currentColor\"/><text x=\"100\" y=\"39\" text-anchor=\"middle\">Data 255</text><rect x=\"130\" y=\"20\" width=\"60\" height=\"30\" fill=\"none\" stroke=\"currentColor\"/><text x=\"160\" y=\"39\" text-anchor=\"middle\">FID 255</text><rect x=\"190\" y=\"20\" width=\"60\" height=\"30\" fill=\"none\" stroke=\"currentColor\"/><text x=\"220\" y=\"39\" text-anchor=\"middle\">Data 255</text><rect x=\"250\" y=\"20\" width=\"50\" height=\"30\" fill=\"none\" stroke=\"currentColor\"/><text x=\"275\" y=\"39\" text-anchor=\"middle\">FID m</text><rect x=\"300\" y=\"20\" width=\"50\" height=\"30\" fill=\"none\" stroke=\"currentColor\"/><text x=\"325\" y=\"39\" text-anchor=\"middle\">Data m</text><text x=\"10\" y=\"70\" fill=\"currentColor\">leading element</text><text x=\"160\" y=\"70\" fill=\"currentColor\">Fragment elements (255 octets each)</text><path d=\"M 30 95 L 330 95\" stroke=\"currentColor\" fill=\"none\" marker-end=\"url(#a)\"/><defs><marker id=\"a\" markerWidth=\"8\" markerHeight=\"8\" refX=\"6\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L6,3 L0,6 Z\" fill=\"currentColor\"/></marker></defs><text x=\"60\" y=\"120\" fill=\"currentColor\">concatenate in order until a non-Fragment element / end of MMPDU</text><text x=\"60\" y=\"140\" fill=\"currentColor\">total payload L = 255 + 255 + ... + m octets</text></svg>",
+      "caption": {
+        "en": "Plain element fragmentation (10.28.11): a leading element of 255 octets, followed by Fragment elements of 255 octets each, ending with a final Fragment of m = L mod 255 octets. The receiver concatenates them in order (10.28.12).",
+        "zh": "基本的元素分片（10.28.11 节）：一个 255 个八位字节的引导元素，后跟若干各 255 个八位字节的 Fragment 元素，最后以一个 m = L mod 255 个八位字节的 Fragment 收尾。接收方按序将它们拼接起来（10.28.12 节）。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the six clauses in this lesson",
+        "zh": "覆盖地图：本课涉及的六个条款"
+      },
+      "en": "All six leaf clauses live in 10.28 (MAC frame processing). 10.28.2 Revision level field processing: discard a frame whose revision level exceeds what you support, silently — no indication to the STA or LLC. 10.28.7 Vendor specific element parsing: ignore an unsupported Vendor Specific element and parse on. 10.28.9 Extensible subelement parsing: ignore unknown/unsupported/reserved subelement IDs (and unsupported vendor-specific subelements) and continue; for an extensible subelement that is not extensible-by-subelements, discard Length-excess bytes beyond the standard-defined structure and process the truncated remainder. 10.28.10 Extensible TLV parsing: a TVHT STA discards a TLV tuple with an unknown Type and continues with the next tuple. 10.28.13 Element fragmentation within a subelement of a nonfragmentable element: a fragmentable element inside a nonfragmentable carrier's subelement is bounded by remaining subelement length; when it overflows, the carrier is followed by another element with the same Element ID/Extension whose first subelement carries a Fragment element with the remainder, possibly spilling across several carriers (e.g., a Nontransmitted BSSID Profile subelement across Multiple BSSID elements). 10.28.14 Element defragmentation within a subelement of a nonfragmentable element: same as 10.28.12, with the added consideration that fragments are carried across subelements in multiple successive nonfragmentable elements.",
+      "zh": "全部六个叶级条款都位于 10.28 节（MAC 帧处理）。10.28.2 版本级别字段处理：若某帧的版本级别高于你的支持范围，则静默丢弃——不向 STA 或 LLC 发出任何指示。10.28.7 厂商特定元素解析：忽略不支持的厂商特定元素，继续解析。10.28.9 可扩展子元素解析：忽略未知/不支持/保留的子元素 ID（以及不支持的厂商特定子元素）并继续；对于“可扩展但不通过子元素扩展”的子元素，丢弃超出本标准所定义结构的 Length 多余字节，并处理被截断后的剩余部分。10.28.10 可扩展 TLV 解析：TVHT STA 丢弃 Type 未知的 TLV 三元组，并继续处理下一个。10.28.13 不可分片元素的子元素内的元素分片：位于不可分片承载元素子元素中的可分片元素，受限于子元素剩余长度；溢出时，该承载元素后跟另一个 Element ID/Extension 相同的元素，其首个子元素携带装有剩余内容的 Fragment 元素，并可能跨越多个承载元素（例如跨多个 Multiple BSSID 元素的非传输 BSSID 配置子元素）。10.28.14 不可分片元素的子元素内的元素重组：与 10.28.12 相同，额外考量是这些分片分散承载于多个连续不可分片元素内部的子元素中。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2093,
+          2094,
+          2095,
+          2096
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two distinct safety strategies are at work here. Length/Type mismatches and unknown extensions are handled by tolerance — ignore, truncate, skip, keep parsing. But a too-high revision level is handled by rejection — discard the whole frame. The difference is risk: a stray unknown element is harmless to skip, whereas a wholesale newer revision might reinterpret fields you think you understand, so the safe move is to drop it entirely.",
+      "zh": "这里运用了两种截然不同的安全策略。长度/类型不匹配以及未知扩展，靠“容忍”来处理——忽略、截断、跳过、继续解析。但“版本级别过高”则靠“拒绝”来处理——丢弃整帧。差别在于风险：跳过一个偶然出现的未知元素是无害的，而面对一个整体更新的版本，它可能重新解读你自以为理解的字段，因此最安全的做法就是把它整帧丢掉。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2093,
+        2094
+      ],
+      "note": "10.28.1-10.28.10: revision level (10.28.2), vendor specific element (10.28.7), extensible subelement (10.28.9), extensible TLV (10.28.10) parsing"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2094,
+        2095,
+        2096
+      ],
+      "note": "10.28.11-10.28.14: element fragmentation/defragmentation and the within-a-subelement-of-a-nonfragmentable-element cases (10.28.13, 10.28.14), incl. Figures 10-47/10-48/10-49"
+    }
+  ],
+  "covers": [
+    "80211-2024:10.28.2",
+    "80211-2024:10.28.7",
+    "80211-2024:10.28.9",
+    "80211-2024:10.28.10",
+    "80211-2024:10.28.13",
+    "80211-2024:10.28.14"
+  ],
+  "track": "frames"
+}

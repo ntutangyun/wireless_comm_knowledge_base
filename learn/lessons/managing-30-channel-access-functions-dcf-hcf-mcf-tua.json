@@ -1,0 +1,139 @@
+{
+  "id": "managing-30-channel-access-functions-dcf-hcf-mcf-tua",
+  "title": {
+    "en": "The Coordination Functions: DCF, HCF, MCF and Triggered Uplink Access",
+    "zh": "协调功能：DCF、HCF、MCF 与触发式上行接入（TUA）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A Wi-Fi channel is a shared medium: only one radio can usefully transmit at a time. So the very first job of the MAC is to answer a deceptively simple question — *who gets to transmit, and when?* The IEEE 802.11 standard answers it with a family of **coordination functions**, each layered on top of the last. This lesson walks through all four: the baseline **DCF**, the QoS-aware **HCF**, the mesh-specific **MCF**, and the scheduled **triggered uplink access (TUA)** used in modern S1G/HE deployments.",
+      "zh": "Wi-Fi 信道是一种共享介质：同一时刻只能有一个射频有效地发送。因此 MAC 层的首要任务，就是回答一个看似简单的问题——*谁可以发送，在什么时候发送？* IEEE 802.11 标准用一组**协调功能**来回答它，每一层都建立在前一层之上。本课依次讲解这四种功能：基础的 **DCF**、面向 QoS 的 **HCF**、专用于网状网的 **MCF**，以及现代 S1G/HE 部署中使用的、经调度的**触发式上行接入（TUA）**。"
+    },
+    {
+      "type": "prose",
+      "en": "**DCF (10.2.2)** is the foundation — every station must implement it. Its access method is **CSMA/CA**: carrier sense multiple access with collision avoidance. Before transmitting, a station senses the medium; if it is idle for a required gap, it may proceed. If the medium is busy it *defers* until the current transmission ends, then picks a **random backoff count** and decrements that counter one slot at a time while the medium stays idle. Optionally a short RTS/CTS handshake reserves the medium first to shrink the collision window further.",
+      "zh": "**DCF（10.2.2）**是基础——每个站点都必须实现它。它的接入方式是 **CSMA/CA**：带冲突避免的载波侦听多路访问。在发送前，站点先侦听介质；如果介质空闲达到要求的间隔，便可开始发送。如果介质忙，站点就*延迟*到当前传输结束，然后选取一个**随机退避计数**，并在介质保持空闲期间每个时隙将该计数器减一。可选地，先用一次短的 RTS/CTS 握手预约介质，进一步缩小冲突窗口。"
+    },
+    {
+      "type": "widget",
+      "widget": "backoff",
+      "params": {}
+    },
+    {
+      "type": "prose",
+      "en": "Why random? Just after a busy medium goes idle is exactly when collisions are most likely — several stations may have been waiting for that moment. **DCF (10.3.1)** therefore makes each station roll its own dice: the random backoff spreads their start times out, resolving the contention without a central referee. All individually addressed traffic is then protected by **immediate positive acknowledgment**: the sender retransmits if no Ack frame comes back.",
+      "zh": "为什么要随机？恰恰是在忙碌的介质刚刚转为空闲的那一刻，最容易发生冲突——可能有多个站点都在等待这一时刻。因此 **DCF（10.3.1）**让每个站点各自“掷骰子”：随机退避把它们的起始时间错开，无需中央裁判即可化解争用。随后，所有单播流量都受到**立即正向确认**的保护：若发送方收不到 Ack 帧，便会重传。"
+    },
+    {
+      "type": "prose",
+      "en": "DCF and the QoS access function share a common toolbox — clause **10.3.2, \"Procedures common to the DCF and EDCAF\".** This is where the standard defines the **carrier sense (CS) mechanism** itself: a *physical* CS supplied by the PHY plus a *virtual* CS, the **NAV** (Network Allocation Vector), that predicts future medium use from the Duration field in RTS/CTS and other frames. When either CS indicates busy, the medium is busy. The same clause defines **MAC-level acknowledgments** and the family of **interframe spaces (IFS)** — SIFS, PIFS, DIFS, AIFS, EIFS and more — whose different lengths create the priority ordering for medium access.",
+      "zh": "DCF 与 QoS 接入功能共享一套通用工具——这就是 **10.3.2 节“DCF 与 EDCAF 的公共过程”**。标准在此定义了**载波侦听（CS）机制**本身：由 PHY 提供的*物理* CS，加上*虚拟* CS——即 **NAV**（网络分配矢量），它根据 RTS/CTS 及其他帧中的 Duration 字段来预测介质的未来占用情况。只要任一种 CS 指示忙，介质即视为忙。同一节还定义了 **MAC 层确认**，以及一族**帧间间隔（IFS）**——SIFS、PIFS、DIFS、AIFS、EIFS 等——它们不同的长度构成了介质接入的优先级次序。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The shorter the IFS, the higher the access priority. SIFS (used for an Ack right after a frame) is the shortest, so an acknowledgment always wins the medium before any new contention can start. DIFS, used by plain DCF, is longer — giving response and high-priority traffic a head start.",
+      "zh": "IFS 越短，接入优先级越高。SIFS（用于紧跟一帧之后的 Ack）最短，因此确认帧总能在任何新一轮争用开始之前抢到介质。普通 DCF 使用的 DIFS 更长——从而让响应帧和高优先级流量抢先一步。"
+    },
+    {
+      "type": "prose",
+      "en": "**HCF (10.2.3)** is the QoS upgrade, implemented by every QoS station except mesh stations. It blends DCF's ideas with QoS-specific machinery and offers two paths to a TXOP (transmit opportunity). The contention-based path is **EDCA**: each of four access categories (Background, Best Effort, Video, Voice) runs its own DCF-like **EDCAF** with its own contention-window and AIFS settings, so voice contends more aggressively than background traffic. The controlled path is **HCCA**, where a central hybrid coordinator polls stations for contention-free transfers — though HCCA is now deprecated.",
+      "zh": "**HCF（10.2.3）**是 QoS 增强版，由除网状站点外的每个 QoS 站点实现。它把 DCF 的思想与 QoS 专用机制融合在一起，并提供两条获取 TXOP（发送机会）的途径。基于争用的途径是 **EDCA**：四个接入类别（后台、尽力而为、视频、语音）各自运行一个类似 DCF 的 **EDCAF**，拥有各自的争用窗口和 AIFS 设置，因此语音流量比后台流量争用得更激进。受控途径是 **HCCA**，由中央混合协调器（HC）轮询各站点以进行无争用传输——不过 HCCA 现已被弃用。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Frame to send] --> B{Medium idle\\nfor IFS?}\n  B -- No --> C[Defer + random backoff]\n  C --> B\n  B -- Yes --> D{QoS station?}\n  D -- No --> E[DCF / CSMA-CA]\n  D -- Yes --> F[HCF: EDCA per AC]\n  F --> G[Win TXOP]\n  E --> G\n  G --> H[Transmit, wait for Ack]",
+      "zh": "flowchart TD\n  A[有帧要发送] --> B{介质空闲\\n达 IFS?}\n  B -- 否 --> C[延迟 + 随机退避]\n  C --> B\n  B -- 是 --> D{QoS 站点?}\n  D -- 否 --> E[DCF / CSMA-CA]\n  D -- 是 --> F[HCF: 按 AC 的 EDCA]\n  F --> G[赢得 TXOP]\n  E --> G\n  G --> H[发送, 等待 Ack]"
+    },
+    {
+      "type": "prose",
+      "en": "Two more coordination functions complete the picture. **MCF (10.2.4)** is the *mesh* coordination function: a mesh station implements MCF only, combining EDCA for contention-based access with **MCCA** (MCF controlled channel access) for contention-free access inside a mesh BSS. **TUA (10.2.5)** — triggered uplink access — flips the usual model: instead of each station contending, an HE AP sends a Trigger to make one or more non-AP HE stations transmit HE TB PPDUs *simultaneously*. An optional **UORA** mode even lets a station randomly pick one of several resource units the AP set aside for random access.",
+      "zh": "还有两种协调功能让全景图变得完整。**MCF（10.2.4）**是*网状*协调功能：网状站点只实现 MCF，它把用于基于争用接入的 EDCA 与用于网状 BSS 内无争用接入的 **MCCA**（MCF 受控信道接入）结合起来。**TUA（10.2.5）**——触发式上行接入——则颠覆了通常的模型：不再由各站点各自争用，而是由 HE AP 发送一个 Trigger，让一个或多个非 AP 的 HE 站点*同时*发送 HE TB PPDU。可选的 **UORA** 模式甚至允许站点从 AP 预留的若干随机接入资源单元（RU）中随机选取一个。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, two small but essential mechanisms tie the timing together. **Signal extension (10.3.8)** appends a brief period of no transmission (aSignalExtension) after certain OFDM and HT/HE transmissions so that legacy Clause 16 stations set their NAV correctly. And **the contention window itself is PHY-derived**: clause 10.3.9 explains how the MAC variable aCWmin is computed from the PHY characteristic aCWmin and the station's characteristic rate set — the seed value the backoff widget above starts from.",
+      "zh": "最后，两个虽小却关键的机制把时序衔接起来。**信号扩展（10.3.8）**会在某些 OFDM 与 HT/HE 传输之后附加一小段不发送的时间（aSignalExtension），以便让传统的第 16 章站点正确地设置其 NAV。而**争用窗口本身是由 PHY 推导而来的**：10.3.9 节解释了 MAC 变量 aCWmin 如何根据 PHY 特征 aCWmin 与站点的特征速率集计算得出——也正是上面退避控件所使用的初始种子值。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each clause lives in this lesson",
+        "zh": "覆盖映射：每个条款在本课中的位置"
+      },
+      "en": "MAC architecture, clause 10.2: **10.2.2 DCF** — the CSMA/CA fundamental access method, mandatory in all STAs. **10.2.3 HCF** — the QoS coordination function (EDCA contention-based path plus the deprecated HCCA controlled path); implemented in all QoS STAs except mesh STAs. **10.2.4 MCF** — the mesh coordination function, implemented only by mesh STAs, combining EDCA and MCCA. **10.2.5 TUA** — triggered uplink access, where an HE AP triggers simultaneous HE TB PPDU uplinks, with optional UORA random access.\n\nDCF detail, clause 10.3: **10.3.1 General** — CSMA/CA + random backoff after a busy medium, with immediate positive acknowledgment for individually addressed traffic. **10.3.2 Procedures common to the DCF and EDCAF** — the CS mechanism (physical CS from the PHY + the virtual-CS NAV), MAC-level acknowledgments, and the ten interframe spaces (RIFS, SIFS, PIFS, DIFS, AIFS, EIFS, ...). **10.3.5 Individually addressed MPDU transfer procedure** — when RTS/CTS protection is required (governed by dot11RTSThreshold and dot11TXOPDurationRTSThreshold), and that the data PPDU follows one SIFS after a successful RTS/CTS, otherwise after the basic access procedure. **10.3.8 Signal extension** — the aSignalExtension quiet period after ERP-OFDM / NON_HT_DUP_OFDM / HT / HE transmissions (except RIFS) so Clause 16 STAs set NAV correctly. **10.3.9 Determination of PLME aCWmin characteristics** — for the Clause 18 ERP, the MAC variable aCWmin is derived from the PHY characteristic aCWmin (vector aCWmin(0)/aCWmin(1) chosen by the characteristic rate set, or a scalar value).",
+      "zh": "MAC 体系结构，第 10.2 节：**10.2.2 DCF**——CSMA/CA 基础接入方式，所有 STA 必须实现。**10.2.3 HCF**——QoS 协调功能（基于争用的 EDCA 途径，外加已弃用的受控 HCCA 途径）；除网状 STA 外的所有 QoS STA 都实现它。**10.2.4 MCF**——网状协调功能，仅由网状 STA 实现，结合 EDCA 与 MCCA。**10.2.5 TUA**——触发式上行接入，由 HE AP 触发多站点同时上行发送 HE TB PPDU，并可选 UORA 随机接入。\n\nDCF 细节，第 10.3 节：**10.3.1 概述**——忙介质之后的 CSMA/CA + 随机退避，并对单播流量采用立即正向确认。**10.3.2 DCF 与 EDCAF 的公共过程**——CS 机制（来自 PHY 的物理 CS + 虚拟 CS（NAV））、MAC 层确认，以及十种帧间间隔（RIFS、SIFS、PIFS、DIFS、AIFS、EIFS……）。**10.3.5 单播 MPDU 传输过程**——何时需要 RTS/CTS 保护（由 dot11RTSThreshold 与 dot11TXOPDurationRTSThreshold 控制），以及数据 PPDU 在成功完成 RTS/CTS 后相隔一个 SIFS 发送，否则在基本接入过程之后发送。**10.3.8 信号扩展**——在 ERP-OFDM / NON_HT_DUP_OFDM / HT / HE 传输之后（RIFS 除外）的 aSignalExtension 静默期，使第 16 章 STA 正确设置 NAV。**10.3.9 PLME aCWmin 特征的确定**——对第 18 章 ERP，MAC 变量 aCWmin 由 PHY 特征 aCWmin 推导而来（向量形式按特征速率集选择 aCWmin(0)/aCWmin(1)，或为标量值）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1876,
+          1881,
+          1884,
+          1886,
+          1930,
+          1934
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1876
+      ],
+      "note": "10.2.2 DCF (CSMA/CA fundamental access method) and 10.2.3 HCF general"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1881
+      ],
+      "note": "10.2.4 MCF (mesh coordination function) and 10.2.5 TUA (triggered uplink access / UORA)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1884
+      ],
+      "note": "10.3.1 DCF General — CSMA/CA, random backoff, immediate Ack, virtual CS/NAV"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1886,
+        1887
+      ],
+      "note": "10.3.2 Procedures common to DCF and EDCAF — CS mechanism, NAV, MAC-level acknowledgments, IFS list"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1930
+      ],
+      "note": "10.3.5 individually addressed MPDU transfer (RTS/CTS thresholds dot11RTSThreshold/dot11TXOPDurationRTSThreshold, SIFS)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1934
+      ],
+      "note": "10.3.8 Signal extension (aSignalExtension) and 10.3.9 Determination of PLME aCWmin characteristics"
+    }
+  ],
+  "covers": [
+    "80211-2024:10.2.2",
+    "80211-2024:10.2.3",
+    "80211-2024:10.2.4",
+    "80211-2024:10.2.5",
+    "80211-2024:10.3.1",
+    "80211-2024:10.3.2",
+    "80211-2024:10.3.5",
+    "80211-2024:10.3.8",
+    "80211-2024:10.3.9"
+  ],
+  "track": "managing"
+}

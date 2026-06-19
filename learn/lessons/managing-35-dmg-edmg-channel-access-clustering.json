@@ -1,0 +1,233 @@
+{
+  "id": "managing-35-dmg-edmg-channel-access-clustering",
+  "title": {
+    "en": "60 GHz Scheduling: DMG/EDMG/CDMG Channel Access, Clustering and EDMG MAC Features",
+    "zh": "60 GHz 的调度：DMG/EDMG/CDMG 信道接入、成簇与 EDMG MAC 特性"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "The 60 GHz family of Wi-Fi (DMG and its successor EDMG, plus the China-band CDMG and the 45 GHz CMMG) works very differently from the 2.4/5/6 GHz radios. Because millimeter-wave links are highly directional and short-range, a 60 GHz BSS is run on a tight clock by a coordinator called the AP or PCP. This lesson is a guided survey: we map how time is sliced inside a beacon interval, how stations access the medium under that schedule, and how neighboring 60 GHz BSSs cluster together to share the air. Along the way we visit the EDMG-specific MAC features layered on top: wide-channel access, reverse direction for downlink MU-MIMO, A-PPDU aggregation, phase hopping, distributed scheduling, segmentation, and multi-TID acknowledgment.",
+      "zh": "60 GHz 这一族 Wi-Fi（DMG 及其后继 EDMG，再加上面向中国频段的 CDMG 与 45 GHz 的 CMMG）与 2.4/5/6 GHz 的射频工作方式截然不同。由于毫米波链路高度定向且距离很短，60 GHz 的 BSS 由一个称为 AP 或 PCP 的协调者按严格的时钟来运行。本课是一次导览式综述：我们梳理信标间隔内时间如何被切分、各站点如何在该调度下接入媒介，以及相邻的 60 GHz BSS 如何成簇以共享无线资源。沿途还会逐一介绍叠加其上的 EDMG 专属 MAC 特性：宽信道接入、下行 MU-MIMO 的反向传输、A-PPDU 聚合、相位跳变、分布式调度、分段与多 TID 确认。"
+    },
+    {
+      "type": "prose",
+      "en": "Time in a DMG/CMMG BSS is divided into beacon intervals, and each beacon interval is split into access periods with different rules (clause 10.38.1-10.38.2). The first part is the beacon header interval (BHI), made of the beacon transmission interval (BTI, where DMG Beacons go out), the optional A-BFT (beamforming training), and the optional ATI (a request-response management window). The rest is the data transfer interval (DTI), which holds contention-based access periods (CBAPs) and scheduled service periods (SPs). The AP or PCP builds this schedule and announces it in DMG Beacon and Announce frames; stations then transmit only inside the period assigned to them, using that period's access rules.",
+      "zh": "DMG/CMMG BSS 中的时间被划分为信标间隔，每个信标间隔再切分为规则各异的接入期（条款 10.38.1-10.38.2）。前半部分是信标头间隔（BHI），由信标发送间隔（BTI，发送 DMG 信标）、可选的 A-BFT（波束成形训练）和可选的 ATI（请求-响应式管理窗口）组成。其余部分是数据传输间隔（DTI），其中包含基于竞争的接入期（CBAP）和经调度的服务期（SP）。AP 或 PCP 构建该调度，并在 DMG 信标帧和 Announce 帧中通告；各站点随后仅在分配给自己的接入期内、按该期的接入规则进行发送。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 130\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\"><rect x=\"1\" y=\"40\" width=\"638\" height=\"40\" fill=\"none\" stroke=\"currentColor\"/><line x1=\"60\" y1=\"40\" x2=\"60\" y2=\"80\" stroke=\"currentColor\"/><line x1=\"120\" y1=\"40\" x2=\"120\" y2=\"80\" stroke=\"currentColor\"/><line x1=\"190\" y1=\"40\" x2=\"190\" y2=\"80\" stroke=\"currentColor\"/><line x1=\"330\" y1=\"40\" x2=\"330\" y2=\"80\" stroke=\"currentColor\"/><line x1=\"470\" y1=\"40\" x2=\"470\" y2=\"80\" stroke=\"currentColor\"/><text x=\"30\" y=\"65\" fill=\"currentColor\" font-size=\"12\" text-anchor=\"middle\">BTI</text><text x=\"90\" y=\"65\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">A-BFT</text><text x=\"155\" y=\"65\" fill=\"currentColor\" font-size=\"12\" text-anchor=\"middle\">ATI</text><text x=\"260\" y=\"65\" fill=\"currentColor\" font-size=\"12\" text-anchor=\"middle\">CBAP</text><text x=\"400\" y=\"65\" fill=\"currentColor\" font-size=\"12\" text-anchor=\"middle\">SP</text><text x=\"555\" y=\"65\" fill=\"currentColor\" font-size=\"12\" text-anchor=\"middle\">CBAP / SP ...</text><text x=\"95\" y=\"25\" fill=\"currentColor\" font-size=\"12\" text-anchor=\"middle\">BHI</text><text x=\"400\" y=\"25\" fill=\"currentColor\" font-size=\"12\" text-anchor=\"middle\">DTI</text><line x1=\"1\" y1=\"30\" x2=\"190\" y2=\"30\" stroke=\"currentColor\"/><line x1=\"190\" y1=\"30\" x2=\"639\" y2=\"30\" stroke=\"currentColor\"/><text x=\"320\" y=\"105\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">one beacon interval (time →)</text></svg>",
+      "caption": {
+        "en": "A beacon interval = BHI (BTI + A-BFT + ATI) followed by the DTI (any mix of CBAPs and SPs).",
+        "zh": "一个信标间隔 = BHI（BTI + A-BFT + ATI），其后接 DTI（CBAP 与 SP 的任意组合）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Inside the DTI, the AP or PCP gives each allocation a fixed start time (referenced to its TSF) and a fixed duration (clause 10.38.6.1). An SP grants exclusive channel time to one source station, which must start its frame exchange at the start of the SP; a CBAP lets stations compete using EDCA-style rules. The full schedule travels in the Extended Schedule element (and, in an EDMG BSS, additionally the EDMG Extended Schedule element). EDMG stations layer extra rules on top (clause 10.38.12): transmissions may span the 2.16 GHz primary plus secondary channels up to four 2.16 GHz channels wide, a secondary channel may be used only if it was idle for a PIFS before the backoff expires, and directional allocations let the AP point a narrow beam at a station with an asymmetric link. CMMG follows the same DMG scheme with its own 540/1080 MHz channel bandwidths.",
+      "zh": "在 DTI 内部，AP 或 PCP 为每个分配给定固定的起始时间（以其 TSF 为参考）和固定时长（条款 10.38.6.1）。SP 把信道时间独占式地授予某一个源站，该站必须在 SP 起始处开始帧交换；CBAP 则让各站点按类似 EDCA 的规则竞争。完整调度通过 Extended Schedule 元素传递（在 EDMG BSS 中还会额外通过 EDMG Extended Schedule 元素）。EDMG 站点在其上叠加了额外规则（条款 10.38.12）：发送可跨越 2.16 GHz 主信道加上若干辅信道，最宽可达四个 2.16 GHz 信道；只有当辅信道在退避计满前已空闲 PIFS 时才可使用；定向分配则让 AP 把窄波束对准链路非对称的站点。CMMG 沿用相同的 DMG 框架，但使用其自有的 540/1080 MHz 信道带宽。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two ways to get airtime in a DMG BSS, mirroring the rest of 802.11: an SP is like a reserved slot (contention-free, one owner), while a CBAP is the familiar listen-before-talk contention window. The difference at 60 GHz is that both live inside a coordinator-published schedule rather than free-running across the whole channel.",
+      "zh": "在 DMG BSS 中获得空口时间有两种方式，与 802.11 的其余部分相呼应：SP 类似预留时隙（无竞争、单一拥有者），而 CBAP 则是大家熟悉的先听后发竞争窗口。60 GHz 的不同之处在于：两者都处于协调者发布的调度之内，而不是在整个信道上自由运行。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant AP\n  participant S1 as EDMG STA1\n  participant S2 as EDMG STA2\n  AP->>S1: DL MU PPDU (RDG=1, Sched Ack) + BA Schedule\n  AP->>S2: DL MU PPDU (RDG=0, Sched Ack) + BA Schedule\n  S1->>AP: RD burst: BlockAck + QoS Data\n  S2->>AP: BlockAck only\n  AP->>S1: next MU PPDU + BlockAck for RD burst",
+      "zh": "sequenceDiagram\n  participant AP\n  participant S1 as EDMG 站1\n  participant S2 as EDMG 站2\n  AP->>S1: 下行 MU PPDU (RDG=1, 调度确认) + BA 调度\n  AP->>S2: 下行 MU PPDU (RDG=0, 调度确认) + BA 调度\n  S1->>AP: 反向突发: BlockAck + QoS 数据\n  S2->>AP: 仅 BlockAck\n  AP->>S1: 下一个 MU PPDU + 对反向突发的 BlockAck"
+    },
+    {
+      "type": "prose",
+      "en": "EDMG adds several efficiency features that ride on this schedule. Reverse direction for EDMG downlink MU-MIMO (clause 10.29.5) lets the AP, in a single MU PPDU, both send downlink data and grant a return slot: it sets RDG/More PPDU = 1 and Ack Policy = Scheduled Ack, and includes a Block Ack Schedule frame whose Response Offset/Duration and Next PPDU Start Offset define exactly when the station may fire back its uplink burst. A-PPDU operation (clause 10.14) aggregates several PPDUs back-to-back, each carrying an A-MPDU with the same TA/RA; DMG and EDMG PPDUs are never mixed in one A-PPDU, and any frame needing an immediate response goes in the last A-MPDU. Phase hopping and open-loop precoding (clause 10.67) are capability-gated PHY aids for two-stream SU transmission that both peers must advertise as supported.",
+      "zh": "EDMG 在此调度之上增加了若干提效特性。EDMG 下行 MU-MIMO 的反向传输（条款 10.29.5）让 AP 在单个 MU PPDU 中既发送下行数据又授予回传时隙：它将 RDG/More PPDU 置为 1、Ack Policy 置为“调度确认”，并附带一个 Block Ack Schedule 帧，其 Response Offset/Duration 与 Next PPDU Start Offset 精确定义了站点何时可发回其上行突发。A-PPDU 操作（条款 10.14）把多个 PPDU 背靠背聚合，每个承载一个 TA/RA 相同的 A-MPDU；DMG 与 EDMG 的 PPDU 绝不在同一 A-PPDU 中混用，任何需要即时响应的帧都放在最后一个 A-MPDU 中。相位跳变与开环预编码（条款 10.67）是受能力位约束的 PHY 辅助手段，用于双流 SU 发送，需双方都通告支持。"
+    },
+    {
+      "type": "prose",
+      "en": "Because 60 GHz cells are small and dense, neighboring APs/PCPs synchronize and cluster to share airtime and cut interference (clauses 10.39, 10.40). A station that hears a DMG Beacon from a foreign AP sends a Cluster Report element to its own AP (clause 10.39.4); the AP can then reschedule SPs/CBAPs, move its BTI, or even insert dummy SPs (source/destination AID = 255) to keep specific periods quiet. A member station can also request that decentralized clustering be turned on by setting the Cluster request subfield (clause 10.39.5). CDMG clusters add the same machinery for variable-bandwidth channels: cluster report/rescheduling and the cluster request reuse the DMG rules (clauses 10.40.4, 10.40.5), and CDMG clusters support spatial sharing, where APs measure directional channel quality and then deliberately schedule overlapping SPs for links that do not interfere (clause 10.40.6).",
+      "zh": "由于 60 GHz 蜂窝小而密集，相邻的 AP/PCP 会同步并成簇，以共享空口时间并削减干扰（条款 10.39、10.40）。当某站点听到来自外部 AP 的 DMG 信标时，它向自己的 AP 发送 Cluster Report 元素（条款 10.39.4）；该 AP 随后可重排 SP/CBAP、移动其 BTI，甚至插入哑 SP（源/目的 AID = 255）以使特定时段保持静默。成员站还可通过置位 Cluster request 子字段来请求开启去中心化成簇（条款 10.39.5）。CDMG 簇为可变带宽信道增添了相同机制：簇报告/重排与簇请求复用 DMG 规则（条款 10.40.4、10.40.5），且 CDMG 簇支持空间共享——AP 测量定向信道质量，然后有意为互不干扰的链路调度相互重叠的 SP（条款 10.40.6）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Spotting the pattern: clustering at 60 GHz is built almost entirely out of the Cluster Report element plus careful scheduling. There is no central controller in the air; APs/PCPs report what they hear, reschedule to dodge each other, and (in CDMG) only overlap SPs once measurements prove the two links are mutually invisible.",
+      "zh": "看出其中的套路：60 GHz 的成簇几乎完全由 Cluster Report 元素加上精心的调度构成。空口中并无中央控制器；各 AP/PCP 报告所听到的情况、通过重排来彼此避让，并且（在 CDMG 中）只有在测量证明两条链路互不可见后，才让 SP 相互重叠。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: CDMG dynamic-bandwidth (DBC) channel access and the EDMG MAC features, clause by clause",
+        "zh": "覆盖图谱：CDMG 动态带宽（DBC）信道接入与 EDMG MAC 特性，逐条款详解"
+      },
+      "en": "CDMG dynamic bandwidth control (DBC) for variable 1.08/2.16 GHz channels (clause 10.63): General (10.63.1) - a CDMG BSS may run on a 1.08 GHz or 2.16 GHz channel, and each 2.16 GHz channel encompasses two 1.08 GHz channels; an AP on a 1.08 GHz channel must also periodically beacon on the encompassing 2.16 GHz channel. CDMG channel access (10.63.2): on a 2.16 GHz channel it follows ordinary DMG rules (10.63.2.1); on a 1.08 GHz channel (10.63.2.2) the AP/PCP schedules a notification period (NP) or BHI on the 2.16 GHz channel - signaled by the DBC Option subfield of the Dynamic Bandwidth Control element - with quiet periods (QPs) and a guard interval so stations can switch bands. Synchronization of two BSSs on adjacent 1.08 GHz channels (10.63.2.3) uses Notification Period / Extended Notification Period Request/Response frames to reserve aligned NPs. Channel splitting (10.63.3): a station sends a (Extended) Channel Splitting Request to push an existing 2.16 GHz BSS down onto one 1.08 GHz half, freeing the adjacent half for a new BSS. Channel expansion (10.63.4): an AP on a 1.08 GHz channel grows back to the full 2.16 GHz channel when the adjacent half is free. Backward compatibility (10.63.5): a CDMG AP always serves plain DMG STAs by scheduling their SPs/CBAPs on the 2.16 GHz channel, and uses RTS / DMG CTS/DTS on the 2.16 GHz channel to set legacy NAVs. Opportunistic transmission in an alternative channel for CDMG STAs (clause 10.38.11): scheduled via the CDMG Extended Schedule element, peers move data onto a non-operating 'alternative' channel through cyclic monitor / transmission / suspension phases, abandoning the alternative channel if a foreign DMG Beacon is heard.\n\nEDMG MAC features: distributed scheduling protocol (clause 10.68) - General (10.68.1) is enabled by the Distributed Scheduling Enabled subfield; initialization (10.68.2) listens a full beacon interval for neighbor DMG Beacons; the protocol (10.68.3) caps each AP/PCP at 1/(Ni+1) of the beacon interval on channel i and randomly places SPs over unoccupied time first. DMG segmentation and reassembly (clause 10.69): General (10.69.1) is gated by dot11SAROptionImplemented and negotiated per-TID via ADDBA + SAR Configuration element; segmentation (10.69.2) marks Start of MSDU / End of MSDU and uses continuously increasing MSDU/MPDU sequence numbers; reassembly (10.69.3) concatenates segments in increasing MPDU-SN order. EDMG A-MPDU with multiple TIDs (clause 10.70): General (10.70.1) defines a multi-TID A-MPDU and its capability/TXOP/SP rules; the acknowledgment context (10.70.2) sets the Ack Type subfield of the EDMG Multi-TID BlockAck frame to All Ack (2), BlockAck (0), or Ack (1).",
+      "zh": "面向 1.08/2.16 GHz 可变信道的 CDMG 动态带宽控制（DBC）（条款 10.63）：总则（10.63.1）——CDMG BSS 可运行于 1.08 GHz 或 2.16 GHz 信道，每个 2.16 GHz 信道包含两个 1.08 GHz 信道；运行于 1.08 GHz 信道的 AP 还必须周期性地在所包含的 2.16 GHz 信道上发送信标。CDMG 信道接入（10.63.2）：在 2.16 GHz 信道上遵循普通 DMG 规则（10.63.2.1）；在 1.08 GHz 信道上（10.63.2.2），AP/PCP 在 2.16 GHz 信道上调度通知期（NP）或 BHI——由 Dynamic Bandwidth Control 元素的 DBC Option 子字段指示——并配以静默期（QP）和保护间隔，使站点得以切换频段。相邻 1.08 GHz 信道上两个 BSS 的同步（10.63.2.3）使用 Notification Period / Extended Notification Period 请求/响应帧来预留对齐的 NP。信道分裂（10.63.3）：站点发送（Extended）Channel Splitting Request，将一个已存在的 2.16 GHz BSS 下压到其中一个 1.08 GHz 半信道，从而腾出相邻半信道供新 BSS 使用。信道扩展（10.63.4）：运行于 1.08 GHz 信道的 AP 在相邻半信道空闲时重新扩回完整的 2.16 GHz 信道。后向兼容（10.63.5）：CDMG AP 始终通过在 2.16 GHz 信道上为普通 DMG STA 调度其 SP/CBAP 来为它们服务，并在 2.16 GHz 信道上使用 RTS / DMG CTS/DTS 来设置传统 NAV。CDMG STA 在备用信道中的机会式传输（条款 10.38.11）：通过 CDMG Extended Schedule 元素调度，对端站点经由“监听/传输/挂起”的循环相位把数据转移到非工作的“备用”信道，一旦听到外部 DMG 信标即放弃该备用信道。\n\nEDMG MAC 特性：分布式调度协议（条款 10.68）——总则（10.68.1）由 Distributed Scheduling Enabled 子字段开启；初始化（10.68.2）监听整整一个信标间隔以侦测邻居的 DMG 信标；协议（10.68.3）将每个 AP/PCP 在信道 i 上的占用上限定为信标间隔的 1/(Ni+1)，并优先把 SP 随机安排到未占用时段。DMG 分段与重组（条款 10.69）：总则（10.69.1）由 dot11SAROptionImplemented 控制，并经 ADDBA + SAR Configuration 元素按 TID 协商；分段（10.69.2）标注 Start of MSDU / End of MSDU 并使用连续递增的 MSDU/MPDU 序号；重组（10.69.3）按 MPDU 序号递增顺序拼接各分段。带多 TID 的 EDMG A-MPDU（条款 10.70）：总则（10.70.1）定义多 TID A-MPDU 及其能力/TXOP/SP 规则；确认上下文（10.70.2）将 EDMG Multi-TID BlockAck 帧的 Ack Type 子字段置为 All Ack（2）、BlockAck（0）或 Ack（1）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2186,
+          2188,
+          2408,
+          2409,
+          2414,
+          2415,
+          2417,
+          2421,
+          2422,
+          2423,
+          2424,
+          2425
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact clause anchors for the scheduling and clustering core",
+        "zh": "调度与成簇核心部分的精确条款锚点"
+      },
+      "en": "Beacon-interval structure and scheduled DTI: 10.38.1 (General - schedule communicated in DMG Beacon/Announce frames) on p.2152; 10.38.6 channel access in the scheduled DTI - 10.38.6.1 General (fixed start time + duration; SP vs CBAP; Extended Schedule + EDMG Extended Schedule element) on p.2158, 10.38.6.2.1 SP allocation General on p.2159. EDMG channel access 10.38.12 on p.2188-2190: 10.38.12.1 General, 10.38.12.2 channel access over multiple channels (≤ four 2.16 GHz channels, secondary-channel CCA, EDMG Extended Schedule allocations), 10.38.12.3 directional allocation. A-PPDU operation 10.14 on p.1983 (ADD-PPDU TXVECTOR rules; no mixing DMG/EDMG PPDUs; immediate response in the last A-MPDU). Reverse direction for EDMG DL MU-MIMO 10.29.5 on p.2102-2103 (RDG/More PPDU + Scheduled Ack + Block Ack Schedule frame timing). Clustering: 10.39.4 cluster report and rescheduling on p.2208-2209 (Cluster Report element conditions; AID-255 dummy SPs); 10.39.5 decentralized AP or PCP cluster request on p.2209-2210 (Cluster request subfield). CDMG clustering 10.40 on p.2210-2221: 10.40.1 General, 10.40.2 / 10.40.3 formation and maintenance, 10.40.4 cluster report and rescheduling, 10.40.5 decentralized cluster request, 10.40.6 spatial sharing (SPSH measurement vs spatial-sharing phases, SPSH Report element).",
+      "zh": "信标间隔结构与调度 DTI：10.38.1（总则——调度在 DMG 信标/Announce 帧中通告）见第 2152 页；10.38.6 调度 DTI 中的信道接入——10.38.6.1 总则（固定起始时间+时长；SP 与 CBAP；Extended Schedule + EDMG Extended Schedule 元素）见第 2158 页，10.38.6.2.1 SP 分配总则见第 2159 页。EDMG 信道接入 10.38.12 见第 2188-2190 页：10.38.12.1 总则、10.38.12.2 跨多信道接入（不超过四个 2.16 GHz 信道、辅信道 CCA、EDMG Extended Schedule 分配）、10.38.12.3 定向分配。A-PPDU 操作 10.14 见第 1983 页（ADD-PPDU 的 TXVECTOR 规则；DMG/EDMG PPDU 不混用；即时响应放在最后一个 A-MPDU）。EDMG 下行 MU-MIMO 反向传输 10.29.5 见第 2102-2103 页（RDG/More PPDU + 调度确认 + Block Ack Schedule 帧的时序）。成簇：10.39.4 簇报告与重排见第 2208-2209 页（Cluster Report 元素条件；AID=255 哑 SP）；10.39.5 去中心化 AP 或 PCP 簇请求见第 2209-2210 页（Cluster request 子字段）。CDMG 成簇 10.40 见第 2210-2221 页：10.40.1 总则、10.40.2/10.40.3 形成与维护、10.40.4 簇报告与重排、10.40.5 去中心化簇请求、10.40.6 空间共享（SPSH 测量相位与空间共享相位、SPSH Report 元素）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1983,
+          2102,
+          2103,
+          2152,
+          2158,
+          2159,
+          2188,
+          2189,
+          2190,
+          2208,
+          2209,
+          2210,
+          2220
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Put together, the 60 GHz MAC is best read as one schedule with many tenants. The AP/PCP carves a beacon interval into a BHI and a DTI; the DTI holds SPs (reserved) and CBAPs (contended); EDMG widens that across multiple 2.16 GHz channels and adds MU-MIMO reverse direction, A-PPDU aggregation, distributed scheduling, segmentation, and multi-TID BlockAck; CDMG bends the same scheme onto 1.08/2.16 GHz variable-bandwidth channels with splitting, expansion, opportunistic alternative-channel transmission, and DMG backward compatibility; and clustering lets co-channel neighbors report, reschedule, and spatially share. Every clause in this lesson is one tile in that single coordinated-time picture.",
+      "zh": "综合来看，60 GHz 的 MAC 最好理解为“一张调度、多个租户”。AP/PCP 把信标间隔切分为 BHI 和 DTI；DTI 中包含 SP（预留）和 CBAP（竞争）；EDMG 将其拓宽到多个 2.16 GHz 信道，并加入 MU-MIMO 反向传输、A-PPDU 聚合、分布式调度、分段以及多 TID BlockAck；CDMG 把同一框架弯折到 1.08/2.16 GHz 的可变带宽信道之上，配以分裂、扩展、机会式备用信道传输以及对 DMG 的后向兼容；而成簇则让同信道的邻居彼此报告、重排并进行空间共享。本课中的每一个条款，都是这幅“协调时间”图景中的一块拼图。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1983
+      ],
+      "note": "10.14 DMG/EDMG A-PPDU operation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2102,
+        2103
+      ],
+      "note": "10.29.5 reverse direction for EDMG DL MU-MIMO"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2152,
+        2158,
+        2159
+      ],
+      "note": "10.38.1 general; 10.38.6 channel access in scheduled DTI"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2186,
+        2188,
+        2189,
+        2190
+      ],
+      "note": "10.38.11 opportunistic alternative-channel tx; 10.38.12 EDMG channel access"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2208,
+        2209,
+        2210
+      ],
+      "note": "10.39.4 cluster report/rescheduling; 10.39.5 decentralized cluster request"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2210,
+        2219,
+        2220
+      ],
+      "note": "10.40.1-10.40.6 CDMG clustering, report/rescheduling, request, spatial sharing"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2408,
+        2409,
+        2414,
+        2415,
+        2417
+      ],
+      "note": "10.63.1-10.63.5 DBC channel access, splitting, expansion, backward compatibility"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2420,
+        2421,
+        2422,
+        2423
+      ],
+      "note": "10.67 phase hopping/open-loop precoding; 10.68 distributed scheduling; 10.69 segmentation/reassembly"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2424,
+        2425
+      ],
+      "note": "10.70.1-10.70.2 EDMG multi-TID A-MPDU and Multi-TID BlockAck acknowledgment context"
+    }
+  ],
+  "covers": [
+    "80211-2024:10.14",
+    "80211-2024:10.29.5",
+    "80211-2024:10.38.1",
+    "80211-2024:10.38.6",
+    "80211-2024:10.38.11",
+    "80211-2024:10.38.12",
+    "80211-2024:10.63.1",
+    "80211-2024:10.63.2",
+    "80211-2024:10.63.3",
+    "80211-2024:10.63.4",
+    "80211-2024:10.63.5",
+    "80211-2024:10.67",
+    "80211-2024:10.68.1",
+    "80211-2024:10.68.2",
+    "80211-2024:10.68.3",
+    "80211-2024:10.69.1",
+    "80211-2024:10.69.2",
+    "80211-2024:10.69.3",
+    "80211-2024:10.70.1",
+    "80211-2024:10.70.2",
+    "80211-2024:10.39.4",
+    "80211-2024:10.39.5",
+    "80211-2024:10.40.1",
+    "80211-2024:10.40.2",
+    "80211-2024:10.40.3",
+    "80211-2024:10.40.4",
+    "80211-2024:10.40.5",
+    "80211-2024:10.40.6"
+  ],
+  "track": "managing"
+}

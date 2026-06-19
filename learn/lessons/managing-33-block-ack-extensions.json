@@ -1,0 +1,140 @@
+{
+  "id": "managing-33-block-ack-extensions",
+  "title": {
+    "en": "Block Ack, Extended: HT-Immediate, Protected, GCR, DMG and Unsolicited",
+    "zh": "Block Ack 的扩展：HT-即时、受保护、GCR、DMG 与非请求式"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "The basic block ack mechanism lets a sender push a burst of QoS Data frames and collect a single bitmap acknowledgment instead of one Ack per frame. That is efficient, but real deployments need more: aggregation of A-MPDUs, lighter memory at the receiver, security against forged control frames, group-addressed (multicast) delivery with feedback, the directional 60 GHz world, and even acknowledgment without any prior handshake. Clauses 10.25.6 through 10.25.10 are exactly those five extensions, each layered on top of the basics defined in 10.25.1 to 10.25.4.",
+      "zh": "基本的块确认机制让发送方一次推送一批 QoS 数据帧，然后只用一个位图确认来回复，而不必为每一帧单独回 Ack。这很高效，但真实部署还需要更多能力：A-MPDU 聚合、更轻量的接收端内存占用、对伪造控制帧的安全防护、带反馈的组播（组地址）传输、面向 60 GHz 定向场景，乃至无需任何预先握手的确认。10.25.6 到 10.25.10 这五个子条款正是这五种扩展，它们都建立在 10.25.1 到 10.25.4 所定义的基础机制之上。"
+    },
+    {
+      "type": "prose",
+      "en": "HT-immediate block ack (10.25.6) is the workhorse extension. It simplifies using immediate block ack with A-MPDUs and reduces the resources a recipient must keep. Every HT STA must support it as a recipient, and DMG STAs must support it outright. The architecture splits the recipient into two cooperating entities: a receive reordering buffer (which reorders MSDUs by sequence number and drops duplicates) and a scoreboard context control (which tracks an acknowledgment bitmap and supplies the Starting Sequence Number for outgoing BlockAck frames). The originator side keeps a transmit buffer window described by WinStartO and WinSizeO.",
+      "zh": "HT-即时块确认（10.25.6）是最核心的扩展。它简化了块确认在 A-MPDU 场景下的即时使用，并降低接收端必须保留的资源。每个 HT STA 作为接收方都必须支持它，DMG STA 则必须直接支持。其架构把接收端拆为两个协作实体：接收重排序缓冲区（按序列号重排 MSDU 并丢弃重复帧）和记分牌上下文控制（维护确认位图，并为外发的 BlockAck 帧提供起始序列号）。发送端则维护一个由 WinStartO 和 WinSizeO 描述的发送缓冲窗口。"
+    },
+    {
+      "type": "prose",
+      "en": "The clever part of HT-immediate is that the recipient secretly picks between full-state and partial-state operation for each agreement, and the originator never knows which. Under full-state operation the scoreboard lives in statically reserved memory and is always accurate. Under partial-state operation the scoreboard lives in a cache, so a record may be evicted when a frame from a different originator arrives. Partial state is what lets a busy AP serve many clients without permanently dedicating a window of memory to each one — at the cost of occasionally losing state and triggering a few redundant retransmissions.",
+      "zh": "HT-即时机制的巧妙之处在于：接收方会为每个协商私下在「全状态」和「部分状态」两种工作方式之间选择，而发送方永远不知道选了哪一种。在全状态方式下，记分牌存放在静态预留的内存中，始终准确。在部分状态方式下，记分牌存放在缓存里，因此当来自另一发送方的帧到达时，某条记录可能被替换出去。正是部分状态让繁忙的 AP 能服务众多客户端而无需为每个客户端永久独占一段内存窗口——代价是偶尔丢失状态，从而触发少量冗余重传。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  O[Originator<br/>WinStartO WinSizeO] -->|A-MPDU| R\n  subgraph R[Recipient]\n    SC[Scoreboard<br/>WinStartR WinSizeR]\n    RB[Reorder buffer<br/>WinStartB WinSizeB]\n  end\n  R -->|BlockAck bitmap SSN| O",
+      "zh": "flowchart LR\n  O[发送方<br/>WinStartO WinSizeO] -->|A-MPDU| R\n  subgraph R[接收方]\n    SC[记分牌<br/>WinStartR WinSizeR]\n    RB[重排序缓冲<br/>WinStartB WinSizeB]\n  end\n  R -->|BlockAck 位图 SSN| O"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "When the scoreboard advances its window (WinStartR/WinEndR), bits for sequence numbers that fall out of the window are reset to 0. This is why a BlockAckReq carrying a Starting Sequence Number is so powerful: it slides the recipient's window forward and clears stale bits in one shot. The originator typically solicits a final BlockAck as the last activity of a TXOP to minimize the chance of partial state being lost before it learns the outcome.",
+      "zh": "当记分牌推进其窗口（WinStartR/WinEndR）时，落到窗口之外的序列号对应位会被重置为 0。这正是携带起始序列号的 BlockAckReq 如此有用的原因：它能一次性把接收方窗口向前滑动并清除陈旧位。发送方通常会把最后一次 BlockAck 请求安排在 TXOP 的最后动作，以尽量降低在得知结果之前部分状态被丢失的概率。"
+    },
+    {
+      "type": "prose",
+      "en": "A protected block ack agreement (10.25.7) closes a security hole. An unauthenticated attacker could otherwise forge a BlockAckReq whose Starting Sequence Number jumps the recipient's window forward, silently discarding legitimate buffered frames. Two STAs that both advertise management frame protection (MFPC) and the PBAC capability form a protected block ack agreement. In a protected agreement, the recipient must NOT advance WinStartB/WinStartR from the Starting Sequence Number in a plain BlockAckReq, MU-BAR or GCR-MU-BAR Trigger frame; an out-of-window value instead increments dot11PBACErrors. Window advances happen only via a dedicated, protected PBAC WinStart Update frame.",
+      "zh": "受保护的块确认协商（10.25.7）堵上了一个安全漏洞。否则，未经认证的攻击者可以伪造一个 BlockAckReq，让其中的起始序列号把接收方窗口向前跳，从而悄无声息地丢弃合法的已缓存帧。两个都通告了管理帧保护（MFPC）和 PBAC 能力的 STA 会建立受保护的块确认协商。在受保护协商中，接收方不得用普通 BlockAckReq、MU-BAR 或 GCR-MU-BAR 触发帧里的起始序列号去推进 WinStartB/WinStartR；若该值落在窗口之外，则 dot11PBACErrors 加一。窗口的推进只能通过专用且受保护的 PBAC WinStart Update 帧来完成。"
+    },
+    {
+      "type": "prose",
+      "en": "GCR and GLK-GCR block ack (10.25.8) extend the mechanism to group-addressed (multicast) frames, which normally are never acknowledged. With GCR (Groupcast with Retries) block ack, the AP sends a burst of A-MSDUs to a concealment address, then polls each group member in turn with a BlockAckReq — or, for HE members, with a single GCR MU-BAR Trigger that collects BlockAck frames in an uplink HE TB PPDU from several stations at once. From the union of bitmaps the AP decides which A-MSDUs to retransmit, retrying each until a per-group lifetime limit expires or every polled member has it. GLK-GCR is the general-link variant for mesh-style groupcast, set up through the GLK-GCR Parameter Set element rather than ADDBA.",
+      "zh": "GCR 与 GLK-GCR 块确认（10.25.8）把该机制扩展到组地址（组播）帧——这类帧通常根本不会被确认。在 GCR（带重传的组播）块确认中，AP 先向一个隐藏地址发送一批 A-MSDU，然后用 BlockAckReq 逐个轮询各组成员；对于 HE 成员，则可用单个 GCR MU-BAR 触发帧，让多个站点在上行 HE TB PPDU 中一次性回送各自的 BlockAck。AP 根据这些位图的并集判断需要重传哪些 A-MSDU，并不断重试，直到达到该组的生存期上限，或所有被轮询的成员都已收到为止。GLK-GCR 是面向 mesh 式组播的通用链路变体，通过 GLK-GCR Parameter Set 元素而非 ADDBA 建立。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant AP\n  participant M1 as Member 1\n  participant M2 as Member 2\n  AP->>M1: Group A-MSDUs\n  AP->>M2: (same multicast)\n  AP->>M1: BlockAckReq\n  M1-->>AP: BlockAck\n  AP->>M2: BlockAckReq\n  M2-->>AP: BlockAck\n  Note over AP: union of bitmaps -> retransmit",
+      "zh": "sequenceDiagram\n  participant AP\n  participant M1 as 成员 1\n  participant M2 as 成员 2\n  AP->>M1: 组播 A-MSDU\n  AP->>M2: （同一组播）\n  AP->>M1: BlockAckReq\n  M1-->>AP: BlockAck\n  AP->>M2: BlockAckReq\n  M2-->>AP: BlockAck\n  Note over AP: 位图取并集 -> 重传"
+    },
+    {
+      "type": "prose",
+      "en": "DMG block ack with flow control (10.25.9) is for the directional 60 GHz (DMG/EDMG) world, where receiver memory is precious and bursts can be very large. Both STAs must advertise the capability in their DMG Capabilities element. The twist is explicit flow control: each BlockAck carries an RBUFCAP field reporting how many free buffer slots remain at the recipient. The originator turns that into WinLimitO = MostSuccSN + WinCapacityO and must never transmit an MPDU beyond WinLimitO. In other words, the receiver continuously tells the sender how much room it has, and the sender throttles itself — a credit-based window on top of the ordinary block ack.",
+      "zh": "带流控的 DMG 块确认（10.25.9）面向定向的 60 GHz（DMG/EDMG）场景，那里接收端内存十分宝贵，而突发可能非常大。两端都必须在各自的 DMG Capabilities 元素中通告该能力。它的特别之处在于显式流控：每个 BlockAck 都携带一个 RBUFCAP 字段，报告接收端还剩多少空闲缓冲槽。发送方据此算出 WinLimitO = MostSuccSN + WinCapacityO，并且绝不能发送序列号超过 WinLimitO 的 MPDU。换句话说，接收方持续告诉发送方自己还有多少空间，发送方据此自我节流——这相当于在普通块确认之上叠加了一个基于信用额度的窗口。"
+    },
+    {
+      "type": "prose",
+      "en": "The unsolicited block ack extension (10.25.10) removes the handshake entirely. It lets an originator send A-MPDUs without first exchanging ADDBA Request/Response frames, and lets a recipient share its buffer resources across all originators rather than reserving a fixed window per agreement. The recipient only ever uses full-state scoreboarding here, and its window parameters are seeded from the first A-MPDU for a given <TA, RA, TID> tuple. Before sending, the originator must first synchronize WinStartR/WinStartB at the recipient (sending an MPDU or a BlockAckReq and waiting for an Ack or BlockAck), and at TXOP boundaries it conservatively resets the ack status of any MPDU at or above the first unsuccessful one so nothing is dropped on a state mismatch.",
+      "zh": "非请求式块确认扩展（10.25.10）则完全免去了握手。它让发送方无需先交换 ADDBA 请求/响应帧就能发送 A-MPDU，并让接收方在所有发送方之间共享缓冲资源，而不必为每个协商预留固定窗口。在此扩展中接收方只使用全状态记分牌，其窗口参数由某个 <TA, RA, TID> 元组的第一个 A-MPDU 来初始化。发送前，发送方必须先在接收端同步 WinStartR/WinStartB（发送一个 MPDU 或 BlockAckReq，等待 Ack 或 BlockAck）；在 TXOP 边界处，它会保守地把序列号不低于首个未成功 MPDU 的所有 MPDU 的确认状态重置，从而避免在状态不一致时丢帧。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A useful mental map of the five: 10.25.6 is the foundation (HT-immediate, full vs partial state); 10.25.7 secures it (PBAC WinStart Update only); 10.25.8 multicasts it (GCR / GLK-GCR with per-member polling); 10.25.9 adds receiver-driven flow control for 60 GHz; and 10.25.10 drops the handshake (unsolicited). The last three all build directly on the HT-immediate architecture of 10.25.6.",
+      "zh": "对这五者的一个实用记忆图：10.25.6 是基础（HT-即时，全状态与部分状态之分）；10.25.7 为其加固（只允许 PBAC WinStart Update 推进窗口）；10.25.8 让其支持组播（GCR / GLK-GCR，逐成员轮询）；10.25.9 为 60 GHz 加入接收端驱动的流控；10.25.10 则免去握手（非请求式）。后三者都直接构建在 10.25.6 的 HT-即时架构之上。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each clause is pinned in the standard",
+        "zh": "覆盖映射：每个子条款在标准中的对应处"
+      },
+      "en": "10.25.6 HT-immediate block ack extensions (p.2058-2073): introduction and mandatory support (HT recipient, DMG STA); architecture with WinStartO/WinSizeO at the originator and the scoreboard (WinStartR/WinSizeR/WinEndR) plus reorder buffer (WinStartB/WinSizeB) at the recipient; full-state scoreboarding rules (10.25.6.3) versus partial-state with cache eviction (10.25.6.4); BlockAck generation a SIFS after a BlockAckReq or implicit-BAR A-MPDU (10.25.6.5); originator behavior and state maintenance (10.25.6.7-10.25.6.9). 10.25.7 Protected block ack agreement (p.2073-2074): MFPC + PBAC capability bits form a PBAC STA; window advances must use a PBAC WinStart Update frame, and a plain BlockAckReq SSN outside the window increments dot11PBACErrors. 10.25.8 GCR and GLK-GCR block ack (p.2074-2079): extension to group-addressed frames; per-member BlockAckReq or HE GCR MU-BAR Trigger exchanges; GLK-GCR set up via the GLK-GCR Parameter Set element; lifetime-limited retransmission. 10.25.9 DMG block ack with flow control (p.2079-2083): DMG Capabilities BA-with-Flow-Control bit; RBUFCAP in BlockAck drives WinLimitO = MostSuccSN + WinCapacityO. 10.25.10 Unsolicited block ack extension (p.2083-2085): no ADDBA needed; full-state only; window seeded from the first A-MPDU of a <TA, RA, TID> tuple; mandatory synchronization before sending and conservative ack-status reset at TXOP/SP boundaries.",
+      "zh": "10.25.6 HT-即时块确认扩展（第2058-2073页）：引言与强制支持要求（HT 接收方、DMG STA）；架构——发送端的 WinStartO/WinSizeO，接收端的记分牌（WinStartR/WinSizeR/WinEndR）与重排序缓冲（WinStartB/WinSizeB）；全状态记分牌规则（10.25.6.3）与带缓存替换的部分状态（10.25.6.4）；在 BlockAckReq 或隐式 BAR 的 A-MPDU 后 SIFS 生成 BlockAck（10.25.6.5）；发送方行为与状态维护（10.25.6.7-10.25.6.9）。10.25.7 受保护的块确认协商（第2073-2074页）：MFPC + PBAC 能力位构成 PBAC STA；窗口推进必须使用 PBAC WinStart Update 帧，普通 BlockAckReq 的 SSN 若落在窗口外则 dot11PBACErrors 加一。10.25.8 GCR 与 GLK-GCR 块确认（第2074-2079页）：扩展到组地址帧；逐成员的 BlockAckReq 或 HE GCR MU-BAR 触发帧交换；GLK-GCR 经 GLK-GCR Parameter Set 元素建立；带生存期上限的重传。10.25.9 带流控的 DMG 块确认（第2079-2083页）：DMG Capabilities 中的「带流控的 BA」位；BlockAck 中的 RBUFCAP 驱动 WinLimitO = MostSuccSN + WinCapacityO。10.25.10 非请求式块确认扩展（第2083-2085页）：无需 ADDBA；仅全状态；窗口由某 <TA, RA, TID> 元组的第一个 A-MPDU 初始化；发送前须强制同步，并在 TXOP/SP 边界保守地重置确认状态。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2058,
+          2060,
+          2061,
+          2073,
+          2074,
+          2079,
+          2083,
+          2084,
+          2085
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2058,
+        2059,
+        2060,
+        2061,
+        2062
+      ],
+      "note": "10.25.6 HT-immediate block ack extensions: intro, architecture (Fig 10-40/10-41), full-state (10.25.6.3) and partial-state (10.25.6.4) scoreboard rules, BlockAck generation (10.25.6.5)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2073,
+        2074
+      ],
+      "note": "10.25.6.9 originator support of partial state; 10.25.7 protected block ack agreement (PBAC, MFPC, PBAC WinStart Update, dot11PBACErrors); start of 10.25.8 GCR/GLK-GCR"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2075,
+        2076,
+        2077,
+        2078,
+        2079
+      ],
+      "note": "10.25.8 GCR and GLK-GCR scoreboarding and frame-exchange sequences (BlockAckReq / GCR MU-BAR Trigger, Fig 10-43/10-44); 10.25.9.1-9.2 DMG block ack with flow control intro and architecture"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2083,
+        2084,
+        2085
+      ],
+      "note": "10.25.9.5-9.6 DMG flow control (RBUFCAP -> WinLimitO); 10.25.10 unsolicited block ack extension (no ADDBA, full-state only, synchronization, TXOP-boundary reset)"
+    }
+  ],
+  "covers": [
+    "80211-2024:10.25.6",
+    "80211-2024:10.25.7",
+    "80211-2024:10.25.8",
+    "80211-2024:10.25.9",
+    "80211-2024:10.25.10"
+  ],
+  "track": "managing"
+}

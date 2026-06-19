@@ -1,0 +1,211 @@
+{
+  "id": "low-power-iot-05-s1g-mac-operation",
+  "title": {
+    "en": "Sub-1 GHz MAC: S1G Channel Selection, Sectorization, Relay and Efficiency Features",
+    "zh": "Sub-1 GHz MAC：S1G 信道选择、扇区化、中继与高效特性"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "The sub-1 GHz (S1G) amendment lets Wi-Fi reach far and last long: narrow channels (1, 2, 4, 8, 16 MHz) below 1 GHz cover hundreds of meters and serve battery-powered sensors. To make that work in unlicensed, crowded spectrum, S1G adds a whole family of MAC procedures on top of the familiar 802.11 rules. This lesson is a guided survey: we group those procedures into four themes — getting onto the right channel, sharing the air efficiently, extending range with relays, and saving energy — and then a coverage map nails the exact clauses.",
+      "zh": "Sub-1 GHz（S1G）修正案让 Wi-Fi 既能传得远、又能用得久：1、2、4、8、16 MHz 的窄信道工作在 1 GHz 以下，覆盖可达数百米，专为电池供电的传感器服务。为了在拥挤的免许可频段中实现这一点，S1G 在熟悉的 802.11 规则之上增加了一整套 MAC 流程。本课是一次导览：我们把这些流程归为四个主题——选对信道、高效共享空口、用中继扩展覆盖、以及节能——最后用一张覆盖图对应到确切的条款。"
+    },
+    {
+      "type": "prose",
+      "en": "Theme 1 — getting onto the right channel. Before starting an S1G BSS, an AP must run a minimum number of OBSS scans to discover existing networks (clause 10.45.3 channel selection; 10.45.5 scanning requirements). The rules say where a new 1 MHz or 2 MHz primary channel may sit relative to a neighbor's secondary channels, so overlapping BSSs interleave cleanly. Once the BSS exists, every joining STA must support the full BSS Basic S1G-MCS and NSS set — the <MCS, NSS> tuples all members must be able to send and receive (10.45.7). And because the band is shared with non-802.11 systems like IEEE 802.15.4g, S1G defines coexistence behavior: a –75 dBm/MHz energy-detect CCA threshold and mitigation options such as changing channel, beamforming, or rescheduling (10.45.8).",
+      "zh": "主题一——选对信道。在启动 S1G BSS 之前，AP 必须先执行最少次数的 OBSS 扫描以发现已有网络（条款 10.45.3 信道选择；10.45.5 扫描要求）。规则规定了新建 BSS 的 1 MHz 或 2 MHz 主信道相对于邻居次信道应处的位置，使重叠的 BSS 能整齐错开。BSS 建立后，每个加入的 STA 都必须支持完整的 BSS 基本 S1G-MCS 与 NSS 集合——即所有成员都能收发的 <MCS, NSS> 元组（10.45.7）。由于该频段还与 IEEE 802.15.4g 等非 802.11 系统共用，S1G 定义了共存行为：–75 dBm/MHz 的能量检测 CCA 门限，以及换信道、波束成形或重新调度等缓解手段（10.45.8）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why so many channel-width rules? In S1G the primary channel can be 1 MHz or 2 MHz, nested inside a wider operating channel. A clean overlap (sharing a neighbor's primary) is allowed; sitting on a neighbor's secondary channel is discouraged because that's where the neighbor expects quiet. The scan-first rule (10.45.3 references 10.45.5) makes sure you actually look before you leap.",
+      "zh": "为什么有这么多信道带宽规则？在 S1G 中，主信道可以是 1 MHz 或 2 MHz，嵌套在更宽的工作信道内。整齐重叠（与邻居共用主信道）是允许的；而占用邻居的次信道则不被鼓励，因为那是邻居期望保持安静的地方。先扫描的规则（10.45.3 引用 10.45.5）确保你在动手前先观察清楚。"
+    },
+    {
+      "type": "prose",
+      "en": "Theme 2 — sharing the air efficiently. Several features cut the number of contention rounds and the time radios stay awake. Target Wake Time (TWT) schedules STAs at staggered wake times; clause 10.46.9 adds parameter ranges, letting a request carry two TWT elements to express a range of acceptable wake times and intervals, which the responder picks from. Bidirectional TXOP (BDT, 10.49.1) fuses uplink and downlink into one continuous SIFS-separated burst, so a poll-and-data round-trip costs one channel access instead of two. Subchannel Selective Transmission (SST) lets STAs move off the primary onto a quieter subchannel: aperiodic SST (10.51.2) grants permission beacon-by-beacon via the SST element, while periodic SST (10.51.3) grants it over many intervals via the RPS element.",
+      "zh": "主题二——高效共享空口。多项特性减少了竞争轮次和射频保持唤醒的时间。目标唤醒时间（TWT）把各 STA 安排在错开的唤醒时刻；条款 10.46.9 增加了参数范围，使一次请求可携带两个 TWT 元素来表达一段可接受的唤醒时间与间隔范围，由响应方从中选取。双向 TXOP（BDT，10.49.1）把上行和下行融合成一个连续的、以 SIFS 分隔的突发，使一次轮询加数据的往返只需一次信道接入而非两次。子信道选择性传输（SST）让 STA 从主信道移到更安静的子信道上：非周期 SST（10.51.2）通过 SST 元素逐信标授予许可，而周期 SST（10.51.3）通过 RPS 元素跨多个间隔授予许可。"
+    },
+    {
+      "type": "prose",
+      "en": "Sectorization is the spatial side of efficiency. The AP splits its coverage into sectors using directional beams, so fewer STAs contend within each sector (clause 10.52.1 introduction). To pick the best beam, the AP runs sector training (10.52.5): it sends a burst of NDP CTS frames, one per sector, separated by SIFS; each STA listens, judges which sector gives the best CSI, and reports back with a Sector ID Feedback frame. A STA can request training using the HT variant Control field, and Fast Sector Discovery lets many STAs report inside a dedicated report RAW.",
+      "zh": "扇区化是效率的空间维度。AP 用定向波束把覆盖区划分为若干扇区，从而减少每个扇区内竞争的 STA 数量（条款 10.52.1 引言）。为挑选最佳波束，AP 执行扇区训练（10.52.5）：它发送一连串以 SIFS 分隔的 NDP CTS 帧，每个扇区一个；各 STA 监听并判断哪个扇区给出最佳 CSI，再用扇区 ID 反馈帧上报。STA 可使用 HT 变体控制字段请求训练，而快速扇区发现允许众多 STA 在专用的报告 RAW 内集中上报。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant AP\n  participant STA\n  STA->>AP: Sector training request (+HTC)\n  AP->>STA: NDP CTS (Sector 0)\n  AP->>STA: NDP CTS (Sector 1)\n  AP->>STA: NDP CTS (Sector 2)\n  Note over STA: pick best CSI\n  STA->>AP: Sector ID Feedback",
+      "zh": "sequenceDiagram\n  participant AP\n  participant STA\n  STA->>AP: 扇区训练请求 (+HTC)\n  AP->>STA: NDP CTS（扇区 0）\n  AP->>STA: NDP CTS（扇区 1）\n  AP->>STA: NDP CTS（扇区 2）\n  Note over STA: 选择最佳 CSI\n  STA->>AP: 扇区 ID 反馈"
+    },
+    {
+      "type": "prose",
+      "en": "Theme 3 — extending range with relays. An S1G relay (clause 10.53.1) is a paired relay-AP and relay-STA that forward frames between a far-away STA and the root AP, hop by hop. Group-addressed (multicast/broadcast) traffic needs special handling (10.53.4): a relay AP does NOT re-broadcast group frames locally. Instead the group frame first travels up to the root AP as an individually addressed four-address frame, and only then flows back down the tree as a group transmission — so each multicast frame reaches every branch exactly once without loops.",
+      "zh": "主题三——用中继扩展覆盖。S1G 中继（条款 10.53.1）是成对的中继 AP 与中继 STA，它们在远端 STA 与根 AP 之间逐跳转发帧。组地址（组播/广播）流量需要特殊处理（10.53.4）：中继 AP 不会在本地重新广播组帧。相反，组帧先作为单地址的四地址帧上行到根 AP，然后才作为组传输沿树向下分发——这样每个组播帧恰好到达每个分支一次，且不会形成环路。"
+    },
+    {
+      "type": "prose",
+      "en": "Theme 4 — saving energy and tightening the air. Group AID (clause 10.54) lets the AP assign one AID to a group of STAs so a single TIM bit signals buffered group-addressed traffic, and the STAs only wake every group listen interval. Energy-limited (EL) STA operation (10.61) bounds how long the AP may keep such a STA awake, using ELMaxAwakeTimer and ELRecoveryTimer so an energy-harvesting node never overdraws its budget. S1G flow control (10.60) lets one STA tell another to pause sending Data frames for a stated duration via a Flow Suspension frame or a flag in a BAT/TACK/STACK/NDP-Ack frame — vital for keeping a relay's buffers from overflowing.",
+      "zh": "主题四——节能与压缩空口开销。组 AID（条款 10.54）让 AP 为一组 STA 分配同一个 AID，从而用单个 TIM 比特即可通知有缓存的组地址流量，这些 STA 只需每个组侦听间隔唤醒一次。能量受限（EL）STA 操作（10.61）限制 AP 能让此类 STA 保持唤醒的时长，通过 ELMaxAwakeTimer 与 ELRecoveryTimer，使能量收集节点永不透支其预算。S1G 流量控制（10.60）让一个 STA 通过流量挂起帧、或 BAT/TACK/STACK/NDP-Ack 帧中的某个标志，告知另一个 STA 在指定时长内暂停发送数据帧——这对防止中继的缓冲区溢出至关重要。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 400 120\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" font-family=\"sans-serif\" font-size=\"11\"><rect x=\"10\" y=\"45\" width=\"60\" height=\"30\" fill=\"none\" stroke=\"currentColor\"/><text x=\"40\" y=\"64\" text-anchor=\"middle\" fill=\"currentColor\">EL STA</text><rect x=\"330\" y=\"45\" width=\"60\" height=\"30\" fill=\"none\" stroke=\"currentColor\"/><text x=\"360\" y=\"64\" text-anchor=\"middle\" fill=\"currentColor\">S1G STA</text><line x1=\"70\" y1=\"60\" x2=\"330\" y2=\"60\" stroke=\"currentColor\" stroke-dasharray=\"4 3\"/><rect x=\"150\" y=\"30\" width=\"100\" height=\"18\" fill=\"none\" stroke=\"currentColor\"/><text x=\"200\" y=\"43\" text-anchor=\"middle\" fill=\"currentColor\">MaxAwakeTimer</text><rect x=\"150\" y=\"72\" width=\"100\" height=\"18\" fill=\"none\" stroke=\"currentColor\"/><text x=\"200\" y=\"85\" text-anchor=\"middle\" fill=\"currentColor\">RecoveryTimer</text><text x=\"200\" y=\"15\" text-anchor=\"middle\" fill=\"currentColor\">PPDU duration must fit within MaxAwakeTimer</text></svg>",
+      "caption": {
+        "en": "Energy-limited STA: the AP must not send (or elicit) a PPDU whose duration would exceed the EL STA's remaining ELMaxAwakeTimer, protecting a harvested-energy budget (clause 10.61).",
+        "zh": "能量受限 STA：AP 不得发送（或引发）一个时长会超过 EL STA 剩余 ELMaxAwakeTimer 的 PPDU，从而保护其能量收集预算（条款 10.61）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "A few more S1G mechanisms round out the picture, mostly about robustness and frame format. Traveling pilot operation (clause 10.55) lets pilots move across subcarriers to track fast-changing channels, negotiated via a capability bit. Bitmap protection for NDP BlockAck frames (10.56) XOR-folds the BlockAck bitmap onto itself before transmit, adding protection because the tiny NDP SIG CRC alone is weak. Transmission of an NDP CMAC PPDU (10.58) fixes the TXVECTOR parameters (single stream, zero APEP length, one user) for these compact control PPDUs. S1G_Long operation (10.59) is a longer-preamble mode, again capability-gated. And S1G BSS/STA type (10.62) classifies non-AP STAs as sensor or non-sensor, and BSSs as sensor, non-sensor, or mixed.",
+      "zh": "还有几项 S1G 机制完善了整体图景，大多关乎鲁棒性与帧格式。行进导频操作（条款 10.55）让导频在子载波间移动以跟踪快变信道，通过能力比特协商。NDP BlockAck 帧的位图保护（10.56）在发送前把 BlockAck 位图与自身做 XOR 折叠，增加保护，因为单凭微小的 NDP SIG CRC 太弱。NDP CMAC PPDU 的传输（10.58）为这些紧凑的控制 PPDU 固定了 TXVECTOR 参数（单流、APEP 长度为零、单用户）。S1G_Long 操作（10.59）是一种更长前导码模式，同样受能力门控。S1G BSS/STA 类型（10.62）则把非 AP STA 分类为传感器或非传感器，把 BSS 分类为传感器、非传感器或混合型。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause and where it lives",
+        "zh": "覆盖图：每个条款及其所在位置"
+      },
+      "en": "Channel and rates: 10.45.3 S1G BSS channel selection methods (run min dot11S1GOBSSScanCount OBSS scans before starting a BSS; primary-channel placement rules vs. neighbors' secondary channels). 10.45.5 Scanning requirements for S1G STA (passive/active dwell, per-channel total scan time). 10.45.7 BSS Basic S1G-MCS and NSS set operation (the <MCS,NSS> tuples all members must support; STA may not join/associate without supporting them). 10.45.8 S1G coexistence with non-IEEE-802.11 systems (–75 dBm/MHz ED-CCA; mitigation via channel change, sectorized beamforming, RAW/TWT/SST rescheduling, or deferral). Efficiency: 10.46.9 TWT parameter ranges (two TWT elements express a value range for Target Wake Time, Nominal Min Wake Duration, and wake interval; Suggest/Demand vs Alternate/Dictate). 10.49.1 Bidirectional TXOP overview (UL+DL in one SIFS-separated sequence; BDT Capable field). 10.51.2 Aperiodic SST (SST Operation/SST elements grant subchannels per beacon interval; parallel/series beacons; sounding RAWs). 10.51.3 Periodic SST (RPS element with Periodic RAW Indication grants over multiple intervals). Sectorization: 10.52.1 Introduction (partition coverage into sectors to cut contention). 10.52.5 Sector training operation (consecutive NDP CTS per sector, Sector ID Feedback, HT-variant Control request, Fast Sector Discovery). Relay: 10.53.1 General (relay = relay-AP + relay-STA + relay function; multi-hop forwarding). 10.53.4 Group addressed relay frames (group frame goes up to root AP as individually addressed 4-address/A-MSDU frame, then down the tree as group TX). Other S1G MAC: 10.54 Group AID (one AID for a group of STAs; single TIM bit; group listen interval). 10.55 Traveling pilot operation (capability values 1 or 3; TRAVELING_PILOTS TXVECTOR). 10.56 Bitmap protection for NDP BlockAck (XOR-fold [B3:B10] or [B3:B18] with later bits). 10.58 Transmission of an NDP CMAC PPDU (NDP_INDICATION=1, NUM_STS=1, APEP_LENGTH=0, NUM_USERS=1). 10.59 S1G_Long operation (S1G_LONG_PREAMBLE capability-gated). 10.60 S1G flow control (Flow Suspension frame or flagged BAT/TACK/STACK/NDP-Ack pauses Data frames; Flow Resumption cancels). 10.61 Energy limited STAs (ELMaxAwakeTimer/ELRecoveryTimer bound awake time). 10.62 S1G BSS type and STA type (sensor/non-sensor STA; sensor/non-sensor/mixed BSS). GLK addressing: 10.64 Addressing of GLK Data frame transmission (3- or 4-address MAC header, Basic A-MSDU, or group-addressed via SYNRA). 10.65 SYNRA filtering operation (GLK non-AP STA filters group-addressed frames by SYNRA type, From/To DS, and AID Bitmap rules).",
+      "zh": "信道与速率：10.45.3 S1G BSS 信道选择方法（启动 BSS 前执行最少 dot11S1GOBSSScanCount 次 OBSS 扫描；主信道相对邻居次信道的放置规则）。10.45.5 S1G STA 扫描要求（被动/主动驻留、每信道总扫描时间）。10.45.7 BSS 基本 S1G-MCS 与 NSS 集合操作（所有成员必须支持的 <MCS,NSS> 元组；不支持则不得加入/关联）。10.45.8 S1G 与非 802.11 系统共存（–75 dBm/MHz ED-CCA；通过换信道、扇区波束成形、RAW/TWT/SST 重调度或推迟来缓解）。效率：10.46.9 TWT 参数范围（两个 TWT 元素表达目标唤醒时间、标称最小唤醒时长与唤醒间隔的取值范围；Suggest/Demand 与 Alternate/Dictate）。10.49.1 双向 TXOP 概述（上行+下行在一个以 SIFS 分隔的序列中；BDT Capable 字段）。10.51.2 非周期 SST（SST Operation/SST 元素按信标间隔授予子信道；并行/串行信标；探测 RAW）。10.51.3 周期 SST（带周期 RAW 指示的 RPS 元素跨多个间隔授予）。扇区化：10.52.1 引言（把覆盖划分为扇区以减少竞争）。10.52.5 扇区训练操作（每扇区连续 NDP CTS、扇区 ID 反馈、HT 变体控制请求、快速扇区发现）。中继：10.53.1 总则（中继 = 中继 AP + 中继 STA + 中继功能；多跳转发）。10.53.4 组地址中继帧（组帧先作为单地址的 4 地址/A-MSDU 帧上行到根 AP，再作为组传输向下分发）。其他 S1G MAC：10.54 组 AID（一个 AID 对应一组 STA；单个 TIM 比特；组侦听间隔）。10.55 行进导频操作（能力值 1 或 3；TRAVELING_PILOTS TXVECTOR）。10.56 NDP BlockAck 位图保护（把 [B3:B10] 或 [B3:B18] 与后续比特做 XOR 折叠）。10.58 NDP CMAC PPDU 的传输（NDP_INDICATION=1、NUM_STS=1、APEP_LENGTH=0、NUM_USERS=1）。10.59 S1G_Long 操作（S1G_LONG_PREAMBLE 受能力门控）。10.60 S1G 流量控制（流量挂起帧或带标志的 BAT/TACK/STACK/NDP-Ack 暂停数据帧；流量恢复帧取消）。10.61 能量受限 STA（ELMaxAwakeTimer/ELRecoveryTimer 限制唤醒时间）。10.62 S1G BSS 类型与 STA 类型（传感器/非传感器 STA；传感器/非传感器/混合 BSS）。GLK 寻址：10.64 GLK 数据帧传输的寻址（3 或 4 地址 MAC 头、基本 A-MSDU，或经 SYNRA 的组地址）。10.65 SYNRA 过滤操作（GLK 非 AP STA 按 SYNRA 类型、From/To DS 与 AID 位图规则过滤组地址帧）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2351,
+          2352,
+          2353,
+          2364,
+          2365,
+          2371,
+          2377,
+          2380,
+          2389,
+          2391,
+          2396,
+          2401,
+          2402,
+          2404,
+          2405,
+          2406,
+          2408,
+          2419,
+          2420
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Finally, two clauses cover General Link (GLK) addressing, used when an 802.1Q bridge presents links to S1G transmission. Clause 10.64 says how a GLK Data frame is addressed: a three-address header (when RA equals DA and the transmitter is an AP), a four-address header, or a Basic A-MSDU; for multiple general links the AP may even send a group-addressed four-address frame using a Single-Network Receiver Address (SYNRA). Clause 10.65 then defines SYNRA filtering: a receiving GLK non-AP STA discards a SYNRA-addressed frame whose SYNRA type is unsupported, whose From/To DS bits are not both 1, or whose AID falls outside the AID Bitmap's covered set — so a single group transmission can be targeted to exactly the right subset of stations.",
+      "zh": "最后，有两个条款涉及通用链路（GLK）寻址，用于 802.1Q 网桥向 S1G 传输呈现链路时。条款 10.64 规定 GLK 数据帧如何寻址：三地址头（当 RA 等于 DA 且发送方是 AP 时）、四地址头，或基本 A-MSDU；对于多个通用链路，AP 甚至可使用单网络接收地址（SYNRA）发送组地址的四地址帧。条款 10.65 随后定义 SYNRA 过滤：接收的 GLK 非 AP STA 会丢弃这样的 SYNRA 寻址帧——其 SYNRA 类型不受支持、其 From/To DS 比特并非都为 1、或其 AID 落在 AID 位图覆盖集之外——从而使一次组传输能精准定向到恰好正确的那部分站点子集。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2351,
+        2352,
+        2353
+      ],
+      "note": "10.45.3 S1G BSS channel selection, 10.45.5 scanning requirements, 10.45.7 BSS Basic S1G-MCS and NSS set, 10.45.8 coexistence with non-802.11 systems"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2364,
+        2365
+      ],
+      "note": "10.46.9 TWT parameter ranges (two TWT elements, value ranges, Suggest/Demand/Alternate/Dictate)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2371
+      ],
+      "note": "10.49.1 Bidirectional TXOP overview"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2377,
+        2380
+      ],
+      "note": "10.51.2 aperiodic SST and 10.51.3 periodic SST operation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2380,
+        2389,
+        2391
+      ],
+      "note": "10.52.1 sectorization introduction and 10.52.5 sector training operation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2391,
+        2396
+      ],
+      "note": "10.53.1 S1G relay general and 10.53.4 group addressed relay frame forwarding"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2401,
+        2402
+      ],
+      "note": "10.54 Group AID, 10.55 traveling pilot, 10.56 NDP BlockAck bitmap protection"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2404,
+        2405,
+        2406
+      ],
+      "note": "10.58 NDP CMAC PPDU transmission, 10.59 S1G_Long, 10.60 S1G flow control, 10.61 energy limited STAs"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2408
+      ],
+      "note": "10.62 S1G BSS type and STA type (sensor/non-sensor/mixed)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2419,
+        2420
+      ],
+      "note": "10.64 GLK Data frame addressing and 10.65 SYNRA filtering operation"
+    }
+  ],
+  "covers": [
+    "80211-2024:10.45.3",
+    "80211-2024:10.45.5",
+    "80211-2024:10.45.7",
+    "80211-2024:10.45.8",
+    "80211-2024:10.46.9",
+    "80211-2024:10.49.1",
+    "80211-2024:10.51.2",
+    "80211-2024:10.51.3",
+    "80211-2024:10.52.1",
+    "80211-2024:10.52.5",
+    "80211-2024:10.53.1",
+    "80211-2024:10.53.4",
+    "80211-2024:10.54",
+    "80211-2024:10.55",
+    "80211-2024:10.56",
+    "80211-2024:10.58",
+    "80211-2024:10.59",
+    "80211-2024:10.60",
+    "80211-2024:10.61",
+    "80211-2024:10.62",
+    "80211-2024:10.64",
+    "80211-2024:10.65"
+  ],
+  "track": "low-power-iot"
+}

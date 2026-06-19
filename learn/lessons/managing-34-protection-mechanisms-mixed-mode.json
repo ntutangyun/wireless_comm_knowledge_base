@@ -1,0 +1,133 @@
+{
+  "id": "managing-34-protection-mechanisms-mixed-mode",
+  "title": {
+    "en": "Coexisting Politely: Protection Mechanisms for Mixed-Generation BSSs",
+    "zh": "礼貌共存：混合代际 BSS 的保护机制"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every new Wi-Fi generation transmits with a faster, fancier signal that older stations simply cannot decode. To an old radio, a modern transmission can look like meaningless noise — or worse, like an idle channel. If that old station thinks the air is free, it starts talking right on top of the new transmission, and both frames are destroyed. Clause 10.27 of IEEE 802.11-2024 gives newer transmitters a way to be polite: before they speak in a language the old neighbours don't understand, they first announce — in a language everyone understands — exactly how long they'll be busy, so the old radios stay quiet.",
+      "zh": "每一代新的 Wi-Fi 都使用更快、更复杂的信号，而老设备根本无法解码这些信号。在老式电台看来，现代传输可能像一堆毫无意义的噪声——或者更糟，像一条空闲的信道。如果老设备误以为空中没人，它就会径直在新传输之上开始发送，结果两个帧都被毁掉。IEEE 802.11-2024 的第 10.27 条为更新一代的发送方提供了一种讲礼貌的办法：在用老邻居听不懂的语言说话之前，先用大家都听得懂的语言宣布自己将占用信道多久，从而让老式电台保持安静。"
+    },
+    {
+      "type": "prose",
+      "en": "The whole idea rests on the Network Allocation Vector (NAV) — a virtual carrier-sense timer every station keeps. When a station hears a frame that declares a duration, it sets its NAV and refuses to transmit until that timer expires, even if its physical sensing says the channel is clear. Clause 10.27.1 frames the goal: these mechanisms cause a potential interferer to defer for a known period of time. The trick is to update the NAV of stations that cannot decode the actual data — so the protection frame must be sent in an old, universally decodable format.",
+      "zh": "整个思路的核心是网络分配矢量（NAV）——每个站点都维护的一个虚拟载波侦听计时器。当一个站点听到声明了持续时间的帧时，它就设置自己的 NAV，并在该计时器到期前拒绝发送，即使其物理侦听显示信道空闲也是如此。第 10.27.1 条点明了目标：这些机制让潜在的干扰者在一段已知的时间内推迟发送。关键在于更新那些无法解码实际数据的站点的 NAV——因此保护帧必须以一种古老的、人人都能解码的格式发送。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant New as New STA\n    participant Old as Legacy STA\n    Note over New,Old: protect first\n    New->>Old: RTS (old rate)\n    Note over Old: sets NAV, stays quiet\n    Old-->>New: CTS (old rate)\n    New->>New: fast data (new format)\n    Note over Old: NAV still held",
+      "zh": "sequenceDiagram\n    participant New as 新站点\n    participant Old as 旧站点\n    Note over New,Old: 先保护\n    New->>Old: RTS（旧速率）\n    Note over Old: 设置 NAV，保持安静\n    Old-->>New: CTS（旧速率）\n    New->>New: 高速数据（新格式）\n    Note over Old: NAV 仍在保持"
+    },
+    {
+      "type": "prose",
+      "en": "The classic case is the non-ERP receiver — the 802.11b problem inside an 802.11g network (Clause 10.27.2). An 802.11g (ERP) station sends OFDM, which a legacy 802.11b radio cannot demodulate. So before transmitting an ERP-OFDM data frame when the BSS signals Use_Protection = 1, the ERP station first sends RTS/CTS or CTS-to-self at a mandatory legacy rate (a Clause 15 or Clause 16 / DSSS rate). That short exchange carries a Duration value covering the whole upcoming data-plus-response time, updating the NAV of the slow 802.11b stations so they hold off. The standard requires the updated NAV period to be at least as long as the time needed to send the data and any required responses.",
+      "zh": "经典场景就是非 ERP 接收方——802.11g 网络中混入 802.11b 的问题（第 10.27.2 条）。802.11g（ERP）站点发送 OFDM 信号，而老式 802.11b 电台无法解调它。因此当 BSS 发出 Use_Protection = 1 信号时，ERP 站点在发送 ERP-OFDM 数据帧之前，先用强制要求的传统速率（第 15 或第 16 条规定的 DSSS 速率）发送 RTS/CTS 或 CTS-to-self。这次简短交互携带的持续时间值覆盖了接下来整段数据加响应的时间，从而更新慢速 802.11b 站点的 NAV，让它们暂缓发送。标准要求更新后的 NAV 时长至少等于发送数据及任何所需响应所需的时间。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why send the guard frame slowly? Because the only point of the RTS/CTS is to be heard by the radios that can't hear the data. A protection frame transmitted at a fancy modern rate would be invisible to exactly the stations it is meant to silence. So the rule is always: protect in the lowest common dialect, even though it costs airtime.",
+      "zh": "为什么用慢速发送保护帧？因为 RTS/CTS 的唯一意义就是让那些听不懂数据的电台能听见。如果保护帧用花哨的现代速率发送，它对那些本该被它压住的站点恰恰是隐形的。所以规则始终是：用最低的通用方言来保护，哪怕这会浪费一些空口时间。"
+    },
+    {
+      "type": "prose",
+      "en": "The next generation faces the same dilemma. Clause 10.27.3 covers protection for HT (802.11n) PPDU transmissions. An HT AP advertises an HT Protection field in its HT Operation element (carried in Beacons and Probe Responses) with four modes — no protection, nonmember protection, 20 MHz protection, and non-HT mixed mode — chosen by what kinds of stations it detects. If any non-HT station is around (or might be, on the secondary channel), the AP escalates toward non-HT mixed mode, and HT transmissions must be protected. The applicable mechanisms (Table 10-27) are the familiar ones: RTS/CTS or CTS-to-self sent first using Clause 17/18 legacy rates (or non-HT duplicate frames for 40 MHz), or leading the TXOP with a non-HT frame that demands an immediate response.",
+      "zh": "下一代面临同样的困境。第 10.27.3 条处理 HT（802.11n）PPDU 传输的保护。HT AP 在其 HT 操作元素（携带于信标和探测响应帧中）里通告一个 HT Protection 字段，它有四种模式——无保护、非成员保护、20 MHz 保护、以及非 HT 混合模式——根据检测到的站点类型来选择。如果附近有（或在次信道上可能有）任何非 HT 站点，AP 就升级到非 HT 混合模式，此时 HT 传输必须受到保护。适用的机制（表 10-27）正是我们熟悉的那些：先用第 17/18 条的传统速率发送 RTS/CTS 或 CTS-to-self（40 MHz 时用非 HT 重复帧），或者用一个要求立即响应的非 HT 帧来引导 TXOP。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[All neighbours HT?] -->|yes| B[no protection]\n    A -->|stranger non-HT seen| C[nonmember protection]\n    A -->|legacy member present| D[non-HT mixed mode]\n    D --> E[protect every HT PPDU]\n    C --> F[protect greenfield + RIFS]",
+      "zh": "flowchart TD\n    A[邻居全是 HT 吗？] -->|是| B[无保护]\n    A -->|发现陌生非 HT| C[非成员保护]\n    A -->|存在传统成员| D[非 HT 混合模式]\n    D --> E[保护每个 HT PPDU]\n    C --> F[保护 greenfield + RIFS]"
+    },
+    {
+      "type": "prose",
+      "en": "HT also introduced an even faster framing called HT-greenfield format, which drops the legacy-compatible preamble entirely, plus RIFS (Reduced Interframe Space) bursts. These are the most aggressive — and the most invisible to old radios — so the Nongreenfield HT STAs Present field and the OBSS Non-HT STAs Present field let an AP flag that greenfield and RIFS sequences specifically must be protected even when ordinary HT frames need not be. A neat economy hides here: an HT-mixed format PPDU carries a legacy (non-HT) preamble up front, whose L-LENGTH / L-DATARATE fields (Clause 10.27.4) already tell legacy stations how long to stay quiet — so a well-formed mixed-format frame is partly self-protecting.",
+      "zh": "HT 还引入了一种更快的帧格式，称为 HT-greenfield 格式，它完全去掉了兼容传统的前导码，再加上 RIFS（缩短帧间间隔）突发传输。这些是最激进的——对老式电台而言也是最隐形的——因此 Nongreenfield HT STAs Present 字段和 OBSS Non-HT STAs Present 字段让 AP 能够标明：即便普通 HT 帧无需保护，greenfield 和 RIFS 序列也必须特别加以保护。这里藏着一个巧妙的节省：HT-mixed 格式 PPDU 在前部携带一个传统（非 HT）前导码，其 L-LENGTH / L-DATARATE 字段（第 10.27.4 条）已经告诉传统站点要安静多久——所以一个格式良好的混合格式帧本身就具有部分自我保护能力。"
+    },
+    {
+      "type": "prose",
+      "en": "Because these HT rules were written to be extensible, later generations simply inherit them. VHT (802.11ac) and HE (802.11ax) stations follow the HT protection rules for their band, substituting a VHT or HE PPDU wherever the rules mention an HT-mixed format PPDU (Clauses 10.27.5 and 10.27.6) — and HE additionally gains the MU-RTS/CTS exchange. So the same NAV-first courtesy quietly scales from 11n all the way through Wi-Fi 6.",
+      "zh": "由于这些 HT 规则在设计时就考虑了可扩展性，后续各代直接继承它们。VHT（802.11ac）和 HE（802.11ax）站点在其频段遵循 HT 保护规则，凡是规则中提到 HT-mixed 格式 PPDU 之处，都用 VHT 或 HE PPDU 替代（第 10.27.5 和 10.27.6 条）——HE 还额外获得了 MU-RTS/CTS 交互。于是同样的“先发 NAV”礼仪悄然地从 11n 一路延伸到 Wi-Fi 6。"
+    },
+    {
+      "type": "prose",
+      "en": "The 60 GHz world plays by the same spirit. Clause 10.27.7 defines protection for EDMG (802.11ay) PPDU transmissions: an EDMG station must not send an EDMG PPDU without first attempting to update the NAV of receiving non-EDMG stations, with the NAV period covering the full data-plus-response time. Protection is mandatory when the TXOP was won by contention-based access, and optional during a scheduled service period. The guard frames here are the DMG family — RTS, DMG CTS, DMG CTS-to-self, DMG DTS, and CF-End — sent at the robust MCS 0 so every station in range can read the duration even if it can't decode the EDMG signal. Neatly, protection can be skipped entirely if the whole TXOP is sent at MCS 0, since then everyone could decode it anyway.",
+      "zh": "60 GHz 的世界也秉持同样的精神。第 10.27.7 条定义了 EDMG（802.11ay）PPDU 传输的保护：EDMG 站点不得在未先尝试更新接收方非 EDMG 站点的 NAV 之前发送 EDMG PPDU，且 NAV 时长要覆盖完整的数据加响应时间。当 TXOP 是通过基于竞争的接入赢得时，保护是强制的；在调度的服务周期内则为可选。这里的保护帧属于 DMG 家族——RTS、DMG CTS、DMG CTS-to-self、DMG DTS 和 CF-End——以稳健的 MCS 0 发送，使范围内每个站点即使无法解码 EDMG 信号也能读出持续时间。巧妙的是，如果整个 TXOP 都用 MCS 0 发送，保护就可以完全省略，因为那样所有人本就都能解码。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the recurring shape across all four clauses: (1) detect that someone present can't decode your modern signal, (2) speak first in a slow universal format that carries a Duration, (3) let that Duration set everyone's NAV, then (4) burst your fast frame inside the protected window. The radio technology changes from DSSS to OFDM to 60 GHz beamforming, but the courtesy protocol is the same.",
+      "zh": "请注意这四条贯穿始终的共同模式：（1）发现现场有人无法解码你的现代信号；（2）先用携带持续时间的慢速通用格式说话；（3）让该持续时间设置每个人的 NAV；然后（4）在受保护的窗口内突发你的高速帧。无线技术从 DSSS 变到 OFDM 再到 60 GHz 波束成形，但这套礼仪协议始终如一。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: exactly where each clause lives",
+        "zh": "覆盖映射：每条款的精确位置"
+      },
+      "en": "10.27.1 (Introduction, p.2085) states the purpose — protection mechanisms cause a potential interferer to defer for a known period, so non-ERP STAs do not interfere with ERP exchanges and non-HT STAs do not interfere with HT exchanges. 10.27.2 (Protection mechanism for non-ERP receivers, pp.2085-2087) requires an ERP STA to use RTS/CTS or CTS-to-self for ERP-OFDM data/MMPDUs when Use_Protection = 1, sent at a mandatory Clause 15/16 rate, with the NAV period at least the data-plus-response time; it also governs the NonERP_Present and Use_Protection bits in the ERP element. 10.27.3 (Protection for HT PPDUs, pp.2087-2091) defines the four HT Protection field modes, Table 10-26 protection requirements, Table 10-27 mechanisms (RTS/CTS, CTS-to-self, non-HT duplicate for 40 MHz, leading non-HT frame), plus greenfield/RIFS protection via the Nongreenfield HT STAs Present and OBSS Non-HT STAs Present fields. 10.27.7 (Protection for EDMG PPDUs, pp.2092-2093) requires an EDMG STA to update non-EDMG NAV before an EDMG PPDU, mandatory for contention-based TXOPs, using RTS / DMG CTS / DMG CTS-to-self / DMG DTS / CF-End at MCS 0, skippable if the whole TXOP uses MCS 0.",
+      "zh": "10.27.1（引言，第 2085 页）阐明目的——保护机制让潜在干扰者在已知时间内推迟，使非 ERP 站点不干扰 ERP 交互、非 HT 站点不干扰 HT 交互。10.27.2（非 ERP 接收方的保护机制，第 2085-2087 页）要求 ERP 站点在 Use_Protection = 1 时对 ERP-OFDM 数据/MMPDU 使用 RTS/CTS 或 CTS-to-self，以强制的第 15/16 条速率发送，NAV 时长至少为数据加响应时间；它还规范了 ERP 元素中的 NonERP_Present 和 Use_Protection 位。10.27.3（HT PPDU 的保护，第 2087-2091 页）定义了四种 HT Protection 字段模式、表 10-26 的保护要求、表 10-27 的机制（RTS/CTS、CTS-to-self、40 MHz 的非 HT 重复帧、引导用的非 HT 帧），以及通过 Nongreenfield HT STAs Present 和 OBSS Non-HT STAs Present 字段实现的 greenfield/RIFS 保护。10.27.7（EDMG PPDU 的保护，第 2092-2093 页）要求 EDMG 站点在发送 EDMG PPDU 前更新非 EDMG 站点的 NAV，对基于竞争的 TXOP 为强制，使用 MCS 0 的 RTS / DMG CTS / DMG CTS-to-self / DMG DTS / CF-End，若整个 TXOP 用 MCS 0 则可省略。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2085,
+          2086,
+          2087,
+          2088,
+          2089,
+          2090,
+          2091,
+          2092,
+          2093
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2085
+      ],
+      "note": "10.27.1 Introduction and start of 10.27.2 — purpose of protection mechanisms; non-ERP receiver protection via RTS/CTS / CTS-to-self at legacy rates"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2086,
+        2087
+      ],
+      "note": "10.27.2 NonERP_Present / Use_Protection bit rules; start of 10.27.3.1 HT Protection field modes"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2088,
+        2089,
+        2090,
+        2091
+      ],
+      "note": "10.27.3 Table 10-26 and Table 10-27 HT protection requirements/mechanisms; RIFS protection; OBSS Non-HT STAs Present; mesh HT rules; 10.27.4 L_LENGTH"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2092,
+        2093
+      ],
+      "note": "10.27.5 VHT and 10.27.6 HE inheritance; 10.27.7 EDMG PPDU protection — DMG CTS family at MCS 0, mandatory for contention-based TXOP"
+    }
+  ],
+  "covers": [
+    "80211-2024:10.27.1",
+    "80211-2024:10.27.2",
+    "80211-2024:10.27.3",
+    "80211-2024:10.27.7"
+  ],
+  "track": "managing"
+}

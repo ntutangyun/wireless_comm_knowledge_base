@@ -1,0 +1,125 @@
+{
+  "id": "qos-power-07-edca-raw-mcf-channel-access",
+  "title": {
+    "en": "Contention with Priority: EDCA, the Restricted Access Window, and MCF",
+    "zh": "带优先级的竞争：EDCA、受限接入窗口（RAW）与 MCF"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Plain DCF treats every frame equally: each station that wants the medium waits, then counts down a random backoff, and whoever hits zero first transmits. That is fair, but a voice call should not have to queue behind a bulk file download. The Hybrid Coordination Function (HCF) fixes this with two access methods on top of DCF. This lesson covers the contention-based one — Enhanced Distributed Channel Access (EDCA) — plus two specialized variants: the S1G Restricted Access Window (RAW) that schedules contention for groups of low-power stations, and the Mesh Coordination Function (MCF) used between mesh nodes.",
+      "zh": "普通的 DCF 对每一帧一视同仁：每个想占用信道的站点先等待，再倒数一个随机退避值，谁先减到零谁就发送。这很公平，但语音通话不应排在大文件下载后面。混合协调功能（HCF）在 DCF 之上引入两种接入方式来解决这个问题。本课讲解其中基于竞争的方式——增强型分布式信道接入（EDCA）——以及两个专门变体：用于为成组低功耗站点调度竞争的 S1G 受限接入窗口（RAW），以及网状节点之间使用的网状协调功能（MCF）。"
+    },
+    {
+      "type": "prose",
+      "en": "EDCA gives traffic priority by sorting it into four Access Categories (ACs): Voice (VO), Video (VI), Best Effort (BE), and Background (BK). Inside one station, each AC runs its own independent contention engine — an EDCA function, or EDCAF — with its own backoff counter and its own timing parameters. Higher-priority categories are simply tuned to grab the medium sooner, so on average voice beats video beats best-effort beats background. There is no central scheduler; the priority emerges from the parameters.",
+      "zh": "EDCA 通过把流量分到四个接入类别（AC）来实现优先级：语音（VO）、视频（VI）、尽力而为（BE）和背景（BK）。在一个站点内部，每个 AC 运行各自独立的竞争引擎——即 EDCA 功能（EDCAF）——拥有各自的退避计数器和各自的时序参数。优先级更高的类别只是被调成更早抢占信道，于是平均而言语音胜过视频、视频胜过尽力而为、尽力而为胜过背景。这里没有中央调度器，优先级完全由参数自然产生。"
+    },
+    {
+      "type": "prose",
+      "en": "The two knobs that create priority are AIFS and the contention window. Instead of DCF's fixed DIFS, each AC waits an Arbitration Interframe Space, AIFS[AC] = AIFSN[AC] x aSlotTime + aSIFSTime — a smaller AIFSN means a shorter wait. After that wait, the EDCAF picks a random backoff from 0 to CW[AC], where CW starts at CWmin[AC] and doubles (up to CWmax[AC]) after each failure. High-priority ACs get a small AIFSN and a small contention window, so they wait less and pick smaller backoffs. The AP advertises these per-AC values in the EDCA Parameter Set element in its Beacons.",
+      "zh": "制造优先级的两个旋钮是 AIFS 和竞争窗口。每个 AC 不再像 DCF 那样使用固定的 DIFS，而是等待一个仲裁帧间间隔 AIFS[AC] = AIFSN[AC] x aSlotTime + aSIFSTime——AIFSN 越小，等待越短。等待之后，EDCAF 从 0 到 CW[AC] 之间随机取一个退避值，其中 CW 初始为 CWmin[AC]，每次失败后翻倍（上限为 CWmax[AC]）。高优先级 AC 拥有较小的 AIFSN 和较小的竞争窗口，因此等待更少、取到的退避值也更小。AP 通过 Beacon 中的 EDCA 参数集元素广播这些按 AC 区分的取值。"
+    },
+    {
+      "type": "widget",
+      "widget": "backoff",
+      "params": {}
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Because all four EDCAFs live in one station, two of them can hit zero on the same slot. That is an internal collision. The standard resolves it without touching the air: the higher-priority AC is granted the TXOP, and the lower-priority AC behaves exactly as if it had collided on the medium — it invokes its backoff procedure and doubles its contention window.",
+      "zh": "由于四个 EDCAF 都位于同一个站点内，其中两个可能在同一个时隙同时减到零，这就是内部冲突。标准在不动用空口的情况下解决它：优先级更高的 AC 获得 TXOP，优先级较低的 AC 则完全表现得像在介质上发生了冲突一样——启动其退避过程并将竞争窗口翻倍。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Frame arrives for an AC] --> B[Wait AIFS of that AC]\n  B --> C{Medium idle for AIFS?}\n  C -- no --> B\n  C -- yes --> D[Pick backoff 0..CW]\n  D --> E{Backoff == 0?}\n  E -- no --> F[Idle slot: decrement]\n  F --> E\n  E -- yes --> G{Higher-AC also ready?}\n  G -- yes, internal collision --> H[Lose: redo backoff, CW doubles]\n  G -- no --> I[Win TXOP and transmit]",
+      "zh": "flowchart TD\n  A[某 AC 有帧到达] --> B[等待该 AC 的 AIFS]\n  B --> C{介质空闲达 AIFS?}\n  C -- 否 --> B\n  C -- 是 --> D[取退避值 0..CW]\n  D --> E{退避值为 0?}\n  E -- 否 --> F[空闲时隙：减一]\n  F --> E\n  E -- 是 --> G{更高 AC 也就绪?}\n  G -- 是，内部冲突 --> H[落败：重做退避，CW 翻倍]\n  G -- 否 --> I[赢得 TXOP 并发送]"
+    },
+    {
+      "type": "prose",
+      "en": "The Restricted Access Window (RAW) adapts EDCA for sub-1-GHz (S1G) networks, which can host thousands of sensors. If they all contend at once, collisions dominate. When dot11RAWOperationActivated is true, an AP carves out a medium-access interval — the RAW — inside a (short) beacon interval and announces it in the RPS element of the S1G Beacon, naming a RAW group by an AID range. The RAW is split into RAW slots, and each station maps to exactly one slot via islot = (x + Noffset) mod NRAW, where x is derived from the station's AID. A station may begin contending no earlier than the start of its assigned slot, and stations outside the group stay off the air for the whole RAW. Inside a slot, access is still ordinary S1G EDCA — RAW only decides who contends, and when.",
+      "zh": "受限接入窗口（RAW）将 EDCA 适配到可容纳数千个传感器的 1 GHz 以下（S1G）网络。如果它们同时竞争，冲突将占主导。当 dot11RAWOperationActivated 为真时，AP 在一个（短）信标间隔内划出一段介质接入区间——即 RAW——并通过 S1G Beacon 的 RPS 元素公布，用一段 AID 范围指定一个 RAW 组。RAW 被切分为若干 RAW 时隙，每个站点通过 islot = (x + Noffset) mod NRAW 精确映射到一个时隙，其中 x 由站点的 AID 推出。站点最早只能在其被分配时隙的起点开始竞争，组外站点在整个 RAW 期间保持静默。在时隙内部，接入仍是普通的 S1G EDCA——RAW 只决定谁竞争、何时竞争。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The Cross Slot Boundary flag in the RPS element decides what happens at a slot's edge. If it is 1, a station may overrun its slot boundary just to finish an ongoing frame exchange. If it is 0, a station must not even start a transmission unless the frame plus its expected immediate response will fit before the boundary.",
+      "zh": "RPS 元素中的跨时隙边界标志决定时隙边缘的行为。若为 1，站点可以越过时隙边界，仅用于完成正在进行的帧交换。若为 0，站点必须确保该帧及其预期的立即响应能在边界前完成，否则连发送都不得开始。"
+    },
+    {
+      "type": "prose",
+      "en": "The Mesh Coordination Function (MCF) is HCF reused between mesh stations, and it offers the same two flavors. MCF contention-based access is literally the same EDCA described above — clause 10.24.2 just says MCF implements the same EDCA as HCF. The optional half is MCF Controlled Channel Access (MCCA), which lets mesh STAs reserve recurring time periods called MCCAOPs. A station sends an MCCA Setup Request to become the MCCAOP owner; owner and responders then advertise the reservation so neighbors stay silent during it. During its own MCCAOP the owner still wins a TXOP by running EDCA — but with no competing neighbors, and using special MCCA values for AIFSN, CWmin, and CWmax. MCCA is optional and only works among synchronized stations that have dot11MCCAActivated true on the same channel.",
+      "zh": "网状协调功能（MCF）就是在网状站点之间复用的 HCF，同样提供两种方式。MCF 基于竞争的接入实际上就是上文描述的同一套 EDCA——条款 10.24.2 明确指出 MCF 实现的 EDCA 与 HCF 相同。可选的另一半是 MCF 受控信道接入（MCCA），它让网状站点预约称为 MCCAOP 的周期性时间段。某站点发送 MCCA 建立请求成为 MCCAOP 所有者，随后所有者与响应者通告该预约，使邻居在此期间保持静默。在自己的 MCCAOP 期间，所有者仍通过运行 EDCA 赢得 TXOP——但没有邻居竞争，并使用 AIFSN、CWmin、CWmax 的专用 MCCA 取值。MCCA 是可选的，仅在同一信道上、已将 dot11MCCAActivated 置为真且相互同步的站点之间生效。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  HCF[HCF / MCF] --> EDCA[EDCA: contention-based]\n  HCF --> CTRL[Controlled access]\n  EDCA --> AC[4 ACs: VO VI BE BK]\n  EDCA --> RAW[S1G RAW: slotted EDCA per group]\n  CTRL --> HCCA[HCCA in a BSS]\n  CTRL --> MCCA[MCCA in a mesh: reserved MCCAOPs]",
+      "zh": "flowchart LR\n  HCF[HCF / MCF] --> EDCA[EDCA：基于竞争]\n  HCF --> CTRL[受控接入]\n  EDCA --> AC[4 个 AC：VO VI BE BK]\n  EDCA --> RAW[S1G RAW：按组分时隙的 EDCA]\n  CTRL --> HCCA[BSS 中的 HCCA]\n  CTRL --> MCCA[网状中的 MCCA：预约的 MCCAOP]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: exactly where each clause lives",
+        "zh": "覆盖对照：各条款的确切出处"
+      },
+      "en": "10.23.2 (HCF contention-based channel access, EDCA) — the reference model of four EDCAFs mapping UP to access categories, the backoff procedure that initializes CW[AC] to CWmin[AC] and doubles it via QSRC on failure, and the rules for obtaining an EDCA TXOP using AIFS[AC] = AIFSN[AC] x aSlotTime + aSIFSTime, with internal collisions awarding the TXOP to the higher-priority AC. 10.23.5 (Restricted access window, RAW operation) — RAW is enabled by dot11RAWOperationActivated, announced in the RPS element of the S1G Beacon, divided into RAW slots with slot assignment islot = (x + Noffset) mod NRAW; access within a slot is S1G EDCA (10.23.2.6); the Cross Slot Boundary subfield governs slot-edge behavior. 10.24.1 (MCF General) — under MCF the unit of transmission right is the TXOP, of two types: EDCA TXOPs and MCCA TXOPs. 10.24.2 (MCF contention-based channel access) — MCF implements the same EDCA as HCF. 10.24.3 (MCF controlled channel access, MCCA) — an optional method where an MCCAOP owner reserves MCCAOPs via MCCA Setup frames, advertises them, and during its MCCAOP wins a TXOP by EDCA with no neighbor competition, substituting MCCA AIFSN/CWmin/CWmax.",
+      "zh": "10.23.2（HCF 基于竞争的信道接入，EDCA）——四个 EDCAF 将 UP 映射到接入类别的参考模型，将 CW[AC] 初始化为 CWmin[AC] 并在失败时通过 QSRC 翻倍的退避过程，以及使用 AIFS[AC] = AIFSN[AC] x aSlotTime + aSIFSTime 获取 EDCA TXOP 的规则，内部冲突时将 TXOP 判给优先级更高的 AC。10.23.5（受限接入窗口，RAW 操作）——RAW 由 dot11RAWOperationActivated 启用，在 S1G Beacon 的 RPS 元素中公布，被划分为 RAW 时隙，时隙分配为 islot = (x + Noffset) mod NRAW；时隙内的接入是 S1G EDCA（10.23.2.6）；跨时隙边界子字段管控时隙边缘行为。10.24.1（MCF 概述）——MCF 下传输权的单位是 TXOP，分两种：EDCA TXOP 与 MCCA TXOP。10.24.2（MCF 基于竞争的信道接入）——MCF 实现与 HCF 相同的 EDCA。10.24.3（MCF 受控信道接入，MCCA）——一种可选方法，MCCAOP 所有者通过 MCCA 建立帧预约 MCCAOP 并加以通告，在自己的 MCCAOP 期间通过 EDCA 在无邻居竞争下赢得 TXOP，并替换为 MCCA 的 AIFSN/CWmin/CWmax。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1998,
+          2000,
+          2001,
+          2031,
+          2032,
+          2033,
+          2038,
+          2039
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1998,
+        1999,
+        2000,
+        2001,
+        2002
+      ],
+      "note": "10.23.2 EDCA: reference model with four EDCAFs/ACs, backoff procedure (CW[AC], CWmin/CWmax, QSRC), AIFS and obtaining an EDCA TXOP, internal collision resolution."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2031,
+        2032,
+        2033,
+        2034
+      ],
+      "note": "10.23.5 RAW operation: dot11RAWOperationActivated, RPS element in S1G Beacon, RAW group by AID range, RAW slots, slot assignment islot=(x+Noffset) mod NRAW, Cross Slot Boundary, EDCA within slot."
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2038,
+        2039,
+        2040
+      ],
+      "note": "10.24.1 MCF General (EDCA TXOP vs MCCA TXOP); 10.24.2 MCF contention-based access = same EDCA as HCF; 10.24.3 MCCA: MCCAOP owner/responders, reservations, EDCA with MCCA AIFSN/CWmin/CWmax."
+    }
+  ],
+  "covers": [
+    "80211-2024:10.23.2",
+    "80211-2024:10.23.5",
+    "80211-2024:10.24.1",
+    "80211-2024:10.24.2",
+    "80211-2024:10.24.3"
+  ],
+  "track": "qos-power"
+}

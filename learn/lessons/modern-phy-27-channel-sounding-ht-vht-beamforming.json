@@ -1,0 +1,158 @@
+{
+  "id": "modern-phy-27-channel-sounding-ht-vht-beamforming",
+  "title": {
+    "en": "Sounding the Channel: NDPs and HT/VHT Transmit Beamforming",
+    "zh": "探测信道：NDP 与 HT/VHT 发射波束成形"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Beamforming is only as good as the channel knowledge behind it. Before a transmitter can steer energy toward a receiver, it has to learn how the air between them distorts each antenna's signal. The 802.11 standard solves this with sounding: a transmitter sends a special probe and the receiver (or the transmitter itself) measures the resulting channel. This lesson follows that idea from the HT era through VHT, covering sounding PPDUs, how a beamformer turns a channel estimate into a steering matrix, implicit feedback, antenna selection, and the compact null-data-packet (NDP) sounding protocol.",
+      "zh": "波束成形的效果，取决于背后对信道的了解程度。在发射机能把能量定向送往接收机之前，它必须先弄清楚两者之间的空气如何扭曲每根天线的信号。802.11 标准用“探测（sounding）”来解决这个问题：发射机发出一个特殊的探测信号，接收机（或发射机自身）据此测量信道。本课沿着这条思路，从 HT 时代讲到 VHT，涵盖探测 PPDU、波束成形器如何把信道估计转化为导向矩阵、隐式反馈、天线选择，以及紧凑的空数据包（NDP）探测协议。"
+    },
+    {
+      "type": "prose",
+      "en": "A sounding PPDU is simply a PPDU whose TXVECTOR/RXVECTOR carries the SOUNDING parameter (clause 10.30). Its job is to let the receiving STA estimate the MIMO channel between the two radios. A STA transmits sounding PPDUs in several roles — as an MFB requester, as an HT beamformee answering a training request, as an HT beamformer doing explicit beamforming, or as an ASEL transmitter — and receives them in the mirror-image roles. The number of HT-LTF training symbols carried determines how many space-time streams the receiver can estimate, bounded by the receiver's advertised Channel Estimation Capability.",
+      "zh": "探测 PPDU 不过是一个其 TXVECTOR/RXVECTOR 带有 SOUNDING 参数的 PPDU（条款 10.30）。它的作用是让接收方 STA 估计两台收发机之间的 MIMO 信道。STA 会在若干角色中发送探测 PPDU——作为 MFB 请求方、作为响应训练请求的 HT 波束被成形者、作为执行显式波束成形的 HT 波束成形器，或作为 ASEL 发射方——并在对应的镜像角色中接收它们。所携带的 HT-LTF 训练符号数量，决定了接收方能估计多少条空时流，其上限由接收方所通告的“信道估计能力”决定。"
+    },
+    {
+      "type": "prose",
+      "en": "How does a beamformer actually compute its steering matrix (clause 10.33.1)? It needs an accurate estimate of the channel it transmits over, and the standard defines two routes. With implicit feedback, the beamformer listens to long training symbols sent by the beamformee and, assuming the channel is reciprocal, reuses that uplink estimate to build the downlink steering matrix — well-calibrated radios improve reciprocity. With explicit feedback, the beamformee measures the channel from the beamformer's own training symbols, quantizes a CSI or steering report, and sends it back. Implicit needs no feedback message but leans on reciprocity; explicit costs an over-the-air report but needs no calibration.",
+      "zh": "波束成形器究竟如何计算它的导向矩阵呢（条款 10.33.1）？它需要对自己所发射经过的信道有一个准确估计，而标准定义了两条路径。采用隐式反馈时，波束成形器倾听波束被成形者发来的长训练符号，并在假设信道互易的前提下，复用该上行估计来构建下行导向矩阵——经过良好校准的射频可改善互易性。采用显式反馈时，波束被成形者从波束成形器自身的训练符号中测量信道，量化出 CSI 或导向报告并回传。隐式方式无需反馈消息，但依赖互易性；显式方式需付出一次空口报告的开销，但无需校准。"
+    },
+    {
+      "type": "prose",
+      "en": "HT transmit beamforming with implicit feedback (clause 10.33.2) can run one-way or two-way. In unidirectional operation, only one STA steers: STA A sends an unsteered frame with a training request (TRQ=1), STA B answers with a sounding PPDU, and A computes its steering matrix and sends a steered frame back — repeating the training request periodically to refresh stale steering vectors. In bidirectional operation both STAs steer, alternating beamformer and beamformee roles so each direction of the link is beamformed. A key practical rule: during the exchange, neither STA should switch antennas, since that would invalidate the channel estimate.",
+      "zh": "采用隐式反馈的 HT 发射波束成形（条款 10.33.2）可以单向或双向运行。在单向运行中，只有一台 STA 进行导向：STA A 发出一个带训练请求（TRQ=1）的非导向帧，STA B 以探测 PPDU 应答，A 据此计算导向矩阵并回发一个导向帧——并周期性地重复训练请求，以刷新已陈旧的导向矢量。在双向运行中，两台 STA 都进行导向，交替扮演波束成形器与波束被成形者，使链路的两个方向都被波束成形。一条关键的实用规则是：在交互过程中两台 STA 都不应切换天线，否则会使信道估计失效。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant A as STA A (beamformer)\n    participant B as STA B (beamformee)\n    A->>B: Unsteered frame, TRQ=1\n    B->>A: Sounding PPDU\n    Note over A: Compute steering matrix\n    A->>B: Steered frame (TRQ=1)\n    B->>A: Sounding PPDU (refresh)\n    Note over A: Update steering vectors",
+      "zh": "sequenceDiagram\n    participant A as STA A（波束成形器）\n    participant B as STA B（被成形者）\n    A->>B: 非导向帧, TRQ=1\n    B->>A: 探测 PPDU\n    Note over A: 计算导向矩阵\n    A->>B: 导向帧 (TRQ=1)\n    B->>A: 探测 PPDU（刷新）\n    Note over A: 更新导向矢量"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Implicit feedback hinges on channel reciprocity — that the uplink and downlink look the same to the math. But a radio's transmit chain and receive chain are never perfectly matched, which breaks reciprocity. That is why a STA acting as an HT beamformer should be calibrated, while a STA that only ever acts as a beamformee does not need calibration. Over-the-air calibration measures and removes the transmit/receive chain mismatch.",
+      "zh": "隐式反馈的成立取决于信道互易性——即上行与下行在数学上看起来一致。但一台射频的发射链与接收链从来无法做到完全匹配，这会破坏互易性。正因如此，充当 HT 波束成形器的 STA 应当进行校准，而仅充当波束被成形者的 STA 则无需校准。空口校准会测量并消除发射链与接收链之间的失配。"
+    },
+    {
+      "type": "prose",
+      "en": "Antenna selection (ASEL, clause 10.34.1) addresses a different hardware reality: a STA may have more antenna elements than RF chains. ASEL is a time-varying mapping of the few RF chains onto the best subset of antennas, chosen from instantaneous or averaged CSI. To choose well, the STA must train the full-size channel across all antenna elements — which it does by sending or receiving sounding PPDUs over every antenna, ideally consecutively within one TXOP so the channel barely changes between probes. ASEL supports up to eight antennas mapped onto up to four RF chains, with the training signaled through the HT Control field.",
+      "zh": "天线选择（ASEL，条款 10.34.1）应对的是另一种硬件现实：一台 STA 的天线单元可能多于其射频链数量。ASEL 是一种把为数不多的射频链时变地映射到“最佳天线子集”上的方法，依据瞬时或平均 CSI 来选择。为了选得好，STA 必须训练覆盖所有天线单元的全尺寸信道——它通过在每根天线上发送或接收探测 PPDU 来完成，最好在一个 TXOP 内连续进行，以使各次探测之间信道几乎不变。ASEL 支持最多八根天线映射到最多四条射频链，训练通过 HT 控制字段来信令传递。"
+    },
+    {
+      "type": "prose",
+      "en": "Sending full data frames just to sound the channel wastes airtime, so 802.11 defines the null data packet (NDP) — a PPDU with no MAC payload, carrying only training symbols. An HT NDP is recognized by a LENGTH/RXVECTOR LENGTH of 0. Because an NDP carries no addresses, it can't say who it is for; instead it is always preceded by an announcement. An HT NDP sequence begins with an HT NDP Announcement, and the announcement's addresses are what let the receiver figure out the NDP's destination and source.",
+      "zh": "仅仅为了探测信道而发送完整数据帧会浪费空口时间，因此 802.11 定义了空数据包（NDP）——一个不含 MAC 载荷、只携带训练符号的 PPDU。HT NDP 通过其 LENGTH（RXVECTOR LENGTH）为 0 来识别。由于 NDP 不携带地址，它无法表明自己发给谁；因此它总是由一个“通告”帧在前引导。一个 HT NDP 序列以一个 HT NDP 通告开始，正是该通告中的地址，让接收方得以推断出 NDP 的目的端与源端。"
+    },
+    {
+      "type": "prose",
+      "en": "Transmitting an HT NDP (clause 10.35.2) follows fixed rules: LENGTH=0, SOUNDING set to SOUNDING, STBC=0, and an MCS indicating two or more spatial streams — and the number of streams sounded must not exceed the receiver's Channel Estimation Capability. Determining the destination (clause 10.35.3) and source (clause 10.35.4) is done by inspecting the announcement: the destination of the first HT NDP equals the RA of an MPDU in the announcement, while the source is the TA when the announcement carries two or more addresses, or the RA of the frame it answered when it carries only one. A Calibration Position of 1 lets a second NDP swap source and destination for the calibration round-trip.",
+      "zh": "发送 HT NDP（条款 10.35.2）遵循固定规则：LENGTH=0、SOUNDING 置为 SOUNDING、STBC=0，且 MCS 须指示两条或更多空间流——而被探测的流数不得超过接收方的“信道估计能力”。确定目的端（条款 10.35.3）与源端（条款 10.35.4）的方法是检视通告帧：第一个 HT NDP 的目的端等于通告中某个 MPDU 的 RA；当通告携带两个或更多地址时，源端为其 TA，当通告只携带一个地址时，源端则为它所应答帧的 RA。校准位置（Calibration Position）为 1 时，可让第二个 NDP 在校准往返中互换源端与目的端。"
+    },
+    {
+      "type": "prose",
+      "en": "VHT moved entirely to explicit feedback and added downlink multi-user MIMO, so its sounding protocol (clause 10.35.5) is built around an announcement that can name several beamformees at once. The VHT beamformer sends a VHT NDP Announcement frame — with one STA Info field (carrying an AID12) per beamformee — followed a SIFS later by a VHT NDP (clause 10.35.6: SU PPDU format, APEP_LENGTH=0, NUM_USERS=1, NUM_STS of two or more, bandwidth matching the announcement). The first or only beamformee replies a SIFS after the NDP with a VHT Compressed Beamforming frame; additional beamformees are then polled in turn with Beamforming Report Poll frames. A sounding dialog token ties each report back to its announcement.",
+      "zh": "VHT 完全转向显式反馈，并加入了下行多用户 MIMO，因此其探测协议（条款 10.35.5）围绕一个“可一次性指名多个波束被成形者”的通告来构建。VHT 波束成形器发送一个 VHT NDP 通告帧——每个被成形者对应一个 STA Info 字段（携带 AID12）——并在一个 SIFS 后紧跟一个 VHT NDP（条款 10.35.6：SU PPDU 格式、APEP_LENGTH=0、NUM_USERS=1、NUM_STS 为二或更多、带宽与通告一致）。第一个（或唯一的）被成形者在 NDP 之后一个 SIFS 回以 VHT 压缩波束成形帧；其余被成形者随后由波束成形报告轮询（Beamforming Report Poll）帧依次轮询。一个探测对话令牌（sounding dialog token）把每份报告与其通告对应起来。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant BF as VHT Beamformer\n    participant B1 as Beamformee 1\n    participant B2 as Beamformee 2\n    BF->>B1: VHT NDP Announcement (B1,B2)\n    BF->>B1: VHT NDP\n    B1-->>BF: VHT Compressed Beamforming\n    BF->>B2: Beamforming Report Poll\n    B2-->>BF: VHT Compressed Beamforming",
+      "zh": "sequenceDiagram\n    participant BF as VHT 波束成形器\n    participant B1 as 被成形者 1\n    participant B2 as 被成形者 2\n    BF->>B1: VHT NDP 通告 (B1,B2)\n    BF->>B1: VHT NDP\n    B1-->>BF: VHT 压缩波束成形\n    BF->>B2: 波束成形报告轮询\n    B2-->>BF: VHT 压缩波束成形"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A VHT compressed beamforming report should fit in a single frame, but a wide-bandwidth multi-user report can be enormous. When it would exceed the beamformer's maximum MPDU length, the report is split into up to 8 feedback segments, each in its own VHT Compressed Beamforming frame and all sent in one A-MPDU in descending segment order. A Beamforming Report Poll with a retransmission bitmap lets the beamformer re-fetch exactly the segments it missed.",
+      "zh": "一份 VHT 压缩波束成形报告本应放进单个帧中，但宽带宽的多用户报告可能极其庞大。当其将超出波束成形器的最大 MPDU 长度时，报告会被拆分为最多 8 个反馈段，每段置于各自的 VHT 压缩波束成形帧中，并全部以反馈段编号降序放入一个 A-MPDU 发送。带有重传位图的波束成形报告轮询帧，可让波束成形器精确地重新取回它所漏收的那些段。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Clause coverage map",
+        "zh": "条款覆盖对照表"
+      },
+      "en": "This lesson teaches: 10.30 (Sounding PPDUs — definition via the SOUNDING parameter, the transmitter/receiver roles, and the limit on simultaneously estimable space-time streams). 10.33.1 (HT steering matrix calculations — implicit vs. explicit feedback). 10.33.2 (HT transmit beamforming with implicit feedback — general behavior plus the unidirectional and bidirectional PPDU exchanges and the 'do not switch antennas' rule; calibration motivation). 10.34.1 (Antenna selection introduction — time-variant RF-chain-to-antenna mapping, full-size channel training, up to 8 antennas / 4 RF chains). 10.35.2 (Transmission of an HT NDP — LENGTH=0, SOUNDING, STBC=0, MCS ≥ 2 streams). 10.35.3 (Determination of HT NDP destination — from the announcement RA / Calibration Position). 10.35.4 (Determination of HT NDP source — from the announcement TA/RA / Calibration Position). 10.35.5 (VHT sounding protocol — explicit feedback, VHT NDP Announcement with per-beamformee STA Info, the single- and multi-beamformee sequences, sounding dialog token, and the fragmented-feedback rules of 10.35.5.3). 10.35.6 (Transmission of a VHT NDP — SU PPDU format, APEP_LENGTH=0, NUM_USERS=1, NUM_STS ≥ 2, bandwidth from the announcement; intended receiver = RA and transmitter = TA of the preceding VHT NDP Announcement).",
+      "zh": "本课讲授：10.30（探测 PPDU——通过 SOUNDING 参数给出的定义、发送/接收角色，以及可同时估计的空时流数量上限）。10.33.1（HT 导向矩阵计算——隐式与显式反馈）。10.33.2（采用隐式反馈的 HT 发射波束成形——总体行为，以及单向与双向 PPDU 交互和“不切换天线”规则；校准的动机）。10.34.1（天线选择导论——射频链到天线的时变映射、全尺寸信道训练、最多 8 天线 / 4 射频链）。10.35.2（发送 HT NDP——LENGTH=0、SOUNDING、STBC=0、MCS≥2 流）。10.35.3（确定 HT NDP 目的端——依据通告的 RA / 校准位置）。10.35.4（确定 HT NDP 源端——依据通告的 TA/RA / 校准位置）。10.35.5（VHT 探测协议——显式反馈、含每个被成形者 STA Info 的 VHT NDP 通告、单个与多个被成形者序列、探测对话令牌，以及 10.35.5.3 的分段反馈规则）。10.35.6（发送 VHT NDP——SU PPDU 格式、APEP_LENGTH=0、NUM_USERS=1、NUM_STS≥2、带宽取自通告；预期接收方=前序 VHT NDP 通告的 RA，发射方=其 TA）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2104,
+          2113,
+          2114,
+          2129,
+          2135,
+          2136,
+          2141
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2104,
+        2105,
+        2106
+      ],
+      "note": "10.30 Sounding PPDUs — SOUNDING parameter, transmitter/receiver roles, space-time-stream estimation limits"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2113,
+        2114,
+        2115,
+        2116,
+        2117
+      ],
+      "note": "10.33.1 HT steering matrix calculations (implicit vs explicit); 10.33.2 HT transmit beamforming with implicit feedback (uni/bidirectional exchanges, calibration motivation)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2129,
+        2130
+      ],
+      "note": "10.34.1 Antenna selection (ASEL) introduction — RF-chain-to-antenna mapping, full-size channel training, up to 8 antennas / 4 RF chains"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2133,
+        2134,
+        2135
+      ],
+      "note": "10.35.1 HT NDP sounding overview; 10.35.2 transmission of an HT NDP; 10.35.3 HT NDP destination; 10.35.4 HT NDP source"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2136,
+        2137,
+        2138,
+        2139,
+        2140,
+        2141,
+        2142
+      ],
+      "note": "10.35.5 VHT sounding protocol (general, sequence rules, fragmented feedback); 10.35.6 transmission of a VHT NDP"
+    }
+  ],
+  "covers": [
+    "80211-2024:10.30",
+    "80211-2024:10.33.1",
+    "80211-2024:10.33.2",
+    "80211-2024:10.34.1",
+    "80211-2024:10.35.2",
+    "80211-2024:10.35.3",
+    "80211-2024:10.35.4",
+    "80211-2024:10.35.5",
+    "80211-2024:10.35.6"
+  ],
+  "track": "modern-phy"
+}

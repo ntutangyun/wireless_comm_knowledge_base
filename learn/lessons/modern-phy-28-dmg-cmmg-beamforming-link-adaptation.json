@@ -1,0 +1,272 @@
+{
+  "id": "modern-phy-28-dmg-cmmg-beamforming-link-adaptation",
+  "title": {
+    "en": "Aiming the Beam at 60 GHz: DMG/CMMG Beamforming, NDP Sounding and Link Adaptation",
+    "zh": "在 60 GHz 对准波束：DMG/CMMG 波束成形、NDP 探测与链路自适应"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "At 60 GHz, radio waves are so easily blocked and so quickly attenuated that omnidirectional transmission simply does not close the link. Directional millimeter-wave (DMG) and the related CMMG and EDMG STAs survive by aiming narrow beams at each other. Before any data flows, a pair of STAs must run beamforming (BF) training: a structured exchange that lets each side discover which antenna sector points at its peer, then refine that choice down to a precise antenna weight vector (AWV). This lesson walks the full DMG/CMMG beamforming and link-adaptation toolkit defined in IEEE 802.11-2024.",
+      "zh": "在 60 GHz 频段，电波极易被遮挡、衰减又非常快，全向发射根本无法建立可用链路。定向毫米波（DMG）以及相关的 CMMG、EDMG 站点只能靠把窄波束对准彼此来维持通信。在任何数据传输之前，一对站点必须先完成波束成形（BF）训练：通过一套结构化的帧交换，让双方各自找出指向对端的天线扇区，再把该选择细化到精确的天线权重矢量（AWV）。本课将完整梳理 IEEE 802.11-2024 中定义的 DMG/CMMG 波束成形与链路自适应工具集。"
+    },
+    {
+      "type": "prose",
+      "en": "BF training always begins with a Sector-Level Sweep (SLS). The initiator transmits a burst of beamforming frames (SSW, DMG Beacon, SSW-Feedback or SSW-Ack), one per sector, while its peer listens. The SLS can contain up to four parts: an Initiator Sector Sweep (ISS) to train the initiator's link, a Responder Sector Sweep (RSS) to train the reverse link, an SSW feedback step, and an SSW ack step. The goal of SLS is modest but essential: get the link working at the DMG control-mode rate or better. A STA must not change its transmit power mid-sweep, and the number of sectors per DMG antenna is capped at 64 (128 across all antennas).",
+      "zh": "BF 训练总是从扇区级扫描（SLS）开始。发起方逐个扇区地发送一连串波束成形帧（SSW、DMG Beacon、SSW-Feedback 或 SSW-Ack），对端则在一旁侦听。SLS 最多包含四个部分：训练发起方链路的发起方扇区扫描（ISS）、训练反向链路的响应方扇区扫描（RSS）、SSW 反馈步骤以及 SSW 确认步骤。SLS 的目标朴素却关键：让链路至少能以 DMG 控制模式速率运行。站点在扫描过程中不得改变发射功率，每个 DMG 天线的扇区数上限为 64（所有天线合计不超过 128）。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant I as Initiator\n  participant R as Responder\n  I->>R: ISS (SSW per sector)\n  R->>I: RSS (SSW per sector)\n  I->>R: SSW-Feedback\n  R->>I: SSW-Ack\n  Note over I,R: SLS done, then optional BRP",
+      "zh": "sequenceDiagram\n  participant I as 发起方\n  participant R as 响应方\n  I->>R: ISS（逐扇区 SSW）\n  R->>I: RSS（逐扇区 SSW）\n  I->>R: SSW-反馈\n  R->>I: SSW-确认\n  Note over I,R: SLS 完成，随后可选 BRP"
+    },
+    {
+      "type": "prose",
+      "en": "SLS only gets you a coarse sector. The Beam Refinement Protocol (BRP) phase then iteratively sharpens both the transmit and receive AWVs at each STA using appended training (TRN-T / TRN-R) subfields. BRP is built from a BRP setup subphase (where STAs exchange capabilities and request what follows), an optional Multiple sector ID Detection / Beam Combining (MIDC) subphase that finds better starting AWVs than the imperfect quasi-omni patterns of SLS, and one or more beam refinement transactions in which request/response frames sweep a broader set of TX and RX AWVs. A transmit request sets TX-TRN-REQ to 1; a receive request sets L-RX greater than 0.",
+      "zh": "SLS 只能给出一个粗略扇区。随后的波束细化协议（BRP）阶段通过附加的训练子字段（TRN-T / TRN-R）迭代地把每个站点的发射与接收 AWV 都磨得更锐。BRP 由若干部分组成：BRP 建立子阶段（站点交换能力并请求后续流程）、可选的多扇区 ID 检测/波束合并（MIDC）子阶段（用于找到比 SLS 那种不完美准全向方向图更好的起始 AWV），以及一次或多次波束细化事务——通过请求/响应帧扫描更大范围的 TX 与 RX AWV。发射请求把 TX-TRN-REQ 置 1，接收请求把 L-RX 置为大于 0。"
+    },
+    {
+      "type": "prose",
+      "en": "Where BF training happens depends on the period of the beacon interval. In the Beacon Transmission Interval (BTI), the AP or PCP performs an initiator TXSS by transmitting DMG Beacon frames through its sectors (it may even fragment the sweep across several BTIs). In the Association Beamforming Training (A-BFT) window that follows, the roles flip: the AP/PCP becomes the receiver and listening STAs respond with their RSS in contention-based SSW slots — but the BRP phase is never run inside the A-BFT. Finally, in the Data Transfer Interval (DTI), any initiator/responder pair can run a full SLS-plus-BRP inside an SP or CBAP allocation, with timeouts governed by dot11MaxBFTime and dot11BFRetryLimit.",
+      "zh": "BF 训练发生在信标间隔的哪个时段，取决于具体时段。在信标发送间隔（BTI）中，AP 或 PCP 通过逐扇区发送 DMG Beacon 帧来执行发起方 TXSS（甚至可以把扫描分片到多个 BTI 上）。在随后的关联波束成形训练（A-BFT）窗口中，角色翻转：AP/PCP 转为接收方，侦听的站点在基于竞争的 SSW 时隙里用 RSS 作答——但 A-BFT 内绝不运行 BRP 阶段。最后，在数据传输间隔（DTI）中，任意发起方/响应方对都可在 SP 或 CBAP 分配内运行完整的 SLS 加 BRP，超时由 dot11MaxBFTime 与 dot11BFRetryLimit 控制。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why the role-flip in A-BFT matters: in the BTI the AP sweeps its transmit sectors so STAs can find the best downlink beam; in the A-BFT the STAs sweep their transmit sectors back so the AP can find the uplink beam. Together they train both directions of the link without ever needing an omni antenna that 60 GHz can't afford.",
+      "zh": "为何 A-BFT 中的角色翻转很重要：在 BTI 里 AP 扫描自己的发射扇区，让站点找到最佳下行波束；在 A-BFT 里站点反过来扫描自己的发射扇区，让 AP 找到上行波束。两者合起来就训练好了链路的双向，而完全不需要 60 GHz 频段负担不起的全向天线。"
+    },
+    {
+      "type": "prose",
+      "en": "The standard pins this behavior down with formal SLS state machines (one for the initiator, one for the responder) that move between Idle, Sector Selector and SSW-acknowledgment states on events like 'SSW frame received' or 'Timeout'. On top of plain beam tracking, CDMG STAs add enhanced beam tracking: they pre-configure a backup (alternative) link during SLS/BRP and, using e-TRN measurements, can quickly switch to it via a 'Switching to Backup AWV' handshake when the primary beam is suddenly blocked — vital when a hand or body crosses a 60 GHz path. EDMG beamforming layers on SU-/MU-MIMO BF training, BRP TXSS, polarization-aware refinement and same-PPDU TX+RX training. TDD beamforming, run entirely inside a TDD SP, sweeps with TDD SSW / TDD SSW Feedback / TDD SSW Ack frames and supports individual, group, and measurement-only variants (the last reports results to the SME rather than feeding them back).",
+      "zh": "标准用正式的 SLS 状态机（发起方一套、响应方一套）把这套行为钉死，状态在 Idle、扇区选择器和 SSW 确认之间，依据“收到 SSW 帧”或“超时”等事件迁移。在普通波束跟踪之上，CDMG 站点还加入了增强波束跟踪：它们在 SLS/BRP 期间预先配置一条备用（替代）链路，并借助 e-TRN 测量，在主波束突然被遮挡时通过“切换到备用 AWV”握手迅速切过去——当有手或身体穿过 60 GHz 路径时这一点至关重要。EDMG 波束成形又叠加了 SU-/MU-MIMO BF 训练、BRP TXSS、考虑极化的细化以及同一 PPDU 内 TX+RX 同时训练。TDD 波束成形完全在 TDD SP 内运行，用 TDD SSW / TDD SSW Feedback / TDD SSW Ack 帧扫描，并支持单点、组播和仅测量三种变体（最后一种把结果上报给 SME 而非反馈出去）。"
+    },
+    {
+      "type": "prose",
+      "en": "CMMG STAs reuse the same DMG beamforming rules (a CMMG BF frame simply rides in a CMMG PPDU). For transmit beamforming with an omni/quasi-omni pattern, a CMMG beamformer collects explicit compressed-beamforming feedback from the beamformee, advertised in the CMMG Capabilities element as immediate, delayed, or both. That feedback can be sounded efficiently with a Null Data PPDU (NDP). A CMMG NDP carries no data (RXVECTOR LENGTH = 0): an NDP sequence starts with a +HTC frame whose CMMG NDP Announcement subfield is 1, then a SIFS later the NDP itself follows. The receiver figures out the NDP's destination from the RA of the announcement and its source from the announcement's TA (with special second-NDP rules when the Calibration Position subfield is 1).",
+      "zh": "CMMG 站点复用同一套 DMG 波束成形规则（CMMG BF 帧只是装进 CMMG PPDU 里）。对于使用全向/准全向方向图的发射波束成形，CMMG 波束成形器从被成形方收集显式压缩波束成形反馈，其能力在 CMMG Capabilities 元素中声明为立即、延迟或两者皆可。这种反馈可用空数据 PPDU（NDP）高效探测。CMMG NDP 不携带数据（RXVECTOR LENGTH = 0）：一个 NDP 序列以 CMMG NDP Announcement 子字段为 1 的 +HTC 帧开头，经过一个 SIFS 后紧跟 NDP 本身。接收方从通告帧的 RA 推断 NDP 的目的地，从通告帧的 TA 推断其源（当 Calibration Position 子字段为 1 时，第二个 NDP 适用特殊规则）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 120\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" role=\"img\"><rect x=\"10\" y=\"40\" width=\"120\" height=\"34\" rx=\"4\" fill=\"none\" stroke=\"currentColor\"/><text x=\"70\" y=\"61\" text-anchor=\"middle\" fill=\"currentColor\" font-size=\"11\">+HTC: NDP Annc=1</text><rect x=\"160\" y=\"40\" width=\"90\" height=\"34\" rx=\"4\" fill=\"none\" stroke=\"currentColor\"/><text x=\"205\" y=\"61\" text-anchor=\"middle\" fill=\"currentColor\" font-size=\"11\">CMMG NDP</text><rect x=\"280\" y=\"40\" width=\"130\" height=\"34\" rx=\"4\" fill=\"none\" stroke=\"currentColor\"/><text x=\"345\" y=\"55\" text-anchor=\"middle\" fill=\"currentColor\" font-size=\"11\">Compressed BF</text><text x=\"345\" y=\"69\" text-anchor=\"middle\" fill=\"currentColor\" font-size=\"11\">feedback</text><line x1=\"130\" y1=\"57\" x2=\"158\" y2=\"57\" stroke=\"currentColor\"/><line x1=\"250\" y1=\"57\" x2=\"278\" y2=\"57\" stroke=\"currentColor\"/><text x=\"144\" y=\"34\" text-anchor=\"middle\" fill=\"currentColor\" font-size=\"9\">SIFS</text><text x=\"264\" y=\"34\" text-anchor=\"middle\" fill=\"currentColor\" font-size=\"9\">SIFS</text></svg>",
+      "caption": {
+        "en": "A CMMG NDP sounding sequence: an announcement frame, a SIFS later the data-less NDP (LENGTH=0, SOUNDING set), and then the beamformee's compressed-beamforming feedback.",
+        "zh": "一次 CMMG NDP 探测序列：通告帧，经过一个 SIFS 后是无数据的 NDP（LENGTH=0、置 SOUNDING），随后是被成形方的压缩波束成形反馈。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Beams alone don't keep a link healthy — rate and power must track the channel too. Link adaptation lets one STA solicit MCS/SNR feedback (MFB) from another, immediately, delayed, or unsolicited. The HT, VHT and CMMG variants of the HT Control field each carry MRQ (request), MSI (sequence label) and MFB/MFSI (feedback + matching label) subfields so a requester can correlate an answer with its question. The CMMG variant additionally reports NUM_STS and BW, and signals 'no feedback' with the reserved CMMG-MCS=31 / NUM_STS=3 combination. For DMG and CMMG, link adaptation is also driven by Link Measurement Request/Report frames carrying a DMG (or CMMG) Link Margin element with recommended MCS, SNR and link-margin values.",
+      "zh": "光有波束并不能让链路始终健康——速率和功率也必须跟随信道变化。链路自适应允许一个站点向另一个站点索取 MCS/SNR 反馈（MFB），可以是立即、延迟或非请求方式。HT Control 字段的 HT、VHT 与 CMMG 三种变体各自携带 MRQ（请求）、MSI（序列标签）以及 MFB/MFSI（反馈+匹配标签）子字段，使请求方能把回答和自己的提问对应起来。CMMG 变体还额外上报 NUM_STS 和 BW，并用保留组合 CMMG-MCS=31 / NUM_STS=3 表示“无反馈”。对 DMG 和 CMMG 而言，链路自适应还由 Link Measurement Request/Report 帧驱动，这些帧携带 DMG（或 CMMG）Link Margin 元素，给出推荐的 MCS、SNR 和链路余量值。"
+    },
+    {
+      "type": "prose",
+      "en": "Transmit power control (TPC) closes the loop. In DMG TPC, a STA receiving a Link Margin element that recommends increasing or decreasing power answers with a DMG Link Adaptation Acknowledgment element echoing whether it complied. Fast link adaptation uses the reverse-direction protocol to bounce a Link Measurement Request/Report pair within tight BRPIFS deadlines (the report sent at MCS 1 in an aggregated PPDU) so the rate can be updated almost instantly. EDMG STAs add per-spatial-stream feedback via a control trailer on SSW-Feedback/BlockAck/Ack frames; TDD link maintenance gathers RX-chain, PPDU, LDPC and SC/OFDM statistics; and Extended TPC lets a STA adjust its transmit power from periodic reports, in either Rx-driven or Tx-driven mode. CMMG mirrors all of this with CMMG TPC and CMMG fast link adaptation.",
+      "zh": "发射功率控制（TPC）把这个回路闭合。在 DMG TPC 中，收到推荐增大或减小功率的 Link Margin 元素的站点，会回复一个 DMG Link Adaptation Acknowledgment 元素，表明自己是否照做。快速链路自适应利用反向方向协议，在紧凑的 BRPIFS 期限内来回弹送一对 Link Measurement Request/Report（报告以 MCS 1 在聚合 PPDU 中发出），从而几乎瞬间更新速率。EDMG 站点通过在 SSW-Feedback/BlockAck/Ack 帧上附加控制尾来提供逐空间流反馈；TDD 链路维护收集 RX 链、PPDU、LDPC 与 SC/OFDM 统计；扩展 TPC 让站点依据周期报告调整发射功率，可工作于 Rx 驱动或 Tx 驱动模式。CMMG 用 CMMG TPC 和 CMMG 快速链路自适应完整镜像了这一切。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, when a 60 GHz path is blocked, a relay can step in. DMG relay operation supports link switching (route around the broken direct link via a relay) and link cooperation (the relay simultaneously repeats the source's frame to boost the received signal). Relay link adaptation reuses the link-measurement machinery with one twist: the relay's (RDS) Link Measurement Report to the source carries two Link Margin elements — first the source-to-relay quality, then the relay-to-destination quality — so the source can pick the right MCS for each hop.",
+      "zh": "最后，当某条 60 GHz 路径被遮挡时，中继可以顶上。DMG 中继操作支持链路切换（经中继绕过中断的直连链路）和链路协作（中继同时复制源帧以增强接收信号）。中继链路自适应复用了链路测量机制，但有一个变化：中继（RDS）发给源的 Link Measurement Report 会携带两个 Link Margin 元素——先是源到中继的质量，再是中继到目的的质量——以便源为每一跳分别选择合适的 MCS。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each clause lives in IEEE 802.11-2024",
+        "zh": "覆盖映射：各子条款在 IEEE 802.11-2024 中的位置"
+      },
+      "en": "Link adaptation overview: 10.31.1 introduces immediate/delayed/unsolicited MFB. 10.31.4 specifies link adaptation using the CMMG variant HT Control field (MRQ/MSI/MFB/MFSI, NUM_STS, the CMMG-MCS=31/NUM_STS=3 'no feedback' code). 10.32 is CMMG beamforming (directional BF reusing 10.41 rules vs. transmit BF via 10.33). 10.33.5 is explicit feedback beamforming for CMMG STAs (compressed feedback, immediate/delayed advertisement). CMMG NDP sounding: 10.36.1 NDP rules, 10.36.2 transmission of a CMMG NDP (LENGTH=0, SOUNDING, STBC=0, NSS>=2), 10.36.3 destination determination, 10.36.4 source determination. DMG beamforming: 10.41.1 general (BF frames, sector caps, dot11MaxBFTime); 10.41.2 SLS phase (ISS/RSS/SSW-feedback/SSW-ack); 10.41.3 BRP phase (setup, MIDC, beam refinement transactions, TX-TRN-REQ/L-RX); 10.41.4 beamforming in BTI (initiator TXSS via DMG Beacons, fragmented TXSS); 10.41.5 beamforming in A-BFT (RSS in SSW slots, no BRP); 10.41.6 beamforming in DTI (SLS+BRP in SP/CBAP); 10.41.8 SLS state machines; 10.41.9 CDMG enhanced beam tracking (backup/alternative link, Switching to Backup AWV); 10.41.10 EDMG beamforming (SU/MU-MIMO BF, BRP TXSS, polarization); 10.41.11 TDD beamforming (individual/group/measurement, TDD SSW frames). Link adaptation & TPC: 10.42.1 general (Link Measurement Request/Report, DMG Link Margin), 10.42.2 DMG TPC (Link Adaptation Acknowledgment), 10.42.3 fast link adaptation (RD protocol, BRPIFS, MCS 1), 10.42.4 EDMG spatial-stream feedback (control trailer), 10.42.5 TDD link maintenance (RX-chain/PPDU/LDPC/SC-OFDM statistics), 10.42.6 extended TPC (Rx/Tx modes). CMMG link adaptation via link measurement: 10.43.1 general, 10.43.2 CMMG TPC, 10.43.3 CMMG fast link adaptation. Relay: 10.44.4 relay link adaptation (two Link Margin elements: S-R then R-D).",
+      "zh": "链路自适应总览：10.31.1 引入立即/延迟/非请求 MFB。10.31.4 规定使用 CMMG 变体 HT Control 字段的链路自适应（MRQ/MSI/MFB/MFSI、NUM_STS、CMMG-MCS=31/NUM_STS=3 的“无反馈”码）。10.32 为 CMMG 波束成形（复用 10.41 规则的定向 BF 与经 10.33 的发射 BF）。10.33.5 为 CMMG 站点的显式反馈波束成形（压缩反馈、立即/延迟声明）。CMMG NDP 探测：10.36.1 NDP 规则，10.36.2 CMMG NDP 的发送（LENGTH=0、SOUNDING、STBC=0、NSS>=2），10.36.3 目的地判定，10.36.4 源判定。DMG 波束成形：10.41.1 概述（BF 帧、扇区上限、dot11MaxBFTime）；10.41.2 SLS 阶段（ISS/RSS/SSW-反馈/SSW-确认）；10.41.3 BRP 阶段（建立、MIDC、波束细化事务、TX-TRN-REQ/L-RX）；10.41.4 BTI 中的波束成形（经 DMG Beacon 的发起方 TXSS、分片 TXSS）；10.41.5 A-BFT 中的波束成形（SSW 时隙内的 RSS、无 BRP）；10.41.6 DTI 中的波束成形（SP/CBAP 内的 SLS+BRP）；10.41.8 SLS 状态机；10.41.9 CDMG 增强波束跟踪（备用/替代链路、切换到备用 AWV）；10.41.10 EDMG 波束成形（SU/MU-MIMO BF、BRP TXSS、极化）；10.41.11 TDD 波束成形（单点/组播/测量、TDD SSW 帧）。链路自适应与 TPC：10.42.1 概述（Link Measurement Request/Report、DMG Link Margin），10.42.2 DMG TPC（Link Adaptation Acknowledgment），10.42.3 快速链路自适应（RD 协议、BRPIFS、MCS 1），10.42.4 EDMG 逐空间流反馈（控制尾），10.42.5 TDD 链路维护（RX 链/PPDU/LDPC/SC-OFDM 统计），10.42.6 扩展 TPC（Rx/Tx 模式）。基于链路测量的 CMMG 链路自适应：10.43.1 概述，10.43.2 CMMG TPC，10.43.3 CMMG 快速链路自适应。中继：10.44.4 中继链路自适应（两个 Link Margin 元素：先 S-R 后 R-D）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2105,
+          2110,
+          2113,
+          2126,
+          2143,
+          2144,
+          2221,
+          2224,
+          2234,
+          2238,
+          2241,
+          2249,
+          2271,
+          2273,
+          2275,
+          2320,
+          2334,
+          2336,
+          2337,
+          2338,
+          2339,
+          2340,
+          2341,
+          2349
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2105,
+        2106
+      ],
+      "note": "10.31.1 link adaptation introduction (immediate/delayed/unsolicited MFB)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2110,
+        2111,
+        2112,
+        2113
+      ],
+      "note": "10.31.4 CMMG variant HT Control link adaptation; 10.32 CMMG beamforming; 10.33.1 transmit beamforming intro"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2126,
+        2127
+      ],
+      "note": "10.33.5 explicit feedback beamforming for CMMG STAs"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2143,
+        2144
+      ],
+      "note": "10.36.1 NDP rules, 10.36.2 CMMG NDP transmission, 10.36.3 destination, 10.36.4 source"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2221,
+        2222,
+        2223,
+        2224,
+        2225
+      ],
+      "note": "10.41.1 DMG beamforming general; 10.41.2 SLS phase general"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2234,
+        2235
+      ],
+      "note": "10.41.3 Beam Refinement Protocol phase (setup, MIDC, transactions)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2238,
+        2239,
+        2241,
+        2242
+      ],
+      "note": "10.41.4 beamforming in BTI; 10.41.5 beamforming in A-BFT"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2249,
+        2250
+      ],
+      "note": "10.41.5.4 A-BFT multiple antennas; 10.41.6 beamforming in DTI"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2271,
+        2272,
+        2273
+      ],
+      "note": "10.41.8 SLS state machines; 10.41.9 CDMG enhanced beam tracking"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2275,
+        2276
+      ],
+      "note": "10.41.10 EDMG beamforming (SU/MU-MIMO, BRP TXSS)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2320,
+        2321,
+        2334
+      ],
+      "note": "10.41.11 TDD beamforming (individual/group/measurement)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2334,
+        2335,
+        2336,
+        2337,
+        2338,
+        2339,
+        2340
+      ],
+      "note": "10.42.1-10.42.6 DMG link adaptation, TPC, fast link adaptation, EDMG stream feedback, TDD link maintenance, extended TPC"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2340,
+        2341,
+        2342
+      ],
+      "note": "10.43.1-10.43.3 CMMG link measurement, CMMG TPC, CMMG fast link adaptation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2349
+      ],
+      "note": "10.44.4 relay link adaptation (two Link Margin elements S-R and R-D)"
+    }
+  ],
+  "covers": [
+    "80211-2024:10.31.1",
+    "80211-2024:10.31.4",
+    "80211-2024:10.32",
+    "80211-2024:10.33.5",
+    "80211-2024:10.36.1",
+    "80211-2024:10.36.2",
+    "80211-2024:10.36.3",
+    "80211-2024:10.36.4",
+    "80211-2024:10.41.1",
+    "80211-2024:10.41.2",
+    "80211-2024:10.41.3",
+    "80211-2024:10.41.4",
+    "80211-2024:10.41.5",
+    "80211-2024:10.41.6",
+    "80211-2024:10.41.8",
+    "80211-2024:10.41.9",
+    "80211-2024:10.41.10",
+    "80211-2024:10.41.11",
+    "80211-2024:10.42.1",
+    "80211-2024:10.42.2",
+    "80211-2024:10.42.3",
+    "80211-2024:10.42.4",
+    "80211-2024:10.42.5",
+    "80211-2024:10.42.6",
+    "80211-2024:10.43.1",
+    "80211-2024:10.43.2",
+    "80211-2024:10.43.3",
+    "80211-2024:10.44.4"
+  ],
+  "track": "modern-phy"
+}
