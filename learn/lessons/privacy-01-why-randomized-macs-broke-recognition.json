@@ -1,0 +1,96 @@
+{
+  "id": "privacy-01-why-randomized-macs-broke-recognition",
+  "title": {
+    "en": "Why Randomized MACs Broke Device Recognition",
+    "zh": "随机化 MAC 为何让网络“认不出”你的设备"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every Wi-Fi device has a MAC address — a 48-bit hardware label it stamps on every frame it sends. For years that address was fixed and globally unique, like a license plate that never changes. That made it trivially easy to track: a coffee shop, a mall, or any passer-by with a sniffer could watch one address wander between networks and quietly build a map of where you go and when. So phones and laptops fought back. Modern devices now rotate their MAC address — picking a fresh random one for different networks, and changing it again over time. Privacy-wise, this is a big win: the license plate now changes every few blocks.",
+      "zh": "每台 Wi-Fi 设备都有一个 MAC 地址——一个 48 位的硬件标签，设备发送的每一帧都会打上它。多年来，这个地址是固定且全球唯一的，就像一块永不更换的车牌。这让追踪变得轻而易举：咖啡馆、商场，或任何拿着抓包工具的路人，都能盯着某个地址在不同网络间游走，悄悄拼出你何时去过哪里的轨迹。于是手机和笔记本开始反击。如今的设备会轮换自己的 MAC 地址——对不同网络挑选一个全新的随机地址，并随时间再次更换。从隐私角度看，这是一大进步：车牌现在每隔几个街区就换一次。"
+    },
+    {
+      "type": "prose",
+      "en": "But there's a catch. A surprising amount of everyday convenience quietly relied on that stable address to recognise a returning device. When you walk back into a network, a fixed MAC let it think \"oh, it's you again\" — and skip the friction. Randomization breaks all of it at once: a brief drop no longer reconnects inside its grace period without you re-logging in; the captive-portal session you paid for ten minutes ago no longer remembers you; parental controls and per-device QoS or policy can't find the device they were bound to; and per-device billing loses the thread. The very thing that protects you from strangers also blinds the network you actually trust.",
+      "zh": "但问题来了。大量日常便利其实都悄悄依赖那个稳定的地址来“认出”回头的设备。当你重新走进一个网络，固定的 MAC 让它能想：“哦，又是你”——从而省去种种麻烦。随机化一下子把这些全打破了：短暂掉线后，连接不再能在“宽限期”内免重新登录地自动恢复；你十分钟前付费购买的强制门户（captive portal）会话不再记得你；家长控制、按设备的 QoS 或策略再也找不到它们当初绑定的那台设备；按设备计费也断了线索。那个保护你免遭陌生人追踪的机制，同时也让你真正信任的网络“失明”了。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The jargon for this is RCM — Randomized and Changing MAC addresses. IEEE 802.11bh-2024 is the amendment written specifically to fix what RCM broke. Its whole job is captured in one sentence: preserve the existing services that randomization would otherwise restrict, without weakening the user's privacy.",
+      "zh": "这个现象的术语叫 RCM——随机化与变化的 MAC 地址（Randomized and Changing MAC）。IEEE 802.11bh-2024 这份修正案正是为修复 RCM 所打破的东西而写。它的全部使命可以浓缩成一句话：在不削弱用户隐私的前提下，保住那些原本会被随机化所限制的现有服务。"
+    },
+    {
+      "type": "prose",
+      "en": "Here is the core tension 802.11bh resolves. We do NOT want to go back to a single fixed address — that just re-arms third-party tracking. What we want is selective recognition: let a network you trust re-recognise YOUR device, while everyone else still sees only meaningless, ever-changing addresses. The amendment threads that needle with two independent, opt-in tools that you'll meet in the next lessons: a Device ID, an identifier the access point hands to your device to show next time; and an IRM (Identifiable Random MAC address), a random address your device picks for itself and reuses only with that one trusted network. Both make you recognisable to one ESS while keeping you anonymous to the world.",
+      "zh": "这正是 802.11bh 要化解的核心矛盾。我们并不想退回到单一固定地址——那只会重新武装第三方追踪。我们想要的是“有选择的识别”：让你信任的网络重新认出你的设备，而其他所有人看到的，仍只是毫无意义、不断变化的地址。该修正案用两件相互独立、需用户自愿开启（opt-in）的工具穿过了这根针眼，你将在后续课程中逐一认识它们：一是 Device ID（设备标识符），由接入点（AP）发给你的设备、供下次出示；二是 IRM（可识别随机 MAC 地址，Identifiable Random MAC address），由你的设备自行挑选、且只对那一个受信任的网络复用的随机地址。两者都能让你对某一个 ESS 可被识别，同时对世界保持匿名。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='12'><rect x='1' y='1' width='458' height='218' fill='none' stroke='currentColor' stroke-width='1'/><text x='230' y='22' text-anchor='middle' fill='currentColor' font-size='13' font-weight='bold'>One device, two faces</text><circle cx='80' cy='120' r='26' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='80' y='124' text-anchor='middle' fill='currentColor'>STA</text><text x='80' y='162' text-anchor='middle' fill='currentColor' font-size='10'>your phone</text><line x1='106' y1='108' x2='350' y2='66' stroke='currentColor' stroke-width='1.5'/><line x1='106' y1='132' x2='350' y2='160' stroke='currentColor' stroke-width='1.5' stroke-dasharray='5 4'/><rect x='350' y='44' width='98' height='44' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='399' y='62' text-anchor='middle' fill='currentColor'>Trusted ESS</text><text x='399' y='78' text-anchor='middle' fill='currentColor' font-size='10'>recognises you</text><rect x='350' y='138' width='98' height='44' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='399' y='156' text-anchor='middle' fill='currentColor'>Third party</text><text x='399' y='172' text-anchor='middle' fill='currentColor' font-size='10'>sees noise</text><text x='225' y='80' text-anchor='middle' fill='currentColor' font-size='10'>stable Device ID / IRM</text><text x='225' y='150' text-anchor='middle' fill='currentColor' font-size='10'>random, ever-changing MAC</text></svg>",
+      "caption": {
+        "en": "Selective recognition: the same station looks stable and recognisable to the network it trusts, but looks like meaningless, changing noise to everyone else.",
+        "zh": "有选择的识别：同一个站点对它所信任的网络显得稳定、可被认出，而对其他所有人，则只是毫无意义、不断变化的“噪声”。"
+      }
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Non-AP STA (your device)\n    participant AP as AP (trusted ESS)\n    Note over STA,AP: First visit — establish recognition\n    STA->>AP: Associate (Device ID Support = 1; may offer an IRM)\n    AP-->>STA: Associate Response: here is a Device ID\n    Note over STA: store Device ID + remember the IRM I chose\n    Note over STA,AP: --- device leaves, MAC randomizes ---\n    Note over STA,AP: Return visit — be re-recognised\n    STA->>AP: Associate (present stored Device ID, and/or use the IRM as my address)\n    AP-->>STA: Device ID Status = Recognized (0): prior state is yours again\n    Note over STA,AP: grace-period / portal / policy / billing all resume",
+      "zh": "sequenceDiagram\n    participant STA as 非 AP 站点（你的设备）\n    participant AP as AP（受信任的 ESS）\n    Note over STA,AP: 首次到访 —— 建立识别关系\n    STA->>AP: 关联（Device ID Support = 1；可同时提供一个 IRM）\n    AP-->>STA: 关联响应：这是给你的 Device ID\n    Note over STA: 保存 Device ID + 记住我所选的 IRM\n    Note over STA,AP: --- 设备离开，MAC 随机化 ---\n    Note over STA,AP: 再次到访 —— 被重新认出\n    STA->>AP: 关联（出示已存的 Device ID，且/或用该 IRM 作为我的地址）\n    AP-->>STA: Device ID 状态 = 已识别(0)：先前状态重新归你所有\n    Note over STA,AP: 宽限期 / 门户 / 策略 / 计费 全部恢复"
+    },
+    {
+      "type": "prose",
+      "en": "Notice who holds which token. The Device ID is allocated BY the access point and reported back by your device — the network mints it, you carry it. The IRM works the other way: your device picks the random address and reuses it only when talking to that AP, so the AP learns to expect it. They are fully independent — a device can use one, the other, or both at once — and both are gated behind your consent, so nothing is exposed unless you've decided the network is worth trusting. That single design choice is what lets 802.11bh restore all the convenience without re-opening the door to strangers.",
+      "zh": "请留意哪一方持有哪个“令牌”。Device ID 由接入点（AP）分配、再由你的设备出示——网络铸造它，你携带它。IRM 则反过来：由你的设备挑选那个随机地址，并只在与该 AP 通信时复用，于是 AP 学会预期它的出现。两者完全独立——设备可只用其一、或其二、或同时使用——而且都受你的同意所约束，因此除非你认定某网络值得信任，否则什么都不会暴露。正是这一个设计抉择，让 802.11bh 既恢复了全部便利，又没有重新向陌生人敞开大门。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What the standard actually says, and where the two mechanisms live",
+        "zh": "标准的原文究竟怎么说，以及两个机制各自的位置"
+      },
+      "en": "Clause 12.2.13 ('Identifying a non-AP STA with changing MAC address') states the problem precisely: because a non-AP STA can randomly change its MAC address while not associated, the network cannot identify a STA that previously associated, nor apply cached shared identity state from that prior association — and symmetrically, the STA cannot assume it will be recognised. Two mechanisms are defined to alleviate this. In the device ID mechanism the AP provides an identifier to the STA during association or PASN authentication, which the STA later reports back. In the IRM mechanism the STA provides a random MAC address (different from its current TA) that it then uses as its TA to be identified at the next exchange. Both require the MAC privacy enhancements of 12.2.11 (dot11PrivacyActivated = true), both are opt-in (typically under user control), and the two may be used concurrently. The standard is also explicit that the IRM and device ID mechanisms are independent: an IRM is selected by the non-AP STA, a device ID is allocated by the AP. The amendment's scope (Introduction, and clause 1.3) frames the goal as preserving existing services — session continuity, customer support, diagnostics, device-arrival detection in a trusted environment — in an ESS where STAs use randomized or changing MAC addresses, without affecting user privacy.",
+      "zh": "12.2.13 节（“识别使用变化 MAC 地址的非 AP 站点”）精确地陈述了问题：由于非 AP 站点可在未关联时随机更换其 MAC 地址，网络无法识别此前曾关联过的站点，也无法把上一次关联缓存的“共享身份状态”套用到本次关联；对称地，站点也不能假定自己会被认出。为缓解此问题定义了两个机制。在 device ID 机制中，AP 在关联或 PASN 认证期间向站点提供一个标识符，站点稍后将其回报。在 IRM 机制中，站点提供一个随机 MAC 地址（不同于其当前的 TA），随后将其用作 TA，以便在下次交换时被识别。两者都要求 12.2.11 的 MAC 隐私增强（dot11PrivacyActivated = true），都需自愿开启（通常由用户掌控），且二者可并用。标准还明确：IRM 与 device ID 机制相互独立——IRM 由非 AP 站点选定，device ID 由 AP 分配。修正案的范围（前言与 1.3 节）将目标界定为：在 ESS 中站点使用随机化或变化 MAC 地址的情形下，保住现有服务——会话连续性、客户支持、诊断排障、受信任环境下的设备到达检测——同时不影响用户隐私。",
+      "cite": {
+        "pdf_id": "80211bh-2024",
+        "pages": [
+          13,
+          19,
+          35
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211bh-2024:1.3",
+    "80211bh-2024:4.5.4.10",
+    "80211bh-2024:12.2.13"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        13
+      ],
+      "note": "Introduction — scope: preserve existing services restricted by randomized/changing MAC addresses in an ESS, without affecting user privacy; session continuity, support, diagnostics, device-arrival detection"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        19
+      ],
+      "note": "1.3 purpose (private device identification of STAs with RCM); definitions of device ID and IRM; 4.5.4.10 MAC privacy enhancements"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        35
+      ],
+      "note": "12.2.13 Identifying a non-AP STA with changing MAC address — the RCM problem and the two mechanisms (device ID allocated by AP; IRM selected by STA); opt-in; independent; may be used concurrently"
+    }
+  ],
+  "track": "privacy"
+}

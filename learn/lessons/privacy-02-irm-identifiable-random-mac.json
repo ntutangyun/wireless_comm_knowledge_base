@@ -1,0 +1,109 @@
+{
+  "id": "privacy-02-irm-identifiable-random-mac",
+  "title": {
+    "en": "IRM: A Random MAC the Right Network Can Still Recognise",
+    "zh": "IRM：让“对的”网络仍能认出的随机 MAC"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Modern phones rotate their Wi-Fi MAC address so that nobody can follow them around by tracking one fixed hardware address. Great for privacy — but it creates a problem for networks you actually trust. If your home or office Wi-Fi only ever sees a fresh, random address, it can no longer tell that the device walking back in the door is the same one that was here yesterday. 802.11bh's Identifiable Random MAC (IRM) is the device-driven fix: the station keeps looking random to outsiders, while still letting a network it has visited before recognise it as a returning friend.",
+      "zh": "现代手机会不断更换自己的 Wi-Fi MAC 地址，这样就没人能靠追踪某个固定的硬件地址来跟踪你的行踪。这对隐私很好——但对你真正信任的网络却带来了麻烦。如果你家里或公司的 Wi-Fi 永远只看到一个全新的随机地址，它就再也无法判断今天走进门的这台设备，和昨天来过的是不是同一台。802.11bh 的“可识别随机 MAC（Identifiable Random MAC，IRM）”就是由设备主导的解法：站点对外人依旧看起来是随机的，但又能让一个它曾经造访过的网络把它认出来，知道是“老朋友回来了”。"
+    },
+    {
+      "type": "prose",
+      "en": "The core idea is a private 'secret handshake'. An IRM is itself a randomly constructed locally administered MAC address — the same kind of address privacy already uses. The difference is that the station hands this particular address to a specific network as a promise: 'next time I come back, I'll show up wearing this address, and only you will know it means me.' Because the value is just a random MAC, an outside observer sniffing the air sees nothing but yet another unlinkable random address. Only the network that was given the IRM holds the matching record.",
+      "zh": "核心思路是一种私密的“暗号握手”。IRM 本身就是一个随机构造的本地管理（locally administered）MAC 地址——和隐私机制本来就在用的那种地址同属一类。区别在于，站点会把这个特定的地址交给某个具体的网络，作为一个约定：“下次我回来时，我会戴着这个地址出现，而只有你知道它代表的是我。”由于这个值不过是一个随机 MAC，在空中嗅探的外部观察者看到的只是又一个无法关联的随机地址。只有当初拿到这个 IRM 的那个网络，手里才有与之对应的记录。"
+    },
+    {
+      "type": "prose",
+      "en": "So how does the station hand over that value? Through the IRM element. When the element travels from the station up to the AP, it carries an IRM field holding a 6-octet MAC address — that is the address the device is reserving for its next visit. When the same element comes back the other way, from the AP to the station, the address is dropped and instead an IRM Status field carries the AP's verdict: 0 = Recognized ('yes, I know this address is you') or 1 = Not Recognized ('I don't have a record for that'). One small element, two directions, two different jobs.",
+      "zh": "那么站点是怎么把这个值交出去的？靠的是 IRM 元素（IRM element）。当这个元素从站点上行送往 AP 时，它携带一个 IRM 字段，里面装着一个 6 字节的 MAC 地址——这正是设备为下次造访所预留的地址。当同一个元素反方向、由 AP 回送给站点时，地址会被省去，取而代之的是一个 IRM Status 字段，承载 AP 的判定结果：0 = Recognized（“认出来了，这个地址就是你”）或 1 = Not Recognized（“我没有这个地址的记录”）。一个小小的元素，两个方向，两种不同的职责。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Non-AP STA\n    participant ESS as AP (in the ESS)\n    Note over STA,ESS: First visit — STA uses MAC1, no shared identity yet\n    STA->>ESS: Associate (RSNXE: IRM Support = 1)\n    ESS->>STA: Associate Resp (IRM Support = 1); IRM Status = Not Recognized\n    STA->>ESS: 4-way HS msg 4 — IRM KDE provides IRM1\n    Note over STA,ESS: STA and all APs in the ESS store IRM1\n    Note over STA: Disconnect, leave, return later\n    Note over STA,ESS: Return — STA now uses IRM1 as its address\n    STA->>ESS: Associate using IRM1 as TA\n    ESS->>STA: 4-way HS msg 3 — IRM Status = Recognized (0)\n    STA->>ESS: 4-way HS msg 4 — IRM KDE provides a fresh IRM2\n    Note over STA,ESS: rotate the secret for next time",
+      "zh": "sequenceDiagram\n    participant STA as 非 AP 站点\n    participant ESS as AP（同一 ESS 内）\n    Note over STA,ESS: 首次造访——STA 使用 MAC1，尚无共享身份\n    STA->>ESS: 关联请求 (RSNXE: IRM Support = 1)\n    ESS->>STA: 关联响应 (IRM Support = 1); IRM Status = 未识别\n    STA->>ESS: 四次握手 消息4 —— 用 IRM KDE 提供 IRM1\n    Note over STA,ESS: STA 与 ESS 内所有 AP 都存下 IRM1\n    Note over STA: 断开、离开，稍后返回\n    Note over STA,ESS: 返回——STA 现在用 IRM1 作为自己的地址\n    STA->>ESS: 用 IRM1 作为 TA 发起关联\n    ESS->>STA: 四次握手 消息3 —— IRM Status = 已识别 (0)\n    STA->>ESS: 四次握手 消息4 —— 用 IRM KDE 提供全新的 IRM2\n    Note over STA,ESS: 为下一次轮换这个“暗号”"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The relationship is with the whole network, not one box. An IRM is shared across every AP in the same ESS (extended service set). So you can hand IRM1 to AP-1 in the lobby today, then walk upstairs tomorrow and have AP-2 recognise you from that same stored IRM1 — as long as every AP in the ESS has IRM activated. How the IRM gets distributed among those APs is left to the implementation.",
+      "zh": "这层关系是和整张网络建立的，而不是某一台设备。一个 IRM 会在同一个 ESS（扩展服务集）内的所有 AP 之间共享。于是你今天可以在大堂把 IRM1 交给 AP-1，明天走到楼上，由 AP-2 凭着同一份存下来的 IRM1 把你认出来——前提是该 ESS 内的每个 AP 都启用了 IRM。至于 IRM 如何在这些 AP 之间分发，则交由具体实现决定，标准不作规定。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 520 120' role='img'><g fill='none' stroke='currentColor' stroke-width='1.5'><rect x='8' y='30' width='90' height='40'/><rect x='98' y='30' width='90' height='40'/><rect x='188' y='30' width='90' height='40'/><rect x='278' y='30' width='180' height='40'/></g><g fill='currentColor' font-family='sans-serif' font-size='10' text-anchor='middle'><text x='53' y='20'>Element ID</text><text x='53' y='54'>1 octet</text><text x='143' y='20'>Length</text><text x='143' y='54'>1 octet</text><text x='233' y='20'>Element ID Ext</text><text x='233' y='54'>1 octet</text><text x='323' y='20'>IRM Status</text><text x='323' y='54'>0 or 1 octet</text><text x='413' y='20'>IRM (MAC)</text><text x='413' y='54'>0 or 6 octets</text></g><g fill='currentColor' font-family='sans-serif' font-size='9' text-anchor='middle'><text x='368' y='90'>Status present only AP -&gt; STA; IRM (address) present only STA -&gt; AP</text></g></svg>",
+      "caption": {
+        "en": "The IRM element. Going up to the AP it carries a 6-octet IRM (the reserved address); coming back from the AP it carries instead a 1-octet IRM Status (Recognized / Not Recognized).",
+        "zh": "IRM 元素。上行送往 AP 时，它携带一个 6 字节的 IRM（预留地址）；由 AP 回送时，则改为携带一个 1 字节的 IRM Status（已识别 / 未识别）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "What if the relationship needs maintenance mid-stream? That is what the IRM Action frame is for. It comes in two flavours, told apart by an IRM Action field right after the Category field. New IRM (action value 1) carries a fresh 6-octet IRM field and rotates the device to a brand-new secret — the AP sends a Duplicate IRM frame when the value a station just offered clashes with one already in use, and the station answers with a New IRM to pick again. Duplicate IRM (action value 0) carries no address; it is the AP's nudge that 'the IRM you gave me is already taken, please send another.' Together they let the secret handshake be re-confirmed or swapped without tearing down the connection.",
+      "zh": "如果这层关系需要在过程中途“维护”怎么办？这正是 IRM Action 帧的用途。它有两种形态，靠紧跟在 Category 字段之后的 IRM Action 字段来区分。New IRM（动作值 1）携带一个全新的 6 字节 IRM 字段，把设备轮换到一个全新的暗号——当站点刚提供的值与已在使用中的某个值冲突时，AP 会发送一个 Duplicate IRM 帧，站点便用一个 New IRM 帧重新挑选一个。Duplicate IRM（动作值 0）不携带任何地址；它是 AP 的提醒：“你给我的这个 IRM 已经被占用了，请再发一个。”两者配合，便能在不拆除连接的前提下，对这套暗号握手进行重新确认或更换。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Activation, the Recognized/Not-Recognized rule, and how the IRM is actually delivered",
+        "zh": "激活、已识别/未识别规则，以及 IRM 究竟如何投递"
+      },
+      "en": "By 12.2.13.2, an AP advertises IRM by setting the IRM Support field to 1 in the Extended RSN Capabilities field of the RSNXE in Beacon and Probe Response frames; a non-AP STA with dot11MACPrivacyActivated and dot11IRMActivated mirrors that bit in its (Re)Association Request or first PASN frame. An IRM is a random locally administered MAC address built per IEEE Std 802-2014 and 802c-2017. In a 4-way handshake, the AP delivers its verdict in an IRM KDE in message 3 (Status = Recognized when it knows the TA, else Not Recognized), and the STA provides its next IRM in an IRM KDE in message 4; FILS uses the IRM element in the Association Request/Response, and PASN uses the second/third PASN frames. On a STA's very first association to any AP in an ESS, the AP must set Status = Not Recognized and the STA must ignore that and continue. Because a recognised IRM is usable as the TA of Authentication frames, Probe Requests, and public Action frames, an AP can identify a returning STA even before association completes — and a STA should change its IRM on each association.",
+      "zh": "依据 12.2.13.2，AP 通过在 Beacon 和 Probe Response 帧的 RSNXE 中将 Extended RSN Capabilities 字段里的 IRM Support 位置 1 来通告对 IRM 的支持；当 dot11MACPrivacyActivated 与 dot11IRMActivated 均为真时，非 AP 站点会在其（重）关联请求帧或第一个 PASN 帧中同样把该位置 1。IRM 是依照 IEEE Std 802-2014 与 802c-2017 构造的随机本地管理 MAC 地址。在四次握手中，AP 在消息 3 的 IRM KDE 里给出判定（认得该 TA 时 Status = Recognized，否则 Not Recognized），站点则在消息 4 的 IRM KDE 里提供下一个 IRM；FILS 改用关联请求/响应中的 IRM 元素，PASN 则使用第二/第三个 PASN 帧。站点首次关联到 ESS 内任一 AP 时，AP 必须将 Status 置为 Not Recognized，而站点必须忽略它并继续关联。由于一个被识别的 IRM 可用作认证帧、探测请求帧以及公共 Action 帧的 TA，AP 甚至能在关联完成之前就识别出一个返回的站点——而站点应在每次关联时更换其 IRM。",
+      "cite": {
+        "pdf_id": "80211bh-2024",
+        "pages": [
+          38,
+          39,
+          40
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211bh-2024:9.4.2.317",
+    "80211bh-2024:9.6.36.2",
+    "80211bh-2024:9.6.36.3",
+    "80211bh-2024:12.2.13.2",
+    "80211bh-2024:AG.2"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        29
+      ],
+      "note": "9.4.2.317 IRM element — format (Figure 9-1074b): IRM field is a MAC address STA->AP; IRM Status field (Recognized/Not Recognized, Table 9-417b) only AP->STA"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        32,
+        33
+      ],
+      "note": "9.6.36.2 Duplicate IRM and 9.6.36.3 New IRM Action frames — IRM Action field values (Table 9-658a); New IRM carries a 6-octet IRM, Duplicate IRM carries none"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        38,
+        39,
+        40
+      ],
+      "note": "12.2.13.2 Identifiable random MAC address (IRM) — activation via RSNXE IRM Support bit; IRM delivery in 4-way HS / FILS / PASN; Recognized/Not Recognized rule; first-association behaviour; per-association rotation"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        58,
+        59
+      ],
+      "note": "AG.2 Examples of IRM Usage — Figure AG-4 IRM exchange in the 4-way handshake across AP-1/AP-2 in one ESS (MAC1 -> IRM1 -> recognised -> IRM2)"
+    }
+  ],
+  "track": "privacy"
+}

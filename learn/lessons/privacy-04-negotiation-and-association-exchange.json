@@ -1,0 +1,106 @@
+{
+  "id": "privacy-04-negotiation-and-association-exchange",
+  "title": {
+    "en": "How It's Negotiated: Carrying IRM and Device ID in the Association Exchange",
+    "zh": "如何协商：在关联交互中携带 IRM 与设备 ID"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "We've seen the two privacy tools 802.11bh gives us: a Device ID the network hands back so it can recognise you next time, and an Identifiable Random MAC (IRM) — a random address you reuse on purpose so a specific network can still spot you while everyone else just sees noise. This lesson ties them together at the wire level. The key idea: this whole conversation happens during the (re)connection setup, before the link is even up. By the time you're passing traffic, the network already knows who you are — or has just handed you a fresh identity for next time.",
+      "zh": "前面我们已经认识了 802.11bh 给出的两件隐私工具：一是网络回发的“设备 ID（Device ID）”，让它下次能认出你；二是“可识别的随机 MAC 地址（IRM）”——一个你有意复用的随机地址，让某个特定网络仍能认出你，而其他人看到的只是杂乱无章的噪声。本课把这两件工具放到“线缆层面”串起来。核心思想是：这整段对话都发生在（重新）连接建立阶段，甚至在链路还没真正建立之前就完成了。等到你开始传数据时，网络早已知道你是谁——或者刚刚给你发了一个供下次使用的新身份。"
+    },
+    {
+      "type": "prose",
+      "en": "It starts with both sides advertising that they even speak this language. Support is signalled in the RSN Extended Capabilities element (the RSNXE): a STA sets the Device ID Support bit when it can use device IDs, and the IRM Support bit when it can use IRM. The AP advertises the same bits in its Beacons and Probe Responses. So before any identifier is exchanged, each side already knows the other is willing to play — no point sending a Device ID to an AP that wouldn't know what to do with it.",
+      "zh": "一切始于双方各自“声明”自己会说这门语言。这种支持能力是在 RSN 扩展能力元素（RSNXE）中标示的：站点在能够使用设备 ID 时把“Device ID Support”比特置 1，在能够使用 IRM 时把“IRM Support”比特置 1。AP 也在它的 Beacon 与 Probe Response 中标示相同的比特位。于是，在交换任何标识符之前，双方就已经知道对端愿意配合——毕竟，向一个根本不懂如何处理设备 ID 的 AP 发送设备 ID 是没有意义的。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the actual handoff. The STA puts what it already knows into the Association Request: if it has been here before, it sends its stored Device ID, and/or it shows up using its IRM as its MAC address (it can carry an IRM element too, and may even hint at this in Probe Requests). The AP, when it recognises you, returns or refreshes a Device ID in the Association Response. Crucially, the AP issues a fresh Device ID each time — handing you a new token rather than reusing the old one is exactly what keeps a passive eavesdropper from linking your visits. Recognition without a stable, trackable label.",
+      "zh": "接下来是真正的“交接”。站点把自己已经掌握的信息放进“关联请求（Association Request）”里：如果它以前来过，就发送已存储的设备 ID；并/或者直接用它的 IRM 作为 MAC 地址出现（它也可以携带一个 IRM 元素，甚至可能在 Probe Request 中先行暗示这一点）。AP 在认出你之后，会在“关联响应（Association Response）”中回发或刷新一个设备 ID。关键在于：AP 每次都会发放一个全新的设备 ID——给你一个新令牌、而不是复用旧的——这正是让被动窃听者无法把你的多次到访关联起来的诀窍：能被识别，却没有一个稳定、可被追踪的标签。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Non-AP STA\n    participant AP as Access Point\n    Note over AP: Beacon / Probe Response<br/>RSNXE: Device ID + IRM Support = 1\n    Note over STA: SME issues MLME-ASSOCIATE.request<br/>(Device ID, IRM)\n    STA->>AP: Association Request<br/>RSNXE support bits + stored Device ID,<br/>arriving as its IRM\n    Note over AP: MLME-ASSOCIATE.indication to SME<br/>matches stored identity, recognises STA\n    AP->>STA: Association Response<br/>fresh Device ID (Status = Recognized)<br/>+ IRM Status\n    Note over STA,AP: link comes up — STA already recognised,<br/>holding a new ID for next time",
+      "zh": "sequenceDiagram\n    participant STA as 非-AP 站点\n    participant AP as 接入点\n    Note over AP: Beacon / Probe Response<br/>RSNXE：Device ID + IRM 支持 = 1\n    Note over STA: SME 发出 MLME-ASSOCIATE.request<br/>（Device ID, IRM）\n    STA->>AP: 关联请求<br/>RSNXE 支持比特 + 已存设备 ID，<br/>并以其 IRM 作为地址到来\n    Note over AP: 向 SME 上报 MLME-ASSOCIATE.indication<br/>匹配已存身份，认出该站点\n    AP->>STA: 关联响应<br/>全新设备 ID（状态=Recognized）<br/>+ IRM 状态\n    Note over STA,AP: 链路建立——站点已被认出，<br/>且握有供下次使用的新 ID"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Watch the direction of the status. When the STA sends a Device ID or IRM up to the AP, no status field rides along — it's just the claim 'here's who I am'. The AP's reply is the one that carries a Device ID Status (Recognized / Not Recognized / Not Applicable) and an IRM Status (Recognized / Not Recognized). The verdict always flows from the network back to the device.",
+      "zh": "留意“状态”的方向。当站点把设备 ID 或 IRM 上报给 AP 时，并不附带状态字段——那只是一句声明：“这就是我”。真正携带状态的是 AP 的回复：其中包含 Device ID Status（Recognized／Not Recognized／Not Applicable，即“已识别／未识别／不适用”）以及 IRM Status（Recognized／Not Recognized）。判定结果总是从网络流回到设备一侧。"
+    },
+    {
+      "type": "prose",
+      "en": "Why does this live in the association exchange rather than after the link is up? Because recognition is most useful early. If the network can map you to an identity it already holds (a prior session, a steering decision, transactional state) at the moment you reconnect, it can tailor what happens next — before a single data frame flows. The two tools also cooperate: a STA can use Device ID and IRM together, with the IRM letting the AP spot the STA from its very MAC address and the Device ID confirming exactly which prior identity it is.",
+      "zh": "为什么这件事要放在关联交互中，而不是等链路建立之后？因为“识别”在越早的阶段越有价值。如果网络能在你重新连接的那一刻，就把你映射到它已经保存的某个身份（先前的会话、某次引导决策、事务性状态），它就能据此定制接下来的行为——而且是在任何一个数据帧流动之前。这两件工具还能协同：站点可以同时使用设备 ID 与 IRM——IRM 让 AP 仅凭 MAC 地址就能发现该站点，而设备 ID 则确认它究竟对应哪一个先前的身份。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Where exactly the bits sit: primitives, frame orders, and the combined AG.3 example",
+        "zh": "比特究竟落在何处：原语、帧内顺序，以及 AG.3 联合示例"
+      },
+      "en": "802.11bh threads these identifiers through every layer of the association. At the MLME SAP, MLME-ASSOCIATE.request (6.5.7.2) and .indication (6.5.7.4) gain Device ID and IRM parameters; MLME-ASSOCIATE.confirm (6.5.7.3) and .response (6.5.7.5) gain Device ID, IRM, and PASN ID. On the wire, the Association Request frame body (9.3.3.5, Table 9-64) carries Device ID at order 61 and IRM at order 62, each optionally present only when dot11FILSActivated is true; the Association Response (9.3.3.6, Table 9-65) carries Device ID (78), IRM (79), and PASN ID (80). Capability is in the RSNXE (9.4.2.240): Device ID Support is bit 16 and IRM Support is bit 17 of the Extended RSN Capabilities field. The combined example in AG.3 shows the full life cycle: on first contact with AP-1 the STA has neither identifier; AP-1 assigns a device ID (and PASN ID), the STA returns an IRM (IRM1), and the STA, AP-1 and AP-2 (same ESS) all store them. When the STA returns using IRM1 as its MAC address, AP-2 recognises it from the stored IRM1, the STA supplies the device ID, AP-2 replies with IRM Status and Device ID Status both set to Recognized, and the STA hands over a fresh IRM (IRM2) for next time.",
+      "zh": "802.11bh 把这些标识符贯穿到了关联的每一层。在 MLME SAP 层，MLME-ASSOCIATE.request（6.5.7.2）与 .indication（6.5.7.4）新增了 Device ID 与 IRM 参数；MLME-ASSOCIATE.confirm（6.5.7.3）与 .response（6.5.7.5）则新增了 Device ID、IRM 与 PASN ID。在“线缆”上，关联请求帧体（9.3.3.5，表 9-64）在顺序 61 处携带 Device ID、在顺序 62 处携带 IRM，二者均仅在 dot11FILSActivated 为真时可选地出现；关联响应（9.3.3.6，表 9-65）则携带 Device ID（78）、IRM（79）与 PASN ID（80）。能力声明位于 RSNXE（9.4.2.240）中：在扩展 RSN 能力字段里，Device ID Support 是第 16 比特、IRM Support 是第 17 比特。AG.3 中的联合示例展示了完整生命周期：首次接触 AP-1 时站点两个标识符都没有；AP-1 分配一个设备 ID（及 PASN ID），站点回发一个 IRM（IRM1），随后站点、AP-1 与 AP-2（同一 ESS）都将其存储下来。当站点以 IRM1 作为 MAC 地址再次到来时，AP-2 凭借已存的 IRM1 认出它，站点随后提供设备 ID，AP-2 回复时把 IRM Status 与 Device ID Status 都置为 Recognized，站点则交出一个全新的 IRM（IRM2）供下次使用。",
+      "cite": {
+        "pdf_id": "80211bh-2024",
+        "pages": [
+          20,
+          21,
+          24,
+          28,
+          62,
+          63
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211bh-2024:6.5.7.2",
+    "80211bh-2024:6.5.7.3",
+    "80211bh-2024:9.3.3.5",
+    "80211bh-2024:9.3.3.6",
+    "80211bh-2024:9.4.2.240",
+    "80211bh-2024:AG.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        20,
+        21,
+        22,
+        23
+      ],
+      "note": "6.5.7.2-6.5.7.5 MLME-ASSOCIATE request/confirm/indication/response gain Device ID, IRM (and PASN ID on confirm/response)"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        24
+      ],
+      "note": "9.3.3.5 Association Request (Device ID order 61, IRM order 62) and 9.3.3.6 Association Response (Device ID 78, IRM 79, PASN ID 80)"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        28,
+        29
+      ],
+      "note": "9.4.2.240 RSNXE Device ID Support bit 16 / IRM Support bit 17; Device ID and IRM element formats with their Status field values"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        62,
+        63
+      ],
+      "note": "AG.3 combined Device ID + IRM usage example across AP-1 and AP-2 in one ESS"
+    }
+  ],
+  "track": "privacy"
+}

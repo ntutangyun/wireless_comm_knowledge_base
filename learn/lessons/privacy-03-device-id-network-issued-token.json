@@ -1,0 +1,106 @@
+{
+  "id": "privacy-03-device-id-network-issued-token",
+  "title": {
+    "en": "Device ID: A Network-Issued Token Your Device Brings Back",
+    "zh": "设备 ID：网络发给设备、下次带回来的“身份令牌”"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A privacy-minded Wi-Fi client randomises its MAC address, so each time it walks back into a network it looks like a brand-new stranger. That is great against trackers, but it is awkward for a network you actually trust — it has no way to know you are the same device that was here yesterday, so it cannot reuse anything it learned about you. 802.11bh-2024 defines two ways out of this bind. One, the IRM mechanism, lets the *device* pick the identifier. The other, the subject of this lesson, is the mirror image: the *network* issues the identifier. It is called the device ID mechanism.",
+      "zh": "注重隐私的 Wi-Fi 客户端会随机化自己的 MAC 地址，于是它每次回到某个网络时，看起来都像一个全新的陌生人。这对防追踪很有利，但对一个你真正信任的网络来说就很尴尬——它无法判断你就是昨天来过的那台设备，因此也无法复用它此前对你了解到的任何信息。802.11bh-2024 给出了两条出路。第一条是 IRM 机制，由“设备”来挑选标识符。本课要讲的是它的镜像版本：由“网络”来下发标识符，这就是设备 ID（device ID）机制。"
+    },
+    {
+      "type": "prose",
+      "en": "The idea is simple. When you associate to an access point, the AP hands you an opaque token — a device ID. Your device stores it. The next time you return to that same network (with a fresh random MAC, looking like a stranger again), you present the stored device ID. The AP reads it, recognises you, and silently reconnects you to whatever shared state it had from before — without ever needing a stable MAC address. The MAC stays random and untrackable to outsiders; the device ID does the recognising instead.",
+      "zh": "原理很简单。当你关联到某个接入点（AP）时，AP 会发给你一个不透明的令牌——设备 ID。你的设备把它存起来。下次你回到同一个网络时（用一个全新的随机 MAC，再次看起来像陌生人），你就把存好的设备 ID 递回去。AP 读取它、认出你，然后悄悄把你和此前的共享状态重新对接上——整个过程完全不需要一个稳定的 MAC 地址。MAC 对外人来说始终是随机、不可追踪的；改由设备 ID 来完成“认出你”这件事。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The word that matters is 'opaque'. The device ID is meaningful only to the network that issued it. To your device, and to any eavesdropper, it is indistinguishable from a random string with no significance. So the network gets to recognise you, but the token itself leaks nothing — it cannot be reverse-engineered into who you are.",
+      "zh": "关键词是“不透明（opaque）”。设备 ID 只对发出它的那个网络有意义。对你的设备、对任何窃听者来说，它都和一串毫无意义的随机字符串无法区分。于是网络能认出你，但令牌本身什么都不泄露——没人能把它逆向推算出“你是谁”。"
+    },
+    {
+      "type": "prose",
+      "en": "On the wire, the token rides in a Device ID element. It carries the standard Element ID / Length / Element ID Extension header, then a Device ID Length, a Device ID Status, and the variable-length Device ID itself. The Status field is how the AP answers on a return visit: 0 means Recognized (welcome back), 1 means Not Recognized, and 2 means Not Applicable. Both sides advertise that they speak this protocol by setting a Device ID Support bit in the Extended RSN Capabilities field of the RSNXE — the AP in its Beacons and Probe Responses, the client in its (Re)Association Request.",
+      "zh": "在链路上，这个令牌承载于“设备 ID 元素（Device ID element）”中。它带有标准的 Element ID / Length / Element ID Extension 头部，然后是 Device ID Length、Device ID Status，以及变长的 Device ID 本体。Status 字段是 AP 在你回访时给出的答复：0 表示 Recognized（认出了，欢迎回来），1 表示 Not Recognized（没认出），2 表示 Not Applicable（不适用）。双方都通过在 RSNXE 的 Extended RSN Capabilities 字段中置位 Device ID Support 比特来声明自己支持本协议——AP 在 Beacon 和 Probe Response 中声明，客户端在（重）关联请求中声明。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as non-AP STA\n    participant AP1 as AP-1\n    participant AP2 as AP-2 (same ESS)\n    Note over STA,AP2: AP-1 & AP-2 advertise Device ID Support in RSNXE\n    Note over STA: first visit, MAC1, no device ID yet\n    STA->>AP1: (Re)Assoc Request (Device ID Support = 1)\n    AP1->>STA: 4-way msg 3: Device ID KDE assigns devID\n    Note over STA,AP2: STA, AP-1, AP-2 all store devID\n    Note over STA: later returns with a fresh MAC2\n    STA->>AP2: 4-way msg 2: Device ID KDE presents devID\n    Note over AP2: recognises STA despite random MAC2\n    AP2->>STA: 4-way msg 3: Device ID Status = 0 (Recognized)",
+      "zh": "sequenceDiagram\n    participant STA as 非 AP 站点\n    participant AP1 as AP-1\n    participant AP2 as AP-2（同一 ESS）\n    Note over STA,AP2: AP-1 与 AP-2 在 RSNXE 中声明 Device ID Support\n    Note over STA: 首次到访，MAC1，尚无 device ID\n    STA->>AP1: （重）关联请求（Device ID Support = 1）\n    AP1->>STA: 4 次握手消息 3：Device ID KDE 分配 devID\n    Note over STA,AP2: STA、AP-1、AP-2 都存下 devID\n    Note over STA: 之后用全新的 MAC2 回访\n    STA->>AP2: 4 次握手消息 2：Device ID KDE 递回 devID\n    Note over AP2: 尽管 MAC2 是随机的，仍认出该 STA\n    AP2->>STA: 4 次握手消息 3：Device ID Status = 0（Recognized）"
+    },
+    {
+      "type": "prose",
+      "en": "There is a clean symmetry to remember. IRM and device ID solve the same problem from opposite ends. The single question that separates them is: who creates the identifier? With IRM, the device picks a random MAC and announces it to the network — device-driven. With device ID, the network mints an opaque token and hands it to the device, which brings it back — network-driven. The two are independent and may even run at the same time; a client with both activated might present both an IRM and a device ID in one association.",
+      "zh": "有一个清晰的对称关系值得记住。IRM 与设备 ID 从相反的两端解决同一个问题。区分它们的唯一问题是：谁创建标识符？在 IRM 中，是设备挑一个随机 MAC 并告诉网络——由设备驱动。在设备 ID 中，是网络铸造一个不透明令牌并交给设备，设备下次带回来——由网络驱动。两者相互独立，甚至可以同时运行；一个同时启用了两种机制的客户端，可能在一次关联中既出示 IRM、又出示设备 ID。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "To stay unlinkable, the network does not have to keep the same token forever. On a return visit the AP can either keep the existing device ID (it sends a zero-length Device ID, meaning 'same as before') or assign a brand-new value — rotating the token each visit so an outside observer cannot string your visits together. Recognition stays continuous for the network; the trail stays broken for everyone else.",
+      "zh": "为了保持不可关联，网络并不必永远沿用同一个令牌。在回访时，AP 既可以保留现有设备 ID（发送一个零长度的 Device ID，意为“与上次相同”），也可以分配一个全新的值——每次到访都轮换令牌，让外部观察者无法把你历次到访串联起来。对网络而言，识别是连续的；对其他所有人而言，踪迹是断开的。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "How an opaque identifier is actually built and checked",
+        "zh": "不透明标识符究竟如何生成与校验"
+      },
+      "en": "Annex AF gives an example scheme that makes a token opaque while still letting any AP in the ESS recover it. Generation (AF.2) takes the real identifier, prepends one octet giving the count of random padding octets that follow, prepends that with a variable-length random 'tweak', and wraps the whole tweaked-padded-id with AES-SIV in deterministic mode under a single symmetric secret k shared by all APs in the ESS (256 or 512 bits). The padding's variability is what buys traffic-analysis resistance; the tweak length n sets the baseline collision resistance at about 1/2^(n/2). Processing (AF.3) runs AES-SIV in reverse with k: FAIL means the protocol fails; on success the known-length tweak and the pad are stripped to recover the original id, which is then validated as the current one bound to that identity. Crucially, an AP that receives a token re-wraps the identity into a new opaque value with a different pad length before handing it back — that is the rotation that keeps successive tokens unlinkable. The clause 12.2.13.1 rules tie this to the wire: a recognised device ID gets Status 0, and the non-AP STA always sends back the most recent device ID it received from any AP in the same ESS.",
+      "zh": "附录 AF 给出了一个示例方案，使令牌不透明，同时又让 ESS 中的任何 AP 都能还原它。生成过程（AF.2）以真实标识符为输入，先在前面加一个字节表示随后跟着多少个随机填充字节，再在前面加一段变长随机“tweak”，然后用所有 ESS 内 AP 共享的单一对称密钥 k（256 或 512 位）以确定性模式的 AES-SIV 包裹整个 tweaked-padded-id。填充的可变性带来抗流量分析的能力；tweak 的位数 n 决定了大约 1/2^(n/2) 的基线抗碰撞强度。处理过程（AF.3）用 k 反向运行 AES-SIV：返回 FAIL 则协议失败；成功时剥去已知长度的 tweak 和填充以还原原始 id，再校验它是否为当前绑定到该身份的标识符。关键在于：AP 收到令牌后，会用不同的填充长度把该身份重新包裹成一个新的不透明值再交还——这正是让前后令牌不可关联的“轮换”。12.2.13.1 节的规则把这些与链路对接起来：被认出的设备 ID 状态置为 0，而非 AP 站点回送的，始终是它从同一 ESS 任一 AP 处最近收到的那个设备 ID。",
+      "cite": {
+        "pdf_id": "80211bh-2024",
+        "pages": [
+          51,
+          52,
+          37
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211bh-2024:9.4.2.316",
+    "80211bh-2024:12.2.13.1",
+    "80211bh-2024:AF.2",
+    "80211bh-2024:AF.3",
+    "80211bh-2024:AG.1"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        28
+      ],
+      "note": "9.4.2.316 Device ID element format (Fig 9-1074a) and Device ID Status values (Table 9-417a); Device ID Support bit in Extended RSN Capabilities"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        35,
+        36,
+        37
+      ],
+      "note": "12.2.13 / 12.2.13.1 device ID mechanism — AP issues ID, STA returns it; Status 0 Recognized; zero-length keep vs new value; most-recent-in-ESS rule"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        51,
+        52
+      ],
+      "note": "Annex AF.2/AF.3 example opaque-identifier scheme — AES-SIV generation, padding/tweak, processing and recovery"
+    },
+    {
+      "pdf_id": "80211bh-2024",
+      "pages": [
+        53
+      ],
+      "note": "Annex AG.1 example device ID usage — return to ESS with new MAC, AP-2 recognises devID via Device ID KDE"
+    }
+  ],
+  "track": "privacy"
+}
