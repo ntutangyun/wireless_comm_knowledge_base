@@ -1,0 +1,121 @@
+{
+  "id": "mesh-06-mesh-security-sae",
+  "title": {
+    "en": "Trusting Your Neighbours: SAE and Authenticated Mesh Peering",
+    "zh": "信任你的邻居：SAE 与受认证的 Mesh 对等连接"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In a normal Wi-Fi network there is a clear boss: the access point is the authenticator, and every client proves itself to that one central authority. A mesh is different. Every node is a peer of its neighbours — there is no AP in the middle, no server to vouch for anyone. So the question becomes awkward: if two mesh stations have never met, how does each convince the other that they both know the network password, without a referee and without leaking anything an eavesdropper could use to guess the password later?",
+      "zh": "在普通的 Wi-Fi 网络里有一个明确的“老大”：接入点（AP）就是认证方，每个客户端都向这一个中心权威证明自己的身份。Mesh 网络则不同。每个节点都是其邻居的对等方——中间没有 AP，也没有服务器替任何人作担保。于是问题就变得有点尴尬：如果两个 Mesh 站点素未谋面，在没有“裁判”、又不能泄露任何可供窃听者日后用来猜测口令的信息的前提下，它们各自要如何让对方相信双方都掌握着网络口令？"
+    },
+    {
+      "type": "prose",
+      "en": "The answer is SAE — Simultaneous Authentication of Equals, the same dragonfly handshake that powers WPA3. The name is the whole idea: the two parties are equals. Neither is the \"initiator\" or the \"supplicant\"; either side can start, and both can even start at the same time. That symmetry is exactly what a mesh needs, because no node has the authority to act as the one true authenticator. When SAE finishes, the two stations share a fresh secret key (a PMK) that they computed together from the password — and crucially, an attacker who watches the whole exchange can make at most one password guess per attempt. There is no captured handshake to take home and grind through a dictionary offline.",
+      "zh": "答案就是 SAE——Simultaneous Authentication of Equals（对等同时认证），也就是支撑 WPA3 的那套“蜻蜓（dragonfly）”握手。这个名字本身就道出了全部要义：双方是平等的。谁都不是“发起方”或“申请方”；任意一方都可以开始，甚至双方可以同时开始。这种对称性正是 Mesh 所需要的，因为没有哪个节点有权充当那个唯一的认证方。SAE 完成后，两个站点会共享一把全新的密钥（PMK），它是双方共同从口令派生出来的——而且关键在于，即便攻击者全程窃听整个交换，每次攻击也最多只能猜一次口令。没有可以“拿回家”离线慢慢用字典暴力破解的握手记录。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why \"resistant to offline dictionary attack\" matters: with older schemes, an eavesdropper could record one handshake and then, offline, try millions of password guesses against that recording until one fits. SAE breaks that — observing or even relaying the exchange tells the attacker nothing they can test offline. Each guess costs one fresh, live, online interaction.",
+      "zh": "为什么“抵御离线字典攻击”如此重要：在较旧的方案中，窃听者可以录下一次握手，然后在离线状态下针对这份记录尝试上百万次口令猜测，直到蒙对为止。SAE 打破了这一点——无论是窃听还是中继整个交换，攻击者都得不到任何可在离线状态下验证的东西。每猜一次，都得付出一次全新的、实时的、在线的交互代价。"
+    },
+    {
+      "type": "prose",
+      "en": "SAE gets you a shared PMK, but a PMK is not yet a working, protected link. That is where the Authenticated Mesh Peering Exchange (AMPE) comes in. Ordinary mesh peering uses three management frames — Open, Confirm, Close — to set up the neighbour relationship. AMPE reuses those exact same frames but folds the SAE-derived PMK into them, so a single set of Open/Confirm frames does double duty: it both establishes the peering and cryptographically protects it. From the PMK each side derives an AEK (authenticated encryption key, used to protect the peering frames themselves with AES-SIV) and an MTK (mesh temporal key, used to protect the actual data flowing over that link). The Open frame also carries each station's group key (the MGTK) to the other, so broadcast and multicast traffic stays encrypted across the mesh too.",
+      "zh": "SAE 让你得到一把共享的 PMK，但 PMK 还不是一条可用、受保护的链路。这正是“受认证的 Mesh 对等交换”（AMPE）登场之处。普通的 Mesh 对等连接用三种管理帧——Open（打开）、Confirm（确认）、Close（关闭）——来建立邻居关系。AMPE 复用这套完全相同的帧，但把 SAE 派生出的 PMK 融入其中，于是同一组 Open/Confirm 帧便身兼两职：既建立对等连接，又对其进行密码学保护。双方从 PMK 各自派生出一把 AEK（认证加密密钥，用 AES-SIV 保护对等帧本身）和一把 MTK（Mesh 临时密钥，用于保护在该链路上实际流动的数据）。Open 帧还会把各自的组播密钥（MGTK）带给对方，使得广播与组播流量在整个 Mesh 中也保持加密。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant A as Mesh STA A\n    participant B as Mesh STA B\n    Note over A,B: 1. SAE (dragonfly) — equals, either may start\n    A->>B: SAE Commit\n    B->>A: SAE Commit\n    A->>B: SAE Confirm\n    B->>A: SAE Confirm\n    Note over A,B: shared PMK derived (mesh PMKSA)\n    Note over A,B: 2. AMPE — fold PMK into peering frames\n    A->>B: Mesh Peering Open (RSNE, nonce, MGTK) + AES-SIV\n    B->>A: Mesh Peering Open (RSNE, nonce, MGTK) + AES-SIV\n    A->>B: Mesh Peering Confirm (peer nonce) + AES-SIV\n    B->>A: Mesh Peering Confirm (peer nonce) + AES-SIV\n    Note over A,B: derive AEK + MTK; install keys; link protected",
+      "zh": "sequenceDiagram\n    participant A as Mesh 站点 A\n    participant B as Mesh 站点 B\n    Note over A,B: 1. SAE（蜻蜓）——对等，任意一方可发起\n    A->>B: SAE Commit\n    B->>A: SAE Commit\n    A->>B: SAE Confirm\n    B->>A: SAE Confirm\n    Note over A,B: 派生出共享 PMK（mesh PMKSA）\n    Note over A,B: 2. AMPE——把 PMK 融入对等帧\n    A->>B: Mesh Peering Open（RSNE、nonce、MGTK）+ AES-SIV\n    B->>A: Mesh Peering Open（RSNE、nonce、MGTK）+ AES-SIV\n    A->>B: Mesh Peering Confirm（对端 nonce）+ AES-SIV\n    B->>A: Mesh Peering Confirm（对端 nonce）+ AES-SIV\n    Note over A,B: 派生 AEK + MTK；安装密钥；链路受保护"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 440 220' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><text x='220' y='20' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>From one password to many keys</text><rect x='160' y='35' width='120' height='30' rx='4'/><text x='220' y='55' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>Password (shared)</text><line x1='220' y1='65' x2='220' y2='90'/><rect x='165' y='90' width='110' height='30' rx='4'/><text x='220' y='110' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>SAE -&gt; PMK</text><line x1='220' y1='120' x2='120' y2='150'/><line x1='220' y1='120' x2='320' y2='150'/><rect x='55' y='150' width='130' height='34' rx='4'/><text x='120' y='167' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>AEK</text><text x='120' y='179' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>protects peering frames</text><rect x='255' y='150' width='130' height='34' rx='4'/><text x='320' y='167' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>MTK</text><text x='320' y='179' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>protects link data</text><rect x='155' y='195' width='130' height='20' rx='4' stroke-dasharray='4 3'/><text x='220' y='209' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>MGTK -&gt; broadcast/multicast</text></svg>",
+      "caption": {
+        "en": "One password seeds SAE, which yields a per-pair PMK. AMPE then derives an AEK (to protect the peering frames) and an MTK (to protect link data), while the Mesh Peering Open frame hands over each node's group key (MGTK) for broadcast/multicast protection.",
+        "zh": "一个口令为 SAE 提供种子，SAE 产出一把“每对节点专属”的 PMK。随后 AMPE 派生出 AEK（保护对等帧）与 MTK（保护链路数据），同时 Mesh Peering Open 帧把各节点的组播密钥（MGTK）交给对方，用于广播/组播保护。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Notice how nicely this composes. Because every peering is its own pairwise SAE run, each link in the mesh ends up with an independent, freshly derived set of keys — compromising one neighbour relationship does not hand an attacker the keys to any other link, and rekeying one link does not disturb the rest. The peer-to-peer trust that felt like a problem at the start turns out to be the very thing that makes the mesh robust: there is no single central credential whose loss takes the whole network down.",
+      "zh": "请留意这套机制组合得多么优雅。由于每一次对等连接都是各自独立的一对一 SAE 过程，Mesh 中的每条链路最终都拥有一套独立、全新派生的密钥——攻陷某一段邻居关系，并不会把任何其他链路的密钥拱手交给攻击者；为某条链路重新换密钥，也不会扰动其余链路。开始时看似棘手的“点对点信任”，恰恰成了让 Mesh 变得健壮的关键所在：网络中不存在某一份一旦丢失就会拖垮全网的中心化凭据。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Where the keys actually come from: AEK and MTK derivation",
+        "zh": "密钥究竟从何而来：AEK 与 MTK 的派生"
+      },
+      "en": "The standard is explicit that SAE must be implemented on all mesh STAs (12.4.1), and a successful SAE run leaves the two peers sharing a PMK — the basis of the mesh PMKSA that AMPE requires before it begins (14.4.3, 14.6.1). AMPE then derives two keys from that PMK. The AEK is static — it depends only on long-lived inputs: AEK = KDF-Hash-256(PMK, \"AEK Derivation\", Selected AKM Suite || min(localMAC, peerMAC) || max(localMAC, peerMAC)). The MTK is dynamic, mixing in the fresh nonces and link IDs each side chose for this instance: MTK = KDF-Hash-Length(PMK, \"Temporal Key Derivation\", min/max of the two nonces || min/max of the two LinkIDs || Selected AKM Suite || min/max of the two MACs). The min/max ordering makes both ends compute an identical key regardless of who is \"A\" and who is \"B\" — fitting for equals. The mesh peering Management frames are themselves protected with AES-SIV keyed by the AEK (14.6.1, 14.6.3), and the Mesh Peering Open frame carries each station's MGTK so group-addressed traffic is protected too (14.6.4). Once peering completes, individually addressed data and robust management frames are protected by the mesh PTKSA and group-addressed frames by the MGTK (14.8).",
+      "zh": "标准明确规定，所有 Mesh 站点都必须实现 SAE（12.4.1），而一次成功的 SAE 过程会让两个对等方共享一把 PMK——这正是 AMPE 启动前所要求的 mesh PMKSA 的基础（14.4.3、14.6.1）。随后 AMPE 从这把 PMK 派生出两把密钥。AEK 是静态的——它只依赖于长期不变的输入：AEK = KDF-Hash-256(PMK, \"AEK Derivation\", 所选 AKM 套件 || min(localMAC, peerMAC) || max(localMAC, peerMAC))。MTK 则是动态的，会混入双方为本次实例各自选择的全新 nonce 与 LinkID：MTK = KDF-Hash-Length(PMK, \"Temporal Key Derivation\", 两个 nonce 的 min/max || 两个 LinkID 的 min/max || 所选 AKM 套件 || 两个 MAC 的 min/max)。这种 min/max 排序使得无论谁是“A”、谁是“B”，两端都会算出完全相同的密钥——这与“对等”的精神相契合。Mesh 对等管理帧本身由以 AEK 为密钥的 AES-SIV 加以保护（14.6.1、14.6.3），而 Mesh Peering Open 帧携带各站点的 MGTK，使得组播寻址的流量同样受到保护（14.6.4）。对等连接一旦完成，单播寻址的数据帧与稳健管理帧便由 mesh PTKSA 保护，组播寻址的帧则由 MGTK 保护（14.8）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3218,
+          3219
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:12.4.1",
+    "80211-2024:14.4.3",
+    "80211-2024:14.6.1",
+    "80211-2024:14.6.4",
+    "80211-2024:14.6.7",
+    "80211-2024:14.8"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2961,
+        2962
+      ],
+      "note": "12.4.1 SAE overview — dragonfly PAKE; equals (no initiator/responder); resistant to offline dictionary attack; yields a shared PMK; SAE shall be implemented on all mesh STAs"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3198
+      ],
+      "note": "14.4.3 Mesh authentication + Table 14-1 — SAE leaves peers authenticated with a shared PMK forming the mesh PMKSA"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3210
+      ],
+      "note": "14.6.1 AMPE overview — requires a mesh PMKSA; reuses mesh peering Management (Open/Confirm/Close) frames; AES-SIV protection; functions = capability selection, key confirmation, key management"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3214
+      ],
+      "note": "14.6.4 Distribution of group keys in an MBSS — MGTK (and IGTK when MFP active) distributed via the Mesh Peering Open frame during AMPE"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3218,
+        3219
+      ],
+      "note": "14.6.7 Keys and key derivation for AMPE — AEK (static) and MTK (dynamic, mixes nonces/LinkIDs) derivation formulas; min/max ordering for symmetry"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3223
+      ],
+      "note": "14.8 Mesh security — individually addressed data/robust mgmt protected by mesh PTKSA; group-addressed frames by MGTK"
+    }
+  ],
+  "track": "mesh"
+}

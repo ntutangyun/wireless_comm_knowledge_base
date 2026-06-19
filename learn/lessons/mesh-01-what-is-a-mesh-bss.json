@@ -1,0 +1,96 @@
+{
+  "id": "mesh-01-what-is-a-mesh-bss",
+  "title": {
+    "en": "What Is a Mesh BSS? Wi-Fi Without Wires Between Nodes",
+    "zh": "什么是 Mesh BSS？节点之间无需布线的 Wi-Fi"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Picture a normal home Wi-Fi network: one access point (AP) in the corner, and every phone, laptop, and TV talking straight to it. That is an infrastructure BSS. Every client is exactly one hop from the AP, clients never relay for each other, and if you want to cover the far end of the house you run an Ethernet cable to a second AP. A mesh BSS (MBSS) tears up that rule. Instead of one boss and many clients, a mesh is a group of equal nodes — mesh stations — that link up with their neighbours and pass frames along for one another. Coverage spreads node-to-node, multi-hop, with no Ethernet between the boxes.",
+      "zh": "先想象一个普通的家庭 Wi-Fi 网络：角落里放着一台接入点（AP），所有手机、笔记本和电视都直接与它通信。这就是基础设施型 BSS（infrastructure BSS）。每个客户端到 AP 恰好只有一跳，客户端之间从不互相转发；要覆盖房子的另一头，你得拉一根网线接上第二台 AP。而 Mesh BSS（MBSS）打破了这条规则。它不是“一个老板、众多客户端”，而是一群地位平等的节点——网状站点（mesh STA）——彼此与邻居建立链路、互相转发数据帧。覆盖范围就这样在节点之间一跳一跳地铺开，盒子之间无需任何网线。"
+    },
+    {
+      "type": "prose",
+      "en": "The key shift is that a mesh STA is a peer of its neighbours, not a client of an AP. In an infrastructure BSS your laptop only ever talks to the AP. In a mesh, every node both uses the network for its own traffic AND relays traffic for the others. The standard puts it plainly: inside a mesh BSS, all stations establish wireless links with neighbour stations to mutually exchange data, and using that multi-hop capability, data and management frames can travel between stations that cannot hear each other directly. From the application's point of view it looks like any node can reach any other node — even ones far out of radio range.",
+      "zh": "最关键的转变在于：网状站点是其邻居的“对等体（peer）”，而不是某台 AP 的“客户端”。在基础设施型 BSS 中，你的笔记本只与 AP 通信；而在网状网络里，每个节点既为自己的流量使用网络，也为其他节点转发流量。标准说得很直白：在一个 Mesh BSS 内部，所有站点都与邻居站点建立无线链路以相互交换数据；借助这种多跳（multi-hop）能力，数据帧和管理帧可以在彼此无法直接听到的站点之间传递。从应用的视角看，任何节点似乎都能抵达任何其他节点——哪怕对方远在射频覆盖范围之外。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    subgraph Infrastructure_BSS[\"Infrastructure BSS (one hop, no relaying)\"]\n        AP((AP))\n        C1[Client]\n        C2[Client]\n        C3[Client]\n        C1 --- AP\n        C2 --- AP\n        C3 --- AP\n    end\n    subgraph Mesh_BSS[\"Mesh BSS (peers relay multi-hop)\"]\n        M1[Mesh STA]\n        M2[Mesh STA]\n        M3[Mesh STA]\n        M4[Mesh STA / mesh gate]\n        M1 --- M2\n        M2 --- M3\n        M1 --- M3\n        M3 --- M4\n        M4 -. to wired DS .-> DS[(Wired network)]\n    end",
+      "zh": "graph LR\n    subgraph Infrastructure_BSS[\"基础设施型 BSS（一跳，无转发）\"]\n        AP((AP))\n        C1[客户端]\n        C2[客户端]\n        C3[客户端]\n        C1 --- AP\n        C2 --- AP\n        C3 --- AP\n    end\n    subgraph Mesh_BSS[\"Mesh BSS（对等节点多跳转发）\"]\n        M1[网状站点]\n        M2[网状站点]\n        M3[网状站点]\n        M4[网状站点 / 网状网关]\n        M1 --- M2\n        M2 --- M3\n        M1 --- M3\n        M3 --- M4\n        M4 -. 通往有线 DS .-> DS[(有线网络)]\n    end"
+    },
+    {
+      "type": "prose",
+      "en": "Not every node has to be a workhorse. The standard notes that stations in a mesh BSS might be sources, sinks, or propagators of traffic — some mesh STAs just relay for others without ever being the origin or final destination of data. Because the topology forms itself from whoever is in range and reroutes around a node that drops out, a mesh is naturally self-forming and self-healing. There is no single AP whose failure takes the whole network down; the neighbours simply find another path.",
+      "zh": "并非每个节点都得当“主力”。标准指出，Mesh BSS 中的站点可以是流量的源（source）、汇（sink）或传播者（propagator）——有些网状站点只为别人转发，自己既不是数据的起点也不是终点。由于拓扑会根据“谁在覆盖范围内”自行组建，并能在某个节点掉线时绕开它重新选路，网状网络天生具备自组织（self-forming）与自愈（self-healing）的特性。没有哪一台 AP 的故障会让整个网络瘫痪；邻居们只需另寻一条路径即可。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Vocabulary you'll meet all through this track: a mesh STA is a node that supports mesh services. The Mesh ID is the name of the mesh (like an SSID, e.g. \"Mike's Mesh\"). A mesh profile is the bundle of parameters — Mesh ID, path selection protocol, and metric — that two nodes must share to be in the same mesh. And a mesh gate is the door to the wired world: the logical point where frames leave the mesh and enter the wired distribution system (DS).",
+      "zh": "本主题轨道（track）中会反复出现的术语：网状站点（mesh STA）是支持网状服务的节点；Mesh ID 是这张网的名字（类似 SSID，例如“Mike's Mesh”）；网状配置档（mesh profile）是一组参数——包含 Mesh ID、路径选择协议与度量标准——两个节点必须共享这组参数才算同属一张网；网状网关（mesh gate）则是通往有线世界的“门”：它是数据帧离开网状网络、进入有线分发系统（DS）的逻辑入口点。"
+    },
+    {
+      "type": "prose",
+      "en": "A pure mesh would be an island, so the mesh gate is what connects it to the rest of the world. The standard introduces it as a logical component that integrates a mesh STA with the distribution system: data moves between the mesh BSS and the DS through one or more mesh gates, and that is the point at which a mesh frame enters the wired DS. Once a mesh has a gate onto the DS, it can interconnect with ordinary infrastructure BSSs whose APs sit on the same DS — that is how a phone on a normal AP and a node deep inside the mesh end up able to reach each other. One physical box can even be an AP and a mesh gate at the same time.",
+      "zh": "一张纯粹的网状网络会是一座“孤岛”，而网状网关正是它与外部世界相连的纽带。标准把它定义为一个逻辑组件，用于将网状站点与分发系统（DS）整合起来：数据通过一个或多个网状网关在 Mesh BSS 与 DS 之间流动，这里正是网状数据帧进入有线 DS 的入口点。一旦某张网状网络拥有了通往 DS 的网关，它就能与那些 AP 接在同一 DS 上的普通基础设施型 BSS 互联——这就是为什么挂在普通 AP 上的手机，最终能与深藏在网状网络内部的节点互相通信。甚至一个物理盒子可以同时既是 AP 又是网状网关。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A mesh STA is its own kind of station. The standard says mesh STAs do not communicate with nonmesh STAs directly, and a mesh STA is not a member of an IBSS or an infrastructure BSS. So a regular laptop cannot just \"join\" a mesh as a client — it reaches the mesh only through a gate (or a colocated AP). The mesh is a separate club with its own membership rules.",
+      "zh": "网状站点是一类独立的站点。标准规定，网状站点不与非网状站点直接通信，而且网状站点也不属于任何 IBSS 或基础设施型 BSS。因此，一台普通笔记本无法以客户端身份直接“加入”网状网络——它只能通过网关（或与之同址的 AP）来访问网状网络。这张网是一个有自己成员资格规则的独立“俱乐部”。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Where mesh lives in the standard, and what makes a STA a mesh STA",
+        "zh": "网状机制在标准中的位置，以及一个站点凭什么算作网状站点"
+      },
+      "en": "Clause 4.3.24 frames the mesh facility as a set of MAC enhancements (the \"mesh facility\") available only to mesh STAs that belong to an MBSS; before membership, only the mesh discovery service is available. A mesh STA is defined as a QoS STA that supports mesh services and implements a subset of QoS functionality — QoS frame format and EDCA as part of the mesh coordination function (MCF) — while explicitly NOT supporting HCCA, TS management, admission control, APSD, or TDLS (4.3.24.2-4.3.24.3). Clause 14 carries the MLME mesh procedures. The actual switch that turns a STA into a mesh STA is the MIB attribute dot11MeshActivated: clause 14.2 states that when dot11MeshActivated is true the STA is a mesh STA, requires dot11QosOptionImplemented to be true, and forces dot11OCBActivated and dot11FastBSSTransitionActivated to false — so a node cannot be both a mesh STA and a fast-BSS-transition or outside-the-context-of-a-BSS station at once. Clause 4.3.24.4 introduces the mesh gate as the logical integration point with the DS and distinguishes it from a portal (which integrates the 802.11 architecture with a non-802.11 LAN).",
+      "zh": "4.3.24 节把网状机制描述为一组 MAC 增强功能（即“mesh facility”），仅供隶属于某个 MBSS 的网状站点使用；在成为成员之前，站点只能使用网状发现（mesh discovery）服务。网状站点被定义为一种支持网状服务的 QoS 站点，它实现了 QoS 功能的一个子集——QoS 帧格式，以及作为网状协调功能（MCF）一部分的 EDCA——但明确不支持 HCCA、TS 管理、准入控制、APSD 或 TDLS（见 4.3.24.2–4.3.24.3）。第 14 章承载了 MLME 网状流程。真正把一个站点“变成”网状站点的开关，是 MIB 属性 dot11MeshActivated：14.2 节规定，当 dot11MeshActivated 为 true 时该站点即为网状站点，此时 dot11QosOptionImplemented 必须为 true，并强制 dot11OCBActivated 与 dot11FastBSSTransitionActivated 为 false——因此一个节点不能同时既是网状站点、又是快速 BSS 切换站点或 BSS 上下文之外（OCB）的站点。4.3.24.4 节引入了网状网关，将其作为与 DS 整合的逻辑入口点，并把它与门户（portal，用于将 802.11 架构与非 802.11 LAN 整合）区分开来。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          369,
+          370,
+          3192
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        369
+      ],
+      "note": "4.3.24.2 Overview of the mesh BSS and 4.3.24.3 Mesh STA — autonomous STAs, multi-hop MSDU exchange, sources/sinks/propagators, QoS subset"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        370
+      ],
+      "note": "4.3.24.4 IEEE 802.11 components and mesh BSS — mesh gate as logical point into the DS; mesh STAs not in IBSS/infrastructure BSS; AP+mesh-gate colocation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3192
+      ],
+      "note": "14.1 General and 14.2 Mesh STA dependencies — dot11MeshActivated defines a mesh STA; requires dot11QosOptionImplemented; forces OCB/FT off"
+    }
+  ],
+  "covers": [
+    "80211-2024:4.3.24.2",
+    "80211-2024:4.3.24.3",
+    "80211-2024:4.3.24.4",
+    "80211-2024:14.1",
+    "80211-2024:14.2"
+  ],
+  "track": "mesh"
+}

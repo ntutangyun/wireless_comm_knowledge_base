@@ -1,0 +1,122 @@
+{
+  "id": "mesh-04-self-healing-paths",
+  "title": {
+    "en": "Self-Healing: Sequence Numbers and Path Errors",
+    "zh": "自愈：序列号与路径错误"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A mesh is only as good as its ability to recover. Nodes get unplugged, walk out of range, or simply die — and when that happens, every path that ran through the missing node is suddenly broken. The promise of mesh is that the network notices, drops the dead route, and re-routes around the gap on its own. This lesson is about the two machines inside HWMP (the mesh path-selection protocol) that make that self-healing happen: sequence numbers, which keep routes fresh and loop-free, and the Path Error (PERR) message, which spreads the news that a next-hop is gone.",
+      "zh": "一个 Mesh 网络的价值，取决于它从故障中恢复的能力。节点会被拔掉电源、走出信号范围，或者干脆宕机——一旦发生，所有经过这个缺失节点的路径都会瞬间断裂。Mesh 的承诺是：网络能够察觉这一点，丢弃失效路由，并自行绕开缺口重新选路。本课讲的就是 HWMP（Mesh 路径选择协议）内部让这种“自愈”得以实现的两台机器：序列号（让路由保持新鲜且无环路）以及路径错误（PERR）消息（把“某个下一跳已消失”的消息扩散出去）。"
+    },
+    {
+      "type": "prose",
+      "en": "First, freshness. Every mesh STA owns a single number called its HWMP sequence number (SN), which it increments over time. Routing messages — path requests (PREQ), path replies (PREP), path errors (PERR) — all carry an SN. When a node hears routing info about some destination, it compares the incoming SN with the one it already has stored. A higher SN means newer information and wins; a lower SN is stale and gets discarded. This single rule is what stops the mesh from chasing old, dead routes and, crucially, what prevents routing loops.",
+      "zh": "首先是“新鲜度”。每个 Mesh STA 都拥有一个属于自己的数字，叫做 HWMP 序列号（SN），它会随时间递增。各类路由消息——路径请求（PREQ）、路径回复（PREP）、路径错误（PERR）——都携带一个 SN。当一个节点收到关于某个目的地的路由信息时，它会把收到的 SN 与自己已存储的 SN 作比较。更高的 SN 意味着更新的信息，胜出；更低的 SN 是陈旧信息，被丢弃。正是这一条规则，让 Mesh 不会去追逐过时的死路由，更关键的是——它防止了路由环路。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A node only increments its OWN sequence number — never invents one for someone else. Two cases: an originator bumps its SN right before starting a fresh path discovery (so old reverse paths can't be confused with new ones), and a target bumps its SN just before replying to a PREQ. SN comparison uses circular modulo-2^32 arithmetic, so the counter can wrap around forever without breaking.",
+      "zh": "一个节点只会递增自己的序列号——绝不会替别人凭空造一个。有两种情形：发起方在开始一次全新的路径发现之前，立即把自己的 SN 加一（这样旧的反向路径就不会与新路径混淆）；目标方在回复 PREQ 之前，立即把自己的 SN 加一。SN 的比较采用循环模 2^32 运算，因此这个计数器可以永远地回绕而不会出问题。"
+    },
+    {
+      "type": "prose",
+      "en": "Each node keeps forwarding information — a small table that, for every destination, records the next hop to send toward, the destination's HWMP SN, a path metric, and a hop count. PREQ and PREP processing updates this table, but only when the new info is genuinely better: it accepts an update when the incoming SN is higher than the stored one, OR when the SN is equal but the path metric improved. That 'higher SN, or equal SN with a better metric' test is the precise gate that keeps the table both fresh and loop-free.",
+      "zh": "每个节点都维护着一份转发信息（forwarding information）——一张小表，针对每个目的地记录着：应朝哪个下一跳转发、该目的地的 HWMP SN、一个路径度量值（path metric）以及跳数。PREQ 与 PREP 的处理会更新这张表，但仅在新信息确实更优时才更新：当收到的 SN 高于已存储的 SN，或者 SN 相等但路径度量更优时，才接受这次更新。这条“SN 更高，或 SN 相等但度量更好”的判据，正是让表既保持新鲜又保持无环路的精确闸门。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the healing. Suppose node B forwards traffic toward destination D via next-hop C, and the link B→C goes dead — B simply can't deliver frames to C anymore. B reacts in two moves. First, locally: for every destination whose path used C as next-hop, B increments that destination's stored SN by one and marks the path invalid. Bumping the SN is the clever part — it guarantees that any newer, repaired path B later learns about will out-rank this now-poisoned entry. Second, B announces the failure: it sends a PERR element naming the unreachable destinations, each tagged with its freshly-incremented SN, to every upstream neighbour that was relying on B for those destinations.",
+      "zh": "现在来看“自愈”。假设节点 B 经由下一跳 C 朝目的地 D 转发流量，而链路 B→C 断了——B 再也无法把帧交付给 C。B 会做两个动作。第一，在本地：对于每一个把 C 当作下一跳的目的地，B 把该目的地存储的 SN 加一，并把这条路径标记为失效。把 SN 加一是其中的巧妙之处——它保证 B 日后学到的任何更新的、已修复的路径，都会压过这条如今被“毒化”的旧表项。第二，B 宣告这次故障：它发送一个 PERR 元素，列出那些不可达的目的地，每个目的地都带上其刚刚递增过的 SN，发给所有此前依赖 B 来到达这些目的地的上游邻居。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    A[Node A<br/>source] -->|toward D| B[Node B]\n    B -->|next-hop| C[Node C]\n    C -.->|link DEAD| D[Dest D]\n    B -. PERR: D unreachable<br/>SN incremented .-> A\n    A ==>|new PREQ:<br/>rediscover D| E[Node E]\n    E ==>|repaired path| D",
+      "zh": "graph LR\n    A[节点 A<br/>源] -->|发往 D| B[节点 B]\n    B -->|下一跳| C[节点 C]\n    C -.->|链路断开| D[目的 D]\n    B -. PERR: D 不可达<br/>SN 已递增 .-> A\n    A ==>|新 PREQ:<br/>重新发现 D| E[节点 E]\n    E ==>|修复后的路径| D"
+    },
+    {
+      "type": "prose",
+      "en": "A PERR only travels where it matters. A receiving node accepts it only if it actually had forwarding information for one of the named destinations AND its next-hop for that destination is the very neighbour that sent the PERR — otherwise the PERR is discarded. When accepted, the node invalidates that path and, if it still has downstream neighbours depending on it, propagates the PERR onward (decrementing the element's TTL each hop so it can't circulate forever). The wave of invalidations ripples back along exactly the broken branch — no further. Any node that wants D back simply launches a new path discovery, and because every repaired route carries a higher SN, it cleanly supersedes the invalidated one.",
+      "zh": "PERR 只会传播到它真正有意义的地方。接收节点只有在以下两个条件同时满足时才接受它：它确实持有所列某个目的地的转发信息，并且它指向该目的地的下一跳，正是发来这个 PERR 的那个邻居——否则 PERR 被丢弃。一旦接受，节点就把该路径标记失效；如果它下游还有依赖它的邻居，就继续向外转发 PERR（每经过一跳就把元素的 TTL 减一，使其不会无限循环）。这一波失效操作恰好沿着断裂的那条分支向回涟漪扩散——绝不越界。任何想恢复 D 的节点，只需发起一次新的路径发现；又因为每条修复后的路由都携带更高的 SN，它会干净利落地取代那条已失效的旧路由。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "PERR comes in flavours: 'destination unreachable' (a next-hop link died), 'no forwarding information' (a frame arrived for a destination this node has no path to), and a proxy variant for mesh gates. It can be group-addressed to many precursors at once, or sent individually. The unifying idea is the same: tell whoever was counting on me that the road is closed, and stamp it with a sequence number so the truth can't be overwritten by stale gossip.",
+      "zh": "PERR 有几种“口味”：“目的地不可达”（下一跳链路断了）、“无转发信息”（收到了一个本节点没有路径可达之目的地的帧），以及面向 Mesh 网关的代理（proxy）变体。它可以组播给众多前驱节点，也可以单独发送。但其统一的思想是一致的：告诉所有曾依赖我的节点“这条路封了”，并盖上一个序列号，使这条真相不会被陈旧的“流言”覆盖。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact SN rules, the update gate, and PERR processing",
+        "zh": "精确的 SN 规则、更新闸门与 PERR 处理"
+      },
+      "en": "Clause 14.11.8.3 defines HWMP sequence numbering: each mesh STA owns and increments its own HWMP SN, and SNs appear in PREQ, PREP, PERR, and RANN elements. An originator increments its SN immediately before starting path discovery; a target sets its SN to max(current SN, target SN in the PREQ) + 1 immediately before generating a PREP. Comparison uses circular modulo-2^32 arithmetic, and an element with an SN lower than the stored value is generally discarded. The one case where a STA changes ANOTHER STA's SN independently of receiving that STA's element is a broken next-hop link: for each affected destination it increments the stored SN and marks the path invalid. Clause 14.11.8.4 gives the forwarding-information update gate: on PREQ/PREP processing, a STA updates its entry to the originator/target when the received SN > stored SN, OR the received SN = stored SN AND the new path metric is better. The entry stores destination SN, path metric, and hop count. Clause 14.11.11.2 states PERR's function — announcing one or more unreachable destinations to all traffic sources with an active path to them. Clause 14.11.11.3 Case A: when the link to a next hop of an active path is no longer usable, the STA increments the SN of every announced unreachable destination by 1, invalidates that forwarding information, and sends a PERR (Reason Code MESH-PATH-ERROR-DESTINATION-UNREACHABLE) carrying each destination's post-increment SN; Case D governs propagation (TTL > 1, dot11MeshForwarding true). Clause 14.11.11.4: a PERR is accepted only if the receiver has forwarding information whose destination is listed AND whose next hop is the PERR's transmitter, otherwise discarded; on acceptance the STA invalidates the matching forwarding information and may propagate the PERR per Case D.",
+      "zh": "14.11.8.3 节定义了 HWMP 序列号机制：每个 Mesh STA 拥有并递增自己的 HWMP SN，SN 出现在 PREQ、PREP、PERR 和 RANN 元素中。发起方在开始路径发现之前立即递增自己的 SN；目标方在生成 PREP 之前，立即把自己的 SN 设为 max(当前 SN, PREQ 中的目标 SN) + 1。比较采用循环模 2^32 运算，SN 低于存储值的元素通常被丢弃。一个 STA 在未收到某 STA 自身元素的情况下、独立地更改另一个 STA 的 SN，唯一的情形就是下一跳链路断裂：对每一个受影响的目的地，它递增存储的 SN 并将路径标记为失效。14.11.8.4 节给出了转发信息的更新闸门：在处理 PREQ/PREP 时，当收到的 SN > 存储的 SN，或者收到的 SN = 存储的 SN 且新的路径度量更优时，STA 才更新指向发起方/目标方的表项。该表项存储目的地 SN、路径度量与跳数。14.11.11.2 节阐明了 PERR 的功能——向所有拥有到达某些目的地之活动路径的流量源，宣告一个或多个不可达的目的地。14.11.11.3 节 Case A：当一条活动路径的下一跳链路不再可用时，STA 把所宣告的每个不可达目的地的 SN 加一，使该转发信息失效，并发送 PERR（原因码 MESH-PATH-ERROR-DESTINATION-UNREACHABLE），其中携带每个目的地递增后的 SN；Case D 则规定传播条件（TTL > 1、dot11MeshForwarding 为真）。14.11.11.4 节：仅当接收方持有的转发信息其目的地在列、且其下一跳正是该 PERR 的发送方时，PERR 才被接受，否则丢弃；一旦接受，STA 将匹配的转发信息标记失效，并可按 Case D 继续传播该 PERR。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3233,
+          3234,
+          3250,
+          3251,
+          3254
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:14.11.8.3",
+    "80211-2024:14.11.8.4",
+    "80211-2024:14.11.11.2",
+    "80211-2024:14.11.11.3",
+    "80211-2024:14.11.11.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3233,
+        3234
+      ],
+      "note": "14.11.8.3 HWMP sequence numbering — per-STA SN, increment rules, circular modulo-2^32 comparison, stale-element discard, SN increment on broken next-hop link"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3234,
+        3235
+      ],
+      "note": "14.11.8.4 Forwarding information — destination SN/metric/hop-count fields; update gate (higher SN, or equal SN with better metric); invalidation on unusable next hop or received PERR"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3250
+      ],
+      "note": "14.11.11.2 PERR function — announce unreachable destination(s) to traffic sources with an active path; group/individually addressed; may trigger rediscovery"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3250,
+        3251,
+        3252,
+        3253
+      ],
+      "note": "14.11.11.3 Conditions for generating/sending PERR — Case A (next hop unusable: increment SN, invalidate, announce), Case B/C, Case D propagation; Tables 14-22..14-25"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3254
+      ],
+      "note": "14.11.11.4 PERR element processing — acceptance criteria (destination listed AND next hop is PERR transmitter), effect of receipt (invalidate, set SN, propagate per Case D)"
+    }
+  ],
+  "track": "mesh"
+}

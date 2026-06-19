@@ -1,0 +1,111 @@
+{
+  "id": "mesh-02-discovery-and-peering",
+  "title": {
+    "en": "Finding Neighbours and Forming Peerings (Mesh Peering Management)",
+    "zh": "发现邻居并建立对等连接（Mesh 对等管理）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A mesh network starts life as a scattered bag of radios. Before any of them can relay traffic for one another, two things have to happen: each mesh station has to find neighbours it is actually compatible with, and then it has to negotiate a working link with them. This lesson walks both halves — discovery by scanning, and link formation by Mesh Peering Management (MPM). The end result is the step that turns loose radios into a connected graph the routing layer can run on top of.",
+      "zh": "一个 Mesh 网络起初不过是一堆零散的无线电。在它们能互相中继流量之前，必须先发生两件事：每个 Mesh 站点要先找到真正与自己兼容的邻居，然后再与它们协商出一条可用的链路。本课会走完这两个环节——通过扫描完成“发现”，再通过 Mesh 对等管理（MPM）完成“建链”。最终成果，正是把一堆松散的无线电变成一张连通图、让上层路由层得以在其上运行的那一步。"
+    },
+    {
+      "type": "prose",
+      "en": "Discovery is just scanning, the same active/passive scanning every Wi-Fi station does — but tuned for mesh. A mesh STA scans for a particular Mesh ID: it either listens passively for Beacons, or sends Probe Requests carrying the Mesh ID and waits for replies. Using a wildcard Mesh ID finds any mesh; using a specific Mesh ID finds only the network you want to join. This is how a node avoids pairing with random radios — it only looks at stations advertising the right mesh.",
+      "zh": "发现其实就是扫描，和每个 Wi-Fi 站点都会做的主动/被动扫描如出一辙——只是针对 Mesh 做了调整。一个 Mesh 站点会针对某个特定的 Mesh ID 进行扫描：要么被动地监听 Beacon 帧，要么发送携带 Mesh ID 的 Probe Request 并等待回应。使用通配 Mesh ID 可以发现任意 Mesh；使用具体的 Mesh ID 则只会发现你想加入的那个网络。正是凭借这一点，节点才不会与随机的无线电配对——它只关注那些宣告了正确 Mesh 的站点。"
+    },
+    {
+      "type": "prose",
+      "en": "Finding a neighbour is not enough; it must be a candidate peer. A discovered neighbour only qualifies if it shares the same mesh profile (same Mesh ID, same path-selection protocol, same congestion-control and synchronisation methods — see lesson mesh-01), if its Beacon or Probe Response says it is still accepting additional peerings, and if the two sides' security settings line up. If any of those fail, the node simply ignores it. This profile-matching is the filter that guarantees only mutually compatible nodes ever try to pair.",
+      "zh": "仅仅找到一个邻居还不够；它必须是一个“候选对等站点（candidate peer）”。只有当一个被发现的邻居满足以下全部条件时，才有资格成为候选：它与本站采用相同的 Mesh profile（相同的 Mesh ID、相同的路径选择协议、相同的拥塞控制与同步方法——见 mesh-01 课），它的 Beacon 或 Probe Response 表明自己仍在接受新的对等连接，并且双方的安全设置相互匹配。只要任何一项不满足，节点就会直接忽略它。正是这种 profile 匹配充当了过滤器，确保只有相互兼容的节点才会尝试配对。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mesh has no APs and no clients — every node is a peer. So a peering is symmetric: it is a mutual agreement to relay for each other, not a one-sided 'join'. That symmetry is exactly why the handshake needs both sides to send AND receive an Open, then both to send AND receive a Confirm — neither node is in charge.",
+      "zh": "Mesh 网络里没有 AP、也没有客户端——每个节点都是对等者。因此一次对等连接是对称的：它是一份“互相为对方中继”的双边约定，而不是单方面的“加入”。正是这种对称性，决定了握手需要双方都发送并接收一个 Open 帧，再双方都发送并接收一个 Confirm 帧——没有哪个节点说了算。"
+    },
+    {
+      "type": "prose",
+      "en": "Once a candidate is chosen, MPM negotiates the link with three frame types: Mesh Peering Open, Mesh Peering Confirm, and Mesh Peering Close. The peering succeeds when both stations have sent and correctly processed an Open, and both have sent and correctly processed a Confirm. Each side picks its own localLinkID and learns the other's as peerLinkID; the pair (localMAC, peerMAC, localLinkID) uniquely identifies this peering instance, so a node can keep many peerings straight at once. When a peering is accepted, the node also assigns the peer a unique AID, just as an AP would for an associated client.",
+      "zh": "一旦选定了候选站点，MPM 就用三种帧来协商链路：Mesh Peering Open、Mesh Peering Confirm 和 Mesh Peering Close。当双方都发送并正确处理了 Open 帧、且双方都发送并正确处理了 Confirm 帧时，这次对等连接才算成功。每一方都会挑选自己的 localLinkID，并把对方的记为 peerLinkID；(localMAC, peerMAC, localLinkID) 这一组合唯一地标识本次对等实例，因此一个节点可以同时清晰地维护多条对等连接。当一次对等被接受时，节点还会为该对端分配一个唯一的 AID，就像 AP 给已关联的客户端分配那样。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant A as Mesh STA A (IDLE)\n    participant B as Mesh STA B (IDLE)\n    Note over A,B: both discovered each other as candidate peers (matching Mesh ID + profile)\n    A->>B: Mesh Peering Open (localLinkID=A)\n    Note over A: A -> OPN_SNT\n    B->>A: Mesh Peering Open (localLinkID=B)\n    A->>B: Mesh Peering Confirm (peerLinkID=B)\n    B->>A: Mesh Peering Confirm (peerLinkID=A)\n    Note over A,B: each sent & received Open AND Confirm\n    Note over A,B: both -> ESTAB : peering established",
+      "zh": "sequenceDiagram\n    participant A as Mesh 站点 A (IDLE)\n    participant B as Mesh 站点 B (IDLE)\n    Note over A,B: 双方已互相发现为候选对等站点（Mesh ID 与 profile 匹配）\n    A->>B: Mesh Peering Open (localLinkID=A)\n    Note over A: A -> OPN_SNT\n    B->>A: Mesh Peering Open (localLinkID=B)\n    A->>B: Mesh Peering Confirm (peerLinkID=B)\n    B->>A: Mesh Peering Confirm (peerLinkID=A)\n    Note over A,B: 各自都已发送并接收 Open 与 Confirm\n    Note over A,B: 双方 -> ESTAB ：对等连接建立"
+    },
+    {
+      "type": "prose",
+      "en": "Each peering is driven by a small finite state machine (the MPM FSM) with six states. It starts in IDLE; sending an Open moves it to OPN_SNT; receiving the peer's Open and Confirm (and sending its own Confirm) drives it through OPN_RCVD / CNF_RCVD and finally to ESTAB, the working state where data frames may flow. Tearing down is just as clean: a Mesh Peering Close frame (or a timer expiring after retries) pushes the FSM into HOLDING, where it waits out a holding timer and then returns to IDLE — releasing the peering gracefully so both sides agree it is gone.",
+      "zh": "每一条对等连接都由一台小型有限状态机（MPM FSM）驱动，共有六个状态。它从 IDLE 出发；发送 Open 后进入 OPN_SNT；收到对端的 Open 与 Confirm（并发出自己的 Confirm）后，依次经过 OPN_RCVD / CNF_RCVD，最终到达 ESTAB——这是可以收发数据帧的工作状态。拆链同样干净利落：一个 Mesh Peering Close 帧（或在多次重试后某个定时器超时）会把状态机推入 HOLDING，在那里它等待 holding 定时器走完，然后回到 IDLE——优雅地释放这条对等连接，让双方都确认它已经消失。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact candidate-peer test, the success criteria, and the six-state FSM",
+        "zh": "精确的候选对等判定、成功判据，以及六状态有限状态机"
+      },
+      "en": "Clause 14.3.6 has the mesh STA scan (active or passive, per the MLME-SCAN.request ScanType) using a wildcard or specific Mesh ID. Clause 14.3.7 makes a discovered neighbour a candidate peer only if all hold: it has the same mesh STA configuration (14.3.4); its received Mesh Capability has Accepting Additional Mesh Peerings = 1; and the security settings are compatible (both dot11MeshSecurityActivated false, or both true with a compatible RSNE). Clause 14.3.9 establishes a peering only with candidate STAs in the same MBSS, on successful completion of MPM (14.4) — or AMPE (14.6) when security is on. Per 14.4.1, MPM runs when dot11MeshSecurityActivated is false and uses Mesh Peering Open / Confirm / Close frames; success requires both STAs to have sent and received (and correctly processed) an Open and a corresponding Confirm. A peering instance is keyed by {localLinkID, localMAC, peerMAC}, with peerLinkID supplied in the Mesh Peering Management element of the Open/Confirm frames (14.4.4). The MPM FSM (14.5.2) has six states — IDLE, OPN_SNT, CNF_RCVD, OPN_RCVD, ESTAB, HOLDING — and its transitions are tabulated in Table 14-2 (14.5.5): e.g. from IDLE, ACTOPN / (sndOPN, setR) -> OPN_SNT; CLS_ACPT and timer events drive the FSM via HOLDING back to IDLE for graceful close.",
+      "zh": "14.3.6 节规定 Mesh 站点按 MLME-SCAN.request 的 ScanType 进行主动或被动扫描，使用通配或特定的 Mesh ID。14.3.7 节规定，只有当下列条件全部成立时，被发现的邻居才成为候选对等站点：它具有相同的 mesh STA 配置（14.3.4）；其收到的 Mesh Capability 中 Accepting Additional Mesh Peerings = 1；且安全设置相互兼容（双方 dot11MeshSecurityActivated 均为 false，或均为 true 且对端通告了兼容的 RSNE）。14.3.9 节规定只与同一 MBSS 内的候选站点建立对等连接，且须在 MPM（14.4）成功完成时建立——开启安全时则为 AMPE（14.6）。依据 14.4.1，当 dot11MeshSecurityActivated 为 false 时运行 MPM，使用 Mesh Peering Open / Confirm / Close 帧；成功的条件是双方都已发送并接收（且正确处理）了 Open 帧以及相应的 Confirm 帧。对等实例由 {localLinkID, localMAC, peerMAC} 作为键标识，其中 peerLinkID 由 Open/Confirm 帧中的 Mesh Peering Management 元素提供（14.4.4）。MPM 状态机（14.5.2）有六个状态——IDLE、OPN_SNT、CNF_RCVD、OPN_RCVD、ESTAB、HOLDING——其状态转移列于表 14-2（14.5.5）：例如从 IDLE 出发，ACTOPN /（sndOPN, setR）-> OPN_SNT；CLS_ACPT 以及各定时器事件会经由 HOLDING 把状态机带回 IDLE，以实现优雅关闭。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3194,
+          3195,
+          3196,
+          3202,
+          3205
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:14.3.6",
+    "80211-2024:14.3.7",
+    "80211-2024:14.3.9",
+    "80211-2024:14.4.6",
+    "80211-2024:14.4.7",
+    "80211-2024:14.4.8",
+    "80211-2024:14.5.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3194,
+        3195
+      ],
+      "note": "14.3.6 Scanning mesh BSSs (wildcard/specific Mesh ID, active/passive); 14.3.7 Candidate peer mesh STA conditions (same mesh profile, Accepting Additional Mesh Peerings, security compatibility)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3196
+      ],
+      "note": "14.3.9 Establishing mesh peerings (same MBSS, via MPM or AMPE); 14.4.1 MPM general — Open/Confirm/Close frames, success criteria"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3200,
+        3201,
+        3202
+      ],
+      "note": "14.4.6 Mesh Peering Open, 14.4.7 Mesh Peering Confirm, 14.4.8 Mesh Peering Close — frame generation and processing"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3202,
+        3204,
+        3205
+      ],
+      "note": "14.5.2 six MPM FSM states (IDLE/OPN_SNT/CNF_RCVD/OPN_RCVD/ESTAB/HOLDING); 14.5.5 Table 14-2 state transitions"
+    }
+  ],
+  "track": "mesh"
+}

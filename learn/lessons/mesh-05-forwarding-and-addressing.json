@@ -1,0 +1,102 @@
+{
+  "id": "mesh-05-forwarding-and-addressing",
+  "title": {
+    "en": "Multi-Hop Delivery: The Mesh Control Field and Four/Six Addresses",
+    "zh": "多跳转发：Mesh 控制字段与四/六地址"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In an ordinary Wi-Fi network a frame travels exactly one hop: station to AP, or AP to station. A mesh is different. A frame may have to cross several mesh STAs before it reaches whoever it is really for. The trick that makes this work is that the 802.11 header carries enough addresses to keep two questions separate: who is physically handing this frame to whom right now, and who originally sent it and who is it ultimately for. This lesson is about how those addresses, plus a small Mesh Control field, get a frame across the mesh without it getting lost or circling forever.",
+      "zh": "在普通 Wi-Fi 网络里，一个帧只走一跳：站点到 AP，或 AP 到站点。Mesh 网络则不同——一个帧可能要穿过好几个 Mesh 站点（mesh STA），才能到达它真正的目标。让这一切成立的关键，是 802.11 帧头携带了足够多的地址，从而把两个问题分开：此刻是谁在物理上把这个帧交给谁，以及最初是谁发出它、它最终又是发给谁的。本课就讲这些地址，再加上一个小小的 Mesh 控制字段，是如何把帧送过整张 Mesh 而不至于丢失或永远绕圈的。"
+    },
+    {
+      "type": "prose",
+      "en": "Picture two pairs of names on every frame. The hop-by-hop pair is the transmitter and the receiver: the two mesh STAs that are neighbours and are exchanging this frame on this single link. The end-to-end pair is the mesh source and the mesh destination: the STA that first injected the data and the STA it is meant to arrive at. As the frame is relayed, the hop-by-hop pair is rewritten at every hop, while the source and destination stay fixed the whole way. Keeping them in separate header fields is exactly what lets an intermediate STA forward a frame without disturbing who it is from or for.",
+      "zh": "想象每个帧上都有两对名字。逐跳的一对是发送者（transmitter）与接收者（receiver）：它们是相邻的两个 Mesh 站点，正在这一条链路上交换这个帧。端到端的一对是 Mesh 源（mesh source）与 Mesh 目的（mesh destination）：最先注入这份数据的站点，以及它最终应当到达的站点。随着帧被一跳跳转发，逐跳的那一对会在每一跳被改写，而源与目的则全程保持不变。把它们放在不同的帧头字段里，正是为了让中间站点能转发一个帧，却不动它“来自谁、发给谁”的身份。"
+    },
+    {
+      "type": "prose",
+      "en": "Concretely, a mesh Data frame between two mesh STAs uses the four-address MAC header. Address 1 is the next-hop receiver, Address 2 is the transmitter (this hop's two ends), Address 3 is the mesh destination, and Address 4 is the mesh source (the end-to-end pair). A source mesh STA fills all four, sets the next hop from its forwarding information, and sends. Each intermediate STA looks at Address 3, finds the next hop in its forwarding table, then rewrites only Address 1 (new next hop) and Address 2 (itself) before re-transmitting — Address 3 and Address 4 are never touched, so the recipient always knows the true source and destination.",
+      "zh": "具体来说，两个 Mesh 站点之间的 Mesh 数据帧使用四地址 MAC 帧头。地址 1 是下一跳接收者，地址 2 是发送者（这一跳的两端）；地址 3 是 Mesh 目的，地址 4 是 Mesh 源（端到端的一对）。源 Mesh 站点填好这四个地址，根据自己的转发信息（forwarding information）设定下一跳，然后发送。每个中间站点查看地址 3，在自己的转发表里找到下一跳，随后只改写地址 1（新的下一跳）和地址 2（它自己），再重新发送——地址 3 和地址 4 从不被改动，因此收端始终知道真正的源与目的。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 170\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"60\" cy=\"60\" r=\"22\"/><circle cx=\"230\" cy=\"60\" r=\"22\"/><circle cx=\"400\" cy=\"60\" r=\"22\"/><text x=\"60\" y=\"65\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">SRC</text><text x=\"230\" y=\"65\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">MID</text><text x=\"400\" y=\"65\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">DST</text><line x1=\"82\" y1=\"60\" x2=\"206\" y2=\"60\" stroke-dasharray=\"0\"/><polygon points=\"206,60 196,55 196,65\" fill=\"currentColor\" stroke=\"none\"/><line x1=\"252\" y1=\"60\" x2=\"376\" y2=\"60\"/><polygon points=\"376,60 366,55 366,65\" fill=\"currentColor\" stroke=\"none\"/><text x=\"144\" y=\"48\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">hop 1</text><text x=\"314\" y=\"48\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">hop 2</text><text x=\"144\" y=\"108\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">A1=MID A2=SRC</text><text x=\"314\" y=\"108\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">A1=DST A2=MID</text><text x=\"230\" y=\"140\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">A3=DST and A4=SRC unchanged on every hop</text></svg>",
+      "caption": {
+        "en": "Across two hops the hop-by-hop pair (A1/A2) is rewritten at each relay, while the end-to-end pair (A3 = mesh destination, A4 = mesh source) stays fixed.",
+        "zh": "经过两跳，逐跳的一对（A1/A2）在每个中继处被改写，而端到端的一对（A3 = Mesh 目的，A4 = Mesh 源）保持不变。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Addresses alone are not enough, because a relayed frame could loop. That is what the Mesh Control field is for. It is a small field (6, 12, or 18 octets) prepended to the data, holding three things: Mesh Flags (including an Address Extension Mode that says whether extra addresses follow), a Mesh Sequence Number, and a Mesh TTL. The source sets the sequence number from a counter it increments for every new MSDU, so receivers can spot and drop duplicates. The Mesh TTL is a hop budget: the source sets it to dot11MeshTTL, every forwarder decrements it by one, and when it hits zero the frame is discarded instead of forwarded. Together they guarantee a frame eventually dies rather than circling the mesh forever.",
+      "zh": "光有地址还不够，因为被转发的帧可能成环。这正是 Mesh 控制字段（Mesh Control field）的用途。它是一个紧贴在数据前面的小字段（6、12 或 18 个八位组），装着三样东西：Mesh 标志（Mesh Flags，其中含一个“地址扩展模式”，说明后面是否还有额外地址）、Mesh 序号（Mesh Sequence Number），以及 Mesh TTL。源站点用一个对每个新 MSDU 递增的计数器来设定序号，于是收端能识别并丢弃重复帧。Mesh TTL 则是一份“跳数预算”：源站点把它设为 dot11MeshTTL，每个转发者将其减 1，减到 0 时帧就被丢弃而不再转发。两者合在一起，保证一个帧最终会“死掉”，而不会在 Mesh 里永远绕圈。"
+    },
+    {
+      "type": "prose",
+      "en": "Group-addressed (broadcast) frames work a little differently. They cannot use a next-hop address, so the source uses a three-address layout: Address 1 is the group address, Address 2 is the transmitter, and Address 3 is the mesh source. There is no single destination to look up. Instead, every recipient that is a forwarder decrements the Mesh TTL and, if it is still nonzero (and forwarding is enabled), re-broadcasts the frame with Address 2 set to its own address — flooding it outward one hop at a time, with TTL and the duplicate check stopping the flood from exploding. If you set the Mesh TTL to 1, a group frame reaches only immediate neighbours.",
+      "zh": "组播（广播）帧的处理略有不同。它们无法使用下一跳地址，于是源站点采用三地址布局：地址 1 是组地址，地址 2 是发送者，地址 3 是 Mesh 源。这里没有单一目的可供查表。取而代之的是，每个作为转发者的收端都会把 Mesh TTL 减 1；只要它仍不为 0（且转发已开启），就把地址 2 设为自己的地址并重新广播该帧——以“一次一跳”的方式向外泛洪，而 TTL 与重复检测则阻止泛洪失控膨胀。如果把 Mesh TTL 设为 1，组播帧就只能到达紧邻的邻居。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "What if the real destination lives outside the mesh — say, a laptop on the wired LAN? Then a mesh gate steps in. The Address Extension Mode in the Mesh Control field switches on extra address fields: Address 5 and Address 6 carry the true end-station destination and source (the ones outside the mesh), while Address 3 and Address 4 still carry the mesh STAs that bridge in and out. The four-address header gets the frame to the gate; the extra Address 5/6 pair tells the gate who the frame is really for once it leaves the mesh.",
+      "zh": "如果真正的目的在 Mesh 之外——比如一台接在有线局域网上的笔记本——怎么办？这时就轮到 Mesh 网关（mesh gate）登场。Mesh 控制字段里的“地址扩展模式”会启用额外的地址字段：地址 5 和地址 6 携带真正的端站目的与源（即位于 Mesh 之外的那两端），而地址 3 和地址 4 仍携带负责进出桥接的 Mesh 站点。四地址帧头把帧送到网关；额外的地址 5/6 这一对，则告诉网关帧离开 Mesh 之后究竟是发给谁的。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact four-address mapping, the TTL/sequence rules, and the receive procedure",
+        "zh": "精确的四地址映射、TTL/序号规则与接收流程"
+      },
+      "en": "Clause 10.37.3.1 fixes the source mapping for individually addressed mesh Data frames: Address 1 = next-hop mesh STA, Address 2 = transmitter, Address 3 = destination mesh STA, Address 4 = source mesh STA, with the Mesh Control Address Extension Mode set to 'None'; when the true endpoint is off-path, the mode becomes 'Address5&6' and Address 5/6 carry the destination/source end stations. The source sets Mesh TTL to dot11MeshTTL and the Mesh Sequence Number from a modulo-2^32 counter incremented per new MSDU or A-MSDU. The receive procedure (10.37.3.2) checks authenticity, verifies Address 2 is a known precursor, may detect duplicates, then — if Address 3 is not its own but is a known destination — refreshes forwarding/precursor lifetimes, decrements the Mesh TTL (discarding the MSDU at zero), and re-transmits with Address 1 = next hop and Address 2 = itself. If Address 3 matches its own address it delivers up via MA-UNITDATA.indication (or, under Address5&6, delivers when Address 5 equals Address 3 else re-forwards toward Address 5). For group-addressed frames, 10.37.4.1 sets Address 1 = group address, Address 2 = transmitter, Address 3 = source mesh STA; 10.37.4.2 has each recipient decrement the Mesh TTL and, if nonzero and dot11MeshForwarding is true, re-broadcast with Address 2 = its own address. The Mesh Control field itself (9.2.4.8.3) is 6/12/18 octets — Mesh Flags, Mesh TTL, Mesh Sequence Number, and an optional Mesh Address Extension whose presence is governed by the Address Extension Mode subfield.",
+      "zh": "10.37.3.1 节固定了单播 Mesh 数据帧在源端的地址映射：地址 1 = 下一跳 Mesh 站点，地址 2 = 发送者，地址 3 = 目的 Mesh 站点，地址 4 = 源 Mesh 站点，且 Mesh 控制字段的地址扩展模式设为“None”；当真正的端点不在路径末端时，模式变为“Address5&6”，由地址 5/6 携带目的/源端站。源站点将 Mesh TTL 设为 dot11MeshTTL，并用一个对每个新 MSDU 或 A-MSDU 递增的模 2^32 计数器设定 Mesh 序号。接收流程（10.37.3.2）会检查真实性、核实地址 2 是该目的的已知前驱（precursor），可检测重复；随后——若地址 3 不是自己却是已知目的——刷新转发与前驱的生存期，将 Mesh TTL 减 1（减到 0 则丢弃该 MSDU），并以地址 1 = 下一跳、地址 2 = 自己重新发送。若地址 3 与自身地址匹配，则经 MA-UNITDATA.indication 上交（或在 Address5&6 模式下，当地址 5 等于地址 3 时上交，否则朝地址 5 继续转发）。对于组播帧，10.37.4.1 设地址 1 = 组地址、地址 2 = 发送者、地址 3 = 源 Mesh 站点；10.37.4.2 让每个收端将 Mesh TTL 减 1，若不为 0 且 dot11MeshForwarding 为真，则以地址 2 = 自己重新广播。Mesh 控制字段本身（9.2.4.8.3）为 6/12/18 个八位组——含 Mesh 标志、Mesh TTL、Mesh 序号，以及一个可选的 Mesh 地址扩展，其存在与否由地址扩展模式子字段决定。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          707,
+          2145,
+          2146,
+          2147,
+          2148
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.2.4.8.3",
+    "80211-2024:10.37.3.1",
+    "80211-2024:10.37.3.2",
+    "80211-2024:10.37.4.1",
+    "80211-2024:10.37.4.2"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        707
+      ],
+      "note": "9.2.4.8.3 Mesh Control field — 6/12/18 octets; Mesh Flags (Address Extension Mode), Mesh TTL, Mesh Sequence Number, Mesh Address Extension"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2145,
+        2146
+      ],
+      "note": "10.37.3.1-10.37.3.2 — four-address mapping (A1 next hop, A2 transmitter, A3 destination, A4 source); Address5&6 for off-path endpoints; TTL/sequence; intermediate-STA forwarding and rewrite of A1/A2"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2147,
+        2148
+      ],
+      "note": "10.37.4.1-10.37.4.2 — group-addressed three-address mapping; recipient decrements Mesh TTL and re-broadcasts; mesh gate / proxied (Address4) forwarding to the DS"
+    }
+  ],
+  "track": "mesh"
+}

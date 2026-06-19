@@ -1,0 +1,128 @@
+{
+  "id": "mesh-03-airtime-metric-and-hwmp",
+  "title": {
+    "en": "Picking the Best Path: Airtime Metric and HWMP",
+    "zh": "选择最佳路径：空口时间度量与 HWMP"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In a wired network, counting hops is a fine way to choose a route — every link runs at the same speed, so fewer hops usually means faster. In a wireless mesh that intuition breaks. One \"short\" two-hop path might run over a weak, noisy link that transmits slowly and retransmits often, while a \"longer\" three-hop path hops between strong neighbours that each fire off frames at full rate. Hop count would pick the slow path. Wireless needs a metric that asks a smarter question: how much of the precious shared channel time does it actually cost to push a frame across this link?",
+      "zh": "在有线网络里，数跳数是一种不错的选路方式——每条链路速率都一样，跳数越少通常就越快。但在无线 Mesh 网络里，这种直觉就失灵了。一条看似“短”的两跳路径，可能要经过一条又弱又吵的链路：发得慢、重传又多；而一条“更长”的三跳路径，反倒可能在几个信号强的邻居之间跳转，每一跳都能以满速率把帧发出去。按跳数来选，就会挑中那条慢路径。无线网络需要一种会问出更聪明问题的度量：把一个帧推过这条链路，到底要消耗掉多少宝贵的共享信道时间？"
+    },
+    {
+      "type": "prose",
+      "en": "That metric is the airtime link metric, the default path-selection metric in 802.11 mesh. It rolls three things every link experiences into a single number: the PHY data rate r (how fast you can actually send right now), the frame error rate ef (how often a frame gets corrupted and has to be re-sent), and a fixed overhead O (headers, training sequences, channel-access protocol — the airtime you spend before any payload moves). The lower the number, the cheaper the link; a fast, clean link scores low and a slow, lossy one scores high. Because the unit is airtime, the costs of each hop simply add up along a path, and the mesh prefers the path with the smallest total.",
+      "zh": "这种度量就是“空口时间链路度量（airtime link metric）”，它是 802.11 Mesh 中默认的选路度量。它把每条链路上发生的三件事浓缩成一个数字：PHY 数据速率 r（你此刻实际能发多快）、帧错误率 ef（一个帧被破坏、需要重发的概率），以及一项固定开销 O（帧头、训练序列、信道接入协议——也就是在任何有效载荷开始传输之前你已经花掉的空口时间）。这个数字越小，链路越“便宜”：又快又干净的链路得分低，又慢又易丢的链路得分高。由于单位是空口时间，一条路径上各跳的代价可以直接相加，Mesh 网络会优先选择总和最小的那条路径。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 400 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><circle cx='40' cy='75' r='16'/><text x='40' y='80' text-anchor='middle' stroke='none' fill='currentColor' font-size='12'>A</text><circle cx='200' cy='30' r='16'/><text x='200' y='35' text-anchor='middle' stroke='none' fill='currentColor' font-size='12'>B</text><circle cx='200' cy='120' r='16'/><text x='200' y='125' text-anchor='middle' stroke='none' fill='currentColor' font-size='12'>C</text><circle cx='360' cy='75' r='16'/><text x='360' y='80' text-anchor='middle' stroke='none' fill='currentColor' font-size='12'>D</text><line x1='55' y1='66' x2='185' y2='39'/><text x='115' y='40' text-anchor='middle' stroke='none' fill='currentColor' font-size='11'>cost 80</text><line x1='215' y1='39' x2='345' y2='66'/><text x='285' y='40' text-anchor='middle' stroke='none' fill='currentColor' font-size='11'>cost 80</text><line x1='55' y1='84' x2='185' y2='111' stroke-dasharray='5 4'/><text x='110' y='118' text-anchor='middle' stroke='none' fill='currentColor' font-size='11'>cost 350</text><line x1='215' y1='111' x2='345' y2='84' stroke-dasharray='5 4'/></svg>",
+      "caption": {
+        "en": "Two paths from A to D have the same hop count (2). The top path (A-B-D) crosses two strong links costing 80 each = 160 airtime. The bottom path (A-C) starts on one weak, lossy link costing 350. Airtime picks the top path; pure hop count could not tell them apart.",
+        "zh": "从 A 到 D 的两条路径跳数相同（都是 2 跳）。上面的路径（A-B-D）经过两条强链路，每条代价 80，合计 160 空口时间。下面的路径（A-C）一开始就走上一条又弱又易丢的链路，代价高达 350。空口时间度量会选上面那条；而单纯数跳数根本区分不出这两条路径。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "How the airtime cost is actually computed",
+        "zh": "空口时间代价究竟是如何计算的"
+      },
+      "en": "Clause 14.10.2 defines the airtime cost as ca = [O + Bt/r] · 1/(1 - ef). O is the channel-access overhead in microseconds (headers, training sequences, access-protocol frames), Bt = 8192 is the number of bits in a nominal frame body, r is the estimated PHY data rate in Mb/s for that frame, and ef is the estimated frame error rate. The Bt/r term is the time to actually clock the bits out at rate r; adding O accounts for the fixed per-frame overhead; and dividing by (1 - ef) inflates the cost to reflect retransmissions on a lossy link. The standard recommends a STA use the high-PHY-rate airtime link metric once its PHY can exceed 54 Mb/s. The metric is a 4-octet unsigned integer; metrics aggregate by addition along a path, the initial value is 0, and a smaller value is better.",
+      "zh": "14.10.2 节将空口时间代价定义为 ca = [O + Bt/r] · 1/(1 − ef)。其中 O 是以微秒计的信道接入开销（帧头、训练序列、接入协议帧），Bt = 8192 是一个标称帧体的比特数，r 是该帧估计的 PHY 数据速率（单位 Mb/s），ef 是估计的帧错误率。Bt/r 这一项是按速率 r 把这些比特真正发送出去所需的时间；加上 O 是计入每帧固定开销；再除以 (1 − ef) 则把代价放大，以体现在易丢链路上的重传成本。标准建议：一旦站点的 PHY 能力超过 54 Mb/s，就改用“高 PHY 速率空口时间链路度量”。该度量是一个 4 字节的无符号整数；沿路径累加（加法聚合），初值为 0，数值越小越好。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3224,
+          3225
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Knowing a link's cost is only half the job — the mesh still has to discover and assemble whole paths. That is the job of HWMP, the Hybrid Wireless Mesh Protocol, the default path-selection protocol. \"Hybrid\" is the key word: it blends a reactive, on-demand mode with a proactive, tree-building mode, and the two run concurrently. The reactive side is inspired by AODV but adapted for MAC addresses and link-metric awareness, and it uses sequence numbers to keep paths loop-free and to tell fresh path information from stale.",
+      "zh": "知道一条链路的代价只完成了一半工作——Mesh 仍然需要去发现并拼装出完整的路径。这正是 HWMP（混合无线 Mesh 协议）的职责，它是默认的选路协议。“混合（Hybrid）”是关键词：它把一种被动的、按需的模式与一种主动的、构建树状结构的模式融合在一起，而且两者可以并发运行。其被动部分借鉴自 AODV，但针对 MAC 地址寻址与链路度量感知做了改造，并用序列号来保持路径无环、并区分新鲜的路径信息与陈旧信息。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The intuition in one line: reactive = ask only when you need to go somewhere; proactive = always keep a path home to the gateway. On-demand mode floods a Path Request (PREQ) and waits for a Path Reply (PREP) only when traffic actually needs a route. Proactive tree mode has a configured root mesh STA continually advertise itself (a periodic proactive PREQ, or a RANN announcement) so every node already knows the way to the gateway before any packet arrives.",
+      "zh": "一句话抓住直觉：被动模式 = 只在你真要去某处时才去问路；主动模式 = 始终保留一条“回家”通往网关的路径。按需模式只有在确实有流量需要路由时，才广播一个“路径请求（PREQ）”并等待“路径回复（PREP）”。主动树模式则由一个被配置为“根（root）”的 Mesh 站点不断地宣告自己（周期性发送主动 PREQ，或发送 RANN 公告），这样在任何数据包到来之前，每个节点就已经知道通往网关的路了。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    subgraph Reactive[\"On-demand mode: ask only when needed\"]\n      S[\"Source mesh STA\"] -->|\"broadcast PREQ (find target)\"| I1[\"Intermediate\"]\n      I1 -->|\"propagate PREQ, add link cost\"| T[\"Target mesh STA\"]\n      T -.->|\"unicast PREP back\"| I1\n      I1 -.->|\"PREP, build forward path\"| S\n    end\n    subgraph Proactive[\"Proactive tree: always know the way home\"]\n      R[\"Root mesh STA (gateway)\"] -->|\"periodic proactive PREQ / RANN\"| M1[\"Mesh STA\"]\n      R -->|\"periodic proactive PREQ / RANN\"| M2[\"Mesh STA\"]\n      M1 -.->|\"path to root recorded\"| R\n      M2 -.->|\"path to root recorded\"| R\n    end",
+      "zh": "graph TD\n    subgraph Reactive[\"按需模式：只在需要时问路\"]\n      S[\"源 Mesh 站点\"] -->|\"广播 PREQ（寻找目标）\"| I1[\"中间站点\"]\n      I1 -->|\"转发 PREQ 并累加链路代价\"| T[\"目标 Mesh 站点\"]\n      T -.->|\"单播回复 PREP\"| I1\n      I1 -.->|\"PREP，建立正向路径\"| S\n    end\n    subgraph Proactive[\"主动树：始终知道回家的路\"]\n      R[\"根 Mesh 站点（网关）\"] -->|\"周期性主动 PREQ / RANN\"| M1[\"Mesh 站点\"]\n      R -->|\"周期性主动 PREQ / RANN\"| M2[\"Mesh 站点\"]\n      M1 -.->|\"记录通往根的路径\"| R\n      M2 -.->|\"记录通往根的路径\"| R\n    end"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "PREQ vs PREP, and the two proactive flavours (PREQ tree vs RANN)",
+        "zh": "PREQ 与 PREP，以及两种主动模式（PREQ 树 与 RANN）"
+      },
+      "en": "In on-demand mode (14.11.3) a source broadcasts a PREQ with the metric field initialised to the metric's initial value; each forwarder updates path info toward the originator and, when it propagates the PREQ, adds the link cost so the metric reflects the cumulative path. The PREQ's Target Only (TO) subfield decides who may answer: TO=1 means only the target returns a PREP, while TO=0 lets an intermediate with an existing path reply quickly. The PREP's function (14.11.10.2) is to establish the forward path to the target and confirm the reverse path to the originator. The PREQ's function (14.11.9.2) covers discovering a path, optional maintenance and confirmation, and building the proactive reverse tree to the root. Proactive building has two flavours (14.11.4): the proactive PREQ mechanism (14.11.4.2) — the root periodically sends a PREQ with Target Address all-1s and TO=1, so every STA creates forwarding info toward the root; and the RANN mechanism (14.11.4.3) — the root periodically floods a RANN that only disseminates the metric to the root (reception alone does not create a path), and a STA needing a path replies with an individually addressed PREQ to the root, which answers with a PREP.",
+      "zh": "在按需模式（14.11.3）中，源站点广播一个 PREQ，其度量字段被初始化为该度量的初值；每个转发者都会更新通往发起方的路径信息，并在转发 PREQ 时累加链路代价，使度量反映出整条路径的累计值。PREQ 中的“仅目标（TO）”子字段决定谁有权回应：TO=1 表示只有目标返回 PREP，而 TO=0 则允许已有路径的中间站点快速回复。PREP 的功能（14.11.10.2）是建立通往目标的正向路径、并确认通往发起方的反向路径。PREQ 的功能（14.11.9.2）则涵盖：发现路径、可选的路径维护与确认，以及构建通往根的主动反向树。主动构建有两种方式（14.11.4）：主动 PREQ 机制（14.11.4.2）——根站点周期性发送一个目标地址全为 1、TO=1 的 PREQ，使每个站点都建立起通往根的转发信息；以及 RANN 机制（14.11.4.3）——根站点周期性泛洪一个 RANN，它只负责散布通往根的度量（仅仅收到它并不会建立路径），而需要路径的站点则向根回以一个单播寻址的 PREQ，根再以 PREP 作答。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3226,
+          3228,
+          3229,
+          3236,
+          3246
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:14.10.2",
+    "80211-2024:14.11.3",
+    "80211-2024:14.11.4.2",
+    "80211-2024:14.11.4.3",
+    "80211-2024:14.11.9.2",
+    "80211-2024:14.11.10.2"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3224,
+        3225
+      ],
+      "note": "14.10.2 Airtime link metric and high PHY rate airtime link metric — ca = [O + Bt/r]/(1-ef); constants O, n, Bt; 4-octet unsigned, additive aggregation, smaller is better"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3226
+      ],
+      "note": "14.11.1 HWMP general — hybrid of on-demand and proactive tree modes; PREQ/PREP/PERR/RANN elements; sequence numbers keep paths loop-free"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3228,
+        3229
+      ],
+      "note": "14.11.3 On-demand path selection mode; 14.11.4.2 proactive PREQ mechanism; 14.11.4.3 proactive RANN mechanism — TO subfield, cumulative metric, root tree building"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3236
+      ],
+      "note": "14.11.9.2 PREQ function — discover/maintain/confirm a path and build the proactive reverse tree to the root"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3246
+      ],
+      "note": "14.11.10.2 PREP function — establish the forward path to the target and confirm the reverse path to the originator"
+    }
+  ],
+  "track": "mesh"
+}
