@@ -1,0 +1,103 @@
+{
+  "id": "wifi7-15",
+  "title": {
+    "en": "EHT Preamble Puncturing Operation: Advertising, Signaling, and Using Holes in the Channel",
+    "zh": "EHT 前导码打孔运行：信道空洞的通告、信令与使用"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A wide Wi-Fi 7 channel — 80, 160, even 320 MHz — almost never finds all of its 20 MHz subchannels clean. Some are occupied by a legacy network, a radar incumbent, or a DFS lockout. Preamble puncturing is EHT's answer: instead of shrinking down to a narrower clean channel, the AP keeps its wide channel and simply leaves a hole where the busy subchannel is. The transmitter sends nothing on the punctured subchannel and uses the rest. The static tone-plan view tells you which RUs exist around a hole; this lesson is about the *operational* side — how a hole is announced to the BSS, how it is signaled per transmission, and what the transmitter is actually allowed to do.",
+      "zh": "Wi-Fi 7 的宽信道——80、160、乃至 320 MHz——几乎永远找不到所有 20 MHz 子信道都是干净的情形。总有一些被传统网络占用、被雷达主用户占用，或处于 DFS 锁定状态。前导码打孔（preamble puncturing）正是 EHT 给出的答案：AP 不再退守到更窄的干净信道，而是保留它的宽信道，只在繁忙子信道处留下一个“空洞”。发射机在被打孔的子信道上不发任何东西，只使用其余部分。静态的音调计划（tone plan）视图告诉你空洞周围存在哪些 RU；而本课关注的是“运行”这一侧——空洞如何被通告给整个 BSS、如何在每次发送时被信令告知，以及发射机实际被允许做什么。"
+    },
+    {
+      "type": "prose",
+      "en": "There are two flavours of puncturing, and keeping them apart is the key idea. Static (BSS-wide) puncturing is the AP declaring \"for this whole BSS, subchannel X is permanently disabled\" — it is advertised to every associated STA so they all transmit and receive around the same hole. Dynamic (per-PPDU) puncturing is a transmitter, on a single packet, leaving extra subchannels empty just for that one transmission — for example because it grabbed the medium but a neighbour is momentarily busy on one subchannel. Both end up as holes in the spectrum, but one is a standing rule of the network and the other is a one-shot decision baked into a single PPDU.",
+      "zh": "打孔有两种“口味”，把它们区分清楚是本课的核心思想。静态（BSS 范围）打孔是 AP 宣布“在整个 BSS 中，子信道 X 被永久禁用”——它被通告给每一个已关联的 STA，使它们都围绕同一个空洞收发。动态（逐 PPDU）打孔则是发射机在某一个数据包上，仅为这一次发送而额外留空若干子信道——比如它抢到了介质，但邻居恰好在某个子信道上短暂繁忙。两者最终都表现为频谱上的空洞，但一个是网络的常驻规则，另一个则是固化进单个 PPDU 的一次性决定。"
+    },
+    {
+      "type": "prose",
+      "en": "The standing rule is advertised in the EHT Operation element. If the AP punctures any subchannel for the BSS, it sets the Disabled Subchannel Bitmap Present subfield to 1 and includes a Disabled Subchannel Bitmap — one bit per 20 MHz subchannel, a 1 marking a hole. Two hard constraints apply: the bitmap must match one of the pre-defined non-OFDMA puncturing patterns for the operating width, and the bit covering the primary 20 MHz subchannel must always be 0. The primary can never be punctured — that is where beacons live and where everyone listens.",
+      "zh": "常驻规则在 EHT Operation 元素中通告。如果 AP 为该 BSS 打了任何孔，它就把 Disabled Subchannel Bitmap Present 子字段置为 1，并包含一个 Disabled Subchannel Bitmap（被禁用子信道位图）——每个 20 MHz 子信道一个比特，置 1 即标记一个空洞。两条硬约束随之而来：该位图必须匹配该运行带宽下预先定义的某个非 OFDMA 打孔图案，并且覆盖主 20 MHz 子信道的那一位必须始终为 0。主信道永远不能被打孔——因为信标在那里发送，所有人也都在那里侦听。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 520 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='20' fill='currentColor' stroke='none' font-size='13' font-weight='bold'>160 MHz channel = 8 x 20 MHz subchannels</text><g font-size='11' fill='currentColor' stroke='none'><text x='10' y='52'>SC0</text><text x='70' y='52'>SC1*</text><text x='135' y='52'>SC2</text><text x='195' y='52'>SC3</text><text x='255' y='52'>SC4</text><text x='315' y='52'>SC5</text><text x='375' y='52'>SC6</text><text x='435' y='52'>SC7</text></g><rect x='10' y='60' width='55' height='40'/><rect x='70' y='60' width='55' height='40' stroke-width='3'/><rect x='130' y='60' width='55' height='40'/><rect x='190' y='60' width='55' height='40' stroke-dasharray='5 4'/><rect x='250' y='60' width='55' height='40'/><rect x='310' y='60' width='55' height='40'/><rect x='370' y='60' width='55' height='40' stroke-dasharray='5 4'/><rect x='430' y='60' width='55' height='40'/><g font-size='10' fill='currentColor' stroke='none'><text x='84' y='84'>PRI</text><text x='200' y='84'>HOLE</text><text x='380' y='84'>HOLE</text></g><text x='10' y='128' fill='currentColor' stroke='none' font-size='11'>Disabled Subchannel Bitmap (1 = punctured):</text><g font-size='12' fill='currentColor' stroke='none' font-family='monospace'><text x='25' y='150'>0</text><text x='90' y='150'>0</text><text x='150' y='150'>0</text><text x='210' y='150'>1</text><text x='270' y='150'>0</text><text x='330' y='150'>0</text><text x='390' y='150'>1</text><text x='450' y='150'>0</text></g><text x='70' y='180' fill='currentColor' stroke='none' font-size='10'>* primary 20 MHz: its bit is ALWAYS 0</text></svg>",
+      "caption": {
+        "en": "A BSS-wide puncture on a 160 MHz channel: subchannels 3 and 6 are holes (bitmap bit = 1), the primary subchannel's bit stays 0. The bitmap must equal a pre-defined non-OFDMA puncturing pattern for 160 MHz.",
+        "zh": "160 MHz 信道上的 BSS 范围打孔：子信道 3 与 6 是空洞（位图比特 = 1），主子信道对应位保持为 0。该位图必须等于 160 MHz 下某个预定义的非 OFDMA 打孔图案。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "How does a transmission actually skip the hole? The advertised bitmap is translated into a per-PPDU PHY instruction. For each EHT or non-HT-duplicate PPDU, the MAC sets a TXVECTOR parameter called INACTIVE_SUBCHANNELS, with a 1 for every 20 MHz subchannel that must stay silent. The PHY's contract is blunt: it shall not transmit on any subchannel marked inactive. For an EHT MU PPDU the resulting puncturing pattern is also written into the U-SIG field's punctured-channel information, so a receiver decoding the header knows which subchannels carry signal before it tries to demodulate them. INACTIVE_SUBCHANNELS is the bridge from the BSS-wide rule down to a single packet on the air.",
+      "zh": "一次发送究竟如何“跳过”空洞？被通告的位图会被翻译成逐 PPDU 的 PHY 指令。对每一个 EHT 或非 HT 复制（non-HT duplicate）PPDU，MAC 都会设置一个名为 INACTIVE_SUBCHANNELS 的 TXVECTOR 参数，凡是必须保持静默的 20 MHz 子信道就置 1。PHY 的约定毫不含糊：它不得在任何被标记为 inactive 的子信道上发送。对于 EHT MU PPDU，最终的打孔图案还会被写入 U-SIG 字段的“被打孔信道信息”中，于是解码报头的接收机在尝试解调之前，就已经知道哪些子信道载有信号。INACTIVE_SUBCHANNELS 就是从 BSS 范围规则下沉到空中单个数据包的那座桥。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[AP decides BSS-wide puncture] --> B[EHT Operation element:<br/>Disabled Subchannel Bitmap Present = 1<br/>+ Disabled Subchannel Bitmap]\n    B --> C[Beacon / advertise to all STAs]\n    C --> D{STA builds a PPDU}\n    D --> E[Set TXVECTOR<br/>INACTIVE_SUBCHANNELS<br/>from latest bitmap]\n    E --> F[PHY: transmit nothing<br/>on inactive subchannels]\n    F --> G[EHT MU PPDU:<br/>pattern also in U-SIG<br/>punctured-channel info]\n    D -.per-PPDU only.-> H[May puncture EXTRA<br/>subchannels for this one PPDU<br/>dynamic puncturing]",
+      "zh": "flowchart TD\n    A[AP 决定进行 BSS 范围打孔] --> B[EHT Operation 元素：<br/>Disabled Subchannel Bitmap Present = 1<br/>+ Disabled Subchannel Bitmap]\n    B --> C[信标 / 通告给所有 STA]\n    C --> D{STA 构造一个 PPDU}\n    D --> E[依据最新位图设置<br/>TXVECTOR<br/>INACTIVE_SUBCHANNELS]\n    E --> F[PHY：在 inactive 子信道上<br/>不发送任何内容]\n    F --> G[EHT MU PPDU：<br/>图案同时写入 U-SIG<br/>被打孔信道信息]\n    D -.仅限逐 PPDU.-> H[可为这一个 PPDU<br/>额外打孔其它子信道<br/>动态打孔]"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "There's a sharp asymmetry between the two flavours. A transmission that solicits an immediate response (and isn't using a trigger frame) must NOT punch extra holes beyond the advertised bitmap — otherwise the responder might try to reply on a subchannel the originator just blanked. Extra dynamic puncturing is allowed when the response is solicited via a triggering frame, because then the AP explicitly assigns the responder an RU/MRU inside the non-punctured set. Dynamic flexibility is real, but it's gated on the AP staying in control of where the answer comes back.",
+      "zh": "这两种“口味”之间存在一个尖锐的不对称性。一次会索要立即响应（且未使用触发帧）的发送绝不能在已通告位图之外额外打孔——否则响应方可能会试图在发起方刚刚清空的子信道上回复。当响应是通过触发帧（triggering frame）索要时，额外的动态打孔才被允许，因为此时 AP 会显式地把响应方的 RU/MRU 指派在未被打孔的集合之内。动态灵活性确实存在，但其前提是 AP 始终掌控着“答复从哪里回来”。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The transmit-spectrum constraints on a punctured PPDU (36.3.20)",
+        "zh": "对被打孔 PPDU 的发射频谱约束（36.3.20）"
+      },
+      "en": "Leaving a subchannel silent isn't free at the PHY: energy still leaks from the occupied subchannels into the hole, and 36.3.20 caps how much. The base transmit spectral mask is selected by the Bandwidth subfield of the U-SIG, and for a punctured 80/160/320 MHz PPDU the interim mask is further subject to the additional puncturing restrictions of 36.3.20.1.2. Those restrictions are split by geometry of the hole: Case 1 is puncturing at the edge of the PPDU bandwidth (a 0/-20/-28 dBr subchannel edge mask applied at the outermost occupied edges); Case 2 is two-or-more contiguous 20 MHz subchannels punctured in the interior (a -20/-25 dBr mask applied at both inner edges of the hole); Case 3 is a single interior 20 MHz hole (a tighter -20/-23 dBr notch mask across the punctured subchannel). The standard says explicitly that the pattern being masked is, for an EHT MU PPDU, the punctured-channel information in U-SIG, and for an EHT TB / non-HT-duplicate PPDU the TXVECTOR INACTIVE_SUBCHANNELS — tying the regulatory leakage limits back to the very same signaling that announced the hole.",
+      "zh": "在 PHY 层面，让一个子信道保持静默并非毫无代价：能量仍会从被占用的子信道泄漏进空洞，而 36.3.20 对泄漏量加以限制。基础发射频谱掩模由 U-SIG 的 Bandwidth 子字段选定；对于被打孔的 80/160/320 MHz PPDU，其临时掩模还要进一步受 36.3.20.1.2 中附加打孔限制的约束。这些限制按空洞的几何位置分类：情形 1 是在 PPDU 带宽边缘打孔（在最外侧被占用边缘施加 0/-20/-28 dBr 的子信道边缘掩模）；情形 2 是内部两个或更多连续 20 MHz 子信道被打孔（在空洞两侧内边缘施加 -20/-25 dBr 掩模）；情形 3 是单个内部 20 MHz 空洞（在被打孔子信道上施加更严格的 -20/-23 dBr 凹陷掩模）。标准明确指出，被施加掩模的图案，对 EHT MU PPDU 而言就是 U-SIG 中的被打孔信道信息，对 EHT TB / 非 HT 复制 PPDU 而言则是 TXVECTOR INACTIVE_SUBCHANNELS——从而把这些监管层面的泄漏限值，重新绑回到当初宣告空洞的那同一套信令上。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          849,
+          853,
+          854,
+          856,
+          857
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.15.2",
+    "80211be-2024:35.11.5",
+    "80211be-2024:36.3.20"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        644,
+        645
+      ],
+      "note": "35.15.2 Preamble puncturing operation — Disabled Subchannel Bitmap (Present subfield, primary bit = 0, pre-defined patterns), INACTIVE_SUBCHANNELS derivation, static vs extra/dynamic puncturing and the immediate-response constraint"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        630
+      ],
+      "note": "35.11.5 INACTIVE_SUBCHANNELS — PHY shall not transmit on punctured subchannels; parameter conveyed MAC->PHY for non-HT duplicate / EHT PPDU when 35.15.2 conditions hold"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        849,
+        853,
+        854,
+        856,
+        857
+      ],
+      "note": "36.3.20 Transmit specification — base mask selected by U-SIG Bandwidth; 36.3.20.1.2 additional puncturing restrictions Cases 1/2/3; pattern from U-SIG punctured-channel info (MU) or INACTIVE_SUBCHANNELS (TB / non-HT duplicate)"
+    }
+  ],
+  "track": "wifi7-eht"
+}

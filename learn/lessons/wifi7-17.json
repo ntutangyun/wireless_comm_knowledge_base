@@ -1,0 +1,102 @@
+{
+  "id": "wifi7-17",
+  "title": {
+    "en": "EHT MU Operation, A-MPDU & Acknowledgment: Filling the Wide Pipe Efficiently",
+    "zh": "EHT MU 操作、A-MPDU 与确认机制：高效填满宽信道"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Winning the channel is only half the battle. Once an EHT (Wi-Fi 7) access point holds a transmit opportunity (TXOP) over a pipe as wide as 320 MHz, the real question is: how do you pack that pipe full of useful bytes and confirm they arrived — for many stations at once — before the TXOP ends? This lesson is about the 'bulk data' phase: serving multiple users in parallel (MU operation), stuffing each transmission with as many frames as possible (A-MPDU aggregation), and acknowledging everyone efficiently (block ack). The single guiding intuition is maximize bytes-per-TXOP.",
+      "zh": "赢得信道只是成功了一半。当一个 EHT（Wi-Fi 7）接入点（AP）拿到一段发送机会（TXOP），面对最宽可达 320 MHz 的“管道”时，真正的问题是：如何把这条管道塞满有用的字节，并且确认它们都送达了——而且要同时为多个站点完成——还得赶在 TXOP 结束之前？本课讲的就是这个“批量传数据”阶段：并行服务多个用户（MU 操作）、把每次发送尽量塞满帧（A-MPDU 聚合），以及高效地向所有人确认（块确认，Block Ack）。贯穿全程的核心直觉只有一句：让每个 TXOP 承载尽可能多的字节。"
+    },
+    {
+      "type": "prose",
+      "en": "EHT serves many stations in one PPDU using two directions. In downlink (DL) MU operation, the AP sends an EHT MU PPDU that carries data to several stations at once, splitting the wide channel into resource units (RUs and the larger multi-RUs, MRUs) and optionally layering MU-MIMO on top. In uplink (UL) MU operation, the AP sends a Trigger frame that solicits simultaneous EHT TB (trigger-based) PPDUs from several stations — each station replies in its assigned RU/MRU, with bandwidths up to 320 MHz. EHT inherits the HE (Wi-Fi 6) machinery here and extends it; an EHT station is, by definition, also an HE station.",
+      "zh": "EHT 用两个方向在一个 PPDU 里服务多个站点。在下行（DL）MU 操作中，AP 发送一个 EHT MU PPDU，一次性把数据送给多个站点，它把宽信道切成资源单元（RU 以及更大的多资源单元 MRU），并可在其上叠加 MU-MIMO。在上行（UL）MU 操作中，AP 发送一个触发帧（Trigger frame），同时向多个站点征集 EHT TB（基于触发的）PPDU——每个站点在分配给它的 RU/MRU 上回复，带宽最高可达 320 MHz。EHT 在这里继承了 HE（Wi-Fi 6）的机制并加以扩展；从定义上说，一个 EHT 站点同时也是一个 HE 站点。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as EHT AP\n    participant S1 as STA 1\n    participant S2 as STA 2\n    Note over AP,S2: DL MU: one wide PPDU to many\n    AP->>S1: EHT MU PPDU (RU/MRU + data)\n    AP->>S2: EHT MU PPDU (RU/MRU + data)\n    Note over AP,S2: UL MU: trigger many at once\n    AP->>S1: Trigger frame (RU assignment)\n    AP->>S2: Trigger frame (RU assignment)\n    S1-->>AP: EHT TB PPDU (UL data)\n    S2-->>AP: EHT TB PPDU (UL data)\n    AP->>S2: Multi-STA BlockAck (acks both)",
+      "zh": "sequenceDiagram\n    participant AP as EHT AP\n    participant S1 as 站点 1\n    participant S2 as 站点 2\n    Note over AP,S2: 下行 MU：一个宽 PPDU 服务多人\n    AP->>S1: EHT MU PPDU (RU/MRU + 数据)\n    AP->>S2: EHT MU PPDU (RU/MRU + 数据)\n    Note over AP,S2: 上行 MU：一次触发多个站点\n    AP->>S1: 触发帧 (RU 分配)\n    AP->>S2: 触发帧 (RU 分配)\n    S1-->>AP: EHT TB PPDU (上行数据)\n    S2-->>AP: EHT TB PPDU (上行数据)\n    AP->>S2: 多站点块确认 (一次确认两者)"
+    },
+    {
+      "type": "prose",
+      "en": "Inside each transmission, A-MPDU aggregation is what fills the pipe. Instead of sending one MAC frame per PPDU, an EHT station packs many subframes (MPDUs) into a single aggregate (an A-MPDU). The longer the aggregate, the more of the airtime you've already paid for actually carries payload. EHT keeps the HE/VHT/HT aggregation rules but adds its own: it raises the maximum A-MPDU length via a new exponent-extension capability, and it requires certain control frames (Class 1 and Class 2 frames) to be sent as a standalone S-MPDU rather than mixed into a data aggregate.",
+      "zh": "在每一次发送内部，真正把管道填满的是 A-MPDU 聚合。EHT 站点不再是每个 PPDU 只发一个 MAC 帧，而是把多个子帧（MPDU）打包进一个聚合体（A-MPDU）里。聚合得越长，你已经付出的空口时间里就有越大比例真正用于承载有效载荷。EHT 保留了 HE/VHT/HT 的聚合规则，又增加了自己的规则：它通过一个新的“指数扩展”能力字段把 A-MPDU 的最大长度抬高，同时要求某些控制帧（Class 1 和 Class 2 帧）以独立的 S-MPDU 形式发送，而不是混进数据聚合里。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 150' xmlns='http://www.w3.org/2000/svg' role='img' fill='none' stroke='currentColor'>\n  <text x='8' y='20' font-size='13' stroke='none' fill='currentColor'>One EHT PPDU (up to 320 MHz, one TXOP)</text>\n  <rect x='8' y='34' width='444' height='40' rx='4'/>\n  <text x='14' y='30' font-size='10' stroke='none' fill='currentColor'>A-MPDU</text>\n  <rect x='16' y='42' width='86' height='24' rx='2'/>\n  <text x='26' y='58' font-size='10' stroke='none' fill='currentColor'>MPDU 1</text>\n  <rect x='110' y='42' width='86' height='24' rx='2'/>\n  <text x='120' y='58' font-size='10' stroke='none' fill='currentColor'>MPDU 2</text>\n  <rect x='204' y='42' width='86' height='24' rx='2'/>\n  <text x='214' y='58' font-size='10' stroke='none' fill='currentColor'>MPDU 3</text>\n  <rect x='298' y='42' width='86' height='24' rx='2' stroke-dasharray='4 3'/>\n  <text x='308' y='58' font-size='10' stroke='none' fill='currentColor'>...</text>\n  <rect x='392' y='42' width='52' height='24' rx='2' stroke-dasharray='4 3'/>\n  <text x='400' y='58' font-size='9' stroke='none' fill='currentColor'>padding</text>\n  <line x1='8' y1='96' x2='452' y2='96'/>\n  <line x1='8' y1='92' x2='8' y2='100'/>\n  <line x1='452' y1='92' x2='452' y2='100'/>\n  <text x='150' y='114' font-size='11' stroke='none' fill='currentColor'>longer aggregate = more bytes per TXOP</text>\n  <rect x='8' y='126' width='220' height='18' rx='3'/>\n  <text x='16' y='139' font-size='10' stroke='none' fill='currentColor'>Multi-STA BlockAck: acks STA1+STA2+...</text>\n</svg>",
+      "caption": {
+        "en": "A wide EHT PPDU carries a long A-MPDU of many MPDUs; one Multi-STA BlockAck then acknowledges several stations together.",
+        "zh": "一个宽 EHT PPDU 承载由许多 MPDU 组成的长 A-MPDU；随后一个多站点块确认（Multi-STA BlockAck）一次性确认多个站点。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Acknowledging all those bytes is where the EHT block ack procedure earns its keep. Block ack lets a receiver confirm a whole burst of MPDUs with a single bitmap instead of one ACK per frame. Because EHT aggregates are so long, EHT extends the BlockAck Bitmap to 512 and 1024 bits and lets the negotiated buffer size grow to 1024 — so a receiver can track and acknowledge up to 1024 outstanding frames. Crucially, after a UL MU exchange the AP can send a single Multi-STA BlockAck frame that carries a separate Per AID TID Info field for each station, acknowledging everyone who just transmitted in one shot. That is the acking counterpart to serving many users at once.",
+      "zh": "确认这么多字节，正是 EHT 块确认流程发挥价值的地方。块确认让接收方用一张位图就确认一整串 MPDU，而不必每帧回一个 ACK。由于 EHT 的聚合体非常长，EHT 把 BlockAck 位图扩展到 512 位和 1024 位，并允许协商的缓冲区大小增长到 1024——这样接收方就能跟踪并确认多达 1024 个未完成的帧。更关键的是，在一次上行 MU 交换之后，AP 可以发送一个多站点块确认帧（Multi-STA BlockAck），其中为每个站点携带一个独立的 Per AID TID Info 字段，一次性确认刚刚发送的所有站点。这正是“同时服务多个用户”在确认侧的对应物。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "One small but neat EHT addition: the two BQR (Buffer Status / channel-availability) Control subfields. A 320 MHz EHT station can implement the 'Two BQRs' option and report the availability of every 20 MHz subchannel back to its AP using two BQR Control subfields — but only after the AP advertises support. It lets the AP make smarter scheduling and RU-allocation choices across a very wide channel before it even builds the next MU PPDU.",
+      "zh": "EHT 一个不大但很巧妙的新增点：两个 BQR（缓冲状态 / 信道可用性，Buffer Status Report）控制子字段。一个 320 MHz 的 EHT 站点可以实现“Two BQRs”选项，用两个 BQR 控制子字段把每个 20 MHz 子信道的可用情况上报给它的 AP——但前提是 AP 已经声明支持该能力。这让 AP 在构建下一个 MU PPDU 之前，就能针对这条很宽的信道做出更聪明的调度与 RU 分配决策。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact buffer-size / bitmap rules and how EHT reuses HE procedures",
+        "zh": "精确的缓冲区大小 / 位图规则，以及 EHT 如何复用 HE 流程"
+      },
+      "en": "The EHT acknowledgment procedure (35.4) builds on HT-immediate block ack (10.25.6) and HE acknowledgment (26.4), adding support for BlockAck Bitmap field lengths of 512 and 1024. In a BA agreement (35.4.2) the originator's transmission window must not exceed the buffer size in the ADDBA Response, and must not exceed 1024. Table 35-1 maps each negotiated buffer size to the allowed Block Ack Bitmap subfield lengths: e.g. a 513-1024 buffer permits 64/256/512/1024-bit bitmaps in a Compressed BlockAck and 32/64/128/256/512/1024-bit bitmaps in a Multi-STA BlockAck (a 32-bit length is only allowed if the originator set the 32-bit BA Bitmap Support field). For MU operation, EHT DL MU (35.5.1) reuses the HE MU PPDU rules of 26.5.1.x and applies them to RUs and MRUs; EHT UL MU (35.5.2) lets the AP solicit simultaneous EHT TB PPDUs up to 320 MHz via Trigger frames, with EHT-variant User Info fields selecting an EHT TB PPDU response. The two BQR Control subfields (35.5.3) are gated by dot11TwoBQRsOptionImplemented and the Two BQRs Support subfield. A-MPDU operation in an EHT PPDU (35.6) follows 10.12 plus EHT rules: Class 1/Class 2 frames in an EHT PPDU are sent as an S-MPDU, the aggregate must not exceed the recipient's advertised maximum A-MPDU length, and the Maximum A-MPDU Length Exponent Extension subfield raises the pre-EOF padding bound (the upper bound 15 523 200 octets is the EHT PPDU PSDU size limit from Table 9-34).",
+      "zh": "EHT 确认流程（35.4）建立在 HT-immediate 块确认（10.25.6）和 HE 确认（26.4）之上，新增了对 512 位和 1024 位 BlockAck 位图字段长度的支持。在一个 BA 协商（35.4.2）中，发起方的发送窗口不得超过 ADDBA Response 中指示的缓冲区大小，且不得超过 1024。表 35-1 把每个协商缓冲区大小映射到允许的 Block Ack 位图子字段长度：例如 513-1024 的缓冲区在 Compressed BlockAck 中允许 64/256/512/1024 位的位图，在 Multi-STA BlockAck 中允许 32/64/128/256/512/1024 位的位图（只有当发起方设置了 32-bit BA Bitmap Support 字段时才允许 32 位长度）。在 MU 操作方面，EHT 下行 MU（35.5.1）复用了 26.5.1.x 的 HE MU PPDU 规则，并将其应用于 RU 和 MRU；EHT 上行 MU（35.5.2）允许 AP 通过触发帧征集最高 320 MHz 的并行 EHT TB PPDU，由 EHT 变体的 User Info 字段选择以 EHT TB PPDU 作为响应。两个 BQR 控制子字段（35.5.3）受 dot11TwoBQRsOptionImplemented 与 Two BQRs Support 子字段的门控。EHT PPDU 中的 A-MPDU 操作（35.6）遵循 10.12 并附加 EHT 规则：EHT PPDU 中的 Class 1/Class 2 帧以 S-MPDU 形式发送，聚合体不得超过接收方声明的最大 A-MPDU 长度，而 Maximum A-MPDU Length Exponent Extension 子字段抬高了 pre-EOF 填充上限（上限 15 523 200 字节即来自表 9-34 的 EHT PPDU PSDU 大小限制）。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          587,
+          588,
+          596,
+          597
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.5.1",
+    "80211be-2024:35.5.2",
+    "80211be-2024:35.5.3",
+    "80211be-2024:35.6",
+    "80211be-2024:35.4.2"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        587,
+        588
+      ],
+      "note": "35.4 EHT acknowledgment procedure + 35.4.2 Block ack procedures; 512/1024-bit BlockAck Bitmap; Multi-STA BlockAck; Table 35-1 buffer size vs bitmap length"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        589,
+        590
+      ],
+      "note": "35.5.1 EHT DL MU operation and 35.5.2 EHT UL MU operation; EHT MU PPDU over RUs/MRUs; Trigger frames soliciting EHT TB PPDUs up to 320 MHz"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        596,
+        597
+      ],
+      "note": "35.5.3 two BQR Control subfields (Two BQRs option) and 35.6 A-MPDU operation in an EHT PPDU; S-MPDU for Class 1/2 frames; max A-MPDU length exponent extension"
+    }
+  ],
+  "track": "wifi7-eht"
+}

@@ -1,0 +1,119 @@
+{
+  "id": "wifi7-16",
+  "title": {
+    "en": "Keeping MLO Coherent: BSS Critical Update, Channel Switch/Quieting, and ML Power Management",
+    "zh": "维持 MLO 一致性：BSS 关键更新、信道切换/静默与多链路省电"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A Wi-Fi 7 multi-link device (MLD) talks to its access point over several radio links at once. That convenience creates a coordination problem: when something changes on one link — a new channel, a quiet period, a parameter tweak, or a link going to sleep — the device has to stay coherent across all of them without constantly re-reading every Beacon. This lesson walks through the three mechanisms that keep a non-AP MLD in sync as the network shifts underneath it: critical-update signalling, cross-link channel switching/quieting, and multi-link power management.",
+      "zh": "Wi-Fi 7 的多链路设备（MLD）会同时通过多条无线链路与接入点通信。这种便利带来了一个协调难题：当某条链路上发生变化——换信道、安排静默时段、调整某个参数，或某条链路进入休眠——设备必须在所有链路之间保持一致，而又不能频繁地把每一个 Beacon 都重新解析一遍。本课讲解让非 AP MLD 在网络“脚下”变化时仍能保持同步的三种机制：关键更新（critical update）信令、跨链路的信道切换/静默，以及多链路省电管理。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the hard part: how does a station learn that a parameter on *another* link changed, when it may be dozing on that link? Wi-Fi 7 gives every affiliated AP a small counter — the BSS Parameters Change Count — carried for each AP of the MLD inside the Reduced Neighbor Report and the Basic Multi-Link element. The counter starts at 0 and bumps by 1 (modulo 256, skipping the value 255) whenever a critical update occurs to that AP's BSS parameters. A non-AP MLD simply keeps a record of the last value it saw per AP. If the value it next receives differs, it knows that link's parameters moved — without having parsed the actual changed elements.",
+      "zh": "先看最难的一点：当站点可能正在某条链路上休眠时，它怎么得知*另一条*链路上的某个参数变了？Wi-Fi 7 为每个隶属的 AP 配了一个小计数器——BSS 参数变更计数（BSS Parameters Change Count）——它会针对该 MLD 下的每个 AP，分别携带在精简邻居报告（Reduced Neighbor Report）和基础多链路元素（Basic Multi-Link element）里。计数器从 0 开始，每当该 AP 的 BSS 参数发生一次关键更新，就加 1（按 256 取模，并跳过取值 255）。非 AP MLD 只需为每个 AP 记下它上次看到的数值。如果下次收到的值不一样，它就知道那条链路的参数变了——而无需真正解析那些发生变化的元素。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "There's also a fast-path flag. An AP sets the Critical Update Flag in its Capability Information until (and including) the next DTIM beacon whenever a covered change has happened. So a station has two cheap signals: a per-AP counter that says *which* AP changed, and a flag that says *something* changed recently — both readable without decoding the full updated elements.",
+      "zh": "这里还有一条“快速通道”标志位。只要发生了被覆盖的变更，AP 就会把能力信息（Capability Information）里的关键更新标志（Critical Update Flag）置为 1，直到下一个 DTIM beacon（含该 beacon）为止。于是站点有两个低成本信号：一个是按 AP 计的计数器，告诉你*哪个* AP 变了；一个是标志位，告诉你最近*有东西*变了——两者都无需解码完整的更新元素即可读取。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as non-AP MLD\n    participant AP1 as AP (link 1)\n    participant AP2 as AP (link 2)\n    Note over STA: dozing on link 2, awake on link 1\n    AP2->>AP2: critical update on link 2\n    Note over AP2: BSS Params Change Count +1\n    AP1->>STA: Beacon (RNR carries link-2 count, Critical Update Flag=1)\n    Note over STA: stored count for AP2 differs!\n    STA->>AP1: Probe Request (or wake on link 2)\n    AP1->>STA: updated elements for AP2",
+      "zh": "sequenceDiagram\n    participant STA as 非 AP MLD\n    participant AP1 as AP (链路 1)\n    participant AP2 as AP (链路 2)\n    Note over STA: 在链路 2 休眠，在链路 1 唤醒\n    AP2->>AP2: 链路 2 发生关键更新\n    Note over AP2: BSS 参数变更计数 +1\n    AP1->>STA: Beacon (RNR 携带链路 2 计数, 关键更新标志=1)\n    Note over STA: 存储的 AP2 计数不一致!\n    STA->>AP1: Probe Request (或在链路 2 上唤醒)\n    AP1->>STA: AP2 的更新元素"
+    },
+    {
+      "type": "prose",
+      "en": "Channel switching and quieting reuse the same cross-link trick. When one AP (the affected AP) must move channel or schedule a quiet interval, it carries the Channel Switch Announcement, Extended Channel Switch Announcement, Max Channel Switch Time, Quiet, or Quiet Channel elements. Crucially, another AP of the same MLD (the reporting AP) repeats those elements inside the per-STA profile of the Basic Multi-Link element on *its* link. The timing fields, though, are interpreted against the affected AP's own TBTT and beacon interval — not the reporting AP's — so a station reading link 1 can correctly schedule a switch that happens on link 2. The MLD must also pick the new channel so no associated client ends up with two setup links on overlapping channels.",
+      "zh": "信道切换与静默沿用了同样的跨链路技巧。当某个 AP（受影响 AP，affected AP）必须更换信道或安排静默时段时，它会携带信道切换通告（Channel Switch Announcement）、扩展信道切换通告（Extended Channel Switch Announcement）、最大信道切换时间（Max Channel Switch Time）、静默（Quiet）或静默信道（Quiet Channel）元素。关键在于：同一 MLD 下的另一个 AP（报告 AP，reporting AP）会把这些元素重复放进*它*那条链路上、基础多链路元素的 per-STA 配置（per-STA profile）里。不过，其中的定时字段是相对于受影响 AP 自己的 TBTT 和 beacon 间隔来解释的——而非报告 AP 的——这样，读取链路 1 的站点就能正确地为发生在链路 2 上的切换排程。此外，MLD 选择新信道时还必须保证：任何已关联的客户端都不会出现两条 setup 链路落在重叠信道上的情况。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 400 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><rect x='20' y='20' width='150' height='60' rx='6'/><text x='95' y='45' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>Affected AP</text><text x='95' y='63' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>link 2: switching ch.</text><rect x='230' y='20' width='150' height='60' rx='6'/><text x='305' y='45' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>Reporting AP</text><text x='305' y='63' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>link 1: Beacon</text><path d='M170 50 H230' stroke-dasharray='5 4'/><polygon points='230,50 222,46 222,54' fill='currentColor' stroke='none'/><text x='200' y='42' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>CSA copied</text><rect x='230' y='110' width='150' height='70' rx='6' stroke-dasharray='3 3'/><text x='305' y='133' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>per-STA profile</text><text x='305' y='150' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>CSA / Quiet / Max</text><text x='305' y='164' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>Ch. Switch Time</text><path d='M305 80 V110'/><polygon points='305,110 301,102 309,102' fill='currentColor' stroke='none'/><rect x='20' y='110' width='150' height='70' rx='6'/><text x='95' y='140' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>non-AP MLD</text><text x='95' y='158' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>reads link 1, learns</text><text x='95' y='171' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>about link 2 switch</text><path d='M230 145 H170' stroke-dasharray='5 4'/><polygon points='170,145 178,141 178,149' fill='currentColor' stroke='none'/></svg>",
+      "caption": {
+        "en": "A reporting AP echoes the affected AP's channel-switch and quieting elements inside the per-STA profile, with timing referenced to the affected AP's own TBTT.",
+        "zh": "报告 AP 把受影响 AP 的信道切换与静默元素回显到 per-STA 配置中，其定时以受影响 AP 自己的 TBTT 为基准。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Power management is where coherence pays off. Each affiliated non-AP STA keeps its own power-management mode, but the MLD can sleep individual links while staying reachable as a whole: it monitors at least one setup link for traffic indications, time sync, and BSS updates while the other STAs doze. Buffered traffic is signalled at the MLD level — the AP MLD sets the bit for the MLD's AID in the TIM, and the Multi-Link Traffic Indication element tells the device *which* links to use to retrieve the buffered units. A keepalive within the MLD max idle period stops the AP from disassociating it. And with intra-PPDU power save, a non-AP EHT STA can even doze partway through a frame it has decided isn't for it, waking again at the PPDU's end.",
+      "zh": "省电管理正是这种一致性带来回报的地方。每个隶属的非 AP STA 都各自维护自己的省电模式，但 MLD 可以让个别链路休眠、同时整体仍可被触达：它至少在一条 setup 链路上监听流量指示、时间同步与 BSS 更新，而其他 STA 进入打盹（doze）状态。缓存的下行流量在 MLD 层面给出指示——AP MLD 在 TIM 中把该 MLD 的 AID 对应位置 1，再由多链路流量指示元素（Multi-Link Traffic Indication element）告诉设备应当用*哪些*链路来取回这些缓存单元。在 MLD 最大空闲周期（max idle period）内发送一次保活帧（keepalive），即可避免被 AP 解除关联。而借助 PPDU 内省电（intra-PPDU power save），非 AP EHT STA 甚至能在判断出某帧不是发给自己后中途打盹，待该 PPDU 结束时再唤醒。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact rules: the counter, the per-STA echo, and the MLD-level buffer signalling",
+        "zh": "精确规则：计数器、per-STA 回显，以及 MLD 层的缓存信令"
+      },
+      "en": "Per 35.3.10, each AP's BSS Parameters Change Count is initialised to 0 and incremented modulo 256 (excluding 255) on a critical update defined in 11.2.3.14; the count for other affiliated APs rides in the MLD Parameters subfield of the Reduced Neighbor Report, the count for the reporting AP rides in the Basic Multi-Link element Common Info, and the Critical Update Flag stays 1 until the next DTIM. A non-AP MLD records the last value per AP and, on a mismatch, either receives a Beacon/Probe Response or sends a Probe Request — except that if the new value is exactly old+1 and the All Updates Included subfield is 1, the updated elements are already present and no further action is needed. Under 35.3.11, an affected AP's CSA, Extended CSA, Max Channel Switch Time, Quiet, and Quiet Channel elements are carried by a reporting AP in the per-STA profile of the Basic Multi-Link element, with timing fields applied against the affected AP's most recent TBTT and Beacon Interval; the MLD must choose the new channel so no associated non-AP MLD has setup links on overlapping channels. Under 35.3.12, the MLD-level TIM bit plus the Multi-Link Traffic Indication element's Per-Link Traffic Indication Bitmap tell the device which link(s) to PS-Poll on; an MLD max idle period governs keepalives. Section 35.12 layers intra-PPDU power save (per 26.14.1, extended to EHT MU/TB PPDUs) on top.",
+      "zh": "依据 35.3.10，每个 AP 的 BSS 参数变更计数初始化为 0，并在发生 11.2.3.14 定义的关键更新时按 256 取模（排除 255）加 1；其他隶属 AP 的计数随精简邻居报告的 MLD Parameters 子字段携带，报告 AP 自身的计数随基础多链路元素的 Common Info 携带，而关键更新标志会保持为 1 直到下一个 DTIM。非 AP MLD 为每个 AP 记录上次的数值，一旦不匹配，就要么接收一个 Beacon/Probe Response，要么发送一个 Probe Request——但若新值恰好是旧值加 1，且 All Updates Included 子字段为 1，则更新元素已随帧给出，无需再做动作。依据 35.3.11，受影响 AP 的 CSA、扩展 CSA、最大信道切换时间、静默与静默信道元素，由报告 AP 携带在基础多链路元素的 per-STA 配置里，其定时字段以受影响 AP 最近的 TBTT 和 beacon 间隔为基准；MLD 选择新信道时必须保证没有已关联的非 AP MLD 出现 setup 链路落在重叠信道上的情况。依据 35.3.12，MLD 层的 TIM 比特加上多链路流量指示元素的 Per-Link Traffic Indication Bitmap，会告诉设备应在哪条/哪些链路上发送 PS-Poll；MLD 最大空闲周期则约束保活帧。35.12 节在此之上叠加了 PPDU 内省电（依据 26.14.1，并扩展到 EHT MU/TB PPDU）。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          538,
+          539,
+          541,
+          544,
+          545,
+          630
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.3.10",
+    "80211be-2024:35.3.11",
+    "80211be-2024:35.3.12",
+    "80211be-2024:35.12"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        538,
+        539,
+        540,
+        541
+      ],
+      "note": "35.3.10 BSS parameter critical update procedure — BSS Parameters Change Count (init 0, +1 mod 256 excl. 255), Critical Update Flag until next DTIM, All Updates Included subfield, non-AP MLD record/probe response"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        541,
+        542,
+        543,
+        544
+      ],
+      "note": "35.3.11 ML procedures for (extended) channel switching and channel quieting — affected vs reporting AP, CSA/ECSA/Max Channel Switch Time/Quiet/Quiet Channel echoed in per-STA profile, timing vs affected AP TBTT, non-overlapping channel constraint"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        544,
+        545,
+        546,
+        547,
+        548,
+        549,
+        550
+      ],
+      "note": "35.3.12 ML power management — per-STA power mode, basic BSS monitoring on one link, MLD max idle period keepalives, MLD-level TIM bit and Multi-Link Traffic Indication element / Per-Link Traffic Indication Bitmap, More Data subfield"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        630
+      ],
+      "note": "35.12 Intra-PPDU power save for non-AP EHT STAs — follows 26.14.1 extended to EHT MU/TB PPDUs; doze until end of current PPDU"
+    }
+  ],
+  "track": "wifi7-eht"
+}

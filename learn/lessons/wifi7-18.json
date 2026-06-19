@@ -1,0 +1,133 @@
+{
+  "id": "wifi7-18",
+  "title": {
+    "en": "The EHT Element & Action-Frame Catalog plus MLO Security Binding",
+    "zh": "EHT 信息元素与 Action 帧目录及 MLO 安全绑定"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Multi-Link Operation gives a Wi-Fi 7 device several radio links at once, but a bundle of links needs a vocabulary to manage it. Earlier lessons covered the Multi-Link element that sets the links up; this one is the rest of the EHT signaling toolkit — the small information elements that steer traffic across links, the Action frames that carry the requests, and the security clause that keys it all. Think of it as the control panel that sits behind the multi-link plumbing.",
+      "zh": "多链路操作（MLO）让 Wi-Fi 7 设备同时拥有多条无线链路，但一束链路需要一套“词汇”来管理它。之前的课程讲过用于建链的 Multi-Link 元素；本课要讲的是 EHT 信令工具箱的其余部分——在链路间引导流量的小型信息元素、承载这些请求的 Action 帧，以及把这一切“上锁”的安全条款。可以把它看作多链路管道背后的那块控制面板。"
+    },
+    {
+      "type": "prose",
+      "en": "Four elements do most of the steering. The TID-To-Link Mapping element (TTLM, 9.4.2.324) declares which links each traffic identifier (TID) may use, separately for downlink and uplink, optionally with a switch time and an expected duration so a remapping can be scheduled in advance. The Multi-Link Traffic Indication element (9.4.2.325) carries a per-link buffered-traffic bitmap, telling a multi-link station which links have data waiting. The QoS Characteristics element (9.4.2.326) describes a flow's needs — service interval, data rate, delay bound, MSDU delivery ratio — so the AP can honour latency-sensitive traffic. The Bandwidth Indication element (9.4.2.329) reuses the EHT Operation Information layout to announce channel width, centre frequency, and punctured subchannels.",
+      "zh": "四个元素承担了大部分“引导”工作。TID-到-链路映射元素（TTLM，9.4.2.324）声明每个流量标识符（TID）可使用哪些链路，下行与上行分别指定，并可选地携带切换时刻与预期持续时间，从而提前安排一次重映射。多链路流量指示元素（9.4.2.325）携带按链路划分的缓存流量位图，告诉多链路站点哪些链路上有数据在等待。QoS 特征元素（9.4.2.326）描述某条流的需求——服务间隔、数据速率、时延上界、MSDU 投递率——使 AP 能照顾对时延敏感的流量。带宽指示元素（9.4.2.329）复用 EHT Operation Information 的布局，用来通告信道带宽、中心频率以及被打孔的子信道。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "TTLM is the heart of link steering. Setting the Direction subfield to 0, 1, or 2 lets a device map a TID to different link sets for downlink versus uplink — for example, pinning low-latency uplink to a clean 6 GHz link while letting bulk downlink spread across 5 GHz and 6 GHz.",
+      "zh": "TTLM 是链路引导的核心。把 Direction 子字段设为 0、1 或 2，设备就能为某个 TID 在下行与上行上映射到不同的链路集合——例如，把低时延的上行钉在一条干净的 6 GHz 链路上，同时让大流量下行分散到 5 GHz 与 6 GHz 上。"
+    },
+    {
+      "type": "prose",
+      "en": "These elements travel inside two new Action-frame categories. The EHT Action frame (9.6.37) is the unprotected category, and in this amendment it carries just one format: the EHT Compressed Beamforming/CQI feedback frame. The Protected EHT Action frame (9.6.38) is the busy one — its action field selects among TID-To-Link Mapping Request/Response/Teardown, EPCS Priority Access Enable/Teardown, EML Operating Mode Notification, Link Recommendation, Multi-Link Operation Update, and Link Reconfiguration Notify/Request/Response. Crucially the whole MLO management vocabulary — link remapping, link add/delete, emergency priority access — rides on *protected* Action frames, so it inherits management frame protection.",
+      "zh": "这些元素都封装在两类新的 Action 帧里传输。EHT Action 帧（9.6.37）是“未受保护”的那一类，在本修正案中它只携带一种格式：EHT 压缩波束成形/CQI 反馈帧。Protected EHT Action 帧（9.6.38）才是“忙碌”的那一类——它的 action 字段在以下之间选择：TID-到-链路映射 请求/响应/拆除、EPCS 优先接入 启用/拆除、EML 工作模式通知、链路推荐、多链路操作更新，以及链路重配置 通知/请求/响应。关键在于：整套 MLO 管理词汇——链路重映射、链路增删、紧急优先接入——都跑在“受保护的” Action 帧上，因此天然继承了管理帧保护。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    A[Protected EHT Action frame] --> B[TID-To-Link Mapping Req/Resp/Teardown]\n    A --> C[EPCS Priority Access Enable/Teardown]\n    A --> D[EML Operating Mode Notification]\n    A --> E[Link Recommendation]\n    A --> F[Link Reconfiguration Notify/Req/Resp]\n    B -. carries .-> G[TID-To-Link Mapping element 9.4.2.324]\n    E -. carries .-> H[Multi-Link Traffic Indication 9.4.2.325 + AID Bitmap]\n    F -. carries .-> I[Reconfiguration Multi-Link element + optional Group Key Data]",
+      "zh": "graph TD\n    A[Protected EHT Action 帧] --> B[TID-到-链路映射 请求/响应/拆除]\n    A --> C[EPCS 优先接入 启用/拆除]\n    A --> D[EML 工作模式通知]\n    A --> E[链路推荐]\n    A --> F[链路重配置 通知/请求/响应]\n    B -. 携带 .-> G[TID-到-链路映射元素 9.4.2.324]\n    E -. 携带 .-> H[多链路流量指示 9.4.2.325 + AID 位图]\n    F -. 携带 .-> I[重配置 Multi-Link 元素 + 可选的组密钥数据]"
+    },
+    {
+      "type": "prose",
+      "en": "Now the lock. With MLO, security is bound to the MLD, not to each radio. The non-AP MLD includes exactly one RSNE in its (Re)Association Request — one AKM suite, one pairwise cipher, one group cipher common to every affiliated AP (12.6.3.2). The single 4-way handshake then runs over the MLD MAC addresses and derives one PTKSA for the whole MLD. But group keys are per link: Message 3 carries an MLO GTK KDE for each setup link, plus an MLO IGTK KDE (management frame protection) and an MLO BIGTK KDE (beacon protection) per link, each tagged with its Link ID. The AP MLD manages the PTKSA; the affiliated APs manage their own GTKSAs.",
+      "zh": "现在来看“锁”。在 MLO 中，安全是绑定到 MLD 的，而不是绑定到每个射频。非 AP 的 MLD 在它的（重）关联请求中只包含一个 RSNE——一个 AKM 套件、一个成对密码、一个对所有附属 AP 都通用的组密码（12.6.3.2）。随后一次性的四次握手在 MLD 的 MAC 地址之上运行，为整个 MLD 派生出一个 PTKSA。但组密钥是按链路划分的：消息 3 为每条建立的链路携带一个 MLO GTK KDE，再加上每条链路的 MLO IGTK KDE（管理帧保护）与 MLO BIGTK KDE（信标保护），每个都标注了各自的 Link ID。AP MLD 管理 PTKSA；各附属 AP 管理各自的 GTKSA。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "One PTK, many GTKs. The pairwise key protecting your unicast traffic is computed once over the MLD identities and covers every link; the per-link group/integrity keys are then delivered as Link-ID-tagged KDEs inside that same handshake. EHT also tightens the floor: an EHT STA using RSN must enable beacon protection (12.12.9), which implies management frame protection is on.",
+      "zh": "一个 PTK，多个 GTK。保护你单播流量的成对密钥只在 MLD 身份之上计算一次，覆盖所有链路；随后每条链路的组/完整性密钥以带 Link ID 标注的 KDE 在同一次握手中下发。EHT 还抬高了底线：使用 RSN 的 EHT 站点必须启用信标保护（12.12.9），而这意味着管理帧保护已开启。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "RSNA policy selection and the MLO-aware 4-way handshake",
+        "zh": "RSNA 策略选择与 MLO 感知的四次握手"
+      },
+      "en": "Clause 12.6.3.2 states that on receiving a (Re)Association Request carrying an RSNE, the AP MLD Authenticator uses the request's AKM and pairwise cipher to establish the RSNA, and compares the MFPC/MFPR bits against each affiliated AP's advertised values per requested link (Table 12-5) to decide which links can be accepted; the AP MLD manages the PTKSA while affiliated APs manage the GTKSA. In 12.7.6.1 the handshake notation is extended so every message carries a MAC Address KDE with the sending MLD's MAC address, Message 2 carries an MLO Link KDE per requested link (affiliated STA MAC + Link ID), and Message 3 carries an MLO Link KDE per affiliated AP (Link ID, AP MAC, RSNE, RSNXE) plus an MLO GTK KDE for each setup link, with MLO IGTK and MLO BIGTK KDEs when MFP and beacon protection are negotiated. RSC in Message 3 is set to 0 for MLO. 12.12.9 requires dot11BeaconProtectionEnabled = 1 for EHT STAs using RSN and mandates SAE hash-to-element (AKM 00-0F-AC:24 or :25) for EHT-to-EHT SAE.",
+      "zh": "12.6.3.2 节规定：AP MLD 的认证方在收到携带 RSNE 的（重）关联请求时，使用请求中的 AKM 与成对密码建立 RSNA，并按每条被请求的链路，将 MFPC/MFPR 位与各附属 AP 通告的值比对（表 12-5），据此判定哪些链路可被接受；AP MLD 管理 PTKSA，而各附属 AP 管理 GTKSA。在 12.7.6.1 中，握手记法被扩展：每条消息都携带含发送方 MLD MAC 地址的 MAC Address KDE，消息 2 为每条被请求的链路携带一个 MLO Link KDE（附属 STA MAC + Link ID），消息 3 为每个附属 AP 携带一个 MLO Link KDE（Link ID、AP MAC、RSNE、RSNXE），并为每条建立的链路携带一个 MLO GTK KDE，当协商了 MFP 与信标保护时还有 MLO IGTK 与 MLO BIGTK KDE。MLO 情形下消息 3 的 RSC 置为 0。12.12.9 要求使用 RSN 的 EHT 站点将 dot11BeaconProtectionEnabled 置为 1，并要求 EHT 间的 SAE 使用 hash-to-element 方法（AKM 00-0F-AC:24 或 :25）。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          412,
+          419,
+          424,
+          425,
+          446
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:9.4.2.324",
+    "80211be-2024:9.4.2.325",
+    "80211be-2024:9.4.2.326",
+    "80211be-2024:9.4.2.329",
+    "80211be-2024:9.6.37",
+    "80211be-2024:9.6.38",
+    "80211be-2024:12.6.3.2",
+    "80211be-2024:12.7.6",
+    "80211be-2024:12.12.9"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        276,
+        277,
+        278,
+        279
+      ],
+      "note": "9.4.2.324 TID-To-Link Mapping element; 9.4.2.325 Multi-Link Traffic Indication element; 9.4.2.326 QoS Characteristics element"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        285
+      ],
+      "note": "9.4.2.329 Bandwidth Indication element — reuses EHT Operation Information layout"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        303,
+        304,
+        305,
+        309,
+        311,
+        312
+      ],
+      "note": "9.6.37 EHT Action frame (Compressed Beamforming/CQI); 9.6.38 Protected EHT Action frame — TTLM, EPCS, EML, Link Recommendation, Link Reconfiguration; Group Key Data with MLO GTK/IGTK/BIGTK KDEs"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        412
+      ],
+      "note": "12.6.3.2 RSNA policy selection for MLO — one RSNE; AP MLD manages PTKSA, affiliated APs manage GTKSA"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        419,
+        424,
+        425
+      ],
+      "note": "12.7.6 4-way handshake — MAC Address KDE, MLO Link KDE, per-link MLO GTK/IGTK/BIGTK KDEs in Message 3"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        446
+      ],
+      "note": "12.12.9 Security constraints for EHT — beacon protection mandatory, SAE hash-to-element"
+    }
+  ],
+  "track": "wifi7-eht"
+}

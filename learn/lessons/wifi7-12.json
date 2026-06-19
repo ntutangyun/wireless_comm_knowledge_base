@@ -1,0 +1,118 @@
+{
+  "id": "wifi7-12",
+  "title": {
+    "en": "EHT BSS Operation: the EHT Operation & EHT Capabilities Elements",
+    "zh": "EHT BSS 运行：EHT Operation 与 EHT Capabilities 信息元素详解"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "When a Wi-Fi 7 access point lights up, every Beacon it sends is a tiny brochure that says: \"here is exactly how powerful I am, and here is precisely how this network runs.\" Two information elements carry that message. The EHT Capabilities element is the brochure of abilities — what the radio can do. The EHT Operation element is the house rules — how this particular BSS is currently configured. A station reads both before it ever tries to associate, so it knows the operating bandwidth, which subchannels are switched off, and which data rates it absolutely must support to be allowed in.",
+      "zh": "当一台 Wi-Fi 7 接入点（AP）开机点亮后，它发出的每一帧 Beacon 都像一份小小的“宣传册”，上面写着：“这是我究竟有多强，这是这张网络具体怎么运行的。”承载这份信息的，是两个信息元素。EHT Capabilities 元素是“能力宣传册”——这台无线电能做什么；EHT Operation 元素则是“本网络的规矩”——这个特定 BSS 当前是怎样配置的。站点（STA）在真正尝试关联之前就会把两者都读一遍，从而知道工作带宽、哪些子信道被关掉了，以及自己必须支持哪些数据速率才被允许入网。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with EHT Capabilities. After the usual Element ID / Length / Element ID Extension header, it packs four chunks: a 2-octet EHT MAC Capabilities Information field, a 9-octet EHT PHY Capabilities Information field, a variable-length Supported EHT-MCS And NSS Set field, and an optional EHT PPE Thresholds field. The MAC field is a row of feature flags (EPCS priority access, EHT OM Control, restricted TWT, MU-RTS TXS modes, maximum MPDU length, link-adaptation support). The PHY field is a much wider bit-array of radio abilities: whether the STA supports 320 MHz in 6 GHz, beamforming roles, number of sounding dimensions, 4096-QAM, and so on.",
+      "zh": "先看 EHT Capabilities。在通用的 Element ID / Length / Element ID Extension 头部之后，它打包了四块内容：一个 2 字节的 EHT MAC Capabilities Information 字段、一个 9 字节的 EHT PHY Capabilities Information 字段、一个变长的 Supported EHT-MCS And NSS Set 字段，以及一个可选的 EHT PPE Thresholds 字段。MAC 字段是一排功能开关（EPCS 优先接入、EHT OM Control、受限 TWT、MU-RTS TXS 模式、最大 MPDU 长度、链路自适应支持）。PHY 字段则是一个宽得多的“无线电能力”位数组：是否支持 6 GHz 上的 320 MHz、波束成形角色、探测维度数、4096-QAM 等等。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Capabilities are not promises about traffic — they are an honest inventory. The standard ties most PHY bits directly to MIB attributes: e.g. \"Support For 320 MHz In 6 GHz\" is just b2int(dot11EHTSupportFor320MHzImplemented). So the element is a faithful mirror of what the silicon was built to do, not a negotiation. Negotiation about how the BSS actually runs lives in the *Operation* element.",
+      "zh": "能力字段不是对流量的承诺，而是一份诚实的“清单”。标准把大多数 PHY 位直接绑定到 MIB 属性：例如“Support For 320 MHz In 6 GHz”就等于 b2int(dot11EHTSupportFor320MHzImplemented)。所以这个元素忠实地映射出芯片被设计成能做什么，而不是一场谈判。关于 BSS 实际如何运行的“约定”，存放在 *Operation* 元素里。"
+    },
+    {
+      "type": "prose",
+      "en": "The Supported EHT-MCS And NSS Set field answers a different question: for each modulation-and-coding scheme (EHT-MCS 0–13), how many spatial streams can this STA receive, and how many can it transmit? It is split into per-bandwidth maps — a 20 MHz-only map, a map for BW ≤ 80 MHz, a 160 MHz map, and a 320 MHz map — and which maps are present depends on the channel widths the STA declared. The optional EHT PPE Thresholds field then tells the peer how much packet-extension padding this STA needs per RU size and NSS, so the transmitter can pad EHT PPDUs correctly.",
+      "zh": "Supported EHT-MCS And NSS Set 字段回答的是另一个问题：对每一种调制编码方案（EHT-MCS 0–13），这台 STA 能接收几条空间流、能发送几条空间流？它被拆成按带宽划分的多张映射表——一张 20 MHz-only 表、一张 BW ≤ 80 MHz 表、一张 160 MHz 表和一张 320 MHz 表——具体出现哪几张，取决于 STA 声明的信道宽度。可选的 EHT PPE Thresholds 字段则告诉对端：这台 STA 对每种 RU 大小和每个 NSS 需要多少“分组扩展（packet extension）”填充，发送方据此为 EHT PPDU 正确补齐填充。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 720 260' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='12'><g stroke='currentColor' fill='none' stroke-width='1.5'><text x='8' y='20' fill='currentColor' font-size='13' font-weight='bold' stroke='none'>EHT Capabilities element</text><rect x='8' y='32' width='70' height='34'/><rect x='78' y='32' width='110' height='34'/><rect x='188' y='32' width='150' height='34'/><rect x='338' y='32' width='180' height='34'/><rect x='518' y='32' width='150' height='34'/></g><g fill='currentColor' stroke='none' font-size='10'><text x='14' y='52'>ID / Len /</text><text x='14' y='63'>Ext</text><text x='90' y='52'>MAC Caps</text><text x='90' y='63'>(2 octets)</text><text x='198' y='52'>PHY Caps</text><text x='198' y='63'>(9 octets)</text><text x='348' y='52'>Supported EHT-MCS</text><text x='348' y='63'>And NSS Set (var)</text><text x='528' y='52'>PPE Thresholds</text><text x='528' y='63'>(optional, var)</text></g><g stroke='currentColor' fill='none' stroke-width='1.5'><text x='8' y='128' fill='currentColor' font-size='13' font-weight='bold' stroke='none'>EHT Operation element</text><rect x='8' y='140' width='70' height='34'/><rect x='78' y='140' width='120' height='34'/><rect x='198' y='140' width='150' height='34'/><rect x='348' y='140' width='320' height='34'/></g><g fill='currentColor' stroke='none' font-size='10'><text x='14' y='160'>ID / Len /</text><text x='14' y='171'>Ext</text><text x='86' y='160'>EHT Operation</text><text x='86' y='171'>Parameters (1)</text><text x='208' y='160'>Basic EHT-MCS</text><text x='208' y='171'>And NSS Set (4)</text><text x='356' y='160'>EHT Operation Information</text><text x='356' y='171'>(0 / 3 / 5 octets)</text></g><g stroke='currentColor' fill='none' stroke-width='1.2'><rect x='348' y='196' width='80' height='30'/><rect x='428' y='196' width='60' height='30'/><rect x='488' y='196' width='60' height='30'/><rect x='548' y='196' width='120' height='30'/></g><g fill='currentColor' stroke='none' font-size='9'><text x='354' y='214'>Control</text><text x='356' y='224'>(width)</text><text x='438' y='214'>CCFS0</text><text x='498' y='214'>CCFS1</text><text x='554' y='214'>Disabled Subchannel</text><text x='560' y='223'>Bitmap (0/2)</text></g></svg>",
+      "caption": {
+        "en": "The two elements side by side: EHT Capabilities advertises abilities (MAC + PHY + per-bandwidth MCS/NSS maps + PPE), while EHT Operation carries the running config — including the EHT Operation Information field with Control (Channel Width), CCFS0/CCFS1, and the optional Disabled Subchannel Bitmap.",
+        "zh": "两个元素并排对照：EHT Capabilities 宣告能力（MAC + PHY + 按带宽划分的 MCS/NSS 映射 + PPE），而 EHT Operation 承载运行配置——其中 EHT Operation Information 字段含 Control（信道宽度）、CCFS0/CCFS1 以及可选的 Disabled Subchannel Bitmap（被禁用子信道位图）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now the EHT Operation element — the house rules. Its EHT Operation Parameters octet has flags like EHT Operation Information Present, Disabled Subchannel Bitmap Present, MCS15 Disable, and the EHT Default PE Duration. The 4-octet Basic EHT-MCS And NSS Set field is the membership exam: it lists the <EHT-MCS, NSS> tuples that every STA in this BSS must be able to both transmit and receive. If your radio can't do all of them, you are not allowed to join. When present, the EHT Operation Information field then pins down the geometry: a Control subfield whose Channel Width says 20/40/80/160/320 MHz, CCFS0 and CCFS1 giving the center-frequency indices, and the 16-bit Disabled Subchannel Bitmap marking which 20 MHz subchannels are punctured (each 1-bit = punctured; the primary 20 MHz bit is always 0).",
+      "zh": "再看 EHT Operation 元素——也就是“本网络的规矩”。它的 EHT Operation Parameters 字节里有若干标志位，如 EHT Operation Information Present、Disabled Subchannel Bitmap Present、MCS15 Disable，以及 EHT Default PE Duration。4 字节的 Basic EHT-MCS And NSS Set 字段是“入会考试”：它列出本 BSS 中每台 STA 都必须既能发送又能接收的 <EHT-MCS, NSS> 元组。如果你的无线电做不到其中全部，你就不被允许加入。当存在时，EHT Operation Information 字段进一步钉死“几何形状”：Control 子字段里的 Channel Width 表示 20/40/80/160/320 MHz，CCFS0 与 CCFS1 给出中心频率索引，而 16 位的 Disabled Subchannel Bitmap 标出哪些 20 MHz 子信道被打孔（每个置 1 的位 = 被打孔；主 20 MHz 对应的位恒为 0）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[STA scans, gets Beacon/Probe Resp] --> B[Read EHT Capabilities element]\n    B --> C[Read EHT Operation element]\n    C --> D{Basic EHT-MCS/NSS set:<br/>can I TX and RX all tuples?}\n    D -- No --> X[Do not MLME-JOIN this BSS]\n    D -- Yes --> E[EHT Operation Information present?]\n    E -- Yes --> F[Channel Width + CCFS0/CCFS1<br/>= operating bandwidth & center]\n    F --> G[Disabled Subchannel Bitmap<br/>= which 20 MHz are punctured]\n    E -- No --> H[Fall back to HE/VHT/HT<br/>operating width]\n    G --> I[Now I know BW, punctures,<br/>mandatory rates -> associate]\n    H --> I",
+      "zh": "flowchart TD\n    A[STA 扫描, 收到 Beacon/探测响应] --> B[读取 EHT Capabilities 元素]\n    B --> C[读取 EHT Operation 元素]\n    C --> D{基础 EHT-MCS/NSS 集:<br/>我能收发其中全部元组吗?}\n    D -- 否 --> X[不对此 BSS 发起 MLME-JOIN]\n    D -- 是 --> E[EHT Operation Information 是否存在?]\n    E -- 是 --> F[Channel Width + CCFS0/CCFS1<br/>= 工作带宽与中心频率]\n    F --> G[Disabled Subchannel Bitmap<br/>= 哪些 20 MHz 被打孔]\n    E -- 否 --> H[回退到 HE/VHT/HT<br/>的工作带宽]\n    G --> I[现在我已知带宽、打孔、<br/>强制速率 -> 进行关联]\n    H --> I"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why does the bitmap matter so much? Preamble puncturing lets a 160 or 320 MHz BSS keep operating even when a radar hit or interferer makes one 20 MHz slice unusable — instead of dropping to a narrower channel, the AP just punches a hole. The Disabled Subchannel Bitmap is how every STA learns where the holes are, so nobody transmits on a subchannel that's switched off.",
+      "zh": "为什么这张位图如此重要？前导码打孔（preamble puncturing）让一个 160 或 320 MHz 的 BSS 即便在某段 20 MHz 因雷达命中或干扰而不可用时仍能继续运行——AP 无需退回到更窄的信道，只需“打个洞”。Disabled Subchannel Bitmap 正是每台 STA 得知“洞在哪里”的途径，这样就没人会在已被关闭的子信道上发送。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "How a STA derives the EHT BSS operating channel width — and when the AP must signal it",
+        "zh": "STA 如何推导出 EHT BSS 工作信道宽度——以及 AP 何时必须显式标示它"
+      },
+      "en": "Clause 35.15.1 makes the read precise. An EHT AP sets the EHT Operation Information Present subfield to 1 only if it is in 5 GHz or 6 GHz, AND it announces an EHT BSS operating channel width to EHT STAs that differs from what it tells non-EHT STAs, AND that width either includes a punctured 20 MHz subchannel or is 320 MHz; otherwise it sets the subfield to 0. If a width is announced in the EHT Operation element, that is the EHT BSS operating channel width. If it is NOT announced, the STA derives it from legacy elements: in 6 GHz from the HE Operation element; in 5 GHz from HT+VHT (or HT+HE with VHT Operation Information); in 2.4 GHz from the HT Operation element. An EHT AP shall never announce an 80+80 MHz width. Separately (35.15.2), the AP sets the Disabled Subchannel Bitmap Present subfield to 1 and includes the bitmap whenever it punctures any subchannel; the puncturing pattern must be one of the non-OFDMA patterns in Table 36-30 matching the operating width, and the bit for the primary 20 MHz is always 0. A STA shall not MLME-JOIN a BSS unless it can transmit and receive every tuple in the basic EHT-MCS and NSS set.",
+      "zh": "35.15.1 节把这次“读取”说得很精确。EHT AP 只有在同时满足以下条件时才把 EHT Operation Information Present 子字段置 1：它工作在 5 GHz 或 6 GHz，并且它向 EHT STA 宣告的 EHT BSS 工作信道宽度不同于它告诉非 EHT STA 的宽度，并且该宽度要么包含一个被打孔的 20 MHz 子信道、要么为 320 MHz；否则将该子字段置 0。若 EHT Operation 元素中宣告了某宽度，那它就是 EHT BSS 工作信道宽度。若未宣告，STA 则从传统元素推导：在 6 GHz 从 HE Operation 元素；在 5 GHz 从 HT+VHT（或带 VHT Operation Information 的 HT+HE）；在 2.4 GHz 从 HT Operation 元素。EHT AP 绝不应宣告 80+80 MHz 宽度。另外（35.15.2），只要 AP 对任何子信道打孔，就应把 Disabled Subchannel Bitmap Present 子字段置 1 并包含该位图；打孔图样必须是 Table 36-30 中与工作宽度匹配的非 OFDMA 图样之一，且主 20 MHz 对应的位恒为 0。STA 除非能收发基础 EHT-MCS/NSS 集中的每一个元组，否则不应对该 BSS 发起 MLME-JOIN。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          640,
+          641,
+          644
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:9.4.2.321",
+    "80211be-2024:9.4.2.323",
+    "80211be-2024:35.15.1",
+    "80211be-2024:35.11.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        229,
+        230,
+        231
+      ],
+      "note": "9.4.2.321 EHT Operation element — Operation Parameters, Basic EHT-MCS And NSS Set, EHT Operation Information (Control/Channel Width, CCFS0/CCFS1, Disabled Subchannel Bitmap)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        253,
+        257,
+        268,
+        274
+      ],
+      "note": "9.4.2.323 EHT Capabilities element — MAC Caps, PHY Caps, Supported EHT-MCS And NSS Set, EHT PPE Thresholds field formats"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        628,
+        629
+      ],
+      "note": "35.11.3 Contents of the EHT PHY Capabilities Information field and Supported EHT-MCS And NSS Set field — PHY bits derived from MIB attributes"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        640,
+        641,
+        644
+      ],
+      "note": "35.15.1 Basic EHT BSS operation and 35.15.2 preamble puncturing — operating-width derivation, EHT Operation Information Present rules, basic EHT-MCS/NSS join gate, Disabled Subchannel Bitmap"
+    }
+  ],
+  "track": "wifi7-eht"
+}
