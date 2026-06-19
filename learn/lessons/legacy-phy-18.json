@@ -1,0 +1,108 @@
+{
+  "id": "legacy-phy-18",
+  "title": {
+    "en": "ERP PHY (Clause 18): The 11g 2.4 GHz Bridge & Backward-Compat Glue",
+    "zh": "ERP 物理层（第18章）：11g 2.4 GHz 过渡层与向后兼容的黏合剂"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "By the early 2000s the 2.4 GHz band had a speed problem: the only PHYs living there were the slow single-carrier ones — Clause 15 DSSS (1, 2 Mb/s) and Clause 16 HR/DSSS with CCK (5.5, 11 Mb/s). Meanwhile a much faster OFDM PHY (Clause 17, the 802.11a one) already delivered up to 54 Mb/s, but only at 5 GHz. The Extended Rate PHY (ERP) — what people call 802.11g — is the bridge: it lifts that fast OFDM into the crowded 2.4 GHz band while staying polite to the slow legacy radios already sharing the channel.",
+      "zh": "进入 21 世纪初，2.4 GHz 频段有个速度短板：当时住在这个频段里的只有慢速的单载波物理层——第 15 章的 DSSS（1、2 Mb/s）和第 16 章带 CCK 的 HR/DSSS（5.5、11 Mb/s）。与此同时，一个快得多的 OFDM 物理层（第 17 章，也就是 802.11a 那套）已经能跑到 54 Mb/s，但只在 5 GHz。扩展速率物理层（ERP）——大家口中的 802.11g——就是这座桥：它把那套高速 OFDM 引入拥挤的 2.4 GHz 频段，同时对已经共享这个信道的慢速旧设备保持“礼貌”。"
+    },
+    {
+      "type": "prose",
+      "en": "The trick is that ERP is not one PHY but a toolbox of modes, all on the same channel. ERP-DSSS/CCK is the borrowed Clause 16 single-carrier modulation (1/2/5.5/11 Mb/s); ERP-OFDM is the borrowed Clause 17 OFDM (6, 9, 12, 18, 24, 36, 48, 54 Mb/s). Of the full menu, transmit and receive for 1, 2, 5.5, 6, 11, 12, and 24 Mb/s is mandatory. An ERP station must be able to decode Clause 15, Clause 16, and ERP PPDUs — so it understands everything its neighbours might send. A BSS can run ERP-OFDM-only, a mix of ERP-OFDM and ERP-DSSS/CCK, or a mix with plain non-ERP stations.",
+      "zh": "诀窍在于：ERP 不是单一的物理层，而是同一个信道上的一套“模式工具箱”。ERP-DSSS/CCK 是借用第 16 章的单载波调制（1/2/5.5/11 Mb/s）；ERP-OFDM 是借用第 17 章的 OFDM（6、9、12、18、24、36、48、54 Mb/s）。在整张菜单中，1、2、5.5、6、11、12、24 Mb/s 的收发是强制的。一个 ERP 站点必须能解出第 15 章、第 16 章和 ERP 的 PPDU——这样它才听得懂邻居们可能发出的一切。一个 BSS 可以只跑 ERP-OFDM、跑 ERP-OFDM 与 ERP-DSSS/CCK 的混合、也可以与纯非 ERP 站点混合运行。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11'><rect x='1' y='1' width='458' height='228' fill='none' stroke='currentColor' stroke-width='1'/><text x='230' y='20' text-anchor='middle' font-size='13' fill='currentColor'>ERP modes share one 2.4 GHz channel</text><rect x='20' y='40' width='420' height='52' fill='none' stroke='currentColor'/><text x='30' y='58' fill='currentColor'>ERP-OFDM PPDU (Clause 17 borrowed)</text><rect x='30' y='64' width='70' height='20' fill='none' stroke='currentColor'/><text x='65' y='78' text-anchor='middle' fill='currentColor'>OFDM preamble</text><rect x='100' y='64' width='40' height='20' fill='none' stroke='currentColor'/><text x='120' y='78' text-anchor='middle' fill='currentColor'>SIGNAL</text><rect x='140' y='64' width='260' height='20' fill='none' stroke='currentColor'/><text x='270' y='78' text-anchor='middle' fill='currentColor'>PSDU (6-54 Mb/s OFDM)  + SigExt</text><rect x='20' y='110' width='420' height='52' fill='none' stroke='currentColor'/><text x='30' y='128' fill='currentColor'>ERP-DSSS/CCK PPDU (Clause 16 long/short preamble)</text><rect x='30' y='134' width='90' height='20' fill='none' stroke='currentColor'/><text x='75' y='148' text-anchor='middle' fill='currentColor'>DSSS preamble</text><rect x='120' y='134' width='50' height='20' fill='none' stroke='currentColor'/><text x='145' y='148' text-anchor='middle' fill='currentColor'>PHY hdr</text><rect x='170' y='134' width='230' height='20' fill='none' stroke='currentColor'/><text x='285' y='148' text-anchor='middle' fill='currentColor'>PSDU (1-11 Mb/s DSSS/CCK)</text><text x='230' y='190' text-anchor='middle' fill='currentColor'>CCA detects BOTH preamble types at all times</text><text x='230' y='210' text-anchor='middle' fill='currentColor'>SIFS = 10 us  |  slot = 20 us (long) / 9 us (short)</text></svg>",
+      "caption": {
+        "en": "ERP carries two PPDU families on the same channel: borrowed OFDM and borrowed DSSS/CCK. The receiver tells them apart by preamble.",
+        "zh": "ERP 在同一信道上承载两类 PPDU：借来的 OFDM 与借来的 DSSS/CCK。接收机靠前导（preamble）把它们区分开。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Here is the heart of the coexistence problem. A legacy Clause 15/16 radio physically cannot demodulate an OFDM waveform — to it, an ERP-OFDM burst looks like noise it can't decode, so it might think the channel is free and transmit on top of it, wrecking both frames. ERP solves this two ways. First, CCA: an ERP station keeps its clear-channel-assessment alive for ALL preamble types at all times, so it correctly senses an OFDM burst as 'busy.' Second, virtual carrier sense: ERP-OFDM is wrapped in protection — RTS/CTS or CTS-to-self sent in a rate the legacy radio CAN decode — which sets the legacy station's NAV so it defers for the duration of the OFDM frame it can't hear.",
+      "zh": "这里就是共存问题的核心。一个旧式的第 15/16 章无线电在物理上根本无法解调 OFDM 波形——对它而言，一段 ERP-OFDM 突发看起来就像一团解不出的噪声，于是它可能误以为信道空闲而直接发射、压在上面，把两帧都毁掉。ERP 用两招化解。第一招，CCA：ERP 站点让它的空闲信道评估（CCA）对“所有”前导类型始终保持有效，从而把一段 OFDM 突发正确判为“忙”。第二招，虚拟载波侦听：给 ERP-OFDM 套上保护——用旧设备“听得懂”的速率发送 RTS/CTS 或 CTS-to-self——借此设置旧站点的 NAV，让它在那段它听不见的 OFDM 帧期间老老实实退避。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The timing has a subtle gotcha. Clause 17 OFDM was designed with a 16 us SIFS to give its convolutional decoder time to finish, but ERP uses a 10 us SIFS to match the legacy DSSS world. To stop that mismatch from confusing legacy NAV math, every ERP-OFDM transmission is followed by a 6 us 'signal extension' (aSignalExtension) of dead air — so the Duration field and slot boundaries line up exactly for the Clause 16 stations doing the counting.",
+      "zh": "时序上有个微妙的“坑”。第 17 章的 OFDM 当初设计的 SIFS 是 16 us，好给它的卷积译码器留够收尾时间；而 ERP 用的是 10 us 的 SIFS，以对齐旧式 DSSS 世界。为了不让这个差异搞乱旧设备的 NAV 计算，每段 ERP-OFDM 发送之后都跟着一段 6 us 的“信号扩展”（aSignalExtension）静默时间——这样 Duration 字段和时隙边界就能与正在数时间的第 16 章站点精确对齐。"
+    },
+    {
+      "type": "prose",
+      "en": "The rest of the picture is mostly inheritance with small tweaks. ERP lives in the 2.4 GHz band using Clause 16's channel plan (the familiar channels 1-13/14, ~25 MHz adjacent-channel spacing). It uses SIFS = 10 us, a long slot time of 20 us or a short slot time of 9 us, and a max PSDU of 4095 octets. CCA must report busy on any energy above -62 dBm, and must catch a valid sync symbol down to -82 dBm with at least 99% probability on long slot time (90% on short slot). Transmit specs follow Clause 17 (OFDM) or Clause 16 (DSSS/CCK), with a ±25 ppm locked center-frequency/clock tolerance and a -20 dBm maximum receiver input level.",
+      "zh": "其余部分基本是“继承 + 微调”。ERP 工作在 2.4 GHz 频段，沿用第 16 章的信道规划（熟悉的 1-13/14 信道，相邻信道间隔约 25 MHz）。它的 SIFS = 10 us，长时隙 20 us、短时隙 9 us，最大 PSDU 为 4095 字节。CCA 必须在任何高于 -62 dBm 的能量上报告“忙”，并且要在低至 -82 dBm 时仍能捕获有效同步符号——长时隙下检测概率至少 99%，短时隙下至少 90%。发射规范则分别遵循第 17 章（OFDM）或第 16 章（DSSS/CCK），载波/时钟同源锁定、容差 ±25 ppm，接收机最大输入电平为 -20 dBm。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exactly where the standard pins down SIFS, the signal extension, CCA thresholds, and the timing characteristics",
+        "zh": "标准在何处精确钉死 SIFS、信号扩展、CCA 门限与时序特征"
+      },
+      "en": "Clause 18.3.2.4 spells out the timing fix: Clause 17 PPDUs use a 16 us SIFS (extra time for convolutional decode) while Clause 18 PPDUs use 10 us, so each ERP-OFDM PPDU is followed by aSignalExtension of dead air, and the slot-boundary reference is 'the end of the previous PPDU[+SigExt]' — making the Duration field and the legacy NAV come out right. 18.3.4 defines the CCA mode as a CS+energy combination whose carrier sense must include both Barker-code (DSSS) and OFDM sync-symbol detection. 18.4.5 fixes SIFS at 10 us. 18.4.6 gives the CCA performance numbers: -82 dBm sensitivity with >=99% detect probability on long slot time (>=90% short), hold busy for the full PHY LENGTH on a correct header, and busy on any energy above -62 dBm. 18.4.7/18.4.8 inherit transmit/receive specs from Clause 17 (ERP-OFDM) and Clause 16 (ERP-DSSS/CCK), with ±25 ppm locked tolerance and -20 dBm max input. Table 18-5 lists the characteristics: aSlotTime 20 us (long) / 9 us (short), aSIFSTime 10 us, aSignalExtension 6 us, aPSDUMaxLength 4095 octets.",
+      "zh": "第 18.3.2.4 节写明了这处时序修补：第 17 章 PPDU 用 16 us 的 SIFS（给卷积译码留余量），而第 18 章 PPDU 用 10 us，因此每段 ERP-OFDM PPDU 之后都跟一段 aSignalExtension 的静默，且时隙边界的参考点是“上一个 PPDU[+SigExt] 的结束”——从而让 Duration 字段与旧设备 NAV 计算得到正确结果。18.3.4 节把 CCA 模式定义为载波侦听加能量检测的组合，其载波侦听必须同时包含 Barker 码（DSSS）与 OFDM 同步符号的检测。18.4.5 节将 SIFS 钉死为 10 us。18.4.6 节给出 CCA 性能数字：-82 dBm 灵敏度下，长时隙检测概率 >=99%（短时隙 >=90%）；收到正确 PHY 头后须在整个 PHY LENGTH 期间保持“忙”；任何高于 -62 dBm 的能量都报“忙”。18.4.7/18.4.8 节的发射/接收规范分别继承自第 17 章（ERP-OFDM）与第 16 章（ERP-DSSS/CCK），载波/时钟同源锁定、容差 ±25 ppm，最大输入 -20 dBm。表 18-5 列出了各项特征：aSlotTime 20 us（长）/ 9 us（短）、aSIFSTime 10 us、aSignalExtension 6 us、aPSDUMaxLength 4095 字节。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3394,
+          3395,
+          3396,
+          3400
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:18.1.3",
+    "80211-2024:18.3.2",
+    "80211-2024:18.3.3",
+    "80211-2024:18.3.4",
+    "80211-2024:18.4.5",
+    "80211-2024:18.4.6",
+    "80211-2024:18.4.7",
+    "80211-2024:18.4.8"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3389
+      ],
+      "note": "18.1.3 Operational modes - ERP decodes Clause 15/16/ERP PPDUs; ERP-DSSS/CCK & ERP-OFDM exceptions; CCA active for all preamble types; coexistence via RTS/CTS, CSMA/CA"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3392,
+        3393,
+        3394
+      ],
+      "note": "18.3.2 PPDU formats (long/short DSSS, ERP-OFDM) and 18.3.2.4 signal extension; 18.3.3 modulation/rate change; 18.3.4 CCA mode (Barker + OFDM sync)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3395,
+        3396,
+        3397
+      ],
+      "note": "18.4.5 SIFS=10us; 18.4.6 CCA performance (-82/-62 dBm, 99%/90%); 18.4.7 transmit specs (±25 ppm locked); 18.4.8 receive specs (-20 dBm max input)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3400
+      ],
+      "note": "Table 18-5 ERP characteristics - aSlotTime 20/9 us, aSIFSTime 10 us, aSignalExtension 6 us, aPSDUMaxLength 4095"
+    }
+  ],
+  "track": "legacy-phy"
+}

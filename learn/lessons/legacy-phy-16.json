@@ -1,0 +1,147 @@
+{
+  "id": "legacy-phy-16",
+  "title": {
+    "en": "CMMG PHY (Clause 25): China's 45 GHz Millimeter-Wave PHY",
+    "zh": "CMMG 物理层（第25章）：中国 45 GHz 毫米波物理层"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 25 defines the China Millimeter-wave Multi-Gigabit PHY — CMMG. If you already know the 60 GHz DMG/EDMG world of 802.11ad/ay, CMMG will feel familiar: it is the same multi-gigabit millimeter-wave toolkit — directional beams, single-carrier and OFDM waveforms, a ZCZ-sequence preamble — but retuned to a different regional band. CMMG channels live up around 45 GHz: ten 540 MHz channels whose centres start at 42.66 GHz, plus wide 1080 MHz channels stitched from two of them.",
+      "zh": "第 25 章定义了中国毫米波多吉比特物理层——CMMG。如果你已经熟悉 802.11ad/ay 在 60 GHz 上的 DMG/EDMG 世界，那么 CMMG 会让你倍感亲切：它用的是同一套多吉比特毫米波工具——定向波束、单载波与 OFDM 波形、基于 ZCZ 序列的前导——只是被重新调谐到了一个不同的区域频段。CMMG 的信道位于约 45 GHz：十个 540 MHz 信道，中心频率从 42.66 GHz 起步，再加上由其中两个拼起来的 1080 MHz 宽信道。"
+    },
+    {
+      "type": "prose",
+      "en": "CMMG offers three transmission modes, selected by MCS. MCS 0 is Control mode: a heavily spread, robust signalling waveform (spreading factors 13, 7, 4, or none) used to find a partner and exchange the most critical frames when the link is still weak. MCS 1-8 is Single-Carrier (SC) mode — a low-PAPR workhorse well suited to power-amplifier-limited mmWave radios. MCS 9-16 is OFDM mode, which adds the frequency-domain machinery (subcarriers, pilots, tone mapping) for higher spectral efficiency. A CMMG station must support Control mode and SC MCS 1-3; everything above that, plus OFDM and MIMO, is optional.",
+      "zh": "CMMG 提供三种传输模式，由 MCS 选定。MCS 0 是控制模式（Control mode）：一种经过强扩频、极为稳健的信令波形（扩频因子 13、7、4，或不扩频），用于在链路尚弱时寻找对端并交换最关键的帧。MCS 1-8 是单载波（SC）模式——一种低峰均比（PAPR）的主力波形，非常适合受功率放大器限制的毫米波射频。MCS 9-16 是 OFDM 模式，它引入了频域机制（子载波、导频、音调映射）以获得更高的频谱效率。CMMG 站点必须支持控制模式与 SC MCS 1-3；在此之上的部分，以及 OFDM 和 MIMO，都是可选的。"
+    },
+    {
+      "type": "prose",
+      "en": "All three modes share one common preamble: a Short Training Field (CMMG-STF) for detection, AGC and synchronisation, followed by a Channel Estimation Field (CMMG-CEF) for channel measurement. Both are built from a length-256 ZCZ (zero-correlation-zone) sequence Z(n) whose excellent autocorrelation lets the receiver cleanly reconstruct the channel impulse response — exactly the property analog beamforming relies on. After the preamble comes a mode-specific CMMG-SIG header (carrying MCS, length, bandwidth) and then the encoded Data field.",
+      "zh": "这三种模式共享同一个公共前导：用于检测、AGC 与同步的短训练字段（CMMG-STF），其后是用于信道测量的信道估计字段（CMMG-CEF）。两者都由长度为 256 的 ZCZ（零相关区）序列 Z(n) 构造而成，其优异的自相关特性让接收机能够干净地重建信道冲激响应——这正是模拟波束赋形所依赖的特性。前导之后是与模式相关的 CMMG-SIG 头（携带 MCS、长度、带宽），再接上经过编码的数据字段。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 560 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='12'><g stroke='currentColor' fill='none' stroke-width='1.5'><rect x='10' y='20' width='70' height='34'/><rect x='80' y='20' width='90' height='34'/><rect x='170' y='20' width='70' height='34'/><rect x='240' y='20' width='150' height='34'/></g><g fill='currentColor' text-anchor='middle'><text x='45' y='41'>STF</text><text x='125' y='41'>CEF</text><text x='205' y='41'>SIG</text><text x='315' y='41'>SC-Data</text></g><text x='200' y='14' fill='currentColor' font-size='11'>CMMG SC mode PPDU (CBW540)</text><g stroke='currentColor' fill='none' stroke-width='1.5'><rect x='10' y='90' width='55' height='34'/><rect x='65' y='90' width='70' height='34'/><rect x='135' y='90' width='55' height='34'/><rect x='190' y='90' width='110' height='34'/><rect x='300' y='90' width='110' height='34'/><rect x='410' y='90' width='130' height='34'/></g><g fill='currentColor' text-anchor='middle' font-size='11'><text x='37' y='111'>STF</text><text x='100' y='111'>CEF</text><text x='162' y='111'>SIG</text><text x='245' y='111'>OSTF</text><text x='355' y='111'>OCEF...</text><text x='475' y='111'>OFDM-Data</text></g><text x='220' y='84' fill='currentColor' font-size='11'>CMMG OFDM mode PPDU</text><g fill='currentColor' text-anchor='middle' font-size='9'><text x='90' y='68'>shared CMMG preamble</text></g></svg>",
+      "caption": {
+        "en": "Both SC and OFDM PPDUs open with the common CMMG preamble (STF + CEF) and a CMMG-SIG; OFDM additionally inserts OFDM-specific training (OSTF + OCEF) before its Data field.",
+        "zh": "SC 与 OFDM 两种 PPDU 都以公共 CMMG 前导（STF + CEF）和 CMMG-SIG 开头；OFDM 还会在其数据字段前额外插入 OFDM 专用训练字段（OSTF + OCEF）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "On the spatial side, CMMG supports up to four space-time streams. SC and OFDM share the same chain: a stream parser splits the LDPC-coded bits across streams, constellation mapping draws from BPSK / QPSK / 16-QAM / 64-QAM (LDPC rates 1/2, 5/8, 3/4, 13/16), then either spatial expansion (SC) or — in OFDM mode — LDPC tone mapping, optional space-time block coding (STBC), cyclic-shift diversity (CSD) per stream, and a spatial-mapping Q matrix before the IDFT. The two MCS families are tabulated separately: SC MCS reach roughly 1.2 Gb/s per stream at 16-QAM, and the full four-stream OFDM stack pushes well past that.",
+      "zh": "在空间维度上，CMMG 最多支持四条空时流。SC 与 OFDM 共用同一条处理链：流分解器（stream parser）把 LDPC 编码后的比特分配到各条流上，星座映射从 BPSK / QPSK / 16-QAM / 64-QAM 中取值（LDPC 码率 1/2、5/8、3/4、13/16），随后在 SC 模式下做空间扩展（spatial expansion），或在 OFDM 模式下做 LDPC 音调映射、可选的空时分组编码（STBC）、每流循环移位分集（CSD），并在 IDFT 之前施加空间映射 Q 矩阵。两套 MCS 各自列表：SC MCS 在 16-QAM 下单流可达约 1.2 Gb/s，而完整的四流 OFDM 链路则能远超这一数值。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "1080 MHz channels are not designed from scratch — the preamble (STF, CEF) and SIG for a wide channel are made by duplication transmission: the 540 MHz fields are simply copied across the two 540 MHz subchannels (with per-subchannel phase rotation), so their durations stay identical to the 540 MHz case. That is why the timing table lists the same STF/CEF/SIG times for CBW540 and CBW1080.",
+      "zh": "1080 MHz 信道并非从零设计——宽信道的前导（STF、CEF）和 SIG 是通过复制传输（duplication transmission）生成的：把 540 MHz 的各字段简单地复制到两个 540 MHz 子信道上（并对各子信道施加相位旋转），因此它们的持续时间与 540 MHz 情形完全相同。这就是为什么时序表里 CBW540 与 CBW1080 的 STF/CEF/SIG 时间是一样的。"
+    },
+    {
+      "type": "prose",
+      "en": "Because 45 GHz links are directional, CMMG leans on analog beamforming exactly like its 60 GHz cousins. It starts coarse with a TX sector sweep — those sweep frames are plain Control-mode PPDUs, so the most robust waveform is used to find a usable direction first. Then beam refinement (BRP) fine-tunes the antenna weight vectors: BRP-RX PPDUs append TRN-R training to train the receiver, BRP-TX PPDUs append TRN-T training to let the transmitter try different sectors per subfield. The ZCZ sequences in those training fields are what make per-tap channel measurement possible.",
+      "zh": "由于 45 GHz 链路是定向的，CMMG 与它 60 GHz 的近亲一样依赖模拟波束赋形。它先用 TX 扇区扫描（TX sector sweep）做粗对准——这些扫描帧就是普通的控制模式 PPDU，因此会先用最稳健的波形找到一个可用方向。随后用波束细化（BRP）来精调天线权矢量：BRP-RX PPDU 在尾部附加 TRN-R 训练以训练接收端，BRP-TX PPDU 附加 TRN-T 训练以让发射端在每个子字段尝试不同扇区。这些训练字段中的 ZCZ 序列，正是逐抽头信道测量得以实现的关键。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Where to find the modes, the preamble, and the band in Clause 25",
+        "zh": "在第 25 章中如何定位这些模式、前导与频段"
+      },
+      "en": "Clause 25.1.1 introduces CMMG as SC and OFDM systems supporting up to four space-time streams, 540 MHz and 1080 MHz channel widths, BPSK/QPSK/16-/64-QAM, and LDPC at rates 1/2, 3/4, 5/8, 13/16; 25.1.2 names the three modes by MCS (0 = Control / 25.4, 1-8 = SC / 25.5, 9-16 = OFDM / 25.6). The common preamble is the CMMG-STF (25.3.5.2, 17 or 50 repeats of a length-32 Z(n)) and CMMG-CEF (25.3.5.3, four concatenated length-256 Z(n) blocks with mode-specific sign patterns). Channelization (25.10) places ten 540 MHz channels with centres from 42.66 GHz upward and 1080 MHz channels from 42.93 GHz — squarely the 45 GHz band, distinct from the 60 GHz DMG/CDMG/EDMG channelization. The SC and OFDM PPDU formats are 25.5.4 and 25.6.2; OFDM constellation mapping is 25.6.8.6 and its STBC is 25.6.8.8; SC spatial expansion is 25.5.6.7; the TX sector sweep uses Control-mode PPDUs (25.7.1); and the per-MCS rate tables begin at 25.15.1.",
+      "zh": "25.1.1 节将 CMMG 介绍为支持最多四条空时流、540 MHz 与 1080 MHz 带宽、BPSK/QPSK/16-/64-QAM 以及码率 1/2、3/4、5/8、13/16 的 LDPC 的 SC 与 OFDM 系统；25.1.2 节按 MCS 命名三种模式（0 = 控制模式 / 25.4，1-8 = SC / 25.5，9-16 = OFDM / 25.6）。公共前导即 CMMG-STF（25.3.5.2，长度为 32 的 Z(n) 重复 17 或 50 次）与 CMMG-CEF（25.3.5.3，四段拼接的长度 256 的 Z(n) 块，按模式采用不同的符号模式）。信道化（25.10）将十个 540 MHz 信道的中心频率置于 42.66 GHz 及以上，1080 MHz 信道则从 42.93 GHz 起——正落在 45 GHz 频段，与 60 GHz 的 DMG/CDMG/EDMG 信道化截然不同。SC 与 OFDM 的 PPDU 格式分别见 25.5.4 与 25.6.2；OFDM 星座映射见 25.6.8.6，其 STBC 见 25.6.8.8；SC 空间扩展见 25.5.6.7；TX 扇区扫描使用控制模式 PPDU（25.7.1）；逐 MCS 速率表自 25.15.1 开始。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3892,
+          3905,
+          3923,
+          3932,
+          3960
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3892
+      ],
+      "note": "25.1.1-25.1.2 — CMMG SC/OFDM systems; up to 4 STS; 540/1080 MHz; BPSK..64-QAM; three modes by MCS (Control/SC/OFDM)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3905,
+        3906,
+        3907
+      ],
+      "note": "25.3.5.2-25.3.5.3 — CMMG-STF (length-32 Z(n)) and CMMG-CEF (four length-256 Z(n) blocks) common preamble"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3917
+      ],
+      "note": "25.4.1 — CMMG Control mode introduction (spreading factors / robust signalling)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3923,
+        3928
+      ],
+      "note": "25.5.4 SC PPDU format; 25.5.6.7 spatial expansion (stream parser -> constellation -> spatial expansion chain)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3932,
+        3941,
+        3944
+      ],
+      "note": "25.6.2 OFDM PPDU format; 25.6.8.6 subcarrier modulation mapping; 25.6.8.8 space-time block coding"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3953
+      ],
+      "note": "25.7.1 — TX sector sweep uses Control-mode PPDUs; 25.7.2 beam refinement (BRP-RX/TRN-R, BRP-TX/TRN-T)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3960
+      ],
+      "note": "25.10 — Channelization: ten 540 MHz channels from 42.66 GHz, 1080 MHz channels from 42.93 GHz (the 45 GHz band)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3969
+      ],
+      "note": "25.15.1 — per-MCS rate-dependent parameter tables for SC and OFDM modes"
+    }
+  ],
+  "covers": [
+    "80211-2024:25.1.1",
+    "80211-2024:25.3.5.2",
+    "80211-2024:25.3.5.3",
+    "80211-2024:25.4.1",
+    "80211-2024:25.5.4",
+    "80211-2024:25.6.2",
+    "80211-2024:25.6.8.6",
+    "80211-2024:25.6.8.8",
+    "80211-2024:25.5.6.7",
+    "80211-2024:25.10",
+    "80211-2024:25.7.1",
+    "80211-2024:25.15.1"
+  ],
+  "track": "legacy-phy"
+}

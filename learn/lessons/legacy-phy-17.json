@@ -1,0 +1,161 @@
+{
+  "id": "legacy-phy-17",
+  "title": {
+    "en": "EDMG Leftovers (Clause 28): Channel Bonding, MIMO Channelization & Beam Training",
+    "zh": "EDMG 补遗（第28章）：信道捆绑、MIMO 信道化与波束训练"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "An earlier lesson introduced the EDMG PHY (802.11ay) and what it is for: pushing 60 GHz Wi-Fi past 100 Gbit/s. This lesson fills in the leftovers — the actual machinery that does the scaling. EDMG starts from the single-channel DMG PHY of Clause 20 and grows it in two directions at once: wider in frequency (channel bonding) and wider in space (MIMO, up to eight space-time streams). Clause 28 has to signal which of those is happening, and train the beams that make 60 GHz usable. That signalling-and-training apparatus is the subject here.",
+      "zh": "之前的一课介绍了 EDMG PHY（802.11ay）以及它的目标：把 60 GHz Wi-Fi 推上 100 Gbit/s 以上。本课补上“补遗”——真正实现扩容的那套机器。EDMG 以第 20 章的单信道 DMG PHY 为起点，同时朝两个方向生长：在频率上更宽（信道捆绑），在空间上更宽（MIMO，最多八条空时流）。第 28 章必须把“正在发生哪一种扩容”信令出去，并训练出让 60 GHz 真正可用的波束。本课讲的就是这套“信令与训练”装置。"
+    },
+    {
+      "type": "prose",
+      "en": "Bandwidth scaling first. DMG uses one 2.16 GHz channel. EDMG bonds contiguous 2.16 GHz channels together: two bonded gives 4.32 GHz, three gives 6.48 GHz, four gives 8.64 GHz. It can also aggregate two non-contiguous chunks — 2.16+2.16 GHz and 4.32+4.32 GHz — where the two pieces need not be adjacent in frequency. The PHY captures this in a single integer N_CB, the number of contiguous bonded 2.16 GHz channels, derived from two TXVECTOR knobs: CH_BANDWIDTH (a bitmap of which channels) and CHANNEL_AGGREGATION (bonded vs. aggregated). Almost every EDMG sequence length downstream scales by N_CB, so this one number ripples through the whole PHY.",
+      "zh": "先看带宽扩容。DMG 用一个 2.16 GHz 信道。EDMG 把相邻的 2.16 GHz 信道捆绑起来：捆两个得 4.32 GHz，三个得 6.48 GHz，四个得 8.64 GHz。它也能聚合两段不相邻的频块——2.16+2.16 GHz 与 4.32+4.32 GHz——这两段在频率上不必相邻。PHY 用一个整数 N_CB 来概括这一切，即被捆绑的相邻 2.16 GHz 信道数目，它由两个 TXVECTOR 参数推导得到：CH_BANDWIDTH（哪些信道的位图）与 CHANNEL_AGGREGATION（捆绑还是聚合）。下游几乎每一个 EDMG 序列长度都随 N_CB 缩放，所以这一个数字会贯穿整个 PHY。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Bonded vs. aggregated is the crux. With two contiguous channels, if CHANNEL_AGGREGATION says NOT_AGGREGATED you get one wide 4.32 GHz waveform (N_CB = 2); if it says AGGREGATED you instead get two independent 2.16 GHz channels carrying separate streams (N_CB = 1). Same spectrum, two completely different PHYs — which is exactly why both knobs must be signalled, not inferred.",
+      "zh": "“捆绑”与“聚合”的区分是关键。两个相邻信道下，若 CHANNEL_AGGREGATION 为 NOT_AGGREGATED，得到的是一段 4.32 GHz 的宽波形（N_CB = 2）；若为 AGGREGATED，得到的则是两个各自承载独立流的独立 2.16 GHz 信道（N_CB = 1）。同样的频谱，两套截然不同的 PHY——这正是两个旋钮都必须被信令、而不能靠推断的原因。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 230' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='18' fill='currentColor' stroke='none' font-size='12' font-weight='bold'>EDMG channel bonding (N_CB)</text><rect x='20' y='40' width='80' height='28'/><text x='60' y='58' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>2.16 GHz</text><text x='130' y='58' fill='currentColor' stroke='none' font-size='10'>N_CB=1 (DMG)</text><rect x='20' y='86' width='80' height='28'/><rect x='100' y='86' width='80' height='28'/><text x='100' y='104' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>4.32 GHz</text><text x='210' y='104' fill='currentColor' stroke='none' font-size='10'>N_CB=2 bonded</text><rect x='20' y='132' width='80' height='28'/><rect x='100' y='132' width='80' height='28'/><rect x='180' y='132' width='80' height='28'/><text x='140' y='150' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>6.48 / 8.64 GHz</text><text x='290' y='150' fill='currentColor' stroke='none' font-size='10'>N_CB=3 / 4</text><rect x='20' y='178' width='80' height='28'/><rect x='180' y='178' width='80' height='28'/><line x1='100' y1='192' x2='180' y2='192' stroke-dasharray='4 3'/><text x='40' y='196' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>prim</text><text x='220' y='196' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>sec</text><text x='290' y='196' fill='currentColor' stroke='none' font-size='10'>2.16+2.16 aggregated</text></svg>",
+      "caption": {
+        "en": "How CH_BANDWIDTH and CHANNEL_AGGREGATION map to N_CB: one channel, two/three/four bonded, or two aggregated (possibly non-contiguous) chunks.",
+        "zh": "CH_BANDWIDTH 与 CHANNEL_AGGREGATION 如何映射为 N_CB：一个信道、捆绑两/三/四个，或两段（可能不相邻的）聚合频块。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now the MIMO and bandwidth machinery inside the preamble. Every EDMG PPDU keeps a non-EDMG portion (L-STF, L-CEF, L-Header) that legacy Clause 20 stations can decode, then adds an EDMG portion. Two new training fields carry the spatial/bandwidth work: the EDMG-STF (short training field, for AGC/timing) and the EDMG-CEF (channel estimation field). Both are absent for a plain single-stream SC transmission on one 2.16 GHz channel — but the moment you go multi-stream or multi-channel they appear, built per space-time stream through a spatial mapping matrix Q so the receiver can separate up to eight streams. Their Golay sequence lengths scale directly with N_CB. SU-MIMO uses these alone; an MU PPDU adds an EDMG-Header-B that carries per-user encoding. The wider channel signalling for a control PPDU rides in a control trailer appended after the Data field, an extra LDPC codeword that also carries MU-MIMO group and next-transmission hints.",
+      "zh": "再看前导码里的 MIMO 与带宽机器。每个 EDMG PPDU 都保留一段非 EDMG 部分（L-STF、L-CEF、L-Header），让传统第 20 章站点能够解码，然后再追加一段 EDMG 部分。两个新的训练字段承担空间/带宽的工作：EDMG-STF（短训练字段，用于 AGC/定时）与 EDMG-CEF（信道估计字段）。在单信道 2.16 GHz 上的单流 SC 传输中两者都不出现——但一旦走向多流或多信道，它们就会出现，并通过空间映射矩阵 Q 按每条空时流构造，使接收机能分离最多八条流。它们的 Golay 序列长度直接随 N_CB 缩放。SU-MIMO 仅用这两者；MU PPDU 还会加上一个携带逐用户编码的 EDMG-Header-B。控制 PPDU 的更宽信道信令则借助附在 Data 字段之后的控制尾（control trailer）——一个额外的 LDPC 码字，同时携带 MU-MIMO 分组及下一次传输的提示。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    subgraph nonEDMG[Non-EDMG portion - legacy-decodable]\n      A[L-STF] --> B[L-CEF] --> C[L-Header]\n    end\n    subgraph EDMG[EDMG portion]\n      C --> D[EDMG-Header-A]\n      D --> E[EDMG-STF<br/>per stream]\n      E --> F[EDMG-CEF<br/>per stream]\n      F --> G{MU PPDU?}\n      G -- yes --> H[EDMG-Header-B<br/>per user]\n      G -- no --> I[Data]\n      H --> I\n      I --> J[TRN<br/>beam training]\n    end",
+      "zh": "graph LR\n    subgraph nonEDMG[非 EDMG 部分 - 传统可解码]\n      A[L-STF] --> B[L-CEF] --> C[L-Header]\n    end\n    subgraph EDMG[EDMG 部分]\n      C --> D[EDMG-Header-A]\n      D --> E[EDMG-STF<br/>逐流]\n      E --> F[EDMG-CEF<br/>逐流]\n      F --> G{是否 MU PPDU?}\n      G -- 是 --> H[EDMG-Header-B<br/>逐用户]\n      G -- 否 --> I[Data]\n      H --> I\n      I --> J[TRN<br/>波束训练]\n    end"
+    },
+    {
+      "type": "prose",
+      "en": "Bandwidth and streams only pay off if the beams point the right way — so 802.11ay layers extra beam-training apparatus on top of 802.11ad. Three pieces matter. First, the Short SSW PPDU: a stripped-down DMG control PPDU (PHY-header Length = 6, a 6-octet payload) used for fast sector sweeps during transmit sector sweep (TXSS); it carries a CDOWN counter, source/destination AIDs and an RF-chain id, and supports both SISO and MU-MIMO training. Second, beam refinement (BRP): the EDMG BRP PPDU appends a TRN field of training subfields and comes in RX, TX, and RX/TX flavours, letting transmitter and receiver refine their antenna-weight vectors (AWVs) — even simultaneously. Third, the EDMG secure ranging PPDU: a single-stream BRP-TX PPDU whose TRN field carries Secure TRN subfields (a zero-prefixed pseudorandom ranging waveform) for tamper-resistant round-trip-time distance measurement.",
+      "zh": "只有当波束指对了方向，带宽与多流才有意义——所以 802.11ay 在 802.11ad 之上又叠了一层波束训练装置。有三块要点。其一，Short SSW PPDU：一个精简的 DMG 控制 PPDU（PHY 头 Length = 6，6 字节载荷），用于发送扇区扫描（TXSS）期间的快速扇区遍历；它携带 CDOWN 倒计数、源/目的 AID 与一个射频链 ID，并同时支持 SISO 与 MU-MIMO 训练。其二，波束精化（BRP）：EDMG BRP PPDU 在末尾追加由训练子字段组成的 TRN 字段，分为 RX、TX、RX/TX 三型，让发送端与接收端精化各自的天线加权向量（AWV）——甚至可同时进行。其三，EDMG 安全测距 PPDU：一个单流的 BRP-TX PPDU，其 TRN 字段携带 Secure TRN 子字段（带零前缀的伪随机测距波形），用于抗篡改的往返时延（RTT）距离测量。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Where N_CB comes from, and the exact Short SSW / BRP / Secure-TRN gates",
+        "zh": "N_CB 的由来，以及 Short SSW / BRP / Secure-TRN 的精确判定"
+      },
+      "en": "N_CB is derived from the bit pattern of CH_BANDWIDTH together with CHANNEL_AGGREGATION (28.2.2): one set bit gives N_CB = 1; two contiguous set bits give N_CB = 2 if NOT_AGGREGATED else 1; three contiguous bits give 3; four contiguous bits give 2 if AGGREGATED else 4. Channelization (28.3.4) is fixed by four MIB fields with channel-index step Δf = 1.08 GHz (half of 2.16 GHz spacing). The EDMG-STF/EDMG-CEF are absent for single-stream SC on one channel and otherwise built per space-time stream via the spatial mapping matrix Q with Golay-sequence lengths scaling by N_CB (SC: 28.5.4/28.5.5; OFDM EDMG-STF tone counts 88/192/296/400 for N_CB 1-4: 28.6.4). The control trailer (28.3.7) is one LDPC codeword (18 data + 21 parity octets) inserted after the Data field of a non-EDMG control-mode PPDU, signalled by SCRAMBLER_INIT_SETTING = CONTROL_TRAILER and a +2 increment of the Training Length field. A Short SSW PPDU (28.9.1) is a DMG control PPDU with PHY-header Length = 6 and PPDU Type = 0. EDMG BRP PPDUs (28.9.2.2) require EDMG_TRN_LEN > 0; RX/TX/RX-TX type is decoded from PPDU Type, Beam Tracking Request, and RX-TRN-Units-per-TX-TRN-Unit. The EDMG secure ranging PPDU (28.9.3) is a single-stream BRP-TX PPDU flagged by Secure TRN = 1 in EDMG-Header-A, with EDMG TRN-Unit M = 3 so each TRN-Unit holds four Secure TRN subfields; each Secure TRN subfield is GI / 128xN_CB zero prefix / 384xN_CB pi/2-BPSK ranging field / 128xN_CB zero postfix / GI.",
+      "zh": "N_CB 由 CH_BANDWIDTH 的比特模式连同 CHANNEL_AGGREGATION 推导（28.2.2）：置 1 位为一个时 N_CB = 1；两个相邻置 1 位时，NOT_AGGREGATED 取 2、否则取 1；三个相邻位取 3；四个相邻位在 AGGREGATED 时取 2、否则取 4。信道化（28.3.4）由四个 MIB 字段确定，信道索引步进 Δf = 1.08 GHz（即 2.16 GHz 间隔的一半）。EDMG-STF/EDMG-CEF 在单信道单流 SC 下不出现，其余情形按空时流经空间映射矩阵 Q 构造，Golay 序列长度随 N_CB 缩放（SC：28.5.4/28.5.5；OFDM 的 EDMG-STF 在 N_CB 1-4 下音调数为 88/192/296/400：28.6.4）。控制尾（28.3.7）是一个 LDPC 码字（18 数据 + 21 校验字节），插在非 EDMG 控制模式 PPDU 的 Data 字段之后，由 SCRAMBLER_INIT_SETTING = CONTROL_TRAILER 信令、并将 Training Length 字段加 2 表示。Short SSW PPDU（28.9.1）是 PHY 头 Length = 6 且 PPDU Type = 0 的 DMG 控制 PPDU。EDMG BRP PPDU（28.9.2.2）要求 EDMG_TRN_LEN > 0；RX/TX/RX-TX 类型由 PPDU Type、Beam Tracking Request 与 RX-TRN-Units-per-TX-TRN-Unit 解码得出。EDMG 安全测距 PPDU（28.9.3）是由 EDMG-Header-A 中 Secure TRN = 1 标记的单流 BRP-TX PPDU，EDMG TRN-Unit M = 3 使每个 TRN-Unit 含四个 Secure TRN 子字段；每个 Secure TRN 子字段为 GI / 128xN_CB 零前缀 / 384xN_CB 的 pi/2-BPSK 测距字段 / 128xN_CB 零后缀 / GI。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4400,
+          4451,
+          4470,
+          4498,
+          4563,
+          4599,
+          4603,
+          4615,
+          4616
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:28.3.3",
+    "80211-2024:28.3.4",
+    "80211-2024:28.3.5",
+    "80211-2024:28.3.7",
+    "80211-2024:28.5.4",
+    "80211-2024:28.6.4",
+    "80211-2024:28.9.1",
+    "80211-2024:28.9.2",
+    "80211-2024:28.9.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4398,
+        4400,
+        4401
+      ],
+      "note": "28.1-28.2.2 EDMG intro + channel widths (4.32/6.48/8.64, 2.16+2.16, 4.32+4.32); N_CB derived from CH_BANDWIDTH and CHANNEL_AGGREGATION"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4426,
+        4427
+      ],
+      "note": "28.3.2-28.3.3 EDMG PPDU format and preamble; non-EDMG portion (L-STF/L-CEF/L-Header) + EDMG portion (Header-A, EDMG-STF, EDMG-CEF, Header-B)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4451,
+        4452,
+        4453
+      ],
+      "note": "28.3.4 Channelization (Δf = 1.08 GHz, channel index) and 28.3.5 Transmit mask for bonded/aggregated PPDUs"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4470,
+        4471
+      ],
+      "note": "28.3.7 Control trailer — LDPC codeword (18 data + 21 parity octets) carrying BW / MU-MIMO group / next-Tx signalling"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4498,
+        4499,
+        4501
+      ],
+      "note": "28.5.4 EDMG-STF and 28.5.5 EDMG-CEF (SC mode) — absent for single-stream/single-channel; per-stream via spatial mapping matrix Q; lengths scale with N_CB"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4563
+      ],
+      "note": "28.6.4 EDMG-STF definition (OFDM mode) — tone counts 88/192/296/400 for N_CB = 1/2/3/4"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4599,
+        4600
+      ],
+      "note": "28.9.1 Short SSW PPDU — DMG control PPDU, Length = 6, 6-octet payload; SISO and MU-MIMO sector sweep"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4603,
+        4604
+      ],
+      "note": "28.9.2 Beam refinement / EDMG BRP PPDU — RX, TX, RX/TX types; TRN field, AWV training"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4615,
+        4616
+      ],
+      "note": "28.9.3 EDMG secure ranging PPDU — single-stream BRP-TX with Secure TRN subfields for tamper-resistant RTT"
+    }
+  ],
+  "track": "legacy-phy"
+}

@@ -1,0 +1,145 @@
+{
+  "id": "legacy-phy-14",
+  "title": {
+    "en": "TVHT PHY (Clause 22): Wi-Fi in the TV White Space",
+    "zh": "TVHT 物理层（第22章）：电视白频段里的 Wi-Fi"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Picture the spectrum just below 1 GHz, the old analogue-TV broadcast bands. When a region switched off some of those TV transmitters, the channels they used didn't disappear — they became locally unused gaps called TV white space (TVWS). 802.11af's Television Very High Throughput (TVHT) PHY is Wi-Fi squeezed into those gaps. The clever part: instead of inventing a new modem, the standard takes the existing VHT (802.11ac) signal-processing chain and reuses it almost wholesale, just rescaled to fit a narrow TV channel.",
+      "zh": "想象一下 1 GHz 以下的那片频谱，也就是过去模拟电视广播所占用的频段。当某个地区关闭了部分电视发射机后，它们曾用的信道并没有消失——而是变成了本地暂时没人用的空隙，称为“电视白频段”（TVWS）。802.11af 的电视超高吞吐（TVHT）物理层，就是把 Wi-Fi 塞进这些空隙里。其精妙之处在于：标准并没有发明一套全新的调制解调器，而是把现成的 VHT（802.11ac）信号处理链几乎原封不动地拿来复用，只是重新缩放，以适配一个窄窄的电视信道。"
+    },
+    {
+      "type": "prose",
+      "en": "The fundamental unit of TVHT is the Basic Channel Unit (BCU), written TVHT_W. One BCU is exactly one TV broadcast channel — 6, 7, or 8 MHz wide depending on the country's regulatory domain. From this one brick you build wider modes: TVHT_2W (two adjacent BCUs), TVHT_W+W (two BCUs that are NOT adjacent — a non-contiguous pair), TVHT_4W (four adjacent), and TVHT_2W+2W (two non-contiguous chunks of two BCUs each). So where ordinary VHT thinks in 20/40/80/160 MHz, TVHT thinks in these much narrower W-sized building blocks.",
+      "zh": "TVHT 的基本单位是“基本信道单元”（Basic Channel Unit，BCU），记作 TVHT_W。一个 BCU 恰好对应一个电视广播信道——根据各国的管制域不同，宽度为 6、7 或 8 MHz。以这一块“砖”为基础，可以拼出更宽的模式：TVHT_2W（两个相邻 BCU）、TVHT_W+W（两个不相邻的 BCU——一对非连续频段）、TVHT_4W（四个相邻 BCU），以及 TVHT_2W+2W（两段非连续频段，每段各含两个 BCU）。所以普通 VHT 以 20/40/80/160 MHz 来思考，而 TVHT 则以这些窄得多的 W 大小的积木来思考。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The trick that makes the reuse work: every TVHT transmission in one BCU borrows the VHT parameters for a 40 MHz channel, but slows the sampling clock down so the same waveform shrinks to fit ~6–8 MHz. A 6/8 MHz BCU uses 144 tones (data/pilots out to tone 58 each side of DC, exactly the VHT-40 layout); a 7 MHz BCU uses 168 tones to keep the same tone spacing. It is literally 'VHT-40, stretched in time and squeezed in bandwidth.'",
+      "zh": "让这种复用得以成立的诀窍是：每一次在单个 BCU 上的 TVHT 传输都借用 40 MHz 信道的 VHT 参数，但把采样时钟放慢，让同一波形缩小到约 6–8 MHz 的宽度。6/8 MHz 的 BCU 使用 144 个子载波（数据/导频延伸到直流两侧第 58 号子载波，恰好就是 VHT-40 的布局）；7 MHz 的 BCU 则使用 168 个子载波，以保持相同的子载波间隔。这其实就是“把 VHT-40 在时间上拉长、在带宽上压窄”。"
+    },
+    {
+      "type": "prose",
+      "en": "Because the timing is stretched, the preamble looks familiar but runs slow. The PPDU keeps the legacy front-end — L-STF, L-LTF, L-SIG — for backward-readable framing, then adds the VHT-style fields renamed for TVHT: TVHT-SIG-A (signals bandwidth mode and stream/AID info), TVHT-STF, TVHT-LTF (1, 2, or 4 symbols, one per group of space-time streams), and TVHT-SIG-B, before the Data field. The symbol times are simply scaled: each legacy symbol that is 8 µs in VHT-40 becomes 45 µs here, and a 4 µs symbol becomes 30 µs (22.5 µs for 8 MHz channels) — same shape, longer clock.",
+      "zh": "由于时序被拉长，前导码看上去很眼熟，但跑得很慢。PPDU 保留了传统前端——L-STF、L-LTF、L-SIG——以保证向后可读的成帧，然后加上沿用 VHT 风格、但为 TVHT 重新命名的字段：TVHT-SIG-A（指示带宽模式以及流数/AID 信息）、TVHT-STF、TVHT-LTF（1、2 或 4 个符号，每组空时流对应一个），以及 TVHT-SIG-B，最后才是数据字段。符号时长只是被简单地缩放：在 VHT-40 中为 8 µs 的每个传统符号，在这里变成 45 µs；4 µs 的符号变成 30 µs（8 MHz 信道为 22.5 µs）——形状相同，时钟更长。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 760 200\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\" font-size=\"12\"><g stroke=\"currentColor\" fill=\"none\" stroke-width=\"1.5\"><rect x=\"10\" y=\"60\" width=\"70\" height=\"40\"/><rect x=\"80\" y=\"60\" width=\"70\" height=\"40\"/><rect x=\"150\" y=\"60\" width=\"70\" height=\"40\"/><rect x=\"220\" y=\"60\" width=\"90\" height=\"40\"/><rect x=\"310\" y=\"60\" width=\"55\" height=\"40\"/><rect x=\"365\" y=\"60\" width=\"120\" height=\"40\"/><rect x=\"485\" y=\"60\" width=\"75\" height=\"40\"/><rect x=\"560\" y=\"60\" width=\"190\" height=\"40\"/></g><g fill=\"currentColor\" text-anchor=\"middle\"><text x=\"45\" y=\"84\">L-STF</text><text x=\"115\" y=\"84\">L-LTF</text><text x=\"185\" y=\"84\">L-SIG</text><text x=\"265\" y=\"84\">TVHT-SIG-A</text><text x=\"337\" y=\"84\">TVHT-STF</text><text x=\"425\" y=\"84\">TVHT-LTF</text><text x=\"522\" y=\"84\">TVHT-SIG-B</text><text x=\"655\" y=\"84\">Data (PSDU)</text></g><g fill=\"currentColor\" text-anchor=\"middle\" font-size=\"10\"><text x=\"45\" y=\"118\">45 us</text><text x=\"115\" y=\"118\">45 us</text><text x=\"185\" y=\"118\">45 us</text><text x=\"265\" y=\"118\">30 us</text><text x=\"337\" y=\"118\">30 us</text><text x=\"425\" y=\"118\">30 us/sym</text><text x=\"522\" y=\"118\">30 us</text></g><g fill=\"currentColor\"><text x=\"10\" y=\"40\">Legacy preamble (back-readable)</text><text x=\"320\" y=\"150\">TVHT portion: reused VHT fields, scaled timing (6/7 MHz example)</text></g></svg>",
+      "caption": {
+        "en": "VHT PPDU in TVWS bands: a legacy L-STF/L-LTF/L-SIG front-end followed by the TVHT (renamed VHT) preamble fields, then Data. Times shown for 6/7 MHz BCUs.",
+        "zh": "TVWS 频段中的 VHT PPDU：传统的 L-STF/L-LTF/L-SIG 前端，后接 TVHT（重命名的 VHT）前导字段，最后是数据。所示时长针对 6/7 MHz 的 BCU。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Two things separate TVHT from a plain frequency-shift of VHT. First, channelization is database-driven, not free choice: a TV channel is identified by MIB fields (channel width, two centre-frequency segment indices, and a primary-channel index), and which channels are legally usable in your location is decided by consulting a geolocation database of protected broadcast incumbents — not merely by sensing energy. Second, because you're a guest in protected broadcast spectrum, the transmit spectrum mask is strict: TVHT reuses the VHT 40 MHz (or 80+80) mask but scales the frequency axis down by W/40, and the 144-tone design (rather than 128) exists precisely to allow sharper filtering and meet a 55 dB adjacent-channel leakage target.",
+      "zh": "有两点让 TVHT 不只是 VHT 的简单频率搬移。第一，信道划分是由数据库驱动的，而非随意选择：一个电视信道由若干 MIB 字段标识（信道宽度、两个中心频率段索引，以及一个主信道索引），而你所在位置上哪些信道可以合法使用，是通过查询一个记录受保护广播在用者的地理位置数据库来决定的——而不仅仅靠能量感知。第二，由于你是受保护广播频谱里的“客人”，发射频谱模板非常严格：TVHT 复用 VHT 的 40 MHz（或 80+80）模板，但把频率轴按 W/40 缩小；而采用 144 子载波（而非 128）的设计，正是为了允许更陡峭的滤波，以达到 55 dB 的邻道泄漏目标。"
+    },
+    {
+      "type": "prose",
+      "en": "Capability-wise, TVHT inherits VHT's MIMO toolbox but in a smaller package. Every TVHT STA must do at least one BCU (TVHT_MODE_1), single-stream MCS 0–7, BCC coding, and short/long guard intervals. Optionally it can add the multi-BCU modes, multiple spatial streams, LDPC, STBC, MCS 8–9, and full SU-MIMO plus downlink MU-MIMO beamforming — the same closed-loop sounding-and-feedback machinery as VHT, with the total space-time streams across all users capped at 4 and the number of BCC encoders always fixed at 1.",
+      "zh": "在能力方面，TVHT 继承了 VHT 的 MIMO 工具箱，只是封装得更小。每个 TVHT 站点至少必须支持单 BCU（TVHT_MODE_1）、单流 MCS 0–7、BCC 编码，以及长/短保护间隔。可选地，它还能加上多 BCU 模式、多空时流、LDPC、STBC、MCS 8–9，以及完整的 SU-MIMO 和下行 MU-MIMO 波束成形——与 VHT 相同的闭环探测与反馈机制；所有用户合计的空时流数上限为 4，而 BCC 编码器的数量始终固定为 1。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact channelization math and the SIG-A bandwidth field",
+        "zh": "精确的信道划分算法与 SIG-A 带宽字段"
+      },
+      "en": "Clause 22.3.14 specifies a TVHT channel with four MIB fields: dot11CurrentTVHTChannelWidth, two CenterFrequencyIndex fields (segment 0 / segment 1), and dot11CurrentPrimaryChannel. The channel centre frequency follows Equation (22-10): centre = channel-starting-frequency + TVHT_W x index + correction, where the correction is 0 for MODE_1/MODE_2N, 0.5xW for MODE_2C and MODE_4N, and 1.5xW for MODE_4C. The standard's worked example: US TV channel 2 has starting frequency 45 MHz, so index 2 gives 45 + 6x2 + 0 = 57 MHz. In TVHT-SIG-A1 the 2-bit B0-B1 field (Table 22-13) encodes the mode: 10 = MODE_1, 01 = MODE_2C/2N, 11 = MODE_4C/4N. The transmit spectral mask (22.3.17.1) is the VHT 40 MHz mask with the frequency axis scaled by W/40 (e.g. 6/40 for a 6 MHz MODE_1 channel), built as the higher of an interim relative mask and an absolute spectral limit at each offset.",
+      "zh": "第 22.3.14 节用四个 MIB 字段来指定一个 TVHT 信道：dot11CurrentTVHTChannelWidth、两个中心频率索引字段（段 0／段 1），以及 dot11CurrentPrimaryChannel。信道中心频率遵循式 (22-10)：中心 = 信道起始频率 + TVHT_W x 索引 + 校正项，其中校正项在 MODE_1/MODE_2N 下为 0，在 MODE_2C 和 MODE_4N 下为 0.5xW，在 MODE_4C 下为 1.5xW。标准给出的算例：美国电视 2 频道起始频率为 45 MHz，因此索引 2 得到 45 + 6x2 + 0 = 57 MHz。在 TVHT-SIG-A1 中，2 比特的 B0-B1 字段（表 22-13）用于编码模式：10 = MODE_1，01 = MODE_2C/2N，11 = MODE_4C/4N。发射频谱模板（22.3.17.1）即 VHT 的 40 MHz 模板，但频率轴按 W/40 缩放（例如 6 MHz 的 MODE_1 信道为 6/40），并在每个频偏处取临时相对模板与绝对频谱限值二者中的较高者来构建。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3712,
+          3713,
+          3714
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:22.1.1",
+    "80211-2024:22.3.2",
+    "80211-2024:22.2.3",
+    "80211-2024:22.3.8.3",
+    "80211-2024:22.3.4.5",
+    "80211-2024:22.3.4.8",
+    "80211-2024:22.3.5",
+    "80211-2024:22.3.11.1",
+    "80211-2024:22.3.13",
+    "80211-2024:22.3.14",
+    "80211-2024:22.3.17.1"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3680,
+        3681
+      ],
+      "note": "22.1.1 Introduction to the TVHT PHY: BCU (TVHT_W) = 6/7/8 MHz; TVHT_2W, W+W, 4W, 2W+2W; reuse of VHT-40 params via sampling-clock change; 144/168 tones; mandatory features"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3689
+      ],
+      "note": "22.2.3 Effects of CH_BANDWIDTH on PPDU format (Table 22-2): TVHT_W->MODE_1, 2W->2C, 4W->4C, W+W->2N, 2W+2W->4N"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3694,
+        3695
+      ],
+      "note": "22.3.2 VHT PPDU format in TVWS bands; Figure 22-1 (L-STF/L-LTF/L-SIG + TVHT-SIG-A/STF/LTF/SIG-B + Data) with 45/30 us scaled timing; Table 22-7 field list"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3699,
+        3700
+      ],
+      "note": "22.3.4.5 Construction of TVHT-SIG-A; 22.3.4.8 Construction of TVHT-SIG-B; 22.3.5 MCS carried in SIG-A (SU) / SIG-B"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3706,
+        3707,
+        3708
+      ],
+      "note": "22.3.8.3 TVHT portion of preamble: SIG-A/STF/LTF/SIG-B definitions; Table 22-13 B0-B1 bandwidth-mode field; NTVHT-LTF = 1/2/4"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3711
+      ],
+      "note": "22.3.11.1 SU-MIMO and MU-MIMO beamforming general (reuse of VHT 21.3.11.1)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3712,
+        3713
+      ],
+      "note": "22.3.13 Regulatory requirements; 22.3.14 Channelization - four MIB fields, Equation (22-10) centre frequency, worked US TV channel examples"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3714
+      ],
+      "note": "22.3.17.1 Transmit spectrum mask: VHT 40 MHz / 80+80 mask with W/40 frequency scaling (Tables 22-18, 22-19)"
+    }
+  ],
+  "track": "legacy-phy"
+}
