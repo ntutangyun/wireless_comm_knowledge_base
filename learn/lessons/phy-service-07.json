@@ -1,0 +1,117 @@
+{
+  "id": "phy-service-07",
+  "title": {
+    "en": "Finding and starting a network: SCAN, JOIN, SYNCH and START",
+    "zh": "发现与启动网络：扫描、加入、同步与启动"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "When you tap 'Wi-Fi settings' and a list of networks appears, something concrete happened underneath: a piece of software asked the radio to go look around. In 802.11 that conversation runs between two layers — the station management entity (SME, the decision-maker) and the MAC layer management entity (MLME, the part that actually touches the air). They talk through named function calls called MLME primitives. This lesson follows the first family of them: the calls that discover networks and bring a BSS up.",
+      "zh": "当你点开“Wi-Fi 设置”、看到一串网络名字弹出来时，底层其实发生了一件很具体的事：有一段软件请求无线电去“四处看看”。在 802.11 里，这段对话发生在两层之间——站点管理实体（SME，做决定的一方）和 MAC 层管理实体（MLME，真正接触空口的一方）。它们通过一组有名字的函数调用来沟通，这些调用叫做 MLME 原语（primitive）。本课跟随其中的第一个家族：负责发现网络、并把一个 BSS 启动起来的那些调用。"
+    },
+    {
+      "type": "prose",
+      "en": "Discovery starts with MLME-SCAN.request — the SME asking the MAC to survey the potential BSSs the station could later try to join. The request carries a ScanType of ACTIVE or PASSIVE. Passive means just listen: the radio parks on each channel and waits to overhear Beacons. Active means speak up: the radio transmits Probe Request frames and collects the Probe Responses that come back, which is faster because it does not have to wait for the next beacon. Either way, when the survey ends the MAC answers with MLME-SCAN.confirm, whose BSSDescriptionSet is exactly the list of networks your settings screen renders.",
+      "zh": "发现从 MLME-SCAN.request 开始——SME 请求 MAC 去勘察那些站点之后可能尝试加入的候选 BSS。请求里带有一个 ScanType 字段，取值为 ACTIVE（主动）或 PASSIVE（被动）。被动扫描就是只管听：无线电停在每个信道上，等着“偷听”到 Beacon 帧。主动扫描则是主动开口：无线电发送 Probe Request（探测请求）帧，再收集回来的 Probe Response（探测响应）帧——这样更快，因为不必等到下一个信标周期。无论哪种方式，勘察结束时 MAC 都会用 MLME-SCAN.confirm 回复，其中的 BSSDescriptionSet（BSS 描述集合）正是你设置界面里渲染出来的那串网络列表。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Map the call to the airtime you already know. MLME-SCAN.request with ScanType=ACTIVE is the software reason a Probe Request goes out; ScanType=PASSIVE is the reason the radio sits quietly listening for Beacons. If a scan is taking too long, the SME can cut it short with MLME-SCAN-STOP.request, which terminates every ongoing scan in the station.",
+      "zh": "把这个调用对应到你已经见过的空口现象上。带 ScanType=ACTIVE 的 MLME-SCAN.request，正是一帧 Probe Request 发出去的软件原因；ScanType=PASSIVE 则是无线电安静地蹲守 Beacon 的原因。如果一次扫描拖得太久，SME 可以用 MLME-SCAN-STOP.request 把它叫停，该原语会终止站点中所有正在进行的扫描。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant SME as SME (decision-maker)\n    participant MLME as MLME (MAC)\n    participant AIR as On the air\n    Note over SME: user opens Wi-Fi list\n    SME->>MLME: MLME-SCAN.request (ScanType=ACTIVE)\n    MLME->>AIR: Probe Request\n    AIR-->>MLME: Probe Response / Beacon\n    MLME->>SME: MLME-SCAN.confirm (BSSDescriptionSet)\n    Note over SME: picks one BSSDescription\n    SME->>MLME: MLME-JOIN.request (SelectedBSS)\n    Note over MLME: synchronize TSF timer + beacon params\n    MLME->>SME: MLME-JOIN.confirm (ResultCode)\n    Note over SME,MLME: now synchronized, ready to authenticate",
+      "zh": "sequenceDiagram\n    participant SME as SME（决策方）\n    participant MLME as MLME（MAC）\n    participant AIR as 空口\n    Note over SME: 用户打开 Wi-Fi 列表\n    SME->>MLME: MLME-SCAN.request (ScanType=ACTIVE)\n    MLME->>AIR: Probe Request\n    AIR-->>MLME: Probe Response / Beacon\n    MLME->>SME: MLME-SCAN.confirm (BSSDescriptionSet)\n    Note over SME: 选定一个 BSSDescription\n    SME->>MLME: MLME-JOIN.request (SelectedBSS)\n    Note over MLME: 同步 TSF 定时器与信标参数\n    MLME->>SME: MLME-JOIN.confirm (ResultCode)\n    Note over SME,MLME: 已同步，准备进行认证"
+    },
+    {
+      "type": "prose",
+      "en": "Picking one network from that list is MLME-JOIN.request. Its key parameter is SelectedBSS — and the standard requires it to be one of the BSSDescriptions the prior scan returned; you cannot join a network you never discovered. JOIN is the synchronization (SYNCH) step: the MLME locks its TSF timer and beacon parameters onto the chosen BSS so that, from this moment, the station counts time the same way the AP does. Crucially, JOIN happens before any authentication — it only lines up timing, it does not let you exchange data yet. The MAC reports back with MLME-JOIN.confirm carrying a ResultCode of SUCCESS or JOIN_FAILURE_TIMEOUT.",
+      "zh": "从那串列表里选定一个网络，对应的是 MLME-JOIN.request。它的关键参数是 SelectedBSS——而且标准要求它必须是之前那次扫描返回的某个 BSSDescription；你无法加入一个从未发现过的网络。JOIN 就是同步（SYNCH）这一步：MLME 把自己的 TSF 定时器和信标参数锁定到所选 BSS 上，于是从这一刻起，站点与 AP 用同一套方式计时。关键在于，JOIN 发生在任何认证之前——它只是对齐时序，此时还不能交换数据。MAC 通过 MLME-JOIN.confirm 回报结果，其 ResultCode 取值为 SUCCESS 或 JOIN_FAILURE_TIMEOUT。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 420 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><text x='10' y='20' fill='currentColor' stroke='none' font-size='13' font-weight='bold'>STA side</text><text x='300' y='20' fill='currentColor' stroke='none' font-size='13' font-weight='bold'>AP side</text><rect x='10' y='35' width='150' height='32' rx='4'/><text x='85' y='56' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>SCAN -&gt; JOIN</text><rect x='10' y='90' width='150' height='32' rx='4'/><text x='85' y='111' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>discover &amp; sync</text><rect x='260' y='35' width='150' height='32' rx='4'/><text x='335' y='56' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>START</text><rect x='260' y='90' width='150' height='32' rx='4'/><text x='335' y='111' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>create BSS, beacon</text><line x1='160' y1='51' x2='258' y2='51' stroke-dasharray='4 3'/><text x='210' y='45' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>Beacon</text><polygon points='258,51 250,47 250,55' fill='currentColor' stroke='none'/></svg>",
+      "caption": {
+        "en": "Two mirror-image roles: a joining STA runs SCAN then JOIN to find and sync to a BSS; the AP runs START to create that BSS and begin beaconing in the first place.",
+        "zh": "两个互为镜像的角色：要加入的 STA 先 SCAN 再 JOIN，去发现并同步到一个 BSS；而 AP 一开始就通过 START 来创建这个 BSS 并开始发送信标。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "There would be nothing to scan for if no one had started a network. MLME-START.request is the AP-side mirror of all this: it asks the MAC to create a brand-new BSS (or become the first member of a mesh BSS). It carries the SSID, BSSType, BeaconPeriod, the channel via PHY parameter set, and the rate sets — everything the AP will then advertise. Its effect of receipt is the BSS initialization procedure, after which the AP begins beaconing; that stream of Beacons is exactly what a passively scanning station will later overhear. The MAC confirms with MLME-START.confirm and a ResultCode. The standard guards it: START must not run again after a successful START or JOIN without an intervening MLME-RESET.request.",
+      "zh": "如果没有人先启动一个网络，那也就无从扫描了。MLME-START.request 正是上述这一切在 AP 侧的镜像：它请求 MAC 创建一个全新的 BSS（或者成为某个 mesh BSS 的第一个成员）。它携带 SSID、BSSType、BeaconPeriod（信标周期）、通过 PHY 参数集指定的信道，以及速率集——也就是 AP 随后将要广播的全部信息。它被接收后的效果是触发 BSS 初始化流程，之后 AP 便开始发送信标；而这一串 Beacon，正是被动扫描的站点之后会“偷听”到的内容。MAC 通过 MLME-START.confirm 及一个 ResultCode 予以确认。标准还对它加了护栏：在一次成功的 START 或 JOIN 之后，若未先发出 MLME-RESET.request，就不得再次运行 START。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact functions, the SelectedBSS rule, and the ResultCodes",
+        "zh": "精确的功能定义、SelectedBSS 规则与各 ResultCode"
+      },
+      "en": "Clause 6.5.3 frames Scan as 'determining the characteristics of the available BSSs.' MLME-SCAN.request (6.5.3.2) requests a survey of potential BSSs; its ScanType parameter is the enumeration {ACTIVE, PASSIVE, TDD PASSIVE}, and active scanning transmits Probe Request frames. MLME-SCAN.confirm (6.5.3.3) returns a BSSDescriptionSet of zero or more BSSDescriptions and a ResultCode (SUCCESS, INTERMEDIATE_SCAN_RESULT, NOT_SUPPORTED, PARTIAL_SCAN). MLME-SCAN-STOP.request (6.5.3.4) 'terminates any ongoing scan.' Clause 6.5.4 names the mechanism Synchronization: MLME-JOIN.request (6.5.4.2) 'requests synchronization with a nonmesh BSS' and its SelectedBSS parameter must be a member of the description set returned by a prior MLME-SCAN.request; its effect of receipt synchronizes MLME timing with that BSS. MLME-JOIN.confirm (6.5.4.3) 'confirms synchronization' with ResultCode {SUCCESS, JOIN_FAILURE_TIMEOUT}. Clause 6.5.11 Start: MLME-START.request (6.5.11.2) 'requests that the MAC entity start a new BSS,' carrying SSID, BSSType, Beacon Period, PHY parameter set and rate sets; it shall not be reused after a successful START or JOIN without an intervening MLME-RESET.request. MLME-START.confirm (6.5.11.3) reports the result with ResultCode {SUCCESS, BSS_ALREADY_STARTED_OR_JOINED, RESET_REQUIRED_BEFORE_START, NOT_SUPPORTED}.",
+      "zh": "6.5.3 节把扫描（Scan）定义为“确定可用 BSS 的特征”。MLME-SCAN.request（6.5.3.2）请求对候选 BSS 进行一次勘察；其 ScanType 参数是枚举 {ACTIVE, PASSIVE, TDD PASSIVE}，主动扫描会发送 Probe Request 帧。MLME-SCAN.confirm（6.5.3.3）返回一个含零个或多个 BSSDescription 的 BSSDescriptionSet，以及一个 ResultCode（SUCCESS、INTERMEDIATE_SCAN_RESULT、NOT_SUPPORTED、PARTIAL_SCAN）。MLME-SCAN-STOP.request（6.5.3.4）“终止任何正在进行的扫描”。6.5.4 节将该机制命名为同步（Synchronization）：MLME-JOIN.request（6.5.4.2）“请求与一个非 mesh BSS 同步”，其 SelectedBSS 参数必须是先前某次 MLME-SCAN.request 返回的描述集合中的成员；被接收后的效果是将 MLME 的时序与该 BSS 同步。MLME-JOIN.confirm（6.5.4.3）“确认同步”，ResultCode 取值为 {SUCCESS, JOIN_FAILURE_TIMEOUT}。6.5.11 节为启动（Start）：MLME-START.request（6.5.11.2）“请求 MAC 实体启动一个新的 BSS”，携带 SSID、BSSType、信标周期、PHY 参数集与速率集；在一次成功的 START 或 JOIN 之后，若未先发出 MLME-RESET.request，则不得重复使用它。MLME-START.confirm（6.5.11.3）回报结果，ResultCode 取值为 {SUCCESS, BSS_ALREADY_STARTED_OR_JOINED, RESET_REQUIRED_BEFORE_START, NOT_SUPPORTED}。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          464,
+          469,
+          487,
+          491,
+          555,
+          563
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:6.5.3.1",
+    "80211-2024:6.5.3.2",
+    "80211-2024:6.5.3.3",
+    "80211-2024:6.5.3.4",
+    "80211-2024:6.5.4.1",
+    "80211-2024:6.5.4.2",
+    "80211-2024:6.5.4.3",
+    "80211-2024:6.5.11.1",
+    "80211-2024:6.5.11.2",
+    "80211-2024:6.5.11.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        464,
+        469
+      ],
+      "note": "6.5.3.1-6.5.3.3 Scan - introduction, MLME-SCAN.request (ScanType ACTIVE/PASSIVE), MLME-SCAN.confirm BSSDescriptionSet + ResultCode"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        487
+      ],
+      "note": "6.5.3.4 MLME-SCAN-STOP.request - terminates any ongoing scan; 6.5.4.1-6.5.4.2 Synchronization + MLME-JOIN.request SelectedBSS"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        490,
+        491
+      ],
+      "note": "6.5.4.2.4 effect of receipt (synchronize MLME timing) and 6.5.4.3 MLME-JOIN.confirm ResultCode SUCCESS/JOIN_FAILURE_TIMEOUT"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        555,
+        561,
+        563
+      ],
+      "note": "6.5.11.1-6.5.11.3 Start - MLME-START.request creates a new BSS (SSID/BSSType/BeaconPeriod), RESET-before-restart rule, MLME-START.confirm ResultCode set"
+    }
+  ],
+  "track": "phy-service"
+}

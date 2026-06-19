@@ -1,0 +1,120 @@
+{
+  "id": "phy-service-09",
+  "title": {
+    "en": "Power, protection and measurement primitives: POWERMGT, SETKEYS/DELETEKEYS/SETPROTECTION, and the radio-measurement model",
+    "zh": "功率、保护与测量原语：电源管理、密钥/保护设置与无线测量模型"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Earlier tracks watched a station scan, authenticate and associate. But the interesting life of a link happens after the door is open: it has to save power, lock down its frames, and keep an eye on the air around it. This lesson covers the 'operate and protect' family of MLME primitives — the software knobs the management entity (the SME) turns on an already-connected link. Each one is a single request handed down to the MAC, and each one produces a behaviour you may already have noticed on the air: a power-save bit, encrypted data frames, or measurement Action frames.",
+      "zh": "前面的课程里我们看着一个站点完成扫描、认证、关联。但一条链路真正有意思的生命，是在“门打开之后”才开始的：它要省电、要给自己的帧上锁、还要时刻留意周围的无线环境。本课讲的是“运行与保护”这一族 MLME 原语——也就是管理实体（SME）在一条已连接链路上拨动的“软件旋钮”。每一个原语都是下交给 MAC 的一次请求，而每一个都会产生你或许早已在空口上注意到的行为：省电位、加密的数据帧，或是测量类的 Action 帧。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with power. MLME-POWERMGT.request is the control-plane switch behind all doze/awake behaviour. It carries just two things: a PowerManagementMode of either ACTIVE or POWER_SAVE, and a ReceiveDTIMBeacons boolean that decides whether the station wakes for every DTIM beacon. The SME issues it to implement whatever power-saving strategy the device wants; the MAC applies the change and answers with MLME-POWERMGT.confirm carrying a ResultCode of SUCCESS or NOT_SUPPORTED. Note the confirm is local — there is no special frame for it. The mode change becomes visible on the air as the Power Management bit the MAC sets in the frames it sends.",
+      "zh": "先看电源管理。MLME-POWERMGT.request 是所有“打盹/唤醒”行为背后的控制面开关。它只携带两样东西：一个取值为 ACTIVE 或 POWER_SAVE 的 PowerManagementMode，以及一个决定站点是否对每个 DTIM beacon 都醒来的 ReceiveDTIMBeacons 布尔值。SME 发出它，以实现设备所需的省电策略；MAC 应用这一变更后，用携带 ResultCode（SUCCESS 或 NOT_SUPPORTED）的 MLME-POWERMGT.confirm 作答。注意这个 confirm 是本地的——它并不对应一个专门的空口帧。模式变更最终体现在空口上，就是 MAC 在它发出的帧里设置的那一位“Power Management”比特。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A useful mental model: .request goes down (SME -> MAC), .confirm comes back up (MAC -> SME), and only some primitives also trigger something on the air. POWERMGT, SETKEYS, DELETEKEYS and SETPROTECTION are all purely local configuration — they arm MAC behaviour. The measurement primitives, by contrast, do reach across the link as real frames.",
+      "zh": "一个好用的心智模型：.request 向下走（SME -> MAC），.confirm 向上返回（MAC -> SME），而只有部分原语还会在空口上触发动作。POWERMGT、SETKEYS、DELETEKEYS 和 SETPROTECTION 都是纯本地配置——它们只是“武装”起 MAC 的行为。相比之下，测量类原语则会以真实的帧跨越链路抵达对端。"
+    },
+    {
+      "type": "prose",
+      "en": "Next, the security-enabling trio. After the key handshake derives keys, three primitives install and arm them in the MAC. MLME-SETKEYS.request takes a Keylist of key descriptors — each with a Key value, Key ID, and Key Type (Group, Pairwise, PeerKey, IGTK, BIGTK, WIGTK) — and tells the MAC to use them for transmitting and receiving frames, initialising the relevant packet-number / replay counters for any new key. MLME-DELETEKEYS.request is the mirror image: it removes named keys so the MAC stops using them. Crucially, installing a key is not the same as turning encryption on. That final step is MLME-SETPROTECTION.request, whose ProtectType per peer address selects None, Rx, Tx, or Rx_Tx — i.e. which direction of data frames must be protected. This is how the management plane decides exactly when frames to and from a peer become protected.",
+      "zh": "接下来是“安全使能”三件套。在密钥握手派生出密钥之后，有三个原语负责把它们装进 MAC 并“上膛”。MLME-SETKEYS.request 携带一个由密钥描述符组成的 Keylist——每个描述符含 Key 值、Key ID 和 Key Type（Group、Pairwise、PeerKey、IGTK、BIGTK、WIGTK）——它告诉 MAC 用这些密钥来收发帧，并为每个新密钥初始化相应的分组号 / 重放计数器。MLME-DELETEKEYS.request 则是它的镜像：删除指定密钥，让 MAC 停止使用。关键在于：装入密钥并不等于打开加密。真正打开的那一步是 MLME-SETPROTECTION.request，它针对每个对端地址用 ProtectType 选择 None、Rx、Tx 或 Rx_Tx——也就是规定哪个方向的数据帧必须受保护。管理面正是借此精确地决定：与某个对端往来的帧从什么时候起开始被保护。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant SME as SME (policy)\n    participant MLME as MLME / MAC\n    participant Air as On the air\n    Note over SME: handshake derived keys\n    SME->>MLME: MLME-SETKEYS.request (Keylist)\n    Note over MLME: install keys, init PN/replay counters\n    SME->>MLME: MLME-SETPROTECTION.request (ProtectType = Rx_Tx)\n    Note over MLME: arm encryption for this peer\n    MLME->>Air: subsequent Data frames now Protected\n    Note over SME: later, on teardown\n    SME->>MLME: MLME-DELETEKEYS.request (Keylist)\n    Note over MLME: keys removed, frames no longer protected",
+      "zh": "sequenceDiagram\n    participant SME as SME（策略）\n    participant MLME as MLME / MAC\n    participant Air as 空口\n    Note over SME: 握手已派生密钥\n    SME->>MLME: MLME-SETKEYS.request（Keylist）\n    Note over MLME: 装入密钥，初始化 PN/重放计数器\n    SME->>MLME: MLME-SETPROTECTION.request（ProtectType = Rx_Tx）\n    Note over MLME: 为该对端“武装”加密\n    MLME->>Air: 此后的数据帧均标记为 Protected\n    Note over SME: 之后，拆链时\n    SME->>MLME: MLME-DELETEKEYS.request（Keylist）\n    Note over MLME: 删除密钥，帧不再受保护"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, measurement. Clause 6.5.13 gives a clean picture of who does what: policy decisions (which measurement to run, whether to switch channel) live in the SME, while the protocol — the actual frame exchange and timing — lives in the MLME. So when the SME decides to ask a peer for a measurement, it issues MLME-MREQUEST.request; the MAC sends a Spectrum or Radio Measurement Request frame on the air; the peer's MLME raises MLME-MREQUEST.indication, runs the measurement (MLME-MEASURE.request / .confirm), compiles a report, and sends a Radio Measurement Report frame back. This is a primitive that genuinely crosses the link, unlike the local knobs above.",
+      "zh": "最后是测量。6.5.13 节清晰地划分了职责：策略决策（要做哪种测量、是否切换信道）归 SME，而协议本身——真正的帧交换与时序——归 MLME。于是当 SME 决定向某个对端请求一次测量时，它发出 MLME-MREQUEST.request；MAC 在空口上发送一个频谱或无线测量请求帧（Spectrum or Radio Measurement Request frame）；对端的 MLME 上报 MLME-MREQUEST.indication，执行测量（MLME-MEASURE.request / .confirm），整理出报告，再发回一个无线测量报告帧（Radio Measurement Report frame）。与上面那些纯本地旋钮不同，这是一个真正会跨越链路的原语。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "There is a specialised cousin worth knowing: the NGV radio-environment measurement primitives (6.5.27). MLME-RADIOENVIRONMENT.request asks for a snapshot of the local airspace over a measurement period, and MLME-RADIOENVIRONMENT.indication reports back three numbers — a station count, the percentage of those stations that are NGV-capable, and the channel-busy percentage. It is a self-measurement of the radio environment rather than a request-and-report across the link.",
+      "zh": "还有一个值得一提的“近亲”：NGV 无线环境测量原语（6.5.27）。MLME-RADIOENVIRONMENT.request 请求在一段测量周期内对本地空域做一次快照，而 MLME-RADIOENVIRONMENT.indication 回报三个数字——站点数量、其中具备 NGV 能力的站点所占百分比，以及信道繁忙百分比。它是对无线环境的一次“自我测量”，而非跨链路的“请求—报告”。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact parameters and the layer-management partition",
+        "zh": "精确的参数与层管理职责划分"
+      },
+      "en": "Precise semantics from clause 6.5. MLME-POWERMGT.request (6.5.2.2) carries PowerManagementMode {ACTIVE, POWER_SAVE} and ReceiveDTIMBeacons {true, false}; the confirm (6.5.2.3) returns ResultCode {SUCCESS, NOT_SUPPORTED} and is not generated until the change completes per 11.2.3. MLME-SETKEYS.request (6.5.14.1) installs a Keylist of SetKeyDescriptors; for a new Pairwise/PeerKey key the MAC zeroes the TSC/PN counter and replay counter, and key application is explicitly 'subject to the MLME-SETPROTECTION.request primitive'. MLME-DELETEKEYS.request (6.5.15.1) deletes the temporal keys named by Key Type, Key ID and Address. MLME-SETPROTECTION.request (6.5.16.1) sets ProtectType {None, Rx, Tx, Rx_Tx} per MAC address — Rx discards unprotected Data frames received from that address, Tx protects Data frames sent to it. The layer-management model (6.5.13, Figure 6-9) places measurement/TPC/channel-switch policy in the SME and timing/frame-exchange in the MLME; Figures 6-10/6-11 show the accept/reject measurement flows (MLME-MREQUEST -> MLME-MEASURE -> MLME-MREPORT). NGV radio-environment measurement (6.5.27) uses MLME-RADIOENVIRONMENT.request {RadioEnvironmentMeasurementPeriod, StationMeasurementPeriod} and .indication {StationCount, NGVCapabilityPercentage, ChannelBusyPercentage}, generated when dot11NGVOptionImplemented is true.",
+      "zh": "来自第 6.5 节的精确语义。MLME-POWERMGT.request（6.5.2.2）携带 PowerManagementMode {ACTIVE, POWER_SAVE} 与 ReceiveDTIMBeacons {true, false}；其 confirm（6.5.2.3）返回 ResultCode {SUCCESS, NOT_SUPPORTED}，且要等到变更按 11.2.3 完成后才会生成。MLME-SETKEYS.request（6.5.14.1）装入由 SetKeyDescriptor 组成的 Keylist；对于一个新的 Pairwise/PeerKey 密钥，MAC 会把 TSC/PN 计数器与重放计数器清零，且密钥的应用明确“受 MLME-SETPROTECTION.request 原语约束”。MLME-DELETEKEYS.request（6.5.15.1）删除由 Key Type、Key ID 与 Address 指定的临时密钥。MLME-SETPROTECTION.request（6.5.16.1）按 MAC 地址设置 ProtectType {None, Rx, Tx, Rx_Tx}——Rx 表示丢弃从该地址收到的未受保护数据帧，Tx 表示对发往该地址的数据帧加保护。层管理模型（6.5.13，图 6-9）把测量/TPC/信道切换的“策略”放在 SME，把“时序与帧交换”放在 MLME；图 6-10/6-11 展示了接受/拒绝测量的流程（MLME-MREQUEST -> MLME-MEASURE -> MLME-MREPORT）。NGV 无线环境测量（6.5.27）使用 MLME-RADIOENVIRONMENT.request {RadioEnvironmentMeasurementPeriod, StationMeasurementPeriod} 与 .indication {StationCount, NGVCapabilityPercentage, ChannelBusyPercentage}，当 dot11NGVOptionImplemented 为 true 时生成。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          462,
+          463,
+          564,
+          568,
+          570,
+          601
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:6.5.2.1",
+    "80211-2024:6.5.2.2",
+    "80211-2024:6.5.2.3",
+    "80211-2024:6.5.13",
+    "80211-2024:6.5.14.1",
+    "80211-2024:6.5.15.1",
+    "80211-2024:6.5.16.1",
+    "80211-2024:6.5.27.1",
+    "80211-2024:6.5.27.2",
+    "80211-2024:6.5.27.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        462,
+        463,
+        464
+      ],
+      "note": "6.5.2.1-6.5.2.3 Power management - MLME-POWERMGT.request/.confirm; PowerManagementMode {ACTIVE, POWER_SAVE}, ReceiveDTIMBeacons, ResultCode {SUCCESS, NOT_SUPPORTED}"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        564,
+        565,
+        566
+      ],
+      "note": "6.5.13 Protocol layer model for spectrum management and radio measurement - Figure 6-9 layer management model; Figures 6-10/6-11 measurement accept/reject (MLME-MREQUEST/MLME-MEASURE/MLME-MREPORT)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        564,
+        567,
+        568,
+        569,
+        570
+      ],
+      "note": "6.5.14.1 SETKEYS (Keylist, Key Type, PN/replay init, subject to SETPROTECTION); 6.5.15.1 DELETEKEYS; 6.5.16.1 SETPROTECTION ProtectType {None, Rx, Tx, Rx_Tx}"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        601,
+        602
+      ],
+      "note": "6.5.27 NGV radio environment measurement - MLME-RADIOENVIRONMENT.request/.indication; StationCount, NGVCapabilityPercentage, ChannelBusyPercentage"
+    }
+  ],
+  "track": "phy-service"
+}

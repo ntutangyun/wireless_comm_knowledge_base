@@ -1,0 +1,106 @@
+{
+  "id": "phy-service-06",
+  "title": {
+    "en": "How MLME primitives talk: request / confirm / indication / response",
+    "zh": "MLME 原语的交互方式：请求 / 确认 / 指示 / 响应"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 6 of 802.11 reads like a list of operations a station can perform — authenticate, associate, scan, switch channel. But every one of those operations is described in the same little grammar of four word-endings: .request, .confirm, .indication, and .response. Learn that grammar once and the rest of clause 6 becomes readable. This lesson is that decoder ring.",
+      "zh": "802.11 的第 6 章读起来像是一份站点能执行的操作清单——认证、关联、扫描、切换信道。但其中每一项操作都用同一套小小的“语法”来描述，归结为四个词尾：.request（请求）、.confirm（确认）、.indication（指示）和 .response（响应）。把这套语法学会一次，第 6 章的其余部分就都能读懂了。本课就是这把“解码环”。"
+    },
+    {
+      "type": "prose",
+      "en": "First, who is talking to whom. Inside one station sit two layers: the SME (the station management entity — the decision maker, the brain) and the MLME (the MAC sublayer management entity — the hands that build and send frames). They meet at a doorway called the MLME SAP. The four suffixes simply say which direction a message crosses that doorway. A .request goes DOWN from SME to MLME (\"go do this\"). A .confirm comes back UP, MLME to SME (\"here's how it went\"). An .indication also goes UP (\"a frame just arrived from a peer\"). A .response goes DOWN again (\"reply to that peer like so\").",
+      "zh": "首先，是谁在和谁对话。一个站点内部有两层：SME（站点管理实体——做决定的“大脑”）和 MLME（MAC 子层管理实体——构造并发送帧的“双手”）。它们在一个叫 MLME SAP 的“门口”交汇。这四个词尾不过是在说一条消息朝哪个方向穿过这道门。.request 由 SME 向下交给 MLME（“去做这件事”）；.confirm 再向上返回，由 MLME 交给 SME（“事情办得怎么样”）；.indication 也是向上（“刚有一个来自对端的帧到达”）；.response 则再次向下（“就这样回复那个对端”）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy mnemonic for the round-trip case: I requested it, the peer's arrival is indicated to me, I respond, and my own MLME confirms the outcome. request/confirm always live on the side that started the operation; indication/response always live on the side that received an incoming frame.",
+      "zh": "对于“往返”情形，有一个好记的口诀：我请求（request），对端帧的到达被指示（indication）给我，我做出响应（response），而我自己的 MLME 给出确认（confirm）。request/confirm 总是出现在“发起操作”的那一侧；indication/response 总是出现在“收到来帧”的那一侧。"
+    },
+    {
+      "type": "prose",
+      "en": "Tie it to something you already saw on the air. When a station authenticates, its SME issues MLME-AUTHENTICATE.request; the MLME turns that into an Authentication frame on the wire. The peer's MLME receives that frame and raises MLME-AUTHENTICATE.indication to its own SME. The peer SME answers with MLME-AUTHENTICATE.response, which becomes the reply Authentication frame. Back at the originator, once that reply is acknowledged, the MLME issues MLME-AUTHENTICATE.confirm with a Result Code. The four suffixes are exactly the four moments of that on-air handshake.",
+      "zh": "把它和你之前在空口上见过的事情对应起来。当一个站点进行认证时，它的 SME 发出 MLME-AUTHENTICATE.request；MLME 把它变成空口上的一个认证帧。对端的 MLME 收到该帧，向它自己的 SME 上报 MLME-AUTHENTICATE.indication。对端 SME 以 MLME-AUTHENTICATE.response 作答，这会变成回复用的认证帧。回到发起方，一旦该回复被确认（ACK），MLME 便发出带有 Result Code 的 MLME-AUTHENTICATE.confirm。这四个词尾，恰好就是那次空口握手的四个时刻。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant ASME as SME (initiator)\n    participant AML as MLME (initiator)\n    participant BML as MLME (peer)\n    participant BSME as SME (peer)\n    ASME->>AML: MLME-XXX.request\n    AML->>BML: XXX Request frame (on air)\n    BML->>BSME: MLME-XXX.indication\n    BSME->>BML: MLME-XXX.response\n    BML->>AML: XXX Response frame (on air)\n    AML->>ASME: MLME-XXX.confirm (Result Code)",
+      "zh": "sequenceDiagram\n    participant ASME as SME (发起方)\n    participant AML as MLME (发起方)\n    participant BML as MLME (对端)\n    participant BSME as SME (对端)\n    ASME->>AML: MLME-XXX.request\n    AML->>BML: XXX 请求帧 (空口)\n    BML->>BSME: MLME-XXX.indication\n    BSME->>BML: MLME-XXX.response\n    BML->>AML: XXX 响应帧 (空口)\n    AML->>ASME: MLME-XXX.confirm (Result Code)"
+    },
+    {
+      "type": "prose",
+      "en": "Not every operation needs all four. The standard groups MLME-SAP primitives into seven general 'Type' forms (6.3.2-6.3.8), and the easy way to read them is by how much of the round-trip survives. Type 1 is the full loop above — request/indication/response/confirm — a true request/response exchange between two STAs. Types 2, 3 and 4 are 'send a frame, no peer reply needed': Type 2 still gives the initiator a .confirm (was it acknowledged or timed out?) and the peer an .indication; Type 3 drops the .confirm too (fire and forget, peer still gets an .indication); Type 4 is a frame a STA just emits with a .confirm but no peer involved. Types 5 and 6 never touch the air at all — they are purely local: the SME asks its own MLME to run a process, with (Type 5) or without (Type 6) a .confirm. Type 7 is the lone upward whisper: the MLME spontaneously raises an .indication to tell the SME an event happened.",
+      "zh": "并非每个操作都需要这全部四个。标准把 MLME-SAP 原语归纳为七种通用的“Type（类型）”形式（6.3.2–6.3.8），读懂它们的捷径是看“往返流程”保留了多少。Type 1 就是上面那个完整闭环——request/indication/response/confirm——是两个站点之间真正的请求/响应交换。Type 2、3、4 都是“发一个帧，无需对端回复”：Type 2 仍给发起方一个 .confirm（被确认了，还是超时了？），并给对端一个 .indication；Type 3 连 .confirm 也去掉（发完即不管，对端仍收到 .indication）；Type 4 则是某个站点自己发出一个帧、带 .confirm、但不涉及对端。Type 5 和 6 完全不触及空口——它们纯属本地：SME 请自己的 MLME 执行一个过程，带（Type 5）或不带（Type 6）.confirm。Type 7 是唯一一种单向上行的“低语”：MLME 主动发出一个 .indication，告诉 SME 发生了某个事件。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 460 300' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='20' fill='currentColor' stroke='none' font-size='13' font-weight='bold'>Does it cross the air?</text><line x1='30' y1='40' x2='30' y2='270'/><line x1='30' y1='40' x2='430' y2='40' opacity='0.3'/><text x='40' y='70' fill='currentColor' stroke='none' font-size='12'>Type 1: req / ind / resp / conf  (two-STA round-trip)</text><text x='40' y='98' fill='currentColor' stroke='none' font-size='12'>Type 2: req / ind / conf  (send + confirm, no reply)</text><text x='40' y='126' fill='currentColor' stroke='none' font-size='12'>Type 3: req / ind  (fire and forget)</text><text x='40' y='154' fill='currentColor' stroke='none' font-size='12'>Type 4: req / conf  (own frame, confirm only)</text><line x1='30' y1='172' x2='430' y2='172' opacity='0.3'/><text x='40' y='195' fill='currentColor' stroke='none' font-size='13' font-weight='bold'>Local only (no frame):</text><text x='40' y='220' fill='currentColor' stroke='none' font-size='12'>Type 5: req / conf  (run a process, confirm)</text><text x='40' y='244' fill='currentColor' stroke='none' font-size='12'>Type 6: req  (run a process, no confirm)</text><text x='40' y='268' fill='currentColor' stroke='none' font-size='12'>Type 7: ind  (MLME tells SME an event happened)</text></svg>",
+      "caption": {
+        "en": "The seven MLME-SAP Type forms, sorted by how much of the request/confirm/indication/response round-trip each one keeps.",
+        "zh": "七种 MLME-SAP 类型形式，按各自保留了多少 request/confirm/indication/response 往返流程排列。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "There is also a generic pair you'll see everywhere: MLME-GET and MLME-SET, which read or write a single MIB attribute, each a .request answered by a .confirm carrying a status. A SET can also trigger an action, not just store a value. And once you know the grammar, Table 6-1 (clause 6.4) becomes a lookup table: every named MLME service lists its Type, so you can predict its primitive shape before reading a single procedure.",
+      "zh": "还有一对随处可见的通用原语：MLME-GET 和 MLME-SET，用于读取或写入单个 MIB 属性，每个都是一个 .request、由携带状态的 .confirm 作答。SET 不仅能存值，还可能触发某个动作。一旦掌握了这套语法，表 6-1（6.4 节）就成了一张查询表：每个有名字的 MLME 服务都标注了它的 Type，于是你还没读任何流程，就能预判它的原语形态。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The standard's exact wording for the seven Types",
+        "zh": "标准对七种 Type 的精确措辞"
+      },
+      "en": "Clause 6.3.1 states the general form directly: a .request followed by a .confirm for an exchange initiated by the SAP client, and an .indication followed by a .response for an exchange initiated by the MLME; the response and .confirm primitives generally carry a ResultCode. It then declares 'There are seven general forms of MLME-SAP interface primitives.' Type 1 (6.3.2) is the request/response exchange between an initiating STA and a peer STA: the initiator's SME issues .request, the peer's MLME raises .indication on receipt, the peer's SME issues .response, and the initiator's MLME issues .confirm when the response frame is acknowledged or the request (re)transmission fails. Type 2 (6.3.3) transmits a frame needing no peer response but needing a confirmation that it was sent and acknowledged-or-timed-out (the peer still gets an .indication). Type 3 (6.3.4) needs neither response nor confirmation (.request and a peer .indication only). Type 4 (6.3.5) is a local-STA frame transmission with a .confirm that it was sent. Type 5 (6.3.6) is the SME asking the MLME to run a process or supply information, with a .confirm. Type 6 (6.3.7) is the same process request with no confirmation. Type 7 (6.3.8) is the MLME informing the SME of an event via a lone .indication. Clause 6.4 then points to Table 6-1, which lists every service name, its MLME-XXX interface name, and its Type.",
+      "zh": "6.3.1 节直接给出了通用形式：对于由 SAP 客户端发起的交换，是 .request 后跟 .confirm；对于由 MLME 发起的交换，是 .indication 后跟 .response；response 与 .confirm 原语通常携带一个 ResultCode。随后明确声明：“MLME-SAP 接口原语共有七种通用形式。”Type 1（6.3.2）是发起站点与对端站点之间的请求/响应交换：发起方 SME 发出 .request，对端 MLME 在收到时发出 .indication，对端 SME 发出 .response，发起方 MLME 在响应帧被确认、或请求帧（重）传失败时发出 .confirm。Type 2（6.3.3）传输一个无需对端响应、但需要确认其已发送并被 ACK 或超时的帧（对端仍收到 .indication）。Type 3（6.3.4）既不需要响应也不需要确认（仅 .request 与对端 .indication）。Type 4（6.3.5）是本站点的帧发送，带一个“已发送”的 .confirm。Type 5（6.3.6）是 SME 请 MLME 执行某过程或提供信息，带 .confirm。Type 6（6.3.7）是同样的过程请求，但不带确认。Type 7（6.3.8）是 MLME 通过单个 .indication 告知 SME 某事件。6.4 节随后指向表 6-1，其中列出了每个服务名称、其 MLME-XXX 接口名以及其 Type。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          451,
+          452,
+          453,
+          454,
+          455
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:6.3.1",
+    "80211-2024:6.3.2",
+    "80211-2024:6.3.3",
+    "80211-2024:6.3.4",
+    "80211-2024:6.3.5",
+    "80211-2024:6.3.6",
+    "80211-2024:6.3.7",
+    "80211-2024:6.3.8",
+    "80211-2024:6.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        451
+      ],
+      "note": "6.3.1 Introduction — MLME SAP primitives general form: .request/.confirm (client-initiated) and .indication/.response (MLME-initiated); ResultCode; 'seven general forms'"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        452,
+        453,
+        454,
+        455
+      ],
+      "note": "6.3.2-6.3.8 Type 1 through Type 7 forms (with Figures 6-2..6-8); 6.4 points to Table 6-1 mapping each MLME service to its Type"
+    }
+  ],
+  "track": "phy-service"
+}

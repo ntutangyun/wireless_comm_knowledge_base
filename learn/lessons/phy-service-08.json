@@ -1,0 +1,143 @@
+{
+  "id": "phy-service-08",
+  "title": {
+    "en": "The connection lifecycle: AUTHENTICATE, ASSOCIATE, REASSOCIATE, DISASSOCIATE, DEAUTHENTICATE",
+    "zh": "连接生命周期：认证、关联、重关联、解除关联与解除认证"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every Wi-Fi connection is born, lives, and dies through a small family of MLME primitives. Clause 6.5 of the standard names them as verbs: Authenticate, Associate, Reassociate, Disassociate, Deauthenticate. They are the management-plane controls a station's brain (the SME) pulls to build a relationship with an AP and later tear it down. This lesson walks the whole journey as a state machine — and shows that each primitive is just the software-side name for an exchange of frames you may already have seen on the air.",
+      "zh": "每一条 Wi-Fi 连接都要经历诞生、存续、消亡，而这一切都通过一小族 MLME 原语来驱动。标准 6.5 节用动词为它们命名：认证（Authenticate）、关联（Associate）、重关联（Reassociate）、解除关联（Disassociate）、解除认证（Deauthenticate）。它们是管理平面的“操纵杆”，由站点的“大脑”（SME）拉动，用来与 AP 建立关系、并在之后将其拆除。本课会把整段旅程当作一个状态机来走一遍——并揭示每个原语其实只是某段空口帧交换在软件侧的名字。"
+    },
+    {
+      "type": "prose",
+      "en": "Four of these mechanisms share the same four-primitive shape, and learning it once unlocks all of them. Take Authenticate (6.5.5): the initiator's SME issues an MLME-AUTHENTICATE.request, which the MLME turns into a transmitted Authentication frame. The peer's MLME receives that frame and raises an MLME-AUTHENTICATE.indication up to its SME. The peer's SME decides and answers with an MLME-AUTHENTICATE.response, which goes back on the air. Finally the initiator's MLME closes the loop with an MLME-AUTHENTICATE.confirm carrying the ResultCode. request -> frame -> indication -> response -> frame -> confirm: one clean round-trip.",
+      "zh": "其中四个机制共享同一种“四原语”形态，学会一次就能举一反三。以认证（6.5.5）为例：发起方的 SME 发出 MLME-AUTHENTICATE.request，MLME 据此构造并发送一个认证帧。对端 MLME 收到该帧后，向它的 SME 上报一个 MLME-AUTHENTICATE.indication。对端 SME 做出决定，用 MLME-AUTHENTICATE.response 回应，该回应再次走上空口。最后，发起方 MLME 用携带 ResultCode 的 MLME-AUTHENTICATE.confirm 收尾。request -> 帧 -> indication -> response -> 帧 -> confirm：一次干净利落的往返。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant iSME as Initiator SME\n    participant iMLME as Initiator MLME\n    participant pMLME as Peer MLME\n    participant pSME as Peer SME\n    iSME->>iMLME: MLME-AUTHENTICATE.request\n    iMLME->>pMLME: Authentication frame (on air)\n    pMLME->>pSME: MLME-AUTHENTICATE.indication\n    pSME->>pMLME: MLME-AUTHENTICATE.response (ResultCode)\n    pMLME->>iMLME: Authentication frame (on air)\n    iMLME->>iSME: MLME-AUTHENTICATE.confirm (ResultCode)\n    Note over iSME,pSME: same .request->frame->.indication->.response->frame->.confirm shape reused by ASSOCIATE and REASSOCIATE",
+      "zh": "sequenceDiagram\n    participant iSME as 发起方 SME\n    participant iMLME as 发起方 MLME\n    participant pMLME as 对端 MLME\n    participant pSME as 对端 SME\n    iSME->>iMLME: MLME-AUTHENTICATE.request\n    iMLME->>pMLME: 认证帧（空口）\n    pMLME->>pSME: MLME-AUTHENTICATE.indication\n    pSME->>pMLME: MLME-AUTHENTICATE.response（ResultCode）\n    pMLME->>iMLME: 认证帧（空口）\n    iMLME->>iSME: MLME-AUTHENTICATE.confirm（ResultCode）\n    Note over iSME,pSME: 关联与重关联复用同一套 .request->帧->.indication->.response->帧->.confirm 形态"
+    },
+    {
+      "type": "prose",
+      "en": "Once authenticated, the station asks to join: MLME-ASSOCIATE (6.5.7) follows the identical four-primitive pattern, but its frames carry far more. The ASSOCIATE.request hands the MLME a long list of capabilities and elements — listen interval, RSN, QoS, HT/VHT/HE capabilities, TWT, and dozens more — that become the Association Request frame. The peer's ASSOCIATE.response returns an AssociationID plus the operating parameters (EDCA set, HE Operation, etc.) the AP wants the station to use. MLME-REASSOCIATE (6.5.8) is the same machinery aimed at a new AP: it moves an existing association during a roam, which is why its frames also carry the third FT message for fast BSS transition.",
+      "zh": "完成认证后，站点请求“入会”：MLME-ASSOCIATE（6.5.7）遵循完全相同的四原语模式，只是它的帧承载的内容多得多。ASSOCIATE.request 把一长串能力与元素交给 MLME——监听间隔、RSN、QoS、HT/VHT/HE 能力、TWT 等等几十项——它们将组成关联请求帧（Association Request）。对端的 ASSOCIATE.response 返回一个 AssociationID，外加 AP 希望站点使用的运行参数（EDCA 参数集、HE Operation 等）。MLME-REASSOCIATE（6.5.8）是同一套机器，只是指向一个新的 AP：它在漫游时把既有关联“搬家”过去，因此其帧还会携带快速 BSS 切换（FT）的第三条消息。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the asymmetry in the teardown verbs. Disassociate and Deauthenticate are NOT four-primitive round-trips — they are fire-and-forget. The initiator issues a .request, its MLME sends one frame and immediately returns a local .confirm; the peer's MLME raises only an .indication. There is no .response, because you don't ask permission to leave. Deauthenticate is the bigger hammer: because association requires prior authentication, dropping authentication implicitly drops the association too.",
+      "zh": "请留意“拆除类”动词的不对称性。解除关联与解除认证并不是四原语往返——它们是“发了就走”。发起方发出 .request，其 MLME 发送一个帧后立即返回本地的 .confirm；对端 MLME 只会产生一个 .indication。这里没有 .response，因为“离开”并不需要征得对方许可。解除认证是更重的“锤子”：由于关联以先行认证为前提，撤销认证也就隐式地撤销了关联。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 520 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><rect x='10' y='55' width='110' height='40' rx='6'/><text x='65' y='80' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>State 1</text><text x='65' y='40' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>unauth / unassoc</text><rect x='205' y='55' width='110' height='40' rx='6'/><text x='260' y='80' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>State 2</text><text x='260' y='40' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>auth / unassoc</text><rect x='400' y='55' width='110' height='40' rx='6'/><text x='455' y='80' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>State 3/4</text><text x='455' y='40' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>auth + assoc</text><line x1='120' y1='70' x2='203' y2='70' marker-end='url(#a)'/><text x='162' y='62' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>AUTHENTICATE</text><line x1='315' y1='70' x2='398' y2='70' marker-end='url(#a)'/><text x='357' y='62' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>ASSOCIATE</text><path d='M398 88 C 330 130, 195 130, 122 88' marker-end='url(#a)'/><text x='260' y='128' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>DISASSOCIATE</text><path d='M400 100 C 250 148, 160 148, 60 100' marker-end='url(#a)'/><text x='230' y='146' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>DEAUTHENTICATE</text><defs><marker id='a' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='currentColor' stroke='none'/></marker></defs></svg>",
+      "caption": {
+        "en": "The lifecycle as a state journey: AUTHENTICATE lifts State 1 -> 2, ASSOCIATE lifts 2 -> associated; DISASSOCIATE drops back to State 2, DEAUTHENTICATE drops all the way to State 1.",
+        "zh": "把生命周期看作一段状态旅程：AUTHENTICATE 将 State 1 提升到 2，ASSOCIATE 将 2 提升到已关联；DISASSOCIATE 退回 State 2，DEAUTHENTICATE 则一路退回 State 1。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Why split a single 'connect' action into request/indication/response/confirm at all? Because the standard deliberately separates the two cooperating layers. The SME owns policy (should I authenticate? accept this association?); the MLME owns mechanism (build the frame, run the timeout, parse the reply). The .request/.response are the SME-to-MLME asks; the on-air Authentication/Association frames are the mechanism; the .indication/.confirm are how each MLME reports back up. This is exactly why the Auth/Assoc handshake you saw on the air earlier maps one-to-one onto these primitives — the wire exchange is the middle of the round-trip, with an SME decision bracketing each end.",
+      "zh": "为什么要把一个简单的“连接”动作拆成 request/indication/response/confirm 呢？因为标准刻意把两个协作的层次分开。SME 负责策略（我该不该认证？要不要接受这次关联？）；MLME 负责机制（构造帧、跑超时、解析回复）。.request/.response 是 SME 向 MLME 下达的请求；空口上的认证帧/关联帧是机制本身；.indication/.confirm 则是各自的 MLME 向上汇报的方式。这正是为什么你之前在空口上看到的认证/关联握手，能与这些原语一一对应——空口交换是这次往返的“中段”，两端各由一次 SME 决策包裹。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact primitive shapes and the asymmetric teardown",
+        "zh": "原语的精确形态与不对称的拆除流程"
+      },
+      "en": "6.5.5 Authenticate is fully symmetric: .request (6.5.5.2) carries PeerSTAAddress, AuthenticationType (OPEN_SYSTEM, SHARED_KEY, FAST_BSS_TRANSITION, SAE, the three FILS modes), and an AuthenticateFailureTimeout; .confirm (6.5.5.3) returns a ResultCode (SUCCESS, AUTHENTICATION_REJECTED, AUTH_FAILURE_TIMEOUT, ...); the responder side raises .indication (6.5.5.4) and answers .response (6.5.5.5). 6.5.7 Associate mirrors this: .request (6.5.7.2) carries the capability/element bundle, .confirm (6.5.7.3) returns ResultCode plus AssociationID and operating parameters, and .indication (6.5.7.4) delivers the request up to the responder SME. 6.5.8 Reassociate (6.5.8.2-6.5.8.5) is identical but targets a new AP and carries the third FT message. The teardown verbs break the pattern: 6.5.6 Deauthenticate has only request/confirm/indication (no response) and accepts a broadcast PeerSTAAddress with a ReasonCode; 6.5.9 Disassociate likewise has request (6.5.9.1), a local confirm (6.5.9.2, ResultCode SUCCESS or INVALID_PARAMETERS), and a peer-side indication (6.5.9.3) carrying the ReasonCode — there is no response primitive because no peer consent is sought.",
+      "zh": "6.5.5 认证是完全对称的：.request（6.5.5.2）携带 PeerSTAAddress、AuthenticationType（OPEN_SYSTEM、SHARED_KEY、FAST_BSS_TRANSITION、SAE 以及三种 FILS 模式）和一个 AuthenticateFailureTimeout；.confirm（6.5.5.3）返回 ResultCode（SUCCESS、AUTHENTICATION_REJECTED、AUTH_FAILURE_TIMEOUT 等）；响应方产生 .indication（6.5.5.4）并以 .response（6.5.5.5）作答。6.5.7 关联与之对应：.request（6.5.7.2）携带能力/元素集合，.confirm（6.5.7.3）返回 ResultCode 以及 AssociationID 和运行参数，.indication（6.5.7.4）则把请求上交给响应方 SME。6.5.8 重关联（6.5.8.2-6.5.8.5）形态完全相同，只是指向新的 AP，并携带第三条 FT 消息。而拆除类动词打破了这一模式：6.5.6 解除认证只有 request/confirm/indication（没有 response），其 PeerSTAAddress 可为广播地址并带一个 ReasonCode；6.5.9 解除关联同样只有 request（6.5.9.1）、本地 confirm（6.5.9.2，ResultCode 为 SUCCESS 或 INVALID_PARAMETERS）以及对端的 indication（6.5.9.3，携带 ReasonCode）——因为无需征求对端同意，所以没有 response 原语。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          491,
+          495,
+          496,
+          498,
+          552,
+          553
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        491,
+        493,
+        495,
+        496
+      ],
+      "note": "6.5.5 Authenticate — four primitives (.request/.confirm/.indication/.response); AuthenticationType and ResultCode enumerations"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        497,
+        498
+      ],
+      "note": "6.5.6 Deauthenticate — request/confirm/indication only (no response); ReasonCode; broadcast PeerSTAAddress"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        499,
+        500,
+        504,
+        512
+      ],
+      "note": "6.5.7 Associate — .request capability/element bundle; .confirm returns AssociationID + ResultCode; .indication"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        530,
+        532,
+        552
+      ],
+      "note": "6.5.8 Reassociate — same four-primitive shape aimed at a new AP; carries third FT message"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        552,
+        553,
+        554
+      ],
+      "note": "6.5.9 Disassociate — request/confirm/indication; ResultCode SUCCESS/INVALID_PARAMETERS; peer-side indication with ReasonCode"
+    }
+  ],
+  "covers": [
+    "80211-2024:6.5.5.1",
+    "80211-2024:6.5.5.2",
+    "80211-2024:6.5.5.3",
+    "80211-2024:6.5.5.4",
+    "80211-2024:6.5.5.5",
+    "80211-2024:6.5.6.1",
+    "80211-2024:6.5.6.2",
+    "80211-2024:6.5.6.3",
+    "80211-2024:6.5.6.4",
+    "80211-2024:6.5.7.1",
+    "80211-2024:6.5.7.2",
+    "80211-2024:6.5.7.3",
+    "80211-2024:6.5.7.4",
+    "80211-2024:6.5.7.5",
+    "80211-2024:6.5.8.1",
+    "80211-2024:6.5.8.2",
+    "80211-2024:6.5.8.3",
+    "80211-2024:6.5.8.4",
+    "80211-2024:6.5.8.5",
+    "80211-2024:6.5.9.1",
+    "80211-2024:6.5.9.2",
+    "80211-2024:6.5.9.3"
+  ],
+  "track": "phy-service"
+}

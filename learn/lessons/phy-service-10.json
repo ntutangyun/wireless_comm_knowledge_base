@@ -1,0 +1,115 @@
+{
+  "id": "phy-service-10",
+  "title": {
+    "en": "The PLME-SAP and the MIB: GET/SET and the dot11 managed objects",
+    "zh": "PLME-SAP 与 MIB：GET/SET 与 dot11 管理对象"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Across this track we have watched the management plane drive the radio: the SME deciding what the MAC and PHY should do, and primitives carrying those decisions to and from the air. This final lesson exposes the data those decisions read and write. Every tunable in an 802.11 device — a channel, a transmit power, a timer, a capability flag — lives somewhere as a named value called a MIB attribute. The management plane never pokes at registers directly; it GETs and SETs these attributes through a service interface.",
+      "zh": "在这一系列课程中，我们一直在观察管理平面如何驱动无线电：SME 决定 MAC 与 PHY 该做什么，原语则把这些决定在空口两端来回传递。本课作为收尾，要揭示这些决定所读写的“数据”。802.11 设备中每一个可调项——一个信道、一个发射功率、一个定时器、一个能力标志——都以一个带名字的值存在某处，称为 MIB 属性。管理平面从不直接去戳寄存器，而是通过一个服务接口对这些属性进行 GET（读取）与 SET（设置）。"
+    },
+    {
+      "type": "prose",
+      "en": "The MIB — Management Information Base — is just the organised collection of all those attributes. The standard models the MAC sublayer as 'containing' a MAC MIB and the PHY as 'containing' a PHY MIB, with the MLME and PLME holding them respectively. Reading and writing is uniform: XX-GET fetches an attribute's value, XX-SET writes one, where XX is MLME for MAC attributes or PLME for PHY attributes. These two pairs of primitives are the universal read/write verbs of the whole management model.",
+      "zh": "MIB（管理信息库，Management Information Base）就是把所有这些属性有组织地汇集在一起。标准把 MAC 子层建模为“包含”一个 MAC MIB，把 PHY 建模为“包含”一个 PHY MIB，分别由 MLME 与 PLME 持有。读写方式是统一的：XX-GET 取出某个属性的值，XX-SET 写入一个值，其中 XX 对 MAC 属性是 MLME、对 PHY 属性是 PLME。这两对原语就是整个管理模型通用的“读/写动词”。"
+    },
+    {
+      "type": "prose",
+      "en": "Each verb is a request paired with a confirm. XX-GET.request names an attribute; XX-GET.confirm returns a status plus the value (or an error like 'invalid MIB attribute' or 'attempt to get write-only MIB attribute'). XX-SET.request names an attribute and a value; XX-SET.confirm reports whether the write succeeded. The subtle part: a SET is not always passive. If the attribute implies a specific action, writing it triggers that action — so SET-ting an attribute can be how the SME tells the PHY or MAC to *do* something, not merely to remember a number.",
+      "zh": "每个动词都是一个 request 配一个 confirm。XX-GET.request 指明一个属性；XX-GET.confirm 返回一个状态以及取到的值（或者返回错误，比如“无效的 MIB 属性”“试图读取只写属性”）。XX-SET.request 指明一个属性和一个值；XX-SET.confirm 报告写入是否成功。微妙之处在于：SET 并不总是被动的。如果某个属性隐含了一个具体动作，写入它就会触发该动作——因此对某个属性执行 SET，可能正是 SME 用来让 PHY 或 MAC 去“做某件事”的方式，而不仅仅是记住一个数字。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant SME as SME (management plane)\n    participant PLME as PLME (PHY mgmt entity)\n    participant PHY as PHY / PHY MIB\n    Note over SME: wants the PHY's operating channel\n    SME->>PLME: PLME-GET.request(dot11CurrentChannel)\n    PLME->>PHY: read attribute from PHY MIB\n    PHY-->>PLME: value\n    PLME-->>SME: PLME-GET.confirm(success, value)\n    Note over SME: now set a new channel (implies an action)\n    SME->>PLME: PLME-SET.request(dot11CurrentChannel, 36)\n    PLME->>PHY: write attribute -> retune radio\n    PHY-->>PLME: action done\n    PLME-->>SME: PLME-SET.confirm(success)",
+      "zh": "sequenceDiagram\n    participant SME as SME（管理平面）\n    participant PLME as PLME（PHY 管理实体）\n    participant PHY as PHY / PHY MIB\n    Note over SME: 想读取 PHY 当前的工作信道\n    SME->>PLME: PLME-GET.request(dot11CurrentChannel)\n    PLME->>PHY: 从 PHY MIB 读取该属性\n    PHY-->>PLME: 取到的值\n    PLME-->>SME: PLME-GET.confirm(success, 值)\n    Note over SME: 再设置一个新信道（隐含一个动作）\n    SME->>PLME: PLME-SET.request(dot11CurrentChannel, 36)\n    PLME->>PHY: 写入属性 -> 重新调谐无线电\n    PHY-->>PLME: 动作完成\n    PLME-->>SME: PLME-SET.confirm(success)"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "There are really two PHY-facing SAPs — the SME-PLME SAP and the MLME-PLME SAP — but they carry identical primitives, so the standard treats them as one logical PLME SAP. It can be used directly by the SME, or by the MLME acting on the SME's behalf — which mirrors how real drivers funnel PHY control through the MAC.",
+      "zh": "面向 PHY 其实有两个 SAP——SME-PLME SAP 与 MLME-PLME SAP——但它们承载的原语完全相同，所以标准把它们视为一个逻辑上的 PLME SAP。它既可以由 SME 直接使用，也可以由代表 SME 的 MLME 来使用——这正好对应了真实驱动把 PHY 控制都汇集到 MAC 去处理的做法。"
+    },
+    {
+      "type": "prose",
+      "en": "Beyond plain GET/SET, the PLME SAP carries a handful of PHY-specific primitives. PLME-RESET re-initialises the PHY, always leaving it in the receive state so it can never accidentally transmit. PLME-CHARACTERISTICS asks the PHY to report what it can do — its .confirm returns a long list of capability constants such as aSlotTime, aSIFSTime, aCCATime, aPSDUMaxLength and aCWmin/aCWmax — the numbers the MAC needs to time the medium correctly. PLME-TXTIME asks the PHY, given a TXVECTOR, exactly how long a PPDU will occupy the air; its .confirm returns TXTIME in microseconds (tying straight back to the TXVECTOR/PHY-SAP work earlier in this track). Finally the MINPAYLOADSTAT family (request/confirm, plus RESET and STOP) starts, configures, and stops PHY-side measurement of metrics like EVM, SNR and LDPC over PPDUs above a minimum payload length.",
+      "zh": "除了普通的 GET/SET，PLME SAP 还承载若干 PHY 专属原语。PLME-RESET 重新初始化 PHY，并且始终把它置于接收态，确保它永远不会意外发射。PLME-CHARACTERISTICS 让 PHY 报告自己能做什么——它的 .confirm 返回一长串能力常量，例如 aSlotTime、aSIFSTime、aCCATime、aPSDUMaxLength 以及 aCWmin/aCWmax——这些都是 MAC 正确把握介质时序所需要的数值。PLME-TXTIME 给 PHY 一个 TXVECTOR，询问一个 PPDU 究竟会占用空口多久；它的 .confirm 以微秒返回 TXTIME（这正好接回本系列前面 TXVECTOR/PHY-SAP 的内容）。最后是 MINPAYLOADSTAT 家族（request/confirm，外加 RESET 与 STOP），用来启动、配置并停止 PHY 侧对 EVM、SNR、LDPC 等指标的测量，统计对象是负载长度不小于某阈值的 PPDU。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the symmetry with the PHY-SAP track: PHY-TXSTART tells the PHY 'send this PPDU now', while PLME-TXTIME asks 'how long would sending it take?' — same TXVECTOR, one is the action on the data SAP, the other a question on the management SAP. Airtime accounting is a management-plane concern.",
+      "zh": "注意它与 PHY-SAP 那条线索的对称性：PHY-TXSTART 是告诉 PHY“现在发送这个 PPDU”，而 PLME-TXTIME 是询问“发送它需要多久？”——用的是同一个 TXVECTOR，一个是数据 SAP 上的动作，另一个是管理 SAP 上的提问。空口时长的核算属于管理平面的事务。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The dot11 managed-object tree (Annex C MIB)",
+        "zh": "dot11 管理对象树（附录 C 的 MIB）"
+      },
+      "en": "The attributes that GET/SET name are not ad-hoc — they are standardised as a managed-object tree in Annex C, written in ASN.1 (SMIv2, per IETF RFC 2578) as the IEEE802dot11-MIB module. Every attribute carries the dot11 prefix (dot11CurrentChannel, dot11RTSThreshold, dot11ShortRetryLimit, …) and a defined type, valid range, and access (read-only / read-write). The SME walks this name-value tree to configure and query the MAC and PHY, and the same dot11 attributes are precisely what a real driver and its management tooling expose upward. The MIB is normative but lives canonically as an online text file (802.11mib.txt) compiled with standard SMI tooling; the standard even sets editorial rules for it — 7-bit US-ASCII only, units spelled out ('microseconds', never the greek-mu symbol). So the abstract GET/SET primitives at the top of clause 6 and the concrete dot11 objects in Annex C are two views of one thing: the management plane's data model.",
+      "zh": "GET/SET 所指名的那些属性并非临时拼凑——它们在附录 C 中被标准化为一棵管理对象树，用 ASN.1（按 IETF RFC 2578 的 SMIv2）写成名为 IEEE802dot11-MIB 的模块。每个属性都带有 dot11 前缀（dot11CurrentChannel、dot11RTSThreshold、dot11ShortRetryLimit……），并有明确定义的类型、有效取值范围和访问权限（只读/读写）。SME 遍历这棵名-值树来配置和查询 MAC 与 PHY，而这些 dot11 属性恰恰就是真实驱动及其管理工具向上暴露的内容。这个 MIB 是规范性的，但其权威形态是一个在线文本文件（802.11mib.txt），用标准 SMI 工具编译；标准甚至为它规定了编辑规则——只用 7 位 US-ASCII，单位要拼写完整（写“microseconds”，绝不用希腊字母 mu 符号）。因此，clause 6 开头那些抽象的 GET/SET 原语，与附录 C 中具体的 dot11 对象，是同一件事物的两种视角：管理平面的数据模型。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          5020
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        450
+      ],
+      "note": "6.1 management model — MLME/PLME contain the MAC/PHY MIB; SME-PLME and MLME-PLME SAPs are identical, viewed as one PLME SAP; GET/SET as double arrows in Figure 6-1"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        451
+      ],
+      "note": "6.2 generic management primitives — XX-GET.request/.confirm, XX-SET.request/.confirm (XX = MLME or PLME); a SET may imply an action; XX-RESET.request"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        623,
+        624,
+        625,
+        626,
+        627,
+        628,
+        629,
+        630
+      ],
+      "note": "6.7 PLME SAP — PLME-RESET (6.7.2), PLME-CHARACTERISTICS request/confirm (6.7.3-6.7.4, capability constants), PLME-TXTIME request/confirm (6.7.5-6.7.6), PLME-MINPAYLOADSTAT request/confirm/RESET/STOP (6.7.7-6.7.10)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        5020
+      ],
+      "note": "Annex C.1/C.2/C.3 — IEEE802dot11-MIB in ASN.1 (SMIv2 / RFC 2578); dot11-prefixed managed objects; online 802.11mib.txt; 7-bit ASCII / spelled-out-units editorial rules"
+    }
+  ],
+  "covers": [
+    "80211-2024:6.2",
+    "80211-2024:6.7.1",
+    "80211-2024:6.7.2",
+    "80211-2024:6.7.3",
+    "80211-2024:6.7.4",
+    "80211-2024:6.7.5",
+    "80211-2024:6.7.6",
+    "80211-2024:6.7.7",
+    "80211-2024:6.7.8",
+    "80211-2024:6.7.9",
+    "80211-2024:6.7.10",
+    "80211-2024:C.3"
+  ],
+  "track": "phy-service"
+}

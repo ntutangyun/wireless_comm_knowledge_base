@@ -1,0 +1,86 @@
+{
+  "id": "phy-service-05",
+  "title": {
+    "en": "The Management Plane: SME, MLME, PLME and the management SAPs",
+    "zh": "管理平面：SME、MLME、PLME 与管理服务接入点"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every interface you met in lessons 01-04 lived on the data plane: the PHY-SAP and the DS-SAP exist to carry frames — bits going in and out of the radio. But something has to decide which channel to sit on, when to scan, when to authenticate, what transmit power to use. That decision-making lives on a separate, parallel interface called the management plane. Think of the data plane as the pipe the water flows through, and the management plane as the control panel of valves and dials beside it.",
+      "zh": "你在第 01-04 课见到的每一个接口都位于数据平面：PHY-SAP 和 DS-SAP 的职责是搬运帧——把比特送进、送出无线电。但总得有人来决定：停在哪个信道上、何时扫描、何时认证、用多大发射功率。这些“做决定”的工作位于一个独立、并行的接口上，叫做管理平面。可以把数据平面想象成水流过的管道，而管理平面则是管道旁边那一排控制阀门和旋钮的控制面板。"
+    },
+    {
+      "type": "prose",
+      "en": "The standard names three entities on this control panel. Conceptually, the MAC sublayer contains a management entity called the MLME (MAC sublayer management entity), and the PHY contains one called the PLME (PHY management entity). Sitting above and beside both is the SME — the Station Management Entity. The SME is deliberately layer-independent: it lives in a separate management plane, or as the standard puts it, 'off to the side.' It is the decision-maker — in a real product it is realised by things like the driver, the supplicant, or firmware policy.",
+      "zh": "标准为这块控制面板命名了三个实体。从概念上讲，MAC 子层内含一个管理实体，称为 MLME（MAC 子层管理实体）；PHY 内含一个，称为 PLME（PHY 管理实体）。位于二者之上、之旁的是 SME——站点管理实体（Station Management Entity）。SME 被刻意设计为与层无关：它处于一个独立的管理平面，或者用标准的原话说，“位于一旁（off to the side）”。它就是那个决策者——在真实产品里，它由驱动、请求方（supplicant）或固件策略等部分来实现。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The standard requires that an SME be present within every STA — it is what makes correct MAC operation possible. Some of the SME's functions are specified by 802.11, but the SME itself is not a layer; it gathers status from the layer management entities (the MLME and PLME) and sets their parameters, typically on behalf of higher system management.",
+      "zh": "标准要求每个站点（STA）内部都必须存在一个 SME——正是它使得 MAC 能够正确运作。SME 的部分功能由 802.11 规定，但 SME 本身并不是一个“层”；它从各层管理实体（MLME 和 PLME）收集状态、设置其参数，通常是代表更高层的系统管理来执行这些动作。"
+    },
+    {
+      "type": "prose",
+      "en": "These entities talk to one another across management SAPs — the management-plane counterpart of the data-plane SAPs. The standard defines three: the SME-MLME SAP, the SME-PLME SAP, and the MLME-PLME SAP. The crucial simplification: the latter two carry identical primitives, so they can be viewed as a single SAP — the PLME SAP — used either directly by the SME or, more commonly, by the MLME on the SME's behalf. That is why implementations usually let the MLME drive the PLME instead of wiring the SME straight to the PHY.",
+      "zh": "这些实体之间通过管理服务接入点（management SAP）相互通信——它们是数据平面 SAP 在管理平面上的对应物。标准定义了三个：SME-MLME SAP、SME-PLME SAP 以及 MLME-PLME SAP。关键的简化在于：后两个 SAP 承载的原语完全相同，因此可以被视为同一个 SAP——即 PLME SAP——既可由 SME 直接使用，更常见的是由 MLME 代表 SME 来使用。这正是为什么在实现中，通常是让 MLME 去驱动 PLME，而不是把 SME 直接接到 PHY 上。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 360 260' stroke='currentColor' fill='none'><rect x='120' y='10' width='120' height='42' rx='6' stroke-width='2'/><text x='180' y='28' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>SME</text><text x='180' y='44' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>(off to the side)</text><rect x='30' y='110' width='130' height='44' rx='6' stroke-width='2'/><text x='95' y='130' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>MLME</text><text x='95' y='146' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>+ MAC MIB</text><rect x='200' y='110' width='130' height='44' rx='6' stroke-width='2'/><text x='265' y='130' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>PLME</text><text x='265' y='146' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>+ PHY MIB</text><rect x='30' y='200' width='130' height='38' rx='6' stroke-width='2'/><text x='95' y='223' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>MAC</text><rect x='200' y='200' width='130' height='38' rx='6' stroke-width='2'/><text x='265' y='223' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>PHY</text><line x1='150' y1='52' x2='95' y2='110' stroke-width='1.5'/><text x='95' y='86' fill='currentColor' stroke='none' font-size='8' text-anchor='middle'>SME-MLME SAP</text><line x1='210' y1='52' x2='265' y2='110' stroke-width='1.5'/><text x='285' y='86' fill='currentColor' stroke='none' font-size='8' text-anchor='middle'>SME-PLME SAP</text><line x1='160' y1='132' x2='200' y2='132' stroke-width='1.5'/><text x='180' y='100' fill='currentColor' stroke='none' font-size='8' text-anchor='middle'>MLME-PLME SAP</text></svg>",
+      "caption": {
+        "en": "The management model (Figure 6-1): the SME sits off to the side, reaching the MLME via the SME-MLME SAP and the PLME via the SME-PLME / MLME-PLME SAPs (collapsible into one PLME SAP). Each LME 'contains' its MIB.",
+        "zh": "管理模型（图 6-1）：SME 位于一旁，通过 SME-MLME SAP 触及 MLME，通过 SME-PLME / MLME-PLME SAP 触及 PLME（这两者可合并为单一的 PLME SAP）。每个层管理实体都“内含”各自的 MIB。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The mental model that every later lesson builds on is this: the SME pushes a primitive down through the MLME-SAP as a .request; the MLME turns that request into actual on-air management frames; and the result bubbles back up as a .confirm (when the SME started the exchange) or as a .indication that the SME answers with a .response (when the MLME started it). So whenever you read 'MLME-AUTHENTICATE.request' or 'MLME-SCAN.confirm' in a later lesson, you are watching the SME and the MLME converse across the SME-MLME SAP.",
+      "zh": "后续每一课都建立在这样一个心智模型之上：SME 通过 MLME-SAP 以 .request（请求）的形式把一个原语下推；MLME 把这个请求转化为真正的空口管理帧；结果再以 .confirm（确认，当交换由 SME 发起时）冒回上层，或者以 .indication（指示）冒上来、由 SME 用 .response（响应）作答（当交换由 MLME 发起时）。因此，当你在后续课程里读到 “MLME-AUTHENTICATE.request” 或 “MLME-SCAN.confirm” 时，你看到的正是 SME 与 MLME 在 SME-MLME SAP 上的一次对话。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant SME as SME (decision-maker)\n    participant MLME as MLME (MAC mgmt)\n    participant AIR as On-air / peer\n    Note over SME: decide to act (e.g. authenticate)\n    SME->>MLME: MLME-AUTHENTICATE.request (over SME-MLME SAP)\n    MLME->>AIR: builds & sends Authentication management frame\n    AIR-->>MLME: peer's reply frame arrives\n    MLME-->>SME: MLME-AUTHENTICATE.confirm (ResultCode)\n    Note over SME,MLME: result bubbles back up the same SAP",
+      "zh": "sequenceDiagram\n    participant SME as SME（决策者）\n    participant MLME as MLME（MAC 管理）\n    participant AIR as 空口 / 对端\n    Note over SME: 决定行动（如发起认证）\n    SME->>MLME: MLME-AUTHENTICATE.request（经 SME-MLME SAP）\n    MLME->>AIR: 构造并发送认证管理帧\n    AIR-->>MLME: 对端回复帧到达\n    MLME-->>SME: MLME-AUTHENTICATE.confirm（含 ResultCode）\n    Note over SME,MLME: 结果沿同一 SAP 冒回上层"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "MIBs, GET/SET, and the request/confirm vs indication/response shape",
+        "zh": "MIB、GET/SET，以及 request/confirm 与 indication/response 的原语形态"
+      },
+      "en": "Clause 6.1 places a MAC MIB inside the MLME and a PHY MIB inside the PLME — each LME 'contains' its MIB. The generic primitives across every management SAP let the SAP user GET an attribute's value or SET it, modelled as XX-GET.request/.confirm and XX-SET.request/.confirm, where XX is MLME or PLME; a SET may imply that the entity performs a defined action, and each SAP also supports an XX-RESET.request to initialise the entities and MIBs (6.2). Beyond GET/SET, the MLME SAP carries action primitives (6.3) in the X.210 form: an SAP client (the SME) initiates with ACTION.request followed by ACTION.confirm, while an exchange the MLME initiates surfaces as ACTION.indication followed by the SME's ACTION.response — the .response and .confirm typically carrying a ResultCode. That request/confirm-versus-indication/response duality is exactly what you will see named in every connecting and scanning lesson.",
+      "zh": "6.1 节把 MAC MIB 放在 MLME 内部、把 PHY MIB 放在 PLME 内部——每个层管理实体都“内含”自己的 MIB。跨各管理 SAP 的通用原语允许 SAP 用户去 GET（读取）一个属性的值或 SET（设置）它，建模为 XX-GET.request/.confirm 与 XX-SET.request/.confirm，其中 XX 为 MLME 或 PLME；一次 SET 可能意味着该实体要执行某个既定动作，每个 SAP 还都支持一个 XX-RESET.request 用于初始化各实体与 MIB（6.2 节）。在 GET/SET 之外，MLME SAP 还承载动作类原语（6.3 节），其形态遵循 X.210：由 SAP 客户端（SME）发起时表现为 ACTION.request 后接 ACTION.confirm；而由 MLME 发起的交换则表现为 ACTION.indication 后接 SME 的 ACTION.response——其中 .response 与 .confirm 通常携带一个 ResultCode。正是这种 request/confirm 与 indication/response 的二元形态，会在每一节连接与扫描课程中被反复点名。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          450,
+          451
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:6.1"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        450
+      ],
+      "note": "6.1 Overview of management model — MLME/PLME/SME; SME 'off to the side'; the three management SAPs and the collapse of SME-PLME + MLME-PLME into one PLME SAP; Figure 6-1 GET/SET"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        451
+      ],
+      "note": "6.2 generic GET/SET/RESET primitives across management SAPs; 6.3.1 MLME SAP request/confirm and indication/response form (X.210), ResultCode"
+    }
+  ],
+  "track": "phy-service"
+}
