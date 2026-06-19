@@ -1,0 +1,106 @@
+{
+  "id": "modern-phy-05",
+  "title": {
+    "en": "The Trigger Frame: How One AP Conducts Many Uplinks at Once",
+    "zh": "触发帧：一个 AP 如何同时指挥多路上行"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In older Wi-Fi, every client that wanted to send had to win the channel for itself — back off, listen, and transmit alone, one device at a time. Wi-Fi 6 (HE) keeps that contention for many cases, but adds a second, AP-conducted mode where the access point acts like an orchestra conductor. It raises its baton once, and several clients play their uplink at the same instant. The baton is a single management/control device called the Trigger frame.",
+      "zh": "在早期的 Wi-Fi 中，每个想发送数据的客户端都必须自己抢到信道——退避、监听、然后独自发送，一次只有一台设备。Wi-Fi 6（HE）在很多情况下仍保留这种竞争方式，但额外引入了一种由 AP 主导的模式：接入点就像乐队指挥。它只挥一次指挥棒，多个客户端便会在同一瞬间“奏响”各自的上行数据。这根指挥棒，就是一个被称为“触发帧（Trigger frame）”的帧。"
+    },
+    {
+      "type": "prose",
+      "en": "It helps to see the two halves of multi-user (MU) operation. Downlink MU is the easy direction: the AP already owns the airtime, so it just stuffs data for several clients into one HE MU PPDU, each on its own slice of the channel called a resource unit (RU). Uplink MU is the hard direction — many independent radios would normally collide. The standard's fix is that an HE AP first solicits the uplink: it explicitly invites a chosen set of clients to send, so nobody has to contend and nobody collides.",
+      "zh": "理解多用户（MU）操作的两个方向会很有帮助。下行 MU 是简单的方向：AP 本来就占有信道时间，所以它只需把发给多个客户端的数据塞进一个 HE MU PPDU，每个客户端各占信道的一小片，称为“资源单元（RU）”。上行 MU 才是困难的方向——许多彼此独立的射频本来会相互碰撞。标准的解决办法是：HE AP 先“征召”上行——它显式地邀请一组选定的客户端发送，于是没人需要竞争，也没人会碰撞。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The golden rule of uplink MU: a non-AP station must never send a trigger-based (HE TB) uplink on its own. It transmits one only when an AP has explicitly triggered it. The AP holds the baton; the clients only ever respond to it.",
+      "zh": "上行 MU 的黄金法则：非 AP 站点绝不能自行发送基于触发的（HE TB）上行帧。它只有在 AP 显式触发它时才会发送。指挥棒始终握在 AP 手里；客户端永远只是对它做出响应。"
+    },
+    {
+      "type": "prose",
+      "en": "What does the Trigger frame actually say? It carries a Common Info field that applies to everyone, plus one User Info field per invited client. Each User Info field names a client (by the 12 low bits of its association ID), tells it which RU to use, which MCS and coding to transmit at, how many spatial streams, and what transmit power to hit. In other words, the AP hands out a complete, per-user recipe so that when the clients fire together, their separate signals land cleanly side by side at the AP's receiver.",
+      "zh": "触发帧到底说了什么？它携带一个对所有人生效的“公共信息（Common Info）”字段，外加每个被邀请客户端各一份的“用户信息（User Info）”字段。每份用户信息字段会指名一个客户端（用其关联 ID 的低 12 位），告诉它使用哪个 RU、以何种 MCS 和编码发送、用多少条空间流、以及发射功率打到多少。换句话说，AP 给出了一份完整的、按用户定制的“配方”，于是当这些客户端同时开火时，它们各自独立的信号能在 AP 接收端干净地并排落地。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as Access Point (conductor)\n    participant S1 as STA 1 (RU a)\n    participant S2 as STA 2 (RU b)\n    participant S3 as STA 3 (RU c)\n    AP->>S1: Trigger (User Info: RU a, MCS, power)\n    AP->>S2: Trigger (User Info: RU b, MCS, power)\n    AP->>S3: Trigger (User Info: RU c, MCS, power)\n    Note over AP,S3: one Trigger frame names all three\n    Note over S1,S3: wait exactly SIFS\n    par simultaneous uplink burst\n        S1->>AP: HE TB PPDU on RU a\n    and\n        S2->>AP: HE TB PPDU on RU b\n    and\n        S3->>AP: HE TB PPDU on RU c\n    end\n    AP->>S3: Multi-STA BlockAck (one frame acks all)",
+      "zh": "sequenceDiagram\n    participant AP as 接入点 (指挥)\n    participant S1 as 站点1 (RU a)\n    participant S2 as 站点2 (RU b)\n    participant S3 as 站点3 (RU c)\n    AP->>S1: 触发帧 (用户信息: RU a, MCS, 功率)\n    AP->>S2: 触发帧 (用户信息: RU b, MCS, 功率)\n    AP->>S3: 触发帧 (用户信息: RU c, MCS, 功率)\n    Note over AP,S3: 一个触发帧点名全部三方\n    Note over S1,S3: 恰好等待一个 SIFS\n    par 同步上行突发\n        S1->>AP: HE TB PPDU 在 RU a\n    and\n        S2->>AP: HE TB PPDU 在 RU b\n    and\n        S3->>AP: HE TB PPDU 在 RU c\n    end\n    AP->>S3: 多站点 BlockAck (一帧确认全部)"
+    },
+    {
+      "type": "prose",
+      "en": "Timing is what makes the burst land together. After the Trigger frame ends, every solicited client waits exactly one SIFS — the same short, fixed gap — and then all of them start their HE TB PPDU at the same moment. The AP also pads the Trigger frame so the slowest client still has enough time to decode its recipe and prepare its signal. If the AP gets back at least one frame from at least one invited client, it counts the whole exchange as a success; if it hears nothing, it backs off and tries again, just like ordinary contention.",
+      "zh": "让这场突发同时落地的关键，是时序。触发帧结束后，每个被征召的客户端恰好等待一个 SIFS——同一段短而固定的间隔——然后所有客户端在同一时刻开始发送各自的 HE TB PPDU。AP 还会对触发帧做填充，好让最慢的客户端也有足够时间解码自己的“配方”并准备好信号。只要 AP 从至少一个被邀请的客户端那里收回了至少一帧，它就把整次交换记为成功；如果什么都没听到，它就退避并重试，和普通的竞争方式一样。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='8' y='20' fill='currentColor' stroke='none' font-size='12'>AP downlink</text><rect x='110' y='8' width='150' height='22'/><text x='185' y='23' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>Trigger frame</text><text x='270' y='23' fill='currentColor' stroke='none' font-size='10'>SIFS</text><line x1='262' y1='19' x2='300' y2='19' stroke-dasharray='3 3'/><text x='8' y='70' fill='currentColor' stroke='none' font-size='12'>STA 1 (RU a)</text><rect x='300' y='58' width='150' height='18'/><text x='8' y='100' fill='currentColor' stroke='none' font-size='12'>STA 2 (RU b)</text><rect x='300' y='88' width='150' height='18'/><text x='8' y='130' fill='currentColor' stroke='none' font-size='12'>STA 3 (RU c)</text><rect x='300' y='118' width='150' height='18'/><text x='375' y='71' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>HE TB PPDU</text><text x='375' y='101' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>HE TB PPDU</text><text x='375' y='131' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>HE TB PPDU</text><line x1='300' y1='44' x2='300' y2='150' stroke-dasharray='2 2'/><text x='300' y='168' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>all three start at the same instant</text><line x1='450' y1='44' x2='450' y2='150' stroke-dasharray='2 2'/><text x='430' y='185' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>end together</text></svg>",
+      "caption": {
+        "en": "One Trigger frame, then a SIFS, then three clients transmit their HE TB PPDUs simultaneously — each on its own RU, all padded to end at the same time.",
+        "zh": "一个触发帧，接着一个 SIFS，然后三个客户端同时发送各自的 HE TB PPDU——各占一个 RU，并都经过填充以在同一时刻结束。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "How the AP solicits, and what 'trigger-based' really commits the client to",
+        "zh": "AP 如何征召，以及“基于触发”到底让客户端承担了什么"
+      },
+      "en": "Clause 26.5.2.1 defines UL MU operation as the AP soliciting simultaneous immediate response frames from one or more non-AP HE STAs, and states the bright-line rule that a non-AP STA shall not send a triggering frame — only the AP may. A solicited client responds in an HE TB PPDU (the exception being an MU-RTS Trigger, whose response is a CTS in a non-HT PPDU). Clause 26.5.2.2 lists the two ways an AP solicits the burst: either by including one or more Trigger frames carrying User Info fields whose AID12 subfield is set to the 12 LSBs of a client's AID (or signals contiguous RA-RUs for UORA), or by sending individually addressed frames that carry a TRS Control subfield. The standard requires the AP to allocate sufficient resources per User Info field so the named client can send its expected response. Per 26.5.2.3, the interframe space between the triggering PPDU and the HE TB PPDU is a SIFS, and a non-AP STA shall not send an HE TB PPDU unless explicitly triggered. Clause 26.5.3 adds MU cascading: within one PPDU the AP both acknowledges prior frames and triggers a further uplink, all inside a single TXOP (Figure 26-5).",
+      "zh": "26.5.2.1 节将 UL MU 操作定义为：AP 向一个或多个非 AP HE 站点征召同步的即时响应帧，并给出一条铁律——非 AP 站点不得发送触发类帧，只有 AP 才可以。被征召的客户端以 HE TB PPDU 作答（例外是 MU-RTS 触发帧，其响应是以 non-HT PPDU 发送的 CTS）。26.5.2.2 节列出 AP 征召这场突发的两种方式：要么在 PPDU 中加入一个或多个触发帧，其用户信息字段的 AID12 子字段被置为某客户端 AID 的低 12 位（或指示用于 UORA 的连续 RA-RU）；要么发送携带 TRS Control 子字段的单独寻址帧。标准要求 AP 为每份用户信息字段分配足够资源，使被点名的客户端能发出其预期响应。依据 26.5.2.3 节，触发 PPDU 与 HE TB PPDU 之间的帧间隔为一个 SIFS，且非 AP 站点除非被显式触发否则不得发送 HE TB PPDU。26.5.3 节还补充了 MU 级联：AP 在单个 PPDU 内既确认先前的帧、又触发进一步的上行，全部都在一个 TXOP 内完成（图 26-5）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4008,
+          4009,
+          4016,
+          4024
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:26.5.1",
+    "80211-2024:26.5.2.1",
+    "80211-2024:26.5.2.2",
+    "80211-2024:26.5.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4005
+      ],
+      "note": "26.5.1 HE DL MU operation — AP transmits simultaneously to multiple STAs via DL OFDMA / DL MU-MIMO on per-STA RUs"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4008,
+        4009
+      ],
+      "note": "26.5.2.1 / 26.5.2.2 — UL MU: AP solicits simultaneous immediate responses; non-AP STA shall not send a triggering frame; Trigger frame User Info AID12 addressing and TRS Control solicitation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4016
+      ],
+      "note": "26.5.2.3 — non-AP STA only sends HE TB PPDU when explicitly triggered; SIFS between triggering PPDU and HE TB PPDU"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4024
+      ],
+      "note": "26.5.3 MU cascading sequence — single PPDU acks prior frames and triggers further uplink within one TXOP (Figure 26-5)"
+    }
+  ],
+  "track": "modern-phy"
+}

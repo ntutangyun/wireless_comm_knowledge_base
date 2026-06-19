@@ -1,0 +1,139 @@
+{
+  "id": "modern-phy-10",
+  "title": {
+    "en": "Reading the HE Preamble: SIG-A, SIG-B, LTF, and the Four PPDU Formats",
+    "zh": "解读 HE 前导码：SIG-A、SIG-B、LTF 与四种 PPDU 格式"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Everything Wi-Fi 6 does in the air — OFDMA, multi-user MIMO, trigger-based uplink, spatial reuse — only works because the front of every frame tells the receiver exactly how to read the rest of it. That front matter is the preamble. This lesson opens up the HE (High Efficiency) preamble and shows how a station, in the first few microseconds of a frame, figures out what kind of frame this is and which slice of it is addressed to it.",
+      "zh": "Wi-Fi 6 在空口上做的一切——OFDMA、多用户 MIMO、基于触发的上行、空间复用——之所以能成立，是因为每一帧的开头都明确告诉接收机该如何解读其余部分。这段开头就是“前导码（preamble）”。本课将拆开 HE（高效率，High Efficiency）前导码，展示一个站点如何在帧开始后的最初几微秒内，判断出这是哪种帧、以及其中哪一片是发给自己的。"
+    },
+    {
+      "type": "prose",
+      "en": "An HE station can send one of four PPDU formats, and the receiver must tell them apart immediately. HE SU carries a single PSDU to one receiver — the everyday point-to-point frame. HE MU carries one or more PSDUs to one or more users at once: this is the downlink OFDMA / MU-MIMO workhorse. HE ER SU is an Extended Range single-user format for stations at the edge of coverage. HE TB (Trigger-Based) is special: a station only sends it as a response to a Trigger frame from the AP, lining up with everyone else on the AP's schedule for synchronised uplink.",
+      "zh": "HE 站点可以发送四种 PPDU 格式之一，接收机必须立刻把它们区分开来。HE SU 向一个接收者携带单个 PSDU——这是日常的点对点帧。HE MU 一次向一个或多个用户携带一个或多个 PSDU：它是下行 OFDMA / MU-MIMO 的主力。HE ER SU 是面向覆盖边缘站点的“扩展距离（Extended Range）”单用户格式。HE TB（基于触发，Trigger-Based）则很特别：站点只在收到 AP 的触发帧（Trigger frame）后才发送它，从而与其他人按 AP 的时间表对齐，完成同步的上行传输。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 520 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='10'><g stroke='currentColor' fill='none' stroke-width='1'><rect x='5' y='30' width='40' height='28'/><rect x='45' y='30' width='40' height='28'/><rect x='85' y='30' width='30' height='28'/><rect x='115' y='30' width='30' height='28'/><rect x='145' y='30' width='55' height='28'/><rect x='200' y='30' width='55' height='28' stroke-dasharray='3 2'/><rect x='255' y='30' width='35' height='28'/><rect x='290' y='30' width='45' height='28'/><rect x='335' y='30' width='45' height='28'/><rect x='380' y='30' width='90' height='28'/><rect x='470' y='30' width='30' height='28'/></g><g fill='currentColor' text-anchor='middle'><text x='25' y='48'>L-STF</text><text x='65' y='48'>L-LTF</text><text x='100' y='48'>L-SIG</text><text x='130' y='48'>RL-SIG</text><text x='172' y='48'>SIG-A</text><text x='227' y='48'>SIG-B</text><text x='272' y='48'>HE-STF</text><text x='312' y='48'>HE-LTF</text><text x='357' y='48'>HE-LTF</text><text x='425' y='48'>Data</text><text x='485' y='48'>PE</text></g><g fill='currentColor' text-anchor='middle' font-size='9'><text x='102' y='75'>legacy / pre-HE modulated</text><text x='227' y='90'>SIG-B: HE MU only</text><text x='425' y='75'>HE modulated</text></g><g stroke='currentColor' fill='none' stroke-width='0.75'><line x1='227' y1='58' x2='227' y2='82'/></g></svg>",
+      "caption": {
+        "en": "The HE preamble in order. Legacy fields (L-STF…RL-SIG) keep older devices aware; HE-SIG-A and (in HE MU only) HE-SIG-B carry the HE control info; HE-STF/HE-LTF train the receiver before the Data field. RL-SIG, HE-SIG-A, HE-STF, HE-LTF and PE are present in all four HE formats.",
+        "zh": "按顺序排列的 HE 前导码。传统字段（L-STF…RL-SIG）让旧设备保持感知；HE-SIG-A 与（仅在 HE MU 中存在的）HE-SIG-B 携带 HE 控制信息；HE-STF/HE-LTF 在 Data 字段之前训练接收机。RL-SIG、HE-SIG-A、HE-STF、HE-LTF 和 PE 在全部四种 HE 格式中都存在。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "HE-SIG-A is the common control block — two OFDM symbols carrying the parameters every receiver needs to interpret the PPDU: the BSS Color that identifies the network, the bandwidth, the GI+HE-LTF size, MCS and coding, the spatial-reuse permission, and the TXOP duration. The very first bit (the Format field) is what separates an SU/ER-SU frame from a TB frame. HE-SIG-A is protected by its own 4-bit CRC, so a receiver that mis-decodes it simply discards the frame rather than acting on garbage.",
+      "zh": "HE-SIG-A 是公共控制块——两个 OFDM 符号，携带每个接收机解读 PPDU 所需的参数：标识网络的 BSS Color、带宽、GI+HE-LTF 尺寸、MCS 与编码、空间复用许可，以及 TXOP 时长。最开头的那一比特（Format 字段）正是用来把 SU/ER-SU 帧与 TB 帧区分开来的。HE-SIG-A 由它自带的 4 比特 CRC 保护，因此若接收机解码出错，它会直接丢弃该帧，而不会基于错误数据去动作。"
+    },
+    {
+      "type": "prose",
+      "en": "HE-SIG-B is where multi-user magic becomes legible. It appears only in the HE MU format, and it carries the resource-unit (RU) allocation map: which RU each user gets, the MCS for each user, and how many spatial streams in MU-MIMO. Crucially, each User field includes an 11-bit STA-ID. A receiver scans the User fields, finds the one whose STA-ID matches its own association ID, and from that learns exactly which RU and MCS to decode — that is how it picks its own slice out of a frame shared with several other stations. On 40 MHz and wider, HE-SIG-B is split across two content channels so it can be sent in parallel across the band.",
+      "zh": "HE-SIG-B 正是多用户“魔法”变得可读之处。它只出现在 HE MU 格式中，携带资源单元（RU，resource unit）分配图：每个用户分到哪个 RU、各自的 MCS，以及 MU-MIMO 中的空间流数量。关键在于，每个 User 字段都含有一个 11 比特的 STA-ID。接收机扫描这些 User 字段，找到 STA-ID 与自身关联 ID 匹配的那一个，并据此精确得知应解码哪个 RU、用哪个 MCS——这就是它从与多个其他站点共享的一帧中“拣出自己那一片”的方式。在 40 MHz 及更宽时，HE-SIG-B 会被拆分到两个内容信道（content channel）上，从而在频带上并行发送。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n  A[Receive HE MU PPDU] --> B[Decode HE-SIG-A: bandwidth, BSS Color, MCS]\n  B --> C[Decode HE-SIG-B Common: RU allocation map]\n  C --> D[Scan User fields for my STA-ID]\n  D -->|match| E[Read my RU + MCS + streams]\n  E --> F[Use HE-LTF to estimate my channel]\n  F --> G[Decode only my slice of Data]\n  D -->|no match| H[Ignore this PPDU]",
+      "zh": "graph LR\n  A[收到 HE MU PPDU] --> B[解码 HE-SIG-A：带宽、BSS Color、MCS]\n  B --> C[解码 HE-SIG-B 公共字段：RU 分配图]\n  C --> D[在 User 字段中查找自己的 STA-ID]\n  D -->|匹配| E[读取自己的 RU + MCS + 流数]\n  E --> F[用 HE-LTF 估计自己的信道]\n  F --> G[只解码 Data 中属于自己的那一片]\n  D -->|不匹配| H[忽略此 PPDU]"
+    },
+    {
+      "type": "prose",
+      "en": "After the signalling comes the HE-LTF (Long Training field). Its job is channel estimation: the receiver knows the LTF's transmitted pattern, so by comparing what it expected against what arrived, it measures the radio channel — including, for MIMO, the full matrix between each transmit stream and each receive antenna. Only after the LTF has characterised the channel can the receiver equalise and decode the Data field correctly. HE supports 1x, 2x and 4x HE-LTF types, trading symbol duration against robustness.",
+      "zh": "信令之后是 HE-LTF（长训练字段，Long Training field）。它的职责是信道估计：接收机已知 LTF 发送时的图样，于是通过比较“它预期收到的”与“实际收到的”，测量出无线信道——对于 MIMO，还包括每条发送流与每根接收天线之间的完整矩阵。只有在 LTF 刻画出信道之后，接收机才能正确地做均衡并解码 Data 字段。HE 支持 1x、2x、4x 三种 HE-LTF 类型，在符号时长与鲁棒性之间做权衡。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Dual Carrier Modulation (DCM) is the range trick. It copies the same information onto a pair of subcarriers, so if a deep fade or interference knocks out one tone, the duplicate on the other still carries the bit. That redundancy buys robustness at the edge of coverage — at the cost of throughput, since two subcarriers now do one subcarrier's work. DCM applies only to the lower MCS indices (0, 1, 3, 4), exactly the rates a far-away station would already be using.",
+      "zh": "双载波调制（DCM，Dual Carrier Modulation）是用于扩展距离的小技巧。它把同一份信息复制到一对子载波上，这样即便某个子载波被深衰落或干扰击垮，另一个子载波上的副本仍能承载该比特。这种冗余在覆盖边缘换来了鲁棒性——代价是吞吐量，因为现在要用两个子载波去完成一个子载波的活儿。DCM 仅适用于较低的 MCS 序号（0、1、3、4），而这恰好正是一个远端站点本就会使用的速率。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact format set and the SIG-A / SIG-B / LTF roles in the standard",
+        "zh": "标准中精确的格式集合与 SIG-A / SIG-B / LTF 的职责"
+      },
+      "en": "Clause 27.1.4 lists the FORMAT values an HE TXVECTOR can take; 27.3.4 names the four HE PPDU formats explicitly — HE SU, HE MU, HE ER SU, HE TB — and notes the HE-SIG-A is not repeated in HE SU/MU but is twice as long (repeated) in HE ER SU, and that the HE TB preamble matches HE SU except the HE-STF is doubled in duration. RL-SIG, HE-SIG-A, HE-STF, HE-LTF and PE are present in all HE formats; HE-SIG-B is present only in HE MU. Per 27.3.11.7, HE-SIG-A carries the common interpretation parameters (Format, BSS Color, Bandwidth, MCS, GI+HE-LTF Size, Spatial Reuse, TXOP) over two BCC-coded OFDM symbols with a 4-bit CRC. Per 27.3.11.8, HE-SIG-B provides the OFDMA and DL MU-MIMO resource-allocation signalling: a Common field with the RU Allocation map plus a User Specific field of per-user User fields (each carrying an 11-bit STA-ID, MCS, and for MU-MIMO a spatial-configuration index), split across two content channels at 40 MHz and wider. Per 27.3.11.10, HE-LTF lets the receiver estimate the per-RU NRX × NSTS MIMO channel, with 1x/2x/4x HE-LTF types. Per 27.3.12.15, DCM modulates the same information on a pair of subcarriers and is applicable only to HE-MCS indices 0, 1, 3, and 4 (and at most 1-2 spatial streams).",
+      "zh": "27.1.4 节列出了 HE TXVECTOR 可取的 FORMAT 值；27.3.4 节明确命名了四种 HE PPDU 格式——HE SU、HE MU、HE ER SU、HE TB——并指出 HE-SIG-A 在 HE SU/MU 中不重复，但在 HE ER SU 中长度翻倍（重复），且 HE TB 的前导码与 HE SU 相同，只是 HE-STF 时长加倍。RL-SIG、HE-SIG-A、HE-STF、HE-LTF 和 PE 在所有 HE 格式中都存在；HE-SIG-B 仅在 HE MU 中存在。据 27.3.11.7 节，HE-SIG-A 在两个经 BCC 编码的 OFDM 符号上携带公共解读参数（Format、BSS Color、带宽、MCS、GI+HE-LTF 尺寸、空间复用、TXOP），并带 4 比特 CRC。据 27.3.11.8 节，HE-SIG-B 提供 OFDMA 与下行 MU-MIMO 的资源分配信令：一个携带 RU 分配图的 Common 字段，外加一个由逐用户 User 字段组成的 User Specific 字段（每个 User 字段携带 11 比特 STA-ID、MCS，以及在 MU-MIMO 情形下的空间配置索引），在 40 MHz 及更宽时拆分到两个内容信道。据 27.3.11.10 节，HE-LTF 让接收机估计逐 RU 的 NRX × NSTS MIMO 信道，并有 1x/2x/4x 三种 HE-LTF 类型。据 27.3.12.15 节，DCM 把同一份信息调制到一对子载波上，仅适用于 HE-MCS 序号 0、1、3、4（且至多 1-2 条空间流）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4139,
+          4180,
+          4216,
+          4231,
+          4251,
+          4291
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:27.1.4",
+    "80211-2024:27.3.4",
+    "80211-2024:27.3.11.7",
+    "80211-2024:27.3.11.8",
+    "80211-2024:27.3.11.10",
+    "80211-2024:27.3.12.15"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4138,
+        4139
+      ],
+      "note": "27.1.4 PPDU formats — FORMAT parameter values; HE_SU, HE_ER_SU, HE_MU, HE_TB defined"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4180,
+        4181
+      ],
+      "note": "27.3.4 HE PPDU formats — the four formats; preamble field layout (Figures 27-8..27-11); which fields are present in each"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4216,
+        4217,
+        4218,
+        4219,
+        4220
+      ],
+      "note": "27.3.11.7 HE-SIG-A — common parameters: Format, BSS Color, Bandwidth, MCS, GI+HE-LTF Size, Spatial Reuse, TXOP; CRC"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4231,
+        4232,
+        4233,
+        4244,
+        4245
+      ],
+      "note": "27.3.11.8 HE-SIG-B — Common field RU allocation map; per-user User fields with STA-ID; two content channels at 40 MHz+"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4251,
+        4252
+      ],
+      "note": "27.3.11.10 HE-LTF — channel estimation; per-RU NRX x NSTS MIMO channel; 1x/2x/4x HE-LTF types"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4291
+      ],
+      "note": "27.3.12.15 Dual carrier modulation — same info on a pair of subcarriers; HE-MCS 0,1,3,4 only"
+    }
+  ],
+  "track": "modern-phy"
+}

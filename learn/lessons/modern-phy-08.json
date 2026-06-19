@@ -1,0 +1,106 @@
+{
+  "id": "modern-phy-08",
+  "title": {
+    "en": "Operating Mode Control and Sleeping Mid-Packet",
+    "zh": "操作模式控制与包内休眠"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A Wi-Fi client doesn't run flat-out all the time. To save battery it might shut down some of its receive chains, narrow the channel it listens on, or stop joining the AP's uplink multi-user bursts. The catch: the moment it does any of that, the AP must rate-adapt to match — send fewer spatial streams, a narrower bandwidth — or every frame to that client misses. This lesson is about two efficiency levers an HE (Wi-Fi 6) client toggles on the fly: Operating Mode (OM) Control, which renegotiates capability without a full reassociation, and intra-PPDU power save, which lets a client doze through a frame it can already tell isn't for it.",
+      "zh": "Wi-Fi 客户端并不会一直满负荷运行。为了省电，它可能关掉部分接收链路、把监听的信道收窄，或者干脆不再参与 AP 发起的上行多用户突发。问题是：它一旦这么做，AP 就必须随之调整速率——发更少的空间流、更窄的带宽——否则发给该客户端的每一帧都会落空。本课讲的是 HE（Wi-Fi 6）客户端动态切换的两个效率开关：操作模式控制（OM Control），它无需完整重新关联即可重新协商能力；以及包内休眠（intra-PPDU power save），它让客户端在已经判断出某一帧与自己无关时，于该帧期间打盹。"
+    },
+    {
+      "type": "prose",
+      "en": "OM Control is a tiny subfield that rides along inside an ordinary frame the client was going to send anyway — a QoS Data, a QoS Null, or a Class 3 management frame — as long as that frame asks for an immediate acknowledgment. The sender is called the OMI initiator; the peer that reads and acts on the subfield is the OMI responder. Every HE AP must support receiving it. Because the change piggybacks on a normal acked frame, the client can announce 'I can now only handle 2 streams at 80 MHz' in the middle of a session, and the very ack confirms the AP heard it. No reassociation, no downtime.",
+      "zh": "OM Control 是一个很小的子字段，它搭便车藏在客户端本来就要发送的普通帧里——一个 QoS Data、QoS Null 或 Class 3 管理帧——只要这帧请求立即确认（ACK）即可。发送方称为 OMI 发起者（initiator），读取并据此行动的对端称为 OMI 响应者（responder）。每个 HE AP 都必须支持接收它。由于这次变更是搭在一个普通的、会被 ACK 的帧上，客户端可以在会话进行中宣告“我现在只能在 80 MHz 上处理 2 条空间流”，而那个 ACK 本身就确认了 AP 已收到。无需重新关联，没有停机。"
+    },
+    {
+      "type": "prose",
+      "en": "The subfield carries two directions of change. Receive Operating Mode (ROM) tells the responder the maximum bandwidth and the maximum number of spatial streams (Rx NSS) the initiator can currently receive — so the AP shrinks the PPDUs it sends downlink. Transmit Operating Mode (TOM) tells the responder how the initiator will transmit when triggered: a Tx NSTS cap, a channel-width cap, and crucially an UL MU Disable bit that lets the client opt out of responding to Trigger frames altogether. A non-AP STA can change both; an AP, as initiator, only ever does ROM (it never disables its own uplink-MU duties).",
+      "zh": "这个子字段携带两个方向的变更。接收操作模式（ROM）告诉响应者发起者当前能接收的最大带宽和最大空间流数（Rx NSS）——于是 AP 会缩小它下行发送的 PPDU。发射操作模式（TOM）则告诉响应者发起者在被触发时将如何发射：一个 Tx NSTS 上限、一个信道带宽上限，以及关键的“UL MU Disable”比特，它让客户端可以彻底退出对触发帧（Trigger frame）的响应。非 AP 站点两者都能改；而作为发起者的 AP 只会做 ROM（它绝不会关闭自己的上行多用户职责）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Direction matters for timing. When the client tightens a setting (higher to lower — fewer streams, narrower channel), it waits until after the TXOP in which it got the ack, so the AP has surely processed the change before the client actually shrinks. When it loosens (lower to higher), it applies the change as soon as it expects the ack. The conservative order avoids a window where the AP is still transmitting wide while the client has already gone narrow — which would just lose frames.",
+      "zh": "方向决定时序。当客户端收紧设置（由高到低——更少的流、更窄的信道）时，它会等到收到 ACK 的那个 TXOP 结束之后再真正缩减，以确保 AP 在客户端实际收窄之前已经处理了这次变更。当它放宽设置（由低到高）时，则在预期收到 ACK 时就立即应用。这种保守的顺序避免了出现这样一个窗口：AP 仍在用宽带宽发送，而客户端却已经切到了窄带宽——那只会丢帧。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Non-AP STA (OMI initiator)\n    participant AP as AP (OMI responder)\n    Note over STA: battery low - drop to 2 streams, 80 MHz\n    STA->>AP: QoS Null + OM Control (Rx NSS=2, BW=80, solicits ack)\n    AP-->>STA: Ack (SIFS later)\n    Note over STA: tightening - apply only AFTER this TXOP\n    Note over AP: update stored ROM for this STA\n    AP->>STA: subsequent DL PPDU at <=2 SS, <=80 MHz\n    Note over STA: later: re-enable uplink MU\n    STA->>AP: QoS Data + OM Control (UL MU Disable=0)\n    AP-->>STA: Ack\n    AP->>STA: Trigger frame -> STA may send HE TB PPDU again",
+      "zh": "sequenceDiagram\n    participant STA as 非 AP 站点 (OMI 发起者)\n    participant AP as AP (OMI 响应者)\n    Note over STA: 电量低 - 降到 2 条流, 80 MHz\n    STA->>AP: QoS Null + OM Control (Rx NSS=2, BW=80, 请求 ACK)\n    AP-->>STA: ACK (SIFS 之后)\n    Note over STA: 收紧 - 仅在本 TXOP 结束后才应用\n    Note over AP: 更新该站点的 ROM 记录\n    AP->>STA: 后续下行 PPDU 用 <=2 流, <=80 MHz\n    Note over STA: 之后: 重新启用上行 MU\n    STA->>AP: QoS Data + OM Control (UL MU Disable=0)\n    AP-->>STA: ACK\n    AP->>STA: Trigger frame -> STA 可再次发送 HE TB PPDU"
+    },
+    {
+      "type": "prose",
+      "en": "The second lever is intra-PPDU power save. Modern Wi-Fi packs many clients into one multi-user PPDU, and a client decodes the preamble before the data. Once it reads the per-user fields and the BSS color and sees that this intra-BSS frame is not addressed to it, there is no reason to keep the radio lit for the rest of the transmission. A non-AP HE STA with this feature on may doze (if in power-save mode) or simply go unavailable (if in active mode) until the PPDU ends — then snap back awake. There is one piece of bookkeeping it must keep doing while it sleeps.",
+      "zh": "第二个效率开关是包内休眠（intra-PPDU power save）。现代 Wi-Fi 会把许多客户端塞进同一个多用户 PPDU，而客户端会先解码前导码、再处理数据。一旦它读取了各用户字段以及 BSS color，并发现这个 BSS 内（intra-BSS）的帧并非发给自己，就没有理由在这段传输剩余的时间里继续点亮射频。开启了此特性的非 AP HE 站点可以打盹（若处于省电模式）或干脆变为不可用状态（若处于活跃模式），直到该 PPDU 结束——然后立刻醒来。它在休眠期间必须坚持做一件“记账”的事。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Sleeping doesn't mean going deaf to the medium. A STA in intra-PPDU power save must keep running its NAV timers and keep treating the medium as busy for the whole PPDU, then wake at the end. That way it doesn't blunder onto a channel that's still in use — the instant the NAV expires it can contend normally. It only judges a frame ignorable by reading the preamble first (BSS color, uplink flag, the STA_ID / RA list), so it never dozes through something actually meant for it.",
+      "zh": "休眠并不意味着对介质“充耳不闻”。处于包内休眠的站点必须在整个 PPDU 期间继续运行其 NAV 定时器、继续把介质视为忙，并在帧结束时醒来。这样它就不会贸然闯入一个仍在被占用的信道——一旦 NAV 到期，它便可正常竞争介质。它只通过先读取前导码（BSS color、上行标志、STA_ID / RA 列表）来判断某帧可以忽略，因此绝不会把真正发给自己的内容睡过去。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Which PPDUs qualify for a mid-packet doze, and the UL-MU opt-out",
+        "zh": "哪些 PPDU 可触发包内休眠，以及上行 MU 退出机制"
+      },
+      "en": "Clause 26.14.1 enumerates the exact conditions. A non-AP HE STA with dot11IntraPPDUPowerSaveOptionActivated true may doze or become unavailable until a PPDU ends when, for example: it is an HE MU PPDU whose RXVECTOR BSS_COLOR matches its BSS, UPLINK_FLAG is 0, the STA_ID list does not include the STA's identifier (nor a broadcast identifier for it), and BSS Color Disabled is 0 in the latest HE Operation element; or an HE TB / HE SU / HE ER SU PPDU under analogous intra-BSS color matches; or a VHT PPDU whose PARTIAL_AID matches the BSSID and GROUP_ID is 0; or an A-MPDU addressed to the BSSID but not to this STA's individual or group address. While dozing it shall keep its NAV timers running, consider the medium busy, and transition to awake at the PPDU's end (it may also discard an inter-BSS PPDU until its end). For OM Control, 26.9.3 (TOM) is the lever that suspends triggered uplink: setting UL MU Disable to 1 stops the STA responding to all Trigger-frame variants (including MU-RTS and NFRP); an AP responder shall then send it no triggering frames for subsequent TXOPs. A finer UL MU Data Disable bit (only if the AP advertised support) suspends just UL MU data while still allowing control-response and management transmissions.",
+      "zh": "26.14.1 节列举了精确条件。一个 dot11IntraPPDUPowerSaveOptionActivated 为 true 的非 AP HE 站点，在以下情形（举例）下可打盹或变为不可用直至 PPDU 结束：该帧是 HE MU PPDU，其 RXVECTOR 的 BSS_COLOR 与自身 BSS 匹配、UPLINK_FLAG 为 0、STA_ID 列表不包含该站点标识（也不含面向它的广播标识），且最近一次 HE Operation 元素中的 BSS Color Disabled 为 0；或是在类似的 BSS 内 color 匹配下的 HE TB / HE SU / HE ER SU PPDU；或是 PARTIAL_AID 与 BSSID 匹配且 GROUP_ID 为 0 的 VHT PPDU；或是寻址到该 BSSID 但并非该站点单播或组播地址的 A-MPDU。在打盹期间，它应继续运行 NAV 定时器、将介质视为忙，并在 PPDU 结束时转入唤醒态（它也可将 BSS 间的 PPDU 丢弃至其结束）。对于 OM Control，26.9.3（TOM）是暂停被触发上行的开关：将 UL MU Disable 置为 1 会使站点停止响应所有触发帧变体（包括 MU-RTS 与 NFRP）；此时作为响应者的 AP 在后续 TXOP 中不应再向它发送任何触发帧。更细粒度的 UL MU Data Disable 比特（仅当 AP 已通告支持时）则只暂停上行 MU 数据，同时仍允许控制响应帧与管理帧的发送。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4104,
+          4105,
+          4080
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:26.9.1",
+    "80211-2024:26.9.2",
+    "80211-2024:26.9.3",
+    "80211-2024:26.14.1"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4076,
+        4077
+      ],
+      "note": "26.9.1 OMI general — OMI initiator/responder roles; OM Control rides on acked QoS Data/Null/Class 3 mgmt frame; AP must support reception; Rx NSS / Channel Width semantics"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4079,
+        4080
+      ],
+      "note": "26.9.2 ROM indication — higher-to-lower vs lower-to-higher timing relative to the TXOP of the ack; responder updates bandwidth and max NSS"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4080,
+        4081
+      ],
+      "note": "26.9.3 TOM indication — Tx NSTS / Channel Width caps; UL MU Disable and UL MU Data Disable; responder stops triggering when UL MU Disable=1"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4104,
+        4105
+      ],
+      "note": "26.14.1 Intra-PPDU power save — conditions to doze until PPDU end (intra-BSS color/STA_ID checks); must keep NAV running and treat medium busy, wake at PPDU end"
+    }
+  ],
+  "track": "modern-phy"
+}

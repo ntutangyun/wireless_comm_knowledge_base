@@ -1,0 +1,107 @@
+{
+  "id": "modern-phy-07",
+  "title": {
+    "en": "Telling the AP What You Need: Buffer Status Reports and UORA Random Access",
+    "zh": "让 AP 知道你的需求：缓冲状态报告与 UORA 随机接入"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In Wi-Fi 6 (HE), the access point became a scheduler: instead of every client fighting for the air on its own, the AP hands out uplink airtime by sending Trigger frames that tell named clients exactly which resource unit (RU) to transmit in. That only works if the AP knows two things — who actually has data waiting, and how to let in a client it has never scheduled. This lesson is about those two pieces: the Buffer Status Report (BSR), which advertises how much data is queued, and UL OFDMA-based Random Access (UORA), which sets aside random-access RUs so an unscheduled client can still get a word in.",
+      "zh": "在 Wi-Fi 6（HE）中，接入点（AP）变成了一个调度器：不再让每个客户端各自抢占信道，而是由 AP 发出触发帧（Trigger frame），明确告诉指定的客户端在哪个资源单元（RU）上发送上行数据。但这套机制要奏效，AP 必须知道两件事——到底谁手里压着数据、以及如何放行一个从未被调度过的客户端。本课就讲这两块：缓冲状态报告（BSR），用来告知队列中还有多少数据；以及基于上行 OFDMA 的随机接入（UORA），它专门预留出随机接入 RU，让未被调度的客户端也能插上话。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the BSR. A client tells its AP how much data is queued so the scheduler can size and prioritise the airtime it grants. There are two flavours. An unsolicited BSR rides along inside any frame the client already sends to the AP — it lives in the QoS Control field (a queue size for one traffic ID) or in a richer BSR Control subfield (a per-access-category picture). A solicited BSR is the AP asking directly: it sends a BSRP (BSR Poll) Trigger frame, and the polled clients reply with their queue sizes. Either way, the AP ends up with a fresh map of who needs how much.",
+      "zh": "先看 BSR。客户端把自己队列里还有多少数据告诉 AP，让调度器据此分配并安排所授予的空口时间的大小与优先级。它有两种形式。非主动请求（unsolicited）的 BSR 搭顺风车，附在客户端本就要发给 AP 的任意帧里——它存放在 QoS Control 字段中（携带某个流标识 TID 的队列大小），或者放在内容更丰富的 BSR Control 子字段中（按接入类别 AC 给出更完整的画面）。被请求（solicited）的 BSR 则是 AP 直接来问：它发出一个 BSRP（BSR 轮询）触发帧，被点名的客户端就回复各自的队列大小。无论哪种方式，AP 最终都能得到一张关于“谁需要多少”的最新地图。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A queue size of 255 is a special value: it means \"unknown or unspecified\" rather than a literal byte count. A client can use it to say \"I have a lot, but I'm not committing to an exact number\" — handy when the queue is still filling.",
+      "zh": "队列大小取值 255 是一个特殊值：它表示“未知或未指定”，而不是字面上的字节数。客户端可以用它来表达“我还有不少数据，但不打算给出一个精确数字”——在队列仍在不断填充时很实用。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the access problem. Triggered uplink is great for clients the AP already knows and has scheduled, but what about a client with no standing assignment — one that just woke up with new data, or one that isn't even associated yet? UORA is the answer. The AP marks some RUs in a Trigger frame as random-access RUs (RA-RUs) by setting their AID12 subfield to 0 (for associated clients) or 2045 (for unassociated clients). Any eligible client may try one of these instead of waiting to be named. To keep collisions down, each client runs an OFDMA backoff (OBO) counter: every Trigger frame it subtracts the number of eligible RA-RUs from its OBO, and only when OBO reaches zero does it transmit — picking one of the RA-RUs at random.",
+      "zh": "再看接入问题。触发式上行对于 AP 已经认识并调度过的客户端很好用，但那些没有固定分配的客户端怎么办——比如刚刚被新数据唤醒的，或者甚至还没关联上的？UORA 就是答案。AP 通过把某些 RU 的 AID12 子字段置为 0（面向已关联客户端）或 2045（面向未关联客户端），将触发帧中的这些 RU 标记为随机接入 RU（RA-RU）。任何符合条件的客户端都可以去尝试其中一个，而不必等着被点名。为了减少碰撞，每个客户端都维护一个 OFDMA 退避（OBO）计数器：每收到一个触发帧，它就从 OBO 中减去本帧中符合条件的 RA-RU 数量，只有当 OBO 减到零时，它才发送——并从这些 RA-RU 中随机挑一个。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA1 as STA1 (assoc, OBO=3)\n    participant STA2 as STA2 (assoc, OBO=5)\n    participant AP as AP\n    Note over AP: Trigger frame: 3 RA-RUs (AID12=0)\n    AP->>STA1: Trigger (random access)\n    AP->>STA2: Trigger (random access)\n    Note over STA1: OBO 3 - 3 = 0 -> may send\n    Note over STA2: OBO 5 - 3 = 2 -> wait for next Trigger\n    STA1->>AP: HE TB PPDU on a randomly picked RA-RU\n    AP->>STA1: Multi-STA BlockAck\n    Note over STA1: success -> reset OCW to OCWmin, redraw OBO",
+      "zh": "sequenceDiagram\n    participant STA1 as STA1 (已关联, OBO=3)\n    participant STA2 as STA2 (已关联, OBO=5)\n    participant AP as AP\n    Note over AP: 触发帧: 3 个 RA-RU (AID12=0)\n    AP->>STA1: 触发帧 (随机接入)\n    AP->>STA2: 触发帧 (随机接入)\n    Note over STA1: OBO 3 - 3 = 0 -> 可发送\n    Note over STA2: OBO 5 - 3 = 2 -> 等下一个触发帧\n    STA1->>AP: 在随机挑中的 RA-RU 上发送 HE TB PPDU\n    AP->>STA1: Multi-STA BlockAck\n    Note over STA1: 成功 -> 将 OCW 重置为 OCWmin, 重新抽取 OBO"
+    },
+    {
+      "type": "prose",
+      "en": "What counts as eligible matters. A client only treats an RU as an eligible RA-RU if it can actually transmit an HE TB PPDU there with the parameters the Trigger frame asks for, and if the RU's intended audience matches its own status: associated clients use the AID12=0 RA-RUs, unassociated clients use the AID12=2045 ones. Crucially, if the client is itself the named target of a User Info field in that Trigger frame (it got a dedicated RU), it must NOT contend on the random-access RUs and must NOT decrement its OBO — it just uses its assigned RU. The AP can also lay down a whole contiguous block of RA-RUs at once to widen the random-access lane.",
+      "zh": "什么算“符合条件”很关键。客户端只有在确实能用触发帧所要求的参数在某个 RU 上发送 HE TB PPDU、并且该 RU 的目标对象与自身状态相符时，才会把它当作符合条件的 RA-RU：已关联客户端使用 AID12=0 的 RA-RU，未关联客户端使用 AID12=2045 的那些。关键在于，如果客户端本身就是该触发帧中某个 User Info 字段点名的目标（即拿到了专用 RU），它就绝不能去争用随机接入 RU，也绝不能递减自己的 OBO——它直接使用被分配的那个 RU。AP 还可以一次性铺出一整块连续的 RA-RU，以拓宽随机接入这条“车道”。"
+    },
+    {
+      "type": "prose",
+      "en": "Collisions are inevitable when several clients pick the same RU, so UORA borrows the idea of an expanding contention window. Each client keeps an OFDMA Contention Window (OCW) bounded by OCWmin and OCWmax, advertised in the AP's UORA Parameter Set element. After a successful transmission the client resets OCW to OCWmin and draws a fresh OBO in the range 0…OCW. After a failure — including the case where carrier sense says the chosen RU is busy — it doubles the window (OCW becomes 2 × OCW + 1, capped at OCWmax) and redraws OBO, exactly the back-off-and-retry rhythm that keeps a crowded random-access channel from melting down. A failed attempt can also simply be retried later over ordinary EDCA.",
+      "zh": "当多个客户端挑中同一个 RU 时，碰撞在所难免，因此 UORA 借用了“竞争窗口逐步扩大”的思路。每个客户端维护一个 OFDMA 竞争窗口（OCW），其取值被 OCWmin 与 OCWmax 限定，这两个边界由 AP 的 UORA 参数集元素（UORA Parameter Set element）通告。一次成功发送之后，客户端把 OCW 重置为 OCWmin，并在 0…OCW 范围内重新抽取 OBO。一次失败之后——包括载波侦听判定所选 RU 忙碌的情形——它会把窗口翻倍（OCW 变为 2 × OCW + 1，上限为 OCWmax）并重新抽取 OBO，正是这种“退避后重试”的节奏，让拥挤的随机接入信道不至于崩溃。失败的尝试也可以干脆稍后改用普通的 EDCA 重传。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Unassociated access: bootstrapping into the network through an RA-RU",
+        "zh": "未关联接入：通过 RA-RU 引导进入网络"
+      },
+      "en": "UORA isn't only for associated clients — clause 26.5.4.5 lets a client that hasn't joined yet bootstrap in. An AP that allocates RA-RUs for unassociated STAs must send that Trigger frame in an HE PPDU so the unassociated client can read the BSS color it needs to build its HE TB PPDU. Such a client uses the AID12=2045 RA-RUs and, lacking a UORA Parameter Set element, falls back to default OCW values. The bootstrapping chain is concrete: an unassociated client can send an Authentication frame inside an RA-RU; an AP that receives one should schedule, 3–5 TUs later, another Trigger frame allocating unassociated RA-RUs — giving that client a follow-up opening to send a second Authentication frame or an Association Request. The AP groups these opportunities under broadcast TWT service periods (Broadcast TWT Recommendation = 2, Trigger = 1) and advertises them in Beacons, broadcast Probe Responses, and FILS Discovery frames, and when the BSS is 80 MHz or wider it must offer at least two unassociated RA-RUs in at least one such Trigger frame per SP. The Multi-STA BlockAck acknowledging unassociated uplinks uses STA-ID 2045.",
+      "zh": "UORA 并不只服务于已关联的客户端——26.5.4.5 节允许一个尚未入网的客户端借此引导接入。一个为未关联 STA 分配 RA-RU 的 AP，必须在 HE PPDU 中发送该触发帧，以便未关联客户端读取它构造 HE TB PPDU 所需的 BSS color。这类客户端使用 AID12=2045 的 RA-RU，并且由于缺少 UORA 参数集元素，会回退到默认 OCW 取值。这条引导链相当具体：未关联客户端可以在某个 RA-RU 中发送认证帧（Authentication frame）；收到该帧的 AP 应当在其后 3–5 个 TU 安排再发一个分配未关联 RA-RU 的触发帧——为发出认证帧的那个客户端提供后续机会，去发送第二个认证帧或一个关联请求帧（Association Request）。AP 把这些机会归并在广播 TWT 服务周期之下（Broadcast TWT Recommendation = 2、Trigger = 1），并在信标帧、广播探测响应帧和 FILS 发现帧中予以通告；当 BSS 带宽为 80 MHz 或更宽时，它必须在每个服务周期内至少一次这样的触发帧中提供至少两个未关联 RA-RU。用于确认未关联上行的 Multi-STA BlockAck 使用 STA-ID 2045。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4030,
+          4031
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:26.5.5",
+    "80211-2024:26.5.4.1",
+    "80211-2024:26.5.4.2",
+    "80211-2024:26.5.4.3",
+    "80211-2024:26.5.4.4",
+    "80211-2024:26.5.4.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4031,
+        4032
+      ],
+      "note": "26.5.5 Buffer status report operation — unsolicited vs solicited BSR; QoS Control vs BSR Control subfield; BSRP Trigger; queue size 255 = unknown"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4025,
+        4026
+      ],
+      "note": "26.5.4.1 General + 26.5.4.2 Eligible RA-RUs — AID12=0/2045 RA-RUs, OCW/OBO maintenance, UORA Parameter Set element, eligibility rules"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4027,
+        4028,
+        4029
+      ],
+      "note": "26.5.4.3 Transmission procedure (OBO countdown, Figure 26-6) + 26.5.4.4 Retransmission procedure (OCW = 2 x OCW + 1)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4030,
+        4031
+      ],
+      "note": "26.5.4.5 Additional considerations for unassociated STAs — Authentication frame in RA-RU, 3-5 TU follow-up Trigger, broadcast TWT scheduling, STA-ID 2045"
+    }
+  ],
+  "track": "modern-phy"
+}

@@ -1,0 +1,110 @@
+{
+  "id": "modern-phy-06",
+  "title": {
+    "en": "Speaking on Cue: Client Behavior Inside the HE TB PPDU",
+    "zh": "听令而发：HE TB PPDU 内的客户端行为"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In legacy Wi-Fi, every device contends for the air on its own, talking whenever it senses the channel is free — a noisy free-for-all. Wi-Fi 6 (802.11ax / HE) adds a conductor. The access point sends a Trigger frame that tells several clients at once exactly when, where, and how loudly to transmit, and they all reply together in a single synchronized burst called an HE TB PPDU (HE Trigger-Based PPDU). This lesson is about the client's side of that orchestra: how a non-AP station reads its own part out of the Trigger and plays it on cue.",
+      "zh": "在传统 Wi-Fi 中，每台设备各自争用信道，一旦感知到信道空闲就开口说话——这是一场嘈杂的自由混战。Wi-Fi 6（802.11ax / HE）引入了一位“指挥”。接入点（AP）发送一个触发帧（Trigger frame），一次性告诉多个客户端究竟在何时、在哪个资源单元、以多大功率发送，于是它们在同一个同步突发中一起回复，这个突发被称为 HE TB PPDU（基于触发的 HE PPDU）。本课讲的是这场“乐队演奏”中客户端的一侧：一个非 AP 站点如何从触发帧里读出属于自己的那段乐谱，并听令而发。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The golden rule (26.5.2.3): a non-AP STA shall NOT send an HE TB PPDU unless an AP explicitly triggered it. And when it does respond, the gap between the triggering frame and the HE TB PPDU is exactly one SIFS — no backoff, no contention. The station has been given a reserved slot; its only job is to fill it precisely.",
+      "zh": "黄金法则（26.5.2.3）：非 AP 站点“绝不”主动发送 HE TB PPDU，除非被 AP 明确触发。而当它确实要回应时，触发帧与 HE TB PPDU 之间的间隔恰好是一个 SIFS——没有退避，也没有争用。站点已经拿到一个预留的时隙，它唯一的任务就是精确地把它填满。"
+    },
+    {
+      "type": "prose",
+      "en": "First the station has to recognize that the Trigger is talking to it. Inside the Trigger frame is a list of User Info fields; one is addressed to this station when its AID12 subfield matches the 12 least-significant bits of the station's AID (or when it allocates a random-access RU the station is allowed to contend for). Once it finds its User Info field, the station may ignore all the others — its assignment is fully described right there: which Resource Unit (RU) to use, which MCS, how many spatial streams, what target receive power. The station does not get to choose these; it copies them straight into its TXVECTOR so that every triggered client lands at the AP cleanly aligned.",
+      "zh": "站点首先得认出这个触发帧是在对自己说话。触发帧内含一串“用户信息字段（User Info field）”，当其中某个字段的 AID12 子字段与站点 AID 的低 12 位相匹配时（或当它分配了一个站点被允许争用的随机接入 RU 时），该字段即是发给本站点的。一旦找到属于自己的用户信息字段，站点便可忽略其余所有字段——它的任务已经在这里被完整描述：用哪个资源单元（RU）、哪种 MCS、多少空间流、目标接收功率是多少。这些参数站点无权自选；它把它们直接复制进自己的 TXVECTOR，好让每个被触发的客户端都干净地、对齐地抵达 AP。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as Access Point (conductor)\n    participant S1 as STA 1\n    participant S2 as STA 2\n    AP->>S1: Trigger (User Info: AID=1, RU, MCS, TargetRxPwr)\n    AP->>S2: Trigger (User Info: AID=2, RU, MCS, TargetRxPwr)\n    Note over S1,S2: read my User Info; UL MU CS check; align timing/freq/power\n    Note over S1,S2: wait exactly one SIFS\n    par synchronized uplink burst\n        S1->>AP: HE TB PPDU (A-MPDU on my RU)\n    and\n        S2->>AP: HE TB PPDU (A-MPDU on my RU)\n    end\n    AP->>S1: Multi-STA BlockAck\n    AP->>S2: Multi-STA BlockAck",
+      "zh": "sequenceDiagram\n    participant AP as 接入点（指挥）\n    participant S1 as 站点 1\n    participant S2 as 站点 2\n    AP->>S1: 触发帧 (用户信息: AID=1, RU, MCS, 目标接收功率)\n    AP->>S2: 触发帧 (用户信息: AID=2, RU, MCS, 目标接收功率)\n    Note over S1,S2: 读取属于我的用户信息; UL MU CS 检查; 对齐时间/频率/功率\n    Note over S1,S2: 精确等待一个 SIFS\n    par 同步上行突发\n        S1->>AP: HE TB PPDU (在我的 RU 上的 A-MPDU)\n    and\n        S2->>AP: HE TB PPDU (在我的 RU 上的 A-MPDU)\n    end\n    AP->>S1: Multi-STA BlockAck\n    AP->>S2: Multi-STA BlockAck"
+    },
+    {
+      "type": "prose",
+      "en": "Because many stations transmit at the same instant on adjacent RUs, sloppiness from any one of them smears the whole burst. So the standard pins down three precorrections (27.3.15). Timing: the station must start its HE TB PPDU within ±0.4 µs of the ideal SIFS boundary after the triggering PPDU. Frequency and sampling clock: it locks onto the triggering PPDU and trims residual carrier-frequency offset to under 350 Hz, so its subcarriers don't bleed into a neighbor's RU. Power: instead of blasting at full power, it computes transmit power from the AP's advertised Tx power and its own measured downlink path loss, aiming to arrive at the AP at the exact target receive power the Trigger requested — so no single client drowns out the others.",
+      "zh": "由于众多站点在相邻的 RU 上于同一瞬间发送，任何一个站点的马虎都会把整个突发抹花。因此标准钉死了三项“预校正”（27.3.15）。时间：站点必须在触发 PPDU 之后理想 SIFS 边界的 ±0.4 µs 内开始发送它的 HE TB PPDU。频率与采样时钟：它锁定触发 PPDU，并把残余载波频偏修整到 350 Hz 以下，使自己的子载波不会渗入相邻 RU。功率：它不是用满功率猛轰，而是根据 AP 公告的发射功率与自己测得的下行路径损耗算出发射功率，目标是恰好以触发帧所要求的目标接收功率抵达 AP——这样就没有哪个客户端会盖过其他人。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 180\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"16\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">AP Trigger</text><rect x=\"10\" y=\"24\" width=\"150\" height=\"22\"/><text x=\"18\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Trigger frame</text><text x=\"168\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">SIFS</text><path d=\"M160 35 h40\" stroke-dasharray=\"3 3\"/><text x=\"210\" y=\"16\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Synchronized HE TB PPDU</text><rect x=\"210\" y=\"24\" width=\"200\" height=\"22\"/><text x=\"218\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">STA 1  A-MPDU (RU lo)</text><rect x=\"210\" y=\"50\" width=\"200\" height=\"22\"/><text x=\"218\" y=\"65\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">STA 2  A-MPDU (RU hi)</text><text x=\"10\" y=\"104\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Each STA aligns:</text><text x=\"24\" y=\"122\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">time  -  within +/-0.4 us of SIFS edge</text><text x=\"24\" y=\"140\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">freq  -  residual CFO &lt; 350 Hz</text><text x=\"24\" y=\"158\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">power -  hits AP's target Rx power</text></svg>",
+      "caption": {
+        "en": "Two stations fill adjacent RUs in one SIFS-aligned burst; each precorrects timing, frequency, and power so their overlapping transmissions arrive cleanly at the AP.",
+        "zh": "两个站点在一个 SIFS 对齐的突发中填满相邻的 RU；每个站点都对时间、频率与功率做预校正，使它们彼此重叠的发送能干净地抵达 AP。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "What can the station pack into its slot? The HE TB PPDU carries an A-MPDU (26.5.2.4) whose allowed contents depend on the Trigger type. A Basic Trigger lets it send buffered QoS Data up to the TID Aggregation Limit named in its User Info field; if it has nothing to send (or the RU is too small) it must still put at least a QoS Null in, so the AP knows it heard the call. A BSRP Trigger asks only for a buffer-status report (QoS Null, no data); an MU-BAR asks for a BlockAck; a BFRP asks for beamforming feedback. The station also stuffs its UL Power Headroom (UPH) into the A-Control field, telling the AP how much louder it could have gone — feedback that helps the AP pick a better MCS next time.",
+      "zh": "站点能往自己的时隙里塞什么？HE TB PPDU 携带一个 A-MPDU（26.5.2.4），其允许的内容取决于触发帧的类型。一个 Basic Trigger 允许它发送缓存的 QoS 数据，上限为其用户信息字段中指定的 TID 聚合限制；如果它无数据可发（或 RU 太小），仍必须至少放入一个 QoS Null 帧，好让 AP 知道它听到了召唤。BSRP Trigger 只索取缓冲状态报告（QoS Null，不含数据）；MU-BAR 索取 BlockAck；BFRP 索取波束成形反馈。站点还会把自己的上行功率余量（UPH）塞进 A-Control 字段，告诉 AP 它本还能再大声多少——这一反馈有助于 AP 下次挑选更合适的 MCS。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, before joining the burst the station runs a simplified carrier sense (UL MU CS, 26.5.2.5) — not the full backoff of normal contention. If the Trigger's CS Required bit is 0, it may transmit regardless of whether the medium looks busy: the AP already owns this TXOP, so the station trusts the conductor. If CS Required is 1, the station only does a quick energy-detect during the SIFS on the 20 MHz channels covering its own RU, plus a NAV check, and transmits only if those are idle. It deliberately ignores the intra-BSS NAV set by its own AP — that traffic is the conductor's, not an outsider's.",
+      "zh": "最后，在加入这场突发之前，站点会执行一种简化的载波侦听（UL MU CS，26.5.2.5）——而非常规争用中那套完整的退避。如果触发帧的 CS Required 位为 0，它便可不顾介质看上去是否繁忙而直接发送：AP 已经持有这个 TXOP，于是站点信任这位指挥。如果 CS Required 为 1，站点只在 SIFS 期间对覆盖自己 RU 的那些 20 MHz 信道做一次快速能量检测，外加一次 NAV 检查，仅当它们空闲时才发送。它会有意忽略由自己所属 AP 设置的 intra-BSS NAV——那份流量属于指挥本人，而非外来者。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact gating, power equation, and CS rules in the standard",
+        "zh": "标准中精确的触发门控、功率公式与载波侦听规则"
+      },
+      "en": "26.5.2.3 conditions a response on the Trigger's CS Required / UL MU CS state, on UL MU (Data) Disable being clear in the STA's last OM Control, and on the User Info matching by AID12 or allocating a usable RA-RU. Power precorrection (27.3.15.2) uses TxpwrSTA = PLDL + TargetRxpwr, with downlink path loss PLDL = TxpwrAP − Rxpwr from Equation (27-125); if UL Target Receive Power says 'max', the STA simply transmits at its max for the assigned HE-MCS. 27.3.15 also fixes the synchronization budget: residual CFO ≤ 350 Hz on HE TB data subcarriers (measured after HE-SIG-A), symbol clock corrected by the same ppm, and start time within ±0.4 µs + 16 µs of the end of the triggering PPDU (i.e. within 0.4 µs of the SIFS). 26.5.2.4 enumerates the A-MPDU contents per Trigger type and requires a QoS Null when nothing else fits, plus inclusion of the UPH Control subfield. 26.5.2.5 specifies that with CS Required = 0 the STA responds regardless of medium state, and with CS Required = 1 it energy-detects on the 20 MHz channels containing its allocated RUs during the SIFS, considering basic NAV but not the associated AP's intra-BSS NAV.",
+      "zh": "26.5.2.3 把“是否响应”条件化于触发帧的 CS Required / UL MU CS 状态、站点最近一次 OM Control 中 UL MU（Data）Disable 是否清零，以及用户信息字段是否按 AID12 匹配或分配了可用的 RA-RU。功率预校正（27.3.15.2）使用 TxpwrSTA = PLDL + TargetRxpwr，其中下行路径损耗 PLDL = TxpwrAP − Rxpwr（出自公式 (27-125)）；若 UL Target Receive Power 指示为“最大”，站点便直接以其针对所分配 HE-MCS 的最大功率发送。27.3.15 还钉死了同步预算：HE TB 数据子载波上残余载波频偏 ≤ 350 Hz（在 HE-SIG-A 之后测量），符号时钟按相同 ppm 修正，且起始时间须在触发 PPDU 结束后 ±0.4 µs + 16 µs 之内（即 SIFS 的 0.4 µs 之内）。26.5.2.4 逐一列出了按触发帧类型可放入 A-MPDU 的内容，并要求当再无其他内容可放时放入一个 QoS Null，且须包含 UPH Control 子字段。26.5.2.5 规定：当 CS Required = 0 时站点不顾介质状态而响应；当 CS Required = 1 时，它在 SIFS 期间对包含其所分配 RU 的 20 MHz 信道做能量检测，考虑 basic NAV 但不考虑所属 AP 的 intra-BSS NAV。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4016,
+          4022,
+          4023,
+          4298
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:26.5.2.3",
+    "80211-2024:26.5.2.4",
+    "80211-2024:26.5.2.5",
+    "80211-2024:27.3.15"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4016,
+        4017,
+        4018
+      ],
+      "note": "26.5.2.3 Non-AP STA behavior for UL MU operation - HE TB PPDU only when triggered; SIFS; User Info addressed by AID12; TXVECTOR copied from Trigger (RU/MCS/NSS/target power)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4020,
+        4021,
+        4022,
+        4023
+      ],
+      "note": "26.5.2.4 A-MPDU contents in an HE TB PPDU - per-Trigger-type contents, QoS Null fallback, UPH Control subfield; 26.5.2.5 UL MU CS mechanism"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4298,
+        4299,
+        4300
+      ],
+      "note": "27.3.15 Transmit requirements for triggered PPDUs - power precorrection Eq (27-124)/(27-125), residual CFO <= 350 Hz, start-time +/-0.4 us of SIFS"
+    }
+  ],
+  "track": "modern-phy"
+}

@@ -1,0 +1,128 @@
+{
+  "id": "modern-phy-09",
+  "title": {
+    "en": "BSS Coloring and Spatial Reuse: Sharing the Air Between Neighbors",
+    "zh": "BSS 着色与空间复用：在邻居之间共享空中资源"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In a crowded apartment block, every Wi-Fi network can hear its neighbors. Classic Wi-Fi plays it safe: if the air sounds busy at all, a radio holds back and waits its turn — even when the busy signal is coming from a faint network three flats away that it would never actually collide with. That politeness wastes a lot of airtime. Wi-Fi 6 (the HE amendment) adds a smarter rule: tell apart 'my network' from 'a neighbor's network', and if the neighbor is faint enough, just ignore it and transmit anyway. This lesson is about how that decision is made.",
+      "zh": "在拥挤的公寓楼里，每个 Wi-Fi 网络都能听见邻居。传统 Wi-Fi 的做法很保守：只要空中听起来有点忙，无线电就退避、等待轮到自己——哪怕这“忙”信号来自三户之外、本来根本不会真正发生冲突的微弱网络。这种“礼让”浪费了大量空中时间。Wi-Fi 6（即 HE 修正案）引入了一条更聪明的规则：分清“我的网络”和“邻居的网络”，如果邻居足够微弱，就干脆忽略它、照常发送。本课讲的就是这个决策是如何做出的。"
+    },
+    {
+      "type": "prose",
+      "en": "The first step is identity. Every HE access point paints its transmissions with a small tag called a BSS color — a number carried right in the preamble. A receiving radio compares the color of an incoming frame against its own. Same color (or a matching address) means intra-BSS: this is my network, defer normally. A different, non-zero color means inter-BSS: this came from an overlapping neighbor (an OBSS). The color lets a radio reach this verdict from the very start of the frame, long before decoding the payload — that early read is what makes the rest of spatial reuse possible.",
+      "zh": "第一步是“辨明身份”。每个 HE 接入点都会给自己的发送打上一个叫做 BSS 颜色（BSS color）的小标签——这个数字就携带在前导码里。接收端的无线电会把来帧的颜色与自己的颜色比对。颜色相同（或地址匹配）即为 intra-BSS（BSS 内）：这是我的网络，正常退避。颜色不同且非零即为 inter-BSS（BSS 间）：这来自一个交叠的邻居（即 OBSS）。颜色让无线电在帧的最开头就能得出判断，远早于解码净荷——正是这个“提前读出”使后续的空间复用成为可能。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><circle cx='130' cy='100' r='70'/><circle cx='330' cy='100' r='70'/><text x='130' y='40' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>My BSS - color 3</text><text x='330' y='40' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>Neighbor OBSS - color 7</text><circle cx='110' cy='110' r='5' fill='currentColor' stroke='none'/><text x='110' y='130' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>me</text><circle cx='350' cy='110' r='5' fill='currentColor' stroke='none'/><path d='M 200 100 L 260 100' stroke-dasharray='4 4'/><text x='230' y='92' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>faint</text><text x='230' y='175' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>color says inter-BSS - if weak enough, ignore and TX</text></svg>",
+      "caption": {
+        "en": "The BSS color tags each network. A frame wearing a foreign color, received weakly, can be ignored so my radio transmits instead of deferring.",
+        "zh": "BSS 颜色为每个网络打标签。带着外来颜色、且接收很弱的帧可以被忽略，于是我的无线电不再退避，而是直接发送。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Knowing it's a neighbor is only half the rule. The mechanism is called OBSS PD — overlapping-BSS preamble detection. Normally a radio treats the channel as busy whenever a signal crosses a fixed, low detection threshold. OBSS PD lets the radio raise that threshold, but only for frames it has classified as inter-BSS. If a foreign frame arrives below the raised OBSS PD level, the radio resets its clear-channel indication, leaves its neighbor-traffic (basic) NAV untouched, and is free to start its own transmission. Loud frames — and anything from my own network — still make it defer, so the safety net stays in place where it matters.",
+      "zh": "知道这是邻居只完成了一半。这个机制叫 OBSS PD——交叠 BSS 的前导码检测（overlapping-BSS preamble detection）。通常，只要信号越过一个固定的、较低的检测门限，无线电就把信道视为忙。OBSS PD 允许无线电抬高这个门限，但仅针对被判定为 inter-BSS 的帧。如果一个外来帧到达时低于抬高后的 OBSS PD 电平，无线电就复位它的“信道空闲”指示，保持其邻居流量所用的 basic NAV 不变，从而可以自由地开始自己的发送。响亮的帧——以及来自自己网络的任何帧——仍会让它退避，这样安全网在真正要紧的地方依然存在。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "There's a fair-play catch: if a station chooses to ignore a neighbor this way, it must cap its own transmit power for that TXOP. The intuition is a trade — 'I'll talk over you only because you're faint to me, so I'll also keep my voice down so I stay faint to you.' Shouting at full power after raising your listening threshold would just push the interference onto someone else.",
+      "zh": "这里有一个“公平博弈”的附加条件：如果一个站点用这种方式选择忽略邻居，它在那个 TXOP 内就必须限制自己的发送功率。其直觉是一种交换——“我之所以敢盖过你说话，只因为你对我而言很微弱；那么我也把音量压低，让自己对你同样微弱。”如果抬高了收听门限后还全功率“喊话”，只会把干扰转嫁给别人。"
+    },
+    {
+      "type": "prose",
+      "en": "The standard actually offers two flavors of OBSS PD. The plain non-SRG kind uses a fixed minimum offset baked into the spec, and applies to any inter-BSS frame. The SRG (spatial reuse group) kind lets an AP hand its stations a list — by BSS color and partial BSSID — of specifically trusted neighbors, often other APs in the same managed deployment, and grants them a separately tuned threshold. A station can run neither, one, or both at once. Either way the chosen OBSS PD level and the resulting power cap are linked by one equation: the more you raise your listening threshold, the more you must lower your transmit power.",
+      "zh": "标准其实提供了两种 OBSS PD 口味。普通的 non-SRG（非 SRG）那种使用规范里固定写死的最小偏移，适用于任何 inter-BSS 帧。SRG（spatial reuse group，空间复用组）那种则允许 AP 把一份名单——按 BSS 颜色和部分 BSSID 列出——交给它的站点，列出特别受信任的邻居（往往是同一受管部署中的其他 AP），并为它们授予一个单独调校的门限。一个站点可以两种都不跑、只跑一种、或同时跑两种。无论哪种，所选的 OBSS PD 电平与由此产生的功率上限由同一个公式联系起来：你把收听门限抬得越高，就必须把发送功率压得越低。"
+    },
+    {
+      "type": "prose",
+      "en": "Reclaiming airtime is great, but an AP often needs the opposite too: a way to lock down the medium for a whole multi-user exchange. That's MU-RTS / CTS. The AP sends one MU-RTS Trigger frame addressed to several stations at once; each addressed station that hears a clear medium fires back a CTS at the same SIFS instant, on the 20 MHz subchannels the trigger named. Those synchronized CTS frames set neighbors' NAVs and carve out a protected window — so the downlink multi-user PPDU and all its acknowledgments ride through without a mid-exchange collision.",
+      "zh": "夺回空中时间固然好，但 AP 往往也需要相反的能力：把介质锁定下来，供一整次多用户交换使用。这就是 MU-RTS / CTS。AP 发出一帧同时寻址多个站点的 MU-RTS 触发帧（MU-RTS Trigger frame）；每个被寻址、且听到介质空闲的站点会在同一个 SIFS 时刻、在触发帧指定的那些 20 MHz 子信道上回送一个 CTS。这些同步的 CTS 帧设置邻居的 NAV，划出一段受保护的窗口——于是下行多用户 PPDU 及其全部确认都能穿行而过，中途不会发生冲突。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as AP\n    participant S1 as STA1\n    participant S2 as STA2\n    AP->>S1: MU-RTS Trigger (to STA1 and STA2)\n    AP->>S2: MU-RTS Trigger (to STA1 and STA2)\n    Note over S1,S2: each checks medium idle, waits SIFS\n    S1-->>AP: CTS (simultaneous)\n    S2-->>AP: CTS (simultaneous)\n    Note over AP,S2: neighbors' NAV now set - window protected\n    AP->>S1: HE MU PPDU (downlink)\n    AP->>S2: HE MU PPDU (downlink)\n    S1-->>AP: BlockAck\n    S2-->>AP: BlockAck",
+      "zh": "sequenceDiagram\n    participant AP as AP\n    participant S1 as STA1\n    participant S2 as STA2\n    AP->>S1: MU-RTS 触发帧 (寻址 STA1 与 STA2)\n    AP->>S2: MU-RTS 触发帧 (寻址 STA1 与 STA2)\n    Note over S1,S2: 各自确认介质空闲, 等待 SIFS\n    S1-->>AP: CTS (同步发送)\n    S2-->>AP: CTS (同步发送)\n    Note over AP,S2: 邻居 NAV 已设置 - 窗口受保护\n    AP->>S1: HE MU PPDU (下行)\n    AP->>S2: HE MU PPDU (下行)\n    S1-->>AP: BlockAck\n    S2-->>AP: BlockAck"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact OBSS-PD conditions, the two NAVs, and the power equation",
+        "zh": "精确的 OBSS-PD 条件、两个 NAV 与功率公式"
+      },
+      "en": "Clause 26.2.2 defines classification: a PPDU is inter-BSS if its RXVECTOR BSS_COLOR is non-zero and differs from the STA's own color (with several address-based fallbacks); intra-BSS if the color matches or an RA/TA/BSSID equals the member BSSID. To support this, an HE STA keeps two NAVs (26.2.4): an intra-BSS NAV and a basic NAV, the latter updated by inter-BSS or unclassifiable PPDUs. Non-SRG OBSS PD (26.10.2.2) lets the MAC issue PHY-CCARESET.request and skip the basic-NAV update for an inter-BSS PPDU only if a list of conditions all hold — chiefly that the measured signal (from L-STF/L-LTF) is below the non-SRG OBSS PD level, and the PPDU isn't a response frame addressed to it. SRG OBSS PD (26.10.2.3) is the same procedure gated on the PPDU being an SRG PPDU below the SRG level. The level and power cap are tied by Equation (26-5): OBSS_PDlevel = max(OBSS_PDmin, min(OBSS_PDmax, OBSS_PDmin + (TX_PWRref - TX_PWR))) + 10*log10(PPDU_BW/20MHz); raising the level forces TX_PWR down (26.10.2.4), enforced as a transmit-power restriction period running to the end of the gained TXOP. MU-RTS/CTS protection (26.2.6): the AP sends an MU-RTS Trigger frame, each addressed STA whose UL MU CS says idle replies with a 6 Mb/s non-HT (duplicate) CTS at SIFS on the indicated 20 MHz channels, and those CTS frames set the surrounding NAVs that protect the exchange.",
+      "zh": "26.2.2 节定义了分类：若 PPDU 的 RXVECTOR 参数 BSS_COLOR 非零且不同于站点自身的颜色（还有若干基于地址的回退条件），则为 inter-BSS；若颜色匹配，或 RA/TA/BSSID 等于成员 BSSID，则为 intra-BSS。为支持这一点，HE 站点维护两个 NAV（26.2.4）：一个 intra-BSS NAV 与一个 basic NAV，后者由 inter-BSS 或无法分类的 PPDU 更新。non-SRG OBSS PD（26.10.2.2）允许 MAC 对某个 inter-BSS PPDU 发出 PHY-CCARESET.request 并跳过 basic NAV 的更新，但前提是一系列条件全部成立——主要是从 L-STF/L-LTF 测得的信号强度低于 non-SRG OBSS PD 电平，且该 PPDU 不是寻址给它的响应帧。SRG OBSS PD（26.10.2.3）是同样的流程，但门控在“该 PPDU 是低于 SRG 电平的 SRG PPDU”之上。电平与功率上限由公式 (26-5) 绑定：OBSS_PDlevel = max(OBSS_PDmin, min(OBSS_PDmax, OBSS_PDmin + (TX_PWRref − TX_PWR))) + 10·log10(PPDU_BW/20MHz)；抬高电平会迫使 TX_PWR 下降（26.10.2.4），并以一个延续到所获 TXOP 结束的发送功率限制期来强制执行。MU-RTS/CTS 保护（26.2.6）：AP 发送 MU-RTS 触发帧，每个被寻址、且其 UL MU CS 判为空闲的站点，在 SIFS 后于指定的 20 MHz 信道上以 6 Mb/s 的 non-HT（重复）PPDU 回送 CTS，这些 CTS 帧设置周围的 NAV，从而保护该次交换。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3979,
+          4082,
+          4084,
+          4085,
+          3983
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:26.10.1",
+    "80211-2024:26.10.2.1",
+    "80211-2024:26.10.2.2",
+    "80211-2024:26.10.2.3",
+    "80211-2024:26.10.2.4",
+    "80211-2024:26.2.6",
+    "80211-2024:26.2.2"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3979,
+        3980
+      ],
+      "note": "26.2.2 Intra-BSS and inter-BSS PPDU classification by BSS color and address; 26.2.4 two NAVs (intra-BSS and basic)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4081
+      ],
+      "note": "26.10.1 General — objective of HE spatial reuse: reuse the medium more often between OBSSs in dense deployments"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4082,
+        4083,
+        4084
+      ],
+      "note": "26.10.2.1 two types; 26.10.2.2 non-SRG OBSS PD operation; 26.10.2.3 SRG OBSS PD operation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4085,
+        4086,
+        4087
+      ],
+      "note": "26.10.2.4 Adjustment of OBSS PD and transmit power — Equation (26-5), power cap and offsets"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3983,
+        3984,
+        3985
+      ],
+      "note": "26.2.6 MU-RTS Trigger/CTS frame exchange sequence — protecting a multi-user TXOP with synchronized CTS and NAV"
+    }
+  ],
+  "track": "modern-phy"
+}
