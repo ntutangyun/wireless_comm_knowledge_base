@@ -1,0 +1,113 @@
+{
+  "id": "frames-32",
+  "title": {
+    "en": "PV1 control & management frames: STACK, BAT, and the slimmed Probe/Action set",
+    "zh": "PV1 控制帧与管理帧：STACK、BAT 及精简版探测/管理帧"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "We already met the compact PV1 header — the long-range, low-power variant of the 802.11 frame that trims every byte it can. This lesson takes a guided tour of the frames that ride that header. There are only a handful, and each has exactly one job. We will name them, say what each does, and point out what got dropped relative to the familiar PV0 versions you know from ordinary Wi-Fi.",
+      "zh": "我们已经认识了精简的 PV1 帧头——它是 802.11 帧面向远距离、低功耗的变体，能省的字节一律省掉。本课带你逛一遍跑在这个帧头上的各类帧。它们数量不多，而且每一种都只干一件事。我们会逐一点名，说清它各自的职责，并指出相对你熟悉的普通 Wi-Fi（PV0）版本，它们砍掉了什么。"
+    },
+    {
+      "type": "prose",
+      "en": "The frames split into two families. PV1 Control frames are the tiny acknowledgements and schedulers. There are exactly two subtypes: STACK and BAT (every other code point is reserved — that is the whole 'what got dropped' story for control, since PV0 has many more control subtypes like RTS/CTS/Ack/Block Ack). PV1 Management frames are the housekeeping frames: a general management format with four subtypes — Action, Action No Ack, PV1 Probe Response, and Resource Allocation. Notice what is missing versus PV0: no separate Beacon, no Authentication, no Association frames here — those duties move elsewhere, and what remains is a deliberately lean set.",
+      "zh": "这些帧分为两大家族。PV1 控制帧是极小的确认帧与调度帧，仅有两种子类型：STACK 和 BAT（其余码点全部保留——这就是控制帧“砍掉了什么”的全部故事，因为 PV0 还有 RTS/CTS/Ack/Block Ack 等许多控制子类型）。PV1 管理帧负责日常事务：一种通用管理格式，包含四个子类型——Action、Action No Ack、PV1 Probe Response 与 Resource Allocation。注意相对 PV0 缺了什么：这里没有独立的 Beacon、没有 Authentication、也没有 Association 帧——这些职责被挪到别处，留下的是一组刻意精简的帧。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "How to read the control subtype code: the PTID/Subtype subfield (bits b2 b1 b0) of the PV1 Control Frame Control field carries 000 = STACK, 001 = BAT, 010–111 = Reserved. For management, the same three bits carry 000 = Action, 001 = Action No Ack, 010 = PV1 Probe Response, 011 = Resource Allocation, 100–111 = Reserved.",
+      "zh": "如何读控制子类型编码：PV1 控制帧的 Frame Control 字段中 PTID/Subtype 子字段（位 b2 b1 b0）取值 000 = STACK、001 = BAT、010–111 = 保留。对管理帧而言，这同样的三位取值 000 = Action、001 = Action No Ack、010 = PV1 Probe Response、011 = Resource Allocation、100–111 = 保留。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    PV1[PV1 frames] --> C[Control]\n    PV1 --> M[Management]\n    C --> STACK[STACK 000<br/>ack + next-TWT trigger]\n    C --> BAT[BAT 001<br/>compact block-ack bitmap]\n    M --> ACT[Action 000<br/>carries an Action field]\n    M --> ANA[Action No Ack 001<br/>Action, no ack expected]\n    M --> PR[PV1 Probe Response 010<br/>compact scan reply]\n    M --> RA[Resource Allocation 011<br/>schedules RAW airtime]",
+      "zh": "graph TD\n    PV1[PV1 帧] --> C[控制帧]\n    PV1 --> M[管理帧]\n    C --> STACK[STACK 000<br/>确认 + 下次 TWT 触发]\n    C --> BAT[BAT 001<br/>紧凑块确认位图]\n    M --> ACT[Action 000<br/>承载 Action 字段]\n    M --> ANA[Action No Ack 001<br/>Action，无需确认]\n    M --> PR[PV1 Probe Response 010<br/>精简扫描回复]\n    M --> RA[Resource Allocation 011<br/>调度 RAW 空口时间]"
+    },
+    {
+      "type": "prose",
+      "en": "Take the two control frames first. STACK — the short TWT acknowledgement — is a combined acknowledge-plus-trigger: it confirms a soliciting frame and, in the same breath, can hand the recipient its next Target Wake Time so a low-power station knows exactly when to wake again (or, in flow-control mode, how long to stay silent). BAT — the Block Acknowledgment TWT frame — is a compact block-ack: a single bitmap acknowledges the received status of up to 32 MSDUs at once, each bit standing for one frame counted up from a Starting Sequence Number. Both are deliberately tiny so a sleepy device spends as little airtime awake as possible.",
+      "zh": "先看两种控制帧。STACK——即短 TWT 确认（short TWT acknowledgement）——是“确认 + 触发”二合一：它确认所征询的帧，同时还能把下一个目标唤醒时间（Next TWT）一并交给接收方，让低功耗站点准确知道何时再次醒来（或在流控模式下，知道该保持静默多久）。BAT——块确认 TWT 帧（Block Acknowledgment TWT）——是一种紧凑的块确认：用一张位图一次性确认最多 32 个 MSDU 的接收状态，每一位代表一个帧，从起始序号（Starting Sequence Number）开始递增计数。两者都刻意做得极小，好让休眠设备醒着占用的空口时间尽可能少。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the four management frames. The general PV1 Management format (9.8.5.1) is the shared skeleton: Frame Control, A1, A2 always present, an optional A3 set to the BSSID, a Sequence Control field present only for Action and Action No Ack, then a frame body of fields-followed-by-elements. On top of that skeleton: an Action frame carries an Action field to invoke a defined procedure and expects an acknowledgement; Action No Ack carries the same Action field but expects none — fire and forget. The PV1 Probe Response answers a scan with a compact reply (timestamp, change sequence, and either a 4-octet Short SSID or a full SSID element) and is the natural partner of the PV1 Probe Response Option element (9.4.2.208) that lets a scanner ask for this slim form. Finally, the Resource Allocation frame is the scheduler: an AP broadcasts it to a RAW group to signal buffered downlink data and hand each paged station its assigned RAW slot for uplink and downlink.",
+      "zh": "再看四种管理帧。通用 PV1 管理格式（9.8.5.1）是共享骨架：Frame Control、A1、A2 始终存在，可选的 A3 置为 BSSID，Sequence Control 字段仅在 Action 与 Action No Ack 中出现，随后是“先字段、后元素”的帧体。在这个骨架之上：Action 帧承载一个 Action 字段以触发某项已定义流程，并期待确认；Action No Ack 承载同样的 Action 字段，但不期待确认——发出即不管。PV1 Probe Response 用一份精简回复（时间戳、变更序号，以及 4 字节的 Short SSID 或完整的 SSID 元素之一）来应答扫描，它天然搭配 PV1 Probe Response Option 元素（9.4.2.208）——后者让扫描方请求这种瘦身形式。最后，Resource Allocation 帧是调度器：AP 把它广播给某个 RAW 组，告知下行缓存数据，并为每个被寻呼的站点分配其在该 RAW 内的上下行时隙。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 660 120' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='8' y='16' fill='currentColor' stroke='none' font-size='12'>BAT frame (compact block-ack)</text><rect x='8' y='30' width='70' height='38'/><text x='12' y='53' fill='currentColor' stroke='none' font-size='10'>Frame Ctrl</text><rect x='78' y='30' width='40' height='38'/><text x='86' y='53' fill='currentColor' stroke='none' font-size='10'>A1</text><rect x='118' y='30' width='60' height='38'/><text x='138' y='53' fill='currentColor' stroke='none' font-size='10'>A2</text><rect x='178' y='30' width='66' height='38'/><text x='184' y='49' fill='currentColor' stroke='none' font-size='9'>Beacon</text><text x='184' y='61' fill='currentColor' stroke='none' font-size='9'>Seq</text><rect x='244' y='30' width='80' height='38'/><text x='250' y='49' fill='currentColor' stroke='none' font-size='9'>Penta-</text><text x='250' y='61' fill='currentColor' stroke='none' font-size='9'>Timestamp</text><rect x='324' y='30' width='80' height='38'/><text x='330' y='49' fill='currentColor' stroke='none' font-size='9'>NextTWT/</text><text x='330' y='61' fill='currentColor' stroke='none' font-size='9'>Suspend</text><rect x='404' y='30' width='86' height='38'/><text x='410' y='49' fill='currentColor' stroke='none' font-size='9'>Starting</text><text x='410' y='61' fill='currentColor' stroke='none' font-size='9'>Seq Ctrl</text><rect x='490' y='30' width='90' height='38'/><text x='498' y='49' fill='currentColor' stroke='none' font-size='9'>BAT Bitmap</text><text x='498' y='61' fill='currentColor' stroke='none' font-size='9'>(up to 32)</text><rect x='580' y='30' width='40' height='38'/><text x='590' y='53' fill='currentColor' stroke='none' font-size='10'>FCS</text><text x='8' y='92' fill='currentColor' stroke='none' font-size='10'>One bit per MSDU, counted up from the Starting Sequence Number.</text></svg>",
+      "caption": {
+        "en": "The BAT frame lays its 32-bit bitmap right after a Starting Sequence Control field — one compact frame acknowledges a whole burst.",
+        "zh": "BAT 帧把它的 32 位位图紧跟在 Starting Sequence Control 字段之后——一帧即可确认整批数据。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Where the bytes go — and the two Resource Allocation formats",
+        "zh": "字节都去哪了——以及 Resource Allocation 的两种格式"
+      },
+      "en": "From the figures: the STACK frame is just Frame Control, A1, A2, a Tetrapartial Timestamp / Next TWT Info / Suspend Duration field, and FCS — A1 is a SID carrying the recipient's AID (0 if the recipient is an AP), and A2 is a SID built from Scrambler Initialization and FCS bits of the soliciting PSDU. The BAT frame adds a Beacon Sequence octet, a 5-octet Pentapartial Timestamp, a Next TWT Info/Suspend Duration field, the Starting Sequence Control field (4-bit BAT TID + 12-bit Starting Sequence Number), and the 32-bit BAT Bitmap. The Resource Allocation frame has two layouts chosen by the Slot Assignment Mode subfield: Mode 0 (Figure 9-1343) lists explicit per-STA / per-MU-group Slot Assignment subfields (3 or 4 octets each, with EOM/GID/Partial-AID/Slot-Start-Offset forms), while Mode 1 (Figure 9-1344) uses a single variable-length Slot Assignment Bitmap where every 4 bits encode the number of RAW slots for one STA, sized SABlength = (RAW End AID − RAW Start AID + 1) × 4 bits. The general management format note also defines forward-compatible parsing: a STA that meets an unrecognised element ID in a PV1 Management frame body skips it and keeps parsing.",
+      "zh": "从各图可见：STACK 帧只有 Frame Control、A1、A2、一个 Tetrapartial Timestamp / Next TWT Info / Suspend Duration 字段以及 FCS——A1 是携带接收方 AID 的 SID（若接收方为 AP 则为 0），A2 是由所征询 PSDU 的 Scrambler Initialization 与 FCS 比特拼成的 SID。BAT 帧另加一个 Beacon Sequence 字节、5 字节的 Pentapartial Timestamp、一个 Next TWT Info/Suspend Duration 字段、Starting Sequence Control 字段（4 位 BAT TID + 12 位 Starting Sequence Number）以及 32 位 BAT Bitmap。Resource Allocation 帧由 Slot Assignment Mode 子字段在两种布局间选择：模式 0（图 9-1343）逐一列出每 STA / 每 MU 组的 Slot Assignment 子字段（各 3 或 4 字节，含 EOM/GID/Partial-AID/Slot-Start-Offset 等形态）；模式 1（图 9-1344）使用单个可变长度的 Slot Assignment Bitmap，其中每 4 位编码一个 STA 的 RAW 时隙数，长度 SABlength =（RAW End AID − RAW Start AID + 1）× 4 位。通用管理格式的注释还规定了向前兼容的解析：站点在 PV1 管理帧体中遇到无法识别的 element ID 时会跳过它并继续解析。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1859,
+          1860,
+          1863,
+          1865
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.8.4.1",
+    "80211-2024:9.8.4.2",
+    "80211-2024:9.8.4.3",
+    "80211-2024:9.8.5.1",
+    "80211-2024:9.8.5.2",
+    "80211-2024:9.8.5.3",
+    "80211-2024:9.8.5.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1858
+      ],
+      "note": "9.8.4.1 PV1 Control frames General + Table 9-672 subtypes (STACK=000, BAT=001)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1858,
+        1859,
+        1860
+      ],
+      "note": "9.8.4.2 STACK frame format; 9.8.4.3 BAT frame format and BAT Bitmap (up to 32 MSDUs)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1860,
+        1861
+      ],
+      "note": "9.8.5.1 PV1 Management format + Table 9-673 subtypes; 9.8.5.2 Action / Action No Ack"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1862,
+        1863,
+        1865
+      ],
+      "note": "9.8.5.3 PV1 Probe Response frame format; 9.8.5.4 Resource Allocation frame and its two slot-assignment formats"
+    }
+  ],
+  "track": "frames"
+}

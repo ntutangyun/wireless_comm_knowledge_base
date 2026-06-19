@@ -1,0 +1,207 @@
+{
+  "id": "frames-37",
+  "title": {
+    "en": "The Rest of the Control-Frame Zoo: BlockAck variants, NDP Announcements, Triggers & Ranging, and the DMG set",
+    "zh": "控制帧动物园的“剩余成员”：BlockAck 变体、NDP 通告、Trigger 与测距，以及 DMG 帧集"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "You already know the headline control frames — RTS, CTS, Ack. But clause 9.3.1 holds a whole zoo beyond them: dozens of small, single-purpose frames that keep modern Wi-Fi efficient, point antennas in the right direction, and even measure distance. This lesson is a guided walk through that zoo. We won't dissect every field — instead we'll name each animal and tell you its one job, so the next time you see 'Multi-STA BlockAck' or 'MU-RTS Trigger' in a sniffer trace, you know exactly what it is doing there.",
+      "zh": "你已经认识了那几个“头牌”控制帧——RTS、CTS、Ack。但 9.3.1 节里还藏着一整座动物园：几十种小巧、各司其职的帧，它们让现代 Wi-Fi 保持高效、把天线指向正确方向，甚至还能测距。本课就是带你逛一遍这座动物园。我们不会逐字段解剖每一只，而是给每只“动物”起好名字、讲清它唯一的职责——这样下次你在抓包里看到 “Multi-STA BlockAck” 或 “MU-RTS Trigger”，就立刻明白它在那里干什么。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy mental split: (1) acknowledgement family — PS-Poll and the BlockAckReq / BlockAck variants; (2) the Control Wrapper, which simply wraps another control frame so it can carry an HT Control field; (3) sounding helpers — NDP Announcements and Beamforming Report Poll; (4) the HE Trigger family that orchestrates uplink multi-user; (5) the S1G TACK; and (6) the DMG/EDMG directional set for 60 GHz beam steering.",
+      "zh": "一个好用的归类法：(1) 确认家族——PS-Poll 以及 BlockAckReq / BlockAck 的各种变体；(2) Control Wrapper（控制封装帧），它只是把另一个控制帧包起来，好让它能携带 HT Control 字段；(3) 探测辅助帧——NDP 通告与 Beamforming Report Poll；(4) 编排上行多用户的 HE Trigger 家族；(5) S1G 的 TACK；(6) 用于 60 GHz 波束指向的 DMG/EDMG 定向帧集。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the acknowledgement family. A PS-Poll frame lets a dozing station ask the AP for one buffered frame; its non-BDT variant (9.3.1.5.2) puts the station's AID in the Duration/ID field, while the BDT variant (9.3.1.5.3) — PS-Poll+BDT, used only by S1G stations — instead carries a real duration value. Then come the bulk-acknowledgement workhorses. A BlockAckReq asks 'which of these did you get?', and a BlockAck answers with a bitmap. Both come in matching flavours: Compressed (9.3.1.7.2 / 9.3.1.8.2) for one TID with a 64/256-bit bitmap; Extended Compressed (9.3.1.7.3 / 9.3.1.8.3), which adds an RBUFCAP byte reporting free buffer space; Multi-TID (9.3.1.7.4) bundling several TIDs at once; GCR (9.3.1.7.5 / 9.3.1.8.4) for groupcast retries, carrying a group address; and GLK-GCR (9.3.1.7.6 / 9.3.1.8.5) for the GLK (general link) groupcast case.",
+      "zh": "先看确认家族。PS-Poll 帧让一个正在打盹的站点向 AP 索要一帧缓存数据；它的非 BDT 变体（9.3.1.5.2）把站点的 AID 放进 Duration/ID 字段，而 BDT 变体（9.3.1.5.3）——即 PS-Poll+BDT，仅 S1G 站点使用——则在该字段里携带真正的时长值。接着是批量确认的“主力军”。BlockAckReq 在问“这些里你收到了哪些？”，BlockAck 则用位图作答。两者一一对应：Compressed（9.3.1.7.2 / 9.3.1.8.2）针对单个 TID，配 64/256 位的位图；Extended Compressed（9.3.1.7.3 / 9.3.1.8.3）额外加一个 RBUFCAP 字节，上报空闲缓冲区；Multi-TID（9.3.1.7.4）一次打包多个 TID；GCR（9.3.1.7.5 / 9.3.1.8.4）用于组播重传，携带组地址；GLK-GCR（9.3.1.7.6 / 9.3.1.8.5）则用于 GLK（通用链路）组播场景。"
+    },
+    {
+      "type": "prose",
+      "en": "Two more BlockAck variants belong to special worlds. The Multi-STA BlockAck (9.3.1.8.6) is the OFDMA star: one frame from the AP can acknowledge many stations at once, each addressed by a Per AID TID Info subfield — this is what makes uplink MU acknowledgement cheap. The EDMG Compressed (9.3.1.8.7) and EDMG Multi-TID (9.3.1.8.8) variants serve 60 GHz directional links and add buffer-capacity reporting for flow control. Wrapping all of these, the Control Wrapper frame (9.3.1.9) does one thing: it takes any other control frame and attaches an HT Control field that the original frame format had no room for.",
+      "zh": "还有两种 BlockAck 变体属于特殊场景。Multi-STA BlockAck（9.3.1.8.6）是 OFDMA 的明星：AP 用一帧就能同时确认多个站点，每个站点由一个 Per AID TID Info 子字段寻址——正是它让上行多用户确认变得廉价。EDMG Compressed（9.3.1.8.7）与 EDMG Multi-TID（9.3.1.8.8）变体服务于 60 GHz 定向链路，并加入缓冲容量上报以做流控。而把这些都能“包起来”的 Control Wrapper 帧（9.3.1.9）只做一件事：把任意另一个控制帧裹上一个 HT Control 字段——原帧格式里本没有它的容身之处。"
+    },
+    {
+      "type": "diagram",
+      "en": "mindmap\n  root((Control frames\nbeyond the basics))\n    Acknowledge\n      PS-Poll non-BDT / BDT\n      BlockAckReq: Compressed/ExtComp/MultiTID/GCR/GLK-GCR\n      BlockAck: Compressed/ExtComp/GCR/GLK-GCR/Multi-STA/EDMG\n      Control Wrapper\n    Sounding\n      VHT/HE/Ranging NDP Announcement\n      Beamforming Report Poll\n    Trigger family\n      Basic / BFRP / MU-BAR\n      MU-RTS / BSRP / GCR MU-BAR\n      BQRP / NFRP / Ranging\n      Ranging subtypes: Poll/Sounding/Secure/Report/Passive\n    S1G\n      TACK\n    DMG/EDMG directional\n      Poll / SPR / Grant / Grant Ack\n      DMG CTS / DMG DTS\n      SSW / SSW-Feedback / SSW-Ack / Sector Ack\n      Block Ack Schedule\n      TDD Beamforming: SSW/Feedback/Ack",
+      "zh": "mindmap\n  root((基础之外的\n控制帧))\n    确认类\n      PS-Poll 非BDT / BDT\n      BlockAckReq：压缩/扩展压缩/多TID/GCR/GLK-GCR\n      BlockAck：压缩/扩展压缩/GCR/GLK-GCR/多STA/EDMG\n      Control Wrapper 封装帧\n    探测类\n      VHT/HE/测距 NDP 通告\n      Beamforming Report Poll\n    Trigger 家族\n      Basic / BFRP / MU-BAR\n      MU-RTS / BSRP / GCR MU-BAR\n      BQRP / NFRP / Ranging\n      测距子类型：轮询/探测/安全/报告/被动\n    S1G\n      TACK\n    DMG/EDMG 定向\n      Poll / SPR / Grant / Grant Ack\n      DMG CTS / DMG DTS\n      SSW / SSW-反馈 / SSW-确认 / Sector Ack\n      Block Ack Schedule\n      TDD 波束成形：SSW/反馈/确认"
+    },
+    {
+      "type": "prose",
+      "en": "Now the sounding helpers, used to measure the channel before beamforming. The VHT/HE/Ranging NDP Announcement frame (9.3.1.19) is one frame with three personalities — a 2-bit type subfield picks VHT, HE, or Ranging — and it warns the receivers that a null-data sounding packet is coming, naming who should compute feedback. Its partner, the Beamforming Report Poll (9.3.1.20), then asks a station to (re)send a specific segment of its beamforming report. Switching domains, the S1G TACK frame (9.3.1.21) is a sub-1-GHz acknowledgement that doubles as a timing/scheduling beacon: it echoes the latest beacon change sequence, carries a partial timestamp, and can announce the next TWT (target wake time) for a power-saving station.",
+      "zh": "再看探测辅助帧，用于波束成形前测量信道。VHT/HE/Ranging NDP 通告帧（9.3.1.19）是一帧三面孔——一个 2 比特的类型子字段在 VHT、HE、测距三者间切换——它预告接收方：一个空数据探测包（NDP）马上就到，并点名谁该计算反馈。它的搭档 Beamforming Report Poll（9.3.1.20）随后请某站点（重新）发送其波束成形报告的某个特定分段。切换到另一域：S1G 的 TACK 帧（9.3.1.21）是一种 1 GHz 以下的确认帧，同时兼作定时/调度信标：它回显最新的信标变更序号、携带部分时间戳，并能为省电站点通告下一个 TWT（目标唤醒时间）。"
+    },
+    {
+      "type": "prose",
+      "en": "The Trigger frame (9.3.1.22) is the conductor of uplink multi-user Wi-Fi: it allocates RUs and solicits HE TB PPDUs, and a 4-bit Trigger Type subfield picks the variant. Basic (9.3.1.22.2) requests uplink data; BFRP (9.3.1.22.3) solicits beamforming feedback; MU-BAR (9.3.1.22.4) collects BlockAcks from many stations; MU-RTS (9.3.1.22.5) clears the channel for an OFDMA exchange; BSRP (9.3.1.22.6) asks stations to report buffer status; GCR MU-BAR (9.3.1.22.7) gathers groupcast acknowledgements; BQRP (9.3.1.22.8) asks for bandwidth-query reports; and NFRP (9.3.1.22.9) gathers tiny NDP feedback from a whole AID range at once. The Ranging Trigger variant (9.3.1.22.10) drives FTM distance measurement and splits into five subtypes (9.3.1.23.1–9.3.1.23.5): Poll opens the exchange, Sounding requests the sounding PPDU, Secure Sounding adds a sequence authentication code, Report delivers the result, and Passive Sounding lets bystanders observe.",
+      "zh": "Trigger 帧（9.3.1.22）是上行多用户 Wi-Fi 的“指挥家”：它分配 RU 并征召 HE TB PPDU，由一个 4 比特的 Trigger Type 子字段选择变体。Basic（9.3.1.22.2）请求上行数据；BFRP（9.3.1.22.3）征集波束成形反馈；MU-BAR（9.3.1.22.4）从多站点收集 BlockAck；MU-RTS（9.3.1.22.5）为一次 OFDMA 交换清空信道；BSRP（9.3.1.22.6）让站点上报缓冲区状态；GCR MU-BAR（9.3.1.22.7）汇集组播确认；BQRP（9.3.1.22.8）请求带宽查询报告；NFRP（9.3.1.22.9）一次性从整段 AID 范围收集微型 NDP 反馈。Ranging Trigger 变体（9.3.1.22.10）驱动 FTM 距离测量，又细分为五种子类型（9.3.1.23.1–9.3.1.23.5）：Poll 开启交换、Sounding 请求探测 PPDU、Secure Sounding 附加序列认证码、Report 递交结果、Passive Sounding 让旁观者得以观测。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally the 60 GHz (DMG/EDMG) directional set, where antennas are pencil-thin beams and frames mostly negotiate where to point them. Poll (9.3.1.10) and its SPR reply (9.3.1.11) handle polled access; Grant (9.3.1.12) and Grant Ack (9.3.1.18) hand out service-period allocations. DMG CTS (9.3.1.13) protects a directional exchange while DMG DTS (9.3.1.14) — denial to send — declines one. Sector sweep is the dance of finding the best beam: SSW (9.3.1.15) probes one sector at a time, SSW-Feedback (9.3.1.16) reports the best, and SSW-Ack (9.3.1.17) confirms; a Sector Ack (9.3.1.24) batches multiple sector feedbacks. A Block Ack Schedule frame (9.3.1.25) arranges timing for a block-ack exchange. And the TDD Beamforming frame (9.3.1.26) — with its TDD SSW (9.3.1.26.2), TDD SSW Feedback (9.3.1.26.3), and TDD SSW Ack (9.3.1.26.4) subtypes — runs the same sweep-feedback-ack choreography inside time-division-duplex slots.",
+      "zh": "最后是 60 GHz（DMG/EDMG）定向帧集——这里天线是铅笔般细的波束，帧的主要任务是协商把它指向何处。Poll（9.3.1.10）及其 SPR 应答（9.3.1.11）处理轮询接入；Grant（9.3.1.12）与 Grant Ack（9.3.1.18）分配服务周期。DMG CTS（9.3.1.13）保护一次定向交换，而 DMG DTS（9.3.1.14，拒绝发送）则婉拒一次。扇区扫描是寻找最佳波束的“舞蹈”：SSW（9.3.1.15）逐扇区探测、SSW-Feedback（9.3.1.16）上报最佳扇区、SSW-Ack（9.3.1.17）予以确认；Sector Ack（9.3.1.24）则把多个扇区反馈打包。Block Ack Schedule 帧（9.3.1.25）为一次块确认交换安排时序。而 TDD Beamforming 帧（9.3.1.26）——含 TDD SSW（9.3.1.26.2）、TDD SSW Feedback（9.3.1.26.3）、TDD SSW Ack（9.3.1.26.4）三种子类型——在时分双工时隙内运行同样的“扫描—反馈—确认”编舞。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "How one type subfield selects each variant",
+        "zh": "一个类型子字段如何选出每种变体"
+      },
+      "en": "Several of these frames are really one frame format plus a small selector subfield. The BlockAckReq frame body has a BAR Control field whose BAR Type subfield (Table 9-36) encodes Extended Compressed=1, Compressed=2, Multi-TID=3, GCR=6, GLK-GCR=10. The BlockAck frame mirrors this with a BA Type subfield (Table 9-37): Extended Compressed=1, Compressed=2, GCR=6, EDMG Multi-TID=7, EDMG Compressed=8, GLK-GCR=10, Multi-STA=11. The NDP Announcement carries a 2-bit NDP Announcement Type in the Sounding Dialog Token (Table 9-43): VHT=0, Ranging=1, HE=2. The Trigger frame's 4-bit Trigger Type subfield (Table 9-47) runs Basic=0, BFRP=1, MU-BAR=2, MU-RTS=3, BSRP=4, GCR MU-BAR=5, BQRP=6, NFRP=7, Ranging=8 — and within Ranging, a Ranging Trigger Subtype subfield (Table 9-56) selects Poll=0, Sounding=1, Secure Sounding=2, Report=3, Passive Sounding=4. The DMG TDD Beamforming Frame Type subfield (Table 9-58) likewise selects TDD SSW=0, TDD SSW Feedback=1, TDD SSW Ack=2. Once you internalise 'one base format, one selector subfield,' the whole catalogue collapses into a handful of patterns.",
+      "zh": "这些帧里有不少其实是“一种帧格式 + 一个小小的选择子字段”。BlockAckReq 帧体里有一个 BAR Control 字段，其 BAR Type 子字段（表 9-36）编码为：Extended Compressed=1、Compressed=2、Multi-TID=3、GCR=6、GLK-GCR=10。BlockAck 帧用 BA Type 子字段（表 9-37）与之对应：Extended Compressed=1、Compressed=2、GCR=6、EDMG Multi-TID=7、EDMG Compressed=8、GLK-GCR=10、Multi-STA=11。NDP 通告在 Sounding Dialog Token 里带一个 2 比特的 NDP Announcement Type（表 9-43）：VHT=0、Ranging=1、HE=2。Trigger 帧的 4 比特 Trigger Type 子字段（表 9-47）依次为：Basic=0、BFRP=1、MU-BAR=2、MU-RTS=3、BSRP=4、GCR MU-BAR=5、BQRP=6、NFRP=7、Ranging=8——而在 Ranging 内部，又由 Ranging Trigger Subtype 子字段（表 9-56）选出 Poll=0、Sounding=1、Secure Sounding=2、Report=3、Passive Sounding=4。DMG 的 TDD Beamforming Frame Type 子字段（表 9-58）同理选出 TDD SSW=0、TDD SSW Feedback=1、TDD SSW Ack=2。一旦你把“一个基础格式 + 一个选择子字段”内化，整本目录就坍缩成寥寥几种模式。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          719,
+          722,
+          737,
+          747,
+          759,
+          766
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.3.1.5.2",
+    "80211-2024:9.3.1.5.3",
+    "80211-2024:9.3.1.7.2",
+    "80211-2024:9.3.1.7.3",
+    "80211-2024:9.3.1.7.4",
+    "80211-2024:9.3.1.7.5",
+    "80211-2024:9.3.1.7.6",
+    "80211-2024:9.3.1.8.2",
+    "80211-2024:9.3.1.8.3",
+    "80211-2024:9.3.1.8.4",
+    "80211-2024:9.3.1.8.5",
+    "80211-2024:9.3.1.8.6",
+    "80211-2024:9.3.1.8.7",
+    "80211-2024:9.3.1.8.8",
+    "80211-2024:9.3.1.9",
+    "80211-2024:9.3.1.10",
+    "80211-2024:9.3.1.11",
+    "80211-2024:9.3.1.12",
+    "80211-2024:9.3.1.13",
+    "80211-2024:9.3.1.14",
+    "80211-2024:9.3.1.15",
+    "80211-2024:9.3.1.16",
+    "80211-2024:9.3.1.17",
+    "80211-2024:9.3.1.18",
+    "80211-2024:9.3.1.19",
+    "80211-2024:9.3.1.20",
+    "80211-2024:9.3.1.21",
+    "80211-2024:9.3.1.22.2",
+    "80211-2024:9.3.1.22.3",
+    "80211-2024:9.3.1.22.4",
+    "80211-2024:9.3.1.22.5",
+    "80211-2024:9.3.1.22.6",
+    "80211-2024:9.3.1.22.7",
+    "80211-2024:9.3.1.22.8",
+    "80211-2024:9.3.1.22.9",
+    "80211-2024:9.3.1.22.10",
+    "80211-2024:9.3.1.23.1",
+    "80211-2024:9.3.1.23.2",
+    "80211-2024:9.3.1.23.3",
+    "80211-2024:9.3.1.23.4",
+    "80211-2024:9.3.1.23.5",
+    "80211-2024:9.3.1.24",
+    "80211-2024:9.3.1.25",
+    "80211-2024:9.3.1.26.2",
+    "80211-2024:9.3.1.26.3",
+    "80211-2024:9.3.1.26.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        717,
+        718
+      ],
+      "note": "9.3.1.5.2-9.3.1.5.3 PS-Poll non-BDT and BDT variants"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        719,
+        720,
+        721
+      ],
+      "note": "9.3.1.7 BlockAckReq Control field, BAR Type encoding (Table 9-36), Compressed/Ext/Multi-TID/GCR/GLK-GCR variants"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        722,
+        723,
+        726,
+        730,
+        731
+      ],
+      "note": "9.3.1.8 BlockAck BA Type encoding (Table 9-37); Compressed/Ext/GCR/GLK-GCR/Multi-STA/EDMG variants"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        732,
+        733
+      ],
+      "note": "9.3.1.9 Control Wrapper; 9.3.1.10 Poll; 9.3.1.11 SPR"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        734,
+        735,
+        736
+      ],
+      "note": "9.3.1.12-9.3.1.17 Grant, DMG CTS, DMG DTS, SSW, SSW-Feedback, SSW-Ack"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        737,
+        744,
+        745
+      ],
+      "note": "9.3.1.18 Grant Ack; 9.3.1.19 VHT/HE/Ranging NDP Announcement (Table 9-43); 9.3.1.20 Beamforming Report Poll; 9.3.1.21 TACK"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        746,
+        747,
+        755,
+        757
+      ],
+      "note": "9.3.1.22 Trigger frame and Trigger Type encoding (Table 9-47); Basic/BFRP/MU-BAR/MU-RTS/BSRP/GCR MU-BAR/BQRP/NFRP/Ranging"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        758,
+        759,
+        760,
+        761
+      ],
+      "note": "9.3.1.22.10 / 9.3.1.23 Ranging Trigger subvariants (Table 9-56): Poll/Sounding/Secure/Report/Passive"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        762,
+        763,
+        766,
+        768
+      ],
+      "note": "9.3.1.24 Sector Ack; 9.3.1.25 Block Ack Schedule; 9.3.1.26 TDD Beamforming (Table 9-58) SSW/Feedback/Ack"
+    }
+  ],
+  "track": "frames"
+}

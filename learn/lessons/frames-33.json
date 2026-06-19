@@ -1,0 +1,120 @@
+{
+  "id": "frames-33",
+  "title": {
+    "en": "WUR frames: the ultra-low-power wake-up radio packet format (9.9)",
+    "zh": "WUR 帧：超低功耗唤醒无线电的帧格式（9.9）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Imagine your Wi-Fi chip could nap almost all the time, with one tiny ear left awake. That ear is the Wake-up Radio (WUR) — a separate, ultra-low-power companion receiver that does just one job: listen for a very small packet that says \"wake the main radio up.\" The main 802.11 radio (and its battery-hungry transmitter) stays off until the WUR hears its name called. To make that listening cheap, WUR packets are deliberately tiny and use their own stripped-down frame format — not the full 802.11 MAC frame you meet elsewhere.",
+      "zh": "想象一下，你的 Wi-Fi 芯片几乎可以一直打盹，只留一只小小的“耳朵”醒着。这只耳朵就是唤醒无线电（WUR）——一个独立的、超低功耗的伴随接收机，它只干一件事：监听一个极小的数据包，这个包会说“把主无线电唤醒”。在 WUR 听到自己被点名之前，耗电的主 802.11 无线电（以及它那耗电的发射机）始终保持关闭。为了让这种监听足够省电，WUR 数据包被刻意做得极小，并使用它自己精简过的帧格式——而不是你在别处见到的完整 802.11 MAC 帧。"
+    },
+    {
+      "type": "prose",
+      "en": "Every WUR frame except the tiniest one (Short Wake-up) is built from three basic components (9.9.1): a MAC header, an optional variable-length frame body, and an FCS for error checking. The general layout (9.9.2.1) is just 32 header bits, a variable body, and 16 FCS bits. A frame with no body is called an FL (fixed-length) WUR frame; one carrying a body is a VL (variable-length) WUR frame. That is the whole skeleton — compare it to a normal 802.11 frame with its 24+ byte header and you can feel how aggressively WUR was slimmed down.",
+      "zh": "除了最小的那一种（Short Wake-up，短唤醒帧）以外，每个 WUR 帧都由三个基本组成部分构成（9.9.1）：一个 MAC 头、一个可选的可变长帧体，以及一个用于校验的 FCS。其总体布局（9.9.2.1）只有 32 比特的头、一个可变长的帧体，再加 16 比特的 FCS。不带帧体的帧称为 FL（定长）WUR 帧；携带帧体的称为 VL（变长）WUR 帧。这就是它的全部骨架——把它和带有 24 字节以上头部的普通 802.11 帧对比一下，你就能感受到 WUR 被瘦身得有多么彻底。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 520 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='20' stroke='none' fill='currentColor' font-size='13' font-weight='bold'>WUR frame (9.9.2.1)</text><rect x='10' y='35' width='180' height='34'/><rect x='190' y='35' width='240' height='34'/><rect x='430' y='35' width='80' height='34'/><text x='100' y='56' stroke='none' fill='currentColor' font-size='12' text-anchor='middle'>MAC Header (32 b)</text><text x='310' y='56' stroke='none' fill='currentColor' font-size='12' text-anchor='middle'>Frame Body (variable)</text><text x='470' y='56' stroke='none' fill='currentColor' font-size='12' text-anchor='middle'>FCS (16 b)</text><rect x='10' y='95' width='70' height='30'/><rect x='80' y='95' width='55' height='30'/><rect x='135' y='95' width='55' height='30'/><text x='45' y='114' stroke='none' fill='currentColor' font-size='10.5' text-anchor='middle'>Frame Ctrl</text><text x='45' y='90' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>8 b</text><text x='107' y='114' stroke='none' fill='currentColor' font-size='10.5' text-anchor='middle'>ID</text><text x='107' y='90' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>12 b</text><text x='162' y='110' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>Type Dep.</text><text x='162' y='121' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>Control 12 b</text><line x1='10' y1='69' x2='10' y2='95' stroke-dasharray='3 3'/><line x1='190' y1='69' x2='190' y2='95' stroke-dasharray='3 3'/></svg>",
+      "caption": {
+        "en": "The WUR frame skeleton: a 32-bit MAC header (Frame Control + ID + Type Dependent Control), an optional variable body, and a 16-bit FCS.",
+        "zh": "WUR 帧骨架：32 比特的 MAC 头（帧控制 + ID + 类型相关控制）、可选的可变长帧体，以及 16 比特的 FCS。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Walk the MAC header left to right (9.9.2.2). The Frame Control field (9.9.2.2.1) is 8 bits and carries the Type subfield (which WUR frame this is), a Protected bit (0 = a 16-bit CRC protects the frame, 1 = a 16-bit MIC does), a Frame Body Present bit, and a Length/Miscellaneous subfield (the body's length when a body is present, otherwise a small Miscellaneous field). Next, the ID field (9.9.2.2.2) — 12 bits naming who the frame is for or from: a transmitter ID, a WUR Group ID, an individual WUR ID, or part of a vendor's OUI/CID. Last, the Type Dependent Control field (9.9.2.2.3) — 12 bits whose meaning changes per frame type (a timestamp for a Beacon, a sequence/counter for a Wake-up, BSSID bits for a Discovery).",
+      "zh": "我们从左到右走一遍这个 MAC 头（9.9.2.2）。帧控制字段（9.9.2.2.1）有 8 比特，携带 Type 子字段（这是哪种 WUR 帧）、一个 Protected 比特（0 = 用 16 比特 CRC 保护，1 = 用 16 比特 MIC 保护）、一个 Frame Body Present（帧体存在）比特，以及一个 Length/Miscellaneous（长度/杂项）子字段（有帧体时表示帧体长度，否则是一个小小的杂项字段）。接下来是 ID 字段（9.9.2.2.2）——12 比特，标明这帧是发给谁或来自谁：可以是发送方 ID、WUR 组 ID、单个 WUR ID，或厂商 OUI/CID 的一部分。最后是类型相关控制字段（9.9.2.2.3）——12 比特，其含义随帧类型而变（信标里是时间戳，唤醒帧里是序号/计数器，发现帧里是 BSSID 比特）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two small tail pieces close the frame. The Frame Body field (9.9.2.3) only appears in VL frames; when present it is 2 to 16 octets — 2×(L+1) where L is the Length subfield. The FCS field is special: instead of the usual 32-bit CRC, WUR uses a 16-bit CRC (9.9.2.4.2) computed with the polynomial x16+x12+x5+1 over the calculation fields (header, body, and an optional Embedded BSSID), or a 16-bit MIC when Protected = 1. Half the CRC width = fewer bits to receive = less energy.",
+      "zh": "两个小尾巴收尾整个帧。帧体字段（9.9.2.3）只出现在 VL 帧中；存在时长度为 2 到 16 个八位组——即 2×(L+1)，其中 L 是 Length 子字段的值。FCS 字段很特别：WUR 不用常见的 32 比特 CRC，而是用一个 16 比特 CRC（9.9.2.4.2），以多项式 x16+x12+x5+1 在计算字段（头部、帧体，以及可选的 Embedded BSSID）上计算；当 Protected = 1 时则改用 16 比特 MIC。CRC 宽度减半 = 要接收的比特更少 = 更省电。"
+    },
+    {
+      "type": "diagram",
+      "en": "mindmap\n  root((WUR frame types 9.9.3))\n    Beacon 9.9.3.1\n      carries partial TSF = timing\n      no body, CRC protected\n    Wake-up 9.9.3.2\n      wake one STA / a group / broadcast\n      Seq Number + Counter\n    Discovery 9.9.3.3\n      advertise a WUR AP\n      Compressed SSID + Operating Class/Channel\n    Vendor Specific 9.9.3.4\n      out-of-scope vendor info\n      ID = OUI/CID bits\n    Short Wake-up 9.9.3.5\n      tiniest: Type+Protected+WUR ID+FCS\n      no header/body structure",
+      "zh": "mindmap\n  root((WUR 帧类型 9.9.3))\n    Beacon 信标 9.9.3.1\n      携带部分 TSF = 授时\n      无帧体, CRC 保护\n    Wake-up 唤醒 9.9.3.2\n      唤醒单个 STA / 一组 / 广播\n      序号 + 计数器\n    Discovery 发现 9.9.3.3\n      宣告一个 WUR AP\n      压缩 SSID + 工作类别/信道\n    Vendor Specific 厂商专有 9.9.3.4\n      标准范围外的厂商信息\n      ID = OUI/CID 比特\n    Short Wake-up 短唤醒 9.9.3.5\n      最小: Type+Protected+WUR ID+FCS\n      无头/体结构"
+    },
+    {
+      "type": "prose",
+      "en": "Now meet the five frame types by job (9.9.3). The WUR Beacon (9.9.3.1) is the heartbeat: a bodiless frame whose Type Dependent Control carries a partial TSF, letting sleeping WUR stations keep their clocks aligned so they wake on schedule. The WUR Wake-up frame (9.9.3.2) is the actual alarm: its ID picks the target — an individual WUR ID, a WUR group ID, or a broadcast — and its Type Dependent Control holds a Sequence Number and Counter (the counter doubles as a BSS update counter for broadcasts). The WUR Discovery frame (9.9.3.3) lets a device find a WUR AP: it carries a Compressed SSID plus the Operating Class and Channel of the BSS. The WUR Vendor Specific frame (9.9.3.4) is an escape hatch for vendor-defined info, identified by OUI/CID bits. And the WUR Short Wake-up frame (9.9.3.5) is the absolute minimum — just Type, Protected, a 12-bit WUR ID, and FCS, with no header/body split at all: the cheapest possible \"wake up now\" ping.",
+      "zh": "现在按职责逐一认识这五种帧类型（9.9.3）。WUR 信标帧（9.9.3.1）是心跳：一个不带帧体的帧，其类型相关控制字段携带部分 TSF，让休眠中的 WUR 站点保持时钟同步，从而按时醒来。WUR 唤醒帧（9.9.3.2）才是真正的闹钟：它的 ID 选定目标——单个 WUR ID、一个 WUR 组 ID，或广播——而其类型相关控制字段装着序号（Sequence Number）和计数器（Counter）（广播时该计数器兼作 BSS 更新计数器）。WUR 发现帧（9.9.3.3）让设备找到一个 WUR AP：它携带压缩 SSID 以及该 BSS 的工作类别和信道。WUR 厂商专有帧（9.9.3.4）是给厂商自定义信息留的“后门”，用 OUI/CID 比特来标识。而 WUR 短唤醒帧（9.9.3.5）是绝对的极简——只有 Type、Protected、一个 12 比特的 WUR ID 和 FCS，完全没有头/体之分：这是成本最低的“现在醒来”一声呼叫。"
+    },
+    {
+      "type": "prose",
+      "en": "One more piece ties it together. The WUR frames above ride on a tiny dedicated radio, but turning that mode on and off is negotiated using ordinary 802.11 Action frames of category WUR (9.6.33). Three of them matter: the WUR Mode Setup frame (9.6.33.2) carries a Dialog Token plus a WUR Mode element and (optionally) a WUR Operation element to request or confirm entering/suspending WUR mode; the WUR Mode Teardown frame (9.6.33.3) is the minimal counterpart that exits the mode (just Category + WUR Action); and the WUR Wake-up Indication frame (9.6.33.4) carries an 8-bit indication value (value 0 = UNSOLICITED_WAKEUP) to signal a wake-up over the main radio. So the main radio sets up the deal, then the wake-up radio quietly listens.",
+      "zh": "还有最后一块把整体串起来。上面这些 WUR 帧跑在一个小小的专用无线电上，但开启和关闭这个模式，是用普通的 802.11 动作帧（类别为 WUR，见 9.6.33）来协商的。其中三种最关键：WUR Mode Setup（模式建立）帧（9.6.33.2）携带一个 Dialog Token，外加一个 WUR Mode 元素以及（可选的）WUR Operation 元素，用来请求或确认进入/挂起 WUR 模式；WUR Mode Teardown（模式拆除）帧（9.6.33.3）是与之对应的极简帧，用来退出该模式（仅含 Category + WUR Action）；而 WUR Wake-up Indication（唤醒指示）帧（9.6.33.4）携带一个 8 比特的指示值（值 0 = UNSOLICITED_WAKEUP），用主无线电发出唤醒信号。于是，主无线电先把约定谈好，唤醒无线电再安静地监听。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Field-exact: the Short Wake-up layout and the Wake-up frame's Miscellaneous subfield",
+        "zh": "字段精确版：短唤醒帧布局与唤醒帧的杂项子字段"
+      },
+      "en": "The WUR Short Wake-up frame (9.9.3.5, Figure 9-1357) abandons the normal header/body/FCS split entirely: it is Type (3 bits), Protected (1 bit, set to 0), WUR ID (12 bits, defined in 29.5), and FCS (16 bits) — 32 bits total. In the regular WUR Wake-up frame (9.9.3.2), the Type Dependent Control splits into an 8-bit Sequence Number and a 4-bit Counter; when no body is present the Length/Miscellaneous subfield becomes a Miscellaneous subfield (Figure 9-1354) holding a Group Addressed BU bit (group-addressed frames buffered at the AP), a Key ID bit (which WIGTK protects a protected broadcast/group frame), and a reserved bit. A VL WUR Wake-up frame's body is one or more STA Info fields (Figure 9-1355: a 12-bit WUR ID plus 4 reserved bits). On the negotiation side, the WUR Mode Setup Action field is ordered Category, WUR Action, Dialog Token, WUR Mode element, optional WUR Operation element, optional WUR PN Update; the WUR Action field values are 0 = Mode Setup, 1 = Mode Teardown, 2 = Wake-up Indication (Table 9-650).",
+      "zh": "WUR 短唤醒帧（9.9.3.5，图 9-1357）彻底放弃了常规的头/体/FCS 划分：它由 Type（3 比特）、Protected（1 比特，置 0）、WUR ID（12 比特，定义见 29.5）和 FCS（16 比特）组成——共 32 比特。在常规的 WUR 唤醒帧（9.9.3.2）中，类型相关控制字段拆分为 8 比特的序号和 4 比特的计数器；当不带帧体时，Length/Miscellaneous 子字段变为一个杂项子字段（图 9-1354），其中含有一个 Group Addressed BU 比特（AP 处缓存了组寻址帧）、一个 Key ID 比特（哪个 WIGTK 保护着受保护的广播/组帧）以及一个保留比特。VL WUR 唤醒帧的帧体是一个或多个 STA Info 字段（图 9-1355：一个 12 比特 WUR ID 加 4 个保留比特）。在协商一侧，WUR Mode Setup 的 Action 字段顺序为 Category、WUR Action、Dialog Token、WUR Mode 元素、可选的 WUR Operation 元素、可选的 WUR PN Update；WUR Action 字段取值为 0 = 模式建立、1 = 模式拆除、2 = 唤醒指示（表 9-650）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1871,
+          1873,
+          1836
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1866,
+        1867,
+        1868
+      ],
+      "note": "9.9.1-9.9.2.3 — basic components, general WUR frame format, MAC header (Frame Control/ID/Type Dependent Control), frame body; Table 9-674 WUR frame types, Table 9-675 identifiers"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1869,
+        1870,
+        1871,
+        1872,
+        1873
+      ],
+      "note": "9.9.2.4.2 CRC for WUR; 9.9.3.1-9.9.3.5 individual frame types (Beacon, Wake-up, Discovery, Vendor Specific, Short Wake-up)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1836,
+        1837
+      ],
+      "note": "9.6.33.2-9.6.33.4 — WUR Mode Setup, WUR Mode Teardown, WUR Wake-up Indication Action frames; Table 9-650 WUR Action field values"
+    }
+  ],
+  "covers": [
+    "80211-2024:9.9.1",
+    "80211-2024:9.9.2.1",
+    "80211-2024:9.9.2.2.1",
+    "80211-2024:9.9.2.2.2",
+    "80211-2024:9.9.2.2.3",
+    "80211-2024:9.9.2.3",
+    "80211-2024:9.9.2.4.2",
+    "80211-2024:9.9.3.1",
+    "80211-2024:9.9.3.2",
+    "80211-2024:9.9.3.3",
+    "80211-2024:9.9.3.4",
+    "80211-2024:9.9.3.5",
+    "80211-2024:9.6.33.2",
+    "80211-2024:9.6.33.3",
+    "80211-2024:9.6.33.4"
+  ],
+  "track": "frames"
+}

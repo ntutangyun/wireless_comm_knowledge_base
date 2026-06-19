@@ -1,0 +1,103 @@
+{
+  "id": "frames-31",
+  "title": {
+    "en": "PV1 frames: the compact S1G MAC header for tiny IoT packets",
+    "zh": "PV1 帧：为微型物联网报文设计的紧凑型 S1G MAC 头"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Picture a sub-1-GHz 802.11ah (S1G) sensor that wakes up, sends a 10-byte temperature reading, and goes back to sleep. With the normal 802.11 MAC header that reading drags ~30 bytes of header behind it — more overhead than payload, every single time. At long range and low data rate, those bytes are airtime and battery you cannot spare. So 802.11 defines a second Protocol Version, PV1 (Protocol Version = 1), with a stripped-down MAC header built for exactly this traffic.",
+      "zh": "想象一个工作在 1 GHz 以下的 802.11ah（S1G）传感器：它醒来，发送一条 10 字节的温度读数，然后重新睡去。如果用普通的 802.11 MAC 头，这条读数每次都要拖着约 30 字节的帧头——开销比有效载荷还大。在远距离、低速率的场景下，这些字节就是你省不起的空口时间和电量。于是 802.11 定义了第二个协议版本 PV1（Protocol Version = 1），它带有一个专为此类流量而生的精简 MAC 头。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 9.8.1 lists the basic components of a PV1 frame: a PV1 MAC header (Frame Control, address fields, and optional Sequence Control), a variable-length Frame Body carrying type-specific data, and a 4-byte FCS. Clause 9.8.2 gives the general layout — Frame Control, A1, A2 and FCS are always present, while Sequence Control, A3, A4 and the Frame Body are optional. Notice what is already gone compared with a PV0 header: there is no separate Duration/ID field and no third-and-fourth address by default.",
+      "zh": "9.8.1 节列出了 PV1 帧的基本组成：一个 PV1 MAC 头（帧控制、地址字段、可选的序列控制）、一个承载类型相关数据的可变长帧体，以及一个 4 字节的 FCS。9.8.2 节给出总体布局——帧控制、A1、A2 和 FCS 始终存在，而序列控制、A3、A4 和帧体则是可选的。注意与 PV0 帧头相比，这里已经省掉了什么：默认没有独立的 Duration/ID 字段，也没有第三、第四地址。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 720 130' fill='none' stroke='currentColor' stroke-width='1.5' font-family='sans-serif' font-size='12'><g><rect x='10' y='30' width='70' height='40'/><text x='45' y='54' text-anchor='middle' stroke='none' fill='currentColor'>FC</text><text x='45' y='88' text-anchor='middle' stroke='none' fill='currentColor'>2</text><rect x='80' y='30' width='80' height='40'/><text x='120' y='54' text-anchor='middle' stroke='none' fill='currentColor'>A1</text><text x='120' y='88' text-anchor='middle' stroke='none' fill='currentColor'>2 or 6</text><rect x='160' y='30' width='80' height='40'/><text x='200' y='54' text-anchor='middle' stroke='none' fill='currentColor'>A2</text><text x='200' y='88' text-anchor='middle' stroke='none' fill='currentColor'>2 or 6</text><rect x='240' y='30' width='80' height='40' stroke-dasharray='4 3'/><text x='280' y='50' text-anchor='middle' stroke='none' fill='currentColor'>Seq</text><text x='280' y='64' text-anchor='middle' stroke='none' fill='currentColor'>Ctrl</text><text x='280' y='88' text-anchor='middle' stroke='none' fill='currentColor'>0 or 2</text><rect x='320' y='30' width='70' height='40' stroke-dasharray='4 3'/><text x='355' y='54' text-anchor='middle' stroke='none' fill='currentColor'>A3</text><text x='355' y='88' text-anchor='middle' stroke='none' fill='currentColor'>0 or 6</text><rect x='390' y='30' width='70' height='40' stroke-dasharray='4 3'/><text x='425' y='54' text-anchor='middle' stroke='none' fill='currentColor'>A4</text><text x='425' y='88' text-anchor='middle' stroke='none' fill='currentColor'>0 or 6</text><rect x='460' y='30' width='150' height='40' stroke-dasharray='4 3'/><text x='535' y='54' text-anchor='middle' stroke='none' fill='currentColor'>Frame Body</text><text x='535' y='88' text-anchor='middle' stroke='none' fill='currentColor'>variable</text><rect x='610' y='30' width='70' height='40'/><text x='645' y='54' text-anchor='middle' stroke='none' fill='currentColor'>FCS</text><text x='645' y='88' text-anchor='middle' stroke='none' fill='currentColor'>4</text><text x='10' y='20' stroke='none' fill='currentColor'>Octets:</text><text x='10' y='110' stroke='none' fill='currentColor'>solid = always present &#160;&#160; dashed = optional</text></g></svg>",
+      "caption": {
+        "en": "PV1 frame format (Figure 9-1333): Frame Control, A1, A2 and FCS are mandatory; Sequence Control, A3, A4 and Frame Body are optional. A1+A2 together are either 8 or 12 octets.",
+        "zh": "PV1 帧格式（图 9-1333）：帧控制、A1、A2 与 FCS 为必选；序列控制、A3、A4 与帧体为可选。A1+A2 合计为 8 或 12 个八位组。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The biggest single saving lives in clause 9.8.3.1 — the Frame Control field, which is only 2 octets in PV1 (versus the same 2 octets in PV0 but doing far more work). It opens with the 2-bit Protocol Version (always 1 here), a 3-bit Type (QoS Data, Management, or Control per Table 9-669), and a 3-bit PTID/Subtype that doubles as the low TID bits for Data or as the subtype for Management/Control. A From DS bit then decides which of A1/A2 is a compact short identifier versus a full MAC address (Table 9-670), and small flags follow — More Fragments, Power Management, More Data, Protected Frame, EOSP, Relayed Frame, and the Ack Policy Indicator that selects Normal Ack / Implicit BAR / No Ack / Block Ack (Table 9-671).",
+      "zh": "最大的一笔节省藏在 9.8.3.1 节——帧控制字段。在 PV1 中它只有 2 个八位组（与 PV0 同为 2 字节，却承担了多得多的功能）。它以 2 比特的协议版本（这里恒为 1）开头，接着是 3 比特的类型（按表 9-669 区分 QoS 数据、管理或控制帧），以及一个 3 比特的 PTID/Subtype——对数据帧它兼作 TID 的低位，对管理/控制帧它表示子类型。随后的 From DS 比特决定 A1/A2 中哪一个是紧凑短标识、哪一个是完整 MAC 地址（表 9-670）；其后是一串小标志位——More Fragments、Power Management、More Data、Protected Frame、EOSP、Relayed Frame，以及用于选择 Normal Ack / Implicit BAR / No Ack / Block Ack 的 Ack Policy Indicator（表 9-671）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The clever trick is in the address fields (clause 9.8.3.2). An associated STA already has an Association ID (AID), so PV1 lets A1 or A2 be a 2-byte Short ID (SID) carrying that 13-bit AID instead of a full 6-byte MAC address — saving 4 bytes per address. The From DS bit says which side is the SID. The optional A3/A4 (source/destination) need only appear when they differ from A1/A2 and are not already cached at the receiver, and the SID's A3 Present / A4 Present / A-MSDU bits flag exactly that. No SID field at all means no A3, no A4, and no A-MSDU.",
+      "zh": "真正巧妙之处在地址字段（9.8.3.2 节）。已关联的 STA 本就拥有一个关联标识（AID），因此 PV1 允许 A1 或 A2 用一个 2 字节的短标识（SID）来承载该 13 比特 AID，而不必用完整的 6 字节 MAC 地址——每个地址省下 4 字节。From DS 比特指明哪一侧是 SID。可选的 A3/A4（源/目的）只有在它们与 A1/A2 不同、且接收端未缓存时才需出现，而 SID 中的 A3 Present / A4 Present / A-MSDU 比特正是用来标记这一点。完全没有 SID 字段，就意味着没有 A3、没有 A4，也没有 A-MSDU。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining pieces are deliberately lightweight. Sequence Control (clause 9.8.3.3) appears only in PV1 Data frames and in Management frames other than PV1 Probe Response — so a stateless beacon-like response carries none. The Frame Body (clause 9.8.3.4) is the variable payload itself. Encryption overhead (clause 9.8.3.5) is not a header field at all — the standard simply points to Clause 12, so any cipher's expansion is accounted for there rather than baked into the header. And the FCS (clause 9.8.3.6) is the same 4-byte CRC every 802.11 frame ends with, guarding the whole MPDU.",
+      "zh": "其余部分都被刻意做得很轻。序列控制（9.8.3.3 节）只出现在 PV1 数据帧，以及除 PV1 Probe Response 之外的管理帧中——因此一个类似信标的无状态响应根本不带序列控制。帧体（9.8.3.4 节）就是那段可变的有效载荷本身。加密开销（9.8.3.5 节）根本不是帧头字段——标准直接指向第 12 章，于是任何加密算法带来的字节膨胀都在那里核算，而非塞进帧头。FCS（9.8.3.6 节）则是每个 802.11 帧结尾都有的同一个 4 字节 CRC，用以校验整个 MPDU。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Add it up: drop the 4-byte Duration/ID, shrink A1 and A2 to SIDs (−8 bytes), and skip A3/A4/Sequence Control whenever they are not needed. A short uplink reading from an associated S1G sensor can ride a header of roughly 8–10 bytes instead of ~30. At a few hundred kbit/s over a kilometre, that is real airtime returned and battery saved on every wake-up.",
+      "zh": "算一笔账：去掉 4 字节的 Duration/ID，把 A1、A2 缩成 SID（省 8 字节），并在不需要时跳过 A3/A4/序列控制。一个已关联 S1G 传感器的短上行读数，帧头可以从约 30 字节降到大约 8–10 字节。在跨越一公里、仅几百 kbit/s 的链路上，这意味着每次唤醒都实打实地省回了空口时间与电量。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exactly when A3 and A4 may vanish, and what the SID carries",
+        "zh": "A3、A4 究竟何时可以消失，以及 SID 里装了什么"
+      },
+      "en": "Clause 9.8.3.2 makes the address compaction precise. The SID field (Figure 9-1335) is 16 bits: a 13-bit AID subfield plus A3 Present, A4 Present, and A-MSDU flags; the AID carries the receiver's or transmitter's AID per Table 9-670, and a group AID value addresses a group of non-AP STAs. The A3 field is present only when A3 differs from the address identified by A1 and no matching A3 is stored at the receiver; otherwise A3 is taken from the receiver's stored value or, failing that, equals A1. A4 mirrors this against A2. This receiver-side caching (per clause 10.57) is what lets a long-running flow omit the source/destination addresses on most frames. The standard also notes that PV1 frames without a SID field carry neither A3/A4 nor an A-MSDU, and that A1+A2 total either 8 or 12 octets (two SIDs, or one SID plus one MAC address, or two MAC addresses).",
+      "zh": "9.8.3.2 节把地址压缩讲得很精确。SID 字段（图 9-1335）共 16 比特：一个 13 比特的 AID 子字段，外加 A3 Present、A4 Present、A-MSDU 三个标志位；AID 按表 9-670 承载接收方或发送方的 AID，而一个组 AID 值可寻址一组非 AP STA。A3 字段仅在以下情况出现：A3 与 A1 所标识的地址不同，且接收端未存有匹配的 A3；否则 A3 取自接收端的存储值，若无存储值则等于 A1。A4 对 A2 同理。正是这种接收端缓存（见 10.57 节）让一条长期存在的流在多数帧上省去源/目的地址。标准还指出：不含 SID 字段的 PV1 帧既无 A3/A4 也不携带 A-MSDU；A1+A2 合计为 8 或 12 个八位组（两个 SID，或一个 SID 加一个 MAC 地址，或两个 MAC 地址）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1856,
+          1857
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.8.1",
+    "80211-2024:9.8.2",
+    "80211-2024:9.8.3.1",
+    "80211-2024:9.8.3.2",
+    "80211-2024:9.8.3.3",
+    "80211-2024:9.8.3.4",
+    "80211-2024:9.8.3.5",
+    "80211-2024:9.8.3.6"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1850
+      ],
+      "note": "9.8.1 Basic components — PV1 MAC header, variable Frame Body, 32-bit FCS"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1854,
+        1855
+      ],
+      "note": "9.8.2 general PV1 format (Fig 9-1333) and 9.8.3.1 Frame Control (Fig 9-1334, Tables 9-669/9-670)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1856,
+        1857
+      ],
+      "note": "9.8.3.1 Ack Policy (Table 9-671); 9.8.3.2 address fields and SID (Fig 9-1335); 9.8.3.3-9.8.3.6 Sequence Control, Frame Body, encryption overhead, FCS"
+    }
+  ],
+  "track": "frames"
+}

@@ -1,0 +1,166 @@
+{
+  "id": "frames-38",
+  "title": {
+    "en": "Remaining ANQP-elements & access-network TLVs (9.4.5 / 9.4.4)",
+    "zh": "剩余的 ANQP 元素与接入网 TLV（9.4.5 / 9.4.4）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Imagine your phone walking into a coffee shop. Before it joins any Wi-Fi, it would love to ask the access point a few questions: Who runs this network? What does it cost? Can my SIM authenticate here? Where am I, in case I need to dial emergency? The Access Network Query Protocol (ANQP) is exactly that conversation — a pre-association Q&A that powers Hotspot 2.0 / Passpoint. The station sends a short query, the AP answers with a catalog of ANQP-elements, and the phone decides whether this network is worth associating to.",
+      "zh": "想象你的手机走进一家咖啡馆。在加入任何 Wi-Fi 之前，它很想先向接入点（AP）问几个问题：这个网络是谁运营的？要不要收费？我的 SIM 卡能在这里认证吗？我现在在哪里，万一要拨打紧急电话怎么办？接入网查询协议（ANQP）正是这样一场对话——一次在关联之前进行的问答，它支撑着 Hotspot 2.0 / Passpoint。站点发出一个简短的查询，AP 用一组 ANQP 元素作答，手机据此判断这个网络是否值得关联。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Every ANQP-element shares the same wrapper: a 2-octet Info ID (its unique catalog number), a 2-octet Length, then the Information payload. This lesson is a guided tour of that catalog — not a field-by-field teardown. For each element, just remember its one job: what question it answers.",
+      "zh": "每个 ANQP 元素都共用同一个外壳：2 字节的 Info ID（它在目录中的唯一编号）、2 字节的长度，然后是信息载荷。本课是对这份目录的导览——而不是逐字段的拆解。对每个元素，你只需记住它的一项职责：它回答的是哪个问题。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the two that make ANQP self-describing. The Query List (9.4.5.2) is the station's shopping list — it carries the Info IDs of every element the STA wants back. The Capability List (9.4.5.3) is the AP's menu — the set of Info IDs it can actually answer. Together they let a client ask only for what exists, and the AP advertise only what it has configured.",
+      "zh": "先看让 ANQP 能够“自我描述”的两个元素。Query List（查询列表，9.4.5.2）是站点的“购物清单”——它装着 STA 想要取回的每个元素的 Info ID。Capability List（能力列表，9.4.5.3）则是 AP 的“菜单”——它真正能够回答的 Info ID 集合。两者配合，使客户端只索取存在的内容，而 AP 也只通告它已配置好的内容。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    Q[\"Query List 9.4.5.2 — what STA asks for\"] --> C[\"Capability List 9.4.5.3 — what AP can answer\"]\n    C --> ID[\"Identity & operator\"]\n    C --> LOC[\"Location & emergency\"]\n    C --> ROAM[\"Roaming & auth\"]\n    C --> SVC[\"Services & charging\"]\n    ID --> ID1[\"Venue Name 9.4.5.4 / Venue URL 9.4.5.20 / Local Content 9.4.5.22\"]\n    ID --> ID2[\"Domain Name 9.4.5.15\"]\n    LOC --> L1[\"AP Geospatial 9.4.5.12 / Civic 9.4.5.13 / Public ID URI 9.4.5.14\"]\n    LOC --> L2[\"Emergency Call # 9.4.5.5 / NAI 9.4.5.17 / Alert URI 9.4.5.16\"]\n    ROAM --> R1[\"Net Auth Type 9.4.5.6 / +Timestamp 9.4.5.23\"]\n    ROAM --> R2[\"Roaming Consortium 9.4.5.7 / NAI Realm 9.4.5.10 / Excluded NAI 9.4.5.35\"]\n    ROAM --> R3[\"3GPP Cellular 9.4.5.11 / IP Avail 9.4.5.9 / Credential Types 9.4.5.33\"]\n    SVC --> S1[\"Advice of Charge 9.4.5.21 / SLA 9.4.5.34\"]\n    SVC --> S2[\"Service Info Req/Resp 9.4.5.27/28 / CAG 9.4.5.26\"]\n    SVC --> S3[\"EBCS 9.4.5.30 + Content Req/Resp 9.4.5.31/32\"]\n    SVC --> S4[\"TDLS Cap 9.4.5.18 / Neighbor Report 9.4.5.19 / Local MAC Policy 9.4.5.29 / Query+List AP 9.4.5.24/25\"]",
+      "zh": "graph TD\n    Q[\"Query List 9.4.5.2 — STA 想要什么\"] --> C[\"Capability List 9.4.5.3 — AP 能回答什么\"]\n    C --> ID[\"身份与运营商\"]\n    C --> LOC[\"位置与紧急\"]\n    C --> ROAM[\"漫游与认证\"]\n    C --> SVC[\"服务与计费\"]\n    ID --> ID1[\"场所名 9.4.5.4 / 场所 URL 9.4.5.20 / 本地内容 9.4.5.22\"]\n    ID --> ID2[\"域名 9.4.5.15\"]\n    LOC --> L1[\"AP 地理坐标 9.4.5.12 / 民用地址 9.4.5.13 / 公共标识 URI 9.4.5.14\"]\n    LOC --> L2[\"紧急呼叫号码 9.4.5.5 / 紧急 NAI 9.4.5.17 / 告警 URI 9.4.5.16\"]\n    ROAM --> R1[\"网络认证类型 9.4.5.6 / 带时间戳 9.4.5.23\"]\n    ROAM --> R2[\"漫游联盟 9.4.5.7 / NAI 域 9.4.5.10 / 排除的 NAI 域 9.4.5.35\"]\n    ROAM --> R3[\"3GPP 蜂窝 9.4.5.11 / IP 可用性 9.4.5.9 / 凭据类型 9.4.5.33\"]\n    SVC --> S1[\"资费告知 9.4.5.21 / SLA 9.4.5.34\"]\n    SVC --> S2[\"服务信息 请求/响应 9.4.5.27/28 / CAG 9.4.5.26\"]\n    SVC --> S3[\"EBCS 9.4.5.30 + 内容 请求/响应 9.4.5.31/32\"]\n    SVC --> S4[\"TDLS 能力 9.4.5.18 / 邻居报告 9.4.5.19 / 本地 MAC 策略 9.4.5.29 / 查询+列出 AP 9.4.5.24/25\"]"
+    },
+    {
+      "type": "prose",
+      "en": "Identity & operator. Venue Name (9.4.5.4) gives the venue's human-readable name(s) to help a user pick the right BSS; Venue URL (9.4.5.20) is the matching web link for venue info or ads; Local Content (9.4.5.22) lists URLs to display content tied to this BSS. Domain Name (9.4.5.15) names the operator's domain(s) of the access network. Location & emergency. AP Geospatial Location (9.4.5.12) gives the AP's lat/long/altitude in LCI form; AP Civic Location (9.4.5.13) gives the same as a postal-style civic address; AP Location Public Identifier URI/FQDN (9.4.5.14) is an indirect pointer to that location info. Emergency Call Number (9.4.5.5) lists local emergency dial strings; Emergency NAI (9.4.5.17) supplies an identity string for emergency-access requests; Emergency Alert URI (9.4.5.16) is where to fetch an emergency-alert (EAS) message.",
+      "zh": "身份与运营商。Venue Name（场所名，9.4.5.4）给出场所的可读名称，帮用户挑对 BSS；Venue URL（场所 URL，9.4.5.20）是与之对应的网页链接，用于场所信息或广告；Local Content（本地内容，9.4.5.22）列出用于展示与该 BSS 相关内容的 URL。Domain Name（域名，9.4.5.15）则给出接入网运营方的域名。位置与紧急。AP Geospatial Location（AP 地理坐标，9.4.5.12）以 LCI 格式给出 AP 的经纬度与海拔；AP Civic Location（AP 民用地址，9.4.5.13）以邮政式民用地址给出同样信息；AP Location Public Identifier URI/FQDN（9.4.5.14）则是指向这些位置信息的间接引用。Emergency Call Number（紧急呼叫号码，9.4.5.5）列出本地紧急拨号字符串；Emergency NAI（紧急 NAI，9.4.5.17）提供用于紧急接入请求的身份字符串；Emergency Alert URI（告警 URI，9.4.5.16）则是获取紧急告警（EAS）消息的地址。"
+    },
+    {
+      "type": "prose",
+      "en": "Roaming & authentication. Network Authentication Type (9.4.5.6) tells the STA what extra step a non-RSN/ASRA network demands — accept terms, online enroll, or HTTP/DNS redirect; Network Authentication Type with Timestamp (9.4.5.23) adds a timestamp so the STA can tell if previously seen terms are stale. Roaming Consortium (9.4.5.7) lists the Organization Identifiers of consortia/SSPs reachable here; NAI Realm (9.4.5.10) lists realms plus the EAP methods each uses; Excluded NAI Realm (9.4.5.35) lists realms that are NOT reachable even though their consortium is advertised. 3GPP Cellular Network (9.4.5.11) carries mobile network/country codes to help a SIM pick this AP; IP Address Type Availability (9.4.5.9) says which IPv4/IPv6 address types you'd get after associating; Credential Types (9.4.5.33) advertises which kinds of credentials the AP accepts.",
+      "zh": "漫游与认证。Network Authentication Type（网络认证类型，9.4.5.6）告诉 STA：一个非 RSN/ASRA 网络还要求做哪一步额外动作——接受条款、在线注册，或 HTTP/DNS 重定向；Network Authentication Type with Timestamp（带时间戳的网络认证类型，9.4.5.23）加上时间戳，让 STA 判断之前看过的条款是否已过期。Roaming Consortium（漫游联盟，9.4.5.7）列出经此可达的联盟/SSP 的组织标识（OI）；NAI Realm（NAI 域，9.4.5.10）列出各域及其使用的 EAP 方法；Excluded NAI Realm（排除的 NAI 域，9.4.5.35）则列出即便其联盟被通告、也无法经此可达的域。3GPP Cellular Network（3GPP 蜂窝网络，9.4.5.11）携带移动网络码/国家码，帮 SIM 选中这个 AP；IP Address Type Availability（IP 地址类型可用性，9.4.5.9）说明关联后你能拿到哪种 IPv4/IPv6 地址类型；Credential Types（凭据类型，9.4.5.33）通告该 AP 接受哪些种类的凭据。"
+    },
+    {
+      "type": "prose",
+      "en": "Services, charging & the rest. Advice of Charge (9.4.5.21) describes the cost model (time-based, data-volume, unlimited …) per realm; Service Level Agreement (9.4.5.34) advertises the roaming/settlement type and the SLA (Olympic bronze/silver/gold) offered. Service Information Request / Response (9.4.5.27 / 9.4.5.28) carry a generic, service-specific query keyed by a service hash and its reply. CAG (9.4.5.26) — Common Advertisement Group — bundles a set of Info IDs plus a version number so a client can detect when cached advertisements changed. TDLS Capability (9.4.5.18) lets a STA discover a peer's direct-link capabilities; Neighbor Report (9.4.5.19) hands back reports about nearby APs while still preassociated. Local MAC Address Policy (9.4.5.29) tells the STA the ESS's rules for randomized/local MAC addresses. Query AP List / AP List Response (9.4.5.24 / 9.4.5.25) batch one ANQP query across several BSSIDs and return their answers together. Finally the EBCS family — EBCS (9.4.5.30) advertises available enhanced broadcast services, while EBCS Content Request / Response (9.4.5.31 / 9.4.5.32) register or stop a STA's reception of a given broadcast stream.",
+      "zh": "服务、计费及其余。Advice of Charge（资费告知，9.4.5.21）按域描述计费模型（按时长、按流量、不限量……）；Service Level Agreement（服务等级协议，9.4.5.34）通告漫游/结算类型以及所提供的 SLA（奥运式的铜/银/金等级）。Service Information Request / Response（服务信息请求/响应，9.4.5.27 / 9.4.5.28）携带以服务哈希为键的通用、服务专属查询及其回复。CAG（公共广告组，9.4.5.26）把一组 Info ID 连同一个版本号打包，让客户端能察觉缓存的通告何时发生了变化。TDLS Capability（TDLS 能力，9.4.5.18）让 STA 发现对端的直连能力；Neighbor Report（邻居报告，9.4.5.19）在仍处于预关联状态时回送附近 AP 的报告。Local MAC Address Policy（本地 MAC 地址策略，9.4.5.29）告诉 STA 该 ESS 关于随机化/本地 MAC 地址的规则。Query AP List / AP List Response（查询 AP 列表 / AP 列表响应，9.4.5.24 / 9.4.5.25）把一次 ANQP 查询批量发往多个 BSSID 并一并返回结果。最后是 EBCS 家族——EBCS（9.4.5.30）通告可用的增强广播服务，而 EBCS Content Request / Response（EBCS 内容请求/响应，9.4.5.31 / 9.4.5.32）用于登记或停止 STA 对某个广播流的接收。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Not every pre-association parameter is an ANQP-element. A separate, smaller family — the access-network TLV encodings (9.4.4) — uses a Name/Type/Length/Value/Scope tuple to carry channel-availability data, mostly for TV White Space (TVWS). Device Class (9.4.4.2.2) states the device's TVWS operating mode; Device Identification (9.4.4.2.3) identifies the device making a channel-availability query; Device Location (9.4.4.2.4) gives its lat/long/altitude for that query; Channel Schedule Descriptor (9.4.4.2.5) carries when a given channel becomes available and for how long; and WSM information values (9.4.4.2.6) carry the country-specific available-channel list for the White Space Map.",
+      "zh": "并非每个预关联参数都是 ANQP 元素。另有一个更小的家族——接入网 TLV 编码（9.4.4）——用 Name/Type/Length/Value/Scope 元组来承载信道可用性数据，主要服务于电视白频段（TVWS）。Device Class（设备类别，9.4.4.2.2）说明设备在 TVWS 下的工作模式；Device Identification（设备标识，9.4.4.2.3）标识发起信道可用性查询的设备；Device Location（设备位置，9.4.4.2.4）为该查询给出设备的经纬度与海拔；Channel Schedule Descriptor（信道时间表描述符，9.4.4.2.5）携带某信道何时可用、可用多久；WSM information values（WSM 信息值，9.4.4.2.6）则承载白频段地图（White Space Map）中按国家/地区定义的可用信道列表。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Where the catalog lives and how the wrapper works",
+        "zh": "目录所在之处与外壳的工作方式"
+      },
+      "en": "The whole ANQP catalog is anchored in 9.4.5.1: every ANQP-element shares the format of Figure 9-1079 — a 2-octet Info ID, a 2-octet Length, then a variable Information field — and Table 9-426 binds each name to its unique Info ID (Query List = 256, Capability List = 257, Venue Name = 258, … up to Excluded NAI Realm = 289, with Vendor Specific parked at 56797). The Length field counts only the octets in the Information field. Querying is self-describing: the Query List (9.4.5.2) carries Info IDs ordered by increasing value, and the Capability List (9.4.5.3) always includes its own Info ID so a client knows the AP speaks ANQP at all. The access-network TLVs of 9.4.4 are a different beast: 9.4.4.1 defines the general tuple (Name, Type, 1-octet Length, Value, Scope/Country code) and notes that TLVs with unknown or reserved types are simply discarded on receipt — the Device Class / Identification / Location, Channel Schedule Descriptor, and WSM information values of 9.4.4.2.2–9.4.4.2.6 all follow that single common form.",
+      "zh": "整份 ANQP 目录都锚定在 9.4.5.1：每个 ANQP 元素都共用图 9-1079 的格式——2 字节 Info ID、2 字节长度，再加一个可变的信息字段——而表 9-426 把每个名称绑定到其唯一的 Info ID（Query List = 256、Capability List = 257、Venue Name = 258……一直到 Excluded NAI Realm = 289，Vendor Specific 则停放在 56797）。长度字段只统计信息字段中的字节数。查询是自我描述的：Query List（9.4.5.2）携带按取值递增排序的 Info ID，而 Capability List（9.4.5.3）总会包含它自己的 Info ID，让客户端确认 AP 确实“会说”ANQP。9.4.4 的接入网 TLV 则是另一类东西：9.4.4.1 定义了通用元组（Name、Type、1 字节 Length、Value、Scope/国家码），并指出类型未知或保留的 TLV 在收到时会被直接丢弃——9.4.4.2.2 至 9.4.4.2.6 的 Device Class / Identification / Location、Channel Schedule Descriptor 与 WSM information values 都遵循这同一种通用形式。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1581,
+          1586,
+          1587
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.4.5.2",
+    "80211-2024:9.4.5.3",
+    "80211-2024:9.4.5.4",
+    "80211-2024:9.4.5.5",
+    "80211-2024:9.4.5.6",
+    "80211-2024:9.4.5.7",
+    "80211-2024:9.4.5.9",
+    "80211-2024:9.4.5.10",
+    "80211-2024:9.4.5.11",
+    "80211-2024:9.4.5.12",
+    "80211-2024:9.4.5.13",
+    "80211-2024:9.4.5.14",
+    "80211-2024:9.4.5.15",
+    "80211-2024:9.4.5.16",
+    "80211-2024:9.4.5.17",
+    "80211-2024:9.4.5.18",
+    "80211-2024:9.4.5.19",
+    "80211-2024:9.4.5.20",
+    "80211-2024:9.4.5.21",
+    "80211-2024:9.4.5.22",
+    "80211-2024:9.4.5.23",
+    "80211-2024:9.4.5.24",
+    "80211-2024:9.4.5.25",
+    "80211-2024:9.4.5.26",
+    "80211-2024:9.4.5.27",
+    "80211-2024:9.4.5.28",
+    "80211-2024:9.4.5.29",
+    "80211-2024:9.4.5.30",
+    "80211-2024:9.4.5.31",
+    "80211-2024:9.4.5.32",
+    "80211-2024:9.4.5.33",
+    "80211-2024:9.4.5.34",
+    "80211-2024:9.4.5.35",
+    "80211-2024:9.4.4.2.2",
+    "80211-2024:9.4.4.2.3",
+    "80211-2024:9.4.4.2.4",
+    "80211-2024:9.4.4.2.5",
+    "80211-2024:9.4.4.2.6"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1586,
+        1587
+      ],
+      "note": "9.4.5.1 ANQP-element common format (Figure 9-1079) and Table 9-426 Info ID assignments (256-289, Vendor Specific 56797)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1587,
+        1588,
+        1589,
+        1590,
+        1591,
+        1592,
+        1593
+      ],
+      "note": "9.4.5.2-9.4.5.15 Query/Capability List, Venue Name, Emergency Call Number, Network Authentication Type, Roaming Consortium, IP Address Type Availability, NAI Realm, 3GPP Cellular, AP Geospatial/Civic/Public-ID location, Domain Name"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1598,
+        1599,
+        1600,
+        1601,
+        1602,
+        1603,
+        1604,
+        1605,
+        1606,
+        1607,
+        1609,
+        1618,
+        1619,
+        1620,
+        1621
+      ],
+      "note": "9.4.5.16-9.4.5.35 Emergency Alert/NAI, TDLS, Neighbor Report, Venue URL, Advice of Charge, Local Content, Net Auth +Timestamp, Query/Response AP List, CAG, Service Info Req/Resp, Local MAC Policy, EBCS family, Credential Types, SLA, Excluded NAI Realm"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1581,
+        1582,
+        1583,
+        1584,
+        1585
+      ],
+      "note": "9.4.4.1-9.4.4.2.6 TLV encodings: general form, Device Class, Device Identification, Device Location, Channel Schedule Descriptor, WSM information values"
+    }
+  ],
+  "track": "frames"
+}

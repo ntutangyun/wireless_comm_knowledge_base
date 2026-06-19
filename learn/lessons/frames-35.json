@@ -1,0 +1,123 @@
+{
+  "id": "frames-35",
+  "title": {
+    "en": "Extension frames & the QoS Control field subfield catalog",
+    "zh": "扩展帧与 QoS Control 字段子字段全集"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Most 802.11 frames fall into three neat buckets — management, control, data. But the standard quietly keeps a fourth type around for frames that don't fit the usual MAC-header mould: the Extension frame. And inside ordinary QoS Data frames there is a tiny 2-byte field, the QoS Control field, that does an outsized amount of work — steering scheduling, aggregation, and power-save all at once. This lesson tours both: the oddball frames at the edges, and the busy little field at the centre.",
+      "zh": "大多数 802.11 帧都能整齐地归入三类——管理帧、控制帧、数据帧。但标准还悄悄保留了第四种类型，用于那些不符合常规 MAC 头格式的帧：扩展帧（Extension frame）。而在普通的 QoS 数据帧内部，还藏着一个仅 2 字节的小字段——QoS Control 字段，它干的活却出奇地多，同时掌管着调度、聚合和省电。本课将带你游览二者：边缘地带那些“另类”的帧，以及处于核心位置、忙碌不已的那个小字段。"
+    },
+    {
+      "type": "prose",
+      "en": "An Extension frame (9.3.4.1) is deliberately loose: its MAC header begins only with a Frame Control field and a Duration field, and after that the layout is whatever the specific frame needs — a chain of fields of different number and types, then a Frame Body and FCS. That flexibility is the whole point, because the two members of the family look nothing alike. Both serve the same role a Beacon does — announcing a network — but for two very different bands.",
+      "zh": "扩展帧（9.3.4.1）有意设计得很“松散”：它的 MAC 头只以 Frame Control 字段和 Duration 字段开头，之后的布局完全由具体帧的需要决定——一串数量和类型各异的字段，再接 Frame Body 和 FCS。这种灵活性正是设计初衷，因为这个家族的两位成员长得毫不相像。二者都承担着与 Beacon 相同的角色——宣告一个网络的存在——只不过是面向两个截然不同的频段。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 200' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='20' font-size='13' stroke='none' fill='currentColor'>Extension frame (generic, 9.3.4.1)</text><rect x='10' y='30' width='90' height='30'/><text x='55' y='49' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>Frame Ctrl</text><rect x='100' y='30' width='70' height='30'/><text x='135' y='49' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>Duration</text><rect x='170' y='30' width='150' height='30' stroke-dasharray='4 3'/><text x='245' y='49' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>&lt;Field 0..N&gt;</text><rect x='320' y='30' width='130' height='30'/><text x='385' y='49' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>Frame Body</text><rect x='450' y='30' width='60' height='30'/><text x='480' y='49' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>FCS</text><text x='10' y='95' font-size='13' stroke='none' fill='currentColor'>DMG Beacon (60 GHz, 9.3.4.2)</text><rect x='10' y='105' width='90' height='28'/><text x='55' y='123' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>Frame Ctrl</text><rect x='100' y='105' width='70' height='28'/><text x='135' y='123' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>Duration</text><rect x='170' y='105' width='70' height='28'/><text x='205' y='123' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>BSSID</text><rect x='240' y='105' width='120' height='28'/><text x='300' y='123' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>Frame Body</text><rect x='360' y='105' width='50' height='28'/><text x='385' y='123' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>FCS</text><text x='10' y='168' font-size='13' stroke='none' fill='currentColor'>S1G Beacon (sub-1 GHz, 9.3.4.3 — no BSSID, SA instead)</text><rect x='10' y='175' width='80' height='22'/><text x='50' y='190' font-size='8' text-anchor='middle' stroke='none' fill='currentColor'>Frame Ctrl</text><rect x='90' y='175' width='55' height='22'/><text x='117' y='190' font-size='8' text-anchor='middle' stroke='none' fill='currentColor'>Dur</text><rect x='145' y='175' width='45' height='22'/><text x='167' y='190' font-size='8' text-anchor='middle' stroke='none' fill='currentColor'>SA</text><rect x='190' y='175' width='70' height='22'/><text x='225' y='190' font-size='8' text-anchor='middle' stroke='none' fill='currentColor'>Timestamp</text><rect x='260' y='175' width='75' height='22' stroke-dasharray='3 2'/><text x='297' y='190' font-size='8' text-anchor='middle' stroke='none' fill='currentColor'>ChangeSeq</text><rect x='335' y='175' width='130' height='22' stroke-dasharray='3 2'/><text x='400' y='190' font-size='8' text-anchor='middle' stroke='none' fill='currentColor'>opt: TBTT/SSID/ANO</text><rect x='465' y='175' width='80' height='22'/><text x='505' y='190' font-size='8' text-anchor='middle' stroke='none' fill='currentColor'>Body+FCS</text></svg>",
+      "caption": {
+        "en": "The Extension frame family: one loose generic shape, two concrete beacons for two bands. The S1G Beacon trades a full MAC header for a compact, header-light layout.",
+        "zh": "扩展帧家族：一个松散的通用骨架，对应两个频段的两种具体信标。S1G Beacon 用一个紧凑、轻量化的布局替代了完整的 MAC 头。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The DMG Beacon (9.3.4.2) is the 60-GHz directional beacon. Because mmWave links are highly directional, it doubles as a beamforming training frame: it carries a BSSID, sets Duration to the time left until the beacon transmission interval (BTI) ends, and packs a long body of DMG-specific elements (timestamp, sector sweep, beacon-interval control, clustering control, capabilities…). The S1G Beacon (9.3.4.3) goes the opposite way — for sub-1-GHz IoT it is header-light and compact: no BSSID, just an SA (source address), a 4-octet Timestamp, a Change Sequence counter (bumped on any critical Beacon update), and a few optional fields (Next TBTT, Short SSID, Access Network Options). It even ships in two sizes: a minimum element set off-TBTT and a full set at the TBTT.",
+      "zh": "DMG Beacon（9.3.4.2）是 60 GHz 的定向信标。由于毫米波链路高度定向，它还兼作波束成形训练帧：它携带 BSSID，将 Duration 置为距信标传输间隔（BTI）结束所剩的时间，并装入一长串 DMG 专用元素（时间戳、扇区扫描、信标间隔控制、簇控制、能力……）。S1G Beacon（9.3.4.3）则走向相反方向——面向 1 GHz 以下的物联网，它轻量而紧凑：没有 BSSID，只有一个 SA（源地址）、一个 4 字节的 Timestamp、一个 Change Sequence 计数器（每当 Beacon 发生关键更新时递增），外加几个可选字段（Next TBTT、Short SSID、Access Network Options）。它甚至有两种尺寸：非 TBTT 时只带最小元素集，TBTT 时带完整元素集。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Frame addressing in an MBSS (9.3.5) is a separate addressing rule, not a frame format. In a mesh BSS, Mesh Data and Multihop Action frames need more than the usual three or four address fields to forward MSDUs across hops. A Mesh Control field's Address Extension Mode subfield selects how many addresses appear — up to six (RA, TA, Mesh DA, Mesh SA, plus a proxied DA and SA) — so a frame can name both the next hop and the true end-to-end source and destination behind a proxy.",
+      "zh": "MBSS 中的帧寻址（9.3.5）是一条独立的寻址规则，而非一种帧格式。在网状 BSS 中，Mesh Data 帧和 Multihop Action 帧需要比通常的三四个地址字段更多的地址，才能跨多跳转发 MSDU。Mesh Control 字段中的 Address Extension Mode 子字段决定出现多少个地址——最多六个（RA、TA、Mesh DA、Mesh SA，再加上被代理的 DA 和 SA）——这样一个帧就能同时标明下一跳，以及代理背后真正的端到端源和目的地。"
+    },
+    {
+      "type": "prose",
+      "en": "Now to the workhorse. The QoS Control field (9.2.4.5) lives in every Data frame whose QoS subtype bit is 1. It is only two octets, yet it carries 'which traffic, how to ack it, how much is queued, and what to do about power-save' — and its exact layout shifts with the frame type and who is sending (an HC/AP vs a non-AP STA vs a mesh STA). Below is the catalog: every subfield and its one job.",
+      "zh": "现在来看真正的主力。QoS Control 字段（9.2.4.5）出现在每一个 QoS 子类型位为 1 的数据帧中。它仅有两个字节，却承载着“属于哪类流量、如何应答、排队了多少、省电该怎么办”——而且它的具体布局会随帧类型以及发送方身份（HC/AP、非 AP STA、还是网状 STA）而变化。下面就是这份目录：每个子字段及其唯一的职责。"
+    },
+    {
+      "type": "diagram",
+      "en": "mindmap\n  root((QoS Control\\n2 octets))\n    Always\n      TID: which TC/TS this frame belongs to\n      Ack Policy Indicator: how to acknowledge (Normal/BlockAck/NoAck...)\n    Bit4_meaning\n      EOSP: HC/DMG/mesh marks end of service period\n      TXOP-bit: 0 to 1 selects the B8-15 view\n    HC_sends\n      TXOP Limit: time cap on a granted CF-Poll TXOP\n      AP PS Buffer State: downlink buffer status at AP\n    nonAP_STA_sends\n      TXOP Duration Requested: time STA wants next\n      Queue Size: uplink bytes buffered for this TID\n    Aggregation\n      A-MSDU Present: body holds an A-MSDU\n      A-MSDU Type: Basic vs Short (DMG)\n    Mesh\n      Mesh Control Present: Mesh Control field in body\n      Mesh Power Save Level: deep vs light sleep\n      RSPI: receiver's mesh SP initiated?\n    DMG_reverse_direction\n      RDG/More PPDU: grant reverse direction / more to come\n      AC Constraint: RD data limited to one AC\n      Buffered AC: which ACs have buffered units",
+      "zh": "mindmap\n  root((QoS Control\\n2 字节))\n    总是存在\n      TID: 本帧属于哪个 TC/TS\n      Ack Policy Indicator: 如何应答 (Normal/BlockAck/NoAck...)\n    Bit4_含义\n      EOSP: HC/DMG/网状STA 标记服务期结束\n      TXOP位: 由0变1选择 B8-15 的视图\n    HC_发送\n      TXOP Limit: 对所授予 CF-Poll TXOP 的时间上限\n      AP PS Buffer State: AP 处的下行缓存状态\n    非AP_STA_发送\n      TXOP Duration Requested: STA 下次想要的时长\n      Queue Size: 该 TID 排队待发的上行字节数\n    聚合\n      A-MSDU Present: 帧体含一个 A-MSDU\n      A-MSDU Type: Basic 还是 Short (DMG)\n    网状\n      Mesh Control Present: 帧体含 Mesh Control 字段\n      Mesh Power Save Level: 深睡 vs 浅睡\n      RSPI: 接收方的网状服务期是否已发起\n    DMG_反向\n      RDG/More PPDU: 授予反向传输 / 还有后续\n      AC Constraint: RD 数据限定为单一 AC\n      Buffered AC: 哪些 AC 有缓存单元"
+    },
+    {
+      "type": "callout",
+      "variant": "note",
+      "en": "The clever trick: bits 8–15 are reused. When a non-AP STA sends a QoS Data frame, bit 4 stops meaning EOSP and instead acts as a selector — 0 means the upper byte is a TXOP Duration Requested (9.2.4.5.7: how much airtime I want next, in 32 µs units), 1 means it is a Queue Size (9.2.4.5.6: how many bytes I still have buffered for this TID). When an HC sends, that same upper region instead holds either a TXOP Limit (9.2.4.5.5: the airtime cap it is granting) or an AP PS Buffer State (9.2.4.5.8: Buffer State Indicated + Highest Priority Buffered AC + AP Buffered Load, the downlink buffer report). Same two bytes, four different meanings depending on direction.",
+      "zh": "巧妙之处在于：第 8–15 位被复用。当非 AP STA 发送 QoS 数据帧时，第 4 位不再表示 EOSP，而是充当选择器——0 表示高字节是 TXOP Duration Requested（9.2.4.5.7：我下次想要多少空口时间，以 32 µs 为单位），1 表示它是 Queue Size（9.2.4.5.6：该 TID 我还有多少字节排队待发）。当 HC 发送时，同一片高位区域则改为承载 TXOP Limit（9.2.4.5.5：它所授予的空口时间上限）或 AP PS Buffer State（9.2.4.5.8：Buffer State Indicated + Highest Priority Buffered AC + AP Buffered Load，即下行缓存报告）。同样的两个字节，因方向不同而有四种含义。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining subfields round out the catalog. EOSP (9.2.4.5.3) is set on the final frame of a service period to end it. Ack Policy Indicator (9.2.4.5.4) names the acknowledgement behaviour. A-MSDU Present (9.2.4.5.9) flags that the body is an aggregated A-MSDU, and A-MSDU Type (9.2.4.5.13) distinguishes Basic from Short for DMG. The mesh trio — Mesh Control Present (9.2.4.5.10) signals a Mesh Control field, Mesh Power Save Level (9.2.4.5.11) picks deep vs light sleep, and RSPI (9.2.4.5.12) flags whether the receiver's mesh service period is initiated. Finally, for DMG reverse-direction protocol: RDG/More PPDU (9.2.4.5.14) grants a reverse-direction burst or says more PPDUs follow, AC Constraint (9.2.4.5.15) limits an RD data frame to a single access category, and Buffered AC (9.2.4.5.16) flags, per AC (VO/VI/BE/BK), which have buffered units waiting.",
+      "zh": "其余子字段补全了这份目录。EOSP（9.2.4.5.3）置于服务期的最后一帧上以结束该服务期。Ack Policy Indicator（9.2.4.5.4）指明应答行为。A-MSDU Present（9.2.4.5.9）标记帧体是一个聚合的 A-MSDU，而 A-MSDU Type（9.2.4.5.13）则为 DMG 区分 Basic 与 Short 两种格式。网状三件套——Mesh Control Present（9.2.4.5.10）表示存在 Mesh Control 字段，Mesh Power Save Level（9.2.4.5.11）在深睡与浅睡之间做选择，RSPI（9.2.4.5.12）标记接收方的网状服务期是否已发起。最后，面向 DMG 反向传输协议：RDG/More PPDU（9.2.4.5.14）授予一次反向传输突发或表示后续还有更多 PPDU，AC Constraint（9.2.4.5.15）将一个 RD 数据帧限定为单一接入类别，而 Buffered AC（9.2.4.5.16）逐 AC（VO/VI/BE/BK）标记哪些类别有缓存单元在等待发送。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Where the standard pins down the overlapping layouts",
+        "zh": "标准在何处钉死了这些重叠的布局"
+      },
+      "en": "Table 9-10 (9.2.4.5.1) enumerates the QoS Control layouts row by row: TID always sits in bits 0–3 and the Ack Policy Indicator in bits 5–6, but bits 8–15 are reused. For QoS Data sent by a non-AP STA, bit 4 = 0 puts TXOP Duration Requested in bits 9–15, while bit 4 = 1 puts Queue Size there; for HC-sent frames the same span is TXOP Limit or the AP PS Buffer State (Figure 9-10: Buffer State Indicated, Highest Priority Buffered AC, QoS AP Buffered Load). Mesh STA frames carry Mesh Control Present (bit 8), Mesh Power Save Level (bit 9), and RSPI (bit 10). DMG PPDU frames use a different table (Table 9-11): A-MSDU Type (bit 8), RDG/More PPDU (bit 9), Buffered AC (bits 10–13, expanded in Figure 9-11 as BU-for-AC_VO/VI/BE/BK), and AC Constraint (bit 15). The Ack Policy Indicator encodings (Normal Ack, No Ack, Block Ack, HETP Ack, Scheduled Ack…) are spelled out in Table 9-13.",
+      "zh": "表 9-10（9.2.4.5.1）逐行列举了 QoS Control 的各种布局：TID 始终位于第 0–3 位，Ack Policy Indicator 位于第 5–6 位，但第 8–15 位会被复用。对于非 AP STA 发送的 QoS 数据帧，第 4 位 = 0 时第 9–15 位放 TXOP Duration Requested，第 4 位 = 1 时则放 Queue Size；对于 HC 发送的帧，同一片区间则是 TXOP Limit 或 AP PS Buffer State（图 9-10：Buffer State Indicated、Highest Priority Buffered AC、QoS AP Buffered Load）。网状 STA 帧携带 Mesh Control Present（第 8 位）、Mesh Power Save Level（第 9 位）和 RSPI（第 10 位）。DMG PPDU 帧使用另一张表（表 9-11）：A-MSDU Type（第 8 位）、RDG/More PPDU（第 9 位）、Buffered AC（第 10–13 位，在图 9-11 中展开为 BU-for-AC_VO/VI/BE/BK）以及 AC Constraint（第 15 位）。Ack Policy Indicator 的各种编码（Normal Ack、No Ack、Block Ack、HETP Ack、Scheduled Ack……）则在表 9-13 中详细给出。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          674,
+          675,
+          676,
+          681
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.3.4.1",
+    "80211-2024:9.3.4.2",
+    "80211-2024:9.3.4.3",
+    "80211-2024:9.3.5",
+    "80211-2024:9.2.4.5.2",
+    "80211-2024:9.2.4.5.3",
+    "80211-2024:9.2.4.5.4",
+    "80211-2024:9.2.4.5.5",
+    "80211-2024:9.2.4.5.6",
+    "80211-2024:9.2.4.5.7",
+    "80211-2024:9.2.4.5.8",
+    "80211-2024:9.2.4.5.9",
+    "80211-2024:9.2.4.5.10",
+    "80211-2024:9.2.4.5.11",
+    "80211-2024:9.2.4.5.12",
+    "80211-2024:9.2.4.5.13",
+    "80211-2024:9.2.4.5.14",
+    "80211-2024:9.2.4.5.15",
+    "80211-2024:9.2.4.5.16"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        823,
+        829,
+        832
+      ],
+      "note": "9.3.4 Extension frames — generic format (Fig 9-129), DMG Beacon (9.3.4.2, Fig 9-130), S1G Beacon (9.3.4.3, Fig 9-135); 9.3.5 mesh address fields (Table 9-77)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        674,
+        675,
+        676,
+        680,
+        681
+      ],
+      "note": "9.2.4.5 QoS Control field — Table 9-10/9-11 layouts; per-subfield definitions 9.2.4.5.2-9.2.4.5.16; Fig 9-10 AP PS Buffer State; Fig 9-11 Buffered AC; Table 9-13 ack policy"
+    }
+  ],
+  "track": "frames"
+}
