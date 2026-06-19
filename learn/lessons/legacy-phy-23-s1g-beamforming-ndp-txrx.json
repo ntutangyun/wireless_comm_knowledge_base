@@ -1,0 +1,155 @@
+{
+  "id": "legacy-phy-23-s1g-beamforming-ndp-txrx",
+  "title": {
+    "en": "S1G Part B (Clause 23 remainder): Beamforming, NDP CMAC PPDUs, Spec & PHY Procedures",
+    "zh": "S1G 第B部分（第23章余下）：波束成形、NDP CMAC PPDU、射频指标与 PHY 收发流程"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This lesson finishes the sub-1-GHz (S1G) PHY of Clause 23. The first half of the clause built the S1G PPDU; here we tour what is left: how a multi-antenna S1G device steers its energy (beamforming), a clever trick that crams an entire control frame into the preamble with no Data field at all (NDP CMAC PPDUs), the regulatory and RF conformance numbers a radio must hit, and the step-by-step PHY transmit and receive procedures. S1G's whole reason to exist is long-range, low-power IoT, so every feature here is about squeezing more out of a tiny, narrow channel.",
+      "zh": "本课收尾第 23 章的 Sub-1-GHz（S1G）物理层。该章前半部分搭好了 S1G 的 PPDU，本课带你游览余下的内容：多天线 S1G 设备如何把能量定向（波束成形）；一个把整帧控制信息塞进前导码、完全不带 Data 字段的巧妙技巧（NDP CMAC PPDU）；一台射频设备必须达到的监管与射频一致性指标；以及逐步的 PHY 发送与接收流程。S1G 存在的根本目的，就是远距离、低功耗的物联网，因此这里的每个特性都围绕着如何从一个又窄又小的信道里榨出更多价值。"
+    },
+    {
+      "type": "prose",
+      "en": "Beamforming first (23.3.10). An S1G beamformer with several antennas measures the channel and computes a steering matrix V so its signal arrives stronger at the intended receiver. S1G reuses the VHT machinery almost verbatim — same compressed feedback matrix V, same Group ID for addressing users. The S1G-specific numbers: single-user MIMO supports up to 4 space-time streams; downlink multi-user MIMO supports up to 4 total streams across users, each user getting at most 3. An MU-capable STA must be able to receive an MU PPDU whose streams sum to no more than its advertised capability (ceiling 4). Beamforming exchanges are defined only for 2/4/8/16 MHz — never the tiny 1 MHz channel.",
+      "zh": "先看波束成形（23.3.10）。一个拥有多根天线的 S1G 波束成形器会测量信道，算出一个导向矩阵 V，让它的信号在目标接收方处更强。S1G 几乎原封不动地复用了 VHT 的那套机制——相同的压缩反馈矩阵 V、相同的用于寻址用户的 Group ID。S1G 特有的数字是：单用户 MIMO 最多支持 4 条空时流；下行多用户 MIMO 在所有用户间最多支持 4 条总流，每个用户最多 3 条。支持 MU 的站点必须能接收总流数不超过其声明能力（上限 4）的 MU PPDU。波束成形交换只在 2/4/8/16 MHz 下定义——绝不在最小的 1 MHz 信道上进行。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The headline trick: NDP CMAC PPDUs (23.3.11, 23.3.12). NDP means Null Data Packet — a frame with no Data field at all. Normally a tiny control frame (an Ack, a CTS, a PS-Poll) still pays for a full PHY preamble plus a short data payload. S1G instead carries the whole control message inside the SIG field of the preamble: set one NDP-Indication bit, and the SIG bits themselves become the frame body. No Data symbols are ever transmitted. For IoT, where the actual control content is just a few bytes, this removes almost all the per-frame overhead.",
+      "zh": "本课的重头戏：NDP CMAC PPDU（23.3.11、23.3.12）。NDP 即 Null Data Packet（空数据包）——一种完全不带 Data 字段的帧。通常一个极小的控制帧（Ack、CTS、PS-Poll）仍要付出一个完整 PHY 前导码外加一小段数据载荷的代价。S1G 改为把整条控制消息塞进前导码的 SIG 字段里：置位一个 NDP-Indication 比特，SIG 的那些比特本身就成了帧体。从不发送任何 Data 符号。对于实际控制内容只有寥寥几字节的物联网而言，这几乎抹掉了全部每帧开销。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    subgraph Normal[\"Normal control frame\"]\n      A1[STF] --> A2[LTF] --> A3[SIG] --> A4[Data: Ack bytes]\n    end\n    subgraph NDP[\"NDP CMAC PPDU\"]\n      B1[STF] --> B2[LTF] --> B3[\"SIG = frame body<br/>NDP-Indication = 1<br/>(no Data field)\"]\n    end",
+      "zh": "graph LR\n    subgraph Normal[\"普通控制帧\"]\n      A1[STF] --> A2[LTF] --> A3[SIG] --> A4[Data：Ack 字节]\n    end\n    subgraph NDP[\"NDP CMAC PPDU\"]\n      B1[STF] --> B2[LTF] --> B3[\"SIG = 帧体<br/>NDP-Indication = 1<br/>（无 Data 字段）\"]\n    end"
+    },
+    {
+      "type": "prose",
+      "en": "The NDP CMAC PPDU body comes in two sizes by preamble format: 25 bits inside an S1G_1M preamble (NDP_1M, body bit set at SIG B25) and 37 bits inside an S1G_SHORT preamble (NDP_2M, bit at SIG B37). A 3-bit Type field at the front says which control message it is. The standard defines eight types: NDP CTS / CF-End, PS-Poll, Ack, PS-Poll-Ack, BlockAck, Beamforming Report Poll, Paging, and Probe Request. Each is the preamble-only equivalent of a normal MPDU and obeys the same MAC rules — so an NDP Ack acknowledges exactly like a real Ack, just with zero data overhead.",
+      "zh": "NDP CMAC PPDU 的帧体按前导码格式有两种长度：在 S1G_1M 前导码内为 25 比特（NDP_1M，帧体标志位在 SIG 的 B25），在 S1G_SHORT 前导码内为 37 比特（NDP_2M，标志位在 SIG 的 B37）。帧体开头的 3 比特 Type 字段说明这是哪一种控制消息。标准定义了八种类型：NDP CTS / CF-End、PS-Poll、Ack、PS-Poll-Ack、BlockAck、波束成形报告轮询（Beamforming Report Poll）、寻呼（Paging）和探测请求（Probe Request）。每一种都是普通 MPDU 的“仅前导码”等价物，并遵循同样的 MAC 规则——所以一个 NDP Ack 的确认行为与真正的 Ack 完全一致，只是零数据开销。"
+    },
+    {
+      "type": "prose",
+      "en": "Next come the conformance and RF anchors. Regulatory requirements (23.3.13) defer to regional rules in Annex D/E. Channelization (23.3.14) places S1G in the 700 MHz-1 GHz band with channel centers fc = ChannelStartingFrequency + 0.5 MHz x ChannelCenterNumber. Slot time (23.3.15) is a relatively long 52 us — sensible for the slow, long-range S1G symbol. Port impedance (23.3.16) points back to the legacy OFDM clause. The transmit specification (23.3.17) then pins down the spectral mask per bandwidth (0 dBr passband stepping down to -40 dBr), spectral flatness (deviation limits per subcarrier group), a +/-20 ppm center-frequency and symbol-clock tolerance, and modulation accuracy (relative constellation RMS error / EVM bounds, plus LO-leakage limits).",
+      "zh": "接下来是一致性与射频的“锚点”。监管要求（23.3.13）交由附录 D/E 的地区性规则处理。信道化（23.3.14）把 S1G 放在 700 MHz–1 GHz 频段，信道中心频率 fc = 起始频率 + 0.5 MHz × 中心信道号。时隙（23.3.15）相对较长，为 52 微秒——这对又慢又远的 S1G 符号是合理的。端口阻抗（23.3.16）回指传统 OFDM 章节。发送指标（23.3.17）则逐带宽锁定频谱模板（0 dBr 通带逐级降到 –40 dBr）、频谱平坦度（各子载波组的偏差上限）、±20 ppm 的中心频率与符号时钟容差，以及调制精度（相对星座 RMS 误差 / EVM 上限，外加本振泄漏限制）。"
+    },
+    {
+      "type": "prose",
+      "en": "The receiver specification (23.3.18) is the mirror image: a minimum input sensitivity per MCS, adjacent- and nonadjacent-channel rejection, a maximum input level the receiver must tolerate, and CCA (clear-channel assessment) thresholds that differ for type-1 vs type-2 channelization and per channel width (e.g. detect a 1 MHz PPDU at -86 dBm on the primary). Two report values close it out: RSSI (a monotonic measure taken during the LTFs) and RCPI (received channel power in dBm, +/-5 dB accuracy, with a 3 dB correction for the boosted MCS-10 STF). Finally the PHY transmit (23.3.19) and receive (23.3.20) procedures lay out the PHY-TXSTART / PHY-DATA / PHY-TXEND and the receive-side SIG-detect / CRC-check / filter-out handshakes with the MAC.",
+      "zh": "接收指标（23.3.18）则是其镜像：逐 MCS 的最小输入灵敏度、相邻与非相邻信道抑制、接收机必须容忍的最大输入电平，以及 CCA（空闲信道评估）门限——它们对 type-1 与 type-2 信道化以及不同信道宽度各不相同（例如在主信道上以 –86 dBm 检测一个 1 MHz PPDU）。两个上报值收尾：RSSI（在 LTF 期间测得的单调量）与 RCPI（以 dBm 表示的接收信道功率，精度 ±5 dB，对功率被抬升的 MCS-10 STF 有 3 dB 修正）。最后，PHY 发送（23.3.19）与接收（23.3.20）流程铺陈出与 MAC 之间的 PHY-TXSTART / PHY-DATA / PHY-TXEND，以及接收侧的 SIG 检测 / CRC 校验 / 过滤判定握手。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact NDP rules, the 25/37-bit bodies, and the receive-side filter handshake",
+        "zh": "精确的 NDP 规则、25/37 比特帧体，以及接收侧的过滤握手"
+      },
+      "en": "23.3.11 states an NDP is the only S1G sounding format and is built on the S1G PPDU format with the Data field removed; sounding NDPs must use S1G_SHORT and are not allowed at 1 MHz, while NDP CMAC PPDUs may use S1G_SHORT or S1G_1M and carry exactly one LTF. 23.3.12.1 fixes the body sizes: NDP_1M is 25 bits with the NDP-indication at SIG B25, NDP_2M is 37 bits with the indication at SIG B37; the TXVECTOR carries NDP_INDICATION=1 and NDP_CMAC_PPDU_BODY, mirrored by the RXVECTOR on receive. Table 23-30 enumerates the eight NDP CMAC PPDU types (0 CTS/CF-End ... 7 Probe Request), each tagged with its equivalent MPDU. On the receive side (23.3.20), the PHY detects and classifies the SIG field, tests its CRC, and on a SIG/SIG-A CRC failure issues PHY-RXEND.indication(FormatViolation) and holds CCA BUSY until the receive level drops below the minimum-sensitivity-plus-20-dB threshold; an unsupported mode yields UnsupportedRate, and a PPDU that is filtered out (PHYCONFIG_VECTOR) yields PHY-RXEND.indication(Filtered).",
+      "zh": "23.3.11 规定 NDP 是 S1G 唯一的探测（sounding）格式，构建在去掉 Data 字段的 S1G PPDU 之上；探测用 NDP 必须使用 S1G_SHORT 且不允许在 1 MHz 上发送，而 NDP CMAC PPDU 可用 S1G_SHORT 或 S1G_1M 并恰好携带一个 LTF。23.3.12.1 固定了帧体长度：NDP_1M 为 25 比特、NDP-indication 在 SIG 的 B25，NDP_2M 为 37 比特、指示位在 SIG 的 B37；TXVECTOR 携带 NDP_INDICATION=1 与 NDP_CMAC_PPDU_BODY，接收时由 RXVECTOR 镜像。表 23-30 列出八种 NDP CMAC PPDU 类型（0 为 CTS/CF-End……7 为 Probe Request），每种都标注了其等价 MPDU。在接收侧（23.3.20），PHY 检测并分类 SIG 字段、校验其 CRC；若 SIG/SIG-A 的 CRC 失败，则发出 PHY-RXEND.indication(FormatViolation)，并保持 CCA BUSY 直到接收电平降至“最小灵敏度 + 20 dB”门限以下；不受支持的模式给出 UnsupportedRate，而被过滤掉的 PPDU（依 PHYCONFIG_VECTOR）给出 PHY-RXEND.indication(Filtered)。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3809,
+          3810,
+          3811,
+          3846
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3808,
+        3809
+      ],
+      "note": "23.3.10.1-23.3.10.4 S1G SU-MIMO/DL MU-MIMO beamforming: feedback matrix V, max total spatial streams in MU PPDUs, Group ID"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3809,
+        3810,
+        3811
+      ],
+      "note": "23.3.11 S1G preamble for NDPs; 23.3.12.1 NDP CMAC PPDU general - 25/37-bit bodies, NDP-indication, Table 23-30 eight types"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3812,
+        3823
+      ],
+      "note": "23.3.12.2 NDP CMAC PPDU details (CTS, PS-Poll, Ack, BlockAck, Beamforming Report Poll, Paging, Probe Request field layouts)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3823,
+        3824
+      ],
+      "note": "23.3.13 Regulatory requirements; 23.3.14 Channelization (700 MHz-1 GHz, fc formula); 23.3.15 Slot time 52 us; 23.3.16 Port impedance"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3824,
+        3825,
+        3827,
+        3828
+      ],
+      "note": "23.3.17 S1G transmit spec: spectral mask, spectral flatness, +/-20 ppm CF/symbol-clock tolerance, modulation accuracy / LO leakage"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3837,
+        3838,
+        3839
+      ],
+      "note": "23.3.18 S1G receiver spec: CCA sensitivity (type-1/type-2, per channel width), RSSI, RCPI"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3840,
+        3846
+      ],
+      "note": "23.3.19 PHY transmit procedure; 23.3.20 PHY receive procedure (SIG detect, CRC, filter-out, RXEND indications)"
+    }
+  ],
+  "covers": [
+    "80211-2024:23.3.10.1",
+    "80211-2024:23.3.10.2",
+    "80211-2024:23.3.10.3",
+    "80211-2024:23.3.10.4",
+    "80211-2024:23.3.11",
+    "80211-2024:23.3.12.1",
+    "80211-2024:23.3.12.2",
+    "80211-2024:23.3.13",
+    "80211-2024:23.3.14",
+    "80211-2024:23.3.15",
+    "80211-2024:23.3.16",
+    "80211-2024:23.3.17.1",
+    "80211-2024:23.3.17.2",
+    "80211-2024:23.3.17.3",
+    "80211-2024:23.3.17.4",
+    "80211-2024:23.3.17.5",
+    "80211-2024:23.3.18.1",
+    "80211-2024:23.3.18.2",
+    "80211-2024:23.3.18.3",
+    "80211-2024:23.3.18.4",
+    "80211-2024:23.3.18.5",
+    "80211-2024:23.3.18.6",
+    "80211-2024:23.3.18.7",
+    "80211-2024:23.3.19",
+    "80211-2024:23.3.20"
+  ],
+  "track": "legacy-phy"
+}

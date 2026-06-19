@@ -1,0 +1,156 @@
+{
+  "id": "legacy-phy-22-s1g-preamble-mcs-data-remainder",
+  "title": {
+    "en": "S1G Part A (Clause 23 remainder): PPDU Formats, Preamble Fields, MCS & the Data Chain",
+    "zh": "S1G 第A部分（第23章余下）：PPDU 格式、前导字段、MCS 与数据处理链"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "S1G — \"Sub-1-GHz\" — is the 802.11ah PHY built for kilometre-scale, low-power IoT. Its trick is not a new modem: it takes the same OFDM machinery used by the high-throughput PHYs and rescales it to narrow channels of 1, 2, 4, 8, and 16 MHz down in the sub-gigahertz bands. Narrower channels mean lower noise bandwidth and better link budget, which is what buys the long range. This lesson is a guided tour of the transmit side: what PPDU formats exist, how each preamble variant is assembled, what the MCS set and timing constants look like, and how the Data field is built bit-by-bit.",
+      "zh": "S1G——“Sub-1-GHz（亚1 GHz）”——是为公里级、低功耗物联网而设计的 802.11ah 物理层。它的诀窍并不是一套全新的调制解调器：它把高吞吐物理层所用的同一套 OFDM 机制原样拿来，缩放到亚吉赫兹频段上 1、2、4、8、16 MHz 的窄信道。信道越窄，噪声带宽越低、链路预算越好，这正是换来远距离的关键。本课是一次发射侧的导览：有哪些 PPDU 格式、每种前导变体如何组装、MCS 集合与定时常量长什么样，以及数据字段是如何逐比特构造出来的。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 23.3.1-23.3.2 give the lay of the land. Three native PPDU formats are defined: S1G_SHORT (a single-user format for 2/4/8/16 MHz), S1G_LONG (single-user beamformed and multi-user, with an extra omnidirectional + beam-changeable structure), and S1G_1M (the special narrowest 1 MHz single-user format). Two duplicate modes, S1G_DUP_2M and S1G_DUP_1M, simply copy a 2 MHz or 1 MHz preamble across a wider channel. Every PPDU is the familiar chain — STF, LTF(s), a SIGNAL field, then Data — with S1G_LONG adding SIG-A / D-STF / D-LTF / SIG-B for its beam-changeable portion.",
+      "zh": "23.3.1-23.3.2 节给出了全局图景。共定义了三种原生 PPDU 格式：S1G_SHORT（用于 2/4/8/16 MHz 的单用户格式）、S1G_LONG（单用户波束成形与多用户格式，带有额外的“全向部分 + 可变波束部分”结构）以及 S1G_1M（最窄的 1 MHz 单用户特殊格式）。另有两种复制模式 S1G_DUP_2M 和 S1G_DUP_1M，只是把一个 2 MHz 或 1 MHz 的前导在更宽信道上复制铺开。每个 PPDU 都是熟悉的链条——STF、LTF（一个或多个）、一个 SIGNAL 字段，然后是 Data——其中 S1G_LONG 为其可变波束部分额外加上 SIG-A / D-STF / D-LTF / SIG-B。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 560 200' fill='none' stroke='currentColor' stroke-width='1.5'><text x='8' y='28' font-size='12' stroke='none' fill='currentColor'>S1G_SHORT</text><rect x='8' y='36' width='60' height='28'/><text x='14' y='54' font-size='11' stroke='none' fill='currentColor'>STF</text><rect x='68' y='36' width='70' height='28'/><text x='80' y='54' font-size='11' stroke='none' fill='currentColor'>LTF1</text><rect x='138' y='36' width='60' height='28'/><text x='150' y='54' font-size='11' stroke='none' fill='currentColor'>SIG</text><rect x='198' y='36' width='90' height='28'/><text x='205' y='54' font-size='10' stroke='none' fill='currentColor'>LTF2..N</text><rect x='288' y='36' width='110' height='28'/><text x='320' y='54' font-size='11' stroke='none' fill='currentColor'>Data</text><text x='8' y='98' font-size='12' stroke='none' fill='currentColor'>S1G_LONG</text><rect x='8' y='106' width='44' height='28'/><text x='14' y='124' font-size='10' stroke='none' fill='currentColor'>STF</text><rect x='52' y='106' width='50' height='28'/><text x='58' y='124' font-size='10' stroke='none' fill='currentColor'>LTF1</text><rect x='102' y='106' width='52' height='28'/><text x='108' y='124' font-size='10' stroke='none' fill='currentColor'>SIG-A</text><rect x='154' y='106' width='46' height='28'/><text x='159' y='124' font-size='9' stroke='none' fill='currentColor'>D-STF</text><rect x='200' y='106' width='70' height='28'/><text x='206' y='124' font-size='9' stroke='none' fill='currentColor'>D-LTF1..N</text><rect x='270' y='106' width='52' height='28'/><text x='276' y='124' font-size='10' stroke='none' fill='currentColor'>SIG-B</text><rect x='322' y='106' width='110' height='28'/><text x='354' y='124' font-size='11' stroke='none' fill='currentColor'>Data</text><line x1='8' y1='142' x2='270' y2='142'/><text x='80' y='156' font-size='9' stroke='none' fill='currentColor'>omnidirectional</text><line x1='154' y1='162' x2='432' y2='162'/><text x='250' y='176' font-size='9' stroke='none' fill='currentColor'>beam-changeable</text></svg>",
+      "caption": {
+        "en": "The S1G_SHORT and S1G_LONG PPDU field layouts. S1G_LONG splits into an omnidirectional portion (STF/LTF1/SIG-A) and a beam-changeable portion (D-STF/D-LTF/SIG-B/Data).",
+        "zh": "S1G_SHORT 与 S1G_LONG 的 PPDU 字段排布。S1G_LONG 分为全向部分（STF/LTF1/SIG-A）和可变波束部分（D-STF/D-LTF/SIG-B/Data）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The transmitter block diagram (23.3.3) and the encoding overview (23.3.4) read like a recipe with optional steps. From the PSDU the chain runs: prepend the SERVICE field, add PHY padding, scramble, FEC-encode (BCC or LDPC), stream-parse, segment-parse (only for 16 MHz), BCC-interleave, map to a constellation, insert pilots, do spatial mapping, IDFT, prepend a guard interval, window, and upconvert. The encoding-overview subclauses (23.3.4.2-23.3.4.8) just walk this same kit for each field of each format: how to build STF, LTF1, SIG/SIG-A, D-STF, D-LTF, SIG-B for S1G_LONG; the STF/LTF/SIG for S1G_SHORT; the 1 MHz versions for S1G_1M; the duplicate-mode preambles; and the SU and MU Data fields with BCC vs LDPC.",
+      "zh": "发射机框图（23.3.3）和编码概述（23.3.4）读起来像一份带可选步骤的菜谱。从 PSDU 出发，处理链是：前置 SERVICE 字段、加 PHY 填充、加扰、FEC 编码（BCC 或 LDPC）、流解析（stream parser）、段解析（segment parser，仅 16 MHz）、BCC 交织、星座映射、插入导频、空间映射、IDFT、前置保护间隔、加窗、上变频。编码概述各小节（23.3.4.2-23.3.4.8）只是把这同一套工具针对每种格式的每个字段各走一遍：S1G_LONG 的 STF、LTF1、SIG/SIG-A、D-STF、D-LTF、SIG-B 如何构造；S1G_SHORT 的 STF/LTF/SIG；S1G_1M 的 1 MHz 版本；复制模式的前导；以及 BCC 与 LDPC 两种编码下的 SU 和 MU 数据字段。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Watch for the special 1 MHz / MCS 10 mode. For the very longest links, S1G defines an extra modulation-and-coding index (MCS 10), valid only for 1 MHz with a single spatial stream. Its construction (23.3.4.7) inserts one extra block: a block-wise 2× repetition applied per OFDM symbol after FEC, then BPSK. Repeating each coded block twice halves the effective rate and roughly doubles the energy per bit — pure range, when even MCS 0 isn't robust enough. The transmitter has a dedicated MCS-10 block diagram (Figure 23-4) precisely because of this repetition step.",
+      "zh": "请留意特殊的 1 MHz / MCS 10 模式。为了应对最远的链路，S1G 额外定义了一个调制编码索引（MCS 10），仅在单空间流的 1 MHz 下有效。它的构造（23.3.4.7）插入了一个额外模块：在 FEC 之后按 OFDM 符号进行块级 2 倍重复，然后 BPSK 调制。把每个编码块重复两次，使有效码率减半、每比特能量约翻倍——当连 MCS 0 都不够稳健时，这换来的是纯粹的距离。正是因为这一重复步骤，发射机为 MCS 10 设置了专门的框图（图 23-4）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  PSDU --> SVC[SERVICE field]\n  SVC --> PAD[PHY padding]\n  PAD --> SCR[Scrambler]\n  SCR --> FEC[FEC: BCC or LDPC]\n  FEC --> REP{1 MHz MCS 10?}\n  REP -- yes --> R2[2x block repetition]\n  REP -- no --> SP[Stream parser]\n  R2 --> ILV\n  SP --> SEG[Segment parser 16 MHz only]\n  SEG --> ILV[BCC interleaver]\n  ILV --> MAP[Constellation mapper]\n  MAP --> PIL[Pilot insertion]\n  PIL --> SM[Spatial mapping]\n  SM --> IDFT --> GI[GI + window] --> RF[Analog/RF]",
+      "zh": "flowchart LR\n  PSDU --> SVC[SERVICE 字段]\n  SVC --> PAD[PHY 填充]\n  PAD --> SCR[加扰器]\n  SCR --> FEC[FEC：BCC 或 LDPC]\n  FEC --> REP{1 MHz MCS 10?}\n  REP -- 是 --> R2[2 倍块重复]\n  REP -- 否 --> SP[流解析]\n  R2 --> ILV\n  SP --> SEG[段解析 仅16 MHz]\n  SEG --> ILV[BCC 交织]\n  ILV --> MAP[星座映射]\n  MAP --> PIL[插入导频]\n  PIL --> SM[空间映射]\n  SM --> IDFT --> GI[GI + 加窗] --> RF[模拟/RF]"
+    },
+    {
+      "type": "prose",
+      "en": "The MCS set (23.3.5) and timing parameters (23.3.6) tie the numbers down. S1G-MCS is a compact index (0-9, plus 10 for 1 MHz/NSS=1) carried in the SIG or SIG-A field for SU PPDUs and in SIG-B for S1G_LONG MU PPDUs; rate-dependent parameters cover all five bandwidths and 1-4 spatial streams. The timing is a clean scaling of OFDM constants: subcarrier spacing is 31.25 kHz, the IDFT period is 32 microseconds, the normal guard interval is 8 microseconds, and a symbol with normal GI is 40 microseconds. The data-subcarrier counts scale with width — 24 (1 MHz), 52 (2 MHz), 108 (4 MHz), 234 (8 MHz), 468 (16 MHz) — the same OFDM kit, just rescaled.",
+      "zh": "MCS 集合（23.3.5）与定时参数（23.3.6）把这些数字落到实处。S1G-MCS 是一个紧凑索引（0-9，再加上仅用于 1 MHz/NSS=1 的 10），对 SU PPDU 携带在 SIG 或 SIG-A 字段中，对 S1G_LONG 的 MU PPDU 携带在 SIG-B 中；与速率相关的参数覆盖全部五种带宽和 1-4 个空间流。定时则是 OFDM 常量的整齐缩放：子载波间隔 31.25 kHz，IDFT 周期 32 微秒，常规保护间隔 8 微秒，带常规 GI 的符号为 40 微秒。数据子载波数随带宽缩放——24（1 MHz）、52（2 MHz）、108（4 MHz）、234（8 MHz）、468（16 MHz）——同一套 OFDM 工具，只是被重新缩放。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Reading the signal math and the 1 MHz / 2 MHz subcarrier maps",
+        "zh": "解读信号数学与 1 MHz / 2 MHz 的子载波映射"
+      },
+      "en": "The mathematical description of signals (23.3.7) starts from the standard complex-baseband relation r_RF(t) = Re{ r(t) exp(j 2 pi f_c t) }, then defines per-format transmit equations (Equation 23-2 for S1G_1M and S1G_SHORT, Equation 23-3 for S1G_LONG) as a sum of per-field IDFT subfields (Equation 23-4). The subcarrier maps make the rescaling concrete: a 1 MHz PPDU uses 32 subcarriers carrying tones -13..-1 and 1..13 (DC at 0); a 2 MHz PPDU uses 64 subcarriers on -28..-1 and 1..28; 4/8/16 MHz scale to 128/256/512 subcarriers. The preamble (23.3.8) then defines, for >=2 MHz, the S1G_SHORT and S1G_LONG cyclic-shift, STF and LTF constructions — the LTF tones are multiplied by a P_HTLTF matrix so an N_RX x N_STS MIMO channel can be estimated, with the number of LTF symbols (1, 2, or 4) set by the total space-time streams (Table 23-11). The Data field subclauses (23.3.9) specify the SERVICE field, the scrambler, BCC/LDPC coding and PHY padding, the per-symbol block repetition for MCS 10, the stream and segment parsers, the BCC interleaver, the constellation mapper, pilots, the spatial-mapping Q matrix, and the per-2-MHz (or per-1-MHz, for duplicate) phase rotations.",
+      "zh": "信号的数学描述（23.3.7）从标准的复基带关系 r_RF(t) = Re{ r(t) exp(j 2 pi f_c t) } 出发，然后定义各格式的发射方程（S1G_1M 与 S1G_SHORT 用方程 23-2，S1G_LONG 用方程 23-3），它们都是各字段 IDFT 子场之和（方程 23-4）。子载波映射把这种缩放具体化：1 MHz PPDU 用 32 个子载波，承载 -13..-1 和 1..13 的音调（DC 在 0）；2 MHz PPDU 用 64 个子载波，分布在 -28..-1 和 1..28；4/8/16 MHz 则缩放到 128/256/512 个子载波。前导部分（23.3.8）随后为 >=2 MHz 定义了 S1G_SHORT 与 S1G_LONG 的循环移位、STF 和 LTF 构造——LTF 的音调要乘以 P_HTLTF 矩阵，以便估计 N_RX x N_STS 的 MIMO 信道，而 LTF 符号数（1、2 或 4）由空间时间流总数决定（表 23-11）。数据字段各小节（23.3.9）规定了 SERVICE 字段、加扰器、BCC/LDPC 编码与 PHY 填充、MCS 10 的按符号块重复、流解析与段解析、BCC 交织器、星座映射、导频、空间映射的 Q 矩阵，以及按每 2 MHz（复制模式则按每 1 MHz）的相位旋转。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3760,
+          3761,
+          3762,
+          3768,
+          3769,
+          3770
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:23.3.1",
+    "80211-2024:23.3.2",
+    "80211-2024:23.3.3",
+    "80211-2024:23.3.4.1",
+    "80211-2024:23.3.4.2",
+    "80211-2024:23.3.4.3",
+    "80211-2024:23.3.4.4",
+    "80211-2024:23.3.4.5",
+    "80211-2024:23.3.4.6",
+    "80211-2024:23.3.4.7",
+    "80211-2024:23.3.4.8",
+    "80211-2024:23.3.5",
+    "80211-2024:23.3.6",
+    "80211-2024:23.3.7",
+    "80211-2024:23.3.8.1",
+    "80211-2024:23.3.8.2",
+    "80211-2024:23.3.8.3",
+    "80211-2024:23.3.9.1",
+    "80211-2024:23.3.9.2",
+    "80211-2024:23.3.9.3",
+    "80211-2024:23.3.9.4",
+    "80211-2024:23.3.9.5",
+    "80211-2024:23.3.9.6",
+    "80211-2024:23.3.9.7",
+    "80211-2024:23.3.9.8",
+    "80211-2024:23.3.9.9",
+    "80211-2024:23.3.9.10",
+    "80211-2024:23.3.9.11",
+    "80211-2024:23.3.9.12"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3743,
+        3744,
+        3745
+      ],
+      "note": "23.3.1-23.3.2 — S1G PHY intro and the three PPDU formats (S1G_SHORT/S1G_LONG/S1G_1M); Table 23-4 fields"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3745,
+        3746
+      ],
+      "note": "23.3.3-23.3.4 — transmitter block list and the MCS-10 2x block-repetition diagram (Figure 23-4)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3755,
+        3756
+      ],
+      "note": "23.3.4.7-23.3.4.8 — 1 MHz MCS 10 Data field (block repetition) and MU Data field construction"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3756,
+        3757,
+        3758
+      ],
+      "note": "23.3.5-23.3.6 — S1G-MCS set; Table 23-5 timing constants (31.25 kHz, 32/8/40 us, NSD per width)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3760,
+        3761,
+        3762
+      ],
+      "note": "23.3.7 — mathematical description of signals; 1/2/4/8/16 MHz subcarrier maps and transmit equations"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3768,
+        3769,
+        3770
+      ],
+      "note": "23.3.8 — S1G preamble: formats, cyclic shift, STF/LTF definitions; PHTLTF mapping and Table 23-11 NLTF"
+    }
+  ],
+  "track": "legacy-phy"
+}

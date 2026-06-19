@@ -1,0 +1,174 @@
+{
+  "id": "legacy-phy-21-cdmg-china-60ghz-full-phy",
+  "title": {
+    "en": "CDMG (Clause 24): The Full China 60 GHz Directional Multi-Gigabit PHY",
+    "zh": "CDMG（第24章）：完整的中国 60 GHz 定向多吉比特 PHY"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "The CDMG PHY (China directional multi-gigabit) is the 60 GHz Chinese-regulatory cousin of the 802.11ad DMG PHY of Clause 20. It is deliberately a close relative: the standard says so explicitly, defining CDMG largely by what differs from DMG and reusing DMG text for everything that stays the same. The headline difference is the channel: CDMG runs in a 1.08 GHz-wide channel, half the 2.16 GHz DMG channel, with its center frequencies built from a 56.16 GHz starting frequency. Like DMG it is directional — every link is beamformed — and like DMG it offers a low-rate control mode plus a fast single-carrier (SC) mode.",
+      "zh": "CDMG PHY（中国定向多吉比特，China directional multi-gigabit）是第20章 802.11ad DMG PHY 在 60 GHz、面向中国监管环境的“表亲”。它被有意设计成近亲：标准明文如此，主要通过列举与 DMG 的差异来定义 CDMG，凡是相同之处一律复用 DMG 的条文。最显眼的差异在信道：CDMG 工作在 1.08 GHz 宽的信道上，只有 DMG 2.16 GHz 信道的一半，其中心频率由 56.16 GHz 的起始频率推算而来。与 DMG 一样，它是定向的——每条链路都经过波束成形；同样地，它提供一个低速率的控制模式，外加一个高速的单载波（SC）模式。"
+    },
+    {
+      "type": "prose",
+      "en": "Underneath, CDMG presents the same service face to the MAC as DMG: a PHY plus its management entity (PLME), driven through TXVECTOR / RXVECTOR / TXSTATUS parameter lists. TXVECTOR/RXVECTOR carry MCS (0-23), LENGTH (up to 262 143 octets), beam-training hints (TRN_LEN, PPDU_TYPE, BEAM_TRACKING_REQUEST), ANT_CONFIG, RSSI/SNR readouts, a ROBUST_MODE selector active only when MCS=0, and time-of-departure fields; TXSTATUS returns the actual departure time and clock rate. This is the contract by which the MAC asks the PHY to send a PPDU and learns how a received one fared.",
+      "zh": "在底层，CDMG 向 MAC 呈现与 DMG 相同的服务面：一个 PHY 加上它的管理实体（PLME），通过 TXVECTOR / RXVECTOR / TXSTATUS 参数列表来驱动。TXVECTOR/RXVECTOR 携带 MCS（0-23）、LENGTH（最多 262 143 个八位组）、波束训练提示（TRN_LEN、PPDU_TYPE、BEAM_TRACKING_REQUEST）、ANT_CONFIG、RSSI/SNR 读数、仅当 MCS=0 时才生效的 ROBUST_MODE 选择器，以及发送出发时间（time of departure）字段；TXSTATUS 则回传实际的发送出发时间与时钟频率。这就是 MAC 请求 PHY 发送一个 PPDU、并了解收到的 PPDU 表现如何所依据的“契约”。"
+    },
+    {
+      "type": "prose",
+      "en": "Section 24.3 holds the common parameters that all three waveforms share. Channelization (24.3.1): center frequency = 56.16 GHz + spacing × (channel mod 32), with channels 2, 35 and 36 mandatory. A transmit mask (24.3.2) keeps the spectrum inside ~0.94 GHz at 0 dBr. Then the RF tolerances: ±20 ppm center-frequency and symbol-clock accuracy from one shared reference oscillator, ≤ -23 dB center-frequency leakage, plus ramp-up/down, antenna-setting, maximum-input and minimum-sensitivity rules. A common preamble (24.3.6) — a Short Training field of repeated Golay Ga128 sequences plus an SFS for I/Q imbalance, followed by a Channel Estimation field of Gu512/Gv512 — is shared by all modes. The clause also reuses DMG's HCS (CRC-16-CCITT), LDPC matrices, scrambler and RCPI measurement wholesale.",
+      "zh": "24.3 节收纳了三种波形共享的通用参数。信道划分（24.3.1）：中心频率 = 56.16 GHz + 间隔 ×（信道号 mod 32），其中信道 2、35、36 为必选。发射频谱模板（24.3.2）把频谱约束在约 0.94 GHz（0 dBr）以内。接着是各项射频容限：中心频率与符号时钟均为 ±20 ppm，且二者源自同一参考振荡器；中心频率泄漏 ≤ -23 dB；外加上升/下降沿、天线设置、最大输入与最小灵敏度等规则。一个通用前导（24.3.6）——由重复的 Golay Ga128 序列构成的短训练字段加上用于 I/Q 失衡估计的 SFS，其后是由 Gu512/Gv512 构成的信道估计字段——被所有模式共用。该章还整体复用了 DMG 的 HCS（CRC-16-CCITT）、LDPC 矩阵、扰码器与 RCPI 测量。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[\"CDMG PHY (Clause 24)\\n60 GHz, 1.08 GHz channel\"] --> B[\"24.3 Common parameters\\npreamble STF+CEF, HCS,\\nLDPC, scrambler, RCPI\"]\n    B --> C[\"24.4 Control mode\\nMCS 0, DBPSK, 13.75 Mb/s\\n(mandatory)\"]\n    B --> D[\"24.5 SC mode\\nMCS 1-16, pi/2 BPSK..64-QAM\\nup to ~3.47 Gb/s\"]\n    B --> E[\"24.6 Low-power SC mode\\nMCS 17-23 (obsolete)\"]\n    C --> F[\"24.7 Tx / 24.8 Rx\\nprocedures\"]\n    D --> F\n    E --> F\n    F --> G[\"24.9 Beamforming\\nsector sweep + beam refinement\"]\n    G --> H[\"24.10 PLME / MIB\\nTXTIME, characteristics\"]",
+      "zh": "flowchart TD\n    A[\"CDMG PHY（第24章）\\n60 GHz, 1.08 GHz 信道\"] --> B[\"24.3 通用参数\\n前导 STF+CEF, HCS,\\nLDPC, 扰码器, RCPI\"]\n    B --> C[\"24.4 控制模式\\nMCS 0, DBPSK, 13.75 Mb/s\\n（必选）\"]\n    B --> D[\"24.5 SC 模式\\nMCS 1-16, pi/2 BPSK..64-QAM\\n最高约 3.47 Gb/s\"]\n    B --> E[\"24.6 低功耗 SC 模式\\nMCS 17-23（已废弃）\"]\n    C --> F[\"24.7 发送 / 24.8 接收\\n流程\"]\n    D --> F\n    E --> F\n    F --> G[\"24.9 波束成形\\n扇区扫描 + 波束精修\"]\n    G --> H[\"24.10 PLME / MIB\\nTXTIME, 特性\"]"
+    },
+    {
+      "type": "prose",
+      "en": "Now the three waveforms. Control mode (24.4) is the robust, mandatory low-rate carrier: MCS 0 is DBPSK at code rate 1/2 for 13.75 Mb/s, with a long Short Training field (48 repeated Gb128 sequences) so receivers can lock on at very low SNR; its header carries Length, Scrambler Init, PPDU Type, Training Length and a 16-bit HCS over bits 0-23. SC mode (24.5) is the workhorse: a richer header (Scrambler Init, MCS, 18-bit Length, ADD_PPDU, beam-tracking and Last-RSSI fields, HCS over bits 0-47) feeds a Data field that ramps from π/2-BPSK up through π/2-QPSK, π/2-16-QAM and π/2-64-QAM (MCS 1-16, ~192 Mb/s to ~3.47 Gb/s). Low-power SC mode (24.6) reuses the SC preamble and header but swaps in Reed-Solomon + block-code combinations (MCS 17-23) to cut receiver processing power — and the standard now marks it obsolete.",
+      "zh": "接下来是三种波形。控制模式（24.4）是鲁棒、必选的低速率载波：MCS 0 为 DBPSK、码率 1/2，速率 13.75 Mb/s，配有很长的短训练字段（48 个重复的 Gb128 序列），让接收机在极低信噪比下也能锁定；其头部携带 Length、扰码器初始化、PPDU 类型、训练长度，以及一个对 0-23 位计算的 16 位 HCS。SC 模式（24.5）是主力：更丰富的头部（扰码器初始化、MCS、18 位 Length、ADD_PPDU、波束跟踪与 Last-RSSI 字段、对 0-47 位计算的 HCS）驱动一个数据字段，调制方式从 π/2-BPSK 一路爬升到 π/2-QPSK、π/2-16-QAM 与 π/2-64-QAM（MCS 1-16，约 192 Mb/s 至约 3.47 Gb/s）。低功耗 SC 模式（24.6）复用 SC 的前导与头部，但换用 Reed-Solomon + 分组码的组合（MCS 17-23）以降低接收机处理功耗——标准现已将其标记为废弃。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why a separate low-power SC mode at all? At 60 GHz the SC equalizer and LDPC decoder dominate a receiver's power budget. Low-power SC mode trades raw flexibility for a fixed Reed-Solomon + short block-code FEC chain that is much cheaper to decode, letting battery-powered or thermally constrained 60 GHz transceivers stay alive longer. The standard ultimately judged the trade-off unattractive enough to deprecate it — but the design intent is the lesson: at these data rates, decoder energy, not airtime, is often the real constraint.",
+      "zh": "为什么要专门设一个低功耗 SC 模式？在 60 GHz，SC 均衡器与 LDPC 译码器主导着接收机的功耗预算。低功耗 SC 模式以牺牲原始灵活性为代价，换来一条固定的 Reed-Solomon + 短分组码 FEC 链路，其译码代价低得多，从而让电池供电或受热约束的 60 GHz 收发机能更久地保持运行。标准最终认为这一权衡吸引力不足而将其弃用——但其设计意图本身就是一课：在这样的数据率下，真正的瓶颈往往是译码能耗，而非空口时间。"
+    },
+    {
+      "type": "prose",
+      "en": "The PHY transmit procedure (24.7) is the familiar state machine: a PHY-TXSTART.request puts the PHY into transmit, the MCS picks the control- or SC-mode preamble, the PHY encodes header then PSDU (adding padding), optionally appends AGC and TRN training units for beam tracking, and signals PHY-TXEND.confirm. The receive procedure (24.8) follows DMG rules and, notably, a CDMG STA falls back to the full DMG receive procedure if it detects a genuine 2.16 GHz DMG PPDU. Beamforming (24.9) reuses DMG's sector-level sweep (sweep PPDUs are control-mode) and beam refinement, and adds enhanced beam tracking: BRP PPDUs that append an extra STF+CE field so a STA can measure and pre-train an alternative backup link, ready to switch the instant blockage or rotation kills the main beam. Finally the PLME (24.10) exposes the CDMG MIB (dot11PHYType = cdmg(12), the low-power-SC flags), the TXTIME equations, and the PHY characteristics (aPPDUMaxTime 4 ms, aPSDUMaxLength 262 143 octets).",
+      "zh": "PHY 发送流程（24.7）是熟悉的状态机：PHY-TXSTART.request 让 PHY 进入发送态，MCS 决定采用控制模式还是 SC 模式的前导，PHY 先编码头部再编码 PSDU（必要时补零填充），可选地追加用于波束跟踪的 AGC 与 TRN 训练单元，最后发出 PHY-TXEND.confirm。接收流程（24.8）遵循 DMG 规则；值得注意的是，若 CDMG STA 检测到真正的 2.16 GHz DMG PPDU，会回退到完整的 DMG 接收流程。波束成形（24.9）复用 DMG 的扇区级扫描（扫描用 PPDU 为控制模式）与波束精修，并新增增强波束跟踪：BRP PPDU 在尾部追加额外的 STF+CE 字段，使 STA 能够测量并预先训练一条备用链路，一旦遮挡或旋转使主波束失效便可瞬间切换。最后，PLME（24.10）暴露 CDMG MIB（dot11PHYType = cdmg(12)、低功耗 SC 标志位）、TXTIME 计算公式，以及 PHY 特性（aPPDUMaxTime 4 ms，aPSDUMaxLength 262 143 个八位组）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The numbers that make CDMG concrete: chip rate, sensitivity, and the SC rate ladder",
+        "zh": "让 CDMG 落地的具体数字：码片率、灵敏度与 SC 速率阶梯"
+      },
+      "en": "Concrete figures pin the design down. The chip rate Fc is 880 MHz (chip time ~1.14 ns), with NGI = 64 and NSPB = 448; the STF spans 18×Tseq (~2618 ns) and the CEF 9×Tseq (~1309 ns), the SC header 3×512 chips (~1.75 µs). Receiver minimum-input sensitivity runs from -81 dBm at MCS 0 down to -46 dBm at MCS 16 (Table 24-3). The SC rate ladder (Table 24-9): MCS 1 is π/2-BPSK 1/2 with repetition at 192.5 Mb/s, climbing through π/2-QPSK (MCS 6-9), π/2-16-QAM (MCS 10-13) to π/2-64-QAM (MCS 14-16) topping out at 3465 Mb/s; transmit/receive support for MCS 9 and below is mandatory. Robust PHY modes 0 and 1 (Table 24-7) spread control-mode data with Golay Ga(8) and Ga(4) sequences for 55 and 110 Mb/s. The control mode is DBPSK 1/2 at 13.75 Mb/s, and CCA must flag busy with >90% probability within 3 µs (control) or 1 µs (SC) above the relevant sensitivity.",
+      "zh": "具体数字让设计变得确凿。码片率 Fc 为 880 MHz（码片时间约 1.14 ns），NGI = 64、NSPB = 448；STF 跨度为 18×Tseq（约 2618 ns），CEF 为 9×Tseq（约 1309 ns），SC 头部为 3×512 个码片（约 1.75 µs）。接收机最小输入灵敏度从 MCS 0 的 -81 dBm 一直到 MCS 16 的 -46 dBm（表 24-3）。SC 速率阶梯（表 24-9）：MCS 1 为带重复的 π/2-BPSK 1/2，速率 192.5 Mb/s，经 π/2-QPSK（MCS 6-9）、π/2-16-QAM（MCS 10-13）攀升至 π/2-64-QAM（MCS 14-16），峰值 3465 Mb/s；MCS 9 及以下的收发支持为必选。鲁棒 PHY 模式 0 与 1（表 24-7）用 Golay Ga(8) 与 Ga(4) 序列对控制模式数据进行扩频，速率分别为 55 与 110 Mb/s。控制模式为 DBPSK 1/2、13.75 Mb/s；CCA 须在高于相应灵敏度时以 >90% 的概率分别在 3 µs（控制）或 1 µs（SC）内指示信道忙。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3871,
+          3872,
+          3878,
+          3880,
+          3884
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3866,
+        3867,
+        3868
+      ],
+      "note": "24.1-24.2 scope (1.08 GHz vs 2.16 GHz DMG), PHY functions, PLME, TXVECTOR/RXVECTOR and TXSTATUS parameters"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3869,
+        3870,
+        3871,
+        3872,
+        3873,
+        3874
+      ],
+      "note": "24.3 common parameters: channelization (56.16 GHz start; ch 2/35/36), transmit mask, tolerances, sensitivity, common STF/CEF preamble, HCS/LDPC/scrambler/RCPI"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3874,
+        3875,
+        3876,
+        3877,
+        3878,
+        3879,
+        3880,
+        3881,
+        3882,
+        3883,
+        3884,
+        3885
+      ],
+      "note": "24.4 control mode (MCS 0 DBPSK 13.75 Mb/s), 24.5 SC mode (MCS 1-16 ladder, header, EVM), 24.6 low-power SC mode (obsolete, RS+block-code MCS 17-23)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3886,
+        3887,
+        3888,
+        3889,
+        3890,
+        3891
+      ],
+      "note": "24.7 Tx procedure, 24.8 Rx procedure, 24.9 beamforming (sector sweep, beam refinement, enhanced beam tracking), 24.10 PLME/MIB/TXTIME/characteristics"
+    }
+  ],
+  "covers": [
+    "80211-2024:24.1.1",
+    "80211-2024:24.1.2.1",
+    "80211-2024:24.1.2.2",
+    "80211-2024:24.1.2.3",
+    "80211-2024:24.2.1",
+    "80211-2024:24.2.2",
+    "80211-2024:24.2.3",
+    "80211-2024:24.3.1",
+    "80211-2024:24.3.2",
+    "80211-2024:24.3.3.1",
+    "80211-2024:24.3.3.2",
+    "80211-2024:24.3.3.3",
+    "80211-2024:24.3.3.4",
+    "80211-2024:24.3.3.5",
+    "80211-2024:24.3.3.6",
+    "80211-2024:24.3.3.7",
+    "80211-2024:24.3.3.8",
+    "80211-2024:24.3.4",
+    "80211-2024:24.3.5",
+    "80211-2024:24.3.6.1",
+    "80211-2024:24.3.6.2",
+    "80211-2024:24.3.6.3",
+    "80211-2024:24.3.7",
+    "80211-2024:24.3.8",
+    "80211-2024:24.3.9",
+    "80211-2024:24.3.10",
+    "80211-2024:24.4.1",
+    "80211-2024:24.4.2",
+    "80211-2024:24.4.3.1",
+    "80211-2024:24.4.3.2",
+    "80211-2024:24.4.3.3",
+    "80211-2024:24.4.4.1",
+    "80211-2024:24.4.4.2",
+    "80211-2024:24.5.1",
+    "80211-2024:24.5.2",
+    "80211-2024:24.5.3.1",
+    "80211-2024:24.5.3.2",
+    "80211-2024:24.5.4.1",
+    "80211-2024:24.5.4.2",
+    "80211-2024:24.6.1",
+    "80211-2024:24.6.2.1",
+    "80211-2024:24.6.2.2",
+    "80211-2024:24.6.2.3",
+    "80211-2024:24.7",
+    "80211-2024:24.8",
+    "80211-2024:24.9.1",
+    "80211-2024:24.9.2.1",
+    "80211-2024:24.9.2.2",
+    "80211-2024:24.10.1",
+    "80211-2024:24.10.2",
+    "80211-2024:24.10.3",
+    "80211-2024:24.10.4"
+  ],
+  "track": "legacy-phy"
+}

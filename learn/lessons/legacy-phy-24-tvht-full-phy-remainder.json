@@ -1,0 +1,169 @@
+{
+  "id": "legacy-phy-24-tvht-full-phy-remainder",
+  "title": {
+    "en": "TVHT (Clause 22 remainder): The Full TV White Space VHT PHY",
+    "zh": "TVHT（第22章余下）：完整的电视白频段 VHT PHY"
+  },
+  "estMinutes": 6,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 22 of 802.11 defines TVHT — a PHY that takes the entire 802.11ac (VHT) machinery and re-tunes it to run in the sub-1-GHz TV white space (TVWS) spectrum freed up by the switch to digital television. The idea is almost pure reuse: keep VHT's OFDM, MCS set, preamble structure, MU-MIMO and beamforming, but shrink everything in frequency so it fits inside 6, 7, or 8 MHz TV channels instead of 20/40/80/160 MHz Wi-Fi channels. Sub-1-GHz signals travel far and bend around obstacles, which is why TVWS is attractive for long-range, low-population-density links.",
+      "zh": "802.11 的第 22 章定义了 TVHT——它把整套 802.11ac（VHT）机制原样搬过来，重新调谐到次 1 GHz 的电视白频段（TVWS）频谱上运行，这段频谱是电视由模拟切换到数字后腾出来的。其思路几乎就是纯粹的复用：保留 VHT 的 OFDM、MCS 集合、前导码结构、MU-MIMO 与波束成形，但把整个频率尺度缩小，使其塞进 6、7、8 MHz 的电视频道内，而不是 20/40/80/160 MHz 的 Wi-Fi 频道。次 1 GHz 信号传播远、绕过障碍物的能力强，这正是 TVWS 在远距离、低人口密度链路上颇具吸引力的原因。"
+    },
+    {
+      "type": "prose",
+      "en": "The unit of bandwidth here is the BCU — a Basic Channel Unit, one TV channel of 6, 7, or 8 MHz. TVHT defines five transmission modes built from BCUs: TVHT_MODE_1 uses one BCU; the _2C and _4C modes bond two or four contiguous BCUs; and the _2N and _4N modes use two non-contiguous frequency segments (think VHT 80+80). The PPDU it carries is the 'VHT PPDU format in TVWS bands' — and almost every construction step in Clause 22 is written as 'do exactly what Clause 21 (VHT) says, but read Clause 22 and correct the bandwidth.' The interesting part is what changes in that re-scaling.",
+      "zh": "这里的带宽基本单位是 BCU——基本信道单元（Basic Channel Unit），即一个 6、7 或 8 MHz 的电视频道。TVHT 用 BCU 组合出五种传输模式：TVHT_MODE_1 使用一个 BCU；_2C 与 _4C 模式将两个或四个连续 BCU 绑定；而 _2N 与 _4N 模式使用两个非连续的频率段（可类比 VHT 的 80+80）。它承载的 PPDU 是“TVWS 频段中的 VHT PPDU 格式”——第 22 章里几乎每一个构造步骤都写成“完全照第 21 章（VHT）执行，但改读第 22 章并修正带宽”。真正有意思的，是这种重新缩放中发生改变的那部分。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 720 120' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><g font-size='11' font-family='sans-serif'><rect x='10' y='40' width='70' height='40'/><text x='45' y='64' text-anchor='middle' stroke='none' fill='currentColor'>L-STF</text><rect x='80' y='40' width='70' height='40'/><text x='115' y='64' text-anchor='middle' stroke='none' fill='currentColor'>L-LTF</text><rect x='150' y='40' width='70' height='40'/><text x='185' y='64' text-anchor='middle' stroke='none' fill='currentColor'>L-SIG</text><rect x='220' y='40' width='90' height='40'/><text x='265' y='64' text-anchor='middle' stroke='none' fill='currentColor'>TVHT-SIG-A</text><rect x='310' y='40' width='70' height='40'/><text x='345' y='64' text-anchor='middle' stroke='none' fill='currentColor'>TVHT-STF</text><rect x='380' y='40' width='80' height='40'/><text x='420' y='64' text-anchor='middle' stroke='none' fill='currentColor'>TVHT-LTF</text><rect x='460' y='40' width='90' height='40'/><text x='505' y='64' text-anchor='middle' stroke='none' fill='currentColor'>TVHT-SIG-B</text><rect x='550' y='40' width='160' height='40' stroke-dasharray='4 3'/><text x='630' y='64' text-anchor='middle' stroke='none' fill='currentColor'>Data (absent in NDP)</text><text x='185' y='28' text-anchor='middle' stroke='none' fill='currentColor' font-size='10'>non-TVHT (legacy) portion</text><line x1='10' y1='32' x2='220' y2='32'/><text x='430' y='28' text-anchor='middle' stroke='none' fill='currentColor' font-size='10'>TVHT portion</text><line x1='220' y1='32' x2='550' y2='32'/><text x='45' y='100' text-anchor='middle' stroke='none' fill='currentColor' font-size='9'>scaled to 6/7/8 MHz BCUs</text></g></svg>",
+      "caption": {
+        "en": "The VHT-in-TVWS PPDU: a legacy (non-TVHT) preamble — L-STF/L-LTF/L-SIG — that any legacy receiver can decode, followed by the TVHT-specific preamble (SIG-A, STF, LTF, SIG-B) and the Data field. In a null-data-packet (NDP) sounding PPDU the Data field is omitted. Symbol durations are stretched (e.g. 45 µs L-STF for 6/7 MHz vs VHT's 8 µs) because the subcarrier spacing shrinks with the channel.",
+        "zh": "TVWS 中的 VHT PPDU：先是传统（非 TVHT）前导码——L-STF/L-LTF/L-SIG——任何传统接收机都能解码；其后是 TVHT 专用前导码（SIG-A、STF、LTF、SIG-B）和 Data 字段。在用于探测的空数据包（NDP）中，Data 字段被省略。符号时长被拉长（例如 6/7 MHz 下 L-STF 为 45 µs，而 VHT 仅 8 µs），因为子载波间隔随信道一起缩小了。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Walk the encoding chain (22.3.3-22.3.4) and you see VHT's blocks with one or two surgical edits. The transmitter block diagram and the per-field construction (L-STF, L-LTF, L-SIG, then TVHT-SIG-A/STF/LTF/SIG-B, then the SU and MU Data fields) all defer to Clause 21, but TVHT duplicates each legacy field across the BCUs and applies a phase rotation, and a single BCC encoder is always assumed. Inside the Data field the SERVICE bits, the SIG-B CRC, the scrambler, coding, stream parser, BCC interleaver, constellation mapper, pilots and OFDM transmission are all the VHT routines — but the segment parser/deparser are dropped entirely (there is only ever one common interleaver or tone mapper), and the _2N/_4N modes add a subcarrier-allocation block that splits tones between two IDFTs for the two frequency segments.",
+      "zh": "沿着编码链路走一遍（22.3.3–22.3.4），你会看到 VHT 的各个模块只做了一两处精准改动。发射机框图与逐字段构造（L-STF、L-LTF、L-SIG，然后是 TVHT-SIG-A/STF/LTF/SIG-B，再到 SU 和 MU 的 Data 字段）都引用第 21 章，但 TVHT 会把每个传统字段跨各 BCU 复制并施加相位旋转，且始终只用单个 BCC 编码器。在 Data 字段内部，SERVICE 比特、SIG-B 的 CRC、扰码器、编码、流解析器、BCC 交织器、星座映射、导频与 OFDM 发送全是 VHT 的那套流程——但段解析器/段反解析器被完全去掉（任何时候都只有一个公共交织器或音调映射器），而 _2N/_4N 模式额外加入一个子载波分配模块，把音调分配到对应两个频率段的两个 IDFT 上。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The whole PHY is essentially VHT under a frequency-scaling transform. Per BCU there are 114 subcarriers (108 data + 6 pilot), and the IDFT period stretches to 24 µs for 6/7 MHz channels (18 µs for 8 MHz) versus VHT's 3.2 µs — narrower channels mean closer-spaced tones, longer symbols, and proportionally longer guard intervals, slot time (24/20 µs) and SIFS (120/90 µs). The cyclic-shift values are even reused verbatim, just multiplied by a fixed scaling factor (7.5 for 6/7 MHz, 5.625 for 8 MHz).",
+      "zh": "整个 PHY 本质上就是 VHT 经过一次频率缩放变换。每个 BCU 有 114 个子载波（108 个数据 + 6 个导频），IDFT 周期在 6/7 MHz 信道下拉长到 24 µs（8 MHz 下为 18 µs），而 VHT 仅为 3.2 µs——更窄的信道意味着更密的音调、更长的符号，以及按比例更长的保护间隔、时隙（24/20 µs）和 SIFS（120/90 µs）。连循环移位值都被原样复用，只是乘以一个固定缩放因子（6/7 MHz 为 7.5，8 MHz 为 5.625）。"
+    },
+    {
+      "type": "prose",
+      "en": "The MU side keeps VHT's multi-user toolkit intact: TVHT-SIG-A carries the per-user NSTS / Partial AID and the BW field that names the mode, the same Group ID scheme partitions users, and SU/MU-MIMO beamforming reuses the VHT feedback-matrix V construction (only the feedback report format and CSD values differ). Sounding uses a TVHT NDP — the same PPDU minus the Data field, with SIG-B set to a fixed pattern — so a beamformer can probe the channel before steering. None of this is new physics; it is VHT's beamforming choreography re-pointed at TV channels.",
+      "zh": "多用户侧完整保留了 VHT 的多用户工具集：TVHT-SIG-A 携带逐用户的 NSTS / Partial AID 以及标明模式的 BW 字段，相同的 Group ID 机制对用户进行分组，SU/MU-MIMO 波束成形复用 VHT 的反馈矩阵 V 构造（仅反馈报告格式与 CSD 值不同）。探测使用 TVHT NDP——即去掉 Data 字段、SIG-B 置为固定图样的同一 PPDU——使波束成形端在赋形前先探测信道。这些都不是新的物理原理，而是把 VHT 的波束成形“编舞”重新指向了电视频道。"
+    },
+    {
+      "type": "prose",
+      "en": "Because TVWS is licensed, regulated spectrum, Clause 22 spends real effort on the regulatory framing. Channelization is pinned to actual TV channel numbers: a channel is named by a width (TVHT_W/2W/W+W/4W/2W+2W), two center-frequency indices and a primary-channel index, and the center frequency is computed from the regulatory channel starting frequency (e.g. US TV channel 2 lands at 57 MHz). The transmit spec — spectral mask, spectral flatness, ±25 ppm frequency tolerance, modulation accuracy/EVM, LO leakage, Time-of-Departure — and the receiver spec — sensitivity (down to -88 dBm BPSK 1/2), adjacent/nonadjacent channel rejection, -20 dBm max input, CCA thresholds per primary/secondary segment, RSSI and RCPI — are all VHT's tests with the frequency axis scaled by ratios like 6/40 or 12/80.",
+      "zh": "由于 TVWS 是有许可、受监管的频谱，第 22 章在监管框架上下了真功夫。信道化被锚定到真实的电视频道号：一个信道由宽度（TVHT_W/2W/W+W/4W/2W+2W）、两个中心频率索引和一个主信道索引共同命名，其中心频率由监管规定的信道起始频率推算（例如美国电视 2 频道落在 57 MHz）。发射规格——频谱模板、频谱平坦度、±25 ppm 频率容差、调制精度/EVM、本振泄漏、离开时刻（ToD）——以及接收规格——灵敏度（BPSK 1/2 低至 -88 dBm）、相邻/非相邻信道抑制、-20 dBm 最大输入、按主/次频段划分的 CCA 门限、RSSI 与 RCPI——全都是 VHT 的那套测试，只是把频率轴按 6/40 或 12/80 之类的比例缩放。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Where the re-scaling actually bites: timing, tones, and the dropped segment parser",
+        "zh": "重新缩放真正起作用之处：时序、音调与被去掉的段解析器"
+      },
+      "en": "Three concrete differences make TVHT more than a relabel. (1) Timing (22.3.6, Table 22-8): per BCU NSD=108, NSP=6, NST=114, NSR=58; TDFT = 24 µs for 6/7 MHz and 18 µs for 8 MHz, with TGI = TDFT/4 (6 µs / 4.5 µs). All other timing parameters derive from this stretched TDFT. (2) Segment parser removed (22.3.10.7, 22.3.10.9.3): unlike VHT 80+80, every TVHT mode uses one common BCC interleaver or one common LDPC tone mapper, so the segment parser and segment deparser are simply not used — the _2N/_4N split is handled by a subcarrier-allocation block feeding two IDFTs instead (22.3.10.11). (3) Tone layout (Table 22-9): TVHT_MODE_1 occupies subcarriers -58..-2 and +2..+58; the contiguous _2C/_4C modes lay out 228/456 occupied tones across the bonded BCUs, while _2N/_4N repeat the single-BCU layout in each non-contiguous segment. CCA is defined per segment (22.3.18.6): a primary-channel BUSY at e.g. -68 dBm (20 dB above the -88 dBm BPSK 1/2 sensitivity for 6 MHz), with separate secondary and secondaryTVHT_2W thresholds and an aCCAMidTime mid-packet detect.",
+      "zh": "三处具体差异使 TVHT 不止是改个名字。(1) 时序（22.3.6，表 22-8）：每个 BCU 的 NSD=108、NSP=6、NST=114、NSR=58；TDFT 在 6/7 MHz 下为 24 µs、8 MHz 下为 18 µs，TGI = TDFT/4（6 µs / 4.5 µs）。其余所有时序参数都由这个被拉长的 TDFT 推导而来。(2) 去掉段解析器（22.3.10.7、22.3.10.9.3）：与 VHT 80+80 不同，TVHT 的每种模式都只用一个公共 BCC 交织器或一个公共 LDPC 音调映射器，因此段解析器与段反解析器干脆不用——_2N/_4N 的分段改由一个子载波分配模块喂给两个 IDFT 来处理（22.3.10.11）。(3) 音调布局（表 22-9）：TVHT_MODE_1 占用子载波 -58..-2 与 +2..+58；连续的 _2C/_4C 模式在绑定的各 BCU 上铺开 228/456 个占用音调，而 _2N/_4N 在每个非连续段中重复单 BCU 的布局。CCA 按段定义（22.3.18.6）：主信道 BUSY 门限例如 -68 dBm（比 6 MHz 下 BPSK 1/2 的 -88 dBm 灵敏度高 20 dB），并为 secondary 与 secondaryTVHT_2W 设有独立门限，以及一个用于包中检测的 aCCAMidTime。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3700,
+          3709,
+          3720
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3694,
+        3695
+      ],
+      "note": "22.3.1-22.3.4 — VHT PPDU format in TVWS bands, transmitter block diagram, PPDU encoding overview; Figure 22-1 field list and stretched symbol durations"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3700,
+        3701
+      ],
+      "note": "22.3.5-22.3.7 — MCS set (Tables 22-26..22-37), timing parameters Table 22-8 (NSD=108, NST=114, TDFT 24/18 µs), tone locations Table 22-9, signal math"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3707,
+        3708,
+        3709
+      ],
+      "note": "22.3.8-22.3.10 — TVHT preamble (non-TVHT and TVHT portions), SIG-A NSTS/Partial AID, SIG-B CRC, scrambler/coding/stream parser, segment parser dropped, BCC interleaver"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3711,
+        3712
+      ],
+      "note": "22.3.11-22.3.14 — SU/MU-MIMO beamforming, feedback matrix V, Group ID, sounding NDP preamble, regulatory requirements, channelization to TV channel numbers"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3714,
+        3717,
+        3720
+      ],
+      "note": "22.3.15-22.3.20 — slot time/impedance, transmit spec (mask, flatness, ±25 ppm, EVM, ToD), receiver spec (sensitivity, rejection, max input, CCA, RSSI, RCPI), PHY tx/rx procedures"
+    }
+  ],
+  "covers": [
+    "80211-2024:22.3.1",
+    "80211-2024:22.3.2",
+    "80211-2024:22.3.3",
+    "80211-2024:22.3.4.1",
+    "80211-2024:22.3.4.2",
+    "80211-2024:22.3.4.3",
+    "80211-2024:22.3.4.4",
+    "80211-2024:22.3.4.5",
+    "80211-2024:22.3.4.6",
+    "80211-2024:22.3.4.7",
+    "80211-2024:22.3.4.8",
+    "80211-2024:22.3.4.9",
+    "80211-2024:22.3.4.10",
+    "80211-2024:22.3.5",
+    "80211-2024:22.3.6",
+    "80211-2024:22.3.7",
+    "80211-2024:22.3.8.1",
+    "80211-2024:22.3.8.2",
+    "80211-2024:22.3.8.3",
+    "80211-2024:22.3.9",
+    "80211-2024:22.3.10.1",
+    "80211-2024:22.3.10.2",
+    "80211-2024:22.3.10.3",
+    "80211-2024:22.3.10.4",
+    "80211-2024:22.3.10.5",
+    "80211-2024:22.3.10.6",
+    "80211-2024:22.3.10.7",
+    "80211-2024:22.3.10.8",
+    "80211-2024:22.3.10.9",
+    "80211-2024:22.3.10.10",
+    "80211-2024:22.3.10.11",
+    "80211-2024:22.3.10.12",
+    "80211-2024:22.3.11.1",
+    "80211-2024:22.3.11.2",
+    "80211-2024:22.3.11.3",
+    "80211-2024:22.3.12",
+    "80211-2024:22.3.13",
+    "80211-2024:22.3.14",
+    "80211-2024:22.3.15",
+    "80211-2024:22.3.16",
+    "80211-2024:22.3.17.1",
+    "80211-2024:22.3.17.2",
+    "80211-2024:22.3.17.3",
+    "80211-2024:22.3.17.4",
+    "80211-2024:22.3.17.5",
+    "80211-2024:22.3.18.1",
+    "80211-2024:22.3.18.2",
+    "80211-2024:22.3.18.3",
+    "80211-2024:22.3.18.4",
+    "80211-2024:22.3.18.5",
+    "80211-2024:22.3.18.6",
+    "80211-2024:22.3.18.7",
+    "80211-2024:22.3.18.8",
+    "80211-2024:22.3.19",
+    "80211-2024:22.3.20"
+  ],
+  "track": "legacy-phy"
+}

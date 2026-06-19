@@ -1,0 +1,181 @@
+{
+  "id": "legacy-phy-20-cmmg-ofdm-beamforming-procedures",
+  "title": {
+    "en": "CMMG Part 2 (Clause 25): OFDM Mode, Analog Beamforming & PHY Procedures",
+    "zh": "CMMG 第二部分（第25章）：OFDM 模式、模拟波束成形与 PHY 收发流程"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "CMMG is the IEEE 802.11 PHY that lives in China's 45 GHz millimetre-wave band. A companion lesson covered its single-carrier (SC) mode; here we finish the picture with the two pieces that make CMMG fast and steerable: a high-rate OFDM waveform, and an analog beamforming machinery woven directly into the frame. At 45 GHz, antennas are tiny, so a transmitter packs many of them into a phased array and electronically points the energy at the receiver. The interesting part is that the standard doesn't bolt beam steering on as an afterthought — it builds the training for it into the PPDU itself.",
+      "zh": "CMMG 是 IEEE 802.11 中工作于中国 45 GHz 毫米波频段的 PHY。另有一课讲过它的单载波（SC）模式；本课补齐拼图的两块：让 CMMG 既快又可定向的关键——一种高速率 OFDM 波形，以及一套直接编织进帧结构里的模拟波束成形机制。在 45 GHz，天线非常小，于是发射端把大量天线堆叠成相控阵，用电子方式把能量指向接收端。有意思的是，标准并没有把波束控制当作附加件草草加上——而是把它的训练过程直接构建进了 PPDU 本身。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with OFDM mode (25.6). A CMMG OFDM PPDU carries a familiar preamble — but renamed for OFDM: an OSTF (OFDM Short Training field, for AGC in MIMO) and OCEF (OFDM Channel Estimation field, for sounding the MIMO channel), followed by SIG and the Data field. The number of OCEF symbols scales with the number of space-time streams (1, 2, or 4), because each extra stream needs its own column of channel measurement. The transmit block diagram (25.6.3) and the encoding overviews (25.6.4) walk the bits down a long chain.",
+      "zh": "先看 OFDM 模式（25.6）。CMMG OFDM PPDU 携带一段熟悉的前导——但针对 OFDM 做了改名：OSTF（OFDM 短训练字段，用于 MIMO 中的自动增益控制）与 OCEF（OFDM 信道估计字段，用于探测 MIMO 信道），其后是 SIG 与 Data 字段。OCEF 符号的数量随空时流数（1、2 或 4）增长，因为每多一条流就需要它自己那一列的信道测量。发射框图（25.6.3）与编码总览（25.6.4）把比特一路送进一条很长的处理链。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n    A[Scrambler] --> B[LDPC encoder]\n    B --> C[Stream parser]\n    C --> D[Constellation mapper<br/>BPSK..64-QAM]\n    D --> E[LDPC tone mapping]\n    E --> F[OFDM symbol<br/>zero padding]\n    F --> G[STBC]\n    G --> H[Pilot insertion]\n    H --> I[CSD per STS]\n    I --> J[Spatial mapping Q]\n    J --> K[IDFT]\n    K --> L[GI + windowing]\n    L --> M[Analog & RF]",
+      "zh": "flowchart LR\n    A[加扰器] --> B[LDPC 编码]\n    B --> C[流解析器]\n    C --> D[星座映射<br/>BPSK..64-QAM]\n    D --> E[LDPC 音调映射]\n    E --> F[OFDM 符号<br/>补零]\n    F --> G[STBC]\n    G --> H[导频插入]\n    H --> I[每空时流 CSD]\n    I --> J[空间映射 Q]\n    J --> K[IDFT]\n    K --> L[GI + 加窗]\n    L --> M[模拟与射频]"
+    },
+    {
+      "type": "prose",
+      "en": "Each stage in that chain has a job. The scrambler (25.6.8.2) keeps running without reset from the SIG into the Data field. The LDPC encoder and zero-padding (25.6.8.3-4) fit the data to whole code words. The stream parser (25.6.8.5) round-robins coded bits across spatial streams. The constellation mapper (25.6.8.6) turns bit groups into BPSK/QPSK/16-QAM/64-QAM points using Gray coding and a power-normalising factor. LDPC tone mapping (25.6.8.7) spreads neighbouring symbols across well-separated tones so a deep fade can't wipe out a whole code word. STBC (25.6.8.8) optionally doubles space-time streams for robustness, pilots (25.6.8.9) let the receiver track phase, and CSD (25.6.8.10) staggers identical streams so they don't accidentally beamform into a null. Finally OFDM modulation (25.6.8.11) and the spatial-mapping matrix Q apply the IDFT and steer.",
+      "zh": "链上的每一级都有其职责。加扰器（25.6.8.2）从 SIG 一直运行到 Data 字段而不复位。LDPC 编码与补零（25.6.8.3-4）把数据凑成整数个码字。流解析器（25.6.8.5）以轮转方式把编码比特分配到各空间流。星座映射（25.6.8.6）用格雷编码与功率归一化因子把比特组转成 BPSK/QPSK/16-QAM/64-QAM 点。LDPC 音调映射（25.6.8.7）把相邻符号铺到相距较远的音调上，使深衰落无法一次抹掉整个码字。STBC（25.6.8.8）可选地把空时流翻倍以增强鲁棒性，导频（25.6.8.9）让接收端跟踪相位，CSD（25.6.8.10）则错开相同的流，避免它们意外地把波束成形到零点。最后 OFDM 调制（25.6.8.11）与空间映射矩阵 Q 完成 IDFT 并进行定向。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why does the MCS table split into SC and OFDM? They are two different waveforms. SC mode uses rotated π/2-BPSK/QPSK/QAM chips and counts data blocks; OFDM mode uses subcarriers and counts OFDM symbols. So data-rate and EVM tables (25.15) are listed separately — the same MCS index means a different thing in each mode. Note also that only 540 MHz, NSS=1, SC is mandatory; everything OFDM, and everything with NSS>1, is optional.",
+      "zh": "为什么 MCS 表要拆成 SC 与 OFDM 两套？因为它们是两种不同的波形。SC 模式用旋转的 π/2-BPSK/QPSK/QAM 码片并按数据块计数；OFDM 模式用子载波并按 OFDM 符号计数。所以数据速率表与 EVM 表（25.15）分开列出——同一个 MCS 索引在两种模式里含义不同。还要注意：只有 540 MHz、NSS=1、SC 是强制的；所有 OFDM、以及所有 NSS>1 的情形都是可选的。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the steering itself. Two flavours coexist. Digital MIMO beamforming (25.6.8.13) is the OFDM-mode kind: the beamformee sounds the channel from an NDP, computes a feedback matrix V compressed as quantised angles, and the beamformer turns V into the steering matrix Q used above. The sounding-PPDU preamble (25.6.8.14) is just an ordinary PPDU whose OCEFs are made numerous enough to characterise the full channel — and an NDP (zero-length) is the lean special case used purely to sound. The second flavour is analog beamforming (25.7): instead of a matrix, the array physically sweeps its antenna weight vectors (AWVs) and measures which direction is best.",
+      "zh": "再看定向本身。两种方式并存。数字 MIMO 波束成形（25.6.8.13）是 OFDM 模式的那一种：波束接收方用 NDP 探测信道，算出反馈矩阵 V（压缩为量化后的角度），波束发射方再把 V 转成上文用到的空间映射矩阵 Q。探测用 PPDU 的前导（25.6.8.14）其实就是一个普通 PPDU，只是把它的 OCEF 数量增加到足以刻画整个信道——而 NDP（零长度）则是专门用于探测的精简特例。第二种方式是模拟波束成形（25.7）：它不用矩阵，而是让阵列在物理上扫过各天线权重矢量（AWV），测出哪个方向最佳。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='8' y='20' stroke='none' fill='currentColor' font-size='11'>BRP-TX PPDU (transmitter AWV training)</text><rect x='8' y='34' width='44' height='26'/><text x='12' y='51' stroke='none' fill='currentColor' font-size='9'>STF/CEF</text><rect x='52' y='34' width='34' height='26'/><text x='60' y='51' stroke='none' fill='currentColor' font-size='9'>SIG</text><rect x='86' y='34' width='52' height='26'/><text x='94' y='51' stroke='none' fill='currentColor' font-size='9'>Data</text><rect x='138' y='34' width='60' height='26'/><text x='146' y='51' stroke='none' fill='currentColor' font-size='9'>AGC x4N</text><rect x='198' y='34' width='40' height='26'/><text x='205' y='51' stroke='none' fill='currentColor' font-size='9'>CEF</text><rect x='238' y='34' width='30' height='26'/><text x='244' y='51' stroke='none' fill='currentColor' font-size='9'>T1</text><rect x='268' y='34' width='30' height='26'/><text x='274' y='51' stroke='none' fill='currentColor' font-size='9'>T2</text><rect x='298' y='34' width='30' height='26'/><text x='303' y='51' stroke='none' fill='currentColor' font-size='9'>...</text><rect x='328' y='34' width='40' height='26'/><text x='334' y='51' stroke='none' fill='currentColor' font-size='9'>T4N</text><text x='8' y='90' stroke='none' fill='currentColor' font-size='9'>Each Tn = a ZCZ training sequence; the TX may change its</text><text x='8' y='104' stroke='none' fill='currentColor' font-size='9'>antenna weight vector at the start of each subfield. The RX</text><text x='8' y='118' stroke='none' fill='currentColor' font-size='9'>measures every subfield and feeds back which beam was best.</text></svg>",
+      "caption": {
+        "en": "A BRP-TX PPDU appends AGC subfields and TRN-T training subfields after the Data field. The transmitter changes its beam between subfields; the receiver scores each and reports the winner.",
+        "zh": "BRP-TX PPDU 在 Data 字段之后附加 AGC 子字段与 TRN-T 训练子字段。发射端在子字段之间切换波束；接收端为每个子字段打分并回报最优者。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The analog machinery (25.7) runs in stages. TX sector sweep (25.7.1) uses control-mode packets to find a coarse direction. Beam refinement (25.7.2) then fine-tunes with BRP PPDUs that carry extra training fields after the Data field: BRP-RX PPDUs append TRN-R subfields (train the receiver's AWV), BRP-TX PPDUs append TRN-T subfields (train the transmitter's). A Training Length of N means 4N AGC subfields plus N TRN subfields. All these training sequences are built from ZCZ sequences (25.8) — zero-correlation-zone sequences whose clean autocorrelation lets the receiver reconstruct channel taps and judge beam quality. Because the training is specified at the SC chip rate, an OFDM-mode BRP resamples it (25.7.2.8) to line up.",
+      "zh": "模拟机制（25.7）分阶段进行。TX 扇区扫描（25.7.1）用控制模式分组找出一个粗略方向。波束精化（25.7.2）随后用 BRP PPDU 做精调，这些 PPDU 在 Data 字段之后携带额外训练字段：BRP-RX PPDU 附加 TRN-R 子字段（训练接收端 AWV），BRP-TX PPDU 附加 TRN-T 子字段（训练发射端）。训练长度为 N 表示有 4N 个 AGC 子字段加 N 个 TRN 子字段。所有这些训练序列都由 ZCZ 序列（25.8）构成——零相关区序列，其干净的自相关性让接收端能重建信道抽头并评判波束质量。由于训练以 SC 码片速率定义，OFDM 模式的 BRP 会对其重采样（25.7.2.8）以对齐。"
+    },
+    {
+      "type": "prose",
+      "en": "Wrapping the band into a real radio takes the housekeeping clauses. Regulatory (25.9), channelization (25.10), and the spectrum mask (25.11) pin CMMG to the 42.3-48.4 GHz region: ten 540 MHz channels or five 1080 MHz channels, selected by two MIB fields (channel width and centre-frequency index). The PHY transmit procedures (25.12) and receive procedure (25.13) are the SC-vs-OFDM state machines that drive PHY-TXSTART/TXEND and PHY-CCA/RXSTART handshakes with the MAC. The PLME/MIB (25.14) exposes capability flags (short GI, STBC, beamforming, max TX chains) and the TXTIME formula that simply sums preamble field durations plus the per-symbol Data time.",
+      "zh": "要把这个频段落地成真实电台，还需要那些“后勤”章节。法规要求（25.9）、信道划分（25.10）与频谱模板（25.11）把 CMMG 钉在 42.3–48.4 GHz 区域：十个 540 MHz 信道或五个 1080 MHz 信道，由两个 MIB 字段（信道宽度与中心频率索引）选定。PHY 发送流程（25.12）与接收流程（25.13）就是驱动与 MAC 之间 PHY-TXSTART/TXEND 与 PHY-CCA/RXSTART 握手的 SC 与 OFDM 状态机。PLME/MIB（25.14）暴露能力标志位（短 GI、STBC、波束成形、最大发射链数）以及 TXTIME 公式——它不过是把前导各字段时长加上每符号的 Data 时间累加起来。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "OCEF count vs space-time streams, and the V→Q feedback loop",
+        "zh": "OCEF 数量与空时流数的关系，以及 V→Q 反馈环"
+      },
+      "en": "Two precise rules tie the OFDM-mode sounding together. First, the OCEF count: Table 25-17 fixes NOCEF as a function of NSTS — 1 stream needs 1 OCEF, 2 needs 2, and 3 or 4 streams each need 4 OCEFs (the count must satisfy NOCEF >= NSTS). Each OCEF symbol's data tones are multiplied by entries of a matrix POCEF while its pilot tones use ROCEF, so receivers can track phase/frequency offset during channel estimation. Second, the feedback loop: on receiving an NDP sounding PPDU the beamformee first removes the space-time-stream CSD of Table 25-27 from the measured channel, then compresses the feedback matrix V as quantised angles phi and psi (Table 9-117) with Nr rows equal to the NDP's NSTS. After receiving those angles the beamformer reconstructs V and derives the steering matrix Q (the method is implementation-specific). For the digital duplicate transmission in 1080 MHz, the Data field is built per Equation (25-66). On the analog side, the maximum available space-time streams are inferred from TX/RX chains and STBC capability (Table 25-28), and EVM limits per OFDM MCS run from -7 dB (MCS 9, BPSK 1/2) down to -26 dB (MCS 16, 64-QAM 13/16) in Table 25-29.",
+      "zh": "两条精确规则把 OFDM 模式的探测串了起来。其一是 OCEF 数量：表 25-17 把 NOCEF 定为 NSTS 的函数——1 条流需 1 个 OCEF，2 条需 2 个，3 或 4 条流各需 4 个 OCEF（数量须满足 NOCEF >= NSTS）。每个 OCEF 符号的数据音调乘以矩阵 POCEF 的元素，而其导频音调用 ROCEF，使接收端在信道估计期间能跟踪相位/频率偏移。其二是反馈环：收到 NDP 探测 PPDU 后，波束接收方先从测得信道中去除表 25-27 的空时流 CSD，再把反馈矩阵 V 压缩为量化角度 phi 与 psi（表 9-117），其行数 Nr 等于该 NDP 的 NSTS。波束发射方收到这些角度后重建 V 并导出空间映射矩阵 Q（具体方法由实现决定）。对于 1080 MHz 的数字重复传输，Data 字段按式（25-66）构造。在模拟侧，最大可用空时流数由收发链数与 STBC 能力推断（表 25-28），而各 OFDM MCS 的 EVM 限值在表 25-29 中从 -7 dB（MCS 9，BPSK 1/2）一路降到 -26 dB（MCS 16，64-QAM 13/16）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3937,
+          3948,
+          3950,
+          3951
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:25.6.1",
+    "80211-2024:25.6.2",
+    "80211-2024:25.6.3",
+    "80211-2024:25.6.4.1",
+    "80211-2024:25.6.4.2",
+    "80211-2024:25.6.4.3",
+    "80211-2024:25.6.4.4",
+    "80211-2024:25.6.4.5",
+    "80211-2024:25.6.5.1",
+    "80211-2024:25.6.5.2",
+    "80211-2024:25.6.5.3",
+    "80211-2024:25.6.5.4",
+    "80211-2024:25.6.5.5",
+    "80211-2024:25.6.6",
+    "80211-2024:25.6.7",
+    "80211-2024:25.6.8.1",
+    "80211-2024:25.6.8.2",
+    "80211-2024:25.6.8.3",
+    "80211-2024:25.6.8.4",
+    "80211-2024:25.6.8.5",
+    "80211-2024:25.6.8.6",
+    "80211-2024:25.6.8.7",
+    "80211-2024:25.6.8.8",
+    "80211-2024:25.6.8.9",
+    "80211-2024:25.6.8.10",
+    "80211-2024:25.6.8.11",
+    "80211-2024:25.6.8.12",
+    "80211-2024:25.6.8.13",
+    "80211-2024:25.6.8.14",
+    "80211-2024:25.6.9.1",
+    "80211-2024:25.6.9.2",
+    "80211-2024:25.6.9.3",
+    "80211-2024:25.7.1",
+    "80211-2024:25.7.2.1",
+    "80211-2024:25.7.2.2",
+    "80211-2024:25.7.2.3",
+    "80211-2024:25.7.2.4",
+    "80211-2024:25.7.2.5",
+    "80211-2024:25.7.2.6",
+    "80211-2024:25.7.2.7",
+    "80211-2024:25.7.2.8",
+    "80211-2024:25.8",
+    "80211-2024:25.9",
+    "80211-2024:25.10",
+    "80211-2024:25.11",
+    "80211-2024:25.12.1",
+    "80211-2024:25.12.2",
+    "80211-2024:25.13",
+    "80211-2024:25.14.1",
+    "80211-2024:25.14.2",
+    "80211-2024:25.14.3",
+    "80211-2024:25.14.4",
+    "80211-2024:25.15.1",
+    "80211-2024:25.15.2",
+    "80211-2024:25.15.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3932,
+        3933,
+        3934,
+        3935
+      ],
+      "note": "25.6.1-25.6.4 CMMG OFDM mode: PPDU format, transmit block diagrams, SIG/OSTF/OCEF construction overview"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3939,
+        3940,
+        3941,
+        3944,
+        3946,
+        3947,
+        3948
+      ],
+      "note": "25.6.8 Data fields: scrambler, encoding, stream parser, modulation mapping, tone mapping, STBC, pilots, CSD, OFDM modulation, beamforming, sounding-PPDU preamble"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3953,
+        3954,
+        3955
+      ],
+      "note": "25.7-25.8 analog beamforming: TX sector sweep, beam refinement, BRP structure/AGC/TRN-R/TRN-T, channel measurement, BRP resampling, ZCZ sequences"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3960,
+        3961,
+        3967,
+        3968,
+        3969
+      ],
+      "note": "25.10-25.15 channelization, spectrum mask, transmit/receive procedures, PLME/MIB/TXTIME, CMMG-MCS parameter tables (SC vs OFDM)"
+    }
+  ],
+  "track": "legacy-phy"
+}

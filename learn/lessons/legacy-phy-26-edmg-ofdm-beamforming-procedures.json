@@ -1,0 +1,174 @@
+{
+  "id": "legacy-phy-26-edmg-ofdm-beamforming-procedures",
+  "title": {
+    "en": "EDMG Part 2 (Clause 28 remainder): OFDM Mode, BRP/Short-SSW Beamforming & Procedures",
+    "zh": "EDMG 第二部分（第28章余下）：OFDM 模式、BRP/短SSW 波束成形与收发流程"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "We finished 11ay's single-carrier (SC) side earlier; this lesson walks the rest of Clause 28. First the EDMG OFDM mode — an alternative waveform to SC that spreads data across hundreds of subcarriers — then the transmit/receive procedures that wrap a PPDU, the beam-training machinery (Short SSW frames, the BRP PPDU's TRN field), the secure-ranging hardening, and the supporting sequence libraries and PLME/TXTIME bookkeeping. Think of it as a guided tour: we name each subclause group and what job it does, rather than reproducing every table.",
+      "zh": "我们之前已经讲完了 11ay 的单载波（SC）部分；本课带你走完第28章余下的内容。先看 EDMG OFDM 模式——它是 SC 之外的另一种波形，把数据分散到数百个子载波上——然后是封装一个 PPDU 的收发流程、波束训练机制（短 SSW 帧、BRP PPDU 的 TRN 字段）、安全测距的加固，以及支撑这一切的序列库与 PLME/TXTIME 记账。可以把它当成一次导览：我们点名每个子条款组及其职责，而不是把每张表都抄一遍。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the OFDM signal parameters (28.6.2). EDMG OFDM scales by channel bonding: NCB counts how many contiguous 2.16 GHz channels are glued together (1, 2, 3, or 4). As NCB grows, almost everything scales linearly — data subcarriers go 336 → 734 → 1134 → 1532, the DFT size goes 512 → 1024 → 1536 → 2048, and the sample rate Fs = 2.64 × NCB GHz. The subcarrier spacing stays fixed at 5.15625 MHz and the IDFT period is a constant 0.194 µs across all widths. So bonding is the throughput knob: wider channel, proportionally more tones, proportionally more bits per symbol — the OFDM rate scales almost directly with NCB.",
+      "zh": "先看 OFDM 信号参数（28.6.2）。EDMG OFDM 通过信道捆绑来伸缩：NCB 表示把多少个连续的 2.16 GHz 信道粘在一起（1、2、3 或 4）。随着 NCB 增大，几乎一切都线性放大——数据子载波从 336 → 734 → 1134 → 1532，DFT 大小从 512 → 1024 → 1536 → 2048，采样率 Fs = 2.64 × NCB GHz。子载波间隔固定为 5.15625 MHz，IDFT 周期在所有带宽下都恒为 0.194 µs。所以捆绑就是吞吐量旋钮：信道越宽，音调按比例越多，每符号比特数按比例越多——OFDM 速率几乎与 NCB 成正比。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "One subtlety worth knowing: the DC relative shift (28.6.2.3). The DC subcarrier isn't always at the carrier centre — it's shifted by a channel-dependent amount (fDC − fc), kept within half a subcarrier spacing. This lines up every channel's grid onto the same 64.8 + ΔF×n GHz lattice, so the subcarriers of a 4.32 GHz channel align with those inside a 2.16 GHz channel. That alignment is what makes wide bonded channels look like clean multiples of the narrow ones.",
+      "zh": "一个值得了解的细节：DC 相对偏移（28.6.2.3）。DC 子载波并不总在载波中心——它按信道相关的量 (fDC − fc) 偏移，且保持在半个子载波间隔之内。这样就把每个信道的栅格对齐到同一个 64.8 + ΔF×n GHz 的格点上，于是 4.32 GHz 信道的子载波能与 2.16 GHz 信道内的子载波对齐。正是这种对齐，让宽的捆绑信道看起来就像窄信道的整洁倍数。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n    SC[Scrambler] --> EN[LDPC encoder]\n    EN --> SP[Stream parser]\n    SP --> CM[Constellation mapper]\n    CM --> IL[Interleaver 16/64-QAM]\n    IL --> ST[STBC encoder]\n    ST --> SM[Spatial mapper: direct / indirect / beamforming]\n    SM --> CSD[Cyclic shift CSD]\n    CSD --> IDFT[IDFT]\n    IDFT --> GI[GI insert + window]\n    GI --> RF[DAC + RF]",
+      "zh": "flowchart LR\n    SC[加扰器] --> EN[LDPC 编码器]\n    EN --> SP[流解析器]\n    SP --> CM[星座映射器]\n    CM --> IL[交织器 16/64-QAM]\n    IL --> ST[STBC 编码器]\n    ST --> SM[空间映射器: 直接/间接/波束成形]\n    SM --> CSD[循环移位 CSD]\n    CSD --> IDFT[IDFT]\n    IDFT --> GI[插入 GI + 加窗]\n    GI --> RF[DAC + 射频]"
+    },
+    {
+      "type": "prose",
+      "en": "The transmitter block diagram (28.6.3) is the usual OFDM pipeline: scramble → LDPC encode (with 0-padding to whole codewords/symbols) → stream-parse into spatial streams → constellation map → interleave (only for 16-/64-QAM) → optional STBC (which doubles NSS streams into NSTS = 2×NSS space-time streams) → spatial map → IDFT → GI insertion. The spatial mapper offers direct, indirect, or digital-beamforming mappings. The preamble pieces — EDMG-STF (28.6.4) and EDMG-CEF (28.6.5) — are built in the frequency domain from per-stream sequences; the STF gives the receiver something to lock timing/AGC onto, the CEF carries the channel-estimation tones. SU and MU differ only in plumbing: MU runs an independent scrambler/encoder flow per user (seeded from EDMG-Header-B) but keeps one shared space-time-stream enumeration across users.",
+      "zh": "发射机框图（28.6.3）就是常规的 OFDM 流水线：加扰 → LDPC 编码（用 0 填充到整数个码字/符号）→ 流解析为多个空间流 → 星座映射 → 交织（仅对 16/64-QAM）→ 可选 STBC（把 NSS 个流翻倍为 NSTS = 2×NSS 个空时流）→ 空间映射 → IDFT → 插入 GI。空间映射器提供直接、间接或数字波束成形三种映射。前导部件——EDMG-STF（28.6.4）与 EDMG-CEF（28.6.5）——在频域由每流序列构造；STF 让接收机锁定定时/AGC，CEF 承载信道估计音调。SU 与 MU 只在管线上不同：MU 为每个用户跑一条独立的加扰/编码流（由 EDMG-Header-B 播种），但在所有用户间保持一份共享的空时流编号。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the procedures and beamforming. The EDMG transmit procedure (28.7) and receive procedure (28.8) describe the primitive handshake between MAC and PHY — PHY-TXSTART.request kicks off transmission, the FORMAT and EDMG_MODULATION parameters pick control / SC / OFDM mode, and the PPDU's optional fields (EDMG-STF/CEF, TRN) are present or absent depending on the TXVECTOR. Beamforming (28.9) is how the link learns where to point. The Short SSW PPDU is a tiny 6-octet control-mode frame used for fast sector sweeps, carrying a Short Scrambled BSSID and direction/AID fields. Beam refinement (28.9.2) uses the EDMG BRP PPDU, whose TRN field appends training subfields the peer measures to refine the antenna weight vector (AWV).",
+      "zh": "现在看流程与波束成形。EDMG 发射流程（28.7）与接收流程（28.8）描述了 MAC 与 PHY 之间的原语握手——PHY-TXSTART.request 启动发射，FORMAT 与 EDMG_MODULATION 参数选定控制/SC/OFDM 模式，而 PPDU 的可选字段（EDMG-STF/CEF、TRN）是否出现取决于 TXVECTOR。波束成形（28.9）是链路学习指向何方的方式。短 SSW PPDU 是一个仅 6 字节的控制模式帧，用于快速扇区扫描，携带短加扰 BSSID 以及方向/AID 字段。波束细化（28.9.2）使用 EDMG BRP PPDU，其 TRN 字段附加训练子字段，供对端测量以细化天线权重向量（AWV）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Secure ranging (28.9.3) is where the TRN gets hardened against spoofing. An ordinary TRN subfield uses a known Golay sequence — an attacker who knows it can forge an early-arriving copy and pull the measured round-trip time short. A Secure TRN subfield instead wraps a secret, per-session pseudorandom waveform (SECURE_TRN_SEQUENCE) inside a GI / zero-prefix / secure-ranging-field / zero-postfix / GI structure. Because the ranging waveform is unpredictable, an attacker can't synthesise a convincing early replica, so the time-of-flight measurement resists distance-reduction attacks.",
+      "zh": "安全测距（28.9.3）正是把 TRN 加固以抵御欺骗之处。普通 TRN 子字段使用已知的 Golay 序列——知道它的攻击者可以伪造一份提前到达的副本，把测得的往返时间拉短。安全 TRN 子字段则把一段保密的、每会话的伪随机波形（SECURE_TRN_SEQUENCE）包在 GI / 零前缀 / 安全测距字段 / 零后缀 / GI 的结构中。由于测距波形不可预测，攻击者无法合成一份足以乱真的提前副本，因此飞行时间测量能抵抗距离缩短攻击。"
+    },
+    {
+      "type": "prose",
+      "en": "The lesson closes with the supporting machinery. The Golay-sequence library (28.10) defines complementary pairs of length 32–1024 (with per-stream DK/WK vectors) reused throughout the STF/CEF and TRN fields; the OFDM EDMG-STF and EDMG-CEF sequences (28.11) are the frequency-domain tone patterns those preamble fields are built from. Finally the EDMG PLME / MIB / TXTIME block (28.12) holds the bookkeeping: PLME SAP primitives, the PHY MIB attribute table, the per-mode TXTIME calculations (a dedicated one for OFDM mode that sums preamble, header, data symbols, and any TRN), and the EDMG PHY characteristics table returned to higher layers. Not glamorous, but it's what lets the MAC size airtime correctly before it ever transmits.",
+      "zh": "本课以支撑机制收尾。Golay 序列库（28.10）定义了长度 32–1024 的互补对（带每流 DK/WK 向量），在 STF/CEF 与 TRN 字段中被反复复用；OFDM 的 EDMG-STF 与 EDMG-CEF 序列（28.11）是这些前导字段所依据的频域音调图样。最后，EDMG PLME / MIB / TXTIME 部分（28.12）负责记账：PLME SAP 原语、PHY MIB 属性表、各模式的 TXTIME 计算（其中专为 OFDM 模式准备了一套，对前导、头部、数据符号以及任何 TRN 求和），以及返回给高层的 EDMG PHY 特性表。它并不光鲜，却是 MAC 在发射前就能正确估算空口时间的依据。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "How NCB drives the OFDM tone counts, and how the Secure TRN subfield is laid out",
+        "zh": "NCB 如何驱动 OFDM 音调数，以及安全 TRN 子字段如何排布"
+      },
+      "en": "From the OFDM timing table (28.6.2.2), per NCB = 1/2/3/4 the standard fixes NSD (data subcarriers) = 336/734/1134/1532, NSP (pilots) = 16/36/56/76, NDC (DC tones) = 3 in all cases, and DFT size = 512/1024/1536/2048, with ΔF = 5.15625 MHz and TDFT = 0.194 µs everywhere — so the symbol time is constant and the rate gain from bonding is purely the extra data tones. For secure ranging (28.9.3.6), each Secure TRN subfield is five consecutive segments: a GI of 64×NCB samples, a zero prefix of 128×NCB zero channel symbols, a Secure Ranging field of 384×NCB π/2-BPSK symbols drawn consecutively (no overlap) from the SECURE_TRN_SEQUENCE pseudorandom bits, a zero postfix of 128×NCB zeros, and a closing 64×NCB GI. The header sets PPDU Type = 1, EDMG TRN Length = 1, and EDMG TRN-Unit M = 3 (so each TRN-Unit carries 4 secure subfields), all transmitted single-stream (iSTS = 1) on one transmit chain with the AWV from first-path beamforming training.",
+      "zh": "由 OFDM 定时表（28.6.2.2），对 NCB = 1/2/3/4，标准固定 NSD（数据子载波）= 336/734/1134/1532，NSP（导频）= 16/36/56/76，NDC（DC 音调）在所有情形下 = 3，DFT 大小 = 512/1024/1536/2048，且 ΔF = 5.15625 MHz、TDFT 各处均为 0.194 µs——因此符号时长恒定，捆绑带来的速率增益纯粹来自多出来的数据音调。对安全测距（28.9.3.6），每个安全 TRN 子字段由五个连续段组成：一个 64×NCB 样本的 GI，一个 128×NCB 个零信道符号的零前缀，一个 384×NCB 个 π/2-BPSK 符号的安全测距字段（从 SECURE_TRN_SEQUENCE 伪随机比特中连续、不重叠地取出），一个 128×NCB 个零的零后缀，以及一个收尾的 64×NCB GI。头部设 PPDU Type = 1、EDMG TRN Length = 1、EDMG TRN-Unit M = 3（于是每个 TRN-Unit 携带 4 个安全子字段），全部以单流（iSTS = 1）在一条发射链上、用首径波束训练得到的 AWV 发送。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4550,
+          4616
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4549,
+        4550,
+        4551
+      ],
+      "note": "28.6.1-28.6.2.3 EDMG OFDM mode general, signal/timing parameters (NCB scaling), DC relative shift"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4560,
+        4561,
+        4562
+      ],
+      "note": "28.6.3 transmitter block diagram; SU and MU PPDU transmission pipelines"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4589,
+        4590,
+        4599
+      ],
+      "note": "28.7 EDMG transmit procedure, 28.8 receive procedure; 28.9.1 Short SSW PPDU"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4615,
+        4616,
+        4617
+      ],
+      "note": "28.9.3 EDMG secure ranging PPDU + Secure TRN subfield layout; 28.10 Golay sequences"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4704,
+        4708,
+        4711
+      ],
+      "note": "28.12 EDMG PLME/MIB, 28.12.3.4 TXTIME calc for OFDM mode, 28.12.4 EDMG PHY characteristics"
+    }
+  ],
+  "covers": [
+    "80211-2024:28.6.1",
+    "80211-2024:28.6.2.1",
+    "80211-2024:28.6.2.2",
+    "80211-2024:28.6.2.3",
+    "80211-2024:28.6.2.4",
+    "80211-2024:28.6.2.5",
+    "80211-2024:28.6.2.6",
+    "80211-2024:28.6.3.1",
+    "80211-2024:28.6.3.2",
+    "80211-2024:28.6.4.1",
+    "80211-2024:28.6.4.2",
+    "80211-2024:28.6.5.1",
+    "80211-2024:28.6.5.2",
+    "80211-2024:28.6.6",
+    "80211-2024:28.6.7",
+    "80211-2024:28.6.8",
+    "80211-2024:28.6.9.1",
+    "80211-2024:28.6.9.2",
+    "80211-2024:28.6.9.3",
+    "80211-2024:28.6.10.1",
+    "80211-2024:28.6.10.2",
+    "80211-2024:28.6.10.3",
+    "80211-2024:28.6.10.4",
+    "80211-2024:28.6.11.1",
+    "80211-2024:28.6.11.2",
+    "80211-2024:28.7",
+    "80211-2024:28.8",
+    "80211-2024:28.9.1.1",
+    "80211-2024:28.9.1.2",
+    "80211-2024:28.9.1.3",
+    "80211-2024:28.9.2.1",
+    "80211-2024:28.9.2.2",
+    "80211-2024:28.9.3.1",
+    "80211-2024:28.9.3.2",
+    "80211-2024:28.9.3.3",
+    "80211-2024:28.9.3.4",
+    "80211-2024:28.9.3.5",
+    "80211-2024:28.9.3.6",
+    "80211-2024:28.9.3.7",
+    "80211-2024:28.10.1",
+    "80211-2024:28.10.2",
+    "80211-2024:28.10.3",
+    "80211-2024:28.11.1.1",
+    "80211-2024:28.11.1.2",
+    "80211-2024:28.11.2.1",
+    "80211-2024:28.11.2.2",
+    "80211-2024:28.12.1",
+    "80211-2024:28.12.2",
+    "80211-2024:28.12.3.1",
+    "80211-2024:28.12.3.2",
+    "80211-2024:28.12.3.3",
+    "80211-2024:28.12.3.4",
+    "80211-2024:28.12.3.5",
+    "80211-2024:28.12.3.6",
+    "80211-2024:28.12.4"
+  ],
+  "track": "legacy-phy"
+}

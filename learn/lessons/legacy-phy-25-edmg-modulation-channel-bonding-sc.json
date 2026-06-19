@@ -1,0 +1,141 @@
+{
+  "id": "legacy-phy-25-edmg-modulation-channel-bonding-sc",
+  "title": {
+    "en": "EDMG Part 1 (Clause 28 remainder): Channel Bonding, Headers & the SC Mode Chain",
+    "zh": "EDMG 第一部分（第28章余下）：信道绑定、报头与单载波模式处理链"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 28 defines the enhanced directional multi-gigabit (EDMG) PHY — the 60 GHz radio of 802.11ay. It is built directly on top of the Clause 20 DMG (11ad) PHY: every EDMG station must still transmit and receive plain DMG PPDUs. What EDMG adds on top is the headline of this lesson — more spatial streams (up to eight), downlink multi-user (MU) transmission, and, above all, channel bonding: stitching several 2.16 GHz channels together to make a 4.32, 6.48, or 8.64 GHz pipe, or aggregating two non-adjacent chunks (2.16+2.16 GHz, 4.32+4.32 GHz). Bonding is how 11ay multiplies 11ad's already-fast single-channel rate.",
+      "zh": "第28章定义了增强型定向多吉比特（EDMG）PHY——也就是 802.11ay 的 60 GHz 射频。它直接建立在第20章的 DMG（11ad）PHY 之上：每个 EDMG 站点仍必须能收发普通的 DMG PPDU。EDMG 在此基础上新增的能力正是本课的主题——更多空间流（最多八条）、下行多用户（MU）传输，以及最重要的信道绑定：把若干个 2.16 GHz 信道拼接成一条 4.32、6.48 或 8.64 GHz 的管道，或者聚合两段不相邻的频块（2.16+2.16 GHz、4.32+4.32 GHz）。绑定正是 11ay 把 11ad 本已很高的单信道速率成倍放大的手段。"
+    },
+    {
+      "type": "prose",
+      "en": "The whole framework hangs off one number the standard calls NCB — the count of contiguous bonded 2.16 GHz channels. It is derived purely from two TXVECTOR knobs: CH_BANDWIDTH (a bitmap of which channels are lit) and CHANNEL_AGGREGATION (whether two lit halves are treated as bonded or aggregated). One bit set means NCB=1; two contiguous bits and NOT_AGGREGATED means NCB=2; three contiguous bits means NCB=3; four means NCB=4. NCB then scales nearly everything downstream — the training-sequence length is 128×NCB, and the per-channel sample rate and number of subcarriers all key off it. Get NCB right and the rest of the PHY arithmetic falls out.",
+      "zh": "整个框架都挂在标准称为 NCB 的一个数字上——它表示被绑定的相邻 2.16 GHz 信道的数量。NCB 完全由两个 TXVECTOR 参数推导而来：CH_BANDWIDTH（一个标明哪些信道被点亮的位图）和 CHANNEL_AGGREGATION（被点亮的两半是按绑定还是按聚合处理）。置一位表示 NCB=1；两个相邻位且为 NOT_AGGREGATED 表示 NCB=2；三个相邻位表示 NCB=3；四个则表示 NCB=4。随后 NCB 几乎缩放了下游的一切——训练序列长度是 128×NCB，每信道采样率与子载波数也都由它决定。只要把 NCB 算对，PHY 其余的算术就会自然推导出来。"
+    },
+    {
+      "type": "prose",
+      "en": "Every EDMG transmission uses a single PPDU shape, and it is deliberately backward-compatible. The frame starts with a non-EDMG portion (the legacy L-STF, L-CEF and L-Header) that a plain 11ad station can still decode, then an EDMG portion: EDMG-Header-A, a new EDMG-STF and EDMG-CEF (training tuned to the bonded width), an optional EDMG-Header-B, and the Data field. Single-user PPDUs omit EDMG-Header-B; multi-user PPDUs must include it (it carries the per-user parameters). Several such PPDUs can also be chained back-to-back with no preamble in between to form an A-PPDU.",
+      "zh": "每一次 EDMG 传输都使用同一种 PPDU 结构，而且刻意做到向后兼容。帧以一个非 EDMG 部分开头（即传统的 L-STF、L-CEF 和 L-Header），普通的 11ad 站点仍能解码它；随后是 EDMG 部分：EDMG-Header-A、新的 EDMG-STF 与 EDMG-CEF（针对绑定带宽调校的训练字段）、可选的 EDMG-Header-B，以及 Data 字段。单用户 PPDU 省略 EDMG-Header-B；多用户 PPDU 则必须包含它（它携带每用户参数）。多个这样的 PPDU 还可以首尾相接、中间不插前导，拼成一个 A-PPDU。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 150' fill='none' stroke='currentColor' stroke-width='1.5'><g font-family='sans-serif' font-size='11'><rect x='8' y='40' width='56' height='34'/><text x='36' y='61' text-anchor='middle'>L-STF</text><rect x='64' y='40' width='56' height='34'/><text x='92' y='61' text-anchor='middle'>L-CEF</text><rect x='120' y='40' width='64' height='34'/><text x='152' y='61' text-anchor='middle'>L-Header</text><rect x='184' y='40' width='80' height='34'/><text x='224' y='58' text-anchor='middle'>EDMG-</text><text x='224' y='70' text-anchor='middle'>Header-A</text><rect x='264' y='40' width='64' height='34'/><text x='296' y='61' text-anchor='middle'>EDMG-STF</text><rect x='328' y='40' width='64' height='34'/><text x='360' y='61' text-anchor='middle'>EDMG-CEF</text><rect x='392' y='40' width='80' height='34' stroke-dasharray='4 3'/><text x='432' y='58' text-anchor='middle'>EDMG-</text><text x='432' y='70' text-anchor='middle'>Header-B*</text><rect x='472' y='40' width='90' height='34'/><text x='517' y='61' text-anchor='middle'>Data</text><rect x='562' y='40' width='66' height='34' stroke-dasharray='4 3'/><text x='595' y='61' text-anchor='middle'>TRN*</text><line x1='8' y1='90' x2='184' y2='90'/><line x1='8' y1='86' x2='8' y2='94'/><line x1='184' y1='86' x2='184' y2='94'/><text x='96' y='106' text-anchor='middle'>Non-EDMG portion (11ad-decodable)</text><line x1='184' y1='90' x2='628' y2='90'/><line x1='628' y1='86' x2='628' y2='94'/><text x='406' y='106' text-anchor='middle'>EDMG portion</text><text x='320' y='130' text-anchor='middle' font-size='10'>* EDMG-Header-B = MU only; TRN = optional</text></g></svg>",
+      "caption": {
+        "en": "The EDMG PPDU: a legacy-decodable non-EDMG preamble, then the EDMG-specific header, training, optional MU header, and data.",
+        "zh": "EDMG PPDU：先是可被传统设备解码的非 EDMG 前导，随后是 EDMG 专用报头、训练字段、可选的 MU 报头与数据。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 28 then describes three waveform families. The control mode (28.4) is the slowest, most robust one — MCS 0, a Golay-spread BPSK chain used for management/control frames; it reuses the legacy header math and adds an EDMG-Header-A but no EDMG-STF/CEF or Header-B. The single-carrier (SC) mode (28.5) is the workhorse data path: a transmitter chain of scrambler -> LDPC encoder -> constellation mapper, sent as fixed-length symbol blocks separated by a Golay guard interval (the GI doubles as a cyclic prefix and as channel-tracking pilots). SC offers MCS 1-21, spanning pi/2-BPSK up to 64-QAM/64-NUC and pi/2-8-PSK. (The OFDM mode of 28.6 is a separate lesson.)",
+      "zh": "第28章随后描述了三个波形族。控制模式（28.4）是最慢、最稳健的一种——MCS 0，一条用于管理/控制帧的 Golay 扩频 BPSK 链；它复用传统报头算术，新增 EDMG-Header-A，但没有 EDMG-STF/CEF 或 Header-B。单载波（SC）模式（28.5）是数据通道的主力：发射链为 加扰器 -> LDPC 编码器 -> 星座映射器，以固定长度的符号块发送，块间用 Golay 保护间隔隔开（该 GI 既充当循环前缀，又充当用于信道跟踪的导频）。SC 提供 MCS 1-21，从 pi/2-BPSK 一直到 64-QAM/64-NUC 与 pi/2-8-PSK。（28.6 的 OFDM 模式另立一课。）"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[PSDU bits] --> B[Scrambler]\n  B --> C[LDPC encoder<br/>rate 1/2 ... 7/8]\n  C --> D[Constellation map<br/>pi/2-BPSK ... 64-QAM/NUC]\n  D --> E[Symbol blocks<br/>+ Golay guard interval]\n  E --> F[Spatial mapping<br/>over NTX chains]\n  F --> G[Bond over NCB<br/>2.16 GHz channels]\n  G --> H[60 GHz RF]",
+      "zh": "flowchart LR\n  A[PSDU 比特] --> B[加扰器]\n  B --> C[LDPC 编码器<br/>码率 1/2 ... 7/8]\n  C --> D[星座映射<br/>pi/2-BPSK ... 64-QAM/NUC]\n  D --> E[符号块<br/>+ Golay 保护间隔]\n  E --> F[空间映射<br/>跨 NTX 条链]\n  F --> G[在 NCB 个<br/>2.16 GHz 信道上绑定]\n  G --> H[60 GHz 射频]"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why a guard interval instead of OFDM's cyclic prefix? In SC mode the GI is a known Golay sequence inserted between symbol blocks. It serves the same anti-multipath job as a cyclic prefix, but because it is a known sequence the receiver also reuses it as a pilot to track the channel over the burst — two jobs, one field. Its length scales with NCB, so a wider bonded channel carries a proportionally longer GI.",
+      "zh": "为什么用保护间隔而不是 OFDM 的循环前缀？在 SC 模式中，GI 是插在符号块之间的一段已知 Golay 序列。它承担与循环前缀相同的抗多径任务，但由于是已知序列，接收机还能把它当作导频，在整个突发中跟踪信道——一段字段，两份工作。它的长度随 NCB 缩放，因此更宽的绑定信道会携带成比例更长的 GI。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "How NCB is computed and how aggregated channels split the transmit chains",
+        "zh": "NCB 如何计算，以及聚合信道如何划分发射链"
+      },
+      "en": "28.2.2 defines NCB from the CH_BANDWIDTH bitmap and CHANNEL_AGGREGATION: one bit set -> NCB=1; two noncontiguous bits -> NCB=1; two contiguous bits -> NCB=2 unless AGGREGATED (then 1); three bits -> NCB=3; four bits -> NCB=4 unless AGGREGATED (then 2). For an aggregated transmission (28.3.3.4.2), NTX must be even: the lower NTX/2 chains drive the primary channel (or primary+secondary 2.16 GHz for 4.32+4.32 GHz), the upper NTX/2 chains drive the secondary channel, each modulated onto its own carrier center frequency. A channel is fully specified by four PLME MIB fields (28.3.4, Table 28-20): dot11EDMGCurrentChannelWidth plus two center-frequency indices (range 1-15) and the primary-channel index. The pre-EDMG modulated fields (the legacy preamble plus EDMG-Header-A) are transmitted in the non-EDMG duplicate format for 4.32/6.48/8.64 GHz PPDUs, with each secondary-channel copy allowed a relative delay of 0 to Tc.",
+      "zh": "28.2.2 节根据 CH_BANDWIDTH 位图与 CHANNEL_AGGREGATION 定义 NCB：置一位 -> NCB=1；两个不相邻位 -> NCB=1；两个相邻位 -> NCB=2，除非为 AGGREGATED（此时为 1）；三位 -> NCB=3；四位 -> NCB=4，除非为 AGGREGATED（此时为 2）。对于聚合传输（28.3.3.4.2 节），NTX 必须为偶数：较低的 NTX/2 条链驱动主信道（4.32+4.32 GHz 时为主+次 2.16 GHz），较高的 NTX/2 条链驱动次信道，各自调制到自己的载波中心频率上。一个信道由四个 PLME MIB 字段完整确定（28.3.4 节，表 28-20）：dot11EDMGCurrentChannelWidth，加上两个中心频率索引（取值 1-15）与主信道索引。对于 4.32/6.48/8.64 GHz 的 PPDU，pre-EDMG 调制字段（传统前导加 EDMG-Header-A）以非 EDMG 重复格式发送，每个次信道副本允许有 0 到 Tc 之间的相对时延。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4400,
+          4426,
+          4450,
+          4451
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4398,
+        4399
+      ],
+      "note": "28.1.1 Introduction to EDMG PHY — built on DMG; bonded widths 4.32/6.48/8.64 GHz and 2.16+2.16/4.32+4.32 GHz; up to 8 STS; MU; mandatory feature list"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4400
+      ],
+      "note": "28.1.4 PPDU formats and 28.2.2 — FORMAT NON_EDMG vs EDMG; SU/MU; NCB derivation from CH_BANDWIDTH + CHANNEL_AGGREGATION"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4426
+      ],
+      "note": "28.3.2.1 EDMG PPDU format — Table 28-3 field list; non-EDMG vs EDMG portion; EDMG-Header-B MU-only; A-PPDU concatenation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4450,
+        4451
+      ],
+      "note": "28.3.3.4.2 Channel aggregation (NTX even, lower/upper half chains to primary/secondary) and 28.3.4 Channelization Table 28-20"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4483,
+        4486
+      ],
+      "note": "28.4 control mode transmitter block diagram (EDMG PPDU has L-STF/L-CEF/L-Header/EDMG-Header-A, no EDMG-STF/CEF/Header-B) and 28.4.7 PPDU transmission; 28.5 SC mode chain (scrambler/LDPC/mapping/GI)"
+    }
+  ],
+  "covers": [
+    "80211-2024:28.1.1",
+    "80211-2024:28.1.2",
+    "80211-2024:28.1.3.1",
+    "80211-2024:28.1.3.2",
+    "80211-2024:28.1.3.3",
+    "80211-2024:28.1.4",
+    "80211-2024:28.2.1",
+    "80211-2024:28.2.2",
+    "80211-2024:28.2.3",
+    "80211-2024:28.2.4.1",
+    "80211-2024:28.2.4.2",
+    "80211-2024:28.2.4.3",
+    "80211-2024:28.3.1",
+    "80211-2024:28.3.2.1",
+    "80211-2024:28.3.2.2",
+    "80211-2024:28.3.3.1",
+    "80211-2024:28.3.3.4",
+    "80211-2024:28.3.4",
+    "80211-2024:28.4.1",
+    "80211-2024:28.4.2.1",
+    "80211-2024:28.4.2.2",
+    "80211-2024:28.4.2.3",
+    "80211-2024:28.5.1",
+    "80211-2024:28.5.4.1",
+    "80211-2024:28.5.4.2",
+    "80211-2024:28.5.9.1",
+    "80211-2024:28.5.9.2",
+    "80211-2024:28.5.9.3",
+    "80211-2024:28.5.9.4",
+    "80211-2024:28.5.9.5"
+  ],
+  "track": "legacy-phy"
+}

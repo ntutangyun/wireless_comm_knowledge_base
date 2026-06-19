@@ -1,0 +1,210 @@
+{
+  "id": "legacy-phy-19-cmmg-foundations-control-sc",
+  "title": {
+    "en": "CMMG Part 1 (Clause 25): Foundations, Control Mode & SC Mode",
+    "zh": "CMMG 第一部分（第25章）：基础架构、控制模式与单载波模式"
+  },
+  "estMinutes": 6,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 25 defines the China millimeter-wave multi-gigabit (CMMG) PHY — a regional 802.11 layer that lives up around 45 GHz. Like the 60 GHz DMG PHY it borrows from, CMMG is built for short, very wide channels: it offers 540 MHz and 1080 MHz channel widths, modulates with BPSK / QPSK / 16-QAM / 64-QAM, protects everything with LDPC at rates 1/2, 3/4, 5/8 and 13/16, and supports up to four space-time streams. The whole clause is organised around three transmission flavours that all share one preamble: a robust Control mode (MCS 0), a Single Carrier (SC) mode (MCS 1–8), and an OFDM mode (MCS 9–16). This lesson tours the shared foundations and the two single-carrier waveforms; OFDM mode gets its own lesson.",
+      "zh": "第 25 章定义了中国毫米波多吉比特（CMMG）PHY——一个工作在 45 GHz 附近的区域性 802.11 物理层。和它借鉴的 60 GHz DMG PHY 一样，CMMG 是为短距、超宽信道设计的：它提供 540 MHz 和 1080 MHz 两种信道带宽，采用 BPSK / QPSK / 16-QAM / 64-QAM 调制，用码率为 1/2、3/4、5/8、13/16 的 LDPC 编码保护全部数据，并支持最多四条空时流。整章围绕三种共享同一前导码的传输形态组织：稳健的控制模式（MCS 0）、单载波（SC）模式（MCS 1–8）和 OFDM 模式（MCS 9–16）。本课带你走一遍共享的基础架构与两种单载波波形；OFDM 模式留待单独一课。"
+    },
+    {
+      "type": "prose",
+      "en": "Everything starts at the PHY service interface (25.2). The MAC drives the PHY with a TXVECTOR — a per-PPDU bundle of transmit parameters — and the PHY reports each received frame back through an RXVECTOR; a PHYCONFIG_VECTOR configures the PHY independently of any frame. The TXVECTOR is where CMMG's personality shows: MCS (0 selects Control mode, 1–8 SC, 9–16 OFDM), CH_BANDWIDTH (CBW540 or CBW1080), NSS / N_TX for MIMO, STBC, a SPREADING_FACTOR knob unique to Control mode, plus beam-tracking, partial-AID and BSS-color fields inherited from the directional mmWave heritage. Reading that one table tells you almost everything a CMMG transmitter can be asked to do.",
+      "zh": "一切始于 PHY 服务接口（25.2）。MAC 通过 TXVECTOR——一份逐 PPDU 的发送参数集合——驱动 PHY；PHY 则通过 RXVECTOR 把每个收到的帧的参数回报给 MAC；而 PHYCONFIG_VECTOR 则独立于任何帧来配置 PHY。CMMG 的“个性”就体现在 TXVECTOR 里：MCS（0 选控制模式、1–8 选 SC、9–16 选 OFDM）、CH_BANDWIDTH（CBW540 或 CBW1080）、用于 MIMO 的 NSS / N_TX、STBC、控制模式专属的 SPREADING_FACTOR 旋钮，以及继承自定向毫米波血统的波束跟踪、部分 AID、BSS 着色等字段。读懂这一张表，几乎就知道了 CMMG 发射机能被要求做的所有事情。"
+    },
+    {
+      "type": "prose",
+      "en": "Before any mode-specific maths, Clause 25 lays down a shelf of common parts (25.3) that all three modes reuse. There is a timing table (NSD/NSP subcarrier counts, sample rate FS, chip rate FC = 2/3·FS, guard-interval durations); a signal-math section that defines the complex baseband, tone rotation and a windowing function to smooth field-to-field transitions; a shared preamble of a Short Training Field plus a Channel Estimation Field built from length-32/256 Z sequences (the STF for detection/AGC/sync, the CEF for channel estimation, with sign patterns that differ per mode); a CRC (16-bit over the SIG, 8-bit over Data blocks); a scrambler driven by S(x)=x⁷+x⁴+1; the common LDPC parity matrices for codeword lengths 672 (mandatory) and 2016 (optional); the CMMG SIG layout; the rules for duplicating a 540 MHz waveform across a 1080 MHz channel; and a fixed hFilt resampling filter. Each later mode just points back into this shelf.",
+      "zh": "在进入任何模式专属的数学之前，第 25 章先摆出一排三种模式共用的“公共组件”（25.3）。其中有：一张定时参数表（NSD/NSP 子载波数、采样率 FS、码片率 FC = 2/3·FS、保护间隔时长）；一节信号数学，定义复基带信号、音调旋转，以及用于平滑字段间过渡的加窗函数；一段共享前导码——短训练字段（STF）加信道估计字段（CEF），由长度 32/256 的 Z 序列构成（STF 用于检测/AGC/同步，CEF 用于信道估计，各模式的符号正负图样不同）；一种 CRC（对 SIG 用 16 位、对数据块用 8 位）；一个由 S(x)=x⁷+x⁴+1 驱动的扰码器；码字长度 672（必选）与 2016（可选）的公共 LDPC 校验矩阵；CMMG SIG 的布局；把 540 MHz 波形在 1080 MHz 信道上复制传输的规则；以及一个固定的 hFilt 重采样滤波器。后面每个模式只需回指到这排组件即可。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 640 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='10' y='50' width='70' height='40'/><text x='45' y='74' font-size='12' text-anchor='middle' stroke='none' fill='currentColor'>STF</text><rect x='80' y='50' width='90' height='40'/><text x='125' y='74' font-size='12' text-anchor='middle' stroke='none' fill='currentColor'>CEF</text><rect x='170' y='50' width='80' height='40'/><text x='210' y='74' font-size='12' text-anchor='middle' stroke='none' fill='currentColor'>SIG</text><rect x='250' y='50' width='60' height='40' stroke-dasharray='4 3'/><text x='280' y='74' font-size='11' text-anchor='middle' stroke='none' fill='currentColor'>SCTF*</text><rect x='310' y='50' width='100' height='40'/><text x='360' y='74' font-size='12' text-anchor='middle' stroke='none' fill='currentColor'>SC Data (BLK…)</text><rect x='410' y='50' width='110' height='40' stroke-dasharray='4 3'/><text x='465' y='68' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>AGC /</text><text x='465' y='82' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>TRN-R/T*</text><line x1='10' y1='110' x2='520' y2='110'/><text x='20' y='128' font-size='11' stroke='none' fill='currentColor'>t = 0</text><text x='360' y='128' font-size='10' stroke='none' fill='currentColor'>shared preamble  +  SIG  +  payload  (* = optional / 1080 MHz only)</text></svg>",
+      "caption": {
+        "en": "A CMMG SC-mode PPDU: a shared STF+CEF preamble, the SIG, an extra SCTF only on 1080 MHz, then the data carried as 256-symbol blocks (BLK). Control and SC modes use this same single-carrier skeleton.",
+        "zh": "一个 CMMG SC 模式 PPDU：共享的 STF+CEF 前导码、SIG，仅在 1080 MHz 上多出的 SCTF，随后是以 256 符号块（BLK）承载的数据。控制模式与 SC 模式共用这副单载波骨架。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Control mode (25.4) is the rock-bottom-robust waveform, and it is mandatory for every CMMG STA. It only ever uses MCS 0: π/2-BPSK modulation, rate-1/2 LDPC of length 672, and — its signature trick — Barker spreading. The SIG and Data constellation points are spread by a Barker sequence whose length the TXVECTOR's SPREADING_FACTOR picks: 13, 7, 4, or none, trading raw data rate (25.4 Mb/s up to 330 Mb/s) for processing gain. The SIG itself is always spread by Barker(13). Because it is just BPSK over a single carrier with heavy spreading, Control mode survives the worst link conditions — exactly what you want for the beam-finding and control handshakes that bring a directional 45 GHz link up before the faster modes take over.",
+      "zh": "控制模式（25.4）是最底线、最稳健的波形，每个 CMMG STA 都必须支持。它只使用 MCS 0：π/2-BPSK 调制、长度 672 的 1/2 码率 LDPC，再加上它的招牌绝活——Barker 扩频。SIG 与数据的星座点会被一个 Barker 序列扩频，其长度由 TXVECTOR 的 SPREADING_FACTOR 选择：13、7、4 或不扩频，用裸数据速率（25.4 Mb/s 到 330 Mb/s）换取处理增益。SIG 本身始终用 Barker(13) 扩频。由于它只是单载波上的 BPSK 加重度扩频，控制模式能在最恶劣的链路条件下存活——这正是定向 45 GHz 链路在更快模式接管之前、用于波束搜索与控制握手所需要的特性。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why a single carrier at all? At 45 GHz the power amplifier is the bottleneck. A single-carrier waveform has a far lower peak-to-average power ratio than OFDM, so the amplifier can run closer to saturation without clipping — more usable output power and better range. That is the deal SC mode strikes: it gives up OFDM's tidy per-tone equalisation in exchange for an amplifier-friendly signal, then leans on the CEF and a frequency-domain equaliser at the receiver to clean up the channel.",
+      "zh": "为什么要用单载波？在 45 GHz，功率放大器才是瓶颈。单载波波形的峰均功率比远低于 OFDM，因此放大器可以更接近饱和区工作而不削波——可用输出功率更高、覆盖更远。这正是 SC 模式做的取舍：它放弃了 OFDM 那种整齐的逐音调均衡，换来一个对放大器友好的信号，然后在接收端依靠 CEF 和频域均衡器来补偿信道。"
+    },
+    {
+      "type": "prose",
+      "en": "SC mode (25.5) is the workhorse — MCS 1–3 mandatory, 4–8 optional, with optional MIMO. Its transmit chain reads top-to-bottom: scramble, LDPC-encode, append block-padding zeros, run a stream parser that round-robins coded bits across spatial streams, map to π/2-rotated BPSK/QPSK/16-QAM/64-QAM constellations, apply spatial expansion across transmit chains, then pulse-shape and upconvert. The π/2 rotation per symbol (sₖ = s̃ₖ·e^{jπk/2}) is what keeps the single-carrier signal close to constant-envelope — the same amplifier-friendliness the callout describes. The data is carried as fixed 256-symbol blocks, each prepended with a unique-word / cyclic-prefix guard interval so the receiver can equalise block-by-block. On a 1080 MHz channel the SIG, preamble and modulated symbols are simply duplicated from the 540 MHz waveform per the common duplication rule.",
+      "zh": "SC 模式（25.5）是主力——MCS 1–3 必选、4–8 可选，并可选支持 MIMO。它的发送链自上而下是：扰码、LDPC 编码、追加块填充零、用流分析器（stream parser）把编码比特轮询分配到各空间流、映射到经 π/2 旋转的 BPSK/QPSK/16-QAM/64-QAM 星座、跨发射链做空间扩展，最后脉冲整形并上变频。逐符号的 π/2 旋转（sₖ = s̃ₖ·e^{jπk/2}）正是让单载波信号保持接近恒包络的关键——也就是上面提示框所说的对放大器友好。数据以固定的 256 符号块承载，每块前面加上一段唯一字（UW）/循环前缀作为保护间隔，使接收端能够逐块均衡。在 1080 MHz 信道上，SIG、前导码与已调符号只是按公共复制规则从 540 MHz 波形直接复制而来。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[PSDU + PHY pad] --> B[Scrambler\\nS x = x7+x4+1]\n    B --> C[LDPC encoder\\nlen 672 / 2016]\n    C --> D[Block-padding zeros]\n    D --> E[Stream parser\\nround-robin to NSS]\n    E --> F[Constellation mapper\\npi/2 BPSK..64-QAM]\n    F --> G[Spatial expansion\\nNSS -> NTX]\n    G --> H[256-symbol blocks\\n+ UW / GI]\n    H --> I[Pulse shape + RF\\n540 / 1080 MHz]",
+      "zh": "flowchart TD\n    A[PSDU + PHY 填充] --> B[扰码器\\nS x = x7+x4+1]\n    B --> C[LDPC 编码\\n长度 672 / 2016]\n    C --> D[块填充零]\n    D --> E[流分析器\\n轮询分配到 NSS]\n    E --> F[星座映射\\npi/2 BPSK..64-QAM]\n    F --> G[空间扩展\\nNSS -> NTX]\n    G --> H[256 符号块\\n+ 唯一字 / GI]\n    H --> I[脉冲整形 + 射频\\n540 / 1080 MHz]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact numbers: timing, scrambler, SIG encoding and the Control-mode rates",
+        "zh": "精确数字：定时、扰码器、SIG 编码与控制模式速率"
+      },
+      "en": "From the source: the timing table (25.3.3) sets the OFDM sample rate FS = 660 MHz (CBW540) / 1320 MHz (CBW1080), the SC chip rate FC = 2/3·FS = 440 / 880 MHz, DFT length 256 / 512, subcarrier spacing 2.578125 MHz, normal GI = TDFT/4 and short GI = TDFT/8. The scrambler (25.3.7) is a length-127 sequence from S(x)=x⁷+x⁴+1, seeded by a nonzero value carried in the 7-bit Scrambler Initialization field; each data bit is XORed with x⁴⊕x⁷. The CMMG SIG (25.3.9) is an 80-bit field (Scrambler Init, Short GI, Uplink Indication, PAID, 18-bit Length, MCS, CRC, etc.); its encoding (25.3.9.2) pads to 84 bits, repeats two 42-bit subsequences to 168 bits, zero-pads to 336, LDPC-encodes at rate-1/2 length 672 with h26=−1, then rate-matches to a 1024-bit transmit sequence. The CRC uses a 16-bit CCITT polynomial G(D)=D¹⁶+D¹²+D⁵+1 over the SIG and an 8-bit polynomial over Data blocks. Control mode (25.4.1, Table 25-8) is π/2-BPSK rate-1/2 giving 25.38 Mb/s at spreading factor 13, 47.14 Mb/s at SF 7-equivalent, 82.5 Mb/s at SF 4, and 330 Mb/s with no spreading; its CCA must flag busy with >90% probability within 3 µs at −78 dBm. SC-mode CCA (25.5.7.2) must flag busy within 1 µs above the MCS-0 sensitivity (−81 dBm at 540 MHz, −78 dBm at 1080 MHz), and SC-mode EVM (Table 25-16) tightens from −7 dB (π/2-BPSK) down to −28 dB (π/2-64-QAM 13/16).",
+      "zh": "源文给出的精确值：定时表（25.3.3）规定 OFDM 采样率 FS = 660 MHz（CBW540）/ 1320 MHz（CBW1080），SC 码片率 FC = 2/3·FS = 440 / 880 MHz，DFT 长度 256 / 512，子载波间隔 2.578125 MHz，正常 GI = TDFT/4、短 GI = TDFT/8。扰码器（25.3.7）是由 S(x)=x⁷+x⁴+1 生成的长度 127 序列，由 7 位扰码初始化字段携带的非零种子初始化；每个数据比特与 x⁴⊕x⁷ 异或。CMMG SIG（25.3.9）是一个 80 位字段（扰码初始化、短 GI、上行指示、PAID、18 位长度、MCS、CRC 等）；其编码（25.3.9.2）先填充至 84 位，将两段 42 位子序列重复成 168 位，补零至 336 位，用 1/2 码率、长度 672 且 h26=−1 的 LDPC 编码，再经速率匹配得到 1024 位发送序列。CRC 对 SIG 使用 16 位 CCITT 多项式 G(D)=D¹⁶+D¹²+D⁵+1，对数据块使用 8 位多项式。控制模式（25.4.1，表 25-8）为 π/2-BPSK、1/2 码率，扩频因子 13 时 25.38 Mb/s、SF 7 等效时 47.14 Mb/s、SF 4 时 82.5 Mb/s、不扩频时 330 Mb/s；其 CCA 须在 −78 dBm 下于 3 µs 内以 >90% 概率指示忙。SC 模式 CCA（25.5.7.2）须在高于 MCS 0 灵敏度（540 MHz 为 −81 dBm、1080 MHz 为 −78 dBm）时于 1 µs 内指示忙；SC 模式 EVM（表 25-16）从 −7 dB（π/2-BPSK）一路收紧到 −28 dB（π/2-64-QAM 13/16）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3899,
+          3909,
+          3911,
+          3914,
+          3917,
+          3930
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:25.1.1",
+    "80211-2024:25.1.2",
+    "80211-2024:25.1.3.1",
+    "80211-2024:25.1.3.2",
+    "80211-2024:25.1.3.3",
+    "80211-2024:25.1.3.4",
+    "80211-2024:25.2.1",
+    "80211-2024:25.2.2",
+    "80211-2024:25.3.1",
+    "80211-2024:25.3.2.1",
+    "80211-2024:25.3.2.2",
+    "80211-2024:25.3.2.3",
+    "80211-2024:25.3.3",
+    "80211-2024:25.3.4.1",
+    "80211-2024:25.3.4.2",
+    "80211-2024:25.3.4.3",
+    "80211-2024:25.3.4.4",
+    "80211-2024:25.3.4.5",
+    "80211-2024:25.3.5.1",
+    "80211-2024:25.3.5.2",
+    "80211-2024:25.3.5.3",
+    "80211-2024:25.3.6",
+    "80211-2024:25.3.7",
+    "80211-2024:25.3.8.1",
+    "80211-2024:25.3.8.2",
+    "80211-2024:25.3.9.1",
+    "80211-2024:25.3.9.2",
+    "80211-2024:25.3.10",
+    "80211-2024:25.3.11",
+    "80211-2024:25.3.12",
+    "80211-2024:25.3.13",
+    "80211-2024:25.4.1",
+    "80211-2024:25.4.2",
+    "80211-2024:25.4.3",
+    "80211-2024:25.4.4.1",
+    "80211-2024:25.4.4.2",
+    "80211-2024:25.4.4.3",
+    "80211-2024:25.4.4.4",
+    "80211-2024:25.4.4.5",
+    "80211-2024:25.4.4.6",
+    "80211-2024:25.4.5.1",
+    "80211-2024:25.4.5.2",
+    "80211-2024:25.4.5.3",
+    "80211-2024:25.4.5.4",
+    "80211-2024:25.4.5.5",
+    "80211-2024:25.4.6.1",
+    "80211-2024:25.4.6.2",
+    "80211-2024:25.5.1",
+    "80211-2024:25.5.2",
+    "80211-2024:25.5.3.1",
+    "80211-2024:25.5.3.2",
+    "80211-2024:25.5.3.3",
+    "80211-2024:25.5.4",
+    "80211-2024:25.5.5.1",
+    "80211-2024:25.5.5.2",
+    "80211-2024:25.5.5.3",
+    "80211-2024:25.5.5.4",
+    "80211-2024:25.5.6.1",
+    "80211-2024:25.5.6.2",
+    "80211-2024:25.5.6.3",
+    "80211-2024:25.5.6.4",
+    "80211-2024:25.5.6.5",
+    "80211-2024:25.5.6.6",
+    "80211-2024:25.5.6.7",
+    "80211-2024:25.5.6.8",
+    "80211-2024:25.5.7.1",
+    "80211-2024:25.5.7.2"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3892,
+        3893
+      ],
+      "note": "25.1 Introduction / 25.1.2-25.1.3 — CMMG scope: 45 GHz SC+OFDM, 540/1080 MHz, MCS 0/1-8/9-16, three modes share one preamble, PHY functions and PPDU formats"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3893,
+        3894,
+        3895,
+        3896,
+        3897
+      ],
+      "note": "25.2 PHY service interface — TXVECTOR/RXVECTOR/PHYCONFIG_VECTOR, Table 25-1 parameters (MCS, CH_BANDWIDTH, NSS, STBC, SPREADING_FACTOR, etc.)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3899,
+        3901,
+        3904,
+        3905,
+        3908,
+        3909
+      ],
+      "note": "25.3 Common parameters — Table 25-3 timing, signal math/tone rotation/windowing, STF/CEF preamble (Z sequences), CRC, scrambler S(x)=x7+x4+1, common LDPC 672/2016, SIG, duplication, hFilt"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3911,
+        3914
+      ],
+      "note": "25.3.9 CMMG SIG layout (Table 25-7) and 25.3.9.2 SIG encoding (84->168->336 bits, rate-1/2 len-672 LDPC, rate-match to 1024)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3917,
+        3918,
+        3919,
+        3920,
+        3921
+      ],
+      "note": "25.4 CMMG control mode — MCS 0 pi/2-BPSK rate-1/2, Barker spreading (SF 13/7/4/none), data rates, CRC, scrambler, modulation, CCA"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3921,
+        3922,
+        3923,
+        3924,
+        3925,
+        3926,
+        3930
+      ],
+      "note": "25.5 CMMG SC mode — transmitter block diagrams, SIG construction, scrambler, encoding, symbol-block zero padding, stream parser, pi/2 constellation mapping, spatial expansion, duplication, EVM/CCA"
+    }
+  ],
+  "track": "legacy-phy"
+}
