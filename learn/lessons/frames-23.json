@@ -1,0 +1,122 @@
+{
+  "id": "frames-23",
+  "title": {
+    "en": "Fixed fields I: the management-body identity & handshake fields",
+    "zh": "定长字段（一）：管理帧体的身份与握手字段"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Open up the body of a management frame — a Beacon, an Authentication frame, an Association Response — and you find two very different kinds of building block sitting side by side. Some are elements: each wrapped in an Element ID and a Length byte, so a parser can skip what it doesn't recognise. The others are fixed fields: no ID, no length, just a known number of octets at a known offset. You don't look them up — you simply know that the next 2 octets here are the Capability Information, and you read them. This lesson tours the fixed fields that carry a station through the join-and-leave lifecycle (clause 9.4.1).",
+      "zh": "打开一个管理帧的帧体——比如 Beacon、认证帧、关联响应帧——你会发现两种截然不同的“积木”并排躺在里面。有些是“元素（element）”：每个都被包在一个 Element ID 和一个 Length 字节里，这样解析器遇到不认识的就能直接跳过。另一些是“定长字段（fixed field）”：没有 ID、没有长度，只是位于已知偏移处、占已知字节数的一段。你不用去查表——你直接知道“这里接下来的 2 个字节就是 Capability Information”，读出来即可。本课带你走一遍贯穿站点“入网到离网”生命周期的定长字段（9.4.1 节）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The mental model: an element is a labelled box (ID + Length tell you what and how big); a fixed field is an unlabelled slot whose meaning comes from its position alone. That's why fixed fields are cheap — no per-field overhead — but rigid: their layout is baked into the frame format, not negotiable on the wire.",
+      "zh": "记住这个心智模型：元素是“贴了标签的盒子”（ID + Length 告诉你它是什么、有多大）；定长字段是“没贴标签的格子”，它的含义完全由所处位置决定。这就是定长字段的优点——没有逐字段的额外开销——但也意味着它很“死板”：其布局被固化进帧格式里，不能在空口上临时协商。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[\"Auth Algorithm Number\\n+ Transaction Seq Number\"] -->|which method, which step| B[\"Status Code\\n(did auth succeed?)\"]\n    B -->|read Beacon Interval + Capability Info| C[\"Association Request\\n(Listen Interval, Capability Info)\"]\n    C -->|AP replies| D[\"Status Code + AID\\n(accepted -> my slot number)\"]\n    D -.reassociating elsewhere.-> E[\"Current AP Address\\n(the AP I'm leaving)\"]\n    D -->|later, time to go| F[\"Reason Code\\n(why we disconnect)\"]\n    G[\"Timestamp (TSF)\"] -.rides in every Beacon.-> A",
+      "zh": "flowchart TD\n    A[\"认证算法编号\\n+ 事务序号\"] -->|哪种方法、第几步| B[\"状态码\\n（认证成功了吗？）\"]\n    B -->|读取 Beacon Interval + Capability Info| C[\"关联请求\\n（Listen Interval、Capability Info）\"]\n    C -->|AP 回复| D[\"状态码 + AID\\n（被接纳 -> 我的槽位号）\"]\n    D -.去别处重关联.-> E[\"Current AP Address\\n（我正要离开的 AP）\"]\n    D -->|稍后，该走了| F[\"Reason Code\\n（为何断开）\"]\n    G[\"时间戳（TSF）\"] -.随每个 Beacon 同行.-> A"
+    },
+    {
+      "type": "prose",
+      "en": "The handshake opens with two fields that together say which method and which step. The Authentication Algorithm Number field (9.4.1.1) names the method — 0 = Open System, 3 = SAE, 7 = PASN, and so on. The Authentication Transaction Sequence Number field (9.4.1.2) counts where you are inside that multi-step exchange — frame 1, 2, 3… Once the algorithm runs, the response carries a Status Code field (9.4.1.9): 0 = SUCCESS, or a numbered failure such as UNSUPPORTED_AUTH_ALGORITHM (13) or CHALLENGE_FAILURE (15) telling you exactly why it didn't work. The Status Code is the universal yes/no-and-why of every response frame, association included.",
+      "zh": "握手由两个字段拉开序幕，它们合起来回答“用哪种方法、走到第几步”。认证算法编号字段（Authentication Algorithm Number，9.4.1.1）指明方法——0 = Open System、3 = SAE、7 = PASN 等等。认证事务序号字段（Authentication Transaction Sequence Number，9.4.1.2）则数出你在这个多步交换里走到了哪一步——第 1、2、3……帧。算法跑完后，回复里带着状态码字段（Status Code，9.4.1.9）：0 = SUCCESS，或者一个带编号的失败码，例如 UNSUPPORTED_AUTH_ALGORITHM（13）或 CHALLENGE_FAILURE（15），明确告诉你为什么没成功。状态码是每一个响应帧（包括关联响应）通用的“成/败及原因”。"
+    },
+    {
+      "type": "prose",
+      "en": "Two more fields describe the rhythm of the BSS and what the radios can do. The Beacon Interval field (9.4.1.3) is the heartbeat — the number of time units (TUs) between target beacon transmission times, i.e. how often the AP beacons. The Capability Information field (9.4.1.4) is a compact bitmap of optional features and roles: bits like ESS vs IBSS, Privacy, Short Slot Time, QoS, Radio Measurement. A station reads it from a Beacon to learn what the AP offers and sets its own copy in an Association Request to advertise what it supports.",
+      "zh": "另外两个字段描述了 BSS 的“节拍”以及收发机的能力。Beacon Interval 字段（9.4.1.3）是心跳——目标 Beacon 发送时刻（TBTT）之间相隔的时间单位（TU）数，也就是 AP 多久发一次 Beacon。Capability Information 字段（9.4.1.4）则是一张紧凑的“可选特性与角色”位图：诸如 ESS 与 IBSS、Privacy、Short Slot Time、QoS、Radio Measurement 等比特位。站点从 Beacon 中读它来了解 AP 提供什么，又在关联请求里设置自己的那一份来宣告自己支持什么。"
+    },
+    {
+      "type": "prose",
+      "en": "The rest of the tour is about belonging and leaving. The Listen Interval field (9.4.1.6) is the station's promise about sleep: how many beacon intervals it may doze before waking to check for buffered frames — the AP uses it to decide how long to hold traffic. When association succeeds, the AP hands back an AID field (9.4.1.8) — the Association ID, the station's 16-bit slot number in this BSS (1–2007 for a normal STA). If the station is reassociating — hopping from one AP to another in the same ESS — it puts the Current AP Address field (9.4.1.5), the MAC address of the AP it's currently with, into the Reassociation Request so the new AP knows who it's taking over from. And when the link finally ends, a Reason Code field (9.4.1.7) explains why: e.g. LEAVING_NETWORK_DEAUTH (3) or REASON_INACTIVITY (4). Status Code answers \"did the request work?\"; Reason Code answers \"why are we tearing this down?\"",
+      "zh": "余下的行程关乎“归属”与“离开”。Listen Interval 字段（9.4.1.6）是站点关于睡眠的承诺：它最多打盹多少个 beacon interval 才醒来查看是否有缓存帧——AP 据此决定要替它把流量缓存多久。关联成功时，AP 回送一个 AID 字段（9.4.1.8）——关联标识（Association ID），即站点在本 BSS 中的 16 位“槽位号”（普通 STA 取 1–2007）。如果站点是在做“重关联”——在同一 ESS 内从一个 AP 跳到另一个——它会把 Current AP Address 字段（9.4.1.5，即当前所连 AP 的 MAC 地址）放进重关联请求，好让新 AP 知道自己是从谁手里接管的。当链路最终结束时，Reason Code 字段（9.4.1.7）说明缘由：例如 LEAVING_NETWORK_DEAUTH（3）或 REASON_INACTIVITY（4）。状态码回答“这个请求成功了吗？”；Reason Code 回答“我们为什么要拆掉这条连接？”"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"20\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">Beacon body — fixed fields sit at known offsets, no ID/Length wrapper</text><rect x=\"10\" y=\"35\" width=\"150\" height=\"40\"/><text x=\"85\" y=\"52\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">Timestamp</text><text x=\"85\" y=\"68\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">8 octets (TSF)</text><rect x=\"160\" y=\"35\" width=\"120\" height=\"40\"/><text x=\"220\" y=\"52\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">Beacon Interval</text><text x=\"220\" y=\"68\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">2 octets</text><rect x=\"280\" y=\"35\" width=\"150\" height=\"40\"/><text x=\"355\" y=\"52\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">Capability Info</text><text x=\"355\" y=\"68\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">2 octets (bitmap)</text><rect x=\"430\" y=\"35\" width=\"80\" height=\"40\" stroke-dasharray=\"4 3\"/><text x=\"470\" y=\"52\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">elements</text><text x=\"470\" y=\"68\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">(ID+Len)...</text><text x=\"10\" y=\"105\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Solid = fixed fields (position = meaning). Dashed = the self-describing element list that follows.</text><text x=\"10\" y=\"125\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">AID, Listen Interval, Status/Reason Code, Auth fields appear in other management bodies.</text></svg>",
+      "caption": {
+        "en": "A Beacon body leads with fixed fields at fixed offsets (Timestamp, Beacon Interval, Capability Information), then a self-describing list of elements.",
+        "zh": "Beacon 帧体先以固定偏移处的定长字段（时间戳、Beacon Interval、Capability Information）开头，随后才是一串自描述的元素。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Sizes, offsets, and why position alone is enough",
+        "zh": "字节数、偏移，以及为何“仅凭位置”就够用"
+      },
+      "en": "Clause 9.4.1 opens by calling these \"Fields that are not elements\" — the giveaway that they carry no Element ID/Length. Each has a fixed octet count: Authentication Algorithm Number and Authentication Transaction Sequence Number are 2 octets each; Beacon Interval, Capability Information, Listen Interval, Reason Code, AID, and Status Code are all 2 octets; Current AP Address is a 6-octet MAC address; and the Timestamp (9.4.1.10) is an 8-octet snapshot of the source's TSF timer. Because the frame format pins each to a fixed position, a receiver parses them purely by offset. The Capability Information bitmap (Figure 9-140 for a non-DMG STA) packs ESS, IBSS, Privacy, Short Preamble, Spectrum Management, QoS, Short Slot Time, APSD, Radio Measurement, and EPD into its bits, reinterpreted per frame subtype. Status Code (Table 9-80) and Reason Code (Table 9-79) are large enumerations — Status Code 0 is SUCCESS while Reason Code 0 is reserved — which is the clean tell that the two are different namespaces with different jobs: one reports the outcome of a request, the other the cause of a teardown.",
+      "zh": "9.4.1 节的标题就是“不是元素的字段（Fields that are not elements）”——这正是它们不带 Element ID/Length 的明证。每个字段都有固定的字节数：认证算法编号与认证事务序号各 2 个字节；Beacon Interval、Capability Information、Listen Interval、Reason Code、AID、Status Code 也都是 2 个字节；Current AP Address 是 6 字节的 MAC 地址；时间戳（Timestamp，9.4.1.10）则是源端 TSF 计时器的 8 字节快照。由于帧格式把每个字段钉在固定位置，接收方完全靠偏移来解析。Capability Information 位图（非 DMG STA 见图 9-140）把 ESS、IBSS、Privacy、Short Preamble、Spectrum Management、QoS、Short Slot Time、APSD、Radio Measurement、EPD 等打包进各个比特位，并按帧子类型重新解释。Status Code（表 9-80）与 Reason Code（表 9-79）是两张很大的枚举表——Status Code 的 0 是 SUCCESS，而 Reason Code 的 0 是保留值——这恰好干净地表明二者是不同的命名空间、各司其职：一个报告请求的结果，另一个说明拆链的原因。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          834,
+          835,
+          841,
+          842,
+          848
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.4.1.1",
+    "80211-2024:9.4.1.2",
+    "80211-2024:9.4.1.3",
+    "80211-2024:9.4.1.4",
+    "80211-2024:9.4.1.5",
+    "80211-2024:9.4.1.6",
+    "80211-2024:9.4.1.7",
+    "80211-2024:9.4.1.8",
+    "80211-2024:9.4.1.9",
+    "80211-2024:9.4.1.10"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        834
+      ],
+      "note": "9.4.1.1-9.4.1.2 Authentication Algorithm Number & Transaction Sequence Number fields (2 octets each)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        835,
+        836,
+        837
+      ],
+      "note": "9.4.1.3 Beacon Interval; 9.4.1.4 Capability Information bitmap (Fig 9-140); 9.4.1.5 Current AP Address; 9.4.1.6 Listen Interval"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        838
+      ],
+      "note": "9.4.1.7 Reason Code field; Table 9-79 reason codes"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        841,
+        842
+      ],
+      "note": "9.4.1.8 AID field (Association ID, 1-2007 for non-DMG/non-S1G); 9.4.1.9 Status Code field; Table 9-80 status codes"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        848
+      ],
+      "note": "9.4.1.10 Timestamp field — 8-octet TSF timer snapshot of the frame source"
+    }
+  ],
+  "track": "frames"
+}

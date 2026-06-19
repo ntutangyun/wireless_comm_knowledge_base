@@ -1,0 +1,162 @@
+{
+  "id": "frames-27",
+  "title": {
+    "en": "DMG / directional 60 GHz elements: beamforming, scheduling & relays",
+    "zh": "DMG/定向 60 GHz 元素：波束成形、调度与中继"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "At 2.4 and 5 GHz a Wi-Fi signal sprays out in all directions and the radio just listens. At 60 GHz (the DMG band of 802.11ad, extended to EDMG by 802.11ay) that no longer works: the path loss is so brutal that a link only closes if both ends focus their energy into a narrow pencil-beam aimed straight at each other. Move your hand in front of the antenna and the beam can drop. So the whole element family here exists to answer three questions over and over: which way do I point (beamforming), when do I get to talk (scheduling), and who relays for me when the direct beam is blocked (relays). A PCP/AP runs the show on a tight clock.",
+      "zh": "在 2.4 GHz 和 5 GHz，Wi-Fi 信号向四面八方扩散，收发双方只管监听就行。但在 60 GHz（802.11ad 的 DMG 频段，802.11ay 又把它扩展为 EDMG）这一套行不通：路径损耗极其严酷，只有当两端都把能量聚成一束、笔直对准彼此的“铅笔波束”时链路才能建立。你在天线前挥一下手，波束就可能中断。因此这里的整个元素家族存在的意义，就是反复回答三个问题：我该往哪个方向打（波束成形）、我什么时候能发言（调度）、以及当直射波束被挡住时谁来替我中继（中继）。这一切由 PCP/AP 在一套严格的时钟节拍下统筹。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Vocabulary: a DMG network is often a PBSS run by a PCP (PBSS Control Point) rather than an AP — but the PCP plays the AP's role. A beacon interval is split into a Beacon Header Interval (BTI / A-BFT / ATI, used for discovery and beam training) and a Data Transfer Interval carved into scheduled allocations (SPs and CBAPs). Almost every element below hangs off that timeline.",
+      "zh": "术语：DMG 网络常常是由 PCP（PBSS 控制点）而非 AP 管理的 PBSS——但 PCP 扮演着 AP 的角色。一个信标间隔被切分为信标头间隔（BTI / A-BFT / ATI，用于发现和波束训练）和数据传输间隔，后者再被切成一个个被调度的分配（SP 与 CBAP）。下面几乎每一个元素都挂在这条时间线上。"
+    },
+    {
+      "type": "diagram",
+      "en": "mindmap\n  root((DMG/EDMG elements))\n    Capability/Operation\n      DMG Capabilities 9.4.2.126\n      DMG Operation 9.4.2.127\n      DMG BSS Parameter Change 9.4.2.125\n      EDMG Capabilities 9.4.2.264\n      EDMG Operation 9.4.2.265\n    Beam training/feedback\n      DMG Beam Refinement 9.4.2.128\n      Channel Measurement Feedback 9.4.2.135\n      EDMG Channel Meas Feedback 9.4.2.267\n      BeamLink Maintenance 9.4.2.150\n      Antenna Sector ID Pattern 9.4.2.155\n    Scheduling\n      Extended Schedule 9.4.2.130\n      EDMG Extended Schedule 9.4.2.266\n      DMG TSPEC 9.4.2.132\n      Next DMG ATI 9.4.2.134\n      DMG Wakeup Schedule 9.4.2.129\n      TDD Slot Structure/Schedule/Route 9.4.2.280-282\n    Handover/Relays/Multi-band\n      Next PCP List 9.4.2.139\n      PCP Handover 9.4.2.140\n      Relay Capabilities 9.4.2.146\n      Relay Transfer Parameter Set 9.4.2.147\n      Multi-band 9.4.2.137\n    Link adaptation\n      DMG Link Margin 9.4.2.141\n      DMG Link Adaptation Ack 9.4.2.142",
+      "zh": "mindmap\n  root((DMG/EDMG 元素))\n    能力/运行\n      DMG Capabilities 9.4.2.126\n      DMG Operation 9.4.2.127\n      DMG BSS Parameter Change 9.4.2.125\n      EDMG Capabilities 9.4.2.264\n      EDMG Operation 9.4.2.265\n    波束训练/反馈\n      DMG Beam Refinement 9.4.2.128\n      Channel Measurement Feedback 9.4.2.135\n      EDMG 信道测量反馈 9.4.2.267\n      BeamLink Maintenance 9.4.2.150\n      Antenna Sector ID Pattern 9.4.2.155\n    调度\n      Extended Schedule 9.4.2.130\n      EDMG Extended Schedule 9.4.2.266\n      DMG TSPEC 9.4.2.132\n      Next DMG ATI 9.4.2.134\n      DMG Wakeup Schedule 9.4.2.129\n      TDD 时隙 结构/调度/路由 9.4.2.280-282\n    切换/中继/多频段\n      Next PCP List 9.4.2.139\n      PCP Handover 9.4.2.140\n      Relay Capabilities 9.4.2.146\n      Relay Transfer Parameter Set 9.4.2.147\n      Multi-band 9.4.2.137\n    链路自适应\n      DMG Link Margin 9.4.2.141\n      DMG Link Adaptation Ack 9.4.2.142"
+    },
+    {
+      "type": "prose",
+      "en": "Start with who-am-I. The DMG Capabilities element (9.4.2.126) is the big business card: it carries the STA's MAC address and AID and advertises optional DMG features — number of RX antennas, sector counts, supported MCS set, A-MPDU limits, TDD/SAR capability, direction-measurement and fine-timing support. The DMG Operation element (9.4.2.127) is the PCP/AP's counterpart: it announces the operating parameters of the BSS (TDD channel access, PCP-handover support, the BHI durations). When something about the BSS shifts mid-flight, the DMG BSS Parameter Change element (9.4.2.125) flags it — a Change Type Bitmap says whether the TBTT moved or the beacon-interval length (BI Duration) changed, with a TBTT Offset for the first changed TBTT. The 802.11ay generation adds EDMG Capabilities (9.4.2.264) for channel-bonding/MIMO/TRN abilities and EDMG Operation (9.4.2.265) for the EDMG BSS's wider-channel parameters.",
+      "zh": "先从“我是谁”说起。DMG Capabilities 元素（9.4.2.126）是那张大名片：它携带 STA 的 MAC 地址和 AID，并通告可选的 DMG 特性——接收天线数、扇区数量、支持的 MCS 集、A-MPDU 上限、TDD/SAR 能力、方向测量与精细定时支持等。DMG Operation 元素（9.4.2.127）是 PCP/AP 这一侧的对应物：它公布该 BSS 的运行参数（TDD 信道接入、是否支持 PCP 切换、BHI 各段时长）。当 BSS 在运行途中发生变化时，DMG BSS Parameter Change 元素（9.4.2.125）负责示警——其 Change Type Bitmap 指出是 TBTT 发生了移动还是信标间隔时长（BI Duration）发生了变化，并用 TBTT Offset 指明第一个被改动的 TBTT。802.11ay 这一代又新增了 EDMG Capabilities（9.4.2.264，用于信道捆绑/MIMO/TRN 能力）和 EDMG Operation（9.4.2.265，用于 EDMG BSS 更宽信道的参数）。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the aiming. Beam training is a request/response dance carried by the DMG Beam Refinement element (9.4.2.128) inside BRP frames: it says who is the initiator, whether this is a TX- or RX-training response, asks for feedback (FBCK-REQ) and describes the feedback type (FBCK-TYPE). The measured answer comes back in the Channel Measurement Feedback element (9.4.2.135) — per-sector SNR plus a channel-impulse-response and tap-delay table — so the peer learns which sector is best. EDMG widens that with the EDMG Channel Measurement Feedback element (9.4.2.267) for the bonded-channel/MIMO case. Once a beam is good, BeamLink Maintenance (9.4.2.150) keeps a timer alive so a still-aligned link isn't torn down; and the Antenna Sector ID Pattern element (9.4.2.155) hands a STA a tiny pseudo-random sequence generator so it can predict which sector the PCP will sweep in each upcoming DMG Beacon — letting it listen efficiently instead of scanning everything.",
+      "zh": "接下来是“瞄准”。波束训练是一段请求/响应的舞步，由 BRP 帧内的 DMG Beam Refinement 元素（9.4.2.128）承载：它说明谁是发起方、这是发射训练还是接收训练的响应、请求反馈（FBCK-REQ）并描述反馈类型（FBCK-TYPE）。测出来的答案则装在 Channel Measurement Feedback 元素（9.4.2.135）里返回——逐扇区的 SNR 加上信道冲激响应与抽头时延表——这样对端就能知道哪个扇区最好。EDMG 又用 EDMG Channel Measurement Feedback 元素（9.4.2.267）把它扩展到捆绑信道/MIMO 场景。一旦波束良好，BeamLink Maintenance（9.4.2.150）会维持一个计时器，使仍对准的链路不被无故拆除；而 Antenna Sector ID Pattern 元素（9.4.2.155）则交给 STA 一个小巧的伪随机序列发生器，让它能预测 PCP 在接下来每个 DMG 信标中将扫描哪个扇区——从而高效收听，而不必把所有扇区都扫一遍。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='40' y='20' font-size='11' stroke='none' fill='currentColor'>PCP/AP</text><text x='370' y='20' font-size='11' stroke='none' fill='currentColor'>STA</text><circle cx='55' cy='80' r='6' fill='currentColor' stroke='none'/><circle cx='405' cy='80' r='6' fill='currentColor' stroke='none'/><path d='M61 80 L360 55 M61 80 L360 80 M61 80 L360 105' stroke-dasharray='3 3' opacity='0.5'/><path d='M61 80 L360 80' stroke-width='2.5'/><text x='150' y='73' font-size='9' stroke='none' fill='currentColor'>chosen sector (best SNR)</text><text x='150' y='48' font-size='9' stroke='none' fill='currentColor' opacity='0.7'>swept sectors</text><rect x='150' y='112' width='160' height='26' rx='3'/><text x='160' y='129' font-size='9' stroke='none' fill='currentColor'>blocked? -> relay or re-train</text></svg>",
+      "caption": {
+        "en": "A 60 GHz link is one chosen pencil-beam among many swept sectors. Lose it and the network must re-train the beam or route through a relay.",
+        "zh": "一条 60 GHz 链路只是众多被扫描扇区中被选中的那一束铅笔波束。一旦丢失，网络就必须重新训练波束或经由中继转发。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Scheduling is the heartbeat. The Extended Schedule element (9.4.2.130) is the master timetable the PCP/AP broadcasts: a list of allocations, each tagged with an Allocation ID, AllocationType (SP vs CBAP), and Source/Destination AID, telling every STA exactly when its airtime is. The EDMG Extended Schedule element (9.4.2.266) adds which bonded channel each allocation lives on. A STA asks for its own slice with the DMG TSPEC element (9.4.2.132) — a traffic-stream request stating allocation period, min/max allocation and bandwidth. The Next DMG ATI element (9.4.2.134) pre-announces the earliest start and duration of the next Announcement Transmission Interval, and the DMG Wakeup Schedule element (9.4.2.129) lets a power-saving STA agree exactly which beacon intervals it will wake for (its BI Start Time). For the strict time-division mode, three elements pin down the grid: TDD Slot Structure (9.4.2.280) defines the slot layout of a TDD SP, TDD Slot Schedule (9.4.2.281) assigns which STA may use each slot (uplink/downlink/etc.), and TDD Route (9.4.2.282) carries the beamforming result used to route within that TDD structure.",
+      "zh": "调度是这套系统的心跳。Extended Schedule 元素（9.4.2.130）是 PCP/AP 广播的总时间表：一份分配清单，每项都带有 Allocation ID、AllocationType（SP 还是 CBAP）以及 Source/Destination AID，明确告诉每个 STA 它的空口时间在何时。EDMG Extended Schedule 元素（9.4.2.266）又补充了每项分配落在哪个捆绑信道上。STA 用 DMG TSPEC 元素（9.4.2.132）来申请属于自己的那一份——这是一份业务流请求，声明分配周期、最小/最大分配以及带宽。Next DMG ATI 元素（9.4.2.134）预先通告下一个公告传输间隔（ATI）的最早开始时间和时长；DMG Wakeup Schedule 元素（9.4.2.129）则让处于省电模式的 STA 精确约定它将为哪些信标间隔醒来（由其 BI Start Time 指明）。对于严格的时分模式，有三个元素把网格钉死：TDD Slot Structure（9.4.2.280）定义一个 TDD SP 的时隙布局，TDD Slot Schedule（9.4.2.281）分配每个时隙可由哪个 STA 使用（上行/下行等），TDD Route（9.4.2.282）则携带在该 TDD 结构内用于路由的波束成形结果。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, resilience and tuning. Because a single PCP is a single point of failure, the Next PCP List element (9.4.2.139) publishes the ordered succession of STAs that could take over, and the PCP Handover element (9.4.2.140) actually performs the transfer — naming the Old BSSID, the New PCP Address, and how many beacon intervals remain until the handover takes effect. When a direct beam is blocked, relaying steps in: the Relay Capabilities element (9.4.2.146) advertises whether a STA can relay and in what duplex mode (full-duplex amplify-and-forward vs half-duplex decode-and-forward), and the Relay Transfer Parameter Set element (9.4.2.147) carries the timing knobs (link-change interval, the two link periods) once a relay path is set up. The Multi-band element (9.4.2.137) lets the same device announce that it is also reachable on another band/channel (e.g. fall back to 5 GHz), enabling fast session transfer. And to keep a working beam efficient, the DMG Link Margin element (9.4.2.141) feeds back a recommended MCS and an Activity (e.g. change MCS, lower power) plus optional RX/PPDU/LDPC statistics, which the peer confirms with the DMG Link Adaptation Acknowledgment element (9.4.2.142).",
+      "zh": "最后是“抗断与调优”。由于单一 PCP 是单点故障，Next PCP List 元素（9.4.2.139）会公布一组按顺序排列、可接管的候选 STA，而 PCP Handover 元素（9.4.2.140）则真正执行这次交接——指明 Old BSSID、New PCP Address，以及距离切换生效还剩多少个信标间隔。当直射波束被挡住时，中继登场：Relay Capabilities 元素（9.4.2.146）通告某 STA 是否能中继、以及以何种双工模式（全双工放大转发 FD-AF 还是半双工解码转发 HD-DF）；中继路径建立后，Relay Transfer Parameter Set 元素（9.4.2.147）携带其时序参数（链路切换间隔、两段链路周期）。Multi-band 元素（9.4.2.137）让同一台设备声明它在另一频段/信道上也可达（例如回退到 5 GHz），从而支持快速会话转移。而为了让已建立的波束保持高效，DMG Link Margin 元素（9.4.2.141）反馈一个推荐的 MCS 与一个 Activity（如换 MCS、降功率），并可附带 RX/PPDU/LDPC 统计；对端则用 DMG Link Adaptation Acknowledgment 元素（9.4.2.142）确认这些建议。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Why so many scheduling and beam elements? Read the field layouts",
+        "zh": "为什么有这么多调度与波束元素？看字段布局"
+      },
+      "en": "Two field layouts show why DMG needs its own element zoo. The Extended Schedule element's Allocation Control subfield (9.4.2.130) is built around the tuple (Source AID, Destination AID, Allocation ID): except for broadcast CBAP allocations, that triple uniquely names one airtime allocation, and an AllocationType + Pseudo-static flag fixes how it is accessed — this is hard scheduling, not contention. The DMG Link Margin element (9.4.2.141) is the matching feedback half: its Activity field uses an explicit table (0 = no change preferred, 1 = changed MCS, 2 = decreased transmit power, ...), and a Rate Adaptation Control field gates optional RX-chain / PPDU / LDPC statistics so a STA can recommend a precise MCS and power point to its peer, which then answers with the DMG Link Adaptation Acknowledgment element (9.4.2.142). Together the scheduling tuple and the link-margin/ack pair are what let a PCP run a deterministic, beam-steered 60 GHz network on a clock instead of letting stations contend blindly.",
+      "zh": "两段字段布局就能说明 DMG 为何需要自己这一套元素动物园。Extended Schedule 元素的 Allocation Control 子字段（9.4.2.130）以三元组（Source AID、Destination AID、Allocation ID）为核心：除广播 CBAP 分配外，这个三元组唯一地标识一项空口分配，再配合 AllocationType 与 Pseudo-static 标志确定其接入方式——这是硬性调度，而非竞争接入。DMG Link Margin 元素（9.4.2.141）正是与之配套的反馈一半：其 Activity 字段使用一张明确的取值表（0 = 不建议改变，1 = 已改变 MCS，2 = 已降低发射功率，……），而 Rate Adaptation Control 字段则控制是否附带可选的 RX 链/PPDU/LDPC 统计，使一个 STA 能向对端推荐精确的 MCS 与功率工作点，对端再用 DMG Link Adaptation Acknowledgment 元素（9.4.2.142）作答。调度三元组与“链路余量/确认”这一对，合在一起，正是让 PCP 能按时钟运行一个确定性的、波束受控的 60 GHz 网络，而非让各站点盲目竞争的原因。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1256,
+          1273,
+          1274
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1238,
+        1239,
+        1249
+      ],
+      "note": "9.4.2.125 DMG BSS Parameter Change; 9.4.2.126 DMG Capabilities; 9.4.2.127 DMG Operation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1250,
+        1264,
+        1265
+      ],
+      "note": "9.4.2.128 DMG Beam Refinement; 9.4.2.134 Next DMG ATI; 9.4.2.135 Channel Measurement Feedback"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1255,
+        1256,
+        1260
+      ],
+      "note": "9.4.2.129 DMG Wakeup Schedule (BI Start Time); 9.4.2.130 Extended Schedule (Allocation Control); 9.4.2.132 DMG TSPEC"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1269,
+        1272,
+        1273,
+        1274
+      ],
+      "note": "9.4.2.137 Multi-band; 9.4.2.139 Next PCP List; 9.4.2.140 PCP Handover; 9.4.2.141 DMG Link Margin; 9.4.2.142 DMG Link Adaptation Acknowledgment"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1284,
+        1285,
+        1287,
+        1291
+      ],
+      "note": "9.4.2.146 Relay Capabilities; 9.4.2.147 Relay Transfer Parameter Set; 9.4.2.150 BeamLink Maintenance; 9.4.2.155 Antenna Sector ID Pattern"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1477,
+        1487,
+        1489,
+        1492,
+        1517,
+        1518,
+        1519
+      ],
+      "note": "9.4.2.264 EDMG Capabilities; 9.4.2.265 EDMG Operation; 9.4.2.266 EDMG Extended Schedule; 9.4.2.267 EDMG Channel Measurement Feedback; 9.4.2.280 TDD Slot Structure; 9.4.2.281 TDD Slot Schedule; 9.4.2.282 TDD Route"
+    }
+  ],
+  "covers": [
+    "80211-2024:9.4.2.125",
+    "80211-2024:9.4.2.126",
+    "80211-2024:9.4.2.127",
+    "80211-2024:9.4.2.128",
+    "80211-2024:9.4.2.129",
+    "80211-2024:9.4.2.130",
+    "80211-2024:9.4.2.132",
+    "80211-2024:9.4.2.134",
+    "80211-2024:9.4.2.135",
+    "80211-2024:9.4.2.137",
+    "80211-2024:9.4.2.139",
+    "80211-2024:9.4.2.140",
+    "80211-2024:9.4.2.141",
+    "80211-2024:9.4.2.142",
+    "80211-2024:9.4.2.146",
+    "80211-2024:9.4.2.147",
+    "80211-2024:9.4.2.150",
+    "80211-2024:9.4.2.155",
+    "80211-2024:9.4.2.264",
+    "80211-2024:9.4.2.265",
+    "80211-2024:9.4.2.266",
+    "80211-2024:9.4.2.267",
+    "80211-2024:9.4.2.280",
+    "80211-2024:9.4.2.281",
+    "80211-2024:9.4.2.282"
+  ],
+  "track": "frames"
+}

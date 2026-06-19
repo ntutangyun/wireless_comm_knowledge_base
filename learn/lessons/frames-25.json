@@ -1,0 +1,153 @@
+{
+  "id": "frames-25",
+  "title": {
+    "en": "Fixed fields III: beamforming feedback reports & the SAE security fields",
+    "zh": "定长字段（三）：波束成形反馈报告与 SAE 安全字段"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This lesson tours the two heaviest fixed-field families in clause 9.4.1. The first is beamforming feedback — the data a receiver (the beamformee) sends back so the transmitter (the beamformer) can aim its antennas. The second is the SAE security fields — the handful of fields WPA3's 'dragonfly' handshake uses to prove a password without ever sending it. Two very different jobs, both built from small fixed-length fields that ride inside management frames.",
+      "zh": "本课带你走一遍 9.4.1 节中最“重”的两组定长字段。第一组是波束成形反馈——接收方（beamformee）回传的数据，让发送方（beamformer）能据此对准自己的天线。第二组是 SAE 安全字段——WPA3 的“蜻蜓（dragonfly）”握手用来在不发送密码的前提下证明拥有密码的那几个字段。两件截然不同的工作，却都由嵌在管理帧里的小型定长字段拼成。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the intuition for beamforming. The AP sends a known 'sounding' signal; the station measures how the radio channel distorted it, then mails back a description of that channel. The transmitter uses it to pre-shape its signal so the waves arrive in phase at the station — louder signal, higher rate, no extra power. The feedback can be raw channel state (CSI) or already-condensed steering angles (compressed), and 802.11 has evolved a fresh feedback chain for each PHY generation: HT (11n), VHT (11ac), and HE (11ax).",
+      "zh": "先建立波束成形的直觉。AP 发出一段已知的“探测（sounding）”信号；站点测量无线信道把它扭曲成了什么样，再把这份信道描述回寄出去。发送方据此预先“整形”自己的信号，使各路波在站点处同相到达——信号更强、速率更高，却不必加大功率。反馈可以是原始信道状态（CSI），也可以是已被压缩的导向角度（compressed）。802.11 为每一代 PHY 都演化出一条全新的反馈链：HT（11n）、VHT（11ac）和 HE（11ax）。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant BFr as Beamformer (AP)\n    participant BFe as Beamformee (STA)\n    BFr->>BFe: Sounding NDP (known training)\n    Note over BFe: measure channel, build matrix V\n    BFe->>BFr: Feedback frame: MIMO Control + Beamforming Report\n    Note over BFr: derive steering matrix Q, aim antennas\n    BFr->>BFe: data, now beamformed",
+      "zh": "sequenceDiagram\n    participant BFr as 发送方/波束成形器 (AP)\n    participant BFe as 接收方/被成形者 (STA)\n    BFr->>BFe: 探测 NDP（已知训练序列）\n    Note over BFe: 测量信道，构造矩阵 V\n    BFe->>BFr: 反馈帧：MIMO Control + 波束成形报告\n    Note over BFr: 推导导向矩阵 Q，对准天线\n    BFr->>BFe: 数据，此时已波束成形"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Each generation pairs a MIMO Control 'header' field with one or more 'report' fields. The control field says how the report is shaped (matrix size Nc/Nr, channel width, subcarrier grouping Ng, coefficient/codebook bit sizes, feedback type, and which segment this is); the report field carries the actual numbers. Read them as a header-then-payload pair.",
+      "zh": "每一代都把一个 MIMO Control “头部”字段与一个或多个“报告”字段配成一对。控制字段说明报告如何成形（矩阵尺寸 Nc/Nr、信道带宽、子载波分组 Ng、系数/码本比特数、反馈类型，以及这是第几个分段）；报告字段则承载真正的数值。把它们当作“头部 + 载荷”的一对来读。"
+    },
+    {
+      "type": "prose",
+      "en": "The HT (11n) family: MIMO Control (9.4.1.24) is the header — Nc/Nr indices, channel width, grouping, coefficient size, codebook info, and a sounding timestamp. Three report flavours follow. CSI Report (9.4.1.25) sends the raw effective channel matrix Heff plus per-chain SNR — the most data. Noncompressed Beamforming Report (9.4.1.26) sends the steering matrix V itself. Compressed Beamforming Report (9.4.1.27) sends V as quantized angles (φ and ψ) — far smaller, the common choice. Separately, Antenna Selection Indices (9.4.1.28) is a 1-octet bitmap saying which antennas a station picked.",
+      "zh": "HT（11n）家族：MIMO Control（9.4.1.24）是头部——包含 Nc/Nr 索引、信道带宽、分组、系数大小、码本信息以及一个探测时间戳。其后跟三种报告口味。CSI Report（9.4.1.25）回送原始的有效信道矩阵 Heff 加每条接收链的 SNR——数据量最大。Noncompressed Beamforming Report（9.4.1.26）直接回送导向矩阵 V。Compressed Beamforming Report（9.4.1.27）把 V 表示为量化的角度（φ 与 ψ）——体积小得多，是常用选择。此外，Antenna Selection Indices（9.4.1.28）是一个 1 字节位图，标明站点选用了哪些天线。"
+    },
+    {
+      "type": "prose",
+      "en": "The VHT (11ac) family scales this up for wider channels and multi-user. VHT MIMO Control (9.4.1.46) is the richer header (adds a Feedback Type bit for SU vs MU and segmentation fields). VHT Compressed Beamforming Report (9.4.1.47) carries the angle-quantized V; its TVHT variant (TV-band) reuses the same format with shifted subcarrier maps (9.4.1.48). For multi-user, the MU Exclusive Beamforming Report (9.4.1.49) adds per-stream delta-SNR values so the AP can null interference between users.",
+      "zh": "VHT（11ac）家族把这一切放大到更宽信道与多用户。VHT MIMO Control（9.4.1.46）是更丰富的头部（新增区分 SU 与 MU 的 Feedback Type 位以及分段字段）。VHT Compressed Beamforming Report（9.4.1.47）承载角度量化后的 V；其 TVHT 变体（电视频段）沿用同一格式但平移了子载波映射（9.4.1.48）。面向多用户时，MU Exclusive Beamforming Report（9.4.1.49）追加逐流的 delta-SNR 值，使 AP 能在用户之间抵消干扰。"
+    },
+    {
+      "type": "prose",
+      "en": "The HE (11ax) family is the densest. HE MIMO Control (9.4.1.62) is the header, now carrying RU start/end indices and an optional disallowed-subchannel bitmap. Three report fields feed off it: HE Compressed Beamforming Report (9.4.1.63) — the angle-quantized V plus per-stream average SNR; HE MU Exclusive Beamforming Report (9.4.1.64) — per-stream delta-SNRs for MU; and HE CQI Report (9.4.1.65) — per-RU average SNRs describing link quality. The HE Compressed Beamforming/CQI Report (9.4.1.66) is the container that bundles whichever of those three apply, and the HE Sounding Feedback Segment (9.4.1.67) is simply a slice of that container's octets when feedback is too big to fit one frame.",
+      "zh": "HE（11ax）家族最为密集。HE MIMO Control（9.4.1.62）是头部，现在携带 RU 起止索引和一个可选的“禁用子信道”位图。三个报告字段以它为依托：HE Compressed Beamforming Report（9.4.1.63）——角度量化的 V 加逐流平均 SNR；HE MU Exclusive Beamforming Report（9.4.1.64）——面向 MU 的逐流 delta-SNR；HE CQI Report（9.4.1.65）——描述链路质量的逐 RU 平均 SNR。HE Compressed Beamforming/CQI Report（9.4.1.66）是把上述三者中适用部分打包在一起的容器，而 HE Sounding Feedback Segment（9.4.1.67）就是当反馈太大、一帧装不下时，从该容器中切出的一段字节。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Now switch hats to security. SAE (Simultaneous Authentication of Equals) is WPA3's password method. Both sides commit to a value derived from the password, swap commitments, then prove they got the same shared secret — never transmitting the password. Six small fixed fields carry the whole exchange.",
+      "zh": "现在切换到安全这一面。SAE（对等同时认证，Simultaneous Authentication of Equals）是 WPA3 的密码认证方法。双方各自对一个由密码派生出的值做出承诺，交换承诺，然后证明彼此得到了相同的共享密钥——全程不传输密码。整个交换由六个小型定长字段承载。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 460 200' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='10' y='20' width='190' height='160' rx='6'/><rect x='260' y='20' width='190' height='160' rx='6'/><text x='105' y='40' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>Commit message</text><text x='355' y='40' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>Confirm message</text><text x='20' y='62' fill='currentColor' stroke='none' font-size='10'>Finite Cyclic Group</text><text x='20' y='84' fill='currentColor' stroke='none' font-size='10'>Scalar</text><text x='20' y='106' fill='currentColor' stroke='none' font-size='10'>FFE (field element)</text><text x='20' y='128' fill='currentColor' stroke='none' font-size='10'>Anti-Clogging Token</text><text x='20' y='150' fill='currentColor' stroke='none' font-size='9'>(group + commitment)</text><text x='270' y='62' fill='currentColor' stroke='none' font-size='10'>Send-Confirm</text><text x='270' y='84' fill='currentColor' stroke='none' font-size='10'>Confirm</text><text x='270' y='150' fill='currentColor' stroke='none' font-size='9'>(proof of shared key)</text><line x1='200' y1='80' x2='260' y2='80' marker-end='url(#a)'/><line x1='260' y1='120' x2='200' y2='120' marker-end='url(#a)'/><defs><marker id='a' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6' stroke='currentColor'/></marker></defs></svg>",
+      "caption": {
+        "en": "The SAE fields split into a Commit phase (which group, and the committed Scalar + field element) and a Confirm phase (proving the shared key). The Anti-Clogging Token defends the Commit phase from flooding.",
+        "zh": "SAE 字段分为承诺阶段（用哪个群，以及承诺的 Scalar 与有限域元素）和确认阶段（证明共享密钥）。Anti-Clogging Token 则保护承诺阶段不被洪泛攻击淹没。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Field by field: Finite Cyclic Group (9.4.1.40) is a 2-octet integer naming which cryptographic group (an IANA-registered Diffie-Hellman group) both sides will compute in. Scalar (9.4.1.37) and FFE (9.4.1.38, a finite-field element) together are each side's Commit value. Confirm (9.4.1.39) is the proof-of-key sent in the Confirm phase, and Send-Confirm (9.4.1.35) is a 2-octet counter that orders confirms and blocks replay. Anti-Clogging Token (9.4.1.36) is a variable-length cookie the AP can demand before doing expensive crypto, so an attacker cannot flood it with commit requests — a denial-of-service guard.",
+      "zh": "逐字段来看：Finite Cyclic Group（9.4.1.40）是一个 2 字节整数，指明双方将在哪个密码学群（一个 IANA 注册的 Diffie-Hellman 群）中运算。Scalar（9.4.1.37）与 FFE（9.4.1.38，一个有限域元素）合起来构成各方的承诺（Commit）值。Confirm（9.4.1.39）是确认阶段发送的密钥证明，Send-Confirm（9.4.1.35）则是一个 2 字节计数器，用于给 confirm 排序并阻止重放。Anti-Clogging Token（9.4.1.36）是一个变长的 cookie，AP 可在进行昂贵的密码运算前要求对方先回带它，从而防止攻击者用 commit 请求把它淹没——这是一道拒绝服务防护。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Why HT splits CSI / noncompressed / compressed, and how MIMO Control shapes the report",
+        "zh": "为何 HT 把 CSI / 非压缩 / 压缩拆成三种，以及 MIMO Control 如何决定报告形态"
+      },
+      "en": "The HT MIMO Control field (9.4.1.24, Figure 9-163 / Table 9-85) is a 6-octet header whose subfields fully determine the report's size: Nc Index and Nr Index give matrix columns/rows minus one, MIMO Control Channel Width selects 20 or 40 MHz, Grouping (Ng) lets one value stand in for 1/2/4 adjacent subcarriers to shrink the report, Coefficient Size sets Nb bits per real/imaginary element, Codebook Information sets the φ/ψ angle bit-widths, Remaining Matrix Segment supports segmentation, and Sounding Timestamp records the lower 4 octets of the TSF at the end of the sounding PPDU. CSI Report (9.4.1.25) carries the raw Heff matrix per carrier plus 8-bit per-chain SNR encoded as 4×(SNR-22); Noncompressed Beamforming Report (9.4.1.26) carries the orthogonal V matrix directly; Compressed Beamforming Report (9.4.1.27) carries only the φ/ψ angles whose count (Na) depends on the Nr×Nc matrix size per Table 9-91 — trading precision for size. Antenna Selection Indices (9.4.1.28) is the lone 1-octet bitmap, antennas 0-7, used for ASEL feedback.",
+      "zh": "HT 的 MIMO Control 字段（9.4.1.24，图 9-163 / 表 9-85）是一个 6 字节的头部，其子字段完全决定报告的尺寸：Nc Index 与 Nr Index 给出矩阵列数/行数减一；MIMO Control Channel Width 选择 20 或 40 MHz；Grouping（Ng）允许用一个值代表 1/2/4 个相邻子载波以缩减报告；Coefficient Size 设定每个实部/虚部元素的 Nb 比特数；Codebook Information 设定 φ/ψ 角度的比特宽度；Remaining Matrix Segment 支持分段；Sounding Timestamp 记录探测 PPDU 结束时 TSF 的低 4 字节。CSI Report（9.4.1.25）逐载波回送原始 Heff 矩阵，外加以 4×(SNR−22) 编码的 8 比特逐链 SNR；Noncompressed Beamforming Report（9.4.1.26）直接回送正交矩阵 V；Compressed Beamforming Report（9.4.1.27）只回送 φ/ψ 角度，其数量（Na）按表 9-91 由 Nr×Nc 矩阵尺寸决定——以精度换体积。Antenna Selection Indices（9.4.1.28）是那个唯一的 1 字节位图，对应天线 0–7，用于 ASEL 反馈。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          856,
+          857,
+          861,
+          864
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.4.1.24",
+    "80211-2024:9.4.1.25",
+    "80211-2024:9.4.1.26",
+    "80211-2024:9.4.1.27",
+    "80211-2024:9.4.1.28",
+    "80211-2024:9.4.1.46",
+    "80211-2024:9.4.1.47",
+    "80211-2024:9.4.1.49",
+    "80211-2024:9.4.1.62",
+    "80211-2024:9.4.1.63",
+    "80211-2024:9.4.1.64",
+    "80211-2024:9.4.1.65",
+    "80211-2024:9.4.1.66",
+    "80211-2024:9.4.1.67",
+    "80211-2024:9.4.1.35",
+    "80211-2024:9.4.1.36",
+    "80211-2024:9.4.1.37",
+    "80211-2024:9.4.1.38",
+    "80211-2024:9.4.1.39",
+    "80211-2024:9.4.1.40"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        855,
+        856,
+        857,
+        859,
+        861,
+        864
+      ],
+      "note": "9.4.1.24-9.4.1.28 HT MIMO Control + CSI / Noncompressed / Compressed Beamforming Report + Antenna Selection Indices"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        875,
+        876,
+        887,
+        888
+      ],
+      "note": "9.4.1.46-9.4.1.49 VHT MIMO Control + VHT Compressed Beamforming Report (+ TVHT) + MU Exclusive Beamforming Report"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        906,
+        907,
+        915,
+        916,
+        917,
+        918,
+        919
+      ],
+      "note": "9.4.1.62-9.4.1.67 HE MIMO Control + HE Compressed Beamforming / MU Exclusive / CQI Reports + combined report + Sounding Feedback Segment"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        870,
+        871,
+        872
+      ],
+      "note": "9.4.1.35-9.4.1.40 SAE fields: Send-Confirm, Anti-Clogging Token, Scalar, FFE, Confirm, Finite Cyclic Group"
+    }
+  ],
+  "track": "frames"
+}

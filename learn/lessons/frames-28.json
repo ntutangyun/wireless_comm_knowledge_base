@@ -1,0 +1,151 @@
+{
+  "id": "frames-28",
+  "title": {
+    "en": "FILS, FTM ranging & PASN elements: fast login and Wi-Fi distance measurement",
+    "zh": "FILS、FTM 测距与 PASN 元素：快速接入与 Wi-Fi 测距"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Two very modern feature families hide inside clause 9 of 802.11. The first, FILS (Fast Initial Link Setup, from 802.11ai), is about speed: getting a station onto a busy network in just a couple of frames instead of a long sequence of probe, auth, association, EAP, and DHCP round-trips. The second, FTM ranging (fine timing, from 802.11az), is about geometry: measuring how far away another device is, and in which direction. Both express themselves as a small zoo of elements, and each element really does just one job.",
+      "zh": "802.11 的第 9 章里藏着两个非常现代的功能家族。第一个是 FILS（快速初始链路建立，源自 802.11ai），它关乎“速度”：让站点只用几帧就接入一个繁忙的网络，而不必经历探测、认证、关联、EAP、DHCP 等一长串往返。第二个是 FTM 测距（精细计时，源自 802.11az），它关乎“几何”：测量另一台设备有多远、在哪个方向。两者都表现为一小群元素，而每个元素其实只做一件事。"
+    },
+    {
+      "type": "prose",
+      "en": "The core intuition for ranging is one line of physics: time-of-flight × speed-of-light = distance. If two radios timestamp exactly when a frame leaves and when it arrives, the tiny gap (a few nanoseconds) times c gives the range. FTM does this with a careful back-and-forth of timestamps; the rest of the ranging elements just configure, secure, schedule, and report that measurement. Likewise the FILS elements just carry the cryptographic proof and the piggy-backed setup that let a station skip the slow path.",
+      "zh": "测距的核心直觉就是一行物理公式：飞行时间 × 光速 = 距离。如果两个无线电精确记录一帧何时离开、何时到达，那个极小的时间差（几纳秒）乘以光速 c 就得到距离。FTM 通过一组精心安排的时间戳往返来完成这件事；其余的测距元素只是为这次测量做配置、加密、调度和上报。同样地，FILS 元素只是携带密码学证明以及搭车的配置信息，让站点得以跳过那条慢路径。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Most of these sit at Element ID 255 (Element ID Extension present) — the standard ran out of one-octet IDs years ago, so newer elements live in the extension space. A few legacy ones (FTM Parameters = 206, FILS Indication = 240, CAG Number = 237, AP-CSN = 239, DILS = 241) still have plain one-octet IDs.",
+      "zh": "这些元素大多落在 Element ID 255（带 Element ID Extension）之下——标准多年前就用尽了单字节 ID，因此较新的元素都安置在扩展空间里。少数老一些的元素（FTM Parameters = 206、FILS Indication = 240、CAG Number = 237、AP-CSN = 239、DILS = 241）仍使用普通的单字节 ID。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    subgraph FILS [\"FILS — fast login (802.11ai)\"]\n        A1[\"FILS Indication: AP advertises FILS support\"]\n        A2[\"FILS Request Parameters: prune probe responses\"]\n        A3[\"FILS Session + FILS Nonce: bind one exchange\"]\n        A4[\"FILS Key Confirmation: prove the keys match\"]\n        A5[\"FILS Public Key + Wrapped Data: carry crypto\"]\n        A6[\"FILS HLP Container + IP Address Assignment: piggy-back DHCP\"]\n        A7[\"Key Delivery: hand over the GTK\"]\n    end\n    subgraph FTM [\"FTM ranging (802.11az)\"]\n        B1[\"FTM Parameters: negotiate the session\"]\n        B2[\"Ranging Parameters + Secure HE-LTF: configure & protect\"]\n        B3[\"ISTA/RSTA Availability Window: schedule slots\"]\n        B4[\"Direction Measurement Results: angle of arrival/departure\"]\n        B5[\"Passive TB reports + LCI Table: share results\"]\n        B6[\"LOS Likelihood: was it line-of-sight?\"]\n    end",
+      "zh": "flowchart TD\n    subgraph FILS [\"FILS — 快速接入 (802.11ai)\"]\n        A1[\"FILS Indication：AP 通告支持 FILS\"]\n        A2[\"FILS Request Parameters：筛减探测响应\"]\n        A3[\"FILS Session + FILS Nonce：绑定一次交换\"]\n        A4[\"FILS Key Confirmation：证明密钥一致\"]\n        A5[\"FILS Public Key + Wrapped Data：承载密码学数据\"]\n        A6[\"FILS HLP Container + IP Address Assignment：搭车 DHCP\"]\n        A7[\"Key Delivery：交付 GTK\"]\n    end\n    subgraph FTM [\"FTM 测距 (802.11az)\"]\n        B1[\"FTM Parameters：协商会话\"]\n        B2[\"Ranging Parameters + Secure HE-LTF：配置与保护\"]\n        B3[\"ISTA/RSTA Availability Window：调度时隙\"]\n        B4[\"Direction Measurement Results：到达/出发角\"]\n        B5[\"Passive TB 报告 + LCI 表：共享结果\"]\n        B6[\"LOS Likelihood：是否视距？\"]\n    end"
+    },
+    {
+      "type": "prose",
+      "en": "Walking the FILS family, one job each. FILS Indication (9.4.2.181) is the AP's billboard — it sits in Beacons/Probe Responses to announce which FILS authentication flavours and higher-layer setup the AP supports. FILS Request Parameters (9.4.2.176) lets a probing station add criteria (RSSI limit, max channel time) so only useful APs answer. FILS Session (9.4.2.178) is a random 8-octet tag that pins all frames of one authentication exchange together; FILS Nonce (9.4.2.188) adds fresh randomness so the handshake can't be replayed. FILS Key Confirmation (9.4.2.177) carries the KeyAuth proof that both sides derived the same keys. FILS Public Key (9.4.2.179) ships a certificate or raw public key for the public-key flavour, and Wrapped Data (9.4.2.186) is the opaque envelope the FILS (and PASN) crypto rides inside.",
+      "zh": "逐一走过 FILS 家族，各司其职。FILS Indication（9.4.2.181）是 AP 的广告牌——它出现在 Beacon/探测响应中，宣告 AP 支持哪些 FILS 认证方式及上层配置。FILS Request Parameters（9.4.2.176）让探测中的站点附加筛选条件（RSSI 门限、最大信道时间），从而只有有用的 AP 才回应。FILS Session（9.4.2.178）是一个随机的 8 字节标签，把一次认证交换的所有帧绑在一起；FILS Nonce（9.4.2.188）补充新鲜的随机数，使握手无法被重放。FILS Key Confirmation（9.4.2.177）携带 KeyAuth 证明，表明双方推导出了相同的密钥。FILS Public Key（9.4.2.179）为公钥方式承载证书或裸公钥，而 Wrapped Data（9.4.2.186）则是 FILS（及 PASN）密码学数据乘坐其中的不透明信封。"
+    },
+    {
+      "type": "prose",
+      "en": "The rest of FILS is about skipping the slow follow-up steps. FILS HLP Container (9.4.2.182) wraps a higher-layer packet — typically a DHCP discover — so the station's IP request rides inside the association frames instead of after them. FILS IP Address Assignment (9.4.2.183) is where the AP hands the address (and gateway/DNS) straight back. Key Delivery (9.4.2.184) carries the current RSC and group key (GTK) so the station is immediately ready to receive broadcast traffic. AP-CSN (9.4.2.180) is a configuration sequence number that bumps whenever the BSS's static info changes, so a returning station knows if its cached parameters are stale. Association Delay Info (9.4.2.174) tells the station the minimum (re)association response timeout to wait. DILS (9.4.2.185) — Differentiated Initial Link Setup — carries duration/priority/MAC-filter rules that gate which stations may even attempt FILS during congestion. CAG Number (9.4.2.175), the Common Advertisement Group version, lets a station skip redundant GAS query exchanges when advertised info hasn't changed.",
+      "zh": "FILS 的其余部分都是为了跳过那些缓慢的后续步骤。FILS HLP Container（9.4.2.182）封装一个上层数据包——通常是 DHCP discover——使站点的 IP 请求随关联帧一起搭车，而不是在其之后单独发送。FILS IP Address Assignment（9.4.2.183）则是 AP 直接把地址（及网关/DNS）回交的地方。Key Delivery（9.4.2.184）携带当前 RSC 与组密钥（GTK），让站点立刻就能接收广播流量。AP-CSN（9.4.2.180）是配置序号，每当 BSS 的静态信息变化时递增，使返回的站点能判断其缓存参数是否过期。Association Delay Info（9.4.2.174）告诉站点应等待的最小（重）关联响应超时。DILS（9.4.2.185）——差异化初始链路建立——携带时长/优先级/MAC 过滤规则，在拥塞时决定哪些站点才被允许尝试 FILS。CAG Number（9.4.2.175）即公共广告组版本号，让站点在所通告信息未变时跳过冗余的 GAS 查询交换。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><circle cx=\"60\" cy=\"75\" r=\"16\"/><text x=\"60\" y=\"110\" font-size=\"12\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">ISTA</text><circle cx=\"400\" cy=\"75\" r=\"16\"/><text x=\"400\" y=\"110\" font-size=\"12\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">RSTA</text><line x1=\"78\" y1=\"66\" x2=\"382\" y2=\"66\" marker-end=\"url(#a)\"/><text x=\"230\" y=\"58\" font-size=\"11\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">depart t1  ----&gt;  arrive t2</text><line x1=\"382\" y1=\"88\" x2=\"78\" y2=\"88\" marker-end=\"url(#a)\"/><text x=\"230\" y=\"104\" font-size=\"11\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">depart t3  &lt;----  arrive t4</text><text x=\"230\" y=\"135\" font-size=\"11\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">range = c &#215; ((t4 - t1) - (t3 - t2)) / 2</text><defs><marker id=\"a\" markerWidth=\"8\" markerHeight=\"8\" refX=\"6\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L6,3 L0,6\" fill=\"currentColor\" stroke=\"none\"/></marker></defs></svg>",
+      "caption": {
+        "en": "Round-trip time-of-flight: four timestamps (t1–t4) between an initiating STA (ISTA) and responding STA (RSTA) cancel out the turnaround delay, leaving pure flight time × c = distance.",
+        "zh": "往返飞行时间：发起站（ISTA）与响应站（RSTA）之间的四个时间戳（t1–t4）抵消掉转向延迟，剩下纯飞行时间 × c = 距离。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now the ranging family, one job each. FTM Parameters (9.4.2.166) advertises and negotiates the FTM session configuration between the two STAs. FTM Synchronization Information (9.4.2.171) carries the 4 least-significant octets of the TSF so a passive listener can align its clock. Ranging Parameters (9.4.2.300) is the 802.11az session contract — TB vs non-TB mode, secure HE-LTF requirement, Tx-window choices, the availability window, and a max-session timer. Secure HE-LTF Parameters (9.4.2.301) carries the counter and SACs that randomise the HE-LTF sequence so an attacker can't spoof or replay the ranging waveform. ISTA Availability Window (9.4.2.298) and RSTA Availability Window (9.4.2.299) are the scheduling bitmaps: the initiator advertises when it can range, the responder grants matching windows.",
+      "zh": "现在看测距家族，各司其职。FTM Parameters（9.4.2.166）在两个站点之间通告并协商 FTM 会话配置。FTM Synchronization Information（9.4.2.171）携带 TSF 的低 4 字节，使被动监听者能对齐自己的时钟。Ranging Parameters（9.4.2.300）是 802.11az 的会话合同——TB 与非 TB 模式、安全 HE-LTF 要求、Tx 窗口选择、可用窗口以及最大会话计时器。Secure HE-LTF Parameters（9.4.2.301）携带计数器与 SAC，用于随机化 HE-LTF 序列，使攻击者无法伪造或重放测距波形。ISTA Availability Window（9.4.2.298）与 RSTA Availability Window（9.4.2.299）是调度位图：发起方通告自己何时可以测距，响应方据此分配匹配的窗口。"
+    },
+    {
+      "type": "prose",
+      "en": "The angle and results elements finish the picture. Direction Measurement Results (9.4.2.302) reports angle-of-arrival (AOA) and angle-of-departure (AOD) — azimuth and elevation — so a device gets direction, not just distance. PASN Parameters (9.4.2.305) drives Pre-Association Security Negotiation: it lets a station establish keys for secure ranging without a full association, with a Control field flagging the comeback info, finite-cyclic-group, and ephemeral-public-key fields (the actual crypto travelling in Wrapped Data). For the passive trigger-based mode, ISTA Passive TB Ranging Measurement Report (9.4.2.306) and RSTA Passive TB Ranging Measurement Report (9.4.2.307) convey/broadcast the measured results, and Passive TB Ranging LCI Table (9.4.2.308) lets an RSTA broadcast the location (LCI) data for participating ISTAs. Finally LOS Likelihood (9.4.2.309) attaches a log-likelihood ratio estimating whether a measurement came over a clean line-of-sight path or a reflected one — crucial because a bounced signal travels farther and inflates the range.",
+      "zh": "角度与结果类元素把整幅图补完整。Direction Measurement Results（9.4.2.302）上报到达角（AOA）与出发角（AOD）——方位角与俯仰角——使设备获得的不只是距离，还有方向。PASN Parameters（9.4.2.305）驱动“关联前安全协商”：它让站点无需完整关联即可为安全测距建立密钥，其 Control 字段标记 comeback 信息、有限循环群以及临时公钥等字段的存在（真正的密码学数据则在 Wrapped Data 中传输）。对于被动的基于触发的模式，ISTA Passive TB Ranging Measurement Report（9.4.2.306）与 RSTA Passive TB Ranging Measurement Report（9.4.2.307）传送/广播测量结果，而 Passive TB Ranging LCI Table（9.4.2.308）则让 RSTA 广播参与的 ISTA 的位置（LCI）数据。最后，LOS Likelihood（9.4.2.309）附上一个对数似然比，估计某次测量是来自干净的视距路径还是反射路径——这至关重要，因为反射信号走得更远，会夸大测距结果。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the recurring pair of roles in 802.11az: ISTA = the initiating STA (the one asking 'how far am I from you?') and RSTA = the responding STA (usually the AP). The availability windows, passive reports, and LCI table all come in ISTA/RSTA flavours because the two ends play asymmetric parts in the timestamp dance.",
+      "zh": "注意 802.11az 中反复出现的一对角色：ISTA = 发起站（即问“我离你有多远？”的一方），RSTA = 响应站（通常是 AP）。可用窗口、被动报告和 LCI 表都分 ISTA/RSTA 两种版本，因为这两端在时间戳的“舞蹈”中扮演着不对称的角色。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Where the time-of-flight maths and the randomised-LTF protection actually live",
+        "zh": "飞行时间数学与随机化 LTF 保护究竟落在何处"
+      },
+      "en": "The ISTA Availability Window element (9.4.2.298) carries a Count subfield giving the bitmap size and an Availability Bitmap where each bit Bk marks the ISTA's periodic availability for TB ranging in the interval [tstart,k, tend,k] repeated every N TUs, with tstart,k = tstart,0 + 10k TU and each bit valued in units of 10 TUs (Equation 9-12). The RSTA Availability Window (9.4.2.299) replies with Availability Window Information subfields of Partial TSF Timer, Duration (units of 100 µs), and Periodicity (units of 100 TU). On the security side, Secure HE-LTF Parameters (9.4.2.301) carries a Secure LTF Counter used to derive the randomised LTF sequence of the I2R and R2I NDPs, a Validation SAC that validates that sequence, and a Measurement SAC verifying both ends used the same sequence — the mechanism that stops an attacker forging the ranging waveform to fake a closer distance. LOS Likelihood (9.4.2.309) encodes 40 × log10 of the ratio of LOS-path to non-LOS-path probability as a signed 8-bit number.",
+      "zh": "ISTA Availability Window 元素（9.4.2.298）携带一个 Count 子字段给出位图大小，以及一个 Availability Bitmap，其中每个比特 Bk 标记 ISTA 在区间 [tstart,k, tend,k] 内、以每 N 个 TU 为周期重复的 TB 测距可用性，其中 tstart,k = tstart,0 + 10k TU，每个比特以 10 个 TU 为单位取值（公式 9-12）。RSTA Availability Window（9.4.2.299）以若干 Availability Window Information 子字段作答，包含 Partial TSF Timer、Duration（单位 100 µs）与 Periodicity（单位 100 TU）。在安全侧，Secure HE-LTF Parameters（9.4.2.301）携带一个 Secure LTF Counter，用于推导 I2R 与 R2I NDP 的随机化 LTF 序列；一个 Validation SAC 用于验证该序列；以及一个 Measurement SAC 用于核实两端使用了相同的序列——这正是阻止攻击者伪造测距波形以假冒更近距离的机制。LOS Likelihood（9.4.2.309）以一个有符号 8 位数字编码 LOS 路径概率与非 LOS 路径概率之比的 40 × log10。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1556,
+          1557,
+          1566,
+          1575
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.4.2.166",
+    "80211-2024:9.4.2.171",
+    "80211-2024:9.4.2.174",
+    "80211-2024:9.4.2.175",
+    "80211-2024:9.4.2.176",
+    "80211-2024:9.4.2.177",
+    "80211-2024:9.4.2.178",
+    "80211-2024:9.4.2.179",
+    "80211-2024:9.4.2.180",
+    "80211-2024:9.4.2.181",
+    "80211-2024:9.4.2.182",
+    "80211-2024:9.4.2.183",
+    "80211-2024:9.4.2.184",
+    "80211-2024:9.4.2.185",
+    "80211-2024:9.4.2.188",
+    "80211-2024:9.4.2.298",
+    "80211-2024:9.4.2.299",
+    "80211-2024:9.4.2.300",
+    "80211-2024:9.4.2.301",
+    "80211-2024:9.4.2.302",
+    "80211-2024:9.4.2.305",
+    "80211-2024:9.4.2.306",
+    "80211-2024:9.4.2.307",
+    "80211-2024:9.4.2.308",
+    "80211-2024:9.4.2.309"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1312,
+        1326,
+        1329
+      ],
+      "note": "9.4.2.166 FTM Parameters; 9.4.2.171 FTM Synchronization Information; 9.4.2.174 Association Delay Info; 9.4.2.175 CAG Number"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1333,
+        1334,
+        1335,
+        1337,
+        1341,
+        1343
+      ],
+      "note": "9.4.2.176-185, 188 FILS family — Request Parameters, Key Confirmation, Session, Public Key, AP-CSN, Indication, HLP Container, IP Address Assignment, Key Delivery, DILS, Wrapped Data, FILS Nonce"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1556,
+        1557,
+        1559,
+        1566,
+        1567,
+        1570,
+        1572,
+        1573,
+        1574,
+        1575
+      ],
+      "note": "9.4.2.298-309 ranging family — ISTA/RSTA Availability Window, Ranging Parameters, Secure HE-LTF Parameters, Direction Measurement Results, PASN Parameters, ISTA/RSTA Passive TB Ranging Reports, Passive TB Ranging LCI Table, LOS Likelihood"
+    }
+  ],
+  "track": "frames"
+}

@@ -1,0 +1,158 @@
+{
+  "id": "frames-30",
+  "title": {
+    "en": "ANQP elements (9.4.5): the pre-association questions Hotspot clients ask",
+    "zh": "ANQP 元素（9.4.5）：关联前热点客户端发起的问询"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Before a phone joins a public Hotspot, it would like to know a few things: who runs this network, what will it cost me, can my carrier offload here, and is there a way to dial 911? The Access Network Query Protocol (ANQP) is how a station asks. Each answerable item is a small self-describing record called an ANQP-element, and clause 9.4.5 is the catalogue of them. The mood of the whole catalogue is one line: 'before I associate, tell me who you are and what you offer.'",
+      "zh": "在手机加入一个公共热点之前，它想先弄清几件事：这张网由谁运营、用起来要花多少钱、我的运营商能不能在这里卸载流量、出事了能不能拨打紧急电话？接入网络查询协议（ANQP）就是站点用来问这些问题的方式。每一个可被回答的条目都是一条自描述的小记录，称为 ANQP 元素，而第 9.4.5 节正是它们的目录。整本目录的基调就是一句话：“在我关联之前，先告诉我你是谁、能提供什么。”"
+    },
+    {
+      "type": "prose",
+      "en": "Every ANQP-element shares the same tiny envelope: a 2-octet Info ID that names which question this is, a 2-octet Length, then the Information payload. The IDs live in Table 9-426 (256 = Query List, 257 = Capability List, 258 = Venue Name, and so on). These elements ride inside GAS frames, the generic container that carries advertisement queries while the station is still unassociated — so all of this happens before the station ever joins.",
+      "zh": "每个 ANQP 元素都共用同一个极简“信封”：一个 2 字节的 Info ID（标明这是哪个问题）、一个 2 字节的 Length（长度），随后是 Information（信息）负载。这些 ID 定义在表 9-426 中（256 = Query List、257 = Capability List、258 = Venue Name，以此类推）。这些元素被装载在 GAS 帧里——GAS 是站点尚未关联时承载“广告类查询”的通用容器——因此这一切都发生在站点真正入网之前。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two elements form the question/answer scaffolding. The Query List (9.4.5.2) is the station's shopping list — a sequence of Info IDs it wants answered, ordered by increasing ID. The Capability List (9.4.5.3) is the AP's menu — the Info IDs it is actually willing to answer (always including the Capability List ID itself, plus any Vendor Specific entries). Ask with the first; learn what's on offer with the second.",
+      "zh": "有两个元素构成了“问/答”的骨架。Query List（查询列表，9.4.5.2）是站点的购物清单——它想要得到回答的一串 Info ID，按 ID 递增排列。Capability List（能力列表，9.4.5.3）则是 AP 的菜单——它实际愿意回答的那些 Info ID（其中必定包含 Capability List 本身的 ID，外加任何 Vendor Specific 条目）。用前者发问，用后者了解“供应清单”。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Station (unassociated)\n    participant AP as Hotspot AP\n    Note over STA: build Query List (Info IDs I want)\n    STA->>AP: GAS Request carrying Query List ANQP-element\n    Note over AP: look up each Info ID in its config\n    AP->>STA: GAS Response: Venue Name, NAI Realm, 3GPP Cellular, ...\n    Note over STA: now decide whether to associate",
+      "zh": "sequenceDiagram\n    participant STA as 站点（未关联）\n    participant AP as 热点 AP\n    Note over STA: 构造 Query List（我想要的 Info ID）\n    STA->>AP: GAS 请求，携带 Query List ANQP 元素\n    Note over AP: 在配置中逐个查找各 Info ID\n    AP->>STA: GAS 响应：Venue Name、NAI Realm、3GPP Cellular……\n    Note over STA: 据此决定是否关联"
+    },
+    {
+      "type": "prose",
+      "en": "Now the answerable items, each one a single question. Where am I? — Venue Name (9.4.5.4) gives the venue's human-readable name, and Venue URL (9.4.5.20) points to a web page tied to that name. Can I reach emergency services? — Emergency Call Number (9.4.5.5) lists the local emergency dialled digits, Emergency NAI (9.4.5.17) supplies an identity string for emergency-access requests, and Emergency Alert URI (9.4.5.16) gives a URL to fetch an emergency alert (EAS) message. How do I get onto the network? — Network Authentication Type (9.4.5.6) lists what's required (accept terms, online enrollment, http/https or DNS redirect), and Network Authentication Type with Timestamp (9.4.5.23) adds a timestamp so the client can tell if cached terms are stale.",
+      "zh": "现在来看可被回答的各个条目，每个都对应一个问题。我在哪里？——Venue Name（场所名称，9.4.5.4）给出场所的可读名称，Venue URL（9.4.5.20）则指向与该名称关联的网页。我能否联系紧急服务？——Emergency Call Number（紧急呼叫号码，9.4.5.5）列出本地紧急拨号位串，Emergency NAI（9.4.5.17）提供用于紧急接入请求的身份字符串，Emergency Alert URI（紧急警报 URI，9.4.5.16）给出可用于获取紧急警报（EAS）消息的 URL。我该如何上网？——Network Authentication Type（网络认证类型，9.4.5.6）列出所需步骤（接受条款、在线注册、http/https 或 DNS 重定向），而 Network Authentication Type with Timestamp（带时间戳的网络认证类型，9.4.5.23）额外携带一个时间戳，让客户端能判断本地缓存的条款是否已过时。"
+    },
+    {
+      "type": "prose",
+      "en": "Who can I roam with, and who am I really talking to? — Roaming Consortium (9.4.5.7) lists the OIs of roaming partners reachable through this AP, NAI Realm (9.4.5.10) lists the login domains and the EAP methods each accepts, Excluded NAI Realm (9.4.5.35) names realms that are NOT reachable even if their consortium is advertised, and Domain Name (9.4.5.15) gives the operator's own domain names. Will my phone bill work here? — 3GPP Cellular Network (9.4.5.11) carries carrier network/country codes for cellular offload. What will it cost, and on what terms? — Advice of Charge (9.4.5.21) describes charging plans (time, data, unlimited), Service Level Agreement (9.4.5.34) advertises the roaming SLA tiers offered, and Credential Types (9.4.5.33) says which credential kinds and validation levels the AP accepts.",
+      "zh": "我能与谁漫游，又究竟在与谁打交道？——Roaming Consortium（漫游联盟，9.4.5.7）列出通过本 AP 可达的漫游伙伴的 OI，NAI Realm（NAI 域，9.4.5.10）列出登录域以及各域接受的 EAP 方法，Excluded NAI Realm（被排除的 NAI 域，9.4.5.35）则指明那些即便其联盟被通告、仍无法经本 AP 访问的域，Domain Name（域名，9.4.5.15）给出运营商自身的域名。我的手机套餐能在这里用吗？——3GPP Cellular Network（3GPP 蜂窝网络，9.4.5.11）携带用于蜂窝卸载的运营商网络码/国家码。要花多少钱、按什么条款？——Advice of Charge（资费提示，9.4.5.21）描述计费方案（按时长、按流量、不限量），Service Level Agreement（服务等级协议，9.4.5.34）通告所提供的漫游 SLA 等级，Credential Types（凭证类型，9.4.5.33）说明 AP 接受哪些凭证种类及其验证级别。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 520 250' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='10' y='10' width='500' height='40' rx='4'/><line x1='150' y1='10' x2='150' y2='50'/><line x1='290' y1='10' x2='290' y2='50'/><text x='80' y='35' text-anchor='middle' stroke='none' fill='currentColor' font-size='13'>Info ID (2)</text><text x='220' y='35' text-anchor='middle' stroke='none' fill='currentColor' font-size='13'>Length (2)</text><text x='400' y='35' text-anchor='middle' stroke='none' fill='currentColor' font-size='13'>Information (variable)</text><text x='10' y='75' stroke='none' fill='currentColor' font-size='12'>Same 4-octet envelope for every element; Info ID names the question:</text><rect x='10' y='90' width='240' height='22' rx='3'/><text x='130' y='105' text-anchor='middle' stroke='none' fill='currentColor' font-size='11'>258 Venue Name — where am I?</text><rect x='270' y='90' width='240' height='22' rx='3'/><text x='390' y='105' text-anchor='middle' stroke='none' fill='currentColor' font-size='11'>263 NAI Realm — which logins?</text><rect x='10' y='120' width='240' height='22' rx='3'/><text x='130' y='135' text-anchor='middle' stroke='none' fill='currentColor' font-size='11'>264 3GPP — carrier offload?</text><rect x='270' y='120' width='240' height='22' rx='3'/><text x='390' y='135' text-anchor='middle' stroke='none' fill='currentColor' font-size='11'>259 Emergency Call — dial 911?</text><rect x='10' y='150' width='240' height='22' rx='3'/><text x='130' y='165' text-anchor='middle' stroke='none' fill='currentColor' font-size='11'>261 Roaming Consortium — partners?</text><rect x='270' y='150' width='240' height='22' rx='3'/><text x='390' y='165' text-anchor='middle' stroke='none' fill='currentColor' font-size='11'>278 Advice of Charge — cost?</text><rect x='10' y='180' width='240' height='22' rx='3'/><text x='130' y='195' text-anchor='middle' stroke='none' fill='currentColor' font-size='11'>268 Domain Name — operator?</text><rect x='270' y='180' width='240' height='22' rx='3'/><text x='390' y='195' text-anchor='middle' stroke='none' fill='currentColor' font-size='11'>262 IP Type — IPv4/IPv6?</text><text x='10' y='225' stroke='none' fill='currentColor' font-size='11'>56797 Vendor Specific — anything not standardized, namespaced by OI.</text></svg>",
+      "caption": {
+        "en": "One envelope, many questions: a sampling of ANQP Info IDs and the single thing each answers.",
+        "zh": "一个信封，多个问题：部分 ANQP Info ID 及其各自回答的那件事。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "A few more practical questions round out the catalogue. Will I get a usable IP? — IP Address Type Availability (9.4.5.9) says whether IPv6 and what flavour of IPv4 (public, NATed, port-restricted) you'd be handed. Exactly where is this AP? — AP Geospatial Location (9.4.5.12) gives coordinates (LCI), AP Civic Location (9.4.5.13) gives a street address, and AP Location Public Identifier URI/FQDN (9.4.5.14) gives an indirect pointer to that location. What else can this network do? — TDLS Capability (9.4.5.18) lets a station probe a peer's direct-link support, Neighbor Report (9.4.5.19) hands back neighbouring-AP reports useful before association, Local Content (9.4.5.22) offers URLs for venue-local content, and Local MAC Address Policy (9.4.5.29) advertises whether the ESS permits randomized local MAC addresses (and any restricted prefixes). And the escape hatch: Vendor Specific (9.4.5.8) carries anything not standardized, namespaced by an organization identifier so reserved IDs aren't abused.",
+      "zh": "还有几个偏实用的问题为目录收尾。我能拿到可用的 IP 吗？——IP Address Type Availability（IP 地址类型可用性，9.4.5.9）说明是否提供 IPv6、以及会分到哪种 IPv4（公网、经 NAT、端口受限）。这个 AP 究竟在哪儿？——AP Geospatial Location（AP 地理空间位置，9.4.5.12）给出坐标（LCI），AP Civic Location（AP 民用地址，9.4.5.13）给出街道地址，AP Location Public Identifier URI/FQDN（AP 位置公共标识 URI/FQDN，9.4.5.14）给出指向该位置的间接引用。这张网还能做什么？——TDLS Capability（TDLS 能力，9.4.5.18）让站点探询对端的直连支持，Neighbor Report（邻居报告，9.4.5.19）返回关联前有用的邻近 AP 报告，Local Content（本地内容，9.4.5.22）提供面向场所本地内容的 URL，Local MAC Address Policy（本地 MAC 地址策略，9.4.5.29）通告该 ESS 是否允许随机化的本地 MAC 地址（及任何受限前缀）。还有那个兜底口子：Vendor Specific（厂商专有，9.4.5.8）承载任何未标准化的内容，并以组织标识（OI）作命名空间，避免预留 ID 被滥用。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "How the envelope and a couple of tricky elements are actually built",
+        "zh": "信封与几个棘手元素的实际构造"
+      },
+      "en": "Per 9.4.5.1, every ANQP-element is Info ID (2 octets) + Length (2 octets) + Information, with the valid Info IDs in Table 9-426. The Query List (9.4.5.2) Information is just n x 2-octet ANQP Query ID subfields, each an Info ID, ordered by monotonically increasing value; the Capability List (9.4.5.3) returns the answerable Info IDs (always including its own) by nondecreasing value plus any Vendor Specific elements. NAI Realm (9.4.5.10) is richer: an NAI Realm Count then per-realm tuples carrying an encoding byte, the realm string (semicolon-delimited, RFC 4282 or free UTF-8), and an EAP Method Count with EAP Method tuples whose Authentication Parameter IDs (Table 9-430) enumerate credential types like SIM/USIM/certificate/username-password. Local MAC Address Policy (9.4.5.29) is a SLAP-quadrant bitmap (Table 9-435) plus a count and list of Restricted Address Prefix subfields. Credential Types (9.4.5.33) packs each tuple into 3 octets — Category Group/Type, a 3-bit Validation level (Table 9-443), Lifetime, and a Privacy Indicator. The Network Authentication Type with Timestamp (9.4.5.23) reuses the 9.4.5.6 indicator/redirect fields and appends an optional 10-octet Time Value.",
+      "zh": "依据 9.4.5.1，每个 ANQP 元素都是 Info ID（2 字节）+ Length（2 字节）+ Information，有效的 Info ID 列于表 9-426。Query List（9.4.5.2）的 Information 只是 n 个 2 字节的 ANQP Query ID 子字段，每个都是一个 Info ID，按数值单调递增排列；Capability List（9.4.5.3）则按非递减数值返回可被回答的 Info ID（必定含其自身），外加任何 Vendor Specific 元素。NAI Realm（9.4.5.10）更为丰富：先是一个 NAI Realm Count，随后是每个域的元组，携带一个编码字节、域字符串（以分号分隔，符合 RFC 4282 或为自由 UTF-8），以及一个 EAP Method Count 与若干 EAP Method 元组——其认证参数 ID（表 9-430）枚举出 SIM/USIM/证书/用户名口令等凭证类型。Local MAC Address Policy（9.4.5.29）是一个 SLAP 象限位图（表 9-435），外加受限地址前缀子字段的计数与列表。Credential Types（9.4.5.33）把每个元组压进 3 字节——Category Group/Type、3 比特的 Validation 级别（表 9-443）、Lifetime 和一个 Privacy Indicator。Network Authentication Type with Timestamp（9.4.5.23）复用 9.4.5.6 的指示符/重定向字段，并附加一个可选的 10 字节 Time Value。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1586,
+          1593,
+          1607,
+          1619
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.4.5.2",
+    "80211-2024:9.4.5.3",
+    "80211-2024:9.4.5.4",
+    "80211-2024:9.4.5.5",
+    "80211-2024:9.4.5.6",
+    "80211-2024:9.4.5.7",
+    "80211-2024:9.4.5.8",
+    "80211-2024:9.4.5.9",
+    "80211-2024:9.4.5.10",
+    "80211-2024:9.4.5.11",
+    "80211-2024:9.4.5.12",
+    "80211-2024:9.4.5.13",
+    "80211-2024:9.4.5.14",
+    "80211-2024:9.4.5.15",
+    "80211-2024:9.4.5.16",
+    "80211-2024:9.4.5.17",
+    "80211-2024:9.4.5.18",
+    "80211-2024:9.4.5.19",
+    "80211-2024:9.4.5.20",
+    "80211-2024:9.4.5.21",
+    "80211-2024:9.4.5.22",
+    "80211-2024:9.4.5.23",
+    "80211-2024:9.4.5.29",
+    "80211-2024:9.4.5.33",
+    "80211-2024:9.4.5.34",
+    "80211-2024:9.4.5.35"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1586,
+        1587,
+        1588
+      ],
+      "note": "9.4.5.1-9.4.5.3 — ANQP-element envelope (Info ID/Length), Table 9-426 Info IDs, Query List and Capability List"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1588,
+        1589,
+        1590,
+        1591,
+        1592,
+        1593
+      ],
+      "note": "9.4.5.4-9.4.5.9 — Venue Name, Emergency Call Number, Network Authentication Type, Roaming Consortium, Vendor Specific, IP Address Type Availability"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1593,
+        1596,
+        1597,
+        1598,
+        1599,
+        1600
+      ],
+      "note": "9.4.5.10-9.4.5.20 — NAI Realm/EAP methods, 3GPP Cellular, AP Geospatial/Civic/Public-Identifier Location, Domain Name, Emergency Alert URI, Emergency NAI, TDLS, Neighbor Report, Venue URL"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1601,
+        1602,
+        1603,
+        1604,
+        1607,
+        1609
+      ],
+      "note": "9.4.5.21-9.4.5.23, 9.4.5.29 — Advice of Charge, Local Content, Network Authentication Type with Timestamp, Local MAC Address Policy (SLAP bitmap)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1619,
+        1620,
+        1621
+      ],
+      "note": "9.4.5.33-9.4.5.35 — Credential Types, Service Level Agreement, Excluded NAI Realm"
+    }
+  ],
+  "track": "frames"
+}

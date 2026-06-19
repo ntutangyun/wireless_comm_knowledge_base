@@ -1,0 +1,132 @@
+{
+  "id": "frames-24",
+  "title": {
+    "en": "Fixed fields II: action plumbing, Block Ack, QoS, power & class control",
+    "zh": "定长字段（二）：动作帧、块确认、QoS、功率与信道控制"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Management frames carry a lot of variable-length elements, but they also lean on a set of small, fixed-size fields — each a tidy little box with exactly one job. This lesson tours the fixed fields behind action frames and the control mechanisms they drive: which action is being requested, how a request and its reply are matched up, how a Block Ack agreement is set up and torn down, what QoS flags a station advertises, and the knobs for transmit power and channel/class. None of these is hard on its own; the trick is knowing which box does which job.",
+      "zh": "管理帧携带了大量可变长度的元素（element），但它们同样依赖一组小巧、定长的字段（field）——每个字段都是一只整洁的小盒子，只干一件事。本课带你巡览支撑动作帧及其驱动机制的这些定长字段：正在请求哪个动作、如何把请求与回复对上号、如何建立和拆除一个块确认（Block Ack）协定、站点会通告哪些 QoS 标志，以及发射功率和信道/操作类的各种旋钮。单看每一个都不难；窍门在于记清哪只盒子干哪件事。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the two fields that make action frames work at all. The Action field has a 1-octet Category (Spectrum Management, QoS, Block Ack, HT, …) plus an Action Details body — it says which extended management action this frame is. Right beside it, the Dialog Token is a 1-octet tag that matches a response back to its request when several action exchanges are in flight at once. Think of Category as the subject line and Dialog Token as the ticket number.",
+      "zh": "先看让动作帧得以运转的两个字段。Action 字段由 1 字节的 Category（类别，如频谱管理、QoS、块确认、HT……）加上一段 Action Details（动作细节）正文组成——它说明这一帧是哪一类扩展管理动作。紧挨着它的 Dialog Token（对话令牌）是一个 1 字节的标记，当多个动作交换同时在途时，用它把回复与对应的请求对上号。可以把 Category 想成邮件的“主题行”，把 Dialog Token 想成“受理单号”。"
+    },
+    {
+      "type": "prose",
+      "en": "Next, the Block Ack family — three fixed fields that set up, time out, and tear down a BA agreement (which lets a sender batch many frames and get one bitmap acknowledgement). The Block Ack Parameter Set, carried in ADDBA Request/Response, signals the agreement parameters: A-MSDU Supported, Block Ack Policy, the TID (which traffic stream), and Buffer Size (how many reorder buffers the recipient offers). The Block Ack Timeout Value gives the inactivity timeout in TUs (0 = never). The Originator Preferred MCS, in the ADDBA Response, signals the S1G-MCS the responder would like the originator to use (value 15 means asymmetric BA isn't supported). And the DELBA Parameter Set, in a DELBA frame, tears the agreement down — its Initiator bit says who is ending it, and its TID says which stream.",
+      "zh": "接着是块确认家族——三个定长字段，负责建立、超时和拆除一个 BA 协定（它让发送方把许多帧成批发送，再用一张位图一次性确认）。Block Ack Parameter Set（块确认参数集）随 ADDBA 请求/响应携带，用来通告协定参数：A-MSDU Supported（是否支持 A-MSDU）、Block Ack Policy（块确认策略）、TID（哪条流量流）以及 Buffer Size（接收方提供多少个重排序缓冲区）。Block Ack Timeout Value（块确认超时值）以 TU 给出不活动超时（0 表示永不超时）。Originator Preferred MCS（发起方首选 MCS）出现在 ADDBA 响应中，通告响应方希望发起方使用的 S1G-MCS（取值 15 表示不支持非对称 BA）。而 DELBA Parameter Set（DELBA 参数集）出现在 DELBA 帧中，用来拆除协定——其 Initiator（发起者）位说明是谁在结束它，TID 说明结束的是哪条流。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 520 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='20' font-size='13' stroke='none' fill='currentColor'>ADDBA Request</text><rect x='10' y='30' width='120' height='28'/><text x='70' y='48' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>BA Parameter Set</text><rect x='130' y='30' width='110' height='28'/><text x='185' y='48' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>BA Timeout Value</text><text x='10' y='85' font-size='13' stroke='none' fill='currentColor'>ADDBA Response</text><rect x='10' y='95' width='120' height='28'/><text x='70' y='113' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>BA Parameter Set</text><rect x='130' y='95' width='110' height='28'/><text x='185' y='113' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>BA Timeout Value</text><rect x='240' y='95' width='130' height='28'/><text x='305' y='113' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>Orig. Preferred MCS</text><text x='400' y='85' font-size='13' stroke='none' fill='currentColor'>DELBA</text><rect x='400' y='95' width='110' height='28'/><text x='455' y='113' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>DELBA Param Set</text></svg>",
+      "caption": {
+        "en": "The Block Ack fixed fields across the agreement lifecycle: parameters and timeout proposed in ADDBA Request, confirmed (plus preferred MCS) in ADDBA Response, and torn down by the DELBA Parameter Set.",
+        "zh": "块确认定长字段贯穿协定生命周期：在 ADDBA 请求中提出参数与超时，在 ADDBA 响应中确认（并附首选 MCS），最后由 DELBA 参数集拆除。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The QoS Info field carries per-STA QoS capability flags, and its contents differ depending on whether an AP or a non-AP STA sends it. From an AP it holds the EDCA Parameter Set Update Count (a counter that bumps when EDCA/MU-EDCA parameters change), Q-Ack, Queue Request, TXOP Request, and More Data Ack. From a non-AP STA it instead carries the four per-AC U-APSD Flags (AC_VO/VI/BK/BE — each marking that AC both trigger- and delivery-enabled for unscheduled power save), Q-Ack, Max SP Length (how many buffered units it will accept per service period), and More Data Ack. Same field name, two layouts, one purpose: advertise this STA's QoS behaviour.",
+      "zh": "QoS Info 字段携带每个站点的 QoS 能力标志，其内容取决于发送方是 AP 还是非 AP 站点。来自 AP 时，它包含 EDCA Parameter Set Update Count（EDCA 参数集更新计数，当 EDCA/MU-EDCA 参数变化时递增）、Q-Ack、Queue Request、TXOP Request 与 More Data Ack。来自非 AP 站点时，它改为携带四个按接入类别（AC）的 U-APSD Flag（AC_VO/VI/BK/BE——每个都标记该 AC 在非调度省电中同时触发使能与投递使能）、Q-Ack、Max SP Length（每个服务周期愿意接收多少个缓冲单元）以及 More Data Ack。字段名相同，两套布局，目的一致：通告本站点的 QoS 行为。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The transmit-power and channel fields are mostly one-octet integers, each a single dial. Measurement Pilot Interval — TUs between measurement-pilot transmissions. Max Transmit Power — signed dBm ceiling at the antenna connector for this channel. Transmit Power Used — signed dBm actually used for this frame (always ≤ the max). Channel Width — in a Notify Channel Width frame, 0 = 20 MHz, 1 = any width in the STA's supported set. Operating Class And Channel — one octet of operating class plus one of channel number, read against the country in the Beacon. SM Power Control — in an SM Power Save frame, two bits: SM Power Save Enabled and SM Mode (1 = dynamic spatial-multiplexing power save, 0 = static).",
+      "zh": "发射功率与信道相关字段大多是单字节整数，各自一只旋钮。Measurement Pilot Interval（测量导频间隔）——相邻测量导频发送之间的 TU 数。Max Transmit Power（最大发射功率）——本信道上天线接口处的带符号 dBm 上限。Transmit Power Used（已用发射功率）——本帧实际使用的带符号 dBm（始终不超过最大值）。Channel Width（信道宽度）——在 Notify Channel Width 帧中，0 = 20 MHz，1 = 站点支持集合中的任意宽度。Operating Class And Channel（操作类与信道）——一个字节的操作类加一个字节的信道号，依 Beacon 中的国家进行解释。SM Power Control（空间复用省电控制）——在 SM Power Save 帧中，两个比特：SM Power Save Enabled（省电使能）与 SM Mode（1 = 动态空间复用省电，0 = 静态）。"
+    },
+    {
+      "type": "prose",
+      "en": "Two final fields round out the tour. The Organization Identifier (OUI) holds a public identifier assigned by the IEEE Registration Authority — a 24-bit OUI/CID (3 octets) or a 36-bit OUI-36 (5 octets) — the prefix that lets vendor-specific and organisation-scoped content be attributed. The Rate Identification field describes a frame rate other than the current one, so services can agree on a rate before using it: a Mask sub-field (MCS Selector + Rate Type) selects which sub-fields apply, an MCS Index picks the row in the relevant HT/VHT/S1G/TVHT MCS tables, and a Rate field gives the legacy PHY rate in 0.5 Mb/s units.",
+      "zh": "最后两个字段为本次巡览收尾。Organization Identifier（组织标识符，OUI）保存由 IEEE 注册管理机构分配的公开标识符——24 位的 OUI/CID（3 字节）或 36 位的 OUI-36（5 字节）——这一前缀让厂商专用内容和组织范围内容得以被归属。Rate Identification（速率标识）字段描述当前帧以外的某个帧速率，使各服务能在使用前就速率达成一致：Mask 子字段（MCS Selector + Rate Type）选定哪些子字段生效，MCS Index 在相应的 HT/VHT/S1G/TVHT MCS 表中选取行，Rate 字段则以 0.5 Mb/s 为单位给出传统 PHY 速率。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Reading the exact bit layouts",
+        "zh": "细读精确的比特布局"
+      },
+      "en": "The Block Ack Parameter Set (Figure 9-151) is 16 bits: A-MSDU Supported (B0), Block Ack Policy (B1, set to 1 for a non-DMG STA), TID (B2–B5), and Buffer Size (B6–B15) — and in an ADDBA Response with Status SUCCESS the Buffer Size is at least 1. The DELBA Parameter Set (Figure 9-154) reserves B0–B10, then Initiator (B11) and TID (B12–B15). The Originator Preferred MCS (Figure 9-153) reserves B0–B11 and carries a 4-bit MCS (B12–B15) whose value 15 signals asymmetric BA is unsupported. The Operating Class And Channel field (Figure 9-161) is simply one octet of Operating Class followed by one octet of Channel, both interpreted via Annex E in the country's context; the Channel Width field's value 1 means \"any width in the STA's Supported Channel Width Set\". The Action field's Category draws from Table 9-81 (0 Spectrum Management, 1 QoS, 3 Block Ack, 7 HT, and so on), and the Organization Identifier is 3 octets for a 24-bit OUI/CID or 5 octets for a 36-bit OUI-36.",
+      "zh": "Block Ack Parameter Set（图 9-151）共 16 位：A-MSDU Supported（B0）、Block Ack Policy（B1，非 DMG 站点置 1）、TID（B2–B5）与 Buffer Size（B6–B15）——并且在状态为 SUCCESS 的 ADDBA 响应中，Buffer Size 至少为 1。DELBA Parameter Set（图 9-154）保留 B0–B10，随后是 Initiator（B11）与 TID（B12–B15）。Originator Preferred MCS（图 9-153）保留 B0–B11，携带 4 位 MCS（B12–B15），取值 15 表示不支持非对称 BA。Operating Class And Channel 字段（图 9-161）就是一个字节的 Operating Class 后接一个字节的 Channel，二者均依国家上下文按附录 E 解释；Channel Width 字段取值 1 表示“站点支持信道宽度集合中的任意宽度”。Action 字段的 Category 取自表 9-81（0 频谱管理、1 QoS、3 块确认、7 HT 等等），而 Organization Identifier 在 24 位 OUI/CID 时为 3 字节、在 36 位 OUI-36 时为 5 字节。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          850,
+          851,
+          852,
+          855,
+          864
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.4.1.11",
+    "80211-2024:9.4.1.12",
+    "80211-2024:9.4.1.13",
+    "80211-2024:9.4.1.14",
+    "80211-2024:9.4.1.15",
+    "80211-2024:9.4.1.16",
+    "80211-2024:9.4.1.17",
+    "80211-2024:9.4.1.18",
+    "80211-2024:9.4.1.19",
+    "80211-2024:9.4.1.20",
+    "80211-2024:9.4.1.21",
+    "80211-2024:9.4.1.22",
+    "80211-2024:9.4.1.23",
+    "80211-2024:9.4.1.29",
+    "80211-2024:9.4.1.30"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        848,
+        849,
+        850
+      ],
+      "note": "9.4.1.11-9.4.1.13 Action field (Category, Table 9-81), Dialog Token, Block Ack Parameter Set"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        851,
+        852
+      ],
+      "note": "9.4.1.14-9.4.1.16 Block Ack Timeout Value, Originator Preferred MCS, DELBA Parameter Set"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        852,
+        853
+      ],
+      "note": "9.4.1.17-9.4.1.18 QoS Info (AP vs non-AP STA layouts; U-APSD flags, Max SP Length), Measurement Pilot Interval"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        853,
+        854,
+        855
+      ],
+      "note": "9.4.1.19-9.4.1.23 Max Transmit Power, Transmit Power Used, Channel Width, Operating Class And Channel, SM Power Control"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        864,
+        865,
+        866
+      ],
+      "note": "9.4.1.29-9.4.1.30 Organization Identifier (OUI/CID/OUI-36) and Rate Identification (Mask, MCS Index, Rate)"
+    }
+  ],
+  "track": "frames"
+}

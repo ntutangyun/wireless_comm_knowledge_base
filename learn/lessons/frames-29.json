@@ -1,0 +1,150 @@
+{
+  "id": "frames-29",
+  "title": {
+    "en": "6 GHz discovery & efficiency elements: RNR, Multiple BSSID, WUR and friends",
+    "zh": "6 GHz 发现与省电元素：RNR、多 BSSID、WUR 等"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Modern Wi-Fi networks are dense and increasingly live on 6 GHz, where there are far too many channels for a client to scan one by one. So the standard adds a family of clause-9 elements with a single shared goal: tell a client about other channels, other BSSes, and upcoming changes up front, so it spends less time awake and scanning. This lesson is a guided tour of that family — each element does exactly one small job, and once you see the jobs grouped, the long list stops looking intimidating.",
+      "zh": "现代 Wi-Fi 网络越来越密集，而且大量部署在 6 GHz 频段——那里的信道太多，客户端根本无法逐个扫描。于是标准新增了一组 clause-9 元素，它们有一个共同目标：提前把“其他信道、其他 BSS、即将发生的变化”告诉客户端，让它少醒着、少扫描。本课就是对这一组元素的导览——每个元素只做一件小事；一旦你把这些“小事”归类，这份长长的清单就不再吓人了。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: there are three buckets. (1) Out-of-band discovery — point the client at radios it can't currently hear. (2) One beacon, many APs — let a single transmitted BSSID carry the profiles of several virtual APs. (3) Sip power — wake-up radio and opportunistic power save so a sleepy device barely listens. Almost every element below falls into one of these three.",
+      "zh": "记忆模型：分三类。(1) 带外发现——把客户端指向它当前听不到的射频；(2) 一个信标、多个 AP——让单个“发送 BSSID”携带多个虚拟 AP 的配置；(3) 省电——唤醒射频与机会式省电，让休眠设备几乎不用监听。下面几乎每个元素都落入这三类之一。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[\"Discovery & efficiency elements\"] --> B[\"Out-of-band discovery\"]\n    A --> C[\"One beacon, many APs (Multiple BSSID set)\"]\n    A --> D[\"Sip power & smooth handoff\"]\n    B --> B1[\"RNR: neighbor APs on other channels\"]\n    B --> B2[\"Known BSSID / Short SSID List: ask for what I don't know yet\"]\n    C --> C1[\"Multiple BSSID + BSSID-Index + Config\"]\n    C --> C2[\"Nontransmitted BSSID Capability + Non-Inheritance\"]\n    D --> D1[\"WUR family: wake-up radio\"]\n    D --> D2[\"OPS / ESS Report / Max CSW Time / Future Channel Guidance\"]\n    D --> D3[\"Estimated Service Params In/Out, Service Hint/Hash\"]",
+      "zh": "flowchart TD\n    A[\"发现与省电元素\"] --> B[\"带外发现\"]\n    A --> C[\"一信标多 AP（多 BSSID 集合）\"]\n    A --> D[\"省电与平滑切换\"]\n    B --> B1[\"RNR：其他信道上的邻居 AP\"]\n    B --> B2[\"Known BSSID / Short SSID List：索要我还不知道的\"]\n    C --> C1[\"Multiple BSSID + BSSID-Index + Config\"]\n    C --> C2[\"Nontransmitted BSSID Capability + Non-Inheritance\"]\n    D --> D1[\"WUR 系列：唤醒射频\"]\n    D --> D2[\"OPS / ESS Report / Max CSW Time / Future Channel Guidance\"]\n    D --> D3[\"入/出向预估服务参数, Service Hint/Hash\"]"
+    },
+    {
+      "type": "prose",
+      "en": "Bucket 1 — out-of-band discovery. The Reduced Neighbor Report (RNR) is the star: it lists neighbor APs by operating class, channel, and TBTT, so a 6 GHz radio can be found without sweeping every channel. The Short SSID List lets a client request info using compact 4-octet short SSIDs instead of full SSIDs, and the Known BSSID element lets a client tell the AP which nontransmitted BSSIDs it has already discovered, so a directed Probe Request only fetches the ones it's still missing.",
+      "zh": "第一类——带外发现。精简邻居报告（RNR）是主角：它按操作类、信道、TBTT 列出邻居 AP，于是无需逐信道扫描就能发现 6 GHz 射频。Short SSID List 让客户端用紧凑的 4 字节短 SSID（而非完整 SSID）来请求信息；Known BSSID 元素则让客户端告诉 AP 它已经发现了哪些非发送 BSSID，从而定向探测请求只去补它还缺的那些。"
+    },
+    {
+      "type": "prose",
+      "en": "Bucket 2 — one beacon advertising many virtual APs. The Multiple BSSID element packs several BSSIDs into one beacon: a single transmitted BSSID broadcasts, while the others are 'nontransmitted'. Inside, each nontransmitted profile carries a Nontransmitted BSSID Capability element (that BSS's capabilities) and a Multiple BSSID-Index element (its index in the set, which also fixes its DTIM offset). The Multiple BSSID Configuration element states how many BSSIDs are active and how many beacons a scanner must catch to see them all. Because the nontransmitted profiles inherit most fields from the transmitted one, the Non-Inheritance element lists the few elements a given virtual AP should NOT inherit.",
+      "zh": "第二类——一个信标宣告多个虚拟 AP。Multiple BSSID 元素把若干 BSSID 打包进一个信标：单个“发送 BSSID”负责广播，其余为“非发送”。在其内部，每个非发送配置都带有 Nontransmitted BSSID Capability 元素（该 BSS 的能力）和 Multiple BSSID-Index 元素（它在集合中的索引，同时确定其 DTIM 偏移）。Multiple BSSID Configuration 元素说明有多少个 BSSID 处于活动状态，以及扫描者需要捕获多少个信标才能看全它们。由于非发送配置会从发送配置继承大部分字段，Non-Inheritance 元素就负责列出某个虚拟 AP 不应继承的那几个元素。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why inheritance matters: instead of repeating HT/VHT/HE operation, country, TPC and so on for every virtual AP, the transmitted BSSID states them once and the nontransmitted ones inherit. Non-Inheritance is the small 'except these' override — it keeps the combined beacon short, which is the whole point of Multiple BSSID on a crowded 6 GHz channel.",
+      "zh": "继承为何重要：与其为每个虚拟 AP 重复 HT/VHT/HE 操作、国家码、TPC 等字段，不如由发送 BSSID 声明一次、其余非发送 BSSID 继承。Non-Inheritance 就是那个小小的“除了这些之外”的覆盖项——它让合并后的信标保持精简，而这正是在拥挤的 6 GHz 信道上使用 Multiple BSSID 的全部意义。"
+    },
+    {
+      "type": "prose",
+      "en": "Bucket 3 — sip power and smooth the handoff. The Wake-Up Radio (WUR) family lets a main radio sleep while a tiny low-power companion radio listens: WUR Capabilities advertises a STA is WUR-capable, WUR Operation carries the parameters (duty-cycle period, WUR channel, TWBTT offset), WUR Mode negotiates entering/leaving WUR mode and group assignment, WUR Discovery advertises which channels carry WUR Discovery frames, and WUR PN Update refreshes the packet-number counter that protects WUR frames. Alongside them: OPS (opportunistic power save) tells STAs the duration of an OPS service period; ESS Report says whether the BSS is part of a planned ESS and gives a recommended roam RSSI threshold; Max Channel Switch Time tells clients the worst-case gap between the last beacon on the old channel and the first on the new one; and Future Channel Guidance hints which channel the AP is likely to move to next.",
+      "zh": "第三类——省电并让切换更平滑。唤醒射频（WUR）系列让主射频休眠、而一个极低功耗的伴随射频负责监听：WUR Capabilities 宣告某站点支持 WUR；WUR Operation 携带参数（占空比周期、WUR 信道、TWBTT 偏移）；WUR Mode 协商进入/退出 WUR 模式以及分组归属；WUR Discovery 宣告哪些信道承载 WUR Discovery 帧；WUR PN Update 则刷新保护 WUR 帧的分组号计数器。与它们并列的还有：OPS（机会式省电）告知站点一个 OPS 服务周期的时长；ESS Report 说明该 BSS 是否属于一个有规划的 ESS，并给出建议的漫游 RSSI 门限；Max Channel Switch Time 告知客户端旧信道最后一个信标与新信道第一个信标之间的最坏间隔；Future Channel Guidance 则提示 AP 下一步可能切到哪个信道。"
+    },
+    {
+      "type": "prose",
+      "en": "Two last efficiency helpers round out the family. Estimated Service Parameters Inbound and Estimated Service Parameters Outbound each carry a per-access-category air-time estimate, so a joining STA can predict the throughput it would get into and out of a BSS before committing. And the Service Hint (a compact Bloom filter) and Service Hash (one or more 6-octet service hashes) let an AP advertise which higher-layer services it offers, so a client can pick a network by service availability — again, deciding before it wastes airtime associating.",
+      "zh": "还有两个效率辅助元素为这一组收尾。Estimated Service Parameters Inbound 与 Estimated Service Parameters Outbound 各自按接入类别携带空口时间预估，让待入网站点在“下决心”之前就能预测进入和离开某个 BSS 时能拿到的吞吐。而 Service Hint（一个紧凑的布隆过滤器）与 Service Hash（一个或多个 6 字节服务哈希）让 AP 宣告它提供哪些高层服务，客户端便可按服务可用性挑选网络——同样是在浪费空口时间去关联之前就先做判断。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What RNR actually carries, and how Multiple BSSID derives its BSSIDs",
+        "zh": "RNR 究竟携带什么，以及 Multiple BSSID 如何推导各 BSSID"
+      },
+      "en": "Per 9.4.2.169, the Reduced Neighbor Report element holds one or more Neighbor AP Information fields, each describing a group of neighbor APs on one channel via an Operating Class, a Channel Number, and a TBTT Information Set; a TBTT Information Header subfield gives the TBTT Information Field Type (0 or 1), a TBTT Information Count, and a per-field TBTT Information Length, so a 6 GHz radio learns exactly when and where to find neighbors without scanning. Per 9.4.2.44, the Multiple BSSID element's MaxBSSID Indicator field encodes n, where 2^n is the maximum set size (max n = 8); BSSID(i) is derived arithmetically from the reference BSSID, and each nontransmitted profile begins with the Nontransmitted BSSID Capability element, then SSID, then the Multiple BSSID-Index element (9.4.2.72), whose BSSID Index between 1 and 2^n - 1 also sets that BSS's DTIM position. The Multiple BSSID Configuration element (9.4.2.259) adds a BSSID Count and a Full Set Rx Periodicity — the minimum number of beacons a scanner must receive to discover every active nontransmitted BSSID.",
+      "zh": "依据 9.4.2.169，精简邻居报告元素包含一个或多个 Neighbor AP Information 字段，每个字段通过 Operating Class、Channel Number 以及 TBTT Information Set 描述同一信道上的一组邻居 AP；其 TBTT Information Header 子字段给出 TBTT Information Field Type（0 或 1）、TBTT Information Count，以及每个字段的 TBTT Information Length，因此 6 GHz 射频无需扫描就能确切知道何时何地能找到邻居。依据 9.4.2.44，Multiple BSSID 元素的 MaxBSSID Indicator 字段编码 n，其中 2^n 为集合的最大规模（n 最大为 8）；BSSID(i) 由参考 BSSID 经算术推导得到，而每个非发送配置以 Nontransmitted BSSID Capability 元素开头，随后是 SSID，再是 Multiple BSSID-Index 元素（9.4.2.72），其取值在 1 到 2^n - 1 之间的 BSSID Index 同时确定该 BSS 的 DTIM 位置。Multiple BSSID Configuration 元素（9.4.2.259）再补充一个 BSSID Count 和一个 Full Set Rx Periodicity——扫描者要发现全部活动非发送 BSSID 所需接收的最少信标数。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1320,
+          1110,
+          1175,
+          1473
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1320,
+        1321
+      ],
+      "note": "9.4.2.169 Reduced Neighbor Report element — Neighbor AP Information field, TBTT Information Header/Count/Length"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1110,
+        1111,
+        1174,
+        1175
+      ],
+      "note": "9.4.2.44 Multiple BSSID; 9.4.2.70 Nontransmitted BSSID Capability; 9.4.2.72 Multiple BSSID-Index"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1431,
+        1473,
+        1474,
+        1475
+      ],
+      "note": "9.4.2.239 Non-Inheritance; 9.4.2.259 Multiple BSSID Configuration; 9.4.2.260 Known BSSID; 9.4.2.261 Short SSID List"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1545,
+        1547,
+        1548,
+        1553,
+        1554
+      ],
+      "note": "9.4.2.290-294 WUR Capabilities / Operation / Mode / Discovery / PN Update"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1400,
+        1427,
+        1428,
+        1429,
+        1470,
+        1471,
+        1327,
+        1329
+      ],
+      "note": "9.4.2.216 Max Channel Switch Time; 9.4.2.234 ESP Outbound; 9.4.2.236 Service Hint; 9.4.2.237 Service Hash; 9.4.2.255 ESS Report; 9.4.2.256 OPS; 9.4.2.172 ESP Inbound; 9.4.2.173 Future Channel Guidance"
+    }
+  ],
+  "covers": [
+    "80211-2024:9.4.2.44",
+    "80211-2024:9.4.2.70",
+    "80211-2024:9.4.2.72",
+    "80211-2024:9.4.2.169",
+    "80211-2024:9.4.2.172",
+    "80211-2024:9.4.2.173",
+    "80211-2024:9.4.2.216",
+    "80211-2024:9.4.2.234",
+    "80211-2024:9.4.2.236",
+    "80211-2024:9.4.2.237",
+    "80211-2024:9.4.2.239",
+    "80211-2024:9.4.2.255",
+    "80211-2024:9.4.2.256",
+    "80211-2024:9.4.2.259",
+    "80211-2024:9.4.2.260",
+    "80211-2024:9.4.2.261",
+    "80211-2024:9.4.2.290",
+    "80211-2024:9.4.2.291",
+    "80211-2024:9.4.2.292",
+    "80211-2024:9.4.2.293",
+    "80211-2024:9.4.2.294"
+  ],
+  "track": "frames"
+}
