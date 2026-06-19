@@ -1,0 +1,160 @@
+{
+  "id": "frames-43",
+  "title": {
+    "en": "DMG and S1G action frames — 60 GHz relay/beamforming control and sub-1 GHz device management",
+    "zh": "DMG 与 S1G 动作帧——60 GHz 中继/波束成形控制与 Sub-1 GHz 设备管理"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Action frames are 802.11's general-purpose control messages — one Category byte, then a per-category Action byte that names the exact operation. This lesson surveys the action frames built for the two band extremes. At 60 GHz, the DMG (Directional Multi-Gigabit) family negotiates relays and refines pencil-thin beams. At sub-1 GHz, the S1G (Sub-1-GHz) family manages tiny power-pinched IoT stations: switching their AIDs, scheduling sleep, sectorizing coverage, and compressing headers. Each family also has an 'Unprotected' twin (no robust-management encapsulation) and, on the S1G side, 'Protected' versions for the secured exchanges.",
+      "zh": "动作帧（Action frame）是 802.11 的通用控制消息——一个 Category 字节，再加一个按类别定义的 Action 字节来指明具体操作。本课综览为两个频段极端而设计的动作帧。在 60 GHz，DMG（定向多吉比特）家族负责协商中继并精修铅笔般细的波束；在 Sub-1 GHz，S1G（亚 1 GHz）家族管理功耗受限的微型物联网站点：切换其 AID、安排睡眠、对覆盖进行扇区化、压缩帧头。每个家族还有一个“未保护（Unprotected）”孪生版本（不做健壮管理帧封装），而在 S1G 一侧还有用于安全交换的“受保护（Protected）”版本。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Naming trick: 'Unprotected' frames carry the same payload but skip robust-management protection (they're sent in the clear, often as Action No Ack). The S1G 'Protected' frames are byte-for-byte identical to their Unprotected S1G twins — the only change is the Category, swapping the Unprotected S1G Action field for the S1G Action field so the frame is protected.",
+      "zh": "命名小窍门：“未保护”帧携带相同的载荷，但跳过健壮管理帧保护（明文发送，常作为 Action No Ack）。S1G 的“受保护”帧与其未保护 S1G 孪生帧逐字节相同——唯一的区别是 Category：把 Unprotected S1G Action 字段换成 S1G Action 字段，使该帧受到保护。"
+    },
+    {
+      "type": "prose",
+      "en": "Start at 60 GHz with the protected DMG family (9.6.19). Power-save sits first: Power Save Configuration Request and Power Save Configuration Response toggle a station between active and power-save mode. Information Request and Information Response exchange DMG capability snapshots about a station and its neighbours. Handover Request and Handover Response let a PCP (the 60 GHz coordinator) hand control to another capable station. Then the relay set: Relay Search Request and Relay Search Response find candidate relay stations; Multi-relay Channel Measurement Request and Multi-relay Channel Measurement Report gauge the links to several relay candidates at once; RLS Request, RLS Response, RLS Announcement, and RLS Teardown set up, confirm, announce, and tear down a relay link; Relay Ack Request and Relay Ack Response acknowledge frames across a half-duplex relay.",
+      "zh": "先看 60 GHz 的受保护 DMG 家族（9.6.19）。省电类居首：Power Save Configuration Request 与 Power Save Configuration Response 在活跃模式和省电模式之间切换站点。Information Request 与 Information Response 交换关于某站点及其邻居的 DMG 能力快照。Handover Request 与 Handover Response 让 PCP（60 GHz 协调者）把控制权移交给另一个有能力的站点。接着是中继集合：Relay Search Request 与 Relay Search Response 寻找候选中继站点；Multi-relay Channel Measurement Request 与 Multi-relay Channel Measurement Report 一次性评估到多个中继候选的链路；RLS Request、RLS Response、RLS Announcement、RLS Teardown 分别建立、确认、宣告并拆除一条中继链路；Relay Ack Request 与 Relay Ack Response 在半双工中继上对帧进行确认。"
+    },
+    {
+      "type": "prose",
+      "en": "Closing out DMG: TPA Request, TPA Response, and TPA Report run the timing-precision (TPA) procedure that aligns transmit timing across cooperating relay stations. ROC Request and ROC Response handle a receive-sector training control exchange. Protected Announce is the secured form of the Announce frame — a beacon-like advertisement sent during the ATI without a full sector sweep. The Unprotected DMG family (9.6.21) holds the beamforming work: Announce (the unprotected advertisement) and BRP (Beam Refinement Protocol — the workhorse that iteratively sharpens a beam), plus MIMO BF Setup, MIMO BF Poll, MIMO BF Feedback, and MIMO BF Selection, which set up, poll for, feed back, and finalise a MIMO beamforming configuration.",
+      "zh": "DMG 收尾：TPA Request、TPA Response、TPA Report 执行时序精度（TPA）流程，对齐多个协作中继站点之间的发送时序。ROC Request 与 ROC Response 处理接收扇区训练的控制交换。Protected Announce 是 Announce 帧的安全形式——在 ATI 期间发送的类似信标的通告，无需完整扇区扫描。未保护 DMG 家族（9.6.21）承担波束成形工作：Announce（未保护的通告）与 BRP（波束精修协议——迭代地锐化波束的主力），以及 MIMO BF Setup、MIMO BF Poll、MIMO BF Feedback、MIMO BF Selection，分别建立、轮询、反馈并敲定一套 MIMO 波束成形配置。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    A[Action frame: Category + Action byte] --> B[60 GHz: DMG]\n    A --> C[sub-1 GHz: S1G]\n    B --> B1[Protected DMG 9.6.19: PowerSaveConfig, Info, Handover, RelaySearch, Multi-relay Meas, RLS x4, RelayAck, TPA x3, ROC x2, Protected Announce]\n    B --> B2[Unprotected DMG 9.6.21: Announce, BRP, MIMO BF Setup/Poll/Feedback/Selection]\n    C --> C1[Unprotected S1G 9.6.24: AID Switch Req/Rsp, Sync Control, STA Info Announce, EDCA Param Set, EL Operation, TWT Setup/Teardown/Information, Sectorized Group ID List, Sector ID Feedback]\n    C --> C2[S1G 9.6.25: Reachable Address Update, Relay Activation Req/Rsp, Header Compression, then Protected twins of the S1G set]",
+      "zh": "graph TD\n    A[动作帧: Category + Action 字节] --> B[60 GHz: DMG]\n    A --> C[Sub-1 GHz: S1G]\n    B --> B1[受保护 DMG 9.6.19: 省电配置, 信息, 切换, 中继搜索, 多中继测量, RLS x4, 中继Ack, TPA x3, ROC x2, Protected Announce]\n    B --> B2[未保护 DMG 9.6.21: Announce, BRP, MIMO BF 建立/轮询/反馈/选择]\n    C --> C1[未保护 S1G 9.6.24: AID 切换 请求/响应, 同步控制, STA 信息通告, EDCA 参数集, EL 操作, TWT 建立/拆除/信息, 扇区组ID列表, 扇区ID反馈]\n    C --> C2[S1G 9.6.25: 可达地址更新, 中继激活 请求/响应, 帧头压缩, 之后是 S1G 集合的受保护孪生帧]"
+    },
+    {
+      "type": "prose",
+      "en": "Now sub-1 GHz. The Unprotected S1G family (9.6.24) is the IoT management toolkit. AID Switch Request and AID Switch Response let a station change its association ID (or request a group AID) — useful when a device changes role. Sync Control enables or disables uplink sync-frame transmission. STA Information Announcement broadcasts a station's updated AID to peers or to the AP via a relay. EDCA Parameter Set pushes fresh channel-access parameters to a station. EL Operation carries the EL (extended-range link) operation element. The TWT trio — TWT Setup, TWT Teardown, TWT Information — negotiates, ends, and exchanges details about Target Wake Time sleep schedules, the heart of S1G power saving. Sectorized Group ID List assigns sector group IDs, and Sector ID Feedback reports which sector a station hears best.",
+      "zh": "现在看 Sub-1 GHz。未保护 S1G 家族（9.6.24）是物联网管理工具箱。AID Switch Request 与 AID Switch Response 让站点更改其关联标识（AID）（或申请一个组 AID）——当设备改变角色时很有用。Sync Control 启用或禁用上行同步帧的发送。STA Information Announcement 向对端广播站点更新后的 AID，或经由中继告知 AP。EDCA Parameter Set 向站点推送新的信道接入参数。EL Operation 携带 EL（扩展距离链路）操作元素。TWT 三件套——TWT Setup、TWT Teardown、TWT Information——协商、终止并交换目标唤醒时间（TWT）睡眠计划的细节，这是 S1G 省电的核心。Sectorized Group ID List 分配扇区组 ID，Sector ID Feedback 报告站点接收最佳的扇区。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally the S1G family proper (9.6.25). Three are unique to it: Reachable Address Update refreshes which addresses are reachable through a relay station; Relay Activation Request and Relay Activation Response start or stop a relay function; Header Compression updates the header-compression context that shrinks per-frame overhead for tiny IoT links. The rest are the Protected twins of the Unprotected S1G set, providing robust (secured) station-to-station versions: Protected TWT Setup, Protected TWT Teardown, Protected TWT Information, Protected AID Switch Request, Protected AID Switch Response, Protected Sync Control, Protected STA Information Announcement, Protected EDCA Parameter Set, Protected EL Operation, Protected Sectorized Group ID List, and Protected Sector ID Feedback.",
+      "zh": "最后是真正的 S1G 家族（9.6.25）。其中三个为其独有：Reachable Address Update 刷新可经由某中继站点到达的地址；Relay Activation Request 与 Relay Activation Response 启动或停止中继功能；Header Compression 更新帧头压缩上下文，为微型物联网链路缩减每帧开销。其余则是未保护 S1G 集合的受保护孪生帧，提供健壮（安全）的站点间版本：Protected TWT Setup、Protected TWT Teardown、Protected TWT Information、Protected AID Switch Request、Protected AID Switch Response、Protected Sync Control、Protected STA Information Announcement、Protected EDCA Parameter Set、Protected EL Operation、Protected Sectorized Group ID List、Protected Sector ID Feedback。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Where the Action byte lives, and the 'same format except Category' rule",
+        "zh": "Action 字节的位置，以及“格式相同、仅 Category 不同”的规则"
+      },
+      "en": "Each family is keyed by a single Action byte sitting immediately after the Category byte. Table 9-568 enumerates the DMG Action values: 0/1 Power Save Configuration Request/Response, 2/3 Information Request/Response, 4/5 Handover Request/Response, 8/9 Relay Search Request/Response, 10/11 Multi-relay Channel Measurement Request/Report, 12-15 RLS Request/Response/Announcement/Teardown, 16/17 Relay Ack Request/Response, 18-20 TPA Request/Response/Report, 21/22 ROC Request/Response, 23 Protected Announce. Table 9-597 lists Unprotected DMG values 0-5: Announce, BRP, MIMO BF Setup, Poll, Feedback, Selection. Table 9-610 lists Unprotected S1G values 0-11 (AID Switch Request/Response, Sync Control, STA Information Announcement, EDCA Parameter Set, EL Operation, TWT Setup/Teardown, Sectorized Group ID List, Sector ID Feedback, then TWT Information at 11). Table 9-622 lists S1G values 0-14: Reachable Address Update, Relay Activation Request/Response, Header Compression, then the eleven Protected frames. The standard defines each Protected S1G frame as having the same Action field format as its Unprotected S1G twin, except that Order 2 is the S1G Action field instead of the Unprotected S1G Action field — the entire difference between unprotected and protected is which category the Action byte belongs to.",
+      "zh": "每个家族都由紧跟在 Category 字节之后的单个 Action 字节作为索引。表 9-568 列举了 DMG Action 取值：0/1 省电配置请求/响应，2/3 信息请求/响应，4/5 切换请求/响应，8/9 中继搜索请求/响应，10/11 多中继信道测量请求/报告，12-15 RLS 请求/响应/通告/拆除，16/17 中继 Ack 请求/响应，18-20 TPA 请求/响应/报告，21/22 ROC 请求/响应，23 Protected Announce。表 9-597 列出未保护 DMG 取值 0-5：Announce、BRP、MIMO BF Setup、Poll、Feedback、Selection。表 9-610 列出未保护 S1G 取值 0-11（AID 切换请求/响应、同步控制、STA 信息通告、EDCA 参数集、EL 操作、TWT 建立/拆除、扇区组 ID 列表、扇区 ID 反馈，TWT 信息位于 11）。表 9-622 列出 S1G 取值 0-14：可达地址更新、中继激活请求/响应、帧头压缩，之后是十一个受保护帧。标准规定每个受保护 S1G 帧的 Action 字段格式与其未保护 S1G 孪生帧相同，只是 Order 2 改为 S1G Action 字段而非 Unprotected S1G Action 字段——未保护与受保护之间的全部差别，仅在于该 Action 字节归属哪个类别。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1783,
+          1802,
+          1813,
+          1820,
+          1822
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1783,
+        1786,
+        1788
+      ],
+      "note": "9.6.19 DMG Action frame details — Table 9-568 DMG Action values; Power Save, Information, Handover, Relay Search, Multi-relay Channel Measurement, RLS, Relay Ack frames"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1802,
+        1803
+      ],
+      "note": "9.6.21 Unprotected DMG Action frame details — Table 9-597 values 0-5: Announce, BRP, MIMO BF Setup/Poll/Feedback/Selection"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1813,
+        1816,
+        1818
+      ],
+      "note": "9.6.24 Unprotected S1G Action frame details — Table 9-610 values 0-11: AID Switch, Sync Control, STA Info Announcement, EDCA Param Set, EL Operation, TWT Setup/Teardown/Information, Sectorized Group ID List, Sector ID Feedback"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1820,
+        1822,
+        1823
+      ],
+      "note": "9.6.25 S1G Action frame details — Table 9-622 values 0-14: Reachable Address Update, Relay Activation Req/Rsp, Header Compression, and the eleven Protected S1G frames"
+    }
+  ],
+  "covers": [
+    "80211-2024:9.6.19.2",
+    "80211-2024:9.6.19.3",
+    "80211-2024:9.6.19.4",
+    "80211-2024:9.6.19.5",
+    "80211-2024:9.6.19.6",
+    "80211-2024:9.6.19.7",
+    "80211-2024:9.6.19.8",
+    "80211-2024:9.6.19.9",
+    "80211-2024:9.6.19.10",
+    "80211-2024:9.6.19.11",
+    "80211-2024:9.6.19.12",
+    "80211-2024:9.6.19.13",
+    "80211-2024:9.6.19.14",
+    "80211-2024:9.6.19.15",
+    "80211-2024:9.6.19.16",
+    "80211-2024:9.6.19.17",
+    "80211-2024:9.6.19.18",
+    "80211-2024:9.6.19.19",
+    "80211-2024:9.6.19.20",
+    "80211-2024:9.6.19.21",
+    "80211-2024:9.6.19.22",
+    "80211-2024:9.6.19.23",
+    "80211-2024:9.6.21.2",
+    "80211-2024:9.6.21.3",
+    "80211-2024:9.6.21.4",
+    "80211-2024:9.6.21.5",
+    "80211-2024:9.6.21.6",
+    "80211-2024:9.6.21.7",
+    "80211-2024:9.6.24.2",
+    "80211-2024:9.6.24.3",
+    "80211-2024:9.6.24.4",
+    "80211-2024:9.6.24.5",
+    "80211-2024:9.6.24.6",
+    "80211-2024:9.6.24.7",
+    "80211-2024:9.6.24.8",
+    "80211-2024:9.6.24.9",
+    "80211-2024:9.6.24.10",
+    "80211-2024:9.6.24.11",
+    "80211-2024:9.6.24.12",
+    "80211-2024:9.6.25.2",
+    "80211-2024:9.6.25.3",
+    "80211-2024:9.6.25.4",
+    "80211-2024:9.6.25.5",
+    "80211-2024:9.6.25.6",
+    "80211-2024:9.6.25.7",
+    "80211-2024:9.6.25.8",
+    "80211-2024:9.6.25.9",
+    "80211-2024:9.6.25.10",
+    "80211-2024:9.6.25.11",
+    "80211-2024:9.6.25.12",
+    "80211-2024:9.6.25.13",
+    "80211-2024:9.6.25.14",
+    "80211-2024:9.6.25.15",
+    "80211-2024:9.6.25.16"
+  ],
+  "track": "frames"
+}

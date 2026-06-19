@@ -1,0 +1,98 @@
+{
+  "id": "frames-42",
+  "title": {
+    "en": "Robust AV Streaming and FST Action Frames — SCS/MSCS Stream Classification and Fast Session Transfer",
+    "zh": "鲁棒 AV 流与 FST 动作帧——SCS/MSCS 流分类与快速会话转移"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Not all traffic is equal. A video call, a cloud-gaming stream, or a voice flow is latency-sensitive in a way that a background file download is not. 802.11 gives a station a way to point at one of its flows and tell the AP: 'this one is special — please classify it and treat it accordingly.' This lesson surveys two groups of robust Action frames that do exactly that. The Robust AV Streaming group (clause 9.6.18) sets up per-stream classification and multicast group bookkeeping. The FST group (clause 9.6.20) hands a live link from one band to another — say from a congested 5 GHz channel to a fast 60 GHz one — without tearing the session down.",
+      "zh": "并非所有流量都同等重要。视频通话、云游戏流或语音流对时延的敏感程度，远高于后台文件下载。802.11 让站点能够指着自己的某一条流告诉 AP：“这一条很特别——请把它分类并据此对待。”本课概览两组专门做这件事的鲁棒（robust）动作帧。鲁棒 AV 流组（9.6.18 节）负责建立逐流分类与组播成员记账；FST 组（9.6.20 节）则把一条活动链路从一个频段交接到另一个频段——比如从拥塞的 5 GHz 信道切换到高速的 60 GHz——而无需拆除会话。"
+    },
+    {
+      "type": "prose",
+      "en": "All of these frames share a robust Action header: a Category field, then a Robust Action (or FST Action) field that selects which frame in the group this is, and a Dialog Token that pairs a response back to its request. The Robust AV Streaming group has six members. SCS Request (9.6.18.2) asks the AP to create, modify, or delete a stream classification, carrying one or more SCS Descriptor elements; SCS Response (9.6.18.3) replies with a list of per-stream status duples (an SCSID plus a Status). MSCS Request (9.6.18.6) does the same for mirrored stream classification, carrying an MSCS Descriptor element, and MSCS Response (9.6.18.7) returns a Status (and the descriptor only when it failed).",
+      "zh": "这些帧都共享一个鲁棒动作帧头：先是 Category 字段，然后是用于在组内选择具体帧类型的 Robust Action（或 FST Action）字段，再加上把响应与请求配对起来的 Dialog Token（对话令牌）。鲁棒 AV 流组共有六名成员。SCS Request（9.6.18.2）请求 AP 创建、修改或删除一个流分类，携带一个或多个 SCS Descriptor 元素；SCS Response（9.6.18.3）以一组逐流的状态二元组（一个 SCSID 加一个 Status）作答。MSCS Request（9.6.18.6）对“镜像流分类”做同样的事，携带一个 MSCS Descriptor 元素；MSCS Response（9.6.18.7）返回一个 Status（仅在失败时才附带描述符）。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining two in the group manage multicast membership. Group Membership Request (9.6.18.4) asks a STA for the contents of its group-address table — which multicast groups it belongs to. Group Membership Response (9.6.18.5) replies with an Address Count and a Group Address List of the MAC addresses for which the STA wants to receive frames, and can also be sent unsolicited whenever that membership changes. Together these let the AP know who should receive each multicast stream.",
+      "zh": "组内余下的两名成员负责管理组播成员关系。Group Membership Request（9.6.18.4）向某个 STA 索取其组地址表的内容——即它属于哪些组播组。Group Membership Response（9.6.18.5）以一个 Address Count 和一份 Group Address List（即该 STA 希望接收帧的那些 MAC 地址列表）作答；当成员关系发生变化时，它也可以主动（非请求式）发送。两者配合，让 AP 知道每条组播流应该发给谁。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    subgraph AV[\"9.6.18 Robust AV Streaming\"]\n      A1[\"SCS Request 9.6.18.2<br/>create/modify/delete a stream class\"]\n      A2[\"SCS Response 9.6.18.3<br/>per-stream status duples\"]\n      A3[\"Group Membership Request 9.6.18.4<br/>ask for group-address table\"]\n      A4[\"Group Membership Response 9.6.18.5<br/>list of multicast addresses\"]\n      A5[\"MSCS Request 9.6.18.6<br/>mirrored stream class\"]\n      A6[\"MSCS Response 9.6.18.7<br/>status of the request\"]\n    end\n    subgraph FST[\"9.6.20 Fast Session Transfer\"]\n      F1[\"FST Setup Request 9.6.20.2<br/>announce intent to move band\"]\n      F2[\"FST Setup Response 9.6.20.3<br/>accept/reject + status\"]\n      F3[\"FST Teardown 9.6.20.4<br/>delete an FST session\"]\n      F4[\"FST Ack Request 9.6.20.5<br/>confirm in the new band\"]\n      F5[\"FST Ack Response 9.6.20.6<br/>acknowledge the confirm\"]\n      F6[\"On-channel Tunnel Request 9.6.20.7<br/>tunnel an MMPDU between bands\"]\n    end",
+      "zh": "graph TD\n    subgraph AV[\"9.6.18 鲁棒 AV 流\"]\n      A1[\"SCS Request 9.6.18.2<br/>创建/修改/删除流分类\"]\n      A2[\"SCS Response 9.6.18.3<br/>逐流状态二元组\"]\n      A3[\"Group Membership Request 9.6.18.4<br/>索取组地址表\"]\n      A4[\"Group Membership Response 9.6.18.5<br/>组播地址列表\"]\n      A5[\"MSCS Request 9.6.18.6<br/>镜像流分类\"]\n      A6[\"MSCS Response 9.6.18.7<br/>请求的处理状态\"]\n    end\n    subgraph FST[\"9.6.20 快速会话转移\"]\n      F1[\"FST Setup Request 9.6.20.2<br/>宣告转移频段的意图\"]\n      F2[\"FST Setup Response 9.6.20.3<br/>接受/拒绝 + 状态\"]\n      F3[\"FST Teardown 9.6.20.4<br/>删除 FST 会话\"]\n      F4[\"FST Ack Request 9.6.20.5<br/>在新频段确认\"]\n      F5[\"FST Ack Response 9.6.20.6<br/>对确认的应答\"]\n      F6[\"On-channel Tunnel Request 9.6.20.7<br/>在频段间隧道传送 MMPDU\"]\n    end"
+    },
+    {
+      "type": "prose",
+      "en": "The FST group migrates a live session between frequency bands on a multi-band device. FST Setup Request (9.6.20.2) is the opening move: an initiating STA announces it intends to enable FST for the session, carrying a Link-Loss Timeout (LLT) and a Session Transition element that names the source and target bands. FST Setup Response (9.6.20.3) accepts or rejects with a Status Code. Once agreed, the STAs switch bands; FST Ack Request (9.6.20.5) is then sent in the band the session was transferred *to* and confirms the transfer, identified by an FSTS ID, and FST Ack Response (9.6.20.6) acknowledges it. FST Teardown (9.6.20.4) deletes an established FST session by its FSTS ID when it is no longer needed.",
+      "zh": "FST 组负责在一台多频段设备上把活动会话在频段之间迁移。FST Setup Request（9.6.20.2）是开局动作：发起方 STA 宣告它打算为该会话启用 FST，并携带一个链路丢失超时（LLT）字段和一个指明源频段与目标频段的 Session Transition 元素。FST Setup Response（9.6.20.3）以一个 Status Code 接受或拒绝。一经达成，两个 STA 便切换频段；随后在会话被转移“到”的那个频段中发送 FST Ack Request（9.6.20.5），以 FSTS ID 标识并确认本次转移，FST Ack Response（9.6.20.6）则对其作出应答。当不再需要时，FST Teardown（9.6.20.4）按 FSTS ID 删除一个已建立的 FST 会话。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The odd one out is On-channel Tunnel Request (9.6.20.7). Instead of moving a session, it encapsulates an entire management frame (an MMPDU — its Frame Control plus Frame Body) so one STA of a multi-band device can hand it to the MLME of a peer STA inside the *same* multi-band device. This 'tunnel' is how the device pre-arranges multi-band association and authentication on the target band before the session actually moves there — so the new band is already set up when FST flips over.",
+      "zh": "组里的“异类”是 On-channel Tunnel Request（9.6.20.7）。它并不迁移会话，而是把一整个管理帧（一个 MMPDU——其帧控制字段加帧体）封装起来，让多频段设备中的某个 STA 把它递交给“同一台”多频段设备内另一个对端 STA 的 MLME。正是借助这条“隧道”，设备得以在会话真正迁移过去之前，先在目标频段上预先完成多频段关联与认证——这样当 FST 切换发生时，新频段早已就绪。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Where these frames sit in the Action namespace, and the exact field layouts",
+        "zh": "这些帧在动作帧命名空间中的位置，以及精确的字段布局"
+      },
+      "en": "Each group is selected by a value in the octet right after the Category field. In Robust AV Streaming (Table 9-567) the Robust Action values run 0=SCS Request, 1=SCS Response, 2=Group Membership Request, 3=Group Membership Response, 4=MSCS Request, 5=MSCS Response. The SCS Request Action field is Category, Robust Action, Dialog Token, then an SCS Descriptor List; the SCS Response replaces the descriptor list with a Count and an SCS Status List of {SCSID, Status} duples (Figure 9-1308). For FST (Table 9-590) the FST Action values run 0=Setup Request, 1=Setup Response, 2=Teardown, 3=Ack Request, 4=Ack Response, 5=On-channel Tunnel Request. FST Teardown is the minimal frame — just Category, FST Action, and FSTS ID — while the On-channel Tunnel Request carries an OCT MMPDU Descriptor (MMPDU Length, Frame Control, Frame Body per Figure 9-1315), a Multi-band element naming the destination MLME's Band ID / Channel Number / BSSID, and an OCT Source element.",
+      "zh": "每个组都由 Category 字段紧后那个八位字节中的值来选择。在鲁棒 AV 流中（表 9-567），Robust Action 取值为 0=SCS Request、1=SCS Response、2=Group Membership Request、3=Group Membership Response、4=MSCS Request、5=MSCS Response。SCS Request 的动作字段依次为 Category、Robust Action、Dialog Token，再加上一个 SCS Descriptor List；SCS Response 则把描述符列表换成一个 Count 和一份由 {SCSID, Status} 二元组组成的 SCS Status List（图 9-1308）。对于 FST（表 9-590），FST Action 取值为 0=Setup Request、1=Setup Response、2=Teardown、3=Ack Request、4=Ack Response、5=On-channel Tunnel Request。FST Teardown 是最精简的帧——仅 Category、FST Action 与 FSTS ID——而 On-channel Tunnel Request 则携带一个 OCT MMPDU Descriptor（含 MMPDU Length、Frame Control、Frame Body，见图 9-1315）、一个指明目标 MLME 的 Band ID／Channel Number／BSSID 的 Multi-band 元素，以及一个 OCT Source 元素。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1779,
+          1780,
+          1798,
+          1802
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.6.18.2",
+    "80211-2024:9.6.18.3",
+    "80211-2024:9.6.18.4",
+    "80211-2024:9.6.18.5",
+    "80211-2024:9.6.18.6",
+    "80211-2024:9.6.18.7",
+    "80211-2024:9.6.20.2",
+    "80211-2024:9.6.20.3",
+    "80211-2024:9.6.20.4",
+    "80211-2024:9.6.20.5",
+    "80211-2024:9.6.20.6",
+    "80211-2024:9.6.20.7"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1779,
+        1780,
+        1781,
+        1782
+      ],
+      "note": "9.6.18 Robust AV Streaming — Robust Action values (Table 9-567); SCS/MSCS Request and Response and Group Membership Request/Response Action field formats"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1798,
+        1799,
+        1800,
+        1801,
+        1802
+      ],
+      "note": "9.6.20 FST — FST Action values (Table 9-590); FST Setup Request/Response, Teardown, Ack Request/Response, and On-channel Tunnel Request formats"
+    }
+  ],
+  "track": "frames"
+}

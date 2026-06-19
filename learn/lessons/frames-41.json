@@ -1,0 +1,150 @@
+{
+  "id": "frames-41",
+  "title": {
+    "en": "Peer-to-peer and mesh-building action frames — DLS, TDLS, Self-Protected, and Mesh",
+    "zh": "点对点与组网动作帧——DLS、TDLS、自保护与 Mesh"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Most Wi-Fi traffic runs star-shaped: every packet hops up to the AP and back down. But two stations sitting next to each other shouldn't have to relay through the AP, and a building full of mesh nodes has no single AP at all. This lesson surveys the action frames that build those alternative topologies — the direct peer-link handshakes (TDLS) and the neighbor-pairing, key-agreement, path-finding, and airtime-reserving machinery of a mesh.",
+      "zh": "大多数 Wi-Fi 流量都是星形的：每个数据包都要先上行到 AP、再下行回来。但两个紧挨着的站点本不必经 AP 中转，而一整栋楼里的 Mesh 节点更是根本没有单一的 AP。本课带你纵览构建这些替代拓扑的动作帧——既包括直连对等链路的握手（TDLS），也包括 Mesh 中邻居配对、密钥协商、路径发现与空口预约的整套机制。"
+    },
+    {
+      "type": "prose",
+      "en": "TDLS (Tunneled Direct-Link Setup) lets two stations in the same BSS open a direct link without making the AP forward every frame. The trick is in the name: the setup frames are tunneled — carried inside ordinary Data frames so the AP relays them like any traffic, never needing TDLS awareness. The TDLS Action field (one octet after Category) selects which message it is. Setup is a three-way handshake — TDLS Setup Request, TDLS Setup Response, TDLS Setup Confirm — and TDLS Teardown closes the link. Note the curiosity: there is no TDLS Discovery Response Action field; the TDLS Discovery Request is answered by a Public Action frame, not a Data frame.",
+      "zh": "TDLS（隧道式直连链路建立）让同一 BSS 内的两个站点开通直连链路，而无需 AP 转发每一帧。诀窍正如其名：建链帧是“隧道化”的——被装进普通数据帧里，AP 像处理任意流量一样中转它们，完全不必“懂” TDLS。TDLS Action 字段（Category 后的一个字节）用于区分是哪条消息。建链是一次三步握手——TDLS Setup Request、TDLS Setup Response、TDLS Setup Confirm——而 TDLS Teardown 用于拆除链路。有个值得注意的细节：并不存在 TDLS Discovery Response 动作字段；TDLS Discovery Request 是由一个 Public Action 帧来应答的，而非数据帧。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The rest of the TDLS family keeps a live direct link healthy. TDLS Peer Traffic Indication tells a sleeping peer that data is buffered; TDLS Peer Traffic Response confirms it. TDLS Channel Switch Request / Response move the direct link off the AP's channel to a quieter one. TDLS Peer PSM Request / Response set up or change a periodic wakeup (power-save) schedule on the link. TDLS Discovery Request finds candidate TDLS peers in the BSS.",
+      "zh": "TDLS 家族的其余成员负责维持一条已建立的直连链路。TDLS Peer Traffic Indication 告知正在休眠的对端“有数据已缓存”；TDLS Peer Traffic Response 对其确认。TDLS Channel Switch Request / Response 把直连链路从 AP 信道切换到更安静的信道。TDLS Peer PSM Request / Response 在链路上建立或更改周期性唤醒（省电）调度。TDLS Discovery Request 则用于在 BSS 内寻找可作为 TDLS 对端的候选站点。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant A as TDLS Initiator\n    participant AP as AP (relays, TDLS-unaware)\n    participant B as TDLS Responder\n    Note over A,B: setup tunneled inside Data frames through the AP\n    A->>AP: TDLS Setup Request\n    AP->>B: (relayed)\n    B->>AP: TDLS Setup Response\n    AP->>A: (relayed)\n    A->>AP: TDLS Setup Confirm\n    AP->>B: (relayed)\n    Note over A,B: direct link is up — frames now go A <-> B\n    A-->>B: data direct (Peer Traffic Ind/Resp, Channel Switch, Peer PSM)\n    A->>B: TDLS Teardown",
+      "zh": "sequenceDiagram\n    participant A as TDLS 发起方\n    participant AP as AP (中转, 不感知 TDLS)\n    participant B as TDLS 响应方\n    Note over A,B: 建链帧装进数据帧经 AP 隧道传输\n    A->>AP: TDLS Setup Request\n    AP->>B: (中转)\n    B->>AP: TDLS Setup Response\n    AP->>A: (中转)\n    A->>AP: TDLS Setup Confirm\n    AP->>B: (中转)\n    Note over A,B: 直连链路建立——帧此后直接走 A <-> B\n    A-->>B: 直连数据 (流量指示/响应, 信道切换, 省电调度)\n    A->>B: TDLS Teardown"
+    },
+    {
+      "type": "prose",
+      "en": "A mesh has no AP to lean on, so neighbors must pair and protect themselves. That is the Self-Protected category, named because the exchange bootstraps its own integrity protection rather than relying on a prior association. The Self-protected Action field selects the message. Mesh Peering Open, Mesh Peering Confirm, and Mesh Peering Close open, confirm, and tear down a peering between two mesh STAs (the mesh peering management protocol). Once peered, Mesh Group Key Inform delivers or updates a mesh group key (MGTK) to the peer, and Mesh Group Key Acknowledge confirms its receipt — the mesh group key handshake.",
+      "zh": "Mesh 没有 AP 可依赖，因此邻居之间必须自行配对并自我保护。这正是 Self-Protected（自保护）类别的由来——该交换会自行引导出完整性保护，而不依赖此前的关联。Self-protected Action 字段用于区分消息。Mesh Peering Open、Mesh Peering Confirm、Mesh Peering Close 分别用于在两个 Mesh 站点之间开启、确认与关闭对等连接（即 Mesh 对等管理协议）。配对完成后，Mesh Group Key Inform 向对端下发或更新 Mesh 组密钥（MGTK），而 Mesh Group Key Acknowledge 确认其已收到——这便是 Mesh 组密钥握手。"
+    },
+    {
+      "type": "prose",
+      "en": "With neighbors paired, the Mesh category carries the day-to-day running of the mesh. Mesh Link Metric Report tells a neighbor how good the link to it is. HWMP Mesh Path Selection is the routing engine — it establishes, updates, or deletes paths across the mesh. Gate Announcement lets a mesh gate (the bridge to the wired world) advertise its presence. Congestion Control Notification signals a node's congestion to neighbors. The MCCA family reserves airtime: MCCA Setup Request / Reply negotiate a reservation, MCCA Advertisement Request / Advertisement publish the reservation schedule, and MCCA Teardown releases it. Finally, TBTT Adjustment Request / Response nudge a neighbor's beacon timing to avoid collisions.",
+      "zh": "邻居配对就绪后，Mesh 类别负责 Mesh 的日常运转。Mesh Link Metric Report 告知邻居“通往它的链路质量如何”。HWMP Mesh Path Selection 是路由引擎——用于在 Mesh 中建立、更新或删除路径。Gate Announcement 让 Mesh 网关（通往有线世界的桥梁）通告自身的存在。Congestion Control Notification 向邻居发出本节点的拥塞信号。MCCA 家族负责预约空口时间：MCCA Setup Request / Reply 协商一项预约，MCCA Advertisement Request / Advertisement 公布预约调度，MCCA Teardown 释放预约。最后，TBTT Adjustment Request / Response 用于微调邻居的信标时序以避免碰撞。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 250\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"10\" width=\"200\" height=\"230\" rx=\"8\"/><text x=\"110\" y=\"32\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"13\">Self-Protected (pairing)</text><text x=\"24\" y=\"60\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Mesh Peering Open</text><text x=\"24\" y=\"82\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Mesh Peering Confirm</text><text x=\"24\" y=\"104\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Mesh Peering Close</text><text x=\"24\" y=\"130\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Mesh Group Key Inform</text><text x=\"24\" y=\"152\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Mesh Group Key Ack</text><path d=\"M110 165 L110 200\"/><polygon points=\"110,210 105,200 115,200\" stroke=\"none\" fill=\"currentColor\"/><text x=\"110\" y=\"228\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">peered + keyed</text><rect x=\"250\" y=\"10\" width=\"200\" height=\"230\" rx=\"8\"/><text x=\"350\" y=\"32\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"13\">Mesh (running)</text><text x=\"264\" y=\"58\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Link Metric Report</text><text x=\"264\" y=\"78\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">HWMP Path Selection</text><text x=\"264\" y=\"98\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Gate Announcement</text><text x=\"264\" y=\"118\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Congestion Control Notif.</text><text x=\"264\" y=\"138\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">MCCA Setup / Advert / Teardown</text><text x=\"264\" y=\"158\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">TBTT Adjustment Req/Resp</text><line x1=\"264\" y1=\"172\" x2=\"436\" y2=\"172\" stroke-dasharray=\"3 3\"/><text x=\"264\" y=\"192\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Multihop:</text><text x=\"264\" y=\"212\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Proxy Update</text><text x=\"264\" y=\"230\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Proxy Update Confirmation</text></svg>",
+      "caption": {
+        "en": "The mesh action-frame stack: Self-Protected pairs and keys neighbors; Mesh runs metrics, paths, congestion, airtime, and beacon timing; Multihop keeps proxy address mappings in sync.",
+        "zh": "Mesh 动作帧栈：Self-Protected 完成邻居配对与密钥；Mesh 负责度量、路径、拥塞、空口与信标时序；Multihop 维持代理地址映射的一致。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "One last piece spans multiple hops: the Multihop category, used when a mesh node proxies addresses for devices that aren't mesh-aware. The Multihop Action field selects the message. Proxy Update informs a recipient of new, updated, or deleted proxy information (which external addresses live behind which mesh node), and Proxy Update Confirmation is the acknowledgement sent back in response.",
+      "zh": "最后还有一块跨多跳的拼图：Multihop（多跳）类别，用于 Mesh 节点为那些“不感知 Mesh”的设备代理地址的场景。Multihop Action 字段用于区分消息。Proxy Update 向接收方通报新增、更新或删除的代理信息（即哪些外部地址位于哪个 Mesh 节点之后），而 Proxy Update Confirmation 是回送的确认。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Where each category and message lives in the standard",
+        "zh": "各类别与消息在标准中的位置"
+      },
+      "en": "The TDLS Action field values are enumerated in Table 9-524: 0 TDLS Setup Request, 1 Setup Response, 2 Setup Confirm, 3 Teardown, 4 Peer Traffic Indication, 5 Channel Switch Request, 6 Channel Switch Response, 7 Peer PSM Request, 8 Peer PSM Response, 9 Peer Traffic Response, 10 Discovery Request (11-255 reserved). A NOTE clarifies there is no TDLS Discovery Response Action field — the response is a Public Action frame. Each TDLS Action field is encapsulated in a Data frame and tunneled per 11.20.2. The Self-protected Action field values appear in Table 9-546: Mesh Peering Open, Mesh Peering Confirm, Mesh Peering Close, Mesh Group Key Inform, Mesh Group Key Acknowledge; the peering frames carry integrity protection for the mesh peering management (MPM) protocol, and the group-key frames are protected by the mesh group key handshake (14.7). The Mesh Action field values are in Table 9-552: Mesh Link Metric Report, HWMP Mesh Path Selection, Gate Announcement, Congestion Control Notification, MCCA Setup Request, MCCA Setup Reply, MCCA Advertisement Request, MCCA Advertisement, MCCA Teardown, TBTT Adjustment Request, TBTT Adjustment Response. The Multihop Action field values are in Table 9-564: Proxy Update, Proxy Update Confirmation, carrying the PXU (9.4.2.114) and PXUC (9.4.2.115) elements respectively.",
+      "zh": "TDLS Action 字段取值列于 Table 9-524：0 TDLS Setup Request、1 Setup Response、2 Setup Confirm、3 Teardown、4 Peer Traffic Indication、5 Channel Switch Request、6 Channel Switch Response、7 Peer PSM Request、8 Peer PSM Response、9 Peer Traffic Response、10 Discovery Request（11-255 保留）。一条 NOTE 说明：并不存在 TDLS Discovery Response 动作字段——其响应是一个 Public Action 帧。每个 TDLS Action 字段都封装在数据帧中，并按 11.20.2 隧道传输。Self-protected Action 字段取值见 Table 9-546：Mesh Peering Open、Mesh Peering Confirm、Mesh Peering Close、Mesh Group Key Inform、Mesh Group Key Acknowledge；其中对等帧为 Mesh 对等管理（MPM）协议提供完整性保护，组密钥帧则由 Mesh 组密钥握手（14.7）保护。Mesh Action 字段取值见 Table 9-552：Mesh Link Metric Report、HWMP Mesh Path Selection、Gate Announcement、Congestion Control Notification、MCCA Setup Request、MCCA Setup Reply、MCCA Advertisement Request、MCCA Advertisement、MCCA Teardown、TBTT Adjustment Request、TBTT Adjustment Response。Multihop Action 字段取值见 Table 9-564：Proxy Update、Proxy Update Confirmation，分别携带 PXU（9.4.2.114）与 PXUC（9.4.2.115）元素。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1732,
+          1769,
+          1772,
+          1778
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.6.12.2",
+    "80211-2024:9.6.12.3",
+    "80211-2024:9.6.12.4",
+    "80211-2024:9.6.12.5",
+    "80211-2024:9.6.12.6",
+    "80211-2024:9.6.12.7",
+    "80211-2024:9.6.12.8",
+    "80211-2024:9.6.12.9",
+    "80211-2024:9.6.12.10",
+    "80211-2024:9.6.12.11",
+    "80211-2024:9.6.12.12",
+    "80211-2024:9.6.15.2",
+    "80211-2024:9.6.15.3",
+    "80211-2024:9.6.15.4",
+    "80211-2024:9.6.15.5",
+    "80211-2024:9.6.15.6",
+    "80211-2024:9.6.16.2",
+    "80211-2024:9.6.16.3",
+    "80211-2024:9.6.16.4",
+    "80211-2024:9.6.16.5",
+    "80211-2024:9.6.16.6",
+    "80211-2024:9.6.16.7",
+    "80211-2024:9.6.16.8",
+    "80211-2024:9.6.16.9",
+    "80211-2024:9.6.16.10",
+    "80211-2024:9.6.16.11",
+    "80211-2024:9.6.16.12",
+    "80211-2024:9.6.17.2",
+    "80211-2024:9.6.17.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1731,
+        1732,
+        1737,
+        1738,
+        1739,
+        1740,
+        1741,
+        1742
+      ],
+      "note": "9.6.12 TDLS Action field formats — Table 9-524 values; Setup Req/Resp/Confirm, Teardown, Peer Traffic Ind/Resp, Channel Switch Req/Resp, Peer PSM Req/Resp, Discovery Request; tunneled in Data frames"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1769,
+        1770,
+        1771
+      ],
+      "note": "9.6.15 Self-protected Action field formats — Table 9-546 values; Mesh Peering Open/Confirm/Close, Mesh Group Key Inform/Acknowledge"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1772,
+        1773,
+        1774,
+        1775,
+        1776,
+        1777
+      ],
+      "note": "9.6.16 Mesh Action field formats — Table 9-552 values; Link Metric Report, HWMP Path Selection, Gate Announcement, Congestion Control Notification, MCCA Setup/Advertisement/Teardown, TBTT Adjustment Req/Resp"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1778,
+        1779
+      ],
+      "note": "9.6.17 Multihop Action field formats — Table 9-564 values; Proxy Update (PXU), Proxy Update Confirmation (PXUC)"
+    }
+  ],
+  "track": "frames"
+}

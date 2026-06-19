@@ -1,0 +1,137 @@
+{
+  "id": "frames-46",
+  "title": {
+    "en": "The header bits and query encodings — 9.2.4/9.2.5 control fields, 9.4.4 TLVs, and 9.4.6 RLQP elements",
+    "zh": "帧头比特与查询编码——9.2.4/9.2.5 控制字段、9.4.4 TLV 与 9.4.6 RLQP 元素"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Most lessons live in the middle of a frame — the body, the elements, the action. This one cleans up the two corners that frame everything else. First corner: the handful of control fields at the very start of every MAC header (clauses 9.2.4 and 9.2.5), which decide protection, addressing, sequencing, QoS, and how the medium-reservation timer is computed. Second corner: a couple of access-network query protocols (clauses 9.4.4 and 9.4.6) that carry their payloads as type-length-value blobs rather than the ordinary information elements. Each item below is named with the single decision or datum it carries.",
+      "zh": "大多数课程都聚焦帧的“中段”——帧体、信息元素、动作内容。本课要收拾的是把这一切框起来的两个“边角”。第一个边角：每个 MAC 头部最开头那几个控制字段（9.2.4 与 9.2.5 节），它们决定加密保护、寻址、排序、QoS，以及介质预留计时器（NAV）如何计算。第二个边角：少数几个接入网查询协议（9.4.4 与 9.4.6 节），它们用“类型-长度-值”（TLV）数据块、而非普通信息元素来承载负载。下面每一项都只点名它携带的那一个决定或数据。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 760 120' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><g font-size='11' font-family='sans-serif' fill='currentColor' stroke='none'><text x='8' y='16'>MAC header (9.2.4)</text></g><rect x='8' y='28' width='70' height='34'/><rect x='78' y='28' width='70' height='34'/><rect x='148' y='28' width='150' height='34'/><rect x='298' y='28' width='80' height='34'/><rect x='378' y='28' width='80' height='34'/><rect x='458' y='28' width='80' height='34'/><rect x='538' y='28' width='120' height='34' stroke-dasharray='4 3'/><rect x='658' y='28' width='94' height='34'/><g font-size='9.5' font-family='sans-serif' fill='currentColor' stroke='none' text-anchor='middle'><text x='43' y='49'>Frame Ctrl</text><text x='113' y='49'>Dur/ID</text><text x='223' y='49'>Address 1-4</text><text x='338' y='49'>Seq Ctrl</text><text x='418' y='49'>QoS Ctrl</text><text x='498' y='49'>HT Ctrl</text><text x='598' y='49'>Frame Body</text><text x='705' y='49'>FCS</text></g><g font-size='8' font-family='sans-serif' fill='currentColor' stroke='none' text-anchor='middle'><text x='43' y='76'>9.2.4.1</text><text x='113' y='76'>9.2.4.2</text><text x='223' y='76'>9.2.4.3</text><text x='338' y='76'>9.2.4.4</text><text x='418' y='76'>9.2.4.5</text><text x='498' y='76'>9.2.4.6/.7</text><text x='598' y='76'>9.2.4.8</text><text x='705' y='76'>9.2.4.9</text></g><g font-size='9' font-family='sans-serif' fill='currentColor' stroke='none'><text x='8' y='104'>HT Ctrl HE variant carries the A-Control (Control subfields) hitchhiker; QoS STAs compute Dur/ID per 9.2.5.</text></g></svg>",
+      "caption": {
+        "en": "The MAC header fields of clause 9.2.4, left to right, each with its subclause. The QoS Control and HT Control fields are conditional; the A-Control hitchhikes inside HT Control.",
+        "zh": "9.2.4 节的 MAC 头部字段（从左到右）及其对应子条款。QoS Control 与 HT Control 字段是条件性出现的；A-Control 则“搭便车”藏在 HT Control 之中。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Part A — the header control fields. The Frame Control field (9.2.4.1) is the first two octets: protocol version, the type/subtype bitmap that names the frame, and flags including To DS, From DS, Protected Frame, and +HTC (which signals an HT Control field is present). The Duration/ID field (9.2.4.2) normally carries a microsecond duration that sets the NAV, but in PS-Poll frames it instead carries the station's AID. The Address fields (9.2.4.3) are up to four MAC addresses — BSSID, source, destination, transmitter, receiver — positioned by role, with Address 1 always the receiver and Address 2 always the transmitter. The Sequence Control field (9.2.4.4) carries the sequence number and fragment number so a receiver can reassemble and drop duplicates. The QoS Control field (9.2.4.5) carries the TID, ack policy, and buffer-state hints, present only in QoS frames. The HT Control field (9.2.4.6) carries link-adaptation and sounding feedback in its HT, VHT, and HE variants. The Frame Body field (9.2.4.8) holds the variable-length payload. The FCS field (9.2.4.9) is the 32-bit CRC over header plus body.",
+      "zh": "A 部分——头部控制字段。Frame Control 字段（9.2.4.1）是开头两个字节：协议版本、用于命名帧的类型/子类型位图，以及若干标志位，包括 To DS、From DS、Protected Frame 和 +HTC（指示存在 HT Control 字段）。Duration/ID 字段（9.2.4.2）通常携带以微秒计的时长来设置 NAV，但在 PS-Poll 帧中则改为携带站点的 AID。Address 字段（9.2.4.3）最多四个 MAC 地址——BSSID、源、目的、发送方、接收方——按角色就位：Address 1 永远是接收方，Address 2 永远是发送方。Sequence Control 字段（9.2.4.4）携带序号与分片号，使接收方能重组分片并丢弃重复帧。QoS Control 字段（9.2.4.5）携带 TID、确认策略与缓存状态提示，仅出现在 QoS 帧中。HT Control 字段（9.2.4.6）以其 HT、VHT、HE 三种变体携带链路自适应与探测反馈。Frame Body 字段（9.2.4.8）存放可变长度的负载。FCS 字段（9.2.4.9）是覆盖头部加帧体的 32 位 CRC 校验。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The A-Control hitchhiker. The HE variant of HT Control (9.2.4.6.4) replaces the old middle subfield with an A-Control: a list of small Control subfields, each tagged by a Control ID. The named riders are Triggered Response Scheduling (TRS), Operating Mode (OM), HE Link Adaptation (HLA), Buffer Status Report (BSR), UL Power Headroom (UPH), Bandwidth Query Report (BQR), and Command And Status (CAS). Each one piggybacks a tiny piece of feedback or a state change onto an ordinary frame, so no separate management exchange is needed.",
+      "zh": "A-Control“搭便车”机制。HT Control 的 HE 变体（9.2.4.6.4）把旧的中段子字段换成了 A-Control：一串小巧的 Control 子字段，每个由一个 Control ID 标识。被点名的“乘客”包括触发响应调度（TRS）、工作模式（OM）、HE 链路自适应（HLA）、缓存状态报告（BSR）、上行功率余量（UPH）、带宽查询报告（BQR），以及命令与状态（CAS）。每一种都把一小段反馈或一次状态变更“捎带”在一个普通帧上，从而省去单独的管理帧交互。"
+    },
+    {
+      "type": "prose",
+      "en": "Part A, continued — getting the NAV right (9.2.5). A QoS STA does not just stamp a fixed duration; it computes the Duration/ID value so receivers reserve exactly enough airtime. 9.2.5.2 gives the single- vs multiple-protection settings under EDCA — single protection covers the next frame, multiple protection extends the NAV to the estimated end of the whole TXOP. 9.2.5.3 is the setting inside a QoS CF-Poll frame (it grants and bounds a polled TXOP). 9.2.5.4 is the setting a TXOP holder uses under HCCA to protect the whole controlled access phase. 9.2.5.5 covers the value used inside a dual-CTS sequence. 9.2.5.6 is the control-response setting — what a CTS, Ack, or BlockAck copies so the reservation continues. 9.2.5.7 is the catch-all 'other response' setting for any frame from a non-TXOP-holder not already covered.",
+      "zh": "A 部分（续）——把 NAV 算对（9.2.5）。QoS 站点并非简单地填一个固定时长，而是计算 Duration/ID 值，使接收方恰好预留够用的空口时间。9.2.5.2 给出 EDCA 下的单一保护与多重保护设置——单一保护只覆盖下一帧，多重保护把 NAV 延伸到整个 TXOP 的预计结束时刻。9.2.5.3 是 QoS CF-Poll 帧内部的设置（授予并限定一次被轮询的 TXOP）。9.2.5.4 是 TXOP 持有者在 HCCA 下用来保护整个受控访问阶段（CAP）的设置。9.2.5.5 涵盖双 CTS 序列内部所用的取值。9.2.5.6 是控制响应设置——CTS、Ack 或 BlockAck 复制何值以延续预留。9.2.5.7 则是兜底的“其他响应”设置，适用于非 TXOP 持有者发送、且未被前述条款覆盖的任何帧。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n  A[Access-network query payloads] --> B[9.4.4 Common TLVs]\n  A --> C[9.4.6 RLQP elements]\n  B --> B1[9.4.4.2.2 Device Class]\n  B --> B2[9.4.4.2.3 Device Identification Info]\n  B --> B3[9.4.4.2.4 Device Location Info]\n  B --> B4[9.4.4.2.5 Channel Schedule Descriptor]\n  B --> B5[9.4.4.2.6 WSM information values]\n  C --> C1[9.4.6.2 Channel Availability Query]\n  C --> C2[9.4.6.3 Channel Schedule Management]\n  C --> C3[9.4.6.4 Network Channel Control]\n  C --> C4[9.4.6.5 Vendor Specific]",
+      "zh": "graph TD\n  A[接入网查询负载] --> B[9.4.4 通用 TLV]\n  A --> C[9.4.6 RLQP 元素]\n  B --> B1[9.4.4.2.2 设备类别]\n  B --> B2[9.4.4.2.3 设备标识信息]\n  B --> B3[9.4.4.2.4 设备位置信息]\n  B --> B4[9.4.4.2.5 信道日程描述符]\n  B --> B5[9.4.4.2.6 WSM 信息值]\n  C --> C1[9.4.6.2 信道可用性查询]\n  C --> C2[9.4.6.3 信道日程管理]\n  C --> C3[9.4.6.4 网络信道控制]\n  C --> C4[9.4.6.5 厂商专用]"
+    },
+    {
+      "type": "prose",
+      "en": "Part B — the TLV and RLQP encodings. Some access-network exchanges (the white-space / geolocation-database queries carried over GAS) encode their data as TLV tuples rather than elements. The Common TLVs (9.4.4.2) are: Device Class (9.4.4.2.2), an integer naming the regulatory device class that sets how the channel-availability list is read; Device Identification Information (9.4.4.2.3), who is asking; Device Location Information (9.4.4.2.4), where the asking device is; Channel Schedule Descriptor (9.4.4.2.5), a channel plus its availability start time and duration; and WSM information values (9.4.4.2.6), the per-channel availability and power-level map. The Registered Location Query Protocol elements (9.4.6) wrap these into queryable units, each with a unique Info ID: Channel Availability Query (9.4.6.2), 'which channels may I use here?'; Channel Schedule Management (9.4.6.3), query/return a channel schedule; Network Channel Control (9.4.6.4), request and grant per-operating-class channel control; and Vendor Specific (9.4.6.5), the extension hook for non-standard RLQP data.",
+      "zh": "B 部分——TLV 与 RLQP 编码。某些接入网交互（通过 GAS 承载的“白频段 / 地理位置数据库”查询）用 TLV 元组、而非信息元素来编码数据。通用 TLV（9.4.4.2）包括：设备类别（9.4.4.2.2），一个整数，标明监管上的设备类别，并决定如何解读信道可用性列表；设备标识信息（9.4.4.2.3），谁在发起查询；设备位置信息（9.4.4.2.4），发起设备身处何地；信道日程描述符（9.4.4.2.5），一个信道及其可用性起始时间与持续时长；以及 WSM 信息值（9.4.4.2.6），逐信道的可用性与功率电平映射表。注册位置查询协议（RLQP）元素（9.4.6）把这些封装成可查询的单元，每个都带唯一 Info ID：信道可用性查询（9.4.6.2），“我在此处可用哪些信道？”；信道日程管理（9.4.6.3），查询/返回某信道日程；网络信道控制（9.4.6.4），按工作类别请求并授予信道控制；以及厂商专用（9.4.6.5），承载非标准 RLQP 数据的扩展挂钩。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The A-Control Control ID table and the QoS Duration/ID computation",
+        "zh": "A-Control 的 Control ID 表与 QoS Duration/ID 计算"
+      },
+      "en": "Two precise mechanisms anchor this survey. First, the HE-variant A-Control (9.2.4.6.4): the Control List is a sequence of Control subfields, each a 4-bit Control ID followed by a fixed-length Control Information field, padded so the whole A-Control is 30 bits. Table 9-25 fixes the IDs — 0 TRS, 1 OM, 2 HLA, 3 BSR, 4 UPH, 5 BQR, 6 CAS — each pointing to its definition in 9.2.4.7.x. Second, the QoS Duration/ID computation (9.2.5.2): under multiple protection the value D is derived from the remaining TXOP time, the remaining NAV (TEND-NAV), and the PPDU time — e.g. if TTXOP = 0 and TEND-NAV = 0 then D = TSINGLE-MSDU − TPPDU; otherwise D extends to the estimated end of the TXOP. This is why a NAV set by one QoS frame can correctly protect a whole burst of following frames, and why CTS, Ack, and BlockAck responses (9.2.5.6) simply copy a value consistent with that reservation.",
+      "zh": "本课综述由两个精确机制锚定。其一，HE 变体的 A-Control（9.2.4.6.4）：Control List 是一串 Control 子字段，每个由 4 比特的 Control ID 加上定长的 Control Information 字段构成，并补零填充使整个 A-Control 达到 30 比特。表 9-25 固定了这些 ID——0 TRS、1 OM、2 HLA、3 BSR、4 UPH、5 BQR、6 CAS——各自指向 9.2.4.7.x 中的定义。其二，QoS Duration/ID 的计算（9.2.5.2）：在多重保护下，取值 D 由剩余 TXOP 时间、剩余 NAV（TEND-NAV）与 PPDU 时间推导——例如当 TTXOP = 0 且 TEND-NAV = 0 时 D = TSINGLE-MSDU − TPPDU；否则 D 延伸至 TXOP 的预计结束。这正是为何一个 QoS 帧设置的 NAV 能正确保护其后整串帧，也是为何 CTS、Ack 与 BlockAck 响应（9.2.5.6）只需复制一个与该预留相一致的值。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          690,
+          707
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.2.4.1",
+    "80211-2024:9.2.4.2",
+    "80211-2024:9.2.4.3",
+    "80211-2024:9.2.4.4",
+    "80211-2024:9.2.4.5",
+    "80211-2024:9.2.4.6",
+    "80211-2024:9.2.4.7",
+    "80211-2024:9.2.4.8",
+    "80211-2024:9.2.4.9",
+    "80211-2024:9.2.5.2",
+    "80211-2024:9.2.5.3",
+    "80211-2024:9.2.5.4",
+    "80211-2024:9.2.5.5",
+    "80211-2024:9.2.5.6",
+    "80211-2024:9.2.5.7",
+    "80211-2024:9.4.4.2.2",
+    "80211-2024:9.4.4.2.3",
+    "80211-2024:9.4.4.2.4",
+    "80211-2024:9.4.4.2.5",
+    "80211-2024:9.4.4.2.6",
+    "80211-2024:9.4.6.2",
+    "80211-2024:9.4.6.3",
+    "80211-2024:9.4.6.4",
+    "80211-2024:9.4.6.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        660,
+        669,
+        671,
+        680,
+        681
+      ],
+      "note": "9.2.4 Frame fields — Frame Control, Duration/ID, Address, Sequence Control, QoS Control, HT Control fields"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        690
+      ],
+      "note": "9.2.4.6.4 HE variant A-Control; Table 9-25 Control ID values (TRS/OM/HLA/BSR/UPH/BQR/CAS) -> 9.2.4.7.x"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        702,
+        707
+      ],
+      "note": "9.2.4.8 Frame Body / 9.2.4.9 FCS; 9.2.5 Duration/ID (QoS STA) settings 9.2.5.2-9.2.5.7"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1581,
+        1582
+      ],
+      "note": "9.4.4 TLV encodings; 9.4.4.2 Common TLVs (Device Class, Device Id, Device Location, Channel Schedule Descriptor, WSM)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1620,
+        1622
+      ],
+      "note": "9.4.6 RLQP-elements (Channel Availability Query, Channel Schedule Management, Network Channel Control, Vendor Specific)"
+    }
+  ],
+  "track": "frames"
+}
