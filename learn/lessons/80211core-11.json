@@ -1,0 +1,116 @@
+{
+  "id": "80211core-11",
+  "title": {
+    "en": "HT Coexistence: Protecting the Old Guard (Protection Modes, RIFS, 20/40 MHz)",
+    "zh": "HT 与传统设备共存：保护模式、RIFS 与 20/40 MHz 操作"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "When 802.11n (HT) arrived, it had to share the air with a crowd of older a/b/g radios already out there. The problem is brutal: a legacy radio literally cannot decode an HT preamble. To it, a fast HT transmission looks like meaningless noise — so it sees the channel as idle, starts its own transmission, and the two collide. If nothing were done, a mixed room of HT and legacy stations would dissolve into a storm of collisions. This lesson walks through the MAC's coexistence toolkit: how HT frames stay readable to old radios, and how an AP signals when extra protection is needed.",
+      "zh": "当 802.11n（HT）问世时，它不得不与空中已经存在的大量老式 a/b/g 设备共享频谱。问题非常棘手：传统设备根本无法解码 HT 前导码。在它看来，一段高速 HT 传输只是一堆无意义的噪声——于是它认为信道空闲、开始自己的发送，结果两者相撞。如果不做任何处理，HT 与传统站点混杂的环境就会陷入一场碰撞风暴。本课将带你走过 MAC 的共存工具箱：HT 帧如何让老设备仍能“读懂”，以及 AP 如何在需要额外保护时发出信号。"
+    },
+    {
+      "type": "prose",
+      "en": "The first trick is built into the frame itself. An HT-mixed format PPDU starts with a legacy-readable preamble that any a/g radio can parse. Inside that legacy header sits an L_LENGTH and an L_DATARATE field. The transmitter fixes L_DATARATE at 6 Mb/s and computes L_LENGTH so that, when an old radio multiplies length by rate, it works out a duration equal to the rest of the HT PPDU. The legacy radio can't read the HT data — but it reads 'medium busy for this many microseconds' and politely sets its NAV (its countdown timer) to stay quiet. The HT burst hides safely behind a duration the old guard understands.",
+      "zh": "第一个技巧内置在帧本身。HT 混合格式（HT-mixed）PPDU 以一段任何 a/g 设备都能解析的传统前导码开头。在这段传统头部里，有 L_LENGTH 和 L_DATARATE 两个字段。发送方把 L_DATARATE 固定为 6 Mb/s，并计算 L_LENGTH，使得老设备用“长度 × 速率”算出的时长恰好等于 HT PPDU 剩余部分的持续时间。传统设备读不懂 HT 数据——但它读懂了“介质在这么多微秒内忙碌”，于是乖乖把自己的 NAV（倒计时定时器）设好、保持安静。HT 突发就这样安全地藏在了一段老设备能理解的时长背后。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Think of L_LENGTH as a 'spoofed' duration written in a language the old radios still speak. It carries no real HT payload meaning — its only job is to make a legacy NAV countdown last exactly as long as the HT transmission underneath it.",
+      "zh": "可以把 L_LENGTH 看作一段用老设备仍能听懂的语言写下的“伪装时长”。它不携带任何真正的 HT 载荷含义——它唯一的工作，就是让传统设备的 NAV 倒计时恰好持续到底下那段 HT 传输结束。"
+    },
+    {
+      "type": "prose",
+      "en": "The legacy-readable preamble handles ordinary mixed-format frames, but two cases need more. HT-greenfield format PPDUs (which drop the legacy preamble entirely for efficiency) and RIFS-separated bursts are invisible to legacy and even to older HT radios. So the AP advertises a protection mode in the HT Operation element of its Beacons and Probe Responses, telling everyone how careful to be. It climbs a ladder: no protection (all neighbours are HT), to nonmember protection (a stray non-HT device that isn't in this BSS is nearby), to 20 MHz protection (a 20 MHz HT station shares a 20/40 MHz BSS), and finally non-HT mixed mode (legacy stations are actual members) — the most defensive setting, which an AP may pick at any time.",
+      "zh": "传统可读前导码能应付普通的混合格式帧，但有两种情况需要更多防护。HT 绿地格式（greenfield）PPDU（为提升效率彻底去掉了传统前导码）以及由 RIFS 分隔的突发，对传统设备、甚至对较老的 HT 设备都是“隐形”的。于是 AP 在其 Beacon 和 Probe Response 的 HT Operation 元素中通告一个保护模式（protection mode），告诉所有人要多小心。它沿着一架阶梯逐级攀升：无保护（no protection，周围全是 HT 设备）、非成员保护（nonmember protection，附近有一个不属于本 BSS 的非 HT 设备）、20 MHz 保护（20 MHz protection，某个 20 MHz 的 HT 站点共享着一个 20/40 MHz BSS），最后是 non-HT 混合模式（传统站点真的成了本 BSS 成员）——这是最具防御性的设置，AP 随时都可以选择它。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    A[AP evaluates neighbours] --> B{All STAs HT?}\n    B -- yes --> C[no protection mode]\n    B -- no --> D{Stray non-HT outside BSS?}\n    D -- yes, only outsiders --> E[nonmember protection mode]\n    D -- a 20MHz HT member in 20/40 BSS --> F[20 MHz protection mode]\n    D -- legacy STA is a member --> G[non-HT mixed mode]\n    G --> H[wrap HT TXOP: RTS/CTS or CTS-to-self first]\n    E --> H",
+      "zh": "graph TD\n    A[AP 评估邻居设备] --> B{全部是 HT 站点?}\n    B -- 是 --> C[无保护模式]\n    B -- 否 --> D{有不属于本 BSS 的非 HT 设备?}\n    D -- 仅有外部设备 --> E[非成员保护模式]\n    D -- 20/40 BSS 中有 20MHz HT 成员 --> F[20 MHz 保护模式]\n    D -- 传统站点是本 BSS 成员 --> G[non-HT 混合模式]\n    G --> H[包裹 HT TXOP: 先发 RTS/CTS 或 CTS-to-self]\n    E --> H"
+    },
+    {
+      "type": "prose",
+      "en": "When protection is required, the HT TXOP is wrapped in something a legacy radio can hear. The classic choice is a control-frame exchange before the HT transmission: RTS/CTS, or CTS-to-self, sent at a legacy rate (and for 40 MHz, as non-HT duplicate frames so both 20 MHz halves carry it). That legacy frame sets everyone's NAV first; only then does the fast HT burst go out, shielded. RIFS — a gap even shorter than SIFS used to pack HT bursts back-to-back for efficiency — gets special handling: the AP signals a RIFS Mode field, and stations must protect RIFS sequences whenever the AP is in non-HT mixed mode, because a legacy neighbour can't see the gap is 'reserved' for a continuation.",
+      "zh": "当需要保护时，HT 的 TXOP 会被包裹在某种传统设备能“听见”的东西里。经典做法是在 HT 传输之前先做一次控制帧交换：以传统速率发送的 RTS/CTS 或 CTS-to-self（对于 40 MHz，则以非 HT 复制帧的形式发送，使两个 20 MHz 半信道都携带它）。这个传统帧先把所有人的 NAV 设好；之后那段高速 HT 突发才在受保护的状态下发出。RIFS——一种比 SIFS 还短、用来把多个 HT 突发背靠背紧凑排列以提升效率的间隔——有专门处理：AP 通告一个 RIFS Mode 字段，并且只要 AP 处于 non-HT 混合模式，站点就必须保护 RIFS 序列，因为传统邻居无法看出这段间隔是“预留”给后续传输的。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='6' y='16' fill='currentColor' stroke='none' font-size='12'>HT-mixed PPDU as a legacy radio sees it</text><rect x='10' y='34' width='90' height='34'/><text x='14' y='55' fill='currentColor' stroke='none' font-size='10'>L-preamble</text><rect x='100' y='34' width='340' height='34' stroke-dasharray='5 4'/><text x='150' y='49' fill='currentColor' stroke='none' font-size='10'>HT data (undecodable to legacy)</text><text x='150' y='62' fill='currentColor' stroke='none' font-size='9'>covered by L_LENGTH / L_DATARATE = 6 Mb/s</text><line x1='100' y1='86' x2='440' y2='86' marker-start='url(#a)' marker-end='url(#a)'/><text x='190' y='102' fill='currentColor' stroke='none' font-size='10'>legacy NAV held this long</text><text x='6' y='130' fill='currentColor' stroke='none' font-size='10'>The old radio reads a duration, not the data, and stays silent.</text><defs><marker id='a' markerWidth='8' markerHeight='8' refX='4' refY='4' orient='auto'><path d='M0,4 L8,1 L8,7 Z' fill='currentColor' stroke='none'/></marker></defs></svg>",
+      "caption": {
+        "en": "A legacy radio can't decode the HT data, but the legacy preamble's L_LENGTH tells it how long to keep its NAV set — so it stays off the air for the whole HT PPDU.",
+        "zh": "传统设备无法解码 HT 数据，但传统前导码中的 L_LENGTH 告诉它需要把 NAV 保持多久——于是它在整个 HT PPDU 期间都不上线。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Two edge cases round out the picture. A 40 MHz HT transmission worries about its secondary 20 MHz channel: a STA may only launch a 40 MHz PPDU to start a TXOP when the AP is in no protection mode and the secondary channel offset is valid — otherwise it must fall back to 20 MHz. And an HT station running a direct link with a peer inside a non-HT BSS can't rely on the AP's signalling at all, so it behaves as if everything is maximally defensive: RIFS Mode = 1, HT Protection = non-HT mixed mode, non-greenfield and OBSS-non-HT flags set. Together these rules let HT and legacy take turns on the medium without ever stepping on each other.",
+      "zh": "两个边界情形为整幅图景收尾。一段 40 MHz 的 HT 传输会担心它的次要 20 MHz 信道：只有当 AP 处于无保护模式、且次要信道偏移有效时，站点才可以发起一段 40 MHz PPDU 来开启 TXOP——否则它必须退回到 20 MHz。而一个在非 HT BSS 内与对端运行直连链路（direct link）的 HT 站点，根本无法依赖 AP 的通告，于是它表现得仿佛一切都处于最大防御状态：RIFS Mode = 1、HT Protection = non-HT 混合模式、置位非绿地与 OBSS-非HT 标志。这些规则合在一起，让 HT 与传统设备能在介质上轮流发言，而不会彼此踩踏。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact protection ladder, RIFS rule, and the L_LENGTH formula",
+        "zh": "精确的保护阶梯、RIFS 规则与 L_LENGTH 公式"
+      },
+      "en": "Clause 10.27.3.1 sets the protection ladder precisely: no protection mode requires all detected STAs (primary and secondary channel) to be HT and all known members to be 20/40 or 20 MHz HT; nonmember protection mode when a non-HT STA outside this BSS is detected but all members are HT; 20 MHz protection mode in a 20/40 BSS with at least one 20 MHz HT member; non-HT mixed mode otherwise (an AP may select non-HT mixed mode at any time). A STA may transmit a 40 MHz HT PPDU to initiate a TXOP only when the HT Protection field is no protection mode and the Secondary Channel Offset is SCA or SCB. Clause 10.27.3.2 puts a direct-link HT STA in a non-HT BSS into the most defensive posture (RIFS Mode=1, HT Protection=non-HT mixed mode, Nongreenfield and OBSS Non-HT STAs Present=1). Clause 10.27.3.3 requires a STA to protect RIFS sequences when its AP advertises non-HT mixed mode (and may protect under nonmember protection mode). RIFS itself (10.3.2.3.2) is a gap that may replace SIFS to separate multiple transmissions from one transmitter when no SIFS-separated response is expected; both PPDUs must be HT (or both DMG), and an HT STA may only use it when the AP's HT Operation element has RIFS Mode=1 — note its use by non-DMG STAs is now obsolete. Clause 10.27.4 fixes L_DATARATE at 6 Mb/s and defines L_LENGTH (Equation 10-17) so the non-HT NAV duration equals the remaining HT PPDU after the non-HT preamble; L_LENGTH must not exceed 4095 octets.",
+      "zh": "10.27.3.1 节精确设定了保护阶梯：无保护模式要求所检测到的全部站点（主、次信道）都是 HT，且所有已知成员都是 20/40 或 20 MHz HT；非成员保护模式用于检测到一个不属于本 BSS 的非 HT 站点、但所有成员都是 HT 时；20 MHz 保护模式用于 20/40 BSS 中至少有一个 20 MHz HT 成员时；其余情况则为 non-HT 混合模式（AP 随时可选 non-HT 混合模式）。只有当 HT Protection 字段为无保护模式、且次要信道偏移为 SCA 或 SCB 时，站点才可发起一段 40 MHz HT PPDU 来开启 TXOP。10.27.3.2 节把非 HT BSS 内运行直连链路的 HT 站点置于最具防御性的姿态（RIFS Mode=1、HT Protection=non-HT 混合模式、置位 Nongreenfield 与 OBSS Non-HT STAs Present=1）。10.27.3.3 节要求：当所属 AP 通告 non-HT 混合模式时，站点必须保护 RIFS 序列（在非成员保护模式下则可选保护）。RIFS 本身（10.3.2.3.2）是一种间隔，当不期待 SIFS 间隔的响应时，可替代 SIFS 来分隔同一发送方的多次传输；两段 PPDU 必须都是 HT（或都是 DMG），且 HT 站点只有在 AP 的 HT Operation 元素中 RIFS Mode=1 时才可使用它——注意非 DMG 站点对它的使用现已被列为过时（obsolete）。10.27.4 节把 L_DATARATE 固定为 6 Mb/s，并定义 L_LENGTH（公式 10-17），使非 HT 的 NAV 时长等于非 HT 前导码之后 HT PPDU 的剩余时长；L_LENGTH 不得超过 4095 个八位组。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2087,
+          2089,
+          2091,
+          1888
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.27.3.1",
+    "80211-2024:10.27.3.2",
+    "80211-2024:10.27.3.3",
+    "80211-2024:10.27.4",
+    "80211-2024:10.3.2.3.2"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2087,
+        2088,
+        2089
+      ],
+      "note": "10.27.3.1 — HT protection-mode ladder (no protection / nonmember / 20 MHz / non-HT mixed); 40 MHz TXOP restriction; Tables 10-26/10-27 protection mechanisms"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2089,
+        2090
+      ],
+      "note": "10.27.3.2 direct-link HT STA in non-HT BSS (max-defensive field settings); 10.27.3.3 RIFS protection rules vs AP protection mode"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2090,
+        2091,
+        2092
+      ],
+      "note": "10.27.4 — L_LENGTH and L_DATARATE for HT-mixed format PPDUs; L_DATARATE = 6 Mb/s; Equation 10-17; 4095-octet limit"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1888
+      ],
+      "note": "10.3.2.3.2 RIFS definition — tighter-than-SIFS gap, both PPDUs HT, RIFS Mode=1 requirement, non-DMG use obsolete"
+    }
+  ],
+  "track": "80211core"
+}

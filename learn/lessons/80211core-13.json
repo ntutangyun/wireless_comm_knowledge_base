@@ -1,0 +1,96 @@
+{
+  "id": "80211core-13",
+  "title": {
+    "en": "GCR: Reliable Groupcast — Giving Multicast the Retries It Never Had",
+    "zh": "GCR 组播重传：让一对多传输也能确认与重传"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Ordinary Wi-Fi multicast and broadcast are fire-and-forget. A frame sent to a group address goes out once, usually at a slow basic rate, and nobody acknowledges it. There is no ACK, so there is no retry — if one receiver misses the frame, that data is simply gone for that receiver, and the sender never even finds out. That is fine for a one-off announcement, but it is a disaster for streaming the same video to a wall of screens, where a single dropped frame shows up as a glitch.",
+      "zh": "普通的 Wi-Fi 组播（multicast）和广播（broadcast）都是“发了就不管”。发往组地址的帧只发一次，通常还用较慢的基础速率，而且没有任何人回复确认。既然没有 ACK，也就没有重传——只要有一个接收者漏掉了这一帧，这份数据对它来说就彻底丢了，而发送方甚至根本不会知道。对于一次性的通告这没问题，但如果要把同一路视频流推送到一整面屏幕墙，那就是灾难：哪怕只丢一帧，画面也会卡顿、花屏。"
+    },
+    {
+      "type": "prose",
+      "en": "GCR — Groupcast with Retries — fixes exactly this. It is part of the Robust AV Streaming feature, and it lets a station ask the AP for greater reliability on one or more group-addressed streams it receives. The standard offers three delivery modes, each trading feedback for overhead in a different way. The trick is to give a 'one transmission, many receivers' flow the ability to be acknowledged and retried — without collapsing back into sending a private copy to every member.",
+      "zh": "GCR（Groupcast with Retries，即“带重传的组播”）正是为解决这个问题而生。它属于 Robust AV Streaming（鲁棒音视频流）特性，允许站点向 AP 申请：对它所接收的一路或多路组播流提供更高的可靠性。标准为此给出了三种投递模式，每种在“反馈”和“开销”之间做出不同的取舍。其核心思路是：让一条“一次发送、多方接收”的数据流也能被确认、被重传——同时又不必退化成向每个成员各发一份私有拷贝。"
+    },
+    {
+      "type": "prose",
+      "en": "Mode one is unsolicited retry: just send the same group frame two or more times. There is zero feedback — the sender never learns who got it — but by repeating the frame it stacks the odds that every member catches at least one copy. Mode two is GCR block ack, the heart of this lesson: the data goes out concealed in an A-MPDU addressed to a special concealment address, and then the AP polls each member individually and collects a per-member report of exactly what was received. Mode three is GCR-SP, which delivers the groupcast inside a scheduled service period so power-saving members are guaranteed awake to hear it.",
+      "zh": "第一种模式是非请求式重传（unsolicited retry）：直接把同一个组播帧发送两次或多次。它完全没有反馈——发送方永远不知道谁收到了——但通过重复发送，提高了每个成员至少收到一份拷贝的概率。第二种模式是 GCR 块确认（GCR block ack），也是本课的重点：数据被“伪装”在一个发往特殊隐藏地址（concealment address）的 A-MPDU 中发出，随后 AP 逐个轮询每个成员，并收集每个成员“到底收到了哪些帧”的逐成员报告。第三种模式是 GCR-SP，它在一个预定的服务周期（service period）内投递组播，从而保证处于省电状态的成员一定醒着、能够收到。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The clever part of GCR block ack is the concealment address. The data frames carry a group destination address inside the A-MSDU, but their RA (receiver address) is set to a GCR concealment address. That lets a single over-the-air transmission be heard by the whole group, while the per-member acknowledgement happens afterwards, one member at a time.",
+      "zh": "GCR 块确认最巧妙之处在于“隐藏地址”。数据帧在 A-MSDU 内部携带的是组目的地址，但帧的 RA（接收方地址）被设为一个 GCR 隐藏地址。这样，单次空口发送就能被整个组同时收到，而逐成员的确认则在之后、按成员一个一个地完成。"
+    },
+    {
+      "type": "prose",
+      "en": "So how does the AP find out who got what? After sending its A-MSDUs, it does not ask everyone at once. It sends a BlockAckReq frame to group member 1, whose RA is that member's own unicast MAC address, waits one SIFS, and member 1 replies with a BlockAck carrying its personal bitmap of received sequence numbers. The AP then sends a BlockAckReq to member 2, collects its BlockAck, and so on around the group. For HE (Wi-Fi 6) stations the AP can be more efficient and poll several members at once with a GCR MU-BAR Trigger frame, gathering multiple BlockAcks in a single uplink response. Once every member has reported, the AP looks across all the bitmaps and retransmits only the A-MSDUs that someone still missed.",
+      "zh": "那么 AP 是怎么知道“谁收到了哪些”的呢？发完一批 A-MSDU 之后，它并不会同时问所有人。它先向组成员 1 发送一个 BlockAckReq 帧——这个帧的 RA 设为该成员自己的单播 MAC 地址——等待一个 SIFS，成员 1 便回以一个 BlockAck，其中携带它个人的“已收序号”位图。接着 AP 再向成员 2 发 BlockAckReq、收回它的 BlockAck，如此沿着组轮询下去。对于 HE（Wi-Fi 6）站点，AP 可以更高效地用一个 GCR MU-BAR Trigger 帧同时轮询多个成员，在一次上行响应中收回多个 BlockAck。等所有成员都汇报完毕，AP 再纵览全部位图，只重传那些仍有人没收到的 A-MSDU。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as AP (originator)\n    participant M1 as Member 1\n    participant M2 as Member 2\n    participant M3 as Member 3\n    AP->>M1: A-MSDUs (RA = concealment addr, group DA)\n    AP->>M2: (same over-the-air transmission)\n    AP->>M3: (same over-the-air transmission)\n    Note over AP: now poll each member in turn\n    AP->>M1: BlockAckReq (RA = M1 unicast)\n    M1->>AP: BlockAck (M1 bitmap)\n    AP->>M2: BlockAckReq (RA = M2 unicast)\n    M2->>AP: BlockAck (M2 bitmap)\n    Note over AP: merge bitmaps -> who still missed what?\n    AP->>M1: retransmit only the A-MSDUs still missing",
+      "zh": "sequenceDiagram\n    participant AP as AP（发起方）\n    participant M1 as 成员 1\n    participant M2 as 成员 2\n    participant M3 as 成员 3\n    AP->>M1: A-MSDU（RA=隐藏地址，组 DA）\n    AP->>M2: （同一次空口发送）\n    AP->>M3: （同一次空口发送）\n    Note over AP: 接着逐个轮询各成员\n    AP->>M1: BlockAckReq（RA=M1 单播）\n    M1->>AP: BlockAck（M1 的位图）\n    AP->>M2: BlockAckReq（RA=M2 单播）\n    M2->>AP: BlockAck（M2 的位图）\n    Note over AP: 合并位图 -> 谁还漏了什么？\n    AP->>M1: 只重传仍缺失的 A-MSDU"
+    },
+    {
+      "type": "prose",
+      "en": "The reason this works is the per-member scoreboard. Under a GCR block ack agreement, each recipient keeps its own block acknowledgement record: a bitmap indexed by sequence number, a starting sequence number, a window low edge (WinStartR), a window high edge (WinEndR), and a window size (WinSizeR, capped at 64). Every group data frame the member receives sets the matching bit; every BlockAckReq slides the window forward. Because each member owns an independent scoreboard, 'one transmission, many independent acknowledgers' becomes literally true: the same airtime feeds everyone, yet the AP ends up with an exact, separate picture of each member's losses.",
+      "zh": "这套机制之所以奏效，关键在于“逐成员记分板”。在一个 GCR 块确认协定下，每个接收成员都维护自己的块确认记录（block acknowledgement record）：一张按序号索引的位图、一个起始序号、窗口下沿 WinStartR、窗口上沿 WinEndR，以及窗口大小 WinSizeR（上限为 64）。成员每收到一个组播数据帧，就把对应的比特置 1；每收到一个 BlockAckReq，就把窗口向前滑动。正因为每个成员都拥有一块独立的记分板，“一次发送、多个独立确认者”才真正成立：同一份空口时间喂给了所有人，而 AP 最终却能得到每个成员各自丢包情况的、精确而独立的画面。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The frame-exchange rule, the concealment address, and the per-member record",
+        "zh": "帧交换规则、隐藏地址与逐成员记录"
+      },
+      "en": "10.25.8.1 says GCR block ack simply extends the ordinary block ack mechanism of 10.25.6 to group-addressed frames carried under the GCR block ack and GLK-GCR retransmission policies; the operation is the same except for the points in 10.25.8.2-10.25.8.4. 10.25.8.4 fixes the choreography: an originator shall not transmit more than the GCR buffer size of A-MSDUs whose RA is the GCR concealment address and whose A-MSDU DA is the GCR group address before sending a BlockAckReq frame — with RA set to a destination STA's MAC address — to one STA holding a GCR block ack agreement for that group address. On receiving the BlockAck it may send a BlockAckReq to the next member, repeating around the group; for HE STAs a single GCR MU-BAR Trigger frame can poll several members at once (Figures 10-43 and 10-44). A recipient that gets a BlockAckReq with the GCR Group Address subfield matching its group address transmits its BlockAck a SIFS later, acknowledging its own reception status of the requested block. After the exchange the originator merges the bitmaps and the missing-BlockAck information to decide which A-MSDUs to retransmit, retrying each until a chosen lifetime limit is reached or all polled members have it. 10.25.8.2 defines the per-recipient block acknowledgement record — bitmap, starting sequence number, WinStartR, WinEndR, and WinSizeR (the smaller of 64 and the ADDBA Response Buffer Size) — and the rules that update it on each Data frame and each BlockAckReq. The whole feature is introduced in 4.3.27.2: GCR provides greater reliability for group-addressed streams via unsolicited retries or the block ack mechanism.",
+      "zh": "10.25.8.1 节指出，GCR 块确认只是把 10.25.6 中普通的块确认机制扩展到“按 GCR 块确认与 GLK-GCR 重传策略承载”的组地址帧上；除 10.25.8.2 至 10.25.8.4 列出的差异外，其运作方式与普通块确认相同。10.25.8.4 节确定了整套“编舞”：发起方在向某个持有该组地址 GCR 块确认协定的站点发送 BlockAckReq 帧（该帧 RA 设为目标站点的 MAC 地址）之前，所发送的、RA 为 GCR 隐藏地址且 A-MSDU 子帧 DA 为 GCR 组地址的 A-MSDU 数量，不得超过 GCR 缓冲区大小。收到 BlockAck 后，它可以向下一个成员发送 BlockAckReq，如此绕组轮询；对 HE 站点，可用单个 GCR MU-BAR Trigger 帧一次轮询多个成员（见图 10-43 与图 10-44）。接收方若收到 GCR Group Address 子字段与自身组地址相符的 BlockAckReq，应在一个 SIFS 后发送 BlockAck，确认它自己对所请求帧块的接收状态。交换完成后，发起方综合各位图与“缺失的 BlockAck”信息，决定需要重传哪些 A-MSDU，并对每个 A-MSDU 重试，直到达到所选的生存期限（lifetime limit）或所有被轮询成员都已收到为止。10.25.8.2 节定义了逐接收方的块确认记录——位图、起始序号、WinStartR、WinEndR 以及 WinSizeR（取 64 与 ADDBA Response 缓冲区大小中的较小者）——以及它在每个数据帧、每个 BlockAckReq 上的更新规则。整个特性在 4.3.27.2 节引入：GCR 通过非请求式重传或块确认机制，为组地址流提供更高的可靠性。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          376,
+          2074,
+          2076,
+          2077
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.25.8.1",
+    "80211-2024:10.25.8.2",
+    "80211-2024:10.25.8.4",
+    "80211-2024:4.3.27.2"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        376
+      ],
+      "note": "4.3.27.2 GCR overview — greater reliability for group addressed streams via unsolicited retries or the block ack mechanism; GCR service periods"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2074
+      ],
+      "note": "10.25.8.1 General — GCR block ack extends 10.25.6 block ack to group addressed frames; 10.25.8.2 per-recipient block acknowledgement record (bitmap, SSN, WinStartR, WinEndR, WinSizeR<=64)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2076,
+        2077
+      ],
+      "note": "10.25.8.4 GCR block ack BlockAckReq/BlockAck and GCR MU-BAR Trigger frame exchange sequences; concealment address; per-member polling; merge bitmaps and retransmit (Figures 10-43, 10-44)"
+    }
+  ],
+  "track": "80211core"
+}

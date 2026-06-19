@@ -1,0 +1,120 @@
+{
+  "id": "80211core-12",
+  "title": {
+    "en": "VHT & HE Protection plus the Reverse Direction Protocol: Lending Your Turn Back",
+    "zh": "VHT/HE 保护与反向数据协议（RDP）：把发言权借还回去"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every generation of Wi-Fi after 802.11n inherits a problem: a brand-new fast PPDU is invisible to older stations that cannot decode it. HT (11n) solved this with protection — sending a frame older stations CAN understand first (like RTS/CTS or CTS-to-self, plus a legacy-readable preamble) so they back off and stay quiet. The good news for VHT (11ac) and HE (11ax) is that they did not reinvent this. They simply reuse the HT protection rules, with small extensions for the new, wider channels.",
+      "zh": "802.11n 之后的每一代 Wi-Fi 都继承了同一个难题：一种全新的高速 PPDU 对那些无法解调它的旧站点来说是“隐形”的。HT（11n）用“保护机制”解决了这个问题——先发送一个旧站点能听懂的帧（例如 RTS/CTS 或 CTS-to-self，再配上一个传统设备可读的前导码），让它们退避并保持安静。对 VHT（11ac）和 HE（11ax）来说，好消息是它们并没有重新发明这套机制，而是直接复用 HT 的保护规则，只针对更宽的新信道做了少量扩展。"
+    },
+    {
+      "type": "prose",
+      "en": "A VHT STA follows all the HT protection rules for its band, with one twist: it may send a VHT PPDU wherever the rule called for an HT PPDU, and the protection now also covers 80, 160 and 80+80 MHz transmissions using non-HT duplicate frames. An HE STA layers on top: in 2.4 GHz it obeys the HT rules, in 5 GHz it obeys the VHT rules, substituting HE PPDU formats (HE_SU, HE_ER_SU, HE_MU, HE_TB) for HT/VHT ones — and it additionally gains the MU-RTS/CTS exchange. The pattern is clear: inherit, substitute the new PPDU format, widen the bandwidth signalling. No new RTS dance.",
+      "zh": "VHT 站点遵循其所在频段的全部 HT 保护规则，只有一处变化：凡是规则要求发送 HT PPDU 的地方，它都可以改发 VHT PPDU，并且保护机制现在还借助 non-HT duplicate 帧覆盖 80、160 和 80+80 MHz 的传输。HE 站点则在此之上再叠加：在 2.4 GHz 遵循 HT 规则，在 5 GHz 遵循 VHT 规则，把 HE PPDU 格式（HE_SU、HE_ER_SU、HE_MU、HE_TB）替换进去——并且额外获得了 MU-RTS/CTS 交换能力。规律很清楚：继承、替换新的 PPDU 格式、拓宽带宽信令。没有新的 RTS“舞步”。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: protection is backward-compatibility insurance. The newer the PHY, the harder its frames are for old stations to hear — so each generation keeps the same legacy-readable 'announcement' and just plugs its own faster payload format into the slot the older generation already defined.",
+      "zh": "心智模型：保护机制是“向后兼容保险”。PHY 越新，它的帧就越难被旧站点听到——于是每一代都沿用同样的、传统设备可读的“公告”，只是把自己更快的负载格式插进上一代早已定义好的位置里。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the star of the lesson. Normally the station that wins a TXOP does all the talking for its whole turn; the other side only gets to reply with acknowledgements. But many flows are lopsided. In a download, the access point sends data and the client mostly just sends back ACKs and tiny requests. Forcing that client to contend for the medium all over again — just to send a few bytes — wastes airtime. The Reverse Direction Protocol (RDP) fixes this: the TXOP holder can lend the rest of its turn to the other side.",
+      "zh": "现在进入本课的主角。通常，赢得一次 TXOP 的站点会在整个发言时段里包揽所有发送，另一方只能用确认帧回应。但很多数据流是“偏向一边”的。以下载为例：接入点不断发数据，客户端大多只回发 ACK 和很小的请求。强迫这个客户端为了发那么几个字节而重新去竞争信道，会白白浪费空口时间。反向数据协议（RDP）正是为此而生：TXOP 持有者可以把自己剩下的发言时段“借”给对方。"
+    },
+    {
+      "type": "prose",
+      "en": "Here is the choreography. The TXOP holder — now called the RD initiator — sends a PPDU containing a frame whose RDG/More PPDU subfield (carried in the HT Control field, or the CAS Control subfield for HE) is set to 1. That bit is the grant: it says 'the time remaining in my TXOP is yours for a reply burst.' The addressed station — the RD responder — may then transmit its own data burst a SIFS later, with no new contention and ignoring the NAV, because this is a continuation of the initiator's TXOP, not a fresh channel access. The responder marks its last PPDU with RDG/More PPDU = 0 to hand the turn back, after which the initiator can send a final acknowledgement if one is owed.",
+      "zh": "下面是这套“编舞”。TXOP 持有者——此时称为 RD 发起方（initiator）——发送一个 PPDU，其中某个帧把 RDG/More PPDU 子字段（位于 HT Control 字段中，HE 则位于 CAS Control 子字段中）置为 1。这一位就是授权：它表示“我 TXOP 里剩下的时间，归你用来回发一段数据”。被寻址的站点——即 RD 响应方（responder）——便可以在一个 SIFS 之后发送自己的数据突发，无需重新竞争、并且忽略 NAV，因为这属于发起方 TXOP 的延续，而不是一次全新的信道接入。响应方在它的最后一个 PPDU 中把 RDG/More PPDU 置为 0，从而把发言权交还回去；之后，如果还欠一个确认，发起方再发出最终的确认帧。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant I as RD Initiator (TXOP holder)\n    participant R as RD Responder\n    Note over I,R: I won the TXOP via contention\n    I->>R: RDG PPDU (data + RDG/More PPDU = 1)\n    Note over R: SIFS later, no new contention, NAV ignored\n    R->>I: RD response burst (data, RDG/More PPDU = 1)\n    R->>I: last PPDU (RDG/More PPDU = 0) -> turn handed back\n    Note over I: SIFS later\n    I->>R: RD initiator final PPDU (BlockAck/Ack, if required)\n    Note over I,R: all within the initiator's single TXOP",
+      "zh": "sequenceDiagram\n    participant I as RD 发起方 (TXOP 持有者)\n    participant R as RD 响应方\n    Note over I,R: 发起方通过竞争赢得 TXOP\n    I->>R: RDG PPDU (数据 + RDG/More PPDU = 1)\n    Note over R: 一个 SIFS 后, 无需重新竞争, 忽略 NAV\n    R->>I: RD 响应突发 (数据, RDG/More PPDU = 1)\n    R->>I: 最后一个 PPDU (RDG/More PPDU = 0) -> 交还发言权\n    Note over I: 一个 SIFS 后\n    I->>R: RD 发起方最终 PPDU (BlockAck/Ack, 若需要)\n    Note over I,R: 全部都在发起方的同一个 TXOP 之内"
+    },
+    {
+      "type": "prose",
+      "en": "Both sides have firm limits. The initiator may only set the grant in a frame that needs no immediate response or needs only a BlockAck/Ack, and if the TXOP was won via EDCA it must set the AC Constraint subfield to 1 — pinning the responder to the same access category so a borrowed turn cannot smuggle in higher-priority traffic. The responder, in turn, must fit its entire burst (and any expected responses) inside the time left in the Duration/ID field, must not transmit at a wider channel bandwidth than the grant PPDU, must restrict its frames to an allowed set (Ack, BlockAck, QoS Data, QoS Null, Management, Basic Trigger…), and a receiver is never obligated to use a grant — it can simply decline by sending a frame with RDG/More PPDU = 0.",
+      "zh": "双方都有硬性约束。发起方只能在“无需立即响应”或“仅需 BlockAck/Ack”的帧里设置授权；并且若该 TXOP 是通过 EDCA 赢得的，它必须把 AC Constraint 子字段置为 1——把响应方钉在同一个接入类别（AC）上，从而避免借来的时段被用来夹带更高优先级的流量。响应方这边，则必须把自己整段突发（以及任何预期的响应）都塞进 Duration/ID 字段所剩的时间内，不得使用比授权 PPDU 更宽的信道带宽，必须把帧限制在允许的集合内（Ack、BlockAck、QoS Data、QoS Null、Management、Basic Trigger……）；而且接收方从来没有义务使用授权——它完全可以发送一个 RDG/More PPDU = 0 的帧来直接拒绝。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why this matters today: RDP is the conceptual ancestor of modern TXOP sharing and MU TXOP in 11ax/11be. The core idea — 'I won the airtime, but I'll let you transmit inside it without re-contending' — is exactly what an AP does when it shares a TXOP with its clients via triggers. Learn RDP and the newer mechanisms feel familiar.",
+      "zh": "为什么它在今天仍重要：RDP 是 11ax/11be 中现代 TXOP 共享（TXOP sharing）与 MU TXOP 的概念“祖先”。其核心思想——“信道是我赢来的，但我让你在里面发送，而不必重新竞争”——正是 AP 通过 Trigger 帧与客户端共享 TXOP 时所做的事。理解了 RDP，再看这些更新的机制就会觉得似曾相识。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact RD frame-exchange sequence and the SIFS timing rule",
+        "zh": "精确的 RD 帧交换序列与 SIFS 时序规则"
+      },
+      "en": "Clause 10.29.2 defines the RD frame exchange sequence in three parts: (a) the RD initiator transmits an RDG PPDU containing one or more +HTC (or DMG) MPDUs with RDG/More PPDU = 1; (b) the addressed RD responder transmits an RD response burst whose first PPDU carries at most one immediate BlockAck or Ack, with PPDUs separated by SIFS or RIFS; (c) if required, the initiator transmits a final PPDU with the owed BlockAck/Ack. Clause 10.29.4 fixes the timing: if the grant came in an A-MPDU with an ack policy other than Scheduled Ack, the responder shall transmit its initial response-burst PPDU a SIFS after receiving the RDG PPDU, and Note 1 stresses this is not a new channel access but a continuation of the initiator's TXOP — the responder ignores the NAV. The responder must keep its transmissions within the Duration/ID, must not exceed the grant PPDU's channel bandwidth, and is restricted to the allowed frame set in 10.29.4; the initiator's grant conditions and the EDCA AC Constraint rule live in 10.29.3.",
+      "zh": "10.29.2 节把 RD 帧交换序列分为三部分：(a) RD 发起方发送一个 RDG PPDU，其中含有一个或多个 RDG/More PPDU = 1 的 +HTC（或 DMG）MPDU；(b) 被寻址的 RD 响应方发送一段 RD 响应突发，其首个 PPDU 至多携带一个立即 BlockAck 或 Ack，突发内各 PPDU 之间以 SIFS 或 RIFS 相隔；(c) 如有需要，发起方再发送一个携带所欠 BlockAck/Ack 的最终 PPDU。10.29.4 节明确了时序：若授权是在 ack 策略不为 Scheduled Ack 的 A-MPDU 中给出的，响应方应在收到 RDG PPDU 后的一个 SIFS 发送其响应突发的首个 PPDU；其 Note 1 强调这并非一次新的信道接入，而是发起方 TXOP 的延续——响应方忽略 NAV。响应方必须把自己的传输保持在 Duration/ID 所示时间内，不得超过授权 PPDU 的信道带宽，并被限制在 10.29.4 列出的允许帧集合内；发起方的授权条件以及 EDCA 下的 AC Constraint 规则则见于 10.29.3。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2097,
+          2098,
+          2100
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.27.5",
+    "80211-2024:10.27.6",
+    "80211-2024:10.29.1",
+    "80211-2024:10.29.2",
+    "80211-2024:10.29.3",
+    "80211-2024:10.29.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2092
+      ],
+      "note": "10.27.5 VHT protection (HT rules + 80/160/80+80 MHz non-HT duplicate); 10.27.6 HE protection (2.4 GHz=HT, 5 GHz=VHT rules; HE PPDU substitution; MU-RTS/CTS)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2097
+      ],
+      "note": "10.29.1 General — RD support by HT/S1G/DMG/EDMG; RD Responder capability subfields; RDG/More PPDU & AC Constraint location in HTC/CAS Control"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2097,
+        2098
+      ],
+      "note": "10.29.2 RD frame exchange sequence — RDG PPDU, RD response burst, RD initiator final PPDU; RD initiator/responder definitions"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2098,
+        2099,
+        2100
+      ],
+      "note": "10.29.3 Rules for RD initiator — grant frame conditions, AC Constraint under EDCA, normal continuation a SIFS after response"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2100,
+        2101
+      ],
+      "note": "10.29.4 Rules for RD responder — SIFS timing, NAV ignored (continuation of TXOP), Duration/ID fit, bandwidth limit, allowed frame set, declining a grant"
+    }
+  ],
+  "track": "80211core"
+}

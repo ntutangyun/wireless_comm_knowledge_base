@@ -1,0 +1,121 @@
+{
+  "id": "80211core-14",
+  "title": {
+    "en": "S1G Turn-Taking at Scale: Restricted Access Windows for Thousands of IoT Nodes",
+    "zh": "S1G 海量接入：受限访问窗口（RAW）为成千上万的物联网节点排队"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Sub-1-GHz Wi-Fi (802.11ah, marketed as Wi-Fi HaLow) was built for a different crowd than your laptop and phone. A single S1G access point may have to serve hundreds or even thousands of small, battery-powered sensors that mostly sleep and occasionally have one tiny packet to send. The classic Wi-Fi answer — let everyone wake up after the beacon and contend for the channel at once — simply does not scale. If a thousand sensors all backed off and transmitted in the same instant, the collisions would melt the channel and almost nothing would get through.",
+      "zh": "Sub-1-GHz（亚千兆赫）Wi-Fi（即 802.11ah，市场名 Wi-Fi HaLow）面向的人群与你的笔记本、手机完全不同。一个 S1G 接入点（AP）可能要服务成百上千个小型、电池供电的传感器——它们大多在睡觉，偶尔才有一个极小的数据包要发。经典 Wi-Fi 的做法——让所有节点在信标后一起醒来、同时争用信道——根本无法扩展。如果上千个传感器在同一瞬间退避并发送，碰撞会让信道彻底瘫痪，几乎什么都传不出去。"
+    },
+    {
+      "type": "prose",
+      "en": "The Restricted Access Window (RAW) is 802.11's answer: instead of one big free-for-all, the AP carves out a slice of time right after the beacon, restricts who is allowed to contend in it, and then chops that slice into smaller slots. Each group of stations is told which slot it may contend in. By spreading the uplink access attempts of a small set of stations across a span of time, the AP cuts collisions and lifts overall medium efficiency. The intuition is simple: turn a stampede into an orderly, time-staggered queue.",
+      "zh": "受限访问窗口（Restricted Access Window，RAW）就是 802.11 给出的答案：AP 不再让所有节点一拥而上，而是在信标之后切出一段时间，限制谁有资格在其中争用，再把这段时间切成更小的“时隙（slot）”。每一组站点都会被告知自己可以在哪个时隙里争用。通过把一小批站点的上行接入尝试分散到一段时间内，AP 降低了碰撞、提升了整体介质效率。直觉很简单：把“一窝蜂”变成有序、错峰的排队。"
+    },
+    {
+      "type": "prose",
+      "en": "The whole structure is broadcast in the S1G Beacon. The AP includes an RPS (RAW Parameter Set) element whose RAW Assignment subfield says: which group of stations this RAW is for (a contiguous range of Association IDs, from a start AID to an end AID), when the RAW starts, how long each slot is, and how many slots there are. A station first checks whether its AID falls inside the group's AID range; if so, it is a member and must figure out exactly which slot is its turn — and stay silent during everyone else's slots.",
+      "zh": "整套结构都通过 S1G 信标广播。AP 在信标里放入一个 RPS（RAW Parameter Set，受限访问参数集）元素，其 RAW Assignment 子字段说明：这个 RAW 是分给哪一组站点的（一段连续的关联标识 AID 范围，从起始 AID 到结束 AID）、RAW 何时开始、每个时隙多长、一共有多少个时隙。站点首先检查自己的 AID 是否落在该组的 AID 范围内；若是，它就是成员，必须算出究竟哪个时隙才是轮到自己的——并在别人的时隙里保持沉默。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 520 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11'><line x1='10' y1='90' x2='510' y2='90' stroke='currentColor' stroke-width='1.5'/><rect x='10' y='60' width='40' height='30' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='30' y='80' text-anchor='middle' fill='currentColor'>Beacon</text><rect x='70' y='60' width='90' height='30' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='115' y='80' text-anchor='middle' fill='currentColor'>Slot 0</text><rect x='160' y='60' width='90' height='30' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='205' y='80' text-anchor='middle' fill='currentColor'>Slot 1</text><rect x='250' y='60' width='90' height='30' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='295' y='80' text-anchor='middle' fill='currentColor'>Slot 2</text><rect x='340' y='60' width='90' height='30' fill='currentColor' stroke='currentColor' stroke-width='1.5' fill-opacity='0.15'/><text x='385' y='80' text-anchor='middle' fill='currentColor'>Slot i</text><text x='115' y='110' text-anchor='middle' fill='currentColor'>PS-Poll</text><text x='205' y='110' text-anchor='middle' fill='currentColor'>DATA</text><text x='295' y='110' text-anchor='middle' fill='currentColor'>ACK</text><line x1='70' y1='52' x2='430' y2='52' stroke='currentColor' stroke-width='1'/><line x1='70' y1='48' x2='70' y2='56' stroke='currentColor' stroke-width='1'/><line x1='430' y1='48' x2='430' y2='56' stroke='currentColor' stroke-width='1'/><text x='250' y='44' text-anchor='middle' fill='currentColor'>Restricted Access Window (RAW)</text><line x1='160' y1='90' x2='160' y2='128' stroke='currentColor' stroke-width='0.7' stroke-dasharray='3,3'/><text x='160' y='142' text-anchor='middle' fill='currentColor' font-size='9'>slot boundary</text></svg>",
+      "caption": {
+        "en": "A RAW sits right after the beacon and is divided into equal-length slots. A station only contends in its assigned slot (highlighted), keeping all the other slots collision-free for the groups that own them.",
+        "zh": "RAW 紧跟在信标之后，被划分为等长的时隙。站点只在分配给自己的时隙（高亮处）里争用，从而让其他时隙对各自所属的组保持无碰撞。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "How does a station know which slot is its turn? The standard gives a small, deterministic mapping. With NRAW slots indexed 0 to NRAW-1, a station computes its slot index as islot = (x + Noffset) mod NRAW. Here x is the station's position index — derived from its AID — Noffset is an offset broadcast to improve fairness (the standard reuses the two least-significant octets of the beacon's FCS for it), and NRAW is the number of slots. The modulo neatly folds a wide range of AIDs down onto a handful of slots, so a thousand stations spread evenly across, say, eight slots — roughly 125 contenders per slot instead of 1000 all at once.",
+      "zh": "站点怎么知道哪个时隙轮到自己？标准给出了一个简洁、确定的映射。设共有 NRAW 个时隙、编号从 0 到 NRAW-1，站点用 islot = (x + Noffset) mod NRAW 计算自己的时隙编号。其中 x 是站点的位置索引（由其 AID 导出），Noffset 是广播下发、用于提升公平性的偏移量（标准复用信标 FCS 的低两个八位字节作为该值），NRAW 是时隙数量。取模运算把一大段 AID 整齐地折叠到少数几个时隙上：于是上千个站点均匀散布到比如 8 个时隙里——每个时隙大约 125 个争用者，而不是 1000 个一起涌上来。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Once a station knows its slot, the rule of the game is timing. It must not start contending earlier than the start of its assigned slot, and — when the AP forbids crossing slot boundaries — it may only begin a frame exchange if there is enough time left in the slot to finish the transmission and receive the expected response before the boundary. No straddling into your neighbour's turn.",
+      "zh": "一旦站点确定了自己的时隙，游戏规则就归结为“时机”。它不得早于所分配时隙的起始时刻就开始争用；并且——当 AP 禁止跨时隙边界时——只有当时隙内剩余时间足以在边界前完成本次发送并收到预期应答时，它才可以发起一次帧交换。绝不能跨进邻居的回合。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    A[\"S1G Beacon: RPS + TIM element\"] --> B{\"My AID in RAW group?\\nN1 <= AID <= N2\"}\n    B -- no --> C[\"Stay off the medium\\nfor the RAW duration\"]\n    B -- yes --> D[\"Compute slot index\\nislot = (x + Noffset) mod NRAW\"]\n    D --> E[\"Wait until start of slot islot\"]\n    E --> F[\"Run S1G EDCA backoff\\ninside the slot\"]\n    F --> G{\"Cross Slot Boundary = 0\\nand not enough time left?\"}\n    G -- yes --> H[\"Hold off:\\ndo not start the exchange\"]\n    G -- no --> I[\"Transmit (PS-Poll / DATA),\\nget ACK\"]",
+      "zh": "graph TD\n    A[\"S1G 信标：RPS + TIM 元素\"] --> B{\"我的 AID 在 RAW 组里吗？\\nN1 <= AID <= N2\"}\n    B -- 否 --> C[\"在 RAW 期间\\n不接入介质\"]\n    B -- 是 --> D[\"计算时隙编号\\nislot = (x + Noffset) mod NRAW\"]\n    D --> E[\"等到时隙 islot 的起点\"]\n    E --> F[\"在时隙内运行\\nS1G EDCA 退避\"]\n    F --> G{\"Cross Slot Boundary = 0\\n且剩余时间不足？\"}\n    G -- 是 --> H[\"暂缓：\\n不发起本次交换\"]\n    G -- 否 --> I[\"发送（PS-Poll / DATA），\\n收到 ACK\"]"
+    },
+    {
+      "type": "prose",
+      "en": "EDCA backoff gets a clever twist inside a RAW. A station keeps two backoff function states. The one it normally uses outside the RAW is frozen the moment the RAW begins — backoff counter, CW[AC] and QSRC[AC] are all saved away — and restored when the RAW ends, so the RAW does not disturb the station's ordinary contention. Inside the RAW the station runs a separate, second backoff state: at the start of its assigned slot it resets CW[AC] to CWmin[AC] and contends fresh. If the AP forbids crossing the slot boundary, the station only counts down its backoff during its own slots; if crossing is allowed, it may keep counting down past the boundary to finish. When the RAW ends, the second state is simply discarded.",
+      "zh": "RAW 内部的 EDCA 退避有一个巧妙的变化。站点维护两套退避函数状态。RAW 一开始，它平时在 RAW 外使用的那一套就被冻结——退避计数器、CW[AC] 和 QSRC[AC] 全部存起来——并在 RAW 结束时恢复，使得 RAW 不会扰动站点平常的争用。在 RAW 内部，站点运行另一套独立的“第二退避状态”：在所分配时隙的起点把 CW[AC] 重置为 CWmin[AC]，重新开始争用。如果 AP 禁止跨时隙边界，站点只在属于自己的时隙里递减退避；如果允许跨越，它可以越过边界继续递减以完成发送。RAW 结束时，第二套状态被直接丢弃。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, sensor traffic is usually periodic — a meter reports every minute, a door sensor checks in on a schedule. Re-advertising a fresh RAW in every beacon would waste airtime. So 802.11 defines the Periodic RAW (PRAW): the AP sets a Periodic RAW Indication bit and the RAW recurs on a schedule, valid for a fixed number of periods. The AP need not repeat the allocation in every beacon, and stations keep using the most recently received parameters until the AP broadcasts an update. Recurring schedules turn one-off staggering into a standing, predictable rhythm that battery-powered nodes can sleep against.",
+      "zh": "最后，传感器流量通常是周期性的——电表每分钟上报一次，门磁按计划签到。如果在每个信标里都重新通告一个 RAW，会浪费空口时间。于是 802.11 定义了周期性 RAW（Periodic RAW，PRAW）：AP 置上 Periodic RAW Indication（周期 RAW 指示）位，RAW 便按计划重复出现，并在固定的若干个周期内有效。AP 无需在每个信标里都重复该分配，站点会一直沿用最近收到的参数，直到 AP 广播更新。周期性的调度把一次性的错峰变成了稳定、可预测的节拍，电池供电的节点可以据此安排睡眠。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact membership test, slot-mapping function, and dual-backoff rule",
+        "zh": "精确的成员判定、时隙映射函数与双退避规则"
+      },
+      "en": "Membership (10.23.5.2): an S1G STA in TIM mode is in the RAW group if N1 <= n <= N2, where n is its AID, N1 is formed by concatenating the Page Index subfield with the RAW Start AID subfield, and N2 by concatenating Page Index with the RAW End AID subfield of the RAW Group subfield in the RPS element. Slot count and timing come from the RAW Slot Definition subfield. Slot mapping (10.23.5.3): islot = (x + Noffset) mod NRAW, where NRAW is the Number of Slots subfield, x is the AID's position index (when the RAW is restricted to STAs whose TIM bits are 1, AIDs are arranged ascending and indexed from 0) or simply the AID otherwise, and Noffset is taken from the two least-significant octets of the S1G Beacon's FCS to improve fairness. Slotted access (10.23.5.4) is EDCA-based; a STA contends no earlier than its assigned slot. Dual backoff (10.23.5.5): a STA freezes its outside-RAW (first) backoff state at RAW start and restores it at RAW end; inside the RAW it runs a second state, setting CW[AC] = CWmin[AC] at slot start and, when Cross Slot Boundary = 0, counting down only within its assigned slots — discarding the second state after the RAW. Periodic RAW (10.23.5.8): setting the Periodic RAW Indication subfield to 1 makes the assignment recur, valid for a fixed number of periods (PRAW Validity), without needing to re-advertise in every beacon.",
+      "zh": "成员判定（10.23.5.2）：处于 TIM 模式的 S1G 站点属于该 RAW 组，当且仅当 N1 <= n <= N2，其中 n 为其 AID，N1 由 RPS 元素 RAW Group 子字段中的 Page Index 子字段与 RAW Start AID 子字段拼接而成，N2 由 Page Index 与 RAW End AID 子字段拼接而成；时隙数量与时序取自 RAW Slot Definition 子字段。时隙映射（10.23.5.3）：islot = (x + Noffset) mod NRAW，其中 NRAW 为 Number of Slots 子字段，x 为 AID 的位置索引（当 RAW 限定于 TIM 位为 1 的站点时，AID 按升序排列并从 0 开始编号）或在其他情形下直接取 AID，Noffset 取自 S1G 信标 FCS 的低两个八位字节以提升公平性。时隙化接入（10.23.5.4）基于 EDCA，站点不早于所分配时隙开始争用。双退避（10.23.5.5）：站点在 RAW 开始时冻结其 RAW 外（第一套）退避状态，并在 RAW 结束时恢复；在 RAW 内运行第二套状态，在时隙起点令 CW[AC] = CWmin[AC]，且当 Cross Slot Boundary = 0 时只在所分配时隙内递减——RAW 结束后丢弃第二套状态。周期性 RAW（10.23.5.8）：将 Periodic RAW Indication 子字段置 1 即可让该分配周期性重复，并在固定的若干周期内有效（PRAW Validity），无需在每个信标里重复通告。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2031,
+          2033,
+          2034,
+          2035,
+          2037
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.23.5.2",
+    "80211-2024:10.23.5.3",
+    "80211-2024:10.23.5.4",
+    "80211-2024:10.23.5.5",
+    "80211-2024:10.23.5.8"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2030,
+        2031,
+        2032
+      ],
+      "note": "10.23.5.1-10.23.5.2 General + RAW structure and timing: RAW group AID range (N1<=n<=N2), slots, Cross Slot Boundary, Figure 10-35"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2033,
+        2034
+      ],
+      "note": "10.23.5.3-10.23.5.4 Slot assignment islot=(x+Noffset) mod NRAW (Figures 10-36/10-37) and slotted EDCA channel access"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2035,
+        2036
+      ],
+      "note": "10.23.5.5 EDCA backoff in RAW: first (outside) vs second (inside) backoff function states, CW[AC]=CWmin[AC] at slot start"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2037
+      ],
+      "note": "10.23.5.8 Periodic RAW (PRAW): Periodic RAW Indication, PRAW Validity, recurrence without per-beacon re-advertisement"
+    }
+  ],
+  "track": "80211core"
+}

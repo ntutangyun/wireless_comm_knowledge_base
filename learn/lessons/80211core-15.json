@@ -1,0 +1,127 @@
+{
+  "id": "80211core-15",
+  "title": {
+    "en": "S1G Modes: Sectorized Beams, Short NDP/PV1 Frames, and TWT Wake Schedules",
+    "zh": "S1G 模式：扇区波束、短帧（NDP/PV1）与目标唤醒时间（TWT）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Sub-1-GHz Wi-Fi (S1G, the basis of 802.11ah / Wi-Fi HaLow) is built for long range and tiny battery-powered sensors, not for a living room full of laptops. At those frequencies a single contention-based free-for-all wastes airtime and drains coin-cell radios. So clause 10 of the standard adds three MAC adaptations that all push in the same direction: trade always-on, omnidirectional, full-header contention for conversations that are directional, short, and scheduled. This lesson walks through all three — sectorized beams, ultra-short frames, and target wake time.",
+      "zh": "Sub-1-GHz Wi-Fi（S1G，即 802.11ah / Wi-Fi HaLow 的基础）是为远距离和小型电池供电的传感器设计的，而不是为坐满笔记本电脑的客厅设计的。在这些频段上，单纯依赖竞争的“群雄逐鹿”会浪费空口时间、耗尽纽扣电池的电量。因此标准第 10 章增加了三种 MAC 适配，它们的方向一致：把“始终在线、全向、完整帧头”的竞争式接入，换成“有方向、短帧、有调度”的对话。本课会依次讲解这三者——扇区波束、超短帧，以及目标唤醒时间（TWT）。"
+    },
+    {
+      "type": "prose",
+      "en": "First, sectorized beam operation. Instead of radiating in all directions at once, the AP splits its coverage into angular sectors and steers (or listens through) one sector at a time, covering each subset of stations in turn. Fewer stations share each sector, so there are fewer hidden nodes colliding and less interference. It begins with a capabilities exchange: an S1G STA advertises whether it is sectorized-beam-capable, and the AP advertises which flavours it supports — TXOP-based sectorization, group sectorization, or both. The standard guarantees an AP has at least two sectors, and the whole BSS is always reachable via an omnidirectional fallback beam.",
+      "zh": "首先是扇区波束操作（sectorized beam operation）。AP 不再同时向四面八方辐射，而是把覆盖区划分成若干角度扇区，每次只朝一个扇区发射（或从一个扇区接收），轮流覆盖各个站点子集。每个扇区里共享介质的站点更少，于是发生碰撞的隐藏节点更少、干扰也更小。这一切以一次能力交换开始：S1G 站点声明自己是否支持扇区波束，AP 则声明它支持哪几种——基于 TXOP 的扇区化、群组扇区化，或两者皆有。标准保证 AP 至少有两个扇区，并且整个 BSS 始终可以通过一束全向回退波束被覆盖到。"
+    },
+    {
+      "type": "prose",
+      "en": "There are two ways to schedule who talks in which sector. In group sectorization, the AP alternates sectorized beacons with omnidirectional beacons; each station is assigned a non-zero group ID at association, and a station may only transmit before the next TBTT if its group ID appears in the S1G Sector Operation element of the beacon it just heard. (Group ID 0 is a wildcard — those stations may transmit in every interval.) In TXOP-based sectorization, the choice is made per TXOP: the AP often opens with an omnidirectional frame to set up NAV protection, then switches to a sector by setting the matching bit in the TXVECTOR SECTOR_ID parameter, and must keep using that same sector for the rest of the protected exchange.",
+      "zh": "决定“在哪个扇区里轮到谁说话”有两种方式。在群组扇区化（group sectorization）中，AP 让扇区波束信标与全向信标交替出现；每个站点在关联时被分配一个非零的组 ID，只有当某站点的组 ID 出现在它刚收到的信标的 S1G Sector Operation 元素中时，它才被允许在下一个 TBTT 之前发送。（组 ID 为 0 是通配——这类站点在每个间隔都可发送。）在基于 TXOP 的扇区化（TXOP-based sectorization）中，则按每个 TXOP 来选择：AP 往往先用一帧全向传输来建立 NAV 保护，再通过把 TXVECTOR 的 SECTOR_ID 参数中对应的比特置 1 来切换到某个扇区，并且在该受保护交换的剩余时间内必须一直使用同一个扇区。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    subgraph Beacon Rotation Period\n    S1[\"Sectorized Beacon<br/>Sector 1\"] --> I1[\"Sector Interval 1<br/>group IDs for S1 may TX\"]\n    I1 --> S2[\"Sectorized Beacon<br/>Sector 2\"]\n    S2 --> I2[\"Sector Interval 2<br/>group IDs for S2 may TX\"]\n    I2 --> S3[\"Sectorized Beacon<br/>Sector 3\"]\n    S3 --> I3[\"Sector Interval 3<br/>group IDs for S3 may TX\"]\n    I3 --> OM[\"Omnidirectional Beacon\"]\n    OM --> IO[\"Omni Interval<br/>ALL STAs may TX\"]\n    end",
+      "zh": "graph LR\n    subgraph 信标轮转周期\n    S1[\"扇区信标<br/>扇区 1\"] --> I1[\"扇区间隔 1<br/>扇区1的组ID可发送\"]\n    I1 --> S2[\"扇区信标<br/>扇区 2\"]\n    S2 --> I2[\"扇区间隔 2<br/>扇区2的组ID可发送\"]\n    I2 --> S3[\"扇区信标<br/>扇区 3\"]\n    S3 --> I3[\"扇区间隔 3<br/>扇区3的组ID可发送\"]\n    I3 --> OM[\"全向信标\"]\n    OM --> IO[\"全向间隔<br/>所有站点均可发送\"]\n    end"
+    },
+    {
+      "type": "prose",
+      "en": "Second, ultra-short frames. An IoT sensor's real payload might be a single byte of temperature — yet a normal MAC header (three or four 6-byte addresses, sequence control, QoS) dwarfs it. S1G attacks this from two angles. The S1G NDP (null-data PPDU) carries its entire meaning in the PHY header with no MAC body at all, riding the compact 2 MHz short format — perfect for tiny control signals like acks, polls, and CTS. And PV1 header compression lets two associated S1G stations store each other's A3/A4 addresses once and then omit them from every later frame, so a QoS Data, Action, or Action No Ack frame shrinks to only the fields that actually changed.",
+      "zh": "其次是超短帧。一个物联网传感器真正的有效载荷可能只是一个字节的温度读数——可常规 MAC 帧头（三到四个 6 字节地址、序列控制、QoS）却比它大得多。S1G 从两个角度解决这个问题。S1G NDP（空数据 PPDU）把全部含义都放进 PHY 头里，根本没有 MAC 帧体，并采用紧凑的 2 MHz 短格式——非常适合 ACK、轮询、CTS 这类微小的控制信号。而 PV1 帧头压缩（header compression）让两个已关联的 S1G 站点先把彼此的 A3/A4 地址各存储一次，之后在每一帧里都省略它们，于是一帧 QoS Data、Action 或 Action No Ack 就只剩下真正发生变化的那些字段。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11'><text x='6' y='20' fill='currentColor'>PV0 (full) header:</text><rect x='6' y='28' width='70' height='26' fill='none' stroke='currentColor'/><text x='12' y='45' fill='currentColor'>FC/Dur</text><rect x='76' y='28' width='60' height='26' fill='none' stroke='currentColor'/><text x='90' y='45' fill='currentColor'>A1</text><rect x='136' y='28' width='60' height='26' fill='none' stroke='currentColor'/><text x='150' y='45' fill='currentColor'>A2</text><rect x='196' y='28' width='60' height='26' fill='none' stroke='currentColor'/><text x='210' y='45' fill='currentColor'>A3</text><rect x='256' y='28' width='60' height='26' fill='none' stroke='currentColor'/><text x='270' y='45' fill='currentColor'>A4</text><rect x='316' y='28' width='80' height='26' fill='currentColor' opacity='0.15' stroke='currentColor'/><text x='350' y='45' fill='currentColor'>payload</text><text x='6' y='90' fill='currentColor'>PV1 (A3/A4 stored, omitted):</text><rect x='6' y='98' width='70' height='26' fill='none' stroke='currentColor'/><text x='12' y='115' fill='currentColor'>FC/Dur</text><rect x='76' y='98' width='60' height='26' fill='none' stroke='currentColor'/><text x='90' y='115' fill='currentColor'>A1</text><rect x='136' y='98' width='60' height='26' fill='none' stroke='currentColor'/><text x='150' y='115' fill='currentColor'>A2</text><rect x='196' y='98' width='80' height='26' fill='currentColor' opacity='0.15' stroke='currentColor'/><text x='230' y='115' fill='currentColor'>payload</text><text x='284' y='115' fill='currentColor'>← shorter on air</text></svg>",
+      "caption": {
+        "en": "PV1 header compression: once a receiver stores the transmitter's A3/A4, those address fields are dropped from later frames, leaving more of the tiny PPDU for actual data.",
+        "zh": "PV1 帧头压缩：一旦接收方存储了发送方的 A3/A4，这些地址字段就会从后续帧中删除，让这一微小 PPDU 中更多的空间留给真正的数据。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Third, target wake time (TWT). Rather than waking for every beacon to check for buffered traffic, a station negotiates exact future wake windows with the AP and sleeps soundly in between. The requesting STA sends a TWT element (Request, Suggest, or Demand) and the responding STA replies (Accept, Alternate, Dictate, or Reject); on Accept, a TWT agreement exists, identified by a 3-bit Flow Identifier (so up to 8 agreements per STA pair). Two timing styles exist. In explicit TWT the responder hands over the next wake time inside each response (the Next TWT field). In implicit TWT the schedule is periodic, so the STA simply adds a fixed TWT Wake Interval to the current start time to compute the next one — no per-cycle signalling needed.",
+      "zh": "第三是目标唤醒时间（TWT）。站点不必为每个信标都醒来去查看是否有缓存流量，而是与 AP 协商出精确的未来唤醒窗口，并在两次窗口之间安心休眠。请求方站点发送一个 TWT 元素（Request、Suggest 或 Demand），响应方站点予以回复（Accept、Alternate、Dictate 或 Reject）；一旦 Accept，便存在一个 TWT 协议，由一个 3 比特的 Flow Identifier 标识（因此每对站点之间最多 8 个协议）。计时方式有两种。在显式 TWT（explicit TWT）中，响应方在每次回复里都给出下一次唤醒时间（Next TWT 字段）。在隐式 TWT（implicit TWT）中，调度是周期性的，于是站点只需把当前起始时间加上一个固定的 TWT 唤醒间隔（TWT Wake Interval），即可算出下一次——无需每个周期都发信令。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "One unifying intuition: the explicit-vs-implicit TWT split mirrors the sectorization split. Explicit TWT and group sectorization both lean on signalled, per-interval information (Next TWT field, beacon group list); implicit TWT and TXOP-based sectorization both lean on a rule the STA can apply locally (add the interval; read the SECTOR_ID bit). S1G keeps offering you the same trade: spend a little signalling to stay flexible, or follow a fixed rule and save the airtime.",
+      "zh": "有一个统一的直觉：显式与隐式 TWT 的区分，恰好映照了扇区化的区分。显式 TWT 和群组扇区化都依赖“被发信令告知、按间隔给出”的信息（Next TWT 字段、信标里的组列表）；隐式 TWT 和基于 TXOP 的扇区化都依赖“站点可以本地套用的规则”（加上间隔；读取 SECTOR_ID 比特）。S1G 一再向你提供同一个取舍：花一点信令开销换取灵活性，或者遵循一条固定规则来省下空口时间。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact wording: SECTOR_ID continuity, S1G NDP TXVECTOR, and explicit vs implicit TWT timing",
+        "zh": "精确条文：SECTOR_ID 的连续性、S1G NDP 的 TXVECTOR，以及显式与隐式 TWT 的计时"
+      },
+      "en": "TXOP-based sectorization (10.52.4) is precise about commitment: switching from omnidirectional to a sectorized beam happens when the bit for that sector is 1 in the TXVECTOR parameter SECTOR_ID; once the AP transmits to a STA through that sector it must use the same sector to receive within the TXOP, must continue with it for the remaining NAV/RID protection, and may not truncate the TXOP. An omnidirectional beam can be realised by setting all SECTOR_ID bits to 0 (or all to 1 with CSD inserted to avoid unintentional beamforming). The S1G NDP (10.35.7) must use the 2 MHz short format with APEP_LENGTH or PSDU_LENGTH set to 0, NUM_USERS = 1, and NDP_INDICATION = 0; it carries no MAC body. For TWT timing: under explicit TWT (10.46.3) each next SP start is delivered in the Next TWT Info/Suspend Duration field of a response frame, and a STA that received a nonzero Next TWT must not doze until it has been awake for at least the Nominal Minimum TWT Wake Duration or received EOSP = 1. Under implicit TWT (10.46.4) the values are periodic: the requesting STA determines the next TWT SP start by adding the TWT Wake Interval of that agreement to the current SP start time, though a received Next TWT in a TWT Information frame overrides the computed value.",
+      "zh": "基于 TXOP 的扇区化（10.52.4）对“承诺”有精确规定：当 TXVECTOR 参数 SECTOR_ID 中对应该扇区的比特为 1 时，便从全向波束切换到扇区波束；AP 一旦通过该扇区向某站点发送，在该 TXOP 内就必须用同一扇区接收，必须在剩余的 NAV/RID 保护期内继续使用它，且不得截断该 TXOP。全向波束可以通过把所有 SECTOR_ID 比特置 0 来实现（或全部置 1 并插入 CSD 以避免意外的波束成形）。S1G NDP（10.35.7）必须使用 2 MHz 短格式，APEP_LENGTH 或 PSDU_LENGTH 置 0，NUM_USERS = 1，NDP_INDICATION = 0；它不携带任何 MAC 帧体。关于 TWT 计时：在显式 TWT（10.46.3）下，每个下一个 SP 的起始时间都在响应帧的 Next TWT Info/Suspend Duration 字段中给出，收到非零 Next TWT 的站点在醒着满足至少 Nominal Minimum TWT Wake Duration 或收到 EOSP = 1 之前不得进入休眠。在隐式 TWT（10.46.4）下，这些值是周期性的：请求方站点通过把该协议的 TWT 唤醒间隔加到当前 SP 起始时间上来确定下一个 TWT SP 起始，不过 TWT Information 帧中收到的 Next TWT 会覆盖这个计算值。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2142,
+          2383,
+          2384,
+          2361,
+          2362
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.52.2",
+    "80211-2024:10.52.3",
+    "80211-2024:10.52.4",
+    "80211-2024:10.35.7",
+    "80211-2024:10.57",
+    "80211-2024:10.46.3",
+    "80211-2024:10.46.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2380,
+        2381,
+        2382
+      ],
+      "note": "10.52.2-10.52.3 Sector Capabilities Exchange and group sectorization — capability fields, group IDs, sectorized vs omnidirectional beacons, S1G Sector Operation element"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2383,
+        2384
+      ],
+      "note": "10.52.4 TXOP-based sectorization — per-TXOP sector choice via TXVECTOR SECTOR_ID, omnidirectional setup then same-sector continuity for the protected exchange"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2142
+      ],
+      "note": "10.35.7 Transmission of an S1G NDP — 2 MHz short format, no MAC body, TXVECTOR settings"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2402,
+        2403,
+        2404
+      ],
+      "note": "10.57 Generation of PV1 MPDUs and header compression — storing/omitting A3/A4, Header Compression element, PV1 vs PV0"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2361,
+        2362
+      ],
+      "note": "10.46.3-10.46.4 Explicit vs implicit TWT operation — Next TWT field delivery vs periodic TWT Wake Interval addition"
+    }
+  ],
+  "track": "80211core"
+}

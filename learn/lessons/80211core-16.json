@@ -1,0 +1,165 @@
+{
+  "id": "80211core-16",
+  "title": {
+    "en": "DMG/PCP at 60 GHz: Carving the Beacon Interval into Service Periods and Contention",
+    "zh": "DMG/PCP 60GHz 接入：把信标间隔切成服务期（SP）与竞争期（CBAP）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "At 60 GHz, Wi-Fi stops being a free-for-all. The 802.11ad/ay directional millimetre-wave bands need narrow steered beams, so a single coordinator — an AP or a PCP (PBSS Control Point) — schedules the medium like a conductor handing out solos. Instead of every station fighting for airtime whenever it likes, the coordinator publishes a calendar and each station transmits only in its assigned window. This lesson walks through how that calendar is built inside a single beacon interval.",
+      "zh": "在 60 GHz 频段，Wi-Fi 不再是“谁抢到谁用”。802.11ad/ay 的定向毫米波频段需要又窄又对准的波束，因此由一个统一的协调者——AP 或 PCP（PBSS 控制点）——像指挥一样调度信道，逐一分配“独奏”时段。各站点不再随时争抢空口时间，而是由协调者发布一张“时间表”，每个站点只在分配给自己的窗口里发送。本课就来讲解这张时间表是如何在单个信标间隔内被切分出来的。"
+    },
+    {
+      "type": "prose",
+      "en": "Medium time is divided into beacon intervals, and each beacon interval is split into access periods, each with its own access rules. The front half is the BHI (beacon header interval): the BTI broadcasts DMG Beacon frames, the A-BFT does beamforming training with whoever just beaconed, and the ATI is a request/response management window between the AP/PCP and stations. The back half is the DTI (data transfer interval), and that is where the real choice lives — the DTI is sliced into CBAPs and SPs in any number and order the schedule wants.",
+      "zh": "空口时间被划分成一个个信标间隔（beacon interval），而每个信标间隔又被切成若干“接入期（access period）”，每个接入期都有自己专属的接入规则。前半部分是 BHI（信标头间隔）：BTI 用来广播 DMG Beacon 帧，A-BFT 用来与刚刚发过 Beacon 的站点做波束成形训练，ATI 则是 AP/PCP 与站点之间的请求/响应管理窗口。后半部分是 DTI（数据传输间隔），真正的“取舍”就在这里——DTI 会被切成 CBAP 和 SP，数量和先后顺序完全由时间表决定。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two access flavours inside the DTI: a CBAP (Contention-Based Access Period) is the familiar EDCA free-for-all where eligible stations contend; an SP (Service Period) is a reserved slot owned by one source station talking to one destination — no contention, just a booked appointment. Directional 60 GHz leans on SPs precisely because steered beams don't tolerate random collisions well.",
+      "zh": "DTI 内有两种接入风味：CBAP（竞争式接入期）是大家熟悉的 EDCA“自由竞争”，符合条件的站点彼此争抢；而 SP（服务期）则是一段被预订的时段，由一个源站点对一个目的站点独占——没有竞争，就像一个排好的“预约”。定向 60 GHz 之所以偏爱 SP，正是因为对准的窄波束很不擅长应付随机碰撞。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 660 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='12'><line x1='10' y1='120' x2='650' y2='120' stroke='currentColor' stroke-width='1'/><polygon points='650,120 642,116 642,124' fill='currentColor'/><text x='600' y='140' fill='currentColor'>time</text><text x='10' y='18' fill='currentColor' font-size='13'>Beacon Interval</text><g stroke='currentColor' fill='none' stroke-width='1'><rect x='10' y='40' width='40' height='40'/><rect x='50' y='40' width='50' height='40'/><rect x='100' y='40' width='50' height='40'/></g><g stroke='currentColor' fill='none' stroke-width='1.5'><rect x='150' y='40' width='120' height='40'/><rect x='270' y='40' width='90' height='40'/><rect x='360' y='40' width='90' height='40'/><rect x='450' y='40' width='120' height='40'/><rect x='570' y='40' width='80' height='40'/></g><text x='30' y='64' text-anchor='middle' fill='currentColor'>BTI</text><text x='75' y='64' text-anchor='middle' fill='currentColor'>A-BFT</text><text x='125' y='64' text-anchor='middle' fill='currentColor'>ATI</text><text x='210' y='64' text-anchor='middle' fill='currentColor'>CBAP 1</text><text x='315' y='64' text-anchor='middle' fill='currentColor'>SP 1</text><text x='405' y='64' text-anchor='middle' fill='currentColor'>SP 2</text><text x='510' y='64' text-anchor='middle' fill='currentColor'>CBAP 2</text><text x='610' y='64' text-anchor='middle' fill='currentColor'>SP 3</text><line x1='10' y1='95' x2='150' y2='95' stroke='currentColor' stroke-width='1'/><line x1='150' y1='95' x2='650' y2='95' stroke='currentColor' stroke-width='1'/><text x='80' y='110' text-anchor='middle' fill='currentColor'>BHI</text><text x='400' y='110' text-anchor='middle' fill='currentColor'>DTI (CBAPs + SPs, any order)</text></svg>",
+      "caption": {
+        "en": "One beacon interval: the BHI (BTI / A-BFT / ATI) handles beaconing, beamforming and management; the DTI carries data, sliced into CBAPs (contention) and SPs (reserved) in any combination.",
+        "zh": "一个信标间隔：BHI（BTI / A-BFT / ATI）负责发 Beacon、做波束成形与管理；DTI 承载数据，被切成 CBAP（竞争）与 SP（预约），二者可任意组合排列。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Each SP is announced in an Extended Schedule element with AllocationType 0, a Source AID and a Destination AID, a start time relative to the AP/PCP's TSF clock, and a fixed duration. The source station owns the SP: it must kick off the frame exchange at the start of the SP, and only the named source and destination may transmit during it. Crucially, the source must check that the whole exchange — data plus any acknowledgements — finishes before the SP ends; nothing is allowed to spill past the booked boundary.",
+      "zh": "每个 SP 都在“扩展调度元素（Extended Schedule element）”中公布：AllocationType 设为 0，带有一个 Source AID 和一个 Destination AID，一个相对 AP/PCP 的 TSF 时钟的起始时间，以及一个固定时长。源站点拥有这个 SP：它必须在 SP 开始时发起帧交换，且只有被点名的源与目的站点才能在其间发送。关键的一点是，源站点必须确认整段交换——数据加上任何确认帧——都能在 SP 结束前完成；任何内容都不允许越过预订好的边界。"
+    },
+    {
+      "type": "prose",
+      "en": "Two tricks keep this calendar robust. Pseudo-static allocations let an SP or CBAP recur at the same offset from TBTT and the same duration across multiple beacon intervals, so a station can keep using its slot even if it misses a few schedules (up to dot11MaxLostBeacons). And because every clock drifts a little, the AP/PCP inserts guard time between adjacent allocations — computed from worst-case TSF drift plus SIFS and propagation delay — so a station that runs slightly long doesn't crash into the next appointment.",
+      "zh": "有两个技巧让这张时间表更稳健。其一是“伪静态分配（pseudo-static allocation）”：一个 SP 或 CBAP 可以在多个信标间隔里以相对 TBTT 的同一偏移、同一时长反复出现，于是即便站点漏收了几次调度（最多 dot11MaxLostBeacons 次），仍能继续使用自己的时段。其二，由于每个时钟都会略有漂移，AP/PCP 会在相邻分配之间插入“保护时间（guard time）”——它由最坏情况下的 TSF 漂移加上 SIFS 和传播时延算出——这样某个站点稍微超时也不会撞进下一个预约。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as AP / PCP\n    participant S as Station (source)\n    Note over AP: Polling Period (PP)\n    AP->>S: Poll (any free time in a broadcast SP/CBAP)\n    S->>AP: SPR (I have traffic, want time)\n    Note over AP: Grant Period (GP)\n    AP->>S: Grant (SP allocated, duration set)\n    Note over S: data transfer in the granted SP\n    Note over S: finishes early -> CF-End / Grant truncates SP\n    Note over S: needs more -> SPR requests extension into next broadcast SP",
+      "zh": "sequenceDiagram\n    participant AP as AP / PCP\n    participant S as 站点（源）\n    Note over AP: 轮询期 (PP)\n    AP->>S: Poll（在广播 SP/CBAP 的空闲时间内）\n    S->>AP: SPR（我有流量，想要时段）\n    Note over AP: 授予期 (GP)\n    AP->>S: Grant（分配 SP，设定时长）\n    Note over S: 在授予的 SP 内做数据传输\n    Note over S: 提前结束 -> CF-End / Grant 截断 SP\n    Note over S: 不够用 -> SPR 请求延伸进下一个广播 SP"
+    },
+    {
+      "type": "prose",
+      "en": "On top of the fixed schedule sits a dynamic layer that reassigns airtime on the fly within one beacon interval. In the Polling Period (PP) the AP/PCP sends Poll frames and stations reply with SPR frames declaring they have traffic; in the Grant Period (GP) the AP/PCP issues Grant frames that carve out an SP for a specific source/destination pair. If an SP finishes early, the owner can truncate it — a CF-End returns the leftover time to the AP/PCP, or a broadcast Grant reopens it as a CBAP — and if a station needs more, it can request a dynamic extension by sending an SPR into the time of a following broadcast-AID SP.",
+      "zh": "在固定时间表之上，还有一层“动态分配”，能在单个信标间隔内即时重新分配空口时间。在轮询期（PP），AP/PCP 发送 Poll 帧，站点用 SPR 帧回应、声明自己有流量；在授予期（GP），AP/PCP 发出 Grant 帧，为某个特定的源/目的站点对划出一个 SP。如果某个 SP 提前结束，其拥有者可以将它“截断（truncate）”——用一个 CF-End 帧把剩余时间还给 AP/PCP，或用一个广播 Grant 帧把它重新开放成 CBAP；而如果站点不够用，则可以发送一个 SPR、把请求伸进随后一个广播 AID 的 SP 时间里，申请“动态延伸（extension）”。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact rules: SP ownership, guard time, and the SPR/Grant dynamic loop",
+        "zh": "精确规则：SP 归属、保护时间，以及 SPR/Grant 动态环路"
+      },
+      "en": "10.38.2 lists the access periods and fixes that the BHI = BTI + A-BFT + ATI and the DTI = CBAPs + scheduled SPs, with a single BHI and DTI per beacon interval. 10.38.5 governs CBAPs: EDCA operation suspends at the end of a CBAP and resumes at the next, with backoff and NAVs frozen in between. 10.38.6.2.1 sets AllocationType = 0 for an SP, assigns it to the source AID, and requires the source to initiate at the SP start while only source/destination transmit. 10.38.6.4 defines pseudo-static recurrence (same offset to TBTT, same duration) surviving up to dot11MaxLostBeacons missed schedules. 10.38.6.5 gives Tguard from worst-case drift (Ai, C, Di) plus SIFS, propagation TP and TSF resolution TTR. The dynamic layer: 10.38.7.2 starts a Polling Period during a broadcast-AID SP/CBAP or relinquished time, soliciting SPR frames; 10.38.7.3 starts a Grant Period (SIFS after a PP, or standalone) where Grant frames create exactly one allocation per GP. 10.38.8.1 lets only the source (or the destination on a no-show) truncate an SP — CF-End returns time to the AP/PCP, a broadcast Grant reopens it as a CBAP. 10.38.9 lets a non-AP/PCP STA send an SPR to extend the current SP into a following broadcast-AID SP, granted only if that next SP is long enough.",
+      "zh": "10.38.2 列出了各接入期，并固定下来：BHI = BTI + A-BFT + ATI，DTI = CBAP + 调度 SP，每个信标间隔有且仅有一个 BHI 和一个 DTI。10.38.5 规定 CBAP：EDCA 操作在一个 CBAP 结束时挂起、在下一个 CBAP 开始时恢复，其间退避计数与 NAV 保持冻结。10.38.6.2.1 把 SP 的 AllocationType 设为 0，将其分配给 Source AID，并要求源站点在 SP 开始时发起、且仅源/目的站点可发送。10.38.6.4 定义伪静态的复现（相对 TBTT 的同一偏移、同一时长），可在最多 dot11MaxLostBeacons 次漏收调度后仍然存活。10.38.6.5 给出 Tguard：由最坏情况漂移（Ai、C、Di）加上 SIFS、传播时延 TP 与 TSF 分辨率 TTR 算出。动态层：10.38.7.2 在广播 AID 的 SP/CBAP 或被让出的时间内启动轮询期，征集 SPR 帧；10.38.7.3 启动授予期（PP 后 SIFS，或独立启动），其中 Grant 帧每个 GP 只创建一个分配。10.38.8.1 规定只有源站点（或在源缺席时由目的站点）可截断 SP——CF-End 把时间还给 AP/PCP，广播 Grant 则把它重新开放成 CBAP。10.38.9 允许非 AP/PCP 站点发送 SPR、把当前 SP 延伸进随后一个广播 AID 的 SP，且仅当下一个 SP 足够长时才会被批准。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2152,
+          2156,
+          2159,
+          2165,
+          2167,
+          2175,
+          2178,
+          2179,
+          2181
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.38.2",
+    "80211-2024:10.38.5",
+    "80211-2024:10.38.6.2.1",
+    "80211-2024:10.38.6.4",
+    "80211-2024:10.38.6.5",
+    "80211-2024:10.38.7.2",
+    "80211-2024:10.38.7.3",
+    "80211-2024:10.38.8.1",
+    "80211-2024:10.38.9"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2152
+      ],
+      "note": "10.38.2 Access periods within a beacon interval — BHI=BTI+A-BFT+ATI; DTI=CBAPs+SPs; Figure 10-60"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2156,
+        2157
+      ],
+      "note": "10.38.5 CBAP transmission rules — EDCA suspend/resume at CBAP boundaries; backoff/NAV frozen"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2159,
+        2160
+      ],
+      "note": "10.38.6.2.1 SP allocation general — AllocationType 0, Source AID owns SP, must complete before SP end"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2165,
+        2166,
+        2167
+      ],
+      "note": "10.38.6.4 Pseudo-static allocations — same offset to TBTT/duration across up to dot11MaxLostBeacons"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2167,
+        2168
+      ],
+      "note": "10.38.6.5 Guard time — Tguard from worst-case drift + SIFS + TP + TTR; Figure 10-65"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2175,
+        2176,
+        2177
+      ],
+      "note": "10.38.7.2 Polling Period — Poll/SPR over broadcast-AID SP/CBAP or relinquished time"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2178,
+        2179
+      ],
+      "note": "10.38.7.3 Grant Period — Grant frames allocate SP; one allocation per GP; SP/TXOP relinquish via Grant"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2179,
+        2180
+      ],
+      "note": "10.38.8.1 DMG dynamic truncation — CF-End returns time to AP/PCP; broadcast Grant reopens as CBAP"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2181,
+        2182
+      ],
+      "note": "10.38.9 Dynamic extension — SPR requests extra time into a following broadcast-AID SP"
+    }
+  ],
+  "track": "80211core"
+}
