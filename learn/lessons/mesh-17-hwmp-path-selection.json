@@ -1,0 +1,224 @@
+{
+  "id": "mesh-17-hwmp-path-selection",
+  "title": {
+    "en": "Finding a Route Through the Mesh: HWMP Path Selection",
+    "zh": "在网格中找路：HWMP 路径选择"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A mesh BSS is a web of peer mesh STAs, and a frame often has to hop across several of them to reach its destination. Deciding which neighbors a frame should traverse is called mesh path selection: choosing multi-hop paths between mesh STAs at the link layer, which produces the forwarding information that the MAC then uses to forward each MSDU or MMPDU. Rather than hardcode one algorithm, the standard wraps path selection in an extensible framework and ships one default protocol — HWMP — inside it.",
+      "zh": "网格 BSS 是由众多对等网格 STA 组成的网状结构，一帧往往要经过其中若干跳才能抵达目的地。决定一帧应经由哪些邻居转发，就叫作网格路径选择：在链路层为网格 STA 之间挑选多跳路径，由此生成转发信息，MAC 随后据此转发每个 MSDU 或 MMPDU。标准没有把某一种算法写死，而是用一个可扩展框架来承载路径选择，并在其中内置了一个默认协议——HWMP。"
+    },
+    {
+      "type": "prose",
+      "en": "The extensible path selection framework lets a mesh STA carry several protocol and metric implementations, but only one path selection protocol and one path selection metric may be active at a time. The active choices are advertised in the Mesh Configuration element so neighbors know whether and how to peer. Each protocol/metric defines a small contract: the metric's data type and field length, an aggregation operator that combines per-link metrics into a path metric, a comparison operator that decides which path is better, and the metric's initial value. HWMP is the mandatory default protocol; the airtime link metric (and, for faster radios, the high PHY rate airtime link metric) is the mandatory default metric. Both defaults must be implemented on every mesh STA.",
+      "zh": "可扩展路径选择框架允许一个网格 STA 携带多种协议与度量实现，但同一时刻只能激活一种路径选择协议和一种路径选择度量。当前激活的选择会在网格配置元素中通告，邻居据此判断是否以及如何建立对等关系。每种协议/度量都定义了一份简短约定：度量的数据类型与字段长度、把各链路度量聚合成路径度量的聚合算子、判定哪条路径更优的比较算子，以及度量的初始值。HWMP 是强制的默认协议；空口时间链路度量（对于更快的射频则是高 PHY 速率空口时间链路度量）是强制的默认度量。这两个默认项都必须在每个网格 STA 上实现。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Link metric reporting is the supporting plumbing: a mesh STA can send a Mesh Link Metric Report frame, or request one (Request subfield = 1) from a peer, who must reply with its link metric value. How a STA folds a received report into its local metric is left to the implementation. The airtime metric itself estimates the channel resources a link consumes from PHY rate, frame overhead, and frame error rate — a radio-aware cost, not just hop count.",
+      "zh": "链路度量上报是支撑性的管道机制：一个网格 STA 可以发送网格链路度量报告帧，或向对等方请求一份（Request 子字段 = 1），对方必须回复其链路度量值。STA 如何把收到的报告并入本地度量，则交由实现决定。空口时间度量本身根据 PHY 速率、帧开销和帧错误率来估算一条链路所消耗的信道资源——这是一种感知射频的代价，而不仅仅是跳数。"
+    },
+    {
+      "type": "prose",
+      "en": "HWMP is hybrid because it blends two modes that run concurrently. On-demand mode is always available and lets any two mesh STAs discover a peer-to-peer path when they need one. Proactive tree building mode is layered on top when a mesh STA is configured as a root mesh STA: it pre-builds a tree rooted at that STA so traffic can flow immediately (e.g., toward a gateway) while a shorter on-demand path is discovered in the background. Four element types carry the protocol: PREQ (path request), PREP (path reply), PERR (path error), and RANN (root announcement). A Metric field rides in the PREQ, PREP, and RANN elements so cumulative path cost propagates with them.",
+      "zh": "HWMP 之所以称为混合，是因为它融合了两种并发运行的模式。按需模式始终可用，让任意两个网格 STA 在需要时发现一条点对点路径。主动建树模式则在某个网格 STA 被配置为根网格 STA 时叠加其上：它预先构建一棵以该 STA 为根的树，使流量可以立即流动（例如流向网关），同时在后台发现更短的按需路径。四种元素承载该协议：PREQ（路径请求）、PREP（路径回复）、PERR（路径错误）和 RANN（根通告）。度量字段搭载在 PREQ、PREP 和 RANN 元素中，使累计路径代价随其一同传播。"
+    },
+    {
+      "type": "prose",
+      "en": "To keep paths loop-free, every mesh STA owns and increments its own HWMP sequence number (HWMP SN), carried in every element so recipients can tell fresh information from stale. The terminology is precise and fixed for the duration of one PREQ/PREP discovery: the path originator triggers discovery, the path target is what it seeks, intermediate mesh STAs sit between them, the forward path leads to the target and the reverse path leads back to the originator. Relative to any reference STA, a destination mesh STA has a next-hop mesh STA toward it and precursor mesh STAs that rely on this STA as their next hop.",
+      "zh": "为保持路径无环，每个网格 STA 拥有并递增自己的 HWMP 序列号（HWMP SN），它搭载在每个元素中，使接收方能够区分新信息与陈旧信息。术语在一次 PREQ/PREP 发现过程中是精确且固定的：路径发起方触发发现，路径目标是其寻找的对象，中间网格 STA 位于二者之间，前向路径通往目标，反向路径通回发起方。相对于任一参考 STA，目的网格 STA 有一个指向它的下一跳网格 STA，以及把本 STA 当作其下一跳的前驱网格 STA。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  O[Path originator] -->|PREQ flood| I1[Intermediate 1]\n  I1 -->|PREQ| I2[Intermediate 2]\n  I2 -->|PREQ| T[Path target]\n  T -.->|PREP unicast| I2\n  I2 -.->|PREP| I1\n  I1 -.->|PREP| O\n  O === T",
+      "zh": "flowchart LR\n  O[路径发起方] -->|PREQ 泛洪| I1[中间1]\n  I1 -->|PREQ| I2[中间2]\n  I2 -->|PREQ| T[路径目标]\n  T -.->|PREP 单播| I2\n  I2 -.->|PREP| I1\n  I1 -.->|PREP| O\n  O === T"
+    },
+    {
+      "type": "prose",
+      "en": "On demand, the originator group-addresses a PREQ naming the target with the metric set to its initial value. Each receiver creates or updates a reverse path to the originator and re-floods the PREQ only if it carries a greater HWMP SN, or an equal SN with a better metric — updating the Metric field to the cumulative cost as it goes. The Target Only (TO) subfield controls who may answer: with TO = 1 only the target replies; with TO = 0 an intermediate STA holding a fresh path may reply early with a PREP for low-latency setup. The PREP is unicast back along the reverse path, building the forward path at each hop, until a bidirectional best-metric end-to-end path stands between originator and target.",
+      "zh": "按需场景中，发起方以组地址发出一个指明目标的 PREQ，度量置为初始值。每个接收方创建或更新通回发起方的反向路径，且仅当该 PREQ 携带更大的 HWMP SN、或 SN 相等但度量更优时才重新泛洪——并在转发途中把度量字段更新为累计代价。仅目标（TO）子字段控制谁可以应答：TO = 1 时仅目标回复；TO = 0 时持有新鲜路径的中间 STA 可提前回复 PREP，以实现低时延建立。PREP 沿反向路径单播回送，在每一跳建立前向路径，直至在发起方与目标之间立起一条双向的、度量最优的端到端路径。"
+    },
+    {
+      "type": "prose",
+      "en": "In proactive tree building mode a root mesh STA periodically seeds the tree. The proactive PREQ mechanism sends a group-addressed PREQ with the Target Address set to all 1s and TO = 1; every STA records its metric and hop count to the root and re-transmits, so reverse paths to the root form across the whole network using only group-addressed traffic. If Proactive PREP is requested (or the STA needs to send toward the root), the STA returns a proactive PREP to establish the forward path from the root. The proactive RANN mechanism instead floods RANN elements that only announce the root and its metric — reception does not create a path. A STA wanting a path then unicasts a PREQ to the root via the neighbor it heard the RANN from, and the root answers with a PREP, yielding robust bidirectional trees built on acknowledged frames.",
+      "zh": "在主动建树模式中，根网格 STA 周期性地播撒这棵树。主动 PREQ 机制发送一个目标地址全置 1、TO = 1 的组地址 PREQ；每个 STA 记录其到根的度量与跳数并重新发送，于是仅用组地址流量就在全网形成通往根的反向路径。若请求了主动 PREP（或该 STA 需要向根发送数据），STA 返回一个主动 PREP 以建立从根出发的前向路径。主动 RANN 机制则改为泛洪 RANN 元素，它只通告根及其度量——接收本身并不建立路径。需要路径的 STA 随后经由听到该 RANN 的那个邻居向根单播一个 PREQ，根以 PREP 应答，从而在确认帧之上建立健壮的双向树。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: framework, metric, terminology, modes and addressing",
+        "zh": "覆盖地图：框架、度量、术语、模式与寻址"
+      },
+      "en": "Mesh path selection and its framework — 14.9.1 defines mesh path selection as link-layer multi-hop path choice feeding forwarding information; 14.9.2 is the extensible framework (multiple protocols/metrics allowed, only one active, advertised in the Mesh Configuration element, with the data-type/length/aggregation/comparison/initial-value contract); 14.9.3 is link metric reporting via the Mesh Link Metric Report frame and its Request subfield. The link metric — 14.10.1 explains a path selection link metric assesses link quality for a radio-aware path, with the airtime metric as default and high PHY rate airtime metric for >54 Mb/s radios. HWMP basics — 14.11.1 introduces HWMP as the hybrid default protocol (on-demand + proactive tree, AODV-inspired, four elements, sequence numbers); 14.11.2 fixes terminology (originator, target, intermediate, forward/reverse path, HWMP SN, forwarding information, destination, next-hop, precursor, lifetime, Element TTL, root mesh STA). The proactive mode — 14.11.4 covers the two proactive mechanisms: proactive PREQ (group-addressed, Target Address all 1s, TO = 1, builds reverse paths) and proactive RANN (announces root, no path created on receipt). Colocated STAs — 14.11.5 notes HWMP addresses (originator/intermediate/target) are for destination mapping and need not equal the transmitter/receiver addresses on the WM; first-hop detection uses Hop Count, not source-vs-transmitter comparison. Framework parameters and addressing — 14.11.6 gives HWMP's framework parameters (protocol ID, 4-octet metric field, aggregation/comparison/initial value per the active metric); 14.11.7 specifies the Address 1/2/3 fields of the HWMP Mesh Path Selection frame for each element and case, including the PREQ Addressing Mode subfield (0 = group, 1 = individually addressed) and that RANN may also ride in a Beacon.",
+      "zh": "网格路径选择及其框架——14.9.1 把网格路径选择定义为链路层多跳路径选择，为转发信息提供输入；14.9.2 是可扩展框架（允许多种协议/度量、仅一种激活、在网格配置元素中通告，并带有数据类型/长度/聚合/比较/初始值的约定）；14.9.3 是经由网格链路度量报告帧及其 Request 子字段的链路度量上报。链路度量——14.10.1 说明路径选择链路度量用于评估链路质量以得到感知射频的路径，默认采用空口时间度量，对 >54 Mb/s 的射频采用高 PHY 速率空口时间度量。HWMP 基础——14.11.1 将 HWMP 引入为混合默认协议（按需 + 主动树、受 AODV 启发、四种元素、序列号）；14.11.2 固定术语（发起方、目标、中间、前向/反向路径、HWMP SN、转发信息、目的、下一跳、前驱、生存期、元素 TTL、根网格 STA）。主动模式——14.11.4 涵盖两种主动机制：主动 PREQ（组地址、目标地址全 1、TO = 1、建立反向路径）与主动 RANN（通告根、接收时不建立路径）。共置 STA——14.11.5 指出 HWMP 地址（发起方/中间/目标）用于目的映射，无需等于无线介质上的发送方/接收方地址；首跳判定使用跳数字段，而非比较源地址与发送方地址。框架参数与寻址——14.11.6 给出 HWMP 的框架参数（协议 ID、4 字节度量字段、聚合/比较/初始值随激活度量而定）；14.11.7 规定 HWMP 网格路径选择帧在每种元素与情形下的 Address 1/2/3 字段，包括 PREQ 寻址模式子字段（0 = 组地址，1 = 单独寻址），以及 RANN 也可搭载于信标帧。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3223,
+          3224,
+          3226,
+          3227,
+          3229,
+          3230,
+          3231,
+          3232
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: element processing rules and the four mechanisms",
+        "zh": "覆盖地图：元素处理规则与四种机制"
+      },
+      "en": "General processing rules — 14.11.8 governs HWMP SN, Element TTL and Metric: propagation modifies elements in flight (TTL must exceed 1 and is decremented before forwarding); sequence numbering increments the originator's SN before a discovery and forces a target's SN to max(current, PREQ target SN)+1 before replying, with modulo-2^32 comparison and discard of lower SNs; forwarding information adds destination HWMP SN, path metric and hop count, with create/update rules keyed on greater SN or equal-SN-better-metric, plus validate/invalidate timing; repeated path-discovery attempts are capped at dot11MeshHWMPmaxPREQretries, and SN-increment rate can be limited for path stability. PREQ — 14.11.9 gives the function (discover, maintain, build proactive tree, confirm path) and the generating cases (A path discovery, B maintenance, C proactive, D root-path confirmation, E propagation) with their frame contents and Per Target TO/USN flags. PREP — 14.11.10 establishes the forward path and confirms the reverse path; cases A original, B propagation, C intermediate reply, D proactive PREP; processing covers propagation, proxy-information storage when the AE subfield is set, and precursor-list updates. PERR — 14.11.11 announces unreachable destinations to traffic sources, may be group- or individually addressed, increments and invalidates affected forwarding information; acceptance requires the destination be listed and the next hop be the PERR transmitter, with reason-code-driven effects and propagation (Case D). RANN — 14.11.12 announces a root via the proactive RANN mechanism, propagates path metric so STAs pick a best-metric path to the root; acceptance rejects stale or worse-metric RANNs, and on receipt a STA may launch a PREQ/PREP exchange to the root. STAs without mesh functionality — 14.11.13 lets a mesh STA colocated with an AP verify a non-mesh non-AP STA's MAC address is disjunct by issuing a PREQ (TO = 1) for it; a returned PREP with AE = 0 reveals the address already exists in the MBSS as a mesh STA.",
+      "zh": "通用处理规则——14.11.8 管辖 HWMP SN、元素 TTL 与度量：传播会在途中修改元素（TTL 须大于 1 并在转发前递减）；序列号在发起一次发现前递增发起方的 SN，并在回复前把目标的 SN 强制为 max(当前, PREQ 目标 SN)+1，采用模 2^32 比较并丢弃较低的 SN；转发信息增加目的 HWMP SN、路径度量与跳数，创建/更新规则取决于更大的 SN 或同 SN 而度量更优，并规定校验/失效时机；对单一目标的重复路径发现尝试上限为 dot11MeshHWMPmaxPREQretries，且可限制 SN 递增速率以提升路径稳定性。PREQ——14.11.9 给出其功能（发现、维护、建立主动树、确认路径）与生成情形（A 路径发现、B 维护、C 主动、D 根路径确认、E 传播）及其帧内容和每目标 TO/USN 标志。PREP——14.11.10 建立前向路径并确认反向路径；情形有 A 原始、B 传播、C 中间回复、D 主动 PREP；处理涵盖传播、AE 子字段置位时的代理信息存储以及前驱列表更新。PERR——14.11.11 向流量源通告不可达目的，可组地址或单独寻址，递增并使受影响的转发信息失效；接受条件要求该目的在列且下一跳为 PERR 发送方，并按原因码驱动效果与传播（情形 D）。RANN——14.11.12 经由主动 RANN 机制通告根，传播路径度量使各 STA 选取通往根的度量最优路径；接受条件拒绝陈旧或度量更差的 RANN，接收后 STA 可发起与根的 PREQ/PREP 交换。无网格功能的 STA——14.11.13 允许与 AP 共置的网格 STA 通过对某非网格非 AP STA 的 MAC 地址发出 PREQ（TO = 1）来验证地址互不相交；若返回的 PREP 的 AE = 0，则表明该地址作为某网格 STA 已存在于 MBSS 中。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3232,
+          3233,
+          3234,
+          3236,
+          3246,
+          3250,
+          3254,
+          3255,
+          3256,
+          3257
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: PREQ asks (and floods to find), PREP answers (and unicasts to confirm), PERR warns (a path just broke), RANN advertises (a root is here). Sequence numbers are the timestamp that keeps every decision loop-free, and the metric — not hop count — is what makes one path win over another.",
+      "zh": "心智模型：PREQ 发问（泛洪以寻找），PREP 应答（单播以确认），PERR 报警（某条路径刚断），RANN 广而告之（这里有个根）。序列号是让每个决策保持无环的时间戳，而决定一条路径胜出的是度量——而非跳数。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3223
+      ],
+      "note": "14.9.1 General; 14.9.2 extensible path selection framework; 14.9.3 link metric reporting"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3224
+      ],
+      "note": "14.9.3 link metric report frame; 14.10.1 path selection link metric general; HWMP/airtime as defaults"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3226
+      ],
+      "note": "14.11.1 HWMP general (hybrid, modes, four elements, sequence numbers); 14.11.2 terminology intro"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3227
+      ],
+      "note": "14.11.2 terminology: originator, target, intermediate, forward/reverse path, HWMP SN, forwarding info, next-hop"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3228
+      ],
+      "note": "14.11.2 precursor, lifetime, unreachable, Element TTL, root mesh STA; 14.11.3 on-demand mode"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3229
+      ],
+      "note": "14.11.3 on-demand TO subfield; 14.11.4.1/14.11.4.2 proactive tree building + proactive PREQ"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3230
+      ],
+      "note": "14.11.4.3 proactive RANN; 14.11.5 colocated STAs; 14.11.6 framework parameters"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3231,
+        3232
+      ],
+      "note": "14.11.7 addressing of HWMP Mesh Path Selection frame (Address 1/2/3 per case); 14.11.8.1 general"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3233,
+        3234
+      ],
+      "note": "14.11.8.2 propagation/TTL; 14.11.8.3 sequence numbering; 14.11.8.4 forwarding information"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3236,
+        3237
+      ],
+      "note": "14.11.8.5/8.6 retries and SN-rate limiting; 14.11.9.1/9.2/9.3 PREQ function and generating cases"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3246,
+        3247
+      ],
+      "note": "14.11.10.1/10.2/10.3 PREP function, cases A/B/C, frame contents"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3250,
+        3251
+      ],
+      "note": "14.11.11.1/11.2/11.3 PERR function and generating cases A/B"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3254,
+        3255,
+        3256,
+        3257
+      ],
+      "note": "14.11.11.4 PERR processing; 14.11.12 RANN mechanism; 14.11.13 STAs without mesh functionality"
+    }
+  ],
+  "covers": [
+    "80211-2024:14.9.1",
+    "80211-2024:14.9.2",
+    "80211-2024:14.9.3",
+    "80211-2024:14.10.1",
+    "80211-2024:14.11.1",
+    "80211-2024:14.11.2",
+    "80211-2024:14.11.4",
+    "80211-2024:14.11.5",
+    "80211-2024:14.11.6",
+    "80211-2024:14.11.7",
+    "80211-2024:14.11.8",
+    "80211-2024:14.11.9",
+    "80211-2024:14.11.10",
+    "80211-2024:14.11.11",
+    "80211-2024:14.11.12",
+    "80211-2024:14.11.13"
+  ],
+  "track": "mesh"
+}

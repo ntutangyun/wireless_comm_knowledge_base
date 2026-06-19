@@ -1,0 +1,143 @@
+{
+  "id": "mesh-15-mesh-peering-management-state-machine",
+  "title": {
+    "en": "Becoming Neighbors: the Mesh Peering Management Protocol and Its State Machine",
+    "zh": "成为邻居：网格对等管理协议（MPM）及其状态机"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In a mesh BSS, two mesh STAs that have discovered each other are still strangers — they cannot freely exchange data until they form a *mesh peering*. The Mesh Peering Management (MPM) protocol is the handshake that turns a candidate peer into an established peer. MPM is used when mesh security is off (`dot11MeshSecurityActivated` is false); when security is on, the same frames carry an authenticated variant (AMPE). This lesson walks through the MPM framework and the finite state machine that drives it.",
+      "zh": "在网格 BSS 中，两个已经互相发现的网格 STA 仍然是“陌生人”——在建立*网格对等关系（mesh peering）*之前，它们无法自由交换数据。网格对等管理协议（MPM）就是把候选对等方变成正式对等方的“握手”过程。当网格安全功能关闭时（`dot11MeshSecurityActivated` 为 false）使用 MPM；当安全功能开启时，同样的帧承载一个带认证的变体（AMPE）。本课将讲解 MPM 框架以及驱动它的有限状态机。"
+    },
+    {
+      "type": "prose",
+      "en": "MPM uses just three management frames: **Mesh Peering Open**, **Mesh Peering Confirm**, and **Mesh Peering Close**. A peering succeeds only when *both* STAs have sent and correctly processed an Open frame, *and both* have sent and correctly processed a matching Confirm frame — a fully symmetric, four-frame exchange. The instant a STA accepts an Open frame, it assigns the sender a unique AID (association identifier) among its peers, because that AID is later used to encode the TIM element in beacons.",
+      "zh": "MPM 只用到三种管理帧：**网格对等打开（Open）帧**、**网格对等确认（Confirm）帧**和**网格对等关闭（Close）帧**。只有当*双方* STA 都发送并正确处理了 Open 帧，*并且双方*都发送并正确处理了相应的 Confirm 帧时，对等关系才算建立成功——这是一个完全对称的四帧交换过程。STA 一旦接受某个 Open 帧，就会在其对等方中为发送方分配一个唯一的 AID（关联标识符），因为该 AID 之后会用于在信标帧中编码 TIM 元素。"
+    },
+    {
+      "type": "prose",
+      "en": "Each STA keeps a per-neighbor **state variable** for every neighbor it needs to talk to directly over the wireless medium. The value of that variable (State 1 through State 4, depending on whether no authentication, SAE, or IEEE 802.1X is in use) decides which classes of frames are even *allowed* between the pair. Until a peering exists, a mesh STA may only send frames used for discovery, MPM, and SAE — nothing else gets through.",
+      "zh": "每个 STA 会为每一个需要通过无线介质直接通信的邻居维护一个**状态变量**。该变量的取值（根据使用的是无认证、SAE 还是 IEEE 802.1X，分别对应状态 1 到状态 4）决定了这对 STA 之间*允许*交换哪些帧类别。在对等关系建立之前，网格 STA 只能发送用于发现、MPM 和 SAE 的帧——其他任何帧都无法通过。"
+    },
+    {
+      "type": "prose",
+      "en": "All of a STA's peerings are run by one **mesh peering instance controller**. It creates and deletes the state machines, hands out instance identifiers, preprocesses every incoming peering management frame, and routes each frame to the state machine with the matching identifier. A peering *instance* is identified by the triple `{localLinkID, localMAC, peerMAC}`: localMAC and peerMAC are the two MAC addresses, and localLinkID is a fresh, locally-unique integer the STA picks so the same number is very unlikely to collide with any recent instance. The peer's own localLinkID becomes our `peerLinkID`, carried in the Mesh Peering Management element of the Open and Confirm frames.",
+      "zh": "一个 STA 的所有对等关系都由一个**网格对等实例控制器**统一管理。它负责创建和删除状态机、分配实例标识符、预处理每一个收到的对等管理帧，并把每个帧路由到标识符匹配的那个状态机。一个对等*实例*由三元组 `{localLinkID, localMAC, peerMAC}` 标识：localMAC 与 peerMAC 是两个 MAC 地址，localLinkID 是 STA 选取的、本地唯一的新整数，选取时要尽量保证该数字不会与近期任何实例重复。对端自己的 localLinkID 就成为我们的 `peerLinkID`，它通过 Open 帧和 Confirm 帧中的网格对等管理元素携带。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two STAs can run more than one peering instance to each other at once — the controller may create multiple instances toward the same candidate peer. When a frame arrives, **instance selection** compares it against every existing instance: Address 2 must equal peerMAC, Address 1 must equal localMAC, and the Peer Link ID field must equal localLinkID. An unmatched *Open* frame creates a brand-new instance; an unmatched *Confirm* or *Close* frame is silently discarded.",
+      "zh": "两个 STA 之间可以同时运行多个对等实例——控制器可以朝同一个候选对等方创建多个实例。当一个帧到达时，**实例选择**会把它与每一个现有实例比对：Address 2 必须等于 peerMAC，Address 1 必须等于 localMAC，且 Peer Link ID 字段必须等于 localLinkID。一个未匹配到的 *Open* 帧会创建全新实例；而未匹配到的 *Confirm* 或 *Close* 帧则被静默丢弃。"
+    },
+    {
+      "type": "prose",
+      "en": "The behavior of a single instance is captured by the **MPM finite state machine (FSM)**, which has six states. **IDLE** is the quiescent terminal state, ready to either passively listen for an Open frame or actively start a peering. **OPN_SNT** means we have sent our Open and are waiting for the peer's Open and Confirm. **CNF_RCVD** means we received a Confirm but not yet an Open. **OPN_RCVD** means we received an Open (and replied with a Confirm) but not yet the peer's Confirm. **ESTAB** means both Opens and both Confirms have flowed — the peering is live. **HOLDING** is the graceful-shutdown state while the peering is being closed.",
+      "zh": "单个实例的行为由 **MPM 有限状态机（FSM）** 描述，它共有六个状态。**IDLE（空闲）**是静止的终止态，可以被动监听 Open 帧，也可以主动发起对等。**OPN_SNT（已发送 Open）**表示我们已发出自己的 Open，正在等待对端的 Open 和 Confirm。**CNF_RCVD（已收到 Confirm）**表示收到了 Confirm 但还没收到 Open。**OPN_RCVD（已收到 Open）**表示收到了 Open（并已回复 Confirm），但还没收到对端的 Confirm。**ESTAB（已建立）**表示双方的 Open 和 Confirm 都已往返——对等关系已生效。**HOLDING（保持/关闭中）**是对等关系正在关闭时的优雅终止态。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> IDLE\n  IDLE --> OPN_SNT: ACTOPN / sndOPN,setR\n  IDLE --> OPN_RCVD: OPN_ACPT / sndOPN,sndCNF,setR\n  IDLE --> IDLE: REQ_RJCT / sndCLS\n  OPN_SNT --> CNF_RCVD: CNF_ACPT / clR,setC\n  OPN_SNT --> OPN_RCVD: OPN_ACPT / sndCNF\n  OPN_SNT --> HOLDING: reject/TOR2/CNCL / sndCLS,setH\n  CNF_RCVD --> ESTAB: OPN_ACPT / clC,sndCNF\n  CNF_RCVD --> HOLDING: close/reject/TOC / sndCLS,setH\n  OPN_RCVD --> ESTAB: CNF_ACPT / clR\n  OPN_RCVD --> HOLDING: reject/TOR2/CNCL / sndCLS,setH\n  ESTAB --> HOLDING: close/reject/CNCL / sndCLS,setH\n  HOLDING --> IDLE: CLS_ACPT / clH\n  HOLDING --> IDLE: TOH\n  ESTAB --> [*]",
+      "zh": "stateDiagram-v2\n  [*] --> IDLE\n  IDLE --> OPN_SNT: 主动发起 / 发Open,启重试\n  IDLE --> OPN_RCVD: 收到Open / 发Open,发Confirm,启重试\n  IDLE --> IDLE: 拒绝请求 / 发Close\n  OPN_SNT --> CNF_RCVD: 收到Confirm / 清重试,启确认\n  OPN_SNT --> OPN_RCVD: 收到Open / 发Confirm\n  OPN_SNT --> HOLDING: 拒绝/重试耗尽/取消 / 发Close,启保持\n  CNF_RCVD --> ESTAB: 收到Open / 清确认,发Confirm\n  CNF_RCVD --> HOLDING: 关闭/拒绝/确认超时 / 发Close,启保持\n  OPN_RCVD --> ESTAB: 收到Confirm / 清重试\n  OPN_RCVD --> HOLDING: 拒绝/重试耗尽/取消 / 发Close,启保持\n  ESTAB --> HOLDING: 关闭/拒绝/取消 / 发Close,启保持\n  HOLDING --> IDLE: 收到Close / 清保持\n  HOLDING --> IDLE: 保持超时\n  ESTAB --> [*]"
+    },
+    {
+      "type": "prose",
+      "en": "Transitions are driven by **events** and accompanied by **actions**. Transition events include `ACTOPN` (the SME asks to actively initiate a peering) and `CNCL` (cancel a peering). Frame-processing events are `OPN_ACPT`/`OPN_RJCT`, `CNF_ACPT`/`CNF_RJCT`, `CLS_ACPT`, and the special `REQ_RJCT` (reject an incoming Open request for an internal reason). The two frame-sending actions are `sndOPN` (sendOpen) and `sndCNF` (sendConfirm); a third, `sndCLS` (sendClose), tears the peering down — with reason code MESH-PEERING-CANCELED after a CNCL, or MESH-CLOSE-RCVD after a CLS_ACPT.",
+      "zh": "状态转换由**事件**驱动，并伴随相应的**动作**。转换类事件包括 `ACTOPN`（SME 请求主动发起对等）和 `CNCL`（取消对等）。帧处理类事件有 `OPN_ACPT`/`OPN_RJCT`、`CNF_ACPT`/`CNF_RJCT`、`CLS_ACPT`，以及特殊的 `REQ_RJCT`（因内部原因拒绝收到的 Open 请求）。两个发帧动作是 `sndOPN`（sendOpen，发送 Open）和 `sndCNF`（sendConfirm，发送 Confirm）；第三个 `sndCLS`（sendClose，发送 Close）用于拆除对等关系——由 CNCL 触发时原因码为 MESH-PEERING-CANCELED，由 CLS_ACPT 触发时原因码为 MESH-CLOSE-RCVD。"
+    },
+    {
+      "type": "prose",
+      "en": "Three timers keep the handshake honest. The **retryTimer** (`dot11MeshRetryTimeout`) resends the Open frame if no Confirm came back — event `TOR1` resends and increments the retry counter while it is below `dot11MeshMaxRetries`, while `TOR2` fires once the counter reaches the maximum and closes the instance with reason MESH-MAX-RETRIES. The **confirmTimer** (`dot11MeshConfirmTimeout`) aborts the attempt if a Confirm responding to our Open never arrives — its expiry is event `TOC`. The **holdingTimer** (`dot11MeshHoldingTimeout`) governs the graceful shutdown in HOLDING — its expiry, event `TOH`, finally returns the FSM to IDLE.",
+      "zh": "三个定时器保证握手的可靠性。**retryTimer（重试定时器，`dot11MeshRetryTimeout`）**在没有收到 Confirm 时重发 Open 帧——当重试计数器小于 `dot11MeshMaxRetries` 时，事件 `TOR1` 重发并递增计数器；一旦计数器达到上限，`TOR2` 触发并以原因码 MESH-MAX-RETRIES 关闭该实例。**confirmTimer（确认定时器，`dot11MeshConfirmTimeout`）**在始终没有收到回应我方 Open 的 Confirm 时中止本次尝试——其超时即事件 `TOC`。**holdingTimer（保持定时器，`dot11MeshHoldingTimeout`）**管理 HOLDING 状态中的优雅关闭——其超时（事件 `TOH`）最终让 FSM 返回 IDLE。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the symmetry between OPN_SNT and OPN_RCVD: both are waiting for one more piece of the four-frame exchange. From OPN_SNT, receiving the peer's Open (`OPN_ACPT`) moves us to OPN_RCVD; receiving the Confirm first (`CNF_ACPT`) moves us to CNF_RCVD instead. Whichever order the two remaining frames arrive in, the next accepted frame lands the instance in **ESTAB**. The HOLDING state is the great equalizer — almost any error, rejection, or cancel in any active state routes there, sends a Close, and waits out the holding timer before recycling to IDLE.",
+      "zh": "请注意 OPN_SNT 与 OPN_RCVD 之间的对称性：两者都在等待四帧交换中剩下的某一帧。从 OPN_SNT 出发，先收到对端的 Open（`OPN_ACPT`）会进入 OPN_RCVD；而先收到 Confirm（`CNF_ACPT`）则进入 CNF_RCVD。无论剩下两帧以何种顺序到达，下一个被接受的帧都会让实例进入 **ESTAB**。HOLDING 状态则是“万流归宗”——任何活跃状态下几乎所有的错误、拒绝或取消都会路由到这里，发送一个 Close 帧，并在保持定时器超时后回收到 IDLE。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each clause lives",
+        "zh": "覆盖映射：各子条款的归属"
+      },
+      "en": "Framework (14.4): **14.4.1 General** — MPM vs AMPE, the three frames, the four-frame success condition, and AID assignment. **14.4.2 State variable management** — the per-neighbor state variable, States 1–4 (Table 14-1), and frame-class gating. **14.4.4 Mesh peering instance controller** — the controller's functions, the `{localLinkID, localMAC, peerMAC}` identifier, peerLinkID, and creating/deleting instances (a holding-timer expiry, an accepted close, or a peer deauthentication all delete an instance). **14.4.5 Mesh peering instance selection** — matching an incoming frame to an instance by Address 2 = peerMAC, Address 1 = localMAC, Peer Link ID = localLinkID, plus the create-new-on-unmatched-Open / discard-unmatched-Confirm-or-Close rules.\n\nState machine (14.5): **14.5.1 General** — one MPM FSM per instance, driven by MLME primitives. **14.5.2 States** — the six states IDLE, OPN_SNT, CNF_RCVD, OPN_RCVD, ESTAB, HOLDING. **14.5.3 Events and actions** — the three event families (transition events ACTOPN/CNCL; frame events OPN_ACPT/OPN_RJCT/CNF_ACPT/CNF_RJCT/CLS_ACPT/REQ_RJCT; timer events) and the sndOPN/sndCNF/sndCLS actions. **14.5.4 Timers** — retryTimer (TOR1/TOR2), confirmTimer (TOC), holdingTimer (TOH). **14.5.6 IDLE** — ACTOPN→OPN_SNT, OPN_ACPT→OPN_RCVD, REQ_RJCT stays. **14.5.7 OPN_SNT** — CNF_ACPT→CNF_RCVD, OPN_ACPT→OPN_RCVD, TOR1 resend, TOR2/reject/CNCL→HOLDING. **14.5.8 CNF_RCVD** — OPN_ACPT→ESTAB, TOC/reject/close→HOLDING. **14.5.9 OPN_RCVD** — CNF_ACPT→ESTAB, OPN_ACPT re-Confirm, TOR1 resend, TOR2/reject/CNCL→HOLDING. **14.5.10 ESTAB** — OPN_ACPT re-Confirm (stay), any close/reject/CNCL→HOLDING. **14.5.11 HOLDING** — CLS_ACPT or TOH→IDLE, stray Open/Confirm/reject events trigger another Close.",
+      "zh": "框架部分（14.4）：**14.4.1 概述**——MPM 与 AMPE 的区别、三种帧、四帧成功条件以及 AID 分配。**14.4.2 状态变量管理**——按邻居维护的状态变量、状态 1–4（表 14-1）以及基于帧类别的门控。**14.4.4 网格对等实例控制器**——控制器的功能、`{localLinkID, localMAC, peerMAC}` 标识符、peerLinkID，以及实例的创建/删除（保持定时器超时、接受关闭、或对端去认证都会删除实例）。**14.4.5 网格对等实例选择**——通过 Address 2 = peerMAC、Address 1 = localMAC、Peer Link ID = localLinkID 把收到的帧匹配到实例，以及“未匹配的 Open 则新建、未匹配的 Confirm/Close 则丢弃”规则。\n\n状态机部分（14.5）：**14.5.1 概述**——每个实例一台 MPM FSM，由 MLME 原语驱动。**14.5.2 状态**——IDLE、OPN_SNT、CNF_RCVD、OPN_RCVD、ESTAB、HOLDING 六个状态。**14.5.3 事件与动作**——三类事件（转换事件 ACTOPN/CNCL；帧事件 OPN_ACPT/OPN_RJCT/CNF_ACPT/CNF_RJCT/CLS_ACPT/REQ_RJCT；定时器事件）以及 sndOPN/sndCNF/sndCLS 动作。**14.5.4 定时器**——retryTimer（TOR1/TOR2）、confirmTimer（TOC）、holdingTimer（TOH）。**14.5.6 IDLE**——ACTOPN→OPN_SNT，OPN_ACPT→OPN_RCVD，REQ_RJCT 原地停留。**14.5.7 OPN_SNT**——CNF_ACPT→CNF_RCVD，OPN_ACPT→OPN_RCVD，TOR1 重发，TOR2/拒绝/CNCL→HOLDING。**14.5.8 CNF_RCVD**——OPN_ACPT→ESTAB，TOC/拒绝/关闭→HOLDING。**14.5.9 OPN_RCVD**——CNF_ACPT→ESTAB，OPN_ACPT 重发 Confirm，TOR1 重发，TOR2/拒绝/CNCL→HOLDING。**14.5.10 ESTAB**——OPN_ACPT 重发 Confirm（停留），任何关闭/拒绝/CNCL→HOLDING。**14.5.11 HOLDING**——CLS_ACPT 或 TOH→IDLE，游离的 Open/Confirm/拒绝事件触发再发一个 Close。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3196,
+          3197,
+          3198,
+          3199,
+          3202,
+          3203,
+          3204,
+          3206,
+          3207,
+          3208,
+          3209
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3196,
+        3197
+      ],
+      "note": "14.4.1 General and 14.4.2 State variable management — MPM vs AMPE, three frames, four-frame success condition, AID assignment, per-neighbor state variable and Table 14-1 (States 1-4)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3198,
+        3199,
+        3200
+      ],
+      "note": "14.4.4 Mesh peering instance controller (functions, {localLinkID, localMAC, peerMAC} identifier, peerLinkID, create/delete) and 14.4.5 Mesh peering instance selection (matching rules)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3202,
+        3203,
+        3204
+      ],
+      "note": "14.5.1 General, 14.5.2 States (six states), 14.5.3 Events and actions (ACTOPN/CNCL, OPN_ACPT/RJCT, CNF_ACPT/RJCT, CLS_ACPT, REQ_RJCT; sndOPN/sndCNF/sndCLS), 14.5.4 Timers (retry/confirm/holding; TOR1/TOR2/TOC/TOH)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3206,
+        3207,
+        3208,
+        3209
+      ],
+      "note": "14.5.6 IDLE, 14.5.7 OPN_SNT, 14.5.8 CNF_RCVD, 14.5.9 OPN_RCVD, 14.5.10 ESTAB, 14.5.11 HOLDING per-state transition behavior; Figure 14-2 MPM FSM"
+    }
+  ],
+  "covers": [
+    "80211-2024:14.4.1",
+    "80211-2024:14.4.2",
+    "80211-2024:14.4.4",
+    "80211-2024:14.4.5",
+    "80211-2024:14.5.1",
+    "80211-2024:14.5.2",
+    "80211-2024:14.5.3",
+    "80211-2024:14.5.4",
+    "80211-2024:14.5.6",
+    "80211-2024:14.5.7",
+    "80211-2024:14.5.8",
+    "80211-2024:14.5.9",
+    "80211-2024:14.5.10",
+    "80211-2024:14.5.11"
+  ],
+  "track": "mesh"
+}

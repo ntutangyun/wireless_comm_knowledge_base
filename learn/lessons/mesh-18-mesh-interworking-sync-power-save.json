@@ -1,0 +1,214 @@
+{
+  "id": "mesh-18-mesh-interworking-sync-power-save",
+  "title": {
+    "en": "Mesh Meets the World: Gateways, Synchronization, Beaconing and Power Save",
+    "zh": "网格连接外界：网关、同步、信标与省电"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A mesh BSS (MBSS) is a self-contained wireless network, but it rarely lives alone. To carry traffic to the wired world it needs a doorway, and to keep many mesh STAs each transmitting their own beacons from tripping over one another it needs timekeeping and collision-avoidance rules. On top of that, battery-powered mesh nodes want to sleep. This lesson walks the three remaining pillars of mesh operation: interworking with a distribution system (DS) or bridge, synchronization and beaconing, and mesh power save.",
+      "zh": "网格基本服务集（MBSS）是一个自成体系的无线网络，但它很少独立存在。要把流量送到有线世界，它需要一扇门；要让众多各自发送信标的网格站点不互相撞车，它需要计时与避碰规则；而靠电池供电的网格节点还想睡觉。本课讲解网格运行的最后三大支柱：与分布式系统（DS）或网桥的互通、同步与信标、以及网格省电。"
+    },
+    {
+      "type": "prose",
+      "en": "The doorway is a mesh gate: a mesh STA with direct access to a DS. Other mesh STAs reach the DS through it, and the MBSS as a whole behaves like a single IEEE 802 LAN segment. An MBSS may have several gates; if two gates touch the same bridged network the mesh has more than one 'port' into it, which can form broadcast loops, so gates are expected to cooperate with the DS loop-prevention protocol (such as RSTP). When dot11MeshGateAnnouncements is true, a gate advertises itself either via the gate announcement (GANN) protocol or via an HWMP proactive method with the Gate Announcement field set.",
+      "zh": "这扇门就是网格网关（mesh gate）：一个能直接访问 DS 的网格站点。其他网格站点经由它访问 DS，整个 MBSS 在外界看来就像一个单独的 IEEE 802 局域网段。一个 MBSS 可以有多个网关；若两个网关接入同一个桥接网络，网格就有了不止一个进入该网络的“端口”，可能形成广播环路，因此网关应与 DS 的环路防止协议（如 RSTP）协作。当 dot11MeshGateAnnouncements 为真时，网关通过网关通告（GANN）协议、或通过设置了 Gate Announcement 字段的 HWMP 主动式方法来宣告自身存在。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  EXT[External STA] --- BR[DS / Bridge]\n  BR --- G1[Mesh Gate 1]\n  BR --- G2[Mesh Gate 2]\n  G1 --- M1[Mesh STA]\n  G1 --- M2[Mesh STA]\n  G2 --- M2\n  subgraph MBSS\n    G1\n    G2\n    M1\n    M2\n  end",
+      "zh": "flowchart LR\n  EXT[外部STA] --- BR[DS / 网桥]\n  BR --- G1[网格网关1]\n  BR --- G2[网格网关2]\n  G1 --- M1[网格站点]\n  G1 --- M2[网格站点]\n  G2 --- M2\n  subgraph MBSS\n    G1\n    G2\n    M1\n    M2\n  end"
+    },
+    {
+      "type": "prose",
+      "en": "When a gate bridges to IEEE 802 stations outside the mesh, it is a proxy mesh gate: it represents those external STAs so that forwarding tables inside the mesh only ever hold MBSS addresses. To do this, each proxy gate keeps proxy information mapping an external address to a proxy address (the gate that proxies it), plus a sequence number and lifetime. Gates announce and refresh these mappings with Proxy Update (PXU) frames, which the recipient acknowledges with a Proxy Update Confirmation (PXUC); once a PXUC arrives, the sender stops repeating that PXU ID. Data crossing the boundary uses the four-address mesh header with Address 5 and Address 6 carrying the true end-station addresses. A mesh STA collocated with another STA must use a distinct MAC address to avoid ambiguity in the Mesh Control field, GTK use, and proxy information.",
+      "zh": "当网关桥接到网格之外的 IEEE 802 站点时，它就是代理网格网关（proxy mesh gate）：它代表那些外部站点，使网格内部的转发表只包含 MBSS 地址。为此，每个代理网关维护代理信息（proxy information），把外部地址映射到代理地址（代理它的网关），并附带序列号与生存期。网关用代理更新（PXU）帧通告并刷新这些映射，接收方以代理更新确认（PXUC）回应；一旦收到 PXUC，发送方便停止重发相同 PXU ID 的帧。跨越边界的数据使用四地址网格头部，由地址 5 和地址 6 携带真正的端站地址。与另一站点同址的网格站点必须使用不同的 MAC 地址，以避免在 Mesh Control 字段、GTK 使用和代理信息上产生歧义。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Three things to remember about mesh gates: GANN announces 'I can reach the outside'; proxy information records 'which gate owns which external address'; and PXU/PXUC keep those records fresh and confirmed. Together they let an MBSS look like one flat LAN segment to the world beyond it.",
+      "zh": "关于网格网关要记住三件事：GANN 宣告“我能连到外界”；代理信息记录“哪个网关拥有哪个外部地址”；PXU/PXUC 让这些记录保持新鲜并得到确认。三者合起来，使 MBSS 在外界看来就像一个扁平的局域网段。"
+    },
+    {
+      "type": "prose",
+      "en": "Inside the mesh, congestion can build at a relay node. Intra-mesh congestion control rests on three pieces: local congestion monitoring/detection, congestion-control signaling, and local rate control. Exactly one congestion-control protocol is active per MBSS, named in the Mesh Configuration element. The standardized signaling protocol lets a congested mesh STA send Congestion Control Notification frames naming the troublesome destinations and an expected duration per access category; neighbors then pause or slow forwarding to those destinations for that time.",
+      "zh": "在网格内部，中继节点处可能积压拥塞。网格内拥塞控制建立在三件事上：本地拥塞监测/检测、拥塞控制信令、以及本地速率控制。每个 MBSS 同一时刻只有一个拥塞控制协议生效，并在 Mesh Configuration 元素中标明。标准化的信令协议让发生拥塞的网格站点发送拥塞控制通知帧，指明引发问题的目的地以及每个接入类别的预计持续时间；邻居随后在该时段内对这些目的地暂停或减慢转发。"
+    },
+    {
+      "type": "prose",
+      "en": "Timekeeping in a mesh is peer-to-peer, not anchored to one AP. Each mesh STA keeps a TSF timer and updates it per the MBSS's active synchronization method. The standard defines an extensible synchronization framework so vendors can plug in methods, but the default mandatory one is neighbor offset synchronization: a STA measures the timing offset to each neighbor and applies a bounded clock-drift adjustment (it may only slow its own TSF, within 0.04% of a beacon interval per period) so neighboring TBTTs stop drifting apart. The aim is not strict lock-step but keeping beacon target times loosely aligned.",
+      "zh": "网格中的计时是对等的，而非锚定于某个 AP。每个网格站点维护一个 TSF 定时器，并按 MBSS 当前生效的同步方法更新它。标准定义了一个可扩展的同步框架，供厂商插入自有方法，但默认且强制的方法是邻居偏移同步：站点测量与每个邻居的时间偏移，并施加有界的时钟漂移调整（每个周期只能放慢自己的 TSF，且幅度在一个信标间隔的 0.04% 以内），使相邻的 TBTT 不再彼此漂离。目标不是严格的步调一致，而是让各自的信标目标时刻保持大致对齐。"
+    },
+    {
+      "type": "prose",
+      "en": "Every mesh STA transmits its own Beacon frames, differentiated from infrastructure/IBSS beacons by the Capability Information field and identified as same-mesh by the Mesh ID element (not Address 3). TBTTs are spaced exactly dot11BeaconPeriod TUs apart, with time zero a DTIM beacon. Because many neighbors beacon at the same interval, hidden-node beacon collisions are a real hazard. Mesh beacon collision avoidance (MBCA) fights this within a 2-hop range: STAs advertise neighbors' TBTTs in a Beacon Timing element (with a modulo-16 status number that flags changes), then use that map to select a non-colliding TBTT and, if collisions recur, to adjust their TBTT (self-determined or requested via a TBTT Adjustment Request, only ever slowing the TSF).",
+      "zh": "每个网格站点都发送自己的信标帧，通过 Capability Information 字段与基础设施/IBSS 信标相区分，并通过 Mesh ID 元素（而非地址 3）判定是否属于同一网格。各 TBTT 之间精确相隔 dot11BeaconPeriod 个 TU，时间零点为一个 DTIM 信标。由于众多邻居以相同间隔发信标，隐藏节点导致的信标碰撞是真实隐患。网格信标避碰（MBCA）在两跳范围内对抗这一问题：站点在信标定时（Beacon Timing）元素中通告邻居的 TBTT（并附带一个标识变化的模 16 状态号），随后用这张图选择一个不碰撞的 TBTT；若碰撞反复出现，再调整自己的 TBTT（自行决定，或经 TBTT 调整请求请对方调整，且始终只放慢 TSF）。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, mesh power save. A mesh STA sets a power management mode independently for each peering. Peer-specific modes are active (always awake), light sleep (wakes for every peer beacon), and deep sleep (may skip peer beacons). Toward all nonpeers it keeps a single nonpeer mode: active or deep sleep. These are signaled by the Power Management subfield (Frame Control) plus the Mesh Power Save Level subfield (QoS Control). To raise activity a STA may use any frame; to drop to a lower level it must use an acknowledged individually addressed frame so the peer reliably learns the new mode.",
+      "zh": "最后是网格省电。网格站点为每条对等连接独立设置一个电源管理模式。对等专用模式有：活跃（始终唤醒）、轻睡眠（每次对等信标都唤醒接收）、深睡眠（可不接收对等信标）。对所有非对等站点，它保持一个单一的非对等模式：活跃或深睡眠。这些通过 Power Management 子字段（Frame Control）加 Mesh Power Save Level 子字段（QoS Control）来指示。提升活跃度可用任意帧；降到较低级别则必须用已被确认的单播帧，使对端可靠地获知新模式。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> Active\n  Active --> LightSleep: lower (acked)\n  LightSleep --> DeepSleep: lower (acked)\n  DeepSleep --> LightSleep: raise (any frame)\n  LightSleep --> Active: raise (any frame)\n  DeepSleep --> Active: raise (any frame)\n  Active: Active - always awake\n  LightSleep: Light sleep - wake per peer beacon\n  DeepSleep: Deep sleep - may skip beacons",
+      "zh": "stateDiagram-v2\n  [*] --> 活跃\n  活跃 --> 轻睡眠: 降级(需确认)\n  轻睡眠 --> 深睡眠: 降级(需确认)\n  深睡眠 --> 轻睡眠: 升级(任意帧)\n  轻睡眠 --> 活跃: 升级(任意帧)\n  深睡眠 --> 活跃: 升级(任意帧)\n  活跃: 活跃-始终唤醒\n  轻睡眠: 轻睡眠-每个对等信标唤醒\n  深睡眠: 深睡眠-可跳过信标"
+    },
+    {
+      "type": "prose",
+      "en": "For sleeping peers to still receive traffic, the sender buffers frames and signals them. The TIM element marks, by AID, which peer mesh STAs have buffered traffic, and AID 0 flags pending group-addressed traffic. There are two TIM types: a TIM accompanies every beacon, and every DTIMPeriod a DTIM beacon is sent, after which buffered group-addressed frames go out first (More Data subfield chaining them). Power-save support means a STA must buffer rather than blindly transmit to a sleeping peer, transmitting only at designated times. Individually addressed delivery to a sleeping peer happens inside a mesh peer service period: a directional burst started by a peer trigger frame (its RSPI/EOSP subfields decide how many service periods are opened and who owns them) and ended by an acknowledged frame with EOSP set to 1.",
+      "zh": "为了让睡眠中的对端仍能收到流量，发送方需缓存帧并加以指示。TIM 元素按 AID 标明哪些对等网格站点有缓存流量，AID 0 则标示有待发的组播流量。TIM 有两种类型：每个信标都带一个 TIM，每隔 DTIMPeriod 发送一个 DTIM 信标，其后先发出缓存的组播帧（用 More Data 子字段把它们串接起来）。省电支持意味着站点必须缓存而非盲目向睡眠对端发送，只在约定时刻发送。对睡眠对端的单播投递发生在一个网格对等服务期（mesh peer service period）内：这是由对等触发帧启动的定向突发（其 RSPI/EOSP 子字段决定开启几个服务期以及谁是拥有者），并由一个 EOSP 置 1 且被确认的帧结束。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause taught in this lesson",
+        "zh": "覆盖地图：本课讲到的每个条款"
+      },
+      "en": "Interworking with the DS/bridge (14.12): 14.12.1 overview of MBSS-to-DS interworking, mesh gates, GLK mesh STAs, loop prevention; 14.12.2 gate announcement (GANN) function, generation conditions (Case A original / Case B propagation), acceptance criteria, and effect of receipt; 14.12.3 data forwarding at proxy mesh gates (MBSS-to-DS and DS-to-MBSS, four-address and three-address handling, unknown-destination behavior); 14.12.4 proxy information (external/proxy address, sequence number, lifetime) and proxy update via PXU plus PXUC confirmation; 14.12.5 mesh STA collocation requiring a distinct MAC address. Intra-mesh congestion control (14.13): 14.13.1 the three mechanisms (monitoring/detection, signaling, local rate control) and the single active congestion-control protocol per MBSS. Synchronization and beaconing (14.14): 14.14.1 TSF for MBSSs (per-STA TSF timer, active sync method); 14.14.2 the extensible synchronization framework with neighbor offset synchronization as the default mandatory method (timing-offset calc, bounded clock-drift adjustment); 14.14.3 beaconing (beacon generation, TBTT spacing, DTIM at time zero, beacon reception keyed on Mesh ID); 14.14.4 mesh beacon collision avoidance (MBCA) covering Beacon Timing advertisement, status number, TBTT selection, and TBTT adjustment within 2 hops. Power save in a mesh BSS (14.15): 14.15.1 general (peer-specific and nonpeer modes, awake window, buffering and support); 14.15.2 the modes themselves (active/light sleep/deep sleep peer-specific; active/deep sleep nonpeer); 14.15.3 mode indications and transitions (Power Management + Mesh Power Save Level signaling, raise vs lower activity); 14.15.4 TIM transmissions in an MBSS (per-AID buffered-traffic bitmap, AID 0 for group traffic); 14.15.5 TIM types (TIM vs DTIM, group-addressed delivery after DTIM, More Data, Group Delivery Idle Time); 14.15.7 power-save support (buffer-don't-transmit rule, transmit only at designated times); 14.15.8 operation in each mode (active, deep sleep for nonpeers, light/deep sleep for a peering, conditions for doze state); 14.15.9 mesh peer service periods (directional owner/recipient, peer trigger frame, RSPI/EOSP initiation, operation, EOSP-terminated).",
+      "zh": "与 DS/网桥的互通（14.12）：14.12.1 MBSS 与 DS 互通概述、网格网关、GLK 网格站点、环路防止；14.12.2 网关通告（GANN）的功能、生成条件（情形 A 原始发送 / 情形 B 转发传播）、接受准则与接收效果；14.12.3 代理网格网关的数据转发（MBSS→DS 与 DS→MBSS、四地址与三地址处理、未知目的地行为）；14.12.4 代理信息（外部地址/代理地址、序列号、生存期）及通过 PXU 的代理更新与 PXUC 确认；14.12.5 网格站点同址要求使用不同 MAC 地址。网格内拥塞控制（14.13）：14.13.1 三大机制（监测/检测、信令、本地速率控制）以及每个 MBSS 同一时刻仅一个生效的拥塞控制协议。同步与信标（14.14）：14.14.1 MBSS 的 TSF（每站点 TSF 定时器、当前生效的同步方法）；14.14.2 可扩展同步框架，以邻居偏移同步为默认强制方法（时间偏移计算、有界时钟漂移调整）；14.14.3 信标（信标生成、TBTT 间距、时间零点的 DTIM、按 Mesh ID 判定信标接收）；14.14.4 网格信标避碰（MBCA），涵盖信标定时通告、状态号、两跳内的 TBTT 选择与 TBTT 调整。网格 BSS 省电（14.15）：14.15.1 总则（对等专用模式与非对等模式、唤醒窗口、缓存与支持）；14.15.2 各模式本身（对等专用：活跃/轻睡眠/深睡眠；非对等：活跃/深睡眠）；14.15.3 模式指示与转换（Power Management + Mesh Power Save Level 信令、升级与降级）；14.15.4 MBSS 中的 TIM 发送（按 AID 的缓存流量位图，AID 0 表组播流量）；14.15.5 TIM 类型（TIM 与 DTIM、DTIM 后的组播投递、More Data、组投递空闲时间）；14.15.7 省电支持（缓存而非发送的规则、只在约定时刻发送）；14.15.8 各模式下的操作（活跃、对非对等的深睡眠、对某条对等连接的轻/深睡眠、进入打盹状态的条件）；14.15.9 网格对等服务期（定向的拥有者/接收者、对等触发帧、RSPI/EOSP 启动、运行、由 EOSP 终止）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3257,
+          3258,
+          3260,
+          3262,
+          3266,
+          3267,
+          3270,
+          3271,
+          3277,
+          3279,
+          3280,
+          3282,
+          3283
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3257,
+        3258
+      ],
+      "note": "14.12.1 overview of interworking between a mesh BSS and a DS/bridge; mesh gate, GLK mesh STA, loop prevention; GANN vs HWMP proactive announcement"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3258,
+        3259,
+        3260
+      ],
+      "note": "14.12.2 GANN function, Case A/B generation conditions, acceptance criteria, effect of receipt"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3260,
+        3261,
+        3262
+      ],
+      "note": "14.12.3 data forwarding at proxy mesh gates (MBSS->DS, DS->MBSS, four-address header, unknown destination)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3262,
+        3263,
+        3264,
+        3265,
+        3266
+      ],
+      "note": "14.12.4 proxy information (external/proxy address, seq number, lifetime), PXU and PXUC; 14.12.5 mesh STA collocation distinct MAC"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3266,
+        3267
+      ],
+      "note": "14.13.1 intra-mesh congestion control three mechanisms and single active protocol; signaling protocol"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3267,
+        3270
+      ],
+      "note": "14.14.1 TSF for MBSSs; 14.14.2 extensible synchronization framework and neighbor offset synchronization; clock drift adjustment"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3270,
+        3271
+      ],
+      "note": "14.14.3 beacon generation and reception in MBSSs; 14.14.4.1 MBCA overview"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3271,
+        3272,
+        3273,
+        3274,
+        3275
+      ],
+      "note": "14.14.4.2 Beacon Timing advertisement and status number; 14.14.4.3 TBTT selection; 14.14.4.4 TBTT adjustment"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3277,
+        3278,
+        3279
+      ],
+      "note": "14.15.1 power save general; 14.15.2 peer-specific and nonpeer power management modes; 14.15.3 mode indications/transitions"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3280
+      ],
+      "note": "14.15.4 TIM transmissions in an MBSS; 14.15.5 TIM types (TIM/DTIM, group delivery, Group Delivery Idle Time)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3281,
+        3282,
+        3283
+      ],
+      "note": "14.15.7 power save support; 14.15.8 operation in each mode and doze conditions; 14.15.9 mesh peer service periods (RSPI/EOSP, owner/recipient)"
+    }
+  ],
+  "covers": [
+    "80211-2024:14.12.1",
+    "80211-2024:14.12.2",
+    "80211-2024:14.12.3",
+    "80211-2024:14.12.4",
+    "80211-2024:14.12.5",
+    "80211-2024:14.13.1",
+    "80211-2024:14.14.1",
+    "80211-2024:14.14.2",
+    "80211-2024:14.14.3",
+    "80211-2024:14.14.4",
+    "80211-2024:14.15.1",
+    "80211-2024:14.15.2",
+    "80211-2024:14.15.3",
+    "80211-2024:14.15.4",
+    "80211-2024:14.15.5",
+    "80211-2024:14.15.7",
+    "80211-2024:14.15.8",
+    "80211-2024:14.15.9"
+  ],
+  "track": "mesh"
+}

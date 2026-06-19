@@ -1,0 +1,136 @@
+{
+  "id": "mesh-14-mesh-bss-basics-discovery-joining",
+  "title": {
+    "en": "What Is a Mesh BSS: Profiles, Discovery and Joining",
+    "zh": "什么是 Mesh BSS：配置档、发现与加入"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "An infrastructure Wi-Fi network has a clear hub: an access point (AP) that every client (STA) talks to. A mesh BSS (MBSS) is different. There is no AP at all. Instead, a group of peer devices called mesh STAs talk directly to one another and relay traffic on each other's behalf, forming a self-organizing fabric. Before any of that relaying can happen, the mesh STAs must first find one another and agree that they belong to the same mesh. This lesson covers that foundation: how a mesh is identified, the parameters peers must share, and how a device discovers and then joins (or starts) a mesh BSS.",
+      "zh": "传统的基础设施 Wi-Fi 网络有一个清晰的中心：一个接入点（AP），所有客户端（STA）都与它通信。Mesh BSS（MBSS）则不同，它根本没有 AP。取而代之的是一组互为对等的设备，称为 mesh STA，它们直接相互通信并替彼此转发流量，从而构成一张自组织的网络。在任何转发开始之前，这些 mesh STA 必须先彼此发现，并确认它们属于同一个 mesh。本课讲解这一基础：mesh 如何被标识、对等节点之间必须共享哪些参数，以及设备如何发现并加入（或开启）一个 mesh BSS。"
+    },
+    {
+      "type": "prose",
+      "en": "Discovery is the entry point. To find an operating mesh BSS, a mesh STA performs either active scanning (sending Probe Request frames and listening for responses) or passive scanning (just listening for Beacon frames), driven by the MLME-SCAN.request primitive. Scanning does more than locate neighbors: it also harvests a mesh profile — the set of parameters that identifies a mesh BSS's configuration. Based on what it learns, the device decides whether to start a brand-new mesh BSS or become a member of one it found, using the START primitive, which kicks off the beaconing that lets neighbors discover it in turn.",
+      "zh": "发现是入口。为了找到一个正在运行的 mesh BSS，mesh STA 会执行主动扫描（发送 Probe Request 帧并等待响应）或被动扫描（仅监听 Beacon 帧），二者均由 MLME-SCAN.request 原语驱动。扫描不仅用于定位邻居：它还会采集 mesh 配置档（mesh profile）——一组用于标识某个 mesh BSS 配置的参数。根据扫描所得，设备决定是开启一个全新的 mesh BSS，还是加入已发现的某个 mesh BSS，这通过 START 原语完成，该原语会启动信标发送，使邻居也能反过来发现它。"
+    },
+    {
+      "type": "prose",
+      "en": "Every mesh has a name. The mesh ID is the identifier of an MBSS — the mesh equivalent of an SSID. It might be set by a user (\"Mike's Mesh\") or installed by other means outside the standard. A mesh STA advertises its mesh ID by including the Mesh ID element in its Beacon and Probe Response frames, and also in its Mesh Peering Open, Confirm, and Close frames. Critically, the SSID field in Beacons, Probe Requests, and Probe Responses is set to the wildcard SSID. This is a polite signal to ordinary (non-mesh) clients: \"I am neither an infrastructure BSS nor an IBSS — do not try to join me.\"",
+      "zh": "每个 mesh 都有名字。mesh ID 是某个 MBSS 的标识符——相当于 mesh 世界里的 SSID。它可以由用户设置（例如“Mike's Mesh”），也可以通过标准之外的其他方式预置。mesh STA 通过在其 Beacon 与 Probe Response 帧中包含 Mesh ID 元素来通告自己的 mesh ID，同时也会在 Mesh Peering Open、Confirm 与 Close 帧中包含它。关键的是，Beacon、Probe Request 与 Probe Response 中的 SSID 字段会被设为通配 SSID。这是给普通（非 mesh）客户端的一个礼貌提示：“我既不是基础设施 BSS，也不是 IBSS——请不要尝试加入我。”"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "An MBSS does not have a BSSID in the usual sense. Any field that would carry a BSSID instead carries the MAC address of the particular mesh STA that sent the frame (or the wildcard BSSID where allowed). So the mesh ID — not a BSSID — is what binds the members together.",
+      "zh": "MBSS 并不具有通常意义上的 BSSID。任何本应承载 BSSID 的字段，实际承载的是发送该帧的那个具体 mesh STA 的 MAC 地址（或在允许处使用通配 BSSID）。因此，把成员绑定在一起的是 mesh ID，而不是某个 BSSID。"
+    },
+    {
+      "type": "prose",
+      "en": "The mesh ID alone is not enough to interoperate. Peers must also agree on how the mesh actually works, and that agreement is captured in the mesh profile: the set of parameters specifying a mesh BSS's attributes. All mesh STAs in one mesh BSS use the same mesh profile, and two profiles count as identical only if every parameter matches. A profile bundles the mesh ID together with the chosen path-selection protocol and metric, the congestion-control mode, the synchronization method, the authentication protocol, and EPD (Extended Service Set Path Discovery) support. A mesh STA configures exactly one mesh profile before starting or joining a mesh, and it must not change that profile while it remains a member.",
+      "zh": "仅有 mesh ID 还不足以实现互通。对等节点还必须就 mesh 的具体运作方式达成一致，而这一致性被记录在 mesh 配置档中：它是一组用于描述某个 mesh BSS 属性的参数。同一个 mesh BSS 中的所有 mesh STA 使用相同的 mesh 配置档，且只有当每一项参数都匹配时，两个配置档才算相同。配置档把 mesh ID 与所选的路径选择协议及度量、拥塞控制模式、同步方法、认证协议，以及 EPD（扩展服务集路径发现）支持捆绑在一起。mesh STA 在开启或加入 mesh 之前会配置恰好一个 mesh 配置档，并且在它仍是成员期间不得更改该配置档。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 240\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"10\" y=\"10\" width=\"200\" height=\"220\" rx=\"8\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"15\">Mesh profile</text><line x1=\"30\" y1=\"48\" x2=\"190\" y2=\"48\"/><text x=\"28\" y=\"72\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">Mesh ID</text><text x=\"28\" y=\"95\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">Path selection protocol</text><text x=\"28\" y=\"118\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">Path selection metric</text><text x=\"28\" y=\"141\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">Congestion control mode</text><text x=\"28\" y=\"164\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">Synchronization method</text><text x=\"28\" y=\"187\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">Authentication protocol</text><text x=\"28\" y=\"210\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">EPD support</text><rect x=\"250\" y=\"10\" width=\"180\" height=\"220\" rx=\"8\" stroke-dasharray=\"5 4\"/><text x=\"340\" y=\"34\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"15\">STA configuration</text><line x1=\"270\" y1=\"48\" x2=\"410\" y2=\"48\"/><text x=\"268\" y=\"74\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">(the mesh profile)</text><text x=\"268\" y=\"100\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">+ Supported Rates</text><text x=\"268\" y=\"123\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">+ Ext. Supported Rates</text><text x=\"268\" y=\"146\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">+ HT Operation</text><text x=\"268\" y=\"169\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">+ VHT Operation</text><text x=\"268\" y=\"192\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">+ HE Operation</text><path d=\"M210 120 L250 120\" marker-end=\"url(#a)\"/><defs><marker id=\"a\" markerWidth=\"8\" markerHeight=\"8\" refX=\"6\" refY=\"3\" orient=\"auto\"><path d=\"M0 0 L6 3 L0 6\" fill=\"currentColor\" stroke=\"none\"/></marker></defs></svg>",
+      "caption": {
+        "en": "The mesh profile is the inner agreement; the mesh STA configuration wraps it with the rate sets and operation elements that decide whether two STAs can actually communicate.",
+        "zh": "mesh 配置档是内层的一致性约定；mesh STA 配置在其外层加上速率集与各类操作元素，共同决定两个 STA 是否真的能够通信。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "There is a layer above the profile: the mesh STA configuration, which decides whether two mesh STAs can actually communicate. It consists of the mesh profile plus the rate-related and PHY-operation context — the Supported Rates and BSS Membership Selectors element, the Extended Supported Rates element, and (when present) the HT, VHT, and HE Operation elements. Two configurations are identical only if the profiles match and the basic rate sets and basic MCS/NSS sets line up for whichever PHY generations are in play. This is the test a device uses to know it can pair with a neighbor.",
+      "zh": "在配置档之上还有一层：mesh STA 配置，它决定两个 mesh STA 是否真的能够通信。它由 mesh 配置档加上与速率及 PHY 操作相关的上下文构成——包括 Supported Rates and BSS Membership Selectors 元素、Extended Supported Rates 元素，以及（在存在时）HT、VHT 与 HE Operation 元素。只有当配置档相同，并且对于所涉及的各 PHY 代际，基本速率集与基本 MCS/NSS 集都对齐时，两个配置才算相同。这正是设备用来判断自己能否与某个邻居配对的依据。"
+    },
+    {
+      "type": "prose",
+      "en": "Discovery also carries supplemental information that shapes who will accept whom. Each mesh STA must signal whether it can take on more peerings: the Accepting Additional Mesh Peerings subfield in the Mesh Capability field (inside the Mesh Configuration element) is set to 1 when the device has room for more peers, and 0 when it does not. This is driven dynamically by internal policy — a device might be configured to hold only two peerings, for example. A mesh STA also announces topological state through the Mesh Formation Info field, which must be coded to reflect its current configuration.",
+      "zh": "发现过程还会携带一些补充信息，用来左右谁会接受谁。每个 mesh STA 都必须表明自己是否还能再建立配对：当设备还有容纳更多对等节点的余量时，Mesh Capability 字段（位于 Mesh Configuration 元素内）中的 Accepting Additional Mesh Peerings 子字段被置为 1，否则置为 0。这由内部策略动态控制——例如某设备可能被配置为最多只保持两个配对。mesh STA 还会通过 Mesh Formation Info 字段通告其拓扑状态，该字段必须按当前配置进行编码。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n    [*] --> Scanning\n    Scanning --> Decide: scan complete\n    Decide --> StartNew: no matching profile\n    Decide --> JoinExisting: matching candidate found\n    StartNew --> Beaconing: activate new profile + START\n    JoinExisting --> Beaconing: activate same profile + START\n    Beaconing --> Peering: establish mesh peerings\n    Peering --> [*]",
+      "zh": "stateDiagram-v2\n    [*] --> 扫描\n    扫描 --> 决策: 扫描完成\n    决策 --> 开启新Mesh: 无匹配配置档\n    决策 --> 加入现有: 找到匹配候选\n    开启新Mesh --> 信标发送: 激活新配置档+START\n    加入现有 --> 信标发送: 激活相同配置档+START\n    信标发送 --> 建立配对: 建立mesh配对\n    建立配对 --> [*]"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the device acts. After determining its active mesh profile, a mesh STA either establishes a new mesh BSS or becomes a new member of an existing one. To start a new mesh BSS it activates a mesh profile different from any it discovered while scanning. To join an existing one it activates the same mesh profile as a candidate peer of that mesh. Either way, it issues the START primitive: it initializes and starts its TSF timer per its synchronization method and begins transmitting Beacon frames. A new member should then establish a peering with one or more candidate peers, and shall adopt that mesh's basic rate set. The Mesh Formation Info field helps a scanning STA choose which mesh to join, though the actual choice policy is left outside the standard.",
+      "zh": "最后，设备付诸行动。在确定了自己的活动 mesh 配置档之后，mesh STA 要么开启一个新的 mesh BSS，要么成为某个现有 mesh BSS 的新成员。要开启新的 mesh BSS，它会激活一个与扫描期间发现的任何配置档都不同的 mesh 配置档；要加入现有的 mesh BSS，它会激活与该 mesh 某个候选对等节点相同的 mesh 配置档。无论哪种情形，它都会发出 START 原语：按其同步方法初始化并启动 TSF 定时器，并开始发送 Beacon 帧。随后，新成员应与一个或多个候选对等节点建立配对，并应采用该 mesh 的基本速率集。Mesh Formation Info 字段可帮助扫描中的 STA 选择加入哪个 mesh，不过具体的选择策略被留在标准之外。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The split is worth remembering: \"start a new mesh\" means activating a profile no neighbor is using; \"join an existing mesh\" means activating a neighbor's profile. The mechanics (START primitive, TSF init, beaconing) are the same — only the profile choice differs.",
+      "zh": "这一区分值得记住：“开启新 mesh”意味着激活一个没有任何邻居在用的配置档；“加入现有 mesh”意味着激活某个邻居的配置档。其机制（START 原语、TSF 初始化、信标发送）完全相同——区别只在于配置档的选择。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: clauses 14.3.1–14.3.5 and 14.3.8",
+        "zh": "覆盖映射：条款 14.3.1–14.3.5 与 14.3.8"
+      },
+      "en": "This lesson maps to the foundational subclauses of mesh discovery in IEEE Std 802.11-2024, Clause 14 (MLME mesh procedures). 14.3.1 (General) frames discovery as scan → obtain a mesh profile → start or join via the START primitive, with beaconing enabling neighbor discovery. 14.3.2 (Mesh identifier) defines the mesh ID, its carriage in the Mesh ID element of Beacons/Probe Responses and peering frames, and the wildcard-SSID rule that keeps non-mesh STAs away. 14.3.3 (Mesh profile) enumerates the seven profile parameters (mesh ID, path-selection protocol, path-selection metric, congestion-control mode, synchronization method, authentication protocol, EPD support), the all-must-match identity rule, the one-profile/no-change constraint, and that the profile is signaled via the Mesh ID and Mesh Configuration elements. 14.3.4 (Mesh STA configuration) extends the profile with the Supported/Extended Supported Rates elements and the HT/VHT/HE Operation elements, plus the identity conditions on basic rate and basic MCS/NSS sets. 14.3.5 (Supplemental information) covers the Accepting Additional Mesh Peerings subfield in the Mesh Capability field and the Mesh Formation Info field. 14.3.8 (Establishing or becoming a member) distinguishes starting a new mesh (activate a not-yet-seen profile) from joining (activate a candidate peer's profile), the role of Mesh Formation Info in selection, and the START → TSF init → beaconing → adopt basic rate set sequence. (Subclauses 14.3.6 scanning, 14.3.7 candidate peer, and 14.3.9 peering establishment are adjacent and referenced in passing but are taught in their own lessons.)",
+      "zh": "本课对应 IEEE Std 802.11-2024 第 14 章（MLME mesh 流程）中 mesh 发现的基础子条款。14.3.1（总则）把发现刻画为：扫描 → 获取 mesh 配置档 → 通过 START 原语开启或加入，并由信标发送实现邻居发现。14.3.2（mesh 标识符）定义 mesh ID、其在 Beacon/Probe Response 及配对帧的 Mesh ID 元素中的承载方式，以及让非 mesh STA 不来打扰的通配 SSID 规则。14.3.3（mesh 配置档）列举七项配置档参数（mesh ID、路径选择协议、路径选择度量、拥塞控制模式、同步方法、认证协议、EPD 支持）、全部匹配才算相同的判定规则、单一配置档且成员期间不可更改的约束，以及配置档通过 Mesh ID 与 Mesh Configuration 元素发出这一点。14.3.4（mesh STA 配置）在配置档之上扩展出 Supported/Extended Supported Rates 元素与 HT/VHT/HE Operation 元素，并给出基本速率集与基本 MCS/NSS 集的相同性条件。14.3.5（补充信息）涵盖 Mesh Capability 字段中的 Accepting Additional Mesh Peerings 子字段与 Mesh Formation Info 字段。14.3.8（开启或成为成员）区分开启新 mesh（激活一个尚未见过的配置档）与加入（激活某候选对等节点的配置档）、Mesh Formation Info 在选择中的作用，以及 START → TSF 初始化 → 信标发送 → 采用基本速率集这一序列。（子条款 14.3.6 扫描、14.3.7 候选对等节点与 14.3.9 配对建立相邻并被顺带引用，但在各自的课程中讲授。）",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3192,
+          3193,
+          3194,
+          3195,
+          3196
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3192
+      ],
+      "note": "14.3.1 General (scan, obtain mesh profile, START, beaconing) and 14.3.2 Mesh identifier (mesh ID, Mesh ID element in Beacon/Probe Response/peering frames)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3193
+      ],
+      "note": "14.3.2 wildcard SSID + no-BSSID note; 14.3.3 Mesh profile parameters and identity/one-profile rules; 14.3.4 Mesh STA configuration definition"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3194
+      ],
+      "note": "14.3.4 identity conditions (basic rate, HT/VHT/HE MCS/NSS sets); 14.3.5 Accepting Additional Mesh Peerings subfield and Mesh Formation Info field"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3195
+      ],
+      "note": "14.3.8 Establishing or becoming a member of a mesh BSS: Mesh Formation Info for selection, active mesh profile determination, TBTT/DTIM notes"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3196
+      ],
+      "note": "14.3.8 start-new vs join (profile activation), START primitive, TSF init, beaconing, adopt basic rate set"
+    }
+  ],
+  "covers": [
+    "80211-2024:14.3.1",
+    "80211-2024:14.3.2",
+    "80211-2024:14.3.3",
+    "80211-2024:14.3.4",
+    "80211-2024:14.3.5",
+    "80211-2024:14.3.8"
+  ],
+  "track": "mesh"
+}

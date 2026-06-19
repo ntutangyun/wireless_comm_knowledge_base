@@ -1,0 +1,146 @@
+{
+  "id": "security-28-rsna-requirements-assumptions",
+  "title": {
+    "en": "The Security Rulebook: RSNA Requirements, Protection and TKIP",
+    "zh": "安全规则手册：RSNA 要求、保护与 TKIP"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Before Clause 12 of IEEE 802.11-2024 dives into ciphers and key exchanges, it lays down a rulebook: the reading conventions, the trust assumptions the whole security design rests on, and a set of small but load-bearing requirements about which frames get protected and how. This lesson walks that rulebook end-to-end, then surveys the corner cases — emergency calling, channel validation, MAC-address privacy, secure ranging — and finishes with the two legacy methods the standard still documents: pre-RSNA Open System authentication and the obsolete TKIP cipher.",
+      "zh": "在 IEEE 802.11-2024 第 12 章深入讲解密码算法与密钥交换之前，它先立下一本规则手册：阅读约定、整套安全设计所依赖的信任假设，以及一组虽小却至关重要的要求——哪些帧需要保护、如何保护。本课将从头到尾梳理这本规则手册，再综述若干边角场景——紧急呼叫、信道校验、MAC 地址隐私、安全测距——最后介绍标准仍保留文档记录的两种遗留方法：RSNA 之前的开放系统认证，以及已废弃的 TKIP 加密。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the conventions (12.1). Inside Clause 12 and Clause 13, reserved fields are transmitted as 0 and ignored on receipt — a simple rule that lets future amendments add bits without breaking old parsers. The clause also defines 'masking out': forcing certain bits to 0 in a *copy* of a field used by another computation, while leaving the original field untouched. That distinction matters whenever a value feeds into a cryptographic calculation but must still travel unchanged on the wire.",
+      "zh": "先看约定（12.1）。在第 12 章与第 13 章内部，保留字段发送时置 0、接收时忽略——这条简单规则让未来的修正案可以新增比特位而不会破坏旧解析器。该条款还定义了“屏蔽（masking out）”：在供另一处计算使用的字段“副本”中将某些比特强制置 0，而原始字段保持不变。每当某个值要参与密码学计算、却仍需原封不动地在空口传输时，这个区分就很关键。"
+    },
+    {
+      "type": "prose",
+      "en": "Next come the RSNA assumptions and constraints (12.2.5) — the bedrock of trust. A Robust Security Network Association only holds if: every STA can generate cryptographic-quality random numbers; the chosen EAP method performs mutual authentication (EAP-MD5 fails this); a fresh PTK is derived for each session; the AP and Authentication Server share a trustworthy channel; the AS never leaks the symmetric key to anyone but the current AP; and a STA never shares a pairwise key with a third party. Break any one of these and the guarantees collapse — for example, the SSID is only an *unprotected hint* that the AP shares your credentials; only a successful 802.1X/EAP or PSK exchange actually proves it.",
+      "zh": "接下来是 RSNA 的假设与约束（12.2.5）——信任的基石。一个健壮安全网络关联（RSNA）只有在满足下列条件时才成立：每个 STA 都能生成具备密码学质量的随机数；所选 EAP 方法执行双向认证（EAP-MD5 不满足）；每个会话派生全新的 PTK；AP 与认证服务器（AS）之间有可信信道；AS 绝不把对称密钥泄露给除当前 AP 之外的任何方；STA 绝不与第三方共享成对密钥。违反其中任意一条，安全保证即告崩溃——例如 SSID 只是一个“未受保护的提示”，表明该 AP 可能与你共享凭据；唯有成功完成 802.1X/EAP 或 PSK 交换才能真正证明这一点。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Assumption (f) is the strictest: an 802.1X AS must never reveal the symmetric key to anyone but the AP currently serving the STA. In practice this means the AS is either embedded in the AP, or the AP is physically secure and both live in the same administrative domain — otherwise the STA cannot be sure its key wasn't compromised in transit between AS and AP.",
+      "zh": "假设 (f) 最为严格：802.1X 的 AS 绝不能把对称密钥透露给当前服务该 STA 的 AP 之外的任何方。实际上这意味着 AS 要么内嵌于 AP，要么 AP 物理安全且二者位于同一管理域——否则 STA 无法确信其密钥在从 AS 到 AP 的传输途中没有被泄露。"
+    },
+    {
+      "type": "prose",
+      "en": "Then the protection requirements. The Protected Frame field (12.2.6) is set to 1 only on Data frames protected by Clause 12 mechanisms and on individually addressed protected robust Management frames — and 0 on everything else. Beacon protection (12.2.8) says that when it is enabled at the AP, protected Beacon frames are encapsulated using the procedures of 11.52, so a STA can detect a forged or tampered Beacon. These are short clauses, but they are the switches that turn confidentiality and integrity on per frame.",
+      "zh": "随后是保护要求。受保护帧（Protected Frame）字段（12.2.6）仅在以下两类帧中置 1：受第 12 章机制保护的数据帧，以及单播的受保护健壮管理帧——其余所有帧一律置 0。信标保护（12.2.8）规定：当 AP 启用该功能时，受保护的信标帧按 11.52 的流程封装，使 STA 能够检测伪造或被篡改的信标。这些条款篇幅虽短，却是逐帧开启机密性与完整性的“开关”。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Frame to send] --> B{Data frame protected<br/>by Clause 12?}\n  B -->|Yes| P[Protected Frame = 1]\n  B -->|No| C{Individually addressed<br/>protected robust<br/>Management frame?}\n  C -->|Yes| P\n  C -->|No| Z[Protected Frame = 0]",
+      "zh": "flowchart TD\n  A[待发送帧] --> B{受第 12 章保护的<br/>数据帧?}\n  B -->|是| P[受保护帧字段 = 1]\n  B -->|否| C{单播的受保护<br/>健壮管理帧?}\n  C -->|是| P\n  C -->|否| Z[受保护帧字段 = 0]"
+    },
+    {
+      "type": "prose",
+      "en": "A few clauses handle special operating conditions. Emergency service in an RSN (12.2.9): an AP advertising the ESR and UESA bits supports emergency-services associations alongside normal RSNAs simultaneously. Because an emergency STA has no group key, it cannot decrypt group addressed frames, so the AP is advised to avoid sending unprotected group traffic (using Proxy ARP, or DMS to convert group frames into individually addressed ones) so it does not disturb the STAs that do hold the group key. Operating Channel Validation (12.2.10): an OCVC-capable STA advertises the capability in the RSNE and validates the Operating Channel Information (OCI) it receives during key establishment — matching bandwidth, primary channel, and 80+80 segment numbers — discarding frames that arrive on the wrong channel. This blocks multi-channel man-in-the-middle attacks.",
+      "zh": "另有几个条款处理特殊运行条件。RSN 中的紧急服务（12.2.9）：通告 ESR 与 UESA 比特的 AP 可以同时支持紧急服务关联与普通 RSNA。由于紧急 STA 没有组密钥、无法解密组播帧，因此建议 AP 避免发送未受保护的组播流量（通过代理 ARP，或用 DMS 把组播帧转换为单播帧），以免干扰持有组密钥的 STA。工作信道校验（OCV，12.2.10）：具备 OCVC 能力的 STA 在 RSNE 中通告该能力，并在密钥建立过程中校验收到的工作信道信息（OCI）——核对带宽、主信道以及 80+80 段编号——丢弃在错误信道上到达的帧。这可阻断跨信道的中间人攻击。"
+    },
+    {
+      "type": "prose",
+      "en": "MAC privacy enhancements (12.2.11): when activated on a non-AP STA, the STA periodically changes its MAC address to a random locally-administered value while *not* associated — but never mid-transaction (e.g. during preassociation discovery, RSN preauthentication, or FT over-the-DS). Each address change resets every sequence-number counter and resets the scrambler on the next PPDU. Crucially, within a single connection across an ESS the STA keeps one MAC address, and for PMKSA caching it changes back to the address that created the PMKSA. The standard also nudges STAs to use the wildcard SSID in Probe Requests to avoid leaking preferred-network names.",
+      "zh": "MAC 隐私增强（12.2.11）：在非 AP STA 上启用后，STA 在“未关联”时会周期性地把 MAC 地址更换为随机的本地管理地址——但绝不在某次事务中途更换（例如预关联发现、RSN 预认证或经 DS 的 FT 过程中）。每次更换地址都会重置所有序列号计数器，并在下一个 PPDU 上重置加扰器。关键在于：在一个 ESS 内的单次连接期间，STA 保持同一个 MAC 地址；为支持 PMKSA 缓存，它会切换回创建该 PMKSA 时所用的地址。标准还建议 STA 在探测请求中使用通配 SSID，以避免泄露偏好网络的名称。"
+    },
+    {
+      "type": "prose",
+      "en": "The framework section closes with EDMG secure ranging sequences (12.2.12), used in 60 GHz EDMG fine timing measurement. The initiating STA generates a 32-octet Secret Key, sends it in the Secure Ranging Operation Parameters of a Protected FTM Request, and both sides feed it as Input Key Material into HKDF (RFC 5869, SHA-256). The Salt is the PMKID of the security association, and the Info string is the fixed label 'EDMG Secure RTT' to prevent key reuse across subsystems. The HKDF output becomes the pseudorandom Secure TRN sequences that shape the ranging waveforms; the Secret Key and Salt are discarded when the FTM session ends, and each session uses a fresh key.",
+      "zh": "框架部分以 EDMG 安全测距序列（12.2.12）收尾，用于 60 GHz EDMG 的精细定时测量。发起方 STA 生成一个 32 字节的密钥（Secret Key），将其放入受保护 FTM 请求的“安全测距运行参数”字段发送，双方都把它作为输入密钥材料（IKM）送入 HKDF（RFC 5869，SHA-256）。盐值（Salt）取自该安全关联的 PMKID，Info 字符串则固定为标签“EDMG Secure RTT”，以防密钥在不同子系统间被复用。HKDF 的输出即为伪随机的安全 TRN 序列，用于构造测距波形；FTM 会话结束时丢弃 Secret Key 与 Salt，且每个会话都使用全新的密钥。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the pre-RSNA world. Pre-RSNA authentication (12.3.3) — the only method is Open System authentication, a null two-message exchange: the first message asserts identity and requests authentication, the second returns the result, and 'successful' simply declares the pair mutually authenticated. A non-DMG STA must complete this exchange before association in an infrastructure BSS; it is optional in an IBSS, and a DMG STA must not use Open System. All Authentication frames are individually addressed. TKIP (12.3.4) wraps WEP with a keyed Message Integrity Code (Michael) to resist forgery, a per-MPDU TKIP Sequence Counter (TSC) for replay protection encoded as the WEP IV and extended IV, and a key-mixing function combining the temporal key, transmitter address, and TSC into the WEP seed to defeat weak-key attacks. If too many MIC failures occur, TKIP triggers countermeasures. The standard is blunt: TKIP is obsolete and unsuitable, and HT/VHT/HE STAs must not negotiate it.",
+      "zh": "最后是 RSNA 之前的世界。RSNA 之前的认证（12.3.3）——唯一方法是开放系统认证，一次空（null）两消息交换：第一条消息声明身份并请求认证，第二条返回结果，结果为“成功”即宣告双方相互认证完成。在基础设施 BSS 中，非 DMG STA 必须在关联前完成此交换；在 IBSS 中为可选；DMG STA 不得使用开放系统认证。所有认证帧均为单播。TKIP（12.3.4）在 WEP 之上加上：带密钥的消息完整性码（MIC，即 Michael）以抵御伪造；逐 MPDU 的 TKIP 序列计数器（TSC）提供重放保护，编码于 WEP IV 与扩展 IV 中；以及把临时密钥、发送方地址与 TSC 混合成 WEP 种子的密钥混合函数，用以挫败弱密钥攻击。若 MIC 校验失败过多，TKIP 会触发对抗措施。标准直言不讳：TKIP 已废弃且不适用，HT/VHT/HE STA 不得协商使用它。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each rule lives in Clause 12",
+        "zh": "覆盖地图：每条规则在第 12 章中的位置"
+      },
+      "en": "Conventions and framework (12.1, 12.2.5): 12.1 sets reserved-field handling (transmit 0 / ignore on receipt) and defines 'masking out'; 12.2.5 lists the eight RSNA assumptions (a–i) — random-number quality, mutual EAP authentication, fresh per-session PTK, trustworthy AP–AS channel, AS key confidentiality, no third-party key sharing, correct destination. Protection requirements (12.2.6, 12.2.8): 12.2.6 fixes the Protected Frame field to 1 for Clause-12-protected Data frames and individually addressed protected robust Management frames, 0 elsewhere; 12.2.8 says enabled beacon protection encapsulates Beacons via 11.52. Special conditions (12.2.9, 12.2.10, 12.2.11): 12.2.9 — emergency-service association coexists with RSNA when ESR+UESA are set, with group-frame handling advice (Proxy ARP / DMS); 12.2.10 — OCVC validates received OCI (bandwidth, primary channel, 80+80 segment) and discards wrong-channel frames; 12.2.11 — randomized locally-administered MAC addresses while unassociated, never mid-transaction, with counter/scrambler reset and PMKSA-caching address restoration. Secure ranging (12.2.12): EDMG Secure TRN sequences from a 32-octet Secret Key via HKDF (SHA-256), Salt = PMKID, Info = 'EDMG Secure RTT'. Pre-RSNA and legacy (12.3.3, 12.3.4): 12.3.3 — Open System null authentication (two messages, individually addressed, required before association for non-DMG infrastructure STAs, forbidden for DMG); 12.3.4 — TKIP overlays WEP with the Michael MIC, the TSC replay counter, and the temporal-key/TA/TSC mixing function, plus countermeasures — declared obsolete and barred from HT/VHT/HE.",
+      "zh": "约定与框架（12.1、12.2.5）：12.1 规定保留字段处理方式（发送置 0 / 接收忽略）并定义“屏蔽”；12.2.5 列出八条 RSNA 假设（a–i）——随机数质量、EAP 双向认证、每会话全新 PTK、可信的 AP–AS 信道、AS 密钥机密性、不与第三方共享密钥、目的地正确。保护要求（12.2.6、12.2.8）：12.2.6 规定受保护帧字段在受第 12 章保护的数据帧及单播受保护健壮管理帧中置 1，其余置 0；12.2.8 规定启用信标保护时按 11.52 封装信标。特殊条件（12.2.9、12.2.10、12.2.11）：12.2.9——设置 ESR+UESA 时紧急服务关联与 RSNA 共存，并给出组播帧处理建议（代理 ARP / DMS）；12.2.10——OCVC 校验收到的 OCI（带宽、主信道、80+80 段）并丢弃错误信道的帧；12.2.11——未关联时使用随机本地管理 MAC 地址，绝不在事务中途更换，更换时重置计数器与加扰器，并为 PMKSA 缓存恢复原地址。安全测距（12.2.12）：EDMG 安全 TRN 序列由 32 字节 Secret Key 经 HKDF（SHA-256）生成，Salt = PMKID，Info = “EDMG Secure RTT”。RSNA 之前与遗留（12.3.3、12.3.4）：12.3.3——开放系统空认证（两条消息、单播、非 DMG 基础设施 STA 关联前必须完成、DMG 禁用）；12.3.4——TKIP 在 WEP 之上叠加 Michael MIC、TSC 重放计数器，以及临时密钥/TA/TSC 混合函数与对抗措施——已宣告废弃并禁止用于 HT/VHT/HE。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2937,
+          2940,
+          2941,
+          2942,
+          2943,
+          2944,
+          2946,
+          2947,
+          2948
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2937
+      ],
+      "note": "12.1 Conventions — reserved fields, masking out; 12.2 framework intro (TKIP obsolete)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2940,
+        2941
+      ],
+      "note": "12.2.5 RSNA assumptions and constraints (a–i); 12.2.6 Protected Frame field requirements"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2941,
+        2942
+      ],
+      "note": "12.2.8 beacon protection; 12.2.9 emergency service in an RSN; 12.2.10 Operating Channel Validation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2943,
+        2944
+      ],
+      "note": "12.2.11 MAC privacy enhancements; 12.2.12 EDMG secure ranging sequences (HKDF)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2946,
+        2947
+      ],
+      "note": "12.3.3 Pre-RSNA / Open System authentication; 12.3.4.1 TKIP overview"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2948
+      ],
+      "note": "12.3.4.1.2/.3 TKIP encapsulation and decapsulation, MIC, TSC, mixing function"
+    }
+  ],
+  "covers": [
+    "80211-2024:12.1",
+    "80211-2024:12.2.5",
+    "80211-2024:12.2.6",
+    "80211-2024:12.2.8",
+    "80211-2024:12.2.9",
+    "80211-2024:12.2.10",
+    "80211-2024:12.2.11",
+    "80211-2024:12.2.12",
+    "80211-2024:12.3.3",
+    "80211-2024:12.3.4"
+  ],
+  "track": "security"
+}

@@ -1,0 +1,218 @@
+{
+  "id": "security-30-cipher-suites-key-hierarchy",
+  "title": {
+    "en": "Locking the Frames: CCMP/GCMP/BIP, the Key Hierarchy and the Handshakes",
+    "zh": "锁住每一帧：CCMP/GCMP/BIP、密钥层次与握手"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Once a station has authenticated and associated, its frames still travel over the open air. A Robust Security Network Association (RSNA) is the contract that turns that exposure into protection: it pairs a set of cryptographic keys with the policies and counters needed to encrypt, authenticate, and replay-protect each frame. This lesson walks the full chain — the three over-the-air protocols (CCMP, GCMP, BIP), the security associations that hold the keys, how an RSNA is established in an infrastructure BSS (and across multiple bands), the key hierarchy that derives every key, and the EAPOL-Key handshakes that distribute them.",
+      "zh": "站点完成认证与关联后，它的帧仍然在开放的空中传播。健壮安全网络关联（RSNA）就是把这种暴露转化为保护的契约：它将一组加密密钥与对每一帧进行加密、认证和防重放所需的策略和计数器绑定在一起。本课沿着完整链条展开——三种空口协议（CCMP、GCMP、BIP）、保存密钥的安全关联、如何在基础设施 BSS 中（以及跨多个频段）建立 RSNA、推导出每个密钥的密钥层次，以及分发这些密钥的 EAPOL-Key 握手。"
+    },
+    {
+      "type": "prose",
+      "en": "Three confidentiality/integrity protocols do the per-frame work. CCMP (clause 12.5.2) uses AES in CCM mode — CTR for encryption plus CBC-MAC for integrity — over either a 128-bit or 256-bit key; CCMP-128 is mandatory for every non-DMG RSNA station. GCMP (clause 12.5.4) uses AES in Galois/Counter Mode with a 128-bit MIC and is mandatory for DMG (60 GHz) stations. Both add a header carrying a 48-bit packet number (PN) and a Key ID, encrypt the frame body, and append a MIC; both demand a fresh temporal key per session and a unique nonce per frame, because reusing a nonce with the same key voids all security guarantees. BIP (clause 12.5.3) protects group-addressed robust Management frames and Beacons — it does not encrypt, it only adds a Management MIC element computed with AES-CMAC or AES-GMAC under the IGTK or BIGTK.",
+      "zh": "三种机密性/完整性协议负责逐帧的工作。CCMP（条款 12.5.2）以 CCM 模式使用 AES——用 CTR 加密、用 CBC-MAC 做完整性——密钥为 128 位或 256 位；CCMP-128 是每个非 DMG RSNA 站点的强制能力。GCMP（条款 12.5.4）以 Galois/计数器模式使用 AES，MIC 为 128 位，是 DMG（60 GHz）站点的强制能力。两者都添加一个携带 48 位包号（PN）和 Key ID 的头部，加密帧体并附上 MIC；两者都要求每个会话使用全新的临时密钥、每帧使用唯一的 nonce，因为同一密钥下重用 nonce 会使一切安全保证作废。BIP（条款 12.5.3）保护组播的健壮管理帧和信标帧——它不加密，只用 AES-CMAC 或 AES-GMAC、以 IGTK 或 BIGTK 计算并附加一个管理 MIC 元素。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: CCMP and GCMP give you confidentiality + integrity + replay protection for unicast data and individually addressed robust Management frames. BIP gives you integrity + replay protection only — for group-addressed management and beacons, where hiding the content is pointless but forging it must be stopped.",
+      "zh": "记忆模型：CCMP 和 GCMP 为单播数据和单播健壮管理帧提供机密性 + 完整性 + 防重放。BIP 只提供完整性 + 防重放——用于组播管理帧和信标帧，因为隐藏其内容毫无意义，但必须阻止伪造。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"40\" width=\"90\" height=\"40\"/><text x=\"55\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">MAC Header</text><rect x=\"100\" y=\"40\" width=\"90\" height=\"40\"/><text x=\"145\" y=\"60\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">CCMP/GCMP</text><text x=\"145\" y=\"73\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Header (PN)</text><rect x=\"190\" y=\"40\" width=\"120\" height=\"40\"/><text x=\"250\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Data (encrypted)</text><rect x=\"310\" y=\"40\" width=\"70\" height=\"40\"/><text x=\"345\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">MIC</text><rect x=\"380\" y=\"40\" width=\"60\" height=\"40\"/><text x=\"410\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">FCS</text><line x1=\"190\" y1=\"90\" x2=\"380\" y2=\"90\"/><text x=\"285\" y=\"110\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">authenticated + encrypted</text><text x=\"55\" y=\"110\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">AAD (authenticated)</text></svg>",
+      "caption": {
+        "en": "Expanded CCMP/GCMP MPDU: the cipher header carries the 48-bit PN and Key ID, the frame body is encrypted, and a MIC covers both the data and the authenticated header fields (AAD).",
+        "zh": "扩展后的 CCMP/GCMP MPDU：加密头携带 48 位 PN 和 Key ID，帧体被加密，MIC 覆盖数据和被认证的头部字段（AAD）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Keys do not float free — each lives inside a security association (clause 12.6.1), a named bundle of policy plus key plus counters that both parties store identically. The standard defines a family of them: a PMKSA caches the pairwise master key from 802.1X / SAE / FILS or a pre-shared key; a PTKSA holds the per-link pairwise transient key built by a 4-way handshake; a GTKSA holds the group temporal key for broadcast data; an IGTKSA and BIGTKSA hold the integrity keys BIP uses for group management frames and beacons; and a TPKSA holds the keys for a direct TDLS link. Each association has an identity compact enough to index a table or sit in a frame, and its own life cycle.",
+      "zh": "密钥并非凭空存在——每个密钥都驻留在一个安全关联（条款 12.6.1）中，这是一个由策略、密钥和计数器组成的具名集合，双方以完全一致的方式保存。标准定义了一整族：PMKSA 缓存来自 802.1X / SAE / FILS 或预共享密钥的成对主密钥；PTKSA 保存由 4 次握手生成的每链路成对临时密钥；GTKSA 保存用于广播数据的组临时密钥；IGTKSA 和 BIGTKSA 保存 BIP 用于组播管理帧和信标帧的完整性密钥；TPKSA 保存用于 TDLS 直连链路的密钥。每个关联都有一个足够紧凑、可作为表索引或放入帧中的标识，以及各自的生命周期。"
+    },
+    {
+      "type": "prose",
+      "en": "In an infrastructure BSS, establishing an RSNA (clause 12.6.8) follows a fixed sequence: the station authenticates (Open System, SAE, or FILS), associates while advertising its RSNE, and then runs IEEE 802.1X or uses a cached PMKSA to obtain the PMK. The 4-way handshake then derives and confirms the PTK and delivers the group keys, after which the 802.1X Controlled Port opens and data can flow. A pre-cached PMKSA (PMK caching) lets a returning station skip the full 802.1X exchange and jump straight to the 4-way handshake. Multi-band RSNA (clause 12.6.20) extends this across frequency bands: a multi-band-capable pair can reuse one PMKSA but builds a separate PTKSA per band, and either negotiates each band transparently after a Fast Session Transfer or runs a fresh 4-way handshake for the other band.",
+      "zh": "在基础设施 BSS 中，建立 RSNA（条款 12.6.8）遵循固定顺序：站点先认证（开放系统、SAE 或 FILS），在关联时通告其 RSNE，然后运行 IEEE 802.1X 或使用缓存的 PMKSA 获得 PMK。随后 4 次握手推导并确认 PTK 并下发组密钥，之后 802.1X 受控端口打开，数据即可通行。预缓存的 PMKSA（PMK 缓存）使返回的站点能跳过完整的 802.1X 交换、直接进入 4 次握手。多频段 RSNA（条款 12.6.20）将其扩展到多个频段：具备多频段能力的一对站点可复用同一个 PMKSA，但为每个频段建立独立的 PTKSA，并在快速会话转移（FST）后透明地协商各频段，或为另一频段运行全新的 4 次握手。"
+    },
+    {
+      "type": "prose",
+      "en": "Every temporal key is derived, never sent in the clear. The key hierarchy (clause 12.7.1) starts from the PMK. A pseudorandom function expands it into the pairwise transient key (PTK), which is then partitioned into a Key Confirmation Key (PTK-KCK, used to MIC the handshake messages), a Key Encryption Key (PTK-KEK, used to wrap the group keys inside the handshake), the temporal key the cipher actually uses on data frames, and — when WUR frame protection is negotiated — a Key Derivation Key. The PTK is bound to both endpoint MAC addresses and to both nonces, so it is unique per link and per session. The group hierarchy is simpler: a single GTK (and the IGTK/BIGTK for BIP) is generated by the Authenticator and shared to all stations.",
+      "zh": "每个临时密钥都是推导出来的，从不明文传送。密钥层次（条款 12.7.1）从 PMK 开始。一个伪随机函数将其扩展为成对临时密钥（PTK），再划分为密钥确认密钥（PTK-KCK，用于对握手消息计算 MIC）、密钥加密密钥（PTK-KEK，用于在握手中封装组密钥）、密码实际用于数据帧的临时密钥，以及——当协商了 WUR 帧保护时——一个密钥派生密钥。PTK 绑定到两端的 MAC 地址和两个 nonce，因此每链路、每会话唯一。组层次更简单：单个 GTK（以及 BIP 用的 IGTK/BIGTK）由认证者生成并分发给所有站点。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n  PMK[PMK master key] -->|PRF| PTK[PTK]\n  PTK --> KCK[PTK-KCK confirm]\n  PTK --> KEK[PTK-KEK wrap keys]\n  PTK --> TK[Temporal Key unicast]\n  GMK[Group master] --> GTK[GTK broadcast]\n  GTK --> IGTK[IGTK / BIGTK BIP]",
+      "zh": "graph TD\n  PMK[PMK 主密钥] -->|PRF| PTK[PTK]\n  PTK --> KCK[PTK-KCK 确认]\n  PTK --> KEK[PTK-KEK 封装密钥]\n  PTK --> TK[临时密钥 单播]\n  GMK[组主密钥] --> GTK[GTK 广播]\n  GTK --> IGTK[IGTK / BIGTK BIP]"
+    },
+    {
+      "type": "prose",
+      "en": "The handshakes ride on EAPOL-Key PDUs (clause 12.7.3) — the construction and processing rules that decide which fields are set, when the Key MIC is computed (over the body with the MIC field first zeroed, using the PTK-KCK), and how Key Data KDEs carry the wrapped group keys. The 4-way handshake (clause 12.7.6) is four such PDUs: message 1 carries the Authenticator's ANonce; message 2 returns the Supplicant's SNonce plus a MIC, letting both sides now compute the same PTK; message 3 carries the Authenticator's MIC plus the encrypted GTK/IGTK; message 4 acknowledges. ANonce and SNonce are mixed into the PTK, so replay is detected implicitly through MIC failures. The group key handshake (clause 12.7.7) is a two-message rekey: the Authenticator sends a fresh GTK (and IGTK/BIGTK), the Supplicant installs it and acknowledges.",
+      "zh": "握手承载于 EAPOL-Key PDU（条款 12.7.3）之上——这套构造与处理规则决定了哪些字段被置位、何时计算 Key MIC（先将 MIC 字段清零后对 PDU 主体、用 PTK-KCK 计算），以及 Key Data KDE 如何携带被封装的组密钥。4 次握手（条款 12.7.6）由四个这样的 PDU 组成：消息 1 携带认证者的 ANonce；消息 2 回送申请者的 SNonce 及一个 MIC，使双方此时能算出相同的 PTK；消息 3 携带认证者的 MIC 以及加密的 GTK/IGTK；消息 4 进行确认。ANonce 与 SNonce 被混入 PTK，因此重放通过 MIC 失败被隐式检测。组密钥握手（条款 12.7.7）是两条消息的重新密钥流程：认证者发送全新的 GTK（及 IGTK/BIGTK），申请者安装并确认。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant S as Supplicant\n  participant A as Authenticator\n  A->>S: Msg1 ANonce\n  S->>A: Msg2 SNonce + MIC\n  Note over S,A: both derive PTK\n  A->>S: Msg3 MIC + GTK/IGTK\n  S->>A: Msg4 ack, install keys",
+      "zh": "sequenceDiagram\n  participant S as 申请者\n  participant A as 认证者\n  A->>S: 消息1 ANonce\n  S->>A: 消息2 SNonce + MIC\n  Note over S,A: 双方推导 PTK\n  A->>S: 消息3 MIC + GTK/IGTK\n  S->>A: 消息4 确认并安装密钥"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "TDLS PeerKey (clause 12.7.8): two non-AP stations that want a direct link run their own TPK handshake to derive a peer key, but only if their link to the AP is already secured — the standard forbids the TPK protocol when the AP link is unprotected or uses TKIP.",
+      "zh": "TDLS PeerKey（条款 12.7.8）：两个想建立直连链路的非 AP 站点运行各自的 TPK 握手来推导对等密钥，但前提是它们与 AP 的链路已经加密——当 AP 链路未受保护或使用 TKIP 时，标准禁止 TPK 协议。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> INITIALIZE\n  INITIALIZE --> AUTHENTICATION: AuthRequest\n  AUTHENTICATION --> STAKEYSTART: EAPOL-Key PDU\n  STAKEYSTART --> STAKEYSTART: process msg / MIC ok\n  STAKEYSTART --> DISCONNECTED: AuthFailed\n  DISCONNECTED --> INITIALIZE: UCT",
+      "zh": "stateDiagram-v2\n  [*] --> 初始化\n  初始化 --> 认证中: 认证请求\n  认证中 --> 密钥启动: 收到 EAPOL-Key PDU\n  密钥启动 --> 密钥启动: 处理消息 / MIC 通过\n  密钥启动 --> 已断开: 认证失败\n  已断开 --> 初始化: 无条件转移"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each of the 13 clauses lives",
+        "zh": "覆盖地图：13 个条款各自的位置"
+      },
+      "en": "Per-frame protocols — 12.5.2 CCMP (AES-CCM, CCMP-128/256, PN + Key ID header, AAD + MIC); 12.5.3 BIP (integrity-only for group management/beacons via AES-CMAC or AES-GMAC under the IGTK/BIGTK, the Management MIC element); 12.5.4 GCMP (AES-GCM, 128-bit MIC, mandatory for DMG). Security associations & establishment — 12.6.1 the SA family (PMKSA, PTKSA, GTKSA, IGTKSA, BIGTKSA, TPKSA, …) and their life cycles; 12.6.8 RSNA establishment in an infrastructure BSS (authenticate → associate → 802.1X or cached PMKSA → 4-way handshake → port open, including preauthentication and PMK caching); 12.6.20 multi-band RSNA (one PMKSA, per-band PTKSA, transparent vs nontransparent and TDLS-in-band cases). Keys & key distribution — 12.7.1 the key hierarchy (PRF expands PMK → PTK → KCK/KEK/TK/KDK; group GTK and IGTK/BIGTK hierarchies); 12.7.3 EAPOL-Key PDU construction and processing (field settings, Key MIC over the zeroed-MIC body with PTK-KCK, KDEs); 12.7.6 the 4-way handshake (ANonce/SNonce, PTK derivation, GTK delivery, implicit replay detection); 12.7.7 the group key handshake (two-message GTK/IGTK/BIGTK rekey); 12.7.8 the TDLS PeerKey (TPK) security protocol (peer-to-peer key derivation, gated on a secured AP link); 12.7.9 the RSNA Supplicant key-management state machine (INITIALIZE → AUTHENTICATION → STAKEYSTART, no internal timeouts); 12.7.10 the RSNA Authenticator key-management state machine (per-STA 4-way and group-key handshake state plus the global group-key state).",
+      "zh": "逐帧协议——12.5.2 CCMP（AES-CCM，CCMP-128/256，PN + Key ID 头部，AAD + MIC）；12.5.3 BIP（仅完整性，用 IGTK/BIGTK 下的 AES-CMAC 或 AES-GMAC 保护组管理帧/信标帧，即管理 MIC 元素）；12.5.4 GCMP（AES-GCM，128 位 MIC，DMG 强制）。安全关联与建立——12.6.1 SA 族（PMKSA、PTKSA、GTKSA、IGTKSA、BIGTKSA、TPKSA……）及其生命周期；12.6.8 基础设施 BSS 中的 RSNA 建立（认证 → 关联 → 802.1X 或缓存 PMKSA → 4 次握手 → 端口打开，含预认证与 PMK 缓存）；12.6.20 多频段 RSNA（一个 PMKSA、每频段一个 PTKSA，透明与非透明以及频段内 TDLS 情形）。密钥与密钥分发——12.7.1 密钥层次（PRF 将 PMK 扩展为 PTK → KCK/KEK/TK/KDK；组 GTK 与 IGTK/BIGTK 层次）；12.7.3 EAPOL-Key PDU 的构造与处理（字段置位、用 PTK-KCK 在 MIC 清零后的主体上计算 Key MIC、KDE）；12.7.6 4 次握手（ANonce/SNonce、PTK 推导、GTK 下发、隐式重放检测）；12.7.7 组密钥握手（两条消息的 GTK/IGTK/BIGTK 重新密钥）；12.7.8 TDLS PeerKey（TPK）安全协议（点对点密钥推导，以 AP 链路已加密为前提）；12.7.9 RSNA 申请者密钥管理状态机（初始化 → 认证中 → 密钥启动，无内部超时）；12.7.10 RSNA 认证者密钥管理状态机（每站点的 4 次握手与组密钥握手状态，加上全局组密钥状态）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2986,
+          2997,
+          3004,
+          3011,
+          3026,
+          3037,
+          3040,
+          3062,
+          3066,
+          3076,
+          3080,
+          3086,
+          3090
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2986,
+        2987,
+        2988
+      ],
+      "note": "12.5.2 CCMP: AES-CCM, CCMP-128/256, M and L parameters, MPDU format with PN + Key ID, AAD + nonce construction"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2997,
+        2998
+      ],
+      "note": "12.5.3 BIP: integrity + replay protection for group management frames and beacons via AES-CMAC / AES-GMAC under IGTK/BIGTK"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3004,
+        3005
+      ],
+      "note": "12.5.4 GCMP: AES-GCM overview, 128-bit MIC, DMG mandatory, expanded MPDU format"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3011,
+        3012
+      ],
+      "note": "12.6.1 security associations: PMKSA, PTKSA, GTKSA, IGTKSA, BIGTKSA, TPKSA family and definitions"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3026
+      ],
+      "note": "12.6.8 RSNA establishment in an infrastructure BSS: authentication choices, 802.1X, port behavior, IGTK delivery"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3037
+      ],
+      "note": "12.6.20 multi-band RSNA: shared PMKSA, per-band PTKSA, transparent vs nontransparent establishment"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3040,
+        3042
+      ],
+      "note": "12.7.1 key hierarchy: PRF, pairwise hierarchy partitioning PTK into KCK/KEK/TK/KDK, group key hierarchy"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3062
+      ],
+      "note": "12.7.3 EAPOL-Key PDU construction and processing: RSNE/RSNXE insertion and validation across messages 2 and 3"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3066
+      ],
+      "note": "12.7.6 4-way handshake: message flow, ANonce/SNonce, MIC over EAPOL-Key body with PTK-KCK, GTK/IGTK delivery"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3076
+      ],
+      "note": "12.7.6.8 analysis (replay via MIC) and 12.7.7 group key handshake general"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3080
+      ],
+      "note": "12.7.7 group key handshake message processing and 12.7.8 TDLS PeerKey (TPK) protocol general + handshake"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3086
+      ],
+      "note": "12.7.8 TPK message 3 validation and 12.7.9 RSNA Supplicant key management state machine (INITIALIZE/AUTHENTICATION/STAKEYSTART)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3090
+      ],
+      "note": "12.7.10 RSNA Authenticator key management state machine: per-STA 4-way and group key handshake states and procedures"
+    }
+  ],
+  "covers": [
+    "80211-2024:12.5.2",
+    "80211-2024:12.5.3",
+    "80211-2024:12.5.4",
+    "80211-2024:12.6.1",
+    "80211-2024:12.6.8",
+    "80211-2024:12.6.20",
+    "80211-2024:12.7.1",
+    "80211-2024:12.7.3",
+    "80211-2024:12.7.6",
+    "80211-2024:12.7.7",
+    "80211-2024:12.7.8",
+    "80211-2024:12.7.9",
+    "80211-2024:12.7.10"
+  ],
+  "track": "security"
+}

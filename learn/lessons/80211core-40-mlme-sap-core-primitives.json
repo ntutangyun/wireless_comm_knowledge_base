@@ -1,0 +1,149 @@
+{
+  "id": "80211core-40-mlme-sap-core-primitives",
+  "title": {
+    "en": "The Control Knobs: Core MLME-SAP Primitives",
+    "zh": "控制旋钮：核心 MLME-SAP 原语"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Inside every 802.11 station there are two cooperating pieces: the MAC sublayer management entity (MLME), which actually drives the radio and the MAC, and the station management entity (SME), the higher-layer logic that decides what the station should do. They talk across a well-defined boundary called the MLME-SAP (service access point). Clause 6.5 of IEEE 802.11-2024 defines the set of service primitives that cross this boundary — think of them as the labelled control knobs the SME turns to make the MAC scan, join, authenticate, associate, sleep, reset, start, and stop.",
+      "zh": "每个 802.11 站点内部都有两个协作的部分：MAC 子层管理实体（MLME）真正驱动射频和 MAC；站点管理实体（SME）则是决定站点该做什么的高层逻辑。它们通过一个明确定义的边界——MLME-SAP（服务接入点）——进行通信。IEEE 802.11-2024 的第 6.5 条定义了穿越这条边界的一组服务原语，可以把它们看作 SME 用来让 MAC 执行扫描、加入、认证、关联、休眠、复位、启动和停止的一组贴好标签的控制旋钮。"
+    },
+    {
+      "type": "prose",
+      "en": "6.5.1 (Introduction) explains the bookkeeping rule: a primitive is spelled out in detail in Clause 6.5 only when it does NOT map cleanly onto a frame exchange described elsewhere, when its parameters differ significantly from the matching frame fields, or when it would otherwise be unclear. Each service comes in up to four flavours, following a consistent pattern: a .request from the SME asks the MLME to do something; a .confirm reports the outcome back; an .indication tells the SME that something happened on the air; and a .response lets the SME answer an indication. Not every service uses all four — Table 6-1 (clause 6.4) classifies each into one of these interaction Types.",
+      "zh": "6.5.1（引言）说明了一条记账规则：只有当某原语无法干净地对应到别处描述的帧交换、其参数与对应帧字段差异显著、或在别处描述中不够清晰时，才会在第 6.5 条中详细展开。每项服务最多有四种形态，遵循一致的模式：来自 SME 的 .request 请求 MLME 去做某事；.confirm 把结果回报上来；.indication 告诉 SME 空中发生了某事；.response 则让 SME 回应一个 indication。并非每项服务都用满四种——表 6-1（第 6.4 条）把每项服务归入其中一种交互类型。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant SME\n  participant MLME\n  SME->>MLME: MLME-XXX.request\n  MLME-->>SME: MLME-XXX.confirm\n  Note over MLME: peer event on the air\n  MLME->>SME: MLME-XXX.indication\n  SME-->>MLME: MLME-XXX.response",
+      "zh": "sequenceDiagram\n  participant SME\n  participant MLME\n  SME->>MLME: MLME-XXX.request\n  MLME-->>SME: MLME-XXX.confirm\n  Note over MLME: 空中的对端事件\n  MLME->>SME: MLME-XXX.indication\n  SME-->>MLME: MLME-XXX.response"
+    },
+    {
+      "type": "prose",
+      "en": "Now the lifecycle of a station, knob by knob. Synchronization (6.5.4) comes first in practice: MLME-JOIN.request asks the MAC to synchronize with a chosen BSS (timing, beacon interval, channel) — it does not yet exchange any frames with the AP. To pick which BSS to join, the SME first runs Scan (6.5.3): MLME-SCAN.request kicks off an active or passive sweep of channels, MLME-SCAN.confirm returns the list of discovered BSSs, and MLME-SCAN-STOP.request aborts an in-progress scan early.",
+      "zh": "下面按旋钮逐一走过一个站点的生命周期。实践中同步（6.5.4）最先出现：MLME-JOIN.request 请求 MAC 与选定的 BSS 同步（时序、信标间隔、信道）——此时还不会与 AP 交换任何帧。为了选出要加入哪个 BSS，SME 先运行扫描（6.5.3）：MLME-SCAN.request 启动对各信道的主动或被动扫描，MLME-SCAN.confirm 返回发现的 BSS 列表，MLME-SCAN-STOP.request 则可提前中止正在进行的扫描。"
+    },
+    {
+      "type": "prose",
+      "en": "With a BSS chosen and synchronized, the station proves its identity. Authenticate (6.5.5) is the richest of the core services because it must support two-sided handshakes: MLME-AUTHENTICATE.request and .confirm drive the requesting side, while .indication and .response let the SME on the receiving side learn of an incoming attempt and answer it. Deauthenticate (6.5.6) tears that relationship down — MLME-DEAUTHENTICATE.request notifies the peer that authentication (and therefore any association) is over.",
+      "zh": "选定并同步好 BSS 后，站点要证明自己的身份。认证（6.5.5）是核心服务中最丰富的一项，因为它必须支持双方握手：MLME-AUTHENTICATE.request 和 .confirm 驱动发起方，而 .indication 和 .response 让接收方的 SME 得知有认证请求到来并予以回应。去认证（6.5.6）则拆除这一关系——MLME-DEAUTHENTICATE.request 通知对端认证（以及随之而来的任何关联）已经结束。"
+    },
+    {
+      "type": "prose",
+      "en": "Once authenticated, a non-AP STA joins the BSS by associating. Associate (6.5.7) carries the full request/confirm/indication/response set: the client side sends MLME-ASSOCIATE.request and gets a .confirm, while the AP side receives an .indication and replies with a .response. Reassociate (6.5.8) is the same shape but used when moving from one AP to another within the same ESS (a roam), preserving session context. Disassociate (6.5.9) ends the membership: MLME-DISASSOCIATE.request notifies the peer that the specific association relationship is invalidated, and the matching .confirm/.indication report it on each side.",
+      "zh": "认证之后，非 AP 站点通过关联加入 BSS。关联（6.5.7）带有完整的 request/confirm/indication/response 一组：客户端发出 MLME-ASSOCIATE.request 并收到 .confirm，而 AP 端收到 .indication 并以 .response 回应。重关联（6.5.8）形态相同，但用于在同一 ESS 内从一个 AP 迁移到另一个 AP（漫游），保留会话上下文。解除关联（6.5.9）结束成员关系：MLME-DISASSOCIATE.request 通知对端某个特定关联关系已失效，对应的 .confirm/.indication 在两端各自上报此事。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy memory aid: services that involve a peer accepting or rejecting you (Authenticate, Associate, Reassociate) use the full four-primitive set. Services where the SME just commands the local MAC with no negotiated answer (Reset, Stop, Scan-Stop) are request-only. Power management, Scan, Join, and Start sit in between — request plus confirm.",
+      "zh": "一个便于记忆的小窍门：涉及对端接受或拒绝你的服务（认证、关联、重关联）使用完整的四原语集合。SME 只是命令本地 MAC、没有协商回应的服务（复位、停止、停止扫描）则只有 request。电源管理、扫描、加入和启动介于两者之间——request 加 confirm。"
+    },
+    {
+      "type": "prose",
+      "en": "Two services manage power and the AP's own existence. Power management (6.5.2) lets the SME switch the STA between active and power-save modes: MLME-POWERMGT.request sets the desired mode and MLME-POWERMGT.confirm reports whether the MAC adopted it. On the infrastructure side, Start (6.5.11) is how an AP (or the first STA of an IBSS) brings a BSS into existence — MLME-START.request carries the SSID, beacon interval, capabilities and operating parameters, and MLME-START.confirm reports success. Stop (6.5.12) does the reverse: MLME-STOP.request ceases beaconing and shuts the BSS down.",
+      "zh": "有两项服务管理电源以及 AP 自身的存在。电源管理（6.5.2）让 SME 在活动和省电模式之间切换站点：MLME-POWERMGT.request 设置期望的模式，MLME-POWERMGT.confirm 报告 MAC 是否采纳了它。在基础设施一侧，启动（6.5.11）是 AP（或 IBSS 的第一个站点）让某个 BSS 诞生的方式——MLME-START.request 携带 SSID、信标间隔、能力和工作参数，MLME-START.confirm 报告是否成功。停止（6.5.12）则相反：MLME-STOP.request 停止发送信标并关闭 BSS。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, Reset (6.5.10) returns the MAC to initial conditions. MLME-RESET.request takes a STAAddress (optionally a locally administered MAC) and a SetDefaultMIB Boolean: if true, every MIB attribute reverts to its implementation-dependent default; if false, the MAC is reset but the MIB values are preserved. The standard requires a reset before the first MLME-START.request and before the first MLME-JOIN.request — it is the clean-slate knob every station turns at power-on.",
+      "zh": "最后，复位（6.5.10）让 MAC 回到初始状态。MLME-RESET.request 接受一个 STAAddress（可选用本地管理的 MAC 地址）和一个 SetDefaultMIB 布尔值：若为 true，每个 MIB 属性都恢复到与实现相关的默认值；若为 false，则 MAC 被复位但保留 MIB 的当前取值。标准要求在首次 MLME-START.request 之前以及首次 MLME-JOIN.request 之前先进行复位——它是每个站点开机时都要拧动的“清零”旋钮。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> Reset: RESET.request\n  Reset --> Synced: JOIN.request\n  Synced --> Authed: AUTHENTICATE\n  Authed --> Assoc: ASSOCIATE\n  Assoc --> Authed: DISASSOCIATE\n  Authed --> Reset: DEAUTHENTICATE\n  Reset --> APup: START.request\n  APup --> Reset: STOP.request",
+      "zh": "stateDiagram-v2\n  [*] --> 复位: RESET.request\n  复位 --> 已同步: JOIN.request\n  已同步 --> 已认证: AUTHENTICATE\n  已认证 --> 已关联: ASSOCIATE\n  已关联 --> 已认证: DISASSOCIATE\n  已认证 --> 复位: DEAUTHENTICATE\n  复位 --> AP运行: START.request\n  AP运行 --> 复位: STOP.request"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the twelve core MLME-SAP clauses",
+        "zh": "覆盖地图：十二个核心 MLME-SAP 条款"
+      },
+      "en": "All twelve units taught here map one-to-one onto subclauses of 6.5 'MLME SAP primitives'. 6.5.1 Introduction (p.455) states when a primitive is detailed here and references Table 6-1. 6.5.2 Power management (p.462) — MLME-POWERMGT.request/.confirm. 6.5.3 Scan (p.464) — MLME-SCAN.request/.confirm plus MLME-SCAN-STOP.request (6.5.3.4, p.487). 6.5.4 Synchronization (p.487) — MLME-JOIN.request/.confirm. 6.5.5 Authenticate (p.491) — the full .request/.confirm/.indication/.response set. 6.5.6 Deauthenticate (p.498) — MLME-DEAUTHENTICATE.request. 6.5.7 Associate (p.499) and 6.5.8 Reassociate (p.525) — full four-primitive sets. 6.5.9 Disassociate (p.552) — request/confirm/indication. 6.5.10 Reset (p.554) — MLME-RESET.request with STAAddress and SetDefaultMIB. 6.5.11 Start (p.555) and 6.5.12 Stop (p.563) — bringing a BSS up and down.",
+      "zh": "本课讲授的十二个单元与第 6.5 条“MLME SAP 原语”的子条款一一对应。6.5.1 引言（第 455 页）说明何时在此详述原语并引用表 6-1。6.5.2 电源管理（第 462 页）——MLME-POWERMGT.request/.confirm。6.5.3 扫描（第 464 页）——MLME-SCAN.request/.confirm 以及 MLME-SCAN-STOP.request（6.5.3.4，第 487 页）。6.5.4 同步（第 487 页）——MLME-JOIN.request/.confirm。6.5.5 认证（第 491 页）——完整的 .request/.confirm/.indication/.response 集合。6.5.6 去认证（第 498 页）——MLME-DEAUTHENTICATE.request。6.5.7 关联（第 499 页）和 6.5.8 重关联（第 525 页）——完整的四原语集合。6.5.9 解除关联（第 552 页）——request/confirm/indication。6.5.10 复位（第 554 页）——带 STAAddress 和 SetDefaultMIB 的 MLME-RESET.request。6.5.11 启动（第 555 页）和 6.5.12 停止（第 563 页）——让 BSS 上线和下线。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          455,
+          462,
+          464,
+          487,
+          491,
+          498,
+          499,
+          525,
+          552,
+          554,
+          555,
+          563
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        455,
+        456
+      ],
+      "note": "6.5.1 Introduction and Table 6-1 (clause 6.4) listing all MLME-SAP interfaces with their Types and references"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        462,
+        463,
+        464
+      ],
+      "note": "6.5.2 Power management (MLME-POWERMGT.request/.confirm) and start of 6.5.3 Scan"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        487
+      ],
+      "note": "6.5.3.4 MLME-SCAN-STOP.request and 6.5.4 Synchronization / MLME-JOIN.request"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        491,
+        498,
+        499,
+        525,
+        552
+      ],
+      "note": "6.5.5 Authenticate, 6.5.6 Deauthenticate, 6.5.7 Associate, 6.5.8 Reassociate, 6.5.9 Disassociate"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        554,
+        555,
+        563
+      ],
+      "note": "6.5.10 Reset (MLME-RESET.request with STAAddress/SetDefaultMIB), 6.5.11 Start, 6.5.12 Stop"
+    }
+  ],
+  "covers": [
+    "80211-2024:6.5.1",
+    "80211-2024:6.5.2",
+    "80211-2024:6.5.3",
+    "80211-2024:6.5.4",
+    "80211-2024:6.5.5",
+    "80211-2024:6.5.6",
+    "80211-2024:6.5.7",
+    "80211-2024:6.5.8",
+    "80211-2024:6.5.9",
+    "80211-2024:6.5.10",
+    "80211-2024:6.5.11",
+    "80211-2024:6.5.12"
+  ],
+  "track": "80211core"
+}

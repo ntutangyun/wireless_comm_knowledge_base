@@ -1,0 +1,171 @@
+{
+  "id": "frames-49-frame-structure-fields-types",
+  "title": {
+    "en": "Anatomy of Every Frame: Structure, Fields and the Three Frame Types",
+    "zh": "每一种帧的解剖：结构、字段与三大帧类型"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every bit a Wi-Fi radio puts on the air is wrapped in a MAC frame. Clause 9 of IEEE 802.11-2024 is the single chapter that defines what those frames look like. The rule it opens with is strict: a STA shall transmit only the frame formats described in this clause, and on reception it shall validate every frame with the frame check sequence (FCS) and interpret certain MAC-header fields of all frames. A STA only needs to build and decode the subset of formats matching the functions it supports — but it must understand the headers of everything it hears. This lesson walks the frame from the outside in.",
+      "zh": "Wi-Fi 无线电送上空口的每一个比特，都被包裹在一个 MAC 帧里。IEEE 802.11-2024 标准的第 9 章，正是定义这些帧长什么样的唯一一章。它开篇的规则很严格：STA 只能发送本章所描述的帧格式；在接收时，必须用帧校验序列（FCS）校验每一个帧，并解读所有帧 MAC 头中的某些字段。一个 STA 只需构造和解码与它所支持功能相对应的那部分格式，但它必须能读懂所听到的一切帧的帧头。本课将由外而内地剖析一个帧。"
+    },
+    {
+      "type": "prose",
+      "en": "At the highest level (9.2.1), every MAC frame has three basic components. First, a MAC header — frame control, optional duration (absent in PS-Poll frames), address fields, optional sequence control, optional QoS Control (only in QoS Data frames), and optional HT Control (only in +HTC frames). Second, a variable-length frame body carrying information specific to the frame's type and subtype. Third, an FCS holding a 32-bit CRC. The header tells the network what the frame is and where it is going; the body is the payload; the FCS lets the receiver detect corruption.",
+      "zh": "在最高层次上（9.2.1），每一个 MAC 帧都有三个基本组成部分。第一，MAC 头——包含帧控制、可选的时长（PS-Poll 帧中没有）、地址字段、可选的序列控制、可选的 QoS 控制（仅出现在 QoS 数据帧中）以及可选的 HT 控制（仅出现在 +HTC 帧中）。第二，可变长度的帧体，携带与该帧类型和子类型相关的特定信息。第三，FCS，存放一个 32 位的 CRC。帧头告诉网络这个帧是什么、要发往哪里；帧体是有效载荷；FCS 让接收方能够检测出数据损坏。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 720 120\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\" font-size=\"12\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"30\" width=\"70\" height=\"40\"/><rect x=\"80\" y=\"30\" width=\"70\" height=\"40\"/><rect x=\"150\" y=\"30\" width=\"60\" height=\"40\"/><rect x=\"210\" y=\"30\" width=\"60\" height=\"40\"/><rect x=\"270\" y=\"30\" width=\"60\" height=\"40\"/><rect x=\"330\" y=\"30\" width=\"70\" height=\"40\"/><rect x=\"400\" y=\"30\" width=\"60\" height=\"40\"/><rect x=\"460\" y=\"30\" width=\"70\" height=\"40\"/><rect x=\"530\" y=\"30\" width=\"70\" height=\"40\"/><rect x=\"600\" y=\"30\" width=\"60\" height=\"40\"/><rect x=\"660\" y=\"30\" width=\"50\" height=\"40\"/></g><g fill=\"currentColor\" text-anchor=\"middle\"><text x=\"45\" y=\"54\">Frame Ctrl</text><text x=\"115\" y=\"54\">Duration</text><text x=\"180\" y=\"54\">Addr 1</text><text x=\"240\" y=\"54\">Addr 2</text><text x=\"300\" y=\"54\">Addr 3</text><text x=\"365\" y=\"54\">Seq Ctrl</text><text x=\"430\" y=\"54\">Addr 4</text><text x=\"495\" y=\"54\">QoS Ctrl</text><text x=\"565\" y=\"54\">HT Ctrl</text><text x=\"630\" y=\"54\">Body</text><text x=\"685\" y=\"54\">FCS</text></g><g fill=\"currentColor\" text-anchor=\"middle\" font-size=\"10\"><text x=\"45\" y=\"86\">2</text><text x=\"115\" y=\"86\">2</text><text x=\"180\" y=\"86\">6</text><text x=\"240\" y=\"86\">0/6</text><text x=\"300\" y=\"86\">0/6</text><text x=\"365\" y=\"86\">0/2</text><text x=\"430\" y=\"86\">0/6</text><text x=\"495\" y=\"86\">0/2</text><text x=\"565\" y=\"86\">0/4</text><text x=\"630\" y=\"86\">var</text><text x=\"685\" y=\"86\">4</text></g><text x=\"10\" y=\"20\" fill=\"currentColor\" font-size=\"11\">MAC header (left of Body) | octets shown below each field</text></svg>",
+      "caption": {
+        "en": "The general MAC frame format (Figure 9-2). Many fields are optional (0 octets) depending on frame type — only Frame Control, Duration/ID, Address 1, and the FCS are nearly always present.",
+        "zh": "通用 MAC 帧格式（图 9-2）。许多字段是可选的（长度为 0 字节），取决于帧类型——只有帧控制、时长/ID、地址 1 和 FCS 几乎总是存在。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Before reading any field you need the layout conventions (9.2.2). Components appear left-to-right then top-to-bottom in the exact order they are passed to the PHY. Numbers are unsigned integers unless stated otherwise. Bits are numbered 0..k with bit 0 the least significant; a value printed in parentheses, e.g. To DS (0), means the field is set to that value on transmission. CRC fields are the exception — they go out most-significant term first. MAC addresses transmit the Individual/Group bit (bit 0) first and bit 47 last. Crucially: reserved fields are set to 0 on transmission and ignored on reception, and receiving a reserved value generally leaves behavior undefined. These conventions are what make a one-byte diagram unambiguous worldwide.",
+      "zh": "在解读任何字段之前，你需要先掌握排布约定（9.2.2）。各组成部分按照传递给 PHY 的确切顺序，从左到右、再从上到下排列。除非另有说明，数字都是无符号整数。比特从 0 到 k 编号，比特 0 为最低有效位；括号中印出的值（如 To DS (0)）表示该字段在发送时置为该值。CRC 字段是例外——它从最高次项开始发送。MAC 地址先发送个体/组比特（比特 0），最后发送比特 47。尤其关键的是：保留字段在发送时置 0、在接收时忽略，而收到一个保留值通常会使行为未定义。正是这些约定，让一张单字节的图在全球范围内都不产生歧义。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the fields themselves (9.2.4). The Frame Control field's first three subfields are always Protocol Version, Type, and Subtype; the rest depend on type/subtype. Protocol Version is 0 for the PV0 frames described here and 1 for PV1 frames. Type and Subtype together name the frame's function: there are three frame types — Control, Data, and Management — each with several subtypes, plus a Control Frame Extension mechanism that reuses bits B8–B11 to enlarge the control subtype space. In Data frames the MSB of Subtype (B7) is the QoS bit: when set, the frame carries a QoS Control field. The other Frame Control flags (To DS / From DS, More Fragments, Retry, Power Management, More Data, Protected Frame, +HTC) each toggle one behavior of the frame.",
+      "zh": "现在来看字段本身（9.2.4）。帧控制字段的前三个子字段始终是协议版本、类型和子类型；其余子字段取决于类型/子类型。对本课所述的 PV0 帧，协议版本为 0，PV1 帧则为 1。类型与子类型共同标明帧的功能：共有三大帧类型——控制、数据和管理——每一类又有若干子类型，外加一种控制帧扩展机制，它复用 B8–B11 比特来扩充控制子类型空间。在数据帧中，子类型的最高有效位（B7）是 QoS 比特：置位时，该帧携带一个 QoS 控制字段。其余的帧控制标志位（To DS / From DS、更多分片、重试、电源管理、更多数据、受保护帧、+HTC）各自切换该帧的一种行为。"
+    },
+    {
+      "type": "prose",
+      "en": "The second header field, Duration/ID (9.2.4.2), is overloaded — its meaning changes with frame type, subtype, and the QoS capability of the sender. In PS-Poll frames (and broadcast S1G transmissions) it carries the sender's 14-bit association identifier (AID) with the two most significant bits both set to 1 — that is the 'ID' meaning. In Data and Management frames sent by QoS STAs it is a duration value per 9.2.5; in Extension frames a duration per 9.3.4; and in all other frames a duration per the relevant 9.3 subclause. The duration value is what stations use to set their network allocation vector (NAV) and stay quiet during another transmission.",
+      "zh": "第二个帧头字段——时长/ID（9.2.4.2）——是一个多义字段：它的含义随帧类型、子类型以及发送方的 QoS 能力而变化。在 PS-Poll 帧（以及 S1G 的广播传输）中，它携带发送方的 14 位关联标识符（AID），并将最高两位均置为 1——这就是其“ID”含义。在 QoS STA 发送的数据帧和管理帧中，它是按 9.2.5 定义的时长值；在扩展帧中是按 9.3.4 定义的时长值；在其他所有帧中则是按相应 9.3 子条款定义的时长值。各站点正是用这个时长值来设置网络分配矢量（NAV），从而在他人传输期间保持安静。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model for Duration/ID: it is a duration in microseconds almost everywhere, but in PS-Poll it becomes an identifier (the AID). The two leading 1 bits flag the AID interpretation, so a receiver can tell the two uses apart without guessing.",
+      "zh": "理解时长/ID 的思维模型：它在绝大多数场合是以微秒为单位的时长，但在 PS-Poll 帧中却变成了一个标识符（即 AID）。开头那两个置 1 的比特标记出 AID 这种解读方式，因此接收方无需猜测即可区分这两种用途。"
+    },
+    {
+      "type": "prose",
+      "en": "How does a QoS STA fill in that duration (9.2.5)? Values are computed in microseconds; a non-integer result is rounded up, and a negative result becomes 0. The standard then gives a recipe per situation: the general rule (9.2.5.1), settings for single and multiple protection under EDCA (9.2.5.2), for QoS CF-Poll frames (9.2.5.3), for frames sent by a TXOP holder under HCCA (9.2.5.4), within a dual-CTS sequence (9.2.5.5), for control response frames (9.2.5.6), and for other response frames (9.2.5.7). Each rule exists so that everyone hearing the frame sets a NAV that protects exactly the airtime the transmitter needs — no more, no less.",
+      "zh": "那么 QoS STA 如何填写这个时长呢（9.2.5）？数值以微秒计算；非整数结果向上取整，负数结果置为 0。随后标准针对不同情形给出具体算法：通用规则（9.2.5.1）、EDCA 下单次与多次保护的设置（9.2.5.2）、QoS CF-Poll 帧的设置（9.2.5.3）、HCCA 下由 TXOP 持有者发送的帧的设置（9.2.5.4）、双 CTS 序列内的设置（9.2.5.5）、控制响应帧的设置（9.2.5.6）以及其他响应帧的设置（9.2.5.7）。每一条规则的存在，都是为了让听到该帧的所有人所设置的 NAV，恰好保护发送方所需的那段空口时间——不多，也不少。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  FC[\"Frame Control: Type subfield\"] --> M[\"Type 0: Management\"]\n  FC --> C[\"Type 1: Control\"]\n  FC --> D[\"Type 2: Data\"]\n  FC --> E[\"Type 3: Extension\"]\n  M --> M2[\"Beacon, Probe, Assoc, Auth, Action...\"]\n  C --> C2[\"RTS, CTS, Ack, PS-Poll, BlockAck...\"]\n  D --> D2[\"Data, QoS Data, Null, QoS Null...\"]\n  E --> E2[\"DMG Beacon and other extensions\"]",
+      "zh": "flowchart TD\n  FC[\"帧控制: 类型子字段\"] --> M[\"类型 0: 管理\"]\n  FC --> C[\"类型 1: 控制\"]\n  FC --> D[\"类型 2: 数据\"]\n  FC --> E[\"类型 3: 扩展\"]\n  M --> M2[\"信标/探测/关联/认证/动作...\"]\n  C --> C2[\"RTS/CTS/Ack/PS-Poll/BlockAck...\"]\n  D --> D2[\"数据/QoS数据/空帧/QoS空帧...\"]\n  E --> E2[\"DMG 信标及其他扩展\"]"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 9.3 then defines each frame type concretely. Control frames (9.3.1) coordinate access and acknowledge data: Frame Control, Duration and Address 1 (RA) are present in every control subtype, with Address 2 (TA) present in some. This family includes RTS, CTS, Ack, PS-Poll, CF-End, BlockAckReq and BlockAck. Data frames (9.3.2) carry the actual payload: Frame Control, Duration, Address 1, Address 2, Address 3 and Sequence Control are always present, while Address 4, QoS Control and HT Control appear only when To DS/From DS, the QoS bit, or +HTC respectively call for them. The address fields are interpreted from the To DS / From DS combination, and Address 1 always holds the receiver while Address 2 always holds the transmitter. Management frames (9.3.3, formally the PV0 Management frames) carry the network's control plane — Beacon, Probe Request/Response, Association, Authentication and the many Action frames; Frame Control, Duration, Address 1/2/3 and Sequence Control are present in every management subtype, HT Control appears only in +HTC frames, and a STA matches Address 1 to decide whether to receive. Finally, Extension frames (9.3.4) are a flexible family whose MAC header always begins with Frame Control followed by Duration, but the number and types of fields after Duration vary by frame — the DMG Beacon (9.3.4.2) is the canonical example, used for synchronization and as a beamforming training frame.",
+      "zh": "随后，9.3 条款逐一具体定义每种帧类型。控制帧（9.3.1）协调信道接入并确认数据：帧控制、时长和地址 1（RA）出现在每一个控制子类型中，地址 2（TA）则出现在部分子类型中。这一族包括 RTS、CTS、Ack、PS-Poll、CF-End、BlockAckReq 和 BlockAck。数据帧（9.3.2）承载真正的有效载荷：帧控制、时长、地址 1、地址 2、地址 3 和序列控制始终存在，而地址 4、QoS 控制和 HT 控制分别只在 To DS/From DS、QoS 比特或 +HTC 需要时才出现。地址字段依据 To DS / From DS 的组合来解读，地址 1 始终存放接收方，地址 2 始终存放发送方。管理帧（9.3.3，正式名称为 PV0 管理帧）承载网络的控制平面——信标、探测请求/响应、关联、认证及众多动作帧；其帧控制、时长、地址 1/2/3 和序列控制在所有管理子类型中均存在，HT 控制仅出现在 +HTC 帧中，STA 通过匹配地址 1 决定是否接收。最后，扩展帧（9.3.4）是一个灵活的帧族，其 MAC 头始终以帧控制开头、紧跟时长，但时长之后字段的数量和类型则因帧而异——DMG 信标（9.3.4.2）是其典型代表，用于同步并兼作波束成形训练帧。"
+    },
+    {
+      "type": "widget",
+      "widget": "frame-anatomy",
+      "params": {}
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each clause lives",
+        "zh": "覆盖地图：每个条款的所在位置"
+      },
+      "en": "This lesson teaches nine units of Clause 9. 9.1 General requirements: a STA transmits only Clause 9 formats and validates every received frame with the FCS. 9.2.1 Basic components: the three pieces — MAC header, frame body, FCS. 9.2.2 Conventions: transmission order (left-to-right, top-to-bottom), bit numbering, the parentheses-value notation, the CRC exception, and reserved-field handling. 9.2.4 Frame fields: the Frame Control subfields (Protocol Version, Type/Subtype, the flag bits) in 9.2.4.1 and the Duration/ID field in 9.2.4.2 (duration vs AID). 9.2.5 Duration/ID field (QoS STA): how a QoS STA computes the duration value (9.2.5.1 general plus the EDCA, QoS CF-Poll, HCCA TXOP, dual-CTS, and response-frame settings 9.2.5.2–9.2.5.7). 9.3.1 Control frames: format and the RA/TA presence rule. 9.3.2 Data frames: the always-present fields and the conditional Address 4 / QoS Control / HT Control. 9.3.3 (PV0) Management frames: the control-plane frame family and Address 1 matching. 9.3.4 Extension frames: a variable header starting with Frame Control + Duration, with the DMG Beacon as the example.",
+      "zh": "本课讲授第 9 章的九个单元。9.1 通用要求：STA 只发送第 9 章的格式，并用 FCS 校验每一个收到的帧。9.2.1 基本组成：三个部分——MAC 头、帧体、FCS。9.2.2 约定：传输顺序（从左到右、从上到下）、比特编号、括号取值记法、CRC 例外，以及保留字段的处理。9.2.4 帧字段：9.2.4.1 中的帧控制子字段（协议版本、类型/子类型、各标志位）和 9.2.4.2 中的时长/ID 字段（时长与 AID）。9.2.5 时长/ID 字段（QoS STA）：QoS STA 如何计算时长值（9.2.5.1 通用规则，加上 EDCA、QoS CF-Poll、HCCA TXOP、双 CTS 和响应帧设置 9.2.5.2–9.2.5.7）。9.3.1 控制帧：格式及 RA/TA 的存在规则。9.3.2 数据帧：始终存在的字段以及条件性的地址 4 / QoS 控制 / HT 控制。9.3.3（PV0）管理帧：控制平面帧族与地址 1 匹配。9.3.4 扩展帧：以帧控制 + 时长开头的可变帧头，以 DMG 信标为例。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          657,
+          660,
+          669,
+          709,
+          715,
+          770,
+          777,
+          823
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        657
+      ],
+      "note": "9.1 General requirements; 9.2.1 Basic components (MAC header / frame body / FCS); 9.2.2 Conventions"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        658
+      ],
+      "note": "9.2.2 Conventions continued: reception, reserved fields set to 0 and ignored, parentheses notation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        660
+      ],
+      "note": "9.2.3/9.2.4 MAC frame format (Figure 9-2) and Frame Control field; 9.2.4.1.2 Protocol Version; 9.2.4.1.3 Type/Subtype, three frame types"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        669,
+        670
+      ],
+      "note": "9.2.4.2 Duration/ID field — AID in PS-Poll, duration values per 9.2.5 / 9.3.4 / 9.3"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        709
+      ],
+      "note": "9.2.5 Duration/ID field (QoS STA): 9.2.5.1 general, microsecond rounding rules; subclauses 9.2.5.2–9.2.5.7"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        715,
+        716
+      ],
+      "note": "9.3.1 Control frames: format, Frame Control / Duration / Address 1 (RA) always present, Address 2 (TA) in some"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        770
+      ],
+      "note": "9.3.2 Data frames: always-present fields, conditional Address 4 / QoS Control / HT Control, RA/TA semantics"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        777
+      ],
+      "note": "9.3.3 (PV0) Management frames: format, always-present header fields, Address 1 matching"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        823
+      ],
+      "note": "9.3.4 Extension frames: variable header starting Frame Control + Duration; 9.3.4.2 DMG Beacon"
+    }
+  ],
+  "covers": [
+    "80211-2024:9.1",
+    "80211-2024:9.2.1",
+    "80211-2024:9.2.2",
+    "80211-2024:9.2.4",
+    "80211-2024:9.2.5",
+    "80211-2024:9.3.1",
+    "80211-2024:9.3.2",
+    "80211-2024:9.3.3",
+    "80211-2024:9.3.4"
+  ],
+  "track": "frames"
+}

@@ -1,0 +1,156 @@
+{
+  "id": "80211core-42-mac-state-generic-convergence-function",
+  "title": {
+    "en": "Talking to the Upper Layers: the MAC-State Generic Convergence Function",
+    "zh": "与上层对话：MAC 状态通用汇聚功能"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Higher-layer software — a mobility manager, an IP stack, a handover engine in an external network — does not want to track every 802.11 association, key handshake, or beacon loss. It just wants to know one thing: is my link to the network up, and is it about to go away? The MAC State Generic Convergence Function (MSGCF) is the answer. It presents an abstraction of the link between a non-AP STA and an entire ESS (an \"ESS link\"), giving upper layers a clean place to read connectivity state, configure thresholds, send commands, and receive events — without caring whether the real information lives in the MLME, the PLME, or the SME.",
+      "zh": "上层软件——移动性管理器、IP 协议栈、外部网络中的切换引擎——并不想去跟踪每一次 802.11 关联、密钥握手或信标丢失。它只想知道一件事：我到网络的链路通不通，会不会很快断掉？MAC 状态通用汇聚功能（MSGCF）就是答案。它把非 AP STA 与整个 ESS 之间的链路抽象成一条“ESS 链路”，为上层提供一个干净的入口，用来读取连接状态、配置门限、下发命令并接收事件——而无需关心真实信息究竟存放在 MLME、PLME 还是 SME 中。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Key idea: the MSGCF is defined in terms of ESS connectivity, not association. A non-AP STA that roams between two APs in the same ESS (an intra-ESS transition) stays connected from the convergence function's point of view — its state does not change and the LLC sublayer sees no disruption. (6.6.1, 6.6.2)",
+      "zh": "核心思想：MSGCF 是以 ESS 连接性来定义的，而不是以关联来定义的。当非 AP STA 在同一个 ESS 内的两个 AP 之间漫游（即 ESS 内切换）时，从汇聚功能的视角看它始终保持连接——状态不变，LLC 子层也感受不到任何中断。（6.6.1、6.6.2）"
+    },
+    {
+      "type": "prose",
+      "en": "The convergence function maintains a small state machine with exactly four states (6.6.3). ESS_CONNECTED means layer-2 setup is complete and the STA can send Class 3 frames to peer LLC entities through any AP in the ESS. ESS_DISCONNECTED means no Class 3 frames are possible and higher-layer protocols are unavailable (though the STA may still use GAS for network discovery). ESS_DISENGAGING is the predictive-warning state: the SME expects all ESS links to be lost within a defined time interval, but Class 3 frames still flow for now. STANDBY means the STA is powered down and cannot communicate at all.",
+      "zh": "汇聚功能维护一个小型状态机，恰好包含四个状态（6.6.3）。ESS_CONNECTED 表示二层建立已完成，STA 可以通过 ESS 中任意 AP 向对等 LLC 实体发送 Class 3 帧。ESS_DISCONNECTED 表示无法发送任何 Class 3 帧、上层协议不可用（但 STA 仍可使用 GAS 进行网络发现）。ESS_DISENGAGING 是预测性预警状态：SME 预计在某个确定的时间间隔内所有 ESS 链路都将丢失，但目前 Class 3 帧仍可正常收发。STANDBY 表示 STA 已断电，完全无法通信。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> STANDBY\n  STANDBY --> ESS_DISCONNECTED: power on / init\n  ESS_DISCONNECTED --> STANDBY: power off\n  ESS_DISCONNECTED --> ESS_CONNECTED: attach + auth + assoc (LINK-UP)\n  ESS_CONNECTED --> ESS_DISCONNECTED: shutdown / signal loss / key expiry (LINK-DOWN)\n  ESS_CONNECTED --> ESS_DISENGAGING: predict failure (LINK-GOING-DOWN)\n  ESS_DISENGAGING --> ESS_DISCONNECTED: failure occurred (LINK-DOWN)\n  ESS_DISENGAGING --> ESS_CONNECTED: cancel prediction (EVENT-ROLLBACK)",
+      "zh": "stateDiagram-v2\n  [*] --> STANDBY\n  STANDBY --> ESS_DISCONNECTED: 上电 / 初始化\n  ESS_DISCONNECTED --> STANDBY: 断电\n  ESS_DISCONNECTED --> ESS_CONNECTED: 接入+认证+关联 (LINK-UP)\n  ESS_CONNECTED --> ESS_DISCONNECTED: 关闭/信号丢失/密钥失效 (LINK-DOWN)\n  ESS_CONNECTED --> ESS_DISENGAGING: 预测故障 (LINK-GOING-DOWN)\n  ESS_DISENGAGING --> ESS_DISCONNECTED: 故障发生 (LINK-DOWN)\n  ESS_DISENGAGING --> ESS_CONNECTED: 取消预测 (EVENT-ROLLBACK)"
+    },
+    {
+      "type": "prose",
+      "en": "Each transition (6.6.4) carries a meaning and usually fires an event. Reaching ESS_CONNECTED from ESS_DISCONNECTED means the STA finished network selection, authentication, association, and — if required — the RSN 4-way handshake; the MSGCF emits MSGCF-ESS-LINK-UP.indication. Leaving for ESS_DISCONNECTED (from CONNECTED or DISENGAGING) emits MSGCF-ESS-LINK-DOWN.indication. Moving CONNECTED to DISENGAGING emits an ESS-LINK-GOING-DOWN event when the SME predicts imminent failure — perhaps from a disassociation, key usage limits (PN exhaustion), or fading signal. Cancelling that prediction (DISENGAGING back to CONNECTED) emits MSGCF-ESS-LINK-EVENT-ROLLBACK.indication. Powering on (STANDBY to DISCONNECTED) and powering off (DISCONNECTED to STANDBY) issue no event.",
+      "zh": "每个状态转移（6.6.4）都有其含义，并且通常会触发一个事件。从 ESS_DISCONNECTED 进入 ESS_CONNECTED，意味着 STA 完成了网络选择、认证、关联，以及（如有需要）RSN 四次握手；此时 MSGCF 发出 MSGCF-ESS-LINK-UP.indication。进入 ESS_DISCONNECTED（来自 CONNECTED 或 DISENGAGING）会发出 MSGCF-ESS-LINK-DOWN.indication。从 CONNECTED 进入 DISENGAGING，则在 SME 预测即将发生故障时发出 ESS-LINK-GOING-DOWN 事件——故障可能源于去关联、密钥使用上限（PN 耗尽）或信号衰落。取消该预测（DISENGAGING 回到 CONNECTED）会发出 MSGCF-ESS-LINK-EVENT-ROLLBACK.indication。上电（STANDBY 到 DISCONNECTED）和断电（DISCONNECTED 到 STANDBY）则不发出任何事件。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Not everything is a state change. Informational events (6.6.5) can occur in any state without moving the machine: they fire when new candidate ESS links are discovered, when threshold parameters are set or read, and when higher layers issue an ESS-LINK-COMMAND. The SME just updates the convergence-function MIB. To keep events orderable and reversible, the SAP (6.6.6) uses an EventID — an unsigned integer reset to 1 each time the STA leaves STANDBY — as a dialog token for sequencing and rollback.",
+      "zh": "并非所有事件都对应状态变化。信息性事件（6.6.5）可以在任意状态下发生而不改变状态机：当发现新的候选 ESS 链路、设置或读取门限参数、以及上层下发 ESS-LINK-COMMAND 时都会触发。此时 SME 只是更新汇聚功能的 MIB。为了让事件可排序、可回滚，SAP（6.6.6）使用 EventID——一个每当 STA 离开 STANDBY 时复位为 1 的无符号整数——作为排序与回滚的对话令牌。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 230\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"20\" y=\"15\" width=\"400\" height=\"40\" rx=\"6\"/><text x=\"220\" y=\"40\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"13\">Higher layers / external network</text><rect x=\"20\" y=\"90\" width=\"400\" height=\"40\" rx=\"6\"/><text x=\"220\" y=\"108\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">MSGCF (state machine + SAP)</text><text x=\"220\" y=\"123\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">status / config / events / commands</text><rect x=\"30\" y=\"170\" width=\"110\" height=\"40\" rx=\"6\"/><text x=\"85\" y=\"194\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">MLME</text><rect x=\"165\" y=\"170\" width=\"110\" height=\"40\" rx=\"6\"/><text x=\"220\" y=\"194\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">SME</text><rect x=\"300\" y=\"170\" width=\"110\" height=\"40\" rx=\"6\"/><text x=\"355\" y=\"194\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">PLME</text><line x1=\"220\" y1=\"55\" x2=\"220\" y2=\"90\"/><line x1=\"85\" y1=\"130\" x2=\"85\" y2=\"170\"/><line x1=\"220\" y1=\"130\" x2=\"220\" y2=\"170\"/><line x1=\"355\" y1=\"130\" x2=\"355\" y2=\"170\"/></svg>",
+      "caption": {
+        "en": "The MSGCF sits between higher layers and the 802.11 management entities (MLME, SME, PLME), presenting one standardized SAP regardless of where the underlying state lives.",
+        "zh": "MSGCF 位于上层与 802.11 管理实体（MLME、SME、PLME）之间，无论底层状态存放在何处，都对外呈现一个统一标准化的 SAP。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Beyond raw link state, the SAP groups its primitives into functional families. ESS status reporting (6.6.7) delivers the LINK-UP / LINK-DOWN / LINK-GOING-DOWN / EVENT-ROLLBACK indications, plus scan-related primitives that report discovered ESSs to higher layers. Network configuration (6.6.8) lets upper layers query a network's capabilities (ESS-LINK-CAPABILITY) and set, confirm, or read back the link parameters and thresholds that govern when reports fire (ESS-LINK-PARAMETERS and GET-ESS-LINK-PARAMETERS). Network events (6.6.9) is where ESS-LINK-THRESHOLD-REPORT.indication lives — fired when a monitored layer-2 performance metric crosses a configured threshold, telling higher layers (e.g. for handover decisions) which parameter crossed and in which direction.",
+      "zh": "除了原始链路状态，SAP 还把其原语归类为若干功能族。ESS 状态报告（6.6.7）负责传递 LINK-UP / LINK-DOWN / LINK-GOING-DOWN / EVENT-ROLLBACK 指示，以及向上层报告已发现 ESS 的扫描相关原语。网络配置（6.6.8）让上层查询某网络的能力（ESS-LINK-CAPABILITY），并设置、确认或回读决定何时触发报告的链路参数与门限（ESS-LINK-PARAMETERS 与 GET-ESS-LINK-PARAMETERS）。网络事件（6.6.9）则是 ESS-LINK-THRESHOLD-REPORT.indication 所在之处——当某个被监测的二层性能指标越过已配置门限时触发，告诉上层（例如用于切换决策）是哪个参数越过了门限、以及越过的方向。"
+    },
+    {
+      "type": "prose",
+      "en": "Information flows the other way too. The network command interface (6.6.10) gives higher layers a single primitive, MSGCF-ESS-LINK-COMMAND.request, to act on the link. Its CommandType enumerates DISCONNECT (the SME issues MLME-DEAUTHENTICATE and refrains from reconnecting), LOW_POWER (mapped to MLME-POWERMGT with POWER_SAVE), POWER_UP, POWER_DOWN, and SCAN (mapped to MLME-SCAN, with results surfaced via the detected-networks table and indication). The convergence function translates each command into the right MLME action on behalf of the upper layer.",
+      "zh": "信息也会反向流动。网络命令接口（6.6.10）为上层提供单一原语 MSGCF-ESS-LINK-COMMAND.request，用于对链路施加动作。其 CommandType 枚举了 DISCONNECT（SME 发出 MLME-DEAUTHENTICATE 并不再重连）、LOW_POWER（映射为带 POWER_SAVE 的 MLME-POWERMGT）、POWER_UP、POWER_DOWN，以及 SCAN（映射为 MLME-SCAN，结果通过已检测网络表与指示原语呈现）。汇聚功能代表上层把每条命令翻译成相应的 MLME 动作。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the MSGCF does not only face upward. The MAC State SME SAP for mobility management (6.6.11) is an internal interface: the SME issues MSSME-ESS-LINK-GOING-DOWN.indication when it predicts a link failure while a connection is currently established. It carries the non-AP STA MAC address, the ESS identifier, a TimeInterval for how long connectivity is still expected, and a ReasonCode (EXPLICIT_DISCONNECT, LINK_PARAMETER_DEGRADATION, KEY_EXPIRATION, LOW_POWER, QOS_UNAVAILABLE, VENDOR_SPECIFIC). The MSGCF consumes it to generate the upward-facing ESS-LINK-DOWN indication due to link-parameter degradation. The predictive algorithm itself is out of scope — one example is firing when link quality fades and no better AP can be found.",
+      "zh": "最后，MSGCF 并不只朝上对接。面向移动性管理的 MAC 状态 SME SAP（6.6.11）是一个内部接口：当连接当前已建立而 SME 预测即将发生链路故障时，SME 会发出 MSSME-ESS-LINK-GOING-DOWN.indication。它携带非 AP STA 的 MAC 地址、ESS 标识、表示连接预计还能维持多久的 TimeInterval，以及一个 ReasonCode（EXPLICIT_DISCONNECT、LINK_PARAMETER_DEGRADATION、KEY_EXPIRATION、LOW_POWER、QOS_UNAVAILABLE、VENDOR_SPECIFIC）。MSGCF 据此生成向上的、因链路参数劣化导致的 ESS-LINK-DOWN 指示。预测算法本身不在标准范围内——一个示例是：当链路质量衰落且找不到更好的 AP 时触发。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each 6.6 sub-clause lives",
+        "zh": "覆盖地图：6.6 各子条款的归属"
+      },
+      "en": "The convergence function is specified in 6.6 across these eleven sub-clauses. 6.6.1 Overview of the convergence function — the ESS-link abstraction and the SAPs it touches (MLME, PLME, SME). 6.6.2 Overview of the state machine — defined in terms of ESS connectivity, unaffected by intra-ESS transitions. 6.6.3 State list — ESS_CONNECTED, ESS_DISCONNECTED, ESS_DISENGAGING, STANDBY. 6.6.4 State transitions — the entry/exit rules for each state and which indication each fires. 6.6.5 Informational events — non-state-changing events that just update the MIB. 6.6.6 The MAC state generic convergence SAP — the standardized higher-layer interface and the EventID dialog token. 6.6.7 ESS status reporting — LINK-UP / LINK-DOWN / LINK-GOING-DOWN / EVENT-ROLLBACK / scan reporting primitives. 6.6.8 Network configuration — capability query and link-parameter set/get primitives. 6.6.9 Network events — the threshold-report indication. 6.6.10 Network command interface — the single LINK-COMMAND.request with its CommandType enumeration. 6.6.11 MAC state SME SAP for mobility management — the internal GOING-DOWN prediction the MSGCF turns into an upward LINK-DOWN.",
+      "zh": "汇聚功能在 6.6 中由以下十一个子条款规定。6.6.1 汇聚功能概述——ESS 链路抽象及其所涉及的 SAP（MLME、PLME、SME）。6.6.2 状态机概述——以 ESS 连接性定义，不受 ESS 内切换影响。6.6.3 状态列表——ESS_CONNECTED、ESS_DISCONNECTED、ESS_DISENGAGING、STANDBY。6.6.4 状态转移——每个状态的进入/退出规则及各自触发的指示。6.6.5 信息性事件——不改变状态、仅更新 MIB 的事件。6.6.6 MAC 状态通用汇聚 SAP——标准化的上层接口与 EventID 对话令牌。6.6.7 ESS 状态报告——LINK-UP / LINK-DOWN / LINK-GOING-DOWN / EVENT-ROLLBACK / 扫描报告原语。6.6.8 网络配置——能力查询与链路参数设置/读取原语。6.6.9 网络事件——门限报告指示。6.6.10 网络命令接口——带 CommandType 枚举的单一 LINK-COMMAND.request。6.6.11 面向移动性管理的 MAC 状态 SME SAP——MSGCF 将其转化为向上 LINK-DOWN 的内部 GOING-DOWN 预测。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          606,
+          607,
+          608,
+          609,
+          615,
+          620,
+          621,
+          622,
+          623
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        606
+      ],
+      "note": "6.6.1 overview, 6.6.2 state machine overview, 6.6.3.1-6.6.3.2 ESS_CONNECTED/ESS_DISCONNECTED"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        607
+      ],
+      "note": "6.6.3.3-6.6.3.4 ESS_DISENGAGING/STANDBY, 6.6.4.1 transitions to ESS_CONNECTED, Figure 6-16 MSGCF state machine"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        608
+      ],
+      "note": "6.6.4 remaining transitions, 6.6.5 informational events"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        609
+      ],
+      "note": "6.6.6 MAC state generic convergence SAP (EventID), 6.6.7 ESS status reporting, 6.6.7.1 LINK-UP.indication"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        615
+      ],
+      "note": "6.6.8 Network configuration, 6.6.8.1 ESS-LINK-CAPABILITY.request"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        620,
+        621
+      ],
+      "note": "6.6.9 Network events (THRESHOLD-REPORT.indication), 6.6.10 Network command interface (LINK-COMMAND.request, CommandType)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        622,
+        623
+      ],
+      "note": "6.6.10.1.4 command effects, 6.6.11 MAC state SME SAP mobility management (GOING-DOWN.indication, ReasonCode)"
+    }
+  ],
+  "covers": [
+    "80211-2024:6.6.1",
+    "80211-2024:6.6.2",
+    "80211-2024:6.6.3",
+    "80211-2024:6.6.4",
+    "80211-2024:6.6.5",
+    "80211-2024:6.6.6",
+    "80211-2024:6.6.7",
+    "80211-2024:6.6.8",
+    "80211-2024:6.6.9",
+    "80211-2024:6.6.10",
+    "80211-2024:6.6.11"
+  ],
+  "track": "80211core"
+}

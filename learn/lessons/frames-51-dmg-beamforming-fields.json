@@ -1,0 +1,155 @@
+{
+  "id": "frames-51-dmg-beamforming-fields",
+  "title": {
+    "en": "Steering at 60 GHz: the DMG/EDMG Beamforming Fields",
+    "zh": "在 60 GHz 转向：DMG/EDMG 波束成形字段"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "At 60 GHz, a millimeter-wave link survives only when the transmitter and receiver point narrow antenna beams straight at each other. So before any data flows, two DMG (Directional Multi-Gigabit) or EDMG (Enhanced DMG) stations run a beamforming dance: they sweep through sectors, measure which one is loudest, feed the winner back, then refine. Clause 9.5 of IEEE 802.11-2024 defines the nine compact control fields that carry all of this steering information. None of them are information elements with element IDs; they are fixed-layout fields embedded directly in management, extension, and control frames.",
+      "zh": "在 60 GHz 频段，毫米波链路只有在发射端和接收端都把窄天线波束精确对准彼此时才能维持。因此在数据传输之前，两个 DMG（定向千兆，Directional Multi-Gigabit）或 EDMG（增强型 DMG）站点要先完成一套波束成形流程：扫描各个扇区，测量哪个扇区信号最强，把最优扇区反馈回去，然后再做精细化。IEEE 802.11-2024 的 9.5 条款定义了承载这些转向信息的九个紧凑控制字段。它们都不是带元素 ID 的信息元素，而是固定布局、直接嵌入在管理帧、扩展帧和控制帧中的字段。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Sector Sweep<br/>SSW field] --> B[Feedback<br/>SSW Feedback]\n  B --> C[Refine<br/>BRP Request]\n  C --> D[Maintain<br/>Link Maintenance]\n  A -. EDMG short .-> E[EDMG BRP<br/>Short Feedback]",
+      "zh": "flowchart LR\n  A[扇区扫描<br/>SSW 字段] --> B[反馈<br/>SSW Feedback]\n  B --> C[精细化<br/>BRP Request]\n  C --> D[维护<br/>链路维护]\n  A -. EDMG 短帧 .-> E[EDMG BRP<br/>短反馈]"
+    },
+    {
+      "type": "prose",
+      "en": "The journey starts with the SSW (Sector Sweep) field (9.5.1). Each swept frame carries one of these. A Direction bit says whether the sender is the beamforming initiator (0) or responder (1). A 9-bit CDOWN counts down the remaining sweep frames so the receiver knows when the sweep ends (it reaches 0 on the last frame). The Sector ID and DMG Antenna ID name exactly which sector and antenna this frame went out on, so the receiver can report back the best one. When the SSW field rides inside a DMG Beacon, a different layout adds a Quasi-omni TX bit, a PCP/AP Coverage Parameter (a link-budget hint encoded in 4 dBm steps from 18 to 42 dBm), and extra bits that widen the antenna ID.",
+      "zh": "整个过程从 SSW（扇区扫描，Sector Sweep）字段（9.5.1）开始。每个扫描帧都携带一个 SSW 字段。Direction（方向）比特表示发送方是波束成形发起方（0）还是响应方（1）。9 比特的 CDOWN 倒数剩余的扫描帧数，让接收方知道扫描何时结束（最后一帧时归零）。Sector ID（扇区 ID）和 DMG Antenna ID（DMG 天线 ID）精确标明本帧是通过哪个扇区、哪根天线发出的，接收方据此回报最优扇区。当 SSW 字段嵌入 DMG Beacon 帧时，会采用不同布局，增加一个准全向发送比特、一个 PCP/AP 覆盖参数（以 4 dBm 为步长、覆盖 18 到 42 dBm 的链路预算提示），以及用于扩展天线 ID 的额外比特。"
+    },
+    {
+      "type": "prose",
+      "en": "Once the sweep is over, the SSW Feedback field (9.5.3) tells the peer which sector won. It comes in three layouts. As part of an ISS (Initiator Sector Sweep), it announces the Total Sectors in ISS and Number of RX DMG Antennas the initiator will use. Otherwise it carries the actual answer: a Sector Select and DMG Antenna Select pointing at the best-received frame, plus an 8-bit SNR Report (encoded as 4x(SNR-19), spanning -13 dB to 50.75 dB). An EDMG Extension Flag switches between the legacy meaning and an EDMG meaning, where Sector Select instead names a CDOWN value from a Short SSW PPDU.",
+      "zh": "扫描结束后，SSW Feedback（SSW 反馈）字段（9.5.3）告诉对端哪个扇区胜出。它有三种布局。作为 ISS（发起方扇区扫描，Initiator Sector Sweep）的一部分时，它宣布发起方将使用的 ISS 总扇区数和接收 DMG 天线数。其他情况下它携带真正的答案：指向最优接收帧的 Sector Select（扇区选择）和 DMG Antenna Select（DMG 天线选择），外加一个 8 比特的 SNR Report（信噪比报告，按 4x(SNR-19) 编码，覆盖 -13 dB 到 50.75 dB）。EDMG Extension Flag（EDMG 扩展标志）在传统含义与 EDMG 含义之间切换，在 EDMG 含义下 Sector Select 改为标识来自 Short SSW PPDU 的 CDOWN 值。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Remember the rhythm: SSW field = the question ('I'm sending on sector N'), SSW Feedback = the answer ('sector N was loudest, SNR X'). The Sector Feedback field (9.5.9) is simply the SSW Feedback wrapped with an RA address so it can be sent to a specific destination.",
+      "zh": "记住这个节奏：SSW 字段 = 提问（“我正在用扇区 N 发送”），SSW Feedback = 回答（“扇区 N 最强，信噪比为 X”）。而 Sector Feedback（扇区反馈）字段（9.5.9）就是给 SSW Feedback 套上一个 RA 目的地址，使其能发往特定目的站点。"
+    },
+    {
+      "type": "prose",
+      "en": "With a coarse sector chosen, the link enters Beam Refinement Protocol (BRP). The BRP Request field (9.5.4) asks for fine-tuning: an L-RX count requests RX training units, TX-TRN-REQ asks for transmit training, and MID-REQ / BC-REQ request specific refinement subphases (the peer answers with MID-Grant / BC-Grant). A TX Sector ID names the pattern in use, and two EDMG bits, EDMG-SHORT-BRP and EDMG-SHORT-FBCK, signal that the compact EDMG fields follow. The Chan-FBCK-CAP bit advertises whether the station can return full channel measurements or only beam SNR feedback.",
+      "zh": "选定粗略扇区后，链路进入波束精细化协议（BRP，Beam Refinement Protocol）。BRP Request（BRP 请求）字段（9.5.4）请求精细调整：L-RX 计数请求接收训练单元，TX-TRN-REQ 请求发送训练，MID-REQ / BC-REQ 请求特定的精细化子阶段（对端用 MID-Grant / BC-Grant 应答）。TX Sector ID 标明当前使用的方向图，两个 EDMG 比特——EDMG-SHORT-BRP 和 EDMG-SHORT-FBCK——则指示紧凑的 EDMG 字段是否随后出现。Chan-FBCK-CAP 比特宣告该站点能返回完整信道测量，还是仅能返回波束信噪比反馈。"
+    },
+    {
+      "type": "prose",
+      "en": "The Beamforming Control field (9.5.5) is the scheduler's instruction sheet, carried in Grant, Grant Ack, and Extended Schedule frames. A single Beamforming Training bit says whether training happens at all; if 0, everything else is reserved. IsInitiatorTXSS and IsResponderTXSS pick whether each side does a transmit sweep (TXSS) or receive sweep (RXSS), and (in EDMG) an Unsolicited RSS bit lets a sweep start with no preceding ISS. Table 9-449 enumerates the six legal combinations. The RXSS Length, Total Number of Sectors, and Number of RX DMG Antennas subfields size the upcoming sweep.",
+      "zh": "Beamforming Control（波束成形控制）字段（9.5.5）是调度方的指令单，承载于 Grant、Grant Ack 和扩展调度（Extended Schedule）帧中。一个 Beamforming Training（波束成形训练）比特决定是否进行训练；若为 0，其余所有子字段保留。IsInitiatorTXSS 和 IsResponderTXSS 决定每一方做发送扫描（TXSS）还是接收扫描（RXSS），而（在 EDMG 中）Unsolicited RSS（非请求 RSS）比特允许扫描在没有前导 ISS 的情况下开始。表 9-449 列举了六种合法组合。RXSS Length、Total Number of Sectors 和 Number of RX DMG Antennas 子字段为即将到来的扫描确定规模。"
+    },
+    {
+      "type": "prose",
+      "en": "Beams drift as people and objects move, so the Beamformed Link Maintenance field (9.5.6) sets a timer. It carries a BeamLink Maintenance Unit Index (selecting either 32 us or 2000 us units, per Table 9-450) and a 6-bit Value; their product is dot11BeamLinkMaintenanceTime, the window before the trained link is presumed stale. A Value of 0 leaves the time undefined, meaning the station opts out of link maintenance. A BeamLink isMaster bit lets the two stations negotiate who owns the timer.",
+      "zh": "随着人和物体移动，波束会发生漂移，因此 Beamformed Link Maintenance（波束成形链路维护）字段（9.5.6）设置一个定时器。它携带 BeamLink Maintenance Unit Index（维护单位索引，按表 9-450 在 32 us 或 2000 us 单位间选择）和一个 6 比特的 Value（值）；两者相乘即为 dot11BeamLinkMaintenanceTime，也就是认定已训练链路过期之前的时间窗。Value 为 0 时该时间未定义，表示该站点退出链路维护。BeamLink isMaster 比特让两个站点协商由谁掌管该定时器。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: all nine 9.5 fields and where each lives",
+        "zh": "覆盖地图：全部九个 9.5 字段及其各自的归属"
+      },
+      "en": "Here is the complete clause-9.5 inventory so every field has a home. 9.5.1 SSW field: per-frame sector-sweep descriptor (Direction, CDOWN, Sector ID, DMG Antenna ID), with a DMG-Beacon variant adding Quasi-omni TX and PCP/AP Coverage Parameter. 9.5.2 Dynamic Allocation Info field: not a beamforming field at all, but it shares this clause; it carries TID, AllocationType, Source/Destination AID, and Allocation Duration for dynamic SP/CBAP allocation in SPR and Grant frames (a value of 32768 signals 'within current TXOP'). 9.5.3 SSW Feedback field: the sweep result (Sector Select, DMG Antenna Select, SNR Report, Poll Required), in three layouts gated by the EDMG Extension Flag. 9.5.4 BRP Request field: refinement request (L-RX, TX-TRN-REQ, MID/BC-REQ and grants, TX Sector ID, EDMG-SHORT-BRP/FBCK). 9.5.5 Beamforming Control field: scheduler control of TXSS/RXSS roles and sweep sizing (two layouts; Table 9-449 gives the role combinations). 9.5.6 Beamformed Link Maintenance field: the dot11BeamLinkMaintenanceTime timer (Unit Index x Value) plus isMaster negotiation (Table 9-450, Table 9-451). 9.5.7 EDMG BRP field: a fixed-size packing of the EDMG BRP Request element plus the DMG Beam Refinement element (its subfields are defined by reference to 9.4.2.128 and 9.4.2.269) for the fixed-size BRP frame. 9.5.8 Short BRP Feedback field: up to 16 Sector Measurement subfields, each 32 bits (Sector ID/CDOWN/AWV ID, BRP CDOWN, TX/RX Antenna ID, SNR); an SNR of 255 marks the measurement invalid. 9.5.9 Sector Feedback field: an RA address plus an embedded SSW Feedback field, used to direct feedback to a named station.",
+      "zh": "这是 9.5 条款的完整清单，确保每个字段都有归属。9.5.1 SSW 字段：逐帧的扇区扫描描述符（Direction、CDOWN、Sector ID、DMG Antenna ID），其 DMG Beacon 变体增加准全向发送和 PCP/AP 覆盖参数。9.5.2 Dynamic Allocation Info（动态分配信息）字段：它本身并非波束成形字段，但共处本条款；它携带 TID、AllocationType、源/目的 AID 和 Allocation Duration，用于 SPR 和 Grant 帧中的动态 SP/CBAP 分配（值为 32768 表示“在当前 TXOP 内”）。9.5.3 SSW Feedback 字段：扫描结果（Sector Select、DMG Antenna Select、SNR Report、Poll Required），由 EDMG 扩展标志控制的三种布局。9.5.4 BRP Request 字段：精细化请求（L-RX、TX-TRN-REQ、MID/BC-REQ 及授权、TX Sector ID、EDMG-SHORT-BRP/FBCK）。9.5.5 Beamforming Control 字段：调度方对 TXSS/RXSS 角色及扫描规模的控制（两种布局；表 9-449 给出角色组合）。9.5.6 Beamformed Link Maintenance 字段：dot11BeamLinkMaintenanceTime 定时器（单位索引 x 值）以及 isMaster 协商（表 9-450、表 9-451）。9.5.7 EDMG BRP 字段：把 EDMG BRP Request 元素和 DMG Beam Refinement 元素打包成固定大小（其子字段通过引用 9.4.2.128 和 9.4.2.269 定义），用于固定大小的 BRP 帧。9.5.8 Short BRP Feedback 字段：最多 16 个各 32 比特的 Sector Measurement 子字段（Sector ID/CDOWN/AWV ID、BRP CDOWN、TX/RX Antenna ID、SNR）；SNR 为 255 表示该测量无效。9.5.9 Sector Feedback 字段：一个 RA 地址加一个内嵌的 SSW Feedback 字段，用于把反馈定向发给指定站点。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1627,
+          1628,
+          1629,
+          1631,
+          1632,
+          1634,
+          1635,
+          1636,
+          1637
+        ]
+      }
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 400 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"45\" width=\"30\" height=\"30\"/><text x=\"25\" y=\"95\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">TX</text><rect x=\"360\" y=\"45\" width=\"30\" height=\"30\"/><text x=\"375\" y=\"95\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">RX</text><path d=\"M40 60 L360 30\"/><path d=\"M40 60 L360 60\" stroke-width=\"3\"/><path d=\"M40 60 L360 90\"/><text x=\"200\" y=\"22\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">sector 0</text><text x=\"200\" y=\"55\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">sector 1 (best)</text><text x=\"200\" y=\"108\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">sector 2</text></svg>",
+      "caption": {
+        "en": "Sector sweep: the SSW field labels each beam (sector 0,1,2...); SSW Feedback names the loudest (here sector 1) and reports its SNR.",
+        "zh": "扇区扫描：SSW 字段标记每个波束（扇区 0、1、2……）；SSW Feedback 指出最强的那个（此处为扇区 1）并报告其信噪比。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "EDMG adds two compact fields to speed all this up. The EDMG BRP field (9.5.7) collapses the EDMG BRP Request element and the DMG Beam Refinement element into one fixed-size field so a BRP frame can be a fixed length; its many subfields (L-RX, TX Sector ID, BRP CDOWN, TX Antenna Mask, First Path Training, and more) are defined by cross-reference rather than respecified here. The Short BRP Feedback field (9.5.8) packs up to 16 Sector Measurement entries, each a tidy 32 bits holding a sector/CDOWN/AWV identifier, TX and RX antenna IDs, and an SNR (with 255 reserved to mark an entry invalid). Together these let a 60 GHz link converge on a good beam in far fewer frames.",
+      "zh": "EDMG 增加了两个紧凑字段来加速整个过程。EDMG BRP 字段（9.5.7）把 EDMG BRP Request 元素和 DMG Beam Refinement 元素合并为一个固定大小的字段，使 BRP 帧能够保持固定长度；它的众多子字段（L-RX、TX Sector ID、BRP CDOWN、TX Antenna Mask、First Path Training 等）通过交叉引用定义，而非在此处重新规定。Short BRP Feedback 字段（9.5.8）打包最多 16 个 Sector Measurement 条目，每个条目整齐地占 32 比特，包含扇区/CDOWN/AWV 标识符、TX 和 RX 天线 ID 以及 SNR（其中 255 保留用于标记条目无效）。两者配合，让 60 GHz 链路能用少得多的帧数收敛到一个好波束。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "One field in clause 9.5 is the odd one out: the Dynamic Allocation Info field (9.5.2) has nothing to do with beamforming. It schedules dynamic service-period and CBAP airtime in SPR and Grant frames. It simply shares the same clause as its DMG/EDMG neighbors, so it is taught here for completeness.",
+      "zh": "9.5 条款中有一个字段是例外：Dynamic Allocation Info（动态分配信息）字段（9.5.2）与波束成形毫无关系。它在 SPR 和 Grant 帧中调度动态服务期（SP）和 CBAP 的空口时间。它只是与其 DMG/EDMG 邻居共处同一条款，因此在此一并讲解以求完整。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1627,
+        1628
+      ],
+      "note": "9.5.1 SSW field (both layouts) and 9.5.2 Dynamic Allocation Info field"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1629,
+        1630
+      ],
+      "note": "9.5.3 SSW Feedback field, three layouts and subfield semantics (SNR, Sector Select, EDMG Extension Flag)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1631,
+        1632
+      ],
+      "note": "9.5.4 BRP Request field and start of 9.5.5 Beamforming Control field"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1633,
+        1634
+      ],
+      "note": "9.5.5 Beamforming Control field (Table 9-449) and 9.5.6 Beamformed Link Maintenance field (Table 9-450)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1635,
+        1636
+      ],
+      "note": "9.5.7 EDMG BRP field and 9.5.8 Short BRP Feedback field (Sector Measurement subfield)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1637
+      ],
+      "note": "9.5.9 Sector Feedback field (RA plus embedded SSW Feedback)"
+    }
+  ],
+  "covers": [
+    "80211-2024:9.5.1",
+    "80211-2024:9.5.2",
+    "80211-2024:9.5.3",
+    "80211-2024:9.5.4",
+    "80211-2024:9.5.5",
+    "80211-2024:9.5.6",
+    "80211-2024:9.5.7",
+    "80211-2024:9.5.8",
+    "80211-2024:9.5.9"
+  ],
+  "track": "frames"
+}

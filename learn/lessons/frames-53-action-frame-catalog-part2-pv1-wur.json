@@ -1,0 +1,249 @@
+{
+  "id": "frames-53-action-frame-catalog-part2-pv1-wur",
+  "title": {
+    "en": "The Action Frame Catalog, Part 2: VHT/HE/S1G/WUR and the PV1 & WUR Frame Formats",
+    "zh": "Action 帧目录（下）：VHT/HE/S1G/WUR 以及 PV1 与 WUR 帧格式"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Part 1 of this catalog walked through the early Action categories. Part 2 finishes the job: the remaining Action frame categories — Unprotected DMG, VHT, FILS, S1G (protected and unprotected), Flow Control, Control Response MCS Negotiation, CDMG, CMMG, GLK, HE (protected and unprotected), WUR, Protected Fine Timing, and EBCS. Each category is just a value in the Category field followed by a category-specific Action field that selects one of the frame formats inside. After the catalog, we cover two compact frame families that are NOT Action frames at all: the PV1 (Protocol Version 1) frames used by sub-1-GHz S1G devices, and the bespoke WUR (Wake-Up Radio) frame types.",
+      "zh": "本目录的上篇介绍了较早的 Action 类别。下篇收尾：剩余的 Action 帧类别——Unprotected DMG、VHT、FILS、S1G（受保护与非受保护）、Flow Control、Control Response MCS Negotiation、CDMG、CMMG、GLK、HE（受保护与非受保护）、WUR、Protected Fine Timing 以及 EBCS。每个类别本质上都是 Category 字段中的一个取值，后面紧跟一个类别专属的 Action 字段，用来在该类别内部选出具体的帧格式。讲完目录后，我们再介绍两类完全不属于 Action 帧的紧凑帧族：供 1 GHz 以下 S1G 设备使用的 PV1（协议版本 1）帧，以及专门定义的 WUR（唤醒无线电）帧类型。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The pattern repeats everywhere: Category field → category Action field → frame-specific fields. Once you see it, the whole catalog reads as one big lookup table. The category name usually names a PHY generation (VHT = 802.11ac, HE = 802.11ax, S1G = 802.11ah, DMG/CDMG/CMMG = 60 GHz, WUR = wake-up radio).",
+      "zh": "这个模式无处不在：Category 字段 → 类别 Action 字段 → 帧专属字段。一旦看懂，整个目录就像一张大查找表。类别名称通常对应某一代 PHY（VHT = 802.11ac，HE = 802.11ax，S1G = 802.11ah，DMG/CDMG/CMMG = 60 GHz，WUR = 唤醒无线电）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Category field] --> B[Category Action field]\n  B --> C{Which format?}\n  C --> D[VHT: Compressed BF / Group ID / OpMode Notification]\n  C --> E[HE: Compressed BF-CQI / Quiet Time / OPS]\n  C --> F[S1G: TWT / Sectorized Beam / Sync Control]\n  C --> G[WUR: Mode Setup / Teardown / Parameters]",
+      "zh": "flowchart TD\n  A[Category 字段] --> B[类别 Action 字段]\n  B --> C{选哪种格式?}\n  C --> D[VHT: 压缩波束成形 / 组 ID / 操作模式通知]\n  C --> E[HE: 压缩 BF-CQI / 静默时段 / OPS]\n  C --> F[S1G: TWT / 扇区波束 / 同步控制]\n  C --> G[WUR: 模式建立 / 拆除 / 参数]"
+    },
+    {
+      "type": "prose",
+      "en": "The mainstream high-throughput categories are VHT and HE. The VHT category (9.6.22) carries the VHT Compressed Beamforming frame (the explicit sounding feedback that drives downlink MU-MIMO), the Group ID Management frame, and the Operating Mode Notification frame that lets a STA announce a change in its receive bandwidth or spatial streams. HE (9.6.31) is the 802.11ax analogue: the HE Compressed Beamforming/CQI frame, Quiet Time Period setup, and the OPS (Opportunistic Power Save) frame. Protected HE (9.6.32) adds management-frame-protected variants such as the MU EDCA Reset and the BSS Color Change Announcement frame.",
+      "zh": "主流高吞吐类别是 VHT 和 HE。VHT 类别（9.6.22）承载 VHT 压缩波束成形帧（驱动下行 MU-MIMO 的显式探测反馈）、组 ID 管理帧，以及让 STA 通告其接收带宽或空间流变化的操作模式通知帧。HE（9.6.31）是 802.11ax 的对应版本：HE 压缩波束成形/CQI 帧、静默时段建立，以及 OPS（机会式省电）帧。Protected HE（9.6.32）增加了受管理帧保护的变体，例如 MU EDCA 复位帧和 BSS 颜色变更通告帧。"
+    },
+    {
+      "type": "prose",
+      "en": "The sub-1-GHz family 802.11ah (S1G) needs both unprotected and protected Action categories. Unprotected S1G (9.6.24) carries lightweight signalling such as AID Switch and the (unprotected) EDCA Parameter Set; protected S1G (9.6.25) repeats the security-sensitive ones — Reachable Address Update, TWT setup, sectorized beam operation, and the protected EDCA Parameter Set whose Action field simply swaps in the S1G Action field. The 60-GHz lineage contributes Unprotected DMG (9.6.21) — Announce, BRP, and the MIMO BF Setup/Poll/Feedback/Selection frames — plus the centimetre-wave CDMG (9.6.28) and CMMG (9.6.29) categories with their own channel-splitting, allocation, and compressed-beamforming frames.",
+      "zh": "1 GHz 以下的 802.11ah（S1G）家族同时需要非受保护和受保护两类 Action 类别。Unprotected S1G（9.6.24）承载轻量信令，如 AID Switch 和（非受保护的）EDCA 参数集；Protected S1G（9.6.25）则重复那些对安全敏感的帧——可达地址更新、TWT 建立、扇区波束操作，以及受保护的 EDCA 参数集（其 Action 字段只是换成 S1G Action 字段）。60 GHz 谱系贡献了 Unprotected DMG（9.6.21）——Announce、BRP，以及 MIMO BF 建立/轮询/反馈/选择帧——再加上厘米波的 CDMG（9.6.28）和 CMMG（9.6.29）类别，各自带有信道分裂、资源分配和压缩波束成形帧。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every remaining Action category (9.6.21–9.6.35)",
+        "zh": "覆盖地图——所有剩余 Action 类别（9.6.21–9.6.35）"
+      },
+      "en": "9.6.21 Unprotected DMG — Announce, BRP, MIMO BF Setup/Poll/Feedback/Selection (60 GHz beam refinement). 9.6.22 VHT — Compressed Beamforming, Group ID Management, Operating Mode Notification. 9.6.23 FILS — post-association Fast Initial Link Setup signalling. 9.6.24 Unprotected S1G — AID Switch, unprotected EDCA Parameter Set, and other lightweight S1G control. 9.6.25 S1G — Reachable Address Update, TWT, sectorized beam, protected EDCA Parameter Set. 9.6.26 Flow Control — Flow Suspension to pause incoming transmissions for a Suspend Duration. 9.6.27 Control Response MCS Negotiation — Request/Response to agree the MCS used for control response frames. 9.6.28 CDMG — channel splitting and allocation request/response (centimetre-wave DMG). 9.6.29 CMMG — Compressed Beamforming for CMMG. 9.6.30 GLK — Groupcast Mode Change Notification (general link / 802.11ak). 9.6.31 HE — Compressed Beamforming/CQI, Quiet Time Period, OPS. 9.6.32 Protected HE — MU EDCA Reset, BSS Color Change Announcement (protected). 9.6.33 WUR — WUR Mode Setup, WUR Mode Teardown, and WUR parameter signalling. 9.6.34 Protected Fine Timing — protected variants of fine-timing-measurement signalling. 9.6.35 EBCS — Enhanced Broadcast Service signalling (two frame formats).",
+      "zh": "9.6.21 Unprotected DMG——Announce、BRP、MIMO BF 建立/轮询/反馈/选择（60 GHz 波束细化）。9.6.22 VHT——压缩波束成形、组 ID 管理、操作模式通知。9.6.23 FILS——关联后的快速初始链路建立信令。9.6.24 Unprotected S1G——AID Switch、非受保护 EDCA 参数集，以及其他轻量 S1G 控制。9.6.25 S1G——可达地址更新、TWT、扇区波束、受保护 EDCA 参数集。9.6.26 Flow Control——Flow Suspension，按 Suspend Duration 暂停入站传输。9.6.27 Control Response MCS Negotiation——请求/响应，用于协商控制响应帧所用的 MCS。9.6.28 CDMG——信道分裂与资源分配请求/响应（厘米波 DMG）。9.6.29 CMMG——CMMG 的压缩波束成形。9.6.30 GLK——组播模式变更通知（通用链路 / 802.11ak）。9.6.31 HE——压缩波束成形/CQI、静默时段、OPS。9.6.32 Protected HE——MU EDCA 复位、BSS 颜色变更通告（受保护）。9.6.33 WUR——WUR 模式建立、WUR 模式拆除，以及 WUR 参数信令。9.6.34 Protected Fine Timing——精细测距信令的受保护变体。9.6.35 EBCS——增强广播服务信令（两种帧格式）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1802,
+          1810,
+          1812,
+          1813,
+          1820,
+          1824,
+          1825,
+          1827,
+          1830,
+          1832,
+          1835,
+          1838
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now the compact formats. PV1 (Protocol Version 1) is a slimmed-down MAC frame for S1G devices where every saved octet matters over the air. 9.8.3 defines the PV1 frame fields: the general PV1 frame always carries Frame Control, A1, A2, and FCS, while Sequence Control, A3, A4, and the Frame Body are optional. The Frame Control field (9.8.3.1) sets Protocol Version to 1 and uses a Type subfield plus a PTID/Subtype subfield; addresses (9.8.3.2) can be full MAC addresses or compact Short IDs (SIDs) carrying an AID, chosen by the From DS bit.",
+      "zh": "接下来是紧凑格式。PV1（协议版本 1）是为 S1G 设备设计的精简 MAC 帧——在空口上每节省一个八位组都很重要。9.8.3 定义了 PV1 帧字段：通用 PV1 帧始终携带 Frame Control、A1、A2 和 FCS，而 Sequence Control、A3、A4 和帧体则为可选。Frame Control 字段（9.8.3.1）将协议版本置为 1，并使用 Type 子字段加 PTID/Subtype 子字段；地址（9.8.3.2）可以是完整 MAC 地址，也可以是携带 AID 的紧凑短 ID（SID），由 From DS 比特决定。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"4\" y=\"30\" width=\"80\" height=\"34\"/><text x=\"44\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Frame Ctrl</text><rect x=\"84\" y=\"30\" width=\"60\" height=\"34\"/><text x=\"114\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">A1</text><rect x=\"144\" y=\"30\" width=\"60\" height=\"34\"/><text x=\"174\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">A2</text><rect x=\"204\" y=\"30\" width=\"80\" height=\"34\" stroke-dasharray=\"4 3\"/><text x=\"244\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Seq Ctrl?</text><rect x=\"284\" y=\"30\" width=\"56\" height=\"34\" stroke-dasharray=\"4 3\"/><text x=\"312\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">A3?</text><rect x=\"340\" y=\"30\" width=\"56\" height=\"34\" stroke-dasharray=\"4 3\"/><text x=\"368\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">A4?</text><rect x=\"396\" y=\"30\" width=\"140\" height=\"34\" stroke-dasharray=\"4 3\"/><text x=\"466\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Frame Body?</text><rect x=\"536\" y=\"30\" width=\"60\" height=\"34\"/><text x=\"566\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">FCS</text><text x=\"4\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">solid = always present  /  dashed = optional</text></svg>",
+      "caption": {
+        "en": "General PV1 frame: Frame Control, A1, A2 and FCS are always present; Sequence Control, A3, A4 and the Frame Body are optional (9.8.2–9.8.3).",
+        "zh": "通用 PV1 帧：Frame Control、A1、A2 和 FCS 始终存在；Sequence Control、A3、A4 和帧体为可选（9.8.2–9.8.3）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "PV1 then splits into Control and Management frames. PV1 Control frames (9.8.4) define subtypes whose Frame Control carries S1G-specific bits such as Bandwidth Indication and Dynamic Indication, and bodies that pack timestamps and TWT scheduling information very tightly (e.g. tetrapartial/pentapartial timestamp fields). PV1 Management frames (9.8.5) cover the lightweight management exchanges — PV1 Probe Response, the Resource Allocation frame (with its RAW group and slot-assignment indications), and others — letting an S1G STA do scanning and resource signalling without the heavier legacy management overhead.",
+      "zh": "PV1 接着分为控制帧和管理帧。PV1 控制帧（9.8.4）定义了若干子类型，其 Frame Control 携带 S1G 专属比特，如带宽指示和动态指示，帧体则极其紧凑地打包时间戳和 TWT 调度信息（如四分/五分时间戳字段）。PV1 管理帧（9.8.5）涵盖轻量管理交互——PV1 探测响应、资源分配帧（含 RAW 组和时隙分配指示）等——让 S1G STA 在不承担沉重传统管理开销的情况下完成扫描和资源信令。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the WUR (Wake-Up Radio) frames. A WUR companion radio is an ultra-low-power receiver that listens while the main radio sleeps; its frames are minimal by design. 9.9.3 defines each individual WUR frame type: the WUR Beacon frame (its ID set to the transmitter ID, used for time sync and discovery), the WUR Wake-up frame (which actually wakes the main radio, optionally carrying a BSS Update Counter or PN bits), the WUR Discovery frame, the WUR Vendor Specific frame, and the WUR Short Wake-up frame (the most compact wake trigger). Each is built from the basic WUR components — Frame Control (with Type and Protected subfields), an ID field, and a type-dependent body.",
+      "zh": "最后是 WUR（唤醒无线电）帧。WUR 伴随无线电是一个超低功耗接收机，在主无线电休眠时持续侦听；其帧在设计上极为精简。9.9.3 定义了每一种 WUR 帧类型：WUR Beacon 帧（其 ID 置为发送方 ID，用于时间同步和发现）、WUR 唤醒帧（真正唤醒主无线电，可选携带 BSS 更新计数器或 PN 比特）、WUR 发现帧、WUR 厂商专属帧，以及 WUR 短唤醒帧（最紧凑的唤醒触发）。每一种都由基本 WUR 组件构成——Frame Control（含 Type 和 Protected 子字段）、一个 ID 字段，以及一个类型相关的帧体。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — PV1 and WUR compact formats (9.8.3–9.8.5, 9.9.3)",
+        "zh": "覆盖地图——PV1 与 WUR 紧凑格式（9.8.3–9.8.5、9.9.3）"
+      },
+      "en": "9.8.3 PV1 frame fields — Frame Control (Protocol Version = 1, Type, PTID/Subtype), Address fields (full MAC or SID/AID by From DS), Sequence Control, Frame Body, encryption overhead, and FCS. 9.8.4 PV1 Control frames — subtype table plus tightly packed timestamp / TWT scheduling bodies (Bandwidth and Dynamic Indication subfields). 9.8.5 PV1 Management frames — PV1 Probe Response, Resource Allocation (RAW group, slot assignment), and related lightweight management. 9.9.3 Format of individual WUR frame types — WUR Beacon (9.9.3.1), WUR Wake-up (9.9.3.2), WUR Discovery (9.9.3.3), WUR Vendor Specific (9.9.3.4), WUR Short Wake-up (9.9.3.5), each assembled from the basic WUR components in 9.9.2.",
+      "zh": "9.8.3 PV1 帧字段——Frame Control（协议版本 = 1、Type、PTID/Subtype）、地址字段（按 From DS 取完整 MAC 或 SID/AID）、Sequence Control、帧体、加密开销以及 FCS。9.8.4 PV1 控制帧——子类型表加上紧凑打包的时间戳 / TWT 调度帧体（带宽与动态指示子字段）。9.8.5 PV1 管理帧——PV1 探测响应、资源分配（RAW 组、时隙分配）及相关轻量管理。9.9.3 各 WUR 帧类型的格式——WUR Beacon（9.9.3.1）、WUR 唤醒（9.9.3.2）、WUR 发现（9.9.3.3）、WUR 厂商专属（9.9.3.4）、WUR 短唤醒（9.9.3.5），每一种都由 9.9.2 的基本 WUR 组件组装而成。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1854,
+          1856,
+          1857,
+          1858,
+          1860,
+          1869,
+          1870,
+          1871,
+          1872
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1802,
+        1809
+      ],
+      "note": "9.6.21 Unprotected DMG Action frame details — Announce, BRP, MIMO BF Setup/Poll/Feedback/Selection"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1810,
+        1811,
+        1812
+      ],
+      "note": "9.6.22 VHT (Compressed BF, Group ID, OpMode Notification) and 9.6.23 FILS Action frame details"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1813,
+        1820,
+        1823
+      ],
+      "note": "9.6.24 Unprotected S1G and 9.6.25 S1G Action frame details (TWT, EDCA Parameter Set)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1824,
+        1825,
+        1826,
+        1827
+      ],
+      "note": "9.6.26 Flow Control (Flow Suspension) and 9.6.27 Control Response MCS Negotiation Request/Response"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1827,
+        1828,
+        1829,
+        1830,
+        1831
+      ],
+      "note": "9.6.28 CDMG (channel splitting/allocation) and 9.6.29 CMMG Compressed Beamforming"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1832,
+        1833,
+        1834
+      ],
+      "note": "9.6.30 GLK Groupcast Mode Change and 9.6.31 HE (Compressed BF/CQI, Quiet Time, OPS)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1834,
+        1835,
+        1836,
+        1837
+      ],
+      "note": "9.6.32 Protected HE (MU EDCA Reset, BSS Color Change) and 9.6.33 WUR (Mode Setup/Teardown)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1837,
+        1838
+      ],
+      "note": "9.6.34 Protected Fine Timing and 9.6.35 EBCS Action frame details"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1854,
+        1855,
+        1856,
+        1857
+      ],
+      "note": "9.8.3 PV1 frame fields — Frame Control, Address fields, Sequence Control, Frame Body, FCS"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1858,
+        1859,
+        1860
+      ],
+      "note": "9.8.4 PV1 Control frames — subtypes, timestamp/TWT bodies"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1860,
+        1861,
+        1862,
+        1864,
+        1865
+      ],
+      "note": "9.8.5 PV1 Management frames — PV1 Probe Response, Resource Allocation, RAW/slot assignment"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1866,
+        1867,
+        1869,
+        1870,
+        1871,
+        1872
+      ],
+      "note": "9.9.3 Format of individual WUR frame types — Beacon, Wake-up, Discovery, Vendor Specific, Short Wake-up"
+    }
+  ],
+  "covers": [
+    "80211-2024:9.6.21",
+    "80211-2024:9.6.22",
+    "80211-2024:9.6.23",
+    "80211-2024:9.6.24",
+    "80211-2024:9.6.25",
+    "80211-2024:9.6.26",
+    "80211-2024:9.6.27",
+    "80211-2024:9.6.28",
+    "80211-2024:9.6.29",
+    "80211-2024:9.6.30",
+    "80211-2024:9.6.31",
+    "80211-2024:9.6.32",
+    "80211-2024:9.6.33",
+    "80211-2024:9.6.34",
+    "80211-2024:9.6.35",
+    "80211-2024:9.8.3",
+    "80211-2024:9.8.4",
+    "80211-2024:9.8.5",
+    "80211-2024:9.9.3"
+  ],
+  "track": "frames"
+}

@@ -1,0 +1,196 @@
+{
+  "id": "frames-52-action-frame-catalog-part1",
+  "title": {
+    "en": "The Action Frame Catalog, Part 1: Spectrum, QoS, Block Ack, FT, HT, TDLS, WNM and Mesh",
+    "zh": "Action 帧目录（上）：频谱、QoS、Block Ack、FT、HT、TDLS、WNM 与 Mesh"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Management frames in 802.11 carry a fixed set of subtypes — Beacon, Probe, Association, Authentication, and so on. But the standard also needs an open-ended way to add new management commands without inventing a new frame subtype every time. That mechanism is the Action frame. Clause 9.6 defines the Action field formats allowed inside each action category, where the first octet after the MAC header is a Category field that selects which family of commands follows. This lesson surveys the first half of that catalog.",
+      "zh": "802.11 的管理帧有一组固定的子类型——Beacon、Probe、Association、Authentication 等等。但标准还需要一种开放式的方式来不断增加新的管理命令，而不必每次都发明一个新的帧子类型。这个机制就是 Action 帧。9.6 节定义了每个动作类别（category）中允许的 Action 字段格式：MAC 头之后的第一个八位组是 Category 字段，用来选择后面跟随的是哪一族命令。本课概览这个目录的上半部分。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Read an Action frame in two steps. First the Category octet picks the family (Spectrum Management, QoS, Block Ack, FT, HT, …). Then a second octet — the family's own Action field (Spectrum Management Action, QoS Action, Block Ack Action, etc.) — picks the exact frame within that family. Everything after that is the per-frame payload.",
+      "zh": "读一个 Action 帧分两步。先看 Category 八位组，它选定命令族（频谱管理、QoS、Block Ack、FT、HT 等）。再看第二个八位组——该族自己的 Action 字段（如 Spectrum Management Action、QoS Action、Block Ack Action）——它在族内选定具体帧。之后的内容就是该帧的载荷。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 480 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><rect x=\"10\" y=\"30\" width=\"110\" height=\"34\" stroke=\"currentColor\"/><text x=\"65\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Category</text><rect x=\"120\" y=\"30\" width=\"150\" height=\"34\" stroke=\"currentColor\"/><text x=\"195\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">family Action field</text><rect x=\"270\" y=\"30\" width=\"200\" height=\"34\" stroke=\"currentColor\"/><text x=\"370\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">fields + elements</text><text x=\"65\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">1 octet</text><text x=\"195\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">1 octet</text><text x=\"370\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">variable</text></svg>",
+      "caption": {
+        "en": "The common shape of an Action field: Category, then the family's Action subfield, then the frame-specific payload.",
+        "zh": "Action 字段的通用结构：Category，然后是该族的 Action 子字段，最后是该帧特有的载荷。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The first family is Spectrum Management (9.6.2). Its five formats — Spectrum Measurement Request and Report, TPC (transmit power control) Request and Report, and Channel Switch Announcement — let STAs measure channels, control transmit power, and coordinate moving the whole BSS to a new channel. These are the tools behind radar avoidance and tidy spectrum sharing. Next is QoS (9.6.3): the ADDTS Request/Response and DELTS frames that set up and tear down traffic streams with explicit TSPEC parameters, plus a SCHEDULE frame, so latency-sensitive traffic gets the airtime it negotiated.",
+      "zh": "第一个族是频谱管理（9.6.2）。它的五种格式——Spectrum Measurement 请求与报告、TPC（发射功率控制）请求与报告、以及 Channel Switch Announcement——让 STA 能够测量信道、控制发射功率，并协调把整个 BSS 切换到新信道。这些是雷达规避和有序频谱共享背后的工具。接着是 QoS（9.6.3）：ADDTS 请求/响应和 DELTS 帧通过显式的 TSPEC 参数建立和拆除业务流，再加上一个 SCHEDULE 帧，让对时延敏感的流量获得它协商到的空口时间。"
+    },
+    {
+      "type": "prose",
+      "en": "Block Ack (9.6.4) is the throughput workhorse: ADDBA Request and ADDBA Response negotiate a block ack agreement for a TID, TS, or GCR group, DELBA tears it down, and a PBAC WinStart Update keeps a protected agreement's window in sync — so a burst of frames can be acknowledged with a single BlockAck. Vendor Specific (9.6.5) is the deliberate escape hatch: a category that hands the rest of the frame to a vendor's own OUI-scoped content, including a protected variant. FT (9.6.8) carries fast-BSS-transition data over the distribution system, using the Action frame as a transport between the STA and its current AP toward a target AP. HT (9.6.11) carries the high-throughput control set: Notify Channel Width, SM Power Save, PSMP, MIMO CSI/beamforming feedback, and antenna-selection feedback.",
+      "zh": "Block Ack（9.6.4）是吞吐量的主力：ADDBA 请求与 ADDBA 响应为某个 TID、TS 或 GCR 组协商一份 block ack 协议，DELBA 拆除它，PBAC WinStart Update 则让受保护协议的窗口保持同步——这样一批帧就能用一个 BlockAck 统一确认。Vendor Specific（9.6.5）是有意设计的扩展出口：这个类别把帧的其余部分交给厂商自己的、以 OUI 划定范围的内容，并包含一个受保护的变体。FT（9.6.8）在分发系统上承载快速 BSS 切换数据，把 Action 帧用作 STA 与其当前 AP 之间、面向目标 AP 的传输载体。HT（9.6.11）承载高吞吐控制集：Notify Channel Width、SM 省电、PSMP、MIMO 信道状态/波束成形反馈，以及天线选择反馈。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Action frame] --> B{Category octet}\n  B --> C[Spectrum Mgmt 9.6.2]\n  B --> D[QoS 9.6.3]\n  B --> E[Block Ack 9.6.4]\n  B --> F[Vendor Specific 9.6.5]\n  B --> G[FT / HT / TDLS]\n  B --> H[WNM / Mesh / DMG]",
+      "zh": "flowchart TD\n  A[Action 帧] --> B{Category 八位组}\n  B --> C[频谱管理 9.6.2]\n  B --> D[QoS 9.6.3]\n  B --> E[Block Ack 9.6.4]\n  B --> F[厂商自定义 9.6.5]\n  B --> G[FT / HT / TDLS]\n  B --> H[WNM / Mesh / DMG]"
+    },
+    {
+      "type": "prose",
+      "en": "Some families are about steering and direct links. TDLS (9.6.12) sets up a tunneled direct link between two STAs in the same BSS: Setup Request/Response/Confirm, Teardown, Peer Traffic Indication, and channel-switch frames are carried inside Data frames through the AP, so two clients can talk directly without relaying through the AP. WNM — Wireless Network Management (9.6.13) — is the largest single family here, with thirty-plus frames covering BSS Transition Management (the roaming nudge), FMS, diagnostics, event and location reporting, WNM Sleep Mode, TIM Broadcast, channel-usage queries, and directed multicast. Its companion, Unprotected WNM (9.6.14), holds the WNM frames that are deliberately not robust-management-protected — notably Timing Measurement for fine-time ranging.",
+      "zh": "有些族关乎引导和直连。TDLS（9.6.12）在同一 BSS 内的两个 STA 之间建立隧道式直连链路：Setup 请求/响应/确认、Teardown、Peer Traffic Indication 以及信道切换帧都封装在 Data 帧中经 AP 传递，从而让两个客户端无需经 AP 中转即可直接通信。WNM——无线网络管理（9.6.13）——是这里最大的单一族，包含三十多种帧，涵盖 BSS Transition Management（漫游引导）、FMS、诊断、事件与位置上报、WNM 睡眠模式、TIM Broadcast、信道占用查询以及定向组播。其姊妹族 Unprotected WNM（9.6.14）则收纳那些有意不做健壮管理帧保护的 WNM 帧——尤其是用于精细时间测距的 Timing Measurement。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Watch for the 'protected' / 'unprotected' / 'self-protected' distinctions. Protected Dual of Public (9.6.10) mirrors Public Action content but in a robust, STA-to-STA protected form. Self-protected (9.6.15) frames — the mesh peering and key-handshake frames — carry their own protection rather than relying on the normal robust-management wrapper. Unprotected WNM exists precisely because some exchanges (like timing measurement) must work before protection is in place.",
+      "zh": "注意 “protected”（受保护）/“unprotected”（非保护）/“self-protected”（自保护）这几种区分。Protected Dual of Public（9.6.10）以健壮的、STA 到 STA 的受保护形式镜像 Public Action 的内容。Self-protected（9.6.15）帧——即 mesh 对等建立和密钥握手帧——自带保护，而不依赖通常的健壮管理帧封装。Unprotected WNM 的存在恰恰是因为某些交换（如时间测量）必须在保护建立之前就能工作。"
+    },
+    {
+      "type": "prose",
+      "en": "The mesh families round out this half. Self-protected (9.6.15) carries Mesh Peering Open/Confirm/Close and the Mesh Group Key Inform/Acknowledge handshake that brings two mesh STAs into a secured peering. Mesh (9.6.16) carries the running-network frames — HWMP path selection, congestion control, and proxy/gating updates — while Multihop (9.6.17) carries the Proxy Update and Proxy Update Confirmation frames that keep external-address mappings consistent across the mesh. Finally come three feature-specific families: Robust AV Streaming (9.6.18) for stream-classification and group-membership control of audio/video traffic; DMG (9.6.19) for the 60 GHz directional-multi-gigabit feature set, with its long list of relay, beamforming, and power-save frames; and FST (9.6.20) — Fast Session Transfer — whose Setup, Teardown, Ack, and On-channel Tunnel frames move a session between bands or channels.",
+      "zh": "mesh 相关的几个族收尾这上半部分。Self-protected（9.6.15）承载 Mesh Peering Open/Confirm/Close，以及让两个 mesh STA 进入安全对等关系的 Mesh Group Key Inform/Acknowledge 握手。Mesh（9.6.16）承载网络运行期间的帧——HWMP 路径选择、拥塞控制、代理/网关更新——而 Multihop（9.6.17）承载 Proxy Update 和 Proxy Update Confirmation 帧，让外部地址映射在整个 mesh 中保持一致。最后是三个面向特定功能的族：Robust AV Streaming（9.6.18）用于音视频流量的流分类与组成员控制；DMG（9.6.19）用于 60 GHz 定向多吉比特特性集，包含一长串中继、波束成形和省电帧；以及 FST（9.6.20）——快速会话转移——其 Setup、Teardown、Ack 和 On-channel Tunnel 帧负责在频段或信道之间迁移一个会话。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause in this half, with its job",
+        "zh": "覆盖地图——本上半部分的每个子句及其职责"
+      },
+      "en": "9.6.2 Spectrum Management — Spectrum Measurement Request/Report, TPC Request/Report, Channel Switch Announcement (selected by the Spectrum Management Action field, Table 9-452). 9.6.3 QoS — ADDTS Request/Response (Basic and DMG TSPEC variants), DELTS, SCHEDULE (QoS Action field, Table 9-453). 9.6.4 Block Ack — ADDBA Request/Response, DELBA, PBAC WinStart Update for protected agreements (Block Ack Action field, Table 9-465). 9.6.5 Vendor Specific Action frame and Vendor Specific Protected Action frame — OUI-scoped vendor content. 9.6.8 FT — four formats transporting fast-BSS-transition data over the DS via the current AP. 9.6.10 Protected Dual of Public — robust STA-to-STA mirror of Public Action content. 9.6.11 HT — Notify Channel Width, SM Power Save, PSMP, CSI/Compressed Beamforming and Antenna Selection Indices Feedback (HT Action field, Table 9-517). 9.6.12 TDLS — Setup Request/Response/Confirm, Teardown, Peer Traffic Indication/Response, Channel Switch Request/Response, tunneled in Data frames through the AP. 9.6.13 WNM — 30+ frames: BSS Transition Management, FMS, Event/Diagnostic/Location reporting, WNM Sleep Mode, TIM Broadcast, Channel Usage, DMS, WNM Notification. 9.6.14 Unprotected WNM — non-robust WNM frames including Timing Measurement. 9.6.15 Self-protected — Mesh Peering Open/Confirm/Close, Mesh Group Key Inform/Acknowledge (carry their own protection). 9.6.16 Mesh — HWMP path selection, congestion control, gate/proxy operation frames. 9.6.17 Multihop — Proxy Update and Proxy Update Confirmation. 9.6.18 Robust AV Streaming — stream-classification and group-membership control for AV traffic. 9.6.19 DMG — relay, beamforming, handover and power-save frames for 60 GHz (DMG Action field, Table 9-568). 9.6.20 FST — Fast Session Transfer Setup Request/Response, Teardown, Ack Request/Response, On-channel Tunnel Request (FST Action field, Table 9-590).",
+      "zh": "9.6.2 频谱管理——Spectrum Measurement 请求/报告、TPC 请求/报告、Channel Switch Announcement（由 Spectrum Management Action 字段选择，表 9-452）。9.6.3 QoS——ADDTS 请求/响应（Basic 与 DMG TSPEC 两种变体）、DELTS、SCHEDULE（QoS Action 字段，表 9-453）。9.6.4 Block Ack——ADDBA 请求/响应、DELBA、用于受保护协议的 PBAC WinStart Update（Block Ack Action 字段，表 9-465）。9.6.5 Vendor Specific 与 Vendor Specific Protected Action 帧——以 OUI 划定范围的厂商内容。9.6.8 FT——四种格式，经当前 AP 在 DS 上传输快速 BSS 切换数据。9.6.10 Protected Dual of Public——以健壮的 STA 到 STA 形式镜像 Public Action 内容。9.6.11 HT——Notify Channel Width、SM 省电、PSMP、CSI/压缩波束成形与天线选择索引反馈（HT Action 字段，表 9-517）。9.6.12 TDLS——Setup 请求/响应/确认、Teardown、Peer Traffic Indication/Response、Channel Switch 请求/响应，封装在 Data 帧中经 AP 传递。9.6.13 WNM——30 多种帧：BSS Transition Management、FMS、事件/诊断/位置上报、WNM 睡眠模式、TIM Broadcast、信道占用、DMS、WNM Notification。9.6.14 Unprotected WNM——非健壮的 WNM 帧，包括 Timing Measurement。9.6.15 Self-protected——Mesh Peering Open/Confirm/Close、Mesh Group Key Inform/Acknowledge（自带保护）。9.6.16 Mesh——HWMP 路径选择、拥塞控制、网关/代理操作帧。9.6.17 Multihop——Proxy Update 与 Proxy Update Confirmation。9.6.18 Robust AV Streaming——音视频流量的流分类与组成员控制。9.6.19 DMG——60 GHz 的中继、波束成形、切换与省电帧（DMG Action 字段，表 9-568）。9.6.20 FST——快速会话转移 Setup 请求/响应、Teardown、Ack 请求/响应、On-channel Tunnel 请求（FST Action 字段，表 9-590）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1637,
+          1641,
+          1649,
+          1653,
+          1722,
+          1727,
+          1728,
+          1731,
+          1742,
+          1764,
+          1766,
+          1771,
+          1778,
+          1779,
+          1783,
+          1798
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Two patterns are worth remembering. First, the Action frame is how 802.11 stays extensible: a new feature usually means a new category (or a new value in an existing family's Action field), not a new frame subtype. Second, families cluster by purpose — radio housekeeping (Spectrum, HT, FST), traffic agreements (QoS, Block Ack, Robust AV Streaming), mobility and topology (FT, TDLS, WNM, Mesh, Multihop, DMG), and the catch-alls (Vendor Specific, Protected Dual of Public). Part 2 of the catalog continues with the public, fast-initial-link, S1G, and EHT-era families.",
+      "zh": "有两个规律值得记住。其一，Action 帧是 802.11 保持可扩展性的方式：新增一个特性通常意味着新增一个类别（或在现有族的 Action 字段中新增一个取值），而不是新增一个帧子类型。其二，各族按用途聚类——无线电管理（频谱、HT、FST）、流量协议（QoS、Block Ack、Robust AV Streaming）、移动性与拓扑（FT、TDLS、WNM、Mesh、Multihop、DMG）以及通配类（Vendor Specific、Protected Dual of Public）。目录的下半部分将继续介绍 public、快速初始链路、S1G 以及 EHT 时代的各族。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1637,
+        1638
+      ],
+      "note": "9.6.1 General + 9.6.2 Spectrum Management Action field and the five formats (Table 9-452)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1641
+      ],
+      "note": "9.6.3 QoS Action frame details + QoS Action field (Table 9-453), ADDTS Basic/DMG variants"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1649,
+        1653
+      ],
+      "note": "9.6.4 Block Ack (ADDBA/DELBA/PBAC WinStart Update, Table 9-465); 9.6.5 Vendor Specific begins"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1722
+      ],
+      "note": "9.6.8 FT Action frame details — four formats over the DS via current AP"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1727,
+        1728
+      ],
+      "note": "9.6.10 Protected Dual of Public; 9.6.11 HT Action field (Table 9-517), Notify Channel Width"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1731,
+        1732
+      ],
+      "note": "9.6.11 HT Compressed Beamforming / Antenna Selection; 9.6.12 TDLS Action field formats tunneled in Data frames"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1742,
+        1764
+      ],
+      "note": "9.6.13 WNM Action frame details (30+ frames); 9.6.14 Unprotected WNM Action field"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1766,
+        1767,
+        1771
+      ],
+      "note": "9.6.15 Self-protected (Mesh Peering Open/Confirm/Close, Mesh Group Key Inform/Acknowledge)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1778,
+        1779
+      ],
+      "note": "9.6.16 Mesh / 9.6.17 Multihop (Proxy Update / Confirmation); 9.6.18 Robust AV Streaming begins"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1783,
+        1798
+      ],
+      "note": "9.6.19 DMG Action field (Table 9-568); 9.6.20 FST Action field (Table 9-590) and FST formats"
+    }
+  ],
+  "covers": [
+    "80211-2024:9.6.2",
+    "80211-2024:9.6.3",
+    "80211-2024:9.6.4",
+    "80211-2024:9.6.5",
+    "80211-2024:9.6.8",
+    "80211-2024:9.6.10",
+    "80211-2024:9.6.11",
+    "80211-2024:9.6.12",
+    "80211-2024:9.6.13",
+    "80211-2024:9.6.14",
+    "80211-2024:9.6.15",
+    "80211-2024:9.6.16",
+    "80211-2024:9.6.17",
+    "80211-2024:9.6.18",
+    "80211-2024:9.6.19",
+    "80211-2024:9.6.20"
+  ],
+  "track": "frames"
+}

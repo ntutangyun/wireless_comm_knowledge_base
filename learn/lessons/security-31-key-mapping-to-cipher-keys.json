@@ -1,0 +1,106 @@
+{
+  "id": "security-31-key-mapping-to-cipher-keys",
+  "title": {
+    "en": "From Master Keys to Cipher Keys: the Key-Mapping Tables",
+    "zh": "从主密钥到密码密钥：密钥映射表"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "The 4-way handshake and group key handshake hand you a small set of named keys: the pairwise PTK and the group GTK, plus the management-integrity keys IGTK and BIGTK, and the wake-up keys WTK and WIGTK. But a cipher engine — TKIP, CCMP, GCMP, or BIP — does not consume \"the PTK\". It needs a specific number of bits, sliced out of a specific part of a temporal key, used in a specific direction. Clause 12.8, \"Mapping EAPOL keys to IEEE 802.11 keys\", is the rulebook that performs that slicing. This lesson walks the whole table.",
+      "zh": "四次握手和组密钥握手交给你的是一小组带名字的密钥：成对的 PTK 与组播的 GTK，再加上管理帧完整性密钥 IGTK 和 BIGTK，以及唤醒帧密钥 WTK 和 WIGTK。但密码引擎——TKIP、CCMP、GCMP 或 BIP——并不会直接吃下“PTK”这个整体。它需要的是从某个临时密钥的特定部分切出的、特定长度的比特位，并按特定方向使用。第 12.8 节《将 EAPOL 密钥映射为 IEEE 802.11 密钥》正是执行这种切分的规则手册。本课将把整张映射表走一遍。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Key idea: the handshake derives temporal keys; clause 12.8 only re-interprets their bits. Each subclause says \"see 12.7.1.x for the temporal key, then use bits A–B as the following cipher key.\" No new key material is generated here — it is pure bit-assignment.",
+      "zh": "核心思想：握手负责派生临时密钥；第 12.8 节只是重新解释这些密钥的比特位。每个小节都说“临时密钥的定义见 12.7.1.x，然后把第 A 到 B 位用作下面这个密码密钥”。这里不会产生任何新的密钥材料——它纯粹是比特位的分配。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">TKIP temporal key (256 bits)</text><rect x=\"10\" y=\"30\" width=\"160\" height=\"30\"/><rect x=\"170\" y=\"30\" width=\"120\" height=\"30\"/><rect x=\"290\" y=\"30\" width=\"120\" height=\"30\"/><text x=\"20\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">0-127 mixing</text><text x=\"180\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">128-191 Michael A2S</text><text x=\"300\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">192-255 Michael S2A</text><text x=\"10\" y=\"95\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">CCMP / GCMP temporal key</text><rect x=\"10\" y=\"105\" width=\"280\" height=\"30\"/><text x=\"20\" y=\"124\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">whole key = cipher key</text><text x=\"10\" y=\"170\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">BIP key (IGTK/BIGTK/WTK/WIGTK)</text><rect x=\"10\" y=\"180\" width=\"140\" height=\"16\"/><text x=\"18\" y=\"192\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">0-127 (128) or 0-255 (256)</text></svg>",
+      "caption": {
+        "en": "Three slicing patterns: TKIP cuts its 256-bit key into a mixing key plus two directional Michael keys; CCMP and GCMP use the temporal key whole; BIP takes the low 128 or 256 bits depending on the algorithm.",
+        "zh": "三种切分模式：TKIP 把 256 位密钥切成一个混合密钥加两个方向性的 Michael 密钥；CCMP 和 GCMP 整体使用临时密钥；BIP 则根据算法取低 128 位或 256 位。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "TKIP (12.8.1, 12.8.2) is the most elaborate slicing. Whether the temporal key comes from the PTK (pairwise) or the GTK (group), the same 256-bit layout applies: bits 0–127 feed the TKIP Phase 1 and Phase 2 mixing functions, bits 128–191 are the Michael MIC key for frames flowing from the Authenticator's STA to the Supplicant's STA, and bits 192–255 are the Michael key for the reverse direction. Two separate MIC keys, one per direction, are what let TKIP detect forgery on each link independently.",
+      "zh": "TKIP（12.8.1、12.8.2）的切分最为讲究。无论临时密钥来自 PTK（成对）还是 GTK（组播），都套用同一套 256 位布局：第 0–127 位送入 TKIP 的第一阶段和第二阶段混合函数；第 128–191 位是 Michael MIC 密钥，用于从认证方 STA 流向请求方 STA 的帧；第 192–255 位是反方向的 Michael 密钥。两个独立的 MIC 密钥（每个方向一个）正是 TKIP 能在每条链路上各自独立检测伪造的原因。"
+    },
+    {
+      "type": "prose",
+      "en": "CCMP (12.8.3, 12.8.4) and GCMP (12.8.6, 12.8.7) are refreshingly simple: a STA uses the whole temporal key as the cipher key. For the pairwise case the key protects MPDUs between the two communicating STAs; for the group case it is simply the group cipher key. There is no directional split and no separate MIC key, because CCMP and GCMP are AEAD ciphers — authentication and encryption are produced together by one key in one pass.",
+      "zh": "CCMP（12.8.3、12.8.4）和 GCMP（12.8.6、12.8.7）则清爽得多：STA 直接把整个临时密钥用作密码密钥。成对情形下，该密钥保护两个通信 STA 之间的 MPDU；组播情形下，它就是组播密码密钥。这里没有方向性的拆分，也没有单独的 MIC 密钥，因为 CCMP 和 GCMP 都是 AEAD 密码——认证与加密由同一个密钥在同一遍处理中一并完成。"
+    },
+    {
+      "type": "prose",
+      "en": "The integrity-only keys (12.8.5, 12.8.8) protect robust management frames with BIP. The IGTK protects broadcast/multicast management frames; the BIGTK protects Beacons. Both map the same way: bits 0–127 serve as the AES-128-CMAC key and as the AES-128-GMAC key, while bits 0–255 serve as the AES-256-GMAC key and as the AES-256-CMAC key. The same low bits do double duty across CMAC and GMAC — which BIP algorithm is actually used is selected elsewhere, by the negotiated management cipher suite.",
+      "zh": "只做完整性保护的密钥（12.8.5、12.8.8）用 BIP 来保护健壮管理帧。IGTK 保护广播/组播管理帧；BIGTK 保护信标帧。两者的映射方式相同：第 0–127 位用作 AES-128-CMAC 密钥，同时也用作 AES-128-GMAC 密钥；第 0–255 位用作 AES-256-GMAC 密钥，同时也用作 AES-256-CMAC 密钥。同一段低位比特在 CMAC 与 GMAC 之间身兼两职——真正使用哪种 BIP 算法是在别处、由协商出来的管理帧密码套件决定的。"
+    },
+    {
+      "type": "prose",
+      "en": "The newest entries (12.8.9, 12.8.10) cover WUR (Wake-Up Radio) wake-up frames. The WTK uses its bits 0–127 as the AES-128-CMAC key to protect individually addressed wake-up frames, and the WIGTK uses its bits 0–127 as the AES-128-CMAC key to protect broadcast and group addressed wake-up frames. Both are integrity-only BIP keys — the wake-up frame is tiny and only needs to be authenticated, not encrypted.",
+      "zh": "最新加入的条目（12.8.9、12.8.10）覆盖 WUR（唤醒无线电）唤醒帧。WTK 把其第 0–127 位用作 AES-128-CMAC 密钥，保护单独寻址的唤醒帧；WIGTK 把其第 0–127 位用作 AES-128-CMAC 密钥，保护广播和组播寻址的唤醒帧。两者都是只做完整性保护的 BIP 密钥——唤醒帧体积极小，只需被认证，无需加密。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  PTK[PTK temporal key] --> TKIP1[TKIP keys 12.8.1]\n  PTK --> CCMP1[CCMP key 12.8.3]\n  PTK --> GCMP1[GCMP key 12.8.6]\n  GTK[GTK temporal key] --> TKIP2[TKIP keys 12.8.2]\n  GTK --> CCMP2[CCMP key 12.8.4]\n  GTK --> GCMP2[GCMP key 12.8.7]\n  IGTK[IGTK] --> BIP1[BIP keys 12.8.5]\n  BIGTK[BIGTK] --> BIP2[BIP keys 12.8.8]\n  WTK[WTK] --> BIP3[BIP key 12.8.9]\n  WIGTK[WIGTK] --> BIP4[BIP key 12.8.10]",
+      "zh": "flowchart TD\n  PTK[PTK 临时密钥] --> TKIP1[TKIP 密钥 12.8.1]\n  PTK --> CCMP1[CCMP 密钥 12.8.3]\n  PTK --> GCMP1[GCMP 密钥 12.8.6]\n  GTK[GTK 临时密钥] --> TKIP2[TKIP 密钥 12.8.2]\n  GTK --> CCMP2[CCMP 密钥 12.8.4]\n  GTK --> GCMP2[GCMP 密钥 12.8.7]\n  IGTK[IGTK] --> BIP1[BIP 密钥 12.8.5]\n  BIGTK[BIGTK] --> BIP2[BIP 密钥 12.8.8]\n  WTK[WTK] --> BIP3[BIP 密钥 12.8.9]\n  WIGTK[WIGTK] --> BIP4[BIP 密钥 12.8.10]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: all ten 12.8 subclauses, source key, bits used, and cipher role",
+        "zh": "覆盖地图：12.8 全部十个小节、源密钥、所用比特位与密码角色"
+      },
+      "en": "Pairwise/group data ciphers. 12.8.1 Map PTK to TKIP — bits 0–127 to the Phase 1/Phase 2 mixing functions, bits 128–191 the Michael key for Authenticator-STA-to-Supplicant-STA MSDUs, bits 192–255 the Michael key for the reverse direction. 12.8.2 Map GTK to TKIP — identical 256-bit layout as 12.8.1. 12.8.3 Map PTK to CCMP — the whole temporal key is the CCMP key for MPDUs between the two communicating STAs. 12.8.4 Map GTK to CCMP — the whole temporal key is the CCMP key. 12.8.6 Map PTK to GCMP — the whole temporal key is the GCMP key for MPDUs between the two communicating STAs. 12.8.7 Map GTK to GCMP — the whole temporal key is the GCMP key.\n\nManagement and wake-up integrity (BIP). 12.8.5 Map IGTK to BIP — bits 0–127 as AES-128-CMAC key and AES-128-GMAC key; bits 0–255 as AES-256-GMAC key and AES-256-CMAC key. 12.8.8 Map BIGTK to BIP — same bit assignment as the IGTK. 12.8.9 Map WTK to BIP — bits 0–127 as the AES-128-CMAC key protecting individually addressed WUR Wake-up frames. 12.8.10 Map WIGTK to BIP — bits 0–127 as the AES-128-CMAC key protecting broadcast and group addressed WUR Wake-up frames. Each subclause references 12.7.1.x for where the source temporal key itself is defined; 12.8 only re-labels those bits onto a cipher.",
+      "zh": "成对/组播数据密码。12.8.1 将 PTK 映射为 TKIP——第 0–127 位送入第一/第二阶段混合函数，第 128–191 位为认证方 STA 到请求方 STA 方向 MSDU 的 Michael 密钥，第 192–255 位为反方向的 Michael 密钥。12.8.2 将 GTK 映射为 TKIP——与 12.8.1 相同的 256 位布局。12.8.3 将 PTK 映射为 CCMP——整个临时密钥即为两个通信 STA 间 MPDU 的 CCMP 密钥。12.8.4 将 GTK 映射为 CCMP——整个临时密钥即为 CCMP 密钥。12.8.6 将 PTK 映射为 GCMP——整个临时密钥即为两个通信 STA 间 MPDU 的 GCMP 密钥。12.8.7 将 GTK 映射为 GCMP——整个临时密钥即为 GCMP 密钥。\n\n管理帧与唤醒帧完整性（BIP）。12.8.5 将 IGTK 映射为 BIP——第 0–127 位用作 AES-128-CMAC 密钥和 AES-128-GMAC 密钥；第 0–255 位用作 AES-256-GMAC 密钥和 AES-256-CMAC 密钥。12.8.8 将 BIGTK 映射为 BIP——比特位分配与 IGTK 相同。12.8.9 将 WTK 映射为 BIP——第 0–127 位用作 AES-128-CMAC 密钥，保护单独寻址的 WUR 唤醒帧。12.8.10 将 WIGTK 映射为 BIP——第 0–127 位用作 AES-128-CMAC 密钥，保护广播和组播寻址的 WUR 唤醒帧。每个小节都引用 12.7.1.x 来说明源临时密钥本身在何处定义；12.8 只负责把这些比特位重新标注到某个密码上。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3097,
+          3098
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy mental rule: AEAD data ciphers (CCMP, GCMP) take the temporal key whole; the legacy data cipher (TKIP) splits into mixing + two Michael keys; integrity ciphers (BIP, for IGTK/BIGTK/WTK/WIGTK) take a fixed-length low slice (128 or 256 bits). Match the cipher family to the slicing pattern and you have memorized all of 12.8.",
+      "zh": "一个好记的心法：AEAD 数据密码（CCMP、GCMP）整体取用临时密钥；传统数据密码（TKIP）拆分为混合密钥加两个 Michael 密钥；完整性密码（用于 IGTK/BIGTK/WTK/WIGTK 的 BIP）取固定长度的低位切片（128 或 256 位）。把密码族与切分模式对上号，就记住了整个 12.8 节。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3097
+      ],
+      "note": "12.8 intro; 12.8.1-12.8.4 PTK/GTK to TKIP and CCMP bit mappings"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3098
+      ],
+      "note": "12.8.5-12.8.10 IGTK/PTK/GTK/BIGTK/WTK/WIGTK to BIP and GCMP key mappings"
+    }
+  ],
+  "covers": [
+    "80211-2024:12.8.1",
+    "80211-2024:12.8.2",
+    "80211-2024:12.8.3",
+    "80211-2024:12.8.4",
+    "80211-2024:12.8.5",
+    "80211-2024:12.8.6",
+    "80211-2024:12.8.7",
+    "80211-2024:12.8.8",
+    "80211-2024:12.8.9",
+    "80211-2024:12.8.10"
+  ],
+  "track": "security"
+}

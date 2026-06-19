@@ -1,0 +1,192 @@
+{
+  "id": "security-29-sae-deep-dive",
+  "title": {
+    "en": "Password Authentication Done Right: SAE (Dragonfly) in Depth",
+    "zh": "把口令认证做对：深入 SAE（Dragonfly）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Simultaneous Authentication of Equals (SAE) is the password-authenticated key exchange behind WPA3-Personal. It is a variant of Dragonfly, based on a zero-knowledge proof: two stations prove to each other that they both know the password without ever sending it, and they end the exchange with a fresh shared pairwise master key (PMK). The whole point is to be resistant to off-line dictionary attacks — an eavesdropper, or even an active attacker who forges and replays frames, can make at most one password guess per attack and learns nothing it can take offline to crack at leisure.",
+      "zh": "对等实体同时认证（SAE）是 WPA3-Personal 背后的口令认证密钥交换协议。它是 Dragonfly 的一个变体，基于零知识证明：通信双方在从不发送口令的前提下，相互证明各自都掌握同一口令，并在交换结束时得到一个全新的共享成对主密钥（PMK）。其核心目标是抵御离线字典攻击——窃听者，乃至伪造、重放帧的主动攻击者，每次攻击至多只能做一次口令猜测，且无法获得可带回离线慢慢破解的任何信息。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "\"Equals\" is the key word. Unlike Supplicant/Authenticator or Initiator/Responder protocols, SAE forces no roles: either side may start, and both may start at the same time — each viewing itself as the initiator. This symmetry is what lets SAE work in a mesh BSS where there is no fixed AP. The two parties are simply STA-A and STA-B, identified by their MAC addresses.",
+      "zh": "“对等”是关键词。不同于请求者/认证者或发起者/响应者这类协议，SAE 不强加角色：任何一方都可以发起，双方甚至可以同时发起——各自都把自己视为发起者。正是这种对称性让 SAE 能在没有固定 AP 的 mesh BSS 中工作。双方就是 STA-A 与 STA-B，以各自的 MAC 地址标识。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "12.4.2 — Assumptions on SAE: the H and CN hash primitives",
+        "zh": "12.4.2——SAE 的假设前提：H 与 CN 两个哈希原语"
+      },
+      "en": "SAE is built on two functions instantiated in HMAC form. H(salt, ikm) = HMAC-Hash(salt, ikm) is a randomness extractor used to hash inputs to a digest (for example to derive the PWE seed or keyseed). CN(key, counter, X, Y, …) = HMAC-Hash(key, counter || D2OS(X) || D2OS(Y) || …) is the confirmation function: each data item is converted to an octet string, concatenated after the counter, and keyed-hashed — this is what produces the confirm value in the confirmation exchange. Which hash is used depends on the method: the legacy looping (hunt-and-peck) method always uses SHA-256, while the modern hash-to-element method picks SHA-256/384/512 from Table 12-1 by the size of the group's prime.",
+      "zh": "SAE 建立在两个以 HMAC 形式实例化的函数之上。H(salt, ikm) = HMAC-Hash(salt, ikm) 是一个随机性提取器，用于把输入哈希成摘要（例如派生 PWE 种子或 keyseed）。CN(key, counter, X, Y, …) = HMAC-Hash(key, counter || D2OS(X) || D2OS(Y) || …) 是确认函数：每个数据项先转换为八位组串，拼接在计数器之后，再做带密钥的哈希——这正是确认交换中生成 confirm 值的方式。使用哪种哈希取决于方法：传统的循环（hunt-and-peck）法始终用 SHA-256，而现代的 hash-to-element 法则按群素数的大小从表 12-1 中选取 SHA-256/384/512。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2962
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "12.4.4 — Finite cyclic groups: ECC and FFC, and the password element (PWE)",
+        "zh": "12.4.4——有限循环群：ECC 与 FFC，以及口令元素（PWE）"
+      },
+      "en": "SAE uses discrete-logarithm cryptography over a negotiated finite cyclic group, identified by an IANA \"Group Description\" number. Groups may be elliptic-curve (ECC) — defined by the sextuple (p, a, b, G, r, h), elements being points (x, y) on y² = x³ + ax + b mod p — or finite-field (FFC), where elements are integers mod a prime. Only ECC groups over a prime field with prime ≥ 256 bits, or FFC groups with prime ≥ 3072 bits, are suitable; every STA must support group 19 (a 256-bit prime curve). Three operations are defined for both kinds: element-op, scalar-op, and inverse-op. The password is deterministically mapped into the group as the secret password element (PWE), either by the random \"hunting-and-pecking\" loop (with side-channel-resistant blinding and a fixed iteration count) or by the modern hash-to-element method that derives a stored secret PT offline at provisioning time.",
+      "zh": "SAE 在协商出的有限循环群上使用离散对数密码学，群由 IANA 的“Group Description”编号标识。群可以是椭圆曲线（ECC）——由六元组 (p, a, b, G, r, h) 定义，元素是 y² = x³ + ax + b mod p 上的点 (x, y)——也可以是有限域（FFC），其元素是模某素数的整数。只有素数域上素数 ≥ 256 位的 ECC 群，或素数 ≥ 3072 位的 FFC 群才适用；每个 STA 都必须支持群 19（256 位素数曲线）。两类群都定义了三种运算：元素运算、标量运算和逆运算。口令被确定性地映射进群中，成为秘密的口令元素（PWE）：要么经由随机的“hunting-and-pecking”循环（带抗侧信道的盲化处理和固定迭代次数），要么经由现代的 hash-to-element 法——后者在开通配置时离线派生并存储秘密值 PT。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2963,
+          2964,
+          2965,
+          2966
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The protocol itself (12.4.5) is two round trips: a commitment exchange and a confirmation exchange. In commit, each side picks two random secrets — rand and mask (each 1 < value < r) — and sends a commit-scalar = (rand + mask) mod r together with a COMMIT-ELEMENT = inverse-op(scalar-op(mask, PWE)). This commits the sender to exactly one password guess. On receiving the peer's commit, a STA validates the scalar and element, then derives a shared secret K = scalar-op(rand, elem-op(scalar-op(peer-commit-scalar, PWE), PEER-COMMIT-ELEMENT)), turns it into k = F(K), and runs the KDF to produce the SAE-KCK (key confirmation key) and the PMK. Only then does confirm run: confirm = CN(SAE-KCK, send-confirm, own scalar/element, peer scalar/element). Each side recomputes the peer's expected verifier; a mismatch means the password guess was wrong and authentication fails.",
+      "zh": "协议本身（12.4.5）是两个往返：一次承诺交换和一次确认交换。在承诺阶段，每一方选取两个随机秘密——rand 和 mask（各满足 1 < 值 < r）——并发送 commit-scalar = (rand + mask) mod r，连同 COMMIT-ELEMENT = inverse-op(scalar-op(mask, PWE))。这就把发送方锁定到唯一一次口令猜测。收到对端的 commit 后，STA 先校验标量与元素，再派生共享秘密 K = scalar-op(rand, elem-op(scalar-op(peer-commit-scalar, PWE), PEER-COMMIT-ELEMENT))，将其转为 k = F(K)，并运行 KDF 生成 SAE-KCK（密钥确认密钥）与 PMK。只有此时才进行确认：confirm = CN(SAE-KCK, send-confirm, 本端标量/元素, 对端标量/元素)。双方各自重新计算对端应有的校验值；不匹配即意味着口令猜测错误，认证失败。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant A as STA-A\n  participant B as STA-B\n  Note over A,B: Commitment exchange\n  A->>B: SAE Commit (scalar, element)\n  B->>A: SAE Commit (scalar, element)\n  Note over A,B: derive K, SAE-KCK, PMK\n  Note over A,B: Confirmation exchange\n  A->>B: SAE Confirm (send-confirm, confirm)\n  B->>A: SAE Confirm (send-confirm, confirm)\n  Note over A,B: verify -> Accepted, PMK shared",
+      "zh": "sequenceDiagram\n  participant A as STA-A\n  participant B as STA-B\n  Note over A,B: 承诺交换\n  A->>B: SAE Commit（标量, 元素）\n  B->>A: SAE Commit（标量, 元素）\n  Note over A,B: 派生 K、SAE-KCK、PMK\n  Note over A,B: 确认交换\n  A->>B: SAE Confirm（send-confirm, confirm）\n  B->>A: SAE Confirm（send-confirm, confirm）\n  Note over A,B: 校验 -> 进入 Accepted，共享 PMK"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "12.4.6 — Anti-clogging tokens: a stateless DoS defense",
+        "zh": "12.4.6——抗淤塞令牌：无状态的拒绝服务防御"
+      },
+      "en": "Processing an SAE Commit message is computationally expensive (group operations, PWE derivation), which invites a distributed denial-of-service flood from forged source MAC addresses. SAE defends statelessly: a STA keeps an Open counter of unfinished protocol instances. Once it reaches dot11RSNASAEAntiCloggingThreshold, the STA stops doing work for new commits and instead replies with a rejection carrying an Anti-Clogging Token field that is cryptographically bound to the sender's MAC (the suggested construction hashes a secret and the sender MAC with H). A legitimate peer simply echoes the token in a repeated SAE Commit; a spoofing attacker that never receives the rejection cannot produce a valid token, so the STA never expends the expensive work on it. The token is opaque to the peer and should not exceed 256 octets.",
+      "zh": "处理一条 SAE Commit 消息在计算上代价不菲（群运算、PWE 派生），这给了来自伪造源 MAC 地址的分布式拒绝服务洪泛以可乘之机。SAE 以无状态方式防御：STA 维护一个记录未完成协议实例数量的 Open 计数器。一旦该计数达到 dot11RSNASAEAntiCloggingThreshold，STA 便不再为新到的 commit 做计算，而是回复一条携带抗淤塞令牌字段的拒绝消息，该令牌以密码学方式绑定到发送方 MAC（建议的构造是用 H 对一个秘密值与发送方 MAC 做哈希）。合法对端只需在重发的 SAE Commit 中回带该令牌即可；而收不到拒绝消息的伪造攻击者无法生成有效令牌，于是 STA 永远不会为它消耗昂贵的计算。令牌对对端而言是不透明的，且不应超过 256 个八位组。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2975,
+          2976
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "12.4.7 — Framing of SAE: Authentication frames, data conversion, status codes",
+        "zh": "12.4.7——SAE 的成帧：认证帧、数据转换、状态码"
+      },
+      "en": "SAE rides inside ordinary Authentication frames with Authentication Algorithm Number = 3. An SAE Commit message uses Transaction Sequence Number 1 and carries a Finite Cyclic Group field, a Scalar field, and an FFE (element) field; an SAE Confirm message uses Transaction Sequence Number 2 and carries a Send-Confirm field and a Confirm field. Because elements and scalars are mathematical objects, 12.4.7.2 specifies exact integer-to-octet-string and element-to-octet-string conversions (smallest m such that 2^(8m) > value), and the inverse on receipt — fixed lengths are what let a receiver tell whether an Anti-Clogging Token field is present. The Status Code carries SUCCESS or SAE_HASH_TO_ELEMENT for normal commits, and rejections such as UNSUPPORTED_FINITE_CYCLIC_GROUP, UNKNOWN_PASSWORD_IDENTIFIER, ANTI_CLOGGING_TOKEN_REQUIRED, or CHALLENGE_FAILURE.",
+      "zh": "SAE 承载于普通的认证帧之中，认证算法编号字段 = 3。一条 SAE Commit 消息使用事务序号 1，携带有限循环群字段、标量字段和 FFE（元素）字段；一条 SAE Confirm 消息使用事务序号 2，携带 Send-Confirm 字段和 Confirm 字段。由于元素和标量都是数学对象，12.4.7.2 规定了精确的整数到八位组串、元素到八位组串的转换（取满足 2^(8m) > 值 的最小 m），以及接收时的逆向转换——正是这些固定长度让接收方得以判断是否存在抗淤塞令牌字段。状态码字段在正常 commit 中携带 SUCCESS 或 SAE_HASH_TO_ELEMENT，在拒绝时携带诸如 UNSUPPORTED_FINITE_CYCLIC_GROUP、UNKNOWN_PASSWORD_IDENTIFIER、ANTI_CLOGGING_TOKEN_REQUIRED 或 CHALLENGE_FAILURE。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2976,
+          2977,
+          2978
+        ]
+      }
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> Nothing\n  Nothing --> Committed: Init or Commit recv / send Commit\n  Committed --> Confirmed: peer Commit ok / send Confirm\n  Confirmed --> Accepted: peer Confirm verified\n  Committed --> Nothing: big(Sync) or fatal / Del\n  Confirmed --> Nothing: BadAuth or timeout / Fail-Del\n  Accepted --> [*]: PMK shared",
+      "zh": "stateDiagram-v2\n  [*] --> Nothing\n  Nothing --> Committed: 发起或收到 Commit / 发送 Commit\n  Committed --> Confirmed: 对端 Commit 通过 / 发送 Confirm\n  Confirmed --> Accepted: 对端 Confirm 校验通过\n  Committed --> Nothing: Sync 超限或致命 / Del\n  Confirmed --> Nothing: 认证失败或超时 / Fail-Del\n  Accepted --> [*]: 共享 PMK"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "12.4.8 — The SAE finite state machine: four states, managed by the SME",
+        "zh": "12.4.8——SAE 有限状态机：四个状态，由 SME 管理"
+      },
+      "en": "The protocol is driven by a finite state machine (Figure 12-14). A parent process managed by the SME receives SAE messages and dispatches each to a protocol instance keyed by the (local MAC, peer MAC) tuple. Each protocol instance lives in one of four states: Nothing (freshly allocated or about to be deleted), Committed (has sent a Commit, awaits the peer's Commit and Confirm), Confirmed (has sent Commit and Confirm and received the peer's Commit, awaits the peer's Confirm), and Accepted (both Commit and Confirm sent and received — finished, with the PMK shared). The SME signals Initiate and Kill; instances signal Auth, Fail, and Del back up. Timers (t0, t1) and a Sync counter handle retransmissions and bound the exchange, so the machine cannot loop forever — when Sync grows too large the instance is deleted.",
+      "zh": "协议由一个有限状态机驱动（图 12-14）。由 SME 管理的父进程接收 SAE 消息，并把每条消息分派给以（本端 MAC, 对端 MAC）元组为键的协议实例。每个协议实例处于以下四个状态之一：Nothing（刚分配或即将被删除）、Committed（已发送 Commit，等待对端的 Commit 与 Confirm）、Confirmed（已发送 Commit 与 Confirm 且已收到对端 Commit，等待对端 Confirm）、Accepted（Commit 与 Confirm 均已收发完毕——已完成，PMK 已共享）。SME 发出 Initiate 与 Kill 事件；实例向上回报 Auth、Fail 与 Del。定时器（t0、t1）与 Sync 计数器负责处理重传并为交换设界，使状态机不会无限循环——当 Sync 增长过大时，该实例即被删除。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2978,
+          2979,
+          2980
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Reading the map: 12.4.2 gives the H/CN primitives; 12.4.4 builds the math (ECC/FFC groups and the PWE); 12.4.5 is the commit/confirm protocol that yields the PMK; 12.4.6 hardens it against DoS with anti-clogging tokens; 12.4.7 puts it on the wire inside Authentication frames; and 12.4.8 is the state machine that orchestrates the whole thing. Together they are what makes WPA3-Personal resistant to the offline dictionary attacks that plagued WPA2's pre-shared-key handshake.",
+      "zh": "通读这张地图：12.4.2 给出 H/CN 原语；12.4.4 搭建数学基础（ECC/FFC 群与 PWE）；12.4.5 是产出 PMK 的 commit/confirm 协议；12.4.6 用抗淤塞令牌使其能抵御 DoS；12.4.7 把它装进认证帧送上无线信道；12.4.8 则是统筹全局的状态机。它们合在一起，正是让 WPA3-Personal 能抵御曾困扰 WPA2 预共享密钥握手的离线字典攻击的原因。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2961,
+        2962
+      ],
+      "note": "12.4.1 SAE overview and 12.4.2 Assumptions on SAE (security properties, equals/roles, H and CN HMAC primitives)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2963,
+        2964,
+        2965,
+        2966
+      ],
+      "note": "12.4.4 Finite cyclic groups: ECC/FFC group definitions, suitable group sizes, group 19, PWE generation by looping with blinding"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2971,
+        2972,
+        2973,
+        2974,
+        2975
+      ],
+      "note": "12.4.5 SAE protocol: message exchanges, PWE/secret generation, commit construction and processing, K/SAE-KCK/PMK derivation, confirm"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2975,
+        2976
+      ],
+      "note": "12.4.6 Anti-clogging tokens: Open counter, dot11RSNASAEAntiCloggingThreshold, stateless MAC-bound token"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2976,
+        2977,
+        2978
+      ],
+      "note": "12.4.7 Framing of SAE: Authentication frames (alg 3, seq 1/2), data type conversion, commit/confirm encoding, status codes"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2978,
+        2979,
+        2980
+      ],
+      "note": "12.4.8 SAE finite state machine: Figure 12-14, four states (Nothing/Committed/Confirmed/Accepted), parent process, events"
+    }
+  ],
+  "covers": [
+    "80211-2024:12.4.2",
+    "80211-2024:12.4.4",
+    "80211-2024:12.4.5",
+    "80211-2024:12.4.6",
+    "80211-2024:12.4.7",
+    "80211-2024:12.4.8"
+  ],
+  "track": "security"
+}

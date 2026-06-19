@@ -1,0 +1,220 @@
+{
+  "id": "security-32-ampe-peerkey-fils-pasn-ebcs-auth",
+  "title": {
+    "en": "Beyond the Four-Way: AMPE, PeerKey, FILS, PASN and EBCS Authentication",
+    "zh": "超越四次握手：AMPE、PeerKey、FILS、PASN 与 EBCS 认证"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "The familiar RSNA path is: authenticate, associate, run the 4-Way Handshake, and start sending encrypted data. But IEEE 802.11-2024 defines a whole family of *specialized* authentication and key-establishment methods for situations the 4-Way Handshake was never meant to cover: peering between mesh nodes, two APs that want to trust each other's scheduling, ultra-fast initial link setup, deriving keys *before* you associate, and authenticating one-way broadcast streams with no key negotiation at all. This lesson is a coverage map of those methods, with deep dives into the trickier ones.",
+      "zh": "我们熟悉的 RSNA 流程是：认证、关联、运行四次握手，然后开始发送加密数据。但 IEEE 802.11-2024 还定义了一整套*专用*的认证与密钥建立方法，用于四次握手从未打算覆盖的场景：网状节点之间的对等连接、两个互相信任调度的 AP、超快速的初始链路建立、在*关联之前*就推导密钥，以及在完全没有密钥协商的情况下认证单向广播流。本课是这些方法的覆盖地图，并对其中较复杂的部分进行深入讲解。"
+    },
+    {
+      "type": "prose",
+      "en": "Two of these are short pointers. Authenticated mesh peering exchange (AMPE, 12.9) is the mesh world's key-establishment protocol — clause 12.9 simply states that AMPE is fully defined in 14.6 (the mesh clause), so we treat it as the mesh-side counterpart to the 4-Way Handshake. AP PeerKey (12.10) is its OBSS cousin: two neighbouring APs run a Diffie-Hellman exchange of Public Key frames to build a *mesh PMKSA* and *mesh PTKSA* purely so they can protect HCCA TXOP Advertisement and QLoad Report frames — proving that whoever sent a protected scheduling frame holds a particular private key. It is deliberately *unauthenticated* (no verified identity) and is never used to carry Data frames.",
+      "zh": "其中两种只是简短的指引。认证网状对等交换（AMPE，12.9）是网状世界的密钥建立协议——12.9 条仅说明 AMPE 的完整定义在 14.6（网状条款）中，因此我们把它当作四次握手在网状侧的对应物。AP PeerKey（12.10）是它在 OBSS 中的近亲：两个相邻的 AP 通过交换公钥帧（Public Key frame）运行 Diffie-Hellman 交换，构建*网状 PMKSA*与*网状 PTKSA*，其唯一目的是保护 HCCA TXOP 通告帧和 QLoad 报告帧——以此证明发送某个受保护调度帧的一方持有特定私钥。它有意是*未认证的*（双方身份均未经验证），且从不用于承载数据帧。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "AP PeerKey reuses SAE's discrete-log cryptography (12.4): each AP has a public/private key in a finite cyclic group (group 19 is mandatory). After exchanging public keys they compute a Diffie-Hellman shared secret k, extract entropy with H to get keyseed, then derive the PMK with KDF and a fixed label 'AP Peerkey Protocol'. The resulting PMK is bound to no identity — it only proves possession of a private key, which is exactly enough to trust a scheduling peer.",
+      "zh": "AP PeerKey 复用了 SAE 的离散对数密码学（12.4）：每个 AP 在有限循环群中拥有一对公私钥（群 19 为必选）。交换公钥后，双方计算 Diffie-Hellman 共享密钥 k，用 H 提取熵得到 keyseed，再用 KDF 和固定标签 “AP Peerkey Protocol” 推导出 PMK。所得到的 PMK 不绑定任何身份——它只证明持有某个私钥，而这恰好足以信任一个调度对端。"
+    },
+    {
+      "type": "prose",
+      "en": "FILS authentication (12.11) targets *Fast Initial Link Setup*: getting a station securely onto a network in as few frames as possible. FILS is a full RSNA authentication protocol that authenticates STA and AP to each other using either a *shared key* (FILS Shared Key, optionally with Perfect Forward Secrecy) or a *public key* (FILS Public Key, always with PFS). Key establishment happens in the Authentication frames; key confirmation rides on the (Re)Association Request/Response. With Shared Key, the STA leverages an EAP-RP rRK held with a trusted third party (RFC 6696) or a cached PMK; with Public Key, both sides trust each other's X.509v3 certificate or a hash-identified raw public key.",
+      "zh": "FILS 认证（12.11）面向*快速初始链路建立*（Fast Initial Link Setup）：用尽可能少的帧让站点安全接入网络。FILS 是一个完整的 RSNA 认证协议，使用*共享密钥*（FILS 共享密钥，可选配合完全前向保密 PFS）或*公钥*（FILS 公钥，始终启用 PFS）来让 STA 与 AP 互相认证。密钥建立在认证帧中完成；密钥确认则搭载在（重）关联请求/响应中。使用共享密钥时，STA 借助与可信第三方共享的 EAP-RP rRK（RFC 6696）或缓存的 PMK；使用公钥时，双方信任对方的 X.509v3 证书或以哈希标识的裸公钥。"
+    },
+    {
+      "type": "prose",
+      "en": "PASN — Preassociation security negotiation (12.13) — solves a different problem: deriving a PTKSA *before* you associate, in a tidy three-message Authentication exchange (algorithm number 7, sequence numbers 1/2/3). It is primarily used so an AP and STA can protect management frames (notably secure ranging) ahead of association. PASN always exchanges ephemeral public keys for PFS. If a cached PMK exists for a chosen 'base AKMP', the resulting PTKSA is mutually authenticated; if not, PASN can derive a PTKSA from the ephemeral keys alone (no PMKSA), making it a non-RSNA protocol. Frames 2 and 3 carry a MIC under the Key Confirmation Key for integrity.",
+      "zh": "PASN——预关联安全协商（Preassociation security negotiation，12.13）——解决的是另一个问题：在你关联*之前*就推导出 PTKSA，整个过程是一个简洁的三消息认证交换（算法编号 7，序列号 1/2/3）。它主要用于让 AP 与 STA 在关联之前就能保护管理帧（尤其是安全测距）。PASN 始终交换临时公钥以实现 PFS。若所选“基础 AKMP”存在缓存的 PMK，则所得 PTKSA 是双向认证的；若没有，PASN 可仅凭临时密钥推导出 PTKSA（无 PMKSA），此时它是一个非 RSNA 协议。第 2、3 帧携带在密钥确认密钥（KCK）下计算的 MIC 以保证完整性。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant S as STA / Supplicant\n  participant A as AP / Authenticator\n  A-->>S: Beacon (RSNE: PASN+Base AKMP)\n  S->>A: Auth PASN seq=1 (RSNE, PMKIDs, S-ephemeral pub, Wrapped Data)\n  A->>S: Auth PASN seq=2 (A-ephemeral pub, Wrapped Data, MIC)\n  S->>A: Auth PASN seq=3 (Wrapped Data, MIC)\n  Note over S,A: PTKSA installed (KCK, TK, optional KDK)",
+      "zh": "sequenceDiagram\n  participant S as STA / 申请方\n  participant A as AP / 认证方\n  A-->>S: 信标 (RSNE: PASN+基础 AKMP)\n  S->>A: 认证 PASN 序号=1 (RSNE, PMKID 列表, S 临时公钥, 封装数据)\n  A->>S: 认证 PASN 序号=2 (A 临时公钥, 封装数据, MIC)\n  S->>A: 认证 PASN 序号=3 (封装数据, MIC)\n  Note over S,A: 安装 PTKSA (KCK, TK, 可选 KDK)"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "PASN deep dive: base AKMPs, FILS-shared-key, FT, tunneled PASN, key derivation and MIC",
+        "zh": "PASN 深入：基础 AKMP、FILS 共享密钥、FT、隧道式 PASN、密钥推导与 MIC"
+      },
+      "en": "PASN is parameterized by a *base AKMP* that decides how (or whether) a PMK enters the picture. (1) Key establishment (12.13.3): the STA picks a base AKMP, pairwise cipher and finite cyclic group, generates an ephemeral key pair, and sends frame 1; the AP validates the RSNE/group/public key, derives the PTKSA (12.13.8) and replies with frame 2; the STA confirms with frame 3. Group 19 support is mandatory. (2) FILS shared key (12.13.4): when no PMK is cached, the first frame's Wrapped Data carries an EAP-Initiate/Re-auth packet; the AP relays it to the AS, gets back EAP-Finish/Re-auth plus the rMSK, and the rMSK feeds PMKSA derivation where SNonce/ANonce are the two ephemeral public keys and DHss is the PASN shared secret. (3) FT (12.13.6): with FT base AKMPs the FT key hierarchy must already exist; Wrapped Data carries the RSNE+MDE+FTE of the FT message — present means FT-PASN, absent means non-FT PASN. (4) Tunneled PASN (12.13.7): a STA reaches a *target* AP through a first AP it already has a PASN session with (same SSID, or same mobility domain for FT); the Tunneled PASN element carries the STA's intended address and the target BSSID, and the ephemeral key is the one meant for the target. (5) PTKSA derivation (12.13.8): PTK = KDF-HASH-NNN(PMK, 'PASN PTK Derivation', SPA || BSSID || DHss), split into KCK, TK and an optional KDK (for secure LTF). When there is no base AKMP the PMK is the literal 'PMKz' padded with 28 zeros. (6) MIC computation (12.13.9): frame 2's MIC = HMAC-HASH(KCK, BSSID || SPA || Beacon RSNE || Beacon RSNXE || Frame Data) — folding in the Beacon RSNE/RSNXE defeats downgrade attacks; frame 3's MIC = HMAC-HASH(KCK, SPA || BSSID || hash(frame 1) || Frame Data), taking the first MMM (16 or 24) octets.",
+      "zh": "PASN 由一个*基础 AKMP*参数化，它决定 PMK 如何（或是否）参与。(1) 密钥建立（12.13.3）：STA 选定基础 AKMP、成对密码套件和有限循环群，生成临时密钥对并发送第 1 帧；AP 校验 RSNE/群/公钥，推导 PTKSA（12.13.8）并回复第 2 帧；STA 用第 3 帧确认。群 19 为必选支持。(2) FILS 共享密钥（12.13.4）：当没有缓存 PMK 时，第 1 帧的封装数据携带 EAP-Initiate/Re-auth 报文；AP 转发给 AS，取回 EAP-Finish/Re-auth 及 rMSK，rMSK 用于 PMKSA 推导，其中 SNonce/ANonce 为两个临时公钥，DHss 为 PASN 共享密钥。(3) FT（12.13.6）：使用 FT 基础 AKMP 时，FT 密钥层级必须已建立；封装数据携带 FT 消息的 RSNE+MDE+FTE——存在即为 FT-PASN，不存在即为非 FT 的 PASN。(4) 隧道式 PASN（12.13.7）：STA 通过已建立 PASN 会话的第一个 AP（同 SSID，或 FT 情形下同移动域）到达*目标* AP；隧道式 PASN 元素携带 STA 拟用地址和目标 BSSID，所传临时密钥即为面向目标的密钥。(5) PTKSA 推导（12.13.8）：PTK = KDF-HASH-NNN(PMK, 'PASN PTK Derivation', SPA || BSSID || DHss)，拆分为 KCK、TK 和可选的 KDK（用于安全 LTF）。当无基础 AKMP 时，PMK 取字面值 'PMKz' 并补 28 个零。(6) MIC 计算（12.13.9）：第 2 帧 MIC = HMAC-HASH(KCK, BSSID || SPA || 信标 RSNE || 信标 RSNXE || 帧数据)——把信标 RSNE/RSNXE 纳入可挫败降级攻击；第 3 帧 MIC = HMAC-HASH(KCK, SPA || BSSID || hash(第 1 帧) || 帧数据)，取前 MMM（16 或 24）字节。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3119,
+          3124,
+          3126,
+          3127,
+          3128
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The last family is EBCS frame authentication (12.15) — *Enhanced Broadcast Service*. Broadcast streams have no return channel and many receivers, so a handshake is impossible; EBCS instead provides *one-way* authentication that needs no key negotiation. There are three flavours. Public-key frame authentication (PKFA) signs each EBCS Info frame and each Data MPDU with RSASSA-PSS or ECDSA, verified against a CA-signed certificate — best for occasional or time-sensitive transfers. Hash-chain frame authentication (HCFA) uses the TESLA scheme (RFC 4082): a signature anchors a reverse hash chain whose keys are disclosed on a delay, amortising cost across a continuous stream like live video. And the no-frame-authentication option leaves source authentication entirely to a higher layer (HLSA).",
+      "zh": "最后一类是 EBCS 帧认证（12.15）——*增强广播服务*（Enhanced Broadcast Service）。广播流没有回传信道且接收者众多，握手无从谈起；EBCS 转而提供无需密钥协商的*单向*认证，共有三种风味。公钥帧认证（PKFA）用 RSASSA-PSS 或 ECDSA 对每个 EBCS Info 帧和每个数据 MPDU 签名，并依据由 CA 签发的证书验证——最适合偶发或时间敏感的传输。哈希链帧认证（HCFA）采用 TESLA 方案（RFC 4082）：以一个签名锚定一条逆向哈希链，其密钥延迟披露，从而将开销摊薄到像直播视频这样的连续流上。而无帧认证选项则把源认证完全交给更高层（HLSA）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"18\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">EBCS one-way authentication</text><rect x=\"10\" y=\"32\" width=\"120\" height=\"40\"/><text x=\"20\" y=\"50\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">PKFA</text><text x=\"20\" y=\"64\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">sign each frame</text><rect x=\"150\" y=\"32\" width=\"120\" height=\"40\"/><text x=\"160\" y=\"50\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">HCFA (TESLA)</text><text x=\"160\" y=\"64\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">hash chain + delay</text><rect x=\"290\" y=\"32\" width=\"120\" height=\"40\"/><text x=\"300\" y=\"50\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">HLSA</text><text x=\"300\" y=\"64\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">higher layer only</text><line x1=\"70\" y1=\"72\" x2=\"70\" y2=\"110\"/><line x1=\"210\" y1=\"72\" x2=\"210\" y2=\"110\"/><line x1=\"350\" y1=\"72\" x2=\"350\" y2=\"110\"/><text x=\"30\" y=\"126\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">occasional /</text><text x=\"30\" y=\"138\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">time-sensitive</text><text x=\"165\" y=\"126\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">continuous</text><text x=\"165\" y=\"138\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">streaming</text><text x=\"320\" y=\"126\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">no MAC-layer</text><text x=\"320\" y=\"138\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">frame auth</text></svg>",
+      "caption": {
+        "en": "EBCS offers three one-way authentication choices, trading computational cost (PKFA) against latency/buffering (HCFA) against deferral to the higher layer (HLSA).",
+        "zh": "EBCS 提供三种单向认证选择，在计算开销（PKFA）、时延/缓冲（HCFA）与交由更高层处理（HLSA）之间权衡。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "EBCS deep dive: PKFA signatures, HCFA hash chains, and the HLSA fallback",
+        "zh": "EBCS 深入：PKFA 签名、HCFA 哈希链与 HLSA 回退"
+      },
+      "en": "Coverage map for 12.15. General (12.15.1): EBCS DL uses PKFA, HCFA (with or without instant authentication), or HLSA; EBCS UL uses PKFA or HLSA. Both PKFA and HCFA require CA certificates pre-installed in receivers as trusted roots, and the transmitter's public key must be CA-signed; EBCS never encrypts (use a higher layer if you need confidentiality). PKFA (12.15.2): the transmitter signs EBCS Info frames with RSASSA-PSS or ECDSA over (its MAC address || frame fields); receivers check timestamp freshness, verify the certificate chain to the CA, then verify the signature (12.15.2.2). Each Data MPDU uses the PKFA MPDU format (Timestamp, Data Sequence, Data Length, Data, Signature) and is verified the same way (12.15.2.3-4). EBCS UL frames are likewise signed by the non-AP STA and checked by an EBCS proxy, with frame-count replay protection (12.15.2.5-6). HCFA (12.15.3): built on TESLA (RFC 4082); EBCS Info frames carry a signed chain anchor while Data frames are authenticated with delayed-disclosure keys, with optional 'instant authentication' to avoid buffering malicious MPDUs. Timing is governed by dot11EBCSInfoInterval (TI) and dot11EBCSHCFAKeyChangeInterval (TK), and frames are identified by HCFA sequence, Content ID, key sequence and data sequence numbers. HLSA (12.15.4): if neither PKFA nor HCFA is used, source authentication must come from a higher layer (out of scope); EBCS Info frame authentication is then optional, but if the Info frame includes the AP's certificate the receiver must authenticate it per 12.15.2.2.",
+      "zh": "12.15 覆盖地图。总则（12.15.1）：EBCS 下行使用 PKFA、HCFA（带或不带即时认证）或 HLSA；EBCS 上行使用 PKFA 或 HLSA。PKFA 与 HCFA 都要求接收者预装 CA 证书作为可信根，且发送端公钥须经 CA 签名；EBCS 从不加密（如需机密性请用更高层）。PKFA（12.15.2）：发送端用 RSASSA-PSS 或 ECDSA 对（自身 MAC 地址 || 帧字段）签名 EBCS Info 帧；接收者检查时间戳新鲜度，验证到 CA 的证书链，再验证签名（12.15.2.2）。每个数据 MPDU 采用 PKFA MPDU 格式（时间戳、数据序号、数据长度、数据、签名），以相同方式验证（12.15.2.3-4）。EBCS 上行帧同样由非 AP STA 签名，并由 EBCS 代理验证，附带基于帧计数的重放保护（12.15.2.5-6）。HCFA（12.15.3）：基于 TESLA（RFC 4082）；EBCS Info 帧携带签名的链锚，数据帧用延迟披露的密钥认证，可选“即时认证”以避免缓冲恶意 MPDU。时序由 dot11EBCSInfoInterval（TI）和 dot11EBCSHCFAKeyChangeInterval（TK）控制，帧由 HCFA 序号、内容 ID、密钥序号和数据序号标识。HLSA（12.15.4）：若 PKFA 与 HCFA 均不使用，源认证须由更高层提供（超出本标准范围）；此时 EBCS Info 帧认证为可选，但若 Info 帧含 AP 证书，接收者须按 12.15.2.2 进行认证。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3130,
+          3131,
+          3132,
+          3134,
+          3141
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Quick coverage map: where each method lives and what it is for",
+        "zh": "快速覆盖地图：各方法所在位置及其用途"
+      },
+      "en": "AMPE (12.9) — authenticated mesh peering exchange; clause 12.9 defers entirely to 14.6 (mesh). AP PeerKey (12.10): overview (12.10.1) establishes an unauthenticated mesh PMKSA/PTKSA between two APs to protect OBSS scheduling frames; the protocol (12.10.2) is an SAE-style Public Key frame exchange in finite cyclic groups (group 19 mandatory). FILS (12.11): general (12.11.1) defines FILS as an RSNA protocol authenticating via shared key (optional PFS) or public key (always PFS); the protocol (12.11.2) does key establishment in Authentication frames and key confirmation in (Re)Association frames. PASN (12.13): general (12.13.1) — a three-message preassociation exchange yielding a PTKSA with or without mutual authentication; key establishment (12.13.3); with FILS shared key (12.13.4); with FT (12.13.6); tunneled (12.13.7); MIC computation (12.13.9). EBCS (12.15): general (12.15.1); PKFA (12.15.2); HCFA (12.15.3); HLSA / no frame authentication (12.15.4).",
+      "zh": "AMPE（12.9）——认证网状对等交换；12.9 条完全指向 14.6（网状）。AP PeerKey（12.10）：概述（12.10.1）在两个 AP 之间建立未认证的网状 PMKSA/PTKSA 以保护 OBSS 调度帧；协议（12.10.2）是有限循环群中的 SAE 式公钥帧交换（群 19 必选）。FILS（12.11）：总则（12.11.1）将 FILS 定义为 RSNA 协议，通过共享密钥（可选 PFS）或公钥（始终 PFS）认证；协议（12.11.2）在认证帧中做密钥建立、在（重）关联帧中做密钥确认。PASN（12.13）：总则（12.13.1）——产生 PTKSA（可带或不带双向认证）的三消息预关联交换；密钥建立（12.13.3）；配合 FILS 共享密钥（12.13.4）；配合 FT（12.13.6）；隧道式（12.13.7）；MIC 计算（12.13.9）。EBCS（12.15）：总则（12.15.1）；PKFA（12.15.2）；HCFA（12.15.3）；HLSA / 无帧认证（12.15.4）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3098,
+          3099,
+          3102,
+          3118,
+          3130
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3098
+      ],
+      "note": "12.9 AMPE (defers to 14.6); 12.10 / 12.10.1 AP PeerKey overview"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3099,
+        3100,
+        3101
+      ],
+      "note": "12.10.2 AP PeerKey protocol: SAE-style public-key exchange, PMK/PMKID derivation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3102,
+        3103
+      ],
+      "note": "12.11 / 12.11.1 FILS general; 12.11.2 FILS authentication protocol"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3118
+      ],
+      "note": "12.13 / 12.13.1 PASN general (three-message exchange, with/without mutual auth)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3119,
+        3120,
+        3121,
+        3122,
+        3123
+      ],
+      "note": "12.13.3 key establishment, PASN frame construction/processing, Figure 12-59"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3124
+      ],
+      "note": "12.13.4 PASN with FILS shared key (EAP-RP rMSK feeds PMKSA derivation)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3126
+      ],
+      "note": "12.13.6 PASN with FT; 12.13.7 tunneled PASN"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3127,
+        3128
+      ],
+      "note": "12.13.8 PTKSA derivation; 12.13.9 MIC computation for second/third PASN frame"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3130
+      ],
+      "note": "12.15 / 12.15.1 EBCS frame authentication general (PKFA/HCFA/HLSA, one-way)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3131,
+        3132,
+        3133,
+        3134
+      ],
+      "note": "12.15.2 PKFA signatures and MPDU format; 12.15.3.1 HCFA general (TESLA)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3141
+      ],
+      "note": "12.15.4 / 12.15.4.1 HLSA — no frame authentication, higher-layer source auth"
+    }
+  ],
+  "covers": [
+    "80211-2024:12.9",
+    "80211-2024:12.10.1",
+    "80211-2024:12.10.2",
+    "80211-2024:12.11.1",
+    "80211-2024:12.11.2",
+    "80211-2024:12.13.1",
+    "80211-2024:12.13.3",
+    "80211-2024:12.13.4",
+    "80211-2024:12.13.6",
+    "80211-2024:12.13.7",
+    "80211-2024:12.13.9",
+    "80211-2024:12.15.1",
+    "80211-2024:12.15.2",
+    "80211-2024:12.15.3",
+    "80211-2024:12.15.4"
+  ],
+  "track": "security"
+}

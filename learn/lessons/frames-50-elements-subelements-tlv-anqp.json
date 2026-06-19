@@ -1,0 +1,154 @@
+{
+  "id": "frames-50-elements-subelements-tlv-anqp",
+  "title": {
+    "en": "The Information Element Toolbox: Elements, Subelements, TLVs and Query Protocols",
+    "zh": "信息元素工具箱：元素、子元素、TLV 与查询协议"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Management frames carry a lot of variable, optional information: an SSID name, a list of supported rates, security parameters, capability advertisements. Rather than inventing a new fixed layout for every message, 802.11 standardizes a small set of reusable encoding shapes. This lesson walks the whole 9.4 toolbox: plain fields that are NOT elements, the Element family, subelements nested inside them, generic TLV encodings, and two query-protocol element families (ANQP and RLQP). Learn these five shapes once and you can read almost any management-frame body.",
+      "zh": "管理帧需要携带大量可变、可选的信息：SSID 名称、支持速率列表、安全参数、能力通告等。802.11 没有为每一种消息单独发明固定布局，而是标准化了一小组可复用的编码形态。本课带你走完整个 9.4 工具箱：不属于元素的普通字段、元素家族、嵌套其中的子元素、通用的 TLV 编码，以及两个查询协议元素家族（ANQP 与 RLQP）。掌握这五种形态，你几乎就能读懂任何管理帧主体。"
+    },
+    {
+      "type": "prose",
+      "en": "First, not everything in a frame body is an 'element'. Subclause 9.4.1 collects the fixed-meaning fields that ride directly in the body without an ID/length wrapper — for example the Authentication Algorithm Number, the Beacon Interval, the Capability Information field, the Status Code, the Timestamp, the Dialog Token, and many more. Each has a known size and known position defined by the frame format itself, so it needs no self-describing header. When you see a 2-octet Beacon Interval or a 2-octet Capability Information field, that is a 9.4.1 field, not an element.",
+      "zh": "首先，帧主体里并非所有内容都是“元素”。9.4.1 小节汇集了那些含义固定、直接出现在主体中、不带 ID/长度包装的字段——例如认证算法编号、信标间隔、能力信息字段、状态码、时间戳、对话令牌等等。每个字段都有由帧格式本身定义的已知大小和已知位置，因此不需要自描述的头部。当你看到 2 字节的信标间隔或 2 字节的能力信息字段时，那就是一个 9.4.1 字段，而不是元素。"
+    },
+    {
+      "type": "prose",
+      "en": "The workhorse is the Element (9.4.2). Every element shares one general format: a 1-octet Element ID, a 1-octet Length, an optional 1-octet Element ID Extension, then a variable Information field. The Length counts only the octets after the ID and Length fields. The Element ID Extension is present only when the element's row in the master Element ID table (Table 9-130) calls for it — in practice when the base Element ID equals the special value 255, the real identity is carried in the extension octet. This is how the standard expanded past 256 element types without breaking old parsers.",
+      "zh": "主力是元素（9.4.2）。每个元素共享同一种通用格式：1 字节的元素 ID、1 字节的长度、可选的 1 字节元素 ID 扩展，然后是可变长度的信息字段。长度字段只计入 ID 与长度字段之后的字节数。只有当元素在主元素 ID 表（表 9-130）中对应的行要求时，元素 ID 扩展才会出现——实际上当基础元素 ID 等于特殊值 255 时，真正的身份由扩展字节承载。标准正是借此在不破坏旧解析器的前提下，把元素类型扩展到了 256 种以上。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 90\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\" font-size=\"12\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"25\" width=\"70\" height=\"34\"/><rect x=\"80\" y=\"25\" width=\"70\" height=\"34\"/><rect x=\"150\" y=\"25\" width=\"110\" height=\"34\"/><rect x=\"260\" y=\"25\" width=\"190\" height=\"34\"/></g><g fill=\"currentColor\" text-anchor=\"middle\"><text x=\"45\" y=\"46\">Element ID</text><text x=\"115\" y=\"46\">Length</text><text x=\"205\" y=\"42\">Element ID</text><text x=\"205\" y=\"55\">Extension</text><text x=\"355\" y=\"46\">Information</text><text x=\"45\" y=\"75\">1</text><text x=\"115\" y=\"75\">1</text><text x=\"205\" y=\"75\">0 or 1</text><text x=\"355\" y=\"75\">variable</text><text x=\"10\" y=\"18\" text-anchor=\"start\">Octets</text></g></svg>",
+      "caption": {
+        "en": "The common Element format (9.4.2.1): Element ID, Length, optional Element ID Extension, variable Information. Length counts only the Information (plus extension), not the ID and Length octets.",
+        "zh": "通用元素格式（9.4.2.1）：元素 ID、长度、可选的元素 ID 扩展、可变长度信息字段。长度只计入信息字段（含扩展），不含 ID 与长度两个字节。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A single Length octet maxes out at 255. Some elements carry more, so the standard marks certain elements 'Fragmentable' (a column in Table 9-130): the content is split across an element plus following Fragment elements. Likewise 'Extensible' elements may gain new trailing fields in future amendments, so a parser must skip unknown trailing bytes rather than reject the element.",
+      "zh": "单个长度字节最多只能表示 255。有些元素携带的内容更长，因此标准把某些元素标记为“可分片”（表 9-130 中的一列）：内容会被拆分到一个元素加上随后的分片元素中。同样，“可扩展”元素可能在未来修订中新增尾部字段，所以解析器必须跳过未知的尾部字节，而不是拒绝整个元素。"
+    },
+    {
+      "type": "prose",
+      "en": "Elements can nest. A subelement (9.4.3) has its own compact format — a 1-octet Subelement ID, a 1-octet Length, and a variable Data field — and lives INSIDE a containing element (or another subelement, or a field). Each Subelement ID is unique only within its container, so the same ID number can mean different things in different elements. Subelements within a container are ordered by nondecreasing Subelement ID, and (apart from Vendor Specific) only one of each ID appears. Like elements, a subelement may be declared extensible so it can grow later.",
+      "zh": "元素可以嵌套。子元素（9.4.3）有自己的紧凑格式——1 字节子元素 ID、1 字节长度、可变长度数据字段——并存在于某个容器元素内部（或另一个子元素、或某个字段内部）。每个子元素 ID 只在其所属容器内唯一，因此同一个 ID 编号在不同元素中可以表示不同含义。容器内的子元素按子元素 ID 非递减排序，且（厂商专有除外）每种 ID 只出现一次。与元素一样，子元素也可被声明为可扩展，以便日后增长。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n  F[\"Management frame body\"] --> N[\"9.4.1 fields (no ID/length)\"]\n  F --> E[\"9.4.2 Element: ID + Len + opt ExtID + Info\"]\n  E --> S[\"9.4.3 Subelement: SubID + Len + Data\"]\n  E -->|Info ID family| A[\"9.4.5 ANQP-element\"]\n  E -->|Info ID family| R[\"9.4.6 RLQP-element\"]\n  E -.carries.-> T[\"9.4.4 TLV: Type + Len + Value\"]",
+      "zh": "graph TD\n  F[\"管理帧主体\"] --> N[\"9.4.1 字段（无 ID/长度）\"]\n  F --> E[\"9.4.2 元素：ID + 长度 + 可选扩展ID + 信息\"]\n  E --> S[\"9.4.3 子元素：子ID + 长度 + 数据\"]\n  E -->|Info ID 家族| A[\"9.4.5 ANQP 元素\"]\n  E -->|Info ID 家族| R[\"9.4.6 RLQP 元素\"]\n  E -.携带.-> T[\"9.4.4 TLV：类型 + 长度 + 值\"]"
+    },
+    {
+      "type": "prose",
+      "en": "When the same wrapper idea is used to carry parameters that are not formal elements, 802.11 uses TLV encodings (9.4.4). A TLV is a Type / Length / Value tuple: a 1-octet Type, a 1-octet Length giving the number of octets in the Value, and the Value itself. TLVs can be a single octet, a single multi-octet value, or compound (Value built from further fields). They even nest: an 'm.n' type means a TLV of type n embedded inside the Value of a TLV of type m. A Scope/Country code column binds some TLVs to a regulatory entity (an ISO 3166-1 country code) — these TLVs are the building blocks of the white-space and channel-availability machinery.",
+      "zh": "当需要用同样的包装思路来携带并非正式元素的参数时，802.11 使用 TLV 编码（9.4.4）。一个 TLV 就是类型/长度/值三元组：1 字节类型、1 字节长度（给出值字段的字节数）、以及值本身。TLV 可以是单字节、单个多字节值，或复合型（值由更多字段构成）。它们还能嵌套：“m.n”型表示类型为 n 的 TLV 嵌入在类型为 m 的 TLV 的值字段中。一个“范围/国家代码”列把某些 TLV 绑定到监管实体（ISO 3166-1 国家代码）——这些 TLV 正是空白频谱与频道可用性机制的基础构件。"
+    },
+    {
+      "type": "prose",
+      "en": "The last two families share a distinct format built for query protocols. An ANQP-element (9.4.5) — Access Network Query Protocol — uses a 2-octet Info ID, a 2-octet Length, then a variable Information field. Note the WIDER 2-octet ID and Length compared to an ordinary element: ANQP carries pre-association network discovery data such as the Query List, Capability List, Venue Name, NAI Realm, 3GPP Cellular Network, and Domain Name, typically transported over GAS. The Info ID space (Table 9-426) starts at 256, leaving the low values reserved.",
+      "zh": "最后两个家族共享一种为查询协议设计的独特格式。ANQP 元素（9.4.5）——接入网查询协议——使用 2 字节 Info ID、2 字节长度，然后是可变长度的信息字段。注意它的 ID 与长度都是 2 字节，比普通元素更宽：ANQP 携带关联前的网络发现数据，例如查询列表、能力列表、场所名称、NAI Realm、3GPP 蜂窝网络、域名等，通常通过 GAS 传输。其 Info ID 空间（表 9-426）从 256 开始，低位数值保留。"
+    },
+    {
+      "type": "prose",
+      "en": "Its sibling, the RLQP-element (9.4.6) — Registered Location Query Protocol — uses the identical 2-octet Info ID / 2-octet Length / variable Information shape. RLQP carries the channel-availability conversation for regulated bands: the Channel Availability Query, Channel Schedule Management, and Network Channel Control elements (Info IDs 273-275 in Table 9-446), again exchanged over GAS. A Channel Availability Query, for instance, names the requesting and responding STA addresses, a Reason Result Code, and the per-device TLVs from 9.4.4 — a neat example of the families composing together.",
+      "zh": "它的同胞 RLQP 元素（9.4.6）——注册位置查询协议——使用完全相同的 2 字节 Info ID / 2 字节长度 / 可变信息字段的形态。RLQP 携带受监管频段的频道可用性对话：频道可用性查询、频道调度管理、网络频道控制等元素（表 9-446 中 Info ID 为 273–275），同样通过 GAS 交换。例如一个频道可用性查询会给出请求方与响应方 STA 地址、原因结果码，以及来自 9.4.4 的逐设备 TLV——这正是各家族相互组合的一个利落示例。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the six units of 9.4 and exactly what each defines",
+        "zh": "覆盖地图：9.4 的六个单元，以及每个单元具体定义了什么"
+      },
+      "en": "9.4.1 'Fields that are not elements' — fixed-meaning fields placed directly in a frame body with no ID/length wrapper (Authentication Algorithm Number, Beacon Interval, Capability Information, Status Code, Timestamp, Dialog Token, AID, Reason Code, and dozens more). 9.4.2 'Elements' — the common Element format: 1-octet Element ID, 1-octet Length, optional 1-octet Element ID Extension (present when the base ID is 255), variable Information; Table 9-130 is the master ID registry with Extensible and Fragmentable columns. 9.4.3 'Subelements' — nested ID(1)/Length(1)/Data format; Subelement IDs are unique only within their container, ordered by nondecreasing ID, normally one per ID except Vendor Specific. 9.4.4 'TLV encodings' — Type(1)/Length(1)/Value tuples used to carry parameters in Management frames; single-octet, single-value, or compound; 'm.n' nesting; an optional Scope/Country code binding (ISO 3166-1). 9.4.5 'ANQP-elements' — 2-octet Info ID + 2-octet Length + Information; Info IDs from 256 in Table 9-426 (Query List, Capability List, Venue Name, NAI Realm, etc.). 9.4.6 'RLQP-elements' — same 2-octet Info ID / Length / Information shape; Info IDs 273-275 in Table 9-446 (Channel Availability Query, Channel Schedule Management, Network Channel Control) plus Vendor Specific.",
+      "zh": "9.4.1“不属于元素的字段”——含义固定、不带 ID/长度包装、直接置于帧主体中的字段（认证算法编号、信标间隔、能力信息、状态码、时间戳、对话令牌、AID、原因码等数十个）。9.4.2“元素”——通用元素格式：1 字节元素 ID、1 字节长度、可选 1 字节元素 ID 扩展（基础 ID 为 255 时出现）、可变信息；表 9-130 是主 ID 登记表，含可扩展与可分片两列。9.4.3“子元素”——嵌套的 ID(1)/长度(1)/数据格式；子元素 ID 仅在容器内唯一，按 ID 非递减排序，除厂商专有外通常每种 ID 只一个。9.4.4“TLV 编码”——用于在管理帧中携带参数的类型(1)/长度(1)/值三元组；可为单字节、单值或复合型；支持“m.n”嵌套；含可选的范围/国家代码绑定（ISO 3166-1）。9.4.5“ANQP 元素”——2 字节 Info ID + 2 字节长度 + 信息；表 9-426 中 Info ID 从 256 起（查询列表、能力列表、场所名称、NAI Realm 等）。9.4.6“RLQP 元素”——相同的 2 字节 Info ID / 长度 / 信息形态；表 9-446 中 Info ID 为 273–275（频道可用性查询、频道调度管理、网络频道控制）外加厂商专有。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          834,
+          923,
+          1580,
+          1581,
+          1586,
+          1622
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Quick tell-apart rule. 1-octet ID + 1-octet Length = an Element (9.4.2) or Subelement/TLV depending on context. 2-octet Info ID + 2-octet Length = a query-protocol element (ANQP 9.4.5 or RLQP 9.4.6). No ID/Length wrapper at all, fixed position = a 9.4.1 field. The width of the ID and Length is your fastest clue to which family you are reading.",
+      "zh": "快速辨别法。1 字节 ID + 1 字节长度 = 元素（9.4.2），或视上下文为子元素/TLV。2 字节 Info ID + 2 字节长度 = 查询协议元素（ANQP 9.4.5 或 RLQP 9.4.6）。完全没有 ID/长度包装、位置固定 = 9.4.1 字段。ID 与长度的宽度，是你判断正在阅读哪个家族最快的线索。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        834
+      ],
+      "note": "9.4.1 Fields that are not elements — Authentication Algorithm Number, etc.; intro to 9.4 frame body components"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        923
+      ],
+      "note": "9.4.2.1 General + Figure 9-208 Element format (Element ID / Length / Element ID Extension / Information) and Table 9-130 Element IDs"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        933,
+        935
+      ],
+      "note": "9.4.2 Element ID table showing the 255 extension marker plus Extensible and Fragmentable columns"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1580
+      ],
+      "note": "9.4.3 Subelements — Figure 9-1078 Subelement format (Subelement ID / Length / Data), ordering and uniqueness rules"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1581
+      ],
+      "note": "9.4.4 TLV encodings — Table 9-418 General TLV format, single/compound/m.n nesting, Scope/Country code"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1586,
+        1587
+      ],
+      "note": "9.4.5 ANQP-elements — Figure 9-1079 (2-octet Info ID / 2-octet Length / Information) and Table 9-426 Info IDs from 256"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1622,
+        1623
+      ],
+      "note": "9.4.6 RLQP-elements — Figure 9-1159 format and Table 9-446 (Channel Availability Query / Channel Schedule Management / Network Channel Control)"
+    }
+  ],
+  "covers": [
+    "80211-2024:9.4.1",
+    "80211-2024:9.4.2",
+    "80211-2024:9.4.3",
+    "80211-2024:9.4.4",
+    "80211-2024:9.4.5",
+    "80211-2024:9.4.6"
+  ],
+  "track": "frames"
+}

@@ -1,0 +1,217 @@
+{
+  "id": "80211core-41-mlme-sap-security-event-measurement-primitives",
+  "title": {
+    "en": "More Control Knobs: Key, Event, Measurement and Feature MLME-SAP Primitives",
+    "zh": "更多控制旋钮：密钥、事件、测量与功能类 MLME-SAP 原语"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "We have already met the famous MLME-SAP primitives — scan, join, authenticate, associate. But the management entity (the SME) needs many more control knobs than that. Clauses 6.5.14 through 6.5.29 collect a long tail of primitives covering encryption keys, event logging, on-channel tunneling, beamforming, throughput estimation, wake-up radio discovery, and broadcast services. This lesson is a guided coverage map: a few high-value primitives explained in depth, and the rest organized so you can see exactly what each one does and where it lives in the standard.",
+      "zh": "我们已经认识了几个著名的 MLME-SAP 原语——扫描、加入、认证、关联。但管理实体（SME）需要的控制旋钮远不止这些。第 6.5.14 至 6.5.29 节汇集了一长串原语，涵盖加密密钥、事件日志、同信道隧道、波束成形、吞吐量估计、唤醒无线电发现以及广播业务。本课是一张带导览的覆盖地图：少数高价值原语深入讲解，其余则有条理地组织起来，让你一眼看清每个原语的作用以及它在标准中的位置。"
+    },
+    {
+      "type": "prose",
+      "en": "Remember the pattern: an MLME primitive is a software call across the boundary between the SME (the decision maker) and the MLME (the MAC's manager). Most come in families — a .request that the SME issues, a .confirm that returns the result locally, and sometimes an .indication that surfaces something arriving from a peer. The first group here, 6.5.14 to 6.5.16, is about installing and policing the cryptographic keys the MAC uses to protect frames.",
+      "zh": "记住这个模式：MLME 原语是一次跨越 SME（决策者）与 MLME（MAC 管理者）边界的软件调用。大多数原语成族出现——SME 发出的 .request、在本地返回结果的 .confirm，有时还有把来自对端的内容上报的 .indication。这里的第一组（6.5.14 至 6.5.16）负责安装与监管 MAC 用来保护帧的加密密钥。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Key management trio: SetKeys, DeleteKeys, SetProtection (6.5.14–6.5.16)",
+        "zh": "密钥管理三件套：SetKeys、DeleteKeys、SetProtection（6.5.14–6.5.16）"
+      },
+      "en": "6.5.14 SetKeys (MLME-SETKEYS.request) hands the MAC a Keylist of SetKeyDescriptors — each carrying a Key value, Length, Key ID, Key Type (Group, Pairwise, IGTK, BIGTK, WIGTK …) and the peer Address. The SME generates it whenever one or more keys must be installed for use. 6.5.15 DeleteKeys (MLME-DELETEKEYS.request) is the inverse: it passes a Keylist of DeleteKeyDescriptors so the named keys are removed from the MAC and disabled. 6.5.16 SetProtection (MLME-SETPROTECTION.request) carries a Protectlist of ProtectDescriptors that say whether frames to and from a given MAC address must be protected; setting a ProtectType of None clears the protection state for that address. Together these three let the SME drive everything the four-way handshake's keys eventually feed into, without the MAC inventing key state on its own.",
+      "zh": "6.5.14 SetKeys（MLME-SETKEYS.request）向 MAC 交付一个由 SetKeyDescriptor 组成的 Keylist——每个描述符携带密钥值 Key、长度 Length、密钥标识 Key ID、密钥类型 Key Type（组播 Group、成对 Pairwise、IGTK、BIGTK、WIGTK 等）以及对端地址 Address。只要需要安装一个或多个密钥，SME 就会生成该原语。6.5.15 DeleteKeys（MLME-DELETEKEYS.request）则相反：它传入由 DeleteKeyDescriptor 组成的 Keylist，使指定密钥从 MAC 中移除并禁用。6.5.16 SetProtection（MLME-SETPROTECTION.request）携带由 ProtectDescriptor 组成的 Protectlist，指明发往及来自某 MAC 地址的帧是否必须受保护；将 ProtectType 设为 None 即清除该地址的保护状态。这三者合起来，让 SME 驱动四次握手密钥最终汇入的全部环节，而无需 MAC 自行臆造密钥状态。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          565,
+          569,
+          570,
+          571
+        ]
+      }
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  SME[SME decision] -->|SETKEYS.request| MAC[MLME / MAC]\n  SME -->|DELETEKEYS.request| MAC\n  SME -->|SETPROTECTION.request| MAC\n  MAC -->|PN-WARNING.indication| SME\n  MAC -->|PN-EXHAUSTION.indication| SME",
+      "zh": "flowchart TD\n  SME[SME 决策] -->|SETKEYS.request| MAC[MLME / MAC]\n  SME -->|DELETEKEYS.request| MAC\n  SME -->|SETPROTECTION.request| MAC\n  MAC -->|PN-WARNING.indication| SME\n  MAC -->|PN-EXHAUSTION.indication| SME"
+    },
+    {
+      "type": "prose",
+      "en": "Keys do not last forever. Every protected frame burns a packet number (PN), and a PN that wraps around would let an attacker replay old frames. 6.5.17 PN event report is the safety valve: MLME-PN-WARNING.indication fires when a temporal key's PN crosses the thresholds in dot11PNWarningThresholdLow / dot11PNWarningThresholdHigh, and a companion exhaustion indication fires when it is nearly used up — telling the SME to rekey before the counter rolls over. Notice the direction: these are .indication primitives flowing up from the MAC to the SME, not commands going down.",
+      "zh": "密钥不会永久有效。每个受保护的帧都会消耗一个分组号（PN），而一旦 PN 回绕，攻击者就有机会重放旧帧。6.5.17 PN 事件报告就是这道安全阀：当某临时密钥的 PN 越过 dot11PNWarningThresholdLow / dot11PNWarningThresholdHigh 中设定的阈值时，MLME-PN-WARNING.indication 触发；当 PN 接近耗尽时，配套的耗尽指示触发——提示 SME 在计数器回绕之前重新生成密钥。注意方向：这些是从 MAC 向上流向 SME 的 .indication 原语，而非向下的命令。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Events and logging: Event request, Event report, Event (6.5.18–6.5.20)",
+        "zh": "事件与日志：事件请求、事件报告、事件（6.5.18–6.5.20）"
+      },
+      "en": "Diagnostics and roaming benefit from STAs swapping structured event logs. 6.5.18 Event request (MLME-EVLREQUEST.request/.confirm) lets the SME ask a peer to send specific event types — its parameters include the Peer MAC Address, a Dialog Token, an Event Request Set, and even a Destination URI; the MLME builds and schedules an Event Request frame. 6.5.19 Event report (MLME-EVLREPORT.request/.indication) carries the answer the other way: a peer's Event Report Set is delivered up to the SME. 6.5.20 Event (MLME-EVLOG.request/.confirm) is the local logging engine — the SME asks the MLME to begin identifying events, and the .confirm returns an Event Report Set when results are ready. So 6.5.18/6.5.19 are the over-the-air exchange and 6.5.20 is the on-box event log that feeds it.",
+      "zh": "诊断与漫游都受益于 STA 之间交换结构化的事件日志。6.5.18 事件请求（MLME-EVLREQUEST.request/.confirm）让 SME 请求对端发送特定类型的事件——其参数包括对端 MAC 地址、对话令牌 Dialog Token、事件请求集 Event Request Set，甚至还有目的 URI；MLME 据此构造并调度一个事件请求帧。6.5.19 事件报告（MLME-EVLREPORT.request/.indication）把答复反向送回：对端的事件报告集 Event Report Set 被上报给 SME。6.5.20 事件（MLME-EVLOG.request/.confirm）则是本地的日志引擎——SME 请求 MLME 开始识别事件，待结果就绪后 .confirm 返回一个事件报告集。因此 6.5.18/6.5.19 是空口交换，而 6.5.20 是为其供料的本机事件日志。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          572,
+          574,
+          575,
+          576,
+          577
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Special-purpose feature primitives (6.5.21–6.5.27)",
+        "zh": "专用功能类原语（6.5.21–6.5.27）"
+      },
+      "en": "The next stretch is feature-specific. 6.5.21 On-channel Tunneling operation (MLME-OCTunnel.request/.indication/.confirm) wraps a management frame (an OCT MMPDU) so it can be carried to a peer — useful for multi-band coordination, with a Multi-band peer parameter. 6.5.22 DMG beamforming is a large family (MLME-…-BF-… plus MU-MIMO hybrid beamforming sub-primitives) that drives the 60 GHz directional training of clause 10.41 between a STA and its peer. 6.5.23 Estimated Throughput (MLME-ESTIMATED-THROUGHPUT.request/.confirm) asks the MLME to estimate the achievable throughput for a potential or existing link to a PeerMACAddress — exactly the kind of input a roaming or band-steering decision needs. 6.5.24 Update (MLME-UPDATE.request/.confirm) changes BSS parameters — e.g. ServiceHint / ServiceHash elements in Beacons — without restarting the BSS. 6.5.25 WUR Discovery (MLME-WURDISCOVERY.request/.confirm) lets a Wake-Up Radio non-AP STA scan a WURDiscoveryChannelList to find other joinable BSSs. 6.5.26 Cancel transmissions of MSDUs (MLME-CANCELTX.request/.confirm) tells the MAC to drop queued MSDUs that no longer need sending. 6.5.27 NGV radio environment measurement (MLME-RADIOENVIRONMENT.request/.indication) reports the state of a Next Generation V2X STA's radio environment, including a StationCount.",
+      "zh": "接下来这一段是按功能划分的。6.5.21 同信道隧道操作（MLME-OCTunnel.request/.indication/.confirm）把一个管理帧（OCT MMPDU）封装起来以便送达对端——适用于多频段协同，并带有 Multi-band peer 参数。6.5.22 DMG 波束成形是一个庞大的族（MLME-…-BF-… 以及 MU-MIMO 混合波束成形子原语），驱动第 10.41 节定义的 STA 与对端之间的 60 GHz 定向训练。6.5.23 估计吞吐量（MLME-ESTIMATED-THROUGHPUT.request/.confirm）请求 MLME 估算与某 PeerMACAddress 之间潜在或已有链路可达到的吞吐量——正是漫游或频段引导决策所需的输入。6.5.24 更新（MLME-UPDATE.request/.confirm）在不重启 BSS 的前提下更改 BSS 参数，例如信标中的 ServiceHint / ServiceHash 元素。6.5.25 WUR 发现（MLME-WURDISCOVERY.request/.confirm）让唤醒无线电的非 AP STA 扫描一个 WURDiscoveryChannelList，以寻找其他可加入的 BSS。6.5.26 取消 MSDU 传输（MLME-CANCELTX.request/.confirm）通知 MAC 丢弃不再需要发送的排队 MSDU。6.5.27 NGV 无线电环境测量（MLME-RADIOENVIRONMENT.request/.indication）上报下一代 V2X STA 的无线电环境状态，其中包含 StationCount。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          577,
+          580,
+          593,
+          594,
+          596,
+          597,
+          600,
+          601
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A quick way to read any primitive name: the verb after MLME- tells you the feature (SETKEYS, EVLOG, OCTunnel, WURDISCOVERY …), and the suffix tells you the direction — .request goes SME→MLME, .confirm returns the local result, .indication surfaces something received from a peer. Match those two halves and you can predict a primitive's role without reading its prose.",
+      "zh": "快速读懂任何原语名字的窍门：MLME- 后面的动词告诉你是哪个功能（SETKEYS、EVLOG、OCTunnel、WURDISCOVERY……），而后缀告诉你方向——.request 是 SME→MLME，.confirm 返回本地结果，.indication 把从对端收到的内容上报。把这两半对上，你不读正文也能预判某个原语的角色。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Enhanced Broadcast Services (EBCS): 6.5.28–6.5.29",
+        "zh": "增强广播业务（EBCS）：6.5.28–6.5.29"
+      },
+      "en": "The last two cover Enhanced Broadcast Services, a way for an AP to broadcast content efficiently to many listeners. 6.5.28 MLME-EBCSINFO procedures (MLME-EBCSINFO.request/.indication) send and receive the EBCS Info frame; the request carries an EBCSInfoAuthenticationAlgorithm, PrivateKey, Certificate, EBCSTIM and a ContentInformationSet, and on the receive side the SME follows the procedure in clause 34.3.4. 6.5.29 EBCS UL relaying (MLME-EBCSUL.request/.indication) constructs and transmits — or reports receipt of — an EBCS UL frame, used so STAs can relay uplink content for the broadcast service (see clause 34.4.4). These round out the MLME-SAP surface: even one-to-many broadcast gets a clean SME control interface rather than ad-hoc MAC behavior.",
+      "zh": "最后两节涉及增强广播业务（EBCS）——一种让 AP 高效地向众多接收者广播内容的机制。6.5.28 MLME-EBCSINFO 过程（MLME-EBCSINFO.request/.indication）负责发送与接收 EBCS Info 帧；请求携带 EBCSInfoAuthenticationAlgorithm、PrivateKey、Certificate、EBCSTIM 以及 ContentInformationSet，接收侧 SME 则遵循第 34.3.4 节的过程。6.5.29 EBCS 上行中继（MLME-EBCSUL.request/.indication）构造并发送——或上报收到——一个 EBCS UL 帧，使 STA 能为广播业务中继上行内容（见第 34.4.4 节）。它们为 MLME-SAP 这张接口图收了尾：即便是一对多广播，也获得了一个干净的 SME 控制接口，而非临时拼凑的 MAC 行为。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          602,
+          603,
+          604,
+          605
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Step back and the shape is clear. The MLME-SAP is not one big API but a layered toolbox: security key lifecycle (6.5.14–6.5.17), structured event exchange and logging (6.5.18–6.5.20), then a band of feature-specific knobs (6.5.21–6.5.27) for tunneling, mmWave beamforming, throughput estimation, live BSS updates, wake-up discovery, transmit cancellation and V2X measurement, capped by broadcast services (6.5.28–6.5.29). You will rarely use all of them in one device, but knowing the map means that when a vendor datasheet or a driver log mentions, say, 'EVLOG' or 'WURDISCOVERY', you know exactly which clause to open.",
+      "zh": "退一步看，轮廓就清晰了。MLME-SAP 不是一个庞大的单一 API，而是一个分层的工具箱：安全密钥生命周期（6.5.14–6.5.17）、结构化事件交换与日志（6.5.18–6.5.20），接着是一段功能专用旋钮（6.5.21–6.5.27），涵盖隧道、毫米波波束成形、吞吐量估计、BSS 在线更新、唤醒发现、传输取消与 V2X 测量，最后由广播业务（6.5.28–6.5.29）收尾。你很少会在同一设备里用到全部原语，但掌握这张地图意味着：当某份厂商数据表或驱动日志提到诸如 “EVLOG” 或 “WURDISCOVERY” 时，你能立刻知道该翻开哪一节。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        565,
+        566,
+        567,
+        568
+      ],
+      "note": "6.5.14 SetKeys — MLME-SETKEYS.request, Keylist / SetKeyDescriptor (Key, Length, Key ID, Key Type, Address)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        569,
+        570
+      ],
+      "note": "6.5.15 DeleteKeys (MLME-DELETEKEYS.request) and 6.5.16 SetProtection (MLME-SETPROTECTION.request, ProtectType None)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        571,
+        572
+      ],
+      "note": "6.5.17 PN event report — MLME-PN-WARNING.indication, dot11PNWarningThresholdLow/High; 6.5.18 Event request begins"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        573,
+        574,
+        575,
+        576,
+        577
+      ],
+      "note": "6.5.18 Event request, 6.5.19 Event report, 6.5.20 Event (MLME-EVLOG.request/.confirm)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        578,
+        579,
+        580
+      ],
+      "note": "6.5.21 On-channel Tunneling (MLME-OCTunnel), 6.5.22 DMG beamforming begins (clause 10.41 training)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        593,
+        594,
+        595,
+        596
+      ],
+      "note": "6.5.22 DMG beamforming MU-MIMO hybrid; 6.5.23 Estimated Throughput; 6.5.24 Update intro"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        597,
+        598,
+        599,
+        600
+      ],
+      "note": "6.5.24 Update (ServiceHint/ServiceHash); 6.5.25 WUR Discovery; 6.5.26 Cancel transmissions of MSDUs begins"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        601,
+        602,
+        603,
+        604,
+        605
+      ],
+      "note": "6.5.27 NGV radio environment measurement; 6.5.28 MLME-EBCSINFO procedures; 6.5.29 EBCS UL relaying"
+    }
+  ],
+  "covers": [
+    "80211-2024:6.5.14",
+    "80211-2024:6.5.15",
+    "80211-2024:6.5.16",
+    "80211-2024:6.5.17",
+    "80211-2024:6.5.18",
+    "80211-2024:6.5.19",
+    "80211-2024:6.5.20",
+    "80211-2024:6.5.21",
+    "80211-2024:6.5.22",
+    "80211-2024:6.5.23",
+    "80211-2024:6.5.24",
+    "80211-2024:6.5.25",
+    "80211-2024:6.5.26",
+    "80211-2024:6.5.27",
+    "80211-2024:6.5.28",
+    "80211-2024:6.5.29"
+  ],
+  "track": "80211core"
+}
