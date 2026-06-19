@@ -1,0 +1,182 @@
+{
+  "id": "frames-08-ampdu-delimiter",
+  "title": {
+    "en": "A-MPDU Aggregation: the MPDU Delimiter",
+    "zh": "A-MPDU 聚合：MPDU 定界符"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Sending one frame per radio transmission is wasteful: every transmission pays a fixed tax of preamble, headers, and a gap before the next one. Aggregation fixes this by packing many MAC frames (MPDUs) into a single PHY transmission. The 802.11 tool for that is the A-MPDU (Aggregate MPDU) — literally a train of MPDUs riding inside one PPDU. But once you glue many frames end to end, the receiver faces a new problem: where does one MPDU stop and the next begin?",
+      "zh": "每次无线发送只传一个帧是很浪费的：每次发送都要付出固定的“开销税”——前导码、各种头部，以及发送之间的间隔。聚合（aggregation）正是为了解决这个问题，它把多个 MAC 帧（MPDU）打包进一次 PHY 发送。802.11 为此提供的工具就是 A-MPDU（聚合 MPDU）——本质上是一列“MPDU 列车”，乘坐在同一个 PPDU 里。但是，一旦把许多帧首尾粘在一起，接收方就面临一个新问题：一个 MPDU 在哪里结束、下一个又从哪里开始？"
+    },
+    {
+      "type": "prose",
+      "en": "The answer is the MPDU delimiter — a tiny 4-octet marker placed in front of every MPDU. An A-MPDU is a sequence of A-MPDU subframes, and each subframe is simply: a delimiter, then (optionally) the MPDU itself, then a few padding octets so the subframe length is a multiple of 4. There is no separate table of lengths anywhere; the train is self-describing, because each car announces its own length in the delimiter that precedes it.",
+      "zh": "答案就是 MPDU 定界符（MPDU delimiter）——一个只有 4 个八位组的小小标记，放在每个 MPDU 前面。一个 A-MPDU 是由若干 A-MPDU 子帧组成的序列，而每个子帧的结构很简单：先是定界符，然后（可选地）是 MPDU 本身，最后是几个填充八位组，使子帧长度凑成 4 的整数倍。整个结构里没有任何单独的“长度表”；这列火车是自描述的，因为每节车厢都在它前面的定界符里宣告了自己的长度。"
+    },
+    {
+      "type": "widget",
+      "widget": "frame-anatomy",
+      "params": {
+        "fields": [
+          {
+            "name": {
+              "en": "EOF / Tag",
+              "zh": "EOF / Tag（帧尾 / 标记）"
+            },
+            "octets": 0,
+            "desc": {
+              "en": "1 bit. If MPDU Length is 0, this is an end-of-frame indication (used for EOF padding subframes). If MPDU Length is nonzero, it is a tagged/untagged indication used by certain ack-enabled A-MPDUs.",
+              "zh": "1 比特。当 MPDU Length 为 0 时，它是帧尾（EOF）指示，用于 EOF 填充子帧；当 MPDU Length 非 0 时，它是“已标记/未标记”指示，供某些支持 ack 的 A-MPDU 使用。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                1841
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "Reserved",
+              "zh": "保留位"
+            },
+            "octets": 0,
+            "desc": {
+              "en": "1 bit, reserved.",
+              "zh": "1 比特，保留。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                1841
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "MPDU Length",
+              "zh": "MPDU 长度"
+            },
+            "octets": 0,
+            "desc": {
+              "en": "14 bits. Length of the MPDU that follows, in octets. Set to 0 if no MPDU is present (a length-0 subframe is used as filler to meet minimum start spacing or to pad the A-MPDU).",
+              "zh": "14 比特。后续 MPDU 的长度（以八位组计）。若没有 MPDU 则置 0（长度为 0 的子帧用作填充，以满足最小起始间隔要求或为 A-MPDU 补位）。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                1841
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "CRC",
+              "zh": "CRC 校验"
+            },
+            "octets": 1,
+            "desc": {
+              "en": "8-bit CRC over the preceding 16 bits (EOF/Tag, Reserved, MPDU Length). This is what lets a receiver trust the announced length even on a noisy channel.",
+              "zh": "对前面 16 比特（EOF/Tag、保留位、MPDU Length）计算的 8 位 CRC。正是它让接收方即使在嘈杂信道上也能信任所宣告的长度。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                1841,
+                1842
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "Delimiter Signature",
+              "zh": "定界符签名"
+            },
+            "octets": 1,
+            "desc": {
+              "en": "8 bits. A fixed unique pattern, 0x4E (the ASCII value of 'N'), used to detect a delimiter when scanning the bitstream — the anchor a receiver re-locks onto after losing sync.",
+              "zh": "8 比特。固定的唯一模式 0x4E（即字符 'N' 的 ASCII 值），用于在扫描比特流时识别定界符——也是接收方失步后重新锁定的锚点。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                1841
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The delimiter is exactly 4 octets (32 bits): 1 + 1 + 14 + 8 + 8. Two of those octets — the CRC and the Signature — exist purely so the receiver can find and trust the delimiter, not to carry data. That is the price of being self-describing, and it is tiny compared with the per-frame PHY overhead it saves.",
+      "zh": "定界符正好是 4 个八位组（32 比特）：1 + 1 + 14 + 8 + 8。其中两个八位组——CRC 和签名——的存在纯粹是为了让接收方能够找到并信任定界符，而不是为了携带数据。这就是“自描述”所付的代价，而它相比所节省的每帧 PHY 开销，简直微不足道。"
+    },
+    {
+      "type": "prose",
+      "en": "Here is the clever part: error resilience. The whole point of the delimiter is to let the receiver locate the MPDUs so the A-MPDU structure can usually be recovered even when one or more delimiters arrive with errors. The receiver walks the chain — read a delimiter, check its CRC, jump MPDU-Length octets forward (plus padding to the next 4-octet boundary), read the next delimiter. If a subframe is corrupted and the walk loses its place, the receiver does not give up on the rest of the burst: it scans forward for the 0x4E signature pattern to re-synchronise on the next delimiter and keeps deaggregating. One bad MPDU no longer poisons the entire transmission.",
+      "zh": "精妙之处在于：抗错能力。定界符的核心目的，是让接收方能够定位各个 MPDU，从而即使有一个或多个定界符出错，A-MPDU 的结构通常仍可恢复。接收方沿着这条链逐步前进——读取一个定界符，校验它的 CRC，向前跳过 MPDU-Length 个八位组（再加上补到下一个 4 字节边界的填充），然后读取下一个定界符。如果某个子帧损坏、行进过程“迷失了位置”，接收方并不会放弃这次突发传输的其余部分：它会向前扫描，寻找 0x4E 签名模式，重新对齐到下一个定界符，并继续解聚合。一个坏掉的 MPDU 不再会“毒害”整次发送。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[Read 4-octet delimiter] --> B{CRC over first 16 bits OK?}\n    B -- yes --> C{MPDU Length == 0?}\n    C -- no --> D[Hand MPDU up; skip Length octets + pad to 4-octet boundary]\n    C -- yes --> E[Filler / EOF subframe: skip 4 octets]\n    D --> F{More octets in A-MPDU?}\n    E --> F\n    F -- yes --> A\n    F -- no --> G[Done]\n    B -- no --> H[Lost sync: scan forward for 0x4E signature]\n    H --> A",
+      "zh": "flowchart TD\n    A[读取 4 字节定界符] --> B{前 16 比特的 CRC 正确?}\n    B -- 是 --> C{MPDU 长度 == 0?}\n    C -- 否 --> D[上交 MPDU; 跳过 Length 字节 + 补齐到 4 字节边界]\n    C -- 是 --> E[填充 / EOF 子帧: 跳过 4 字节]\n    D --> F{A-MPDU 中还有字节?}\n    E --> F\n    F -- 是 --> A\n    F -- 否 --> G[完成]\n    B -- 否 --> H[失步: 向前扫描 0x4E 签名]\n    H --> A"
+    },
+    {
+      "type": "prose",
+      "en": "What rides inside the train is constrained, not arbitrary. All MPDUs in one A-MPDU share the same receiver address (RA) and the same transmitter address (TA) — it is point-to-point between two stations — and all protected MPDUs share the same key ID. The exact mix of frame types allowed depends on the transmission context (for example, a data burst versus a control-response burst), which the standard enumerates context by context. The delimiter mechanics, though, stay identical no matter what is inside.",
+      "zh": "列车里能装什么是有约束的，而非任意。同一个 A-MPDU 中的所有 MPDU 共享相同的接收方地址（RA）和相同的发送方地址（TA）——它是两个站点之间的点对点传输——并且所有受保护的 MPDU 共享相同的 key ID。允许混装的具体帧类型取决于发送上下文（例如数据突发 vs. 控制响应突发），标准会逐个上下文地一一列举。不过，无论里面装的是什么，定界符的运作机制始终保持不变。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The delimiter CRC polynomial and the recovery guarantee",
+        "zh": "定界符 CRC 多项式与恢复保证"
+      },
+      "en": "Clause 9.7.2 states the purpose explicitly: the MPDU delimiter exists to locate the MPDUs within the A-MPDU so the structure can usually be recovered when one or more MPDU delimiters are received with errors (a deaggregation algorithm is sketched in Annex O.2). The 8-bit delimiter CRC protects only the 16 bits that precede it (EOF/Tag, Reserved, and the 14-bit MPDU Length) — not the MPDU payload, which carries its own FCS. The CRC is the 1s complement of the modulo-2 division remainder of those protected bits by the polynomial x^8 + x^2 + x + 1, with the shift register preset to all 1s. The MPDU Length field itself is encoded for forward compatibility across PHYs: the 14 bits split into a 12-bit MPDU Length Low and a 2-bit MPDU Length High, where HT PPDUs use only the low subfield (high is reserved) while VHT and HE PPDUs use both, computing L = Llow + 4096 x Lhigh.",
+      "zh": "9.7.2 节明确指出其目的：MPDU 定界符的存在，是为了在 A-MPDU 中定位各 MPDU，从而在一个或多个定界符接收出错时，结构通常仍可恢复（附录 O.2 给出了一种解聚合算法的概要）。这个 8 位定界符 CRC 只保护它前面的 16 比特（EOF/Tag、保留位，以及 14 位的 MPDU Length）——而不保护 MPDU 载荷，载荷自带它自己的 FCS。该 CRC 是上述受保护比特对多项式 x^8 + x^2 + x + 1 做模 2 除法所得余数的反码（1 的补码），移位寄存器初值预置为全 1。MPDU Length 字段本身的编码考虑了跨 PHY 的向前兼容：14 比特拆分为 12 位的 MPDU Length Low 和 2 位的 MPDU Length High，其中 HT PPDU 只用低子字段（高子字段保留），而 VHT 与 HE PPDU 两者皆用，按 L = Llow + 4096 x Lhigh 计算。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1841,
+          1842
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.7.1",
+    "80211-2024:9.7.2",
+    "80211-2024:9.7.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1840,
+        1841
+      ],
+      "note": "9.7.1 A-MPDU format and A-MPDU subframe format (Figures 9-1326 to 9-1329); MPDU delimiter fields (Table 9-659); delimiter signature 0x4E"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1842
+      ],
+      "note": "9.7.2 MPDU delimiter CRC field — purpose (locate MPDUs, recover after delimiter errors), polynomial, MPDU Length encoding"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1843
+      ],
+      "note": "9.7.3 A-MPDU contents — same RA/TA, same key ID for protected MPDUs, context-dependent permitted contents"
+    }
+  ],
+  "track": "frames"
+}

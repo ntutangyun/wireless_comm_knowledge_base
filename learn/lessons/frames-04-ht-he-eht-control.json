@@ -1,0 +1,163 @@
+{
+  "id": "frames-04-ht-he-eht-control",
+  "title": {
+    "en": "The HT Control Field and Its HE/EHT A-Control Variants",
+    "zh": "HT Control 字段及其 HE/EHT A-Control 变体"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Most of a Wi-Fi frame's MAC header is fixed plumbing — addresses, sequence numbers, durations. But there is one optional rider that only shows up when a single flag in the Frame Control field, the +HTC subfield, is set: the HT Control field. It is always exactly 4 octets, and it appears in QoS Data, QoS Null, and Management frames (and is always present in a Control Wrapper frame). Think of it as a piggyback channel: rather than spending a whole separate frame to say 'please adapt your rate' or 'here's how full my buffer is', a station bolts that signalling onto the header of a frame it was already going to send.",
+      "zh": "Wi-Fi 帧的 MAC 头大部分都是固定的“管线”——地址、序号、持续时间。但有一个可选的“搭车”字段，只有当 Frame Control 字段中的某一个标志位 +HTC 被置 1 时才会出现：这就是 HT Control 字段。它始终恰好为 4 个八位组（octet），出现在 QoS Data、QoS Null 和 Management 帧中（并且在 Control Wrapper 帧中始终存在）。可以把它想象成一条“搭便车”的通道：与其专门发一整帧去说“请调整你的速率”或“我的缓冲区有多满”，站点不如把这类信令直接挂在一个本来就要发送的帧的头部上。"
+    },
+    {
+      "type": "prose",
+      "en": "The catch is that the same 4 octets have to mean different things to different generations of devices. So the standard defines variants, and the first two bits (B0, B1) act as a tag that tells the receiver how to read the rest. A 0 in B0 means the HT variant (the original 802.11n link-adaptation controls). B0=1, B1=0 means the VHT variant (802.11ac, with VHT-MCS feedback). And B0=1, B1=1 means the HE variant — the modern one introduced in 802.11ax and carried forward into 802.11be (EHT) — whose payload is not a single fixed layout but a flexible list of small Control subfields called the A-Control.",
+      "zh": "难点在于：同样这 4 个八位组，对不同世代的设备必须表达不同的含义。于是标准定义了若干“变体”，并用最前面的两个比特（B0、B1）作为标签，告诉接收方该如何解读其余部分。B0 为 0 表示 HT 变体（最初的 802.11n 链路自适应控制）。B0=1、B1=0 表示 VHT 变体（802.11ac，带 VHT-MCS 反馈）。而 B0=1、B1=1 则表示 HE 变体——这是在 802.11ax 中引入、并被 802.11be（EHT）沿用的现代格式——它的载荷不是单一的固定布局，而是一串灵活的小型 Control 子字段，统称为 A-Control。"
+    },
+    {
+      "type": "widget",
+      "widget": "frame-anatomy",
+      "params": {
+        "fields": [
+          {
+            "name": {
+              "en": "B0 / B1 (variant tag)",
+              "zh": "B0 / B1（变体标签）"
+            },
+            "octets": 1,
+            "desc": {
+              "en": "The first two bits select the variant: B0=0 -> HT; B0=1,B1=0 -> VHT; B0=1,B1=1 -> HE. Everything after is interpreted according to this tag.",
+              "zh": "前两个比特选择变体：B0=0 → HT；B0=1,B1=0 → VHT；B0=1,B1=1 → HE。其后的所有内容都按此标签来解读。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                682
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "HT Control Middle (HT variant)",
+              "zh": "HT Control Middle（HT 变体）"
+            },
+            "octets": 1,
+            "desc": {
+              "en": "In the HT variant, bits B2-B29 carry the HT Control Middle subfield (Link Adaptation Control, calibration, CSI/steering, NDP announcement, DEI).",
+              "zh": "在 HT 变体中，B2–B29 承载 HT Control Middle 子字段（链路自适应控制、校准、CSI/导向、NDP 通告、DEI）。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                683
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "A-Control (HE variant)",
+              "zh": "A-Control（HE 变体）"
+            },
+            "octets": 1,
+            "desc": {
+              "en": "In the HE variant, bits B2-B31 (30 bits) carry the A-Control subfield: a Control List of one or more Control subfields plus padding to fill the 30 bits.",
+              "zh": "在 HE 变体中，B2–B31（共 30 比特）承载 A-Control 子字段：由一个或多个 Control 子字段组成的 Control List，再加上用于补足 30 比特的填充。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                690
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "AC Constraint / RDG-More PPDU (HT & VHT)",
+              "zh": "AC Constraint / RDG-More PPDU（HT 与 VHT）"
+            },
+            "octets": 1,
+            "desc": {
+              "en": "In the HT and VHT variants, B30 and B31 carry the AC Constraint and RDG/More PPDU bits used by reverse-direction grants; in the HE variant these bits are absorbed into the A-Control.",
+              "zh": "在 HT 与 VHT 变体中，B30 与 B31 承载用于反向授权（RDG）的 AC Constraint 与 RDG/More PPDU 比特；在 HE 变体中，这两个比特被并入 A-Control。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                682
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The HE variant is where the design gets clever. Its 30-bit A-Control is a Control List: a back-to-back sequence of Control subfields, each one starting with a 4-bit Control ID that names what it carries, followed by a Control Information field whose length is fixed per ID. If there is space left over after the last subfield, a Padding field of 0s fills it so the A-Control is exactly 30 bits. This lets a station pack several independent pieces of signalling — say, an operating-mode change and a buffer-status report — into the same header, and lets future amendments add new IDs without redesigning the field.",
+      "zh": "HE 变体正是这套设计的精妙之处。它的 30 比特 A-Control 是一个 Control List：一串首尾相接的 Control 子字段，每个都以一个 4 比特的 Control ID 开头来标明它承载什么，后面跟着一个长度由该 ID 固定决定的 Control Information 字段。如果最后一个子字段之后还有剩余空间，就用一个全 0 的 Padding 字段填满，使 A-Control 恰好为 30 比特。这样一来，站点可以把多条相互独立的信令——比如一次工作模式变更和一份缓冲区状态报告——打包进同一个头部，也让未来的修订版本能在不重新设计该字段的前提下新增 ID。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    HTC[\"HT Control (4 octets)\"] -->|B0=1,B1=1| AC[\"A-Control (30 bits)\"]\n    AC --> L[\"Control List\"]\n    AC --> P[\"Padding (0s)\"]\n    L --> C1[\"Control subfield #1\"]\n    L --> C2[\"Control subfield #2 ...\"]\n    C1 --> ID[\"Control ID (4 bits)\"]\n    C1 --> INFO[\"Control Information (fixed length per ID)\"]",
+      "zh": "graph LR\n    HTC[\"HT Control（4 个八位组）\"] -->|B0=1,B1=1| AC[\"A-Control（30 比特）\"]\n    AC --> L[\"Control List\"]\n    AC --> P[\"Padding（全 0）\"]\n    L --> C1[\"Control 子字段 #1\"]\n    L --> C2[\"Control 子字段 #2 ...\"]\n    C1 --> ID[\"Control ID（4 比特）\"]\n    C1 --> INFO[\"Control Information（每个 ID 长度固定）\"]"
+    },
+    {
+      "type": "prose",
+      "en": "What can a Control subfield say? The Control ID values map to a small menu of link-management messages. TRS (Triggered Response Scheduling) schedules an uplink response; OM (Operating Mode) announces a change in supported streams or channel width; HLA (HE Link Adaptation) carries rate feedback; BSR (Buffer Status Report) tells the AP how much uplink data is queued and for which access categories; UPH (UL Power Headroom) reports how much transmit-power room is left; BQR (Bandwidth Query Report) reports which 20 MHz subchannels are idle; and CAS (Command and Status) carries reverse-direction and PSRT signalling. Together they turn the HT Control field into a compact bus for fast, frame-free link adaptation and buffer-status exchange.",
+      "zh": "一个 Control 子字段能说些什么？Control ID 的取值对应一份小型的链路管理消息菜单。TRS（触发响应调度）用于调度上行响应；OM（工作模式）通告所支持的流数或信道带宽的变更；HLA（HE 链路自适应）携带速率反馈；BSR（缓冲区状态报告）告诉 AP 有多少上行数据在排队、以及属于哪些接入类别；UPH（上行功率余量）报告还剩多少发射功率空间；BQR（带宽查询报告）报告哪些 20 MHz 子信道处于空闲；CAS（命令与状态）携带反向方向与 PSRT 相关的信令。它们合在一起，把 HT Control 字段变成了一条紧凑的“总线”，用于快速、无需独立帧的链路自适应与缓冲区状态交换。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why piggyback at all? Air time is the scarcest resource in a busy BSS. Spending a whole frame — with its preamble, header, and acknowledgement — just to report a buffer level or a rate recommendation is expensive. Riding inside the header of a frame the station is already transmitting makes the signalling almost free, which is exactly why the A-Control is built as an extensible list rather than one rigid layout.",
+      "zh": "为什么一定要“搭便车”？在繁忙的 BSS 中，空口时间是最稀缺的资源。仅仅为了报告一个缓冲区水平或一条速率建议，就专门发一整帧——还要带上前导码、头部和确认——代价太高。把信令塞进站点本就要发送的帧的头部里，几乎不增加额外开销；这正是 A-Control 被设计成可扩展列表、而非一个僵硬固定布局的原因。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact variant tags and the Control ID table",
+        "zh": "精确的变体标签与 Control ID 表"
+      },
+      "en": "Per Table 9-15, the non-CMMG HT Control field has three variants keyed on B0/B1: HT (B0=0) with HT Control Middle in B2-B29 and AC Constraint / RDG-More PPDU in B30/B31; VHT (B0=1, B1=0) with VHT Control Middle in the same span; and HE (B0=1, B1=1) whose B2-B31 form the A-Control subfield. The A-Control (Figure 9-21) is a Control List of one or more Control subfields followed by a Padding subfield of 0s so the A-Control totals 30 bits. Each Control subfield (Figure 9-22) is a 4-bit Control ID plus a Control-ID-specific fixed-length Control Information field. Table 9-25 assigns: 0 = TRS (26 bits), 1 = OM (12), 2 = HLA (26), 3 = BSR (26), 4 = UPH (8), 5 = BQR (10), 6 = CAS (8), 7-14 reserved, and 15 = ONES (26 bits, all 1s). The per-ID Control Information formats are defined in 9.2.4.7.1 through 9.2.4.7.7.",
+      "zh": "依据 Table 9-15，非 CMMG 的 HT Control 字段以 B0/B1 为键有三种变体：HT（B0=0），其 B2–B29 为 HT Control Middle，B30/B31 为 AC Constraint / RDG-More PPDU；VHT（B0=1、B1=0），在同一区间为 VHT Control Middle；HE（B0=1、B1=1），其 B2–B31 构成 A-Control 子字段。A-Control（图 9-21）由一个或多个 Control 子字段组成的 Control List，后接一个全 0 的 Padding 子字段，使 A-Control 合计为 30 比特。每个 Control 子字段（图 9-22）由 4 比特的 Control ID 加上一个长度随该 ID 固定的 Control Information 字段构成。Table 9-25 的分配为：0 = TRS（26 比特）、1 = OM（12）、2 = HLA（26）、3 = BSR（26）、4 = UPH（8）、5 = BQR（10）、6 = CAS（8）、7–14 保留、15 = ONES（26 比特，全 1）。各 ID 的 Control Information 格式定义在 9.2.4.7.1 至 9.2.4.7.7 中。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          682,
+          690
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.2.4.6",
+    "80211-2024:9.2.4.7"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        681,
+        682
+      ],
+      "note": "9.2.4.6.1 HT Control field — 4 octets; present per +HTC in QoS Data/QoS Null/Management and always in Control Wrapper; Table 9-15 HT/VHT/HE variants keyed on B0/B1"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        683
+      ],
+      "note": "9.2.4.6.2 HT variant — HT Control Middle and Link Adaptation Control subfield layout"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        690
+      ],
+      "note": "9.2.4.6.4 HE variant — A-Control = Control List + Padding to 30 bits; Control subfield = 4-bit Control ID + Control Information; Table 9-25 Control ID values (TRS/OM/HLA/BSR/UPH/BQR/CAS/ONES)"
+    }
+  ],
+  "track": "frames"
+}

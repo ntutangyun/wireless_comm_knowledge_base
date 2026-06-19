@@ -1,0 +1,123 @@
+{
+  "id": "frames-07-action-frame-catalog",
+  "title": {
+    "en": "Action Frames: the Category Catalog",
+    "zh": "Action 帧：类别目录"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "802.11 has only a fixed handful of management-frame subtypes — Beacon, Probe, Authentication, Association, and a few more. So how does the standard keep adding new features (channel switching, block ack, fast roaming, radio measurement, every new PHY generation) without running out of subtypes? The answer is the Action frame: a single management subtype that is deliberately open-ended. Instead of minting a brand-new frame for each feature, the standard gives each feature a category number inside the Action frame.",
+      "zh": "802.11 的管理帧子类型其实只有固定的少数几种——Beacon、Probe、认证、关联，再加上零星几个。那么，标准是如何在不耗尽子类型的情况下，持续加入新功能（信道切换、块确认、快速漫游、无线电测量、每一代新 PHY）的呢？答案就是 Action 帧：一个被刻意设计为可无限扩展的管理帧子类型。标准不必为每个功能新造一个帧，而是在 Action 帧内部给每个功能分配一个“类别编号”。"
+    },
+    {
+      "type": "prose",
+      "en": "The frame body of an Action frame is almost nothing on its own. It begins with a single Action field, which itself is just two parts: a one-octet Category that says which feature family this frame belongs to, followed by an Action Details field whose contents are entirely defined by that category. Read the Category octet first, and you know how to parse everything after it. There is also an Action No Ack variant — identical body, but the recipient is not required to acknowledge it — used where an immediate Ack would be wasteful.",
+      "zh": "Action 帧的帧体本身几乎是“空”的。它以一个 Action 字段开头，而该字段本身只有两部分：一个长度为 1 个八位组的 Category（类别）字段，用来表明本帧属于哪一类功能族；其后是一个 Action Details 字段，其内容完全由该类别定义。先读 Category 这一个八位组，你就知道该如何解析它后面的所有内容。此外还有一个 Action No Ack 变体——帧体完全相同，但接收方无需对其进行确认（Ack）——用于那些立即回 Ack 会造成浪费的场景。"
+    },
+    {
+      "type": "widget",
+      "widget": "frame-anatomy",
+      "params": {
+        "fields": [
+          {
+            "name": {
+              "en": "Category",
+              "zh": "类别 (Category)"
+            },
+            "octets": 1,
+            "desc": {
+              "en": "Which feature family — e.g. 0 = Spectrum Management, 3 = Block Ack, 4 = Public, 5 = Radio Measurement, 8 = SA Query. The whole catalog of values is Table 9-81.",
+              "zh": "属于哪个功能族——例如 0 = 频谱管理，3 = 块确认，4 = Public，5 = 无线电测量，8 = SA Query。全部取值的目录见表 9-81。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                848
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "Action Details",
+              "zh": "动作细节 (Action Details)"
+            },
+            "octets": 0,
+            "desc": {
+              "en": "Variable-length body whose layout is defined entirely by the Category. Typically its first octet is an Action subfield naming the specific request/response within that category.",
+              "zh": "可变长度的主体，其布局完全由 Category 定义。通常其首个八位组是一个 Action 子字段，用于在该类别内指明具体的请求/响应。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                848
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The catalog itself (Table 9-81) is the heart of the mechanism. A few of the workhorses: Spectrum Management (0) carries channel-switch and TPC requests; QoS (1) and Block Ack (3) set up traffic streams and aggregation; Public (4) carries pre-association exchanges like GAS that any STA may send; Radio Measurement (5) requests beacon/channel-load/noise measurements; Fast BSS Transition (6) speeds up roaming; SA Query (8) lets a protected STA check that a peer is still live; WNM (10) covers network-management nudges like BSS-transition steering. Every PHY generation also gets its own category — HT (7), VHT (21), HE (30), and the latest EHT for Wi-Fi 7 — so beamforming and operating-mode negotiation can evolve per generation.",
+      "zh": "目录本身（表 9-81）才是这套机制的核心。挑几个主力来看：频谱管理（0）承载信道切换和 TPC 请求；QoS（1）与块确认（3）用于建立业务流和聚合；Public（4）承载关联前的交换（如 GAS），任何 STA 都可发送；无线电测量（5）请求 Beacon／信道负载／噪声等测量；快速 BSS 切换（6）加速漫游；SA Query（8）让受保护的 STA 确认对端仍然在线；WNM（10）涵盖如 BSS 切换引导这类网络管理“提示”。每一代 PHY 也各有自己的类别——HT（7）、VHT（21）、HE（30），以及面向 Wi-Fi 7 的最新 EHT——使波束成形与工作模式协商能够逐代演进。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the pattern in the catalog: many categories come in a Protected and an Unprotected pair (WNM / Unprotected WNM, Protected Dual of Public Action, Protected Fine Timing, Protected HE). The Robust column of Table 9-81 marks which categories must be cryptographically protected once management frame protection is on — so an attacker cannot forge, say, a deauth-style steering nudge. Vendor-specific (127) and its protected sibling (126) are the escape hatch for proprietary extensions.",
+      "zh": "注意目录中的一个规律：许多类别都成对出现，分为“受保护”和“未受保护”两个版本（WNM／Unprotected WNM、Protected Dual of Public Action、Protected Fine Timing、Protected HE）。表 9-81 中的 Robust 列标明了：一旦启用管理帧保护，哪些类别必须经过密码学保护——这样攻击者就无法伪造（例如）一条类似去认证的引导“提示”。Vendor-specific（127）及其受保护的同胞（126）则是为专有扩展预留的“逃生口”。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[Receive Action frame] --> B[Read Category octet]\n    B -->|0 Spectrum Mgmt| C[parse per 9.6.2]\n    B -->|4 Public| D[parse per 9.6.7]\n    B -->|5 Radio Measurement| E[parse per 9.6.6]\n    B -->|8 SA Query| F[parse per 9.6.9]\n    B -->|30 HE / EHT| G[parse per PHY clause]\n    B -->|127 Vendor| H[vendor-defined]",
+      "zh": "flowchart TD\n    A[收到 Action 帧] --> B[读取 Category 八位组]\n    B -->|0 频谱管理| C[按 9.6.2 解析]\n    B -->|4 Public| D[按 9.6.7 解析]\n    B -->|5 无线电测量| E[按 9.6.6 解析]\n    B -->|8 SA Query| F[按 9.6.9 解析]\n    B -->|30 HE / EHT| G[按对应 PHY 子条款解析]\n    B -->|127 Vendor| H[厂商自定义]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exactly what Table 9-81 defines, and why the Robust column matters",
+        "zh": "表 9-81 究竟定义了什么，以及 Robust 列为何重要"
+      },
+      "en": "Clause 9.4.1.11 defines the Action field as a 1-octet Category followed by a variable Action Details field; the Category is set to a nonreserved Code from Table 9-81, and frames of a category are named '<category> Action frames' (e.g. QoS Action frames). Table 9-81 enumerates the codes: 0 Spectrum Management (9.6.2), 1 QoS (9.6.3), 3 Block Ack (9.6.4), 4 Public (9.6.7), 5 Radio Measurement (9.6.6), 6 Fast BSS Transition (9.6.8), 7 HT (9.6.11), 8 SA Query (9.6.9), 9 Protected Dual of Public Action (9.6.10), 10 WNM (9.6.13), 11 Unprotected WNM, 15 Self-protected (9.6.15), 21 VHT (9.6.22), 30 HE (9.6.31), 31 Protected HE (9.6.32), up through Protected Fine Timing (34), with 126 Vendor-specific Protected and 127 Vendor-specific as the proprietary escape hatch. Two columns govern security: 'Robust' marks categories that are protected as Robust Action frames per 12.2.7 (so Block Ack, Radio Measurement, FT, SA Query, WNM and others cannot be forged once MFP is active), while 'Group addressed privacy' (defined in 11.12) is Yes only for Mesh and Multihop. The Action frame body itself (Table 9-73) is just the Action field plus optional Vendor Specific elements and, for group-addressed robust frames, an MME for integrity protection.",
+      "zh": "9.4.1.11 节将 Action 字段定义为：1 个八位组的 Category，后接可变长度的 Action Details 字段；Category 取自表 9-81 中某个非保留的 Code，且某类别的帧被称为“<类别> Action 帧”（如 QoS Action 帧）。表 9-81 列举了这些编码：0 频谱管理（9.6.2）、1 QoS（9.6.3）、3 块确认（9.6.4）、4 Public（9.6.7）、5 无线电测量（9.6.6）、6 快速 BSS 切换（9.6.8）、7 HT（9.6.11）、8 SA Query（9.6.9）、9 Protected Dual of Public Action（9.6.10）、10 WNM（9.6.13）、11 Unprotected WNM、15 Self-protected（9.6.15）、21 VHT（9.6.22）、30 HE（9.6.31）、31 Protected HE（9.6.32），一直到 Protected Fine Timing（34），并以 126 Vendor-specific Protected 与 127 Vendor-specific 作为专有扩展的逃生口。两个列负责安全性：“Robust”标明哪些类别会按 12.2.7 作为 Robust Action 帧加以保护（因此一旦启用 MFP，块确认、无线电测量、FT、SA Query、WNM 等便无法被伪造）；而“Group addressed privacy”（定义见 11.12）仅对 Mesh 与 Multihop 为 Yes。Action 帧体本身（表 9-73）则只是 Action 字段，再加上可选的 Vendor Specific 元素，并且对群组寻址的 robust 帧还附带一个用于完整性保护的 MME。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          847,
+          848,
+          849
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.3.3.13",
+    "80211-2024:9.4.1.11",
+    "80211-2024:9.6.1",
+    "80211-2024:9.6.6",
+    "80211-2024:9.6.7",
+    "80211-2024:9.6.9"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        822
+      ],
+      "note": "9.3.3.13/9.3.3.14 Action and Action No Ack frame format — Table 9-73 frame body (Action field plus optional Vendor Specific/MME)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        847,
+        848,
+        849
+      ],
+      "note": "9.4.1.11 Action field (Category + Action Details, Figure 9-149) and Table 9-81 Category values with Robust and Group addressed privacy columns; references 9.6.2/9.6.6/9.6.7/9.6.9 subclauses"
+    }
+  ],
+  "track": "frames"
+}

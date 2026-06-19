@@ -1,0 +1,214 @@
+{
+  "id": "frames-01-control-frames-on-the-wire",
+  "title": {
+    "en": "Control Frames on the Wire: RTS/CTS, ACK, BlockAck, PS-Poll, CF-End",
+    "zh": "线路上的控制帧：RTS/CTS、ACK、BlockAck、PS-Poll、CF-End"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Most of the bytes on a Wi-Fi channel carry your data, but a small family of tiny frames keeps the medium orderly. These are the control frames. None of them carries a payload — each is a header-only MPDU whose whole job is timing and acknowledgement: reserve the air, say \"go ahead\", or say \"I got that\". Because they are so short, they cost almost no airtime, which is exactly the point: the overhead that keeps a shared channel from descending into chaos has to be cheap.",
+      "zh": "Wi-Fi 信道上的大多数字节承载的是你的数据，但有一小族“迷你帧”负责维持信道秩序，它们就是控制帧（control frame）。这些帧都不携带数据载荷——每一个都是只有帧头的 MPDU，其全部职责就是定时与确认：预约空口、说“你可以发”，或者说“我收到了”。正因为它们极短，几乎不占用空口时间，而这恰恰是关键：让一条共享信道免于陷入混乱的开销，本身必须足够廉价。"
+    },
+    {
+      "type": "prose",
+      "en": "Three fields appear in every control frame, and they tell the whole story. Frame Control carries the Type (set to Control) and a Subtype that names exactly which control frame this is. Duration sets the Network Allocation Vector (NAV) — a microsecond countdown that tells every other station \"the medium is busy, stay quiet this long\". And Address 1 (RA) is the receiver address, present in all of them. A few subtypes add Address 2 (TA), the transmitter address, when the receiver needs to know who is talking.",
+      "zh": "每个控制帧里都出现三个字段，它们已经说清了全部故事。Frame Control（帧控制）携带 Type（置为 Control）以及 Subtype（子类型），后者精确指明这是哪一种控制帧。Duration（持续时间）设置网络分配矢量（NAV）——一个以微秒为单位的倒计时，告诉其他所有站点“空口正忙，请安静这么久”。Address 1（RA）是接收方地址，所有控制帧都有它。少数子类型在接收方需要知道是谁在发送时，会再加上 Address 2（TA），即发送方地址。"
+    },
+    {
+      "type": "widget",
+      "widget": "frame-anatomy",
+      "params": {
+        "fields": [
+          {
+            "name": {
+              "en": "Frame Control",
+              "zh": "帧控制"
+            },
+            "octets": 2,
+            "desc": {
+              "en": "Type = Control plus a Subtype naming this specific frame (RTS, CTS, Ack, PS-Poll, CF-End, BlockAckReq, BlockAck). For non-S1G control frames, To DS / From DS / More Frag / Retry / Protected / +HTC are all 0.",
+              "zh": "Type = Control，加上指明具体帧的 Subtype（RTS、CTS、Ack、PS-Poll、CF-End、BlockAckReq、BlockAck）。对于非 S1G 控制帧，To DS / From DS / More Frag / Retry / Protected / +HTC 全部为 0。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                715
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "Duration",
+              "zh": "Duration（持续时间）"
+            },
+            "octets": 2,
+            "desc": {
+              "en": "Microseconds to reserve the medium via the NAV. In an RTS by a non-QoS STA it covers the pending frame plus a CTS, an Ack, and three SIFSs.",
+              "zh": "通过 NAV 预约空口的微秒数。在非 QoS STA 发送的 RTS 中，它覆盖待发帧加上一个 CTS、一个 Ack 以及三个 SIFS。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                716
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "RA (Address 1)",
+              "zh": "RA（地址 1）"
+            },
+            "octets": 6,
+            "desc": {
+              "en": "Receiver address — the intended immediate recipient. Present in every control frame subtype.",
+              "zh": "接收方地址——预定的即时接收者。每一种控制帧子类型都有此字段。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                716
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "TA (Address 2)",
+              "zh": "TA（地址 2）"
+            },
+            "octets": 6,
+            "desc": {
+              "en": "Transmitter address. Present only in some subtypes (RTS, PS-Poll, BlockAckReq, BlockAck, CF-End). Absent from CTS and Ack — the responder doesn't need to announce itself.",
+              "zh": "发送方地址。仅部分子类型有此字段（RTS、PS-Poll、BlockAckReq、BlockAck、CF-End）。CTS 和 Ack 没有它——应答方无需自报身份。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                716
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "FCS",
+              "zh": "FCS（帧校验序列）"
+            },
+            "octets": 4,
+            "desc": {
+              "en": "Frame Check Sequence — the CRC that lets the receiver detect corruption.",
+              "zh": "帧校验序列——让接收方检测损坏的 CRC。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                716
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Start with the classic pair. RTS (Request To Send) carries RA, TA, and a Duration, and asks the receiver to clear the air. CTS (Clear To Send) answers with just RA and a Duration — it drops the TA entirely, because it copies the RA from the RTS's TA, so everyone already knows who is being cleared. Both set the NAV on overhearing stations, which is how RTS/CTS solves the hidden-node problem. ACK is even leaner: RA, a Duration, FCS, and nothing else — a bare \"received it\" whose RA is taken from the TA of the frame it acknowledges.",
+      "zh": "先看经典的一对。RTS（请求发送）携带 RA、TA 和一个 Duration，请求接收方腾出空口。CTS（允许发送）回应时只带 RA 和一个 Duration——它完全省去了 TA，因为它把 RA 直接抄自 RTS 的 TA，于是所有人都已知道被允许发送的是谁。两者都会在偷听到的站点上设置 NAV，这正是 RTS/CTS 解决隐藏节点问题的方式。ACK 更加精简：RA、一个 Duration、FCS，别无其他——一个纯粹的“收到了”，其 RA 取自它所确认的那个帧的 TA。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "PS-Poll plays a neat trick with one field. A power-saving station that the AP has buffered traffic for sends a PS-Poll to fetch it — and instead of a NAV value, the Duration/ID field carries the station's AID (Association ID) with its two most-significant bits set to 1. The same 16 bits mean \"this long in microseconds\" in most frames, but \"this is my AID\" here. Reusing one field for two purposes is a recurring theme in 802.11 frame design.",
+      "zh": "PS-Poll 用一个字段玩了个巧妙的把戏。当 AP 为某个省电站点缓存了下行流量时，该站点发送 PS-Poll 去取——此时 Duration/ID 字段携带的不是 NAV 数值，而是该站点的 AID（关联 ID），并把最高两位置为 1。同样的 16 比特，在大多数帧里表示“这么多微秒”，在这里却表示“这是我的 AID”。让同一个字段身兼两职，是 802.11 帧设计中反复出现的主题。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant S as Sender\n    participant R as Receiver\n    participant X as Overhearing STA\n    S->>R: RTS (RA, TA, Duration)\n    Note over X: hears RTS -> set NAV, stay quiet\n    R->>S: CTS (RA, Duration)\n    Note over X: hears CTS -> set NAV, stay quiet\n    S->>R: Data\n    R->>S: Ack (RA, Duration=0)",
+      "zh": "sequenceDiagram\n    participant S as 发送方\n    participant R as 接收方\n    participant X as 偷听站点\n    S->>R: RTS (RA, TA, Duration)\n    Note over X: 听到 RTS -> 设置 NAV，保持安静\n    R->>S: CTS (RA, Duration)\n    Note over X: 听到 CTS -> 设置 NAV，保持安静\n    S->>R: 数据\n    R->>S: Ack (RA, Duration=0)"
+    },
+    {
+      "type": "prose",
+      "en": "Then there is bulk acknowledgement. Modern Wi-Fi sends many frames back-to-back in an A-MPDU, so acking each one individually would waste airtime. Instead a BlockAckReq (BAR) asks \"how did this whole block arrive?\" and a BlockAck (BA) answers with a bitmap — one bit per MPDU, 1 for received, 0 for missing. Both add a BAR/BA Control field (whose Type subfield selects a variant) and a Block Ack Starting Sequence Control that anchors the bitmap to a starting sequence number. The common Compressed variant carries an 8- or 32-octet bitmap covering up to 64 or 256 MSDUs; the Multi-TID variant repeats the structure once per traffic identifier; and the Multi-STA variant lets one AP acknowledge many stations in a single frame.",
+      "zh": "接下来是批量确认。现代 Wi-Fi 会在一个 A-MPDU 中背靠背地发送许多帧，逐个单独确认会浪费空口时间。于是 BlockAckReq（BAR，块确认请求）发问“整整一批到达得如何？”，BlockAck（BA，块确认）则用一个位图回答——每个 MPDU 对应一比特，1 表示收到，0 表示缺失。两者都加上 BAR/BA Control 字段（其 Type 子字段选择变体），以及一个把位图锚定到起始序号的 Block Ack Starting Sequence Control。常见的 Compressed（压缩）变体携带 8 字节或 32 字节的位图，覆盖多达 64 或 256 个 MSDU；Multi-TID（多 TID）变体为每个业务标识符重复一次该结构；而 Multi-STA（多站点）变体让一个 AP 在单个帧中确认许多站点。"
+    },
+    {
+      "type": "prose",
+      "en": "Two odd ones round out the family. CF-End announces the early end of a transmission opportunity and resets the NAV: a non-DMG, non-S1G station sets its Duration to 0 and its RA to the broadcast address, so every overhearing station hears \"you can stop waiting now\". And the Control Wrapper frame is a meta-frame: it wraps any other control frame together with an HT Control field, so a legacy control frame can ride along with high-throughput control information it was never designed to hold.",
+      "zh": "还有两个“另类”成员凑齐了这一族。CF-End 宣告一次传输机会提前结束并复位 NAV：非 DMG、非 S1G 站点把它的 Duration 置为 0、RA 置为广播地址，于是每个偷听站点都听到“你现在可以不用再等了”。而 Control Wrapper（控制封装）帧是一个元帧：它把任意其他控制帧与一个 HT Control 字段封装在一起，从而让一个本不为承载高吞吐控制信息而设计的传统控制帧，也能搭载这些信息。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "How the compressed BlockAck bitmap actually indexes MPDUs",
+        "zh": "压缩 BlockAck 位图究竟如何索引 MPDU"
+      },
+      "en": "In the Compressed BlockAck variant (9.3.1.8.2), the BA Information field is a 2-octet Block Ack Starting Sequence Control followed by an 8- or 32-octet Block Ack Bitmap. When B0 of the Fragment Number subfield is 0, each bit acknowledges one MSDU/A-MSDU in sequence-number order, the first bit matching the Starting Sequence Number (SSN); an 8-octet bitmap covers 64 frames and a 32-octet bitmap covers 256, selected by B2-B1 of the Fragment Number subfield (Table 9-38). When B0 is 1, fragmentation is in play: bit position n acknowledges the MPDU with sequence number SN and fragment number FN where n = 4 x (SN - SSN) + FN, with sequence arithmetic done modulo 4096. The Multi-STA variant (9.3.1.8.6) reuses the same bitmap logic but wraps it in Per AID TID Info subfields, each carrying an 11-bit AID11, an Ack Type, and a TID, so a single frame can carry block-ack, plain-ack, all-ack, and management/PS-Poll-ack contexts for many recipients at once (Table 9-39).",
+      "zh": "在 Compressed BlockAck 变体（9.3.1.8.2）中，BA Information 字段由 2 字节的 Block Ack Starting Sequence Control，后跟 8 字节或 32 字节的 Block Ack Bitmap 组成。当 Fragment Number 子字段的 B0 为 0 时，每一比特按序号顺序确认一个 MSDU/A-MSDU，首比特对应起始序号（SSN）；8 字节位图覆盖 64 帧，32 字节位图覆盖 256 帧，由 Fragment Number 子字段的 B2-B1 选择（表 9-38）。当 B0 为 1 时，启用了分片：位置为 n 的比特确认序号为 SN、分片号为 FN 的 MPDU，其中 n = 4 x (SN - SSN) + FN，序号运算按模 4096 进行。Multi-STA 变体（9.3.1.8.6）复用同样的位图逻辑，但把它包裹进 Per AID TID Info 子字段，每个子字段携带一个 11 比特的 AID11、一个 Ack Type 和一个 TID，从而让单个帧能同时为多个接收者承载块确认、普通确认、全部确认以及管理/PS-Poll 确认等多种语境（表 9-39）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          723,
+          724,
+          726,
+          727
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.3.1.1",
+    "80211-2024:9.3.1.2",
+    "80211-2024:9.3.1.3",
+    "80211-2024:9.3.1.4",
+    "80211-2024:9.3.1.5",
+    "80211-2024:9.3.1.6",
+    "80211-2024:9.3.1.7",
+    "80211-2024:9.3.1.8"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        715
+      ],
+      "note": "9.3.1.1 Format of Control frames — Frame Control / Duration / RA in all subtypes; TA in some; non-S1G FC subfield values (Figure 9-37)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        716,
+        717
+      ],
+      "note": "9.3.1.2-9.3.1.4 RTS / CTS / Ack frame formats (Figures 9-41/9-42/9-43); CTS and Ack carry RA only; RTS Duration rule"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        717,
+        718
+      ],
+      "note": "9.3.1.5 PS-Poll (Figure 9-44) — Duration/ID carries AID with two MSBs set to 1; 9.3.1.6 CF-End (Figure 9-45) — broadcast RA, Duration 0 for non-DMG/non-S1G"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        718,
+        719,
+        720
+      ],
+      "note": "9.3.1.7 BlockAckReq — BAR Control / BAR Information (Figure 9-46/9-47); variant encoding Table 9-36; Compressed / Multi-TID variants"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        722,
+        723,
+        724,
+        726,
+        727
+      ],
+      "note": "9.3.1.8 BlockAck — BA Control / variants (Figure 9-52/9-53, Table 9-37); Compressed bitmap indexing (Table 9-38); Multi-STA Per AID TID Info (Table 9-39)"
+    }
+  ],
+  "track": "frames"
+}

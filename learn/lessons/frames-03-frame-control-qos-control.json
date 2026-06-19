@@ -1,0 +1,286 @@
+{
+  "id": "frames-03-frame-control-qos-control",
+  "title": {
+    "en": "Frame Control and QoS Control: the Bits That Steer Every Frame",
+    "zh": "Frame Control 与 QoS Control：驾驭每一帧的比特"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every 802.11 frame opens with the same two octets: the Frame Control field. It is the steering wheel of the MAC header — before a receiver looks at addresses, payload, or anything else, it reads these 16 bits to learn what kind of frame this is and how to treat it. Get Frame Control wrong and nothing else parses. So it is worth slowing down and decoding it bit by bit.",
+      "zh": "每一帧 802.11 都以相同的两个八位组开头：Frame Control（帧控制）字段。它是 MAC 头部的方向盘——在接收方查看地址、负载或其他任何内容之前，它先读这 16 个比特，以判断这是哪种帧、应如何处理。Frame Control 解析错了，后面的一切都无从谈起。所以值得放慢脚步，逐比特解读它。"
+    },
+    {
+      "type": "prose",
+      "en": "The first three subfields are the constant core, present in every frame. Protocol Version (2 bits) is 0 for ordinary frames and 1 for the compact PV1 frames; everything else is reserved. Type (2 bits) splits frames into Management, Control, Data, and Extension. Subtype (4 bits) names the exact frame — Beacon, RTS, QoS Data, Authentication, and so on. After those six bits, the remaining ten depend on what Type and Subtype said: a Data frame and a Control Frame Extension lay out the rest of the field differently.",
+      "zh": "前三个子字段是恒定的核心，存在于每一帧中。Protocol Version（协议版本，2 比特）对普通帧为 0，对紧凑的 PV1 帧为 1，其余取值保留。Type（类型，2 比特）将帧划分为管理帧（Management）、控制帧（Control）、数据帧（Data）和扩展帧（Extension）。Subtype（子类型，4 比特）则点明具体是哪一种帧——Beacon、RTS、QoS Data、Authentication 等等。在这六个比特之后，剩下的十个比特取决于 Type 与 Subtype 的取值：数据帧与“控制帧扩展”（Control Frame Extension）对字段其余部分的布局并不相同。"
+    },
+    {
+      "type": "widget",
+      "widget": "frame-anatomy",
+      "params": {
+        "fields": [
+          {
+            "name": {
+              "en": "Protocol Version",
+              "zh": "协议版本"
+            },
+            "octets": 1,
+            "desc": {
+              "en": "Bits B0-B1. 0 for the MAC frames in clause 9.2, 1 for PV1 frames. All other values reserved.",
+              "zh": "比特 B0-B1。9.2 节描述的 MAC 帧取 0，PV1 帧取 1，其余取值保留。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                661
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "Type",
+              "zh": "类型"
+            },
+            "octets": 1,
+            "desc": {
+              "en": "Bits B2-B3. Management (00), Control (01), Data (10), Extension (11).",
+              "zh": "比特 B2-B3。管理帧 (00)、控制帧 (01)、数据帧 (10)、扩展帧 (11)。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                661
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "Subtype",
+              "zh": "子类型"
+            },
+            "octets": 1,
+            "desc": {
+              "en": "Bits B4-B7. Names the exact frame within its Type. In Data frames the MSB (B7) is the QoS subfield, set to 1 for QoS Data.",
+              "zh": "比特 B4-B7。在所属 Type 内点明具体帧。在数据帧中，最高位 (B7) 是 QoS 子字段，QoS Data 时置为 1。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                661,
+                662
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "To DS / From DS",
+              "zh": "To DS / From DS"
+            },
+            "octets": 1,
+            "desc": {
+              "en": "Bits B8-B9. Together they say which direction a Data frame travels relative to the distribution system; 1/1 means the four-address (mesh/relay) format.",
+              "zh": "比特 B8-B9。二者共同表明数据帧相对分布式系统（DS）的传输方向；1/1 表示四地址（网状/中继）格式。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                664
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "More Fragments",
+              "zh": "More Fragments"
+            },
+            "octets": 1,
+            "desc": {
+              "en": "Bit B10. Set to 1 when another fragment of the current MSDU/MMPDU follows.",
+              "zh": "比特 B10。当前 MSDU/MMPDU 后面还有分片时置为 1。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                665
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "Retry",
+              "zh": "Retry"
+            },
+            "octets": 1,
+            "desc": {
+              "en": "Bit B11. Set to 1 if this Data/Management frame is a retransmission, helping the receiver discard duplicates.",
+              "zh": "比特 B11。若该数据/管理帧是重传则置为 1，帮助接收方剔除重复帧。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                665
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "Power Management",
+              "zh": "Power Management"
+            },
+            "octets": 1,
+            "desc": {
+              "en": "Bit B12. The STA's power mode after this exchange: 1 = power save, 0 = active. Reserved in frames sent by the AP.",
+              "zh": "比特 B12。本次交换后该 STA 的电源模式：1 = 省电，0 = 活动。AP 发送的帧中该位保留。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                665
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "More Data",
+              "zh": "More Data"
+            },
+            "octets": 1,
+            "desc": {
+              "en": "Bit B13. An AP sets this to 1 to tell a dozing STA that more buffered units are waiting for it.",
+              "zh": "比特 B13。AP 置为 1，告诉处于休眠的 STA 还有更多缓存数据在等待它。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                666
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "Protected Frame",
+              "zh": "Protected Frame"
+            },
+            "octets": 1,
+            "desc": {
+              "en": "Bit B14. Set to 1 when the Frame Body has been processed by a cryptographic encapsulation (see Clause 12).",
+              "zh": "比特 B14。当帧体已被加密封装处理（见第 12 章）时置为 1。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                667
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "+HTC",
+              "zh": "+HTC"
+            },
+            "octets": 1,
+            "desc": {
+              "en": "Bit B15. Set to 1 when an HT Control field is present at the end of the MAC header.",
+              "zh": "比特 B15。当 MAC 头部末尾存在 HT Control 字段时置为 1。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                667,
+                668
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Octets above are a display convenience — Frame Control is 16 bits total, and most of these subfields are a single bit. The shape is: 2 + 2 + 4 bits for Version/Type/Subtype, then eight 1-bit flags (To DS, From DS, More Fragments, Retry, Power Management, More Data, Protected Frame, +HTC). Think of the last eight as a row of switches.",
+      "zh": "上面标的“octets”只是展示上的便利——Frame Control 总共 16 比特，其中大多数子字段只占 1 比特。结构是：版本/类型/子类型占 2 + 2 + 4 比特，随后是八个 1 比特的标志位（To DS、From DS、More Fragments、Retry、Power Management、More Data、Protected Frame、+HTC）。可以把后八个想象成一排开关。"
+    },
+    {
+      "type": "prose",
+      "en": "One bit deserves special attention because it reshapes the whole frame downstream: the QoS subfield, which is B7 of Subtype. When it is 1, the Data frame is a QoS Data frame, and that means an extra two-octet QoS Control field appears in the MAC header (right after Sequence Control). So a single bit up front decides whether a later field even exists. The QoS Control field is where 802.11 carries per-frame traffic-class and scheduling information.",
+      "zh": "有一个比特值得特别留意，因为它会重塑后续整帧的结构：QoS 子字段，即 Subtype 的 B7。当它为 1 时，该数据帧就是 QoS Data 帧，这意味着 MAC 头部中会多出一个两字节的 QoS Control 字段（紧跟在 Sequence Control 之后）。可见，开头的一个比特，决定了后面某个字段究竟是否存在。QoS Control 字段正是 802.11 携带逐帧的流量类别与调度信息的地方。"
+    },
+    {
+      "type": "prose",
+      "en": "Inside QoS Control, the first four bits are the TID (traffic identifier) — which traffic class or stream this frame belongs to (values 0-7 map to user priorities under EDCA; 8-15 are traffic-stream IDs). Bits 5-6 are the Ack Policy Indicator, choosing Normal Ack, No Ack, Block Ack, and friends. Bit 7 is A-MSDU Present, telling the receiver whether the Frame Body holds one MSDU or a whole aggregated A-MSDU. The top byte (bits 8-15) is overloaded: from a non-AP STA it carries either a TXOP Duration Requested or a Queue Size (selected by bit 4); from the AP/HC it can carry a TXOP Limit or the AP PS Buffer State. Same eight bits, different meaning depending on who sent the frame.",
+      "zh": "在 QoS Control 内部，前四位是 TID（流量标识符）——表明该帧属于哪个流量类别或流（取值 0-7 在 EDCA 下映射到用户优先级；8-15 为流标识符）。第 5-6 位是 Ack Policy Indicator（确认策略指示），用于选择 Normal Ack、No Ack、Block Ack 等。第 7 位是 A-MSDU Present，告诉接收方帧体里装的是单个 MSDU，还是一整个聚合的 A-MSDU。高字节（第 8-15 位）是“一位多用”的：来自非 AP 的 STA 时，它携带 TXOP Duration Requested 或 Queue Size（由第 4 位选择）；来自 AP/HC 时，它可能携带 TXOP Limit 或 AP PS Buffer State。同样的八个比特，含义取决于由谁发送了该帧。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    FC[\"Frame Control: Type=Data, Subtype B7 (QoS) = ?\"] -->|QoS bit = 0| PLAIN[\"Plain Data frame:\\nno QoS Control field\"]\n    FC -->|QoS bit = 1| QOS[\"QoS Data frame:\\n2-octet QoS Control field added\"]\n    QOS --> T[\"Bits 0-3: TID\\n(traffic class / stream)\"]\n    QOS --> A[\"Bits 5-6: Ack Policy\\n(Normal / No Ack / Block Ack)\"]\n    QOS --> M[\"Bit 7: A-MSDU Present\\n(aggregated payload?)\"]\n    QOS --> TOP[\"Bits 8-15: TXOP / Queue Size\\n(meaning depends on sender)\"]",
+      "zh": "flowchart TD\n    FC[\"Frame Control：Type=Data，Subtype B7 (QoS) = ?\"] -->|QoS 位 = 0| PLAIN[\"普通数据帧：\\n无 QoS Control 字段\"]\n    FC -->|QoS 位 = 1| QOS[\"QoS Data 帧：\\n新增 2 字节 QoS Control 字段\"]\n    QOS --> T[\"第 0-3 位：TID\\n（流量类别 / 流）\"]\n    QOS --> A[\"第 5-6 位：确认策略\\n（Normal / No Ack / Block Ack）\"]\n    QOS --> M[\"第 7 位：A-MSDU Present\\n（是否为聚合负载？）\"]\n    QOS --> TOP[\"第 8-15 位：TXOP / 队列长度\\n（含义取决于发送方）\"]"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The recurring theme: bits earlier in the frame change the meaning of bits later in it. Subtype's QoS bit decides whether QoS Control exists; bit 4 inside QoS Control decides whether bits 8-15 mean a TXOP request or a Queue Size; whether you are an AP or a non-AP STA changes the whole top byte again. A frame is not a flat list of fields — it is a small state machine that the early bits configure.",
+      "zh": "反复出现的主题是：帧中靠前的比特会改变靠后比特的含义。Subtype 的 QoS 位决定 QoS Control 是否存在；QoS Control 内部的第 4 位决定第 8-15 位表示 TXOP 请求还是队列长度；而你是 AP 还是非 AP 的 STA，又会再次改变整个高字节。一帧并不是一张扁平的字段清单——它更像一个由前置比特配置的小型状态机。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exactly which subfields follow the core, and the layouts of the QoS Control top byte",
+        "zh": "核心字段之后究竟跟随哪些子字段，以及 QoS Control 高字节的各种布局"
+      },
+      "en": "Clause 9.2.4.1.1 fixes the order: the first three subfields are always Protocol Version, Type, Subtype, and for a non-S1G PPDU where Type is not Control-Frame-Extension, the remaining subfields are To DS, From DS, More Fragments, Retry, Power Management, More Data, Protected Frame, and +HTC (Figure 9-3). For a Control Frame Extension (Type 1, Subtype 6), B8-B11 are reused as a Control Frame Extension field instead (Figure 9-4), so To DS / From DS / More Fragments / Retry are simply not present there. Clause 9.2.4.1.3 notes that in Data frames the Subtype MSB (B7) is the QoS subfield, and QoS Data subtypes are exactly those carrying a QoS Control field. Clause 9.2.4.5.1 then says the QoS Control field is present in every Data frame with the QoS subfield equal to 1, and comprises five or eight subfields whose layout (Table 9-10) depends on the sender. For a non-AP STA, bit 4 selects between TXOP Duration Requested (bit 4 = 0) and Queue Size (bit 4 = 1) in bits 8-15; for the HC, bits 8-15 instead carry a TXOP Limit (in CF-Poll subtypes) or the AP PS Buffer State. TID (9.2.4.5.2) uses 0-7 under EDCA and 8-15 for HCCA/SPCA/HEMM/SEMM traffic streams, and A-MSDU Present (9.2.4.5.9) is bit 7 indicating an aggregated payload.",
+      "zh": "9.2.4.1.1 节固定了顺序：前三个子字段始终是 Protocol Version、Type、Subtype；对于非 S1G PPDU 且 Type 不是“控制帧扩展”的情形，其余子字段为 To DS、From DS、More Fragments、Retry、Power Management、More Data、Protected Frame 和 +HTC（图 9-3）。对于控制帧扩展（Type 为 1、Subtype 为 6），B8-B11 被改用为“控制帧扩展”字段（图 9-4），因此 To DS / From DS / More Fragments / Retry 在那里根本不存在。9.2.4.1.3 节指出，在数据帧中 Subtype 的最高位（B7）即 QoS 子字段，QoS Data 各子类型正是那些携带 QoS Control 字段的帧。9.2.4.5.1 节进而规定：凡 QoS 子字段为 1 的数据帧都带有 QoS Control 字段，它由五个或八个子字段组成，其布局（表 9-10）取决于发送方。对非 AP 的 STA，第 4 位在第 8-15 位上选择 TXOP Duration Requested（第 4 位 = 0）或 Queue Size（第 4 位 = 1）；对 HC，第 8-15 位则携带 TXOP Limit（在含 CF-Poll 的子类型中）或 AP PS Buffer State。TID（9.2.4.5.2 节）在 EDCA 下取 0-7，在 HCCA/SPCA/HEMM/SEMM 流中取 8-15；A-MSDU Present（9.2.4.5.9 节）为第 7 位，指示是否为聚合负载。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          660,
+          661,
+          662,
+          674,
+          675,
+          679
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        660,
+        661,
+        662
+      ],
+      "note": "9.2.4.1 Frame Control field — general layout, Protocol Version, Type/Subtype, Figures 9-3/9-4, Table 9-1"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        664,
+        665,
+        666,
+        667,
+        668
+      ],
+      "note": "9.2.4.1.4-9.2.4.1.10 — To DS/From DS, More Fragments, Retry, Power Management, More Data, Protected Frame, +HTC"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        673,
+        674,
+        675,
+        678,
+        679
+      ],
+      "note": "9.2.4.5 QoS Control field — Table 9-10 layouts, TID, Ack Policy Indicator, TXOP Limit, Queue Size, A-MSDU Present"
+    }
+  ],
+  "covers": [
+    "80211-2024:9.2.4.1",
+    "80211-2024:9.2.4.5"
+  ],
+  "track": "frames"
+}

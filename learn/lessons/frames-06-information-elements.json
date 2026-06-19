@@ -1,0 +1,190 @@
+{
+  "id": "frames-06-information-elements",
+  "title": {
+    "en": "How Information Elements Work: TLV, the ID Namespace, and Fragmentation",
+    "zh": "信息元素的运作：TLV、ID 命名空间与分片"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Open up almost any 802.11 management frame — a Beacon, a Probe Response, an Association Request — and after the fixed fields you find a long, open-ended list of 'elements'. The SSID is one. The supported rates are another. The security parameters, the HT/VHT/HE/EHT capabilities, the power-save bitmap — each is its own element. The genius of the design is that they all share one tiny shape. Learn that one shape and you can walk through a frame you have never seen, skipping past elements you do not understand and stopping on the ones you do.",
+      "zh": "随便打开一个 802.11 管理帧——Beacon、Probe Response、关联请求——在固定字段之后，你会看到一长串没有上限的“元素（element）”列表。SSID 是其中之一，支持速率是另一个，安全参数、HT/VHT/HE/EHT 能力、省电位图……每一项都是一个独立的元素。这套设计的巧妙之处在于：它们全都共用同一个极小的“外形”。只要学会这一个外形，你就能逐个走读一个从未见过的帧，跳过看不懂的元素，停在看得懂的元素上。"
+    },
+    {
+      "type": "prose",
+      "en": "That shape is a classic TLV: Tag, Length, Value. The first octet is the Element ID (the tag — which element is this?), the second octet is the Length (how many octets of body follow — counting neither the ID nor the Length octet itself), and after that comes the Information field, the body. Because the Length is always in a known place, a parser never has to understand an element to step over it: read ID, read Length, jump Length octets forward, repeat. This is exactly how a station ignores vendor extensions it does not implement while still reading the SSID it needs.",
+      "zh": "这个外形就是经典的 TLV：Tag（标签）、Length（长度）、Value（值）。第一个八位组是 Element ID（标签——这是哪个元素？），第二个八位组是 Length（后面跟着多少个八位组的主体——既不算 ID、也不算 Length 这个八位组本身），再之后就是 Information 字段，也就是主体。由于 Length 总是位于一个已知的位置，解析器无需读懂某个元素就能跨过它：读 ID、读 Length、向前跳过 Length 个八位组、重复。这正是站点既能忽略自己未实现的厂商扩展、又能照常读取所需 SSID 的原理。"
+    },
+    {
+      "type": "widget",
+      "widget": "frame-anatomy",
+      "params": {
+        "fields": [
+          {
+            "name": {
+              "en": "Element ID",
+              "zh": "Element ID（元素标识）"
+            },
+            "octets": 1,
+            "desc": {
+              "en": "The tag. Identifies which element this is, indexed into the master table of element IDs (Table 9-130). Value 255 is special: it means 'look in the extension namespace'.",
+              "zh": "标签。标识这是哪个元素，对应元素 ID 主表（Table 9-130）。值 255 很特殊：它表示“请到扩展命名空间里查找”。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                923
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "Length",
+              "zh": "Length（长度）"
+            },
+            "octets": 1,
+            "desc": {
+              "en": "Number of octets in the element body, excluding the Element ID and Length octets themselves. One octet, so it caps the body at 255.",
+              "zh": "元素主体的八位组数量，不含 Element ID 与 Length 这两个八位组本身。只有一个八位组，因此主体被限制在 255 之内。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                923
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "Element ID Extension",
+              "zh": "Element ID Extension（扩展标识）"
+            },
+            "octets": 1,
+            "desc": {
+              "en": "Present (0 or 1 octet) only when Element ID = 255. It selects an element from the second, extended namespace (e.g. HE Capabilities = 255/35).",
+              "zh": "仅当 Element ID = 255 时才出现（0 或 1 个八位组）。它从第二个、扩展的命名空间中选出一个元素（例如 HE Capabilities = 255/35）。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                923
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "Information",
+              "zh": "Information（信息）"
+            },
+            "octets": 0,
+            "desc": {
+              "en": "The element body — variable length, contents specific to each element. For an SSID it holds 0-32 octets of network name; for an RSNE it holds cipher and AKM suites.",
+              "zh": "元素主体——长度可变，内容因元素而异。对 SSID 来说是 0–32 个八位组的网络名称；对 RSNE 来说是加密套件与 AKM 套件。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                923
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The single-octet Length is the source of both the elegance and a famous headache. One octet means the body can never exceed 255 octets. For the first decades that was plenty — an SSID is at most 32 octets, a supported-rates list at most 8. But modern capability elements (HE, EHT) and security material grew past 255, which forced two later inventions: a second ID namespace, and a way to fragment.",
+      "zh": "单字节的 Length 既是优雅之源，也是一个著名的麻烦之源。一个八位组意味着主体永远不能超过 255 个八位组。在最初的几十年里这绰绰有余——SSID 最多 32 个八位组，支持速率列表最多 8 个。但现代的能力元素（HE、EHT）和安全材料的体量超过了 255，于是逼出了后来的两项发明：第二套 ID 命名空间，以及一种分片的办法。"
+    },
+    {
+      "type": "prose",
+      "en": "First invention: the namespace ran out. The Element ID is one octet, so there are only 256 possible tags, and the standard burned through them. The fix was to reserve one value, ID 255, as an escape hatch. When the Element ID is 255, a third octet — the Element ID Extension — appears, opening a whole second namespace of 256 more elements (255/0, 255/1, 255/2 …). That is where the newer elements live: HE Capabilities is 255/35, HE Operation is 255/36. So 'which element is this?' is sometimes a one-octet question and sometimes a two-octet one.",
+      "zh": "第一项发明：命名空间用尽了。Element ID 只有一个八位组，因此最多只有 256 个标签，而标准把它们用光了。解决办法是预留一个值——ID 255——作为“逃生舱口”。当 Element ID 等于 255 时，会多出第三个八位组——Element ID Extension——从而开辟出一整套包含另外 256 个元素的第二命名空间（255/0、255/1、255/2……）。较新的元素就住在这里：HE Capabilities 是 255/35，HE Operation 是 255/36。所以“这是哪个元素？”有时是一个单字节的问题，有时是一个双字节的问题。"
+    },
+    {
+      "type": "prose",
+      "en": "Second invention: bodies outgrew 255 octets. When an element's information is longer than the Length octet can express, the element is split: the first piece is a normal element carrying its first 255 octets, and each continuation rides in a separate Fragment element (Element ID 242) carrying up to 255 more octets. The receiver concatenates the original element's body with the bodies of the trailing Fragment elements to reconstruct the whole. Only elements marked 'Fragmentable' in the master table behave this way — for the rest, 255 octets is a hard ceiling.",
+      "zh": "第二项发明：主体超过了 255 个八位组。当某个元素的信息长度超出 Length 字节所能表示的范围时，该元素就会被拆开：第一段是一个携带前 255 个八位组的普通元素，之后每一段续接都搭乘一个独立的 Fragment 元素（Element ID 242），各自再携带至多 255 个八位组。接收方将原始元素的主体与后续各 Fragment 元素的主体拼接起来，重建出完整内容。只有在主表中被标记为“Fragmentable（可分片）”的元素才会这样工作——其余元素的 255 个八位组就是硬上限。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n    A[\"Element ID\\n(1 octet)\"] --> B{\"== 255?\"}\n    B -- no --> C[\"single-octet tag\"]\n    B -- yes --> D[\"read Element ID Extension\\n(extended namespace)\"]\n    C --> E[\"Length (1 octet)\"]\n    D --> E\n    E --> F{\"body > 255\\nand Fragmentable?\"}\n    F -- no --> G[\"Information field\\n(<= 255 octets)\"]\n    F -- yes --> H[\"first 255 octets here,\\nrest in Fragment elements (ID 242)\"]",
+      "zh": "flowchart LR\n    A[\"Element ID\\n(1 个八位组)\"] --> B{\"== 255?\"}\n    B -- 否 --> C[\"单字节标签\"]\n    B -- 是 --> D[\"读取 Element ID Extension\\n(扩展命名空间)\"]\n    C --> E[\"Length (1 个八位组)\"]\n    D --> E\n    E --> F{\"主体 > 255\\n且可分片?\"}\n    F -- 否 --> G[\"Information 字段\\n(<= 255 个八位组)\"]\n    F -- 是 --> H[\"前 255 个八位组放这里,\\n其余放入 Fragment 元素 (ID 242)\"]"
+    },
+    {
+      "type": "prose",
+      "en": "A quick tour of the elements you will meet first. SSID (ID 0) carries the 0-32 octet network name; length 0 is the wildcard used in Probe Requests. Supported Rates (ID 1) packs up to eight rate/membership-selector octets. DSSS Parameter Set (ID 3) advertises the current channel number. TIM (ID 5) is the power-save heartbeat in Beacons — a bitmap telling sleeping stations whether the AP has buffered traffic for them. RSNE (ID 48) carries the security suites that set up an RSNA. And the capability elements — HT (45), VHT (191), then HE (255/35) and EHT in the extension space — advertise what each generation of the PHY can do. Different bodies, identical TLV skin.",
+      "zh": "快速浏览一遍你最先会遇到的元素。SSID（ID 0）携带 0–32 个八位组的网络名称；长度为 0 是 Probe Request 中使用的通配符。Supported Rates（ID 1）打包至多八个速率/成员选择子八位组。DSSS Parameter Set（ID 3）通告当前信道号。TIM（ID 5）是 Beacon 中的省电“心跳”——一个位图，告诉休眠中的站点 AP 是否为它们缓存了流量。RSNE（ID 48）携带用于建立 RSNA 的安全套件。而能力元素——HT（45）、VHT（191），以及位于扩展空间的 HE（255/35）和 EHT——则通告每一代 PHY 的能力。主体各不相同，TLV 外皮完全一致。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact format rule, the 255 namespace, and what Fragmentable means",
+        "zh": "精确的格式规则、255 命名空间，以及“可分片”的含义"
+      },
+      "en": "Clause 9.4.2.1 states the common format precisely (Figure 9-208): an element is identified by the Element ID field and, if present, the Element ID Extension field; the Length field indicates the number of octets in the element excluding the Element ID and Length fields; the Information field carries element-specific content. The octet layout is Element ID (1), Length (1), Element ID Extension (0 or 1), Information (variable). Table 9-130 is the master registry: it lists every element's ID, whether an Element ID Extension is present, and two flags — Extensible (may grow in future amendments) and Fragmentable (its information may exceed the threshold that triggers fragmentation, per 10.28.11). Element ID 255 is the gateway to the extension namespace, and entries beyond it are written as 255/0, 255/1, and so on (HE Capabilities is 255/35). The Fragment element itself is Element ID 242. The single-octet Length is why fragmentation exists at all: it caps any one element body at 255 octets, so elements flagged Fragmentable spill their overflow into trailing Fragment elements that the receiver reassembles. Among the most-used fixed-namespace elements: SSID is ID 0 (Figure 9-209, 0-32 octets), Supported Rates and BSS Membership Selectors is ID 1, DSSS Parameter Set is ID 3, TIM is ID 5, and the RSNE is ID 48 (its General subclause notes the RSNE size is itself limited by the 255-octet element size).",
+      "zh": "9.4.2.1 节精确地描述了这个通用格式（Figure 9-208）：元素由 Element ID 字段标识，若存在则还包括 Element ID Extension 字段；Length 字段表示元素中除 Element ID 与 Length 字段以外的八位组数量；Information 字段承载元素特定的内容。八位组排布为 Element ID（1）、Length（1）、Element ID Extension（0 或 1）、Information（可变）。Table 9-130 是主登记表：它列出每个元素的 ID、是否存在 Element ID Extension，以及两个标志——Extensible（可在未来修订中增长）与 Fragmentable（其信息可能超过触发分片的阈值，见 10.28.11）。Element ID 255 是通往扩展命名空间的入口，其后的条目写作 255/0、255/1 等（HE Capabilities 即 255/35）。Fragment 元素本身的 Element ID 是 242。单字节的 Length 正是分片存在的根本原因：它把任一元素主体限制在 255 个八位组以内，因此被标记为 Fragmentable 的元素会把溢出部分放入随后的 Fragment 元素，由接收方重新拼装。在固定命名空间中最常用的元素里：SSID 是 ID 0（Figure 9-209，0–32 个八位组），Supported Rates and BSS Membership Selectors 是 ID 1，DSSS Parameter Set 是 ID 3，TIM 是 ID 5，RSNE 是 ID 48（其 General 子条款指出 RSNE 的大小本身就受 255 个八位组的元素大小限制）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          923,
+          934,
+          935,
+          1046
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.4.2.1",
+    "80211-2024:9.4.2.2",
+    "80211-2024:9.4.2.5",
+    "80211-2024:9.4.2.23",
+    "80211-2024:9.4.2.187"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        923
+      ],
+      "note": "9.4.2.1 General + Figure 9-208 element format; Table 9-130 Element IDs (ID 255 = Element ID Extension present)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        929,
+        930,
+        934,
+        935
+      ],
+      "note": "Table 9-130 continued — Fragment element ID 242 (9.4.2.187); Fragmentable/Extensible columns and the 10.28.11 fragmentation reference"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        935,
+        936
+      ],
+      "note": "9.4.2.2 SSID (ID 0, Figure 9-209, 0-32 octets) and 9.4.2.3 Supported Rates (ID 1)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        937
+      ],
+      "note": "9.4.2.5 TIM element (ID 5) format — DTIM Count/Period, Bitmap Control, Partial Virtual Bitmap"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1046
+      ],
+      "note": "9.4.2.23 RSNE (ID 48, Figure 9-367) — RSNE size limited by the 255-octet element size"
+    }
+  ],
+  "track": "frames"
+}

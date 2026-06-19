@@ -1,0 +1,211 @@
+{
+  "id": "frames-05-management-frame-bodies",
+  "title": {
+    "en": "Management Frame Bodies: Beacon, Probe, Association, Auth, Deauth",
+    "zh": "管理帧主体：Beacon、Probe、关联、认证、去关联"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every 802.11 management frame shares the same MAC header (Frame Control, Duration, three address fields, Sequence Control). What makes a Beacon a Beacon and an Association Request an Association Request is the frame body — the variable-length payload that rides after the header. Clause 9.3.3 defines, subtype by subtype, exactly what goes in each body and in what order. Learn the pattern once and every management frame becomes readable.",
+      "zh": "每一个 802.11 管理帧都共用相同的 MAC 头部（帧控制、时长、三个地址字段、序号控制）。真正让一个帧成为 Beacon、让另一个帧成为关联请求的，是“帧主体（frame body）”——跟在头部之后那段变长的载荷。第 9.3.3 节逐个子类型地规定了每种帧主体里放什么、按什么顺序放。把这个规律学一遍，所有管理帧就都能读懂了。"
+    },
+    {
+      "type": "prose",
+      "en": "The pattern is always the same: fixed fields first, then a train of elements. Fixed fields are positional — there is no length tag, so you must know each field's size to parse it (a Timestamp is always 8 octets, a Beacon Interval always 2, Capability Information always 2). Elements come after and are self-describing: each is an Element ID plus a Length plus its contents, so a parser can step through them and simply skip any Element ID it does not recognise. The standard says fields and elements appear in the specified relative order, and all are mandatory unless the table marks them optional or conditional.",
+      "zh": "这个规律永远一致：先是固定字段，然后是一串元素（element）。固定字段是按位置排布的——它们没有长度标记，所以你必须事先知道每个字段的大小才能解析（Timestamp 永远是 8 字节，Beacon Interval 永远是 2 字节，Capability Information 永远是 2 字节）。元素排在其后，且是自描述的：每个元素都由“元素 ID + 长度 + 内容”组成，因此解析器可以逐个遍历，并直接跳过它不认识的任何元素 ID。标准规定字段和元素按指定的相对顺序出现，且除非表格标注为可选或有条件，否则都是强制的。"
+    },
+    {
+      "type": "widget",
+      "widget": "frame-anatomy",
+      "params": {
+        "fields": [
+          {
+            "name": {
+              "en": "Timestamp",
+              "zh": "时间戳"
+            },
+            "octets": 8,
+            "desc": {
+              "en": "Beacon body order 1: the AP's TSF timer value, used by stations to synchronise their clocks to the BSS.",
+              "zh": "Beacon 主体第 1 项：AP 的 TSF 定时器值，站点用它把自己的时钟同步到 BSS。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                779
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "Beacon Interval",
+              "zh": "Beacon 间隔"
+            },
+            "octets": 2,
+            "desc": {
+              "en": "Order 2: how often (in time units) the AP intends to transmit Beacons.",
+              "zh": "第 2 项：AP 计划发送 Beacon 的间隔（以时间单位计）。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                779
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "Capability Information",
+              "zh": "能力信息"
+            },
+            "octets": 2,
+            "desc": {
+              "en": "Order 3: a bitfield advertising BSS capabilities (privacy, short preamble, QoS, etc.).",
+              "zh": "第 3 项：一个位字段，用于通告 BSS 的能力（加密、短前导码、QoS 等）。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                779
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "SSID element",
+              "zh": "SSID 元素"
+            },
+            "octets": 0,
+            "desc": {
+              "en": "Order 4 and the first element: ID + Length + the network name. From here on the body is a stack of self-describing elements (Supported Rates, RSN, HT/VHT/HE/EHT Capabilities, …).",
+              "zh": "第 4 项，也是第一个元素：ID + 长度 + 网络名。从这里开始，主体就是一摞自描述的元素（支持速率、RSN、HT/VHT/HE/EHT 能力……）。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                779
+              ]
+            }
+          },
+          {
+            "name": {
+              "en": "… elements …",
+              "zh": "……元素……"
+            },
+            "octets": 0,
+            "desc": {
+              "en": "A long, ordered train of optional/conditional elements. An unrecognised Element ID is skipped and parsing continues.",
+              "zh": "一长串有序的可选/有条件元素。遇到不认识的元素 ID 就跳过，继续解析后续元素。"
+            },
+            "cite": {
+              "pdf_id": "80211-2024",
+              "pages": [
+                779
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A Probe Response is almost a Beacon with a different hat on. Both start with Timestamp, Beacon Interval, Capability Information, then SSID and the same element train. The big difference: a Beacon is broadcast on a schedule and may carry a TIM, while a Probe Response is sent on demand to answer a specific Probe Request. A Probe Request itself is lean — it has no fixed fields at all, just elements starting with the SSID it is looking for.",
+      "zh": "Probe Response 几乎就是“换了顶帽子的 Beacon”。两者都以 Timestamp、Beacon Interval、Capability Information 开头，随后是 SSID 和相同的那串元素。最大区别在于：Beacon 是按时间表广播的、可能携带 TIM；而 Probe Response 是按需发送、用来回应某个具体的 Probe Request。Probe Request 本身则很精简——它完全没有固定字段，只有从所查找的 SSID 开始的一串元素。"
+    },
+    {
+      "type": "prose",
+      "en": "The association family follows the same fixed-then-elements shape but with telling differences. An (Re)Association Request opens with Capability Information then a Listen Interval — the value that tells the AP how often the station will wake to check for buffered traffic; a Reassociation Request additionally carries the Current AP address before the SSID. The (Re)Association Response answers with Capability Information, a Status Code (did it succeed?), and — on success — the AID, the Association ID the AP assigns so it can address this station in the TIM. Note the AID lives only in the response, never in the request.",
+      "zh": "关联家族遵循同样的“先固定字段、后元素”的形态，但其差异很说明问题。（重）关联请求以 Capability Information 开头，紧接 Listen Interval——这个值告诉 AP 站点多久会醒来一次以查看缓存的下行数据；重关联请求还会在 SSID 之前额外携带“当前 AP 地址”。（重）关联响应则以 Capability Information、Status Code（是否成功？）作答，并在成功时给出 AID——也就是 AP 分配的关联标识，用于在 TIM 中寻址该站点。请注意：AID 只出现在响应里，绝不出现在请求中。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    subgraph Beacon / Probe Response\n        B1[Timestamp 8] --> B2[Beacon Interval 2] --> B3[Capability Info 2] --> B4[SSID + elements ...]\n    end\n    subgraph Assoc Request\n        AQ1[Capability Info 2] --> AQ2[Listen Interval 2] --> AQ3[SSID + elements ...]\n    end\n    subgraph Assoc Response\n        AR1[Capability Info 2] --> AR2[Status Code 2] --> AR3[AID 2] --> AR4[elements ...]\n    end\n    subgraph Authentication\n        AU1[Alg Number 2] --> AU2[Txn Seq 2] --> AU3[Status Code 2] --> AU4[method-specific ...]\n    end\n    subgraph Deauth / Disassoc\n        D1[Reason Code 2]\n    end",
+      "zh": "graph TD\n    subgraph Beacon / Probe Response\n        B1[时间戳 8] --> B2[Beacon间隔 2] --> B3[能力信息 2] --> B4[SSID + 元素 ...]\n    end\n    subgraph 关联请求\n        AQ1[能力信息 2] --> AQ2[Listen Interval 2] --> AQ3[SSID + 元素 ...]\n    end\n    subgraph 关联响应\n        AR1[能力信息 2] --> AR2[状态码 2] --> AR3[AID 2] --> AR4[元素 ...]\n    end\n    subgraph 认证\n        AU1[算法编号 2] --> AU2[事务序号 2] --> AU3[状态码 2] --> AU4[方法相关 ...]\n    end\n    subgraph 去认证 / 去关联\n        D1[原因码 2]\n    end"
+    },
+    {
+      "type": "prose",
+      "en": "Two frame bodies stand out for being almost empty. An Authentication frame body always begins with three fixed fields — Authentication algorithm number, Authentication transaction sequence number, and a Status Code — and everything after that (Finite Cyclic Group, Scalar, FFE, FILS Nonce, …) is present only for specific methods like SAE or FILS. At the opposite extreme, Disassociation and Deauthentication carry essentially just a 2-octet Reason Code: a single number saying why the link is being torn down (plus optional Vendor Specific elements and, with protection enabled, an MME). Tearing down is a one-field affair.",
+      "zh": "有两种帧主体因近乎“空”而格外醒目。认证帧主体永远以三个固定字段开头——认证算法编号、认证事务序号和状态码——其后的一切（有限循环群、标量 Scalar、FFE、FILS Nonce……）只在 SAE、FILS 等特定方法下才出现。处在另一个极端的是去关联（Disassociation）和去认证（Deauthentication），它们基本上只携带一个 2 字节的原因码（Reason Code）：用一个数字说明链路为何被拆除（外加可选的 Vendor Specific 元素，以及在启用保护时的 MME）。拆链路，一个字段就够了。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What the clause-9.3.3 tables actually mandate",
+        "zh": "第 9.3.3 节的表格究竟规定了什么"
+      },
+      "en": "9.3.3.1 sets the universal rule: the frame body consists of fields and elements defined per subtype; all are mandatory unless stated otherwise, they appear in the specified relative order skipping any that are absent, and an unrecognised Element ID is ignored while parsing continues (10.28.7). The Beacon body (Table 9-62, 9.3.3.2) is the longest, opening with Timestamp / Beacon Interval / Capability Information then SSID, Supported Rates, and dozens of conditional elements; the MME, when beacon protection is enabled, is placed last by design so it is easy to locate. Probe Request (9.3.3.9, Table 9-68) has no fixed fields and starts at SSID; Probe Response (9.3.3.10, Table 9-69) mirrors the Beacon's fixed-field trio. Association Request (9.3.3.5, Table 9-64) leads with Capability Information then Listen Interval; Association Response (9.3.3.6, Table 9-65) leads with Capability Information, Status Code, and AID (the AID is absent when dot11S1GOptionImplemented is true). Reassociation Request (9.3.3.7, Table 9-66) inserts a Current AP address; Reassociation Response is 9.3.3.8 (Table 9-67). The Authentication body (9.3.3.11, Table 9-70) fixes algorithm number, transaction sequence number, and Status Code, with all later fields conditional per Table 9-71. Disassociation (9.3.3.4, Table 9-63) and Deauthentication (9.3.3.12, Table 9-72) carry only a Reason code plus optional Vendor Specific elements and a trailing MME under management frame protection.",
+      "zh": "9.3.3.1 节给出了通用规则：帧主体由各子类型所定义的字段与元素组成；除非另有说明，否则全部强制；它们按指定的相对顺序出现、跳过不存在的项；遇到不认识的元素 ID 则忽略并继续解析（见 10.28.7）。Beacon 主体（表 9-62，9.3.3.2）最长，以 Timestamp / Beacon Interval / Capability Information 开头，随后是 SSID、支持速率以及数十个有条件元素；在启用 Beacon 保护时，MME 被有意放在最后，以便于定位。Probe Request（9.3.3.9，表 9-68）没有固定字段，直接从 SSID 开始；Probe Response（9.3.3.10，表 9-69）则复现了 Beacon 的固定字段三件套。关联请求（9.3.3.5，表 9-64）以 Capability Information 开头、紧接 Listen Interval；关联响应（9.3.3.6，表 9-65）以 Capability Information、Status Code、AID 开头（当 dot11S1GOptionImplemented 为真时不含 AID）。重关联请求（9.3.3.7，表 9-66）插入了“当前 AP 地址”；重关联响应见 9.3.3.8（表 9-67）。认证主体（9.3.3.11，表 9-70）固定了算法编号、事务序号和状态码，其后所有字段均按表 9-71 有条件出现。去关联（9.3.3.4，表 9-63）和去认证（9.3.3.12，表 9-72）只携带一个原因码，外加可选的 Vendor Specific 元素，以及在管理帧保护下尾随的 MME。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          779,
+          786,
+          787,
+          791,
+          805,
+          807,
+          815,
+          821
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:9.3.3.2",
+    "80211-2024:9.3.3.4",
+    "80211-2024:9.3.3.5",
+    "80211-2024:9.3.3.6",
+    "80211-2024:9.3.3.7",
+    "80211-2024:9.3.3.8",
+    "80211-2024:9.3.3.9",
+    "80211-2024:9.3.3.10",
+    "80211-2024:9.3.3.11",
+    "80211-2024:9.3.3.12"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        778,
+        779
+      ],
+      "note": "9.3.3.1-9.3.3.2 — universal frame-body rule (fixed fields then elements; unrecognised IDs skipped) and the Beacon frame body (Table 9-62)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        786,
+        787
+      ],
+      "note": "9.3.3.4 Disassociation (Reason code, Table 9-63) and 9.3.3.5 Association Request (Capability Info + Listen Interval, Table 9-64)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        791
+      ],
+      "note": "9.3.3.6 Association Response — Capability Information, Status Code, AID (Table 9-65)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        805,
+        807
+      ],
+      "note": "9.3.3.9 Probe Request (no fixed fields, Table 9-68) and 9.3.3.10 Probe Response (Beacon's fixed-field trio, Table 9-69)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        815,
+        821
+      ],
+      "note": "9.3.3.11 Authentication body (algorithm number / transaction sequence number / Status Code, Table 9-70) and 9.3.3.12 Deauthentication (Reason code, Table 9-72)"
+    }
+  ],
+  "track": "frames"
+}
