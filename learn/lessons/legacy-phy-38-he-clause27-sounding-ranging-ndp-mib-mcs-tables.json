@@ -1,0 +1,136 @@
+{
+  "id": "legacy-phy-38-he-clause27-sounding-ranging-ndp-mib-mcs-tables",
+  "title": {
+    "en": "HE PHY Clause 27 Remainder, Part 2: Sounding/Feedback/Ranging NDP, PHY MIB & TXTIME, and the HE-MCS / HE-SIG-B-MCS Parameter Tables",
+    "zh": "HE PHY 第 27 章余项之二：探测/反馈/测距 NDP、PHY MIB 与 TXTIME，以及 HE-MCS / HE-SIG-B-MCS 参数表"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "The first HE-remainder lesson walked through preambles, padding, and packet extension. This one picks up the pieces left on the table — and they split cleanly into two stories. The first is how an HE radio measures the channel and reports back: a family of special null-data packets (NDPs) that carry no payload, only training symbols. The second is the menu of rates the radio can pick once it knows the channel: the big HE-MCS lookup tables. In between sits the management plumbing — the PLME primitives, the PHY MIB, and the TXTIME math — that lets the MAC drive all of it.",
+      "zh": "HE 余项的第一课讲了前导码、填充与包扩展。本课接着把剩下的内容收尾——而它们恰好分成两条主线。第一条：HE 收发机如何测量信道并把结果汇报回去——一组不带载荷、只携带训练符号的特殊空数据包（NDP）。第二条：当收发机知道信道情况后，它能从哪份“速率菜单”里挑速率——也就是庞大的 HE-MCS 查找表。夹在两者之间的，是把这一切串起来驱动的管理“管路”：PLME 原语、PHY MIB，以及 TXTIME 计算公式。"
+    },
+    {
+      "type": "prose",
+      "en": "Beamforming starts with measurement. To steer energy at a station, the access point first sends an HE sounding NDP — an HE SU PPDU stripped of its Data field, leaving just the long training fields the receiver uses to estimate the channel. The beamformee turns that estimate into a beamforming feedback matrix V, compresses it into quantized angles (so it fits in a feedback frame), and sends it back. From V the beamformer computes a steering matrix Q. If the announcement also asked for CQI, the beamformee adds a channel-quality index per stream — quantized SNR — to help the AP choose which resource units and rates to use next.",
+      "zh": "波束成形从测量开始。为了把能量定向射向某个站点，接入点（AP）先发送一个 HE 探测 NDP——它是去掉了数据字段的 HE SU PPDU，只保留接收端用来估计信道的长训练字段（LTF）。波束接收方（beamformee）把这份信道估计转换成波束成形反馈矩阵 V，再将其压缩成量化后的角度（这样才能装进一帧反馈里）送回。波束成形方（beamformer）据此从 V 算出导向矩阵 Q。如果探测公告还要求了 CQI，波束接收方会再加上每条流的信道质量指数（量化后的 SNR），帮助 AP 决定下一步用哪些资源单元（RU）和哪些速率。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as AP (beamformer)\n    participant STA as STA (beamformee)\n    AP->>STA: HE NDP Announcement (sounding + maybe CQI)\n    AP->>STA: HE sounding NDP (HE-LTF only, no Data)\n    Note over STA: estimate channel -> matrix V (compressed angles)\n    STA->>AP: Beamforming feedback (V) + optional CQI\n    Note over AP: V -> steering matrix Q\n    AP->>STA: steered DL data (SU or DL-MU-MIMO)",
+      "zh": "sequenceDiagram\n    participant AP as AP（波束成形方）\n    participant STA as STA（波束接收方）\n    AP->>STA: HE NDP 公告（探测 + 可能含 CQI）\n    AP->>STA: HE 探测 NDP（仅 HE-LTF，无数据）\n    Note over STA: 估计信道 -> 矩阵 V（压缩角度）\n    STA->>AP: 波束成形反馈（V）+ 可选 CQI\n    Note over AP: V -> 导向矩阵 Q\n    AP->>STA: 定向下行数据（SU 或 DL-MU-MIMO）"
+    },
+    {
+      "type": "prose",
+      "en": "The same no-payload idea is reused for three other jobs. The HE TB feedback NDP carries an NDP feedback report on the trigger-based uplink — two 4x HE-LTF symbols, transmitted only on the 20 MHz channel a station was assigned. The HE Ranging NDP and HE TB Ranging NDP exist for fine timing measurement (FTM): they measure distance from the round-trip flight time of the signal. They never apply beamforming, and they can swap their normal training fields for secure HE-LTFs — randomized sequences with a zero-power guard interval — so a clock spoofer cannot quietly forge the timing and lie about the distance.",
+      "zh": "同样“无载荷”的思路还被复用在另外三件事上。HE TB 反馈 NDP 在基于触发的上行链路上携带 NDP 反馈报告——两个 4x HE-LTF 符号，且只在站点被分配到的那个 20 MHz 信道上发送。HE 测距 NDP 与 HE TB 测距 NDP 则服务于精细定时测量（FTM）：它们用信号往返飞行时间来测距。它们从不施加波束成形，并且可以把常规训练字段换成“安全 HE-LTF”——带零功率保护间隔的随机化序列——这样时钟伪造者就无法悄悄伪造定时、谎报距离。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The thread connecting all four NDPs: they are HE PPDUs with the Data field removed. They exist to carry training symbols, not bits. Sounding measures the channel for beamforming; TB-feedback returns a report; the two Ranging variants measure distance. Strip the payload, keep the pilots — that is the whole family.",
+      "zh": "把这四种 NDP 串起来的那根线索是：它们都是去掉了数据字段的 HE PPDU。它们存在的意义是携带训练符号，而非比特。探测 NDP 为波束成形测量信道；TB 反馈 NDP 回传报告；两种测距变体测量距离。去掉载荷、保留导频——这就是这一整个家族。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 520 150' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='20' font-size='12' stroke='none' fill='currentColor'>HE sounding / Ranging NDP = HE PPDU with NO Data field</text><rect x='10' y='40' width='55' height='34'/><text x='37' y='61' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>L-STF</text><rect x='65' y='40' width='55' height='34'/><text x='92' y='61' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>L-LTF</text><rect x='120' y='40' width='45' height='34'/><text x='142' y='61' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>L-SIG</text><rect x='165' y='40' width='65' height='34'/><text x='197' y='61' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>HE-SIG-A</text><rect x='230' y='40' width='45' height='34'/><text x='252' y='61' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>HE-STF</text><rect x='275' y='40' width='130' height='34' stroke-dasharray='4 3'/><text x='340' y='61' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>HE-LTF (the point)</text><rect x='405' y='40' width='40' height='34'/><text x='425' y='61' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>PE</text><rect x='445' y='40' width='65' height='34' stroke-dasharray='2 4'/><text x='477' y='58' font-size='8' text-anchor='middle' stroke='none' fill='currentColor'>(no Data</text><text x='477' y='69' font-size='8' text-anchor='middle' stroke='none' fill='currentColor'>field)</text><text x='10' y='110' font-size='11' stroke='none' fill='currentColor'>Ranging variants may use secure HE-LTF: randomized seq + zero-power GI</text><text x='10' y='130' font-size='11' stroke='none' fill='currentColor'>to resist timing-spoofing of the distance estimate.</text></svg>",
+      "caption": {
+        "en": "Every HE NDP keeps the preamble and training fields but drops the Data field — the HE-LTF block is the whole reason the packet is sent.",
+        "zh": "每个 HE NDP 都保留前导码与训练字段，但丢弃数据字段——HE-LTF 块正是发送这个包的全部理由。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now the management backbone. The HE PLME SAP primitives (PLME-GET/SET/RESET/CHARACTERISTICS) are the interface a higher layer uses to read and tune the PHY. Behind them sits the HE PHY MIB — a long table of named attributes like dot11PHYType = he(14), the beamforming capability flags, the spatial-stream counts, and the secure-LTF and STBC options. Each attribute is either static (fixed for a given chip) or dynamic (read or written at run time). The TXTIME / PSDU_LENGTH calculation is the arithmetic the MAC relies on: given a rate and a frame length it predicts exactly how long the PPDU will occupy the air — preamble + symbols + LTFs + packet extension — which the MAC needs for NAV and contention timing.",
+      "zh": "接下来是管理“骨架”。HE PLME SAP 原语（PLME-GET/SET/RESET/CHARACTERISTICS）是高层用来读取和调整 PHY 的接口。它们背后是 HE PHY MIB——一张很长的命名属性表，例如 dot11PHYType = he(14)、各类波束成形能力标志、空间流数量，以及安全 LTF 和 STBC 选项。每个属性要么是静态的（对某款芯片固定不变），要么是动态的（运行时可读或可写）。TXTIME / PSDU_LENGTH 计算则是 MAC 所依赖的那套算术：给定速率与帧长，它能精确预测一个 PPDU 会占用多长的空口时间——前导码 + 符号 + LTF + 包扩展——这正是 MAC 计算 NAV 与竞争定时所需要的。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the rate menu itself. Clause 27.5 is mostly tables — one set per resource-unit size: 26-, 52-, 106-, 242-, 484-, 996-, and 2×996-tone RUs (plus the matching non-OFDMA 20/40/80/160/80+80 MHz widths). Each table indexes HE-MCS 0 through 11 against modulation (BPSK up to 1024-QAM), coding rate, and the bits-per-symbol counts (NBPSCS, NCBPS, NDBPS) that ultimately give the data rate for each guard-interval choice. HE-MCS 8-11 are always optional. Clause 27.6 is the small companion table for HE-SIG-B-MCS — the rates used to carry the HE-SIG-B field itself inside an HE MU PPDU, so the per-user allocation map can be read before the data is decoded.",
+      "zh": "最后是速率菜单本身。第 27.5 章基本就是一堆表——每种资源单元尺寸一组：26、52、106、242、484、996 与 2×996 音调 RU（外加对应的非 OFDMA 20/40/80/160/80+80 MHz 带宽）。每张表把 HE-MCS 0 到 11 与调制方式（从 BPSK 一直到 1024-QAM）、编码率，以及每符号比特数（NBPSCS、NCBPS、NDBPS）一一对应，后者最终给出每种保护间隔选择下的数据速率。HE-MCS 8 至 11 始终是可选的。第 27.6 章是配套的小表 HE-SIG-B-MCS——它规定承载 HE MU PPDU 内部 HE-SIG-B 字段本身所用的速率，这样在解码数据之前就能先读出每用户的分配映射图。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact NDP-to-feedback chain and where the rate numbers come from",
+        "zh": "精确的 NDP→反馈链路，以及速率数字的出处"
+      },
+      "en": "27.3.16.2 fixes the feedback path: on receiving an HE sounding NDP the beamformee computes V_{k,u} per subcarrier, removes the space-time-stream CSD, compresses V into the angles phi and psi (quantized per Table 9-92, using the codebook bits in the HE MIMO Control field), and the only Clause 27 feedback format is the compressed beamforming feedback matrix of 19.3.12.3.6; the beamformer reconstructs V via Equation (19-79) and derives Q. 27.3.16.3 adds CQI: quantized SNR per stream per requested RU. 27.3.17 defines the sounding NDP as an HE SU PPDU without Data and a 4-us PE; 27.3.18 the TB feedback NDP (two 4x HE-LTF symbols, 0-us PE); 27.3.19 the Ranging NDP and HE TB Ranging NDP for FTM, which set the Beamformed field to 0 and may use secure HE-LTFs (LTF_REP > 1, zero-power GI). On the management side, 27.4.1-27.4.2 expose the PLME SAP primitives and the dot11 HE PHY MIB attribute table (dot11PHYType = he(14), static vs dynamic semantics), 27.4.3 gives TXTIME via Equation (27-149) and PSDU_LENGTH via Equations (27-153)-(27-163), and 27.4.4 lists HE PHY characteristics (aPPDUMaxTime = 5.484 ms, aPSDUMaxLength = 6 500 631 octets). 27.5.1-27.5.8 are the per-RU HE-MCS tables (NDBPS = NCBPS x R), and 27.6 the HE-SIG-B-MCS table for the HE MU PPDU's HE-SIG-B field.",
+      "zh": "27.3.16.2 固定了反馈路径：收到 HE 探测 NDP 后，波束接收方按子载波计算 V_{k,u}，去除空时流的 CSD，把 V 压缩成角度 phi 与 psi（依 Table 9-92 量化，使用 HE MIMO 控制字段中的码本比特），且第 27 章唯一的反馈格式是 19.3.12.3.6 的压缩波束成形反馈矩阵；波束成形方经式 (19-79) 重建 V 并导出 Q。27.3.16.3 加入 CQI：按流、按请求的 RU 给出量化 SNR。27.3.17 把探测 NDP 定义为去掉数据、PE 为 4 微秒的 HE SU PPDU；27.3.18 定义 TB 反馈 NDP（两个 4x HE-LTF 符号、PE 为 0 微秒）；27.3.19 定义用于 FTM 的测距 NDP 与 HE TB 测距 NDP，它们把 Beamformed 字段置 0 并可使用安全 HE-LTF（LTF_REP > 1、零功率 GI）。在管理侧，27.4.1-27.4.2 给出 PLME SAP 原语与 dot11 HE PHY MIB 属性表（dot11PHYType = he(14)、静态与动态语义），27.4.3 用式 (27-149) 给出 TXTIME、用式 (27-153)-(27-163) 给出 PSDU_LENGTH，27.4.4 列出 HE PHY 特性（aPPDUMaxTime = 5.484 ms、aPSDUMaxLength = 6 500 631 字节）。27.5.1-27.5.8 是按 RU 划分的 HE-MCS 表（NDBPS = NCBPS x R），27.6 是用于 HE MU PPDU 中 HE-SIG-B 字段的 HE-SIG-B-MCS 表。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4301,
+          4302,
+          4303,
+          4356,
+          4360,
+          4362
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4301,
+        4302
+      ],
+      "note": "27.3.16.1-27.3.16.3 SU/DL-MU-MIMO beamforming, feedback matrix V (compressed angles), CQI feedback; 27.3.17 HE sounding NDP"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4303,
+        4304,
+        4305,
+        4306
+      ],
+      "note": "27.3.18 HE TB feedback NDP; 27.3.19.1-27.3.19.2 HE Ranging NDP and HE TB Ranging NDP (FTM, secure HE-LTF, no beamforming)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4351,
+        4356,
+        4359
+      ],
+      "note": "27.4.1 PLME SAP primitives; 27.4.2 HE PHY MIB (Table 27-60); 27.4.3 TXTIME / PSDU_LENGTH calculation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4360,
+        4361,
+        4362
+      ],
+      "note": "27.4.4 HE PHY characteristics (Table 27-61); 27.5.1-27.5.8 per-RU HE-MCS tables; 27.6 HE-SIG-B-MCS parameters"
+    }
+  ],
+  "covers": [
+    "80211-2024:27.3.16.1",
+    "80211-2024:27.3.16.2",
+    "80211-2024:27.3.16.3",
+    "80211-2024:27.3.17",
+    "80211-2024:27.3.18",
+    "80211-2024:27.3.19.1",
+    "80211-2024:27.3.19.2",
+    "80211-2024:27.4.1",
+    "80211-2024:27.4.2",
+    "80211-2024:27.4.3",
+    "80211-2024:27.4.4",
+    "80211-2024:27.5.1",
+    "80211-2024:27.5.2",
+    "80211-2024:27.5.3",
+    "80211-2024:27.5.4",
+    "80211-2024:27.5.5",
+    "80211-2024:27.5.6",
+    "80211-2024:27.5.7",
+    "80211-2024:27.5.8",
+    "80211-2024:27.6"
+  ],
+  "track": "legacy-phy"
+}

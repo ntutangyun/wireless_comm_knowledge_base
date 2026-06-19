@@ -1,0 +1,142 @@
+{
+  "id": "legacy-phy-39-wur-clause30-modulation-ppdu-preamble-waveform",
+  "title": {
+    "en": "WUR PHY Clause 30, Part 1: The Wake-Up Radio Idea, OOK/MC-OOK Modulation, PPDU Formats, Preamble/Sync, and Waveform Generation",
+    "zh": "WUR PHY 第 30 章之一：唤醒无线电理念、OOK/MC-OOK 调制、PPDU 格式、前导码/同步与波形生成"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Imagine a device that mostly sleeps but must wake instantly when the network calls it. Keeping a full Wi-Fi radio listening drains the battery; turning it off means missing the call. The 802.11ba Wake-Up Radio (WUR) PHY (Clause 30) solves this with a second, tiny companion receiver that sips microwatts while it waits for one specific signal: 'wake the main radio.' The main OFDM radio stays asleep until the WUR receiver hears its doorbell. WUR runs in the 2.4 GHz and 5 GHz bands and offers just two speeds — 62.5 kb/s (Low Data Rate, LDR) and 250 kb/s (High Data Rate, HDR). It is built on the Clause 17 PHY, and a WUR AP must be able to transmit a WUR Basic PPDU while a WUR non-AP STA must be able to receive one.",
+      "zh": "设想一个大部分时间都在睡眠、但一旦网络呼叫就要立刻醒来的设备。让一整套 Wi-Fi 射频持续监听会耗尽电量；而把它关掉又会错过呼叫。802.11ba 的唤醒无线电（Wake-Up Radio，WUR）PHY（第 30 章）用一个第二、极小的伴随接收机来解决这个矛盾：它只消耗微瓦级功率，静候一个特定信号——“唤醒主射频”。主 OFDM 射频一直沉睡，直到 WUR 接收机听到属于自己的“门铃”。WUR 工作在 2.4 GHz 与 5 GHz 频段，仅提供两档速率——62.5 kb/s（低数据率，LDR）与 250 kb/s（高数据率，HDR）。它构建在第 17 章 PHY 之上：WUR AP 必须能发送 WUR Basic PPDU，而 WUR 非 AP STA 必须能接收 WUR Basic PPDU。"
+    },
+    {
+      "type": "prose",
+      "en": "The core trick is the modulation. Coherent OFDM demodulation needs an FFT, channel estimation, and carrier recovery — expensive in silicon and power. WUR instead uses on-off keying (OOK): a bit is simply 'energy present' (On) or 'energy absent' (Off), which a cheap envelope detector can read by just measuring power. But the transmitter is still an ordinary OFDM radio. So WUR carves the OOK symbol out of OFDM via multicarrier OOK (MC-OOK): the On symbol is built by feeding a handful of subcarrier coefficients into a 64-point IDFT, using 13 contiguous subcarriers centered in a 20 MHz channel at 312.5 kHz spacing with the center subcarrier nulled; the Off symbol is just zero energy. The result looks like OOK to the receiver but is generated entirely inside the existing OFDM transmit chain.",
+      "zh": "核心诀窍在于调制方式。相干 OFDM 解调需要 FFT、信道估计与载波恢复——这些在芯片与功耗上都很昂贵。WUR 改用通断键控（On-Off Keying，OOK）：一个比特无非是“有能量”（On）或“无能量”（Off），廉价的包络检测器只需测量功率即可读出。然而发射端仍是一台普通的 OFDM 射频。于是 WUR 通过多载波 OOK（MC-OOK）把 OOK 符号从 OFDM 中“雕刻”出来：On 符号由把若干子载波系数送入 64 点 IDFT 生成，使用居中于 20 MHz 信道内的 13 个连续子载波、子载波间隔 312.5 kHz、且中心子载波置零；Off 符号则就是零能量。这样接收端看到的像是 OOK，而它却完全在既有的 OFDM 发射链内部生成。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "There is no explicit 'data rate' field in a WUR PPDU. Instead, the WUR-Sync field encodes it: a repeated 32-bit sequence [W W] means LDR, while the bitwise complement of W means HDR. The receiver figures out the speed just by detecting which Sync pattern it heard — clever, because the tiny receiver has to recover timing and rate before it can decode anything.",
+      "zh": "WUR PPDU 中没有显式的“数据率”字段。取而代之，WUR-Sync 字段对其进行编码：重复的 32 位序列 [W W] 表示 LDR，而 W 的按位取反序列则表示 HDR。接收机只需检测听到的是哪种 Sync 图样，就能判定速率——这很巧妙，因为这个微型接收机必须先恢复定时与速率，才能解码任何内容。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n    subgraph NonWUR[\"Non-WUR preamble (OFDM, protects legacy STAs)\"]\n      A[L-STF] --> B[L-LTF] --> C[L-SIG] --> D[BPSK-Mark1] --> E[BPSK-Mark2]\n    end\n    E --> F[\"WUR-Sync (64 or 128 us): detect + timing + rate\"]\n    F --> G[\"WUR-Data: OOK On/Off symbols carry the PSDU\"]\n    style NonWUR fill:#eef",
+      "zh": "flowchart LR\n    subgraph NonWUR[\"非 WUR 前导（OFDM，保护传统 STA）\"]\n      A[L-STF] --> B[L-LTF] --> C[L-SIG] --> D[BPSK-Mark1] --> E[BPSK-Mark2]\n    end\n    E --> F[\"WUR-Sync（64 或 128 微秒）：检测+定时+速率\"]\n    F --> G[\"WUR-Data：OOK 通/断符号承载 PSDU\"]\n    style NonWUR fill:#eef"
+    },
+    {
+      "type": "prose",
+      "en": "The PPDU has two layers. First comes a non-WUR portion built from ordinary OFDM fields — L-STF, L-LTF, L-SIG — that legacy stations can hear, plus two derived BPSK symbols: BPSK-Mark1 spoofs HT stations and BPSK-Mark2 spoofs VHT stations away from mistaking the frame for one of theirs, so they correctly defer. Then comes the WUR portion the tiny receiver actually cares about: the WUR-Sync field (64 us for HDR, 128 us for LDR) for packet detection, symbol timing, and rate determination, followed by the WUR-Data field carrying the PSDU. The WUR Basic PPDU is the single-20-MHz form; the WUR FDMA PPDU duplicates the 20 MHz preamble across 40 or 80 MHz and places an independent WUR signal in each 20 MHz subchannel, padding shorter subchannels so they all end together.",
+      "zh": "PPDU 分为两层。先是一段非 WUR 部分，由普通 OFDM 字段构成——L-STF、L-LTF、L-SIG——传统站点能够听到；再加两个派生的 BPSK 符号：BPSK-Mark1 用于“迷惑”HT 站点、BPSK-Mark2 用于“迷惑”VHT 站点，使它们不会误以为这是属于自己的帧格式，从而正确退避。随后才是微型接收机真正关心的 WUR 部分：WUR-Sync 字段（HDR 为 64 微秒、LDR 为 128 微秒）用于包检测、符号定时与速率判定，其后是承载 PSDU 的 WUR-Data 字段。WUR Basic PPDU 是单 20 MHz 形式；WUR FDMA PPDU 则把 20 MHz 前导复制到 40 或 80 MHz 上，并在每个 20 MHz 子信道放置独立的 WUR 信号，对较短的子信道进行填充，使它们同时结束。"
+    },
+    {
+      "type": "prose",
+      "en": "Waveform generation is two-state switching. The transmitter has an On-Waveform Generator (On-WG) and an Off-WG; a sequence of bits flips between them. For WUR-Sync and WUR-Data with HDR, the On symbol is 2 us (a 64-point IDFT, take the first 32 samples, then prepend the last 8 as a guard interval -> 40 samples). For WUR-Data with LDR the On symbol is 4 us (full 64-point IDFT plus a 16-sample guard interval -> 80 samples). The encoder maps each input bit to On/Off symbols (HDR: 0->10, 1->01; LDR: 0->1010, 1->0101), with encoded bit 0 = Off and 1 = On. A Symbol Randomizer driven by a 7-bit LFSR (generator x^7 + x^4 + 1) multiplies each symbol by +/-1 and applies a pseudorandom cyclic shift to smear out spectral lines, and a per-transmit-chain cyclic shift (CSD) avoids unintentional beamforming on multi-antenna transmitters.",
+      "zh": "波形生成本质上是两态切换。发射机拥有一个 On 波形生成器（On-WG）和一个 Off-WG；一串比特在二者之间翻转。对于 WUR-Sync 以及 HDR 的 WUR-Data，On 符号为 2 微秒（做 64 点 IDFT，取前 32 个采样，再把最后 8 个采样前置作为保护间隔 -> 40 个采样）。对于 LDR 的 WUR-Data，On 符号为 4 微秒（完整 64 点 IDFT 加 16 个采样的保护间隔 -> 80 个采样）。编码器把每个输入比特映射为 On/Off 符号（HDR：0->10、1->01；LDR：0->1010、1->0101），其中编码比特 0 = Off、1 = On。由 7 位 LFSR（生成多项式 x^7 + x^4 + 1）驱动的符号随机化器，将每个符号乘以 +/-1 并施加伪随机循环移位以抹除频谱谱线；而每发射链的循环移位（CSD）则避免多天线发射机上产生非预期的波束成形。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why bother spoofing legacy radios with BPSK-Mark1/Mark2? Because the WUR-Data is OOK, not OFDM — a legacy STA that locks onto only L-SIG might misjudge the frame length and transmit over it. The two BPSK marks make HT and VHT stations classify the PPDU as 'not mine, but occupied,' so they hold off for the L-SIG-signalled duration and the fragile OOK transmission survives.",
+      "zh": "为何要用 BPSK-Mark1/Mark2 去“迷惑”传统射频？因为 WUR-Data 是 OOK 而非 OFDM——仅锁定 L-SIG 的传统 STA 可能误判帧长并在其上叠加发送。两个 BPSK 标记让 HT 与 VHT 站点把该 PPDU 判定为“不是我的，但信道已被占用”，于是它们按 L-SIG 标示的时长退避，脆弱的 OOK 传输得以存活。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The MC-OOK On symbol, the unified IDFT signal model, and FDMA padding",
+        "zh": "MC-OOK On 符号、统一的 IDFT 信号模型与 FDMA 填充"
+      },
+      "en": "The HDR On-WG (30.3.4.1) uses subcarriers k = (-6,-4,-2,2,4,6) with nonzero coefficients from BPSK/QPSK/16-/64-/256-QAM, takes the first 32 of the 64 IDFT outputs through the Symbol Randomizer, then prepends the last 8 as a guard interval, yielding 40 samples for the 2 us symbol. The LDR On-WG (30.3.4.2) uses 12 subcarriers k = (-6..-1, 1..6), keeps all 64 IDFT outputs, and prepends the last 16, yielding 80 samples for the 4 us symbol. The single unified signal model (Eq. 30-3) for both Sync and Data On symbols is an IDFT over k = -6..6 with field-specific coefficients X_Field(k), windowing w(t), a 50%-duty-cycle scaling factor, plus the cyclic-shift terms T_CS (per-chain) and T_CSR (pseudorandom); the Off symbol sets the signal to zero. WUR LDR maps each information bit to N_SPDB = 4 OOK symbols (N_WUR-Sync = 64), HDR to 2 (N_WUR-Sync = 32). For FDMA, every nonpunctured 20 MHz subchannel transmits for equal duration; if one is shorter, padding (30.3.11) repeats the HDR information-bit-1 OOK waveform, with the LFSR randomizer continued and updated every T_Sym-HDR, so all subchannels align to the L-SIG LENGTH.",
+      "zh": "HDR 的 On-WG（30.3.4.1）使用子载波 k = (-6,-4,-2,2,4,6)，其非零系数取自 BPSK/QPSK/16-/64-/256-QAM；将 64 点 IDFT 输出的前 32 个送入符号随机化器，再把最后 8 个前置作为保护间隔，得到 2 微秒符号的 40 个采样。LDR 的 On-WG（30.3.4.2）使用 12 个子载波 k = (-6..-1, 1..6)，保留全部 64 个 IDFT 输出，并把最后 16 个前置，得到 4 微秒符号的 80 个采样。对 Sync 与 Data 的 On 符号统一的信号模型（式 30-3）是在 k = -6..6 上的 IDFT，带有字段相关系数 X_Field(k)、窗函数 w(t)、补偿 50% 占空比的缩放因子，以及循环移位项 T_CS（每链）与 T_CSR（伪随机）；Off 符号则把信号置零。WUR LDR 把每个信息比特映射为 N_SPDB = 4 个 OOK 符号（N_WUR-Sync = 64），HDR 为 2 个（N_WUR-Sync = 32）。对于 FDMA，每个未打孔的 20 MHz 子信道发送等长时间；若某个较短，则填充（30.3.11）重复 HDR 信息比特 1 的 OOK 波形，LFSR 随机化器持续运行并每 T_Sym-HDR 更新一次，使所有子信道对齐到 L-SIG 的 LENGTH。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4748,
+          4749,
+          4757,
+          4764
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:30.1",
+    "80211-2024:30.2.1",
+    "80211-2024:30.2.2",
+    "80211-2024:30.2.3",
+    "80211-2024:30.3.1",
+    "80211-2024:30.3.2",
+    "80211-2024:30.3.3",
+    "80211-2024:30.3.4.1",
+    "80211-2024:30.3.4.2",
+    "80211-2024:30.3.4.3",
+    "80211-2024:30.3.4.4",
+    "80211-2024:30.3.5.1",
+    "80211-2024:30.3.5.2",
+    "80211-2024:30.3.5.3",
+    "80211-2024:30.3.5.4",
+    "80211-2024:30.3.5.5",
+    "80211-2024:30.3.5.6",
+    "80211-2024:30.3.5.7",
+    "80211-2024:30.3.5.8",
+    "80211-2024:30.3.5.9",
+    "80211-2024:30.3.6",
+    "80211-2024:30.3.7",
+    "80211-2024:30.3.8",
+    "80211-2024:30.3.9.1",
+    "80211-2024:30.3.9.2",
+    "80211-2024:30.3.9.3",
+    "80211-2024:30.3.10.1",
+    "80211-2024:30.3.10.2",
+    "80211-2024:30.3.11"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4740,
+        4741
+      ],
+      "note": "30.1 Introduction — WUR PHY purpose, bands, LDR/HDR rates, OOK/MC-OOK (13 subcarriers, 312.5 kHz, center null), AP/STA mandatory features"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4745,
+        4746
+      ],
+      "note": "30.3.2-30.3.4 WUR Basic and FDMA PPDU formats; non-WUR preamble fields; On-WG/Off-WG transmitter block diagram"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4748,
+        4749,
+        4750
+      ],
+      "note": "30.3.4.1-30.3.4.4 HDR/LDR On symbol construction (IDFT, GI), FDMA multiplexing, Symbol Randomizer LFSR x^7+x^4+1 and per-chain CSD"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4757,
+        4758,
+        4762,
+        4763
+      ],
+      "note": "30.3.8-30.3.10 unified MC-OOK signal model (Eq. 30-3), WUR-Sync sequence W and complement (LDR/HDR rate signalling), WUR encoding tables"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4764
+      ],
+      "note": "30.3.11 WUR Padding field for FDMA PPDU — repeat HDR bit-1 OOK waveform, align to L-SIG LENGTH"
+    }
+  ],
+  "track": "legacy-phy"
+}

@@ -1,0 +1,135 @@
+{
+  "id": "legacy-phy-40-wur-clause30-transmit-receive-spec-procedures-plme",
+  "title": {
+    "en": "WUR PHY Clause 30, Part 2: Transmit Spec & Mask, OOK On/Off Power Ratio, Receiver Spec, Transmit/Receive Procedures, and WUR PLME",
+    "zh": "WUR PHY 第 30 章之二：发射规格与频谱模板、OOK 通断功率比、接收机规格、收发流程与 WUR PLME"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "The whole point of a Wake-Up Radio (WUR) is to let a sleeping device run a tiny, microwatt-class envelope detector that does just one job: notice the word 'wake up' on the air and rouse the main Wi-Fi radio. That radio is cheap and dumb on purpose — it cannot demodulate OFDM, it just measures whether energy is present (On) or absent (Off). So 802.11ba's On-Off Keying (OOK) waveform has to be shaped carefully on the transmit side, and the receiver has to be specified strictly, or the detector will either miss real wake-ups or, worse, fire on noise and drain the very battery it was meant to save. This lesson is the RF quality contract — the transmit spec, the receiver spec, the send/receive procedures, and the PLME bookkeeping — that makes that reliable.",
+      "zh": "唤醒无线电（WUR）的全部意义，在于让一个休眠设备运行一个微瓦级、极其简单的包络检波器，它只做一件事：在空口上察觉到“醒来”这个词，然后唤醒主 Wi-Fi 射频。这个检波器有意做得便宜而简单——它无法解调 OFDM，只能判断能量是有（On）还是无（Off）。因此 802.11ba 的通断键控（OOK）波形在发射侧必须被精心整形，接收机也必须被严格规定，否则检波器要么漏掉真正的唤醒信号，要么更糟——被噪声触发，反而耗尽它本应节省的那块电池。本课讲的正是这份射频质量契约——发射规格、接收规格、收发流程，以及 PLME 记账——它让这套机制变得可靠。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the transmit specification (30.3.12). The transmit spectrum mask keeps the signal inside its lane: the WUR-Sync and WUR-Data fields must hold a 0 dBr bandwidth under 4.5 MHz and fall away to -15 dBr at 3.5 MHz, -20 dBr at 11 MHz, -28 dBr at 20 MHz, and the larger of -40 dBr / -53 dBm/MHz at 30 MHz and beyond — much tighter than the OFDM preamble that escorts it. Spectral flatness then demands the power be even across the center 4 MHz (any 1 MHz slice must sit within [Pave-6 dB, Pave+3 dB]). Center-frequency and symbol-clock tolerances are pinned to ±20 ppm, both derived from the same reference oscillator so the timing never drifts apart.",
+      "zh": "先看发射规格（30.3.12）。发射频谱模板把信号约束在自己的车道里：WUR-Sync 与 WUR-Data 字段的 0 dBr 带宽必须小于 4.5 MHz，并衰减到在 3.5 MHz 处 -15 dBr、11 MHz 处 -20 dBr、20 MHz 处 -28 dBr，在 30 MHz 及以上取 -40 dBr 与 -53 dBm/MHz 中的较大者——比护送它的 OFDM 前导部分要严格得多。频谱平坦度则要求功率在中心 4 MHz 内保持均匀（任意 1 MHz 切片都必须落在 [Pave-6 dB, Pave+3 dB] 区间内）。中心频率与符号时钟容差被钉在 ±20 ppm，且两者都从同一参考振荡器导出，使时序永不脱节。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The single most important OOK metric lives here: the Transmit On and Off symbols power ratio (30.3.12.4). The average power of an 'On' symbol must be at least 20 dB above an 'Off' symbol — a 100x energy gap. That is what lets a detector with no clever DSP tell a '1' from a '0' just by asking 'is there energy here?'. And the correlation test (30.3.12.5) caps the autocorrelation metric at 0.4 so a WUR waveform does not accidentally look like an L-STF preamble to ordinary receivers — a guard against false detection in both directions.",
+      "zh": "最重要的那一个 OOK 指标就在这里：发射 On/Off 符号功率比（30.3.12.4）。一个“On”符号的平均功率必须至少比“Off”符号高 20 dB——即 100 倍的能量差。正是这道鸿沟，让一个没有任何高级 DSP 的检波器仅凭“这里有没有能量？”就能区分“1”和“0”。而相关性测试（30.3.12.5）把自相关度量上限定在 0.4，使 WUR 波形不会在普通接收机眼中意外地像 L-STF 前导——这是一道双向防止误检的护栏。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 420 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><line x1='20' y1='120' x2='400' y2='120'/><line x1='20' y1='120' x2='20' y2='15'/><text x='8' y='30' font-size='11' stroke='none' fill='currentColor'>P</text><text x='370' y='138' font-size='11' stroke='none' fill='currentColor'>time</text><rect x='40' y='35' width='40' height='85' fill='currentColor' opacity='0.15'/><rect x='120' y='35' width='40' height='85' fill='currentColor' opacity='0.15'/><rect x='280' y='35' width='40' height='85' fill='currentColor' opacity='0.15'/><line x1='40' y1='113' x2='80' y2='113'/><line x1='200' y1='113' x2='240' y2='113'/><line x1='360' y1='113' x2='400' y2='113'/><text x='44' y='28' font-size='10' stroke='none' fill='currentColor'>On</text><text x='124' y='28' font-size='10' stroke='none' fill='currentColor'>On</text><text x='205' y='108' font-size='10' stroke='none' fill='currentColor'>Off</text><text x='284' y='28' font-size='10' stroke='none' fill='currentColor'>On</text><text x='362' y='108' font-size='10' stroke='none' fill='currentColor'>Off</text><line x1='95' y1='35' x2='95' y2='120' stroke-dasharray='3,3'/><text x='100' y='80' font-size='10' stroke='none' fill='currentColor'>&#8805; 20 dB gap</text></svg>",
+      "caption": {
+        "en": "OOK: an envelope detector reads bits as energy-present (On) vs energy-absent (Off). The standard's 20 dB On/Off power ratio is the gap that makes that decision trivial and noise-robust.",
+        "zh": "OOK：包络检波器把比特读作“有能量（On）”与“无能量（Off）”。标准规定的 20 dB 通断功率比，正是让这个判决变得简单且抗噪的那道鸿沟。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now the receiver specification (30.3.13). Sensitivity is defined as keeping packet error ratio (PER) under 10% for a 6-octet PSDU at rate-dependent input levels: -82 dBm for the slower WUR LDR and -77 dBm for WUR HDR — the LDR is more sensitive because it spends more energy per bit. Adjacent- and nonadjacent-channel rejection say how much louder an interferer 20 MHz or 40 MHz away can be before it breaks the link (e.g. 16 dB / 32 dB for LDR). A maximum input level (-30 dBm at 5 GHz, -20 dBm at 2.4 GHz) keeps a strong nearby signal from saturating the front end, and CCA sensitivity is simply inherited from whatever companion PHY (OFDM/HT/VHT/HE) the device already carries.",
+      "zh": "再看接收机规格（30.3.13）。灵敏度定义为：在与速率相关的输入电平下，对 6 字节 PSDU 维持分组错误率（PER）低于 10%——较慢的 WUR LDR 为 -82 dBm，WUR HDR 为 -77 dBm；LDR 更灵敏，因为它每比特花费更多能量。相邻信道与非相邻信道抑制规定了：相距 20 MHz 或 40 MHz 的干扰信号能比期望信号大多少而仍不破坏链路（例如 LDR 为 16 dB / 32 dB）。最大输入电平（5 GHz 为 -30 dBm，2.4 GHz 为 -20 dBm）防止附近的强信号使前端饱和；而 CCA 灵敏度则直接沿用设备本就携带的伴随 PHY（OFDM/HT/VHT/HE）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[PHY-TXSTART.request TXVECTOR] --> B[TX L-STF / L-LTF / L-SIG]\n    B --> C[TX BPSK-Mark1, BPSK-Mark2]\n    C --> D[TX WUR-Sync at chosen data rate]\n    D --> E[WUR-encode + TX WUR-Data octets via PHY-DATA.request]\n    E --> F[PHY-TXEND.request -> enter RX state]\n    G[RX IDLE] --> H{valid WUR-Sync?}\n    H -- no --> G\n    H -- yes --> I[PHY-RXSTART + WUR_DATARATE.indication; measure RSSI/RCPI]\n    I --> J[decode OOK symbols -> octets -> PHY-DATA.indication]\n    J --> K{signal strength dropped?}\n    K -- no --> J\n    K -- yes --> L[PHY-RXEND.indication -> RX IDLE]",
+      "zh": "flowchart TD\n    A[PHY-TXSTART.request TXVECTOR] --> B[发送 L-STF / L-LTF / L-SIG]\n    B --> C[发送 BPSK-Mark1、BPSK-Mark2]\n    C --> D[按所选速率发送 WUR-Sync]\n    D --> E[WUR 编码并经 PHY-DATA.request 发送 WUR-Data 字节]\n    E --> F[PHY-TXEND.request -> 进入接收态]\n    G[接收空闲] --> H{检到有效 WUR-Sync?}\n    H -- 否 --> G\n    H -- 是 --> I[发 PHY-RXSTART 与 WUR_DATARATE.indication；测 RSSI/RCPI]\n    I --> J[解码 OOK 符号 -> 字节 -> PHY-DATA.indication]\n    J --> K{信号强度下降?}\n    K -- 否 --> J\n    K -- 是 --> L[PHY-RXEND.indication -> 接收空闲]"
+    },
+    {
+      "type": "prose",
+      "en": "The transmit procedure (30.3.14) and receive procedure (30.3.15) orchestrate all of this. On transmit, the MAC fires PHY-TXSTART.request, the PHY sends the legacy preamble and BPSK marks, then the WUR-Sync and WUR-encoded data, ending on PHY-TXEND.request. A subtlety on receive: the tiny WUR radio is not told where the PPDU ends. It locks onto a valid WUR-Sync to learn the data rate and start point, measures RSSI/RCPI during Sync, then keeps decoding OOK symbols until the received signal strength drops significantly (or the MAC says stop via PHY-CCARESET.request). Finally the WUR PLME (30.4) does the arithmetic: TXTIME and PSDU-length calculation (30.4.1), the table of time and length characteristics (30.4.2) — note aPPDUMaxTime of 2972 us and a max PSDU of 22 octets — and the WUR data-rate parameters (30.5), the familiar 62.5 kb/s LDR and 250 kb/s HDR.",
+      "zh": "发射流程（30.3.14）与接收流程（30.3.15）把这一切编排起来。发射时，MAC 触发 PHY-TXSTART.request，PHY 发送传统前导与 BPSK 标记，随后是 WUR-Sync 与 WUR 编码数据，最终以 PHY-TXEND.request 结束。接收侧有个微妙之处：这个微型 WUR 射频并不知道 PPDU 在哪里结束。它锁定一个有效的 WUR-Sync 以获知数据率与起点，在 Sync 期间测量 RSSI/RCPI，然后持续解码 OOK 符号，直到接收信号强度显著下降（或 MAC 通过 PHY-CCARESET.request 叫停）。最后，WUR PLME（30.4）负责算术：TXTIME 与 PSDU 长度计算（30.4.1）、时间与长度特性表（30.4.2）——注意 aPPDUMaxTime 为 2972 微秒、PSDU 最大 22 字节——以及 WUR 数据率参数（30.5），即我们熟悉的 62.5 kb/s LDR 与 250 kb/s HDR。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Why the receiver 'keeps decoding until the signal drops', and the exact spec numbers",
+        "zh": "为何接收机要“持续解码直到信号下降”，以及精确的规格数值"
+      },
+      "en": "The receive procedure (30.3.15) is explicit that 'since the WUR PHY is not aware of the end of the WUR PPDU, the PHY shall keep decoding until receive signal strength drops significantly,' with the WUR MAC able to terminate early via PHY-CCARESET.request; terminating on signal loss yields PHY-RXEND.indication(NoError), terminating on the MAC request yields PHY-RXEND.indication(MAC Request). The transmit spec pins the hard numbers: On/Off power ratio at least 20 dB for both LDR and HDR and for the WUR-Sync field (30.3.12.4); ±20 ppm center-frequency and symbol-clock tolerance from one reference oscillator (30.3.12.3); spectral flatness within [Pave-6 dB, Pave+3 dB] over the center 4 MHz (30.3.12.2); correlation metric maximum below 0.4 with M=16, N=6 (30.3.12.5). Receiver minimum sensitivity is -82 dBm (LDR) / -77 dBm (HDR) at 10% PER for a 6-octet PSDU (Table 30-11), with adjacent / nonadjacent rejection of 16 dB / 32 dB (LDR) and 11 dB / 27 dB (HDR) (Table 30-12), and a maximum input level of -30 dBm (5 GHz) / -20 dBm (2.4 GHz) (30.3.13.4). The PLME table (30.4.2, Table 30-13) lists aCCAMidTime 25 us, aPPDUMaxTime 2972 us, aPSDUMaxLength 22 octets, and aRxPHYStartDelay 92 us; the data-rate table (30.5, Table 30-14) gives 62.5 kb/s (LDR, NSPDB=4) and 250 kb/s (HDR, NSPDB=2).",
+      "zh": "接收流程（30.3.15）明确写道：“由于 WUR PHY 不知道 WUR PPDU 的结束位置，PHY 应持续解码，直到接收信号强度显著下降”，而 WUR MAC 可经 PHY-CCARESET.request 提前终止；因信号丢失而终止产生 PHY-RXEND.indication(NoError)，因 MAC 请求而终止产生 PHY-RXEND.indication(MAC Request)。发射规格钉死了硬性数值：On/Off 功率比对 LDR、HDR 以及 WUR-Sync 字段均至少 20 dB（30.3.12.4）；中心频率与符号时钟容差为 ±20 ppm 且源自同一参考振荡器（30.3.12.3）；频谱平坦度在中心 4 MHz 内落于 [Pave-6 dB, Pave+3 dB]（30.3.12.2）；相关度量最大值低于 0.4，其中 M=16、N=6（30.3.12.5）。接收机最小灵敏度在 6 字节 PSDU、10% PER 下为 -82 dBm（LDR）/ -77 dBm（HDR）（表 30-11），相邻 / 非相邻信道抑制为 16 dB / 32 dB（LDR）与 11 dB / 27 dB（HDR）（表 30-12），最大输入电平为 -30 dBm（5 GHz）/ -20 dBm（2.4 GHz）（30.3.13.4）。PLME 表（30.4.2，表 30-13）列出 aCCAMidTime 25 微秒、aPPDUMaxTime 2972 微秒、aPSDUMaxLength 22 字节、aRxPHYStartDelay 92 微秒；数据率表（30.5，表 30-14）给出 62.5 kb/s（LDR，NSPDB=4）与 250 kb/s（HDR，NSPDB=2）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4767,
+          4768,
+          4769,
+          4774,
+          4776
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:30.3.12.1",
+    "80211-2024:30.3.12.2",
+    "80211-2024:30.3.12.3",
+    "80211-2024:30.3.12.4",
+    "80211-2024:30.3.12.5",
+    "80211-2024:30.3.13.1",
+    "80211-2024:30.3.13.2",
+    "80211-2024:30.3.13.3",
+    "80211-2024:30.3.13.4",
+    "80211-2024:30.3.13.5",
+    "80211-2024:30.3.14",
+    "80211-2024:30.3.15",
+    "80211-2024:30.4.1",
+    "80211-2024:30.4.2",
+    "80211-2024:30.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4764,
+        4765,
+        4766
+      ],
+      "note": "30.3.12.1 WUR transmit spectrum mask for WUR-Sync/WUR-Data fields (Basic and FDMA PPDU)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4766,
+        4767,
+        4768
+      ],
+      "note": "30.3.12.2-30.3.12.5 spectral flatness; +/-20 ppm tolerance; >=20 dB On/Off power ratio; correlation test < 0.4"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4768,
+        4769
+      ],
+      "note": "30.3.13.1-30.3.13.5 receiver sensitivity (Table 30-11), adjacent/nonadjacent rejection (Table 30-12), max input level, CCA sensitivity"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4769,
+        4770,
+        4771,
+        4772,
+        4773,
+        4774
+      ],
+      "note": "30.3.14 WUR transmit procedure and 30.3.15 WUR receive procedure (keep decoding until RSSI drops)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4775,
+        4776
+      ],
+      "note": "30.4.1 TXTIME/PSDU length; 30.4.2 Table 30-13 time/length characteristics; 30.5 Table 30-14 WUR data rates (62.5/250 kb/s)"
+    }
+  ],
+  "track": "legacy-phy"
+}

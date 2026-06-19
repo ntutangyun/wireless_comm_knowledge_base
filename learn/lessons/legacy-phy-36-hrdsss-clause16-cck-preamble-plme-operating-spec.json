@@ -1,0 +1,140 @@
+{
+  "id": "legacy-phy-36-hrdsss-clause16-cck-preamble-plme-operating-spec",
+  "title": {
+    "en": "HR/DSSS Clause 16 Remainder, Part 1: 802.11b Overview, CCK Modulation Detail, Long/Short Preamble PMD, PLME/MIB, and Operating Spec",
+    "zh": "HR/DSSS 第 16 章余项之一：802.11b 概览、CCK 调制细节、长/短前导码 PMD、PLME/MIB 与工作规格"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This is the PHY behind 802.11b. Clause 16 calls it HR/DSSS — the high-rate extension of the older 1 and 2 Mb/s DSSS system (Clause 15). It stays in the same 2.4 GHz ISM band and keeps the same 11 MHz chipping rate, so it occupies the same channel bandwidth as plain DSSS. What it adds are two new payload rates: 5.5 Mb/s and 11 Mb/s. The trick that gets there is 8-chip complementary code keying (CCK). One HR/DSSS mode reuses the DSSS preamble and header verbatim, so old and new radios can share a BSS and switch rates frame by frame (16.1.1). The clause also splits the PHY into two protocol functions — a PHY data function that maps each PSDU into a PPDU, and a function describing how bits actually cross the wireless medium (16.1.2) — and into two functional entities: the PHY itself and a layer-management entity (16.1.3.1).",
+      "zh": "这就是 802.11b 背后的 PHY。第 16 章称它为 HR/DSSS——即对更早的 1、2 Mb/s DSSS 系统（第 15 章）的高速率扩展。它仍工作在 2.4 GHz ISM 频段，仍沿用相同的 11 MHz 码片速率，因此占用的信道带宽与普通 DSSS 完全相同。它新增的是两个负载速率：5.5 Mb/s 与 11 Mb/s。实现这一点的诀窍是 8 码片互补码键控（CCK）。HR/DSSS 的一种模式原样复用 DSSS 的前导码与头部，因此新旧设备可共处同一个 BSS，并逐帧切换速率（16.1.1）。本章还把 PHY 拆为两个协议功能——一个把每个 PSDU 映射成 PPDU 的 PHY 数据功能，以及一个描述比特如何真正穿过无线介质的功能（16.1.2）——并拆为两个功能实体：PHY 本身与层管理实体（16.1.3.1）。"
+    },
+    {
+      "type": "prose",
+      "en": "Management lives in the PLME, the PHY layer management entity. It runs the local PHY's housekeeping in concert with the MAC's MLME (16.1.3.2). Throughout the clause, the service primitives, figures, and state diagrams are deliberately framed as abstract illustrations of what the PHY offers the layer above — a model optimised for clarity, not a mandated circuit (16.1.4). Keep that lens for the rest of the lesson: we are describing capabilities and interfaces, not one specific chip.",
+      "zh": "管理工作由 PLME（PHY 层管理实体）承担。它与 MAC 的 MLME 协同，处理本地 PHY 的各项内务（16.1.3.2）。在整章中，服务原语、图示与状态图都被有意地表述为对“PHY 向上层提供什么”的抽象描绘——这是为清晰而优化的模型，而非强制的电路实现（16.1.4）。请在本课余下部分保持这一视角：我们描述的是能力与接口，而不是某一颗具体的芯片。"
+    },
+    {
+      "type": "prose",
+      "en": "Every PPDU begins with a preamble and header, and HR/DSSS defines two flavours (16.2.1). The mandatory long preamble is fully interoperable with legacy 1/2 Mb/s DSSS: a 128-bit SYNC of scrambled 1s, a 16-bit SFD, then SIGNAL/SERVICE/LENGTH/CRC-16, all sent at 1 Mb/s DBPSK — 144 preamble bits plus a 48-bit header, costing 192 μs of overhead. The optional short preamble (HR/DSSS/short) cuts that nearly in half: a 56-bit shortSYNC of scrambled 0s and a time-reversed SFD, with the header sent faster at 2 Mb/s, for just 96 μs of overhead. Less time spent on the preamble means more of the air goes to payload — that is the whole point of the short option, and it only works between two radios that both support it.",
+      "zh": "每个 PPDU 都以前导码和头部开头，HR/DSSS 定义了两种版本（16.2.1）。强制的长前导码与传统 1/2 Mb/s DSSS 完全互通：128 比特、由加扰“1”构成的 SYNC，16 比特的 SFD，随后是 SIGNAL/SERVICE/LENGTH/CRC-16，全部以 1 Mb/s DBPSK 发送——144 比特前导码加 48 比特头部，开销为 192 μs。可选的短前导码（HR/DSSS/short）几乎把它砍掉一半：56 比特、由加扰“0”构成的 shortSYNC，加上时间反转的 SFD，头部以更快的 2 Mb/s 发送，开销仅 96 μs。前导码占用的时间越短，留给负载的空中时间就越多——这正是短前导码选项的全部意义，而它只在双方都支持时才可用。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n  subgraph Long[\"Long PPDU — 192 us overhead\"]\n    A[\"SYNC 128b<br/>scrambled 1s\"] --> B[\"SFD 16b\"] --> C[\"Header 48b<br/>@1 Mb/s DBPSK\"] --> D[\"PSDU<br/>2/5.5/11 Mb/s\"]\n  end\n  subgraph Short[\"Short PPDU — 96 us overhead\"]\n    E[\"shortSYNC 56b<br/>scrambled 0s\"] --> F[\"shortSFD 16b\"] --> G[\"Header 48b<br/>@2 Mb/s\"] --> H[\"PSDU<br/>2/5.5/11 Mb/s\"]\n  end",
+      "zh": "graph LR\n  subgraph Long[\"长 PPDU — 192us 开销\"]\n    A[\"SYNC 128b<br/>加扰1\"] --> B[\"SFD 16b\"] --> C[\"头部 48b<br/>@1 Mb/s DBPSK\"] --> D[\"PSDU<br/>2/5.5/11 Mb/s\"]\n  end\n  subgraph Short[\"短 PPDU — 96us 开销\"]\n    E[\"shortSYNC 56b<br/>加扰0\"] --> F[\"shortSFD 16b\"] --> G[\"头部 48b<br/>@2 Mb/s\"] --> H[\"PSDU<br/>2/5.5/11 Mb/s\"]\n  end"
+    },
+    {
+      "type": "prose",
+      "en": "Before any of those bits hit the air they pass through a data scrambler so the spectrum looks random and runs of identical symbols are broken up. HR/DSSS uses a self-synchronising scrambler/descrambler with polynomial G(z) = z^-7 + z^-4 + 1, a 7-stage shift register (16.2.4). Self-synchronising means the receiver needs no advance knowledge of the transmitter's seed — it recovers in lock step. The seed differs by preamble: the long preamble loads [1101100] (producing the scrambled-1s SYNC), and the short preamble loads the reverse pattern [0011011] (producing the scrambled-0s shortSYNC).",
+      "zh": "在这些比特发往空中之前，它们要先经过一个数据加扰器，使频谱看起来随机、并打散连续相同符号的长串。HR/DSSS 使用一个自同步的加扰器/解扰器，多项式为 G(z) = z^-7 + z^-4 + 1，对应一个 7 级移位寄存器（16.2.4）。自同步意味着接收机无需预先知道发射机的种子——它会同步地恢复出来。种子随前导码而异：长前导码装入 [1101100]（产生加扰“1”的 SYNC），短前导码装入相反的 [0011011]（产生加扰“0”的 shortSYNC）。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the heart of it: how four rates ride the same 11 MHz channel (16.3.6.4). The basic 1 Mb/s rate uses DBPSK; 2 Mb/s uses DQPSK; both spread each symbol with the same 11-chip Barker sequence (+1,-1,+1,+1,-1,+1,+1,+1,-1,-1,-1), kept verbatim for backward compatibility (16.3.6.5). The high rates throw out Barker and switch to CCK (16.3.6.6). The intuition: instead of spreading with one fixed sequence, the transmitter keeps a code book of 8-chip complex sequences and picks one per symbol, so the choice of sequence itself carries data bits. At 5.5 Mb/s, 4 bits ride each symbol — 2 bits set the symbol's overall phase (phi1, DQPSK), the other 2 pick one of 4 codewords (16.3.6.6.3). At 11 Mb/s, 8 bits ride each symbol — 2 bits set phi1 and the remaining 6 (as three QPSK dibits phi2/phi3/phi4) select among 64 codewords (16.3.6.6.4). Same chip rate, same channel — four times the bits per symbol. A cover code flips chips 4 and 7 by 180 degrees to improve correlation and kill DC offset (16.3.6.6.2).",
+      "zh": "现在进入核心：四种速率如何共用同一个 11 MHz 信道（16.3.6.4）。基础的 1 Mb/s 速率用 DBPSK；2 Mb/s 用 DQPSK；两者都用同一个 11 码片 Barker 序列（+1,-1,+1,+1,-1,+1,+1,+1,-1,-1,-1）对每个符号扩频，为向后兼容而原样保留（16.3.6.5）。高速率则抛弃 Barker，改用 CCK（16.3.6.6）。其直觉是：发射机不再用一个固定序列扩频，而是手握一本 8 码片复序列的“码本”，每个符号挑选其中之一，于是“挑哪个序列”本身就携带了数据比特。在 5.5 Mb/s 下，每个符号承载 4 比特——其中 2 比特设定符号的整体相位（phi1，DQPSK），另外 2 比特从 4 个码字中选 1 个（16.3.6.6.3）。在 11 Mb/s 下，每个符号承载 8 比特——2 比特设定 phi1，其余 6 比特（作为三个 QPSK 二元组 phi2/phi3/phi4）从 64 个码字中选 1 个（16.3.6.6.4）。码片速率不变、信道不变——每符号的比特数却翻了四倍。一个覆盖码把第 4、7 号码片旋转 180 度，以改善相关特性并消除直流偏置（16.3.6.6.2）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "CCK is the whole reason 802.11b reached 11 Mb/s without leaving the 2.4 GHz channel plan. Barker spends a long fixed code to send a few bits robustly; CCK reuses those same 8 chips as an information-bearing choice from a code book. The chips stop being mere spreading and become part of the message — that is how DSSS quadrupled its speed in the same bandwidth.",
+      "zh": "CCK 正是 802.11b 在不离开 2.4 GHz 信道规划的前提下达到 11 Mb/s 的全部原因。Barker 用一个固定的长码稳健地发送少量比特；CCK 把同样的这 8 个码片重新用作“从码本中做选择”这一携带信息的动作。码片不再只是扩频，而成了消息的一部分——这就是 DSSS 在相同带宽内把速度提升四倍的方法。"
+    },
+    {
+      "type": "prose",
+      "en": "Around the modulation sits the management and operating-spec envelope. The PLME SAP exposes a MIB of managed objects via PLME-GET/SET/RESET — for example dot11PHYType = High rate-2.4, the short-preamble flag, current channel, antenna and TX-power tables (16.3.1, 16.3.2). PLME-CHARACTERISTICS reports fixed PHY constants (16.3.3): aSlotTime 20 μs, aSIFSTime 10 μs, aRxPHYStartDelay 192 μs long / 96 μs short, CWmin 31, CWmax 1023. PLME-TXTIME computes airtime as PreambleLength + PHYHeaderTime + ceil(LENGTH*8/DATARATE), where preamble/header are 144+48 μs long or 72+24 μs short (16.3.4). Service primitives carry a TXVECTOR/RXVECTOR of parameters — DATARATE, LENGTH, PREAMBLE_TYPE, antenna, RSSI, SQ, time-of-departure (16.3.5). The operating spec then fixes the envelope (16.3.6.1): operation across 2.4-2.5 GHz (16.3.6.2); 14 channels numbered with 5 MHz spacing (1 = 2412 MHz ... 13 = 2472 MHz, 14 = 2484 MHz for Japan), needing >=25 MHz centre separation to coexist (16.3.6.3); regulatory spurious-emission compliance (16.3.6.7); a TX-to-RX turnaround under 10 μs (16.3.6.8) and a 5 μs RX-to-TX turnaround (16.3.6.9); the slot time from the characteristics table (16.3.6.10); and a 50 ohm antenna-connector impedance (16.3.6.11).",
+      "zh": "围绕调制的，是管理与工作规格这层“封套”。PLME SAP 通过 PLME-GET/SET/RESET 暴露一组受管对象 MIB——例如 dot11PHYType = High rate-2.4、短前导码标志、当前信道、天线与发射功率表（16.3.1、16.3.2）。PLME-CHARACTERISTICS 报告固定的 PHY 常量（16.3.3）：aSlotTime 20 μs、aSIFSTime 10 μs、aRxPHYStartDelay 长前导 192 μs / 短前导 96 μs、CWmin 31、CWmax 1023。PLME-TXTIME 把空中时间算为 PreambleLength + PHYHeaderTime + ceil(LENGTH*8/DATARATE)，其中前导/头部为长前导 144+48 μs 或短前导 72+24 μs（16.3.4）。服务原语携带一份 TXVECTOR/RXVECTOR 参数向量——DATARATE、LENGTH、PREAMBLE_TYPE、天线、RSSI、SQ、离开时刻（16.3.5）。工作规格随后固定了整个封套（16.3.6.1）：工作于 2.4-2.5 GHz（16.3.6.2）；14 个以 5 MHz 间隔编号的信道（1=2412 MHz……13=2472 MHz，14=2484 MHz 专供日本），共存需中心频率间隔至少 25 MHz（16.3.6.3）；符合监管的杂散发射要求（16.3.6.7）；TX-到-RX 转换时间小于 10 μs（16.3.6.8）、RX-到-TX 转换时间 5 μs（16.3.6.9）；时隙时间取自特性表（16.3.6.10）；以及天线连接器 50 欧姆阻抗（16.3.6.11）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Reading the CCK 5.5 Mb/s code book straight from the standard",
+        "zh": "直接从标准里读懂 5.5 Mb/s 的 CCK 码本"
+      },
+      "en": "Equation 16-1 builds the 8 complex chips C = {c0..c7} as a generalised Hadamard transform of four phase terms: phi1 is added to all chips, phi2 to all odd chips, phi3 to odd pairs, phi4 to odd quads, with chips 4 and 7 negated by the cover code. At 5.5 Mb/s (16.3.6.6.3) the 4 data bits d0..d3 split cleanly: d0,d1 DQPSK-encode phi1 (the symbol's bulk phase rotation, relative to the previous symbol), while d2,d3 select the basic codeword via phi2 = d2*pi + pi/2, phi3 = 0, phi4 = d3*pi — Table 16-10 tabulates the four resulting chip sets directly. Odd-numbered PSDU symbols get an extra 180-degree rotation (Table 16-9), with PSDU symbol numbering starting at 0 so transmission begins on an even symbol; a '+1' Barker chip and a '+1' CCK chip carry the same carrier phase at the header-to-PSDU boundary. At 11 Mb/s (16.3.6.6.4) the same phi1 mechanism holds, but d2..d7 form three QPSK dibits encoding phi2, phi3, phi4 (Table 16-11, binary-coded not Gray), expanding the book from 4 to 64 codewords.",
+      "zh": "式 16-1 把 8 个复码片 C = {c0..c7} 构造为四个相位项的广义 Hadamard 变换：phi1 加到所有码片，phi2 加到所有奇数码片，phi3 加到奇数对，phi4 加到奇数四元组，并由覆盖码对第 4、7 号码片取负。在 5.5 Mb/s 下（16.3.6.6.3），4 个数据比特 d0..d3 干净地分工：d0,d1 用 DQPSK 编码 phi1（符号的整体相位旋转，相对于前一符号），而 d2,d3 通过 phi2 = d2*pi + pi/2、phi3 = 0、phi4 = d3*pi 选出基本码字——表 16-10 直接列出了由此得到的四组码片。奇数序号的 PSDU 符号额外旋转 180 度（表 16-9），PSDU 符号编号从 0 开始，故传输从偶数符号起步；在头部到 PSDU 的边界上，一个“+1”Barker 码片与一个“+1”CCK 码片承载相同的载波相位。在 11 Mb/s 下（16.3.6.6.4），同样的 phi1 机制成立，但 d2..d7 构成三个 QPSK 二元组，分别编码 phi2、phi3、phi4（表 16-11，二进制编码而非格雷码），将码本从 4 个扩展到 64 个码字。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3329,
+          3330
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:16.1.1",
+    "80211-2024:16.1.2",
+    "80211-2024:16.1.3.1",
+    "80211-2024:16.1.3.2",
+    "80211-2024:16.1.4",
+    "80211-2024:16.2.1",
+    "80211-2024:16.2.4",
+    "80211-2024:16.3.1",
+    "80211-2024:16.3.2",
+    "80211-2024:16.3.3",
+    "80211-2024:16.3.4",
+    "80211-2024:16.3.5",
+    "80211-2024:16.3.6.1",
+    "80211-2024:16.3.6.2",
+    "80211-2024:16.3.6.3",
+    "80211-2024:16.3.6.4",
+    "80211-2024:16.3.6.5",
+    "80211-2024:16.3.6.6",
+    "80211-2024:16.3.6.7",
+    "80211-2024:16.3.6.8",
+    "80211-2024:16.3.6.9",
+    "80211-2024:16.3.6.10",
+    "80211-2024:16.3.6.11"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3312,
+        3313
+      ],
+      "note": "16.1.1-16.1.4 — HR/DSSS overview: 5.5/11 Mb/s via 8-chip CCK at 11 MHz chip rate in 2.4 GHz; two protocol functions; PHY + PLME entities"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3313,
+        3318
+      ],
+      "note": "16.2.1, 16.2.4 — long vs short (HR/DSSS/short) preamble/header (192 vs 96 us); self-synchronising scrambler G(z)=z^-7+z^-4+1, seeds [1101100]/[0011011]"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3328,
+        3329,
+        3330
+      ],
+      "note": "16.3.6.4-16.3.6.6 — four rates; 11-chip Barker for 1/2 Mb/s; CCK code book for 5.5/11 Mb/s; Equation 16-1, cover code, Tables 16-9/16-10/16-11"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3324,
+        3325,
+        3326,
+        3327
+      ],
+      "note": "16.3.1-16.3.5 — PLME SAP MIB (Table 16-3), PHY characteristics (Table 16-4), TXTIME equation, TXVECTOR/RXVECTOR parameters (Table 16-5)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3327,
+        3331,
+        3332
+      ],
+      "note": "16.3.6.1-16.3.6.11 — operating spec: 2.4-2.5 GHz, 14-channel plan (Table 16-6), turnaround times, slot time, 50 ohm antenna impedance"
+    }
+  ],
+  "track": "legacy-phy"
+}

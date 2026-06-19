@@ -1,0 +1,116 @@
+{
+  "id": "legacy-phy-37-hrdsss-clause16-transmit-receive-rf-spec",
+  "title": {
+    "en": "HR/DSSS Clause 16 Remainder, Part 2: Receive PHY, Transmit Spec & Mask, Modulation Accuracy, and Receiver Specifications",
+    "zh": "HR/DSSS 第 16 章余项之二：接收 PHY、发射规格与频谱模板、调制精度与接收机规格"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "The 5.5 / 11 Mb/s HR/DSSS radio — the 802.11b PHY — is the part of Wi-Fi that just refused to leave. Long after the OFDM PHYs (11g, 11n, 11ax …) took over the 2.4 GHz band, an 11b station could still be sharing the same channel. This lesson is the RF quality contract that lets it do so politely: how the receiver demodulates a symbol, what the transmitter is allowed to put on the air (power, spectral shape, frequency accuracy, modulation purity), and how sensitive and selective the receiver has to be. The recurring theme: 11b had to grow up into a 'good neighbour' for the OFDM radios that arrived after it.",
+      "zh": "5.5 / 11 Mb/s 的 HR/DSSS 射频——也就是 802.11b 的 PHY——是 Wi-Fi 中那个迟迟不肯退场的部分。在 OFDM 系列 PHY（11g、11n、11ax……）接管 2.4 GHz 频段很久之后，一个 11b 站点仍可能与它们共用同一信道。本课讲的就是让它得以“礼貌地”共存的射频质量契约：接收机如何解调一个符号、发射机被允许送上空中的信号（功率、频谱形状、频率精度、调制纯度），以及接收机必须达到的灵敏度与选择性。贯穿始终的主题是：11b 必须“长大成人”，成为日后到来的 OFDM 射频的“好邻居”。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the receive datapath. When energy arrives, CCA fires a BUSY indication; the PHY then hunts for the SFD that marks the end of the preamble. Finding it kicks off CRC-16 processing over the PHY header, where the SIGNAL field names the data rate and the SERVICE field carries flags. A long header is demodulated as BPSK at 1 Mb/s, a short header as QPSK at 2 Mb/s — only then does the radio know whether the body is a Barker symbol or a CCK symbol. If the header CRC passes and the rate is supported, the PHY raises RXSTART with an RXVECTOR (rate, length, preamble type, RSSI, SQ) and clocks the PSDU bits up to the MAC; an unsupported rate or a bad header instead raises RXEND with an error and keeps CCA busy for the frame's whole intended duration so nobody else jumps in mid-air.",
+      "zh": "先看接收数据通路。当有能量到来时，CCA 会发出 BUSY 指示；随后 PHY 开始搜寻标志前导码结束的 SFD。一旦找到，就对 PHY 头部启动 CRC-16 校验——其中 SIGNAL 字段给出数据速率，SERVICE 字段携带各种标志位。长头部按 1 Mb/s 的 BPSK 解调，短头部按 2 Mb/s 的 QPSK 解调——只有到此刻射频才知道帧体是 Barker 符号还是 CCK 符号。若头部 CRC 通过且速率受支持，PHY 便发出 RXSTART 及其 RXVECTOR（速率、长度、前导码类型、RSSI、SQ），并把 PSDU 比特逐位上送 MAC；若速率不受支持或头部出错，则改为发出带错误码的 RXEND，并在帧的整个预定时长内保持 CCA 忙，以免他人在半途抢占信道。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[Energy detected: CCA BUSY] --> B[Search for SFD]\n    B --> C[CRC-16 over PHY header]\n    C --> D{Header CRC ok\\nand rate supported?}\n    D -- yes --> E[RXSTART + RXVECTOR]\n    E --> F[PHY-DATA: PSDU bits to MAC]\n    F --> G[RXEND NoError + RCPI]\n    D -- bad header --> H[RXEND FormatViolation]\n    D -- rate not supported --> I[RXEND UnsupportedRate]\n    H --> J[CCA stays BUSY for intended PPDU duration]\n    I --> J",
+      "zh": "flowchart TD\n    A[检测到能量：CCA 忙] --> B[搜寻 SFD]\n    B --> C[对 PHY 头部做 CRC-16]\n    C --> D{头部 CRC 通过\\n且速率受支持？}\n    D -- 是 --> E[RXSTART + RXVECTOR]\n    E --> F[PHY-DATA：PSDU 比特上送 MAC]\n    F --> G[RXEND 无错 + RCPI]\n    D -- 头部损坏 --> H[RXEND 格式违规]\n    D -- 速率不支持 --> I[RXEND 速率不支持]\n    H --> J[CCA 在预定 PPDU 时长内保持忙]\n    I --> J"
+    },
+    {
+      "type": "prose",
+      "en": "Now the transmit contract. Power control is required above 100 mW (up to four levels, with a guaranteed step back to 100 mW or less). The transmit spectral mask is the headline 'good neighbour' rule: 0 dBr inside ±11 MHz of the centre, dropping to −30 dBr from 11 to 22 MHz out and −50 dBr beyond, floored at −53 dBm/MHz — this is what stops an 11b transmitter from smearing energy into adjacent channels. Centre-frequency and chip-clock tolerances are both ±25 ppm (and ideally locked together). The power-on and power-down ramps must each stay within 2 μs (10%↔90%), and RF carrier suppression must be at least 15 dB below the sin(x)/x peak so a residual carrier spike doesn't pollute the spectrum.",
+      "zh": "再看发射契约。功率高于 100 mW 时必须提供功率控制（最多四档，并保证能回退到 100 mW 或更低）。发射频谱模板是最显眼的“好邻居”规则：在中心频率 ±11 MHz 内为 0 dBr，向外 11 至 22 MHz 处降到 −30 dBr，更远处降到 −50 dBr，并以 −53 dBm/MHz 为下限——正是它阻止 11b 发射机把能量“涂抹”进相邻信道。中心频率容差与码片时钟容差均为 ±25 ppm（并最好彼此锁定）。功率上升沿与下降沿（10%↔90%）各须不超过 2 μs，而射频载波抑制须比 sin(x)/x 峰值至少低 15 dB，以免残余载波尖峰污染频谱。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Modulation accuracy is where CCK raises the bar. Instead of a loose mask, the spec demands a per-chip error-vector check: capture 1000 I/Q sample pairs through a reference receiver, dc-correct and normalise them, and require the worst-case error-vector magnitude Verr(n) < 0.35 against the ideal DQPSK points (±0.707, ±0.707). This is an EVM-style purity test — a Barker radio could be sloppy; a CCK radio packing 8 bits per symbol cannot.",
+      "zh": "调制精度正是 CCK 把门槛抬高之处。规范不再使用宽松的模板，而是要求逐码片的误差矢量检查：通过参考接收机采集 1000 组 I/Q 样本对，做直流校正与归一化后，要求最坏情况误差矢量幅度 Verr(n) < 0.35（以理想 DQPSK 星座点 ±0.707, ±0.707 为基准）。这是一项 EVM 式的纯度测试——Barker 射频可以马虎一些，但每符号塞进 8 比特的 CCK 射频不能。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 360 200' fill='none' stroke='currentColor' stroke-width='1.5'><line x1='30' y1='180' x2='340' y2='180'/><line x1='30' y1='180' x2='30' y2='20'/><text x='318' y='195' font-size='9' stroke='none' fill='currentColor'>freq</text><text x='8' y='28' font-size='9' stroke='none' fill='currentColor'>dBr</text><line x1='150' y1='180' x2='150' y2='30' stroke-dasharray='3 3'/><text x='138' y='28' font-size='8' stroke='none' fill='currentColor'>fc</text><polyline points='30,150 90,150 90,90 130,90 130,40 170,40 210,40 210,90 250,90 250,150 310,150'/><text x='178' y='52' font-size='8' stroke='none' fill='currentColor'>0 dBr</text><text x='95' y='84' font-size='8' stroke='none' fill='currentColor'>-30 dBr</text><text x='255' y='145' font-size='8' stroke='none' fill='currentColor'>-50 dBr</text><text x='112' y='196' font-size='7' stroke='none' fill='currentColor'>-22</text><text x='128' y='196' font-size='7' stroke='none' fill='currentColor'>-11</text><text x='166' y='196' font-size='7' stroke='none' fill='currentColor'>+11</text><text x='200' y='196' font-size='7' stroke='none' fill='currentColor'>+22</text></svg>",
+      "caption": {
+        "en": "The HR/DSSS transmit spectral mask (schematic): 0 dBr within ±11 MHz, −30 dBr out to ±22 MHz, −50 dBr beyond — the rule that keeps 11b energy out of its neighbours' channels.",
+        "zh": "HR/DSSS 发射频谱模板（示意）：±11 MHz 内为 0 dBr，到 ±22 MHz 为 −30 dBr，更远为 −50 dBr——正是把 11b 能量挡在邻居信道之外的规则。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The receiver side closes the contract. Minimum input sensitivity is the famous 11b floor: at 11 Mb/s CCK, PER < 8×10⁻² for a 1024-octet PSDU at just −76 dBm. The maximum input level is −10 dBm (don't clip on a strong signal), and adjacent-channel rejection must be ≥ 35 dB across channels ≥ 25 MHz apart. The CCA rules are the literal sharing mechanism: a HR/DSSS STA must support an energy-above-threshold mode plus the mandatory Mode 6 (busy above −62 dBm), with ED thresholds tied to TX power, so it backs off for OFDM neighbours rather than transmitting over them. Finally, time-of-departure accuracy (≤ 80 ns RMS) and the RCPI measurement (received power, ±5 dB) feed the ranging and radio-measurement machinery the rest of 802.11 relies on.",
+      "zh": "接收机一侧为契约收尾。最小输入灵敏度就是著名的 11b 下限：在 11 Mb/s CCK 下，对 1024 字节的 PSDU，仅 −76 dBm 输入即要求 PER < 8×10⁻²。最大输入电平为 −10 dBm（强信号下不得削顶），相邻信道抑制在间隔 ≥ 25 MHz 的信道间须 ≥ 35 dB。CCA 规则是字面意义上的共存机制：HR/DSSS 站点必须支持“能量过门限”类模式，再加上强制的 Mode 6（高于 −62 dBm 即判忙），且 ED 门限与发射功率挂钩，于是它会为 OFDM 邻居退避，而非压着对方发送。最后，出发时间精度（RMS ≤ 80 ns）与 RCPI 测量（接收功率，±5 dB）为 802.11 其余部分所依赖的测距与无线电测量机制提供输入。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact numbers: sensitivity, ACR, CCA thresholds and the EVM bound",
+        "zh": "精确数值：灵敏度、相邻信道抑制、CCA 门限与 EVM 上界"
+      },
+      "en": "16.3.8.2 fixes the minimum input sensitivity: PER < 8×10⁻² at a 1024-octet PSDU for −76 dBm at the antenna connector, specified for 11 Mb/s CCK, with the ED threshold set ≤ −76 dBm. 16.3.8.3 sets the maximum input level at −10 dBm (same PER/length), and 16.3.8.4 requires adjacent-channel rejection ≥ 35 dB between channels ≥ 25 MHz apart, measured with the wanted signal 6 dB above sensitivity and the adjacent signal 41 dB above it. 16.3.8.5 lists the CCA options: at least one of Mode 1 (energy above ED threshold), Mode 4 (CS with a 3.65 ms timer — the longest 5.5 Mb/s PSDU), or Mode 5 (CS plus energy), AND mandatory Mode 6 (busy above −62 dBm); on a correct PHY header the PHY must hold CCA busy until end-of-PPDU per the 16.3.4 TXTIME, overriding the Mode 4 timer. ED thresholds scale with TX power: ≤ −76 dBm above 100 mW, ≤ −73 dBm for 50–100 mW, ≤ −70 dBm at ≤ 50 mW. On the transmit side, 16.3.7.9 bounds the per-chip error vector at Verr(n) < 0.35 against ideal DQPSK points (±0.707, ±0.707) over 1000 dc-corrected samples, and 16.3.7.10 caps time-of-departure RMS error at 80 ns; 16.3.8.6 specifies RCPI as received RF power over the SYNC field within ±5 dB (95% confidence).",
+      "zh": "16.3.8.2 规定最小输入灵敏度：在天线接口处 −76 dBm、1024 字节 PSDU 时 PER < 8×10⁻²，针对 11 Mb/s CCK，且 ED 门限设为 ≤ −76 dBm。16.3.8.3 将最大输入电平定为 −10 dBm（相同的 PER 与长度）；16.3.8.4 要求间隔 ≥ 25 MHz 的信道间相邻信道抑制 ≥ 35 dB，测量时有用信号高出灵敏度 6 dB、相邻信号高出 41 dB。16.3.8.5 列出 CCA 选项：Mode 1（能量过 ED 门限）、Mode 4（带 3.65 ms 定时器的载波侦听，3.65 ms 为最长 5.5 Mb/s PSDU 时长）、Mode 5（载波侦听加能量）中至少一项，外加强制的 Mode 6（高于 −62 dBm 即判忙）；当收到正确 PHY 头部时，PHY 须依 16.3.4 的 TXTIME 将 CCA 保持忙至 PPDU 结束，并覆盖 Mode 4 的定时器。ED 门限随发射功率分级：>100 mW 时 ≤ −76 dBm，50–100 mW 时 ≤ −73 dBm，≤50 mW 时 ≤ −70 dBm。发射侧 16.3.7.9 在 1000 个直流校正样本上将逐码片误差矢量限制为 Verr(n) < 0.35（以理想 DQPSK 点 ±0.707, ±0.707 为基准）；16.3.7.10 将出发时间 RMS 误差上限定为 80 ns；16.3.8.6 将 RCPI 规定为对 SYNC 字段测得的接收射频功率，精度 ±5 dB（95% 置信度）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3334,
+          3336,
+          3337
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3321,
+        3322,
+        3323
+      ],
+      "note": "16.2.6 Receive PHY — CCA/SFD/CRC-16 header, BPSK/QPSK header demod, RXSTART/RXVECTOR, RXEND error cases, receive state machine"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3332,
+        3333,
+        3334
+      ],
+      "note": "16.3.7.1-16.3.7.10 — TX power levels & control, spectral mask, frequency/chip-clock tolerance, power ramps, RF carrier suppression, modulation accuracy (Verr < 0.35), time-of-departure accuracy"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3336,
+        3337,
+        3338
+      ],
+      "note": "16.3.8.1-16.3.8.6 — receiver sensitivity (-76 dBm), max input (-10 dBm), adjacent-channel rejection (35 dB), CCA modes/thresholds, RCPI measurement"
+    }
+  ],
+  "covers": [
+    "80211-2024:16.2.6",
+    "80211-2024:16.3.7.1",
+    "80211-2024:16.3.7.2",
+    "80211-2024:16.3.7.3",
+    "80211-2024:16.3.7.4",
+    "80211-2024:16.3.7.5",
+    "80211-2024:16.3.7.6",
+    "80211-2024:16.3.7.7",
+    "80211-2024:16.3.7.8",
+    "80211-2024:16.3.7.9",
+    "80211-2024:16.3.7.10",
+    "80211-2024:16.3.8.1",
+    "80211-2024:16.3.8.2",
+    "80211-2024:16.3.8.3",
+    "80211-2024:16.3.8.4",
+    "80211-2024:16.3.8.5",
+    "80211-2024:16.3.8.6"
+  ],
+  "track": "legacy-phy"
+}

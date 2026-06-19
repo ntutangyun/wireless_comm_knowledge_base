@@ -1,0 +1,125 @@
+{
+  "id": "legacy-phy-34-dsss-clause15-service-plme-operating-spec",
+  "title": {
+    "en": "DSSS Clause 15 Remainder, Part 1: PHY Service Interface, PLME/MIB, and the PMD Operating Specification",
+    "zh": "DSSS 第 15 章余项之一：PHY 服务接口、PLME/MIB 与 PMD 工作规格"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "The original 1 and 2 Mb/s DSSS radio is the oldest Wi-Fi PHY, and most descriptions of it dive straight into the waveform — Barker spreading, DBPSK, DQPSK. This lesson takes the other view: how that radio presents itself to the MAC, and what the 'datasheet' clauses say about where, how fast, and how cleanly it is allowed to operate. Think of it as reading the radio's spec sheet and its driver interface, not its modulator.",
+      "zh": "最初的 1/2 Mb/s DSSS 收发机是最古老的 Wi-Fi PHY，大多数介绍都会直接跳进波形细节——Barker 扩频、DBPSK、DQPSK。本课换一个视角：这块收发机是如何把自己呈现给 MAC 的，以及那些“数据手册”式的条款规定了它能在哪里工作、能跑多快、又要工作得多“干净”。可以把它理解为去读这块收发机的规格书和它的驱动接口，而不是它的调制器。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 15 opens (15.1) with the overview: the DSSS PHY targets the 2.4 GHz ISM band and offers a 1 Mb/s and a 2 Mb/s payload. Architecturally it splits into two entities — the PHY function that moves bits, and a layer-management function, the PLME (PHY Layer Management Entity), that manages the radio's local state alongside the MAC's MLME. The clause is written as an abstract service: it describes primitives and parameters, deliberately independent of any one chip implementation.",
+      "zh": "第 15 章以概述（15.1）开篇：DSSS PHY 面向 2.4 GHz ISM 频段，提供 1 Mb/s 与 2 Mb/s 两档载荷速率。在架构上它分为两个实体——负责搬运比特的 PHY 功能，以及负责管理收发机本地状态的层管理功能，即 PLME（PHY 层管理实体），它与 MAC 的 MLME 协同工作。该章以“抽象服务”的方式书写：只描述原语与参数，刻意不绑定任何一款具体芯片实现。"
+    },
+    {
+      "type": "prose",
+      "en": "How does the MAC talk to this PHY? Through four parameter lists that cross the PHY-SAP (15.2). The TXVECTOR rides on PHY-TXSTART.request and carries the knobs for a transmit: LENGTH (in octets), DATARATE (1 or 2 Mb/s), a SERVICE field (null here), a TXPWR_LEVEL_INDEX (1-8, picking one of the MIB power levels), an optional time-of-departure request, and TX_ANTENNA. The RXVECTOR comes up on PHY-RXSTART.indication and reports what was received: LENGTH, RSSI, SIGNAL (the rate), SQ (signal quality from PN-code correlation), RX_ANTENNA, RCPI, and a start-of-frame offset. TXSTATUS returns measured time-of-departure on the confirm. And the PHYCONFIG_VECTOR, on PHY-CONFIG.request, carries the OPERATING_CHANNEL that sets dot11CurrentChannel. Together these are the entire 'API surface' of the radio.",
+      "zh": "MAC 是如何与这块 PHY 对话的？通过跨越 PHY-SAP 的四个参数列表（15.2）。TXVECTOR 搭载在 PHY-TXSTART.request 上，携带一次发送所需的“旋钮”：LENGTH（以八位组计）、DATARATE（1 或 2 Mb/s）、SERVICE 字段（此处为 null）、TXPWR_LEVEL_INDEX（1-8，用于选择 MIB 中某一档发射功率）、可选的发出时刻测量请求，以及 TX_ANTENNA。RXVECTOR 经 PHY-RXSTART.indication 上报，报告接收结果：LENGTH、RSSI、SIGNAL（速率）、SQ（来自 PN 码相关的信号质量）、RX_ANTENNA、RCPI，以及帧起始偏移。TXSTATUS 在 confirm 上返回测得的发出时刻。而 PHYCONFIG_VECTOR 经 PHY-CONFIG.request 携带 OPERATING_CHANNEL，用以设置 dot11CurrentChannel。这些合起来，就是这块收发机的全部“API 接口”。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TB\n    MAC[MAC / MLME]\n    subgraph SAP[PHY-SAP parameter lists 15.2]\n      TXV[TXVECTOR\\nLENGTH, DATARATE,\\nTXPWR_IDX, TX_ANTENNA]\n      RXV[RXVECTOR\\nLENGTH, RSSI, SIGNAL,\\nSQ, RCPI]\n      TXS[TXSTATUS\\nTIME_OF_DEPARTURE]\n      CFG[PHYCONFIG_VECTOR\\nOPERATING_CHANNEL]\n    end\n    PLME[PLME + DSSS MIB 15.4.1-15.4.3\\ndot11PHYType, rates,\\npower levels, channel]\n    MAC -- TX request --> TXV --> PHY[DSSS PHY]\n    PHY -- RX indication --> RXV --> MAC\n    PHY -- TX confirm --> TXS --> MAC\n    MAC -- config --> CFG --> PHY\n    MAC <-- GET/SET/RESET --> PLME",
+      "zh": "flowchart TB\n    MAC[MAC / MLME]\n    subgraph SAP[PHY-SAP 参数列表 15.2]\n      TXV[TXVECTOR\\nLENGTH, DATARATE,\\nTXPWR_IDX, TX_ANTENNA]\n      RXV[RXVECTOR\\nLENGTH, RSSI, SIGNAL,\\nSQ, RCPI]\n      TXS[TXSTATUS\\nTIME_OF_DEPARTURE]\n      CFG[PHYCONFIG_VECTOR\\nOPERATING_CHANNEL]\n    end\n    PLME[PLME + DSSS MIB 15.4.1-15.4.3\\ndot11PHYType、速率、\\n功率档、信道]\n    MAC -- 发送请求 --> TXV --> PHY[DSSS PHY]\n    PHY -- 接收指示 --> RXV --> MAC\n    PHY -- 发送确认 --> TXS --> MAC\n    MAC -- 配置 --> CFG --> PHY\n    MAC <-- GET/SET/RESET --> PLME"
+    },
+    {
+      "type": "prose",
+      "en": "Below the per-frame vectors sits the management plane (15.4.1-15.4.3). The PLME exposes its state through PLME-GET, PLME-SET and PLME-RESET, and that state is the DSSS PHY MIB (15.4.2): a table of attributes that store the radio's static capabilities and a few dynamic ones. You see dot11PHYType = DSSS-2.4, the supported TX/RX data rates (X'02', X'04' meaning 1 and 2 Mb/s), the antenna and diversity attributes, eight TX power-level slots, and the current channel and CCA mode. 'Static' attributes are baked into the implementation; 'dynamic' ones (current channel, current antenna, current power) can be changed by management. Separately, PLME-CHARACTERISTICS (15.4.3) reports timing constants like aSIFSTime = 10 us and aRxPHYStartDelay = 192 us.",
+      "zh": "在逐帧的向量之下，是管理面（15.4.1-15.4.3）。PLME 通过 PLME-GET、PLME-SET 与 PLME-RESET 暴露其状态，而这份状态就是 DSSS PHY MIB（15.4.2）：一张存放收发机静态能力（以及少量动态项）的属性表。你会看到 dot11PHYType = DSSS-2.4、支持的收发数据速率（X'02'、X'04' 即 1 与 2 Mb/s）、天线与分集属性、八个发射功率档位，以及当前信道与 CCA 模式。“静态”属性在实现中固化；“动态”属性（当前信道、当前天线、当前功率）可由管理实体改写。此外，PLME-CHARACTERISTICS（15.4.3）报告诸如 aSIFSTime = 10 us、aRxPHYStartDelay = 192 us 等时序常量。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 520 200' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='20' stroke='none' fill='currentColor' font-size='13' font-weight='bold'>DSSS PMD operating envelope (15.4.4)</text><rect x='10' y='35' width='240' height='55'/><text x='20' y='55' stroke='none' fill='currentColor' font-size='11'>Where: 2.4-2.5 GHz ISM band</text><text x='20' y='72' stroke='none' fill='currentColor' font-size='11'>Channels 1-14 (2412-2484 MHz)</text><text x='20' y='86' stroke='none' fill='currentColor' font-size='10'>5 MHz spacing; 30 MHz to not overlap</text><rect x='270' y='35' width='240' height='55'/><text x='280' y='55' stroke='none' fill='currentColor' font-size='11'>How fast: 11-chip Barker spread</text><text x='280' y='72' stroke='none' fill='currentColor' font-size='11'>1 Mb/s DBPSK / 2 Mb/s DQPSK</text><text x='280' y='86' stroke='none' fill='currentColor' font-size='10'>1 symbol = 11 chips</text><rect x='10' y='100' width='240' height='70'/><text x='20' y='120' stroke='none' fill='currentColor' font-size='11'>How clean: spurious emissions</text><text x='20' y='137' stroke='none' fill='currentColor' font-size='11'>per regulator (in/out of band)</text><text x='20' y='154' stroke='none' fill='currentColor' font-size='11'>50 ohm antenna connector</text><rect x='270' y='100' width='240' height='70'/><text x='280' y='120' stroke='none' fill='currentColor' font-size='11'>How quick: TX-&gt;RX &lt; 10 us</text><text x='280' y='137' stroke='none' fill='currentColor' font-size='11'>RX-&gt;TX &lt;= 5 us</text><text x='280' y='154' stroke='none' fill='currentColor' font-size='11'>slot time 20 us</text></svg>",
+      "caption": {
+        "en": "The 15.4.4 operating specification pins down four things about the radio: where it transmits (band + channel plan), how fast (Barker + DBPSK/DQPSK rates), how cleanly (spurious-emission limits, 50 ohm impedance), and how quickly it can switch (turnaround times, slot time).",
+        "zh": "15.4.4 工作规格为这块收发机锁定了四件事：在哪里发射（频段 + 信道规划）、跑多快（Barker 扩频 + DBPSK/DQPSK 速率）、有多干净（杂散发射限值、50 欧姆阻抗），以及切换有多快（收发转换时间、时隙长度）。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice how the channel plan is gated. When dot11OperatingClassesRequired is true, channel numbering follows the operating-class rules in Clause 17; only when operating classes are not defined does the radio fall back to the classic Table 15-6 list (channels 1-14, centred 2412-2484 MHz at 5 MHz spacing, with channel 14 at 2484). So the famous '14 channels of 2.4 GHz' is really the legacy fallback plan, not the only one.",
+      "zh": "注意信道规划是有条件的。当 dot11OperatingClassesRequired 为 true 时，信道编号遵循第 17 章的工作类（operating class）规则；只有在未定义工作类时，收发机才回退到经典的表 15-6 列表（信道 1-14，中心频率 2412-2484 MHz、间隔 5 MHz，其中信道 14 位于 2484 MHz）。所以那个人尽皆知的“2.4 GHz 的 14 个信道”其实是遗留的回退方案，而非唯一方案。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact numbers in the 15.4.4 operating spec",
+        "zh": "15.4.4 工作规格中的精确数字"
+      },
+      "en": "15.4.4 lays out the PMD envelope clause by clause. 15.4.4.2 sets the operating frequency range to 2.4-2.5 GHz as allocated by regulators. 15.4.4.3 gives the channel-numbering rule (operating-class path via Clause 17, or the Table 15-6 fallback) and notes that cells need >= 30 MHz centre-frequency separation to avoid interference. 15.4.4.4 fixes the spreading sequence as the 11-chip Barker code +1,-1,+1,+1,-1,+1,+1,+1,-1,-1,-1, leftmost chip first, exactly 11 chips per symbol. 15.4.4.5 defines the two rates: a basic 1 Mb/s DBPSK (encoder in Table 15-7) and an enhanced 2 Mb/s DQPSK (encoder in Table 15-8). 15.4.4.6 defers in-band and out-of-band spurious emissions to the regulator. 15.4.4.7 requires TX-to-RX turnaround < 10 us (measured on the medium, including power-down ramp); 15.4.4.8 requires RX-to-TX turnaround <= 5 us (measured at the MAC/PHY interface, including power-on ramp). 15.4.4.9 points the slot time to Table 15-5 (20 us). 15.4.4.10 fixes the transmit and receive antenna-connector impedance at 50 ohm where the connector is exposed.",
+      "zh": "15.4.4 逐条铺陈了 PMD 的工作包络。15.4.4.2 规定工作频率范围为监管机构分配的 2.4-2.5 GHz。15.4.4.3 给出信道编号规则（经第 17 章的工作类路径，或表 15-6 的回退方案），并指出相邻小区需要 >= 30 MHz 的中心频率间隔以避免干扰。15.4.4.4 将扩频序列固定为 11 码片的 Barker 码 +1,-1,+1,+1,-1,+1,+1,+1,-1,-1,-1，最左侧码片先发，每个符号恰好 11 个码片。15.4.4.5 定义两档速率：基本档 1 Mb/s DBPSK（编码见表 15-7）与增强档 2 Mb/s DQPSK（编码见表 15-8）。15.4.4.6 将带内与带外杂散发射交由监管机构规定。15.4.4.7 要求 TX-到-RX 转换时间 < 10 us（在介质上测量，含功率下降斜坡）；15.4.4.8 要求 RX-到-TX 转换时间 <= 5 us（在 MAC/PHY 接口处测量，含功率上升斜坡）。15.4.4.9 将时隙长度指向表 15-5（20 us）。15.4.4.10 在天线连接器外露时，将收发天线连接器阻抗固定为 50 欧姆。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3301,
+          3302,
+          3303,
+          3304
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:15.1.1",
+    "80211-2024:15.1.2",
+    "80211-2024:15.1.3.1",
+    "80211-2024:15.1.3.2",
+    "80211-2024:15.1.4",
+    "80211-2024:15.2.1",
+    "80211-2024:15.2.2",
+    "80211-2024:15.2.3",
+    "80211-2024:15.2.4",
+    "80211-2024:15.2.5",
+    "80211-2024:15.3.1",
+    "80211-2024:15.4.1",
+    "80211-2024:15.4.2",
+    "80211-2024:15.4.3",
+    "80211-2024:15.4.4.1",
+    "80211-2024:15.4.4.2",
+    "80211-2024:15.4.4.3",
+    "80211-2024:15.4.4.4",
+    "80211-2024:15.4.4.5",
+    "80211-2024:15.4.4.6",
+    "80211-2024:15.4.4.7",
+    "80211-2024:15.4.4.8",
+    "80211-2024:15.4.4.9",
+    "80211-2024:15.4.4.10"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3287,
+        3288,
+        3289,
+        3290
+      ],
+      "note": "15.1 overview (DSSS, 2.4 GHz, PLME) and 15.2 PHY-SAP parameter lists: TXVECTOR, RXVECTOR, TXSTATUS, PHYCONFIG_VECTOR"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3300,
+        3301
+      ],
+      "note": "15.4.1-15.4.3 PLME SAP primitives, DSSS PHY MIB (Table 15-4), and PLME-CHARACTERISTICS (Table 15-5)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3301,
+        3302,
+        3303,
+        3304
+      ],
+      "note": "15.4.4 PHY operating specifications: frequency range, channel plan, Barker sequence, DBPSK/DQPSK rates, spurious emissions, turnaround times, slot time, 50 ohm impedance"
+    }
+  ],
+  "track": "legacy-phy"
+}
