@@ -1,0 +1,116 @@
+{
+  "id": "80211core-06",
+  "title": {
+    "en": "Data/ACK Exchange: Retries, Retry Limits, Sequence Numbers and Duplicate Detection",
+    "zh": "数据/ACK 交互：重传、重传限制、序列号与重复检测"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Radio is a lossy medium — a frame can be hit by noise, interference, or a collision and never arrive. Wi-Fi makes that flaky link feel reliable one frame at a time, using a simple promise: when a station sends a frame that needs acknowledging, the receiver — if the frame's FCS checks out — answers with an Ack a short, fixed gap (a SIFS) later. The arriving Ack is the only proof the sender gets that its frame made it. This is called positive acknowledgment, and it is the heartbeat of the 802.11 MAC.",
+      "zh": "无线电是一种有损介质——一帧可能被噪声、干扰或碰撞击中而永远到达不了。Wi-Fi 用一个简单的约定，让这条不稳定的链路逐帧地“看起来”可靠：当一个站点发出需要确认的帧时，接收方——只要该帧的 FCS 校验通过——就会在一个短而固定的间隔（一个 SIFS）之后回以一个 Ack。这个到达的 Ack 是发送方唯一能拿到的“帧已送达”证据。这被称为肯定确认（positive acknowledgment），它是 802.11 MAC 的心跳。"
+    },
+    {
+      "type": "prose",
+      "en": "But the absence of an Ack is ambiguous. If the sender doesn't hear one within its AckTimeout window, it can only infer that something failed — and it cannot tell whether the data frame itself was lost, or whether the data arrived fine and only the returning Ack was destroyed. The standard is blunt about this: the MAC gets no protocol indication of which half broke. So the sender does the only safe thing — it assumes failure and retransmits. Every such retry is sent with the Retry subfield of the Frame Control field set to 1, a one-bit flag that says \"you may have seen this before.\"",
+      "zh": "但“没收到 Ack”这件事本身是有歧义的。如果发送方在它的 AckTimeout 窗口内没听到 Ack，它只能推断“出了点问题”——却无法判断到底是数据帧本身丢了，还是数据顺利到达、只是回程的 Ack 被毁掉了。标准对此说得很直白：MAC 拿不到任何协议层面的指示来区分是哪一半坏了。于是发送方做了唯一安全的事——假定失败并重传。每一次这样的重传都会把帧控制字段（Frame Control）里的 Retry 子字段置为 1，这一个比特相当于在说：“这帧你可能见过。”"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant TX as Sender\n    participant RX as Receiver\n    TX->>RX: Data (Retry=0, SeqNum=42)\n    Note over RX: Data arrives, FCS ok\n    RX--xTX: Ack (LOST in the air)\n    Note over TX: AckTimeout expires -> infer failure\n    Note over TX: backoff, then retransmit\n    TX->>RX: Data (Retry=1, SeqNum=42)\n    Note over RX: SeqNum 42 already cached + Retry=1\n    Note over RX: DISCARD duplicate, but still Ack it\n    RX->>TX: Ack\n    Note over TX: Ack heard -> success, reset retry count",
+      "zh": "sequenceDiagram\n    participant TX as 发送方\n    participant RX as 接收方\n    TX->>RX: 数据 (Retry=0, 序列号=42)\n    Note over RX: 数据到达，FCS 正确\n    RX--xTX: Ack (在空中丢失)\n    Note over TX: AckTimeout 超时 -> 推断为失败\n    Note over TX: 退避，然后重传\n    TX->>RX: 数据 (Retry=1, 序列号=42)\n    Note over RX: 序列号 42 已在缓存中 且 Retry=1\n    Note over RX: 丢弃重复帧，但仍然回 Ack\n    RX->>TX: Ack\n    Note over TX: 听到 Ack -> 成功，重置重传计数"
+    },
+    {
+      "type": "prose",
+      "en": "Retransmission can't go on forever, or one stuck frame would block everything behind it. So each frame awaiting transmission carries two counters: a Short Retry Count (SRC) and a Long Retry Count (LRC), incremented and reset independently. Short frames (at or below dot11RTSThreshold) burn the SRC; long frames (above it) burn the LRC. When the SRC hits dot11ShortRetryLimit — or the frame's lifetime timer (dot11MaxTransmitMSDULifetime) runs out, whichever comes first — the STA gives up: retries cease and the frame is discarded. Reliability is best-effort with a hard ceiling, not an infinite guarantee.",
+      "zh": "重传不能无止境地进行下去，否则一帧卡住就会把它后面的一切都堵死。因此每个等待发送的帧都带着两个计数器：短重传计数（Short Retry Count, SRC）和长重传计数（Long Retry Count, LRC），二者各自独立地递增与清零。短帧（长度不超过 dot11RTSThreshold）消耗 SRC；长帧（超过该阈值）消耗 LRC。当 SRC 达到 dot11ShortRetryLimit——或者该帧的生存期定时器（dot11MaxTransmitMSDULifetime）耗尽，以先到者为准——站点便放弃：停止重传，丢弃该帧。可靠性是带有硬性上限的“尽力而为”，而不是无限的保证。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "There are actually two pairs of these counters. The SRC/LRC live per frame (per MSDU/MMPDU), while a Station Short/Long Retry Count (SSRC/SLRC) accumulate across the STA and drive the contention-window growth used by backoff. A failed RTS bumps the SRC and SSRC; a failed data Ack bumps either SRC/SSRC or LRC/SLRC depending on length. A success resets the matching counters.",
+      "zh": "其实这类计数器有两套。SRC/LRC 是按帧维护的（按 MSDU/MMPDU），而站点级的短/长重传计数（SSRC/SLRC）则在整个站点范围内累加，并驱动退避所用的竞争窗口（contention window）增长。RTS 失败会让 SRC 和 SSRC 各加一；数据帧 Ack 失败则按帧长决定是增 SRC/SSRC 还是 LRC/SLRC。一旦成功，对应的计数器随之清零。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the hazard becomes clear. If the data really did arrive and only the Ack was lost, the receiver will see the same frame twice — once as the original, once as the Retry=1 copy. Delivering both up the stack would corrupt the data stream. The fix is the Sequence Control field every Data, Management, and Extension frame carries: a 12-bit sequence number (a modulo-4096 counter the sender bumps by 1 for each new MSDU/A-MSDU/MMPDU) plus a 4-bit fragment number. All MPDUs of the same MSDU share one sequence number; distinct MSDUs almost always differ.",
+      "zh": "现在隐患就清楚了。如果数据其实已经到达、仅仅是 Ack 丢了，接收方就会看到同一帧两次——一次是原始帧，一次是 Retry=1 的副本。把两份都上交协议栈会破坏数据流。解决之道是每个数据帧、管理帧和扩展帧都携带的序列控制字段（Sequence Control）：一个 12 比特的序列号（一个模 4096 的计数器，发送方每发一个新的 MSDU/A-MSDU/MMPDU 就加 1）外加一个 4 比特的分片号（fragment number）。同一个 MSDU 的所有 MPDU 共用同一个序列号；不同的 MSDU 则几乎总是各不相同。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 420 120' width='420' height='120' fill='none' stroke='currentColor'><rect x='10' y='30' width='250' height='40' stroke-width='1.5'/><line x1='160' y1='30' x2='160' y2='70' stroke-width='1.5'/><text x='85' y='55' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>Sequence Number (12 bits)</text><text x='210' y='51' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>Frag No.</text><text x='210' y='64' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>(4 bits)</text><text x='135' y='22' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>Sequence Control field (16 bits)</text><text x='10' y='95' fill='currentColor' stroke='none' font-size='11'>mod-4096 counter, +1 per new MSDU/MMPDU</text><text x='10' y='110' fill='currentColor' stroke='none' font-size='11'>fragments of one MSDU share the sequence number</text></svg>",
+      "caption": {
+        "en": "The 16-bit Sequence Control field: a 12-bit sequence number plus a 4-bit fragment number. Together with the sender's address, this is the key a receiver uses to recognise a duplicate.",
+        "zh": "16 比特的序列控制字段：12 比特序列号加 4 比特分片号。它与发送方地址一起，构成接收方识别重复帧所用的“钥匙”。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The receiver closes the loop with duplicate detection caches. When a Data, Management, or Extension frame arrives, it records an entry keyed by <Address 2 (the sender), sequence number, fragment number> — plus the TID for QoS Data. When a frame arrives with Retry=1, the receiver searches the matching cache; if it finds a hit, the frame is a duplicate and is discarded. Crucially, the receiver still sends the Ack first: it performs acknowledgment on every frame requiring it, even one it is about to throw away. That's what stops reliability from turning into duplication — the sender learns its frame got through, and the receiver quietly drops the redundant copy.",
+      "zh": "接收方用重复检测缓存（duplicate detection cache）来闭合这个回路。当一个数据帧、管理帧或扩展帧到达时，接收方记录一条以 <Address 2（发送方）、序列号、分片号> 为键的条目——对 QoS 数据帧还要加上 TID。当一帧带着 Retry=1 到达时，接收方在相应缓存中查找；若命中，则该帧是重复帧，予以丢弃。关键在于，接收方仍会先发出 Ack：它对每个需要确认的帧都执行确认，哪怕这帧马上就要被扔掉。正是这一点阻止了可靠性退化为重复——发送方得知自己的帧已送达，而接收方则悄悄丢弃那份冗余副本。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exactly what the cache stores, and why a rare false-positive is tolerated",
+        "zh": "缓存究竟存什么，以及为何容忍极少数误判"
+      },
+      "en": "Clause 10.3.2.14 lays out transmitter and receiver requirements as two tables. On the transmit side (10.3.2.14.2), a STA maintains one or more sequence-number spaces — e.g. SNS1 (Baseline) for ordinary frames and SNS2, indexed by <Address 1, TID>, for individually addressed QoS Data — each a modulo-4096 counter (SNS4/QMF uses modulo-1024). On the receive side (10.3.2.14.3), Table 10-6 defines caches such as RC1 (Not QoS Data, indexed by <Address 2, sequence number, fragment number>) and RC2 (QoS Data, also indexed by TID), with rule RR5: discard the frame if Retry=1 and it matches a cache entry. The standard explicitly accepts a tiny risk: because a cache need only hold the most recent entry per sender, a frame may occasionally be rejected improperly, but \"this occurrence is rare and simply results in a lost frame (similar to an FCS error in other LAN protocols).\" Note too that the receiver runs the Ack procedure on all frames requiring immediate acknowledgment even when the frame is then discarded by duplicate filtering — and that the PS-Poll path (10.3.4.4) is a classic source of these duplicates, filtered the same way.",
+      "zh": "10.3.2.14 节用两张表分别给出发送方和接收方的要求。在发送侧（10.3.2.14.2），一个站点维护一个或多个序列号空间——例如用于普通帧的 SNS1（Baseline），以及按 <Address 1, TID> 索引、用于单播 QoS 数据帧的 SNS2——每个都是一个模 4096 的计数器（SNS4/QMF 用模 1024）。在接收侧（10.3.2.14.3），表 10-6 定义了诸如 RC1（非 QoS 数据，按 <Address 2、序列号、分片号> 索引）和 RC2（QoS 数据，还要加 TID 索引）这样的缓存，配套规则 RR5 规定：若 Retry=1 且命中缓存条目，则丢弃该帧。标准明确接受一点点风险：由于缓存只需保留每个发送方最近的一条条目，偶尔可能有一帧被错误地拒绝，但“这种情况很罕见，仅仅造成一帧丢失（类似于其他 LAN 协议中的 FCS 错误）”。另外要注意，即便某帧随后会被重复过滤丢弃，接收方仍对所有需要立即确认的帧执行 Ack 流程——而 PS-Poll 路径（10.3.4.4）正是这类重复帧的一个典型来源，并以同样的方式被过滤。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1916,
+          1917,
+          1918
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.3.2.2",
+    "80211-2024:10.3.2.11",
+    "80211-2024:10.3.2.14",
+    "80211-2024:10.3.4.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1887
+      ],
+      "note": "10.3.2.2 MAC-level acknowledgments — positive acknowledgment; lost Ack gives no protocol indication of which half failed"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1907,
+        1908
+      ],
+      "note": "10.3.2.11 Ack procedure — AckTimeout, no-Ack interpreted as failure, invoke backoff"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1915,
+        1916,
+        1917,
+        1918,
+        1919,
+        1920
+      ],
+      "note": "10.3.2.14 Duplicate detection and recovery — Sequence Control field, transmitter sequence-number spaces (Table 10-5), receiver caches (Table 10-6), Retry subfield, RR5"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1928,
+        1929
+      ],
+      "note": "10.3.4.4 Recovery procedures and retransmit limits — SRC/LRC/SSRC/SLRC, dot11ShortRetryLimit, dot11MaxTransmitMSDULifetime, Retry subfield set to 1 on retransmission"
+    }
+  ],
+  "track": "80211core"
+}

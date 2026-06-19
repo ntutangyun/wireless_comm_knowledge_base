@@ -1,0 +1,108 @@
+{
+  "id": "80211core-10",
+  "title": {
+    "en": "MAC Timing and the TSF: Keeping a BSS in Sync",
+    "zh": "MAC 定时与 TSF：让 BSS 保持同步"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Almost everything the 802.11 MAC does is timed. When a station finishes sending a frame, the air does not simply fall silent and wait for whoever is fastest — instead, the MAC enforces a set of precise gaps called interframe spaces (IFS). These gaps decide who gets to talk next and when. A short gap grants priority; a longer gap means 'wait your turn.' Because every station measures the same gaps from the same reference point, a frame exchange becomes a tightly choreographed sequence rather than a free-for-all.",
+      "zh": "802.11 MAC 所做的几乎每一件事都是有时间安排的。当一个站点发完一帧后，信道并不会简单地静下来、让反应最快的人抢先——相反，MAC 会强制执行一组被称为“帧间间隔（IFS）”的精确时间间隙。这些间隙决定了谁能在何时接着发言：较短的间隙赋予优先权，较长的间隙则意味着“再等等”。由于每个站点都从同一个参考点出发、测量相同的间隙，一次帧交换便成了一段编排紧凑的序列，而非一场混战。"
+    },
+    {
+      "type": "prose",
+      "en": "Two basic quantities anchor all of this: aSIFSTime (the short interframe space, SIFS) and aSlotTime (one backoff slot). The standard fixes SIFS as the shortest gap, used between the tightly coupled pieces of one exchange — for example between a frame and its acknowledgement. The longer spaces are built directly on top of these two: PIFS = SIFS + one slot, and DIFS = SIFS + two slots. So a station waiting a DIFS before contending always waits longer than one waiting a PIFS, which in turn waits longer than something resuming after just a SIFS. That strict ordering is what creates priority on the air.",
+      "zh": "支撑这一切的是两个基本量：aSIFSTime（短帧间间隔，SIFS）和 aSlotTime（一个退避时隙）。标准把 SIFS 规定为最短的间隙，用于一次交换中那些紧密耦合的环节之间——例如一帧与它的确认（Ack）之间。更长的间隔则直接建立在这两者之上：PIFS = SIFS + 一个时隙，DIFS = SIFS + 两个时隙。因此，一个在争用前要等待 DIFS 的站点，总会比只等 PIFS 的等得更久，而后者又比只等一个 SIFS 就恢复的等得更久。正是这种严格的先后顺序，在空口上制造出了优先级。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph LR\n    A[Medium goes idle<br/>end of last PPDU] --> B[SIFS<br/>aSIFSTime]\n    B --> C[PIFS<br/>SIFS + 1 slot]\n    C --> D[DIFS<br/>SIFS + 2 slots]\n    D --> E[backoff slots...]\n    style B fill:none,stroke:currentColor\n    style C fill:none,stroke:currentColor\n    style D fill:none,stroke:currentColor",
+      "zh": "graph LR\n    A[信道转为空闲<br/>上一个 PPDU 结束] --> B[SIFS<br/>aSIFSTime]\n    B --> C[PIFS<br/>SIFS + 1 时隙]\n    C --> D[DIFS<br/>SIFS + 2 时隙]\n    D --> E[退避时隙...]\n    style B fill:none,stroke:currentColor\n    style C fill:none,stroke:currentColor\n    style D fill:none,stroke:currentColor"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "All these MAC timings are measured from the end of the previous transmission on the medium — concretely, from PHY primitives such as PHY-TXEND.confirm and PHY-RXEND.indication. So every station has the same starting line. SIFS is fixed for a given PHY, while a slot can stretch slightly to cover longer propagation distances.",
+      "zh": "所有这些 MAC 定时都是从信道上上一次传输的结束时刻开始测量的——具体来说，是从 PHY-TXEND.confirm、PHY-RXEND.indication 等 PHY 原语起算。因此每个站点都拥有相同的“起跑线”。对某一特定 PHY 而言，SIFS 是固定的，而时隙（slot）可以略微拉长，以覆盖更长的传播距离。"
+    },
+    {
+      "type": "prose",
+      "en": "Those microsecond-scale gaps only work if everyone shares a sense of time at a coarser scale too. That is the job of the Timing Synchronization Function (TSF). Every station in a BSS keeps a local TSF timer: a counter that ticks in microseconds and rolls over only after a 64-bit modulus — effectively never, in practice. The TSF is the BSS-wide clock that Beacon scheduling, power-save wake times, and coordinated access all hang from. Without a common timebase, a station could not know when the next Beacon is due or when to wake from sleep to catch it.",
+      "zh": "这些微秒级的间隙要想奏效，前提是大家在更粗的时间尺度上也共享一种“时间感”。这正是定时同步功能（TSF，Timing Synchronization Function）的职责。BSS 中的每个站点都维护一个本地 TSF 定时器：一个以微秒为单位计数、达到 64 位模数后才回绕的计数器——在实际中几乎永远不会回绕。TSF 就是那把贯穿整个 BSS 的时钟，Beacon 的调度、省电唤醒时刻、以及协同接入都依附于它。没有一个共同的时间基准，站点就无从知晓下一个 Beacon 何时到来，也无从知道该在何时从休眠中醒来去接收它。"
+    },
+    {
+      "type": "prose",
+      "en": "In an infrastructure BSS the question of 'whose clock is correct' has a clean answer: the AP is the timing master. The AP periodically transmits Beacon frames, and each Beacon carries a timestamp field containing the value of the AP's own TSF timer. A station that receives a Beacon from its AP simply sets its local TSF timer to that timestamp value. Do this every Beacon period and the whole BSS converges onto the AP's clock — one shared clock, distributed for free by frames the AP was already sending.",
+      "zh": "在基础设施 BSS 中，“谁的时钟才是准的”这个问题有一个干净利落的答案：AP 是定时主控（timing master）。AP 会周期性地发送 Beacon 帧，而每个 Beacon 都携带一个时间戳字段，其中装着 AP 自己的 TSF 定时器的取值。一个站点收到来自其 AP 的 Beacon 后，只需把它本地的 TSF 定时器设为该时间戳的值即可。每个 Beacon 周期都这样做一次，整个 BSS 便会向 AP 的时钟收敛——一把共享的时钟，借由 AP 本就在发送的帧免费地分发了出去。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200' fill='none' stroke='currentColor' stroke-width='2'><circle cx='200' cy='45' r='26'/><text x='200' y='50' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>AP</text><text x='200' y='90' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>TSF master clock</text><line x1='200' y1='100' x2='90' y2='150'/><line x1='200' y1='100' x2='200' y2='150'/><line x1='200' y1='100' x2='310' y2='150'/><text x='150' y='118' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>Beacon (timestamp)</text><circle cx='90' cy='168' r='20'/><text x='90' y='172' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>STA</text><circle cx='200' cy='168' r='20'/><text x='200' y='172' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>STA</text><circle cx='310' cy='168' r='20'/><text x='310' y='172' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>STA</text></svg>",
+      "caption": {
+        "en": "The AP stamps its TSF value into every Beacon; each STA adopts it, so the whole BSS shares one clock.",
+        "zh": "AP 把它的 TSF 取值打进每一个 Beacon；每个 STA 都采纳它，于是整个 BSS 共享同一把时钟。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact rules: IFS derivation, the 2^64 microsecond timer, and Beacon filtering",
+        "zh": "精确规则：IFS 的推导、2^64 微秒计数器，以及 Beacon 过滤"
+      },
+      "en": "Clause 10.3.7 defines the IFS algebra: PIFS = aSIFSTime + aSlotTime (Eq. 10-5) and DIFS = aSIFSTime + 2 x aSlotTime (Eq. 10-6), where aSIFSTime is fixed per PHY and aSlotTime can change dynamically as aAirPropagationTime changes. All MAC timings are referenced from the PHY-TXEND.confirm, PHY-TXSTART.confirm, PHY-RXSTART.indication, and PHY-RXEND.indication primitives, and all medium timings are referenced from the end of the PPDU[+SigExt]. On the synchronization side, clause 11.1.3.1 requires each STA to maintain a TSF timer with modulus 2^64 counting in increments of microseconds. Clause 11.1.2.1 makes the AP the timing master of an infrastructure BSS: Beacon frames carry the AP's TSF value, and if a STA's TSF timer differs from the received timestamp, the STA shall set its local TSF timer to the received value. Clause 11.1.3.7 adds a filter — STAs in an infrastructure BSS use information in received Beacon frames only if the BSSID field equals the MAC address currently in use by the AP of their BSS — so a STA only adopts timing from its own AP, not from a neighbouring network.",
+      "zh": "10.3.7 节定义了 IFS 的代数关系：PIFS = aSIFSTime + aSlotTime（式 10-5），DIFS = aSIFSTime + 2 x aSlotTime（式 10-6），其中 aSIFSTime 对每个 PHY 是固定的，而 aSlotTime 会随 aAirPropagationTime 的变化而动态改变。所有 MAC 定时都以 PHY-TXEND.confirm、PHY-TXSTART.confirm、PHY-RXSTART.indication、PHY-RXEND.indication 原语为参考，所有信道定时则以 PPDU[+SigExt] 的结束为参考。在同步这一侧，11.1.3.1 节要求每个 STA 维护一个模数为 2^64、以微秒为步进计数的 TSF 定时器。11.1.2.1 节确立了 AP 为基础设施 BSS 的定时主控：Beacon 帧携带 AP 的 TSF 取值；若某 STA 的 TSF 定时器与收到的时间戳不同，该 STA 应将其本地 TSF 定时器置为收到的取值。11.1.3.7 节又补上一道过滤——基础设施 BSS 中的 STA 只有在 BSSID 字段等于其 BSS 的 AP 当前所用 MAC 地址时，才使用所收 Beacon 帧中的信息——因此 STA 只会采纳来自自己 AP 的定时，而不会采纳邻近网络的。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1932,
+          2427,
+          2428,
+          2434
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.1",
+    "80211-2024:10.3.7",
+    "80211-2024:11.1.2.1",
+    "80211-2024:11.1.3.7"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1874
+      ],
+      "note": "10.1 Introduction - MAC functional description; DCF/HCF/MCF/TUA architecture; clause map for timing and access"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1931,
+        1932,
+        1934
+      ],
+      "note": "10.3.7 DCF timing relations - IFS referenced from PHY-TXEND/RXEND primitives; aSIFSTime fixed, aSlotTime dynamic; PIFS=SIFS+slot (10-5), DIFS=SIFS+2*slot (10-6); Figure 10-25"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2427,
+        2428
+      ],
+      "note": "11.1.1/11.1.2.1 - TSF keeps BSS timers synchronized; AP is timing master; Beacon timestamp carries AP TSF; receiver sets local TSF to received value; modulus 2^64 microseconds"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2434
+      ],
+      "note": "11.1.3.7 Beacon reception - infrastructure STAs use Beacon info only if BSSID matches the AP's MAC address in use"
+    }
+  ],
+  "track": "80211core"
+}

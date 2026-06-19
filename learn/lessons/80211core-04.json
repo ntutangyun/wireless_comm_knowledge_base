@@ -1,0 +1,115 @@
+{
+  "id": "80211core-04",
+  "title": {
+    "en": "Virtual Carrier Sense and the NAV: RTS/CTS and the Duration Field",
+    "zh": "虚拟载波侦听与 NAV：RTS/CTS 与持续时间字段"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A Wi-Fi station has two ways to tell whether the air is free. The obvious one is to physically listen — the PHY reports whether energy is on the channel. But listening only works for transmitters you can actually hear, and in a real room some stations are hidden from each other behind walls or distance. So 802.11 adds a second, smarter sense: every frame announces, in its header, how long the medium will stay busy. Stations that overhear that announcement back off — even if they never hear the frames that follow. This is virtual carrier sense.",
+      "zh": "Wi-Fi 站点有两种方式判断空中是否空闲。最直接的一种是物理侦听——由 PHY 报告信道上是否有能量。但侦听只对你能真正听到的发送方有效，而在真实房间里，有些站点会被墙体或距离隔开、彼此“听不见”。于是 802.11 增加了第二种更聪明的感知：每一帧都会在其帧头中宣告介质将保持忙碌多长时间。听到这个宣告的站点就会退避——哪怕它们根本听不到随后传输的那些帧。这就是虚拟载波侦听。"
+    },
+    {
+      "type": "prose",
+      "en": "The carrier-sense rule is simple: the medium is busy when EITHER the physical sense OR the virtual sense says busy; it is idle only when both agree it is idle. The virtual sense is implemented as the NAV — the Network Allocation Vector. You can picture the NAV as a countdown timer measured in microseconds. While the NAV is nonzero, the station treats the medium as busy and will not transmit, even if its radio hears nothing at all. When the NAV counts down to zero, the virtual sense reports idle again.",
+      "zh": "载波侦听规则很简单：只要物理侦听或虚拟侦听其中任意一个判定为忙，介质就算忙；只有当两者都判定为空闲时，介质才算空闲。虚拟侦听是通过 NAV（Network Allocation Vector，网络分配向量）实现的。可以把 NAV 想象成一个以微秒为单位的倒计时器。只要 NAV 非零，站点就把介质当作忙碌，不会发送数据——即便它的射频什么都听不到。当 NAV 倒数到零时，虚拟侦听才重新报告“空闲”。"
+    },
+    {
+      "type": "prose",
+      "en": "Where does the number come from? Almost every frame carries a Duration field in its MAC header. When a station overhears a frame whose receiver address is NOT its own, it reads that Duration and, if the value is larger than its current NAV, it loads the NAV with the new value. (If the frame is addressed to the station itself, it does not arm its NAV — it is the intended recipient, not a bystander.) That single rule lets one transmitter reserve the air for a whole multi-frame exchange that its neighbours can respect without decoding the payload.",
+      "zh": "这个数字从哪来？几乎每一帧都在其 MAC 帧头中携带一个“持续时间（Duration）”字段。当一个站点偷听到一帧、而该帧的接收地址并不是它自己时，它就读取这个 Duration 值；如果该值比它当前的 NAV 还大，就用新值刷新 NAV。（如果这帧本来就是发给该站点自己的，它就不会据此设置 NAV——因为它是目标接收方，而不是旁观者。）正是这条简单规则，让一个发送方能为整段多帧交换预留空中资源，而邻居们无需解码载荷便能尊重这次预留。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The hidden-node problem in one sentence: station A and station C can both hear the AP, but A and C cannot hear each other. If A is sending a long data frame, C — hearing nothing — would happily transmit and collide at the AP. Virtual carrier sense fixes this because C does not need to hear A; it only needs to hear a short reservation frame from the AP.",
+      "zh": "一句话说清隐藏节点问题：站点 A 和站点 C 都能听到 AP，但 A 与 C 彼此听不见。如果 A 正在发送一帧很长的数据，C 因为什么都听不到，就会大大方方地发送，从而在 AP 处发生碰撞。虚拟载波侦听解决了这一点，因为 C 根本不需要听到 A——它只需要听到 AP 发来的一帧很短的预留帧即可。"
+    },
+    {
+      "type": "prose",
+      "en": "That short reservation frame is exactly what RTS/CTS provides. Before sending a long frame, the source transmits a tiny Request-to-Send (RTS) whose Duration covers the entire upcoming exchange — CTS + data + Ack and the gaps between them. The receiver answers with a Clear-to-Send (CTS) after a SIFS, and the CTS carries its own Duration: the RTS's duration minus one SIFS and minus the airtime of the CTS itself. The RTS is heard by stations near the sender; the CTS is heard by stations near the receiver — including the hidden node. Both groups arm their NAVs, so a hidden station that never hears the data frame still stays silent for exactly the right length of time, protected by a CTS it could hear.",
+      "zh": "这帧很短的预留帧正是 RTS/CTS 所提供的。在发送一帧长数据之前，源站点先发出一个极小的“请求发送（RTS）”帧，其 Duration 覆盖了整段即将进行的交换——CTS + 数据 + Ack 以及它们之间的间隔。接收方在一个 SIFS 之后回以“允许发送（CTS）”，而 CTS 携带自己的 Duration：即 RTS 的持续时间减去一个 SIFS，再减去 CTS 自身的传输耗时。RTS 会被发送方附近的站点听到；CTS 会被接收方附近的站点听到——包括那个隐藏节点。两组站点都会设置各自的 NAV，于是一个从头到尾都听不到数据帧的隐藏站点，仍会恰好沉默正确的时长，被一帧它能听到的 CTS 所保护。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant S as Source\n    participant R as Receiver (AP)\n    participant H as Hidden node\n    Note over H: hears CTS, not RTS/Data\n    S->>R: RTS (Duration = whole exchange)\n    Note over S,R: SIFS\n    R->>S: CTS (Duration = RTS - SIFS - CTS time)\n    Note over H: NAV armed from CTS -> stays silent\n    Note over R: SIFS\n    S->>R: Data frame\n    Note over R: SIFS\n    R->>S: Ack\n    Note over H: NAV reaches 0 -> medium idle again",
+      "zh": "sequenceDiagram\n    participant S as 源站点\n    participant R as 接收方 (AP)\n    participant H as 隐藏节点\n    Note over H: 能听到 CTS, 听不到 RTS/数据\n    S->>R: RTS (Duration = 整段交换)\n    Note over S,R: SIFS\n    R->>S: CTS (Duration = RTS - SIFS - CTS耗时)\n    Note over H: 由 CTS 设置 NAV -> 保持沉默\n    Note over R: SIFS\n    S->>R: 数据帧\n    Note over R: SIFS\n    R->>S: Ack\n    Note over H: NAV 归零 -> 介质重新空闲"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 480 220' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><text x='8' y='20' fill='currentColor' stroke='none' font-size='13'>On the air (heard near receiver):</text><rect x='12' y='34' width='40' height='26'/><text x='32' y='51' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>RTS</text><rect x='66' y='34' width='40' height='26'/><text x='86' y='51' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>CTS</text><rect x='120' y='34' width='230' height='26'/><text x='235' y='51' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>Data</text><rect x='364' y='34' width='40' height='26'/><text x='384' y='51' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>Ack</text><text x='8' y='96' fill='currentColor' stroke='none' font-size='13'>NAV set by RTS:</text><line x1='52' y1='112' x2='420' y2='112'/><line x1='52' y1='104' x2='52' y2='120'/><line x1='420' y1='104' x2='420' y2='120'/><text x='8' y='150' fill='currentColor' stroke='none' font-size='13'>NAV set by CTS (hidden node):</text><line x1='106' y1='166' x2='420' y2='166'/><line x1='106' y1='158' x2='106' y2='174'/><line x1='420' y1='158' x2='420' y2='174'/><line x1='420' y1='30' x2='420' y2='200' stroke-dasharray='4 4'/><text x='426' y='112' fill='currentColor' stroke='none' font-size='10'>medium</text><text x='426' y='124' fill='currentColor' stroke='none' font-size='10'>free</text></svg>",
+      "caption": {
+        "en": "Two NAV bars from one exchange. Stations that hear the RTS reserve from the end of the RTS; stations that hear only the CTS reserve from the end of the CTS. Both end at the same instant — the moment the medium becomes free again.",
+        "zh": "同一次交换产生两条 NAV 时间条。听到 RTS 的站点从 RTS 结束处开始预留；只听到 CTS 的站点从 CTS 结束处开始预留。两者在同一时刻结束——也就是介质重新空闲的那一刻。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "When there is no one to ask — no separate receiver to send a CTS — a station can still announce a reservation by sending a CTS-to-self: a CTS whose receiver address is its own MAC address, carrying a Duration that covers the pending transmission. It is cheaper than a full RTS/CTS handshake but less robust against hidden nodes, so it is best used when collisions are unlikely.",
+      "zh": "当没有“对象”可以征询时——也就是没有一个独立的接收方来回 CTS——站点仍可以通过发送 CTS-to-self 来宣告预留：这是一帧接收地址等于自己 MAC 地址的 CTS，携带一个覆盖待发送传输的 Duration。它比完整的 RTS/CTS 握手开销更小，但对隐藏节点的鲁棒性更弱，因此最适合在碰撞不太可能发生时使用。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact NAV update rule and the CTS Duration arithmetic",
+        "zh": "精确的 NAV 更新规则与 CTS 持续时间的算法"
+      },
+      "en": "Clause 10.3.2.1 defines the NAV as the virtual CS mechanism that all MACs provide, and 10.3.2.4 gives the update rule: a STA reads the Duration field of a received frame and, when the received frame's RA is NOT equal to the STA's own MAC address, updates its NAV when the received Duration is greater than its current NAV value (it never lowers the NAV by overhearing a smaller value). The NAV is conceptually a counter counting down to zero at a uniform rate; nonzero means the virtual CS indicates busy, zero means idle. For the responder, 10.3.2.9 fixes the CTS arithmetic precisely: the Duration field in the CTS frame is the Duration field from the received RTS, adjusted by subtracting aSIFSTime and the microseconds required to transmit the CTS frame at the rate chosen per 10.6 — which is why every overhearing station's NAV, whether armed from the RTS or from the CTS, expires at the same moment. Finally, 10.3.2.15 describes CTS-to-self: a node may reserve the medium for a frame others might not hear by transmitting a CTS with the RA equal to its own MAC address, a lower-overhead but less hidden-node-robust alternative to RTS/CTS.",
+      "zh": "10.3.2.1 节将 NAV 定义为所有 MAC 都必须提供的虚拟载波侦听机制；10.3.2.4 节给出了更新规则：站点读取所收到帧的 Duration 字段，当该帧的 RA 不等于站点自身的 MAC 地址、且收到的 Duration 大于当前 NAV 值时，才更新 NAV（它绝不会因偷听到一个更小的值而降低 NAV）。NAV 在概念上是一个以匀速倒数至零的计数器；非零表示虚拟载波侦听判定为忙，零表示空闲。对于响应方，10.3.2.9 节精确规定了 CTS 的算法：CTS 帧中的 Duration 字段等于所收到 RTS 帧的 Duration 字段，再减去 aSIFSTime 以及按 10.6 节所选速率发送该 CTS 帧所需的微秒数——这正是为什么无论是由 RTS 还是由 CTS 设置的 NAV，每个偷听站点的 NAV 都会在同一时刻到期。最后，10.3.2.15 节描述了 CTS-to-self：一个节点可以通过发送一帧 RA 等于自身 MAC 地址的 CTS，来为一帧别人可能听不到的传输预留介质；相比 RTS/CTS，它开销更低，但对隐藏节点的鲁棒性更弱。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1886,
+          1893,
+          1901,
+          1921
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.3.2.1",
+    "80211-2024:10.3.2.4",
+    "80211-2024:10.3.2.9",
+    "80211-2024:10.3.2.15"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1886,
+        1887
+      ],
+      "note": "10.3.2.1 CS mechanism — physical + virtual CS; NAV is the virtual CS provided by all MACs; NAV as a countdown counter (nonzero = busy)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1893,
+        1894
+      ],
+      "note": "10.3.2.4 Setting and resetting the NAV — Duration field source; do not update when RA == own address; update when received Duration > current NAV; Figure 10-6 RTS vs CTS NAV bars"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1900,
+        1901
+      ],
+      "note": "10.3.2.9 CTS procedure — CTS Duration = received RTS Duration - aSIFSTime - CTS transmit time"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1920,
+        1921
+      ],
+      "note": "10.3.2.15 NAV distribution — CTS-to-self (RA = own MAC address); lower overhead, less hidden-node robust than RTS/CTS"
+    }
+  ],
+  "track": "80211core"
+}

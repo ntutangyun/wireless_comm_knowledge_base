@@ -1,0 +1,108 @@
+{
+  "id": "80211core-05",
+  "title": {
+    "en": "Interframe Spaces: How SIFS, PIFS, DIFS, AIFS and EIFS Create Priority",
+    "zh": "帧间间隔：SIFS、PIFS、DIFS、AIFS 与 EIFS 如何制造优先级"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Wi-Fi has no central traffic cop deciding who transmits next. Instead, every station watches the air, and the moment the medium goes idle it starts a stopwatch. Whoever was willing to wait the *shortest* time before speaking gets to go first. That single idea — priority by waiting time — is the whole story of interframe spaces (IFS). An IFS is just a fixed gap a station must sense the medium idle for before it is allowed to transmit. Shorter gap, higher priority.",
+      "zh": "Wi-Fi 里没有一个中央“交通警察”来决定下一个谁发送。取而代之的是：每个站点都在监听空口，一旦介质变为空闲，它就开始掐表计时。谁愿意等待的时间*最短*，谁就先发。这一个朴素的想法——按等待时间分配优先级——就是帧间间隔（IFS）的全部精髓。所谓 IFS，不过是站点在被允许发送之前，必须感知到介质保持空闲的一段固定时间。间隔越短，优先级越高。"
+    },
+    {
+      "type": "prose",
+      "en": "The standard defines ten different IFSs, but five of them carry the everyday priority logic. From shortest to longest: SIFS lets a reply (an Ack or CTS) jump ahead of all new traffic; PIFS sits just one slot above SIFS for special priority access like beacons and channel-switch announcements; DIFS is the ordinary gap a legacy DCF station waits before contending for a fresh transmission; AIFS is the per-traffic-category version of DIFS used by QoS (EDCA) stations, so voice can wait less than background downloads; and EIFS is a deliberately *long* wait you take after hearing a frame you could not decode. Crucially, these timings do not depend on the data rate — a 6 Mb/s and a 4800 Mb/s station use the same SIFS.",
+      "zh": "标准一共定义了十种 IFS，但承载日常优先级逻辑的主要是其中五种。从短到长依次为：SIFS 让回复帧（Ack 或 CTS）插到所有新流量前面；PIFS 仅比 SIFS 高出一个时隙，用于信标、信道切换通告等特殊优先级接入；DIFS 是传统 DCF 站点在争用一次全新发送前等待的普通间隔；AIFS 是 DIFS 的“按业务类别”版本，供 QoS（EDCA）站点使用，从而让语音的等待短于后台下载；而 EIFS 则是当你听到一个无法解码的帧之后，*故意*采用的一段较长等待。关键在于，这些时间与数据速率无关——6 Mb/s 的站点和 4800 Mb/s 的站点用的是同一个 SIFS。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 220\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\" font-size=\"12\" fill=\"currentColor\"><line x1=\"40\" y1=\"30\" x2=\"40\" y2=\"200\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"36\" y=\"22\" text-anchor=\"end\">medium idle</text><text x=\"44\" y=\"22\">longer wait → lower priority</text><rect x=\"40\" y=\"40\" width=\"60\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"108\" y=\"53\">SIFS — Ack / CTS (highest)</text><rect x=\"40\" y=\"72\" width=\"90\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"138\" y=\"85\">PIFS — beacons, channel switch</text><rect x=\"40\" y=\"104\" width=\"120\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"168\" y=\"117\">DIFS — normal DCF access</text><rect x=\"40\" y=\"136\" width=\"120\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-dasharray=\"4 3\"/><text x=\"168\" y=\"149\">AIFS[AC] — QoS, varies by category</text><rect x=\"40\" y=\"168\" width=\"230\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"278\" y=\"181\">EIFS — after an undecodable frame (longest)</text></svg>",
+      "caption": {
+        "en": "The strict ordering SIFS < PIFS < DIFS / AIFS < EIFS is the entire priority mechanism. A shorter bar means the station is allowed to start transmitting sooner after the air falls idle.",
+        "zh": "严格的排序 SIFS < PIFS < DIFS / AIFS < EIFS 就是整个优先级机制。横条越短，意味着空口空闲后该站点被允许越早开始发送。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Why is SIFS the shortest? Because once two stations have started a frame exchange — say RTS, then CTS, then Data, then Ack — the network wants that exchange to finish without interruption. Every response in the sequence is sent after only a SIFS. Since SIFS is shorter than any IFS a *new* transmitter must wait, the in-progress exchange always wins the air back before any outsider can grab it. The reply effectively reserves the channel just by being fast.",
+      "zh": "为什么 SIFS 最短？因为一旦两个站点开始了一次帧交换——比如 RTS、然后 CTS、然后 Data、然后 Ack——网络希望这次交换能不被打断地完成。序列中的每个响应帧都只在一个 SIFS 之后发出。由于 SIFS 比任何*新*发送者必须等待的 IFS 都短，正在进行的交换总能在任何外来者抢到之前夺回空口。这个回复仅凭“够快”，就等于把信道预留了下来。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant A as Sender\n    participant B as Receiver\n    participant C as Other STA\n    Note over A,C: medium idle\n    A->>B: RTS (after DIFS/AIFS + backoff)\n    Note over B: wait SIFS\n    B->>A: CTS\n    Note over A: wait SIFS\n    A->>B: Data\n    Note over B: wait SIFS\n    B->>A: Ack\n    Note over C: must wait DIFS/AIFS (> SIFS),\\nso never interrupts the exchange",
+      "zh": "sequenceDiagram\n    participant A as 发送方\n    participant B as 接收方\n    participant C as 其他站点\n    Note over A,C: 介质空闲\n    A->>B: RTS（等待 DIFS/AIFS + 退避后）\n    Note over B: 等待 SIFS\n    B->>A: CTS\n    Note over A: 等待 SIFS\n    A->>B: Data\n    Note over B: 等待 SIFS\n    B->>A: Ack\n    Note over C: 必须等待 DIFS/AIFS（> SIFS），\\n所以永远不会打断这次交换"
+    },
+    {
+      "type": "prose",
+      "en": "EIFS is the odd one out — it is long *on purpose*. If your radio receives a PPDU that fails its FCS check (or the PHY reports an error), you have no idea what was just said. Somewhere out there a station might be about to send an Ack in reply to a frame you simply could not hear. If you barged in after a normal DIFS you would collide with that Ack. So instead you back off for the much longer EIFS, giving the unseen reply enough room to complete. If a clean frame arrives during the EIFS, you resynchronise to the real state of the medium and drop back to DIFS or AIFS. It is politeness born of uncertainty.",
+      "zh": "EIFS 是其中的“另类”——它*故意*被设得很长。如果你的射频收到了一个 FCS 校验失败的 PPDU（或者 PHY 报告了错误），你根本不知道刚才说了什么。空口某处可能有个站点正准备针对一个你压根没听清的帧回复一个 Ack。如果你在正常的 DIFS 之后就贸然插入，就会和那个 Ack 相撞。所以你转而退避一段长得多的 EIFS，给那个看不见的回复留出足够完成的空间。如果在 EIFS 期间收到了一个正确无误的帧，你就重新同步到介质的真实状态，并退回到 DIFS 或 AIFS。这是一种源于“不确定”的礼貌。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy mental model: SIFS and PIFS are built from PHY timing — SIFS is fixed per PHY, and PIFS = SIFS + one aSlotTime. DIFS = SIFS + 2 × aSlotTime. The slot time itself is what backoff counts in. So when you hear that 802.11g introduced a 'short slot time' (9 us vs 20 us), that single PHY number ripples upward and shrinks PIFS, DIFS, and every backoff slot at once — which is exactly why short slot time made dense networks faster.",
+      "zh": "一个好用的心智模型：SIFS 和 PIFS 都建立在 PHY 时序之上——SIFS 对每种 PHY 是固定的，而 PIFS = SIFS + 一个 aSlotTime。DIFS = SIFS + 2 × aSlotTime。而退避所计数的单位正是这个时隙时间。所以当你听说 802.11g 引入了“短时隙时间”（9 微秒对 20 微秒）时，这一个 PHY 数值会自下而上层层传导，同时缩短 PIFS、DIFS 以及每一个退避时隙——这正是短时隙时间让密集网络更快的原因。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What the standard actually says about each IFS and the slot time it is built on",
+        "zh": "标准对每种 IFS 及其所依赖的时隙时间究竟是怎么规定的"
+      },
+      "en": "Clause 10.3.2.3.1 states there are ten IFSs defined to 'provide priority levels for access to the wireless medium,' all referenced from PHY primitives (PHY-TXEND.confirm, PHY-RXEND.indication, etc.), and that all IFS timings except AIFS are fixed per PHY and independent of bit rate. SIFS (10.3.2.3.3) is the shortest IFS between transmissions from different non-DMG STAs and is used 'when STAs have seized the medium and need to keep it for the duration of the frame exchange sequence' — it precedes Ack, CTS, BlockAck and similar response frames. PIFS (10.3.2.3.4) is used to gain priority access (beacons, TIM frames, channel-switch announcements, HCCA TXOP start). DIFS (10.3.2.3.5) is used by DCF stations to transmit Data and Management frames once the medium is idle at the TxDIFS boundary and the backoff counter is zero. AIFS (10.3.2.3.6) is the EDCA per-AC equivalent, computed from dot11EDCATableAIFSN carried in the EDCA Parameter Set. EIFS (10.3.2.3.7) is used after a PPDU whose PHY-RXEND.indication contained an error or whose FCS was incorrect, and is 'defined to provide enough time for another STA to acknowledge what was, to this STA, an incorrectly received PPDU' before this STA transmits; under EDCA the equivalent is the EIFS-DIFS+AIFS[AC] interval. Separately, 10.3.2.16 governs aSlotTime: an AP advertises short vs long slot time via the Short Slot Time subfield in Beacon, Probe Response, and (Re)Association Response frames, and a capable non-AP STA adopts that value — the MAC variable from which DIFS and the backoff slots are derived.",
+      "zh": "10.3.2.3.1 节指出共定义了十种 IFS，用以“为接入无线介质提供优先级层次”，它们都以 PHY 原语（PHY-TXEND.confirm、PHY-RXEND.indication 等）为基准计时，并且除 AIFS 外所有 IFS 时序对每种 PHY 都是固定的、与比特率无关。SIFS（10.3.2.3.3）是不同非 DMG 站点之间最短的 IFS，在“站点已占用介质并需要在帧交换序列期间持续保持”时使用——它出现在 Ack、CTS、BlockAck 等响应帧之前。PIFS（10.3.2.3.4）用于获取优先接入（信标、TIM 帧、信道切换通告、HCCA TXOP 起始）。DIFS（10.3.2.3.5）供 DCF 站点使用：当介质在 TxDIFS 边界处空闲且退避计数器为零时，发送 Data 与 Management 帧。AIFS（10.3.2.3.6）是 EDCA 的“按 AC”等价物，由 EDCA 参数集所携带的 dot11EDCATableAIFSN 计算得出。EIFS（10.3.2.3.7）在收到一个 PHY-RXEND.indication 含错误或 FCS 不正确的 PPDU 之后使用，其设计目的是“给另一个站点留出足够时间，去确认那个对本站点而言接收有误的 PPDU”，然后本站点才发送；在 EDCA 下其等价物是 EIFS-DIFS+AIFS[AC] 间隔。另外，10.3.2.16 节规范了 aSlotTime：AP 通过 Beacon、Probe Response 及（重）关联响应帧中的 Short Slot Time 子字段通告短/长时隙时间，具备能力的非 AP 站点随之采用该值——而 DIFS 与退避时隙正是由这个 MAC 变量推导而来。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1887,
+          1889,
+          1890,
+          1891,
+          1892,
+          1921
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.3.2.3",
+    "80211-2024:10.3.2.16"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1887,
+        1888
+      ],
+      "note": "10.3.2.3.1 IFS General — ten IFSs provide priority levels; referenced from PHY primitives; fixed per PHY (except AIFS), independent of bit rate"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1889,
+        1890
+      ],
+      "note": "10.3.2.3.3 SIFS (shortest, used within a seized frame-exchange sequence) and 10.3.2.3.4 PIFS (priority access)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1891,
+        1892
+      ],
+      "note": "10.3.2.3.5 DIFS, 10.3.2.3.6 AIFS[AC], 10.3.2.3.7 EIFS — EIFS after an undecodable PPDU gives an unheard Ack room to complete"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1921
+      ],
+      "note": "10.3.2.16 Operation of aSlotTime — Short Slot Time subfield in Beacon/Probe Response/(Re)Association Response; MAC variable underlying DIFS and backoff slots"
+    }
+  ],
+  "track": "80211core"
+}

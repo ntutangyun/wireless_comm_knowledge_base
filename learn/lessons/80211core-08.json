@@ -1,0 +1,110 @@
+{
+  "id": "80211core-08",
+  "title": {
+    "en": "Multirate Support: Picking a Speed and Why Control Frames Go Slow",
+    "zh": "多速率支持：如何选速率，以及控制帧为何用低速率发送"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A Wi-Fi link is not one fixed speed. The same station can send one frame at a blistering high-order modulation and the very next at a slow, rugged rate — choosing per frame depending on how strong the signal is, how much interference is around, and how far away the receiver sits. Closer and quieter means a faster rate (more bits per symbol, less redundancy); farther and noisier means a slower, more robust rate that survives a weak or messy channel. This per-frame trade between throughput and robustness is what 802.11 calls multirate support.",
+      "zh": "Wi-Fi 链路并不是固定的单一速率。同一个站点可以把这一帧用极高阶的调制飞快发出，下一帧却切换到缓慢而稳健的速率——它会逐帧选择，依据是信号有多强、周围干扰有多大、接收方有多远。距离更近、环境更安静，就用更快的速率（每符号承载更多比特、冗余更少）；距离更远、噪声更多，就用更慢、更稳健的速率，以便在微弱或杂乱的信道里也能被收到。这种逐帧在吞吐量与稳健性之间的权衡，正是 802.11 所称的“多速率支持”。"
+    },
+    {
+      "type": "prose",
+      "en": "Here is the surprising part the standard is careful about: it does NOT tell you how to pick the rate. The algorithm that climbs up to fast rates when things are good and falls back when frames start failing is left entirely to the implementer — that is why two vendors' chips behave differently in the same room. What the standard fixes instead are the interoperability rules: which rate set a frame is allowed to draw from, so that no matter how clever (or aggressive) a rate-adaptation algorithm is, every station in the BSS can still coexist and decode what it must.",
+      "zh": "标准在这里特意留了个出人意料的口子：它并不规定你该如何选速率。在信道好时往高速率爬升、在帧开始失败时回退的那套算法，完全交给实现者——这正是为什么同一个房间里两家厂商的芯片表现各异。标准真正固定下来的，是互操作性规则：一帧被允许从哪个速率集合里取速率。这样一来，无论某个速率自适应算法多么聪明（或激进），BSS 中的每个站点仍能共存，并能解出它必须解出的帧。"
+    },
+    {
+      "type": "prose",
+      "en": "The key idea is the basic rate set (BSSBasicRateSet). When a BSS is set up, the AP designates a handful of low, universally understood rates that every member is required to support. Data and management frames may race ahead using any rate the receiver supports — but certain frames must be drawn from this basic set so that they are decodable by anyone who needs to hear them. The most important of those are the control frames that protect a transmission: RTS/CTS and the acknowledgements.",
+      "zh": "核心概念是“基本速率集（BSSBasicRateSet）”。在建立 BSS 时，AP 指定少数几个低速、人人都能理解的速率，要求每个成员都必须支持。数据帧和管理帧可以用接收方支持的任意速率一路飞奔——但某些帧必须从这个基本集合里取速率，以便任何需要听到它的人都能解出。其中最重要的，就是用来保护一次传输的控制帧：RTS/CTS 以及确认帧。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why does the protective handshake deliberately run slow? Think of RTS/CTS as shouting \"clear the floor!\" to everyone nearby, and the NAV they set as the silence that follows. If that shout went out at a fast rate, distant or weak stations might fail to decode it — and a station that cannot hear the reservation will not stay quiet. A slow, robust control frame is heard by the widest possible audience, so the protective reservation is never lost.",
+      "zh": "为什么这套保护性握手要刻意走低速？可以把 RTS/CTS 想象成对周围所有人喊一声“清场！”，它们设置的 NAV 就是随后的静默。如果这声呼喊用高速率发出，距离远或信号弱的站点可能解不出来——而一个听不到这次预约的站点就不会保持安静。低速、稳健的控制帧能被尽可能多的听众听到，于是这次保护性预约绝不会丢失。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant S as Sender\n    participant N as Nearby STAs\n    participant R as Receiver\n    Note over S,R: RTS at a BASIC RATE (slow, robust)\n    S->>R: RTS (basic rate)\n    S-->>N: RTS overheard -> set NAV\n    Note over R: CTS at a rate the sender can surely decode\n    R->>S: CTS (basic-rate-derived)\n    R-->>N: CTS overheard -> set NAV\n    Note over S,R: Data at the FASTEST rate that gets through\n    S->>R: Data (high MCS)\n    R->>S: Ack (basic-rate-derived, slow)\n    Note over N: NAV holds the floor quiet the whole time",
+      "zh": "sequenceDiagram\n    participant S as 发送方\n    participant N as 周围站点\n    participant R as 接收方\n    Note over S,R: RTS 用基本速率（慢而稳健）\n    S->>R: RTS（基本速率）\n    S-->>N: 旁听到 RTS -> 设置 NAV\n    Note over R: CTS 用发送方必定能解出的速率\n    R->>S: CTS（基于基本速率）\n    R-->>N: 旁听到 CTS -> 设置 NAV\n    Note over S,R: 数据用能成功送达的最快速率\n    S->>R: 数据（高阶 MCS）\n    R->>S: 确认帧（基于基本速率，慢）\n    Note over N: NAV 全程让信道保持静默"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 420 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><text x='210' y='20' text-anchor='middle' stroke='none' fill='currentColor' font-size='13'>Rate set hierarchy</text><rect x='40' y='40' width='340' height='44' rx='6'/><text x='210' y='60' text-anchor='middle' stroke='none' fill='currentColor' font-size='11'>Receiver's supported / operational rates</text><text x='210' y='76' text-anchor='middle' stroke='none' fill='currentColor' font-size='10'>Data &amp; mgmt frames may use any of these (fast OK)</text><rect x='95' y='98' width='230' height='42' rx='6'/><text x='210' y='118' text-anchor='middle' stroke='none' fill='currentColor' font-size='11'>BSSBasicRateSet (low, mandatory for all)</text><text x='210' y='133' text-anchor='middle' stroke='none' fill='currentColor' font-size='10'>CTS / Ack drawn from here</text><rect x='140' y='154' width='140' height='36' rx='6'/><text x='210' y='176' text-anchor='middle' stroke='none' fill='currentColor' font-size='10'>PHY mandatory rate set (fallback)</text></svg>",
+      "caption": {
+        "en": "Nested rate sets. Payload can use the receiver's full rate set; protective control responses are drawn from the smaller basic rate set; if that is empty the PHY's mandatory rate set is the floor.",
+        "zh": "嵌套的速率集合。负载可使用接收方的完整速率集；保护性的控制响应从更小的基本速率集中取用；若基本速率集为空，则以 PHY 的强制速率集兜底。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "There is a second, subtler reason control responses are constrained. A CTS or Ack is sent a SIFS after the frame that triggered it, and the original sender already wrote a Duration value into the air assuming a particular response length. So the responder cannot just pick any rate — it must pick one whose timing the sender can predict. The standard's recipe is precise: the responder takes the highest basic rate that is no faster than the frame it is answering. That keeps the response decodable by the sender, keeps the reserved duration honest, and still lets it be as quick as the basic set allows.",
+      "zh": "控制响应被约束还有第二个、更微妙的原因。CTS 或确认帧是在触发它的那一帧之后相隔一个 SIFS 发出的，而原发送方早已按假定的响应长度在空口里写下了一个 Duration 值。因此响应方不能随意选速率——它必须选一个其时长能被发送方预测的速率。标准给出的配方很精确：响应方取“基本速率集中不快于所应答帧速率”的最高速率。这样既保证响应能被发送方解出、又让预约的时长名副其实，同时还能在基本集允许的范围内尽量快。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact rules: scope, basic-rate selection, and the control-response recipe",
+        "zh": "精确规则：适用范围、基本速率选取，以及控制响应配方"
+      },
+      "en": "Clause 10.6.1 sets the scope plainly: rate switching exists \"with the objective of improving performance,\" but \"the algorithm for performing rate switching is beyond the scope of this standard\" — the standard only defines coexistence/interoperability rules all STAs follow, and only the mandatory rate set of the attached PHY is guaranteed supported. For data and management frames, when the receiver's operational rate set is unknown the transmitter falls back to a rate in BSSBasicRateSet (or, if that is empty, the PHY mandatory rate set) — the rule that closes out 10.6.5.8. Control frames get their own subclause: 10.6.6.1 says a frame that initiates an exchange (most control subtypes) is subject to explicit rate limits intended to ensure \"maximum possible coverage and receivability,\" and a control response is one sent a SIFS after the eliciting PPDU (e.g., CTS for RTS, Ack for Data). For non-HT CTS/Ack, 10.6.6.5.2 defines the primary rate as \"the highest rate in the BSSBasicRateSet that is less than or equal to the rate of the previous frame\" (falling to the highest such mandatory PHY rate if the basic set yields none); an alternate rate is allowed only if it has the same frame duration (10.6.6.5.4) — which is exactly what lets the sender pre-compute the Duration/ID field.",
+      "zh": "10.6.1 节直白地划定了范围：速率切换的存在是“以改善性能为目标”，但“执行速率切换的算法不在本标准范围之内”——标准只定义所有 STA 遵循的共存／互操作规则，并且只有所连接 PHY 的强制速率集才保证被支持。对数据帧和管理帧而言，当接收方的工作速率集未知时，发送方回退到 BSSBasicRateSet 中的某个速率（若该集为空，则用 PHY 强制速率集）——这正是 10.6.5.8 收尾的规则。控制帧另有专门小节：10.6.6.1 指出，发起一次交换的帧（大多数控制子类型）受到明确的速率限制，意在确保“尽可能大的覆盖与可接收性”；而“控制响应帧”是在引发它的 PPDU 之后相隔一个 SIFS 发出的帧（如对 RTS 的 CTS、对数据的 Ack）。对于非 HT 的 CTS/Ack，10.6.6.5.2 把“主速率”定义为“BSSBasicRateSet 中不大于前一帧速率的最高速率”（若基本集得不出结果，则取满足该条件的最高强制 PHY 速率）；只有在帧时长相同时（10.6.6.5.4）才允许选用替代速率——而这恰恰是发送方能够预先算出 Duration/ID 字段的原因。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1937,
+          1942,
+          1943,
+          1945,
+          1949
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.6.1",
+    "80211-2024:10.6.5.8",
+    "80211-2024:10.6.6.1",
+    "80211-2024:10.6.6.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1937
+      ],
+      "note": "10.6.1 Overview — rate switching improves performance; the switching algorithm is beyond scope; only the mandatory rate set is guaranteed; coexistence/interoperability rules apply to all STAs"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1942
+      ],
+      "note": "10.6.5.8 (close) — when the receiver's operational rate set is unknown, data/management frames fall back to BSSBasicRateSet or the PHY mandatory rate set"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1942,
+        1943
+      ],
+      "note": "10.6.6.1 General rules for rate selection for Control frames; definition of a control response frame (sent a SIFS after the eliciting PPDU, e.g. CTS for RTS, Ack for Data); coverage/receivability intent"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1945,
+        1946,
+        1948,
+        1949
+      ],
+      "note": "10.6.6.5 Rate selection for control response frames — non-HT CTS/Ack primary rate = highest BSSBasicRateSet rate <= previous frame rate; alternate rate must preserve frame duration (10.6.6.5.4)"
+    }
+  ],
+  "track": "80211core"
+}

@@ -1,0 +1,99 @@
+{
+  "id": "80211core-09",
+  "title": {
+    "en": "Group-Addressed Delivery: Why Broadcast and Multicast Go Unacknowledged",
+    "zh": "组寻址传输：广播与组播为何不被确认"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Most Wi-Fi traffic follows a simple, reassuring contract: a station sends a frame to one recipient, and that recipient answers a short SIFS later with an Ack. No Ack? The sender assumes the frame was lost and retransmits. That send-and-acknowledge loop is what makes individually addressed traffic feel reliable. But what happens when a frame is meant for everyone at once — a broadcast to the whole BSS, or a multicast to a group?",
+      "zh": "Wi-Fi 中的大多数流量都遵循一个简单而让人安心的约定：站点把帧发给某一个接收者，接收者在一个 SIFS 之后回复一个简短的 Ack（确认帧）。没收到 Ack？发送方就认为帧丢了，于是重传。正是这个“发送—确认”的循环，让单播（逐个寻址）流量显得可靠。可是，当一个帧本就是发给所有人的——比如对整个 BSS 的广播，或者发给一个组的组播——又会怎样呢？"
+    },
+    {
+      "type": "prose",
+      "en": "Here the simple contract breaks down. A group-addressed frame has many intended receivers. If every one of them tried to Ack at the same SIFS boundary, their replies would all land on top of each other and collide into noise. Acknowledging them one at a time, in turn, would not scale — a busy network might have dozens of listeners. There is no clean way to collect that many confirmations, so the standard makes a deliberate design choice: don't collect any. Group-addressed MPDUs are sent without acknowledgment and without retransmission.",
+      "zh": "在这里，那个简单约定就失效了。一个组寻址帧有许多预期接收者。如果它们都在同一个 SIFS 时刻试图回 Ack，这些回复就会彼此叠加、撞成一团噪声。让它们一个接一个轮流确认又无法扩展——繁忙的网络里可能有几十个监听者。要收集这么多确认根本没有干净的办法，于是标准做了一个有意为之的设计抉择：那就一个都不收集。组寻址 MPDU 在发送时既不被确认，也不被重传。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The rule is explicit in clause 10.3.6: when a STA transmits group-addressed MPDUs with To DS = 0, no recipient transmits an Ack, and no RTS/CTS handshake is used regardless of frame length. The one exception is when the frame is heading toward the AP (To DS = 1) — then it is really a unicast hop to the AP and follows the normal acknowledgment rules.",
+      "zh": "10.3.6 节对此有明确规定：当站点发送 To DS = 0 的组寻址 MPDU 时，任何接收者都不回 Ack，并且无论帧长多大都不使用 RTS/CTS 握手。唯一的例外是帧正发往 AP 的情形（To DS = 1）——这时它实际上是发给 AP 的一跳单播，因此遵循正常的确认规则。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as AP / sender\n    participant S1 as Listener 1\n    participant S2 as Listener 2\n    participant S3 as Listener 3\n    Note over AP: basic access (CSMA/CA), no RTS/CTS\n    AP->>S1: Group-addressed MPDU (basic rate)\n    AP->>S2: (same frame, one transmission)\n    AP->>S3: (same frame, one transmission)\n    Note over S1,S3: NO Ack sent back by anyone\n    Note over AP: no Ack -> no retransmission; best-effort",
+      "zh": "sequenceDiagram\n    participant AP as AP / 发送方\n    participant S1 as 监听者 1\n    participant S2 as 监听者 2\n    participant S3 as 监听者 3\n    Note over AP: 基本接入 (CSMA/CA)，无 RTS/CTS\n    AP->>S1: 组寻址 MPDU (基本速率)\n    AP->>S2: (同一帧，一次发送)\n    AP->>S3: (同一帧，一次发送)\n    Note over S1,S3: 没有任何人回 Ack\n    Note over AP: 无 Ack → 不重传；尽力而为"
+    },
+    {
+      "type": "prose",
+      "en": "No Ack and no retransmission has a clear consequence: group-addressed traffic is inherently best-effort. The standard says so plainly — its reliability is reduced relative to individually addressed traffic, because lost frames from interference, collisions, or a time-varying channel are never recovered at the MAC layer. So the sender does the next best thing: it hedges its single shot. Group-addressed Data and Management frames are transmitted at a robust rate drawn from the BSSBasicRateSet — the set of low, widely supported rates every member of the BSS is guaranteed to understand. A slower, sturdier modulation reaches farther and survives more noise, maximising the chance that the one-and-only transmission is heard by everyone.",
+      "zh": "不回 Ack、不重传，带来一个明确的后果：组寻址流量天生就是“尽力而为”的。标准对此直言不讳——相对于单播流量，它的可靠性更低，因为由干扰、碰撞或时变信道造成的丢帧，在 MAC 层永远不会被恢复。于是发送方退而求其次：给这唯一的一次机会上保险。组寻址的数据帧和管理帧会以 BSSBasicRateSet 中的稳健速率发送——这是一组速率较低、被广泛支持的速率，BSS 中的每个成员都保证能听懂。更慢、更结实的调制方式传得更远、更能扛噪声，从而最大化让这唯一一次发送被所有人听到的概率。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 480 220' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><circle cx='80' cy='110' r='18'/><text x='80' y='150' font-size='12' text-anchor='middle' stroke='none' fill='currentColor'>AP</text><circle cx='340' cy='40' r='12'/><circle cx='400' cy='110' r='12'/><circle cx='340' cy='180' r='12'/><circle cx='250' cy='70' r='12'/><circle cx='250' cy='150' r='12'/><path d='M98 110 Q200 40 328 40' stroke-dasharray='4 4'/><path d='M98 110 Q260 110 388 110' stroke-dasharray='4 4'/><path d='M98 110 Q200 180 328 180' stroke-dasharray='4 4'/><path d='M98 110 Q170 75 238 70' stroke-dasharray='4 4'/><path d='M98 110 Q170 145 238 150' stroke-dasharray='4 4'/><path d='M16 110 a 64 64 0 0 1 0 0' /><path d='M40 80 Q24 110 40 140' /><path d='M30 64 Q4 110 30 156' /><text x='360' y='205' font-size='11' text-anchor='middle' stroke='none' fill='currentColor'>many listeners, zero Acks</text></svg>",
+      "caption": {
+        "en": "One transmission fans out to every listener at a robust basic rate. The dashed arrows are the frame reaching listeners; none of them send anything back.",
+        "zh": "一次发送以稳健的基本速率扇出到每个监听者。虚线箭头表示帧到达各监听者；它们当中没有任何一个回送任何东西。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "If group traffic is best-effort, how does anything important ever get delivered reliably to a group? The answer is that reliability moves elsewhere — never back to a link-layer Ack. Two tools handle it. First, protection: the same No-Ack reasoning underlies the No Ack ack policy for QoS Data frames (clause 10.26), and in both cases the standard recommends a protective mechanism — HCCA, RTS/CTS, or CTS-to-self — to push other stations' NAV out and keep the medium clear during the transmission, lowering the collision odds for that single shot. Second, higher layers: if an application truly needs every receiver to get every packet, it builds its own acknowledgment and retransmission on top (or the AP uses specialised group services). The MAC deliberately stays simple and lets the layers that know what reliability they need supply it.",
+      "zh": "既然组流量是尽力而为的，那么真正重要的东西又如何可靠地送达一个组呢？答案是：可靠性被挪到了别处——绝不会回到链路层的 Ack 上。有两类工具来承担它。其一是“保护机制”：同样的“不确认”逻辑也支撑着 QoS 数据帧的 No Ack 确认策略（10.26 节），在这两种情形下，标准都建议使用一种保护机制——HCCA、RTS/CTS 或 CTS-to-self——把其他站点的 NAV 往外推、在这次发送期间保持信道清净，从而降低这唯一一次发送的碰撞概率。其二是“更高层”：如果某个应用确实需要每个接收者都收到每个分组，它就在上层自建确认与重传（或者由 AP 使用专门的组传输服务）。MAC 有意保持简单，把可靠性交给那些清楚自己需要何种可靠性的层去提供。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact words: no Ack, no RTS/CTS, no MAC recovery — and the rate rule",
+        "zh": "原文精确表述：无 Ack、无 RTS/CTS、无 MAC 恢复——以及速率规则"
+      },
+      "en": "Clause 10.3.6 states that for group-addressed MPDUs with To DS = 0 not using GATS, the STA shall not use an RTS/(NDP) CTS or RTS/DMG CTS exchange regardless of frame length, and no recipient shall transmit an Ack frame; a To-DS = 1 group-addressed MPDU is directed to the AP and follows the normal RTS/CTS and acknowledgment rules. The standard then states there is no MAC-level recovery on group-addressed frames (except To DS = 1 and frames via the GATS), so reliability is reduced versus individually addressed traffic owing to interference, collisions, or time-varying channel properties. Clause 10.6.5.4 fixes the rate: a Data or Management frame with a group address in Address 1 shall be transmitted in a non-HT PPDU using one of the rates in BSSBasicRateSet when that set is non-empty (with HT/VHT/S1G basic-MCS fallbacks, and mandatory PHY rates for an unassociated STA whose basic sets are all empty). Clause 10.26 (No Ack) gives the parallel for QoS Data: no MAC-level recovery, reduced reliability, and a recommended protective mechanism (HCCA, RTS/CTS, or 10.27) to reduce the probability of other STAs transmitting during the TXOP.",
+      "zh": "10.3.6 节规定：对于 To DS = 0 且未使用 GATS 的组寻址 MPDU，站点无论帧长多大都不得使用 RTS/(NDP) CTS 或 RTS/DMG CTS 交换，且任何接收者都不得发送 Ack 帧；而 To DS = 1 的组寻址 MPDU 是发往 AP 的，遵循正常的 RTS/CTS 与确认规则。标准随后指出：组寻址帧没有 MAC 层的恢复机制（To DS = 1 及经由 GATS 发送的帧除外），因此因干扰、碰撞或时变信道特性导致丢帧后，其可靠性相对单播流量更低。10.6.5.4 节固定了速率：当 BSSBasicRateSet 非空时，Address 1 为组地址的数据帧或管理帧应以非 HT PPDU、使用该集合中的某个速率发送（并有 HT/VHT/S1G 基本 MCS 的回退规则；对于基本速率集全为空的未关联站点，则使用强制 PHY 速率）。10.26 节（No Ack）给出了 QoS 数据帧的对应情形：无 MAC 层恢复、可靠性降低，并建议采用保护机制（HCCA、RTS/CTS 或 10.27 节）以降低 TXOP 期间其他站点发送的概率。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1930,
+          1931,
+          1939,
+          2085
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.3.6",
+    "80211-2024:10.6.5.4",
+    "80211-2024:10.26"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1930,
+        1931
+      ],
+      "note": "10.3.6 Group addressed MPDU transfer procedure — no Ack, no RTS/CTS for To DS=0; no MAC-level recovery; reduced reliability"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1939,
+        1940
+      ],
+      "note": "10.6.5.4 Rate selection for other group addressed Data and Management frames — BSSBasicRateSet, non-HT PPDU, HT/VHT/S1G fallbacks"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2085
+      ],
+      "note": "10.26 No Acknowledgment (No Ack) — no MAC-level recovery; recommended protective mechanism (HCCA, RTS/CTS, 10.27)"
+    }
+  ],
+  "track": "80211core"
+}

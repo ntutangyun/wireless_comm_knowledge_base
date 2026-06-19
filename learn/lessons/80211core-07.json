@@ -1,0 +1,110 @@
+{
+  "id": "80211core-07",
+  "title": {
+    "en": "Fragmentation and Defragmentation: Splitting MSDUs and When It Helps",
+    "zh": "分片与重组：拆分 MSDU 及其适用场景"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Picture sending a long letter across a noisy radio link. The longer the frame, the more chances interference has to clip a single bit somewhere inside it — and one bad bit fails the whole frame, forcing the entire thing to be sent again. Fragmentation is 802.11's answer: instead of one big frame, the MAC chops the payload into several smaller frames. Each travels and is acknowledged on its own, so when noise strikes you only resend the small piece that got hit, not the whole payload.",
+      "zh": "想象在一条充满噪声的无线链路上寄一封长信。帧越长，干扰就越有机会击中其中某一个比特——而只要有一个比特出错，整帧就失败，被迫整体重传。分片（fragmentation）正是 802.11 给出的对策：MAC 不再发送一个大帧，而是把负载切成若干个较小的帧。每个小帧各自传输、各自被确认，于是当噪声来袭时，你只需重发被击中的那一小片，而不是整个负载。"
+    },
+    {
+      "type": "prose",
+      "en": "The thing being split is an MSDU (a data payload handed down from the upper layer), an A-MSDU, or an MMPDU (a management frame). The MAC partitions it into smaller MPDUs called fragments. This kicks in when a frame would exceed dot11FragmentationThreshold: above that size the MAC fragments; below it, the frame goes whole. The whole point is reliability — shorter frames have a higher probability of getting through when channel conditions punish long ones. Splitting happens at the immediate transmitter; the immediate receiver reassembles, an operation called defragmentation.",
+      "zh": "被拆分的对象是 MSDU（上层下交的数据负载）、A-MSDU，或 MMPDU（管理帧）。MAC 把它切分为若干个更小的 MPDU，称为“分片”。当一个帧的长度会超过 dot11FragmentationThreshold（分片门限）时，分片机制就启动：超过门限则分片，未超过则整帧发送。其全部意义在于可靠性——在信道条件对长帧不利时，较短的帧更有机会顺利通过。拆分发生在直接发送方，直接接收方则把它们重新拼合，这一操作称为重组（defragmentation）。"
+    },
+    {
+      "type": "prose",
+      "en": "How does the receiver put the pieces back together? Every fragment shares the same sequence number (they belong to one MSDU) but carries a fragment number that starts at 0 and counts up. A single control bit, the More Fragments bit, is set to 1 on every fragment except the last; the last fragment has it set to 0. So the receiver collects fragments in fragment-number order and, the moment it sees More Fragments = 0, it knows the MSDU is complete. Fragments must be sent lowest number first, and once a fragment has been transmitted its content and length are frozen until it is delivered.",
+      "zh": "接收方如何把这些碎片重新拼起来？每个分片共享相同的序列号（因为它们同属一个 MSDU），但携带一个从 0 开始、依次递增的分片号（fragment number）。还有一个单比特的控制位——“更多分片位（More Fragments bit）”：除最后一个分片外，每个分片都将其置为 1；最后一个分片则置为 0。于是接收方按分片号顺序收集分片，一旦看到 More Fragments = 0，就知道这个 MSDU 已经完整。分片必须按从小到大的分片号顺序发送，而且一个分片一旦发出，其内容和长度在被成功送达之前就被冻结。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant S as Source\n    participant D as Destination\n    Note over S,D: optional RTS/CTS first sets the NAV\n    S->>D: Fragment 0 (MoreFrag=1, fragNo=0, Dur covers Ack0+SIFS+Frag1+...)\n    D->>S: Ack 0 (after SIFS, Dur chains to next)\n    S->>D: Fragment 1 (MoreFrag=1, fragNo=1)\n    D->>S: Ack 1 (after SIFS)\n    S->>D: Fragment 2 (MoreFrag=0, fragNo=2, last)\n    D->>S: Ack 2 (Duration = 0)\n    Note over S,D: each Dur field reserves the medium for the NEXT fragment+Ack",
+      "zh": "sequenceDiagram\n    participant S as 源站\n    participant D as 目的站\n    Note over S,D: 可选的 RTS/CTS 先设置 NAV\n    S->>D: 分片 0 (MoreFrag=1, 分片号=0, Dur 覆盖 Ack0+SIFS+分片1+...)\n    D->>S: Ack 0 (隔 SIFS, Dur 链接到下一段)\n    S->>D: 分片 1 (MoreFrag=1, 分片号=1)\n    D->>S: Ack 1 (隔 SIFS)\n    S->>D: 分片 2 (MoreFrag=0, 分片号=2, 末片)\n    D->>S: Ack 2 (Duration = 0)\n    Note over S,D: 每个 Dur 字段都为“下一个”分片+Ack 预约介质"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the chaining trick in the diagram. Each fragment and each Ack carries a Duration value that reserves the medium not for itself but for the NEXT fragment-and-Ack pair. So a single RTS/CTS at the start, plus this rolling reservation, keeps other stations' NAV set across the whole burst — no need to re-arbitrate between fragments. The very last fragment's Ack sets Duration to 0, releasing the channel.",
+      "zh": "注意图中的“链式”技巧。每个分片和每个 Ack 携带的 Duration（持续时间）值，预约的不是自己，而是“下一个”分片-Ack 对所需的介质时间。因此，开头只需一次 RTS/CTS，再加上这种滚动式的预约，就能让其他站点的 NAV 在整个突发期间一直保持设置——分片之间无需重新竞争介质。最末一个分片的 Ack 把 Duration 置为 0，从而释放信道。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 460 170' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='20' fill='currentColor' stroke='none' font-size='13' font-weight='bold'>One MSDU</text><rect x='10' y='28' width='320' height='26'/><text x='170' y='46' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>payload (longer than threshold)</text><line x1='130' y1='62' x2='130' y2='78' stroke-dasharray='3 3'/><line x1='230' y1='62' x2='230' y2='78' stroke-dasharray='3 3'/><text x='10' y='100' fill='currentColor' stroke='none' font-size='13' font-weight='bold'>Fragments</text><rect x='10' y='108' width='100' height='40'/><text x='60' y='124' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>frag 0</text><text x='60' y='140' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>MoreFrag=1</text><rect x='120' y='108' width='100' height='40'/><text x='170' y='124' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>frag 1</text><text x='170' y='140' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>MoreFrag=1</text><rect x='230' y='108' width='100' height='40'/><text x='280' y='124' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>frag 2 (last)</text><text x='280' y='140' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>MoreFrag=0</text><text x='345' y='132' fill='currentColor' stroke='none' font-size='10'>same seq no.,</text><text x='345' y='146' fill='currentColor' stroke='none' font-size='10'>fragNo 0,1,2</text></svg>",
+      "caption": {
+        "en": "An oversized MSDU is partitioned into equal-length fragments (the last may be shorter). All share one sequence number; fragment numbers count 0, 1, 2, and More Fragments = 0 marks the last.",
+        "zh": "一个超长的 MSDU 被切分为等长的分片（最后一片可较短）。它们共享同一个序列号；分片号依次为 0、1、2，而 More Fragments = 0 标记最后一片。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "So why don't modern Wi-Fi networks lean on fragmentation much anymore? It's a tradeoff. Every extra fragment adds its own MAC header, FCS, and a separate Ack with SIFS gaps — pure overhead that grows as you split more finely. On a clean channel that overhead is wasted; on a noisy one it can pay for itself by avoiding costly full retransmits. But since 802.11n, aggregation (A-MPDU) flipped the economics: it bundles many subframes under one PHY preamble with a Block Ack that selectively confirms each one, getting per-subframe retransmission AND low overhead. That's why fragmentation is now a niche tool for hostile channels rather than an everyday mechanism.",
+      "zh": "那么，为什么现代 Wi-Fi 网络已经不太依赖分片了？这是一个权衡。每多一个分片，就要多一份自己的 MAC 头、FCS，以及一个带 SIFS 间隔的独立 Ack——这些纯属开销，且切得越细、开销越大。在干净的信道上这些开销是浪费；但在嘈杂的信道上，它能通过避免代价高昂的整帧重传而“回本”。然而自 802.11n 起，聚合（A-MPDU）改写了这笔经济账：它把许多子帧打包在同一个 PHY 前导码之下，并用块确认（Block Ack）逐一选择性地确认——既获得了“按子帧重传”的好处，又保持了低开销。这正是分片如今沦为应对恶劣信道的小众工具、而非日常机制的原因。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact rules: thresholds, frozen fragments, timers, and the bans on fragmenting",
+        "zh": "精确规则：门限、冻结分片、计时器，以及禁止分片的情形"
+      },
+      "en": "Clause 10.2.7 defines fragmentation as partitioning an MSDU, A-MSDU, or MMPDU into smaller MPDUs to raise the probability of successful transmission when channel characteristics limit reliability for longer frames; the resulting MPDUs are sent as independent transmissions, each separately acknowledged, permitting retries per fragment rather than per MSDU. Several cases forbid it: an MSDU under an HT-immediate block ack agreement, an MSDU/MMPDU in an A-MPDU lacking an S-MPDU, and any group-addressed MPDU shall not be fragmented even above dot11FragmentationThreshold. Clause 10.4 fixes the mechanics: all fragments are an equal, even number of octets except the last; the sequence number stays constant while fragment numbers run 0 upward; once first transmitted, a fragment's body and length are frozen until delivered; and the source runs a transmit timer bounded by dot11MaxTransmitMSDULifetime, discarding leftover fragments if it expires. Clause 10.5 covers reassembly: the destination orders fragments by fragment number using the Sequence Control field, must not mix fragments encrypted under different keys (or encrypted with unencrypted), supports concurrent reassembly of at least three MSDUs/MMPDUs each under a Receive Timer bounded by dot11MaxReceiveLifetime, and discards duplicates (though a duplicate is still acknowledged). Clause 10.3.2.6 ties it to the NAV: with RTS/CTS, the Duration/ID in each Data and Ack frame reserves the medium for the next fragment-and-Ack, each acting as a virtual RTS/CTS so no further RTS/CTS is needed, until the last fragment whose Ack sets Duration/ID to 0.",
+      "zh": "10.2.7 节将分片定义为：把 MSDU、A-MSDU 或 MMPDU 切分为更小的 MPDU，以便在信道特性限制长帧可靠性时提高成功传输的概率；由此产生的 MPDU 作为相互独立的传输各自被确认，从而允许“按分片”而非“按 MSDU”重传。有几种情形被禁止分片：HT 立即块确认协议下的 MSDU、不含 S-MPDU 的 A-MPDU 中的 MSDU/MMPDU，以及任何组寻址 MPDU——即便超过 dot11FragmentationThreshold 也不得分片。10.4 节固定了机制细节：除最后一片外，所有分片均为相等的、偶数个八位组；序列号保持不变，而分片号从 0 起递增；一旦首次发送，分片的帧体与长度在被送达前即被冻结；源站运行一个受 dot11MaxTransmitMSDULifetime 限制的发送计时器，超时则丢弃剩余分片。10.5 节涵盖重组：目的站依据序列控制字段中的分片号对分片排序，不得混合用不同密钥加密的分片（或加密与未加密混合），支持至少三个 MSDU/MMPDU 的并发重组、每个由受 dot11MaxReceiveLifetime 限制的接收计时器看护，并丢弃重复分片（但重复分片仍会被确认）。10.3.2.6 节将其与 NAV 关联：使用 RTS/CTS 时，每个数据帧与 Ack 帧中的 Duration/ID 为下一个分片-Ack 对预约介质，每一帧充当虚拟的 RTS/CTS，因而无需再发 RTS/CTS，直到最后一个分片——其 Ack 把 Duration/ID 置为 0。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1882,
+          1883,
+          1935,
+          1936,
+          1937
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.2.7",
+    "80211-2024:10.3.2.6",
+    "80211-2024:10.4",
+    "80211-2024:10.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1882,
+        1883
+      ],
+      "note": "10.2.7 Fragmentation/defragmentation overview — partition MSDU/A-MSDU/MMPDU for reliability; independent transmissions separately acknowledged; per-fragment retry; cases where fragmentation is forbidden"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1898,
+        1899
+      ],
+      "note": "10.3.2.6 RTS/CTS with fragmentation — Duration/ID chaining; each fragment and Ack reserves NAV for the next; last Ack Duration = 0 (Figures 10-8, 10-9)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1935,
+        1936
+      ],
+      "note": "10.4 MSDU/A-MSDU/MMPDU fragmentation — equal even-octet fragments, constant sequence number, fragment numbers from 0, More Fragments bit, frozen fragment body/length, dot11MaxTransmitMSDULifetime"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1936,
+        1937
+      ],
+      "note": "10.5 MSDU/A-MSDU/MMPDU defragmentation — reassembly by fragment number, key-mixing prohibition, concurrent reassembly of >=3 MSDUs, Receive Timer/dot11MaxReceiveLifetime, duplicate discard but still acknowledged"
+    }
+  ],
+  "track": "80211core"
+}
