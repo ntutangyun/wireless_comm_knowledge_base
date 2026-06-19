@@ -1,0 +1,118 @@
+{
+  "id": "managing-12",
+  "title": {
+    "en": "Playing by the Regulator's Rules: DSE and Extended Channel Switching",
+    "zh": "遵守监管规则：DSE 与扩展信道切换"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Some Wi-Fi spectrum isn't a free-for-all. In bands like the US 3650 MHz band, a regulator hands control to a licensed operator: only stations that are explicitly permitted may transmit, and the operator must be able to locate and rein in any device causing interference. 802.11 has two cooperating mechanisms for living inside such rules. Dynamic STA Enablement (DSE) decides who is allowed to talk at all. Extended Channel Switching (ECS) decides how to move the whole network to a different channel or operating class when conditions demand it. This lesson is the intuition for both.",
+      "zh": "有些 Wi-Fi 频段并非任你自由使用。在像美国 3650 MHz 这样的频段里，监管机构把控制权交给持牌运营方：只有获得明确许可的站点才能发射，而且运营方必须能够定位并约束任何造成干扰的设备。802.11 提供了两套相互配合的机制来在这类规则内运行。动态站点使能（DSE）决定谁有资格发射，扩展信道切换（ECS）则决定在条件需要时如何把整个网络迁移到另一个信道或工作类。本课就是关于这两者的直觉。"
+    },
+    {
+      "type": "prose",
+      "en": "DSE sorts stations into three roles. A registered STA has had its operating location filed with the authorities and broadcasts that location; a fixed STA is registered but is not allowed to enable anyone else. An enabling STA is a registered STA that the regulator additionally permits to authorise other devices — it creates a DSE service area and broadcasts a DSE Registered Location element with the RegLoc DSE bit set to 1. A dependent STA is unregistered: it may not transmit a single frame until it has heard that enabling beacon and completed an enablement handshake. Enabled is a state you must earn — and one that can be taken away.",
+      "zh": "DSE 把站点分成三种角色。已注册站点（registered STA）已向监管机构登记其工作位置并对外广播该位置；固定站点（fixed STA）虽已注册，但不允许去使能任何其他设备。使能站点（enabling STA）是一种被监管机构额外允许去授权其他设备的已注册站点——它会创建一个 DSE 服务区，并广播一个将 RegLoc DSE 位置 1 的 DSE 注册位置元素。依赖站点（dependent STA）则是未注册的：在它听到那个使能信标并完成一次使能握手之前，它连一帧都不能发射。“已使能”是必须挣得的状态——而且是可以被收回的状态。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant Dep as Dependent STA (unenabled)\n    participant En as Enabling STA\n    Note over En: Beacon carries DSE Registered Location (RegLoc DSE = 1)\n    En-->>Dep: Beacon (enabling signal heard over the air)\n    Note over Dep: SME issues MLME-ENABLEMENT.request\n    Dep->>En: DSE Enablement (reason result code = 2, identity assertion)\n    Note over En: MLME-ENABLEMENT.indication to SME\n    En->>Dep: DSE Enablement (result = successful, unique enablement identifier)\n    Note over Dep,En: both set enablement state = Enabled\n    Note over Dep: may now transmit; must keep hearing the enabling signal",
+      "zh": "sequenceDiagram\n    participant Dep as 依赖站点（未使能）\n    participant En as 使能站点\n    Note over En: 信标携带 DSE 注册位置元素（RegLoc DSE = 1）\n    En-->>Dep: 信标（在空口听到的使能信号）\n    Note over Dep: SME 发出 MLME-ENABLEMENT.request\n    Dep->>En: DSE 使能帧（reason result code = 2，身份声明）\n    Note over En: 向 SME 发 MLME-ENABLEMENT.indication\n    En->>Dep: DSE 使能帧（结果 = 成功，唯一使能标识符）\n    Note over Dep,En: 双方将使能状态置为“已使能”\n    Note over Dep: 现可发射；必须持续听到使能信号"
+    },
+    {
+      "type": "prose",
+      "en": "The enablement exchange is deliberately tiny: a two-frame transaction. The first DSE Enablement frame asserts the requester's identity and asks to be enabled; the second returns the result and, if successful, a dependent enablement identifier that is unique among everyone this enabling STA has enabled — so a licensed operator chasing interference can point at exactly one device. Deenablement is even simpler: a single DSE Deenablement frame flips the peer's state straight back to Unenabled. A dependent STA also self-disables if it stops hearing the enabling signal in time. The state machine is Unenabled -> Becoming enabled -> Enabled, with timeouts pulling it back down.",
+      "zh": "使能交换被刻意设计得极小：一次两帧事务。第一帧 DSE 使能帧声明请求方的身份并请求被使能；第二帧返回结果，若成功，还附带一个依赖使能标识符（dependent enablement identifier），它在该使能站点所使能的所有设备中是唯一的——这样持牌运营方在追查干扰时就能精确指向某一台设备。去使能（deenablement）更简单：单独一帧 DSE 去使能帧就把对端状态直接翻回“未使能”。依赖站点若未能及时持续听到使能信号，也会自行失能。状态机是：未使能 → 正在变为已使能 → 已使能，各种超时会把它拉回去。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "DSE is location-aware on purpose. The whole point is interference accountability: registered STAs broadcast their filed latitude/longitude/altitude, and each dependent device carries a unique enablement identifier. If two licensees clash, the regulator can map who is transmitting where. Wi-Fi here is less 'open spectrum' and more 'a managed sublease'.",
+      "zh": "DSE 刻意是位置感知的。其核心目的就是干扰可追责：已注册站点广播其登记的经纬度与高度，每台依赖设备携带一个唯一的使能标识符。如果两个持牌方发生冲突，监管机构就能勾画出谁在何处发射。此处的 Wi-Fi 与其说是“开放频谱”，不如说是“受管理的转租”。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the second mechanism: moving everyone at once. A plain Channel Switch Announcement can shift a BSS to a new channel, but it cannot change bands, because it never carries the operating class. Extended Channel Switching fixes that. First a STA advertises which operating classes it can use, via the Supported Operating Classes element (its Current Operating Class field names the one in use). Then, when an AP, DFS owner, mesh STA, or enabling STA wants to relocate the network, it sends an Extended Channel Switch Announcement carrying the new operating class, new channel number, channel switch mode, and a count-down. Because the operating class travels with it, ECS can steer the whole BSS across bands — the controlled, coordinated way to move everyone together.",
+      "zh": "现在来看第二套机制：让所有人一起搬家。普通的信道切换通告（Channel Switch Announcement）能把一个 BSS 切换到新信道，但它无法切换频段，因为它从不携带工作类（operating class）。扩展信道切换弥补了这一点。首先，站点通过受支持工作类元素（Supported Operating Classes element）广播它能使用哪些工作类（其 Current Operating Class 字段指明当前在用的那一个）。随后，当 AP、DFS 所有者、网状站点或使能站点想要迁移网络时，它会发送一个携带新工作类、新信道号、信道切换模式以及倒计数的扩展信道切换通告。由于工作类随之传递，ECS 能把整个 BSS 跨频段地引导过去——这是让所有人协调一致地一起搬家的受控方式。"
+    },
+    {
+      "type": "prose",
+      "en": "How the steering plays out depends on the topology. In an infrastructure BSS the AP advertises the Extended Channel Switch Announcement in Beacons, Probe Responses, and Action frames right up to the switch time, and can set the switch mode to 1 to make stations stop transmitting until the move; a non-AP STA must not originate one. In an IBSS the DFS owner does the advertising and may even skip backoff (transmit after a single PIFS of idle medium) to get the word out fast. In a mesh BSS (MBSS) a mesh STA advertises the switch in Beacons and Probe Responses until switch time. And the two mechanisms join hands: an enabling STA can issue an ECS announcement to its dependent STAs, and a dependent AP or DFS owner must then perform the extended channel switch — the regulator's reach extending all the way down to the channel a borrowed device sits on.",
+      "zh": "这种引导如何展开取决于拓扑。在基础设施 BSS 中，AP 会在信标、探测响应和动作帧里一直通告扩展信道切换通告直到切换时刻，并可把切换模式置为 1，让站点在迁移前停止发射；非 AP 站点不得发起这种通告。在 IBSS 中，由 DFS 所有者负责通告，甚至可以跳过退避（在介质空闲一个 PIFS 后即发送）以尽快把消息传出去。在网状 BSS（MBSS）中，网状站点会在信标和探测响应里通告该切换直到切换时刻。而这两套机制还会携手：使能站点可以向其依赖站点下发一个 ECS 通告，依赖的 AP 或 DFS 所有者随即必须执行扩展信道切换——监管方的影响力一路延伸到一台被借用设备所处的信道上。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The two-frame enablement transaction and the ECS topology rules, precisely",
+        "zh": "精确的两帧使能事务与 ECS 拓扑规则"
+      },
+      "en": "Clause 11.11.1 grounds DSE in regulation (e.g., the US 3650 MHz band) and defines fixed, enabling, and dependent STAs via the dot11LCIDSERequired / dot11ExtendedChannelSwitchActivated / dot11DSERequired attribute combinations in Table 11-15. Enablement (11.11.2) is a two-frame transaction keyed on a state variable per peer: the requester (11.11.2.2) sends a DSE Enablement frame with reason result code = 2 and enablement identifier = 0 on an MLME-ENABLEMENT.request, then on a matching reply issues MLME-ENABLEMENT.confirm (or TIMEOUT after EnablementTimeLimit TUs); the responder (11.11.2.3) replies with the result and a dependent enablement identifier unique among those it has assigned, and on success sets the requester's state to Enabled. Deenablement is one frame (11.11.2.4 / 11.11.2.5), setting the peer back to Unenabled. A registered STA (11.11.3) broadcasts a DSE Registered Location element in every Beacon; an enabling STA (11.11.4) sets RegLoc DSE = 1, and a dependent STA may transmit nothing until it decodes that element over the air. For ECS, 11.9.2 says the Supported Operating Classes element advertises all classes the STA can use plus the Current Operating Class; 11.9.3.2 (infrastructure BSS, AP-originated, switch mode may be 1), 11.9.3.3 (IBSS, DFS owner, may transmit after one PIFS without backoff), and 11.9.3.4 (MBSS, mesh STA, carried in Beacons and Probe Responses) define who advertises the Extended Channel Switch Announcement and when, including the rule that an enabling STA's ECS announcement obliges a dependent AP/DFS owner to switch.",
+      "zh": "11.11.1 节把 DSE 立足于监管之上（例如美国 3650 MHz 频段），并通过表 11-15 中 dot11LCIDSERequired / dot11ExtendedChannelSwitchActivated / dot11DSERequired 属性组合来定义固定、使能与依赖站点。使能（11.11.2）是一次以每对端状态变量为键的两帧事务：请求方（11.11.2.2）在收到 MLME-ENABLEMENT.request 后发送一个 reason result code = 2、enablement identifier = 0 的 DSE 使能帧，收到匹配回复后发出 MLME-ENABLEMENT.confirm（或在 EnablementTimeLimit 个 TU 后给出 TIMEOUT）；响应方（11.11.2.3）回复结果以及一个在其已分配集合中唯一的依赖使能标识符，成功时将请求方状态置为“已使能”。去使能只用一帧（11.11.2.4 / 11.11.2.5），把对端置回“未使能”。已注册站点（11.11.3）在每个信标中广播 DSE 注册位置元素；使能站点（11.11.4）将 RegLoc DSE 置为 1，而依赖站点在通过空口解码出该元素之前不得发射任何帧。对于 ECS，11.9.2 规定受支持工作类元素广播该站点能使用的所有工作类以及当前工作类；11.9.3.2（基础设施 BSS，由 AP 发起，切换模式可为 1）、11.9.3.3（IBSS，由 DFS 所有者发起，可在一个 PIFS 后免退避发送）与 11.9.3.4（MBSS，由网状站点发起，承载于信标与探测响应中）定义了谁在何时通告扩展信道切换通告，其中包含这样一条规则：使能站点的 ECS 通告会迫使依赖的 AP/DFS 所有者执行切换。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2622,
+          2623,
+          2624,
+          2625,
+          2626,
+          2587
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.11.1",
+    "80211-2024:11.11.2.2",
+    "80211-2024:11.11.2.3",
+    "80211-2024:11.11.2.4",
+    "80211-2024:11.11.2.5",
+    "80211-2024:11.11.3",
+    "80211-2024:11.11.4",
+    "80211-2024:11.11.5",
+    "80211-2024:11.9.2",
+    "80211-2024:11.9.3.2",
+    "80211-2024:11.9.3.3",
+    "80211-2024:11.9.3.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2622,
+        2623
+      ],
+      "note": "11.11.1 General + 11.11.2.1 - DSE motivation (3650 MHz band), fixed/enabling/dependent roles, Table 11-15, two-frame enablement transaction"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2624,
+        2625
+      ],
+      "note": "11.11.2.2-11.11.2.5 - enablement requester/responder and deenablement procedures; unique dependent enablement identifier"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2625,
+        2626
+      ],
+      "note": "11.11.3 registered STA, 11.11.4 enabling STA (RegLoc DSE = 1; ECS announcement to dependent STA), 11.11.5 dependent STA state machine (Figure 11-36)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2587,
+        2588,
+        2589,
+        2590
+      ],
+      "note": "11.9.2 advertising Supported Operating Classes; 11.9.3.2/11.9.3.3/11.9.3.4 selecting and advertising a new channel and/or operating class in infrastructure BSS, IBSS, and MBSS"
+    }
+  ],
+  "track": "managing"
+}

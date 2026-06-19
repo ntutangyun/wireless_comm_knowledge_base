@@ -1,0 +1,131 @@
+{
+  "id": "managing-09",
+  "title": {
+    "en": "Choosing a Network Before You Join: ANQP, Passpoint Discovery, and Emergency Services",
+    "zh": "加入前先选网：ANQP 查询、Passpoint 发现与紧急服务"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Imagine walking into an airport where a dozen Wi-Fi networks are in range. Your phone shouldn't have to try each one, type in a password, and see what happens. Instead, before associating, it can quietly interview each access point: 'Which roaming partners do you support? What login methods? Can I reach my cellular operator through you? Is this an emergency-only network?' That interview is ANQP — the Access Network Query Protocol — and it is what powers Hotspot/Passpoint-style automatic network selection.",
+      "zh": "想象你走进一个机场，周围有十几个 Wi-Fi 网络。你的手机不应该挨个去连、输入密码、再看结果如何。相反，在关联之前，它可以悄悄地“面试”每一个接入点（AP）：“你支持哪些漫游伙伴？支持哪些登录方式？我能通过你接入我的蜂窝运营商吗？这是不是一个只供紧急用途的网络？”这场面试就是 ANQP——接入网络查询协议（Access Network Query Protocol）——它正是 Hotspot/Passpoint 式自动选网的底层动力。"
+    },
+    {
+      "type": "prose",
+      "en": "ANQP rides on top of GAS (the Generic Advertisement Service), which is the transport that carries these queries inside Public Action frames while the station is still unassociated. The conversation is request/response and built from named pieces called ANQP-elements. The station sends one element — the Query List — naming the Info IDs it wants. The AP answers with exactly those elements, none extra, ordered by ascending Info ID. A device that has Interworking turned on must at minimum support asking for the Capability List (the menu of what this AP can answer); everything else is optional.",
+      "zh": "ANQP 承载在 GAS（通用广播服务，Generic Advertisement Service）之上——GAS 是在站点尚未关联时、用公共 Action 帧来传输这些查询的“运输层”。这场对话采用请求/响应模式，由一些带名字的小片段构成，叫做 ANQP-element（ANQP 元素）。站点先发出一个元素——查询列表（Query List）——在其中列出它想要的 Info ID。AP 则恰好回以这些元素，不多不少，并按 Info ID 升序排列。一台开启了 Interworking（互通）功能的设备，至少必须支持请求“能力列表（Capability List）”（也就是这个 AP 能回答哪些内容的菜单）；其余一切都是可选的。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Station (unassociated)\n    participant AP as Access Point\n    Note over STA: heard Beacon advertising ANQP support\n    STA->>AP: GAS Initial Request (Query List: Roaming Consortium, NAI Realm, 3GPP, Venue Name)\n    Note over AP: relays to advertisement server if needed\n    AP->>STA: GAS Initial Response (the requested ANQP-elements, by Info ID)\n    Note over STA: matches my credentials against the answers\n    Note over STA: picks the right operator network, then authenticates",
+      "zh": "sequenceDiagram\n    participant STA as 站点 (未关联)\n    participant AP as 接入点\n    Note over STA: 收到通告 ANQP 支持的 Beacon\n    STA->>AP: GAS 初始请求 (查询列表: 漫游联盟, NAI Realm, 3GPP, 场所名称)\n    Note over AP: 必要时转发给广告服务器\n    AP->>STA: GAS 初始响应 (所请求的 ANQP 元素, 按 Info ID 排序)\n    Note over STA: 用本地凭据与回答进行匹配\n    Note over STA: 选定正确的运营商网络, 然后开始认证"
+    },
+    {
+      "type": "prose",
+      "en": "So what does the device actually ask about? A handful of elements do most of the selection work. The Roaming Consortium element carries a set of Organization Identifiers (OIs), each naming an SSP or group of SSPs the AP can authenticate you against — if your stored credential matches an OI, you belong here. The NAI Realm element advertises login realms (like 'example.com') and, in priority order, the EAP methods each realm uses, so the device knows how to log in before it tries. The 3GPP Cellular Network element lets a phone discover whether its mobile operator is reachable through this Wi-Fi. And venue-flavoured elements like Venue Name help a person recognise the place. Together these turn 'a dozen unknown SSIDs' into 'the one network my account works on.'",
+      "zh": "那么设备到底会问些什么？少数几个元素就承担了大部分选网工作。漫游联盟（Roaming Consortium）元素携带一组组织标识符（OI），每个 OI 标识一个 AP 能为你完成认证的 SSP（订阅服务提供商）或 SSP 群组——如果你本地存储的凭据匹配某个 OI，那你就“属于”这里。NAI Realm 元素通告各个登录域（如 “example.com”），并按优先级列出每个域使用的 EAP 方法，于是设备在尝试之前就知道该怎么登录。3GPP 蜂窝网络（3GPP Cellular Network）元素让手机得以发现它的移动运营商能否通过这个 Wi-Fi 接入。而像“场所名称（Venue Name）”这类带场所色彩的元素则帮助人来辨认地点。这些元素合在一起，就把“十几个陌生的 SSID”变成了“我的账号能用的那一个网络”。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "ANQP answers travel in the clear, before any association or encryption. That's fine for discovery, but it means a hint can be spoofed. The standard's advice: after you've associated and brought up an RSNA, re-confirm sensitive advertisements (like the NAI Realm list) using a Protected Dual of Public Action frame, so a downgrade attack can't trick you with fake login methods.",
+      "zh": "ANQP 的回答是明文传输的，发生在任何关联或加密之前。这对“发现”来说没问题，但也意味着某条提示可能被伪造。标准给出的建议是：在你完成关联并建立起 RSNA（安全关联）之后，用“受保护的公共 Action 帧对偶（Protected Dual of Public Action frame）”重新确认敏感的通告（比如 NAI Realm 列表），这样降级攻击就无法用伪造的登录方式来欺骗你。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 360 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"12\" y=\"14\" width=\"150\" height=\"172\" rx=\"8\"/><text x=\"87\" y=\"34\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">Query List asks for:</text><circle cx=\"30\" cy=\"56\" r=\"3\" fill=\"currentColor\" stroke=\"none\"/><text x=\"42\" y=\"60\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Roaming Consortium</text><circle cx=\"30\" cy=\"80\" r=\"3\" fill=\"currentColor\" stroke=\"none\"/><text x=\"42\" y=\"84\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">NAI Realm + EAP</text><circle cx=\"30\" cy=\"104\" r=\"3\" fill=\"currentColor\" stroke=\"none\"/><text x=\"42\" y=\"108\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">3GPP Cellular</text><circle cx=\"30\" cy=\"128\" r=\"3\" fill=\"currentColor\" stroke=\"none\"/><text x=\"42\" y=\"132\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Venue Name</text><circle cx=\"30\" cy=\"152\" r=\"3\" fill=\"currentColor\" stroke=\"none\"/><text x=\"42\" y=\"156\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Emergency NAI</text><path d=\"M168 100 L210 100\" marker-end=\"url(#a)\"/><defs><marker id=\"a\" markerWidth=\"8\" markerHeight=\"8\" refX=\"6\" refY=\"3\" orient=\"auto\"><path d=\"M0 0 L6 3 L0 6 z\" fill=\"currentColor\" stroke=\"none\"/></marker></defs><text x=\"189\" y=\"92\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">GAS</text><rect x=\"216\" y=\"60\" width=\"132\" height=\"80\" rx=\"8\"/><text x=\"282\" y=\"86\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">AP / advertisement</text><text x=\"282\" y=\"102\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">server</text><text x=\"282\" y=\"122\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">answers, by Info ID</text></svg>",
+      "caption": {
+        "en": "A single Query List bundles many questions into one round trip; the AP (sometimes via an advertisement server) returns just those elements, sorted by Info ID.",
+        "zh": "一个查询列表把许多问题打包进一次往返；AP（有时经由广告服务器）只返回这些元素，并按 Info ID 排序。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "There is also a safety-critical side to pre-association discovery. Emergency-services support lets a station learn from the Interworking element whether an AP can reach emergency authorities at all, and whether it allows access even to unauthenticated devices — the ESR and UESA bits encode 'reachable for authenticated STAs' versus 'reachable for any STA.' A phone with no valid credentials can still ask for the Emergency NAI element and use it as its EAP identity, signalling that it wants network access purely to place an emergency call. Separately, the Emergency Alert System (EAS) lets an AP advertise an alert via an Alert Identifier Hash in its Beacons; a device fetches the actual alert message over a GAS query, and the shared hash lets it skip alerts it already downloaded. A sibling protocol, RLQP (the Registered Location Query Protocol), works just like ANQP but answers location-registration questions rather than network-selection ones.",
+      "zh": "关联前的发现还有事关安全的一面。紧急服务支持（emergency-services support）让站点能从 Interworking 元素中得知：这个 AP 究竟能否联系到紧急救援机构，以及它是否允许未认证设备也接入——ESR 与 UESA 两个比特分别编码了“仅对已认证站点可达”与“对任意站点可达”。一台没有有效凭据的手机仍然可以请求 Emergency NAI 元素，并把它用作自己的 EAP 身份，借此表明它接入网络纯粹是为了拨打紧急电话。另外，紧急告警系统（EAS，Emergency Alert System）让 AP 在其 Beacon 中用“告警标识符哈希（Alert Identifier Hash）”来通告某条告警；设备通过一次 GAS 查询取回真正的告警内容，而这个共享的哈希让它能跳过已经下载过的告警。还有一个“同门兄弟”协议 RLQP（注册位置查询协议，Registered Location Query Protocol），其工作方式与 ANQP 如出一辙，只不过回答的是位置注册相关的问题，而非选网问题。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "One more piece of interworking glue: QoS mapping from external networks. Because an upstream network may label traffic with different DSCP values than Wi-Fi expects, an AP can advertise a QoS Map so the station translates Layer-3 priorities to the correct Wi-Fi User Priority — otherwise your 'voice' packets might be admitted as best-effort.",
+      "zh": "还有一块互通的“黏合剂”：来自外部网络的 QoS 映射（QoS mapping）。由于上游网络给流量打的 DSCP 值可能与 Wi-Fi 的预期不同，AP 可以通告一张 QoS Map，让站点把三层（L3）优先级正确地翻译成 Wi-Fi 的用户优先级（UP）——否则你的“语音”分组可能会被当作尽力而为（best-effort）流量来接纳。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact rules: Query List ordering, EAP-method hints, and the unauthenticated emergency path",
+        "zh": "精确规则：查询列表排序、EAP 方法提示与未认证的紧急通道"
+      },
+      "en": "Clause 11.22.3.3.1 fixes the shape of the exchange: an ANQP request is one or more elements with type 'Q' in Table 11-20, ordered by nondecreasing Info ID; the AP shall not return any element the STA did not request, responses carry type 'S' and are likewise ordered by Info ID, and a STA with dot11InterworkingServiceActivated true shall at least support using the Query List to fetch the Capability List. The Query List procedure (11.22.3.3.2) lets the requester include only Info IDs that are not type-'Q'. For login planning, 11.22.3.3.4 states the EAP Method list in the NAI Realm element shall be in priority order (most preferred first) and is a hint — a STA recognising the realm may attempt authentication even if it thinks the EAP methods are wrong — and recommends reconfirming after RSNA via a Protected Dual of Public Action frame to avoid downgrade attacks. Roaming Consortium OIs (11.22.3.3.3, advertised per 11.22.8) come from dot11RoamingConsortiumTable and an AP may list an OI only if, with an AS, it can actually authenticate a STA holding that SSPN's credentials. On the safety side, 11.22.6 defines the ESR/UESA settings (Table 11-21: ESR=1/UESA=0 means emergency services reachable only for authenticated STAs; ESR=1/UESA=1 means reachable for any STA), and 11.22.3.3.9 lets a STA without valid credentials use the Emergency NAI element as its EAP identity per RFC 5216.",
+      "zh": "11.22.3.3.1 节固定了交换的形态：一个 ANQP 请求由一个或多个在 Table 11-20 中类型为“Q”的元素组成，按 Info ID 非递减排序；AP 不得返回站点未请求的任何元素，响应元素的类型为“S”并同样按 Info ID 排序；而 dot11InterworkingServiceActivated 为真的站点至少必须支持用查询列表来获取能力列表（Capability List）。查询列表流程（11.22.3.3.2）规定请求方只能纳入非“Q”类型的 Info ID。在登录规划方面，11.22.3.3.4 规定 NAI Realm 元素中的 EAP 方法列表应按优先级排列（最优先者列在最前），且它只是一个“提示”——识别出该域的站点即使认为 EAP 方法有误也可以尝试认证——并建议在建立 RSNA 之后用“受保护的公共 Action 帧对偶”重新确认，以避免降级攻击。漫游联盟的 OI（11.22.3.3.3，按 11.22.8 通告）来自 dot11RoamingConsortiumTable，且 AP 只有在与 AS 协作、确实能为持有该 SSPN 凭据的站点完成认证时，才可列出某个 OI。在安全一侧，11.22.6 定义了 ESR/UESA 的取值（Table 11-21：ESR=1/UESA=0 表示紧急服务仅对已认证站点可达；ESR=1/UESA=1 表示对任意站点可达），而 11.22.3.3.9 允许没有有效凭据的站点按 RFC 5216 把 Emergency NAI 元素用作自己的 EAP 身份。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2793,
+          2796,
+          2797,
+          2798,
+          2805
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.22.3.3.1",
+    "80211-2024:11.22.3.3.2",
+    "80211-2024:11.22.3.3.3",
+    "80211-2024:11.22.3.3.4",
+    "80211-2024:11.22.3.3.5",
+    "80211-2024:11.22.3.3.9",
+    "80211-2024:11.22.3.4",
+    "80211-2024:11.22.6",
+    "80211-2024:11.22.7",
+    "80211-2024:11.22.8",
+    "80211-2024:11.22.9"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2793,
+        2794,
+        2795,
+        2796
+      ],
+      "note": "11.22.3.3.1-11.22.3.3.5 ANQP general, Query List ordering, Roaming Consortium, NAI Realm/EAP method advertising, 3GPP Cellular; Table 11-20 ANQP usage"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2798
+      ],
+      "note": "11.22.3.3.9 Emergency NAI procedure — STA without valid credentials uses Emergency NAI as EAP identity"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2801
+      ],
+      "note": "11.22.3.4 RLQP procedures — location-query sibling of ANQP"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2805,
+        2806
+      ],
+      "note": "11.22.6 emergency services support (ESR/UESA, Table 11-21); 11.22.7 EAS support (Alert Identifier Hash, GAS retrieval)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2807,
+        2808
+      ],
+      "note": "11.22.8 advertisement of Roaming Consortium element; 11.22.9 QoS mapping from external networks (QoS Map, DSCP-to-UP)"
+    }
+  ],
+  "track": "managing"
+}

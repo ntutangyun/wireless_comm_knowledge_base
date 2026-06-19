@@ -1,0 +1,104 @@
+{
+  "id": "managing-11",
+  "title": {
+    "en": "Keeping Video Smooth: Robust AV Streaming with SCS and MSCS",
+    "zh": "让视频不卡顿：稳健音视频流的 SCS 与 MSCS"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Picture a video call on your phone. The picture and the voice are not just 'data' — they are time-sensitive: a packet that arrives 200 ms late is useless, because the moment it belonged to has already passed. Ordinary web traffic can wait its turn, but audio and video need consistent, low latency or you see the dreaded freeze-and-jump. Wi-Fi groups all this under the banner of robust AV (audio/video) streaming: a set of procedures that let a station and its access point agree on which packets deserve special, priority handling.",
+      "zh": "想象一下你在手机上视频通话。画面和声音不只是普通的“数据”——它们对时间高度敏感：一个晚到 200 毫秒的数据包就毫无意义了，因为它本该出现的那一刻早已过去。普通的网页流量可以排队等候，但音频和视频需要稳定的低时延，否则你就会看到那种令人头疼的画面卡顿、跳帧。Wi-Fi 把这一切归在“稳健音视频流（robust AV streaming）”这面旗帜下：一组让站点与其接入点（AP）就“哪些数据包值得特殊、优先处理”达成一致的流程。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Robust AV streaming has a prerequisite. A station can only call itself a robust AV streaming STA if it already does QoS — the standard requires dot11QosOptionImplemented to be true. In plain terms: before you can give some flows special treatment, the device has to first understand the basic idea of traffic priorities (the access categories: voice, video, best-effort, background). Priority handling is built on top of QoS, not instead of it.",
+      "zh": "稳健音视频流有一个前提条件。一个站点只有在已经支持 QoS 的情况下，才能称自己为“稳健音视频流 STA”——标准要求 dot11QosOptionImplemented 必须为真。说白了：在你能给某些数据流特殊待遇之前，设备必须先理解流量优先级的基本概念（也就是几个接入类别：语音、视频、尽力而为、后台）。优先级处理是建立在 QoS 之上的，而不是用来替代 QoS 的。"
+    },
+    {
+      "type": "prose",
+      "en": "The first tool is the Stream Classification Service (SCS). The intuition is simple: the station tells the AP, in advance, 'packets that look like THIS are my video stream — treat them specially.' To describe 'look like this,' the station sends an SCS Request frame carrying an SCS Descriptor, which contains a classifier (TCLAS) — a pattern over fields like IP addresses and port numbers — plus the priority to assign to anything that matches. Each such agreement gets a small numeric handle, the SCSID, so the station can later change or remove it. The AP replies with an SCS Response: SUCCESS if it accepts, or a decline code (for example, it doesn't support that classifier, or it has run out of classification resources).",
+      "zh": "第一件工具是“流分类服务（Stream Classification Service，SCS）”。其直觉很简单：站点事先告诉 AP——“长得像‘这样’的数据包就是我的视频流，请特殊对待它们。”为了描述“长得像这样”，站点发送一个携带 SCS 描述符（SCS Descriptor）的 SCS 请求帧，描述符里包含一个分类器（TCLAS）——一种针对 IP 地址、端口号等字段的匹配模式——以及对所有命中该模式的数据包要赋予的优先级。每一份这样的约定都会得到一个小小的数字句柄，即 SCSID，方便站点之后修改或删除它。AP 回复一个 SCS 响应帧：接受则为 SUCCESS，拒绝则给出拒绝码（例如它不支持该分类器，或它的分类资源已耗尽）。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Non-AP STA (video app)\n    participant AP as Access Point\n    Note over STA: SME decides to prioritise the video flow\n    STA->>AP: SCS Request (SCSID, Request Type = Add, TCLAS + priority)\n    Note over AP: check classifier support + resources\n    AP->>STA: SCS Response (SCSID, Status = SUCCESS)\n    Note over AP: now classify matching downlink MSDUs\n    Note over STA,AP: matching packets get the requested UP / queue\n    STA->>AP: SCS Request (SCSID, Request Type = Remove)\n    AP->>STA: SCS Response (Status = TCLAS_PROCESSING_TERMINATED)",
+      "zh": "sequenceDiagram\n    participant STA as 非 AP 站点 (视频应用)\n    participant AP as 接入点\n    Note over STA: SME 决定为视频流提升优先级\n    STA->>AP: SCS 请求 (SCSID, 请求类型 = Add, TCLAS + 优先级)\n    Note over AP: 检查分类器支持情况与资源\n    AP->>STA: SCS 响应 (SCSID, 状态 = SUCCESS)\n    Note over AP: 开始对命中的下行 MSDU 进行分类\n    Note over STA,AP: 命中的数据包获得请求的 UP / 队列\n    STA->>AP: SCS 请求 (SCSID, 请求类型 = Remove)\n    AP->>STA: SCS 响应 (状态 = TCLAS_PROCESSING_TERMINATED)"
+    },
+    {
+      "type": "prose",
+      "en": "SCS works beautifully when the station knows exactly what its stream looks like. But there is a common, awkward case: a downlink flow whose fields the station can't easily predict — think of incoming video where the server's IP and port are chosen on the fly. The station does, however, see the matching uplink flow it sends back (the reverse direction of the same conversation). That is the idea behind the Mirrored Stream Classification Service (MSCS): the station gives the AP a classifier mask, and the AP watches the station's uplink packets to learn their priority, then mirrors that priority onto the matching downlink packets coming the other way.",
+      "zh": "当站点确切知道自己的数据流“长什么样”时，SCS 工作得非常漂亮。但有一种常见而又棘手的情况：某个下行数据流的字段站点难以预先知道——比如接入的视频，其服务器的 IP 和端口是临时选定的。不过，站点确实能看到自己发回去的、与之对应的上行数据流（也就是同一段会话的反方向）。这正是“镜像流分类服务（Mirrored Stream Classification Service，MSCS）”的核心思路：站点给 AP 一个分类器掩码，AP 观察站点的上行数据包以了解它们的优先级，然后把这个优先级“镜像”到反方向、与之匹配的下行数据包上。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 460 200' fill='none' stroke='currentColor' stroke-width='2'><rect x='20' y='80' width='90' height='44' rx='6'/><text x='65' y='107' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>STA</text><rect x='350' y='80' width='90' height='44' rx='6'/><text x='395' y='107' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>AP</text><line x1='110' y1='95' x2='350' y2='95' marker-end='url(#a)'/><text x='230' y='86' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>uplink: AP learns its UP</text><line x1='350' y1='112' x2='110' y2='112' marker-end='url(#a)'/><text x='230' y='130' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>downlink: mirror the same UP</text><text x='230' y='162' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>swap src&#8596;dst addr / port to find the mirror</text><defs><marker id='a' markerWidth='10' markerHeight='10' refX='8' refY='3' orient='auto'><path d='M0,0 L8,3 L0,6 Z' fill='currentColor' stroke='none'/></marker></defs></svg>",
+      "caption": {
+        "en": "MSCS mirrors a flow: the AP reads the user priority of the station's uplink packets and applies it to the matching downlink packets, swapping source/destination addresses and ports to identify the mirror.",
+        "zh": "MSCS 对数据流做“镜像”：AP 读取站点上行数据包的用户优先级，并把它应用到对应的下行数据包上；它通过交换源/目的地址与端口来识别这条“镜像”流。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Both services are negotiated, not assumed — and both can be torn down cleanly. The station sends a Remove request to end an SCS or MSCS stream, and the AP confirms by stopping classification. The AP can also cancel unilaterally, for example when it runs low on QoS resources or hits a policy conflict, by sending an unsolicited response carrying a termination status. The result of all this negotiation is what makes a smartphone video call feel steady: the AP knows which packets are the call, gives them the right access category and queue, and keeps doing so until either side says stop.",
+      "zh": "这两种服务都是协商出来的，而非默认开启——而且都能被干净地拆除。站点发送一个 Remove 请求来结束某条 SCS 或 MSCS 流，AP 通过停止分类来确认。AP 也可以单方面取消，比如当它的 QoS 资源不足、或遇到策略冲突时，发送一个携带终止状态的非请求（unsolicited）响应帧。所有这些协商带来的结果，正是让手机视频通话感觉“稳”的原因：AP 知道哪些数据包属于这通通话，给它们正确的接入类别和队列，并一直这样做，直到任意一方说停。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exactly how SCS classifies and how MSCS mirrors",
+        "zh": "SCS 究竟如何分类、MSCS 究竟如何镜像"
+      },
+      "en": "Clause 11.25.1 sets the dependency: when dot11RobustAVStreamingImplemented is true the STA is a robust AV streaming STA, and dot11QosOptionImplemented shall be true. Clause 11.25.2 (SCS) has the non-AP STA send an SCS Request with an SCS Descriptor (Request Type Add/Change), each stream keyed by an SCSID; the AP answers SUCCESS or a decline code such as REQUEST_DECLINED, REQUESTED_TCLAS_NOT_SUPPORTED_BY_AP, or INSUFFICIENT_TCLAS_PROCESSING_RESOURCES. When several streams match one MSDU, the most granular classifier (most parameters required for a match) wins. Matching MSDUs take their UP from the Intra-Access Category Priority element and can be steered to a primary or alternate EDCA queue, with DEI set per the Drop Eligibility subfield. Clause 11.25.3 (MSCS) lets the AP classify downlink MSDUs destined for the STA using classifier masks the STA supplies (TCLAS Mask, Classifier Type ≤ 5 or 10). The AP builds mirror classifier parameters by swapping source↔destination addresses and ports, maintains a logical list of UP{tuple} variables learned from the STA's uplink, and assigns matching downlink MSDUs a UP of min(UP{tuple}, User Priority Limit) — only for MSDUs not already part of a TS or an SCS stream. There is at most one active MSCS per non-AP STA, and a Stream Timeout ages out stale entries.",
+      "zh": "11.25.1 节定下依赖关系：当 dot11RobustAVStreamingImplemented 为真时，该 STA 即为稳健音视频流 STA，且 dot11QosOptionImplemented 必须为真。11.25.2 节（SCS）中，非 AP 站点发送携带 SCS 描述符的 SCS 请求帧（请求类型 Add/Change），每条流以一个 SCSID 标识；AP 回复 SUCCESS，或回复诸如 REQUEST_DECLINED、REQUESTED_TCLAS_NOT_SUPPORTED_BY_AP、INSUFFICIENT_TCLAS_PROCESSING_RESOURCES 之类的拒绝码。当多条流都命中同一个 MSDU 时，最“细粒度”的分类器（要求匹配的参数最多者）胜出。命中的 MSDU 从 Intra-Access Category Priority 元素取得其 UP，可被导向主 EDCA 队列或备用 EDCA 队列，并按 Drop Eligibility 子字段设置 DEI。11.25.3 节（MSCS）让 AP 用站点提供的分类器掩码（TCLAS Mask，分类器类型 ≤ 5 或等于 10）对发往该站点的下行 MSDU 进行分类。AP 通过交换源↔目的地址与端口来构造“镜像分类参数”，维护一个从站点上行流中学到的 UP{tuple} 变量逻辑列表，并给命中的下行 MSDU 赋予 min(UP{tuple}, User Priority Limit) 的 UP——且仅对那些尚未属于某个 TS 或某条 SCS 流的 MSDU 这样做。每个非 AP 站点至多有一条活动的 MSCS，且 Stream Timeout 会让陈旧条目超时淘汰。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2817,
+          2818,
+          2819,
+          2820,
+          2821,
+          2822
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.25.1",
+    "80211-2024:11.25.2",
+    "80211-2024:11.25.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2817
+      ],
+      "note": "11.25.1 Robust AV streaming dependencies — dot11RobustAVStreamingImplemented requires dot11QosOptionImplemented"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2817,
+        2818,
+        2819
+      ],
+      "note": "11.25.2 SCS procedures — SCS Request/Response, SCSID, TCLAS classifier, most-granular match, UP/queue/DEI assignment, termination"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2819,
+        2820,
+        2821,
+        2822
+      ],
+      "note": "11.25.3 MSCS procedures — mirror classifier (swap src/dst addr+port), UP{tuple} list, min(UP{tuple}, User Priority Limit), one active MSCS per STA, termination"
+    }
+  ],
+  "track": "managing"
+}

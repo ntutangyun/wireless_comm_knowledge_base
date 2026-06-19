@@ -1,0 +1,108 @@
+{
+  "id": "managing-08",
+  "title": {
+    "en": "Meeting the Outside World: GAS and the Generic Advertisement Service",
+    "zh": "与外部世界对话：GAS 通用广告服务"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Imagine walking up to an airport hotspot. Before you commit to joining, you want to ask questions: Which roaming partners does this network honour? Does it reach the internet or just a walled garden? What real name is behind this SSID? The trouble is, you are not associated yet — you are a stranger standing outside the door, and the only frames you are allowed to send are a tiny handful. The Generic Advertisement Service (GAS) is how 802.11 lets a station ask an access point rich questions BEFORE joining, and lets the AP answer without shouting the answers across the whole channel.",
+      "zh": "想象你走到一个机场的热点旁边。在决定加入之前，你想先问几个问题：这个网络支持哪些漫游合作伙伴？它能连到真正的互联网，还是只是一个“围墙花园”？这个 SSID 背后究竟是哪家运营商？麻烦在于：你此刻还没有关联——你只是站在门外的陌生人，被允许发送的帧寥寥无几。通用广告服务（GAS, Generic Advertisement Service）正是 802.11 让站点在加入之前就能向接入点（AP）提出丰富问题的方式，而且让 AP 能够回答，又不必把答案对着整个信道大声嚷出来。"
+    },
+    {
+      "type": "prose",
+      "en": "It starts with interworking. When an AP supports talking to external networks, it advertises an Interworking element in its Beacon and Probe Response frames, and it lists which advertisement protocols it understands in an Advertisement Protocol element. Think of these two elements as a sign on the door: 'I can answer questions, and here are the question languages I speak.' A station is not allowed to fire off a GAS query for a protocol the AP never advertised — you only ask in a language the door says it understands.",
+      "zh": "这一切从“互通（interworking）”开始。当一个 AP 支持与外部网络对话时，它会在 Beacon 和 Probe Response 帧中通告一个 Interworking 元素，并在 Advertisement Protocol（广告协议）元素中列出它能听懂哪些广告协议。可以把这两个元素想象成门上的一块招牌：“我能回答问题，下面是我会说的几种‘问题语言’。”站点不允许针对 AP 从未通告过的协议发起 GAS 查询——你只能用招牌上写明它听得懂的语言来提问。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "GAS is the envelope, not the letter. It is a generic transport: it carries whatever advertisement protocol you choose (ANQP is the famous one — that's the next lesson). GAS itself doesn't understand the question or the answer; it just reliably moves a Query Request to the AP and a Query Response back, even when the payload is too big for one frame. The query language is transparent to GAS.",
+      "zh": "GAS 是信封，不是信。它是一种通用传输：你选用哪种广告协议，它就承载哪种（最著名的就是 ANQP——那是下一课的内容）。GAS 本身并不理解问题或答案的含义；它只是可靠地把一份 Query Request（查询请求）送到 AP、再把 Query Response（查询响应）带回来，哪怕载荷大到一个帧装不下也行。查询语言对 GAS 而言是透明的。"
+    },
+    {
+      "type": "prose",
+      "en": "The handshake rides on Public Action frames (Class 1 — allowed even while unassociated). In the simplest case it is two frames: the station sends a GAS Initial Request carrying a Dialog Token (a little ticket number to match request and reply), the Advertisement Protocol element, and the actual query. The AP, if the answer is small and ready, replies with a GAS Initial Response carrying the same Dialog Token, a Status Code, and the Query Response. Ask, answer, done — and you still haven't joined the network.",
+      "zh": "这套握手承载在 Public Action（公共动作）帧上（属于 Class 1，即使在未关联状态也被允许发送）。最简单的情形只需两帧：站点发送一个 GAS Initial Request（GAS 初始请求），其中携带一个 Dialog Token（对话令牌，一个小小的“票号”，用来把请求和回复对上号）、Advertisement Protocol 元素以及真正的查询内容。如果答案很短且已经就绪，AP 就回以一个 GAS Initial Response（GAS 初始响应），携带相同的 Dialog Token、一个 Status Code（状态码）和 Query Response。一问一答，搞定——而你此时仍未加入这个网络。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Requesting STA (unassociated)\n    participant AP as Responding STA (AP)\n    participant SV as Advertisement server\n    Note over AP: Beacon/Probe Resp: Interworking + Advertisement Protocol\n    STA->>AP: GAS Initial Request (Dialog Token, Adv Protocol, Query Request)\n    AP->>SV: post Query Request (outside 802.11 scope)\n    SV-->>AP: Query Response\n    AP->>STA: GAS Initial Response (same Dialog Token, Status=SUCCESS, Query Response)\n    Note over STA,AP: small answer fits one frame — exchange complete",
+      "zh": "sequenceDiagram\n    participant STA as 请求方 STA (未关联)\n    participant AP as 响应方 STA (AP)\n    participant SV as 广告服务器\n    Note over AP: Beacon/Probe Resp: Interworking + Advertisement Protocol\n    STA->>AP: GAS 初始请求 (Dialog Token, 广告协议, Query Request)\n    AP->>SV: 转发 Query Request (在 802.11 范围之外)\n    SV-->>AP: Query Response\n    AP->>STA: GAS 初始响应 (相同 Dialog Token, 状态=SUCCESS, Query Response)\n    Note over STA,AP: 答案很短，一帧装得下 — 交换完成"
+    },
+    {
+      "type": "prose",
+      "en": "But the answer often isn't ready instantly — the AP may have to relay your query to an advertisement server out in the external network, and that round-trip takes time. The standard refuses to let the AP hold the air hostage while it waits. Instead it uses a comeback delay: the GAS Initial Response can come back almost empty, carrying a GAS Comeback Delay field that says 'I don't have your answer yet — come back in this many time units.' The station waits, then sends a GAS Comeback Request with the matching Dialog Token, and the AP replies with a GAS Comeback Response. This deferral keeps the channel free instead of blocking on a slow backend.",
+      "zh": "但答案往往不会立刻就绪——AP 可能得把你的查询转发到外部网络中的某个广告服务器，而这一来一回是要花时间的。标准不允许 AP 在等待期间一直霸占着空口。取而代之的是“稍后再来”机制（comeback delay）：GAS Initial Response 可以几乎是空的回来，只携带一个 GAS Comeback Delay（稍后再来延迟）字段，意思是“你的答案我还没拿到——过这么多个时间单位后再来取”。站点等待之后，发送一个携带相同 Dialog Token 的 GAS Comeback Request（GAS 稍后请求），AP 再以 GAS Comeback Response（GAS 稍后响应）回复。这种延后让信道保持空闲，而不是因为后端慢就一直阻塞。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><rect x='10' y='80' width='90' height='40' rx='6'/><text x='55' y='104' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>Big Query</text><text x='55' y='118' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>Response</text><line x1='100' y1='100' x2='150' y2='100' stroke-dasharray='4 3'/><polygon points='150,100 142,96 142,104' fill='currentColor' stroke='none'/><rect x='160' y='30' width='80' height='28' rx='4'/><text x='200' y='49' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>Frag 0</text><rect x='160' y='86' width='80' height='28' rx='4'/><text x='200' y='105' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>Frag 1</text><rect x='160' y='142' width='80' height='28' rx='4'/><text x='200' y='161' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>Frag 2 (last)</text><line x1='250' y1='44' x2='300' y2='90' stroke-dasharray='4 3'/><line x1='250' y1='100' x2='300' y2='100' stroke-dasharray='4 3'/><line x1='250' y1='156' x2='300' y2='110' stroke-dasharray='4 3'/><rect x='305' y='70' width='140' height='60' rx='6'/><text x='375' y='95' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>one Comeback</text><text x='375' y='110' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>Response per</text><text x='375' y='125' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>Comeback Request</text></svg>",
+      "caption": {
+        "en": "When a response is larger than one MMPDU, GAS splits it into numbered fragments. Each GAS Comeback Request pulls back exactly one GAS Comeback Response fragment; the More GAS Fragments bit is 0 on the final piece. Oversized queries are simply refused (TOO_LARGE) to protect the medium.",
+        "zh": "当响应超过一个 MMPDU 的大小时，GAS 会把它拆成带编号的分片。每个 GAS Comeback Request 恰好取回一个 GAS Comeback Response 分片；最后一片上的 More GAS Fragments（更多分片）位为 0。过大的查询会被直接拒绝（TOO_LARGE 状态码），以保护无线介质。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Dialog Tokens, comeback timing, fragment numbering, and the medium-abuse guards",
+        "zh": "Dialog Token、稍后再来的计时、分片编号，以及防滥用介质的保护机制"
+      },
+      "en": "GAS is invoked on an MLME-GAS.request and runs over Public Action frames (Class 1); with management frame protection negotiated, Protected Dual of Public Action frames are used instead (11.22.3.1, 11.22.3.2.1). The Dialog Token binds a request to its response: the responding STA copies the requester's token into every GAS Initial/Comeback Response, and a STA that receives a Comeback Request whose source MAC and Dialog Token don't match an outstanding Initial Response answers with NO_OUTSTANDING_GAS_REQUEST (11.22.3.2.5). Timing is governed by dot11GASResponseTimer at the requester and a PostReplyTimer at the responder. When dot11GASPauseForServerResponse is true and the answer fits one MMPDU, it returns in the Initial Response with Comeback Delay = 0; if it exceeds the MMPDU, the Initial Response sets Comeback Delay = 1 TU and Query Response Length = 0, signalling fragmented delivery via Comeback frames. Fragments use the GAS Query Fragment ID (starting at 0, incremented per fragment) with a More GAS Fragments bit cleared on the last one; a response needing more than 128 fragments is ignored. Two explicit medium-abuse guards exist: a request larger than dot11GASQueryRequestLengthLimit is refused with GAS_QUERY_REQUEST_TOO_LARGE, and a response larger than dot11GASQueryResponseLengthLimit is refused with GAS_QUERY_RESPONSE_TOO_LARGE.",
+      "zh": "GAS 由 MLME-GAS.request 触发，运行在 Public Action 帧（Class 1）之上；当协商了管理帧保护时，则改用 Protected Dual of Public Action 帧（见 11.22.3.1、11.22.3.2.1）。Dialog Token 把请求与其响应绑定在一起：响应方 STA 会把请求方的令牌复制进每一个 GAS Initial/Comeback Response 中；若某 STA 收到的 Comeback Request 其源 MAC 与 Dialog Token 都对不上任何一个未完成的 Initial Response，它会以 NO_OUTSTANDING_GAS_REQUEST 作答（11.22.3.2.5）。计时由请求方的 dot11GASResponseTimer 和响应方的 PostReplyTimer 共同管理。当 dot11GASPauseForServerResponse 为 true 且答案能装进一个 MMPDU 时，答案随 Initial Response 返回，Comeback Delay = 0；若超过 MMPDU，Initial Response 会把 Comeback Delay 置为 1 TU、Query Response Length 置为 0，借此示意将通过 Comeback 帧分片交付。分片使用 GAS Query Fragment ID（从 0 开始、每片递增），最后一片清除 More GAS Fragments 位；需要超过 128 个分片的响应会被忽略。标准还设有两道明确的防滥用介质保护：超过 dot11GASQueryRequestLengthLimit 的请求会被以 GAS_QUERY_REQUEST_TOO_LARGE 拒绝，超过 dot11GASQueryResponseLengthLimit 的响应会被以 GAS_QUERY_RESPONSE_TOO_LARGE 拒绝。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2779,
+          2786,
+          2789,
+          2790
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.22.1",
+    "80211-2024:11.22.2",
+    "80211-2024:11.22.3.1",
+    "80211-2024:11.22.3.2"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2778
+      ],
+      "note": "11.22.1 General; 11.22.2 Interworking capabilities — Interworking element in Beacon/Probe Response/Probe Request; network discovery and selection"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2779
+      ],
+      "note": "11.22.3.1 GAS Introduction — generic transport over Public Action frames; advertisement protocol is transparent to GAS; STA must not query a protocol not advertised in the Advertisement Protocol element"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2779,
+        2780
+      ],
+      "note": "11.22.3.2.1 General — GAS Initial Request/Response, Comeback Request/Response, Dialog Token; single-frame vs fragmented delivery"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2789,
+        2790,
+        2791
+      ],
+      "note": "11.22.3.2.5 — comeback delay, fragmentation via GAS Query Fragment ID / More GAS Fragments, TOO_LARGE guards, Dialog Token matching"
+    }
+  ],
+  "track": "managing"
+}

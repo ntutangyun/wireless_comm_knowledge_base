@@ -1,0 +1,127 @@
+{
+  "id": "managing-10",
+  "title": {
+    "en": "Lightweight Discovery and Polite QoS: Preassociation Discovery and QMF",
+    "zh": "轻量发现与文明的 QoS：预关联发现 (PAD) 与 QMF"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Two small management tools, each solving a very human problem. The first: before a station commits to joining a network, it would love to know \"does this AP even offer the service I need?\" — without paying for a full information dump. That is Preassociation Discovery (PAD). The second: management frames (beacons, deauths, channel-switch announcements) share the air with your video and downloads, so which ones deserve to jump the queue? That is the QoS Management Frame (QMF) policy. Neither is glamorous, but both keep a busy BSS efficient and well-mannered.",
+      "zh": "两个小巧的管理工具，各自解决一个很贴近现实的问题。其一：在站点决定加入某个网络之前，它很想知道“这个 AP 到底提供不提供我需要的服务？”——而又不想为此付出一整套完整信息的开销。这就是预关联发现（PAD）。其二：管理帧（信标、解除认证、信道切换通告）和你的视频、下载共享同一段空口，那么哪些管理帧该优先插队？这就是 QoS 管理帧（QMF）策略。两者都不起眼，却让繁忙的 BSS 保持高效而有礼。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with PAD. The standard defines two flavours. In the unsolicited flavour, the AP volunteers what it offers right inside its Beacon and Probe Response frames, using compact Service Hash or Service Hint elements. In the solicited flavour, the station asks a targeted question over ANQP — a Service Information Request — and gets back detailed service information. The point is that a service name (think a string like \"_ipp._tcp\" for printing) never travels in full; only a tiny fingerprint of it does.",
+      "zh": "先看 PAD。标准定义了两种形态。在“非请求（unsolicited）”形态中，AP 主动把自己提供的服务直接放进信标帧和探测响应帧里，使用紧凑的服务哈希（Service Hash）元素或服务提示（Service Hint）元素。在“请求（solicited）”形态中，站点通过 ANQP 发出一个有针对性的提问——服务信息请求（Service Information Request）——并取回详细的服务信息。关键在于：服务名（比如表示打印的字符串 “_ipp._tcp”）从不以完整形式传输，传输的只是它的一小段指纹。"
+    },
+    {
+      "type": "prose",
+      "en": "How is that fingerprint built? A service hash is just the first 48 bits of the SHA-256 of the (lowercased) service name. For \"_ipp._tcp\" the standard's worked example gives 0xbfd39037d25c. A Service Hash element advertises one or more of these with a negligible false-positive rate — match it and you can be confident the service is really there. A Service Hint element is even cheaper: it packs several services into a Bloom filter bit array, trading a known false-positive probability for size. The station rebuilds the same bit positions and checks whether they are all set; if so, the service is probably reachable.",
+      "zh": "这段指纹是怎么算出来的？所谓服务哈希，就是对（转成小写后的）服务名做 SHA-256，再取其最前面的 48 位。对 “_ipp._tcp”，标准给出的示例结果是 0xbfd39037d25c。服务哈希元素以可忽略的误判率通告一个或多个这样的哈希——一旦匹配，你基本可以确信该服务确实存在。服务提示元素则更省：它把若干服务压进一个布隆过滤器（Bloom filter）位数组，用一个已知的误判概率换取更小的体积。站点重新计算出相同的若干位位置，检查它们是否全部被置 1；若是，则该服务很可能可达。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Non-AP STA\n    participant AP as AP / SIR\n    Note over AP: unsolicited — advertise in Beacon\n    AP-->>STA: Beacon (Service Hash / Service Hint elements)\n    Note over STA: hash my service name, test Bloom bits\n    Note over STA: candidate match — want detail\n    STA->>AP: GAS Initial Request (Service Information Request ANQP)\n    AP->>STA: GAS Initial Response (Service Information Response ANQP)\n    Note over STA: now proceed to authentication & association",
+      "zh": "sequenceDiagram\n    participant STA as 非 AP 站点\n    participant AP as AP / SIR\n    Note over AP: 非请求方式——在信标中通告\n    AP-->>STA: 信标 (服务哈希 / 服务提示元素)\n    Note over STA: 对服务名做哈希, 检验布隆位\n    Note over STA: 命中候选——想要详细信息\n    STA->>AP: GAS 初始请求 (服务信息请求 ANQP)\n    AP->>STA: GAS 初始响应 (服务信息响应 ANQP)\n    Note over STA: 随后再进行认证与关联"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why hash at all? Privacy and economy. The station never has to broadcast \"I'm looking for service X\" in the clear, and the AP advertises dozens of services in a handful of bytes. A Service Hash gives near-certainty; a Service Hint (Bloom filter) is more compact but can occasionally say \"maybe\" when the answer is \"no\" — so the standard lets the station weigh the advertised false-positive probability before deciding whether to query further or just associate.",
+      "zh": "为什么要做哈希？为了隐私与节省。站点无需明文广播“我在找服务 X”，AP 也能用区区几个字节通告几十种服务。服务哈希给出近乎确定的结论；服务提示（布隆过滤器）更紧凑，但偶尔会在答案本是“否”时说“也许”——因此标准允许站点先权衡所通告的误判概率，再决定是继续查询，还是直接关联。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the second tool. Once associated, both AP and station send a constant trickle of management frames, and not all are equally urgent. A channel-switch announcement that arrives late is useless; a stray probe response can wait. QMF lets these frames carry an EDCA access category (AC_VO, AC_VI, AC_BE, AC_BK) just like data, so the important ones win airtime. A station that supports this sets the QMFActivated bit in its Extended Capabilities element so peers know to treat its management traffic this way.",
+      "zh": "再看第二个工具。一旦关联建立，AP 与站点都会持续不断地发送管理帧，而它们的紧迫程度并不相同。一条迟到的信道切换通告毫无用处；一条零散的探测响应则可以等待。QMF 让这些管理帧也能像数据帧一样携带一个 EDCA 接入类别（AC_VO、AC_VI、AC_BE、AC_BK），从而让重要的帧赢得空口时间。支持该机制的站点会在其扩展能力（Extended Capabilities）元素中置位 QMFActivated 比特，让对端知道应当如此对待它的管理流量。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 400 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><text x='200' y='20' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>Default QMF policy (Table 11-22)</text><rect x='20' y='40' width='170' height='30'/><text x='105' y='60' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>(Re)Assoc, Auth, Deauth</text><rect x='250' y='40' width='110' height='30'/><text x='305' y='60' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>AC_VO</text><line x1='190' y1='55' x2='250' y2='55'/><rect x='20' y='90' width='170' height='30'/><text x='105' y='110' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>Channel-switch announce</text><rect x='250' y='90' width='110' height='30'/><text x='305' y='110' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>AC_VO</text><line x1='190' y1='105' x2='250' y2='105'/><rect x='20' y='140' width='170' height='30'/><text x='105' y='160' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>Probe Response, WNM</text><rect x='250' y='140' width='110' height='30'/><text x='305' y='160' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>AC_BE</text><line x1='190' y1='155' x2='250' y2='155'/></svg>",
+      "caption": {
+        "en": "The default QMF policy maps each management frame to an access category by subtype/category/action. Urgent control (associations, authentication, channel-switch) defaults to voice (AC_VO); routine traffic (probe responses, WNM) defaults to best-effort (AC_BE). Anything not listed defaults to AC_BE.",
+        "zh": "默认 QMF 策略按子类型/类别/动作把每种管理帧映射到一个接入类别。紧迫的控制类（关联、认证、信道切换）默认归为语音类（AC_VO）；常规流量（探测响应、WNM）默认归为尽力而为类（AC_BE）。表中未列出的帧一律默认归为 AC_BE。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Where does a station get its policy? If it knows the peer is a QMF STA but has heard no policy yet, it falls back to the default QMF policy in Table 11-22. A QMF AP, however, includes a QMF Policy element in its Beacons, and stations also pick it up from (Re)Association and Probe Responses. A station can even negotiate: it sends a QMF Policy Change frame, and the AP replies with a QMF Policy frame whose Status Code is SUCCESS or REQUEST_DECLINED — but only if the AP advertised QMFReconfigurationActivated = 1. Reject a request and a station must not nag for the same change again during that association.",
+      "zh": "站点的策略从何而来？如果它知道对端是 QMF 站点、却还没听到任何策略，就退回到表 11-22 中的默认 QMF 策略。而 QMF AP 会在其信标帧中携带 QMF 策略（QMF Policy）元素，站点也会从（重）关联响应和探测响应中获取它。站点甚至可以协商：它发送一个 QMF 策略变更（QMF Policy Change）帧，AP 回复一个 QMF 策略帧，其状态码为 SUCCESS 或 REQUEST_DECLINED——但前提是 AP 通告了 QMFReconfigurationActivated = 1。一旦请求被拒，站点在该次关联存续期间不得就同一变更反复纠缠。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The service hash formula, the Bloom hash, and last-wins QACM resolution",
+        "zh": "服务哈希公式、布隆哈希与“后者优先”的 QACM 解析"
+      },
+      "en": "PAD precision: 11.23.4 defines service hash = ExtractBits(SHA-256(service name), 0, 48) on the lowercased service name, with \"_ipp._tcp\" yielding 0xbfd39037d25c. 11.23.5 defines the Bloom hash H(j,X,m): A(j,X)=[j||X]; B(j,X)=CRC32(A(j,X)) & 0x0000FFFF (the same CRC32 as 9.2.4.9); H = B mod m, with j ranging 0x00–0x0F and the Number Of Hash Functions subfield set to k−1. A Service Hash element implies a negligible false-positive probability; a Service Hint element carries an explicit False Positive Probability Range. QMF resolution: 11.24.1.2's Table 11-22 keys access category on subtype/category/action, with unlisted QMFs defaulting to AC_BE and frames to non-QMF or unknown-capability destinations sent as AC_VO. 11.24.3 governs the QMF Policy element: a Length-1 element means \"use the default policy\"; each QACM field maps a subtype, or an action category, or specific action values via the Action Value Bitmap; and if a frame matches multiple QACM fields, the access category from the LAST matching QACM field wins (e.g. a broad WNM=AC_BE followed by a narrow Event Request/Report=AC_BK leaves WNM at AC_BE except those events).",
+      "zh": "PAD 的精确定义：11.23.4 规定 服务哈希 = ExtractBits(SHA-256(服务名), 0, 48)，作用于转小写后的服务名，“_ipp._tcp” 得到 0xbfd39037d25c。11.23.5 定义布隆哈希 H(j,X,m)：A(j,X)=[j||X]；B(j,X)=CRC32(A(j,X)) & 0x0000FFFF（与 9.2.4.9 的 CRC32 相同）；H = B mod m，其中 j 取值 0x00–0x0F，哈希函数数量（Number Of Hash Functions）子字段设为 k−1。服务哈希元素意味着可忽略的误判概率；服务提示元素则携带显式的误判概率范围（False Positive Probability Range）。QMF 的解析：11.24.1.2 的表 11-22 以子类型/类别/动作为键确定接入类别，表中未列出的 QMF 默认为 AC_BE，而发往非 QMF 或能力未知目标的帧以 AC_VO 发送。11.24.3 规范 QMF 策略元素：长度为 1 的元素表示“使用默认策略”；每个 QACM 字段映射一个子类型、或一个动作类别、或通过动作值位图（Action Value Bitmap）指定的具体动作值；若某帧匹配多个 QACM 字段，则以最后一个匹配的 QACM 字段所定义的接入类别为准（例如先有一条宽泛的 WNM=AC_BE，再有一条狭窄的 事件请求/报告=AC_BK，则 WNM 类除该事件帧外仍为 AC_BE）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2810,
+          2812,
+          2817,
+          2818
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.23.1",
+    "80211-2024:11.23.2",
+    "80211-2024:11.23.3",
+    "80211-2024:11.23.4",
+    "80211-2024:11.23.5",
+    "80211-2024:11.24.1.1",
+    "80211-2024:11.24.1.2",
+    "80211-2024:11.24.2.2",
+    "80211-2024:11.24.2.3",
+    "80211-2024:11.24.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2808,
+        2809
+      ],
+      "note": "11.23.1-11.23.3 PAD general, unsolicited (Service Hash/Hint in Beacon/Probe Response, Bloom matching steps) and solicited (Service Information Request/Response ANQP)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2810
+      ],
+      "note": "11.23.4 service hash = ExtractBits(SHA-256(name),0,48), _ipp._tcp -> 0xbfd39037d25c; 11.23.5 Bloom hash H(j,X,m) via CRC32"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2811,
+        2812
+      ],
+      "note": "11.24.1.1 QMFActivated, IQMF/GQMF conditions, AC_VO fallback; 11.24.1.2 default QMF policy Table 11-22"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2815,
+        2816
+      ],
+      "note": "11.24.2.2 QMF Policy Change frame and QMFReconfigurationActivated; 11.24.2.3 AP advertises QMF Policy element in Beacons / (Re)Assoc / Probe Response"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2817,
+        2818
+      ],
+      "note": "11.24.3 interpreting QMF access categories: Length-1 = default policy, QACM field scope, last-matching-QACM wins"
+    }
+  ],
+  "track": "managing"
+}

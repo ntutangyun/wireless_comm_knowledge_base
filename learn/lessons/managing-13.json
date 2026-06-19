@@ -1,0 +1,121 @@
+{
+  "id": "managing-13",
+  "title": {
+    "en": "Hopping Bands Without Dropping the Call: Multi-Band Operation and Fast Session Transfer",
+    "zh": "换频段不掉线：多频段操作与快速会话转移 (FST)"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Imagine your phone is talking to a peer over a 5 GHz link, but the same peer is also reachable on a different band — say a fast, short-range 60 GHz link, or 2.4 GHz for range. Multi-band operation is the idea that one device can hold a relationship with a peer that spans several bands, and Fast Session Transfer (FST) is the choreography that moves a live session from one band to another without tearing it down and starting over. A device announces it is multi-band capable by carrying a Multi-band element in its beacons, probes, and association frames — that element tells everyone which bands, channels, and MAC addresses it can be found on.",
+      "zh": "想象你的手机正通过 5 GHz 链路与一个对端通信，而同一个对端在另一个频段上也能够到——比如又快又近的 60 GHz 链路，或者覆盖更广的 2.4 GHz。多频段操作（multi-band operation）的核心思想是：一台设备可以与对端维持一段横跨多个频段的关系；而快速会话转移（Fast Session Transfer，FST）则是把一条活跃会话从一个频段平滑搬到另一个频段的“编舞动作”——无需拆掉重来。设备通过在信标、探测帧和关联帧里携带“多频段元素（Multi-band element）”来宣告自己具备多频段能力——该元素告诉所有人：它能在哪些频段、哪些信道、用哪些 MAC 地址被找到。"
+    },
+    {
+      "type": "prose",
+      "en": "An FST session runs between an initiator and a responder and is named by a session identifier (the FSTS ID) that the initiator allocates and keeps stable for the lifetime of the session. There is a neat shortcut baked into the rules: if both ends use the same MAC address across the bands involved, the transfer is called transparent — the device presents a single MAC service access point to the layers above, so the upper stack never even notices the band changed, and you don't need to re-authenticate or re-associate. If the MAC addresses differ across bands, the transfer is nontransparent and the new band may require its own join.",
+      "zh": "一条 FST 会话在“发起方（initiator）”与“响应方（responder）”之间运行，并由一个会话标识符（FSTS ID）来命名——该标识符由发起方分配，并在整个会话生命周期内保持不变。规则里还藏着一个巧妙的捷径：如果两端在所涉及的各频段上都使用相同的 MAC 地址，这种转移就称为“透明（transparent）”——设备向上层只呈现单一的 MAC 服务接入点（MAC SAP），于是上层协议栈根本察觉不到频段已经切换，你也无需重新认证或重新关联。如果各频段上的 MAC 地址不同，则为“非透明（nontransparent）”转移，新频段可能需要各自重新入网。"
+    },
+    {
+      "type": "prose",
+      "en": "Setting up and moving a session walks through a four-state machine: Initial (talking in the old band/channel), Setup Completed (both ends are ready to switch), Transition Done (now talking in the new band/channel), and Transition Confirmed (full connectivity confirmed on the new band). The initiator and responder reach Setup Completed by exchanging FST Setup Request and FST Setup Response frames, each carrying a Status Code. A clever knob called the Link Loss Timeout (LLT) decides when the actual jump happens: with LLT = 0 the device moves to Transition Done immediately, while a nonzero LLT keeps the device in Setup Completed and only switches if the old band goes quiet long enough that a countdown timer (reloaded by every frame from the peer) drains to zero — a graceful fallback rather than an abrupt hop.",
+      "zh": "建立并搬移一条会话要走过一个四状态机：Initial（在旧频段/信道上通信）、Setup Completed（两端都已准备好切换）、Transition Done（现已在新频段/信道上通信）、Transition Confirmed（新频段上的完整连通性已确认）。发起方与响应方通过交换 FST Setup Request 与 FST Setup Response 帧（各自携带状态码）来到达 Setup Completed。一个叫“链路丢失超时（Link Loss Timeout，LLT）”的巧妙旋钮决定真正的“跳跃”何时发生：当 LLT = 0 时，设备立即进入 Transition Done；而非零的 LLT 会让设备停留在 Setup Completed，仅当旧频段安静到一个倒计时定时器（每收到对端一帧就重置）耗尽归零时才切换——这是一种优雅的回退，而非突兀的跳变。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant I as Initiator (SME/MLME)\n    participant R as Responder (SME/MLME)\n    Note over I,R: Initial state - talking in old band/channel\n    I->>R: FST Setup Request (FSTS ID, LLT, Session Transition)\n    R->>I: FST Setup Response (Status = SUCCESS)\n    I->>R: Ack\n    Note over I,R: Setup Completed - both ready to switch\n    Note over I,R: LLT countdown drains (or LLT=0 -> immediate)\n    Note over I,R: Transition Done - now on new band/channel\n    I->>R: FST Ack Request (in new band)\n    R->>I: FST Ack Response\n    Note over I,R: Transition Confirmed - full connectivity",
+      "zh": "sequenceDiagram\n    participant I as 发起方 (SME/MLME)\n    participant R as 响应方 (SME/MLME)\n    Note over I,R: Initial 状态 - 在旧频段/信道通信\n    I->>R: FST Setup Request (FSTS ID, LLT, 会话转移元素)\n    R->>I: FST Setup Response (状态码 = SUCCESS)\n    I->>R: Ack\n    Note over I,R: Setup Completed - 两端均已就绪\n    Note over I,R: LLT 倒计时归零 (或 LLT=0 -> 立即)\n    Note over I,R: Transition Done - 现已切到新频段/信道\n    I->>R: FST Ack Request (在新频段)\n    R->>I: FST Ack Response\n    Note over I,R: Transition Confirmed - 完整连通性"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "You don't have to move everything at once. With FST TS switching, a device that wants to migrate only some of its traffic streams includes a Switching Stream element listing exactly which streams go to the other band — the rest stay put. Streams are re-pinned to the new band/channel using ADDTS/ADDBA frames that carry a Multi-band element, so a block ack agreement set up in the old band can be made to apply to the new one.",
+      "zh": "你不必一次性搬走所有东西。借助 FST TS 切换（FST TS switching），只想迁移部分业务流的设备会带上一个“切换流元素（Switching Stream element）”，精确列出哪些流要去另一个频段——其余的留在原地。这些流通过携带“多频段元素”的 ADDTS/ADDBA 帧被“重新钉”到新频段/信道上，于是在旧频段建立的块确认（block ack）协议得以应用到新频段。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 480 200' fill='none' stroke='currentColor' stroke-width='2'><rect x='20' y='30' width='180' height='140' rx='8'/><rect x='280' y='30' width='180' height='140' rx='8'/><text x='110' y='22' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>Old band / channel</text><text x='370' y='22' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>New band / channel</text><circle cx='70' cy='75' r='10'/><text x='70' y='105' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>STA on band A</text><circle cx='150' cy='75' r='10'/><text x='150' y='105' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>peer on band A</text><line x1='80' y1='75' x2='140' y2='75'/><text x='110' y='150' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>live session</text><circle cx='330' cy='75' r='10' stroke-dasharray='4 3'/><circle cx='410' cy='75' r='10' stroke-dasharray='4 3'/><line x1='340' y1='75' x2='400' y2='75' stroke-dasharray='4 3'/><text x='370' y='150' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>session transferred</text><path d='M205 100 L275 100' marker-end='url(#a)'/><text x='240' y='92' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>FST</text><defs><marker id='a' markerWidth='10' markerHeight='10' refX='8' refY='3' orient='auto'><path d='M0 0 L8 3 L0 6 z' fill='currentColor' stroke='none'/></marker></defs></svg>",
+      "caption": {
+        "en": "A live session moves from the old band/channel to the new one. With transparent FST the same MAC address carries over, so the layers above the MAC never notice the hop.",
+        "zh": "一条活跃会话从旧频段/信道搬到新的频段/信道。在透明 FST 下相同的 MAC 地址被沿用，因此 MAC 之上的各层完全察觉不到这次切换。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Two more pieces round out the toolkit. FST teardown: at any time in Setup Completed or Transition Done, either end can send an FST Teardown frame, and both ends fall back to the Initial state — a clean way to cancel a pending transfer. And On-channel Tunneling (OCT): the clever trick that lets a device send a management frame about one band while it is physically sitting on another. Instead of hopping to the target band to exchange a management frame, a station wraps that frame inside an On-channel Tunnel Request frame and sends it over the band it is already on; the receiver unwraps it and hands it to the right internal entity, exactly as if it had arrived over the air on the target band. That is how the setup conversation about the 60 GHz link can happen comfortably over the 5 GHz link you are already using.",
+      "zh": "还有两块拼图让工具箱更完整。FST 拆除（FST teardown）：在 Setup Completed 或 Transition Done 状态下的任何时刻，任一端都可以发送 FST Teardown 帧，两端随即回退到 Initial 状态——这是取消一次待定转移的干净办法。以及“同信道隧道（On-channel Tunneling，OCT）”：这个巧妙的把戏让设备能够在物理上身处某一频段时，发送关于另一频段的管理帧。站点不必跳到目标频段去交换管理帧，而是把那一帧包进一个“同信道隧道请求帧（On-channel Tunnel Request frame）”，从它当前所在的频段发出去；接收方拆包后把它交给正确的内部实体，就好像该帧是在目标频段上经空口收到的一样。正是这样，关于 60 GHz 链路的建立对话可以舒舒服服地在你已经在用的 5 GHz 链路上完成。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The precise FST state rules, LLT countdown, and how OCT routes a tunneled MMPDU",
+        "zh": "精确的 FST 状态规则、LLT 倒计时，以及 OCT 如何路由被隧道封装的 MMPDU"
+      },
+      "en": "Clause 11.31.3.1 defines the four states (Initial, Setup Completed, Transition Done, Transition Confirmed) and notes a STA supports FST when the FST Not Supported subfield in its Multi-band element is 0. State transitions (11.31.3.2) are policed by a State Transition Timer (STT) loaded from FSTSessionTimeout; a STA returns to Initial when the STT moves from 1 to 0 or on an FST Teardown. On reaching Setup Completed with LLT = 0, both ends move to Transition Done immediately; with LLT > 0 they run a Link Loss countdown of LLT x 32 us (STA-based, or stream-based when a Switching Stream element is present), reloaded by each individually addressed frame from the peer, and transition only when it hits zero. FST TS switching (11.31.3.3) uses the Switching Stream element plus ADDTS/ADDBA frames carrying the Multi-band element to bind a block ack agreement to the new band/channel. FST teardown (11.31.4) returns both ends to Initial. OCT (11.31.5): the non-transmitting MLME (NT-MLME) builds an OCT MMPDU and issues MLME-OCTunnel.request to a transmitting MLME (TR-MLME), which sends an individually addressed (never group-addressed) On-channel Tunnel Request frame to the peer TR-MLME; the receiver raises MLME-OCTunnel.indication to the target NT-MLME, identified by the Band ID, Channel Number, and BSSID fields of the Multi-band / OCT Source elements. MLME-AUTHENTICATE, MLME-ASSOCIATE, and MLME-REASSOCIATE are cited as example OCT MLME primitives, and OCT can be used with or independently of FST.",
+      "zh": "11.31.3.1 节定义了四个状态（Initial、Setup Completed、Transition Done、Transition Confirmed），并指出当某站点“多频段元素”中的 FST Not Supported 子字段为 0 时即支持 FST。状态转移（11.31.3.2）由“状态转移定时器（STT）”管控，其值取自 FSTSessionTimeout；当 STT 从 1 变为 0，或收到/发出 FST Teardown 帧时，站点回到 Initial。到达 Setup Completed 时若 LLT = 0，两端立即进入 Transition Done；若 LLT > 0，则运行一个 LLT x 32 微秒的链路丢失倒计时（基于 STA，或在存在“切换流元素”时基于流），每收到对端一帧个体寻址帧就重新装载，仅当其归零时才转移。FST TS 切换（11.31.3.3）借助“切换流元素”加上携带“多频段元素”的 ADDTS/ADDBA 帧，把块确认协议绑定到新频段/信道。FST 拆除（11.31.4）使两端回到 Initial。OCT（11.31.5）：非发送 MLME（NT-MLME）构造一个 OCT MMPDU 并向发送 MLME（TR-MLME）发出 MLME-OCTunnel.request，后者向对端 TR-MLME 发送一个个体寻址（绝不组寻址）的同信道隧道请求帧；接收方据“多频段/OCT Source 元素”中的 Band ID、Channel Number 与 BSSID 字段识别目标 NT-MLME，并向其上报 MLME-OCTunnel.indication。标准举 MLME-AUTHENTICATE、MLME-ASSOCIATE、MLME-REASSOCIATE 为 OCT MLME 原语之例，且 OCT 既可与 FST 配合使用，也可独立使用。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2849,
+          2851,
+          2856,
+          2858,
+          2859
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.31.1",
+    "80211-2024:11.31.2",
+    "80211-2024:11.31.3.1",
+    "80211-2024:11.31.3.2",
+    "80211-2024:11.31.3.3",
+    "80211-2024:11.31.4",
+    "80211-2024:11.31.5",
+    "80211-2024:11.31.6"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2847,
+        2848
+      ],
+      "note": "11.31.1 General; 11.31.2 General FST rules - Multi-band element advertisement, FSTS ID, transparent vs nontransparent addressing"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2849,
+        2851
+      ],
+      "note": "11.31.3.1 General - four FST states; 11.31.3.2 Transitioning between states - STT, LLT countdown, Figure 11-91 state diagram"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2856,
+        2858
+      ],
+      "note": "11.31.3.3 FST TS switching - Switching Stream element, ADDTS/ADDBA with Multi-band element; 11.31.4 FST teardown"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2858,
+        2859
+      ],
+      "note": "11.31.5 On-channel Tunneling (OCT) - NT-MLME/TR-MLME, On-channel Tunnel Request frame, OCT MLME primitives"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2863
+      ],
+      "note": "11.31.6 FST payload - FST Action frames forwarded by an AP use MSDUs with EtherType 89-0d"
+    }
+  ],
+  "track": "managing"
+}

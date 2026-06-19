@@ -1,0 +1,127 @@
+{
+  "id": "managing-14",
+  "title": {
+    "en": "VHT Housekeeping: BSS Operation, Group ID, and Operating-Mode Notifications",
+    "zh": "VHT 的日常管理：BSS 运行、组 ID 与运行模式通知"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "VHT — Very High Throughput, the 802.11ac generation — brought wide channels (up to 160 MHz) and downlink multi-user MIMO. But raw speed needs management glue to keep a BSS coherent: every station has to agree on which channel is 'primary', how wide the BSS really is, which rates everyone must support, and how to back off when one corner of the wide channel is busy. Clause 11.38 is that housekeeping layer. Think of it as the building rules for a shared, very wide hallway — everyone enters through the same door (the primary 20 MHz channel) even though the hallway is much wider.",
+      "zh": "VHT——“极高吞吐量”，即 802.11ac 这一代——带来了宽信道（最高 160 MHz）和下行多用户 MIMO。但纯粹的速度需要一层管理“胶水”来维持 BSS 的一致性：每个站点都必须就哪个信道是“主信道”、BSS 实际有多宽、大家都必须支持哪些速率、以及当宽信道的某个角落繁忙时如何退避达成一致。第 11.38 节就是这层日常管理。可以把它想象成一条共享的、非常宽的走廊的建筑规则：尽管走廊很宽，但所有人都从同一扇门（主 20 MHz 信道）进出。"
+    },
+    {
+      "type": "prose",
+      "en": "The foundation is the primary channel. A VHT BSS can be 20, 40, 80, 160, or 80+80 MHz wide, but it is anchored on one primary 20 MHz channel — and inside that, a primary 40 MHz and a primary 80 MHz. The AP advertises the full geometry by combining the HT Operation element's primary channel and width subfields with the VHT Operation element's Channel Width plus two Channel Center Frequency Segment subfields (CCFS0 and CCFS1). A member STA is not free to transmit a narrow PPDU wherever it likes: a 20 MHz frame must sit on the primary 20 MHz channel, a 40 MHz frame on the primary 40, and so on. The wide channel is one structured block, not a free-for-all.",
+      "zh": "基础是主信道。一个 VHT BSS 可以是 20、40、80、160 或 80+80 MHz 宽，但它锚定在一个主 20 MHz 信道上——并在其中再嵌套出主 40 MHz 与主 80 MHz。AP 通过组合 HT Operation 元素的主信道与带宽子字段，以及 VHT Operation 元素的 Channel Width 字段加上两个信道中心频率段子字段（CCFS0 与 CCFS1）来通告完整的频谱几何结构。成员站点并不能随意在任何位置发送窄带 PPDU：20 MHz 帧必须落在主 20 MHz 信道上，40 MHz 帧落在主 40 上，依此类推。宽信道是一个有结构的整体，而非各取所需的自由竞争。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 420 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='10' y='20' width='400' height='40' /><rect x='10' y='20' width='100' height='40' fill='currentColor' fill-opacity='0.18' stroke='none'/><line x1='110' y1='20' x2='110' y2='60'/><line x1='210' y1='20' x2='210' y2='60'/><line x1='310' y1='20' x2='310' y2='60'/><text x='60' y='45' text-anchor='middle' font-size='11' stroke='none' fill='currentColor'>Primary</text><text x='60' y='14' text-anchor='middle' font-size='9' stroke='none' fill='currentColor'>20</text><text x='160' y='14' text-anchor='middle' font-size='9' stroke='none' fill='currentColor'>20</text><text x='260' y='14' text-anchor='middle' font-size='9' stroke='none' fill='currentColor'>20</text><text x='360' y='14' text-anchor='middle' font-size='9' stroke='none' fill='currentColor'>20</text><line x1='10' y1='80' x2='110' y2='80' stroke-width='3'/><text x='110' y='95' text-anchor='middle' font-size='9' stroke='none' fill='currentColor'>Pri 40</text><line x1='10' y1='105' x2='210' y2='105' stroke-width='3'/><text x='210' y='120' text-anchor='middle' font-size='9' stroke='none' fill='currentColor'>Pri 80</text><line x1='10' y1='130' x2='410' y2='130' stroke-width='3'/><text x='410' y='145' text-anchor='end' font-size='9' stroke='none' fill='currentColor'>160 MHz BSS</text></svg>",
+      "caption": {
+        "en": "A 160 MHz VHT BSS is nested around a single primary 20 MHz channel: primary 20 sits inside primary 40, inside primary 80, inside the full 160. Narrow PPDUs always use the primary sub-channel of their width.",
+        "zh": "一个 160 MHz 的 VHT BSS 围绕单一的主 20 MHz 信道层层嵌套：主 20 在主 40 之内，主 40 在主 80 之内，主 80 又在完整的 160 之内。窄带 PPDU 总是使用其对应带宽的主子信道。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Three smaller pieces of housekeeping round out basic operation. NAV assertion (11.38.5): when a STA hears a frame not addressed to it, it must defer based on the Duration field — but only for frames received in the primary sub-channels or in a full 160/80+80 PPDU, so the wide-channel virtual carrier sense stays consistent. Antenna indication (11.38.6): a STA flags, via the Rx/Tx Antenna Pattern Consistency subfields, whether its antenna pattern stays fixed after association — useful for beamforming feedback validity. And the basic VHT-MCS and NSS set (11.38.7): the rate-and-stream floor that every member must be able to both transmit and receive; a STA may not even issue MLME-JOIN.request for a VHT BSS unless it supports every tuple in that floor.",
+      "zh": "另有三个较小的管理要素补全了基本运行。NAV 置位（11.38.5）：当某站点听到一个并非发给自己的帧时，它必须依据 Duration 字段进行退避——但仅针对在主子信道中收到的帧，或完整的 160/80+80 PPDU，从而让宽信道的虚拟载波侦听保持一致。天线指示（11.38.6）：站点通过 Rx/Tx 天线方向图一致性（Antenna Pattern Consistency）子字段标明其天线方向图在关联后是否保持固定——这对波束成形反馈的有效性很有用。还有基本 VHT-MCS 与 NSS 集（11.38.7）：每个成员都必须能够同时发送与接收的“速率与流”下限；除非站点支持该下限中的每一个元组，否则它甚至不能对某个 VHT BSS 发出 MLME-JOIN.request。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the dynamic parts. Group ID management (11.39) is how downlink MU-MIMO addresses recipients efficiently. Instead of naming each station, the AP assigns stations to groups (Group IDs 1–62) and to a user position within each group, sending that map in a Group ID Management frame. When a station receives one matching its address, its MLME pushes the membership and position tables down into the PHY so it knows which streams in a multi-user PPDU are its own. Group IDs 0 and 63 are reserved for single-user PPDUs. The handshake must complete and be acknowledged before the AP sends the corresponding MU PPDU.",
+      "zh": "现在来看动态部分。组 ID 管理（11.39）是下行 MU-MIMO 高效寻址接收者的方式。AP 不会逐个点名站点，而是把站点分配到“组”（Group ID 为 1–62）以及组内的某个用户位置（user position），并通过一个 Group ID Management 帧把这张映射表发出去。当某站点收到与自己地址匹配的该帧时，其 MLME 会把成员关系表与位置表下推到 PHY，从而让它知道多用户 PPDU 中哪些流是属于自己的。Group ID 0 与 63 保留给单用户 PPDU。这次握手必须在 AP 发送对应的 MU PPDU 之前完成并得到确认。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as VHT AP\n    participant STA as VHT STA (MU beamformee)\n    Note over AP: assign STA to group g, user position p\n    AP->>STA: Group ID Management frame (Membership + User Position arrays)\n    STA->>AP: Ack\n    Note over STA: MLME -> PHYCONFIG_VECTOR(GROUP_ID_MANAGEMENT)\n    Note over STA: PHY tables: MembershipStatusInGroupID[g], UserPositionInGroupID[g]\n    Note over AP,STA: only NOW may a VHT MU PPDU be sent to this group\n    AP->>STA: VHT MU PPDU (STA decodes its own user position)",
+      "zh": "sequenceDiagram\n    participant AP as VHT AP\n    participant STA as VHT 站点 (MU 波束成形接收者)\n    Note over AP: 将站点分配到组 g、用户位置 p\n    AP->>STA: Group ID Management 帧 (成员关系数组 + 用户位置数组)\n    STA->>AP: Ack 确认\n    Note over STA: MLME -> PHYCONFIG_VECTOR(GROUP_ID_MANAGEMENT)\n    Note over STA: PHY 查找表: MembershipStatusInGroupID[g]、UserPositionInGroupID[g]\n    Note over AP,STA: 只有此刻起，才可向该组发送 VHT MU PPDU\n    AP->>STA: VHT MU PPDU (站点解码出属于自己的用户位置)"
+    },
+    {
+      "type": "prose",
+      "en": "Stations also change shape mid-flight — narrowing their receive bandwidth or dropping spatial streams to save power. Notification of operating mode changes (11.40) is how a STA announces 'I just changed my bandwidth/streams, route to me accordingly.' An operating-mode-notification-capable STA either embeds an Operating Mode Notification element in an (Re)Association/TDLS/Mesh setup frame, or sends a standalone Operating Mode Notification frame to a peer with which it has an association, TDLS link, or mesh peering. (Older peers that lack this capability are instead told via the Notify Channel Width frame or the HT Operation element.) Finally, OCB (11.18) is the opposite extreme: with dot11OCBActivated true, a STA exchanges Data frames entirely outside the context of a BSS — no synchronization, no authentication, no association, wildcard BSSID — the 'no-association' mode used for vehicular and other ad hoc communications.",
+      "zh": "站点在运行中也会“改变形态”——收窄其接收带宽或减少空间流以节省功耗。运行模式变更通知（11.40）就是站点用来宣告“我刚改变了带宽/流数，请据此向我转发”的机制。一个具备运行模式通知能力的站点，要么在（重）关联/TDLS/Mesh 建立帧中内嵌一个 Operating Mode Notification 元素，要么向与之已建立关联、TDLS 直连或 Mesh 对等关系的对端，单独发送一个 Operating Mode Notification 帧。（不具备该能力的较旧对端，则改为通过 Notify Channel Width 帧或 HT Operation 元素来告知。）最后，OCB（11.18）是另一个极端：当 dot11OCBActivated 为真时，站点完全在 BSS 上下文之外交换数据帧——没有同步、没有认证、没有关联、使用通配 BSSID——这就是用于车联网及其他自组织通信的“无关联”模式。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two announcements, two audiences. A Channel Switch / Extended Channel Switch Announcement (11.38.4) is the AP telling the whole BSS 'we are all moving to a new channel/bandwidth.' An Operating Mode Notification (11.40) is one STA telling its peers 'only I changed my width/streams.' Don't conflate the BSS-wide move with the per-STA reshape.",
+      "zh": "两种通告，两类受众。信道切换 / 扩展信道切换通告（11.38.4）是 AP 告知整个 BSS“我们都要迁移到新的信道/带宽”。而运行模式通知（11.40）是单个站点告诉它的对端“只有我自己改变了带宽/流数”。不要把这种全 BSS 的迁移与单站点的形态调整混为一谈。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Channel switching mechanics and the Extended NSS BW signal",
+        "zh": "信道切换机制与扩展 NSS BW 信令"
+      },
+      "en": "Channel switching for a VHT BSS (11.38.4) is more than a new channel number. A VHT AP announces a switch via a Channel Switch Announcement (element/frame, per 11.8.8.2) or an Extended Channel Switch Announcement (per 11.9), and may simultaneously change BSS bandwidth, country string/operating classes, or TPC parameters. The New Channel Number field always identifies the post-switch primary 20 MHz channel. Crucially, the required companion elements scale with the target width: a switch to 40 MHz needs a Secondary Channel Offset element (and, in a Beacon/Probe Response, a Wide Bandwidth Channel Switch subelement); a switch to 80/160/80+80 MHz needs both the Secondary Channel Offset and a Wide Bandwidth Channel Switch element/subelement. The Extended Channel Switch Announcement instead leans on the New Operating Class to convey width and secondary-channel position, so it does not carry a Secondary Channel Offset element. Separately, Extended NSS BW Support signaling (11.38.8) lets a STA advertise reduced spatial-stream support at 160/80+80 MHz: when dot11VHTExtendedNSSBWCapable is true the Extended NSS BW Support subfield may be 1/2/3 and the VHT Extended NSS BW Capable subfield is set to 1, which (with Table 11-31's CCFS2 spacing rules) lets an AP run a wide BSS even when not all stations carry full NSS across the whole width.",
+      "zh": "VHT BSS 的信道切换（11.38.4）远不止给出一个新的信道号。VHT AP 通过信道切换通告（元素/帧，依 11.8.8.2）或扩展信道切换通告（依 11.9）来宣布切换，并可同时改变 BSS 带宽、国家字符串/运行类、或 TPC 参数。New Channel Number 字段始终标识切换后的主 20 MHz 信道。关键在于，所需的伴随元素会随目标带宽而递增：切换到 40 MHz 需要一个 Secondary Channel Offset 元素（在 Beacon/Probe Response 中还需一个 Wide Bandwidth Channel Switch 子元素）；切换到 80/160/80+80 MHz 则同时需要 Secondary Channel Offset 与一个 Wide Bandwidth Channel Switch 元素/子元素。而扩展信道切换通告则改为依靠 New Operating Class 来传达带宽与次信道位置，因此它不携带 Secondary Channel Offset 元素。另外，扩展 NSS BW 支持信令（11.38.8）允许站点通告其在 160/80+80 MHz 下被削减的空间流支持：当 dot11VHTExtendedNSSBWCapable 为真时，Extended NSS BW Support 子字段可取 1/2/3，且 VHT Extended NSS BW Capable 子字段置为 1，这（配合表 11-31 中关于 CCFS2 间距的规则）使得 AP 即便在并非所有站点都能在整个带宽上承载完整 NSS 的情况下，仍能运行一个宽 BSS。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2888,
+          2889,
+          2891
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.38.1",
+    "80211-2024:11.38.2",
+    "80211-2024:11.38.4",
+    "80211-2024:11.38.5",
+    "80211-2024:11.38.6",
+    "80211-2024:11.38.7",
+    "80211-2024:11.38.8",
+    "80211-2024:11.39",
+    "80211-2024:11.40",
+    "80211-2024:11.18"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2883,
+        2884,
+        2885,
+        2886
+      ],
+      "note": "11.38.1-11.38.2 Basic VHT BSS functionality, BSS bandwidth tables (11-29/11-30), CCFS subfields, primary-channel transmit constraints, channel selection / OBSS scan"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2888,
+        2889,
+        2890
+      ],
+      "note": "11.38.4 Channel switching methods for a VHT BSS; CSA/Extended CSA, Secondary Channel Offset, Wide Bandwidth Channel Switch by target width; 11.38.5 NAV assertion"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2891
+      ],
+      "note": "11.38.6 antenna indication; 11.38.7 basic VHT-MCS and NSS set; 11.38.8 Extended NSS BW Support signaling; 11.39 Group ID management"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2892
+      ],
+      "note": "11.39 Group ID Management frame -> PHYCONFIG_VECTOR tables; 11.40 Notification of operating mode changes"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2644
+      ],
+      "note": "11.18 STAs communicating Data frames outside the context of a BSS (OCB); dot11OCBActivated, wildcard BSSID, no sync/auth/association"
+    }
+  ],
+  "track": "managing"
+}
