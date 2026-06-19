@@ -1,0 +1,120 @@
+{
+  "id": "mobility-02-mobility-domain-and-ft-key-hierarchy",
+  "title": {
+    "en": "The Mobility Domain and the FT Key Hierarchy",
+    "zh": "移动域与 FT 密钥层级"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "When you walk through a building on Wi-Fi, your phone keeps hopping from one access point to the next. If every hop forced a full login — the slow handshake with an authentication server that you do when you first join — your call would stutter every time you changed rooms. Fast BSS Transition (FT) solves this with one big idea: authenticate once, then mint cheap per-AP keys on the move. This lesson covers the two structures that make that safe — the Mobility Domain that says which APs trust each other, and the FT key hierarchy that turns one expensive login into many fast ones.",
+      "zh": "当你在一栋楼里使用 Wi-Fi 走动时，你的手机会不断从一个接入点（AP）跳到下一个。如果每次跳转都被迫重新完整登录——也就是你首次入网时与认证服务器之间那段缓慢的握手——那么每换一个房间，你的通话就会卡顿一次。快速 BSS 切换（Fast BSS Transition，FT）用一个核心思想解决了这个问题：只认证一次，然后在移动途中按需快速生成各个 AP 专用的密钥。本课介绍让这一切既快又安全的两个结构——告诉你哪些 AP 彼此信任的“移动域”，以及把一次昂贵登录变成多次快速登录的 FT 密钥层级。"
+    },
+    {
+      "type": "prose",
+      "en": "A Mobility Domain (MD) is a set of APs, within a single ESS, that agree to share FT trust. Each AP advertises a Mobility Domain Identifier (MDID) in its Beacon and Probe Response frames, inside an element called the MDE. When your station sees two APs advertising the same MDID, it knows: these belong to the same trust group, so I can fast-roam between them without starting over. The very first association where the station opts in — by including the MDE — is called the FT initial mobility domain association. That one association is where the expensive authentication happens; everything afterward rides on it.",
+      "zh": "移动域（Mobility Domain，MD）是处于同一个 ESS 内、约定共享 FT 信任关系的一组 AP。每个 AP 都会在其信标帧（Beacon）和探测响应帧（Probe Response）中、通过一个名为 MDE 的元素来通告“移动域标识符”（MDID）。当你的站点看到两个 AP 通告了相同的 MDID 时，它就明白：这些 AP 属于同一个信任组，所以我可以在它们之间快速漫游，而无需从头来过。站点首次选择启用 FT（通过在帧中包含 MDE）的那次关联，被称为“FT 初始移动域关联”（FT initial mobility domain association）。正是这次关联完成了那段昂贵的认证；之后的一切都建立在它之上。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The MDID is a promise, not a guarantee of identity. The Fast BSS Transition policy bits inside the MDE need to be the same across the whole mobility domain, and the MDE is also surfaced in Neighbor Report elements so a station can plan its next hop. The MDID tells the station 'these APs play by the same FT rules' — the actual key separation between them is the job of the key hierarchy in the next blocks.",
+      "zh": "MDID 是一种“约定”，而非身份的“保证”。MDE 中的“快速 BSS 切换”策略比特位需要在整个移动域内保持一致；MDE 也会出现在邻居报告（Neighbor Report）元素中，以便站点规划下一跳。MDID 告诉站点“这些 AP 遵循相同的 FT 规则”——而它们之间真正的密钥隔离，则由后续几个区块讲到的密钥层级来负责。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the key hierarchy — three levels, each derived from the one above using a key derivation function (KDF). At the top sits PMK-R0, the first-level key, computed once from whatever your initial login produced (the MSK from an 802.1X/EAP exchange, a PSK, or the PMK from SAE or FILS). PMK-R0 is held by the R0KH — the level-0 key holder, co-located with the network's authentication front end. The R0KH is the only entity allowed to know PMK-R0 and the raw login secret; the standard forbids it from exposing PMK-R0 to anyone else.",
+      "zh": "现在来看密钥层级——共三层，每一层都用密钥派生函数（KDF）从上一层派生而来。最顶端是 PMK-R0，即第一层密钥，它只在你首次登录时计算一次，其原料来自你初始登录所产生的密钥材料（802.1X/EAP 交换得到的 MSK、预共享密钥 PSK，或 SAE、FILS 得到的 PMK）。PMK-R0 由 R0KH 持有——即第 0 级密钥持有者，它与网络的认证前端共处一处。R0KH 是唯一被允许知晓 PMK-R0 和原始登录密钥的实体；标准禁止它向任何其他方暴露 PMK-R0。"
+    },
+    {
+      "type": "prose",
+      "en": "From PMK-R0 the R0KH derives a separate PMK-R1 for each AP in the mobility domain — that is the second-level key. The derivation binds in the R1KH-ID (a MAC address of the AP that will hold the key) and the station's address, so every AP gets its own distinct PMK-R1; one compromised AP cannot impersonate another. The R0KH ships each PMK-R1 to its R1KH (the level-1 key holder living at each AP) over a secure channel whose details the standard deliberately leaves open. Finally, at the target AP, the R1KH and your station each independently compute the third-level key, the PTK, by mixing PMK-R1 with two fresh random nonces and both MAC addresses. The PTK is the working key that actually protects your traffic on that AP.",
+      "zh": "R0KH 从 PMK-R0 出发，为移动域中的每一个 AP 派生出各自独立的 PMK-R1——这就是第二层密钥。派生过程会把 R1KH-ID（将持有该密钥的那个 AP 的某个 MAC 地址）和站点地址绑定进去，因此每个 AP 都会得到一个互不相同的 PMK-R1；某一个 AP 被攻破，也无法冒充另一个 AP。R0KH 通过一条安全通道把各个 PMK-R1 分发给对应的 R1KH（即驻留在每个 AP 上的第 1 级密钥持有者），而这条通道的具体实现，标准有意不作规定。最后，在目标 AP 处，R1KH 与你的站点各自独立地计算第三层密钥——PTK，其方法是把 PMK-R1 与两个新鲜的随机数（nonce）以及双方的 MAC 地址混合在一起。PTK 才是真正保护你在该 AP 上流量的工作密钥。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 460 300' role='img' aria-label='FT three-level key hierarchy'><g fill='none' stroke='currentColor' stroke-width='1.5'><rect x='150' y='20' width='160' height='44' rx='6'/><rect x='150' y='120' width='160' height='44' rx='6'/><rect x='20' y='230' width='130' height='44' rx='6'/><rect x='310' y='230' width='130' height='44' rx='6'/></g><g fill='currentColor' font-family='sans-serif' font-size='13' text-anchor='middle'><text x='230' y='38'>PMK-R0</text><text x='230' y='55' font-size='10'>R0KH (login once)</text><text x='230' y='138'>PMK-R1</text><text x='230' y='155' font-size='10'>R1KH, per-AP</text><text x='85' y='248'>PTK @ AP 1</text><text x='85' y='265' font-size='10'>S1KH + R1KH</text><text x='375' y='248'>PTK @ AP 2</text><text x='375' y='265' font-size='10'>S1KH + R1KH</text></g><g fill='none' stroke='currentColor' stroke-width='1.5'><path d='M230 64 L230 120' marker-end='url(#a)'/><path d='M210 164 L85 230' marker-end='url(#a)'/><path d='M250 164 L375 230' marker-end='url(#a)'/></g><g fill='currentColor' font-family='sans-serif' font-size='10' text-anchor='middle'><text x='250' y='95'>KDF \"FT-R1\"</text><text x='120' y='205'>KDF \"FT-PTK\"</text><text x='340' y='205'>KDF \"FT-PTK\"</text></g><defs><marker id='a' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='currentColor'/></marker></defs></svg>",
+      "caption": {
+        "en": "One PMK-R0 from the single initial login fans out into a distinct PMK-R1 per AP, and each AP independently derives a fresh PTK with the station. Authenticate once at the top; mint cheap, separated keys on the way down.",
+        "zh": "由唯一一次初始登录得到的单个 PMK-R0，向下扇出为每个 AP 各自独立的 PMK-R1；每个 AP 再与站点独立派生出新鲜的 PTK。顶层只认证一次，向下逐层快速生成彼此隔离的密钥。"
+      }
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant S as Station (S0KH/S1KH)\n    participant R0 as R0KH (login server side)\n    participant AP as Target AP (R1KH)\n    Note over S,R0: FT initial mobility domain association (the one expensive login)\n    S->>R0: EAP / SAE / FILS authentication\n    Note over S,R0: both derive PMK-R0 from MSK/PSK/PMK\n    R0->>AP: deliver PMK-R1 for this AP (secure channel)\n    Note over S,AP: STA roams to target AP\n    S->>AP: FT Authentication-Request (SNonce, PMKR0Name)\n    AP->>S: FT Authentication-Response (ANonce)\n    Note over S,AP: each side computes PTK = KDF(PMK-R1, SNonce, ANonce, addrs)\n    Note over S,AP: no return trip to the login server needed",
+      "zh": "sequenceDiagram\n    participant S as 站点 (S0KH/S1KH)\n    participant R0 as R0KH (登录服务器侧)\n    participant AP as 目标 AP (R1KH)\n    Note over S,R0: FT 初始移动域关联（唯一一次昂贵登录）\n    S->>R0: EAP / SAE / FILS 认证\n    Note over S,R0: 双方各自从 MSK/PSK/PMK 派生 PMK-R0\n    R0->>AP: 通过安全通道下发该 AP 的 PMK-R1\n    Note over S,AP: 站点漫游到目标 AP\n    S->>AP: FT 认证请求 (SNonce, PMKR0Name)\n    AP->>S: FT 认证响应 (ANonce)\n    Note over S,AP: 双方各自计算 PTK = KDF(PMK-R1, SNonce, ANonce, 地址)\n    Note over S,AP: 无需再回到登录服务器往返一次"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact derivation labels, holder restrictions, and what binds into each key",
+        "zh": "精确的派生标签、持有者限制，以及绑定进每层密钥的内容"
+      },
+      "en": "Clause 12.7.1.6.3 derives PMK-R0 = ExtractBits of KDF-Hash-Length(XXKey, \"FT-R0\", SSIDlength || SSID || MDID || R0KHlength || R0KH-ID || S0KH-ID) — note the MDID and R0KH-ID are bound in, tying the key to one mobility domain and one R0 holder. Clause 12.7.1.6.4 derives PMK-R1 = KDF-Hash-Length(PMK-R0, \"FT-R1\", R1KH-ID || S1KH-ID), where R1KH-ID is the holding AP's MAC address, giving per-AP separation. Clause 12.7.1.6.5 derives PTK = KDF-Hash-Length(PMK-R1, \"FT-PTK\", SNonce || ANonce || BSSID || STA-ADDR), then splits the PTK into component keys (KCK, KEK, the temporal key, KCK2, KEK2, and optionally a KDK). On the holder side, 13.2.2 (Authenticator) restricts computation of PMK-R0/PMK-R1 to the R0KH and computation of PTK to the R1KH, requires the R0KH to authenticate each R1KH before handing it a PMK-R1, and mandates a confidential, integrity-protected channel between them; 13.2.3 places the mirror-image S0KH/S1KH in the Supplicant, both identified by the station's MAC address (SPA), each forbidden from exposing keys beyond the next authorized level.",
+      "zh": "12.7.1.6.3 节给出 PMK-R0 = 对 KDF-Hash-Length(XXKey, \"FT-R0\", SSIDlength || SSID || MDID || R0KHlength || R0KH-ID || S0KH-ID) 取 ExtractBits——请注意 MDID 与 R0KH-ID 被绑定进来，从而把该密钥与某一个移动域、某一个 R0 持有者绑定。12.7.1.6.4 节给出 PMK-R1 = KDF-Hash-Length(PMK-R0, \"FT-R1\", R1KH-ID || S1KH-ID)，其中 R1KH-ID 是持有该密钥的 AP 的 MAC 地址，由此实现按 AP 的隔离。12.7.1.6.5 节给出 PTK = KDF-Hash-Length(PMK-R1, \"FT-PTK\", SNonce || ANonce || BSSID || STA-ADDR)，随后把 PTK 切分为若干分量密钥（KCK、KEK、临时密钥、KCK2、KEK2，以及可选的 KDK）。在持有者一侧，13.2.2 节（认证方）规定 PMK-R0/PMK-R1 的计算只能限于 R0KH、PTK 的计算只能限于 R1KH，要求 R0KH 在向某个 R1KH 下发 PMK-R1 之前先对其进行认证，并强制二者之间使用具备机密性与完整性保护的通道；13.2.3 节则在请求方（Supplicant）一侧放置镜像的 S0KH/S1KH，二者均以站点的 MAC 地址（SPA）标识，且都被禁止把密钥暴露给超出下一授权层级的任何方。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3048,
+          3050,
+          3051,
+          3143,
+          3144
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:12.7.1.6.3",
+    "80211-2024:12.7.1.6.4",
+    "80211-2024:12.7.1.6.5",
+    "80211-2024:13.2.2",
+    "80211-2024:13.2.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3046,
+        3047
+      ],
+      "note": "12.7.1.6.1 FT key hierarchy overview — three levels PMK-R0/PMK-R1/PTK; R0KH derives and distributes PMK-R1s within the mobility domain"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3048,
+        3050
+      ],
+      "note": "12.7.1.6.3 PMK-R0 derivation — KDF label FT-R0; binds SSID, MDID, R0KH-ID, S0KH-ID"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3050,
+        3051
+      ],
+      "note": "12.7.1.6.4 PMK-R1 (FT-R1, R1KH-ID||S1KH-ID) and 12.7.1.6.5 PTK (FT-PTK, SNonce||ANonce||BSSID||STA-ADDR)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3142,
+        3143,
+        3144
+      ],
+      "note": "13.2.2 Authenticator key holders — R0KH/R1KH responsibilities, per-AP PMK-R1, secure R0KH-to-R1KH channel"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3144,
+        3145
+      ],
+      "note": "13.2.3 Supplicant key holders — S0KH/S1KH in the STA, identified by SPA; 13.3 MDE/MDID advertisement"
+    }
+  ],
+  "track": "mobility"
+}

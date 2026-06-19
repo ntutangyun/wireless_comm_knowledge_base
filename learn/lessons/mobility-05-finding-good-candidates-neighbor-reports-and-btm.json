@@ -1,0 +1,101 @@
+{
+  "id": "mobility-05-finding-good-candidates-neighbor-reports-and-btm",
+  "title": {
+    "en": "Where Do I Go Next? Neighbor Reports and BSS Transition Management",
+    "zh": "下一步去哪？邻居报告与 BSS 切换管理（802.11k/v）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Fast roaming only pays off if your phone roams to the right access point at the right moment. A handoff that is lightning-fast but lands on a weak or congested AP is no help at all. So before the signal gets bad, two cooperating mechanisms help a station figure out where to go next: the 802.11k Neighbor Report tells it which nearby BSSs are worth scanning, and 802.11v BSS Transition Management (BTM) lets the network actively suggest — or even steer — a station toward a better AP.",
+      "zh": "快速漫游只有在你的手机在正确的时刻漫游到正确的接入点（AP）时才有意义。一次切换即使快如闪电，但落到一个信号弱或拥塞的 AP 上，也毫无帮助。因此，在信号变差之前，有两套相互配合的机制帮助站点（STA）想清楚“下一步该去哪”：802.11k 的邻居报告告诉它附近哪些 BSS 值得扫描，而 802.11v 的 BSS 切换管理（BTM）则让网络主动建议——甚至引导——站点转向一个更好的 AP。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the problem the Neighbor Report solves. Left on its own, a station discovers neighbors by scanning — hopping across channels listening for Beacons. That is slow and burns airtime and battery, and it happens at exactly the wrong time: when the link is already deteriorating. The Neighbor Report flips this around. A station sends a Neighbor Report Request frame to its associated AP, and the AP replies with a Neighbor Report Response frame carrying zero or more Neighbor Report elements — a pre-vetted list of nearby APs in the same network, each with its BSSID, operating channel, and capabilities. Now the station knows which channels to check instead of blindly sweeping the band.",
+      "zh": "先看邻居报告要解决的问题。若站点孤军奋战，它只能靠扫描来发现邻居——在各个信道间跳来跳去，监听 Beacon。这既慢，又消耗空口时间和电量，而且偏偏发生在最糟糕的时刻：链路已经在恶化的时候。邻居报告把这一切颠倒过来。站点向其关联的 AP 发送一个邻居报告请求帧（Neighbor Report Request frame），AP 回复一个邻居报告响应帧（Neighbor Report Response frame），其中携带零个或多个邻居报告元素（Neighbor Report element）——这是一份预先甄选好的、同一网络内的附近 AP 列表，每一项都带有其 BSSID、工作信道和能力信息。这样，站点就知道该去查哪些信道，而不必盲目地把整个频段扫一遍。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A Neighbor Report is advisory, not gospel. The standard notes the list might be stale or incomplete, so anything the station learns from its own scan, or from a Beacon or Probe Response, can override what the report said. Treat it as a head start, not the final word.",
+      "zh": "邻居报告是“建议性的”，而非金科玉律。标准指出该列表可能已过期或不完整，因此站点通过自身扫描、或从 Beacon、Probe Response 帧中获取的信息，都可以覆盖报告中的内容。请把它当作“抢跑的起点”，而不是“最终定论”。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Station\n    participant AP as Serving AP\n    Note over STA: link still good, but plan ahead\n    STA->>AP: Neighbor Report Request\n    Note over AP: gather neighbor APs in this ESS\n    AP->>STA: Neighbor Report Response (Neighbor Report elements: BSSID, channel, capabilities)\n    Note over STA: scan only the listed channels\n    AP->>STA: BSS Transition Mgmt Request (candidate list, preferences)\n    Note over STA: pick a non-excluded candidate\n    STA->>AP: BSS Transition Mgmt Response (Accept / Reject + code)\n    Note over STA,AP: STA (re)associates to the chosen target AP",
+      "zh": "sequenceDiagram\n    participant STA as 站点\n    participant AP as 服务 AP\n    Note over STA: 链路尚好，但提前规划\n    STA->>AP: 邻居报告请求\n    Note over AP: 收集本 ESS 内的邻居 AP\n    AP->>STA: 邻居报告响应（邻居报告元素：BSSID、信道、能力）\n    Note over STA: 只扫描列表中的信道\n    AP->>STA: BSS 切换管理请求（候选列表、偏好值）\n    Note over STA: 选一个未被排除的候选\n    STA->>AP: BSS 切换管理响应（接受 / 拒绝 + 状态码）\n    Note over STA,AP: STA 向选定的目标 AP（重新）关联"
+    },
+    {
+      "type": "prose",
+      "en": "Now 802.11v BTM closes the loop. The Neighbor Report tells the station where the neighbors are; BTM is about who decides and when to move. A station can pull: it sends a BSS Transition Management Query frame to ask its AP for a candidate list (and it can attach its own preferred candidates). The AP can push: it sends a BSS Transition Management Request frame — solicited (replying to a Query) or unsolicited at any time — carrying a list of candidate BSSs. Each candidate has a Preference value from 1 to 255 (higher = more preferred); a Preference of 0 marks an excluded BSS the station should avoid. This is how a network gently load-balances or steers a client to a better AP before the link degrades.",
+      "zh": "现在，802.11v 的 BTM 来闭合这个环。邻居报告告诉站点邻居在哪里；而 BTM 关心的是“由谁来决定、何时移动”。站点可以主动“拉取”：它发送一个 BSS 切换管理查询帧（BSS Transition Management Query frame），向 AP 索要一份候选列表（还可以附上自己偏好的候选）。AP 也可以主动“推送”：它发送一个 BSS 切换管理请求帧（BSS Transition Management Request frame）——可以是应答查询的（被请求的），也可以在任意时刻主动发起（非请求的）——其中携带一份候选 BSS 列表。每个候选都有一个 1 到 255 的偏好值（Preference，越高越优先）；偏好值为 0 则标记为“被排除的 BSS”，站点应当避开它。网络正是借此在链路恶化之前，温和地做负载均衡，或把客户端引导到更好的 AP。"
+    },
+    {
+      "type": "prose",
+      "en": "The station always keeps the final say. When it receives a BTM Request, it may answer with a BSS Transition Management Response frame carrying a BTM Status Code: 0 means Accept (it will move, and it may name the Target BSSID it chose), while non-zero codes are polite refusals with a reason — for example 'insufficient Beacon/Probe Responses from all candidates', 'no suitable candidates', or 'leaving the ESS'. A network can also signal urgency: if the BTM Request sets Disassociation Imminent, the AP starts a countdown (the Disassociation Timer, in Beacon intervals) before it will kick the station off, nudging it to reassociate elsewhere in time.",
+      "zh": "最终决定权始终在站点手里。当它收到一个 BTM 请求时，可以回复一个 BSS 切换管理响应帧（BSS Transition Management Response frame），其中携带一个 BTM 状态码（BTM Status Code）：0 表示“接受”（它将迁移，并可指明自己选定的目标 BSSID），而非零状态码则是带理由的礼貌拒绝——例如“从所有候选都收到的 Beacon/Probe Response 不足”、“没有合适的候选”，或“正在离开该 ESS”。网络还可以传递紧迫性：如果 BTM 请求把“即将解除关联（Disassociation Imminent）”置位，AP 就会启动一个倒计时（解除关联计时器，以 Beacon 间隔计数），在把站点踢下线之前，催促它及时重新关联到别处。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Put it together: 802.11k answers 'which neighbors are worth looking at,' 802.11v answers 'should I move, and to where, and how urgently.' Pair them with the fast transition you learned earlier, and the phone scans smartly, decides early, and hands off cleanly — all before you ever notice a hiccup on the call.",
+      "zh": "把它们串起来：802.11k 回答“哪些邻居值得看一眼”，802.11v 回答“我该不该走、走去哪里、有多急”。再把它们与你之前学过的快速切换配合起来，手机就能聪明地扫描、提早地决策、干净地切换——这一切都发生在你还没察觉通话有任何卡顿之前。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exactly who sends what, and what the status codes mean",
+        "zh": "到底谁发什么，以及状态码的含义"
+      },
+      "en": "Per 11.10.10.2, a STA requesting a neighbor report sends a Neighbor Report Request frame to its associated AP; it can also request LCI or civic location of neighbors via an embedded Measurement Request element. Per 11.10.10.3, if dot11RMNeighborReportActivated is true the AP responds with a Neighbor Report Response frame containing zero or more Neighbor Report elements scoped by the requested SSID (wildcard SSID returns all neighbors); if that MIB is false the AP ignores the request. For BTM (11.21.7.2), a non-AP STA may request a BSS Transition Candidate list with a BSS Transition Management Query frame, optionally including its own candidate entries with Preference values 1-255. Per 11.21.7.3 the AP must answer a Query with a BSS Transition Management Request frame, may send unsolicited or broadcast Requests to STAs that advertise BTM support, and signals an impending kick via the Disassociation Imminent field plus a Disassociation Timer counted down per Beacon. Per 11.21.7.4 the STA's SME may issue an MLME-BTM.response: BTM Status Code 0 is Accept (optionally with a Target BSSID), while codes such as 2 (insufficient Beacon/Probe Responses), 6 (STA candidate list provided), 7 (no suitable candidates) and 8 (leaving ESS) are rejections — and after accepting a Request with both Disassociation Imminent and Preferred Candidate List Included set, the STA must either disassociate or (re)associate to a non-excluded candidate from the list.",
+      "zh": "依据 11.10.10.2，请求邻居报告的 STA 向其关联 AP 发送邻居报告请求帧；它还可通过内嵌的测量请求元素（Measurement Request element）索取邻居的 LCI 或市政位置信息。依据 11.10.10.3，若 dot11RMNeighborReportActivated 为 true，AP 以邻居报告响应帧作答，其中含零个或多个按所请求 SSID 限定范围的邻居报告元素（通配 SSID 则返回所有邻居）；若该 MIB 为 false，AP 忽略此请求。对于 BTM（11.21.7.2），非 AP STA 可用 BSS 切换管理查询帧索要候选列表，并可选择附上自己的候选项及其 1-255 的偏好值。依据 11.21.7.3，AP 必须以 BSS 切换管理请求帧应答查询，可向声明支持 BTM 的 STA 发送非请求或广播请求，并通过“即将解除关联”字段加上按 Beacon 递减的解除关联计时器来预告“踢出”。依据 11.21.7.4，STA 的 SME 可发出 MLME-BTM.response：BTM 状态码 0 表示接受（可附目标 BSSID），而诸如 2（候选 Beacon/Probe Response 不足）、6（已提供 STA 候选列表）、7（无合适候选）、8（离开 ESS）等则为拒绝——并且在接受了一个同时置位“即将解除关联”和“包含偏好候选列表”的请求后，STA 必须要么解除关联，要么向列表中某个未被排除的候选（重新）关联。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2613,
+          2614,
+          2745,
+          2746,
+          2747
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.10.10.2",
+    "80211-2024:11.10.10.3",
+    "80211-2024:11.21.7.2",
+    "80211-2024:11.21.7.3",
+    "80211-2024:11.21.7.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2613,
+        2614
+      ],
+      "note": "11.10.10.2-11.10.10.3 — STA sends Neighbor Report Request to associated AP; AP responds with Neighbor Report Response containing zero or more Neighbor Report elements (gated by dot11RMNeighborReportActivated, scoped by SSID)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2745,
+        2746
+      ],
+      "note": "11.21.7.2-11.21.7.3 — BSS Transition Management Query (STA-initiated candidate request) and Request (AP-initiated, solicited/unsolicited/broadcast); candidate Preference 1-255, 0 = excluded; Disassociation Imminent + Disassociation Timer"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2747,
+        2748
+      ],
+      "note": "11.21.7.4 — BSS Transition Management Response; BTM Status Code 0 = Accept (with Target BSSID), reject codes 2/6/7/8; on Accept with Disassociation Imminent + Preferred Candidate List Included the STA must disassociate or (re)associate to a non-excluded candidate"
+    }
+  ],
+  "track": "mobility"
+}

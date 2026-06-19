@@ -1,0 +1,109 @@
+{
+  "id": "mobility-04-ft-protocol-over-the-air-vs-over-the-ds",
+  "title": {
+    "en": "The Fast Roam Itself: Over-the-Air vs Over-the-DS",
+    "zh": "快速漫游本身：空口方式 vs 经分布系统方式"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "When you walk across a building on a video call, your phone keeps hopping from one access point to the next. With ordinary roaming, each hop means a full re-authentication and a fresh key exchange — hundreds of milliseconds during which voice stutters and packets pile up. Fast BSS Transition (FT) fixes this by doing the expensive part early: it negotiates the encryption keys with the target AP *before* the station leaves the one it is on, so the actual jump is just a handful of frames. This is the payoff lesson of the roaming track — the moment where the hand-off finally becomes near-instant.",
+      "zh": "当你一边视频通话一边在楼里走动时，手机会不断地从一个接入点（AP）跳到下一个。在普通漫游里，每跳一次都意味着一次完整的重新认证加一次全新的密钥交换——这几百毫秒里语音会卡顿、数据包会堆积。快速 BSS 切换（Fast BSS Transition，FT）的做法是把最耗时的部分提前做完：它在站点离开当前 AP *之前*，就先和目标 AP 把加密密钥协商好，于是真正的“跳跃”只需要寥寥几帧。这就是漫游这一系列课程的“收获课”——切换终于变得近乎瞬时的那一刻。"
+    },
+    {
+      "type": "prose",
+      "en": "The trick is the FT authentication sequence. Instead of starting key derivation from scratch, the station (called the FTO — the FT Originator) and the target AP run a short exchange that pins down a fresh Pairwise Transient Key (PTK) ahead of time. The FTO contributes a random SNonce and names the key it already holds (PMKR0Name); the target AP answers with its own random ANonce. With both nonces in hand, *both sides independently compute the same fresh PTK* — before the station has even associated. By the time the station physically jumps, the encryption is already agreed; reassociation only has to prove it with a MIC and unblock the data path.",
+      "zh": "诀窍在于 FT 认证序列。站点（称为 FTO，即 FT 发起方）和目标 AP 不再从零开始推导密钥，而是跑一段简短的交换，提前敲定一把全新的成对临时密钥（PTK）。FTO 贡献一个随机数 SNonce，并指明自己已持有的密钥（PMKR0Name）；目标 AP 回以它自己的随机数 ANonce。两个随机数都到手后，*双方各自独立算出同一把全新的 PTK*——而此时站点甚至还没关联。等站点真正跳过去时，加密早已谈妥；重关联只需用一个 MIC 来证明，并打开数据通道即可。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "FT is its own authentication algorithm. A station using the FT protocol must use the FT authentication algorithm and nothing else, and the FT authentication frames only ever use transaction sequence numbers 1 and 2. So no matter which delivery path you pick, the cryptographic conversation is the same four-element dance: PMKR0Name + SNonce out, ANonce back, then PMKR1Name + MIC to confirm.",
+      "zh": "FT 自成一种认证算法。使用 FT 协议的站点必须且只能使用 FT 认证算法，而 FT 认证帧只会用到事务序号 1 和 2。所以无论你选哪条投递路径，密码学层面的对话都是同一套“四要素之舞”：先送出 PMKR0Name + SNonce，收回 ANonce，再用 PMKR1Name + MIC 来确认。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant FTO as Station (FTO)\n    participant T as Target AP\n    Note over FTO: decides to transition to Target AP\n    FTO->>T: Authentication-Request (FTAA, seq=1)<br/>RSNE[PMKR0Name], MDE, FTE[SNonce, R0KH-ID]\n    Note over T: derive PMKR1Name; pick ANonce\n    T->>FTO: Authentication-Response (FTAA, seq=2, Status)<br/>RSNE, MDE, FTE[ANonce, SNonce, R1KH-ID]\n    Note over FTO,T: both compute the same fresh PTK now\n    FTO->>T: Reassociation Request<br/>RSNE[PMKR1Name], FTE[MIC, ANonce, SNonce]\n    T->>FTO: Reassociation Response<br/>FTE[MIC, ANonce, SNonce, GTK, IGTK...]\n    Note over FTO,T: 802.1X port unblocked - secure session",
+      "zh": "sequenceDiagram\n    participant FTO as 站点 (FTO)\n    participant T as 目标 AP\n    Note over FTO: 决定切换到目标 AP\n    FTO->>T: 认证请求 (FTAA, 序号=1)<br/>RSNE[PMKR0Name], MDE, FTE[SNonce, R0KH-ID]\n    Note over T: 推导 PMKR1Name；选取 ANonce\n    T->>FTO: 认证响应 (FTAA, 序号=2, 状态)<br/>RSNE, MDE, FTE[ANonce, SNonce, R1KH-ID]\n    Note over FTO,T: 双方此刻各自算出同一把全新 PTK\n    FTO->>T: 重关联请求<br/>RSNE[PMKR1Name], FTE[MIC, ANonce, SNonce]\n    T->>FTO: 重关联响应<br/>FTE[MIC, ANonce, SNonce, GTK, IGTK...]\n    Note over FTO,T: 802.1X 端口解锁 - 安全会话"
+    },
+    {
+      "type": "prose",
+      "en": "Now the two delivery paths. In **over-the-air** FT, the station sends the Authentication-Request straight to the target AP — the source address is the FTO's MAC, the destination is the target AP's BSSID. The station is talking on the air to an AP it is not yet associated with, channel-hopping to reach it. In **over-the-DS** (Distribution System) FT, the station never leaves its current AP's channel: it wraps the same key material into an *FT Request* Action frame and hands it to its current AP, which forwards it across the wired backbone to the target AP. The target's *FT Response* comes back the same way. The station prepares its next AP without ever tuning away from the one carrying its traffic.",
+      "zh": "现在来看两条投递路径。在**空口（over-the-air）**方式中，站点把认证请求直接发给目标 AP——源地址是 FTO 的 MAC，目的地址是目标 AP 的 BSSID。站点是在空中与一个它尚未关联的 AP 对话，需要切换信道才能够到它。在**经分布系统（over-the-DS）**方式中，站点始终不离开当前 AP 的信道：它把同样的密钥材料封装进一个 *FT Request* 动作帧，交给当前 AP，由当前 AP 经有线骨干网转发给目标 AP。目标 AP 的 *FT Response* 也沿原路返回。站点无需从承载着自己流量的那个 AP 上调离信道，就完成了对下一个 AP 的准备。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 220' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><text x='20' y='20' fill='currentColor' stroke='none' font-size='13' font-weight='bold'>Over-the-air</text><circle cx='40' cy='90' r='14'/><text x='26' y='120' fill='currentColor' stroke='none' font-size='11'>STA</text><rect x='180' y='50' width='40' height='30'/><text x='178' y='100' fill='currentColor' stroke='none' font-size='11'>Current AP</text><rect x='180' y='120' width='40' height='30'/><text x='180' y='170' fill='currentColor' stroke='none' font-size='11'>Target AP</text><path d='M54 90 L178 135' stroke-dasharray='6 4'/><text x='70' y='128' fill='currentColor' stroke='none' font-size='10'>FT auth direct</text><text x='250' y='20' fill='currentColor' stroke='none' font-size='13' font-weight='bold'>Over-the-DS</text><circle cx='270' cy='90' r='14'/><text x='256' y='120' fill='currentColor' stroke='none' font-size='11'>STA</text><rect x='350' y='50' width='40' height='30'/><text x='348' y='44' fill='currentColor' stroke='none' font-size='11'>Current AP</text><rect x='350' y='120' width='40' height='30'/><text x='350' y='170' fill='currentColor' stroke='none' font-size='11'>Target AP</text><path d='M284 88 L348 70'/><text x='280' y='66' fill='currentColor' stroke='none' font-size='10'>on-channel</text><path d='M370 80 L370 120'/><text x='374' y='105' fill='currentColor' stroke='none' font-size='10'>via DS</text></svg>",
+      "caption": {
+        "en": "Two ways to reach the target AP: over-the-air the STA talks to it directly on its channel; over-the-DS the STA tunnels FT frames through its current AP across the wired distribution system, never leaving its channel.",
+        "zh": "够到目标 AP 的两种方式：空口方式下站点在目标 AP 的信道上与之直接对话；经分布系统方式下站点把 FT 帧通过当前 AP、经有线分布系统隧道传输，全程不离开当前信道。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Both paths converge on the same finish line: reassociation. The third message (the Reassociation Request) carries PMKR1Name and an FTE with a MIC — the station's cryptographic proof that it really computed the PTK. The fourth message (the Reassociation Response) returns its own MIC and, wrapped inside, the group keys (GTK, IGTK, and friends) so the station is immediately ready to send and receive protected traffic. One hard rule governs the whole thing: a successful reassociation only happens if the time between the first FT frame and the Reassociation Request stays within the **Reassociation Deadline Time**. Take too long and the target AP discards the pre-computed PTK, and the station must start over.",
+      "zh": "两条路径最终汇聚到同一个终点：重关联。第三条消息（重关联请求）携带 PMKR1Name 以及一个带 MIC 的 FTE——这是站点确实算出了 PTK 的密码学证明。第四条消息（重关联响应）回以它自己的 MIC，并在其中封装好组密钥（GTK、IGTK 等），使站点立即就能收发受保护的流量。有一条硬性规则统管全程：只有当首条 FT 帧与重关联请求之间的时间不超过**重关联截止时间（Reassociation Deadline Time）**，重关联才会成功。耗时过长，目标 AP 就会丢弃预先算好的 PTK，站点只得从头再来。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact four-message contents and how the two paths differ in the standard",
+        "zh": "四条消息的精确内容，以及标准中两条路径的差异"
+      },
+      "en": "Over-the-air (13.5.2): the FTO and target AP exchange Authentication-Request/Response frames carrying the FT authentication algorithm (FTAA); the SME drives them via MLME-AUTHENTICATE primitives using only sequence numbers 1 and 2. Over-the-DS (13.5.3): the same key material rides inside FT Request / FT Response *Action* frames; the FTO's SME issues an MLME-REMOTE-REQUEST.request, the MAC sends the Action frame to the current AP, and it is relayed over the DS to the target AP — explicitly forbidden if the target's MDE advertises the 'FT over DS' bit as 0. The four message bodies are pinned down in 13.8.2-13.8.5: message 1 sets RSNE PMKID=PMKR0Name plus FTE SNonce and R0KH-ID; message 2 returns FTE ANonce, SNonce, R1KH-ID, R0KH-ID; message 3 (the Reassociation Request) sets RSNE PMKID=PMKR1Name and an FTE MIC computed over FTO MAC || target AP MAC || sequence number (5 for reassoc, else 3) || RSNE || MDE || FTE; message 4 (the Reassociation Response) returns a MIC over the equivalent fields with sequence number 6/4, and may carry wrapped GTK/IGTK/BIGTK/WIGTK subelements in the FTE. In both paths, if the Status Code is SUCCESS the FTO and target AP transition to State 2 (per 11.3) and the FTO may continue with reassociation.",
+      "zh": "空口方式（13.5.2）：FTO 与目标 AP 交换携带 FT 认证算法（FTAA）的认证请求/响应帧；由 SME 通过 MLME-AUTHENTICATE 原语驱动，只使用序号 1 和 2。经分布系统方式（13.5.3）：同样的密钥材料承载于 FT Request / FT Response *动作*帧中；FTO 的 SME 发出 MLME-REMOTE-REQUEST.request，MAC 把动作帧发给当前 AP，再经 DS 转发给目标 AP——若目标 AP 的 MDE 把“FT over DS”位通告为 0，则明令禁止此方式。四条消息体由 13.8.2-13.8.5 精确规定：消息 1 把 RSNE 的 PMKID 设为 PMKR0Name，并在 FTE 中放入 SNonce 与 R0KH-ID；消息 2 回以 FTE 中的 ANonce、SNonce、R1KH-ID、R0KH-ID；消息 3（重关联请求）把 RSNE 的 PMKID 设为 PMKR1Name，并附带一个 MIC，其计算范围为 FTO MAC || 目标 AP MAC || 序号（重关联为 5，否则为 3）|| RSNE || MDE || FTE；消息 4（重关联响应）以序号 6/4 对等价字段计算 MIC，且其 FTE 中可携带封装好的 GTK/IGTK/BIGTK/WIGTK 子元素。两条路径下，若状态码为 SUCCESS，FTO 与目标 AP 即转入 State 2（依 11.3），FTO 可继续进行重关联。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3151,
+          3153,
+          3154,
+          3168,
+          3169,
+          3170
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:13.5.2",
+    "80211-2024:13.5.3",
+    "80211-2024:13.8.2",
+    "80211-2024:13.8.3",
+    "80211-2024:13.8.4",
+    "80211-2024:13.8.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3151,
+        3152,
+        3153
+      ],
+      "note": "13.5.2 Over-the-air FT protocol in an RSN - Auth-Request/Response (FTAA), SNonce/ANonce, PTK computed before reassociation, Reassociation Deadline Time; Figure 13-5"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3153,
+        3154,
+        3155
+      ],
+      "note": "13.5.3 Over-the-DS FT protocol in an RSN - FT Request/FT Response Action frames tunneled via current AP, MLME-REMOTE-REQUEST, FT-over-DS bit gate; Figures 13-6/13-7"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3168,
+        3169,
+        3170,
+        3171
+      ],
+      "note": "13.8.2-13.8.5 FT authentication sequence: contents of the first through fourth messages (PMKR0Name/SNonce; ANonce; PMKR1Name+MIC; final MIC + wrapped GTK/IGTK)"
+    }
+  ],
+  "track": "mobility"
+}

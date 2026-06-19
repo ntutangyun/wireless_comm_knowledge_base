@@ -1,0 +1,106 @@
+{
+  "id": "mobility-01-the-handoff-problem",
+  "title": {
+    "en": "The Handoff Problem: Why Your Call Drops When You Walk",
+    "zh": "切换难题：为什么走动时通话会断"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Picture a video call as you walk from your desk to a meeting room. The Wi-Fi name (SSID) never changes, the bars stay full — yet for a moment the call freezes. What happened is invisible from the outside: your phone quietly let go of one access point (AP) and grabbed another. That move between APs is called a roam, and doing it without breaking a live call is one of the hardest things a Wi-Fi network does.",
+      "zh": "想象你一边视频通话，一边从工位走到会议室。Wi-Fi 的名字（SSID）始终没变，信号格也是满的——可就在那一瞬间，通话卡顿了一下。从外面完全看不出发生了什么：你的手机悄悄松开了一个接入点（AP），又抓住了另一个。这种在 AP 之间的转移叫做“漫游（roam）”，而在不打断实时通话的前提下完成它，是 Wi-Fi 网络要做的最困难的事情之一。"
+    },
+    {
+      "type": "prose",
+      "en": "First, the key idea: this is all one network. A single Wi-Fi network you join — one SSID — is an Extended Service Set (ESS). Inside it, each AP runs its own little radio cell called a Basic Service Set (BSS), identified by a BSSID. So 'one SSID, many BSSs' is the whole game: walking around means your station (STA) drifts out of one BSS's coverage and into another's, while staying inside the same ESS. Roaming is a same-network move, not a re-login to somewhere new.",
+      "zh": "首先要抓住一个核心概念：这一切都属于同一个网络。你加入的一个 Wi-Fi 网络——一个 SSID——就是一个扩展服务集（ESS）。在它内部，每个 AP 各自运行着一个小小的无线小区，叫做基本服务集（BSS），用 BSSID 来标识。所以“一个 SSID、多个 BSS”就是问题的全部：四处走动意味着你的站点（STA）从一个 BSS 的覆盖范围漂出、漂入另一个 BSS，但始终待在同一个 ESS 之内。漫游是“同网内的移动”，而不是去某个新地方重新登录。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"6\" y=\"6\" width=\"408\" height=\"188\" rx=\"10\" stroke-dasharray=\"6 5\"/><text x=\"14\" y=\"24\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">ESS  (one SSID)</text><circle cx=\"120\" cy=\"120\" r=\"60\" stroke-dasharray=\"4 4\"/><circle cx=\"300\" cy=\"120\" r=\"60\" stroke-dasharray=\"4 4\"/><rect x=\"108\" y=\"70\" width=\"24\" height=\"16\" rx=\"3\"/><text x=\"96\" y=\"60\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">AP 1 (BSS A)</text><rect x=\"288\" y=\"70\" width=\"24\" height=\"16\" rx=\"3\"/><text x=\"276\" y=\"60\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">AP 2 (BSS B)</text><circle cx=\"160\" cy=\"140\" r=\"9\" fill=\"currentColor\" stroke=\"none\"/><text x=\"150\" y=\"172\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">STA</text><path d=\"M170 138 L255 132\" stroke-dasharray=\"3 4\" marker-end=\"url(#a)\"/><defs><marker id=\"a\" markerWidth=\"8\" markerHeight=\"8\" refX=\"6\" refY=\"3\" orient=\"auto\"><path d=\"M0 0 L6 3 L0 6 z\" fill=\"currentColor\" stroke=\"none\"/></marker></defs></svg>",
+      "caption": {
+        "en": "One ESS, two overlapping BSS cells. As the STA walks right, it must hand off from AP 1 to AP 2 without leaving the network.",
+        "zh": "一个 ESS，两个相互重叠的 BSS 小区。当 STA 向右走动时，必须在不离开网络的前提下，从 AP 1 切换到 AP 2。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "So why does the call ever stutter? Because joining an AP is not instant. The naive path to a new AP repeats the full join: 802.11 authentication, then — on a secured network — an 802.1X/EAP exchange (often a round-trip to a back-end authentication server), a 4-way handshake to derive fresh keys, and finally reassociation. Each step is a frame exchange over the air and sometimes over the wire to a server. Stacked together, this can take hundreds of milliseconds. A VoIP or video stream sends a packet every ~20 ms, so a gap that long is heard as a dropped word or a frozen frame.",
+      "zh": "那为什么通话还是会卡顿？因为接入一个 AP 并不是瞬间完成的。通往新 AP 的“朴素路径”要把整个入网流程重做一遍：先做 802.11 认证，然后——在受保护的网络上——还要做一次 802.1X/EAP 交换（往往要往返后端认证服务器一趟），再做一次用于推导新密钥的四次握手（4-way handshake），最后才是重关联（reassociation）。每一步都是一次空口上的帧交换，有时还要经过有线网络去找服务器。这些步骤叠加起来，可能耗费数百毫秒。而 VoIP 或视频流大约每 20 毫秒就要发一个数据包，所以这么长的空档，听起来就是漏掉的一个词，或者画面卡住的一帧。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The trick the standard uses: do the slow, time-consuming work early, before you actually move. If security and QoS parameters for the next AP are negotiated in advance, the only thing left at the moment of the move is a quick, pre-staged switch. That is exactly the idea behind Fast BSS Transition (FT).",
+      "zh": "标准采用的诀窍是：把那些缓慢、耗时的工作提前做掉，赶在你真正移动之前。如果面向下一个 AP 的安全与 QoS 参数能提前协商好，那么真正切换的那一刻就只剩下一次快速的、预先准备好的切换动作。这正是“快速 BSS 切换（Fast BSS Transition，FT）”背后的思路。"
+    },
+    {
+      "type": "prose",
+      "en": "Fast BSS Transition lives in Clause 13 of the standard. Its goal is stated plainly: reduce the length of time that connectivity is lost during a BSS transition. It works only between APs in the same mobility domain within the same ESS — again, the same-network rule. With FT, the STA can set up its security association with the target AP ahead of reassociation, so the time-consuming operations are pulled out of the time-critical step. Below is the over-the-air FT exchange in a secured network: notice the keying work happens in the first two Authentication frames, leaving reassociation fast.",
+      "zh": "快速 BSS 切换定义在标准的第 13 章。它的目标说得很直白：缩短 BSS 切换期间连接中断的时长。它只适用于同一个 ESS、同一个移动域（mobility domain）内的 AP 之间——还是那条“同网”规则。借助 FT，STA 可以在重关联之前就和目标 AP 建立好安全关联，从而把耗时的操作从对时间敏感的那一步里抽离出去。下面是受保护网络中“空中（over-the-air）”FT 交换的过程：注意密钥相关的工作都发生在前两个认证帧里，从而让重关联变得很快。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as STA (FTO)\n    participant T as Target AP\n    Note over STA: still connected to current AP; decides to move to Target AP\n    STA->>T: Authentication-Request (FTAA, RSNE[PMKR0Name], MDE, FTE[SNonce, R0KH-ID])\n    T->>STA: Authentication-Response (FTAA, RSNE, MDE, FTE[ANonce, SNonce, R1KH-ID, R0KH-ID])\n    Note over STA,T: fresh PTK computed in advance — keying done BEFORE the move\n    STA->>T: Reassociation Request (RSNE[PMKR1Name], MDE, FTE[MIC, ANonce, SNonce...])\n    T->>STA: Reassociation Response (FTE[MIC, ... GTK, IGTK, BIGTK], RSNXE)\n    Note over STA,T: 802.1X port unblocked — secure session resumes, fast",
+      "zh": "sequenceDiagram\n    participant STA as STA（FTO）\n    participant T as 目标 AP\n    Note over STA: 仍连着当前 AP；决定切换到目标 AP\n    STA->>T: 认证请求 Authentication-Request (FTAA, RSNE[PMKR0Name], MDE, FTE[SNonce, R0KH-ID])\n    T->>STA: 认证响应 Authentication-Response (FTAA, RSNE, MDE, FTE[ANonce, SNonce, R1KH-ID, R0KH-ID])\n    Note over STA,T: 新的 PTK 已提前算好——密钥工作在“移动之前”完成\n    STA->>T: 重关联请求 Reassociation Request (RSNE[PMKR1Name], MDE, FTE[MIC, ANonce, SNonce...])\n    T->>STA: 重关联响应 Reassociation Response (FTE[MIC, ... GTK, IGTK, BIGTK], RSNXE)\n    Note over STA,T: 802.1X 受控端口解锁——安全会话快速恢复"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What the standard actually says about FT and reassociation timing",
+        "zh": "标准对 FT 及重关联时序的确切规定"
+      },
+      "en": "Clause 4.5.4.8 defines the FT mechanism as a means for a STA to set up security and QoS parameters prior to reassociation to a new AP, so that time-consuming operations are removed from the time-critical reassociation process. Clause 13.1 scopes it tightly: the FT protocols are part of the reassociation service and only apply to STA transitions between APs within the same mobility domain within the same ESS. Two flavours exist — the FT protocol (no resource request before transition) and the FT resource request protocol — and the exchange can run Over-the-Air (directly with the target AP using the FT authentication algorithm) or Over-the-DS (via the current AP). For the over-the-air case, Figure 13-5 shows the FTO and target AP exchanging Authentication-Request / Authentication-Response (carrying SNonce, ANonce, and key-holder IDs) to compute a fresh PTK in advance, then a fast Reassociation Request / Response. Critically, the standard notes a deadline: a successful reassociation occurs only when the time between the Authentication-Request and the Reassociation Request does not exceed the Reassociation Deadline Time. Separately, Clause 11.3.8 lets an AP steer a roaming STA by rejecting an Authentication or (Re)Association Request with status code REJECTED_WITH_SUGGESTED_BSS_TRANSITION plus Neighbor Report elements pointing at better BSSs in the same ESS.",
+      "zh": "4.5.4.8 节把 FT 机制定义为：让 STA 能在重关联到新 AP 之前就设置好安全与 QoS 参数，从而把耗时的操作从对时间敏感的重关联流程中移除。13.1 节则严格界定了它的适用范围：FT 协议是重关联服务的一部分，仅适用于同一个 ESS、同一个移动域内 AP 之间的 STA 切换。它有两种形式——FT 协议（切换前无需资源请求）和 FT 资源请求协议——交换过程可以走“空中（Over-the-Air，直接用 FT 认证算法与目标 AP 通信）”或“经分布系统（Over-the-DS，经由当前 AP）”。在空中方式下，图 13-5 显示 FTO 与目标 AP 交换认证请求/认证响应（携带 SNonce、ANonce 以及密钥持有者 ID）以提前算出新的 PTK，随后才是快速的重关联请求/响应。关键在于，标准给出了一个时限：只有当认证请求与重关联请求之间的时间不超过“重关联截止时间（Reassociation Deadline Time）”时，重关联才会成功。此外，11.3.8 节允许 AP 通过把认证或（重）关联响应的状态码置为 REJECTED_WITH_SUGGESTED_BSS_TRANSITION 并附上邻居报告元素（指向同一 ESS 内更优的 BSS），来引导正在漫游的 STA。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          398,
+          3141,
+          3151,
+          3152,
+          2539
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:4.5.4.8",
+    "80211-2024:13.1",
+    "80211-2024:11.3.8"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        398
+      ],
+      "note": "4.5.4.8 Fast BSS transition — FT sets up security/QoS prior to reassociation, removing time-consuming ops from the time-critical reassociation"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3141
+      ],
+      "note": "13.1 Overview — FT reduces connectivity-loss time during BSS transition; only between APs in same mobility domain within same ESS; FT protocol vs FT resource request; Over-the-Air vs Over-the-DS"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3151,
+        3152
+      ],
+      "note": "13.5 / Figure 13-5 — over-the-air FT protocol message exchange; Authentication-Request/Response keying then Reassociation; Reassociation Deadline Time"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2539
+      ],
+      "note": "11.3.8 Neighbor report information upon rejection with suggested BSS transition — REJECTED_WITH_SUGGESTED_BSS_TRANSITION + Neighbor Report elements"
+    }
+  ],
+  "track": "mobility"
+}

@@ -1,0 +1,89 @@
+{
+  "id": "mobility-03-ft-initial-mobility-domain-association",
+  "title": {
+    "en": "Joining the Mobility Domain: FT Initial Association",
+    "zh": "加入移动域：FT 初次关联"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Fast BSS Transition (FT) exists so a station can hop from one access point to another inside a network without redoing a slow, full security handshake every time. But that speed isn't free — somebody has to set up the cryptographic keys first. That one-time setup happens during the FT initial mobility domain association: the very first time a station joins the network and announces, in effect, 'I plan to roam, so let's get the keys ready now.' Pay the security cost up front, once, and every later roam becomes cheap.",
+      "zh": "Fast BSS Transition（FT，快速 BSS 切换）的意义在于：让站点能在同一个网络内从一个接入点（AP）跳到另一个，而不必每次都重做一遍缓慢的完整安全握手。但这种“快”不是凭空而来的——总得有人先把密钥准备好。这个一次性的准备工作就发生在 FT 初次移动域关联（FT initial mobility domain association）时：也就是站点第一次加入该网络的那一刻，它实际上在宣告：“我打算漫游，所以现在就把密钥准备好。”把安全开销提前、一次性付清，之后每一次漫游就都变得很便宜。"
+    },
+    {
+      "type": "prose",
+      "en": "A 'mobility domain' is just a group of APs that agree to share roaming keys for the same set of stations, identified by a Mobility Domain Identifier (MDID). An AP advertises that it belongs to one — and that it speaks FT — by including the Mobility Domain element (MDE) in its Beacon and Probe Response frames. A station that wants in echoes that MDE back in its (Re)Association Request, along with its security capabilities in the RSNE. That mutual exchange is the handshake that says 'we both intend FT,' and it binds this association to the mobility domain.",
+      "zh": "所谓“移动域（mobility domain）”，无非是一组互相约定、愿意为同一批站点共享漫游密钥的 AP，它们用一个移动域标识符（MDID）来标记。AP 通过在其 Beacon 和 Probe Response 帧中加入移动域元素（MDE，Mobility Domain element）来宣告：自己属于某个移动域，并且支持 FT。想要加入的站点则在它的（重）关联请求中把这个 MDE 原样回送回去，同时在 RSNE 中带上自己的安全能力。这一来一回的交换就构成了“我们双方都打算使用 FT”的握手，并把本次关联绑定到该移动域上。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The MDE is the 'I plan to roam' flag, and the FTE (FT element) is the envelope that carries the key-holder identities. Both must appear in this first association for the fast-roam machinery to be armed. Skip the FT initial association and a later transition has no key hierarchy to lean on — it falls back to a full, slow authentication.",
+      "zh": "MDE 是那面“我打算漫游”的旗子，而 FTE（FT element，FT 元素）则是装载密钥持有者身份的信封。要让快速漫游机制就位，这两者都必须出现在这第一次关联中。如果跳过 FT 初次关联，那么之后的切换就没有可依赖的密钥层级——只能退回到一次完整、缓慢的认证。"
+    },
+    {
+      "type": "prose",
+      "en": "Under the hood the station still performs a full IEEE 802.11 authentication first — Open System for most stations, or SAE if that's the chosen method — exactly like any normal join. The difference is what follows. After the (Re)Association exchange carrying MDE/RSNE/FTE, the station and AP run an 802.1X (or SAE) authentication if needed, then an FT 4-way handshake. By the end, the 802.1X Controlled Port opens and the FT key hierarchy is established: a top-level PMK-R0 held by the R0 key holder (R0KH), and a per-AP PMK-R1 handed to the R1 key holder (R1KH). Those R0KH/R1KH identities, carried in the FTE, are what bind the keys to specific holders in the domain.",
+      "zh": "在底层，站点其实仍然要先做一次完整的 IEEE 802.11 认证——大多数站点用 Open System，若选用 SAE 则用 SAE——和任何普通入网过程一模一样。不同之处在于其后的步骤。在携带 MDE/RSNE/FTE 的（重）关联交换之后，站点与 AP 会按需进行一次 802.1X（或 SAE）认证，随后再做一次 FT 四次握手（FT 4-way handshake）。到流程结束时，802.1X 受控端口（Controlled Port）打开，FT 密钥层级也随之建立：一个由 R0 密钥持有者（R0KH）保管的顶层 PMK-R0，以及一个交给 R1 密钥持有者（R1KH）的、每个 AP 各一份的 PMK-R1。FTE 中携带的这些 R0KH/R1KH 身份，正是把密钥绑定到域内特定持有者上的依据。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Station (SME + MLME)\n    participant AP as AP (R0KH / R1KH)\n    Note over STA,AP: AP Beacon/Probe Resp already carried MDE (FT-capable)\n    STA->>AP: Authentication-Request (Open System)\n    AP->>STA: Authentication-Response (Open System, Status)\n    STA->>AP: (Re)Association Request (MDE, RSNE, RSNXE)\n    AP->>STA: (Re)Association Response (MDE, FTE[R1KH-ID, R0KH-ID], RSNXE)\n    Note over STA,AP: 802.1X EAP authentication (bypassed if PSK)\n    Note over STA,AP: FT 4-way handshake establishes PMK-R0 / PMK-R1\n    Note over STA,AP: 802.1X Controlled Port opens — keys ready for future fast roams",
+      "zh": "sequenceDiagram\n    participant STA as 站点 (SME + MLME)\n    participant AP as AP (R0KH / R1KH)\n    Note over STA,AP: AP 的 Beacon/Probe Resp 已携带 MDE（支持 FT）\n    STA->>AP: 认证请求 (Open System)\n    AP->>STA: 认证响应 (Open System, 状态)\n    STA->>AP: （重）关联请求 (MDE, RSNE, RSNXE)\n    AP->>STA: （重）关联响应 (MDE, FTE[R1KH-ID, R0KH-ID], RSNXE)\n    Note over STA,AP: 802.1X EAP 认证（若用 PSK 则跳过）\n    Note over STA,AP: FT 四次握手建立 PMK-R0 / PMK-R1\n    Note over STA,AP: 802.1X 受控端口打开——密钥已就绪，可供后续快速漫游"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 360 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><rect x='150' y='10' width='60' height='30' rx='4'/><text x='180' y='30' text-anchor='middle' fill='currentColor' stroke='none' font-size='11'>PMK-R0</text><text x='180' y='52' text-anchor='middle' fill='currentColor' stroke='none' font-size='9'>held by R0KH</text><line x1='180' y1='40' x2='90' y2='100'/><line x1='180' y1='40' x2='270' y2='100'/><rect x='40' y='100' width='100' height='30' rx='4'/><text x='90' y='120' text-anchor='middle' fill='currentColor' stroke='none' font-size='11'>PMK-R1 (AP-a)</text><rect x='220' y='100' width='100' height='30' rx='4'/><text x='270' y='120' text-anchor='middle' fill='currentColor' stroke='none' font-size='11'>PMK-R1 (AP-b)</text><text x='90' y='148' text-anchor='middle' fill='currentColor' stroke='none' font-size='9'>R1KH at AP-a</text><text x='270' y='148' text-anchor='middle' fill='currentColor' stroke='none' font-size='9'>R1KH at AP-b</text><line x1='90' y1='130' x2='90' y2='168' stroke-dasharray='4 3'/><line x1='270' y1='130' x2='270' y2='168' stroke-dasharray='4 3'/><rect x='50' y='168' width='80' height='24' rx='4' stroke-dasharray='4 3'/><text x='90' y='184' text-anchor='middle' fill='currentColor' stroke='none' font-size='9'>PTK on roam</text><rect x='230' y='168' width='80' height='24' rx='4' stroke-dasharray='4 3'/><text x='270' y='184' text-anchor='middle' fill='currentColor' stroke='none' font-size='9'>PTK on roam</text></svg>",
+      "caption": {
+        "en": "The FT key hierarchy set up at initial association: one PMK-R0 at the R0KH derives a separate PMK-R1 for each AP's R1KH. A later fast roam only needs to derive a fresh PTK from the AP's pre-positioned PMK-R1 — no trip back to the authentication server.",
+        "zh": "初次关联时建立的 FT 密钥层级：R0KH 处的一个 PMK-R0 为每个 AP 的 R1KH 派生出各自独立的 PMK-R1。之后的一次快速漫游只需从该 AP 预先就位的 PMK-R1 派生出新的 PTK 即可——无需再回到认证服务器。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "So the whole point of this first, deliberately heavier association is to leave the station holding keys it can reuse. Once the hierarchy exists, transitioning to any other AP in the same mobility domain skips the slow parts: there's no fresh trip to the authentication server, because that AP's R1KH already has (or can be given) a PMK-R1 derived from the shared PMK-R0. The expensive work was done once, at the door; every subsequent roam just derives a fresh session key and moves on.",
+      "zh": "因此，这第一次刻意做得更“重”的关联，目的就是让站点最终握有可以复用的密钥。一旦密钥层级建立起来，切换到同一移动域内的任何其他 AP 都能跳过那些缓慢的步骤：不必再次往返认证服务器，因为那个 AP 的 R1KH 已经持有（或能被分发到）一份由共享的 PMK-R0 派生出来的 PMK-R1。昂贵的工作只在门口做了一次；之后的每一次漫游，只需派生一个新的会话密钥就能继续。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "What MDE/FTE/RSNE actually carry, and the exact RSN sequence",
+        "zh": "MDE/FTE/RSNE 到底携带了什么，以及精确的 RSN 流程"
+      },
+      "en": "Clause 13.4.1 defines FT initial mobility domain association as the first (re)association in the mobility domain, where the STA's SME enables future use of the FT procedures — and notes both Association and Reassociation frames are supported so FT and non-FT APs can coexist in one ESS. Clause 13.4.2 gives the RSN sequence precisely: the STA indicates FT support via the MDE and security via the RSNE in the (Re)Association Request; the AP responds with MDE, FTE, and RSNE. The contents of the MDE the STA sends must equal what the AP advertised in Beacon/Probe Response, or the AP rejects with STATUS_INVALID_MDE; if the RSNE doesn't indicate a single FT AKMP, the AP rejects with STATUS_INVALID_AKMP. The FTE in the response carries the AP's R0KH-ID and R1KH-ID (from dot11FTR0KeyHolderID and dot11FTR1KeyHolderID). After a successful 802.1X or SAE authentication, the R0KH computes PMK-R0, PMKR0Name, and PMK-R1 and makes the PMK-R1 available to the AP's R1KH; the R1KH and S1KH then run the FT 4-way handshake, after which the 802.1X Controlled Port opens on both sides.",
+      "zh": "13.4.1 节将 FT 初次移动域关联定义为移动域内的第一次（重）关联，站点的 SME 在此启用其今后对 FT 流程的使用——并指出 Association 与 Reassociation 帧都被支持，从而让 FT 与非 FT 的 AP 能在同一个 ESS 中共存。13.4.2 节精确给出了 RSN 下的流程：站点在（重）关联请求中通过 MDE 表明支持 FT、通过 RSNE 表明安全能力；AP 则在响应中带上 MDE、FTE 与 RSNE。站点发送的 MDE 内容必须与 AP 在 Beacon/Probe Response 中所宣告的一致，否则 AP 以 STATUS_INVALID_MDE 拒绝；若 RSNE 未指明单一的 FT AKMP，AP 则以 STATUS_INVALID_AKMP 拒绝。响应中的 FTE 携带 AP 的 R0KH-ID 和 R1KH-ID（取自 dot11FTR0KeyHolderID 与 dot11FTR1KeyHolderID）。在成功完成 802.1X 或 SAE 认证后，R0KH 计算出 PMK-R0、PMKR0Name 和 PMK-R1，并把 PMK-R1 提供给该 AP 的 R1KH；随后 R1KH 与 S1KH 进行 FT 四次握手，完成后双方的 802.1X 受控端口都将打开。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          3145,
+          3146,
+          3147
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:13.4.2",
+    "80211-2024:13.4.1"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3145
+      ],
+      "note": "13.4.1 Overview + start of 13.4.2 — FT initial mobility domain association is the first (re)assoc; MDE advertised in Beacon/Probe Response; Open System / SAE authentication initiates the procedure"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        3146,
+        3147
+      ],
+      "note": "13.4.2 in an RSN — (Re)Association carries MDE/RSNE/FTE; STATUS_INVALID_MDE / STATUS_INVALID_AKMP rejects; FTE carries R0KH-ID/R1KH-ID; R0KH derives PMK-R0/PMK-R1; FT 4-way handshake; Figure 13-2"
+    }
+  ],
+  "track": "mobility"
+}
