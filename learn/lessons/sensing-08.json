@@ -1,0 +1,109 @@
+{
+  "id": "sensing-08",
+  "title": {
+    "en": "Sensing by proxy, in full: setup, reporting, and teardown of a third-party sensing service",
+    "zh": "完整的代理感知（SBP）：第三方感知服务的建立、上报与拆除"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Not every device wants to run the full Wi-Fi sensing machinery itself. Sounding the channel, scheduling measurement sessions, collecting CSI from a fleet of responders — that is a lot of work for a battery-powered phone or a thin IoT node. Sensing by Proxy (SBP) is the standard's answer: a non-AP STA asks a capable AP to perform sensing on its behalf and to hand back the results. Think of it as 'sensing as a service' — a thin client outsourcing the heavy lifting, with a clean contract for what it wants, how results come back, and how to cancel.",
+      "zh": "并不是每台设备都愿意自己运行整套 Wi-Fi 感知机制。探测信道、调度测量会话、从一群响应者那里收集 CSI——这对于一部靠电池供电的手机或一个轻量的物联网节点来说工作量太大了。代理感知（Sensing by Proxy，SBP）就是标准给出的答案：一个非 AP 站点请求一台有能力的 AP 代它执行感知，并把结果回传给它。可以把它理解为“感知即服务”——瘦客户端把繁重的工作外包出去，同时通过一份清晰的“合同”约定它想要什么、结果如何返回、以及如何取消。"
+    },
+    {
+      "type": "prose",
+      "en": "Two roles drive the whole thing. The SBP initiator is the non-AP STA that wants sensing done; the SBP responder is the AP that does it. Both advertise the ability by setting the SBP field in their Extended Capabilities element to 1, and both must implement sensing and SBP. A neat detail: the initiator does not even have to be associated with the AP — an unassociated STA can still ask for proxied sensing, which the standard handles with extra polling and availability-window machinery.",
+      "zh": "整个流程由两个角色驱动。SBP 发起者（initiator）是想要完成感知的那个非 AP 站点；SBP 响应者（responder）是执行感知的那台 AP。双方都通过把扩展能力元素（Extended Capabilities element）中的 SBP 字段置为 1 来宣告该能力，并且都必须实现感知与 SBP。一个有意思的细节是：发起者甚至不必与 AP 关联——未关联的站点照样可以请求代理感知，标准会用额外的轮询与可用窗口机制来处理这种情形。"
+    },
+    {
+      "type": "prose",
+      "en": "The service runs in four phases. First a setup handshake: the initiator sends an SBP Request, the responder answers with an SBP Response that either accepts (SUCCESS) or declines. If accepted, the responder quietly spins up real sensing sessions under the hood — but with the responders out in the field, not with the thin initiator. Then it reports the measurement results back to the initiator. Finally either side can tear the service down. Setup, sensing, reporting, termination — four clean steps.",
+      "zh": "该服务分四个阶段运行。首先是建立握手：发起者发送 SBP 请求帧（SBP Request），响应者回复 SBP 响应帧（SBP Response），要么接受（SUCCESS）、要么拒绝。一旦接受，响应者就在底层悄悄启动真正的感知会话——但对象是分布在现场的那些响应者，而不是这个瘦发起者。随后它把测量结果上报回发起者。最后，任何一方都可以拆除该服务。建立、感知、上报、拆除——干净的四步。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant I as SBP Initiator (non-AP STA)\n    participant R as SBP Responder (AP)\n    participant S as Sensing Responders\n    Note over I: SME issues MLME-SBP.request\n    I->>R: SBP Request (SBP + Sensing Measurement Parameters)\n    Note over R: validate; MLME-SBP.indication/response\n    R->>I: SBP Response (Status=SUCCESS, Measurement Session ID, AID/USID)\n    Note over R,S: responder runs TB sensing on the initiator's behalf\n    R->>S: Sensing Measurement Request (TB exchanges)\n    S-->>R: CSI / measurement reports\n    R->>I: Sensing Measurement Report frame(s)\n    Note over I,R: either side may send an SBP Termination frame\n    I->>R: SBP Termination",
+      "zh": "sequenceDiagram\n    participant I as SBP 发起者 (非 AP 站点)\n    participant R as SBP 响应者 (AP)\n    participant S as 感知响应者们\n    Note over I: SME 发出 MLME-SBP.request\n    I->>R: SBP 请求帧 (SBP + 感知测量参数)\n    Note over R: 校验; MLME-SBP.indication/response\n    R->>I: SBP 响应帧 (状态=SUCCESS, 测量会话 ID, AID/USID)\n    Note over R,S: 响应者代发起者运行 TB 感知\n    R->>S: 感知测量请求帧 (TB 交换)\n    S-->>R: CSI / 测量报告\n    R->>I: 感知测量报告帧\n    Note over I,R: 任一方都可发送 SBP 终止帧\n    I->>R: SBP 终止帧"
+    },
+    {
+      "type": "prose",
+      "en": "The setup exchange is where the contract is negotiated. The SBP Request must carry an SBP Parameters element and a Sensing Measurement Parameters element, and it can list preferred sensing responders by MAC address. It also sets a procedure-expiry timer: if no frames flow for that long, the whole SBP procedure is considered terminated. The responder must reply within aSBPSetupExpiry (100 ms). A SUCCESS response assigns a Measurement Session ID and an AID/USID to the initiator; a declined response uses REQUEST_DECLINED, while REJECTED_WITH_SUGGESTED_SENSING_PARAMETERS lets the AP say 'no, but try these parameters instead' — a counter-offer rather than a flat refusal.",
+      "zh": "建立交换正是协商“合同”的环节。SBP 请求帧必须携带 SBP 参数元素和感知测量参数元素，并且可以按 MAC 地址列出偏好的感知响应者。它还设定一个过程过期定时器：如果在该时长内没有任何帧往来，整个 SBP 过程即被视为终止。响应者必须在 aSBPSetupExpiry（100 ms）内回复。SUCCESS 响应会为发起者分配一个测量会话 ID（Measurement Session ID）和一个 AID/USID；被拒绝时使用 REQUEST_DECLINED，而 REJECTED_WITH_SUGGESTED_SENSING_PARAMETERS 则让 AP 表达“不行，但可以试试这些参数”——这是一个还价，而非一口回绝。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A key separation: the initiator never sounds the channel itself. The proxy AP starts a brand-new sensing procedure with the field responders using TB (trigger-based) sensing exchanges, identified by a fresh Measurement Session ID. The initiator just hands over its requirements and later collects reports — it stays a thin client throughout. If the initiator happens to also be a sensing responder, the AP can fold it into the measurement too.",
+      "zh": "一个关键的分离点：发起者从不亲自探测信道。代理 AP 会与现场的响应者们启动一个全新的感知过程，使用 TB（基于触发的）感知交换，并用一个新分配的测量会话 ID 来标识。发起者只是交出它的需求、之后收取报告——它自始至终都是瘦客户端。如果发起者恰好同时也是一个感知响应者，AP 也可以把它一并纳入测量。"
+    },
+    {
+      "type": "prose",
+      "en": "Reporting closes the loop. Triggered by an MLME-SBPREPORT.request, the responder sends Sensing Measurement Report frames to the initiator, each carrying one or more Sensing Measurement Report Container fields with the CSI or measurement data (or a segment of it). For unassociated initiators, the AP assigns a sensing availability window — a periodic slot the initiator must be awake for to receive its reports — and reporting is scheduled around TB sensing exchanges and the acquired TXOP. Termination is symmetric and lenient: the initiator can send an SBP Termination frame at any time; the responder can too if the initiator is associated, or otherwise during the initiator's availability window. Expiry of the procedure timer ends it as well, and the AP then tears down the underlying sensing sessions with all the field responders.",
+      "zh": "上报阶段把闭环补上。由 MLME-SBPREPORT.request 触发，响应者向发起者发送感知测量报告帧（Sensing Measurement Report frame），每一帧携带一个或多个感知测量报告容器字段（Sensing Measurement Report Container），其中装着 CSI 或测量数据（或其某个分段）。对于未关联的发起者，AP 会分配一个感知可用窗口（sensing availability window）——发起者必须在该周期性时隙内保持唤醒才能收到报告——上报则围绕 TB 感知交换和已获取的 TXOP 来调度。终止是对称且宽松的：发起者可在任意时刻发送 SBP 终止帧（SBP Termination frame）；若发起者已关联，响应者亦可，否则需在发起者的可用窗口内发送。过程定时器到期同样会结束它，随后 AP 会拆除与所有现场响应者之间的底层感知会话。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact setup contract and termination rules",
+        "zh": "精确的建立合同与终止规则"
+      },
+      "en": "Clause 11.55.2.2 pins down the setup. The SBP initiator's SME issues MLME-SBP.request, producing an SBP Request frame that shall include both an SBP Parameters element and a Sensing Measurement Parameters element. The responder validates it, raises MLME-SBP.indication, and on an MLME-SBP.response transmits an SBP Response within aSBPSetupExpiry (100 ms). On SUCCESS the response shall include a Measurement Session ID Indication field and an SBP initiator AID/USID field, and shall NOT include a Sensing Measurement Parameters element; on REQUEST_DECLINED it shall include neither a Sensing Measurement Parameters nor an SBP Parameters element; on REJECTED_WITH_SUGGESTED_SENSING_PARAMETERS it shall include both, carrying the suggested parameters. To satisfy the request the responder initiates a NEW sensing procedure (11.55.1.4) via MLME-SENSMSMTSESSION.request, and the Sensing Measurement Request it sends to field responders carries an SBP Specific subelement with the initiator's AID12/USID12 and a Measurement Session ID identical to the one in the SBP Response. Only TB sensing measurement exchanges are used. For an unassociated initiator the responder sets Poll Assigned to 1 and polls it. Reporting (11.55.2.3) runs on MLME-SBPREPORT.request. Termination (11.55.2.4) may be initiated by either party via an SBP Termination frame, or by expiry of the SBP procedure expiry timer, after which the responder terminates the corresponding sensing measurement sessions with all sensing responders (except the initiator if it is itself a sensing responder).",
+      "zh": "11.55.2.2 节确定了建立细节。SBP 发起者的 SME 发出 MLME-SBP.request，产生一个 SBP 请求帧，该帧必须同时包含 SBP 参数元素和感知测量参数元素。响应者对其校验、上报 MLME-SBP.indication，并在收到 MLME-SBP.response 后于 aSBPSetupExpiry（100 ms）内发送 SBP 响应帧。SUCCESS 时，响应帧必须包含测量会话 ID 指示字段和 SBP 发起者 AID/USID 字段，且不得包含感知测量参数元素；REQUEST_DECLINED 时，既不含感知测量参数元素也不含 SBP 参数元素；REJECTED_WITH_SUGGESTED_SENSING_PARAMETERS 时则两者都含，用于携带建议参数。为满足请求，响应者通过 MLME-SENSMSMTSESSION.request 启动一个全新的感知过程（11.55.1.4），它发给现场响应者的感知测量请求帧携带一个 SBP 专用子元素（含发起者的 AID12/USID12），其测量会话 ID 与 SBP 响应帧中的相同。仅使用 TB 感知测量交换。对于未关联的发起者，响应者把 Poll Assigned 置为 1 并对其轮询。上报（11.55.2.3）由 MLME-SBPREPORT.request 驱动。终止（11.55.2.4）可由任一方通过 SBP 终止帧发起，或在 SBP 过程过期定时器到期时发生，此后响应者会终止与所有感知响应者之间相应的感知测量会话（若发起者本身也是感知响应者则将其除外）。",
+      "cite": {
+        "pdf_id": "80211bf-2025",
+        "pages": [
+          166,
+          170,
+          172
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211bf-2025:11.55.2",
+    "80211bf-2025:11.55.2.1",
+    "80211bf-2025:11.55.2.2",
+    "80211bf-2025:11.55.2.3",
+    "80211bf-2025:11.55.2.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        165
+      ],
+      "note": "11.55.2 / 11.55.2.1 General — SBP lets a non-AP STA ask an AP to sense on its behalf; SBP field, initiator/responder roles, associated or unassociated; timing table 11-33b"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        166,
+        167,
+        168,
+        169,
+        170,
+        171
+      ],
+      "note": "11.55.2.2 Setup exchange — SBP Request/Response, MLME-SBP primitives, Status Codes, Measurement Session ID, aSBPSetupExpiry, new sensing procedure, availability windows"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        171,
+        172
+      ],
+      "note": "11.55.2.3 Reporting — MLME-SBPREPORT.request, Sensing Measurement Report frames, Report Container fields, availability window scheduling"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        172,
+        173
+      ],
+      "note": "11.55.2.4 Termination — SBP Termination frame from either side, procedure expiry timer, teardown of underlying sensing measurement sessions"
+    }
+  ],
+  "track": "sensing"
+}

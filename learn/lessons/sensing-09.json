@@ -1,0 +1,118 @@
+{
+  "id": "sensing-09",
+  "title": {
+    "en": "DMG sensing procedure: beam-based sounding, sessions, and bursts at 60 GHz",
+    "zh": "DMG 感知流程：60 GHz 上基于波束的探测、会话与突发"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Down in the sub-7 GHz bands, Wi-Fi sensing listens to the whole room at once: nearly omnidirectional antennas hand the receiver channel state information across every subcarrier, so a single measurement already covers the space. At 60 GHz — the DMG (Directional Multi-Gigabit) band that 802.11ad/ay live in — that free lunch is gone. The antenna array forms pencil-thin, steerable beams, so a device can only 'see' wherever the beam happens to point. To cover a scene it has to paint the room beam by beam. 802.11bf therefore rebuilds the whole sensing procedure around beams and a tight schedule. This lesson lays down that skeleton — the session and burst structure the next lesson's measurement-exchange modes hang on.",
+      "zh": "在 Sub-7 GHz 频段，Wi-Fi 感知能一次性“听”到整个房间：近乎全向的天线把每个子载波上的信道状态信息交给接收端，因此单次测量就已覆盖整个空间。可一到 60 GHz——也就是 802.11ad/ay 所在的 DMG（定向多吉比特）频段——这份免费午餐就没了。天线阵列形成铅笔般细、可转向的波束，设备只能“看见”波束恰好指向的地方。要覆盖一个场景，它必须一束一束地把房间“画”出来。因此 802.11bf 把整套感知流程围绕波束与紧凑的时序重新搭建。本课就来打下这副骨架——会话与突发结构，下一课的测量交换模式正挂靠在它之上。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Intuition: sub-7 GHz sensing is a floodlight that lights the whole room in one flash; DMG sensing is a laser pointer on a gimbal that you must sweep, beam by beam, on a schedule. Everything in the DMG procedure — capabilities, sessions, bursts — exists to organise that sweep in time.",
+      "zh": "直觉：Sub-7 GHz 感知像泛光灯，一闪即照亮整屋；DMG 感知像装在云台上的激光笔，你必须按计划一束一束地扫过去。DMG 流程里的一切——能力、会话、突发——都是为了在时间上把这次“扫描”组织好而存在的。"
+    },
+    {
+      "type": "prose",
+      "en": "The procedure runs between one sensing initiator and one or more sensing responders, and it is assembled from a fixed set of stages: a capabilities exchange, then a measurement session, then one or more bursts, each holding measurement exchanges, and finally a termination. Two facts shape everything. First, DMG sensing is optional — a DMG STA only plays if dot11DMGSensingMsmtImplemented is true, in which case it advertises support and adopts the timing parameters in the standard's timing table. Second, a session is time-limited: aDMGSensingProcedureExpiry (10 s) is how long a session stays alive with no frames exchanged between initiator and responder before it lapses.",
+      "zh": "整个流程在一个感知发起方与一个或多个感知响应方之间运行，由一组固定的阶段拼装而成：先是能力交换，接着是测量会话，然后是一个或多个突发（每个突发内含若干测量交换），最后是终止。有两点决定了一切。其一，DMG 感知是可选的——只有当 dot11DMGSensingMsmtImplemented 为真时，DMG 站点才会参与，此时它会声明支持，并采用标准时序表中的时序参数。其二，会话是有时限的：aDMGSensingProcedureExpiry（10 秒）规定了在发起方与响应方之间没有任何帧交换的情况下，一个会话能存活多久，超时即失效。"
+    },
+    {
+      "type": "prose",
+      "en": "The first stage is the capabilities exchange. Because beams are directional, a DMG STA must publish not just which sensing types and roles it supports, but the very shape of its beams. A sensing-capable AP or PCP carries the DMG Sensing Short Capabilities element in DMG Beacon and Announce frames, while a non-AP STA includes the full DMG Sensing Capabilities element in probe and association frames; both sides advertise their beam patterns through the DMG Sensing Beam Descriptor element. A DMG sensing session is considered established once a STA and a DMG AP or PCP have completed association — and the AP must not start a measurement session with a STA that has not claimed at least one sensing type.",
+      "zh": "第一个阶段是能力交换。由于波束是定向的，DMG 站点不仅要公布它支持哪些感知类型与角色，还要公布它波束的具体形状。具备感知能力的 AP 或 PCP 会在 DMG Beacon 与 Announce 帧中携带 DMG Sensing Short Capabilities 元素，而非 AP 站点则在探测帧与关联帧中携带完整的 DMG Sensing Capabilities 元素；双方都通过 DMG Sensing Beam Descriptor 元素来公布各自的波束方向图。当一个站点与 DMG AP 或 PCP 完成关联后，DMG 感知会话即视为建立——而且如果某站点没有声明至少一种感知类型，AP 就不得与它启动测量会话。"
+    },
+    {
+      "type": "prose",
+      "en": "Next comes the measurement session: a short negotiation where initiator and responder agree on operational parameters and stamp them with a DMG Measurement Session ID. The initiator's SME issues an MLME-DMG-SENSMSMTSESSION.request, which sends a DMG Sensing Measurement Request frame carrying a DMG Sensing Measurement Session element. That element pins down the sensing type, the report type, the TX/RX beam lists (indices into the published beam descriptors), and a schedule — Start Of Burst, Intraburst Interval, Interburst Interval, and how many beams per exchange. The responder validates, raises an indication to its SME, and replies with a DMG Sensing Measurement Response whose Status Code is SUCCESS, REJECTED_WITH_SUGGESTED_SENSING_PARAMETERS, or REQUEST_DECLINED. The initiator negotiates separately with each responder.",
+      "zh": "接下来是测量会话：这是一段简短的协商，发起方与响应方就操作参数达成一致，并为其打上一个 DMG Measurement Session ID。发起方的 SME 发出 MLME-DMG-SENSMSMTSESSION.request，由此发送一个携带 DMG Sensing Measurement Session 元素的 DMG Sensing Measurement Request 帧。该元素确定了感知类型、报告类型、TX/RX 波束列表（即已公布波束描述符的索引）以及一份调度——突发起始（Start Of Burst）、突发内间隔（Intraburst Interval）、突发间间隔（Interburst Interval），以及每次交换使用多少波束。响应方校验该帧、向其 SME 上报指示，并回复一个 DMG Sensing Measurement Response 帧，其状态码为 SUCCESS、REJECTED_WITH_SUGGESTED_SENSING_PARAMETERS 或 REQUEST_DECLINED。发起方会与每个响应方分别协商。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant I as Sensing Initiator (AP/PCP)\n    participant R as Sensing Responder\n    Note over I,R: Capabilities + Beam Descriptors advertised; assoc done\n    Note over I: SME issues MLME-DMG-SENSMSMTSESSION.request\n    I->>R: DMG Sensing Measurement Request (Session ID, type, beam lists, schedule)\n    Note over R: MLME validates, indicates to SME\n    R->>I: DMG Sensing Measurement Response (Status = SUCCESS)\n    Note over I,R: session parameters fixed under DMG Measurement Session ID\n    rect rgb(230,240,255)\n    Note over I,R: Burst ID = 1 begins (MLME-DMG-SENSMSMTSTART.confirm = SUCCESS)\n    Note over I,R: exchange SN=1 ... SN=2 ... SN=3, spaced by Intraburst Interval\n    end\n    Note over I,R: next burst after Interburst Interval (Burst ID = 2)",
+      "zh": "sequenceDiagram\n    participant I as 感知发起方 (AP/PCP)\n    participant R as 感知响应方\n    Note over I,R: 已公布能力与波束描述符；关联完成\n    Note over I: SME 发出 MLME-DMG-SENSMSMTSESSION.request\n    I->>R: DMG 感知测量请求 (会话ID、类型、波束列表、调度)\n    Note over R: MLME 校验，向 SME 上报指示\n    R->>I: DMG 感知测量响应 (状态 = SUCCESS)\n    Note over I,R: 会话参数固定于 DMG Measurement Session ID 之下\n    rect rgb(230,240,255)\n    Note over I,R: 突发 ID = 1 开始 (MLME-DMG-SENSMSMTSTART.confirm = SUCCESS)\n    Note over I,R: 交换 SN=1 … SN=2 … SN=3，以突发内间隔分隔\n    end\n    Note over I,R: 经突发间间隔后开始下一突发 (突发 ID = 2)"
+    },
+    {
+      "type": "prose",
+      "en": "Finally the burst — the unit that makes beam-by-beam sensing schedulable. A DMG sensing burst is a set of scheduled measurement exchanges arranged so that the whole burst finishes before the next burst begins. Why bundle exchanges this way? Estimating a Doppler (velocity) shift needs repeated looks spread over time, but the airtime per channel access is capped by the TXOP limit, so you cannot gather them in one grab. The burst instead schedules multiple medium accesses. Each burst gets a Measurement Burst ID (unique per session), each exchange inside it gets a Sensing Exchange SN counting up from 1, and successive exchanges are spaced by the Intraburst Interval while successive bursts are spaced by the Interburst Interval. That triple — Session ID, Burst ID, Exchange SN — is the address book that lets results from many beam sweeps be reassembled into one coherent picture.",
+      "zh": "最后是突发——正是它让“一束一束”的感知变得可调度。一个 DMG 感知突发是一组经过调度的测量交换，其安排使整个突发能在下一个突发开始之前完成。为什么要这样把交换打包？因为估计多普勒（速度）频移需要在一段时间里反复观测，但每次信道接入的空口时间受 TXOP 限制约束，无法一次性抓取完。于是突发改为调度多次媒介接入。每个突发拿到一个 Measurement Burst ID（在同一会话内唯一），其内每次交换拿到一个从 1 开始递增的 Sensing Exchange SN；相邻交换以突发内间隔（Intraburst Interval）分隔，相邻突发以突发间间隔（Interburst Interval）分隔。这三元组——会话 ID、突发 ID、交换 SN——就是那本通讯录，让来自众多波束扫描的结果能被重新拼装成一幅连贯的图像。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 360 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><line x1='20' y1='110' x2='345' y2='110'/><text x='150' y='135' fill='currentColor' stroke='none' font-size='10'>time</text><rect x='30' y='70' width='110' height='30'/><text x='52' y='90' fill='currentColor' stroke='none' font-size='10'>Burst ID = 1</text><rect x='225' y='70' width='110' height='30'/><text x='247' y='90' fill='currentColor' stroke='none' font-size='10'>Burst ID = 2</text><line x1='140' y1='85' x2='225' y2='85' stroke-dasharray='4 3'/><text x='150' y='62' fill='currentColor' stroke='none' font-size='9'>Interburst Interval</text><line x1='40' y1='70' x2='40' y2='50'/><line x1='75' y1='70' x2='75' y2='50'/><line x1='110' y1='70' x2='110' y2='50'/><text x='34' y='44' fill='currentColor' stroke='none' font-size='8'>SN1</text><text x='69' y='44' fill='currentColor' stroke='none' font-size='8'>SN2</text><text x='104' y='44' fill='currentColor' stroke='none' font-size='8'>SN3</text><line x1='40' y1='118' x2='75' y2='118'/><text x='42' y='128' fill='currentColor' stroke='none' font-size='8'>Intraburst</text></svg>",
+      "caption": {
+        "en": "One DMG Measurement Session, sliced into bursts. Exchanges (Sensing Exchange SN 1,2,3) are spaced by the Intraburst Interval; bursts are spaced by the Interburst Interval — the schedule that lets repeated beam looks accumulate for Doppler.",
+        "zh": "一个 DMG 测量会话被切分为多个突发。各交换（Sensing Exchange SN 1、2、3）以突发内间隔分隔，各突发以突发间间隔分隔——正是这份调度让重复的波束观测得以为多普勒积累起来。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact MLME handshake and the IDs that index a burst",
+        "zh": "精确的 MLME 握手与索引突发的各个 ID"
+      },
+      "en": "11.55.3.4 fixes the session setup: the initiator's SME issues MLME-DMG-SENSMSMTSESSION.request, sending a DMG Sensing Measurement Request frame whose DMG Sensing Measurement Session element sets a unique DMG Measurement Session ID, the Report Type, the Sensing Type (never a type the responder has not claimed in 9.4.2.334), and TX/RX Beam List subelements indexing the published beam descriptors (for Coordinated Monostatic the RX Beam List is absent). The DMG Sensing Scheduling subelement carries Start Of Burst, Intraburst Interval, Interburst Interval, Number TX Beams Per Exchange and Repeat Per Exchange. The responder's MLME validates and raises MLME-DMG-SENSMSMTSESSION.indication; its SME answers with a DMG Sensing Measurement Response (Status SUCCESS, REJECTED_WITH_SUGGESTED_SENSING_PARAMETERS, or REQUEST_DECLINED), and the initiator's MLME issues MLME-DMG-SENSMSMTSESSION.confirm. 11.55.3.5 then defines the burst: on MLME-DMG-SENSMSMTSTART.confirm = SUCCESS the initiator starts exchanges, assigns a Measurement Burst ID unique per Session ID, runs Number Of Exchanges Per Burst exchanges each separated by the Intraburst Interval, and labels each with a Sensing Exchange SN unique per Burst ID that increments sequentially from 1. The whole burst must complete in less than the gap between consecutive bursts. 11.55.3.2 makes the procedure optional (dot11DMGSensingMsmtImplemented) and sets aDMGSensingProcedureExpiry = 10 s.",
+      "zh": "11.55.3.4 固定了会话建立：发起方的 SME 发出 MLME-DMG-SENSMSMTSESSION.request，发送一个 DMG Sensing Measurement Request 帧，其 DMG Sensing Measurement Session 元素设定唯一的 DMG Measurement Session ID、报告类型（Report Type）、感知类型（Sensing Type，绝不能是响应方未在 9.4.2.334 中声明过的类型），以及索引已公布波束描述符的 TX/RX Beam List 子元素（协同单基时不含 RX Beam List）。DMG Sensing Scheduling 子元素携带 Start Of Burst、Intraburst Interval、Interburst Interval、Number TX Beams Per Exchange 与 Repeat Per Exchange。响应方的 MLME 校验后上报 MLME-DMG-SENSMSMTSESSION.indication；其 SME 以一个 DMG Sensing Measurement Response 帧应答（状态为 SUCCESS、REJECTED_WITH_SUGGESTED_SENSING_PARAMETERS 或 REQUEST_DECLINED），随后发起方的 MLME 发出 MLME-DMG-SENSMSMTSESSION.confirm。11.55.3.5 进而定义突发：当收到 MLME-DMG-SENSMSMTSTART.confirm = SUCCESS 时，发起方开始各交换，为突发分配一个在同一会话内唯一的 Measurement Burst ID，运行 Number Of Exchanges Per Burst 次交换（每次以 Intraburst Interval 分隔），并为每次交换标注一个在同一 Burst ID 内唯一、从 1 顺序递增的 Sensing Exchange SN。整个突发必须在相邻突发的间隔时间内完成。11.55.3.2 规定该流程为可选（dot11DMGSensingMsmtImplemented），并设定 aDMGSensingProcedureExpiry = 10 秒。",
+      "cite": {
+        "pdf_id": "80211bf-2025",
+        "pages": [
+          177,
+          179,
+          180,
+          181
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211bf-2025:11.55.3",
+    "80211bf-2025:11.55.3.1",
+    "80211bf-2025:11.55.3.2",
+    "80211bf-2025:11.55.3.3",
+    "80211bf-2025:11.55.3.4",
+    "80211bf-2025:11.55.3.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        173,
+        174
+      ],
+      "note": "11.55.3 / 11.55.3.1 Overview — DMG sensing procedure between one initiator and one or more responders; composed of capabilities exchange, measurement session, burst, measurement exchange, termination; bursts schedule multiple channel accesses for Doppler under TXOP limit; Session ID / Burst ID / Sensing Exchange SN indexing"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        175,
+        176
+      ],
+      "note": "11.55.3.2 Dependencies and timing — DMG sensing optional (dot11DMGSensingMsmtImplemented); Sensing support field; Table 11-33c aDMGSensingProcedureExpiry = 10 s. 11.55.3.3 capabilities exchange — Short/full DMG Sensing Capabilities and Beam Descriptor elements; session established at association"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        177,
+        178,
+        179,
+        180
+      ],
+      "note": "11.55.3.4 DMG sensing measurement session — MLME-DMG-SENSMSMTSESSION request/indication/response/confirm; DMG Measurement Session ID; Sensing Type / Report Type; TX/RX Beam List; Scheduling subelement (Start Of Burst, Intraburst/Interburst Interval, Number TX Beams Per Exchange, Repeat Per Exchange); Status Codes"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        180,
+        181
+      ],
+      "note": "11.55.3.5 DMG sensing burst — scheduled set of measurement exchanges fitting within interburst gap; Measurement Burst ID unique per Session ID; Number Of Exchanges Per Burst; Intraburst Interval spacing; Sensing Exchange SN unique per Burst ID, increments from 1; MLME-DMG-SENSMSMTSTART.confirm = SUCCESS"
+    }
+  ],
+  "track": "sensing"
+}

@@ -1,0 +1,130 @@
+{
+  "id": "sensing-10",
+  "title": {
+    "en": "DMG measurement modes and reporting: monostatic, bistatic, multistatic, TRN, and passive",
+    "zh": "DMG 测量模式与上报：单站、双站、多站、TRN 与被动感知"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "At 60 GHz (the DMG band), Wi-Fi sensing rides on the same pencil-thin steered beams that make millimetre-wave links work. So the central question of every DMG sensing measurement is simply: who transmits and who listens? That choice decides what geometry of the room you can reconstruct. This lesson is the menu of DMG sensing topologies — coordinated monostatic, bistatic, coordinated bistatic, and multistatic EDMG — plus how each one closes the loop with a report, how a session is torn down, and a quieter cousin that just listens to beacons.",
+      "zh": "在 60 GHz（DMG 频段），Wi-Fi 感知借助的是让毫米波链路得以工作的那种铅笔般纤细的可控波束。因此，每一次 DMG 感知测量的核心问题其实很简单：谁发送、谁接收？这个选择决定了你能重建出房间的何种几何信息。本课就是 DMG 感知拓扑的“菜单”——协调单站（coordinated monostatic）、双站（bistatic）、协调双站（coordinated bistatic）以及多站 EDMG（multistatic）——并讲清每一种如何用一份报告闭环、会话如何拆除，以及一个只“偷听”信标的安静表亲。"
+    },
+    {
+      "type": "prose",
+      "en": "Every DMG sensing measurement exchange is bounded by one TXOP or service period, belongs to one Measurement Session ID, and is tagged with a sequential Sensing Exchange SN. It runs in up to three phases: an optional initiation phase (the initiator hands out DMG Sensing Request frames and collects Responses), a mandatory sounding phase (the actual beam-swept PPDUs), and an optional reporting phase. The sensing type fixes the rules: monostatic and bistatic may skip the initiation phase, but coordinated monostatic, coordinated bistatic, and multistatic must include one — they have several STAs to line up first.",
+      "zh": "每一次 DMG 感知测量交换都被限定在一个 TXOP 或服务周期（SP）内，归属于一个测量会话 ID（Measurement Session ID），并被标上一个顺序递增的感知交换序号（Sensing Exchange SN）。它最多分三个阶段进行：可选的发起阶段（发起方分发 DMG Sensing Request 帧并收集 Response）、强制的探测阶段（真正进行波束扫描的 PPDU）、以及可选的上报阶段。感知类型决定了规则：单站与双站可以省略发起阶段，而协调单站、协调双站和多站则必须包含发起阶段——因为它们要先把多个 STA 排好队。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    A[\"DMG sensing measurement exchange\"] --> B[\"Coordinated monostatic<br/>device senses its own echoes\"]\n    A --> C[\"Bistatic<br/>one TX, one RX (TRN field)\"]\n    A --> D[\"Coordinated bistatic<br/>many bistatic pairs, ordered\"]\n    A --> E[\"Multistatic EDMG<br/>one TX, many RX listeners\"]\n    B --> B1[\"sequential or parallel sounding\"]\n    C --> C1[\"BRP frames carry TRN beam-sounding\"]\n    E --> E1[\"each RX uses its own Sync field\"]",
+      "zh": "graph TD\n    A[\"DMG 感知测量交换\"] --> B[\"协调单站<br/>设备感知自身回波\"]\n    A --> C[\"双站<br/>一发一收（TRN 字段）\"]\n    A --> D[\"协调双站<br/>多个双站对，按序进行\"]\n    A --> E[\"多站 EDMG<br/>一发多收\"]\n    B --> B1[\"顺序或并行探测\"]\n    C --> C1[\"BRP 帧承载 TRN 波束探测\"]\n    E --> E1[\"每个接收端使用各自的 Sync 字段\"]"
+    },
+    {
+      "type": "prose",
+      "en": "Start with coordinated monostatic: each sensing responder transmits DMG monostatic sensing PPDUs and listens to its own reflections, while the initiator orchestrates several responders at once. It runs in two modes. Sequential walks responders one-by-one (request, sound, report, then the next STA) — the Monostatic Sounding Mode field is set to 1. Parallel fires requests to everyone first, then all responders sound their reflections at the same time, and the initiator polls each for a report afterward — Monostatic Sounding Mode is 0. Parallel is faster but the report phase needs explicit DMG Sensing Poll frames.",
+      "zh": "先看协调单站：每个感知响应方（responder）发送 DMG 单站感知 PPDU 并接收自身的反射回波，而发起方同时编排多个响应方。它有两种模式。顺序模式逐个处理响应方（请求、探测、上报，再轮到下一个 STA）——此时 Monostatic Sounding Mode 字段置为 1。并行模式先把请求发给所有响应方，然后所有响应方同时进行反射探测，之后发起方逐一轮询（poll）各方索取报告——此时 Monostatic Sounding Mode 置为 0。并行更快，但其上报阶段需要显式的 DMG Sensing Poll 帧。"
+    },
+    {
+      "type": "prose",
+      "en": "Bistatic splits the roles: exactly one transmitting STA and one receiving STA. Here the beam-sounding substrate is the TRN (training) field, carried inside BRP frames — the same beam-refinement machinery DMG already uses to find a good link is reused to probe the environment. If the initiator is the transmitter, it sends BRP frames with a TRN field and the responder replies with a report BRP frame a BRPIFS later; if the initiator is the receiver, the responder sweeps the TRN beams and there is no report at all (the initiator already holds the measurement). Coordinated bistatic just chains several such bistatic exchanges in STA-ID order. Multistatic EDMG goes the other way: one initiator transmits EDMG multistatic sensing PPDUs and two-to-eight responders each listen using their own Sync field index, then get polled for reports.",
+      "zh": "双站则把角色拆开：恰好一个发送 STA 和一个接收 STA。这里的波束探测基底是 TRN（training，训练）字段，承载于 BRP 帧之中——DMG 原本用来寻找优质链路的那套波束精化机制，被复用来探测环境。若发起方是发送端，它发送带 TRN 字段的 BRP 帧，响应方在一个 BRPIFS 之后回以一份报告 BRP 帧；若发起方是接收端，则由响应方扫描 TRN 波束，且完全没有上报（测量数据已在发起方手中）。协调双站不过是按 STA ID 顺序串起若干次这样的双站交换。多站 EDMG 则反其道而行：一个发起方发送 EDMG 多站感知 PPDU，2 到 8 个响应方各自使用自己的 Sync 字段索引来监听，随后被轮询索取报告。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The reporting phase is mandatory whenever a responder is in a receiver role (it holds the only copy of the measurement). It is optional in monostatic, where the same device that sounded can keep its own result. There are seven DMG report types: types without Doppler (1, 2, 4) report per measurement exchange; types with Doppler (3, 5, 6, 7) report once at the end of the whole burst.",
+      "zh": "只要响应方处于接收端角色，上报阶段就是强制的（因为它握着测量数据的唯一副本）。在单站中上报是可选的，因为完成探测的那台设备本就可以自留结果。DMG 共有七种报告类型：不含多普勒的类型（1、2、4）按每次测量交换上报；含多普勒的类型（3、5、6、7）则在整个突发（burst）结束时一次性上报。"
+    },
+    {
+      "type": "prose",
+      "en": "A session ends one of two ways. Explicit termination: either side issues an MLME-DMG-SENSMSMTTERMINATION.request and sends a DMG Sensing Measurement Termination frame; once delivered, both stop. Implicit termination: a DMG sensing procedure expiry timer (aDMGSensingProcedureExpiry) is reset on every completed exchange, and if it fires, the session simply lapses. Separately, DMG passive sensing is the listen-only flavour — a STA learns a DMG AP/PCP's beacon direction and location by requesting a DMG Passive Sensing Beacon element, without initiating any sounding of its own. And when a client lacks the hardware to sense for itself, the DMG SBP procedure (the DMG variant of sensing-by-proxy) lets it ask the AP to run a sensing procedure on its behalf and stream back the reports.",
+      "zh": "会话以两种方式之一结束。显式终止：任一方发出 MLME-DMG-SENSMSMTTERMINATION.request 并发送一个 DMG Sensing Measurement Termination 帧；一经送达，双方即停止。隐式终止：DMG 感知过程超时定时器（aDMGSensingProcedureExpiry）在每次交换完成时被重置，一旦触发，会话便自然失效。另外，DMG 被动感知是“只听不发”的形态——STA 通过请求一个 DMG Passive Sensing Beacon 元素，了解 DMG AP/PCP 的信标方向与位置，而无需自己发起任何探测。而当某个客户端缺乏自行感知的硬件时，DMG SBP 过程（感知代理 sensing-by-proxy 的 DMG 变体）允许它请求 AP 代为执行一次感知过程，并把报告回传给它。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact phase rules, the TRN substrate, and the DMG SBP setup handshake",
+        "zh": "精确的阶段规则、TRN 基底，以及 DMG SBP 建立握手"
+      },
+      "en": "Clause 11.55.3.6 bounds an exchange to one TXOP/SP and one Measurement Session ID, with a sequential Sensing Exchange SN; the sounding phase is mandatory while initiation and reporting are optional, except that coordinated monostatic, coordinated bistatic, and multistatic shall include an initiation phase, and reporting is mandatory whenever the responder is in a receiver role. Sequential coordinated monostatic (11.55.3.6.2.2) sets Monostatic Sounding Mode = 1 and computes the first Request's Duration via Equation (11-8a); parallel (11.55.3.6.2.3) sets it to 0, uses Equation (11-8b), and polls with DMG Sensing Poll frames. In bistatic (11.55.3.6.3), measurement uses BRP frames carrying a TRN field per the Number TX Beams Per Exchange field; an initiator-as-transmitter exchange ends with a report BRP frame a BRPIFS later, an initiator-as-receiver exchange has no report. Multistatic EDMG (11.55.3.6.5) assigns each responder an STA ID 0-7 mapping to a Sync field index. Reporting (11.55.3.7) defines seven report types in Table 9-417ad — non-Doppler (1,2,4) per exchange, Doppler (3,5,6,7) per burst. Termination (11.55.3.8) is explicit (DMG Sensing Measurement Termination frame via MLME-DMG-SENSMSMTTERMINATION) or implicit (aDMGSensingProcedureExpiry). DMG passive sensing (11.55.3.9) uses an Information Request/Response carrying a DMG Passive Sensing Beacon element. The DMG SBP procedure (11.55.4) is gated on dot11DMGSensingMsmtImplemented and dot11DMGSBPImplemented both being true; setup (11.55.4.2) is a DMG SBP Request/Response handshake whose Status Code is SUCCESS, REQUEST_DECLINED, or REJECTED_WITH_SUGGESTED_SENSING_PARAMETERS, bounded by aDMGSBPSetupExpiry (200 ms) and kept alive by aDMGSBPProcedureExpiry (10 s); reporting (11.55.4.3) and termination (11.55.4.4) ride MLME-DMG-SBPREPORT and MLME-DMG-SBPTERMINATION primitives.",
+      "zh": "11.55.3.6 节将一次交换限定在一个 TXOP/SP、一个测量会话 ID 内，并附以顺序递增的感知交换序号；探测阶段为强制，发起与上报阶段为可选，但协调单站、协调双站和多站必须包含发起阶段，且只要响应方处于接收端角色，上报即为强制。顺序协调单站（11.55.3.6.2.2）将 Monostatic Sounding Mode 置为 1，并按式（11-8a）计算首个 Request 的 Duration 字段；并行（11.55.3.6.2.3）将其置为 0，使用式（11-8b），并以 DMG Sensing Poll 帧进行轮询。在双站（11.55.3.6.3）中，测量使用承载 TRN 字段的 BRP 帧，覆盖 Number TX Beams Per Exchange 字段所指示的波束数；发起方作为发送端的交换在一个 BRPIFS 后以报告 BRP 帧收尾，发起方作为接收端的交换则无上报。多站 EDMG（11.55.3.6.5）为每个响应方分配 0–7 的 STA ID，对应一个 Sync 字段索引。上报（11.55.3.7）在表 9-417ad 中定义了七种报告类型——非多普勒（1、2、4）按交换上报，多普勒（3、5、6、7）按突发上报。终止（11.55.3.8）分显式（经 MLME-DMG-SENSMSMTTERMINATION 发送 DMG Sensing Measurement Termination 帧）与隐式（aDMGSensingProcedureExpiry 超时）。DMG 被动感知（11.55.3.9）使用承载 DMG Passive Sensing Beacon 元素的 Information Request/Response。DMG SBP 过程（11.55.4）以 dot11DMGSensingMsmtImplemented 与 dot11DMGSBPImplemented 均为真为前提；建立（11.55.4.2）是一次 DMG SBP Request/Response 握手，其 Status Code 为 SUCCESS、REQUEST_DECLINED 或 REJECTED_WITH_SUGGESTED_SENSING_PARAMETERS，受 aDMGSBPSetupExpiry（200 ms）约束并由 aDMGSBPProcedureExpiry（10 s）维持；上报（11.55.4.3）与终止（11.55.4.4）则借助 MLME-DMG-SBPREPORT 与 MLME-DMG-SBPTERMINATION 原语。",
+      "cite": {
+        "pdf_id": "80211bf-2025",
+        "pages": [
+          183,
+          184,
+          190,
+          193,
+          194,
+          195,
+          196,
+          197,
+          198
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        182,
+        183,
+        184,
+        187,
+        190
+      ],
+      "note": "11.55.3.6 DMG sensing measurement exchange — phases, sensing types, coordinated monostatic sequential/parallel sounding modes"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        190,
+        191,
+        192,
+        193,
+        194
+      ],
+      "note": "11.55.3.6.3-11.55.3.6.5 bistatic (TRN/BRP), coordinated bistatic, multistatic EDMG; 11.55.3.7 reporting — seven report types, Doppler per burst"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        195,
+        196
+      ],
+      "note": "11.55.3.8 measurement termination (explicit/implicit); 11.55.3.9 DMG passive sensing — beacon listening"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        197,
+        198,
+        199,
+        200,
+        201
+      ],
+      "note": "11.55.4 DMG SBP procedure — general, setup exchange (Status Codes, timers), reporting, termination"
+    }
+  ],
+  "covers": [
+    "80211bf-2025:11.55.3.6",
+    "80211bf-2025:11.55.3.6.1",
+    "80211bf-2025:11.55.3.6.2",
+    "80211bf-2025:11.55.3.6.3",
+    "80211bf-2025:11.55.3.6.4",
+    "80211bf-2025:11.55.3.6.5",
+    "80211bf-2025:11.55.3.7",
+    "80211bf-2025:11.55.3.8",
+    "80211bf-2025:11.55.3.9",
+    "80211bf-2025:11.55.4",
+    "80211bf-2025:11.55.4.1",
+    "80211bf-2025:11.55.4.2",
+    "80211bf-2025:11.55.4.3",
+    "80211bf-2025:11.55.4.4"
+  ],
+  "track": "sensing"
+}

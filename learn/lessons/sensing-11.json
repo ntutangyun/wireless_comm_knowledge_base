@@ -1,0 +1,130 @@
+{
+  "id": "sensing-11",
+  "title": {
+    "en": "The sensing data structures: capability, parameter, and report elements on the wire",
+    "zh": "感知数据结构：协议中的能力、参数与报告元素"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every sensing procedure you have seen so far — negotiating a session, sounding the channel, reporting a result — is ultimately carried by concrete bytes on the air. 802.11bf defines a small family of information elements that act as a shared vocabulary: they let two vendors' radios agree on 'here is what I can do', 'here is how this session is configured', and 'here is the answer I measured'. This lesson decodes that vocabulary at the intuition level, not bit by bit.",
+      "zh": "到目前为止你看到的每一个感知流程——协商一个会话、对信道进行探测、上报一个结果——最终都要靠空口上一串具体的字节来承载。802.11bf 定义了一小族信息元素（information element），它们就像一套共享词汇：让两家厂商的射频设备就“我能做什么”“这个会话怎么配置”“我测到的答案是什么”达成一致。本课在直觉层面解读这套词汇，而不是逐比特拆解。"
+    },
+    {
+      "type": "prose",
+      "en": "Think of the elements in three groups. First, advertisement: the Sensing Capabilities element broadcasts what a STA can do — its maximum bandwidth, supported space-time streams, LTF repetitions, whether it supports threshold-based reporting, how many concurrent sessions it can hold. Second, configuration: the Sensing Measurement Parameters element pins down how one session actually runs — which side is the sensing transmitter, which is the sensing receiver, the bandwidth, the subcarrier grouping, whether a report is requested. Third, the SBP Parameters element handles the sensing-by-proxy case, where an initiator asks an AP to run sensing on its behalf and lists how many (and which) responders it wants.",
+      "zh": "可以把这些元素分成三组。第一组是“广播能力”：感知能力（Sensing Capabilities）元素对外宣告一个站点能做什么——它的最大带宽、支持的空时流数、LTF 重复次数、是否支持基于阈值的上报、能同时维持多少个会话。第二组是“配置会话”：感知测量参数（Sensing Measurement Parameters）元素确定一个具体会话如何运行——哪一方是感知发射机、哪一方是感知接收机、带宽、子载波分组方式、是否请求上报。第三组是 SBP 参数（SBP Parameters）元素，处理“代理感知”场景：发起方请求某个 AP 代其执行感知，并列出它想要多少个（以及哪些）响应方。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "All of these are 'Element ID 255' extension elements — they share the generic element ID 255 and are distinguished by a one-byte Element ID Extension (117 for Sensing Measurement Parameters, 118 for Sensing Capabilities, 119 for SBP Parameters, and 120–132 for the DMG sensing family). That is the standard's way of adding many new element types without exhausting the original ID space.",
+      "zh": "这些元素都属于“元素 ID 255”的扩展元素——它们共用通用元素 ID 255，再通过一个字节的元素 ID 扩展（Element ID Extension）来区分（感知测量参数为 117、感知能力为 118、SBP 参数为 119，DMG 感知系列为 120–132）。这是标准在不耗尽原有 ID 空间的前提下增添大量新元素类型的常用手法。"
+    },
+    {
+      "type": "prose",
+      "en": "The answer side is the Sensing Measurement Report Container field. It is laid out as four pieces: a 2-octet Container Length, a 5-octet Segmentation Control field (session ID, exchange ID, transmitter/receiver STA IDs, which report segment this is, and an Invalid Indication bit), then a Sensing Measurement Report Control field, and finally the Sensing Measurement Report itself. The Control field tells the reader how to interpret the report — bandwidth, number of transmit and receive chains, subcarrier grouping — and the Report field carries the actual measured channel state information (CSI). Because a full CSI matrix can be huge (the standard's largest report is over 64 KB), it can be split across several segments.",
+      "zh": "“答案”这一侧是感知测量报告容器（Sensing Measurement Report Container）字段。它由四部分组成：2 字节的容器长度（Container Length）、5 字节的分段控制（Segmentation Control）字段（会话 ID、交换 ID、收发站点 ID、这是第几个报告分段，以及一个 Invalid Indication 位）、随后是感知测量报告控制（Report Control）字段，最后才是感知测量报告（Report）本身。控制字段告诉读取方如何解读报告——带宽、发射链与接收链数量、子载波分组方式——而报告字段携带真正测得的信道状态信息（CSI）。由于一个完整的 CSI 矩阵可能极大（标准中最大的报告超过 64 KB），它可以被切分成若干分段。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    A[Element ID 255 + Ext ID] --> B[Sensing Capabilities  Ext=118<br/>what a STA can do]\n    A --> C[Sensing Measurement Parameters  Ext=117<br/>how a session is configured]\n    A --> D[SBP Parameters  Ext=119<br/>sensing-by-proxy request]\n    E[Sensing Measurement Report Container] --> F[Container Length  2 oct]\n    E --> G[Segmentation Control  5 oct]\n    E --> H[Report Control  0/4/8 oct]\n    E --> I[Sensing Measurement Report<br/>scaled+quantized CSI]",
+      "zh": "graph TD\n    A[元素 ID 255 + 扩展 ID] --> B[感知能力  扩展=118<br/>站点能做什么]\n    A --> C[感知测量参数  扩展=117<br/>会话如何配置]\n    A --> D[SBP 参数  扩展=119<br/>代理感知请求]\n    E[感知测量报告容器] --> F[容器长度  2 字节]\n    E --> G[分段控制  5 字节]\n    E --> H[报告控制  0/4/8 字节]\n    E --> I[感知测量报告<br/>缩放并量化后的 CSI]"
+    },
+    {
+      "type": "prose",
+      "en": "How does raw CSI get packed? Each complex CSI value (one real part, one imaginary part, per receive-chain / transmit-chain / subcarrier triple) starts as a 2's-complement number. The sensing receiver picks a 12-bit positive scaling factor for each receive/transmit chain pair, then scales and quantizes each real and imaginary part down to 8 bits. The decoder reverses this: read the 8-bit pairs as 2's-complement, combine into a complex number, and rescale by the stored factor. It is lossy compression chosen so that the dynamic range fits without overflow — the exact scaling factor is left to the implementation.",
+      "zh": "原始 CSI 是怎样被打包的？每个复数 CSI 值（在“接收链 / 发射链 / 子载波”三元组下各有一个实部和一个虚部）起初都是补码（2's-complement）表示的数。感知接收机为每一对收发链选取一个 12 位的正缩放因子，然后把每个实部和虚部缩放并量化到 8 位。解码时反向操作：把 8 位的实/虚对按补码读出、组合成复数，再用存下来的因子重新放大。这是一种有损压缩，目的是让动态范围在不溢出的前提下塞进去——具体的缩放因子取值由实现自行决定。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The directional (DMG / 60 GHz) world gets its own element family — DMG Sensing Capabilities, Beam Descriptor, Measurement Session, Image Range / Doppler axis lookup tables, Report Control / Report, BRP Sensing, and Passive Sensing Beacon. They mirror the sub-7 GHz elements but speak in beams and range-Doppler images rather than per-subcarrier CSI matrices, because directional sensing measures the world as steered beam returns.",
+      "zh": "定向（DMG / 60 GHz）世界拥有自己的一套元素系列——DMG 感知能力、波束描述符（Beam Descriptor）、测量会话、图像距离/多普勒轴查找表（LUT）、报告控制/报告、BRP 感知，以及被动感知信标（Passive Sensing Beacon）。它们与 7 GHz 以下的元素相互对应，但说的是“波束”和“距离-多普勒图像”的语言，而非逐子载波的 CSI 矩阵，因为定向感知是以扫描波束的回波来度量世界的。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact container layout and the CSI scale/quantize equations",
+        "zh": "容器的精确布局与 CSI 缩放/量化公式"
+      },
+      "en": "Per 9.4.1.81, the Sensing Measurement Report Container is Container Length (2 octets, inclusive of itself), Segmentation Control (5 octets), Sensing Measurement Report Control (0, 4, or 8 octets), and Sensing Measurement Report (0 or variable). Segmentation Control packs a 3-bit Measurement Session ID, 6-bit Measurement Exchange ID, 12-bit Sensing Transmitter STA ID, 12-bit Sensing Receiver STA ID, 5-bit Remaining Report Segments, a First Report Segment bit, and an Invalid Indication bit; when Invalid Indication is 1 the Report Control and Report fields are omitted. CSI encoding (9.4.1.81.2.2): for each (r,t) chain pair a positive 12-bit scaling factor is chosen to avoid overflow, then each real and imaginary part is rounded to 8 bits via the encode equations; decoding (9.4.1.81.2.3) reads the 8-bit 2's-complement pair, forms the complex value, and rescales. The number of subcarriers depends on bandwidth, puncturing, and Ng (e.g. 64 subcarriers at 20 MHz / Ng=4), per Table 9-129l. Configuration lives in the Sensing Measurement Parameters element (9.4.2.331): its Sensing Transmitter and Sensing Receiver bits assign roles, and BW, TX/RX STS, LTF Repetition, and subcarrier-grouping (INg) fields parameterize the NDP exchanges; capability advertisement lives in the Sensing Capabilities element (9.4.2.332), and proxy requests in the SBP Parameters element (9.4.2.333).",
+      "zh": "依据 9.4.1.81，感知测量报告容器由容器长度（2 字节，含其自身）、分段控制（5 字节）、感知测量报告控制（0、4 或 8 字节）和感知测量报告（0 或可变长度）构成。分段控制打包了 3 位测量会话 ID、6 位测量交换 ID、12 位感知发射机站点 ID、12 位感知接收机站点 ID、5 位剩余报告分段数、一个首报告分段位以及一个 Invalid Indication 位；当 Invalid Indication 为 1 时，报告控制与报告字段被省略。CSI 编码（9.4.1.81.2.2）：为每一对 (r,t) 链选取一个正的 12 位缩放因子以避免溢出，再用编码公式把每个实部和虚部四舍五入到 8 位；解码（9.4.1.81.2.3）则读出 8 位补码对、组成复数并重新缩放。子载波数量取决于带宽、打孔（puncturing）和 Ng（例如 20 MHz、Ng=4 时为 64 个子载波），见表 9-129l。配置信息位于感知测量参数元素（9.4.2.331）：其感知发射机位与感知接收机位用于分配角色，BW、TX/RX STS、LTF 重复次数与子载波分组（INg）等字段则对 NDP 交换进行参数化；能力宣告位于感知能力元素（9.4.2.332），代理请求位于 SBP 参数元素（9.4.2.333）。",
+      "cite": {
+        "pdf_id": "80211bf-2025",
+        "pages": [
+          54,
+          56,
+          75,
+          79,
+          82
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211bf-2025:9.4.2.331",
+    "80211bf-2025:9.4.2.332",
+    "80211bf-2025:9.4.2.333",
+    "80211bf-2025:9.4.2.334",
+    "80211bf-2025:9.4.2.335",
+    "80211bf-2025:9.4.2.336",
+    "80211bf-2025:9.4.2.337",
+    "80211bf-2025:9.4.2.338",
+    "80211bf-2025:9.4.2.339",
+    "80211bf-2025:9.4.2.340",
+    "80211bf-2025:9.4.2.341",
+    "80211bf-2025:9.4.2.342",
+    "80211bf-2025:9.4.2.343",
+    "80211bf-2025:9.4.2.344",
+    "80211bf-2025:9.4.2.345",
+    "80211bf-2025:9.4.2.346",
+    "80211bf-2025:9.4.1.81"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        54,
+        55,
+        56
+      ],
+      "note": "9.4.1.81 Sensing Measurement Report Container field — layout, Segmentation Control, CSI encode/decode (scale + 8-bit quantize, 2's complement)"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        70,
+        71
+      ],
+      "note": "Table 9-130 Element IDs — Element ID 255 with Extension IDs 117-132 for the sensing element family"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        75,
+        76
+      ],
+      "note": "9.4.2.331 Sensing Measurement Parameters element — Sensing Transmitter/Receiver roles, BW, STS, LTF Repetition, subcarrier grouping"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        79,
+        80
+      ],
+      "note": "9.4.2.332 Sensing Capabilities element — BW, max STS, LTF, threshold-based reporting, max sessions"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        82,
+        86
+      ],
+      "note": "9.4.2.333 SBP Parameters element (proxy request) and 9.4.2.334 DMG Sensing Capabilities element (directional family)"
+    }
+  ],
+  "track": "sensing"
+}

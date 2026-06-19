@@ -1,0 +1,157 @@
+{
+  "id": "sensing-12",
+  "title": {
+    "en": "The sensing frames and control plane: action frames, NDP/Trigger variants, and the MLME SAP",
+    "zh": "感知帧与控制面：动作帧、NDP/触发帧变体与 MLME SAP"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Earlier lessons walked through the choreography of 802.11bf sensing — who initiates, who responds, how a session is set up and torn down. This lesson is about the actual messages that carry that dance over the air, plus the software doorway inside the stack through which a host application speaks to it. If lessons 07-10 were the dance steps, this is the vocabulary the dancers actually use, and the door they walk through to reach the floor.",
+      "zh": "前面的课程讲解了 802.11bf 感知的“编舞”——谁发起、谁响应、会话如何建立又如何拆除。本课关注的是真正承载这套舞蹈、在空口上飞来飞去的具体消息，以及协议栈内部那扇“软件门”——主机上的应用正是通过它与感知功能对话。如果说第 07-10 课是舞步，那么本课就是舞者真正使用的词汇，以及他们走上舞池所经过的那扇门。"
+    },
+    {
+      "type": "prose",
+      "en": "For sub-7 GHz (HE/EHT) sensing, the bulk of the control traffic rides on Public Action frames. There is a Sensing Measurement Request to ask for a session, a Sensing Measurement Response to accept, decline, or counter-propose, a Sensing Measurement Report (an Action No Ack frame) that actually delivers the measured CSI, a Sensing Measurement Termination to end one or more sessions, and a Sensing Measurement Query that an unassociated station uses to announce its presence and capabilities to the AP. A parallel set — SBP Request, SBP Response, SBP Termination — drives the sensing-by-proxy procedure, where one station asks the AP to measure on its behalf. Almost every one of these has a Protected variant, transmitted as a Protected Dual of Public Action, so the same exchange can run with robust management-frame protection.",
+      "zh": "对于 7 GHz 以下（HE/EHT）感知，绝大部分控制流量承载在公共动作帧（Public Action frame）上。有用于请求会话的“感知测量请求帧（Sensing Measurement Request）”，有用于接受、拒绝或反向提议参数的“感知测量响应帧（Sensing Measurement Response）”，有真正递送所测 CSI 的“感知测量报告帧（Sensing Measurement Report，一种 Action No Ack 帧）”，有用于结束一个或多个会话的“感知测量终止帧（Sensing Measurement Termination）”，还有未关联站点用来向 AP 宣告自身存在与能力的“感知测量查询帧（Sensing Measurement Query）”。与之并行的另一组——SBP 请求、SBP 响应、SBP 终止——驱动“代理感知（sensing-by-proxy）”流程，即一个站点请 AP 代其测量。几乎每一种帧都有受保护变体（以 Protected Dual of Public Action 形式发送），因此同一交换流程也能在健壮管理帧保护下运行。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A useful split: the Action frames carry intent and results (set up, accept, report, terminate), while the Control frames carry timing (when, exactly, do you sound the channel?). The Report frame delivers the CSI; the Trigger frame says 'now'.",
+      "zh": "一个有用的划分：动作帧承载“意图与结果”（建立、接受、报告、终止），而控制帧承载“时序”（究竟在何时探测信道？）。报告帧递送 CSI；触发帧则说“就是现在”。"
+    },
+    {
+      "type": "prose",
+      "en": "The fine-grained timing lives in the control plane. The NDP Announcement frame gains a new Sensing variant (9.3.1.19.6) that announces the upcoming null-data-packet sounding and names the responder and measurement exchange. The Trigger frame gains a whole family of sensing subtypes, selected by a Sensing Trigger Subtype field: Sensing Polling, SR2SI Sounding, Sensing Threshold-Based Reporting, Sensing Reporting, and SR2SR Sounding. Together these solicit sounding PPDUs and the TB reports that follow. For the 60 GHz DMG world, the beam-sounding handshake is carried instead on the TDD Beamforming frame, which now defines DMG Sensing Request, DMG Sensing Response, and DMG Sensing Poll sub-frames to coordinate directional sensing.",
+      "zh": "细粒度的时序则位于控制面。NDP 通告帧（NDP Announcement frame）新增了一个感知变体（9.3.1.19.6），用于宣告即将到来的空数据包（NDP）探测，并指明响应方与测量交换。触发帧（Trigger frame）则新增了一整族感知子类型，由“感知触发子类型（Sensing Trigger Subtype）”字段选择：感知轮询（Sensing Polling）、SR2SI 探测、基于阈值的感知报告、感知报告以及 SR2SR 探测。它们共同征召探测 PPDU 以及随后的 TB 报告。而在 60 GHz 的 DMG 世界，波束探测握手改由 TDD 波束成形帧（TDD Beamforming frame）承载，该帧如今定义了 DMG 感知请求、DMG 感知响应与 DMG 感知轮询三个子帧，用以协调定向感知。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    subgraph Host[\"Host / SME\"]\n        SAP[\"MLME SAP\\nMLME-SENSREPORTRQ\\nSENSMSMTSESSION ...\"]\n    end\n    SAP -->|primitive down| MLME[\"MLME (MAC)\"]\n    MLME -->|builds frames| AIR{{\"Over the air\"}}\n    subgraph Action[\"sub-7 Action frames\"]\n        A1[\"Sensing Measurement Request / Response\"]\n        A2[\"Sensing Measurement Report (No Ack)\"]\n        A3[\"Termination / Query\"]\n        A4[\"SBP Request / Response / Termination\"]\n    end\n    subgraph Ctrl[\"Control-plane timing\"]\n        C1[\"Sensing NDP Announcement\"]\n        C2[\"Sensing Trigger variants\"]\n        C3[\"DMG: TDD Beamforming\\n(Sensing Req/Resp/Poll)\"]\n    end\n    AIR --> Action\n    AIR --> Ctrl\n    MLME -->|results up| SAP",
+      "zh": "graph TD\n    subgraph Host[\"主机 / SME\"]\n        SAP[\"MLME SAP\\nMLME-SENSREPORTRQ\\nSENSMSMTSESSION 等\"]\n    end\n    SAP -->|原语下行| MLME[\"MLME（MAC）\"]\n    MLME -->|构造帧| AIR{{\"空口\"}}\n    subgraph Action[\"7GHz 以下动作帧\"]\n        A1[\"感知测量请求 / 响应\"]\n        A2[\"感知测量报告（No Ack）\"]\n        A3[\"终止 / 查询\"]\n        A4[\"SBP 请求 / 响应 / 终止\"]\n    end\n    subgraph Ctrl[\"控制面时序\"]\n        C1[\"感知 NDP 通告\"]\n        C2[\"感知触发帧变体\"]\n        C3[\"DMG：TDD 波束成形\\n（感知 请求/响应/轮询）\"]\n    end\n    AIR --> Action\n    AIR --> Ctrl\n    MLME -->|结果上行| SAP"
+    },
+    {
+      "type": "prose",
+      "en": "Where do the results enter the host? Through the MLME SAP — the service access point between the MAC and the station management entity (SME). 802.11bf inserts new rows into the MLME SAP interface table for the sensing procedures and adds a dedicated reporting primitive, MLME-SENSREPORTRQ. The SME issues an MLME-SENSREPORTRQ.request to have a Sensing Measurement Report frame transmitted; a .confirm tells it the frame went out; and on the receiving station a .indication hands the arriving measurement results (or a CSI-variation feedback value, in threshold-based reporting) up to the SME. This is the clean boundary between 'radio did the sensing' and 'software gets the answer'.",
+      "zh": "那么结果是从哪里进入主机的呢？通过 MLME SAP——MAC 与站点管理实体（SME）之间的服务访问点。802.11bf 在 MLME SAP 接口表中为各项感知流程插入了新行，并新增了一个专用的报告原语 MLME-SENSREPORTRQ。SME 发出 MLME-SENSREPORTRQ.request 以请求发送一个感知测量报告帧；.confirm 告知它帧已发出；而在接收侧站点，.indication 把到达的测量结果（在基于阈值的报告中则可能是一个 CSI 变化反馈值）上交给 SME。这正是“无线电完成了感知”与“软件拿到了答案”之间那条清晰的分界线。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 420 170' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='20' y='20' width='160' height='40' rx='4'/><text x='100' y='44' text-anchor='middle' fill='currentColor' stroke='none' font-size='12'>SME (host)</text><rect x='20' y='110' width='160' height='40' rx='4'/><text x='100' y='134' text-anchor='middle' fill='currentColor' stroke='none' font-size='12'>MLME (MAC)</text><line x1='100' y1='60' x2='100' y2='110'/><polygon points='100,110 96,100 104,100' fill='currentColor' stroke='none'/><text x='112' y='88' fill='currentColor' stroke='none' font-size='10'>.request</text><line x1='130' y1='110' x2='130' y2='60'/><polygon points='130,60 126,70 134,70' fill='currentColor' stroke='none'/><text x='142' y='98' fill='currentColor' stroke='none' font-size='10'>.indication / .confirm</text><rect x='250' y='110' width='150' height='40' rx='4' stroke-dasharray='5 4'/><text x='325' y='134' text-anchor='middle' fill='currentColor' stroke='none' font-size='11'>Sensing Report frame</text><line x1='180' y1='130' x2='250' y2='130'/><polygon points='250,130 240,126 240,134' fill='currentColor' stroke='none'/><text x='200' y='124' fill='currentColor' stroke='none' font-size='9'>over the air</text></svg>",
+      "caption": {
+        "en": "MLME-SENSREPORTRQ is the SAP doorway: the SME asks (.request), the MAC builds and sends the Sensing Measurement Report frame, and arriving reports come back up as .indication / .confirm.",
+        "zh": "MLME-SENSREPORTRQ 就是这扇 SAP 之门：SME 发起请求（.request），MAC 构造并发送感知测量报告帧，到达的报告再以 .indication / .confirm 形式回到上层。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Frame numbering, the protected duals, and the exact SAP primitives",
+        "zh": "帧编号、受保护对偶帧与精确的 SAP 原语"
+      },
+      "en": "In Table 9-471 the sub-7 Public Action values are assigned: 54 Sensing Measurement Termination, 55 Sensing Measurement Query, 56 SBP Request, 57 SBP Response, 58 SBP Termination, 61 Sensing Measurement Request, 62 Sensing Measurement Response, 63 Sensing Measurement Report (9.6.7.56-9.6.7.63). The Request/Response/Termination/Query and the three SBP frames each carry a Protected variant sent as a Protected Dual of Public Action; the Report (9.6.7.58) is an Action No Ack frame carrying the Sensing Measurement Report Container (9.4.1.81). The Sensing NDP Announcement frame (9.3.1.19.6) reuses the HE NDP Announcement format with NDP Announcement Variant = 1 and an always-present STA Info field with AID11 = 2045. The Sensing Trigger subtypes (9.3.1.22.15) are encoded in Table 9-55a: 0 Sensing Polling, 1 SR2SI Sounding, 2 Sensing Threshold-Based Reporting, plus Sensing Reporting and SR2SR Sounding. At 60 GHz the TDD Beamforming frame (9.3.1.26) gains DMG Sensing Request/Response/Poll sub-frames, and the unprotected DMG action values include 6 DMG Sensing Measurement Request (9.6.21.8), 7 DMG Sensing Measurement Response (9.6.21.9) and 8 DMG Sensing Measurement Report (9.6.21.10), with protected DMG duals listed in Table 9-568 (e.g. 9.6.19.24). On the host boundary, Table 6-1 inserts SENSMSMTSESSION, SENSMSMTQUERY, SENSMSMTTERMINATION, SENSTBMSMTRQ, SENSNONTBMSMTRQ, SENSREPORT and SENSREPORTRQ rows; 6.5.33 defines MLME-SENSREPORTRQ with .request (PeerSTAAddress, SensingMeasurementReportContainer), .confirm (adds MeasurementSessionID, MeasurementExchangeID) and .indication, and 4.11 frames the four WLAN-sensing procedures the whole apparatus serves.",
+      "zh": "在表 9-471 中分配了 7 GHz 以下公共动作字段值：54 感知测量终止、55 感知测量查询、56 SBP 请求、57 SBP 响应、58 SBP 终止、61 感知测量请求、62 感知测量响应、63 感知测量报告（9.6.7.56-9.6.7.63）。请求/响应/终止/查询以及三个 SBP 帧各自带有以 Protected Dual of Public Action 发送的受保护变体；报告帧（9.6.7.58）是承载“感知测量报告容器（9.4.1.81）”的 Action No Ack 帧。感知 NDP 通告帧（9.3.1.19.6）复用 HE NDP 通告格式，其 NDP 通告变体子字段 = 1，且始终存在一个 AID11 = 2045 的 STA Info 字段。感知触发子类型（9.3.1.22.15）由表 9-55a 编码：0 感知轮询、1 SR2SI 探测、2 基于阈值的感知报告，以及感知报告与 SR2SR 探测。在 60 GHz，TDD 波束成形帧（9.3.1.26）新增 DMG 感知请求/响应/轮询子帧，非受保护 DMG 动作值包括 6 DMG 感知测量请求（9.6.21.8）、7 DMG 感知测量响应（9.6.21.9）与 8 DMG 感知测量报告（9.6.21.10），相应的受保护 DMG 对偶帧列于表 9-568（如 9.6.19.24）。在主机边界一侧，表 6-1 插入了 SENSMSMTSESSION、SENSMSMTQUERY、SENSMSMTTERMINATION、SENSTBMSMTRQ、SENSNONTBMSMTRQ、SENSREPORT 与 SENSREPORTRQ 等行；6.5.33 定义了 MLME-SENSREPORTRQ，含 .request（PeerSTAAddress、SensingMeasurementReportContainer）、.confirm（追加 MeasurementSessionID、MeasurementExchangeID）与 .indication；而 4.11 则界定了整套机制所服务的四类 WLAN 感知流程。",
+      "cite": {
+        "pdf_id": "80211bf-2025",
+        "pages": [
+          114,
+          115,
+          116,
+          117,
+          119,
+          124,
+          28,
+          29,
+          30
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        27,
+        28
+      ],
+      "note": "4.11 WLAN sensing — four procedures; Table 6-1 MLME SAP rows for the sensing procedures"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        29,
+        30,
+        31
+      ],
+      "note": "6.5.33 MLME-SENSREPORTRQ .request / .confirm / .indication primitives"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        35
+      ],
+      "note": "9.3.1.19.6 Sensing NDP Announcement frame format; Table 9-42b variant encoding"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        40
+      ],
+      "note": "9.3.1.22.15 Sensing Trigger frame variants; Table 9-55a Sensing Trigger Subtype encoding"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        46,
+        47,
+        49,
+        50
+      ],
+      "note": "9.3.1.26 TDD Beamforming frame; DMG Sensing Request / Response / Poll sub-frames"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        114,
+        115,
+        116,
+        117,
+        119,
+        120
+      ],
+      "note": "9.6.7.56-9.6.7.63 (Protected) Sensing Measurement Request/Response/Report/Termination/Query and SBP Request/Response/Termination; Table 9-471 Public Action values"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        122,
+        124,
+        125
+      ],
+      "note": "9.6.19.24 Protected DMG Sensing Measurement Request; 9.6.21.8-9.6.21.10 DMG Sensing Measurement Request/Response/Report"
+    }
+  ],
+  "covers": [
+    "80211bf-2025:9.6.7.56",
+    "80211bf-2025:9.6.7.57",
+    "80211bf-2025:9.6.7.58",
+    "80211bf-2025:9.6.7.59",
+    "80211bf-2025:9.6.7.60",
+    "80211bf-2025:9.6.7.61",
+    "80211bf-2025:9.6.7.62",
+    "80211bf-2025:9.6.7.63",
+    "80211bf-2025:9.6.19.24",
+    "80211bf-2025:9.6.21.8",
+    "80211bf-2025:9.6.21.9",
+    "80211bf-2025:9.6.21.10",
+    "80211bf-2025:9.3.1.19.6",
+    "80211bf-2025:9.3.1.22.15",
+    "80211bf-2025:9.3.1.26",
+    "80211bf-2025:6.5.33",
+    "80211bf-2025:4.11"
+  ],
+  "track": "sensing"
+}

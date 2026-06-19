@@ -1,0 +1,137 @@
+{
+  "id": "sensing-07",
+  "title": {
+    "en": "Inside the sub-7 GHz measurement exchange: polling, sounding, and reporting sub-steps",
+    "zh": "深入 Sub-7 GHz 测量交换：轮询、探测与上报的分步流程"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Earlier sensing lessons sketched the idea that a sub-7 GHz sensing session is a repeating loop of 'sound the channel, then report what you measured.' This lesson zooms into the engine room of that loop: the sensing measurement exchange. One exchange is a tightly choreographed burst of frames in which an initiator solicits sounding signals, devices measure how the radio channel distorts them (the CSI — channel state information), and the measured results travel back. A session is just this beat repeated over and over, like a metronome of sound-and-report.",
+      "zh": "之前的感知课程大致勾勒了一个想法：Sub-7 GHz 感知会话就是“探测信道，再上报测量结果”这样一个不断重复的循环。本课要深入这个循环的“引擎室”——感知测量交换（sensing measurement exchange）。一次交换就是一段编排紧凑的帧突发：发起方索求探测信号，各设备测量无线信道如何畸变这些信号（即 CSI，信道状态信息），测得的结果再传回。一次会话不过是这个节拍反复进行，就像一台“探测—上报”的节拍器。"
+    },
+    {
+      "type": "prose",
+      "en": "There are two flavours of exchange, and which one you use depends on who is in charge. In a Trigger-Based (TB) exchange the AP is the sensing initiator and one or more non-AP stations are the responders: the AP runs the show with trigger frames. In a Non-TB exchange the roles flip — a non-AP station is the initiator and the AP is the responder — and there is no soliciting trigger at all: the initiator simply sounds the channel whenever the medium is free. TB is the many-responder, AP-orchestrated mode; Non-TB is the lightweight, station-driven one.",
+      "zh": "交换有两种风格，用哪一种取决于“谁主导”。在触发式（TB, Trigger-Based）交换中，AP 是感知发起方，一个或多个非 AP 站点是响应方：AP 用触发帧统揽全局。在非触发式（Non-TB）交换中，角色互换——非 AP 站点是发起方，AP 是响应方——而且根本没有索求性触发帧：发起方只要介质空闲就直接探测信道。TB 是“多响应方、由 AP 编排”的模式；Non-TB 则是“轻量、由站点驱动”的模式。"
+    },
+    {
+      "type": "prose",
+      "en": "A TB exchange can string together up to four phases, in order. First the polling phase: the AP sends a Sensing Polling Trigger frame to the stations it wants, and each willing station answers with a CTS-to-self in its assigned resource unit — that's how the AP learns who is actually present. Next the NDPA sounding phase: the AP announces and then sends a sounding NDP (an SI2SR NDP) that responders measure. Then the TF sounding phase: the AP triggers responders to send their own sounding NDPs (SR2SI, or station-to-station SR2SR). Finally the reporting phase: a Sensing Reporting Trigger frame collects the measured results back as Sensing Measurement Report frames. Crucially, an exchange can't be just a reporting phase, just an NDPA phase, or only polling-plus-reporting — it must carry real sounding.",
+      "zh": "一次 TB 交换最多可按顺序串起四个阶段。首先是轮询阶段（polling phase）：AP 向它想要的站点发送感知轮询触发帧（Sensing Polling Trigger frame），每个愿意参与的站点在分配给它的资源单元（RU）里回以 CTS-to-self——AP 由此得知谁真的在场。接着是 NDPA 探测阶段：AP 先发公告，再发出供响应方测量的探测 NDP（即 SI2SR NDP）。然后是 TF 探测阶段：AP 触发响应方发送它们自己的探测 NDP（SR2SI，或站到站的 SR2SR）。最后是上报阶段（reporting phase）：用一帧感知上报触发帧（Sensing Reporting Trigger frame）把测量结果作为感知测量上报帧（Sensing Measurement Report frame）收回。关键在于：一次交换不能仅有上报阶段、仅有 NDPA 阶段，也不能只是“轮询+上报”——它必须包含真正的探测。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as AP (sensing initiator)\n    participant R as Responders (STA1..n)\n    Note over AP,R: polling phase\n    AP->>R: Sensing Polling Trigger\n    R->>AP: CTS-to-self (in assigned RU)\n    Note over AP,R: SIFS\n    Note over AP,R: NDPA sounding phase\n    AP->>R: Sensing NDP Announcement\n    AP->>R: SI2SR NDP (responders measure)\n    Note over AP,R: SIFS\n    Note over AP,R: TF sounding phase\n    AP->>R: SR2SI Sounding Trigger\n    R->>AP: SR2SI NDP (AP measures)\n    Note over AP,R: SIFS\n    Note over AP,R: reporting phase\n    AP->>R: Sensing Reporting Trigger\n    R->>AP: Sensing Measurement Report",
+      "zh": "sequenceDiagram\n    participant AP as AP（感知发起方）\n    participant R as 响应方（STA1..n）\n    Note over AP,R: 轮询阶段\n    AP->>R: 感知轮询触发帧\n    R->>AP: CTS-to-self（在分配的 RU 内）\n    Note over AP,R: SIFS\n    Note over AP,R: NDPA 探测阶段\n    AP->>R: 感知 NDP 公告帧\n    AP->>R: SI2SR NDP（响应方测量）\n    Note over AP,R: SIFS\n    Note over AP,R: TF 探测阶段\n    AP->>R: SR2SI 探测触发帧\n    R->>AP: SR2SI NDP（AP 测量）\n    Note over AP,R: SIFS\n    Note over AP,R: 上报阶段\n    AP->>R: 感知上报触发帧\n    R->>AP: 感知测量上报帧"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the metronome: phases that are present follow each other a SIFS apart — sounding starts a SIFS after polling, reporting a SIFS after sounding, and a triggered NDP flies a SIFS after its trigger. SIFS (the shortest inter-frame space) is what makes the whole exchange a single uninterrupted burst that nobody else can slip into. The naming follows the data flow: SI2SR = Sensing-Initiator-to-Sensing-Responder, SR2SI = the reverse, SR2SR = responder-to-responder.",
+      "zh": "注意这台“节拍器”：凡是出现的阶段，彼此都相隔一个 SIFS——探测在轮询之后一个 SIFS 开始，上报在探测之后一个 SIFS 开始，被触发的 NDP 在其触发帧之后一个 SIFS 发出。SIFS（最短的帧间间隔）正是让整次交换成为一段不被他人插入的连续突发的原因。命名遵循数据流向：SI2SR = 感知发起方到感知响应方（Sensing-Initiator-to-Sensing-Responder），SR2SI 是反方向，SR2SR 是响应方到响应方。"
+    },
+    {
+      "type": "prose",
+      "en": "The Non-TB exchange is the stripped-down cousin. There is no polling and no trigger to solicit anything: the non-AP initiator simply sends a Sensing NDP Announcement, sends its SI2SR NDP a SIFS later, the AP answers with an SR2SI NDP a SIFS after that, and — if a report was requested — the AP sends a Sensing Measurement Report a SIFS later. It is a single sound-and-report round between two devices, fired off whenever the medium is free (the AP can cap how often via a minimum interval). Same heartbeat, far fewer instruments.",
+      "zh": "Non-TB 交换是其精简版的“表亲”。这里没有轮询，也没有用来索求任何东西的触发帧：非 AP 发起方直接发送一帧感知 NDP 公告帧，一个 SIFS 后发出它的 SI2SR NDP，再过一个 SIFS，AP 回以 SR2SI NDP，并且——若请求了上报——AP 再过一个 SIFS 发出感知测量上报帧。这就是两台设备之间的一轮“探测—上报”，只要介质空闲就发起（AP 可通过最小时间间隔限制其频率）。同样的心跳，却用了少得多的“乐器”。"
+    },
+    {
+      "type": "prose",
+      "en": "Two 'common rules' keep both flavours interpretable over time. First, consistency of hardware: a sensing transmitter and receiver must reuse the exact same ordered set of RF chains and antennas — no swapping — across every exchange in a session, so successive CSI snapshots are comparable rather than reshuffled. If a transmit chain becomes unavailable, the device skips that NDP rather than sound with a different antenna set. Second, the 'indication of receiver operating condition': because the receiver's gain settings and signal level distort its CSI estimate, the receiver tells its peer the conditions it measured under, via an Rx_OP_Gain_Index in the report. Think of it as a photographer stamping the ISO and exposure on each photo — the picture only means something once you know the camera's settings.",
+      "zh": "有两条“通用规则（common rules）”使两种风格都能随时间保持可解释。其一是硬件一致性：感知发送方与接收方必须在一次会话的每一次交换中，复用完全相同且顺序不变的那一组射频链路与天线——不得调换——这样前后的 CSI 快照才是可比较的，而不是被打乱重排。若某条发送链路不可用，设备会跳过该次 NDP，而不是改用另一组天线去探测。其二是“接收机工作状态指示（indication of receiver operating condition）”：由于接收机的增益设置和信号强度会畸变其 CSI 估计，接收机会在上报中通过 Rx_OP_Gain_Index 字段告诉对端它是在何种条件下测得的。可以把它想成摄影师在每张照片上标注 ISO 与曝光——只有知道相机的设置，照片才有意义。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "When the loop should stop: a session ends explicitly when either party sends a Sensing Measurement Termination frame, or implicitly when the session expiry timer runs out — the timer is reset to aMeasurementSessionExpiry each time an exchange completes. So a healthy session keeps its own clock alive simply by continuing to beat.",
+      "zh": "循环何时该停止：当任一方发送一帧感知测量终止帧（Sensing Measurement Termination frame）时，会话显式结束；或者当会话到期定时器超时时，会话隐式结束——每完成一次交换，该定时器都会被重置为 aMeasurementSessionExpiry。因此，一个健康的会话只要持续“跳动”，就能让自己的时钟保持存活。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Threshold-based reporting and the operating-condition index, precisely",
+        "zh": "门限式上报与工作状态索引的精确规则"
+      },
+      "en": "Clause 11.55.1.5.2.6 splits the TB reporting phase into a basic reporting phase (11.55.1.5.2.6.1) — present whenever the Sensing Measurement Report Requested field is 1, with a single Sensing Reporting Trigger frame collecting reports — and an optional threshold-based reporting phase (11.55.1.5.2.6.2). The latter runs when the CSI Variation Threshold field is set to 0–10: it adds a CSI variation reporting subphase (responders feed back a quantised CSI-variation value in [0,1], larger meaning a bigger change vs. the last reported CSI) and only those whose value meets or exceeds their assigned threshold are then triggered in the measurement reporting subphase — cutting feedback overhead to just the responders whose channel actually moved. For the operating condition (11.55.1.5.5), the receiver sets Rx_OP_Gain_Type (0–2; 3 reserved) and an Rx_OP_Gain_Index (0–255, larger = greater impact on the CSI estimate, 0 = negligible); the chosen type stays consistent across the whole session, while the index value may change between exchanges to reflect a genuine change of operating point.",
+      "zh": "11.55.1.5.2.6 节将 TB 上报阶段拆分为基本上报阶段（11.55.1.5.2.6.1）——只要 Sensing Measurement Report Requested 字段为 1 即存在，由单帧感知上报触发帧收集上报——以及可选的门限式上报阶段（11.55.1.5.2.6.2）。后者在 CSI 变化门限（CSI Variation Threshold）字段取值为 0–10 时运行：它增加一个 CSI 变化上报子阶段（响应方反馈一个量化的 CSI 变化值，取值落在 [0,1] 闭区间内，值越大表示相对上次已上报 CSI 的变化越大），随后只有那些其值达到或超过各自门限的响应方，才会在测量上报子阶段被触发——从而把反馈开销削减到仅限信道确有变动的响应方。对于工作状态（11.55.1.5.5），接收机设置 Rx_OP_Gain_Type（0–2，值 3 保留）与 Rx_OP_Gain_Index（0–255，值越大表示对 CSI 估计的影响越大，0 表示影响可忽略）；所选类型在整个会话中保持一致，而索引值可在不同交换之间变化，以反映工作点的真实变化。",
+      "cite": {
+        "pdf_id": "80211bf-2025",
+        "pages": [
+          156,
+          157,
+          163
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211bf-2025:11.55.1.5",
+    "80211bf-2025:11.55.1.5.1",
+    "80211bf-2025:11.55.1.5.2",
+    "80211bf-2025:11.55.1.5.3",
+    "80211bf-2025:11.55.1.5.4",
+    "80211bf-2025:11.55.1.5.5",
+    "80211bf-2025:11.55.1.6"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        145,
+        146
+      ],
+      "note": "11.55.1.5 / 11.55.1.5.1 Sensing measurement exchange — General; TB and Non-TB variants; per-link under MLO; MLME-SENSREPORT.indication on NDP receipt"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        146,
+        147,
+        149,
+        150,
+        152,
+        154
+      ],
+      "note": "11.55.1.5.2 TB sensing measurement exchange — polling / NDPA sounding / TF sounding (SR2SI, SR2SR) phases; SIFS spacing; CTS-to-self polling response; phase-presence constraints"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        156,
+        157,
+        163
+      ],
+      "note": "11.55.1.5.2.6 basic vs threshold-based reporting phase; 11.55.1.5.5 indication of receiver operating condition (Rx_OP_Gain_Type / Rx_OP_Gain_Index)"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        157,
+        158,
+        159,
+        160
+      ],
+      "note": "11.55.1.5.3 Non-TB sensing measurement exchange — non-AP initiator, AP responder; no soliciting trigger; measurement sounding then optional reporting; min measurement interval"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        160,
+        161
+      ],
+      "note": "11.55.1.5.4 Common rules — same ordered RF chains/antennas across a session; skip NDP if a TX chain is unavailable"
+    },
+    {
+      "pdf_id": "80211bf-2025",
+      "pages": [
+        164,
+        165
+      ],
+      "note": "11.55.1.6 Sensing measurement session termination — explicit (Termination frame) vs implicit (expiry timer reset to aMeasurementSessionExpiry per completed exchange)"
+    }
+  ],
+  "track": "sensing"
+}
