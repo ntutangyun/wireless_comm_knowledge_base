@@ -1,0 +1,121 @@
+{
+  "id": "80211core-29",
+  "title": {
+    "en": "Traffic Stream Lifecycle: Setting Up, Tearing Down, and Healing a Reserved Flow",
+    "zh": "业务流生命周期：预留流的建立、拆除与恢复"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Plain EDCA channel access is a free-for-all: every queue just contends for the air and hopes its frames get through in time. But a video call or a voice stream needs more than hope — it needs a promise. A Traffic Stream (TS) is that promise. Before sending such traffic, a station asks the access point to reserve resources for a described flow, and the AP either grants it or declines. Think of it as a restaurant reservation: you state your party size and timing, the host confirms or turns you away, and a table is held for you.",
+      "zh": "普通的 EDCA 信道接入是一场“各凭本事”的争抢：每条队列都只是去竞争空口，然后寄希望于自己的帧能及时发出去。但视频通话或语音流需要的不仅是希望——它需要一个承诺。业务流（Traffic Stream，TS）就是这个承诺。在发送这类流量之前，站点会请求接入点（AP）为一条被描述清楚的数据流预留资源，AP 要么批准、要么拒绝。可以把它想象成餐厅订座：你说明用餐人数和时间，迎宾要么确认、要么婉拒，然后为你保留一张桌子。"
+    },
+    {
+      "type": "prose",
+      "en": "The reservation request itself is a TSPEC — the traffic specification. Built at the station's management layer (the SME) from what the application needs plus what the MAC knows, it describes the flow's contract: its TSID and direction, the access policy (EDCA, HCCA, or a blend called HEMM), a minimum PHY rate, mean data rate, delay bound, and timers for inactivity and suspension. Optional TCLAS classifiers tell the receiver which packets belong to this stream. It is always the non-AP STA's job to initiate a TS, regardless of which direction the data flows.",
+      "zh": "预留请求本身就是一个 TSPEC（业务流规范）。它在站点的管理层（SME）构造，来源是应用的需求加上 MAC 已知的信息，描述了这条流的“合同”：它的 TSID 与方向、接入策略（EDCA、HCCA，或两者混合的 HEMM）、最小 PHY 速率、平均数据速率、时延上限，以及用于不活动与挂起的计时器。可选的 TCLAS 分类器告诉接收方哪些数据包属于这条流。无论数据朝哪个方向流动，发起业务流始终是非 AP 站点的职责。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "TSID vs UP: a TS is identified inside the non-AP STA by its TSID plus direction, and inside the AP (the HC) by TSID, direction, and the STA's address. For an EDCA stream the TID carried in each QoS Data frame is just the User Priority value — which is why a stream that was never set up still travels, but as plain best-effort (AC_BE) with no reservation behind it.",
+      "zh": "TSID 与 UP：在非 AP 站点内部，业务流由 TSID 加方向标识；在 AP（即 HC）内部，则由 TSID、方向和站点地址共同标识。对于 EDCA 流，每个 QoS 数据帧里携带的 TID 就是用户优先级（UP）值——这也是为什么一条从未建立过的流仍能传输，但只能作为普通的尽力而为流量（AC_BE），背后没有任何资源预留。"
+    },
+    {
+      "type": "prose",
+      "en": "Setup is a short ADDTS handshake. The SME hands its MLME an MLME-ADDTS.request carrying the TSPEC; the MLME sends an ADDTS Request frame to the AP. The AP's SME decides to admit, refuse, or suggest an alternative TSPEC, and replies with an ADDTS Response carrying a status code. If the code is SUCCESS the TS enters the Active state and QoS Data frames may flow; otherwise the station can repeat the exchange with a modified TSPEC using the same TSID until the granted service is good enough — or give up. While active, the station can renegotiate the contract; a successful renegotiation resets both the inactivity and suspension timers.",
+      "zh": "建立过程是一段简短的 ADDTS 握手。SME 把携带 TSPEC 的 MLME-ADDTS.request 交给它的 MLME；MLME 向 AP 发送一个 ADDTS Request 帧。AP 的 SME 决定接纳、拒绝，或建议一个替代的 TSPEC，并回复一个携带状态码的 ADDTS Response。若状态码为 SUCCESS，该业务流进入活动（Active）状态，QoS 数据帧便可流动；否则站点可以用相同的 TSID、修改后的 TSPEC 重复这次交换，直到所授予的服务足够好——或者放弃。在活动期间，站点可以重新协商这份合同；一次成功的重新协商会同时重置不活动计时器与挂起计时器。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n    [*] --> Inactive\n    Inactive --> Active: ADDTS success (TS Setup)\n    Inactive --> Inactive: Failed TS Setup\n    Inactive --> Accepted: FT Resource Request\n    Accepted --> Active: Reassociation\n    Accepted --> Inactive: Reassociation deadline\n    Active --> Active: TS Renegotiation\n    Active --> Inactive: TS Deletion / TS Timeout\n    Active --> Suspended: TS Suspension (idle)\n    Suspended --> Active: Rx/Tx frame (Reinstatement)",
+      "zh": "stateDiagram-v2\n    [*] --> 非活动\n    非活动 --> 活动: ADDTS 成功 (业务流建立)\n    非活动 --> 非活动: 业务流建立失败\n    非活动 --> 已接受: FT 资源请求\n    已接受 --> 活动: 重关联\n    已接受 --> 非活动: 重关联截止\n    活动 --> 活动: 业务流重新协商\n    活动 --> 非活动: 业务流删除 / 业务流超时\n    活动 --> 挂起: 业务流挂起 (空闲)\n    挂起 --> 活动: 收/发帧 (恢复)"
+    },
+    {
+      "type": "prose",
+      "en": "Once active, data transfer is routine: MSDUs arrive at the MAC SAP tagged with the TID, and the classifier above the MAC uses the TS's TCLAS elements (if any) to decide which stream each packet joins. A stream ends in one of three ways. Deletion is the clean teardown: either side issues MLME-DELTS.request, sends a DELTS frame, and frees the resources the instant the Ack arrives — there is no management-frame response. Timeout is the silent death: the AP watches each TS, and if no traffic appears within the stream's inactivity interval it sends a DELTS with reason code TIMEOUT and notifies its SME. Disassociation or reassociation deletes every TS outright.",
+      "zh": "一旦进入活动状态，数据传输就很常规：MSDU 带着 TID 到达 MAC SAP，MAC 之上的分类器利用该业务流的 TCLAS 元素（若有）判断每个数据包应归入哪条流。一条流的终结有三种方式。删除是干净的拆除：任一方发出 MLME-DELTS.request，发送一个 DELTS 帧，并在收到 Ack 的那一刻立即释放资源——没有管理帧应答。超时是无声的消亡：AP 会盯着每条业务流，若在该流的不活动间隔内没有出现任何流量，就发送一个原因码为 TIMEOUT 的 DELTS，并通知自己的 SME。解关联或重关联则会直接删除全部业务流。"
+    },
+    {
+      "type": "prose",
+      "en": "But not every quiet stretch should kill a reservation. A stream that idles only briefly can be suspended instead of deleted. Suspension happens inside the AP's MAC when no traffic is seen within the (separate, usually shorter) suspension interval: it stops generating QoS CF-Poll frames for that TS — but crucially, it does NOT reclaim the reserved resources. The moment activity returns, the TS is reinstated: for uplink or direct-link, the station simply sends a QoS Data or QoS Null frame (at highest priority via EDCA) and polling resumes; for downlink, the AP reinstates it as soon as a higher-layer MSDU arrives. This suspend-and-reinstate dance lets a bursty flow survive a lull without paying the full setup cost again.",
+      "zh": "但并非每一段安静都该断送一份预留。只是短暂空闲的流可以被挂起，而不是删除。挂起发生在 AP 的 MAC 内部，当在（另一个、通常更短的）挂起间隔内未见任何流量时：AP 会停止为该业务流生成 QoS CF-Poll 帧——但关键在于，它不会回收已预留的资源。一旦活动恢复，业务流便被恢复（reinstated）：对于上行或直连链路，站点只需发送一个 QoS 数据帧或 QoS Null 帧（通过 EDCA 以最高优先级发送），轮询随即恢复；对于下行，AP 一旦收到来自高层的 MSDU 就将其恢复。这套“挂起—恢复”的舞步让一条突发型的流能够熬过一段空闲，而无需再次付出完整的建立代价。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact life-cycle states and the suspension-vs-timeout distinction",
+        "zh": "精确的生命周期状态与“挂起 vs 超时”的区别"
+      },
+      "en": "Clause 11.4.3 (Figure 11-24) defines the states: a TS is initially Inactive, and a STA shall not transmit QoS Data frames whose TID matches an Inactive TS. A successful setup (11.4.4) moves it to Active; an FT Resource Request creates it in the intermediate Accepted state, which advances to Active on reassociation or falls back to Inactive if the reassociation deadline passes (11.4.5). 11.4.9 distinguishes the timeout direction: for an uplink TS the AP times out on arrival of received MSDUs belonging to the TS; for a downlink TS on confirmed transmission of those MSDUs. The key contrast lives in 11.4.10 vs 11.4.11: on a suspension interval with no traffic, the HC's MAC stops QoS (+)CF-Poll generation for the TS but, per 11.4.3, 'the HC shall not reclaim the resources assigned to the TS' while suspended — whereas an inactivity TIMEOUT in 11.4.9 actually deletes the TS and releases all its resources. Reinstatement (11.4.11) requires only one frame of activity to resume polling.",
+      "zh": "11.4.3 节（图 11-24）定义了这些状态：业务流初始为非活动（Inactive），且站点不得发送 TID 与某个非活动业务流匹配的 QoS 数据帧。一次成功的建立（11.4.4）将其推入活动（Active）状态；FT 资源请求则在中间的“已接受（Accepted）”状态下创建它，该状态在重关联时前进到活动，或在重关联截止时间过后退回非活动（11.4.5）。11.4.9 区分了超时的方向：对于上行业务流，AP 依据属于该流的、收到的 MSDU 的到达来判定超时；对于下行业务流，则依据这些 MSDU 被确认发送来判定。最关键的对比在于 11.4.10 与 11.4.11：当在挂起间隔内没有流量时，HC 的 MAC 会停止为该业务流生成 QoS (+)CF-Poll 帧，但依据 11.4.3，在挂起期间“HC 不得回收分配给该业务流的资源”——而 11.4.9 中的不活动超时（TIMEOUT）则会真正删除业务流并释放其全部资源。恢复（11.4.11）只需一帧的活动即可让轮询重新开始。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2544,
+          2545,
+          2557
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.4.1",
+    "80211-2024:11.4.2",
+    "80211-2024:11.4.3",
+    "80211-2024:11.4.4",
+    "80211-2024:11.4.7",
+    "80211-2024:11.4.8",
+    "80211-2024:11.4.9",
+    "80211-2024:11.4.10",
+    "80211-2024:11.4.11"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2541,
+        2542,
+        2543
+      ],
+      "note": "11.4.1 Introduction; 11.4.2 TSPEC construction - TSPEC purpose, TSID/direction identification, non-AP STA initiates, EDCA/HCCA/HEMM access policy"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2544,
+        2545
+      ],
+      "note": "11.4.3 TS life cycle and Figure 11-24 - Inactive/Accepted/Active/Suspended states; suspension does not reclaim resources"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2547,
+        2548,
+        2549,
+        2550
+      ],
+      "note": "11.4.4 TS setup - ADDTS Request/Response handshake, MLME-ADDTS primitives, SUCCESS -> Active, renegotiation resets timers"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2552,
+        2553
+      ],
+      "note": "11.4.7 Data transfer - MSDUs classified above MAC; no-TSPEC traffic falls to AC_BE; 11.4.8 TS deletion - DELTS frame, resources freed on Ack"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2556,
+        2557
+      ],
+      "note": "11.4.9 TS timeout (uplink/downlink basis, DELTS reason TIMEOUT); 11.4.10 TS suspension (stop CF-Poll); 11.4.11 TS reinstatement (one frame resumes)"
+    }
+  ],
+  "track": "80211core"
+}

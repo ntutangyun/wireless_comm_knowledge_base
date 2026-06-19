@@ -1,0 +1,98 @@
+{
+  "id": "80211core-28",
+  "title": {
+    "en": "Fetching Buffered Frames: PS-Poll, APSD, and Receive Operation in Power Save",
+    "zh": "取回缓存帧：PS-Poll、APSD 与省电态下的接收操作"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A station in power save (PS) mode spends most of its time dozing with its radio off, while the access point quietly stockpiles any frames addressed to it. The TIM in the AP's beacon is the notice board: it lights up the bit for a station's AID when there is mail waiting. This lesson is about what the station does next — how it actually walks up and collects that buffered mail. Knowing the bit is set is only half the story; retrieving the frames is the other half.",
+      "zh": "处于省电（PS）模式的站点大部分时间都在“打盹”、关闭射频，而接入点（AP）则悄悄地把发往它的帧囤积起来。AP 信标中的 TIM 就是那块公告栏：当某个站点的 AID 对应的比特被点亮时，就表示有“邮件”在等它。本课讲的是站点接下来要做什么——它如何真正“走上前去”把缓存的邮件取回来。知道比特被置位只是故事的一半；把帧取回来才是另一半。"
+    },
+    {
+      "type": "prose",
+      "en": "The classic way is the PS-Poll frame. When the dozing station wakes, reads the beacon, and sees its AID bit set in the TIM, it sends a single PS-Poll to the AP. The AP responds by delivering one buffered frame. If more frames are waiting, the AP sets the More Data subfield to 1 in that frame, and the station — at its convenience — sends another PS-Poll, and another, one fetch per poll, until More Data reads 0. It is the front desk model: you ask for one package at a time, and the clerk tells you whether there are more behind the counter.",
+      "zh": "经典的方式是 PS-Poll 帧。当打盹的站点醒来、读取信标、并在 TIM 中看到自己的 AID 比特被置位时，它就向 AP 发送一个 PS-Poll。AP 作为回应，投递一个缓存帧。如果还有更多帧在等，AP 会在该帧中把 More Data 子字段置为 1，站点便在方便时再发一个 PS-Poll，再一个，每“轮询”一次取一帧，直到 More Data 读到 0 为止。这就是“前台取件”模型：你一次只领一个包裹，柜员会告诉你后面是否还有。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two timing details matter. The station must wake early enough to catch the beacon (governed by its negotiated ListenInterval), and the PS-Poll itself is sent after a DIFS plus a random backoff uniformly chosen between 0 and aCWmin slots — so that many freshly-woken stations don't all poll at the same instant.",
+      "zh": "有两个时序细节很重要。站点必须足够早地醒来以接住信标（由它协商好的 ListenInterval 决定）；而 PS-Poll 本身要在一个 DIFS 之后、再加上一个在 0 到 aCWmin 个时隙之间均匀随机选取的退避之后才发出——这样许多刚醒来的站点就不会在同一瞬间一起轮询。"
+    },
+    {
+      "type": "prose",
+      "en": "PS-Poll works, but it costs a round trip per frame. Automatic Power Save Delivery (APSD) is the smarter alternative, and it comes in two flavours. Scheduled APSD (S-APSD) sets up a fixed wakeup clock: the station and AP agree on a Service Interval and start time, the station wakes exactly then, and the AP delivers the whole batch during that scheduled service period (SP). Unscheduled APSD (U-APSD) is event-driven: the station's own uplink frame — a QoS Data or QoS Null frame on a trigger-enabled access category — doubles as a trigger that opens an SP, during which the AP pushes down the buffered frames for delivery-enabled ACs.",
+      "zh": "PS-Poll 确实能用，但每取一帧都要付出一个往返的代价。自动省电投递（APSD）是更聪明的替代方案，它有两种形态。计划型 APSD（S-APSD）建立一个固定的唤醒时钟：站点与 AP 商定一个服务间隔（Service Interval）和起始时间，站点恰好在那一刻醒来，AP 则在该计划服务周期（SP）内一次性投递整批帧。非计划型 APSD（U-APSD）则是事件驱动的：站点自己的一个上行帧——在某个“可触发（trigger-enabled）”接入类别（AC）上的 QoS Data 或 QoS Null 帧——同时充当一个触发器，开启一个 SP，AP 在此期间把“可投递（delivery-enabled）”AC 的缓存帧推送下来。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "This is the heart of the intuition: PS-Poll is asking the front desk for one package at a time. U-APSD is 'whenever I walk up to send mail, hand me my packages too' — your outgoing frame is also the request, and the AP fulfils it in one burst.",
+      "zh": "这正是直觉的核心：PS-Poll 是一次只向前台领一个包裹；而 U-APSD 则是“每当我走上前去寄信时，顺便把我的包裹也一起给我”——你那个外发的帧本身就是请求，AP 用一次集中投递就把它满足了。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Station (dozing)\n    participant AP as Access Point\n    Note over AP: buffers frames for PS STA\n    rect rgb(230,240,255)\n    Note over STA,AP: Legacy PS-Poll\n    STA->>AP: wake, read beacon TIM (AID bit = 1)\n    STA->>AP: PS-Poll\n    AP->>STA: buffered frame (More Data = 1)\n    STA->>AP: PS-Poll\n    AP->>STA: buffered frame (More Data = 0)\n    end\n    rect rgb(235,255,235)\n    Note over STA,AP: U-APSD\n    STA->>AP: trigger frame (QoS Data/Null, trigger-enabled AC)\n    Note over AP: unscheduled SP begins\n    AP->>STA: BU (More Data = 1, EOSP = 0)\n    AP->>STA: BU (EOSP = 1)\n    Note over STA: SP ends, may doze\n    end",
+      "zh": "sequenceDiagram\n    participant STA as 站点 (打盹中)\n    participant AP as 接入点\n    Note over AP: 为 PS 站点缓存帧\n    rect rgb(230,240,255)\n    Note over STA,AP: 传统 PS-Poll\n    STA->>AP: 醒来, 读信标 TIM (AID 比特 = 1)\n    STA->>AP: PS-Poll\n    AP->>STA: 缓存帧 (More Data = 1)\n    STA->>AP: PS-Poll\n    AP->>STA: 缓存帧 (More Data = 0)\n    end\n    rect rgb(235,255,235)\n    Note over STA,AP: U-APSD\n    STA->>AP: 触发帧 (QoS Data/Null, 可触发 AC)\n    Note over AP: 非计划 SP 开始\n    AP->>STA: BU (More Data = 1, EOSP = 0)\n    AP->>STA: BU (EOSP = 1)\n    Note over STA: SP 结束, 可打盹\n    end"
+    },
+    {
+      "type": "prose",
+      "en": "How does the station know an APSD service period is over so it can go back to sleep? It watches the EOSP (End Of Service Period) subfield. The station stays awake through the SP until it receives a QoS Data or QoS Null frame addressed to it with EOSP set to 1 — that is the AP's signal that the burst is finished. The contrast with active mode closes the loop: a station in active mode simply keeps its receiver on continuously and never has to interpret the TIM at all. Power save trades that always-on convenience for battery life, and PS-Poll, S-APSD, and U-APSD are the three doors back to the buffered frames.",
+      "zh": "站点如何知道一个 APSD 服务周期已经结束、从而可以回去睡觉？它盯住 EOSP（服务周期结束，End Of Service Period）子字段。站点在整个 SP 期间保持清醒，直到收到一个发往它、且 EOSP 置为 1 的 QoS Data 或 QoS Null 帧——这就是 AP 发出的“这一批已经投递完毕”的信号。与活动（active）模式的对比让整个逻辑闭环：活动模式下的站点只是持续开着接收机，根本不必去解读 TIM。省电模式用这种“始终在线”的便利换取了电池续航，而 PS-Poll、S-APSD 与 U-APSD 就是通往那些缓存帧的三扇门。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact STA-side rules: TIM-triggered poll, trigger frames, and EOSP",
+        "zh": "精确的站点侧规则：TIM 触发的轮询、触发帧与 EOSP"
+      },
+      "en": "Clause 11.2.3.7 gives the PS-mode receive procedure: when the STA detects its AID bit is 1 in the TIM, it issues a PS-Poll frame (or a trigger frame, if it is using U-APSD and all ACs are delivery-enabled) to retrieve the buffered BU, transmitted after a DIFS plus a random delay uniformly distributed between 0 and aCWmin slots. The STA stays awake until it receives the BU or a later TIM clears its bit, and if the More Data subfield indicates more buffered traffic it keeps polling at its convenience until none remains. Clause 11.2.3.8 covers the APSD receive procedure: for a scheduled SP the STA transitions to awake at its scheduled start time; to initiate an unscheduled SP it wakes and transmits a trigger frame, and for any non-delivery-enabled ACs it may retrieve BUs by sending PS-Poll frames. In both cases the STA shall remain awake until it receives a QoS Data or QoS Null frame addressed to it with the EOSP subfield equal to 1; it may send additional PS-Poll or trigger frames while More Data is 1. Clause 11.2.3.5 defines U-APSD versus S-APSD and how a trigger frame (a QoS Data or QoS Null frame on a trigger-enabled AC) begins an unscheduled SP, while clause 11.2.3.9 states the active-mode baseline — the receiver is on continuously and the STA need not interpret TIM elements.",
+      "zh": "11.2.3.7 节给出了 PS 模式的接收流程：当站点检测到自己在 TIM 中的 AID 比特为 1 时，它发出一个 PS-Poll 帧（若正在使用 U-APSD 且所有 AC 均为可投递，则发触发帧）来取回缓存的 BU，该帧在一个 DIFS 之后、再加上一个在 0 到 aCWmin 个时隙间均匀随机分布的延迟之后发送。站点保持清醒，直到收到该 BU，或直到后续某个 TIM 清除了它的比特；若 More Data 子字段表明还有更多缓存流量，它便在方便时继续轮询，直到再无缓存为止。11.2.3.8 节涵盖 APSD 接收流程：对于计划型 SP，站点在其计划起始时间切换到清醒；要发起一个非计划 SP，它醒来并发送一个触发帧，而对于任何非可投递的 AC，它可以通过发送 PS-Poll 帧来取回 BU。两种情形下，站点都应保持清醒，直到收到一个发往它、且 EOSP 子字段等于 1 的 QoS Data 或 QoS Null 帧；当 More Data 为 1 时，它可以继续发送额外的 PS-Poll 或触发帧。11.2.3.5 节定义了 U-APSD 与 S-APSD 的区别，以及一个触发帧（可触发 AC 上的 QoS Data 或 QoS Null 帧）如何开启一个非计划 SP；而 11.2.3.9 节给出了活动模式的基线——接收机持续开启，站点无需解读 TIM 元素。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2481,
+          2482,
+          2483
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.2.3.5",
+    "80211-2024:11.2.3.7",
+    "80211-2024:11.2.3.8",
+    "80211-2024:11.2.3.9"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2474,
+        2475,
+        2476
+      ],
+      "note": "11.2.3.5 Power management with APSD — U-APSD vs S-APSD; trigger frame on a trigger-enabled AC begins an unscheduled SP; delivery-enabled ACs"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2481,
+        2482
+      ],
+      "note": "11.2.3.7 Receive operation for STAs in PS mode — TIM AID bit -> PS-Poll (or trigger) after DIFS + random 0..aCWmin slots; More Data drives further polling"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2483
+      ],
+      "note": "11.2.3.8 Receive operation using APSD (scheduled start / trigger frame; remain awake until EOSP=1) and 11.2.3.9 STAs operating in the active mode (receiver on continuously; no TIM interpretation)"
+    }
+  ],
+  "track": "80211core"
+}

@@ -1,0 +1,118 @@
+{
+  "id": "80211core-31",
+  "title": {
+    "en": "Radio Resource Procedures: Transmit Power Control and Dynamic Frequency Selection",
+    "zh": "无线资源过程：发射功率控制与动态频率选择"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Wi-Fi shares the 5 GHz and 6 GHz bands with other systems — including, in some sub-bands, weather and military radar that owns the spectrum by law. To stay a good citizen there, 802.11 defines two regulatory radio-management procedures: Transmit Power Control (TPC) and Dynamic Frequency Selection (DFS). Both kick in only when dot11SpectrumManagementRequired is true, which a station sets when the regulator (or the BSS it wants to join) demands it. The intuition is simple: TPC is adjusting your voice to the room; DFS is being a polite guest in a band someone else owns — listen first, keep listening, and vacate the moment you hear the owner.",
+      "zh": "Wi-Fi 与其他系统共用 5 GHz 和 6 GHz 频段——在某些子频段里，这包括了依法拥有该频谱的气象雷达和军用雷达。为了在那里做个守规矩的“住户”，802.11 定义了两套监管性的无线资源管理过程：发射功率控制（TPC）和动态频率选择（DFS）。两者都只在 dot11SpectrumManagementRequired 为真时启用，而站点会在监管机构（或它想加入的 BSS）有此要求时把它置真。直觉很简单：TPC 就是把你的音量调到适合房间大小；DFS 则是在别人拥有的频段里当个有礼貌的客人——先听、持续听，一旦听到主人的声音就立刻让出。"
+    },
+    {
+      "type": "prose",
+      "en": "TPC starts at association. A station tells the AP its minimum and maximum transmit-power capability in a Power Capability element inside its (Re)Association Request — and the AP may even reject it if that capability is unacceptable (for example, if it cannot turn down low enough to meet a local power constraint). From there the station combines limits to pick a power: it computes a regulatory maximum (the minimum over all regulatory limits it knows — from the Country element, a Transmit Power Envelope element, and other sources) and a local maximum (which folds in the AP's Power Constraint, set so the channel's mitigation requirement is met). An AP transmits at or below the regulatory maximum; a non-AP STA transmits at or below the lower of the local maximum and the regulatory client maximum.",
+      "zh": "TPC 从关联时就开始。站点在其（重）关联请求中用一个功率能力元素（Power Capability element）告诉 AP 自己的最小和最大发射功率能力——如果这个能力不可接受（例如它无法把功率降到足够低以满足本地功率约束），AP 甚至可以拒绝它。从这里开始，站点通过组合各种上限来选定功率：它算出一个监管最大功率（在它所知的全部监管上限里取最小——来自 Country 元素、发射功率包络元素以及其他来源），以及一个本地最大功率（其中纳入了 AP 的 Power Constraint，该约束被设置成恰好满足本信道的缓解要求）。AP 以不超过监管最大值的功率发射；非 AP 站点以不超过“本地最大值与监管客户端最大值中较小者”的功率发射。"
+    },
+    {
+      "type": "prose",
+      "en": "Within those ceilings, a station is free to adapt its power dynamically — using any criteria it likes, typically path-loss and link-margin estimates: shout only as loud as the link actually needs. To get the data, a station can send a TPC Request frame; the receiver must reply with a TPC Report frame whose Transmit Power field is the power it used and whose Link Margin field is its estimated margin. APs also broadcast a TPC Report element (with Link Margin set to 0) in their Beacons so the whole BSS has a reference. The exact adaptation algorithm is left to the implementation — the standard only defines the ceilings and the measurement exchange.",
+      "zh": "在这些上限之内，站点可以自由地动态调整功率——可采用任何它喜欢的准则，通常是路径损耗和链路余量估计：链路需要多大声，就只喊多大声。为了拿到这些数据，站点可以发送 TPC 请求帧（TPC Request frame）；接收方必须以 TPC 报告帧（TPC Report frame）回应，其中发射功率字段是它所用的功率，链路余量字段是它估计的余量。AP 还会在 Beacon 中广播一个链路余量置 0 的 TPC 报告元素，让整个 BSS 都有一个参考。具体的自适应算法留给实现去决定——标准只定义了这些上限和测量交换。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "TPC and DFS are siblings under the same switch. Both are gated by dot11SpectrumManagementRequired, and a non-AP STA won't join a BSS demanding them unless the Spectrum Management bit is 1 in the AP's Beacon / Probe Response. TPC manages how loud; DFS manages where.",
+      "zh": "TPC 与 DFS 是同一个开关下的“兄弟”。两者都受 dot11SpectrumManagementRequired 控制；除非 AP 的 Beacon / 探测响应里的 Spectrum Management 位为 1，否则非 AP 站点不会加入一个要求它们的 BSS。TPC 管“多大声”，DFS 管“在哪里”。"
+    },
+    {
+      "type": "prose",
+      "en": "DFS is the where. At association a station lists every channel it can operate in via a Supported Channels element, so the AP knows where the whole BSS can legally move. Then comes the listening discipline: before using a channel and while operating in it, the channel must be tested for radar (the detection method itself is left to the regulator, not the standard). If a station detects radar — or accepts that another station did — it discontinues transmissions on that channel per the regulatory rules. The band's owner has spoken, so the guests fall silent.",
+      "zh": "DFS 管的就是“在哪里”。关联时，站点通过一个支持信道元素（Supported Channels element）列出它能工作的每一个信道，这样 AP 就知道整个 BSS 在法律上可以迁往何处。接着是“倾听纪律”：在使用某信道之前以及在该信道上工作期间，都必须对其进行雷达测试（具体的检测方法由监管机构而非标准来规定）。一旦某个站点检测到雷达——或者认可另一个站点检测到了——它就按监管规则在该信道上停止发射。频段的主人已经发话，于是客人们安静下来。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[Associate: send Supported Channels + Power Capability] --> B[Test channel for radar]\n    B --> C{Radar detected?}\n    C -- no --> D[Operate; keep listening; adapt TX power within ceilings]\n    D --> C\n    C -- yes --> E[Discontinue TX on this channel]\n    E --> F[AP selects a new supported channel]\n    F --> G[Advertise via Channel Switch Announcement<br/>in Beacons / Probe Resp / CSA frames]\n    G --> H{CSA Mode = 1?}\n    H -- yes --> I[STAs stop TX until the switch]\n    H -- no --> J[Switch is advisory only]\n    I --> K[Whole BSS moves to new channel together]\n    J --> K",
+      "zh": "flowchart TD\n    A[关联：发送支持信道元素 + 功率能力元素] --> B[对信道进行雷达测试]\n    B --> C{检测到雷达?}\n    C -- 否 --> D[工作；持续倾听；在上限内自适应发射功率]\n    D --> C\n    C -- 是 --> E[在本信道上停止发射]\n    E --> F[AP 选择一个受支持的新信道]\n    F --> G[通过信道切换通告<br/>在 Beacon / 探测响应 / CSA 帧中通告]\n    G --> H{CSA 模式 = 1?}\n    H -- 是 --> I[站点停止发射直到切换发生]\n    H -- 否 --> J[切换仅为建议性]\n    I --> K[整个 BSS 一起迁往新信道]\n    J --> K"
+    },
+    {
+      "type": "prose",
+      "en": "Vacating is only half the job — the BSS must regroup somewhere new, together. In a non-DMG infrastructure BSS, only the AP decides the new channel, and it tries to pick one supported by every associated station (that is what the Supported Channels lists were for). It announces the move using Channel Switch Announcement (CSA) elements in Beacons, Probe Responses, and dedicated Channel Switch Announcement frames, repeated until the switch time so even power-save stations catch at least one. The CSA's Channel Switch Mode field is the lever: a value of 1 forces stations to stop transmitting on the old channel until the switch; a value of 0 imposes no such restriction. Either way, the announcement carries the BSS to the new channel as a unit.",
+      "zh": "让出信道只完成了一半工作——BSS 必须一起在新的地方重新集结。在非 DMG 的基础设施 BSS 中，只有 AP 决定新信道，并且它会尽量挑选一个所有已关联站点都支持的信道（这正是当初那些支持信道列表的用途）。它通过在 Beacon、探测响应以及专门的信道切换通告帧中携带信道切换通告（CSA）元素来通告这次迁移，并一直重复到切换时刻，好让连处于省电模式的站点也至少能收到一次。CSA 的信道切换模式（Channel Switch Mode）字段就是那个杠杆：取值为 1 时强制站点在切换前停止在旧信道上发射；取值为 0 则不施加这种限制。无论哪种方式，这个通告都会把整个 BSS 作为一个整体带到新信道。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact power-ceiling math and the CSA Mode rule",
+        "zh": "精确的功率上限算法与 CSA 模式规则"
+      },
+      "en": "Clause 11.7.5 defines both ceilings as minimums. The regulatory maximum is the minimum of: any regulatory maximum in a Country element from the AP, any regulatory client maximum in a Transmit Power Envelope element (if the STA is extended spectrum management capable), and any regulatory maximum known from other sources. The local maximum is the minimum of: the local maximum from a Country + Power Constraint element combination, any local maximum in a Transmit Power Envelope element, and any local maximum known otherwise. 11.7.6 then bounds transmission: an AP transmits at or below the regulatory maximum (meeting any mitigation requirement); a non-AP STA transmits at or below the lower of the local maximum and the regulatory client maximum. On the DFS side, 11.8.9 states the CSA lever precisely: a non-DMG STA in a non-IBSS BSS that receives a Channel Switch Mode field equal to 1 shall not transmit any more frames on the channel until the scheduled switch occurs; an IBSS STA may treat Mode = 1 as advisory; and Mode = 0 imposes no requirement. A note warns that a CSA cannot switch bands, because the operating class is not communicated.",
+      "zh": "11.7.5 节把两个上限都定义为“取最小”。监管最大功率是以下各项的最小值：来自 AP 的 Country 元素中的任何监管最大功率、发射功率包络元素中的任何监管客户端最大功率（若站点具备扩展频谱管理能力）、以及从其他来源得知的任何监管最大功率。本地最大功率是以下各项的最小值：来自 Country 元素与 Power Constraint 元素组合的本地最大功率、发射功率包络元素中的任何本地最大功率、以及从别处得知的任何本地最大功率。11.7.6 节随后界定发射：AP 以不超过监管最大值的功率发射（并满足任何缓解要求）；非 AP 站点以不超过“本地最大值与监管客户端最大值中较小者”的功率发射。在 DFS 一侧，11.8.9 节精确规定了 CSA 这个杠杆：在非 IBSS 的 BSS 中，收到信道切换模式字段为 1 的非 DMG 站点，在预定切换发生前不得再在该信道上发射任何帧；IBSS 站点可将“模式=1”视为建议性的；而“模式=0”不施加任何要求。一条注释提醒：CSA 无法切换频段，因为它并不传达操作类（operating class）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2571,
+          2572,
+          2573,
+          2586
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.7.1",
+    "80211-2024:11.7.2",
+    "80211-2024:11.7.4",
+    "80211-2024:11.7.5",
+    "80211-2024:11.7.6",
+    "80211-2024:11.7.7",
+    "80211-2024:11.8.1",
+    "80211-2024:11.8.2.1",
+    "80211-2024:11.8.5",
+    "80211-2024:11.8.6",
+    "80211-2024:11.8.8.2",
+    "80211-2024:11.8.9"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2568,
+        2569
+      ],
+      "note": "11.7.1 TPC general; 11.7.2 association based on transmit power capability (Power Capability element)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2571,
+        2572,
+        2573
+      ],
+      "note": "11.7.5 regulatory/local maximum transmit power (minimums); 11.7.6 transmit power selection; 11.7.7 power adaptation, TPC Request/Report"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2573,
+        2574,
+        2575
+      ],
+      "note": "11.8.1 DFS general (dot11SpectrumManagementRequired); 11.8.2.1 association based on supported channels (Supported Channels element)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2577,
+        2579,
+        2580,
+        2586
+      ],
+      "note": "11.8.5 discontinuing on radar; 11.8.6 detecting radar; 11.8.8.2 AP selects/advertises new channel via CSA in non-DMG infra BSS; 11.8.9 Channel Switch Mode rule"
+    }
+  ],
+  "track": "80211core"
+}

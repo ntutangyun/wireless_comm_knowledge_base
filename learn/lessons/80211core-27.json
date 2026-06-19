@@ -1,0 +1,136 @@
+{
+  "id": "80211core-27",
+  "title": {
+    "en": "AP-Side Power Management: TIM, DTIM, and Buffering for Sleeping Stations",
+    "zh": "AP 侧省电管理：TIM、DTIM 与为休眠站缓存帧"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Most Wi-Fi clients run on a battery, so they cannot keep their radio on all the time. 802.11 lets a non-AP station drop into a power save (PS) mode where it spends most of its life dozing — radio off, drawing almost no power — and only briefly wakes to check whether anything is waiting for it. The trick is that traffic does not stop arriving just because a station is asleep. Something has to hold that traffic and tell the station it exists. That something is the AP.",
+      "zh": "大多数 Wi-Fi 终端都靠电池供电，因此无法让射频一直开着。802.11 允许非 AP 站点进入省电（PS）模式：它大部分时间处于“休眠（doze）”状态——射频关闭、几乎不耗电——只在短暂醒来时检查是否有数据在等它。问题在于，站点睡着了，发给它的流量并不会因此停下。总得有人把这些流量先存起来，并告诉站点“你有东西”。这个角色就是 AP。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The mental model: the AP is a hotel front desk. When a guest goes up to nap, the desk holds their mail and packages, and posts a board in the lobby saying which room numbers have something waiting. A napping guest only has to glance at the board to know whether it's worth coming down. That board is the TIM (Traffic Indication Map), and 'come down to collect' is the PS-Poll.",
+      "zh": "可以这样想：AP 就是酒店前台。客人上楼小睡时，前台替他保管邮件和包裹，并在大堂挂出一块告示牌，写明哪些房间号“有东西在等”。小睡的客人只需瞥一眼告示牌，就知道值不值得下楼。这块告示牌就是 TIM（流量指示图，Traffic Indication Map），而“下楼来取”就是 PS-Poll。"
+    },
+    {
+      "type": "prose",
+      "en": "A non-AP STA has exactly two power management modes: Active mode (radio effectively always listening) and PS mode (doze most of the time, wake to send or receive). A station must always tell the AP which mode it is in — it does so via the Power Management subfield in the Frame Control field of frames it sends, and the mode only actually changes after the AP acknowledges that frame. You do not get to silently fall asleep; the AP has to know you are dozing so it starts buffering for you. On (re)association a station always begins in Active mode.",
+      "zh": "非 AP 站点恰好有两种电源管理模式：活动模式（Active，射频基本上一直在监听）和省电模式（PS，大部分时间休眠，需要收发时才醒来）。站点必须始终告诉 AP 自己当前处于哪种模式——它通过所发送帧的帧控制（Frame Control）字段中的“电源管理（Power Management）子字段”来表明，而且只有在 AP 对该帧回了确认（Ack）之后，模式才真正切换。你不能悄悄睡过去；AP 必须知道你在休眠，这样它才会开始为你缓存数据。（重新）关联时，站点总是从活动模式开始。"
+    },
+    {
+      "type": "prose",
+      "en": "Once the AP knows a station is in PS mode, it buffers the units addressed to that station (the standard calls them BUs — buffer units, individually addressed frames plus certain bufferable management frames). It then advertises who has something waiting using the TIM, an element carried inside every Beacon. Each station is assigned an Association ID (AID) at association time; the TIM is a compact bitmap where a 1 at a station's AID position means 'you have buffered traffic, come and get it.' A dozing station only needs to wake briefly, read the TIM, and if its bit is set, send a PS-Poll to pull the frame down.",
+      "zh": "一旦 AP 知道某站点处于 PS 模式，它就会缓存发往该站点的数据单元（标准称之为 BU——缓存单元，包括单播帧以及某些可缓存的管理帧）。然后它通过 TIM 来告知“谁有东西在等”，TIM 是一个携带在每个 Beacon 中的信息元素。每个站点在关联时都会被分配一个关联标识（AID）；TIM 是一张紧凑的位图，站点 AID 对应位置上的“1”表示“你有缓存流量，快来取”。休眠的站点只需短暂醒来、读取 TIM，若发现自己的位被置 1，就发出 PS-Poll 把帧取回来。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as STA (PS mode, dozing)\n    participant AP as AP (front desk)\n    participant DS as Network (DS)\n    DS->>AP: frame arrives for dozing STA\n    Note over AP: buffer the BU; set STA's AID bit in TIM\n    AP-->>STA: Beacon (TIM: your AID bit = 1)\n    Note over STA: wake briefly, read TIM, my bit is set\n    STA->>AP: PS-Poll\n    AP->>STA: buffered frame (More Data = 0 if last)\n    Note over STA: nothing more buffered -> doze again",
+      "zh": "sequenceDiagram\n    participant STA as 站点 (PS 模式, 休眠中)\n    participant AP as AP (前台)\n    participant DS as 网络 (DS)\n    DS->>AP: 发往休眠站点的帧到达\n    Note over AP: 缓存该 BU; 在 TIM 中置该站点 AID 位\n    AP-->>STA: Beacon (TIM: 你的 AID 位 = 1)\n    Note over STA: 短暂醒来, 读 TIM, 我的位被置 1\n    STA->>AP: PS-Poll\n    AP->>STA: 缓存的帧 (若为最后一帧则 More Data = 0)\n    Note over STA: 没有更多缓存 -> 重新休眠"
+    },
+    {
+      "type": "prose",
+      "en": "There are two types of TIM, and the difference matters for group (broadcast/multicast) traffic. An ordinary TIM appears in every Beacon. But once every DTIM period the AP sends a special Delivery TIM (DTIM). Group-addressed frames cannot be individually polled — every dozing member would need them — so the AP holds buffered group traffic and only releases it right after a DTIM beacon, before any individually addressed frames. A station that cares about broadcast/multicast must therefore wake for DTIM beacons specifically; the DTIM is the scheduled 'group delivery is happening now' gate.",
+      "zh": "TIM 有两种类型，二者的区别对组播/广播（group）流量很关键。普通 TIM 出现在每个 Beacon 中；但每隔一个 DTIM 周期，AP 会发送一个特殊的“投递 TIM”（DTIM，Delivery TIM）。组播帧无法逐一通过轮询取回——因为每个休眠成员都需要它——所以 AP 会缓存组播流量，只在 DTIM beacon 之后、且先于任何单播帧时统一发出。因此，关心广播/组播的站点必须专门为 DTIM beacon 醒来；DTIM 就是那道“现在开始投递组播”的预定闸门。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 170' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><line x1='20' y1='40' x2='440' y2='40'/><polygon points='440,40 432,36 432,44' fill='currentColor'/><text x='20' y='28' stroke='none' fill='currentColor' font-size='12'>time -></text><rect x='40' y='30' width='10' height='20' fill='currentColor'/><rect x='140' y='30' width='10' height='20'/><rect x='240' y='30' width='10' height='20'/><rect x='340' y='30' width='10' height='20' fill='currentColor'/><text x='30' y='68' stroke='none' fill='currentColor' font-size='11'>DTIM</text><text x='132' y='68' stroke='none' fill='currentColor' font-size='11'>TIM</text><text x='232' y='68' stroke='none' fill='currentColor' font-size='11'>TIM</text><text x='330' y='68' stroke='none' fill='currentColor' font-size='11'>DTIM</text><text x='20' y='100' stroke='none' fill='currentColor' font-size='11'>DTIM period = 3 beacons</text><line x1='45' y1='110' x2='345' y2='110' stroke-dasharray='4 3'/><text x='40' y='140' stroke='none' fill='currentColor' font-size='11'>group-addressed BUs flushed right after each DTIM</text></svg>",
+      "caption": {
+        "en": "Beacons carry a TIM every interval; every Nth one (here N=3) is a DTIM, after which the AP flushes buffered group-addressed traffic.",
+        "zh": "每个间隔的 Beacon 都携带 TIM；每第 N 个（此处 N=3）为 DTIM，AP 在其后统一发出缓存的组播/广播流量。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The AP cannot buffer forever. Two limits keep buffers honest. First, ordering: if the AP is QoS-enabled it must preserve the arrival order of individually addressed frames for a given station on a given TID. Second, aging: the AP may discard buffered frames using an aging function, but it shall not discard a buffered frame any sooner than the listen interval the station advertised in its (Re)Association Request — so a station that says 'I check every 3 beacons' is guaranteed its frame survives at least that long. Beyond that the exact algorithm is left to the implementation.",
+      "zh": "AP 不能无限期地缓存。有两条限制让缓存行为保持合理。其一是顺序：若 AP 启用了 QoS，它必须为某个站点、某个 TID 上的单播帧保持到达顺序。其二是老化（aging）：AP 可以用老化函数丢弃缓存帧，但丢弃缓存帧的时间不得早于站点在（重新）关联请求中声明的“监听间隔（listen interval）”——因此，一个声明“我每 3 个 beacon 查一次”的站点，能保证它的帧至少存活那么久。除此之外，具体算法由实现自行决定。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A symmetric twist: the AP itself can sleep too. For S1G (sub-1 GHz, IEEE 802.11ah) APs, AP power management lets the AP advertise — via an AP PM bit in the S1G Beacon — that it will doze between scheduled access windows, instead of staying awake continuously. The front desk gets to take naps of its own, as long as it tells the guests when it will be reachable.",
+      "zh": "一个对称的有趣之处：AP 自己也能休眠。对于 S1G（亚 1 GHz，IEEE 802.11ah）AP，“AP 电源管理”允许 AP 通过 S1G Beacon 中的“AP PM 位”告知大家：它会在预定的接入窗口之间休眠，而不必持续保持清醒。前台也可以打个盹——只要它提前告诉客人何时能找到它。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact buffering, TIM, and aging rules the AP must follow",
+        "zh": "AP 必须遵守的精确缓存、TIM 与老化规则"
+      },
+      "en": "Per 11.2.1, a non-AP STA is in either Active mode or PS mode; in PS mode it is Awake (fully powered) or Doze (cannot transmit/receive non-WUR PPDUs, very low power). 11.2.2 splits MMPDUs into bufferable (Action except FTM/FTMR, Disassociation, Deauthentication, and certain IBSS Probe Responses) vs nonbufferable. 11.2.3.1 requires a STA to signal a PS-mode change via the Power Management subfield and not change mode mid-exchange; the AP buffers individually addressed BUs for PS STAs and, if any STA is in PS mode, buffers group-addressed BUs for delivery immediately after the next DTIM beacon, advertising buffered BUs in a TIM included in every Beacon. 11.2.3.2 states a STA is in Active mode upon (re)association and must inform the AP of a mode change via a successful, AP-acknowledged frame exchange. 11.2.3.3: the TIM identifies STAs with pending buffered traffic via a partial virtual bitmap keyed on AID; AID 0 signals buffered group-addressed traffic. 11.2.3.4: a TIM is sent with every Beacon (with timing exceptions), and every dot11DTIMPeriod a DTIM is sent instead; after a DTIM the AP transmits buffered group-addressed BUs before any individually addressed frames (Figure 11-16 illustrates a DTIM every three TIMs). 11.2.3.6 (AP operation): the AP maintains per-STA Power Management status, buffers BUs for PS STAs (preserving per-TID order when QoS-enabled), assembles the partial virtual bitmap each beacon interval, sets the Traffic Indicator field for buffered group traffic, responds to a PS-Poll after SIFS with a buffered BU and uses the More Data subfield to signal further buffered BUs, and may delete buffered BUs via an aging function subject to 11.2.3.10. 11.2.3.10 (AP aging function): the aging function shall not discard a buffered BU sooner than the Listen Interval the STA gave in its (Re)Association Request. 11.2.3.17 (AP power management): for S1G APs, dot11APPMActivated true permits Active or Power Save mode, indicated by the AP PM bit in the S1G Beacon (or RPS AP PM RAWs); a dozing AP must still be awake during negotiated RAW/PRAW intervals and TWT SPs, and shall not doze longer than dot11MaxAwayDuration.",
+      "zh": "依据 11.2.1，非 AP 站点处于活动模式或 PS 模式；PS 模式下又分清醒（Awake，满功率）与休眠（Doze，无法收发非 WUR PPDU、功耗极低）。11.2.2 将 MMPDU 分为可缓存（除 FTM/FTMR 外的 Action 帧、解关联、去认证，以及某些 IBSS 探测响应）与不可缓存两类。11.2.3.1 要求站点通过电源管理子字段通告 PS 模式变更，且不得在一次帧交换中途改变模式；AP 为 PS 站点缓存单播 BU，且只要有任一站点处于 PS 模式，就缓存组播 BU，并在下一个 DTIM beacon 之后立即投递，同时在每个 Beacon 携带的 TIM 中通告已缓存的 BU。11.2.3.2 规定站点在（重新）关联时处于活动模式，且必须通过一次成功且被 AP 确认的帧交换来通告模式变更。11.2.3.3：TIM 通过以 AID 为索引的部分虚拟位图标识有待发缓存流量的站点；AID 0 用于指示已缓存的组播流量。11.2.3.4：每个 Beacon 都发送 TIM（存在时序例外），且每隔 dot11DTIMPeriod 改发一个 DTIM；DTIM 之后，AP 先发缓存的组播 BU，再发任何单播帧（图 11-16 演示了每三个 TIM 一个 DTIM）。11.2.3.6（AP 操作）：AP 维护每站点的电源管理状态，为 PS 站点缓存 BU（启用 QoS 时保持每 TID 顺序），每个 beacon 间隔组装部分虚拟位图，为缓存的组播流量置 Traffic Indicator 字段，在收到 PS-Poll 后经 SIFS 回送一个缓存 BU 并用 More Data 子字段指示是否还有更多缓存 BU，且可在符合 11.2.3.10 的前提下经老化函数删除缓存 BU。11.2.3.10（AP 老化函数）：老化函数丢弃缓存 BU 的时间不得早于站点在（重新）关联请求中给出的监听间隔。11.2.3.17（AP 电源管理）：对 S1G AP，dot11APPMActivated 为真时允许活动或省电模式，并通过 S1G Beacon 中的 AP PM 位（或 RPS 的 AP PM RAW）指示；休眠的 AP 在协商的 RAW/PRAW 区间与 TWT SP 期间仍须清醒，且休眠时长不得超过 dot11MaxAwayDuration。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2467,
+          2468,
+          2469,
+          2472,
+          2473,
+          2477,
+          2483,
+          2497
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.2.1",
+    "80211-2024:11.2.2",
+    "80211-2024:11.2.3.1",
+    "80211-2024:11.2.3.2",
+    "80211-2024:11.2.3.3",
+    "80211-2024:11.2.3.4",
+    "80211-2024:11.2.3.6",
+    "80211-2024:11.2.3.10",
+    "80211-2024:11.2.3.17"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2467,
+        2468
+      ],
+      "note": "11.2.1 Active vs PS mode / Awake vs Doze; 11.2.2 bufferable vs nonbufferable MMPDUs (Table 11-4)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2469,
+        2472
+      ],
+      "note": "11.2.3.1 AP buffers individually/group addressed BUs, TIM in every Beacon; 11.2.3.2 active on (re)association, PM change via acked frame exchange"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2472,
+        2473
+      ],
+      "note": "11.2.3.3 TIM = partial virtual bitmap keyed on AID, AID 0 = group traffic; 11.2.3.4 TIM vs DTIM, group BUs flushed after DTIM (Figure 11-16)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2477,
+        2483
+      ],
+      "note": "11.2.3.6 AP operation: per-STA PM status, buffering, per-TID order, PS-Poll response, More Data; 11.2.3.10 aging not sooner than Listen Interval"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2497
+      ],
+      "note": "11.2.3.17 AP power management (S1G): dot11APPMActivated, AP PM bit, doze bounded by dot11MaxAwayDuration"
+    }
+  ],
+  "track": "80211core"
+}

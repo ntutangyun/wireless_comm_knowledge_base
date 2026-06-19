@@ -1,0 +1,103 @@
+{
+  "id": "80211core-30",
+  "title": {
+    "en": "Block Ack Agreements and Higher-Layer Time: The MLME Handshake and Wall-Clock Sync",
+    "zh": "块确认协商与高层时间：MLME 握手与统一墙钟"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Aggregating acknowledgments is a deal two stations strike before any data flows: 'I'll send you a batch of frames, you tally them up and answer with one receipt instead of acking each one.' That deal is a Block Ack agreement, and like any agreement it has to be negotiated, can be modified, and eventually gets torn down. This lesson is about the control-plane choreography that sets it up and cleans it up — not the BlockAck frame itself, but the handshake that makes batched acknowledgment legal between two peers.",
+      "zh": "聚合确认本质上是两个站点在数据流动之前达成的一笔“约定”：“我给你发一批帧，你统一清点，然后只回一张收据，而不是逐帧确认。”这笔约定就是块确认（Block Ack）协商，它和任何协议一样需要先协商建立、可以中途修改、最终还要拆除。本课讲的是建立和清理这套约定的控制面“编舞动作”——不是 BlockAck 帧本身，而是让两个对端之间的批量确认变得合法的那段握手。"
+    },
+    {
+      "type": "prose",
+      "en": "Setup is driven from the management entity (SME) down through the MAC (MLME). The originator's SME issues an MLME-ADDBA.request; the MLME builds an ADDBA Request frame that names the traffic identifier (TID) and the buffer size it wants the recipient to reserve. The recipient's MLME raises an MLME-ADDBA.indication to its SME, which decides via MLME-ADDBA.response, and the recipient replies with an ADDBA Response carrying a status code. SUCCESS means the agreement (or its modification) is live; the dialog token matches request to response. Every parameter of an agreement can be renegotiated later — except the TID, which is the identity of the agreement itself.",
+      "zh": "建立过程由管理实体（SME）向下穿过 MAC（MLME）来驱动。发起方的 SME 发出 MLME-ADDBA.request；MLME 据此构造一个 ADDBA Request 帧，其中写明流标识符（TID）以及希望接收方预留的缓冲区大小（Buffer Size）。接收方的 MLME 向它的 SME 上报 MLME-ADDBA.indication，SME 通过 MLME-ADDBA.response 做出决定，接收方随后回复一个携带状态码的 ADDBA Response 帧。状态码为 SUCCESS 表示该约定（或其修改）已生效；对话令牌（dialog token）用于把请求与响应一一对应。约定的所有参数日后都可以重新协商——唯独 TID 不行，因为它就是这笔约定的身份标识。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant OS as Originator SME\n    participant OM as Originator MLME\n    participant RM as Recipient MLME\n    participant RS as Recipient SME\n    OS->>OM: MLME-ADDBA.request (TID, BufferSize)\n    OM->>RM: ADDBA Request frame\n    RM->>RS: MLME-ADDBA.indication\n    RS->>RM: MLME-ADDBA.response\n    RM->>OM: ADDBA Response (Status = SUCCESS)\n    OM->>OS: MLME-ADDBA.confirm\n    Note over OM,RM: agreement live (TID fixed, params negotiable)",
+      "zh": "sequenceDiagram\n    participant OS as 发起方 SME\n    participant OM as 发起方 MLME\n    participant RM as 接收方 MLME\n    participant RS as 接收方 SME\n    OS->>OM: MLME-ADDBA.request (TID, 缓冲区大小)\n    OM->>RM: ADDBA Request 帧\n    RM->>RS: MLME-ADDBA.indication\n    RS->>RM: MLME-ADDBA.response\n    RM->>OM: ADDBA Response (状态 = SUCCESS)\n    OM->>OS: MLME-ADDBA.confirm\n    Note over OM,RM: 约定生效 (TID 固定, 参数可协商)"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Modification reuses the same ADDBA exchange — there is no separate 'modify' frame. The standard says a successful modification behaves as if a DELBA had been sent and received immediately before the new ADDBA Request: the old agreement is conceptually wiped, then the new one installed. And if a modification request fails, the existing agreement is left untouched — you never end up in a half-changed state.",
+      "zh": "修改复用的就是同一套 ADDBA 交换——并没有单独的“修改”帧。标准规定：一次成功的修改，其行为等同于在新的 ADDBA Request 之前刚好发送并收到了一个 DELBA——也就是先在概念上抹掉旧约定，再装入新约定。而如果修改请求失败，原有约定将保持原样不动——你绝不会停留在“改了一半”的状态。"
+    },
+    {
+      "type": "prose",
+      "en": "Teardown is simpler and one-sided. Either party's SME issues an MLME-DELBA.request; the MLME just transmits a DELBA frame — there is no response to wait for. The peer that receives the DELBA raises an MLME-DELBA.indication with ReasonCode REQUESTED and the agreement is gone. There's also an automatic safety net: every negotiated agreement carries an inactivity timer. If no relevant traffic (or BlockAckReq/BlockAck) refreshes it before it expires, the station sends a DELBA with ReasonCode TIMEOUT and signals MLME-DELBA.indication(TIMEOUT). This is the error-recovery path that quietly reclaims agreements after a peer goes silent or fails.",
+      "zh": "拆除则更简单，而且是单向的。任何一方的 SME 发出 MLME-DELBA.request；MLME 直接发送一个 DELBA 帧——无需等待任何响应。收到 DELBA 的对端会上报一个 ReasonCode 为 REQUESTED 的 MLME-DELBA.indication，约定随即消失。此外还有一张自动安全网：每个协商好的约定都带有一个不活动计时器（inactivity timer）。如果在其超时前没有相关流量（或 BlockAckReq/BlockAck 帧）刷新它，站点就会发送一个 ReasonCode 为 TIMEOUT 的 DELBA，并发出 MLME-DELBA.indication(TIMEOUT)。这正是对端沉默或失效后，悄悄回收约定的错误恢复路径。"
+    },
+    {
+      "type": "prose",
+      "en": "The lesson's second thread is unrelated in mechanism but lives next door in the standard: higher-layer timer synchronization. The MAC has its own internal clock (the TSF), but applications above the MAC sometimes need a shared stopwatch — a common time reference across the whole BSS. 802.11 deliberately leaves the synchronization algorithm itself out of scope; what it provides is one precise hook. Higher layers multicast 'sync' packets carrying a timestamp and sequence number as ordinary group-addressed MSDUs, and the MAC tells the application exactly when each one crossed the air.",
+      "zh": "本课的第二条线索在机制上与块确认无关，但在标准中恰好比邻而居：高层定时器同步（higher layer timer synchronization）。MAC 拥有自己的内部时钟（TSF），但 MAC 之上的应用有时需要一只共享的“秒表”——一个贯穿整个 BSS 的统一时间基准。802.11 有意把同步算法本身排除在标准范围之外；它所提供的，是一个精确的“挂钩”。高层把携带时间戳和序号的“同步（sync）”包，作为普通的组播 MSDU 多播出去，而 MAC 会精确地告诉应用：每一个这样的包究竟在何时跨过了空口。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The clever part is *when* the timestamp is taken. Hardware can't stamp the exact instant a frame leaves, so a sync packet carries the timestamp of the *previous* packet — and the MLME-HL-SYNC.indication fires precisely at the end of the PPDU on both sender and all receivers. Because that 'end of PPDU' moment is delivered simultaneously (within implementation bounds) to every STA in the BSS, the fixed PHY-indication offset and propagation delay become constant biases, not jitter — and a constant bias is easy to cancel.",
+      "zh": "精妙之处在于时间戳“何时”被取走。硬件无法在帧离开的那一瞬间打戳，因此同步包携带的是“上一个”包的时间戳——而 MLME-HL-SYNC.indication 恰好在 PPDU 结束的那一刻、在发送方和所有接收方同时触发。由于这个“PPDU 结束”时刻是（在实现允许的误差范围内）同时送达 BSS 中每个站点的，于是 PHY 指示的固定偏移与传播时延就变成了恒定的偏置，而非抖动——而恒定偏置是很容易被抵消的。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact ADDBA/DELBA primitives, the inactivity timer, and the Address-1 match rule",
+        "zh": "精确的 ADDBA/DELBA 原语、不活动计时器与 Address 1 匹配规则"
+      },
+      "en": "Clause 11.5.2.2 (originator) walks the ADDBA path: on MLME-ADDBA.request the initiator sends an ADDBA Request naming the TID and buffer size; on an ADDBA Response with matching dialog token and TID and status SUCCESS the MLME issues MLME-ADDBA.confirm (a non-SUCCESS status confirms failure). 11.5.2.3 (recipient) issues MLME-ADDBA.indication on receipt, then replies per the MLME-ADDBA.response. 11.5.1 fixes that all parameters except the TID are modifiable, with a successful modification behaving as a DELBA-then-ADDBA. 11.5.3.2/11.5.3.3 give teardown: MLME-DELBA.request → transmit DELBA → peer raises MLME-DELBA.indication(REQUESTED). 11.5.4 mandates an inactivity timer per agreement (except GCR group addresses), reset by matching-TID data/BlockAckReq at the recipient and BlockAck at the originator; on timeout the STA sends DELBA(Reason=TIMEOUT) and signals MLME-DELBA.indication(TIMEOUT). For higher-layer time, 11.6.2 defines the trigger: a MAC supporting MLME-HL-SYNC compares a Data frame's Address 1 to group addresses registered via MLME-HL-SYNC.request, and on a match issues MLME-HL-SYNC.indication at the end of the transmitted/received PPDU[+SigExt], simultaneously across the BSS within implementation-dependent bounds.",
+      "zh": "11.5.2.2 节（发起方）描绘了 ADDBA 路径：收到 MLME-ADDBA.request 后，发起方发送写明 TID 与缓冲区大小的 ADDBA Request；当收到对话令牌与 TID 均匹配、且状态为 SUCCESS 的 ADDBA Response 时，MLME 发出 MLME-ADDBA.confirm（非 SUCCESS 状态则确认失败）。11.5.2.3 节（接收方）在收到请求时发出 MLME-ADDBA.indication，再按 MLME-ADDBA.response 回复。11.5.1 节规定：除 TID 外的所有参数均可修改，一次成功的修改其行为等同于先 DELBA 再 ADDBA。11.5.3.2/11.5.3.3 节给出拆除流程：MLME-DELBA.request → 发送 DELBA → 对端上报 MLME-DELBA.indication(REQUESTED)。11.5.4 节强制要求每个约定都维护一个不活动计时器（GCR 组地址除外）：接收方由匹配 TID 的数据帧/BlockAckReq 重置，发起方由 BlockAck 重置；超时时站点发送 DELBA(Reason=TIMEOUT) 并发出 MLME-DELBA.indication(TIMEOUT)。对于高层时间，11.6.2 节定义了触发条件：支持 MLME-HL-SYNC 的 MAC 将数据帧的 Address 1 字段与通过 MLME-HL-SYNC.request 注册的组地址列表进行比对，匹配时在所发送/所接收 PPDU[+SigExt] 结束之际发出 MLME-HL-SYNC.indication，并在实现相关的误差范围内对 BSS 内各站点同时发生。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2562,
+          2563,
+          2566,
+          2568
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.5.1",
+    "80211-2024:11.5.2",
+    "80211-2024:11.5.3",
+    "80211-2024:11.5.4",
+    "80211-2024:11.6.1",
+    "80211-2024:11.6.2"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2561,
+        2562,
+        2563
+      ],
+      "note": "11.5.1-11.5.2 — Block ack setup/modification; all params but TID modifiable; ADDBA Request/Response, MLME-ADDBA primitives, buffer size, dialog token (Figure 11-32)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2565,
+        2566
+      ],
+      "note": "11.5.3-11.5.4 — DELBA teardown (MLME-DELBA.request/indication, ReasonCode REQUESTED) and inactivity-timer error recovery (ReasonCode TIMEOUT)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2566,
+        2567,
+        2568
+      ],
+      "note": "11.6.1-11.6.2 — higher layer timer synchronization: opaque sync MSDUs, previous-packet timestamp, MLME-HL-SYNC.indication at end of PPDU, Address 1 group-address match"
+    }
+  ],
+  "track": "80211core"
+}

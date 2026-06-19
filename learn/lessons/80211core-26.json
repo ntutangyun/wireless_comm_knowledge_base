@@ -1,0 +1,113 @@
+{
+  "id": "80211core-26",
+  "title": {
+    "en": "Multiple BSSID and Scanning Timing: One Radio, Many Networks; Listening vs Asking",
+    "zh": "多 BSSID 与扫描定时：一部射频多张网络，被动聆听与主动询问"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Walk into an office and you might see a dozen Wi-Fi names: a guest network, a staff network, an IoT network. It is tempting to assume each is a separate access point. Often they are not — a single radio can advertise several virtual networks at once. And before a station can pick one, it has to discover them. This lesson joins those two timing-adjacent ideas: how one AP packs many BSSs into one Beacon (Multiple BSSID), and how a station spends its time finding networks at all (scanning).",
+      "zh": "走进一间办公室，你可能会看到十几个 Wi-Fi 名称：访客网络、员工网络、物联网网络。人们很容易以为每一个都对应一台独立的接入点（AP）。但事实往往并非如此——一部射频可以同时广播多张虚拟网络。而在站点能挑选其中一张之前，它必须先发现它们。本课把这两个与“定时”相关的概念放在一起讲：一台 AP 如何把多个 BSS 装进一个 Beacon（多 BSSID），以及站点究竟如何花时间去找到网络（扫描）。"
+    },
+    {
+      "type": "prose",
+      "en": "In a Multiple BSSID set, one BSSID is the transmitted BSSID — only its AP actually sends Beacon frames for the whole group. The other members are nontransmitted BSSIDs: they exist, but they don't each emit their own Beacon. Instead the transmitted BSSID's Beacon carries a Multiple BSSID element holding one Nontransmitted BSSID Profile per virtual network — its SSID, capabilities, and an index. The station derives each nontransmitted BSSID's MAC address from the transmitted BSSID plus that index. The payoff is airtime: one Beacon describes many networks instead of N Beacons clogging the channel.",
+      "zh": "在一个多 BSSID 集合（Multiple BSSID set）中，有一个 BSSID 是“发送 BSSID（transmitted BSSID）”——只有它对应的 AP 真正为整个组发送 Beacon 帧。其余成员是“非发送 BSSID（nontransmitted BSSID）”：它们确实存在，但各自并不单独发出 Beacon。取而代之的是，发送 BSSID 的 Beacon 里携带一个“多 BSSID 元素（Multiple BSSID element）”，其中为每张虚拟网络放入一个“非发送 BSSID 配置（Nontransmitted BSSID Profile）”——包含它的 SSID、能力字段和一个索引。站点根据发送 BSSID 加上该索引推导出每个非发送 BSSID 的 MAC 地址。好处在于节省空口时间：一个 Beacon 就能描述多张网络，而不必让 N 个 Beacon 把信道塞满。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 230' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='20' y='20' width='420' height='190' rx='8'/><text x='30' y='42' stroke='none' fill='currentColor' font-size='13'>One Beacon from the transmitted BSSID</text><rect x='40' y='56' width='120' height='40' rx='4'/><text x='52' y='74' stroke='none' fill='currentColor' font-size='11'>Beacon header</text><text x='52' y='89' stroke='none' fill='currentColor' font-size='10'>+ shared elements</text><rect x='180' y='56' width='240' height='134' rx='4' stroke-dasharray='4 3'/><text x='192' y='74' stroke='none' fill='currentColor' font-size='11'>Multiple BSSID element</text><rect x='196' y='84' width='208' height='30' rx='3'/><text x='206' y='103' stroke='none' fill='currentColor' font-size='10'>NonTx Profile: SSID-A, index 1</text><rect x='196' y='120' width='208' height='30' rx='3'/><text x='206' y='139' stroke='none' fill='currentColor' font-size='10'>NonTx Profile: SSID-B, index 2</text><rect x='196' y='156' width='208' height='30' rx='3'/><text x='206' y='175' stroke='none' fill='currentColor' font-size='10'>NonTx Profile: SSID-C, index 3</text></svg>",
+      "caption": {
+        "en": "One transmitted-BSSID Beacon carries a Multiple BSSID element whose subelements describe each nontransmitted virtual network. Elements shared with the transmitted BSSID are inherited, not repeated.",
+        "zh": "一个发送 BSSID 的 Beacon 携带一个多 BSSID 元素，其子元素分别描述每张非发送的虚拟网络。与发送 BSSID 相同的元素通过“继承”得到，无需重复携带。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "An AP need not advertise every nontransmitted profile in every Beacon. It can rotate a partial list across several Beacons; the Full Set Rx Periodicity field tells a scanning station how many Beacons it must catch to see them all. So if you only passively listen briefly, you might miss some virtual networks — a small value for that field is recommended precisely to help fast passive discovery.",
+      "zh": "AP 并不需要在每个 Beacon 里都广播全部非发送配置。它可以把一份“部分列表”分散到多个 Beacon 上轮流播；“Full Set Rx Periodicity”字段告诉扫描中的站点：要看全所有虚拟网络，需要接收多少个 Beacon。因此如果你只被动地短暂聆听，可能会漏掉一些虚拟网络——标准建议把该字段取一个较小的值，正是为了帮助被动扫描快速发现全部网络。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the discovery itself. A station scans in one of two modes, chosen by the ScanType parameter. Passive scanning is eavesdropping: the station tunes to a channel and simply listens for Beacons, dwelling no longer than MaxChannelTime before moving on. Active scanning is knocking: the station transmits a Probe Request asking 'anyone here?' and collects the Probe Responses that come back. Passive is quieter and works where transmitting is restricted; active is faster because it does not wait for the next Beacon to arrive on its own.",
+      "zh": "再看发现过程本身。站点按 ScanType 参数在两种模式中择一进行扫描。被动扫描（passive scanning）就像窃听：站点切换到某个信道，单纯地聆听 Beacon，在该信道停留的时间不超过 MaxChannelTime，然后转向下一个。主动扫描（active scanning）则像敲门：站点发出一个探测请求（Probe Request）问“有人在吗？”，再收集回来的探测响应（Probe Response）。被动扫描更安静，也适用于发射受限的场景；主动扫描更快，因为它不必干等下一个 Beacon 自行到来。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Station\n    participant CH as Channel / AP\n    Note over STA: Active scan on a channel\n    Note over STA: wait ProbeDelay (or PHY-RXSTART)\n    STA->>CH: Probe Request (wildcard or target SSID)\n    Note over STA: start ActiveScanningTimer\n    alt medium quiet by MinChannelTime\n        Note over STA: nothing heard -> move to next channel\n    else activity seen\n        CH->>STA: Probe Response(s)\n        Note over STA: keep receiving until MaxChannelTime\n    end\n    Note over STA,CH: results returned via MLME-SCAN.confirm",
+      "zh": "sequenceDiagram\n    participant STA as 站点\n    participant CH as 信道 / AP\n    Note over STA: 在某信道上主动扫描\n    Note over STA: 等待 ProbeDelay（或 PHY-RXSTART）\n    STA->>CH: 探测请求（通配或目标 SSID）\n    Note over STA: 启动 ActiveScanningTimer\n    alt 到 MinChannelTime 仍空闲\n        Note over STA: 什么都没听到 -> 转下一信道\n    else 检测到活动\n        CH->>STA: 探测响应（一个或多个）\n        Note over STA: 持续接收直到 MaxChannelTime\n    end\n    Note over STA,CH: 结果经 MLME-SCAN.confirm 返回"
+    },
+    {
+      "type": "prose",
+      "en": "Three timers shape an active scan on each channel. ProbeDelay is a short wait before the station even sends its Probe Request, giving it a moment to detect ongoing transmissions first. MinChannelTime is the early-exit checkpoint: if the medium has shown no activity (no PHY-CCA busy) by then, the channel is presumably empty and the station leaves immediately — no point burning time on a dead channel. MaxChannelTime is the hard ceiling: the station keeps gathering Probe Responses until this expires, then stops and moves on. Together they let a station sweep many channels quickly while still pausing long enough on busy ones to hear the replies.",
+      "zh": "三个计时器塑造了每个信道上的主动扫描。ProbeDelay 是在站点发出探测请求之前的一段短暂等待，让它先有机会检测到正在进行的传输。MinChannelTime 是“提前退出”的检查点：如果到那一刻介质仍未显示任何活动（没有 PHY-CCA 忙），就推定该信道为空，站点立即离开——不必在死信道上浪费时间。MaxChannelTime 是硬性上限：站点持续收集探测响应，直到它到期才停止并转向下一个。三者配合，使站点既能快速扫过许多信道，又能在繁忙信道上停留足够长的时间以听到回复。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Multiple BSSID and scanning meet at the response rules. In a Multiple BSSID set, only the AP of the transmitted BSSID answers a Probe Request — the nontransmitted members stay silent and let that one reply carry their profiles too. So the airtime saving you saw in Beacons also applies to probing: one responder speaks for the whole virtual group.",
+      "zh": "多 BSSID 与扫描在“响应规则”处交汇。在一个多 BSSID 集合里，只有发送 BSSID 对应的 AP 才回应探测请求——非发送成员保持沉默，让这一个回复同时携带它们的配置。于是你在 Beacon 中看到的空口节省，同样适用于探测：一个响应者代表整个虚拟组发声。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact per-channel active-scan timing rules",
+        "zh": "逐信道主动扫描的精确定时规则"
+      },
+      "en": "Clause 11.1.4.3.2 gives the non-DMG active-scan procedure step by step. For each channel the STA first waits until ProbeDelay has expired or a PHY-RXSTART.indication is received, performs the basic access procedure, and sends a Probe Request to the broadcast address carrying the SSID/BSSID from the MLME-SCAN.request. It then initializes and starts the ActiveScanningTimer: if a PHY-CCA.indication(BUSY) is not received before the timer reaches MinChannelTime, it proceeds straight to the 'set NAV to 0 and scan the next channel' step; otherwise a non-FILS STA receives all Probe Response and Beacon frames while the ActiveScanningTimer is less than MaxChannelTime. Passive scanning (11.1.4.2.1) is far simpler — the STA listens to each channel for no longer than MaxChannelTime. The Multiple BSSID response rule lives in 11.1.4.3.4: if a STA receiving a Probe Request is in a multiple BSSID set, the STA corresponding to the transmitted BSSID sends the Probe Response(s) and the other STAs in the set shall not respond.",
+      "zh": "11.1.4.3.2 节逐步给出了非 DMG 站点的主动扫描流程。对每个信道，站点先等待 ProbeDelay 到期或收到 PHY-RXSTART.indication，执行基本接入流程，并向广播地址发送携带 MLME-SCAN.request 中 SSID/BSSID 的探测请求；随后初始化并启动 ActiveScanningTimer：若在计时器达到 MinChannelTime 之前未收到 PHY-CCA.indication(BUSY)，就直接进入“将 NAV 置 0 并扫描下一信道”这一步；否则，非 FILS 站点在 ActiveScanningTimer 小于 MaxChannelTime 期间接收所有探测响应和 Beacon 帧。被动扫描（11.1.4.2.1）则简单得多——站点在每个信道上聆听的时间不超过 MaxChannelTime。多 BSSID 的响应规则见 11.1.4.3.4：若接收探测请求的站点处于一个多 BSSID 集合中，则由对应发送 BSSID 的站点发送探测响应，集合中的其他站点不得响应。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2446,
+          2447,
+          2450
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.1.3.8",
+    "80211-2024:11.1.4.1",
+    "80211-2024:11.1.4.2",
+    "80211-2024:11.1.4.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2435,
+        2436
+      ],
+      "note": "11.1.3.8.1-11.1.3.8.2 Multiple BSSID procedure - transmitted vs nontransmitted BSSID; only the transmitted BSSID sends Beacons; Nontransmitted BSSID Profile carried in the Multiple BSSID element"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2438
+      ],
+      "note": "11.1.3.8.3 Discovery of a nontransmitted BSSID profile - partial lists, Full Set Rx Periodicity, small value recommended for fast passive discovery"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2444,
+        2446,
+        2447
+      ],
+      "note": "11.1.4.1 General (ScanType passive/active); 11.1.4.2.1 passive scan (MaxChannelTime dwell); 11.1.4.3.2 active scan procedure (ProbeDelay, MinChannelTime, MaxChannelTime, ActiveScanningTimer)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2450
+      ],
+      "note": "11.1.4.3.4 Criteria for sending a response - in a multiple BSSID set only the transmitted-BSSID STA sends Probe Responses"
+    }
+  ],
+  "track": "80211core"
+}

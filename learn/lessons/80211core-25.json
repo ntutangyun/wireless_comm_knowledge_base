@@ -1,0 +1,119 @@
+{
+  "id": "80211core-25",
+  "title": {
+    "en": "TSF Maintenance and Beacon Timing: Keeping Everyone on the Same Clock",
+    "zh": "TSF 维护与信标定时：让所有设备共用一个时钟"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every device in a Wi-Fi network needs to agree on what time it is. Power-save wake-ups, when a beacon is due, when a measurement window opens — all of it depends on a shared clock. 802.11 gives every station a free-running counter called the TSF (Timing Synchronization Function) timer, and defines a set of rules that keep all those counters nudged into agreement. Think of the access point as the wall clock in a room: everyone glances at it on each announcement and resets their wristwatch to match.",
+      "zh": "Wi-Fi 网络里的每台设备都需要对“现在几点”达成共识。省电唤醒、何时该发信标、何时打开测量窗口——这一切都依赖一个共享的时钟。802.11 为每个站点（STA）提供一个自由运行的计数器，称为 TSF（定时同步功能）定时器，并定义了一套规则，把所有这些计数器不断地推向一致。可以把接入点（AP）想象成房间里的挂钟：大家在每次播报时瞥一眼它，然后把自己的手表对准它。"
+    },
+    {
+      "type": "prose",
+      "en": "The TSF timer is a 64-bit counter that ticks in microseconds. Who keeps the authoritative version depends on the kind of network. In an infrastructure BSS (the normal home/office case) or a PBSS, one device — the AP, or the PCP in a PBSS — is the timing master. It stamps the current value of its own TSF timer into every Beacon it sends, and every other station copies that value. There is no voting: the master's clock simply is the time.",
+      "zh": "TSF 定时器是一个以微秒为单位计数的 64 位计数器。谁来保管权威版本，取决于网络类型。在基础设施 BSS（常见的家庭/办公场景）或 PBSS 中，有一台设备——AP，或 PBSS 中的 PCP——担任定时主控。它把自己 TSF 定时器的当前值打进所发出的每一个信标里，其它每个站点都照抄这个值。这里没有投票：主控的时钟就是“标准时间”。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Infrastructure vs IBSS is the key fork. In an infrastructure BSS the AP is boss: stations always overwrite their TSF with whatever timestamp the AP sends. In an IBSS (ad-hoc, no AP) there is no boss, so the rule flips: a station adopts another station's timestamp only if it is LATER than its own. The network democratically drifts toward whoever's clock is running fastest.",
+      "zh": "“基础设施 vs IBSS”是关键的分岔点。在基础设施 BSS 中，AP 是老大：站点总是用 AP 发来的时间戳覆盖自己的 TSF。而在 IBSS（自组织、无 AP）中没有老大，规则因此反转：站点只有在对方时间戳比自己“更晚”时才采纳它。整个网络会民主地朝着“跑得最快的那个时钟”收敛。"
+    },
+    {
+      "type": "prose",
+      "en": "The cadence is set by the beacon interval, dot11BeaconPeriod, measured in TUs (1 TU = 1024 microseconds). The AP defines a series of Target Beacon Transmission Times (TBTTs) spaced exactly one beacon period apart; time 0 is the first TBTT. At each TBTT the AP queues a Beacon as the next frame to send. But the medium might be busy — CSMA can defer the actual transmission. Crucially, a deferred beacon does NOT shift the schedule: the next TBTT is still computed from the undelayed nominal grid, so jitter never accumulates.",
+      "zh": "节奏由信标间隔 dot11BeaconPeriod 决定，以 TU 为单位（1 TU = 1024 微秒）。AP 定义出一系列“目标信标发送时刻”（TBTT），彼此正好相隔一个信标周期；时刻 0 即第一个 TBTT。在每个 TBTT，AP 把一个信标排为下一个要发送的帧。但信道可能正忙——CSMA 会推迟真正的发送。关键在于：被推迟的信标并不会让整个时间表跟着挪动，下一个 TBTT 仍按未延迟的标称网格来计算，因此抖动不会累积。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant AP as AP (timing master)\n    participant STA as Station\n    Note over AP: TBTT reached, beacon queued\n    AP->>STA: Beacon (Timestamp = AP's TSF now)\n    Note over STA: timestamp != my TSF?\n    Note over STA: set local TSF = received timestamp\n    Note over AP: next TBTT = nominal grid (no drift)\n    AP->>STA: Beacon (Timestamp = AP's TSF now)\n    Note over STA: re-sync local TSF",
+      "zh": "sequenceDiagram\n    participant AP as AP（定时主控）\n    participant STA as 站点\n    Note over AP: 到达 TBTT，信标入队\n    AP->>STA: 信标（时间戳 = AP 当前 TSF）\n    Note over STA: 时间戳 != 我的 TSF？\n    Note over STA: 把本地 TSF 设为收到的时间戳\n    Note over AP: 下一个 TBTT = 标称网格（不漂移）\n    AP->>STA: 信标（时间戳 = AP 当前 TSF）\n    Note over STA: 重新同步本地 TSF"
+    },
+    {
+      "type": "prose",
+      "en": "The timestamp has to be honest about WHEN it was measured. The transmitting STA must set the Timestamp field to equal its TSF timer at the exact instant the first bit of that field appears at the antenna connector — not when the frame was built. Because there are real delays through the PHY between the MAC and the antenna, implementations compensate for them so the number on the wire matches the moment it goes out. On reception, a STA only trusts the timing if the BSSID matches its own AP/PCP; a beacon from a neighbour's network is ignored for synchronization.",
+      "zh": "时间戳必须诚实地反映它“是何时测量的”。发送方 STA 必须把 Timestamp 字段设为：该字段第一个比特出现在天线接口的那一精确瞬间，其 TSF 定时器的值——而不是构造帧时的值。由于从 MAC 到天线之间的 PHY 存在真实延迟，实现需要对其进行补偿，使得线缆上的数值与它真正发出的时刻相吻合。在接收侧，STA 只有在 BSSID 与自己的 AP/PCP 匹配时才信任这份定时信息；来自邻居网络的信标在同步上会被忽略。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 420 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><line x1='20' y1='110' x2='400' y2='110'/><polygon points='400,110 392,106 392,114' fill='currentColor' stroke='none'/><g stroke-dasharray='4 3'><line x1='60' y1='40' x2='60' y2='110'/><line x1='160' y1='40' x2='160' y2='110'/><line x1='260' y1='40' x2='260' y2='110'/><line x1='360' y1='40' x2='360' y2='110'/></g><text x='52' y='32' font-size='10' stroke='none' fill='currentColor'>TBTT0</text><text x='152' y='32' font-size='10' stroke='none' fill='currentColor'>TBTT1</text><text x='252' y='32' font-size='10' stroke='none' fill='currentColor'>TBTT2</text><text x='352' y='32' font-size='10' stroke='none' fill='currentColor'>TBTT3</text><rect x='60' y='80' width='22' height='20' fill='currentColor' stroke='none'/><rect x='185' y='80' width='22' height='20' fill='currentColor' stroke='none'/><rect x='260' y='80' width='22' height='20' fill='currentColor' stroke='none'/><line x1='160' y1='95' x2='185' y2='95' stroke-dasharray='2 2'/><text x='150' y='128' font-size='9' stroke='none' fill='currentColor'>busy: deferred</text><text x='100' y='128' font-size='9' stroke='none' fill='currentColor'>beacon period</text></svg>",
+      "caption": {
+        "en": "TBTTs sit on a fixed grid spaced one beacon period apart. A busy medium can delay the beacon at TBTT1 (dashed offset), but the next TBTT stays on the nominal grid — delays never accumulate.",
+        "zh": "TBTT 位于固定网格上，相邻间隔为一个信标周期。信道繁忙时可推迟 TBTT1 处的信标发送（虚线偏移），但下一个 TBTT 仍停在标称网格上——延迟不会累积。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "S1G (sub-1-GHz, Wi-Fi HaLow) does it slightly differently. An S1G AP sends S1G Beacon frames instead of regular Beacons. To save airtime, the S1G Beacon drops the full Timestamp/Beacon Interval/Capability fields and carries an S1G Beacon Compatibility element instead. A receiving S1G station reconstructs the AP's full TSF by concatenating the TSF Completion field in that element with the shorter Timestamp field — same idea, leaner frame.",
+      "zh": "S1G（亚 1 GHz，即 Wi-Fi HaLow）的做法略有不同。S1G AP 发送的是 S1G 信标帧，而非普通信标帧。为节省空口时间，S1G 信标省去了完整的 Timestamp/Beacon Interval/Capability 字段，改为携带一个 S1G Beacon Compatibility 元素。接收方 S1G 站点通过把该元素中的 TSF Completion 字段与较短的 Timestamp 字段拼接起来，重建出 AP 的完整 TSF——思路相同，但帧更精简。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact master/IBSS rules, the timestamp placement, and S1G reconstruction",
+        "zh": "主控/IBSS 的精确规则、时间戳放置位置与 S1G 重建方法"
+      },
+      "en": "Clause 11.1.2.1 names the AP (or PCP) as TSF timing master for an infrastructure BSS/PBSS and requires Beacon/DMG Beacon/Announce frames to carry the master's TSF value; a receiving STA whose TSF differs from the received timestamp sets its local TSF to that value. 11.1.2.2 makes the IBSS distributed: each STA adopts a received TSF only if it is LATER than its own. 11.1.3.1 fixes the timer as modulus 2^64 counting in microseconds. 11.1.3.2 defines the TBTT series exactly dot11BeaconPeriod TUs apart with time 0 as the first TBTT, and notes (Figure 11-1) that CSMA-deferred beacons are still scheduled on the undelayed nominal interval. The timestamp must equal the TSF when the first bit of the Timestamp field reaches the antenna connector, compensating for PHY path delay. 11.1.3.5 gives the distributed IBSS beacon-generation backoff (random delay, cancel on hearing a peer beacon). 11.1.3.7 gates Beacon reception on a matching BSSID (infrastructure) or matching IBSS subfield + SSID + later TSF (IBSS). 11.1.3.9 supplies the timer-adjust algorithm that 11.1.5 invokes: an infrastructure/PBSS STA adopts the AP/PCP timestamp, while an IBSS STA adopts another STA's parameters only when the received Timestamp is later than its own. 11.1.3.10 covers the S1G variant: the S1G Beacon Compatibility element replaces Timestamp/Beacon Interval/Capability, and the STA reconstructs the AP TSF by concatenating the TSF Completion field with the Timestamp field.",
+      "zh": "11.1.2.1 节指定 AP（或 PCP）为基础设施 BSS/PBSS 的 TSF 定时主控，并要求信标/DMG 信标/Announce 帧携带主控的 TSF 值；接收 STA 若其 TSF 与收到的时间戳不同，则将本地 TSF 设为该值。11.1.2.2 节让 IBSS 采用分布式：每个 STA 仅在收到的 TSF 比自己“更晚”时才采纳。11.1.3.1 节规定该定时器以微秒计数、模为 2^64。11.1.3.2 节定义出彼此正好相隔 dot11BeaconPeriod TU 的 TBTT 序列，并以时刻 0 为首个 TBTT，并指出（图 11-1）被 CSMA 推迟的信标仍按未延迟的标称间隔排程。时间戳必须等于“Timestamp 字段第一个比特到达天线接口”那一刻的 TSF，并需补偿 PHY 路径延迟。11.1.3.5 节给出 IBSS 分布式信标生成的退避过程（随机延迟、听到对端信标即取消）。11.1.3.7 节规定信标接收的门槛：基础设施下 BSSID 须匹配，IBSS 下须 IBSS 子字段+SSID 匹配且 TSF 更晚。11.1.3.9 节提供 11.1.5 节调用的定时调整算法：基础设施/PBSS 站点采纳 AP/PCP 的时间戳，而 IBSS 站点仅在收到的 Timestamp 比自己更晚时才采纳对端参数。11.1.3.10 节覆盖 S1G 变体：S1G Beacon Compatibility 元素替代 Timestamp/Beacon Interval/Capability，站点通过拼接 TSF Completion 字段与 Timestamp 字段来重建 AP 的 TSF。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2427,
+          2429,
+          2430,
+          2434,
+          2443
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.1.2.1",
+    "80211-2024:11.1.2.2",
+    "80211-2024:11.1.3.1",
+    "80211-2024:11.1.3.2",
+    "80211-2024:11.1.3.5",
+    "80211-2024:11.1.3.7",
+    "80211-2024:11.1.3.9",
+    "80211-2024:11.1.3.10",
+    "80211-2024:11.1.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2427
+      ],
+      "note": "11.1.2.1-11.1.2.2 - AP/PCP as TSF timing master vs distributed IBSS adopt-later rule; beacons carry master TSF value"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2429,
+        2430
+      ],
+      "note": "11.1.3.1-11.1.3.2 - 64-bit microsecond timer; TBTT series on undelayed nominal grid (Fig 11-1); timestamp set at antenna connector"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2434
+      ],
+      "note": "11.1.3.5 IBSS distributed beacon generation backoff; 11.1.3.7 Beacon reception BSSID/SSID gating"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2443,
+        2466
+      ],
+      "note": "11.1.3.10 S1G Beacon Compatibility element + TSF reconstruction; 11.1.5 adjusting STA timers via 11.1.3.9"
+    }
+  ],
+  "track": "80211core"
+}

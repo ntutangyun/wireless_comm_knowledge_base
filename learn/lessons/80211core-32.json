@@ -1,0 +1,85 @@
+{
+  "id": "80211core-32",
+  "title": {
+    "en": "Protecting Management Frames: Group-Addressed Protection and SA Query",
+    "zh": "保护管理帧：组寻址保护与 SA Query"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Most people assume Wi-Fi encryption protects everything once you're connected. But for years, management frames — the little control messages like deauthenticate and disassociate — flew in the clear. That left a famous hole: anyone nearby could forge a deauth frame with your address and kick you off the network, no password needed. A robust-security network (RSN) closes this with management frame protection (MFP). This lesson covers the two procedures that make MFP work for the trickiest cases: protecting broadcasts everyone shares, and verifying a station that suddenly claims it wants to (re)join.",
+      "zh": "很多人以为只要连上了 Wi-Fi，加密就保护了一切。但多年以来，管理帧——也就是去认证（deauthenticate）、解关联（disassociate）这类小小的控制消息——一直是明文传输的。这就留下了一个著名的漏洞：附近任何人都能伪造一个带着你地址的去认证帧，把你踢下线，根本不需要密码。健壮安全网络（RSN）通过管理帧保护（MFP）堵上了这个洞。本课讲解让 MFP 在最棘手的两种场景下生效的两个流程：保护人人共享的广播帧，以及核验一个突然声称要重新入网的站点。"
+    },
+    {
+      "type": "prose",
+      "en": "The first problem: individually addressed management frames can be encrypted with the pairwise key the two parties already share, but broadcast and multicast management frames go to everyone, so there is no single shared secret to encrypt with. Worse, you can't even encrypt a broadcast meaningfully — every receiver would need to decrypt it. The standard's answer is not to hide these frames but to make them tamper-evident: each group-addressed robust management frame is sealed with a cryptographic integrity check using a key the whole BSS shares — the Integrity Group Temporal Key (IGTK). This is BIP (Broadcast/Multicast Integrity Protocol). The content is still readable, but a forged or altered broadcast announcement fails the integrity check and is dropped.",
+      "zh": "第一个问题：单播的管理帧可以用双方已经共享的成对密钥来加密，但广播和组播管理帧是发给所有人的，因此没有一个单一的共享秘密可用于加密。更何况，加密广播本身也没有意义——每个接收者都得能解密它。标准给出的答案不是把这些帧藏起来，而是让它们“一旦被篡改就能被发现”：每个组寻址的健壮管理帧都用整个 BSS 共享的一把密钥——完整性组临时密钥（IGTK）——加上一道密码学完整性校验。这就是 BIP（广播/组播完整性协议）。帧内容仍然可读，但任何被伪造或被改动过的广播通告都会通不过完整性校验，从而被丢弃。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Think of the IGTK as a wax seal on a public notice. Anyone can read the notice, but only the network can press the seal. If the seal is missing or broken, you know the notice is fake. BIP installs the IGTK with an MLME-SETKEYS request and turns on protection with MLME-SETPROTECTION; the AP sets it for transmit, a non-AP station for receive.",
+      "zh": "可以把 IGTK 想象成贴在公告上的火漆封印。任何人都能读公告，但只有网络才能盖上这枚封印。如果封印缺失或破损，你就知道这份公告是假的。BIP 通过 MLME-SETKEYS 请求安装 IGTK，并通过 MLME-SETPROTECTION 开启保护；AP 将其设为发送方向，非 AP 站点设为接收方向。"
+    },
+    {
+      "type": "prose",
+      "en": "The second problem is subtler. Even with broadcasts sealed, an attacker can still try to forge an *unprotected* (Re)Association Request — the very first frame of joining, which by design happens before a protected key exists. If an AP blindly honored it, an attacker could flood the AP with fake association attempts or knock a legitimate, already-associated station out of its slot. The SA Query procedure is the AP's safeguard: when a still-associated station appears to send a fresh association request, the AP doesn't just act on it. Instead it challenges the station that it *believes* is still there — 'if you really are my associated client, answer this.'",
+      "zh": "第二个问题更微妙。即便广播都被封印了，攻击者仍然可以尝试伪造一个**未受保护的**（重）关联请求帧——这正是入网的第一帧，按设计它发生在受保护密钥建立之前。如果 AP 不假思索地照单全收，攻击者就能用大量伪造的关联尝试淹没 AP，或把一个合法的、已经关联的站点挤出它的位置。SA Query 流程就是 AP 的防护手段：当一个仍处于关联状态的站点看起来又发来了一个全新的关联请求时，AP 不会直接执行它，而是去质询那个它**认为**还在线的站点——“如果你真的是我已关联的客户端，就回应这个挑战。”"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant Atk as Attacker (spoofing STA addr)\n    participant AP as Access Point\n    participant STA as Real STA (still associated)\n    Atk->>AP: unprotected (Re)Association Request\n    Note over AP: I think this STA is already associated\n    AP-->>Atk: Association Response (status = comeback later)\n    AP->>STA: SA Query Request (protected)\n    STA->>AP: SA Query Response (protected)\n    Note over AP: real STA answered -> association still valid\n    Note over AP: ignore the spoofed request",
+      "zh": "sequenceDiagram\n    participant Atk as 攻击者 (伪造STA地址)\n    participant AP as 接入点\n    participant STA as 真实STA (仍关联中)\n    Atk->>AP: 未受保护的(重)关联请求\n    Note over AP: 该STA我认为已经关联\n    AP-->>Atk: 关联响应 (状态=稍后回来)\n    AP->>STA: SA Query 请求 (受保护)\n    STA->>AP: SA Query 响应 (受保护)\n    Note over AP: 真实STA已回应 -> 关联仍有效\n    Note over AP: 忽略那个伪造的请求"
+    },
+    {
+      "type": "prose",
+      "en": "SA Query works both directions. A station can also be the one to start it: if a station with management frame protection receives an *unprotected* Deauthentication or Disassociation frame carrying reason code INVALID_CLASS2_FRAME or INVALID_CLASS3_FRAME, it treats that not as a real disconnect but as a hint that its association state might be out of sync with the AP. Its SME may then send SA Query Requests to the AP, one every retry-timeout interval, until it gets a valid response or the maximum timeout elapses. A valid response means 'keep using the connection'; silence means the station may delete its keys and fall back to State 1. Either way, a forged plaintext disconnect can no longer instantly tear down a protected session.",
+      "zh": "SA Query 是双向的。站点也可以是发起方：如果一个启用了管理帧保护的站点收到一个**未受保护的**去认证或解关联帧，并且其原因码为 INVALID_CLASS2_FRAME 或 INVALID_CLASS3_FRAME，它不会把这当作真正的断连，而是当作一个提示——它与 AP 之间的关联状态可能已经不同步了。于是它的 SME 可以向 AP 发送 SA Query 请求，每隔一个重试超时间隔发一次，直到收到有效响应或达到最大超时为止。收到有效响应意味着“继续使用这条连接”；而一片沉默则意味着该站点可以删除其密钥并退回到 State 1。无论哪种情况，一个伪造的明文断连帧都再也无法瞬间撕毁一条受保护的会话了。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A station can skip the SA Query round-trip entirely if it and the AP already share a PTK-KCK. It includes a Known STA Identification element — a MIC computed over a recent timestamp — in its (Re)Association Request, proving its identity up front. The AP accepts a fresh, non-replayed timestamp and lets the association proceed without the comeback delay.",
+      "zh": "如果站点和 AP 已经共享了一把 PTK-KCK，站点可以完全跳过这趟 SA Query 往返。它会在（重）关联请求中放入一个 Known STA Identification 元素——这是对一个近期时间戳计算出的 MIC——从而预先证明自己的身份。AP 在确认这个时间戳是新鲜、未被重放的之后，便允许关联直接进行，而无需经历“稍后回来”的延迟。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact SA Query response rules and OCV interaction",
+        "zh": "SA Query 响应的精确规则与 OCV 的交互"
+      },
+      "en": "Clause 11.13 spells out when a station must NOT answer an SA Query Request: when it is not currently associated to the requester and has no PASN-established PTKSA; when the request was sent to a group address; when it has itself sent a (Re)Association Request within dot11AssociationResponseTimeOut but not yet received the response; or when operating channel validation (OCV) is active and the request either lacks an OCI element or carries channel information that doesn't match the current channel. Group-addressed SA Query Responses are always deemed invalid and discarded. When OCVC was indicated, a responder must include an OCI element, and a station that started SA Query after a channel switch but gets no valid response within dot11AssociationSAQueryMaximumTimeout TUs must deauthenticate. The IGTK-based group protection of 11.12 uses BIP per 12.5.3; in an MBSS, group-addressed Action frames flagged for group-addressed privacy are instead protected with the MGTK negotiated during the AMPE exchange.",
+      "zh": "11.13 节明确规定了站点在何种情况下不得应答 SA Query 请求：当它当前并未与请求方关联、且没有通过 PASN 建立的 PTKSA 时；当请求被发往一个组地址时；当它自己在 dot11AssociationResponseTimeOut 内发出了（重）关联请求但尚未收到响应时；或者当工作信道验证（OCV）已激活、而请求中要么缺少 OCI 元素、要么所带信道信息与当前信道不符时。组寻址的 SA Query 响应一律视为无效并丢弃。当对端指示了 OCVC 时，应答方必须包含 OCI 元素；而一个在信道切换后发起 SA Query、却在 dot11AssociationSAQueryMaximumTimeout 个 TU 内未收到有效响应的站点，必须执行去认证。11.12 节中基于 IGTK 的组保护按 12.5.3 使用 BIP；在 MBSS 中，被标记为需要组寻址隐私的组寻址 Action 帧，则改用在 AMPE 交换期间协商出的 MGTK 来保护。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2628,
+          2629
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.12",
+    "80211-2024:11.13"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2628
+      ],
+      "note": "11.12 Group addressed management frame protection — IGTK/BIP encapsulation, MLME-SETPROTECTION/SETKEYS, MGTK for MBSS group Action frames; 11.13 SA Query support requirement and when not to respond"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2629
+      ],
+      "note": "11.13 SA Query — OCV/OCI rules, group-addressed response invalid, station-initiated SA Query on unprotected deauth/disassoc with INVALID_CLASS2/3_FRAME, Known STA Identification element to skip SA Query"
+    }
+  ],
+  "track": "80211core"
+}
