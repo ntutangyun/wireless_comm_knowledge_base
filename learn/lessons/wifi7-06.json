@@ -1,0 +1,128 @@
+{
+  "id": "wifi7-06",
+  "title": {
+    "en": "Multi-Link Setup, Reconfiguration & Adding/Removing Links",
+    "zh": "多链路建立、重配置与链路的增删"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In Wi-Fi 6 a station joined one access point on one channel — one association, one link. Wi-Fi 7's multi-link operation (MLO) changes that picture: a multi-link device (MLD) is one logical endpoint that can run several radios at once, say 5 GHz and 6 GHz together. So joining a network is no longer about a single link — it is about agreeing on a *bundle* of links. The key idea of this lesson: that bundle is negotiated at join time, and it can be edited live afterwards.",
+      "zh": "在 Wi-Fi 6 里，一个站点在一个信道上接入一个接入点——一次关联，一条链路。Wi-Fi 7 的多链路操作（MLO）改变了这幅图景：多链路设备（MLD）是一个逻辑端点，可以同时运行多个射频，比如 5 GHz 与 6 GHz 一起跑。因此“加入网络”不再是关于单条链路，而是关于就一“束”链路达成一致。本课的核心思想是：这束链路是在入网时协商出来的，之后还能在线编辑。"
+    },
+    {
+      "type": "prose",
+      "en": "The two endpoints are a non-AP MLD (the client, e.g. a phone) and an AP MLD (the infrastructure). Each MLD has one MLD MAC address that identifies the whole device, while each affiliated STA or AP underneath it keeps its own per-link MAC. The whole MLO setup hangs off this addressing: you authenticate and associate as the MLD, but data flows over the individual links. The procedure that establishes the bundle is called ML (re)setup.",
+      "zh": "两个端点分别是非 AP MLD（客户端，例如一部手机）和 AP MLD（基础设施侧）。每个 MLD 拥有一个 MLD MAC 地址来标识整台设备，而其下挂的每个隶属 STA 或 AP 仍保留各自的“逐链路 MAC”。整个 MLO 建立都依托这套寻址：你以 MLD 的身份完成认证与关联，而数据则在各条独立链路上流动。建立这束链路的流程被称为 ML（重）建立（ML (re)setup）。"
+    },
+    {
+      "type": "prose",
+      "en": "ML (re)setup rides on the ordinary (Re)Association Request/Response exchange — but with a twist. An exchange counts as ML setup only if *both* the request and the response carry a Basic Multi-Link element. The non-AP MLD sends the request through one of its STAs, on a link it wants in the bundle, and inside the Basic Multi-Link element it lists every requested link as a Per-STA Profile. The AP MLD then replies, accepting all, a subset, or none — but if it accepts only a subset, that subset must include the link the request arrived on. If that arriving link can't be accepted, the whole setup fails.",
+      "zh": "ML（重）建立搭载在普通的（重）关联请求/响应交换之上——但有一个关键限定：只有当请求帧与响应帧“双方”都携带 Basic Multi-Link 元素时，这次交换才算作 ML 建立。非 AP MLD 通过它的某个 STA、在一条它希望纳入这束链路的链路上发出请求，并在 Basic Multi-Link 元素中把每条被请求的链路都列为一个 Per-STA Profile（逐 STA 配置）。AP MLD 随后回复：可以全部接受、接受一个子集、或全部拒绝——但如果只接受子集，该子集必须包含请求所到达的那条链路。如果那条到达链路无法被接受，整个建立就判定失败。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant N as non-AP MLD\n    participant A as AP MLD\n    Note over N,A: authentication between MLDs first (11.3)\n    N->>A: (Re)Association Request + Basic ML element\n    Note right of N: lists requested links as Per-STA Profiles\n    A->>N: (Re)Association Response + Basic ML element\n    Note left of A: accept all / subset (incl. arriving link) / none\n    Note over N,A: single AID assigned to the MLD\n    Note over N,A: accepted links = setup links (State 3/4)",
+      "zh": "sequenceDiagram\n    participant N as 非AP MLD\n    participant A as AP MLD\n    Note over N,A: 先在 MLD 之间完成认证 (11.3)\n    N->>A: (重)关联请求 + Basic ML 元素\n    Note right of N: 以 Per-STA Profile 列出被请求链路\n    A->>N: (重)关联响应 + Basic ML 元素\n    Note left of A: 全部接受 / 子集(含到达链路) / 全部拒绝\n    Note over N,A: 为该 MLD 分配单一 AID\n    Note over N,A: 被接受的链路 = 建立链路 (State 3/4)"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "How does each side know what the *other's* radios can do per link? That's the job of two elements carried during association. The Basic Multi-Link element advertises MLD-wide and per-link structure (which links, their MAC addresses, MLD capabilities), and inside each Per-STA Profile an EHT Capabilities element declares that link's EHT MAC/PHY abilities — 320 MHz support, EHT-MCS/NSS sets, beamforming, and more. So association doubles as a per-link capability exchange.",
+      "zh": "每一侧如何知道“对端”每条链路上的射频能做什么？这正是关联期间携带的两个元素的职责。Basic Multi-Link 元素通告 MLD 级与逐链路的结构（有哪些链路、它们的 MAC 地址、MLD 能力），而在每个 Per-STA Profile 内部，一个 EHT Capabilities 元素声明该链路的 EHT MAC/PHY 能力——是否支持 320 MHz、EHT-MCS/NSS 集、波束成形等等。因此“关联”同时也是一次逐链路的能力交换。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='12'><rect x='10' y='20' width='130' height='180' rx='8' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='75' y='40' text-anchor='middle' fill='currentColor' font-weight='bold'>non-AP MLD</text><text x='75' y='56' text-anchor='middle' fill='currentColor'>MLD MAC: a0</text><rect x='25' y='70' width='100' height='34' rx='5' fill='none' stroke='currentColor'/><text x='75' y='91' text-anchor='middle' fill='currentColor'>STA link 1</text><rect x='25' y='120' width='100' height='34' rx='5' fill='none' stroke='currentColor'/><text x='75' y='141' text-anchor='middle' fill='currentColor'>STA link 2</text><rect x='320' y='20' width='130' height='180' rx='8' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='385' y='40' text-anchor='middle' fill='currentColor' font-weight='bold'>AP MLD</text><text x='385' y='56' text-anchor='middle' fill='currentColor'>MLD MAC: b0</text><rect x='335' y='70' width='100' height='34' rx='5' fill='none' stroke='currentColor'/><text x='385' y='91' text-anchor='middle' fill='currentColor'>AP 6 GHz</text><rect x='335' y='120' width='100' height='34' rx='5' fill='none' stroke='currentColor'/><text x='385' y='141' text-anchor='middle' fill='currentColor'>AP 5 GHz</text><line x1='125' y1='87' x2='335' y2='87' stroke='currentColor' stroke-width='1.5'/><line x1='125' y1='137' x2='335' y2='137' stroke='currentColor' stroke-width='1.5'/><text x='230' y='80' text-anchor='middle' fill='currentColor'>setup link 1</text><text x='230' y='130' text-anchor='middle' fill='currentColor'>setup link 2</text><text x='230' y='185' text-anchor='middle' fill='currentColor'>one AID, one association</text></svg>",
+      "caption": {
+        "en": "One MLD MAC per device, per-link MACs underneath; association binds a bundle of setup links under a single AID.",
+        "zh": "每台设备一个 MLD MAC，其下为逐链路 MAC；关联将一束“建立链路”绑定在单一 AID 之下。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The bundle is not frozen. ML reconfiguration lets the AP MLD edit its set of affiliated APs over time. To *add* an AP, the AP MLD's management entity starts a new BSS and announces it by bumping the Maximum Number Of Simultaneous Links count in the Basic Multi-Link element and adding a TBTT entry in the Reduced Neighbor Report — a client watching Beacons can then ask to add that link. To *remove* an AP, the AP MLD advertises a Reconfiguration Multi-Link element carrying a per-AP AP Removal Timer that counts down in Beacons; when it hits the target TBTT the affiliated AP is removed and clients treat that link as gone. So links can appear and disappear without tearing down the association.",
+      "zh": "这束链路并非一成不变。ML 重配置（ML reconfiguration）允许 AP MLD 随时间编辑其隶属 AP 的集合。要“增加”一个 AP，AP MLD 的管理实体启动一个新的 BSS，并通过在 Basic Multi-Link 元素中把“最大同时链路数（Maximum Number Of Simultaneous Links）”加一、在 Reduced Neighbor Report 中加入一个 TBTT 条目来通告它——监听 Beacon 的客户端便可请求把该链路加入。要“移除”一个 AP，AP MLD 会通告一个 Reconfiguration Multi-Link 元素，其中携带逐 AP 的 AP 移除计时器（AP Removal Timer），它在 Beacon 中逐帧递减；当倒数到目标 TBTT 时，该隶属 AP 被移除，客户端把那条链路视为不复存在。于是链路可以出现与消失，而无需拆除整个关联。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact (re)setup rule and the add/remove choreography",
+        "zh": "精确的（重）建立规则与增删链路的编舞"
+      },
+      "en": "Clause 35.3.5.1 makes ML (re)setup ride on (Re)Association and reuse the 11.3 association procedure, gated by authentication between MLDs first. An exchange is an ML (re)setup only if both frames carry a Basic Multi-Link element; the request lists requested links and the response must accept the link it arrived on or fail entirely, then assign a single AID to the non-AP MLD with all affiliated STAs sharing that AID, landing the MLD in State 3/4. Each requested link is represented by a Per-STA Profile, and per 9.4.2.323 each such profile carries an EHT Capabilities element (EHT MAC + PHY Capabilities Information, Supported EHT-MCS And NSS Set, optional PPE Thresholds) declaring that link's abilities. For reconfiguration, 35.3.6.2 (adding) has the AP MLD issue MLME-START.request per new AP and announce it by incrementing Maximum Number Of Simultaneous Links and adding a Reduced Neighbor Report TBTT entry; 35.3.6.3 (removing) has the SME issue MLME-BSS-AP-REMOVAL.request, then advertise a Reconfiguration Multi-Link element with a Per-STA Profile whose AP Removal Timer (a TBTT countdown decremented each Beacon) marks when the affiliated AP and its link are removed — at which point a non-AP MLD whose only setup link was that one is disassociated.",
+      "zh": "35.3.5.1 节规定 ML（重）建立搭载在（重）关联之上并复用 11.3 的关联流程，前提是先在 MLD 之间完成认证。只有当两帧都携带 Basic Multi-Link 元素时，该交换才算 ML（重）建立；请求列出被请求链路，响应必须接受请求所到达的那条链路、否则整体失败，随后为非 AP MLD 分配单一 AID，所有隶属 STA 共享该 AID，使 MLD 进入 State 3/4。每条被请求链路由一个 Per-STA Profile 表示，依据 9.4.2.323，每个此类配置都携带一个 EHT Capabilities 元素（EHT MAC 与 PHY Capabilities Information、Supported EHT-MCS And NSS Set、可选的 PPE Thresholds），声明该链路的能力。在重配置方面，35.3.6.2（增加）要求 AP MLD 对每个新增 AP 发出 MLME-START.request，并通过把“最大同时链路数”加一以及在 Reduced Neighbor Report 中加入一个 TBTT 条目来通告；35.3.6.3（移除）要求 SME 发出 MLME-BSS-AP-REMOVAL.request，随后通告一个 Reconfiguration Multi-Link 元素，其 Per-STA Profile 中的 AP 移除计时器（一个随每个 Beacon 递减的 TBTT 倒数）标记隶属 AP 及其链路被移除的时刻——届时，若某非 AP MLD 仅有的建立链路正是这条，它将被解除关联。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          509,
+          510,
+          514,
+          515,
+          516
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.3.5.1",
+    "80211be-2024:35.3.6.2",
+    "80211be-2024:35.3.6.3",
+    "80211be-2024:9.4.2.322",
+    "80211be-2024:9.4.2.323"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        509,
+        510,
+        511
+      ],
+      "note": "35.3.5.1 ML (re)setup procedure — rides on (Re)Association + Basic Multi-Link element in both frames; accept all/subset/none with arriving link mandatory; single AID, State 3/4"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        514,
+        515
+      ],
+      "note": "35.3.6.2 Adding affiliated AP(s) — MLME-START.request; increment Maximum Number Of Simultaneous Links; Reduced Neighbor Report TBTT entry"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        515,
+        516,
+        517,
+        518
+      ],
+      "note": "35.3.6.3 Removing affiliated AP(s) — MLME-BSS-AP-REMOVAL.request; Reconfiguration Multi-Link element with AP Removal Timer TBTT countdown; link removal and disassociation"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        230,
+        231,
+        232,
+        233,
+        234
+      ],
+      "note": "9.4.2.322 Multi-Link element — variants (Basic/Reconfiguration/...), Multi-Link Control, Common Info with MLD MAC Address, Per-STA Profile subelements"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        252,
+        253,
+        254,
+        255,
+        256
+      ],
+      "note": "9.4.2.323 EHT Capabilities element — EHT MAC/PHY Capabilities Information, Supported EHT-MCS And NSS Set, PPE Thresholds; per-link capabilities advertised during association"
+    }
+  ],
+  "track": "wifi7-eht"
+}

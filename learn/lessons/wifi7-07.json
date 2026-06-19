@@ -1,0 +1,113 @@
+{
+  "id": "wifi7-07",
+  "title": {
+    "en": "TID-to-Link Mapping & NSTR Constraints",
+    "zh": "TID 到链路的映射与 NSTR 约束"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A Wi-Fi 7 device with Multi-Link Operation (MLO) can hold several links open at once — say one on 5 GHz and one on 6 GHz. But not all traffic is equal: a voice call wants low latency on a quiet link, while a big download just wants raw throughput and doesn't care about jitter. TID-To-Link Mapping (TTLM) is the steering wheel: it lets an MLD decide which traffic categories ride on which links, instead of spraying everything across all of them.",
+      "zh": "支持多链路操作（MLO）的 Wi-Fi 7 设备可以同时保持多条链路——比如一条在 5 GHz、一条在 6 GHz。但并非所有流量都一样：语音通话希望走一条安静、低时延的链路，而大文件下载只在乎吞吐量、对抖动并不敏感。TID 到链路的映射（TTLM）就是那个“方向盘”：它让一个 MLD 决定哪类流量走哪条链路，而不是把所有流量一股脑撒到全部链路上。"
+    },
+    {
+      "type": "prose",
+      "en": "Traffic is sorted into TIDs (Traffic Identifiers) 0–7, which carry the QoS priority of each flow. TTLM assigns each TID a 'link set' — a subset of the setup links it is allowed to use, separately for downlink (DL) and uplink (UL). By default, every TID is mapped to every setup link in both directions. A non-default mapping narrows that: a TID can be pinned to as few as one link. A link counts as 'enabled' for a device if at least one TID is mapped to it in DL or UL; if no TID maps to it in either direction, that link is 'disabled' and carries no individually addressed frames.",
+      "zh": "流量被划分为 TID（流量标识符）0–7，每个 TID 承载对应数据流的 QoS 优先级。TTLM 为每个 TID 分配一个“链路集合”——即它被允许使用的建立链路的一个子集，下行（DL）与上行（UL）分别指定。默认情况下，每个 TID 在两个方向上都映射到所有建立的链路。非默认映射则会收窄它：一个 TID 最少可以被钉死在一条链路上。只要至少有一个 TID 在 DL 或 UL 上映射到某条链路，该链路对此设备就算“启用”；若两个方向都没有任何 TID 映射到它，该链路就是“禁用”，不再承载点对点寻址的帧。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "One hard rule keeps you from cutting off traffic by accident: at any moment, every TID must be mapped to at least one link in DL and at least one in UL. A TTLM change that would leave any TID with an empty link set is invalid and rejected — so you can steer traffic, but you can never accidentally strand it.",
+      "zh": "有一条硬性规则可以防止你误把流量切断：在任何时刻，每个 TID 在 DL 和 UL 上都必须至少映射到一条链路。任何会导致某个 TID 的链路集合变为空的 TTLM 变更都是无效的、会被拒绝——所以你可以引导流量，却永远不会不小心让它“无路可走”。"
+    },
+    {
+      "type": "prose",
+      "en": "How does a mapping get established? Three ways. (1) Default — applied automatically when nothing else is in force. (2) Negotiated — one MLD sends a TID-To-Link Mapping Request frame; the peer replies with a Response frame carrying Status Code 0 (SUCCESS), 133 (DENIED), or 134 (a preferred mapping suggested back). Either side can later tear it down with a Teardown frame. (3) Advertised — an AP MLD broadcasts a mandatory TTLM in its Beacons and Probe Responses, with a Mapping Switch Time telling everyone when it takes effect. Negotiated mappings are individual; advertised mappings apply to all associated devices at once.",
+      "zh": "映射是如何建立的？有三种方式。（1）默认——当没有其他映射生效时自动采用。（2）协商——一个 MLD 发送 TID-To-Link Mapping Request（请求）帧，对端回以 Response（响应）帧，携带状态码 0（SUCCESS 成功）、133（DENIED 拒绝）或 134（回建议一个更偏好的映射）。任一方之后都可以用 Teardown（拆除）帧把它拆掉。（3）广播——AP MLD 在它的 Beacon 与 Probe Response 中广播一个强制性的 TTLM，并用 Mapping Switch Time（映射切换时间）告诉所有人它何时生效。协商映射是针对单个设备的；广播映射则同时作用于所有已关联的设备。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant I as Initiating MLD\n    participant P as Peer MLD\n    Note over I: pick link sets per TID (e.g. voice->link A, bulk->link B)\n    I->>P: TID-To-Link Mapping Request (TTLM element, Direction DL/UL)\n    alt accepts\n        P->>I: Response (Status Code 0 = SUCCESS, no element)\n        Note over I,P: TTLM active until torn down or replaced\n    else rejects with suggestion\n        P->>I: Response (Status Code 134, preferred TTLM element)\n        Note over I,P: default mapping used until renegotiated\n    end\n    I->>P: TID-To-Link Mapping Teardown (later, optional)\n    Note over I,P: revert to advertised or default mapping",
+      "zh": "sequenceDiagram\n    participant I as 发起方 MLD\n    participant P as 对端 MLD\n    Note over I: 为每个 TID 选定链路集合 (如 语音->链路A, 批量->链路B)\n    I->>P: TID-To-Link Mapping 请求 (TTLM 元素, 方向 DL/UL)\n    alt 接受\n        P->>I: 响应 (状态码 0 = 成功, 不含元素)\n        Note over I,P: TTLM 生效, 直到被拆除或替换\n    else 拒绝并给出建议\n        P->>I: 响应 (状态码 134, 含偏好的 TTLM 元素)\n        Note over I,P: 在重新协商前使用默认映射\n    end\n    I->>P: TID-To-Link Mapping 拆除 (稍后, 可选)\n    Note over I,P: 回退到广播映射或默认映射"
+    },
+    {
+      "type": "prose",
+      "en": "Now the physics catch. The whole appeal of MLO is true simultaneity — transmit on link A while you receive on link B. But if a device's two radios sit on links that are too close in frequency (commonly both within the same band), the transmitter on one link leaks into and deafens the receiver on the other. Such a pair is called Non-Simultaneous Transmit and Receive (NSTR): the device physically cannot TX on one link and RX on the other at the same instant. So 'put voice on the clean link, bulk on the busy one' only buys real parallelism when the two links are far enough apart in frequency to be STR-capable. On an NSTR pair, the device must instead align (synchronise) its transmissions so both links go in the same direction at once — TTLM steers which traffic goes where, but NSTR decides whether the two links can actually run independently.",
+      "zh": "现在该谈物理限制了。MLO 全部的吸引力在于真正的“同时性”——在链路 A 上发送的同时在链路 B 上接收。但如果一个设备的两个射频所处的链路在频率上靠得太近（常见情形是两条都在同一频段内），那么其中一条链路上的发射机就会泄漏到另一条链路的接收机里，把它“震聋”。这样的一对链路被称为非同时收发（NSTR，Non-Simultaneous Transmit and Receive）：该设备在物理上无法在某一瞬间于一条链路发送、同时在另一条链路接收。所以“语音走干净链路、批量走繁忙链路”只有在两条链路频率相距足够远、具备 STR 能力时，才能换来真正的并行。在一对 NSTR 链路上，设备必须改为让两条链路的发送在时间上对齐（同步），使二者在同一时刻朝同一方向收发——TTLM 决定哪类流量走哪条链路，而 NSTR 决定这两条链路能否真正各自独立地运行。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Intuition: TTLM is the routing plan; NSTR is the road. A great plan that sends voice and bulk down two 'separate' lanes buys nothing if the lanes are an NSTR pair that must move in lockstep. Real latency wins come from steering the latency-sensitive TID onto a link that is STR-independent from the heavy one.",
+      "zh": "直观理解：TTLM 是路线规划，NSTR 是路况。一个把语音和批量分到两条“独立”车道的漂亮规划，如果这两条车道恰好是一对必须步调一致的 NSTR 链路，那它就什么也换不来。真正的时延收益，来自把对时延敏感的 TID 引导到一条与重负载链路在 STR 上彼此独立的链路上。"
+    },
+    {
+      "type": "prose",
+      "en": "Mappings can also shift on the fly. With dynamic link transitions, a non-AP MLD uses the power states of its affiliated stations to change which links it actively operates on without renegotiating the whole TTLM — handy for a single-radio device that 'parks' one link to save power. And when an advertised TTLM is replaced, the AP carries two TID-To-Link Mapping elements at once: the current one plus a future one whose Mapping Switch Time marks the handover instant, so every client transitions cleanly at the same TBTT.",
+      "zh": "映射还能在运行中动态调整。借助动态链路切换，非 AP 的 MLD 可以利用其下属站点的功率状态，来改变自己实际工作的链路，而无需重新协商整个 TTLM——这对一个想“停泊”某条链路以省电的单射频设备很实用。而当一个广播 TTLM 即将被替换时，AP 会同时携带两个 TID-To-Link Mapping 元素：当前生效的那个，再加上一个未来生效的，后者用 Mapping Switch Time 标出切换时刻，让所有客户端都在同一个 TBTT 干净利落地完成过渡。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Inside the TID-To-Link Mapping element and the validity rule",
+        "zh": "深入 TID-To-Link Mapping 元素与有效性规则"
+      },
+      "en": "Per 35.3.7.2.1, a TTLM change is only valid and successful if it does not leave any TID with a DL or UL link set of zero links; a setup link is 'enabled' if at least one TID maps to it (DL or UL) and 'disabled' if none does. Negotiation (35.3.7.2.3) completes when an MLD transmits or receives a TID-To-Link Mapping Response with Status Code 0 (SUCCESS); rejection uses 133 (DENIED_TID_TO_LINK_MAPPING) or 134 (PREFERRED_TID_TO_LINK_MAPPING_SUGGESTED, which carries a suggested element). The element itself (9.4.2.324) opens with a TID-To-Link Mapping Control field whose Direction subfield is 0 (DL), 1 (UL), or 2 (both); a Default Link Mapping bit; Mapping Switch Time Present and Expected Duration Present bits; a Link Mapping Size bit selecting a 1- or 2-octet per-TID field; and a Link Mapping Presence Bitmap marking which of the Link Mapping Of TID 0..7 fields follow. In each Link Mapping Of TID n field, bit i set to 1 means TID n is mapped to the link with link ID i for the stated direction; 0 means it is not. Dynamic link transitions (35.3.7.3) let a non-AP MLD change its operating links via affiliated-STA power states.",
+      "zh": "依据 35.3.7.2.1，只有当一次 TTLM 变更不会使任何 TID 的 DL 或 UL 链路集合变为零条链路时，它才有效且成功；只要至少有一个 TID（在 DL 或 UL）映射到某条建立链路，该链路就“启用”，若无则“禁用”。协商（35.3.7.2.3）在某个 MLD 发送或接收到状态码为 0（SUCCESS）的 TID-To-Link Mapping Response 时完成；拒绝则用 133（DENIED_TID_TO_LINK_MAPPING）或 134（PREFERRED_TID_TO_LINK_MAPPING_SUGGESTED，携带一个建议的元素）。元素本身（9.4.2.324）以 TID-To-Link Mapping Control 字段开头，其 Direction 子字段取 0（DL）、1（UL）或 2（两者）；还有 Default Link Mapping 位、Mapping Switch Time Present 与 Expected Duration Present 位、用于选择每 TID 字段为 1 或 2 字节的 Link Mapping Size 位，以及标记其后出现哪些 Link Mapping Of TID 0..7 字段的 Link Mapping Presence Bitmap。在每个 Link Mapping Of TID n 字段中，第 i 位置为 1 表示 TID n 在所述方向上映射到链路 ID 为 i 的链路，置 0 表示未映射。动态链路切换（35.3.7.3）则允许非 AP 的 MLD 通过下属 STA 的功率状态来改变其工作链路。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          526,
+          529,
+          530,
+          276,
+          277
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.3.7.2",
+    "80211be-2024:35.3.7.3",
+    "80211be-2024:9.4.2.324"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        526,
+        527,
+        528
+      ],
+      "note": "35.3.7.2 TTLM — default vs non-default mapping, enabled/disabled links, the at-least-one-link validity rule, negotiation framing"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        529,
+        530
+      ],
+      "note": "35.3.7.2.3 Negotiation — Request/Response/Teardown frames, Status Codes 0/133/134, success condition"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        531,
+        532
+      ],
+      "note": "35.3.7.2.4 advertised TTLM (Mapping Switch Time, two elements during replacement) and 35.3.7.3 dynamic link transitions via power states"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        276,
+        277
+      ],
+      "note": "9.4.2.324 TID-To-Link Mapping element — Direction subfield, Default/Switch-Time/Duration/Size bits, Link Mapping Presence Bitmap, Link Mapping Of TID n"
+    }
+  ],
+  "track": "wifi7-eht"
+}

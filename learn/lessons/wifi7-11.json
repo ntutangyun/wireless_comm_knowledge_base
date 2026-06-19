@@ -1,0 +1,108 @@
+{
+  "id": "wifi7-11",
+  "title": {
+    "en": "EHT Sounding, Beamforming Feedback & EPCS Priority Access",
+    "zh": "EHT 信道探测、波束成形反馈与 EPCS 优先接入"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Two very different Wi-Fi 7 MAC mechanisms share one beginner-friendly intuition: before you act, get the right information. EHT sounding is how a transmitter 'asks the channel for a map' before steering its beams. EPCS priority access is a 'fast-lane pass' that lets authorized emergency traffic jump the queue when the air is congested. This lesson walks through both — the sounding loop first, then the priority handshake.",
+      "zh": "Wi-Fi 7 中有两个截然不同的 MAC 层机制，却共享一个适合初学者的直觉：行动之前，先拿到正确的信息。EHT 信道探测（sounding）就是发射端在“引导波束”之前，先“向信道索要一张地图”。而 EPCS 优先接入则是一张“快速通道通行证”，让获得授权的应急流量在空口拥塞时插队抢先。本课先讲探测回路，再讲优先接入握手。"
+    },
+    {
+      "type": "prose",
+      "en": "Sounding exists because transmit beamforming and downlink MU-MIMO need to know the channel. To steer energy toward a receiver — or toward several receivers at once without them interfering — the access point must compute a steering matrix, and that requires an up-to-date picture of the radio channel. The device doing the steering is the beamformer; the device measuring and reporting back is the beamformee. They are advertised by capability bits (SU/MU beamformer and beamformee) in the EHT Capabilities element.",
+      "zh": "信道探测之所以存在，是因为发射波束成形和下行 MU-MIMO 都需要了解信道。要把能量精准引导到某个接收端——或同时引导给多个接收端而互不干扰——接入点必须计算出一个引导矩阵（steering matrix），而这需要一张最新的无线信道画像。负责引导的设备称为波束成形发起方（beamformer），负责测量并回报的设备称为波束成形接收方（beamformee）。二者通过 EHT Capabilities 元素中的能力位（SU/MU beamformer 与 beamformee）相互声明。"
+    },
+    {
+      "type": "prose",
+      "en": "The loop runs on a Null Data Packet (NDP). The beamformer sends an EHT NDP Announcement naming who should respond, then a SIFS later transmits the EHT sounding NDP — a training-only PPDU with no data payload. The beamformee measures the channel from that training signal and sends back a compressed report. Feedback comes in three flavours: SU (compressed beamforming matrix for one user), MU (that matrix plus an exclusive report so beams can suppress crosstalk between users), and CQI (a channel-quality indicator the AP can use to pick the best resource units).",
+      "zh": "整个回路建立在空数据包（NDP，Null Data Packet）之上。波束成形发起方先发送一个 EHT NDP Announcement，点名谁该回应；经过一个 SIFS 间隔后，再发送 EHT sounding NDP——一种只含训练字段、不含数据负载的 PPDU。接收方从这个训练信号测量信道，并回送一份压缩报告。反馈分三种：SU（针对单用户的压缩波束成形矩阵）、MU（在该矩阵之外再加一份专属报告，使波束能抑制用户之间的串扰）、以及 CQI（信道质量指示，AP 可据此挑选最佳资源单元）。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant BFR as Beamformer (AP)\n    participant BFE as Beamformee (STA)\n    BFR->>BFE: EHT NDP Announcement (names beamformee, feedback type)\n    Note over BFR,BFE: SIFS\n    BFR->>BFE: EHT sounding NDP (training only, no data)\n    Note over BFE: measure channel, compute & compress V / CQI\n    Note over BFR,BFE: SIFS\n    BFE->>BFR: EHT Compressed Beamforming/CQI frame\n    Note over BFR: derive steering matrix for MU-MIMO",
+      "zh": "sequenceDiagram\n    participant BFR as 发起方 (AP)\n    participant BFE as 接收方 (STA)\n    BFR->>BFE: EHT NDP Announcement (点名接收方、反馈类型)\n    Note over BFR,BFE: SIFS\n    BFR->>BFE: EHT sounding NDP (仅训练，无数据)\n    Note over BFE: 测量信道，计算并压缩 V / CQI\n    Note over BFR,BFE: SIFS\n    BFE->>BFR: EHT Compressed Beamforming/CQI 帧\n    Note over BFR: 推导出 MU-MIMO 引导矩阵"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Non-TB vs TB sounding. A non-trigger-based (non-TB) sequence has exactly one STA Info field and sounds a single beamformee — that is the simple two-step exchange in the diagram. A trigger-based (TB) sequence has two or more STA Info fields and a broadcast address, then uses a BFRP Trigger frame to collect feedback from many beamformees in one shot — the efficient path when the AP needs maps from a whole group.",
+      "zh": "非触发式（non-TB）与触发式（TB）探测的区别：非触发式序列只含一个 STA Info 字段，仅探测单个接收方——也就是图中那个简单的两步交换。触发式序列含两个或更多 STA Info 字段、目标地址为广播，随后用一个 BFRP Trigger 帧一次性向多个接收方收集反馈——当 AP 需要一整组设备的信道地图时，这是更高效的路径。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the second mechanism. EPCS — Emergency Preparedness Communications Service — gives authorized users a better chance of getting through during congestion. It only works between an EPCS AP MLD and an EPCS non-AP MLD, both of which advertise support and must have negotiated a protected (RSNA, management-frame-protected) link first. EPCS sits in one of two states: torn down (the default right after association) or enabled. A short request/response handshake flips it on.",
+      "zh": "再看第二个机制。EPCS——应急准备通信服务（Emergency Preparedness Communications Service）——让获得授权的用户在拥塞时更有把握成功通信。它只在 EPCS AP MLD 与 EPCS non-AP MLD 之间生效，二者都要声明支持，并且必须先协商出一条受保护的链路（RSNA，且启用管理帧保护）。EPCS 有两种状态：拆除态（关联后的默认状态）与启用态。一段简短的请求/响应握手即可将其开启。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant NS as EPCS non-AP MLD\n    participant AP as EPCS AP MLD\n    Note over NS: higher layer triggers EPCS (torn down state)\n    NS->>AP: EPCS Priority Access Enable Request (dialog token)\n    Note over AP: verify authorization\n    AP->>NS: Enable Response (Status = SUCCESS, optional EDCA params)\n    Note over NS,AP: both enter ENABLED state\n    Note over NS: apply EPCS EDCA parameters to traffic",
+      "zh": "sequenceDiagram\n    participant NS as EPCS non-AP MLD\n    participant AP as EPCS AP MLD\n    Note over NS: 高层触发 EPCS (拆除态)\n    NS->>AP: EPCS Priority Access Enable Request (对话令牌)\n    Note over AP: 验证授权\n    AP->>NS: Enable Response (状态 = SUCCESS, 可含 EDCA 参数)\n    Note over NS,AP: 双方进入启用态\n    Note over NS: 对流量应用 EPCS EDCA 参数"
+    },
+    {
+      "type": "prose",
+      "en": "What does 'priority' actually mean? It is delivered through EDCA — the contention parameters that govern how long a station waits before grabbing the medium. When EPCS is enabled, the station loads a special EDCA (and MU EDCA) parameter set, which the AP can supply inside the response frame. Lower CWmin/CWmax and AIFSN values mean shorter random backoffs, so EPCS traffic statistically wins the medium more often. The AP also adjusts the parameters it advertises so that EPCS stations come out ahead — that is the fast lane, built entirely from contention-timing knobs rather than a separate reserved channel.",
+      "zh": "“优先”到底意味着什么？它是通过 EDCA 实现的——EDCA 是一组竞争参数，决定站点在抢占信道前要等待多久。当 EPCS 启用时，站点会加载一套专门的 EDCA（及 MU EDCA）参数集，这套参数可由 AP 在响应帧中下发。更小的 CWmin/CWmax 和 AIFSN 值意味着更短的随机退避，因此 EPCS 流量在统计意义上更频繁地抢到信道。AP 还会调整它所通告的参数，使 EPCS 站点占据优势——这就是那条“快速通道”，它完全由竞争计时旋钮搭建，而非另设一条预留信道。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Compressed V matrix, CQI, and the exact EPCS enable handshake",
+        "zh": "压缩 V 矩阵、CQI，以及精确的 EPCS 启用握手"
+      },
+      "en": "On the feedback side, 36.3.17.2 says the beamformee computes the beamforming feedback matrix V per subcarrier and per RU/MRU, removes the spatial-stream CSD, then compresses V into quantized angles phi and psi using the Clause 19 compressed-feedback method; the beamformer reconstructs V from those angles to build the SU steering matrix or a DL MU-MIMO matrix that suppresses cross-user crosstalk (the exact computation is implementation specific). 36.3.17.3 adds that if CQI is requested, the beamformee derives CQI values from quantized SNRs and feeds them back per RU and spatial stream. On the EPCS side, 35.16.2.2 specifies the enable handshake: the initiator sends an EPCS Priority Access Enable Request, and a matching dialog token plus a Status Code of SUCCESS in the Enable Response transitions both ends to the enabled state (other status codes such as EPCS_DENIED_UNAUTHORIZED keep it torn down). 35.16.3.2 then defines the EDCA treatment: an enabled non-AP STA updates its dot11EDCATable to the EDCA Parameters Set carried in the EPCS Priority Access Multi-Link element (or default values otherwise), runs contention-based access from that table, and ignores the EDCA updates the AP otherwise broadcasts in Beacons/Probe Responses.",
+      "zh": "在反馈侧，36.3.17.2 规定：接收方按子载波、按 RU/MRU 计算波束成形反馈矩阵 V，先移除空间流 CSD，再用 Clause 19 的压缩反馈方法把 V 压缩成量化角度 phi 与 psi；发起方据此角度重建 V，用以构造 SU 引导矩阵，或构造抑制跨用户串扰的下行 MU-MIMO 矩阵（具体计算由实现自定）。36.3.17.3 补充：若请求了 CQI，接收方将量化后的 SNR 推导为 CQI 值，按 RU 和空间流回报。在 EPCS 侧，35.16.2.2 规定了启用握手：发起方发送 EPCS Priority Access Enable Request，当 Enable Response 中对话令牌匹配且状态码为 SUCCESS 时，双方转入启用态（若为 EPCS_DENIED_UNAUTHORIZED 等其他状态码，则保持拆除态）。35.16.3.2 接着定义 EDCA 处理方式：处于启用态的 non-AP STA 将其 dot11EDCATable 更新为 EPCS Priority Access Multi-Link 元素中携带的 EDCA Parameters Set（若无则用默认值），依据该表执行竞争式接入，并忽略 AP 在 Beacon/Probe Response 中另行广播的 EDCA 更新。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          847,
+          648,
+          651,
+          652
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.7.2",
+    "80211be-2024:36.3.17.2",
+    "80211be-2024:36.3.17.3",
+    "80211be-2024:35.16.2.2",
+    "80211be-2024:35.16.3.2"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        598,
+        599,
+        600,
+        612
+      ],
+      "note": "35.7.1-35.7.3 EHT sounding operation/protocol/sequences — beamformer/beamformee roles, SU/MU/CQI feedback, non-TB vs TB NDP sounding"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        847
+      ],
+      "note": "36.3.17.2-36.3.17.3 EHT beamforming feedback matrix V (compressed angles phi/psi) and EHT CQI feedback"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        647,
+        648,
+        649,
+        651,
+        652
+      ],
+      "note": "35.16.1-35.16.3.2 EPCS priority access — enable/teardown states, Enable Request/Response handshake, EDCA operation using EPCS parameters"
+    }
+  ],
+  "track": "wifi7-eht"
+}

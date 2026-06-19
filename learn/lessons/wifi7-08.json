@@ -1,0 +1,109 @@
+{
+  "id": "wifi7-08",
+  "title": {
+    "en": "The EHT Preamble: U-SIG and EHT-SIG",
+    "zh": "EHT 前导码：U-SIG 与 EHT-SIG 详解"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every Wi-Fi 7 packet on the air opens with a preamble — a run of known training and signalling symbols that a receiver hears before any real data arrives. The preamble's job is purely logistical: it tells the receiver 'a packet is coming, here is its width, here is how it is carved up, and here is the recipe to decode the rest.' Get the preamble wrong and the whole packet is lost, so 802.11be packs the decode instructions into two carefully layered signal fields: the Universal SIG (U-SIG) and the EHT-SIG.",
+      "zh": "空口上的每一个 Wi-Fi 7 数据包都以前导码（preamble）开头——这是一串已知的训练符号和信令符号，接收机会在任何真正的数据到达之前先听到它们。前导码的任务纯粹是“后勤性”的：它告诉接收机“一个数据包要来了，它有多宽，是怎么切分的，以及解码剩余部分的配方是什么。”一旦前导码解错，整个数据包就丢了，所以 802.11be 把解码指令分装进两个精心分层的信令字段里：通用信令字段（U-SIG）和 EHT-SIG。"
+    },
+    {
+      "type": "prose",
+      "en": "First comes the legacy part, inherited unchanged from older standards: L-STF, L-LTF and L-SIG, followed by a repeated L-SIG (RL-SIG). This part exists for coexistence — an old 802.11a/n/ac device that cannot understand Wi-Fi 7 can still read the legacy L-SIG, learn how long the medium will be busy, and politely stay quiet. Only after this legacy front-matter do the EHT-specific fields begin: U-SIG, then (in some formats) EHT-SIG, then the training fields and data.",
+      "zh": "最先出现的是“传统部分（legacy part）”，原封不动地继承自更早的标准：L-STF、L-LTF、L-SIG，后面再跟一个重复的 L-SIG（即 RL-SIG）。这部分的存在是为了“共存（coexistence）”——一台看不懂 Wi-Fi 7 的老式 802.11a/n/ac 设备，仍然能读懂传统的 L-SIG，得知信道将被占用多久，从而礼貌地保持安静。只有在这段传统“开头部分”之后，EHT 专属字段才开始：先是 U-SIG，然后（在某些格式中）是 EHT-SIG，再是训练字段和数据。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 660 120' fill='none' stroke='currentColor' stroke-width='1.5'><g font-family='sans-serif' font-size='11' fill='currentColor' stroke='none'><text x='8' y='16'>Legacy (coexistence)</text><text x='340' y='16'>EHT-specific</text></g><rect x='8' y='28' width='52' height='34'/><rect x='60' y='28' width='52' height='34'/><rect x='112' y='28' width='52' height='34'/><rect x='164' y='28' width='52' height='34'/><rect x='216' y='28' width='66' height='34' stroke-width='2.5'/><rect x='282' y='28' width='66' height='34' stroke-width='2.5'/><rect x='348' y='28' width='52' height='34'/><rect x='400' y='28' width='52' height='34'/><rect x='452' y='28' width='80' height='34'/><rect x='532' y='28' width='40' height='34'/><g font-family='sans-serif' font-size='10' fill='currentColor' stroke='none' text-anchor='middle'><text x='34' y='49'>L-STF</text><text x='86' y='49'>L-LTF</text><text x='138' y='49'>L-SIG</text><text x='190' y='49'>RL-SIG</text><text x='249' y='49'>U-SIG</text><text x='315' y='45'>EHT-</text><text x='315' y='57'>SIG</text><text x='374' y='45'>EHT-</text><text x='374' y='57'>STF</text><text x='426' y='45'>EHT-</text><text x='426' y='57'>LTF</text><text x='492' y='49'>Data</text><text x='552' y='49'>PE</text></g><text x='315' y='80' font-family='sans-serif' font-size='9' fill='currentColor' stroke='none' text-anchor='middle'>(EHT MU PPDU only)</text><line x1='216' y1='92' x2='348' y2='92'/><line x1='216' y1='88' x2='216' y2='96'/><line x1='348' y1='88' x2='348' y2='96'/><text x='282' y='108' font-family='sans-serif' font-size='10' fill='currentColor' stroke='none' text-anchor='middle'>the two SIG fields decode everything after</text></svg>",
+      "caption": {
+        "en": "EHT MU PPDU field order: a legacy preamble for coexistence, then U-SIG and EHT-SIG carrying the decode instructions, then training fields and data. (EHT-SIG is present only in the MU PPDU format.)",
+        "zh": "EHT MU PPDU 的字段顺序：先是用于共存的传统前导码，再是携带解码指令的 U-SIG 与 EHT-SIG，最后是训练字段和数据。（EHT-SIG 仅在 MU PPDU 格式中存在。）"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "U-SIG is the envelope every Wi-Fi 7 device must read. Its great innovation is a set of version-independent fields whose meaning and bit positions are frozen across all future PHY clauses: a PHY Version Identifier (0 = EHT), the Bandwidth (20/40/80/160/320 MHz), an UL/DL flag, the BSS Color, and the TXOP duration. Because these never move, a future Wi-Fi 8 device can still parse a Wi-Fi 7 U-SIG enough to know the bandwidth and back off correctly — forward compatibility baked into the bits. U-SIG also carries the Punctured Channel Information, which tells the receiver which 20 MHz subchannels are punched out, plus the MCS and symbol count of the EHT-SIG that follows, all protected by a CRC.",
+      "zh": "U-SIG 是每一台 Wi-Fi 7 设备都必须读取的“信封”。它最大的创新在于一组“版本无关字段（version-independent fields）”——它们的含义和比特位置在未来所有 PHY 章节中都被固定下来：PHY 版本标识符（0 = EHT）、带宽（20/40/80/160/320 MHz）、上行/下行（UL/DL）标志、BSS Color，以及 TXOP 时长。正因为这些字段位置永不挪动，未来的 Wi-Fi 8 设备依然能解析 Wi-Fi 7 的 U-SIG，至少足以得知带宽并正确退避——前向兼容性被直接写进了比特里。U-SIG 还携带“打孔信道信息（Punctured Channel Information）”，告诉接收机哪些 20 MHz 子信道被打掉了，以及紧随其后的 EHT-SIG 所用的 MCS 和符号数，全部由一个 CRC 保护。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two ways to picture them: U-SIG is the envelope — short, fixed-layout, read by every device on the channel, including ones that arrive years later. EHT-SIG is the detailed routing slip inside — it can grow to several symbols and only matters to the devices that are actually being addressed in this packet.",
+      "zh": "可以用两个比喻来理解它们：U-SIG 是“信封”——简短、布局固定，信道上的每台设备都会读取它，连几年后才问世的设备也能读。EHT-SIG 则是信封里那张“详细的派送单”——它可以扩展到好几个符号，而且只对本数据包真正寻址到的那些设备才有意义。"
+    },
+    {
+      "type": "prose",
+      "en": "EHT-SIG is where the per-user detail lives. It begins with some overflow bits common to everyone, then carries the RU (resource unit) allocation map and, for each addressed station, a User field with that user's MCS, number of spatial streams, and coding. In an OFDMA transmission EHT-SIG is split into one or two content channels, each made of a Common field plus a User Specific field grouped into user encoding blocks of two users apiece. This is exactly what lets one EHT MU PPDU hand different RUs and different rates to several stations at once — the routing slip that pairs each user with their slice of the spectrum.",
+      "zh": "EHT-SIG 正是承载“每用户细节”的地方。它先是一些对所有人都通用的“溢出比特（overflow bits）”，然后携带 RU（资源单元）分配图，并为每一个被寻址的站点提供一个 User 字段，其中包含该用户的 MCS、空间流数和编码方式。在 OFDMA 传输中，EHT-SIG 被切分为一到两条“内容信道（content channel）”，每条由一个 Common 字段加一个 User Specific 字段构成，后者又被组织成每块两个用户的“用户编码块（user encoding block）”。正是这一点，让一个 EHT MU PPDU 能同时把不同的 RU 和不同的速率分派给多个站点——这就是把每个用户和其频谱切片配对起来的那张“派送单”。"
+    },
+    {
+      "type": "prose",
+      "en": "Why two preamble layouts? 802.11be defines exactly two EHT PPDU formats. The EHT MU PPDU is the general-purpose one — used for downlink and SU/MU transmissions that are not a reply to a trigger — and it always includes EHT-SIG. The EHT TB PPDU is the trigger-based one: a station sends it as a synchronized response to a Trigger frame from the AP, which has already told everyone their RU and rate. Because that scheduling info is already known, the TB PPDU drops EHT-SIG entirely (its U-SIG carries Spatial Reuse fields instead) and doubles the EHT-STF duration to help the AP combine the simultaneous uplink signals.",
+      "zh": "为什么要有两种前导码布局？802.11be 恰好定义了两种 EHT PPDU 格式。EHT MU PPDU 是通用格式——用于下行以及非触发响应的 SU/MU 传输——它总是包含 EHT-SIG。EHT TB PPDU 则是“基于触发（trigger-based）”的格式：站点把它作为对 AP 发来的 Trigger 帧的同步响应而发送，而 AP 此前已经告知了大家各自的 RU 和速率。正因为这些调度信息已知，TB PPDU 干脆完全去掉了 EHT-SIG（它的 U-SIG 转而携带 Spatial Reuse 字段），并把 EHT-STF 的时长加倍，以帮助 AP 合并多路同时到达的上行信号。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    A[Receiver locks onto legacy preamble<br/>L-STF/L-LTF/L-SIG/RL-SIG] --> B[Decode U-SIG<br/>2 OFDM symbols]\n    B --> C{PPDU Type<br/>+ UL/DL?}\n    C -->|EHT MU PPDU| D[EHT-SIG present:<br/>read RU map + per-user MCS/NSS]\n    C -->|EHT TB PPDU<br/>response to Trigger| E[No EHT-SIG:<br/>RU/rate already known from Trigger]\n    D --> F[Decode EHT-STF / EHT-LTF / Data]\n    E --> F",
+      "zh": "graph TD\n    A[接收机锁定传统前导码<br/>L-STF/L-LTF/L-SIG/RL-SIG] --> B[解码 U-SIG<br/>2 个 OFDM 符号]\n    B --> C{PPDU 类型<br/>+ 上行/下行?}\n    C -->|EHT MU PPDU| D[存在 EHT-SIG：<br/>读取 RU 分配图 + 每用户 MCS/NSS]\n    C -->|EHT TB PPDU<br/>对 Trigger 的响应| E[无 EHT-SIG：<br/>RU/速率已由 Trigger 告知]\n    D --> F[解码 EHT-STF / EHT-LTF / 数据]\n    E --> F"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact U-SIG structure and the version-independent design",
+        "zh": "U-SIG 的精确结构与版本无关的设计"
+      },
+      "en": "Clause 36.3.12.7 specifies U-SIG as two OFDM symbols (U-SIG-1 and U-SIG-2, 26 data bits each, BCC-encoded at rate 1/2, BPSK). The five version-independent fields are PHY Version Identifier (B0-B2, 0=EHT, values 1-7 Validate), Bandwidth (B3-B5, 0..5 for 20/40/80/160/320-1/320-2 MHz), UL/DL (B6), BSS Color (B7-B12), and TXOP (B13-B19). U-SIG-2 then carries version-dependent fields: PPDU Type And Compression Mode (B0-B1, distinguishing DL OFDMA / EHT SU or sounding NDP / non-OFDMA MU-MIMO / TB), Punctured Channel Information (B3-B7), EHT-SIG MCS (B9-B10), Number Of EHT-SIG Symbols (B11-B15), then CRC (B16-B19, over bits 0-41) and a 6-bit Tail. The standard explicitly states the intent: the version-independent fields are 'consistent in location and interpretation across multiple IEEE 802.11 PHY clauses' so devices from Clause 36 onward coexist, and the PHY Version Identifier exists 'to identify the exact PHY version starting with EHT.' EHT-SIG (36.3.12.8) adds U-SIG overflow bits common to all users plus resource-allocation information, organised into one or two content channels each with a Common field and a User Specific field. The EHT TB PPDU drops EHT-SIG entirely and doubles the EHT-STF (36.3.4).",
+      "zh": "36.3.12.7 节规定 U-SIG 为两个 OFDM 符号（U-SIG-1 与 U-SIG-2，各 26 个数据比特，以 1/2 码率 BCC 编码、BPSK 映射）。五个版本无关字段为：PHY 版本标识符（B0-B2，0=EHT，值 1-7 为 Validate）、带宽（B3-B5，0..5 对应 20/40/80/160/320-1/320-2 MHz）、UL/DL（B6）、BSS Color（B7-B12）以及 TXOP（B13-B19）。U-SIG-2 随后携带版本相关字段：PPDU 类型与压缩模式（B0-B1，区分下行 OFDMA / EHT SU 或探测 NDP / 非 OFDMA MU-MIMO / TB）、打孔信道信息（B3-B7）、EHT-SIG MCS（B9-B10）、EHT-SIG 符号数（B11-B15），最后是 CRC（B16-B19，覆盖第 0-41 比特）和 6 比特的 Tail。标准明确陈述了其意图：版本无关字段在“多个 IEEE 802.11 PHY 章节间的位置和解释保持一致”，以便从第 36 章起的设备彼此共存；而 PHY 版本标识符存在的目的是“从 EHT 开始标识确切的 PHY 版本”。EHT-SIG（36.3.12.8）追加了对所有用户通用的 U-SIG 溢出比特以及资源分配信息，被组织成一到两条内容信道，每条含一个 Common 字段和一个 User Specific 字段。EHT TB PPDU 则完全去掉 EHT-SIG，并把 EHT-STF 时长加倍（36.3.4）。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          755,
+          756,
+          757,
+          758,
+          769
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:36.3.12.7",
+    "80211be-2024:36.3.12.8",
+    "80211be-2024:36.3.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        721,
+        722
+      ],
+      "note": "36.3.4 EHT PPDU formats — EHT MU PPDU vs EHT TB PPDU; Table 36-17 field list; EHT-SIG present only in MU PPDU; EHT-STF doubled in TB PPDU"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        755,
+        756,
+        757,
+        758
+      ],
+      "note": "36.3.12.7 U-SIG — version-independent fields (PHY Version Identifier, Bandwidth, UL/DL, BSS Color, TXOP), Punctured Channel Information, EHT-SIG MCS, CRC/Tail; Table 36-28/36-29"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        769,
+        770,
+        771
+      ],
+      "note": "36.3.12.8 EHT-SIG — U-SIG overflow + RU allocation + per-user User fields; Common field + User Specific field; content channels"
+    }
+  ],
+  "track": "wifi7-eht"
+}
