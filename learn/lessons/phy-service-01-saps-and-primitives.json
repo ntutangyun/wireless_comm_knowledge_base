@@ -1,0 +1,92 @@
+{
+  "id": "phy-service-01-saps-and-primitives",
+  "title": {
+    "en": "Layered Service Model: SAPs and Primitives",
+    "zh": "分层服务模型：服务接入点（SAP）与原语"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A Wi-Fi stack is built as layers — the MAC, the PHY beneath it, the distribution system (DS) that links access points behind the scenes. The crucial design rule is that these layers never reach into each other's internals. They talk only through narrow, well-defined boundaries called Service Access Points (SAPs). The PHY offers its service to the MAC through the PHY SAP; the DS offers its service to APs through the DS SAP. Each SAP is a contract that says what one layer can ask of another — nothing more, nothing less.",
+      "zh": "Wi-Fi 协议栈是按层搭建的——MAC 层、它下方的 PHY 层，以及在幕后把各个接入点连起来的分布式系统（DS）。其中一条关键设计规则是：这些层之间绝不直接伸手去碰对方的内部实现。它们只通过狭窄、定义清晰的边界来交流，这些边界叫作“服务接入点（SAP）”。PHY 通过 PHY SAP 向 MAC 提供服务；DS 通过 DS SAP 向各个 AP 提供服务。每个 SAP 都是一份契约，规定了一层能向另一层请求什么——不多也不少。"
+    },
+    {
+      "type": "prose",
+      "en": "Across a SAP, layers don't call functions — they exchange abstract messages called primitives. Every primitive is one of four types, and together they form the universal grammar of 802.11 interfaces. A .request flows downward: a layer asks the layer below to do something. A .confirm flows back up: the lower layer reports the outcome of that request. An .indication flows upward unprompted: a layer announces an event it just noticed (\"data arrived\", \"the channel went busy\"). And a .response flows back down: a reply to an indication. Remember the four by the shorthand RICI — Request, Confirm, Indication, Response.",
+      "zh": "在 SAP 上，各层并不是去“调用函数”——它们交换的是一种抽象消息，称为“原语（primitive）”。每个原语都属于四种类型之一，它们共同构成了 802.11 接口的通用语法。.request（请求）向下流动：某一层请求下层去做某件事。.confirm（确认）向上回流：下层汇报该请求的结果。.indication（指示）则是主动向上流动：某一层宣告它刚注意到的事件（“数据到达了”“信道变忙了”）。而 .response（响应）再向下回流：是对某个 indication 的答复。可以用缩写 RICI 来记这四种：Request、Confirm、Indication、Response。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Not every SAP uses all four. The PHY SAP, for instance, only ever uses .request, .indication, and .confirm — there is no PHY .response, because the MAC never has to formally answer the PHY. The full RICI set shows up at higher boundaries like the MLME SAP, where a peer's decision really does need a response. The grammar is universal; which letters a given SAP actually speaks depends on the conversation.",
+      "zh": "并非每个 SAP 都会用满四种。例如 PHY SAP 只会用到 .request、.indication 和 .confirm——根本没有 PHY 的 .response，因为 MAC 从不需要正式“答复” PHY。完整的 RICI 四件套出现在更高层的边界上，比如 MLME SAP，那里对端的决定确实需要一个 response。语法是通用的；至于某个具体的 SAP 实际会“说”哪几个字母，取决于这场对话本身的需要。"
+    },
+    {
+      "type": "prose",
+      "en": "Here is the payoff that makes this abstraction worth the trouble. Because the contract across the PHY SAP is described abstractly — \"these services are described in an abstract way and do not imply any particular implementation\" — the MAC can be designed once and then paired with many wildly different PHYs. An old OFDM PHY, a modern Wi-Fi 7 multi-band PHY, a future PHY not yet invented: each plugs into the same MAC through the same PHY SAP. The DS gets the same gift — it can be any backbone (Ethernet, another wireless link) as long as it honours the DS SAP. Layers become swappable LEGO bricks.",
+      "zh": "下面这一点，正是这层抽象“值得费这番功夫”的回报所在。由于 PHY SAP 上的契约是抽象描述的——标准原文称“这些服务以抽象方式描述，并不暗示任何特定实现”——所以 MAC 只需设计一次，就能与许许多多差异巨大的 PHY 配对。一个老式的 OFDM PHY、一个现代 Wi-Fi 7 多频段 PHY、乃至一个尚未发明的未来 PHY：每一个都能通过同一个 PHY SAP 接到同一个 MAC 上。DS 也享有同样的好处——只要它遵守 DS SAP，它可以是任何骨干网（以太网、另一条无线链路）。各层就这样变成了可随意替换的乐高积木。"
+    },
+    {
+      "type": "prose",
+      "en": "To make this concrete, watch the MAC drive the PHY through one frame. When the MAC wants to transmit, it sends PHY-TXSTART.request carrying a TXVECTOR (the set of parameters describing how to send). It then streams the frame down octet by octet as PHY-DATA.request primitives, and finally PHY-TXEND.request to close out. On the receiving station the PHY runs the mirror image: it raises PHY-RXSTART.indication with an RXVECTOR when it detects an incoming frame, delivers the bytes up as PHY-DATA.indication, and signals PHY-RXEND.indication when the frame finishes. Notice the pattern: outbound is driven by .request, inbound is announced by .indication.",
+      "zh": "把它落到实处，我们来看 MAC 如何驱动 PHY 发出一帧。当 MAC 想要发送时，它发出 PHY-TXSTART.request，其中携带一个 TXVECTOR（描述“怎么发”的一组参数）。随后它把整帧逐字节地以 PHY-DATA.request 原语向下传送，最后用 PHY-TXEND.request 收尾。在接收侧的站点上，PHY 则上演这套动作的镜像：当它探测到一帧到来时，发出携带 RXVECTOR 的 PHY-RXSTART.indication；把字节以 PHY-DATA.indication 向上交付；当一帧结束时，发出 PHY-RXEND.indication。注意这个规律：向外发送由 .request 驱动，向内接收由 .indication 宣告。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant MAC as MAC (sending STA)\n    participant TXP as PHY (sending STA)\n    participant RXP as PHY (receiving STA)\n    participant RMAC as MAC (receiving STA)\n    Note over MAC,TXP: across the PHY SAP\n    MAC->>TXP: PHY-TXSTART.request (TXVECTOR)\n    MAC->>TXP: PHY-DATA.request (octet ...)\n    MAC->>TXP: PHY-DATA.request (octet ...)\n    MAC->>TXP: PHY-TXEND.request\n    TXP-->>MAC: PHY-TXEND.confirm\n    TXP->>RXP: PPDU over the air\n    RXP->>RMAC: PHY-RXSTART.indication (RXVECTOR)\n    RXP->>RMAC: PHY-DATA.indication (octet ...)\n    RXP->>RMAC: PHY-DATA.indication (octet ...)\n    RXP->>RMAC: PHY-RXEND.indication",
+      "zh": "sequenceDiagram\n    participant MAC as MAC（发送站点）\n    participant TXP as PHY（发送站点）\n    participant RXP as PHY（接收站点）\n    participant RMAC as MAC（接收站点）\n    Note over MAC,TXP: 跨越 PHY SAP\n    MAC->>TXP: PHY-TXSTART.request (TXVECTOR)\n    MAC->>TXP: PHY-DATA.request (字节 ...)\n    MAC->>TXP: PHY-DATA.request (字节 ...)\n    MAC->>TXP: PHY-TXEND.request\n    TXP-->>MAC: PHY-TXEND.confirm\n    TXP->>RXP: PPDU 经空口传输\n    RXP->>RMAC: PHY-RXSTART.indication (RXVECTOR)\n    RXP->>RMAC: PHY-DATA.indication (字节 ...)\n    RXP->>RMAC: PHY-DATA.indication (字节 ...)\n    RXP->>RMAC: PHY-RXEND.indication"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 260\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"60\" y=\"20\" width=\"300\" height=\"50\" rx=\"6\"/><text x=\"210\" y=\"50\" fill=\"currentColor\" stroke=\"none\" font-size=\"16\" text-anchor=\"middle\">MAC sublayer</text><line x1=\"60\" y1=\"95\" x2=\"360\" y2=\"95\" stroke-dasharray=\"6 5\"/><text x=\"210\" y=\"90\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">PHY SAP</text><line x1=\"150\" y1=\"70\" x2=\"150\" y2=\"190\"/><polygon points=\"150,190 145,178 155,178\" fill=\"currentColor\" stroke=\"none\"/><text x=\"140\" y=\"135\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"end\">.request</text><line x1=\"270\" y1=\"190\" x2=\"270\" y2=\"70\"/><polygon points=\"270,70 265,82 275,82\" fill=\"currentColor\" stroke=\"none\"/><text x=\"280\" y=\"135\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"start\">.indication / .confirm</text><rect x=\"60\" y=\"190\" width=\"300\" height=\"50\" rx=\"6\"/><text x=\"210\" y=\"220\" fill=\"currentColor\" stroke=\"none\" font-size=\"16\" text-anchor=\"middle\">PHY</text></svg>",
+      "caption": {
+        "en": "The PHY SAP is the only doorway between MAC and PHY: requests go down, indications and confirms come back up.",
+        "zh": "PHY SAP 是 MAC 与 PHY 之间唯一的门户：请求向下传，指示与确认向上回。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Where the standard pins down the SAPs and primitive tables",
+        "zh": "标准在何处钉死了这些 SAP 与原语表"
+      },
+      "en": "Clause 8.3.1 is explicit that the PHY-to-MAC services \"are described in an abstract way and do not imply any particular implementation or exposed interface\" — the decoupling guarantee in one sentence. 8.3.2 names the PHY's job (transfer PSDUs between STAs) and 8.3.3 splits its primitives into two families: those that support MAC peer-to-peer interactions and those with purely local significance between the MAC sublayer and the PHY. The tables then enumerate them: Table 8-1 (8.3.4.1) lists the single peer-to-peer primitive PHY-DATA with Request/Indication/Confirm columns; Table 8-2 (8.3.4.2) lists the local inter-(sub)layer set — PHY-TXSTART, PHY-TXEND, PHY-RXSTART, PHY-RXEND, PHY-CCA, PHY-CONFIG, PHY-TRIGGER and more — each marked under Request, Indication, or Confirm (note no Response column exists). Table 8-3 binds parameters to primitives: TXVECTOR rides on PHY-TXSTART.request, RXVECTOR on PHY-RXSTART.indication, RXERROR on PHY-RXEND.indication. The DS SAP is the parallel construct one layer over: 7.2.1 lists its primitives — DS-UNITDATA.request, DS-UNITDATA.indication, DS-STA-NOTIFY.request — the interface by which APs push MAC service tuples into the distribution system.",
+      "zh": "8.3.1 节明确指出，PHY 向 MAC 提供的服务“以抽象方式描述，并不暗示任何特定实现或对外暴露的接口”——一句话给出了解耦保证。8.3.2 点明 PHY 的职责（在站点之间传递 PSDU），8.3.3 则把它的原语分成两族：支持 MAC 对等（peer-to-peer）交互的，以及仅在 MAC 子层与 PHY 之间具有本地意义的。随后各表逐一列举：表 8-1（8.3.4.1）列出唯一的对等原语 PHY-DATA，带有 Request/Indication/Confirm 三栏；表 8-2（8.3.4.2）列出本地的层间原语集合——PHY-TXSTART、PHY-TXEND、PHY-RXSTART、PHY-RXEND、PHY-CCA、PHY-CONFIG、PHY-TRIGGER 等等——每个都标注在 Request、Indication 或 Confirm 之下（注意：并不存在 Response 一栏）。表 8-3 把参数绑定到原语上：TXVECTOR 随 PHY-TXSTART.request 一起，RXVECTOR 随 PHY-RXSTART.indication，RXERROR 随 PHY-RXEND.indication。DS SAP 则是上一层的同构构造：7.2.1 列出它的原语——DS-UNITDATA.request、DS-UNITDATA.indication、DS-STA-NOTIFY.request——这正是各个 AP 把 MAC 服务元组送入分布式系统所用的接口。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          635,
+          636,
+          631
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:8.3.2",
+    "80211-2024:8.3.3",
+    "80211-2024:8.3.4.1",
+    "80211-2024:8.3.4.2",
+    "80211-2024:7.2.1"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        635,
+        636
+      ],
+      "note": "8.3.1-8.3.4.2 — abstract PHY service; primitive categories; Table 8-1 peer-to-peer (PHY-DATA), Table 8-2 inter-(sub)layer primitives, Table 8-3 parameters (TXVECTOR/RXVECTOR)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        631
+      ],
+      "note": "7.2.1 — DS SAP primitives: DS-UNITDATA.request/.indication, DS-STA-NOTIFY.request"
+    }
+  ],
+  "track": "phy-service"
+}

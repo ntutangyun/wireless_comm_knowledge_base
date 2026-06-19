@@ -1,0 +1,91 @@
+{
+  "id": "phy-service-04-ds-sap",
+  "title": {
+    "en": "The DS SAP: Moving Frames Between BSSs in an ESS",
+    "zh": "DS 服务接入点：在 ESS 中跨 BSS 转发帧"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Earlier in this track we met the PHY-SAP: the clean contract by which the MAC hands a frame to the radio without knowing anything about modulation or antennas. Now we climb to the other boundary in scope — the top of the stack. A single access point covers one basic service set (BSS), but real Wi-Fi networks stitch many BSSs together into one seamless extended service set (ESS) so you can roam from room to room without dropping. The glue behind that is the distribution system (DS), and the DS SAP is the contract by which an AP's MAC hands frames to the DS so they can travel between BSSs.",
+      "zh": "在本系列前面我们认识了 PHY-SAP：MAC 把帧交给无线电、却不必关心调制方式或天线的那道干净接口。现在我们爬到本系列关注的另一道边界——协议栈的顶端。一个接入点（AP）只覆盖一个基本服务集（BSS），但真实的 Wi-Fi 网络会把多个 BSS 缝合成一个无缝的扩展服务集（ESS），让你能在房间之间漫游而不掉线。在背后充当“黏合剂”的，就是分发系统（DS），而 DS SAP 正是 AP 的 MAC 把帧交给 DS、使其得以跨 BSS 传输的那份契约。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7 is careful about who sits on each side of this interface. The service users — the entities that talk to the DS — are the connected APs, plus mesh gates and a portal (the bridge to a non-802.11 LAN like wired Ethernet). The service provider is the DS itself. Crucially, the standard describes only the primitives that get frames in and out of the DS and keep its station map current; what the DS actually is, and how it forwards internally, is explicitly out of scope. That is the point: the DS SAP hides the backbone — Ethernet, a mesh, anything — from the MAC.",
+      "zh": "第 7 章对这道接口两侧各坐着谁有明确界定。服务使用者——也就是与 DS 对话的实体——是相连的各个 AP，外加网状网关（mesh gate）和门户（portal，连接非 802.11 局域网（如有线以太网）的桥接点）。服务提供者则是 DS 本身。关键在于，标准只描述把帧送入与送出 DS、并维护其站点映射所需的原语；至于 DS 究竟是什么、内部如何转发，则被明确划在范围之外。这正是要点所在：DS SAP 把骨干网络——以太网、网状网，或任何形式——对 MAC 隐藏起来。"
+    },
+    {
+      "type": "prose",
+      "en": "The interface has just three primitives, and they reuse the same '.request / .indication' grammar you saw at the PHY-SAP. The two workhorses move user data: DS-UNITDATA.request asks the DS to distribute a MAC service tuple (an MSDU plus its parameters) toward a destination that may live behind a different AP, while DS-UNITDATA.indication is the DS handing an arriving tuple up to this AP for local delivery to its own MAC. The third, DS-STA-NOTIFY.request, solves the mapping problem — it tells the DS which AP a station is currently associated with, so frames get routed to the right BSS.",
+      "zh": "这道接口只有三个原语，而且复用了你在 PHY-SAP 见过的同一套“.request / .indication”语法。两个主力负责搬运用户数据：DS-UNITDATA.request 请求 DS 把一个 MAC 服务元组（一个 MSDU 加上它的各项参数）分发给某个目的地，而该目的地可能位于另一个 AP 之后；DS-UNITDATA.indication 则是 DS 把抵达的元组上交给本 AP、以便在本地交付给它自己的 MAC。第三个原语 DS-STA-NOTIFY.request 解决映射问题——它告诉 DS 某个站点当前关联在哪个 AP 上，从而把帧路由到正确的 BSS。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant MAC1 as AP1 MAC (BSS A)\n    participant DS as Distribution System\n    participant MAC2 as AP2 MAC (BSS B)\n    Note over MAC1: frame for a STA that roamed to BSS B\n    MAC1->>DS: DS-UNITDATA.request(tuple, SRC_AP)\n    Note over DS: look up STA-to-AP map -> AP2\n    DS->>MAC2: DS-UNITDATA.indication(tuple)\n    Note over MAC2: deliver locally over the air to the STA\n    Note over MAC2,DS: later the STA roams back\n    MAC2->>DS: DS-STA-NOTIFY.request(STAAddress, MOVE)\n    Note over DS: map now points the STA at AP2",
+      "zh": "sequenceDiagram\n    participant MAC1 as AP1 MAC (BSS A)\n    participant DS as 分发系统\n    participant MAC2 as AP2 MAC (BSS B)\n    Note over MAC1: 要发给已漫游到 BSS B 的某站点的帧\n    MAC1->>DS: DS-UNITDATA.request(元组, SRC_AP)\n    Note over DS: 查 STA-到-AP 映射 -> AP2\n    DS->>MAC2: DS-UNITDATA.indication(元组)\n    Note over MAC2: 在本地通过空口交付给该站点\n    Note over MAC2,DS: 稍后该站点再次漫游\n    MAC2->>DS: DS-STA-NOTIFY.request(STA地址, MOVE)\n    Note over DS: 映射现在把该站点指向 AP2"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice how roaming 'just works.' When a station moves from one AP to another, the AP it joins sends a DS-STA-NOTIFY.request and the DS updates its STA-to-AP map. The next DS-UNITDATA.request destined for that station is automatically steered to the new BSS — the same association logic runs no matter what the backbone is. That is the abstract-interface principle from Lesson 1, applied at the very top of the stack instead of the bottom.",
+      "zh": "留意漫游为何能“自动生效”。当一个站点从一个 AP 移动到另一个 AP 时，它新加入的那个 AP 会发送一条 DS-STA-NOTIFY.request，DS 随即更新它的 STA-到-AP 映射。下一条发往该站点的 DS-UNITDATA.request 就会被自动导向新的 BSS——无论骨干网络是什么，运行的都是同一套关联逻辑。这正是第 1 课中那条抽象接口原则，只不过被应用在协议栈的最顶端、而非最底端。"
+    },
+    {
+      "type": "prose",
+      "en": "The parameters are small but telling. A DS-UNITDATA.request carries the MAC service tuple plus a SourceType enumeration — SRC_AP, SRC_MESH_GATE, or SRC_PORTAL — which lets the DS apply the right distribution rules (for example, a group-addressed frame from an AP is flooded to the portal and to every AP and mesh gate, including the sender). A DS-STA-NOTIFY.request carries just a STAAddress and an UpdateType of ADD, MOVE, or DELETE — exactly the three events in a station's lifetime at an AP: it joins, it roams, it leaves.",
+      "zh": "这些参数虽小，却很说明问题。一条 DS-UNITDATA.request 携带 MAC 服务元组，外加一个 SourceType 枚举——SRC_AP、SRC_MESH_GATE 或 SRC_PORTAL——以便 DS 套用正确的分发规则（例如，来自某 AP 的组播帧会被泛洪到门户以及每一个 AP 和网状网关，包括发送方自己）。一条 DS-STA-NOTIFY.request 则只携带一个 STA地址 和一个取值为 ADD、MOVE 或 DELETE 的 UpdateType——恰好对应一个站点在某 AP 处生命周期中的三个事件：加入、漫游、离开。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact semantics: distribution rules, the indication, and map updates",
+        "zh": "精确语义：分发规则、指示原语与映射更新"
+      },
+      "en": "Clause 7.2.2.2 defines DS-UNITDATA.request(MAC service tuple, SourceType). An individually-addressed tuple is distributed to the corresponding AP, mesh gate, or portal; a group-addressed tuple delivered from an AP or mesh gate is sent to the portal (if any) and to all APs and mesh gates including the originator, while a group-addressed tuple from a portal goes to all APs and mesh gates. Clause 7.2.2.3 defines DS-UNITDATA.indication(MAC service tuple), generated by the DS to deliver a tuple up to an AP, mesh gate, or portal. Clause 7.2.3.2 defines DS-STA-NOTIFY.request(STAAddress, UpdateType): generated by an AP it updates the STA-to-AP map controlling which AP receives a given STA's tuples; generated by a mesh gate it updates the mesh STA-to-mesh-gate map (which may be incomplete). The standard notes the mapping mechanism is implementation-defined — for an IEEE 802 LAN DS, one example for ADD/MOVE is an XID null frame (ISO/IEC 8802-2). The introduction in 7.1 fixes scope: the DS itself is out of scope; only the primitives are specified.",
+      "zh": "7.2.2.2 节定义了 DS-UNITDATA.request(MAC 服务元组, SourceType)。单播元组被分发到对应的 AP、网状网关或门户；从某 AP 或网状网关送入的组播元组会被发往门户（若存在）以及包括发起方在内的所有 AP 和网状网关，而来自门户的组播元组则发往所有 AP 和网状网关。7.2.2.3 节定义了 DS-UNITDATA.indication(MAC 服务元组)，由 DS 生成，用于把元组上交给某个 AP、网状网关或门户。7.2.3.2 节定义了 DS-STA-NOTIFY.request(STA地址, UpdateType)：由 AP 生成时，它更新 STA-到-AP 映射，决定某给定站点的元组应交给哪个 AP；由网状网关生成时，它更新网状 STA-到-网状网关映射（该映射可以不完整）。标准指出，映射机制由实现自行决定——对于 IEEE 802 LAN 形式的 DS，ADD/MOVE 的一个示例是使用 XID null 帧（ISO/IEC 8802-2）。7.1 节的引言锁定了范围：DS 本身在范围之外，标准只规定那些原语。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          632,
+          633,
+          634
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:7.2.2.2",
+    "80211-2024:7.2.2.3",
+    "80211-2024:7.2.3.2",
+    "80211-2024:7.1"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        631
+      ],
+      "note": "7.1 Introduction + 7.2.1 General — DS SAP users (APs, mesh gates, portal), scope (DS itself out of scope), three primitives"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        632,
+        633
+      ],
+      "note": "7.2.2.2 DS-UNITDATA.request (tuple + SourceType, distribution rules) and 7.2.2.3 DS-UNITDATA.indication"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        633,
+        634
+      ],
+      "note": "7.2.3.2 DS-STA-NOTIFY.request — STAAddress + UpdateType (ADD/MOVE/DELETE); STA-to-AP map; XID null frame example"
+    }
+  ],
+  "track": "phy-service"
+}

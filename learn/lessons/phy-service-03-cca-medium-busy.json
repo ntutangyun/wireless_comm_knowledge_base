@@ -1,0 +1,103 @@
+{
+  "id": "phy-service-03-cca-medium-busy",
+  "title": {
+    "en": "PHY-CCA: How the PHY Tells the MAC the Air Is Busy",
+    "zh": "PHY-CCA：物理层如何告知 MAC 信道是否繁忙"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Wi-Fi is built on a simple courtesy: listen before you talk. But the part of the radio that actually listens — the PHY — and the part that decides whether to talk — the MAC — are two different layers. They need a shared phone line. That phone line is a single service primitive called PHY-CCA.indication. CCA stands for Clear Channel Assessment: the PHY continuously senses the air, and through this one upward signal it tells the MAC, in effect, 'the medium is BUSY' or 'the medium is IDLE'. Everything the MAC's carrier-sense logic does — backing off, waiting, deciding when it is finally polite to transmit — hangs off this one indication.",
+      "zh": "Wi-Fi 建立在一条简单的礼貌规则之上：先听再说。但是真正负责“听”的那部分（物理层 PHY）和负责决定是否“说”的那部分（MAC 层）是两个不同的层。它们之间需要一条共用的“电话线”。这条电话线就是一个名为 PHY-CCA.indication 的服务原语。CCA 是 Clear Channel Assessment（空闲信道评估）的缩写：PHY 持续感知空中信道，并通过这一条向上传递的信号告诉 MAC——本质上就是“信道现在繁忙（BUSY）”或“信道现在空闲（IDLE）”。MAC 载波侦听逻辑所做的一切——退避、等待、判断何时才礼貌地开始发送——都依赖于这一条 indication。"
+    },
+    {
+      "type": "prose",
+      "en": "The indication carries a STATE parameter with exactly two possible values: BUSY or IDLE. The rule is precise — STATE is BUSY when the PHY's assessment determines the channel(s) are not available; otherwise it is IDLE. Notice the plural 'channel(s)'. A modern Wi-Fi link is rarely a single 20 MHz slice; it is a wide channel stitched together from several 20 MHz subchannels. So a flat 'busy' bit would throw away useful information, and the standard does not settle for a flat bit.",
+      "zh": "这条 indication 携带一个 STATE 参数，它只有两个取值：BUSY（繁忙）或 IDLE（空闲）。规则很精确——当 PHY 评估认为信道不可用时，STATE 为 BUSY；否则为 IDLE。请注意这里用的是复数“信道（channel(s)）”。现代 Wi-Fi 链路很少只是单个 20 MHz 的频段，而往往是由多个 20 MHz 子信道拼接而成的宽信道。因此，一个扁平的“繁忙”比特会丢掉有用的信息——标准并没有满足于这样一个单比特。"
+    },
+    {
+      "type": "prose",
+      "en": "So 'busy' is richer than one bit. Alongside STATE, the indication can carry a channel-list parameter naming which subchannels are busy (primary, secondary, secondary40, secondary80, and so on), and for HE STAs with a width above 20 MHz a per20bitmap parameter, where each bit marks the busy/idle status of one 20 MHz subchannel across the operating width. This lets the MAC do something far smarter than 'wait for the whole channel to clear' — it can know exactly which slices are occupied. When STATE is IDLE, or when the PHY assesses CCA on a single channel, channel-list is simply absent.",
+      "zh": "所以“繁忙”远不止一个比特。在 STATE 之外，这条 indication 还可以携带一个 channel-list 参数，指明具体是哪些子信道繁忙（primary、secondary、secondary40、secondary80 等等）；对于工作带宽超过 20 MHz 的 HE 站点，它还携带一个 per20bitmap 参数，其中每一比特标记工作带宽内某一个 20 MHz 子信道的繁忙/空闲状态。这让 MAC 能做出比“等整条信道空下来”聪明得多的判断——它可以确切知道哪些频段被占用。当 STATE 为 IDLE 时，或者当 PHY 在单一信道上评估 CCA 时，channel-list 直接不出现（缺省）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "An important nuance: a channel can count as BUSY for two different reasons. The PHY may have decoded an actual 802.11 signal (it recognises a Wi-Fi PPDU), or it may simply have detected raw energy on the air (a microwave oven, a non-Wi-Fi device, an unintelligible burst). Both make the channel 'not available', so both produce BUSY — but the underlying cause differs, and the per-channel detail in channel-list / per20bitmap is what lets wide-channel operation react sensibly to each.",
+      "zh": "一个重要的细微之处：信道被判为 BUSY 可能出于两种不同原因。PHY 可能解调出了一个真正的 802.11 信号（它识别出一个 Wi-Fi PPDU），也可能只是检测到了空中的原始能量（微波炉、非 Wi-Fi 设备、无法解读的突发信号）。两者都使信道“不可用”，因此都会产生 BUSY——但其根本原因不同，而 channel-list / per20bitmap 中按子信道给出的细节，正是让宽信道运行能够对各自情况做出合理反应的关键。"
+    },
+    {
+      "type": "prose",
+      "en": "The indication is event-driven, not a constant heartbeat. The PHY raises a fresh PHY-CCA.indication whenever the channel status flips from idle to busy or busy to idle, whenever the entries of channel-list change, or (for HE PHYs) whenever the per20bitmap changes. The effect on receipt is exactly what you would expect: the MAC updates its physical carrier-sense (CS) state. That physical-CS state is half of the MAC's go/no-go decision (the other half being the virtual NAV) — and it is the precise hinge that gates whether the MAC is even allowed to begin a transmission.",
+      "zh": "这条 indication 是事件驱动的，而不是恒定的“心跳”。PHY 只在以下时刻才发出一条新的 PHY-CCA.indication：信道状态从空闲翻转为繁忙或从繁忙翻转为空闲、channel-list 的条目发生变化，或（对 HE PHY 而言）per20bitmap 发生变化。MAC 收到后的效果正如你所料：MAC 更新它的物理载波侦听（CS）状态。这个物理 CS 状态是 MAC“发/不发”决策的一半（另一半是虚拟的 NAV）——也正是决定 MAC 是否被允许开始一次发送的那个精确铰链。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant MAC as MAC sublayer\n    participant PHY as PHY (CCA)\n    Note over PHY: senses the medium continuously\n    PHY->>MAC: PHY-CCA.indication(STATE=BUSY, channel-list)\n    Note over MAC: physical CS = busy -> defer / back off\n    PHY->>MAC: PHY-CCA.indication(STATE=IDLE)\n    Note over MAC: physical CS = idle -> may contend\n    Note over MAC: at end of NAV / each slot boundary\n    MAC->>PHY: PHY-CCARESET.request(IPI-STATE)\n    Note over PHY: reset CCA, start a new evaluation cycle\n    PHY->>MAC: PHY-CCARESET.confirm(IPI-REPORT)\n    Note over MAC: CCA re-armed; now clear to consider TXSTART",
+      "zh": "sequenceDiagram\n    participant MAC as MAC 子层\n    participant PHY as PHY (CCA)\n    Note over PHY: 持续感知信道\n    PHY->>MAC: PHY-CCA.indication(STATE=BUSY, channel-list)\n    Note over MAC: 物理 CS = 繁忙 -> 推迟 / 退避\n    PHY->>MAC: PHY-CCA.indication(STATE=IDLE)\n    Note over MAC: 物理 CS = 空闲 -> 可参与竞争\n    Note over MAC: 在 NAV 结束 / 每个时隙边界\n    MAC->>PHY: PHY-CCARESET.request(IPI-STATE)\n    Note over PHY: 复位 CCA, 启动新的评估周期\n    PHY->>MAC: PHY-CCARESET.confirm(IPI-REPORT)\n    Note over MAC: CCA 已重新就绪; 此时方可考虑 TXSTART"
+    },
+    {
+      "type": "prose",
+      "en": "There is also a reset side to the conversation. The MAC issues PHY-CCARESET.request to ask the PHY to reset to the state appropriate for the end of a received frame and to begin a new CCA evaluation cycle. This is generated, for instance, at the end of a NAV and at slot boundaries. The same request also carries an IPI-STATE parameter that turns Idle Power Indicator reporting on or off; when it is on, the PHY answers back with PHY-CCARESET.confirm carrying an IPI-REPORT of recently observed power values. Together these two primitives let the MAC re-arm carrier sense cleanly between frames rather than carrying stale 'busy' across a boundary.",
+      "zh": "这段对话还有一个“复位”侧。MAC 发出 PHY-CCARESET.request，请求 PHY 复位到“一帧接收结束时应处的状态”，并开始一个新的 CCA 评估周期。例如，它会在 NAV 结束时以及时隙边界处被发出。同一个请求还携带一个 IPI-STATE 参数，用于开关 IPI（Idle Power Indicator，空闲功率指示）上报；当其打开时，PHY 会用 PHY-CCARESET.confirm 回复，其中携带一个 IPI-REPORT，给出近期观测到的功率值。这两条原语合在一起，让 MAC 能够在帧与帧之间干净地重新就绪载波侦听，而不会把陈旧的“繁忙”状态带过边界。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact STATE rule, the rich parameter list, and when PHY-CCA.indication fires",
+        "zh": "精确的 STATE 规则、丰富的参数列表，以及 PHY-CCA.indication 的触发时机"
+      },
+      "en": "Clause 8.3.5.12.2 defines PHY-CCA.indication with parameters STATE, IPI-REPORT, channel-list, per20bitmap, and RX-antenna-ID. STATE is BUSY if the PHY's assessment determines the channel(s) are not available, otherwise IDLE. channel-list is absent when STATE is IDLE or when CCA is determined on a single channel; otherwise it is a set drawn from primary / secondary / secondary40 / secondary80 / primary1 / primary2 / secondary1 / secondary2 / secondary4 / secondary8 (Table 8-5), each entry pointing at the per-PHY busy rules. per20bitmap is present only for an HE STA wider than 20 MHz, one bit per 20 MHz subchannel. Per 8.3.5.12.3, for Clause 27 (HE) PHYs the indication is generated when channel status changes idle->busy or busy->idle, when channel-list entries change, or when per20bitmap changes; on receipt (8.3.5.12.4) the MAC updates the physical CS state and collects IPI values when IPI reporting is on. The reset path: 8.3.5.10 (PHY-CCARESET.request) resets the PHY to the end-of-received-frame state and initiates a new CCA evaluation cycle, carrying IPI-STATE (IPI-ON/IPI-OFF); 8.3.5.11 (PHY-CCARESET.confirm) returns IPI-REPORT and is only issued if IPI reporting was on before the latest reset request.",
+      "zh": "8.3.5.12.2 节定义了 PHY-CCA.indication，其参数包括 STATE、IPI-REPORT、channel-list、per20bitmap 和 RX-antenna-ID。当 PHY 评估认为信道不可用时 STATE 为 BUSY，否则为 IDLE。当 STATE 为 IDLE 时、或 CCA 在单一信道上判定时，channel-list 缺省；否则它是一个取自 primary / secondary / secondary40 / secondary80 / primary1 / primary2 / secondary1 / secondary2 / secondary4 / secondary8 的集合（见表 8-5），每个条目都指向对应 PHY 的繁忙判定规则。per20bitmap 仅对工作带宽超过 20 MHz 的 HE 站点出现，每个 20 MHz 子信道对应一比特。依据 8.3.5.12.3，对于第 27 章（HE）PHY，该 indication 在信道状态由空闲变繁忙或由繁忙变空闲、channel-list 条目变化、或 per20bitmap 变化时被生成；收到后（8.3.5.12.4），MAC 更新物理 CS 状态，并在 IPI 上报打开时收集 IPI 值。复位路径：8.3.5.10（PHY-CCARESET.request）把 PHY 复位到“一帧接收结束”的状态并启动新的 CCA 评估周期，携带 IPI-STATE（IPI-ON/IPI-OFF）；8.3.5.11（PHY-CCARESET.confirm）返回 IPI-REPORT，且仅在最近一次复位请求之前 IPI 上报已打开时才会发出。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          644,
+          646,
+          650
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:8.3.5.12",
+    "80211-2024:8.3.5.10",
+    "80211-2024:8.3.5.11"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        644,
+        645
+      ],
+      "note": "8.3.5.12 PHY-CCA.indication — function, STATE=BUSY/IDLE, channel-list / per20bitmap / IPI-REPORT parameters"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        646
+      ],
+      "note": "Table 8-5 — channel-list parameter entries (primary, secondary, secondary40/80, primary1/2, secondary1/2/4/8) and per-PHY busy rules"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        650,
+        651
+      ],
+      "note": "8.3.5.12.3/.4 — when PHY-CCA.indication is generated (status change, channel-list / per20bitmap change); on receipt MAC updates physical CS state"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        643,
+        644
+      ],
+      "note": "8.3.5.10 PHY-CCARESET.request (reset CCA, IPI-STATE) and 8.3.5.11 PHY-CCARESET.confirm (IPI-REPORT)"
+    }
+  ],
+  "track": "phy-service"
+}

@@ -1,0 +1,110 @@
+{
+  "id": "phy-service-02-phy-sap-primitives-and-vectors",
+  "title": {
+    "en": "The PHY-SAP: TXSTART/RXSTART, DATA, and the TX/RXVECTOR",
+    "zh": "PHY 服务接入点：TXSTART/RXSTART、DATA 与 TXVECTOR/RXVECTOR"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In Lesson 1 we learned the grammar of 802.11 service primitives — request, indication, confirm (and sometimes response), the RICI verbs that two layers use to talk across a service access point (SAP). Now let's listen to one real conversation: the one between the MAC sublayer and the PHY, across the PHY-SAP, as they cooperate to put exactly one frame on the air and pull one back off it. The unit they exchange is a PPDU (the PHY's on-air packet), and the whole dialogue is just those RICI verbs applied to a handful of concrete primitives.",
+      "zh": "在第 1 课里我们学过 802.11 服务原语的“语法”——request（请求）、indication（指示）、confirm（确认）（有时还有 response，响应），也就是两层之间跨服务接入点（SAP）对话所用的 RICI 动词。现在让我们来听一段真实的对话：MAC 子层与 PHY 之间、跨 PHY-SAP 进行的对话，看它们如何协作，把恰好一帧数据送上空口、再从空口接回来一帧。它们交换的单位是 PPDU（PHY 的空口分组），而整段对话不过就是把那几个 RICI 动词套用到少数几个具体原语上而已。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with transmit. The MAC opens the conversation with PHY-TXSTART.request — 'get ready to send a frame.' The PHY answers with PHY-TXSTART.confirm once it is armed and ready to accept bytes. The MAC then streams the frame body one octet at a time: each byte goes down as a PHY-DATA.request, and the PHY acknowledges each with a PHY-DATA.confirm before the MAC sends the next. When the last byte has been confirmed, the MAC closes the transmission with PHY-TXEND.request, and the PHY replies PHY-TXEND.confirm. That confirm matters for more than tidiness — its timing is the reference the MAC uses to start counting its channel-access backoff.",
+      "zh": "先看发送。MAC 用 PHY-TXSTART.request 开启对话——“准备发送一帧”。一旦 PHY 就绪、可以开始接收字节，它就回以 PHY-TXSTART.confirm。随后 MAC 一个字节一个字节地把帧体送下去：每个字节作为一个 PHY-DATA.request 下发，PHY 对每个字节都回以一个 PHY-DATA.confirm，MAC 收到确认后再发下一个。当最后一个字节得到确认后，MAC 用 PHY-TXEND.request 结束本次发送，PHY 回以 PHY-TXEND.confirm。这个 confirm 的意义不只是“收尾”——它的时刻正是 MAC 用来开始计算信道接入退避（backoff）的时间基准。"
+    },
+    {
+      "type": "prose",
+      "en": "Receive is the mirror image, but the verbs flip direction because now the PHY is the one with news to report. When the PHY locks onto an incoming PPDU and successfully decodes its PHY header, it raises PHY-RXSTART.indication up to the MAC — 'a frame is arriving.' It then delivers the body upward, one octet per PHY-DATA.indication, and finally signals PHY-RXEND.indication when the PPDU is complete. Notice there is no 'request' on receive: the MAC didn't ask for this frame, so the PHY simply informs it. That asymmetry — request/confirm going down on transmit, indication coming up on receive — is the RICI grammar of Lesson 1 made concrete.",
+      "zh": "接收是发送的镜像，但动词的方向反了过来，因为现在是 PHY 这一方有“消息”要上报。当 PHY 锁定一个到来的 PPDU 并成功解出其 PHY 头时，它向上给 MAC 发出 PHY-RXSTART.indication——“有一帧正在到达”。随后它把帧体逐字节向上递交，每个字节对应一个 PHY-DATA.indication；当整个 PPDU 接收完毕时，再发出 PHY-RXEND.indication。请注意接收侧没有“request”：MAC 并没有主动索取这一帧，所以 PHY 只是把情况“指示”给它。这种不对称——发送时 request/confirm 向下、接收时 indication 向上——正是第 1 课 RICI 语法的具体落地。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant MAC as MAC sublayer\n    participant PHY as PHY\n    Note over MAC,PHY: TRANSMIT one PPDU\n    MAC->>PHY: PHY-TXSTART.request(TXVECTOR)\n    PHY-->>MAC: PHY-TXSTART.confirm(TXSTATUS)\n    loop each octet of the PSDU\n        MAC->>PHY: PHY-DATA.request(DATA)\n        PHY-->>MAC: PHY-DATA.confirm\n    end\n    MAC->>PHY: PHY-TXEND.request\n    PHY-->>MAC: PHY-TXEND.confirm\n    Note over MAC,PHY: RECEIVE one PPDU (mirror)\n    PHY->>MAC: PHY-RXSTART.indication(RXVECTOR)\n    loop each received octet\n        PHY->>MAC: PHY-DATA.indication(DATA)\n    end\n    PHY->>MAC: PHY-RXEND.indication(RXERROR, RCPI)",
+      "zh": "sequenceDiagram\n    participant MAC as MAC 子层\n    participant PHY as PHY\n    Note over MAC,PHY: 发送一个 PPDU\n    MAC->>PHY: PHY-TXSTART.request(TXVECTOR)\n    PHY-->>MAC: PHY-TXSTART.confirm(TXSTATUS)\n    loop PSDU 的每个字节\n        MAC->>PHY: PHY-DATA.request(DATA)\n        PHY-->>MAC: PHY-DATA.confirm\n    end\n    MAC->>PHY: PHY-TXEND.request\n    PHY-->>MAC: PHY-TXEND.confirm\n    Note over MAC,PHY: 接收一个 PPDU（镜像）\n    PHY->>MAC: PHY-RXSTART.indication(RXVECTOR)\n    loop每个收到的字节\n        PHY->>MAC: PHY-DATA.indication(DATA)\n    end\n    PHY->>MAC: PHY-RXEND.indication(RXERROR, RCPI)"
+    },
+    {
+      "type": "prose",
+      "en": "The real cleverness lives in the parameter bundles carried at the boundary. PHY-TXSTART.request doesn't just say 'send' — it hands down a TXVECTOR, a list of per-PPDU knobs that tell the PHY exactly how to format this transmission: the data rate (or MCS), the LENGTH, the channel bandwidth, the format/preamble, transmit power, and more. Coming back the other way, PHY-RXSTART.indication hands up an RXVECTOR: the PHY's report of what it actually measured on the inbound frame — the rate it decoded, the LENGTH it read from the header, and link-quality figures. The TXVECTOR is the order; the RXVECTOR is the receipt.",
+      "zh": "真正巧妙之处在于边界上携带的参数“包”。PHY-TXSTART.request 并不只是说“发送”——它把一个 TXVECTOR 一并下交，这是一份针对本次 PPDU 的“旋钮清单”，告诉 PHY 究竟该如何格式化这次发送：数据速率（或 MCS）、LENGTH（长度）、信道带宽、格式/前导（preamble）、发射功率等等。反方向上，PHY-RXSTART.indication 则上交一个 RXVECTOR：这是 PHY 对到来帧实际测量结果的汇报——它解出的速率、它从 PHY 头读到的 LENGTH，以及链路质量指标。可以说 TXVECTOR 是“下单”，RXVECTOR 是“回执”。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "This is why one MAC can drive any PHY generation. The standard defines a minimum set of vector parameters (DATARATE, LENGTH …), but the vector is deliberately extensible: an HT, VHT, or HE PHY simply replaces DATARATE with richer fields like MCS, CH_BANDWIDTH, NUM_STS, RU_ALLOCATION, GI_TYPE. The MAC fills in the same conceptual 'blanks'; the PHY interprets them per its own generation. The PHY-SAP contract stays fixed while the silicon underneath evolves from 802.11n to 802.11be and beyond.",
+      "zh": "正因如此，同一个 MAC 才能驱动任意一代 PHY。标准定义了一组最小向量参数（DATARATE、LENGTH……），但向量是有意设计成可扩展的：HT、VHT 或 HE PHY 只需把 DATARATE 替换为更丰富的字段，如 MCS、CH_BANDWIDTH、NUM_STS、RU_ALLOCATION、GI_TYPE。MAC 填写的始终是同一套概念上的“空格”，而 PHY 则按自己这一代的规则去解读它们。于是 PHY-SAP 这份“契约”保持不变，而底层硅片却可以从 802.11n 一路演进到 802.11be 乃至更远。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 420 220' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='20' y='20' width='160' height='40' rx='4'/><text x='100' y='45' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>MAC sublayer</text><rect x='20' y='160' width='160' height='40' rx='4'/><text x='100' y='185' fill='currentColor' stroke='none' font-size='13' text-anchor='middle'>PHY</text><line x1='100' y1='60' x2='100' y2='160' stroke-dasharray='4 3'/><text x='100' y='112' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>PHY-SAP</text><line x1='240' y1='70' x2='240' y2='150' marker-end='url(#a)'/><rect x='250' y='60' width='150' height='34' rx='4'/><text x='325' y='81' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>TXVECTOR (down)</text><text x='160' y='95' fill='currentColor' stroke='none' font-size='9'>req</text><line x1='270' y1='150' x2='270' y2='70' marker-end='url(#a)'/><rect x='250' y='126' width='150' height='34' rx='4'/><text x='325' y='147' fill='currentColor' stroke='none' font-size='11' text-anchor='middle'>RXVECTOR (up)</text><defs><marker id='a' markerWidth='8' markerHeight='8' refX='4' refY='4' orient='auto'><path d='M0,0 L8,4 L0,8 Z' fill='currentColor' stroke='none'/></marker></defs></svg>",
+      "caption": {
+        "en": "The TXVECTOR rides down with PHY-TXSTART.request to tell the PHY how to send; the RXVECTOR rides up with PHY-RXSTART.indication to report what the PHY received. Same SAP, opposite directions.",
+        "zh": "TXVECTOR 随 PHY-TXSTART.request 向下，告诉 PHY 如何发送；RXVECTOR 随 PHY-RXSTART.indication 向上，汇报 PHY 收到了什么。同一个 SAP，方向相反。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact primitives, their parameters, and the byte-by-byte ordering rules",
+        "zh": "精确的原语、参数与逐字节的次序规则"
+      },
+      "en": "8.3.5.5 defines PHY-TXSTART.request(TXVECTOR) as the MAC's request to begin transmitting a PSDU, with TXVECTOR's minimum parameters listed in 8.3.4.4. 8.3.5.2 specifies PHY-DATA.request(DATA, ...) carrying one octet X'00'–X'FF', and is explicit that it 'can be issued only following a transmit initialization response (a PHY-TXSTART.confirm)'; the PHY answers each with a PHY-DATA.confirm (8.3.5.4), whose receipt lets the MAC start the next request. 8.3.5.7 says PHY-TXEND.request is generated only after the MAC has received the last PHY-DATA.confirm for the current PSDU. On receive, 8.3.5.14 defines PHY-RXSTART.indication(RXVECTOR), generated only once the PHY has validated the PHY header and determined the PPDU format; 8.3.5.3 carries each received octet up via PHY-DATA.indication; and 8.3.5.15 defines PHY-RXEND.indication(RXERROR, RCPI), where RXERROR is NoError or one of FormatViolation, CarrierLost, UnsupportedRate, Filtered, IntegrityCheckError. 8.3.4.4 (Table 8-4) anchors the vectors: DATARATE and LENGTH are the PHY-dependent minimums for both TXVECTOR and RXVECTOR, and the text notes HT/VHT/HE PHYs replace DATARATE with MCS, CH_BANDWIDTH, NUM_STS, RU_ALLOCATION, GI_TYPE, etc. 8.3.4.3 (Table 8-3) is the parameter catalogue tying each parameter (DATA, TXVECTOR, RXVECTOR, RCPI, RXERROR ...) to its associated primitive.",
+      "zh": "8.3.5.5 将 PHY-TXSTART.request(TXVECTOR) 定义为 MAC 请求开始发送一个 PSDU，其 TXVECTOR 的最小参数列于 8.3.4.4。8.3.5.2 规定 PHY-DATA.request(DATA, ...) 携带一个取值为 X'00'–X'FF' 的字节，并明确指出它“只能在收到发送初始化响应（即 PHY-TXSTART.confirm）之后才能发出”；PHY 对每个字节都回以一个 PHY-DATA.confirm（8.3.5.4），MAC 收到该确认后方可开始下一个请求。8.3.5.7 指出 PHY-TXEND.request 只有在 MAC 收到当前 PSDU 的最后一个 PHY-DATA.confirm 之后才会产生。接收侧，8.3.5.14 定义 PHY-RXSTART.indication(RXVECTOR)，仅当 PHY 校验通过 PHY 头并确定 PPDU 格式后才产生；8.3.5.3 通过 PHY-DATA.indication 把每个收到的字节向上递交；8.3.5.15 定义 PHY-RXEND.indication(RXERROR, RCPI)，其中 RXERROR 取 NoError，或 FormatViolation、CarrierLost、UnsupportedRate、Filtered、IntegrityCheckError 之一。8.3.4.4（表 8-4）锚定了向量：DATARATE 与 LENGTH 是 TXVECTOR 和 RXVECTOR 共同的、依 PHY 而定的最小参数，文中并指出 HT/VHT/HE PHY 会用 MCS、CH_BANDWIDTH、NUM_STS、RU_ALLOCATION、GI_TYPE 等替换 DATARATE。8.3.4.3（表 8-3）则是参数目录，把每个参数（DATA、TXVECTOR、RXVECTOR、RCPI、RXERROR……）与其所属原语一一对应。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          636,
+          638,
+          639,
+          640,
+          641,
+          652,
+          653
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:8.3.5.2",
+    "80211-2024:8.3.5.3",
+    "80211-2024:8.3.5.5",
+    "80211-2024:8.3.5.7",
+    "80211-2024:8.3.5.14",
+    "80211-2024:8.3.5.15",
+    "80211-2024:8.3.4.4",
+    "80211-2024:8.3.4.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        636,
+        637
+      ],
+      "note": "8.3.4.2-8.3.4.4 Tables 8-2/8-3/8-4 — PHY SAP primitives, parameters, and vector descriptions (DATARATE, LENGTH; HT/VHT/HE replace DATARATE with MCS, CH_BANDWIDTH, NUM_STS, RU_ALLOCATION, GI_TYPE)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        638,
+        639,
+        640,
+        641
+      ],
+      "note": "8.3.5.2-8.3.5.7 — PHY-DATA.request/confirm, PHY-TXSTART.request/confirm, PHY-TXEND.request; transmit ordering rules"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        652,
+        653
+      ],
+      "note": "8.3.5.14-8.3.5.15 — PHY-RXSTART.indication(RXVECTOR), PHY-RXEND.indication(RXERROR, RCPI)"
+    }
+  ],
+  "track": "phy-service"
+}
