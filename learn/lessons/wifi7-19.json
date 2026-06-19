@@ -1,0 +1,162 @@
+{
+  "id": "wifi7-19",
+  "title": {
+    "en": "EHT PHY Subcarrier Geometry: RU/MRU Tables, Tone Plans, and the Transmitted-Signal Math",
+    "zh": "EHT 物理层子载波几何：RU/MRU 完整表、音调分布与发射信号数学"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A Wi-Fi 7 transmission is really just energy painted onto a comb of evenly spaced frequencies called subcarriers (or tones). The EHT PHY uses exactly the same tone spacing as Wi-Fi 6 — only the channels got wider, up to 320 MHz. The whole job of this lesson is to answer one question: given a slice of spectrum, where does every tone live, what is it for, and how do those frequency-domain tones become the real waveform that leaves the antenna? Get this map straight and the rest of the PHY stops feeling like alphabet soup.",
+      "zh": "一次 Wi-Fi 7 的发射，本质上就是把能量绘制到一排等间距的频率上，这些频率被称为子载波（或音调，tone）。EHT 物理层使用的音调间距与 Wi-Fi 6 完全相同——只是信道变宽了，最高可达 320 MHz。本课的全部任务就是回答一个问题：给定一段频谱，每一个音调位于哪里、用途是什么，以及这些频域上的音调如何变成真正从天线发出的波形？把这张地图理清楚，物理层的其余部分就不再像一锅“字母汤”那样难懂了。"
+    },
+    {
+      "type": "prose",
+      "en": "Tones are grouped into Resource Units (RUs) — the chunks an AP hands out in OFDMA. EHT defines RU sizes of 26, 52, 106, 242, 484, 996, 2x996, and (for 320 MHz) 4x996 tones. The standard pins down every RU's exact subcarrier index range in three master tables: one for 80 MHz, one for 160 MHz, and one for 320 MHz. Index 0 is the DC tone at channel center; negative indices sit below it in frequency, positive above. For example, in an 80 MHz PPDU the very first 26-tone RU occupies indices -499 to -474, while the single 996-tone RU that fills the whole 80 MHz spans -500 to -3 and 3 to 500 (skipping the DC notch).",
+      "zh": "音调被分组为资源单元（RU，Resource Unit）——这是 AP 在 OFDMA 中分发的“份额”。EHT 定义的 RU 尺寸有 26、52、106、242、484、996、2x996，以及（用于 320 MHz 的）4x996 个音调。标准在三张主表里精确钉死了每个 RU 的子载波索引范围：80 MHz 一张、160 MHz 一张、320 MHz 一张。索引 0 是位于信道中心的 DC 音调；负索引在它下方（频率更低），正索引在上方。举例来说，在一个 80 MHz PPDU 中，第一个 26 音调 RU 占据索引 -499 到 -474，而填满整个 80 MHz 的那个 996 音调 RU 则横跨 -500 到 -3 与 3 到 500（跳过中央的 DC 缺口）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 480 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><line x1='20' y1='110' x2='460' y2='110'/><line x1='240' y1='95' x2='240' y2='125' stroke-dasharray='3 3'/><text x='240' y='140' font-size='10' text-anchor='middle' stroke='none' fill='currentColor'>DC (idx 0)</text><text x='24' y='140' font-size='10' stroke='none' fill='currentColor'>-500</text><text x='436' y='140' font-size='10' stroke='none' fill='currentColor'>+500</text><rect x='22' y='80' width='100' height='25'/><text x='72' y='97' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>106</text><rect x='124' y='80' width='24' height='25'/><text x='136' y='97' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>26</text><rect x='150' y='80' width='86' height='25'/><text x='193' y='97' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>242</text><rect x='244' y='80' width='86' height='25'/><text x='287' y='97' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>242</text><rect x='332' y='80' width='24' height='25'/><text x='344' y='97' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>26</text><rect x='358' y='80' width='100' height='25'/><text x='408' y='97' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>106</text><text x='240' y='35' font-size='11' text-anchor='middle' stroke='none' fill='currentColor'>One 80 MHz PPDU = 996 tones</text><text x='240' y='55' font-size='9' text-anchor='middle' stroke='none' fill='currentColor'>subdivided into smaller RUs (sizes shown), or used whole as a 996-RU</text></svg>",
+      "caption": {
+        "en": "An 80 MHz EHT PPDU spans index -500..+500 around a DC notch. It can be one 996-tone RU, or carved into smaller RUs (26/52/106/242/484) whose index ranges are fixed by Table 36-5. 160 and 320 MHz PPDUs are built from 2 and 4 of these 80 MHz subblocks.",
+        "zh": "一个 80 MHz EHT PPDU 在中央 DC 缺口两侧横跨索引 -500 至 +500。它可以是单个 996 音调 RU，也可以被切分为更小的 RU（26/52/106/242/484），其索引范围由表 36-5 固定。160 MHz 与 320 MHz 的 PPDU 则由 2 个和 4 个这样的 80 MHz 子块拼成。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "When one RU isn't the right shape, EHT lets an AP staple several RUs together into a Multi-RU (MRU). The rules are tidy: small RUs (smaller than 242 tones) only combine with small ones (52+26, 106+26), and large RUs (242 and up) only combine with large ones (484+242, 996+484, 2x996+484, 3x996, and more). Large MRUs exist mainly to recover throughput when part of the band is punctured (skipped to dodge interference): if a 40 MHz subchannel of a 160 MHz channel is punctured, the remaining 996+484 tones can still be glued into one MRU. The data and pilot tones of an MRU are simply the union of its component RUs' tones.",
+      "zh": "当单个 RU 的形状不合适时，EHT 允许 AP 把多个 RU 拼接成一个多资源单元（MRU，Multi-RU）。规则很清爽：小 RU（小于 242 音调）只能与小 RU 组合（52+26、106+26），大 RU（242 及以上）只能与大 RU 组合（484+242、996+484、2x996+484、3x996 等）。大 MRU 的存在主要是为了在频段部分被打孔（puncturing，即为躲避干扰而跳过某段）时恢复吞吐：如果一个 160 MHz 信道里有 40 MHz 子信道被打孔，剩下的 996+484 音调仍可粘成一个 MRU。MRU 的数据与导频音调，就是其各组成 RU 音调的并集。"
+    },
+    {
+      "type": "prose",
+      "en": "Not every tone carries payload. Three kinds sit idle on purpose. DC subcarriers around index 0 are zeroed to dodge transmitter LO leakage and receiver DC offset. Guard subcarriers at the band edges taper the spectrum so it doesn't splatter into neighbors. Null subcarriers sit near DC and edges to shield RUs from each other — Table 36-16 lists them for 80/160/320 MHz (e.g. +/-510 to +/-514 inside a 160 MHz channel). Scattered among the data tones are pilot subcarriers, known reference symbols the receiver uses to track residual phase and frequency drift across an OFDM symbol.",
+      "zh": "并非每个音调都承载有效载荷，有三类音调是有意闲置的。围绕索引 0 的 DC 子载波被置零，用以规避发射机本振泄漏和接收机直流偏置。位于频段边缘的保护（guard）子载波让频谱平滑收尾，避免溢出干扰邻信道。空（null）子载波位于 DC 与边缘附近，用来把相邻 RU 彼此隔开——表 36-16 列出了 80/160/320 MHz 的取值（例如 160 MHz 信道内的 ±510 到 ±514）。散布在数据音调之间的是导频（pilot）子载波，它们是已知的参考符号，接收机用它们来跟踪一个 OFDM 符号内的残余相位与频率漂移。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A neat trick lets a narrow STA join a wide party. A 20 MHz-only client can still be assigned a small RU inside a 40/80/160/320 MHz OFDMA PPDU, and an 80 or 160 MHz client can take an RU inside a 320 MHz transmission — as long as the RU falls within the STA's own operating channel. The pre-EHT preamble is even designed so a STA only has to decode the one 80 MHz subblock it lives in to find its assignment, never the whole 320 MHz.",
+      "zh": "一个巧妙的设计让“窄带”站点也能加入“宽带”聚会。一个仅支持 20 MHz 的客户端，仍可在 40/80/160/320 MHz 的 OFDMA PPDU 中被分配到一个小 RU；80 MHz 或 160 MHz 的客户端也能在 320 MHz 发射中取得一个 RU——前提是该 RU 落在该站点自身的工作信道之内。前导（pre-EHT preamble）的设计甚至确保：站点只需解码它所处的那一个 80 MHz 子块，就能找到属于自己的分配信息，而无需处理整个 320 MHz。"
+    },
+    {
+      "type": "prose",
+      "en": "There's also a degenerate, robust mode worth naming: EHT DUP (duplicate). Used only in 6 GHz for a single-user transmission, it BPSK-DCM-modulates the lower half of the band and copies it (with a partial sign flip to tame the peak-to-average ratio) onto the upper half. So an 80 MHz DUP PPDU is really two 484-tone RUs carrying identical data, a 160 MHz DUP is two 996-tone halves, and a 320 MHz DUP is two 2x996 halves — trading data rate for range and reliability when reaching a far client matters more than speed.",
+      "zh": "还有一种值得一提的“退化但稳健”的模式：EHT DUP（duplicate，复制）。它仅用于 6 GHz 频段的单用户发射，先对频段下半部分做 BPSK-DCM 调制，再把它复制（并做部分符号翻转以抑制峰均比 PAPR）到上半部分。因此一个 80 MHz 的 DUP PPDU 实际上是两个携带相同数据的 484 音调 RU，160 MHz 的 DUP 是上下两个 996 音调半区，320 MHz 的 DUP 则是两个 2x996 半区——当“够到远处的客户端”比速度更重要时，它以数据率换取覆盖距离与可靠性。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[Frequency-domain symbols X for each tone k] --> B[Pick used tone set Kr: skip DC, guard, null]\n    B --> C[Apply spatial mapping Q, phase rotation, power norm]\n    C --> D[Inverse Fourier transform sum over k in Kr]\n    D --> E[Add cyclic prefix / guard interval per field]\n    E --> F[Sum all fields: L-STF ... EHT-LTF, Data, PE]\n    F --> G[Upconvert: multiply by exp j2 pi fc t]\n    G --> H[Real part = transmitted RF signal on chain iTX]",
+      "zh": "flowchart TD\n    A[每个音调 k 的频域符号 X] --> B[选取在用音调集合 Kr：跳过 DC、保护、空子载波]\n    B --> C[施加空间映射 Q、相位旋转、功率归一化]\n    C --> D[做逆傅里叶变换：对 k 属于 Kr 求和]\n    D --> E[为每个字段加循环前缀 / 保护间隔]\n    E --> F[累加所有字段：L-STF ... EHT-LTF、Data、PE]\n    F --> G[上变频：乘以 exp j2 pi fc t]\n    G --> H[取实部 = 发射链 iTX 上发出的射频信号]"
+    },
+    {
+      "type": "prose",
+      "en": "Now the punchline — turning that frequency map into a real signal. First the standard fixes which indices are actually used: an 80 MHz non-OFDMA PPDU uses -500..-3 and 3..500; 160 and 320 MHz just replicate the 80 MHz pattern with a fixed index shift per 80 MHz subblock. Second it fixes the center frequency fc from the channel index. Then the baseband waveform of any field is an inverse Fourier transform: sum over the used tones k of (spatial-mapped, phase-rotated, power-normalized) symbol X times exp(j2 pi k dF (t - guard - cyclic shift)). The whole PPDU is the time-staggered sum of every field's waveform, and the real transmitted RF signal is just Re{ baseband x exp(j2 pi fc t) }.",
+      "zh": "现在是关键之处——把那张频率地图变成真实信号。首先，标准固定了哪些索引真正被使用：一个 80 MHz 的非 OFDMA PPDU 使用 -500 至 -3 与 3 至 500；160 MHz 和 320 MHz 只是把这套 80 MHz 模式按每个 80 MHz 子块做固定的索引平移后复制。其次，它根据信道索引固定了中心频率 fc。然后，任何字段的基带波形都是一次逆傅里叶变换：对在用音调 k 求和，每一项是（经空间映射、相位旋转、功率归一化的）符号 X 乘以 exp(j2 pi k dF (t - 保护间隔 - 循环移位))。整个 PPDU 就是各字段波形在时间上错位叠加之和；而真正发射的射频信号，不过是 Re{ 基带信号 x exp(j2 pi fc t) }。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact subcarrier set, channel-frequency relations, and the transmitted-signal equations",
+        "zh": "精确的子载波集合、信道频率关系与发射信号方程"
+      },
+      "en": "Clause 36.3.11.2 fixes the used indices per bandwidth: 20 MHz non-OFDMA uses -122..-2 and 2..122; 40 MHz uses -244..-3 and 3..244; 80 MHz non-OFDMA (non-DUP) uses -500..-3 and 3..500, while 80 MHz DUP/OFDMA uses -500..-259, -253..-12, 12..253, 259..500; 160/320 MHz replicate the 80 MHz set with an index shift per 80 MHz subblock. Clause 36.3.11.3 derives the center frequency: f_CH,start = dot11ChannelStartingFactor x 500 kHz, and fc = f_CH,start + 5 x f(0) MHz where f(0) chains down from dot11EHTCurrentChannelCenterFrequencyIndex0 through the primary 20/40/80/160 MHz indices (Equations 36-1..36-6; the 320 MHz primary/secondary 160 MHz centers come from Equations 36-5/36-6). Clause 36.3.11.4 gives the transmitted signal: rRF_iTX(t) = Re{ rPPDU_iTX(t) x exp(j2 pi fc t) } (Eq 36-7); rPPDU is the time-offset sum of all field waveforms (Eq 36-8); and each field/subfield is an IDFT over k in Kr of Q[iTX,m] x gamma_k,BW x X_k,r,u,m x exp(j2 pi k dF_Field (t - TGI - TCS - Mr,u(m))) scaled by a power-normalization factor N_norm,r (Eqs 36-9/36-10/36-11), with the EHT-modulated-field subcarrier spacing dF_EHT being the HE value and per-tone power held equal across 1x/2x/4x EHT-LTF.",
+      "zh": "36.3.11.2 节按带宽固定了在用索引：20 MHz 非 OFDMA 用 -122 至 -2 与 2 至 122；40 MHz 用 -244 至 -3 与 3 至 244；80 MHz 非 OFDMA（非 DUP）用 -500 至 -3 与 3 至 500，而 80 MHz 的 DUP/OFDMA 则用 -500 至 -259、-253 至 -12、12 至 253、259 至 500；160/320 MHz 把这套 80 MHz 集合按每个 80 MHz 子块做索引平移后复制。36.3.11.3 节推导中心频率：f_CH,start = dot11ChannelStartingFactor x 500 kHz，且 fc = f_CH,start + 5 x f(0) MHz，其中 f(0) 由 dot11EHTCurrentChannelCenterFrequencyIndex0 沿主 20/40/80/160 MHz 索引逐级推导（式 36-1 至 36-6；320 MHz 的主/次 160 MHz 中心来自式 36-5/36-6）。36.3.11.4 节给出发射信号：rRF_iTX(t) = Re{ rPPDU_iTX(t) x exp(j2 pi fc t) }（式 36-7）；rPPDU 是各字段波形按时间偏移之和（式 36-8）；每个字段/子字段都是对 k 属于 Kr 的一次逆离散傅里叶变换：Q[iTX,m] x gamma_k,BW x X_k,r,u,m x exp(j2 pi k dF_Field (t - TGI - TCS - Mr,u(m)))，再乘以功率归一化因子 N_norm,r（式 36-9/36-10/36-11）；其中 EHT 调制字段的子载波间距 dF_EHT 取 HE 取值，且每音调功率在 1x/2x/4x EHT-LTF 之间保持相等。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          742,
+          743,
+          744,
+          745,
+          746,
+          747
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:36.3.2.1",
+    "80211be-2024:36.3.2.2",
+    "80211be-2024:36.3.2.3",
+    "80211be-2024:36.3.2.4",
+    "80211be-2024:36.3.2.5",
+    "80211be-2024:36.3.2.6",
+    "80211be-2024:36.3.2.7",
+    "80211be-2024:36.3.2.8",
+    "80211be-2024:36.3.5",
+    "80211be-2024:36.3.11.2",
+    "80211be-2024:36.3.11.3",
+    "80211be-2024:36.3.11.4"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        687,
+        688,
+        689,
+        690,
+        691,
+        692,
+        693,
+        694
+      ],
+      "note": "36.3.2.1 Subcarriers and resource allocation in EHT PPDUs; Tables 36-5/36-6/36-7 RU subcarrier indices for 80/160/320 MHz (26 up to 4x996 tones); DC tone at index 0"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        694,
+        695,
+        704,
+        705,
+        706,
+        707,
+        708,
+        709
+      ],
+      "note": "36.3.2.2 Multi-RU: small MRUs (52+26, 106+26) and large MRUs (484+242, 996+484, 996+484+242, 2x996+484, 3x996, 3x996+484); union of component RU tones"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        714,
+        715
+      ],
+      "note": "36.3.2.3 Null subcarriers near DC/edges (Table 36-16, 80/160/320 MHz); 36.3.2.4 pilot subcarriers in Data and EHT-LTF fields"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        715,
+        716,
+        717,
+        718
+      ],
+      "note": "36.3.2.5-36.3.2.8 20/80/160 MHz operating non-AP EHT STAs participating in wider-bandwidth OFDMA, and RU/MRU restrictions for 20 MHz operation"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        723
+      ],
+      "note": "36.3.5 EHT DUP transmission: 6 GHz, SU only, lower 484/996/2x996-tone RU duplicated to upper half with partial sign change (BPSK-DCM, rate-1/2 LDPC)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        742,
+        743,
+        744,
+        745,
+        746,
+        747
+      ],
+      "note": "36.3.11.2 subcarrier indices in use; 36.3.11.3 channel frequencies (Eqs 36-1..36-6); 36.3.11.4 transmitted signal (Eqs 36-7..36-11)"
+    }
+  ],
+  "track": "wifi7-eht"
+}

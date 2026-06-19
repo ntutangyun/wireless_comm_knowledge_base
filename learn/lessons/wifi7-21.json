@@ -1,0 +1,151 @@
+{
+  "id": "wifi7-21",
+  "title": {
+    "en": "The EHT Data Field Coding Chain: Scrambler to OFDM, LDPC/BCC, Stream & Segment Parsing, and DCM",
+    "zh": "EHT 数据字段编码链路：从加扰到 OFDM——LDPC/BCC、流与分段解析及 DCM"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Once a Wi-Fi 7 transmitter knows what bits to send, it cannot just dump them onto the air. Those raw PSDU bits have to flow through a long assembly line — the EHT Data field processing chain — before they become an OFDM waveform. Each station along the line does one job: randomise the bits, add error-correction, split them across antennas and frequency segments, map them to constellation points, scatter them across tones, and finally modulate them. This lesson walks one bitstream down that line and asks, at each stage, why that block exists.",
+      "zh": "当 Wi-Fi 7 发射机确定了要发送哪些比特后，它并不能直接把这些比特倾倒到空口上。这些原始的 PSDU 比特必须先流经一条很长的“流水线”——也就是 EHT 数据字段处理链路——才能变成 OFDM 波形。流水线上的每一个工位都只做一件事：把比特随机化、加上纠错编码、在多根天线与多个频率分段之间拆分、映射到星座点、打散到各个子载波上，最后完成调制。本课就跟随一条比特流走完这条流水线，并在每一站追问：这个模块为什么存在。"
+    },
+    {
+      "type": "prose",
+      "en": "First stop: the SERVICE field and the scrambler. The Data field is assembled as SERVICE + PSDU + Tail (only if BCC is used) + pre-FEC padding, then scrambled with a length-2047 PPDU-synchronous scrambler whose generator polynomial is x^11 + x^9 + 1. Scrambling breaks up long runs of identical bits so the signal does not develop strong spectral lines or starve the receiver's clock recovery. The 11 scrambler-initialisation bits sit in the SERVICE field (B0-B10) and are set to a pseudorandom nonzero state; the receiver re-derives them from the LSBs of the scrambled SERVICE field. The same shift-register both scrambles on transmit and descrambles on receive.",
+      "zh": "第一站：SERVICE 字段与加扰器。数据字段按 SERVICE + PSDU + 尾比特（仅当使用 BCC 时）+ 前向纠错前填充（pre-FEC padding）的顺序拼装，随后由一个长度为 2047 的 PPDU 同步加扰器进行加扰，其生成多项式为 x^11 + x^9 + 1。加扰会打断长串相同的比特，避免信号产生强烈的频谱线，也避免接收端的时钟恢复“饿死”。11 个加扰器初始化比特位于 SERVICE 字段（B0-B10），被置为一个伪随机的非零状态；接收端则从加扰后 SERVICE 字段的低位比特中重新推算出它们。同一个移位寄存器在发送时负责加扰、在接收时负责解扰。"
+    },
+    {
+      "type": "prose",
+      "en": "Next is forward error correction, and EHT offers two coders. BCC (binary convolutional coding) is the lightweight legacy option: it is only allowed for RUs/MRUs of 242 tones or fewer, up to four spatial streams, and EHT-MCS 0-9 (plus MCS 15). LDPC (low-density parity-check) is the heavy-duty coder, and it is the ONLY choice once you go above 242 tones or use EHT-MCS 10-14 — exactly the wide-channel, high-order-modulation cases where Wi-Fi 7 earns its 'extremely high throughput' name. After coding, a two-step padding process (pre-FEC then post-FEC) fills the last OFDM symbol cleanly so the encoder and the symbol grid line up.",
+      "zh": "下一站是前向纠错，EHT 提供了两种编码器。BCC（二进制卷积编码）是轻量级的传统选项：它只允许用于不超过 242 子载波的 RU/MRU、最多 4 条空间流，以及 EHT-MCS 0-9（外加 MCS 15）。LDPC（低密度奇偶校验码）则是重型编码器，一旦超过 242 子载波，或使用 EHT-MCS 10-14，它就是唯一选择——而这些正是宽信道、高阶调制的场景，也正是 Wi-Fi 7 当之无愧“极高吞吐量”之名的地方。编码之后，一个两步填充过程（先 pre-FEC、后 post-FEC）会把最后一个 OFDM 符号干净地填满，让编码器与符号网格对齐。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n    A[SERVICE + PSDU + Tail + pad] --> B[Scrambler<br/>x11+x9+1]\n    B --> C{Coding}\n    C -->|LDPC >242 tones<br/>MCS 10-14| D[Stream parser]\n    C -->|BCC <=242 tones| D\n    D --> E[Segment parser<br/>per 80 MHz subblock]\n    E --> F[BCC interleaver<br/>BCC only]\n    F --> G[Constellation mapper<br/>up to 4096-QAM]\n    G --> H[LDPC tone mapper<br/>LDPC only]\n    H --> I[Segment deparser]\n    I --> J[Freq-domain dup<br/>MCS 14 only]\n    J --> K[Add pilots]\n    K --> L[OFDM modulation]\n    L --> M[Packet extension]",
+      "zh": "flowchart LR\n    A[SERVICE + PSDU + 尾比特 + 填充] --> B[加扰器<br/>x11+x9+1]\n    B --> C{编码}\n    C -->|LDPC >242 子载波<br/>MCS 10-14| D[流解析器]\n    C -->|BCC <=242 子载波| D\n    D --> E[分段解析器<br/>按 80 MHz 子块]\n    E --> F[BCC 交织器<br/>仅 BCC]\n    F --> G[星座映射<br/>最高 4096-QAM]\n    G --> H[LDPC 子载波映射器<br/>仅 LDPC]\n    H --> I[分段反解析器]\n    I --> J[频域复制<br/>仅 MCS 14]\n    J --> K[插入导频]\n    K --> L[OFDM 调制]\n    L --> M[包扩展]"
+    },
+    {
+      "type": "prose",
+      "en": "Now the bitstream gets split twice. The stream parser fans the coded bits out across the spatial streams — this is how a multi-antenna link sends different bits over different MIMO layers at the same time. Then the segment parser does a frequency split: for very wide allocations (the 2x996-, 3x996-, 4x996-tone and similar MRUs) it carves the stream into one block per 80 MHz frequency subblock using a proportional round-robin parser, distributing bits roughly in proportion to how many data tones each subblock holds. Smaller RUs/MRUs (up to 996 tones) skip the segment parser entirely — there is nothing wide to split.",
+      "zh": "现在比特流要被拆分两次。流解析器把编码后的比特扇出到各条空间流上——这正是多天线链路得以在同一时刻、通过不同 MIMO 层发送不同比特的方式。接着分段解析器做的是频率维度的拆分：对于非常宽的分配（2×996、3×996、4×996 子载波等 MRU），它用一个“比例轮询解析器”把比特流切成每个 80 MHz 频率子块一块，并按各子块所含数据子载波数量大致成比例地分配比特。较小的 RU/MRU（不超过 996 子载波）则完全跳过分段解析器——没有那么宽的东西需要拆分。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why two coders and two parsers? It is all about scale. Narrow RUs with simple modulation can ride cheap BCC and need no frequency splitting. But to push 4096-QAM across a 320 MHz channel, you need LDPC's stronger codes, MIMO spreading, and per-80-MHz segment processing — so the chain branches and the heavy machinery only switches on when the allocation actually demands it.",
+      "zh": "为什么要有两种编码器、两种解析器？一切都与“规模”有关。窄 RU 配上简单调制，用廉价的 BCC 即可，也无需做频率拆分。但若要在 320 MHz 信道上推送 4096-QAM，就需要 LDPC 更强的纠错码、MIMO 展开以及按 80 MHz 进行的分段处理——于是链路在此分叉，只有当分配确实有此需求时，这些“重型机械”才会启动。"
+    },
+    {
+      "type": "prose",
+      "en": "After the split, bits become symbols. For BCC streams a block interleaver shuffles the coded bits so that a burst of channel errors lands on non-adjacent code bits — convolutional codes hate clustered errors, and interleaving spreads them out. The constellation mapper then turns bit groups into complex I/Q points; Wi-Fi 7 adds 4096-QAM, where each point packs 12 bits (six choose the I value, six the Q value). For LDPC streams, an LDPC tone mapper permutes those symbols across the subcarriers by a fixed tone-mapping distance, so a deep notch in the channel does not wipe out a whole codeword — it is frequency interleaving for the LDPC path.",
+      "zh": "拆分之后，比特变成符号。对于 BCC 流，块交织器会打乱编码后的比特，使得信道上一阵突发错误落在彼此不相邻的码比特上——卷积码最怕错误扎堆，交织恰好把它们分散开。随后星座映射器把比特分组转换成复数 I/Q 点；Wi-Fi 7 新增了 4096-QAM，其中每个点携带 12 个比特（6 个决定 I 值，6 个决定 Q 值）。对于 LDPC 流，LDPC 子载波映射器按固定的子载波映射距离把这些符号在各子载波间重排，这样信道中的一个深陷落（深衰落）就不会抹掉整个码字——这相当于 LDPC 路径上的频域交织。"
+    },
+    {
+      "type": "prose",
+      "en": "Now reassemble and finish. The segment deparser stitches the per-80-MHz subblocks back into one continuous frequency segment. For the special robustness mode EHT-MCS 14, frequency-domain duplication copies the segment onto a second RU for extra diversity. Pilot subcarriers — known reference tones at fixed indices — are inserted so the receiver can track phase and frequency drift. Finally OFDM modulation lays every data and pilot tone onto its subcarrier and produces the time-domain waveform, with cyclic shifts applied per spatial stream. A Packet Extension field (0, 4, 8, 12, 16, or 20 us) is appended at the very end, buying the receiver extra processing time for the most demanding cases (like 4096-QAM or RUs wider than 2x996 tones).",
+      "zh": "现在重新组装并收尾。分段反解析器把各个 80 MHz 子块重新拼接成一段连续的频率段。对于专门的鲁棒模式 EHT-MCS 14，频域复制会把该频率段复制到第二个 RU 上以获得额外的分集增益。导频子载波——位于固定索引处的已知参考音——被插入进来，使接收端能够跟踪相位与频率漂移。最后，OFDM 调制把每一个数据音与导频音放到各自的子载波上，并对每条空间流施加循环移位，从而生成时域波形。在最末尾还会追加一个包扩展（PE）字段（0、4、8、12、16 或 20 微秒），为最苛刻的场景（如 4096-QAM 或宽于 2×996 子载波的 RU）的接收端争取额外的处理时间。"
+    },
+    {
+      "type": "prose",
+      "en": "One last block deserves a name of its own: dual carrier modulation (DCM). DCM carries the same information on a pair of subcarriers — a built-in frequency diversity that trades data rate for robustness. It is reserved for EHT-MCS 14 and 15 and applies only to BPSK, rate-1/2 coding, single-spatial-stream transmission. It is not a separate stage so much as a mode that re-uses the constellation mapper, LDPC tone mapper, BCC interleaver, and segment parser you just met — which is exactly why it sits at the end of the coding-chain clause as the option you reach for when reaching the cell edge matters more than peak speed.",
+      "zh": "最后还有一个模块值得单独命名：双载波调制（DCM）。DCM 把同一份信息承载在一对子载波上——这是一种内建的频率分集，用数据速率换取鲁棒性。它专用于 EHT-MCS 14 与 15，且仅适用于 BPSK、1/2 码率、单空间流传输。与其说它是一个独立工位，不如说它是一种复用了你刚刚认识的星座映射器、LDPC 子载波映射器、BCC 交织器与分段解析器的“工作模式”——这也正是它出现在编码链路条款末尾的原因：当“能否覆盖到小区边缘”比“峰值速率”更重要时，你就会启用这个选项。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Where each block lives in Clause 36.3.13-36.3.14, and the exact coder/DCM constraints",
+        "zh": "各模块在 36.3.13-36.3.14 条款中的位置，以及编码器与 DCM 的精确约束"
+      },
+      "en": "The chain maps one-to-one onto subclauses 36.3.13.1-36.3.13.13 plus 36.3.14. 36.3.13.1 defines the SERVICE field (Table 36-45: B0-B10 Scrambler Initialization, B11-B15 reserved). 36.3.13.2 specifies the length-2047 PPDU-synchronous scrambler with generator S(x) = x^11 + x^9 + 1 (Figure 36-50); the 11 init bits are set pseudorandom nonzero and the same scrambler descrambles on receive. 36.3.13.3 covers coding: BCC (36.3.13.3.2) is limited to <=4 spatial streams per user, EHT-MCS 0-9 and 15, and RU/MRU <= 242 tones (mandatory at that size); LDPC (36.3.13.3.3) is the only FEC for RU/MRU > 242 tones and for EHT-MCS 10-14. The two-step pre-FEC/post-FEC padding (36.3.13.3.4-36.3.13.3.6) partitions the last OFDM symbol via a pre-FEC padding factor a in {1,2,3,4}. 36.3.13.4 is the stream parser; 36.3.13.5 the segment parser, applied per 80 MHz subblock and only for >=2x996-tone RU/MRU via a proportional round-robin parser (Table 36-49). 36.3.13.6 gives BCC interleaver parameters (BCC only, RU/MRU <= 242 tones); 36.3.13.7 constellation mapping including 4096-QAM (12 bits per point, normalization Kmod = 1/sqrt(2730)); 36.3.13.8 the LDPC tone mapper (distance D_TM per Table 36-52); 36.3.13.9 the segment deparser; 36.3.13.10 frequency-domain duplication (only for EHT-MCS 14, onto a second RU); 36.3.13.11 pilot subcarrier insertion; 36.3.13.12 OFDM modulation (Equation 36-87, with per-stream cyclic shift). 36.3.13.13 states DCM applies to EHT-MCS 14 and 15, only to BPSK, rate-1/2 coding, and single-spatial-stream non-MU-MIMO transmission, reusing the mapper/tone-mapper/interleaver/segment-parser defined earlier. 36.3.14 specifies the Packet Extension field of duration 0/4/8/12/16/20 us, with 20 us allowed only for cases such as 4096-QAM MU PPDUs, 320 MHz PPDUs with an RU/MRU larger than 2x996 tones, or an EHT TB PPDU.",
+      "zh": "整条链路与子条款 36.3.13.1-36.3.13.13 及 36.3.14 一一对应。36.3.13.1 定义 SERVICE 字段（表 36-45：B0-B10 为加扰器初始化，B11-B15 保留）。36.3.13.2 规定长度为 2047 的 PPDU 同步加扰器，生成多项式 S(x) = x^11 + x^9 + 1（图 36-50）；11 个初始化比特置为伪随机非零，且同一加扰器在接收时用于解扰。36.3.13.3 涵盖编码：BCC（36.3.13.3.2）限于每用户 ≤4 条空间流、EHT-MCS 0-9 与 15，以及 RU/MRU ≤ 242 子载波（在该尺寸下为强制）；LDPC（36.3.13.3.3）是 RU/MRU > 242 子载波及 EHT-MCS 10-14 的唯一前向纠错。两步式 pre-FEC/post-FEC 填充（36.3.13.3.4-36.3.13.3.6）通过取值 {1,2,3,4} 的 pre-FEC 填充因子 a 来切分最后一个 OFDM 符号。36.3.13.4 为流解析器；36.3.13.5 为分段解析器，按 80 MHz 子块进行，且仅对 ≥2×996 子载波的 RU/MRU 经由比例轮询解析器执行（表 36-49）。36.3.13.6 给出 BCC 交织器参数（仅 BCC、RU/MRU ≤ 242 子载波）；36.3.13.7 为星座映射，含 4096-QAM（每点 12 比特，归一化因子 Kmod = 1/√2730）；36.3.13.8 为 LDPC 子载波映射器（映射距离 D_TM 见表 36-52）；36.3.13.9 为分段反解析器；36.3.13.10 为频域复制（仅 EHT-MCS 14，复制到第二个 RU）；36.3.13.11 为导频子载波插入；36.3.13.12 为 OFDM 调制（式 36-87，含每流循环移位）。36.3.13.13 指出 DCM 适用于 EHT-MCS 14 与 15，仅适用于 BPSK、1/2 码率以及单空间流的非 MU-MIMO 传输，并复用前述的映射器/子载波映射器/交织器/分段解析器。36.3.14 规定包扩展字段时长为 0/4/8/12/16/20 微秒，其中 20 微秒仅允许用于诸如 4096-QAM MU PPDU、含大于 2×996 子载波 RU/MRU 的 320 MHz PPDU，或 EHT TB PPDU 等情形。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          814,
+          815,
+          816,
+          821,
+          826,
+          827,
+          829,
+          831,
+          838
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:36.3.13.1",
+    "80211be-2024:36.3.13.2",
+    "80211be-2024:36.3.13.3",
+    "80211be-2024:36.3.13.4",
+    "80211be-2024:36.3.13.5",
+    "80211be-2024:36.3.13.6",
+    "80211be-2024:36.3.13.7",
+    "80211be-2024:36.3.13.8",
+    "80211be-2024:36.3.13.9",
+    "80211be-2024:36.3.13.10",
+    "80211be-2024:36.3.13.11",
+    "80211be-2024:36.3.13.12",
+    "80211be-2024:36.3.13.13",
+    "80211be-2024:36.3.14"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        814,
+        815
+      ],
+      "note": "36.3.13.1 SERVICE field (Table 36-45); 36.3.13.2 length-2047 PPDU-synchronous scrambler, S(x)=x^11+x^9+1, Figure 36-50"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        815,
+        816
+      ],
+      "note": "36.3.13.3 Coding: BCC limited to <=242-tone RU/MRU, <=4 SS, EHT-MCS 0-9 & 15; LDPC the only FEC for >242 tones and EHT-MCS 10-14"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        821,
+        822,
+        823
+      ],
+      "note": "36.3.13.4 Stream parser; 36.3.13.5 Segment parser per 80 MHz subblock, proportional round-robin parser (Table 36-49)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        826,
+        827,
+        829
+      ],
+      "note": "36.3.13.6 BCC interleavers; 36.3.13.7 constellation mapping with 4096-QAM (12 bits, Kmod=1/sqrt(2730)) and DCM"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        829,
+        831,
+        832
+      ],
+      "note": "36.3.13.8 LDPC tone mapper (Table 36-52); 36.3.13.9 segment deparser; 36.3.13.10 frequency-domain duplication for EHT-MCS 14"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        833,
+        837,
+        838
+      ],
+      "note": "36.3.13.11 pilot subcarriers; 36.3.13.12 OFDM modulation (Eq 36-87); 36.3.13.13 dual carrier modulation; 36.3.14 packet extension (0-20 us)"
+    }
+  ],
+  "track": "wifi7-eht"
+}

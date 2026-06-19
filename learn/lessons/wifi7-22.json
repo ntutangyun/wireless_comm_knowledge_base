@@ -1,0 +1,154 @@
+{
+  "id": "wifi7-22",
+  "title": {
+    "en": "From EHT-MCS to Microseconds and a Clean Spectrum: Rate Tables, TXTIME, and the RF Quality Envelope",
+    "zh": "从 EHT-MCS 到微秒与干净频谱：速率表、TXTIME 与射频质量包络"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "When a Wi-Fi 7 radio picks an EHT-MCS (a modulation-and-coding choice) and an RU or MRU size (a chunk of subcarriers), those two choices stop being abstract: they turn into a concrete bit rate, a packet that takes a specific number of microseconds to send, and a waveform that must stay inside strict legal limits. This lesson walks that whole chain — read the rate off a table, size the packet in time, then look at what the radio must do to be a clean, legal transmitter.",
+      "zh": "当一台 Wi-Fi 7 收发机选定一个 EHT-MCS（调制与编码的组合）和一个 RU 或 MRU 尺寸（一组子载波）后，这两个选择就不再抽象了：它们会变成一个具体的比特率、一个需要特定微秒数才能发完的数据包，以及一段必须严格守在合法范围内的波形。本课会把这整条链路走一遍——先从表里读出速率，再把数据包按时间量算出来，最后看看这台收发机要做什么才能成为一个干净、合法的发射机。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the rate tables. 802.11be publishes one table per RU/MRU size (26-tone all the way up to 4x996-tone), each listing every EHT-MCS 0-13 plus the DCM modes 14 and 15. For each entry it gives the modulation, coding rate, data tones, coded/data bits per symbol, and three data-rate columns — one for each Data-field guard interval (0.8, 1.6, 3.2 us). The numbers scale almost linearly with tone count: a 26-tone RU at EHT-MCS 13 (4096-QAM, 5/6, 0.8 us GI) is 17.6 Mb/s, while the full 4x996-tone RU at the same MCS reaches 2882.4 Mb/s — about 160x more, because it carries ~160x the data tones.",
+      "zh": "先从速率表开始。802.11be 为每一种 RU/MRU 尺寸都给出一张表（从 26-tone 一直到 4×996-tone），每张表都列出全部 EHT-MCS 0~13 以及 DCM 模式 14、15。每一行都给出调制方式、编码率、数据子载波数、每符号的编码比特/数据比特，还有三列数据速率——分别对应数据字段的三种保护间隔（0.8、1.6、3.2 us）。这些数字随子载波数几乎线性增长：26-tone RU 在 EHT-MCS 13（4096-QAM、5/6、0.8 us GI）下是 17.6 Mb/s，而同样 MCS 下完整的 4×996-tone RU 可达 2882.4 Mb/s——约为前者的 160 倍，因为它承载的数据子载波也大约多 160 倍。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The data rate is not magic. The standard's formula is D = NDBPS,u / (12.8 + TGI), where NDBPS,u is the data bits per OFDM symbol from the table and the denominator is the symbol duration in microseconds (12.8 us EHT IDFT period + the guard interval). That is why a single MCS row shows three different rates: only the guard interval in the denominator changes.",
+      "zh": "数据速率并不神奇。标准给出的公式是 D = NDBPS,u /（12.8 + TGI），其中 NDBPS,u 是表中每个 OFDM 符号的数据比特数，分母是以微秒计的符号时长（12.8 us 的 EHT IDFT 周期 + 保护间隔）。这就是为什么同一个 MCS 行会显示三种不同速率：变化的只有分母里的保护间隔。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='18' stroke='none' fill='currentColor' font-size='12'>EHT PPDU on the wire (TXTIME)</text><rect x='10' y='40' width='34' height='40'/><text x='12' y='95' stroke='none' fill='currentColor' font-size='9'>L-STF</text><rect x='44' y='40' width='34' height='40'/><text x='46' y='95' stroke='none' fill='currentColor' font-size='9'>L-LTF</text><rect x='78' y='40' width='26' height='40'/><text x='80' y='95' stroke='none' fill='currentColor' font-size='9'>L-SIG</text><rect x='104' y='40' width='42' height='40'/><text x='106' y='95' stroke='none' fill='currentColor' font-size='9'>U-SIG</text><rect x='146' y='40' width='40' height='40'/><text x='148' y='95' stroke='none' fill='currentColor' font-size='9'>EHT-SIG</text><rect x='186' y='40' width='30' height='40'/><text x='188' y='95' stroke='none' fill='currentColor' font-size='9'>STF/LTF</text><rect x='216' y='40' width='150' height='40'/><text x='250' y='65' stroke='none' fill='currentColor' font-size='10'>Data: NSYM x TSYM</text><rect x='366' y='40' width='40' height='40' stroke-dasharray='4 3'/><text x='370' y='95' stroke='none' fill='currentColor' font-size='9'>PE</text><line x1='10' y1='130' x2='406' y2='130' stroke-dasharray='2 2'/><text x='10' y='150' stroke='none' fill='currentColor' font-size='10'>TEHT-PREAMBLE</text><line x1='10' y1='118' x2='216' y2='118'/><text x='250' y='150' stroke='none' fill='currentColor' font-size='10'>NSYM x TSYM  (+ TPE + SignalExt + 20us)</text><line x1='216' y1='118' x2='406' y2='118'/></svg>",
+      "caption": {
+        "en": "An EHT PPDU in time: a fixed preamble plus NSYM Data symbols of duration TSYM each, optionally a packet-extension (PE) field. TXTIME sums all of it.",
+        "zh": "时域上的 EHT PPDU：一段固定前导码，加上 NSYM 个时长各为 TSYM 的数据符号，可选地再加一个包扩展（PE）字段。TXTIME 把它们全部相加。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now size the packet in microseconds. The standard's timing constants table fixes every piece: the pre-EHT fields use a 3.2 us IDFT period, while the EHT Data field uses a 12.8 us IDFT period, so one Data OFDM symbol (TSYM) is 13.6 us with the base 0.8 us guard interval, 14.4 us with the double GI, or 16 us with the quadruple GI. TXTIME for an EHT PPDU is then simply 20 us (the legacy preamble portion) + the EHT preamble duration + NSYM x TSYM + the packet-extension field + a signal-extension term. The MAC computes the matching PSDU_LENGTH from NSYM and the per-symbol data bits NDBPS so the receiver knows exactly how many octets to expect.",
+      "zh": "现在把数据包按微秒量算出来。标准的时序常数表把每一块都钉死了：pre-EHT 字段使用 3.2 us 的 IDFT 周期，而 EHT 数据字段使用 12.8 us 的 IDFT 周期，因此一个数据 OFDM 符号（TSYM）在基础 0.8 us 保护间隔下为 13.6 us，在双倍保护间隔下为 14.4 us，在四倍保护间隔下为 16 us。于是一个 EHT PPDU 的 TXTIME 就等于 20 us（传统前导码部分）+ EHT 前导码时长 + NSYM × TSYM + 包扩展字段 + 一个信号扩展项。MAC 再由 NSYM 和每符号数据比特 NDBPS 算出对应的 PSDU_LENGTH，让接收方准确知道该期待多少个八位字节。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[Pick EHT-MCS + RU/MRU size] --> B[Read NDBPS, data rate from rate table]\n    B --> C[Bits to send / NDBPS gives NSYM Data symbols]\n    C --> D[TSYM = 13.6 / 14.4 / 16 us by GI]\n    D --> E[TXTIME = 20us + preamble + NSYM x TSYM + PE + SignalExt]\n    E --> F[Radio must keep mask, flatness, freq tol, EVM in spec]",
+      "zh": "flowchart TD\n    A[选定 EHT-MCS + RU/MRU 尺寸] --> B[从速率表读出 NDBPS、数据速率]\n    B --> C[待发比特数 / NDBPS 得到 NSYM 个数据符号]\n    C --> D[TSYM = 13.6 / 14.4 / 16 us 取决于 GI]\n    D --> E[TXTIME = 20us + 前导码 + NSYM x TSYM + PE + 信号扩展]\n    E --> F[收发机须使掩模、平坦度、频率容差、EVM 均合规]"
+    },
+    {
+      "type": "prose",
+      "en": "Picking a fast MCS only counts if the radio is clean enough to be legal. Four limits matter. (1) The transmit spectral mask: the emitted power-spectral-density must stay under a step-shaped envelope keyed to the signalled bandwidth — for a 320 MHz PPDU it is 0 dBr out to 319 MHz, then -20 dBr at 160.5 MHz offset, -28 dBr at 320 MHz, and -40 dBr at 480 MHz and beyond, with an absolute floor (e.g. -39 dBm/MHz in the 5/6 GHz bands). (2) Spectral flatness: across the occupied subcarriers, no tone may deviate more than +/-4 dB (and +4/-6 dB near the band edges) from the average. (3) Frequency tolerance: the carrier and symbol-clock frequency must be within +/-20 ppm in 5/6 GHz (+/-25 ppm in 2.4 GHz). (4) Modulation accuracy (EVM): the higher the MCS, the tighter the allowed error vector — 4096-QAM at 5/6 demands -38 dB, far stricter than BPSK's -5 dB.",
+      "zh": "选了一个高速 MCS，只有在收发机足够干净、足够合法时才算数。有四个限制要紧。(1) 发射频谱掩模：发射出的功率谱密度必须守在一条由所信令带宽决定的阶梯形包络之下——对 320 MHz 的 PPDU，它在到 319 MHz 处为 0 dBr，随后在 160.5 MHz 偏移处为 -20 dBr，在 320 MHz 处为 -28 dBr，在 480 MHz 及以外为 -40 dBr，并带有一个绝对地板（例如 5/6 GHz 频段的 -39 dBm/MHz）。(2) 频谱平坦度：在被占用的子载波上，任何一个载波相对平均值的偏差都不得超过 ±4 dB（靠近频段边缘处为 +4/-6 dB）。(3) 频率容差：载波与符号时钟频率在 5/6 GHz 须落在 ±20 ppm 内（2.4 GHz 为 ±25 ppm）。(4) 调制精度（EVM）：MCS 越高，允许的误差矢量越紧——4096-QAM 在 5/6 编码率下要求 -38 dB，远比 BPSK 的 -5 dB 严苛。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "There is a fifth requirement that only applies to triggered uplinks. When an AP solicits an EHT TB PPDU from many stations at once, each station must pre-correct its transmit power so all of them land at the AP at a similar level. The station computes Txpwr = downlink-pathloss + the AP's UL Target Receive Power, then must hit it within +/-3 dB (Class A) or +/-9 dB (Class B), and also pre-correct frequency so residual carrier-frequency offset stays under 350 Hz.",
+      "zh": "还有第五项要求，只适用于被触发的上行。当一个 AP 同时向许多站点征召一个 EHT TB PPDU 时，每个站点都必须对自己的发射功率做预校正，使它们到达 AP 时电平相近。站点先算出 Txpwr = 下行路径损耗 + AP 的上行目标接收功率，然后须把它命中在 ±3 dB（Class A）或 ±9 dB（Class B）之内，同时还要对频率做预校正，使残余载波频偏保持在 350 Hz 以下。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exact tabulated numbers: rate, symbol time, mask corners, and EVM floor",
+        "zh": "确切的表格数字：速率、符号时长、掩模拐点与 EVM 地板"
+      },
+      "en": "Clause 36.5 publishes per-RU/MRU rate tables: the 26-tone RU (Table 36-71) tops out at 17.6 Mb/s (EHT-MCS 13, 0.8 us GI, NDBPS=240), and the 4x996-tone RU (Table 36-86) reaches 2882.4 Mb/s at the same MCS (NDBPS=39200) per spatial stream; EHT-MCS 14 in DUP mode (Table 36-87, clause 36.5.17) gives 8.6 / 18.0 / 36.0 Mb/s for 80 / 160 / 320 MHz. Data rate follows D = NDBPS,u / (12.8 + TGI,Data) (36-123). The timing constants (Table 36-18, clause 36.3.10) fix TDFT EHT = 12.8 us, so TSYM1 = 13.6 us, TSYM2 = 14.4 us, TSYM4 = 16 us; TXTIME = 20 + TEHT-PREAMBLE + NSYM x TSYM + TPE + SignalExtension (Eq 36-110, clause 36.4.3). On RF quality: the 320 MHz interim mask (36.3.20.1) has corners at 0 dBr/319 MHz, -20 dBr/160.5 MHz, -28 dBr/320 MHz, -40 dBr/480 MHz; spectral flatness (36.3.20.2, Table 36-63) is +/-4 dB on inner tones and +4/-6 dB on outer tones; frequency tolerance (36.3.20.3) is +/-20 ppm (5/6 GHz); EVM (36.3.20.4.3, Table 36-65) bottoms at -38 dB for 4096-QAM 5/6, and center-frequency leakage must not exceed max(-32 dB rel. to total power, -20 dBm). Trigger-response power pre-correction (36.3.16.2) uses Txpwr_STA = PL_DL + TargetRxpwr with accuracy +/-3 dB (Class A) / +/-9 dB (Class B) per Table 36-62 (36.3.16.3).",
+      "zh": "36.5 节给出按 RU/MRU 分列的速率表：26-tone RU（表 36-71）峰值为 17.6 Mb/s（EHT-MCS 13、0.8 us GI、NDBPS=240），而 4×996-tone RU（表 36-86）在同一 MCS 下每空间流可达 2882.4 Mb/s（NDBPS=39200）；DUP 模式下的 EHT-MCS 14（表 36-87，36.5.17 节）对 80 / 160 / 320 MHz 分别给出 8.6 / 18.0 / 36.0 Mb/s。数据速率遵循 D = NDBPS,u /（12.8 + TGI,Data）（式 36-123）。时序常数（表 36-18，36.3.10 节）确定 TDFT EHT = 12.8 us，因此 TSYM1 = 13.6 us、TSYM2 = 14.4 us、TSYM4 = 16 us；TXTIME = 20 + TEHT-PREAMBLE + NSYM × TSYM + TPE + SignalExtension（式 36-110，36.4.3 节）。在射频质量方面：320 MHz 的临时掩模（36.3.20.1）拐点为 0 dBr/319 MHz、-20 dBr/160.5 MHz、-28 dBr/320 MHz、-40 dBr/480 MHz；频谱平坦度（36.3.20.2，表 36-63）内侧子载波为 ±4 dB、外侧为 +4/-6 dB；频率容差（36.3.20.3）为 ±20 ppm（5/6 GHz）；EVM（36.3.20.4.3，表 36-65）在 4096-QAM 5/6 下低至 -38 dB，载波中心频率泄漏不得超过 max(相对总功率 -32 dB, -20 dBm)。触发响应的功率预校正（36.3.16.2）使用 Txpwr_STA = PL_DL + TargetRxpwr，精度按表 36-62（36.3.16.3）为 ±3 dB（Class A）/ ±9 dB（Class B）。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          736,
+          892,
+          893,
+          908,
+          849,
+          861,
+          864,
+          865,
+          844,
+          845,
+          888
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:36.3.10",
+    "80211be-2024:36.3.16.2",
+    "80211be-2024:36.3.16.3",
+    "80211be-2024:36.3.20.1",
+    "80211be-2024:36.3.20.2",
+    "80211be-2024:36.3.20.3",
+    "80211be-2024:36.3.20.4",
+    "80211be-2024:36.4.3",
+    "80211be-2024:36.5.1",
+    "80211be-2024:36.5.16",
+    "80211be-2024:36.5.17"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        736,
+        737,
+        738
+      ],
+      "note": "36.3.10 Table 36-18 timing constants (TDFT EHT 12.8us, TSYM 13.6/14.4/16us); Table 36-19 tone counts"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        888
+      ],
+      "note": "36.4.3 Eq 36-110 TXTIME = 20 + TEHT-PREAMBLE + NSYM x TSYM + TPE + SignalExtension; PSDU_LENGTH"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        892,
+        893,
+        908
+      ],
+      "note": "36.5 / 36.5.1 / 36.5.16 / 36.5.17 rate tables: 26-tone 17.6 Mb/s, 4x996 2882.4 Mb/s, EHT-MCS 14 DUP 8.6/18.0/36.0; D = NDBPS,u / (12.8 + TGI)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        849,
+        852
+      ],
+      "note": "36.3.20.1 transmit spectral mask incl. 320 MHz corners (0 dBr/319 MHz, -20/-28/-40 dBr) and band floors"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        861,
+        864
+      ],
+      "note": "36.3.20.2 spectral flatness Table 36-63 (+/-4 dB inner, +4/-6 dB outer); 36.3.20.3 frequency tolerance +/-20/25 ppm"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        865,
+        866
+      ],
+      "note": "36.3.20.4.2-4 modulation accuracy: center freq leakage max(-32 dB, -20 dBm); EVM Table 36-65 (4096-QAM 5/6 = -38 dB)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        844,
+        845
+      ],
+      "note": "36.3.16.2-3 trigger-response power pre-correction Txpwr = PL_DL + TargetRxpwr; Table 36-62 +/-3/+/-9 dB; CFO <= 350 Hz"
+    }
+  ],
+  "track": "wifi7-eht"
+}

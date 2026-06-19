@@ -1,0 +1,151 @@
+{
+  "id": "wifi7-25",
+  "title": {
+    "en": "Reshaping an MLD Live: Link Reconfiguration, Recommendation, Enable/Disable, and MLO Frame Delivery",
+    "zh": "在线重塑 MLD：链路重配置、推荐、启用/禁用与 MLO 帧投递"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A Wi-Fi 7 multi-link device (MLD) is a bundle of affiliated radios that look like one device to the network. The radios you talk over are the 'setup links'. The neat trick of 802.11be is that this bundle is not frozen at association time: an AP MLD can grow or shrink the set of affiliated APs, and a non-AP MLD can add or drop the links it uses — all without tearing down and rebuilding the association. This lesson walks through how an MLD is reshaped while it stays online, and how frames keep reaching the right radio while the shape changes underneath them.",
+      "zh": "Wi-Fi 7 的多链路设备（MLD）是一束“隶属”射频，对网络而言看起来像一台设备。你用来通信的那些射频叫做“建立链路（setup links）”。802.11be 的精妙之处在于：这束链路并非在关联时就被冻结——AP MLD 可以增加或减少隶属 AP，非 AP MLD 也可以增加或删除它所使用的链路，而这一切都无需拆除再重建关联。本课带你了解一个 MLD 如何在保持在线的同时被重塑，以及在底层形态变化时帧如何始终送达正确的射频。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the AP side. ML reconfiguration covers four things: adding affiliated APs, removing them, link reconfiguration to a non-AP MLD's setup links, and the AP MLD recommending a reconfiguration. To add an AP, the AP MLD bumps the Maximum Number Of Simultaneous Links count in the Basic Multi-Link element and announces the newcomer in its Beacons and Probe Responses (via a Reduced Neighbor Report entry). To remove one, it announces the removal through a Reconfiguration Multi-Link element carrying a Per-STA Profile with an AP Removal Timer — a countdown, in TBTTs, that ticks down in each Beacon so even power-saving clients hear it at least once before the AP disappears.",
+      "zh": "先看 AP 侧。ML 重配置涵盖四件事：增加隶属 AP、删除隶属 AP、对某个非 AP MLD 的建立链路进行链路重配置，以及 AP MLD 推荐重配置。要增加一个 AP，AP MLD 会在 Basic Multi-Link 元素中把“最大同时链路数（Maximum Number Of Simultaneous Links）”加一，并在 Beacon 与 Probe Response 中（通过 Reduced Neighbor Report 条目）宣告这位新成员。要删除一个 AP，它则通过携带 Per-STA Profile 的 Reconfiguration Multi-Link 元素宣告移除，其中带有“AP 移除计时器（AP Removal Timer）”——一个以 TBTT 为单位的倒计数，在每个 Beacon 中递减，使得连处于省电模式的客户端也能在该 AP 消失前至少听到一次。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the client side. A non-AP MLD with link-reconfiguration activated sends a Link Reconfiguration Request to add or delete links on its own setup. Each operation is one Per-STA Profile inside a Reconfiguration Multi-Link element: Reconfiguration Operation Type 2 means 'add this link' (carrying the full STA profile), type 3 means 'delete this link'. The AP MLD answers with a Link Reconfiguration Response carrying a Reconfiguration Status List — one status per requested link ID — and, for any accepted additions, the group keys (MLO GTK/IGTK/BIGTK) for the new link. A single request can mix adds and deletes; if it deletes and adds the same STA, that's a clean way to move that radio to a different affiliated AP. One rule is firm: you cannot delete your last setup link this way — to leave entirely you send a Disassociation or Deauthentication frame.",
+      "zh": "再看客户端侧。启用了链路重配置的非 AP MLD 通过发送 Link Reconfiguration Request 来增删自己建立链路中的链路。每个操作都是 Reconfiguration Multi-Link 元素内的一个 Per-STA Profile：Reconfiguration Operation Type 为 2 表示“添加此链路”（携带完整 STA 配置），为 3 表示“删除此链路”。AP MLD 以 Link Reconfiguration Response 回应，其中携带 Reconfiguration Status List——为每个请求的 link ID 给出一个状态——并且对任何被接受的添加，附上新链路的组密钥（MLO GTK/IGTK/BIGTK）。一个请求可以同时混合添加与删除；若对同一 STA 既删除又添加，就是把该射频干净地切换到另一个隶属 AP 的好办法。有一条规则是硬性的：你不能用这种方式删除自己最后一条建立链路——要彻底离开应发送 Disassociation 或 Deauthentication 帧。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as non-AP MLD\n    participant AP as AP MLD\n    Note over AP: optional nudge\n    AP-->>STA: Link Reconfiguration Notify (recommend add/del)\n    STA->>AP: Link Reconfiguration Request (Per-STA Profile: add type=2 / del type=3)\n    Note over AP: validate OCI, capabilities, MCS support\n    AP->>STA: Link Reconfiguration Response (Status List; Group Key Data for adds)\n    STA->>AP: Ack\n    Note over STA,AP: on SUCCESS+Ack, both add/delete the link from setup links\n    Note over STA: newly added STA starts in power save / doze",
+      "zh": "sequenceDiagram\n    participant STA as 非 AP MLD\n    participant AP as AP MLD\n    Note over AP: 可选的提示\n    AP-->>STA: Link Reconfiguration Notify（推荐增/删）\n    STA->>AP: Link Reconfiguration Request（Per-STA Profile：添加 type=2 / 删除 type=3）\n    Note over AP: 校验 OCI、能力、MCS 支持\n    AP->>STA: Link Reconfiguration Response（状态列表；添加项附组密钥）\n    STA->>AP: Ack\n    Note over STA,AP: 在 SUCCESS+Ack 后，双方将该链路加入/移出建立链路\n    Note over STA: 新加入的 STA 以省电/doze 状态开始"
+    },
+    {
+      "type": "prose",
+      "en": "Reconfiguration is structural. There are also two lighter knobs. Link recommendation: an AP MLD broadcasts a Link Recommendation frame whose AID Bitmap names specific non-AP MLDs and whose Multi-Link Traffic Indication element suggests, per link, which links a client should prefer for its frames — a load-balancing hint, never a recommendation of a disabled link. Affiliated-AP link disablement/enablement: the AP MLD can switch a whole link off (or back on) for every associated client by advertising a TID-To-Link Mapping in Beacons that maps no TIDs to that link. A disabled link suspends operation but keeps its keys, so it can be re-enabled later without re-keying. And the non-AP MLD's own operation-parameter update (a Multi-Link Operation Update Request, Reconfiguration Operation Type 1) lets a client refresh per-link parameters like max MPDU/A-MSDU length after links are added, deleted, enabled, or disabled.",
+      "zh": "重配置是结构性的。此外还有两个更轻量的“旋钮”。链路推荐：AP MLD 广播一个 Link Recommendation 帧，其 AID Bitmap 点名特定的非 AP MLD，其 Multi-Link Traffic Indication 元素逐链路建议客户端应优先在哪些链路上收发帧——这是一种负载均衡提示，且绝不会推荐已禁用的链路。隶属 AP 的链路禁用/启用：AP MLD 可以为所有关联客户端整体关闭（或重新开启）一条链路，做法是在 Beacon 中通告一份不把任何 TID 映射到该链路的 TID-To-Link Mapping。被禁用的链路会暂停运作但保留其密钥，因此之后可重新启用而无需重新协商密钥。还有非 AP MLD 自己的操作参数更新（Multi-Link Operation Update Request，Reconfiguration Operation Type 为 1），让客户端在链路被增删或启停后刷新逐链路参数，例如最大 MPDU/A-MSDU 长度。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why keep the link's keys when it is merely disabled? Because disable/enable is meant to be cheap and reversible — a way to park a link during congestion or regulatory quiet, not to dismantle it. Tearing down keys would force an expensive re-key on every re-enable. Removing an AP, by contrast, really does end that BSS, so its keys go with it.",
+      "zh": "为什么链路只是被“禁用”时还保留密钥？因为禁用/启用本就被设计成廉价且可逆——是在拥塞或法规静默期间把链路“停车”的手段，而非拆解它。若拆除密钥，就会在每次重新启用时被迫做一次昂贵的重新协商。相比之下，移除一个 AP 确实会终结那个 BSS，因此其密钥随之消失。"
+    },
+    {
+      "type": "prose",
+      "en": "While the shape shifts, frames must still land on the right radio. For QoS Data without block-ack negotiation, the MLD just follows the MLO sequence-number and duplicate-discard rules and retries on any mapped enabled link until success, retry-limit, or lifetime expiry. Individually addressed Management frames are subtler: most must reach a specific affiliated STA, but a class-3 bufferable MMPDU can be delivered through a different affiliated STA than the intended one — provided it carries an MLO Link Info element naming the intended link (placed as the last element before any Vendor Specific element). A small set of frames (Authentication/(Re)Association with a Basic Multi-Link element, Deauth, Disassoc, TID-To-Link Mapping, Link Reconfiguration, and friends) are addressed to the MLD as a whole, not a single STA, and those must not carry an MLO Link Info element. Group-addressed frames go out independently per affiliated AP on every enabled link, and a receiver must drop any group frame whose Source Address equals its own MLD MAC — that's its own transmission echoing back.",
+      "zh": "在形态变化的同时，帧仍必须落到正确的射频上。对于不经块确认协商的 QoS Data 帧，MLD 只需遵循 MLO 的序号与去重丢弃规则，并在任一已映射且已启用的链路上重传，直到成功、达到重传上限或寿命到期。逐个寻址的管理帧更微妙：大多数必须送达某个特定的隶属 STA，但一个 class-3 的可缓冲 MMPDU 可以通过与目标不同的另一个隶属 STA 投递——前提是它携带一个指明目标链路的 MLO Link Info 元素（放在所有 Vendor Specific 元素之前的最后一个元素位置）。还有一小批帧（携带 Basic Multi-Link 元素的 Authentication/(Re)Association、Deauth、Disassoc、TID-To-Link Mapping、Link Reconfiguration 等）是寻址到整个 MLD 而非单个 STA 的，这些帧不得携带 MLO Link Info 元素。组寻址帧由每个隶属 AP 在各自每条已启用链路上独立发出，而接收方必须丢弃任何源地址等于自身 MLD MAC 的组帧——那是它自己发出的帧回响回来了。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.6'><text x='230' y='18' text-anchor='middle' stroke='none' fill='currentColor' font-size='13'>Frame delivery to an MLD</text><rect x='14' y='40' width='150' height='140' rx='8'/><text x='89' y='60' text-anchor='middle' stroke='none' fill='currentColor' font-size='11'>peer MLD</text><rect x='30' y='74' width='118' height='28' rx='4'/><text x='89' y='92' text-anchor='middle' stroke='none' fill='currentColor' font-size='10'>STA on link 1 (enabled)</text><rect x='30' y='112' width='118' height='28' rx='4'/><text x='89' y='130' text-anchor='middle' stroke='none' fill='currentColor' font-size='10'>STA on link 2 (enabled)</text><rect x='30' y='150' width='118' height='22' rx='4' stroke-dasharray='4 3'/><text x='89' y='165' text-anchor='middle' stroke='none' fill='currentColor' font-size='9'>link 3 (disabled)</text><line x1='250' y1='88' x2='148' y2='88' marker-end='url(#a)'/><text x='320' y='84' text-anchor='middle' stroke='none' fill='currentColor' font-size='9'>data on mapped</text><text x='320' y='96' text-anchor='middle' stroke='none' fill='currentColor' font-size='9'>enabled link</text><line x1='250' y1='126' x2='148' y2='126' marker-end='url(#a)' stroke-dasharray='3 3'/><text x='340' y='122' text-anchor='middle' stroke='none' fill='currentColor' font-size='9'>MMPDU via other STA +</text><text x='340' y='134' text-anchor='middle' stroke='none' fill='currentColor' font-size='9'>MLO Link Info (intended link)</text><text x='305' y='170' text-anchor='middle' stroke='none' fill='currentColor' font-size='9'>disabled link keeps its keys</text><defs><marker id='a' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6' fill='currentColor' stroke='none'/></marker></defs></svg>",
+      "caption": {
+        "en": "A frame for one affiliated STA can ride a different STA's link if it carries an MLO Link Info element naming the intended (enabled) link; data follows the TTLM-mapped enabled links; a disabled link is parked but keeps its keys.",
+        "zh": "面向某个隶属 STA 的帧，只要携带指明目标（已启用）链路的 MLO Link Info 元素，就可以搭乘另一 STA 的链路；数据沿 TTLM 映射的已启用链路投递；被禁用的链路被“停车”但保留其密钥。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The carrying frames and the exact reconfiguration field settings",
+        "zh": "承载帧与精确的重配置字段设置"
+      },
+      "en": "The reshape is carried by a small family of Protected EHT Action frames. The Link Recommendation frame (9.6.38.9) is an Action No Ack frame carrying a Reason Code, an AID Bitmap element, and a Multi-Link Traffic Indication element; per 35.3.7.4 its Address 1 is the broadcast address and a link must not be recommended if it is disabled for that non-AP MLD. The Link Reconfiguration Notify frame (9.6.38.12) carries one Reconfiguration Multi-Link element and lets an AP MLD recommend add (Reconfiguration Operation Type 2) or delete (type 3) per 35.3.6.5. The Link Reconfiguration Request frame (9.6.38.13) carries a Reconfiguration Multi-Link element plus an optional OCI element; per 35.3.6.4 an add sets Complete Profile and STA MAC Address Present to 1, AP Removal Timer Present to 0, and includes the full STA profile, while a delete sets Complete Profile to 0 with no STA Profile. The Link Reconfiguration Response frame (9.6.38.14) carries a Count, a Reconfiguration Status List (one Reconfiguration Status Duple = Link ID Info + Status per requested link), an optional Group Key Data subfield (one MLO GTK/IGTK/BIGTK KDE per added link), an optional OCI element, and an optional Basic Multi-Link element with the accepted APs' profiles. On a delete-and-add for the same STA MAC, the AP MLD processes the delete first. After SUCCESS plus acknowledgment, both sides add or delete the link; an added non-AP STA begins in power-save doze. AP removal (35.3.6.3) instead uses a Reconfiguration Operation Type 0 Per-STA Profile with the AP Removal Timer, decremented each Beacon, and on expiry the affiliated AP terminates its BSS — and if that was a non-AP MLD's only setup link, its MLME raises MLME-DISASSOCIATE.indication.",
+      "zh": "这场重塑由一小族 Protected EHT Action 帧承载。Link Recommendation 帧（9.6.38.9）是一个 Action No Ack 帧，携带 Reason Code、AID Bitmap 元素和 Multi-Link Traffic Indication 元素；依 35.3.7.4，其 Address 1 为广播地址，且若某链路对该非 AP MLD 已禁用则不得被推荐。Link Reconfiguration Notify 帧（9.6.38.12）携带一个 Reconfiguration Multi-Link 元素，依 35.3.6.5 让 AP MLD 推荐添加（Reconfiguration Operation Type 为 2）或删除（为 3）。Link Reconfiguration Request 帧（9.6.38.13）携带一个 Reconfiguration Multi-Link 元素加一个可选的 OCI 元素；依 35.3.6.4，添加操作将 Complete Profile 与 STA MAC Address Present 置 1、AP Removal Timer Present 置 0 并包含完整 STA 配置，而删除操作将 Complete Profile 置 0 且不含 STA Profile。Link Reconfiguration Response 帧（9.6.38.14）携带 Count、Reconfiguration Status List（每个请求链路一个 Reconfiguration Status Duple = Link ID Info + Status）、一个可选的 Group Key Data 子字段（每条添加链路一组 MLO GTK/IGTK/BIGTK KDE）、一个可选的 OCI 元素，以及一个携带被接受 AP 配置的可选 Basic Multi-Link 元素。当对同一 STA MAC 同时删除并添加时，AP MLD 先处理删除。在 SUCCESS 加确认之后，双方添加或删除该链路；新加入的非 AP STA 以省电 doze 状态开始。AP 移除（35.3.6.3）则使用一个 Reconfiguration Operation Type 为 0、带 AP Removal Timer 的 Per-STA Profile，该计时器每个 Beacon 递减，到期时该隶属 AP 终止其 BSS——若那是某非 AP MLD 唯一的建立链路，其 MLME 会发出 MLME-DISASSOCIATE.indication。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          309,
+          311,
+          312,
+          519,
+          520,
+          523,
+          532
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.3.6.2",
+    "80211be-2024:35.3.6.3",
+    "80211be-2024:35.3.6.4",
+    "80211be-2024:35.3.6.5",
+    "80211be-2024:35.3.6.6",
+    "80211be-2024:35.3.7.4",
+    "80211be-2024:35.3.7.5",
+    "80211be-2024:35.3.13",
+    "80211be-2024:35.3.14.1",
+    "80211be-2024:35.3.14.3",
+    "80211be-2024:35.3.15.1",
+    "80211be-2024:35.3.15.2",
+    "80211be-2024:9.6.38.9",
+    "80211be-2024:9.6.38.12",
+    "80211be-2024:9.6.38.13",
+    "80211be-2024:9.6.38.14"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        514,
+        515,
+        516,
+        517,
+        518
+      ],
+      "note": "35.3.6.2-35.3.6.3 adding/removing affiliated APs; AP Removal Timer, Reconfiguration Multi-Link element, BSS termination"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        518,
+        519,
+        520,
+        522,
+        523,
+        524
+      ],
+      "note": "35.3.6.4-35.3.6.6 link reconfiguration to setup links, AP MLD recommendation, operation-parameter update; Reconfiguration Operation Type 1/2/3, group keys, can't delete last link"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        532,
+        533,
+        534
+      ],
+      "note": "35.3.7.4 link recommendation (AID Bitmap, Multi-Link Traffic Indication, broadcast, no disabled link); 35.3.7.5 affiliated-AP link disablement/enablement keeps keys"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        550,
+        551,
+        552,
+        554,
+        555,
+        556
+      ],
+      "note": "35.3.13 data without BA; 35.3.14.1/35.3.14.3 individually addressed Management delivery, MLD-addressed frames, MLO Link Info element; 35.3.15.1/35.3.15.2 group addressed transmit/receive, SA==own MLD MAC discard"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        309,
+        311,
+        312,
+        313
+      ],
+      "note": "9.6.38.9 Link Recommendation; 9.6.38.12 Link Reconfiguration Notify; 9.6.38.13 Link Reconfiguration Request; 9.6.38.14 Link Reconfiguration Response (Count, Reconfiguration Status List, Group Key Data, Basic Multi-Link element)"
+    }
+  ],
+  "track": "wifi7-eht"
+}

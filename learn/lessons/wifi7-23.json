@@ -1,0 +1,140 @@
+{
+  "id": "wifi7-23",
+  "title": {
+    "en": "EHT Beamforming and Sounding Feedback Math: Compressed V Matrix, CQI, NDP, and Segmented Feedback",
+    "zh": "EHT 波束成形与探测反馈数学：压缩 V 矩阵、CQI、NDP 与分段反馈"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "To beamform — to aim energy at one station, or to separate several stations in downlink MU-MIMO — the transmitter has to know the channel. It cannot measure its own outgoing channel directly, so it asks the other side. In EHT (Wi-Fi 7) this is the sounding protocol: the beamformer sends a known training signal, the beamformee measures the channel from it, and reports back a compact description. This lesson is about that report — the math of what the beamformee measures and how it squeezes a full MIMO channel into a few hundred quantized angles, plus the MAC choreography that carries it.",
+      "zh": "要做波束成形——把能量对准某个站点，或在下行 MU-MIMO 中把多个站点分开——发射端必须知道信道。它无法直接测量自己发出去的信道，于是只能去问对端。在 EHT（Wi-Fi 7）里这就是探测（sounding）协议：波束成形发起方（beamformer）发出一段已知的训练信号，被测方（beamformee）据此测量信道，然后回送一份紧凑的描述。本课讲的就是这份反馈——被测方测了什么、又如何把一整个 MIMO 信道压缩成几百个量化角度，以及承载它的 MAC 编舞流程。"
+    },
+    {
+      "type": "prose",
+      "en": "The beamformee never sends the raw channel matrix back. Upon receiving the sounding NDP, it estimates the channel and computes a matrix V — the right singular vectors of the channel, i.e. the directions the transmitter should steer along. V is an Nr x Nc orthogonal matrix: Nr rows equal to the number of spatial streams in the NDP, Nc columns equal to how many streams the feedback covers. Sending V verbatim (complex floats per subcarrier) would be enormous, so EHT instead decomposes V into a set of rotation angles, phi and psi, using the Givens-rotation compression carried over from earlier amendments. Only those angles travel back.",
+      "zh": "被测方从不把原始信道矩阵直接回送。在收到探测 NDP 后，它估计信道并计算出一个矩阵 V——也就是信道的右奇异向量，即发射端应当对准的“方向”。V 是一个 Nr×Nc 的正交矩阵：Nr 行等于 NDP 中的空间流数，Nc 列等于反馈所覆盖的流数。逐元素回送 V（每个子载波若干复数浮点）数据量极其庞大，因此 EHT 改为用沿用自早期修订版的 Givens 旋转压缩法，把 V 分解为一组旋转角度 phi 与 psi，只有这些角度被回送。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Intuition for the angles: any orthonormal set of beam directions can be rebuilt from a sequence of plane rotations. phi and psi are just the angles of those rotations. The beamformer applies Equation (19-79) to the received angles to reconstruct V, then turns V into its own steering matrix Q (for SU) or builds a joint Q across users (for MU). How it forms Q is implementation-specific — the standard only pins down the feedback, not the steering recipe.",
+      "zh": "理解这些角度的直觉：任何一组正交的波束方向都可以由一连串平面旋转重建出来，phi 与 psi 不过是这些旋转的角度。波束成形端把收到的角度代入式 (19-79) 重建出 V，再把 V 转化为自己的导向矩阵 Q（SU 情形），或为多用户构造一个联合的 Q（MU 情形）。如何构造 Q 由实现自行决定——标准只规定反馈，不规定导向算法的具体配方。"
+    },
+    {
+      "type": "prose",
+      "en": "Compression is lossy by choice, and the EHT MIMO Control field sets the dials. Its Nc Index and Nr Index give the matrix size; Grouping (Ng = 4 or 16) says report one matrix per 4 or per 16 subcarriers instead of every subcarrier; Codebook Information picks how many bits quantize each angle — for SU, 4/2 or 6/4 bits for (phi, psi); for MU, 7/5 or 9/7 bits. Feedback Type selects SU, MU, or CQI. Each step trades report size against steering accuracy. The matching report fields are the EHT Compressed Beamforming Report (the angles plus a per-stream average SNR), the EHT MU Exclusive Beamforming Report (delta-SNR per subcarrier, added only for MU), and the EHT CQI Report (per-RU average SNRs only — no V at all).",
+      "zh": "压缩是有意为之的有损过程，而 EHT MIMO Control 字段就是那些旋钮。其中 Nc Index 与 Nr Index 给出矩阵尺寸；Grouping（Ng = 4 或 16）表示每 4 个或每 16 个子载波报告一个矩阵，而非逐子载波报告；Codebook Information 选择每个角度用多少比特量化——SU 为 (phi, psi) 4/2 或 6/4 比特，MU 为 7/5 或 9/7 比特；Feedback Type 则选择 SU、MU 还是 CQI。每一档都是在报告体积与导向精度之间做权衡。与之配套的报告字段是：EHT Compressed Beamforming Report（角度加每流平均 SNR）、EHT MU Exclusive Beamforming Report（每子载波的 delta-SNR，仅 MU 时附加），以及 EHT CQI Report（仅每 RU 平均 SNR，完全不含 V）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 480 250' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='20' stroke='none' fill='currentColor' font-size='13'>EHT MIMO Control field (40 bits)</text><rect x='10' y='32' width='52' height='30'/><rect x='62' y='32' width='52' height='30'/><rect x='114' y='32' width='40' height='30'/><rect x='154' y='32' width='34' height='30'/><rect x='188' y='32' width='52' height='30'/><rect x='240' y='32' width='62' height='30'/><rect x='302' y='32' width='40' height='30'/><rect x='342' y='32' width='62' height='30'/><rect x='404' y='32' width='66' height='30'/><text x='14' y='51' stroke='none' fill='currentColor' font-size='9'>Nc Idx</text><text x='66' y='51' stroke='none' fill='currentColor' font-size='9'>Nr Idx</text><text x='118' y='51' stroke='none' fill='currentColor' font-size='9'>BW</text><text x='156' y='51' stroke='none' fill='currentColor' font-size='9'>Grp</text><text x='190' y='51' stroke='none' fill='currentColor' font-size='9'>FbType</text><text x='244' y='45' stroke='none' fill='currentColor' font-size='9'>Remain</text><text x='244' y='56' stroke='none' fill='currentColor' font-size='9'>Seg</text><text x='304' y='45' stroke='none' fill='currentColor' font-size='9'>First</text><text x='304' y='56' stroke='none' fill='currentColor' font-size='9'>Seg</text><text x='346' y='45' stroke='none' fill='currentColor' font-size='9'>Partial</text><text x='346' y='56' stroke='none' fill='currentColor' font-size='9'>BW Info</text><text x='408' y='45' stroke='none' fill='currentColor' font-size='9'>Dialog +</text><text x='408' y='56' stroke='none' fill='currentColor' font-size='9'>Codebook</text><text x='10' y='100' stroke='none' fill='currentColor' font-size='13'>Selects the report payload that follows:</text><rect x='10' y='112' width='150' height='34'/><text x='20' y='133' stroke='none' fill='currentColor' font-size='10'>SU: Compressed BF</text><rect x='170' y='112' width='150' height='34'/><text x='180' y='128' stroke='none' fill='currentColor' font-size='10'>MU: Compressed BF</text><text x='180' y='141' stroke='none' fill='currentColor' font-size='10'>+ MU Exclusive</text><rect x='330' y='112' width='140' height='34'/><text x='340' y='133' stroke='none' fill='currentColor' font-size='10'>CQI: CQI Report</text><text x='10' y='185' stroke='none' fill='currentColor' font-size='13'>If report &gt; 11454 octets -&gt; split into segments:</text><rect x='10' y='198' width='90' height='30'/><rect x='110' y='198' width='90' height='30'/><rect x='210' y='198' width='90' height='30'/><text x='28' y='217' stroke='none' fill='currentColor' font-size='10'>Seg 1</text><text x='128' y='217' stroke='none' fill='currentColor' font-size='10'>Seg 2</text><text x='228' y='217' stroke='none' fill='currentColor' font-size='10'>... Seg K</text><line x1='100' y1='213' x2='110' y2='213'/><line x1='200' y1='213' x2='210' y2='213'/><text x='10' y='245' stroke='none' fill='currentColor' font-size='9'>Remaining/First Feedback Segment subfields tag each one; sent in one A-MPDU.</text></svg>",
+      "caption": {
+        "en": "The EHT MIMO Control field is the header that tells the receiver the matrix size, grouping, codebook resolution, feedback type, and which segment this is. Feedback Type picks which report field(s) follow; an oversized report is split into segments.",
+        "zh": "EHT MIMO Control 字段是告诉接收方矩阵尺寸、分组、码本分辨率、反馈类型以及这是第几段的“报头”。Feedback Type 决定其后跟随哪种报告字段；过大的报告会被拆分成若干段。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "On the MAC side the loop is short. A non-TB sounding sequence is one beamformee: the beamformer sends an EHT NDP Announcement with exactly one STA Info field, then SIFS later the EHT sounding NDP, and SIFS after that the beamformee replies with an EHT Compressed Beamforming/CQI frame. A TB (trigger-based) sequence handles many beamformees at once: the NDP Announcement carries two or more STA Info fields and a broadcast address, the NDP follows, and then a BFRP Trigger frame solicits each beamformee's report inside an EHT TB PPDU. The sounding NDP itself is a stripped EHT MU PPDU with no Data field — just the preamble and EHT-LTF training symbols the beamformee measures.",
+      "zh": "在 MAC 侧这个回路很短。non-TB（非触发）探测序列只针对一个被测方：beamformer 发出一个恰好含一个 STA Info 字段的 EHT NDP Announcement，间隔 SIFS 后发出 EHT sounding NDP，再间隔 SIFS 后被测方回以一个 EHT Compressed Beamforming/CQI 帧。TB（基于触发）序列则一次处理多个被测方：NDP Announcement 携带两个或更多 STA Info 字段及广播地址，随后是 NDP，再用一个 BFRP Trigger 帧在 EHT TB PPDU 中向每个被测方索取其报告。探测 NDP 本身是一个去掉了 Data 字段的精简 EHT MU PPDU——只有前导码和供被测方测量的 EHT-LTF 训练符号。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant BFR as Beamformer (AP)\n    participant BFE as Beamformee (STA)\n    BFR->>BFE: EHT NDP Announcement (1 STA Info, sets Ng / codebook / Nc)\n    Note over BFR: SIFS\n    BFR->>BFE: EHT sounding NDP (EHT-LTF training, no Data)\n    Note over BFE: estimate channel, remove CSD,\\ncompute V, quantize phi/psi\n    Note over BFE: SIFS\n    BFE->>BFR: EHT Compressed Beamforming/CQI frame\\n(MIMO Control + report, maybe segmented)\n    Note over BFR: reconstruct V (Eq 19-79), derive steering Q",
+      "zh": "sequenceDiagram\n    participant BFR as 波束成形端 (AP)\n    participant BFE as 被测方 (STA)\n    BFR->>BFE: EHT NDP Announcement (1 个 STA Info, 设定 Ng/码本/Nc)\n    Note over BFR: SIFS\n    BFR->>BFE: EHT sounding NDP (EHT-LTF 训练, 无 Data)\n    Note over BFE: 估计信道, 去除 CSD,\\n计算 V, 量化 phi/psi\n    Note over BFE: SIFS\n    BFE->>BFR: EHT Compressed Beamforming/CQI 帧\\n(MIMO Control + 报告, 可能分段)\n    Note over BFR: 重建 V (式 19-79), 推导导向矩阵 Q"
+    },
+    {
+      "type": "prose",
+      "en": "320 MHz with eight streams makes the report huge — so EHT defines segmentation. The whole EHT Compressed Beamforming/CQI Report field is the payload; if the resulting frame would exceed 11 454 octets it is sliced into K equal-sized leading segments plus a shorter final one, each carried in its own EHT Sounding Feedback Segment field in a separate EHT Compressed Beamforming/CQI frame, all bundled in one A-MPDU in descending Remaining Feedback Segments order. The Remaining Feedback Segments and First Feedback Segment subfields in EHT MIMO Control identify each slice; the worst case (320 MHz, MU, 8x8, Ng=4, 9/7 bits) is 60 008 octets, needing up to six frames. If any segment is lost, the beamformer does not request a retransmit — it simply repeats the whole sounding.",
+      "zh": "320 MHz 配八条流会让报告变得巨大——于是 EHT 定义了分段（segmentation）。整个 EHT Compressed Beamforming/CQI Report 字段是载荷；若由此形成的帧会超过 11 454 字节，就把它切成 K 个等长的前导段加一个较短的末段，每段装入各自的 EHT Sounding Feedback Segment 字段、放进各自独立的 EHT Compressed Beamforming/CQI 帧，并按 Remaining Feedback Segments 递减的顺序全部捆进同一个 A-MPDU。EHT MIMO Control 中的 Remaining Feedback Segments 与 First Feedback Segment 子字段标识每一片；最坏情形（320 MHz、MU、8×8、Ng=4、9/7 比特）达 60 008 字节，最多需要六个帧。若某段丢失，beamformer 不会请求重传该段——它只是把整个探测过程重做一遍。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Exactly how V is formed and segments are sized",
+        "zh": "V 究竟如何形成、分段尺寸如何确定"
+      },
+      "en": "Per 36.3.17.2, the beamformee removes the spatial-stream CSD from the measured channel, then for each subcarrier k computes the beamforming feedback matrix V (the same Givens-angle compression of 19.3.12.3.6), with Nr equal to the NDP's NSS and angles phi/psi quantized to b_phi/b_psi bits set by the Codebook Information field. The beamformer reconstructs V via Equation (19-79) and forms steering Q (implementation specific). For CQI (36.3.17.3) only quantized per-RU, per-stream SNRs are returned per Table 9-129, not V. The report fields (9.4.1.73 Compressed BF; 9.4.1.74 MU Exclusive delta-SNRs; 9.4.1.75 CQI) pack angles with no inter-angle padding, ordered first by angle then by subcarrier index, padded only at the end to a byte boundary. Segmentation (35.7.4): with L_HCBCR the report length in octets, if the frame stays within 11 454 octets then N1=1, N2=L_HCBCR in a single EHT Sounding Feedback Segment field (9.4.1.80); otherwise it splits into K = Ceil(L_HCBCR / L) segments where L makes each non-final frame exactly 11 454 octets, the k-th non-final segment spanning octets N1=(k-1)L+1 to N2=kL and the last spanning to L_HCBCR. The maximum report is 60 008 octets (320 MHz MU, Nc=Nr=8, Ng=4, 9/7-bit), so at most six frames; the NDP TXVECTOR (35.7.5) is FORMAT=EHT_MU, APEP_LENGTH=0, mandatory 2x EHT-LTF at 0.8/1.6 us GI.",
+      "zh": "依据 36.3.17.2，被测方先从所测信道中去除空间流 CSD，再对每个子载波 k 计算波束成形反馈矩阵 V（即 19.3.12.3.6 中相同的 Givens 角度压缩），其中 Nr 等于 NDP 的 NSS，角度 phi/psi 按 Codebook Information 字段设定的 b_phi/b_psi 比特量化。波束成形端经式 (19-79) 重建 V 并构造导向矩阵 Q（由实现决定）。对 CQI（36.3.17.3），回送的只是按表 9-129 量化的每 RU、每流 SNR，而非 V。各报告字段（9.4.1.73 Compressed BF；9.4.1.74 MU Exclusive delta-SNR；9.4.1.75 CQI）中角度之间不填充，先按角度、再按子载波序号排列，仅在末尾补齐到字节边界。分段（35.7.4）：设 L_HCBCR 为报告字节长度，若帧不超过 11 454 字节，则单个 EHT Sounding Feedback Segment 字段（9.4.1.80）取 N1=1、N2=L_HCBCR；否则拆为 K = Ceil(L_HCBCR / L) 段，其中 L 使每个非末段帧恰为 11 454 字节，第 k 个非末段覆盖第 N1=(k-1)L+1 至 N2=kL 字节，末段直至 L_HCBCR。报告最大为 60 008 字节（320 MHz MU、Nc=Nr=8、Ng=4、9/7 比特），故最多六个帧；NDP 的 TXVECTOR（35.7.5）为 FORMAT=EHT_MU、APEP_LENGTH=0，强制支持 0.8/1.6 us GI 的 2× EHT-LTF。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          847,
+          616,
+          617
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:36.3.17.2",
+    "80211be-2024:36.3.17.3",
+    "80211be-2024:36.3.18",
+    "80211be-2024:35.7.2",
+    "80211be-2024:35.7.3",
+    "80211be-2024:35.7.4",
+    "80211be-2024:35.7.5",
+    "80211be-2024:9.4.1.72",
+    "80211be-2024:9.4.1.73",
+    "80211be-2024:9.4.1.74",
+    "80211be-2024:9.4.1.75",
+    "80211be-2024:9.4.1.79",
+    "80211be-2024:9.4.1.80"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        186,
+        187,
+        188
+      ],
+      "note": "9.4.1.72 EHT MIMO Control field — Nc/Nr Index, BW, Grouping, Feedback Type, Codebook Information, Remaining/First Feedback Segment subfields"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        189,
+        192,
+        193
+      ],
+      "note": "9.4.1.73-9.4.1.75 — EHT Compressed Beamforming Report (V angles + avg SNR), MU Exclusive (delta-SNR), CQI Report (per-RU SNR)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        199
+      ],
+      "note": "9.4.1.79 EHT Compressed Beamforming/CQI Report field and 9.4.1.80 EHT Sounding Feedback Segment field"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        598,
+        611,
+        612
+      ],
+      "note": "35.7.1-35.7.3 — explicit feedback, SU/MU/CQI report composition, non-TB vs TB sounding sequences, 11454-octet single-segment threshold"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        616,
+        617
+      ],
+      "note": "35.7.4 segmented feedback sizing (K, N1/N2, 60008-octet max) and 35.7.5 EHT sounding NDP TXVECTOR"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        847,
+        848
+      ],
+      "note": "36.3.17.2 EHT beamforming feedback matrix V (CSD removal, Givens angle quantization, Eq 19-79 reconstruction), 36.3.17.3 CQI feedback, 36.3.18 EHT sounding NDP"
+    }
+  ],
+  "track": "wifi7-eht"
+}

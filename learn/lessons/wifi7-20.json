@@ -1,0 +1,129 @@
+{
+  "id": "wifi7-20",
+  "title": {
+    "en": "Building the EHT Long Training Field and Short Training Field: Sequences, Cyclic Shifts, and Channel Estimation",
+    "zh": "构建 EHT 长训练字段与短训练字段：序列、循环移位与信道估计"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every EHT PPDU ends its preamble with two EHT-modulated fields that exist purely to help the receiver tune itself before the data arrives: the EHT-STF (Short Training Field) and the EHT-LTF (Long Training Field). The earlier L-STF/L-LTF and U-SIG/EHT-SIG fields handle legacy detection and signalling, but they are not enough for a wide, many-stream Wi-Fi 7 link. EHT adds its own pair because EHT can spread up to 16 spatial streams across up to 320 MHz, and the receiver needs a fresh, EHT-specific reference to set its gain and to measure the MIMO channel for exactly those streams.",
+      "zh": "每个 EHT PPDU 的前导码末尾都有两个 EHT 调制字段，它们存在的唯一目的就是帮助接收机在数据到来之前把自己调好：EHT-STF（短训练字段）和 EHT-LTF（长训练字段）。前面的 L-STF/L-LTF 与 U-SIG/EHT-SIG 字段负责传统检测和信令，但对于又宽又多流的 Wi-Fi 7 链路来说，它们还不够。EHT 之所以加上自己专属的这一对字段，是因为 EHT 最多可在 320 MHz 上铺开多达 16 条空间流，接收机需要一个全新的、专属于 EHT 的参考信号，来设定增益并精确测量这些流所对应的 MIMO 信道。"
+    },
+    {
+      "type": "prose",
+      "en": "The two fields divide the labour. The EHT-STF comes first and its job is automatic gain control (AGC) in a MIMO transmission: it is a short, repeating waveform (five 0.8 µs periods for an EHT MU PPDU, five 1.6 µs periods for an EHT TB PPDU) whose only purpose is to let the receiver set its analog gain so the much more delicate channel-sounding symbols that follow are neither clipped nor buried in noise. The EHT-LTF comes second and is the channel sounder: it lets the receiver estimate the full MIMO channel matrix between the transmitter's constellation-mapper outputs and its own receive chains.",
+      "zh": "这两个字段分工明确。EHT-STF 在前，它的任务是在 MIMO 传输中做自动增益控制（AGC）：它是一段短促、重复的波形（EHT MU PPDU 为 5 个 0.8 µs 周期，EHT TB PPDU 为 5 个 1.6 µs 周期），其唯一目的是让接收机设定模拟增益，使紧随其后那些更娇贵的信道探测符号既不被削顶、也不被噪声淹没。EHT-LTF 在后，它是信道探测器：让接收机估计出发射端星座映射输出与自身接收链之间完整的 MIMO 信道矩阵。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n    USIG[\"U-SIG / EHT-SIG\\n(signalling)\"] --> STF[\"EHT-STF\\nAGC: set the gain\"]\n    STF --> LTF[\"EHT-LTF\\nsound the MIMO channel\"]\n    LTF --> DATA[\"Data field\\ndemodulate with the\\nestimated channel\"]\n    style STF fill:#1f6feb,color:#fff\n    style LTF fill:#1f6feb,color:#fff",
+      "zh": "flowchart LR\n    USIG[\"U-SIG / EHT-SIG\\n（信令）\"] --> STF[\"EHT-STF\\nAGC：设定增益\"]\n    STF --> LTF[\"EHT-LTF\\n探测 MIMO 信道\"]\n    LTF --> DATA[\"数据字段\\n用估计出的信道\\n进行解调\"]\n    style STF fill:#1f6feb,color:#fff\n    style LTF fill:#1f6feb,color:#fff"
+    },
+    {
+      "type": "prose",
+      "en": "How is the EHT-LTF actually built so that many streams stay separable? The trick is that the LTF spans several OFDM symbols, and across those symbols each spatial stream is multiplied by a different row of a matrix P (the data tones use P; the pilot tones use a single-stream row matrix R when single-stream pilots are active). P is an orthogonal mapping — 4×4, 6×6, or 8×8 depending on how many EHT-LTF symbols are sent. Because the rows are orthogonal, the receiver can solve a small linear system and untangle the channel of each stream even though they all share the same tones at the same time. The number of EHT-LTF symbols is set by the total spatial-stream count (1 stream → 1 symbol, 2 → 2, 3–4 → 4, 5–6 → 6, 7–8 → 8), and may optionally be doubled to sharpen the estimate.",
+      "zh": "EHT-LTF 究竟是怎样构造，才能让众多流保持可分离？诀窍在于 LTF 横跨多个 OFDM 符号，而在这些符号之间，每条空间流都被乘以矩阵 P 的不同一行（数据子载波使用 P；当启用单流导频时，导频子载波使用单流行矩阵 R）。P 是一个正交映射——根据所发送的 EHT-LTF 符号数，它是 4×4、6×6 或 8×8。由于各行彼此正交，即使所有流在同一时刻共用相同的子载波，接收机也能解一个小型线性方程组，把每条流的信道分离出来。EHT-LTF 符号数由空间流总数决定（1 流 → 1 符号，2 → 2，3–4 → 4，5–6 → 6，7–8 → 8），并可选择性地翻倍以提高估计精度。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "1×, 2×, 4× EHT-LTF is about how finely the tones are sampled in frequency, not about more antennas. A 4× LTF modulates every subcarrier and transmits a full 12.8 µs symbol; a 2× LTF modulates every second subcarrier and sends the first half; a 1× LTF modulates every fourth subcarrier and sends only the first quarter. Sounding more tones (4×) gives a richer channel estimate for high-delay-spread environments; the sparser 1× and 2× modes trade resolution for a shorter, cheaper preamble. Note 1× EHT-LTF has no pilot subcarriers and is only allowed for uplink non-OFDMA transmissions with two or more users.",
+      "zh": "1×、2×、4× EHT-LTF 说的是在频域上对子载波采样得有多细，而不是天线更多。4× LTF 调制每一个子载波并发送完整的 12.8 µs 符号；2× LTF 调制每隔一个子载波并只发送前一半；1× LTF 调制每隔四个子载波并只发送前四分之一。探测更多子载波（4×）能在高时延扩展环境中给出更丰富的信道估计；更稀疏的 1× 和 2× 模式则以分辨率换取更短、更省的前导码。注意 1× EHT-LTF 没有导频子载波，且仅允许用于两个及以上用户的上行非 OFDMA 传输。"
+    },
+    {
+      "type": "prose",
+      "en": "Both fields also carry a per-stream cyclic shift (CSD). When the same or correlated waveform is sent from several transmit chains, those signals could accidentally beamform — adding up strongly in some directions and cancelling in others, which would distort the AGC reading and the channel estimate. Applying a different small time shift to each spatial stream decorrelates them, so EHT applies CSD throughout the EHT-modulated fields (and reuses the same shifts in the Data field for consistency). After CSD the streams pass through a spatial-mapping Q matrix, the IDFT turns frequency-domain sequences into time-domain samples, and a guard interval plus windowing is prepended.",
+      "zh": "这两个字段还都带有逐流的循环移位（CSD）。当相同或相关的波形从多条发射链发出时，这些信号可能会意外地形成波束——在某些方向上强烈叠加、在另一些方向上相互抵消，从而扭曲 AGC 读数和信道估计。给每条空间流施加一个不同的小时间移位即可使它们去相关，因此 EHT 在整个 EHT 调制字段中都施加 CSD（并在数据字段中复用相同的移位以保持一致）。经过 CSD 后，各流再通过空间映射 Q 矩阵，IDFT 把频域序列转成时域样点，最后在前面加上保护间隔并做加窗。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 480 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='20' stroke='none' fill='currentColor' font-size='12'>EHT-LTF over N symbols: stream m uses row m of P</text><rect x='20' y='40' width='90' height='30'/><text x='65' y='60' stroke='none' fill='currentColor' font-size='11' text-anchor='middle'>LTF seq</text><line x1='110' y1='55' x2='150' y2='55' marker-end='url(#a)'/><rect x='150' y='40' width='70' height='30'/><text x='185' y='60' stroke='none' fill='currentColor' font-size='11' text-anchor='middle'>x P/R</text><line x1='220' y1='55' x2='260' y2='55' marker-end='url(#a)'/><rect x='260' y='40' width='60' height='30'/><text x='290' y='60' stroke='none' fill='currentColor' font-size='11' text-anchor='middle'>CSD</text><line x1='320' y1='55' x2='360' y2='55' marker-end='url(#a)'/><rect x='360' y='40' width='50' height='30'/><text x='385' y='60' stroke='none' fill='currentColor' font-size='11' text-anchor='middle'>Q</text><line x1='410' y1='55' x2='450' y2='55' marker-end='url(#a)'/><text x='40' y='110' stroke='none' fill='currentColor' font-size='11'>data tones -&gt; P (orthogonal, NxN)</text><text x='40' y='130' stroke='none' fill='currentColor' font-size='11'>pilot tones -&gt; R (single-stream)</text><text x='40' y='150' stroke='none' fill='currentColor' font-size='11'>orthogonal rows let RX separate each stream</text><text x='40' y='170' stroke='none' fill='currentColor' font-size='11'>punctured 20 MHz -&gt; tones forced to zero</text><defs><marker id='a' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6' fill='currentColor' stroke='none'/></marker></defs></svg>",
+      "caption": {
+        "en": "The per-symbol EHT-LTF generation chain: the LTF sequence is multiplied by the P/R matrix (orthogonal rows per stream), given a per-stream cyclic shift, spatially mapped by Q, then transformed to time domain. Punctured subchannels have their tones zeroed.",
+        "zh": "逐符号的 EHT-LTF 生成链：LTF 序列先乘以 P/R 矩阵（每条流取正交的一行），再施加逐流循环移位，经 Q 做空间映射，最后变换到时域。被打孔的子信道，其子载波被置零。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Finally, what happens to these training fields when the channel has holes? In a preamble-punctured EHT MU PPDU, no signal is sent in at least one 20 MHz subchannel — perhaps because CCA found it busy, or an EHT Operation element disabled it. The construction handles this simply: the EHT-STF and EHT-LTF sequences keep their full formulas, but every coefficient that maps to a punctured (or unassigned, or DC/null) subcarrier is replaced by zero. For non-OFDMA puncturing the surviving tones form one large MRU spanning all the nonpunctured channel; puncturing is never allowed on the primary 20 MHz, and its resolution is 20 MHz up to 160 MHz and 40 MHz at 320 MHz.",
+      "zh": "最后，当信道里有“洞”时，这些训练字段会怎样？在前导码打孔的 EHT MU PPDU 中，至少有一个 20 MHz 子信道不发送任何信号——可能是因为 CCA 发现它忙，或 EHT Operation 元素将其禁用。构造的处理方式很简单：EHT-STF 与 EHT-LTF 序列保持完整公式不变，但凡是映射到被打孔（或未分配、或 DC/空）子载波的系数，一律替换为零。对于非 OFDMA 打孔，存活下来的子载波构成一个跨越所有未打孔信道的大尺寸 MRU；打孔绝不允许施加在主 20 MHz 上，其分辨率在不超过 160 MHz 时为 20 MHz、在 320 MHz 时为 40 MHz。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact P/R definition, the symbol count, and how puncturing zeroes tones",
+        "zh": "P/R 的精确定义、符号数，以及打孔如何置零子载波"
+      },
+      "en": "In 36.3.12.10 the EHT-LTF data tones on subcarrier k are multiplied by entries of an N_EHT-LTF × N_EHT-LTF matrix A_EHT-LTF[k], which equals R_EHT-LTF when k is a pilot subcarrier and single-stream pilots are used, and P_EHT-LTF otherwise. P_EHT-LTF is the orthogonal P4 (4×4), P6 (6×6), or P8 (8×8) per Equation (36-42)/(36-43), selected by N_EHT-LTF; R_EHT-LTF is row 1 of P. Single-stream pilots are mandatory for all spatial-multiplexing modes except 1× EHT-LTF, which has no pilots and is only allowed for UL non-OFDMA with two or more users (Table 36-44 NOTE). Table 36-43 fixes the initial symbol count from N_SS,total (1→1, 2→2, 3–4→4, 5–6→6, 7–8→8); additional EHT-LTFs may at most double this and are chosen from {2,4,8}. The 1×/2×/4× generation (Figures 36-48/36-49) modulates every 4th/2nd/every subcarrier and truncates to a quarter/half/full 12.8 µs symbol. 36.3.12.2.2 applies the per-stream cyclic shift T_CS,EHT[n] from Table 21-11 throughout the EHT-modulated fields to prevent unintended beamforming, reused in the Data field. For puncturing (36.3.12.11), the EHT-LTF values from Equations (27-41)–(27-52) and (36-38)–(36-40) are set to zero for subcarriers outside the surviving large-size MRU (non-OFDMA) or for any unassigned/punctured/DC/null tone (OFDMA); the EHT-STF coefficients of Equations (36-25)–(36-34) are likewise zeroed on punctured subcarriers, and puncturing is barred on the primary 20 MHz.",
+      "zh": "在 36.3.12.10 中，子载波 k 上的 EHT-LTF 数据子载波被乘以一个 N_EHT-LTF × N_EHT-LTF 矩阵 A_EHT-LTF[k] 的元素：当 k 为导频子载波且使用单流导频时它等于 R_EHT-LTF，其他情况下等于 P_EHT-LTF。P_EHT-LTF 是按式 (36-42)/(36-43) 给出的正交矩阵 P4（4×4）、P6（6×6）或 P8（8×8），由 N_EHT-LTF 选定；R_EHT-LTF 取 P 的第 1 行。除 1× EHT-LTF 外，所有空间复用模式都强制使用单流导频；而 1× EHT-LTF 没有导频，且仅允许用于两个及以上用户的上行非 OFDMA（表 36-44 注）。表 36-43 由 N_SS,total 确定初始符号数（1→1、2→2、3–4→4、5–6→6、7–8→8）；额外的 EHT-LTF 至多使其翻倍，并从 {2,4,8} 中选取。1×/2×/4× 生成（图 36-48/36-49）分别调制每隔 4 个/2 个/每一个子载波，并截断为 12.8 µs 符号的四分之一/一半/全部。36.3.12.2.2 在整个 EHT 调制字段中施加来自表 21-11 的逐流循环移位 T_CS,EHT[n] 以防止意外波束成形，并在数据字段中复用。对于打孔（36.3.12.11），式 (27-41)–(27-52) 与 (36-38)–(36-40) 给出的 EHT-LTF 值，在落于存活大尺寸 MRU 之外的子载波（非 OFDMA），或任何未分配/被打孔/DC/空子载波（OFDMA）处被置零；式 (36-25)–(36-34) 的 EHT-STF 系数同样在被打孔子载波处置零，且主 20 MHz 上禁止打孔。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          804,
+          805,
+          806,
+          810,
+          812
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:36.3.7.8",
+    "80211be-2024:36.3.7.9",
+    "80211be-2024:36.3.12.2",
+    "80211be-2024:36.3.12.9",
+    "80211be-2024:36.3.12.10",
+    "80211be-2024:36.3.12.11"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        734
+      ],
+      "note": "36.3.7.8 / 36.3.7.9 - construction highlights for EHT-STF (sequence gen, CSD, Q, GI) and EHT-LTF (P/R matrix mapping, CSD, Q)"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        751
+      ],
+      "note": "36.3.12.2 - cyclic shift for pre-EHT and EHT modulated fields; per-stream CSD to prevent unintended beamforming"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        801,
+        802,
+        803,
+        804
+      ],
+      "note": "36.3.12.9 - EHT-STF purpose (AGC in MIMO), durations, per-bandwidth frequency-domain sequences, punctured tones zeroed"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        804,
+        805,
+        806,
+        810,
+        811
+      ],
+      "note": "36.3.12.10 - EHT-LTF channel sounding, P/R matrices, Table 36-43 symbol count, 1x/2x/4x generation, Table 36-44"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        809,
+        812,
+        813
+      ],
+      "note": "36.3.12.11 - preamble of preamble-punctured EHT MU PPDU; tones zeroed over punctured subchannels; resolution and primary-20 rule"
+    }
+  ],
+  "track": "wifi7-eht"
+}

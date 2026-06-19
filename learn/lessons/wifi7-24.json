@@ -1,0 +1,135 @@
+{
+  "id": "wifi7-24",
+  "title": {
+    "en": "Living on Two Links at Once: NSTR Time Alignment, Medium-Sync Recovery, TXS Sharing, and BQR",
+    "zh": "同时驻留两条链路：NSTR 时间对齐、介质同步恢复、TXS 共享与 BQR"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Basic multi-link operation (MLO) gives a Wi-Fi 7 device two or more radios that share one association. But many cheap devices cannot truly run two links independently: when one radio transmits, the other radio — sitting on a nearby band in the same box — is deafened by the leakage. The standard calls such a pair of links an NSTR link pair (Non-Simultaneous Transmit and Receive). This lesson is about the hard, real-time choreography NSTR forces on the MAC: aligning when transmissions end, recovering after errors, re-arming a radio that lost track of the medium, and a couple of related EHT channel-access tricks.",
+      "zh": "基础的多链路操作（MLO）让 Wi-Fi 7 设备拥有两个或更多共享同一次关联的射频。但许多廉价设备无法真正独立地运行两条链路：当一个射频在发送时，处在同一机壳内、频段又相邻的另一个射频会被泄漏信号“震聋”。标准把这样的一对链路称为 NSTR 链路对（Non-Simultaneous Transmit and Receive，非同时收发）。本课讲的就是 NSTR 给 MAC 层强加的、对实时性要求极高的“编舞”：对齐发送的结束时刻、在出错后恢复、把丢失介质跟踪的射频重新武装起来，以及几个相关的 EHT 信道接入技巧。"
+    },
+    {
+      "type": "prose",
+      "en": "The core problem: if one of your radios is still receiving a PPDU while the other starts transmitting, your own transmission jams your own reception. The fix is PPDU end-time alignment. When an AP MLD sends to both links of an NSTR pair and at least one PPDU solicits an immediate response, the AP must line up the end times so the two responses come back together — not staggered, where one response would start while the other PPDU is still in the air. The standard bounds the misalignment: end times must differ by no more than 8 microseconds, and a PPDU soliciting a response may end at most 4 microseconds before any PPDU carrying a Trigger frame with CS Required set.",
+      "zh": "核心问题在于：如果你的一个射频还在接收 PPDU，而另一个射频却开始发送，那么你自己的发送就会干扰你自己的接收。解决办法是 PPDU 结束时刻对齐。当一个 AP MLD 向 NSTR 链路对的两条链路同时发送，且至少有一个 PPDU 请求立即响应时，AP 必须让两个 PPDU 的结束时刻对齐，使两个响应一起返回——而不是错开，否则一个响应会在另一个 PPDU 仍在空中传输时就开始。标准对错位量做了限定：结束时刻之差不得超过 8 微秒，且请求响应的 PPDU 至多比任何携带了置位 CS Required 的触发帧的 PPDU 早结束 4 微秒。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The 8 microsecond budget is not arbitrary: it is roughly SIFS plus signal extension minus a timing margin, so that no response PPDU on one link overlaps the still-finishing PPDU on the other. The AP can hit the target with any padding it likes — Trigger-frame Padding, post-EOF A-MPDU padding, SIG-field padding, extra aggregated MPDUs, or a packet extension.",
+      "zh": "8 微秒的预算并非随意设定：它大致等于 SIFS 加信号扩展再减去一个时序余量，从而保证一条链路上的任何响应 PPDU 都不会与另一条链路上尚未结束的 PPDU 重叠。AP 可以用任意填充手段达到目标——触发帧的 Padding 字段、EOF 后的 A-MPDU 填充、SIG 字段填充、额外聚合的 MPDU，或一个分组扩展（packet extension）。"
+    },
+    {
+      "type": "prose",
+      "en": "Alignment in the downlink is the AP's job, but in the uplink the responses come from two peer APs — and the non-AP MLD wants those response PPDUs to land together too. That is what the SRS Control subfield is for. When the two stations of a non-AP MLD simultaneously send PPDUs that solicit control responses, at least one of those PPDUs carries an SRS Control subfield whose PPDU Response Duration subfield tells the APs exactly how long to make their response. Each AP then pads its response (a non-HT, HE SU, or EHT SU PPDU) to exactly that duration, so the two BlockAcks end together. The SRS option is gated: a station only sends it after the AP MLD advertises SRS Support equal to 1 in its Basic Multi-Link element.",
+      "zh": "下行链路上的对齐由 AP 负责，但上行链路上的响应来自两个对端 AP——而非 AP MLD 同样希望这两个响应 PPDU 一起到达。这正是 SRS Control 子字段的用途。当一个非 AP MLD 的两个站点同时发送请求控制响应的 PPDU 时，其中至少一个 PPDU 携带 SRS Control 子字段，其 PPDU Response Duration 子字段精确地告诉各 AP 应把响应做成多长。随后每个 AP 把自己的响应（一个 non-HT、HE SU 或 EHT SU PPDU）填充到恰好那个时长，于是两个 BlockAck 一起结束。SRS 选项有门控：只有在 AP MLD 于其 Basic Multi-Link 元素中通告 SRS Support 等于 1 之后，站点才会发送它。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 200' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='30' stroke='none' fill='currentColor' font-size='12'>Link A</text><text x='10' y='110' stroke='none' fill='currentColor' font-size='12'>Link B</text><rect x='70' y='15' width='150' height='28'/><text x='80' y='33' stroke='none' fill='currentColor' font-size='10'>PPDU (solicits resp.)</text><rect x='70' y='95' width='150' height='28'/><text x='80' y='113' stroke='none' fill='currentColor' font-size='10'>PPDU (solicits resp.)</text><line x1='220' y1='10' x2='220' y2='150' stroke-dasharray='4 3'/><text x='224' y='165' stroke='none' fill='currentColor' font-size='10'>aligned end (&#8804; 8 &#181;s skew)</text><rect x='244' y='15' width='90' height='28'/><text x='254' y='33' stroke='none' fill='currentColor' font-size='10'>BlockAck</text><rect x='244' y='95' width='90' height='28'/><text x='254' y='113' stroke='none' fill='currentColor' font-size='10'>BlockAck</text><line x1='334' y1='10' x2='334' y2='150' stroke-dasharray='4 3'/><text x='338' y='80' stroke='none' fill='currentColor' font-size='10'>responses</text><text x='338' y='94' stroke='none' fill='currentColor' font-size='10'>end together</text></svg>",
+      "caption": {
+        "en": "End-time alignment on an NSTR link pair: both PPDUs end within an 8 microsecond window so the two responses come back together and neither transmission jams the other's reception.",
+        "zh": "NSTR 链路对上的结束时刻对齐：两个 PPDU 在 8 微秒窗口内结束，使两个响应一起返回，从而任一发送都不会干扰另一条链路的接收。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Even with alignment, a transmission can fail on one link while it succeeds on the other. NSTR error recovery within PIFS handles that case. After a pair of end-aligned exchanges, if responses came back on both links but at least one failed its FCS, the MLD uses carefully chosen gaps before the next PPDU: on the link whose response ended last and decoded cleanly, SIFS-to-PIFS; if that last-ending response failed, PIFS minus 4 microseconds up to PIFS; and on the link whose response ended first, exactly PIFS. Whenever the gap exceeds SIFS, the station must confirm the medium is idle by CCA before transmitting again — that is the whole point of waiting a PIFS rather than a SIFS.",
+      "zh": "即便做了对齐，发送仍可能在一条链路上失败而在另一条链路上成功。PIFS 内的 NSTR 错误恢复就用于处理这种情形。在一对结束时刻对齐的交换之后，如果两条链路都返回了响应、但至少一个未通过 FCS 校验，MLD 会在下一个 PPDU 之前采用精心选择的间隔：在响应结束最晚且正确解码的那条链路上，用 SIFS 至 PIFS；若那个最晚结束的响应失败了，则用 PIFS 减 4 微秒至 PIFS；在响应结束最早的那条链路上，则恰好用 PIFS。只要间隔超过 SIFS，站点就必须在再次发送前通过 CCA 确认介质空闲——这正是等一个 PIFS 而非一个 SIFS 的全部意义所在。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the recovery story for a radio that has fallen out of sync. When one STA of an NSTR pair transmits for longer than aMediumSyncThreshold (72 microseconds), the sibling STA — which was deafened the whole time — is declared to have lost medium synchronization. It starts a MediumSyncDelay timer. While that timer is nonzero, the STA cannot freely grab the medium: it must use a more sensitive OFDM energy-detect threshold (default minus 72 dBm instead of the usual threshold), and if it does win a TXOP it must lead with an RTS frame and may try only a limited number of times (default once). Alternatively, the AP MLD can offer AP-assisted recovery (AAR): the deafened STA's sibling sends an AAR Control subfield naming the assisting link, and the assisting AP schedules a Trigger frame so the recovering STA can transmit cleanly without colliding.",
+      "zh": "再看一个“失步”射频的恢复故事。当 NSTR 对中的一个 STA 发送时长超过 aMediumSyncThreshold（72 微秒）时，全程被“震聋”的同胞 STA 就被判定为丢失了介质同步。它会启动一个 MediumSyncDelay 计时器。在该计时器非零期间，该 STA 不能随意抢占介质：它必须使用更灵敏的 OFDM 能量检测门限（默认 −72 dBm，而非通常的门限）；若它确实赢得了一个 TXOP，则必须以 RTS 帧打头，且尝试次数有限（默认一次）。另一种方式是 AP MLD 提供 AP 辅助恢复（AAR）：被震聋 STA 的同胞发送一个指明协助链路的 AAR Control 子字段，协助 AP 随即调度一个触发帧，使正在恢复的 STA 能够干净地发送而不发生碰撞。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two more EHT channel-access pieces round this out. Triggered TXOP sharing (TXS) lets an AP hand a slice of its own TXOP to one associated STA via an MU-RTS TXS Trigger frame: Mode 1 lets that STA transmit only to the AP, while Mode 2 lets it transmit to the AP or to a peer (think direct device-to-device traffic inside the AP's airtime). And the two BQR Control subfields let a 320 MHz station report, per 20 MHz subchannel, which parts of the wide channel are currently available — one subfield can no longer describe all sixteen subchannels of a 320 MHz channel, so EHT defines a second.",
+      "zh": "还有两块 EHT 信道接入拼图收尾。触发式 TXOP 共享（TXS）让 AP 通过 MU-RTS TXS 触发帧，把自己 TXOP 的一段分给某个已关联的 STA：模式 1 只允许该 STA 向 AP 发送，模式 2 则允许它向 AP 或某个对端发送（可理解为在 AP 的空口时间内进行设备到设备的直连流量）。而两个 BQR Control 子字段让 320 MHz 的站点能够逐 20 MHz 子信道地报告这条宽信道当前哪些部分可用——单个子字段已无法描述 320 MHz 信道的全部十六个子信道，因此 EHT 定义了第二个。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact thresholds, timers, and gated capabilities",
+        "zh": "精确的门限、计时器与受门控的能力"
+      },
+      "en": "Clause 35.3.16.5 fixes the alignment budget: simultaneously transmitted PPDU end times must differ by no more than 8 microseconds (SIFS + aSignalExtension minus a half-SIFS timing margin), and a response-soliciting PPDU may end at most 4 microseconds (aRxTxTurnaroundTime) before any PPDU carrying a Trigger frame with CS Required = 1. SRS (35.3.16.5.2) is gated on the SRS Support subfield of the Basic Multi-Link element; the SRS Control's PPDU Response Duration must be at least the longest expected response computed for an HE SU / EHT SU format, matching bandwidth, NSS = 1, longest mandatory GI (3.2 microseconds), and a PSDU at least as long as the larger of a Multi-STA and a Compressed BlockAck. PIFS error recovery (35.3.16.7) tightens the response end-time gap to within 4 microseconds to permit SIFS-or-PIFS continuation, else within 8 microseconds with the per-link SIFS-to-PIFS / PIFS-minus-4 / exactly-PIFS rules above. Medium-sync (35.3.16.8): aMediumSyncThreshold = 72 microseconds; dot11MSDTimerDuration initializes to aPPDUMaxTime and is refreshed from the Medium Synchronization Delay Information field; the OFDM-ED recovery (35.3.16.8.2) uses dot11MSDOFDMEDthreshold (default minus 72 dBm), requires an RTS as the first frame, and caps attempts at dot11MSDTXOPMax (default 1); the timer resets to zero on receiving any MPDU or a PPDU with a specified TXOP_DURATION. AAR (35.3.16.8.3) is gated on dot11AAROptionImplemented and the AAR Support subfield. TXS (35.2.1.2) is gated on the TXS Mode 1 / Mode 2 Support subfields; the allocation starts at the end of the MU-RTS TXS PPDU and the STA's first PPDU must carry a CTS (26.2.6.3). The two BQR subfields (35.5.3) require dot11TwoBQRsOptionImplemented (which implies 320 MHz support) and the AP's Two BQRs Support subfield, with subchannel locations defined in 9.2.4.7.6.",
+      "zh": "35.3.16.5 节固定了对齐预算：同时发送的 PPDU 结束时刻之差不得超过 8 微秒（SIFS + aSignalExtension 减去半个 SIFS 的时序余量），且请求响应的 PPDU 至多比任何携带 CS Required = 1 触发帧的 PPDU 早结束 4 微秒（aRxTxTurnaroundTime）。SRS（35.3.16.5.2）以 Basic Multi-Link 元素的 SRS Support 子字段为门控；SRS Control 的 PPDU Response Duration 必须至少等于按 HE SU / EHT SU 格式、匹配带宽、NSS = 1、最长强制 GI（3.2 微秒）以及不短于 Multi-STA 与 Compressed BlockAck 中较大者的 PSDU 计算出的最长预期响应。PIFS 错误恢复（35.3.16.7）把响应结束时刻之差收紧到 4 微秒以内以允许 SIFS 或 PIFS 续传，否则在 8 微秒以内按上文“逐链路 SIFS 至 PIFS / PIFS 减 4 / 恰好 PIFS”的规则处理。介质同步（35.3.16.8）：aMediumSyncThreshold = 72 微秒；dot11MSDTimerDuration 初始化为 aPPDUMaxTime，并由 Medium Synchronization Delay Information 字段刷新；OFDM-ED 恢复（35.3.16.8.2）使用 dot11MSDOFDMEDthreshold（默认 −72 dBm），要求以 RTS 作为首帧，并把尝试次数限制为 dot11MSDTXOPMax（默认 1）；计时器在收到任何 MPDU 或一个带有指定 TXOP_DURATION 的 PPDU 时清零。AAR（35.3.16.8.3）以 dot11AAROptionImplemented 与 AAR Support 子字段为门控。TXS（35.2.1.2）以 TXS Mode 1 / Mode 2 Support 子字段为门控；分配从 MU-RTS TXS PPDU 结束处开始，且 STA 的首个 PPDU 必须携带 CTS（26.2.6.3）。两个 BQR 子字段（35.5.3）需要 dot11TwoBQRsOptionImplemented（隐含支持 320 MHz）以及 AP 的 Two BQRs Support 子字段，子信道位置定义见 9.2.4.7.6。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          561,
+          562,
+          564,
+          565,
+          566,
+          485,
+          487,
+          596
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.2.1.2",
+    "80211be-2024:35.2.2.1",
+    "80211be-2024:35.2.2.2",
+    "80211be-2024:35.3.16.5.1",
+    "80211be-2024:35.3.16.5.2",
+    "80211be-2024:35.3.16.6",
+    "80211be-2024:35.3.16.7",
+    "80211be-2024:35.3.16.8.1",
+    "80211be-2024:35.3.16.8.2",
+    "80211be-2024:35.3.16.8.3",
+    "80211be-2024:35.3.16.9",
+    "80211be-2024:35.5.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        485,
+        486,
+        487,
+        488,
+        489
+      ],
+      "note": "35.2.1.2 Triggered TXOP sharing (TXS) procedure (AP + non-AP behavior, Modes 1/2); 35.2.2.1-35.2.2.2 MU-RTS Trigger transmission and CTS response for EHT"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        560,
+        561,
+        562,
+        563,
+        564
+      ],
+      "note": "35.3.16.5.1-35.3.16.5.2 PPDU end-time alignment and SRS Control subfield; 35.3.16.6 start-time sync medium access; 35.3.16.7 PIFS error recovery on an NSTR link pair"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        564,
+        565,
+        566,
+        567
+      ],
+      "note": "35.3.16.8.1-35.3.16.8.3 medium access recovery: MediumSyncDelay timer, OFDM-ED based recovery, AP-assisted recovery (AAR); 35.3.16.9 ML retransmit procedures"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        596,
+        597
+      ],
+      "note": "35.5.3 Operation of the two BQR Control subfields (320 MHz per-subchannel availability reporting)"
+    }
+  ],
+  "track": "wifi7-eht"
+}

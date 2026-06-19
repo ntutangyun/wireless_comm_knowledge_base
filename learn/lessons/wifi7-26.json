@@ -1,0 +1,166 @@
+{
+  "id": "wifi7-26",
+  "title": {
+    "en": "Securing Every Link of an MLD: Per-Link Keys, MLO GTK/IGTK Distribution, Replay, and RSNA for MLO",
+    "zh": "为 MLD 的每条链路加密：逐链路密钥、MLO GTK/IGTK 分发、重放与面向 MLO 的 RSNA"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A Wi-Fi 7 device can hold one association that spans several physical links at once — 2.4, 5, and 6 GHz radios all bundled into a single multi-link device (MLD). That raises an awkward security question: do you authenticate three times, once per radio? Wi-Fi 7's answer is no. You authenticate once, at the MLD level, and that single act of trust is then projected onto every link. This lesson follows how one handshake protects traffic on links that each have their own MAC address and their own radio.",
+      "zh": "一台 Wi-Fi 7 设备可以用一个关联同时横跨多条物理链路——2.4、5、6 GHz 的射频被捆绑进一个多链路设备（MLD）。这带来一个棘手的安全问题：难道要认证三次、每个射频各认证一次？Wi-Fi 7 的答案是“不”。你只在 MLD 层面认证一次，这一次建立的信任随后被投射到每一条链路上。本课追踪这样一个事实：一次握手如何保护那些各自拥有独立 MAC 地址、独立射频的链路上的流量。"
+    },
+    {
+      "type": "prose",
+      "en": "The split is clean once you see it. The pairwise key — the one protecting your individually addressed (unicast) traffic — is derived once for the whole MLD. After a successful multi-link setup, a single PMKSA and a single PTKSA exist between the non-AP MLD and the AP MLD, identified by the pair of MLD MAC addresses, and that one PTKSA encrypts and decrypts unicast frames across all setup links. The group keys, by contrast, are per link: each setup link gets its own GTKSA (and an IGTKSA when management-frame protection is on, a BIGTKSA when beacon protection is on). Different APs affiliated with the same AP MLD use different GTK / IGTK / BIGTK values.",
+      "zh": "一旦看清，这个分工其实很干净。成对密钥（pairwise key）——保护你的单播流量（个体寻址帧）的那把钥匙——对整个 MLD 只派生一次。多链路建立成功后，非 AP MLD 与 AP MLD 之间存在唯一的 PMKSA 和唯一的 PTKSA，由这一对 MLD MAC 地址来标识；这一个 PTKSA 负责对所有已建立链路上的单播帧做加密与解密。相比之下，组密钥则是逐链路的：每条已建立链路各自拥有自己的 GTKSA（开启管理帧保护时还有 IGTKSA，开启信标保护时还有 BIGTKSA）。隶属于同一 AP MLD 的不同 AP 使用不同的 GTK / IGTK / BIGTK 值。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A neat way to remember it: pairwise = one key, MLD-wide; group = one key per link. The standard puts it bluntly — the AP MLD manages the PTKSA, while the affiliated APs each manage their own GTKSA. So who owns a key tells you its scope.",
+      "zh": "一个好记的方式：成对密钥 = 一把、覆盖整个 MLD；组密钥 = 每条链路一把。标准说得很直白——AP MLD 管理 PTKSA，而各隶属 AP 各自管理自己的 GTKSA。所以“谁拥有这把钥匙”就告诉你它的作用范围。"
+    },
+    {
+      "type": "prose",
+      "en": "Policy is negotiated MLD-wide too. For MLO the non-AP MLD puts exactly one RSNE into its (Re)Association Request — one AKM suite, one pairwise cipher, one group cipher — that is common to every affiliated AP. All APs of an AP MLD advertise the same RSNE (apart from the AKM list and the MFPR bit). One more EHT rule worth knowing: management-frame protection is mandatory for EHT STAs using RSNA, and an EHT STA must enable beacon protection — so on Wi-Fi 7, the IGTK and BIGTK aren't optional extras, they're expected on every link.",
+      "zh": "策略也是按 MLD 整体协商的。对 MLO 而言，非 AP MLD 在其（重）关联请求中只放入一个 RSNE——一个 AKM 套件、一个成对密码、一个组密码——并且对每个隶属 AP 都通用。一个 AP MLD 下的所有 AP 都广播相同的 RSNE（AKM 列表与 MFPR 位除外）。还有一条值得记住的 EHT 规则：对使用 RSNA 的 EHT STA，管理帧保护是强制的，且 EHT STA 必须开启信标保护——所以在 Wi-Fi 7 上，IGTK 和 BIGTK 并非可选附加项，而是每条链路上都被默认要求的。"
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    subgraph MLD-level[\"MLD level (one handshake)\"]\n      PMK[\"PMKSA\\n(AP MLD MAC, non-AP MLD MAC)\"] --> PTK[\"PTKSA\\nencrypts ALL unicast,\\nevery setup link\"]\n    end\n    PTK -->|delivers per-link group keys| L1[\"Link 1 (2.4 GHz)\\nGTK/IGTK/BIGTK #1\\nown PN/IPN/BIPN\"]\n    PTK -->|in 4-way msg 3| L2[\"Link 2 (5 GHz)\\nGTK/IGTK/BIGTK #2\\nown PN/IPN/BIPN\"]\n    PTK -->|MLO GTK KDE per link| L3[\"Link 3 (6 GHz)\\nGTK/IGTK/BIGTK #3\\nown PN/IPN/BIPN\"]",
+      "zh": "graph TD\n    subgraph MLD-level[\"MLD 层（一次握手）\"]\n      PMK[\"PMKSA\\n(AP MLD MAC, 非AP MLD MAC)\"] --> PTK[\"PTKSA\\n加密所有单播，\\n覆盖每条已建立链路\"]\n    end\n    PTK -->|分发逐链路组密钥| L1[\"链路 1 (2.4 GHz)\\nGTK/IGTK/BIGTK #1\\n各自 PN/IPN/BIPN\"]\n    PTK -->|在 4 次握手消息3中| L2[\"链路 2 (5 GHz)\\nGTK/IGTK/BIGTK #2\\n各自 PN/IPN/BIPN\"]\n    PTK -->|每链路一个 MLO GTK KDE| L3[\"链路 3 (6 GHz)\\nGTK/IGTK/BIGTK #3\\n各自 PN/IPN/BIPN\"]"
+    },
+    {
+      "type": "prose",
+      "en": "How do all those per-link group keys travel if there's only one handshake? The 4-way handshake runs between the AP MLD Authenticator and the non-AP MLD Supplicant, with every message carrying a MAC Address KDE holding the relevant MLD MAC address. Message 3 then bundles the group keys for every setup link at once: one MLO GTK KDE per link, plus an MLO IGTK KDE per link if MFP is on, plus an MLO BIGTK KDE per link if beacon protection is on. Each of those KDEs carries a LinkID field so the Supplicant knows which link's affiliated STA to install the key into. Later, if just one link's group key needs refreshing, the group key handshake can deliver new per-link keys over any enabled link.",
+      "zh": "既然只有一次握手，这些逐链路的组密钥又是怎么送达的？4 次握手在 AP MLD 认证者（Authenticator）与非 AP MLD 申请者（Supplicant）之间进行，每条消息都携带一个含相应 MLD MAC 地址的 MAC Address KDE。随后消息 3 一次性打包所有已建立链路的组密钥：每条链路一个 MLO GTK KDE，若开启 MFP 则每条链路再加一个 MLO IGTK KDE，若开启信标保护则每条链路再加一个 MLO BIGTK KDE。这些 KDE 各自携带一个 LinkID 字段，让申请者知道该把密钥装入哪条链路的隶属 STA。之后，若只需要刷新某一条链路的组密钥，组密钥握手可以在任意已启用链路上发送新的逐链路密钥。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 150' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='10' y='10' width='440' height='130' rx='6'/><text x='20' y='30' stroke='none' fill='currentColor' font-size='13' font-weight='bold'>MLO GTK KDE (per setup link)</text><rect x='20' y='45' width='55' height='34'/><text x='47' y='66' stroke='none' fill='currentColor' font-size='10' text-anchor='middle'>Key ID</text><text x='47' y='92' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>2 b</text><rect x='75' y='45' width='40' height='34'/><text x='95' y='66' stroke='none' fill='currentColor' font-size='10' text-anchor='middle'>Tx</text><text x='95' y='92' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>1 b</text><rect x='115' y='45' width='70' height='34'/><text x='150' y='66' stroke='none' fill='currentColor' font-size='10' text-anchor='middle'>Rsvd</text><text x='150' y='92' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>1 b</text><rect x='185' y='45' width='75' height='34'/><text x='222' y='66' stroke='none' fill='currentColor' font-size='10' text-anchor='middle'>LinkID</text><text x='222' y='92' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>4 b</text><rect x='260' y='45' width='80' height='34'/><text x='300' y='66' stroke='none' fill='currentColor' font-size='10' text-anchor='middle'>PN</text><text x='300' y='92' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>48 b</text><rect x='340' y='45' width='100' height='34'/><text x='390' y='66' stroke='none' fill='currentColor' font-size='10' text-anchor='middle'>GTK</text><text x='390' y='92' stroke='none' fill='currentColor' font-size='9' text-anchor='middle'>variable</text><text x='20' y='118' stroke='none' fill='currentColor' font-size='10'>LinkID tells the Supplicant which link this group key belongs to;</text><text x='20' y='132' stroke='none' fill='currentColor' font-size='10'>PN seeds the receive replay counter for that link.</text></svg>",
+      "caption": {
+        "en": "The MLO GTK KDE adds a LinkID and a per-link PN to the classic GTK KDE — that is what lets one handshake carry a distinct group key for every link.",
+        "zh": "MLO GTK KDE 在经典 GTK KDE 基础上增加了 LinkID 和逐链路 PN——正是这一点让一次握手能为每条链路携带各自不同的组密钥。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Encryption and replay protection are where the per-link / MLD-level split has to be handled with care. The one pairwise key is shared, but it must never reuse a packet number (PN) — so for an MLD, a single PN space is kept for the PTKSA and shared across all affiliated STAs; a frame retransmitted on a different link is encapsulated with the same PN. To keep the cipher consistent across links with different addresses, when an MLD encrypts a unicast Data frame the CCMP/GCMP AAD and nonce use the MLD MAC addresses, not the per-link STA addresses, and the receiver keeps a single set of replay counters for the PTKSA keyed by the transmitter and receiver MLD MAC addresses. Group traffic stays per link: each AP+STA keeps its own PN/IPN/BIPN for that link's GTK/IGTK/BIGTK.",
+      "zh": "加密与重放保护正是“逐链路 / MLD 层”分工必须小心处理的地方。那把唯一的成对密钥是共享的，但它绝不能重复使用某个包号（PN）——因此对一个 MLD，PTKSA 只维护单一的 PN 空间，并由所有隶属 STA 共享；在另一条链路上重传的帧使用相同的 PN 重新封装。为了让密码在地址不同的各条链路间保持一致，当 MLD 加密一个单播数据帧时，CCMP/GCMP 的 AAD 与 nonce 使用 MLD MAC 地址，而非逐链路的 STA 地址；接收方则为 PTKSA 维护单一的一组重放计数器，以发送方与接收方的 MLD MAC 地址为键。组流量则保持逐链路：每个 AP+STA 为该链路的 GTK/IGTK/BIGTK 各自维护自己的 PN/IPN/BIPN。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact MLO ownership rules: PTKSA at the MLD, GTK/IGTK/BIGTK per link",
+        "zh": "精确的 MLO 归属规则：PTKSA 在 MLD，GTK/IGTK/BIGTK 逐链路"
+      },
+      "en": "Clause 35.3.5.2 (ML security) states the model: after a successful ML (re)setup, one PMKSA and one PTKSA exist between the non-AP MLD and the AP MLD; in addition a GTKSA, an IGTKSA (if MFP enabled), and a BIGTKSA (if beacon protection enabled) are established for each setup link. The PTKSA is used for encapsulation/decapsulation of individually addressed MPDUs across all setup links, while a link's GTKSA protects group addressed MPDUs on that link. 'Different APs affiliated with an AP MLD use different GTK/IGTK/BIGTK. Each AP and the corresponding non-AP STA … maintains a single PN/IPN/BIPN for each GTK/IGTK/BIGTK.' The per-link group keys are delivered together by a single 4-way handshake (12.7.6); a triggered update may be sent by the Group key handshake (12.7.7) over any enabled link. Policy: 12.6.3.2 says the AP MLD manages the PTKSA while affiliated APs manage the GTKSA, and the non-AP MLD includes one RSNE with one AKM/pairwise/group selector common to all affiliated APs. On the cipher side, 12.5.2.3.2 / 12.5.4.3.2 mandate a single PN space for the PTKSA across affiliated STAs, the AAD and nonce constructions (12.5.2.3.3/.4, 12.5.4.3.4) substitute the transmitting MLD MAC for A2, and replay detection (12.5.2.4.4) keys the PTKSA replay counter on the transmitter/receiver MLD MAC addresses. The MLO GTK KDE (Figure 12-50d) carries Key ID, Tx, LinkID, PN, and GTK; 12.7.6.4 places one such KDE (plus MLO IGTK/BIGTK KDEs) per setup link into 4-way message 3, and 12.7.7.2 does the same for group key handshake message 1, with RSC set to 0 for MLO. Finally, 12.12.9 makes beacon protection mandatory for EHT RSN and requires SAE hash-to-element with AKM 00-0F-AC:24/25.",
+      "zh": "35.3.5.2 节（ML security）给出了模型：ML（重）建立成功后，非 AP MLD 与 AP MLD 之间存在一个 PMKSA 和一个 PTKSA；此外，为每条已建立链路还建立一个 GTKSA、一个 IGTKSA（若开启 MFP）和一个 BIGTKSA（若开启信标保护）。PTKSA 用于对所有已建立链路上的个体寻址 MPDU 做封装/解封装，而某链路的 GTKSA 保护该链路上的组寻址 MPDU。“隶属于一个 AP MLD 的不同 AP 使用不同的 GTK/IGTK/BIGTK。每个 AP 及对应的非 AP STA……为每个 GTK/IGTK/BIGTK 维护单一的 PN/IPN/BIPN。”逐链路的组密钥由单次 4 次握手（12.7.6）一并送达；被触发的更新可由组密钥握手（12.7.7）在任意已启用链路上发送。策略层面：12.6.3.2 规定 AP MLD 管理 PTKSA，而隶属 AP 管理 GTKSA，且非 AP MLD 只放入一个 RSNE，其 AKM/成对/组选择子对所有隶属 AP 通用。在密码层面，12.5.2.3.2 / 12.5.4.3.2 规定 PTKSA 在所有隶属 STA 间共享单一 PN 空间，AAD 与 nonce 构造（12.5.2.3.3/.4、12.5.4.3.4）用发送方 MLD MAC 替代 A2，重放检测（12.5.2.4.4）以发送/接收 MLD MAC 地址作为 PTKSA 重放计数器的键。MLO GTK KDE（图 12-50d）携带 Key ID、Tx、LinkID、PN 和 GTK；12.7.6.4 在 4 次握手消息 3 中为每条已建立链路放入这样一个 KDE（外加 MLO IGTK/BIGTK KDE），12.7.7.2 对组密钥握手消息 1 也如此，且 MLO 下 RSC 置为 0。最后，12.12.9 规定 EHT RSN 必须开启信标保护，并要求使用 SAE hash-to-element 方法、AKM 取 00-0F-AC:24/25。",
+      "cite": {
+        "pdf_id": "80211be-2024",
+        "pages": [
+          512,
+          412,
+          416,
+          424,
+          428,
+          446
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        512
+      ],
+      "note": "35.3.5.2 ML security — one PMKSA/PTKSA at MLD level used across all setup links; per-link GTKSA/IGTKSA/BIGTKSA; different affiliated APs use different GTK/IGTK/BIGTK; single PN/IPN/BIPN per group key; delivery via single 4-way handshake, updates via group key handshake over any link"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        411,
+        412
+      ],
+      "note": "12.6.2 / 12.6.3.2 RSNA policy selection for MLO — one RSNE common to all affiliated APs; AP MLD manages PTKSA, affiliated APs manage GTKSA; MFP mandatory for EHT"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        401,
+        402,
+        403,
+        404,
+        405
+      ],
+      "note": "12.5.2.3 CCMP encapsulation and 12.5.2.4 decapsulation/replay — MLD MAC in AAD and CCM nonce; single PN space for PTKSA across affiliated STAs; same PN on retransmit on another link; PTKSA replay counters keyed by transmitter/receiver MLD MAC"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        406,
+        407
+      ],
+      "note": "12.5.4.3 GCMP encapsulation — EHT RSNA STA shall support GCMP-256; MLD MAC in AAD/nonce; single PN space for the PTKSA across affiliated STAs"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        413
+      ],
+      "note": "12.6.12 RSNA key management — 4-way and group key handshake run between AP MLD Authenticator and non-AP MLD Supplicant; affiliated APs manage per-link group keys"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        416,
+        417
+      ],
+      "note": "Figure 12-50d MLO GTK KDE (Key ID, Tx, LinkID, PN, GTK) and MLO IGTK/BIGTK/Link KDE formats; KDE selectors 16-19"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        419,
+        420,
+        423,
+        424
+      ],
+      "note": "12.7.6.1-12.7.6.4 4-way handshake for MLO — MAC Address KDE = MLD MAC in every message; message 3 carries one MLO GTK/IGTK/BIGTK KDE per setup link"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        427,
+        428
+      ],
+      "note": "12.7.7.1-12.7.7.2 group key handshake message 1 for MLO — MLO GTK/IGTK/BIGTK KDE per setup link; RSC = 0 for MLO"
+    },
+    {
+      "pdf_id": "80211be-2024",
+      "pages": [
+        446
+      ],
+      "note": "12.12.9 Security constraints for EHT — beacon protection mandatory; SAE hash-to-element; AKM 00-0F-AC:24 or :25"
+    }
+  ],
+  "covers": [
+    "80211be-2024:35.3.5.2",
+    "80211be-2024:12.6.3.2",
+    "80211be-2024:12.7.6.2",
+    "80211be-2024:12.7.6.3",
+    "80211be-2024:12.7.6.4",
+    "80211be-2024:12.7.6.5",
+    "80211be-2024:12.7.7.2",
+    "80211be-2024:12.5.2.3",
+    "80211be-2024:12.5.2.4",
+    "80211be-2024:12.5.4.3",
+    "80211be-2024:12.5.4.4",
+    "80211be-2024:12.12.9"
+  ],
+  "track": "wifi7-eht"
+}
