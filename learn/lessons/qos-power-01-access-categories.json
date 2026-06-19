@@ -1,0 +1,101 @@
+{
+  "id": "qos-power-01-access-categories",
+  "title": {
+    "en": "Why a Video Call Should Beat a Background Download: QoS and the Four Access Categories",
+    "zh": "为什么视频通话应该优先于后台下载：QoS 与四个访问类别"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Imagine your laptop is on a video call while a software update quietly downloads in the background. Both want to send packets over the same patch of air at the same instant — but they are not equally urgent. A few hundred milliseconds of delay ruins the call; the update couldn't care less if it pauses for a moment. The mental model of Wi-Fi Quality of Service (QoS) is exactly this: not all traffic is equal, so the airtime should not be handed out first-come-first-served. Time-critical traffic deserves to grab the air sooner and more often.",
+      "zh": "想象你的笔记本电脑正在进行视频通话，同时一个软件更新正在后台悄悄下载。两者都想在同一瞬间、通过同一片空中信道发送数据包——但它们的紧迫程度并不相同。几百毫秒的延迟就会毁掉这场通话；而更新如果暂停片刻则毫不在意。Wi-Fi 服务质量（QoS）的核心思想正是如此：并非所有流量都同等重要，因此空口时间不应该按“先到先得”来分配。对时间敏感的流量理应更早、更频繁地抢到信道。"
+    },
+    {
+      "type": "prose",
+      "en": "Plain Wi-Fi without QoS uses the DCF (Distributed Coordination Function): everyone listens, waits for the channel to go idle, then backs off a random amount before transmitting — a polite, fair scramble called CSMA/CA. Fair is nice, but fairness is the wrong goal when a voice frame is competing with a bulk download. To fix this, the QoS facility adds a Hybrid Coordination Function (HCF). Its everyday, contention-based half is called EDCA (Enhanced Distributed Channel Access), and EDCA is where prioritization actually happens.",
+      "zh": "不带 QoS 的普通 Wi-Fi 使用 DCF（分布式协调功能）：所有设备都先侦听，等信道空闲后，再退避一段随机时间才发送——这是一套礼貌而公平的争用机制，称为 CSMA/CA。公平固然好，但当一个语音帧要与大批量下载争抢时，“公平”就成了错误的目标。为了解决这个问题，QoS 机制引入了混合协调功能（HCF）。它在日常使用中、基于争用的那一半被称为 EDCA（增强型分布式信道访问），而优先级的区分正是在 EDCA 中真正发生的。"
+    },
+    {
+      "type": "prose",
+      "en": "EDCA's trick is to sort traffic into four buckets, called Access Categories (ACs). From highest to lowest priority they are: AC_VO (Voice), AC_VI (Video), AC_BE (Best Effort, the normal default), and AC_BK (Background, the lowest). Each category runs its own independent copy of the back-off machine, tuned differently. The high-priority categories wait a shorter idle time and draw smaller random back-offs, so on average they win the race to transmit. Your video call lives in AC_VI or AC_VO; the background update sits in AC_BK and politely loses most of the races.",
+      "zh": "EDCA 的诀窍是把流量分进四个“桶”，称为访问类别（AC）。从最高到最低优先级依次是：AC_VO（语音）、AC_VI（视频）、AC_BE（尽力而为，即普通默认）、以及 AC_BK（后台，最低）。每个类别都运行着自己独立的一份退避机制，且参数各不相同。高优先级类别等待的空闲时间更短、抽取的随机退避值更小，因此平均而言更容易赢得发送机会。你的视频通话归在 AC_VI 或 AC_VO 中；后台更新则待在 AC_BK 里，礼貌地输掉大多数竞争。"
+    },
+    {
+      "type": "prose",
+      "en": "How does a packet end up in the right bucket? Each QoS Data frame carries a QoS Control field in its MAC header, and inside it a small User Priority (UP) value — one of eight levels, 0 through 7, inherited from the upper layers (the same idea as 802.1D/802.1Q priority tags). EDCA maps those eight UPs onto the four ACs. So the application says 'this is voice, priority 6'; the UP rides along in every frame; and the MAC reads it to decide which of the four back-off engines should fight for the air on that packet's behalf.",
+      "zh": "数据包是如何进入正确的“桶”的呢？每个 QoS 数据帧都在其 MAC 头部携带一个 QoS Control（QoS 控制）字段，其中包含一个小小的用户优先级（UP）值——取值为 0 到 7 共八个等级，由上层继承而来（与 802.1D/802.1Q 优先级标签的思路相同）。EDCA 把这八个 UP 映射到四个 AC 上。于是应用层说“这是语音，优先级 6”；UP 便随每一帧一同传递；MAC 层读取它，决定应由四个退避引擎中的哪一个代表这个数据包去争抢信道。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Eight priorities, four categories — so they pair up. UP 1 and 2 → Background; UP 0 and 3 → Best Effort; UP 4 and 5 → Video; UP 6 and 7 → Voice. Notice UP 0 outranks UP 1 and 2: untagged everyday traffic (UP 0) is Best Effort, which sits above Background on purpose, so 'no priority set' never sinks below a deliberately deprioritized bulk transfer.",
+      "zh": "八个优先级、四个类别——因此它们两两配对。UP 1 和 2 → 后台；UP 0 和 3 → 尽力而为；UP 4 和 5 → 视频；UP 6 和 7 → 语音。注意 UP 0 的级别高于 UP 1 和 2：未打标签的日常流量（UP 0）属于尽力而为，它被有意安排在后台之上，这样“未设置优先级”的流量绝不会沉到一个被刻意降级的批量传输之下。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 480 240' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='12'><g fill='currentColor' stroke='currentColor'><text x='12' y='20' font-size='13' stroke='none'>User Priority (UP)</text><text x='300' y='20' font-size='13' stroke='none'>Access Category (AC)</text><rect x='12' y='34' width='34' height='24' fill='none'/><text x='22' y='51' stroke='none'>1</text><rect x='12' y='62' width='34' height='24' fill='none'/><text x='22' y='79' stroke='none'>2</text><rect x='12' y='98' width='34' height='24' fill='none'/><text x='22' y='115' stroke='none'>0</text><rect x='12' y='126' width='34' height='24' fill='none'/><text x='22' y='143' stroke='none'>3</text><rect x='12' y='162' width='34' height='24' fill='none'/><text x='22' y='179' stroke='none'>4</text><rect x='12' y='190' width='34' height='24' fill='none'/><text x='22' y='207' stroke='none'>5</text><line x1='46' y1='60' x2='298' y2='60' /><line x1='46' y1='74' x2='298' y2='60' /><line x1='46' y1='110' x2='298' y2='124' /><line x1='46' y1='138' x2='298' y2='124' /><line x1='46' y1='174' x2='298' y2='188' /><line x1='46' y1='202' x2='298' y2='188' /><rect x='298' y='46' width='150' height='28' fill='none'/><text x='306' y='64' stroke='none'>AC_BK  Background</text><rect x='298' y='110' width='150' height='28' fill='none'/><text x='306' y='128' stroke='none'>AC_BE  Best Effort</text><rect x='298' y='174' width='150' height='28' fill='none'/><text x='306' y='192' stroke='none'>AC_VI  Video</text><text x='306' y='228' stroke='none'>(UP 6,7 -&gt; AC_VO Voice, highest)</text></g></svg>",
+      "caption": {
+        "en": "EDCA collapses eight user priorities onto four access categories. Higher categories contend with shorter waits and smaller back-offs, so they statistically win the air more often.",
+        "zh": "EDCA 把八个用户优先级归并为四个访问类别。优先级更高的类别以更短的等待和更小的退避参与争用，因此在统计上更频繁地赢得空口。"
+      }
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    A[Frame to send] --> B{Read User Priority<br/>in QoS Control field}\n    B -->|UP 6,7| VO[AC_VO Voice]\n    B -->|UP 4,5| VI[AC_VI Video]\n    B -->|UP 0,3| BE[AC_BE Best Effort]\n    B -->|UP 1,2| BK[AC_BK Background]\n    VO --> C[Four independent EDCAFs<br/>each runs its own back-off]\n    VI --> C\n    BE --> C\n    BK --> C\n    C --> D{Internal collision?<br/>higher AC wins the TXOP}\n    D --> E[Winner transmits<br/>during its TXOP]",
+      "zh": "graph TD\n    A[待发送的帧] --> B{读取 QoS Control 字段中的<br/>用户优先级 UP}\n    B -->|UP 6,7| VO[AC_VO 语音]\n    B -->|UP 4,5| VI[AC_VI 视频]\n    B -->|UP 0,3| BE[AC_BE 尽力而为]\n    B -->|UP 1,2| BK[AC_BK 后台]\n    VO --> C[四个独立的 EDCAF<br/>各自运行自己的退避]\n    VI --> C\n    BE --> C\n    BK --> C\n    C --> D{内部冲突？<br/>更高优先级的 AC 赢得 TXOP}\n    D --> E[胜者在其 TXOP<br/>期间发送]"
+    },
+    {
+      "type": "prose",
+      "en": "When two of your own categories happen to be ready at the same moment, that is an internal collision — and EDCA resolves it inside the station: the higher-priority AC gets the transmit opportunity (the TXOP — the basic unit of 'the right to transmit', defined by a start time and a maximum length), while the lower AC backs off as if it had lost a real collision on the air. That is the whole intuition. Everything else in QoS — the exact wait times, contention windows, TXOP limits, and the power-saving tricks built on top — is tuning on this one frame: four buckets, sorted by user priority, each fighting for the air with its own dialed-in eagerness.",
+      "zh": "当你自己的两个类别恰好在同一时刻都准备就绪时，就发生了内部冲突——EDCA 会在站点内部解决它：优先级更高的 AC 获得发送机会（即 TXOP——“发送权”的基本单位，由一个起始时间和一个最大长度定义），而较低的 AC 则像在空中输掉了一次真实冲突那样退避。这就是全部的直觉。QoS 中的其他一切——精确的等待时间、争用窗口、TXOP 上限，以及在此之上构建的各种省电技巧——都是在这一框架上的调校：四个桶，按用户优先级分类，每个桶都以自己设定好的“积极程度”去争抢信道。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Where the standard actually defines this: HCF, EDCA, the AC table, and the QoS Control field",
+        "zh": "标准中究竟在哪里定义这些：HCF、EDCA、AC 表格与 QoS Control 字段"
+      },
+      "en": "Clause 10.2.3.2 (HCF contention based channel access, EDCA) is explicit: the EDCA mechanism provides differentiated, distributed access to the medium using eight UPs, and 'defines four access categories (ACs)'. Table 10-1 (UP-to-AC mappings) gives the exact pairing — UP 1,2→AC_BK; UP 0,3→AC_BE; UP 4,5→AC_VI; UP 6,7→AC_VO — with UP 0 (Best Effort) deliberately ranked above UP 1,2 (Background). Each AC runs an enhanced distributed channel access function (EDCAF) with its own EDCA parameters. Clause 10.23.1 frames the unit being competed for: 'the basic unit of allocation of the right to transmit onto the WM is the TXOP', defined by a starting time and a maximum length and won by a STA 'winning an instance of EDCA contention'; 10.23.2.1 shows the reference model with four independent EDCAFs and internal collision resolution. The carrier of priority is the QoS Control field (9.2.4.5), present in every Data frame whose QoS subfield equals 1; its TID subfield carries the traffic identifier / user priority that the UP-to-AC mapping consumes.",
+      "zh": "10.2.3.2 节（HCF 基于争用的信道访问，EDCA）写得很明确：EDCA 机制使用八个 UP 为介质提供有区分的、分布式的访问，并“定义了四个访问类别（AC）”。表 10-1（UP 到 AC 的映射）给出了精确的配对——UP 1,2→AC_BK；UP 0,3→AC_BE；UP 4,5→AC_VI；UP 6,7→AC_VO——其中 UP 0（尽力而为）被有意排在 UP 1,2（后台）之上。每个 AC 都运行一个增强型分布式信道访问功能（EDCAF），拥有各自的 EDCA 参数。10.23.1 节界定了被争抢的单位：“向无线介质发送的发送权的基本分配单位是 TXOP”，它由一个起始时间和一个最大长度定义，并由“赢得一次 EDCA 争用”的站点获得；10.23.2.1 节展示了带有四个独立 EDCAF 与内部冲突解决的参考模型。承载优先级的是 QoS Control 字段（9.2.4.5），它出现在每个 QoS 子字段等于 1 的数据帧中；其 TID 子字段携带的流量标识符／用户优先级正是 UP 到 AC 映射所消费的输入。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1877,
+          1998,
+          674
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.2.3.2",
+    "80211-2024:9.2.4.5",
+    "80211-2024:10.23.1"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1877
+      ],
+      "note": "10.2.3.2 HCF contention based channel access (EDCA) — four ACs, eight UPs, EDCAF; Table 10-1 UP-to-AC mapping"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1998
+      ],
+      "note": "10.23.1 HCF General + 10.23.2.1 reference model — TXOP as the unit of transmit right; four independent EDCAFs"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        674
+      ],
+      "note": "9.2.4.5 QoS Control field — present in Data frames with QoS subfield=1; TID carries user priority"
+    }
+  ],
+  "track": "qos-power"
+}

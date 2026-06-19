@@ -1,0 +1,104 @@
+{
+  "id": "qos-power-03-aggregation-amsdu-ampdu",
+  "title": {
+    "en": "Stop Paying Postage Per Letter: Frame Aggregation with A-MSDU and A-MPDU",
+    "zh": "别再为每封信单独付邮费：A-MSDU 与 A-MPDU 帧聚合"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every Wi-Fi transmission carries fixed costs that have nothing to do with how much data you are actually sending. Before the payload there is a PHY preamble, then a MAC header, then after it an interframe space and an acknowledgment that comes back. Send one tiny 100-byte packet and that overhead can dwarf the payload — you spend most of your airtime on the envelope, not the letter. Now imagine sending a thousand such packets one at a time: the channel is busy almost entirely with postage. Aggregation is the fix: bundle many payloads into one bigger 'envelope' so the fixed cost is paid once and amortised across everything inside.",
+      "zh": "每一次 Wi-Fi 发送都带有一些固定开销，而这些开销与你真正要发送多少数据毫无关系。在有效载荷之前要有 PHY 前导码，然后是 MAC 头部，发送之后还有帧间间隔以及对端回送的确认（ACK）。如果你只发一个 100 字节的小包，这些开销可能远远超过载荷本身——你的大部分空口时间都花在了“信封”上，而不是“信”上。再想象一下要逐个发送一千个这样的小包：信道几乎全程都在为“邮费”忙碌。聚合就是解决之道：把许多有效载荷打包进一个更大的“信封”，让固定开销只付一次，并摊薄到里面所有内容上。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "This is the natural partner of the TXOP from the previous lesson. A TXOP hands you a fat block of contention-free airtime; aggregation is what fills it efficiently. A wide TXOP with un-aggregated single frames still wastes airtime on per-frame overhead — aggregation is how you cash in the airtime you won.",
+      "zh": "这正是上一课中 TXOP 的天然搭档。TXOP 给你一段免竞争的“整块”空口时间；而聚合则负责高效地把它填满。如果在一个很宽的 TXOP 里仍然逐个发送未聚合的单帧，空口时间照样会被逐帧开销浪费掉——聚合正是把你赢得的空口时间真正兑现的方式。"
+    },
+    {
+      "type": "prose",
+      "en": "802.11 gives you two complementary levels of aggregation. The lower one is A-MSDU (Aggregate MAC Service Data Unit): several MSDUs — the actual upper-layer payloads — are concatenated under a single MAC header and a single FCS, then carried inside one QoS Data frame. Because there is just one MAC header for the whole bundle, the rule is strict: every constituent MSDU must share the same TID/priority and map to one receiver (one RA) and one transmitter (one TA). It is the tightest, lowest-overhead packing, but everything inside shares one fate — one CRC covers the lot.",
+      "zh": "802.11 提供了两个互补层级的聚合。较低的一层是 A-MSDU（聚合 MAC 服务数据单元）：把若干个 MSDU——也就是真正的上层有效载荷——拼接在一个共享的 MAC 头部和一个共享的 FCS 之下，然后装进一个 QoS Data 帧里发送。由于整个捆包只有一个 MAC 头部，规则就很严格：每个成员 MSDU 必须具有相同的 TID/优先级，且映射到同一个接收方（同一个 RA）和同一个发送方（同一个 TA）。这是最紧凑、开销最低的打包方式，但里面的所有内容“同生共死”——只有一个 CRC 覆盖全部。"
+    },
+    {
+      "type": "prose",
+      "en": "The higher level is A-MPDU (Aggregate MAC Protocol Data Unit): many fully formed MPDUs — each with its own MAC header and its own FCS — are strung together behind one shared PHY preamble inside a single PHY transmission (PPDU). Each sub-frame is separated by an MPDU delimiter, so the receiver can find sub-frame boundaries and check each one independently. The payoff is twofold: the expensive preamble and PHY overhead are paid once for the whole burst, and because each MPDU keeps its own FCS, a single corrupted sub-frame can be selectively re-sent via Block Ack instead of dragging the whole burst down. You can even nest the two — A-MSDUs packed inside the MPDUs of an A-MPDU — for compounding savings.",
+      "zh": "更高的一层是 A-MPDU（聚合 MAC 协议数据单元）：把许多已完整成形的 MPDU——每个都带有自己的 MAC 头部和自己的 FCS——串接在一个共享的 PHY 前导码之后，放进单次 PHY 发送（PPDU）里。每个子帧之间由一个 MPDU 定界符（delimiter）分隔，于是接收方既能找到子帧边界，又能独立地逐个校验。好处有两重：昂贵的前导码和 PHY 开销对整串突发只付一次；并且由于每个 MPDU 保留了自己的 FCS，单个损坏的子帧可以通过块确认（Block Ack）被有选择地重传，而不必拖累整串突发。你甚至可以把两者嵌套——在 A-MPDU 的各个 MPDU 内部再各装一个 A-MSDU——以获得叠加的节省。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 230' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='8' y='20' fill='currentColor' stroke='none' font-size='13' font-weight='bold'>A-MSDU (one MAC header, one FCS)</text><rect x='8' y='30' width='60' height='28'/><text x='38' y='48' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>MAC hdr</text><rect x='68' y='30' width='70' height='28'/><text x='103' y='48' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>MSDU 1</text><rect x='138' y='30' width='70' height='28'/><text x='173' y='48' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>MSDU 2</text><rect x='208' y='30' width='70' height='28'/><text x='243' y='48' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>MSDU 3</text><rect x='278' y='30' width='44' height='28'/><text x='300' y='48' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>FCS</text><text x='8' y='100' fill='currentColor' stroke='none' font-size='13' font-weight='bold'>A-MPDU (one preamble, per-sub-frame FCS)</text><rect x='8' y='112' width='52' height='30'/><text x='34' y='131' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>preamble</text><rect x='64' y='112' width='16' height='30'/><text x='72' y='160' fill='currentColor' stroke='none' font-size='8' text-anchor='middle'>delim</text><rect x='80' y='112' width='86' height='30'/><text x='123' y='131' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>MPDU 1 +FCS</text><rect x='170' y='112' width='16' height='30'/><text x='178' y='160' fill='currentColor' stroke='none' font-size='8' text-anchor='middle'>delim</text><rect x='186' y='112' width='86' height='30'/><text x='229' y='131' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>MPDU 2 +FCS</text><rect x='276' y='112' width='16' height='30'/><text x='284' y='160' fill='currentColor' stroke='none' font-size='8' text-anchor='middle'>delim</text><rect x='292' y='112' width='86' height='30'/><text x='335' y='131' fill='currentColor' stroke='none' font-size='9' text-anchor='middle'>MPDU 3 +FCS</text><text x='8' y='200' fill='currentColor' stroke='none' font-size='10'>One CRC for the whole A-MSDU vs. one CRC per A-MPDU sub-frame</text><text x='8' y='216' fill='currentColor' stroke='none' font-size='10'>= selective Block-Ack retransmission for A-MPDU.</text></svg>",
+      "caption": {
+        "en": "A-MSDU packs payloads under a single MAC header and one FCS; A-MPDU strings whole MPDUs (each with its own FCS) behind one preamble, separated by delimiters.",
+        "zh": "A-MSDU 把多个载荷打包在单一 MAC 头部和一个 FCS 之下；A-MPDU 则把完整的 MPDU（每个都带自己的 FCS）串在一个前导码之后，由定界符分隔。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Aggregation is not unlimited — the receiver sets the ceiling. For A-MSDU, a station advertises a Maximum A-MSDU Length (and HT/VHT stations advertise a maximum number of MSDUs per A-MSDU); a transmitter must not exceed what the recipient declared. For A-MPDU, each station advertises a Maximum A-MPDU Length Exponent in its capabilities, and the transmitter must keep the burst within the receiver's declared limit. On top of size there is a timing rule: the Minimum MPDU Start Spacing the receiver declares forces a minimum number of octets between the starts of two consecutive MPDUs, so a slow receiver's MAC has time to process each one. If a burst would violate it, the transmitter inserts padding — extra MPDU delimiters with a zero-length field — to stretch the spacing.",
+      "zh": "聚合并非没有上限——上限由接收方设定。对于 A-MSDU，站点会通告一个最大 A-MSDU 长度（HT/VHT 站点还会通告每个 A-MSDU 中的最大 MSDU 数量）；发送方不得超过接收方所声明的值。对于 A-MPDU，每个站点在其能力字段中通告一个“最大 A-MPDU 长度指数（Maximum A-MPDU Length Exponent）”，发送方必须把整串突发控制在接收方声明的上限之内。除了大小，还有一条时序规则：接收方声明的“最小 MPDU 起始间隔（Minimum MPDU Start Spacing）”强制规定了相邻两个 MPDU 起始位置之间的最小字节数，以便较慢的接收方 MAC 有时间逐个处理。如果某串突发会违反该规则，发送方就插入填充——带有零长度字段的额外 MPDU 定界符——来拉开间隔。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact A-MSDU constraints and A-MPDU length / spacing rules",
+        "zh": "精确的 A-MSDU 约束与 A-MPDU 长度 / 间隔规则"
+      },
+      "en": "Clause 10.11 fixes the A-MSDU addressing rule: an A-MSDU contains only MSDUs whose DA values map to a single RA and whose SA values map to a single TA, and all constituent MSDUs must carry the same priority parameter from the MA-UNITDATA.request primitive. A non-DMG/non-S1G STA must not transmit an A-MSDU unless dot11HighThroughputOptionImplemented is true and it has received an HT Capabilities element from the recipient; in an HT PPDU the A-MSDU must not exceed the recipient's Maximum A-MSDU Length, and a VHT STA must not exceed the recipient's Max Number Of MSDUs In A-MSDU. Clause 10.12.1 constrains A-MPDU contents by context (Table 9-660) — e.g. all contained MPDUs share the same Protocol Version, and matching QoS Control bits must agree. Clause 10.12.2 ties the A-MPDU length to the recipient's Maximum A-MPDU Length Exponent (per HT/VHT/HE/S1G/DMG capability element), with MPDUs in an HT-PPDU A-MPDU capped at 4095 octets. Clause 10.12.3 defines minimum MPDU start spacing: the octet count N between the starts of two consecutive MPDUs, measured at the PHY SAP, must satisfy Equation (10-12) (with an extra 2^MMSF factor for an HE TB PPDU), and any shortfall is filled with zero-length MPDU delimiters as padding.",
+      "zh": "10.11 节锁定了 A-MSDU 的寻址规则：一个 A-MSDU 只能包含那些 DA 值都映射到同一个 RA、且 SA 值都映射到同一个 TA 的 MSDU，并且所有成员 MSDU 必须携带来自 MA-UNITDATA.request 原语的相同优先级参数。非 DMG/非 S1G 的站点除非 dot11HighThroughputOptionImplemented 为真、且已从接收方收到 HT Capabilities 元素，否则不得发送 A-MSDU；在 HT PPDU 中，A-MSDU 不得超过接收方的最大 A-MSDU 长度，而 VHT 站点不得超过接收方的“A-MSDU 中最大 MSDU 数量”。10.12.1 节按上下文（表 9-660）约束 A-MPDU 的内容——例如所含的所有 MPDU 必须具有相同的协议版本，相互对应的 QoS Control 比特也必须一致。10.12.2 节把 A-MPDU 长度与接收方的“最大 A-MPDU 长度指数”绑定（依 HT/VHT/HE/S1G/DMG 各能力元素而定），且 HT-PPDU 中 A-MPDU 内的 MPDU 上限为 4095 字节。10.12.3 节定义最小 MPDU 起始间隔：在 PHY SAP 处测量的相邻两个 MPDU 起始位置之间的字节数 N 必须满足式 (10-12)（对 HE TB PPDU 还要乘以一个 2^MMSF 因子），不足的部分以零长度 MPDU 定界符作为填充补齐。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1971,
+          1976,
+          1977,
+          1978
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.11",
+    "80211-2024:10.12.1",
+    "80211-2024:10.12.2",
+    "80211-2024:10.12.3"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1971,
+        1973,
+        1974
+      ],
+      "note": "10.11 A-MSDU operation — single RA/TA mapping, same-priority constraint, HT/VHT length and MSDU-count limits"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1976
+      ],
+      "note": "10.12.1 A-MPDU contents — context-constrained MPDUs, common Protocol Version, matching QoS Control bits"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1976,
+        1977
+      ],
+      "note": "10.12.2 A-MPDU length limit rules — Maximum A-MPDU Length Exponent; 4095-octet MPDU cap in HT PPDU"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1977,
+        1978
+      ],
+      "note": "10.12.3 Minimum MPDU start spacing rules — Equation (10-12); zero-length MPDU delimiter padding"
+    }
+  ],
+  "track": "qos-power"
+}

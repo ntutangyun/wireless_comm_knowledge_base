@@ -1,0 +1,103 @@
+{
+  "id": "qos-power-06-twt",
+  "title": {
+    "en": "Booking a Wake-Up Call: Target Wake Time (TWT)",
+    "zh": "预约闹钟唤醒：目标唤醒时间（TWT）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Classic Wi-Fi power save is a habit of constant checking: the station dozes, but it still has to wake for every beacon (roughly ten times a second) just to ask 'anything for me?' Target Wake Time (TWT), introduced with HE / Wi-Fi 6, flips that around. Instead of checking constantly, the station and the AP agree in advance on specific future time windows — Service Periods (SPs) — when the station will be awake to exchange traffic. Outside those windows it can sleep deeply. The intuition: stop saying 'let me keep checking' and start saying 'I'll be awake at 9:00 — talk to me then.'",
+      "zh": "传统的 Wi-Fi 省电是一种“不停查看”的习惯：站点会打盹，但每个信标都得醒来一次（大约每秒十次），只为问一句“有我的数据吗？”。HE / Wi-Fi 6 引入的目标唤醒时间（TWT）则把这套逻辑反了过来。站点与 AP 不再不停查看，而是提前约定好若干特定的未来时间窗——服务周期（Service Period，SP）——在这些窗口内站点保持清醒、收发数据；窗口之外则可以深度睡眠。直觉上就是：不再说“我一直盯着看”，而是改口说“我 9 点会醒来——到时候跟我说”。"
+    },
+    {
+      "type": "prose",
+      "en": "The standard frames TWT as a tool for the AP to manage BSS activity: by allocating stations to non-overlapping times and/or frequencies and concentrating frame exchanges into predefined Service Periods, the AP both minimises contention between stations and cuts the time a power-saving station must stay awake. Two wins at once — less airtime fighting, and longer battery life — which is exactly why TWT sits in the QoS, power, and efficiency part of the standard.",
+      "zh": "标准把 TWT 定位为 AP 管理 BSS 活动的工具：通过把各个站点分配到互不重叠的时间和/或频率上，并把帧交换集中到预定义的服务周期内，AP 既能最大限度地减少站点之间的竞争，又能缩短处于省电模式的站点必须保持清醒的时间。一举两得——空口争用更少，电池续航更长——这也正是 TWT 被归入标准中 QoS、功耗与效率这一部分的原因。"
+    },
+    {
+      "type": "prose",
+      "en": "TWT comes in two flavours. An individual TWT is a private appointment: one station negotiates a personal schedule with the AP (its TWT responder) — wake interval, target wake time, and duration tailored to that station's traffic. A broadcast TWT is a group schedule: the AP advertises one shared SP (in a broadcast TWT element inside Beacons) and assigns many stations to it. Broadcast TWT shines for fleets of IoT sensors — instead of dozens of devices all waking and contending at once, the AP spreads them across staggered SPs, smoothing out the contention.",
+      "zh": "TWT 有两种形式。独立 TWT（individual TWT）是一份私人预约：单个站点与 AP（它的 TWT 响应方）协商出一份专属时间表——唤醒间隔、目标唤醒时间和持续时长，都按该站点的流量量身定制。广播 TWT（broadcast TWT）则是一份群组时间表：AP 在信标里的广播 TWT 元素中通告一个共享 SP，并把众多站点分配进去。广播 TWT 在大量物联网传感器场景中尤为出色——AP 不会让几十台设备同时醒来争抢信道，而是把它们错开分散到不同的 SP 中，从而平抑竞争。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A TWT can be 'trigger-enabled': inside the SP the AP sends a Trigger frame, and the woken stations reply with uplink data in an HE TB PPDU on the resources the AP assigned. That marries TWT scheduling with OFDMA multi-user access — the station wakes exactly when the AP is ready to schedule it, so airtime is barely wasted on contention.",
+      "zh": "TWT 可以是“触发使能（trigger-enabled）”的：在 SP 内 AP 发送一个触发帧（Trigger frame），被唤醒的站点便在 AP 分配的资源上、以 HE TB PPDU 的形式回传上行数据。这把 TWT 的调度与 OFDMA 多用户接入结合在一起——站点恰好在 AP 准备好调度它时才醒来，因此几乎没有空口时间浪费在争用上。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Station (TWT requester)\n    participant AP as AP (TWT responder)\n    Note over STA,AP: Setup once\n    STA->>AP: TWT request (wake interval, duration)\n    AP->>STA: TWT response (Accept)\n    Note over STA: doze deeply until target wake time\n    Note over STA,AP: --- TWT Service Period begins ---\n    AP->>STA: Basic Trigger frame\n    STA->>AP: PS-Poll / QoS Null (I'm awake)\n    AP->>STA: DL data (DL MU PPDU)\n    STA->>AP: BlockAck\n    Note over STA,AP: --- SP ends ---\n    Note over STA: doze again until next SP",
+      "zh": "sequenceDiagram\n    participant STA as 站点 (TWT 请求方)\n    participant AP as AP (TWT 响应方)\n    Note over STA,AP: 仅协商一次\n    STA->>AP: TWT 请求 (唤醒间隔, 持续时长)\n    AP->>STA: TWT 响应 (接受)\n    Note over STA: 深度打盹直到目标唤醒时间\n    Note over STA,AP: --- TWT 服务周期开始 ---\n    AP->>STA: Basic Trigger 帧\n    STA->>AP: PS-Poll / QoS Null (我醒着)\n    AP->>STA: 下行数据 (DL MU PPDU)\n    STA->>AP: BlockAck\n    Note over STA,AP: --- SP 结束 ---\n    Note over STA: 再次打盹直到下一个 SP"
+    },
+    {
+      "type": "prose",
+      "en": "What actually happens at the boundary of an SP? A station in power-save mode wakes at its target wake time, exchanges its traffic, and then — crucially — is allowed to go back to sleep once a minimum awake time has elapsed, even if it is still waiting on the AP. That floor is called the AdjustedMinimumTWTWakeDuration: the station must stay awake at least that long from the SP start, but after it passes (and, for a trigger-enabled SP, if no Trigger frames arrive) the station may drop back to doze without endlessly listening. An explicit SP-termination signal lets it doze even earlier.",
+      "zh": "在 SP 的边界上究竟发生了什么？处于省电模式的站点在它的目标唤醒时间醒来，收发完自己的数据，然后——关键之处在于——一旦最短清醒时间过去，它就被允许重新入睡，即使它仍在等待 AP 的回复。这个下限叫做 AdjustedMinimumTWTWakeDuration（调整后的最短 TWT 唤醒时长）：站点从 SP 开始算起必须至少保持清醒这么久，但这段时间一过（对触发使能的 SP 而言，若没有触发帧到来），站点便可以重新进入打盹状态，而不必无休止地侦听。一个明确的 SP 终止信号则能让它更早入睡。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact doze rules during a TWT SP",
+        "zh": "TWT SP 期间精确的入睡规则"
+      },
+      "en": "Clause 26.8.5 sets the power-save rules that apply inside both individual and broadcast TWT SPs. A TWT requesting or scheduled STA that is not in PS mode but transmits a frame with the Power Management subfield set to 1 during the SP must remain awake until AdjustedMinimumTWTWakeDuration has elapsed from the SP start time, or until a TWT SP termination event is detected — whichever comes first. A STA already in PS mode that is awake for the SP may transition to doze once that same duration has elapsed, even if it earlier sent a PS-Poll or U-APSD trigger frame and has not yet received the expected response from the AP. For a trigger-enabled SP, if the duration elapses from the scheduled start and no Trigger frames have been received, the STA may doze provided no other condition forces it to stay awake. And when a TWT SP termination event is detected, a participating PS-mode STA may doze immediately, without waiting out the AdjustedMinimumTWTWakeDuration. Each SP is uniquely keyed: a broadcast TWT SP by the <broadcast TWT ID, scheduling-AP MAC> tuple, an individual TWT SP by the <flow id, requester MAC, responder MAC> triple.",
+      "zh": "26.8.5 节规定了同时适用于独立 TWT SP 与广播 TWT SP 内部的省电规则。一个并不处于 PS 模式、却在 SP 期间发送了 Power Management 子字段置为 1 的帧的 TWT 请求方或被调度站点，必须保持清醒，直到从 SP 开始时间算起 AdjustedMinimumTWTWakeDuration 已经过去，或检测到 TWT SP 终止事件——以两者中较早者为准。一个本就处于 PS 模式、在该 SP 期间清醒的站点，一旦同样的时长过去，即可转入打盹状态，即便它此前已发送过 PS-Poll 或 U-APSD 触发帧、且尚未收到 AP 的预期回复。对触发使能的 SP 而言，若从预定开始时间算起该时长已过、却没有收到任何触发帧，则只要没有其他条件强制其保持清醒，站点便可入睡。而当检测到 TWT SP 终止事件时，参与该 SP 的 PS 模式站点可立即入睡，无需等满 AdjustedMinimumTWTWakeDuration。每个 SP 都有唯一标识：广播 TWT SP 由 <广播 TWT ID, 调度 AP 的 MAC 地址> 二元组标识，独立 TWT SP 由 <流标识, 请求方 MAC, 响应方 MAC> 三元组标识。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          4072
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Takeaway: TWT turns power save from reactive polling into a scheduled appointment book. Individual TWT is a per-station appointment; broadcast TWT is a shared calendar the AP hands out to crowds of devices. Both let a station sleep through everything except its own slot — which is why Wi-Fi 6 made battery-powered IoT genuinely practical.",
+      "zh": "要点：TWT 把省电从被动轮询变成了一本排好的预约簿。独立 TWT 是“逐站点的预约”；广播 TWT 则是 AP 发给一大群设备的“共享日程”。两者都让站点除了自己的时段之外可以一直睡下去——这正是 Wi-Fi 6 让电池供电的物联网真正变得实用的原因。"
+    }
+  ],
+  "covers": [
+    "80211-2024:26.8.1",
+    "80211-2024:26.8.2",
+    "80211-2024:26.8.3.1",
+    "80211-2024:26.8.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4053
+      ],
+      "note": "26.8.1 General — TWT lets the AP manage BSS activity, minimise contention, and reduce awake time via non-overlapping times/frequencies and predefined service periods"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4053,
+        4054,
+        4055
+      ],
+      "note": "26.8.2 Individual TWT agreements — per-station negotiation, trigger-enabled/announced TWT, Figure 26-9 example"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4058,
+        4059
+      ],
+      "note": "26.8.3.1 Broadcast TWT general — AP-advertised shared schedule, <broadcast TWT ID, MAC> tuple, Figure 26-10 example"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        4072
+      ],
+      "note": "26.8.5 Power save operation during TWT SPs — AdjustedMinimumTWTWakeDuration floor and doze transitions"
+    }
+  ],
+  "track": "qos-power"
+}

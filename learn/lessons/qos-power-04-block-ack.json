@@ -1,0 +1,107 @@
+{
+  "id": "qos-power-04-block-ack",
+  "title": {
+    "en": "One Receipt for Many Frames: Block Ack",
+    "zh": "一张回执确认一批帧：块确认（Block Ack）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Aggregation let a sender bundle dozens of sub-frames into one big transmission (an A-MPDU) so it pays the airtime overhead once instead of dozens of times. But there is a catch: if the receiver then sends back a separate acknowledgment for every single sub-frame, all of those tiny ACKs — each with its own preamble and inter-frame spacing — would eat up exactly the airtime aggregation just saved. Block Ack fixes the other half of the problem: it lets the receiver confirm a whole window of frames with a single BlockAck frame.",
+      "zh": "聚合让发送方把几十个子帧打包进一次大的传输（A-MPDU），从而只支付一次空口开销，而不是几十次。但这里有个隐患：如果接收方随后对每一个子帧都单独回一个确认，那么这些细碎的 ACK——每个都带着自己的前导码和帧间间隔——会把聚合刚省下来的空口时间又吃回去。块确认（Block Ack）解决的正是问题的另一半：它让接收方用一个 BlockAck 帧就确认一整窗的帧。"
+    },
+    {
+      "type": "prose",
+      "en": "The standard states the purpose plainly: the block ack mechanism improves channel efficiency by aggregating several acknowledgments into one frame. The two roles are the originator (the STA with QoS Data to send) and the recipient (the receiver of that data). Before any of this happens, the two sides set up a block ack agreement — usually by exchanging an ADDBA Request and an ADDBA Response — which pins down the TID being protected and a buffer size that bounds how much state the recipient must keep. A-MPDU plus Block Ack is the workhorse combo behind modern Wi-Fi throughput.",
+      "zh": "标准把目的说得很直白：块确认机制通过把多个确认聚合进一个帧来提升信道效率。其中有两个角色——发起方（originator，有 QoS 数据要发的站点）和接收方（recipient，接收这些数据的一方）。在这一切发生之前，双方要先建立一个块确认协定（block ack agreement）——通常通过交换 ADDBA Request 和 ADDBA Response 帧——它确定了被保护的 TID，以及一个限定接收方需要维护多少状态的缓冲区大小。A-MPDU 加 Block Ack，正是现代 Wi-Fi 吞吐量背后的主力组合。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Buffer Size is the contract. The ADDBA Response's Buffer Size field caps how many outstanding frames the recipient promises to track, and the originator must shrink its transmission window to fit. Non-HE STAs are capped at 64, HE (Wi-Fi 6) STAs can negotiate up to 256, and EDMG can go to 1024 — a bigger window means more frames in flight before an ack is needed, which is exactly what high-rate links want.",
+      "zh": "Buffer Size（缓冲区大小）就是这份合同。ADDBA Response 中的 Buffer Size 字段限定了接收方承诺要跟踪的在途帧数量，发起方必须把自己的发送窗口收缩到这个上限以内。非 HE 站点上限为 64，HE（Wi-Fi 6）站点可协商到 256，EDMG 甚至可达 1024——窗口越大，意味着在需要确认之前可以有更多帧在途，而这正是高速率链路所追求的。"
+    },
+    {
+      "type": "prose",
+      "en": "Once the agreement exists, the transfer itself is elegant. The originator wins access to the medium, sends an A-MPDU of QoS Data frames (each with its Ack Policy set to Block Ack), and then asks for the receipt by sending a BlockAckReq frame. The recipient answers with a single BlockAck frame. Inside that BlockAck is a bitmap: one bit per frame in the window, set to 1 for each sub-frame that arrived intact. The originator reads the bitmap, sees exactly which frames are missing, and selectively retransmits only those gaps — never the whole batch.",
+      "zh": "一旦协定建立，传输本身就很优雅。发起方赢得介质访问权，发送一个由 QoS 数据帧组成的 A-MPDU（每个帧的 Ack Policy 都设为 Block Ack），然后通过发送一个 BlockAckReq 帧来索要回执。接收方用一个 BlockAck 帧作答。这个 BlockAck 帧里装着一张位图（bitmap）：窗口中每个帧对应一位，凡是完好到达的子帧就把对应位置 1。发起方读取这张位图，准确看出哪些帧丢了，于是只针对这些缺口进行选择性重传——绝不会重发整批。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant O as Originator\n    participant R as Recipient\n    Note over O,R: ADDBA Request / Response -> agreement (TID, Buffer Size)\n    O->>R: A-MPDU [#5 #6 #7 #8 ... QoS Data, Ack Policy=Block Ack]\n    Note over R: scoreboard: #7 lost, rest OK\n    O->>R: BlockAckReq (starting sequence)\n    R->>O: BlockAck (bitmap: 1 1 0 1 ...)\n    Note over O: retransmit only #7\n    O->>R: A-MPDU [#7 retx + #9 #10 ...]",
+      "zh": "sequenceDiagram\n    participant O as 发起方\n    participant R as 接收方\n    Note over O,R: ADDBA Request / Response -> 建立协定 (TID, Buffer Size)\n    O->>R: A-MPDU [#5 #6 #7 #8 ... QoS 数据, Ack Policy=Block Ack]\n    Note over R: 记分牌: #7 丢失, 其余正常\n    O->>R: BlockAckReq (起始序号)\n    R->>O: BlockAck (位图: 1 1 0 1 ...)\n    Note over O: 仅重传 #7\n    O->>R: A-MPDU [#7 重传 + #9 #10 ...]"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 360 120' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='2'><text x='4' y='16' fill='currentColor' stroke='none' font-size='12'>BlockAck bitmap (one bit per frame in window)</text><g><rect x='8' y='40' width='40' height='40'/><rect x='48' y='40' width='40' height='40'/><rect x='88' y='40' width='40' height='40'/><rect x='128' y='40' width='40' height='40'/><rect x='168' y='40' width='40' height='40'/><rect x='208' y='40' width='40' height='40'/></g><text x='24' y='66' fill='currentColor' stroke='none' font-size='16'>1</text><text x='64' y='66' fill='currentColor' stroke='none' font-size='16'>1</text><text x='104' y='66' fill='currentColor' stroke='none' font-size='16'>0</text><text x='144' y='66' fill='currentColor' stroke='none' font-size='16'>1</text><text x='184' y='66' fill='currentColor' stroke='none' font-size='16'>1</text><text x='224' y='66' fill='currentColor' stroke='none' font-size='16'>0</text><text x='12' y='100' fill='currentColor' stroke='none' font-size='10'>#5</text><text x='52' y='100' fill='currentColor' stroke='none' font-size='10'>#6</text><text x='92' y='100' fill='currentColor' stroke='none' font-size='10'>#7</text><text x='132' y='100' fill='currentColor' stroke='none' font-size='10'>#8</text><text x='172' y='100' fill='currentColor' stroke='none' font-size='10'>#9</text><text x='212' y='100' fill='currentColor' stroke='none' font-size='10'>#10</text><line x1='88' y1='40' x2='128' y2='80'/><line x1='128' y1='40' x2='88' y2='80'/><line x1='208' y1='40' x2='248' y2='80'/><line x1='248' y1='40' x2='208' y2='80'/></svg>",
+      "caption": {
+        "en": "A 0 marks a gap (#7 and #10 missing). Only those two frames are retransmitted; the rest are confirmed by the single BlockAck.",
+        "zh": "0 标记一个缺口（#7 与 #10 缺失）。只有这两帧会被重传；其余帧都由这一个 BlockAck 一次性确认。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Because each frame carries a sequence number, the recipient keeps a small per-TID record — informally a scoreboard — of which sequence numbers in the current window have arrived. That same record doubles as a reordering buffer: frames may show up out of order or after a retransmission, but the recipient holds them and only releases them to higher layers in the correct sequence. The bounded buffer size from setup is what keeps this state small and predictable, no matter how fast the link runs.",
+      "zh": "由于每个帧都携带序号，接收方会为每个 TID 维护一份小小的记录——非正式地称为“记分牌（scoreboard）”——记下当前窗口里哪些序号已经到达。这份记录同时还充当“重排序缓冲区（reordering buffer）”：帧可能乱序到达、或在一次重传之后才到，但接收方会先把它们暂存，等凑齐后再按正确顺序交付给上层。建立阶段约定的有界缓冲区大小，正是让这份状态无论链路跑得多快都保持小而可预测的关键。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Agreement setup, immediate transfer, and choosing a BlockAck variant",
+        "zh": "协定建立、立即传输，以及 BlockAck 变体的选择"
+      },
+      "en": "10.25.1 frames the goal — block ack improves channel efficiency by aggregating several acknowledgments into one frame, between an originator and a recipient — and notes the mechanism is initialized by an ADDBA Request/Response exchange (or an unsolicited extension), needing no TS. 10.25.2 governs setup and window sizing: the recipient's ADDBA Response carries the Buffer Size and the agreed BlockAck type, the transmission window must not exceed it, and the standard caps the window at 64 for a non-HE STA, 256 when both ends are HE STAs, and 1024 for EDMG; once established, QoS Data frames are transferred in A-MPDUs and acknowledged per 10.25.3. 10.25.3 (immediate block ack policy) says that after gaining the medium the originator transmits an A-MPDU to the recipient's individual address and requests acknowledgment by sending a BlockAckReq frame. 10.25.5 selects variants: between HE STAs a Multi-TID BlockAckReq can solicit a Multi-STA BlockAck for Multi-TID A-MPDUs, while non-HE STAs shall not use the Multi-TID BlockAckReq variant — and where 10.25.6 uses the generic terms BlockAck/BlockAckReq, the appropriate variant (Compressed, Multi-TID, etc.) is meant.",
+      "zh": "10.25.1 给出了目标——块确认通过把多个确认聚合进一个帧来提升信道效率，发生在发起方与接收方之间——并指出该机制由 ADDBA Request/Response 交换（或非请求式扩展）来初始化，且无需建立 TS。10.25.2 规定了建立与窗口定尺：接收方的 ADDBA Response 携带 Buffer Size 和约定的 BlockAck 类型，发送窗口不得超过它；标准把窗口上限定为非 HE 站点 64、两端均为 HE 站点时 256、EDMG 则为 1024；协定一旦建立，QoS 数据帧便以 A-MPDU 传输并按 10.25.3 确认。10.25.3（立即块确认策略）规定：发起方在获得介质后，向接收方的单播地址发送一个 A-MPDU，并通过发送 BlockAckReq 帧来索要确认。10.25.5 负责选择变体：HE 站点之间可用 Multi-TID BlockAckReq 针对 Multi-TID A-MPDU 索要 Multi-STA BlockAck，而非 HE 站点不得使用 Multi-TID BlockAckReq 变体——并且在 10.25.6 中凡使用 BlockAck/BlockAckReq 这类通用术语处，所指的都是相应的具体变体（Compressed、Multi-TID 等）。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2049,
+          2052,
+          2056
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.25.1",
+    "80211-2024:10.25.2",
+    "80211-2024:10.25.3",
+    "80211-2024:10.25.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2049,
+        2050
+      ],
+      "note": "10.25.1 Introduction — block ack improves channel efficiency by aggregating ACKs; originator/recipient; ADDBA init, bounded recipient state"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2050,
+        2052
+      ],
+      "note": "10.25.2 Setup and modification — ADDBA Request/Response, Buffer Size advisory; transmission window caps 64 (non-HE) / 256 (HE) / 1024 (EDMG)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2056
+      ],
+      "note": "10.25.3 Immediate block ack transfer — originator sends A-MPDU then BlockAckReq to recipient individual address"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2056,
+        2057
+      ],
+      "note": "10.25.5 Selection of BlockAck/BlockAckReq variants — Multi-TID BlockAckReq between HE STAs solicits Multi-STA BlockAck; non-HE shall not use Multi-TID variant"
+    }
+  ],
+  "track": "qos-power"
+}

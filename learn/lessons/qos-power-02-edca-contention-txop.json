@@ -1,0 +1,121 @@
+{
+  "id": "qos-power-02-edca-contention-txop",
+  "title": {
+    "en": "Winning the Air, Politely: EDCA Contention Parameters and TXOP",
+    "zh": "礼貌地抢占信道：EDCA 竞争参数与 TXOP"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Wi-Fi is a shared room where everyone has to take turns speaking, and nobody is in charge of handing out the microphone. So how does a voice call — which hates delay — get to talk before a background file sync that nobody is waiting on? The trick is not to shout louder, but to wait less. EDCA (Enhanced Distributed Channel Access) gives time-sensitive traffic a head start in the politeness ritual every station follows before it transmits.",
+      "zh": "Wi-Fi 就像一个共享的房间，所有人都得轮流发言，而且没有谁负责分发麦克风。那么，一个最怕延迟的语音通话，是怎样抢在没人着急等待的后台文件同步之前开口的呢？诀窍不是喊得更大声，而是等得更短。EDCA（增强型分布式信道访问）让对时间敏感的流量，在每个站点发送前都要遵守的“礼貌仪式”中获得一点抢跑优势。"
+    },
+    {
+      "type": "prose",
+      "en": "EDCA sorts traffic into four Access Categories (ACs): Voice (VO), Video (VI), Best Effort (BE), and Background (BK). Each AC runs its own little contention engine — an EDCAF — inside the station. The priority does not come from a hard scheduler; it comes from three timing knobs tuned per-AC: AIFSN (how many slots you must wait after the medium goes idle), and CWmin/CWmax (the size of the random backoff window). Smaller numbers for Voice and Video mean they statistically win the race to transmit, again and again.",
+      "zh": "EDCA 把流量分成四个访问类别（AC）：语音（VO）、视频（VI）、尽力而为（BE）和后台（BK）。每个 AC 在站点内部都运行着一个小小的竞争引擎——EDCAF。优先级并非来自某个强制调度器，而是来自针对每个 AC 单独调校的三个时序旋钮：AIFSN（介质空闲后你必须等待多少个时隙）以及 CWmin/CWmax（随机退避窗口的大小）。语音和视频的这些数值更小，意味着它们在抢占发送权的竞赛中会一次又一次地、从统计意义上胜出。"
+    },
+    {
+      "type": "prose",
+      "en": "Here is the backoff procedure itself. When an AC has a frame to send and the medium is busy, it waits AIFS (= AIFSN × slot + SIFS) of idle air, then picks a random backoff counter uniformly from 0 to CW[AC]. It decrements that counter one slot at a time while the medium stays idle, and transmits when it hits 0. If two ACs in the same station hit 0 together, the higher-priority one wins this internal collision; the loser backs off as if it had collided on the air. On a real failure, CW doubles (up to CWmax) so a congested AC backs off harder; on success it resets to CWmin.",
+      "zh": "下面是退避流程本身。当某个 AC 有帧要发、而介质正忙时，它先等待 AIFS（= AIFSN × 时隙 + SIFS）时长的空闲信道，然后从 0 到 CW[AC] 的范围内均匀地随机取一个退避计数器。只要介质保持空闲，它就每过一个时隙把计数器减 1，减到 0 时就发送。如果同一站点内两个 AC 同时减到 0，优先级更高者赢得这次“内部碰撞”；落败者则像在空中真发生碰撞那样退避。一旦真的发送失败，CW 会翻倍（至多到 CWmax），让拥塞的 AC 退得更狠；发送成功则重置回 CWmin。"
+    },
+    {
+      "type": "widget",
+      "widget": "backoff",
+      "params": {
+        "cwMin": 15,
+        "cwMax": 1023,
+        "stations": 4
+      }
+    },
+    {
+      "type": "diagram",
+      "en": "graph TD\n    A[Frame queued for an AC, medium busy] --> B[Wait AIFS of idle medium<br/>AIFS = AIFSN x slot + SIFS]\n    B --> C[Pick random backoff<br/>uniform 0..CW AC]\n    C --> D{Idle slot?}\n    D -- yes --> E[Decrement backoff by 1]\n    E --> F{Backoff = 0?}\n    F -- no --> D\n    F -- yes --> G[Initiate TXOP, transmit burst]\n    G --> H{Success?}\n    H -- yes --> I[CW = CWmin, reset]\n    H -- no --> J[CW = min CWmax, 2x grow, retry]\n    J --> C\n    D -- no, medium busy --> D",
+      "zh": "graph TD\n    A[某 AC 有帧排队, 介质忙] --> B[等待 AIFS 空闲<br/>AIFS = AIFSN x 时隙 + SIFS]\n    B --> C[随机取退避值<br/>0..CW AC 均匀分布]\n    C --> D{出现空闲时隙?}\n    D -- 是 --> E[退避计数减 1]\n    E --> F{退避 = 0?}\n    F -- 否 --> D\n    F -- 是 --> G[发起 TXOP, 突发发送]\n    G --> H{成功?}\n    H -- 是 --> I[CW = CWmin, 重置]\n    H -- 否 --> J[CW = min CWmax, 翻倍增长, 重试]\n    J --> C\n    D -- 否, 介质忙 --> D"
+    },
+    {
+      "type": "prose",
+      "en": "Winning the backoff race earns you a TXOP — a Transmission Opportunity. Think of it as a time budget rather than a single-frame permit: once you hold the medium, you may send a burst of frames back-to-back (separated only by short SIFS gaps) until your TXOP limit runs out. This is why high-priority ACs are also given generous TXOP limits — a voice or video stream can clear several frames per turn instead of re-contending each time. A TXOP limit of 0 is special: it means 'one frame (plus its protection and acknowledgment) per access', the most conservative setting.",
+      "zh": "赢得退避竞赛，你就获得了一个 TXOP——发送机会。把它理解成一笔“时间预算”，而不是“只准发一帧”的许可：一旦你占住了介质，就可以连续突发地发送一串帧（中间只隔很短的 SIFS），直到 TXOP 限额用完为止。这正是为什么高优先级的 AC 还会被赋予更宽裕的 TXOP 限额——一路语音或视频流每轮可以清掉好几帧，而不必每次都重新竞争。TXOP 限额为 0 是个特例：它表示“每次接入只发一帧（外加其保护帧与确认帧）”，是最保守的设定。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 520 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='12'><line x1='20' y1='150' x2='500' y2='150' stroke='currentColor' stroke-width='1'/><text x='20' y='20' fill='currentColor' font-weight='bold'>One TXOP: a burst budget, not one frame</text><rect x='40' y='120' width='40' height='30' fill='none' stroke='currentColor'/><text x='44' y='140' fill='currentColor'>AIFS</text><rect x='80' y='120' width='70' height='30' fill='none' stroke='currentColor'/><text x='90' y='140' fill='currentColor'>backoff</text><rect x='160' y='110' width='60' height='40' fill='currentColor' opacity='0.18' stroke='currentColor'/><text x='172' y='135' fill='currentColor'>Frame 1</text><rect x='224' y='130' width='14' height='20' fill='none' stroke='currentColor' stroke-dasharray='2'/><text x='222' y='168' fill='currentColor' font-size='9'>SIFS</text><rect x='242' y='110' width='60' height='40' fill='currentColor' opacity='0.18' stroke='currentColor'/><text x='254' y='135' fill='currentColor'>Frame 2</text><rect x='306' y='130' width='14' height='20' fill='none' stroke='currentColor' stroke-dasharray='2'/><rect x='324' y='110' width='60' height='40' fill='currentColor' opacity='0.18' stroke='currentColor'/><text x='336' y='135' fill='currentColor'>Frame 3</text><line x1='160' y1='90' x2='384' y2='90' stroke='currentColor' stroke-width='1' marker-start='url(#a)' marker-end='url(#a)'/><text x='205' y='84' fill='currentColor'>within TXOP limit</text><defs><marker id='a' markerWidth='8' markerHeight='8' refX='4' refY='4' orient='auto'><path d='M0,0 L8,4 L0,8 Z' fill='currentColor'/></marker></defs></svg>",
+      "caption": {
+        "en": "After winning contention (AIFS + backoff), the TXOP holder sends a back-to-back burst separated by SIFS, all fitting inside its TXOP limit.",
+        "zh": "赢得竞争（AIFS + 退避）之后，TXOP 持有者连续突发地发送，帧间仅隔 SIFS，全部塞进其 TXOP 限额之内。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "All these knobs are not baked into your device — the AP broadcasts them. The EDCA Parameter Set element rides in every Beacon and Probe Response, carrying one record per AC (BE/BK/VI/VO) with that AC's AIFSN, ECWmin/ECWmax (CW encoded as exponents), and TXOP Limit. So the AP can re-tune the whole room's fairness on the fly as load changes — and every station just adopts the latest values it heard.",
+      "zh": "这些旋钮并非写死在你的设备里——而是由 AP 广播下发的。EDCA 参数集元素（EDCA Parameter Set element）搭载在每一个 Beacon 和 Probe Response 中，为每个 AC（BE/BK/VI/VO）携带一条记录，内含该 AC 的 AIFSN、ECWmin/ECWmax（以指数形式编码的 CW）以及 TXOP 限额。于是 AP 可以随着负载变化、实时地重新调校整个房间的公平性——而每个站点只需采用它最近一次听到的最新数值即可。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact backoff math, slot-boundary decisions, and the EDCA element fields",
+        "zh": "精确的退避数学、时隙边界决策与 EDCA 元素字段"
+      },
+      "en": "Clause 10.23.2.2 makes CW growth precise: each EDCAF maintains CW[AC] (initialised to CWmin[AC]). On a successful TXOP completion CW[AC] is reset to CWmin[AC]; on a failure or internal collision, if the QoS short retry count QSRC[AC] is below dot11ShortRetryLimit it is incremented and CW[AC] is set to min(CWmax[AC], 2^QSRC[AC] x (CWmin[AC]+1) − 1) — i.e. roughly a doubling, clamped at CWmax. Clause 10.23.2.4 defines AIFS[AC] = AIFSN[AC] x aSlotTime + aSIFSTime, with AIFSN ≥ 2 for non-AP STAs and ≥ 1 for APs; the backoff counter is drawn uniformly over 0..CW[AC] and, at each slot boundary, an EDCAF performs exactly one action — decrement, initiate a TXOP, invoke backoff (chose not to / internal collision), or do nothing — and higher-UP EDCAFs preempt. Clause 10.23.2.9 defines the TXOP as the holder's uninterrupted control of the medium; the holder must keep its duration within the (nonzero) TXOP limit, and a limit of 0 permits essentially one MSDU/MMPDU exchange plus required protection and acknowledgments. In 9.4.2.27, the EDCA Parameter Set element carries a QoS Info field plus one Parameter Record per AC (BE/BK/VI/VO); each record's ACI/AIFSN field holds the AIFSN (min 2) and ACI, the ECWmin/ECWmax field encodes CWmin = 2^ECWmin − 1 and CWmax = 2^ECWmax − 1, and the TXOP Limit field is in units of 32 μs.",
+      "zh": "10.23.2.2 节把 CW 的增长讲得很精确：每个 EDCAF 维护一个 CW[AC]（初始化为 CWmin[AC]）。TXOP 成功完成后，CW[AC] 重置为 CWmin[AC]；发生失败或内部碰撞时，若 QoS 短重试计数 QSRC[AC] 小于 dot11ShortRetryLimit，则将其加 1，并把 CW[AC] 设为 min(CWmax[AC], 2^QSRC[AC] x (CWmin[AC]+1) − 1)——即大致翻倍、并被 CWmax 钳住。10.23.2.4 节定义 AIFS[AC] = AIFSN[AC] x aSlotTime + aSIFSTime，其中非 AP 站点 AIFSN ≥ 2、AP 则 ≥ 1；退避计数器在 0..CW[AC] 上均匀取值，并在每个时隙边界上，EDCAF 只执行一个动作——递减、发起 TXOP、调用退避（选择不发/内部碰撞）或什么都不做——且更高 UP 的 EDCAF 具有抢占权。10.23.2.9 节将 TXOP 定义为持有者对介质的不间断控制；持有者必须把其时长保持在（非零的）TXOP 限额之内，而限额为 0 时基本上只允许一次 MSDU/MMPDU 交换外加必需的保护与确认帧。在 9.4.2.27 节中，EDCA 参数集元素携带一个 QoS Info 字段，外加每个 AC（BE/BK/VI/VO）一条参数记录；每条记录的 ACI/AIFSN 字段保存 AIFSN（最小 2）与 ACI，ECWmin/ECWmax 字段按 CWmin = 2^ECWmin − 1、CWmax = 2^ECWmax − 1 编码，而 TXOP Limit 字段以 32 μs 为单位。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          1999,
+          2001,
+          2012,
+          1067,
+          1068
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:10.23.2.2",
+    "80211-2024:10.23.2.4",
+    "80211-2024:10.23.2.9",
+    "80211-2024:9.4.2.27"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1999,
+        2000,
+        2001
+      ],
+      "note": "10.23.2.2 EDCA backoff procedure — CW[AC] init/reset/growth, QSRC, internal collision, doubling clamped at CWmax"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2001,
+        2002
+      ],
+      "note": "10.23.2.4 Obtaining an EDCA TXOP — AIFS[AC]=AIFSN x slot + SIFS, AIFSN>=2 non-AP, random backoff over 0..CW[AC], slot-boundary single action, higher-UP preemption"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2012,
+        2013
+      ],
+      "note": "10.23.2.9 TXOP limits — TXOP as uninterrupted medium control, advertised in EDCA Parameter Set, TXOP limit of 0 special meaning"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        1067,
+        1068,
+        1069
+      ],
+      "note": "9.4.2.27 EDCA Parameter Set element — per-AC Parameter Record, ACI/AIFSN, ECWmin/ECWmax exponent encoding, TXOP Limit in 32us units, beaconed by AP"
+    }
+  ],
+  "track": "qos-power"
+}

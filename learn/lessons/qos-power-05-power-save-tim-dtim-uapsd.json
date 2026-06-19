@@ -1,0 +1,118 @@
+{
+  "id": "qos-power-05-power-save-tim-dtim-uapsd",
+  "title": {
+    "en": "How Your Phone Sleeps Without Missing a Beat: Power Save, TIM/DTIM, and U-APSD",
+    "zh": "手机如何安心入睡又不漏接：节能模式、TIM/DTIM 与 U-APSD"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A Wi-Fi radio is one of the hungriest parts of your phone. Keeping it awake to listen for packets that almost never arrive would drain the battery fast. So 802.11 gives a station a deal: it can switch off its receiver and doze most of the time, and the access point (AP) promises to hold onto any frames that show up while it sleeps. The trick is coordinating the nap — the station must wake at exactly the right moment to learn whether anything is waiting. This lesson is about how that schedule works.",
+      "zh": "Wi-Fi 射频是手机里最耗电的部件之一。如果让它一直醒着、只为监听那些几乎从不到来的数据包，电池会很快耗尽。于是 802.11 给站点（STA）开出一个“协议”：它可以关掉接收机、大部分时间打盹，而接入点（AP）则承诺，把它睡觉期间到来的帧先替它存着。关键在于如何协调这场小睡——站点必须在恰当的时刻醒来，才能知道是否有数据在等它。本课就讲这套作息表是怎么运作的。"
+    },
+    {
+      "type": "prose",
+      "en": "A non-AP station lives in one of two power management modes: active mode (radio always on) or power save (PS) mode (radio dozes between scheduled wakeups). Switching between them is not silent — the station must tell the AP first, by setting the Power Management subfield in a frame's Frame Control field and completing a successful exchange that the AP acknowledges. Only after that Ack does the new mode take effect. From then on, the AP knows this station is asleep and buffers its downlink frames instead of throwing them on the air.",
+      "zh": "一个非 AP 站点处于两种电源管理模式之一：活动模式（射频始终开启）或节能（PS）模式（射频在两次预定唤醒之间打盹）。两者之间的切换并非悄无声息——站点必须先告知 AP：它在某一帧的 Frame Control 字段中设置 Power Management 子字段，并完成一次被 AP 确认（Ack）的成功交换。只有在收到这个 Ack 之后，新模式才生效。从此 AP 就知道这个站点在睡觉，于是把发往它的下行帧先缓存起来，而不是直接发到空口上。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The Ack matters. A station cannot change its power mode with a frame exchange that the AP does not acknowledge — and notably, a PS-Poll exchange does not necessarily produce an Ack, so you cannot use a PS-Poll to flip into or out of PS mode. The mode change and the data retrieval are two separate jobs.",
+      "zh": "这个 Ack 很重要。站点不能用一次未被 AP 确认的帧交换来改变电源模式——尤其要注意，PS-Poll 交换不一定会产生 Ack，所以你不能用 PS-Poll 来切入或切出 PS 模式。模式切换和取数据是两件互相独立的事。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the AP needs a way to announce 'station #N, I'm holding something for you' — without waking everyone up to ask. It does this in every Beacon using the TIM (Traffic Indication Map). Each associated station has a number called its AID (Association ID), assigned at association. The TIM carries a partial virtual bitmap: bit N is set when buffered traffic is waiting for the station with AID N. A dozing station wakes just before a Beacon, reads its own bit, and if the bit is clear it can go straight back to sleep. One special slot, AID 0, signals buffered group/broadcast traffic for the whole BSS.",
+      "zh": "现在 AP 需要一种方式来宣布“第 N 号站点，我这儿替你存着东西”——而又不必把所有人都叫醒来逐个询问。它在每个 Beacon 中用 TIM（流量指示图，Traffic Indication Map）来完成这件事。每个已关联的站点都有一个编号，叫 AID（关联标识，Association ID），在关联时分配。TIM 携带一张部分虚拟位图（partial virtual bitmap）：当 AID 为 N 的站点有缓存流量在等待时，第 N 位就被置 1。打盹的站点在 Beacon 到来前醒来，读取属于自己的那一位；如果该位为 0，它就可以直接继续睡。还有一个特殊位 AID 0，用来指示整个 BSS 的组播/广播缓存流量。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox='0 0 460 140' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'><text x='6' y='16' font-size='11' stroke='none' fill='currentColor'>TIM element</text><rect x='6' y='26' width='66' height='30'/><rect x='72' y='26' width='52' height='30'/><rect x='124' y='26' width='72' height='30'/><rect x='196' y='26' width='72' height='30'/><rect x='268' y='26' width='80' height='30'/><rect x='348' y='26' width='106' height='30'/><text x='39' y='45' font-size='8' text-anchor='middle' stroke='none' fill='currentColor'>Element ID</text><text x='98' y='45' font-size='8' text-anchor='middle' stroke='none' fill='currentColor'>Length</text><text x='160' y='42' font-size='8' text-anchor='middle' stroke='none' fill='currentColor'>DTIM</text><text x='160' y='51' font-size='8' text-anchor='middle' stroke='none' fill='currentColor'>Count</text><text x='232' y='42' font-size='8' text-anchor='middle' stroke='none' fill='currentColor'>DTIM</text><text x='232' y='51' font-size='8' text-anchor='middle' stroke='none' fill='currentColor'>Period</text><text x='308' y='42' font-size='8' text-anchor='middle' stroke='none' fill='currentColor'>Bitmap</text><text x='308' y='51' font-size='8' text-anchor='middle' stroke='none' fill='currentColor'>Control</text><text x='401' y='42' font-size='8' text-anchor='middle' stroke='none' fill='currentColor'>Partial Virtual</text><text x='401' y='51' font-size='8' text-anchor='middle' stroke='none' fill='currentColor'>Bitmap</text><text x='401' y='74' font-size='8' text-anchor='middle' stroke='none' fill='currentColor'>bit N = AID N has data</text><g transform='translate(348,84)'><rect x='0' y='0' width='13' height='14'/><rect x='13' y='0' width='13' height='14'/><rect x='26' y='0' width='13' height='14' fill='currentColor'/><rect x='39' y='0' width='13' height='14'/><rect x='52' y='0' width='13' height='14'/><rect x='65' y='0' width='13' height='14' fill='currentColor'/><rect x='78' y='0' width='13' height='14'/><rect x='91' y='0' width='13' height='14'/><text x='32' y='28' font-size='8' stroke='none' fill='currentColor'>0 1 1 0 0 1 0 0</text></g></svg>",
+      "caption": {
+        "en": "The TIM element: a DTIM Count counting down to the next DTIM, a DTIM Period saying how often DTIMs occur, and a partial virtual bitmap where each set bit names an AID with buffered traffic.",
+        "zh": "TIM 元素：DTIM Count 倒数到下一个 DTIM，DTIM Period 表示 DTIM 出现的频率，部分虚拟位图中每一个置 1 的位都对应一个有缓存流量的 AID。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "There are two flavors of TIM. An ordinary TIM rides in (almost) every Beacon and covers individually addressed (unicast) buffered traffic. Every dot11DTIMPeriod beacons, the AP instead sends a DTIM — a Delivery TIM. The DTIM is the cue for group-addressed traffic: right after a DTIM Beacon, the AP transmits its buffered broadcast/multicast frames before any unicast frames, because all sleeping stations that care about group traffic wake for the DTIM. So a station that only needs broadcasts can sleep through ordinary TIMs and wake only on DTIMs — saving even more power. The DTIM Count field counts down so stations know which beacon will be the next DTIM.",
+      "zh": "TIM 有两种“口味”。普通 TIM 几乎搭载在每个 Beacon 中，负责单播（individually addressed）缓存流量。每隔 dot11DTIMPeriod 个 Beacon，AP 改发一个 DTIM——即投递型 TIM（Delivery TIM）。DTIM 是组播流量的信号：在 DTIM Beacon 之后，AP 会先发送缓存的广播/组播帧，再发任何单播帧，因为所有关心组播流量的休眠站点都会为 DTIM 醒来。因此，只关心广播的站点可以睡过普通 TIM、只在 DTIM 时醒来——更省电。DTIM Count 字段会递减计数，让站点知道哪个 Beacon 将是下一个 DTIM。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant STA as Station (PS mode)\n    participant AP as Access Point\n    Note over STA: dozing, radio off\n    Note over STA: wake just before TBTT\n    AP-->>STA: Beacon (TIM: bit for my AID = 1)\n    Note over STA: legacy path\n    STA->>AP: PS-Poll\n    AP->>STA: buffered frame\n    Note over STA: ---- or, far better ----\n    Note over STA: U-APSD path\n    STA->>AP: uplink QoS Data (trigger frame)\n    Note over AP: unscheduled SP begins\n    AP->>STA: buffered downlink frame(s)\n    AP->>STA: last frame, EOSP = 1\n    Note over STA: SP ends -> back to doze",
+      "zh": "sequenceDiagram\n    participant STA as 站点 (PS 模式)\n    participant AP as 接入点\n    Note over STA: 打盹中，射频关闭\n    Note over STA: 在 TBTT 前醒来\n    AP-->>STA: Beacon (TIM: 我的 AID 位 = 1)\n    Note over STA: 传统取数据方式\n    STA->>AP: PS-Poll\n    AP->>STA: 缓存的帧\n    Note over STA: ---- 或，更优方式 ----\n    Note over STA: U-APSD 方式\n    STA->>AP: 上行 QoS Data (触发帧)\n    Note over AP: 非调度服务期开始\n    AP->>STA: 缓存的下行帧\n    AP->>STA: 最后一帧, EOSP = 1\n    Note over STA: 服务期结束 -> 重新打盹"
+    },
+    {
+      "type": "prose",
+      "en": "Reading the TIM is only half the story — the station still has to fetch the buffered frame. The legacy way is a PS-Poll: the station sees its bit set, sends a PS-Poll, and the AP returns one buffered frame. That's one round trip per frame, and it keeps the radio awake longer than needed. The modern, battery-friendly way is U-APSD (Unscheduled Automatic Power Save Delivery). Here the station's own uplink frame does double duty: a QoS Data or QoS Null frame on a trigger-enabled access category acts as a trigger, opening an unscheduled service period (SP). The AP then delivers the buffered downlink frames for that station, marking the last one with EOSP = 1 so the station knows the burst is over and can doze again.",
+      "zh": "读懂 TIM 只是故事的一半——站点还得把缓存的帧取回来。传统做法是 PS-Poll：站点看到自己的位被置 1，就发送一个 PS-Poll，AP 返回一个缓存帧。这是“每帧一次往返”，会让射频比必要时多醒一会儿。更现代、更省电的做法是 U-APSD（非调度自动节能投递，Unscheduled Automatic Power Save Delivery）。在这里，站点自己的上行帧身兼两职：在已启用触发的接入类别（access category）上发送一个 QoS Data 或 QoS Null 帧，就充当触发帧，开启一个非调度服务期（SP）。随后 AP 投递该站点的缓存下行帧，并把最后一帧标上 EOSP = 1，让站点知道这波数据已结束、可以重新打盹。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why U-APSD is perfect for voice. A VoIP call sends a small uplink packet every ~20 ms. With U-APSD, each of those uplink voice packets is itself the trigger that pulls down the matching downlink voice packet — no extra PS-Poll, no waiting for a Beacon. The radio wakes, does a tight uplink-plus-downlink burst, and sleeps. That natural rhythm is why U-APSD (often branded 'WMM Power Save') is the backbone of low-power voice and real-time traffic on Wi-Fi.",
+      "zh": "为什么 U-APSD 特别适合语音。一通 VoIP 通话大约每 20 毫秒发送一个很小的上行包。在 U-APSD 下，每一个这样的上行语音包本身就是触发帧，把对应的下行语音包拉下来——不需要额外的 PS-Poll，也不必等待 Beacon。射频醒来，做一个紧凑的“上行 + 下行”小爆发，然后睡去。正是这种天然的节奏，使 U-APSD（常以“WMM Power Save”之名出现）成为 Wi-Fi 上低功耗语音与实时流量的支柱。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Trigger frames, delivery-enabled ACs, and how a station configures U-APSD",
+        "zh": "触发帧、已启用投递的 AC，以及站点如何配置 U-APSD"
+      },
+      "en": "Per 11.2.3.5, an unscheduled SP begins when the AP receives a trigger frame — a QoS Data or QoS Null frame on an access category (AC) the station has configured to be trigger-enabled; an A-MPDU containing such a frame also counts. The SP ends after the AP has attempted at least one buffered BU on a delivery-enabled AC (no more than the Max SP Length value if nonzero), with the EOSP subfield set to 1 in the last frame. A station configures U-APSD in two ways: by setting the per-AC U-APSD Flag bits in the QoS Info subfield of the QoS Capability element in (Re)Association Request frames (a flag of 1 makes that AC both trigger- and delivery-enabled), or via an ADDTS Request frame per AC with the APSD subfield set to 1 and the Schedule subfield set to 0 — and a TSPEC request takes precedence over the static QoS-Capability flags. By contrast, the legacy PS-Poll path (11.2.3.2) is the non-APSD mechanism: the STA sends a PS-Poll and the AP returns the buffered BU immediately or Acks and delivers it later. The TIM element itself (9.4.2.5) carries DTIM Count, DTIM Period, a Bitmap Control octet, and the partial virtual bitmap (0-251 octets), and AID 0 in the bitmap signals buffered group addressed traffic.",
+      "zh": "依据 11.2.3.5，当 AP 收到触发帧时，一个非调度 SP 即开始——触发帧是在站点配置为“已启用触发”的接入类别（AC）上发送的 QoS Data 或 QoS Null 帧；包含此类帧的 A-MPDU 同样算作触发帧。SP 在 AP 已尝试在“已启用投递”的 AC 上至少投递一个缓存 BU 之后结束（若 Max SP Length 非零，则不超过该值），并在最后一帧将 EOSP 子字段置 1。站点用两种方式配置 U-APSD：在（重）关联请求帧的 QoS Capability 元素的 QoS Info 子字段中设置各 AC 的 U-APSD Flag 位（标志位为 1 表示该 AC 同时启用触发与投递）；或按 AC 发送 ADDTS 请求帧，将 APSD 子字段置 1、Schedule 子字段置 0——并且 TSPEC 请求优先于静态的 QoS-Capability 标志。相比之下，传统的 PS-Poll 路径（11.2.3.2）是非 APSD 机制：STA 发送 PS-Poll，AP 立即返回缓存 BU，或先 Ack、稍后再投递。TIM 元素本身（9.4.2.5）携带 DTIM Count、DTIM Period、一个 Bitmap Control 字节以及部分虚拟位图（0-251 字节），位图中的 AID 0 用于指示缓存的组播流量。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          2474,
+          2475,
+          937
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:11.2.3.2",
+    "80211-2024:11.2.3.4",
+    "80211-2024:11.2.3.5",
+    "80211-2024:9.4.2.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2470,
+        2471
+      ],
+      "note": "11.2.3.2 Non-AP STA power management modes - active vs PS; mode change requires Ack'd exchange; PS-Poll cannot change mode"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2472,
+        2473
+      ],
+      "note": "11.2.3.3/11.2.3.4 AP TIM transmissions and TIM types - partial virtual bitmap, AID 0, DTIM cues group-addressed delivery every dot11DTIMPeriod"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        2474,
+        2475
+      ],
+      "note": "11.2.3.5 Power management with APSD - U-APSD trigger frame, unscheduled SP, EOSP, delivery/trigger-enabled ACs, QoS Capability flags vs ADDTS/TSPEC"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        937
+      ],
+      "note": "9.4.2.5 TIM element format - Element ID, Length, DTIM Count, DTIM Period, Bitmap Control, Partial Virtual Bitmap"
+    }
+  ],
+  "track": "qos-power"
+}
