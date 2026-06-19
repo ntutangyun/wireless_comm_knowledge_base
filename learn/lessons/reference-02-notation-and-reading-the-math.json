@@ -1,0 +1,97 @@
+{
+  "id": "reference-02-notation-and-reading-the-math",
+  "title": {
+    "en": "Reading the Notation: Bits, Fields, and the Math/Logic Conventions",
+    "zh": "读懂记号：比特、字段，以及数学与逻辑约定"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Open IEEE 802.11-2024 to any frame-format figure or any equation and you will hit a wall of symbols before you reach a single bit of real content: Floor(x), x mod y, the symbol XOR, ExtractBits(S, F, N), A[b:c], boxes of bits numbered 0 to 47 with little 'LSB' and 'MSB' labels. None of this is the protocol — it is the spec's private shorthand for writing the protocol down precisely. Clause 1.5 is where that shorthand is defined. Read it once and the diagrams elsewhere stop looking like hieroglyphics.",
+      "zh": "翻开 IEEE 802.11-2024，无论你看哪一张帧格式图、哪一个公式，在接触到真正的内容之前，都会先撞上一堵符号的墙：Floor(x)、x mod y、异或符号、ExtractBits(S, F, N)、A[b:c]，还有从 0 编到 47、标着小小“LSB”“MSB”的比特方框。这些本身都不是协议——它们只是标准用来“精确地把协议写下来”的内部速记。第 1.5 节正是定义这套速记的地方。把它读一遍，标准里别处的那些图就不再像天书了。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 1.5 — 'Terminology for mathematical, logical, and bit operations' — is a flat list of operator definitions, each with a worked example. There is nothing to memorise; the trick is knowing it exists so you can look a symbol up instead of guessing. It groups loosely into three families: arithmetic functions (rounding and logs), boolean/bitwise operators (the logic glue), and bit-string operators (the tools for slicing a field out of a longer string of bits).",
+      "zh": "第 1.5 节——“数学、逻辑与比特运算术语”——其实就是一张扁平的运算符定义清单，每条都配了一个实算例子。这里没有需要背的东西；窍门在于知道它存在，这样遇到符号时你可以去查，而不是去猜。它大致分成三类：算术函数（取整与对数）、布尔/按位运算符（逻辑黏合剂），以及比特串运算符（从更长的比特串里切出某个字段的工具）。"
+    },
+    {
+      "type": "prose",
+      "en": "The arithmetic family is mostly about turning real numbers into integers, which the standard does constantly when sizing fields. Floor(x) rounds down (Floor(2.3) is 2, Floor(-2.3) is -3); Ceil(x) rounds up (Ceil(2.3) is 3); Round(x) goes to the nearest, with .5 pushed away from zero (Round(2.5) is 3). The two-argument forms snap to a multiple: Floor(3.3, 2) is 2, Ceil(2.3, 2) is 4 — handy when something must be a multiple of an octet or a symbol. Then x mod y is the always-non-negative remainder (5 mod 3 is 2, and -5 mod 3 is 1, not -1), and log2 / log10 / ln are the usual logarithms (log2(32) is 5).",
+      "zh": "算术这一族主要是把实数变成整数——标准在确定字段大小时无时无刻不在这么做。Floor(x) 向下取整（Floor(2.3) 是 2，Floor(-2.3) 是 -3）；Ceil(x) 向上取整（Ceil(2.3) 是 3）；Round(x) 取最近的整数，且 .5 远离零方向舍入（Round(2.5) 是 3）。两参数形式则对齐到某个倍数：Floor(3.3, 2) 是 2，Ceil(2.3, 2) 是 4——当某个量必须是字节或符号的整数倍时很好用。接着，x mod y 是恒为非负的余数（5 mod 3 是 2，而 -5 mod 3 是 1，不是 -1），log2 / log10 / ln 就是常见的对数（log2(32) 是 5）。"
+    },
+    {
+      "type": "prose",
+      "en": "The logical and bitwise family is the glue you see inside conditions and field constructions. Watch one trap: && is the boolean AND and & is the bitwise AND of two numbers; likewise || is usually concatenation of two strings, but inside code it can mean the short-circuit boolean OR — context decides. !x is boolean NOT, == and != are boolean equality and inequality, the circled-plus symbol is bitwise XOR, and x >> y / x << y are logical shifts (zeros fed in at the vacated end). Finally 0x marks hexadecimal: 0x12 is 18 decimal.",
+      "zh": "逻辑与按位这一族，是你在判断条件和字段构造里到处会看到的黏合剂。注意一个坑：&& 是布尔与，而 & 是两个数的按位与；同样地，|| 通常表示两个串的拼接，但在代码语境里它也可能表示短路布尔或——由上下文决定。!x 是布尔非，== 和 != 是布尔相等与不等，带圈的加号是按位异或（XOR），x >> y / x << y 是逻辑移位（空出的那一端补零）。最后，0x 表示十六进制：0x12 等于十进制的 18。"
+    },
+    {
+      "type": "prose",
+      "en": "The bit-string family is what lets the standard reach into a field and name an exact slice of bits — exactly what a frame-format figure forces you to do by hand. A[b:c] is the substring of bits b through c, and crucially bit 0 of the result is bit b of A. ExtractBits(S, F, N) pulls N bits starting at position F (counting from the left); Truncate-N(S) keeps the first N bits and throws the rest away; and int(S) reads a bit string as a number where bit 0 is the least significant bit. Every one of these defers to '9.2.2 bit conventions' for which bit is which — so to actually trace a value you need both: 1.5 tells you what the operator does, 9.2.2 tells you which end is bit 0.",
+      "zh": "比特串这一族，让标准能伸进一个字段、精确点名其中一段比特——这正是帧格式图逼着你用手去做的事。A[b:c] 是第 b 到第 c 位组成的子串，而关键在于：结果的第 0 位就是 A 的第 b 位。ExtractBits(S, F, N) 从位置 F 起（从左数）取出 N 个比特；Truncate-N(S) 保留前 N 个比特、其余丢弃；int(S) 把一个比特串读成数值，其中第 0 位是最低有效位。这几个运算符在“哪一位是哪一位”上都把皮球踢给了“9.2.2 比特约定”——所以要真正追踪一个值，你需要两样东西：1.5 告诉你运算符做什么，9.2.2 告诉你哪一端才是第 0 位。"
+    },
+    {
+      "type": "diagram",
+      "en": "mindmap\n  root((Reading 802.11 notation))\n    Clause 1.5 operators\n      Arithmetic\n        Floor / Ceil / Round\n        x mod y\n        log2 / log10 / ln\n      Logical / bitwise\n        && and  vs  & (bitwise)\n        XOR  >>  <<\n        0x hex\n      Bit strings\n        A[b:c]\n        ExtractBits(S,F,N)\n        Truncate-N(S)\n        int(S)\n    Clause 9.2.2 conventions\n      bit 0 = least significant\n      LSB to MSB left to right\n      octet = bit number mod 8\n      Figure 9-1 MAC address I/G bit first\n    Where it is used\n      frame-format figures (Clause 9)\n      equations in PHY clauses\n      MAC address ordering",
+      "zh": "mindmap\n  root((读懂 802.11 记号))\n    第1.5节 运算符\n      算术\n        Floor / Ceil / Round\n        x mod y\n        log2 / log10 / ln\n      逻辑与按位\n        && 布尔与  对比  & 按位与\n        XOR  >>  <<\n        0x 十六进制\n      比特串\n        A[b:c]\n        ExtractBits(S,F,N)\n        Truncate-N(S)\n        int(S)\n    第9.2.2节 约定\n      第0位 = 最低有效位\n      LSB 到 MSB 从左到右\n      字节 = 位号 模 8\n      图9-1 MAC地址 先传I/G位\n    用在哪里\n      帧格式图 (第9章)\n      PHY各章的公式\n      MAC地址排序"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 520 150' fill='none' stroke='currentColor' stroke-width='1.5'><text x='10' y='20' fill='currentColor' stroke='none' font-size='13' font-family='sans-serif'>Octet 0 of a MAC address (bits 0-7), as Figure 9-1 draws it</text><g><rect x='20' y='40' width='60' height='44'/><rect x='80' y='40' width='60' height='44'/><rect x='140' y='40' width='60' height='44'/><rect x='200' y='40' width='60' height='44'/><rect x='260' y='40' width='60' height='44'/><rect x='320' y='40' width='60' height='44'/><rect x='380' y='40' width='60' height='44'/><rect x='440' y='40' width='60' height='44'/></g><text x='50' y='66' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>0</text><text x='110' y='66' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>1</text><text x='170' y='66' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>2</text><text x='230' y='66' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>3</text><text x='290' y='66' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>4</text><text x='350' y='66' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>5</text><text x='410' y='66' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>6</text><text x='470' y='66' fill='currentColor' stroke='none' font-size='12' text-anchor='middle'>7</text><text x='50' y='100' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>I/G</text><text x='50' y='112' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>LSB</text><text x='470' y='100' fill='currentColor' stroke='none' font-size='10' text-anchor='middle'>MSB</text><line x1='20' y1='128' x2='180' y2='128'/><polygon points='180,124 192,128 180,132' fill='currentColor' stroke='none'/><text x='20' y='145' fill='currentColor' stroke='none' font-size='11'>transmitted first (bit 0)</text><text x='420' y='145' fill='currentColor' stroke='none' font-size='11'>last</text></svg>",
+      "caption": {
+        "en": "How to read a bit box: bit 0 sits on the left, is the least significant bit, and goes on the air first. The Individual/Group bit is bit 0 of a MAC address — the very first bit transmitted. Knowing 'left = bit 0 = LSB = first out' is the key that unlocks every frame-format figure.",
+        "zh": "如何读懂一个比特方框：第 0 位在最左边，是最低有效位，也最先上天线发出去。Individual/Group 位就是 MAC 地址的第 0 位——最先被发送的那一位。记住“左边 = 第 0 位 = 最低有效位 = 最先发出”，就拿到了解读所有帧格式图的钥匙。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "When a figure confuses you, ask three questions in order: (1) which way does significance run? Per 9.2.2, the lowest-numbered bit is the least significant and figures run from low to high. (2) Where are the octet boundaries? Take the bit number modulo 8. (3) What goes out first? The octet holding the lowest-numbered bits, lowest bit first. Those three rules plus the 1.5 operator list are enough to trace almost any value by hand.",
+      "zh": "当一张图把你绕晕时，按顺序问三个问题：(1) 有效位往哪个方向增大？依据 9.2.2，编号最低的位是最低有效位，图从低位画到高位。(2) 字节边界在哪？把位号对 8 取模即可。(3) 谁最先发出？含有最低编号位的那个字节，且其中最低位先发。这三条规则，加上第 1.5 节的运算符清单，足以让你用手追踪几乎任何一个值。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The exact wording of the operators, and why 1.5 and 9.2.2 must be read together",
+        "zh": "运算符的精确措辞，以及为何 1.5 与 9.2.2 必须合起来读"
+      },
+      "en": "Clause 1.5 defines each operator with a worked example: Floor(x,y) is the largest multiple of y not exceeding x (Floor(3.3,2)=2); Round rounds halves away from zero (Round(-2.5)=-3); x mod y is always non-negative for positive y (-5 mod 3 = 1). Three bit-string operators explicitly defer to the IEEE 802.11 bit conventions of 9.2.2: ExtractBits(S,F,N) is bits F..F+N-1 of S 'starting from the left'; Truncate-N(S) is bits 0..N-1 from the left with the rest 'irretrievably deleted'; and int(S) is the numeric value of S 'where bit 0 of S is the least significant bit'. A[b:c] is the substring with bit 0 of the output equal to bit b of A. This is why notation cannot be read in isolation: 9.2.2 supplies the missing axis, stating that within a field bits are numbered 0..k, that 'bits within numeric fields ... are depicted in increasing order of significance, i.e., with the lowest numbered bit having the least significance', that octet boundaries are the bit numbers modulo 8, and that octets are sent to the PHY from the one containing the lowest-numbered bits upward. Figure 9-1 makes it concrete for a 48-bit MAC address: the Individual/Group bit is bit 0, transferred first; bit 47 is transferred last. CRC fields are the documented exception — transmitted commencing with the highest-order coefficient.",
+      "zh": "第 1.5 节为每个运算符都配了实算例子：Floor(x,y) 是不超过 x 的、y 的最大倍数（Floor(3.3,2)=2）；Round 对 .5 采取远离零方向舍入（Round(-2.5)=-3）；当 y 为正时，x mod y 恒为非负（-5 mod 3 = 1）。其中三个比特串运算符明确把规则交给了 9.2.2 的 IEEE 802.11 比特约定：ExtractBits(S,F,N) 是 S“从左数”的第 F 到第 F+N-1 位；Truncate-N(S) 是从左数的第 0 到第 N-1 位，其余比特“被不可恢复地删除”；int(S) 是 S 的数值，“其中 S 的第 0 位是最低有效位”。A[b:c] 是子串，且输出的第 0 位等于 A 的第 b 位。这正是为什么记号不能孤立地读：9.2.2 补上了缺失的那根坐标轴——它规定字段内的比特从 0 编到 k，“数值字段内的各比特按有效性递增的顺序绘制，即编号最低的位有效性最低”，字节边界由位号对 8 取模得到，且各字节按“含最低编号位的字节在先”的顺序送往 PHY。图 9-1 用 48 位 MAC 地址把这一切落到实处：Individual/Group 位是第 0 位、最先传送；第 47 位最后传送。CRC 字段是被明文记录的例外——发送时从最高阶系数开始。",
+      "cite": {
+        "pdf_id": "80211-2024",
+        "pages": [
+          256,
+          257,
+          258,
+          657,
+          658
+        ]
+      }
+    }
+  ],
+  "covers": [
+    "80211-2024:1.5"
+  ],
+  "cites": [
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        256,
+        257,
+        258
+      ],
+      "note": "1.5 Terminology for mathematical, logical, and bit operations — Floor/Ceil/Round, mod, logs, &&/&/||/!, XOR, shifts, 0x, ExtractBits, Truncate-N, A[b:c], int(S)"
+    },
+    {
+      "pdf_id": "80211-2024",
+      "pages": [
+        657,
+        658
+      ],
+      "note": "9.2.2 Conventions — bit numbering 0..k, lowest-numbered bit least significant, octet boundary = bit number mod 8, octet transmit order, Figure 9-1 MAC address I/G bit is bit 0 transmitted first"
+    }
+  ],
+  "track": "reference"
+}
