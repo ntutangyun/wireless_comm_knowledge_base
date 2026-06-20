@@ -1,0 +1,106 @@
+{
+  "id": "pan-hr-wpan-27",
+  "title": {
+    "en": "HR-WPAN Information Elements: Beamforming Pattern Estimation and Directional Peering",
+    "zh": "HR-WPAN 信息元素：波束图样估计与定向对等通信"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This is part 3 of 4 of our walk through Clause 6 (MAC frame formats) of IEEE Std 802.15.3-2016, the High-Rate Wireless Personal Area Network (HR-WPAN) standard. We are inside 6.4 (Information elements, or IEs) — the variable-length, tagged building blocks that DEVs (devices) and the PNC (piconet coordinator — the device that runs the network) stuff into beacons, commands, and data frames. This lesson covers six IEs (6.4.31 through 6.4.36) that almost all serve one job: configuring and reporting directional antenna beams for the high-rate millimetre-wave PHY (physical layer). When you steer a narrow beam, both ends must agree on exactly how the antenna array is shaped — that shared agreement is what these IEs carry.",
+      "zh": "这是我们讲解 IEEE Std 802.15.3-2016（高速率无线个域网，HR-WPAN）第 6 章（MAC 帧格式）系列的第 3 部分（共 4 部分）。本课聚焦于 6.4 节（信息元素，IE）——这是设备（DEV）与微微网协调器（PNC，运行整个网络的设备）塞进信标、命令帧和数据帧里的可变长度、带标签的构造块。本课覆盖六个 IE（6.4.31 至 6.4.36），它们几乎都服务于同一个目标：为高速率毫米波物理层（PHY）配置与上报定向天线波束。当你要把一束窄波束对准某个方向时，收发两端必须就天线阵列的精确形状达成一致——这些 IE 承载的正是这份共享的约定。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two acronyms recur throughout this set. PET = Pattern Estimation and Tracking: the process of figuring out an antenna array's effective beam pattern (its per-element amplitudes and phases) and keeping it up to date as conditions change. HRS = High-Rate Sub-array (a beamforming concept tied to the high-rate PHY). AAS and SAS are the two antenna architectures: Adaptive Antenna System and Switched Antenna System. In an SAS the transmit and receive configurations are identical, which is why several of these IEs let you omit the RX half.",
+      "zh": "本组贯穿两个反复出现的缩写。PET = 图样估计与跟踪（Pattern Estimation and Tracking）：即估算出天线阵列的有效波束图样（各阵元的幅度与相位），并在环境变化时持续更新它。HRS = 高速率子阵列（High-Rate Sub-array，与高速率 PHY 绑定的一种波束成形概念）。AAS 与 SAS 是两种天线架构：自适应天线系统（Adaptive Antenna System）与开关天线系统（Switched Antenna System）。在 SAS 中收发配置完全相同，这正是这些 IE 中有几个允许省略接收（RX）一半的原因。"
+    },
+    {
+      "type": "prose",
+      "en": "6.4.31 Beam PET IE is the anchor of the group. Its Content field holds a 4-octet PET TX Configuration field and a 4-octet PET RX Configuration field (the RX half is omitted in the SAS case). Each configuration describes the array geometry: a Number of Antennas (z-axis) and Number of Antennas (x-axis) field — each set to one less than the actual count, sketching a two-dimensional linear array — plus a Beam Codebook ID for each axis (which precomputed beam set to use). Crucially it also carries an Amplitude Resolution and a Phase Resolution field. Each is coded as N, meaning there are 2^N possible discrete values, and N is limited to the range 0 to 4. These two numbers tell the receiver how finely the upcoming amplitude and phase reports are quantised.",
+      "zh": "6.4.31 Beam PET IE 是这组 IE 的锚点。其 Content 字段包含一个 4 字节的 PET TX Configuration 字段和一个 4 字节的 PET RX Configuration 字段（在 SAS 情况下省略 RX 一半）。每个配置描述了阵列几何结构：Number of Antennas（z 轴）与 Number of Antennas（x 轴）字段——各自设为实际数量减一，用以勾勒出一个二维线性阵列——再加上每个轴的 Beam Codebook ID（指明使用哪套预先计算好的波束集合）。尤为关键的是，它还携带 Amplitude Resolution（幅度分辨率）与 Phase Resolution（相位分辨率）字段。两者均以 N 编码，表示共有 2^N 个可能的离散值，且 N 被限定在 0 到 4 的范围内。这两个数字告诉接收方：接下来的幅度与相位上报被量化到多细的精度。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"8\" y=\"16\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Beam PET IE Content (Fig 6-117 / 6-118)</text><rect x=\"8\" y=\"28\" width=\"100\" height=\"30\"/><rect x=\"108\" y=\"28\" width=\"100\" height=\"30\"/><text x=\"58\" y=\"47\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">PET TX Config (4 oct)</text><text x=\"158\" y=\"47\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">PET RX Config (4 oct)</text><line x1=\"58\" y1=\"58\" x2=\"30\" y2=\"78\"/><line x1=\"58\" y1=\"58\" x2=\"430\" y2=\"78\"/><rect x=\"8\" y=\"78\" width=\"66\" height=\"30\"/><rect x=\"74\" y=\"78\" width=\"66\" height=\"30\"/><rect x=\"140\" y=\"78\" width=\"74\" height=\"30\"/><rect x=\"214\" y=\"78\" width=\"74\" height=\"30\"/><rect x=\"288\" y=\"78\" width=\"66\" height=\"30\"/><rect x=\"354\" y=\"78\" width=\"66\" height=\"30\"/><rect x=\"420\" y=\"78\" width=\"32\" height=\"30\"/><text x=\"41\" y=\"96\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">N ant z</text><text x=\"107\" y=\"96\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">N ant x</text><text x=\"177\" y=\"96\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">Codebook z</text><text x=\"251\" y=\"96\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">Codebook x</text><text x=\"321\" y=\"96\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">Amp res</text><text x=\"387\" y=\"96\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">Phase res</text><text x=\"436\" y=\"96\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">Rsvd</text></svg>",
+      "caption": {
+        "en": "The Beam PET IE (6.4.31): TX and RX configuration fields, each unpacking into antenna counts, codebook IDs, and the amplitude/phase resolution that govern every later PET report.",
+        "zh": "Beam PET IE（6.4.31）：TX 与 RX 配置字段，各自展开为天线数量、码本 ID，以及决定后续所有 PET 上报的幅度/相位分辨率。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "6.4.32 HRS Beam PET IE is the compact cousin for High-Rate Sub-array beamforming. Its Content field carries a 2-octet PET TX HRS Configuration field and a 2-octet PET RX HRS Configuration field (again, the RX half is omitted for SAS). Each HRS configuration is even simpler than the full Beam PET: it is just an HRS Beam Codebook ID for the z-axis and one for the x-axis. So where 6.4.31 describes a full array with its own resolution settings, 6.4.32 is a lightweight pointer that says 'use these two codebooks' for the high-rate sub-array path.",
+      "zh": "6.4.32 HRS Beam PET IE 是面向高速率子阵列（HRS）波束成形的精简版本。其 Content 字段携带一个 2 字节的 PET TX HRS Configuration 字段和一个 2 字节的 PET RX HRS Configuration 字段（同样，SAS 情况下省略 RX 一半）。每个 HRS 配置比完整的 Beam PET 还要简单：它只是 z 轴和 x 轴各自的 HRS Beam Codebook ID。因此，6.4.31 描述的是一个带有自身分辨率设置的完整阵列，而 6.4.32 则是一个轻量级指针，只是说一句“高速率子阵列路径请使用这两套码本”。"
+    },
+    {
+      "type": "prose",
+      "en": "6.4.33 PET Amplitude IE and 6.4.34 PET Phase IE are where the actual measured beam pattern travels. Both lay out one 4-bit field per antenna element, in the predefined element order, followed by a Reserved field that is present only when there is an odd number of elements (so the total ends on a byte boundary). In the PET Amplitude IE, each Element Amplitude is encoded relative to the strongest element: the value is one less than the numerator N of a fraction N/D, where D = 2^(Amplitude Resolution) comes straight from the Beam PET IE. In the PET Phase IE, each Element Phase is the numerator N of N/D where D = 2^(Phase Resolution); with a phase resolution of 4 you get 16 steps of 22.5 degrees each, spanning 0 to 342.5 degrees. This is the elegant link: 6.4.31 sets the resolution, and 6.4.33/6.4.34 fill in the numbers using exactly that scale.",
+      "zh": "6.4.33 PET Amplitude IE 与 6.4.34 PET Phase IE 才是实际测得的波束图样的载体。两者都按预定义的阵元顺序，为每个天线阵元排布一个 4 比特字段，其后跟一个 Reserved 字段——仅当阵元数为奇数时才存在（以使总长度落在字节边界上）。在 PET Amplitude IE 中，每个 Element Amplitude 相对于最强阵元编码：其值为分数 N/D 的分子 N 减一，其中 D = 2^(幅度分辨率) 直接来自 Beam PET IE。在 PET Phase IE 中，每个 Element Phase 是 N/D 的分子 N，其中 D = 2^(相位分辨率)；当相位分辨率为 4 时，可得 16 个步进、每步 22.5 度，覆盖 0 至 342.5 度。这正是其精妙的衔接：6.4.31 设定分辨率，而 6.4.33/6.4.34 就用这套刻度填入具体数值。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Beam PET IE 6.4.31\\nAmp res = N, Phase res = N] -->|sets scale D=2^N| B[PET Amplitude IE 6.4.33\\nper-element amplitude]\n  A -->|sets scale D=2^N| C[PET Phase IE 6.4.34\\nper-element phase]\n  B --> D[Reconstructed beam pattern]\n  C --> D",
+      "zh": "flowchart LR\n  A[Beam PET IE 6.4.31\\n幅度分辨率=N, 相位分辨率=N] -->|设定刻度 D=2^N| B[PET Amplitude IE 6.4.33\\n各阵元幅度]\n  A -->|设定刻度 D=2^N| C[PET Phase IE 6.4.34\\n各阵元相位]\n  B --> D[重建出的波束图样]\n  C --> D"
+    },
+    {
+      "type": "prose",
+      "en": "6.4.35 Sync Frame Frequency IE steps away from beam patterns to control timing. Its single Content octet packs a 5-bit Sync Frame Frequency field, a 1-bit Sync Frame Direction field, and 2 reserved bits. The PNC uses it to tell a DEV how many superframes (the periodic time structure of the piconet) should pass between two Sync frames, as defined in 6.3.6. Setting the field to zero is a request to stop sending Sync frames altogether. The Sync Frame Direction bit chooses omni-directional transmission (0) or directional transmission (1); when directional, the DEV cycles round-robin through its available beam directions so neighbours in every direction eventually hear the sync.",
+      "zh": "6.4.35 Sync Frame Frequency IE 从波束图样转向控制定时。其单字节 Content 打包了一个 5 比特的 Sync Frame Frequency 字段、一个 1 比特的 Sync Frame Direction 字段以及 2 个保留比特。PNC 用它来告诉某个 DEV：两个 Sync 帧之间应间隔多少个超帧（superframe，即微微网的周期性时间结构），具体见 6.3.6。将该字段置零即请求彻底停止发送 Sync 帧。Sync Frame Direction 比特用于选择全向发送（0）还是定向发送（1）；定向时，DEV 会以轮询（round-robin）方式遍历其各个可用波束方向，使得各个方向上的邻居最终都能收到同步信息。"
+    },
+    {
+      "type": "prose",
+      "en": "6.4.36 Directional Peer IE sets up peer-to-peer directional links. Its Content field is a 1-octet SrcID, a 1-octet DestID (both DEVIDs — the short addresses of the source and destination devices), a 1-octet Configuration field, and a 2-octet Allocated Superframes field. The directional communication happens in the regular CAP and/or regular S-CAP (Contention Access Period / Synchronous Contention Access Period — the contention windows of the superframe). Inside Configuration, a Request/Release bit set to one requests the directional link and zero releases it, and a Unidirectional/Bidirectional Allowance bit set to one means the link is one-way. Allocated Superframes then states how many superframes are reserved for that source-destination pair.",
+      "zh": "6.4.36 Directional Peer IE 用于建立点对点的定向链路。其 Content 字段包含一个 1 字节的 SrcID、一个 1 字节的 DestID（两者均为 DEVID，即源设备与目的设备的短地址）、一个 1 字节的 Configuration 字段，以及一个 2 字节的 Allocated Superframes 字段。定向通信发生在常规 CAP 和/或常规 S-CAP 中（竞争接入期 / 同步竞争接入期，即超帧中的竞争窗口）。在 Configuration 内部，Request/Release 比特置一表示请求建立定向链路、置零表示释放它；Unidirectional/Bidirectional Allowance 比特置一表示链路为单向。Allocated Superframes 则说明为该源—目的设备对预留了多少个超帧。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — exact clause numbers for all six IEs",
+        "zh": "覆盖地图——六个 IE 的精确条款编号"
+      },
+      "en": "All six covered units live in 6.4 (Information elements). 6.4.31 Beam PET IE — Content = PET TX/RX Configuration (4 octets each, Figs 6-117/6-118), carrying antenna counts per axis, beam codebook IDs, and Amplitude/Phase Resolution (each coded as N for 2^N values, range 0-4). 6.4.32 HRS Beam PET IE — Content = PET TX/RX HRS Configuration (2 octets each, Figs 6-119/6-120), just z-axis and x-axis HRS Beam Codebook IDs. 6.4.33 PET Amplitude IE — 4-bit Element Amplitude per element relative to the strongest, scale D = 2^(Amplitude Resolution) (Fig 6-121); Reserved present only for an odd element count. 6.4.34 PET Phase IE — 4-bit Element Phase per element, scale D = 2^(Phase Resolution), e.g. 16 steps of 22.5 degrees (Fig 6-122); Reserved on odd count. 6.4.35 Sync Frame Frequency IE — 5-bit frequency (superframes between Sync frames, 0 = stop), 1-bit direction (omni vs directional round-robin), per 6.3.6 (Fig 6-123). 6.4.36 Directional Peer IE — SrcID, DestID, Configuration (Request/Release bit, Unidirectional/Bidirectional Allowance bit), and Allocated Superframes for directional peer links in the regular CAP/S-CAP (Figs 6-124/6-125).",
+      "zh": "全部六个覆盖单元都位于 6.4 节（信息元素）。6.4.31 Beam PET IE——Content = PET TX/RX Configuration（各 4 字节，图 6-117/6-118），携带每轴天线数量、波束码本 ID 以及幅度/相位分辨率（各以 N 编码表示 2^N 个值，范围 0-4）。6.4.32 HRS Beam PET IE——Content = PET TX/RX HRS Configuration（各 2 字节，图 6-119/6-120），仅含 z 轴和 x 轴的 HRS Beam Codebook ID。6.4.33 PET Amplitude IE——每阵元 4 比特 Element Amplitude，相对最强阵元，刻度 D = 2^(幅度分辨率)（图 6-121）；仅当阵元数为奇数时才有 Reserved。6.4.34 PET Phase IE——每阵元 4 比特 Element Phase，刻度 D = 2^(相位分辨率)，例如 16 个步进、每步 22.5 度（图 6-122）；奇数阵元数时有 Reserved。6.4.35 Sync Frame Frequency IE——5 比特频率（Sync 帧之间的超帧数，0 = 停止）、1 比特方向（全向 vs 定向轮询），依据 6.3.6（图 6-123）。6.4.36 Directional Peer IE——SrcID、DestID、Configuration（Request/Release 比特、Unidirectional/Bidirectional Allowance 比特）以及 Allocated Superframes，用于常规 CAP/S-CAP 中的定向对等链路（图 6-124/6-125）。",
+      "cite": {
+        "pdf_id": "802153-2016",
+        "pages": [
+          154,
+          155,
+          156,
+          157
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The takeaway: these six IEs form a tidy directional-beam toolkit. 6.4.31 and 6.4.32 declare the array shape and resolution; 6.4.33 and 6.4.34 report the measured per-element amplitude and phase against that declared scale; 6.4.35 paces the directional Sync frames; and 6.4.36 negotiates a directional peer link. Read them as one family and the millimetre-wave beam-management story of HR-WPAN snaps into focus.",
+      "zh": "要点：这六个 IE 共同构成了一套清爽的定向波束工具箱。6.4.31 与 6.4.32 声明阵列形状与分辨率；6.4.33 与 6.4.34 依据所声明的刻度上报实测的各阵元幅度与相位；6.4.35 为定向 Sync 帧设定节奏；6.4.36 协商定向对等链路。把它们当作一个家族来读，HR-WPAN 的毫米波波束管理脉络便一目了然。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        154,
+        155,
+        156,
+        157,
+        158
+      ],
+      "note": "Clause 6.4.31-6.4.36 Information Elements: Beam PET, HRS Beam PET, PET Amplitude, PET Phase, Sync Frame Frequency, Directional Peer (figures 6-117 through 6-125)."
+    }
+  ],
+  "covers": [
+    "802153-2016:6.4.31",
+    "802153-2016:6.4.32",
+    "802153-2016:6.4.33",
+    "802153-2016:6.4.34",
+    "802153-2016:6.4.35",
+    "802153-2016:6.4.36"
+  ],
+  "track": "pan-hr-wpan"
+}

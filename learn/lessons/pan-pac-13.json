@@ -1,0 +1,218 @@
+{
+  "id": "pan-pac-13",
+  "title": {
+    "en": "PAC Security and the Reference Annexes: GCMP, ECC, E-DH, and the Building Blocks",
+    "zh": "PAC 安全机制与参考附录：GCMP、ECC、E-DH 及底层构件"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 16 is where Peer Aware Communications (PAC) — the device-to-device mode defined by IEEE Std 802.15.8-2017 — gets its security. Two PAC devices (PDs) that have already discovered and peered with each other now want their traffic to be private, tamper-evident, and provably from the right partner. Clause 16.1 names the toolkit: AES (Advanced Encryption Standard) in Galois Counter Mode (GCM) with the Galois Message Authentication Code (GMAC) — together called the Galois Counter Mode Protocol (GCMP); Elliptic Curve Cryptography (ECC); the Elliptic Curve Digital Signature Algorithm (ECDSA); and the Extended Diffie-Hellman (E-DH) protocol for exchanging public keys. Three kinds of secured session exist: unicast, multicast, and selected broadcast.",
+      "zh": "第 16 章规定了对等感知通信（PAC，IEEE Std 802.15.8-2017 定义的设备到设备模式）的安全机制。两个已经完成发现与配对的 PAC 设备（PD）现在希望它们的流量做到保密、可检测篡改、并能证明确实来自正确的对端。16.1 节列出了工具箱：伽罗瓦计数器模式（GCM）下的高级加密标准（AES）配合伽罗瓦消息认证码（GMAC）——合称伽罗瓦计数器模式协议（GCMP）；椭圆曲线密码学（ECC）；椭圆曲线数字签名算法（ECDSA）；以及用于交换公钥的扩展 Diffie-Hellman（E-DH）协议。共有三类受保护会话：单播、组播和选择性广播。"
+    },
+    {
+      "type": "prose",
+      "en": "GCMP (16.2) protects the MAC payload. Encapsulation expands a frame by exactly 23 octets: a 7-octet GCMP Header carrying the 48-bit Packet Number (PN) plus a 16-octet 128-bit Message Integrity Code (MIC). The PN is the anti-replay heartbeat — it must increment by 1 for every secured frame and must never repeat under the same Temporal Key (TK), because reusing a PN voids all security. The sender builds Additional Authentication Data (AAD) from the MAC and GCMP headers, builds a 96-bit nonce from the PN and the source MAC address, then runs GCM encryption to produce ciphertext plus the MIC. The receiver reverses it and, crucially, checks that the incoming PN is greater than the stored replay counter (RCPN) — a failure raises MLME-SECURITYFAILURE with codes FAIL_MIC, FAIL_SECURITY, or FAIL_RC.",
+      "zh": "GCMP（16.2）保护 MAC 净荷。封装恰好将帧扩展 23 个八位组：7 个八位组的 GCMP 头携带 48 位包号（PN），再加 16 个八位组、128 位的消息完整性码（MIC）。PN 是抗重放的心跳——每个受保护帧都必须加 1，且在同一临时密钥（TK）下绝不能重复，因为重用 PN 会使所有安全保证失效。发送方用 MAC 头和 GCMP 头构造附加认证数据（AAD），用 PN 与源 MAC 地址构造 96 位随机数（nonce），随后运行 GCM 加密产生密文与 MIC。接收方逆向执行，并且关键地检查收到的 PN 是否大于存储的重放计数器（RCPN）——失败将触发 MLME-SECURITYFAILURE，错误码为 FAIL_MIC、FAIL_SECURITY 或 FAIL_RC。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"5\" y=\"30\" width=\"120\" height=\"34\"/><rect x=\"125\" y=\"30\" width=\"100\" height=\"34\"/><rect x=\"225\" y=\"30\" width=\"230\" height=\"34\"/><rect x=\"455\" y=\"30\" width=\"110\" height=\"34\"/><rect x=\"565\" y=\"30\" width=\"70\" height=\"34\"/><text x=\"65\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">MAC Header</text><text x=\"175\" y=\"48\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">GCMP Header</text><text x=\"175\" y=\"61\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">(7 oct / PN)</text><text x=\"340\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Encrypted MAC Payload</text><text x=\"510\" y=\"48\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">MIC</text><text x=\"510\" y=\"61\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">(16 oct)</text><text x=\"600\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">FCS</text><text x=\"320\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Expanded GCMP MAC frame (+23 octets)</text></svg>",
+      "caption": {
+        "en": "The expanded GCMP frame (16.2.2): a 7-octet GCMP Header (carrying the PN) and a 16-octet MIC wrap the encrypted payload.",
+        "zh": "扩展的 GCMP 帧（16.2.2）：7 个八位组的 GCMP 头（携带 PN）和 16 个八位组的 MIC 包裹加密后的净荷。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Where do the keys come from? Key management (16.3) is built on Elliptic Curve Diffie-Hellman (ECDH) plus ECDSA signatures. An elliptic curve over a prime field is described by domain parameters T = (p, a, b, G, n, h); a key pair is a random private integer d and the public point Q = dG. The standard mandates curves P-256 and P-384 (from FIPS 186-4) for signatures, and Curve 25519 for deriving the temporal key via E-DH. Two hash functions are supported — SHA-256 (Hash256) and SHA-384 (Hash384), from FIPS 180-4 — and they feed both ECDSA and the HMAC-based Key Derivation Function (HKDF, from NIST SP 800-56C), which stretches the ECDH shared secret Z into output keying material.",
+      "zh": "密钥从何而来？密钥管理（16.3）建立在椭圆曲线 Diffie-Hellman（ECDH）加 ECDSA 签名之上。素数域上的椭圆曲线由域参数 T = (p, a, b, G, n, h) 描述；密钥对由随机私钥整数 d 和公钥点 Q = dG 组成。标准规定签名使用 P-256 与 P-384 曲线（取自 FIPS 186-4），并使用 Curve 25519 通过 E-DH 派生临时密钥。支持两种哈希函数——SHA-256（Hash256）与 SHA-384（Hash384），取自 FIPS 180-4——它们同时服务于 ECDSA 和基于 HMAC 的密钥派生函数（HKDF，取自 NIST SP 800-56C），后者将 ECDH 共享密钥 Z 扩展为输出密钥材料。"
+    },
+    {
+      "type": "prose",
+      "en": "Signatures (16.4) prove who sent a message. A signer PD U hashes message M, then uses its private key and an ephemeral key pair to compute the signature pair S = (r, s). Any PD holding U's public key can verify — even a third party not involved in the original exchange. The E-DH key agreement (16.5) is the centerpiece: each PD keeps a long-term Identity Key (IK), a periodically-rotated Signed Pre-Key (SPK) with its signature, a set of single-use One-Time Pre-Keys (OPK), and a per-invocation Ephemeral Key (EK). The Requestor combines four ECDH outputs (DH1..DH4) into a value D, runs it through HKDF to get the Shared Key (SK), then deletes the ephemeral material — that deletion is what gives E-DH forward secrecy and cryptographic deniability. A Receiver Sequence Counter (RSC) carried in the encrypted initial message blocks replays. Once two PDs share an SK, an initiator can derive and distribute a Group Key (GK) to every member of a PAC group (16.5.7).",
+      "zh": "签名（16.4）证明消息由谁发出。签名方 PD U 对消息 M 取哈希，然后用其私钥和一对临时密钥计算签名对 S = (r, s)。任何持有 U 公钥的 PD 都可验证——甚至包括未参与原始交换的第三方。E-DH 密钥协商（16.5）是核心：每个 PD 保有一个长期身份密钥（IK）、一个定期轮换并带签名的签名预密钥（SPK）、一组一次性预密钥（OPK），以及每次调用重新生成的临时密钥（EK）。请求方将四个 ECDH 输出（DH1..DH4）拼接为 D，经 HKDF 得到共享密钥（SK），随后删除临时材料——正是这一删除赋予了 E-DH 前向保密性与密码学可否认性。封装在加密初始消息中的接收序列计数器（RSC）用于阻止重放。两个 PD 共享 SK 后，发起方便可派生并向 PAC 组的每个成员分发组密钥（GK，16.5.7）。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant R as Requestor PD\n  participant S as Responder PD\n  Note over R,S: Public keys (IK, SPK+Sig, OPK) shared at peering\n  R->>R: verify SPK signature (ECDSA)\n  R->>R: DH1..DH4 -> D -> SK = HKDF(D)\n  R->>R: delete EK, D (forward secrecy)\n  R->>S: Public Key Request (encrypted, +RSC)\n  S->>S: recompute SK*, decrypt, MIC + replay check\n  S->>S: delete private OPK\n  S->>R: Public Key Response (E-DH complete)",
+      "zh": "sequenceDiagram\n  participant R as 请求方 PD\n  participant S as 响应方 PD\n  Note over R,S: 配对时已共享公钥 (IK, SPK+签名, OPK)\n  R->>R: 验证 SPK 签名 (ECDSA)\n  R->>R: DH1..DH4 -> D -> SK = HKDF(D)\n  R->>R: 删除 EK, D (前向保密)\n  R->>S: 公钥请求 (加密, 含 RSC)\n  S->>S: 重算 SK*, 解密, MIC 与重放检查\n  S->>S: 删除私有 OPK\n  S->>R: 公钥响应 (E-DH 完成)"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: GCMP (16.2) is the per-frame seal you use once a key exists; E-DH (16.5) is the handshake that creates that key; and ECDH/ECDSA/HKDF (16.3-16.4) are the math primitives both lean on. The PN protects ordinary frames from replay; the RSC does the same job for the E-DH initial message itself.",
+      "zh": "心智模型：GCMP（16.2）是密钥存在后用于逐帧封缄的工具；E-DH（16.5）是生成该密钥的握手；而 ECDH/ECDSA/HKDF（16.3-16.4）是二者共同依赖的数学原语。PN 保护普通帧免遭重放；RSC 则为 E-DH 初始消息本身完成同样的工作。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Clause 16 coverage map — every security sub-clause by number",
+        "zh": "第 16 章覆盖图——按编号列出每个安全子条款"
+      },
+      "en": "GCMP (16.2): 16.2.1 general (data confidentiality + origin authentication, GCMP-128/256); 16.2.2 the +23-octet encrypted frame format; 16.2.3 encapsulation (16.2.3.1 the 6 steps; 16.2.3.2 the variant used inside the E-DH Public Key Request; 16.2.3.3 PN processing with macPNExhaustionThreshold and MLME-PNEXHAUSTION; 16.2.3.4 AAD format and its E-DH ADDH form; 16.2.3.5 the 96-bit nonce from source MAC + PN; 16.2.3.6 the GCMP Header); 16.2.4 GCM encryption inputs key/nonce/data/AAD (16.2.4.1 general, 16.2.4.2 E-DH variant); 16.2.5 decapsulation (16.2.5.1 general, 16.2.5.2 E-DH variant) ending in the RCPN replay check; 16.2.6 GCM decryption (16.2.6.1, 16.2.6.2 E-DH variant, 16.2.6.3 PN/replay detection). Key management (16.3): 16.3.1 ECDH+ECDSA overview; 16.3.2 curve domain parameters T; 16.3.3 key-pair generation (d, Q=dG); 16.3.4 hashes (16.3.4.1 general + Table 148, 16.3.4.2 Hash256, 16.3.4.3 Hash384); 16.3.5 the ECDH function (16.3.5.1 general, 16.3.5.2 shared-secret procedure with element-to-octet conversion and modular-inverse, 16.3.5.3 HKDF). Signatures (16.4): 16.4.1 overview, 16.4.2 ECDSA signing S=(r,s), 16.4.3 ECDSA verification. E-DH (16.5): 16.5.1 general (forward secrecy + deniability), 16.5.2 notation (DH, Sign, HKDF, RSC), 16.5.3 the five key types (IK/EK/SPK/Signature/OPK, Table 149), 16.5.4 Requestor sending the initial message, 16.5.5 Responder receiving it, 16.5.6 out-of-band key authentication (fingerprints/QR), 16.5.7 group-key derivation and distribution.",
+      "zh": "GCMP（16.2）：16.2.1 总则（数据保密 + 源认证，GCMP-128/256）；16.2.2 +23 八位组的加密帧格式；16.2.3 封装（16.2.3.1 六步流程；16.2.3.2 E-DH 公钥请求内部使用的变体；16.2.3.3 PN 处理，含 macPNExhaustionThreshold 与 MLME-PNEXHAUSTION；16.2.3.4 AAD 格式及其 E-DH ADDH 形式；16.2.3.5 由源 MAC + PN 构成的 96 位 nonce；16.2.3.6 GCMP 头）；16.2.4 GCM 加密输入 密钥/nonce/数据/AAD（16.2.4.1 总则，16.2.4.2 E-DH 变体）；16.2.5 解封装（16.2.5.1 总则，16.2.5.2 E-DH 变体），以 RCPN 重放检查收尾；16.2.6 GCM 解密（16.2.6.1，16.2.6.2 E-DH 变体，16.2.6.3 PN/重放检测）。密钥管理（16.3）：16.3.1 ECDH+ECDSA 概览；16.3.2 曲线域参数 T；16.3.3 密钥对生成 (d, Q=dG)；16.3.4 哈希（16.3.4.1 总则 + 表 148，16.3.4.2 Hash256，16.3.4.3 Hash384）；16.3.5 ECDH 函数（16.3.5.1 总则，16.3.5.2 共享密钥流程，含元素到八位组转换与模逆，16.3.5.3 HKDF）。签名（16.4）：16.4.1 概览，16.4.2 ECDSA 签名 S=(r,s)，16.4.3 ECDSA 验证。E-DH（16.5）：16.5.1 总则（前向保密 + 可否认性），16.5.2 记号（DH、Sign、HKDF、RSC），16.5.3 五类密钥（IK/EK/SPK/签名/OPK，表 149），16.5.4 请求方发送初始消息，16.5.5 响应方接收，16.5.6 带外密钥认证（指纹/二维码），16.5.7 组密钥派生与分发。",
+      "cite": {
+        "pdf_id": "802158-2017",
+        "pages": [
+          282,
+          283,
+          284,
+          285,
+          286,
+          287,
+          288,
+          289,
+          290,
+          291,
+          292,
+          293,
+          294,
+          295,
+          296,
+          297,
+          298,
+          299,
+          300
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The annexes are the reference shelf the main clauses point to. Annex A (normative) lists the QC-LDPC (Quasi-Cyclic Low-Density Parity-Check) prototype matrices Hp — compact tables of cyclic shift values (for n=648, lifting factor Z=27, at code rates 1/2, 2/3, 3/4 and more) that expand into the full error-correction parity-check matrix. Annex B (normative) is the modulation mapping: exact in-phase/quadrature (I/Q) constellation points for BPSK, QPSK, 16-QAM, and 64-QAM (each normalized, e.g. QPSK at ±1/√2, 16-QAM scaled by 1/√10). Annex C (informative) is a worked synchronization illustration: it walks through two countdown counters n and N per PD across a synchronization period, showing exactly when a PD transmits a sync signal and reseeds its random counter.",
+      "zh": "附录是主条款所指向的参考书架。附录 A（规范性）列出 QC-LDPC（准循环低密度奇偶校验）原型矩阵 Hp——紧凑的循环移位值表（针对 n=648、提升因子 Z=27，码率 1/2、2/3、3/4 等），可展开为完整的纠错校验矩阵。附录 B（规范性）是调制映射：BPSK、QPSK、16-QAM 和 64-QAM 的精确同相/正交（I/Q）星座点（各自归一化，例如 QPSK 为 ±1/√2，16-QAM 以 1/√10 缩放）。附录 C（资料性）是一个同步演示实例：它逐步讲解每个 PD 在一个同步周期内的两个倒计时计数器 n 与 N，准确说明 PD 何时发送同步信号并重新选取随机计数。"
+    },
+    {
+      "type": "prose",
+      "en": "Annex D (informative) derives the mathematics of two-way ranging: single-sided ranging suffers an error from the two devices' clock offsets (eA, eB), while double-sided ranging multiplies the two round-trip measurements so the clock-rate constants cancel — yielding a time-of-flight estimate whose accuracy is independent of the response delays (recall 1 ns ≈ 30 cm). Annex E (normative) pins down the exact cryptographic components: the full hexadecimal domain parameters for Curve P-256, Curve P-384, and Curve 25519 referenced by Clause 16.3. Annex F (informative) shows how a cyclic-superframe lets multiple PAC groups (e.g., an online game at 500 ms, an advertiser at 1 s, equipment control) overlay active/inactive periods to cut interference. Annex G (normative) defines CRC (Cyclic Redundancy Check) generation: divide x16·M(x) by the generator polynomial G16(x) and take the remainder as the Frame Check Sequence (FCS), with a worked 3-byte example. Annex H (informative) is the bibliography of helpful-but-non-binding references.",
+      "zh": "附录 D（资料性）推导双向测距的数学：单边测距会因两设备的时钟偏移（eA、eB）引入误差，而双边测距将两次往返测量相乘，使时钟速率常数相互抵消——得到一个其精度与回复时延无关的飞行时间估计（注意 1 ns ≈ 30 cm）。附录 E（规范性）确定精确的密码学构件：第 16.3 节引用的 Curve P-256、Curve P-384 和 Curve 25519 的完整十六进制域参数。附录 F（资料性）展示循环超帧如何让多个 PAC 组（例如 500 ms 的在线游戏、1 s 的广告、设备控制）叠加活跃/非活跃时段以降低干扰。附录 G（规范性）定义 CRC（循环冗余校验）生成：用生成多项式 G16(x) 去除 x16·M(x)，取余数作为帧校验序列（FCS），并附 3 字节实例。附录 H（资料性）是有益但非强制参考文献的目录。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Annex coverage map — A through H, page by page",
+        "zh": "附录覆盖图——A 至 H，逐页对应"
+      },
+      "en": "Annex A (normative, p.301) — QC-LDPC prototype matrices Hp (Tables A.1+ for n=648, Z=27, rates 1/2, 2/3, 3/4...). Annex B (normative, p.303) — Modulation mapping: BPSK (Table B.1), QPSK (B.2), 16-QAM (B.3), 64-QAM (B.4) I/Q tables. Annex C (informative, p.305) — Synchronization illustration: per-PD counters n and N, Figure C.1 timeline of sync-signal transmissions. Annex D (informative, p.308) — Two-way ranging math: D.1 single-sided clock-offset error, D.2 double-sided derivation where clock constants cancel, plus a 100 m / 333 ns worked error bound. Annex E (normative, p.314) — Cryptographic components: full hex domain parameters E.1 Curve P-256, E.2 Curve P-384, E.3 Curve 25519. Annex F (informative, p.316) — Cyclic-superframe: F.1.1 motivation, example groups A/B/C, F.1.4 configuration sizing rules. Annex G (normative, p.320) — CRC generation: x16·M(x) mod G16(x) -> FCS, with a 3-byte header worked example. Annex H (informative, p.321) — Bibliography [B1] coexistence assurance, [B2] Applied Cryptography.",
+      "zh": "附录 A（规范性，第 301 页）——QC-LDPC 原型矩阵 Hp（表 A.1 起，n=648、Z=27，码率 1/2、2/3、3/4 等）。附录 B（规范性，第 303 页）——调制映射：BPSK（表 B.1）、QPSK（B.2）、16-QAM（B.3）、64-QAM（B.4）的 I/Q 表。附录 C（资料性，第 305 页）——同步演示：每个 PD 的计数器 n 与 N，图 C.1 同步信号发送时间线。附录 D（资料性，第 308 页）——双向测距数学：D.1 单边时钟偏移误差，D.2 双边推导（时钟常数抵消），以及 100 m / 333 ns 的误差界实例。附录 E（规范性，第 314 页）——密码学构件：完整十六进制域参数 E.1 Curve P-256、E.2 Curve P-384、E.3 Curve 25519。附录 F（资料性，第 316 页）——循环超帧：F.1.1 动机、A/B/C 示例组、F.1.4 配置定量规则。附录 G（规范性，第 320 页）——CRC 生成：x16·M(x) mod G16(x) -> FCS，附 3 字节头实例。附录 H（资料性，第 321 页）——参考文献 [B1] 共存保证文档、[B2] 应用密码学。",
+      "cite": {
+        "pdf_id": "802158-2017",
+        "pages": [
+          301,
+          303,
+          305,
+          308,
+          309,
+          310,
+          311,
+          312,
+          313,
+          314,
+          315,
+          316,
+          317,
+          318,
+          319,
+          320,
+          321
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        282,
+        283,
+        284,
+        285,
+        286,
+        287,
+        288,
+        289
+      ],
+      "note": "16.1 overview; 16.2 GCMP encapsulation/decapsulation, AAD, nonce, PN, GCM enc/dec"
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        289,
+        290,
+        291,
+        292,
+        293
+      ],
+      "note": "16.3 key management: curve params, key-pair gen, hashes, ECDH, HKDF"
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        294,
+        295,
+        296
+      ],
+      "note": "16.4 ECDSA signing and verification"
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        296,
+        297,
+        298,
+        299,
+        300
+      ],
+      "note": "16.5 E-DH key agreement, keys, initial message, RSC, group key"
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        301,
+        303,
+        305,
+        308,
+        314,
+        316,
+        320,
+        321
+      ],
+      "note": "Annexes A-H: QC-LDPC, modulation, sync, ranging math, crypto params, cyclic-superframe, CRC, bibliography"
+    }
+  ],
+  "covers": [
+    "802158-2017:16.1",
+    "802158-2017:16.2.1",
+    "802158-2017:16.2.2",
+    "802158-2017:16.2.3",
+    "802158-2017:16.2.4",
+    "802158-2017:16.2.5",
+    "802158-2017:16.2.6",
+    "802158-2017:16.3.1",
+    "802158-2017:16.3.2",
+    "802158-2017:16.3.3",
+    "802158-2017:16.3.4",
+    "802158-2017:16.3.5",
+    "802158-2017:16.4.1",
+    "802158-2017:16.4.2",
+    "802158-2017:16.4.3",
+    "802158-2017:16.5.1",
+    "802158-2017:16.5.2",
+    "802158-2017:16.5.3",
+    "802158-2017:16.5.4",
+    "802158-2017:16.5.5",
+    "802158-2017:16.5.6",
+    "802158-2017:16.5.7",
+    "802158-2017:Annex_A",
+    "802158-2017:Annex_B",
+    "802158-2017:Annex_C",
+    "802158-2017:Annex_D",
+    "802158-2017:Annex_E",
+    "802158-2017:Annex_F",
+    "802158-2017:Annex_G",
+    "802158-2017:Annex_H"
+  ],
+  "track": "pan-pac"
+}

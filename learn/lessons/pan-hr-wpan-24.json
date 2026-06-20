@@ -1,0 +1,132 @@
+{
+  "id": "pan-hr-wpan-24",
+  "title": {
+    "en": "The MAC SAP: How Data Crosses the MAC Boundary (Async vs Isochronous)",
+    "zh": "MAC SAP：数据如何穿越 MAC 边界（异步与等时）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 5 describes the management interfaces of an 802.15.3 high-rate wireless personal area network (HR-WPAN). Part 1 covered the MLME SAP (the management plane). This part zooms in on Clause 5.5, the MAC SAP — the data plane doorway. SAP stands for Service Access Point: the logical interface where one layer hands work to another. The MAC SAP sits between the MAC (Medium Access Control) sublayer below and the FCSL (Frame Convergence Sublayer) above it. The FCSL is the glue that adapts higher-layer protocols (like IP) onto the 802.15.3 MAC.",
+      "zh": "第 5 章描述 802.15.3 高速率无线个域网（HR-WPAN）的各类管理接口。第 1 部分讲的是 MLME SAP（管理面）。本部分聚焦 5.5 节的 MAC SAP——也就是数据面的入口。SAP 是 Service Access Point（服务接入点）的缩写：它是某一层把工作交给另一层的逻辑接口。MAC SAP 位于下方的 MAC（媒体接入控制）子层与其上方的 FCSL（帧汇聚子层）之间。FCSL 是把更高层协议（例如 IP）适配到 802.15.3 MAC 上的黏合层。"
+    },
+    {
+      "type": "prose",
+      "en": "These primitives are 'informative' — they describe what information must pass across the boundary, not a literal API your code must implement. The unit being moved is an MSDU (MAC Service Data Unit): one chunk of payload the upper layer wants delivered. The MAC SAP offers exactly two delivery services, and the whole of Clause 5.5 is built from them: MAC-ASYNC-DATA for ordinary best-effort traffic, and MAC-ISOCH-DATA for isochronous (time-scheduled, streaming) traffic such as video.",
+      "zh": "这些原语是“资料性”的——它们描述必须跨越该边界的信息，而不是你的代码必须照搬实现的具体 API。被搬运的单位是 MSDU（MAC Service Data Unit，MAC 服务数据单元）：上层希望投递的一段净荷。MAC SAP 只提供两种投递服务，整个 5.5 节都由它们构成：用于普通尽力而为流量的 MAC-ASYNC-DATA，以及用于等时（按时间调度的流式）流量（例如视频）的 MAC-ISOCH-DATA。"
+    },
+    {
+      "type": "prose",
+      "en": "Each service follows the classic request / confirm / indication pattern. The sender issues a .request to push an MSDU down into the MAC. The MAC may later return a .confirm to report the outcome back to that same sender. On the far end, the receiving MAC raises an .indication to deliver the MSDU up to its FCSL. Neither service defines a .response primitive — there is nothing for the upper layer to answer back with, so the Response column in the standard is simply empty.",
+      "zh": "每种服务都遵循经典的“请求/确认/指示”（request / confirm / indication）模式。发送方发出 .request，把一个 MSDU 向下压入 MAC。MAC 之后可能返回一个 .confirm，向同一发送方报告结果。在远端，接收方的 MAC 抛出一个 .indication，把 MSDU 向上交给它的 FCSL。这两种服务都没有定义 .response 原语——上层没有需要回应的内容，因此标准里的 Response 列是空的。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant TxFCSL as Sender FCSL\n  participant TxMAC as Sender MAC\n  participant RxMAC as Receiver MAC\n  participant RxFCSL as Receiver FCSL\n  TxFCSL->>TxMAC: DATA.request (MSDU)\n  TxMAC-->>RxMAC: over the air\n  RxMAC->>RxFCSL: DATA.indication\n  TxMAC->>TxFCSL: DATA.confirm (result)",
+      "zh": "sequenceDiagram\n  participant TxFCSL as 发送方 FCSL\n  participant TxMAC as 发送方 MAC\n  participant RxMAC as 接收方 MAC\n  participant RxFCSL as 接收方 FCSL\n  TxFCSL->>TxMAC: DATA.request（MSDU）\n  TxMAC-->>RxMAC: 空口传输\n  RxMAC->>RxFCSL: DATA.indication\n  TxMAC->>TxFCSL: DATA.confirm（结果）"
+    },
+    {
+      "type": "prose",
+      "en": "The asynchronous service (5.5.1–5.5.3) carries best-effort traffic. A MAC-ASYNC-DATA.request (5.5.1) names a target device by TrgtId (a DEVID, the short device identifier used inside a piconet), and carries delivery controls: a TransmitTimeout (how long the MAC may keep trying, in microseconds), a MaxRetries cap, a UserPriority, an AckRequested flag, and a ConfirmRequested setting. The standard advises sending all asynchronous data in Multi-protocol Data frames so piconets running different FCSLs stay interoperable.",
+      "zh": "异步服务（5.5.1–5.5.3）承载尽力而为流量。MAC-ASYNC-DATA.request（5.5.1）通过 TrgtId 指定目标设备（TrgtId 是 DEVID，即微微网内部使用的短设备标识），并携带投递控制参数：TransmitTimeout（MAC 可持续尝试的时长，单位微秒）、MaxRetries（最大重传次数上限）、UserPriority（用户优先级）、AckRequested（是否需要确认）标志，以及 ConfirmRequested 设置。标准建议所有异步数据都用 Multi-protocol Data（多协议数据）帧发送，以保证运行不同 FCSL 的微微网之间互操作。"
+    },
+    {
+      "type": "prose",
+      "en": "The matching MAC-ASYNC-DATA.confirm (5.5.2) reports the fate of that request. Crucially, it is not always raised: it is generated only when ConfirmRequested was ALWAYS, or when it was ON_ERROR and the ResultCode came back FAILURE. It carries the actual TransmitDelay, a ResultCode (SUCCESS or FAILURE), and — on failure — a ReasonCode (TRANSMIT_TIMEOUT, MAX_RETRIES, NOT_ASSOCIATED, or OTHER). At the destination, MAC-ASYNC-DATA.indication (5.5.3) is minimal: it just delivers TrgtId, OrigId (the originator's DEVID), and the Data itself.",
+      "zh": "与之配对的 MAC-ASYNC-DATA.confirm（5.5.2）报告该请求的结局。关键在于它并不总会产生：只有当 ConfirmRequested 为 ALWAYS，或为 ON_ERROR 且 ResultCode 返回 FAILURE 时才会生成。它携带实际的 TransmitDelay、一个 ResultCode（SUCCESS 或 FAILURE），并在失败时携带 ReasonCode（TRANSMIT_TIMEOUT、MAX_RETRIES、NOT_ASSOCIATED 或 OTHER）。在目的端，MAC-ASYNC-DATA.indication（5.5.3）非常精简：只递交 TrgtId、OrigId（发起方的 DEVID）和 Data 本身。"
+    },
+    {
+      "type": "prose",
+      "en": "The isochronous service (5.5.4–5.5.6) carries scheduled stream traffic. A MAC-ISOCH-DATA.request (5.5.4) looks like its async cousin but binds to a StreamIndex (the identifier of a reserved stream) instead of a target ID, because the stream already knows its destination. It adds streaming and video knobs: DataType, UepAllowed (whether Unequal Error Protection may be applied), and a video subheader bundle — InterlacedFieldIndication, VideoFrameNumber, HPosition, and VPosition. Those four locate a pixel block, and they ride in the MAC header (lower error rate) so out-of-place video can still be shown.",
+      "zh": "等时服务（5.5.4–5.5.6）承载按调度发送的流式流量。MAC-ISOCH-DATA.request（5.5.4）形态与异步版相似，但绑定到 StreamIndex（已预留数据流的标识）而非目标 ID，因为该数据流早已知道自己的目的地。它新增了流式与视频相关的旋钮：DataType、UepAllowed（是否可应用 UEP，即不等差错保护），以及一组视频子头——InterlacedFieldIndication（隔行场指示）、VideoFrameNumber、HPosition 与 VPosition。后四者用于定位一块像素，并随 MAC 头传输（误码率更低），从而即便位置错乱也仍能显示视频。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why send pixel coordinates in the header? For uncompressed video, a payload received with bit errors is still useful — you can paint a slightly noisy pixel — but only if you know exactly where on screen it belongs. So the position fields travel in the better-protected MAC header while the pixels ride the riskier payload. That is the whole point of UEP (Unequal Error Protection): spend the error budget where it matters most.",
+      "zh": "为什么把像素坐标放在帧头里？对于未压缩视频，即便净荷收到时有误码也仍有用——你可以画出一个略带噪点的像素——但前提是你确切知道它在屏幕上的位置。因此位置字段走在保护更好的 MAC 头里，而像素走在风险更高的净荷里。这正是 UEP（不等差错保护）的全部意义：把纠错预算花在最要紧的地方。"
+    },
+    {
+      "type": "prose",
+      "en": "MAC-ISOCH-DATA.confirm (5.5.5) mirrors the async confirm — same trigger rule (ALWAYS, or ON_ERROR with FAILURE), same TransmitDelay / ResultCode / ReasonCode — but adds the StreamIndex so the upper layer knows which stream the outcome belongs to. Finally, MAC-ISOCH-DATA.indication (5.5.6) delivers a received stream MSDU: TrgtId, OrigId, StreamIndex, Data, DataType, the video subheader fields, and an ErrorFreeData flag. Video data may be passed up even when received in error; ErrorFreeData tells the higher layer whether what it got was clean or corrupted.",
+      "zh": "MAC-ISOCH-DATA.confirm（5.5.5）与异步确认如出一辙——触发规则相同（ALWAYS，或 ON_ERROR 且 FAILURE），同样携带 TransmitDelay / ResultCode / ReasonCode——但额外加上 StreamIndex，让上层知道该结果属于哪条流。最后，MAC-ISOCH-DATA.indication（5.5.6）递交收到的流式 MSDU：TrgtId、OrigId、StreamIndex、Data、DataType、各视频子头字段，以及一个 ErrorFreeData 标志。视频数据即便收到时有误码也可上交；ErrorFreeData 告诉高层收到的内容是干净的还是损坏的。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"20\" stroke=\"none\" fill=\"currentColor\" font-size=\"13\">ASYNC (5.5.1-5.5.3)</text><rect x=\"10\" y=\"30\" width=\"90\" height=\"26\"/><text x=\"18\" y=\"47\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">.request TrgtId</text><rect x=\"110\" y=\"30\" width=\"90\" height=\"26\"/><text x=\"118\" y=\"47\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">.confirm result</text><rect x=\"210\" y=\"30\" width=\"90\" height=\"26\"/><text x=\"218\" y=\"47\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">.indication</text><text x=\"10\" y=\"100\" stroke=\"none\" fill=\"currentColor\" font-size=\"13\">ISOCH (5.5.4-5.5.6)</text><rect x=\"10\" y=\"110\" width=\"120\" height=\"26\"/><text x=\"18\" y=\"127\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">.request StreamIndex</text><rect x=\"140\" y=\"110\" width=\"120\" height=\"26\"/><text x=\"148\" y=\"127\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">.confirm +Stream</text><rect x=\"270\" y=\"110\" width=\"150\" height=\"26\"/><text x=\"278\" y=\"127\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">.indication +ErrorFreeData</text><text x=\"10\" y=\"175\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">No .response primitive in either service</text></svg>",
+      "caption": {
+        "en": "The two MAC SAP services, each as request / confirm / indication. Async keys on a target DEVID; isochronous keys on a StreamIndex and adds video-aware fields.",
+        "zh": "两种 MAC SAP 服务，各自为请求/确认/指示三元组。异步以目标 DEVID 为键；等时以 StreamIndex 为键并增加面向视频的字段。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every unit, by exact clause number",
+        "zh": "覆盖地图——逐一对应到精确的子条款编号"
+      },
+      "en": "5.5 MAC SAP intro and primitive tables (Table 5-30 summary, Table 5-31 parameters) — pp. 89-91. 5.5.1 MAC-ASYNC-DATA.request: starts an async MSDU transfer; parameters RequestID, TrgtId, TransmitTimeout, MaxRetries, UserPriority, AckRequested, ConfirmRequested, Data. 5.5.2 MAC-ASYNC-DATA.confirm: reports the async result; raised only on ConfirmRequested=ALWAYS or (ON_ERROR and FAILURE); carries TransmitDelay, ResultCode, ReasonCode. 5.5.3 MAC-ASYNC-DATA.indication: delivers a received async MSDU (TrgtId, OrigId, Data). 5.5.4 MAC-ISOCH-DATA.request: starts an isochronous transfer on a StreamIndex; adds DataType, UepAllowed, and the video subheader fields (InterlacedFieldIndication, VideoFrameNumber, HPosition, VPosition). 5.5.5 MAC-ISOCH-DATA.confirm: same trigger and result fields as the async confirm, plus StreamIndex. 5.5.6 MAC-ISOCH-DATA.indication: delivers a received stream MSDU with StreamIndex, DataType, the video subheader, and ErrorFreeData (video may be passed up even if received in error). All six on pp. 92-94.",
+      "zh": "5.5 MAC SAP 引言与原语表（表 5-30 汇总、表 5-31 参数）——第 89-91 页。5.5.1 MAC-ASYNC-DATA.request：发起异步 MSDU 传输；参数 RequestID、TrgtId、TransmitTimeout、MaxRetries、UserPriority、AckRequested、ConfirmRequested、Data。5.5.2 MAC-ASYNC-DATA.confirm：报告异步结果；仅在 ConfirmRequested=ALWAYS 或（ON_ERROR 且 FAILURE）时产生；携带 TransmitDelay、ResultCode、ReasonCode。5.5.3 MAC-ASYNC-DATA.indication：递交收到的异步 MSDU（TrgtId、OrigId、Data）。5.5.4 MAC-ISOCH-DATA.request：在某 StreamIndex 上发起等时传输；新增 DataType、UepAllowed 及视频子头字段（InterlacedFieldIndication、VideoFrameNumber、HPosition、VPosition）。5.5.5 MAC-ISOCH-DATA.confirm：触发条件与结果字段同异步确认，另加 StreamIndex。5.5.6 MAC-ISOCH-DATA.indication：递交收到的流式 MSDU，含 StreamIndex、DataType、视频子头与 ErrorFreeData（视频即便有误码也可上交）。六者均在第 92-94 页。",
+      "cite": {
+        "pdf_id": "802153-2016",
+        "pages": [
+          89,
+          90,
+          91,
+          92,
+          93,
+          94
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "One mental model for the whole clause: pick your service by traffic type. Best-effort packet to a peer? Use ASYNC and address by TrgtId. Steady stream you already reserved (audio/video)? Use ISOCH and address by StreamIndex. Then each service is just three doors — request to send, confirm to learn the outcome (only if you asked), indication to receive.",
+      "zh": "理解整个条款的一个思维模型：按流量类型选服务。给某个对端发尽力而为的包？用 ASYNC，并以 TrgtId 寻址。已预留的稳定流（音频/视频）？用 ISOCH，并以 StreamIndex 寻址。随后每种服务不过是三扇门——request 发送、confirm 获知结果（仅当你索要时）、indication 接收。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        89,
+        90,
+        91
+      ],
+      "note": "5.5 MAC SAP intro; Table 5-30 primitive summary; Table 5-31 parameter definitions"
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        92
+      ],
+      "note": "5.5.1 MAC-ASYNC-DATA.request, 5.5.2 .confirm, 5.5.3 .indication"
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        93
+      ],
+      "note": "5.5.4 MAC-ISOCH-DATA.request, 5.5.5 .confirm"
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        94
+      ],
+      "note": "5.5.6 MAC-ISOCH-DATA.indication and ErrorFreeData"
+    }
+  ],
+  "covers": [
+    "802153-2016:5.5.1",
+    "802153-2016:5.5.2",
+    "802153-2016:5.5.3",
+    "802153-2016:5.5.4",
+    "802153-2016:5.5.5",
+    "802153-2016:5.5.6"
+  ],
+  "track": "pan-hr-wpan"
+}

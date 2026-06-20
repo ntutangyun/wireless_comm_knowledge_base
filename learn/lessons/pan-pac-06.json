@@ -1,0 +1,139 @@
+{
+  "id": "pan-pac-06",
+  "title": {
+    "en": "The MAC Service Menu: MLME-SAP, MLDE-SAP, and the PIB",
+    "zh": "MAC 服务菜单：MLME-SAP、MLDE-SAP 与 PIB"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 8 answers one practical question: when software running above the radio in a Peer-Aware Communications (PAC) device wants the radio to do something — discover neighbours, peer up, send data, change keys — exactly what can it ask for, and what comes back? In 802.15.8 a single device is called a PD (PAC device). Inside every PD the MAC layer (Medium Access Control, the layer that decides who talks on the air and when) exposes two doorways to the layer above it. Clause 8.1 lays out this model: data flows through one doorway, management flows through the other, and a layer-independent Management Entity (ME) sits in a separate plane orchestrating both.",
+      "zh": "Clause 8 回答的是一个很实际的问题：当对等感知通信（PAC）设备里、运行在无线电之上的软件想让无线电去做点什么——发现邻居、建立配对、发送数据、更换密钥——它究竟能请求哪些动作，又会得到什么样的回应？在 802.15.8 里，单个设备称为 PD（PAC 设备）。在每个 PD 内部，MAC 层（介质访问控制层，决定“谁、何时”在空口上说话的那一层）向其上层暴露两扇门。Clause 8.1 描绘了这一模型：数据走一扇门，管理走另一扇门，而一个与层无关的管理实体（ME）则位于独立的管理平面中，统筹这两者。"
+    },
+    {
+      "type": "prose",
+      "en": "Every conversation across these doorways uses the same four-word grammar, defined in Clause 8.2 (generic service primitives). A primitive is an abstract message, not a real function call. ACTION.request is the higher layer asking the MAC to do something; ACTION.confirm is the MAC reporting the outcome; ACTION.indication is the MAC announcing an event it noticed on its own; ACTION.response is the higher layer answering that announcement. When two PDs are involved, a .request becomes a Request command frame on the air and the peer's .response becomes a Response command frame — but the same request/confirm/indication/response shape is reused even when everything happens locally inside one PD.",
+      "zh": "跨越这两扇门的每一次对话，都使用同一套“四词语法”，由 Clause 8.2（通用服务原语）定义。原语是一种抽象消息，并不是真正的函数调用。ACTION.request 是上层请求 MAC 去做某事；ACTION.confirm 是 MAC 汇报结果；ACTION.indication 是 MAC 主动宣告它自己注意到的事件；ACTION.response 是上层对该宣告的答复。当涉及两个 PD 时，一个 .request 会变成空口上的“请求命令帧”，而对端的 .response 则变成“响应命令帧”——但即使一切都只发生在单个 PD 内部，这套 request/confirm/indication/response 的形态依旧被沿用。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Not every primitive uses all four words. Clause 8.3's summary table shows the pattern: lifecycle exchanges like MLME-DISCOVERY, MLME-PEERING and MLME-REASSIGNMENT use the full request/confirm/indication/response set, while one-shot controls like MLME-START carry only a request, and pure notifications like MLME-COMM-STATUS or MLME-SYNCHRONIZATION-LOSS are indication-only. The grammar is universal; which words a given service actually speaks depends on the job.",
+      "zh": "并非每个原语都用满四个词。Clause 8.3 的汇总表展示了这一规律：像 MLME-DISCOVERY、MLME-PEERING、MLME-REASSIGNMENT 这类生命周期交互会用满 request/confirm/indication/response 全套；而像 MLME-START 这类“一锤子”控制只带一个 request；纯通知类如 MLME-COMM-STATUS 或 MLME-SYNCHRONIZATION-LOSS 则只有 indication。语法是通用的；某个具体服务实际“说”哪几个词，取决于它要干的活。"
+    },
+    {
+      "type": "prose",
+      "en": "The management doorway is the MLME-SAP, served by the MLME (MAC Layer Management Entity), described in Clause 8.3. Think of it as the control panel of the radio. Through it the higher layer reads and writes configuration (the GET/SET primitives, 8.3.2), shapes the time structure of the air (the cyclic-superframe primitives, 8.3.3), and runs the whole social life of a peer device: finding neighbours (DISCOVERY, 8.3.4), forming a link (PEERING, 8.3.5), tearing it down (DE-PEERING, 8.3.6), and reserving guaranteed airtime through Resource Element allocation (the RE and DEALLOCATION primitives, 8.3.7). A Resource Element (RE) is a reserved slice of the contention-free period that two PDs hold for their traffic.",
+      "zh": "管理这扇门是 MLME-SAP，由 MLME（MAC 层管理实体）提供服务，见 Clause 8.3。可以把它想象成无线电的“控制面板”。上层通过它读写配置（GET/SET 原语，8.3.2）、塑造空口的时间结构（周期超帧原语，8.3.3），并经营对等设备完整的“社交生活”：发现邻居（DISCOVERY，8.3.4）、建立链路（PEERING，8.3.5）、拆除链路（DE-PEERING，8.3.6），以及通过资源单元（RE）分配预留有保障的空口时间（RE 与 DEALLOCATION 原语，8.3.7）。资源单元（RE）是两个 PD 为其流量预留的一段无竞争期时隙。"
+    },
+    {
+      "type": "prose",
+      "en": "The same control panel also handles housekeeping and the physical realities of the radio. MLME-COMM-STATUS (8.3.8) reports whether a transmit/receive transaction succeeded; MLME-RESET (8.3.9) clears the MAC back to a clean state; MLME-RECEIVER-ENABLE (8.3.10) switches the receiver on for a window of time (UWB PHY only, where listening costs power); MLME-SCAN (8.3.11) sweeps channels; MLME-START (8.3.12) brings a PAC network to life; and the synchronization pair MLME-SYNCHRONIZATION / MLME-SYNCHRONIZATION-LOSS (8.3.13) keeps a PD locked to the network's timing — or warns when that lock is lost. UWB stands for Ultra-Wideband, one of the PHYs (physical layers) 802.15.8 can run over.",
+      "zh": "同一块控制面板也处理日常杂务和无线电的物理现实。MLME-COMM-STATUS（8.3.8）汇报一次收发事务是否成功；MLME-RESET（8.3.9）把 MAC 清回干净状态；MLME-RECEIVER-ENABLE（8.3.10）在一段时间窗内开启接收机（仅限 UWB PHY，因为侦听很费电）；MLME-SCAN（8.3.11）扫描信道；MLME-START（8.3.12）让一个 PAC 网络“活”起来；而同步这一对 MLME-SYNCHRONIZATION / MLME-SYNCHRONIZATION-LOSS（8.3.13）让 PD 锁定到网络的时序上——并在锁定丢失时发出告警。UWB 即超宽带，是 802.15.8 可运行其上的物理层（PHY）之一。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining MLME services tune advanced behaviour. MLME-REASSIGNMENT (8.3.14) lets PDs renegotiate their resource allocations when conditions change. The next three are UWB-specific: MLME-DPS (8.3.15) does Dynamic Preamble Selection so two ranging partners agree on a one-shot preamble code that resists spoofing; MLME-CALIBRATE (8.3.16) measures a device's internal transmit/receive delay so distance estimates are accurate; and MLME-COSYNC (8.3.17) supports cooperative synchronization for the UWB PHY. Finally, MLME security (8.3.18) is a whole family — exchanging public keys (MLME-PUBLICKEY), installing and removing keys (MLME-SETKEYS, MLME-DELETEKEYS), and raising alarms when something goes wrong (MLME-SECURITYFAILURE) or when a packet number is about to wrap (MLME-PN-EXHAUSTION).",
+      "zh": "其余 MLME 服务用于微调高级行为。MLME-REASSIGNMENT（8.3.14）让 PD 在条件变化时重新协商各自的资源分配。接下来三项是 UWB 专用：MLME-DPS（8.3.15）执行动态前导码选择，让两个测距伙伴就一个一次性、抗欺骗的前导码达成一致；MLME-CALIBRATE（8.3.16）测量设备内部的收发时延，使距离估计更准确；MLME-COSYNC（8.3.17）则为 UWB PHY 提供协作同步支持。最后，MLME 安全（8.3.18）是一整族：交换公钥（MLME-PUBLICKEY）、安装与删除密钥（MLME-SETKEYS、MLME-DELETEKEYS），以及在出错（MLME-SECURITYFAILURE）或包号即将翻转（MLME-PN-EXHAUSTION）时发出告警。"
+    },
+    {
+      "type": "prose",
+      "en": "The data doorway is far simpler. The MLDE-SAP, served by the MLDE (MAC Layer Data Entity), is described in Clause 8.4 and carries exactly one service: MLDE-DATA. Its overview (8.4.1) plus the data primitives (8.4.2) cover the whole story. The higher layer hands down an MSDU (MAC Service Data Unit — one chunk of payload) with MLDE-DATA.request, gets an MLDE-DATA.confirm telling it whether the send worked, and receives inbound payloads as MLDE-DATA.indication. The request is rich with knobs — destination address type (unicast, multicast, broadcast), data rate, acknowledgement on or off, priority, and whether the frame should ride in a reserved contention-free slot — so a single primitive covers everything from a quick broadcast to a guaranteed-airtime stream.",
+      "zh": "数据这扇门要简单得多。MLDE-SAP 由 MLDE（MAC 层数据实体）提供服务，见 Clause 8.4，只承载一个服务：MLDE-DATA。它的概述（8.4.1）加上数据原语（8.4.2）就讲完了全部故事。上层用 MLDE-DATA.request 递下一个 MSDU（MAC 服务数据单元，即一块负载），收到 MLDE-DATA.confirm 告知发送是否成功，并以 MLDE-DATA.indication 接收到来的负载。这个 request 带有丰富的“旋钮”——目的地址类型（单播、组播、广播）、数据速率、是否需要确认、优先级，以及该帧是否应搭乘预留的无竞争时隙——因此单一原语就能涵盖从一次快速广播到一条有保障带宽的数据流的全部情形。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    HL[Higher layer / ME]\n    HL -->|management| MLME[MLME-SAP 8.3]\n    HL -->|data| MLDE[MLDE-SAP 8.4]\n    MLME --> MAC[MAC layer]\n    MLDE --> MAC\n    MAC -->|reads / writes| PIB[(PIB 8.5)]\n    MAC --> PHY[PHY: UWB / OFDM / OFDMA]",
+      "zh": "flowchart TD\n    HL[上层 / ME]\n    HL -->|管理| MLME[MLME-SAP 8.3]\n    HL -->|数据| MLDE[MLDE-SAP 8.4]\n    MLME --> MAC[MAC 层]\n    MLDE --> MAC\n    MAC -->|读 / 写| PIB[(PIB 8.5)]\n    MAC --> PHY[PHY：UWB / OFDM / OFDMA]"
+    },
+    {
+      "type": "prose",
+      "en": "Behind both doorways sits the data the radio remembers: the PAC Information Base (PIB), described in Clause 8.5. The PIB is simply the collection of named variables and constants that configure and describe the MAC and PHY — every value the GET/SET primitives read or write lives here. The naming is its own map: variables starting with \"mac\" (for example macImmAckWaitDuration) belong to the MAC, those starting with \"phy\" (for example phyCurrentChannel) belong to the PHY, and constants starting with \"a\" (for example aSuperframeDuration) are fixed by the standard. Some entries carry a dagger, meaning they are read-only to the higher layer because only the vendor or the MAC itself may set them. The PIB is the shared notebook that gives every primitive in Clause 8 something concrete to act on.",
+      "zh": "在这两扇门的背后，是无线电所“记住”的数据：PAC 信息库（PIB），见 Clause 8.5。PIB 就是一组带名字的变量与常量的集合，用于配置和描述 MAC 与 PHY——GET/SET 原语读写的每一个值都存放在这里。命名本身就是一张地图：以“mac”开头的变量（例如 macImmAckWaitDuration）属于 MAC，以“phy”开头的（例如 phyCurrentChannel）属于 PHY，以“a”开头的常量（例如 aSuperframeDuration）则由标准固定。有些条目带有“匕首”标记，表示它对上层是只读的，因为只有厂商或 MAC 自身才能设置它们。PIB 是那本共享的笔记簿，让 Clause 8 中的每个原语都有了可以实际操作的对象。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every Clause 8 unit and where it lives",
+        "zh": "覆盖地图——Clause 8 每个条目及其所在之处"
+      },
+      "en": "The chapter (8.1 Overview) frames the MAC data plane and management plane, the MLME/PLME management entities, and the layer-independent ME. 8.2 (generic service primitives) defines the request/confirm/indication/response grammar and how a .request maps to a Request command frame on the air. 8.3 opens the MLME-SAP: 8.3.1 (Overview) presents Table 32, the master list of every MLME primitive. The families: 8.3.2 PIB access (MLME-GET/SET request and confirm); 8.3.3 cyclic superframe configuration (MLME-CYCLICSUPERFRAME request/confirm); 8.3.4 discovery (MLME-DISCOVERY request/confirm/indication/response); 8.3.5 peering (MLME-PEERING request/indication/response/confirm); 8.3.6 de-peering (MLME-DE-PEERING request/indication); 8.3.7 RE — resource element allocation (MLME-RE request/indication/response/confirm plus MLME-DEALLOCATION request/indication); 8.3.8 communication status (MLME-COMM-STATUS.indication); 8.3.9 reset (MLME-RESET request/confirm); 8.3.10 receiver enable (MLME-RECEIVER-ENABLE request/confirm, UWB PHY only); 8.3.11 channel scanning (MLME-SCAN request/confirm); 8.3.12 start PAC network (MLME-START.request); 8.3.13 synchronization (MLME-SYNCHRONIZATION request/confirm plus MLME-SYNCHRONIZATION-LOSS.indication); 8.3.14 reassignment (MLME-REASSIGNMENT request/indication/response/confirm); 8.3.15 dynamic preamble selection (MLME-DPS request/confirm/indication); 8.3.16 ranging calibration (MLME-CALIBRATE request/confirm); 8.3.17 cooperative synchronization for the UWB PHY (MLME-COSYNC request/confirm/indication); 8.3.18 PAC security (MLME-PUBLICKEY, MLME-SETKEYS, MLME-DELETEKEYS, MLME-SECURITYFAILURE, MLME-PN-EXHAUSTION). 8.4 is the MLDE-SAP: 8.4.1 (Overview) with Table 83, and 8.4.2 (data primitives) carrying the lone MLDE-DATA request/confirm/indication. 8.5 (PAC information base, PIB) defines the mac/phy variables and the a-prefixed constants — including the dagger convention marking read-only attributes — that all the GET/SET traffic acts upon.",
+      "zh": "本章（8.1 概述）勾勒出 MAC 数据平面与管理平面、MLME/PLME 管理实体，以及与层无关的 ME。8.2（通用服务原语）定义了 request/confirm/indication/response 语法，以及一个 .request 如何映射为空口上的“请求命令帧”。8.3 开启 MLME-SAP：8.3.1（概述）给出 Table 32，即所有 MLME 原语的总清单。各族如下：8.3.2 PIB 访问（MLME-GET/SET 的 request 与 confirm）；8.3.3 周期超帧配置（MLME-CYCLICSUPERFRAME request/confirm）；8.3.4 发现（MLME-DISCOVERY request/confirm/indication/response）；8.3.5 配对（MLME-PEERING request/indication/response/confirm）；8.3.6 解除配对（MLME-DE-PEERING request/indication）；8.3.7 RE——资源单元分配（MLME-RE request/indication/response/confirm，外加 MLME-DEALLOCATION request/indication）；8.3.8 通信状态（MLME-COMM-STATUS.indication）；8.3.9 复位（MLME-RESET request/confirm）；8.3.10 接收机使能（MLME-RECEIVER-ENABLE request/confirm，仅限 UWB PHY）；8.3.11 信道扫描（MLME-SCAN request/confirm）；8.3.12 启动 PAC 网络（MLME-START.request）；8.3.13 同步（MLME-SYNCHRONIZATION request/confirm，外加 MLME-SYNCHRONIZATION-LOSS.indication）；8.3.14 重新分配（MLME-REASSIGNMENT request/indication/response/confirm）；8.3.15 动态前导码选择（MLME-DPS request/confirm/indication）；8.3.16 测距校准（MLME-CALIBRATE request/confirm）；8.3.17 UWB PHY 协作同步（MLME-COSYNC request/confirm/indication）；8.3.18 PAC 安全（MLME-PUBLICKEY、MLME-SETKEYS、MLME-DELETEKEYS、MLME-SECURITYFAILURE、MLME-PN-EXHAUSTION）。8.4 即 MLDE-SAP：8.4.1（概述）含 Table 83，8.4.2（数据原语）承载唯一的 MLDE-DATA request/confirm/indication。8.5（PAC 信息库，PIB）定义了 mac/phy 变量与以“a”开头的常量——包括标记只读属性的“匕首”约定——所有 GET/SET 往来都作用于其上。",
+      "cite": {
+        "pdf_id": "802158-2017",
+        "pages": [
+          114,
+          115,
+          116,
+          140,
+          141,
+          142,
+          143,
+          165,
+          170,
+          171,
+          177
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        114,
+        115,
+        116
+      ],
+      "note": "8.1 overview (MAC data/management planes, MLME/ME); 8.2 generic primitive grammar; 8.3.1 Table 32 master primitive list; 8.3.2 PIB access (MLME-GET/SET)"
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        140,
+        141,
+        142,
+        143
+      ],
+      "note": "8.3.7 DEALLOCATION; 8.3.8 COMM-STATUS; 8.3.9 RESET; 8.3.10 RECEIVER-ENABLE (UWB only)"
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        165,
+        170,
+        171,
+        177
+      ],
+      "note": "8.3.18 security primitives (PUBLICKEY/PN-EXHAUSTION); 8.4 MLDE-SAP overview + Table 83; 8.4.2 MLDE-DATA; 8.5 PIB mac/phy/a naming and dagger read-only convention"
+    }
+  ],
+  "covers": [
+    "802158-2017:8.1",
+    "802158-2017:8.2",
+    "802158-2017:8.3.1",
+    "802158-2017:8.3.2",
+    "802158-2017:8.3.3",
+    "802158-2017:8.3.4",
+    "802158-2017:8.3.5",
+    "802158-2017:8.3.6",
+    "802158-2017:8.3.7",
+    "802158-2017:8.3.8",
+    "802158-2017:8.3.9",
+    "802158-2017:8.3.10",
+    "802158-2017:8.3.11",
+    "802158-2017:8.3.12",
+    "802158-2017:8.3.13",
+    "802158-2017:8.3.14",
+    "802158-2017:8.3.15",
+    "802158-2017:8.3.16",
+    "802158-2017:8.3.17",
+    "802158-2017:8.3.18",
+    "802158-2017:8.4.1",
+    "802158-2017:8.4.2",
+    "802158-2017:8.5"
+  ],
+  "track": "pan-pac"
+}

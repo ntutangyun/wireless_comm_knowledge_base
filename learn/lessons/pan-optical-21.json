@@ -1,0 +1,115 @@
+{
+  "id": "pan-optical-21",
+  "title": {
+    "en": "MAC Elements: Data Delivery, Acknowledgment, and Relay Setup",
+    "zh": "MAC 信息元素：数据投递、确认与中继配置"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This is the third and final part of our tour through Clause 7's MAC (Medium Access Control) elements — the small, self-describing building blocks that get packed into IEEE 802.15.13 frames. The previous parts covered management and feedback elements; this part covers the elements that actually carry user data, confirm its safe arrival, and let one device relay traffic on behalf of another. We will give every clause from 7.2.31 to 7.2.41 a clear home. Throughout, OWPAN means optical wireless personal area network, MSDU means MAC service data unit (one user packet handed down for delivery), and MPDU means MAC protocol data unit (the framed thing actually sent over the air).",
+      "zh": "这是我们遍历第 7 章 MAC（介质访问控制）信息元素的第三部分，也是最后一部分。MAC 元素是打包进 IEEE 802.15.13 帧中的、可自我描述的小型构件。前两部分讲解了管理类与反馈类元素；本部分讲解真正承载用户数据、确认数据安全到达、以及让一台设备替另一台设备转发流量的元素。我们会为 7.2.31 到 7.2.41 的每一个子条款给出清晰的归宿。全文中，OWPAN 指光无线个域网，MSDU 指 MAC 服务数据单元（交付投递的一个用户数据包），MPDU 指 MAC 协议数据单元（真正在空口上发送的成帧数据）。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the data-carrying elements. The Single MSDU element (7.2.31) is the simplest: it wraps exactly one user packet for delivery to another device, carrying a Destination Address, a Source Address (both 6 octets, taken from the MD-DATA.request primitive that the upper layer used to hand the packet down), and the MSDU payload itself. When several packets share the same source and destination, the Single Address Aggregated MSDU element (7.2.32) bundles them efficiently: one shared address pair up front, then a repeating run of a 2-octet Length field plus each MSDU. Aggregation amortizes the addressing overhead across many packets.",
+      "zh": "先看承载数据的元素。Single MSDU 元素（7.2.31）最简单：它只封装一个用户数据包以投递给另一台设备，携带目的地址、源地址（各 6 字节，取自上层用来下传该包的 MD-DATA.request 原语）以及 MSDU 净荷本身。当多个数据包共享相同的源和目的地址时，Single Address Aggregated MSDU 元素（7.2.32）可高效地把它们打包：前部放一对共享地址，随后是重复出现的 2 字节长度字段加上各个 MSDU。聚合让寻址开销分摊到许多数据包上。"
+    },
+    {
+      "type": "prose",
+      "en": "When the packets do NOT share addresses — different senders, different recipients — you need the Multiple Address Aggregated MSDU element (7.2.33). Here each bundled packet carries its own Length, Destination Address, Source Address, and MSDU, so the per-packet overhead is larger (14 octets of header per MSDU instead of 2) but the aggregation can mix unrelated traffic into one frame. The standard captures this cost in the figure: each extra entry is (14 + variable) octets, versus (2 + variable) for the single-address case.",
+      "zh": "当各数据包不共享地址时——发送方不同、接收方不同——就需要 Multiple Address Aggregated MSDU 元素（7.2.33）。这里每个被打包的数据包都自带各自的长度、目的地址、源地址和 MSDU，因此每包开销更大（每个 MSDU 有 14 字节头部，而非 2 字节），但聚合可以把互不相关的流量混进同一帧。标准在图中体现了这一代价：每个附加条目占 (14 + 可变) 字节，而单地址情形为 (2 + 可变) 字节。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">7.2.31 Single MSDU</text><rect x=\"10\" y=\"30\" width=\"120\" height=\"34\"/><text x=\"70\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Dest Addr</text><rect x=\"130\" y=\"30\" width=\"120\" height=\"34\"/><text x=\"190\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Src Addr</text><rect x=\"250\" y=\"30\" width=\"160\" height=\"34\"/><text x=\"330\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">MSDU</text><text x=\"10\" y=\"95\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">7.2.32 Single Address Aggregated</text><rect x=\"10\" y=\"105\" width=\"60\" height=\"34\"/><text x=\"40\" y=\"126\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Len 1</text><rect x=\"70\" y=\"105\" width=\"90\" height=\"34\"/><text x=\"115\" y=\"126\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Dest+Src</text><rect x=\"160\" y=\"105\" width=\"110\" height=\"34\"/><text x=\"215\" y=\"126\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">MSDU 1</text><rect x=\"270\" y=\"105\" width=\"60\" height=\"34\"/><text x=\"300\" y=\"126\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Len N</text><rect x=\"330\" y=\"105\" width=\"110\" height=\"34\"/><text x=\"385\" y=\"126\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">MSDU N</text><text x=\"10\" y=\"170\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">7.2.33 Multiple Address Aggregated</text><rect x=\"10\" y=\"178\" width=\"45\" height=\"18\"/><text x=\"32\" y=\"191\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Len 1</text><rect x=\"55\" y=\"178\" width=\"75\" height=\"18\"/><text x=\"92\" y=\"191\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Dest 1+Src 1</text><rect x=\"130\" y=\"178\" width=\"70\" height=\"18\"/><text x=\"165\" y=\"191\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">MSDU 1 …</text></svg>",
+      "caption": {
+        "en": "Three ways to carry payload: one packet (7.2.31), many packets sharing an address pair (7.2.32), or many packets each with its own addresses (7.2.33).",
+        "zh": "承载净荷的三种方式：单个数据包（7.2.31）、共享同一对地址的多个数据包（7.2.32）、或各带独立地址的多个数据包（7.2.33）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Once data arrives, the receiver must say so. The Single ACK element (7.2.34) acknowledges exactly one MPDU: it carries a 12-bit Sequence Number (the rest reserved), and the receiver of that ACK figures out who sent it from the frame's transmitter address — no separate acknowledging-device field needed. For efficiency at high data rates you rarely acknowledge one frame at a time. The Block ACK Request element (7.2.35) lets a transmitter ask for acknowledgment of a run of MPDUs by naming a First Sequence Number (again 12 bits). The receiver answers with the Block ACK element (7.2.36).",
+      "zh": "数据到达后，接收方必须给出回应。Single ACK 元素（7.2.34）只确认一个 MPDU：它携带一个 12 位的序列号（其余位保留），而该 ACK 的接收方依据帧的发送方地址判断是谁发来的——无需单独的确认设备字段。在高速率下出于效率考虑，很少逐帧确认。Block ACK Request 元素（7.2.35）让发送方通过指明一个首序列号（同为 12 位）来请求对一串 MPDU 的确认。接收方则用 Block ACK 元素（7.2.36）作答。"
+    },
+    {
+      "type": "prose",
+      "en": "The Block ACK element (7.2.36) is the clever one: instead of one ACK per frame, it carries a compact bitmap. A 4-bit Bitmap Width field sets the ACK Bitmap size — the real width in octets is Bitmap Width + 1, so 1 to 16 octets, covering up to 128 sequence numbers. The First Sequence Number maps to the least-significant bit of the first octet; each bit set to one means that sequence number was received successfully. So one short element can confirm dozens of packets at once, and the standard even gives a worked example (Bitmap Width = 1, First Sequence Number = 320) showing exactly which bits flip on for which received numbers.",
+      "zh": "Block ACK 元素（7.2.36）是其中精巧的设计：它不是每帧一个 ACK，而是携带一个紧凑的位图。一个 4 位的 Bitmap Width（位图宽度）字段设定 ACK 位图大小——以字节计的实际宽度为 Bitmap Width + 1，即 1 到 16 字节，最多可覆盖 128 个序列号。首序列号对应第一个字节的最低有效位；每一个置 1 的比特表示该序列号已成功接收。因此一个短小的元素就能一次性确认数十个数据包。标准甚至给出了一个实例（Bitmap Width = 1，首序列号 = 320），精确展示了哪些接收到的序列号会让对应比特翻转为 1。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant TX as Transmitter\n  participant RX as Receiver\n  TX->>RX: MPDUs seq 320..335\n  TX->>RX: Block ACK Request (First Seq = 320)\n  RX->>TX: Block ACK (Bitmap Width=1, bitmap)\n  Note over TX,RX: bits set = received seq numbers",
+      "zh": "sequenceDiagram\n  participant TX as 发送方\n  participant RX as 接收方\n  TX->>RX: MPDU 序列 320..335\n  TX->>RX: Block ACK 请求（首序列号=320）\n  RX->>TX: Block ACK（位图宽度=1，位图）\n  Note over TX,RX: 置 1 的比特=已接收的序列号"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining elements support relaying — letting a device reach another device through an intermediary when the direct optical path is weak. The Reachable Address element (7.2.37) is how a device reports who it can see: an Address Count tells how many entries follow, then for each observed device a Reachable Address (6 octets) plus a Requested MCS. MCS means modulation and coding scheme — the speed/robustness setting for a link — and each Requested MCS here is itself an MCS Request element (defined back in 7.2.24), naming the rate the device would want for a future relayed transmission from that observed device.",
+      "zh": "其余元素支持中继——在直连光路较弱时，让一台设备通过中间设备触达另一台设备。Reachable Address 元素（7.2.37）用于设备报告它能看到哪些设备：一个 Address Count（地址数量）说明后面有多少条目，随后对每个被观测到的设备给出一个 Reachable Address（6 字节）加一个 Requested MCS。MCS 指调制与编码方案——一条链路的速率/鲁棒性档位——这里每个 Requested MCS 本身就是一个 MCS Request 元素（在 7.2.24 中定义），指明该设备希望从那个被观测设备处获得未来中继传输所用的速率。"
+    },
+    {
+      "type": "prose",
+      "en": "Relay setup is then a small request/response handshake, and the standard deliberately keeps two symmetric viewpoints. From the relay's side: the Relay Device Configuration Request element (7.2.38) carries a 1-bit Relay Active flag (one = relaying on), the Relayed Device Address it will serve, and a Requested MCS for traffic flowing from the relay to the relayed device; its partner the Relay Device Configuration Response element (7.2.39) returns a 1-octet Status Code (per Table 10: 1 = Denied, 2 = Success) plus the Relayed Device Address. From the relayed device's side the roles mirror: the Relayed Device Configuration Request element (7.2.40) sets Relay Active, names the Relay Device Address, and requests an MCS for traffic from the relayed device up to the relay, with the Relayed Device Configuration Response element (7.2.41) returning a Status Code (Table 11, same values) and the Relay Device Address.",
+      "zh": "中继配置随后是一次小型的请求/响应握手，标准刻意保留了两个对称的视角。从中继方视角：Relay Device Configuration Request 元素（7.2.38）携带一个 1 位的 Relay Active 标志（1 表示开启中继）、它将服务的被中继设备地址，以及用于从中继流向被中继设备流量的 Requested MCS；其搭档 Relay Device Configuration Response 元素（7.2.39）返回一个 1 字节的状态码（依表 10：1=拒绝，2=成功）加上被中继设备地址。从被中继设备视角则角色互换：Relayed Device Configuration Request 元素（7.2.40）设置 Relay Active、指明中继设备地址，并请求用于从被中继设备上行至中继流量的 MCS；Relayed Device Configuration Response 元素（7.2.41）返回一个状态码（表 11，取值相同）和中继设备地址。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mind the near-identical names: 'Relay Device Configuration' (7.2.38/7.2.39) is phrased from the relay node's perspective and sets the MCS for relay-to-relayed traffic, while 'Relayed Device Configuration' (7.2.40/7.2.41) is from the served (relayed) device's perspective and sets the MCS for relayed-to-relay traffic. Same handshake, two directions — the one extra letter in 'Relayed' tells you which way the data flows.",
+      "zh": "注意两组极其相似的名称：'Relay Device Configuration'（7.2.38/7.2.39）从中继节点视角表述，设定中继到被中继方向的 MCS；而 'Relayed Device Configuration'（7.2.40/7.2.41）从被服务（被中继）设备视角表述，设定被中继到中继方向的 MCS。同一次握手，两个方向——'Relayed' 多出的那个字母告诉你数据流向哪边。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: clause-by-clause (7.2.31–7.2.41)",
+        "zh": "覆盖地图：逐条对应（7.2.31–7.2.41）"
+      },
+      "en": "Data delivery — 7.2.31 Single MSDU element (one packet; Dest/Src Address + MSDU, p.83–84); 7.2.32 Single Address Aggregated MSDU element (many packets, shared address pair; repeating 2-octet Length + MSDU, p.84); 7.2.33 Multiple Address Aggregated MSDU element (many packets, per-entry Length + Dest + Src + MSDU at 14+variable octets each, p.84–85). Acknowledgment — 7.2.34 Single ACK element (12-bit Sequence Number; acknowledger inferred from transmitter address, p.85); 7.2.35 Block ACK Request element (12-bit First Sequence Number, p.85); 7.2.36 Block ACK element (4-bit Bitmap Width → bitmap of Bitmap Width+1 octets, First Sequence Number maps to LSB of octet 1; worked example, p.86). Relay — 7.2.37 Reachable Address element (Address Count, then Reachable Address + Requested MCS per observed device; Requested MCS is an MCS Request element per 7.2.24, p.86–87); 7.2.38 Relay Device Configuration Request element (Relay Active bit, Relayed Device Address, Requested MCS, p.87); 7.2.39 Relay Device Configuration Response element (Status Code per Table 10, Relayed Device Address, p.87–88); 7.2.40 Relayed Device Configuration Request element (Relay Active bit, Relay Device Address, Requested MCS, p.88); 7.2.41 Relayed Device Configuration Response element (Status Code per Table 11, Relay Device Address, p.88–89).",
+      "zh": "数据投递——7.2.31 Single MSDU 元素（单包；目的/源地址 + MSDU，第 83–84 页）；7.2.32 Single Address Aggregated MSDU 元素（多包，共享地址对；重复的 2 字节长度 + MSDU，第 84 页）；7.2.33 Multiple Address Aggregated MSDU 元素（多包，每条目长度 + 目的 + 源 + MSDU，各占 14+可变 字节，第 84–85 页）。确认——7.2.34 Single ACK 元素（12 位序列号；确认者由发送方地址推断，第 85 页）；7.2.35 Block ACK Request 元素（12 位首序列号，第 85 页）；7.2.36 Block ACK 元素（4 位位图宽度 → 宽度为 位图宽度+1 字节的位图，首序列号对应第 1 字节的最低有效位；含实例，第 86 页）。中继——7.2.37 Reachable Address 元素（地址数量，随后每个被观测设备一个可达地址 + Requested MCS；Requested MCS 即 7.2.24 定义的 MCS Request 元素，第 86–87 页）；7.2.38 Relay Device Configuration Request 元素（Relay Active 位、被中继设备地址、Requested MCS，第 87 页）；7.2.39 Relay Device Configuration Response 元素（依表 10 的状态码、被中继设备地址，第 87–88 页）；7.2.40 Relayed Device Configuration Request 元素（Relay Active 位、中继设备地址、Requested MCS，第 88 页）；7.2.41 Relayed Device Configuration Response 元素（依表 11 的状态码、中继设备地址，第 88–89 页）。",
+      "cite": {
+        "pdf_id": "8021513-2023",
+        "pages": [
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021513-2023",
+      "pages": [
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89
+      ],
+      "note": "Clause 7.2.31–7.2.41: MSDU-carrying elements, Single/Block ACK elements, and the relay Reachable Address / configuration request-response elements, including Tables 10 and 11."
+    }
+  ],
+  "covers": [
+    "8021513-2023:7.2.31",
+    "8021513-2023:7.2.32",
+    "8021513-2023:7.2.33",
+    "8021513-2023:7.2.34",
+    "8021513-2023:7.2.35",
+    "8021513-2023:7.2.36",
+    "8021513-2023:7.2.37",
+    "8021513-2023:7.2.38",
+    "8021513-2023:7.2.39",
+    "8021513-2023:7.2.40",
+    "8021513-2023:7.2.41"
+  ],
+  "track": "pan-optical"
+}

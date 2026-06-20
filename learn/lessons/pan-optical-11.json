@@ -1,0 +1,119 @@
+{
+  "id": "pan-optical-11",
+  "title": {
+    "en": "Three Annexes: Invisible Watermarks, Multi-Light Decoding, and Twinkle Receivers",
+    "zh": "三个附录：隐形水印、多光源解码与 Twinkle 接收机"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.15.7-2018 governs Short-Range Optical Wireless Communications (OWC) — sending data with visible light, the technology behind LiFi and Visible Light Communication (VLC). After the main body of the standard, three back-matter annexes fill in implementation detail. This lesson gives all three a clear home: Annex L (the only normative one — its rules are mandatory) shows how to hide an invisible watermark inside a displayed image; Annex M (informative — explanatory, not mandatory) walks through how a camera decodes several LEDs at once; and Annex N (also informative) explains how a receiver pulls a faint 'Twinkle' signal out of an oversampled light source.",
+      "zh": "IEEE Std 802.15.7-2018 规范了短距离光无线通信（OWC）——用可见光传输数据，这正是 LiFi 与可见光通信（VLC）背后的技术。在标准正文之后，三个附录补充了实现细节。本课为三者各自找到清晰的归属：附录 L（唯一的规范性附录，其规则为强制）讲解如何把隐形水印藏进显示的图像中；附录 M（资料性，仅作说明、非强制）讲解相机如何同时解码多个 LED；附录 N（同样为资料性）解释接收机如何从过采样的光源中提取微弱的 “Twinkle” 信号。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Normative vs informative: a normative annex (here, Annex L) carries requirements you must meet for compliance. An informative annex (M and N) is background and guidance — it helps you understand or build the system but adds no new obligations.",
+      "zh": "规范性与资料性的区别：规范性附录（此处为附录 L）含有为符合标准而必须满足的要求；资料性附录（M 与 N）是背景与指导——帮助你理解或构建系统，但不增加新的强制义务。"
+    },
+    {
+      "type": "prose",
+      "en": "Annex L — Frequency-based invisible watermarking. When a screen is used as the optical transmitter, the standard can embed data into the picture so that a camera recovers it while a human sees an unchanged image. The trick exploits human vision: our eyes notice noise much more in low spatial frequencies (broad, smooth areas) than in high frequencies (fine detail), yet most of an image's energy sits in the low frequencies. The sweet spot is therefore the middle-to-high frequency band — busy enough that the eye won't notice, strong enough that a camera still captures it.",
+      "zh": "附录 L——基于频率的隐形水印。当屏幕被用作光发射机时，标准可以把数据嵌入画面，使相机能恢复数据而人眼看到的图像保持不变。其诀窍利用了人类视觉特性：人眼对低空间频率（大片平滑区域）的噪声远比对高频（细节）敏感，而图像的能量大多集中在低频。因此最佳落点是中高频段——足够细碎以致人眼察觉不到，又足够强以致相机仍能捕捉。"
+    },
+    {
+      "type": "prose",
+      "en": "How the embedding works: the rendered frame is cut into 8x8 blocks of pixels, and a 2D Discrete Cosine Transform (DCT) — the same frequency transform used in JPEG — is applied to each block independently. Four high-frequency coefficients are chosen: DCTCoeff(6,6), (6,7), (7,6), and (7,7). To write a bit, you nudge these coefficients: a data bit of 1 adds 127.0 to the coefficient, while a 0 adds 0.0 (leaves it unchanged). An Inverse DCT (IDCT) then turns the block back into pixels for display. The shift is small and lives in fine detail, so the watermark stays invisible yet survives common image processing.",
+      "zh": "嵌入过程：把渲染好的帧切成 8x8 像素块，对每个块独立施加二维离散余弦变换（DCT）——与 JPEG 所用的频率变换相同。选取四个高频系数：DCTCoeff(6,6)、(6,7)、(7,6) 与 (7,7)。写入一个比特时调整这些系数：数据比特为 1 时给系数加 127.0，为 0 时加 0.0（保持不变）。随后用逆离散余弦变换（IDCT）把块还原为像素以供显示。改动很小且藏在细节中，因此水印保持隐形，又能抵御常见的图像处理。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"8\" y=\"55\" width=\"70\" height=\"40\"/><text x=\"43\" y=\"79\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">8x8 block</text><rect x=\"110\" y=\"55\" width=\"60\" height=\"40\"/><text x=\"140\" y=\"79\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">2D DCT</text><rect x=\"200\" y=\"55\" width=\"90\" height=\"40\"/><text x=\"245\" y=\"73\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">embed bit:</text><text x=\"245\" y=\"86\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">+127 or +0</text><rect x=\"320\" y=\"55\" width=\"55\" height=\"40\"/><text x=\"347\" y=\"79\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">IDCT</text><rect x=\"395\" y=\"55\" width=\"38\" height=\"40\"/><text x=\"414\" y=\"79\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">screen</text><line x1=\"78\" y1=\"75\" x2=\"110\" y2=\"75\" marker-end=\"url(#a)\"/><line x1=\"170\" y1=\"75\" x2=\"200\" y2=\"75\" marker-end=\"url(#a)\"/><line x1=\"290\" y1=\"75\" x2=\"320\" y2=\"75\" marker-end=\"url(#a)\"/><line x1=\"375\" y1=\"75\" x2=\"395\" y2=\"75\" marker-end=\"url(#a)\"/><defs><marker id=\"a\" markerWidth=\"8\" markerHeight=\"8\" refX=\"7\" refY=\"4\" orient=\"auto\"><path d=\"M0,1 L7,4 L0,7\" stroke=\"currentColor\" fill=\"none\"/></marker></defs></svg>",
+      "caption": {
+        "en": "Annex L pipeline: each 8x8 pixel block goes through the DCT, four high-frequency coefficients are nudged to carry bits, and the IDCT restores it for rendering.",
+        "zh": "附录 L 流程：每个 8x8 像素块经过 DCT，四个高频系数被微调以承载比特，再由 IDCT 还原以供渲染。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Annex M — UFSOOK MIMO decoder protocol. UFSOOK stands for Undersampled Frequency Shift On-Off Keying, a PHY mode where an LED blinks fast and a rolling-shutter camera, sampling slower, reads the pattern. MIMO (Multiple-Input Multiple-Output) here means several LEDs transmit at once and one camera sees them all in its field of view. Annex M is the receiver-side recipe for decoding such a group, expanding on the transmit rules in clause 13.1.5. The decode begins with identification: every LED in the group simultaneously sends the Start Frame Delimiter (SFD), and the camera scans frame by frame until it catches the moment all the lights flash the SFD together — that reveals who belongs to the group.",
+      "zh": "附录 M——UFSOOK MIMO 解码协议。UFSOOK 是欠采样频移开关键控（Undersampled Frequency Shift On-Off Keying）的缩写，这是一种 PHY 模式：LED 快速闪烁，而采样较慢的卷帘快门相机读取其图案。此处的 MIMO（多输入多输出）指多个 LED 同时发送，一台相机在视场内同时看到它们。附录 M 给出了解码这样一组光源的接收端方法，扩展了第 13.1.5 条的发送规则。解码从识别开始：组内每个 LED 同时发送帧起始定界符（SFD），相机逐帧扫描，直到捕捉到所有灯同时闪烁 SFD 的时刻——由此确定哪些灯属于该组。"
+    },
+    {
+      "type": "prose",
+      "en": "After identification, the protocol branches on two modes. In spatial redundancy, every LED sends the identical payload; the receiver decodes each copy and applies Forward Error Correction (FEC) by majority bit-voting across all the copies — more lights simply means more robustness, with no limit on count. In spatial multiplexing, the LEDs split the message: there must be exactly 2^N LEDs, each carrying a sequence number in its ID field (the anchor LED is 0, the last is 2^N-1) that tells the receiver the order to concatenate payloads. If the count of cleanly decoded sequence numbers isn't a complete 2^N set, some LEDs are out of view and multiplexed decode fails. The anchor's number also marks the array's physical reference location — handy when the array broadcasts its own coordinates.",
+      "zh": "识别之后，协议按两种模式分支。在空间冗余中，每个 LED 发送完全相同的载荷；接收机解码每个副本，并通过对所有副本逐比特多数表决来实现前向纠错（FEC）——灯越多越稳健，且数量不设上限。在空间复用中，各 LED 分担消息：必须恰好有 2^N 个 LED，每个在其 ID 字段中携带一个序号（锚点 LED 为 0，最后一个为 2^N−1），告诉接收机拼接载荷的顺序。若干净解码出的序号不构成完整的 2^N 集合，则说明有些 LED 不在视场内，复用解码失败。锚点的序号还标记阵列的物理参考位置——当阵列广播自身坐标时很有用。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[All LEDs flash SFD together] --> B[Camera finds the group]\n  B --> C{ID field present?}\n  C -->|same ID| D[Spatial redundancy: identical payloads]\n  C -->|0..2^N-1| E[Spatial multiplexing: split payloads]\n  D --> F[Bit-vote FEC across copies]\n  E --> G{All 2^N seq numbers present?}\n  G -->|yes| H[Concatenate in order]\n  G -->|no| I[Fail: LEDs missing from view]",
+      "zh": "flowchart TD\n  A[所有 LED 一起闪 SFD] --> B[相机找到该组]\n  B --> C{存在 ID 字段?}\n  C -->|相同 ID| D[空间冗余: 相同载荷]\n  C -->|0..2^N-1| E[空间复用: 拆分载荷]\n  D --> F[对各副本逐比特表决纠错]\n  E --> G{2^N 个序号齐全?}\n  G -->|是| H[按序拼接]\n  G -->|否| I[失败: 有 LED 不在视场]"
+    },
+    {
+      "type": "prose",
+      "en": "Annex N — Receiver details on Twinkle VPPM processing. VPPM stands for Variable Pulse Position Modulation, where data lives in where a pulse sits inside its time slot (and the pulse width also sets the brightness for dimming). 'Twinkle' is the preamble variant defined in clause 8.6.1.2.2. Annex N's key insight is that the receiver works quasi-synchronously: it makes no attempt to lock its clock to the transmitter's. Instead it oversamples the preamble well above the Nyquist rate — the minimum sampling rate needed to capture a signal without loss — then tries several down-sampling phases and simply keeps the phase that gives the best performance. This sidesteps the hard problem of tight timing recovery in a cheap optical link.",
+      "zh": "附录 N——Twinkle VPPM 处理的接收机细节。VPPM 是可变脉冲位置调制（Variable Pulse Position Modulation）的缩写，数据由脉冲在时隙内所处的位置承载（脉冲宽度同时设定亮度以实现调光）。“Twinkle” 是第 8.6.1.2.2 条定义的前导码变体。附录 N 的关键洞见是接收机以准同步方式工作：它不试图把自身时钟锁定到发射机。相反，它以远高于奈奎斯特率（无损捕获信号所需的最低采样率）的速率对前导码过采样，然后尝试多个下采样相位，并直接保留性能最佳的那个相位。这绕开了在廉价光链路中实现紧密定时恢复这一难题。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why oversample-and-pick beats true sync: locking a receiver's timing to a blinking LED is expensive and fragile. By sampling many times per symbol and choosing the best phase after the fact, the Twinkle receiver gets near-synchronous performance with simple, forgiving hardware — a recurring theme in low-cost OWC design.",
+      "zh": "为何 “过采样再择优” 优于真正的同步：把接收机定时锁定到闪烁的 LED 既昂贵又脆弱。Twinkle 接收机通过在每个符号内多次采样、事后再选出最佳相位，用简单而宽容的硬件就获得了接近同步的性能——这是低成本 OWC 设计中反复出现的思路。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: exact annex numbers and the clauses they support",
+        "zh": "覆盖地图：各附录的确切编号及其支撑的条款"
+      },
+      "en": "Annex L (normative) — Frequency-based invisible watermarking (p.403): DCT on 8x8 blocks; embed bits in DCTCoeff(6,6), (6,7), (7,6), (7,7) by adding 127.0 for a 1 or 0.0 for a 0; IDCT to restore; Figures L.1 (DCT block diagram) and L.2 (high-frequency coefficient selection). Annex M (informative) — UFSOOK MIMO decoder protocol (pp.404-405): step-by-step decode for the transmit protocol of clause 13.1.5, with Figure M.1 flowchart; covers (a) group identification via simultaneous SFD, (b) ID-field decoding, (c) spatial-redundancy payloads + bit-vote FEC, (d) spatial-multiplexing failure when fewer than 2^N LEDs are visible, (e) ordered reassembly of equal-length cyclic payloads with bit stuffing, (f) the anchor identifier as the array's physical-location reference. Annex N (informative) — Receiver details on Twinkle VPPM processing (p.406): quasi-synchronous, no transmitter timing lock; oversample the clause 8.6.1.2.2 Twinkle preamble above Nyquist and pick the best down-sampling phase; Figure N.1 shows the receiver signal-processing chain.",
+      "zh": "附录 L（规范性）——基于频率的隐形水印（第 403 页）：对 8x8 块做 DCT；在 DCTCoeff(6,6)、(6,7)、(7,6)、(7,7) 中嵌入比特，1 加 127.0、0 加 0.0；用 IDCT 还原；图 L.1（DCT 框图）与图 L.2（高频系数选取）。附录 M（资料性）——UFSOOK MIMO 解码协议（第 404-405 页）：对第 13.1.5 条发送协议的逐步解码，配图 M.1 流程图；涵盖（a）通过同时发 SFD 识别组，（b）ID 字段解码，（c）空间冗余载荷加逐比特表决纠错，（d）可见 LED 少于 2^N 时空间复用失败，（e）等长循环载荷加比特填充的有序重组，（f）锚点标识符作为阵列物理位置参考。附录 N（资料性）——Twinkle VPPM 处理的接收机细节（第 406 页）：准同步、不锁发射机定时；以高于奈奎斯特率对第 8.6.1.2.2 条 Twinkle 前导码过采样并选取最佳下采样相位；图 N.1 给出接收机信号处理链。",
+      "cite": {
+        "pdf_id": "802157-2018",
+        "pages": [
+          403,
+          404,
+          405,
+          406
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Seen together, these annexes round out the optical PHY: Annex L lets a display carry hidden data with no visible artifact, Annex M turns a cluster of blinking lights into a robust or high-rate channel through one camera, and Annex N keeps the Twinkle receiver simple by trading exact synchronization for oversampling. Each is anchored to a main-body clause — 13.1.5 for the MIMO transmit side and 8.6.1.2.2 for the Twinkle preamble — so the informative annexes read as practical companions to the normative rules.",
+      "zh": "合而观之，这三个附录补全了光 PHY：附录 L 让显示器在无可见痕迹的情况下承载隐藏数据，附录 M 借助一台相机把一簇闪烁的灯变成稳健或高速的信道，附录 N 用过采样换取精确同步从而让 Twinkle 接收机保持简单。每一项都锚定到正文条款——MIMO 发送侧对应 13.1.5，Twinkle 前导码对应 8.6.1.2.2——因此资料性附录读起来正是规范性规则的实用伴侣。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        403
+      ],
+      "note": "Annex L (normative) Frequency-based invisible watermarking: DCT on 8x8 blocks, embed in DCTCoeff(6,6)/(6,7)/(7,6)/(7,7), +127 for 1, IDCT restore; Figures L.1, L.2."
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        404,
+        405
+      ],
+      "note": "Annex M (informative) UFSOOK MIMO decoder protocol: SFD group ID, ID-field decode, spatial redundancy bit-vote FEC, spatial multiplexing 2^N rule, ordered reassembly, anchor identifier; Figure M.1; ties to clause 13.1.5."
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        406
+      ],
+      "note": "Annex N (informative) Receiver details on Twinkle VPPM processing: quasi-synchronous oversample-and-pick-phase for the 8.6.1.2.2 Twinkle preamble; Figure N.1."
+    }
+  ],
+  "covers": [
+    "802157-2018:Annex_L",
+    "802157-2018:Annex_M",
+    "802157-2018:Annex_N"
+  ],
+  "track": "pan-optical"
+}

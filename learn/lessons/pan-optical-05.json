@@ -1,0 +1,169 @@
+{
+  "id": "pan-optical-05",
+  "title": {
+    "en": "How LiFi Secures a Frame: The 802.15.7 Security Suite (Clause 7)",
+    "zh": "LiFi 如何保护一帧数据：802.15.7 安全套件（第 7 章）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.15.7-2018 is the standard for short-range optical wireless communication — the visible-light (LiFi / VLC) cousin of radio PANs (personal area networks). Clause 7 is its security suite. It answers one question for every frame leaving or entering the MAC (Medium Access Control) sublayer: do we protect it, and if so, how do we encrypt, authenticate, and replay-proof it? This lesson walks the whole clause as a coverage map. We define every acronym on first use and name the exact subclause behind each mechanism so you can navigate the standard directly.",
+      "zh": "IEEE Std 802.15.7-2018 是短距离光无线通信标准——它是无线电个域网（PAN）在可见光领域的近亲，也就是 LiFi / VLC（可见光通信）。第 7 章是它的安全套件。对每一帧进出 MAC（媒体访问控制）子层的数据，它都回答同一个问题：要不要保护它？如果要，又如何加密、认证并防重放？本课把整章作为一张覆盖地图来讲解。我们在首次出现时定义每个缩写，并指出每个机制对应的确切小节编号，方便你直接对照标准查阅。"
+    },
+    {
+      "type": "prose",
+      "en": "Security in 802.15.7 is optional and lives entirely in the MAC sublayer (7.1). The higher layers ask for protection; the MAC delivers three services: data confidentiality (the payload is encrypted so eavesdroppers cannot read it), data authenticity (a tag proves the frame really came from the claimed sender and was not altered), and replay protection (an attacker cannot re-send an old captured frame). All the settings that govern this live in the security-related PIB (PAN Information Base) — a per-device store of keys, device records, and policy, defined in 7.5.1.",
+      "zh": "802.15.7 中的安全是可选的，并且完全位于 MAC 子层（7.1）。高层提出保护请求，MAC 提供三项服务：数据机密性（载荷被加密，窃听者无法读取）、数据真实性（一个标签证明该帧确实来自所声称的发送方且未被篡改）、以及防重放保护（攻击者无法重发一个旧的、被截获的帧）。所有控制这些行为的设置都存放在与安全相关的 PIB（PAN 信息库）中——这是每个设备本地保存密钥、设备记录和策略的存储区，定义于 7.5.1。"
+    },
+    {
+      "type": "prose",
+      "en": "The functional description (7.2) is a chain of procedures. When a frame goes out, the outgoing frame security procedure (7.2.1) sets the security level, checks that the frame still fits within aMaxPHYFrameSize after the security overhead is added, grabs the right key via the outgoing frame key retrieval procedure (7.2.2), inserts the auxiliary security header, runs the CCM* transformation, then increments the frame counter. The key-retrieval step builds a lookup key — either implicitly from the frame's addresses (KeyIdMode 0x00) or explicitly from a key source and key index — and hands it to the KeyDescriptor lookup procedure (7.2.5), which scans macKeyTable for a match.",
+      "zh": "功能描述（7.2）是一连串过程。当一帧发出时，出向帧安全过程（7.2.1）会设置安全级别，检查加入安全开销后该帧是否仍在 aMaxPHYFrameSize（最大物理层帧长）之内，通过出向帧密钥检索过程（7.2.2）取得正确的密钥，插入辅助安全头，运行 CCM* 变换，然后将帧计数器加一。密钥检索这一步会构造一个查找键——要么从帧的地址隐式得出（KeyIdMode 为 0x00），要么从密钥源与密钥索引显式得出——再把它交给密钥描述符查找过程（7.2.5），由后者在 macKeyTable 中扫描匹配项。"
+    },
+    {
+      "type": "prose",
+      "en": "Receiving is the mirror image. The incoming frame security procedure (7.2.3) reads the security level and key identifier mode from the auxiliary header, then runs a gauntlet of checks: the incoming frame security material retrieval procedure (7.2.4) finds the matching KeyDescriptor and DeviceDescriptor; the blacklist checking procedure (7.2.6) and DeviceDescriptor lookup procedure (7.2.7) make sure the sending device is known and not blacklisted; the incoming security level checking procedure (7.2.8) enforces the minimum protection the receiver demands for that frame type (it can return passed, failed, or conditionally passed); and the incoming key usage policy checking procedure (7.2.9) confirms this key is actually allowed for this frame type. Only then does CCM* inverse-transform (decrypt and verify) the frame, and the device's stored frame counter advances for replay protection.",
+      "zh": "接收过程是发送的镜像。入向帧安全过程（7.2.3）先从辅助头读取安全级别和密钥标识模式，然后运行一连串检查：入向帧安全材料检索过程（7.2.4）找到匹配的密钥描述符和设备描述符；黑名单检查过程（7.2.6）与设备描述符查找过程（7.2.7）确认发送设备已知且未被列入黑名单；入向安全级别检查过程（7.2.8）强制执行接收方对该帧类型所要求的最低保护（它可返回通过、失败或有条件通过）；入向密钥使用策略检查过程（7.2.9）确认该密钥确实允许用于该帧类型。一切通过后，才对该帧执行 CCM* 逆变换（解密并验证），随后该设备保存的帧计数器递增以实现防重放。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Outgoing frame] --> B[7.2.1 set level + size check]\n  B --> C[7.2.2 retrieve key]\n  C --> D[7.2.5 lookup in macKeyTable]\n  D --> E[insert aux header + CCM*]\n  E --> F[increment frame counter]\n  G[Incoming frame] --> H[7.2.3 read header]\n  H --> I[7.2.4 find key + device]\n  I --> J[7.2.6 / 7.2.7 blacklist + device lookup]\n  J --> K[7.2.8 min level + 7.2.9 key usage]\n  K --> L[CCM inverse + advance counter]",
+      "zh": "flowchart TD\n  A[出向帧] --> B[7.2.1 设级别+长度检查]\n  B --> C[7.2.2 检索密钥]\n  C --> D[7.2.5 在 macKeyTable 查找]\n  D --> E[插入辅助头+CCM*]\n  E --> F[帧计数器加一]\n  G[入向帧] --> H[7.2.3 读取头部]\n  H --> I[7.2.4 找密钥+设备]\n  I --> J[7.2.6/7.2.7 黑名单+设备查找]\n  J --> K[7.2.8 最低级别+7.2.9 密钥用途]\n  K --> L[CCM 逆变换+计数器前进]"
+    },
+    {
+      "type": "prose",
+      "en": "The actual cryptography is CCM* (7.3) — a small extension of CCM, the Counter with CBC-MAC (cipher block chaining message authentication code) mode, built on the AES (Advanced Encryption Standard) block cipher, and borrowed wholesale from IEEE Std 802.15.4. CCM* needs a unique nonce (number used once) per frame: a 13-octet string made of the sender's 8-octet extended address, the 4-octet frame counter, and the 1-octet security level (7.3.2). Its prerequisites fix the AES cipher, the length field L = 2 octets, and an authentication tag M of 0, 4, 8, or 16 octets (7.3.3). The forward transformation (7.3.4) takes a key, nonce, 'a data' (authenticated-only header bytes) and 'm data' (to-be-encrypted payload) and outputs 'c data'; the inverse transformation (7.3.5) reverses it on receive. Integer-and-octet conventions (7.3.1) just say how bytes are ordered.",
+      "zh": "真正的密码学是 CCM*（7.3）——它是 CCM 的一个小扩展。CCM 即“计数器加 CBC-MAC（密码块链接消息认证码）”模式，建立在 AES（高级加密标准）分组密码之上，整套借自 IEEE Std 802.15.4。CCM* 要求每帧使用唯一的 nonce（一次性随机数）：一个 13 字节的串，由发送方的 8 字节扩展地址、4 字节帧计数器和 1 字节安全级别组成（7.3.2）。它的前提条件固定了 AES 密码、长度字段 L = 2 字节，以及 0、4、8 或 16 字节的认证标签 M（7.3.3）。前向变换（7.3.4）以密钥、nonce、'a 数据'（仅认证的头部字节）和 'm 数据'（待加密的载荷）为输入，输出 'c 数据'；逆变换（7.3.5）在接收时将其还原。整数与字节表示约定（7.3.1）仅规定字节的排列顺序。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"30\" width=\"60\" height=\"34\"/><rect x=\"70\" y=\"30\" width=\"160\" height=\"34\"/><rect x=\"230\" y=\"30\" width=\"180\" height=\"34\"/><text x=\"40\" y=\"52\" font-size=\"11\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Sec Ctrl</text><text x=\"150\" y=\"52\" font-size=\"11\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Frame Counter</text><text x=\"320\" y=\"52\" font-size=\"11\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Key Identifier (0/1/5/9)</text><text x=\"40\" y=\"22\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">1 octet</text><text x=\"150\" y=\"22\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">4 octets</text><text x=\"320\" y=\"22\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">variable</text></svg>",
+      "caption": {
+        "en": "The Auxiliary Security Header (7.4): a 1-octet Security Control field, a 4-octet Frame Counter, and a variable Key Identifier field (0, 1, 5, or 9 octets). It is present only when the Security Enabled bit of the Frame Control field is set.",
+        "zh": "辅助安全头（7.4）：1 字节的安全控制字段、4 字节的帧计数器，以及可变长度的密钥标识字段（0、1、5 或 9 字节）。仅当帧控制字段的“安全使能”位被置位时才存在。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The auxiliary security header (7.4) is the small block of bytes that carries the security metadata in each protected frame. It uses the standard MAC integer-and-octet representation (7.4.1). Its 1-octet Security Control field (7.4.2) splits into a 3-bit Security Level subfield (7.4.2.1) and a 2-bit Key Identifier Mode subfield (7.4.2.2). The security level (0x00 to 0x07, per Table 67) selects the protection menu: from 'None', through MIC-32 / MIC-64 / MIC-128 (authentication-only, where MIC is the message integrity code), to ENC and the ENC-MIC combinations that add encryption. The standard even defines an ordering so a receiver can test whether one level is 'greater than or equal to' another. The 4-octet Frame Counter field (7.4.3) carries the sender's macFrameCounter for freshness, and the variable Key Identifier field (7.4.4) — with its Key Source subfield (7.4.4.1) and 1-octet Key Index subfield (7.4.4.2) — names the key explicitly when the mode is not implicit.",
+      "zh": "辅助安全头（7.4）是每个受保护帧中承载安全元数据的小块字节。它采用标准的 MAC 整数与字节表示法（7.4.1）。其 1 字节的安全控制字段（7.4.2）分为 3 位的安全级别子字段（7.4.2.1）和 2 位的密钥标识模式子字段（7.4.2.2）。安全级别（依 Table 67 取 0x00 至 0x07）选择保护“菜单”：从“无”，经 MIC-32 / MIC-64 / MIC-128（仅认证，其中 MIC 为消息完整性码），到 ENC 以及加入加密的 ENC-MIC 组合。标准甚至定义了一种排序，使接收方能判断某一级别是否“大于或等于”另一级别。4 字节的帧计数器字段（7.4.3）承载发送方的 macFrameCounter 以提供新鲜性，而可变长度的密钥标识字段（7.4.4）——连同其密钥源子字段（7.4.4.1）和 1 字节的密钥索引子字段（7.4.4.2）——在模式非隐式时显式指明所用密钥。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model for the security level (Table 67): the three bits are b2 b1 b0. Bit b2 is the encryption switch (ON adds confidentiality). Bits b1 b0 pick the authentication-tag strength (none, 32, 64, or 128 bits). 'ENC-MIC-128' (0x07) is the strongest — full encryption plus a 16-octet tag — while 0x00 is no protection at all.",
+      "zh": "安全级别（Table 67）的思维模型：三位记为 b2 b1 b0。b2 位是加密开关（开启即增加机密性）。b1 b0 两位选择认证标签强度（无、32、64 或 128 位）。'ENC-MIC-128'（0x07）最强——完整加密外加 16 字节标签——而 0x00 则完全没有保护。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the security-related MAC PIB attributes (7.5) are the tables and counters that make all of the above work. 7.5.1 lists them in Table 69 with their identifiers and defaults. The key table (7.5.2, macKeyTable) holds KeyDescriptors — keys plus their lookup and usage rules. The device table (7.5.3, macDeviceTable) holds DeviceDescriptors — one per remote device, including that device's running frame counter and its Exempt flag. The minimum security level table (7.5.4) records the least protection the device will accept per frame type, enforced by 7.2.8. The frame counter (7.5.5, macFrameCounter) is the 4-octet monotonic value that guarantees nonce uniqueness and replay protection; when it hits 0xffffffff the keys must be rekeyed. The automatic request attributes (7.5.6) supply security settings for frames the MAC generates on its own (such as automatic data requests). The default key source (7.5.7, macDefaultKeySource) is shared side information that lets sender and receiver agree on a key while keeping the on-air header small. And the coordinator address (7.5.8) is the commonly known coordinator address used the same way for frames to or from the OWPAN (optical wireless personal area network) coordinator.",
+      "zh": "最后，与安全相关的 MAC PIB 属性（7.5）是支撑上述一切运转的各类表与计数器。7.5.1 在 Table 69 中连同各自的标识符和默认值一并列出。密钥表（7.5.2，macKeyTable）保存密钥描述符——密钥及其查找与使用规则。设备表（7.5.3，macDeviceTable）保存设备描述符——每个远端设备一条，含该设备当前的帧计数器及其 Exempt（豁免）标志。最低安全级别表（7.5.4）记录该设备针对每种帧类型可接受的最低保护，由 7.2.8 强制执行。帧计数器（7.5.5，macFrameCounter）是保证 nonce 唯一性与防重放的 4 字节单调递增值；当它达到 0xffffffff 时必须更换密钥。自动请求属性（7.5.6）为 MAC 自行生成的帧（如自动数据请求）提供安全设置。默认密钥源（7.5.7，macDefaultKeySource）是共享的辅助信息，使收发双方能就密钥达成一致，同时保持空口头部精简。协调器地址（7.5.8）是众所周知的协调器地址，对去往或来自 OWPAN（光无线个域网）协调器的帧以同样方式使用。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every subclause of Clause 7 by number",
+        "zh": "覆盖地图——第 7 章每个小节按编号列出"
+      },
+      "en": "7.1 Overview — three services (confidentiality, authenticity, replay protection), all in the MAC. 7.2 Functional description: 7.2.1 outgoing frame security procedure; 7.2.2 outgoing frame key retrieval; 7.2.3 incoming frame security procedure; 7.2.4 incoming frame security material retrieval; 7.2.5 KeyDescriptor lookup; 7.2.6 blacklist checking; 7.2.7 DeviceDescriptor lookup; 7.2.8 incoming security level checking (passed / failed / conditionally passed); 7.2.9 incoming key usage policy checking. 7.3 Security operations: 7.3.1 integer/octet representation; 7.3.2 CCM* nonce (13 octets = address + counter + level); 7.3.3 CCM* prerequisites (AES, L=2, M=0/4/8/16); 7.3.4 forward transformation (key, nonce, a data, m data -> c data) with 7.3.4.1 key/nonce inputs, 7.3.4.2 a data and m data, 7.3.4.3 c data output; 7.3.5 inverse transformation (-> m data) with 7.3.5.1 key/nonce inputs, 7.3.5.2 c data and a data, 7.3.5.3 m data output. 7.4 Auxiliary Security header: 7.4.1 integer/octet representation; 7.4.2 Security Control field with 7.4.2.1 Security Level subfield and 7.4.2.2 Key Identifier Mode subfield; 7.4.3 Frame Counter field; 7.4.4 Key Identifier field with 7.4.4.1 Key Source subfield and 7.4.4.2 Key Index subfield. 7.5 PIB attributes: 7.5.1 PIB security material (Table 69); 7.5.2 key table; 7.5.3 device table; 7.5.4 minimum security level table; 7.5.5 frame counter; 7.5.6 automatic request attributes; 7.5.7 default key source; 7.5.8 coordinator address.",
+      "zh": "7.1 概述——三项服务（机密性、真实性、防重放），全部在 MAC 层。7.2 功能描述：7.2.1 出向帧安全过程；7.2.2 出向帧密钥检索；7.2.3 入向帧安全过程；7.2.4 入向帧安全材料检索；7.2.5 密钥描述符查找；7.2.6 黑名单检查；7.2.7 设备描述符查找；7.2.8 入向安全级别检查（通过/失败/有条件通过）；7.2.9 入向密钥使用策略检查。7.3 安全操作：7.3.1 整数/字节表示；7.3.2 CCM* nonce（13 字节 = 地址+计数器+级别）；7.3.3 CCM* 前提条件（AES、L=2、M=0/4/8/16）；7.3.4 前向变换（密钥、nonce、a 数据、m 数据 -> c 数据），含 7.3.4.1 密钥/nonce 输入、7.3.4.2 a 数据与 m 数据、7.3.4.3 c 数据输出；7.3.5 逆变换（-> m 数据），含 7.3.5.1 密钥/nonce 输入、7.3.5.2 c 数据与 a 数据、7.3.5.3 m 数据输出。7.4 辅助安全头：7.4.1 整数/字节表示；7.4.2 安全控制字段，含 7.4.2.1 安全级别子字段与 7.4.2.2 密钥标识模式子字段；7.4.3 帧计数器字段；7.4.4 密钥标识字段，含 7.4.4.1 密钥源子字段与 7.4.4.2 密钥索引子字段。7.5 PIB 属性：7.5.1 PIB 安全材料（Table 69）；7.5.2 密钥表；7.5.3 设备表；7.5.4 最低安全级别表；7.5.5 帧计数器；7.5.6 自动请求属性；7.5.7 默认密钥源；7.5.8 协调器地址。",
+      "cite": {
+        "pdf_id": "802157-2018",
+        "pages": [
+          215,
+          216,
+          217,
+          218,
+          219,
+          220,
+          221,
+          222,
+          223,
+          224,
+          225,
+          226,
+          227,
+          228,
+          231,
+          232
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        215,
+        216,
+        217,
+        218,
+        219,
+        220,
+        221,
+        222
+      ],
+      "note": "7.1 Overview and 7.2.1-7.2.9 functional description (outgoing/incoming procedures, key/device lookup, blacklist, level and usage checks)."
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        222,
+        223,
+        224,
+        225
+      ],
+      "note": "7.3.1-7.3.5 CCM* security operations: nonce, prerequisites, forward and inverse transformation data representation."
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        225,
+        226,
+        227,
+        228
+      ],
+      "note": "7.4.1-7.4.4 Auxiliary Security Header (Security Control, Frame Counter, Key Identifier; Table 67 security levels, Table 68 key id modes) and 7.5 intro / 7.5.1 Table 69."
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        231,
+        232
+      ],
+      "note": "7.5.2-7.5.8 security-related MAC PIB attributes: key table, device table, minimum security level table, frame counter, automatic request attributes, default key source, coordinator address."
+    }
+  ],
+  "covers": [
+    "802157-2018:7.1",
+    "802157-2018:7.2.1",
+    "802157-2018:7.2.2",
+    "802157-2018:7.2.3",
+    "802157-2018:7.2.4",
+    "802157-2018:7.2.5",
+    "802157-2018:7.2.6",
+    "802157-2018:7.2.7",
+    "802157-2018:7.2.8",
+    "802157-2018:7.2.9",
+    "802157-2018:7.3.1",
+    "802157-2018:7.3.2",
+    "802157-2018:7.3.3",
+    "802157-2018:7.3.4",
+    "802157-2018:7.3.5",
+    "802157-2018:7.4.1",
+    "802157-2018:7.4.2",
+    "802157-2018:7.4.3",
+    "802157-2018:7.4.4",
+    "802157-2018:7.5.1",
+    "802157-2018:7.5.2",
+    "802157-2018:7.5.3",
+    "802157-2018:7.5.4",
+    "802157-2018:7.5.5",
+    "802157-2018:7.5.6",
+    "802157-2018:7.5.7",
+    "802157-2018:7.5.8"
+  ],
+  "track": "pan-optical"
+}

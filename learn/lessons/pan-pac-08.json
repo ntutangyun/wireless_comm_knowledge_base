@@ -1,0 +1,138 @@
+{
+  "id": "pan-pac-08",
+  "title": {
+    "en": "Inside the PAC OFDM PHY: Packet Format and PSDU Construction",
+    "zh": "走进 PAC OFDM 物理层：报文格式与 PSDU 构造"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.15.8 defines Peer Aware Communications (PAC) — a way for nearby Peer Devices (PDs) to discover and talk to each other directly, without an access point. Clause 11 specifies one of its radios: the OFDM PHY (Orthogonal Frequency Division Multiplexing physical layer). OFDM splits one wide channel into many narrow, mutually non-interfering subcarriers, sending data on all of them in parallel. This lesson is a guided map of Clause 11: what the radio's parameters are (11.1), how a transmitted packet is laid out (11.2), and how the payload bits become subcarrier symbols (11.3).",
+      "zh": "IEEE Std 802.15.8 定义了对等感知通信（PAC，Peer Aware Communications）——一种让邻近的对等设备（PD，Peer Device）无需接入点即可直接发现并互相通信的方式。Clause 11 规定了它的一种无线电：OFDM 物理层（正交频分复用物理层）。OFDM 把一条宽信道拆分成许多互不干扰的窄子载波，在所有子载波上并行发送数据。本课是 Clause 11 的导览地图：无线电参数是什么（11.1）、发送报文如何排布（11.2）、以及载荷比特如何变成子载波符号（11.3）。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the radio's fixed numbers (11.1.1, General). The OFDM PHY supports data rates from 3 Mb/s to 54 Mb/s. The total signal bandwidth is fixed at 20 MHz, built from an FFT (Fast Fourier Transform) of size N=64, of which 52 subcarriers are active. Subcarrier spacing is constant at 312.5 kHz. Each OFDM symbol lasts 4 µs: a 3.2 µs effective symbol plus a 0.8 µs cyclic prefix (CP) — a copy of the symbol's tail prepended to its front, which absorbs echoes so they don't smear into the next symbol. That gives a symbol rate of 250 kilo-symbols per second.",
+      "zh": "先看无线电的固定参数（11.1.1，General）。OFDM 物理层支持 3 Mb/s 到 54 Mb/s 的数据速率。总信号带宽固定为 20 MHz，由大小 N=64 的 FFT（快速傅里叶变换）构成，其中 52 个子载波是有效的。子载波间隔恒为 312.5 kHz。每个 OFDM 符号持续 4 µs：3.2 µs 的有效符号加上 0.8 µs 的循环前缀（CP，cyclic prefix）——把符号尾部复制并拼到头部，用来吸收回波，避免它们拖入下一个符号。由此得到 250 千符号每秒的符号速率。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining 11.1 items pin down where and how the radio operates. Operating frequency range (11.1.2): the PHY runs in the 2.4 GHz and 5.7 GHz unlicensed bands. Channel assignments (11.1.3): a channelization scheme divides each band into channels, each defined by a center frequency and a bandwidth. Duplex schemes (11.1.4): when using TDD (Time Division Duplex — transmit and receive take turns on the same frequency), the PHY follows the duplex scheme defined elsewhere in the standard (clause 12.3.3.2).",
+      "zh": "11.1 的其余条目确定了无线电在哪里、以何种方式工作。工作频率范围（11.1.2）：该物理层运行在 2.4 GHz 和 5.7 GHz 免许可频段。信道分配（11.1.3）：信道化方案把每个频段划分为多个信道，每个信道由中心频率和带宽定义。双工方式（11.1.4）：使用 TDD（时分双工——在同一频率上轮流收发）时，物理层遵循标准别处（12.3.3.2）定义的双工方案。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the packet itself (11.2 PPDU format, 11.2.1 General). A PPDU (PHY Protocol Data Unit) is the complete over-the-air packet. PAC defines two layouts because the network has phases. During the synchronization period the packet carries only timing/signaling fields; during the discovery, peering, and communication periods it carries an actual payload. Across both, all multi-octet fields are sent least-significant-octet first, and each octet is sent LSB (least significant bit) first. Both formats begin with the same Preamble — Short Training Field (STF) plus Long Training Field (LTF) — used for carrier sensing, AGC (automatic gain control — leveling the received signal strength), packet detection, time and frequency synchronization, and channel estimation.",
+      "zh": "现在看报文本身（11.2 PPDU 格式，11.2.1 General）。PPDU（PHY 协议数据单元）是完整的空口报文。PAC 定义了两种排布，因为网络分阶段运行。在同步期，报文只携带定时/信令字段；在发现、配对和通信期，它携带真正的载荷。两种格式中，所有多字节字段都按最低有效字节在先发送，每个字节都按 LSB（最低有效位）在先发送。两种格式都以相同的前导码开头——短训练字段（STF，Short Training Field）加长训练字段（LTF，Long Training Field）——用于载波侦听、AGC（自动增益控制——把接收信号强度调平）、报文检测、时间与频率同步以及信道估计。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 660 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"24\" stroke=\"none\" fill=\"currentColor\" font-size=\"13\">Sync-period PPDU (Fig 72): 6 OFDM symbols</text><rect x=\"10\" y=\"34\" width=\"120\" height=\"40\"/><rect x=\"130\" y=\"34\" width=\"120\" height=\"40\"/><rect x=\"250\" y=\"34\" width=\"70\" height=\"40\"/><rect x=\"320\" y=\"34\" width=\"70\" height=\"40\"/><text x=\"70\" y=\"59\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\" text-anchor=\"middle\">STF (2)</text><text x=\"190\" y=\"59\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\" text-anchor=\"middle\">LTF (2)</text><text x=\"285\" y=\"59\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">TOIF (1)</text><text x=\"355\" y=\"59\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">CWIF (1)</text><text x=\"10\" y=\"120\" stroke=\"none\" fill=\"currentColor\" font-size=\"13\">Other-periods PPDU (Fig 73)</text><rect x=\"10\" y=\"130\" width=\"110\" height=\"40\"/><rect x=\"120\" y=\"130\" width=\"110\" height=\"40\"/><rect x=\"230\" y=\"130\" width=\"60\" height=\"40\"/><rect x=\"290\" y=\"130\" width=\"80\" height=\"40\"/><rect x=\"370\" y=\"130\" width=\"160\" height=\"40\"/><text x=\"65\" y=\"155\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\" text-anchor=\"middle\">STF (2)</text><text x=\"175\" y=\"155\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\" text-anchor=\"middle\">LTF (2)</text><text x=\"260\" y=\"155\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">CWIF</text><text x=\"330\" y=\"155\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">PHR</text><text x=\"450\" y=\"155\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">PSDU (variable)</text></svg>",
+      "caption": {
+        "en": "The two PPDU layouts of Clause 11. The sync-period packet (Figure 72) is six OFDM symbols: STF, LTF, TOIF, CWIF. The other-periods packet (Figure 73) replaces TOIF with a PHY Header (PHR) and a variable-length PSDU payload. Numbers in parentheses are OFDM-symbol counts.",
+        "zh": "Clause 11 的两种 PPDU 排布。同步期报文（图 72）共六个 OFDM 符号：STF、LTF、TOIF、CWIF。其他期报文（图 73）用 PHY 头（PHR）和可变长度的 PSDU 载荷替换 TOIF。括号中的数字为 OFDM 符号个数。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The sync-period packet (11.2.2) is six OFDM symbols. The STF preamble (11.2.2.1) is 2 symbols of length N=64 plus a CP of N/4, used as the synchronization signal and for carrier sensing, AGC, packet detection, and coarse timing/frequency sync; it activates 26 of the 64 subcarriers. The LTF preamble (11.2.2.2) is 2 symbols with a longer CP of N/2 and uses 52 of 64 subcarriers, refining timing/frequency sync and doing channel estimation. After the preamble come two clever single-symbol fields. The TOIF — Timing-Offset Indication Field (11.2.2.3) — carries one of 32 timing-offset IDs that let a receiver acquire the superframe boundary. The CWIF — Contention-Window Indication Field (11.2.2.4) — carries one of 169 contention-window IDs announcing the current contention window.",
+      "zh": "同步期报文（11.2.2）共六个 OFDM 符号。STF 前导码（11.2.2.1）为 2 个长度 N=64 的符号外加 N/4 的 CP，用作同步信号，并用于载波侦听、AGC、报文检测和粗略定时/频率同步；它激活 64 个子载波中的 26 个。LTF 前导码（11.2.2.2）为 2 个符号，CP 更长为 N/2，使用 64 个子载波中的 52 个，用于精化定时/频率同步并做信道估计。前导码之后是两个巧妙的单符号字段。TOIF——定时偏移指示字段（11.2.2.3，Timing-Offset Indication Field）——携带 32 个定时偏移 ID 之一，让接收方获取超帧边界。CWIF——竞争窗口指示字段（11.2.2.4，Contention-Window Indication Field）——携带 169 个竞争窗口 ID 之一，宣告当前竞争窗口。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "How do TOIF and CWIF pack an ID into one symbol? Each ID is a codeword of four parts — (Z, Y, X, W), each chosen from elements 0–12. Every (Group, Element) pair maps to one specific subcarrier position (per Table 111); the transmitter sets exactly those subcarriers to 1 and all others to 0. The receiver detects which subcarriers are lit and reads back the ID. It is essentially a one-OFDM-symbol code-division signal: 32 distinct patterns for TOIF, 169 for CWIF.",
+      "zh": "TOIF 和 CWIF 如何把一个 ID 塞进一个符号？每个 ID 是由四部分组成的码字——(Z, Y, X, W)，每部分取自元素 0–12。每个 (Group, Element) 对都映射到一个特定的子载波位置（依据表 111）；发送方把这些子载波置 1，其余全置 0。接收方检测哪些子载波被点亮，从而读回 ID。本质上这是一种单 OFDM 符号的码分信号：TOIF 有 32 种不同图案，CWIF 有 169 种。"
+    },
+    {
+      "type": "prose",
+      "en": "The other-periods packet (11.2.3, 11.2.3.1 General) reuses the same STF, LTF, and CWIF, but swaps the TOIF for two payload-bearing fields. The PHY Header — PHR (11.2.3.2) — describes the contents and protocol of the PPDU and uses the header format from clause 12.3.2. The PSDU field (11.2.3.3) — PHY Service Data Unit — carries the actual data of the PHY frame, and its length is variable. Data rates (11.2.3.4): PDs must support SBPSK, BPSK, and QPSK modulations; 16QAM and 64-QAM are optional. Table 113 lists nine MCS (Modulation and Coding Scheme) levels from MCS0 (BPSK rate 1/2 with 2× frequency spreading, 3 Mb/s) up to MCS8 (64QAM rate 3/4, 54 Mb/s), over 48 data subcarriers plus 4 pilots.",
+      "zh": "其他期报文（11.2.3，11.2.3.1 General）复用相同的 STF、LTF 和 CWIF，但把 TOIF 换成两个承载载荷的字段。PHY 头——PHR（11.2.3.2）——描述 PPDU 的内容与协议，使用 12.3.2 节的头格式。PSDU 字段（11.2.3.3）——PHY 服务数据单元——携带 PHY 帧的实际数据，长度可变。数据速率（11.2.3.4）：PD 必须支持 SBPSK、BPSK 和 QPSK 调制；16QAM 和 64-QAM 为可选。表 113 列出九个 MCS（调制与编码方案，Modulation and Coding Scheme）等级，从 MCS0（BPSK 1/2 码率加 2× 频率扩展，3 Mb/s）到 MCS8（64QAM 3/4 码率，54 Mb/s），使用 48 个数据子载波加 4 个导频。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.3 (PSDU construction) is the assembly line that turns payload bits into the subcarrier symbols that ride those data subcarriers. Three steps reuse machinery defined elsewhere in the standard: bit-to-symbol mapping (11.3.1) uses the constellation mapper of clause 12.5.7; forward error correction (FEC, 11.3.2) — coding that lets the receiver repair bit errors — uses the codes of clause 12.5.2; and the interleaver (11.3.3) — which scrambles bit order so a burst of channel noise hits scattered, recoverable bits rather than one contiguous block — uses clause 12.5.3.",
+      "zh": "Clause 11.3（PSDU 构造）是把载荷比特变成承载于那些数据子载波上的符号的装配线。其中三步复用标准别处定义的机制：比特到符号映射（11.3.1）使用 12.5.7 节的星座映射器；前向纠错（FEC，11.3.2，Forward Error Correction）——让接收方修复比特错误的编码——使用 12.5.2 节的码；交织器（11.3.3）——打乱比特顺序，使一段突发信道噪声击中分散、可恢复的比特而非一整块连续比特——使用 12.5.3 节。"
+    },
+    {
+      "type": "prose",
+      "en": "Frequency spreading (11.3.4) is the headline trick. General (11.3.4.1): spreading replicates PSK symbols across different subcarriers — index 0 sits at the spectrum center, positive DFT indices map to higher frequencies and negative ones to lower. Spreading by 2 times (11.3.4.2): with Nd=48 data subcarriers (indices −26..26, excluding DC), the data is placed on the 24 positive subcarriers, then copied to the negative ones with a per-subcarrier phase rotation and cyclic shift (Equation 35) that lowers the peak-to-average power ratio — this is what powers the rugged 3 Mb/s MCS0. No spreading (11.3.4.3): a PD may instead place data symbols directly across −Nd/2..−1 and 1..Nd/2 with no duplication, for higher throughput. Pilot subcarriers (11.3.4.4): four subcarriers (d−21=1, d−7=1, d7=1, d21=−1) carry known pilot symbols so the receiver can track frequency offset and phase noise.",
+      "zh": "频率扩展（11.3.4）是重头戏。General（11.3.4.1）：扩展把 PSK 符号复制到不同子载波上——索引 0 位于频谱中心，正 DFT 索引映射到较高频率、负索引映射到较低频率。2 倍频率扩展（11.3.4.2）：在 Nd=48 个数据子载波（索引 −26..26，不含直流）下，数据先放在 24 个正子载波上，再以逐子载波的相位旋转和循环移位（式 35）复制到负子载波，从而降低峰均功率比——这正是稳健的 3 Mb/s MCS0 的底层机制。无扩展（11.3.4.3）：PD 也可以直接把数据符号铺在 −Nd/2..−1 和 1..Nd/2 上而不复制，以获得更高吞吐。导频子载波（11.3.4.4）：四个子载波（d−21=1、d−7=1、d7=1、d21=−1）携带已知导频符号，使接收方能跟踪频偏和相位噪声。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[PSDU bits] --> B[Scrambler 11.3.4.6]\n  B --> C[FEC encode 11.3.2]\n  C --> D[Interleaver 11.3.3]\n  D --> E[Bit-to-symbol map 11.3.1]\n  E --> F{Spreading?}\n  F -->|2x 11.3.4.2| G[Replicate to neg subcarriers]\n  F -->|none 11.3.4.3| H[Direct placement]\n  G --> I[Add 4 pilots + PAD]\n  H --> I\n  I --> J[OFDM symbols on air]",
+      "zh": "flowchart TD\n  A[PSDU 比特] --> B[扰码器 11.3.4.6]\n  B --> C[FEC 编码 11.3.2]\n  C --> D[交织器 11.3.3]\n  D --> E[比特到符号映射 11.3.1]\n  E --> F{是否扩展?}\n  F -->|2倍 11.3.4.2| G[复制到负子载波]\n  F -->|不扩展 11.3.4.3| H[直接放置]\n  G --> I[加 4 导频 + PAD]\n  H --> I\n  I --> J[空口 OFDM 符号]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every Clause 11.1–11.3 unit and where it lives",
+        "zh": "覆盖地图：Clause 11.1–11.3 每个条目及其位置"
+      },
+      "en": "11.1 Introduction — 11.1.1 General: 3–54 Mb/s, 312.5 kHz spacing, 4 µs symbol (3.2 µs + 0.8 µs CP), 250 ksym/s, 52 active subcarriers, 20 MHz, FFT N=64. 11.1.2 Operating frequency range: 2.4 GHz and 5.7 GHz unlicensed bands. 11.1.3 Channel assignments: bands split into channels by center frequency + bandwidth. 11.1.4 Duplex schemes: TDD per 12.3.3.2. 11.2 PPDU format — 11.2.1 General: two formats (sync vs other periods), LSoctet/LSB-first ordering, shared STF+LTF preamble. 11.2.2 sync-period: 11.2.2.1 STF (2 sym, CP N/4, 26 subcarriers); 11.2.2.2 LTF (2 sym, CP N/2, 52 subcarriers); 11.2.2.3 TOIF (32 TO IDs as 4-part codewords lighting subcarriers); 11.2.2.4 CWIF (169 CW IDs). 11.2.3 other periods: 11.2.3.1 reuses STF/LTF/CWIF; 11.2.3.2 PHY Header per 12.3.2; 11.2.3.3 PSDU carries frame data; 11.2.3.4 data rates — SBPSK/BPSK/QPSK mandatory, 16QAM/64QAM optional, MCS0–MCS8 (Table 113). 11.3 PSDU construction — 11.3.1 bit-to-symbol map (12.5.7); 11.3.2 FEC (12.5.2); 11.3.3 interleaver (12.5.3); 11.3.4 frequency spreading — 11.3.4.1 general concept, 11.3.4.2 2× spreading (Eq 35, PAPR reduction), 11.3.4.3 no spreading, 11.3.4.4 four pilot subcarriers, 11.3.4.5 PAD bits (12.5.5), 11.3.4.6 scrambler (12.5.4).",
+      "zh": "11.1 引言——11.1.1 General：3–54 Mb/s，312.5 kHz 间隔，4 µs 符号（3.2 µs + 0.8 µs CP），250 千符号/s，52 个有效子载波，20 MHz，FFT N=64。11.1.2 工作频率范围：2.4 GHz 和 5.7 GHz 免许可频段。11.1.3 信道分配：按中心频率+带宽把频段划分为信道。11.1.4 双工方式：TDD 依 12.3.3.2。11.2 PPDU 格式——11.2.1 General：两种格式（同步期与其他期）、最低字节/最低位在先排序、共享 STF+LTF 前导码。11.2.2 同步期：11.2.2.1 STF（2 符号，CP N/4，26 子载波）；11.2.2.2 LTF（2 符号，CP N/2，52 子载波）；11.2.2.3 TOIF（32 个 TO ID，四部分码字点亮子载波）；11.2.2.4 CWIF（169 个 CW ID）。11.2.3 其他期：11.2.3.1 复用 STF/LTF/CWIF；11.2.3.2 PHY 头依 12.3.2；11.2.3.3 PSDU 承载帧数据；11.2.3.4 数据速率——SBPSK/BPSK/QPSK 必选，16QAM/64QAM 可选，MCS0–MCS8（表 113）。11.3 PSDU 构造——11.3.1 比特到符号映射（12.5.7）；11.3.2 FEC（12.5.2）；11.3.3 交织器（12.5.3）；11.3.4 频率扩展——11.3.4.1 总体概念，11.3.4.2 2× 扩展（式 35，降低 PAPR），11.3.4.3 无扩展，11.3.4.4 四个导频子载波，11.3.4.5 PAD 填充比特（12.5.5），11.3.4.6 扰码器（12.5.4）。",
+      "cite": {
+        "pdf_id": "802158-2017",
+        "pages": [
+          209,
+          210,
+          211,
+          212,
+          213,
+          214,
+          215,
+          216,
+          217,
+          218
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        209
+      ],
+      "note": "11.1 Introduction: 11.1.1 General (rates, spacing, symbol timing, FFT N=64), 11.1.2 frequency range, 11.1.3 channels, 11.1.4 duplex; 11.2.1 General (two PPDU formats)"
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        210,
+        211,
+        212,
+        213,
+        214,
+        215,
+        216
+      ],
+      "note": "11.2.2 sync-period PPDU: STF (11.2.2.1), LTF (11.2.2.2), TOIF (11.2.2.3), CWIF (11.2.2.4); 11.2.3 other periods: general, PHY Header, PSDU, data rates"
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        217,
+        218
+      ],
+      "note": "11.2.3.4 data-rate table (MCS0-MCS8); 11.3 PSDU construction: bit-to-symbol map, FEC, interleaver, frequency spreading (general, 2x, none, pilots, PAD, scrambler)"
+    }
+  ],
+  "covers": [
+    "802158-2017:11.1.1",
+    "802158-2017:11.1.2",
+    "802158-2017:11.1.3",
+    "802158-2017:11.1.4",
+    "802158-2017:11.2.1",
+    "802158-2017:11.2.2",
+    "802158-2017:11.2.3",
+    "802158-2017:11.3.1",
+    "802158-2017:11.3.2",
+    "802158-2017:11.3.3",
+    "802158-2017:11.3.4"
+  ],
+  "track": "pan-pac"
+}

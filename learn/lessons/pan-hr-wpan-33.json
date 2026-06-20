@@ -1,0 +1,147 @@
+{
+  "id": "pan-hr-wpan-33",
+  "title": {
+    "en": "The 2.4 GHz HR-WPAN PHY: Channels, Modulation, and Frame Format",
+    "zh": "2.4 GHz HR-WPAN 物理层：信道、调制与帧格式"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 10 of IEEE Std 802.15.3-2016 defines the original 2.4 GHz physical layer (PHY) for the High-Rate Wireless Personal Area Network (HR-WPAN). PHY is the lowest layer of the radio: it turns bits into the actual waveform that travels through the air. This lesson walks through the first half of Clause 10 — the overview (10.1), the general requirements (10.2), the modulation and coding scheme (10.3), and the on-air frame format (10.4). Think of it as a single-carrier radio that scales its speed by stacking more bits onto each transmitted symbol.",
+      "zh": "IEEE Std 802.15.3-2016 的第 10 章定义了高速无线个域网（HR-WPAN，High-Rate Wireless Personal Area Network）最初的 2.4 GHz 物理层（PHY，physical layer）。物理层是无线电的最底层：它把比特转换成真正在空中传播的波形。本课讲解第 10 章的前半部分——概述（10.1）、通用要求（10.2）、调制与编码（10.3）以及空口帧格式（10.4）。可以把它理解为一种单载波无线电，通过在每个发送符号上叠加更多比特来提升速率。"
+    },
+    {
+      "type": "prose",
+      "en": "The 2.4 GHz PHY (10.1) is a single-carrier system running at a fixed symbol rate of 11 Mbaud, but it offers five modulation formats that trade robustness for speed. The five rungs are: 11 Mb/s using QPSK (Quadrature Phase-Shift Keying) with trellis-coded modulation (TCM), 22 Mb/s using uncoded DQPSK (Differential QPSK), and 33/44/55 Mb/s using 16/32/64-QAM (Quadrature Amplitude Modulation) with trellis coding. The standard is built around regulatory rules in Europe, Japan, Canada, and the United States, advertised through the device's phyRegDomainsSupported parameter.",
+      "zh": "2.4 GHz 物理层（10.1）是一种单载波系统，符号速率固定为 11 Mbaud，但提供五种调制格式，在稳健性和速率之间做权衡。这五个档位是：使用网格编码调制（TCM，trellis-coded modulation）的 QPSK（正交相移键控，Quadrature Phase-Shift Keying）对应 11 Mb/s；非编码 DQPSK（差分 QPSK，Differential QPSK）对应 22 Mb/s；使用网格编码的 16/32/64-QAM（正交幅度调制，Quadrature Amplitude Modulation）分别对应 33/44/55 Mb/s。该标准围绕欧洲、日本、加拿大和美国的监管规则构建，通过设备的 phyRegDomainsSupported 参数对外声明所支持的监管域。"
+    },
+    {
+      "type": "prose",
+      "en": "The general requirements (10.2) pin down the operating envelope. The radio works in the 2.4–2.4835 GHz band (10.2.1). All RF (radio-frequency) power measurements are taken at the antenna connector, or interpreted as EIRP (Effective Isotropic Radiated Power) for devices without one (10.2.2). Five channels are defined (10.2.3): four for a high-density mode plus three for an IEEE 802.11b coexistence mode, with the two outer channels shared, so every compliant device must support all five. While scanning (10.2.4), a device may hop onto an 802.11b channel to detect Wi-Fi networks and should prefer the coexistence channel set and avoid busy channels. Emissions must meet local regulator limits (10.2.5), and the device must work from 0 to 40 degrees Celsius (10.2.6).",
+      "zh": "通用要求（10.2）界定了工作范围。无线电工作在 2.4–2.4835 GHz 频段（10.2.1）。所有射频（RF，radio-frequency）功率测量都在天线连接器处进行；对于没有天线连接器的设备，则按 EIRP（等效全向辐射功率，Effective Isotropic Radiated Power）解释（10.2.2）。共定义五个信道（10.2.3）：高密度模式四个，外加 IEEE 802.11b 共存模式三个，两个外侧信道共用，因此每台合规设备都必须支持全部五个信道。扫描时（10.2.4），设备可切到 802.11b 信道以探测 Wi-Fi 网络，并应优先选用共存信道集、避开繁忙信道。辐射必须满足当地监管限值（10.2.5），且设备必须在 0 至 40 摄氏度范围内正常工作（10.2.6）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[2.4 GHz band\\n2.4-2.4835 GHz] --> C1[Ch1 2.412]\n  A --> C2[Ch2 2.428]\n  A --> C3[Ch3 2.437]\n  A --> C4[Ch4 2.445]\n  A --> C5[Ch5 2.462]\n  C1 -.shared.-> HD[High-density set]\n  C5 -.shared.-> CO[802.11b coexist set]",
+      "zh": "flowchart LR\n  A[2.4 GHz 频段\\n2.4-2.4835 GHz] --> C1[信道1 2.412]\n  A --> C2[信道2 2.428]\n  A --> C3[信道3 2.437]\n  A --> C4[信道4 2.445]\n  A --> C5[信道5 2.462]\n  C1 -.共用.-> HD[高密度信道集]\n  C5 -.共用.-> CO[802.11b 共存信道集]"
+    },
+    {
+      "type": "prose",
+      "en": "PHY timing (10.2.7) sets the clockwork of the radio. Key parameters include pSifsTime (the Short Interframe Space, 10 microseconds), pMifsTime (the Minimum Interframe Space, 2 microseconds), pCcaDetectTime (clear-channel-assessment detect time), and pChannelSwitchTime (500 microseconds). The receive-to-transmit and transmit-to-receive turnaround times (10.2.7.2, 10.2.7.3) bound how fast a device can flip between listening and talking; the minimum gap between successive transmissions is pMifsTime (10.2.7.4); and switching channels must finish within pChannelSwitchTime (10.2.7.5). Data-size limits (10.2.8) cap the maximum frame body at 2048 octets, the maximum transfer unit at 2044 octets, and set a minimum fragment size of 64 octets.",
+      "zh": "物理层定时（10.2.7）规定了无线电的时序节拍。关键参数包括 pSifsTime（短帧间间隔，Short Interframe Space，10 微秒）、pMifsTime（最小帧间间隔，Minimum Interframe Space，2 微秒）、pCcaDetectTime（空闲信道评估检测时间）以及 pChannelSwitchTime（500 微秒）。接收转发送与发送转接收的转换时间（10.2.7.2、10.2.7.3）限定了设备在收听与发话之间切换的速度；相邻两次发送之间的最小间隔为 pMifsTime（10.2.7.4）；切换信道必须在 pChannelSwitchTime 内完成（10.2.7.5）。数据尺寸限制（10.2.8）将最大帧体限定为 2048 字节、最大传输单元限定为 2044 字节，并将最小分片尺寸设为 64 字节。"
+    },
+    {
+      "type": "prose",
+      "en": "Two more building blocks finish the general requirements. The header check sequence (10.2.9) protects the combined PHY and MAC (Medium Access Control) headers with a CCITT CRC-16 — a 16-bit cyclic redundancy check using the polynomial x^16 + x^12 + x^5 + 1, computed before scrambling, exactly as in IEEE 802.11b. Finally, channel access (10.2.10) requires that the Contention Access Period (CAP) be usable for association, data, and commands on the 2.4 GHz PHY, so devices can contend for the medium without a reservation.",
+      "zh": "还有两个组成部分收尾通用要求。头校验序列（10.2.9）用 CCITT CRC-16 保护 PHY 与 MAC（介质访问控制，Medium Access Control）合并头——这是一种 16 位循环冗余校验，使用多项式 x^16 + x^12 + x^5 + 1，在加扰之前计算，与 IEEE 802.11b 完全一致。最后，信道访问（10.2.10）要求 2.4 GHz 物理层上的竞争访问期（CAP，Contention Access Period）可用于关联、数据和命令，使设备无需预约即可竞争介质。"
+    },
+    {
+      "type": "prose",
+      "en": "Modulation and coding (10.3) is where bits become signal points. The base data rate (10.3.1) is 22 Mb/s uncoded DQPSK — chosen over the 11 Mb/s coded mode because shorter, fixed-overhead headers matter, and because DQPSK is what the preamble itself needs. Every device must at minimum support DQPSK, and supporting any higher format implies supporting all lower ones. The signal constellations (10.3.2) for DQPSK/QPSK and 16/32/64-QAM are normalized by a factor K_MOD so that every format keeps the same average power within a frame. DQPSK (10.3.3) is uncoded and differential — each symbol's phase change is measured relative to the previous symbol (and the first relative to the last preamble symbol), which lets receivers be non-coherent.",
+      "zh": "调制与编码（10.3）是比特变为信号点的环节。基础数据速率（10.3.1）为 22 Mb/s 的非编码 DQPSK——之所以不选 11 Mb/s 的编码模式，是因为更短、开销固定的头部更重要，也因为前导码本身就需要 DQPSK。每台设备至少必须支持 DQPSK，且支持任一更高格式即意味着支持所有更低格式。DQPSK/QPSK 与 16/32/64-QAM 的信号星座（10.3.2）由归一化因子 K_MOD 归一，使每种格式在一帧内保持相同的平均功率。DQPSK（10.3.3）是非编码且差分的——每个符号的相位变化相对于前一个符号测量（首符号相对于前导码最后一个符号），这使接收机可以采用非相干方式。"
+    },
+    {
+      "type": "prose",
+      "en": "The higher-speed modes (10.3.4) wrap QPSK and 16/32/64-QAM in an 8-state two-dimensional trellis code (after Ungerboeck). A trellis encoder maps several input bits per symbol into one extra coded bit, then uses set partitioning to choose constellation subsets (C0–C3 for QPSK, D0–D7 for QAM) so that points which are easy to confuse are kept far apart in the code's state diagram. This coding gain is why the QAM modes stay reliable even as they pack 3, 4, or 5 information bits per symbol. The trick is the same Ungerboeck idea used across many high-rate single-carrier systems.",
+      "zh": "更高速模式（10.3.4）把 QPSK 和 16/32/64-QAM 包裹在一个 8 状态二维网格码中（源自 Ungerboeck）。网格编码器将每符号的若干输入比特映射为额外一个编码比特，再用集合划分选择星座子集（QPSK 用 C0–C3，QAM 用 D0–D7），使容易混淆的点在码的状态图中保持远距离。这种编码增益正是 QAM 模式即便每符号承载 3、4 或 5 个信息比特仍能保持可靠的原因。其手法与众多高速单载波系统通用的 Ungerboeck 思路一致。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><rect x=\"5\" y=\"25\" width=\"110\" height=\"40\"/><text x=\"60\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">PHY preamble</text><rect x=\"115\" y=\"25\" width=\"80\" height=\"40\"/><text x=\"155\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">PHY hdr</text><rect x=\"195\" y=\"25\" width=\"90\" height=\"40\"/><text x=\"240\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">MAC hdr</text><rect x=\"285\" y=\"25\" width=\"55\" height=\"40\"/><text x=\"312\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">HCS</text><rect x=\"340\" y=\"25\" width=\"150\" height=\"40\"/><text x=\"415\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">payload + FCS</text><rect x=\"490\" y=\"25\" width=\"55\" height=\"40\"/><text x=\"517\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">SB</text><rect x=\"545\" y=\"25\" width=\"55\" height=\"40\"/><text x=\"572\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">TS</text><text x=\"5\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">first over the air</text><text x=\"600\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"end\">last over the air</text></svg>",
+      "caption": {
+        "en": "The 2.4 GHz PHY frame for the 22/33/44/55 Mb/s modes (10.4.1): preamble, then PHY+MAC header protected by the HCS, then payload+FCS, optional stuff bits (SB), and tail symbols (TS).",
+        "zh": "22/33/44/55 Mb/s 模式的 2.4 GHz 物理层帧（10.4.1）：前导码，随后是由 HCS 保护的 PHY+MAC 头，再是负载+FCS、可选的填充比特（SB）以及尾符号（TS）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The PHY frame format (10.4) assembles all of this on the air. The frame layout (10.4.1) for the 22/33/44/55 Mb/s modes prepends the PHY header to the MAC header, computes the HCS over both, then sends payload, FCS (Frame Check Sequence), stuff bits, and tail symbols. The preamble is always sent in 22 Mb/s QPSK and the header in 22 Mb/s DQPSK, while only the payload uses the chosen high rate. The 11 Mb/s mode is special: it repeats the PHY+MAC header+HCS twice (first in DQPSK, then in QPSK-TCM) so the header error rate stays far below the payload error rate, though the receiver still hands just one decoded copy up to the MAC.",
+      "zh": "物理层帧格式（10.4）把上述一切在空口上组装起来。22/33/44/55 Mb/s 模式的帧布局（10.4.1）将 PHY 头前置于 MAC 头，对两者计算 HCS，然后发送负载、FCS（帧校验序列，Frame Check Sequence）、填充比特和尾符号。前导码始终以 22 Mb/s QPSK 发送，头部以 22 Mb/s DQPSK 发送，只有负载使用所选的高速率。11 Mb/s 模式较特殊：它把 PHY+MAC 头+HCS 重复发送两次（先 DQPSK，再 QPSK-TCM），使头部误码率远低于负载误码率，不过接收机仍只把一份解码副本上交给 MAC。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining frame pieces each have a job. The PHY preamble (10.4.2) is 12 periods of a 16-symbol CAZAC sequence (Constant Amplitude Zero AutoCorrelation), with the 12th period rotated 180 degrees as an end-of-preamble delimiter — its sharp autocorrelation helps the receiver lock timing, carrier offset, and equalization. Header modulation (10.4.3) keeps headers in robust DQPSK (or the doubled QPSK-TCM repetition) since a short header decodes more reliably without forward error correction. Scrambling (10.4.4) applies a side-stream linear-feedback shift register with generator 1 + D^14 + D^15 to the MAC header, HCS, frame body, and stuff bits — but never the preamble, PHY header, or tail symbols — to whiten the data.",
+      "zh": "其余帧组成部分各司其职。物理层前导码（10.4.2）由 16 符号 CAZAC 序列（恒包络零自相关，Constant Amplitude Zero AutoCorrelation）的 12 个周期构成，第 12 个周期旋转 180 度作为前导码结束定界符——其尖锐的自相关有助于接收机锁定定时、载波偏移与均衡。头部调制（10.4.3）让头部保持稳健的 DQPSK（或加倍的 QPSK-TCM 重复），因为短头部即便没有前向纠错也能更可靠地解码。加扰（10.4.4）对 MAC 头、HCS、帧体和填充比特施加一个生成多项式为 1 + D^14 + D^15 的旁流线性反馈移位寄存器——但绝不对前导码、PHY 头或尾符号加扰——以使数据白化。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: PHY header, stuff bits, and tail symbols (10.4.5–10.4.7), plus where every Clause-10 unit lives",
+        "zh": "覆盖图：PHY 头、填充比特与尾符号（10.4.5–10.4.7），以及第 10 章各单元的所在之处"
+      },
+      "en": "The PHY header (10.4.5) is exactly two octets: bits b1–b0 carry the scrambler seed identifier (a 2-bit rollover counter selecting one of four 15-bit seeds), bits b4–b2 encode the MAC Frame Body data rate (000=11, 001=22, 010=33, 011=44, 100=55 Mb/s), and bits b15–b5 hold the payload length in octets (MSB at b15). A zero-length payload carries no FCS. Stuff bits (10.4.6) pad the MPDU up to an integer number of symbols; because the MPDU is whole octets, this only matters for the 33 Mb/s mode (3 bits/symbol) and 55 Mb/s mode (5 bits/symbol) — fewer than one symbol's worth are added and they are ignored on receive. Tail symbols (10.4.7) terminate every trellis-coded sequence in the known zero state S0 to aid Viterbi decoding; for 11 Mb/s QPSK-TCM, three 1-bit tail symbols are appended per Table 10-13.\n\nFull Clause-10 (part 1) map: 10.1 overview and five-rate table; 10.2.1 band 2.4–2.4835 GHz; 10.2.2 RF power at antenna/EIRP; 10.2.3 five channels (high-density + 802.11b coexistence); 10.2.4 scanning behavior; 10.2.5 unwanted emissions; 10.2.6 0–40 C temperature; 10.2.7 timing (SIFS/MIFS/CCA/channel-switch); 10.2.8 size limits (2048/2044/64 octets); 10.2.9 CCITT CRC-16 HCS; 10.2.10 CAP channel access. 10.3.1 base rate 22 Mb/s DQPSK; 10.3.2 constellations + K_MOD normalization; 10.3.3 differential DQPSK encoding; 10.3.4 8-state trellis-coded QPSK/16/32/64-QAM. 10.4.1 frame layout (and 11 Mb/s repeated-header variant); 10.4.2 CAZAC preamble; 10.4.3 header modulation; 10.4.4 side-stream scrambler; 10.4.5 PHY header fields; 10.4.6 stuff bits; 10.4.7 tail symbols.",
+      "zh": "PHY 头（10.4.5）恰为两个字节：b1–b0 携带加扰器种子标识符（一个 2 位翻转计数器，从四个 15 位种子中选一个），b4–b2 编码 MAC 帧体数据速率（000=11、001=22、010=33、011=44、100=55 Mb/s），b15–b5 以字节为单位保存负载长度（最高有效位在 b15）。零长度负载不带 FCS。填充比特（10.4.6）把 MPDU 补齐到整数个符号；由于 MPDU 是整字节，这仅对 33 Mb/s 模式（3 比特/符号）和 55 Mb/s 模式（5 比特/符号）有意义——所加比特少于一个符号且在接收时被忽略。尾符号（10.4.7）使每个网格编码序列终止于已知的零状态 S0 以辅助 Viterbi 译码；对 11 Mb/s QPSK-TCM，按表 10-13 追加三个 1 位尾符号。\n\n第 10 章（第一部分）完整覆盖图：10.1 概述与五速率表；10.2.1 频段 2.4–2.4835 GHz；10.2.2 天线处射频功率/EIRP；10.2.3 五信道（高密度 + 802.11b 共存）；10.2.4 扫描行为；10.2.5 杂散辐射；10.2.6 0–40 摄氏度温度；10.2.7 定时（SIFS/MIFS/CCA/信道切换）；10.2.8 尺寸限制（2048/2044/64 字节）；10.2.9 CCITT CRC-16 HCS；10.2.10 CAP 信道访问。10.3.1 基础速率 22 Mb/s DQPSK；10.3.2 星座 + K_MOD 归一化；10.3.3 差分 DQPSK 编码；10.3.4 8 状态网格编码 QPSK/16/32/64-QAM。10.4.1 帧布局（及 11 Mb/s 重复头变体）；10.4.2 CAZAC 前导码；10.4.3 头部调制；10.4.4 旁流加扰器；10.4.5 PHY 头字段；10.4.6 填充比特；10.4.7 尾符号。",
+      "cite": {
+        "pdf_id": "802153-2016",
+        "pages": [
+          302,
+          303,
+          304,
+          305,
+          307,
+          308,
+          317,
+          322,
+          323
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: one symbol rate (11 Mbaud), many speeds. To go faster, the radio packs more bits per symbol (1 to 5) and adds trellis coding to keep them separable. The preamble and headers always ride at the slow, robust rates (QPSK/DQPSK) so the receiver can always find the frame and read how to decode the rest — only the payload runs fast.",
+      "zh": "心智模型：一个符号速率（11 Mbaud），多种速度。要更快，无线电就在每个符号上塞入更多比特（1 到 5 个），并加入网格编码以保持它们可区分。前导码和头部始终以慢而稳健的速率（QPSK/DQPSK）发送，使接收机总能找到帧并读出如何解码其余部分——只有负载高速运行。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        302,
+        303,
+        304,
+        305,
+        306,
+        307,
+        308,
+        309,
+        310,
+        317,
+        318,
+        319,
+        320,
+        321,
+        322,
+        323
+      ],
+      "note": "Clause 10.1-10.4: 2.4 GHz PHY overview, general requirements, modulation/coding (DQPSK, trellis-coded QAM), and PHY frame format (preamble, headers, scrambler, stuff/tail symbols)."
+    }
+  ],
+  "covers": [
+    "802153-2016:10.1",
+    "802153-2016:10.2.1",
+    "802153-2016:10.2.2",
+    "802153-2016:10.2.3",
+    "802153-2016:10.2.4",
+    "802153-2016:10.2.5",
+    "802153-2016:10.2.6",
+    "802153-2016:10.2.7",
+    "802153-2016:10.2.8",
+    "802153-2016:10.2.9",
+    "802153-2016:10.2.10",
+    "802153-2016:10.3.1",
+    "802153-2016:10.3.2",
+    "802153-2016:10.3.3",
+    "802153-2016:10.3.4",
+    "802153-2016:10.4.1",
+    "802153-2016:10.4.2",
+    "802153-2016:10.4.3",
+    "802153-2016:10.4.4",
+    "802153-2016:10.4.5",
+    "802153-2016:10.4.6",
+    "802153-2016:10.4.7"
+  ],
+  "track": "pan-hr-wpan"
+}

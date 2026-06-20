@@ -1,0 +1,171 @@
+{
+  "id": "pan-pac-04",
+  "title": {
+    "en": "Reading a PAC Frame Off the Air: Addresses, the General Header, Frame Types, and IEs",
+    "zh": "读懂空口上的 PAC 帧：地址、通用帧头、帧类型与信息元素"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This is part 1 of our two-part tour of Clause 7 of IEEE Std 802.15.8-2017, the standard for Peer Aware Communications (PAC). PAC lets nearby devices — called PDs (PAC Devices) — discover and talk to each other directly, without an access point. Clause 7 defines the MAC frame formats: exactly how the bytes are laid out on the air. In this lesson we cover four things in order: how devices are addressed (7.1), the general MAC frame layout shared by every frame (7.2), the four concrete frame types (7.3), and the information elements (IEs) that frames carry (7.4). MAC stands for Medium Access Control, the sublayer that decides who transmits and packages the bytes.",
+      "zh": "这是我们对 IEEE Std 802.15.8-2017（对等感知通信，简称 PAC，Peer Aware Communications）第 7 章两部分讲解的第 1 部分。PAC 让邻近设备——称为 PD（PAC 设备，PAC Device）——无需接入点即可直接相互发现与通信。第 7 章定义了 MAC 帧格式：字节在空口上究竟如何排列。本课依次讲解四件事：设备如何寻址（7.1）、所有帧共用的通用 MAC 帧布局（7.2）、四种具体帧类型（7.3），以及帧所携带的信息元素（IE，Information Element）（7.4）。MAC 是介质访问控制（Medium Access Control）的缩写，负责决定谁来发送并打包字节。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with addresses (7.1). Every PD has a 48-bit MAC address — an EUI-48 (Extended Unique Identifier, 48 bits) assigned from an IEEE Registration Authority block, sent in canonical form. A group of PDs that work together (a PAC group) is identified by a 16-bit multicast group address chosen by the group's initiator and handed down from the next higher layer. So a frame can be aimed at one specific device (its 48-bit MAC address), at a whole group (the 16-bit group address), or at everyone (broadcast, meaning no destination address at all).",
+      "zh": "先看地址（7.1）。每个 PD 都有一个 48 位 MAC 地址——即 EUI-48（48 位扩展唯一标识符，Extended Unique Identifier），从 IEEE 注册管理机构分配的地址块中选取，并以规范格式发送。协同工作的一组 PD（一个 PAC 组）由一个 16 位组播组地址标识，该地址由组的发起者选定，并由上层下发。因此一个帧可以发往某个特定设备（其 48 位 MAC 地址）、发往整个组（16 位组地址），或发往所有设备（广播，即完全不带目的地址）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 760 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><g font-family=\"sans-serif\" font-size=\"11\" fill=\"currentColor\" stroke=\"none\"><text x=\"0\" y=\"12\">Octets:</text><text x=\"70\" y=\"12\">2</text><text x=\"150\" y=\"12\">0/1</text><text x=\"235\" y=\"12\">0/2/6</text><text x=\"320\" y=\"12\">0/1/2/6</text><text x=\"425\" y=\"12\">variable</text><text x=\"535\" y=\"12\">variable</text><text x=\"640\" y=\"12\">2</text></g><g stroke=\"currentColor\"><rect x=\"50\" y=\"20\" width=\"70\" height=\"40\"/><rect x=\"120\" y=\"20\" width=\"70\" height=\"40\"/><rect x=\"190\" y=\"20\" width=\"75\" height=\"40\"/><rect x=\"265\" y=\"20\" width=\"85\" height=\"40\"/><rect x=\"350\" y=\"20\" width=\"105\" height=\"40\"/><rect x=\"455\" y=\"20\" width=\"105\" height=\"40\"/><rect x=\"560\" y=\"20\" width=\"110\" height=\"40\"/><rect x=\"670\" y=\"20\" width=\"50\" height=\"40\"/></g><g font-family=\"sans-serif\" font-size=\"9\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\"><text x=\"85\" y=\"38\">Frame</text><text x=\"85\" y=\"50\">Control</text><text x=\"155\" y=\"38\">Seq</text><text x=\"155\" y=\"50\">Number</text><text x=\"227\" y=\"38\">Dest</text><text x=\"227\" y=\"50\">Address</text><text x=\"307\" y=\"38\">Source</text><text x=\"307\" y=\"50\">Address</text><text x=\"402\" y=\"38\">Header</text><text x=\"402\" y=\"50\">IEs</text><text x=\"507\" y=\"38\">Payload</text><text x=\"507\" y=\"50\">IEs + Payload</text><text x=\"615\" y=\"45\">Payload</text><text x=\"695\" y=\"45\">FCS</text></g><g font-family=\"sans-serif\" font-size=\"9\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\"><text x=\"227\" y=\"78\">MAC Header (MHR)</text><text x=\"507\" y=\"78\">MAC Payload</text><text x=\"695\" y=\"78\">MAC Footer</text></g></svg>",
+      "caption": {
+        "en": "The general MAC frame (Figure 39 of the standard). Fields appear in a fixed order, but most are optional — sizes like 0/1/2/6 mean a field can be absent or one of several lengths.",
+        "zh": "通用 MAC 帧（标准图 39）。各字段次序固定，但大多数可选——诸如 0/1/2/6 的长度表示该字段可缺省或取若干长度之一。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The general MAC frame format (7.2.1) lays out every field in a fixed order, though not all are present in every frame. Three zones: the MAC Header (MHR) holds the Frame Control field, an optional Sequence Number, the addresses, and optional Header IEs; the MAC Payload holds optional Payload IEs plus the actual data; the MAC Footer is a 2-octet FCS (Frame Check Sequence). The Frame Control field (7.2.2) is the 2-octet steering wheel of every frame — its bits announce what kind of frame this is and which optional fields follow. The Frame Type field (7.2.2.2) takes four values: 0000 Data, 0001 Acknowledgment, 0010 MAC command, 0011 Sync (used only on the UWB PHY).",
+      "zh": "通用 MAC 帧格式（7.2.1）以固定次序排布每个字段，但并非每帧都包含全部字段。分三个区域：MAC 帧头（MHR，MAC Header）含帧控制字段、可选的序列号、地址以及可选的帧头 IE；MAC 净荷（MAC Payload）含可选的净荷 IE 加实际数据；MAC 帧尾（MAC Footer）为 2 字节的 FCS（帧校验序列，Frame Check Sequence）。帧控制字段（7.2.2）是每帧 2 字节的“方向盘”——其比特位宣告这是哪种帧，以及随后跟着哪些可选字段。帧类型字段（7.2.2.2）取四种值：0000 数据帧、0001 确认帧、0010 MAC 命令帧、0011 同步帧（仅用于 UWB 物理层）。"
+    },
+    {
+      "type": "prose",
+      "en": "Two address-mode subfields control which addresses appear. The DAM field (Destination Addressing Mode, 7.2.2.3): 00 means no destination address (broadcast), 01 a 48-bit MAC address, 10 a 16-bit group address. The SAM field (Source Addressing Mode, 7.2.2.4): 01 a 48-bit MAC address, 10 an 8-bit Link ID, 11 a 16-bit Link ID. A Link ID is a short stand-in for the source that saves bytes; it may be used only when the destination is a full MAC address. One clever combined bit-pair is the AR/SNS field (7.2.2.5): AR (Acknowledgment Request) and SNS (Sequence Number Suppression) are mutually exclusive, so the standard packs them together — 10 means request an Immediate Ack, 11 an Enhanced Ack, 01 suppresses the Sequence Number entirely.",
+      "zh": "两个地址模式子字段决定出现哪些地址。DAM 字段（目的地址模式，Destination Addressing Mode，7.2.2.3）：00 表示无目的地址（广播），01 为 48 位 MAC 地址，10 为 16 位组地址。SAM 字段（源地址模式，Source Addressing Mode，7.2.2.4）：01 为 48 位 MAC 地址，10 为 8 位链路 ID，11 为 16 位链路 ID。链路 ID（Link ID）是源地址的简短替身，可省字节；仅当目的为完整 MAC 地址时才可使用。一个巧妙的合并比特对是 AR/SNS 字段（7.2.2.5）：AR（确认请求，Acknowledgment Request）与 SNS（序列号抑制，Sequence Number Suppression）互斥，故标准将其打包——10 表示请求立即确认帧，11 表示增强确认帧，01 则完全抑制序列号字段。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The Frame Control field is a contract: its flag bits tell the receiver exactly which optional fields to expect. HIEP=1 (Header IE Present) means Header IEs follow in the MHR; PIEP=1 (Payload IE Present) means Payload IEs are in the MAC Payload; SEC=1 (Security Enabled) means the payload is cryptographically protected (Clause 16); Frame Version is fixed at 00; and the final R bit is Reserved, always sent as 0. Read Frame Control first, and the rest of the frame parses itself.",
+      "zh": "帧控制字段是一份“契约”：其标志位准确告诉接收方应预期哪些可选字段。HIEP=1（帧头 IE 存在，Header IE Present）表示 MHR 中跟有帧头 IE；PIEP=1（净荷 IE 存在，Payload IE Present）表示 MAC 净荷中含净荷 IE；SEC=1（安全启用，Security Enabled）表示净荷经过加密保护（第 16 章）；帧版本固定为 00；末位 R 为保留位（Reserved），始终发送为 0。先读帧控制字段，余下的帧便可自行解析。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining header and footer fields (7.2.3 through 7.2.9) are straightforward. The Sequence Number field (7.2.3) carries macDSN, a per-frame counter, and is omitted when SNS=1. The Destination Address field (7.2.4) and Source Address field (7.2.5) appear only when DAM/SAM call for them. The Header Information Elements field (7.2.6) sits in the MHR when HIEP=1; the Payload Information Elements field (7.2.7) sits in the MAC Payload (so it can be encrypted) when PIEP=1; both follow the IE format of 7.4 and may need termination (7.4.2). The Payload field (7.2.8) carries the frame-type-specific data, protected when SEC=1. Finally the FCS field (7.2.9) is a 2-octet CRC-16-CCITT (Cyclic Redundancy Check using the ITU-T 16-bit polynomial) computed from Frame Control through Payload, catching bit errors.",
+      "zh": "其余的帧头与帧尾字段（7.2.3 至 7.2.9）较为直接。序列号字段（7.2.3）携带 macDSN，即每帧计数器，当 SNS=1 时省略。目的地址字段（7.2.4）与源地址字段（7.2.5）仅在 DAM/SAM 指示时出现。帧头信息元素字段（7.2.6）当 HIEP=1 时位于 MHR；净荷信息元素字段（7.2.7）当 PIEP=1 时位于 MAC 净荷（故可被加密）；二者均遵循 7.4 的 IE 格式，且可能需要终止（7.4.2）。净荷字段（7.2.8）携带与帧类型相关的数据，SEC=1 时受保护。最后，FCS 字段（7.2.9）是 2 字节的 CRC-16-CCITT（采用 ITU-T 16 位多项式的循环冗余校验，Cyclic Redundancy Check），覆盖从帧控制到净荷的全部内容，用于检测比特差错。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Frame Type field<br/>7.2.2.2] --> B{value?}\n  B -->|0000| D[Data frame<br/>7.3.1]\n  B -->|0001| K[Acknowledgment<br/>7.3.2]\n  B -->|0010| C[MAC command<br/>7.3.3]\n  B -->|0011| S[Sync UWB<br/>7.3.4]\n  K --> K1[Immediate Ack]\n  K --> K2[Enhanced Ack]",
+      "zh": "flowchart TD\n  A[帧类型字段<br/>7.2.2.2] --> B{取值?}\n  B -->|0000| D[数据帧<br/>7.3.1]\n  B -->|0001| K[确认帧<br/>7.3.2]\n  B -->|0010| C[MAC 命令帧<br/>7.3.3]\n  B -->|0011| S[同步帧 UWB<br/>7.3.4]\n  K --> K1[立即确认]\n  K --> K2[增强确认]"
+    },
+    {
+      "type": "prose",
+      "en": "Now the four concrete frame types (7.3). A Data frame (7.3.1) is the general layout plus one extra field: the Protocol ID field, which carries the EtherType identifying what the payload encapsulates — present only when there is a data payload. Acknowledgment frames (7.3.2) come in two flavors. An Immediate Ack (7.3.2.2) is tiny: just Frame Control, the copied Sequence Number, and a direct in-order copy of the addressing fields from the frame being acknowledged. An Enhanced Ack (7.3.2.3) is richer — it carries full source and destination addresses and may include Payload IEs, letting the acknowledgment also carry feedback. A MAC command frame (7.3.3) adds a Command ID field and a Content field; the individual commands (Discovery, Peering, and so on) are detailed in 7.5.",
+      "zh": "现在看四种具体帧类型（7.3）。数据帧（7.3.1）是通用布局加一个额外字段：协议 ID 字段（Protocol ID），携带标识净荷封装内容的以太网类型（EtherType）——仅在存在数据净荷时出现。确认帧（7.3.2）有两种。立即确认帧（7.3.2.2）极小：仅含帧控制、复制来的序列号，以及对被确认帧寻址字段的逐项原样复制。增强确认帧（7.3.2.3）更丰富——携带完整的源与目的地址，并可包含净荷 IE，使确认帧也能携带反馈。MAC 命令帧（7.3.3）增加命令 ID 字段（Command ID）与内容字段（Content）；各条命令（发现、配对等）详见 7.5。"
+    },
+    {
+      "type": "prose",
+      "en": "The fourth type is the Sync frame (7.3.4), used only on the UWB (Ultra-Wideband) PHY to form and run a PAC network's superframe timing. Its header (7.3.4.2) is always a broadcast (no destination), carries a MAC source address, and suppresses the sequence number. Its body is built from compact control fields: the Sync Control field (7.3.4.3) holds flags like CAPTX/CAPRX (whether the PD will transmit or listen in the CAP, the Contention Access Period) and AP (open to peering requests); the CFP Usage field (7.3.4.4) reports how busy the CFP (Contention Free Period) is; the LPDI field (Local PD Density Indication) and SMC field (Superframe Misalignment Correction) handle neighbor density and realigning two groups whose superframes drift apart; and the Group ID and Application ID fields advertise which group and application the sender belongs to. These let strangers in radio range synchronize and discover one another.",
+      "zh": "第四种是同步帧（7.3.4），仅用于 UWB（超宽带，Ultra-Wideband）物理层，用于建立并维持 PAC 网络的超帧定时。其帧头（7.3.4.2）始终为广播（无目的地址），携带 MAC 源地址，并抑制序列号。其主体由紧凑的控制字段构成：同步控制字段（7.3.4.3）含 CAPTX/CAPRX（该 PD 是否将在 CAP 即竞争接入周期 Contention Access Period 中发送或侦听）与 AP（是否开放接受配对请求）等标志；CFP 使用字段（7.3.4.4）报告 CFP（竞争无关周期，Contention Free Period）的繁忙程度；LPDI 字段（本地 PD 密度指示，Local PD Density Indication）与 SMC 字段（超帧失准校正，Superframe Misalignment Correction）处理邻居密度，以及让两个超帧渐行渐远的组重新对齐；Group ID 与 Application ID 字段则告知发送者所属的组与应用。这些让射程内素不相识的设备得以同步并相互发现。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, information elements (7.4) — the standard's extensible, plug-in fields. The general IE format (7.4.1) gives every IE a short descriptor (an IE ID plus an IE Length) followed by a variable Content field, in one of three encoding classes (Class 0, 1, 3) that trade descriptor size for how big the content can be (up to 8, 32, or 1024 octets). Crucially, each class has its own separate ID space, so the same ID number means different things in different classes. IE list termination (7.4.2) is the full-stop: a Class 0 IE with both ID and Length set to 0 marks the end of a Header IE list or a Payload IE list when more bytes follow.",
+      "zh": "最后是信息元素（7.4）——标准中可扩展的“插件”字段。通用 IE 格式（7.4.1）为每个 IE 设一个简短描述符（IE ID 加 IE 长度），其后跟可变的内容字段，并分为三种编码类（Class 0、1、3），以描述符大小换取内容可达的尺寸（分别至多 8、32 或 1024 字节）。关键在于，每个类拥有各自独立的 ID 空间，故相同的 ID 数值在不同类中含义不同。IE 列表终止（7.4.2）相当于句号：一个 ID 与长度均置 0 的 Class 0 IE，在后面还有字节时标记帧头 IE 列表或净荷 IE 列表的结束。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause in this lesson, with exact numbers",
+        "zh": "覆盖图——本课每个条款及其精确编号"
+      },
+      "en": "Addressing (7.1): 48-bit EUI-48 MAC addresses and 16-bit multicast group addresses. General MAC frame (7.2): Overview/Figure 39 (7.2.1); Frame Control with Frame Type/DAM/SAM/AR-SNS/Version/HIEP/PIEP/SEC/R subfields (7.2.2 and its 7.2.2.1–7.2.2.10); Sequence Number=macDSN (7.2.3); Destination Address (7.2.4); Source Address or Link ID (7.2.5); Header IEs field (7.2.6); Payload IEs field (7.2.7); Payload field (7.2.8); FCS = CRC-16-CCITT (7.2.9). Individual frame types (7.3): Data frame with Protocol ID/EtherType (7.3.1); Immediate and Enhanced Acknowledgment frames (7.3.2); MAC command frame with Command ID + Content (7.3.3); UWB Sync frame with Sync Control, CFP Usage, LPDI/SMC, Group ID, Application ID (7.3.4). Information elements (7.4): general IE format with Class 0/1/3 (7.4.1); IE list termination via a zero ID/zero length Class 0 IE (7.4.2); Header IEs — Cyclic-superframe Descriptor IE and Link ID Assignment IE (7.4.3); Payload IEs — Interaction Period Specification IE, Interaction Time Adjustment IE, and New Operating Channel IE (7.4.4). Part 2 picks up the MAC command bodies (7.5) and ranging/security IE detail.",
+      "zh": "寻址（7.1）：48 位 EUI-48 MAC 地址与 16 位组播组地址。通用 MAC 帧（7.2）：概述／图 39（7.2.1）；帧控制及其帧类型／DAM／SAM／AR-SNS／版本／HIEP／PIEP／SEC／R 子字段（7.2.2 及其 7.2.2.1–7.2.2.10）；序列号=macDSN（7.2.3）；目的地址（7.2.4）；源地址或链路 ID（7.2.5）；帧头 IE 字段（7.2.6）；净荷 IE 字段（7.2.7）；净荷字段（7.2.8）；FCS=CRC-16-CCITT（7.2.9）。各帧类型（7.3）：带协议 ID／以太网类型的数据帧（7.3.1）；立即与增强确认帧（7.3.2）；带命令 ID＋内容的 MAC 命令帧（7.3.3）；带同步控制、CFP 使用、LPDI/SMC、Group ID、Application ID 的 UWB 同步帧（7.3.4）。信息元素（7.4）：含 Class 0/1/3 的通用 IE 格式（7.4.1）；以 ID 与长度均为 0 的 Class 0 IE 实现的 IE 列表终止（7.4.2）；帧头 IE——周期超帧描述符 IE 与链路 ID 分配 IE（7.4.3）；净荷 IE——交互周期规范 IE、交互时间调整 IE 与新工作信道 IE（7.4.4）。第 2 部分将接续 MAC 命令主体（7.5）以及测距/安全 IE 的细节。",
+      "cite": {
+        "pdf_id": "802158-2017",
+        "pages": [
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The four PAC-defined IEs in 7.4.3–7.4.4, and what each one does",
+        "zh": "7.4.3–7.4.4 中四个 PAC 定义的 IE 及其作用"
+      },
+      "en": "Header IEs (7.4.3) carry timing structure. The Cyclic-superframe Descriptor IE (7.4.3.2, a Class 0 Header IE) describes a repeating superframe pattern — identifier, sequence number, cyclic-superframe size, count of pattern-A superframes, and a Superframe Pattern Type that flags whether the CFP, CAP, Peering, and Discovery periods are active. The Link ID Assignment IE (7.4.3.3, a Class 1 Header IE) hands a peer a short Link ID to use as the source identifier in future frames — only valid in a frame with a full 48-bit MAC destination. Payload IEs (7.4.4) coordinate interactions: the Interaction Period Specification IE (IPS IE, 7.4.4.2) tells a PD or group where in the superframe (in units of 2 microseconds) its interaction should occur; the Interaction Time Adjustment IE (ITA IE, 7.4.4.3) feeds back a signed timing offset so a peer can nudge its next transmission earlier or later; and the New Operating Channel IE (NOC IE, 7.4.4.4) announces a channel and preamble-code change, with a Change Time counted in superframes (0 = immediately).",
+      "zh": "帧头 IE（7.4.3）携带定时结构。周期超帧描述符 IE（7.4.3.2，Class 0 帧头 IE）描述一个重复的超帧模式——标识符、序列号、周期超帧大小、A 型超帧数目，以及一个超帧模式类型字段，用以标志 CFP、CAP、配对周期与发现周期是否激活。链路 ID 分配 IE（7.4.3.3，Class 1 帧头 IE）向对端分配一个简短的链路 ID，供其在后续帧中用作源标识——仅在带完整 48 位 MAC 目的地址的帧中有效。净荷 IE（7.4.4）协调交互：交互周期规范 IE（IPS IE，7.4.4.2）告知某 PD 或某组其交互应在超帧中的何处发生（以 2 微秒为单位）；交互时间调整 IE（ITA IE，7.4.4.3）反馈一个带符号的定时偏移，使对端可将其下次发送提前或推后；新工作信道 IE（NOC IE，7.4.4.4）宣告信道与前导码的变更，并以超帧为单位给出变更时间（0=立即）。",
+      "cite": {
+        "pdf_id": "802158-2017",
+        "pages": [
+          96,
+          97,
+          98,
+          99,
+          100
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        85,
+        86,
+        87,
+        88
+      ],
+      "note": "7.1 PD addresses; 7.2 general MAC frame format including Frame Control subfields, Sequence Number, addresses, IE fields, Payload, and FCS."
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        89,
+        90,
+        91,
+        92
+      ],
+      "note": "7.3 individual frame types: Data, Immediate/Enhanced Ack, MAC command, and UWB Sync frame with its control fields."
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        95,
+        96,
+        97,
+        98,
+        99,
+        100
+      ],
+      "note": "7.4 information elements: general IE format, list termination, Header IEs (Cyclic-superframe Descriptor, Link ID Assignment), and Payload IEs (IPS, ITA, NOC)."
+    }
+  ],
+  "covers": [
+    "802158-2017:7.1",
+    "802158-2017:7.2.1",
+    "802158-2017:7.2.2",
+    "802158-2017:7.2.3",
+    "802158-2017:7.2.4",
+    "802158-2017:7.2.5",
+    "802158-2017:7.2.6",
+    "802158-2017:7.2.7",
+    "802158-2017:7.2.8",
+    "802158-2017:7.2.9",
+    "802158-2017:7.3.1",
+    "802158-2017:7.3.2",
+    "802158-2017:7.3.3",
+    "802158-2017:7.3.4",
+    "802158-2017:7.4.1",
+    "802158-2017:7.4.2",
+    "802158-2017:7.4.3",
+    "802158-2017:7.4.4"
+  ],
+  "track": "pan-pac"
+}

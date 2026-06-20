@@ -1,0 +1,195 @@
+{
+  "id": "pan-pac-05",
+  "title": {
+    "en": "The Twelve PAC MAC Commands: A Field-Level Walkthrough (Clause 7.5)",
+    "zh": "十二个 PAC MAC 命令：字段级逐条精讲（Clause 7.5）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In IEEE 802.15.8 — the Peer Aware Communications (PAC) standard — devices talk directly to one another instead of through an access point. Each such device is a PD (Peer-aware Device). Clause 7.5 (MAC commands) defines the small, fixed catalogue of control messages PDs use to find each other, link up, share airtime, and exchange keys. A MAC command (Medium Access Control command) is just a special frame whose payload begins with a one-octet command identifier (ID). The MAC software layer, the MLME (MAC Sublayer Management Entity), builds each command in response to a service request from the layer above (a 'primitive'). This lesson walks every command in 7.5.1 through 7.5.13, field by field.",
+      "zh": "在 IEEE 802.15.8（对等感知通信，PAC 标准）中，设备彼此直接通信，而不经过接入点。每个这样的设备称为 PD（对等感知设备）。Clause 7.5（MAC 命令）定义了一个小而固定的控制消息目录，PD 用它们来相互发现、建立连接、共享空口时间并交换密钥。MAC 命令（媒体访问控制命令）就是一种特殊的帧，其负载以一个八位字节的命令标识符（ID）开头。MAC 软件层 MLME（MAC 子层管理实体）会根据上层的服务请求（即原语）来构建每条命令。本课将逐字段讲解 7.5.1 到 7.5.13 中的每一条命令。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7.5.1 (Overview) gives the master directory: Table 23 maps command IDs to names. ID 1 = Discovery Request, 2 = Discovery Response, 3 = Peering Request, 4 = Peering Response, 5 = De-peering Notification, 6 = Reassignment, 7 = RE Request, 8 = RE Response, 9 = RE Notification, 10 = Cyclic-superframe Advertise Request, 11 = Public Key Request, 12 = Public Key Response. ID 0 and IDs 13–255 are Reserved. Every command shares the same skeleton: a MAC Header (MHR), then a command-specific Content field. Each subclause below describes that command's 'Relevant MHR fields' (addressing and flags) and its 'Relevant MAC Payload field' (the Content layout).",
+      "zh": "Clause 7.5.1（概述）给出了主目录：表 23 将命令 ID 映射到名称。ID 1 = 发现请求，2 = 发现响应，3 = 配对请求，4 = 配对响应，5 = 解除配对通知，6 = 重新分配，7 = RE 请求，8 = RE 响应，9 = RE 通知，10 = 循环超帧通告请求，11 = 公钥请求，12 = 公钥响应。ID 0 与 ID 13–255 为保留。每条命令共享同一骨架：一个 MAC 头部（MHR），其后是命令特有的内容（Content）字段。下面每个子条款都会描述该命令的“相关 MHR 字段”（寻址与标志）以及“相关 MAC 负载字段”（Content 布局）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"30\" width=\"150\" height=\"34\"/><text x=\"85\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">MAC Header (MHR)</text><rect x=\"160\" y=\"30\" width=\"110\" height=\"34\"/><text x=\"215\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Command ID</text><rect x=\"270\" y=\"30\" width=\"260\" height=\"34\"/><text x=\"400\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Content field (per command)</text><rect x=\"530\" y=\"30\" width=\"100\" height=\"34\"/><text x=\"580\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">FCS</text><text x=\"320\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">MAC command frame skeleton</text></svg>",
+      "caption": {
+        "en": "Every 7.5 command rides in the same envelope: MHR + a one-octet command ID + a command-specific Content field. 7.5.1's Table 23 lists which ID maps to which command.",
+        "zh": "7.5 中每条命令都装在同一个信封里：MHR + 一个八位字节的命令 ID + 命令特有的 Content 字段。7.5.1 的表 23 列出了 ID 与命令的对应关系。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Discovery comes first. The Discovery Request command (7.5.2) is sent by the MLME after an MLME-DISCOVERY.request primitive to fish for other PDs' discovery information. Its address-mode (DAM) field can be a MAC address (one target), a multicast address (a PAC group), or broadcast (everyone); an Immediate Ack is requested only for a unicast target. Its Content carries a 'List of PDs present' bit and, optionally, a list of PDs to ask about. The Discovery Response command (7.5.3) is the reply: the Responder PD returns its discovery information, prefixed by a Status field (0 = Success, 1 = Denied). On Denied, the Discovery Information is left empty.",
+      "zh": "首先是发现过程。发现请求命令（7.5.2）由 MLME 在收到 MLME-DISCOVERY.request 原语后发出，用以探寻其他 PD 的发现信息。它的地址模式字段（DAM）可以是 MAC 地址（单一目标）、多播地址（一个 PAC 组）或广播（所有人）；只有对单播目标才请求立即确认（Immediate Ack）。其 Content 携带一个“List of PDs present”比特，并可选地携带一份要查询的 PD 列表。发现响应命令（7.5.3）是回复：响应方 PD 返回自己的发现信息，前面带一个状态字段（0 = 成功，1 = 拒绝）。若为拒绝，则发现信息字段留空。"
+    },
+    {
+      "type": "prose",
+      "en": "Then comes linking. The Peering Request command (7.5.4) asks to 'peer' (form a link) with one PD (UNICAST), many PDs (BROADCAST), or a whole group (MULTICAST) — a 2-bit Request Type field encodes which. Its Content is the richest in the clause: flags like 'New Channel Page' and 'Frame Pending' (for splitting a long PD list across several frames, counted by Frame Count), a desired Group ID and optional Application ID, a Channel Page / Channel Number proposal, a PHY Capability field (Table 26: OFDM, OFDMA, GFSK, UWB modes), and a Key Descriptor so a public key can ride along. The Peering Response command (7.5.5) answers with a Status field whose six values (Table 27) say exactly why a request was granted or refused — including granular reasons like 'Request of new channel number in the current channel page denied'. If a new channel is granted, the Requestor acknowledges on the old channel but moves to the new one for everything after.",
+      "zh": "接下来是建链。配对请求命令（7.5.4）请求与一个 PD（UNICAST）、多个 PD（BROADCAST）或整个组（MULTICAST）“配对”（建立链路）——一个 2 比特的 Request Type 字段编码了具体方式。它的 Content 是本条款中最丰富的：包含“New Channel Page”和“Frame Pending”等标志（用于将长 PD 列表拆分到多个帧中，由 Frame Count 计数）、期望的 Group ID 和可选的 Application ID、信道页/信道号建议、PHY Capability 字段（表 26：OFDM、OFDMA、GFSK、UWB 模式），以及一个密钥描述符，使公钥可随帧携带。配对响应命令（7.5.5）以一个状态字段作答，其六个取值（表 27）精确说明请求被批准或拒绝的原因——包括“拒绝在当前信道页中使用新信道号”等细粒度原因。若批准了新信道，请求方在旧信道上确认，但此后的一切都改用新信道。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A useful mental grouping: 7.5.2/7.5.3 are the discovery pair, 7.5.4/7.5.5 are the peering pair, 7.5.6 tears a link down, 7.5.7 reconfigures a live link, 7.5.8/7.5.9/7.5.10 manage CFP airtime (request / response / broadcast notice), 7.5.11 advertises the cyclic-superframe schedule, and 7.5.12/7.5.13 are the key-exchange pair. Eight of the twelve come in request/response couples.",
+      "zh": "一个有用的记忆分组：7.5.2/7.5.3 是发现对，7.5.4/7.5.5 是配对对，7.5.6 拆除链路，7.5.7 重配置在用链路，7.5.8/7.5.9/7.5.10 管理 CFP 空口时间（请求/响应/广播通告），7.5.11 通告循环超帧时间表，7.5.12/7.5.13 是密钥交换对。十二条命令中有八条成对出现（请求/响应）。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant R as Requestor PD\n  participant S as Responder PD\n  R->>S: Discovery Request (7.5.2)\n  S-->>R: Discovery Response (7.5.3)\n  R->>S: Peering Request (7.5.4)\n  S-->>R: Peering Response (7.5.5)\n  R->>S: Public Key Request (7.5.12)\n  S-->>R: Public Key Response (7.5.13)\n  R->>S: RE Request (7.5.8)\n  S-->>R: RE Response (7.5.9)",
+      "zh": "sequenceDiagram\n  participant R as 请求方 PD\n  participant S as 响应方 PD\n  R->>S: 发现请求 (7.5.2)\n  S-->>R: 发现响应 (7.5.3)\n  R->>S: 配对请求 (7.5.4)\n  S-->>R: 配对响应 (7.5.5)\n  R->>S: 公钥请求 (7.5.12)\n  S-->>R: 公钥响应 (7.5.13)\n  R->>S: RE 请求 (7.5.8)\n  S-->>R: RE 响应 (7.5.9)"
+    },
+    {
+      "type": "prose",
+      "en": "Three commands keep an established link healthy. The De-peering Notification command (7.5.6) is the clean teardown: a Requestor PD sends it to drop a peer or leave a PAC group; its Content field is empty — the act of sending it is the whole message. The Reassignment command (7.5.7) is sent when something must change mid-session: a multicast group address that conflicts, or a channel page/number that has grown noisy (rising PER — Packet Error Rate — or collision probability). Its Content carries presence bits plus the new Multicast Address and/or new Channel Number and Channel Page, which the receiving PD stores into its PIB (PAN Information Base, the device's parameter store).",
+      "zh": "有三条命令负责维护已建立的链路。解除配对通知命令（7.5.6）是干净的拆链：请求方 PD 发送它以断开某个对端或退出某个 PAC 组；其 Content 字段为空——发送这一动作本身就是全部消息。重新分配命令（7.5.7）在会话中途必须变更时发出：例如发生冲突的多播组地址，或已变得嘈杂的信道页/信道号（PER（包错误率）或碰撞概率上升）。其 Content 携带存在标志位以及新的多播地址和/或新的信道号与信道页，接收 PD 会将其存入自己的 PIB（PAN 信息库，即设备的参数存储区）。"
+    },
+    {
+      "type": "prose",
+      "en": "Airtime in PAC is reserved as REs (Resource Elements) inside the CFP (Contention-Free Period) — scheduled slots free of random contention. The RE Request command (7.5.8) asks for a number of REs, tagged with a Direction (transmit or receive), a Priority (Table 28: Low / Normal / High / Emergency), and an Allocation bit (allocate vs. deallocate); it carries the requesting PD's current schedule as a CFP Table (the macCFPtable, each row five integers: a LinkIndex plus start and finish (i,j) indices). The RE Response command (7.5.9) returns a Status (0 = Success, 1 = fewer REs available than requested, 2 = Denied), the assigned Link Index, and the responder's own CFP Table. The RE Notification command (7.5.10) is broadcast (no destination, security off) the instant a PD updates its macCFPtable, so neighbours always see the current state of CFP allocation.",
+      "zh": "在 PAC 中，空口时间以 CFP（无竞争期，即不含随机竞争的预约时隙）内的 RE（资源单元）形式预约。RE 请求命令（7.5.8）请求若干个 RE，并标注方向（Direction：发送或接收）、优先级（表 28：低/普通/高/紧急）以及分配比特（Allocation：分配或解除分配）；它携带请求 PD 当前的时间表，即 CFP 表（macCFPtable，每行五个整数：一个 LinkIndex 加上起始与结束的 (i,j) 索引）。RE 响应命令（7.5.9）返回状态（0 = 成功，1 = 可用 RE 少于请求数，2 = 拒绝）、分配到的 Link Index 以及响应方自己的 CFP 表。RE 通知命令（7.5.10）在 PD 一更新其 macCFPtable 时立即广播（无目的地址、关闭安全），使邻居始终看到 CFP 分配的最新状态。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, scheduling and keys. The Cyclic-superframe Advertise Request command (7.5.11) is broadcast by the PD that owns a cyclic-superframe to publish its repeating schedule (size, pattern-A count and types, sequence number) inside a Cyclic-superframe descriptor IE; sent periodically during the peering period, its own Content field is empty. The Public Key Request command (7.5.12) and Public Key Response command (7.5.13) implement the Extended Diffie-Hellman (E-DH) key agreement of Clause 16.5 — a way for two parties to derive a shared secret over an open channel. A Request Type field selects the mode (Table 30: Pairwise, Group, or New keys); the request can carry a Key Descriptor plus probe Encrypted Data, or — once E-DH has run — an encrypted group key (GK). The response reports a Status (Table 31: Success, Decryption failed, MIC check failed; MIC = Message Integrity Code) and, for 'New keys', returns the Responder's own public-key descriptor.",
+      "zh": "最后是调度与密钥。循环超帧通告请求命令（7.5.11）由拥有某循环超帧的 PD 广播，以发布其重复时间表（大小、模式 A 数量与类型、序列号），承载在循环超帧描述符 IE 中；在配对期内周期性发送，其自身 Content 字段为空。公钥请求命令（7.5.12）与公钥响应命令（7.5.13）实现了 Clause 16.5 的扩展 Diffie-Hellman（E-DH）密钥协商——一种让双方在开放信道上推导共享密钥的方法。一个 Request Type 字段选择模式（表 30：成对密钥、组密钥或新密钥）；请求可携带密钥描述符加探测用的加密数据，或在 E-DH 运行完成后携带加密的组密钥（GK）。响应报告状态（表 31：成功、解密失败、MIC 校验失败；MIC = 消息完整性码），并在“新密钥”模式下返回响应方自己的公钥描述符。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — exact clause numbers for all twelve commands (7.5.1–7.5.13)",
+        "zh": "覆盖地图——全部十二条命令的精确条款编号（7.5.1–7.5.13）"
+      },
+      "en": "7.5.1 Overview — the command-ID directory (Table 23, IDs 0–12 plus reserved). 7.5.2 Discovery Request — MLME-DISCOVERY.request; DAM = MAC/multicast/broadcast; Content has List-of-PDs-present bit. 7.5.3 Discovery Response — returns discovery info with Status (Success/Denied). 7.5.4 Peering Request — Request Type UNICAST/BROADCAST/MULTICAST; flags (List of PDs, App ID, New Channel Page, Frame Pending), Frame Count, Group ID, Application ID, Channel Page/Number, PHY Capability (Table 26), Key Descriptor. 7.5.5 Peering Response — six-value Status (Table 27), Multicast Address Present, Channel Number fallback, Key Descriptor. 7.5.6 De-peering Notification — empty Content; tears down a peer/group link. 7.5.7 Reassignment — new Multicast Address and/or Channel Number/Page stored to the PIB. 7.5.8 RE Request — Length, Direction, Priority (Table 28), Allocation, Allocation Live, CFP Table (macCFPtable rows). 7.5.9 RE Response — Status (Table 29), Link Index, CFP Table. 7.5.10 RE Notification — broadcast CFP Table after every macCFPtable update; SEC = 0, no destination. 7.5.11 Cyclic-superframe Advertise Request — broadcast cyclic-superframe descriptor IE; empty Content. 7.5.12 Public Key Request — E-DH (Clause 16.5); Request Type Pairwise/Group/New keys (Table 30); Key Descriptor + Encrypted Data / group key GK. 7.5.13 Public Key Response — Status (Table 31: Success/Decryption failed/MIC check failed); returns Key Descriptor for New keys.",
+      "zh": "7.5.1 概述——命令 ID 目录（表 23，ID 0–12 及保留）。7.5.2 发现请求——MLME-DISCOVERY.request；DAM = MAC/多播/广播；Content 含 List-of-PDs-present 比特。7.5.3 发现响应——返回发现信息并带状态（成功/拒绝）。7.5.4 配对请求——Request Type 为 UNICAST/BROADCAST/MULTICAST；标志（List of PDs、App ID、New Channel Page、Frame Pending）、Frame Count、Group ID、Application ID、信道页/号、PHY Capability（表 26）、密钥描述符。7.5.5 配对响应——六值状态（表 27）、Multicast Address Present、信道号回退、密钥描述符。7.5.6 解除配对通知——Content 为空；拆除对端/组链路。7.5.7 重新分配——新多播地址和/或信道号/页，存入 PIB。7.5.8 RE 请求——Length、Direction、Priority（表 28）、Allocation、Allocation Live、CFP 表（macCFPtable 行）。7.5.9 RE 响应——状态（表 29）、Link Index、CFP 表。7.5.10 RE 通知——每次更新 macCFPtable 后广播 CFP 表；SEC = 0，无目的地址。7.5.11 循环超帧通告请求——广播循环超帧描述符 IE；Content 为空。7.5.12 公钥请求——E-DH（Clause 16.5）；Request Type 为成对/组/新密钥（表 30）；密钥描述符 + 加密数据/组密钥 GK。7.5.13 公钥响应——状态（表 31：成功/解密失败/MIC 校验失败）；新密钥模式返回密钥描述符。",
+      "cite": {
+        "pdf_id": "802158-2017",
+        "pages": [
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the recurring building blocks across commands: the same Key Descriptor (Key Cipher Suite, Key Type, Elliptic Curve, Key Data) appears in Peering Request/Response and both Public Key commands; the same CFP Table (macCFPtable) layout appears in all three RE commands. Learn these shared sub-structures once and most of Clause 7.5 reads as variations on a theme.",
+      "zh": "请注意命令之间反复出现的构件：同一个密钥描述符（Key Cipher Suite、Key Type、Elliptic Curve、Key Data）出现在配对请求/响应及两条公钥命令中；同一个 CFP 表（macCFPtable）布局出现在全部三条 RE 命令中。把这些共享子结构学透一次，Clause 7.5 的大部分内容便可视为同一主题的变体。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        100
+      ],
+      "note": "7.5.1 Overview and Table 23 MAC command IDs."
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        101,
+        102
+      ],
+      "note": "7.5.2 Discovery Request and 7.5.3 Discovery Response (Status Table 24)."
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        102,
+        103,
+        104
+      ],
+      "note": "7.5.4 Peering Request (Request Type Table 25, PHY Capability Table 26)."
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        104,
+        105
+      ],
+      "note": "7.5.5 Peering Response (Status Table 27)."
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        106
+      ],
+      "note": "7.5.6 De-peering Notification and 7.5.7 Reassignment."
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        107,
+        108
+      ],
+      "note": "7.5.7 Reassignment Content and 7.5.8 RE Request (Priority Table 28)."
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        108,
+        109
+      ],
+      "note": "7.5.9 RE Response (Status Table 29)."
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        110
+      ],
+      "note": "7.5.10 RE Notification and 7.5.11 Cyclic-superframe Advertise Request."
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        111,
+        112
+      ],
+      "note": "7.5.12 Public Key Request (Request Type Table 30) and start of 7.5.13."
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        112,
+        113
+      ],
+      "note": "7.5.13 Public Key Response (Status Table 31)."
+    }
+  ],
+  "covers": [
+    "802158-2017:7.5.1",
+    "802158-2017:7.5.2",
+    "802158-2017:7.5.3",
+    "802158-2017:7.5.4",
+    "802158-2017:7.5.5",
+    "802158-2017:7.5.6",
+    "802158-2017:7.5.7",
+    "802158-2017:7.5.8",
+    "802158-2017:7.5.9",
+    "802158-2017:7.5.10",
+    "802158-2017:7.5.11",
+    "802158-2017:7.5.12",
+    "802158-2017:7.5.13"
+  ],
+  "track": "pan-pac"
+}

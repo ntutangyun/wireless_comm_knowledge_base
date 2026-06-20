@@ -1,0 +1,218 @@
+{
+  "id": "pan-pac-14",
+  "title": {
+    "en": "IEEE 802.15.22.3 SCOS: A Reference-Grade Walkthrough of Sensors, Managers, and Their Messages",
+    "zh": "IEEE 802.15.22.3 频谱感知系统(SCOS):传感器、管理器及其消息的逐条精读"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.15.22.3-2020 defines a Spectrum Characterization and Occupancy Sensing (SCOS) system — a way to deploy many radio sensors in the field, task them to measure who is using the radio spectrum where and when, and pool the results. Clause 1.1 (Scope) sets out what the standard delivers: formats for system configuration and measurement parameters, plus protocols for reporting that let results from many independent systems be coalesced. It borrows interfaces and primitives from IEEE Std 802.22-2011 and rides on top of any available transport. Clause 1.2 (Purpose) explains why: regulators want cooperative spectrum sharing, which demands knowing occupancy at a particular location and time. SCOS aims to be a high-level architecture that many sensing technologies can plug into, so sensing data becomes broadly available across policy, radio planning, regulatory enforcement, and research.",
+      "zh": "IEEE Std 802.15.22.3-2020 定义了一套频谱特征化与占用感知系统(SCOS,Spectrum Characterization and Occupancy Sensing)——也就是在现场部署大量无线电传感器,让它们测量频谱在何时何地被谁使用,并把结果汇聚起来的方法。第 1.1 条(范围)说明标准交付的内容:系统配置与测量参数的格式,以及让多个独立系统的结果能够合并的上报协议。它借用了 IEEE Std 802.22-2011 的接口与原语,并可运行在任意可用的传输机制之上。第 1.2 条(目的)解释了原因:监管机构希望实现协同频谱共享,而这需要掌握特定地点、特定时刻的频谱占用情况。SCOS 力图成为一个高层架构,让多种感知技术都能接入,使感知数据在政策制定、无线电规划、监管执法与科研等领域广泛可用。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Clause 1.3 (Word usage) fixes the meaning of the keywords you will meet throughout: shall = a mandatory requirement; should = recommended but not required; may = permitted; can = able to (a statement of capability). Whenever you see 'shall' below, it is a hard conformance rule.",
+      "zh": "第 1.3 条(用词)固定了贯穿全文的关键词含义:shall = 强制要求;should = 推荐但非强制;may = 允许;can = 能够(陈述能力)。下文凡是出现 shall,都表示一条硬性的合规规则。"
+    },
+    {
+      "type": "prose",
+      "en": "Before the architecture, Clause 3 gives you the vocabulary. Clause 3.1 (Definitions) names the moving parts: a Sensor is the SCOS entity that does distributed RF (radio frequency) sensing through a remotely accessible API (application programming interface) and packages data with SigMF metadata in a TAR archive; a Manager lets Users and Data Clients reach a whole network of Sensors via a web GUI (graphical user interface) and/or API; an action is a function a Sensor exposes (instrument control, data acquisition, processing); a schedule entry specifies an action plus start/stop times, interval, and priority; a task is one timed execution of an action; an acquisition is the data plus metadata a task produces. Clause 3.2 (Acronyms) is the decoder ring: API, GNSS (global navigation satellite system), GUI, HTTP (Hypertext Transfer Protocol), JSON (JavaScript Object Notation), SCOS, SDR (software defined radio), SigMF (Signal Metadata Format), SLA (service level agreement), RF, URL (Uniform Resource Locator).",
+      "zh": "在讲架构之前,第 3 条先给出术语。第 3.1 条(定义)点名各个组成部分:Sensor(传感器)是通过可远程访问的 API(应用程序编程接口)进行分布式 RF(射频)感知的 SCOS 实体,它将数据连同 SigMF 元数据一起打包进 TAR 归档;Manager(管理器)让用户和 Data Client(数据客户端)通过 Web 图形界面 GUI 和/或 API 访问整个传感器网络;action(动作)是传感器对外暴露的功能(仪器控制、数据采集、数据处理);schedule entry(调度条目)规定一个动作及其起止时间、间隔和优先级;task(任务)是动作的一次定时执行;acquisition(采集)是任务产生的数据加元数据。第 3.2 条(缩略语)则是解码表:API、GNSS(全球导航卫星系统)、GUI、HTTP(超文本传输协议)、JSON(JavaScript 对象表示法)、SCOS、SDR(软件定义无线电)、SigMF(信号元数据格式)、SLA(服务等级协议)、RF、URL(统一资源定位符)。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 4 (System concept) draws the big picture. Clause 4.1 (Context) places a boundary around the system: Users and/or Data Clients reach a distributed network of one or more Sensors through the Manager to perform RF sensing. Clause 4.2 (Entities) says there are exactly two SCOS entities — the Manager (a server application) and one or more Sensors in the field — while a Data Client is a third-party application that integrates via the Manager's API. Clause 4.3 (Interactions) lists the five conversations the system supports: Association (a Sensor or Data Client joins a Manager), Capabilities (discover what a Sensor can do), Subscription (a Data Client asks to receive certain acquisitions), Schedule (a User tasks Sensors with actions), and Data Distribution (acquisitions flow Sensor to Manager to subscribed Data Clients).",
+      "zh": "第 4 条(系统概念)勾勒整体图景。第 4.1 条(上下文)为系统划定边界:用户和/或数据客户端通过管理器访问由一个或多个传感器组成的分布式网络来进行 RF 感知。第 4.2 条(实体)指出 SCOS 恰好有两类实体——管理器(一个服务器应用)和现场的一个或多个传感器——而数据客户端是通过管理器 API 接入的第三方应用。第 4.3 条(交互)列出系统支持的五种会话:关联(传感器或数据客户端加入管理器)、能力(发现传感器能做什么)、订阅(数据客户端请求接收某些采集结果)、调度(用户给传感器派发动作),以及数据分发(采集结果从传感器流向管理器,再流向已订阅的数据客户端)。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant U as User / Data Client\n  participant M as Manager\n  participant S as Sensor\n  S->>M: Association request\n  M-->>S: Association response\n  M->>S: Capabilities request\n  S-->>M: Capabilities response\n  U->>M: Schedule request\n  M->>S: Schedule entry request\n  S-->>M: Schedule entry response\n  S->>M: Acquisition notification\n  M->>U: Acquisition notification",
+      "zh": "sequenceDiagram\n  participant U as 用户 / 数据客户端\n  participant M as 管理器\n  participant S as 传感器\n  S->>M: 关联请求\n  M-->>S: 关联响应\n  M->>S: 能力请求\n  S-->>M: 能力响应\n  U->>M: 调度请求\n  M->>S: 调度条目请求\n  S-->>M: 调度条目响应\n  S->>M: 采集通知\n  M->>U: 采集通知"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 4.4 (General requirements) states the two non-negotiable goals — distributed persistent sensing and data aggregation — and splits the rules in two. Clause 4.4.1 (Connectivity, control, and access) requires that Sensors and the Manager shall be remotely accessible to authorized users, shall provide interfaces for distributed control and data acquisition, shall make capabilities discoverable, shall make data available to authorized users, and shall include SigMF metadata in acquisitions (and should use the SigMF extensions of Annex B). Clause 4.4.2 (Design flexibility) keeps the architecture future-proof: it shall support evolving processing, sensors, and metrics, and SCOS implementations shall not be bound to specific hardware, software, operating systems, or protocols — that agnosticism is why Clause 8 can bolt on HTTP later without rewriting the model.",
+      "zh": "第 4.4 条(通用要求)给出两条不可妥协的目标——分布式持续感知与数据聚合——并把规则一分为二。第 4.4.1 条(连通性、控制与访问)要求:传感器和管理器 shall 对授权用户可远程访问,shall 提供分布式控制与数据采集的接口,shall 使能力可被发现,shall 向授权用户提供数据,并且采集中 shall 包含 SigMF 元数据(且 should 使用附录 B 的 SigMF 扩展)。第 4.4.2 条(设计灵活性)保证架构面向未来:它 shall 支持处理方式、传感器与度量指标的演进,并且 SCOS 实现 shall 不绑定到特定的硬件、软件、操作系统或协议——正是这种协议无关性,使得第 8 条日后能在不重写模型的情况下加挂 HTTP。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"10\" y=\"25\" width=\"100\" height=\"40\" rx=\"4\"/><text x=\"60\" y=\"50\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">Antenna</text><rect x=\"140\" y=\"25\" width=\"100\" height=\"40\" rx=\"4\" stroke-dasharray=\"5 4\"/><text x=\"190\" y=\"50\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Preselector</text><rect x=\"270\" y=\"25\" width=\"110\" height=\"40\" rx=\"4\"/><text x=\"325\" y=\"46\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Signal</text><text x=\"325\" y=\"60\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">analyzer</text><rect x=\"410\" y=\"25\" width=\"100\" height=\"40\" rx=\"4\"/><text x=\"460\" y=\"50\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Computer</text><line x1=\"110\" y1=\"45\" x2=\"140\" y2=\"45\"/><line x1=\"240\" y1=\"45\" x2=\"270\" y2=\"45\"/><line x1=\"380\" y1=\"45\" x2=\"410\" y2=\"45\"/></svg>",
+      "caption": {
+        "en": "Clause 5.1 Sensor hardware model: Antenna and Signal analyzer are required, Preselector (dashed) is optional, and the Computer drives them and serves data. Components may collapse into one unit such as a phone.",
+        "zh": "第 5.1 条传感器硬件模型:天线与信号分析仪为必需,预选器(虚线)为可选,计算机负责驱动各部件并对外提供数据。各部件可合并到单一设备中(例如一部手机)。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5 (Sensor) covers the field device. Clause 5.1 (Hardware) gives the block model: a required antenna converts electromagnetic fields into a voltage; an optional preselector adds filtering, low-noise amplification, and a calibration source; a required signal analyzer (often an SDR) captures raw samples and runs DSP to produce a metric; a required computer issues control signals and hosts remotely accessible services. Clause 5.2 (Software) has two parts. Clause 5.2.1 (Functional requirements) says a Sensor shall associate with a Manager, describe its status (location, system datetime, last calibration, execution status), advertise its capabilities and actions, execute schedule entries, report schedule/task status, and record and distribute acquisitions. Clause 5.2.2 (Messages) defines the concrete wire messages — association, status, capabilities, schedule, task status, and data distribution — each with a Required/Optional/Conditional (R/O/C) marker per field; conditional fields are needed only when the underlying protocol does not already carry that information.",
+      "zh": "第 5 条(传感器)讲的是现场设备。第 5.1 条(硬件)给出方框模型:必需的天线把电磁场转换为电压;可选的预选器提供滤波、低噪声放大与校准信号源;必需的信号分析仪(常为 SDR)采集原始样本并做数字信号处理得到度量值;必需的计算机发出控制信号并承载可远程访问的服务。第 5.2 条(软件)分两部分。第 5.2.1 条(功能要求)规定传感器 shall:与管理器关联、描述自身状态(位置、系统时间、上次校准时间、执行状态)、公布自身能力与动作、执行调度条目、上报调度/任务状态,并记录与分发采集结果。第 5.2.2 条(消息)定义具体的线上消息——关联、状态、能力、调度、任务状态与数据分发——每个字段都带有必需/可选/条件(R/O/C)标记;条件字段仅在底层协议尚未承载该信息时才需要填写。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6 (Manager) covers the server that orchestrates everything. Clause 6.1 (Hardware) is short: the Manager is hosted on a server or virtual machine, sized to meet design and SLA requirements. Clause 6.2 (Software) describes it as a web application that simplifies tasking a fleet of Sensors. Clause 6.2.1 (Functional requirements) says the Manager shall let Sensors and Data Clients associate, shall schedule actions across single or multiple Sensors, shall let Data Clients subscribe, and shall notify Data Clients of matching new acquisitions (and permit archive downloads). Clause 6.2.2 (Messages) reuses the same message tables as the Sensor for association/status/capabilities/schedule, and adds the Manager-only pieces: the Data Client association request/response (Table 15/16), the get_sensors status flow returning a Sensors response (Table 18), and the Subscription request/response (Table 19/20) that decide which acquisition notifications a Data Client receives.",
+      "zh": "第 6 条(管理器)讲的是统筹一切的服务器。第 6.1 条(硬件)很简短:管理器部署在服务器或虚拟机上,按设计与 SLA 要求配置资源。第 6.2 条(软件)将其描述为简化传感器集群派任的 Web 应用。第 6.2.1 条(功能要求)规定管理器 shall:允许传感器与数据客户端关联、shall 在单个或多个传感器上调度动作、shall 允许数据客户端订阅,并 shall 在出现匹配的新采集时通知数据客户端(并允许下载归档)。第 6.2.2 条(消息)在关联/状态/能力/调度上复用与传感器相同的消息表,并增加仅属于管理器的部分:数据客户端关联请求/响应(表 15/16)、返回 Sensors 响应(表 18)的 get_sensors 状态流程,以及决定数据客户端接收哪些采集通知的订阅请求/响应(表 19/20)。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7 (Metadata and data specification) pins down the data shapes. Clause 7.1 (Overview) requires Sensors to use SigMF: metadata shall be JSON, written as a single object holding three named objects — global, captures, and annotations — and SigMF extension namespaces add new fields, files, or datatypes. Clause 7.2 (Message metadata) then defines the JSON objects used by the messages of Clauses 5.2.2 and 6.2.2. Clause 7.2.1 (Status) defines the Location object (latitude, longitude, GNSS flag, description, modified-time) used in a status response, and points to the Sensor object from Annex B. Clause 7.2.2 (Capabilities) defines the Action object (name, summary, description) and reuses Annex B's Sensor/Preselector/RFPath/SignalAnalyzer objects. Clause 7.2.3 (Schedule) defines the ScheduleEntry object (id, name, sensor_ids, action, start/stop, interval, is_active, priority, next-task fields, created/modified, owner). Clause 7.2.4 (Task status) defines the Task object (schedule and sensor IDs, start/finish, duration, status of success/fail/in-progress/scheduled, archive_id) and the Recording object (required SigMF metadata plus optional binary data).",
+      "zh": "第 7 条(元数据与数据规范)确定数据的具体形态。第 7.1 条(概述)要求传感器使用 SigMF:元数据 shall 为 JSON,写成一个单一对象,内含三个具名对象——global、captures 和 annotations——而 SigMF 扩展命名空间用于新增字段、文件或数据类型。第 7.2 条(消息元数据)随后定义第 5.2.2 与 6.2.2 条消息所用的 JSON 对象。第 7.2.1 条(状态)定义状态响应中使用的 Location 对象(纬度、经度、GNSS 标志、描述、修改时间),并指向附录 B 的 Sensor 对象。第 7.2.2 条(能力)定义 Action 对象(name、summary、description),并复用附录 B 的 Sensor/Preselector/RFPath/SignalAnalyzer 对象。第 7.2.3 条(调度)定义 ScheduleEntry 对象(id、name、sensor_ids、action、start/stop、interval、is_active、priority、下一任务字段、created/modified、owner)。第 7.2.4 条(任务状态)定义 Task 对象(调度与传感器 ID、起止时间、时长、success/fail/in-progress/scheduled 状态、archive_id)以及 Recording 对象(必需的 SigMF 元数据加可选的二进制数据)。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 8 (Protocol specific details) makes the abstract model concrete. Clause 8.1 (Overview) restates that SCOS is protocol agnostic but allows normative bindings to be adopted as they mature, and this clause specifies the HTTP one. Clause 8.2 (HTTP) maps the messages of 5.2.2 and 6.2.2 onto REST-style URLs that all begin with /api/{version}; many conditional message fields disappear into path parameters and HTTP response codes. Clause 8.2.1 (Sensor) lists the Sensor endpoints: GET /status, GET /capabilities, and the /schedule family (/schedule, /schedule/{schedule_id}, .../tasks, .../tasks/{task_id}, and .../archive returning a SigMF TAR archive) covering scheduling, task status, and data retrieval. Clause 8.2.2 (Manager) lists the Manager endpoints: /sensors (POST to associate, GET to list) and /sensors/{sensor_id}/status and .../capabilities; /clients to associate or delete a Data Client; and the Manager's own /schedule family plus an acquisitions archive download.",
+      "zh": "第 8 条(协议相关细节)把抽象模型落到实处。第 8.1 条(概述)重申 SCOS 与协议无关,但允许在规范成熟时采纳规范性绑定,本条规定的就是 HTTP 绑定。第 8.2 条(HTTP)把第 5.2.2 与 6.2.2 条的消息映射到全部以 /api/{version} 开头的 REST 风格 URL 上;许多条件性消息字段被并入路径参数与 HTTP 响应码。第 8.2.1 条(传感器)列出传感器端点:GET /status、GET /capabilities,以及 /schedule 系列(/schedule、/schedule/{schedule_id}、.../tasks、.../tasks/{task_id},以及返回 SigMF TAR 归档的 .../archive),涵盖调度、任务状态与数据检索。第 8.2.2 条(管理器)列出管理器端点:/sensors(POST 关联、GET 列表)与 /sensors/{sensor_id}/status 及 .../capabilities;/clients 用于关联或删除数据客户端;还有管理器自己的 /schedule 系列以及一个 acquisitions 归档下载端点。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[\"/api/{version}\"] --> B[\"/status GET\"]\n  A --> C[\"/capabilities GET\"]\n  A --> D[\"/schedule POST GET\"]\n  D --> E[\"/schedule/{id}\"]\n  E --> F[\".../tasks\"]\n  F --> G[\".../tasks/{task_id}\"]\n  G --> H[\".../archive (SigMF TAR)\"]",
+      "zh": "flowchart LR\n  A[\"/api/{version}\"] --> B[\"/status GET\"]\n  A --> C[\"/capabilities GET\"]\n  A --> D[\"/schedule POST GET\"]\n  D --> E[\"/schedule/{id}\"]\n  E --> F[\".../tasks 任务\"]\n  F --> G[\".../tasks/{task_id}\"]\n  G --> H[\".../archive (SigMF TAR 归档)\"]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — exact clause numbers and the pages they live on",
+        "zh": "覆盖地图——精确的条款编号及其所在页码"
+      },
+      "en": "Clause 1 Overview: 1.1 Scope, 1.2 Purpose, 1.3 Word usage (p.13-14). Clause 3 Definitions, acronyms, abbreviations: 3.1 Definitions (Sensor, Manager, action, acquisition, schedule entry, task, etc.), 3.2 Acronyms (API, GNSS, GUI, HTTP, JSON, SCOS, SDR, SigMF, SLA, RF, URL) (p.15-16). Clause 4 System concept: 4.1 Context, 4.2 Entities (Manager + Sensor; Data Client integrates), 4.3 Interactions (association, capabilities, subscription, schedule, data distribution), 4.4.1 Connectivity/control/access requirements, 4.4.2 Design flexibility (hardware/software/OS/protocol agnostic) (p.16-19). Clause 5 Sensor: 5.1 Hardware (antenna, preselector, signal analyzer, computer), 5.2.1 Software functional requirements, 5.2.2 Messages (Tables 1-14: association, status, capabilities, schedule, task status, data distribution) (p.19-30). Clause 6 Manager: 6.1 Hardware, 6.2.1 Software functional requirements, 6.2.2 Messages (Tables 15-20: client association, sensors response, subscription) (p.30-33). Clause 7 Metadata and data specification: 7.1 Overview (SigMF global/captures/annotations), 7.2.1 Status (Location object, Table 21), 7.2.2 Capabilities (Action object, Table 22), 7.2.3 Schedule (ScheduleEntry, Table 23), 7.2.4 Task status (Task Table 24, Recording Table 25) (p.33-38). Clause 8 Protocol specific details: 8.1 Overview, 8.2.1 Sensor HTTP endpoints (Tables 26-28), 8.2.2 Manager HTTP endpoints (Tables 29-31) (p.38-41). Annex A (informative) Bibliography — IEEE Std 802.22-2011 (p.42). Annex B (informative) SigMF metadata extensions — scos-core and scos-sensor namespaces, Antenna/HardwareSpec objects, the global/captures/annotations structure (p.43-44).",
+      "zh": "第 1 条 概述:1.1 范围、1.2 目的、1.3 用词(第 13-14 页)。第 3 条 定义、缩略语与缩写:3.1 定义(Sensor、Manager、action、acquisition、schedule entry、task 等)、3.2 缩略语(API、GNSS、GUI、HTTP、JSON、SCOS、SDR、SigMF、SLA、RF、URL)(第 15-16 页)。第 4 条 系统概念:4.1 上下文、4.2 实体(管理器+传感器;数据客户端接入)、4.3 交互(关联、能力、订阅、调度、数据分发)、4.4.1 连通性/控制/访问要求、4.4.2 设计灵活性(硬件/软件/操作系统/协议无关)(第 16-19 页)。第 5 条 传感器:5.1 硬件(天线、预选器、信号分析仪、计算机)、5.2.1 软件功能要求、5.2.2 消息(表 1-14:关联、状态、能力、调度、任务状态、数据分发)(第 19-30 页)。第 6 条 管理器:6.1 硬件、6.2.1 软件功能要求、6.2.2 消息(表 15-20:客户端关联、Sensors 响应、订阅)(第 30-33 页)。第 7 条 元数据与数据规范:7.1 概述(SigMF 的 global/captures/annotations)、7.2.1 状态(Location 对象,表 21)、7.2.2 能力(Action 对象,表 22)、7.2.3 调度(ScheduleEntry,表 23)、7.2.4 任务状态(Task 表 24、Recording 表 25)(第 33-38 页)。第 8 条 协议相关细节:8.1 概述、8.2.1 传感器 HTTP 端点(表 26-28)、8.2.2 管理器 HTTP 端点(表 29-31)(第 38-41 页)。附录 A(资料性)参考文献——IEEE Std 802.22-2011(第 42 页)。附录 B(资料性)SigMF 元数据扩展——scos-core 与 scos-sensor 命名空间、Antenna/HardwareSpec 对象,以及 global/captures/annotations 结构(第 43-44 页)。",
+      "cite": {
+        "pdf_id": "80215223-2020",
+        "pages": [
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          30,
+          31,
+          33,
+          34,
+          35,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The two informative annexes round the standard out. Annex A (Bibliography) is purely informational — its single reference, IEEE Std 802.22-2011 (Cognitive Wireless Regional Area Networks operating in the TV bands), is the lineage SCOS draws its interfaces and primitives from; you do not need it to implement the standard. Annex B (SigMF metadata extensions) is where the data model gets fleshed out: it defines the scos-core namespace (reusable objects like Antenna and HardwareSpec, and the global/captures/annotations layout) and the scos-sensor namespace (the Sensor, Preselector, RFPath, and SignalAnalyzer objects referenced back in Clauses 6.2.2 and 7.2). Because it is informative, the SigMF extensions are recommended (should) rather than mandatory — but they are what let independently built sensors describe their hardware in a common, machine-readable way so their measurements can be pooled, which is the whole point of SCOS.",
+      "zh": "两个资料性附录为标准收尾。附录 A(参考文献)纯属资料性——其唯一引用 IEEE Std 802.22-2011(运行于电视频段的认知无线区域网)是 SCOS 接口与原语的来源谱系;实现本标准并不需要它。附录 B(SigMF 元数据扩展)则把数据模型充实起来:它定义了 scos-core 命名空间(可复用的 Antenna、HardwareSpec 等对象,以及 global/captures/annotations 布局)和 scos-sensor 命名空间(在第 6.2.2 与 7.2 条被引用的 Sensor、Preselector、RFPath、SignalAnalyzer 对象)。由于是资料性的,这些 SigMF 扩展为推荐(should)而非强制——但正是它们让各自独立研制的传感器能以统一、机器可读的方式描述自身硬件,从而把测量结果汇聚起来,而这正是 SCOS 的根本目的。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "80215223-2020",
+      "pages": [
+        13,
+        14
+      ],
+      "note": "Clause 1.1 Scope, 1.2 Purpose, 1.3 Word usage; Clause 3 header"
+    },
+    {
+      "pdf_id": "80215223-2020",
+      "pages": [
+        15,
+        16
+      ],
+      "note": "Clause 3.1 Definitions and 3.2 Acronyms; Clause 4.1 Context begins"
+    },
+    {
+      "pdf_id": "80215223-2020",
+      "pages": [
+        17,
+        18,
+        19
+      ],
+      "note": "Clause 4.2 Entities, 4.3 Interactions, 4.4.1/4.4.2 General requirements; Clause 5.1 begins"
+    },
+    {
+      "pdf_id": "80215223-2020",
+      "pages": [
+        20,
+        21
+      ],
+      "note": "Clause 5.1 Hardware model and 5.2.1 functional requirements; 5.2.2 Messages begin"
+    },
+    {
+      "pdf_id": "80215223-2020",
+      "pages": [
+        30,
+        31,
+        32,
+        33
+      ],
+      "note": "Clause 6.1 Hardware, 6.2.1 functional requirements, 6.2.2 Messages (Tables 15-20)"
+    },
+    {
+      "pdf_id": "80215223-2020",
+      "pages": [
+        34,
+        35,
+        36,
+        37,
+        38
+      ],
+      "note": "Clause 7.1 Overview and 7.2.1-7.2.4 message metadata objects; Clause 8.1 begins"
+    },
+    {
+      "pdf_id": "80215223-2020",
+      "pages": [
+        39,
+        40,
+        41
+      ],
+      "note": "Clause 8.2.1 Sensor and 8.2.2 Manager HTTP endpoints (Tables 26-31)"
+    },
+    {
+      "pdf_id": "80215223-2020",
+      "pages": [
+        42,
+        43,
+        44
+      ],
+      "note": "Annex A Bibliography; Annex B SigMF metadata extensions (scos-core, scos-sensor)"
+    }
+  ],
+  "covers": [
+    "80215223-2020:1.1",
+    "80215223-2020:1.2",
+    "80215223-2020:1.3",
+    "80215223-2020:3.1",
+    "80215223-2020:3.2",
+    "80215223-2020:4.1",
+    "80215223-2020:4.2",
+    "80215223-2020:4.3",
+    "80215223-2020:4.4.1",
+    "80215223-2020:4.4.2",
+    "80215223-2020:5.1",
+    "80215223-2020:5.2.1",
+    "80215223-2020:5.2.2",
+    "80215223-2020:6.1",
+    "80215223-2020:6.2.1",
+    "80215223-2020:6.2.2",
+    "80215223-2020:7.1",
+    "80215223-2020:7.2.1",
+    "80215223-2020:7.2.2",
+    "80215223-2020:7.2.3",
+    "80215223-2020:7.2.4",
+    "80215223-2020:8.1",
+    "80215223-2020:8.2.1",
+    "80215223-2020:8.2.2",
+    "80215223-2020:Annex_A",
+    "80215223-2020:Annex_B"
+  ],
+  "track": "pan-pac"
+}

@@ -1,0 +1,152 @@
+{
+  "id": "pan-pac-10",
+  "title": {
+    "en": "Building the PSDU: From MAC Bits to OFDMA Waveform",
+    "zh": "构建 PSDU：从 MAC 比特到 OFDMA 波形"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This is part 2 of Clause 12, the OFDMA physical-layer (PHY) specification for Peer Aware Communications (PAC). The whole of subclause 12.5 answers a single question: how does a PAC device turn the bits of a MAC frame into a radio waveform it can actually transmit? OFDMA stands for Orthogonal Frequency-Division Multiple Access — a scheme that splits the spectrum into many narrow subcarriers so several devices can share the air at once. The PSDU (PHY Service Data Unit) is the payload the PHY builds and sends. Clause 12.5.1 frames the rest: the PSDU carries a MAC frame plus forward-error-correction (FEC) bits, and a fixed processing pipeline transforms those bits step by step — code, interleave, scramble, map to symbols, map to antennas, modulate onto subcarriers, and shape into the final waveform.",
+      "zh": "这是第 12 章的第 2 部分，即面向感知通信（PAC，Peer Aware Communications）的 OFDMA 物理层（PHY）规范。整个 12.5 节回答一个问题：PAC 设备如何把 MAC 帧的比特转换成可以真正发射的无线波形？OFDMA 即正交频分多址（Orthogonal Frequency-Division Multiple Access），它把频谱切分成许多窄子载波，使多个设备能够同时共享空口。PSDU（PHY Service Data Unit，物理层服务数据单元）是 PHY 构建并发送的载荷。12.5.1 节为后续内容定调：PSDU 携带一个 MAC 帧加上前向纠错（FEC）比特，并由一条固定的处理流水线逐步变换这些比特——编码、交织、扰码、映射到符号、映射到天线、调制到子载波，最后整形为成品波形。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 720 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"6\" y=\"40\" width=\"78\" height=\"40\"/><text x=\"45\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">FEC (LDPC)</text><rect x=\"90\" y=\"40\" width=\"78\" height=\"40\"/><text x=\"129\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Interleave</text><rect x=\"174\" y=\"40\" width=\"78\" height=\"40\"/><text x=\"213\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Scramble</text><rect x=\"258\" y=\"40\" width=\"78\" height=\"40\"/><text x=\"297\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Mod map</text><rect x=\"342\" y=\"40\" width=\"86\" height=\"40\"/><text x=\"385\" y=\"58\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Layer map +</text><text x=\"385\" y=\"72\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Precode</text><rect x=\"434\" y=\"40\" width=\"86\" height=\"40\"/><text x=\"477\" y=\"58\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">RE map +</text><text x=\"477\" y=\"72\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">OFDM gen</text><rect x=\"526\" y=\"40\" width=\"86\" height=\"40\"/><text x=\"569\" y=\"58\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">CP + WOLA</text><text x=\"569\" y=\"72\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">window</text><rect x=\"640\" y=\"40\" width=\"74\" height=\"40\"/><text x=\"677\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">RF / air</text><path d=\"M84 60 h6 M168 60 h6 M252 60 h6 M336 60 h6 M428 60 h6 M520 60 h6 M612 60 h28\"/></svg>",
+      "caption": {
+        "en": "The 12.5 PSDU construction pipeline: MAC bits flow left-to-right through coding, interleaving, scrambling, symbol mapping, MIMO layer/precode, subcarrier mapping, OFDM generation, and waveform shaping before reaching the air (12.5.1).",
+        "zh": "12.5 节的 PSDU 构建流水线：MAC 比特从左到右依次经过编码、交织、扰码、符号映射、MIMO 分层/预编码、子载波映射、OFDM 生成与波形整形，最终到达空口（12.5.1）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The first three blocks protect and condition the bits. Forward error correction (12.5.2) encodes the MAC frame with quasi-cyclic low-density parity-check (QC-LDPC) codes — codes that approach the performance of turbo codes while being easy to build in parallel hardware. A codeword has k information bits and n−k parity bits; the standard lists coding rates of 1/2, 2/3, 3/4 and 5/6 (Table 121), with the parity-check matrix expanded from compact prototype matrices in Annex A. The interleaver (12.5.3) then reorders the coded bits using a quadratic permutation, so a burst of channel errors lands on scattered bits the code can still recover. The scrambler (12.5.4) XORs the bits with a length-63 Gold-code sequence (built from two pseudo-noise generators) to whiten the spectrum and let different devices use different seeds for low mutual interference.",
+      "zh": "前三个环节用于保护和调理比特。前向纠错（12.5.2）用准循环低密度奇偶校验（QC-LDPC）码对 MAC 帧编码——这类码性能接近 Turbo 码，又便于在并行硬件中实现。一个码字含 k 个信息比特和 n−k 个校验比特；标准列出 1/2、2/3、3/4 和 5/6 的编码率（表 121），其奇偶校验矩阵由附录 A 中紧凑的原型矩阵扩展而来。随后交织器（12.5.3）用二次置换重排编码比特，使信道上的突发错误分散到各个比特上，仍可被码字纠正。扰码器（12.5.4）用长度为 63 的 Gold 序列（由两个伪噪声生成器构成）对比特做异或，以白化频谱，并让不同设备使用不同种子从而降低相互干扰。"
+    },
+    {
+      "type": "prose",
+      "en": "Next the bits become symbols. Pad bits (12.5.5) are appended so the stream fills a whole number of modulation symbols. The modulation mapper (12.5.6) and the modulation tables (12.5.7) map groups of bits to complex constellation points — BPSK (1 bit), QPSK (2 bits), 16QAM (4 bits) or 64QAM (6 bits), with exact mappings in Annex B. QAM stands for quadrature amplitude modulation; higher orders pack more bits per symbol but need a cleaner channel. Then comes MIMO — multiple-input multiple-output, using several antennas. Layer mapping (12.5.8) spreads codeword symbols across independent streams called layers, where 'rank' is the number of layers sent. With one antenna (12.5.9) there is a single layer. Two MIMO modes follow: open-loop spatial multiplexing (12.5.10), which sends different parallel streams to raise throughput, and transmit diversity (12.5.11), which sends the same information from multiple antennas for robustness.",
+      "zh": "接下来比特变成符号。填充比特（12.5.5）被追加进来，使比特流凑满整数个调制符号。调制映射器（12.5.6）与调制表（12.5.7）将一组组比特映射到复星座点——BPSK（1 比特）、QPSK（2 比特）、16QAM（4 比特）或 64QAM（6 比特），精确映射见附录 B。QAM 即正交幅度调制（quadrature amplitude modulation）；阶数越高每符号承载比特越多，但要求信道更干净。然后是 MIMO——多输入多输出，即使用多根天线。分层映射（12.5.8）把码字符号分散到若干称为“层（layer）”的独立流上，其中“秩（rank）”即发送的层数。单天线时（12.5.9）只有一层。随后是两种 MIMO 模式：开环空间复用（12.5.10）发送不同的并行流以提升吞吐，发射分集（12.5.11）从多根天线发送相同信息以增强稳健性。"
+    },
+    {
+      "type": "prose",
+      "en": "Precoding (12.5.12) maps the layer symbols onto the actual antennas. For a single antenna (12.5.13) it is a pass-through. For open-loop spatial multiplexing (12.5.14) the transmitter picks a precoding matrix W from a codebook (Table 125 for 2 antennas, Table 126 for 4, the latter built from Householder matrices) according to the channel rank reported by 2 bits in the time-division-duplex (TDD) control channel. For transmit diversity (12.5.15) the standard uses space-frequency block codes (SFBC) for 2 antennas, and for 4 antennas combines SFBC with frequency-switched transmit diversity. SFBC sends a clever pattern of a symbol and its conjugate across antenna/subcarrier pairs so the receiver can recover it even from a weak, feedback-free link.",
+      "zh": "预编码（12.5.12）把各层符号映射到实际的天线上。单天线时（12.5.13）它是直通。开环空间复用时（12.5.14），发射机根据时分双工（TDD）控制信道中 2 比特上报的信道秩，从码本中选取一个预编码矩阵 W（2 天线见表 125，4 天线见表 126，后者基于 Householder 矩阵构造）。发射分集时（12.5.15），标准对 2 天线采用空频块码（SFBC，space-frequency block codes），对 4 天线则将 SFBC 与频率切换发射分集相结合。SFBC 在天线/子载波对上发送符号及其共轭的巧妙组合，使接收机即便在无反馈的弱链路上也能恢复信号。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 560 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Slot Tslot = 0.5 ms = 7 OFDM symbols</text><g><rect x=\"10\" y=\"35\" width=\"14\" height=\"40\"/><text x=\"17\" y=\"90\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">CP</text><rect x=\"24\" y=\"35\" width=\"56\" height=\"40\"/><text x=\"52\" y=\"58\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">1024</text></g><g><rect x=\"82\" y=\"35\" width=\"14\" height=\"40\"/><text x=\"89\" y=\"90\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">CP</text><rect x=\"96\" y=\"35\" width=\"56\" height=\"40\"/><text x=\"124\" y=\"58\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">1024</text></g><text x=\"170\" y=\"58\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">. . . x7</text><rect x=\"240\" y=\"110\" width=\"300\" height=\"30\"/><text x=\"390\" y=\"129\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">RE = 0.5 ms x 6 subcarriers (90 kHz)</text><text x=\"240\" y=\"30\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">N=1024 subcarriers, df=15 kHz, CP=73 Ts</text></svg>",
+      "caption": {
+        "en": "Time-frequency grid: a 0.5 ms slot holds 7 OFDM symbols of 1024 samples each plus a cyclic prefix; a resource element (RE) is one slot by 6 subcarriers = 90 kHz (12.5.16-12.5.18).",
+        "zh": "时频栅格：一个 0.5 ms 的时隙容纳 7 个 OFDM 符号（每个 1024 个采样点）加循环前缀；一个资源单元（RE）为一个时隙 × 6 个子载波 = 90 kHz（12.5.16–12.5.18）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now the symbols become a waveform. Multicarrier modulation (12.5.16) fixes the OFDMA grid: 1024 subcarriers, a subcarrier spacing of 15 kHz, sampling time 65.1 ns and a 15.36 MHz clock — 15 kHz balances delay-spread tolerance against hardware practicality. The cyclic prefix (12.5.17) copies the tail of each symbol to its front (73 samples, 4.75 µs) so multipath echoes do not smear adjacent symbols; this yields a 0.5 ms slot of 7 OFDM symbols. The resource element (12.5.18), abbreviated RE, is the basic shared unit: one 0.5 ms slot by 6 subcarriers (90 kHz). There are 170 REs, and transmission bandwidth is built by concatenating them — bandwidths of 1, 3, 5, 10 and 15 MHz map to FFT sizes from 128 to 1024 (Table 128). FFT means fast Fourier transform, the engine that converts subcarriers to a time signal.",
+      "zh": "现在符号变成波形。多载波调制（12.5.16）确定 OFDMA 栅格：1024 个子载波、子载波间隔 15 kHz、采样时间 65.1 ns、时钟 15.36 MHz——15 kHz 在时延扩展容忍度与硬件可行性之间取得平衡。循环前缀（12.5.17）把每个符号的尾部复制到其头部（73 个采样点，4.75 µs），使多径回波不会污染相邻符号；由此得到一个含 7 个 OFDM 符号的 0.5 ms 时隙。资源单元（12.5.18，缩写 RE）是基本的共享单元：一个 0.5 ms 时隙 × 6 个子载波（90 kHz）。共有 170 个 RE，传输带宽通过拼接它们来构成——1、3、5、10 和 15 MHz 的带宽对应 128 到 1024 的 FFT 大小（表 128）。FFT 即快速傅里叶变换，是把子载波转换成时域信号的引擎。"
+    },
+    {
+      "type": "prose",
+      "en": "The final shaping steps clean up the spectrum and define where to transmit. WOLA windowing (12.5.19) — weighted overlap and add — applies a soft-edged Tukey (tapered cosine) window to each cyclic-prefix OFDM symbol, overlapping adjacent symbol edges to cut out-of-band (OOB) leakage without adding overhead; it can also be applied at the receiver to suppress interference from a mismatched FFT capture window. For the sub-1 GHz band (12.5.20) the cyclic prefix is instead replaced by an 80-tap symmetric Blackman-Harris filter for better performance. Carrier aggregation (12.5.21) lets the MAC bond a second 10 MHz channel into a 20 MHz channel, signaled to the PHY by one bit (G) in the TDD control channel, so the same RF front end sees one wider channel.",
+      "zh": "最后的整形步骤清理频谱并确定在何处发射。WOLA 加窗（12.5.19，weighted overlap and add，加权重叠相加）对每个带循环前缀的 OFDM 符号施加软边缘的 Tukey（锥形余弦）窗，并将相邻符号的边缘重叠，从而在不增加开销的情况下削减带外（OOB）泄漏；它也可施加在接收端，以抑制因 FFT 捕获窗失配带来的干扰。对于 1 GHz 以下频段（12.5.20），循环前缀改为用一个 80 抽头的对称 Blackman-Harris 滤波器替代，以获得更好性能。载波聚合（12.5.21）允许 MAC 把第二个 10 MHz 信道绑定成一个 20 MHz 信道，并通过 TDD 控制信道中的 1 比特（G）通知 PHY，使同一射频前端看到的是单个更宽的信道。"
+    },
+    {
+      "type": "prose",
+      "en": "Three closing topics define throughput, channel knowledge, and where the radio actually lives. Data rates (12.5.22) come from a single formula combining the number of subcarriers, bits per symbol, coding rate, carrier aggregation and MIMO mode (Table 129): the lowest is about 1 Mb/s and the peak is 372.96 Mb/s (n=111, 64QAM, rate 5/6, aggregation on, 4x4 spatial multiplexing). Reference signals (12.5.23) are known QPSK pilot symbols, derived from the same length-63 Gold sequence, placed at fixed positions in the RE grid (one pattern per antenna) so the receiver can estimate the channel and report the channel quality indicator (CQI) and rank indicator (RI). An optional GFSK modulation (12.5.24) — Gaussian frequency-shift keying, here CP-2FSK with a Gaussian pulse — offers a very-low-power mode for the sub-GHz band with no MIMO. Finally, operating frequency bands (12.5.25) list the three bands: sub-GHz (920 MHz channelization shown for Japan, 12.5.25.2), the 2.4 GHz band split into eight 10 MHz channels (12.5.25.3), and the 5.7 GHz band split into fifteen 10 MHz channels (12.5.25.4).",
+      "zh": "最后三个主题定义吞吐、信道认知以及无线信号实际所处的频率。数据速率（12.5.22）来自一个组合了子载波数、每符号比特数、编码率、载波聚合与 MIMO 模式的统一公式（表 129）：最低约 1 Mb/s，峰值为 372.96 Mb/s（n=111、64QAM、码率 5/6、开启聚合、4x4 空间复用）。参考信号（12.5.23）是已知的 QPSK 导频符号，由同一个长度 63 的 Gold 序列导出，置于 RE 栅格的固定位置（每根天线一种图样），使接收机能够估计信道并上报信道质量指示（CQI）与秩指示（RI）。可选的 GFSK 调制（12.5.24，高斯频移键控，此处为带高斯脉冲的 CP-2FSK）为 1 GHz 以下频段提供一种无 MIMO 的极低功耗模式。最后，工作频段（12.5.25）列出三个频段：1 GHz 以下（以日本的 920 MHz 信道划分为例，12.5.25.2）、被分为 8 个 10 MHz 信道的 2.4 GHz 频段（12.5.25.3），以及被分为 15 个 10 MHz 信道的 5.7 GHz 频段（12.5.25.4）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A memory hook for the whole pipeline: protect (LDPC code, interleave, scramble) -> map (pad, modulation, MIMO layers, precode) -> shape (subcarriers, cyclic prefix, RE grid, WOLA window) -> place (data rate, pilots, optional GFSK, frequency band). Every subclause in 12.5 fits one of those four verbs.",
+      "zh": "记住整条流水线的口诀：保护（LDPC 编码、交织、扰码）→ 映射（填充、调制、MIMO 分层、预编码）→ 整形（子载波、循环前缀、RE 栅格、WOLA 窗）→ 落位（数据速率、导频、可选 GFSK、频段）。12.5 节的每个子条款都归入这四个动词之一。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every 12.5 subclause and where it lives",
+        "zh": "覆盖地图：12.5 节每个子条款及其位置"
+      },
+      "en": "Protect: 12.5.1 General PSDU pipeline (Fig. 83); 12.5.2 QC-LDPC FEC, rates 1/2-5/6 (Table 121, prototype matrices in Annex A); 12.5.3 quadratic-permutation interleaver (short and long lengths); 12.5.4 length-63 Gold-code scrambler seeded by PD IDs. Map: 12.5.5 pad bits to a symbol boundary; 12.5.6 modulation mapper (BPSK/QPSK/16QAM/64QAM); 12.5.7 modulation tables (Table 122, Annex B); 12.5.8 layer mapping (rank = layers); 12.5.9 one-antenna single-layer mapping; 12.5.10 open-loop spatial multiplexing layer map (Table 123); 12.5.11 transmit-diversity layer map (Table 124); 12.5.12 precoding overview (Fig. 84); 12.5.13 single-antenna precoding; 12.5.14 open-loop spatial-multiplexing precoding codebooks (Tables 125-126, Householder for 4 antennas); 12.5.15 transmit-diversity SFBC for 2 and 4 antennas. Shape: 12.5.16 multicarrier parameters (1024 subcarriers, 15 kHz, Table 127); 12.5.17 cyclic prefix and 0.5 ms slot (Fig. 85); 12.5.18 resource element, 170 REs, bandwidths (Table 128); 12.5.19 WOLA Tukey/raised-cosine windowing at Tx and Rx; 12.5.20 Blackman-Harris filtered OFDM for sub-1 GHz. Place: 12.5.21 carrier aggregation (one bit G); 12.5.22 data rates (Table 129, 1 to 372.96 Mb/s); 12.5.23 Gold-derived QPSK reference signals for CQI/RI (Fig. 92); 12.5.24 optional CP-2FSK GFSK low-power mode; 12.5.25 operating bands - 12.5.25.1 general, 12.5.25.2 920 MHz, 12.5.25.3 2.4 GHz (8x10 MHz), 12.5.25.4 5.7 GHz (15x10 MHz).",
+      "zh": "保护：12.5.1 PSDU 流水线总览（图 83）；12.5.2 QC-LDPC 前向纠错，码率 1/2–5/6（表 121，原型矩阵见附录 A）；12.5.3 二次置换交织器（短/长两种长度）；12.5.4 由 PD ID 播种的长度 63 Gold 序列扰码器。映射：12.5.5 填充至符号边界；12.5.6 调制映射器（BPSK/QPSK/16QAM/64QAM）；12.5.7 调制表（表 122，附录 B）；12.5.8 分层映射（秩 = 层数）；12.5.9 单天线单层映射；12.5.10 开环空间复用分层映射（表 123）；12.5.11 发射分集分层映射（表 124）；12.5.12 预编码总览（图 84）；12.5.13 单天线预编码；12.5.14 开环空间复用预编码码本（表 125–126，4 天线用 Householder）；12.5.15 发射分集 SFBC（2 与 4 天线）。整形：12.5.16 多载波参数（1024 子载波、15 kHz，表 127）；12.5.17 循环前缀与 0.5 ms 时隙（图 85）；12.5.18 资源单元、170 个 RE、各带宽（表 128）；12.5.19 收发两端的 WOLA Tukey/升余弦加窗；12.5.20 1 GHz 以下的 Blackman-Harris 滤波 OFDM。落位：12.5.21 载波聚合（1 比特 G）；12.5.22 数据速率（表 129，1 至 372.96 Mb/s）；12.5.23 由 Gold 序列导出的 QPSK 参考信号用于 CQI/RI（图 92）；12.5.24 可选 CP-2FSK GFSK 低功耗模式；12.5.25 工作频段——12.5.25.1 总则、12.5.25.2 920 MHz、12.5.25.3 2.4 GHz（8×10 MHz）、12.5.25.4 5.7 GHz（15×10 MHz）。",
+      "cite": {
+        "pdf_id": "802158-2017",
+        "pages": [
+          225,
+          226,
+          227,
+          228,
+          229,
+          230,
+          231,
+          232,
+          233,
+          234,
+          235,
+          236,
+          237,
+          238,
+          239,
+          240,
+          241
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        225,
+        226,
+        227,
+        228,
+        229,
+        230,
+        231,
+        232,
+        233,
+        234,
+        235,
+        236,
+        237,
+        238,
+        239,
+        240,
+        241
+      ],
+      "note": "Clause 12.5 PSDU construction (12.5.1 through 12.5.25): FEC/LDPC, interleaver, scrambler, pad bits, modulation, MIMO layer mapping/precoding/diversity, multicarrier params, cyclic prefix, resource element, WOLA, sub-GHz filtering, carrier aggregation, data rates, reference signals, GFSK, operating bands."
+    }
+  ],
+  "covers": [
+    "802158-2017:12.5.1",
+    "802158-2017:12.5.2",
+    "802158-2017:12.5.3",
+    "802158-2017:12.5.4",
+    "802158-2017:12.5.5",
+    "802158-2017:12.5.6",
+    "802158-2017:12.5.7",
+    "802158-2017:12.5.8",
+    "802158-2017:12.5.9",
+    "802158-2017:12.5.10",
+    "802158-2017:12.5.11",
+    "802158-2017:12.5.12",
+    "802158-2017:12.5.13",
+    "802158-2017:12.5.14",
+    "802158-2017:12.5.15",
+    "802158-2017:12.5.16",
+    "802158-2017:12.5.17",
+    "802158-2017:12.5.18",
+    "802158-2017:12.5.19",
+    "802158-2017:12.5.20",
+    "802158-2017:12.5.21",
+    "802158-2017:12.5.22",
+    "802158-2017:12.5.23",
+    "802158-2017:12.5.24",
+    "802158-2017:12.5.25"
+  ],
+  "track": "pan-pac"
+}

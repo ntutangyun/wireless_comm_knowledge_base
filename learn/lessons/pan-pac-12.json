@@ -1,0 +1,170 @@
+{
+  "id": "pan-pac-12",
+  "title": {
+    "en": "How PAC Devices Measure Distance: Ranging and Localization (Clause 15)",
+    "zh": "PAC 设备如何测距：测距与定位（第 15 章）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE 802.15.8 is the standard for Peer Aware Communications (PAC) — devices that discover and talk to each other directly, peer-to-peer, with no central base station. Clause 15 answers a practical question: how far apart are two such devices, and where are they? The whole chapter rests on one physical superpower of the ultra-wideband (UWB) PHY (physical layer): it can stamp the exact instant a radio pulse leaves or arrives at the antenna with extraordinary precision. Multiply a tiny time-of-flight by the speed of light and you get distance. This lesson walks the entire clause: the timestamp service (15.1–15.2), the ranging and localization methods (15.3), and the on-air procedures that carry the numbers between devices (15.4).",
+      "zh": "IEEE 802.15.8 是面向对等感知通信（PAC，Peer Aware Communications）的标准——设备之间直接点对点地发现并通信，无需中央基站。第 15 章回答一个实际问题：两台这样的设备相距多远？它们各自在哪里？整章都建立在超宽带（UWB，Ultra-Wideband）物理层（PHY）的一项物理“超能力”之上：它能以极高精度标记一个无线脉冲离开或到达天线的确切时刻。把一个微小的飞行时间乘以光速，就得到了距离。本课带你走完整章：时间戳服务（15.1–15.2）、测距与定位方法（15.3），以及在设备之间传递这些数值的空口流程（15.4）。"
+    },
+    {
+      "type": "prose",
+      "en": "15.1 (Overview) names the anchor of everything: the RMARKER, defined as the start of the first symbol of the PHR (PHY header) of a frame. A ranging counter inside each device timestamps when the RMARKER launches from, or arrives at, the antenna. Because the counter actually runs in digital logic some distance from the antenna, each device corrects its reading using two configurable values — phyTxRmarkerOffset (transmit side) and phyRxRmarkerOffset (receive side) — so the reported timestamp refers to the true antenna instant. The standard supports three timing-based families: single-sided two-way ranging, double-sided two-way ranging, and one-way ranging for time-difference-of-arrival localization.",
+      "zh": "15.1（概述）点明了一切的基准：RMARKER，定义为帧的 PHR（PHY 头部）第一个符号的起始点。每台设备内部的测距计数器会记录 RMARKER 从天线发出或到达天线的时刻。由于该计数器实际运行在距天线一段距离的数字逻辑中，每台设备会用两个可配置值来校正读数——phyTxRmarkerOffset（发送侧）和 phyRxRmarkerOffset（接收侧）——使上报的时间戳对应真正的天线时刻。标准支持三类基于时间的方法：单边双向测距、双边双向测距，以及用于到达时间差定位的“单向”测距。"
+    },
+    {
+      "type": "prose",
+      "en": "15.2 (Service access points for message time stamps) is how the MAC (medium access control) layer hands those raw timestamps up to higher layers. 15.2.1 covers frame transmission timestamping: MLDE-DATA.request sends a Data frame and MLDE-DATA.confirm reports back. If the send was acknowledged (the AckTX parameter was true), the confirm carries TxRangingCounter (when this device transmitted the Data frame) and RxRangingCounter (when it received the Acknowledgment); if unacknowledged, RxRangingCounter is invalid. 15.2.2 (frame reception timestamping) is the mirror image, reported via MLDE-DATA.indication: with the AR (acknowledgment request) bit set, RxRangingCounter is when the Data frame arrived and TxRangingCounter is when this device sent the Acknowledgment.",
+      "zh": "15.2（消息时间戳的服务接入点）规定 MAC（媒体接入控制）层如何把这些原始时间戳上交给高层。15.2.1 讲发送时间戳：MLDE-DATA.request 发出一个 Data 帧，MLDE-DATA.confirm 回报结果。若发送被确认（AckTX 参数为真），confirm 会携带 TxRangingCounter（本设备发出 Data 帧的时刻）与 RxRangingCounter（本设备收到 Acknowledgment 的时刻）；若未被确认，则 RxRangingCounter 无效。15.2.2（接收时间戳）是其镜像，经由 MLDE-DATA.indication 上报：当 AR（确认请求）位置位时，RxRangingCounter 是 Data 帧到达的时刻，TxRangingCounter 是本设备发出 Acknowledgment 的时刻。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: a device alone can only measure round-trip and reply times on its own clock. To turn those into a real distance, the two devices must SHARE their timestamps. That sharing is exactly what the information elements (IEs) in 15.2.3 are for — they are the little envelopes that carry timing numbers across the link.",
+      "zh": "记忆模型：单台设备只能用自己的时钟测量往返时间和回复时间。要把它们变成真实距离，两台设备必须互相共享时间戳。15.2.3 中的信息元素（IE，Information Element）正是为此而生——它们就是把时间数值跨链路递送的小信封。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "15.2.3 — the seven ranging information elements (IEs), one by one",
+        "zh": "15.2.3 — 七个测距信息元素（IE），逐一拆解"
+      },
+      "en": "15.2.3.1 (General) explains why IEs exist: to compute time-of-flight (TOF) between two PDs (PAC devices), measurements from BOTH must be combined, so one device must transfer its timestamps to the other. Table 20 lists each IE's identifier. 15.2.3.2 Ranging Request Reply Time IE (RRRT IE) — a zero-length-content request asking the remote PD to report its reply time. 15.2.3.3 Ranging Reply Time Instantaneous IE (RRTI IE) — a 4-octet 'RX to TX Reply Time': the gap between receiving the last RFRAME and transmitting the frame that carries this IE; used when the device can compute and insert the value in time for the same outgoing frame. 15.2.3.4 Ranging Reply Time Deferred IE (RRTD IE) — same 4-octet reply-time meaning, but carried in a LATER frame, for devices that can't finish the calculation before the reply leaves. 15.2.3.5 Ranging Preferred Reply Time IE (RPRT IE) — advertises that a device can use the RRTI scheme and states its preferred reply time, letting the partner delay turning on its receiver (saving power) and reducing message count; applies to both single- and double-sided ranging. 15.2.3.6 Ranging Control Double-sided TWR IE (RCDT IE) — a 1-octet Control Info field whose values (Table 147) are 0 = initiating DS-TWR, result not needed; 1 = initiating DS-TWR, send result back; 2 = continuing DS-TWR, forming the second round-trip request. 15.2.3.7 Ranging Round Trip Measurement IE (RRTM IE) — 4 octets: the time between transmitting the round-trip-initiating RFRAME and receiving the RFRAME that completes it. 15.2.3.8 Ranging Time-of-Flight IE (RTOF IE) — 4 octets used after a double-sided exchange to send the final computed TOF estimate to the far end if requested.",
+      "zh": "15.2.3.1（总则）说明 IE 为何存在：要算出两台 PD（PAC 设备）之间的飞行时间（TOF，Time-of-Flight），必须把双方的测量合并，因此一方须把自己的时间戳传给另一方。表 20 列出每个 IE 的标识符。15.2.3.2 测距请求回复时间 IE（RRRT IE）——内容长度为零的请求，要求远端 PD 上报其回复时间。15.2.3.3 即时回复时间 IE（RRTI IE）——4 字节的“RX 到 TX 回复时间”：从收到最近一个 RFRAME 到发出携带此 IE 的帧之间的间隔；用于设备能及时算出并插入该值的同一发送帧中。15.2.3.4 延迟回复时间 IE（RRTD IE）——含义相同的 4 字节回复时间，但放在之后的帧中携带，适用于在回复帧发出前无法完成计算的设备。15.2.3.5 首选回复时间 IE（RPRT IE）——宣告设备能使用 RRTI 方案并声明其首选回复时间，让对端延后开启接收机（省电）并减少消息数；单边与双边测距均适用。15.2.3.6 双边 TWR 控制 IE（RCDT IE）——1 字节的控制信息字段，其取值（表 147）为 0=发起 DS-TWR 且不需要结果；1=发起 DS-TWR 并要求回传结果；2=继续 DS-TWR，构成第二个往返请求。15.2.3.7 往返测量 IE（RRTM IE）——4 字节：从发出发起往返的 RFRAME 到收到完成该往返的 RFRAME 之间的时间。15.2.3.8 飞行时间 IE（RTOF IE）——4 字节，在双边交换之后按需把最终算出的 TOF 估计发给远端。",
+      "cite": {
+        "pdf_id": "802158-2017",
+        "pages": [
+          272,
+          273,
+          274
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "15.3 (Ranging and localization methods) is the math layer. 15.3.1 (Preface) sets up three time-based techniques — single-sided two-way ranging (15.3.2), double-sided two-way ranging (15.3.3), and time difference of arrival (15.3.5) — plus two supplementary techniques, angle of arrival (15.3.7) and received signal strength indication (15.3.8). 15.3.2 SS-TWR is the simplest: device A sends a message and B replies. A measures Tround (its own send-to-receive gap) and B measures Treply (its receive-to-send gap); the propagation time is estimated as TProp = (Tround − Treply) / 2. The catch: both clocks have small offset errors, and the estimate degrades as Treply grows — so SS-TWR is best when the reply time is short and clocks are accurate.",
+      "zh": "15.3（测距与定位方法）是数学层。15.3.1（前言）列出三种基于时间的技术——单边双向测距（15.3.2）、双边双向测距（15.3.3）、到达时间差（15.3.5）——以及两种补充技术：到达角（15.3.7）和接收信号强度指示（15.3.8）。15.3.2 的 SS-TWR 最简单：设备 A 发出一条消息，B 回复。A 测得 Tround（自己从发到收的间隔），B 测得 Treply（其从收到发的间隔）；传播时间估计为 TProp =（Tround − Treply）/ 2。难点在于：两个时钟都有微小的偏移误差，且 Treply 越大估计越差——因此 SS-TWR 最适合回复时间短、时钟精确的场景。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"30\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">Device A</text><text x=\"330\" y=\"30\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">Device B</text><line x1=\"40\" y1=\"40\" x2=\"40\" y2=\"185\"/><line x1=\"380\" y1=\"40\" x2=\"380\" y2=\"185\"/><line x1=\"40\" y1=\"55\" x2=\"380\" y2=\"95\" stroke=\"currentColor\"/><text x=\"150\" y=\"65\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">TX -&gt; Tprop -&gt;</text><line x1=\"380\" y1=\"135\" x2=\"40\" y2=\"175\" stroke=\"currentColor\"/><text x=\"150\" y=\"170\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">&lt;- Tprop &lt;- RX</text><line x1=\"30\" y1=\"55\" x2=\"30\" y2=\"175\" stroke=\"currentColor\" stroke-dasharray=\"3 3\"/><text x=\"-30\" y=\"118\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" transform=\"rotate(-90 30 118)\">Tround</text><line x1=\"392\" y1=\"95\" x2=\"392\" y2=\"135\" stroke=\"currentColor\" stroke-dasharray=\"3 3\"/><text x=\"398\" y=\"118\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Treply</text></svg>",
+      "caption": {
+        "en": "Single-sided two-way ranging (15.3.2): A sees Tround, B sees Treply, and TProp = (Tround − Treply) / 2. The RMARKER is the precise reference instant for every timestamp.",
+        "zh": "单边双向测距（15.3.2）：A 看到 Tround，B 看到 Treply，TProp =（Tround − Treply）/ 2。RMARKER 是每个时间戳的精确参考时刻。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "15.3.3 DS-TWR (double-sided two-way ranging) extends SS-TWR with TWO round trips — A initiates one, then B initiates a second back — and combines Tround1, Treply1, Tround2, Treply2 in a formula that largely cancels clock offset, giving picosecond-level timing error even with 20-ppm crystals and asymmetric reply times. 15.3.4 (DS-TWR with three messages) is a clever optimization: B's reply to the first round trip doubles as the initiator of the second, collapsing four messages into three. 15.3.5 TDOA (time difference of arrival) is the 'one-way' method: a mobile device sends once, and several synchronized fixed nodes compare arrival times; each pair of nodes places the mobile on a hyperbolic surface, and the intersection locates it.",
+      "zh": "15.3.3 的 DS-TWR（双边双向测距）在 SS-TWR 基础上增加两个往返——A 发起一个，随后 B 反向发起第二个——并把 Tround1、Treply1、Tround2、Treply2 代入一个能在很大程度上抵消时钟偏移的公式，即便用 20 ppm 晶振且回复时间不对称，也能达到皮秒级时间误差。15.3.4（三消息 DS-TWR）是一个巧妙优化：B 对第一个往返的回复同时充当第二个往返的发起，把四条消息压缩为三条。15.3.5 的 TDOA（到达时间差）是“单向”方法：移动设备只发一次，多个同步的固定节点比较各自的到达时间；每一对节点把移动设备定位在一条双曲面上，多面相交即可定位。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant A as Device A\n  participant B as Device B\n  A->>B: Msg 1 (start round-trip 1)\n  B->>A: Reply (also starts round-trip 2)\n  A->>B: Reply (completes round-trip 2)\n  Note over A,B: 3 messages = full DS-TWR (15.3.4)",
+      "zh": "sequenceDiagram\n  participant A as 设备 A\n  participant B as 设备 B\n  A->>B: 消息 1（开始往返 1）\n  B->>A: 回复（同时开始往返 2）\n  A->>B: 回复（完成往返 2）\n  Note over A,B: 3 条消息 = 完整 DS-TWR（15.3.4）"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "15.3.6–15.3.8 — from a single distance to an actual position",
+        "zh": "15.3.6–15.3.8 — 从单个距离到真实位置"
+      },
+      "en": "15.3.6 (Localization) is the key conceptual point: two-way ranging gives a distance, not a position. A range R from one fixed node places the target somewhere on a sphere of radius R; fixing a 3D position needs ranges to four fixed nodes whose spheres intersect. Relative localization among purely mobile nodes is possible depending on geometry, but pinning true position and bearing always needs some fixed nodes or external information. Crucially, the standard says solving the position is a next-higher-layer function beyond its scope — 802.15.8 only FACILITATES it by providing accurate PHY timestamps and a MAC that delivers them upward. 15.3.7 AOA (angle of arrival) needs extra antennas/receivers to measure the phase or arrival-time difference across the antenna spacing, inferring a bearing to the sender; combined with TOF (and often a compass or an inertial measurement unit, IMU) it helps peers position each other with no infrastructure. 15.3.8 RSSI (received signal strength indication) is the fallback when accurate ranging isn't available — it gives only a rough proximity, because RF channel conditions vary a lot.",
+      "zh": "15.3.6（定位）点出关键概念：双向测距给出的是距离，而非位置。来自一个固定节点的距离 R 把目标限定在半径为 R 的球面上某处；要确定三维位置需要到四个固定节点的距离，使这些球面相交。纯移动节点之间的相对定位视几何关系而定可行，但要锁定真实位置与方位，总需要一些固定节点或外部信息。关键在于，标准明确指出求解位置是高层功能、超出其范围——802.15.8 只通过提供精确的 PHY 时间戳以及把它们上交的 MAC 来“促成”定位。15.3.7 的 AOA（到达角）需要额外的天线/接收机来测量天线间距上的相位差或到达时间差，从而推断到发送方的方位；结合 TOF（常配合罗盘或惯性测量单元 IMU）能让对等设备在无基础设施时互相定位。15.3.8 的 RSSI（接收信号强度指示）是无法精确测距时的退路——它只能给出粗略的远近，因为射频信道条件变化很大。",
+      "cite": {
+        "pdf_id": "802158-2017",
+        "pages": [
+          276,
+          277
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "15.4 — the on-air procedures (coverage map for 15.4.1–15.4.5)",
+        "zh": "15.4 — 空口流程（15.4.1–15.4.5 覆盖图）"
+      },
+      "en": "15.4.1 (General ranging procedures) sets the ground rule: the layers above the MAC decide whether to range and do the final distance calculation; 15.4 then specifies the actual message sequences. 15.4.2 SS-TWR with DEFERRED reply time (Figure 117): an initiating frame carries the RRRT IE; the reply completes the round trip; the responder's reply time arrives LATER in an RRTD IE. At the point labelled (R) the initiator can compute the range using the 15.3.2 formula. 15.4.3 SS-TWR with EMBEDDED reply time (Figures 118 & 119): the reply time rides back inside the RRTI IE — carried on the ACK in Figure 118, or, once an RPRT IE has advertised a preferred reply time, sent as a timed response (no ACK requested) in Figure 119 to save power. 15.4.4 DS-TWR with DEFERRED timestamp information (Figure 120): the exchange is opened by a Data frame carrying an RCDT IE (Control Info per Table 147); the second round trip is requested with another RCDT IE plus RRRT IE; the round-trip measurement is later conveyed in an RRTM IE and the reply time in an RRTD IE, and at (R) the responding end computes the range per 15.3.3 — optionally returning the result in an RTOF IE. 15.4.5 DS-TWR with EMBEDDED timestamp information (Figure 121): the three-message form of 15.3.4 — it requires the initiator to embed the reply time and that both sides have pre-exchanged RPRT IEs, so each receiver wakes only when a response is expected (power saving); the initiator's RCDT IE Control Info again sets whether the final RTOF IE result is sent back.",
+      "zh": "15.4.1（通用测距流程）定下基本规则：MAC 之上的各层决定是否测距并完成最终距离计算；15.4 随后规定具体的消息序列。15.4.2 延迟回复时间的 SS-TWR（图 117）：发起帧携带 RRRT IE；回复完成往返；响应方的回复时间稍后通过 RRTD IE 送达。在标注（R）处，发起方即可用 15.3.2 公式算出距离。15.4.3 嵌入回复时间的 SS-TWR（图 118 与 119）：回复时间装在 RRTI IE 中回送——在图 118 中随 ACK 携带，或在已用 RPRT IE 宣告首选回复时间后，于图 119 中以定时响应（不请求 ACK）发出以省电。15.4.4 延迟时间戳信息的 DS-TWR（图 120）：交换由携带 RCDT IE（控制信息按表 147）的 Data 帧开启；第二个往返用另一个 RCDT IE 加 RRRT IE 请求；往返测量稍后由 RRTM IE 携带、回复时间由 RRTD IE 携带，在（R）处响应端按 15.3.3 算出距离——并可按需用 RTOF IE 回送结果。15.4.5 嵌入时间戳信息的 DS-TWR（图 121）：即 15.3.4 的三消息形式——它要求发起方嵌入回复时间且双方已预先交换 RPRT IE，使每个接收机仅在预期收到响应时唤醒（省电）；发起方 RCDT IE 的控制信息同样决定是否回送最终的 RTOF IE 结果。",
+      "cite": {
+        "pdf_id": "802158-2017",
+        "pages": [
+          277,
+          278,
+          279,
+          280,
+          281
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Pattern to remember across all of 15.4: 'deferred' means the timing number rides in a SUBSEQUENT frame (RRTD/RRTM), while 'embedded/instantaneous' means it rides inside the IMMEDIATE reply (RRTI). The RPRT IE is the power-saver that lets a receiver sleep until the reply is actually due — it is what makes the slimmer three-message DS-TWR (15.4.5) possible.",
+      "zh": "贯穿整个 15.4 的记忆要点：“延迟”指时间数值搭在随后的帧里（RRTD/RRTM），而“嵌入/即时”指它搭在立即回复中（RRTI）。RPRT IE 是省电关键，让接收机睡到回复真正该来时才醒——正是它使更精简的三消息 DS-TWR（15.4.5）成为可能。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        271
+      ],
+      "note": "15.1 Overview (RMARKER, ranging counter, phyTx/RxRmarkerOffset); 15.2.1 frame transmission timestamping; 15.2.2 frame reception timestamping"
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        272,
+        273,
+        274
+      ],
+      "note": "15.2.3.1–15.2.3.8 ranging information elements; 15.3.1 preface; 15.3.2 SS-TWR; 15.3.3 DS-TWR"
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        276,
+        277
+      ],
+      "note": "15.3.4 three-message DS-TWR; 15.3.5 TDOA; 15.3.6 localization; 15.3.7 AOA; 15.3.8 RSSI; 15.4.1 general procedures"
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        277,
+        278,
+        279,
+        280,
+        281
+      ],
+      "note": "15.4.2 SS-TWR deferred; 15.4.3 SS-TWR embedded; 15.4.4 DS-TWR deferred; 15.4.5 DS-TWR embedded"
+    }
+  ],
+  "covers": [
+    "802158-2017:15.1",
+    "802158-2017:15.2.1",
+    "802158-2017:15.2.2",
+    "802158-2017:15.2.3",
+    "802158-2017:15.3.1",
+    "802158-2017:15.3.2",
+    "802158-2017:15.3.3",
+    "802158-2017:15.3.4",
+    "802158-2017:15.3.5",
+    "802158-2017:15.3.6",
+    "802158-2017:15.3.7",
+    "802158-2017:15.3.8",
+    "802158-2017:15.4.1",
+    "802158-2017:15.4.2",
+    "802158-2017:15.4.3",
+    "802158-2017:15.4.4",
+    "802158-2017:15.4.5"
+  ],
+  "track": "pan-pac"
+}

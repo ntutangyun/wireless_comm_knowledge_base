@@ -1,0 +1,173 @@
+{
+  "id": "pan-pac-11",
+  "title": {
+    "en": "The PAC UWB PHY and Transmit Power Control: BPM-BPSK, OOK, Timestamps, and Power Steps",
+    "zh": "PAC 的 UWB 物理层与发射功率控制：BPM-BPSK、OOK、时间戳与功率调节"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE 802.15.8 Peer Aware Communications (PAC) offers several PHYs (physical layers). One of them is the UWB PHY — Ultra-Wideband — an impulse-radio scheme that fires extremely short, band-limited pulses across very wide channels between 3.1 GHz and 10.6 GHz. Because each pulse is so brief and the bandwidth so large, UWB is naturally good at precise distance measurement (ranging) as well as data transfer. Clause 13.1.1 (General) tells us the UWB PHY supports two primary modulation modes: a BPM-BPSK mode (good for both coherent and non-coherent receivers) and an OOK mode (cheap, long-range). Everything shared by both modes lives in 13.1; the mode-specific details follow in 13.2 and 13.3.",
+      "zh": "IEEE 802.15.8 对等感知通信（PAC，Peer Aware Communications）定义了多种物理层（PHY）。其中之一是 UWB 物理层——超宽带（Ultra-Wideband）——这是一种脉冲无线电方案，在 3.1 GHz 到 10.6 GHz 之间的极宽信道上发射极短的、受带限的脉冲。由于每个脉冲都极短、带宽又极大，UWB 天生擅长精确测距（ranging）以及数据传输。13.1.1（总则）告诉我们 UWB 物理层支持两种主要调制模式：BPM-BPSK 模式（既适合相干接收机也适合非相干接收机）和 OOK 模式（成本低、覆盖远）。两种模式共用的内容都放在 13.1 中；各自专属的细节则在 13.2 和 13.3 中展开。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 480 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><rect x=\"10\" y=\"30\" width=\"150\" height=\"34\" stroke=\"currentColor\"/><rect x=\"160\" y=\"30\" width=\"90\" height=\"34\" stroke=\"currentColor\"/><rect x=\"250\" y=\"30\" width=\"220\" height=\"34\" stroke=\"currentColor\"/><text x=\"85\" y=\"52\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">SHR preamble</text><text x=\"205\" y=\"52\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">PHR</text><text x=\"360\" y=\"52\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">PSDU (MAC frame)</text><text x=\"85\" y=\"22\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">SYNC + SFD</text><text x=\"205\" y=\"22\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">19 bits</text><text x=\"360\" y=\"22\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">payload</text><text x=\"10\" y=\"82\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">transmitted first in time -></text></svg>",
+      "caption": {
+        "en": "The UWB PPDU (PHY protocol data unit), from clause 13.1.2: SHR preamble first, then the PHR, then the PSDU. The leftmost field is sent first.",
+        "zh": "UWB 的 PPDU（物理层协议数据单元），出自 13.1.2：先是 SHR 前导码，再是 PHR，最后是 PSDU。最左边的字段最先发送。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "How does a frame get built? Clause 13.1.3 (PPDU encoding process) lists the assembly line: (a) Reed-Solomon encode the PSDU (PHY service data unit — the MAC payload), (b) build the 19-bit PHR (PHY header) with SECDED check bits and prepend it, (c) optionally convolutional-code the data, (d) modulate and spread, then (e) add the SHR (synchronization header) preamble. The PHR itself (13.1.4) carries the three facts a receiver must know before it can decode the rest: the PSDU data rate, the preamble duration, and the frame length — plus six parity bits. There are two PHR layouts: 13.1.4.2 for frames up to 127 octets, and 13.1.4.3 for frames up to 1023 octets (the longer one simply inverts the SECDED bits so one checker handles both).",
+      "zh": "一帧是怎么组装出来的？13.1.3（PPDU 编码过程）列出了这条流水线：(a) 对 PSDU（物理层服务数据单元，即 MAC 净荷）做 Reed-Solomon 编码；(b) 构造带 SECDED 校验位的 19 比特 PHR（物理层头），并前置到 PSDU 之前；(c) 可选地对数据做卷积编码；(d) 调制与扩频；最后 (e) 加上 SHR（同步头）前导码。PHR 本身（13.1.4）承载着接收机解码其余部分前必须知道的三件事：PSDU 数据速率、前导码时长、帧长度——外加六个校验位。PHR 有两种布局：13.1.4.2 用于不超过 127 字节的帧，13.1.4.3 用于不超过 1023 字节的帧（较长的那种只是把 SECDED 位取反，因此一套校验器即可处理两者）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Acronym cheat-sheet: SHR = synchronization header (the preamble), PHR = PHY header, PSDU = PHY service data unit (the payload), SECDED = single-error-correct/double-error-detect, FEC = forward error correction, PRF = pulse repetition frequency, RMARKER = the reference marker instant used for time-stamping. Defining these once makes the rest of Clause 13 readable.",
+      "zh": "缩写速查表：SHR = 同步头（即前导码），PHR = 物理层头，PSDU = 物理层服务数据单元（即净荷），SECDED = 单错纠正/双错检测，FEC = 前向纠错，PRF = 脉冲重复频率，RMARKER = 用于打时间戳的参考标记时刻。把这些先定义清楚，Clause 13 的其余部分读起来就顺了。"
+    },
+    {
+      "type": "prose",
+      "en": "The data field (13.1.5) is protected by forward error correction (FEC). Clause 13.1.6.1 explains it is a concatenated code: an outer Reed-Solomon block code wrapped around an inner half-rate convolutional code. Clause 13.1.6.2 spells out the systematic Reed-Solomon RS6(63,55) code over the Galois field GF(2^6) that appends 48 parity bits, and 13.1.6.3 gives the rate-1/2 systematic convolutional encoder (generators g0 and g1). Because both codes are systematic, a simple receiver can even skip decoding and just read the raw information bits. Finally, 13.1.7 (band allocation) lists the nine channel bands across 3.1–10.6 GHz; whichever you pick, the minimum 10 dB bandwidth must be at least 500 MHz.",
+      "zh": "数据字段（13.1.5）由前向纠错（FEC）保护。13.1.6.1 说明它是一种级联码：外层是 Reed-Solomon 分组码，内层套着一个半速率卷积码。13.1.6.2 详细给出在伽罗瓦域 GF(2^6) 上的系统 Reed-Solomon RS6(63,55) 码，它会追加 48 个校验位；13.1.6.3 给出速率为 1/2 的系统卷积编码器（生成多项式 g0 和 g1）。由于两种码都是系统码，简单的接收机甚至可以跳过译码、直接读取原始信息位。最后，13.1.7（频段分配）列出了横跨 3.1–10.6 GHz 的九个信道频段；无论选哪个，最小 10 dB 带宽都必须至少为 500 MHz。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[PSDU] --> B[Reed-Solomon<br/>+48 parity]\n  B --> C[Prepend PHR<br/>+SECDED]\n  C --> D[Convolutional<br/>rate 1/2]\n  D --> E[Modulate<br/>+ spread]\n  E --> F[Add SHR<br/>preamble]\n  F --> G[RF pulses]",
+      "zh": "flowchart LR\n  A[PSDU] --> B[Reed-Solomon<br/>+48校验]\n  B --> C[前置PHR<br/>+SECDED]\n  C --> D[卷积码<br/>速率1/2]\n  D --> E[调制<br/>+扩频]\n  E --> F[加SHR<br/>前导码]\n  F --> G[射频脉冲]"
+    },
+    {
+      "type": "prose",
+      "en": "Now the first modulation mode. BPM-BPSK (13.2.1) combines burst position modulation (BPM) — where in the symbol the burst of pulses sits — with binary phase-shift keying (BPSK) — whether that burst's polarity is +1 or -1. So each symbol carries two bits at once. Its SHR preamble (13.2.2) helps the receiver lock on: 13.2.2.2 defines the SYNC field built from one of 11 ternary preamble codes spread by a chosen factor (together yielding 48 near-orthogonal virtual channels), 13.2.2.3 defines the SFD (start-of-frame delimiter) that marks the RMARKER, and 13.2.2.4 sums up the preamble timing. The PHR/PSDU symbol structure (13.2.3) splits each symbol into two BPM halves, hops the burst position with a scrambler, and supports data rates from 110 kb/s up to 27.24 Mb/s.",
+      "zh": "现在看第一种调制模式。BPM-BPSK（13.2.1）把脉冲位置调制（BPM，burst position modulation）——脉冲突发落在符号中的哪一半——与二进制相移键控（BPSK）——这个突发的极性是 +1 还是 -1——结合起来。因此每个符号一次承载两个比特。它的 SHR 前导码（13.2.2）帮助接收机捕获同步：13.2.2.2 定义 SYNC 字段，它由 11 个三元前导码之一经选定的扩频因子扩展而成（合起来产生 48 个近乎正交的虚拟信道）；13.2.2.3 定义标记 RMARKER 的 SFD（帧起始定界符）；13.2.2.4 汇总前导码定时。PHR/PSDU 的符号结构（13.2.3）把每个符号分成两个 BPM 半区，用扰码器对突发位置做跳变，并支持从 110 kb/s 一直到 27.24 Mb/s 的数据速率。"
+    },
+    {
+      "type": "prose",
+      "en": "The second mode is OOK (on-off keying, 13.3.1): a pulse means a 1, no pulse means a 0, sent at a steady 1 MHz PRF without hopping. It is deliberately simpler — there is no mandated pulse template, so cheap impulse generators work, and high-energy pulses give long range. Its SHR (13.3.2) repeats a length-31 Gold code, with the SFD being the logical inversion of that code. Clause 13.3.3 maps the rate bits R1,R0 to 8/4/2/1 chips per symbol; 13.3.4 fixes the chip interval at 1 microsecond regardless of rate; and 13.3.5 says any pulse is compliant as long as it fits the 13.1.7 band plan and lasts no longer than one thirty-second of a chip.",
+      "zh": "第二种模式是 OOK（开关键控，on-off keying，13.3.1）：有脉冲代表 1，无脉冲代表 0，以恒定的 1 MHz PRF 发送、且不跳变。它刻意做得更简单——不规定脉冲模板，因此廉价的脉冲发生器即可工作，而高能量脉冲带来远距离覆盖。它的 SHR（13.3.2）重复一个长度为 31 的 Gold 码，SFD 则是该码的逻辑取反。13.3.3 把速率位 R1、R0 映射为每符号 8/4/2/1 个码片；13.3.4 把码片间隔固定为 1 微秒，与速率无关；13.3.5 规定：只要落在 13.1.7 的频段规划内、且持续时间不超过一个码片的三十二分之一，任何脉冲都算合规。"
+    },
+    {
+      "type": "prose",
+      "en": "What makes UWB special is ranging, and ranging needs a clock. Clause 13.4.1 (General) says the UWB PHY time-stamps the exact instant the RMARKER crosses the antenna using a ranging counter. Clause 13.4.2 (Time units) sets the resolution: for BPM-BPSK, the least-significant bit is 1/128 of a chip at 499.2 MHz (so fine that a real 64 GHz counter is not expected — it is computed); for OOK it is about 1 ns. Clause 13.4.3 (Antenna delays) reminds us the timestamp actually happens deep in the digital receiver, so the antenna-to-digital delay must be subtracted (on receive) or added (on transmit) to refer the timestamp back to the antenna — though how you measure that delay is left to the implementer.",
+      "zh": "UWB 之所以特别，关键在于测距，而测距需要时钟。13.4.1（总则）指出，UWB 物理层用一个测距计数器，对 RMARKER 跨过天线的精确时刻打时间戳。13.4.2（时间单位）规定了分辨率：对 BPM-BPSK，最低有效位是 499.2 MHz 下一个码片的 1/128（精细到不指望真有 64 GHz 的物理计数器——它是算出来的）；对 OOK 约为 1 ns。13.4.3（天线时延）提醒我们：时间戳实际发生在接收机数字域深处，因此必须把天线到数字域的时延减去（接收时）或加上（发送时），才能把时间戳折算回天线处——不过如何测量这个时延则交给实现者决定。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 14 is a short, self-contained topic: transmit power control. Clause 14.1 (General) is upfront that this is an optional feature, and notably it applies to PAC's OFDMA PHY or GFSK PHY (not the UWB PHY of Clause 13). Clause 14.2 (Notation) sets up the symbols: a peer device (PD) with M unicast links has a transmit power P_i for the i-th link, a stage-by-stage control value, and a ceiling P_max that varies by band (1 W at 2.4 GHz and 5.7 GHz, down to 1 mW in some sub-1 GHz bands). Clause 14.3 (Power control procedure) is the algorithm: after two PDs successfully peer, the higher layer triggers MLME-POWERCONTROL.request carrying the packet-delivery-ratio list, the received-power list, and the noise-plus-interference list — and the MAC layer management entity uses those measurements to set each link's power, modulation, and coding rate.",
+      "zh": "Clause 14 是一个简短、自成一体的主题：发射功率控制。14.1（总则）开门见山地说明这是一个可选特性，而且值得注意的是，它适用于 PAC 的 OFDMA 物理层或 GFSK 物理层（而非 Clause 13 的 UWB 物理层）。14.2（符号约定）建立起记号：一个拥有 M 条单播链路的对等设备（PD，peer device）对第 i 条链路有发射功率 P_i、一个逐阶段的控制值、以及一个随频段而变的上限 P_max（2.4 GHz 与 5.7 GHz 为 1 W，某些 1 GHz 以下频段低至 1 mW）。14.3（功率控制过程）就是算法本身：两个 PD 成功配对后，高层通过 MLME-POWERCONTROL.request 触发流程，携带分组投递率列表、接收功率列表、以及噪声加干扰列表——MAC 层管理实体据此设定每条链路的功率、调制方式与编码速率。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause this lesson teaches, by exact number",
+        "zh": "覆盖地图——本课所教每个条款的精确编号"
+      },
+      "en": "Clause 13.1 UWB PHY: 13.1.1 General (impulse radio, two modes, 3.1-10.6 GHz); 13.1.2 PPDU format (SHR, PHR, PSDU order); 13.1.3 PPDU encoding process (the 5-step assembly line and the H/D/T-to-symbol mapping); 13.1.4 PHY header (PHR) — 19 bits + 6 parity, with 13.1.4.1 general, 13.1.4.2 the up-to-127-octet layout, 13.1.4.3 the up-to-1023-octet layout; 13.1.5 Data field (RS then convolutional); 13.1.6 FEC — 13.1.6.1 general (concatenated code), 13.1.6.2 Reed-Solomon RS6(63,55) over GF(2^6) adding 48 parity bits, 13.1.6.3 rate-1/2 systematic convolutional encoder; 13.1.7 band allocation (9 channels, min 500 MHz bandwidth). Clause 13.2 BPM-BPSK: 13.2.1 general (BPM + BPSK, 2 bits/symbol, 16/64 MHz PRF); 13.2.2 SHR preamble (general, SYNC ternary codes, SFD, timing across 13.2.2.1-13.2.2.4); 13.2.3 PHR/PSDU symbol structure and modulation (two BPM halves, burst hopping, rate table across 13.2.3.1-13.2.3.5); 13.2.4 RF requirements (pulse mask, PSD mask, +/-20 ppm chip clock across 13.2.4.1-13.2.4.3). Clause 13.3 OOK: 13.3.1 general description (1 MHz PRF, no template, long range); 13.3.2 format of SHR (length-31 Gold code, inverted SFD); 13.3.3 spreading and data rates (R1,R0 to 8/4/2/1 chips); 13.3.4 symbol structure (1 us chip interval); 13.3.5 compliant pulses (fit band plan, <= Tchip/32). Clause 13.4 Timestamps/time units: 13.4.1 general (ranging counter at RMARKER); 13.4.2 time units (1/128 chip for BPM-BPSK, ~1 ns for OOK); 13.4.3 antenna delays (subtract on RX, add on TX). Clause 14 Transmit power control: 14.1 general (optional; OFDMA/GFSK PHY); 14.2 notation (P_i, P_max per band, M unicast links); 14.3 power control procedure (MLME-POWERCONTROL.request with PDR/received-power/noise lists).",
+      "zh": "13.1 UWB 物理层：13.1.1 总则（脉冲无线电、两种模式、3.1-10.6 GHz）；13.1.2 PPDU 格式（SHR、PHR、PSDU 的顺序）；13.1.3 PPDU 编码过程（五步流水线及头/数据/尾比特到符号的映射）；13.1.4 物理层头（PHR）——19 比特 + 6 校验，含 13.1.4.1 总则、13.1.4.2 不超 127 字节布局、13.1.4.3 不超 1023 字节布局；13.1.5 数据字段（先 RS 后卷积）；13.1.6 FEC——13.1.6.1 总则（级联码）、13.1.6.2 GF(2^6) 上加 48 校验位的 Reed-Solomon RS6(63,55)、13.1.6.3 速率 1/2 系统卷积编码器；13.1.7 频段分配（9 个信道，最小 500 MHz 带宽）。13.2 BPM-BPSK：13.2.1 总则（BPM + BPSK，每符号 2 比特，16/64 MHz PRF）；13.2.2 SHR 前导码（总则、SYNC 三元码、SFD、定时，覆盖 13.2.2.1-13.2.2.4）；13.2.3 PHR/PSDU 符号结构与调制（两个 BPM 半区、突发跳变、速率表，覆盖 13.2.3.1-13.2.3.5）；13.2.4 射频要求（脉冲模板、PSD 模板、±20 ppm 码片时钟，覆盖 13.2.4.1-13.2.4.3）。13.3 OOK：13.3.1 总体描述（1 MHz PRF、无模板、远距离）；13.3.2 SHR 格式（长度 31 Gold 码、取反 SFD）；13.3.3 扩频与数据速率（R1,R0 对应 8/4/2/1 码片）；13.3.4 符号结构（1 微秒码片间隔）；13.3.5 合规脉冲（落在频段规划内、<= Tchip/32）。13.4 时间戳与时间单位：13.4.1 总则（RMARKER 处的测距计数器）；13.4.2 时间单位（BPM-BPSK 为 1/128 码片，OOK 约 1 ns）；13.4.3 天线时延（接收减、发送加）。14 发射功率控制：14.1 总则（可选；OFDMA/GFSK 物理层）；14.2 符号约定（P_i、各频段 P_max、M 条单播链路）；14.3 功率控制过程（携带 PDR/接收功率/噪声列表的 MLME-POWERCONTROL.request）。",
+      "cite": {
+        "pdf_id": "802158-2017",
+        "pages": [
+          242,
+          243,
+          245,
+          246,
+          247,
+          248,
+          249,
+          250,
+          251,
+          252,
+          256,
+          257,
+          258,
+          263,
+          266,
+          267,
+          268
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two takeaways to remember Clauses 13 and 14: (1) the UWB PHY is one signal flow shared by two modulation modes — BPM-BPSK (two bits per symbol, hopped bursts) and OOK (one pulse = one bit) — wrapped in a Reed-Solomon + convolutional FEC sandwich, with nanosecond-class timestamps for ranging. (2) Transmit power control is a separate, optional knob for the OFDMA/GFSK PHYs that caps and tunes per-link power from link-quality measurements — it is not part of the UWB PHY at all.",
+      "zh": "记住 Clause 13 与 14 的两个要点：(1) UWB 物理层是一条信号流，被两种调制模式共享——BPM-BPSK（每符号两比特、突发跳变）与 OOK（一个脉冲 = 一个比特）——外面包着 Reed-Solomon + 卷积码的 FEC 夹心，并配备纳秒级时间戳用于测距。(2) 发射功率控制是面向 OFDMA/GFSK 物理层的一个独立、可选的调节旋钮，它依据链路质量测量来设定并约束每条链路的功率——它完全不属于 UWB 物理层。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        242,
+        243,
+        245,
+        246,
+        247,
+        248,
+        249,
+        250,
+        251
+      ],
+      "note": "13.1 UWB PHY: general, PPDU format/encoding, PHR layouts, data field, FEC (Reed-Solomon + convolutional), band allocation."
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        252,
+        256,
+        257,
+        258,
+        261,
+        263
+      ],
+      "note": "13.2 BPM-BPSK modulation mode: general, SHR preamble (SYNC/SFD/timing), PHR/PSDU symbol structure and modulation, RF requirements."
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        263,
+        265,
+        266,
+        267
+      ],
+      "note": "13.3 OOK modulation mode (general, SHR Gold code, spreading/data rates, symbol structure, compliant pulses) and 13.4 timestamps/time units/antenna delays."
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        268
+      ],
+      "note": "14 Transmit power control: general (optional, OFDMA/GFSK PHY), notation (P_i, P_max), and power control procedure (MLME-POWERCONTROL.request)."
+    }
+  ],
+  "covers": [
+    "802158-2017:13.1.1",
+    "802158-2017:13.1.2",
+    "802158-2017:13.1.3",
+    "802158-2017:13.1.4",
+    "802158-2017:13.1.5",
+    "802158-2017:13.1.6",
+    "802158-2017:13.1.7",
+    "802158-2017:13.2.1",
+    "802158-2017:13.2.2",
+    "802158-2017:13.2.3",
+    "802158-2017:13.2.4",
+    "802158-2017:13.3.1",
+    "802158-2017:13.3.2",
+    "802158-2017:13.3.3",
+    "802158-2017:13.3.4",
+    "802158-2017:13.3.5",
+    "802158-2017:13.4.1",
+    "802158-2017:13.4.2",
+    "802158-2017:13.4.3",
+    "802158-2017:14.1",
+    "802158-2017:14.2",
+    "802158-2017:14.3"
+  ],
+  "track": "pan-pac"
+}

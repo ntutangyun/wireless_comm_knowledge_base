@@ -1,0 +1,189 @@
+{
+  "id": "pan-optical-13",
+  "title": {
+    "en": "Clause 16 (PHY VII specifications)",
+    "zh": "Clause 16（PHY VII 规范）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "PHY VII is the family of higher-rate, longer-range Optical Camera Communication (OCC) physical layers added by IEEE Std 802.15.7a-2024. \"Optical Camera Communication\" simply means a flickering LED transmits data and an ordinary image sensor (a camera) receives it. Clause 16 defines five distinct PHY VII transmit chains, each tuned to a different trick of camera physics: RS-OFDM, MIMO-COOK, O-NOMA, MIMO-OOK, and Hybrid modulation. This lesson walks each one as a transmitter block diagram, then maps every sub-clause so you can navigate the standard by number.",
+      "zh": "PHY VII 是 IEEE Std 802.15.7a-2024 新增的一组「更高速率、更远距离」的光学摄像头通信（OCC，Optical Camera Communication）物理层。所谓「光学摄像头通信」，就是用闪烁的 LED 发送数据，再用普通图像传感器（相机）接收。Clause 16 定义了五条各不相同的 PHY VII 发送链路，每一条都利用了相机成像的一种特性：RS-OFDM、MIMO-COOK、O-NOMA、MIMO-OOK 与混合调制。本课逐一以发射机框图讲解，并把每个子条款按编号映射出来，方便你按号查阅标准。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two camera capture tricks recur throughout Clause 16. The rolling shutter exposes image rows one after another, so a single photo of one fast-flickering LED records many bits stacked as bright/dark bands. The frame rate (global shutter) instead captures whole frames in time, so bits arrive frame by frame. Whenever a mode says \"electronic shutter\" it relies on rolling-shutter banding; \"frame rate\" capture relies on the slower frame cadence.",
+      "zh": "Clause 16 反复用到两种相机捕获技巧。卷帘快门（rolling shutter）逐行依次曝光，因此对一个快速闪烁 LED 拍一张照片，就能把许多比特记录成明暗相间的条纹。而帧率（frame rate，即全局快门）则按时间逐帧捕获，比特一帧一帧地到达。凡是模式中提到「电子快门」，靠的就是卷帘条纹；提到「帧率」捕获的，靠的是较慢的逐帧节奏。"
+    },
+    {
+      "type": "prose",
+      "en": "16.1 — RS-OFDM (Rolling Shutter Orthogonal Frequency Division Multiplexing). OFDM packs data onto many parallel subcarriers; here the rolling shutter captures that OFDM signal as sequential row snapshots (16.1.1 reference architecture; data flows: sequence-number insert → FEC → QAM mapping → Hermitian mapping → IDFT → add cyclic prefix → LED). The packet (16.1.2) splits each data sub-packet into a sequence-number (SN) part plus a payload part, length set by phyOfdmPacket. The SN (16.1.3, attribute phyOfdmSn) carries asynchronous timing hints that help the receiver decode. FEC (16.1.4) protects the payload with Hamming (8,4) or Reed-Solomon (15,11). QAM mapping (16.1.5) uses 4-QAM or 16-QAM — QAM (Quadrature Amplitude Modulation) encodes bits as points in a 2-D amplitude/phase grid.",
+      "zh": "16.1 — RS-OFDM（卷帘快门正交频分复用，Rolling Shutter Orthogonal Frequency Division Multiplexing）。OFDM 把数据装载到许多并行子载波上；这里卷帘快门把该 OFDM 信号逐行快照式地捕获（16.1.1 参考架构；数据流为：序号插入 → FEC → QAM 映射 → 厄米映射 → IDFT → 加循环前缀 → LED）。数据包（16.1.2）把每个数据子包拆成序号（SN）部分加载荷部分，长度由 phyOfdmPacket 设定。SN（16.1.3，属性 phyOfdmSn）携带异步定时提示，帮助接收端解码。FEC（16.1.4）用 Hamming (8,4) 或 Reed-Solomon (15,11) 保护载荷。QAM 映射（16.1.5）采用 4-QAM 或 16-QAM——QAM（正交幅度调制）把比特编码为二维幅度/相位网格上的点。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Hermitian mapping (16.1.6) is the clever step that makes OFDM work over light. A normal IDFT (Inverse Discrete Fourier Transform) gives complex numbers, but an LED can only emit real, non-negative intensity. Hermitian symmetry mirrors the subcarriers (X(N-m) = conjugate of X(m)) so the IDFT output comes out purely real — exactly what an intensity-modulated LED needs. The mode table (16.1.7, attribute phyOfdmMode) lists four modes at 20/40 kHz optical clock, reaching 2.304 to 9.216 Mbps.",
+      "zh": "厄米映射（16.1.6）是让 OFDM 能在光上工作的巧妙一步。普通的 IDFT（逆离散傅里叶变换）输出复数，但 LED 只能发出实数、非负的光强。厄米对称把子载波做镜像（X(N-m) 等于 X(m) 的共轭），使 IDFT 输出变为纯实数——正是强度调制 LED 所需。模式表（16.1.7，属性 phyOfdmMode）列出 4 种模式，光时钟为 20/40 kHz，速率从 2.304 到 9.216 Mbps。"
+    },
+    {
+      "type": "prose",
+      "en": "16.2 — MIMO-COOK (Multiple Input Multiple Output Camera On-Off Keying). MIMO here means several LEDs transmit at once and the camera images them as separate spots; OOK (On-Off Keying) is the simplest light code — LED on = 1, off = 0; the leading C marks the camera/rolling-shutter capture. The chain (16.2.1) is: LED-ID insert → sequence-number insert → FEC → RLL encode → preamble insert → OOK mapping → multiple LEDs. The packet (16.2.2, attribute phyMimoCookSubPacketLength) carries four subfields — LED-ID, sequence number, forward payload, backward payload — and repeats sub-packets so no data is lost between adjacent images. FEC (16.2.3) offers Hamming (8,4), Hamming (15,11), or RS (15,11). The SN (16.2.4, phyMimoCookSn) again carries decode-aiding timing.",
+      "zh": "16.2 — MIMO-COOK（多输入多输出摄像头通断键控，Multiple Input Multiple Output Camera On-Off Keying）。这里的 MIMO 指多个 LED 同时发送、相机将它们成像为分离的光点；OOK（通断键控）是最简单的光编码——LED 亮为 1、灭为 0；开头的 C 表示相机/卷帘捕获。链路（16.2.1）为：LED-ID 插入 → 序号插入 → FEC → RLL 编码 → 前导插入 → OOK 映射 → 多个 LED。数据包（16.2.2，属性 phyMimoCookSubPacketLength）含四个子字段——LED-ID、序号、前向载荷、后向载荷——并重复子包，使相邻图像之间不丢数据。FEC（16.2.3）提供 Hamming (8,4)、Hamming (15,11) 或 RS (15,11)。SN（16.2.4，phyMimoCookSn）同样携带辅助解码的定时信息。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "RLL (Run-Length Limited) coding appears in every OOK-based PHY VII mode (16.2.5, 16.4.5). Its job is dimming control: Manchester or 4B6B coding keeps the LED at roughly 50% average brightness so the light looks steadily lit to the human eye while still carrying data. The preamble (16.2.6, phyMimoCookPreamble) is a fixed bit pattern repeated in every sub-packet so the receiver can find the start of a packet. The mode table (16.2.7, phyMimoCookMode) spans 10–40 kHz with 2–4 LEDs, reaching 2 to 5.76 Mbps.",
+      "zh": "RLL（游程长度受限，Run-Length Limited）编码出现在每一种基于 OOK 的 PHY VII 模式中（16.2.5、16.4.5）。它的作用是调光控制：Manchester 或 4B6B 编码使 LED 平均亮度保持在约 50%，让人眼看上去是稳定点亮，同时仍能承载数据。前导（16.2.6，phyMimoCookPreamble）是每个子包中重复的固定比特图样，供接收端找到包的起始。模式表（16.2.7，phyMimoCookMode）覆盖 10–40 kHz、2–4 个 LED，速率为 2 到 5.76 Mbps。"
+    },
+    {
+      "type": "prose",
+      "en": "16.3 — O-NOMA (Optical Non-Orthogonal Multiple Access). NOMA lets several signals share the same channel by stacking them at different power levels; the receiver peels them apart by strength. In O-NOMA the camera captures this power-layered signal in snapshots (16.3.1: each layer runs sequence-number insert → FEC → packet mapping → power allocation, then all layers sum into one LED). The packet (16.3.2, phyNomaPacketLength) is an SN part plus a payload part. FEC (16.3.3, phyNomaFec) is Hamming (8,4) or RS (15,11). Power allocation (16.3.4, phyNomaPowerLevel) sets how many power stages stack — e.g. a two-stage scheme superimposes a strong and a weak layer. The mode table (16.3.5, phyNomaMode) defines two modes at 2/4 kHz with 2–3 power levels, 0.4–0.6 Mbps.",
+      "zh": "16.3 — O-NOMA（光学非正交多址，Optical Non-Orthogonal Multiple Access）。NOMA 让多路信号以不同功率电平叠加，从而共享同一信道；接收端按强弱把它们逐层剥离。在 O-NOMA 中，相机以快照方式捕获这种功率分层信号（16.3.1：每一层经序号插入 → FEC → 包映射 → 功率分配，再把各层叠加进一个 LED）。数据包（16.3.2，phyNomaPacketLength）为 SN 部分加载荷部分。FEC（16.3.3，phyNomaFec）为 Hamming (8,4) 或 RS (15,11)。功率分配（16.3.4，phyNomaPowerLevel）设定叠加几级功率——例如两级方案叠加一强一弱两层。模式表（16.3.5，phyNomaMode）定义两种模式，2/4 kHz、2–3 个功率电平，0.4–0.6 Mbps。"
+    },
+    {
+      "type": "prose",
+      "en": "16.4 — MIMO-OOK (Multiple Input Multiple Output On-Off Keying). Unlike MIMO-COOK, this one uses the frame rate (not rolling-shutter banding) to capture OOK from multiple LEDs (16.4.1: optional outer FEC → LED-ID insert → inner FEC → RLL encode → preamble insert → OOK mapping → multiple LEDs). The clock is set at least twice below the camera frame rate so frame-rate jitter does not corrupt symbols (16.4.2, phyMimoOokSubPacketLength). FEC is two-tier (16.4.3): an inner FEC of CC(1,4) or CC(1,3) — CC means Convolutional Code — plus an optional outer FEC (Hamming (8,4), RS (15,11), RS (15,7)) protecting the PHR (PHY Header) and PSDU (PHY Service Data Unit). LED-ID (16.4.4, phyMimoOokLedId) tags each packet so several light sources can be told apart.",
+      "zh": "16.4 — MIMO-OOK（多输入多输出通断键控，Multiple Input Multiple Output On-Off Keying）。与 MIMO-COOK 不同，它利用帧率（而非卷帘条纹）从多个 LED 捕获 OOK（16.4.1：可选外层 FEC → LED-ID 插入 → 内层 FEC → RLL 编码 → 前导插入 → OOK 映射 → 多个 LED）。时钟设为至少低于相机帧率的二分之一，使帧率抖动不会破坏符号（16.4.2，phyMimoOokSubPacketLength）。FEC 分两级（16.4.3）：内层 FEC 为 CC(1,4) 或 CC(1,3)——CC 指卷积码（Convolutional Code）——外加可选外层 FEC（Hamming (8,4)、RS (15,11)、RS (15,7)），保护 PHR（PHY 头）和 PSDU（PHY 服务数据单元）。LED-ID（16.4.4，phyMimoOokLedId）为每个包打标记，使多个光源可被区分。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "MIMO-OOK reuses the same RLL dimming idea (16.4.5, phyMimoOokRLLCode — Manchester or 4B6B) and the same repeated-preamble start marker (16.4.6, phyMimoOokPreamble) as MIMO-COOK. Its mode table (16.4.7, phyMimoOokMode) runs at low optical clocks (1.5/2/2.5 kHz) with Manchester, 4B6B, or 8B10B RLL, and an extra 8B10B mode — yielding modest 8–16 kbps rates, the trade-off for using slow frame-rate capture instead of fast rolling-shutter banding.",
+      "zh": "MIMO-OOK 沿用与 MIMO-COOK 相同的 RLL 调光思路（16.4.5，phyMimoOokRLLCode——Manchester 或 4B6B）和相同的重复前导起始标记（16.4.6，phyMimoOokPreamble）。其模式表（16.4.7，phyMimoOokMode）在较低光时钟（1.5/2/2.5 kHz）下运行，RLL 用 Manchester、4B6B 或 8B10B，并多出一个 8B10B 模式——速率为较低的 8–16 kbps，这是用慢速帧率捕获替代快速卷帘条纹的代价。"
+    },
+    {
+      "type": "prose",
+      "en": "16.5 — Hybrid modulation. The core idea (16.5.1, 16.5.2): run a low-rate encoder and a high-rate encoder together, and embed the high-rate waveform inside each \"high\" and \"low\" period of the low-rate waveform, so one LED array carries two stacked streams (packet = preamble + low-rate payload + high-rate payload + tail bits, set by phyHybridModulationMode). Clause 16.5.3 gives three concrete hybrids: HOOK-OFDM (16.5.3.1) embeds OFDM inside C-OOK at 16/32 kHz, reaching 4.8–9.6 Mbps; HS2PSK-OFDM (16.5.3.2) embeds OFDM inside S2-PSK (Spatial 2-Phase-Shift Keying) captured by frame rate, 3.804–7.680 Mbps; BPPM (16.5.3.3) is Bi-level Pulse Position Modulation — high-rate PPM stacked with low-rate AM (Amplitude Modulation), 0.4–0.8 Mbps. The shared FEC rule (16.5.4) configures both streams via phyLowRateFec and phyHighRateFec.",
+      "zh": "16.5 — 混合调制。核心思想（16.5.1、16.5.2）：让低速编码器与高速编码器同时工作，并把高速波形嵌入低速波形的每个「高」「低」周期内，于是一个 LED 阵列承载两路叠加的数据流（数据包 = 前导 + 低速载荷 + 高速载荷 + 尾比特，由 phyHybridModulationMode 设定）。条款 16.5.3 给出三个具体混合方案：HOOK-OFDM（16.5.3.1）在 16/32 kHz 下把 OFDM 嵌入 C-OOK，速率 4.8–9.6 Mbps；HS2PSK-OFDM（16.5.3.2）把 OFDM 嵌入由帧率捕获的 S2-PSK（空间二相移键控，Spatial 2-Phase-Shift Keying），速率 3.804–7.680 Mbps；BPPM（16.5.3.3）即双电平脉冲位置调制（Bi-level Pulse Position Modulation）——高速 PPM 与低速 AM（幅度调制）叠加，速率 0.4–0.8 Mbps。共享的 FEC 规则（16.5.4）通过 phyLowRateFec 与 phyHighRateFec 配置两路数据流。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"8\" y=\"16\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">RS-OFDM transmit chain (16.1.1)</text><rect x=\"8\" y=\"40\" width=\"78\" height=\"40\"/><text x=\"47\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">SN insert</text><rect x=\"100\" y=\"40\" width=\"60\" height=\"40\"/><text x=\"130\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">FEC</text><rect x=\"174\" y=\"40\" width=\"78\" height=\"40\"/><text x=\"213\" y=\"60\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">QAM</text><text x=\"213\" y=\"72\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">map</text><rect x=\"266\" y=\"40\" width=\"84\" height=\"40\"/><text x=\"308\" y=\"60\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Hermitian</text><text x=\"308\" y=\"72\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">map</text><rect x=\"364\" y=\"40\" width=\"60\" height=\"40\"/><text x=\"394\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">IDFT</text><rect x=\"438\" y=\"40\" width=\"86\" height=\"40\"/><text x=\"481\" y=\"60\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">add cyclic</text><text x=\"481\" y=\"72\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">prefix</text><rect x=\"538\" y=\"40\" width=\"60\" height=\"40\"/><text x=\"568\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">LED</text><line x1=\"86\" y1=\"60\" x2=\"100\" y2=\"60\"/><line x1=\"160\" y1=\"60\" x2=\"174\" y2=\"60\"/><line x1=\"252\" y1=\"60\" x2=\"266\" y2=\"60\"/><line x1=\"350\" y1=\"60\" x2=\"364\" y2=\"60\"/><line x1=\"424\" y1=\"60\" x2=\"438\" y2=\"60\"/><line x1=\"524\" y1=\"60\" x2=\"538\" y2=\"60\"/><text x=\"8\" y=\"120\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">Hermitian symmetry forces a purely real IDFT output so an intensity LED can emit it (16.1.6).</text></svg>",
+      "caption": {
+        "en": "The RS-OFDM transmit chain (16.1.1): the Hermitian mapping block is what lets a complex OFDM signal be emitted as a real, non-negative LED intensity.",
+        "zh": "RS-OFDM 发送链路（16.1.1）：厄米映射模块使复数 OFDM 信号能够以实数、非负的 LED 光强发出。"
+      }
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[PHY VII Clause 16] --> B[16.1 RS-OFDM<br/>rolling shutter + OFDM]\n  A --> C[16.2 MIMO-COOK<br/>rolling shutter + OOK]\n  A --> D[16.3 O-NOMA<br/>power-layered]\n  A --> E[16.4 MIMO-OOK<br/>frame rate + OOK]\n  A --> F[16.5 Hybrid<br/>low+high stacked]\n  F --> G[HOOK-OFDM]\n  F --> H[HS2PSK-OFDM]\n  F --> I[BPPM]",
+      "zh": "flowchart TD\n  A[PHY VII Clause 16] --> B[16.1 RS-OFDM<br/>卷帘 + OFDM]\n  A --> C[16.2 MIMO-COOK<br/>卷帘 + OOK]\n  A --> D[16.3 O-NOMA<br/>功率分层]\n  A --> E[16.4 MIMO-OOK<br/>帧率 + OOK]\n  A --> F[16.5 混合调制<br/>低速+高速叠加]\n  F --> G[HOOK-OFDM]\n  F --> H[HS2PSK-OFDM]\n  F --> I[BPPM]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every sub-clause of Clause 16 by number",
+        "zh": "覆盖地图：Clause 16 每个子条款按编号"
+      },
+      "en": "16.1 RS-OFDM — 16.1.1 reference architecture (Fig 216a chain); 16.1.2 data packet structure (SN + payload sub-packets, phyOfdmPacket); 16.1.3 sequence-number inserting (phyOfdmSn); 16.1.4 FEC (Hamming (8,4) / RS (15,11), phyOfdmFec); 16.1.5 QAM mapping (4-/16-QAM, phyOfdmQam); 16.1.6 Hermitian mapping (real IDFT output); 16.1.7 mode parameters (Table 151a, phyOfdmMode, 20/40 kHz, 2.304–9.216 Mbps).\n16.2 MIMO-COOK — 16.2.1 reference architecture (Fig 216c); 16.2.2 data packet (LED-ID + SN + forward + backward payload, phyMimoCookSubPacketLength); 16.2.3 FEC (Hamming (8,4)/(15,11), RS (15,11), phyMimoCookFec); 16.2.4 SN inserting (phyMimoCookSn); 16.2.5 RLL coding (Manchester/4B6B, phyMimoCookRLLCode); 16.2.6 preamble (phyMimoCookPreamble); 16.2.7 mode parameters (Table 151b, phyMimoCookMode, 10–40 kHz, 2–5.76 Mbps).\n16.3 O-NOMA — 16.3.1 reference architecture (Fig 216f, per-layer chain summed); 16.3.2 data packet (SN + payload, phyNomaPacketLength); 16.3.3 FEC (Hamming (8,4)/RS (15,11), phyNomaFec); 16.3.4 power allocation (n-stage, phyNomaPowerLevel); 16.3.5 mode parameters (Table 151c, phyNomaMode, 2/4 kHz, 0.4–0.6 Mbps).\n16.4 MIMO-OOK — 16.4.1 reference architecture (Fig 216i, inner+outer FEC); 16.4.2 data packet (clock ≤ half frame rate, phyMimoOokSubPacketLength); 16.4.3 FEC (inner CC(1,4)/CC(1,3), outer Hamming (8,4)/RS (15,11)/(15,7) on PHR+PSDU, phyMimoOokFec); 16.4.4 LED-ID inserting (phyMimoOokLedId); 16.4.5 RLL coding (phyMimoOokRLLCode); 16.4.6 preamble (phyMimoOokPreamble); 16.4.7 mode parameters (Table 151d, phyMimoOokMode, 1.5–2.5 kHz, 8–16 kbps).\n16.5 Hybrid modulation — 16.5.1 reference architecture (low+high encoder into LED array); 16.5.2 data packet structure (high embedded in low periods, phyHybridModulationMode); 16.5.3 examples — 16.5.3.1 HOOK-OFDM (Table 151e), 16.5.3.2 HS2PSK-OFDM (Table 151f), 16.5.3.3 BPPM (Table 151g); 16.5.4 FEC (phyLowRateFec, phyHighRateFec).",
+      "zh": "16.1 RS-OFDM——16.1.1 参考架构（图 216a 链路）；16.1.2 数据包结构（SN+载荷子包，phyOfdmPacket）；16.1.3 序号插入（phyOfdmSn）；16.1.4 FEC（Hamming (8,4)/RS (15,11)，phyOfdmFec）；16.1.5 QAM 映射（4-/16-QAM，phyOfdmQam）；16.1.6 厄米映射（IDFT 实数输出）；16.1.7 模式参数（表 151a，phyOfdmMode，20/40 kHz，2.304–9.216 Mbps）。\n16.2 MIMO-COOK——16.2.1 参考架构（图 216c）；16.2.2 数据包（LED-ID+SN+前向+后向载荷，phyMimoCookSubPacketLength）；16.2.3 FEC（Hamming (8,4)/(15,11)、RS (15,11)，phyMimoCookFec）；16.2.4 序号插入（phyMimoCookSn）；16.2.5 RLL 编码（Manchester/4B6B，phyMimoCookRLLCode）；16.2.6 前导（phyMimoCookPreamble）；16.2.7 模式参数（表 151b，phyMimoCookMode，10–40 kHz，2–5.76 Mbps）。\n16.3 O-NOMA——16.3.1 参考架构（图 216f，逐层链路叠加）；16.3.2 数据包（SN+载荷，phyNomaPacketLength）；16.3.3 FEC（Hamming (8,4)/RS (15,11)，phyNomaFec）；16.3.4 功率分配（n 级，phyNomaPowerLevel）；16.3.5 模式参数（表 151c，phyNomaMode，2/4 kHz，0.4–0.6 Mbps）。\n16.4 MIMO-OOK——16.4.1 参考架构（图 216i，内+外 FEC）；16.4.2 数据包（时钟 ≤ 帧率一半，phyMimoOokSubPacketLength）；16.4.3 FEC（内层 CC(1,4)/CC(1,3)，外层 Hamming (8,4)/RS (15,11)/(15,7) 保护 PHR+PSDU，phyMimoOokFec）；16.4.4 LED-ID 插入（phyMimoOokLedId）；16.4.5 RLL 编码（phyMimoOokRLLCode）；16.4.6 前导（phyMimoOokPreamble）；16.4.7 模式参数（表 151d，phyMimoOokMode，1.5–2.5 kHz，8–16 kbps）。\n16.5 混合调制——16.5.1 参考架构（低速+高速编码器送入 LED 阵列）；16.5.2 数据包结构（高速嵌入低速周期内，phyHybridModulationMode）；16.5.3 实例——16.5.3.1 HOOK-OFDM（表 151e）、16.5.3.2 HS2PSK-OFDM（表 151f）、16.5.3.3 BPPM（表 151g）；16.5.4 FEC（phyLowRateFec、phyHighRateFec）。",
+      "cite": {
+        "pdf_id": "802157a-2024",
+        "pages": [
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy mental sort: RS-OFDM and MIMO-COOK exploit rolling-shutter banding (electronic shutter) for high throughput; MIMO-OOK trades down to slow frame-rate capture; O-NOMA stacks users by power; Hybrid modulation stacks a fast stream inside a slow one. Across all five, the recurring building blocks are the same — sequence numbers for ordering, FEC for error protection, RLL for dimming, and a repeated preamble for packet sync — each surfaced as a configurable PHY PIB (PHY Information Base) attribute.",
+      "zh": "一个便于记忆的归类：RS-OFDM 与 MIMO-COOK 利用卷帘条纹（电子快门）追求高吞吐；MIMO-OOK 降级为慢速帧率捕获；O-NOMA 按功率叠加多用户；混合调制把快流嵌入慢流。五者反复出现的构件相同——序号用于排序、FEC 用于纠错、RLL 用于调光、重复前导用于包同步——每一项都体现为可配置的 PHY PIB（PHY 信息库）属性。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802157a-2024",
+      "pages": [
+        30,
+        31
+      ],
+      "note": "16.1 RS-OFDM: reference architecture, packet, SN, FEC, QAM, Hermitian mapping, mode parameters (Table 151a)."
+    },
+    {
+      "pdf_id": "802157a-2024",
+      "pages": [
+        31,
+        32,
+        33
+      ],
+      "note": "16.2 MIMO-COOK chain, packet, FEC, SN, RLL, preamble, mode parameters (Table 151b)."
+    },
+    {
+      "pdf_id": "802157a-2024",
+      "pages": [
+        33,
+        34,
+        35
+      ],
+      "note": "16.3 O-NOMA reference architecture, packet, FEC, power allocation, mode parameters (Table 151c)."
+    },
+    {
+      "pdf_id": "802157a-2024",
+      "pages": [
+        35,
+        36,
+        37
+      ],
+      "note": "16.4 MIMO-OOK chain, packet, inner/outer FEC, LED-ID, RLL, preamble, mode parameters (Table 151d)."
+    },
+    {
+      "pdf_id": "802157a-2024",
+      "pages": [
+        37,
+        38,
+        39,
+        40
+      ],
+      "note": "16.5 Hybrid modulation: architecture, packet, HOOK-OFDM/HS2PSK-OFDM/BPPM examples, FEC."
+    }
+  ],
+  "covers": [
+    "802157a-2024:16.1.1",
+    "802157a-2024:16.1.2",
+    "802157a-2024:16.1.3",
+    "802157a-2024:16.1.4",
+    "802157a-2024:16.1.5",
+    "802157a-2024:16.1.6",
+    "802157a-2024:16.1.7",
+    "802157a-2024:16.2.1",
+    "802157a-2024:16.2.2",
+    "802157a-2024:16.2.3",
+    "802157a-2024:16.2.4",
+    "802157a-2024:16.2.5",
+    "802157a-2024:16.2.6",
+    "802157a-2024:16.2.7",
+    "802157a-2024:16.3.1",
+    "802157a-2024:16.3.2",
+    "802157a-2024:16.3.3",
+    "802157a-2024:16.3.4",
+    "802157a-2024:16.3.5",
+    "802157a-2024:16.4.1",
+    "802157a-2024:16.4.2",
+    "802157a-2024:16.4.3",
+    "802157a-2024:16.4.4",
+    "802157a-2024:16.4.5",
+    "802157a-2024:16.4.6",
+    "802157a-2024:16.4.7",
+    "802157a-2024:16.5.1",
+    "802157a-2024:16.5.2",
+    "802157a-2024:16.5.3",
+    "802157a-2024:16.5.4"
+  ],
+  "track": "pan-optical"
+}

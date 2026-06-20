@@ -1,0 +1,122 @@
+{
+  "id": "pan-hr-wpan-36",
+  "title": {
+    "en": "The mmWave A/V PHY: HRP + LRP, From Coding to RF Limits",
+    "zh": "毫米波音视频 PHY：HRP 与 LRP，从编码到射频指标"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 11.4 defines the Audio/Visual (A/V) mode of the millimeter-wave (mmWave) PHY — the physical layer built for streaming uncompressed video and audio between consumer-electronics devices like a disc player and a display. It is deliberately asymmetric: one side is mostly a source, the other mostly a sink. To serve that traffic it runs TWO cooperating PHY modes, both using orthogonal frequency division multiplexing (OFDM, splitting data across many narrow subcarriers): a High-Rate PHY (HRP) for the bulk video/audio payload, and a Low-Rate PHY (LRP) for control, beacons, and acknowledgments. A device (DEV) picks one of four roles — HR0, HRRX, HRTX, or HRTR — depending on whether it can transmit and/or receive on the HRP (the LRP is always present).",
+      "zh": "11.4 节定义了毫米波（mmWave）PHY 的音视频（A/V）模式——这是为在消费电子设备之间（如影碟机与显示器）传输未压缩视频和音频而设计的物理层。它有意做成非对称的：一端主要是数据源，另一端主要是数据汇。为承载这类业务，它运行两个相互配合的 PHY 模式，二者都使用正交频分复用（OFDM，即把数据分散到许多窄子载波上）：用于承载大量视频/音频净荷的高速率 PHY（HRP），以及用于控制、信标和确认的低速率 PHY（LRP）。设备（DEV）会从 HR0、HRRX、HRTX、HRTR 四种角色中选取其一，取决于它能否在 HRP 上发送和/或接收（LRP 始终存在）。"
+    },
+    {
+      "type": "prose",
+      "en": "11.4.1 (General requirements) sets the operating envelope. Channelization (11.4.1.1) defines four HRP channels and, inside each, three LRP channels positioned relative to the HRP center frequency fc(HRP); a piconet uses one HRP and one LRP channel at a time, and any A/V implementation must support at least HRP channel 2. PHY-layer timing (11.4.1.2) names the key intervals: a short inter-frame space pSifsTime (≈2 µs) for receive-to-transmit and transmit-to-receive turnaround, pMifsTime between successive transmissions, a CCA (clear channel assessment) detect time pCcaDetectTime (9 µs), and a channel-switch budget pChannelSwitchTime (1000 µs). Data-size limits (11.4.1.3) cap the frame body and set a 512-octet minimum fragment, and the header check sequence (11.4.1.4) is a 32-bit CRC seeded all-ones to protect the header.",
+      "zh": "11.4.1 节（一般要求）规定了工作范围。信道划分（11.4.1.1）定义了 4 个 HRP 信道，并在每个 HRP 信道内定义相对于 HRP 中心频率 fc(HRP) 的 3 个 LRP 信道；微微网（piconet）每次只使用一个 HRP 信道和一个 LRP 信道，任何 A/V 实现都必须至少支持 HRP 信道 2。PHY 层定时（11.4.1.2）给出了关键时间间隔：用于收发转换的短帧间间隔 pSifsTime（约 2 µs），连续发送之间的 pMifsTime，空闲信道评估（CCA）检测时间 pCcaDetectTime（9 µs），以及信道切换预算 pChannelSwitchTime（1000 µs）。数据大小限制（11.4.1.3）限定了帧体并规定最小分片为 512 字节，头校验序列（11.4.1.4）是初值全 1 的 32 位 CRC，用于保护帧头。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why two PHYs? The HRP carries gigabit-per-second video but only ever runs inside directed channel time allocations (CTAs) — never in contention periods. The LRP is the always-available, robust control channel: every broadcast and multicast frame, every beacon, and every acknowledgment travels on the LRP. So the HRP is the firehose, the LRP is the steering wheel.",
+      "zh": "为什么要两个 PHY？HRP 承载每秒数 Gb 的视频，但只在定向的信道时间分配（CTA）内运行——绝不在竞争期内。LRP 则是始终可用、稳健的控制信道：每个广播和组播帧、每个信标以及每个确认都走 LRP。所以 HRP 是高压水枪，LRP 是方向盘。"
+    },
+    {
+      "type": "prose",
+      "en": "11.4.2 (Modulation and forward error correction) is the coding chain. The base rate is always an LRP mode (0, 1, or 2). The HRP supports an unequal/equal error protection split: EEP (equal error protection) treats all bits the same, while UEP (unequal error protection) protects the four most-significant bits (MSBs) of each octet more strongly than the four least-significant bits (LSBs) — perfect for video where the high bits matter most. The chain layers a scrambler, a Reed-Solomon (RS) outer code with field polynomial x^8+x^4+x^3+x^2+1, an outer interleaver, a rate-1/3 constraint-length-7 convolutional encoder (eight parallel encoders A–H for the HRP), puncturing to hit the target rate, a bit interleaver and tone interleaver, then QPSK/16-QAM mapping onto the OFDM subcarriers. The LRP uses a simpler chain with a 6-state scrambler and repetition coding.",
+      "zh": "11.4.2 节（调制与前向纠错）是编码链路。基本速率始终是某个 LRP 模式（0、1 或 2）。HRP 支持不等/相等差错保护的拆分：EEP（相等差错保护）对所有比特一视同仁，而 UEP（不等差错保护）对每字节的高 4 位（MSB）比低 4 位（LSB）保护得更强——这非常适合视频，因为高位最重要。该链路依次叠加扰码器、生成域多项式为 x^8+x^4+x^3+x^2+1 的里德-所罗门（RS）外码、外交织器、约束长度为 7 的 1/3 码率卷积编码器（HRP 使用 A–H 共 8 个并行编码器）、为达到目标码率的删余、比特交织与音调交织，最后将 QPSK/16-QAM 映射到 OFDM 子载波上。LRP 采用更简单的链路，含一个 6 状态扰码器和重复编码。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Input octets] --> B[Splitter + scrambler]\n  B --> C[Reed-Solomon outer code]\n  C --> D[Outer interleaver]\n  D --> E[Convolutional encoder 1/3]\n  E --> F[Puncturing]\n  F --> G[Bit + tone interleaver]\n  G --> H[QPSK / 16-QAM map]\n  H --> I[IFFT + guard interval]",
+      "zh": "flowchart LR\n  A[输入字节] --> B[分流器+扰码器]\n  B --> C[RS 外码]\n  C --> D[外交织器]\n  D --> E[卷积编码 1/3]\n  E --> F[删余]\n  F --> G[比特+音调交织]\n  G --> H[QPSK/16-QAM 映射]\n  H --> I[IFFT+保护间隔]"
+    },
+    {
+      "type": "prose",
+      "en": "11.4.3 (Frame formats) shows how the bits are packaged on the air. The HRPDU (high-rate protocol data unit) is HRP preamble → HRP header → MAC header → HCS → MAC frame body, where the header trio is always sent in the robust HRP mode 0; the body holds one or more subframes that may each use a different HRP mode. The omni LRPDU adds an omni LRP preamble (long for beacons and later frames, short for the first frame in a CTA and for ACKs) ahead of its header and body. A directional LRPDU is the tightest beam variant — used to acknowledge HRP frames — with its own directional preamble, header, and optional payload. The LRP also leans on repetition coding and spatial diversity (11.4.2.2): an OFDM symbol is repeated four or eight times, each repetition steered through a different antenna direction so an omni transmission covers all of space.",
+      "zh": "11.4.3 节（帧格式）展示了比特如何在空口上封装。HRPDU（高速率协议数据单元）为：HRP 前导码 → HRP 帧头 → MAC 帧头 → HCS → MAC 帧体，其中帧头三元组始终以稳健的 HRP 模式 0 发送；帧体包含一个或多个子帧，每个子帧可使用不同的 HRP 模式。全向 LRPDU 在其帧头和帧体之前加上全向 LRP 前导码（信标和后续帧用长前导码，CTA 内首帧和 ACK 用短前导码）。定向 LRPDU 是波束最窄的变体——用于确认 HRP 帧——拥有自己的定向前导码、帧头和可选净荷。LRP 还依赖重复编码与空间分集（11.4.2.2）：一个 OFDM 符号被重复 4 次或 8 次，每次重复经由不同的天线方向发射，使全向发送覆盖整个空间。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"6\" y=\"30\" width=\"120\" height=\"34\"/><text x=\"66\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">HRP preamble</text><rect x=\"126\" y=\"30\" width=\"95\" height=\"34\"/><text x=\"173\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">HRP header</text><rect x=\"221\" y=\"30\" width=\"100\" height=\"34\"/><text x=\"271\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">MAC header</text><rect x=\"321\" y=\"30\" width=\"55\" height=\"34\"/><text x=\"348\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">HCS</text><rect x=\"376\" y=\"30\" width=\"258\" height=\"34\"/><text x=\"505\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">MAC Frame Body (subframes)</text><text x=\"6\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">HRPDU frame format (Fig 11-49)</text></svg>",
+      "caption": {
+        "en": "The HRPDU strip: the header trio (HRP header, MAC header, HCS) always rides HRP mode 0; the frame body carries one or more subframes that may switch HRP mode.",
+        "zh": "HRPDU 帧条带：帧头三元组（HRP 帧头、MAC 帧头、HCS）始终以 HRP 模式 0 传输；帧体承载一个或多个可切换 HRP 模式的子帧。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "11.4.4 (Transmitter requirements) is the RF rulebook. The TX mask (11.4.4.1) constrains the transmit power spectral density (PSD) — the HRP follows the Figure 11-1 mask, the LRP follows Figure 11-65 with per-channel exclusion intervals — measured with a 3 MHz resolution bandwidth. The EVM requirement (11.4.4.2) caps error vector magnitude (how far constellation points stray from ideal): from −10 dB for the simplest modes down to −19 dB for HRP mode 2 (16-QAM), since denser constellations demand cleaner signals. Symbol timing (11.4.4.3) and TX frequency accuracy (11.4.4.4) must be within ±20×10⁻⁶, and each DEV further trims to within ±1.5×10⁻⁶ of the piconet coordinator (PNC), using the beacon preamble as the reference — tight enough to allow shorter preambles. Power ramp on/off (11.4.4.5) is implementation-defined but must respect the timing and regional regulatory limits.",
+      "zh": "11.4.4 节（发射机要求）是射频规则书。发射模板（11.4.4.1）约束发射功率谱密度（PSD）——HRP 遵循图 11-1 的模板，LRP 遵循图 11-65 并带有逐信道的排除区间——以 3 MHz 分辨率带宽测量。EVM 要求（11.4.4.2）限制误差矢量幅度（星座点偏离理想位置的程度）：从最简单模式的 −10 dB 到 HRP 模式 2（16-QAM）的 −19 dB，因为更密的星座需要更干净的信号。符号定时（11.4.4.3）和发射频率精度（11.4.4.4）须在 ±20×10⁻⁶ 以内，且每个 DEV 还需进一步收敛到与微微网协调器（PNC）相差 ±1.5×10⁻⁶ 以内，以信标前导码作为参考——精度足够高，从而允许使用更短的前导码。功率上升/下降（11.4.4.5）由实现自定义，但须满足定时和所在地区的法规限制。"
+    },
+    {
+      "type": "prose",
+      "en": "11.4.5 (Receiver characteristics) sets the matching bar on the receive side. The error-rate criterion (11.4.5.1) is a bit error ratio (BER) below 1×10⁻⁷ measured at the MAC/PHY interface after PHY error correction, using a PN23 pseudo-random test sequence. Sensitivity (11.4.5.2) — the weakest signal a receiver must still decode at that BER — is below −70 dBm for an LRP receiver (mode 1, short preamble) and below −50 dBm for an HRP receiver (mode 0). Maximum input level (11.4.5.3) — the strongest signal it must still handle — is at least −30 dBm for LRP and at least −24 dBm for HRP. Together, sensitivity and max input define the receiver's dynamic range.",
+      "zh": "11.4.5 节（接收机特性）在接收侧设定了对应的标准。误码率准则（11.4.5.1）规定在经过 PHY 纠错后、于 MAC/PHY 接口处测得的误码率（BER）低于 1×10⁻⁷，使用 PN23 伪随机测试序列。灵敏度（11.4.5.2）——接收机仍须在该 BER 下解码的最弱信号——对 LRP 接收机（模式 1、短前导码）须低于 −70 dBm，对 HRP 接收机（模式 0）须低于 −50 dBm。最大输入电平（11.4.5.3）——仍须能处理的最强信号——LRP 至少为 −30 dBm，HRP 至少为 −24 dBm。灵敏度与最大输入共同定义了接收机的动态范围。"
+    },
+    {
+      "type": "prose",
+      "en": "11.4.6 (Preambles and training symbols) closes the clause with the exact reference waveforms the receiver leans on for synchronization and channel estimation. It tabulates the frequency-domain tone values for the 32-sample LRP OFDM training symbol (Table 11-61, 32 tones), the 128-sample LRP OFDM training symbol (Table 11-62, 128 tones), and the HRP preamble symbols 5–8 (Table 11-63) — every tone not listed is zero. These are the concrete sequences behind the preamble fields described in 11.4.3 (AGC, coarse/fine frequency-offset estimation and timing recovery, RX diversity training, and channel estimation).",
+      "zh": "11.4.6 节（前导码与训练符号）以接收机用于同步和信道估计所依赖的精确参考波形收尾。它列出了 32 样点 LRP OFDM 训练符号（表 11-61，32 个音调）、128 样点 LRP OFDM 训练符号（表 11-62，128 个音调）以及 HRP 前导码符号 5–8（表 11-63）的频域音调取值——凡未列出的音调取值均为零。这些就是 11.4.3 节中所述前导码字段（AGC、粗/细频偏估计与定时恢复、接收分集训练、信道估计）背后的具体序列。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every 11.4.x subclause and its exact home",
+        "zh": "覆盖地图——每个 11.4.x 子条款及其确切归属"
+      },
+      "en": "11.4.1 General requirements (p.393–396): 11.4.1.1 channelization (4 HRP + 3 LRP per HRP, support channel 2); 11.4.1.2 PHY timing — interframe space, RX-to-TX and TX-to-RX turnaround, time between transmissions, channel-switch time, CCA detect time; 11.4.1.3 data-size restrictions — max frame length, max transfer unit, min fragment 512 octets; 11.4.1.4 header check sequence (32-bit CRC, all-ones init). 11.4.2 Modulation + FEC (p.396–409): base rate (LRP 0/1/2), repetition coding + spatial diversity, stuff bits, HRP/LRP scramblers, RS outer code, outer interleaver, convolutional encoder + puncturing, data multiplexer/bit interleaver (EEP/UEP variants), tone interleaver, constellations, non-data subcarriers, OFDM modulation. 11.4.3 Frame formats (p.410–417): HRPDU, omni/directional LRPDU, HRP preamble + header, LRP preamble sequences, long/short omni preamble, omni LRP header, directional LRP preamble/header/payload. 11.4.4 TX requirements (p.417–419): TX mask, EVM (Table 11-60), symbol timing, TX frequency accuracy, power ramp on/off. 11.4.5 RX characteristics (p.419): error-rate criterion (BER<1e-7, PN23), sensitivity (LRP<−70 dBm, HRP<−50 dBm), max input (LRP≥−30 dBm, HRP≥−24 dBm). 11.4.6 Preambles + training symbols (p.419–420): Tables 11-61/11-62/11-63 tone values.",
+      "zh": "11.4.1 一般要求（第 393–396 页）：11.4.1.1 信道划分（4 个 HRP + 每 HRP 内 3 个 LRP，须支持信道 2）；11.4.1.2 PHY 定时——帧间间隔、收转发与发转收转换、连续发送间隔、信道切换时间、CCA 检测时间；11.4.1.3 数据大小限制——最大帧长、最大传输单元、最小分片 512 字节；11.4.1.4 头校验序列（32 位 CRC，全 1 初值）。11.4.2 调制与 FEC（第 396–409 页）：基本速率（LRP 0/1/2）、重复编码与空间分集、填充比特、HRP/LRP 扰码器、RS 外码、外交织器、卷积编码与删余、数据复用/比特交织（EEP/UEP 变体）、音调交织、信号星座、非数据子载波、OFDM 调制。11.4.3 帧格式（第 410–417 页）：HRPDU、全向/定向 LRPDU、HRP 前导码与帧头、LRP 前导码序列、长/短全向前导码、全向 LRP 帧头、定向 LRP 前导码/帧头/净荷。11.4.4 发射要求（第 417–419 页）：发射模板、EVM（表 11-60）、符号定时、发射频率精度、功率上升/下降。11.4.5 接收特性（第 419 页）：误码率准则（BER<1e-7，PN23）、灵敏度（LRP<−70 dBm，HRP<−50 dBm）、最大输入（LRP≥−30 dBm，HRP≥−24 dBm）。11.4.6 前导码与训练符号（第 419–420 页）：表 11-61/11-62/11-63 的音调取值。",
+      "cite": {
+        "pdf_id": "802153-2016",
+        "pages": [
+          393,
+          396,
+          410,
+          417,
+          419
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        392,
+        393,
+        394,
+        395,
+        396,
+        397,
+        398,
+        399,
+        400,
+        401,
+        410,
+        411,
+        412,
+        413,
+        414,
+        415,
+        416,
+        417,
+        418,
+        419,
+        420
+      ],
+      "note": "Clause 11.4 Audio/Visual mode of the mmWave PHY: 11.4.1 general requirements, 11.4.2 modulation/FEC, 11.4.3 frame formats, 11.4.4 TX requirements, 11.4.5 RX characteristics, 11.4.6 preambles and training symbols."
+    }
+  ],
+  "covers": [
+    "802153-2016:11.4.1",
+    "802153-2016:11.4.2",
+    "802153-2016:11.4.3",
+    "802153-2016:11.4.4",
+    "802153-2016:11.4.5",
+    "802153-2016:11.4.6"
+  ],
+  "track": "pan-hr-wpan"
+}

@@ -1,0 +1,157 @@
+{
+  "id": "pan-optical-03",
+  "title": {
+    "en": "The MAC Command Toolbox: Every 802.15.7 Control Message",
+    "zh": "MAC 命令工具箱：802.15.7 的每一条控制消息"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In Part 1 we met the frame formats of IEEE Std 802.15.7-2018 — the standard for Short-Range Optical Wireless Communications (OWC), the visible-light family people loosely call LiFi or VLC (Visible Light Communication). This lesson zooms into Clause 5.3, the catalogue of MAC (Medium Access Control) command frames. Think of these as the little control messages two light-based radios send each other to join a network, recover a fading beam, dim the LED, or report link quality. Every command shares the same wrapper: an MHR (MAC Header), a one-octet Command Frame Identifier that names the command, and an optional payload.",
+      "zh": "在第一部分中，我们认识了 IEEE Std 802.15.7-2018 的帧格式——这是短距离光无线通信（OWC）的标准，也就是人们常说的 LiFi 或 VLC（可见光通信）家族。本课聚焦于第 5.3 条，即 MAC（媒体访问控制）命令帧的清单。可以把它们看作两台基于光的设备之间互相发送的小型控制消息：用来加入网络、恢复衰减的光束、调暗 LED，或上报链路质量。每条命令都共用同一个外壳：一个 MHR（MAC 头部）、一个用于标识命令的单字节命令帧标识符，以及一个可选的负载。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5.3 opens with Table 12, the master list of all 20 command identifiers (0x01 through 0x14). A coordinator — the network's organizer, like an access point — must support transmitting and receiving every command except the GTS request. A plain device only implements the subset marked with an 'X'. Crucially, MAC commands may only be sent during the CAP (Contention Access Period) on a beacon-enabled OWPAN (Optical Wireless Personal Area Network), or at any time on a non-beacon network.",
+      "zh": "第 5.3 条以表 12 开篇，列出了全部 20 个命令标识符（0x01 到 0x14）。协调器——即网络的组织者，类似接入点——必须支持收发除 GTS 请求之外的所有命令。普通设备只需实现标有“X”的子集。关键在于：在启用信标的 OWPAN（光无线个域网）中，MAC 命令只能在 CAP（竞争访问期）内发送；而在非信标网络中则可随时发送。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"30\" width=\"150\" height=\"34\"/><rect x=\"160\" y=\"30\" width=\"160\" height=\"34\"/><rect x=\"320\" y=\"30\" width=\"190\" height=\"34\"/><text x=\"85\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">MHR (MAC header)</text><text x=\"240\" y=\"48\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Command Frame</text><text x=\"240\" y=\"60\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Identifier (1 octet)</text><text x=\"415\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Command Payload</text><text x=\"10\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Generic MAC command frame layout (Clause 5.3)</text></svg>",
+      "caption": {
+        "en": "Every command in Clause 5.3 reuses this skeleton: a MAC header, a one-octet identifier from Table 12, then a command-specific payload.",
+        "zh": "第 5.3 条中的每条命令都复用这一骨架：MAC 头部、来自表 12 的单字节标识符，以及命令特有的负载。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The first cluster is about membership. The association request command (5.3.1, id 0x01) is how an unassociated device asks to join an OWPAN through the coordinator; it carries a Capability Information byte and is always acknowledged. The coordinator replies with the association response command (5.3.2, id 0x02), which hands back a 16-bit Short Address, an Association Status code (success, OWPAN at capacity, or access denied), and a Capability Negotiation Response that says whether and where color stabilization will run. When either side wants out, the disassociation notification command (5.3.3, id 0x03) carries a Disassociation Reason — for example, the device cannot support the requested dimming value.",
+      "zh": "第一组命令关乎成员管理。关联请求命令（5.3.1，标识 0x01）是未关联设备通过协调器请求加入 OWPAN 的方式；它携带一个能力信息字节，并且总是需要确认。协调器以关联响应命令（5.3.2，标识 0x02）回复，返回一个 16 位短地址、一个关联状态码（成功、OWPAN 已满或访问被拒），以及一个能力协商响应，用于说明是否以及在何处运行颜色稳定。当任一方想退出时，解关联通知命令（5.3.3，标识 0x03）会携带一个解关联原因——例如设备无法支持所请求的调光值。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant D as Device\n  participant C as Coordinator\n  D->>C: Association request (0x01)\n  C-->>D: Ack\n  D->>C: Data request (0x04)\n  C-->>D: Association response (0x02)\n  Note over D,C: Short Address + Status assigned\n  D->>C: Disassociation notification (0x03)",
+      "zh": "sequenceDiagram\n  participant D as 设备\n  participant C as 协调器\n  D->>C: 关联请求 (0x01)\n  C-->>D: 确认\n  D->>C: 数据请求 (0x04)\n  C-->>D: 关联响应 (0x02)\n  Note over D,C: 分配短地址与状态\n  D->>C: 解关联通知 (0x03)"
+    },
+    {
+      "type": "prose",
+      "en": "The next cluster handles polling and network housekeeping. The data request command (5.3.4, id 0x04) is a device's way of saying 'do you have anything buffered for me?' — sent after a beacon flags pending data, on an MLME-POLL.request from the upper layer, or right after an association acknowledgment. The OWPAN ID conflict notification command (5.3.5, id 0x05) lets a device warn the coordinator that two networks are colliding on the same identifier. The beacon request command (5.3.6, id 0x06) is broadcast during an active scan to flush out every coordinator nearby. And when a coordinator changes its own settings, it broadcasts the coordinator realignment command (5.3.7, id 0x07), bundling the new OWPAN Identifier, Coordinator Short Address, Logical Channel, Short Address, and an Effective Time (the beacon sequence number when the change takes hold).",
+      "zh": "下一组命令负责轮询与网络维护。数据请求命令（5.3.4，标识 0x04）是设备询问“你有为我缓存的数据吗？”的方式——可在信标标示有待发数据后发送、在上层发出 MLME-POLL.request 时发送，或在关联确认之后立即发送。OWPAN ID 冲突通知命令（5.3.5，标识 0x05）让设备提醒协调器：两个网络在同一标识符上发生了冲突。信标请求命令（5.3.6，标识 0x06）在主动扫描期间广播，以发现附近的每一个协调器。当协调器更改自身设置时，它会广播协调器重对准命令（5.3.7，标识 0x07），其中打包了新的 OWPAN 标识符、协调器短地址、逻辑信道、短地址，以及一个生效时间（更改生效时所在的信标序列号）。"
+    },
+    {
+      "type": "prose",
+      "en": "Because light links are physical beams, several commands exist purely to keep the beam alive and pleasant to look at. The GTS request command (5.3.8, id 0x08) lets a device ask for a Guaranteed Time Slot — a reserved chunk of the superframe — using a GTS Characteristics byte (length, direction, allocate-or-deallocate); the coordinator answers with the GTS response command (5.3.13, id 0x0d). The blinking notification command (5.3.9, id 0x09) tells the user, by physically blinking the light at a chosen Blinking Frequency, that the uplink has dropped — a clever human-visible alarm for mobile point-and-shoot links. The dimming notification command (5.3.10, id 0x0a) carries a two-octet Dimming Level (0–1000, i.e. 0–100% in 0.1% steps) plus a Dimmer Adaptation Timer, so the LED can be dimmed for ambiance without breaking the data stream.",
+      "zh": "由于光链路是物理光束，有几条命令专门用来维持光束并让它看起来舒适。GTS 请求命令（5.3.8，标识 0x08）让设备申请一个保证时隙（GTS）——超帧中预留的一段——通过 GTS 特性字节（长度、方向、分配或释放）；协调器以 GTS 响应命令（5.3.13，标识 0x0d）作答。闪烁通知命令（5.3.9，标识 0x09）通过让灯以选定的闪烁频率物理闪烁，告诉用户上行链路已断开——这是面向移动“对准即拍”链路的一种人眼可见的巧妙告警。调光通知命令（5.3.10，标识 0x0a）携带一个两字节的调光级别（0–1000，即以 0.1% 为步进的 0–100%）和一个调光器适配定时器，使 LED 能为氛围调暗而不中断数据流。"
+    },
+    {
+      "type": "prose",
+      "en": "Mobility and link resilience get their own commands. The fast link recovery command (5.3.11, id 0x0b) carries a Fast Link Recovery field whose bit 0 distinguishes a recovery signal from a recovery response, while bits 1–3 encode the beam direction index — so a misaligned pair can quickly re-find each other. The mobility notification command (5.3.12, id 0x0c) reports the WQI (Warning Quality Indicator) values gathered during a cell search, helping a moving device hand off between optical cells. The clock rate change notification command (5.3.14, id 0x0e) announces a new optical clock rate by carrying an MCS (Modulation and Coding Scheme) ID; all future transmissions then use that rate. The multiple channel assignment command (5.3.15, id 0x0f) hands a device extra channels when time-slot resources run short.",
+      "zh": "移动性与链路韧性有各自的命令。快速链路恢复命令（5.3.11，标识 0x0b）携带一个快速链路恢复字段，其比特 0 用于区分恢复信号与恢复响应，比特 1–3 编码光束方向索引——这样失准的一对设备就能迅速重新找到彼此。移动性通知命令（5.3.12，标识 0x0c）上报在小区搜索期间收集的 WQI（告警质量指示）值，帮助移动设备在不同光小区之间切换。时钟速率变更通知命令（5.3.14，标识 0x0e）通过携带一个 MCS（调制与编码方案）ID 来宣布新的光时钟速率；此后所有传输都使用该速率。多信道分配命令（5.3.15，标识 0x0f）在时隙资源不足时为设备分配额外信道。"
+    },
+    {
+      "type": "prose",
+      "en": "The final cluster keeps colors and visibility honest. In PHY III, data is carried by CSK (Color Shift Keying), so color drift must be corrected. The color stabilization timer notification command (5.3.16, id 0x11) sets the minimum interval between two color-stabilization updates; the color stabilization information command (5.3.17, id 0x12) relays the actual received signal levels in each of the three CSK bands back to the transmitter. The CVD disable command (5.3.18, id 0x13) carries a one-bit CVD usage option that tells a peer to stop sending CVD (Color Visibility Dimming) frames when they would interfere — switching instead to out-of-band idle patterns to keep the light visible. Finally, the information element command (5.3.19, id 0x14) is the extensible catch-all: an Element ID + Length + payload triplet (such as Capabilities or WQI elements) that can be appended to any command frame.",
+      "zh": "最后一组命令确保颜色与可见性的准确性。在 PHY III 中，数据由 CSK（色移键控）承载，因此必须校正颜色漂移。颜色稳定定时器通知命令（5.3.16，标识 0x11）设定两次颜色稳定更新之间的最小间隔；颜色稳定信息命令（5.3.17，标识 0x12）将三个 CSK 频带各自的实际接收信号电平回传给发送方。CVD 禁用命令（5.3.18，标识 0x13）携带一个一比特的 CVD 使用选项，告诉对端在 CVD（颜色可见性调光）帧会造成干扰时停止发送——转而使用带外空闲图案以保持光的可见性。最后，信息元素命令（5.3.19，标识 0x14）是可扩展的万能项：一个元素 ID + 长度 + 负载的三元组（如能力或 WQI 元素），可附加到任何命令帧之后。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the pattern: 802.15.7 borrows the familiar association / data-request / realignment commands from the wider IEEE 802.15.4 PAN world, then bolts on a light-specific layer — blinking, dimming, fast link recovery, and color stabilization — that has no equivalent in radio standards. The 'optical' nature of the medium is what makes these last six commands special.",
+      "zh": "注意这个规律：802.15.7 借用了更广泛的 IEEE 802.15.4 个域网世界中熟悉的关联、数据请求、重对准等命令，然后叠加了一层光特有的命令——闪烁、调光、快速链路恢复和颜色稳定——这些在无线电标准中没有对应物。正是介质的“光学”特性，使最后这六条命令与众不同。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — all 19 commands of Clause 5.3 by clause number and identifier",
+        "zh": "覆盖地图——按条款号与标识符列出第 5.3 条的全部 19 条命令"
+      },
+      "en": "Membership: 5.3.1 Association request (0x01, carries Capability Information, ack required); 5.3.2 Association response (0x02, returns Short Address, Association Status per Table 13, Capability Negotiation Response per Table 14); 5.3.3 Disassociation notification (0x03, Disassociation Reason per Table 15). Polling & housekeeping: 5.3.4 Data request (0x04, three trigger cases); 5.3.5 OWPAN ID conflict notification (0x05, extended addressing); 5.3.6 Beacon request (0x06, broadcast in active scan); 5.3.7 Coordinator realignment (0x07, fields OWPAN Identifier / Coordinator Short Address / Logical Channel / Short Address / Effective Time = BSN). Slots & light upkeep: 5.3.8 GTS request (0x08, GTS Characteristics: Length/Direction/Type); 5.3.9 Blinking notification (0x09, Blinking Frequency field); 5.3.10 Dimming notification (0x0a, Dimming Level 0–1000 + Dimmer Adaptation Timer); 5.3.13 GTS response (0x0d, GTS Characteristics + Starting Slot). Mobility & resilience: 5.3.11 Fast link recovery (0x0b, bit 0 = signal/response, bits 1–3 = direction index); 5.3.12 Mobility notification (0x0c, cellSearchQuality WQI octets); 5.3.14 Clock rate change notification (0x0e, MCS ID in 6 LSBs); 5.3.15 Multiple channel assignment (0x0f, Multiple Channels field). Color & visibility: 5.3.16 Color stabilization timer notification (0x11, Color Stabilization Timer = macColorStabilizationTimer); 5.3.17 Color stabilization information (0x12, two octets per CSK band i/j/k); 5.3.18 CVD disable (0x13, 1-bit CVD usage option per Table 16); 5.3.19 Information element command (0x14, Element ID + Length + IE payload per Table 17, e.g. Capabilities and WQI elements).",
+      "zh": "成员管理：5.3.1 关联请求（0x01，携带能力信息，需确认）；5.3.2 关联响应（0x02，返回短地址、按表 13 的关联状态、按表 14 的能力协商响应）；5.3.3 解关联通知（0x03，按表 15 的解关联原因）。轮询与维护：5.3.4 数据请求（0x04，三种触发情形）；5.3.5 OWPAN ID 冲突通知（0x05，扩展寻址）；5.3.6 信标请求（0x06，主动扫描中广播）；5.3.7 协调器重对准（0x07，字段含 OWPAN 标识符 / 协调器短地址 / 逻辑信道 / 短地址 / 生效时间 = BSN）。时隙与光维护：5.3.8 GTS 请求（0x08，GTS 特性：长度/方向/类型）；5.3.9 闪烁通知（0x09，闪烁频率字段）；5.3.10 调光通知（0x0a，调光级别 0–1000 + 调光器适配定时器）；5.3.13 GTS 响应（0x0d，GTS 特性 + 起始时隙）。移动性与韧性：5.3.11 快速链路恢复（0x0b，比特 0 = 信号/响应，比特 1–3 = 方向索引）；5.3.12 移动性通知（0x0c，cellSearchQuality 的 WQI 字节）；5.3.14 时钟速率变更通知（0x0e，6 个最低位为 MCS ID）；5.3.15 多信道分配（0x0f，多信道字段）。颜色与可见性：5.3.16 颜色稳定定时器通知（0x11，颜色稳定定时器 = macColorStabilizationTimer）；5.3.17 颜色稳定信息（0x12，每个 CSK 频带 i/j/k 各两字节）；5.3.18 CVD 禁用（0x13，按表 16 的一比特 CVD 使用选项）；5.3.19 信息元素命令（0x14，按表 17 的元素 ID + 长度 + IE 负载，例如能力与 WQI 元素）。",
+      "cite": {
+        "pdf_id": "802157-2018",
+        "pages": [
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        104,
+        105,
+        106,
+        107,
+        108
+      ],
+      "note": "5.3 intro + Table 12 command list; 5.3.1 association request, 5.3.2 association response (Short Address, Status, Capability Negotiation Response), 5.3.3 disassociation notification"
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        109,
+        110,
+        111,
+        112
+      ],
+      "note": "5.3.4 data request, 5.3.5 OWPAN ID conflict, 5.3.6 beacon request, 5.3.7 coordinator realignment fields, 5.3.8 GTS request"
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        113,
+        114,
+        115,
+        116
+      ],
+      "note": "5.3.9 blinking notification, 5.3.10 dimming notification, 5.3.11 fast link recovery, 5.3.12 mobility notification, 5.3.13 GTS response, 5.3.14 clock rate change, 5.3.15 multiple channel assignment"
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        117,
+        118,
+        119
+      ],
+      "note": "5.3.16 color stabilization timer, 5.3.17 color stabilization information, 5.3.18 CVD disable, 5.3.19 information element command + Table 17 / Capabilities IE"
+    }
+  ],
+  "covers": [
+    "802157-2018:5.3.1",
+    "802157-2018:5.3.2",
+    "802157-2018:5.3.3",
+    "802157-2018:5.3.4",
+    "802157-2018:5.3.5",
+    "802157-2018:5.3.6",
+    "802157-2018:5.3.7",
+    "802157-2018:5.3.8",
+    "802157-2018:5.3.9",
+    "802157-2018:5.3.10",
+    "802157-2018:5.3.11",
+    "802157-2018:5.3.12",
+    "802157-2018:5.3.13",
+    "802157-2018:5.3.14",
+    "802157-2018:5.3.15",
+    "802157-2018:5.3.16",
+    "802157-2018:5.3.17",
+    "802157-2018:5.3.18",
+    "802157-2018:5.3.19"
+  ],
+  "track": "pan-optical"
+}

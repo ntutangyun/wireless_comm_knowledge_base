@@ -1,0 +1,211 @@
+{
+  "id": "pan-optical-10",
+  "title": {
+    "en": "PHY VI Screen-to-Camera Codes and the Reference Annexes",
+    "zh": "PHY VI 屏幕到相机编码与参考性附录"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "PHY VI is the part of IEEE 802.15.7-2018 built for optical camera communication (OCC) using everyday screens and the camera in your phone. Instead of a fast photodiode, the receiver is an ordinary image sensor running at a slow frame rate (often 30 Hz), so the transmitter is a display that overlays special visual codes onto its picture. Clause 15 defines five such transmitter schemes: A-QL, VTASC, SS2DC, IDE, and HA-QL. This lesson gives every sub-clause of Clause 15 a home and then maps the eleven reference annexes (A through K) that support the whole standard.",
+      "zh": "PHY VI 是 IEEE 802.15.7-2018 中专为光学相机通信（OCC，Optical Camera Communication）设计的部分，它使用日常屏幕和手机相机。接收端不是高速光电二极管，而是以较慢帧率（常为 30 Hz）运行的普通图像传感器，因此发射端是一块在画面上叠加特殊视觉编码的显示屏。第 15 章定义了五种这样的发射方案：A-QL、VTASC、SS2DC、IDE 和 HA-QL。本课为第 15 章的每个子条款安排归属，并梳理支撑整部标准的十一个参考性附录（A 到 K）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The recurring trick across PHY VI: the camera is slow and unsynchronized, so codes carry their own reference and synchronization marks. Look for reference cells (corner anchors), spread-spectrum (SS) sequences, and asynchronous bits (Ab) in nearly every scheme.",
+      "zh": "贯穿整个 PHY VI 的核心技巧是：相机慢且不同步，所以编码自带参考标记和同步标记。几乎每种方案中都能看到参考单元（角点锚点）、扩频（SS，Spread Spectrum）序列以及异步比特（Ab，Asynchronous bits）。"
+    },
+    {
+      "type": "prose",
+      "en": "15.1 defines A-QL (a quick-link tri-color cell grid). 15.1.1 sets the reference architecture: three independent color channels (red, green, blue) drive a grid of cells, with a 2D color-code layout (15.1.1.1) whose four corner reference cells stay constant so the receiver can find the starting corner. 15.1.2 is the channel encoder: 15.1.2.1 maps coded bits into the cell intensity matrix at a configurable optical clock rate; 15.1.2.2 inserts asynchronous bits (Ab) at the front of each data block to survive camera frame-rate drift; 15.1.2.3 applies error correction (an RS(15,7) outer code plus an optional rate-1/4 convolutional inner code with a block interleaver). 15.1.3 is the bits-to-intensity mapping (3 input bits choose on/off for the three colors), and 15.1.4 adds a channel-estimation sequence using Walsh codes for color calibration.",
+      "zh": "15.1 定义 A-QL（一种三色单元网格的快速链路）。15.1.1 给出参考架构：三个独立的颜色通道（红、绿、蓝）驱动一个单元网格，采用二维颜色码布局（15.1.1.1），其四个角的参考单元保持恒定，使接收端能找到起始角。15.1.2 是信道编码器：15.1.2.1 以可配置的光学时钟速率把编码比特映射进单元强度矩阵；15.1.2.2 在每个数据块前插入异步比特（Ab），以抵御相机帧率漂移；15.1.2.3 应用纠错（RS(15,7) 外码加可选的 1/4 码率卷积内码及块交织器）。15.1.3 是比特到强度的映射（3 个输入比特决定三种颜色的开/关），15.1.4 则用 Walsh 码加入信道估计序列以进行颜色校准。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 320 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"10\" y=\"10\" width=\"100\" height=\"100\"/><rect x=\"14\" y=\"14\" width=\"14\" height=\"14\" fill=\"currentColor\"/><rect x=\"92\" y=\"14\" width=\"14\" height=\"14\" fill=\"currentColor\"/><rect x=\"14\" y=\"92\" width=\"14\" height=\"14\" fill=\"currentColor\"/><rect x=\"92\" y=\"92\" width=\"14\" height=\"14\" fill=\"currentColor\"/><line x1=\"34\" y1=\"10\" x2=\"34\" y2=\"110\"/><line x1=\"58\" y1=\"10\" x2=\"58\" y2=\"110\"/><line x1=\"82\" y1=\"10\" x2=\"82\" y2=\"110\"/><line x1=\"10\" y1=\"34\" x2=\"110\" y2=\"34\"/><line x1=\"10\" y1=\"58\" x2=\"110\" y2=\"58\"/><line x1=\"10\" y1=\"82\" x2=\"110\" y2=\"82\"/><text x=\"150\" y=\"40\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">corner reference cells</text><text x=\"150\" y=\"60\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">stay constant -&gt; find</text><text x=\"150\" y=\"75\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">starting corner</text><text x=\"150\" y=\"95\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">inner cells carry data</text></svg>",
+      "caption": {
+        "en": "A-QL 2D color-code layout (15.1.1.1): four constant corner reference cells anchor orientation; inner cells modulate data across R/G/B.",
+        "zh": "A-QL 二维颜色码布局（15.1.1.1）：四个恒定的角参考单元锚定方向；内部单元在 R/G/B 上调制数据。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "15.2 defines VTASC (Variable Transparency, Amplitude, Shape, and Color) — symbols overlaid on a video frame for display-to-camera links. 15.2.1 is the reference architecture (data is spread, then mapped onto symbols). 15.2.2 is the synchronization sequence built from spread-spectrum (SS) codes, here binary zero-correlation-duration (ZCD) sequences. 15.2.3 is the code design: each symbol picks among 2 transparency levels, 4 block sizes, 4 shapes, and 8 colors, giving up to 256 symbols (8 bits each). 15.2.4 is the VTASC encoder that overlays color codes onto the visual scene and gives the data-rate formula. 15.2.5 is the asynchronous communication mode (no reference frame needed; SS codes alternate across video frames). 15.2.6 is the scalable bitrate controller, with two modes: frame-rate-adaptive multirate (15.2.6.1, screen split into 2x2 regions at different optical rates) and distance-adaptive data rate (15.2.6.2, symbol size grows for longer range, estimated by a transmitter camera).",
+      "zh": "15.2 定义 VTASC（可变透明度、幅度、形状与颜色，Variable Transparency Amplitude Shape Color）——叠加在视频帧上、用于屏幕到相机链路的符号。15.2.1 是参考架构（数据先扩频再映射成符号）。15.2.2 是用扩频（SS）码构成的同步序列，此处采用二进制零相关区（ZCD，Zero-Correlation Duration）序列。15.2.3 是码设计：每个符号在 2 种透明度、4 种块大小、4 种形状、8 种颜色中各选其一，最多构成 256 个符号（各 8 比特）。15.2.4 是把颜色码叠加到视觉场景上的 VTASC 编码器，并给出数据率公式。15.2.5 是异步通信模式（无需参考帧；SS 码在各视频帧间交替）。15.2.6 是可伸缩码率控制器，含两种模式：帧率自适应多速率（15.2.6.1，屏幕分成 2x2 区域，各区不同光学速率）和距离自适应数据率（15.2.6.2，更远距离用更大符号，由发射端相机估算距离）。"
+    },
+    {
+      "type": "prose",
+      "en": "15.3 defines SS2DC (Spread-Spectrum 2D Code), which tiles one or more standard 2D codes (QR, color code, VTASC, A-QL) in rows and columns to boost throughput. 15.3.1 is its reference architecture (spread, then arrange 2D code symbols on the display). 15.3.2 is the code design (configurable horizontal/vertical block counts and code sizes). 15.3.3 is the SS2DC encoder, which overlays the chosen 2D symbols on the visual scene; with QR version 40 it follows ISO/IEC 18004 and reaches roughly 92 kbps for a 2x2 layout. The minimum QR size must be at least (scanning distance / 10) for reliable detection.",
+      "zh": "15.3 定义 SS2DC（扩频二维码，Spread-Spectrum 2D Code），它将一个或多个标准二维码（QR、颜色码、VTASC、A-QL）以行列方式平铺以提升吞吐量。15.3.1 是其参考架构（先扩频，再在显示屏上排布二维码符号）。15.3.2 是码设计（可配置的水平/垂直块数与码尺寸）。15.3.3 是 SS2DC 编码器，把所选二维码符号叠加到视觉场景上；使用 QR 版本 40 时遵循 ISO/IEC 18004，2x2 布局约可达 92 kbps。为可靠检测，最小 QR 尺寸须至少为（扫描距离 / 10）。"
+    },
+    {
+      "type": "prose",
+      "en": "15.4 defines IDE (Invisible Data Embedding) — hiding data in a frame so a human cannot see it, but a camera can recover it. 15.4.1 is the reference architecture (data spread, then embedded by blending and watermarking). 15.4.2 reuses the SS synchronization sequence from 15.2.2. 15.4.3 is the IDE encoder, which splits the frame into m×n pixel blocks and embeds data via four sub-mechanisms: 15.4.3.1 Hybrid-MPFSK (combining 16 frequencies with 2 phases to map 5-bit symbols, doubling rate), 15.4.3.2 a 2D binary code, 15.4.3.3 invisible data blending (overlaying a near-transparent foreground), and 15.4.3.4 invisible watermarking. To stay imperceptible, the change is held below 0.008 on the Cb channel of YCbCr.",
+      "zh": "15.4 定义 IDE（隐形数据嵌入，Invisible Data Embedding）——把数据藏进画面，人眼看不见但相机能恢复。15.4.1 是参考架构（数据先扩频，再通过混合与水印嵌入）。15.4.2 复用 15.2.2 的 SS 同步序列。15.4.3 是 IDE 编码器，把画面分成 m×n 像素块，并通过四种子机制嵌入数据：15.4.3.1 混合 MPFSK（将 16 个频率与 2 个相位结合以映射 5 比特符号，使速率翻倍）、15.4.3.2 二维二进制码、15.4.3.3 隐形数据混合（叠加近乎透明的前景），以及 15.4.3.4 隐形水印。为保持不可察觉，YCbCr 的 Cb 通道上的改变须低于 0.008。"
+    },
+    {
+      "type": "prose",
+      "en": "15.5 defines HA-QL (Hidden A-QL), an invisible variant of A-QL. 15.5.1 is the reference architecture: data passes through FEC, is split, then a line encoder produces pairs of images. 15.5.2 is the channel encoder: 15.5.2.1 reads screen resolution and cell count for sizing; 15.5.2.2 is a half-rate line encoder that, unlike ordinary run-length-limited (RLL) coding, generates a reference image plus a data-embedded image so the decoder can extract the modulated intensity by comparison (and inserts Ab for frame-rate robustness); 15.5.2.3 applies RS(15,7) outer plus rate-1/4 convolutional inner FEC. 15.5.3 is the bits-to-intensity mapping, where each data bit decides whether a cell's intensity is unmodulated or modulated, kept below 0.008 on the Cb channel to stay invisible.",
+      "zh": "15.5 定义 HA-QL（隐形 A-QL，Hidden A-QL），是 A-QL 的隐形变体。15.5.1 是参考架构：数据先经 FEC，再分裂，然后由线编码器生成成对的图像。15.5.2 是信道编码器：15.5.2.1 读取屏幕分辨率与单元数以确定尺寸；15.5.2.2 是半速率线编码器，与普通游程受限（RLL，Run-Length-Limited）编码不同，它生成一幅参考图像加一幅嵌数图像，使解码器能通过对比提取被调制的强度（并插入 Ab 以增强帧率鲁棒性）；15.5.2.3 应用 RS(15,7) 外码加 1/4 码率卷积内码 FEC。15.5.3 是比特到强度的映射，每个数据比特决定某单元强度是未调制还是被调制，并在 Cb 通道上保持低于 0.008 以维持隐形。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Data bits] --> B[FEC + Ab]\n  B --> C{PHY VI scheme}\n  C --> D[A-QL / HA-QL grid]\n  C --> E[VTASC symbols]\n  C --> F[SS2DC 2D codes]\n  C --> G[IDE blend/watermark]\n  D --> H[Display screen]\n  E --> H\n  F --> H\n  G --> H\n  H --> I[Camera receiver]",
+      "zh": "flowchart LR\n  A[数据比特] --> B[FEC + Ab]\n  B --> C{PHY VI 方案}\n  C --> D[A-QL / HA-QL 网格]\n  C --> E[VTASC 符号]\n  C --> F[SS2DC 二维码]\n  C --> G[IDE 混合/水印]\n  D --> H[显示屏]\n  E --> H\n  F --> H\n  G --> H\n  H --> I[相机接收端]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: Clause 15 sub-clauses (15.1.1-15.5.3)",
+        "zh": "覆盖映射：第 15 章子条款（15.1.1-15.5.3）"
+      },
+      "en": "A-QL: 15.1.1 reference architecture (incl. 15.1.1.1 2D color-code design); 15.1.2 channel encoder (15.1.2.1 encoder config, 15.1.2.2 Ab insertion, 15.1.2.3 error correction RS(15,7)+CC(1/4)); 15.1.3 bits-to-intensity mapping; 15.1.4 channel estimation and color calibration (Walsh codes). VTASC: 15.2.1 reference architecture; 15.2.2 synchronization sequence (ZCD SS codes); 15.2.3 code design (T/A/S/C, up to 256 symbols); 15.2.4 VTASC encoder + data-rate formula; 15.2.5 asynchronous communication mode; 15.2.6 scalable bitrate controller (15.2.6.1 frame-rate-adaptive multirate, 15.2.6.2 distance-adaptive). SS2DC: 15.3.1 reference architecture; 15.3.2 code design; 15.3.3 SS2DC encoder (QR v40 / ISO-IEC 18004). IDE: 15.4.1 reference architecture; 15.4.2 synchronization sequence; 15.4.3 IDE encoder (15.4.3.1-15.4.3.4 Hybrid-MPFSK, binary code, blending, watermarking). HA-QL: 15.5.1 reference architecture; 15.5.2 channel encoder (15.5.2.1 config, 15.5.2.2 half-rate line encoder, 15.5.2.3 error correction); 15.5.3 bits-to-intensity mapping.",
+      "zh": "A-QL：15.1.1 参考架构（含 15.1.1.1 二维颜色码设计）；15.1.2 信道编码器（15.1.2.1 编码器配置、15.1.2.2 Ab 插入、15.1.2.3 纠错 RS(15,7)+CC(1/4)）；15.1.3 比特到强度映射；15.1.4 信道估计与颜色校准（Walsh 码）。VTASC：15.2.1 参考架构；15.2.2 同步序列（ZCD SS 码）；15.2.3 码设计（T/A/S/C，最多 256 符号）；15.2.4 VTASC 编码器与数据率公式；15.2.5 异步通信模式；15.2.6 可伸缩码率控制器（15.2.6.1 帧率自适应多速率、15.2.6.2 距离自适应）。SS2DC：15.3.1 参考架构；15.3.2 码设计；15.3.3 SS2DC 编码器（QR v40 / ISO-IEC 18004）。IDE：15.4.1 参考架构；15.4.2 同步序列；15.4.3 IDE 编码器（15.4.3.1-15.4.3.4 混合 MPFSK、二进制码、混合、水印）。HA-QL：15.5.1 参考架构；15.5.2 信道编码器（15.5.2.1 配置、15.5.2.2 半速率线编码器、15.5.2.3 纠错）；15.5.3 比特到强度映射。",
+      "cite": {
+        "pdf_id": "802157-2018",
+        "pages": [
+          335,
+          339,
+          348,
+          350,
+          354
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the reference annexes (Annex A through K)",
+        "zh": "覆盖映射：参考性附录（附录 A 到 K）"
+      },
+      "en": "Annex A (informative) Bibliography — non-normative references on flicker, lighting safety, and IEEE 802.15 contributions. Annex B (normative) Service-specific convergence sublayer (SSCS) — the IEEE 802.2 LLC convergence layer above the MAC, defining MA-UNITDATA.request/.indication primitives. Annex C (normative) Cyclic redundancy check (CRC) — a 2-octet CRC using generator polynomial G16(x)=x^16+x^12+x^5+1. Annex D (normative) Channel assignment — bit-pattern table assigning multiple visible-light color channels (band code 111 excluded). Annex E (informative) Considerations for OWC using LED displays — contrasts dynamic displays (line-scanned, pixels lit a fraction of each frame) vs. addressed displays (pixel lit the whole frame). Annex F (informative) Receiver performance variation on multi-color channels — why a photodetector responds unequally across colors (radiometric/photometric conversion and Si spectral sensitivity). Annex G (informative) RS-FSK tutorial — how rolling-shutter frequency-shift keying turns frequencies into stripe widths in the camera image (2.2 kHz preamble). Annex H (informative) PHY modes TX and RX profile — classifies transmitter sources (single/point, 2D/multi-source, surface, display) and matching receiver profiles per PHY mode. Annex I (informative) PHY IV/V/VI OCC waveforms decoding guide — receiver decoding methods (S2-PSK XOR, DS8-PSK phase shift, and the A-QL/HA-QL/VTASC/SS2DC/IDE decode references cited from Clause 15). Annex J (normative) Hamming code and majority bit voting — Hamming (8,4) and (15,11) generator/parity matrices plus R3 majority voting over three samples. Annex K (informative) PHY mode-specific characteristics — summarizes the working features of VTASC (K.1), SS2DC (K.2), and IDE (K.3): angle-free, distance-adaptive, asynchronous, frame-rate-independent operation.",
+      "zh": "附录 A（资料性）参考文献——关于闪烁、照明安全及 IEEE 802.15 提案的非规范性引用。附录 B（规范性）服务特定汇聚子层（SSCS）——位于 MAC 之上的 IEEE 802.2 LLC 汇聚层，定义 MA-UNITDATA.request/.indication 原语。附录 C（规范性）循环冗余校验（CRC）——使用生成多项式 G16(x)=x^16+x^12+x^5+1 的 2 字节 CRC。附录 D（规范性）信道分配——为多条可见光颜色信道分配比特模式的表格（不使用 band code 111）。附录 E（资料性）使用 LED 显示屏进行 OWC 的考量——对比动态显示（行扫描，像素每帧只亮一小段）与寻址显示（像素整帧常亮）。附录 F（资料性）多色信道上的接收性能差异——为何光电探测器对各种颜色响应不一致（辐射度/光度换算与硅探测器的光谱灵敏度）。附录 G（资料性）RS-FSK 教程——卷帘式频移键控如何把频率转化为相机图像中的条纹宽度（2.2 kHz 前导）。附录 H（资料性）PHY 模式发射与接收剖面——按 PHY 模式分类发射源（单点、二维/多源、面源、显示）及对应的接收剖面。附录 I（资料性）PHY IV/V/VI OCC 波形解码指南——接收端解码方法（S2-PSK 异或、DS8-PSK 相移，以及第 15 章引用的 A-QL/HA-QL/VTASC/SS2DC/IDE 解码参考）。附录 J（规范性）汉明码与多数比特表决——汉明 (8,4) 与 (15,11) 的生成/校验矩阵，以及对三次采样的 R3 多数表决。附录 K（资料性）PHY 模式专有特性——总结 VTASC（K.1）、SS2DC（K.2）和 IDE（K.3）的工作特性：免角度、距离自适应、异步、帧率无关运行。",
+      "cite": {
+        "pdf_id": "802157-2018",
+        "pages": [
+          357,
+          361,
+          365,
+          366,
+          372,
+          377,
+          381,
+          384,
+          387,
+          399,
+          402
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Normative vs. informative: Annexes B, C, D, and J are normative (you must follow them to be compliant), while A, E, F, G, H, I, and K are informative (background and guidance only). Clause 15's decode references all point into informative Annex I, but the FEC building blocks (CRC in C, Hamming/voting in J) are binding.",
+      "zh": "规范性与资料性之别：附录 B、C、D、J 是规范性的（要合规就必须遵守），而 A、E、F、G、H、I、K 是资料性的（仅作背景与指南）。第 15 章的解码引用都指向资料性的附录 I，但 FEC 构件（附录 C 的 CRC、附录 J 的汉明码/表决）是有约束力的。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        335,
+        336,
+        337,
+        338
+      ],
+      "note": "15.1 A-QL: reference architecture, 2D color code, channel encoder, Ab insertion, error correction, bits-to-intensity, color calibration"
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        339,
+        340,
+        341,
+        343,
+        346,
+        347
+      ],
+      "note": "15.2 VTASC: architecture, ZCD sync, T/A/S/C code design, encoder, asynchronous mode, scalable bitrate controller"
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        348,
+        349
+      ],
+      "note": "15.3 SS2DC: architecture, code design, encoder (QR v40 / ISO-IEC 18004)"
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        350,
+        351,
+        352,
+        353
+      ],
+      "note": "15.4 IDE: architecture, sync, Hybrid-MPFSK, binary code, blending, watermarking"
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        354,
+        355,
+        356
+      ],
+      "note": "15.5 HA-QL: architecture, half-rate line encoder, error correction, bits-to-intensity"
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        357,
+        361,
+        365,
+        366,
+        372,
+        377,
+        381,
+        384,
+        387,
+        399,
+        402
+      ],
+      "note": "Annexes A-K: bibliography, SSCS, CRC, channel assignment, LED displays, multi-color RX, RS-FSK, TX/RX profiles, OCC decoding guide, Hamming/majority voting, PHY mode characteristics"
+    }
+  ],
+  "covers": [
+    "802157-2018:15.1.1",
+    "802157-2018:15.1.2",
+    "802157-2018:15.1.3",
+    "802157-2018:15.1.4",
+    "802157-2018:15.2.1",
+    "802157-2018:15.2.2",
+    "802157-2018:15.2.3",
+    "802157-2018:15.2.4",
+    "802157-2018:15.2.5",
+    "802157-2018:15.2.6",
+    "802157-2018:15.3.1",
+    "802157-2018:15.3.2",
+    "802157-2018:15.3.3",
+    "802157-2018:15.4.1",
+    "802157-2018:15.4.2",
+    "802157-2018:15.4.3",
+    "802157-2018:15.5.1",
+    "802157-2018:15.5.2",
+    "802157-2018:15.5.3",
+    "802157-2018:Annex_A",
+    "802157-2018:Annex_B",
+    "802157-2018:Annex_C",
+    "802157-2018:Annex_D",
+    "802157-2018:Annex_E",
+    "802157-2018:Annex_F",
+    "802157-2018:Annex_G",
+    "802157-2018:Annex_H",
+    "802157-2018:Annex_I",
+    "802157-2018:Annex_J",
+    "802157-2018:Annex_K"
+  ],
+  "track": "pan-optical"
+}

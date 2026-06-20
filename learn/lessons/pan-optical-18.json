@@ -1,0 +1,132 @@
+{
+  "id": "pan-optical-18",
+  "title": {
+    "en": "MAC Functional Specification, Part 2: Data, Acknowledgment, Adaptation, MIMO, and Relaying",
+    "zh": "MAC 功能规范（下）：数据传输、确认、自适应、MIMO 与中继"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In the first half of Clause 6 you saw how an OWPAN (optical wireless personal area network) is formed and kept alive. This second half is about what happens once devices are talking: how user data is packaged and sent, how the receiver confirms it arrived, how the link tunes its speed to the channel, how multiple light beams carry data in parallel, and how a relay can reach a device the coordinator cannot see directly. Light is directional, so all of this runs under a central coordinator rather than the contention-based sensing used by radio. Every acronym is spelled out the first time it appears.",
+      "zh": "在 Clause 6 的上半部分，你已经看到 OWPAN（光无线个域网，optical wireless personal area network）如何组建并维持运行。这下半部分讲的是设备开始通信之后发生的事：用户数据如何打包发送、接收方如何确认收到、链路如何根据信道调整速率、多束光如何并行承载数据，以及当协调器无法直接看到某设备时如何通过中继触达。光是有方向性的，因此这一切都在中央协调器的统一调度下进行，而不是像无线电那样使用基于竞争的信道侦听。每个缩写首次出现时都会给出全称。"
+    },
+    {
+      "type": "prose",
+      "en": "Data transfer (6.7) is the starting point. A MAC service data unit (MSDU) is just a block of user data handed down from the higher layer through the MD-DATA.request primitive; the MAC wraps it for transmission in a data frame, and on the other side delivers it up through MD-DATA.indication (6.7.1). The simplest case is a single MSDU placed in a Single MSDU element carrying its destination and source addresses (6.7.2). To improve efficiency the MAC may also aggregate several MSDUs into one MAC protocol data unit (MPDU) — the framed unit the radio/optical front end actually sends (6.7.3). A Single Address Aggregated MSDU element groups MSDUs that share one source/destination pair, while a Multiple Address Aggregated MSDU element carries MSDUs with different addresses to the same peer; received MSDUs are always passed up in their order of appearance.",
+      "zh": "数据传输（6.7）是起点。MAC 服务数据单元（MSDU，MAC service data unit）就是高层通过 MD-DATA.request 原语下发的一块用户数据；MAC 将它封装进数据帧发送，对端再通过 MD-DATA.indication 上交给高层（6.7.1）。最简单的情形是把单个 MSDU 放入 Single MSDU element，其中携带目的地址和源地址（6.7.2）。为提高效率，MAC 还可以把多个 MSDU 聚合进一个 MAC 协议数据单元（MPDU，MAC protocol data unit）——也就是光前端实际发送的成帧单元（6.7.3）。Single Address Aggregated MSDU element 把共享同一对源/目的地址的多个 MSDU 归为一组；Multiple Address Aggregated MSDU element 则把发往同一对端、但地址各不相同的多个 MSDU 一并承载。接收到的 MSDU 始终按它们在元素中出现的顺序上交。"
+    },
+    {
+      "type": "prose",
+      "en": "Acknowledged transmission (6.8) is how the sender learns a frame survived the trip. If the higher layer set the Acknowledged parameter to TRUE, the MAC sends the MPDU with the ACK Request bit set and buffers a copy in case it must resend (6.8.1). Broadcast frames are never acknowledged, and a sender may have at most aAckWindow unacknowledged MPDUs outstanding. The receiver replies in one of two ways: a Single ACK element confirms one MPDU (6.8.2), or — if capBlockAcknowledgment was negotiated — a Block ACK element confirms many at once using a bitmap of sequence numbers (6.8.3). The acknowledgment must arrive within macRetransmitTimeout. If it does not, retransmission (6.8.4) kicks in: the device resends the identical MPDU, up to macMaxFrameRetries attempts, after which it declares the transfer failed.",
+      "zh": "确认传输（6.8）让发送方得知一帧是否安全送达。如果高层将 Acknowledged 参数置为 TRUE，MAC 会在发送该 MPDU 时置上 ACK Request 位，并缓存一份副本以备重发（6.8.1）。广播帧从不被确认，且发送方未确认的 MPDU 数量最多不得超过 aAckWindow。接收方有两种回应方式：Single ACK element 确认单个 MPDU（6.8.2）；若已协商 capBlockAcknowledgment 能力，则可用 Block ACK element 以序列号位图一次性确认多个（6.8.3）。确认必须在 macRetransmitTimeout 内到达。若未及时到达，重传（6.8.4）启动：设备原样重发同一 MPDU，最多尝试 macMaxFrameRetries 次，之后即判定该次传输失败。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant A as Device A MAC\n  participant B as Device B MAC\n  A->>B: MPDU (ACK Request=1, Seq=2)\n  Note over A,B: macRetransmitTimeout (no ACK)\n  A->>B: Retransmit Seq=2 + new Seq=3\n  B-->>A: Block ACK {2,3 received}\n  Note over A: Clear buffer for 2,3",
+      "zh": "sequenceDiagram\n  participant A as 设备A MAC\n  participant B as 设备B MAC\n  A->>B: MPDU (ACK Request=1, 序号=2)\n  Note over A,B: macRetransmitTimeout (无ACK)\n  A->>B: 重传 序号=2 + 新 序号=3\n  B-->>A: Block ACK {收到 2,3}\n  Note over A: 清除 2,3 的缓存"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why a central timeout instead of an instant ACK like Wi-Fi? Because devices transmit in scheduled slots, the acknowledging device sends its ACK at its next suitable transmission time. The standard's own NOTE advises setting macRetransmitTimeout high enough that the receiver gets at least one transmission opportunity before the timer expires — otherwise you would retransmit frames that were actually received fine.",
+      "zh": "为什么用集中式超时而不是像 Wi-Fi 那样的即时 ACK？因为设备在调度好的时隙里发送，确认方会在它下一个合适的发送时机才发出 ACK。标准本身的 NOTE 提醒：要把 macRetransmitTimeout 设得足够大，确保接收方在定时器到期前至少有一次发送机会——否则你会去重传那些其实已经正确收到的帧。"
+    },
+    {
+      "type": "prose",
+      "en": "Adaptive transmission (6.9) lets the link change speed with the channel. A device picks a modulation and coding scheme (MCS) — the combination of how densely it packs bits and how much error-correction it adds — for each outgoing PHY protocol data unit (PPDU) based on channel feedback; the rate-selection algorithm itself is left to the implementer (6.9.1). Some control-critical frames are too important to gamble on: Announcement, Association Request/Response, Disassociation Notification, Sync, and Random Access frames must go out at the PHY's robust base MCS, and the coordinator should also choose a robust MCS for RTS Descriptor, ACK, and broadcast frames (6.9.2). When both ends support capMcsRequest, the receiver can actively ask the transmitter to switch MCS (6.9.3).",
+      "zh": "自适应传输（6.9）让链路随信道改变速率。设备根据信道反馈，为每个发出的 PHY 协议数据单元（PPDU，PHY protocol data unit）选择一种调制与编码方案（MCS，modulation and coding scheme）——即比特打包的密度与所加纠错量的组合；速率选择算法本身留给实现者决定（6.9.1）。某些控制关键帧太重要、不能冒险：Announcement、Association Request/Response、Disassociation Notification、Sync 以及 Random Access 帧必须以该 PHY 稳健的基础 MCS（base MCS）发送；协调器对 RTS Descriptor、ACK 和广播帧也应选用稳健的 MCS（6.9.2）。当两端都支持 capMcsRequest 能力时，接收方可以主动请求发送方切换 MCS（6.9.3）。"
+    },
+    {
+      "type": "prose",
+      "en": "The MCS request mechanism (6.9.3) splits by PHY. A device that measures incoming signal quality may send an MCS Request element when the current MCS is no longer decodable or when a faster one would now work (6.9.3.1). On the PM-PHY (pulsed modulation PHY) the request carries a PM-PHY MCS element (6.9.3.2). On the HB-PHY (high-bandwidth PHY) the request carries an HB-PHY MCS element that names a bit allocation table (BAT) — a per-subcarrier map of how many bits ride each subcarrier (6.9.3.3). There are 32 BAT IDs: 0–7 are predefined, 8–31 are defined at runtime. Because the request is sent in an unacknowledged control frame, the requester only knows a runtime BAT 'took' when it later successfully decodes a PPDU using that BAT ID.",
+      "zh": "MCS 请求机制（6.9.3）按 PHY 分两种。能测量来波信号质量的设备，可在当前 MCS 不再可解码、或现在已能用更快速率时，发送 MCS Request element（6.9.3.1）。在 PM-PHY（脉冲调制 PHY，pulsed modulation PHY）上，请求携带 PM-PHY MCS element（6.9.3.2）。在 HB-PHY（高带宽 PHY，high-bandwidth PHY）上，请求携带 HB-PHY MCS element，其中指明一张比特分配表（BAT，bit allocation table）——即每个子载波承载多少比特的逐子载波映射（6.9.3.3）。共有 32 个 BAT ID：0–7 为预定义，8–31 可在运行时定义。由于请求是通过不被确认的控制帧发送的，请求方只有在之后成功用某个 BAT ID 解码一个 PPDU 时，才知道该运行时 BAT 已经生效。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Repetition coding (same data on both beams)</text><rect x=\"20\" y=\"35\" width=\"40\" height=\"24\"/><text x=\"40\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">OFE1</text><rect x=\"20\" y=\"70\" width=\"40\" height=\"24\"/><text x=\"40\" y=\"86\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">OFE2</text><line x1=\"60\" y1=\"47\" x2=\"150\" y2=\"47\" stroke-dasharray=\"4 3\"/><line x1=\"60\" y1=\"82\" x2=\"150\" y2=\"82\" stroke-dasharray=\"4 3\"/><rect x=\"150\" y=\"35\" width=\"40\" height=\"24\"/><text x=\"170\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">PD1</text><rect x=\"150\" y=\"70\" width=\"40\" height=\"24\"/><text x=\"170\" y=\"86\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">PD2</text><text x=\"105\" y=\"120\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">X1 X2 X3 X4 on every OFE</text><text x=\"240\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Spatial multiplexing (independent streams)</text><rect x=\"250\" y=\"35\" width=\"40\" height=\"24\"/><text x=\"270\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">OFE1</text><rect x=\"250\" y=\"70\" width=\"40\" height=\"24\"/><text x=\"270\" y=\"86\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">OFE2</text><line x1=\"290\" y1=\"47\" x2=\"380\" y2=\"47\" stroke-dasharray=\"4 3\"/><line x1=\"290\" y1=\"82\" x2=\"380\" y2=\"82\" stroke-dasharray=\"4 3\"/><rect x=\"380\" y=\"35\" width=\"30\" height=\"24\"/><text x=\"395\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">PD1</text><rect x=\"380\" y=\"70\" width=\"30\" height=\"24\"/><text x=\"395\" y=\"86\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">PD2</text><text x=\"330\" y=\"120\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">X1,X3.. and X2,X4.. separately</text></svg>",
+      "caption": {
+        "en": "MIMO over light: an OFE (optical front end) is one emitter; a PD (photo diode) is one receiver. Repetition coding sends identical data on both beams for robustness; spatial multiplexing sends independent streams for throughput, each with its own MCS.",
+        "zh": "光的 MIMO：OFE（光前端，optical front end）是一个发光器件，PD（光电二极管，photo diode）是一个接收器件。重复编码在两束光上发送相同数据以提高稳健性；空间复用则发送相互独立的数据流以提升吞吐，且每束都有各自的 MCS。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "MIMO transmission (6.10) puts multiple optical front ends (OFEs) and photo diodes (PDs) to work. With explicit MIMO channel feedback (6.10.1), a coordinator advertising capExplicitMimoEstimation sends explicit MIMO pilot symbols — one per OFE, time-synchronized to aPhyOfeSyncAccuracy. The receiver estimates the channel state information (CSI) — the per-path signal strength and delay — between each transmitting OFE and itself, then returns an Explicit MIMO Feedback element built from OFE Feedback Descriptor and Tap Descriptor sub-elements. Armed with that CSI, adaptive MIMO transmission (6.10.2) chooses between two modes: repetition coding (the same data on every OFE for robustness) and spatial multiplexing (independent streams, each with its own MCS, for higher throughput).",
+      "zh": "MIMO 传输（6.10）让多个光前端（OFE）和光电二极管（PD）协同工作。在显式 MIMO 信道反馈（6.10.1）中，宣告 capExplicitMimoEstimation 能力的协调器发送显式 MIMO 导频符号——每个 OFE 一个，并以 aPhyOfeSyncAccuracy 的精度做时间同步。接收方估计每个发送 OFE 与自身之间的信道状态信息（CSI，channel state information）——即每条路径的信号强度与时延，然后回送一个由 OFE Feedback Descriptor 与 Tap Descriptor 子元素构成的 Explicit MIMO Feedback element。拿到这份 CSI 后，自适应 MIMO 传输（6.10.2）在两种模式间选择：重复编码（每个 OFE 发送相同数据以求稳健）与空间复用（各自独立的数据流、各带自己的 MCS，以求更高吞吐）。"
+    },
+    {
+      "type": "prose",
+      "en": "Relaying (6.11) extends reach when the coordinator and a device cannot light each other directly — relaying is only available in scheduled medium access mode, and never when the coordinator uses multiple OFEs (6.11.1). It starts with a learning phase: devices that advertised capRelayDevice or capRelayedDevice listen, collect the transmitter addresses they can hear, and periodically report them plus a usable MCS in a Reachable Address element so the coordinator can spot a viable relay path (6.11.2). To activate (6.11.3), the coordinator sends a Relay Device Configuration Request (Relay Active=1) to the relay, gets a SUCCESS/DENIED response, then sends a Relayed Device Configuration Request to the relayed device — note the two directions may use different MCS. To deactivate (6.11.4) it resends both configuration elements with Relay Active=0. Finally, relaying frames (6.11.5): the relay earns a guaranteed time slot (GTS) like any device, and a frame to be relayed is marked with Relayed Frame=1, its Relay Address field zeroed by the original transmitter.",
+      "zh": "中继（6.11）在协调器与某设备无法相互直射时延伸覆盖——中继仅在调度式介质访问模式下可用，且协调器使用多个 OFE 时绝不使用中继（6.11.1）。它从学习阶段开始：宣告了 capRelayDevice 或 capRelayedDevice 能力的设备进行侦听，收集能听到的发送方地址，并周期性地把这些地址连同可用的 MCS 放进 Reachable Address element 上报给协调器，供其发现可行的中继路径（6.11.2）。激活时（6.11.3），协调器向中继设备发送 Relay Device Configuration Request（Relay Active=1），收到 SUCCESS/DENIED 响应后，再向被中继设备发送 Relayed Device Configuration Request——注意两个方向可以使用不同的 MCS。停用时（6.11.4），它把这两个配置元素以 Relay Active=0 重新发送。最后是中继帧转发（6.11.5）：中继设备像普通设备一样获得保障时隙（GTS，guaranteed time slot），待中继的帧被标记 Relayed Frame=1，其 Relay Address 字段由原始发送方置为全零。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant C as Coordinator\n  participant R as Relay device\n  participant D as Relayed device\n  Note over R,D: Learning phase: collect heard addresses\n  R->>C: Reachable Address {addrs, MCS}\n  D->>C: Reachable Address {addrs, MCS}\n  C->>R: Relay Device Config Req (Active=1)\n  R-->>C: Response (SUCCESS)\n  C->>D: Relayed Device Config Req (Active=1)\n  D-->>C: Response (SUCCESS)\n  Note over R,D: Relay link active (uses GTS)",
+      "zh": "sequenceDiagram\n  participant C as 协调器\n  participant R as 中继设备\n  participant D as 被中继设备\n  Note over R,D: 学习阶段：收集听到的地址\n  R->>C: Reachable Address {地址, MCS}\n  D->>C: Reachable Address {地址, MCS}\n  C->>R: Relay Device 配置请求 (Active=1)\n  R-->>C: 响应 (SUCCESS)\n  C->>D: Relayed Device 配置请求 (Active=1)\n  D-->>C: 响应 (SUCCESS)\n  Note over R,D: 中继链路激活 (使用GTS)"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause number in this lesson",
+        "zh": "覆盖地图：本课涉及的每个条款编号"
+      },
+      "en": "Data transfer 6.7 — 6.7.1 Overview (MSDU in/out via MD-DATA primitives), 6.7.2 Single MSDU transmission (Single MSDU element with dest/src addresses), 6.7.3 Multiple MSDU aggregation (Single-Address and Multiple-Address Aggregated MSDU elements; in-order delivery). Acknowledged transmission 6.8 — 6.8.1 Overview (ACK Request bit, buffering, broadcast not acked, aAckWindow), 6.8.2 Single acknowledgment (Single ACK element within macRetransmitTimeout), 6.8.3 Block acknowledgment (Block ACK / Block ACK Request elements, sequence-number bitmap, capBlockAcknowledgment), 6.8.4 Retransmission (macRetransmitTimeout, identical contents, macMaxFrameRetries). Adaptive transmission 6.9 — 6.9.1 Overview (per-PPDU MCS, implementer's algorithm), 6.9.2 Transmission of essential frames (base MCS list; robust MCS recommendations), 6.9.3 MCS request (6.9.3.1 Overview + capMcsRequest, 6.9.3.2 PM-PHY MCS element, 6.9.3.3 HB-PHY MCS element / BAT IDs 0–31 / FEC block size and code rate). MIMO transmission 6.10 — 6.10.1 Explicit MIMO channel feedback (capExplicitMimoEstimation, MIMO pilots, CSI taps, Explicit MIMO Feedback / OFE Feedback Descriptor / Tap Descriptor), 6.10.2 Adaptive MIMO transmission (repetition coding vs spatial multiplexing). Relaying 6.11 — 6.11.1 Overview (scheduled mode only, not with multiple OFEs), 6.11.2 Determining potential relay configurations (capRelayDevice/capRelayedDevice, Reachable Address element), 6.11.3 Activating a relay link (Relay/Relayed Device Configuration Request/Response, Relay Active=1, SUCCESS/DENIED), 6.11.4 Deactivating a relay link (Relay Active=0, departure handling), 6.11.5 Relaying frames (GTS, Relayed Frame=1, Relay Address zeroed).",
+      "zh": "数据传输 6.7 —— 6.7.1 概述（MSDU 经 MD-DATA 原语收发），6.7.2 单 MSDU 传输（携带目的/源地址的 Single MSDU element），6.7.3 多 MSDU 聚合（单地址与多地址聚合 MSDU 元素；按序上交）。确认传输 6.8 —— 6.8.1 概述（ACK Request 位、缓存、广播不确认、aAckWindow），6.8.2 单确认（macRetransmitTimeout 内的 Single ACK element），6.8.3 块确认（Block ACK / Block ACK Request 元素、序列号位图、capBlockAcknowledgment），6.8.4 重传（macRetransmitTimeout、内容相同、macMaxFrameRetries）。自适应传输 6.9 —— 6.9.1 概述（逐 PPDU 选 MCS、算法由实现者决定），6.9.2 关键帧的传输（基础 MCS 清单；稳健 MCS 建议），6.9.3 MCS 请求（6.9.3.1 概述与 capMcsRequest，6.9.3.2 PM-PHY MCS element，6.9.3.3 HB-PHY MCS element / BAT ID 0–31 / FEC 块大小与码率）。MIMO 传输 6.10 —— 6.10.1 显式 MIMO 信道反馈（capExplicitMimoEstimation、MIMO 导频、CSI 抽头、Explicit MIMO Feedback / OFE Feedback Descriptor / Tap Descriptor），6.10.2 自适应 MIMO 传输（重复编码与空间复用）。中继 6.11 —— 6.11.1 概述（仅调度模式、不与多 OFE 并用），6.11.2 确定潜在中继配置（capRelayDevice/capRelayedDevice、Reachable Address element），6.11.3 激活中继链路（Relay/Relayed Device 配置请求/响应、Relay Active=1、SUCCESS/DENIED），6.11.4 停用中继链路（Relay Active=0、设备离开处理），6.11.5 中继帧转发（GTS、Relayed Frame=1、Relay Address 置零）。",
+      "cite": {
+        "pdf_id": "8021513-2023",
+        "pages": [
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021513-2023",
+      "pages": [
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61
+      ],
+      "note": "Clause 6.7 Data transfer through 6.11 Relaying, including Figures 26-31."
+    }
+  ],
+  "covers": [
+    "8021513-2023:6.7.1",
+    "8021513-2023:6.7.2",
+    "8021513-2023:6.7.3",
+    "8021513-2023:6.8.1",
+    "8021513-2023:6.8.2",
+    "8021513-2023:6.8.3",
+    "8021513-2023:6.8.4",
+    "8021513-2023:6.9.1",
+    "8021513-2023:6.9.2",
+    "8021513-2023:6.9.3",
+    "8021513-2023:6.10.1",
+    "8021513-2023:6.10.2",
+    "8021513-2023:6.11.1",
+    "8021513-2023:6.11.2",
+    "8021513-2023:6.11.3",
+    "8021513-2023:6.11.4",
+    "8021513-2023:6.11.5"
+  ],
+  "track": "pan-optical"
+}

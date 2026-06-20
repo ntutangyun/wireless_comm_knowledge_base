@@ -1,0 +1,160 @@
+{
+  "id": "pan-optical-22",
+  "title": {
+    "en": "Talking to the MAC and PHY: the Service Interfaces of 802.15.13",
+    "zh": "与 MAC 和 PHY 对话：802.15.13 的服务接口"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.15.13-2023 is an optical wireless communications (OWC) standard — multi-gigabit-per-second links carried over light. Like every IEEE 802 standard, it describes the inside of a device as a stack of layers that talk through well-defined doorways called Service Access Points (SAPs). Clause 8 (MAC services) and Clause 9 (PHY service) are the catalog of those doorways: what the MAC (Medium Access Control, the sublayer that decides who transmits when) offers upward to applications and management, and what the PHY (the physical layer, the part that actually drives the light) offers upward to the MAC. This lesson walks every interface so you can read these clauses fluently.",
+      "zh": "IEEE Std 802.15.13-2023 是一项光无线通信（OWC）标准——用光承载每秒数吉比特的链路。与所有 IEEE 802 标准一样，它把设备内部描述为一摞通过明确定义的“门”互相通话的层，这些门称为服务接入点（SAP）。第 8 章（MAC 服务）与第 9 章（PHY 服务）正是这些门的目录：MAC（介质访问控制子层，决定谁在何时发送）向上为应用和管理提供什么服务，以及 PHY（物理层，真正驱动光的部分）向上为 MAC 提供什么服务。本课逐一走过每个接口，让你能流畅地读懂这两章。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 8.1 (Overview) lays out the map: the MAC offers its service through two SAPs. The MD-SAP (MAC Data SAP) carries user data, and the MLME-SAP (MAC Layer Management Entity SAP) carries management commands. Two more pillars sit behind them: PIB attributes (the PAN Information Base — the device's settable/readable variables that define MAC behavior and reflect current state, defined in 8.4), and capabilities (optional features a device actually implements, negotiated while a device is joined to an OWPAN — an Optical Wireless Personal Area Network — defined in 8.6). The management commands are driven by the DME (Device Management Entity), the higher-layer brain that configures the device.",
+      "zh": "第 8.1 节（概述）给出全图：MAC 通过两个 SAP 提供服务。MD-SAP（MAC 数据 SAP）承载用户数据，MLME-SAP（MAC 层管理实体 SAP）承载管理命令。它们背后还有两根支柱：PIB 属性（PAN 信息库——设备可设置/可读取、定义 MAC 行为并反映当前状态的变量，在 8.4 中定义），以及能力（设备实际实现的可选特性，在设备加入某个 OWPAN——光无线个域网——期间协商确定，在 8.6 中定义）。管理命令由 DME（设备管理实体）驱动，它是配置设备的高层大脑。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 250\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"30\" y=\"20\" width=\"400\" height=\"40\"/><text x=\"230\" y=\"45\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">Higher layers + DME (management brain)</text><line x1=\"130\" y1=\"60\" x2=\"130\" y2=\"95\"/><text x=\"105\" y=\"80\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">MD-SAP</text><line x1=\"330\" y1=\"60\" x2=\"330\" y2=\"95\"/><text x=\"355\" y=\"80\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">MLME-SAP</text><rect x=\"30\" y=\"95\" width=\"400\" height=\"55\"/><text x=\"230\" y=\"118\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">MAC sublayer</text><text x=\"230\" y=\"138\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">MAC PIB attributes (8.4) + constants (8.5) + capabilities (8.6)</text><line x1=\"130\" y1=\"150\" x2=\"130\" y2=\"185\"/><text x=\"105\" y=\"170\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">PD-SAP</text><line x1=\"330\" y1=\"150\" x2=\"330\" y2=\"185\"/><text x=\"355\" y=\"170\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">PLME-SAP</text><rect x=\"30\" y=\"185\" width=\"400\" height=\"45\"/><text x=\"230\" y=\"205\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">PHY (drives the light)</text><text x=\"230\" y=\"222\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">PHY PIB attributes (9.3.2) + constants (9.3.3)</text></svg>",
+      "caption": {
+        "en": "The four service access points of an 802.15.13 device. Data flows through MD-SAP and PD-SAP; management flows through MLME-SAP and PLME-SAP.",
+        "zh": "802.15.13 设备的四个服务接入点。数据经 MD-SAP 与 PD-SAP 流动；管理经 MLME-SAP 与 PLME-SAP 流动。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 8.2 covers the MD-SAP. Its overview (8.2.1) says the SAP transports MSDUs (MAC Service Data Units — the chunks of user data) between peer devices, and that these MSDUs are wrapped in EtherType format so 802.15.13 networks can slot into bridged LANs per IEEE Std 802.1AC. There are just two primitives: MD-DATA.request (8.2.2), issued by the higher layer to send data — carrying DestinationAddress, SourceAddress, the Msdu, a Priority [0,7], and an Acknowledged flag; and MD-DATA.indication (8.2.3), issued by the MAC when it receives an MSDU from a peer, delivering the same addresses and Msdu upward. A 'primitive' is just one standardized message crossing a SAP.",
+      "zh": "第 8.2 节讲 MD-SAP。其概述（8.2.1）说明该 SAP 在对等设备之间传输 MSDU（MAC 服务数据单元——用户数据的分块），并且这些 MSDU 被封装为 EtherType 格式，使 802.15.13 网络能按 IEEE Std 802.1AC 接入桥接局域网。这里只有两个原语：MD-DATA.request（8.2.2），由高层发出以发送数据——携带 DestinationAddress、SourceAddress、Msdu、优先级 Priority [0,7] 以及 Acknowledged 标志；以及 MD-DATA.indication（8.2.3），当 MAC 收到来自对端的 MSDU 时发出，向上递交相同的地址与 Msdu。所谓“原语”，就是穿过某个 SAP 的一条标准化消息。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "IEEE SAP primitives come in up to four flavors. .request — the layer above asks the layer below to do something. .confirm — the lower layer reports back the result of that request. .indication — the lower layer spontaneously tells the layer above that an event happened. .response — the layer above answers an indication. Spotting which flavor you're reading instantly tells you the direction and role.",
+      "zh": "IEEE 的 SAP 原语最多有四种形态。.request——上层请求下层做某事。.confirm——下层回报该请求的结果。.indication——下层主动告知上层发生了某事件。.response——上层对某个 indication 作出应答。一眼认出读到的是哪种形态，就立刻知道了它的方向与角色。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 8.3 is the MLME-SAP — the management toolbox. The overview (8.3.1) lists the primitives, and 8.3.2 (Common requirements) sets ground rules: MLME calls run sequentially, and a Status parameter can return generic values like INVALID_PARAMETER or ALREADY_IN_PROGRESS. The rest are the seven management operations, each a small state-machine driver: MLME-ASSOCIATE (8.3.3) joins an OWPAN, with request/confirm on the joining device and indication/response on the coordinator (the device that runs the network), allocating an AID (Association Identifier); MLME-DISASSOCIATE (8.3.4) leaves it, carrying a Reason; MLME-GET (8.3.5) reads a PIB attribute; MLME-SET (8.3.6) writes one; MLME-SCAN (8.3.7) listens for existing OWPANs over a ScanDuration and returns a result list (each entry holding OWPAN ID and electrical SNR — signal-to-noise ratio); MLME-START (8.3.8) tells a device to become a coordinator and start a new OWPAN; and MLME-STOP (8.3.9) shuts a running OWPAN down with a Timeout and a Force flag.",
+      "zh": "第 8.3 节是 MLME-SAP——管理工具箱。概述（8.3.1）列出各原语，8.3.2（通用要求）定下基本规则：MLME 调用顺序执行，Status 参数可返回 INVALID_PARAMETER 或 ALREADY_IN_PROGRESS 等通用值。其余是七项管理操作，每项都是一个小型状态机驱动器：MLME-ASSOCIATE（8.3.3）加入 OWPAN，加入方设备用 request/confirm、协调器（运行网络的设备）用 indication/response，并分配 AID（关联标识符）；MLME-DISASSOCIATE（8.3.4）离开，携带 Reason；MLME-GET（8.3.5）读取一个 PIB 属性；MLME-SET（8.3.6）写入一个；MLME-SCAN（8.3.7）在 ScanDuration 内侦听已有 OWPAN，返回结果列表（每条含 OWPAN ID 与电气信噪比 SNR）；MLME-START（8.3.8）令设备成为协调器并启动新 OWPAN；MLME-STOP（8.3.9）用 Timeout 与 Force 标志关闭运行中的 OWPAN。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant D as DME (joining device)\n  participant M as MLME\n  participant C as Coordinator\n  D->>M: MLME-ASSOCIATE.request (OwpanId)\n  M->>C: association over the air\n  C->>C: MLME-ASSOCIATE.indication\n  C->>C: MLME-ASSOCIATE.response (AID)\n  C->>M: result over the air\n  M->>D: MLME-ASSOCIATE.confirm (AID, Status)",
+      "zh": "sequenceDiagram\n  participant D as DME（加入方设备）\n  participant M as MLME\n  participant C as 协调器\n  D->>M: MLME-ASSOCIATE.request (OwpanId)\n  M->>C: 空口关联\n  C->>C: MLME-ASSOCIATE.indication\n  C->>C: MLME-ASSOCIATE.response (AID)\n  C->>M: 空口回结果\n  M->>D: MLME-ASSOCIATE.confirm (AID, Status)"
+    },
+    {
+      "type": "prose",
+      "en": "Clauses 8.4 through 8.6 are the MAC's data dictionary. 8.4 (MAC PIB attributes) is a table of named variables — for example macMacAddress, macOwpanId, macAssociationIdentifier (the AID), macAssociationTimeout, macMaxFrameRetries, and macMaxReassemblyTimeout. Each row has an Access column: 'get' means MLME-GET can read it, 'set' means MLME-SET can write it, and 'change' means it can also be changed remotely by another device's procedure. 8.5 (MAC constants) lists fixed values used for readability rather than tuning — names beginning with 'a', like aSuperframeSlotDuration (1 µs), aClockAccuracy (20 ppm), aMinFragmentSize (64 octets), and aAckWindow (1024 MPDUs, the max in-flight unacknowledged MPDUs — MAC Protocol Data Units). 8.6 (Device capabilities) is a table of optional features each with a name and numeric ID, such as capExplicitMimoEstimation, capFullDuplex, capBlockAcknowledgment, capInterferenceDetection, capMcsRequest, and the relay capabilities capRelayedDevice / capRelayDevice.",
+      "zh": "第 8.4 至 8.6 节是 MAC 的数据字典。8.4（MAC PIB 属性）是一张命名变量表——例如 macMacAddress、macOwpanId、macAssociationIdentifier（即 AID）、macAssociationTimeout、macMaxFrameRetries 与 macMaxReassemblyTimeout。每行都有 Access 列：“get”表示 MLME-GET 可读，“set”表示 MLME-SET 可写，“change”表示还可被另一设备的远程过程更改。8.5（MAC 常量）列出为提升可读性而非用于调优的固定值——以“a”开头的名称，如 aSuperframeSlotDuration（1 µs）、aClockAccuracy（20 ppm）、aMinFragmentSize（64 字节）与 aAckWindow（1024 个 MPDU，即在途未确认 MPDU——MAC 协议数据单元——的上限）。8.6（设备能力）是一张可选特性表，每项有名称与数字 ID，如 capExplicitMimoEstimation、capFullDuplex、capBlockAcknowledgment、capInterferenceDetection、capMcsRequest，以及中继能力 capRelayedDevice / capRelayDevice。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 9 turns to the PHY service. The overview (9.1) makes an important honesty disclaimer: real chips integrate the MAC and PHY into one entity, so the PHY's interfaces (PD-SAP and PLME-SAP) are not actually exposed — they are specified abstractly. The PHY's jobs are listed plainly: activate/deactivate the OWC transceiver, transmit and receive data, estimate the channel of received frames, correct errors, and synchronize. 9.4 then states PHY requirements common to all 802.15.13 PHYs: 9.4.1 (Timing requirements) — a half-duplex PHY needs a turnaround time to switch between transmit and receive, which the MAC must respect; and 9.4.2 (Regulatory requirements) — devices must meet regional certification, with light-safety guidance pointing to IEC 60825-1.",
+      "zh": "第 9 章转向 PHY 服务。概述（9.1）作了一个重要的坦诚说明：真实芯片把 MAC 与 PHY 合并为一个实体，因此 PHY 的接口（PD-SAP 与 PLME-SAP）实际上并不对外暴露——它们以抽象方式规定。PHY 的职责被直白地列出：激活/停用 OWC 收发机、发送与接收数据、估计接收帧的信道、纠错、同步。9.4 随后给出对所有 802.15.13 PHY 通用的 PHY 要求：9.4.1（时序要求）——半双工 PHY 在收发模式间切换需要一段转换时间（turnaround time），MAC 必须予以考虑；9.4.2（监管要求）——设备须满足地区认证，光安全指引指向 IEC 60825-1。"
+    },
+    {
+      "type": "prose",
+      "en": "The PHY's two SAPs mirror the MAC's. 9.2 (PD-SAP) is the data path: 9.2.1 (Overview) defines it as the logical interface for requesting PSDU (PHY Service Data Unit) transmissions and indicating PSDU receptions — vendor-internal, not pinned down here. The next three subclauses describe PHY behaviors the MAC can invoke without knowing chip internals: 9.2.2 (PHY MCS) — every PHY supports multiple MCS (Modulation and Coding Schemes), and the MAC selects one per PSDU, with a robust 'base MCS' for control frames; 9.2.3 (Explicit MIMO channel estimation) — for MIMO (Multiple-Input Multiple-Output) over several OFEs (Optical Front-Ends), the PHY sends mutually orthogonal pilot symbols (up to 256 versions) so each transmit-OFE-to-receive-OFE channel can be measured separately, gated by the capExplicitMimoEstimation capability; and 9.2.4 (MIMO transmission via multiple OFEs) — the MAC may tell the PHY to send one PSDU across several OFEs, as in distributed MIMO. 9.3 (PLME-SAP) is the management path: 9.3.1 (Overview) marks it vendor-internal too; 9.3.2 (PHY PIB attributes) exposes PHY variables to the DME via MLME-GET/SET — including phyImplementedPhy, which reports whether the chip is a PM-PHY or HB-PHY; and 9.3.3 (PHY constants) notes each PHY defines its own constants, sharing names but possibly differing in value.",
+      "zh": "PHY 的两个 SAP 与 MAC 的对应。9.2（PD-SAP）是数据通路：9.2.1（概述）将其定义为请求 PSDU（PHY 服务数据单元）发送并指示 PSDU 接收的逻辑接口——属厂商内部，不在此固定。接下来三个子条描述 MAC 无需了解芯片内部即可调用的 PHY 行为：9.2.2（PHY MCS）——每个 PHY 支持多种 MCS（调制与编码方案），MAC 为每个 PSDU 选择其一，并为控制帧设有稳健的“基准 MCS”；9.2.3（显式 MIMO 信道估计）——对于跨多个 OFE（光前端）的 MIMO（多输入多输出），PHY 发送互相正交的导频符号（最多 256 个版本），从而可分别测量每条“发送 OFE 到接收 OFE”的信道，受 capExplicitMimoEstimation 能力门控；9.2.4（经多个 OFE 的 MIMO 发送）——MAC 可令 PHY 将单个 PSDU 跨多个 OFE 发送，如分布式 MIMO。9.3（PLME-SAP）是管理通路：9.3.1（概述）同样标注其为厂商内部；9.3.2（PHY PIB 属性）通过 MLME-GET/SET 向 DME 暴露 PHY 变量——包括 phyImplementedPhy，用以报告芯片是 PM-PHY 还是 HB-PHY；9.3.3（PHY 常量）指出每个 PHY 定义自己的常量，名称共享但取值可能不同。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause taught above, by exact number",
+        "zh": "覆盖地图——上文所讲每个条款，按精确编号"
+      },
+      "en": "Clause 8 (MAC services): 8.1 Overview (the two MAC SAPs, plus PIB and capabilities pointers); 8.2 MD-SAP — 8.2.1 Overview (MSDU transport in EtherType format per 802.1AC), 8.2.2 MD-DATA.request, 8.2.3 MD-DATA.indication; 8.3 MLME-SAP — 8.3.1 Overview, 8.3.2 Common requirements (sequential calls, generic Status), 8.3.3 MLME-ASSOCIATE, 8.3.4 MLME-DISASSOCIATE, 8.3.5 MLME-GET, 8.3.6 MLME-SET, 8.3.7 MLME-SCAN, 8.3.8 MLME-START, 8.3.9 MLME-STOP; 8.4 MAC PIB attributes (Table 33, get/set/change access); 8.5 MAC constants (Table 34, 'a'-prefixed fixed values); 8.6 Device capabilities (Table 35, named optional features with IDs). Clause 9 (PHY service): 9.1 Overview (MAC+PHY integrated, abstract SAPs, PHY task list); 9.2 PD-SAP — 9.2.1 Overview (PSDU transmit/receive, vendor-internal), 9.2.2 PHY MCS (per-PSDU selection, base MCS), 9.2.3 Explicit MIMO channel estimation (orthogonal pilots, up to 256, capExplicitMimoEstimation), 9.2.4 MIMO transmission via multiple OFEs; 9.3 PLME-SAP — 9.3.1 Overview (vendor-internal), 9.3.2 PHY PIB attributes (Table 36, phyImplementedPhy = PM-PHY or HB-PHY), 9.3.3 PHY constants; 9.4 PHY requirements — 9.4.1 Timing requirements (turnaround time for half-duplex), 9.4.2 Regulatory requirements (regional certification, IEC 60825-1 light safety).",
+      "zh": "第 8 章（MAC 服务）：8.1 概述（MAC 的两个 SAP，以及 PIB 与能力的指引）；8.2 MD-SAP——8.2.1 概述（按 802.1AC 以 EtherType 格式传输 MSDU）、8.2.2 MD-DATA.request、8.2.3 MD-DATA.indication；8.3 MLME-SAP——8.3.1 概述、8.3.2 通用要求（顺序调用、通用 Status）、8.3.3 MLME-ASSOCIATE、8.3.4 MLME-DISASSOCIATE、8.3.5 MLME-GET、8.3.6 MLME-SET、8.3.7 MLME-SCAN、8.3.8 MLME-START、8.3.9 MLME-STOP；8.4 MAC PIB 属性（表 33，get/set/change 访问权限）；8.5 MAC 常量（表 34，以“a”为前缀的固定值）；8.6 设备能力（表 35，带 ID 的命名可选特性）。第 9 章（PHY 服务）：9.1 概述（MAC 与 PHY 合并、抽象 SAP、PHY 职责清单）；9.2 PD-SAP——9.2.1 概述（PSDU 收发，厂商内部）、9.2.2 PHY MCS（按 PSDU 选择、基准 MCS）、9.2.3 显式 MIMO 信道估计（正交导频，最多 256，capExplicitMimoEstimation）、9.2.4 经多个 OFE 的 MIMO 发送；9.3 PLME-SAP——9.3.1 概述（厂商内部）、9.3.2 PHY PIB 属性（表 36，phyImplementedPhy = PM-PHY 或 HB-PHY）、9.3.3 PHY 常量；9.4 PHY 要求——9.4.1 时序要求（半双工的转换时间）、9.4.2 监管要求（地区认证、IEC 60825-1 光安全）。",
+      "cite": {
+        "pdf_id": "8021513-2023",
+        "pages": [
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy mental model: data primitives (MD-DATA, and PSDU transmit/receive over PD-SAP) move bytes; management primitives (the MLME-* family, and PLME's PIB access) move knobs and status. GET/SET are the universal bridge — the same MLME-GET/MLME-SET pair reaches both MAC PIB attributes (8.4) and PHY PIB attributes (9.3.2), which is why the DME can configure the whole stack through one doorway.",
+      "zh": "一个好用的心智模型：数据原语（MD-DATA，以及经 PD-SAP 的 PSDU 收发）搬运字节；管理原语（MLME-* 家族，以及 PLME 的 PIB 访问）搬运旋钮与状态。GET/SET 是通用桥梁——同一对 MLME-GET/MLME-SET 既能触及 MAC PIB 属性（8.4），也能触及 PHY PIB 属性（9.3.2），这正是 DME 能通过一扇门配置整个协议栈的原因。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021513-2023",
+      "pages": [
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107
+      ],
+      "note": "Clause 8 MAC services (8.1 overview, 8.2 MD-SAP, 8.3 MLME-SAP, 8.4 PIB attributes, 8.5 constants, 8.6 capabilities) and Clause 9 PHY service (9.1 overview, 9.2 PD-SAP, 9.3 PLME-SAP, 9.4 PHY requirements)."
+    }
+  ],
+  "covers": [
+    "8021513-2023:8.1",
+    "8021513-2023:8.2.1",
+    "8021513-2023:8.2.2",
+    "8021513-2023:8.2.3",
+    "8021513-2023:8.3.1",
+    "8021513-2023:8.3.2",
+    "8021513-2023:8.3.3",
+    "8021513-2023:8.3.4",
+    "8021513-2023:8.3.5",
+    "8021513-2023:8.3.6",
+    "8021513-2023:8.3.7",
+    "8021513-2023:8.3.8",
+    "8021513-2023:8.3.9",
+    "8021513-2023:8.4",
+    "8021513-2023:8.5",
+    "8021513-2023:8.6",
+    "8021513-2023:9.1",
+    "8021513-2023:9.2.1",
+    "8021513-2023:9.2.2",
+    "8021513-2023:9.2.3",
+    "8021513-2023:9.2.4",
+    "8021513-2023:9.3.1",
+    "8021513-2023:9.3.2",
+    "8021513-2023:9.3.3",
+    "8021513-2023:9.4.1",
+    "8021513-2023:9.4.2"
+  ],
+  "track": "pan-optical"
+}

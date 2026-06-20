@@ -1,0 +1,239 @@
+{
+  "id": "pan-802-15-30",
+  "title": {
+    "en": "KMP Transport in 802.15.9: Service Primitives, the MPX IE, and State Machines",
+    "zh": "802.15.9 中的 KMP 传输：服务原语、MPX IE 与状态机"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.15.9-2021 answers one narrow but vital question: how do two 802.15.4 devices carry a key management protocol (KMP) to each other before they share any keys? A KMP is a conversation — like a handshake — whose end product is a security association (SA): an agreed key plus the parameters needed to use it. 802.15.9 does NOT invent the handshake; it borrows existing ones (802.1X, IKEv2, HIP, PANA, Dragonfly). Its job is to be the courier that carries those handshake messages across the link. This lesson walks the courier's job description, clause by clause: the service interface (Clause 6), the wire format (Clause 7), the protocol catalogue (Clause 8), the rulebooks for sending and receiving (Clause 9), and the four informative annexes that show real protocols riding on top.",
+      "zh": "IEEE Std 802.15.9-2021 回答了一个狭窄却关键的问题：两台 802.15.4 设备在还没有共享任何密钥之前，如何把一套密钥管理协议（KMP）的报文互相传递？KMP 是一段对话——类似握手——其最终成果是一个安全关联（SA）：一把约定好的密钥加上使用它所需的参数。802.15.9 并不发明握手本身，而是借用已有的握手协议（802.1X、IKEv2、HIP、PANA、Dragonfly）。它的职责是充当快递员，把这些握手报文搬运过链路。本课逐条讲解这名快递员的职责说明书：服务接口（第 6 章）、线上格式（第 7 章）、协议目录（第 8 章）、收发规则手册（第 9 章），以及展示真实协议如何在其上运行的四个资料性附录。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two layers of vocabulary live side by side here. KMP-* primitives (KMP-CREATE, KMP-FINISHED, KMP-DELETE, KMP-PURGE) are the interface the higher layer uses to ask for keys. MPX-* primitives and the MPX information element (IE) are the underlying multiplexed data service that actually moves bytes and reassembles fragments. The KMP service sits on top of the MPX service. An information element (IE) is a self-describing chunk of a frame: an ID, a length, and content.",
+      "zh": "这里有两层并存的术语。KMP-* 原语（KMP-CREATE、KMP-FINISHED、KMP-DELETE、KMP-PURGE）是更高层用来请求密钥的接口。MPX-* 原语和 MPX 信息元素（IE）则是底层的复用数据服务，真正负责搬运字节并重组分片。KMP 服务位于 MPX 服务之上。信息元素（IE）是帧中一段自描述的内容：一个 ID、一个长度，以及内容本身。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6 (the KMP transport service) opens with 6.1 Overview, which lists four primitive families in a summary table: KMP-CREATE initiates SA creation; KMP-FINISHED signals the keys are ready to use; KMP-DELETE asks the far end to delete an SA; KMP-PURGE cancels an in-progress KMP operation locally. Crucially, the very first KMP frames must be sent without security (802.15.4 security level 0), because no SA exists yet — so the device's security filter must be configured to let unprotected MPX IEs through. Each family is then specified as a set of primitives. A 'primitive' is just a named service call with typed parameters: a .request asks for something, a .confirm reports the local result, an .indication tells a peer something arrived, and a .response answers an indication.",
+      "zh": "第 6 章（KMP 传输服务）以 6.1 概述开篇，用一张汇总表列出四大原语家族：KMP-CREATE 发起 SA 的创建；KMP-FINISHED 表示密钥已可使用；KMP-DELETE 请求对端删除某个 SA；KMP-PURGE 在本地取消一个进行中的 KMP 操作。关键在于，最初的若干 KMP 帧必须在不加密的情况下发送（802.15.4 安全级别 0），因为此时尚无 SA 存在——因此设备的安全过滤必须配置为允许未受保护的 MPX IE 通过。随后每个家族都以一组原语来规定。所谓“原语”不过是带类型参数的具名服务调用：.request 发起请求，.confirm 报告本地结果，.indication 告知对端有内容到达，.response 则回应一个 indication。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant HA as Higher layer (A)\n    participant A as KMP/MPX (A)\n    participant B as KMP/MPX (B)\n    participant HB as Higher layer (B)\n    HA->>A: KMP-CREATE.request\n    A-->>HA: KMP-CREATE.confirm\n    A->>B: KMP frames (via MPX)\n    B->>HB: KMP-CREATE.indication\n    HB-->>B: KMP-CREATE.response\n    Note over A,B: handshake packets exchanged\n    A-->>HA: KMP-FINISHED.indication\n    B-->>HB: KMP-FINISHED.indication",
+      "zh": "sequenceDiagram\n    participant HA as 高层 (A)\n    participant A as KMP/MPX (A)\n    participant B as KMP/MPX (B)\n    participant HB as 高层 (B)\n    HA->>A: KMP-CREATE.request\n    A-->>HA: KMP-CREATE.confirm\n    A->>B: KMP 报文 (经 MPX)\n    B->>HB: KMP-CREATE.indication\n    HB-->>B: KMP-CREATE.response\n    Note over A,B: 交换握手分组\n    A-->>HA: KMP-FINISHED.indication\n    B-->>HB: KMP-FINISHED.indication"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — Clause 6: the four primitive families (6.1–6.5)",
+        "zh": "覆盖地图——第 6 章：四大原语家族（6.1–6.5）"
+      },
+      "en": "6.1 Overview gives the summary table of which primitives exist and warns that early KMP frames travel unsecured. 6.2 KMP-CREATE primitives: 6.2.1 describes their use (initiating a KMP exchange that ends in an SA); 6.2.2 KMP-CREATE.request carries KmpPayloadHandle, addressing, KmpIdValue, and the New* key-identity fields (NewKeyIdMode 0x00 = pairwise link key, 0x01–0x03 = group keys); 6.2.3 KMP-CREATE.confirm reports SUCCESS or failure of starting the process; 6.2.4 KMP-CREATE.indication tells the receiver a peer wants to start, naming OriginatorExtAddr; 6.2.5 KMP-CREATE.response answers with ContinueProcessing plus a DenyTime (0–300 s) to silence an unwanted peer. 6.3 KMP-FINISHED primitives: 6.3.1 overview explains it fires at BOTH ends regardless of who started, so the higher layer keys off RemoteExtAddr; 6.3.2 KMP-FINISHED.indication delivers the Created* key material to install in the security PIB (PAN information base). 6.4 KMP-DELETE primitives: 6.4.1 it asks the far end to drop an SA; 6.4.2 .request names the SaToDelete* key; 6.4.3 .confirm reports the result; 6.4.4 .indication tells you the peer asked you to delete (group-key deletes need an extra authorization check). 6.5 KMP-PURGE primitives: 6.5.1 removes a local in-progress transaction; 6.5.2 .request takes only a KmpPayloadHandle and also issues an MPX-PURGE.request; 6.5.3 .confirm returns SUCCESS or INVALID_HANDLE.",
+      "zh": "6.1 概述给出存在哪些原语的汇总表，并提醒早期 KMP 帧以非加密方式传输。6.2 KMP-CREATE 原语：6.2.1 描述其用途（发起一段以 SA 收尾的 KMP 交换）；6.2.2 KMP-CREATE.request 携带 KmpPayloadHandle、寻址信息、KmpIdValue，以及 New* 密钥身份字段（NewKeyIdMode 0x00 表示成对链路密钥，0x01–0x03 表示组密钥）；6.2.3 KMP-CREATE.confirm 报告启动过程成功还是失败；6.2.4 KMP-CREATE.indication 告知接收方有对端想要开始，并指明 OriginatorExtAddr；6.2.5 KMP-CREATE.response 以 ContinueProcessing 回应，并附带 DenyTime（0–300 秒）以屏蔽不想要的对端。6.3 KMP-FINISHED 原语：6.3.1 概述说明它在两端都会触发，无论谁发起，因此高层需借助 RemoteExtAddr 来辨别；6.3.2 KMP-FINISHED.indication 交付 Created* 密钥材料以安装进安全 PIB（PAN 信息库）。6.4 KMP-DELETE 原语：6.4.1 请求对端丢弃某 SA；6.4.2 .request 指明 SaToDelete* 密钥；6.4.3 .confirm 报告结果；6.4.4 .indication 告知对端请求你删除（组密钥删除需额外授权检查）。6.5 KMP-PURGE 原语：6.5.1 移除本地进行中的事务；6.5.2 .request 仅取一个 KmpPayloadHandle 并同时发出 MPX-PURGE.request；6.5.3 .confirm 返回 SUCCESS 或 INVALID_HANDLE。",
+      "cite": {
+        "pdf_id": "802159-2021",
+        "pages": [
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7 (the MPX IE format) defines how those KMP bytes actually appear on the wire. 7.1 IE overview reminds us an IE is ID + length + content; the MPX IE's content is built from the fields in 7.3. 7.2 Payload IE group ID fixes the IE ID value to 3 for IEEE Std 802.15.4. 7.3 MPX IE content then lays out the structure: 7.3.1 Overall structure shows a leading Transaction Control octet followed by optional Fragment Number, Total Upper Layer Frame Size, Multiplex ID, and the Upper Layer Frame Fragment. The Transaction Control octet is mandatory; everything else depends on the Transfer Type — that is how 802.15.9 keeps non-initial fragments down to a tiny two-octet overhead.",
+      "zh": "第 7 章（MPX IE 格式）规定这些 KMP 字节在线上的实际呈现方式。7.1 IE 概述提醒我们：IE 即 ID + 长度 + 内容；MPX IE 的内容由 7.3 中的字段构成。7.2 Payload IE 组 ID 将 IEEE Std 802.15.4 的 IE ID 值固定为 3。7.3 MPX IE 内容随后给出结构：7.3.1 整体结构显示开头是一个 Transaction Control（事务控制）八位字节，其后跟着可选的 Fragment Number（分片号）、Total Upper Layer Frame Size（上层帧总长）、Multiplex ID（复用 ID）以及 Upper Layer Frame Fragment（上层帧分片）。事务控制字节是必需的，其余字段都取决于 Transfer Type（传输类型）——这正是 802.15.9 把非首个分片的开销压到仅两个八位字节的方式。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"8\" y=\"30\" width=\"90\" height=\"40\"/><rect x=\"98\" y=\"30\" width=\"90\" height=\"40\"/><rect x=\"188\" y=\"30\" width=\"130\" height=\"40\"/><rect x=\"318\" y=\"30\" width=\"100\" height=\"40\"/><rect x=\"418\" y=\"30\" width=\"214\" height=\"40\"/><text x=\"53\" y=\"54\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Transaction Ctrl</text><text x=\"143\" y=\"54\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Frag Number</text><text x=\"253\" y=\"54\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Total ULF Size</text><text x=\"368\" y=\"54\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Multiplex ID</text><text x=\"525\" y=\"54\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Upper Layer Frame Fragment</text><text x=\"53\" y=\"22\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">1 octet</text><text x=\"143\" y=\"22\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">0/1</text><text x=\"253\" y=\"22\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">0/2</text><text x=\"368\" y=\"22\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">0/2</text><text x=\"525\" y=\"22\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">variable</text></svg>",
+      "caption": {
+        "en": "The MPX IE content fields (Clause 7.3.1). Only the Transaction Control octet is always present; the rest appear or vanish based on the 3-bit Transfer Type.",
+        "zh": "MPX IE 内容字段（7.3.1）。只有 Transaction Control 八位字节始终存在；其余字段依 3 比特的 Transfer Type 而出现或消失。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — Clause 7.3.2–7.3.5: the control octet and payload fields",
+        "zh": "覆盖地图——7.3.2–7.3.5：控制字节与负载字段"
+      },
+      "en": "7.3.2 Transaction Control field: 7.3.2.1 overview shows the octet splits into a 3-bit Transfer Type (bits 0–2) and a 5-bit Transaction ID (bits 3–7); 7.3.2.2 Transfer Type field enumerates the values — 0b000 full frame, 0b001 full frame with compressed Multiplex ID (the 5-bit ID rides inside the Transaction ID field), 0b010 non-last fragment, 0b100 last fragment, 0b110 abort, and 0b011/0b101/0b111 reserved; 7.3.2.3 Transaction ID field is chosen by the originator to be unique between a device pair (5 bits → up to 32 simultaneous transactions); 7.3.2.4 Fragment Number field appears only for Transfer Type 0b010 or 0b100, and when it is 0x00 (the first fragment) it pulls in the Total Size and Multiplex ID fields. 7.3.3 Total Upper Layer Frame Size field lets the responder check it can handle the incoming frame; present on the first fragment (0b010, frag 0x00) and optionally on an abort (0b110) to advertise the max size the responder will accept. 7.3.4 Multiplex ID field demultiplexes upper-layer protocols: values ≤ 1500 use Table 21 (1 = KMP, 1280–1500 = vendor specific), values > 1500 are an EtherType. 7.3.5 Upper Layer Frame Fragment field is the actual payload chunk; present for every Transfer Type except 0b110, and it may even be empty (used to probe whether the peer will accept a large transfer before sending data).",
+      "zh": "7.3.2 事务控制字段：7.3.2.1 概述说明该八位字节分为 3 比特 Transfer Type（位 0–2）与 5 比特 Transaction ID（位 3–7）；7.3.2.2 Transfer Type 字段枚举取值——0b000 完整帧，0b001 带压缩 Multiplex ID 的完整帧（5 比特 ID 藏在 Transaction ID 字段内），0b010 非末分片，0b100 末分片，0b110 中止，0b011/0b101/0b111 保留；7.3.2.3 Transaction ID 字段由发起方选取，在一对设备间唯一（5 比特→最多 32 个并发事务）；7.3.2.4 Fragment Number 字段仅在 Transfer Type 为 0b010 或 0b100 时出现，且当其为 0x00（首个分片）时会带出 Total Size 与 Multiplex ID 字段。7.3.3 Total Upper Layer Frame Size 字段让响应方核对自己能否处理来帧；出现在首分片（0b010、分片 0x00），并可选地出现在中止（0b110）中以告知响应方能接受的最大长度。7.3.4 Multiplex ID 字段对上层协议进行解复用：值 ≤ 1500 按表 21 取值（1 = KMP，1280–1500 = 厂商专用），值 > 1500 则为 EtherType。7.3.5 Upper Layer Frame Fragment 字段是真正的负载块；除 0b110 外的每种 Transfer Type 都存在，甚至可以为空（用于在发送数据前探测对端是否接受大型传输）。",
+      "cite": {
+        "pdf_id": "802159-2021",
+        "pages": [
+          40,
+          41,
+          42,
+          43
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 8 (the KMP Service) is the protocol catalogue. 8.1 KMP ID says the KMP ID is prepended as the very first byte of the first MPX fragment, telling the receiver which handshake protocol the payload belongs to: 1 = IEEE 802.1X/MKA, 2 = HIP, 3 = IKEv2, 4 = PANA, 5 = Dragonfly, 6/7 = 802.11 4-Way / Group Key Handshake, 8 = ETSI TS 102 887-2, 255 = vendor-specific. 8.2 Vendor-specific KMPs reserves ID 255 for private protocols; such a payload begins with a 3-octet Vendor OUI (an organizationally unique identifier assigned by the IEEE Registration Authority), and a receiver that does not recognize the OUI simply ignores the data.",
+      "zh": "第 8 章（KMP 服务）是协议目录。8.1 KMP ID 规定 KMP ID 被置于首个 MPX 分片的第一个字节，告诉接收方该负载属于哪种握手协议：1 = IEEE 802.1X/MKA，2 = HIP，3 = IKEv2，4 = PANA，5 = Dragonfly，6/7 = 802.11 四次/组密钥握手，8 = ETSI TS 102 887-2，255 = 厂商专用。8.2 厂商专用 KMP 将 ID 255 保留给私有协议；此类负载以 3 个八位字节的 Vendor OUI（由 IEEE 注册管理机构分配的机构唯一标识符）开头，接收方若不识别该 OUI 则直接忽略数据。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — Clause 9: inbound and outbound state machines",
+        "zh": "覆盖地图——第 9 章：入站与出站状态机"
+      },
+      "en": "9.1 Inbound state machine is triggered when a frame carrying an MPX IE arrives, and ends in one of four outcomes: payload delivered to the MPX service, payload still in partial assembly, frame dropped (duplicate, wrong fragment number, or inconsistent security), or an abort notification received. Two checks dominate: 'Check fragment number' (the frame's fragment number must equal the last-received-plus-one; smaller means a retransmission to drop, larger means the state is out of sync so all fragments are dropped) and 'Verify that security parameters are same' (SecurityLevel, KeyIdMode, KeyIndex and KeySource captured on the first fragment must match on every later fragment of that transaction). A reassembly buffer per transaction (keyed by Transaction ID plus source/destination addresses) is cleared on abort or after the macMpxReassemblyTimeout expires. 9.2 Outbound state machine creates a transaction toward the destination: it checks whether the MPX payload fits one MAC frame (if so, send it whole), otherwise fragments so each MPX IE content stays under macMpxMaxFragmentSize and sends first/middle/last fragments through MCPS-DATA.request with AckTx set TRUE. A send counts as successful only when the recipient acknowledges; any failure flushes all state for that payload, and an incoming MPX-PURGE.request clears the state for the matching MpxHandle.",
+      "zh": "9.1 入站状态机在收到携带 MPX IE 的帧时触发，最终落入四种结果之一：负载交付给 MPX 服务、负载仍处于部分重组、帧被丢弃（重复、分片号错误或安全参数不一致），或收到中止通知。两项检查最为关键：“检查分片号”（帧的分片号必须等于上次收到值加一；更小说明是应丢弃的重传，更大说明状态失步因而丢弃全部分片）与“核验安全参数相同”（首分片捕获的 SecurityLevel、KeyIdMode、KeyIndex 与 KeySource 必须在该事务此后每个分片上保持一致）。每个事务的重组缓冲区（以 Transaction ID 加源/目的地址为键）在中止时或 macMpxReassemblyTimeout 超时后清空。9.2 出站状态机朝目的设备创建事务：先检查 MPX 负载是否能装入单个 MAC 帧（能则整体发送），否则分片使每个 MPX IE 内容保持在 macMpxMaxFragmentSize 以下，并通过 MCPS-DATA.request（AckTx 置 TRUE）发送首/中/末分片。只有当接收方确认时一次发送才算成功；任何失败都会清空该负载的全部状态，而收到的 MPX-PURGE.request 会清除匹配 MpxHandle 的状态。",
+      "cite": {
+        "pdf_id": "802159-2021",
+        "pages": [
+          44,
+          45,
+          46,
+          47
+        ]
+      }
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    S[Start: MPX IE received] --> TT{Transfer Type?}\n    TT -->|0b110| AB[Return abort for Transaction ID]\n    TT -->|0b000/0b001| DLV[Deliver single-frame payload]\n    TT -->|0b010/0b100| FF{First fragment?}\n    FF -->|Yes 0b010 frag0| SEC{Security params ok?}\n    SEC -->|match| ASM[Start assembly buffer]\n    SEC -->|differ| DR[Drop: inconsistent security]\n    FF -->|No| CFN{Fragment number ok?}\n    CFN -->|new| APP[Append to MPX list]\n    CFN -->|retransmit / skipped| DR2[Drop frame]",
+      "zh": "flowchart TD\n    S[开始: 收到 MPX IE] --> TT{Transfer Type?}\n    TT -->|0b110| AB[返回该事务中止]\n    TT -->|0b000/0b001| DLV[交付单帧负载]\n    TT -->|0b010/0b100| FF{是否首分片?}\n    FF -->|是 0b010 分片0| SEC{安全参数一致?}\n    SEC -->|一致| ASM[启动重组缓冲区]\n    SEC -->|不一致| DR[丢弃: 安全参数不符]\n    FF -->|否| CFN{分片号是否正确?}\n    CFN -->|新分片| APP[追加到 MPX 列表]\n    CFN -->|重传/跳号| DR2[丢弃帧]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — Annexes A–D: real KMPs riding on 802.15.9",
+        "zh": "覆盖地图——附录 A–D：在 802.15.9 上运行的真实 KMP"
+      },
+      "en": "These four informative annexes show how named handshakes map onto the 802.15.9 courier. Annex A (IEEE 802.1X/MKA) — 802.1X is port-based network access control carrying EAP (Extensible Authentication Protocol) between a supplicant PAE (port access entity) and an authenticator PAE backed by an authentication server (AS); MKA (MACsec Key Agreement) turns the EAP-derived CAK (connectivity association key) into working keys, and 802.11's 4-Way / Group Key Handshakes derive from the MSK (master session key). Annex B (IKEv2) — an IETF mutual-authentication and SA protocol normally over IP/UDP; on 802.15.9 the IP/UDP headers are stripped, messages start at the IKEv2 header, combined-mode AES-CCM encrypted payloads are used, and KEYMAT from SK_d seeds the link key. Annex C (HIP, Host Identity Protocol) — a layer-independent four-packet exchange (Base Exchange BEX, plus the lightweight Diet Exchange DEX for constrained devices) keyed on a cryptographic Host Identity and its Host Identity Tag (HIT), with HIT authentication via ACLs, RADIUS, or X.509. Annex D (PANA, Protocol for carrying Authentication for Network Access) — note it is marked DEPRECATED; it transports EAP between a PANA Client (PaC) and PANA Authentication Agent (PAA), optionally via a PANA Relay Element (PRE), and is used for bootstrapping link-layer credentials (LLCs) rather than directly via KMP-CREATE, so it cannot itself be named as the KMP ID in a KMP-CREATE.request.",
+      "zh": "这四个资料性附录展示了具名握手如何映射到 802.15.9 这名快递员上。附录 A（IEEE 802.1X/MKA）——802.1X 是基于端口的网络访问控制，在请求方 PAE（端口访问实体）与有认证服务器（AS）支撑的认证方 PAE 之间承载 EAP（可扩展认证协议）；MKA（MACsec 密钥协商）把 EAP 派生的 CAK（连接关联密钥）转化为可用密钥，而 802.11 的四次/组密钥握手则由 MSK（主会话密钥）派生。附录 B（IKEv2）——一种 IETF 互认证与 SA 协议，通常跑在 IP/UDP 上；在 802.15.9 上剥除 IP/UDP 头，报文从 IKEv2 头开始，使用组合模式 AES-CCM 加密负载，由 SK_d 得到的 KEYMAT 作为链路密钥的种子。附录 C（HIP，主机标识协议）——一种与层无关的四分组交换（基础交换 BEX，外加面向受限设备的轻量 Diet 交换 DEX），以密码学主机标识及其主机标识标签（HIT）为密钥，HIT 认证可经 ACL、RADIUS 或 X.509。附录 D（PANA，承载网络访问认证的协议）——注意它被标记为已弃用；它在 PANA 客户端（PaC）与 PANA 认证代理（PAA）之间传输 EAP，可选地经 PANA 中继单元（PRE），用于引导链路层凭据（LLC）而非直接经 KMP-CREATE，因此它本身不能在 KMP-CREATE.request 中被指定为 KMP ID。",
+      "cite": {
+        "pdf_id": "802159-2021",
+        "pages": [
+          48,
+          57,
+          58,
+          59,
+          60,
+          63,
+          64
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model for the whole lesson: Clause 6 is the steering wheel (what the higher layer asks for), Clause 7 is the road surface (the exact byte layout), Clause 8 is the destination sign (which protocol's payload this is), Clause 9 is the driving rules (how to send fragments and reassemble them safely), and Annexes A–D are example trips taken by real protocols. 802.15.9 itself never decides the keys — it just gets the negotiation across the link reliably and unambiguously.",
+      "zh": "全课的心智模型：第 6 章是方向盘（高层请求什么），第 7 章是路面（精确的字节布局），第 8 章是目的地路牌（这是哪种协议的负载），第 9 章是行车规则（如何发送分片并安全重组），附录 A–D 则是真实协议走过的示例行程。802.15.9 本身从不决定密钥——它只负责把协商内容可靠且无歧义地搬过链路。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802159-2021",
+      "pages": [
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39
+      ],
+      "note": "Clause 6 KMP transport service: 6.1 overview and the KMP-CREATE/FINISHED/DELETE/PURGE primitives"
+    },
+    {
+      "pdf_id": "802159-2021",
+      "pages": [
+        40,
+        41,
+        42,
+        43
+      ],
+      "note": "Clause 7 MPX IE format: IE overview, group ID, Transaction Control octet, fragment/size/multiplex-ID fields"
+    },
+    {
+      "pdf_id": "802159-2021",
+      "pages": [
+        44
+      ],
+      "note": "Clause 8 KMP Service: KMP ID values table and vendor-specific KMP OUI format"
+    },
+    {
+      "pdf_id": "802159-2021",
+      "pages": [
+        45,
+        46,
+        47
+      ],
+      "note": "Clause 9 state machines: inbound and outbound flow diagrams and their checks"
+    },
+    {
+      "pdf_id": "802159-2021",
+      "pages": [
+        48,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65
+      ],
+      "note": "Annexes A-D informative KMP specifics: 802.1X/MKA, IKEv2, HIP, PANA"
+    }
+  ],
+  "covers": [
+    "802159-2021:6.1",
+    "802159-2021:6.2.1",
+    "802159-2021:6.2.2",
+    "802159-2021:6.2.3",
+    "802159-2021:6.2.4",
+    "802159-2021:6.2.5",
+    "802159-2021:6.3.1",
+    "802159-2021:6.3.2",
+    "802159-2021:6.4.1",
+    "802159-2021:6.4.2",
+    "802159-2021:6.4.3",
+    "802159-2021:6.4.4",
+    "802159-2021:6.5.1",
+    "802159-2021:6.5.2",
+    "802159-2021:6.5.3",
+    "802159-2021:7.1",
+    "802159-2021:7.2",
+    "802159-2021:7.3.1",
+    "802159-2021:7.3.2",
+    "802159-2021:7.3.3",
+    "802159-2021:7.3.4",
+    "802159-2021:7.3.5",
+    "802159-2021:8.1",
+    "802159-2021:8.2",
+    "802159-2021:9.1",
+    "802159-2021:9.2",
+    "802159-2021:Annex_A",
+    "802159-2021:Annex_B",
+    "802159-2021:Annex_C",
+    "802159-2021:Annex_D"
+  ],
+  "track": "pan-802-15"
+}

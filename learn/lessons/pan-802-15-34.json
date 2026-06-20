@@ -1,0 +1,159 @@
+{
+  "id": "pan-802-15-34",
+  "title": {
+    "en": "L2R Mesh Routing: Building, Maintaining, and Using Routes (Clauses 5, 6.2, 7.2)",
+    "zh": "L2R 网状路由：构建、维护与使用路由（第 5、6.2、7.2 条）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.15.10a-2019 is an amendment to 802.15.10, the recommended practice for Layer-2 Routing (L2R) over IEEE 802.15.4 low-power wireless networks. L2R lets simple battery-powered radios self-organize into a mesh and forward packets for each other at the MAC layer, with no IP router in sight. This lesson walks through the heart of that machine: how a mesh is started (Clause 5.1), how nodes discover routes (5.2), how those routes are kept fresh as the network changes (5.3), what routing styles are available (5.4), how frames are secured (5.5), the information element that carries routing instructions (6.2), and the data service the upper layers call (7.2). Throughout, the mesh has one special node called the mesh root, and every other node measures its 'depth' as the number of hops up to that root.",
+      "zh": "IEEE Std 802.15.10a-2019 是对 802.15.10 的修订，后者是面向 IEEE 802.15.4 低功耗无线网络的二层路由（L2R, Layer-2 Routing）推荐规程。L2R 让简单的电池供电无线节点在 MAC 层自组织成网状网络并相互转发数据包，完全不需要 IP 路由器。本课讲解这套机制的核心：网络如何启动（第 5.1 条）、节点如何发现路由（5.2）、路由如何随网络变化保持新鲜（5.3）、有哪些路由方式（5.4）、帧如何加密（5.5）、承载路由指令的信息元素（6.2），以及上层调用的数据服务（7.2）。整个机制中存在一个特殊节点，称为网状根（mesh root），其余每个节点都以到根的跳数衡量自己的“深度”（depth）。"
+    },
+    {
+      "type": "prose",
+      "en": "Starting and joining (5.1.1). An L2R mesh is started by a single node that becomes the mesh root. When it starts, key bookkeeping structures in its Mesh Table (MT) are reset: counters are initialized to zero, and if on-demand peer-to-peer (P2P) route discovery is enabled, the P2P path list is initialized as an empty table. Crucially, the amendment renames and unifies this structure — what older text called the 'P2P path list' becomes the Route Table, the single table that holds 'reachable destination information' (one entry per destination the node can reach). The Route Table also starts empty. From this clean slate the mesh grows outward as other nodes hear the root's beacons and join.",
+      "zh": "启动与加入（5.1.1）。一个 L2R 网状网络由单个节点启动，该节点成为网状根。启动时，它的网状表（MT, Mesh Table）中的关键记录结构被重置：计数器清零；若启用了按需对等（P2P, peer-to-peer）路由发现，则 P2P 路径列表初始化为空表。重要的是，本修订对这一结构进行了重命名与统一——旧文本中的“P2P 路径列表”改名为路由表（Route Table），即保存“可达目的地信息”的统一表（每个可达目的地一条表项）。路由表同样以空表开始。从这张白纸出发，随着其他节点听到根的信标并加入，网络逐层向外生长。"
+    },
+    {
+      "type": "prose",
+      "en": "Building the mesh and measuring routes (5.2.1, 5.2.2). As nodes join, each records what it learns about neighbors and reachable destinations into MT entries (5.2.1, Tables 5-1/5-2/5-3). Two quality numbers drive every decision: the Link Quality Metric (LQM), the cost of a single hop between two nodes, and the Path Quality Metric (PQM), the accumulated cost of a whole path up to the root. A node's depth D(X) is simply its hop distance to the root. Clause 5.2.2 defines the default metric — Expected Airtime — which estimates how long a frame occupies the channel, accounting for channel-access overhead, frame size, and the duty cycle implied by the beacon order (BO) and superframe order (SO). When BO = 15 there is no beacon, so the beacon interval (BI) and superframe duration (SD) are set to 1 in the formula. Lower airtime means a better link.",
+      "zh": "构建网状网络并度量路由（5.2.1、5.2.2）。节点加入时，各自把所学到的邻居信息与可达目的地记录到 MT 表项中（5.2.1，表 5-1/5-2/5-3）。每个决策都由两个质量数值驱动：链路质量度量（LQM, Link Quality Metric），即两节点间单跳的代价；路径质量度量（PQM, Path Quality Metric），即一整条路径到根的累计代价。节点的深度 D(X) 就是它到根的跳数。第 5.2.2 条定义了默认度量——预期空口时间（Expected Airtime），它估计一帧占用信道的时长，并计入信道接入开销、帧大小，以及由信标阶（BO, beacon order）和超帧阶（SO, superframe order）所隐含的占空比。当 BO = 15 时没有信标，因此公式中将信标间隔（BI, beacon interval）与超帧时长（SD, superframe duration）设为 1。空口时间越短，链路越好。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  R[\"Mesh Root  D=0\"] -->|LQM| A[\"Node A  D=1\"]\n  R -->|LQM| C[\"Node C  D=1\"]\n  A -->|LQM| E[\"Node E  D=2\"]\n  C -->|LQM| G[\"Node G  D=2\"]\n  E -->|LQM| F[\"Node F  D=3\"]\n  G --> F\n  classDef root stroke-width:2px;\n  class R root;",
+      "zh": "flowchart TD\n  R[\"网状根  D=0\"] -->|LQM| A[\"节点 A  D=1\"]\n  R -->|LQM| C[\"节点 C  D=1\"]\n  A -->|LQM| E[\"节点 E  D=2\"]\n  C -->|LQM| G[\"节点 G  D=2\"]\n  E -->|LQM| F[\"节点 F  D=3\"]\n  G --> F\n  classDef root stroke-width:2px;\n  class R root;"
+    },
+    {
+      "type": "prose",
+      "en": "The three route directions (5.2.3, 5.2.4, 5.2.6, 5.2.7). L2R thinks of traffic relative to the root. Upstream (US) routes carry frames toward the root (5.2.3): each node simply forwards to the neighbor offering the best PQM up the tree, optionally smoothed by a route-validation scheme (RvS) and gated by a link-quality threshold (LQT) so weak links are not chosen. Downstream (DS) routes carry frames away from the root (5.2.4): when the root receives a Route Advertisement (RA IE) or source-route advertisement (SRA IE), it learns the path back to a node, hands the address list up via the L2RLME-INTERMEDIATE-ADDR-LIST.indication primitive, and stores the address-list/destination pair in its Route Table. Multicast routes (5.2.6) are built the same way: intermediate nodes record the multicast group from the RA IE's Multicast Subscription field into their list of reachable multicast groups. Peer-to-peer (P2P) routes (5.2.7) let two ordinary nodes talk without detouring through the root.",
+      "zh": "三个路由方向（5.2.3、5.2.4、5.2.6、5.2.7）。L2R 以根为参照看待流量。上行（US, upstream）路由把帧送往根（5.2.3）：每个节点只需转发给沿树向上 PQM 最优的邻居，可选地由路由验证方案（RvS, route-validation scheme）平滑，并由链路质量门限（LQT, link-quality threshold）把关，以免选中弱链路。下行（DS, downstream）路由把帧送离根（5.2.4）：当根收到路由通告（RA IE, Route Advertisement IE）或源路由通告（SRA IE）时，它学到回到某节点的路径，通过 L2RLME-INTERMEDIATE-ADDR-LIST.indication 原语上交地址列表，并在路由表中保存“地址列表/目的地址”这一对。组播路由（5.2.6）以相同方式建立：中间节点把 RA IE 的组播订阅字段中的组播组记入其可达组播组列表。对等（P2P）路由（5.2.7）让两个普通节点直接通信，无需绕经根。"
+    },
+    {
+      "type": "prose",
+      "en": "How P2P discovery works (5.2.7). A source floods a P2P route request (P2P-RQ IE); a destination answers with a P2P route reply (P2P-RP IE). Each node carries a P2P sequence number (PSN) so freshness can be compared. In storing mode each intermediate node keeps a Route Table entry: on receiving a P2P-RQ IE it records the previous-hop neighbor as the Next hop / Route information, adds the measured LQM to the PQM already in the IE, and stores that. If a later P2P-RQ IE has the same PSN, it is kept only when its PQM is strictly better; if it has a newer PSN, the entry is fully refreshed. If the Request Intermediate Response bit is set and an intermediate node already has a path, it can reply early instead of propagating. In non-storing mode only the two endpoints store the route — the full intermediate address list travels inside the IE and is delivered upward via the L2RLME-INTERMEDIATE-ADDR-LIST.indication primitive.",
+      "zh": "P2P 发现如何运作（5.2.7）。源节点泛洪一个 P2P 路由请求（P2P-RQ IE）；目的节点以 P2P 路由应答（P2P-RP IE）回应。每个节点携带 P2P 序列号（PSN, P2P sequence number），以便比较新鲜度。在存储模式（storing mode）下，每个中间节点保留一条路由表项：收到 P2P-RQ IE 时，把上一跳邻居记为“下一跳/路由信息”，把测得的 LQM 加到 IE 中已有的 PQM 上并存储。若后续 P2P-RQ IE 的 PSN 相同，仅当其 PQM 严格更优时才保留；若 PSN 更新，则整条表项被刷新。若“请求中间应答”位被置 1 且某中间节点已有到目的地的路径，它可提前应答而不再向下传播。在非存储模式（non-storing mode）下，仅两个端点存储路由——完整的中间地址列表随 IE 传递，并通过 L2RLME-INTERMEDIATE-ADDR-LIST.indication 原语上交。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant S as Source\n  participant I as Intermediate\n  participant D as Destination\n  S->>I: P2P-RQ IE (PSN, PQM)\n  I->>D: P2P-RQ IE (PQM += LQM)\n  D->>I: P2P-RP IE (PQM=0, TTL set)\n  I->>S: P2P-RP IE (forward via Next hop)\n  Note over S,D: Both endpoints store Route Table entry",
+      "zh": "sequenceDiagram\n  participant S as 源节点\n  participant I as 中间节点\n  participant D as 目的节点\n  S->>I: P2P-RQ IE（PSN、PQM）\n  I->>D: P2P-RQ IE（PQM += LQM）\n  D->>I: P2P-RP IE（PQM=0，设置 TTL）\n  I->>S: P2P-RP IE（经下一跳转发）\n  Note over S,D: 两端点均存储路由表项"
+    },
+    {
+      "type": "prose",
+      "en": "Keeping routes fresh (5.3.1, 5.3.2). Wireless meshes change constantly, so L2R prunes dead paths. For upstream maintenance (5.3.1), every node periodically transmits Topology Control IEs (TC IEs). If a node fails to receive l2rMaxMissedTcIe consecutive TC IEs from a neighbor, it declares that neighbor gone: the neighbor's entry in the Neighbor Table (NT) is erased, and any Route Table entries in the MT that relied on that neighbor are erased too. For downstream maintenance (5.3.2) in non-storing mode, intermediate hops keep no route entries at all — only the mesh root stores the full path to each device (keyed by the source address found in the Intermediate Address List). The root refreshes those Route Table entries whenever a new L2R Routing IE, RA IE, source-link report (SLR IE), or SRA IE arrives, and may delete an entry if no frame is heard from that source for an implementer-chosen timeout.",
+      "zh": "保持路由新鲜（5.3.1、5.3.2）。无线网状网络时刻在变，因此 L2R 会清除失效路径。对于上行维护（5.3.1），每个节点周期性发送拓扑控制 IE（TC IE, Topology Control IE）。若某节点连续 l2rMaxMissedTcIe 次未收到某邻居的 TC IE，便判定该邻居已失联：邻居表（NT, Neighbor Table）中该邻居的表项被删除，MT 中依赖该邻居的所有路由表项也被删除。对于非存储模式下的下行维护（5.3.2），中间跳完全不保留路由表项——只有网状根存储到每个设备的完整路径（以中间地址列表中的源地址为键）。每当有新的 L2R 路由 IE、RA IE、源链路报告（SLR IE, source-link report）或 SRA IE 到达时，根都会刷新这些路由表项；若在实现者设定的超时内未收到该源的任何帧，根可删除其表项。"
+    },
+    {
+      "type": "prose",
+      "en": "Routing styles and securing frames (5.4.1, 5.5.2). Clause 5.4.1 distinguishes two ways to steer a unicast frame. Source routing pins the entire hop list into the frame up front; it is used for DS routing and non-on-demand P2P by the root, and by the source in on-demand P2P (in non-storing mode the intermediate nodes are spelled out). Source routing is never used for US routing. Hop-by-hop routing instead decides the next hop at each node using a simple test (Figure 5-23): am I the root, do I store routes, and is the destination in one of my lists of reachable destinations? If not reachable downstream, the frame is sent upstream until it reaches the first common ancestor of source and destination, then downstream to the target. On security, Clause 5.5.2 says the L2R sublayer secures each frame per the parameters in the primitive; for a broadcast it instead uses the broadcast security attributes l2rBCSecSecurityLevel, l2rBCSecKeyIdMode, l2rBCSecKeySource, and l2rBCSecKeyIndex.",
+      "zh": "路由方式与帧加密（5.4.1、5.5.2）。第 5.4.1 条区分了引导单播帧的两种方式。源路由（source routing）预先把整条跳列表写入帧；它用于根的 DS 路由和非按需 P2P，以及按需 P2P 中的源节点（非存储模式下会逐一列出中间节点）。源路由从不用于 US 路由。逐跳路由（hop-by-hop routing）则在每个节点用一个简单判断决定下一跳（图 5-23）：我是根吗？我存储路由吗？目的地是否在我的某个可达目的地列表中？若下行不可达，帧先上行直到到达源与目的地的第一个共同祖先，再下行至目标。在安全方面，第 5.5.2 条规定 L2R 子层按原语中的参数为每帧加密；对于广播，则改用广播安全属性 l2rBCSecSecurityLevel、l2rBCSecKeyIdMode、l2rBCSecKeySource 和 l2rBCSecKeyIndex。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"6\" y=\"30\" width=\"90\" height=\"34\"/><rect x=\"96\" y=\"30\" width=\"70\" height=\"34\"/><rect x=\"166\" y=\"30\" width=\"110\" height=\"34\"/><rect x=\"276\" y=\"30\" width=\"100\" height=\"34\"/><rect x=\"376\" y=\"30\" width=\"138\" height=\"34\"/><text x=\"51\" y=\"51\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Descriptor</text><text x=\"131\" y=\"51\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">P2P bit</text><text x=\"221\" y=\"51\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Intermediate Addr List</text><text x=\"326\" y=\"51\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">PQM / PSN</text><text x=\"445\" y=\"51\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Payload</text><text x=\"10\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">L2R Routing IE (LLIE) fields, 6.2.2</text></svg>",
+      "caption": {
+        "en": "The L2R Routing IE — a Long nested IE (LLIE, 6.2) — carries routing instructions inside a frame. Its Descriptor field (6.2.2.1) holds a P2P bit: when set to 1, the forwarder searches the Route Table for the next hop; when 0, it searches its neighbors / lists of reachable destinations to route US or DS.",
+        "zh": "L2R 路由 IE——一种长嵌套 IE（LLIE, Long nested IE，见 6.2）——在帧内承载路由指令。其描述符字段（6.2.2.1）包含一个 P2P 位：置 1 时，转发者在路由表中查找下一跳；置 0 时，则在邻居/可达目的地列表中查找以进行 US 或 DS 路由。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The data service the upper layers call (7.2.1). When the next-higher layer wants to send, it issues the L2R-DATA.request primitive (7.2.1.1). The key parameter clarified by this amendment is IntermediateAddrList: the explicit list of addresses to insert into the L2R Routing IE's Intermediate Address List. The amendment defines its NULL behavior precisely — when IntermediateAddrList is 'NULL', the L2R sublayer falls back to the 'Address List' stored in the Route Table entry whose destination matches the one in the request. The parameter is simply omitted when source routing is not used (for example, plain upstream hop-by-hop traffic). This is the public API knob that lets an application either hand-pick a source route or trust the mesh's stored routing.",
+      "zh": "上层调用的数据服务（7.2.1）。当上层希望发送数据时，它发出 L2R-DATA.request 原语（7.2.1.1）。本修订澄清的关键参数是 IntermediateAddrList：要插入 L2R 路由 IE 的中间地址列表中的显式地址列表。修订精确定义了其 NULL 行为——当 IntermediateAddrList 为 “NULL” 时，L2R 子层回退使用路由表中目的地与本请求匹配的那条表项里所存的“地址列表”。当不使用源路由时（例如普通的上行逐跳流量），该参数直接省略。这正是公开 API 的旋钮：应用既可亲手指定源路由，也可信赖网状网络已存储的路由。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: the mesh root is the tree trunk. US routing climbs toward the trunk, DS routing descends from it, and P2P routing is a shortcut branch between two leaves. The big editorial theme of 802.15.10a-2019 is unification — many separate 'P2P path list' and 'route entry' structures are merged into one Route Table, so the same lookup serves US, DS, and P2P forwarding.",
+      "zh": "记忆模型：网状根是树干。US 路由向树干攀爬，DS 路由从树干下降，P2P 路由则是两片叶子之间的捷径分枝。802.15.10a-2019 的核心编辑主题是“统一”——原先分散的“P2P 路径列表”与“路由表项”结构被合并为单一的路由表（Route Table），因此同一次查表可同时服务于 US、DS 与 P2P 转发。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause taught, with exact numbers",
+        "zh": "覆盖地图——逐一对应所讲解的精确条款编号"
+      },
+      "en": "5.1.1 Starting/stopping a mesh: root resets MT counters to zero; P2P path list and Route Table initialized empty (p.12). 5.2.1 Mesh construction: MT/NT/Route-Table entry elements, Tables 5-1/5-2/5-3, including the rename of 'P2P path list' to 'Route Table' (p.12-13). 5.2.2 Route metrics: LQM, PQM, Expected Airtime formula and variables O, bt, BO, SO, SD, BI in Table 5-6; BO=15 special case (p.15). 5.2.3 US route establishment: forward toward root by best PQM, LQT threshold, RvS (Figure 5-14/5-15, p.16-17). 5.2.4 DS route establishment: root learns path from RA/SRA IE, L2RLME-INTERMEDIATE-ADDR-LIST.indication, stores address-list/destination pair in Route Table (p.17). 5.2.6 Multicast route establishment: intermediates record multicast group from RA IE Multicast Subscription field (Figure 5-18, p.18). 5.2.7 P2P route establishment: storing vs non-storing mode, P2P-RQ/P2P-RP IE, PSN freshness, PQM accumulation, Request Intermediate Response, TTL (p.19-20). 5.3.1 US route maintenance: l2rMaxMissedTcIe consecutive missed TC IEs erase NT entry and dependent Route Table entries (p.20). 5.3.2 DS route maintenance: non-storing mode keeps routes only at root; refreshed by L2R Routing/RA/SLR/SRA IE; timeout delete (p.20). 5.4.1 Unicast routing: source routing (DS, non-on-demand P2P, source in on-demand P2P; never US) vs hop-by-hop (Figure 5-23 decision; first-common-ancestor fallback) (p.21-22). 5.5.2 Securing frames: per-primitive security; broadcast uses l2rBCSec* attributes (Table 7-40) (p.22). 6.2.2 L2R Routing IE: the LLIE that carries routing; Descriptor P2P bit selects Route Table lookup (P2P=1) vs neighbor/reachable-destination lookup (P2P=0) (p.22). 7.2.1 Unicast/broadcast data service: L2R-DATA.request IntermediateAddrList parameter; NULL falls back to Route Table Address List; omitted when source routing unused (p.23).",
+      "zh": "5.1.1 启动/停止网络：根将 MT 计数器清零；P2P 路径列表与路由表初始化为空（第 12 页）。5.2.1 网络构建：MT/NT/路由表表项元素，表 5-1/5-2/5-3，含“P2P 路径列表”更名为“路由表”（第 12-13 页）。5.2.2 路由度量：LQM、PQM、预期空口时间公式及变量 O、bt、BO、SO、SD、BI（表 5-6），BO=15 特例（第 15 页）。5.2.3 US 路由建立：按最优 PQM 向根转发，LQT 门限，RvS（图 5-14/5-15，第 16-17 页）。5.2.4 DS 路由建立：根从 RA/SRA IE 学到路径，L2RLME-INTERMEDIATE-ADDR-LIST.indication 原语，在路由表存“地址列表/目的地址”对（第 17 页）。5.2.6 组播路由建立：中间节点从 RA IE 组播订阅字段记录组播组（图 5-18，第 18 页）。5.2.7 P2P 路由建立：存储与非存储模式、P2P-RQ/P2P-RP IE、PSN 新鲜度、PQM 累加、请求中间应答、TTL（第 19-20 页）。5.3.1 US 路由维护：连续 l2rMaxMissedTcIe 次未收到 TC IE 则删除 NT 表项及依赖该邻居的路由表项（第 20 页）。5.3.2 DS 路由维护：非存储模式仅根存路由；由 L2R 路由/RA/SLR/SRA IE 刷新；超时删除（第 20 页）。5.4.1 单播路由：源路由（DS、非按需 P2P、按需 P2P 的源节点；US 从不使用）与逐跳路由（图 5-23 判定；第一共同祖先回退）（第 21-22 页）。5.5.2 帧加密：按原语加密；广播使用 l2rBCSec* 属性（表 7-40）（第 22 页）。6.2.2 L2R 路由 IE：承载路由的 LLIE；描述符 P2P 位选择路由表查表（P2P=1）或邻居/可达目的地查表（P2P=0）（第 22 页）。7.2.1 单播/广播数据服务：L2R-DATA.request 的 IntermediateAddrList 参数；NULL 时回退路由表地址列表；不用源路由时省略（第 23 页）。",
+      "cite": {
+        "pdf_id": "8021510a-2019",
+        "pages": [
+          12,
+          13,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021510a-2019",
+      "pages": [
+        12,
+        13
+      ],
+      "note": "5.1.1 mesh start (counters zeroed, Route Table empty); 5.2.1 MT/NT/Route-Table entry tables 5-1/5-2/5-3 and the rename to Route Table."
+    },
+    {
+      "pdf_id": "8021510a-2019",
+      "pages": [
+        15,
+        16,
+        17,
+        18
+      ],
+      "note": "5.2.2 Expected Airtime metric and Table 5-6; 5.2.3 US establishment (LQT, RvS); 5.2.4 DS establishment via RA/SRA IE; 5.2.6 multicast route establishment."
+    },
+    {
+      "pdf_id": "8021510a-2019",
+      "pages": [
+        19,
+        20
+      ],
+      "note": "5.2.7 P2P storing/non-storing mode (P2P-RQ/RP IE, PSN, PQM); 5.3.1 US maintenance (l2rMaxMissedTcIe); 5.3.2 DS maintenance in non-storing mode."
+    },
+    {
+      "pdf_id": "8021510a-2019",
+      "pages": [
+        21,
+        22
+      ],
+      "note": "5.4.1 source vs hop-by-hop routing (Figure 5-23); 5.5.2 securing frames and l2rBCSec* attributes; 6.2.2 L2R Routing IE Descriptor P2P bit."
+    },
+    {
+      "pdf_id": "8021510a-2019",
+      "pages": [
+        23
+      ],
+      "note": "7.2.1 L2R-DATA.request IntermediateAddrList parameter and its NULL fallback to the Route Table Address List."
+    }
+  ],
+  "covers": [
+    "8021510a-2019:5.1.1",
+    "8021510a-2019:5.2.1",
+    "8021510a-2019:5.2.2",
+    "8021510a-2019:5.2.3",
+    "8021510a-2019:5.2.4",
+    "8021510a-2019:5.2.6",
+    "8021510a-2019:5.2.7",
+    "8021510a-2019:5.3.1",
+    "8021510a-2019:5.3.2",
+    "8021510a-2019:5.4.1",
+    "8021510a-2019:5.5.2",
+    "8021510a-2019:6.2.2",
+    "8021510a-2019:7.2.1"
+  ],
+  "track": "pan-802-15"
+}

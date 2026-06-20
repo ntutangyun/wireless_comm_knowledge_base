@@ -1,0 +1,141 @@
+{
+  "id": "pan-hr-wpan-34",
+  "title": {
+    "en": "2.4 GHz PHY: Transmitter Quality, Receiver Limits, and PHY Management",
+    "zh": "2.4 GHz 物理层：发射机质量、接收机指标与物理层管理"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In part 1 we built the 2.4 GHz high-rate WPAN (HR-WPAN — High-Rate Wireless Personal Area Network) PHY (physical layer) from the inside out: modulation, coding, and the over-the-air frame. This second half is the rulebook a radio must obey to call itself compliant. It splits into three groups: how clean the transmitter's signal must be (10.5), how weak or strong a signal the receiver must still cope with (10.6), and the management database that lets the MAC (medium access control) layer read and tune all of it (10.7). Throughout, a DEV (device) is any 802.15.3 radio, and the PNC (piconet coordinator) is the DEV that runs the network.",
+      "zh": "在上半部分中，我们从内到外搭建了 2.4 GHz 高速无线个域网（HR-WPAN，High-Rate Wireless Personal Area Network）的物理层（PHY，physical layer）：调制、编码以及空口帧格式。这后半部分则是一台无线电要想被称为“合规”所必须遵守的规则手册。它分为三组：发射机信号必须有多干净（10.5）、接收机必须能应对多弱或多强的信号（10.6），以及让 MAC（medium access control，介质访问控制）层得以读取并调节这一切的管理数据库（10.7）。全程中，DEV（device，设备）指任意一台 802.15.3 无线电，PNC（piconet coordinator，微微网协调器）则是运行整个网络的那台 DEV。"
+    },
+    {
+      "type": "prose",
+      "en": "The transmitter section opens with modulation accuracy. EVM (error vector magnitude, 10.5.1) is the single most important quality number. Imagine the constellation diagram — the grid of ideal symbol points the modulator aims for. Each symbol you actually transmit lands a little off-target; the gap from the ideal point to the real point is the error vector. EVM is the root-mean-square of all those error vectors, normalised to the outermost constellation point. A small EVM means tight, well-placed dots; a large EVM means a smeared cloud the receiver can misread. Clause 10.5.2 turns this into hard pass/fail limits: measured over 1000 symbols through an ideal reference receiver (which performs carrier lock, symbol-timing recovery, and amplitude adjustment with a root-raised-cosine data filter at 30% excess bandwidth), EVM must stay under 3.3% for 64-QAM, 4.8% for 32-QAM, 7.5% for 16-QAM, 9.2% for DQPSK, and 20% for QPSK-TCM. The denser the constellation, the tighter the budget.",
+      "zh": "发射机部分首先讲调制精度。EVM（error vector magnitude，误差矢量幅度，10.5.1）是最重要的单一质量指标。设想星座图——调制器瞄准的理想符号点网格。你实际发出的每个符号都会略微偏离目标；从理想点到实际点的距离就是误差矢量。EVM 是所有这些误差矢量的均方根值，并以最外侧星座点归一化。EVM 小意味着点又紧又准；EVM 大则意味着一团涂抹开的云，接收机可能误判。10.5.2 将其变为硬性的通过/失败门限：在理想参考接收机（执行载波锁定、符号定时恢复和幅度调整，并使用 30% 滚降的根升余弦数据滤波器）下测量 1000 个符号，EVM 必须低于：64-QAM 为 3.3%，32-QAM 为 4.8%，16-QAM 为 7.5%，DQPSK 为 9.2%，QPSK-TCM 为 20%。星座越密集，预算越紧。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 320 160\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><line x1=\"30\" y1=\"80\" x2=\"230\" y2=\"80\" stroke-width=\"1\"/><line x1=\"130\" y1=\"20\" x2=\"130\" y2=\"140\" stroke-width=\"1\"/><circle cx=\"190\" cy=\"40\" r=\"3\" fill=\"currentColor\"/><circle cx=\"205\" cy=\"55\" r=\"3\" fill=\"none\"/><line x1=\"190\" y1=\"40\" x2=\"205\" y2=\"55\" stroke-width=\"1.5\"/><text x=\"196\" y=\"35\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">ideal</text><text x=\"208\" y=\"60\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">actual</text><text x=\"150\" y=\"52\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">error vector</text><text x=\"232\" y=\"83\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">I</text><text x=\"133\" y=\"18\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">Q</text></svg>",
+      "caption": {
+        "en": "Error vector calculation (10.5.1): the error vector is the distance from a symbol's ideal constellation point to where it actually landed; EVM is the normalised RMS of these over 1000 symbols.",
+        "zh": "误差矢量计算（10.5.1）：误差矢量是符号理想星座点到其实际落点之间的距离；EVM 是这些误差在 1000 个符号上归一化后的均方根值。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The rest of 10.5 keeps the radio a good neighbour and a stable clock. The PSD (power spectral density) mask (10.5.3) limits how much energy spills outside your channel — measured in a 100 kHz bandwidth relative to the in-band peak, it falls to -30 dBr beyond 7.5 MHz, slopes down from 15 MHz, and reaches -50 dBr past 22 MHz (one relaxed in-band image at -40 dBr over 15 MHz is permitted). Frequency discipline comes from a tight center-frequency tolerance of ±25 ppm (parts per million, 10.5.4), a symbol rate of 11 Mbaud ±25 ppm (10.5.5, also fixing the MAC's pClockAccuracy at ±25 ppm), and a rule that frequency and symbol rate must share one reference oscillator (clock synchronization, 10.5.6) so they never drift apart.",
+      "zh": "10.5 的其余部分让无线电既做好邻居又保持时钟稳定。PSD（power spectral density，功率谱密度）模板（10.5.3）限制能量溢出信道之外多少——以 100 kHz 带宽相对带内峰值测量，在偏离 7.5 MHz 外降至 -30 dBr，从 15 MHz 起向下倾斜，越过 22 MHz 后达到 -50 dBr（允许一个放宽到 -40 dBr、跨 15 MHz 的带内镜像）。频率纪律来自严格的中心频率容差 ±25 ppm（parts per million，百万分之一，10.5.4）、11 Mbaud ±25 ppm 的符号率（10.5.5，同时把 MAC 的 pClockAccuracy 固定为 ±25 ppm），以及一条规则：频率与符号率必须共用同一个参考振荡器（时钟同步，10.5.6），让两者绝不分道扬镳。"
+    },
+    {
+      "type": "prose",
+      "en": "Three more transmitter rules handle the edges and the power level. Power-on and power-down ramps (10.5.7) must each take less than 2 microseconds to swing the RF power between 10% and 90% of full, and must do so without breaking the unwanted-emissions limits — a clean rise and fall keeps spectral splatter down. RF carrier suppression (10.5.8) requires the leftover carrier tone at the channel center to sit at least 15 dB below the modulated peak (tested with a repeating 01 pattern, scrambler off, DQPSK, 100 kHz resolution). Finally, transmit power (10.5.9) caps maximum output per regulatory region (e.g. Japan 10 mW, Europe 100 mW EIRP), and a DEV that can exceed 0 dBm must be able to step its power down monotonically in 3-to-5 dB increments — the foundation of TPC (transmit power control), whose minimum level pMinTpcLevel is 0 dBm.",
+      "zh": "另外三条发射机规则处理边沿和功率电平。上电与下电斜坡（10.5.7）各自必须在不到 2 微秒内让射频功率在满功率的 10% 与 90% 之间摆动，且过程中不得突破杂散发射限制——干净的上升与下降可抑制频谱泼溅。射频载波抑制（10.5.8）要求信道中心残留的载波音至少比调制峰值低 15 dB（以重复的 01 序列、关闭扰码、DQPSK、100 kHz 分辨率带宽测试）。最后，发射功率（10.5.9）按监管区域设最大输出上限（如日本 10 mW、欧洲 100 mW EIRP），且能超过 0 dBm 的 DEV 必须能以 3 至 5 dB 的步进单调地降低功率——这正是 TPC（transmit power control，发射功率控制）的基础，其最低电平 pMinTpcLevel 为 0 dBm。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A useful mental split: 10.5.1–10.5.2 govern signal cleanliness (EVM), 10.5.3 and 10.5.7–10.5.8 govern spectral neatness (mask, ramps, carrier suppression), 10.5.4–10.5.6 govern timing discipline (frequency, symbol rate, shared oscillator), and 10.5.9 governs how loud you may be.",
+      "zh": "一个好用的记忆划分：10.5.1–10.5.2 管信号干净度（EVM），10.5.3 和 10.5.7–10.5.8 管频谱整洁度（模板、斜坡、载波抑制），10.5.4–10.5.6 管时序纪律（频率、符号率、共享振荡器），10.5.9 管你能多大声。"
+    },
+    {
+      "type": "prose",
+      "en": "The receiver section is anchored by one shared yardstick: the error rate criterion (10.6.1) is a FER (frame error rate) below 8%, measured on a 1024-octet PN23 pseudo-random payload — and crucially the whole frame counts (preamble, PHY header, MAC header, HCS, and FCS), not just the payload. Every other receiver test asks 'at what signal level is this 8% FER still met?' Receiver sensitivity (10.6.2) is the weakest input that still passes, after error correction; the reference floor ranges from -82 dBm for the rugged QPSK-TCM up to -68 dBm for delicate 64-QAM-TCM. At the other extreme, the receiver maximum input level (10.6.3) demands the radio still works with a strong -10 dBm signal, so a nearby talker doesn't overload it.",
+      "zh": "接收机部分由一把共用的标尺锚定：误差率准则（10.6.1）是 FER（frame error rate，帧错误率）低于 8%，在 1024 字节的 PN23 伪随机净荷上测量——而且关键在于整个帧都计入（前导码、PHY 头、MAC 头、HCS 与 FCS），而非仅净荷。其余每项接收机测试都在问“在何种信号电平下这 8% FER 仍能满足？”接收机灵敏度（10.6.2）是纠错之后仍能通过的最弱输入；参考底线从坚固的 QPSK-TCM 的 -82 dBm 一直到娇贵的 64-QAM-TCM 的 -68 dBm。在另一极端，接收机最大输入电平（10.6.3）要求无线电在 -10 dBm 的强信号下仍能工作，从而附近的发话者不会把它压垮。"
+    },
+    {
+      "type": "prose",
+      "en": "Receiver jamming resistance (10.6.4) checks how well you ignore a neighbour on a different channel. Using the high-density channel plan, the wanted signal is fed 6 dB above sensitivity while an interferer sits on an adjacent channel (right next door) or an alternate channel (one further out); the receiver must still meet the 8% FER. The required rejection scales with constellation ruggedness — QPSK-TCM must reject 33 dB adjacent / 48 dB alternate, while fragile 64-QAM-TCM only needs 19 dB / 34 dB. The remaining receiver clauses are the link-health readouts the MAC consumes: CCA performance (clear channel assessment, 10.6.5) flags the medium busy within five CAZAC periods when a valid preamble arrives at the DQPSK-base-rate sensitivity; RSSI (received signal strength indicator, 10.6.6) reports power in 8 steps of 8 dB over at least a 40 dB range, averaged on the last CAZAC sequence; and LQI (link quality indication, 10.6.7) reports an SNR (signal-to-noise ratio) estimate for the TCM-coded QAM modes as a 5-bit number spanning 6 dB to 21.5 dB.",
+      "zh": "接收机抗干扰能力（10.6.4）检验你忽略邻信道邻居的本领。采用高密度信道规划，期望信号以高于灵敏度 6 dB 馈入，同时干扰信号位于邻信道（紧邻）或交替信道（再隔一个）；接收机仍须满足 8% FER。所需抑制度随星座坚固度而变——QPSK-TCM 须抑制 33 dB（邻信道）/ 48 dB（交替信道），而脆弱的 64-QAM-TCM 只需 19 dB / 34 dB。其余接收机条款是 MAC 所消费的链路健康读数：CCA 性能（clear channel assessment，空闲信道评估，10.6.5）在有效前导码以 DQPSK 基速率灵敏度到达时，于五个 CAZAC 周期内标示介质忙；RSSI（received signal strength indicator，接收信号强度指示，10.6.6）以 8 个 8 dB 的步进、至少 40 dB 范围报告功率，在最后一段 CAZAC 序列上取平均；LQI（link quality indication，链路质量指示，10.6.7）则为 TCM 编码的 QAM 模式报告 SNR（signal-to-noise ratio，信噪比）估计，是一个跨越 6 dB 到 21.5 dB 的 5 比特数。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Wanted signal] --> R[Receiver]\n  J[Adjacent / alternate interferer] --> R\n  R --> F{FER < 8%?}\n  F -->|yes| P[Pass jamming test]\n  F -->|no| X[Fail]\n  R --> M[MAC readouts: CCA / RSSI / LQI]",
+      "zh": "flowchart LR\n  A[期望信号] --> R[接收机]\n  J[邻/交替信道干扰] --> R\n  R --> F{FER 小于 8%?}\n  F -->|是| P[通过抗干扰测试]\n  F -->|否| X[失败]\n  R --> M[MAC 读数: CCA / RSSI / LQI]"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, PHY management (10.7) is the database side of the PHY. The PHY PIB (PHY information base) holds the managed objects, attributes, and notifications the MAC uses to read and configure the radio. Two tables define the negotiation alphabet carried in the Capability IE (information element): Table 10-21 encodes which supported data rates a DEV offers (22 up to 11/22/33/44/55 Mb/s) into bits b0-b4, and Table 10-22 encodes the preferred fragment size. The same clause also defines how an Imm-ACK or Dly-ACK frame may piggyback receive status — packing the RSSI (from 10.6.6) and LQI (from 10.6.7) of the just-acknowledged frame into the Fragmentation Control field — so the sender learns how its last transmission was actually heard.",
+      "zh": "最后，PHY 管理（10.7）是物理层的数据库一侧。PHY PIB（PHY information base，物理层信息库）保存 MAC 用以读取和配置无线电的受管对象、属性与通知。两张表定义了承载在能力 IE（information element，信息单元）中的协商字母表：表 10-21 把 DEV 提供的受支持数据速率（22 直到 11/22/33/44/55 Mb/s）编码进 b0–b4 比特，表 10-22 编码首选分片大小。同一条款还定义了 Imm-ACK 或 Dly-ACK 帧如何顺带捎带接收状态——把刚被确认帧的 RSSI（来自 10.6.6）与 LQI（来自 10.6.7）打包进分片控制字段——于是发送方得以了解它上一次发送实际被听成什么样。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause in 10.5, 10.6, and 10.7 with its exact role",
+        "zh": "覆盖地图：10.5、10.6、10.7 中每一条款及其确切角色"
+      },
+      "en": "Transmitter (10.5): 10.5.1 defines EVM via the error vector from ideal to actual symbol; 10.5.2 sets pass limits (64-QAM 3.3% → QPSK-TCM 20%) over 1000 symbols through an ideal reference receiver; 10.5.3 the PSD mask (-30 dBr beyond 7.5 MHz to -50 dBr past 22 MHz, plus a -40 dBr relaxed in-band image); 10.5.4 center-frequency tolerance ±25 ppm; 10.5.5 symbol rate 11 Mbaud ±25 ppm and pClockAccuracy; 10.5.6 frequency and symbol rate share one oscillator; 10.5.7 power-on/down ramps < 2 µs; 10.5.8 RF carrier suppression ≥ 15 dB; 10.5.9 max transmit power per region and monotonic 3-5 dB TPC steps (pMinTpcLevel = 0 dBm). Receiver (10.6): 10.6.1 error-rate criterion FER < 8% on a 1024-octet PN23 frame (whole frame counts); 10.6.2 reference sensitivity -82 to -68 dBm; 10.6.3 maximum input level ≥ -10 dBm; 10.6.4 jamming resistance (adjacent/alternate rejection, 33/48 dB down to 19/34 dB); 10.6.5 CCA energy detection within five CAZAC periods; 10.6.6 RSSI in 8 steps of 8 dB over ≥ 40 dB; 10.6.7 LQI as a 5-bit SNR from 6 to 21.5 dB. Management (10.7): the PHY PIB managed objects; Table 10-21 supported-data-rate encoding and Table 10-22 fragment-size encoding for the Capability IE; and the optional RSSI/LQI receive-status field carried in Imm-ACK/Dly-ACK frames.",
+      "zh": "发射机（10.5）：10.5.1 通过理想到实际符号的误差矢量定义 EVM；10.5.2 设定通过限值（64-QAM 3.3% → QPSK-TCM 20%），在理想参考接收机下测 1000 个符号；10.5.3 PSD 模板（7.5 MHz 外 -30 dBr 到 22 MHz 外 -50 dBr，外加 -40 dBr 放宽带内镜像）；10.5.4 中心频率容差 ±25 ppm；10.5.5 符号率 11 Mbaud ±25 ppm 及 pClockAccuracy；10.5.6 频率与符号率共用一个振荡器；10.5.7 上/下电斜坡 < 2 µs；10.5.8 射频载波抑制 ≥ 15 dB；10.5.9 各区域最大发射功率与单调 3-5 dB 的 TPC 步进（pMinTpcLevel = 0 dBm）。接收机（10.6）：10.6.1 误差率准则在 1024 字节 PN23 帧上 FER < 8%（整帧计入）；10.6.2 参考灵敏度 -82 到 -68 dBm；10.6.3 最大输入电平 ≥ -10 dBm；10.6.4 抗干扰（邻/交替信道抑制，33/48 dB 至 19/34 dB）；10.6.5 CCA 能量检测于五个 CAZAC 周期内；10.6.6 RSSI 以 8 个 8 dB 步进覆盖 ≥ 40 dB；10.6.7 LQI 为跨 6 到 21.5 dB 的 5 比特 SNR。管理（10.7）：PHY PIB 受管对象；表 10-21 受支持数据速率编码与表 10-22 分片大小编码（用于能力 IE）；以及 Imm-ACK/Dly-ACK 帧中可选的 RSSI/LQI 接收状态字段。",
+      "cite": {
+        "pdf_id": "802153-2016",
+        "pages": [
+          326,
+          327,
+          328,
+          329,
+          330,
+          331,
+          332
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the recurring theme: tougher constellations buy higher throughput but pay for it everywhere — they need lower EVM, higher sensitivity floors, and less interference rejection. The standard simply encodes that trade-off as a table of numbers per modulation.",
+      "zh": "注意这个反复出现的主题：更高阶的星座换来更高吞吐，却处处付出代价——它们需要更低的 EVM、更高的灵敏度底线、更弱的抗干扰能力。标准只是把这一权衡按调制方式编成一张数字表罢了。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        326,
+        327,
+        328
+      ],
+      "note": "10.5 Transmitter specifications: EVM (10.5.1-10.5.2), PSD mask, frequency/symbol-rate tolerances, clock sync, ramps, carrier suppression, transmit power (10.5.3-10.5.9)"
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        329,
+        330,
+        331
+      ],
+      "note": "10.6 Receiver specifications: error-rate criterion, sensitivity, max input, jamming resistance, CCA, RSSI, LQI (10.6.1-10.6.7)"
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        331,
+        332,
+        333
+      ],
+      "note": "10.7 PHY management: PHY PIB, supported-data-rate and fragment-size encoding tables, RSSI/LQI receive-status field"
+    }
+  ],
+  "covers": [
+    "802153-2016:10.5.1",
+    "802153-2016:10.5.2",
+    "802153-2016:10.5.3",
+    "802153-2016:10.5.4",
+    "802153-2016:10.5.5",
+    "802153-2016:10.5.6",
+    "802153-2016:10.5.7",
+    "802153-2016:10.5.8",
+    "802153-2016:10.5.9",
+    "802153-2016:10.6.1",
+    "802153-2016:10.6.2",
+    "802153-2016:10.6.3",
+    "802153-2016:10.6.4",
+    "802153-2016:10.6.5",
+    "802153-2016:10.6.6",
+    "802153-2016:10.6.7",
+    "802153-2016:10.7"
+  ],
+  "track": "pan-hr-wpan"
+}

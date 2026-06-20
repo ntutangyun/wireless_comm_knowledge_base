@@ -1,0 +1,220 @@
+{
+  "id": "pan-802-15-27",
+  "title": {
+    "en": "Low-Rate WPAN Mesh: Building the Tree and Routing Across It",
+    "zh": "低速率 WPAN 网状网络：构建逻辑树并在其上路由"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.15.5-2009 is a recommended practice that adds mesh networking to Wireless Personal Area Networks (WPANs) — short-range, low-power radio networks. Its Clause 1 states the scope (clause 1.1): give WPAN devices an architectural framework for interoperable, stable, scalable wireless mesh topologies, and supply any amendment text the existing WPAN standards need to implement it. The purpose (clause 1.2) is to optimize mesh for IEEE 802.15 WPANs, which buys four things: extended coverage without raising transmit power or receiver sensitivity, better reliability through redundant routes, easier configuration, and longer battery life. This lesson walks through Clause 5, the low-rate (LR) WPAN mesh built on top of IEEE Std 802.15.4 — the standard for low-rate WPANs.",
+      "zh": "IEEE Std 802.15.5-2009 是一份推荐性规范，它为无线个域网（WPAN，即短距离、低功耗的无线网络）增加网状组网能力。其第 1 章给出适用范围（1.1 节）：为 WPAN 设备提供一个可互操作、稳定、可扩展的无线网状拓扑架构框架，并补充现有 WPAN 标准实现该框架所需的修订文本。目的（1.2 节）是为 IEEE 802.15 WPAN 优化网状拓扑，从而带来四点好处：在不提高发射功率或接收灵敏度的前提下扩展覆盖、通过冗余路由提升可靠性、更易于配置、更长的电池续航。本课讲解第 5 章，即建立在 IEEE Std 802.15.4（低速率 WPAN 标准）之上的低速率（LR）WPAN 网状网络。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5.1 (general description) places the mesh as a thin sublayer. In the data plane the Mesh Sublayer sits between the Logical Link Control (LLC) convergence sublayer above and the IEEE 802.15.4 Medium Access Control (MAC) below, offering a Mesh Service Access Point (Mesh SAP) deliberately almost identical to the MAC's MCPS SAP so existing apps add mesh with minimal effort. In the management plane the Mesh Sublayer Management Entity (MHME) sits between the application management entity and the MAC Layer Management Entity (MLME). The mesh supports unicast, multicast and reliable broadcast forwarding, synchronous and asynchronous power saving, traceroute, and portability of end devices. End-to-end reliability and security are NOT provided at this sublayer in this version. All devices share one PAN ID; inter-PAN communication is out of scope.",
+      "zh": "5.1 节（总体描述）将网状能力定位为一个轻薄的子层。在数据面，网状子层位于上方的逻辑链路控制（LLC）汇聚子层与下方的 IEEE 802.15.4 媒体访问控制（MAC）之间，对外提供网状服务接入点（Mesh SAP），其设计刻意与 MAC 的 MCPS SAP 几乎一致，使现有应用以最小代价接入网状能力。在管理面，网状子层管理实体（MHME）位于应用管理实体与 MAC 层管理实体（MLME）之间。该网状网络支持单播、多播与可靠广播转发、同步与异步省电、路由追踪以及端设备的可携性。在本版本中，该子层不提供端到端可靠性与安全性。所有设备共享同一个 PAN ID；跨 PAN 通信不在范围内。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 210\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"40\" y=\"15\" width=\"180\" height=\"28\"/><text x=\"130\" y=\"33\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">802.2 LLC / SSCS</text><rect x=\"40\" y=\"60\" width=\"180\" height=\"28\"/><text x=\"130\" y=\"78\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Mesh Sublayer</text><rect x=\"40\" y=\"105\" width=\"180\" height=\"28\"/><text x=\"130\" y=\"123\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">802.15.4 MAC</text><rect x=\"40\" y=\"150\" width=\"180\" height=\"28\"/><text x=\"130\" y=\"168\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">802.15.4 PHY</text><text x=\"130\" y=\"55\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Mesh SAP</text><text x=\"130\" y=\"100\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">MCPS SAP</text><rect x=\"290\" y=\"60\" width=\"130\" height=\"28\"/><text x=\"355\" y=\"78\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">MHME</text><rect x=\"290\" y=\"105\" width=\"130\" height=\"28\"/><text x=\"355\" y=\"123\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">MLME</text><line x1=\"220\" y1=\"74\" x2=\"290\" y2=\"74\"/><line x1=\"220\" y1=\"119\" x2=\"290\" y2=\"119\"/><text x=\"255\" y=\"70\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">MHME-SAP</text></svg>",
+      "caption": {
+        "en": "Reference model (clause 5.1): the Mesh Sublayer slots between LLC and the 802.15.4 MAC in the data plane, with the MHME in the management plane. Mesh SAP mirrors MCPS SAP.",
+        "zh": "参考模型（5.1 节）：在数据面，网状子层位于 LLC 与 802.15.4 MAC 之间；管理面则由 MHME 负责。Mesh SAP 仿照 MCPS SAP 设计。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5.2 (mesh service description) defines two service families. The mesh DATA service (clause 5.2.1) carries application data multiple hops via the Mesh SAP, using MESH-DATA (request/confirm/indication) and MESH-PURGE primitives; its request carries source/destination address modes (16-bit short or 64-bit extended), the payload (mhsdu), and flags choosing acknowledged, multicast, broadcast, or reliable-broadcast delivery. The mesh MANAGEMENT service (clause 5.2.2) runs over the MHME-SAP using MHME-* primitives: DISCOVER (scan for nearby meshes), START-NETWORK, START-DEVICE, JOIN, LEAVE, RESET, GET/SET (read/write managed attributes), and the optional START-SYNC, TRACE-ROUTE, MULTICAST-JOIN and MULTICAST-LEAVE. Together these are the control knobs the higher layer uses to build and operate the mesh.",
+      "zh": "5.2 节（网状服务描述）定义了两类服务。网状数据服务（5.2.1 节）通过 Mesh SAP 进行多跳承载应用数据，使用 MESH-DATA（请求/确认/指示）与 MESH-PURGE 原语；其请求携带源/目的地址模式（16 位短地址或 64 位扩展地址）、负载（mhsdu）以及选择确认、多播、广播或可靠广播投递方式的标志位。网状管理服务（5.2.2 节）经 MHME-SAP 使用 MHME-* 原语：DISCOVER（扫描周边网状网）、START-NETWORK、START-DEVICE、JOIN、LEAVE、RESET、GET/SET（读写受管属性），以及可选的 START-SYNC、TRACE-ROUTE、MULTICAST-JOIN 和 MULTICAST-LEAVE。它们合起来就是高层用于构建与运行网状网络的控制旋钮。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5.3 (frame formats) is small but exact. The general mesh service frame (clause 5.3.1) is a 2-octet Frame Control field, then Destination and Source Address fields (8 or 2 octets each), then the variable mesh payload — and the whole thing rides inside an 802.15.4 MAC data frame's payload. Frame Control packs a 4-bit Protocol Version (=1), a Frame Type bit (0=data, 1=command), Destination and Source Address Mode subfields (0=64-bit extended, 1=16-bit short), and a Transmission Options subfield mirroring the MESH-DATA flags (acknowledged b7, multicast b8, broadcast b9, reliable-broadcast b10). The individual frame types (clause 5.3.2) are the Data frame — payload adds a Sequence Number and a Routing Control octet whose Up-down Flag detects loops — and the Command frame, which carries a Command Frame Identifier selecting one of 23 commands (Children number report, Address assignment, Hello, Link state, Probe, the group G-JREQ/G-JREP/G-LREQ, Wakeup notification, Synchronization, Traceroute, Leave, and more).",
+      "zh": "5.3 节（帧格式）篇幅小但精确。通用网状服务帧（5.3.1 节）由 2 字节的帧控制字段、目的与源地址字段（各 8 或 2 字节）以及可变长度的网状负载组成，整帧承载于 802.15.4 MAC 数据帧的负载中。帧控制字段包含 4 位协议版本（=1）、1 位帧类型（0=数据，1=命令）、目的与源地址模式子字段（0=64 位扩展，1=16 位短）以及与 MESH-DATA 标志对应的传输选项子字段（确认 b7、多播 b8、广播 b9、可靠广播 b10）。各帧类型（5.3.2 节）包括数据帧——其负载增加一个序列号与一个路由控制字节，后者的上行/下行标志位用于检测环路——以及命令帧，命令帧通过命令帧标识符从 23 种命令中选择其一（子节点数量报告、地址分配、Hello、链路状态、探测、组播的 G-JREQ/G-JREP/G-LREQ、唤醒通知、同步、路由追踪、离开等）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 470 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"30\" width=\"70\" height=\"34\"/><text x=\"45\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Frame Ctrl</text><text x=\"45\" y=\"78\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">2</text><rect x=\"80\" y=\"30\" width=\"80\" height=\"34\"/><text x=\"120\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Dest Addr</text><text x=\"120\" y=\"78\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">8/2</text><rect x=\"160\" y=\"30\" width=\"80\" height=\"34\"/><text x=\"200\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Src Addr</text><text x=\"200\" y=\"78\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">8/2</text><rect x=\"240\" y=\"30\" width=\"50\" height=\"34\"/><text x=\"265\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Seq#</text><text x=\"265\" y=\"78\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">1</text><rect x=\"290\" y=\"30\" width=\"60\" height=\"34\"/><text x=\"320\" y=\"48\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">Routing</text><text x=\"320\" y=\"58\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">Control</text><text x=\"320\" y=\"78\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">1</text><rect x=\"350\" y=\"30\" width=\"110\" height=\"34\"/><text x=\"405\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Data Payload</text><text x=\"405\" y=\"78\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">Variable</text><text x=\"150\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Mesh Sublayer Header</text><text x=\"400\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Payload</text></svg>",
+      "caption": {
+        "en": "Mesh data frame (clause 5.3.2.1): the header is Frame Control + addresses + Sequence Number + Routing Control (octets shown below each field). The Routing Control's Up-down Flag (b7) catches routing loops.",
+        "zh": "网状数据帧（5.3.2.1 节）：帧头为帧控制 + 地址 + 序列号 + 路由控制（各字段下方标注字节数）。路由控制中的上行/下行标志位（b7）用于捕捉路由环路。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5.4 collects the dials and the dictionary. Mesh sublayer constants (clause 5.4.1, Table 41) are build-time fixed values: meshcCoordinatorCapability (can this device be a Mesh Coordinator), meshcBroadcastAddress = 0xffff, meshcMaxMeshHeaderLength = 0x12 (18 octets — the worst-case header size), meshcTimeUnit = 1 ms, and timing bases for power saving. The Mesh Information Base (MeshIB, clause 5.4.2, Table 42) is the tunable database the higher layer reads and writes via GET/SET: among ~40 attributes are meshTreeLevel, meshNetworkAddress, meshNeighborList, meshTTLOfHello (how far Hello frames travel), meshDeviceType (MESH_DEVICE vs END_DEVICE), and a whole family of power-saving and synchronization timers. Mesh status values (clause 5.4.3, Table 44) are the codes confirm primitives return — INVALID_REQUEST, NO_NETWORKS, STARTUP_FAILURE, SYNC_SUCCESS, TRACEROUTE_TIMEOUT, UNKNOWN_CHILD_DEVICE, and others.",
+      "zh": "5.4 节集中收录了各类参数与术语词典。网状子层常量（5.4.1 节，表 41）是构建时固定的值：meshcCoordinatorCapability（本设备能否成为网状协调器）、meshcBroadcastAddress = 0xffff、meshcMaxMeshHeaderLength = 0x12（18 字节，即最坏情况下的帧头长度）、meshcTimeUnit = 1 毫秒，以及省电用的时间基准。网状信息库（MeshIB，5.4.2 节，表 42）是高层通过 GET/SET 读写的可调数据库：约 40 个属性中包括 meshTreeLevel、meshNetworkAddress、meshNeighborList、meshTTLOfHello（Hello 帧能传播多远）、meshDeviceType（MESH_DEVICE 或 END_DEVICE）以及一整套省电与同步定时器。网状状态值（5.4.3 节，表 44）是确认原语返回的代码——INVALID_REQUEST、NO_NETWORKS、STARTUP_FAILURE、SYNC_SUCCESS、TRACEROUTE_TIMEOUT、UNKNOWN_CHILD_DEVICE 等。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5.5 is the heart: how the mesh actually behaves. Starting a network (clause 5.5.1): a Mesh Coordinator (MC) issues MHME-START-NETWORK, runs an energy-detect then active MAC scan, picks a channel and PAN ID, and starts beaconing. Joining (clause 5.5.2): a non-MC device runs MHME-DISCOVER (active scan), picks the best parent by tree level and link quality, associates at the MAC, and optionally becomes a relaying mesh device via START-DEVICE. Address assignment (clause 5.5.3) is the clever core: instead of a routing table, addresses encode the tree. After association forms a physical tree (5.5.3.1), a bottom-up children number report counts devices on each branch (5.5.3.2), then the root assigns each branch a contiguous block of short addresses top-down. Because a neighbor's block is a known address range, the entire subtree below it is routable just from that range; spare addresses allow later local adjustment (5.5.3.3).",
+      "zh": "5.5 节是核心：网状网络究竟如何运作。启动网络（5.5.1 节）：网状协调器（MC）发出 MHME-START-NETWORK，先做能量检测扫描再做主动扫描，选定信道与 PAN ID，然后开始发送信标。加入网络（5.5.2 节）：非 MC 设备执行 MHME-DISCOVER（主动扫描），按树层级与链路质量选出最佳父节点，在 MAC 层关联，并可选地通过 START-DEVICE 成为可中继的网状设备。地址分配（5.5.3 节）是精妙的核心：它不用路由表，而是让地址本身编码出整棵树。关联先形成物理树（5.5.3.1 节），随后自底向上的子节点数量报告统计每条分支上的设备数（5.5.3.2 节），再由根节点自顶向下为每条分支分配一段连续的短地址块。由于某个邻居的地址块是一段已知范围，仅凭该范围即可路由其下整个子树；预留地址则允许日后做局部调整（5.5.3.3 节）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  R[\"Root MC\"] -->|block 6-8| D[\"Device D\"]\n  R -->|block 9-13| E[\"Device E\"]\n  R -->|addr 14| G[\"Device G\"]\n  D --> D1[\"child 7\"]\n  D --> D2[\"child 8\"]\n  E --> E1[\"child 10-13\"]",
+      "zh": "flowchart TD\n  R[\"根节点 MC\"] -->|地址块 6-8| D[\"设备 D\"]\n  R -->|地址块 9-13| E[\"设备 E\"]\n  R -->|地址 14| G[\"设备 G\"]\n  D --> D1[\"子节点 7\"]\n  D --> D2[\"子节点 8\"]\n  E --> E1[\"子节点 10-13\"]"
+    },
+    {
+      "type": "prose",
+      "en": "With addresses in place, devices discover and maintain links. Topology discovery (clause 5.5.4): each device broadcasts Hello commands with TTL = meshTTLOfHello and builds a Link State Table — a neighbor list (5.5.4.1.1) plus a connectivity matrix (5.5.4.1.2) that derives hop counts. Path selection and forwarding (clause 5.5.5): the neighbor list is the ONLY thing consulted — if the destination address falls inside a neighbor's block, forward there; the func_nextHop algorithm picks the next hop, with optional random load-balancing (5.5.5.1). Forwarding is hop-by-hop reliable only (no end-to-end ACK), and the payload must fit aMaxMACSafePayloadSize minus the mesh header (5.5.5.2). Path maintenance (clause 5.5.6): the Up-down Flag sanity check catches loops and link-state mismatches (5.5.6.1); failed links go on a probe list and are retried up to meshMaxProbeNum, marked down, and re-advertised via Hello (5.5.6.2). Leaving (clause 5.5.7) is active (MHME-LEAVE.request, 5.5.7.1) or passive (a Leave command from the parent, 5.5.7.2); a departing device sends a Hello with the leaving bit set so neighbors update — a parent keeps the entry for meshRejoinTimer in case it returns.",
+      "zh": "地址就位后，设备开始发现并维护链路。拓扑发现（5.5.4 节）：每个设备以 TTL = meshTTLOfHello 广播 Hello 命令，构建链路状态表——包括邻居列表（5.5.4.1.1 节）与连接矩阵（5.5.4.1.2 节），后者用于推算跳数。路径选择与转发（5.5.5 节）：邻居列表是唯一被查询的依据——若目的地址落在某邻居的地址块内，就转发给它；func_nextHop 算法选出下一跳，并可选地做随机负载均衡（5.5.5.1 节）。转发仅做逐跳可靠（无端到端确认），且负载须不超过 aMaxMACSafePayloadSize 减去网状帧头（5.5.5.2 节）。路径维护（5.5.6 节）：上行/下行标志的一致性检查可捕捉环路与链路状态失配（5.5.6.1 节）；失败链路进入探测列表，最多重试 meshMaxProbeNum 次，标记为 down 并通过 Hello 重新通告（5.5.6.2 节）。离开网络（5.5.7 节）分为主动（MHME-LEAVE.request，5.5.7.1 节）与被动（来自父节点的 Leave 命令，5.5.7.2 节）；离开的设备发送置位了离开标志的 Hello 以便邻居更新——父节点会保留该条目 meshRejoinTimer 时长，以备其返回。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why tree-coded addresses matter: ordinary mesh routing keeps a route entry per destination, which scales poorly on tiny low-power nodes. Here a parent owns a contiguous address block, so a neighbor's [begin, end] range tells a device that EVERY destination in that range is reachable through that neighbor — no route discovery, no per-destination table. The neighbor list (Table 46) is the whole forwarding database.",
+      "zh": "树编码地址为何重要：普通网状路由要为每个目的地保存一条路由表项，这在微型低功耗节点上扩展性很差。这里父节点拥有一段连续地址块，因此邻居的 [起始, 结束] 范围就告诉设备：该范围内的每一个目的地都可经由这个邻居到达——无需路由发现，也无需逐目的地的路由表。邻居列表（表 46）就是整个转发数据库。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining functions round out the mesh. Multicast (clause 5.5.8) reuses the shared logical tree: members (GM), routers (RT), multicast agents and a per-group coordinator (GC) exchange unicast G-JREQ/G-JREP/G-LREQ control frames, so no multicast routing table is needed and the MC is not a bottleneck. Reliable broadcast (clause 5.5.9) sets destination = meshcBroadcastAddress with the ReliableBcst flag; a broadcast transaction table tracks acknowledgements (by overhearing rebroadcasts), and rules in 5.5.9.3 let reliable- and non-reliable-capable devices interoperate. Energy saving (clause 5.5.10) offers an asynchronous mode (ASES, each device wakes on its own meshWakeupOrder schedule and announces via a Wakeup Notification) and a synchronous mode (SES, with a synchronized active/inactive time structure). Portability (clause 5.5.11) lets a leaf device move: detect the broken link, rejoin via MHME-JOIN (RejoinNetwork=0x02), get its old short address back if still remembered, and inform relevant devices with a rejoin notification. Traceroute (clause 5.5.12), like its IP namesake, sends requests with increasing TTL so each hop replies in turn, measuring round-trip time and returning DESTINATION_UNREACHABLE past maxTTL.",
+      "zh": "其余功能让网状网络更完整。多播（5.5.8 节）复用共享的逻辑树：组成员（GM）、路由器（RT）、多播代理与每组的组协调器（GC）通过单播的 G-JREQ/G-JREP/G-LREQ 控制帧交互，因而无需多播路由表，MC 也不会成为瓶颈。可靠广播（5.5.9 节）将目的地址设为 meshcBroadcastAddress 并置位 ReliableBcst 标志；广播事务表跟踪确认（通过偷听重广播实现），5.5.9.3 节的规则让支持与不支持可靠广播的设备互通。省电（5.5.10 节）提供异步模式（ASES，每个设备按自己的 meshWakeupOrder 时间表唤醒，并通过唤醒通知告知）与同步模式（SES，采用同步的活动/非活动时间结构）。可携性（5.5.11 节）允许叶子设备移动：检测到链路中断后，通过 MHME-JOIN（RejoinNetwork=0x02）重新加入，若仍被记得则取回原短地址，并用重新加入通知告知相关设备。路由追踪（5.5.12 节）一如其 IP 同名功能，发送 TTL 递增的请求让每一跳依次回复，测量往返时间，并在超过 maxTTL 时返回 DESTINATION_UNREACHABLE。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause taught, by number",
+        "zh": "覆盖地图——按编号逐条对应所讲内容"
+      },
+      "en": "Clause 1: 1.1 Scope (architectural framework for interoperable/stable/scalable WPAN mesh + amendment text); 1.2 Purpose (optimize mesh for 802.15 WPANs — coverage, reliability, configuration, battery). Clause 5.1 general description (reference model: Mesh Sublayer between LLC and 802.15.4 MAC; MHME; supported features; no end-to-end reliability/security; single PAN ID). Clause 5.2: 5.2.1 mesh data service (MESH-DATA/MESH-PURGE primitives via Mesh SAP); 5.2.2 mesh management service (MHME-DISCOVER/START-NETWORK/START-DEVICE/JOIN/LEAVE/RESET/GET/SET + optional START-SYNC/TRACE-ROUTE/MULTICAST-JOIN/LEAVE via MHME-SAP). Clause 5.3: 5.3.1 general frame format (Frame Control, addresses, payload; Protocol Version, Frame Type, address modes, Transmission Options); 5.3.2 individual frame types (Data frame + Routing Control/Up-down Flag; Command frame + 23-entry Command Frame Identifier table); 5.3.3 (this version defines no 5.3.3 subclause — the frame-format material is fully covered by 5.3.1 and 5.3.2). Clause 5.4: 5.4.1 constants (Table 41: meshcCoordinatorCapability, meshcBroadcastAddress=0xffff, meshcMaxMeshHeaderLength=0x12, meshcTimeUnit); 5.4.2 MeshIB (Table 42 tunable attributes via GET/SET); 5.4.3 status values (Table 44 confirm codes). Clause 5.5: 5.5.1 starting a network; 5.5.2 joining; 5.5.3 address assignment (association + bottom-up count + top-down block assignment); 5.5.4 topology discovery (Hello, neighbor list, connectivity matrix); 5.5.5 path selection & forwarding (func_nextHop, hop-by-hop reliability); 5.5.6 path maintenance (Up-down sanity check, probe list); 5.5.7 leaving (active/passive); 5.5.8 multicast over the shared tree (GM/RT/MA/GC); 5.5.9 reliable broadcast (broadcast transaction table, interoperability); 5.5.10 energy saving (ASES asynchronous + SES synchronous); 5.5.11 portability of leaf devices (movement detect, rejoin, notify); 5.5.12 traceroute (increasing-TTL probes, RTT, maxTTL).",
+      "zh": "第 1 章：1.1 适用范围（可互操作/稳定/可扩展的 WPAN 网状架构框架及修订文本）；1.2 目的（为 802.15 WPAN 优化网状——覆盖、可靠性、配置、电池）。5.1 节总体描述（参考模型：网状子层位于 LLC 与 802.15.4 MAC 之间；MHME；所支持的特性；无端到端可靠性/安全性；单一 PAN ID）。5.2 节：5.2.1 网状数据服务（经 Mesh SAP 的 MESH-DATA/MESH-PURGE 原语）；5.2.2 网状管理服务（经 MHME-SAP 的 MHME-DISCOVER/START-NETWORK/START-DEVICE/JOIN/LEAVE/RESET/GET/SET 及可选的 START-SYNC/TRACE-ROUTE/MULTICAST-JOIN/LEAVE）。5.3 节：5.3.1 通用帧格式（帧控制、地址、负载；协议版本、帧类型、地址模式、传输选项）；5.3.2 各帧类型（数据帧 + 路由控制/上行下行标志；命令帧 + 含 23 项的命令帧标识符表）；5.3.3（本版本未定义 5.3.3 子条款——帧格式内容已由 5.3.1 与 5.3.2 完整覆盖）。5.4 节：5.4.1 常量（表 41：meshcCoordinatorCapability、meshcBroadcastAddress=0xffff、meshcMaxMeshHeaderLength=0x12、meshcTimeUnit）；5.4.2 MeshIB（表 42 经 GET/SET 调整的属性）；5.4.3 状态值（表 44 确认代码）。5.5 节：5.5.1 启动网络；5.5.2 加入；5.5.3 地址分配（关联 + 自底向上计数 + 自顶向下分块）；5.5.4 拓扑发现（Hello、邻居列表、连接矩阵）；5.5.5 路径选择与转发（func_nextHop、逐跳可靠）；5.5.6 路径维护（上行下行一致性检查、探测列表）；5.5.7 离开（主动/被动）；5.5.8 共享树上的多播（GM/RT/MA/GC）；5.5.9 可靠广播（广播事务表、互操作）；5.5.10 省电（ASES 异步 + SES 同步）；5.5.11 叶子设备可携性（移动检测、重新加入、通知）；5.5.12 路由追踪（TTL 递增探测、往返时间、maxTTL）。",
+      "cite": {
+        "pdf_id": "802155-2009",
+        "pages": [
+          13,
+          14,
+          19,
+          20,
+          21,
+          53,
+          54,
+          55,
+          56,
+          57,
+          76,
+          77,
+          81,
+          82,
+          86,
+          89,
+          91,
+          92,
+          94,
+          105,
+          107,
+          121,
+          123
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802155-2009",
+      "pages": [
+        13,
+        14
+      ],
+      "note": "Clause 1.1 Scope and 1.2 Purpose; mesh features."
+    },
+    {
+      "pdf_id": "802155-2009",
+      "pages": [
+        19,
+        20
+      ],
+      "note": "Clause 5.1 general description and reference model (Mesh SAP, MHME)."
+    },
+    {
+      "pdf_id": "802155-2009",
+      "pages": [
+        21,
+        27
+      ],
+      "note": "Clause 5.2.1 mesh data service and 5.2.2 management service primitives."
+    },
+    {
+      "pdf_id": "802155-2009",
+      "pages": [
+        53,
+        54,
+        55,
+        56,
+        57
+      ],
+      "note": "Clause 5.3.1 general frame format and 5.3.2 data/command frame types."
+    },
+    {
+      "pdf_id": "802155-2009",
+      "pages": [
+        76,
+        77,
+        81,
+        82
+      ],
+      "note": "Clause 5.4.1 constants (Table 41), 5.4.2 MeshIB (Table 42), 5.4.3 status values (Table 44)."
+    },
+    {
+      "pdf_id": "802155-2009",
+      "pages": [
+        82,
+        83,
+        84,
+        85,
+        86
+      ],
+      "note": "Clause 5.5.1-5.5.4 starting, joining, address assignment, topology discovery."
+    },
+    {
+      "pdf_id": "802155-2009",
+      "pages": [
+        89,
+        91,
+        92,
+        94
+      ],
+      "note": "Clause 5.5.5-5.5.8 path selection, maintenance, leaving, multicast."
+    },
+    {
+      "pdf_id": "802155-2009",
+      "pages": [
+        105,
+        107,
+        121,
+        123,
+        124
+      ],
+      "note": "Clause 5.5.9-5.5.12 reliable broadcast, energy saving, portability, traceroute."
+    }
+  ],
+  "covers": [
+    "802155-2009:1.1",
+    "802155-2009:1.2",
+    "802155-2009:5.1",
+    "802155-2009:5.2.1",
+    "802155-2009:5.2.2",
+    "802155-2009:5.3.1",
+    "802155-2009:5.3.2",
+    "802155-2009:5.3.3",
+    "802155-2009:5.4.1",
+    "802155-2009:5.4.2",
+    "802155-2009:5.4.3",
+    "802155-2009:5.5.1",
+    "802155-2009:5.5.2",
+    "802155-2009:5.5.3",
+    "802155-2009:5.5.4",
+    "802155-2009:5.5.5",
+    "802155-2009:5.5.6",
+    "802155-2009:5.5.7",
+    "802155-2009:5.5.8",
+    "802155-2009:5.5.9",
+    "802155-2009:5.5.10",
+    "802155-2009:5.5.11",
+    "802155-2009:5.5.12"
+  ],
+  "track": "pan-802-15"
+}

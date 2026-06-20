@@ -1,0 +1,142 @@
+{
+  "id": "pan-hr-wpan-32",
+  "title": {
+    "en": "Clause 9: Security Specifications — CCM, AES, and the Nonce",
+    "zh": "第 9 章：安全规范 — CCM、AES 与一次性随机数（Nonce）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 9 is the cryptography chapter of IEEE Std 802.15.3-2016. It does not invent new math — instead it picks well-known primitives and pins down exactly how a high-rate wireless PAN (personal area network) device, called a DEV, must use them so that two implementations interoperate bit-for-bit. The whole clause rests on one combined mechanism: CCM (Counter with CBC-MAC), built on top of the AES (Advanced Encryption Standard) block cipher. CCM gives you two things at once — confidentiality (encryption) and integrity/authenticity (a tamper-detection tag). This lesson walks the clause top to bottom: the security mode (9.1), the building blocks (9.2), how those blocks map onto real frames (9.3), and the precise CCM algorithm (9.4).",
+      "zh": "第 9 章是 IEEE Std 802.15.3-2016 的密码学章节。它并不发明新的数学，而是选定一组成熟的密码原语，并精确规定高速率无线个域网（PAN，Personal Area Network）设备（称为 DEV）必须如何使用它们，从而让不同实现之间能够逐比特互操作。整章都建立在一个组合机制之上：CCM（Counter with CBC-MAC，计数器模式加 CBC-MAC），它构建在 AES（Advanced Encryption Standard，高级加密标准）分组密码之上。CCM 一次性提供两样东西——机密性（加密）与完整性/真实性（防篡改标签）。本课从头到尾走读这一章：安全模式（9.1）、构建块（9.2）、这些块如何映射到真实帧上（9.3），以及精确的 CCM 算法（9.4）。"
+    },
+    {
+      "type": "prose",
+      "en": "9.1 Modes for security. The standard defines two security modes. Mode 0 has no symmetric-key protection at all — it is the open, unsecured mode. Mode 1 is the secure mode: whenever symmetric-key security operations are selected, every DEV performs them in mode 1 (the membership and key-management rules for mode 1 live in Clause 8.2). The takeaway: symmetric cryptography is simply not defined for mode 0, so everything else in Clause 9 only matters once you are in mode 1.",
+      "zh": "9.1 安全模式。标准定义了两种安全模式。模式 0 完全没有对称密钥保护——它是开放、不加密的模式。模式 1 是安全模式：只要选择了对称密钥安全操作，每个 DEV 都在模式 1 下执行（模式 1 的成员管理与密钥管理规则在第 8.2 章）。要点是：模式 0 根本没有定义对称密码学，因此第 9 章其余内容只有在进入模式 1 后才有意义。"
+    },
+    {
+      "type": "prose",
+      "en": "9.2 Symmetric cryptography building blocks. 9.2.1 (notational conventions) fixes byte and bit order so two vendors never disagree on which bit is 'first': the first byte transmitted is the leftmost (most significant) byte, bits inside a byte are MSB-first (most significant bit first), and octets are most-significant-octet first. It also defines the concatenation operator: x || y glues two bit strings together with x as the high-order (left) part and y as the low-order (right) part. 9.2.2 (CCM combined encryption and data authentication) describes the mechanism in words: first generate an integrity code with a block cipher in CBC (cipher block chaining) mode over the nonce, then the authentication data, then the plaintext; next encrypt the plaintext and that integrity code by running the cipher in counter mode to make a key stream and XORing it in. Decryption regenerates the same key stream and XORs it back.",
+      "zh": "9.2 对称密码学构建块。9.2.1（记法约定）固定了字节序和比特序，使两个厂商绝不会对哪个比特“在先”产生分歧：传输的第一个字节是最左（最高位）字节，字节内比特是 MSB 优先（最高有效位在先），八位组按最高有效八位组在先。它还定义了拼接运算符：x || y 把两个比特串连接起来，x 是高位（左）部分，y 是低位（右）部分。9.2.2（CCM 组合加密与数据认证）用文字描述该机制：先用分组密码以 CBC（密码分组链接）模式，对 nonce、然后认证数据、然后明文计算出一个完整性码；再用计数器模式生成密钥流，对明文与该完整性码做 XOR 实现加密。解密则重新生成同样的密钥流并 XOR 回去。"
+    },
+    {
+      "type": "prose",
+      "en": "9.2.3 (CCM parameters) nails down the exact knobs this standard chose: the AES algorithm of 9.2.5, a length field L of 2 octets, an authentication field M of 8 octets, and a nonce formatted per 9.2.4. 9.2.5 (AES encryption) says the block cipher is AES exactly as defined in NIST FIPS Pub 197, with 128-bit keys and a 128-bit block size — no other variant. (NIST is the U.S. National Institute of Standards and Technology; FIPS is a Federal Information Processing Standard.)",
+      "zh": "9.2.3（CCM 参数）固定了本标准选定的精确取值：使用 9.2.5 的 AES 算法、长度字段 L 为 2 个八位组、认证字段 M 为 8 个八位组、nonce 按 9.2.4 格式化。9.2.5（AES 加密）规定分组密码就是 NIST FIPS Pub 197 中定义的 AES，采用 128 位密钥和 128 位分组大小——不使用其他变体。（NIST 是美国国家标准与技术研究院；FIPS 是联邦信息处理标准。）"
+    },
+    {
+      "type": "prose",
+      "en": "9.2.4 (nonce value) is the safety rule that keeps CCM secure. A nonce is a 'number used once' — if the same nonce is ever reused with the same key, the security collapses. The standard guarantees uniqueness structurally: a DEV must never reuse a Secure Frame Counter value within one superframe toward a given DEVID, and the nonce is built from fields that are unique by construction — the SrcID (source ID, so two DEVs sharing a key differ), the Time Token (different every superframe), and the DestID plus Secure Frame Counter (unique within a superframe, as long as a DEV sends no more than 65 536 frames to one destination that superframe). Crucially, if a frame is retransmitted and even a single bit changed, the Secure Frame Counter must be incremented so a fresh nonce is used. Figure 9-1 lays out the nonce as SrcID || DestID || Time Token || Secure Frame Counter || Fragmentation Control; Figure 9-2 gives the aggregated-frame variant that adds a Secure Subframe Counter (incremented per subframe) and a Padding field set to 0xCFCF.",
+      "zh": "9.2.4（nonce 取值）是保证 CCM 安全的关键规则。nonce 意为“仅用一次的数”——只要同一密钥下重复使用同一 nonce，安全性就崩溃。标准从结构上保证唯一性：DEV 在一个超帧内对某个 DEVID 绝不能重用安全帧计数器值，且 nonce 由本质唯一的字段构成——SrcID（源标识，使共享密钥的两个 DEV 互不相同）、Time Token（每个超帧都不同）、以及 DestID 加安全帧计数器（在一个超帧内唯一，只要 DEV 在该超帧内对某目的地发送不超过 65 536 帧）。尤为关键：若帧被重传且哪怕只改动了一个比特，也必须递增安全帧计数器以使用新 nonce。图 9-1 把 nonce 排为 SrcID || DestID || Time Token || 安全帧计数器 || 分片控制；图 9-2 给出聚合帧变体，增加了安全子帧计数器（每个子帧递增）和取值为 0xCFCF 的填充字段。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><text x=\"8\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">CCM nonce (Figure 9-1) — octet sizes shown</text><g stroke-width=\"1.5\"><rect x=\"8\" y=\"36\" width=\"70\" height=\"40\"/><rect x=\"78\" y=\"36\" width=\"70\" height=\"40\"/><rect x=\"148\" y=\"36\" width=\"150\" height=\"40\"/><rect x=\"298\" y=\"36\" width=\"110\" height=\"40\"/><rect x=\"408\" y=\"36\" width=\"130\" height=\"40\"/></g><g fill=\"currentColor\" stroke=\"none\" font-size=\"11\"><text x=\"22\" y=\"60\">SrcID</text><text x=\"94\" y=\"60\">DestID</text><text x=\"180\" y=\"60\">Time Token</text><text x=\"312\" y=\"60\">Sec Frame Ctr</text><text x=\"420\" y=\"60\">Frag Control</text></g><g fill=\"currentColor\" stroke=\"none\" font-size=\"10\"><text x=\"36\" y=\"92\">1</text><text x=\"106\" y=\"92\">1</text><text x=\"216\" y=\"92\">6</text><text x=\"345\" y=\"92\">2</text><text x=\"465\" y=\"92\">3</text></g></svg>",
+      "caption": {
+        "en": "The CCM nonce is assembled from frame fields that are unique by construction, guaranteeing it is never repeated under one key (Clause 9.2.4, Figure 9-1).",
+        "zh": "CCM 的 nonce 由本质唯一的帧字段拼装而成，从而保证在同一密钥下绝不重复（第 9.2.4 章，图 9-1）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "9.3 Symmetric cryptography implementation maps the abstract CCM inputs onto the real frame types of this standard. 9.3.1 (data formats) is Table 9-1, which fixes the length and meaning of the security objects you see in frames: an Encrypted key (16 octets), an Integrity code (8 octets — the encrypted CCM tag), and Encrypted data (variable). 9.3.2 (cryptographic operations) is the per-frame recipe: for each protected frame type it states the Auth Data Length l(a) (data that is authenticated only) and the Enc Data Length l(m) (data that is both authenticated and encrypted). For secure beacons (Figure 9-3) everything is authenticated, l(m)=0. For most secure commands l(m)=0, except the Request Key Response and Distribute Key Request commands, where 16 octets (the key itself) are encrypted. For Secure Data frames (Figure 9-5) l(a)=14 and l(m) is the payload length; Secure Multi-Protocol Data frames (Figure 9-6) keep l(a)=14 but encrypt the Data ID + Data Header + Data Payload. In every case the input is taken in frame order, omitting the HCS, FCS, and integrity code (HCS = header check sequence, FCS = frame check sequence).",
+      "zh": "9.3 对称密码学实现把抽象的 CCM 输入映射到本标准的真实帧类型上。9.3.1（数据格式）即表 9-1，固定了帧中各安全对象的长度与含义：加密密钥（16 个八位组）、完整性码（8 个八位组，即加密后的 CCM 标签）、加密数据（可变）。9.3.2（密码操作）是逐帧的配方：对每种受保护帧类型，它给出认证数据长度 l(a)（仅被认证的数据）和加密数据长度 l(m)（既被认证又被加密的数据）。安全信标（图 9-3）全部仅认证，l(m)=0。多数安全命令 l(m)=0，但请求密钥响应命令与分发密钥请求命令例外，其中 16 个八位组（即密钥本身）被加密。安全数据帧（图 9-5）取 l(a)=14，l(m) 为负载长度；安全多协议数据帧（图 9-6）保持 l(a)=14，但加密 Data ID + Data Header + Data Payload。所有情形下，输入都按帧内顺序取，且省略 HCS、FCS 和完整性码（HCS = 头校验序列，FCS = 帧校验序列）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  N[Nonce + key K] --> AUTH[CBC-MAC over a then m]\n  A[Auth data a] --> AUTH\n  M[Plaintext m] --> AUTH\n  AUTH --> T[Integrity code T]\n  M --> ENC[CTR keystream XOR]\n  T --> ENC\n  ENC --> C[Ciphertext + encrypted U]",
+      "zh": "flowchart LR\n  N[Nonce + 密钥 K] --> AUTH[对 a 再对 m 做 CBC-MAC]\n  A[认证数据 a] --> AUTH\n  M[明文 m] --> AUTH\n  AUTH --> T[完整性码 T]\n  M --> ENC[CTR 密钥流 XOR]\n  T --> ENC\n  ENC --> C[密文 + 加密后的 U]"
+    },
+    {
+      "type": "prose",
+      "en": "9.4 CCM mode is the algorithm itself, now described generically. CCM is an 'authenticate-and-encrypt' mode for 128-bit block ciphers like AES, with two tunable parameters in Table 9-2: M (authentication field size, valid even values 4–16) and L (length field size, valid 2–8; L=1 is reserved). 9.4.1 (inputs) lists what the sender supplies (Table 9-3): a key K; a unique nonce N of 15−L octets (reusing a nonce under one key destroys security); the message m of l(m) octets; and additional authenticated data a — header/context that is authenticated but not encrypted and not part of the output.",
+      "zh": "9.4 CCM 模式即算法本身，此处以通用方式描述。CCM 是面向 AES 等 128 位分组密码的“认证并加密”模式，表 9-2 中有两个可调参数：M（认证字段大小，有效偶数值 4–16）和 L（长度字段大小，有效 2–8；L=1 保留）。9.4.1（输入）列出发送方需提供的内容（表 9-3）：密钥 K；长度为 15−L 个八位组的唯一 nonce N（同密钥下重用 nonce 会摧毁安全性）；长度为 l(m) 个八位组的消息 m；以及附加认证数据 a——被认证但不被加密、也不出现在输出中的头部/上下文。"
+    },
+    {
+      "type": "prose",
+      "en": "9.4.2 (data authentication) builds the integrity tag T with CBC-MAC. It forms a block sequence B0, B1, …, Bn (Figure 9-7). The first block is B0 = Flags || Nonce || l(m), where the 8-bit Flags = Reserved || Adata || M || L encode the parameters (L as L−1, M as (M−2)/2, Adata=1 when l(a)>0). Optional authentication blocks then encode l(a) (Table 9-4 gives the 2-, 6-, or 10-octet length encoding) followed by a, zero-padded to 16-octet blocks; then the message blocks encode m the same way. CBC-MAC runs X1 = E(K, B0), Xi+1 = E(K, Xi ⊕ Bi), and T = first-M-octets(Xn+1), where E() is AES encryption.",
+      "zh": "9.4.2（数据认证）用 CBC-MAC 构造完整性标签 T。它构造块序列 B0、B1、…、Bn（图 9-7）。首块为 B0 = Flags || Nonce || l(m)，其中 8 位的 Flags = Reserved || Adata || M || L 编码各参数（L 编码为 L−1，M 编码为 (M−2)/2，当 l(a)>0 时 Adata=1）。随后是可选的认证块，先编码 l(a)（表 9-4 给出 2、6 或 10 个八位组的长度编码）再跟上 a，并零填充为 16 个八位组的块；接着消息块以同样方式编码 m。CBC-MAC 计算 X1 = E(K, B0)，Xi+1 = E(K, Xi ⊕ Bi)，T = first-M-octets(Xn+1)，其中 E() 为 AES 加密。"
+    },
+    {
+      "type": "prose",
+      "en": "9.4.3 (encryption) protects the data with CTR (counter) mode. Key-stream blocks are Si = E(K, Ai), where Ai = Flags || Nonce || counter-i, and here Flags = Reserved || Null || L with the Null field set to zero so every Ai differs from B0. The message is encrypted by XORing m with S1, S2, … (Figure 9-10) — note S0 is not used for the message. Instead the tag is encrypted as U = T ⊕ first-M-octets(S0). 9.4.4 (output) is short: the final result c is the encrypted message followed by the encrypted authentication value U. 9.4.5 (decryption) reverses this — recompute the key stream to recover m and T, recompute the CBC-MAC, and check T; if T is wrong, the receiver reveals nothing except that T failed (never the plaintext or the computed value).",
+      "zh": "9.4.3（加密）用 CTR（计数器）模式保护数据。密钥流块为 Si = E(K, Ai)，其中 Ai = Flags || Nonce || 计数器-i，此处 Flags = Reserved || Null || L 且 Null 字段置零，使每个 Ai 都与 B0 不同。消息通过把 m 与 S1、S2、…（图 9-10）做 XOR 来加密——注意 S0 不用于加密消息。标签则加密为 U = T ⊕ first-M-octets(S0)。9.4.4（输出）很简短：最终结果 c 是加密后的消息，后跟加密后的认证值 U。9.4.5（解密）将其逆转——重算密钥流以恢复 m 和 T，重算 CBC-MAC 并校验 T；若 T 错误，接收方除“T 校验失败”这一事实外不泄露任何信息（绝不泄露明文或计算出的值）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why decrypt-then-verify-then-reveal matters: an attacker who sends garbled ciphertext should learn nothing from the receiver's reaction except 'rejected'. Leaking the recomputed T or partial plaintext would hand the attacker an oracle. 9.4.5 and 9.4.6 both insist the receiver verify the CBC-MAC before releasing any plaintext.",
+      "zh": "为什么“先解密、再校验、最后才释放”很重要：攻击者发送被篡改的密文时，应当只能从接收方的反应中得知“被拒绝”，别无其他。泄露重算出的 T 或部分明文等于给了攻击者一个预言机。9.4.5 与 9.4.6 都坚持接收方必须在释放任何明文之前校验 CBC-MAC。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every Clause 9 unit and where it lives",
+        "zh": "覆盖地图 — 第 9 章每个单元及其位置"
+      },
+      "en": "9.1 Modes for security — mode 0 (no symmetric security) vs mode 1 (secure, per Clause 8.2); symmetric ops undefined for mode 0. 9.2.1 Notational conventions — byte/bit order (MSB first, most-significant-octet first) and the || concatenation operator. 9.2.2 CCM combined encryption and data authentication — CBC-MAC integrity code over nonce+auth-data+plaintext, then CTR-mode encryption of plaintext and tag. 9.2.3 CCM parameters — AES (per 9.2.5), L=2 octets, M=8 octets, nonce per 9.2.4. 9.2.4 Nonce value — uniqueness rules, Secure Frame Counter increment on retransmit, Figure 9-1 nonce (SrcID/DestID/Time Token/Sec Frame Ctr/Frag Control) and Figure 9-2 aggregated variant (Secure Subframe Counter, Padding 0xCFCF). 9.2.5 AES encryption — NIST FIPS Pub 197 AES, 128-bit key and block. 9.3.1 Symmetric cryptography data formats — Table 9-1 (Encrypted key 16, Integrity code 8, Encrypted data variable). 9.3.2 Symmetric cryptographic operations — per-frame l(a)/l(m) for secure beacons (Fig 9-3), commands (Fig 9-4, key-bearing commands encrypt 16 octets), Secure Data (Fig 9-5, l(a)=14), Secure Multi-Protocol Data (Fig 9-6); input omits HCS/FCS/integrity code. 9.4.1 Inputs — K, nonce N (15−L octets), message m, additional authenticated data a (Tables 9-2, 9-3). 9.4.2 Data authentication — CBC-MAC, B0=Flags||Nonce||l(m), Flags=Reserved||Adata||M||L, auth/message block ordering (Figs 9-7/9-8/9-9, Table 9-4), T=first-M-octets(Xn+1). 9.4.3 Encryption — CTR key stream Si=E(K,Ai), Ai=Flags||Nonce||counter, U=T⊕first-M-octets(S0) (Fig 9-10). 9.4.4 Output — c = encrypted message || encrypted U. 9.4.5 Decryption — recover m and T, verify CBC-MAC, reveal nothing on failure. 9.4.6 Restrictions — ≤2^61 block-cipher ops per key; verify CBC-MAC before releasing plaintext. 9.4.7 List of symbols — Table 9-5 (a, Ai, Bi, c, K, L, m, M, N, …).",
+      "zh": "9.1 安全模式——模式 0（无对称安全）对模式 1（安全，依第 8.2 章）；模式 0 未定义对称操作。9.2.1 记法约定——字节/比特序（MSB 优先、最高有效八位组在先）与 || 拼接运算符。9.2.2 CCM 组合加密与数据认证——对 nonce+认证数据+明文做 CBC-MAC 完整性码，再以 CTR 模式加密明文与标签。9.2.3 CCM 参数——AES（依 9.2.5）、L=2 八位组、M=8 八位组、nonce 依 9.2.4。9.2.4 Nonce 取值——唯一性规则、重传时递增安全帧计数器、图 9-1 nonce（SrcID/DestID/Time Token/安全帧计数器/分片控制）与图 9-2 聚合变体（安全子帧计数器、填充 0xCFCF）。9.2.5 AES 加密——NIST FIPS Pub 197 的 AES，128 位密钥与分组。9.3.1 对称密码数据格式——表 9-1（加密密钥 16、完整性码 8、加密数据可变）。9.3.2 对称密码操作——各帧的 l(a)/l(m)：安全信标（图 9-3）、命令（图 9-4，含密钥命令加密 16 八位组）、安全数据（图 9-5，l(a)=14）、安全多协议数据（图 9-6）；输入省略 HCS/FCS/完整性码。9.4.1 输入——K、nonce N（15−L 八位组）、消息 m、附加认证数据 a（表 9-2、9-3）。9.4.2 数据认证——CBC-MAC，B0=Flags||Nonce||l(m)，Flags=Reserved||Adata||M||L，认证/消息块排序（图 9-7/9-8/9-9，表 9-4），T=first-M-octets(Xn+1)。9.4.3 加密——CTR 密钥流 Si=E(K,Ai)，Ai=Flags||Nonce||计数器，U=T⊕first-M-octets(S0)（图 9-10）。9.4.4 输出——c = 加密消息 || 加密后的 U。9.4.5 解密——恢复 m 与 T，校验 CBC-MAC，失败时不泄露任何信息。9.4.6 限制——每密钥分组密码操作 ≤2^61；释放明文前先校验 CBC-MAC。9.4.7 符号表——表 9-5（a、Ai、Bi、c、K、L、m、M、N 等）。",
+      "cite": {
+        "pdf_id": "802153-2016",
+        "pages": [
+          293,
+          294,
+          295,
+          296,
+          297,
+          298,
+          299,
+          300
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "9.4.6 (restrictions) sets the lifetime limits that keep the math sound: an implementation must cap the total data encrypted under one key — the sender ensures the combined number of block-cipher operations in CBC-MAC plus encryption never exceeds 2^61 (allowing close to 2^64 octets per key), and the recipient must verify the CBC-MAC before releasing any plaintext, destroying everything on failure. Finally, 9.4.7 (list of symbols) is the glossary, Table 9-5, defining every symbol used above — a (additional data), Ai (counter block), Bi (CBC-MAC input block), c (ciphertext, l(m)+M octets), K (key, ≥128 bits), L, m, M, N, and more — so the whole clause reads unambiguously.",
+      "zh": "9.4.6（限制）规定了保持数学可靠性的寿命上限：实现必须限制单密钥下加密的数据总量——发送方确保 CBC-MAC 加加密中分组密码操作的总数永不超过 2^61（允许每密钥接近 2^64 个八位组），且接收方必须在释放任何明文之前校验 CBC-MAC，失败时销毁一切。最后，9.4.7（符号表）即术语表（表 9-5），定义了上文用到的每个符号——a（附加数据）、Ai（计数器块）、Bi（CBC-MAC 输入块）、c（密文，l(m)+M 个八位组）、K（密钥，≥128 位）、L、m、M、N 等——使整章读来毫无歧义。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        293,
+        294,
+        295,
+        296
+      ],
+      "note": "9.1 modes; 9.2 building blocks (notation, CCM mechanism, parameters, nonce, AES); 9.3 implementation (data formats Table 9-1, per-frame operations Figs 9-3..9-6); 9.4 intro and 9.4.1 inputs (Tables 9-2/9-3)."
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        297,
+        298,
+        299,
+        300
+      ],
+      "note": "9.4.2 CBC-MAC authentication (B0, Flags, Table 9-4, Figs 9-7..9-9); 9.4.3 CTR encryption (Fig 9-10, U); 9.4.4 output; 9.4.5 decryption; 9.4.6 restrictions (2^61 limit); 9.4.7 list of symbols (Table 9-5)."
+    }
+  ],
+  "covers": [
+    "802153-2016:9.1",
+    "802153-2016:9.2.1",
+    "802153-2016:9.2.2",
+    "802153-2016:9.2.3",
+    "802153-2016:9.2.4",
+    "802153-2016:9.2.5",
+    "802153-2016:9.3.1",
+    "802153-2016:9.3.2",
+    "802153-2016:9.4.1",
+    "802153-2016:9.4.2",
+    "802153-2016:9.4.3",
+    "802153-2016:9.4.4",
+    "802153-2016:9.4.5",
+    "802153-2016:9.4.6",
+    "802153-2016:9.4.7"
+  ],
+  "track": "pan-hr-wpan"
+}

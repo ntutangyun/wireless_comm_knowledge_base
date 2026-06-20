@@ -1,0 +1,174 @@
+{
+  "id": "pan-optical-06",
+  "title": {
+    "en": "Clause 8 (PHY specification)",
+    "zh": "第 8 章（物理层规范）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 8 is where IEEE 802.15.7 (the standard behind Visible Light Communication, or VLC, and LiFi) defines its PHY — the physical layer that actually turns bits into flickers of light and back again. The clause opens with an Overview (8.1) listing what the PHY is responsible for: switching the optical transceiver on and off, computing a Wavelength Quality Indicator (WQI) for received frames, selecting a channel, sending and receiving data, error correction, and synchronization. Importantly, this clause specifies only the requirements common to all the PHYs — the detailed modulation maths lives in later clauses.",
+      "zh": "第 8 章是 IEEE 802.15.7（可见光通信 VLC 与 LiFi 背后的标准）定义物理层（PHY）的地方——物理层负责把比特真正变成光的闪烁，再变回比特。本章以概述（8.1）开篇，列出 PHY 的职责：开关光收发器、为接收帧计算波长质量指示（WQI）、选择信道、收发数据、纠错以及同步。需要注意的是，本章只规定所有 PHY 共有的要求，详细的调制数学留给后续章节。"
+    },
+    {
+      "type": "prose",
+      "en": "Operating modes (8.2) give the standard six interchangeable PHY families, named PHY I through PHY VI. A compliant device must implement at least one of them. PHY I targets short outdoor frames and uses concatenated Reed-Solomon (RS) plus convolutional coding (CC). PHY II and PHY III add only RS coding; PHY I and PHY II also add a Run-Length-Limited (RLL) line code for DC balance, clock recovery, and flicker control. The three classic modulations are OOK (On-Off Keying — light on/off), VPPM (Variable Pulse Position Modulation — pulse position carries the bit while pulse width sets brightness), and CSK (Color Shift Keying — data rides on color). PHY IV-VI are the camera/optical-camera-communication families. The MAC picks the optical clock rate during device discovery; the preamble is sent at that clock rate with no coding, and the rate never changes mid-frame.",
+      "zh": "工作模式（8.2）给出六个可互换的 PHY 家族，命名为 PHY I 到 PHY VI。合规设备必须至少实现其中之一。PHY I 面向室外短帧，使用里德-所罗门（RS）外码加卷积码（CC）的级联编码；PHY II 与 PHY III 仅增加 RS 编码；PHY I 与 PHY II 还加入游程受限（RLL）线路编码以实现直流平衡、时钟恢复和抑制闪烁。三种经典调制是 OOK（通断键控——光亮/灭）、VPPM（可变脉冲位置调制——脉冲位置承载比特，脉冲宽度决定亮度）和 CSK（色移键控——数据搭载在颜色上）。PHY IV 至 VI 是基于摄像头的光学摄像通信家族。MAC 在设备发现期间选定光时钟速率；前导码以该速率发送且不带编码，速率在一帧内绝不改变。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy mental anchor: OOK under dimming gives constant range but variable data rate (it inserts 'compensation time'), while VPPM under dimming gives constant data rate but variable range (it adjusts pulse width). That trade-off is the heart of why light dimming and data both live in this PHY.",
+      "zh": "一个好记的锚点：调光下的 OOK 提供恒定通信距离但数据率可变（通过插入“补偿时间”），而调光下的 VPPM 提供恒定数据率但通信距离可变（通过调整脉冲宽度）。这一取舍正是“调光”与“数据”同时存在于该 PHY 的根本原因。"
+    },
+    {
+      "type": "prose",
+      "en": "The General requirements (8.3) are the shared rules every PHY obeys. The Wavelength band plan (8.3.1) covers the optical spectrum from 10,000 nm down to 190 nm (long-wave infrared to far ultraviolet), split into eight coded bands carried in the PHY header. Optical mapping (8.3.2) simply requires that a high switching level means high light intensity and a low level means lower intensity — the extinction ratio is left to the implementer. When several light sources transmit together (8.3.3), their digital inputs must be synchronized and their intensity spread during rise/fall must stay within 12.5% of the clock period.",
+      "zh": "通用要求（8.3）是每个 PHY 都遵守的共同规则。波长频段规划（8.3.1）覆盖从 10000 nm 到 190 nm 的光谱（长波红外到远紫外），划分为八个编码频段，由 PHY 头携带。光学映射（8.3.2）只要求高电平对应高光强、低电平对应低光强——消光比由实现者自定。当多个光源同时发射（8.3.3）时，它们的数字输入必须同步，且在上升/下降时间内的光强离散度不得超过时钟周期的 12.5%。"
+    },
+    {
+      "type": "prose",
+      "en": "Timing rules round out 8.3. Minimum LIFS/SIFS/RIFS periods (8.3.4) define the long, short, and reduced interframe spaces (gaps between frames); for PHY I-III these are fixed in optical-clock units once the clock rate is negotiated, while PHY IV-VI set them all to zero. TX-to-RX (8.3.5) and RX-to-TX (8.3.6) turnaround times bound how quickly a device flips between transmit and receive at the air interface. The Transmit data clock frequency tolerance (8.3.7) is +/- 20 ppm, relaxed to +/- 500 ppm for the MPM (Mirror Pulse Modulation) mode.",
+      "zh": "时序规则补全了 8.3。最小 LIFS/SIFS/RIFS 周期（8.3.4）定义了长、短、缩减三种帧间隔（帧与帧之间的间隙）；对 PHY I-III，一旦协商好时钟速率，这些值以光时钟为单位固定，而 PHY IV-VI 把它们全设为零。TX 到 RX（8.3.5）和 RX 到 TX（8.3.6）转换时间限定了设备在空口处发收切换的速度。发送数据时钟频率容差（8.3.7）为 ±20 ppm，对 MPM（镜像脉冲调制）模式放宽至 ±500 ppm。"
+    },
+    {
+      "type": "prose",
+      "en": "The clause closes its general section with link-quality and channel-sensing rules. The Wavelength Quality Indicator (8.3.8) characterizes a received frame's strength or quality, reported to the MAC for every frame as an integer from 0x00 to 0xff (at least seven distinct values, plus the band-plan identifier from the header). 8.3.8.1 covers WQI for OOK and VPPM; 8.3.8.2 covers CSK, where the device estimates the per-color SNR (signal-to-noise ratio) after clock-and-data recovery, monotonically rising with signal strength. Clear Channel Assessment (8.3.9) lets the PHY sense whether the medium is busy via three modes: energy above threshold (Mode 1), carrier sense only (Mode 2), or both together (Mode 3).",
+      "zh": "本章在通用部分以链路质量与信道侦听规则收尾。波长质量指示（8.3.8）刻画接收帧的强度或质量，每帧都以 0x00 到 0xff 的整数上报给 MAC（至少七个不同取值，并附带头部的频段规划标识）。8.3.8.1 涵盖 OOK 与 VPPM 的 WQI；8.3.8.2 涵盖 CSK，设备在时钟与数据恢复后估计各颜色的信噪比（SNR），其随信号强度单调上升。空闲信道评估（8.3.9）让 PHY 通过三种模式判断介质是否繁忙：能量超阈值（模式 1）、仅载波侦听（模式 2）、或两者结合（模式 3）。"
+    },
+    {
+      "type": "prose",
+      "en": "Data modes (8.4) describe how PPDUs (PHY Protocol Data Units) are packaged into a transmission. Single mode sends one PPDU per frame — ideal for tiny exchanges like acknowledgments, association, or beacons. Packed mode crams multiple PPDUs to the same destination into one frame, saving repeated MAC/PHY headers for higher efficiency. Burst mode uses a shortened preamble (no fast-locking pattern after the first frame) and the reduced RIFS between frames, again boosting throughput. A fourth special case, dimmed-OOK mode, carries data while honoring dimming requests in conjunction with OOK.",
+      "zh": "数据模式（8.4）描述如何把 PPDU（PHY 协议数据单元）打包进一次传输。单一模式每帧发送一个 PPDU——适合确认、关联、信标等极短交互。打包模式把发往同一目的地的多个 PPDU 装进一帧，省去重复的 MAC/PHY 头以提升效率。突发模式使用缩短的前导码（首帧之后不再发送快速锁定序列）并在帧间使用更短的 RIFS，再次提升吞吐。第四种特例是调光 OOK 模式，在配合 OOK 满足调光请求的同时承载数据。"
+    },
+    {
+      "type": "prose",
+      "en": "Dimming and flicker mitigation (8.5) is what makes light both a data carrier and a usable lamp. A compliant device must honor every dimming request from the upper layer (signaled via the phyDim PHY attribute). 8.5.1 handles dimming during idle time: 8.5.1.1 inserts an idle pattern or compensation time (light fully on/off, no data) between frames, and 8.5.1.2 uses visibility patterns — eleven base brightness patterns in 10% steps, averaged over time to reach fine 0.1% resolution. 8.5.2 handles dimming during data transmission, choosing among compensation-symbol insertion, pulse-width, amplitude, and out-of-band dimming depending on the modulation. 8.5.3 explains flicker mitigation split into intraframe (within a frame, via dimmed-OOK and RLL coding) and interframe (across frames, via idle/visibility patterns and constant average power). 8.5.4 adds optional CSK color stabilization, a transmitter control loop that keeps the color constellation's center of gravity fixed.",
+      "zh": "调光与闪烁抑制（8.5）让光既是数据载体又是可用的照明。合规设备必须满足上层的每个调光请求（通过 phyDim 物理层属性发出）。8.5.1 处理空闲期调光：8.5.1.1 在帧间插入空闲图案或补偿时间（光全亮/全灭、不带数据），8.5.1.2 使用可见性图案——十一种以 10% 为步长的基础亮度图案，通过时间平均达到精细的 0.1% 分辨率。8.5.2 处理数据传输期调光，依调制方式在补偿符号插入、脉冲宽度、幅度和带外调光之间选择。8.5.3 阐述闪烁抑制，分为帧内（通过调光 OOK 与 RLL 编码）和帧间（通过空闲/可见性图案与恒定平均功率）。8.5.4 增加可选的 CSK 颜色稳定，一个发射端控制环，使颜色星座的重心保持固定。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 660 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><text x=\"10\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">SHR</text><text x=\"230\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">PHR</text><text x=\"470\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">PHY payload</text><rect x=\"10\" y=\"30\" width=\"150\" height=\"50\"/><text x=\"22\" y=\"60\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Preamble 8.6.1</text><rect x=\"160\" y=\"30\" width=\"130\" height=\"50\"/><text x=\"170\" y=\"60\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">PHY Header 8.6.2</text><rect x=\"290\" y=\"30\" width=\"80\" height=\"50\"/><text x=\"305\" y=\"60\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">HCS 8.6.3</text><rect x=\"370\" y=\"30\" width=\"130\" height=\"50\"/><text x=\"378\" y=\"55\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Optional</text><text x=\"378\" y=\"70\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">fields 8.6.4</text><rect x=\"500\" y=\"30\" width=\"150\" height=\"50\"/><text x=\"515\" y=\"60\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">PSDU 8.6.5</text></svg>",
+      "caption": {
+        "en": "The PPDU layout from Figure 124 of the standard: a synchronization header (SHR = Preamble), a PHY header (PHR = PHY Header + HCS), optional fields, and the payload (PSDU).",
+        "zh": "标准图 124 中的 PPDU 布局：同步头（SHR = 前导码）、物理层头（PHR = PHY 头 + HCS）、可选字段，以及净荷（PSDU）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The PPDU format (8.6) is the on-the-air frame structure, drawn above. The Preamble field (8.6.1) lets the receiver lock its optical clock: for PHY I-III it is a Fast Locking Pattern (FLP, at least 64 alternating 1s and 0s) followed by four repetitions of a 15-bit Topology Dependent Pattern (TDP) — different TDPs mark peer-to-peer, star, broadcast, or topology-independent links, and the pattern is inverted every other repetition for DC balance. The camera-based PHY IV-VI use modulation-specific start-frame delimiters instead. The PHY Header field (8.6.2) for PHY I-III carries Burst Mode, Channel Number, MCS ID (Modulation and Coding Scheme identifier), PSDU Length, and a Dimmed-OOK Extension bit; PHY IV-VI configure their headers through the PHY PIB rather than over the air.",
+      "zh": "PPDU 格式（8.6）即上图所示的空口帧结构。前导码字段（8.6.1）让接收端锁定光时钟：对 PHY I-III，它是快速锁定序列（FLP，至少 64 个交替的 1 和 0），后接某个 15 比特拓扑相关序列（TDP）的四次重复——不同 TDP 标记点对点、星型、广播或拓扑无关链路，且每隔一次重复就取反以保持直流平衡。基于摄像头的 PHY IV-VI 则改用与调制相关的帧起始定界符。PHY I-III 的 PHY 头字段（8.6.2）携带突发模式、信道号、MCS ID（调制与编码方案标识）、PSDU 长度，以及一个调光 OOK 扩展位；PHY IV-VI 通过 PHY PIB 而非空口配置其头部。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Preamble: FLP + 4x TDP] --> B[PHY Header: MCS, length...]\n  B --> C[HCS: CRC-16]\n  C --> D[Optional fields]\n  D --> E[PSDU + FCS + tail bits]",
+      "zh": "flowchart LR\n  A[前导码: FLP + 4xTDP] --> B[PHY 头: MCS、长度...]\n  B --> C[HCS: CRC-16]\n  C --> D[可选字段]\n  D --> E[PSDU + FCS + 尾比特]"
+    },
+    {
+      "type": "prose",
+      "en": "The header is protected by the HCS field (8.6.3) — a 2-octet CRC-16 (Cyclic Redundancy Check) header check sequence, registers preset to all ones (PHY IV/VI variants use generator polynomial 0x1021). The Optional fields (8.6.4) appear only when needed: six Tail Bits when PHY I runs at 200 kHz, then Compensation/Resync/Subframe Length plus an OFCS (Optional Field Check Sequence) when the dimmed-OOK bit is set, and a Channel Estimation Sequence for PHY III. Finally the PSDU field (8.6.5) carries the actual variable-length payload, with the FCS (Frame Check Sequence) appended for any non-zero payload and six trailing zero tail bits added at the lower PHY I rates; camera PHYs mark the payload's end with another start-frame delimiter.",
+      "zh": "头部由 HCS 字段（8.6.3）保护——一个 2 字节的 CRC-16（循环冗余校验）头校验序列，寄存器预置为全 1（PHY IV/VI 变体使用生成多项式 0x1021）。可选字段（8.6.4）仅在需要时出现：PHY I 运行于 200 kHz 时加六个尾比特，调光 OOK 位置位时加补偿/重同步/子帧长度及 OFCS（可选字段校验序列），PHY III 则加信道估计序列。最后，PSDU 字段（8.6.5）承载真正的可变长净荷，任何非零净荷都会附加 FCS（帧校验序列），在 PHY I 的较低速率下还追加六个零尾比特；摄像头类 PHY 用另一个帧起始定界符标记净荷结束。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every Clause 8 unit and where it lives",
+        "zh": "覆盖地图：第 8 章每个单元及其位置"
+      },
+      "en": "Overview and modes: 8.1 lists the PHY's six duties; 8.2 defines PHY I-VI, their RS/CC/RLL coding, and the OOK/VPPM/CSK dimming trade-off. General requirements: 8.3.1 wavelength band plan (190 nm to 10,000 nm, 8 coded bands); 8.3.2 optical mapping (high level = high intensity); 8.3.3 max error tolerance for multiple sources (12.5% of clock period); 8.3.4 minimum LIFS/SIFS/RIFS; 8.3.5 TX-to-RX turnaround; 8.3.6 RX-to-TX turnaround; 8.3.7 clock tolerance (+/-20 ppm, +/-500 ppm for MPM); 8.3.8 WQI (0x00-0xff, >=7 values); 8.3.9 CCA (3 modes). Data modes: 8.4 single / packed / burst / dimmed-OOK. Dimming and flicker: 8.5.1 idle-time dimming (8.5.1.1 idle pattern/compensation, 8.5.1.2 visibility patterns at 10% steps to 0.1% resolution); 8.5.2 data-time dimming (compensation/pulse-width/amplitude/out-of-band per Table 83); 8.5.3 flicker mitigation (intraframe vs interframe); 8.5.4 CSK color stabilization control loop. PPDU format: 8.6.1 Preamble (FLP + 4x 15-bit TDP, topology-dependent); 8.6.2 PHY Header (Burst/Channel/MCS ID/PSDU Length/Dimmed-OOK Extension); 8.6.3 HCS (CRC-16); 8.6.4 Optional fields (tail bits, compensation/resync/subframe length, OFCS, channel estimation); 8.6.5 PSDU (variable payload + FCS + tail bits).",
+      "zh": "概述与模式：8.1 列出 PHY 的六项职责；8.2 定义 PHY I-VI 及其 RS/CC/RLL 编码与 OOK/VPPM/CSK 调光取舍。通用要求：8.3.1 波长频段规划（190 nm 至 10000 nm，8 个编码频段）；8.3.2 光学映射（高电平=高光强）；8.3.3 多光源最大误差容限（时钟周期的 12.5%）；8.3.4 最小 LIFS/SIFS/RIFS；8.3.5 TX 到 RX 转换；8.3.6 RX 到 TX 转换；8.3.7 时钟容差（±20 ppm，MPM 为 ±500 ppm）；8.3.8 WQI（0x00-0xff，至少 7 个取值）；8.3.9 CCA（3 种模式）。数据模式：8.4 单一/打包/突发/调光 OOK。调光与闪烁：8.5.1 空闲期调光（8.5.1.1 空闲图案/补偿，8.5.1.2 可见性图案以 10% 步长达到 0.1% 分辨率）；8.5.2 数据期调光（按表 83 选用补偿/脉宽/幅度/带外）；8.5.3 闪烁抑制（帧内与帧间）；8.5.4 CSK 颜色稳定控制环。PPDU 格式：8.6.1 前导码（FLP + 4 次 15 比特 TDP，与拓扑相关）；8.6.2 PHY 头（突发/信道/MCS ID/PSDU 长度/调光 OOK 扩展）；8.6.3 HCS（CRC-16）；8.6.4 可选字段（尾比特、补偿/重同步/子帧长度、OFCS、信道估计）；8.6.5 PSDU（可变净荷 + FCS + 尾比特）。",
+      "cite": {
+        "pdf_id": "802157-2018",
+        "pages": [
+          233,
+          234,
+          235,
+          236,
+          237,
+          238,
+          239,
+          240,
+          241,
+          246,
+          247,
+          248,
+          249,
+          253,
+          257,
+          258,
+          260
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        233,
+        234,
+        235
+      ],
+      "note": "8.1 Overview and 8.2 Operating modes (PHY I-VI, coding, OOK/VPPM/CSK dimming trade-off)"
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        236,
+        237,
+        238,
+        239
+      ],
+      "note": "8.3.1-8.3.9 General requirements: band plan, optical mapping, multi-source tolerance, IFS, turnaround, clock tolerance, WQI, CCA"
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        240,
+        241,
+        242,
+        246,
+        247
+      ],
+      "note": "8.4 Data modes; 8.5.1-8.5.4 dimming and flicker mitigation"
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        248,
+        249,
+        253,
+        257,
+        258,
+        260
+      ],
+      "note": "8.6.1-8.6.5 PPDU format: preamble, PHY header, HCS, optional fields, PSDU"
+    }
+  ],
+  "covers": [
+    "802157-2018:8.1",
+    "802157-2018:8.2",
+    "802157-2018:8.3.1",
+    "802157-2018:8.3.2",
+    "802157-2018:8.3.3",
+    "802157-2018:8.3.4",
+    "802157-2018:8.3.5",
+    "802157-2018:8.3.6",
+    "802157-2018:8.3.7",
+    "802157-2018:8.3.8",
+    "802157-2018:8.3.9",
+    "802157-2018:8.4",
+    "802157-2018:8.5.1",
+    "802157-2018:8.5.2",
+    "802157-2018:8.5.3",
+    "802157-2018:8.5.4",
+    "802157-2018:8.6.1",
+    "802157-2018:8.6.2",
+    "802157-2018:8.6.3",
+    "802157-2018:8.6.4",
+    "802157-2018:8.6.5"
+  ],
+  "track": "pan-optical"
+}

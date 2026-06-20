@@ -1,0 +1,132 @@
+{
+  "id": "pan-optical-09",
+  "title": {
+    "en": "PHY V: Camera-Ready Modulation (RS-FSK, CM-FSK, C-OOK, MPM)",
+    "zh": "PHY V：面向摄像头的调制方案（RS-FSK、CM-FSK、C-OOK、MPM）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "PHY V is the variant of IEEE 802.15.7 designed to be received by an ordinary rolling-shutter camera (the kind in a smartphone), rather than a fast photodiode. Because cameras sample slowly — often just 30 frames per second — PHY V uses modulation schemes that survive low, sometimes uneven, sampling rates. Clause 14 specifies four such schemes. This lesson walks through each one intuitively, defines every acronym on first use, and ends with a coverage map naming the exact subclauses.",
+      "zh": "PHY V 是 IEEE 802.15.7 中专为普通卷帘快门摄像头（例如智能手机里的那种）接收而设计的物理层变体，而非依赖高速光电二极管。由于摄像头采样很慢——往往只有每秒 30 帧——PHY V 采用了能够在低采样率、甚至不均匀采样率下仍可解码的调制方案。第 14 章规定了四种这样的方案。本课将逐一直观讲解，每个缩写首次出现时都给出定义，最后用一张覆盖图列出确切的子条款编号。"
+    },
+    {
+      "type": "prose",
+      "en": "First scheme: RS-FSK (Rolling-Shutter Frequency-Shift Keying). A rolling-shutter camera reads its sensor row by row, so a single flickering LED paints horizontal stripes across one photo — bright and dark bands whose spacing depends on the flicker frequency. RS-FSK encodes data in that frequency: different data symbols use different LED on/off frequencies, which the camera sees as stripes of different widths. The receiver decodes by measuring stripe width.",
+      "zh": "第一种方案是 RS-FSK（Rolling-Shutter Frequency-Shift Keying，卷帘快门频移键控）。卷帘快门摄像头逐行读取传感器，因此一只闪烁的 LED 会在一张照片上画出水平条纹——明暗相间的条带，其间距取决于闪烁频率。RS-FSK 把数据编码在该频率里：不同的数据符号使用不同的 LED 开关频率，摄像头看到的就是宽度不同的条纹。接收端通过测量条纹宽度来解码。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 14.1.1 (Transmitted signal frequency) fixes the preamble — the known pattern that marks the start of a PPDU (PHY Protocol Data Unit, the over-the-air packet) — at 2.2 kHz, while recommending data frequencies between 500 Hz and 1.4 kHz (corresponding to stripe widths from about 23 to 100 pixels). Clause 14.1.2 (Symbol duration) sets each symbol to last exactly one camera frame; since most cameras shoot 30 fps, the default symbol duration is 1/30 of a second.",
+      "zh": "条款 14.1.1（Transmitted signal frequency，发送信号频率）把前导码——标记 PPDU（PHY Protocol Data Unit，物理层协议数据单元，即空口数据包）起始的已知图案——固定在 2.2 kHz，同时建议数据频率取 500 Hz 到 1.4 kHz 之间（对应约 23 到 100 像素的条纹宽度）。条款 14.1.2（Symbol duration，符号时长）规定每个符号正好持续一个摄像头帧；由于多数摄像头以 30 fps 拍摄，默认符号时长即为 1/30 秒。"
+    },
+    {
+      "type": "prose",
+      "en": "Second scheme: CM-FSK (Camera M-ary Frequency-Shift Keying), specified in Clause 14.2. Here many frequencies — typically 32 or 64 — each stand for a group of bits, so one frequency symbol carries several bits at once. Clause 14.2.1 (Reference architecture) describes the pipeline: insert clock bits, map bits to a frequency (optionally to a phase too), then run an IFFT (Inverse Fast Fourier Transform) to turn the chosen frequency into a waveform that drives the LED. Clause 14.2.2 (Asynchronous bit(s) insertion) prepends one or more Ab (Asynchronous bits) to each data block; one Ab supports decoding when the camera frame rate drifts, while more than one helps the receiver notice symbols it missed.",
+      "zh": "第二种方案是 CM-FSK（Camera M-ary Frequency-Shift Keying，摄像头多进制频移键控），由条款 14.2 规定。这里使用许多频率——通常是 32 或 64 个——每个频率代表一组比特，因此一个频率符号能一次携带多个比特。条款 14.2.1（Reference architecture，参考架构）描述了整条流水线：插入时钟比特，把比特映射到某个频率（可选地也映射到某个相位），再做一次 IFFT（Inverse Fast Fourier Transform，快速傅里叶逆变换），把所选频率转换成驱动 LED 的波形。条款 14.2.2（Asynchronous bit(s) insertion，异步比特插入）在每个数据块前插入一个或多个 Ab（Asynchronous bits，异步比特）；一个 Ab 可在摄像头帧率漂移时支持解码，多个 Ab 则帮助接收端察觉漏掉的符号。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 14.2.3 (CM-FSK encoder) then maps each block of bits to one of the available frequencies. In the 32-FSK case (14.2.3.2), a packet of one Ab plus four data bits picks one of 32 data frequencies f1–f32, with two extra frequencies (f0 and f33) reserved as preamble markers and a fixed separation Δf between neighbouring frequencies. The 64-FSK case (14.2.3.3) doubles the band, packing one Ab plus five data bits into one of 64 frequencies for higher capacity. A hybrid mode (14.2.3.4) can additionally use 2-PSK (2-ary Phase-Shift Keying) across a pair of LEDs, and an optional outer FEC (Forward Error Correction) using RS(15,11) — a Reed–Solomon code — can protect the header and payload (14.2.3.5).",
+      "zh": "条款 14.2.3（CM-FSK encoder，CM-FSK 编码器）随后把每个比特块映射到某个可用频率。在 32-FSK 情形（14.2.3.2）中，一包由一个 Ab 加四个数据比特组成，从 32 个数据频率 f1–f32 中选取一个，另有两个频率（f0 和 f33）保留作前导标记，相邻频率之间有固定间隔 Δf。64-FSK 情形（14.2.3.3）把频带扩大一倍，将一个 Ab 加五个数据比特装入 64 个频率之一，以获得更高容量。混合模式（14.2.3.4）还可在一对 LED 间额外使用 2-PSK（2-ary Phase-Shift Keying，二进制相移键控）；并可选用以 RS(15,11)——一种 Reed–Solomon 里德-所罗门码——构成的外层 FEC（Forward Error Correction，前向纠错）来保护包头和净荷（14.2.3.5）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 480 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"40\" width=\"70\" height=\"36\"/><text x=\"45\" y=\"63\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Ab + data</text><rect x=\"90\" y=\"40\" width=\"90\" height=\"36\"/><text x=\"135\" y=\"63\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">bits→freq</text><rect x=\"190\" y=\"40\" width=\"60\" height=\"36\"/><text x=\"220\" y=\"63\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">IFFT</text><rect x=\"260\" y=\"40\" width=\"60\" height=\"36\"/><text x=\"290\" y=\"63\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">LED</text><rect x=\"360\" y=\"40\" width=\"110\" height=\"36\"/><text x=\"415\" y=\"63\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">camera RX</text><line x1=\"80\" y1=\"58\" x2=\"90\" y2=\"58\"/><line x1=\"180\" y1=\"58\" x2=\"190\" y2=\"58\"/><line x1=\"250\" y1=\"58\" x2=\"260\" y2=\"58\"/><line x1=\"320\" y1=\"58\" x2=\"360\" y2=\"58\" stroke-dasharray=\"4 3\"/><text x=\"340\" y=\"34\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">light</text></svg>",
+      "caption": {
+        "en": "CM-FSK reference architecture (Clause 14.2.1): asynchronous bits and data bits are mapped to a frequency, an IFFT shapes the LED waveform, and an ordinary camera samples the light.",
+        "zh": "CM-FSK 参考架构（条款 14.2.1）：异步比特与数据比特映射到某个频率，IFFT 整形出 LED 波形，普通摄像头对光进行采样。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Third scheme: C-OOK (Camera On-Off Keying), in Clause 14.3 — the simplest idea, where light is switched fully on or off per symbol. Clause 14.3.1 (Reference architecture) and 14.3.2 (C-OOK encoder) define the pipeline. Because cameras have blind gaps between frames, each data sub-packet is repeated several times so nothing is lost (14.3.2.1). Two key tools keep the picture readable: RLL (Run-Length Limited) coding — using Manchester or 4B6B codes — holds the LED's average brightness at 50% so it neither looks dim nor flickers (14.3.2.2); and Ab insertion places matching asynchronous bits at the start and end of the payload to anchor decoding (14.3.2.3). FEC (14.3.2.4) is layered: an inner Hamming(8,4) or Hamming(15,11) code protects the payload, while an outer RS(15,11) code plus a block interleaver protects the header and PSDU (PHY Service Data Unit, the payload handed down from the MAC).",
+      "zh": "第三种方案是 C-OOK（Camera On-Off Keying，摄像头通断键控），见条款 14.3——最朴素的思路，即每个符号让光全开或全关。条款 14.3.1（Reference architecture，参考架构）与 14.3.2（C-OOK encoder，C-OOK 编码器）定义了流水线。由于摄像头在帧与帧之间存在盲区，每个数据子包都会重复若干次以免丢失（14.3.2.1）。有两个关键手段保证画面可读：RLL（Run-Length Limited，游程长度受限）编码——采用曼彻斯特码或 4B6B 码——把 LED 的平均亮度维持在 50%，使其既不显暗也不闪烁（14.3.2.2）；Ab 插入则在净荷的开头和结尾放置相同的异步比特以锚定解码（14.3.2.3）。FEC（14.3.2.4）是分层的：内层用 Hamming(8,4) 或 Hamming(15,11) 码保护净荷，外层用 RS(15,11) 码加块交织器保护包头和 PSDU（PHY Service Data Unit，物理层服务数据单元，即 MAC 层下递的净荷）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why 50% average brightness keeps coming up: a camera-VLC (Visible Light Communication) link is also a lamp. RLL coding and the bright/dark balancing in these schemes ensure the human eye sees steady, comfortable illumination even while data streams through the same light. Communication never costs you good lighting.",
+      "zh": "为什么 50% 平均亮度反复出现：摄像头 VLC（Visible Light Communication，可见光通信）链路本身也是一盏灯。这些方案中的 RLL 编码和明暗平衡保证了即便数据正通过同一束光传输，人眼看到的仍是稳定、舒适的照明。通信绝不以牺牲良好照明为代价。"
+    },
+    {
+      "type": "prose",
+      "en": "Fourth scheme: MPM (Multiple Pulse Modulation), in Clause 14.4. MPM wraps the MPDU (MAC Protocol Data Unit, the frame from the MAC layer) with framing fields and converts it into a structured PLCP (Physical Layer Convergence Procedure) packet: a Header, a Front Payload, a Center, a Back Payload, and a Footer. It runs in two modes selected by phyMpmMode — MPWM (Multiple Pulse Width Modulation) and MPPM (Multiple Pulse Position Modulation). Two small fields organise the stream: the Sequence Number subfield (14.4.1), sent least-significant-bit first and able to use a fixed or dynamically-sized length, and the 1-bit Last Sequence Flag subfield (14.4.2) that marks the final PPDU.",
+      "zh": "第四种方案是 MPM（Multiple Pulse Modulation，多脉冲调制），见条款 14.4。MPM 把 MPDU（MAC Protocol Data Unit，MAC 层数据单元，即来自 MAC 层的帧）加上成帧字段，转换成结构化的 PLCP（Physical Layer Convergence Procedure，物理层会聚过程）包：包头（Header）、前净荷（Front Payload）、中段（Center）、后净荷（Back Payload）和包尾（Footer）。它由 phyMpmMode 选择两种模式之一运行——MPWM（Multiple Pulse Width Modulation，多脉冲宽度调制）和 MPPM（Multiple Pulse Position Modulation，多脉冲位置调制）。有两个小字段负责组织数据流：序号子字段（14.4.1），按最低位优先发送，长度可固定也可动态变化；以及 1 比特的末序标志子字段（14.4.2），用来标记最后一个 PPDU。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 500 80\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"6\" y=\"28\" width=\"70\" height=\"30\"/><text x=\"41\" y=\"47\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Header</text><rect x=\"76\" y=\"28\" width=\"100\" height=\"30\"/><text x=\"126\" y=\"47\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Front Payload</text><rect x=\"176\" y=\"28\" width=\"70\" height=\"30\"/><text x=\"211\" y=\"47\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Center</text><rect x=\"246\" y=\"28\" width=\"100\" height=\"30\"/><text x=\"296\" y=\"47\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Back Payload</text><rect x=\"346\" y=\"28\" width=\"70\" height=\"30\"/><text x=\"381\" y=\"47\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Footer</text><text x=\"211\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">MPM PLCP packet</text></svg>",
+      "caption": {
+        "en": "MPM PLCP structure (Clause 14.4): the MPDU plus Sequence Number and Last Sequence Flag become five subfields — Header, Front Payload, Center, Back Payload, Footer.",
+        "zh": "MPM PLCP 结构（条款 14.4）：MPDU 加上序号与末序标志后变为五个子字段——包头、前净荷、中段、后净荷、包尾。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 14.4.3 (PLCP Header/Center/Footer subfields) gives these markers distinctive symbol patterns so the receiver can lock onto packet boundaries: in MPWM mode each consists of four symbols (e.g. the Header is a, a−10, a, a) and in MPPM mode each consists of three (e.g. the Header is a+10, a, a), where a, b, c are PIB-configured base symbols. Clause 14.4.4 (Front and Back Payload subfields) carries the actual data: the input bit sequence is mapped into N symbols using parameters Modd, Meven, W1 (offset) and W2 (unit), with the Front and Back payloads computed as complementary values so brightness stays balanced. Finally, Clause 14.4.5 (MPWM/MPPM waveform) requires every symbol to be a bright or dark state, with the 10%-to-90% brightness transition completing in under 5 microseconds for clean edges.",
+      "zh": "条款 14.4.3（PLCP Header/Center/Footer subfields，PLCP 包头/中段/包尾子字段）赋予这些标记独特的符号图案，使接收端能锁定包边界：MPWM 模式下每个由四个符号组成（例如包头为 a、a−10、a、a），MPPM 模式下每个由三个符号组成（例如包头为 a+10、a、a），其中 a、b、c 是由 PIB 配置的基准符号。条款 14.4.4（Front and Back Payload subfields，前/后净荷子字段）承载真正的数据：输入比特序列用参数 Modd、Meven、W1（偏移）和 W2（单位）映射成 N 个符号，前净荷与后净荷计算为互补值，从而保持亮度平衡。最后，条款 14.4.5（MPWM/MPPM waveform，MPWM/MPPM 波形）要求每个符号为明态或暗态，且亮度从 10% 到 90% 的跳变须在 5 微秒内完成，以保证边沿干净。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[PHY V Clause 14] --> B[14.1 RS-FSK<br/>stripe width = frequency]\n  A --> C[14.2 CM-FSK<br/>32/64 frequencies + phase]\n  A --> D[14.3 C-OOK<br/>on/off + RLL balance]\n  A --> E[14.4 MPM<br/>MPWM / MPPM framing]",
+      "zh": "flowchart TD\n  A[PHY V 第14章] --> B[14.1 RS-FSK<br/>条纹宽度=频率]\n  A --> C[14.2 CM-FSK<br/>32/64频率+相位]\n  A --> D[14.3 C-OOK<br/>通断+RLL平衡]\n  A --> E[14.4 MPM<br/>MPWM/MPPM成帧]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: exact subclauses 14.1.1–14.4.5",
+        "zh": "覆盖图：确切子条款 14.1.1–14.4.5"
+      },
+      "en": "RS-FSK (14.1): 14.1.1 Transmitted signal frequency — 2.2 kHz preamble, recommended 500 Hz–1.4 kHz data frequencies (23–100 px stripes); 14.1.2 Symbol duration — one camera frame, default 1/30 s. CM-FSK (14.2): 14.2.1 Reference architecture — Ab insertion → bits-to-frequency (and phase) → IFFT → LED; 14.2.2 Asynchronous bit(s) insertion — phyCmfskAb, one for drift, more for missing-symbol detection; 14.2.3 CM-FSK encoder — covering encoder configuration, 32-FSK and 64-FSK bits-to-frequency mapping, hybrid frequency/phase (2-PSK over a pair of LEDs), and optional outer RS(15,11) FEC. C-OOK (14.3): 14.3.1 Reference architecture; 14.3.2 C-OOK encoder — sub-packet repetition, RLL (Manchester/4B6B) for 50% brightness, Start/End Ab, inner Hamming + outer RS(15,11) FEC; 14.3.3 Packet structure specification modes — suggested Modes 1–4 (optical clock 2.2/4.4 kHz, 40–400 bps). MPM (14.4): 14.4.1 Sequence Number subfield — LSB-first, fixed or dynamic length; 14.4.2 Last Sequence Flag subfield — 1-bit end marker; 14.4.3 PLCP Header/Center/Footer subfields — 4-symbol (MPWM) or 3-symbol (MPPM) marker patterns; 14.4.4 Front/Back Payload subfields — N symbols via Modd, Meven, W1, W2; 14.4.5 MPWM/MPPM waveform — bright/dark states, <5 µs 10–90% transition.",
+      "zh": "RS-FSK（14.1）：14.1.1 发送信号频率——2.2 kHz 前导，建议 500 Hz–1.4 kHz 数据频率（23–100 像素条纹）；14.1.2 符号时长——一个摄像头帧，默认 1/30 秒。CM-FSK（14.2）：14.2.1 参考架构——Ab 插入→比特到频率（及相位）→IFFT→LED；14.2.2 异步比特插入——phyCmfskAb，一个用于应对漂移，多个用于漏符号检测；14.2.3 CM-FSK 编码器——涵盖编码器配置、32-FSK 与 64-FSK 比特到频率映射、混合频率/相位（一对 LED 上的 2-PSK），以及可选外层 RS(15,11) FEC。C-OOK（14.3）：14.3.1 参考架构；14.3.2 C-OOK 编码器——子包重复、用于 50% 亮度的 RLL（曼彻斯特/4B6B）、起止 Ab、内层 Hamming 加外层 RS(15,11) FEC；14.3.3 包结构规范模式——建议的模式 1–4（光时钟 2.2/4.4 kHz，40–400 bps）。MPM（14.4）：14.4.1 序号子字段——最低位优先，固定或动态长度；14.4.2 末序标志子字段——1 比特结束标记；14.4.3 PLCP 包头/中段/包尾子字段——4 符号（MPWM）或 3 符号（MPPM）标记图案；14.4.4 前/后净荷子字段——通过 Modd、Meven、W1、W2 得到的 N 个符号；14.4.5 MPWM/MPPM 波形——明/暗态，10%–90% 跳变小于 5 微秒。",
+      "cite": {
+        "pdf_id": "802157-2018",
+        "pages": [
+          326,
+          327,
+          328,
+          329,
+          330,
+          331,
+          332,
+          333
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        326,
+        327,
+        328,
+        329,
+        330,
+        331,
+        332,
+        333
+      ],
+      "note": "Clause 14 PHY V specifications: 14.1 RS-FSK (p.326), 14.2 CM-FSK (p.326-329), 14.3 C-OOK (p.329-331), 14.4 MPM (p.331-333)."
+    }
+  ],
+  "covers": [
+    "802157-2018:14.1.1",
+    "802157-2018:14.1.2",
+    "802157-2018:14.2.1",
+    "802157-2018:14.2.2",
+    "802157-2018:14.2.3",
+    "802157-2018:14.3.1",
+    "802157-2018:14.3.2",
+    "802157-2018:14.3.3",
+    "802157-2018:14.4.1",
+    "802157-2018:14.4.2",
+    "802157-2018:14.4.3",
+    "802157-2018:14.4.4",
+    "802157-2018:14.4.5"
+  ],
+  "track": "pan-optical"
+}

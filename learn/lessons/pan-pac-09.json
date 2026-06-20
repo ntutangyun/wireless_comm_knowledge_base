@@ -1,0 +1,137 @@
+{
+  "id": "pan-pac-09",
+  "title": {
+    "en": "OFDMA PHY, Part 1: PPDU Frame Formats and the Discovery Signal",
+    "zh": "OFDMA 物理层（上）：PPDU 帧格式与发现信号"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 12 of IEEE Std 802.15.8-2017 defines the OFDMA PHY — the physical layer that actually turns bits into radio waves for Peer Aware Communications (PAC). OFDMA stands for Orthogonal Frequency Division Multiple Access: many narrow subcarriers carry data in parallel, and groups of them can be handed to different devices. A PAC device is called a PD (peer device). This first half of the clause covers the shape of every transmitted unit: the PPDU (PHY protocol data unit) frame formats, and the special discovery signal that PDs use to find each other before any connection exists.",
+      "zh": "IEEE Std 802.15.8-2017 的第 12 章定义了 OFDMA 物理层——也就是在对等感知通信（PAC，Peer Aware Communications）中真正把比特变成无线电波的那一层。OFDMA 指正交频分多址（Orthogonal Frequency Division Multiple Access）：许多窄子载波并行承载数据，并且可以把成组的子载波分配给不同设备。PAC 中的设备称为 PD（对等设备，peer device）。本章的前半部分讲述每个发送单元的形态：PPDU（物理层协议数据单元）的帧格式，以及 PD 在建立任何连接之前用来互相发现的专用发现信号。"
+    },
+    {
+      "type": "prose",
+      "en": "12.1 (PHY frame format) tells us there are exactly two PPDU types. Type I is built only from PAC network synchronization preambles — six symbols, no header, no payload — it is pure timing/beacon-like signaling. Type II is a full data frame: a seven-symbol preamble, then a 4-octet PHY header (PHR), then a variable-length PSDU (PHY service data unit) that carries MAC frames. The transmit order is always Preamble, then PHR, then PSDU.",
+      "zh": "12.1 节（PHY 帧格式）告诉我们恰好存在两种 PPDU 类型。类型 I 仅由 PAC 网络同步前导码构成——六个符号，无头部、无净荷——它纯粹是定时/类似信标的信令。类型 II 则是完整的数据帧：七个符号的前导码，接着是 4 字节的 PHY 头部（PHR），再接着是承载 MAC 帧的可变长度 PSDU（PHY 服务数据单元）。发送顺序始终是：前导码、PHR、PSDU。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 480 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"30\" width=\"90\" height=\"34\"/><text x=\"55\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Preamble</text><rect x=\"100\" y=\"30\" width=\"80\" height=\"34\"/><text x=\"140\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">PHR (4 oct)</text><rect x=\"180\" y=\"30\" width=\"200\" height=\"34\"/><text x=\"280\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">PSDU (variable)</text><line x1=\"10\" y1=\"78\" x2=\"380\" y2=\"78\" marker-end=\"url(#a)\"/><defs><marker id=\"a\" markerWidth=\"8\" markerHeight=\"8\" refX=\"6\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L6,3 L0,6\" stroke=\"currentColor\" fill=\"none\"/></marker></defs><text x=\"195\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Transmit order →</text></svg>",
+      "caption": {
+        "en": "Type II PPDU structure (Figure 76): Preamble → PHR → PSDU, sent in that order. Type I omits the PHR and PSDU entirely.",
+        "zh": "类型 II PPDU 结构（图 76）：前导码 → PHR → PSDU，按此顺序发送。类型 I 完全省略 PHR 与 PSDU。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "12.2 (PPDU format type I) is the simplest unit in the whole PHY. A type I PPDU is formed by concatenating the PAC network synchronization preambles described in Clause 11.2.2. There is no header and no payload — its only job is to let other PDs lock onto network timing. Think of it as a heartbeat: it says 'a PAC network is here, synchronize to me,' and nothing more.",
+      "zh": "12.2 节（类型 I PPDU 格式）是整个物理层中最简单的单元。类型 I PPDU 由第 11.2.2 节所述的 PAC 网络同步前导码拼接而成。它没有头部、没有净荷——唯一的作用是让其他 PD 锁定网络定时。可以把它想象成一次心跳：它只说「这里有一个 PAC 网络，请与我同步」，仅此而已。"
+    },
+    {
+      "type": "prose",
+      "en": "12.3 (PPDU format type II) is the workhorse, and it has three parts. 12.3.1 (Preamble): the type II preamble is five repetitions of a length-32 Zadoff-Chu (ZC) sequence followed by two length-52 ZC sequences. A ZC sequence is a constant-amplitude code with excellent autocorrelation, so a receiver can detect frame start and estimate the channel reliably even at low signal levels. The repeated short sequences aid coarse timing; the longer ones refine it.",
+      "zh": "12.3 节（类型 II PPDU 格式）是真正干活的主力，它由三部分组成。12.3.1 节（前导码）：类型 II 前导码是五次重复的长度为 32 的 Zadoff-Chu（ZC）序列，后接两个长度为 52 的 ZC 序列。ZC 序列是一种恒定幅度、具有优良自相关性的码，因此接收机即使在信号很弱时也能可靠地检测帧起始并估计信道。重复的短序列用于粗定时，较长的序列用于精化定时。"
+    },
+    {
+      "type": "prose",
+      "en": "12.3.2 (PHY header) is the 4-octet (32-bit) control block that tells the receiver how to decode the PSDU. Reading bit 0 to bit 31: Data rate sits in (R0,R1,R2); PSDU length in (L0..L7) with L7 as the most significant bit; a Burst bit B (12.3.2.4) that, when set to 1, signals the next frame is part of a burst so consecutive frames can be sent without an Ack, raising throughput; two scrambler seeds (12.3.2.5) — the first six bits of macPD_ID and the first six bits of the group ID, which initialize the Gold-code scrambler; a Frame type bit F (12.3.2.6, 0 = type I, 1 = type II); and finally a 4-bit HCS (header check sequence). The HCS (12.3.2.7) is a CRC-4-ITU computed over the PHR with the polynomial x^4 + x + 1, so a corrupted header is caught before the receiver wastes effort on the payload.",
+      "zh": "12.3.2 节（PHY 头部）是一个 4 字节（32 比特）的控制块，告诉接收机如何解码 PSDU。从比特 0 读到比特 31：数据速率位于 (R0,R1,R2)；PSDU 长度位于 (L0..L7)，其中 L7 为最高有效位；一个突发位 B（12.3.2.4），置 1 时表示下一帧属于突发的一部分，从而可以连续发送多帧而无需 Ack，提升吞吐量；两个扰码种子（12.3.2.5）——分别取自 macPD_ID 的前六位和 group ID 的前六位，用于初始化 Gold 码扰码器；一个帧类型位 F（12.3.2.6，0 = 类型 I，1 = 类型 II）；最后是 4 比特的 HCS（头部校验序列）。HCS（12.3.2.7）是基于 PHR、用多项式 x^4 + x + 1 计算的 CRC-4-ITU，因此头部一旦损坏会在接收机浪费精力解码净荷之前就被发现。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 480 70\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"6\" y=\"22\" width=\"60\" height=\"30\"/><text x=\"36\" y=\"41\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Rate(3)</text><rect x=\"66\" y=\"22\" width=\"110\" height=\"30\"/><text x=\"121\" y=\"41\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">PSDU len(8)</text><rect x=\"176\" y=\"22\" width=\"30\" height=\"30\"/><text x=\"191\" y=\"41\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">B</text><rect x=\"206\" y=\"22\" width=\"130\" height=\"30\"/><text x=\"271\" y=\"41\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">2 seeds(12)</text><rect x=\"336\" y=\"22\" width=\"30\" height=\"30\"/><text x=\"351\" y=\"41\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">F</text><rect x=\"366\" y=\"22\" width=\"100\" height=\"30\"/><text x=\"416\" y=\"41\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">HCS(4)</text><text x=\"6\" y=\"14\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">bit 0</text><text x=\"446\" y=\"14\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">bit 31</text></svg>",
+      "caption": {
+        "en": "The 32-bit PHY header (Figure 78): data rate, PSDU length, burst bit, two scrambler seeds, frame type, and a CRC-4 HCS — bit 0 first.",
+        "zh": "32 比特的 PHY 头部（图 78）：数据速率、PSDU 长度、突发位、两个扰码种子、帧类型，以及一个 CRC-4 HCS——从比特 0 开始。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "12.3.3 (PSDU) is the payload, and it has a striking time structure. The PSDU is made of N frames; each frame is split into ten TDD slots — two switching slots (S) and eight data slots — and each data slot is seven OFDM symbols lasting 0.5 ms (a frame is 7680 Ts = 0.5 ms per slot region). TDD means time-division duplex: the same channel is reused for both directions by alternating in time. The switching slot (12.3.3.2) carries a guard interval, a fine-synchronization preamble (a length-52 ZC sequence), and a control channel that reports the previous channel's rank, the TDD frame type, and whether carrier aggregation is enabled. The guard interval — about 10 microseconds — is sized so a device has time to detect the last incoming symbol and turn its radio around from receive to transmit.",
+      "zh": "12.3.3 节（PSDU）是净荷，它有着鲜明的时间结构。PSDU 由 N 个帧组成；每个帧分为十个 TDD 时隙——两个切换时隙（S）和八个数据时隙——每个数据时隙是七个 OFDM 符号，时长 0.5 毫秒（每个时隙区域为 7680 Ts = 0.5 毫秒）。TDD 指时分双工（time-division duplex）：通过在时间上交替，同一信道被双向复用。切换时隙（12.3.3.2）承载一个保护间隔、一个用于精同步的前导码（长度为 52 的 ZC 序列），以及一个控制信道，该信道报告上一信道的秩、TDD 帧类型，以及是否启用载波聚合。保护间隔约为 10 微秒，其取值要保证设备有时间检测最后一个到达的符号，并把无线电从接收切换到发送。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  P[PSDU] --> F0[Frame 0]\n  P --> F1[Frame 1]\n  P --> FN[Frame N]\n  F0 --> S1[Switch slot S]\n  F0 --> D[8 data slots]\n  F0 --> S2[Switch slot S]\n  D --> SYM[7 OFDM symbols / 0.5 ms]",
+      "zh": "flowchart LR\n  P[PSDU] --> F0[帧 0]\n  P --> F1[帧 1]\n  P --> FN[帧 N]\n  F0 --> S1[切换时隙 S]\n  F0 --> D[8 个数据时隙]\n  F0 --> S2[切换时隙 S]\n  D --> SYM[7 个 OFDM 符号 / 0.5 毫秒]"
+    },
+    {
+      "type": "prose",
+      "en": "12.4 (Discovery signal) is how PDs announce and find each other before any link exists. The discovery signal is sent during the discovery period and is built from discovery resource blocks (DRBs). Each DRB occupies 2 slots (14 OFDM symbols) in time and 12 subcarriers in frequency. Because the FFT size is 1024, there are 85 DRBs available. A PD uses one DRB to send 168 QPSK symbols at half-rate FEC, i.e. 168 bits = 21 octets of discovery information. Once a PD is synchronized, it knows exactly where the DRBs sit, so a receiver scans them for nearby PDs and a transmitter simply picks a free DRB to broadcast its own presence.",
+      "zh": "12.4 节（发现信号）是 PD 在任何链路存在之前互相宣告与发现彼此的方式。发现信号在发现期内发送，由发现资源块（DRB，discovery resource block）构成。每个 DRB 在时间上占用 2 个时隙（14 个 OFDM 符号），在频率上占用 12 个子载波。由于 FFT 大小为 1024，共有 85 个可用的 DRB。一个 PD 用一个 DRB 发送 168 个 QPSK 符号、采用半速率 FEC，即 168 比特 = 21 字节的发现信息。一旦 PD 完成同步，它就确切知道 DRB 的位置，于是接收方扫描这些 DRB 以寻找附近的 PD，发送方则直接挑选一个空闲的 DRB 来广播自身的存在。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy mental model: Type I PPDU and the discovery signal are the 'who's there?' layer (timing and presence), while Type II PPDU is the 'here's the data' layer. The PHY header is the small label that lets a receiver decode the rest — and its CRC-4 check means a garbled label is thrown out fast.",
+      "zh": "一个好记的思维模型：类型 I PPDU 和发现信号属于「谁在那里？」层（定时与存在感），而类型 II PPDU 属于「数据在此」层。PHY 头部是让接收机得以解码后续内容的小标签——它的 CRC-4 校验意味着损坏的标签会被迅速丢弃。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: exactly where each clause lives",
+        "zh": "覆盖地图：每个子条款的确切位置"
+      },
+      "en": "12.1 PHY frame format (p.219, Table 114, Figure 76): two PPDU types — I (6-symbol preamble only, PAC synchronization) and II (7-symbol preamble + 4-octet PHR + variable PSDU carrying MAC frames). 12.2 PPDU format type I (p.219): concatenated PAC network synchronization preambles per 11.2.2; no PHR, no PSDU. 12.3.1 Preamble (p.219, Figure 77): five length-32 ZC sequences (r=1, q=0) + two length-52 ZC sequences. 12.3.2 PHY header (p.220-221, Figure 78): 32 bits — data rate (R0-R2), PSDU length (L0-L7), burst B (Table 115), scrambler seeds from macPD_ID and group ID, frame type F (Table 116), and CRC-4-ITU HCS with polynomial x^4+x+1 (Figure 79). 12.3.3 PSDU (p.222-223, Figures 80-81): N frames, each 10 TDD slots (2 switching + 8 data), 7 OFDM symbols per slot at 0.5 ms; TDD frame types and switching slot (GI, fine-sync preamble, control channel reporting channel rank/frame type/carrier aggregation, Tables 117-120). 12.4 Discovery signal (p.224-225, Figure 82): DRBs of 2 slots × 12 subcarriers, 85 DRBs for FFT-1024, 168 QPSK symbols (21 octets) per DRB.",
+      "zh": "12.1 PHY 帧格式（第 219 页，表 114，图 76）：两种 PPDU 类型——I（仅 6 符号前导码，PAC 同步）与 II（7 符号前导码 + 4 字节 PHR + 承载 MAC 帧的可变长度 PSDU）。12.2 类型 I PPDU 格式（第 219 页）：按 11.2.2 拼接的 PAC 网络同步前导码；无 PHR、无 PSDU。12.3.1 前导码（第 219 页，图 77）：五个长度为 32 的 ZC 序列（r=1，q=0）+ 两个长度为 52 的 ZC 序列。12.3.2 PHY 头部（第 220-221 页，图 78）：32 比特——数据速率（R0-R2）、PSDU 长度（L0-L7）、突发位 B（表 115）、取自 macPD_ID 与 group ID 的扰码种子、帧类型 F（表 116），以及用多项式 x^4+x+1 的 CRC-4-ITU HCS（图 79）。12.3.3 PSDU（第 222-223 页，图 80-81）：N 个帧，每帧 10 个 TDD 时隙（2 个切换 + 8 个数据），每时隙 7 个 OFDM 符号、0.5 毫秒；TDD 帧类型与切换时隙（保护间隔、精同步前导码、报告信道秩/帧类型/载波聚合的控制信道，表 117-120）。12.4 发现信号（第 224-225 页，图 82）：DRB 为 2 时隙 × 12 子载波，FFT-1024 下共 85 个 DRB，每个 DRB 承载 168 个 QPSK 符号（21 字节）。",
+      "cite": {
+        "pdf_id": "802158-2017",
+        "pages": [
+          219,
+          220,
+          221,
+          222,
+          223,
+          224,
+          225
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        219
+      ],
+      "note": "12.1 PHY frame format (Table 114, Figure 76); 12.2 PPDU type I; 12.3.1 preamble (Figure 77)"
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        220,
+        221,
+        222
+      ],
+      "note": "12.3.2 PHY header structure, fields, burst, scrambler seeds, frame type, CRC-4 HCS (Figures 78-79)"
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        222,
+        223
+      ],
+      "note": "12.3.3 PSDU structure and TDD frame / switching slot (Figures 80-81, Tables 117-120)"
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        224,
+        225
+      ],
+      "note": "12.4 Discovery signal and discovery resource block (Figure 82)"
+    }
+  ],
+  "covers": [
+    "802158-2017:12.1",
+    "802158-2017:12.2",
+    "802158-2017:12.3.1",
+    "802158-2017:12.3.2",
+    "802158-2017:12.3.3",
+    "802158-2017:12.4"
+  ],
+  "track": "pan-pac"
+}

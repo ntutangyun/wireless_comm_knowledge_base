@@ -1,0 +1,140 @@
+{
+  "id": "pan-optical-23",
+  "title": {
+    "en": "The PM-PHY: Building a Low-Power Optical Wireless Frame",
+    "zh": "PM-PHY：构建低功耗光无线帧"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.15.13-2023 defines optical wireless communications (OWC) — sending data as modulated light instead of radio. Clause 10 specifies one of its physical layers (PHY, the lowest layer that turns bits into a transmitted signal): the PM-PHY, where 'PM' refers to pulsed-modulation. Its design goal (10.1.1 Overview) is the opposite of chasing peak speed: it uses a high clock rate with very low spectral efficiency to win extended reach and power efficiency, which suits uplinks and IoT (Internet of Things) devices. It tops out around 100 Mb/s using 2-PAM (two-level pulse-amplitude modulation — the LED is simply brighter or dimmer), 8B10B line coding, and RS (Reed-Solomon) forward error correction. Crucially, it adapts the link to channel conditions by varying the clock rate per PPDU (PHY protocol data unit, one transmitted frame).",
+      "zh": "IEEE Std 802.15.13-2023 定义了光无线通信（OWC），即用调制的光而非无线电来传送数据。第 10 章规定了它的一个物理层（PHY，即把比特转换为发送信号的最底层）：PM-PHY，其中 PM 指脉冲调制。它的设计目标（10.1.1 概述）与追求峰值速率相反：用高时钟速率配合极低的频谱效率，换取更远的覆盖和更高的能效，适合上行链路和物联网（IoT）设备。它以约 100 Mb/s 封顶，采用 2-PAM（二电平脉冲幅度调制，即 LED 只是变亮或变暗）、8B10B 线路编码和 RS（里德-所罗门）前向纠错。关键在于，它通过对每个 PPDU（PHY 协议数据单元，即一帧发送数据）改变时钟速率，使链路适配信道条件。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "An OFE is an Optical Front-End: one light emitter/detector element. A device can run many OFEs in parallel to form a MIMO (multiple-input multiple-output) optical link — multiple light beams carrying independent streams.",
+      "zh": "OFE 指光学前端（Optical Front-End），即一个光发射/接收单元。一台设备可以并行运行多个 OFE，组成 MIMO（多输入多输出）光链路——多束光各自承载独立的数据流。"
+    },
+    {
+      "type": "prose",
+      "en": "The 'menu' of speeds comes from the clock rate. The base MCS (modulation and coding scheme — the agreed combination of speed and coding) is fixed at a 12.5 MHz clock rate (10.1.2 Base MCS); every PM-PHY device must support it. Stepping the clock up through 25, 50, 100, and 200 MHz roughly doubles throughput each time, from about 9 Mb/s to about 99 Mb/s. Because the PM-PHY supports up to 64 OFEs, it needs a tidy way to label each one. The OFE index mapping (10.1.3) does this with a single formula, OFE index = Slot Position × 8 + Variant, packing a 'which time slot' and a 'which pilot variant' into one number; indices above 63 are not allowed. Finally, 10.1.4 PHY constants pins down fixed values the PHY relies on — the maximum PSDU (PHY service data unit, the payload handed down from above) size of 2044 octets, the MIFS (minimum interframe spacing) of 3 µs, a 10 µs TX/RX turnaround time, ±10 ppm clock accuracy, and 640 ns OFE synchronization accuracy.",
+      "zh": "速率的“菜单”来自时钟速率。基准 MCS（调制与编码方案，即约定好的速率与编码组合）固定为 12.5 MHz 时钟速率（10.1.2 基准 MCS），每个 PM-PHY 设备都必须支持。把时钟逐级提升到 25、50、100、200 MHz，吞吐量大致每次翻倍，从约 9 Mb/s 增至约 99 Mb/s。由于 PM-PHY 最多支持 64 个 OFE，它需要一种整洁的编号方式。OFE 索引映射（10.1.3）用一个公式完成：OFE index = Slot Position × 8 + Variant，把“哪个时隙”和“哪种导频变体”打包进一个数；索引大于 63 不允许使用。最后，10.1.4 PHY 常量固定了 PHY 依赖的取值——最大 PSDU（PHY 服务数据单元，即上层下发的有效载荷）为 2044 个八位组、MIFS（最小帧间间隔）为 3 µs、TX/RX 切换时间 10 µs、时钟精度 ±10 ppm、OFE 同步精度 640 ns。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 720 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><g stroke-width=\"1.5\"><rect x=\"6\" y=\"30\" width=\"95\" height=\"34\"/><rect x=\"101\" y=\"30\" width=\"110\" height=\"34\"/><rect x=\"211\" y=\"30\" width=\"95\" height=\"34\"/><rect x=\"306\" y=\"30\" width=\"120\" height=\"34\"/><rect x=\"426\" y=\"30\" width=\"130\" height=\"34\"/><rect x=\"556\" y=\"30\" width=\"158\" height=\"34\"/></g><g font-size=\"10\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\"><text x=\"53\" y=\"51\">Preamble</text><text x=\"156\" y=\"47\">Header Chan.</text><text x=\"156\" y=\"59\">Estimation</text><text x=\"258\" y=\"51\">PHY Header</text><text x=\"366\" y=\"47\">Explicit MIMO</text><text x=\"366\" y=\"59\">Pilots</text><text x=\"491\" y=\"47\">Payload Chan.</text><text x=\"491\" y=\"59\">Estimation</text><text x=\"635\" y=\"51\">Payload</text></g><text x=\"6\" y=\"20\" font-size=\"11\" fill=\"currentColor\" stroke=\"none\">PM-PHY PPDU (Figure 81)</text></svg>",
+      "caption": {
+        "en": "The PM-PHY PPDU, in transmit order (clause 10.2.1, Figure 81): Preamble → Header Channel Estimation → PHY Header → Explicit MIMO Pilots → Payload Channel Estimation → Payload.",
+        "zh": "PM-PHY PPDU 的发送顺序（10.2.1 条，图 81）：前导码 → 头部信道估计 → PHY 头部 → 显式 MIMO 导频 → 载荷信道估计 → 载荷。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now the frame itself (10.2 PPDU format). 10.2.1 Overview lays out the six fields shown above. 10.2.2 Bit order is the unglamorous but vital rule: inside each PSDU octet the LSB (least significant bit) goes first, and header number fields are sent LSB-to-MSB (most significant bit) too — get this wrong and every byte is scrambled. The 10.2.3 Preamble has two parts, both sent at the slow 12.5 MHz clock: a 12.8 µs constant-duration AGC (automatic gain control) section, built from 10 copies of a base sequence so the receiver can settle its amplifier, then a synchronization section built from a sign-flipped pseudo-noise sequence that produces a sharp correlation peak for timing. 10.2.4 Header channel estimation sends a known A64 pseudo-noise sequence (with a long cyclic prefix) so the receiver can measure and equalize the channel before decoding the header.",
+      "zh": "接下来是帧本身（10.2 PPDU 格式）。10.2.1 概述列出上图的六个字段。10.2.2 比特顺序虽不起眼却至关重要：每个 PSDU 八位组内 LSB（最低有效位）先发，头部数字字段也按 LSB 到 MSB（最高有效位）发送——搞错这一点每个字节都会乱码。10.2.3 前导码有两部分，都以慢速 12.5 MHz 时钟发送：一段时长恒为 12.8 µs 的 AGC（自动增益控制）段，由基序列重复 10 次构成，让接收机稳定其放大器；随后是同步段，由符号翻转的伪噪声序列构成，产生用于定时的尖锐相关峰。10.2.4 头部信道估计发送已知的 A64 伪噪声序列（带长循环前缀），使接收机在解码头部前先测量并均衡信道。"
+    },
+    {
+      "type": "prose",
+      "en": "The 10.2.5 PHY Header is the frame's instruction sheet — a compact 48-bit record (Figure 82) the receiver reads first. Its fields: PSDU Size (bits 0–10, the payload length in octets); Short CP (bit 11, whether the payload uses a short or long cyclic prefix); Scrambler Initialization (bits 12–15, the seed for de-scrambling); Explicit MIMO Pilot Slots (bits 16–19, how many pilot slots follow); a Reserved field (bits 20–23); MCS ID (bits 24–31, which clock rate the payload used); and HCS (bits 32–47), a header check sequence computed as a CRC-16 (16-bit cyclic redundancy check) over the first 32 header bits so the receiver can detect a corrupted header.",
+      "zh": "10.2.5 PHY 头部是这帧的“说明书”——一份紧凑的 48 比特记录（图 82），接收机最先读取它。其字段为：PSDU Size（第 0–10 位，以八位组计的载荷长度）；Short CP（第 11 位，载荷用短还是长循环前缀）；Scrambler Initialization（第 12–15 位，解扰种子）；Explicit MIMO Pilot Slots（第 16–19 位，后续有多少导频时隙）；Reserved 保留字段（第 20–23 位）；MCS ID（第 24–31 位，载荷所用的时钟速率）；以及 HCS（第 32–47 位），即头部校验序列，对头部前 32 比特做 CRC-16（16 位循环冗余校验），使接收机能检出损坏的头部。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 720 80\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><g stroke-width=\"1.5\"><rect x=\"6\" y=\"28\" width=\"150\" height=\"30\"/><rect x=\"156\" y=\"28\" width=\"55\" height=\"30\"/><rect x=\"211\" y=\"28\" width=\"95\" height=\"30\"/><rect x=\"306\" y=\"28\" width=\"110\" height=\"30\"/><rect x=\"416\" y=\"28\" width=\"75\" height=\"30\"/><rect x=\"491\" y=\"28\" width=\"75\" height=\"30\"/><rect x=\"566\" y=\"28\" width=\"148\" height=\"30\"/></g><g font-size=\"9.5\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\"><text x=\"81\" y=\"47\">PSDU Size</text><text x=\"183\" y=\"47\">ShortCP</text><text x=\"258\" y=\"47\">Scrambler</text><text x=\"361\" y=\"44\">MIMO Pilot</text><text x=\"361\" y=\"55\">Slots</text><text x=\"453\" y=\"47\">Reserved</text><text x=\"528\" y=\"47\">MCS ID</text><text x=\"640\" y=\"47\">HCS</text></g><g font-size=\"8\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\"><text x=\"81\" y=\"22\">0-10</text><text x=\"183\" y=\"22\">11</text><text x=\"258\" y=\"22\">12-15</text><text x=\"361\" y=\"22\">16-19</text><text x=\"453\" y=\"22\">20-23</text><text x=\"528\" y=\"22\">24-31</text><text x=\"640\" y=\"22\">32-47</text></g></svg>",
+      "caption": {
+        "en": "The 48-bit PM-PHY header (clause 10.2.5, Figure 82) with bit positions. The HCS is a CRC-16 over the first 32 bits.",
+        "zh": "48 比特 PM-PHY 头部（10.2.5 条，图 82）及各位段位置。HCS 是对前 32 比特做的 CRC-16。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "10.2.6 Explicit MIMO Pilots are how the receiver learns the channel between every transmitting OFE and every receiving OFE. Each OFE sends exactly one pilot 'variant' in one time slot, and which slot/variant it uses is just the OFE index decoded backwards: Slot Position = floor(OFE index / 8), Variant = OFE index mod 8. The pilots are predefined sequences with no FEC or line coding, and they are built so that all simultaneously transmitted pilots stay orthogonal at any clock rate — a clever 'variable sampling factor' trick (taking every nth bit of a long base sequence) that lets a slower receiver still recover the full-resolution channel. 10.2.7 Payload Channel Estimation is a second known sequence, sent only when the payload uses a different clock rate than the header, so the equalizer can be re-tuned; its base-sequence and cyclic-prefix durations stay constant in time, so faster clocks simply pack in proportionally more samples.",
+      "zh": "10.2.6 显式 MIMO 导频用于让接收机获知每个发送 OFE 与每个接收 OFE 之间的信道。每个 OFE 在一个时隙中恰好发送一种导频“变体”，所用的时隙/变体就是把 OFE 索引反向解出：Slot Position = floor(OFE index / 8)，Variant = OFE index mod 8。这些导频是预定义序列，不做 FEC 也不做线路编码，其构造保证所有同时发送的导频在任意时钟速率下都保持正交——这是一个巧妙的“可变采样因子”技巧（取长基序列的每第 n 个比特），让较慢的接收机仍能恢复全分辨率信道。10.2.7 载荷信道估计是第二段已知序列，仅当载荷与头部使用不同时钟速率时才发送，以便重新调谐均衡器；其基序列与循环前缀的时长在时间上保持恒定，因此更快的时钟只是按比例塞进更多样点。"
+    },
+    {
+      "type": "prose",
+      "en": "10.2.8 Payload finally carries the PSDU from the higher layer, zero-padded up to a multiple of four octets (the PSDU Size field still records the true unpadded length). One of several MCSs is used; an MCS here is really just a clock-rate selector, identified by the MCS ID. MCS 0 = 12.5 MHz is mandatory; MCS 1–4 map to 25/50/100/200 MHz and are optional. The achievable data rate of a payload follows directly from its clock rate and cyclic-prefix length — for example RS(256,248) with 2-PAM, 8B10B, and 12.5 MHz yields about 9.6 Mb/s.",
+      "zh": "10.2.8 载荷最终承载来自上层的 PSDU，用零填充至四个八位组的整数倍（PSDU Size 字段仍记录未填充前的真实长度）。会使用若干 MCS 之一；这里的 MCS 其实只是一个时钟速率选择器，由 MCS ID 标识。MCS 0 = 12.5 MHz 是强制的；MCS 1–4 对应 25/50/100/200 MHz，为可选。载荷可达的数据速率直接由其时钟速率与循环前缀长度决定——例如 RS(256,248) 配 2-PAM、8B10B、12.5 MHz 约得 9.6 Mb/s。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  D[Data] --> S[Scrambler]\n  S --> L[8B10B]\n  L --> R[RS FEC]\n  R --> L2[8B10B parity]\n  L2 --> M[MUX]\n  M --> B[Bit-to-symbol 2-PAM]\n  B --> C[CP insertion]\n  C --> O[Optical out]",
+      "zh": "flowchart LR\n  D[数据] --> S[扰码器]\n  S --> L[8B10B]\n  L --> R[RS 前向纠错]\n  R --> L2[8B10B 校验位]\n  L2 --> M[复用器]\n  M --> B[比特到符号 2-PAM]\n  B --> C[插入循环前缀]\n  C --> O[光输出]"
+    },
+    {
+      "type": "prose",
+      "en": "10.3 Modulation and coding is the transmit chain above (10.3.1 Overview, Figure 85). Data is first scrambled (10.3.3 Scrambler) to randomize interference, using the procedure of 11.3.1.2 but always re-seeded from the header's Scrambler Initialization field. 8B10B line coding (10.3.5) — defined in ANSI/INCITS 373, it maps each 8 bits to a balanced 10-bit code so the LED's average light output stays constant; both the systematic data and the redundant parity pass through it, and the encoders reset at defined points (per-PPDU for systematic, per-RS-block for parity, separately for header and payload). RS (Reed-Solomon) FEC (10.3.4) protects the header with RS(36,24) and the payload with RS(256,248), both using 10-bit symbols and the generator polynomial x¹⁰+x³+1, with zero-padding inserted before encoding and removed afterward. 10.3.2 Clock rate ties it together: since each block's sequence and cyclic-prefix durations are fixed in time, a higher clock rate simply means more symbols per block (Table 42 lists Nseq and NCP for every rate); the transmit clock must meet aPhyClockAccuracy.",
+      "zh": "10.3 调制与编码就是上图的发送链（10.3.1 概述，图 85）。数据先经扰码（10.3.3 扰码器）以随机化干扰，采用 11.3.1.2 的流程，但始终用头部 Scrambler Initialization 字段重新播种。8B10B 线路编码（10.3.5）由 ANSI/INCITS 373 定义，把每 8 比特映射为平衡的 10 比特码，使 LED 的平均光输出保持恒定；系统数据与冗余校验都要经过它，编码器在规定点复位（系统部分每 PPDU 复位，校验部分每 RS 块复位，头部与载荷分别独立）。RS（里德-所罗门）FEC（10.3.4）用 RS(36,24) 保护头部、用 RS(256,248) 保护载荷，二者均用 10 比特符号和生成多项式 x¹⁰+x³+1，编码前插入零填充、编码后移除。10.3.2 时钟速率把这些串起来：由于每块的序列与循环前缀时长在时间上固定，更高的时钟速率就意味着每块更多符号（表 42 列出各速率的 Nseq 与 NCP）；发送时钟须满足 aPhyClockAccuracy。"
+    },
+    {
+      "type": "prose",
+      "en": "Two final pieces shape the optical signal. 10.3.6 Bit-to-symbol mapper applies 2-PAM: each input bit becomes one symbol at level 0 or 1, then a constant 0.5 is subtracted to make the signal dc-free before it rides on the LED's bias current — keeping the modulation symmetric around the operating point. 10.3.7 Cyclic prefix enables frequency-domain equalization by copying the last NCP samples of a block to its front. The prefix length is either 160 ns (short) or 1280 ns (long): the header, channel-estimation, and explicit-MIMO-pilot symbols always use the long 1280 ns prefix, while the payload's choice is set by the MAC (medium access control layer) per PPDU and announced in the Short CP header bit.",
+      "zh": "最后两步塑形光信号。10.3.6 比特到符号映射器采用 2-PAM：每个输入比特变为一个电平为 0 或 1 的符号，随后减去常数 0.5 使信号无直流分量，再叠加到 LED 的偏置电流上——使调制对称于工作点。10.3.7 循环前缀通过把一块的最后 NCP 个样点复制到块前来实现频域均衡。前缀长度为 160 ns（短）或 1280 ns（长）：头部、信道估计和显式 MIMO 导频符号始终用 1280 ns 长前缀，而载荷的选择由 MAC（媒体访问控制层）逐 PPDU 设定，并在头部的 Short CP 位中宣告。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Clause 10 coverage map — every subclause by number",
+        "zh": "第 10 章覆盖地图——按编号逐一对应"
+      },
+      "en": "10.1 General information: 10.1.1 Overview (purpose: reach/power efficiency, ~100 Mb/s, 2-PAM + 8B10B + RS, per-PPDU clock-rate adaptation, Table 37); 10.1.2 Base MCS (mandatory 12.5 MHz); 10.1.3 OFE index mapping (OFE index = Slot Position × 8 + Variant, ≤ 63); 10.1.4 PHY constants (Table 38: 2044-octet max PSDU, 3 µs MIFS, 10 µs turnaround, ±10 ppm clock, 640 ns OFE sync). 10.2 PPDU format: 10.2.1 Overview (Figure 81 six-field frame); 10.2.2 Bit order (LSB-first per octet and per header number); 10.2.3 Preamble (12.8 µs AGC section + sync section, both at 12.5 MHz); 10.2.4 Header channel estimation (A64 PN sequence, long CP); 10.2.5 PHY header (48-bit fields of Figure 82, HCS = CRC-16 over first 32 bits); 10.2.6 Explicit MIMO pilots (per-OFE variant/slot, orthogonal at any clock rate, Tables 39–40); 10.2.7 Payload channel estimation (variable-length AN sequence, sent when payload clock differs from header, Table 42); 10.2.8 Payload (zero-padded to 4-octet multiple, MCS ID → clock rate, Table 41, MCS 0 mandatory). 10.3 Modulation and coding: 10.3.1 Overview (transmitter chain, Figure 85); 10.3.2 Clock rate (Table 42, Nseq/NCP scale with rate, aPhyClockAccuracy); 10.3.3 Scrambler (per 11.3.1.2, seeded from header field); 10.3.4 Reed-Solomon FEC (RS(36,24) header, RS(256,248) payload, 10-bit symbols, generator x¹⁰+x³+1); 10.3.5 8B10B line encoder (ANSI/INCITS 373, defined reset points); 10.3.6 Bit-to-symbol mapper (2-PAM, dc-free −0.5 offset onto LED bias); 10.3.7 Cyclic prefix (160 or 1280 ns; header/estimation/pilots long, payload MAC-chosen).",
+      "zh": "10.1 总体信息：10.1.1 概述（目标：覆盖/能效，约 100 Mb/s，2-PAM + 8B10B + RS，逐 PPDU 时钟速率适配，表 37）；10.1.2 基准 MCS（强制 12.5 MHz）；10.1.3 OFE 索引映射（OFE index = Slot Position × 8 + Variant，≤ 63）；10.1.4 PHY 常量（表 38：最大 PSDU 2044 八位组、MIFS 3 µs、切换 10 µs、时钟 ±10 ppm、OFE 同步 640 ns）。10.2 PPDU 格式：10.2.1 概述（图 81 六字段帧）；10.2.2 比特顺序（每八位组及每个头部数字均 LSB 在先）；10.2.3 前导码（12.8 µs AGC 段 + 同步段，均为 12.5 MHz）；10.2.4 头部信道估计（A64 PN 序列，长 CP）；10.2.5 PHY 头部（图 82 的 48 比特字段，HCS = 对前 32 比特的 CRC-16）；10.2.6 显式 MIMO 导频（每 OFE 的变体/时隙，任意时钟速率下正交，表 39–40）；10.2.7 载荷信道估计（变长 AN 序列，载荷时钟与头部不同时发送，表 42）；10.2.8 载荷（零填充至 4 八位组整数倍，MCS ID → 时钟速率，表 41，MCS 0 强制）。10.3 调制与编码：10.3.1 概述（发送链，图 85）；10.3.2 时钟速率（表 42，Nseq/NCP 随速率缩放，aPhyClockAccuracy）；10.3.3 扰码器（依 11.3.1.2，由头部字段播种）；10.3.4 里德-所罗门 FEC（头部 RS(36,24)、载荷 RS(256,248)，10 比特符号，生成多项式 x¹⁰+x³+1）；10.3.5 8B10B 线路编码器（ANSI/INCITS 373，规定的复位点）；10.3.6 比特到符号映射器（2-PAM，−0.5 偏置使无直流，叠加到 LED 偏置）；10.3.7 循环前缀（160 或 1280 ns；头部/估计/导频用长前缀，载荷由 MAC 选择）。",
+      "cite": {
+        "pdf_id": "8021513-2023",
+        "pages": [
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021513-2023",
+      "pages": [
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116
+      ],
+      "note": "Clause 10 PM-PHY: 10.1 General information (overview, base MCS, OFE index mapping, PHY constants), 10.2 PPDU format (overview, bit order, preamble, header/payload channel estimation, PHY header, explicit MIMO pilots, payload), 10.3 Modulation and coding (overview, clock rate, scrambler, RS FEC, 8B10B, bit-to-symbol mapper, cyclic prefix)."
+    }
+  ],
+  "covers": [
+    "8021513-2023:10.1.1",
+    "8021513-2023:10.1.2",
+    "8021513-2023:10.1.3",
+    "8021513-2023:10.1.4",
+    "8021513-2023:10.2.1",
+    "8021513-2023:10.2.2",
+    "8021513-2023:10.2.3",
+    "8021513-2023:10.2.4",
+    "8021513-2023:10.2.5",
+    "8021513-2023:10.2.6",
+    "8021513-2023:10.2.7",
+    "8021513-2023:10.2.8",
+    "8021513-2023:10.3.1",
+    "8021513-2023:10.3.2",
+    "8021513-2023:10.3.3",
+    "8021513-2023:10.3.4",
+    "8021513-2023:10.3.5",
+    "8021513-2023:10.3.6",
+    "8021513-2023:10.3.7"
+  ],
+  "track": "pan-optical"
+}

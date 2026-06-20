@@ -1,0 +1,238 @@
+{
+  "id": "pan-hr-wpan-35",
+  "title": {
+    "en": "The 60 GHz mmWave PHY (Part 1): Common Rules, Single Carrier and High Speed Interface Modes",
+    "zh": "60 GHz 毫米波 PHY（第一部分）：通用规则、单载波模式与高速接口模式"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE 802.15.3 adds a millimeter wave (mmWave) physical layer (PHY) that runs in the 57.0–66.0 GHz band — the chunk of unlicensed spectrum near 60 GHz. There is so much bandwidth here that a single device (the standard calls each one a DEV) can push multiple gigabits per second over a short, often line-of-sight, link. Clause 11 is the rulebook for that radio. It defines three interchangeable PHY modes, and a compliant mmWave radio must implement at least one of them: Single Carrier (SC PHY) for low-cost mobile gear, High Speed Interface (HSI PHY) for low-latency two-way traffic, and Audio/Visual (AV PHY) for streaming video. This lesson is the first of two; it walks through the shared ground rules plus the SC and HSI modes.",
+      "zh": "IEEE 802.15.3 增加了一个毫米波（mmWave）物理层（PHY），工作在 57.0–66.0 GHz 频段，也就是 60 GHz 附近那段免许可频谱。这里带宽极其充裕，一个设备（标准里称为 DEV）就能在短距离、通常是视距的链路上传输每秒数吉比特的数据。第 11 章就是这个射频的规则手册。它定义了三种可互换的 PHY 模式，合规的毫米波射频至少要实现其中之一：面向低成本移动设备的单载波模式（SC PHY）、面向低时延双向流量的高速接口模式（HSI PHY），以及面向视频流的音视频模式（AV PHY）。本课是两课中的第一课，讲解共同的基础规则以及 SC 与 HSI 两种模式。"
+    },
+    {
+      "type": "prose",
+      "en": "The shared rules live in 11.1 General requirements. Where the radio is allowed to operate is set by regulators (11.1.1 Regulatory information lists the 60 GHz allocations and power limits for the US, Japan, Canada, Australia and Europe). All transmit/receive power is measured as EIRP — Effective Isotropic Radiated Power, i.e. the power referenced to an ideal omni antenna (11.1.2 RF power measurements), and any in-band/out-of-band spurs must stay within regulatory limits (11.1.3 Unwanted emissions). The radio must meet spec from 0 °C to 40 °C (11.1.4 Operating temperature range). The 9.0 GHz of spectrum is carved into four fixed 2.16 GHz-wide channels (11.1.5 RF channelization), and every transmission must fit under the spectral mask drawn in the standard (11.1.6 Transmit PSD mask, where PSD = power spectral density).",
+      "zh": "共同规则在 11.1 通用要求中。射频可在哪里工作由监管机构规定（11.1.1 监管信息列出了美国、日本、加拿大、澳大利亚和欧洲的 60 GHz 频谱分配及功率限制）。所有收发功率都以 EIRP（等效全向辐射功率，即相对理想全向天线的功率）来测量（11.1.2 射频功率测量）；任何带内/带外杂散都必须落在监管限值内（11.1.3 非期望辐射）。射频要在 0 °C 至 40 °C 范围内满足规格（11.1.4 工作温度范围）。9.0 GHz 频谱被划分为四个固定的 2.16 GHz 宽信道（11.1.5 射频信道化），且每次发射都必须落在标准给出的频谱模板之下（11.1.6 发射 PSD 模板，PSD 即功率谱密度）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Acronym anchor for the whole lesson: DEV = device; PHY = physical layer; MCS = modulation and coding scheme (which constellation + which error-correcting code, picked together to set the data rate); FEC = forward error correction; EVM = error vector magnitude (how far received symbols land from the ideal constellation point — lower dB is cleaner); CMS = common mode signaling, the slow but rugged 'lingua franca' every mmWave radio understands.",
+      "zh": "全课缩写锚点：DEV＝设备；PHY＝物理层；MCS＝调制编码方案（同时选定星座图与纠错码，二者共同决定数据率）；FEC＝前向纠错；EVM＝误差矢量幅度（接收符号偏离理想星座点的程度，dB 越低越干净）；CMS＝通用模式信令，是每个毫米波射频都能听懂、速率慢但极其稳健的“通用语”。"
+    },
+    {
+      "type": "prose",
+      "en": "Because the three modes share spectrum and a network, 11.1 also pins down how they coexist. EVM is measured differently for single-carrier vs OFDM radios (11.1.7 Error vector magnitude calculation: 11.1.7.1 covers the chip-by-chip SC method, 11.1.7.2 the per-subcarrier OFDM method for the AV and HSI modes). A block of common management spans all modes (11.1.8 Common PHY management): a bitmap advertising which modulations and codes a DEV supports (11.1.8.1 Supported MCSs), the largest data chunk it prefers to handle (11.1.8.2 Preferred fragment size), and a feedback field the receiver sends back carrying link quality such as RSSIR, SINR and FER to help the transmitter pick a better MCS (11.1.8.3 Receive Status field).",
+      "zh": "由于三种模式共享频谱与同一网络，11.1 还规定了它们如何共存。EVM 对单载波与 OFDM 射频的测量方式不同（11.1.7 误差矢量幅度计算：11.1.7.1 讲 SC 模式逐码片的方法，11.1.7.2 讲 AV 与 HSI 模式逐子载波的 OFDM 方法）。一组贯穿所有模式的通用管理（11.1.8 通用 PHY 管理）包括：一个位图，告知某 DEV 支持哪些调制与编码（11.1.8.1 支持的 MCS）；它倾向处理的最大数据块（11.1.8.2 首选分片大小）；以及接收端回传的反馈字段，携带 RSSIR、SINR、FER 等链路质量信息，帮助发送端选取更合适的 MCS（11.1.8.3 接收状态字段）。"
+    },
+    {
+      "type": "prose",
+      "en": "The piconet coordinator (PNC) — the DEV that runs the small network — has extra duties so radios using different modes can still find and talk to each other (11.1.9 Requirements for mmWave PNCs: an HSI or AV coordinator must send its beacon and Sync frame using CMS every superframe). Contention-based access during the contention period uses CSMA/CA, with all contention periods kept in one PHY mode (11.1.10 CP operation), while any mutually-supported mode may be used inside a reserved channel time allocation (11.1.11 mmWave PHY mode usage in CTA). The glue that makes this interoperability possible is CMS (11.1.12 Common mode signaling): a 1760 Mchip/s π/2-BPSK mode, code-spread with length-64 Golay sequences and Reed–Solomon coded, used to carry beacons, Sync frames and beamforming training so a radio in any mode can decode it. Finally, every adjustable parameter lives in the PHY information base (11.1.13 mmWave PHY PIB).",
+      "zh": "微微网协调器（PNC，运行这个小网络的 DEV）承担额外职责，使采用不同模式的射频仍能彼此发现与通信（11.1.9 毫米波 PNC 的要求：HSI 或 AV 协调器必须在每个超帧用 CMS 发送其信标帧和 Sync 帧）。竞争期内基于竞争的接入采用 CSMA/CA，且所有竞争期保持同一种 PHY 模式（11.1.10 CP 操作）；而在预留的信道时间分配内可使用任何双方都支持的模式（11.1.11 CTA 中的毫米波 PHY 模式使用）。让这种互操作成为可能的黏合剂就是 CMS（11.1.12 通用模式信令）：一种 1760 Mchip/s 的 π/2-BPSK 模式，用长度 64 的 Golay 序列做码扩频并经里德-所罗门编码，用于承载信标、Sync 帧和波束成形训练，使任何模式的射频都能解码。最后，所有可调参数都存放在 PHY 信息库中（11.1.13 毫米波 PHY PIB）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"0\" y=\"14\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">SC PHY frame (11.2.3)</text><rect x=\"0\" y=\"24\" width=\"120\" height=\"40\"/><text x=\"60\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">PHY preamble</text><rect x=\"120\" y=\"24\" width=\"170\" height=\"40\"/><text x=\"205\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Frame header (base+opt)</text><rect x=\"290\" y=\"24\" width=\"350\" height=\"40\"/><text x=\"465\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">PHY Payload (MAC body + PCES + stuff)</text><text x=\"0\" y=\"92\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Preamble: Sync + SFD + CES &#8212; aids AGC, timing, channel estimation</text><text x=\"290\" y=\"108\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Header carries MCS, Frame Length, Pilot Word Length, etc.</text></svg>",
+      "caption": {
+        "en": "A single-carrier mmWave frame: preamble for sync, a header announcing the MCS, then the payload. The HSI frame in 11.3.3 has the same skeleton but builds the header and payload with OFDM.",
+        "zh": "单载波毫米波帧：前导码用于同步，帧头声明 MCS，随后是净荷。11.3.3 中的 HSI 帧骨架相同，但帧头与净荷用 OFDM 构建。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "11.2 Single Carrier Mode of mmWave PHY is the mode tuned for low-cost, low-power mobile devices, with three MCS classes reaching from ~1.5 up to >5 Gb/s. Its operating channels and scanning behaviour are set first (11.2.1 PHY operating specifications). The heart of the mode is its signal processing chain (11.2.2 Modulation, FEC and spreading): a table of MCS-dependent parameters (11.2.2.1) and separate header rates (11.2.2.2 Header rate-dependent parameters), the chip and frame timing (11.2.2.3 Timing-related and 11.2.2.4 Frame-related parameters), four π/2-rotated constellations from BPSK to 16-QAM (11.2.2.5 Modulation), Reed–Solomon and LDPC error-correcting codes (11.2.2.6 FEC), padding (11.2.2.7 Stuff bits), Golay-sequence code spreading driven by a pseudo-random shift register (11.2.2.8 Code spreading), stronger protection for the most important bits (11.2.2.9 Unequal error protection), and data whitening (11.2.2.10 Scrambling).",
+      "zh": "11.2 毫米波 PHY 单载波模式是为低成本、低功耗移动设备调校的模式，三个 MCS 类别覆盖约 1.5 至 5 Gb/s 以上。首先确定其工作信道与扫描行为（11.2.1 SC PHY 工作规格）。该模式的核心是其信号处理链（11.2.2 调制、FEC 与扩频）：一张依 MCS 而定的参数表（11.2.2.1）与独立的帧头速率（11.2.2.2 帧头速率相关参数）、码片与帧定时（11.2.2.3 定时相关参数 与 11.2.2.4 帧相关参数）、从 BPSK 到 16-QAM 的四种 π/2 旋转星座（11.2.2.5 调制）、里德-所罗门与 LDPC 纠错码（11.2.2.6 FEC）、填充（11.2.2.7 填充位）、由伪随机移位寄存器驱动的 Golay 序列码扩频（11.2.2.8 码扩频）、对最重要比特的更强保护（11.2.2.9 不等差错保护），以及数据白化（11.2.2.10 加扰）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: SC PHY frame format, transmitter/receiver specs, timing, management and optional modes (11.2.3–11.2.8)",
+        "zh": "覆盖图：SC PHY 帧格式、收发规格、定时、管理与可选模式（11.2.3–11.2.8）"
+      },
+      "en": "11.2.3 SC PHY frame format defines how a frame is assembled: a PHY preamble (11.2.3.1) made of a Sync field for detection (11.2.3.1.1), an SFD = start-frame delimiter that also signals the header rate (11.2.3.1.2), and a CES = channel estimation sequence (11.2.3.1.3); a frame header (11.2.3.2) carrying the SC PHY header fields like MCS and Pilot Word Length (11.2.3.2.1) protected by a CRC-16 HCS = header check sequence (11.2.3.2.2) and shortened Reed–Solomon parity (11.2.3.2.3), with the same HCS and FEC applied to the MAC subheader (11.2.3.2.4, 11.2.3.2.5); and a PHY Payload field (11.2.3.3) that is scrambled, coded and modulated (11.2.3.3.1, 11.2.3.3.2). 11.2.4 Transmitter specifications fixes EVM limits (11.2.4.1), center-frequency tolerance of ±25 ppm (11.2.4.2), symbol rate (11.2.4.3) and a sub-9.3 ns power-on/power-down ramp (11.2.4.4). 11.2.5 Receiver specifications sets the 8% FER error-rate criterion (11.2.5.1), per-MCS reference sensitivity down to -70 dBm (11.2.5.2), a -10 dBm maximum input level (11.2.5.3) and clear-channel-assessment (CCA) detection (11.2.5.4). 11.2.6 PHY layer timing lists the interframe spaces (11.2.6.1), receive-to-transmit and transmit-to-receive turnaround times (11.2.6.2, 11.2.6.3), the minimum gap between transmissions (11.2.6.4) and a 100 µs channel-switch time (11.2.6.5). 11.2.7 PHY management for SC PHY caps the frame at 8 388 608 octets (11.2.7.1), the transfer unit (11.2.7.2) and a 512-octet minimum fragment (11.2.7.3). Finally, 11.2.8 Optional OOK/DAMI modes adds two ultra-simple low-power schemes — OOK = on-off keying (11.2.8.1) and DAMI = dual alternate mark inversion (11.2.8.2) — both Reed–Solomon coded (11.2.8.3) with simple bit-repetition spreading (11.2.8.4).",
+      "zh": "11.2.3 SC PHY 帧格式规定帧如何组装：PHY 前导码（11.2.3.1），由用于检测的 Sync 字段（11.2.3.1.1）、同时指示帧头速率的 SFD＝帧起始定界符（11.2.3.1.2）和 CES＝信道估计序列（11.2.3.1.3）构成；帧头（11.2.3.2）携带诸如 MCS 与导频字长度等 SC PHY 帧头字段（11.2.3.2.1），由 CRC-16 的 HCS＝帧头校验序列（11.2.3.2.2）和缩短的里德-所罗门校验（11.2.3.2.3）保护，相同的 HCS 与 FEC 也用于 MAC 子帧头（11.2.3.2.4、11.2.3.2.5）；以及经加扰、编码与调制的 PHY 净荷字段（11.2.3.3、11.2.3.3.1、11.2.3.3.2）。11.2.4 发射机规格规定 EVM 限值（11.2.4.1）、±25 ppm 的中心频率容差（11.2.4.2）、符号率（11.2.4.3）以及小于 9.3 ns 的开/关功率斜坡（11.2.4.4）。11.2.5 接收机规格设定 8% FER 的差错率准则（11.2.5.1）、逐 MCS 低至 -70 dBm 的参考灵敏度（11.2.5.2）、-10 dBm 的最大输入电平（11.2.5.3）以及空闲信道评估（CCA）检测（11.2.5.4）。11.2.6 PHY 层定时列出帧间间隔（11.2.6.1）、收转发与发转收的切换时间（11.2.6.2、11.2.6.3）、相邻发射的最小间隔（11.2.6.4）以及 100 µs 的信道切换时间（11.2.6.5）。11.2.7 SC PHY 的 PHY 管理将帧上限定为 8 388 608 字节（11.2.7.1）、传输单元（11.2.7.2）和 512 字节的最小分片（11.2.7.3）。最后，11.2.8 可选 OOK/DAMI 模式增加了两种极简低功耗方案——OOK＝通断键控（11.2.8.1）与 DAMI＝双交替传号反转（11.2.8.2）——均经里德-所罗门编码（11.2.8.3），并用简单的比特重复扩频（11.2.8.4）。",
+      "cite": {
+        "pdf_id": "802153-2016",
+        "pages": [
+          360,
+          361,
+          362,
+          363,
+          364,
+          365,
+          366,
+          367,
+          368,
+          369,
+          370,
+          371
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "11.3 High Speed Interface mode of mmWave PHY swaps the single carrier for orthogonal frequency division multiplexing (OFDM) — splitting the data across many narrow subcarriers so it survives multipath cleanly — and is built for low-latency, bidirectional gigabit links. Its channels are set first, requiring support for channel 2 or 3 (11.3.1 General operating specifications, 11.3.1.1 Operating frequency bands). The mode's signal chain (11.3.2 HSI PHY modulation, FEC and spreading) defines twelve MCSs mixing QPSK/16-QAM/64-QAM with LDPC = low-density parity-check codes (11.3.2.1), plus the OFDM timing such as a 512-point FFT, 5.15625 MHz subcarrier spacing and ~218 ns symbol (11.3.2.2) and frame parameters (11.3.2.3).",
+      "zh": "11.3 毫米波 PHY 高速接口模式以正交频分复用（OFDM）取代单载波——将数据分散到许多窄子载波上，从而干净地对抗多径——专为低时延、双向吉比特链路打造。先确定其信道，要求支持信道 2 或 3（11.3.1 通用工作规格、11.3.1.1 工作频段）。该模式的信号链（11.3.2 HSI PHY 调制、FEC 与扩频）定义了十二个 MCS，将 QPSK/16-QAM/64-QAM 与 LDPC＝低密度奇偶校验码混合（11.3.2.1），并规定了 OFDM 定时，例如 512 点 FFT、5.15625 MHz 子载波间隔和约 218 ns 的符号（11.3.2.2）以及帧参数（11.3.2.3）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[MAC body] --> B[Scramble]\n  B --> C[LDPC encode]\n  C --> D[Bit interleaver opt]\n  D --> E[Stuff bits]\n  E --> F[QPSK/16/64-QAM map]\n  F --> G[Spreader]\n  G --> H[Tone interleaver]\n  H --> I[OFDM modulator]\n  I --> J[Insert PCES]",
+      "zh": "flowchart LR\n  A[MAC 净荷] --> B[加扰]\n  B --> C[LDPC 编码]\n  C --> D[比特交织 可选]\n  D --> E[填充位]\n  E --> F[QPSK/16/64-QAM 映射]\n  F --> G[扩频器]\n  G --> H[音调交织]\n  H --> I[OFDM 调制]\n  I --> J[插入 PCES]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: HSI PHY FEC chain, frame format, transmit/receive specs and management (11.3.2.4–11.3.6)",
+        "zh": "覆盖图：HSI PHY 的 FEC 链、帧格式、收发规格与管理（11.3.2.4–11.3.6）"
+      },
+      "en": "Inside 11.3.2 the FEC chain (11.3.2.4) uses LDPC block codes (11.3.2.4.1) with an EEP = equal error protection multiplexer (11.3.2.4.2), a UEP = unequal error protection multiplexer (11.3.2.4.3) and an optional bit interleaver (11.3.2.4.4); then stuff bits align to OFDM symbols (11.3.2.5), Gray-coded constellations are mapped (11.3.2.6), a spreader applies factor 1 or 48 (11.3.2.7, 11.3.2.7.1, 11.3.2.7.2), a tone interleaver scatters adjacent symbols across subcarriers (11.3.2.8), and the OFDM modulator (11.3.2.9) places 16 pilot subcarriers (11.3.2.9.1) and 16 guard subcarriers (11.3.2.9.2), with optional PCES = pilot channel estimation sequence inserted every 96 symbols (11.3.2.10) and the same scrambler as SC (11.3.2.11). 11.3.3 HSI PHY frame format defines the long/short preamble (11.3.3.1), the main+optional frame header build (11.3.3.2), the HSI PHY header fields (11.3.3.3), the CRC-16 header check sequences (11.3.3.4, 11.3.3.4.1, 11.3.3.4.2) and the payload assembly (11.3.3.5). 11.3.4 Transmitter specifications gives the EVM limits down to -23 dB (11.3.4.1) and ±20 ppm chip-clock alignment (11.3.4.2). 11.3.5 Receiver specifications sets sensitivity at a 10^-6 BER (11.3.5.1), CCA performance (11.3.5.2) and a -25 dBm maximum input level (11.3.5.3). 11.3.6 HSI PHY management defines the supported-data-rate encoding (11.3.6.1), fragment-size encoding (11.3.6.2), the 2^20-1 octet maximum frame length (11.3.6.3), transfer unit size (11.3.6.4) and 512-octet minimum fragment (11.3.6.5).",
+      "zh": "在 11.3.2 内部，FEC 链（11.3.2.4）使用 LDPC 块码（11.3.2.4.1），配合 EEP＝等差错保护复用器（11.3.2.4.2）、UEP＝不等差错保护复用器（11.3.2.4.3）以及可选的比特交织器（11.3.2.4.4）；随后填充位对齐到 OFDM 符号（11.3.2.5），映射格雷编码星座（11.3.2.6），扩频器施加因子 1 或 48（11.3.2.7、11.3.2.7.1、11.3.2.7.2），音调交织器将相邻符号分散到各子载波上（11.3.2.8），OFDM 调制器（11.3.2.9）放置 16 个导频子载波（11.3.2.9.1）和 16 个保护子载波（11.3.2.9.2），并可每 96 个符号插入可选的 PCES＝导频信道估计序列（11.3.2.10），其加扰器与 SC 相同（11.3.2.11）。11.3.3 HSI PHY 帧格式定义长/短前导码（11.3.3.1）、主帧头与可选帧头的构建（11.3.3.2）、HSI PHY 帧头字段（11.3.3.3）、CRC-16 帧头校验序列（11.3.3.4、11.3.3.4.1、11.3.3.4.2）以及净荷组装（11.3.3.5）。11.3.4 发射机规格给出低至 -23 dB 的 EVM 限值（11.3.4.1）与 ±20 ppm 的码片时钟对齐（11.3.4.2）。11.3.5 接收机规格设定 10^-6 误码率下的灵敏度（11.3.5.1）、CCA 性能（11.3.5.2）与 -25 dBm 的最大输入电平（11.3.5.3）。11.3.6 HSI PHY 管理定义支持数据率编码（11.3.6.1）、分片大小编码（11.3.6.2）、2^20-1 字节的最大帧长（11.3.6.3）、传输单元大小（11.3.6.4）与 512 字节的最小分片（11.3.6.5）。",
+      "cite": {
+        "pdf_id": "802153-2016",
+        "pages": [
+          374,
+          375,
+          376,
+          377,
+          379,
+          380,
+          381,
+          382,
+          383,
+          384,
+          385,
+          387,
+          388,
+          389,
+          390,
+          391,
+          392
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: SC and HSI are two ways to spend the same 60 GHz bandwidth. SC keeps the transmitter simple (one carrier, π/2-rotated constellations, easy to build cheap mobile silicon). HSI spreads the signal across hundreds of OFDM subcarriers so it rides out multipath better and turns around faster for two-way traffic. CMS is the shared low-rate handshake both fall back to so radios always recognise each other before negotiating a faster MCS.",
+      "zh": "思维模型：SC 与 HSI 是花费同一段 60 GHz 带宽的两种方式。SC 让发射机保持简单（单载波、π/2 旋转星座，便于制造廉价的移动芯片）。HSI 把信号铺展到数百个 OFDM 子载波上，从而更好地对抗多径，并在双向流量中更快切换收发。CMS 则是二者都会回退使用的共享低速握手，使射频在协商更快的 MCS 之前总能彼此识别。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        334,
+        335,
+        336,
+        337,
+        338,
+        339,
+        340
+      ],
+      "note": "11.1 General requirements: PHY modes, regulatory info, power/emissions/temperature, channelization, PSD mask, EVM calculation, common management, PNC rules, CP/CTA usage"
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        340,
+        341,
+        342,
+        343,
+        344,
+        345
+      ],
+      "note": "11.1.12 Common mode signaling (CMS) and 11.1.13 mmWave PHY PIB"
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        345,
+        346,
+        360,
+        361,
+        362,
+        363,
+        364,
+        365,
+        366
+      ],
+      "note": "11.2 SC PHY overview, operating specs, modulation/FEC/spreading chain, and SC frame format"
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        367,
+        368,
+        369,
+        370,
+        371
+      ],
+      "note": "11.2.4 transmitter, 11.2.5 receiver, 11.2.6 timing, 11.2.7 management, 11.2.8 optional OOK/DAMI"
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        371,
+        372,
+        373,
+        374,
+        375,
+        376,
+        377,
+        379,
+        380,
+        381,
+        382,
+        383
+      ],
+      "note": "11.3 HSI PHY general specs and 11.3.2 modulation/FEC/spreading/OFDM chain"
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        384,
+        385,
+        387,
+        388,
+        389,
+        390,
+        391,
+        392
+      ],
+      "note": "11.3.3 HSI frame format, 11.3.4 transmitter, 11.3.5 receiver, 11.3.6 management"
+    }
+  ],
+  "covers": [
+    "802153-2016:11.1.1",
+    "802153-2016:11.1.2",
+    "802153-2016:11.1.3",
+    "802153-2016:11.1.4",
+    "802153-2016:11.1.5",
+    "802153-2016:11.1.6",
+    "802153-2016:11.1.7",
+    "802153-2016:11.1.8",
+    "802153-2016:11.1.9",
+    "802153-2016:11.1.10",
+    "802153-2016:11.1.11",
+    "802153-2016:11.1.12",
+    "802153-2016:11.1.13",
+    "802153-2016:11.2.1",
+    "802153-2016:11.2.2",
+    "802153-2016:11.2.3",
+    "802153-2016:11.2.4",
+    "802153-2016:11.2.5",
+    "802153-2016:11.2.6",
+    "802153-2016:11.2.7",
+    "802153-2016:11.2.8",
+    "802153-2016:11.3.1",
+    "802153-2016:11.3.2",
+    "802153-2016:11.3.3",
+    "802153-2016:11.3.4",
+    "802153-2016:11.3.5",
+    "802153-2016:11.3.6"
+  ],
+  "track": "pan-hr-wpan"
+}

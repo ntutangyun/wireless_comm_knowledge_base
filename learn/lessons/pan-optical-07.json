@@ -1,0 +1,183 @@
+{
+  "id": "pan-optical-07",
+  "title": {
+    "en": "Talking to the Light: PHY Service Primitives and the PHY I / PHY II Transmit Chains",
+    "zh": "与光对话：PHY 服务原语以及 PHY I / PHY II 发送链路"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.15.7-2018 is the standard for Short-Range Optical Wireless Communications — sending data by blinking light too fast for the eye to see (the basis of LiFi / VLC, Visible Light Communication). This lesson covers three clauses that sit at the boundary between the MAC (Medium Access Control) software and the actual light source: Clause 9 defines the PHY (physical layer) service — the menu of commands the MAC can send down to the radio-of-light. Clause 10 (PHY I) and Clause 11 (PHY II) then specify how raw bits become a modulated light waveform. We will give every subclause an intuitive home and end with a coverage map naming exact clause numbers.",
+      "zh": "IEEE Std 802.15.7-2018 是短距离光无线通信标准——通过快到肉眼无法察觉的闪烁光来传输数据（这是 LiFi / VLC，即可见光通信的基础）。本课覆盖位于 MAC（媒体访问控制）软件与实际光源之间边界的三个章节：第 9 章定义 PHY（物理层）服务，即 MAC 可以下发给“光收发器”的命令菜单；第 10 章（PHY I）与第 11 章（PHY II）则规定如何把原始比特变成被调制的光波形。我们会为每个子条款找到直观的归宿，并以一张点名确切条款号的覆盖图收尾。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 9.1 (Overview) draws the map. The PHY sits between the MAC and the optical channel, and it carries a management entity called the PLME (Physical Layer Management Entity) plus a database of tunable settings called the PHY PIB (PHY PAN Information Base). Two doorways — SAPs, Service Access Points — connect the MAC to the PHY: the PD-SAP (PHY Data SAP) carries actual payload, and the PLME-SAP (PLME's SAP) carries control commands. A third 'optical SAP' faces the light source itself and is deliberately left unspecified, since it depends on the LED driver hardware.",
+      "zh": "第 9.1 节（概述）勾勒出全局。PHY 位于 MAC 与光信道之间，内含一个名为 PLME（物理层管理实体）的管理实体，以及一个名为 PHY PIB（PHY 个域网信息库）的可调参数数据库。两道门——SAP（服务访问点）——把 MAC 连到 PHY：PD-SAP（PHY 数据 SAP）承载真正的有效载荷，PLME-SAP（PLME 的 SAP）承载控制命令。第三道“光学 SAP”面向光源本身，标准刻意未作规定，因为它取决于 LED 驱动硬件。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 170\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"20\" y=\"20\" width=\"380\" height=\"30\"/><text x=\"210\" y=\"40\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">MAC sublayer (MLME / DME)</text><line x1=\"110\" y1=\"50\" x2=\"110\" y2=\"90\"/><text x=\"110\" y=\"75\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">PD-SAP</text><line x1=\"310\" y1=\"50\" x2=\"310\" y2=\"90\"/><text x=\"310\" y=\"75\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">PLME-SAP</text><rect x=\"20\" y=\"90\" width=\"380\" height=\"40\"/><text x=\"210\" y=\"108\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">PHY  (PLME + PHY PIB)</text><text x=\"210\" y=\"123\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">PD-DATA / PLME primitives</text><line x1=\"210\" y1=\"130\" x2=\"210\" y2=\"160\"/><text x=\"210\" y=\"150\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">optical SAP (unspecified)</text></svg>",
+      "caption": {
+        "en": "Clause 9.1: the PHY exposes two specified doorways (PD-SAP for data, PLME-SAP for management) to the MAC, and an unspecified optical SAP to the light source.",
+        "zh": "第 9.1 节：PHY 向 MAC 暴露两道规定的门（数据用 PD-SAP，管理用 PLME-SAP），并向光源暴露一道未作规定的光学 SAP。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 9.2 (PHY management service) lists five command pairs that travel over the PLME-SAP, each a request from the MAC and a confirm back from the PHY. PLME-CCA (9.2.1 request / 9.2.2 confirm) asks for a Clear Channel Assessment — is the light channel busy or idle? — returning BUSY, IDLE, or an error like TRX_OFF. PLME-GET (9.2.3 / 9.2.4) reads one PHY PIB attribute; PLME-SET (9.2.5 / 9.2.6) writes one, confirming SUCCESS, UNSUPPORTED_ATTRIBUTE, or INVALID_PARAMETER. PLME-SET-TRX-STATE (9.2.7 / 9.2.8) flips the transceiver between TRX_OFF (disabled), TX_ON (transmit), RX_ON (receive), or FORCE_TRX_OFF, deferring with BUSY_TX / BUSY_RX if it is mid-frame.",
+      "zh": "第 9.2 节（PHY 管理服务）列出在 PLME-SAP 上传输的五对命令，每对都是来自 MAC 的请求与来自 PHY 的确认。PLME-CCA（9.2.1 请求 / 9.2.2 确认）请求一次空闲信道评估——光信道是忙还是闲？——返回 BUSY、IDLE，或像 TRX_OFF 这样的错误。PLME-GET（9.2.3 / 9.2.4）读取一个 PHY PIB 属性；PLME-SET（9.2.5 / 9.2.6）写入一个属性，确认状态为 SUCCESS、UNSUPPORTED_ATTRIBUTE 或 INVALID_PARAMETER。PLME-SET-TRX-STATE（9.2.7 / 9.2.8）在 TRX_OFF（关闭）、TX_ON（发送）、RX_ON（接收）或 FORCE_TRX_OFF 之间切换收发器；若正处于收发帧的中途，则以 BUSY_TX / BUSY_RX 推迟切换。"
+    },
+    {
+      "type": "prose",
+      "en": "The fifth pair is unusual and optical-specific: PLME-SWITCH (9.2.9 request / 9.2.10 confirm). Because an optical device can have an array of LEDs and photodiodes, the DME (Device Management Entity) uses this primitive with an SW-BIT-MAP — one bit per optical source or photodetector — and a DIR flag (0 = transmit, 1 = receive) to select which physical cells form the active group. The confirm simply reports SUCCESS once the PHY has switched cells. This is how a multi-element luminaire steers which emitters are lit for a given data stream.",
+      "zh": "第五对很特殊，且专属于光：PLME-SWITCH（9.2.9 请求 / 9.2.10 确认）。由于光器件可能拥有由 LED 和光电二极管组成的阵列，DME（设备管理实体）使用该原语，配合 SW-BIT-MAP（每个光源或光电探测器对应一个比特）与 DIR 标志（0 = 发送，1 = 接收），来选择哪些物理单元构成激活组。PHY 完成单元切换后，确认仅报告 SUCCESS。这正是多单元灯具为某条数据流选择点亮哪些发光体的方式。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 9.3 (PHY data service) is simpler — one primitive trio over the PD-SAP. PD-DATA.request (9.3.1) hands a PSDU (PHY Service Data Unit, the payload) plus its length and a bandplanID (color band) down for transmission as a PPDU (PHY Protocol Data Unit). PD-DATA.confirm (9.3.2) reports SUCCESS once sent, or RX_ON / TRX_OFF if the transmitter was not ready. PD-DATA.indication (9.3.3) goes the other way: it delivers a received PSDU upward along with ppduLinkQuality, a WQI (Warning Quality Indicator / link-quality value) measured during reception.",
+      "zh": "第 9.3 节（PHY 数据服务）更简单——在 PD-SAP 上只有一组三个原语。PD-DATA.request（9.3.1）把一个 PSDU（PHY 服务数据单元，即有效载荷）连同其长度和 bandplanID（颜色波段）下发，以 PPDU（PHY 协议数据单元）形式发送。PD-DATA.confirm（9.3.2）在发送完成后报告 SUCCESS，若发射机未就绪则报告 RX_ON / TRX_OFF。PD-DATA.indication（9.3.3）则反向：把收到的 PSDU 上交，并附带 ppduLinkQuality，即接收期间测得的 WQI（链路质量指示值）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 9.4 (PHY enumeration description) is the dictionary of status codes — BUSY (0x00), BUSY_RX, BUSY_TX, FORCE_TRX_OFF, IDLE, INVALID_PARAMETER, RX_ON, SUCCESS, TRX_OFF, TX_ON, UNSUPPORTED_ATTRIBUTE — the exact values returned in the confirm primitives above. Clause 9.5 then defines the PHY's tunable knobs: 9.5.1 (PHY constants) are fixed, hardware-dependent values like aMaxPHYFrameSize (1023 octets for PHY I, 65535 for PHY II/III) and turnaround times; 9.5.2 (PHY PIB attributes) are the read/write settings — phyCurrentChannel, phyDim (0–1000 brightness), phyCCAMode, and per-mode tables for S2-PSK, HS-PSK, Offset-VPWM, and RS-FSK.",
+      "zh": "第 9.4 节（PHY 枚举描述）是状态码字典——BUSY（0x00）、BUSY_RX、BUSY_TX、FORCE_TRX_OFF、IDLE、INVALID_PARAMETER、RX_ON、SUCCESS、TRX_OFF、TX_ON、UNSUPPORTED_ATTRIBUTE——正是上述确认原语返回的确切取值。第 9.5 节随后定义 PHY 的可调旋钮：9.5.1（PHY 常量）是固定的、依赖硬件的值，如 aMaxPHYFrameSize（PHY I 为 1023 字节，PHY II/III 为 65535）和收发转换时间；9.5.2（PHY PIB 属性）是可读写设置——phyCurrentChannel、phyDim（0–1000 亮度）、phyCCAMode，以及面向 S2-PSK、HS-PSK、Offset-VPWM 和 RS-FSK 各模式的分表。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the transmit chains. Clause 10 specifies PHY I — the low-data-rate PHY whose header is sent at 11.67 kbps (200 kHz optical clock, mandatory) or 35.56 kbps (400 kHz). Clause 10.1 (Reference modulator diagram) shows its signature feature: concatenated coding. An outer Reed-Solomon (RS) code wraps an inner convolutional code, with interleaving and puncturing in between — a layered defense so that errors the convolutional decoder cannot fix are mopped up by the RS decoder. Both the PHR (PHY Header) and PSDU pass through this FEC (Forward Error Correction) chain.",
+      "zh": "现在进入发送链路。第 10 章规定 PHY I——低数据率 PHY，其头部以 11.67 kbps（200 kHz 光时钟，强制）或 35.56 kbps（400 kHz）发送。第 10.1 节（参考调制器框图）展示其标志性特征：级联编码。外层里德-所罗门（RS）码包裹内层卷积码，中间夹着交织与删余——这是一种分层防御，使卷积译码器无法纠正的错误由 RS 译码器清扫干净。PHR（PHY 头部）与 PSDU 都要经过这条 FEC（前向纠错）链。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[PHR + PSDU] --> B[Outer RS encoder 10.2]\n  B --> C[Interleave + puncture 10.3]\n  C --> D[Inner convolutional 10.4]\n  D --> E[RLL encode 10.5]\n  E --> F[VPPM mapping 10.6]\n  F --> G[light out]",
+      "zh": "flowchart LR\n  A[PHR + PSDU] --> B[外层 RS 编码 10.2]\n  B --> C[交织 + 删余 10.3]\n  C --> D[内层卷积 10.4]\n  D --> E[RLL 编码 10.5]\n  E --> F[VPPM 映射 10.6]\n  F --> G[光输出]"
+    },
+    {
+      "type": "prose",
+      "en": "Walking the PHY I chain: 10.2 (Outer FEC encoder) uses systematic RS codes over GF(16) (a Galois field of 16 elements) generated by x^4 + x + 1, with code rates RS(15,11), (15,7), (15,4), (15,2); a shortened RS code trims padding for the last block. 10.3 (Interleaving and puncturing block) is a block interleaver of fixed height n and flexible depth D (chosen from the frame size) followed by puncturing, again to minimize padding overhead; the frame length travels in the header so the receiver can re-align. 10.4 (Inner FEC encoder) is a rate-1/3 mother convolutional code of constraint length K=7 (generators g0=133, g1=171, g2=165 octal), with six zero tail bits. From it, 10.4.1 derives rate-1/4 (puncture to 1/2 then repeat), 10.4.2 keeps the native rate-1/3, and 10.4.3 punctures to rate-2/3.",
+      "zh": "走一遍 PHY I 链路：10.2（外层 FEC 编码器）使用 GF(16)（16 元伽罗瓦域）上的系统 RS 码，由 x^4 + x + 1 生成，码率有 RS(15,11)、(15,7)、(15,4)、(15,2)；末块用缩短 RS 码以削减填充。10.3（交织与删余模块）是固定高度 n、灵活深度 D（由帧长决定）的块交织器，其后接删余，同样为最小化填充开销；帧长在头部中传输，使接收端能够重新对齐。10.4（内层 FEC 编码器）是约束长度 K=7 的 1/3 母卷积码（生成多项式八进制 g0=133、g1=171、g2=165），并附六个零尾比特。由它出发：10.4.1 得到 1/4 码率（删余至 1/2 再重复），10.4.2 保留原生 1/3 码率，10.4.3 删余至 2/3 码率。"
+    },
+    {
+      "type": "prose",
+      "en": "After error coding comes line coding. Clause 10.5 (RLL encoder — Run Length Limited) keeps the light stream DC-balanced (equal on/off time) so brightness stays steady and the receiver can recover the clock. 10.5.1 specifies 4B6B encoding for all VPPM modes: every 4 input bits become a 6-bit symbol with exactly three 1s and three 0s — a 50% duty cycle, run-length limited to four, with error-detection capability (Table 117). 10.5.2 specifies Manchester encoding for OOK (On-Off Keying) modes: bit 0 to '01', bit 1 to '10'. Finally 10.6 (Data mapping for VPPM) defines how a logical bit maps to a Variable Pulse Position Modulation pulse — logical 0 is high-then-low, logical 1 is low-then-high, with the high/low split set by a duty cycle d (0.1 to 0.9) that doubles as the dimming control.",
+      "zh": "纠错编码之后是线路编码。第 10.5 节（RLL 编码器——游程长度受限）使光流保持直流平衡（亮灭时间相等），从而亮度稳定、接收端可恢复时钟。10.5.1 为所有 VPPM 模式规定 4B6B 编码：每 4 个输入比特变成恰好含三个 1 与三个 0 的 6 比特符号——占空比 50%，游程长度限制为 4，并具备检错能力（表 117）。10.5.2 为 OOK（通断键控）模式规定曼彻斯特编码：比特 0 映射为“01”，比特 1 映射为“10”。最后 10.6 节（VPPM 数据映射）定义逻辑比特如何映射为可变脉冲位置调制脉冲——逻辑 0 是先高后低，逻辑 1 是先低后高，高低分割由占空比 d（0.1 至 0.9）设定，而 d 同时兼作调光控制。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11 specifies PHY II — the high-data-rate PHY (header at 1.25 to 48 Mbps; 1.25 Mbps at a 3.75 MHz optical clock is mandatory). It is deliberately leaner than PHY I. 11.1 (Reference modulator diagram) again puts both PHR and PSDU through FEC, but 11.2 (FEC encoder) drops the inner convolutional stage and uses a single systematic Reed-Solomon code over the larger GF(256), primitive polynomial x^8 + x^4 + x^3 + x^2 + 1, with RS(160,128) and RS(64,32) generators; for 4B6B VPPM modes each 8-symbol RS word splits into two nibbles fed LSB-first to the 4B6B encoder. 11.3 (RLL encoder) reuses 4B6B for VPPM (from 10.5.1) but mandates 8B10B (per ANSI/INCITS 373) for OOK. 11.4 (Data mapping for VPPM) simply reuses the mapping of 10.6.",
+      "zh": "第 11 章规定 PHY II——高数据率 PHY（头部 1.25 至 48 Mbps；3.75 MHz 光时钟下的 1.25 Mbps 为强制）。它刻意比 PHY I 更精简。11.1 节（参考调制器框图）同样让 PHR 与 PSDU 都经过 FEC，但 11.2 节（FEC 编码器）去掉了内层卷积级，改用更大的 GF(256) 上的单一系统 RS 码，本原多项式为 x^8 + x^4 + x^3 + x^2 + 1，采用 RS(160,128) 与 RS(64,32) 生成多项式；对 4B6B VPPM 模式，每个 8 符号 RS 码字拆成两个半字节，按 LSB 优先送入 4B6B 编码器。11.3 节（RLL 编码器）对 VPPM 复用 4B6B（来自 10.5.1），但对 OOK 强制采用 8B10B（依 ANSI/INCITS 373）。11.4 节（VPPM 数据映射）直接复用 10.6 节的映射。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: PHY I = belt-and-suspenders (RS outer + convolutional inner) for reliability at low speed; PHY II = streamlined (RS only, bigger GF(256) field, 8B10B for OOK) for higher throughput. Both end on the same VPPM mapping and 4B6B line code, which is why 11.3 and 11.4 just point back to 10.5.1 and 10.6.",
+      "zh": "思维模型：PHY I = 双保险（RS 外码 + 卷积内码），以低速换取可靠性；PHY II = 精简方案（仅 RS，更大的 GF(256) 域，OOK 用 8B10B），换取更高吞吐。两者最终都落在同样的 VPPM 映射与 4B6B 线路码上——这正是 11.3 与 11.4 只回指 10.5.1 与 10.6 的原因。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause number in this lesson",
+        "zh": "覆盖图——本课涉及的每一个条款号"
+      },
+      "en": "Clause 9 PHY service: 9.1 Overview (PHY/PLME/PHY PIB, PD-SAP + PLME-SAP + optical SAP). 9.2 PHY management service over PLME-SAP — 9.2.1 PLME-CCA.request, 9.2.2 PLME-CCA.confirm, 9.2.3 PLME-GET.request, 9.2.4 PLME-GET.confirm, 9.2.5 PLME-SET.request, 9.2.6 PLME-SET.confirm, 9.2.7 PLME-SET-TRX-STATE.request, 9.2.8 PLME-SET-TRX-STATE.confirm, 9.2.9 PLME-SWITCH.request (SW-BIT-MAP + DIR), 9.2.10 PLME-SWITCH.confirm. 9.3 PHY data service over PD-SAP — 9.3.1 PD-DATA.request, 9.3.2 PD-DATA.confirm, 9.3.3 PD-DATA.indication (ppduLinkQuality/WQI). 9.4 PHY enumeration description (status codes table). 9.5 constants and PIB — 9.5.1 PHY constants (aMaxPHYFrameSize, turnaround times), 9.5.2 PHY PIB attributes (phyCurrentChannel, phyDim, per-mode tables). Clause 10 PHY I: 10.1 Reference modulator diagram (concatenated coding), 10.2 Outer FEC encoder (RS over GF(16)), 10.3 Interleaving and puncturing block (height n, depth D), 10.4 Inner FEC encoder (rate-1/3 K=7 convolutional) — 10.4.1 rate-1/4, 10.4.2 rate-1/3, 10.4.3 rate-2/3; 10.5 RLL encoder — 10.5.1 4B6B for VPPM, 10.5.2 Manchester for OOK; 10.6 Data mapping for VPPM (duty cycle d). Clause 11 PHY II: 11.1 Reference modulator diagram, 11.2 FEC encoder (RS over GF(256)), 11.3 RLL encoder (4B6B for VPPM, 8B10B for OOK), 11.4 Data mapping for VPPM (reuses 10.6).",
+      "zh": "第 9 章 PHY 服务：9.1 概述（PHY/PLME/PHY PIB，PD-SAP + PLME-SAP + 光学 SAP）。9.2 PLME-SAP 上的 PHY 管理服务——9.2.1 PLME-CCA.request、9.2.2 PLME-CCA.confirm、9.2.3 PLME-GET.request、9.2.4 PLME-GET.confirm、9.2.5 PLME-SET.request、9.2.6 PLME-SET.confirm、9.2.7 PLME-SET-TRX-STATE.request、9.2.8 PLME-SET-TRX-STATE.confirm、9.2.9 PLME-SWITCH.request（SW-BIT-MAP + DIR）、9.2.10 PLME-SWITCH.confirm。9.3 PD-SAP 上的 PHY 数据服务——9.3.1 PD-DATA.request、9.3.2 PD-DATA.confirm、9.3.3 PD-DATA.indication（ppduLinkQuality/WQI）。9.4 PHY 枚举描述（状态码表）。9.5 常量与 PIB——9.5.1 PHY 常量（aMaxPHYFrameSize、收发转换时间）、9.5.2 PHY PIB 属性（phyCurrentChannel、phyDim、各模式分表）。第 10 章 PHY I：10.1 参考调制器框图（级联编码）、10.2 外层 FEC 编码器（GF(16) 上 RS）、10.3 交织与删余模块（高度 n、深度 D）、10.4 内层 FEC 编码器（1/3 码率、K=7 卷积）——10.4.1 1/4 码率、10.4.2 1/3 码率、10.4.3 2/3 码率；10.5 RLL 编码器——10.5.1 VPPM 的 4B6B、10.5.2 OOK 的曼彻斯特；10.6 VPPM 数据映射（占空比 d）。第 11 章 PHY II：11.1 参考调制器框图、11.2 FEC 编码器（GF(256) 上 RS）、11.3 RLL 编码器（VPPM 用 4B6B、OOK 用 8B10B）、11.4 VPPM 数据映射（复用 10.6）。",
+      "cite": {
+        "pdf_id": "802157-2018",
+        "pages": [
+          266,
+          267,
+          271,
+          272,
+          273,
+          274,
+          276,
+          277,
+          291,
+          292,
+          293,
+          294,
+          295,
+          296,
+          297,
+          298
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        266,
+        267,
+        268,
+        269,
+        270,
+        271,
+        272,
+        273,
+        274,
+        275,
+        276,
+        277
+      ],
+      "note": "Clause 9 PHY service specifications: 9.1 overview, 9.2 management primitives (CCA/GET/SET/SET-TRX-STATE/SWITCH), 9.3 data primitives (PD-DATA), 9.4 enumerations, 9.5 constants and PIB attributes."
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        291,
+        292,
+        293,
+        294,
+        295,
+        296
+      ],
+      "note": "Clause 10 PHY I: 10.1 reference modulator, 10.2 outer RS FEC, 10.3 interleaving/puncturing, 10.4 inner convolutional FEC (rates 1/4,1/3,2/3), 10.5 RLL (4B6B/Manchester), 10.6 VPPM mapping."
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        297,
+        298
+      ],
+      "note": "Clause 11 PHY II: 11.1 reference modulator, 11.2 GF(256) RS FEC, 11.3 RLL (4B6B/8B10B), 11.4 VPPM mapping reusing 10.6."
+    }
+  ],
+  "covers": [
+    "802157-2018:9.1",
+    "802157-2018:9.2.1",
+    "802157-2018:9.2.2",
+    "802157-2018:9.2.3",
+    "802157-2018:9.2.4",
+    "802157-2018:9.2.5",
+    "802157-2018:9.2.6",
+    "802157-2018:9.2.7",
+    "802157-2018:9.2.8",
+    "802157-2018:9.2.9",
+    "802157-2018:9.2.10",
+    "802157-2018:9.3.1",
+    "802157-2018:9.3.2",
+    "802157-2018:9.3.3",
+    "802157-2018:9.4",
+    "802157-2018:9.5.1",
+    "802157-2018:9.5.2",
+    "802157-2018:10.1",
+    "802157-2018:10.2",
+    "802157-2018:10.3",
+    "802157-2018:10.4.1",
+    "802157-2018:10.4.2",
+    "802157-2018:10.4.3",
+    "802157-2018:10.5.1",
+    "802157-2018:10.5.2",
+    "802157-2018:10.6",
+    "802157-2018:11.1",
+    "802157-2018:11.2",
+    "802157-2018:11.3",
+    "802157-2018:11.4"
+  ],
+  "track": "pan-optical"
+}

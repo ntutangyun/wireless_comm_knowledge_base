@@ -1,0 +1,192 @@
+{
+  "id": "pan-optical-08",
+  "title": {
+    "en": "PHY III & PHY IV: Color-Shift Keying and Camera-Friendly Light Modulations",
+    "zh": "PHY III 与 PHY IV：颜色偏移键控与适配摄像头的光调制"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE 802.15.7 is the standard for short-range optical wireless communication (OWC) — sending data over visible light, the foundation of LiFi (light fidelity) and VLC (visible light communication). This lesson walks through two of its PHY (physical layer) flavors. PHY III is built around CSK (color-shift keying): instead of flickering one light brighter and dimmer, it mixes three colored light sources and encodes data in the resulting color. PHY IV is a family of camera-friendly modulations designed so an ordinary smartphone camera — sampling the scene only ~30 times a second — can still read the data.",
+      "zh": "IEEE 802.15.7 是短距离光无线通信（OWC）标准——用可见光传输数据，是 LiFi（光保真）与 VLC（可见光通信）的基础。本课讲解它的两种 PHY（物理层）方案。PHY III 以 CSK（颜色偏移键控）为核心：它不是把一盏灯调亮调暗，而是混合三个彩色光源，把数据编码进合成出来的颜色里。PHY IV 则是一组适配摄像头的调制方式，使得普通手机摄像头——每秒只采样约 30 次——也能读出数据。"
+    },
+    {
+      "type": "prose",
+      "en": "PHY III's transmit chain (clause 12.1, the reference modulator diagram) is short: data is first scrambled (12.2) to look random, then optionally passed through a channel encoder (12.3) for error protection, then turned into a color point by the color-coding block. CSK uses three light sources of three different color bands (call them i, j, k); their relative intensities Pi, Pj, Pk place a dot somewhere inside a triangle on the CIE color chart. The scrambler uses the polynomial g(D) = 1 + D^14 + D^15, is applied to the entire PSDU (PHY service data unit, the payload), and is seeded from the TDP with a different seed for every frame. The channel encoder, when used, is the 1/2-rate RS(64,32) Reed-Solomon code.",
+      "zh": "PHY III 的发送链路（条款 12.1，参考调制器框图）很短：数据先被加扰（12.2）使其看起来随机，再可选地经过信道编码器（12.3）做纠错保护，最后由颜色编码模块转换成一个颜色点。CSK 使用三个不同色带（记作 i、j、k）的光源；它们的相对强度 Pi、Pj、Pk 在 CIE 色度图的三角形内确定一个点。加扰器采用多项式 g(D) = 1 + D^14 + D^15，作用于整个 PSDU（PHY 服务数据单元，即载荷），并由 TDP 设定种子，每一帧都用不同的种子。信道编码器在启用时采用 1/2 码率的 RS(64,32) 里德-所罗门码。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  D[Data] --> S[Scrambler]\n  S --> C[Channel encoder]\n  C --> CC[Color coding xy to Pi Pj Pk]\n  CC --> Li[Source band i]\n  CC --> Lj[Source band j]\n  CC --> Lk[Source band k]",
+      "zh": "flowchart LR\n  D[数据] --> S[加扰器]\n  S --> C[信道编码器]\n  C --> CC[颜色编码 xy 转 Pi Pj Pk]\n  CC --> Li[光源 色带 i]\n  CC --> Lj[光源 色带 j]\n  CC --> Lk[光源 色带 k]"
+    },
+    {
+      "type": "prose",
+      "en": "CSK encodes data not in brightness but in color (12.4). Three color bands chosen from the seven defined bands form a triangle on the xy color coordinates — each band's center wavelength is one vertex. A CSK symbol is just a point inside that triangle, produced by mixing the three sources. More points means more bits per symbol: 4-CSK carries 2 bits, 8-CSK carries 3 bits, 16-CSK carries 4 bits. The clever part is that the average light stays roughly constant, so the lamp doesn't visibly flicker while it carries data.",
+      "zh": "CSK 不是用亮度、而是用颜色来编码数据（12.4）。从七个已定义色带中选出三个色带，在 xy 色度坐标上构成一个三角形——每个色带的中心波长就是一个顶点。一个 CSK 符号就是该三角形内的一个点，由三个光源混合产生。点越多，每符号承载的比特越多：4-CSK 承载 2 比特，8-CSK 承载 3 比特，16-CSK 承载 4 比特。妙处在于平均光强大致保持恒定，所以灯在传数据时不会出现可见闪烁。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 300 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><polygon points=\"60,170 240,170 150,40\"/><circle cx=\"60\" cy=\"170\" r=\"4\" fill=\"currentColor\"/><circle cx=\"240\" cy=\"170\" r=\"4\" fill=\"currentColor\"/><circle cx=\"150\" cy=\"40\" r=\"4\" fill=\"currentColor\"/><circle cx=\"150\" cy=\"127\" r=\"3\" fill=\"currentColor\"/><circle cx=\"110\" cy=\"150\" r=\"2.5\" fill=\"currentColor\"/><circle cx=\"190\" cy=\"150\" r=\"2.5\" fill=\"currentColor\"/><circle cx=\"150\" cy=\"90\" r=\"2.5\" fill=\"currentColor\"/><text x=\"40\" y=\"185\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">band i (S vertex)</text><text x=\"205\" y=\"185\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">band j</text><text x=\"130\" y=\"30\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">band k</text><text x=\"155\" y=\"128\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">S0 centroid</text></svg>",
+      "caption": {
+        "en": "A CSK constellation triangle. The three color bands i, j, k are the vertices; symbol points (here for 8-CSK) are placed inside by the design rules of clause 12.5. S0 sits at the centroid.",
+        "zh": "一个 CSK 星座三角形。三个色带 i、j、k 是顶点；符号点（此处为 8-CSK）依据条款 12.5 的设计规则布置在三角形内部。S0 位于三角形的重心。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "How are those interior points placed? That is the job of the constellation design rules (12.5). For 4-CSK (12.5.1) the three vertices are the symbol points S1, S2, S3 and S0 is the centroid of the triangle. For 8-CSK (12.5.2) the standard sub-divides the edges and uses midpoints and centroids of smaller triangles to spread eight points evenly. For 16-CSK (12.5.3) the edges are cut into thirds and the sixteen points include the vertices, the third-points, the big centroid, and the centroids of all the smaller triangles. Even spacing matters because the receiver must tell neighboring colors apart. Once placed, each point is labeled with bits (12.6): a 2-bit pattern for 4-CSK, 3-bit for 8-CSK, 4-bit for 16-CSK — Gray-coded so a small color error flips at most one bit.",
+      "zh": "这些内部点是如何布置的？这正是星座设计规则（12.5）的工作。对 4-CSK（12.5.1），三个顶点就是符号点 S1、S2、S3，而 S0 是三角形的重心。对 8-CSK（12.5.2），标准把各边细分，利用中点以及更小三角形的重心，把八个点均匀铺开。对 16-CSK（12.5.3），各边被三等分，十六个点包括顶点、三等分点、大重心以及所有小三角形的重心。均匀间隔很重要，因为接收机必须区分相邻的颜色。点布置好后，每个点都标上比特（12.6）：4-CSK 用 2 比特，8-CSK 用 3 比特，16-CSK 用 4 比特——采用格雷编码，使得微小的颜色误差最多只翻转一个比特。"
+    },
+    {
+      "type": "prose",
+      "en": "Not every trio of bands works. To form a real triangle the three band centers must not be collinear, so combinations like (110-101-100) are forbidden. Clause 12.7 lists the nine valid color band combinations — each is a band i / band j / band k triple that does span a triangle. Then CSK color mapping (12.8) ties it all together using the CIE 1931 xy chart: the three sources R, G, B sit at (xi,yi), (xj,yj), (xk,yk), and any target color point (xp,yp) is produced by solving for the source intensities Pi, Pj, Pk via Equation (6). The receiver does the reverse — it reads the three received light powers, computes xy, and decodes the bits.",
+      "zh": "并非任意三个色带都能用。要构成真正的三角形，三个色带中心不能共线，因此像（110-101-100）这样的组合被禁止。条款 12.7 列出了九种有效的色带组合——每一种都是能张成三角形的 band i / band j / band k 三元组。颜色映射（12.8）则用 CIE 1931 xy 色度图把一切串起来：三个光源 R、G、B 位于 (xi,yi)、(xj,yj)、(xk,yk)，任意目标颜色点 (xp,yp) 都通过公式 (6) 求解光源强度 Pi、Pj、Pk 得到。接收机做相反的事——读出三路接收光功率，算出 xy，再解码出比特。"
+    },
+    {
+      "type": "prose",
+      "en": "Real light sources drift, ambient light leaks in, and the three colors bleed into one another. Clause 12.9 (CSK calibration at the receiver) fixes this. Before data flows, the transmitter sends a channel estimation sequence: each of the three LEDs is OOK-modulated (on-off keying) with one of three length-4 Walsh codes — W(1,4)={1,-1,1,-1}, W(2,4)={1,1,-1,-1}, W(3,4)={1,-1,-1,1} for bands i, j, k, each bit sent twice and averaged. From this the receiver estimates a 3x3 channel propagation matrix H (Equation 7), then multiplies every received sample by H-inverse (Equation 8) to undo the color cross-talk before decoding.",
+      "zh": "真实光源会漂移，环境光会渗入，三种颜色之间也会互相串扰。条款 12.9（接收端的 CSK 校准）解决了这个问题。在数据传输前，发射端先发送信道估计序列：三个 LED 各自用三个长度为 4 的沃尔什码之一做 OOK 调制（开关键控）——band i、j、k 分别用 W(1,4)={1,-1,1,-1}、W(2,4)={1,1,-1,-1}、W(3,4)={1,-1,-1,1}，每个比特发送两次后取平均。由此接收机估计出一个 3x3 的信道传播矩阵 H（公式 7），再把每个接收样本乘以 H 的逆矩阵（公式 8），在解码前消除颜色串扰。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The big idea behind PHY IV: a smartphone camera samples a scene only about 30 times per second, far too slow to see fast light flicker. So PHY IV modulations deliberately pick blink frequencies that 'alias' (fold down) into patterns the camera CAN see — turning the camera's slow shutter from a limitation into the demodulator.",
+      "zh": "PHY IV 的核心思想：手机摄像头每秒只采样约 30 次，远不足以看清快速的光闪烁。于是 PHY IV 的调制方式刻意选取会“混叠”（折叠到低频）成摄像头能看见的图样的闪烁频率——把摄像头缓慢的快门从限制变成了解调器。"
+    },
+    {
+      "type": "prose",
+      "en": "PHY IV's first mode is UFSOOK (undersampled frequency-shift on-off keying), clause 13.1. Its reference modulator (13.1.1) drives a blinking LED, and the UFSOOK encoder (13.1.2) maps bits to blink frequencies: a logic 0 uses a frequency that is an integer multiple of the camera frame rate, a logic 1 uses an integer-multiple-plus-half. At 30 fps, that might be 120 Hz for 0 and 105 Hz for 1 — the camera under-samples both and sees a steady dot for one and a flickering dot for the other. For robustness, spatial FEC (13.1.3, forward error correction) repeats each frame across multiple LEDs with a small time offset, while temporal FEC (13.1.4) repeats it serially on one LED; a delay greater than a quarter bit duration is enough to dodge bit-boundary slips.",
+      "zh": "PHY IV 的第一种模式是 UFSOOK（欠采样频移开关键控），条款 13.1。其参考调制器（13.1.1）驱动一个闪烁的 LED，UFSOOK 编码器（13.1.2）把比特映射为闪烁频率：逻辑 0 用摄像头帧率的整数倍频率，逻辑 1 用整数倍加二分之一的频率。在 30 fps 下，0 可能用 120 Hz、1 可能用 105 Hz——摄像头对两者都欠采样，看到的是一个稳定的点（其一）和一个闪烁的点（另一）。为提升鲁棒性，空间 FEC（13.1.3，前向纠错）把每帧在多个 LED 上以小的时间偏移重复，时间 FEC（13.1.4）则在单个 LED 上串行重复；偏移大于四分之一比特时长即可避免比特边界滑移。"
+    },
+    {
+      "type": "prose",
+      "en": "UFSOOK can also run a MIMO protocol (13.1.5, multiple-input multiple-output) so the camera figures out which of several LEDs is carrying which data. It introduces a new data delimiter (13.1.5.1) — six video frames long, two high-frequency frames then four frames at (N +/- 0.25) times the frame rate — to mark fields. Four MIMO modes reuse this delimiter: independent data streams (13.1.5.2, each LED sends a unique payload asynchronously), spatial redundancy (13.1.5.3, all LEDs send the same payload synchronously), spatial multiplexing/multiphase (13.1.5.4, 2^N LEDs each send a sub-payload tagged by a binary index), and multiphase FEC (13.1.5.5, asynchronous LEDs all repeat the same redundant payload).",
+      "zh": "UFSOOK 还能运行 MIMO 协议（13.1.5，多输入多输出），让摄像头判断多个 LED 中哪个在传哪段数据。它引入一个新的数据定界符（13.1.5.1）——长六个视频帧，前两帧为高频、后四帧为帧率的 (N +/- 0.25) 倍——用于标记字段。四种 MIMO 模式复用此定界符：独立数据流（13.1.5.2，各 LED 异步发送各自唯一的载荷）、空间冗余（13.1.5.3，所有 LED 同步发送相同载荷）、空间复用/多相（13.1.5.4，2^N 个 LED 各发送一个由二进制索引标记的子载荷），以及多相 FEC（13.1.5.5，异步的各 LED 重复发送相同的冗余载荷）。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining PHY IV modes each tackle the same camera-sampling problem differently. Twinkle VPPM (13.2, variable pulse position modulation) places a data pulse left-of-center for a 0 or right-of-center for a 1; its modulator (13.2.1) and VPPM encoder (13.2.2) alternate between 1/3 and 2/3 duty cycles, and twinkle generation (13.2.3) aliases this alternation down to 1/4 the frame rate (7.5 Hz at 30 fps) so a visible 'twinkle' confirms a link. S2-PSK (13.3, spatial-2-phase-shift keying) drives a pair of LEDs with same-or-inverse-phase square waves: its reference architecture (13.3.1) and bit-to-symbol mapping (13.3.2) map one bit to the phase relationship, a special 1/2-rate line code (13.3.3) keeps the pair DC-balanced and decodable even if one LED is lost, and an optional FEC encoder (13.3.4) adds protection.",
+      "zh": "PHY IV 剩下的几种模式各以不同方式应对同样的摄像头采样难题。Twinkle VPPM（13.2，可变脉冲位置调制）把数据脉冲放在符号中心左侧表示 0、右侧表示 1；其调制器（13.2.1）与 VPPM 编码器（13.2.2）在 1/3 与 2/3 占空比之间交替，twinkle 生成（13.2.3）把这种交替混叠到帧率的 1/4（30 fps 时为 7.5 Hz），从而用可见的“闪烁”确认链路。S2-PSK（13.3，空间二相移键控）用相同相位或反相的方波驱动一对 LED：其参考架构（13.3.1）与比特到符号映射（13.3.2）把单个比特映射为相位关系，特殊的 1/2 码率行编码（13.3.3）保证这对信号直流平衡、即使丢失一个 LED 也能解码，可选的 FEC 编码器（13.3.4）则提供保护。"
+    },
+    {
+      "type": "prose",
+      "en": "HS-PSK (13.4, hybrid spatial PSK) layers two streams: a low-rate S2-PSK stream sets the dimming envelope while a high-rate DS8-PSK (delayed-sum 8-PSK) stream carries the fast data. Its reference architecture (13.4.1) feeds the DS8-PSK modulator (13.4.2), whose bits-to-symbol mapping (13.4.2.1) sends 3 bits per optical clock by phase-shifting one light source's eight time-slotted LEDs by i x T/8 relative to the other, with its own FEC encoder (13.4.2.2, RS(15,11)). The HS-PSK encoder (13.4.3) then modulates DS8-PSK fast while slowly changing the dimming level under S2-PSK control, and a combined FEC encoder (13.4.4) protects both layers. Finally, Offset-VPWM (13.5, variable pulse-width modulation) — reference architecture (13.5.1) and PHY encoder (13.5.2) — encodes data as the pulse width P + nV, mapping a 2-bit or 4-bit symbol to how many reference widths V are added to the minimum pulse P.",
+      "zh": "HS-PSK（13.4，混合空间 PSK）叠加两路数据流：低速的 S2-PSK 流设定调光包络，高速的 DS8-PSK（延迟求和 8 相 PSK）流承载快速数据。其参考架构（13.4.1）馈入 DS8-PSK 调制器（13.4.2），后者的比特到符号映射（13.4.2.1）通过把一个光源的八个分时隙 LED 相对另一光源相移 i x T/8，每个光时钟传送 3 比特，并有自己的 FEC 编码器（13.4.2.2，RS(15,11)）。HS-PSK 编码器（13.4.3）随后让 DS8-PSK 快速调制，同时在 S2-PSK 控制下缓慢改变调光电平，组合 FEC 编码器（13.4.4）则保护两层。最后，Offset-VPWM（13.5，可变脉宽调制）——参考架构（13.5.1）与 PHY 编码器（13.5.2）——把数据编码为脉宽 P + nV，将 2 比特或 4 比特符号映射为在最小脉冲 P 上叠加多少个参考宽度 V。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause in this lesson, by number",
+        "zh": "覆盖地图：本课每个条款（按编号）"
+      },
+      "en": "PHY III (Clause 12): 12.1 reference modulator diagram (scrambler -> channel encoder -> color coding -> three sources); 12.2 scrambler g(D)=1+D^14+D^15 over the whole PSDU, per-frame seed from TDP; 12.3 channel encoder, the 1/2-rate RS(64,32) code; 12.4 CSK constellation overview (three bands of seven form a triangle on xy coordinates); 12.5 constellation design rules — 12.5.1 4-CSK (vertices + centroid), 12.5.2 8-CSK (edge subdivisions + midpoints + small-triangle centroids), 12.5.3 16-CSK (edges in thirds + centroids); 12.6 data mapping (2/3/4 bits per symbol for 4/8/16-CSK); 12.7 valid color band combinations (nine triples that span a triangle); 12.8 CSK color mapping (CIE 1931, intensities Pi/Pj/Pk via Equation 6); 12.9 receiver calibration (length-4 Walsh codes, 3x3 channel matrix H, multiply by H-inverse). PHY IV (Clause 13): 13.1 UFSOOK — 13.1.1 modulator, 13.1.2 encoder (0 = integer-multiple of frame rate, 1 = +1/2), 13.1.3 spatial FEC, 13.1.4 temporal FEC, 13.1.5 MIMO protocol with 13.1.5.1 data delimiter, 13.1.5.2 independent streams, 13.1.5.3 spatial redundancy, 13.1.5.4 spatial multiplexing, 13.1.5.5 multiphase FEC; 13.2 Twinkle VPPM — 13.2.1 modulator, 13.2.2 VPPM encoder (1/3 vs 2/3 duty cycle, pulse left=0/right=1), 13.2.3 twinkle generation (alias to 1/4 frame rate); 13.3 S2-PSK — 13.3.1 reference architecture, 13.3.2 bit-to-symbol mapping (same/inverse phase pair), 13.3.3 1/2-rate line coding, 13.3.4 FEC encoder; 13.4 HS-PSK — 13.4.1 reference architecture, 13.4.2 DS8-PSK modulator (13.4.2.1 bits-to-symbol via S_Phase_Shift = i x T/8, 13.4.2.2 RS(15,11) FEC), 13.4.3 HS-PSK encoder, 13.4.4 combined FEC; 13.5 Offset-VPWM — 13.5.1 reference architecture, 13.5.2 PHY encoder (pulse width P + nV, 2-bit and 4-bit symbol maps).",
+      "zh": "PHY III（条款 12）：12.1 参考调制器框图（加扰器 -> 信道编码器 -> 颜色编码 -> 三个光源）；12.2 加扰器 g(D)=1+D^14+D^15，作用于整个 PSDU，每帧种子由 TDP 决定；12.3 信道编码器，1/2 码率 RS(64,32) 码；12.4 CSK 星座概述（七个色带中选三个在 xy 坐标上构成三角形）；12.5 星座设计规则——12.5.1 4-CSK（顶点+重心），12.5.2 8-CSK（边细分+中点+小三角形重心），12.5.3 16-CSK（边三等分+重心）；12.6 数据映射（4/8/16-CSK 每符号 2/3/4 比特）；12.7 有效色带组合（九个能张成三角形的三元组）；12.8 CSK 颜色映射（CIE 1931，经公式 6 求强度 Pi/Pj/Pk）；12.9 接收端校准（长度 4 的沃尔什码，3x3 信道矩阵 H，乘以 H 的逆）。PHY IV（条款 13）：13.1 UFSOOK——13.1.1 调制器，13.1.2 编码器（0=帧率整数倍，1=+1/2），13.1.3 空间 FEC，13.1.4 时间 FEC，13.1.5 MIMO 协议含 13.1.5.1 数据定界符、13.1.5.2 独立数据流、13.1.5.3 空间冗余、13.1.5.4 空间复用、13.1.5.5 多相 FEC；13.2 Twinkle VPPM——13.2.1 调制器，13.2.2 VPPM 编码器（1/3 与 2/3 占空比，脉冲左=0/右=1），13.2.3 twinkle 生成（混叠到帧率 1/4）；13.3 S2-PSK——13.3.1 参考架构，13.3.2 比特到符号映射（同相/反相成对），13.3.3 1/2 码率行编码，13.3.4 FEC 编码器；13.4 HS-PSK——13.4.1 参考架构，13.4.2 DS8-PSK 调制器（13.4.2.1 经 S_Phase_Shift = i x T/8 映射，13.4.2.2 RS(15,11) FEC），13.4.3 HS-PSK 编码器，13.4.4 组合 FEC；13.5 Offset-VPWM——13.5.1 参考架构，13.5.2 PHY 编码器（脉宽 P + nV，2 比特与 4 比特符号映射）。",
+      "cite": {
+        "pdf_id": "802157-2018",
+        "pages": [
+          299,
+          300,
+          301,
+          302,
+          303,
+          304,
+          305,
+          306,
+          307,
+          308,
+          309,
+          310,
+          311,
+          312,
+          313,
+          314,
+          315,
+          316,
+          317,
+          318,
+          319,
+          320,
+          321,
+          322,
+          323,
+          324
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        299,
+        300,
+        301,
+        302,
+        303,
+        304,
+        305,
+        306,
+        307,
+        308,
+        309
+      ],
+      "note": "Clause 12 PHY III: reference modulator, scrambler, channel encoder, CSK constellation overview/design rules, data mapping, valid band combinations, color mapping, receiver calibration."
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        310,
+        311,
+        312,
+        313,
+        314,
+        315,
+        316,
+        317,
+        318,
+        319,
+        320,
+        321,
+        322,
+        323,
+        324
+      ],
+      "note": "Clause 13 PHY IV: UFSOOK (encoder, spatial/temporal FEC, MIMO protocol), Twinkle VPPM, S2-PSK, HS-PSK (DS8-PSK), Offset-VPWM."
+    }
+  ],
+  "covers": [
+    "802157-2018:12.1",
+    "802157-2018:12.2",
+    "802157-2018:12.3",
+    "802157-2018:12.4",
+    "802157-2018:12.5.1",
+    "802157-2018:12.5.2",
+    "802157-2018:12.5.3",
+    "802157-2018:12.6",
+    "802157-2018:12.7",
+    "802157-2018:12.8",
+    "802157-2018:12.9",
+    "802157-2018:13.1.1",
+    "802157-2018:13.1.2",
+    "802157-2018:13.1.3",
+    "802157-2018:13.1.4",
+    "802157-2018:13.1.5",
+    "802157-2018:13.2.1",
+    "802157-2018:13.2.2",
+    "802157-2018:13.2.3",
+    "802157-2018:13.3.1",
+    "802157-2018:13.3.2",
+    "802157-2018:13.3.3",
+    "802157-2018:13.3.4",
+    "802157-2018:13.4.1",
+    "802157-2018:13.4.2",
+    "802157-2018:13.4.3",
+    "802157-2018:13.4.4",
+    "802157-2018:13.5.1",
+    "802157-2018:13.5.2"
+  ],
+  "track": "pan-optical"
+}

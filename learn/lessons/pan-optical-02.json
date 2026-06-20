@@ -1,0 +1,191 @@
+{
+  "id": "pan-optical-02",
+  "title": {
+    "en": "Inside the LiFi MAC: Channel Access, Joining a Network, and Frame Anatomy",
+    "zh": "走进 LiFi 的 MAC 层：信道接入、入网流程与帧结构剖析"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.15.7-2018 is the standard for Short-Range Optical Wireless Communications (OWC) — the family of light-based links you may know as LiFi or VLC (Visible Light Communication). Clause 5 specifies its MAC (Medium Access Control) sublayer: the rules that decide who gets to flash the LED, when, and in what packet shape. This lesson walks the first half of Clause 5 — clauses 5.1 (the functional description of how the MAC behaves) and 5.2 (the byte layout of MAC frames). A network here is called an OWPAN (Optical Wireless Personal Area Network), governed by a coordinator (the light infrastructure) that serves member devices.",
+      "zh": "IEEE Std 802.15.7-2018 是短距离光无线通信（OWC，Optical Wireless Communications）标准，也就是大家熟知的 LiFi 或 VLC（可见光通信）所属的协议族。第 5 章规定了它的 MAC（介质访问控制，Medium Access Control）子层：决定谁能点亮 LED、什么时候点亮、以及数据封装成什么形状的规则。本课讲解第 5 章的前半部分——5.1（描述 MAC 行为的功能说明）与 5.2（MAC 帧的字节布局）。这里的网络称为 OWPAN（光无线个域网，Optical Wireless Personal Area Network），由一个协调器（coordinator，即照明基础设施）管理若干成员设备。"
+    },
+    {
+      "type": "prose",
+      "en": "Everything in the MAC hangs off the superframe (clause 5.1.1). A coordinator may bound its airtime with a superframe that begins with a beacon and is split into equal slots. Two MAC PIB (PAN Information Base) attributes shape it: macBeaconOrder sets the beacon interval, and macSuperframeOrder sets the length of the active portion. The active portion holds a beacon, then a CAP (Contention Access Period) where devices contend for the channel, then an optional CFP (Contention-Free Period) holding reserved slots. Set macBeaconOrder to 15 and there is no superframe at all — a nonbeacon-enabled OWPAN. A distinctive optical twist: during idle and unused slots the transmitter still sends a visibility pattern so the light never appears to flicker (clause 5.1.1.1.1).",
+      "zh": "MAC 的一切都建立在超帧（superframe，clause 5.1.1）之上。协调器可用一个以信标（beacon）开头、划分为等长时隙的超帧来界定它的空口时间。两个 MAC PIB（个域网信息库，PAN Information Base）属性决定其形态：macBeaconOrder 设定信标间隔，macSuperframeOrder 设定活动段长度。活动段包含一个信标，随后是 CAP（竞争接入期，Contention Access Period，设备在此竞争信道），再接一个可选的 CFP（无竞争期，Contention-Free Period，存放预留时隙）。若把 macBeaconOrder 设为 15，则根本没有超帧——即非信标使能的 OWPAN。一个独特的光学特性：在空闲和未使用的时隙里，发射机仍会发送可见性图案（visibility pattern），使灯光看起来永不闪烁（clause 5.1.1.1.1）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"4\" y=\"24\" width=\"40\" height=\"34\"/><rect x=\"44\" y=\"24\" width=\"190\" height=\"34\"/><rect x=\"234\" y=\"24\" width=\"150\" height=\"34\"/><rect x=\"384\" y=\"24\" width=\"72\" height=\"34\"/><text x=\"24\" y=\"45\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Beacon</text><text x=\"139\" y=\"45\" font-size=\"10\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">CAP (contention)</text><text x=\"309\" y=\"42\" font-size=\"10\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">CFP (GTS slots)</text><text x=\"309\" y=\"54\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">contention-free</text><text x=\"420\" y=\"45\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">inactive</text><text x=\"4\" y=\"16\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">|&lt;-- active portion (macSuperframeOrder) --&gt;|</text><text x=\"4\" y=\"78\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">|&lt;-------- beacon interval (macBeaconOrder) -------&gt;|</text></svg>",
+      "caption": {
+        "en": "The 802.15.7 superframe: a beacon opens it, the CAP carries contention-based traffic, the CFP carries reserved GTS slots, and an inactive tail lets the coordinator sleep.",
+        "zh": "802.15.7 超帧结构：信标开启超帧，CAP 承载基于竞争的流量，CFP 承载预留的 GTS 时隙，末尾的非活动段让协调器进入休眠。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Within the CAP, devices use a random access algorithm (clause 5.1.1.3) closely modeled on classic backoff. Two counters drive it: NB (number of backoffs already taken) and BE (backoff exponent). A device waits a random number of backoff periods between 0 and 2^BE - 1, optionally performs a CCA (Clear Channel Assessment), and transmits if idle; on a busy channel it bumps NB and BE (BE capped at macMaxBE) and retries, giving up after macMaxRABackoffs. Frames are separated by an IFS (Interframe Space) so the receiver can process them — short frames get a SIFS, long frames a LIFS, and back-to-back burst frames a reduced RIFS (clause 5.1.1.2). Beacons, ACK frames, and CFP traffic skip the backoff entirely.",
+      "zh": "在 CAP 内，设备使用一种与经典退避高度相似的随机接入算法（clause 5.1.1.3）。两个计数器驱动它：NB（已退避次数，number of backoffs）与 BE（退避指数，backoff exponent）。设备随机等待 0 到 2^BE − 1 个退避周期，可选地执行一次 CCA（空闲信道评估，Clear Channel Assessment），信道空闲则发送；若信道忙则递增 NB 与 BE（BE 上限为 macMaxBE）并重试，超过 macMaxRABackoffs 次后放弃。帧与帧之间以 IFS（帧间间隔，Interframe Space）分隔，供接收方处理——短帧用 SIFS，长帧用 LIFS，连续突发帧用更短的 RIFS（clause 5.1.1.2）。信标、ACK 帧以及 CFP 流量完全跳过退避。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Init NB=0, BE=macMinBE] --> B[Wait random 0..2^BE-1 backoff periods]\n  B --> C{CCA: channel idle?}\n  C -- yes --> D[Transmit]\n  C -- no --> E[NB++, BE=min BE+1,macMaxBE]\n  E --> F{NB <= macMaxRABackoffs?}\n  F -- yes --> B\n  F -- no --> G[Channel access failure]",
+      "zh": "flowchart TD\n  A[初始化 NB=0, BE=macMinBE] --> B[随机等待 0..2^BE-1 个退避周期]\n  B --> C{CCA：信道空闲？}\n  C -- 是 --> D[发送]\n  C -- 否 --> E[NB++, BE=min BE+1,macMaxBE]\n  E --> F{NB <= macMaxRABackoffs？}\n  F -- 是 --> B\n  F -- 否 --> G[信道接入失败]"
+    },
+    {
+      "type": "prose",
+      "en": "Before a device can talk, it has to find and join a network. Starting an OWPAN (clause 5.1.2) begins with channel scanning: a passive scan just listens for beacons, while an active scan sends a beacon request to provoke them. During discovery the device and coordinator exchange MAC/PHY capabilities and a WQI (Wavelength Quality Indicator) per color channel, then settle on the channels that survive ambient-light interference; aggregation and guard color channels mark intentional multi-band emission versus accidental spectral leakage. The coordinator advertises itself by emitting beacon frames (beacon generation). Maintaining the OWPAN (clause 5.1.3) handles the rare case of two networks sharing one OWPAN identifier: detect the conflict, then resolve it by realigning the network onto a fresh identifier or channel. Association and disassociation (clause 5.1.4) is the actual join/leave handshake — an association request earns a 16-bit short address, and either side can later send a disassociation notification to part ways.",
+      "zh": "设备开口之前，必须先找到并加入网络。启动 OWPAN（clause 5.1.2）始于信道扫描：被动扫描只是侦听信标，而主动扫描发送信标请求（beacon request）以诱发信标。在发现过程中，设备与协调器交换 MAC/PHY 能力以及每个颜色信道的 WQI（波长质量指示，Wavelength Quality Indicator），随后选定能抵御环境光干扰的信道；聚合（aggregation）与保护（guard）颜色信道分别标记有意的多频段发射与无意的频谱泄漏。协调器通过发送信标帧来宣告自身（信标生成）。维护 OWPAN（clause 5.1.3）处理两个网络共用同一 OWPAN 标识符这一罕见情形：先检测冲突，再通过将网络重对齐（realign）到新的标识符或信道来解决。关联与解关联（clause 5.1.4）是真正的入网/退网握手——一次关联请求换得一个 16 位短地址，之后任意一方均可发送解关联通知（disassociation notification）以断开。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant D as Device\n  participant C as Coordinator\n  D->>C: Scan (passive listen / active beacon request)\n  C-->>D: Beacon (capabilities, WQI per color)\n  D->>C: Association request\n  C-->>D: ACK\n  C-->>D: Association response (16-bit short address)\n  D->>C: ACK (now associated)",
+      "zh": "sequenceDiagram\n  participant D as 设备\n  participant C as 协调器\n  D->>C: 扫描（被动侦听 / 主动信标请求）\n  C-->>D: 信标（能力、各颜色 WQI）\n  D->>C: 关联请求\n  C-->>D: ACK\n  C-->>D: 关联响应（16 位短地址）\n  D->>C: ACK（关联完成）"
+    },
+    {
+      "type": "prose",
+      "en": "Once joined, a device stays in step and moves data. Synchronization (clause 5.1.5) is by tracking beacons on a beacon-enabled OWPAN, or by polling the coordinator when there are no beacons; missing aMaxLostBeacons in a row triggers a sync-loss notification. Transaction handling (clause 5.1.6) covers indirect transmission: the coordinator parks a frame and advertises the destination's address in the beacon's pending list, so the device pulls it down on its own schedule. Transmission, reception, and acknowledgment (clause 5.1.7) sets the core reliability loop — every data frame carries a DSN (Data Sequence Number), the receiver filters and FCS-checks it, returns an ACK if requested, and the sender retransmits up to macMaxFrameRetries times if the matching ACK does not arrive within macAckWaitDuration.",
+      "zh": "入网之后，设备要保持同步并搬运数据。同步（clause 5.1.5）在信标使能的 OWPAN 上靠跟踪信标实现，在无信标时则靠轮询（poll）协调器；连续丢失 aMaxLostBeacons 个信标会触发同步丢失通知。事务处理（clause 5.1.6）涵盖间接传输（indirect transmission）：协调器暂存一帧，并在信标的待取地址列表中公布目的地址，设备便按自己的节奏取走它。发送、接收与确认（clause 5.1.7）确立核心可靠性环路——每个数据帧携带一个 DSN（数据序列号，Data Sequence Number），接收方过滤并校验 FCS，若被请求则回送 ACK；若发送方在 macAckWaitDuration 内未收到匹配的 ACK，则最多重传 macMaxFrameRetries 次。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Spot the pattern: the MAC ties timing to optical clocks, not seconds. macAckWaitDuration, the beacon interval, and the IFS periods are all counted in optical clock ticks, because the symbol rate of a light link can vary widely with the PHY and the dimming level in use.",
+      "zh": "注意一个规律：该 MAC 把时间绑定到光时钟（optical clocks）而非秒。macAckWaitDuration、信标间隔以及各 IFS 周期都以光时钟节拍计数，因为光链路的符号速率会随所用 PHY 与调光等级大幅变化。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the optical-specific MAC features (clauses 5.1.8 - 5.1.14)",
+        "zh": "覆盖地图：光学专属的 MAC 特性（clause 5.1.8 - 5.1.14）"
+      },
+      "en": "These clauses are where the optical MAC diverges from a radio MAC. 5.1.8 GTS allocation and management: a GTS (Guaranteed Time Slot) is a contention-free slot the coordinator dedicates to one device inside the CFP; subclauses cover CAP maintenance (5.1.8.1), allocation (5.1.8.2), usage (5.1.8.3), deallocation (5.1.8.4), reallocation to defragment the CFP (5.1.8.5), and expiration detection (5.1.8.6). 5.1.9 Fast link recovery: if acknowledgments stop arriving (macNumAcks misses), a device or coordinator sends a fast-link-recovery signal — and may even try spare color bands or LED angles — to heal a temporarily blocked beam without a full disassociation. 5.1.10 Multiple channel resource assignment: when one band runs out of slots, the coordinator assigns extra color bands via Src_multi_info / Des_multi_info bitmaps (5.1.10.1) and may apply band hopping to dodge interference (5.1.10.2). 5.1.11 OWC cell design and mobility support: a coordinator can split its light into cells, and devices handle physical and logical mobility using cell boundary information (5.1.11.1), per-superframe cell configuration (5.1.11.2), and a cell size/location search (5.1.11.3). 5.1.12 Color function support: CVD (Color Visibility Dimming) frames flash status to the human eye — MAC state (5.1.12.1), acknowledgment (5.1.12.2), channel quality (5.1.12.3), file-transfer progress (5.1.12.4), plus a generic color-assignment mechanism (5.1.12.5). 5.1.13 Color stabilization: CVD-frame feedback lets a transmitter correct color drift on a CSK (Color Shift Keying) link. 5.1.14 Visibility and dimming support: the visibility pattern (5.1.14.1), extended/truncated preamble for visibility (5.1.14.2), uplink visibility in star mode (5.1.14.3), dimmer override (5.1.14.4), PWM override (5.1.14.5), MAC transmission adjustment for dimming (5.1.14.6), discovery/association under dimming (5.1.14.7), and link adaptation for dimming (5.1.14.8) — all so the light stays useful as illumination while it carries data.",
+      "zh": "这些子句正是光学 MAC 与射频 MAC 分道扬镳之处。5.1.8 GTS 分配与管理：GTS（保障时隙，Guaranteed Time Slot）是协调器在 CFP 内为单个设备专用的无竞争时隙；其子条目涵盖 CAP 维护（5.1.8.1）、分配（5.1.8.2）、使用（5.1.8.3）、解分配（5.1.8.4）、为整理 CFP 碎片而重分配（5.1.8.5）以及到期检测（5.1.8.6）。5.1.9 快速链路恢复：若确认停止到达（漏掉 macNumAcks 次），设备或协调器会发送快速链路恢复信号——甚至尝试备用颜色频段或 LED 角度——以在不完全解关联的情况下修复暂时被遮挡的光束。5.1.10 多信道资源分配：当一个频段时隙耗尽时，协调器通过 Src_multi_info / Des_multi_info 位图分配额外颜色频段（5.1.10.1），并可采用频段跳变（band hopping）规避干扰（5.1.10.2）。5.1.11 OWC 蜂窝设计与移动性支持：协调器可将其光照分割为多个蜂窝（cell），设备借助蜂窝边界信息（5.1.11.1）、逐超帧蜂窝配置（5.1.11.2）以及蜂窝大小/位置搜索（5.1.11.3）来处理物理与逻辑移动性。5.1.12 颜色功能支持：CVD（颜色可见性调光，Color Visibility Dimming）帧向人眼闪烁状态——MAC 状态（5.1.12.1）、确认（5.1.12.2）、信道质量（5.1.12.3）、文件传输进度（5.1.12.4），以及通用颜色分配机制（5.1.12.5）。5.1.13 颜色稳定：CVD 帧反馈让发射机在 CSK（颜色偏移键控，Color Shift Keying）链路上校正颜色漂移。5.1.14 可见性与调光支持：可见性图案（5.1.14.1）、用于可见性的扩展/截断前导码（5.1.14.2）、星型模式下的上行可见性（5.1.14.3）、调光器旁路（5.1.14.4）、PWM 旁路（5.1.14.5）、为调光而调整 MAC 发送（5.1.14.6）、调光下的发现/关联（5.1.14.7）以及为调光做链路自适应（5.1.14.8）——这一切都是为了让灯光在传输数据的同时依然能作为照明使用。",
+      "cite": {
+        "pdf_id": "802157-2018",
+        "pages": [
+          66,
+          70,
+          71,
+          74,
+          76,
+          79,
+          82,
+          83,
+          86,
+          88
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5.2 turns behavior into bytes. The general MAC frame format (clause 5.2.1) is a MHR (MAC Header) + MAC Payload + MFR (MAC Footer). The MHR holds the 2-octet Frame Control field (frame type, security-enabled, frame-pending, acknowledgment-request, and the source/destination addressing-mode bits), a Sequence Number, optional OWPAN-identifier and address fields, and an optional Auxiliary Security Header. The MFR is simply the FCS (Frame Check Sequence) used to detect corruption. Frame formats for individual frame types (clause 5.2.2) then specialize this skeleton: the beacon frame (with its Superframe Specification, GTS, and pending-address fields), the data frame, the payload-less acknowledgment frame, the command frame (carrying a Command Frame Identifier), the CVD frame for color signaling, and the Data Null frame. Master these two layouts and every later command in Clause 5 is just a known field plugged into a known envelope.",
+      "zh": "5.2 节把行为落实为字节。通用 MAC 帧格式（clause 5.2.1）由 MHR（MAC 头部，MAC Header）+ MAC 净荷 + MFR（MAC 尾部，MAC Footer）组成。MHR 包含 2 个八位组的帧控制字段（帧类型、安全使能、帧待传、确认请求，以及源/目的地址模式比特）、序列号、可选的 OWPAN 标识符与地址字段，以及可选的辅助安全头部。MFR 就是用于检测损坏的 FCS（帧校验序列，Frame Check Sequence）。各帧类型的格式（clause 5.2.2）随后在此骨架上做特化：信标帧（含超帧规格、GTS 及待取地址字段）、数据帧、无净荷的确认帧、命令帧（携带命令帧标识符）、用于颜色信令的 CVD 帧，以及数据空帧（Data Null）。掌握这两种布局，第 5 章后续的每条命令都不过是把已知字段塞进已知信封。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 470 96\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"4\" y=\"30\" width=\"46\" height=\"30\"/><rect x=\"50\" y=\"30\" width=\"34\" height=\"30\"/><rect x=\"84\" y=\"30\" width=\"108\" height=\"30\"/><rect x=\"192\" y=\"30\" width=\"70\" height=\"30\"/><rect x=\"262\" y=\"30\" width=\"110\" height=\"30\"/><rect x=\"372\" y=\"30\" width=\"50\" height=\"30\"/><text x=\"27\" y=\"49\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Frame Ctrl</text><text x=\"67\" y=\"49\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Seq#</text><text x=\"138\" y=\"49\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Addressing fields</text><text x=\"227\" y=\"49\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Aux Security</text><text x=\"317\" y=\"49\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">MAC Payload</text><text x=\"397\" y=\"49\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">FCS</text><text x=\"4\" y=\"22\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">|&lt;------------------ MHR ------------------&gt;|</text><text x=\"262\" y=\"22\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">|&lt;-payload-&gt;|&lt;-MFR-&gt;|</text><text x=\"27\" y=\"76\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">2 oct</text><text x=\"67\" y=\"76\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">1</text><text x=\"397\" y=\"76\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">2 oct</text></svg>",
+      "caption": {
+        "en": "General MAC frame (clause 5.2.1): a MAC header (Frame Control, Sequence Number, addressing, optional security), a variable payload, and a 2-octet FCS footer.",
+        "zh": "通用 MAC 帧（clause 5.2.1）：MAC 头部（帧控制、序列号、地址、可选安全）、可变长净荷，以及 2 个八位组的 FCS 尾部。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why does Frame Control carry separate source and destination addressing-mode bits? Because an 802.15.7 frame can omit an address entirely: a missing destination address means the frame is bound for the coordinator, and a missing source address means it came from the coordinator. Fewer bytes on the wire keeps short optical frames efficient.",
+      "zh": "为什么帧控制要分别携带源地址模式与目的地址模式比特？因为 802.15.7 帧可以完全省略某个地址：缺少目的地址表示该帧发往协调器，缺少源地址表示它来自协调器。线路上字节更少，能让短小的光学帧保持高效。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        39,
+        40,
+        41,
+        43,
+        44,
+        45,
+        46
+      ],
+      "note": "Clause 5 intro and 5.1.1 channel access: superframe (5.1.1.1), visibility during access (5.1.1.1.1), IFS (5.1.1.2), random access NB/BE algorithm (5.1.1.3)."
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        46,
+        48,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55
+      ],
+      "note": "5.1.2 starting an OWPAN (scanning, discovery, WQI, guard/aggregation channels), 5.1.3 maintaining OWPANs (conflict detection/resolution/realignment), 5.1.4 association and disassociation."
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        64
+      ],
+      "note": "5.1.5 synchronization (with/without beacons), 5.1.6 transaction handling (indirect transmission), 5.1.7 transmission/reception/acknowledgment (DSN, FCS, macMaxFrameRetries)."
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        66,
+        70,
+        71,
+        74,
+        76,
+        79,
+        82,
+        83,
+        86,
+        88
+      ],
+      "note": "5.1.8 GTS allocation/management, 5.1.9 fast link recovery, 5.1.10 multiple channel resource assignment, 5.1.11 cell design/mobility, 5.1.12 color function, 5.1.13 color stabilization, 5.1.14 visibility and dimming support."
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        88,
+        89,
+        90,
+        97
+      ],
+      "note": "5.2 MAC frame formats: 5.2.1 general MAC frame (MHR/payload/MFR, Frame Control fig.49, FCS) and 5.2.2 format of individual frame types (beacon/data/ack/command/CVD/data-null)."
+    }
+  ],
+  "covers": [
+    "802157-2018:5.1.1",
+    "802157-2018:5.1.2",
+    "802157-2018:5.1.3",
+    "802157-2018:5.1.4",
+    "802157-2018:5.1.5",
+    "802157-2018:5.1.6",
+    "802157-2018:5.1.7",
+    "802157-2018:5.1.8",
+    "802157-2018:5.1.9",
+    "802157-2018:5.1.10",
+    "802157-2018:5.1.11",
+    "802157-2018:5.1.12",
+    "802157-2018:5.1.13",
+    "802157-2018:5.1.14",
+    "802157-2018:5.2.1",
+    "802157-2018:5.2.2"
+  ],
+  "track": "pan-optical"
+}

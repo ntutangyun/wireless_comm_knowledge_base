@@ -1,0 +1,196 @@
+{
+  "id": "pan-802-15-28",
+  "title": {
+    "en": "High-Rate WPAN Mesh: SAPs, Frame Formats, and Tree Routing (Clause 6 + Annex A)",
+    "zh": "高速率 WPAN 网状网络：服务接入点、帧格式与树路由（第 6 章 + 附录 A）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.15.5 adds mesh networking to two flavors of WPAN (Wireless Personal Area Network). Clause 6 covers the high-rate flavor, built on top of IEEE Std 802.15.3 / 802.15.3b — the high-rate WPAN designed for multimedia in the home (videoconferencing, HDTV). A plain 802.15.3 network is a piconet: a small cluster of devices coordinated by one PNC (Piconet Coordinator). The mesh extension lets many piconets stitch together into a single network that extends range, adds reliability, and reuses bandwidth efficiently. The key actors get mesh-aware names: an MPNC (Mesh-capable Piconet Coordinator) coordinates one piconet inside the mesh, an MDEV (Mesh-capable DEVice) is an ordinary member, and one special MPNC at the very top is the MC (Mesh Coordinator) — the root of the whole tree (6.1).",
+      "zh": "IEEE Std 802.15.5 为两种 WPAN（无线个域网，Wireless Personal Area Network）加入了网状组网能力。第 6 章针对高速率版本，构建于 IEEE Std 802.15.3 / 802.15.3b 之上——这是面向家庭多媒体（视频会议、高清电视）设计的高速率 WPAN。普通的 802.15.3 网络是一个 piconet（微网）：由一个 PNC（微网协调器，Piconet Coordinator）统一协调的小型设备簇。网状扩展让多个微网拼接成单一网络，从而扩展覆盖范围、提升可靠性并高效复用带宽。关键角色因此获得了网状感知的命名：MPNC（具备网状能力的微网协调器，Mesh-capable Piconet Coordinator）协调网状内的一个微网，MDEV（具备网状能力的设备，Mesh-capable DEVice）是普通成员，而位于最顶端的一个特殊 MPNC 称为 MC（网状协调器，Mesh Coordinator）——整棵树的根（6.1）。"
+    },
+    {
+      "type": "prose",
+      "en": "Where does the mesh logic live? It is a thin mesh sublayer slotted into the existing 802.15.3 stack. In the data plane, the mesh sublayer sits between the FCSL (Frame Convergence Sublayer) above and the MAC sublayer below, exposing the Mesh SAP (Service Access Point) upward. In the management plane, the MHME (Mesh sublayer Management Entity) sits between the DME (Device Management Entity) and the MLME (MAC sublayer Management Entity), exposing the MHME SAP. A SAP is simply the named doorway through which one layer asks another for service. So the whole of Clause 6 is really two doorways (6.2, 6.3), a database (6.4), a set of frame formats (6.5), and the procedures that tie them together (6.6).",
+      "zh": "网状逻辑住在哪里？它是嵌入现有 802.15.3 协议栈中的一个薄薄的网状子层。在数据平面，网状子层位于上方的 FCSL（帧汇聚子层，Frame Convergence Sublayer）与下方的 MAC 子层之间，向上暴露 Mesh SAP（网状服务接入点，Service Access Point）。在管理平面，MHME（网状子层管理实体，Mesh sublayer Management Entity）位于 DME（设备管理实体，Device Management Entity）与 MLME（MAC 子层管理实体，MAC sublayer Management Entity）之间，向上暴露 MHME SAP。SAP 不过是一层向另一层请求服务时所经过的、有名字的“门”。因此整个第 6 章其实就是两扇门（6.2、6.3）、一个数据库（6.4）、一组帧格式（6.5），以及把它们串联起来的过程（6.6）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 220\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"30\" y=\"15\" width=\"150\" height=\"34\"/><text x=\"105\" y=\"36\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">DME (mgmt)</text><rect x=\"240\" y=\"15\" width=\"150\" height=\"34\"/><text x=\"315\" y=\"36\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">FCSL (data)</text><line x1=\"105\" y1=\"49\" x2=\"105\" y2=\"75\"/><text x=\"150\" y=\"66\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">MHME SAP</text><line x1=\"315\" y1=\"49\" x2=\"315\" y2=\"75\"/><text x=\"360\" y=\"66\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Mesh SAP</text><rect x=\"30\" y=\"75\" width=\"360\" height=\"40\"/><text x=\"210\" y=\"100\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Mesh sublayer (MHME + data path)</text><line x1=\"210\" y1=\"115\" x2=\"210\" y2=\"140\"/><rect x=\"30\" y=\"140\" width=\"360\" height=\"40\"/><text x=\"210\" y=\"165\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">802.15.3 MAC sublayer (MLME)</text><line x1=\"210\" y1=\"180\" x2=\"210\" y2=\"200\"/><text x=\"210\" y=\"214\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">PHY</text></svg>",
+      "caption": {
+        "en": "The mesh sublayer drops into the 802.15.3 stack: MHME SAP serves the DME (management), Mesh SAP serves the FCSL (data). The sublayer drives the existing MAC via the MLME (6.1).",
+        "zh": "网状子层嵌入 802.15.3 协议栈：MHME SAP 服务于 DME（管理面），Mesh SAP 服务于 FCSL（数据面）。该子层通过 MLME 驱动已有的 MAC（6.1）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The MHME SAP (6.2) is the management doorway, and its primitives follow the classic IEEE pattern of request / confirm / indication. First come the generic PIB accessors (6.2.1): MHME-SET and MHME-GET let the DME write and read any attribute in the mesh PIB, MAC PIB, or PHY PIB — a PIB (PAN Information Base) being just the layer's bag of managed settings. Then come the lifecycle controls: MHME-RESET (6.2.2) returns the sublayer to initial conditions, optionally restoring default settings; MHME-SCAN (6.2.3) runs a passive scan to discover nearby mesh networks, returning a PiconetDescriptionSet (one entry per network found) and a ChannelRatingList that ranks channels best-to-worst by interference. MHME-START (6.2.4) brings up a piconet — as the MC, or as a child piconet after associating with a parent — and MHME-STOP (6.2.5) shuts it down or hands the MC role over.",
+      "zh": "MHME SAP（6.2）是管理面的门，它的原语遵循经典的 IEEE 模式：请求（request）/ 确认（confirm）/ 指示（indication）。首先是通用的 PIB 访问原语（6.2.1）：MHME-SET 与 MHME-GET 让 DME 可以写入和读取网状 PIB、MAC PIB 或 PHY PIB 中的任意属性——PIB（个域网信息库，PAN Information Base）不过是某一层所管理设置的集合。接着是生命周期控制原语：MHME-RESET（6.2.2）将子层恢复到初始状态，并可选地恢复默认设置；MHME-SCAN（6.2.3）执行被动扫描以发现附近的网状网络，返回 PiconetDescriptionSet（每发现一个网络对应一条记录）以及按干扰程度从优到劣排序的 ChannelRatingList。MHME-START（6.2.4）启动一个微网——既可作为 MC，也可在与父节点关联后作为子微网——而 MHME-STOP（6.2.5）则将其关闭或移交 MC 角色。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining MHME primitives manage membership and addressing. MHME-ASSOCIATE (6.2.6) joins a chosen parent MPNC, identified by its ParentTREEID and MAC address; its .indication tells the DME when some other DEV joins the same mesh. MHME-DISASSOCIATE (6.2.7) leaves a network, or — when invoked by the MC — kicks a member out, with reason codes like DEV_ATP_EXPIRED. The last one, MHME-TREEID-ASSIGN (6.2.8), is special to mesh: a child asks its parent for a block of TREEIDs, and the parent's .confirm hands back a StartingTREEID and EndingTREEID range. A TREEID is the tree-position identifier that, as we will see, makes routing trivial.",
+      "zh": "其余的 MHME 原语负责管理成员关系与寻址。MHME-ASSOCIATE（6.2.6）让设备加入选定的父 MPNC（由其 ParentTREEID 和 MAC 地址标识）；其 .indication 在同一网状网络中有其他 DEV 加入时通知 DME。MHME-DISASSOCIATE（6.2.7）用于离开网络，或——当由 MC 调用时——将某成员踢出，并附带诸如 DEV_ATP_EXPIRED 的原因码。最后一个 MHME-TREEID-ASSIGN（6.2.8）是网状网络特有的：子节点向父节点申请一段 TREEID 块，父节点的 .confirm 返回 StartingTREEID 到 EndingTREEID 的范围。TREEID 是表示树位置的标识符——下文将看到，正是它让路由变得简单。"
+    },
+    {
+      "type": "prose",
+      "en": "The Mesh SAP (6.3) is the data doorway, and it is refreshingly small — just two primitive families. MESH-ASYNC-DATA (6.3.1–6.3.3) carries asynchronous traffic (bursty, best-effort), and MESH-ISOCH-DATA (6.3.4–6.3.6) carries isochronous traffic (a reserved stream for steady multimedia). Each family has the same trio: .request hands an MHSDU (Mesh Higher-layer Service Data Unit — the chunk of payload to ship) to the sublayer; .confirm reports the outcome, but only fires if the caller set ConfirmRequested to ALWAYS, or to ON_ERROR and something failed; .indication delivers a received MHSDU upward, tagged with the origin and target TREEIDs and DEVIDs. The difference between the two families is mostly that the isochronous one carries a StreamIndex naming the reserved stream.",
+      "zh": "Mesh SAP（6.3）是数据面的门，它精简得令人愉快——只有两组原语族。MESH-ASYNC-DATA（6.3.1–6.3.3）承载异步流量（突发性、尽力而为），MESH-ISOCH-DATA（6.3.4–6.3.6）承载等时流量（为稳定多媒体预留的数据流）。每一族都包含相同的三元组：.request 把一个 MHSDU（网状高层服务数据单元，Mesh Higher-layer Service Data Unit——即要发送的那块负载）交给子层；.confirm 报告结果，但仅当调用方将 ConfirmRequested 设为 ALWAYS、或设为 ON_ERROR 且确实发生失败时才触发；.indication 把收到的 MHSDU 向上递交，并标注源与目的的 TREEID 和 DEVID。两族的主要区别在于等时族携带一个 StreamIndex 来指明预留的数据流。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 560 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Mesh header (12 octets) + payload</text><rect x=\"10\" y=\"30\" width=\"40\" height=\"34\"/><text x=\"30\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Ctrl 1</text><rect x=\"50\" y=\"30\" width=\"55\" height=\"34\"/><text x=\"77\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">MeshID 2</text><rect x=\"105\" y=\"30\" width=\"60\" height=\"34\"/><text x=\"135\" y=\"48\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">Src TREEID</text><text x=\"135\" y=\"58\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">2</text><rect x=\"165\" y=\"30\" width=\"60\" height=\"34\"/><text x=\"195\" y=\"48\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">Dst TREEID</text><text x=\"195\" y=\"58\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">2</text><rect x=\"225\" y=\"30\" width=\"45\" height=\"34\"/><text x=\"247\" y=\"48\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">Src ID</text><text x=\"247\" y=\"58\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">1</text><rect x=\"270\" y=\"30\" width=\"45\" height=\"34\"/><text x=\"292\" y=\"48\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">Dst ID</text><text x=\"292\" y=\"58\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">1</text><rect x=\"315\" y=\"30\" width=\"50\" height=\"34\"/><text x=\"340\" y=\"48\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">Seq No</text><text x=\"340\" y=\"58\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">2</text><rect x=\"365\" y=\"30\" width=\"40\" height=\"34\"/><text x=\"385\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">TTL 1</text><rect x=\"405\" y=\"30\" width=\"145\" height=\"34\" stroke-dasharray=\"4 3\"/><text x=\"477\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Mesh frame payload (Ln)</text><text x=\"10\" y=\"90\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Frame Control bits: b7-b5 reserved | b4-b3 Frame Type | b2-b0 Transmission Method</text><text x=\"10\" y=\"106\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Tx method: 000 full broadcast | 001 tree broadcast | 010 tree routing | 011 server routing</text></svg>",
+      "caption": {
+        "en": "The 12-octet mesh header (6.5.1) prepended to the 802.15.3 payload. The Frame Control field's Transmission Method subfield selects how the frame travels (6.5.1, Tables 66-67).",
+        "zh": "插在 802.15.3 负载之前的 12 字节网状帧头（6.5.1）。帧控制字段中的传输方法子字段决定帧的传播方式（6.5.1，表 66-67）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Frame formats (6.5) make routing possible. Every mesh frame gets a 12-octet mesh header (6.5.1) prepended to the 802.15.3 MAC payload, carrying the MeshID, source/destination TREEIDs, source/destination DEVIDs, a Mesh Sequence Number (to drop duplicate relays and keep frames in order), and a TTL (Time To Live — the hop budget). Inside the header's Mesh Frame Control byte, the Transmission Method subfield picks one of four delivery modes — full broadcast, tree broadcast, tree routing, or server routing — and the Frame Type subfield distinguishes a command, a data frame, or an LLC/SNAP data frame (6.5.2). Commands (6.5.3) are the control vocabulary of the mesh: ten of them, from TREEID request/assignment, through server notification/inquiry and link-state request/registration, to the four route commands (discovery, notification, formation, error) that drive server routing.",
+      "zh": "帧格式（6.5）让路由成为可能。每个网状帧都会在 802.15.3 MAC 负载前加上一个 12 字节的网状帧头（6.5.1），其中携带 MeshID、源/目的 TREEID、源/目的 DEVID、一个网状序列号（用于丢弃重复转发并保持帧的顺序），以及一个 TTL（生存时间，Time To Live——即跳数预算）。在帧头的网状帧控制字节内，传输方法子字段在四种投递模式中选其一——全广播、树广播、树路由或服务器路由——而帧类型子字段则区分命令帧、数据帧或 LLC/SNAP 数据帧（6.5.2）。命令（6.5.3）是网状网络的控制词汇表：共十种，从 TREEID 请求/分配，到服务器通知/查询、链路状态请求/注册，再到驱动服务器路由的四种路由命令（发现、通知、形成、错误）。"
+    },
+    {
+      "type": "prose",
+      "en": "The procedures in 6.6 tie everything together. Starting a network (6.6.1): a would-be MC scans (no mesh found), then starts its own piconet via MLME-MESH-CAPABILITY and MLME-START. Tree formation (6.6.2): a newcomer scans, picks the best parent (subject to MESHPIB_MaxTreeLevel), associates, requests a TREEID block, then may itself become a child MPNC. TREEID assignment (6.6.3) is the clever core: the MC owns the full range (e.g. 0-65535) and hands each child a contiguous sub-block sized to that child's descendant count, so a child's whole subtree lives inside one interval. That makes tree routing (6.6.5) a simple interval test — if the destination TREEID falls in a child's block, forward down to that child; else if a neighbor's block, forward sideways; otherwise forward up to the parent. Leaving (6.6.4) handles both self-shutdown and parent-forced removal, with the lowest-TREEID child promoted to MC if the MC itself departs.",
+      "zh": "6.6 中的过程把一切串联起来。启动网络（6.6.1）：有意成为 MC 的设备先扫描（未发现网状网络），再通过 MLME-MESH-CAPABILITY 和 MLME-START 启动自己的微网。树的形成（6.6.2）：新加入者先扫描，选出最佳父节点（受 MESHPIB_MaxTreeLevel 限制），进行关联，申请一段 TREEID 块，之后还可自己成为子 MPNC。TREEID 分配（6.6.3）是其精妙的核心：MC 拥有完整范围（如 0-65535），并按每个子节点的后代数量为其分配一段连续的子块，使得某个子节点的整棵子树都落在同一个区间内。这让树路由（6.6.5）成为一次简单的区间判断——若目的 TREEID 落在某个子节点的块内，就向下转发给该子节点；否则若落在某邻居的块内，就横向转发；再否则就向上转发给父节点。离开网络（6.6.4）处理自行关闭与父节点强制移除两种情形，并在 MC 自身离开时把 TREEID 最小的子节点提升为新的 MC。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  S[\"Frame at MPNC: read Destination TREEID\"] --> C{\"In a child's TREEID block?\"}\n  C -- yes --> D[\"Forward down to that child\"]\n  C -- no --> N{\"In a neighbor's TREEID block?\"}\n  N -- yes --> E[\"Forward sideways to neighbor\"]\n  N -- no --> P[\"Forward up to parent\"]",
+      "zh": "flowchart TD\n  S[\"帧到达 MPNC：读取目的 TREEID\"] --> C{\"是否落在某子节点的 TREEID 块内?\"}\n  C -- 是 --> D[\"向下转发给该子节点\"]\n  C -- 否 --> N{\"是否落在某邻居的 TREEID 块内?\"}\n  N -- 是 --> E[\"横向转发给邻居\"]\n  N -- 否 --> P[\"向上转发给父节点\"]"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why blocks, not single IDs? Because a contiguous TREEID block makes a subtree into a single numeric interval. An MPNC needs no routing table for tree routing — just three interval comparisons (down / sideways / up). The optional server routing (6.6.6) layers a smarter path on top: topology servers gather link-state via Link State Registration commands, run Bellman-Ford or Dijkstra over a subtree, and answer Route Discovery with Route Notification / Route Formation commands; Route Error triggers route recovery.",
+      "zh": "为什么用块而不是单个 ID？因为一段连续的 TREEID 块能把一棵子树变成一个数值区间。在树路由中，MPNC 无需任何路由表——只需三次区间比较（向下 / 横向 / 向上）。可选的服务器路由（6.6.6）在其上叠加更聪明的路径：拓扑服务器通过链路状态注册命令收集链路状态，在子树上运行 Bellman-Ford 或 Dijkstra 算法，并以路由通知 / 路由形成命令回应路由发现；路由错误则触发路由恢复。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause of this lesson, by number",
+        "zh": "覆盖地图：本课逐条对应的标准条款编号"
+      },
+      "en": "6.1 General description — reference model, supported features (init/termination, topology formation, unicast routing), and the MC/MPNC/MDEV roles. 6.2 MHME SAP: 6.2.1 generic SET/GET PIB accessors; 6.2.2 RESET; 6.2.3 SCAN (PiconetDescriptionSet, ChannelRatingList); 6.2.4 START; 6.2.5 STOP; 6.2.6 ASSOCIATE; 6.2.7 DISASSOCIATE; 6.2.8 TREEID-ASSIGN. 6.3 Mesh SAP: 6.3.1-6.3.3 ASYNC-DATA request/confirm/indication; 6.3.4-6.3.6 ISOCH-DATA request/confirm/indication (StreamIndex). 6.4 Mesh PIB — managed objects: MeshID, TREEID, MaxChild, MaxTreeLevel, MeshPNCCapable, MeshDEVCapable, MeshNeighborList. 6.5 Frame formats: 6.5.1 general mesh header (TTL, Seq No, TREEIDs, DEVIDs, MeshID, Frame Control with Transmission Method + Frame Type); 6.5.2 command/data/LLC-SNAP formats; 6.5.3 the ten command types. 6.6 Mesh service support: 6.6.1 starting a network; 6.6.2 tree formation; 6.6.3 TREEID assignment (block sizing P=Pdnum+Cdnum+Rdnum, re-parenting after mMaxLostBeacons); 6.6.4 leaving (6.6.4.1 MPNC shutdown / MC succession, 6.6.4.2 parent-initiated disassociation); 6.6.5 tree routing (neighbor list, association for optimal routing); 6.6.6 routing alternative (6.6.6.1 link state registration, 6.6.6.2 route establishment, 6.6.6.3 route recovery). Annex A (informative) — recommended amendments to the 802.15.3 / 802.15.3b MAC: new definitions (mesh network), acronyms (MDEV, MPNC), subclause 5.5 mesh capability extension, and the MLME-MESH-CAPABILITY primitive (Table 3x) plus disassociation changes.",
+      "zh": "6.1 总体描述——参考模型、支持的特性（初始化/终止、拓扑形成、单播路由）以及 MC/MPNC/MDEV 角色。6.2 MHME SAP：6.2.1 通用 SET/GET PIB 访问；6.2.2 RESET；6.2.3 SCAN（PiconetDescriptionSet、ChannelRatingList）；6.2.4 START；6.2.5 STOP；6.2.6 ASSOCIATE；6.2.7 DISASSOCIATE；6.2.8 TREEID-ASSIGN。6.3 Mesh SAP：6.3.1-6.3.3 ASYNC-DATA 请求/确认/指示；6.3.4-6.3.6 ISOCH-DATA 请求/确认/指示（StreamIndex）。6.4 网状 PIB——受管对象：MeshID、TREEID、MaxChild、MaxTreeLevel、MeshPNCCapable、MeshDEVCapable、MeshNeighborList。6.5 帧格式：6.5.1 通用网状帧头（TTL、序列号、TREEID、DEVID、MeshID、含传输方法与帧类型的帧控制）；6.5.2 命令/数据/LLC-SNAP 格式；6.5.3 十种命令类型。6.6 网状服务支持：6.6.1 启动网络；6.6.2 树的形成；6.6.3 TREEID 分配（块大小 P=Pdnum+Cdnum+Rdnum，超过 mMaxLostBeacons 后重选父节点）；6.6.4 离开（6.6.4.1 MPNC 关闭 / MC 接替，6.6.4.2 父节点发起的解关联）；6.6.5 树路由（邻居列表、为最优路由进行的关联）；6.6.6 路由替代方案（6.6.6.1 链路状态注册，6.6.6.2 路由建立，6.6.6.3 路由恢复）。附录 A（资料性）——对 802.15.3 / 802.15.3b MAC 的建议修订：新增定义（mesh network）、缩略语（MDEV、MPNC）、子条款 5.5 网状能力扩展，以及 MLME-MESH-CAPABILITY 原语（表 3x）和解关联相关改动。",
+      "cite": {
+        "pdf_id": "802155-2009",
+        "pages": [
+          126,
+          127,
+          142,
+          147,
+          148,
+          156,
+          160,
+          164,
+          167,
+          170
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802155-2009",
+      "pages": [
+        126,
+        127
+      ],
+      "note": "6.1 general description, reference model; 6.2 MHME SAP overview and generic primitives"
+    },
+    {
+      "pdf_id": "802155-2009",
+      "pages": [
+        129,
+        130,
+        133,
+        134,
+        136,
+        137,
+        139,
+        140,
+        141,
+        142
+      ],
+      "note": "6.2.2 RESET, 6.2.3 SCAN, 6.2.4 START, 6.2.5 STOP, 6.2.6 ASSOCIATE, 6.2.7 DISASSOCIATE, 6.2.8 TREEID-ASSIGN"
+    },
+    {
+      "pdf_id": "802155-2009",
+      "pages": [
+        142,
+        145,
+        146,
+        147
+      ],
+      "note": "6.3 Mesh SAP ASYNC/ISOCH data primitives; 6.4 Mesh PIB managed objects"
+    },
+    {
+      "pdf_id": "802155-2009",
+      "pages": [
+        147,
+        148,
+        149,
+        150,
+        156
+      ],
+      "note": "6.5 frame formats: mesh header, frame control, command types and route error"
+    },
+    {
+      "pdf_id": "802155-2009",
+      "pages": [
+        156,
+        157,
+        158,
+        160,
+        163,
+        164,
+        167,
+        169
+      ],
+      "note": "6.6 mesh service support: start, tree formation, TREEID assignment, leaving, tree routing, server routing alternative"
+    },
+    {
+      "pdf_id": "802155-2009",
+      "pages": [
+        170,
+        171,
+        172
+      ],
+      "note": "Annex A informative MAC amendments: definitions, acronyms, 5.5 extension, MLME-MESH-CAPABILITY"
+    }
+  ],
+  "covers": [
+    "802155-2009:6.1",
+    "802155-2009:6.2.1",
+    "802155-2009:6.2.2",
+    "802155-2009:6.2.3",
+    "802155-2009:6.2.4",
+    "802155-2009:6.2.5",
+    "802155-2009:6.2.6",
+    "802155-2009:6.2.7",
+    "802155-2009:6.2.8",
+    "802155-2009:6.3.1",
+    "802155-2009:6.3.2",
+    "802155-2009:6.3.3",
+    "802155-2009:6.3.4",
+    "802155-2009:6.3.5",
+    "802155-2009:6.3.6",
+    "802155-2009:6.4",
+    "802155-2009:6.5.1",
+    "802155-2009:6.5.2",
+    "802155-2009:6.5.3",
+    "802155-2009:6.6.1",
+    "802155-2009:6.6.2",
+    "802155-2009:6.6.3",
+    "802155-2009:6.6.4",
+    "802155-2009:6.6.5",
+    "802155-2009:6.6.6",
+    "802155-2009:Annex_A"
+  ],
+  "track": "pan-802-15"
+}

@@ -1,0 +1,196 @@
+{
+  "id": "pan-pac-03",
+  "title": {
+    "en": "PAC MAC Procedures: Sync, Discovery, Peering, and UWB Networks",
+    "zh": "PAC MAC 流程：同步、发现、配对与 UWB 网络"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This is part 2 of 2 of Clause 6, the MAC (Medium Access Control) functional description of IEEE Std 802.15.8-2017, Peer Aware Communications (PAC). PAC is a standard for direct, infrastructure-less communication between nearby devices, called PDs (PAC Devices). This lesson walks through the full life of a link: how devices agree on time (6.8 Synchronization), how they find each other (6.9 Discovery), how they form connections (6.10 Peering) and tear them down (6.11 De-peering), how they actually exchange data (6.12 Communication period), an overhead-saving shorthand for addresses (6.13 Link-ID), and a whole alternate world for ranging-focused radios (6.14 PAC networking with the UWB PHY). Every acronym is spelled out on first use; the deepdive at the end is a clause-by-clause map so you can navigate the standard directly.",
+      "zh": "这是 IEEE Std 802.15.8-2017《对等感知通信》（Peer Aware Communications，PAC）第 6 章 MAC（介质访问控制）功能描述的下半部分（2 之 2）。PAC 是一项面向邻近设备间直接、无基础设施通信的标准，其中的设备称为 PD（PAC 设备）。本课讲述一条链路的完整生命周期：设备如何统一时间（6.8 同步）、如何彼此发现（6.9 发现）、如何建立连接（6.10 配对）与拆除连接（6.11 解除配对）、如何真正交换数据（6.12 通信期）、节省地址开销的简写机制（6.13 Link-ID），以及面向测距的射频的另一套完整体系（6.14 使用 UWB PHY 的 PAC 组网）。每个缩写在首次出现时均会展开；末尾的深入解读是逐条目的导航图，方便你直接对照标准查阅。"
+    },
+    {
+      "type": "prose",
+      "en": "Synchronization (6.8) is how PDs share a common sense of time so their superframes line up. A superframe is the repeating frame that PAC time is divided into; it begins with a synchronization period. 6.8.1 lays out three phases. A PD with no timing of its own (e.g., just powered on) runs the initial synchronization procedure (6.8.2): it searches for a synchronization signal (two OFDM symbols) for at least five consecutive superframes, and the condition is met once the signal is correctly received in three consecutive superframes. If nothing is heard, the PD just starts transmitting its own signal at an arbitrary time, becoming the seed. Devices send sync signals using slotted CSMA/CA (Carrier Sense Multiple Access with Collision Avoidance) with an EIED (Exponential Increase Exponential Decrease) backoff, each maintaining a contention window (CW) tuned so the network-wide rate of sync signals stays roughly constant regardless of how many PDs are present. The reference-timing adjustment rule is elegantly simple: a synchronization timer's phase runs 0 to 2 pi over one superframe; on receiving a sync signal, if phase is below pi the PD ignores it, but if phase is at or above pi the PD jumps its timing forward to 2 pi.",
+      "zh": "同步（6.8）是 PD 之间共享统一时间感的方式，使它们的超帧（superframe）对齐。超帧是划分 PAC 时间的重复帧，以同步期开始。6.8.1 给出三个阶段。没有自身时基的 PD（例如刚上电）执行初始同步流程（6.8.2）：它至少连续五个超帧搜索同步信号（两个 OFDM 符号），当该信号在连续三个超帧内被正确接收时即满足条件。若什么都没收到，PD 就以任意时刻开始发送自己的信号，成为种子节点。设备使用带 EIED（指数增大指数减小）退避的时隙化 CSMA/CA（载波侦听多址/冲突避免）发送同步信号，各自维护一个竞争窗口（CW），其调节使得全网同步信号的发送速率无论有多少 PD 都大致保持恒定。参考时基的调整规则非常简洁：同步定时器的相位在一个超帧内从 0 走到 2 pi；收到同步信号时，若相位小于 pi 则 PD 忽略，若相位达到或超过 pi 则 PD 将其时基跳到 2 pi。"
+    },
+    {
+      "type": "prose",
+      "en": "Once synchronized, the PD moves to the maintaining synchronization procedure (6.8.3), continuously trimming its timer from incoming sync signals. If it hears no sync signal for five consecutive superframes, the re-synchronization condition (6.8.4) triggers; re-sync is identical to initial sync except the PD keeps its own current timing as the starting point. Mobility creates a special hazard: merging of PAC networks (6.8.5). When two separately synchronized networks drift into range and their sync periods overlap, the sync procedure can pull both onto the same superframe start, fusing them. The MAC cannot detect this directly, only infer it from a jump in PER (Packet Error Rate), especially in the contention-free period or discovery period. 6.8.5.2 covers letting the merge proceed; 6.8.5.3 covers avoiding it, in which the MAC raises an MLME-SYNCHRONIZATION-LOSS.indication with status SUPERFRAME_CONFLICT, and a Reassignment command frame negotiates a move to a new channel number (GRANTED or DENIED).",
+      "zh": "一旦同步，PD 进入维持同步流程（6.8.3），持续依据收到的同步信号微调其定时器。若连续五个超帧未听到任何同步信号，则触发重同步条件（6.8.4）；重同步与初始同步完全相同，只是 PD 以自身当前时基作为起点。移动性带来一个特殊隐患：PAC 网络的合并（6.8.5）。当两个各自独立同步的网络漂移进入彼此范围、且其同步期重叠时，同步流程可能把两者拉到相同的超帧起点，从而融合。MAC 无法直接检测这一点，只能从 PER（误包率）的跃升中推断，尤其是在无竞争期或发现期。6.8.5.2 处理放任合并发生的情形；6.8.5.3 处理避免合并，此时 MAC 发出 MLME-SYNCHRONIZATION-LOSS.indication（状态为 SUPERFRAME_CONFLICT），并通过 Reassignment 命令帧协商切换到新的信道号（GRANTED 或 DENIED）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model for 6.8: synchronization is a democratic clock. No master beacon exists; instead every PD nudges its timer toward what it hears, and the phase rule (ignore early signals, jump to align with late ones) makes the whole crowd converge. The price of being leaderless is that two crowds can accidentally merge, which is why 6.8.5 exists.",
+      "zh": "6.8 的心智模型：同步是一种民主时钟。不存在主信标；相反，每个 PD 都朝它听到的时间微调自己的定时器，而相位规则（忽略偏早的信号、跳变以对齐偏晚的信号）使整群设备收敛。无主节点的代价是两群设备可能意外合并，这正是 6.8.5 存在的原因。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> Initial: power on, no timing\n  Initial --> Maintain: 3 of 5 superframes OK\n  Initial --> Seed: no signal heard\n  Seed --> Maintain\n  Maintain --> Resync: silent 5 superframes\n  Resync --> Maintain\n  Maintain --> Merge: PER jumps (6.8.5)",
+      "zh": "stateDiagram-v2\n  [*] --> 初始同步: 上电且无时基\n  初始同步 --> 维持同步: 5 帧中 3 帧成功\n  初始同步 --> 种子节点: 未听到信号\n  种子节点 --> 维持同步\n  维持同步 --> 重同步: 静默 5 个超帧\n  重同步 --> 维持同步\n  维持同步 --> 合并: PER 跃升 (6.8.5)"
+    },
+    {
+      "type": "prose",
+      "en": "Discovery (6.9) is how a PD learns who is nearby. 6.9.2 fixes the discovery information at 21 octets (a Group ID and an Application ID set by the higher layer). 6.9.3 defines three discovery types. One-way discovery is pure advertisement: because the radio is half-duplex, a PD either transmits its 21 octets or listens, never both. Two-way untargeted discovery is publish-and-subscribe: a Requestor PD broadcasts a Discovery Request command frame during the CAP (Contention Access Period) and collects Discovery Response frames from any willing PD. Two-way targeted discovery is query-and-reply: after peering, a Requestor PD asks a specific Responder PD (or PAC group) for its information. 6.9.4 then details each as a message sequence: 6.9.4.1 one-way (carried as raw discovery resources, not wrapped in a MAC frame, across 85 discovery resources in the discovery period), 6.9.4.2 two-way untargeted, 6.9.4.3 two-way targeted, and 6.9.4.4 a two-phase many-to-many procedure where an Initiator PD (I-PD) gathers a list of Responder PDs (R-PDs) that can all hear each other, ready to be turned into a group by 6.10.3.4.",
+      "zh": "发现（6.9）是 PD 了解周围有谁的方式。6.9.2 将发现信息固定为 21 个八位组（由高层设置的 Group ID 与 Application ID）。6.9.3 定义了三种发现类型。单向发现是纯广告：由于射频是半双工，PD 要么发送自己的 21 个八位组，要么侦听，绝不同时进行。双向非定向发现是发布-订阅式：请求方 PD（Requestor PD）在 CAP（竞争访问期）广播 Discovery Request 命令帧，并收集来自任何愿意响应的 PD 的 Discovery Response 帧。双向定向发现是查询-应答式：配对之后，请求方 PD 向特定的响应方 PD（或 PAC 组）索取其信息。6.9.4 随后将每种类型展开为消息序列：6.9.4.1 单向（以原始发现资源承载，不封装进 MAC 帧，在发现期内分布于 85 个发现资源中），6.9.4.2 双向非定向，6.9.4.3 双向定向，以及 6.9.4.4 两阶段的多对多流程，其中发起方 PD（I-PD）收集一份彼此都能听到的响应方 PD（R-PD）列表，待 6.10.3.4 将其变成一个组。"
+    },
+    {
+      "type": "prose",
+      "en": "Peering (6.10) turns a discovered PD into a connected one. 6.10.1 names the roles (Requestor PD initiates, Responder PD is the target). 6.10.2 says peering and de-peering management frames are sent in the dedicated peering period using the p-EIED protocol, with persistence state kept separate from the CAP's. 6.10.3 describes the handshake: a Peering Request command frame (which also carries cryptographic keys to start an encrypted session), an Immediate Ack that confirms receipt but not acceptance, then a Peering Response command frame carrying SUCCESSFUL or ACCESS_DENIED, all bounded by macPeeringResponseTimeout. The variants are 6.10.3.2 one-to-one, 6.10.3.3 one-to-many (one Requestor builds a PAC group by broadcasting one request to several targets), and 6.10.3.4 many-to-many (the I-PD iteratively grows an accepted-R-PD list and finally multicasts a confirming Peering Request so every member shares one multicast group address). De-peering (6.11) is the reverse: 6.11.1 lists its steps (disconnect the link, release resources), and 6.11.2 gives the procedure, split into 6.11.2.2 leaving a PAC group (checked against macGroupIdList) and 6.11.2.3 de-peering from a single PD (checked against macPDIdList, acknowledged with an Immediate Ack).",
+      "zh": "配对（6.10）把一个被发现的 PD 变为已连接的 PD。6.10.1 命名了角色（请求方 PD 发起，响应方 PD 是目标）。6.10.2 规定配对与解除配对的管理帧在专用的配对期内使用 p-EIED 协议发送，其持续性状态与 CAP 的相互独立。6.10.3 描述握手：Peering Request 命令帧（同时携带用于开启加密会话的密钥），一个仅确认收到、并不代表接受的 Immediate Ack，随后是携带 SUCCESSFUL 或 ACCESS_DENIED 的 Peering Response 命令帧，整个过程受 macPeeringResponseTimeout 约束。其变体包括 6.10.3.2 一对一、6.10.3.3 一对多（一个请求方通过向多个目标广播一个请求来组建 PAC 组），以及 6.10.3.4 多对多（I-PD 迭代地扩充已接受 R-PD 列表，最后多播一个确认性的 Peering Request，使每个成员共享同一个多播组地址）。解除配对（6.11）是其逆过程：6.11.1 列出其步骤（断开链路、释放资源），6.11.2 给出流程，分为 6.11.2.2 离开 PAC 组（依据 macGroupIdList 校验）与 6.11.2.3 与单个 PD 解除配对（依据 macPDIdList 校验，以 Immediate Ack 确认）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"30\" width=\"70\" height=\"40\"/><rect x=\"80\" y=\"30\" width=\"90\" height=\"40\"/><rect x=\"170\" y=\"30\" width=\"110\" height=\"40\"/><rect x=\"280\" y=\"30\" width=\"150\" height=\"40\"/><text x=\"45\" y=\"54\" font-size=\"11\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">SP</text><text x=\"125\" y=\"54\" font-size=\"11\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">DP</text><text x=\"225\" y=\"54\" font-size=\"11\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">PP</text><text x=\"355\" y=\"49\" font-size=\"11\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">CP = CAP + CFP</text><text x=\"355\" y=\"63\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">(6.12)</text><text x=\"45\" y=\"22\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">sync 6.8</text><text x=\"125\" y=\"22\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">disc 6.9</text><text x=\"225\" y=\"22\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">peer 6.10</text><text x=\"220\" y=\"95\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">one PAC superframe</text></svg>",
+      "caption": {
+        "en": "A PAC superframe in order: Synchronization Period (SP), Discovery Period (DP), Peering Period (PP), and Communication Period (CP), which itself splits into a contention access period (CAP) and a contention-free period (CFP). Each clause in this lesson governs one slice.",
+        "zh": "按顺序排列的 PAC 超帧：同步期（SP）、发现期（DP）、配对期（PP）和通信期（CP），其中通信期又分为竞争访问期（CAP）和无竞争期（CFP）。本课各条目分别管辖其中一段。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The communication period (6.12) is where data actually flows. 6.12.1 says it consists of a CAP and a CFP (Contention-Free Period): the CFP carries Data frames, while the CAP carries both Data frames and MAC command frames. 6.12.2 details the CAP: transmission uses the p-EIED random access scheme on a listen-before-talk basis (sense the medium, defer if busy, update persistence level p), and 6.12.2.2 specifies carrier sensing (CS) done both physically (by the OFDM or OFDMA PHY) and virtually via the NAV (Network Allocation Vector), where RTS/CTS (Request-To-Send / Clear-To-Send) frames carry a Duration that reserves the medium. 6.12.3 details the CFP: PDs reserve synchronous slotted resource elements (REs) without contention, tracking who uses what via the macCFPTable. The CFP opens with a scheduling period (scheduling reservation, pilot signals, then a CQI, Channel Quality Indicator), and REs are scheduled by received SINR and traffic priority, each link tagged with a unique link index. Link-ID (6.13) is an optional overhead saver: 6.13.1 notes that replacing a 48-bit source address with an 8-bit Link-ID saves five octets per frame. 6.13.2 has the destination PD assign each Link-ID, store it in macOwnLinkIdList, and advertise it via a Link-ID Assignment IE; the receiver records it in macTxLinkIdList. 6.13.3 covers transmission (substitute the 8- or 16-bit Link-ID, set the Source Addressing mode field) and reception (validate against macOwnLinkIdList, recover the real source address). 6.13.4 notes there is no explicit delete; the IDs simply vanish when the pair de-peers.",
+      "zh": "通信期（6.12）是数据真正流动之处。6.12.1 指出它由 CAP 和 CFP（无竞争期）组成：CFP 承载 Data 帧，而 CAP 同时承载 Data 帧和 MAC 命令帧。6.12.2 详述 CAP：发送采用基于先听后说原则的 p-EIED 随机接入方案（侦听介质、忙则推迟、更新持续性等级 p），6.12.2.2 规定载波侦听（CS）同时通过物理方式（由 OFDM 或 OFDMA PHY 完成）和虚拟方式（经由 NAV，网络分配矢量）进行，其中 RTS/CTS（请求发送/允许发送）帧携带用于预留介质的 Duration 字段。6.12.3 详述 CFP：PD 无竞争地预留同步时隙化的资源单元（RE），并通过 macCFPTable 跟踪谁在用什么。CFP 以调度期开始（调度预留、导频信号、然后是 CQI 即信道质量指示），RE 依据接收 SINR 和业务优先级进行调度，每条链路标以唯一的链路索引。Link-ID（6.13）是一项可选的开销节省机制：6.13.1 指出用 8 位 Link-ID 替换 48 位源地址，每帧可省五个八位组。6.13.2 由目的 PD 分配每个 Link-ID、存入 macOwnLinkIdList，并通过 Link-ID Assignment IE 通告；接收方将其记入 macTxLinkIdList。6.13.3 涵盖发送（替换为 8 位或 16 位 Link-ID，设置源寻址模式字段）与接收（依据 macOwnLinkIdList 校验，还原真实源地址）。6.13.4 指出没有显式删除机制；当这对 PD 解除配对时，这些 ID 自然消失。"
+    },
+    {
+      "type": "prose",
+      "en": "PAC networking with the UWB PHY (6.14) is a parallel universe for radios whose superpower is precise distance measurement. UWB (Ultra-Wideband) excels at two-way ranging and localization, so 6.14.1 introduces UWB-only PAC networks that differ in three ways: there is no special sync sequence (a MAC Sync frame replaces it), the Sync frame also carries discovery information and CFP-usage signalling (no multi-carrier grids), and channel access is ALOHA rather than CSMA/CA. 6.14.2 gives the UWB superframe (UWB Sync Period of 8 slots, then a UWB CAP of 32 slots, then a UWB CFP). 6.14.3 has each PD randomly pick one of the 8 Sync Slots, plus one of four sub-slot start delays, to send its Sync frame. 6.14.4 is the cooperative synchronization process: 6.14.4.1 listen then optionally send Sync frames, 6.14.4.2 achieve initial sync by aligning to the superframe boundary (computed from the frame arrival timestamp, sync delay code, and sync position), 6.14.4.3 maintain it by sending one Sync frame per superframe and listening in the others, 6.14.4.4 resolve overlap of two networks (the denser group, judged by the LPDI, Local PD Density Indication, wins; the sparser realigns via the SMD/Resync/SMC fields), and 6.14.4.5 move to another complex channel (RF channel plus preamble sequence) when air gets crowded.",
+      "zh": "使用 UWB PHY 的 PAC 组网（6.14）是为那些以精确测距见长的射频而设的平行体系。UWB（超宽带）擅长双向测距与定位，因此 6.14.1 引入仅 UWB 的 PAC 网络，它在三方面不同：没有专门的同步序列（由 MAC Sync 帧取代）、Sync 帧同时携带发现信息和 CFP 使用信令（不用多载波栅格），以及信道接入采用 ALOHA 而非 CSMA/CA。6.14.2 给出 UWB 超帧（8 个时隙的 UWB 同步期，然后是 32 个时隙的 UWB CAP，再然后是 UWB CFP）。6.14.3 让每个 PD 随机选取 8 个同步时隙之一，外加四种子时隙起始延迟之一，来发送其 Sync 帧。6.14.4 是协作同步过程：6.14.4.1 先侦听再选择性地发送 Sync 帧，6.14.4.2 通过对齐超帧边界（由帧到达时间戳、同步延迟码和同步位置算出）实现初始同步，6.14.4.3 通过每超帧发一个 Sync 帧并在其余时隙侦听来维持同步，6.14.4.4 解决两网络的重叠（更密集的组——由 LPDI 即本地 PD 密度指示判定——胜出，较稀疏的一方经由 SMD/Resync/SMC 字段重新对齐），以及 6.14.4.5 在空口拥挤时迁移到另一个复合信道（射频信道加前导序列）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why UWB needs its own world (6.14): an Ultra-Wideband impulse radio cannot run the OFDM/OFDMA multi-carrier discovery grids, so PAC folds discovery, CFP-usage, and timing all into one MAC Sync frame. The payoff is power-frugal, leaderless ranging groups that can split into non-interfering subgroups (6.14.6) and that can also bolt onto an existing non-UWB PAC network just for occasional distance measurements (6.14.8).",
+      "zh": "为什么 UWB 需要自成一体（6.14）：超宽带脉冲射频无法运行 OFDM/OFDMA 多载波发现栅格，因此 PAC 把发现、CFP 使用和定时全部折叠进一个 MAC Sync 帧中。其回报是省电、无主的测距组，既能分裂成互不干扰的子组（6.14.6），也能仅为偶尔的距离测量而附挂到既有的非 UWB PAC 网络上（6.14.8）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause from 6.8 to 6.14, with exact numbers",
+        "zh": "覆盖图：从 6.8 到 6.14 的每个条目，附确切编号"
+      },
+      "en": "Synchronization (6.8): 6.8.1 overview of the three phases; 6.8.2 initial synchronization (search five superframes, lock on three, send sync signals via slotted CSMA/CA + EIED backoff with a self-tuning CW, adjust reference timing by the phase rule below/above pi); 6.8.3 maintaining synchronization; 6.8.4 re-synchronization (triggered by five silent superframes, identical to initial but keeps own timing); 6.8.5 merging of PAC networks (detected only via PER rise; either let it merge or avoid it with a Reassignment to a new channel number). Discovery (6.9): 6.9.1 overview; 6.9.2 discovery information (21 octets, Group ID + Application ID); 6.9.3 the three discovery types (one-way, two-way untargeted, two-way targeted); 6.9.4 descriptions, namely 6.9.4.1 one-way (85 discovery resources, no MAC frame), 6.9.4.2 two-way untargeted, 6.9.4.3 two-way targeted, 6.9.4.4 many-to-many group formation (I-PD gathers R-PDs in two phases). Peering (6.10): 6.10.1 overview and roles; 6.10.2 p-EIED access in the peering period; 6.10.3 description, namely 6.10.3.1 general handshake with keys and macPeeringResponseTimeout (covered inline within the 6.10.3 narrative), 6.10.3.2 one-to-one, 6.10.3.3 one-to-many, 6.10.3.4 many-to-many. De-peering (6.11): 6.11.1 description (disconnect, release); 6.11.2 procedure, namely 6.11.2.1 general, 6.11.2.2 from a PAC group (macGroupIdList), 6.11.2.3 from another PD (macPDIdList + Immediate Ack). Communication period (6.12): 6.12.1 overview (CAP + CFP); 6.12.2 CAP (6.12.2.1 p-EIED listen-before-talk, 6.12.2.2 physical + virtual NAV carrier sensing with RTS/CTS); 6.12.3 CFP (reserved REs, scheduling period, pilots, CQI, SINR-and-priority scheduling). Link-ID (6.13): 6.13.1 introduction (8-bit ID saves five octets); 6.13.2 assignment (6.13.2.1 general, 6.13.2.2 macOwnLinkIdList records, 6.13.2.3 macTxLinkIdList records); 6.13.3 use (6.13.3.1 transmission, 6.13.3.2 reception); 6.13.4 deletion (none explicit; gone at de-peering). UWB PAC (6.14): 6.14.1 introduction (three differences); 6.14.2 UWB superframe (8 + 32 slots + CFP); 6.14.3 sending sync frames (random slot + delay code); 6.14.4 cooperative synchronization (6.14.4.1 general, 6.14.4.2 initial sync + alignment math, 6.14.4.3 maintaining, 6.14.4.4 resolving overlap via LPDI/SMD/Resync/SMC, 6.14.4.5 moving complex channel); 6.14.5 discovery and peering (carried in Sync frame, peering in the CAP); 6.14.6 non-interfering closed subgroups for ranging; 6.14.7 using the CFP (collate MLME-COSYNC.indication reports, advertise CFP usage); 6.14.8 ranging in an established non-UWB network (6.14.8.1 general, 6.14.8.2 infrequent, 6.14.8.3 more frequent, 6.14.8.4 very frequent ad-hoc UWB ranging).",
+      "zh": "同步（6.8）：6.8.1 三阶段概述；6.8.2 初始同步（搜索五个超帧、三帧锁定、经带自调 CW 的时隙化 CSMA/CA + EIED 退避发送同步信号、依据 pi 上下相位规则调整参考时基）；6.8.3 维持同步；6.8.4 重同步（由五个静默超帧触发，与初始相同但保留自身时基）；6.8.5 PAC 网络合并（仅经由 PER 上升检测；要么放任合并，要么通过 Reassignment 切换新信道号以避免）。发现（6.9）：6.9.1 概述；6.9.2 发现信息（21 个八位组，Group ID + Application ID）；6.9.3 三种发现类型（单向、双向非定向、双向定向）；6.9.4 各描述，即 6.9.4.1 单向（85 个发现资源，无 MAC 帧）、6.9.4.2 双向非定向、6.9.4.3 双向定向、6.9.4.4 多对多组建（I-PD 分两阶段收集 R-PD）。配对（6.10）：6.10.1 概述与角色；6.10.2 配对期内的 p-EIED 接入；6.10.3 描述，即 6.10.3.1 含密钥与 macPeeringResponseTimeout 的通用握手（在 6.10.3 叙述中随文讲解）、6.10.3.2 一对一、6.10.3.3 一对多、6.10.3.4 多对多。解除配对（6.11）：6.11.1 描述（断开、释放）；6.11.2 流程，即 6.11.2.1 通用、6.11.2.2 离开 PAC 组（macGroupIdList）、6.11.2.3 与另一 PD 解除（macPDIdList + Immediate Ack）。通信期（6.12）：6.12.1 概述（CAP + CFP）；6.12.2 CAP（6.12.2.1 p-EIED 先听后说、6.12.2.2 含 RTS/CTS 的物理 + 虚拟 NAV 载波侦听）；6.12.3 CFP（预留 RE、调度期、导频、CQI、按 SINR 与优先级调度）。Link-ID（6.13）：6.13.1 引言（8 位 ID 省五个八位组）；6.13.2 分配（6.13.2.1 通用、6.13.2.2 macOwnLinkIdList 记录、6.13.2.3 macTxLinkIdList 记录）；6.13.3 使用（6.13.3.1 发送、6.13.3.2 接收）；6.13.4 删除（无显式删除；解除配对时消失）。UWB PAC（6.14）：6.14.1 引言（三处不同）；6.14.2 UWB 超帧（8 + 32 时隙 + CFP）；6.14.3 发送同步帧（随机时隙 + 延迟码）；6.14.4 协作同步（6.14.4.1 通用、6.14.4.2 初始同步与对齐算法、6.14.4.3 维持、6.14.4.4 经 LPDI/SMD/Resync/SMC 解决重叠、6.14.4.5 迁移复合信道）；6.14.5 发现与配对（承载于 Sync 帧，配对在 CAP）；6.14.6 用于测距的互不干扰封闭子组；6.14.7 使用 CFP（汇总 MLME-COSYNC.indication 报告、通告 CFP 使用）；6.14.8 在既有非 UWB 网络中测距（6.14.8.1 通用、6.14.8.2 不频繁、6.14.8.3 较频繁、6.14.8.4 非常频繁的临时 UWB 测距）。",
+      "cite": {
+        "pdf_id": "802158-2017",
+        "pages": [
+          55,
+          59,
+          60,
+          61,
+          62,
+          67,
+          73,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          82,
+          83,
+          84
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61
+      ],
+      "note": "6.8 Synchronization procedure (overview, initial/maintain/re-sync, CSMA/CA+EIED, phase rule, network merging) and 6.9 Discovery overview/info/types."
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        62,
+        63,
+        64,
+        65,
+        66,
+        67
+      ],
+      "note": "6.9.4 discovery descriptions (one-way, two-way untargeted/targeted, many-to-many) and start of 6.10 peering."
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74
+      ],
+      "note": "6.10.3 peering procedures (one-to-one, one-to-many, many-to-many) and 6.11 de-peering."
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        75,
+        76,
+        77,
+        78
+      ],
+      "note": "6.12 communication period (CAP/CFP, NAV, REs, CQI), 6.13 Link-ID assignment/use/delete."
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84
+      ],
+      "note": "6.14 PAC networking with the UWB PHY (superframe, sync frames, cooperative sync, discovery/peering, closed subgroups, CFP, ad-hoc ranging)."
+    }
+  ],
+  "covers": [
+    "802158-2017:6.8.1",
+    "802158-2017:6.8.2",
+    "802158-2017:6.8.3",
+    "802158-2017:6.8.4",
+    "802158-2017:6.8.5",
+    "802158-2017:6.9.1",
+    "802158-2017:6.9.2",
+    "802158-2017:6.9.3",
+    "802158-2017:6.9.4",
+    "802158-2017:6.10.1",
+    "802158-2017:6.10.2",
+    "802158-2017:6.10.3",
+    "802158-2017:6.11.1",
+    "802158-2017:6.11.2",
+    "802158-2017:6.12.1",
+    "802158-2017:6.12.2",
+    "802158-2017:6.12.3",
+    "802158-2017:6.13.1",
+    "802158-2017:6.13.2",
+    "802158-2017:6.13.3",
+    "802158-2017:6.13.4",
+    "802158-2017:6.14.1",
+    "802158-2017:6.14.2",
+    "802158-2017:6.14.3",
+    "802158-2017:6.14.4",
+    "802158-2017:6.14.5",
+    "802158-2017:6.14.6",
+    "802158-2017:6.14.7",
+    "802158-2017:6.14.8"
+  ],
+  "track": "pan-pac"
+}

@@ -1,0 +1,131 @@
+{
+  "id": "pan-802-15-31",
+  "title": {
+    "en": "The Informative Annexes: Dragonfly, 802.15.4 Security Keys, and the Bibliography",
+    "zh": "资料性附录详解：Dragonfly、802.15.4 安全密钥与参考文献"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.15.9-2021 defines how to carry a Key Management Protocol (KMP) — the conversation two devices have to agree on encryption keys — inside IEEE 802.15 frames. Its last three annexes are all informative (helpful background, not mandatory rules). They answer three practical questions: which key-exchange protocol should I use when there are no certificates (Annex E, Dragonfly)? Once I have keys, how does the 802.15.4 radio actually find the right one for a given frame (Annex F)? And where can I read more (Annex G, the bibliography)? This lesson is a guided tour of all three.",
+      "zh": "IEEE Std 802.15.9-2021 规定了如何把密钥管理协议（KMP，Key Management Protocol，即两台设备协商加密密钥的那段对话）封装进 IEEE 802.15 帧中传输。它的最后三个附录都是资料性的（提供有益背景，而非强制规则）。它们回答了三个实际问题：当没有证书基础设施时，我该用哪种密钥交换协议（附录 E，Dragonfly）？拿到密钥后，802.15.4 无线电如何为某一帧找到正确的那把密钥（附录 F）？以及还能从哪里读到更多内容（附录 G，参考文献）？本课将带你逐一走完这三个附录。"
+    },
+    {
+      "type": "prose",
+      "en": "Annex E describes Dragonfly, a password-authenticated key exchange. The credential is just a shared secret — a key, code, word, or phrase — not a certificate. Its great strength is resistance to off-line dictionary attack: an attacker cannot grab the messages and grind through a wordlist on their own computer. Each guess requires a fresh active attack against the live device, so even a weak password (a word from a 5000-word list, or a 6-digit number) stays usable. After X active attacks against a credential pool of size D, the attacker's success probability is only 1/(D−X). Dragonfly is a true peer-to-peer protocol: either side can start, both can start at once, and there is no required access point (AP) role.",
+      "zh": "附录 E 描述了 Dragonfly，一种基于口令的认证密钥交换。其凭据只是一个共享秘密——一把密钥、一个代码、一个单词或一句短语——而非证书。它的最大优势是抵抗离线字典攻击：攻击者无法截获报文后在自己电脑上把词表逐个试遍。每猜一次都必须对在线设备发起一次新的主动攻击，因此即便是弱口令（5000 词词库中的一个词，或一个 6 位数字）也仍然可用。在对规模为 D 的凭据池发起 X 次主动攻击后，攻击者的成功概率仅为 1/(D−X)。Dragonfly 是真正的对等协议：任一方都可发起，双方也可同时发起，且不需要接入点（AP，access point）这一固定角色。"
+    },
+    {
+      "type": "prose",
+      "en": "Mechanically, Dragonfly is four messages in two phases. In the commit phase each side sends data that locks it to a single guess of the shared credential. In the confirm phase each side proves it used the same credential. The exchange succeeds only if both used the same secret, and fails in every other case. When run over 802.15.4, Dragonfly reuses the state machine and protocol of SAE (Simultaneous Authentication of Equals — the same 'dragonfly' mechanism used in Wi-Fi's IEEE 802.11), and its messages can ride inside an MPX IE (Multiplexed Information Element), the generic container 802.15.9 uses to fragment and carry KMP datagrams.",
+      "zh": "在机制上，Dragonfly 是分两个阶段的四条报文。在提交（commit）阶段，每一方发送数据将自己锁定到对共享凭据的某一次猜测；在确认（confirm）阶段，每一方证明自己用的是同一个凭据。只有当双方使用了同一个秘密时交换才成功，其余情况一律失败。当运行于 802.15.4 之上时，Dragonfly 复用了 SAE（Simultaneous Authentication of Equals，对等同步认证——也就是 Wi-Fi 的 IEEE 802.11 所用的同一种 “dragonfly” 机制）的状态机与协议，其报文可装入 MPX IE（Multiplexed Information Element，复用信息元素，802.15.9 用来分片承载 KMP 数据报的通用容器）中传输。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant A as Initiator\n    participant B as Responder\n    Note over A,B: Commit phase\n    A->>B: Commit (Group, Scalar, Element)\n    B->>A: Commit (Group, Scalar, Element)\n    Note over A,B: Confirm phase\n    A->>B: Confirm\n    B->>A: Confirm\n    Note over A,B: Same credential? Keys established",
+      "zh": "sequenceDiagram\n    participant A as 发起方\n    participant B as 响应方\n    Note over A,B: 提交阶段\n    A->>B: 提交 (群组, 标量, 元素)\n    B->>A: 提交 (群组, 标量, 元素)\n    Note over A,B: 确认阶段\n    A->>B: 确认\n    B->>A: 确认\n    Note over A,B: 凭据一致则建立密钥"
+    },
+    {
+      "type": "prose",
+      "en": "Dragonfly needs to negotiate two things before it can run. First, a group: a domain parameter set for public-key math, drawn from IANA's IKE registry (Internet Key Exchange) that maps a 16-bit number to a full parameter set — these cover both Finite Field Cryptography (FFC) and Elliptic Curve Cryptography (ECC), and Dragonfly can use either. Second, a random function, which both secures the exchange and seeds a Key Derivation Function (KDF) — the recommended KDF is based on HKDF (HMAC-based Extract-and-Expand KDF, RFC 5869). The commit message carries a 16-bit Group Description, a KMP Registry byte selecting the random function, and the Scalar and Element values. The confirm message carries a single Confirm field whose length depends on the chosen random function.",
+      "zh": "Dragonfly 运行前需要协商两样东西。其一是群组（group）：用于公钥运算的一组域参数，取自 IANA 维护的 IKE（Internet Key Exchange，互联网密钥交换）注册表，该表把一个 16 位数字映射到完整的参数集——其中既有有限域密码学（FFC，Finite Field Cryptography），也有椭圆曲线密码学（ECC，Elliptic Curve Cryptography），Dragonfly 两者皆可用。其二是随机函数（random function），它既保护本次交换，又作为密钥导出函数（KDF，Key Derivation Function）的种子——推荐的 KDF 基于 HKDF（基于 HMAC 的提取-扩展密钥导出函数，RFC 5869）。提交报文携带 16 位的 Group Description、一个选择随机函数的 KMP Registry 字节，以及 Scalar 与 Element 值；确认报文携带单个 Confirm 字段，其长度取决于所选的随机函数。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why peer-to-peer matters: Dragonfly suits the Internet of Things, sensor, mesh, and body-area networks where setting up a Public Key Infrastructure (PKI) — issuing and managing certificates — is awkward. Because any peer-to-peer protocol can also run in client/server mode (but not the reverse), Dragonfly works both for simple device-to-device links and for large meshes with no change.",
+      "zh": "对等为何重要：Dragonfly 适用于物联网、传感器网络、网状网络和体域网，这些场景中部署公钥基础设施（PKI，Public Key Infrastructure，即签发与管理证书）很麻烦。由于任何对等协议都能以客户端/服务器模式运行（反之则不行），Dragonfly 既能用于简单的设备对设备链路，也能无须改动地用于大型网状网。"
+    },
+    {
+      "type": "prose",
+      "en": "Annex F switches focus: once keys exist, how does the 802.15.4 radio pick the right one to verify or decrypt an incoming frame? 802.15.4 has two kinds of Security Association (SA): link keys and group keys. A key is identified by three things — Key Identifier Mode, KeySource, and KeyIndex. The standard does not say who allocates these; that is the higher layer's job, and because the higher layer passes them straight to the MCPS-DATA.request (the MAC Common Part Sublayer data-send primitive), the KMP itself cannot manage them or even know which KeyIndex values are in use.",
+      "zh": "附录 F 转换了焦点：密钥已经存在后，802.15.4 无线电如何挑出正确的那把来校验或解密收到的帧？802.15.4 有两类安全关联（SA，Security Association）：链路密钥（link key）与组密钥（group key）。一把密钥由三样东西标识——Key Identifier Mode（密钥标识符模式）、KeySource（密钥来源）和 KeyIndex（密钥索引）。标准并未规定由谁来分配它们；那是更高层的职责，而由于更高层将其直接传给 MCPS-DATA.request（MAC 公共部分子层的数据发送原语），KMP 本身无法管理它们，甚至无从得知哪些 KeyIndex 值已被占用。"
+    },
+    {
+      "type": "prose",
+      "en": "A link key is shared between exactly two peers and normally uses Key Identifier Mode 0x00: there is no KeySource or KeyIndex at all, because the key is implied by the originator and recipient addresses in the frame header — one key per peer pair. A group key is shared among many peers; its originator is named in the KeySource field, and an 8-bit KeyIndex distinguishes multiple keys from that same originator. The three group modes differ only in how they name the originator: Mode 0x01 means one network-wide originator (typically the PAN coordinator — Personal Area Network); Mode 0x02 names it by a 4-octet PAN-Identifier-plus-16-bit-short-address; Mode 0x03 names it by the 64-bit extended address.",
+      "zh": "链路密钥恰好在两个对等方之间共享，通常使用 Key Identifier Mode 0x00：根本没有 KeySource 或 KeyIndex，因为密钥由帧头中的发起方与接收方地址隐式确定——每对对等方一把密钥。组密钥在多个对等方之间共享；其发起方记于 KeySource 字段，再以 8 位的 KeyIndex 区分同一发起方的多把密钥。三种组模式仅在如何标识发起方上有别：模式 0x01 表示全网唯一的发起方（通常是 PAN 协调器——PAN 即 Personal Area Network，个域网）；模式 0x02 用 4 个八位组的「PAN 标识符 + 16 位短地址」来标识；模式 0x03 用 64 位扩展地址来标识。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Key Identifier Mode selects how a key is named</text><rect x=\"10\" y=\"35\" width=\"120\" height=\"38\"/><text x=\"18\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">0x00 link key</text><text x=\"18\" y=\"66\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">implicit (addresses)</text><rect x=\"140\" y=\"35\" width=\"100\" height=\"38\"/><text x=\"148\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">0x01 group</text><text x=\"148\" y=\"66\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">net-wide + Index</text><rect x=\"250\" y=\"35\" width=\"100\" height=\"38\"/><text x=\"258\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">0x02 group</text><text x=\"258\" y=\"66\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">PAN+short+Index</text><rect x=\"360\" y=\"35\" width=\"90\" height=\"38\"/><text x=\"368\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">0x03 group</text><text x=\"368\" y=\"66\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">ext addr+Index</text><text x=\"10\" y=\"105\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">KeySource = who made the key | KeyIndex = which of their keys</text><text x=\"10\" y=\"125\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Lookup matches secKeyIdLookupDescriptor against the frame</text></svg>",
+      "caption": {
+        "en": "The four Key Identifier Modes of IEEE 802.15.4 and the fields each uses to locate the right key (Annex F).",
+        "zh": "IEEE 802.15.4 的四种 Key Identifier Mode 及各自用于定位正确密钥的字段（附录 F）。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "For each mode the radio fills a secKeyIdLookupDescriptor and matches it against incoming frames: Mode 0x00 matches on device address mode, PAN ID, and device address; Modes 0x01–0x03 match on secKeyIndex plus (for 0x02 and 0x03) secKeySource. Broadcast/multicast key distribution under Dragonfly reuses any existing 802.15.4 KMP technique, deriving extra keys from the KDF and wrapping them with a strong key-wrap such as AES-SIV (RFC 5297).",
+      "zh": "对每种模式，无线电填好一个 secKeyIdLookupDescriptor 并与收到的帧匹配：模式 0x00 按设备地址模式、PAN ID 和设备地址匹配；模式 0x01–0x03 按 secKeyIndex 匹配，且 0x02 与 0x03 还加上 secKeySource。在 Dragonfly 下的广播/组播密钥分发可复用任何现有的 802.15.4 KMP 技术，从 KDF 导出额外密钥，并用如 AES-SIV（RFC 5297）这样的强密钥封装来保护。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: exact clause numbers for Annexes E, F, and G",
+        "zh": "覆盖地图：附录 E、F、G 的精确条款编号"
+      },
+      "en": "Annex E (Dragonfly, p.65–69): E.1 Description — E.1.1 General, E.1.2 Device authentication, E.1.3 authentication + key establishment (E.1.3.1 General, E.1.3.2 client/initiator-to-server/responder mode with Figure E.1, E.1.3.3 peer-to-peer mode with Figure E.2). E.2 Use cases. E.3 Dragonfly and IEEE 802.15 specifics — E.3.1 Overview, E.3.2 Algorithm negotiation (group + random function via IANA/IKE registry), E.3.3 Key derivation (KDF on RFC 5869), E.3.4 Message framing (E.3.4.1 General, E.3.4.2 commit message + Table E.1 KMP Registry, E.3.4.3 confirm message), E.3.5 Broadcast/multicast key distribution. Annex F (IEEE 802.15.4 security, p.70–72): F.1 Description (SA types; Key Identifier Mode/KeySource/KeyIndex), F.2 Link keys (Mode 0x00 + Table F.1), F.3 Group keys — F.3.1 Overview, F.3.2 Mode 0x01 (Table F.2), F.3.3 Mode 0x02 (Table F.3), F.3.4 Mode 0x03 (Table F.4). Annex G (Bibliography, p.73–74): informative references [B1]–[B24], including EAP (RFC 3748), PANA (RFC 5191), AES (FIPS 197), IKE (RFC 2409), IKEv2 (RFC 7296), HKDF (RFC 5869), AES-SIV (RFC 5297), IEEE Std 802.11 [B13], IEEE Std 802.1X [B12], and IEEE Std 802.15.4y [B14].",
+      "zh": "附录 E（Dragonfly，第 65–69 页）：E.1 描述——E.1.1 概述、E.1.2 设备认证、E.1.3 认证与密钥建立（E.1.3.1 概述、E.1.3.2 客户端/发起方到服务器/响应方模式含图 E.1、E.1.3.3 对等模式含图 E.2）。E.2 用例。E.3 Dragonfly 与 IEEE 802.15 细节——E.3.1 概览、E.3.2 算法协商（经 IANA/IKE 注册表协商群组与随机函数）、E.3.3 密钥导出（基于 RFC 5869 的 KDF）、E.3.4 报文成帧（E.3.4.1 概述、E.3.4.2 提交报文含表 E.1 KMP Registry、E.3.4.3 确认报文）、E.3.5 广播/组播密钥分发。附录 F（IEEE 802.15.4 安全，第 70–72 页）：F.1 描述（SA 类型；Key Identifier Mode/KeySource/KeyIndex）、F.2 链路密钥（模式 0x00 含表 F.1）、F.3 组密钥——F.3.1 概览、F.3.2 模式 0x01（表 F.2）、F.3.3 模式 0x02（表 F.3）、F.3.4 模式 0x03（表 F.4）。附录 G（参考文献，第 73–74 页）：资料性参考文献 [B1]–[B24]，包括 EAP（RFC 3748）、PANA（RFC 5191）、AES（FIPS 197）、IKE（RFC 2409）、IKEv2（RFC 7296）、HKDF（RFC 5869）、AES-SIV（RFC 5297）、IEEE Std 802.11 [B13]、IEEE Std 802.1X [B12] 以及 IEEE Std 802.15.4y [B14]。",
+      "cite": {
+        "pdf_id": "802159-2021",
+        "pages": [
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Annex G is the Bibliography: 24 informative references ([B1]–[B24]) that give helpful background but are not required to implement the standard. They map the protocol's intellectual lineage — IETF RFCs for the building blocks (EAP, PANA, IKE/IKEv2, HKDF, AES-SIV, HIP), the FIPS 197 AES standard, and sibling IEEE standards (802.11 for the SAE/Dragonfly machinery, 802.1X for port-based access control, and 802.15.4y for AES-256 security extensions). Read together, the three annexes complete 802.15.9's story: Dragonfly is the recommended certificate-free way to agree on a secret (E), 802.15.4's mode/source/index scheme is how the radio then finds the right key per frame (F), and the bibliography (G) points to every external document behind those choices.",
+      "zh": "附录 G 是参考文献：24 条资料性参考文献（[B1]–[B24]），提供有益背景，但实现本标准并不需要它们。它们勾勒出协议的思想脉络——构件用的 IETF RFC（EAP、PANA、IKE/IKEv2、HKDF、AES-SIV、HIP）、FIPS 197 的 AES 标准，以及同族 IEEE 标准（802.11 提供 SAE/Dragonfly 机制、802.1X 提供基于端口的访问控制、802.15.4y 提供 AES-256 安全扩展）。三个附录合起来补全了 802.15.9 的全貌：Dragonfly 是推荐的、无须证书即可商定秘密的方式（E），802.15.4 的「模式/来源/索引」方案则是无线电随后为每一帧找到正确密钥的方法（F），而参考文献（G）指向这些选择背后的每一份外部文档。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802159-2021",
+      "pages": [
+        66,
+        67,
+        68,
+        69,
+        70
+      ],
+      "note": "Annex E — Dragonfly KMP: description, peer-to-peer vs initiator/responder modes (Figs E.1/E.2), algorithm negotiation, KDF, commit/confirm message framing, Table E.1 KMP Registry."
+    },
+    {
+      "pdf_id": "802159-2021",
+      "pages": [
+        71,
+        72,
+        73
+      ],
+      "note": "Annex F — IEEE 802.15.4 security: link keys (Mode 0x00, Table F.1) and group keys (Modes 0x01/0x02/0x03, Tables F.2–F.4); Key Identifier Mode / KeySource / KeyIndex."
+    },
+    {
+      "pdf_id": "802159-2021",
+      "pages": [
+        74,
+        75
+      ],
+      "note": "Annex G — Bibliography, informative references [B1]–[B24]."
+    }
+  ],
+  "covers": [
+    "802159-2021:Annex_E",
+    "802159-2021:Annex_F",
+    "802159-2021:Annex_G"
+  ],
+  "track": "pan-802-15"
+}

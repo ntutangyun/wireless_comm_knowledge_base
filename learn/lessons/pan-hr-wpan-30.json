@@ -1,0 +1,216 @@
+{
+  "id": "pan-hr-wpan-30",
+  "title": {
+    "en": "HR-WPAN MAC, Part 2: ACKs, Discovery, Power Save and Interference",
+    "zh": "HR-WPAN MAC 第二部分：确认、发现、节能与干扰抑制"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This lesson finishes the MAC functional description (Clause 7) of IEEE Std 802.15.3-2016, the High-Rate Wireless PAN (HR-WPAN) standard. A piconet here is a small wireless network coordinated by one DEV (device) acting as the PNC (piconet coordinator), which beacons a recurring superframe. Time inside the superframe is split into the CAP (contention access period, where DEVs contend for the medium) and the CTAP (channel time allocation period), which is carved into CTAs (channel time allocations) and MCTAs (management CTAs). Part 1 covered timing and channel access; Part 2 covers everything that keeps a link reliable, discoverable, low-power and interference-tolerant: acknowledgment, peer discovery, parameter changes, interference mitigation, multi-rate, power save, the Application-Specific IE, the parameter table, unequal error protection, and Sync frames.",
+      "zh": "本课结束 IEEE Std 802.15.3-2016（高速率无线个域网 HR-WPAN 标准）MAC 功能描述（第 7 章）的讲解。这里的 piconet（微微网）是由一个充当 PNC（piconet coordinator，微微网协调器）的 DEV（device，设备）协调的小型无线网络，PNC 周期性地发送信标并界定 superframe（超帧）。超帧内的时间被分为 CAP（contention access period，竞争接入期，各 DEV 在此竞争介质）与 CTAP（channel time allocation period，信道时间分配期），后者再切分为 CTA（channel time allocation，信道时间分配）与 MCTA（management CTA，管理型 CTA）。第一部分讲了定时与信道接入；第二部分讲述让链路保持可靠、可发现、低功耗且抗干扰的全部机制：确认、对等发现、参数变更、干扰抑制、多速率、节能、应用专用 IE、参数表、不等差错保护以及同步帧。"
+    },
+    {
+      "type": "prose",
+      "en": "Section 7.9 defines five acknowledgment (ACK) policies, set per-frame in the ACK Policy field. No-ACK (7.9.1) means the sender just assumes success and moves on; it is mandatory for broadcast and multicast frames. Imm-ACK (7.9.2, immediate ACK) makes the recipient reply with a dedicated ACK frame right after a correctly received directed frame. Dly-ACK (7.9.3, delayed ACK) is negotiated for isochronous streams: the receiver answers a burst with one ACK that carries a Max Burst and Max Frames field, telling the source how much it may send next so the receive buffer never overflows. Imp-ACK (7.9.4, implied ACK) lets the target's own response frame count as the ACK, turning one CTA into a bidirectional exchange; if the header arrived but the payload failed its FCS (frame check sequence), the target can still reply and set an Imp-ACK NAK bit to say so.",
+      "zh": "7.9 节定义了五种确认（ACK）策略，逐帧通过 ACK Policy 字段设置。No-ACK（7.9.1）表示发送方直接假定成功并继续，对广播与多播帧是强制的。Imm-ACK（7.9.2，即时确认）要求接收方在正确收到定向帧后立即回送一个专门的 ACK 帧。Dly-ACK（7.9.3，延迟确认）为等时（isochronous）流协商使用：接收方对一串突发只回一个 ACK，其中携带 Max Burst 与 Max Frames 字段，告诉源端下一轮可发多少，以保证接收缓冲不溢出。Imp-ACK（7.9.4，隐式确认）让目标自身的响应帧充当 ACK，从而把一个 CTA 变成双向交换；若帧头收到但负载未通过 FCS（frame check sequence，帧校验序列），目标仍可回复并置 Imp-ACK NAK 位以示告知。"
+    },
+    {
+      "type": "prose",
+      "en": "Blk-ACK (7.9.5, block acknowledgment) acknowledges a whole aggregated frame at once: the receiver fills a Blk-ACK Bitmap in the MAC subheader, one bit per subframe, so the sender knows exactly which MSDUs (MAC service data units) to retransmit. The rules differ for standard aggregation (7.9.5.1, fixed subframe order, Retry field flags a verbatim resend) and low-latency aggregation (7.9.5.2, the originator keeps a sliding list of outstanding MSDUs and can abort one by advancing the MSDU Request Number). Retransmissions (7.9.6) obey the CAP backoff rules and, in a CTA, fire one RIFS (retransmission inter-frame space) after a missing ACK as long as time remains. Duplicate detection (7.9.7) uses the SrcID, Stream Index, Fragmentation Control, Retry field and PNID together so a frame that was received but whose ACK was lost is delivered to higher layers only once.",
+      "zh": "Blk-ACK（7.9.5，块确认）一次性确认整个聚合帧：接收方在 MAC 子头中填写 Blk-ACK 位图，每个子帧一位，使发送方精确知道需重传哪些 MSDU（MAC service data unit，MAC 服务数据单元）。标准聚合（7.9.5.1，子帧顺序固定，Retry 字段标记逐字重发）与低时延聚合（7.9.5.2，源端维护一个未确认 MSDU 的滑动列表，可通过推进 MSDU Request Number 来放弃某个）规则不同。重传（7.9.6）在 CAP 中遵循退避规则；在 CTA 中，只要时间足够，便在缺失 ACK 后一个 RIFS（retransmission inter-frame space，重传帧间隔）即触发。重复检测（7.9.7）联合使用 SrcID、Stream Index、Fragmentation Control、Retry 字段与 PNID，使一个已收到但 ACK 丢失的帧只向上层递交一次。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant S as Source DEV\n  participant T as Target DEV\n  S->>T: Data, ACK Policy = Imp-ACK\n  T-->>S: Response frame (= implied ACK)\n  Note over S,T: One CTA, two directions\n  S->>T: Aggregated frame (many MSDUs)\n  T-->>S: Blk-ACK Bitmap (which subframes OK)\n  S->>T: Retransmit only failed MSDUs",
+      "zh": "sequenceDiagram\n  participant S as 源 DEV\n  participant T as 目标 DEV\n  S->>T: 数据, ACK 策略 = Imp-ACK\n  T-->>S: 响应帧 (= 隐式 ACK)\n  Note over S,T: 一个 CTA, 双向\n  S->>T: 聚合帧 (多个 MSDU)\n  T-->>S: Blk-ACK 位图 (哪些子帧正确)\n  S->>T: 仅重传失败的 MSDU"
+    },
+    {
+      "type": "prose",
+      "en": "Peer discovery (7.10) is how DEVs learn about each other and about the radio environment. A DEV asks the PNC about one or all members with the PNC Information Request (7.10.1). The Probe Request/Response (7.10.2) pulls specific information elements (IEs) from a peer, such as a CTA Status IE for a given stream, and can also be used as a presence check. Announce (7.10.3) pushes unrequested IEs to a target. Channel Status Request (7.10.4) reports link quality between two actively communicating DEVs. Remote scan (7.10.5) lets the PNC ask a member DEV to scan listed channels on its behalf — useful for spotting networks the PNC itself cannot hear. PNC channel scanning (7.10.6) is the PNC quietly checking alternate channels by skipping a few beacons (never more than twice mMinChannelScan). Channel probing (7.10.7) feeds link status back during streaming so the source can pick the best MCS (modulation and coding scheme).",
+      "zh": "对等发现（7.10）是各 DEV 了解彼此与无线环境的方式。DEV 通过 PNC Information Request（7.10.1）向 PNC 询问某个或全部成员。Probe Request/Response（7.10.2）从对端拉取特定信息元素（IE），如某条流的 CTA Status IE，也可用作在线检测。Announce（7.10.3）向目标推送未经请求的 IE。Channel Status Request（7.10.4）报告两个正在通信的 DEV 之间的链路质量。Remote scan（7.10.5）让 PNC 请某个成员 DEV 代为扫描指定信道——便于发现 PNC 自己听不到的网络。PNC channel scanning（7.10.6）是 PNC 通过跳过若干信标（不超过两倍 mMinChannelScan）来安静地查看备用信道。Channel probing（7.10.7）在流传输期间回送链路状态，使源端可选取最佳 MCS（modulation and coding scheme，调制与编码方案）。"
+    },
+    {
+      "type": "prose",
+      "en": "When conditions degrade, the piconet adapts. Changing piconet parameters (7.11) always announces ahead of time via a Piconet Parameter Change IE carried in NbrOfChangeBeacons beacons, with a Change Beacon Number telling everyone exactly when the change takes effect. The PNC can move its beacon position (7.11.1, superframe duration unchanged), change the superframe duration itself (7.11.2), or set a new PNID/BSID (7.11.3, the piconet identifiers — never both at once, and a PNID clash forces a change). Dependent piconets keep in step (7.11.4) by echoing the parent's MOVE or SIZE change into their own beacons. Interference mitigation (7.12) offers the PNC four tools against another 802.15.3 piconet — join as child, join as neighbor, change channel, or reduce power — via dynamic channel selection (7.12.1) and transmit power control (7.12.2, TPC). TPC has two independent forms: a capped maximum power for the CAP, beacon and directed MCTAs (7.12.2.1, so no DEV out-shouts others), and a separately adjustable power inside a CTA (7.12.2.2) requested with the Transmit Power Change command.",
+      "zh": "当环境变差时，微微网会自适应。变更微微网参数（7.11）总是提前预告：在 NbrOfChangeBeacons 个信标中携带 Piconet Parameter Change IE，并用 Change Beacon Number 告知所有人变更何时生效。PNC 可移动其信标位置（7.11.1，超帧时长不变）、改变超帧时长本身（7.11.2），或设置新的 PNID/BSID（7.11.3，即微微网标识——二者不可同时改，且 PNID 冲突会强制变更）。从属微微网通过把父网的 MOVE 或 SIZE 变更复制到自身信标中来保持同步（7.11.4）。干扰抑制（7.12）为 PNC 提供四种对抗另一 802.15.3 微微网的手段——作为子网加入、作为邻居加入、更换信道或降低功率——经由动态信道选择（7.12.1）与发射功率控制（7.12.2，TPC）实现。TPC 有两种独立形式：对 CAP、信标与定向 MCTA 设上限的最大功率（7.12.2.1，使无 DEV 压过他人），以及 CTA 内可单独调整的功率（7.12.2.2），后者用 Transmit Power Change 命令请求。"
+    },
+    {
+      "type": "prose",
+      "en": "Multi-rate support (7.13) lets a PHY offer faster and slower rates around one mandatory base rate; a DEV may only send at a rate the destination is known to support, learned from capability broadcasts, a Probe Request, or the PNC. Broadcasts and beacons always use the base rate, while an Imm-ACK matches the rate of the frame it acknowledges. Power management (7.14) defines four PM modes — ACTIVE plus three power-save (PS) modes — each toggling a DEV between AWAKE and SLEEP states across the superframe. PSPS (7.14.1, piconet synchronized power save) wakes all members on a PNC-chosen system wake beacon. DSPS (7.14.2, device synchronized power save) groups DEVs with similar needs into DSPS sets (index 2-253) that the DEVs themselves parametrize via Wake Beacon Interval and Next Wake Beacon (7.14.2.1), switch in and out of (7.14.2.2), and whose CTA timing must be a power-of-two sub-rate of the wake interval (7.14.2.3). APS (7.14.3, asynchronous power save) sleeps for long stretches, only needing one acknowledged frame to the PNC per ATP (association timeout period) to stay a member. A family of message-sequence charts (7.14.4) shows joining, leaving, and switching PM modes.",
+      "zh": "多速率支持（7.13）让 PHY 在一个强制基速率周围提供更快与更慢的速率；DEV 只能以已知目标支持的速率发送，该信息来自能力广播、Probe Request 或 PNC。广播与信标始终用基速率，而 Imm-ACK 匹配其所确认帧的速率。电源管理（7.14）定义四种 PM 模式——ACTIVE 加三种节能（PS）模式——每种都在超帧中让 DEV 在 AWAKE 与 SLEEP 状态间切换。PSPS（7.14.1，微微网同步节能）让所有成员在 PNC 选定的系统唤醒信标上醒来。DSPS（7.14.2，设备同步节能）把需求相近的 DEV 编入 DSPS 集（索引 2-253），其参数由 DEV 自行设定（Wake Beacon Interval 与 Next Wake Beacon，7.14.2.1）、可自由进出（7.14.2.2），且其 CTA 定时必须是唤醒间隔的二的幂次子速率（7.14.2.3）。APS（7.14.3，异步节能）长时间休眠，每个 ATP（association timeout period，关联超时期）只需向 PNC 发一帧被确认的帧即可保留成员资格。一组消息序列图（7.14.4）展示加入、离开与切换 PM 模式。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"4\" y=\"14\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Wake Beacon Interval = 2, CTA Rate Factor = 8 (DSPS sub-rate)</text><line x1=\"10\" y1=\"95\" x2=\"450\" y2=\"95\"/><g><rect x=\"20\" y=\"40\" width=\"10\" height=\"55\"/><rect x=\"75\" y=\"40\" width=\"10\" height=\"55\"/><rect x=\"130\" y=\"40\" width=\"10\" height=\"55\"/><rect x=\"185\" y=\"40\" width=\"10\" height=\"55\"/><rect x=\"240\" y=\"40\" width=\"10\" height=\"55\"/><rect x=\"295\" y=\"40\" width=\"10\" height=\"55\"/><rect x=\"350\" y=\"40\" width=\"10\" height=\"55\"/><rect x=\"405\" y=\"40\" width=\"10\" height=\"55\"/></g><rect x=\"20\" y=\"55\" width=\"55\" height=\"40\" fill=\"currentColor\" opacity=\"0.25\" stroke=\"none\"/><text x=\"22\" y=\"33\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">wake beacon (every 2nd superframe)</text><text x=\"22\" y=\"110\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">CTA appears once per 8 superframes</text></svg>",
+      "caption": {
+        "en": "DSPS trades power against superframe loading: a DEV listens every Wake Beacon Interval, but a CTA Rate Factor that is a larger power of two means the actual CTA recurs less often (7.14.2.3).",
+        "zh": "DSPS 在功耗与超帧负载之间取舍：DEV 每隔一个 Wake Beacon Interval 收听一次，而更大的二的幂次 CTA Rate Factor 意味着实际 CTA 出现得更稀疏（7.14.2.3）。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A clean mental split for Clause 7 Part 2: 7.9 keeps frames reliable, 7.10 keeps peers discoverable, 7.11/7.12 keep the piconet healthy under change and interference, 7.13 keeps the rate adaptive, 7.14 keeps batteries alive, and 7.15-7.18 are the specialised extras (custom IEs, the parameter table, error protection, and mmWave synchronization).",
+      "zh": "第 7 章第二部分的清晰记忆框架：7.9 让帧可靠，7.10 让对端可发现，7.11/7.12 在变更与干扰下让微微网保持健康，7.13 让速率自适应，7.14 让电池续航，而 7.15-7.18 是专门的附加项（自定义 IE、参数表、差错保护与毫米波同步）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the specialised tail of Clause 7 (7.15-7.18) and exact clause homes",
+        "zh": "覆盖图：第 7 章的专门尾部（7.15-7.18）及各条款的精确归属"
+      },
+      "en": "7.15 AS IE operation: the Application-Specific IE lets the PNC and a member implement out-of-scope extensions that do not break the standard for DEVs lacking the feature. A DEV uses the AS IE Request command (Request Type add / modify / remove, with an AS IE Index) and the PNC replies with an AS IE Response; once added, the PNC carries the IE in every beacon until the DEV removes it or disassociates, and AS IEs are not transferred during PNC handover. 7.16 MAC sublayer parameters: Table 7-6 fixes the non-PHY constants such as mMaxSuperframeDuration = 65535 us, mMinSuperframeDuration = 1000 us, mMaxLostBeacons = 4, mMaxNumValidDEVs = 243, and the aggregation limits mMaxSubframeNum (8 standard / 256 low-latency); Tables 7-7 through 7-10 list the PHY-dependent timing (SIFS, MIFS, BIFS, RIFS, pChannelSwitchTime, etc.) per PHY. 7.17 Unequal error protection (UEP): three types let a frame's more-important MSB subframes get stronger protection than LSB subframes — Type 1 uses different FECs (forward error correction), Type 2 uses different MCSs with a UEP Specific IE marking the MSB/LSB boundary, and Type 3 protects within a subframe via FEC rate or a skewed constellation; mismatched DEVs fall back to EEP (equal error protection). 7.18 Sync frame transmission and virtually dependent piconet: a mmWave PNC sends Sync frames (rate set by the Sync Frame Frequency IE in an Announce command) to fight a hidden-PNC co-channel interferer; a PNC hearing another piconet's Sync frames can synchronize to it, forming a virtually dependent piconet and shifting its CTAs to dodge interference.",
+      "zh": "7.15 AS IE 操作：应用专用 IE 让 PNC 与某成员实现标准范围外的扩展，且不破坏缺少该功能的 DEV 的正常运行。DEV 用 AS IE Request 命令（Request Type 为 add/modify/remove，带 AS IE Index），PNC 以 AS IE Response 回应；一旦添加，PNC 会在每个信标中携带该 IE，直至 DEV 移除或解除关联，且 AS IE 在 PNC 交接时不被转移。7.16 MAC 子层参数：表 7-6 固定了与 PHY 无关的常量，如 mMaxSuperframeDuration = 65535 us、mMinSuperframeDuration = 1000 us、mMaxLostBeacons = 4、mMaxNumValidDEVs = 243，以及聚合上限 mMaxSubframeNum（标准 8 / 低时延 256）；表 7-7 至 7-10 按 PHY 列出与 PHY 相关的定时（SIFS、MIFS、BIFS、RIFS、pChannelSwitchTime 等）。7.17 不等差错保护（UEP）：三种类型让帧中更重要的 MSB 子帧获得比 LSB 子帧更强的保护——Type 1 用不同的 FEC（forward error correction，前向纠错），Type 2 用不同的 MCS 并以 UEP Specific IE 标出 MSB/LSB 分界，Type 3 在单个子帧内通过 FEC 码率或偏斜星座图保护；能力不匹配的 DEV 退回到 EEP（equal error protection，等差错保护）。7.18 同步帧传输与虚拟从属微微网：毫米波 PNC 发送同步帧（速率由 Announce 命令中的 Sync Frame Frequency IE 设定）以对抗隐藏 PNC 的同信道干扰；听到另一微微网同步帧的 PNC 可与之同步，形成虚拟从属微微网，并调整其 CTA 以避开干扰。",
+      "cite": {
+        "pdf_id": "802153-2016",
+        "pages": [
+          273,
+          275,
+          276,
+          277,
+          279,
+          280
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: acknowledgment, discovery, parameter change, power save by exact subclause",
+        "zh": "覆盖图：按精确子条款列出确认、发现、参数变更与节能"
+      },
+      "en": "Acknowledgment and retransmission (7.9): no-ACK 7.9.1, Imm-ACK 7.9.2, Dly-ACK 7.9.3, Imp-ACK 7.9.4, Blk-ACK 7.9.5, retransmissions 7.9.6, duplicate detection 7.9.7. Peer discovery (7.10): PNC Information Request 7.10.1, Probe Request/Response 7.10.2, Announce 7.10.3, Channel Status Request 7.10.4, remote scan 7.10.5, PNC channel scanning 7.10.6, channel probing 7.10.7. Changing piconet parameters (7.11): moving beacon 7.11.1, changing superframe duration 7.11.2, setting PNID/BSID 7.11.3, dependent-piconet synchronization 7.11.4. Interference mitigation (7.12): dynamic channel selection 7.12.1, transmit power control 7.12.2. Multi-rate support: 7.13. Power management (7.14): PSPS 7.14.1, DSPS 7.14.2, APS 7.14.3, the power-save MSCs 7.14.4.",
+      "zh": "确认与重传（7.9）：no-ACK 7.9.1、Imm-ACK 7.9.2、Dly-ACK 7.9.3、Imp-ACK 7.9.4、Blk-ACK 7.9.5、重传 7.9.6、重复检测 7.9.7。对等发现（7.10）：PNC Information Request 7.10.1、Probe Request/Response 7.10.2、Announce 7.10.3、Channel Status Request 7.10.4、远程扫描 7.10.5、PNC 信道扫描 7.10.6、信道探测 7.10.7。变更微微网参数（7.11）：移动信标 7.11.1、改变超帧时长 7.11.2、设置 PNID/BSID 7.11.3、从属微微网同步 7.11.4。干扰抑制（7.12）：动态信道选择 7.12.1、发射功率控制 7.12.2。多速率支持：7.13。电源管理（7.14）：PSPS 7.14.1、DSPS 7.14.2、APS 7.14.3、节能 MSC 7.14.4。",
+      "cite": {
+        "pdf_id": "802153-2016",
+        "pages": [
+          247,
+          248,
+          249,
+          253,
+          254,
+          255,
+          256,
+          257,
+          258,
+          259,
+          260,
+          261,
+          262,
+          263,
+          264,
+          265,
+          267,
+          268,
+          269,
+          270
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        247,
+        248,
+        249,
+        250,
+        251,
+        252,
+        253
+      ],
+      "note": "7.9 acknowledgment types (no-ACK, Imm/Dly/Imp/Blk-ACK), retransmission, duplicate detection"
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        253,
+        254,
+        255,
+        256
+      ],
+      "note": "7.10 peer discovery: PNC info request, probe, announce, channel status, remote scan, PNC scan, channel probing"
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        257,
+        258,
+        259
+      ],
+      "note": "7.11 changing piconet parameters; 7.12 interference mitigation overview"
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        260,
+        261,
+        262
+      ],
+      "note": "7.12.1 dynamic channel selection, 7.12.2 TPC, 7.13 multi-rate support"
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        263,
+        264,
+        265,
+        266,
+        267,
+        268,
+        269,
+        270
+      ],
+      "note": "7.14 power management: PSPS, DSPS, APS, power-save MSCs"
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        273,
+        274,
+        275,
+        276,
+        277,
+        279,
+        280
+      ],
+      "note": "7.15 AS IE, 7.16 MAC sublayer parameters, 7.17 UEP, 7.18 Sync frame / virtually dependent piconet"
+    }
+  ],
+  "covers": [
+    "802153-2016:7.9.1",
+    "802153-2016:7.9.2",
+    "802153-2016:7.9.3",
+    "802153-2016:7.9.4",
+    "802153-2016:7.9.5",
+    "802153-2016:7.9.6",
+    "802153-2016:7.9.7",
+    "802153-2016:7.10.1",
+    "802153-2016:7.10.2",
+    "802153-2016:7.10.3",
+    "802153-2016:7.10.4",
+    "802153-2016:7.10.5",
+    "802153-2016:7.10.6",
+    "802153-2016:7.10.7",
+    "802153-2016:7.11.1",
+    "802153-2016:7.11.2",
+    "802153-2016:7.11.3",
+    "802153-2016:7.11.4",
+    "802153-2016:7.12.1",
+    "802153-2016:7.12.2",
+    "802153-2016:7.13",
+    "802153-2016:7.14.1",
+    "802153-2016:7.14.2",
+    "802153-2016:7.14.3",
+    "802153-2016:7.14.4",
+    "802153-2016:7.15",
+    "802153-2016:7.16",
+    "802153-2016:7.17",
+    "802153-2016:7.18"
+  ],
+  "track": "pan-hr-wpan"
+}

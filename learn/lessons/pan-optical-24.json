@@ -1,0 +1,188 @@
+{
+  "id": "pan-optical-24",
+  "title": {
+    "en": "HB-PHY: Building a Multi-Gigabit Light Beam (Clause 11 + Annexes A-D)",
+    "zh": "HB-PHY：搭建多吉比特光束（第 11 章与附录 A-D）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Welcome to the high-speed engine room of IEEE Std 802.15.13-2023. This standard sends data over light (Optical Wireless Communications, OWC) instead of radio waves. The High-Bandwidth PHY (HB-PHY) is its fastest physical layer (PHY = the layer that turns bits into a transmitted signal). Clause 11.1.1 sets the goal: data rates from 23 Mb/s up to 2.192 Gb/s, reached by combining wide bandwidth with high spectral efficiency. The recipe is DC-biased OFDM (Orthogonal Frequency Division Multiplexing: splitting data across many narrow subcarriers), LDPC error-correcting codes (Low-Density Parity-Check), and QAM (Quadrature Amplitude Modulation) whose constellation size M is chosen per subcarrier. The link adapts to the channel by varying the QAM size per subcarrier, the LDPC code rate, and the set of optical front-ends (OFEs) used to transmit.",
+      "zh": "欢迎来到 IEEE Std 802.15.13-2023 的高速引擎室。该标准用光（光无线通信，OWC）而非无线电波来传输数据。高带宽物理层（HB-PHY）是它最快的物理层（PHY＝把比特转换成传输信号的那一层）。第 11.1.1 条给出目标：数据速率从 23 Mb/s 一直到 2.192 Gb/s，靠把宽带宽与高频谱效率结合起来实现。配方是直流偏置 OFDM（正交频分复用：把数据分散到许多窄子载波上）、LDPC 纠错码（低密度奇偶校验码），以及对每个子载波分别选择星座大小 M 的 QAM（正交幅度调制）。链路通过改变每个子载波的 QAM 大小、LDPC 码率以及用于发送的光前端（OFE）集合，来自适应信道。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.1 finishes setting the stage. The base MCS (Modulation and Coding Scheme, the safe fallback every device must understand) is BAT 1 with LDPC code rate 1/2 and a 1280 ns cyclic prefix (11.1.2). A BAT (Bit Allocation Table) says how many bits ride on each subcarrier. Clause 11.1.3 fixes the PHY constants: the OFDM symbol lasts 5120 ns, subcarrier spacing is 195.3125 kHz, the cyclic prefix runs between 160 ns and 1280 ns, each subcarrier carries 1 to 12 bits, and three bandwidths exist (50, 100, 200 MHz, using 256/512/1024 subcarriers). Clause 11.1.4 lists the PHY PIB attributes (PIB = PHY Information Base, the small database of tunable settings) such as phyBandwidth, which selects 50, 100, or 200 MHz.",
+      "zh": "第 11.1 条把舞台搭完。基础 MCS（调制编码方案，每台设备都必须能理解的安全回退）是 BAT 1，配 LDPC 码率 1/2 与 1280 ns 循环前缀（11.1.2）。BAT（比特分配表）规定每个子载波承载多少比特。第 11.1.3 条固定 PHY 常量：OFDM 符号时长 5120 ns、子载波间隔 195.3125 kHz、循环前缀在 160 ns 至 1280 ns 之间、每个子载波承载 1 至 12 比特，并提供三种带宽（50、100、200 MHz，分别使用 256/512/1024 个子载波）。第 11.1.4 条列出 PHY PIB 属性（PIB＝PHY 信息库，存放可调设置的小型数据库），例如选择 50、100 或 200 MHz 的 phyBandwidth。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 600 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><rect x=\"5\" y=\"25\" width=\"95\" height=\"40\"/><rect x=\"100\" y=\"25\" width=\"110\" height=\"40\"/><rect x=\"210\" y=\"25\" width=\"95\" height=\"40\"/><rect x=\"305\" y=\"25\" width=\"130\" height=\"40\"/><rect x=\"435\" y=\"25\" width=\"160\" height=\"40\"/><text x=\"52\" y=\"49\" font-size=\"11\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">Preamble</text><text x=\"155\" y=\"49\" font-size=\"10\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">Channel Est.</text><text x=\"257\" y=\"49\" font-size=\"10\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">PHY Header</text><text x=\"370\" y=\"49\" font-size=\"10\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">MIMO Pilots</text><text x=\"515\" y=\"49\" font-size=\"11\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">Payload</text><text x=\"300\" y=\"15\" font-size=\"10\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">HB-PHY PPDU (Figure 87)</text></svg>",
+      "caption": {
+        "en": "The HB-PHY PPDU (clause 11.2.1): Preamble for gain/detection, Channel Estimation, PHY Header, optional Explicit MIMO Pilots, then the Payload carrying the PSDU.",
+        "zh": "HB-PHY 的 PPDU（第 11.2.1 条）：用于增益与检测的前导码、信道估计、PHY 头、可选的显式 MIMO 导频，最后是承载 PSDU 的载荷。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.2 defines the PPDU (PHY Protocol Data Unit, the over-the-air frame). The overview (11.2.1) names its five fields. Bit order (11.2.2): header numbers and each PSDU octet go LSB first (least-significant bit). The Preamble (11.2.3) is ten copies of an OFDM symbol S at 4x spacing followed by four copies of -S, used for gain setting and frame detection, and carries no cyclic prefix. The Channel Estimation field (11.2.4) is 2.5 repetitions of a symbol S at normal spacing across all subcarriers, letting the receiver equalize the channel. The PHY Header (11.2.5) is exactly 168 bits in one OFDM symbol, sent with BAT 1 and protected by a 16-bit HCS (Header Check Sequence); its fields announce PSDU Size, FEC Rate, BAT ID, Cyclic Prefix ID, and the MIMO-pilot parameters needed to decode the rest.",
+      "zh": "第 11.2 条定义 PPDU（PHY 协议数据单元，即空口帧）。概述（11.2.1）列出它的五个字段。比特顺序（11.2.2）：头部数字与每个 PSDU 八位组都按 LSB 优先（最低有效位先发）。前导码（11.2.3）是十份 4 倍间隔的 OFDM 符号 S，后跟四份 -S，用于设增益与帧检测，且不带循环前缀。信道估计字段（11.2.4）是常规间隔下 2.5 份符号 S，覆盖所有子载波，让接收机做信道均衡。PHY 头（11.2.5）正好 168 比特、占一个 OFDM 符号，用 BAT 1 发送，并由 16 位 HCS（头校验序列）保护；其字段宣告 PSDU 大小、FEC 码率、BAT ID、循环前缀 ID，以及解出后续内容所需的 MIMO 导频参数。"
+    },
+    {
+      "type": "prose",
+      "en": "Two more PPDU pieces complete clause 11.2. Explicit MIMO Pilots (11.2.6) let a receiver separate signals from up to eight transmitting OFEs at once. Each pilot OFDM symbol places occupied subcarriers on a regular comb (every Delta-th subcarrier); shifting the comb (comb shift CS) gives orthogonal slots to different OFEs, and adding 1, 2, 4, or 8 pilot symbols multiplied by a Hadamard matrix (+1/-1 sign pattern) separates groups of OFEs in time. The Payload (11.2.7) simply carries the PSDU (PHY Service Data Unit, the data handed down from the MAC), modulated and coded as the PHY Header announced.",
+      "zh": "再有两块拼出完整的第 11.2 条。显式 MIMO 导频（11.2.6）让接收机一次区分多达八个发送 OFE 的信号。每个导频 OFDM 符号把占用子载波放在规则梳齿上（每隔 Delta 个子载波）；移动梳齿（梳移 CS）为不同 OFE 提供正交位置，再加入 1、2、4 或 8 个乘以哈达玛矩阵（+1/-1 符号模式）的导频符号，便能在时间上区分 OFE 分组。载荷（11.2.7）就是承载 PSDU（PHY 服务数据单元，从 MAC 下传的数据），按 PHY 头宣告的方式调制与编码。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Scrambler 11.3.1.2] --> B[LDPC encoder 11.3.1.5]\n  B --> C[Repetition encoder 11.3.1.3/4]\n  C --> D[Tone mapping 11.3.2.3]\n  D --> E[Constellation encoder 11.3.2.4]\n  E --> F[Constellation scrambling 11.3.2.5]\n  F --> G[OFDM modulator 11.3.3]\n  G --> H[Light out]",
+      "zh": "flowchart LR\n  A[加扰 11.3.1.2] --> B[LDPC 编码 11.3.1.5]\n  B --> C[重复编码 11.3.1.3/4]\n  C --> D[音调映射 11.3.2.3]\n  D --> E[星座编码 11.3.2.4]\n  E --> F[星座加扰 11.3.2.5]\n  F --> G[OFDM 调制器 11.3.3]\n  G --> H[光输出]"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.3 is modulation and coding, the chain that turns bits into a light waveform. Coding (11.3.1) starts with a scrambler (an LFSR, Linear Feedback Shift Register, with polynomial x^23 + x^18 + 1) that whitens the data, then an LDPC encoder adds parity, then header and payload repetition encoders copy codewords for extra robustness. Adaptive bitloading (11.3.2) maps coded bits onto subcarriers: tone mapping (11.3.2.3) uses the BAT to decide how many bits each subcarrier carries, the constellation encoder (11.3.2.4) places each bit group at an I/Q point (square QAM for even bit counts, cross-shaped for odd), and constellation scrambling (11.3.2.5) rotates each point's phase by 0, pi/2, pi, or 3pi/2 to spread the spectrum. Finally the OFDM modulator (11.3.3) runs an inverse DFT, prepends the cyclic prefix, and frequency-up-shifts to the optical band; the optical front-end then adds a DC bias to make the bipolar signal drive an LED.",
+      "zh": "第 11.3 条是调制与编码，即把比特变成光波形的链条。编码（11.3.1）先用加扰器（一个 LFSR，线性反馈移位寄存器，多项式 x^23 + x^18 + 1）把数据白化，再由 LDPC 编码器加入校验位，然后头部与载荷重复编码器复制码字以增强鲁棒性。自适应比特装载（11.3.2）把编码比特映射到子载波：音调映射（11.3.2.3）用 BAT 决定每个子载波承载多少比特，星座编码器（11.3.2.4）把每组比特放到 I/Q 点上（偶数比特用方形 QAM，奇数比特用十字形），星座加扰（11.3.2.5）把每个点的相位旋转 0、pi/2、pi 或 3pi/2 以展宽频谱。最后 OFDM 调制器（11.3.3）做逆 DFT、前置循环前缀并上移到光频段；光前端再加直流偏置，使双极性信号能驱动 LED。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why a DC bias? An LED can only emit positive light, but an OFDM waveform swings positive and negative. Adding a constant DC bias lifts the whole signal above zero so the LED can reproduce it. The modulation index mu (mu <= 1) sets how big the AC swing is relative to the bias. Any waveform that still dips below zero is clipped to zero light by the front-end, intentionally trading throughput for range in some cases.",
+      "zh": "为什么要加直流偏置？LED 只能发出正向光，而 OFDM 波形会正负摆动。加一个恒定的直流偏置把整段信号抬到零以上，LED 才能再现它。调制指数 mu（mu <= 1）决定交流摆幅相对偏置有多大。仍跌破零的波形会被前端削波到零光，在某些场景下有意地用吞吐换取距离。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause and annex, by number",
+        "zh": "覆盖地图：按编号列出每条与每个附录"
+      },
+      "en": "Clause 11.1 General information: 11.1.1 Overview (23 Mb/s-2.192 Gb/s; DC-biased OFDM + LDPC + adaptive QAM); 11.1.2 Base MCS (BAT 1, rate 1/2, 1280 ns CP); 11.1.3 PHY constants (Table 43/44: 5120 ns symbol, 195.3125 kHz spacing, 50/100/200 MHz); 11.1.4 PHY PIB attributes (Table 45, phyBandwidth). Clause 11.2 PPDU format: 11.2.1 Overview (five fields, Figure 87); 11.2.2 Bit order (LSB first); 11.2.3 Preamble (10x S then 4x -S, no CP); 11.2.4 Channel estimation (2.5x S); 11.2.5 PHY header (168 bits, 16-bit HCS, Figure 88); 11.2.6 Explicit MIMO pilots (comb spacing + Hadamard for up to 8 OFEs); 11.2.7 Payload (carries the PSDU). Clause 11.3 Modulation and coding: 11.3.1 Coding (scrambler, LDPC, header/payload repetition, puncturing); 11.3.2 Adaptive bitloading (subcarrier indexing, tone mapping/BAT, constellation encoder, constellation scrambling); 11.3.3 OFDM modulator (IDFT + cyclic prefix + frequency up-shift, then DC-bias in the OFE). Annex A (informative) Bibliography: 12 background references [B1]-[B12], including ITU-T G.9960 and IEEE Std 802.11bb. Annex B (normative) Implementation requirements: B.1 CRC-16 (generator x^16+x^12+x^5+1, used for the HCS), B.2 pseudo-noise/Gold base sequences A1..A1024, B.3 Hadamard matrix generation (used by the MIMO pilots), B.4 LDPC parity-check matrices, B.5 variable sampling factor sequences. Annex C (informative) Dimming support using constant bias current: a lighting control unit sets DC bias and modulation index for the desired brightness, orthogonal to the data so the receiver never needs to know the dimming level. Annex D (normative) PICS proforma: the Protocol Implementation Conformance Statement tables (D.1-D.3) where a vendor declares which device types, MAC functions, and PHY MCS options it implements (M = mandatory, O = optional).",
+      "zh": "第 11.1 条总则：11.1.1 概述（23 Mb/s-2.192 Gb/s；直流偏置 OFDM + LDPC + 自适应 QAM）；11.1.2 基础 MCS（BAT 1、码率 1/2、1280 ns 循环前缀）；11.1.3 PHY 常量（表 43/44：5120 ns 符号、195.3125 kHz 间隔、50/100/200 MHz）；11.1.4 PHY PIB 属性（表 45，phyBandwidth）。第 11.2 条 PPDU 格式：11.2.1 概述（五个字段，图 87）；11.2.2 比特顺序（LSB 优先）；11.2.3 前导码（10 份 S 再 4 份 -S，无循环前缀）；11.2.4 信道估计（2.5 份 S）；11.2.5 PHY 头（168 比特、16 位 HCS，图 88）；11.2.6 显式 MIMO 导频（梳齿间隔 + 哈达玛，支持最多 8 个 OFE）；11.2.7 载荷（承载 PSDU）。第 11.3 条调制与编码：11.3.1 编码（加扰、LDPC、头部/载荷重复、打孔）；11.3.2 自适应比特装载（子载波索引、音调映射/BAT、星座编码器、星座加扰）；11.3.3 OFDM 调制器（IDFT + 循环前缀 + 频率上移，再在 OFE 中加直流偏置）。附录 A（资料性）参考书目：12 条背景文献 [B1]-[B12]，含 ITU-T G.9960 与 IEEE Std 802.11bb。附录 B（规范性）实现要求：B.1 CRC-16（生成多项式 x^16+x^12+x^5+1，用于 HCS），B.2 伪噪声/Gold 基序列 A1..A1024，B.3 哈达玛矩阵生成（MIMO 导频使用），B.4 LDPC 奇偶校验矩阵，B.5 可变采样因子序列。附录 C（资料性）用恒定偏置电流支持调光：照明控制单元设定直流偏置与调制指数以达到所需亮度，且与数据正交，接收机无需知道调光级别。附录 D（规范性）PICS 形式表：协议实现一致性声明表（D.1-D.3），供厂商声明所实现的设备类型、MAC 功能与 PHY MCS 选项（M＝强制，O＝可选）。",
+      "cite": {
+        "pdf_id": "8021513-2023",
+        "pages": [
+          116,
+          117,
+          118,
+          119,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125,
+          132,
+          133,
+          140,
+          142,
+          143,
+          150,
+          151,
+          152
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Reading the annexes together: Annex B is the toolbox the normative clauses reach into (the CRC-16 in B.1 is the HCS of clause 11.2.5; the Hadamard matrices in B.3 are exactly what 11.2.6 multiplies the MIMO pilots by; the LDPC matrices in B.4 back the encoder in 11.3.1.5). Annex C explains how brightness control coexists with data. Annex D is the checklist a conformant product fills in. Annex A points to the wider literature, including ITU-T G.9960, with which the HB-PHY is intentionally compatible.",
+      "zh": "把附录连起来读：附录 B 是规范性条款伸手去取的工具箱（B.1 的 CRC-16 就是 11.2.5 条的 HCS；B.3 的哈达玛矩阵正是 11.2.6 用来乘 MIMO 导频的；B.4 的 LDPC 矩阵支撑 11.3.1.5 的编码器）。附录 C 解释亮度控制如何与数据共存。附录 D 是合规产品要填写的清单。附录 A 指向更广的文献，包括 HB-PHY 有意兼容的 ITU-T G.9960。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021513-2023",
+      "pages": [
+        116,
+        117,
+        118
+      ],
+      "note": "11.1 General information: overview, base MCS, PHY constants (Tables 43/44), PHY PIB attributes (Table 45)"
+    },
+    {
+      "pdf_id": "8021513-2023",
+      "pages": [
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125
+      ],
+      "note": "11.2 PPDU format: overview, bit order, preamble, channel estimation, PHY header, explicit MIMO pilots, payload"
+    },
+    {
+      "pdf_id": "8021513-2023",
+      "pages": [
+        125,
+        126,
+        132,
+        133,
+        136,
+        139,
+        140,
+        141
+      ],
+      "note": "11.3 Modulation and coding: coding/scrambler/LDPC, adaptive bitloading, OFDM modulator and DC-bias"
+    },
+    {
+      "pdf_id": "8021513-2023",
+      "pages": [
+        142
+      ],
+      "note": "Annex A (informative) Bibliography references [B1]-[B12]"
+    },
+    {
+      "pdf_id": "8021513-2023",
+      "pages": [
+        143,
+        144,
+        145,
+        148
+      ],
+      "note": "Annex B (normative): CRC-16, PN/Gold sequences, Hadamard generation, LDPC matrices, sampling factor sequences"
+    },
+    {
+      "pdf_id": "8021513-2023",
+      "pages": [
+        150
+      ],
+      "note": "Annex C (informative) Dimming support using constant bias current"
+    },
+    {
+      "pdf_id": "8021513-2023",
+      "pages": [
+        151,
+        152,
+        153,
+        154,
+        155
+      ],
+      "note": "Annex D (normative) PICS proforma tables D.1-D.4"
+    }
+  ],
+  "covers": [
+    "8021513-2023:11.1.1",
+    "8021513-2023:11.1.2",
+    "8021513-2023:11.1.3",
+    "8021513-2023:11.1.4",
+    "8021513-2023:11.2.1",
+    "8021513-2023:11.2.2",
+    "8021513-2023:11.2.3",
+    "8021513-2023:11.2.4",
+    "8021513-2023:11.2.5",
+    "8021513-2023:11.2.6",
+    "8021513-2023:11.2.7",
+    "8021513-2023:11.3.1",
+    "8021513-2023:11.3.2",
+    "8021513-2023:11.3.3",
+    "8021513-2023:Annex_A",
+    "8021513-2023:Annex_B",
+    "8021513-2023:Annex_C",
+    "8021513-2023:Annex_D"
+  ],
+  "track": "pan-optical"
+}

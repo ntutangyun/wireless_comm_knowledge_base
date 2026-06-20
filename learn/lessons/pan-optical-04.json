@@ -1,0 +1,160 @@
+{
+  "id": "pan-optical-04",
+  "title": {
+    "en": "Inside the LiFi MAC: Services, Primitives, and Clock-Rate Negotiation (Clause 6)",
+    "zh": "走进 LiFi 的 MAC 层：服务、原语与时钟速率协商（第 6 章）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.15.7-2018 specifies short-range optical wireless communication (OWC) — the family that includes visible light communication (VLC) and the popular term LiFi (light fidelity), where data rides on a modulated light source. Clause 6 is the rulebook for the MAC (medium access control) sublayer: it does not describe wires or transistors, but the *service interface* — the menu of named calls that the layer above uses to send data and manage the link. Section 6.1 frames the whole clause: the MAC sits between the SSCS (service-specific convergence sublayer, the adaptation layer above) plus the DME (device management entity) and the PHY (physical layer) below. Inside the MAC lives the MLME (MAC sublayer management entity), which both runs management functions and owns a database of managed objects called the MAC PIB (PAN information base).",
+      "zh": "IEEE Std 802.15.7-2018 规定了短距离光无线通信（OWC），它涵盖可见光通信（VLC）以及人们常说的 LiFi（光保真，light fidelity）——数据通过被调制的光源传输。第 6 章是 MAC（媒体访问控制）子层的规则手册：它描述的不是导线或晶体管，而是“服务接口”——上层用来发送数据和管理链路的一组具名调用清单。6.1 节为整章奠定框架：MAC 位于上方的 SSCS（业务特定汇聚子层，即上方的适配层）和 DME（设备管理实体）与下方的 PHY（物理层）之间。MAC 内部有 MLME（MAC 子层管理实体），它既执行管理功能，又持有一个被称为 MAC PIB（PAN 信息库）的受管对象数据库。"
+    },
+    {
+      "type": "prose",
+      "en": "The MAC exposes its service through two SAPs (service access points) — think of a SAP as a labeled doorway through which named requests pass. The MCPS-SAP (MAC common part sublayer SAP) carries actual user data, and the MLME-SAP carries management commands. Each doorway offers a small set of *primitives* in four flavors: a .request goes down into the layer, a .confirm comes back up as a reply, an .indication is an unsolicited notification pushed up, and a .response is the upper layer answering an indication. Learning Clause 6 is mostly learning which primitives live behind each door and what each one does.",
+      "zh": "MAC 通过两个 SAP（服务访问点）对外提供服务——可以把 SAP 想象成一道贴着标签的门，具名请求从中通过。MCPS-SAP（MAC 公共部分子层 SAP）承载真正的用户数据，MLME-SAP 承载管理命令。每道门提供一小组“原语”，分为四种类型：.request 向下进入本层，.confirm 作为回复向上返回，.indication 是被主动推送上来的非请求通知，.response 是上层对某个 indication 的应答。学习第 6 章，主要就是弄清每道门后面有哪些原语、各自做什么。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 250\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"20\" y=\"15\" width=\"480\" height=\"40\"/><text x=\"260\" y=\"40\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">SSCS / DME (next higher layer)</text><line x1=\"150\" y1=\"55\" x2=\"150\" y2=\"95\"/><text x=\"150\" y=\"80\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">MCPS-SAP</text><line x1=\"380\" y1=\"55\" x2=\"380\" y2=\"95\"/><text x=\"380\" y=\"80\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">MLME-SAP</text><rect x=\"20\" y=\"95\" width=\"480\" height=\"70\"/><text x=\"260\" y=\"120\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">MAC sublayer</text><rect x=\"300\" y=\"130\" width=\"170\" height=\"25\"/><text x=\"385\" y=\"147\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">MLME + MAC PIB</text><rect x=\"55\" y=\"130\" width=\"170\" height=\"25\"/><text x=\"140\" y=\"147\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">MCPS (data path)</text><line x1=\"150\" y1=\"165\" x2=\"150\" y2=\"205\"/><text x=\"150\" y=\"190\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">PD-SAP</text><line x1=\"380\" y1=\"165\" x2=\"380\" y2=\"205\"/><text x=\"380\" y=\"190\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">PLME-SAP</text><rect x=\"20\" y=\"205\" width=\"480\" height=\"35\"/><text x=\"260\" y=\"227\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">PHY (optical)</text></svg>",
+      "caption": {
+        "en": "The MAC reference model of 6.1: data flows through the MCPS-SAP and management through the MLME-SAP, with the MLME owning the MAC PIB. Below, the MAC talks to the optical PHY via the PD-SAP and PLME-SAP.",
+        "zh": "6.1 的 MAC 参考模型：数据经 MCPS-SAP 流动，管理经 MLME-SAP 流动，MLME 持有 MAC PIB。下方，MAC 通过 PD-SAP 与 PLME-SAP 与光学 PHY 通信。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The MAC data service (6.2) is reached through the MCPS-SAP and moves SPDUs (SSCS protocol data units), each carrying an MSDU (MAC service data unit — the actual payload bytes). Two primitive pairs do all the work. MCPS-DATA (6.2.1 .request, 6.2.2 .confirm, 6.2.3 .indication) sends and receives a data frame: the .request names source/destination addressing modes, the destination OWPAN (optical wireless personal area network) ID and address, the payload, transmit options (acknowledged, GTS vs CAP, direct vs indirect), security parameters, and optical-specific fields such as DataRate, BurstMode, and the color-visibility ColorReceived/ColorNotReceived flags. The .confirm reports the outcome, and the .indication delivers a received frame upward. MCPS-PURGE (6.2.4 .request, 6.2.5 .confirm) lets the upper layer cancel an MSDU still waiting in the transmit queue. Section 6.2.6 ties it together with a message sequence chart (MSC) showing a successful end-to-end data transfer.",
+      "zh": "MAC 数据服务（6.2）经 MCPS-SAP 访问，传输 SPDU（SSCS 协议数据单元），每个 SPDU 承载一个 MSDU（MAC 服务数据单元——真正的载荷字节）。两对原语完成全部工作。MCPS-DATA（6.2.1 .request、6.2.2 .confirm、6.2.3 .indication）负责收发数据帧：.request 指定源/目的寻址模式、目的 OWPAN（光无线个域网）标识与地址、载荷、发送选项（确认、GTS 与 CAP、直接与间接），以及安全参数和光学专有字段，如 DataRate、BurstMode 和表示颜色可见性的 ColorReceived/ColorNotReceived 标志；.confirm 报告结果，.indication 把收到的帧向上递交。MCPS-PURGE（6.2.4 .request、6.2.5 .confirm）让上层取消仍在发送队列中等待的 MSDU。6.2.6 用一张消息序列图（MSC）将整个成功的端到端数据传输串联起来。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why the color flags? In OWC the acknowledgment can be signaled by switching the emitted *color* of a multi-color (CVD, color-visibility dimming) source rather than by sending a separate frame. ColorReceived / ColorNotReceived tell the MAC whether that color-based ACK indication is in use — a feature unique to light-based links and absent from radio MACs.",
+      "zh": "为什么有颜色标志？在 OWC 中，确认可以通过切换多色（CVD，颜色可见性调光）光源发出的“颜色”来表示，而不必发送单独的帧。ColorReceived/ColorNotReceived 告诉 MAC 是否启用了这种基于颜色的 ACK 指示——这是光链路独有、在无线电 MAC 中并不存在的特性。"
+    },
+    {
+      "type": "prose",
+      "en": "The MAC management service (6.3) is the larger half: fourteen primitive groups reached through the MLME-SAP, summarized in the standard's Table 31. They cover the full lifecycle of joining and running an OWPAN. Association and disassociation (6.3.1, 6.3.2) let a device join or leave a coordinator. Beacon notification (6.3.3) hands a received beacon's contents up. GET and SET (6.3.4 reading, 6.3.10 writing) read and write PIB attributes. GTS management (6.3.5) negotiates a guaranteed time slot — a reserved, contention-free slice of the superframe. RESET (6.3.6) reinitializes the MAC; RX-ENABLE (6.3.7) turns the receiver on for a window; SCAN (6.3.8) sweeps channels to discover networks; COMM-STATUS (6.3.9) reports the outcome of transmissions the upper layer did not directly request; START (6.3.11) sets up superframe configuration and begins a new OWPAN; SYNC (6.3.12) tracks a coordinator's beacons; SYNC-LOSS (6.3.13) signals lost synchronization; and POLL (6.3.14) explicitly requests pending data from a coordinator.",
+      "zh": "MAC 管理服务（6.3）是更大的一半：经 MLME-SAP 访问的十四组原语，在标准的表 31 中汇总。它们覆盖加入并运行一个 OWPAN 的完整生命周期。关联与去关联（6.3.1、6.3.2）让设备加入或离开协调器；信标通知（6.3.3）把收到的信标内容向上递交；GET 与 SET（6.3.4 读取、6.3.10 写入）读写 PIB 属性；GTS 管理（6.3.5）协商保证时隙——超帧中预留的、无竞争的一段时间；RESET（6.3.6）重新初始化 MAC；RX-ENABLE（6.3.7）在一个时间窗内打开接收机；SCAN（6.3.8）扫描信道以发现网络；COMM-STATUS（6.3.9）报告上层未直接请求的发送的结果；START（6.3.11）配置超帧并启动一个新的 OWPAN；SYNC（6.3.12）跟踪协调器的信标；SYNC-LOSS（6.3.13）报告同步丢失；POLL（6.3.14）显式向协调器请求待发数据。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant U as Upper layer\n  participant M as MLME\n  participant P as PHY\n  U->>M: MLME-ASSOCIATE.request\n  M->>P: send association req\n  P-->>M: ACK / response\n  M-->>U: MLME-ASSOCIATE.confirm\n  Note over U,M: device now joined OWPAN\n  U->>M: MLME-POLL.request\n  M->>P: data request command\n  P-->>M: data frame\n  M-->>U: MLME-POLL.confirm",
+      "zh": "sequenceDiagram\n  participant U as 上层\n  participant M as MLME\n  participant P as PHY\n  U->>M: MLME-ASSOCIATE.request\n  M->>P: 发送关联请求\n  P-->>M: ACK / 应答\n  M-->>U: MLME-ASSOCIATE.confirm\n  Note over U,M: 设备已加入 OWPAN\n  U->>M: MLME-POLL.request\n  M->>P: 数据请求命令\n  P-->>M: 数据帧\n  M-->>U: MLME-POLL.confirm"
+    },
+    {
+      "type": "prose",
+      "en": "Optical clock-rate selection (6.5) is where the standard's light-specific nature shows most clearly. OWC supports many optical clock rates so that very different sources (an LED, a laser, a phone flash) and receivers (a photodiode, a camera) can interoperate. Crucially, the transmit and receive chains are physically independent, so a device may run *asymmetric* clock rates in the two directions. Negotiation can be explicit — the devices exchange a clock-rate-change notification command before switching — or implicit, where a capable receiver simply detects whichever rate arrives. Each topology gets its own rules: peer-to-peer (6.5.1), star (6.5.2), and multicast (6.5.3), each with an explicit-notification and a without-explicit-notification variant. In every case the lowest clock rate C1 is mandatory and used for the initial association and the contention access period (CAP), after which a selected rate C_SEL (always at or below the minimum of the relevant transmit and receive maxima) takes over.",
+      "zh": "光时钟速率选择（6.5）最能体现该标准的光学特性。OWC 支持多种光时钟速率，使差异巨大的光源（LED、激光、手机闪光灯）和接收器（光电二极管、摄像头）能够互通。关键在于，发送链和接收链在物理上相互独立，因此设备在两个方向上可以采用“非对称”的时钟速率。协商可以是显式的——设备在切换前交换时钟速率改变通知命令；也可以是隐式的——具备能力的接收机直接检测到达的速率。每种拓扑有各自的规则：点对点（6.5.1）、星型（6.5.2）和组播（6.5.3），各自又分为显式通知与无显式通知两种变体。在所有情形中，最低时钟速率 C1 都是强制的，用于初始关联和竞争访问周期（CAP），之后由选定速率 C_SEL（始终不超过相关发送/接收最大值中的较小者）接管。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"70\" y=\"25\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Device</text><text x=\"450\" y=\"25\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Coordinator</text><line x1=\"70\" y1=\"35\" x2=\"70\" y2=\"185\"/><line x1=\"450\" y1=\"35\" x2=\"450\" y2=\"185\"/><line x1=\"70\" y1=\"55\" x2=\"450\" y2=\"55\" stroke-dasharray=\"0\"/><text x=\"260\" y=\"50\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">association request (clock C1)</text><polygon points=\"450,55 442,51 442,59\" fill=\"currentColor\" stroke=\"none\"/><line x1=\"450\" y1=\"90\" x2=\"70\" y2=\"90\"/><text x=\"260\" y=\"85\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">association grant (clock C1)</text><polygon points=\"70,90 78,86 78,94\" fill=\"currentColor\" stroke=\"none\"/><line x1=\"70\" y1=\"125\" x2=\"450\" y2=\"125\"/><text x=\"260\" y=\"120\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">inform selected clock C_SEL (clock C1)</text><polygon points=\"450,125 442,121 442,129\" fill=\"currentColor\" stroke=\"none\"/><line x1=\"70\" y1=\"160\" x2=\"450\" y2=\"160\"/><text x=\"260\" y=\"155\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">data exchange (clock C_SEL)</text><polygon points=\"450,160 442,156 442,164\" fill=\"currentColor\" stroke=\"none\"/></svg>",
+      "caption": {
+        "en": "Peer-to-peer clock-rate selection with explicit notification (6.5.1.1): association and grant ride the mandatory C1, then both ends agree on C_SEL before switching to it for data.",
+        "zh": "带显式通知的点对点时钟速率选择（6.5.1.1）：关联与授权使用强制的 C1，随后双方就 C_SEL 达成一致，再切换到该速率传输数据。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause in this lesson, by number",
+        "zh": "覆盖地图——本课按编号列出的每个子句"
+      },
+      "en": "MAC service framing — 6.1 Overview (MLME, MAC PIB, the two SAPs). MAC data service (6.2): 6.2.1 MCPS-DATA.request, 6.2.2 MCPS-DATA.confirm, 6.2.3 MCPS-DATA.indication, 6.2.4 MCPS-PURGE.request, 6.2.5 MCPS-PURGE.confirm, 6.2.6 data-service message sequence chart. MAC management service (6.3), one group per primitive family: 6.3.1 association, 6.3.2 disassociation, 6.3.3 beacon notification, 6.3.4 reading PIB attributes (MLME-GET), 6.3.5 GTS management, 6.3.6 resetting the MAC (MLME-RESET), 6.3.7 specifying receiver-enable time (MLME-RX-ENABLE), 6.3.8 channel scanning (MLME-SCAN), 6.3.9 communication status (MLME-COMM-STATUS), 6.3.10 writing PIB attributes (MLME-SET), 6.3.11 updating the superframe configuration / start (MLME-START), 6.3.12 synchronizing with a coordinator (MLME-SYNC), 6.3.13 synchronization loss (MLME-SYNC-LOSS), 6.3.14 requesting data from a coordinator (MLME-POLL). MAC constants and PIB attributes (6.4): 6.4.1 MAC constants (the fixed aXxx values such as aMaxLostBeacons = 4, aGTSDescPersistenceTime, aMaxMACPayloadSize, in Table 61) and 6.4.2 MAC PIB attributes (the writable managed objects). Optical clock-rate selection (6.5): 6.5.1 peer-to-peer (with 6.5.1.1 explicit and 6.5.1.2 without-explicit notification), 6.5.2 star, 6.5.3 multicast. 6.6 message sequence charts illustrating the full MAC-PHY interaction (OWPAN start, association, scanning, single-frame TX/RX).",
+      "zh": "MAC 服务框架——6.1 概述（MLME、MAC PIB、两个 SAP）。MAC 数据服务（6.2）：6.2.1 MCPS-DATA.request、6.2.2 MCPS-DATA.confirm、6.2.3 MCPS-DATA.indication、6.2.4 MCPS-PURGE.request、6.2.5 MCPS-PURGE.confirm、6.2.6 数据服务消息序列图。MAC 管理服务（6.3），每组对应一类原语：6.3.1 关联、6.3.2 去关联、6.3.3 信标通知、6.3.4 读取 PIB 属性（MLME-GET）、6.3.5 GTS 管理、6.3.6 复位 MAC（MLME-RESET）、6.3.7 指定接收机使能时间（MLME-RX-ENABLE）、6.3.8 信道扫描（MLME-SCAN）、6.3.9 通信状态（MLME-COMM-STATUS）、6.3.10 写入 PIB 属性（MLME-SET）、6.3.11 更新超帧配置/启动（MLME-START）、6.3.12 与协调器同步（MLME-SYNC）、6.3.13 同步丢失（MLME-SYNC-LOSS）、6.3.14 向协调器请求数据（MLME-POLL）。MAC 常量与 PIB 属性（6.4）：6.4.1 MAC 常量（固定的 aXxx 值，如表 61 中的 aMaxLostBeacons = 4、aGTSDescPersistenceTime、aMaxMACPayloadSize）与 6.4.2 MAC PIB 属性（可写的受管对象）。光时钟速率选择（6.5）：6.5.1 点对点（含 6.5.1.1 显式与 6.5.1.2 无显式通知）、6.5.2 星型、6.5.3 组播。6.6 用消息序列图展示完整的 MAC-PHY 交互（OWPAN 启动、关联、扫描、单帧收发）。",
+      "cite": {
+        "pdf_id": "802157-2018",
+        "pages": [
+          125,
+          126,
+          135,
+          136,
+          187,
+          188,
+          200,
+          201,
+          207
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Two reference tables anchor the clause. MAC constants (6.4.1, Table 61) are the *fixed* parameters baked into the standard — for example aMaxLostBeacons (4 consecutive missed beacons triggers a declared loss of synchronization), aGTSDescPersistenceTime (4 superframes), aMaxMACPayloadSize, and aMaxSIFSFrameSize. MAC PIB attributes (6.4.2) are the *writable* managed objects an implementation reads with MLME-GET and changes with MLME-SET. Finally, 6.6 gathers message sequence charts that walk through the headline tasks end to end — starting an OWPAN, a device associating, a coordinator accepting association, passive and active scans, and transmitting then receiving a single data frame — showing how the data-service and management primitives of 6.2 and 6.3 actually thread together with the PHY. Together, Clause 6 gives you the complete service vocabulary needed to read the rest of the optical-MAC standard fluently.",
+      "zh": "两张参考表是本章的支柱。MAC 常量（6.4.1，表 61）是标准中固定写死的参数——例如 aMaxLostBeacons（连续丢失 4 个信标即判定同步丢失）、aGTSDescPersistenceTime（4 个超帧）、aMaxMACPayloadSize 和 aMaxSIFSFrameSize。MAC PIB 属性（6.4.2）则是可写的受管对象，实现用 MLME-GET 读取、用 MLME-SET 修改。最后，6.6 汇集了一系列消息序列图，端到端地走完几项核心任务——启动 OWPAN、设备关联、协调器接受关联、被动与主动扫描，以及发送随后接收单个数据帧——展示 6.2 与 6.3 中的数据服务原语和管理原语如何真正与 PHY 串联起来。综合起来，第 6 章为你提供了流畅阅读光学 MAC 标准其余部分所需的完整服务词汇。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        125,
+        126,
+        127
+      ],
+      "note": "6.1 overview, MCPS-SAP primitive table, MCPS-DATA.request parameters incl. color flags"
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        135,
+        136
+      ],
+      "note": "6.2.6 data-service MSC; 6.3 MLME-SAP primitive summary (Table 31); 6.3.1 association"
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        187,
+        188
+      ],
+      "note": "6.3.14.3 poll MSC; 6.4 MAC constants and PIB attributes (Table 61)"
+    },
+    {
+      "pdf_id": "802157-2018",
+      "pages": [
+        200,
+        201,
+        202,
+        203,
+        205,
+        207
+      ],
+      "note": "6.5 optical clock-rate selection (P2P/star/multicast, explicit and without notification); 6.6 MAC-PHY MSCs"
+    }
+  ],
+  "covers": [
+    "802157-2018:6.1",
+    "802157-2018:6.2.1",
+    "802157-2018:6.2.2",
+    "802157-2018:6.2.3",
+    "802157-2018:6.2.4",
+    "802157-2018:6.2.5",
+    "802157-2018:6.2.6",
+    "802157-2018:6.3.1",
+    "802157-2018:6.3.2",
+    "802157-2018:6.3.3",
+    "802157-2018:6.3.4",
+    "802157-2018:6.3.5",
+    "802157-2018:6.3.6",
+    "802157-2018:6.3.7",
+    "802157-2018:6.3.8",
+    "802157-2018:6.3.9",
+    "802157-2018:6.3.10",
+    "802157-2018:6.3.11",
+    "802157-2018:6.3.12",
+    "802157-2018:6.3.13",
+    "802157-2018:6.3.14",
+    "802157-2018:6.4.1",
+    "802157-2018:6.4.2",
+    "802157-2018:6.5.1",
+    "802157-2018:6.5.2",
+    "802157-2018:6.5.3",
+    "802157-2018:6.6"
+  ],
+  "track": "pan-optical"
+}

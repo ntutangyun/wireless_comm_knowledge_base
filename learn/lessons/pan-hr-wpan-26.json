@@ -1,0 +1,188 @@
+{
+  "id": "pan-hr-wpan-26",
+  "title": {
+    "en": "MAC Frame Formats, Part 2: The Information Element Catalog",
+    "zh": "MAC 帧格式（二）：信息单元目录"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In an HR-WPAN (High-Rate Wireless Personal Area Network), a piconet is a small cluster of devices coordinated by one device acting as the PNC (piconet coordinator). The PNC sends a beacon once per superframe, and devices (DEVs) exchange command frames. But beacons and commands need a flexible way to carry many different kinds of structured data without inventing a new frame for each one. That is what an information element (IE) is: a small, self-describing chunk of bytes you can drop into a frame. Clause 6.4 is the complete catalog of every IE the standard defines. This lesson walks the whole catalog so you can read any HR-WPAN beacon byte by byte.",
+      "zh": "在 HR-WPAN（高速无线个域网）中，一个微微网（piconet）是由一台担任 PNC（微微网协调器，piconet coordinator）的设备所协调的一小簇设备。PNC 在每个超帧（superframe）发送一次信标（beacon），各设备（DEV）之间交换命令帧。但信标和命令需要一种灵活的方式来携带多种结构化数据，而不必为每一种都发明一种新帧。这正是信息单元（IE，information element）的用途：一小段自描述的字节，可以嵌入到帧中。Clause 6.4 是标准定义的所有 IE 的完整目录。本课将走遍整个目录，让你能逐字节读懂任意一个 HR-WPAN 信标。"
+    },
+    {
+      "type": "prose",
+      "en": "Every IE shares the same three-part skeleton, defined in 6.4 (Figure 6-65): a 1-octet Element ID that names the IE, a 1-octet Length that gives the size of the payload in octets, and a variable Content field that carries the IE-specific data. Table 6-13 maps each Element ID hex value to its IE — 0x00 is the CTA IE, 0x01 is the BSID IE, and so on, with 0x80–0xFF reserved for the Vendor Defined IE. The table also says whether each IE appears in the beacon or only in non-beacon frames, and which kinds of DEVs must support it. Because Length is a single byte, an IE caps out at 255 payload octets — a detail that forces some IEs to be split across multiple entries.",
+      "zh": "每个 IE 都共享同一套三段式骨架（在 6.4、图 6-65 中定义）：1 字节的 Element ID（单元标识）用于命名该 IE，1 字节的 Length（长度）给出负载的字节数，以及一个可变的 Content（内容）字段承载该 IE 特有的数据。表 6-13 将每个 Element ID 十六进制值映射到对应的 IE——0x00 是 CTA IE，0x01 是 BSID IE，依此类推，0x80–0xFF 保留给厂商自定义 IE（Vendor Defined IE）。该表还说明每个 IE 是出现在信标中还是仅出现在非信标帧中，以及哪些类型的 DEV 必须支持它。由于 Length 只有一个字节，单个 IE 的负载上限是 255 字节——这个细节迫使某些 IE 必须拆分到多个条目中。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 70\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"20\" width=\"80\" height=\"30\"/><rect x=\"90\" y=\"20\" width=\"80\" height=\"30\"/><rect x=\"170\" y=\"20\" width=\"240\" height=\"30\"/><text x=\"50\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Element ID</text><text x=\"130\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Length</text><text x=\"290\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Content (variable)</text><text x=\"50\" y=\"14\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">1 octet</text><text x=\"130\" y=\"14\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">1 octet</text><text x=\"290\" y=\"14\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">0–255 octets</text></svg>",
+      "caption": {
+        "en": "The universal IE skeleton (6.4, Figure 6-65): a 1-octet Element ID, a 1-octet Length, then a variable Content field. Parsing an IE list means reading Length, jumping that many bytes, and repeating.",
+        "zh": "通用的 IE 骨架（6.4，图 6-65）：1 字节 Element ID、1 字节 Length，再加一个可变的 Content 字段。解析 IE 列表就是读取 Length、跳过相应字节数、然后重复。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The first cluster of IEs runs the piconet's scheduling and membership. The CTA IE (6.4.1) carries channel time allocations — a CTA (channel time allocation) is a reserved slice of the superframe granted to a source/destination DEV pair for a particular stream; the PNC may split CTAs across several CTA IE entries because of the 255-octet limit. The BSID IE (6.4.2) holds a human-readable text string naming the piconet (BSID = beacon source identifier). The Parent Piconet IE (6.4.3) carries the parent PNC's address and the parent piconet's BSID, so a child piconet can point back to its parent. The DEV Association IE (6.4.4) tells current members that one or more DEVs just associated or disassociated, packing each as a DEV Address, DEVID, status, and capabilities. The PNC Shutdown IE (6.4.5) announces the PNC is shutting down and names the dependent PNC allowed to continue.",
+      "zh": "第一组 IE 负责微微网的调度与成员管理。CTA IE（6.4.1）携带信道时间分配——CTA（信道时间分配，channel time allocation）是超帧中预留给某对源/目的 DEV、用于某条流的时间片；由于 255 字节限制，PNC 可以把多个 CTA 拆分到若干 CTA IE 条目中。BSID IE（6.4.2）存放一个可读文本字符串来命名微微网（BSID = 信标源标识符）。父微微网 IE（Parent Piconet IE，6.4.3）携带父 PNC 的地址和父微微网的 BSID，使子微微网能指回其父网。DEV 关联 IE（DEV Association IE，6.4.4）通知现有成员有一个或多个 DEV 刚刚关联或解除关联，每个条目打包了 DEV 地址、DEVID、状态和能力。PNC 关闭 IE（PNC Shutdown IE，6.4.5）宣布 PNC 即将关闭，并指明被允许继续运行的从属 PNC。"
+    },
+    {
+      "type": "prose",
+      "en": "The next group manages change, handover, and power. The Piconet Parameter Change IE (6.4.6) pre-announces a change — a new PNID (piconet identifier), a new BSID, a superframe move or resize, or a channel switch — and a Change Beacon Number telling exactly which future superframe the change takes effect in. The AS IE (6.4.7), application specific IE, carries a Unique ID (an OUI or CID from the IEEE Registration Authority) plus opaque application data the standard does not interpret. The PCTM IE (6.4.8), pending channel time map, is a bitmap asking sleeping DEVs to wake and listen for a CTA. The PNC Handover IE (6.4.9) names the new PNC's address, DEVID, and the beacon number where it takes over. The CTA Status IE (6.4.10) reports detailed characteristics of a CTA — priority, terminate flag, rate type, and sub-rate.",
+      "zh": "下一组负责变更、移交和功耗。微微网参数变更 IE（Piconet Parameter Change IE，6.4.6）预先宣布一项变更——新的 PNID（微微网标识符）、新的 BSID、超帧的平移或改尺寸、或信道切换——并用一个变更信标号（Change Beacon Number）精确指明变更将在哪一个未来超帧生效。AS IE（6.4.7，应用特定 IE）携带一个 Unique ID（来自 IEEE 注册机构的 OUI 或 CID）加上标准不解释的不透明应用数据。PCTM IE（6.4.8，待定信道时间图）是一个位图，要求休眠的 DEV 醒来并监听 CTA。PNC 移交 IE（PNC Handover IE，6.4.9）指明新 PNC 的地址、DEVID 以及其接管的信标号。CTA 状态 IE（CTA Status IE，6.4.10）报告某个 CTA 的详细特征——优先级、终止标志、速率类型和子速率。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the recurring bitmap pattern. The PCTM IE, PS Status IE, CWB IE, and Group ID IE all use a Start DEVID plus a bitmap of 1–32 octets, where bit position N means the DEV whose DEVID equals Start DEVID + N. Reserved DEVIDs (PNCID, broadcast, multicast, neighbor IDs) are always zeroed and ignored. Learn this pattern once and four IEs become trivial to read.",
+      "zh": "注意反复出现的位图模式。PCTM IE、PS Status IE、CWB IE 和 Group ID IE 都使用「起始 DEVID + 一段 1–32 字节的位图」结构，其中第 N 位代表 DEVID 等于「起始 DEVID + N」的那台设备。保留 DEVID（PNCID、广播、组播、邻居 ID）始终置零并被忽略。掌握这一模式后，这四个 IE 就一目了然。"
+    },
+    {
+      "type": "prose",
+      "en": "Capabilities and housekeeping come next. The Capability IE (6.4.11) advertises a DEV's PHY (physical layer) and PNC capabilities, with different overall layouts for the 2.4 GHz PHY versus the mmWave (millimeter-wave) PHY, including beamforming fields like antenna type and sector counts. The Transmit Power Parameters IE (6.4.12) reports TPC (transmit power control) ability — number of power levels, step size in dB, and current TX power in two's-complement dBm. The PS Status IE (6.4.13) maps which DEVs in a power-save set are asleep and when the next wake beacon arrives. The CWB IE (6.4.14), continued wake beacon, uses the same bitmap to ask listed DEVs to keep listening for a CTA block.",
+      "zh": "接下来是能力声明与日常管理。能力 IE（Capability IE，6.4.11）公告某台 DEV 的 PHY（物理层）和 PNC 能力，针对 2.4 GHz PHY 与毫米波（mmWave）PHY 有不同的整体布局，包括天线类型、扇区数量等波束成形字段。发射功率参数 IE（Transmit Power Parameters IE，6.4.12）报告 TPC（发射功率控制）能力——功率级数、以 dB 为单位的步长、以及以二进制补码 dBm 表示的当前发射功率。PS Status IE（6.4.13）标明某个省电集合中哪些 DEV 处于睡眠状态以及下一个唤醒信标何时到来。CWB IE（6.4.14，持续唤醒信标）使用同样的位图，要求所列 DEV 继续监听 CTA 块。"
+    },
+    {
+      "type": "prose",
+      "en": "Then come coexistence, services, and grouping. The Overlapping PNID IE (6.4.15) reports PNIDs the DEV heard on its own or other channels, so the PNC can detect overlapping piconets. The Piconet Services IE (6.4.16) advertises a DEV's application-layer services keyed by DEVID, with content outside the standard's scope. The Vendor Defined IE (6.4.17) is the catch-all (Element IDs 0x80–0xFF): a Unique ID plus vendor data. The Group ID IE (6.4.18) lists multicast-group members via a 48-bit group MAC address, a GrpID, and a member bitmap. The Stream Renew IE (6.4.19) lets a source DEV renew the STP (stream time, the lifetime of its streams) by listing stream indices, and the Next PNC IE (6.4.20) names the DEVID and PNID of whoever becomes PNC after an implicit handover.",
+      "zh": "再往后是共存、服务与分组。重叠 PNID IE（Overlapping PNID IE，6.4.15）报告 DEV 在本信道或其他信道上听到的 PNID，使 PNC 能检测重叠的微微网。微微网服务 IE（Piconet Services IE，6.4.16）按 DEVID 公告某台 DEV 的应用层服务，其内容不在本标准范围内。厂商自定义 IE（Vendor Defined IE，6.4.17）是兜底单元（Element ID 为 0x80–0xFF）：一个 Unique ID 加厂商数据。组 ID IE（Group ID IE，6.4.18）通过一个 48 位组播 MAC 地址、一个 GrpID 和一个成员位图列出组播组成员。流续期 IE（Stream Renew IE，6.4.19）让源 DEV 通过列出流索引来续期 STP（流时间，即其各条流的生存期），而下一个 PNC IE（Next PNC IE，6.4.20）指明隐式移交后将成为 PNC 的那台设备的 DEVID 和 PNID。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Read Element ID] --> B[Look up in Table 6-13]\n  B --> C{Scheduling / membership?}\n  C -->|0x00-0x0A| D[CTA / BSID / Assoc / Capability]\n  C -->|0x0B-0x13| E[Power / coexistence / groups]\n  C -->|0x14-0x1C| F[mmWave: Sync / TSD / beam training]\n  D --> G[Read Length, skip bytes]\n  E --> G\n  F --> G\n  G --> A",
+      "zh": "flowchart TD\n  A[读取 Element ID] --> B[在表 6-13 中查找]\n  B --> C{调度 / 成员类?}\n  C -->|0x00-0x0A| D[CTA / BSID / 关联 / 能力]\n  C -->|0x0B-0x13| E[功耗 / 共存 / 分组]\n  C -->|0x14-0x1C| F[毫米波: 同步 / TSD / 波束训练]\n  D --> G[读取 Length, 跳过字节]\n  E --> G\n  F --> G\n  G --> A"
+    },
+    {
+      "type": "prose",
+      "en": "The final cluster is the mmWave (millimeter-wave) directional toolkit, used by SC PHY and HSI PHY DEVs that steer narrow beams. The Piconet Channel Status IE (6.4.21) reports which DEVs were heard via a 32-octet bitmap. The Synchronization IE (6.4.22) carries quasi-omni beacon timing, the PNC's directional antenna capabilities (symmetric vs asymmetric antenna system, beamforming, BST support), and association/regular S-CAP (sectorized contention access period) layouts. The TSD IE (6.4.23), transmit sector diversity, exchanges mode (announce/request-switch/request-stay/response), transmit-direction count, feedback period, and a direction index. The IFS IE (6.4.25) carries SIFS and MIFS values (interframe spaces), while the UEP Specific IE (6.4.24) marks the MSB/LSB split for unequal error protection of video components.",
+      "zh": "最后一组是毫米波（mmWave）定向工具集，供使用窄波束的 SC PHY 和 HSI PHY 设备使用。微微网信道状态 IE（Piconet Channel Status IE，6.4.21）用一个 32 字节位图报告听到了哪些 DEV。同步 IE（Synchronization IE，6.4.22）携带准全向信标时序、PNC 的定向天线能力（对称天线系统对非对称天线系统、波束成形、BST 支持）以及关联/常规 S-CAP（扇区化竞争接入期，sectorized contention access period）布局。TSD IE（6.4.23，发射扇区分集）交换模式（通告/请求切换/请求保持/响应）、发射方向数、反馈周期和方向索引。IFS IE（6.4.25）携带 SIFS 和 MIFS 值（帧间间隔），而 UEP 特定 IE（UEP Specific IE，6.4.24）标记用于视频分量不等差错保护的 MSB/LSB 分割点。"
+    },
+    {
+      "type": "prose",
+      "en": "Rounding out the directional set: the CTA Relinquish Duration IE (6.4.26) gives back time within a CTA, measured in microseconds. The Feedback IE (6.4.27) reports the best and second-best transmit sectors plus their LQI (link quality indicator, encoded in dB for SNR/SINR or RSSIR) during sector-level training. The Mapping IE (6.4.28) carries TX/RX beam counts, sync mode, and per-cluster tracking periods to transition from sector-level to beam-level training. Finally the BST Clustering IE (6.4.29) and PET Clustering IE (6.4.30) — BST = beam switching/steering and tracking, PET = pattern estimation and tracking — describe how beams are grouped into TX and RX clusters during training, with the BST version listing beam counts per cluster and the PET version listing per-cluster descriptors with center-beam indices.",
+      "zh": "定向集合的收尾部分：CTA 让出时长 IE（CTA Relinquish Duration IE，6.4.26）以微秒为单位让出某个 CTA 内的时间。反馈 IE（Feedback IE，6.4.27）在扇区级训练期间报告最佳和次佳发射扇区及其 LQI（链路质量指示，按 SNR/SINR 或 RSSIR 以 dB 编码）。映射 IE（Mapping IE，6.4.28）携带 TX/RX 波束数量、同步模式和各簇跟踪周期，用于从扇区级训练过渡到波束级训练。最后，BST 成簇 IE（BST Clustering IE，6.4.29）和 PET 成簇 IE（PET Clustering IE，6.4.30）——BST = 波束切换/导向与跟踪，PET = 方向图估计与跟踪——描述训练期间波束如何被分组为 TX 和 RX 簇，其中 BST 版本列出每簇的波束数，PET 版本列出带中心波束索引的逐簇描述符。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every IE in 6.4.1–6.4.30 with its exact clause",
+        "zh": "覆盖地图：6.4.1–6.4.30 中每个 IE 及其确切条款号"
+      },
+      "en": "Scheduling & membership: CTA IE (6.4.1) channel-time blocks; BSID IE (6.4.2) piconet name string; Parent Piconet IE (6.4.3) parent PNC address + BSID; DEV Association IE (6.4.4) join/leave notices; PNC Shutdown IE (6.4.5) shutdown + remaining DEVID. Change & power: Piconet Parameter Change IE (6.4.6) PNID/BSID/MOVE/SIZE/CHANNEL with Change Beacon Number; AS IE (6.4.7) Unique ID + app data; PCTM IE (6.4.8) wake-up bitmap; PNC Handover IE (6.4.9) new PNC address/DEVID/beacon; CTA Status IE (6.4.10) CTA characteristics. Capability & coexistence: Capability IE (6.4.11) 2.4 GHz vs mmWave PHY + PNC caps; Transmit Power Parameters IE (6.4.12) TPC levels/step/current; PS Status IE (6.4.13) power-save bitmap + next wake; CWB IE (6.4.14) continued-wake bitmap; Overlapping PNID IE (6.4.15) heard PNIDs + channels; Piconet Services IE (6.4.16) app-layer services; Vendor Defined IE (6.4.17, IDs 0x80–0xFF); Group ID IE (6.4.18) multicast group + member bitmap; Stream Renew IE (6.4.19) stream indices; Next PNC IE (6.4.20) successor DEVID/PNID. mmWave directional: Piconet Channel Status IE (6.4.21) DEVs-in-range bitmap; Synchronization IE (6.4.22) quasi-omni beacon + S-CAP layout; TSD IE (6.4.23) transmit-sector-diversity mode/period; UEP Specific IE (6.4.24) MSB/LSB component split; IFS IE (6.4.25) SIFS/MIFS; CTA Relinquish Duration IE (6.4.26) returned microseconds; Feedback IE (6.4.27) best-sector indices + LQI; Mapping IE (6.4.28) beam counts + tracking periods; BST Clustering IE (6.4.29) beams-per-cluster; PET Clustering IE (6.4.30) cluster descriptors + center-beam index. All share the Element ID / Length / Content skeleton from 6.4 (Figure 6-65) and are indexed in Table 6-13.",
+      "zh": "调度与成员：CTA IE（6.4.1）信道时间块；BSID IE（6.4.2）微微网名称字符串；父微微网 IE（6.4.3）父 PNC 地址 + BSID；DEV 关联 IE（6.4.4）加入/离开通知；PNC 关闭 IE（6.4.5）关闭 + 剩余 DEVID。变更与功耗：微微网参数变更 IE（6.4.6）携 PNID/BSID/MOVE/SIZE/CHANNEL 及变更信标号；AS IE（6.4.7）Unique ID + 应用数据；PCTM IE（6.4.8）唤醒位图；PNC 移交 IE（6.4.9）新 PNC 地址/DEVID/信标号；CTA 状态 IE（6.4.10）CTA 特征。能力与共存：能力 IE（6.4.11）2.4 GHz 对毫米波 PHY + PNC 能力；发射功率参数 IE（6.4.12）TPC 级数/步长/当前值；PS Status IE（6.4.13）省电位图 + 下次唤醒；CWB IE（6.4.14）持续唤醒位图；重叠 PNID IE（6.4.15）听到的 PNID + 信道；微微网服务 IE（6.4.16）应用层服务；厂商自定义 IE（6.4.17，ID 为 0x80–0xFF）；组 ID IE（6.4.18）组播组 + 成员位图；流续期 IE（6.4.19）流索引；下一个 PNC IE（6.4.20）继任者 DEVID/PNID。毫米波定向：微微网信道状态 IE（6.4.21）范围内 DEV 位图；同步 IE（6.4.22）准全向信标 + S-CAP 布局；TSD IE（6.4.23）发射扇区分集模式/周期；UEP 特定 IE（6.4.24）MSB/LSB 分量分割；IFS IE（6.4.25）SIFS/MIFS；CTA 让出时长 IE（6.4.26）让出的微秒数；反馈 IE（6.4.27）最佳扇区索引 + LQI；映射 IE（6.4.28）波束数 + 跟踪周期；BST 成簇 IE（6.4.29）每簇波束数；PET 成簇 IE（6.4.30）簇描述符 + 中心波束索引。所有 IE 都共享 6.4（图 6-65）的 Element ID / Length / Content 骨架，并在表 6-13 中编入索引。",
+      "cite": {
+        "pdf_id": "802153-2016",
+        "pages": [
+          127,
+          128,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          141,
+          142,
+          143,
+          144,
+          145,
+          146,
+          148,
+          149,
+          150,
+          152,
+          153
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why so many mmWave IEs? Beam-steered links (SC PHY, HSI PHY) must train, track, and feed back beam quality continuously, so 6.4.22–6.4.30 form a small protocol for sector-level then beam-level training. The 2.4 GHz piconet ignores them entirely — Table 6-13 marks them required only for mmWave DEVs.",
+      "zh": "为什么有这么多毫米波 IE？波束导向链路（SC PHY、HSI PHY）必须持续进行波束的训练、跟踪和质量反馈，因此 6.4.22–6.4.30 构成了一套用于先扇区级、后波束级训练的小型协议。2.4 GHz 微微网完全忽略它们——表 6-13 将它们标注为仅毫米波 DEV 必需。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        127,
+        128,
+        129
+      ],
+      "note": "6.4 IE skeleton (Fig 6-65), Table 6-13 Element ID map, CTA IE 6.4.1"
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        130,
+        131,
+        132,
+        133,
+        134
+      ],
+      "note": "BSID/Parent/DEV Association/PNC Shutdown 6.4.2-6.4.5; Param Change/AS/PCTM/Handover/CTA Status 6.4.6-6.4.10"
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        135,
+        141,
+        142,
+        143,
+        144,
+        145
+      ],
+      "note": "Capability 6.4.11, TX Power 6.4.12, PS Status/CWB 6.4.13-14, Overlapping PNID/Services/Vendor/Group/Stream Renew/Next PNC 6.4.15-6.4.20"
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        146,
+        148,
+        149,
+        150,
+        152,
+        153
+      ],
+      "note": "Piconet Channel Status/Sync/TSD/UEP/IFS 6.4.21-6.4.25; CTA Relinquish/Feedback/Mapping/BST/PET Clustering 6.4.26-6.4.30"
+    }
+  ],
+  "covers": [
+    "802153-2016:6.4.1",
+    "802153-2016:6.4.2",
+    "802153-2016:6.4.3",
+    "802153-2016:6.4.4",
+    "802153-2016:6.4.5",
+    "802153-2016:6.4.6",
+    "802153-2016:6.4.7",
+    "802153-2016:6.4.8",
+    "802153-2016:6.4.9",
+    "802153-2016:6.4.10",
+    "802153-2016:6.4.11",
+    "802153-2016:6.4.12",
+    "802153-2016:6.4.13",
+    "802153-2016:6.4.14",
+    "802153-2016:6.4.15",
+    "802153-2016:6.4.16",
+    "802153-2016:6.4.17",
+    "802153-2016:6.4.18",
+    "802153-2016:6.4.19",
+    "802153-2016:6.4.20",
+    "802153-2016:6.4.21",
+    "802153-2016:6.4.22",
+    "802153-2016:6.4.23",
+    "802153-2016:6.4.24",
+    "802153-2016:6.4.25",
+    "802153-2016:6.4.26",
+    "802153-2016:6.4.27",
+    "802153-2016:6.4.28",
+    "802153-2016:6.4.29",
+    "802153-2016:6.4.30"
+  ],
+  "track": "pan-hr-wpan"
+}

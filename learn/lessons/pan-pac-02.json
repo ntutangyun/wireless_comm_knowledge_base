@@ -1,0 +1,179 @@
+{
+  "id": "pan-pac-02",
+  "title": {
+    "en": "Inside the PAC MAC (Part 1): Superframes, Timing, and Channel Access",
+    "zh": "深入 PAC MAC（上）：超帧、时序与信道接入"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.15.8-2017 defines Peer Aware Communications (PAC): a way for nearby devices — called PDs (PAC devices) — to discover each other, peer, and exchange data directly, without an access point. Clause 6 is the heart of the standard: it describes what the MAC (medium access control) layer actually does. The MAC is the software layer that controls all access to the radio. Per clause 6.1 it is responsible for network synchronization, device discovery, peering and de-peering, MAC-level security, channel access, reliable unicast between peers, and multicast/broadcast delivery. This lesson is part 1 of 2 and walks through the first half of clause 6 — how time is divided, how devices time their frames, and how they take turns on the air.",
+      "zh": "IEEE Std 802.15.8-2017 定义了对等感知通信（PAC，Peer Aware Communications）：让附近的设备——称为 PD（PAC 设备）——无需接入点即可相互发现、配对（peering）并直接交换数据。第 6 章是该标准的核心，描述 MAC（媒体接入控制）层究竟做什么。MAC 是控制所有无线访问的软件层。根据 6.1 节，它负责网络同步、设备发现、配对与解除配对、MAC 层安全、信道接入、对等体之间可靠的单播，以及组播/广播传输。本课为两部分中的第一部分，讲解第 6 章前半部分——时间如何划分、设备如何为帧定时，以及它们如何在空口上轮流发送。"
+    },
+    {
+      "type": "prose",
+      "en": "Time on a PAC channel is sliced into superframes (clause 6.2.1). Every superframe has five back-to-back periods in a fixed order: the synchronization period (SP), discovery period (DP), peering period (PP), contention access period (CAP), and contention free period (CFP). Each has a job. The SP (6.2.2) carries synchronization signals so devices share a common clock. The DP (6.2.3) carries discovery information so devices can announce or find each other. The PP (6.2.4) is where peering happens, using the same contention-based random access designed for the CAP. The CAP (6.2.5) is a free-for-all contended window for management messages and data. The CFP (6.2.6) is reserved, collision-free time where transmissions happen without any CSMA/CA contention.",
+      "zh": "PAC 信道上的时间被切分为超帧（superframe，6.2.1 节）。每个超帧按固定顺序包含五个连续时段：同步时段（SP）、发现时段（DP）、配对时段（PP）、竞争接入时段（CAP）和无竞争时段（CFP）。每个时段各司其职。SP（6.2.2）承载同步信号，使设备共享统一时钟。DP（6.2.3）承载发现信息，使设备能宣告自身或发现彼此。PP（6.2.4）用于配对，采用与 CAP 相同的基于竞争的随机接入。CAP（6.2.5）是自由竞争窗口，用于管理消息和数据。CFP（6.2.6）是预留的无冲突时间，发送过程无需任何 CSMA/CA 竞争。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><rect x=\"5\" y=\"25\" width=\"510\" height=\"40\" stroke-width=\"1.5\"/><line x1=\"75\" y1=\"25\" x2=\"75\" y2=\"65\" stroke-width=\"1\"/><line x1=\"150\" y1=\"25\" x2=\"150\" y2=\"65\" stroke-width=\"1\"/><line x1=\"225\" y1=\"25\" x2=\"225\" y2=\"65\" stroke-width=\"1\"/><line x1=\"360\" y1=\"25\" x2=\"360\" y2=\"65\" stroke-width=\"1\"/><text x=\"40\" y=\"49\" font-size=\"11\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">SP</text><text x=\"112\" y=\"49\" font-size=\"11\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">DP</text><text x=\"187\" y=\"49\" font-size=\"11\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">PP</text><text x=\"292\" y=\"49\" font-size=\"11\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">CAP</text><text x=\"437\" y=\"49\" font-size=\"11\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">CFP</text><text x=\"260\" y=\"16\" font-size=\"11\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">One superframe</text></svg>",
+      "caption": {
+        "en": "The PAC superframe: five fixed-order periods (SP, DP, PP, CAP, CFP) — clause 6.2.1, Figure 5.",
+        "zh": "PAC 超帧：五个固定顺序的时段（SP、DP、PP、CAP、CFP）——6.2.1 节，图 5。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Devices rarely need every period of every superframe, so PAC lets them sleep. A cyclic-superframe (clause 6.3.1) is a repeating pattern built from many superframes, where each period (except the SP) can be marked active or inactive. During inactive periods a PD can turn off its transceiver to save power and cut interference. Each superframe uses one of 16 active/inactive combinations, and a cyclic-superframe is built from a run of “pattern A” superframes followed by a run of “pattern B” superframes (up to 4096 superframes total). The next higher layer chooses the right pattern for the application — for example, waking only every sixth superframe to send one data frame in the CAP.",
+      "zh": "设备很少需要每个超帧的每个时段，因此 PAC 允许它们休眠。循环超帧（cyclic-superframe，6.3.1 节）是由多个超帧构成的重复模式，其中每个时段（SP 除外）都可标记为活跃或非活跃。在非活跃时段，PD 可关闭收发机以节省功耗并减少干扰。每个超帧使用 16 种活跃/非活跃组合之一，循环超帧由一段“模式 A”超帧后接一段“模式 B”超帧构成（总计最多 4096 个超帧）。上层为应用选择合适的模式——例如每六个超帧才唤醒一次，在 CAP 中发送一个数据帧。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Maintaining the cyclic-superframe (clause 6.3.2) is driven entirely by the next higher layer via the MLME-CYCLICSUPERFRAME.request primitive (ADD / UPDATE / DELETE). A “background” cyclic-superframe (identifier 0) is always present so a PD periodically wakes to hear Cyclic-superframe Advertise Request frames from neighbours. Knowing neighbours' schedules (kept in macCyclicSuperframeNeighborList) lets a PD pick a start time (clause 6.3.3) that avoids overlapping — and thus interfering — with nearby PAC groups.",
+      "zh": "循环超帧的维护（6.3.2 节）完全由上层通过 MLME-CYCLICSUPERFRAME.request 原语（ADD / UPDATE / DELETE）驱动。始终存在一个标识符为 0 的“后台”循环超帧，使 PD 周期性唤醒以接收邻居发来的循环超帧通告请求帧（Cyclic-superframe Advertise Request）。掌握邻居的调度（保存在 macCyclicSuperframeNeighborList 中）后，PD 可选择一个起始时间（6.3.3 节），避免与附近 PAC 群组重叠，从而避免干扰。"
+    },
+    {
+      "type": "prose",
+      "en": "Before any device can take turns fairly, it needs timing gaps between frames. Clause 6.4.1 defines three inter-frame spaces (IFS), all independent of the bit rate. The MIFS (minimum IFS, 6.4.2) is the tiny gap used right before sending an Immediate Ack, Enhanced Ack, or CTS (clear to send) frame. The DIFS (distributed IFS, 6.4.3) is the idle time a contending device must observe before it is allowed to transmit. The EIFS (extended IFS, 6.4.4) is a longer wait used after the device receives a frame that had an error or a bad FCS (frame check sequence) — it gives other devices enough time to acknowledge that frame before this one jumps in. Clause 6.4.5 ties the timings to PHY measurements: MIFS and SlotTime are computed from radio delays, and DIFS = MIFS + 2 SlotTime, EIFS = MIFS + AckTxTime + DIFS.",
+      "zh": "在设备公平轮流发送之前，需要在帧之间留出时序间隔。6.4.1 节定义了三种帧间间隔（IFS，inter-frame space），均与比特率无关。MIFS（最小帧间隔，6.4.2）是发送立即确认（Immediate Ack）、增强确认（Enhanced Ack）或 CTS（清除发送，clear to send）帧之前所用的极短间隔。DIFS（分布式帧间隔，6.4.3）是竞争设备在获准发送前必须观察到的空闲时间。EIFS（扩展帧间隔，6.4.4）是更长的等待，用于设备收到带错误或 FCS（帧校验序列）不正确的帧之后——它为其他设备留出足够时间确认该帧，再让本设备介入。6.4.5 节将这些时序与 PHY 测量关联：MIFS 与 SlotTime 由射频时延算出，且 DIFS = MIFS + 2 SlotTime，EIFS = MIFS + AckTxTime + DIFS。"
+    },
+    {
+      "type": "prose",
+      "en": "Channel access (clause 6.5) comes in two flavours. Random access (6.5.1) is contention-based: devices fight for the air. For OFDM or OFDMA PHYs this is slotted CSMA/CA (carrier sense multiple access with collision avoidance) using an EIED (exponential increase exponential decrease) backoff. The clever part is p-EIED: instead of a binary backoff window, each PD carries a persistence level p and transmits in each backoff slot with probability p. PDs continuously tune p from a measured inter-arrival time so the network-wide transmission rate stays stable no matter how many devices are present — fairness without a central scheduler. For the UWB (ultra-wideband) PHY, random access instead uses Aloha (6.5.1.2), where CCA (clear channel assessment) simply reports the medium idle.",
+      "zh": "信道接入（6.5 节）分为两类。随机接入（6.5.1）基于竞争：设备争抢空口。对于 OFDM 或 OFDMA PHY，采用带 EIED（指数增加指数减少，exponential increase exponential decrease）退避的时隙化 CSMA/CA（载波侦听多址/冲突避免）。其精妙之处在于 p-EIED：每个 PD 不使用二元退避窗口，而是携带一个持续度 p，并在每个退避时隙以概率 p 发送。PD 根据测得的到达间隔时间持续调整 p，使全网发送速率无论设备多少都保持稳定——无需中心调度即可实现公平。对于 UWB（超宽带）PHY，随机接入改用 Aloha（6.5.1.2），其 CCA（空闲信道评估）直接报告介质空闲。"
+    },
+    {
+      "type": "prose",
+      "en": "The other flavour is contention free access (clause 6.5.2), used only in the CFP. Here time-and-frequency tiles called resource elements (REs) are reserved exclusively for one device, so there is no fighting at all. A Requestor PD and Responder PD negotiate a scheduled link: the Requestor sends an RE Request command, the Responder allocates contiguous REs in its macCFPtable and replies with an RE Response, then broadcasts an RE Notification so other devices know the CFP is busy (clause 6.5.2.2). Scheduling is kept only while the link's SINR (signal-to-interference-plus-noise ratio) stays above a threshold (6.5.2.3); rate adaptation uses pilot signals and CQI feedback (6.5.2.4); data is sent inside the allocated REs (6.5.2.5); and REs are released by an RE Notification when finished (6.5.2.6) or probed for expiry with an AllocationLive request (6.5.2.7).",
+      "zh": "另一类是无竞争接入（6.5.2 节），仅用于 CFP。此处称为资源单元（RE，resource element）的时频块被独占预留给单个设备，因此完全没有争抢。请求方 PD（Requestor PD）与响应方 PD（Responder PD）协商一条调度链路：请求方发送 RE 请求命令（RE Request），响应方在其 macCFPtable 中分配连续的 RE 并回复 RE 响应（RE Response），随后广播 RE 通告（RE Notification）告知其他设备 CFP 已被占用（6.5.2.2 节）。仅当链路 SINR（信号与干扰加噪声比）保持在阈值之上时才维持调度（6.5.2.3）；速率自适应使用导频信号与 CQI 反馈（6.5.2.4）；数据在分配的 RE 内发送（6.5.2.5）；完成后通过 RE 通告释放 RE（6.5.2.6），或用 AllocationLive 请求探测是否过期（6.5.2.7）。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant R as Requestor PD\n  participant S as Responder PD\n  R->>S: RE Request command\n  S-->>R: Immediate Ack\n  S->>R: RE Response command\n  R-->>S: Immediate Ack\n  S->>R: RE Notification (broadcast)\n  Note over R,S: Link now scheduled in CFP",
+      "zh": "sequenceDiagram\n  participant R as 请求方 PD\n  participant S as 响应方 PD\n  R->>S: RE 请求命令\n  S-->>R: 立即确认\n  S->>R: RE 响应命令\n  R-->>S: 立即确认\n  S->>R: RE 通告（广播）\n  Note over R,S: 链路已在 CFP 中调度"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.6 explains how a PAC network is born and kept alive, in order: channel scanning, synchronization, discovery, peering (6.6.1). Channel scanning (6.6.2) uses an ED (energy detection) scan — the PD measures peak energy on each channel to pick a quiet one before starting a network (6.6.2.1, 6.6.2.2). To bootstrap, every band defines a common mode (6.6.3.1): a fixed RF channel and fixed PHY parameters that all devices try first, so synchronization can happen immediately; the rules for when to use it (start-up vs. normal operation, and always for UWB) are in 6.6.3.2. Synchronization itself (6.6.4) gives all PDs a common reference clock. Discovery (6.6.5) is either one-way (announce/listen during the DP, devices need not be peered) or two-way (a Discovery Request during the CAP, devices already peered). Peering and de-peering (6.6.6) come in one-to-one, one-to-many, and many-to-many forms. Finally, dynamic preamble selection (DPS, 6.6.7) is a UWB ranging safeguard: the two ranging partners switch preamble codes (coordinated by encrypted messages) so a hostile device cannot jam or spoof the ranging exchange.",
+      "zh": "6.6 节说明 PAC 网络如何诞生并维持，顺序为：信道扫描、同步、发现、配对（6.6.1）。信道扫描（6.6.2）采用 ED（能量检测，energy detection）扫描——PD 测量每个信道的峰值能量，以便在启动网络前选取一个安静信道（6.6.2.1、6.6.2.2）。为引导启动，每个频段定义一个公共模式（common mode，6.6.3.1）：一个固定 RF 信道和固定 PHY 参数，所有设备首先尝试，使同步可立即进行；何时使用它的规则（启动期 vs. 正常运行，以及 UWB 始终使用）见 6.6.3.2。同步本身（6.6.4）为所有 PD 提供统一参考时钟。发现（6.6.5）分为单向（在 DP 内宣告/侦听，设备无需已配对）或双向（在 CAP 内发送发现请求，设备已配对）。配对与解除配对（6.6.6）有一对一、一对多和多对多形式。最后，动态前导码选择（DPS，dynamic preamble selection，6.6.7）是一种 UWB 测距防护：两个测距伙伴切换前导码（由加密消息协调），使敌对设备无法干扰或伪造测距交换。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.7 covers the actual sending and receiving of frames. On transmission (6.7.1), each PD keeps one Data Sequence Number (DSN) in macDSN, copies it into every outgoing frame's MAC header (MHR), then increments it. On reception (6.7.2), a PD filters incoming frames in four levels: (1) drop anything failing the CRC/FCS check; (2) in promiscuous mode, pass everything else straight up; (3) otherwise accept only frames addressed to this PD's MAC address, an active link ID, a group it belongs to, or broadcast; (4) run the incoming security procedure. A frame is only “successfully received” if it survives this filtering.",
+      "zh": "6.7 节涵盖帧的实际收发。发送时（6.7.1），每个 PD 在 macDSN 中保存一个数据序列号（DSN，Data Sequence Number），将其复制到每个发出帧的 MAC 头（MHR）中，然后加一。接收时（6.7.2），PD 分四级过滤入帧：（1）丢弃任何未通过 CRC/FCS 校验的帧；（2）混杂模式下，将其余帧直接上传；（3）否则仅接受发往本 PD MAC 地址、活跃链路 ID、所属群组或广播的帧；（4）执行入帧安全过程。只有通过该过滤的帧才算“成功接收”。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Acknowledgments (clause 6.7.3): the next higher layer chooses per data frame whether to request none, an Immediate Ack, or an Enhanced Ack via the AR/SNS field. Multicast and broadcast frames are never acknowledged. With no Ack (6.7.3.2) the sender simply assumes success; with an Ack (6.7.3.3) the recipient echoes the same DSN. If the Ack does not arrive within macImmAckWaitDuration, the sender retransmits the same-DSN frame up to macMaxFrameRetries times (6.7.3.4) — but only within the same superframe portion (PP, CAP, or CFP). Promiscuous mode (6.7.4) is simply turning on macPromiscuousMode to keep the receiver always on.",
+      "zh": "确认（6.7.3 节）：上层为每个数据帧通过 AR/SNS 字段选择不请求确认、请求立即确认（Immediate Ack）或增强确认（Enhanced Ack）。组播和广播帧从不被确认。无确认时（6.7.3.2）发送方直接假定成功；有确认时（6.7.3.3）接收方回送相同 DSN。若确认未在 macImmAckWaitDuration 内到达，发送方将以相同 DSN 重传，最多 macMaxFrameRetries 次（6.7.3.4）——但只在同一超帧时段内（PP、CAP 或 CFP）。混杂模式（6.7.4）只是开启 macPromiscuousMode，使接收机常开。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause-6 unit in this lesson, by page",
+        "zh": "覆盖地图：本课涉及的每个第 6 章条目（按页码）"
+      },
+      "en": "6.1 Overview of MAC duties (p.27). 6.2 Superframe structure: 6.2.1 general five-period layout, 6.2.2 SP, 6.2.3 DP, 6.2.4 PP, 6.2.5 CAP, 6.2.6 CFP (p.27–28). 6.3 Cyclic-superframe: 6.3.1 structure (16 patterns, A+B runs, up to 4096), 6.3.2 maintaining it via MLME-CYCLICSUPERFRAME.request and the background cyclic-superframe, 6.3.3 access control / start-time selection from macCyclicSuperframeNeighborList (p.28–36). 6.4 IFS: 6.4.1 the three IFS, 6.4.2 MIFS, 6.4.3 DIFS, 6.4.4 EIFS, 6.4.5 timing relations (MIFS/SlotTime equations, DIFS = MIFS + 2 SlotTime, EIFS = MIFS + AckTxTime + DIFS) (p.36–39). 6.5 Channel access: 6.5.1 random access (slotted CSMA/CA with p-EIED for OFDM/OFDMA; Aloha for UWB), 6.5.2 contention-free access (RE allocation, scheduling maintenance, rate adaptation, RE usage, deallocation, expiration) (p.39–45). 6.6 Starting/maintaining PAC networks: 6.6.1 overview, 6.6.2 channel scanning / ED scan, 6.6.3 common mode and channel-access order, 6.6.4 synchronization, 6.6.5 PD discovery (one-way/two-way), 6.6.6 peering and de-peering, 6.6.7 managing DPS (p.45–48). 6.7 Transmission/reception/acknowledgment: 6.7.1 transmission and DSN, 6.7.2 reception and four-level frame filtering, 6.7.3 use of acknowledgments and retransmissions, 6.7.4 promiscuous mode, 6.7.5 transmission scenarios (success / lost data frame / lost acknowledgment) (p.50–54).",
+      "zh": "6.1 MAC 职责概览（第 27 页）。6.2 超帧结构：6.2.1 五时段总体布局、6.2.2 SP、6.2.3 DP、6.2.4 PP、6.2.5 CAP、6.2.6 CFP（第 27–28 页）。6.3 循环超帧：6.3.1 结构（16 种模式、A+B 序列、最多 4096）、6.3.2 通过 MLME-CYCLICSUPERFRAME.request 与后台循环超帧维护、6.3.3 接入控制/从 macCyclicSuperframeNeighborList 选取起始时间（第 28–36 页）。6.4 IFS：6.4.1 三种 IFS、6.4.2 MIFS、6.4.3 DIFS、6.4.4 EIFS、6.4.5 时序关系（MIFS/SlotTime 公式、DIFS = MIFS + 2 SlotTime、EIFS = MIFS + AckTxTime + DIFS）（第 36–39 页）。6.5 信道接入：6.5.1 随机接入（OFDM/OFDMA 用带 p-EIED 的时隙化 CSMA/CA；UWB 用 Aloha）、6.5.2 无竞争接入（RE 分配、调度维护、速率自适应、RE 使用、释放、过期）（第 39–45 页）。6.6 启动/维护 PAC 网络：6.6.1 概览、6.6.2 信道扫描/ED 扫描、6.6.3 公共模式与信道接入顺序、6.6.4 同步、6.6.5 PD 发现（单向/双向）、6.6.6 配对与解除配对、6.6.7 DPS 管理（第 45–48 页）。6.7 发送/接收/确认：6.7.1 发送与 DSN、6.7.2 接收与四级帧过滤、6.7.3 确认与重传的使用、6.7.4 混杂模式、6.7.5 发送场景（成功/数据帧丢失/确认丢失）（第 50–54 页）。",
+      "cite": {
+        "pdf_id": "802158-2017",
+        "pages": [
+          27,
+          28,
+          36,
+          39,
+          45,
+          50,
+          53,
+          54
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36
+      ],
+      "note": "6.1 MAC overview; 6.2 superframe periods; 6.3 cyclic-superframe structure, maintenance, and access control."
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45
+      ],
+      "note": "6.4 IFS (MIFS/DIFS/EIFS and timing); 6.5 channel access (CSMA/CA p-EIED, Aloha, contention-free REs)."
+    },
+    {
+      "pdf_id": "802158-2017",
+      "pages": [
+        45,
+        46,
+        47,
+        48,
+        50,
+        51,
+        52,
+        53,
+        54
+      ],
+      "note": "6.6 starting/maintaining PAC networks (scanning, common mode, sync, discovery, peering, DPS); 6.7 transmission, reception, acknowledgment, retransmission, promiscuous mode, scenarios."
+    }
+  ],
+  "covers": [
+    "802158-2017:6.1",
+    "802158-2017:6.2.1",
+    "802158-2017:6.2.2",
+    "802158-2017:6.2.3",
+    "802158-2017:6.2.4",
+    "802158-2017:6.2.5",
+    "802158-2017:6.2.6",
+    "802158-2017:6.3.1",
+    "802158-2017:6.3.2",
+    "802158-2017:6.3.3",
+    "802158-2017:6.4.1",
+    "802158-2017:6.4.2",
+    "802158-2017:6.4.3",
+    "802158-2017:6.4.4",
+    "802158-2017:6.4.5",
+    "802158-2017:6.5.1",
+    "802158-2017:6.5.2",
+    "802158-2017:6.6.1",
+    "802158-2017:6.6.2",
+    "802158-2017:6.6.3",
+    "802158-2017:6.6.4",
+    "802158-2017:6.6.5",
+    "802158-2017:6.6.6",
+    "802158-2017:6.6.7",
+    "802158-2017:6.7.1",
+    "802158-2017:6.7.2",
+    "802158-2017:6.7.3",
+    "802158-2017:6.7.4",
+    "802158-2017:6.7.5"
+  ],
+  "track": "pan-pac"
+}

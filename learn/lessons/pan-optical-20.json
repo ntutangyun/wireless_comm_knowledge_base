@@ -1,0 +1,172 @@
+{
+  "id": "pan-optical-20",
+  "title": {
+    "en": "The 802.15.13 Element Toolbox: Every Building Block in 7.2",
+    "zh": "802.15.13 元素工具箱：7.2 中的每一个构件"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In IEEE Std 802.15.13-2023 — the standard for multi-gigabit Optical Wireless Communications (OWC, sending data with light instead of radio) — a MAC frame is rarely just a fixed header. Most of its useful payload is carried in **elements**: small, self-describing chunks of information. Clause 7.2.1 (Overview) gives the rule of the game: an element groups related fields that serve one or more MAC functions, and each element has a numeric **Element ID** so a receiver knows what it is reading. This lesson is a guided tour of every element ID defined in the standard's element table (7.2.2 through 7.2.30).",
+      "zh": "在 IEEE Std 802.15.13-2023——这部面向多吉比特光无线通信（OWC，用光而非无线电传输数据）的标准——中，MAC 帧很少只是一个固定的头部。它大部分有用的载荷都装在**元素（element）**里：一个个自描述的小信息块。第 7.2.1 条（概述）给出了基本规则：元素把服务于一个或多个 MAC 功能的相关字段组合在一起，每个元素都带有一个数字型的**元素 ID（Element ID）**，让接收方知道自己正在读什么。本课将带你逐一走过标准元素表中定义的每一个元素 ID（7.2.2 到 7.2.30）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Three forward-compatibility rules from 7.2.1 keep parsing safe: (1) a receiver skips elements it does not know or support; (2) it verifies each element's declared length is consistent — if the length is larger than the standard defines, it skips that element; (3) if the length is shorter than defined, it drops the whole MPDU (MAC Protocol Data Unit). These rules let new elements be added later without breaking old devices.",
+      "zh": "7.2.1 给出的三条向后兼容规则保证了解析安全：（1）接收方跳过自己不认识或不支持的元素；（2）它会核对每个元素声明的长度是否一致——若长度比标准定义的更长，就跳过该元素；（3）若长度比定义的更短，则丢弃整个 MPDU（MAC 协议数据单元）。这些规则让日后新增元素不会破坏旧设备。"
+    },
+    {
+      "type": "prose",
+      "en": "The first family of elements is the **containers** — elements whose job is to wrap other elements. The **Null element** (7.2.2) has length zero and carries nothing; it is a placeholder. The **Management Procedure Container element** (7.2.3) bundles several elements that belong to one invocation of a management procedure between two devices, tagged with an Invocation ID so both sides can correlate the exchange. The **Multiple Element Container element** (7.2.4) packs several elements addressed to the *same* device. The **Multiple Device Element Container element** (7.2.5) goes further: each inner element carries its own AID (Association Identifier), so one container can address *different* devices at once. The **Vendor Specific element** (7.2.6) carries proprietary content keyed by a 3-octet OUI (Organizationally Unique Identifier) or CID (Company ID).",
+      "zh": "第一类元素是**容器（container）**——其职责是把其他元素包裹起来。**空元素（Null element，7.2.2）**长度为零、不携带任何内容，是一个占位符。**管理过程容器元素（Management Procedure Container element，7.2.3）**把属于两台设备之间某一次管理过程调用的若干元素打包在一起，并用一个 Invocation ID（调用 ID）标记，使双方能把这次交互关联起来。**多元素容器元素（Multiple Element Container element，7.2.4）**把发往*同一台*设备的多个元素装在一起。**多设备元素容器元素（Multiple Device Element Container element，7.2.5）**更进一步：每个内层元素都带有自己的 AID（关联标识符），因此一个容器可以同时寻址*不同*设备。**厂商专用元素（Vendor Specific element，7.2.6）**承载由 3 字节 OUI（机构唯一标识符）或 CID（公司 ID）标记的私有内容。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"30\" width=\"90\" height=\"34\"/><text x=\"55\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Invocation ID</text><rect x=\"100\" y=\"30\" width=\"70\" height=\"34\"/><text x=\"135\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Elem ID 1</text><rect x=\"170\" y=\"30\" width=\"60\" height=\"34\"/><text x=\"200\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Length 1</text><rect x=\"230\" y=\"30\" width=\"80\" height=\"34\"/><text x=\"270\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Element 1</text><text x=\"320\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">...</text><rect x=\"340\" y=\"30\" width=\"70\" height=\"34\"/><text x=\"375\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Elem ID N</text><rect x=\"410\" y=\"30\" width=\"100\" height=\"34\"/><text x=\"460\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Element N</text><text x=\"10\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Management Procedure Container (7.2.3)</text></svg>",
+      "caption": {
+        "en": "A container element repeats an (ID, Length, Element) triple. Because the container's total length is known, a receiver can confirm every inner element fits — the parsing trick behind 7.2.3, 7.2.4, and 7.2.5.",
+        "zh": "容器元素重复着 (ID、长度、元素) 三元组。由于容器的总长度已知，接收方可以确认每个内层元素都装得下——这正是 7.2.3、7.2.4 和 7.2.5 背后的解析技巧。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The next family supports **scheduled medium access** (Clause 6.3), where a coordinator divides time into a superframe of slots. The **Sync element** (7.2.7) broadcasts the current Superframe Number, the Total Superframe Slots, and the Sync Slot so members lock onto the timing. The **RTS Descriptor element** (7.2.8) describes one RTS (Request To Send) allocation — its start slot, length, and the RANDOP (random-operation) length within it. The **GTS Descriptor element** (7.2.10) describes a single GTS (Guaranteed Time Slot) by its valid superframe, start slot, and length; the **GTS Descriptor List element** (7.2.9) simply carries a count plus several GTS Descriptors in increasing order. The **Queue Report element** (7.2.11) lets a device tell the coordinator how many octets it has queued at each of eight priorities (the value is multiplied by 256, and 0xFFFF means 'more than representable').",
+      "zh": "下一类元素支持**调度式介质访问（scheduled medium access，第 6.3 条）**，在这种模式下协调器把时间划分为由若干时隙组成的超帧。**同步元素（Sync element，7.2.7）**广播当前的超帧号（Superframe Number）、超帧总时隙数（Total Superframe Slots）和同步时隙（Sync Slot），使成员锁定时序。**RTS 描述符元素（RTS Descriptor element，7.2.8）**描述一次 RTS（请求发送）分配——它的起始时隙、长度，以及其中的 RANDOP（随机操作）长度。**GTS 描述符元素（GTS Descriptor element，7.2.10）**用有效超帧、起始时隙和长度来描述单个 GTS（保证时隙）；**GTS 描述符列表元素（GTS Descriptor List element，7.2.9）**则只是携带一个计数值，外加若干按递增顺序排列的 GTS 描述符。**队列报告元素（Queue Report element，7.2.11）**让设备告诉协调器它在八个优先级各自排队了多少字节（数值要乘以 256，0xFFFF 表示“超出可表示范围”）。"
+    },
+    {
+      "type": "prose",
+      "en": "**Polled medium access** (Clause 6.4) uses four tiny elements. The **Random Access element** (7.2.12) carries just a Cycle Interval — the microseconds between two random-access periods. The **Random Access Response element** (7.2.13) is used by a device to establish a connection in the RAPP (Random Access PHY Period) and carries no information (length zero). The **Poll element** (7.2.14) is sent by the coordinator to poll a device and likewise carries nothing. The **Poll Response element** (7.2.15) replies with a Duration field — the microseconds the polled device needs to finish its handshake.",
+      "zh": "**轮询式介质访问（polled medium access，第 6.4 条）**用到四个极小的元素。**随机访问元素（Random Access element，7.2.12）**只携带一个周期间隔（Cycle Interval）——即两个随机访问周期之间的微秒数。**随机访问响应元素（Random Access Response element，7.2.13）**用于设备在 RAPP（随机访问 PHY 周期）中建立连接，不携带任何信息（长度为零）。**轮询元素（Poll element，7.2.14）**由协调器发出以轮询某设备，同样不携带任何内容。**轮询响应元素（Poll Response element，7.2.15）**用一个时长（Duration）字段作答——即被轮询设备完成其握手所需的微秒数。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the **OWPAN management** family (Clause 6.5) — joining and leaving an Optical Wireless Personal Area Network. The **Announcement element** (7.2.16) advertises the network with a UTF-8 OWPAN Name. To join, a device sends an **Association Request element** (7.2.17) carrying its Capability List and Supported MCS; the coordinator replies with an **Association Response element** (7.2.18) that holds an Association Result Code (1 = Denied, 2 = Success), the assigned AID, and the capabilities and MCS to use going forward. The **Disassociation Notification element** (7.2.19) carries a single Reason Code (for example 3 = Handover, 5 = Poor channel) when either side tears the link down.",
+      "zh": "接下来是 **OWPAN 管理（OWPAN management，第 6.5 条）**这一类——即加入和退出光无线个域网。**通告元素（Announcement element，7.2.16）**用一个 UTF-8 编码的 OWPAN 名称来宣告网络。设备入网时发送**关联请求元素（Association Request element，7.2.17）**，其中携带它的能力列表（Capability List）和受支持的 MCS（Supported MCS）；协调器以**关联响应元素（Association Response element，7.2.18）**作答，其中含有关联结果码（Association Result Code，1 = 拒绝，2 = 成功）、分配的 AID，以及后续要使用的能力和 MCS。当任一方拆除链路时，**去关联通知元素（Disassociation Notification element，7.2.19）**携带单个原因码（Reason Code，例如 3 = 切换，5 = 信道差）。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant D as Device\n  participant C as Coordinator\n  C-->>D: Announcement (7.2.16)\n  D->>C: Association Request (7.2.17)\n  C->>D: Association Response (7.2.18, AID assigned)\n  Note over D,C: link active\n  D->>C: Disassociation Notification (7.2.19, Reason)",
+      "zh": "sequenceDiagram\n  participant D as 设备\n  participant C as 协调器\n  C-->>D: 通告 (7.2.16)\n  D->>C: 关联请求 (7.2.17)\n  C->>D: 关联响应 (7.2.18, 分配 AID)\n  Note over D,C: 链路激活\n  D->>C: 去关联通知 (7.2.19, 原因码)"
+    },
+    {
+      "type": "prose",
+      "en": "Capabilities and rate adaptation share several elements. The **Capability List element** (7.2.20) is a Bitmap Width plus a Capability Bitmap: each bit position is a capability ID, and a set bit means 'I support this.' The **Supported MCS element** (7.2.21) advertises supported MCS (Modulation and Coding Schemes) and uses a PHY ID to select which sub-element follows — the **PM-PHY MCS List element** (7.2.22) for the PM-PHY (a bitmap of supported Clock Rates: 12.5 / 25 / 50 / 100 / 200 MHz), or the **HB-PHY MCS List element** (7.2.23) for the HB-PHY (a bitmap of supported Bandwidths: 50 / 100 / 200 MHz). To request a specific rate, a device sends the **MCS Request element** (7.2.24), again keyed by PHY ID to either the **PM-PHY MCS element** (7.2.25, a single MCS ID) or the **HB-PHY MCS element** (7.2.26, which describes a BAT — a Bit Allocation Table — with FEC block size, code rate, and per-group bit loading across subcarriers).",
+      "zh": "能力描述与速率自适应共用若干元素。**能力列表元素（Capability List element，7.2.20）**由位图宽度（Bitmap Width）加上能力位图（Capability Bitmap）组成：每个位的位置对应一个能力 ID，置 1 表示“我支持此项”。**受支持 MCS 元素（Supported MCS element，7.2.21）**宣告所支持的 MCS（调制与编码方案），并用一个 PHY ID 来选定随后跟着哪种子元素——对 PM-PHY 用**PM-PHY MCS 列表元素（PM-PHY MCS List element，7.2.22，一张受支持时钟速率的位图：12.5 / 25 / 50 / 100 / 200 MHz）**，对 HB-PHY 用**HB-PHY MCS 列表元素（HB-PHY MCS List element，7.2.23，一张受支持带宽的位图：50 / 100 / 200 MHz）**。要请求某个具体速率时，设备发送**MCS 请求元素（MCS Request element，7.2.24）**，同样按 PHY ID 指向**PM-PHY MCS 元素（PM-PHY MCS element，7.2.25，单个 MCS ID）**或**HB-PHY MCS 元素（HB-PHY MCS element，7.2.26，描述一张 BAT——比特分配表——含 FEC 块大小、码率以及对各子载波分组的逐组比特加载）**。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the recurring PHY-ID indirection: 7.2.21 and 7.2.24 are generic wrappers, and the PHY ID (0 = PM-PHY, 1 = HB-PHY) picks the concrete inner element. This is how one MAC structure cleanly serves two very different optical PHYs without duplicating frame definitions.",
+      "zh": "注意这种反复出现的“PHY-ID 间接寻址”：7.2.21 和 7.2.24 是通用外壳，由 PHY ID（0 = PM-PHY，1 = HB-PHY）来选定具体的内层元素。正是借此，同一套 MAC 结构得以干净利落地服务两种差异很大的光 PHY，而无需重复定义帧格式。"
+    },
+    {
+      "type": "prose",
+      "en": "The last three elements handle attributes, interference, and MIMO. The **Attribute Change Request element** (7.2.27) lets a coordinator set a PIB (PAN Information Base) attribute on an associated device by Attribute ID and New Value; the device answers with the **Attribute Change Response element** (7.2.28), echoing the attribute and adding a Status (0 = Success, 3 = Read-only, and so on). The **Interference Notification element** (7.2.29) reports a signal that is not from the same OWPAN: its Signal Power (encoded as dBm + 155), a Decodable bit, and — if decodable — the Foreign OWPAN ID and Foreign Device Address. Finally, the **Explicit MIMO Feedback element** (7.2.30) carries channel state for multiple-input multiple-output optical front-ends (OFEs): the Number of OFEs, a Tap Format, the integer and fractional Noise Floor, the superframe and slot where the channel was measured, and one OFE Feedback Descriptor per OFE.",
+      "zh": "最后三个元素处理属性、干扰和 MIMO。**属性更改请求元素（Attribute Change Request element，7.2.27）**让协调器通过属性 ID（Attribute ID）和新值（New Value）来设置已关联设备上的某个 PIB（PAN 信息库）属性；设备以**属性更改响应元素（Attribute Change Response element，7.2.28）**作答，回送该属性并附上状态（Status，0 = 成功，3 = 只读，等等）。**干扰通知元素（Interference Notification element，7.2.29）**报告一个并非来自同一 OWPAN 的信号：包括其信号功率（Signal Power，按 dBm + 155 编码）、一个可解码位（Decodable），以及——若可解码——外来 OWPAN ID 和外来设备地址。最后，**显式 MIMO 反馈元素（Explicit MIMO Feedback element，7.2.30）**为多输入多输出的光前端（OFE）携带信道状态：包括 OFE 数量（Number of OFEs）、抽头格式（Tap Format）、噪声基底的整数与小数部分（Noise Floor）、信道测量所在的超帧与时隙，以及每个 OFE 对应的一个 OFE 反馈描述符。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every 7.2 element by ID, clause, and role",
+        "zh": "覆盖图：按 ID、条款和角色排列的每个 7.2 元素"
+      },
+      "en": "Overview & rules — 7.2.1. Containers/utility — 7.2.2 Null (length 0), 7.2.3 Management Procedure Container (Invocation ID + inner triples), 7.2.4 Multiple Element Container (same device), 7.2.5 Multiple Device Element Container (per-element AID), 7.2.6 Vendor Specific (OUI/CID + Body). Scheduled access (6.3) — 7.2.7 Sync (superframe number/slots/sync slot), 7.2.8 RTS Descriptor (start/length/RANDOP), 7.2.9 GTS Descriptor List (count + descriptors), 7.2.10 GTS Descriptor (valid superframe/start/length), 7.2.11 Queue Report (8 priority queue sizes ×256). Polled access (6.4) — 7.2.12 Random Access (Cycle Interval), 7.2.13 Random Access Response (length 0), 7.2.14 Poll (length 0), 7.2.15 Poll Response (Duration). OWPAN management (6.5) — 7.2.16 Announcement (OWPAN Name), 7.2.17 Association Request (Capability List + Supported MCS), 7.2.18 Association Response (Result Code/AID/Capability/MCS; Table 3), 7.2.19 Disassociation Notification (Reason Code; Table 4), 7.2.20 Capability List (Bitmap Width + Capability Bitmap). Adaptive transmission (6.9) — 7.2.21 Supported MCS (PHY ID selector; Table 5), 7.2.22 PM-PHY MCS List (Clock Rates bitmap), 7.2.23 HB-PHY MCS List (Bandwidths bitmap), 7.2.24 MCS Request (PHY ID selector; Table 6), 7.2.25 PM-PHY MCS (MCS ID), 7.2.26 HB-PHY MCS (BAT: Valid BAT Bitmap, Updated BAT, FEC Block Size/Code Rate, BAT Groups). Attributes/interference/MIMO — 7.2.27 Attribute Change Request (Attribute ID + New Value; Table 7), 7.2.28 Attribute Change Response (+ Status; Table 8), 7.2.29 Interference Notification (Signal Power, Decodable, Foreign OWPAN ID/Address), 7.2.30 Explicit MIMO Feedback (Number of OFEs, Tap Format, Noise Floor, OFE Feedback Descriptors; Table 9).",
+      "zh": "概述与规则——7.2.1。容器/工具类——7.2.2 空元素（长度 0）、7.2.3 管理过程容器（调用 ID + 内层三元组）、7.2.4 多元素容器（同一设备）、7.2.5 多设备元素容器（逐元素 AID）、7.2.6 厂商专用（OUI/CID + 主体）。调度式访问（6.3）——7.2.7 同步（超帧号/时隙数/同步时隙）、7.2.8 RTS 描述符（起始/长度/RANDOP）、7.2.9 GTS 描述符列表（计数 + 描述符）、7.2.10 GTS 描述符（有效超帧/起始/长度）、7.2.11 队列报告（8 个优先级队列大小，×256）。轮询式访问（6.4）——7.2.12 随机访问（周期间隔）、7.2.13 随机访问响应（长度 0）、7.2.14 轮询（长度 0）、7.2.15 轮询响应（时长）。OWPAN 管理（6.5）——7.2.16 通告（OWPAN 名称）、7.2.17 关联请求（能力列表 + 受支持 MCS）、7.2.18 关联响应（结果码/AID/能力/MCS；表 3）、7.2.19 去关联通知（原因码；表 4）、7.2.20 能力列表（位图宽度 + 能力位图）。自适应传输（6.9）——7.2.21 受支持 MCS（PHY ID 选择器；表 5）、7.2.22 PM-PHY MCS 列表（时钟速率位图）、7.2.23 HB-PHY MCS 列表（带宽位图）、7.2.24 MCS 请求（PHY ID 选择器；表 6）、7.2.25 PM-PHY MCS（MCS ID）、7.2.26 HB-PHY MCS（BAT：有效 BAT 位图、更新 BAT、FEC 块大小/码率、BAT 分组）。属性/干扰/MIMO——7.2.27 属性更改请求（属性 ID + 新值；表 7）、7.2.28 属性更改响应（+ 状态；表 8）、7.2.29 干扰通知（信号功率、可解码、外来 OWPAN ID/地址）、7.2.30 显式 MIMO 反馈（OFE 数量、抽头格式、噪声基底、OFE 反馈描述符；表 9）。",
+      "cite": {
+        "pdf_id": "8021513-2023",
+        "pages": [
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021513-2023",
+      "pages": [
+        66,
+        67
+      ],
+      "note": "7.2.1 Overview, parsing rules, and Table 2 listing every element ID and the procedure it serves."
+    },
+    {
+      "pdf_id": "8021513-2023",
+      "pages": [
+        68,
+        69,
+        70,
+        71,
+        72
+      ],
+      "note": "7.2.2-7.2.15: container elements, scheduled-access elements (Sync, RTS/GTS, Queue Report), and polled-access elements."
+    },
+    {
+      "pdf_id": "8021513-2023",
+      "pages": [
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82
+      ],
+      "note": "7.2.16-7.2.30: OWPAN management, capability/MCS elements, attribute change, interference notification, explicit MIMO feedback."
+    }
+  ],
+  "covers": [
+    "8021513-2023:7.2.1",
+    "8021513-2023:7.2.2",
+    "8021513-2023:7.2.3",
+    "8021513-2023:7.2.4",
+    "8021513-2023:7.2.5",
+    "8021513-2023:7.2.6",
+    "8021513-2023:7.2.7",
+    "8021513-2023:7.2.8",
+    "8021513-2023:7.2.9",
+    "8021513-2023:7.2.10",
+    "8021513-2023:7.2.11",
+    "8021513-2023:7.2.12",
+    "8021513-2023:7.2.13",
+    "8021513-2023:7.2.14",
+    "8021513-2023:7.2.15",
+    "8021513-2023:7.2.16",
+    "8021513-2023:7.2.17",
+    "8021513-2023:7.2.18",
+    "8021513-2023:7.2.19",
+    "8021513-2023:7.2.20",
+    "8021513-2023:7.2.21",
+    "8021513-2023:7.2.22",
+    "8021513-2023:7.2.23",
+    "8021513-2023:7.2.24",
+    "8021513-2023:7.2.25",
+    "8021513-2023:7.2.26",
+    "8021513-2023:7.2.27",
+    "8021513-2023:7.2.28",
+    "8021513-2023:7.2.29",
+    "8021513-2023:7.2.30"
+  ],
+  "track": "pan-optical"
+}

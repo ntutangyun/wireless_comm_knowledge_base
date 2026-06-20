@@ -1,0 +1,200 @@
+{
+  "id": "pan-hr-wpan-25",
+  "title": {
+    "en": "Reading an HR-WPAN MAC Frame: Conventions, the General Header, and Frame Types",
+    "zh": "读懂 HR-WPAN MAC 帧：约定、通用帧头与各类帧格式"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.15.3-2016 defines a high-rate wireless personal area network (HR-WPAN) — short-range, high-throughput links between devices (DEVs) coordinated by a piconet coordinator (PNC). Clause 6 is the rulebook for how every byte on the air is laid out. This lesson walks the first part of that clause: the drawing conventions (6.1), the one general frame layout shared by all frames (6.2), and the specific shape each frame type takes (6.3). Master this and you can decode any 802.15.3 frame field-by-field.",
+      "zh": "IEEE Std 802.15.3-2016 定义了一种高速率无线个域网（HR-WPAN）——由微微网协调器（PNC）统一调度、在各设备（DEV）之间建立的短距离高吞吐链路。第 6 章是空口上每个字节如何排布的规则手册。本课讲解该章的第一部分：图示约定（6.1）、所有帧共用的通用帧格式（6.2），以及各帧类型各自的具体形态（6.3）。掌握后，你便能逐字段解码任意一个 802.15.3 帧。"
+    },
+    {
+      "type": "prose",
+      "en": "6.1 (Frame format conventions) fixes how to read every figure in the clause. Fields are drawn left-to-right in transmission order: the leftmost bit goes on the air first. Within a field, bits number from 0 (left) to k (right) for a (k+1)-bit field, and multi-octet numeric fields are shown least-significant octet first. The payload is sent lowest-octet-first, least-significant-bit (LSB) first. The frame check sequence (FCS) is the lone exception — it goes most-significant-bit (MSB) first. The header check sequence (HCS) is computed and verified entirely by the PHY, so the MAC never sees it; the MAC's job is to re-validate the whole frame with the FCS.",
+      "zh": "6.1（帧格式约定）规定了阅读本章所有图示的方式。字段按发送顺序自左向右绘制：最左边的比特最先上空口。在一个字段内，比特从 0（左）编号到 k（右），表示该字段长 k+1 比特；多字节的数值字段以最低有效字节在前的方式绘制。负载按最低字节在前、最低有效位（LSB）在前发送。帧校验序列（FCS）是唯一的例外——它以最高有效位（MSB）在前发送。帧头校验序列（HCS）完全由物理层（PHY）计算并校验，MAC 层从不接触它；MAC 的任务是用 FCS 重新校验整帧。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 80\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"8\" y=\"24\" width=\"70\" height=\"32\"/><rect x=\"78\" y=\"24\" width=\"70\" height=\"32\"/><rect x=\"148\" y=\"24\" width=\"40\" height=\"32\"/><rect x=\"188\" y=\"24\" width=\"40\" height=\"32\"/><rect x=\"228\" y=\"24\" width=\"90\" height=\"32\"/><rect x=\"318\" y=\"24\" width=\"45\" height=\"32\"/><rect x=\"363\" y=\"24\" width=\"190\" height=\"32\"/><rect x=\"553\" y=\"24\" width=\"60\" height=\"32\"/><text x=\"43\" y=\"44\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">Frame Control</text><text x=\"113\" y=\"44\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">PNID</text><text x=\"168\" y=\"44\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">DestID</text><text x=\"208\" y=\"44\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">SrcID</text><text x=\"273\" y=\"40\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\">Fragmentation</text><text x=\"273\" y=\"50\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\">Control</text><text x=\"340\" y=\"40\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\">Stream</text><text x=\"340\" y=\"50\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\">Index</text><text x=\"458\" y=\"44\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">Frame Payload</text><text x=\"583\" y=\"44\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">FCS</text><text x=\"43\" y=\"18\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\">2</text><text x=\"113\" y=\"18\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\">2</text><text x=\"168\" y=\"18\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\">1</text><text x=\"208\" y=\"18\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\">1</text><text x=\"273\" y=\"18\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\">3</text><text x=\"340\" y=\"18\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\">1</text><text x=\"458\" y=\"18\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\">variable</text><text x=\"583\" y=\"18\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\">0 or 4</text><text x=\"168\" y=\"72\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\">MAC Header</text><text x=\"488\" y=\"72\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\">MAC Frame Body</text></svg>",
+      "caption": {
+        "en": "The general MAC frame (6.2): a fixed-order 7-octet header (Frame Control, PNID, DestID, SrcID, Fragmentation Control, Stream Index) followed by a variable MAC Frame Body (Frame Payload + FCS). Numbers above each field are octet counts. Redrawn from Figure 6-3.",
+        "zh": "通用 MAC 帧（6.2）：固定顺序的 7 字节帧头（Frame Control、PNID、DestID、SrcID、分片控制、流索引），后接可变长的 MAC 帧体（帧负载 + FCS）。各字段上方数字为字节数。改绘自图 6-3。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "6.2 (General frame format) says every frame uses this same skeleton. The MAC header is always 7 octets: a 2-octet Frame Control field (6.2.1), a 2-octet Piconet ID (PNID) field (6.2.2) identifying which piconet the frame belongs to, 1-octet DestID and 1-octet SrcID fields (6.2.3) carrying the destination and source device IDs (DEVIDs) the PNC assigns at association, a 3-octet Fragmentation Control field (6.2.4), and a 1-octet Stream Index field (6.2.5). The Frame Control field packs the control bits: a 3-bit Protocol Version (6.2.1.1, currently 0b000), a 3-bit Frame Type (6.2.1.2), the SEC bit (6.2.1.3) that switches on secure framing, the acknowledgment-policy bits (6.2.1.4), Retry (6.2.1.5), More Data (6.2.1.6), the Imp-ACK NAK bit (6.2.1.7) for negative-acknowledging a payload whose FCS failed, and the CTA Relinquish bit (6.2.1.8) for handing back a channel time allocation (CTA).",
+      "zh": "6.2（通用帧格式）规定每个帧都使用这套相同骨架。MAC 帧头恒为 7 字节：2 字节的帧控制字段（6.2.1）、2 字节的微微网标识（PNID）字段（6.2.2，标明该帧属于哪个微微网）、各 1 字节的 DestID 与 SrcID 字段（6.2.3，承载 PNC 在关联时分配的目的与源设备标识 DEVID）、3 字节的分片控制字段（6.2.4），以及 1 字节的流索引字段（6.2.5）。帧控制字段把各控制位打包在一起：3 比特协议版本（6.2.1.1，当前为 0b000）、3 比特帧类型（6.2.1.2）、开启安全帧格式的 SEC 位（6.2.1.3）、确认策略位（6.2.1.4）、重传位 Retry（6.2.1.5）、More Data 位（6.2.1.6）、用于对 FCS 校验失败负载作否定确认的 Imp-ACK NAK 位（6.2.1.7），以及用于交还信道时间分配（CTA）所有权的 CTA Relinquish 位（6.2.1.8）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "DEVIDs (6.2.3) are 1-octet handles, not full 48-bit addresses. Some are reserved: 0x00 is the PNC (PNCID), 0xFD is the multicast ID (McstID), 0xFE is the unassociated ID (UnassocID), and 0xFF is the broadcast ID (BcstID). The Stream Index (6.2.5) is similar: 0x00 means asynchronous data, 0xFD means MCTA (management CTA) traffic, and the PNC dynamically assigns the rest per isochronous (time-scheduled) stream.",
+      "zh": "DEVID（6.2.3）是 1 字节的句柄，而非完整的 48 位地址。部分取值被保留：0x00 是 PNC（PNCID），0xFD 是组播标识（McstID），0xFE 是未关联标识（UnassocID），0xFF 是广播标识（BcstID）。流索引（6.2.5）类似：0x00 表示异步数据，0xFD 表示 MCTA（管理用 CTA）流量，其余值由 PNC 为每条等时（按时间调度的）流动态分配。"
+    },
+    {
+      "type": "prose",
+      "en": "The MAC Frame Body (6.2.7) is what rides after the header. In the clear (SEC = 0) it is simply the Frame Payload (6.2.7.1) plus a 4-octet FCS (6.2.7.6) — a 32-bit CRC over the payload, omitted entirely on zero-length frames like an immediate ACK. When SEC = 1, the body becomes the secure form: a Secure session ID (SECID, 6.2.7.2) naming the key, a Secure Frame Counter (SFC, 6.2.7.3) guaranteeing a unique nonce, the encrypted Secure Payload (6.2.7.4), an 8-octet Integrity Code (6.2.7.5) protecting header and payload, then the FCS. MAC header validation (6.2.6) is the PHY-side HCS check that gates whether a frame even reaches the MAC — its length and bit order are PHY-dependent.",
+      "zh": "MAC 帧体（6.2.7）跟在帧头之后。在明文情况下（SEC = 0），它就是帧负载（6.2.7.1）加 4 字节 FCS（6.2.7.6）——一个对负载计算的 32 位 CRC，对像立即确认这样的零长度帧则完全省略。当 SEC = 1 时，帧体变为安全形式：指明密钥的安全会话标识（SECID，6.2.7.2）、保证 nonce 唯一性的安全帧计数器（SFC，6.2.7.3）、加密后的安全负载（6.2.7.4）、保护帧头与负载的 8 字节完整性码（6.2.7.5），最后是 FCS。MAC 帧头校验（6.2.6）是物理层一侧的 HCS 检查，决定一个帧能否到达 MAC——其长度与比特顺序均与 PHY 相关。"
+    },
+    {
+      "type": "prose",
+      "en": "Two heavier body shapes exist for high-rate aggregation. 6.2.8 (SC and HSI aggregated frame format) bundles many subframes behind a MAC Subheader and supports two flavors — standard aggregation (a Blk-ACK Bitmap plus up to 8 per-subframe Subheaders and an RX Buffer Size byte) and low-latency aggregation (a windowed MSDU request/response numbering scheme with a large Blk-ACK bitmap) — each with non-secure and secure variants. 6.2.9 (AV aggregated frame format) is tuned for uncompressed audio/video: an Extended MAC Header (6.2.9.1) replaces the plain header and carries an Extended Control Header (6.2.9.1.1), an optional MAC Extension Header (6.2.9.1.2), a Security Header (6.2.9.1.3), and a Video Header (6.2.9.1.4), with one to seven subframes following.",
+      "zh": "为高速率聚合还存在两种更重的帧体形态。6.2.8（SC 与 HSI 聚合帧格式）在一个 MAC 子帧头后捆绑多个子帧，并支持两种风格——标准聚合（一个 Blk-ACK 位图加上至多 8 个逐子帧的子帧头及一个 RX 缓冲区大小字节）与低时延聚合（一种带窗口的 MSDU 请求/响应编号方案，配以较大的 Blk-ACK 位图）——每种都有非安全与安全两个变体。6.2.9（AV 聚合帧格式）专为未压缩音视频调优：一个扩展 MAC 帧头（6.2.9.1）取代普通帧头，携带扩展控制帧头（6.2.9.1.1）、可选的 MAC 扩展帧头（6.2.9.1.2）、安全帧头（6.2.9.1.3）与视频帧头（6.2.9.1.4），其后跟随一到七个子帧。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[MAC frame] --> B[Header: 7 octets]\n  A --> C[MAC Frame Body]\n  C --> D{SEC bit?}\n  D -->|0| E[Frame Payload + FCS]\n  D -->|1| F[SECID + SFC + Secure Payload + Integrity Code + FCS]\n  C --> G{Aggregated?}\n  G -->|SC/HSI| H[6.2.8 Subheader + subframes]\n  G -->|Audio/Video| I[6.2.9 Extended Header + subframes]",
+      "zh": "flowchart TD\n  A[MAC 帧] --> B[帧头: 7 字节]\n  A --> C[MAC 帧体]\n  C --> D{SEC 位?}\n  D -->|0| E[帧负载 + FCS]\n  D -->|1| F[SECID + SFC + 安全负载 + 完整性码 + FCS]\n  C --> G{是否聚合?}\n  G -->|SC/HSI| H[6.2.8 子帧头 + 子帧]\n  G -->|音/视频| I[6.2.9 扩展帧头 + 子帧]"
+    },
+    {
+      "type": "prose",
+      "en": "6.3 (Format of individual frame types) fills the general body with concrete content per Frame Type. 6.3.1 (Beacon frame) is the PNC's heartbeat: its payload opens with a 19-octet Piconet Synchronization Parameters field (Time Token, Superframe Duration, CAP End Time, Max TX Power Level, Piconet Mode, PNC Response, PNC Address) followed by information elements (IEs), with a non-secure form (6.3.1.1) and a secure form (6.3.1.2). 6.3.2 (Acknowledgment frames) covers the Imm-ACK frame (6.3.2.1) — header only, no payload and no FCS — and the Delayed ACK (Dly-ACK) frame (6.3.2.2), which batches acknowledgments using Max Burst, Max Frames, MPDUs ACKed, and a list of MPDU ID Blocks.",
+      "zh": "6.3（各帧类型格式）按帧类型为通用帧体填入具体内容。6.3.1（信标帧）是 PNC 的心跳：其负载以 19 字节的微微网同步参数字段开头（时间令牌、超帧时长、CAP 结束时间、最大发射功率电平、微微网模式、PNC 响应、PNC 地址），后接信息元素（IE），分非安全形式（6.3.1.1）与安全形式（6.3.1.2）。6.3.2（确认帧）涵盖立即确认帧 Imm-ACK（6.3.2.1）——只有帧头、无负载也无 FCS——以及延迟确认帧 Dly-ACK（6.3.2.2），后者用 Max Burst、Max Frames、MPDUs ACKed 字段及一串 MPDU ID Block 来批量确认。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining types carry application content. 6.3.3 (Command frame) wraps a Command Block (Command Type, Length, Payload) and exists non-secure (6.3.3.1) and secure (6.3.3.2). 6.3.4 (Data frame) is the workhorse: a non-secure form (6.3.4.1) is just Data Payload plus optional FCS — a zero-length null data frame is allowed — and a secure form (6.3.4.2) wraps the payload in SECID/SFC/Integrity Code. 6.3.5 (Multi-protocol Data frame) adds a Data ID and Data Header so one piconet can carry several upper-layer protocols (e.g. Data ID 0x00 selects an Ethertype-style header with destination/source addresses), again in non-secure (6.3.5.1) and secure (6.3.5.2) forms. 6.3.6 (Sync frame) carries Synchronization Parameters plus CTA Blocks to keep dependent devices aligned to the superframe.",
+      "zh": "其余类型承载应用内容。6.3.3（命令帧）封装一个命令块（命令类型、长度、负载），分非安全（6.3.3.1）与安全（6.3.3.2）两种。6.3.4（数据帧）是主力：非安全形式（6.3.4.1）仅为数据负载加可选 FCS——允许零长度的空数据帧——安全形式（6.3.4.2）则用 SECID/SFC/完整性码包裹负载。6.3.5（多协议数据帧）增加 Data ID 与数据帧头，使一个微微网可承载多种上层协议（例如 Data ID 取 0x00 时选用类以太网类型的帧头，带目的/源地址），同样分非安全（6.3.5.1）与安全（6.3.5.2）形式。6.3.6（同步帧）携带同步参数及若干 CTA 块，使从属设备与超帧保持对齐。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause in this lesson, by page",
+        "zh": "覆盖映射——本课每个条款及其页码"
+      },
+      "en": "Conventions and general format: 6.1 frame format conventions (FCS/HCS bit order, reserved-field rules), p.95-96. 6.2.1 Frame Control field and its subfields — Protocol Version, Frame Type (Table 6-1), SEC, ACK-policy/Imp-ACK/Blk-ACK (Table 6-2), Retry, More Data, Imp-ACK NAK, CTA Relinquish, p.97-99. 6.2.2 PNID, 6.2.3 SrcID/DestID (DEVID reservations), 6.2.4 Fragmentation Control (MSDU Number, Fragment Number, Last Fragment Number), 6.2.5 Stream Index, 6.2.6 MAC header validation, p.100-101. 6.2.7 MAC Frame Body — Frame Payload, SECID, SFC, Secure Payload, Integrity Code, FCS (CRC-32 generator polynomial), p.102-103. 6.2.8 SC/HSI aggregation — standard (non-secure p.103-105, secure p.106) and low-latency (non-secure p.106-109, secure p.109). 6.2.9 AV aggregation — Extended MAC Header with Extended Control Header, MAC Extension Header, Security Header, Video Header, p.110-113. Individual types: 6.3.1 Beacon (non-secure p.117-119, secure p.119-120), 6.3.2 Acknowledgment — Imm-ACK and Dly-ACK, p.120-122; 6.3.3 Command (non-secure/secure) p.122-123; 6.3.4 Data (non-secure/secure) p.124; 6.3.5 Multi-protocol Data (Data ID table) p.125-126; 6.3.6 Sync frame p.126.",
+      "zh": "约定与通用格式：6.1 帧格式约定（FCS/HCS 比特顺序、保留字段规则），第 95-96 页。6.2.1 帧控制字段及其子字段——协议版本、帧类型（表 6-1）、SEC、ACK 策略/Imp-ACK/Blk-ACK（表 6-2）、Retry、More Data、Imp-ACK NAK、CTA Relinquish，第 97-99 页。6.2.2 PNID、6.2.3 SrcID/DestID（DEVID 保留值）、6.2.4 分片控制（MSDU 编号、分片编号、末分片编号）、6.2.5 流索引、6.2.6 MAC 帧头校验，第 100-101 页。6.2.7 MAC 帧体——帧负载、SECID、SFC、安全负载、完整性码、FCS（CRC-32 生成多项式），第 102-103 页。6.2.8 SC/HSI 聚合——标准（非安全第 103-105 页，安全第 106 页）与低时延（非安全第 106-109 页，安全第 109 页）。6.2.9 AV 聚合——扩展 MAC 帧头含扩展控制帧头、MAC 扩展帧头、安全帧头、视频帧头，第 110-113 页。各帧类型：6.3.1 信标（非安全第 117-119 页，安全第 119-120 页）、6.3.2 确认——Imm-ACK 与 Dly-ACK，第 120-122 页；6.3.3 命令（非安全/安全）第 122-123 页；6.3.4 数据（非安全/安全）第 124 页；6.3.5 多协议数据（Data ID 表）第 125-126 页；6.3.6 同步帧第 126 页。",
+      "cite": {
+        "pdf_id": "802153-2016",
+        "pages": [
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          110,
+          111,
+          112,
+          113,
+          117,
+          118,
+          119,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125,
+          126
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A reading strategy for any 802.15.3 frame: read the 7-octet header first, decode Frame Type (6.2.1.2, Table 6-1) and the SEC bit (6.2.1.3). Frame Type tells you which 6.3 subclause defines the body; SEC tells you whether to expect the secure layout (SECID + SFC + Integrity Code) or the plain one. Then the figures in 6.2.7/6.3 give you the exact field order.",
+      "zh": "解读任意 802.15.3 帧的策略：先读 7 字节帧头，解码帧类型（6.2.1.2，表 6-1）与 SEC 位（6.2.1.3）。帧类型告诉你帧体由 6.3 的哪一小节定义；SEC 位告诉你应预期安全布局（SECID + SFC + 完整性码）还是明文布局。随后 6.2.7/6.3 中的图示给出精确的字段顺序。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        95,
+        96
+      ],
+      "note": "6.1 frame format conventions; FCS/HCS ordering; reserved-field rules; EUI-48 addressing"
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        97,
+        98,
+        99
+      ],
+      "note": "6.2 general frame format (Fig 6-3); 6.2.1 Frame Control field and subfields; Frame Type Table 6-1; ACK policy Table 6-2"
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        100,
+        101
+      ],
+      "note": "6.2.2 PNID; 6.2.3 SrcID/DestID DEVID reservations; 6.2.4 Fragmentation Control; 6.2.5 Stream Index; 6.2.6 MAC header validation"
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        102,
+        103
+      ],
+      "note": "6.2.7 MAC Frame Body fields (Frame Payload, SECID, SFC, Secure Payload, Integrity Code, FCS); 6.2.8 SC/HSI standard aggregation begins"
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        104,
+        105,
+        106,
+        107,
+        108,
+        109
+      ],
+      "note": "6.2.8 standard and low-latency aggregation, non-secure and secure forms"
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        110,
+        111,
+        112,
+        113
+      ],
+      "note": "6.2.9 AV aggregated frame format; Extended MAC Header, Extended Control Header, MAC Extension Header, Security Header, Video Header"
+    },
+    {
+      "pdf_id": "802153-2016",
+      "pages": [
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126
+      ],
+      "note": "6.3 individual frame types: Beacon, Imm-ACK/Dly-ACK, Command, Data, Multi-protocol Data, Sync"
+    }
+  ],
+  "covers": [
+    "802153-2016:6.1",
+    "802153-2016:6.2.1",
+    "802153-2016:6.2.2",
+    "802153-2016:6.2.3",
+    "802153-2016:6.2.4",
+    "802153-2016:6.2.5",
+    "802153-2016:6.2.6",
+    "802153-2016:6.2.7",
+    "802153-2016:6.2.8",
+    "802153-2016:6.2.9",
+    "802153-2016:6.3.1",
+    "802153-2016:6.3.2",
+    "802153-2016:6.3.3",
+    "802153-2016:6.3.4",
+    "802153-2016:6.3.5",
+    "802153-2016:6.3.6"
+  ],
+  "track": "pan-hr-wpan"
+}

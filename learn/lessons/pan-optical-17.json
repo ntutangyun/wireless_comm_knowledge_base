@@ -1,0 +1,185 @@
+{
+  "id": "pan-optical-17",
+  "title": {
+    "en": "Inside the 802.15.13 MAC, Part 1: Device Functions, Medium Access, and Network Management",
+    "zh": "深入 802.15.13 MAC（上）：设备功能、介质访问与网络管理"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.15.13-2023 is an optical wireless standard: devices talk by blinking LEDs and sensing light, not by transmitting radio. Clause 6 specifies the MAC (medium access control) sublayer — the rulebook that decides who gets to flash light, when, and how a stream of bytes becomes a frame on the wire. A network in this standard is an OWPAN (optical wireless personal area network); one device acts as the coordinator and the others are members. This lesson walks through the first half of Clause 6: the everyday device functions (6.2), the two ways the MAC shares the optical medium (6.3 scheduled, 6.4 polled), the lifecycle of joining and leaving a network (6.5), and how a big frame is sliced up (6.6).",
+      "zh": "IEEE Std 802.15.13-2023 是一项光无线通信标准：设备通过闪烁 LED、感知光线来通信，而不是发射无线电波。第 6 章规定了 MAC（介质访问控制，medium access control）子层——它是一套规则手册，决定谁可以发光、何时发光，以及一串字节如何变成线路上的帧。该标准中的网络称为 OWPAN（光无线个域网，optical wireless personal area network）；其中一个设备充当协调器（coordinator），其余设备是成员（member）。本课讲解第 6 章的前半部分：日常的设备功能（6.2）、MAC 共享光介质的两种方式（6.3 调度式、6.4 轮询式）、加入和离开网络的生命周期（6.5），以及如何把大帧切片（6.6）。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the common machinery in 6.2. Every device has a 48-bit EUI-48 MAC address (the all-ones value FF-FF-FF-FF-FF-FF is the broadcast address), and on joining it also gets a short AID (association identifier); AID 0x0000 is reserved for the coordinator, and the OWPAN's identity (OWPAN ID) is simply the coordinator's MAC address (6.2.2). Transmitting an MPDU (MAC protocol data unit — a MAC-layer frame) means building the header, capping its size to the PHY limit and the available airtime, optionally aggregating or fragmenting, stamping a sequence number, then handing it to the PHY as a PPDU after waiting at least the MIFS (minimum interframe space) (6.2.3). Receiving (6.2.4) reverses this: check the FCS (frame check sequence) and drop corrupted frames, drop frames addressed to others, discard duplicates (same sequence and fragment number), and acknowledge anything that asked for it.",
+      "zh": "先看 6.2 中的通用机制。每个设备都有一个 48 位的 EUI-48 MAC 地址（全 1 值 FF-FF-FF-FF-FF-FF 是广播地址），加入网络时还会获得一个短的 AID（关联标识符，association identifier）；AID 0x0000 保留给协调器，而 OWPAN 的身份（OWPAN ID）就是协调器的 MAC 地址（6.2.2）。发送一个 MPDU（MAC 协议数据单元，即 MAC 层的帧）意味着：构建帧头、把大小限制在 PHY 上限和可用空口时间之内、可选地聚合或分片、打上序列号，然后在等待至少 MIFS（最小帧间隔，minimum interframe space）后作为 PPDU 交给 PHY（6.2.3）。接收（6.2.4）则是反过来：校验 FCS（帧校验序列，frame check sequence）并丢弃损坏的帧、丢弃发给他人的帧、丢弃重复帧（序列号与分片号相同），并对任何请求确认的帧回送应答。"
+    },
+    {
+      "type": "prose",
+      "en": "Two more 6.2 pieces complete the basics. Sequence numbering (6.2.5) keeps a 12-bit counter per peer, starting at zero and wrapping around, so a receiver can spot losses and duplicates; control frames are exempt. Transmission of management information (6.2.6) wraps management elements in a Management Procedure Container that carries a monotonically increasing Invocation ID, so a request and its response can be matched even when several procedures run at once.",
+      "zh": "6.2 还有两个部分补全了基础。序列号编号（6.2.5）为每个对端维护一个 12 位计数器，从零开始并循环回绕，使接收方能识别丢失和重复；控制帧除外。管理信息的传输（6.2.6）把管理元素包裹在一个“管理过程容器（Management Procedure Container）”里，该容器携带一个单调递增的调用 ID（Invocation ID），这样即使同时运行多个过程，也能把请求与其响应配对起来。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the heart of the chapter: how the MAC shares the medium. 802.15.13 offers two modes. The first is scheduled medium access (6.3). Time is cut into superframes, each a fixed number of superframe slots; the coordinator's scheduler hands out groups of slots called time slices. A slice can be unassigned (silence), assigned as a GTS (guaranteed time slice — a contention-free slot a single device owns, TDMA-style), or designated as an RTS (random time slice — a contended window for devices with no GTS yet) (6.3.1, 6.3.2). Because light is directional, the coordinator can even reuse the same slots for members served by spatially separated OFEs (optical front-ends), boosting capacity (6.3.6).",
+      "zh": "现在进入本章的核心：MAC 如何共享介质。802.15.13 提供两种模式。第一种是调度式介质访问（6.3）。时间被切成超帧（superframe），每个超帧含固定数量的超帧时隙（superframe slot）；协调器的调度器分发成组的时隙，称为时间片（time slice）。一个时间片可以是未分配的（保持静默）、分配为 GTS（保证时间片，guaranteed time slice——单个设备独占的无竞争时隙，类似 TDMA），或指定为 RTS（随机时间片，random time slice——供尚无 GTS 的设备竞争的窗口）（6.3.1、6.3.2）。由于光是有方向性的，协调器甚至可以为由空间分离的 OFE（光前端，optical front-end）服务的成员复用同一批时隙，从而提升容量（6.3.6）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Superframe begins] --> B[Coordinator GTS]\n  B --> C[Member A GTS]\n  C --> D[Member B GTS]\n  D --> E[RTS: random access]\n  E --> F[Unassigned: silence]\n  F --> G[Next superframe]\n  E -.slotted ALOHA.-> E",
+      "zh": "flowchart TD\n  A[超帧开始] --> B[协调器 GTS]\n  B --> C[成员 A 的 GTS]\n  C --> D[成员 B 的 GTS]\n  D --> E[RTS：随机接入]\n  E --> F[未分配：静默]\n  F --> G[下一个超帧]\n  E -.分时 ALOHA.-> E"
+    },
+    {
+      "type": "prose",
+      "en": "Scheduled mode only works if everyone shares a clock. Synchronization (6.3.3) uses the Sync element: the coordinator broadcasts it at least every aMaxSyncInterval, and members treat the start of that PPDU's preamble as the start of the slot named in the Sync element, then align their local clock and superframe counter to it. Inside an RTS, devices use slotted ALOHA with a binary-exponential backoff: pick a random number of RANDOPs (random access opportunities) from [0, CW], count them down, then transmit; on failure, double the contention window CW and retry (6.3.4). RTS is reserved for two jobs — the association procedure (6.3.4.3) and the queue report procedure (6.3.4.4, asking the coordinator for more GTS time). Inside a GTS, access is pure TDMA: the owning device transmits freely but must stop at least one MIFS before the slice ends (6.3.5). Because real clocks drift, the coordinator inserts a guard time between adjacent GTS, sized to twice the maximum drift plus the front-end's sync accuracy, so neighbors never collide (6.3.7).",
+      "zh": "调度模式只有在所有人共享时钟时才能工作。同步（6.3.3）使用 Sync 元素：协调器至少每隔 aMaxSyncInterval 广播一次，成员把该 PPDU 前导码的起始时刻当作 Sync 元素所指定时隙的起点，然后据此对齐本地时钟和超帧计数器。在 RTS 内，设备使用分时 ALOHA 加二进制指数退避：从 [0, CW] 中选取一个随机数量的 RANDOP（随机接入机会，random access opportunity），倒数完毕后再发送；失败时把竞争窗口 CW 翻倍并重试（6.3.4）。RTS 仅用于两项工作——关联过程（6.3.4.3）和队列报告过程（6.3.4.4，向协调器请求更多 GTS 时间）。在 GTS 内，访问是纯 TDMA：拥有该时隙的设备可自由发送，但必须在时间片结束前至少留出一个 MIFS（6.3.5）。由于真实时钟会漂移，协调器在相邻 GTS 之间插入一段保护时间（guard time），其大小为最大漂移的两倍加上前端的同步精度，使相邻者永不冲突（6.3.7）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: a GTS is a private reserved parking spot (no one else may park, so no collisions), while an RTS is a shared lot where you wait a random while before pulling in — and if you find it full, you wait twice as long next time. Both live inside the same repeating superframe.",
+      "zh": "记忆模型：GTS 像一个私人预留车位（别人不能停，所以不会碰撞），而 RTS 像一个公共停车场，你要随机等一会儿才驶入——若发现满了，下次就等两倍的时间。两者都存在于同一个不断重复的超帧之内。"
+    },
+    {
+      "type": "prose",
+      "en": "The second mode is polled medium access (6.4). Here the coordinator is firmly in charge and asks each device to speak in turn, which removes most contention. A full cycle has two periods (6.4.1). In the RAPP (random access polling period, 6.4.3), the coordinator sends a Random Access element; not-yet-associated devices answer with a Random Access Response element. Collisions are possible here, so a device that isn't polled next assumes its response was lost, picks a random backoff N between 1 and 5, and retries after N cycles. In the DPP (dedicated polling period, 6.4.4), the coordinator sends a Poll element to one device at a time; the device replies with a Poll Response and may append one queued data frame. Since the coordinator never polls two devices at once, there are no collisions in the DPP. The default is half-duplex, but if capFullDuplex was negotiated at association, a device can transmit and receive simultaneously (6.4.2).",
+      "zh": "第二种模式是轮询式介质访问（6.4）。这里协调器牢牢掌控，依次让每个设备发言，从而消除了大部分竞争。一个完整周期含两个时段（6.4.1）。在 RAPP（随机接入轮询时段，random access polling period，6.4.3）中，协调器发送一个 Random Access 元素；尚未关联的设备用 Random Access Response 元素应答。此处可能发生碰撞，因此下一轮没被轮询到的设备会假定自己的响应已丢失，选取一个 1 到 5 之间的随机退避值 N，并在 N 个周期后重试。在 DPP（专用轮询时段，dedicated polling period，6.4.4）中，协调器每次只向一个设备发送 Poll 元素；该设备回送 Poll Response，并可附带一个排队中的数据帧。由于协调器从不同时轮询两个设备，DPP 内不会发生碰撞。默认是半双工，但若在关联时协商了 capFullDuplex，设备可同时发送和接收（6.4.2）。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant C as Coordinator\n  participant D as Device\n  Note over C,D: RAPP\n  C->>D: Random Access element\n  D->>C: Random Access Response\n  Note over C,D: DPP\n  C->>D: Poll element\n  D->>C: Poll Response + data\n  C->>D: ACK",
+      "zh": "sequenceDiagram\n  participant C as 协调器\n  participant D as 设备\n  Note over C,D: RAPP\n  C->>D: Random Access 元素\n  D->>C: Random Access Response\n  Note over C,D: DPP\n  C->>D: Poll 元素\n  D->>C: Poll Response + 数据\n  C->>D: ACK"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.5 is the network lifecycle. Scanning (6.5.2) is passive only — since the whole standard uses a single optical baseband channel, a device just listens, collecting any Announcement elements and noting strong-but-undecodable signals as interference. Starting an OWPAN (6.5.3): a coordinator-capable device receives an MLME-START.request, scans first, and only proceeds if no other network is found, then begins broadcasting Announcement elements (the optical equivalent of a beacon). Maintaining (6.5.4) lets the coordinator push configuration to members via Attribute Change Request elements; stopping (6.5.5) disassociates everyone and resets state. Associating (6.5.6) is a request/response handshake driven by MLME primitives: the member sends an Association Request (in an RTS, since it has no GTS yet), the coordinator replies with an Association Response carrying the assigned AID, the negotiated capabilities, and the supported MCSs (modulation and coding schemes). Disassociation can be initiated by either side (6.5.7) or happen automatically on a macDeviceTimeout (6.5.8) — which is why members send a keepalive, even an empty Null element, if they have nothing else to say.",
+      "zh": "第 6.5 节是网络生命周期。扫描（6.5.2）只能是被动的——由于整个标准只使用单一光基带信道，设备只需监听，收集任何 Announcement 元素，并把强但无法解码的信号记为干扰。启动 OWPAN（6.5.3）：具备协调器能力的设备收到 MLME-START.request，先扫描，仅在未发现其他网络时才继续，随后开始广播 Announcement 元素（相当于光域的信标）。维护（6.5.4）让协调器可通过 Attribute Change Request 元素向成员下发配置；停止（6.5.5）则解除所有成员的关联并重置状态。关联（6.5.6）是由 MLME 原语驱动的请求/响应握手：成员发送 Association Request（在 RTS 中发送，因为它还没有 GTS），协调器回送 Association Response，其中携带分配的 AID、协商后的能力以及支持的 MCS（调制与编码方案，modulation and coding scheme）。解除关联可由任一方发起（6.5.7），也可在 macDeviceTimeout 超时后自动发生（6.5.8）——这就是为什么成员即使无话可说，也要发送保活帧，哪怕是一个空的 Null 元素。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"20\" width=\"380\" height=\"26\" /><line x1=\"105\" y1=\"20\" x2=\"105\" y2=\"46\" /><line x1=\"200\" y1=\"20\" x2=\"200\" y2=\"46\" /><line x1=\"295\" y1=\"20\" x2=\"295\" y2=\"46\" /><text x=\"57\" y=\"37\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\" text-anchor=\"middle\">Frag 0</text><text x=\"152\" y=\"37\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\" text-anchor=\"middle\">Frag 1</text><text x=\"247\" y=\"37\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\" text-anchor=\"middle\">Frag 2</text><text x=\"342\" y=\"37\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\" text-anchor=\"middle\">Frag 3 (short)</text><text x=\"10\" y=\"14\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">One MPDU, same sequence number, fragment numbers 0..N-1</text><text x=\"10\" y=\"66\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">ACK only after ALL fragments arrive and reassemble</text></svg>",
+      "caption": {
+        "en": "Fragmentation (6.6): an MPDU is split into at most 16 equal-size fragments (the last may be shorter), all sharing one sequence number, numbered 0 to N-1 with the last carrying the Last Fragment value. The receiver acknowledges only the reassembled whole.",
+        "zh": "分片（6.6）：一个 MPDU 最多被切成 16 个等大小的分片（最后一个可较短），它们共享同一个序列号，编号从 0 到 N-1，最后一个携带 Last Fragment 值。接收方只对重组完成的整体进行确认。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every Clause 6 (part 1) unit and where it lives",
+        "zh": "覆盖图——第 6 章（上）每个条目及其归属"
+      },
+      "en": "6.1 Overview lists the MAC's responsibilities (access, OWPAN start/maintain, association, fragmentation, data transfer). General device functions: 6.2.1 General (transmit/receive scope), 6.2.2 Addressing (EUI-48, broadcast FF-FF-FF-FF-FF-FF, AID table, OWPAN ID = coordinator address), 6.2.3 Transmitting an MPDU (header build, size caps, MIFS), 6.2.4 Receiving an MPDU (FCS check, duplicate detection, ACK), 6.2.5 Sequence numbering (12-bit per-peer counter), 6.2.6 Transmission of management information (Management Procedure Container, Invocation ID). Scheduled medium access: 6.3.1 Overview, 6.3.2 Superframe structure (slots, unassigned/GTS/RTS states), 6.3.3 Synchronization (Sync element, aMaxSyncInterval), 6.3.4 medium access in RTS (slotted ALOHA, RANDOPs, CW backoff; sub-procedures association 6.3.4.3 and queue report 6.3.4.4), 6.3.5 Medium access in GTS (TDMA, finish before MIFS), 6.3.6 GTS allocation and assignment (coordinator-only, spatial reuse, GTS Descriptor), 6.3.7 Guard time (drift-based sizing). Polled medium access: 6.4.1 Overview (RAPP+DPP cycle), 6.4.2 Medium access duplex (half vs capFullDuplex), 6.4.3 RAPP (Random Access element, backoff N=1..5), 6.4.4 DPP (Poll/Poll Response, macDeviceTimeout, Cycle Interval). OWPAN management: 6.5.1 Overview, 6.5.2 Scanning (passive, single channel), 6.5.3 Starting (MLME-START, scan-first), 6.5.4 Maintaining (Attribute Change Request), 6.5.5 Stopping (MLME-STOP), 6.5.6 Associating (Association Request/Response, AID, MCSs), 6.5.7 Disassociating (member or coordinator initiated), 6.5.8 Disassociation through timeout (macDeviceTimeout, Null keepalive), 6.5.9 Interference detection (capInterferenceDetection, Interference Notification). 6.6 Fragmentation (≤16 equal fragments, shared sequence number, reassembly, ACK only when whole).",
+      "zh": "6.1 概述列出 MAC 的职责（介质访问、OWPAN 启动/维护、关联、分片、数据传输）。通用设备功能：6.2.1 概述（收发范围）、6.2.2 寻址（EUI-48、广播地址 FF-FF-FF-FF-FF-FF、AID 表、OWPAN ID = 协调器地址）、6.2.3 发送 MPDU（构建帧头、大小上限、MIFS）、6.2.4 接收 MPDU（FCS 校验、重复检测、ACK）、6.2.5 序列号编号（每对端 12 位计数器）、6.2.6 管理信息的传输（管理过程容器、调用 ID）。调度式介质访问：6.3.1 概述、6.3.2 超帧结构（时隙，未分配/GTS/RTS 状态）、6.3.3 同步（Sync 元素、aMaxSyncInterval）、6.3.4 RTS 中的介质访问（分时 ALOHA、RANDOP、CW 退避；子过程含关联 6.3.4.3 与队列报告 6.3.4.4）、6.3.5 GTS 中的介质访问（TDMA、需在 MIFS 前结束）、6.3.6 GTS 分配与指派（仅协调器、空间复用、GTS 描述符）、6.3.7 保护时间（按漂移计算）。轮询式介质访问：6.4.1 概述（RAPP+DPP 周期）、6.4.2 介质访问双工（半双工与 capFullDuplex）、6.4.3 RAPP（Random Access 元素、退避 N=1..5）、6.4.4 DPP（Poll/Poll Response、macDeviceTimeout、周期间隔）。OWPAN 管理：6.5.1 概述、6.5.2 扫描（被动、单信道）、6.5.3 启动（MLME-START、先扫描）、6.5.4 维护（Attribute Change Request）、6.5.5 停止（MLME-STOP）、6.5.6 关联（Association Request/Response、AID、MCS）、6.5.7 解除关联（成员或协调器发起）、6.5.8 超时解除关联（macDeviceTimeout、Null 保活）、6.5.9 干扰检测（capInterferenceDetection、Interference Notification）。6.6 分片（≤16 个等大小分片、共享序列号、重组、整体到齐才 ACK）。",
+      "cite": {
+        "pdf_id": "8021513-2023",
+        "pages": [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021513-2023",
+      "pages": [
+        32,
+        33,
+        34,
+        35
+      ],
+      "note": "6.1 Overview and 6.2 General device functions (addressing, transmit/receive, sequence numbering, management info)"
+    },
+    {
+      "pdf_id": "8021513-2023",
+      "pages": [
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42
+      ],
+      "note": "6.3 Scheduled medium access (superframe, sync, RTS slotted ALOHA, GTS TDMA, guard time)"
+    },
+    {
+      "pdf_id": "8021513-2023",
+      "pages": [
+        42,
+        43,
+        44,
+        45
+      ],
+      "note": "6.4 Polled medium access (duplex, RAPP, DPP)"
+    },
+    {
+      "pdf_id": "8021513-2023",
+      "pages": [
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52
+      ],
+      "note": "6.5 OWPAN management (scan, start, maintain, stop, associate, disassociate, interference) and 6.6 Fragmentation"
+    }
+  ],
+  "covers": [
+    "8021513-2023:6.1",
+    "8021513-2023:6.2.1",
+    "8021513-2023:6.2.2",
+    "8021513-2023:6.2.3",
+    "8021513-2023:6.2.4",
+    "8021513-2023:6.2.5",
+    "8021513-2023:6.2.6",
+    "8021513-2023:6.3.1",
+    "8021513-2023:6.3.2",
+    "8021513-2023:6.3.3",
+    "8021513-2023:6.3.4",
+    "8021513-2023:6.3.5",
+    "8021513-2023:6.3.6",
+    "8021513-2023:6.3.7",
+    "8021513-2023:6.4.1",
+    "8021513-2023:6.4.2",
+    "8021513-2023:6.4.3",
+    "8021513-2023:6.4.4",
+    "8021513-2023:6.5.1",
+    "8021513-2023:6.5.2",
+    "8021513-2023:6.5.3",
+    "8021513-2023:6.5.4",
+    "8021513-2023:6.5.5",
+    "8021513-2023:6.5.6",
+    "8021513-2023:6.5.7",
+    "8021513-2023:6.5.8",
+    "8021513-2023:6.5.9",
+    "8021513-2023:6.6"
+  ],
+  "track": "pan-optical"
+}

@@ -1,0 +1,199 @@
+{
+  "id": "pan-802-15-33",
+  "title": {
+    "en": "L2R on the Wire: IE Frame Formats, Services, and Attributes (Clauses 6-7, Annexes A-B)",
+    "zh": "L2R 的线上格式：IE 帧格式、服务与属性（第 6-7 章、附录 A-B）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.15.10-2017 is a recommended practice that adds Layer 2 Routing (L2R) — multi-hop mesh routing — on top of the IEEE 802.15.4 MAC. The earlier clauses described *behavior* (how a mesh forms and forwards). This lesson covers the concrete *encoding*: Clause 6 defines the information elements (IEs) that L2R packs into 802.15.4 frames, Clause 7 defines the service interface a higher layer uses to drive L2R, and Annexes A and B close the document. An information element (IE) is a self-describing, type-length-value block carried inside a MAC frame. L2R reuses the 802.15.4 MLME IE container and slots its own *nested IEs* inside it.",
+      "zh": "IEEE Std 802.15.10-2017 是一份推荐规程，它在 IEEE 802.15.4 MAC 之上叠加了二层路由（L2R，Layer 2 Routing）——即多跳网状路由。前面的章节描述的是“行为”（网状网如何形成与转发）。本课聚焦具体的“编码”：第 6 章定义了 L2R 塞进 802.15.4 帧里的信息元素（IE，information element），第 7 章定义上层用来驱动 L2R 的服务接口，附录 A 和 B 则收尾整篇文档。信息元素（IE）是一种自描述的“类型-长度-值”块，承载在 MAC 帧内部。L2R 复用 802.15.4 的 MLME IE 容器，并把自己的“嵌套 IE”塞入其中。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two IE sizes exist. A short nested IE (Clause 6.1) caps its content at 255 octets; when L2R needs more, it uses the L2R Long nested IE (LLIE, Clause 6.2), whose length field is wider. The standard's convention omits the Length, Sub-ID, and Type framing in the figures and shows only the Content payload — so the field tables you read are the *inside* of each IE.",
+      "zh": "IE 有两种大小。短嵌套 IE（第 6.1 节）的内容上限为 255 字节；当 L2R 需要更多空间时，就改用 L2R 长嵌套 IE（LLIE，L2R Long nested IE，第 6.2 节），它的长度字段更宽。标准的惯例是在图中省略 Length、Sub-ID 和 Type 这些外层封装，只展示 Content 负载——因此你读到的字段表都是每个 IE 的“内部”结构。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"8\" y=\"16\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">802.15.4 frame &#8594; MLME IE &#8594; L2R nested IEs</text><rect x=\"8\" y=\"30\" width=\"624\" height=\"30\"/><text x=\"16\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">MLME IE container (from 802.15.4)</text><rect x=\"16\" y=\"72\" width=\"120\" height=\"34\"/><text x=\"24\" y=\"93\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">L2R-D IE 0x37</text><rect x=\"144\" y=\"72\" width=\"120\" height=\"34\"/><text x=\"152\" y=\"93\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">TC IE 0x38</text><rect x=\"272\" y=\"72\" width=\"120\" height=\"34\"/><text x=\"280\" y=\"93\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">NLM IE 0x39</text><rect x=\"400\" y=\"72\" width=\"232\" height=\"34\"/><text x=\"408\" y=\"93\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">LLIE 0x00 &#8594; RA / Routing / DCat</text></svg>",
+      "caption": {
+        "en": "L2R nesting: short nested IEs (Sub-IDs 0x37-0x42) and the LLIE all live inside the 802.15.4 MLME IE container.",
+        "zh": "L2R 的嵌套结构：短嵌套 IE（Sub-ID 0x37-0x42）和 LLIE 都位于 802.15.4 的 MLME IE 容器内部。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The eleven short nested IEs (6.1.1-6.1.11) each carry one routing function. The L2R-D IE (6.1.1, \"L2R Discovery\") rides in Enhanced Beacons (EBs) and Enhanced Beacon Requests (EBRs); its Descriptor bitfield announces the whole mesh's mode — Mesh Address Mode (short vs extended addresses), Storing vs non-storing mode, Small Scale PAN (SSPAN), Multi-PAN Operation (MPO), Data Concatenation (DCat), L2R multicast, key-exchange mode, and whether on-demand peer-to-peer (P2P) route discovery is allowed. The TC IE (6.1.2, \"Topology Control\") propagates the path-quality metric (PQM) from the mesh root down the tree, carrying the transmitter's Depth, a Mesh Sequence Number (MSN), the L2R Max Depth, and a PQM value/threshold (hop count, RSW, ETX, or expected airtime per Table 6-5). The NLM IE (6.1.3, \"Neighbor Link Metric\") rides in EBs and lists, per neighbor, the link metric the transmitter measured — the raw material for the mutual-link calculation in Annex A.",
+      "zh": "十一个短嵌套 IE（6.1.1-6.1.11）各自承载一项路由功能。L2R-D IE（6.1.1，“L2R 发现”）搭载在增强信标（EB，Enhanced Beacon）和增强信标请求（EBR，Enhanced Beacon Request）中；它的 Descriptor 位字段宣告整个网状网的模式——网状地址模式（短地址还是扩展地址）、存储/非存储模式、小规模 PAN（SSPAN）、多 PAN 操作（MPO，Multi-PAN Operation）、数据级联（DCat，Data Concatenation）、L2R 组播、密钥交换模式，以及是否允许按需点对点（P2P）路由发现。TC IE（6.1.2，“拓扑控制”）把路径质量度量（PQM，path-quality metric）从网状根沿树向下传播，携带发送方的 Depth、网状序列号（MSN）、L2R 最大深度，以及一个 PQM 值/门限（依据表 6-5，可为跳数、RSW、ETX 或预期空口时间）。NLM IE（6.1.3，“邻居链路度量”）搭载在 EB 中，逐个邻居列出发送方测得的链路度量——这是附录 A 中互链路计算的原料。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining short IEs handle specific exchanges, all carried in MAC Payload (MP) frames unless noted. The SRA IE (6.1.4) and SLR IE (6.1.7) are the SSPAN-only pair: SRA establishes downstream (DS) routes and SLR carries source-list routing in a small network. The P2P-RQ IE (6.1.5) and P2P-RP IE (6.1.6) are the peer-to-peer request/reply for on-demand routes between two non-root devices, each carrying a P2P sequence number (PSN), time-to-live (TTL), and PQM. The E2E ACK IE (6.1.8) is a tiny two-octet end-to-end acknowledgment echoing the L2R Routing IE's sequence number (LSN). The A-RLS IE (6.1.9) releases a short address; the AA-RQ IE (6.1.10) and AA-RP IE (6.1.11) are the address-assignment request and reply, carrying the joining device's extended address, an allocated short address, and an expiration time.",
+      "zh": "其余的短 IE 处理具体的交互，除特别说明外均承载在 MAC 负载（MP，MAC Payload）帧中。SRA IE（6.1.4）与 SLR IE（6.1.7）是仅用于 SSPAN 的一对：SRA 建立下行（DS，downstream）路由，SLR 在小型网络中承载源列表路由。P2P-RQ IE（6.1.5）与 P2P-RP IE（6.1.6）是两个非根设备之间按需路由的点对点请求/应答，各自携带 P2P 序列号（PSN）、生存时间（TTL，time-to-live）和 PQM。E2E ACK IE（6.1.8）是一个仅两字节的端到端确认，回显 L2R Routing IE 的序列号（LSN）。A-RLS IE（6.1.9）用于释放一个短地址；AA-RQ IE（6.1.10）与 AA-RP IE（6.1.11）是地址分配的请求与应答，携带入网设备的扩展地址、分配到的短地址以及过期时间。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — Clause 6 short nested IEs (6.1.1-6.1.11)",
+        "zh": "覆盖地图——第 6 章短嵌套 IE（6.1.1-6.1.11）"
+      },
+      "en": "Table 6-1 allocates Sub-IDs: 6.1.1 L2R-D IE (0x37, in EB/EBR; Descriptor + Mesh ID Information + Mesh Root Address); 6.1.2 TC IE (0x38, in EB/EBR; Descriptor, Tx addresses, L2R Max Depth, Depth, MSN, TC IE Interval, MPO Descriptor, DCat Buffering Time, PQM — see Tables 6-2..6-5); 6.1.3 NLM IE (0x39, in EB; Number of Neighbors, Number of Containers, NLM IE Interval, Neighbor Metric Container); 6.1.4 SRA IE (0x3A, SSPAN, in MP; Vendor Specific Usage, SRA SN, Source Address, Intermediate Address List); 6.1.5 P2P-RQ IE (0x3B; Descriptor, P2P DA/SA, PSN, TTL, PQM); 6.1.6 P2P-RP IE (0x3C; Address Mode, Mesh Root Address, P2P DA/SA, PSN, PQM, TTL); 6.1.7 SLR IE (0x3D, SSPAN; Source/Destination Address, SLSN, Intermediate Address List); 6.1.8 E2E ACK IE (0x3E; a 2-octet LSN echo); 6.1.9 A-RLS IE (0x3F; Releasing Device Extended Address, Short Address); 6.1.10 AA-RQ IE (0x41; Joining Device Extended Address, Allocated Address, Expiration Time); 6.1.11 AA-RP IE (0x42; Status per Table 6-7, Joining Device Extended Address, Allocated Address, Expiration Time).",
+      "zh": "表 6-1 分配 Sub-ID：6.1.1 L2R-D IE（0x37，在 EB/EBR 中；Descriptor + Mesh ID 信息 + 网状根地址）；6.1.2 TC IE（0x38，在 EB/EBR 中；Descriptor、Tx 地址、L2R 最大深度、Depth、MSN、TC IE 间隔、MPO 描述符、DCat 缓冲时间、PQM——见表 6-2 至 6-5）；6.1.3 NLM IE（0x39，在 EB 中；邻居数量、容器数量、NLM IE 间隔、邻居度量容器）；6.1.4 SRA IE（0x3A，SSPAN，在 MP 中；厂商专用用途、SRA SN、源地址、中间地址列表）；6.1.5 P2P-RQ IE（0x3B；Descriptor、P2P DA/SA、PSN、TTL、PQM）；6.1.6 P2P-RP IE（0x3C；地址模式、网状根地址、P2P DA/SA、PSN、PQM、TTL）；6.1.7 SLR IE（0x3D，SSPAN；源/目的地址、SLSN、中间地址列表）；6.1.8 E2E ACK IE（0x3E；2 字节的 LSN 回显）；6.1.9 A-RLS IE（0x3F；释放设备扩展地址、短地址）；6.1.10 AA-RQ IE（0x41；入网设备扩展地址、分配地址、过期时间）；6.1.11 AA-RP IE（0x42；表 6-7 的状态、入网设备扩展地址、分配地址、过期时间）。",
+      "cite": {
+        "pdf_id": "8021510-2017",
+        "pages": [
+          82,
+          83,
+          85,
+          89,
+          90,
+          91,
+          93,
+          94,
+          95,
+          96
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "When 255 octets is not enough, L2R uses the L2R Long nested IE (LLIE, 6.2) — a long nested IE with Sub-ID 0x00. Inside it, a Sub-Element ID selects one of three sub-IEs (Table 6-8). The RA IE (6.2.1, \"Route Announcement\") rides in MP frames and is how a device announces its upstream route to the mesh root: it carries the Mesh Root Address, the device's Depth, an LSN, the originating Source Address, an optional Multicast Subscription list, and (in non-storing mode) the full Intermediate Address List. The L2R Routing IE (6.2.2) is the workhorse: it rides in *data* frames and its 16-bit Descriptor controls forwarding — source/destination presence, Mesh Root Data, DCat, Source Routing, Delay Critical, Guaranteed Transmission, MAC acknowledgment-request (AR) management (Table 6-9), L2R retransmission, end-to-end AR (E2E AR), reverse-source (RvS) prohibition, and the P2P flag — plus addressing fields, LSN, TTL, and Retry Limit. The DCat IE (6.2.3) accompanies an L2R Routing IE and lists the source address, LSN, and length of each concatenated frame so the receiver can split them back apart.",
+      "zh": "当 255 字节不够用时，L2R 改用 L2R 长嵌套 IE（LLIE，6.2）——这是一个 Sub-ID 为 0x00 的长嵌套 IE。其内部用一个 Sub-Element ID 从三个子 IE 中选择一个（表 6-8）。RA IE（6.2.1，“路由通告”）搭载在 MP 帧中，是设备向网状根通告其上行路由的方式：它携带网状根地址、设备的 Depth、一个 LSN、发起方的源地址、一个可选的组播订阅列表，以及（在非存储模式下）完整的中间地址列表。L2R Routing IE（6.2.2）是主力：它搭载在“数据”帧中，其 16 位 Descriptor 控制转发——源/目的地址是否存在、Mesh Root Data、DCat、源路由、延迟关键、保证传输、MAC 确认请求（AR，acknowledgment-request）管理（表 6-9）、L2R 重传、端到端 AR（E2E AR）、反向源（RvS）禁止以及 P2P 标志——还有寻址字段、LSN、TTL 和重试上限。DCat IE（6.2.3）伴随 L2R Routing IE，列出每个被级联帧的源地址、LSN 和长度，以便接收方能把它们重新拆开。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  H[Higher layer] -->|L2R-DATA.request| L2R[L2R sublayer]\n  L2R -->|build L2R Routing IE| MAC[802.15.4 MAC]\n  MAC -->|MCPS-DATA.request| RF((multi-hop mesh))\n  RF -->|arrives| D[Destination L2R]\n  D -->|L2R-DATA.indication| DH[Dest higher layer]\n  D -->|E2E ACK IE| L2R\n  L2R -->|L2R-DATA.confirm| H",
+      "zh": "flowchart TD\n  H[上层] -->|L2R-DATA.request| L2R[L2R 子层]\n  L2R -->|构建 L2R Routing IE| MAC[802.15.4 MAC]\n  MAC -->|MCPS-DATA.request| RF((多跳网状网))\n  RF -->|到达| D[目的 L2R]\n  D -->|L2R-DATA.indication| DH[目的上层]\n  D -->|E2E ACK IE| L2R\n  L2R -->|L2R-DATA.confirm| H"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7 defines the service interface — the request/confirm/indication primitives a higher layer uses to drive L2R, mirroring the SAP style of 802.15.4. The L2R management service (7.1) splits into three groups. Mesh-lifecycle primitives (7.1.1) include L2RLME-PAN-SCAN (trigger an enhanced active scan to discover meshes), MESH-START / MESH-STOP (a root creates or tears down a mesh), JOIN-MESH / LEAVE-MESH, MESH-DISCOVERY / MESH-SELECT, plus indications like DISCONNECT-MESH and NOTIFY. Address-assignment primitives (7.1.2) — AA-RQ, AA-RP, and ARLS — let a joining device obtain and later release a short address. Multicast primitives (7.1.3) — MULTICAST-SUBSCRIPTION request/confirm — ask the L2R sublayer to fold a set of multicast addresses into the next scheduled RA IE.",
+      "zh": "第 7 章定义服务接口——上层用来驱动 L2R 的请求/确认/指示原语，沿用了 802.15.4 的 SAP 风格。L2R 管理服务（7.1）分为三组。网状生命周期原语（7.1.1）包括 L2RLME-PAN-SCAN（触发增强主动扫描以发现网状网）、MESH-START / MESH-STOP（由根创建或拆除网状网）、JOIN-MESH / LEAVE-MESH、MESH-DISCOVERY / MESH-SELECT，以及 DISCONNECT-MESH、NOTIFY 等指示。地址分配原语（7.1.2）——AA-RQ、AA-RP 和 ARLS——让入网设备获取并在之后释放一个短地址。组播原语（7.1.3）——MULTICAST-SUBSCRIPTION 的请求/确认——请求 L2R 子层把一组组播地址折叠进下一个计划发送的 RA IE 中。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — Clause 7 services (7.1.1-7.3) and Annexes A, B",
+        "zh": "覆盖地图——第 7 章服务（7.1.1-7.3）与附录 A、B"
+      },
+      "en": "7.1.1 Mesh-management primitives (Table 7-1): PAN-SCAN, MESH-START, MESH-STOP, JOIN-MESH, MESH-DISCOVERY, MESH-SELECT, LEAVE-MESH, INTERMEDIATE-ADDR-LIST.indication, DISCONNECT-MESH.indication, NOTIFY.indication. 7.1.2 Short-address primitives: AA-RQ (.request/.confirm/.indication), AA-RP (.request/.confirm), ARLS (.request/.confirm/.indication). 7.1.3 Multicast: MULTICAST-SUBSCRIPTION.request/.confirm (Tables 7-30, 7-31) — fold multicast addresses into the next RA IE. 7.2 Data service: 7.2.1 unicast/broadcast via L2R-DATA.request/.confirm/.indication (the .request's many parameters — DelayCritical, GuaranteedTx, MacAr, Rl, E2eAr, P2p — map directly onto the L2R Routing IE Descriptor; confirm status can be SUCCESS, NO_E2E_ACK, or E2E_ACK_INVALID_LSN); 7.2.2 multicast via L2R-MC-DATA.request/.confirm/.indication. 7.3 L2IB attributes (the L2R information base): Table 7-38 lists tunables such as l2rIntervalUnit, l2rTcIeInterval, l2rRaIeInterval, l2rNlmIeInterval, l2rDefaultTtl (127), l2rDefaultRl (16), l2rNlmIeAcceptance, l2rRswExponent; Tables 7-39..7-43 hold mesh-descriptor and security key settings. Annex A (normative) gives the mutual-link-metric formulas (Table A.1: ETX = max or geometric mean of observed/announced; RSW = max; expected airtime = arithmetic mean) used with the NLM IE to fix asymmetric links. Annex B (informative) is the Bibliography (one entry: Zimmermann's OSI Reference Model paper).",
+      "zh": "7.1.1 网状管理原语（表 7-1）：PAN-SCAN、MESH-START、MESH-STOP、JOIN-MESH、MESH-DISCOVERY、MESH-SELECT、LEAVE-MESH、INTERMEDIATE-ADDR-LIST.indication、DISCONNECT-MESH.indication、NOTIFY.indication。7.1.2 短地址原语：AA-RQ（请求/确认/指示）、AA-RP（请求/确认）、ARLS（请求/确认/指示）。7.1.3 组播：MULTICAST-SUBSCRIPTION 请求/确认（表 7-30、7-31）——把组播地址折叠进下一个 RA IE。7.2 数据服务：7.2.1 通过 L2R-DATA.request/.confirm/.indication 实现单播/广播（请求的众多参数——DelayCritical、GuaranteedTx、MacAr、Rl、E2eAr、P2p——直接映射到 L2R Routing IE 的 Descriptor；确认状态可为 SUCCESS、NO_E2E_ACK 或 E2E_ACK_INVALID_LSN）；7.2.2 通过 L2R-MC-DATA.request/.confirm/.indication 实现组播。7.3 L2IB 属性（L2R 信息库）：表 7-38 列出可调项，如 l2rIntervalUnit、l2rTcIeInterval、l2rRaIeInterval、l2rNlmIeInterval、l2rDefaultTtl（127）、l2rDefaultRl（16）、l2rNlmIeAcceptance、l2rRswExponent；表 7-39 至 7-43 保存网状描述符与安全密钥设置。附录 A（规范性）给出与 NLM IE 配合使用、用于修正非对称链路的互链路度量公式（表 A.1：ETX 取观测/通告的最大值或几何平均；RSW 取最大值；预期空口时间取算术平均）。附录 B（资料性）是参考书目（仅一条：Zimmermann 的 OSI 参考模型论文）。",
+      "cite": {
+        "pdf_id": "8021510-2017",
+        "pages": [
+          103,
+          124,
+          125,
+          126,
+          131,
+          132,
+          135,
+          141,
+          142
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why Annex A matters: a wireless link is often asymmetric — A may hear B clearly while B barely hears A. If each end routes only on its own observation, the chosen path can be good one way and poor the other. The mutual link metric combines the observed metric (what I measure) with the announced metric (what the NLM IE told me my neighbor measured) via the Table A.1 formula, giving both ends a single, symmetric link cost so the path is sensible in both directions.",
+      "zh": "附录 A 为何重要：无线链路常常是非对称的——A 也许能清晰听到 B，而 B 却几乎听不到 A。如果两端各自只按自己的观测来选路，所选路径可能一个方向好、另一个方向差。互链路度量通过表 A.1 的公式，把观测度量（我测到的）与通告度量（NLM IE 告诉我邻居测到的）结合起来，给两端一个统一、对称的链路代价，从而使路径在两个方向上都合理。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021510-2017",
+      "pages": [
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90
+      ],
+      "note": "Clause 6.1 short nested IEs: L2R-D, TC, NLM, SRA (Sub-ID table 6-1, Descriptor bitfields, PQM Table 6-5)"
+    },
+    {
+      "pdf_id": "8021510-2017",
+      "pages": [
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97
+      ],
+      "note": "Clause 6.1 remaining IEs (P2P-RQ/RP, SLR, E2E ACK, A-RLS, AA-RQ/RP) and 6.2 LLIE intro (Table 6-8)"
+    },
+    {
+      "pdf_id": "8021510-2017",
+      "pages": [
+        98,
+        99,
+        100,
+        101,
+        102
+      ],
+      "note": "Clause 6.2 LLIE sub-IEs: RA IE, L2R Routing IE Descriptor (Table 6-9), DCat IE"
+    },
+    {
+      "pdf_id": "8021510-2017",
+      "pages": [
+        103,
+        104,
+        124,
+        125,
+        126,
+        127,
+        131,
+        132
+      ],
+      "note": "Clause 7.1 management primitives, 7.1.3 multicast subscription, 7.2 data service (L2R-DATA / L2R-MC-DATA)"
+    },
+    {
+      "pdf_id": "8021510-2017",
+      "pages": [
+        135,
+        136,
+        137,
+        141,
+        142
+      ],
+      "note": "Clause 7.3 L2IB attributes (Table 7-38), Annex A mutual link metric (Table A.1), Annex B bibliography"
+    }
+  ],
+  "covers": [
+    "8021510-2017:6.1.1",
+    "8021510-2017:6.1.2",
+    "8021510-2017:6.1.3",
+    "8021510-2017:6.1.4",
+    "8021510-2017:6.1.5",
+    "8021510-2017:6.1.6",
+    "8021510-2017:6.1.7",
+    "8021510-2017:6.1.8",
+    "8021510-2017:6.1.9",
+    "8021510-2017:6.1.10",
+    "8021510-2017:6.1.11",
+    "8021510-2017:6.2.1",
+    "8021510-2017:6.2.2",
+    "8021510-2017:6.2.3",
+    "8021510-2017:7.1.1",
+    "8021510-2017:7.1.2",
+    "8021510-2017:7.1.3",
+    "8021510-2017:7.2.1",
+    "8021510-2017:7.2.2",
+    "8021510-2017:7.3",
+    "8021510-2017:Annex_A",
+    "8021510-2017:Annex_B"
+  ],
+  "track": "pan-802-15"
+}

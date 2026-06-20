@@ -1,0 +1,236 @@
+{
+  "id": "pan-802-15-32",
+  "title": {
+    "en": "IEEE 802.15.10 L2R: Overview, Vocabulary, Architecture, and the Routing Lifecycle",
+    "zh": "IEEE 802.15.10 二层路由（L2R）：概览、术语、体系结构与路由生命周期"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.15.10-2017 is a Recommended Practice that adds a routing protocol on top of an existing IEEE 802.15.4 low-rate wireless network. The protocol is called Layer 2 Routing (L2R) because it lives just above the MAC sublayer, not in the IP/network layer. Its scope (Clause 1.1) is to route packets across a dynamically changing 802.15.4 network with minimal route-management overhead, so coverage grows as you add nodes. Its purpose (Clause 1.2) is to handle the whole route lifecycle automatically: discovering and adding nodes, establishing routes, reconfiguring them dynamically, re-establishing broken routes, purging inactive ones, exchanging real-time link status, supporting broadcast and multicast, and forwarding frames — all while presenting a single-hop appearance to Layer 3 so standard IP mechanisms keep working.",
+      "zh": "IEEE Std 802.15.10-2017 是一份「推荐做法」（Recommended Practice），它在既有的 IEEE 802.15.4 低速无线网络之上叠加了一套路由协议。该协议称为二层路由（Layer 2 Routing，L2R），因为它紧贴 MAC 子层之上运行，而非位于 IP/网络层。其范围（第 1.1 条）是在动态变化的 802.15.4 网络中以最小的路由管理开销转发数据包，使覆盖范围随节点数增加而扩大。其目的（第 1.2 条）是自动处理整个路由生命周期：发现并接纳新节点、建立路由、动态重配置、重建断裂路由、清除失效路由、交换实时链路状态、支持广播与组播、转发帧——同时对第三层呈现「单跳」外观，让标准 IP 机制继续正常工作。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: L2R turns a mesh of many short-range 802.15.4 radios into something the upper layers see as one big single-hop link. The mesh has one boss — the mesh root (depth 0) — and every device measures how far it sits from that root using a routing metric. \"Up\" means toward the root; \"down\" means away from it.",
+      "zh": "理解要点：L2R 把许多短距离 802.15.4 无线节点组成的网状网，包装成上层眼中的一条「单跳大链路」。网状网只有一个核心——网状根（mesh root，深度为 0）——每台设备都用一个路由度量来衡量自己离根有多远。「上行」指朝向根，「下行」指远离根。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 3.1 (Definitions) gives the vocabulary you will see everywhere. A mesh root is the depth-0 device that manages the mesh. Depth is a device's position relative to the root with respect to the path quality metric (PQM) — it grows as the path worsens. A neighbor is any device in radio range; an ancestor is a neighbor at least one depth nearer the root; a descendant is at least one depth farther; a sibling sits at the same depth. The best upstream next hop is the neighbor chosen to forward toward the root. A coordinator and PAN coordinator are the 802.15.4 devices that run the personal area network (PAN); the mesh root may have a direct connection (PanC DC) to the PAN coordinator. Clause 3.2 (Acronyms) then expands the alphabet soup: US = upstream (toward root), DS = downstream (from root), P2P = peer-to-peer, TC IE = topology construction information element, L2R-D = L2R discovery, MPO = multi-PAN operation, DCat = data concatenation, RvS = routing via a sibling, and so on.",
+      "zh": "第 3.1 条（定义）给出贯穿全文的术语。网状根是深度为 0、负责管理网状网的设备。深度是设备相对于根、以路径质量度量（PQM）衡量的位置——路径越差，深度越大。邻居是任何在无线覆盖范围内的设备；祖先是比自己更靠近根至少一层的邻居；后代是比自己远离根至少一层的邻居；同辈则与自己处于同一深度。最佳上行下一跳是被选来朝根转发的邻居。协调器与 PAN 协调器是运行个人区域网（PAN）的 802.15.4 设备；网状根可能与 PAN 协调器之间存在直连（PanC DC）。第 3.2 条（缩略语）则展开这一连串字母缩写：US＝上行（朝根），DS＝下行（离根），P2P＝点对点，TC IE＝拓扑构建信息元素，L2R-D＝L2R 发现，MPO＝多 PAN 操作，DCat＝数据级联，RvS＝经同辈路由，等等。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 4 is the general description. The introduction (4.1) says L2R extends a WPAN's range while keeping transmit power low, scales from tens to thousands of nodes, and targets applications like smart metering and smart city. Format conventions (4.2) simply inherit IEEE Std 802.15.4-2015's conventions and treat \"integer\" as unsigned. Network topology (4.3) describes three deployment shapes, each built around a mesh root identified by a mesh ID that ties it to a service (internet, data collection, control). A mesh may live in one regular PAN, in a small-scale PAN (SSPAN) where root and PAN coordinator share one device using small nested IEs, or span several PANs in a television white space multichannel cluster tree PAN (TMCTP). Architecture (4.4) places the L2R sublayer above the MAC: it talks down to the MAC through the MLME-SAP and MCPS-SAP, and offers higher layers two interfaces — the L2RLME-SAP for management (discover/start/join) and the L2RDATA-SAP for data — and never touches the PHY directly.",
+      "zh": "第 4 条是总体描述。引言（4.1）指出 L2R 在保持低发射功率的同时扩展 WPAN 的覆盖范围，可从数十节点扩展到数千节点，面向智能电表、智慧城市等应用。格式约定（4.2）直接沿用 IEEE Std 802.15.4-2015 的约定，并把「整数」一律视为无符号整数。网络拓扑（4.3）描述三种部署形态，每种都围绕一个网状根构建，根由网状标识（mesh ID）标识，并将其与某项服务（互联网、数据采集、控制）绑定。网状网可位于单个常规 PAN 中；可位于小规模 PAN（SSPAN）中——此时根与 PAN 协调器合并在同一设备里、使用小型嵌套 IE；也可在电视空白频段多信道簇树 PAN（TMCTP）中跨越多个 PAN。体系结构（4.4）把 L2R 子层置于 MAC 之上：向下通过 MLME-SAP 与 MCPS-SAP 与 MAC 通信，向上为高层提供两个接口——用于管理（发现/启动/加入）的 L2RLME-SAP 和用于数据的 L2RDATA-SAP——而从不直接触碰 PHY。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 360 220\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"40\" y=\"10\" width=\"280\" height=\"30\"/><text x=\"180\" y=\"30\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">Higher layers</text><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"55\"/><text x=\"110\" y=\"52\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">L2RDATA-SAP</text><line x1=\"250\" y1=\"40\" x2=\"250\" y2=\"55\"/><text x=\"250\" y=\"52\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">L2RLME-SAP</text><rect x=\"40\" y=\"55\" width=\"280\" height=\"40\"/><text x=\"180\" y=\"80\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">L2R sublayer (this standard)</text><line x1=\"110\" y1=\"95\" x2=\"110\" y2=\"110\"/><text x=\"110\" y=\"107\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">MCPS-SAP</text><line x1=\"250\" y1=\"95\" x2=\"250\" y2=\"110\"/><text x=\"250\" y=\"107\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">MLME-SAP</text><rect x=\"40\" y=\"110\" width=\"280\" height=\"40\"/><text x=\"180\" y=\"135\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">MAC sublayer (802.15.4)</text><rect x=\"40\" y=\"165\" width=\"280\" height=\"40\"/><text x=\"180\" y=\"190\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">PHY layer (802.15.4)</text></svg>",
+      "caption": {
+        "en": "Clause 4.4 architecture: the L2R sublayer sits above the 802.15.4 MAC, exposes L2RDATA-SAP and L2RLME-SAP upward, uses MCPS-SAP and MLME-SAP downward, and never touches the PHY.",
+        "zh": "第 4.4 条体系结构：L2R 子层位于 802.15.4 MAC 之上，向上暴露 L2RDATA-SAP 与 L2RLME-SAP，向下使用 MCPS-SAP 与 MLME-SAP，并且从不直接触碰 PHY。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 4.5 is the functional overview. Mesh and routing (4.5.1) explains the hierarchy: the root is depth 0, and ancestor/descendant/sibling relationships follow from depth. It names the routing types — unicast (US toward root, DS from root, or P2P between two devices), multicast (to a group), and broadcast (to everyone in a mesh or PAN) — plus optional features such as hop-by-hop retransmission, end-to-end acknowledgment, data concatenation, and MPO for multi-PAN meshes. Tables 4-1 to 4-3 mark each feature as mandatory (Y), optional (O), or not relevant. Addressing modes (4.5.2) say a single address mode is used per mesh: short 16-bit addresses (assigned by the PAN coordinator) or extended 64-bit EUI-64 addresses. Multicast uses short addresses in the 0xff00–0xfffd range; broadcast uses the appropriate broadcast address; a TMCTP uses EUI-64 to avoid duplicates across PANs.",
+      "zh": "第 4.5 条是功能概览。网状网与路由（4.5.1）阐述层级关系：根的深度为 0，祖先/后代/同辈关系都由深度推导。它列出路由类型——单播（朝根的 US、离根的 DS，或两台设备间的 P2P）、组播（发给一个组）、广播（发给一个网状网或 PAN 内所有设备）——以及可选特性，如逐跳重传、端到端确认、数据级联，以及面向多 PAN 网状网的 MPO。表 4-1 至 4-3 将每项特性标注为强制（Y）、可选（O）或不适用。寻址模式（4.5.2）规定每个网状网只用一种地址模式：16 位短地址（由 PAN 协调器分配）或 64 位扩展 EUI-64 地址。组播使用 0xff00–0xfffd 范围内的短地址；广播使用相应的广播地址；TMCTP 使用 EUI-64 以避免跨 PAN 地址重复。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5 is the functional description — how the protocol actually runs. Starting and joining (5.1) covers the two lifecycle ends. Starting and stopping (5.1.1): a device first runs discovery; if it finds no existing mesh with its desired mesh ID it associates with a PAN and becomes the root, initializing a mesh table (MT) with its own address, depth 0, and a mesh sequence number (MSN) seeded between 0xf0 and 0xff, then periodically transmits enhanced beacons (EBs) carrying a TC IE. It can update topology parameters mid-run by issuing a fresh TC IE, and stop the mesh (soft or hard) by sending a TC IE with Depth set to 0xff so descendants know it is leaving. Joining (5.1.2): a joining device performs mesh discovery (looking for a specific mesh ID, all meshes, or within a PAN), selects a mesh either by the L2R sublayer or by the higher layer, then joins, rejoins, or leaves — and if short addressing is used, manages its 16-bit short address (assignment, maintenance, release) via the PAN coordinator.",
+      "zh": "第 5 条是功能描述——讲协议如何实际运行。启动与加入（5.1）涵盖生命周期的两端。启动与停止（5.1.1）：设备先执行发现；若没找到具有其目标 mesh ID 的现有网状网，便与某 PAN 关联并成为根，初始化网状表（mesh table，MT）——填入自身地址、深度 0，以及在 0xf0–0xff 间取初值的网状序号（mesh sequence number，MSN），随后周期性发送携带 TC IE 的增强信标（enhanced beacon，EB）。它可在运行中通过发出新的 TC IE 更新拓扑参数，也可通过发送 Depth＝0xff 的 TC IE 来停止网状网（软停或硬停），让后代知晓它即将退出。加入（5.1.2）：加入设备执行网状发现（查找特定 mesh ID、查找所有网状网，或在某 PAN 内查找），再由 L2R 子层或高层选择一个网状网，然后加入、重新加入或离开——若使用短地址，则通过 PAN 协调器管理其 16 位短地址（分配、维护、释放）。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant H as Higher layer\n  participant L as L2R sublayer\n  participant M as MAC\n  H->>L: L2RLME-MESH-START.request\n  Note over L: Init mesh table (depth 0, MSN)\n  L->>M: MLME-BEACON.request (EB + TC IE)\n  M-->>L: MLME-BEACON.confirm\n  L-->>H: L2RLME-MESH-START.confirm\n  Note over L,M: Periodic TC IE every l2rTcIeInterval",
+      "zh": "sequenceDiagram\n  participant H as 高层\n  participant L as L2R 子层\n  participant M as MAC\n  H->>L: L2RLME-MESH-START.request\n  Note over L: 初始化网状表（深度 0、MSN）\n  L->>M: MLME-BEACON.request（EB ＋ TC IE）\n  M-->>L: MLME-BEACON.confirm\n  L-->>H: L2RLME-MESH-START.confirm\n  Note over L,M: 每 l2rTcIeInterval 周期发送 TC IE"
+    },
+    {
+      "type": "prose",
+      "en": "Mesh formation and route establishment (5.2) is the heart of L2R. Mesh construction (5.2.1) builds the topology from the layer-2 routing information base (L2IB) and the neighbor table: each device reads TC IEs, computes its depth, and chooses ancestors. Route metrics (5.2.2) define how cost is measured — the mesh root picks one metric and advertises it in the PQM field. Three are defined: Received Signal Weakness (RSW), which penalizes weak signals using a tunable exponent; ETX (expected transmission count), the additive estimate of retransmissions per link; and the expected airtime metric, the estimated milliseconds to send a frame given duty cycle and error rate. US route establishment (5.2.3) is purely local: each device forwards toward the lowest-depth, best-PQM ancestor that satisfies the link quality threshold (LQT), needing no knowledge of the full path. DS route establishment (5.2.4) works the other way — hop-by-hop using L2R Routing IEs and RA IEs in storing mode, or source routing in non-storing mode. Route establishment for TMCTP (5.2.5) adapts US and DS to MPO; multicast route establishment (5.2.6) records group subscriptions in RA IEs; and P2P route establishment (5.2.7) discovers a direct path on demand by exchanging P2P-RQ and P2P-RP IEs.",
+      "zh": "网状网形成与路由建立（5.2）是 L2R 的核心。网状网构建（5.2.1）依据二层路由信息库（L2IB）和邻居表搭建拓扑：每台设备读取 TC IE、计算自身深度并选择祖先。路由度量（5.2.2）规定如何衡量代价——网状根选定一种度量并在 PQM 字段中广播。共定义三种：接收信号弱度（Received Signal Weakness，RSW），用可调指数对弱信号施加惩罚；ETX（期望传输次数），每条链路重传次数的可加性估计；以及期望空口时间度量，根据占空比与误码率估算发送一帧所需的毫秒数。US 路由建立（5.2.3）完全是本地决策：每台设备朝深度最低、PQM 最佳且满足链路质量阈值（LQT）的祖先转发，无需知道整条路径。DS 路由建立（5.2.4）方向相反——存储模式下用 L2R Routing IE 和 RA IE 逐跳建立，非存储模式下用源路由。面向 TMCTP 的路由建立（5.2.5）将 US 与 DS 适配到 MPO；组播路由建立（5.2.6）在 RA IE 中记录组订阅；P2P 路由建立（5.2.7）则通过交换 P2P-RQ 与 P2P-RP IE 按需发现一条直达路径。"
+    },
+    {
+      "type": "prose",
+      "en": "Route maintenance (5.3) keeps everything fresh as the network changes. US route maintenance (5.3.1): devices keep reading periodic TC IEs (and optional NLM IEs for asymmetric links); if a device misses l2rMaxMissedTcIe beacons from a neighbor it erases that entry, and if it loses all ancestors it re-derives its depth from siblings or rejoins. DS route maintenance (5.3.2): devices learn reachable destinations from L2R Routing IEs and RA IEs (or SLR/SRA IEs in an SSPAN), refreshing entries and falling back to source routing in non-storing mode. Route maintenance with MPO (5.3.3): each device advertises its channel in the TC IE's MPO Descriptor so neighbors know which channel to use for the next hop.",
+      "zh": "路由维护（5.3）在网络变化时保持一切最新。US 路由维护（5.3.1）：设备持续读取周期性 TC IE（以及用于非对称链路的可选 NLM IE）；若某设备连续漏收某邻居 l2rMaxMissedTcIe 个信标，便删除该表项；若失去全部祖先，则依据同辈重新推导深度或重新加入。DS 路由维护（5.3.2）：设备从 L2R Routing IE 和 RA IE（在 SSPAN 中为 SLR/SRA IE）学习可达目的地，刷新表项，并在非存储模式下回退到源路由。MPO 下的路由维护（5.3.3）：每台设备在 TC IE 的 MPO 描述符中通告自身信道，使邻居知道下一跳应使用哪个信道。"
+    },
+    {
+      "type": "prose",
+      "en": "Routing capabilities (5.4) is where data actually moves. Every routed frame carries four addresses: the source address (SA, originator), the destination address (DA, final target), the transmitting address (TxA, current sender in the MAC header), and the next hop address (NHA). Unicast routing (5.4.1) covers US, DS, and P2P, and includes source routing (5.4.1.1, used in non-storing mode), hop-by-hop routing (5.4.1.2, with a simple US-or-DS decision based on whether the destination is in a list of reachable destinations), MPO routing (5.4.1.3), hop-by-hop retransmission (5.4.1.4), end-to-end acknowledgment (5.4.1.5, via an E2E ACK IE), and DCat (5.4.1.6, concatenating frames bound for the same destination). Multicast routing (5.4.2) either uses true L2R multicast or, when disabled, treats multicast as broadcast filtered by the higher layer, with random jitter to avoid collisions. Broadcast routing (5.4.3) floods the mesh or PAN: each device forwards once and records (SA, LSN) to drop duplicates, with special handling for indirect transmission in non-beacon PANs and for MPO.",
+      "zh": "路由能力（5.4）是数据真正流动之处。每个被路由的帧携带四个地址：源地址（SA，发起者）、目的地址（DA，最终目标）、发送地址（TxA，MAC 头中的当前发送者）和下一跳地址（NHA）。单播路由（5.4.1）涵盖 US、DS 与 P2P，并包含源路由（5.4.1.1，用于非存储模式）、逐跳路由（5.4.1.2，根据目的地是否在某邻居的可达目的地列表中，做出朝上还是朝下的简单判定）、MPO 路由（5.4.1.3）、逐跳重传（5.4.1.4）、端到端确认（5.4.1.5，通过 E2E ACK IE）以及 DCat（5.4.1.6，把发往同一目的地的多帧级联）。组播路由（5.4.2）要么使用真正的 L2R 组播，要么在其禁用时把组播当作由高层过滤的广播处理，并用随机抖动避免冲突。广播路由（5.4.3）向网状网或 PAN 泛洪：每台设备只转发一次并记录 (SA, LSN) 以丢弃重复帧，对非信标 PAN 中的间接传输和 MPO 另有专门处理。"
+    },
+    {
+      "type": "prose",
+      "en": "Security aspects (5.5) close the picture. Bootstrapping (5.5.1) describes how a device comes online: a cold start (first power-on) runs three phases — discover meshes, associate with the PAN, then join and exchange routing info — while a warm start (after a reset) may reuse stored parameters. Three key-exchange modes exist: non-secured, out-of-band (frames secured with a pre-configured key), and KMP-based using IEEE Std 802.15.9 to negotiate keys; the L2R-D IE exchanged during discovery can itself be secured. Securing frames (5.5.2) then explains that the higher layer populates the security L2IB attributes, and the L2R sublayer references them — separate settings for broadcast versus unicast, per-next-hop keys for forwarding — when it asks the MAC to send data frames, EBs, and EBRs through MCPS-DATA, MLME-BEACON, and MLME-SCAN.",
+      "zh": "安全方面（5.5）为全貌收尾。引导（5.5.1）描述设备如何上线：冷启动（首次上电）走三个阶段——发现网状网、与 PAN 关联，然后加入并交换路由信息——而热启动（复位后）可复用已存参数。共有三种密钥交换模式：非安全模式、带外模式（用预配置密钥保护帧），以及基于 KMP、借助 IEEE Std 802.15.9 协商密钥的模式；发现过程中交换的 L2R-D IE 本身也可被保护。帧的安全保护（5.5.2）随后说明：由高层填充安全 L2IB 属性，L2R 子层在请求 MAC 通过 MCPS-DATA、MLME-BEACON 与 MLME-SCAN 发送数据帧、EB 与 EBR 时引用这些属性——广播与单播分设、转发时按下一跳使用各自密钥。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause taught in this lesson, by exact number",
+        "zh": "覆盖地图——本课所讲每一条款的精确编号"
+      },
+      "en": "Clause 1 Overview: 1.1 Scope (route packets in a dynamic 802.15.4 net, low management overhead); 1.2 Purpose (automatic node discovery, route establishment/reconfiguration/recovery/purge, real-time link status, broadcast/multicast, single-hop appearance to L3). Clause 3: 3.1 Definitions (mesh root, depth, ancestor/descendant/sibling, neighbor, next hop, PQM, LQM, short/extended address, SSPAN, TMCTP); 3.2 Acronyms (US, DS, P2P, TC IE, L2R-D, MPO, DCat, RvS, MT, NT, L2IB, MSN, LSN, etc.). Clause 4 General description: 4.1 Introduction (range extension, scale, smart metering/city); 4.2 Format conventions (inherits 802.15.4-2015; integer = unsigned); 4.3 Network topology (regular PAN, SSPAN, TMCTP around a mesh root + mesh ID + service; PanC DC); 4.4 Architecture (L2R sublayer above MAC; L2RLME-SAP, L2RDATA-SAP, MLME-SAP, MCPS-SAP; no PHY interaction); 4.5.1 L2R mesh and routing (depth hierarchy, unicast US/DS/P2P, multicast, broadcast, optional HR/E2E/DCat/MPO, Tables 4-1–4-3); 4.5.2 Addressing modes (single mode per mesh, short vs extended, Table 4-4). Clause 5 functional description: 5.1.1 Starting/stopping (MT init, MSN 0xf0–0xff, periodic TC IE in EB, Depth=0xff to stop); 5.1.2 Joining (discovery, mesh selection, join/rejoin/leave, short-address management); 5.2.1 mesh construction (L2IB + NT, depth from TC IEs); 5.2.2 route metrics (5.2.2.1 RSW, 5.2.2.2 ETX, 5.2.2.3 expected airtime); 5.2.3 US route establishment (local choice of lowest-depth best-PQM ancestor under LQT); 5.2.4 DS route establishment (hop-by-hop vs source routing); 5.2.5 route establishment for TMCTP (MPO US/DS); 5.2.6 multicast route establishment (RA IE subscriptions); 5.2.7 P2P route establishment (P2P-RQ/P2P-RP, storing vs non-storing); 5.3.1 US route maintenance (TC/NLM IEs, missed-beacon erase, ancestor loss); 5.3.2 DS route maintenance (L2R Routing/RA/SLR/SRA IEs); 5.3.3 maintenance with MPO (channel in MPO Descriptor); 5.4.1 unicast routing (four addresses SA/DA/TxA/NHA; source vs hop-by-hop; HR; E2E ACK; DCat); 5.4.2 multicast routing (true L2R multicast vs flood-and-filter, jitter); 5.4.3 broadcast routing (flood, (SA,LSN) duplicate suppression, indirect/MPO cases); 5.5.1 bootstrapping (cold/warm start, non-secured/out-of-band/KMP modes); 5.5.2 securing frames (security L2IB attributes, per-next-hop and broadcast/unicast settings).",
+      "zh": "第 1 条概览：1.1 范围（在动态 802.15.4 网中以低管理开销转发包）；1.2 目的（自动节点发现、路由建立/重配置/恢复/清除、实时链路状态、广播/组播、对 L3 呈单跳外观）。第 3 条：3.1 定义（网状根、深度、祖先/后代/同辈、邻居、下一跳、PQM、LQM、短/扩展地址、SSPAN、TMCTP）；3.2 缩略语（US、DS、P2P、TC IE、L2R-D、MPO、DCat、RvS、MT、NT、L2IB、MSN、LSN 等）。第 4 条总体描述：4.1 引言（扩展覆盖、可扩展性、智能电表/智慧城市）；4.2 格式约定（沿用 802.15.4-2015；整数即无符号）；4.3 网络拓扑（围绕网状根＋mesh ID＋服务的常规 PAN、SSPAN、TMCTP；PanC DC）；4.4 体系结构（L2R 子层位于 MAC 之上；L2RLME-SAP、L2RDATA-SAP、MLME-SAP、MCPS-SAP；不直接触碰 PHY）；4.5.1 网状网与路由（深度层级，单播 US/DS/P2P、组播、广播、可选 HR/E2E/DCat/MPO，表 4-1 至 4-3）；4.5.2 寻址模式（每网状网单一模式，短地址与扩展地址，表 4-4）。第 5 条功能描述：5.1.1 启动/停止（MT 初始化、MSN 取 0xf0–0xff、在 EB 中周期发 TC IE、以 Depth=0xff 停止）；5.1.2 加入（发现、网状网选择、加入/重入/离开、短地址管理）；5.2.1 网状网构建（L2IB＋NT，由 TC IE 推导深度）；5.2.2 路由度量（5.2.2.1 RSW、5.2.2.2 ETX、5.2.2.3 期望空口时间）；5.2.3 US 路由建立（本地选取满足 LQT、深度最低且 PQM 最佳的祖先）；5.2.4 DS 路由建立（逐跳与源路由）；5.2.5 面向 TMCTP 的路由建立（MPO US/DS）；5.2.6 组播路由建立（RA IE 订阅）；5.2.7 P2P 路由建立（P2P-RQ/P2P-RP，存储与非存储）；5.3.1 US 路由维护（TC/NLM IE、漏信标删除、祖先丢失）；5.3.2 DS 路由维护（L2R Routing/RA/SLR/SRA IE）；5.3.3 MPO 下维护（MPO 描述符中的信道）；5.4.1 单播路由（四地址 SA/DA/TxA/NHA；源路由与逐跳；HR；E2E ACK；DCat）；5.4.2 组播路由（真正的 L2R 组播与泛洪过滤、抖动）；5.4.3 广播路由（泛洪、(SA,LSN) 去重、间接/MPO 情形）；5.5.1 引导（冷/热启动，非安全/带外/KMP 模式）；5.5.2 帧的安全保护（安全 L2IB 属性、按下一跳及广播/单播设置）。",
+      "cite": {
+        "pdf_id": "8021510-2017",
+        "pages": [
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          41,
+          48,
+          51,
+          52,
+          54,
+          56,
+          58,
+          66,
+          67,
+          68,
+          74,
+          78,
+          79,
+          80,
+          81
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021510-2017",
+      "pages": [
+        15,
+        16
+      ],
+      "note": "Clause 1 Overview (1.1 Scope, 1.2 Purpose); Clause 3 definitions begin."
+    },
+    {
+      "pdf_id": "8021510-2017",
+      "pages": [
+        16,
+        17,
+        18,
+        19
+      ],
+      "note": "Clause 3.1 Definitions and 3.2 Acronyms and abbreviations."
+    },
+    {
+      "pdf_id": "8021510-2017",
+      "pages": [
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26
+      ],
+      "note": "Clause 4 General description: 4.1 Introduction, 4.2 Format conventions, 4.3 Network topology, 4.4 Architecture, 4.5.1 mesh/routing, 4.5.2 Addressing modes."
+    },
+    {
+      "pdf_id": "8021510-2017",
+      "pages": [
+        27,
+        28,
+        29
+      ],
+      "note": "Clause 5.1 Starting and joining: 5.1.1 starting/stopping, 5.1.2 joining/discovery."
+    },
+    {
+      "pdf_id": "8021510-2017",
+      "pages": [
+        41,
+        48,
+        51,
+        52,
+        54,
+        56,
+        58,
+        60
+      ],
+      "note": "Clause 5.2: 5.2.1 mesh construction, 5.2.2 metrics (RSW/ETX/airtime), 5.2.3 US, 5.2.4 DS, 5.2.5 TMCTP, 5.2.6 multicast, 5.2.7 P2P establishment."
+    },
+    {
+      "pdf_id": "8021510-2017",
+      "pages": [
+        66,
+        67
+      ],
+      "note": "Clause 5.3 route maintenance: 5.3.1 US, 5.3.2 DS, 5.3.3 with MPO."
+    },
+    {
+      "pdf_id": "8021510-2017",
+      "pages": [
+        67,
+        68,
+        73,
+        74,
+        76,
+        78,
+        79
+      ],
+      "note": "Clause 5.4 routing capabilities: 5.4.1 unicast (four addresses, source/hop-by-hop, HR, E2E ACK, DCat), 5.4.2 multicast, 5.4.3 broadcast."
+    },
+    {
+      "pdf_id": "8021510-2017",
+      "pages": [
+        79,
+        80,
+        81
+      ],
+      "note": "Clause 5.5 security: 5.5.1 bootstrapping (cold/warm, modes), 5.5.2 securing frames."
+    }
+  ],
+  "covers": [
+    "8021510-2017:1.1",
+    "8021510-2017:1.2",
+    "8021510-2017:3.1",
+    "8021510-2017:3.2",
+    "8021510-2017:4.1",
+    "8021510-2017:4.2",
+    "8021510-2017:4.3",
+    "8021510-2017:4.4",
+    "8021510-2017:4.5.1",
+    "8021510-2017:4.5.2",
+    "8021510-2017:5.1.1",
+    "8021510-2017:5.1.2",
+    "8021510-2017:5.2.1",
+    "8021510-2017:5.2.2",
+    "8021510-2017:5.2.3",
+    "8021510-2017:5.2.4",
+    "8021510-2017:5.2.5",
+    "8021510-2017:5.2.6",
+    "8021510-2017:5.2.7",
+    "8021510-2017:5.3.1",
+    "8021510-2017:5.3.2",
+    "8021510-2017:5.3.3",
+    "8021510-2017:5.4.1",
+    "8021510-2017:5.4.2",
+    "8021510-2017:5.4.3",
+    "8021510-2017:5.5.1",
+    "8021510-2017:5.5.2"
+  ],
+  "track": "pan-802-15"
+}

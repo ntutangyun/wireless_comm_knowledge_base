@@ -1,0 +1,132 @@
+{
+  "id": "pan-optical-14",
+  "title": {
+    "en": "Decoding PHY VII Waveforms and Deep-Learning OCC Receivers (Annexes O & P)",
+    "zh": "PHY VII 波形解码与深度学习 OCC 接收机（附录 O 与 P）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This lesson tours the two final informative annexes of IEEE Std 802.15.7a-2024, the amendment that adds higher-rate, longer-range Optical Camera Communication (OCC) to the optical wireless standard. OCC means sending data with light from an LED (light-emitting diode) and receiving it with an ordinary camera image sensor (IS). Annex O is a decoding guide for the seven PHY VII waveforms; Annex P shows how deep learning can sharpen the receiver. Both are informative: they explain how to read the signal back out, not new mandatory rules.",
+      "zh": "本课带你走完 IEEE Std 802.15.7a-2024 的两个收尾性资料附录。该修正案为光无线标准增加了更高速率、更远距离的光学摄像头通信（OCC）。OCC 指用 LED（发光二极管）的光发送数据，再用普通摄像头的图像传感器（IS）接收。附录 O 是七种 PHY VII 波形的解码指南；附录 P 展示如何用深度学习提升接收机性能。两者都是资料性的：它们解释如何把信号读回来，而非新的强制规则。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The recurring theme across Annex O is the camera's frame-rate variation. A rolling-shutter camera reads its rows one at a time, so a single frame already captures fast LED blinking as stripes. But the camera frame rate drifts relative to the transmitter packet rate, giving two failure modes: oversampling (the same packet captured twice or more) and undersampling (a packet missed entirely). A sequence number (SN) carried in each data symbol (DS) is the standard's fix for both.",
+      "zh": "贯穿附录 O 的主题是摄像头的帧率波动。卷帘快门摄像头逐行读取，因此一帧画面就能把快速闪烁的 LED 捕捉成条纹。但摄像头帧率相对于发射端的数据包速率会漂移，产生两种故障：过采样（同一个包被拍到两次或更多）与欠采样（整个包被漏掉）。标准的解决办法是在每个数据符号（DS）中携带一个序列号（SN），它同时应对这两种情况。"
+    },
+    {
+      "type": "prose",
+      "en": "Annex O.1 covers the RS-OFDM decoder. RS-OFDM means Rolling-Shutter Orthogonal Frequency-Division Multiplexing: data is spread across many light-intensity subcarriers. The decode chain runs camera image → remove SN → Hermitian demapping → DFT → remove cyclic prefix → equalization → QAM constellation demapping → FEC decoder. (DFT = Discrete Fourier Transform; QAM = Quadrature Amplitude Modulation; FEC = Forward Error Correction.) In oversampling, the receiver discards consecutive packets sharing the same SN and merges those with consecutive SN values (n-1, n, n+1). In undersampling, a jump in SN (e.g. n-1 followed by n+1) reveals a lost payload.",
+      "zh": "附录 O.1 讲解 RS-OFDM 解码器。RS-OFDM 即卷帘快门正交频分复用：数据被分散到许多光强子载波上。解码链路为：摄像头图像 → 去除 SN → 厄米解映射 → DFT → 去除循环前缀 → 均衡 → QAM 星座解映射 → FEC 解码器。（DFT＝离散傅里叶变换；QAM＝正交幅度调制；FEC＝前向纠错。）在过采样时，接收机丢弃 SN 相同的连续包，合并 SN 连续（n-1、n、n+1）的包。在欠采样时，SN 出现跳变（如 n-1 之后直接是 n+1）就暴露了丢失的载荷。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  C[Camera image] --> S[Remove SN]\n  S --> H[Hermitian demap]\n  H --> D[DFT]\n  D --> P[Remove cyclic prefix]\n  P --> E[Equalization]\n  E --> Q[QAM demap]\n  Q --> F[FEC decoder]\n  F --> O[Data out]",
+      "zh": "flowchart LR\n  C[摄像头图像] --> S[去除 SN]\n  S --> H[厄米解映射]\n  H --> D[DFT]\n  D --> P[去除循环前缀]\n  P --> E[均衡]\n  E --> Q[QAM 解映射]\n  Q --> F[FEC 解码器]\n  F --> O[输出数据]"
+    },
+    {
+      "type": "prose",
+      "en": "Annex O.2 covers the MIMO-COOK decoder. MIMO means Multiple-Input Multiple-Output (several LEDs and/or image regions in parallel); C-OOK is Compact On-Off Keying, where the LED simply blinks on and off. Its chain is preprocessing → Region-of-Interest (RoI) detection → downsampling based on the rolling-shutter effect → Start-Frame (SF) detection → forward and backward decoding, plus a matched-filter decoder and the same missing/merger logic driven by the SN. The matched filter (O.2.4) slides a known preamble template over the received signal by convolution to find where packets start and to maximize signal-to-noise ratio (SNR) before reading each bit as 0 or 1.",
+      "zh": "附录 O.2 讲解 MIMO-COOK 解码器。MIMO 即多输入多输出（多个 LED 和/或多个图像区域并行）；C-OOK 是紧凑型通断键控，即 LED 简单地亮灭。其链路为：预处理 → 感兴趣区域（RoI）检测 → 基于卷帘快门效应的下采样 → 起始帧（SF）检测 → 前向与后向解码，再加上一个匹配滤波器解码器，以及由 SN 驱动的同样的丢包/合并逻辑。匹配滤波器（O.2.4）通过卷积把已知前导模板在接收信号上滑动，以找到包的起始位置并在判读每比特为 0 或 1 之前最大化信噪比（SNR）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A matched filter is simply 'compare what I received against the pattern I expect.' Because the transmitter and receiver agree in advance on the preamble (and on the 16 patterns of a 4B6B run-length-limited code, or Manchester code), the receiver convolves the incoming stripe pattern with each known template; the best match tells it both where the packet begins and which bit was sent.",
+      "zh": "匹配滤波器其实就是“把收到的信号与我预期的图样作比较”。由于收发双方事先约定好前导码（以及 4B6B 行程长度受限码的 16 种图样，或曼彻斯特码），接收机将进来的条纹图样与每个已知模板做卷积；最佳匹配既告诉它包从哪里开始，也告诉它发送的是哪个比特。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 360 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"8\" y=\"20\" width=\"40\" height=\"40\"/><rect x=\"48\" y=\"20\" width=\"24\" height=\"40\"/><rect x=\"72\" y=\"20\" width=\"24\" height=\"40\"/><rect x=\"96\" y=\"20\" width=\"24\" height=\"40\"/><rect x=\"120\" y=\"20\" width=\"180\" height=\"40\"/><rect x=\"300\" y=\"20\" width=\"40\" height=\"40\"/><text x=\"28\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Preamble</text><text x=\"60\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">SF</text><text x=\"84\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">SN</text><text x=\"108\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"7\" text-anchor=\"middle\">LED_ID</text><text x=\"210\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Payload (DS)</text><text x=\"320\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">Preamble</text></svg>",
+      "caption": {
+        "en": "A camera-captured packet as seen by the OCC decoders: a preamble for matched-filter detection, a start frame (SF), the sequence number (SN) that drives merge/loss logic, an LED identifier, and the payload data symbol (DS), bracketed by preambles.",
+        "zh": "OCC 解码器眼中一个由摄像头捕获的数据包：用于匹配滤波检测的前导码、起始帧（SF）、驱动合并/丢包逻辑的序列号（SN）、LED 标识符，以及载荷数据符号（DS），首尾由前导码包夹。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Annexes O.3 through O.7 round out the seven PHY VII waveforms. O.3 O-NOMA (Optical Non-Orthogonal Multiple Access) stacks two power levels in one bit (upper half P1, lower half P2) and decodes via LED detection → successive interference cancellation → packet demapping → FEC. O.4 MIMO-OOK adds a preamble between packets so the receiver can tell the wanted light source from background/noise light. O.5 HOOK-OFDM is a hybrid dual-stream scheme on one rolling-shutter camera: a C-OOK decoder for the low-rate stream and an RS-OFDM decoder for the high-rate stream. O.6 HS2PSK-OFDM uses two cameras and includes a Hermitian-demapping step (it mirrors subcarriers so the inverse transform yields a real-valued light intensity). O.7 BPPM (Binary Pulse-Position Modulation) reads two brightness thresholds (ThL, ThH) to separate a high-rate and a low-rate stream from one stripe pattern, with CNN-based LED detection up front.",
+      "zh": "附录 O.3 到 O.7 补全了七种 PHY VII 波形。O.3 的 O-NOMA（光学非正交多址）在一个比特内叠两个功率级（上半 P1、下半 P2），经 LED 检测 → 串行干扰消除 → 包解映射 → FEC 解码。O.4 MIMO-OOK 在包之间加前导码，使接收机能把目标光源与背景/噪声光区分开。O.5 HOOK-OFDM 是单台卷帘快门摄像头上的混合双流方案：低速流用 C-OOK 解码器，高速流用 RS-OFDM 解码器。O.6 HS2PSK-OFDM 用两台摄像头，并包含厄米解映射步骤（它对子载波作镜像，使逆变换得到实数光强）。O.7 BPPM（二进制脉位调制）用两个亮度门限（ThL、ThH）从一张条纹图样中分离出高速流与低速流，前端采用基于 CNN 的 LED 检测。"
+    },
+    {
+      "type": "prose",
+      "en": "Annex P turns to deep learning at the OCC receiver. P.1 describes a convolutional neural network (CNN) for LED detection under a mobility effect. When the camera or LED moves, stripes smear; a neural network (NN) trained by backpropagation reforms the stripe pattern. The training architecture (Figure P.1) warps and resamples image patches of a moving LED to match reference stripes from a fixed LED, using a spatial transformation and an NN regression that scores stripe similarity. To reject false sources, the receiver captures several frames after detection: if a region's stripe pattern keeps changing, it is the true source LED; if not, it is interfering light and is filtered out.",
+      "zh": "附录 P 转向 OCC 接收机的深度学习。P.1 描述了在移动效应下用于 LED 检测的卷积神经网络（CNN）。当摄像头或 LED 移动时条纹会拖花；一个用反向传播训练的神经网络（NN）可重整条纹图样。其训练架构（图 P.1）通过空间变换和一个对条纹相似度打分的 NN 回归，对移动 LED 的图像块进行扭曲与重采样，使其与固定 LED 的参考条纹对齐。为剔除虚假光源，接收机在检测后再拍若干帧：若某区域的条纹图样持续变化，则为真正的源 LED；否则视为干扰光并滤除。"
+    },
+    {
+      "type": "prose",
+      "en": "P.2 describes a support vector machine (SVM) classifier for finding the LED that is actually transmitting. The transmit-side data LEDs are modulated at 2-4 kHz to suppress visible flicker; interfering sources are not modulated at that frequency. The image sensor captures every light source; a trained CNN model dispels interference; image processing segments all candidate LED regions; and because the rolling shutter striates each frame into white/black bands, geometric features of those stripes are extracted so the SVM can classify which regions carry real data. The architecture (Figure P.2) even separates data from two transmitters (TX 1, TX 2).",
+      "zh": "P.2 描述了一种支持向量机（SVM）分类器，用于找出真正在发送的 LED。发射端的数据 LED 以 2–4 kHz 调制以抑制可见闪烁；干扰光源并不在该频率上调制。图像传感器会捕获所有光源；一个训练好的 CNN 模型排除干扰；图像处理分割出所有候选 LED 区域；又因卷帘快门把每帧划成黑白条带，便从这些条纹中提取几何特征，使 SVM 能分类哪些区域携带真实数据。其架构（图 P.2）甚至能分离来自两个发射端（TX 1、TX 2）的数据。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  IS[Image sensor: all light sources] --> CNN[Trained CNN dispels interference]\n  CNN --> SEG[Segment candidate LED regions]\n  SEG --> FEAT[Extract stripe geometry features]\n  FEAT --> SVM[SVM classifier]\n  SVM --> T1[Data from TX 1]\n  SVM --> T2[Data from TX 2]",
+      "zh": "flowchart TD\n  IS[图像传感器：所有光源] --> CNN[训练好的 CNN 排除干扰]\n  CNN --> SEG[分割候选 LED 区域]\n  SEG --> FEAT[提取条纹几何特征]\n  FEAT --> SVM[SVM 分类器]\n  SVM --> T1[来自 TX 1 的数据]\n  SVM --> T2[来自 TX 2 的数据]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every sub-clause of Annexes O and P, by number",
+        "zh": "覆盖地图：附录 O 与 P 的每个子条款（按编号）"
+      },
+      "en": "Annex O (informative) — PHY VII waveforms decoding guide: O.1 RS-OFDM (O.1.1 overview, O.1.2 oversampling, O.1.3 undersampling); O.2 MIMO-COOK (O.2.1 overview, O.2.2 oversampling, O.2.3 undersampling, O.2.4 matched-filter decoding and preamble detection); O.3 O-NOMA; O.4 MIMO-OOK; O.5 HOOK-OFDM; O.6 HS2PSK-OFDM (with Hermitian-demapping equations); O.7 BPPM (dual thresholds ThL/ThH, CNN-based LED detection). Annex P (informative) — Deep learning for OCC receiver: P.1 convolutional neural network for LED detection with mobility effect (Figure P.1 training architecture for stripe-pattern reformation; source vs. interfering-LED rejection over several frames); P.2 support vector machine (SVM) classifier (Figure P.2 accurate data-transmitting LED detection, 2-4 kHz modulation to suppress flicker, geometric stripe features, two-transmitter separation). Both annexes are informative, inserted after Annex N by this amendment.",
+      "zh": "附录 O（资料性）——PHY VII 波形解码指南：O.1 RS-OFDM（O.1.1 概述、O.1.2 过采样、O.1.3 欠采样）；O.2 MIMO-COOK（O.2.1 概述、O.2.2 过采样、O.2.3 欠采样、O.2.4 匹配滤波解码与前导检测）；O.3 O-NOMA；O.4 MIMO-OOK；O.5 HOOK-OFDM；O.6 HS2PSK-OFDM（含厄米解映射公式）；O.7 BPPM（双门限 ThL/ThH，基于 CNN 的 LED 检测）。附录 P（资料性）——OCC 接收机的深度学习：P.1 在移动效应下用于 LED 检测的卷积神经网络（图 P.1 条纹图样重整的训练架构；通过多帧区分源 LED 与干扰 LED）；P.2 支持向量机（SVM）分类器（图 P.2 精确的数据发送 LED 检测、2–4 kHz 调制抑制闪烁、条纹几何特征、双发射端分离）。两个附录均为资料性，由本修正案插入到附录 N 之后。",
+      "cite": {
+        "pdf_id": "802157a-2024",
+        "pages": [
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          50,
+          51
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802157a-2024",
+      "pages": [
+        41,
+        42,
+        43,
+        44,
+        45
+      ],
+      "note": "Annex O.1 RS-OFDM and O.2 MIMO-COOK decoders, oversampling/undersampling, matched filter"
+    },
+    {
+      "pdf_id": "802157a-2024",
+      "pages": [
+        45,
+        46,
+        47,
+        48,
+        49
+      ],
+      "note": "Annex O.3 O-NOMA, O.4 MIMO-OOK, O.5 HOOK-OFDM, O.6 HS2PSK-OFDM, O.7 BPPM decoders"
+    },
+    {
+      "pdf_id": "802157a-2024",
+      "pages": [
+        50,
+        51
+      ],
+      "note": "Annex P.1 CNN for LED detection with mobility, P.2 SVM classifier"
+    }
+  ],
+  "covers": [
+    "802157a-2024:Annex_O",
+    "802157a-2024:Annex_P"
+  ],
+  "track": "pan-optical"
+}
