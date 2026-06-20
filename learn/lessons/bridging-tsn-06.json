@@ -1,0 +1,112 @@
+{
+  "id": "bridging-tsn-06",
+  "title": {
+    "en": "How a VLAN Bridged Network Works: From Wires to Forwarding Rules (Clause 7)",
+    "zh": "VLAN 桥接网络的工作原理：从物理链路到转发规则（第 7 章）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 7 is the conceptual blueprint for the whole standard. Before diving into the gritty mechanics of an individual bridge (Clause 8) or the spanning tree protocols (Clause 13), the standard pauses to describe the *principles* of a Virtual Bridged Network: how a mesh of LANs and bridges turns into a set of clean, loop-free delivery paths. A Bridge is a device that relays frames between the separate Local Area Networks (LANs) attached to its Ports. A Virtual Local Area Network (VLAN) is a logical partition of that network that behaves like its own separate bridged network. This lesson walks through Clause 7 subclause by subclause so you can read the rest of the standard fluently.",
+      "zh": "第 7 章是整部标准的概念蓝图。在深入单个网桥的细节机制（第 8 章）或生成树协议（第 13 章）之前，标准先停下来描述虚拟桥接网络的“原理”：一张由 LAN 和网桥构成的网格，是如何变成一组清晰、无环的转发路径的。网桥（Bridge）是一种在其各端口所连接的不同局域网（LAN）之间转发帧的设备。虚拟局域网（VLAN）则是该网络的逻辑分区，其行为如同一张独立的桥接网络。本课逐节讲解第 7 章，让你能够流畅地阅读标准的其余部分。"
+    },
+    {
+      "type": "prose",
+      "en": "7.1 Network overview lays out six ingredients that, taken together, define how the network operates. First, a **physical topology**: the actual LANs, Bridges, and Bridge Ports, where each Port attaches one LAN to a bridge and carries user data both ways. Second, one or more **active topologies** — each one a loop-free subset of that physical wiring. Third, **classification rules** that put every frame into exactly one active topology. Fourth, **management control** over the connectivity given to differently classified frames. Fifth, **end station location** information saying which LANs have stations that should receive a given destination. Sixth, **communication** of that location info so bridges keep frames only on the LANs along the path to their destination. The standard notes that even a wireless link, with no tangible cable, is modeled the same way: a Bridge Port still represents the association between bridge and LAN.",
+      "zh": "7.1 节“网络概览”列出了六项要素，它们共同定义了网络如何运行。第一，**物理拓扑**：真实存在的 LAN、网桥和网桥端口，每个端口将一个 LAN 接入网桥，并双向传送用户数据。第二，一个或多个**活动拓扑**——每个都是该物理布线的无环子集。第三，**分类规则**，把每一帧放入且仅放入一个活动拓扑。第四，对不同分类帧所获得连通性的**管理控制**。第五，**终端站点位置**信息，说明哪些 LAN 上的站点应当接收发往某目的地址的帧。第六，把该位置信息**传播**出去，使网桥只在通往目的地路径上的 LAN 上保留这些帧。标准指出，即便是没有实体线缆的无线链路，也按同样方式建模：网桥端口仍然表示网桥与 LAN 之间的关联。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 250\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"20\" y=\"20\" width=\"180\" height=\"34\" rx=\"4\"/><text x=\"110\" y=\"42\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Physical topology (LANs + Bridges)</text><rect x=\"20\" y=\"74\" width=\"180\" height=\"34\" rx=\"4\"/><text x=\"110\" y=\"96\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Active topology (loop-free)</text><rect x=\"20\" y=\"128\" width=\"180\" height=\"34\" rx=\"4\"/><text x=\"110\" y=\"150\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">VLAN topology (per-VLAN extent)</text><rect x=\"20\" y=\"182\" width=\"180\" height=\"34\" rx=\"4\"/><text x=\"110\" y=\"204\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Station location (learning, MMRP)</text><line x1=\"110\" y1=\"54\" x2=\"110\" y2=\"74\"/><line x1=\"110\" y1=\"108\" x2=\"110\" y2=\"128\"/><line x1=\"110\" y1=\"162\" x2=\"110\" y2=\"182\"/><rect x=\"260\" y=\"95\" width=\"180\" height=\"60\" rx=\"4\"/><text x=\"350\" y=\"120\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Relay: ingress /</text><text x=\"350\" y=\"138\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">forwarding / egress</text><line x1=\"200\" y1=\"145\" x2=\"260\" y2=\"125\"/></svg>",
+      "caption": {
+        "en": "The layered view from Figure 7-1: physical wiring is narrowed to a loop-free active topology, scoped to per-VLAN extents, refined by station location, and finally executed by each bridge's relay (ingress/forwarding/egress).",
+        "zh": "图 7-1 的分层视图：物理布线先收敛为无环的活动拓扑，再按每个 VLAN 的范围划定边界，由站点位置信息进一步收窄，最终由各网桥的中继功能（入口/转发/出口）执行。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "7.2 Use of VLANs explains why we bother with a VLAN Identifier (VID) at all. The VID is a network-wide reference number that lets bridges (a) name the rules that classify frames into VLANs, (b) effectively extend MAC addresses by treating each VLAN's addressing independently, (c) pick among different active topologies, and (d) carry the configuration that partitions one physical network into many virtual ones. A LAN that network management selects to receive a VLAN's frames is said to be a *member* of that VLAN — and crucially, membership is defined by **reception** to avoid ambiguity. Carrying the VID inside a VLAN tag also guards against loops caused by two bridges classifying the same frame differently, and the tag can carry priority information even when the frame belongs to no particular VLAN.",
+      "zh": "7.2 节“VLAN 的使用”解释了我们为何需要 VLAN 标识符（VID）。VID 是一个全网通用的引用编号，使网桥能够：(a) 标识把帧分类到各 VLAN 的规则；(b) 通过独立处理每个 VLAN 的寻址，有效扩展 MAC 地址；(c) 在不同活动拓扑之间选择；(d) 携带把一张物理网络划分为多张虚拟网络的配置。被网络管理选定接收某 VLAN 帧的 LAN，被称为该 VLAN 的“成员”——关键在于，成员资格以**接收**来定义，以避免歧义。在 VLAN 标签中携带 VID，还可防止两个网桥对同一帧分类不一致而造成的环路；即便帧不属于任何特定 VLAN，该标签也能携带优先级信息。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: the active topology answers \"which links may I use without making a loop?\" The VLAN topology answers \"of those links, which ones does *this* VLAN actually span?\" Station location answers \"of that span, which ports really need this particular frame?\" Each layer narrows the previous one.",
+      "zh": "记忆模型：活动拓扑回答“我可以使用哪些链路而不形成环路？”VLAN 拓扑回答“在这些链路中，*这个* VLAN 实际覆盖哪些？”站点位置回答“在该覆盖范围内，哪些端口才真正需要这一帧？”每一层都在前一层的基础上进一步收窄。"
+    },
+    {
+      "type": "prose",
+      "en": "7.3 Active topology is about staying loop-free. Bridges cooperate to compute one or more spanning trees — loop-free, fully connected subsets of the physical topology — using protocols like the Rapid Spanning Tree Protocol (RSTP), Multiple Spanning Tree Protocol (MSTP), Shortest Path Bridging (SPB), and Path Control and Reservation (PCR). These give rapid recovery from a failed link by switching to alternate connectivity, with no manual intervention. A bridge running RSTP/STP puts every frame on a single Common Spanning Tree (CST). An MSTP or SPB *region* is a group of bridges that agree on which VID maps to which subtree; that subtree may be a Multiple Spanning Tree Instance (MSTI), a Shortest Path Tree (SPT), an Explicit Tree (ET), or the Internal Spanning Tree (IST) that continues the CST through the region. At region boundaries everything falls back to the CST so differently configured regions still interoperate.",
+      "zh": "7.3 节“活动拓扑”讲的是保持无环。网桥相互协作，计算出一棵或多棵生成树——即物理拓扑中无环且全连通的子集——所用协议包括快速生成树协议（RSTP）、多生成树协议（MSTP）、最短路径桥接（SPB）以及路径控制与预留（PCR）。这些协议在链路失效时能切换到备用连通路径，实现快速恢复，无需人工干预。运行 RSTP/STP 的网桥会把每一帧都放到单一的公共生成树（CST）上。MSTP 或 SPB *区域*是一组就“哪个 VID 映射到哪棵子树”达成一致的网桥；该子树可以是多生成树实例（MSTI）、最短路径树（SPT）、显式树（ET），或在区域内延续 CST 的内部生成树（IST）。在区域边界处，一切都回退到 CST，使配置不同的区域仍能互通。"
+    },
+    {
+      "type": "prose",
+      "en": "7.4 VLAN topology zooms into how each VLAN sits on top of those trees. Typically each VID maps to one VLAN supported by one subtree within a region. SPB is the exception: frames for an SPB VLAN ride the SPT rooted at their entry bridge, and the SPB-VLAN variant (SPBV) requires each source bridge to use its own unique Shortest Path VID (SPVID), translated back at the region boundary; the SPB-MAC variant (SPBM) uses a single VID for all the SPTs of a VLAN. A VLAN may occupy the full extent of its tree or any *continuously connected* subset of it — if the subset breaks into pieces, the VLAN is split. Management can shrink a VLAN's maximum extent by excluding certain Bridge Ports, and a registration protocol (Clause 11) can dynamically grow or shrink the VLAN to only the LANs that currently need it, saving bandwidth at the cost of more management complexity.",
+      "zh": "7.4 节“VLAN 拓扑”进一步聚焦于每个 VLAN 如何叠加在这些树之上。通常每个 VID 在一个区域内映射到由一棵子树支持的一个 VLAN。SPB 是例外：SPB VLAN 的帧沿着以其入口网桥为根的 SPT 传输，而 SPB-VLAN 变体（SPBV）要求每个源网桥使用各自唯一的最短路径 VID（SPVID），并在区域边界处转换回原值；SPB-MAC 变体（SPBM）则对一个 VLAN 的所有 SPT 使用单一 VID。一个 VLAN 可以占据其生成树的全部范围，也可以占据其中任意一个*连续连通*的子集——若该子集断裂成多块，则该 VLAN 被分割。管理可通过排除某些网桥端口来缩小 VLAN 的最大范围；注册协议（第 11 章）则可动态地扩大或缩小 VLAN，使其仅覆盖当前需要的 LAN，从而节省带宽，但代价是更高的管理复杂度。"
+    },
+    {
+      "type": "prose",
+      "en": "7.5 Locating end stations is how bridges avoid flooding traffic everywhere. Acting as a distributed system, the bridges within a VLAN's current extent figure out which LANs have stations that should receive a given individual or group address — they don't pinpoint the station, they just decide which of their own ports must forward toward it. Two mechanisms feed this: the Multiple MAC Registration Protocol (MMRP, Clause 10) lets stations advertise that they want to join or leave a multicast group or register an individual address, and **source address learning** — every time a station sends a frame, it implicitly advertises its address and the LAN it sits on. Bridges store this in the Filtering Database (FDB) and use it to filter by destination. Learning can be shared across VLANs (Shared VLAN Learning, SVL) or kept separate (Independent VLAN Learning, IVL), depending on the configuration.",
+      "zh": "7.5 节“定位终端站点”说明网桥如何避免把流量泛洪到各处。作为一个分布式系统，处于某 VLAN 当前范围内的网桥会判断哪些 LAN 上有应当接收某个体地址或组地址的站点——它们并不精确定位站点，只是决定自己的哪些端口需要朝该方向转发。两种机制为此提供支撑：多 MAC 注册协议（MMRP，第 10 章）让站点声明其希望加入或离开某个组播组、或注册某个体地址；以及**源地址学习**——每当站点发送一帧时，就隐式地通告了它的地址及其所在的 LAN。网桥把这些信息存入过滤数据库（FDB），并据此按目的地址进行过滤。视配置而定，学习可在多个 VLAN 之间共享（共享 VLAN 学习，SVL），也可彼此独立（独立 VLAN 学习，IVL）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Frame arrives] --> B[Ingress: classify into one VLAN by VID/Port]\n  B --> C[Forwarding: pick ports from VLAN extent + station location]\n  C --> D[Egress: queue, select, tag or untag]\n  D --> E[Transmit on chosen ports]",
+      "zh": "flowchart LR\n  A[帧到达] --> B[入口：按 VID/端口归入单一 VLAN]\n  B --> C[转发：依据 VLAN 范围与站点位置选端口]\n  C --> D[出口：排队、选择、打标签或去标签]\n  D --> E[在所选端口上发送]"
+    },
+    {
+      "type": "prose",
+      "en": "7.6 Ingress, forwarding, and egress rules is the heart of the relay function each bridge performs, split into three stages. The **ingress rules** classify every received frame into exactly one VLAN and decide whether to accept it, based on its format — which is one of three: *untagged* (no VID), *priority-tagged* (a tag carrying priority but no VID), or *VLAN-tagged* (a tag with a specific VID). Every VLAN bridge can forward already-tagged frames and can classify untagged/priority-tagged frames per port (with optional Port-and-Protocol classification). The **forwarding rules** then decide where the frame goes, using the VLAN's current extent (7.4), station location (7.5), and Clause 8 controls. The **egress rules** queue the frame for the chosen ports, select it for transmission, and decide whether it leaves tagged or untagged. Control frames — spanning tree, SPB, MVRPDUs, plus link-constrained protocols like EAPOL and LLDP — are never forwarded; permanent static FDB entries ensure the Forwarding Process discards them.",
+      "zh": "7.6 节“入口、转发与出口规则”是每个网桥所执行中继功能的核心，分为三个阶段。**入口规则**根据帧的格式，把每一个收到的帧分类到且仅到一个 VLAN，并决定是否接受。帧的格式有三种：*无标签*（无 VID）、*优先级标签*（标签携带优先级但无 VID）、*VLAN 标签*（标签含特定 VID）。每个 VLAN 网桥都能转发已带标签的帧，并能按端口对无标签/优先级标签帧进行分类（还可选用基于端口与协议的分类）。**转发规则**随后依据该 VLAN 的当前范围（7.4 节）、站点位置（7.5 节）以及第 8 章的控制项，决定帧的去向。**出口规则**把帧排入所选端口的队列，选取其发送，并决定它以带标签还是不带标签的方式离开。控制帧——生成树、SPB、MVRPDU，以及 EAPOL、LLDP 等受链路约束的协议——一律不被转发；FDB 中永久性的静态条目确保转发进程将其丢弃。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A frame on a given LAN for a given VLAN must be consistently formatted: all untagged, or all VLAN-tagged with the same VID, or (for SPB) all tagged with an SPVID allocated to that VLAN's Base VID. Mixing formats for one VLAN on one LAN is not allowed — this consistency is what lets neighboring bridges agree on classification.",
+      "zh": "在某个 LAN 上，属于某个 VLAN 的帧必须格式一致：要么全部无标签，要么全部带同一 VID 的 VLAN 标签，或者（对 SPB 而言）全部带分配给该 VLAN 基准 VID（Base VID）的 SPVID。不允许在同一 LAN 上为同一 VLAN 混用格式——正是这种一致性，让相邻网桥能就分类达成一致。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: exactly where each Clause 7 subclause lives",
+        "zh": "覆盖地图：第 7 章各小节的精确位置"
+      },
+      "en": "This lesson teaches all six subclauses of Clause 7 (Principles of Virtual Bridged Network operation): 7.1 Network overview names the six elements — physical topology, active topology, classification, management control, station location, and its communication — and presents the layered Figure 7-1. 7.2 Use of VLANs defines the VID's four roles and fixes VLAN membership by reception. 7.3 Active topology covers spanning trees (RSTP, MSTP, SPB, PCR), the CST, regions, and subtrees (MSTI/SPT/ET/IST). 7.4 VLAN topology covers how VIDs map to subtrees, SPBV/SPBM, SPVID, Base VID, and continuously-connected (vs. split) VLAN extent. 7.5 Locating end stations covers MMRP, source-address learning into the FDB, and SVL vs. IVL. 7.6 Ingress, forwarding, and egress rules covers the three relay stages, the three frame formats (untagged / priority-tagged / VLAN-tagged), and the non-forwarding of control frames. Together these establish the context for individual bridge operation (Clause 8) and the spanning-tree protocols (Clause 13).",
+      "zh": "本课讲解第 7 章（虚拟桥接网络运行原理）的全部六个小节：7.1 节“网络概览”列出六项要素——物理拓扑、活动拓扑、分类、管理控制、站点位置及其传播——并给出分层的图 7-1。7.2 节“VLAN 的使用”定义 VID 的四种作用，并以接收来确定 VLAN 成员资格。7.3 节“活动拓扑”涵盖生成树（RSTP、MSTP、SPB、PCR）、CST、区域以及子树（MSTI/SPT/ET/IST）。7.4 节“VLAN 拓扑”讲述 VID 如何映射到子树、SPBV/SPBM、SPVID、Base VID，以及连续连通（相对于被分割）的 VLAN 范围。7.5 节“定位终端站点”涵盖 MMRP、写入 FDB 的源地址学习，以及 SVL 与 IVL 的对比。7.6 节“入口、转发与出口规则”涵盖中继的三个阶段、三种帧格式（无标签/优先级标签/VLAN 标签），以及控制帧不被转发的规则。这些内容共同为单个网桥的运行（第 8 章）与生成树协议（第 13 章）奠定了上下文。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          186,
+          187,
+          188,
+          189,
+          190
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        186,
+        187,
+        188,
+        189,
+        190
+      ],
+      "note": "Clause 7 in full: 7.1 Network overview and Figure 7-1 (p.186-187), 7.2 Use of VLANs (p.187), 7.3 Active topology (p.187-188), 7.4 VLAN topology (p.188), 7.5 Locating end stations (p.189), 7.6 Ingress/forwarding/egress rules (p.190)."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:7.1",
+    "8021Q-2022:7.2",
+    "8021Q-2022:7.3",
+    "8021Q-2022:7.4",
+    "8021Q-2022:7.5",
+    "8021Q-2022:7.6"
+  ],
+  "track": "bridging-tsn"
+}

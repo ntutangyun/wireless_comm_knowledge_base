@@ -1,0 +1,198 @@
+{
+  "id": "bridging-tsn-14",
+  "title": {
+    "en": "Bridge Management: Congestion Notification, SRP, PFC, PBB-TE and Shortest Path Bridging Objects",
+    "zh": "网桥管理：拥塞通知、SRP、PFC、PBB-TE 与最短路径桥接的受管对象"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This part of Clause 12 finishes the bridge management catalog by describing the *managed objects* for five advanced features. A managed object is just a named bundle of variables that a network operator can create, read, write, or delete to configure and observe a bridge. The five families here are: Congestion Notification (CN), the Stream Reservation Protocol (SRP), Priority-based Flow Control (PFC), 1:1 PBB-TE Infrastructure Protection Switching (IPS), and Shortest Path Bridging (SPB). Each family exposes its internal state machines through tables and objects so an operator never has to poke at the silicon directly.",
+      "zh": "本部分的 Clause 12 通过描述五项高级特性的“受管对象”来收尾网桥管理目录。受管对象只是一组带名字的变量集合，网络运维人员可以对它进行创建、读取、写入或删除，从而配置并观测一台网桥。这里的五个家族是：拥塞通知（CN）、流预留协议（SRP）、基于优先级的流控（PFC）、1:1 PBB-TE 基础设施保护倒换（IPS），以及最短路径桥接（SPB）。每个家族都通过表和对象把内部状态机暴露出来，运维人员因此无需直接操作底层芯片。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why so many tables? Each feature has its own control state machine elsewhere in the standard (Clauses 26, 28, 32, 35, 36). Clause 12 does not re-define the behavior — it only gives you the management *handles* (the rows, the fields, the read/write/create/delete operations) that let you steer those machines.",
+      "zh": "为什么会有这么多表？每项特性在标准的其他章节（第 26、28、32、35、36 章）都有自己的控制状态机。Clause 12 并不重新定义这些行为，它只提供管理用的“把手”（行、字段，以及读/写/创建/删除操作），让你能够操控这些状态机。"
+    },
+    {
+      "type": "prose",
+      "en": "Congestion Notification (CN) lets a switch deep in the network tell a traffic source to slow down before buffers overflow. 12.21 splits its controls into six objects. The CN component object (12.21.1) holds device-wide variables such as a master enable and a discarded-frame counter. The CN component priority object (12.21.2) configures one Congestion Notification Priority Value (CNPV) — a priority class that participates in CN — across all ports at once, and it has explicit Create (12.21.2.1) and Delete (12.21.2.2) operations that ripple down to every port. The CN Port priority object (12.21.3) is the per-port, per-priority version that can override or be overridden by the device-wide setting.",
+      "zh": "拥塞通知（CN）让网络深处的交换机在缓冲区溢出之前，告诉流量源头慢下来。12.21 把它的控制项拆成六个对象。CN 组件对象（12.21.1）保存全设备范围的变量，比如总开关和被丢弃帧计数器。CN 组件优先级对象（12.21.2）一次性为所有端口配置一个拥塞通知优先级值（CNPV，即参与 CN 的某个优先级类别），它带有明确的创建（12.21.2.1）和删除（12.21.2.2）操作，会向下波及每一个端口。CN 端口优先级对象（12.21.3）则是按端口、按优先级的版本，可以覆盖全设备设置，也可以被其覆盖。"
+    },
+    {
+      "type": "prose",
+      "en": "The other two CN objects sit at the edges of the feedback loop. The Congestion Point (CP) object (12.21.4) represents one congested queue inside a bridge — it counts discarded and transmitted frames and holds the parameters that decide how strong a feedback message to send. At the receiving end, the Reaction Point (RP) port priority object (12.21.5) controls how many reaction points an end station creates per port and priority, and the Reaction Point group object (12.21.6) carries the rate-control parameters (target rate, increase/decrease factors, thresholds) that an end station uses to actually throttle its sending rate when it receives a notification.",
+      "zh": "另外两个 CN 对象位于反馈环的两端。拥塞点（CP）对象（12.21.4）代表网桥内部某个拥塞的队列——它统计被丢弃和已发送的帧，并保存决定反馈消息强度的参数。在接收端，反应点（RP）端口优先级对象（12.21.5）控制终端站在每个端口、每个优先级上创建多少个反应点；反应点组对象（12.21.6）则携带速率控制参数（目标速率、增减因子、阈值），终端站收到通知后会用这些参数真正地限制自己的发送速率。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"55\" width=\"90\" height=\"40\" rx=\"4\"/><text x=\"55\" y=\"72\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Source / RP</text><text x=\"55\" y=\"86\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">12.21.5 / 12.21.6</text><rect x=\"185\" y=\"55\" width=\"90\" height=\"40\" rx=\"4\"/><text x=\"230\" y=\"72\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Bridge / CP</text><text x=\"230\" y=\"86\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">12.21.4</text><rect x=\"360\" y=\"55\" width=\"90\" height=\"40\" rx=\"4\"/><text x=\"405\" y=\"77\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Destination</text><line x1=\"100\" y1=\"68\" x2=\"185\" y2=\"68\"/><polygon points=\"185,68 177,64 177,72\" fill=\"currentColor\" stroke=\"none\"/><line x1=\"275\" y1=\"68\" x2=\"360\" y2=\"68\"/><polygon points=\"360,68 352,64 352,72\" fill=\"currentColor\" stroke=\"none\"/><path d=\"M185 84 Q142 130 100 84\"/><polygon points=\"100,84 108,88 104,80\" fill=\"currentColor\" stroke=\"none\"/><text x=\"142\" y=\"125\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">CNM (slow down)</text><text x=\"230\" y=\"30\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Congestion Notification feedback loop</text></svg>",
+      "caption": {
+        "en": "The CN loop: a Congestion Point (12.21.4) inside a congested bridge sends a Congestion Notification Message (CNM) back to the Reaction Point (12.21.5/12.21.6) at the source, which then reduces its rate.",
+        "zh": "CN 反馈环：拥塞网桥内部的拥塞点（12.21.4）向源头的反应点（12.21.5/12.21.6）回送一条拥塞通知消息（CNM），源头随即降低发送速率。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The Stream Reservation Protocol (SRP) reserves bandwidth end-to-end for time-sensitive streams (audio, video, control). 12.22 models it as seven tables. The SRP Bridge Base Table (12.22.1) holds device-wide knobs like whether SRP is enabled and how many SR classes are supported. The SRP Bridge Port Table (12.22.2) is the per-port version, tracking things like the per-port enable flag and counts of failed registrations. The SRP Latency Parameter Table (12.22.3) records the worst-case latency each traffic class adds at a port — the building block for the accumulated-latency math that SRP performs hop by hop.",
+      "zh": "流预留协议（SRP）为时间敏感的数据流（音频、视频、控制）端到端地预留带宽。12.22 将它建模为七张表。SRP 网桥基础表（12.22.1）保存全设备范围的设置，比如是否启用 SRP、支持多少个 SR 类别。SRP 网桥端口表（12.22.2）是按端口的版本，跟踪诸如每端口启用标志和注册失败计数等内容。SRP 时延参数表（12.22.3）记录每个流量类别在某端口上增加的最坏时延——这是 SRP 逐跳累加时延计算的基础构件。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining SRP tables track the streams themselves. The SRP Stream Table (12.22.4) has one row per registered StreamID with its destination, VLAN, frame size, and priority. The SRP Reservations Table (12.22.5) holds one row per Talker or Listener reservation on a port, including accumulated latency and any failure code. Finally, two preload tables — the SRP Stream Preload Table (12.22.6) and SRP Reservations Preload Table (12.22.7) — let an operator pre-seed streams and reservations so they exist the moment the bridge reboots, before live SRP signaling has a chance to re-establish them.",
+      "zh": "其余的 SRP 表跟踪数据流本身。SRP 流表（12.22.4）为每个已注册的 StreamID 各保留一行，记录其目的地址、VLAN、帧大小和优先级。SRP 预留表（12.22.5）为某端口上的每个 Talker（发送者）或 Listener（接收者）预留各保留一行，包含累加时延和任何失败码。最后，两张预载表——SRP 流预载表（12.22.6）和 SRP 预留预载表（12.22.7）——让运维人员预先植入数据流和预留，使网桥重启的那一刻它们就已存在，无需等待实时 SRP 信令重新建立。"
+    },
+    {
+      "type": "prose",
+      "en": "Three smaller families round out the list. Priority-based Flow Control (PFC) (12.23) — a per-priority pause mechanism — exposes just three port objects: PFCLinkDelayAllowance (a writable budget for round-trip link delay), PFCRequests (a count of pause requests sent), and PFCIndications (a count received). The 1:1 PBB-TE IPS managed objects (12.24) cover Provider Backbone Bridge Traffic Engineering Infrastructure Protection Switching, which protects an engineered backbone path by switching to a backup. The IPG list object (12.24.1) enumerates the Infrastructure Protection Groups on a bridge, and the IPG object (12.24.2) lets you read/write one group and apply administrative commands such as Forced Switch or Manual Switch to flip onto the protection path.",
+      "zh": "另外三个较小的家族补全了清单。基于优先级的流控（PFC）（12.23）是一种按优先级的暂停机制，只暴露三个端口对象：PFCLinkDelayAllowance（可写的链路往返时延预算）、PFCRequests（已发送的暂停请求计数）和 PFCIndications（已接收的计数）。1:1 PBB-TE IPS 受管对象（12.24）覆盖运营商骨干网桥流量工程的基础设施保护倒换，它通过切换到备份来保护一条经过工程规划的骨干路径。IPG 列表对象（12.24.1）列举网桥上的基础设施保护组，IPG 对象（12.24.2）让你读写某个组，并下发诸如“强制倒换”或“手动倒换”这样的管理命令，从而切到保护路径。"
+    },
+    {
+      "type": "prose",
+      "en": "The largest family is Shortest Path Bridging (SPB) (12.25), which builds shortest-path forwarding across a whole bridged region using the IS-IS routing protocol (a link-state protocol borrowed from the routing world). Its managed objects come in two flavors: *Static* objects that you configure and that persist over reboot, and *Dynamic* objects that IS-IS-SPB populates automatically as it discovers the topology. The static foundation is the SPB System object (12.25.1, one per IS-IS-SPB area, holding the bridge's system identifier) and the SPB MTID Static object (12.25.2, which defines a Multi-Topology Identifier so several logical topologies can coexist).",
+      "zh": "最大的家族是最短路径桥接（SPB）（12.25），它使用 IS-IS 路由协议（一种从路由领域借来的链路状态协议）在整个桥接区域内构建最短路径转发。它的受管对象分两类：你来配置、且在重启后保持不变的“静态”对象，以及 IS-IS-SPB 在发现拓扑时自动填充的“动态”对象。静态基础是 SPB System 对象（12.25.1，每个 IS-IS-SPB 区域一个，保存网桥的系统标识符）和 SPB MTID 静态对象（12.25.2，它定义一个多拓扑标识符 MTID，使多个逻辑拓扑可以共存）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[SPB System 12.25.1] --> B[MTID Static 12.25.2]\n  B --> C[Topology Instance Dynamic 12.25.3]\n  B --> D[ECT Static / Dynamic 12.25.4 / 12.25.5]\n  B --> E[Adjacency Static / Dynamic 12.25.6 / 12.25.7]\n  B --> F[BSI Static 12.25.8]\n  C --> G[Topology Node / ECT / Edge Tables 12.25.9-12.25.11]\n  C --> H[SPBM / SPBV Service Tables 12.25.12 / 12.25.13]\n  D --> I[ECMP ECT Static Entry 12.25.14]",
+      "zh": "flowchart TD\n  A[SPB System 12.25.1] --> B[MTID 静态 12.25.2]\n  B --> C[拓扑实例动态 12.25.3]\n  B --> D[ECT 静态/动态 12.25.4 / 12.25.5]\n  B --> E[邻接 静态/动态 12.25.6 / 12.25.7]\n  B --> F[BSI 静态 12.25.8]\n  C --> G[拓扑节点/ECT/边 表 12.25.9-12.25.11]\n  C --> H[SPBM / SPBV 业务表 12.25.12 / 12.25.13]\n  D --> I[ECMP ECT 静态条目 12.25.14]"
+    },
+    {
+      "type": "prose",
+      "en": "On top of that foundation sit the per-port and per-service objects. The SPB Adjacency Static (12.25.6) and Dynamic (12.25.7) objects hold, respectively, the configured and the discovered link parameters per port per topology. The SPB ECT Static (12.25.4) and Dynamic (12.25.5) objects govern Equal Cost Tree (ECT) selection — how SPB picks one of several equal-cost shortest paths. The SPBM BSI Static object (12.25.8) maps a Backbone Service Instance (a customer service identified by an I-SID) onto a backbone VLAN. SPBM (SPB MAC mode) and SPBV (SPB VID mode) are the two SPB data-plane encodings. The read-only dynamic tables — Topology Instance (12.25.3), Topology Node (12.25.9), Topology ECT (12.25.10), Topology Edge (12.25.11), SPBM Service (12.25.12), and SPBV Service (12.25.13) — let an operator inspect the live region: which bridges exist, how they connect, and where each service lives. The ECMP ECT Static Entry object (12.25.14) tunes Equal Cost Multi-Path tie-breaking via a per-priority Tie-Break Mask.",
+      "zh": "在这个基础之上是按端口和按业务的对象。SPB 邻接静态（12.25.6）和动态（12.25.7）对象分别按端口、按拓扑保存配置的和发现的链路参数。SPB ECT 静态（12.25.4）和动态（12.25.5）对象管理等价树（ECT）的选择——即 SPB 如何在多条等价的最短路径中挑选一条。SPBM BSI 静态对象（12.25.8）把一个骨干业务实例（由 I-SID 标识的客户业务）映射到一个骨干 VLAN 上。SPBM（SPB MAC 模式）和 SPBV（SPB VID 模式）是 SPB 的两种数据面编码。那些只读的动态表——拓扑实例（12.25.3）、拓扑节点（12.25.9）、拓扑 ECT（12.25.10）、拓扑边（12.25.11）、SPBM 业务（12.25.12）和 SPBV 业务（12.25.13）——让运维人员检视活动区域：有哪些网桥、它们如何相连、每项业务位于何处。ECMP ECT 静态条目对象（12.25.14）则通过按优先级的“断接掩码”（Tie-Break Mask）来调节等价多路径的断接规则。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause number in this lesson",
+        "zh": "覆盖地图——本课涉及的全部条款编号"
+      },
+      "en": "Congestion Notification (12.21): 12.21.1 CN component object (device-wide vars); 12.21.2 CN component priority object (per-CNPV, with Create 12.21.2.1 / Delete 12.21.2.2); 12.21.3 CN Port priority object (per-port per-priority); 12.21.4 Congestion Point object (one per congested queue); 12.21.5 Reaction Point port priority object; 12.21.6 Reaction Point group object (rate-control params). SRP (12.22): 12.22.1 SRP Bridge Base Table; 12.22.2 SRP Bridge Port Table; 12.22.3 SRP Latency Parameter Table; 12.22.4 SRP Stream Table; 12.22.5 SRP Reservations Table; 12.22.6 SRP Stream Preload Table; 12.22.7 SRP Reservations Preload Table. PFC (12.23): PFCLinkDelayAllowance, PFCRequests, PFCIndications. PBB-TE IPS (12.24): 12.24.1 IPG list object (with Read/Create/Delete IPG); 12.24.2 IPG object (Read/Write plus administrative commands). SPB (12.25): 12.25.1 SPB System object; 12.25.2 SPB MTID Static object; 12.25.3 SPB Topology Instance Dynamic object; 12.25.4 SPB ECT Static Entry; 12.25.5 SPB ECT Dynamic Entry; 12.25.6 SPB Adjacency Static Entry; 12.25.7 SPB Adjacency Dynamic Entry; 12.25.8 SPBM BSI Static Entry; 12.25.9 SPB Topology Node Table; 12.25.10 SPB Topology ECT Table; 12.25.11 SPB Topology Edge Table; 12.25.12 SPBM Topology Service Table; 12.25.13 SPBV Topology Service Table; 12.25.14 ECMP ECT Static Entry.",
+      "zh": "拥塞通知（12.21）：12.21.1 CN 组件对象（全设备变量）；12.21.2 CN 组件优先级对象（按 CNPV，含创建 12.21.2.1/删除 12.21.2.2）；12.21.3 CN 端口优先级对象（按端口按优先级）；12.21.4 拥塞点对象（每个拥塞队列一个）；12.21.5 反应点端口优先级对象；12.21.6 反应点组对象（速率控制参数）。SRP（12.22）：12.22.1 SRP 网桥基础表；12.22.2 SRP 网桥端口表；12.22.3 SRP 时延参数表；12.22.4 SRP 流表；12.22.5 SRP 预留表；12.22.6 SRP 流预载表；12.22.7 SRP 预留预载表。PFC（12.23）：PFCLinkDelayAllowance、PFCRequests、PFCIndications。PBB-TE IPS（12.24）：12.24.1 IPG 列表对象（含读/创建/删除 IPG）；12.24.2 IPG 对象（读/写及管理命令）。SPB（12.25）：12.25.1 SPB System 对象；12.25.2 SPB MTID 静态对象；12.25.3 SPB 拓扑实例动态对象；12.25.4 SPB ECT 静态条目；12.25.5 SPB ECT 动态条目；12.25.6 SPB 邻接静态条目；12.25.7 SPB 邻接动态条目；12.25.8 SPBM BSI 静态条目；12.25.9 SPB 拓扑节点表；12.25.10 SPB 拓扑 ECT 表；12.25.11 SPB 拓扑边表；12.25.12 SPBM 拓扑业务表；12.25.13 SPBV 拓扑业务表；12.25.14 ECMP ECT 静态条目。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          436,
+          437,
+          438,
+          439,
+          440,
+          441,
+          442,
+          443,
+          444,
+          445,
+          449,
+          450,
+          451,
+          452,
+          453,
+          454,
+          455,
+          456,
+          457,
+          458,
+          459,
+          460,
+          461,
+          462,
+          463,
+          464,
+          465
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        436,
+        437,
+        438,
+        439,
+        440
+      ],
+      "note": "12.21 Congestion Notification managed objects (CN component, component priority, port priority, Congestion Point, Reaction Point port priority and group)"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        440,
+        441,
+        442,
+        443,
+        444
+      ],
+      "note": "12.22 SRP entities (Base, Port, Latency, Stream, Reservations, and two Preload tables)"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        445
+      ],
+      "note": "12.23 PFC objects and 12.24 1:1 PBB-TE IPS managed objects (IPG list, IPG object)"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        449,
+        450,
+        451,
+        452,
+        453,
+        454,
+        455,
+        456,
+        457,
+        458,
+        459,
+        460,
+        461,
+        462,
+        463,
+        464,
+        465
+      ],
+      "note": "12.25 Shortest Path Bridging managed objects (System, MTID, Topology Instance, ECT, Adjacency, BSI, Topology Node/ECT/Edge tables, SPBM/SPBV Service tables, ECMP ECT)"
+    }
+  ],
+  "covers": [
+    "8021Q-2022:12.21.1",
+    "8021Q-2022:12.21.2",
+    "8021Q-2022:12.21.3",
+    "8021Q-2022:12.21.4",
+    "8021Q-2022:12.21.5",
+    "8021Q-2022:12.21.6",
+    "8021Q-2022:12.22.1",
+    "8021Q-2022:12.22.2",
+    "8021Q-2022:12.22.3",
+    "8021Q-2022:12.22.4",
+    "8021Q-2022:12.22.5",
+    "8021Q-2022:12.22.6",
+    "8021Q-2022:12.22.7",
+    "8021Q-2022:12.23",
+    "8021Q-2022:12.24.1",
+    "8021Q-2022:12.24.2",
+    "8021Q-2022:12.25.1",
+    "8021Q-2022:12.25.2",
+    "8021Q-2022:12.25.3",
+    "8021Q-2022:12.25.4",
+    "8021Q-2022:12.25.5",
+    "8021Q-2022:12.25.6",
+    "8021Q-2022:12.25.7",
+    "8021Q-2022:12.25.8",
+    "8021Q-2022:12.25.9",
+    "8021Q-2022:12.25.10",
+    "8021Q-2022:12.25.11",
+    "8021Q-2022:12.25.12",
+    "8021Q-2022:12.25.13",
+    "8021Q-2022:12.25.14"
+  ],
+  "track": "bridging-tsn"
+}

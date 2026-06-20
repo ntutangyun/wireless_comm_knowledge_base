@@ -1,0 +1,188 @@
+{
+  "id": "bridging-tsn-56",
+  "title": {
+    "en": "CDCP & ECP: Carving S-Channels and Reliably Delivering Edge Control Frames",
+    "zh": "CDCP 与 ECP：划分 S 通道并可靠传输边缘控制帧"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This lesson covers two short, self-contained protocols from IEEE Std 802.1Q-2022 that work at the edge of a bridged network, where a station meets its first bridge. Clause 42 defines the S-Channel Discovery and Configuration Protocol (CDCP): a way to slice one physical link into several logical channels (called S-channels). Clause 43 defines the Edge Control Protocol (ECP): a tiny reliable, in-order delivery service that other protocols ride on top of. Neither is hard once you see the shape: CDCP is a request/respond negotiation between a station and a bridge; ECP is a send-and-acknowledge loop with retries.",
+      "zh": "本课讲解 IEEE Std 802.1Q-2022 中两个简短、相对独立的协议，它们都工作在桥接网络的边缘，也就是站点（station）遇到第一台桥（bridge）的地方。Clause 42 定义了 S 通道发现与配置协议（S-Channel Discovery and Configuration Protocol，CDCP）：把一条物理链路切分成若干条逻辑通道（称为 S 通道，S-channel）的方法。Clause 43 定义了边缘控制协议（Edge Control Protocol，ECP）：一个让其它协议搭载使用的、微型的可靠且保序的传输服务。两者其实都不难：CDCP 是站点与桥之间的请求/应答协商；ECP 是带重传的发送-确认循环。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with CDCP (42.1). An S-channel is a logical sub-link carried over one real link by tagging frames with an S-VID (Service VLAN Identifier). They are built using a Port-mapping S-VLAN component inside the station and the bridge. Untagged frames belong to the default S-channel, whose S-Channel Identifier (SCID) and S-VID are both fixed at 1 and are reserved for that purpose only. To set up extra channels, CDCP does not invent its own frames; it piggybacks on LLDP (Link Layer Discovery Protocol), exchanging a CDCP TLV (Type-Length-Value record) addressed to the Nearest non-TPMR Bridge address. The bridge's capabilities plus the station's requests together decide the final channel layout.",
+      "zh": "先看 CDCP（42.1）。S 通道是一条逻辑子链路，通过给帧打上 S-VID（服务 VLAN 标识符，Service VLAN Identifier）标签，承载在一条真实链路之上。它们由站点和桥内部的“端口映射 S-VLAN 组件”（Port-mapping S-VLAN component）构建。未打标签的帧属于默认 S 通道，其 S 通道标识符（S-Channel Identifier，SCID）和 S-VID 都固定为 1，且仅保留作此用途。要建立额外的通道，CDCP 不自己发明帧，而是搭载在 LLDP（链路层发现协议，Link Layer Discovery Protocol）之上，交换一条寻址到 Nearest non-TPMR Bridge 地址的 CDCP TLV（类型-长度-值记录，Type-Length-Value）。桥的能力加上站点的请求共同决定最终的通道布局。"
+    },
+    {
+      "type": "prose",
+      "en": "CDCP is asymmetric: one side plays Station (role S), the other plays Bridge (role B), set by the AdminRole variable (42.4.2). A station (role S) refuses to accept channel configuration from its neighbor but accepts S-VID assignments; a bridge (role B) accepts the neighbor's channel requests and does its best to fill them. If both ends claim the same role, no channels get configured (42.2). The dance is: the station requests channels, the bridge answers with the best matching resources it can supply, the station then goes operational and reports its running config, and finally the bridge goes operational matching the station. To change anything later, the station simply edits its request and the same cycle repeats.",
+      "zh": "CDCP 是非对称的：一端扮演站点（角色 S），另一端扮演桥（角色 B），由 AdminRole 变量设定（42.4.2）。站点（角色 S）拒绝接受邻居的通道配置，但接受 S-VID 分配；桥（角色 B）接受邻居的通道请求，并尽力满足它们。如果两端都声称相同角色，则不会配置出任何通道（42.2）。整个流程是：站点请求通道，桥用它能提供的最佳匹配资源应答，站点随后进入运行状态并上报其运行配置，最后桥也按站点的运行配置进入运行状态。之后若要改动，站点只需修改其请求，同样的循环再走一遍。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant S as Station (role S)\n  participant B as Bridge (role B)\n  S->>B: CDCP TLV: requested (SCID,S-VID) pairs\n  B->>S: CDCP TLV: best-match assignments\n  S->>B: Running config (goes operational)\n  B->>S: Matches station config (operational)",
+      "zh": "sequenceDiagram\n  participant S as 站点 (角色 S)\n  participant B as 桥 (角色 B)\n  S->>B: CDCP TLV: 请求的 (SCID,S-VID) 对\n  B->>S: CDCP TLV: 最佳匹配分配\n  S->>B: 运行配置 (进入运行态)\n  B->>S: 匹配站点配置 (进入运行态)"
+    },
+    {
+      "type": "prose",
+      "en": "The station and bridge each run a state machine (42.3). The station machine (Figure 42-1) moves Init -> ChannelRequest -> RxSVIDs: it copies its admin wants into the request, calls SetSVIDRequest, then once the remote role is B it reads back the bridge's answer via RxSVIDConfig and goes RUNNING. The bridge machine (Figure 42-2) moves Init -> ChannelRequest -> TxSVIDs: it computes assignments from its pool via TxSVIDConfig and goes RUNNING once the remote role is S. Each loops back when its inputs (admin capability, wants, or the remote list) change, re-running the negotiation.",
+      "zh": "站点和桥各运行一个状态机（42.3）。站点状态机（图 42-1）的流转为 Init -> ChannelRequest -> RxSVIDs：它把管理侧的需求复制进请求，调用 SetSVIDRequest，随后当远端角色为 B 时，通过 RxSVIDConfig 读回桥的应答并进入 RUNNING。桥状态机（图 42-2）的流转为 Init -> ChannelRequest -> TxSVIDs：它通过 TxSVIDConfig 从自己的资源池计算分配，并在远端角色为 S 时进入 RUNNING。当各自的输入（管理能力、需求或远端列表）发生变化时，两者都会回到前面的状态，重新进行协商。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "CDCP variables (42.4.1-42.4.14) and procedures (42.5.1-42.5.3), clause by clause",
+        "zh": "CDCP 的变量（42.4.1-42.4.14）与过程（42.5.1-42.5.3），逐条对应"
+      },
+      "en": "Variables (42.4): AdminChnCap (42.4.1) is the admin-set number of channels supported, carried as ChnCap in the TLV; AdminRole (42.4.2) selects S or B and thus which state machine runs (not carried in the TLV); AdminSVIDWants (42.4.3) is the station's wanted (SCID,S-VID) pairs, always starting with (1,1), SCID range 0-167, S-VID 0 meaning 'any available'; LastLocalSVIDPool (42.4.4) and LastRemoteSVIDList (42.4.5) and LastSVIDWants (42.4.6) are temporary copies for change detection; LocalSVIDPool (42.4.7) is the set of S-VIDs/ports available to a B-role port; OperChnCap (42.4.8) is the live ChnCap (1-167); OperRole (42.4.9) is the live role in the TLV; OperSVIDList (42.4.10) is the live (SCID,S-VID) list (max 167 pairs, always includes (1,1)); RemoteChnCap (42.4.11) and RemoteRole (42.4.12, values rrNull/rwS/rwB) and RemoteSVIDList (42.4.13) mirror the neighbor's TLV (NULL if none present); schState (42.4.14) is NOTRUNNING or RUNNING, readable via Clause 12 management. Procedures (42.5): SetSVIDRequest (42.5.1) builds the station's OperSVIDList from AdminSVIDWants, keeping wanted channels active (new ones requested with S-VID 0) and dropping unwanted ones; RxSVIDConfig (42.5.2) builds the station's OperSVIDList by matching AdminSVIDWants against the bridge's LastRemoteSVIDList; TxSVIDConfig (42.5.3) builds the bridge's OperSVIDList by truncating to the smaller ChnCap and assigning S-VIDs from the pool, deleting pairs it cannot satisfy.",
+      "zh": "变量（42.4）：AdminChnCap（42.4.1）是管理设定的支持通道数，在 TLV 中以 ChnCap 携带；AdminRole（42.4.2）选择 S 或 B，从而决定运行哪个状态机（不在 TLV 中携带）；AdminSVIDWants（42.4.3）是站点想要的 (SCID,S-VID) 对，总以 (1,1) 开头，SCID 范围 0-167，S-VID 为 0 表示“任意可用”；LastLocalSVIDPool（42.4.4）、LastRemoteSVIDList（42.4.5）、LastSVIDWants（42.4.6）是用于检测变化的临时副本；LocalSVIDPool（42.4.7）是 B 角色端口可用的 S-VID/端口集合；OperChnCap（42.4.8）是实时 ChnCap（1-167）；OperRole（42.4.9）是 TLV 中的实时角色；OperSVIDList（42.4.10）是实时 (SCID,S-VID) 列表（最多 167 对，总含 (1,1)）；RemoteChnCap（42.4.11）、RemoteRole（42.4.12，取值 rrNull/rwS/rwB）、RemoteSVIDList（42.4.13）映射邻居的 TLV（若无则为 NULL）；schState（42.4.14）为 NOTRUNNING 或 RUNNING，可通过 Clause 12 管理读取。过程（42.5）：SetSVIDRequest（42.5.1）由 AdminSVIDWants 构建站点的 OperSVIDList，保留想要的通道为活动（新通道以 S-VID 0 请求），删除不需要的；RxSVIDConfig（42.5.2）通过将 AdminSVIDWants 与桥的 LastRemoteSVIDList 匹配来构建站点的 OperSVIDList；TxSVIDConfig（42.5.3）通过截断到较小的 ChnCap 并从池中分配 S-VID 来构建桥的 OperSVIDList，删除它无法满足的对。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1610,
+          1611,
+          1612,
+          1613
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now switch to ECP (43.1). The Edge Control Protocol is a small reliable-delivery service that sits between an upper layer protocol (ULP) and the MAC. Its job is to carry a ULP Data Unit (ULPDU) across one IEEE 802 link with four guarantees: reliable delivery resilient to frame loss, in-order delivery, exactly one copy delivered, and flow control protecting the receiver's buffer from overrun. Examples of ULPs that ride ECP are VDP (VSI Discovery and Configuration Protocol), 802.1BR's PE CSP, and 802.1CS's LRP.",
+      "zh": "现在切换到 ECP（43.1）。边缘控制协议（Edge Control Protocol）是一个介于上层协议（upper layer protocol，ULP）与 MAC 之间的小型可靠传输服务。它的任务是把一个 ULP 数据单元（ULP Data Unit，ULPDU）跨越一条 IEEE 802 链路传送，提供四项保证：抗帧丢失的可靠传输、保序传输、恰好递交一份副本、以及保护接收方缓冲区不溢出的流量控制。搭载 ECP 的 ULP 例子有 VDP（VSI 发现与配置协议）、802.1BR 的 PE CSP、以及 802.1CS 的 LRP。"
+    },
+    {
+      "type": "prose",
+      "en": "The mechanism is a stop-and-wait loop. The ULP hands ECP a ULPDU via an ECP_UNITDATA.request; ECP transmits it as an ECPDU (ECP Data Unit) with a sequence number and starts an acknowledgment (ACK) timer, keeping a copy in the transmit buffer. The receiver buffers the frame, delivers it upward via ECP_UNITDATA.indication, and once its buffer is free sends an L-ACK (low-level acknowledgment). If the ACK arrives before the timer expires, the transmit buffer is cleared and the next ULPDU can go. If the timer expires first, the frame is resent and the timer reset, up to maxRetries times; after that the buffer is cleared, a failure counter ticks, and ECP moves on. Crucially, ECP never tells the ULP that a transmission failed - detecting and recovering from that is the ULP's own responsibility.",
+      "zh": "其机制是一个停-等（stop-and-wait）循环。ULP 通过 ECP_UNITDATA.request 把一个 ULPDU 交给 ECP；ECP 将其作为带序列号的 ECPDU（ECP 数据单元）发送，并启动一个确认（acknowledgment，ACK）定时器，同时在发送缓冲区保留一份副本。接收方缓存该帧，通过 ECP_UNITDATA.indication 向上递交，待其缓冲区空出后发送一个 L-ACK（低层确认，low-level acknowledgment）。若 ACK 在定时器超时前到达，发送缓冲区被清空，下一个 ULPDU 即可发送。若定时器先超时，则重发该帧并重置定时器，最多重试 maxRetries 次；之后清空缓冲区、失败计数器加一，ECP 继续处理下一个。关键在于：ECP 从不告知 ULP 传输失败——检测并从中恢复是 ULP 自己的责任。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 560 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"30\" width=\"70\" height=\"34\"/><text x=\"45\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">EtherType</text><rect x=\"80\" y=\"30\" width=\"55\" height=\"34\"/><text x=\"107\" y=\"48\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Version</text><text x=\"107\" y=\"59\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">4b</text><rect x=\"135\" y=\"30\" width=\"55\" height=\"34\"/><text x=\"162\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">Oper type</text><text x=\"162\" y=\"57\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">2b</text><rect x=\"190\" y=\"30\" width=\"70\" height=\"34\"/><text x=\"225\" y=\"48\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Subtype</text><text x=\"225\" y=\"59\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">10b</text><rect x=\"260\" y=\"30\" width=\"90\" height=\"34\"/><text x=\"305\" y=\"48\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Sequence Num</text><text x=\"305\" y=\"59\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">2 octets</text><rect x=\"350\" y=\"30\" width=\"195\" height=\"34\" stroke-dasharray=\"4 3\"/><text x=\"447\" y=\"48\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">ULPDU</text><text x=\"447\" y=\"59\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">N octets, optional</text><text x=\"10\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">ECPDU structure (Clause 43.3.3)</text></svg>",
+      "caption": {
+        "en": "ECPDU layout (43.3.3): EtherType 0x8940, 4-bit Version (=0x01), 2-bit Operation type (request 0x0 / ACK 0x1), 10-bit Subtype (ULP type, e.g. VDP=0x0001), 2-octet Sequence Number, then the optional ULPDU (present only on requests).",
+        "zh": "ECPDU 结构（43.3.3）：EtherType 0x8940、4 位版本（=0x01）、2 位操作类型（请求 0x0 / ACK 0x1）、10 位子类型（ULP 类型，如 VDP=0x0001）、2 字节序列号，随后是可选的 ULPDU（仅请求帧才有）。"
+      }
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> waitForRequest\n  waitForRequest --> transmitECPDU: requestReceived\n  transmitECPDU --> waitForRequest: ACK seq matches\n  transmitECPDU --> transmitECPDU: timeout, retries<max\n  transmitECPDU --> countErrors: timeout, retries>=max\n  countErrors --> waitForRequest",
+      "zh": "stateDiagram-v2\n  [*] --> waitForRequest\n  waitForRequest --> transmitECPDU: 收到请求\n  transmitECPDU --> waitForRequest: ACK 序列号匹配\n  transmitECPDU --> transmitECPDU: 超时, 重试<上限\n  transmitECPDU --> countErrors: 超时, 重试>=上限\n  countErrors --> waitForRequest"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Sequence numbers are how ECP guarantees exactly-once, in-order delivery (43.3.2). On the first ECPDU after init, the receiver sets its lastSeq to (received seq - 1), so a fresh frame always looks new. It always ACKs with the current sequence number, but only invokes the indication and advances lastSeq when the sequence differs from lastSeq - if they match, the frame is a duplicate retransmission and is silently re-ACKed without delivering it twice.",
+      "zh": "序列号是 ECP 保证“恰好一次、保序”递交的手段（43.3.2）。初始化后收到第一个 ECPDU 时，接收方把它的 lastSeq 设为（收到的序列号 - 1），因此新帧总会被判为新的。它总是用当前序列号回 ACK，但只有当序列号与 lastSeq 不同时才触发 indication 并更新 lastSeq——若两者相同，则该帧是重复重传，会被静默地重新 ACK 而不会重复递交。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "ECP coverage map: operation, ECSS, and all state-machine pieces (43.1-43.3.8)",
+        "zh": "ECP 覆盖图：操作、ECSS 及全部状态机部件（43.1-43.3.8）"
+      },
+      "en": "43.1 ECP operation walks the 5-step send/ACK/retry exchange and lists the four service characteristics (reliable, in-order, single-copy, flow-controlled). 43.2 Edge Control Sublayer Service (ECSS) defines the two primitives ECP_UNITDATA.request(ulptype, ulpdu) and ECP_UNITDATA.indication(ulptype, ulpdu) that hand data between ULP and ECP. 43.3 ECP state machines: 43.3.1 points to Annex E conventions; 43.3.2 Overview says each ECP instance runs one transmit machine (43.3.4) and one receive machine (43.3.5), both re-initialized when portEnabled is FALSE or BEGIN fires. 43.3.3 ECPDU defines the frame, with subfields 43.3.3.1 EtherType (0x8940), 43.3.3.2 Version (0x01), 43.3.3.3 Operation type (request 0x0 / ACK 0x1), 43.3.3.4 Subtype (ULP type table: VDP 0x0001, PE CSP 0x0002, LRP 0x0003), 43.3.3.5 Sequence Number (2 octets, +1 mod 65536 per new request), 43.3.3.6 ULPDU (present only for requests). 43.3.4 ECP transmit state machine (Figure 43-3): waitForRequest -> transmitECPDU (sets ackTimer, increments retries) -> back on matching ACK, retransmit on timeout while retries<maxRetries, or countErrors (inc txErrors) when retries>=maxRetries. 43.3.5 ECP receive state machine (Figure 43-4): receiveWait -> receiveFirst (lastSeq = seq-1) -> receiveECPDU -> newECPDU (invokeIndication, lastSeq=seqECPDU) if seq differs, else straight to sendACK. 43.3.6 timers, with 43.3.6.1 ackTimer (initialized from ackTimerInit, D.2.12.6); resolution 10us, +/-20%. 43.3.7 variables: 43.3.7.1 ackReceived, 43.3.7.2 ecpduReceived, 43.3.7.3 lastSeq, 43.3.7.4 maxRetries (default 3), 43.3.7.5 portEnabled (= MAC_Operational), 43.3.7.6 requestReceived, 43.3.7.7 retries, 43.3.7.8 seqECPDU, 43.3.7.9 sequence, 43.3.7.10 txErrors. 43.3.8 procedures: 43.3.8.1 inc(counter) (+1 mod 65536), 43.3.8.2 transmitECPDU() (build a request), 43.3.8.3 invokeIndication() (pass ULPDU up), 43.3.8.4 sendAck() (build an ACK with seqECPDU), 43.3.8.5 seqNum(pdu-type) (return seq of last received request or ACK).",
+      "zh": "43.1 ECP 操作走完 5 步的发送/ACK/重试交互，并列出四项服务特性（可靠、保序、单副本、有流控）。43.2 边缘控制子层服务（Edge Control Sublayer Service，ECSS）定义两个原语 ECP_UNITDATA.request(ulptype, ulpdu) 与 ECP_UNITDATA.indication(ulptype, ulpdu)，在 ULP 与 ECP 之间传递数据。43.3 ECP 状态机：43.3.1 指向 Annex E 的约定；43.3.2 概述说明每个 ECP 实例运行一个发送机（43.3.4）和一个接收机（43.3.5），二者在 portEnabled 为 FALSE 或 BEGIN 触发时重新初始化。43.3.3 ECPDU 定义帧格式，子字段为 43.3.3.1 EtherType（0x8940）、43.3.3.2 版本（0x01）、43.3.3.3 操作类型（请求 0x0 / ACK 0x1）、43.3.3.4 子类型（ULP 类型表：VDP 0x0001、PE CSP 0x0002、LRP 0x0003）、43.3.3.5 序列号（2 字节，每个新请求 +1 mod 65536）、43.3.3.6 ULPDU（仅请求帧才有）。43.3.4 ECP 发送状态机（图 43-3）：waitForRequest -> transmitECPDU（设 ackTimer、retries 加一）-> ACK 匹配则返回，超时且 retries<maxRetries 则重传，retries>=maxRetries 则进入 countErrors（txErrors 加一）。43.3.5 ECP 接收状态机（图 43-4）：receiveWait -> receiveFirst（lastSeq = seq-1）-> receiveECPDU -> 若序列号不同则 newECPDU（invokeIndication、lastSeq=seqECPDU），否则直接 sendACK。43.3.6 定时器，含 43.3.6.1 ackTimer（由 ackTimerInit 初始化，见 D.2.12.6）；分辨率 10us，±20%。43.3.7 变量：43.3.7.1 ackReceived、43.3.7.2 ecpduReceived、43.3.7.3 lastSeq、43.3.7.4 maxRetries（默认 3）、43.3.7.5 portEnabled（= MAC_Operational）、43.3.7.6 requestReceived、43.3.7.7 retries、43.3.7.8 seqECPDU、43.3.7.9 sequence、43.3.7.10 txErrors。43.3.8 过程：43.3.8.1 inc(counter)（+1 mod 65536）、43.3.8.2 transmitECPDU()（构造请求）、43.3.8.3 invokeIndication()（上交 ULPDU）、43.3.8.4 sendAck()（用 seqECPDU 构造 ACK）、43.3.8.5 seqNum(pdu-type)（返回最近收到的请求或 ACK 的序列号）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1614,
+          1615,
+          1616,
+          1617,
+          1618,
+          1619,
+          1620
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Tying it together: CDCP (Clause 42) is about structure - negotiating how many logical S-channels exist on a link and which S-VID labels them, using LLDP TLVs and a station/bridge role split. ECP (Clause 43) is about transport - a lean reliable, ordered, deduplicated, flow-controlled delivery service that protocols like VDP use to move their control frames safely across that same edge. Together they form part of the Edge Virtual Bridging toolkit that lets a single physical port at the network edge behave like several independently managed channels.",
+      "zh": "把两者串起来：CDCP（Clause 42）关乎结构——用 LLDP TLV 和站点/桥的角色划分，协商一条链路上存在多少条逻辑 S 通道、以及用哪些 S-VID 标识它们。ECP（Clause 43）关乎传输——一个精简的、可靠、保序、去重、带流控的传输服务，供 VDP 等协议安全地在同一边缘上搬运它们的控制帧。两者共同构成边缘虚拟桥接（Edge Virtual Bridging）工具集的一部分，使网络边缘的单个物理端口能像多条可独立管理的通道那样运作。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1608,
+        1609,
+        1610
+      ],
+      "note": "Clause 42.1-42.3: CDCP overview, role split, station/bridge state machines (Figures 42-1, 42-2)."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1610,
+        1611,
+        1612,
+        1613
+      ],
+      "note": "Clause 42.4 configuration variables and 42.5 configuration procedures."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1614,
+        1615
+      ],
+      "note": "Clause 43.1 ECP operation (Figure 43-1) and 43.2 ECSS primitives; 43.3.1-43.3.2 conventions and overview."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1616,
+        1617,
+        1618
+      ],
+      "note": "Clause 43.3.3 ECPDU structure (Figure 43-2, subtypes) and 43.3.4-43.3.6 transmit/receive state machines and timers."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1619,
+        1620
+      ],
+      "note": "Clause 43.3.6.1 ackTimer, 43.3.7 variables, 43.3.8 procedures."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:42.1",
+    "8021Q-2022:42.2",
+    "8021Q-2022:42.3",
+    "8021Q-2022:42.4.1",
+    "8021Q-2022:42.4.2",
+    "8021Q-2022:42.4.3",
+    "8021Q-2022:42.4.4",
+    "8021Q-2022:42.4.5",
+    "8021Q-2022:42.4.6",
+    "8021Q-2022:42.4.7",
+    "8021Q-2022:42.4.8",
+    "8021Q-2022:42.4.9",
+    "8021Q-2022:42.4.10",
+    "8021Q-2022:42.4.11",
+    "8021Q-2022:42.4.12",
+    "8021Q-2022:42.4.13",
+    "8021Q-2022:42.4.14",
+    "8021Q-2022:42.5.1",
+    "8021Q-2022:42.5.2",
+    "8021Q-2022:42.5.3",
+    "8021Q-2022:43.1",
+    "8021Q-2022:43.2",
+    "8021Q-2022:43.3.1",
+    "8021Q-2022:43.3.2",
+    "8021Q-2022:43.3.3",
+    "8021Q-2022:43.3.4",
+    "8021Q-2022:43.3.5",
+    "8021Q-2022:43.3.6",
+    "8021Q-2022:43.3.7",
+    "8021Q-2022:43.3.8"
+  ],
+  "track": "bridging-tsn"
+}

@@ -1,0 +1,119 @@
+{
+  "id": "bridging-tsn-49",
+  "title": {
+    "en": "Congestion Notification: How Bridges and End Stations Throttle Traffic",
+    "zh": "拥塞通知：网桥与端站如何限流"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "When a data-center bridge's output queue starts to fill, it can send a Congestion Notification Message (CNM) back to whichever end station is flooding it, asking that sender to slow down. Clause 31 of IEEE Std 802.1Q-2022 describes the entities that make this work — the Congestion Point (CP) that detects the buildup and the Reaction Point (RP) that throttles the source. This is the data plane of Quantized Congestion Notification (QCN). The clause is careful to say these are *models* of behavior: an implementation may use any internal design as long as the externally observable protocol matches.",
+      "zh": "当数据中心网桥的输出队列开始堆积时，它可以向正在淹没它的端站回送一条拥塞通知消息（CNM，Congestion Notification Message），请求该发送方降速。IEEE Std 802.1Q-2022 第 31 章描述了使其运作的实体——检测堆积的拥塞点（CP，Congestion Point）和对源头限流的反应点（RP，Reaction Point）。这是量化拥塞通知（QCN，Quantized Congestion Notification）的数据平面。该章特别强调这些只是行为*模型*：只要外部可观察的协议一致，实现可以采用任何内部设计。"
+    },
+    {
+      "type": "prose",
+      "en": "A bit of vocabulary first, because the whole clause leans on it. A CNPV (Congestion Notification Priority Value) is simply a priority value that the network has agreed to manage with congestion notification. A CCF (Congestion Controlled Flow) is the stream of frames carried at a CNPV. A CN-TAG is a small tag inserted at the front of a frame's payload so that returning CNMs can be routed back to the exact flow that caused trouble. Keep these four — CNPV, CCF, CNM, CN-TAG — in mind and the rest reads easily.",
+      "zh": "先讲一点术语，因为整章都依赖它们。CNPV（Congestion Notification Priority Value，拥塞通知优先级值）就是网络约定用拥塞通知来管理的某个优先级值。CCF（Congestion Controlled Flow，受控拥塞流）是以某个 CNPV 承载的帧流。CN-TAG 是插在帧载荷最前面的一个小标签，使回送的 CNM 能被路由回正是引发问题的那条流。记住这四个——CNPV、CCF、CNM、CN-TAG——其余内容就好读了。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 31.1 covers the bridge side. The Congestion Point (CP, 31.1.1) sits at an output queue. When the Queuing frames entity hands it a frame, the CP — based on its internal variables — either inserts the frame into the queue or discards it, and may generate a CNM derived from that frame. Discards are counted in cpDiscardedFrames and successful enqueues in cpTransmittedFrames. Any CNM it makes is handed to the CP ingress multiplexer for transmission back toward the RP that sourced the frame. The CP also strips the CN-TAG from frames whose priority (a CNPV) is being defended at this port.",
+      "zh": "第 31.1 节讲网桥侧。拥塞点（CP，31.1.1）位于某个输出队列处。当 Queuing frames 实体把一个帧交给它时，CP 会依据自身的内部变量，要么把帧插入队列、要么丢弃它，并可能根据该帧生成一条 CNM。丢弃计入 cpDiscardedFrames，成功入队计入 cpTransmittedFrames。它生成的任何 CNM 都交给 CP 入向复用器，回送给产生该帧的 RP。当帧的优先级（某个 CNPV）正在此端口被防御时，CP 还会从帧中剥除 CN-TAG。"
+    },
+    {
+      "type": "prose",
+      "en": "The CP ingress multiplexer (31.1.2) is the simpler partner: it inserts the CNMs the CPs generate among the ordinary frames arriving from the LAN, so the feedback messages join the normal traffic stream heading back out. The standard also pins down counting rules so a management interface behaves consistently: a generated CNM is *not* counted in a port's Frames Received or Octets Received, but it *is* counted like ordinary data on whatever port it is output from.",
+      "zh": "CP 入向复用器（31.1.2）是较简单的搭档：它把各 CP 生成的 CNM 插入到从局域网到达的普通帧之中，使这些反馈消息汇入返程的正常流量。该标准还固定了计数规则以使管理接口行为一致：生成的 CNM *不*计入某端口的 Frames Received 或 Octets Received，但它在被输出的那个端口上*会*像普通数据一样被计数。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"55\" width=\"90\" height=\"40\"/><text x=\"55\" y=\"79\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">End station (RP)</text><rect x=\"185\" y=\"30\" width=\"90\" height=\"40\"/><text x=\"230\" y=\"54\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">CP queue</text><rect x=\"185\" y=\"85\" width=\"90\" height=\"40\"/><text x=\"230\" y=\"109\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">CP ingress mux</text><rect x=\"360\" y=\"55\" width=\"90\" height=\"40\"/><text x=\"405\" y=\"79\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Receiver</text><line x1=\"100\" y1=\"70\" x2=\"185\" y2=\"55\"/><text x=\"140\" y=\"58\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">data (CCF)</text><line x1=\"275\" y1=\"50\" x2=\"360\" y2=\"70\"/><line x1=\"185\" y1=\"105\" x2=\"100\" y2=\"82\"/><text x=\"115\" y=\"105\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">CNM back</text></svg>",
+      "caption": {
+        "en": "Bridge side (31.1): a CP detects buildup at its output queue and emits a CNM; the CP ingress multiplexer folds that CNM into the return traffic toward the source RP.",
+        "zh": "网桥侧（31.1）：CP 在其输出队列处检测到堆积并发出 CNM；CP 入向复用器把该 CNM 并入返程流量，送往源 RP。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 31.2 covers the end station, which contains both a CP (for traffic it receives) and the RPs that react to incoming CNMs. On the transmit path, Output flow segregation (31.2.1) is the gatekeeper: for each frame from the upper layers it assigns a priority, then consults the Flow Select Database (31.2.3) to decide which Flow queue, if any, the frame belongs in. Non-CNPV frames bypass straight to the Flow multiplexer; CNPV frames are enqueued into a Flow queue. Crucially, this entity *never discards* a frame — it instead applies (unspecified) backpressure on the upper layers so they don't offer frames a full Flow queue cannot hold. By default there is one Flow queue per CNPV.",
+      "zh": "第 31.2 节讲端站，它既包含一个 CP（用于其接收的流量），也包含对收到的 CNM 作出反应的各个 RP。在发送路径上，输出流分离（Output flow segregation，31.2.1）是把关者：对来自上层的每个帧，它先赋予优先级，再查询流选择数据库（Flow Select Database，31.2.3）以决定该帧（若有）属于哪个 Flow 队列。非 CNPV 帧直接旁路到流复用器；CNPV 帧则入队到某个 Flow 队列。关键在于该实体*从不丢帧*——它转而对上层施加（未规定的）反压，使其不会提交满载 Flow 队列容纳不下的帧。默认每个 CNPV 一个 Flow 队列。"
+    },
+    {
+      "type": "prose",
+      "en": "Each CNPV gets a Per-CNPV station function (31.2.2): one or more Flow queues, an RP per queue (each an RP state machine plus a Rate Limiter), and a Flow Selection function. The RP state machine computes rpLimiterRate from received CNMs; the Rate Limiter enforces that rate. The standard even bounds the limiter's accuracy: over a measurement period T, output octets must stay within (1.05 × the integrated rate) plus a 16-frame burst allowance. The Flow Selection function then picks which queue feeds the Flow multiplexer (31.2.4), which merges throttled flows, bypassing non-CNPV frames, and CNMs from the local CP into the output path.",
+      "zh": "每个 CNPV 都有一个 Per-CNPV 站功能（31.2.2）：一个或多个 Flow 队列、每队列一个 RP（各由一个 RP 状态机加一个限速器组成）、以及一个流选择功能。RP 状态机根据收到的 CNM 计算 rpLimiterRate；限速器执行该速率。标准甚至限定了限速器的精度：在测量周期 T 内，输出字节数须保持在（1.05 × 积分速率）加上 16 帧突发余量之内。流选择功能随后挑选哪个队列馈入流复用器（31.2.4），后者把受限流、旁路的非 CNPV 帧以及本地 CP 产生的 CNM 合并到输出路径。"
+    },
+    {
+      "type": "prose",
+      "en": "On the receive path, the CNM demultiplexer (31.2.5) is the routing hub: it spots incoming CNMs, reads their Flow ID and/or encapsulated priority, and steers each one to the correct RP — a CNM with no CN-TAG or an unknown Flow ID is discarded. Everything that is *not* a CNM passes to Input flow segregation (31.2.6), which sends non-CNPV frames toward the higher layers (or an unspecified queue) and routes CNPV frames into the end station's own CP for processing. Like its transmit twin, Input flow segregation never discards a CNPV frame.",
+      "zh": "在接收路径上，CNM 解复用器（31.2.5）是路由枢纽：它识别到达的 CNM，读取其 Flow ID 和/或封装优先级，并把每条 CNM 引导到正确的 RP——没有 CN-TAG 或 Flow ID 未知的 CNM 会被丢弃。所有*非* CNM 的内容都交给输入流分离（Input flow segregation，31.2.6），它把非 CNPV 帧送往上层（或某个未规定的队列），并把 CNPV 帧路由进端站自身的 CP 处理。与其发送侧的孪生实体一样，输入流分离从不丢弃 CNPV 帧。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[CNM demultiplexer 31.2.5] -->|CNM| B[RP state machine]\n  A -->|data| C[Input flow segregation 31.2.6]\n  C -->|CNPV| D[CP 31.1.1]\n  C -->|non-CNPV| E[End station input queue 31.2.7]\n  D --> E\n  E --> F[Reception selection 31.2.8]\n  F --> G[Upper layers]",
+      "zh": "flowchart TD\n  A[CNM 解复用器 31.2.5] -->|CNM| B[RP 状态机]\n  A -->|数据| C[输入流分离 31.2.6]\n  C -->|CNPV| D[CP 31.1.1]\n  C -->|非 CNPV| E[端站输入队列 31.2.7]\n  D --> E\n  E --> F[接收选择 31.2.8]\n  F --> G[上层]"
+    },
+    {
+      "type": "prose",
+      "en": "Two receive-side pieces finish the picture. The End station input queue (31.2.7) holds frames after the CP; the standard leaves its number and draining method open, but requires it to exist with certain operational parameters because the CP's procedures depend on it — and notes that if too many CNMs arrive, this queue can fill and drop a frame. Finally, Reception selection (31.2.8) takes the role that Transmission selection plays in a bridge: it pulls frames from the queue for delivery to the upper layers, and if a selected frame begins with a CN-TAG, it strips that tag before handing the frame up.",
+      "zh": "接收侧还有两块收尾。端站输入队列（31.2.7）在 CP 之后保存帧；标准对其数量与排空方法不作规定，但要求它必须存在并具备某些运行参数，因为 CP 的过程依赖于它——并指出若到达的 CNM 过多，该队列可能填满并丢弃一个帧。最后，接收选择（Reception selection，31.2.8）承担网桥中传输选择所扮演的角色：它从队列中取出帧交付上层，且若所选帧以 CN-TAG 开头，则在上交前剥除该标签。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A clean way to remember the symmetry: the CP is the *detector* (it watches a queue and emits CNMs), the RP is the *throttle* (it receives CNMs and slows a Flow queue). A bridge needs only CPs; a congestion-aware end station needs both — CPs for the traffic it terminates and RPs for the traffic it sources.",
+      "zh": "记住这种对称性的简便方法：CP 是*检测器*（它监视队列并发出 CNM），RP 是*限流阀*（它接收 CNM 并放慢某个 Flow 队列）。网桥只需要 CP；具备拥塞感知的端站两者都需要——用 CP 处理它终结的流量，用 RP 处理它发出的流量。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every subclause of Clause 31, by number",
+        "zh": "覆盖地图——第 31 章每个子条款（按编号）"
+      },
+      "en": "Bridge Forwarding Process (31.1): 31.1.1 Congestion Point (CP) — enqueues or discards each frame, counts cpDiscardedFrames / cpTransmittedFrames, may generate a CNM, and strips the CN-TAG at defended (CNPV) ports. 31.1.2 CP ingress multiplexer — inserts generated CNMs among frames arriving from the LAN. End-station functions (31.2): 31.2.1 Output flow segregation — assigns priority, picks a Flow queue via the database, bypasses non-CNPV frames, never discards, backpressures upper layers; default one Flow queue per CNPV. 31.2.2 Per-CNPV station function — Flow queues + RPs (RP state machine + Rate Limiter bounded by Equation 31-1) + Flow Selection. 31.2.3 Flow Select Database — maps a frame to a Flow queue (method unspecified). 31.2.4 Flow multiplexer — merges throttled flows, bypass frames, and local CNMs into the output path. 31.2.5 CNM demultiplexer — routes each CNM to its RP by Flow ID / encapsulated priority; discards tag-less or unknown-Flow-ID CNMs; passes data to 31.2.6. 31.2.6 Input flow segregation — non-CNPV frames to higher layers, CNPV frames to a CP; never discards CNPV frames. 31.2.7 End station input queue — must exist for the CP's procedures; number and draining unspecified; can overflow and drop under CNM flood. 31.2.8 Reception selection — replaces Transmission selection on receive; delivers frames upward and removes any leading CN-TAG.",
+      "zh": "网桥转发过程（31.1）：31.1.1 拥塞点（CP）——对每个帧入队或丢弃，计数 cpDiscardedFrames / cpTransmittedFrames，可生成 CNM，并在受防御（CNPV）端口剥除 CN-TAG。31.1.2 CP 入向复用器——把生成的 CNM 插入到从局域网到达的帧中。端站功能（31.2）：31.2.1 输出流分离——赋予优先级，经数据库选择 Flow 队列，旁路非 CNPV 帧，从不丢帧，对上层施加反压；默认每 CNPV 一个 Flow 队列。31.2.2 Per-CNPV 站功能——Flow 队列 + RP（RP 状态机 + 受式 31-1 约束的限速器）+ 流选择。31.2.3 流选择数据库——把帧映射到 Flow 队列（方法未规定）。31.2.4 流复用器——把受限流、旁路帧和本地 CNM 合并到输出路径。31.2.5 CNM 解复用器——按 Flow ID / 封装优先级把每条 CNM 路由到其 RP；丢弃无标签或 Flow ID 未知的 CNM；将数据传给 31.2.6。31.2.6 输入流分离——非 CNPV 帧送上层，CNPV 帧送 CP；从不丢弃 CNPV 帧。31.2.7 端站输入队列——CP 的过程要求它存在；数量与排空未规定；CNM 洪泛下可能溢出丢帧。31.2.8 接收选择——在接收侧替代传输选择；向上交付帧并移除任何前导 CN-TAG。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1468,
+          1469,
+          1470,
+          1471,
+          1472,
+          1473,
+          1474
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1468,
+        1469,
+        1470,
+        1471,
+        1472,
+        1473,
+        1474
+      ],
+      "note": "Clause 31 Congestion notification entity operation: 31.1 bridge Forwarding Process (CP, CP ingress multiplexer) and 31.2 congestion-aware end station functions (Output flow segregation through Reception selection)."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:31.1.1",
+    "8021Q-2022:31.1.2",
+    "8021Q-2022:31.2.1",
+    "8021Q-2022:31.2.2",
+    "8021Q-2022:31.2.3",
+    "8021Q-2022:31.2.4",
+    "8021Q-2022:31.2.5",
+    "8021Q-2022:31.2.6",
+    "8021Q-2022:31.2.7",
+    "8021Q-2022:31.2.8"
+  ],
+  "track": "bridging-tsn"
+}

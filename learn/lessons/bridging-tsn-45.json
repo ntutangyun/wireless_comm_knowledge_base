@@ -1,0 +1,97 @@
+{
+  "id": "bridging-tsn-45",
+  "title": {
+    "en": "Signaling VLAN Registrations Across a Backbone: MVRP vs MIRP Between I-components",
+    "zh": "在骨干网中传递 VLAN 注册信息：I 组件之间的 MVRP 与 MIRP"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A Provider Backbone Bridged Network (PBBN) is a carrier's core network that wraps each customer's frames inside a Backbone MAC (B-MAC) header so the core only has to deal with a small set of backbone addresses. At the edge of that core sit Backbone Edge Bridges (BEBs). The part of a BEB that faces the customer and does the encapsulation is called an I-component (the 'I' is for the I-SID, the 24-bit service-instance identifier it stamps on each frame). This lesson covers a single, focused topic — clause 26.13 — namely how one I-component tells another I-component which VLANs (Virtual LANs — logical broadcast domains identified by a VLAN ID) it needs to hear about.",
+      "zh": "运营商骨干桥接网络（PBBN，Provider Backbone Bridged Network）是运营商的核心网络，它把每个客户的帧封装进一个骨干 MAC（B-MAC，Backbone MAC）头部，这样核心只需处理少量骨干地址。核心边缘是骨干边缘桥（BEB，Backbone Edge Bridge）。BEB 中面向客户、负责封装的部分称为 I 组件（I-component，这里的“I”指它给每帧打上的 24 位业务实例标识 I-SID）。本课只聚焦一个主题——条款 26.13——即一个 I 组件如何告诉另一个 I 组件它需要关注哪些 VLAN（虚拟局域网，Virtual LAN，由 VLAN ID 标识的逻辑广播域）。"
+    },
+    {
+      "type": "prose",
+      "en": "The key insight in 26.13 is one sentence: a Virtual Instance Port (VIP) — the logical port inside an I-component that represents one backbone service instance — is a Bridge Port. Because it is an ordinary Bridge Port, the standard VLAN-signaling machinery already defined elsewhere in 802.1Q just works on it. So the Multiple VLAN Registration Protocol (MVRP, clause 11.2) can be enabled inside an I-component and used to carry dynamic VLAN registrations from one I-component to another straight across the PBBN. Nothing new has to be invented; an existing tool is pointed at a new port.",
+      "zh": "26.13 的核心要点只有一句话：虚拟实例端口（VIP，Virtual Instance Port）——即 I 组件内部代表某个骨干业务实例的逻辑端口——本身就是一个桥接端口（Bridge Port）。正因为它是普通的桥接端口，802.1Q 在别处已经定义好的 VLAN 信令机制对它天然适用。于是多重 VLAN 注册协议（MVRP，Multiple VLAN Registration Protocol，条款 11.2）可以在 I 组件内启用，用来把动态 VLAN 注册信息从一个 I 组件直接传到另一个 I 组件，横穿整个 PBBN。无需发明新东西；只是把现成工具指向一个新端口。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why does dynamic VLAN registration matter at all? Without it, a backbone would have to flood a VLAN's traffic to every edge that might possibly want it. Registration lets each I-component announce 'I have listeners for VLAN 100', so the others only forward VLAN 100 frames toward the edges that asked — saving backbone bandwidth.",
+      "zh": "动态 VLAN 注册为什么重要？如果没有它，骨干就只能把某个 VLAN 的流量泛洪到每一个可能需要它的边缘。注册机制让每个 I 组件能宣告“我这里有 VLAN 100 的接收者”，于是其他组件只把 VLAN 100 的帧转发给提出请求的边缘——从而节省骨干带宽。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 26.13 then describes a special case. Some VIPs do not emit an S-TAG (the Service VLAN tag a Provider Bridged Network uses to keep customer services apart). Such a VIP relies only on the I-TAG — the backbone tag that carries the I-SID — to tell service instances apart. In that situation MVRP is not the natural fit, because MVRP signals VLAN identities and these VIPs are not distinguishing services by VLAN at all. So the standard offers an alternative: the Multiple I-SID Registration Protocol (MIRP, Clause 39).",
+      "zh": "随后 26.13 描述了一种特殊情况。有些 VIP 不发出 S-TAG（即运营商桥接网络用来区分各客户业务的业务 VLAN 标签，Service VLAN tag）。这类 VIP 只依靠 I-TAG——承载 I-SID 的骨干标签——来区分业务实例。在这种情况下，MVRP 并不合适，因为 MVRP 传递的是 VLAN 身份，而这些 VIP 根本不是用 VLAN 来区分业务的。于是标准给出了替代方案：多重 I-SID 注册协议（MIRP，Multiple I-SID Registration Protocol，条款 39）。"
+    },
+    {
+      "type": "prose",
+      "en": "What MIRP actually signals is narrower than VLAN membership: it signals the need to flush learned Customer MAC (C-MAC) address information from one I-component to another. C-MAC addresses are the original customer device addresses that an I-component learns so it knows which backbone path leads to a given customer. When the topology behind a service instance changes, that learning becomes stale and must be cleared. MIRP is the control message that says 'flush what you learned for this service instance' — and because it is keyed on the I-SID, it fits the no-S-TAG VIPs that are organized by I-SID rather than by VLAN.",
+      "zh": "MIRP 实际传递的信息比 VLAN 成员关系更窄：它传递的是“需要清除（flush）已学到的客户 MAC（C-MAC，Customer MAC）地址信息”这一通知，从一个 I 组件发往另一个。C-MAC 地址是 I 组件学到的客户设备原始地址，借此它才知道某个客户应走哪条骨干路径。当某业务实例背后的拓扑发生变化时，这些学习结果就会过期，必须清除。MIRP 正是那条说“请清除你为这个业务实例学到的内容”的控制消息——而且因为它以 I-SID 为键，恰好适配那些按 I-SID（而非按 VLAN）组织的、不带 S-TAG 的 VIP。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[I-component A] -->|control frame across PBBN| B[I-component B]\n  subgraph choice [Administrator picks one]\n    M[MVRP: signals VLAN registration]\n    R[MIRP: signals C-MAC flush, keyed by I-SID]\n  end\n  A -.uses.-> M\n  A -.or uses.-> R",
+      "zh": "flowchart LR\n  A[I 组件 A] -->|穿越 PBBN 的控制帧| B[I 组件 B]\n  subgraph choice [管理员二选一]\n    M[MVRP：传递 VLAN 注册]\n    R[MIRP：传递 C-MAC 清除，按 I-SID 寻址]\n  end\n  A -.使用.-> M\n  A -.或使用.-> R"
+    },
+    {
+      "type": "prose",
+      "en": "So who decides MVRP versus MIRP? The network administrator does, and clause 26.13 frames the choice as a clean engineering trade-off between two costs. MIRP minimizes the number of control frames sent — one I-SID-keyed flush can do the job efficiently. MVRP instead minimizes the number of remote I-components affected by any given control frame — its signaling can be more targeted about who is impacted. You optimize for fewer messages on the wire (MIRP) or for narrower blast radius per message (MVRP), depending on which cost hurts more in your deployment.",
+      "zh": "那么谁来决定用 MVRP 还是 MIRP？由网络管理员决定，条款 26.13 把这个选择刻画为两种成本之间清晰的工程权衡。MIRP 让发送的控制帧数量最少——一条以 I-SID 为键的清除消息就能高效完成任务。MVRP 则让任意一条控制帧所影响的远端 I 组件数量最少——它的信令能更精准地界定受影响范围。你是优化“线路上的消息更少”（MIRP），还是优化“每条消息的波及范围更窄”（MVRP），取决于在你的部署中哪种成本更痛。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Frame at a no-S-TAG VIP (differentiated by I-TAG only)</text><rect x=\"10\" y=\"40\" width=\"90\" height=\"40\"/><text x=\"55\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">B-MAC</text><rect x=\"100\" y=\"40\" width=\"90\" height=\"40\"/><text x=\"145\" y=\"58\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">I-TAG</text><text x=\"145\" y=\"72\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">(I-SID)</text><rect x=\"190\" y=\"40\" width=\"90\" height=\"40\" stroke-dasharray=\"4 4\"/><text x=\"235\" y=\"58\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">S-TAG</text><text x=\"235\" y=\"72\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">(absent)</text><rect x=\"280\" y=\"40\" width=\"130\" height=\"40\"/><text x=\"345\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">customer payload</text><text x=\"10\" y=\"110\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">No S-TAG to key VLAN signaling on,</text><text x=\"10\" y=\"126\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">so MIRP (keyed by I-SID) becomes the natural choice.</text></svg>",
+      "caption": {
+        "en": "When a VIP carries only an I-TAG and no S-TAG, service instances are told apart by I-SID — which is exactly what MIRP keys on, making it the alternative to MVRP for C-MAC flush signaling.",
+        "zh": "当 VIP 只携带 I-TAG 而没有 S-TAG 时，业务实例靠 I-SID 区分——这正是 MIRP 的寻址依据，因此它成为 MVRP 之外用于 C-MAC 清除信令的替代方案。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: MVRP and MIRP both ride across the backbone between I-components, but they answer different questions. MVRP answers 'which VLANs should reach me?' MIRP answers 'forget the customer addresses you learned for this service instance.' Both are legitimate because a VIP is just a Bridge Port that these protocols can run on.",
+      "zh": "记忆模型：MVRP 与 MIRP 都在 I 组件之间穿越骨干传递，但回答的问题不同。MVRP 回答“哪些 VLAN 应该到达我？”；MIRP 回答“忘掉你为这个业务实例学到的客户地址”。两者都成立，因为 VIP 不过是一个可以运行这些协议的桥接端口。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — exactly what clause 26.13 says, line by line",
+        "zh": "覆盖地图——条款 26.13 逐句讲了什么"
+      },
+      "en": "Clause 26.13 'Signaling VLAN registrations among I-components' is short and consists of two paragraphs. (1) A VIP is a Bridge Port; therefore MVRP (cross-referenced to 11.2) can be enabled in an I-component and used to convey dynamic VLAN Registrations from I-component to I-component across a PBBN. (2) The special case of VIPs that do not emit an S-TAG and use only the I-TAG to differentiate service instances: here MIRP (cross-referenced to Clause 39) can be enabled instead of MVRP to signal the need to flush learned C-MAC address information from one I-component to another. The administrator selects MVRP or MIRP per the stated trade-off: MIRP minimizes the number of control frames sent; MVRP minimizes the number of remote I-components affected by any given control frame. This lesson teaches all of 26.13 — there are no numbered sub-clauses beneath it.",
+      "zh": "条款 26.13《在 I 组件之间传递 VLAN 注册信息》篇幅很短，由两段构成。（1）VIP 是桥接端口，因此 MVRP（交叉引用 11.2）可在 I 组件中启用，用来在 PBBN 上把动态 VLAN 注册信息从一个 I 组件传到另一个 I 组件。（2）特殊情况：不发出 S-TAG、仅靠 I-TAG 区分业务实例的 VIP——此时可启用 MIRP（交叉引用 Clause 39）替代 MVRP，传递“需要清除已学 C-MAC 地址信息”的通知。管理员按既定权衡在 MVRP 与 MIRP 间选择：MIRP 使发送的控制帧数量最少；MVRP 使任意一条控制帧所影响的远端 I 组件数量最少。本课覆盖 26.13 的全部内容——其下没有编号子条款。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1388
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1388
+      ],
+      "note": "Clause 26.13 Signaling VLAN registrations among I-components — full text (VIP as Bridge Port, MVRP, MIRP, S-TAG/I-TAG, C-MAC flush, administrator trade-off)."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1345,
+        1346
+      ],
+      "note": "Clause 26 / 26.1 PBBN overview and 26.2 example — context for BEB, I-component, B-MAC, S/I/B LANs and tags."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:26.13"
+  ],
+  "track": "bridging-tsn"
+}

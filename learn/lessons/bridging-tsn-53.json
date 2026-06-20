@@ -1,0 +1,123 @@
+{
+  "id": "bridging-tsn-53",
+  "title": {
+    "en": "Encoding Congestion Notification PDUs: The CN-TAG and CNM on the Wire",
+    "zh": "拥塞通知 PDU 的编码：线路上的 CN-TAG 与 CNM"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "When a bridge's queue starts to back up, Congestion Notification (CN) lets it send a message back to the source telling it to slow down. Clause 33 of IEEE Std 802.1Q-2022 specifies exactly how those messages are laid out on the wire — the bits and bytes. There are two pieces. The CN-TAG is a tiny tag a source attaches to its data frames so a returning feedback message can be steered back to the right flow. The Congestion Notification Message (CNM) is the actual feedback PDU (Protocol Data Unit — a self-contained chunk of protocol bytes) a Congestion Point (CP, the queue that is filling up) sends back. This lesson is a field-by-field tour of both.",
+      "zh": "当网桥的队列开始堆积时，拥塞通知（CN，Congestion Notification）会向源端发送一条消息，告诉它放慢速度。IEEE Std 802.1Q-2022 第 33 章规定了这些消息在线路上的精确排布方式——具体到每一个比特和字节。它包含两个部分。CN-TAG 是源端附加在数据帧上的一个微型标签，使返回的反馈消息能被引导回正确的数据流。拥塞通知消息（CNM，Congestion Notification Message）则是拥塞点（CP，Congestion Point，即正在堆积的队列）回送的真正反馈 PDU（Protocol Data Unit，协议数据单元，一段自包含的协议字节）。本课将逐字段地讲解这两者。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Clause 33 only tells you how to encode the bytes. The why and who live next door: Clause 30 introduces the principles of congestion notification, Clause 31 names the entities (the CP, the Reaction Point/RP that slows down, the demultiplexer), and Clause 32 defines the protocols they run. Clause 33 is the wire format those clauses point at.",
+      "zh": "第 33 章只告诉你如何编码字节。其背后的“为什么”和“谁来做”在邻近章节：第 30 章介绍拥塞通知的原理，第 31 章命名各实体（CP、负责减速的反应点 RP、以及解复用器），第 32 章定义它们运行的协议。第 33 章则是这些章节所指向的线路格式。"
+    },
+    {
+      "type": "prose",
+      "en": "First, the encoding ground rules (33.1). Every CN PDU is a whole number of octets (an octet = 8 bits = 1 byte). Octets are numbered from 1, increasing in the order they enter the MSDU (MAC Service Data Unit — the payload handed to the MAC layer). Within an octet, bits run 1 (least significant) to 8 (most significant). In diagrams, octets higher up or further left are lower-numbered; bits further left are higher-numbered. For multi-octet numbers, the lower-numbered octet holds the more significant value (big-endian). A flag is a single bit: 1 means TRUE/set, 0 means FALSE/clear. These conventions are the alphabet for everything that follows.",
+      "zh": "首先是编码的基本规则（33.1）。每个 CN PDU 都是整数个八位组（一个八位组 = 8 比特 = 1 字节）。八位组从 1 开始编号，按其进入 MSDU（MAC Service Data Unit，MAC 服务数据单元，即交给 MAC 层的载荷）的顺序递增。在一个八位组内，比特从 1（最低有效位）到 8（最高有效位）。在示意图中，位置更靠上或更靠左的八位组编号更小；更靠左的比特编号更大。对于多八位组数值，编号较小的八位组保存更高有效的值（大端序）。标志位是单个比特：1 表示 TRUE/置位，0 表示 FALSE/清除。这些约定是后续一切内容的字母表。"
+    },
+    {
+      "type": "prose",
+      "en": "The CN-TAG (33.2) is two octets of EtherType (the value in Table 33-1) followed by a two-octet Flow Identifier. Placement matters: in a VLAN Bridge the CN-TAG is examined by the Congestion Point inside the Queuing shim, which sits below the VLAN-tag shim. So a source must insert tags in the exact order a bridge expects — addresses, then VLAN tag, then CN-TAG, then data — otherwise the bridge cannot find the CN-TAG. The Flow Identifier (33.2.1) is opaque: the standard does not define its meaning, and a CP shall not interpret it. Its only job is round-trip — the CP copies it into the returning CNM, and the source's CNM demultiplexer reads it back to identify which Reaction Point, flow queue, or group of flows sent the frame that triggered the message.",
+      "zh": "CN-TAG（33.2）由两个八位组的以太类型（EtherType，取值见表 33-1）加上两个八位组的流标识符（Flow Identifier）构成。位置很关键：在 VLAN 网桥中，CN-TAG 由位于排队垫片（Queuing shim）内的拥塞点检查，而排队垫片位于 VLAN 标签垫片之下。因此源端必须按网桥期望的确切顺序插入标签——地址、然后 VLAN 标签、然后 CN-TAG、然后数据——否则网桥无法找到 CN-TAG。流标识符（33.2.1）是不透明的：标准不定义其含义，CP 不得对其进行解释。它唯一的作用是往返传递——CP 将其复制到返回的 CNM 中，源端的 CNM 解复用器再读回它，以辨别是哪个反应点、流队列或流组发出了触发该消息的帧。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  S[Source / end station] -->|data frame + CN-TAG FlowID| CP[Congestion Point queue filling]\n  CP -->|CNM with same CN-TAG FlowID| DM[CNM demultiplexer]\n  DM -->|use FlowID to find| RP[Reaction Point slows down]",
+      "zh": "flowchart LR\n  S[源端 / 终端站] -->|数据帧 + CN-TAG FlowID| CP[拥塞点 队列堆积]\n  CP -->|携带相同 CN-TAG FlowID 的 CNM| DM[CNM 解复用器]\n  DM -->|用 FlowID 定位| RP[反应点 减速]"
+    },
+    {
+      "type": "prose",
+      "en": "The CNM itself (33.3) is identified by its own two-octet EtherType (Table 33-2), and the PDU body runs 24 to 88 octets. Rule of thumb for the returning frame: if the triggering data frame carried a CN-TAG, that same CN-TAG is retained in the frame carrying the CNM; if it did not, a CN-TAG with Flow Identifier 0 is used instead. That guarantees the feedback always has a tag to ride on.",
+      "zh": "CNM 本身（33.3）由其自己的两个八位组以太类型标识（表 33-2），PDU 主体长度为 24 到 88 个八位组。返回帧的经验法则是：如果触发的数据帧携带了 CN-TAG，那么携带 CNM 的帧中保留同一个 CN-TAG；如果没有，则改用流标识符为 0 的 CN-TAG。这保证了反馈始终有一个标签可供承载。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 660 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><g font-size=\"11\" fill=\"currentColor\" stroke=\"none\"><text x=\"4\" y=\"14\">CNM PDU (octets 1..88)</text></g><g><rect x=\"4\" y=\"24\" width=\"40\" height=\"34\"/><rect x=\"44\" y=\"24\" width=\"40\" height=\"34\"/><rect x=\"84\" y=\"24\" width=\"110\" height=\"34\"/><rect x=\"194\" y=\"24\" width=\"60\" height=\"34\"/><rect x=\"254\" y=\"24\" width=\"60\" height=\"34\"/><rect x=\"314\" y=\"24\" width=\"60\" height=\"34\"/><rect x=\"374\" y=\"24\" width=\"110\" height=\"34\"/><rect x=\"484\" y=\"24\" width=\"60\" height=\"34\"/><rect x=\"544\" y=\"24\" width=\"112\" height=\"34\"/></g><g font-size=\"8\" fill=\"currentColor\" stroke=\"none\"><text x=\"8\" y=\"44\">Ver/RsvV</text><text x=\"48\" y=\"44\">RsvV/QFb</text><text x=\"100\" y=\"44\">CP Identifier (8)</text><text x=\"200\" y=\"44\">cnmQOffset</text><text x=\"260\" y=\"44\">cnmQDelta</text><text x=\"318\" y=\"44\">Enc.priority</text><text x=\"388\" y=\"44\">Enc.dest MAC (6)</text><text x=\"490\" y=\"44\">Enc.len</text><text x=\"556\" y=\"44\">Enc.MSDU 0..64</text></g><g font-size=\"8\" fill=\"currentColor\" stroke=\"none\"><text x=\"8\" y=\"74\">oct 1</text><text x=\"84\" y=\"74\">oct 3</text><text x=\"194\" y=\"74\">oct 11</text><text x=\"254\" y=\"74\">oct 13</text><text x=\"314\" y=\"74\">oct 15</text><text x=\"374\" y=\"74\">oct 17</text><text x=\"484\" y=\"74\">oct 23</text><text x=\"544\" y=\"74\">oct 25</text></g></svg>",
+      "caption": {
+        "en": "The CNM PDU layout from Table 33-3: the first two octets pack Version, ReservedV, and Quantized Feedback; then the 8-octet Congestion Point Identifier, two signed queue measures, and an echo of the triggering frame's priority, destination MAC, and a snippet of its payload.",
+        "zh": "表 33-3 的 CNM PDU 布局：前两个八位组打包了版本（Version）、ReservedV 和量化反馈（Quantized Feedback）；随后是 8 个八位组的拥塞点标识符、两个有符号队列度量值，以及对触发帧的优先级、目的 MAC 和部分载荷的回显。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The first two octets are tightly bit-packed. Version (33.4.1) is 4 bits in the most significant bits of octet 1, sent as 0 and ignored on receipt. ReservedV (33.4.2) is 6 bits — the least significant 4 bits of octet 1 plus the most significant 2 bits of octet 2 — also sent as 0 and ignored. Quantized Feedback (33.4.3) is 6 bits in the least significant bits across those first two octets; it carries the feedback value the CP computed in its EM_UNITDATA.request procedure (32.9.3). This is the number the Reaction Point actually acts on to decide how hard to throttle.",
+      "zh": "前两个八位组是紧密的比特打包。版本（Version，33.4.1）占 4 比特，位于第 1 个八位组的最高有效位，发送时为 0，接收时忽略。ReservedV（33.4.2）占 6 比特——第 1 个八位组的最低 4 比特加上第 2 个八位组的最高 2 比特——同样发送时为 0、接收时忽略。量化反馈（Quantized Feedback，33.4.3）占 6 比特，位于这前两个八位组的最低有效位中；它携带 CP 在其 EM_UNITDATA.request 过程（32.9.3）中计算出的反馈值。这个数值正是反应点用来决定限速力度的依据。"
+    },
+    {
+      "type": "prose",
+      "en": "Next comes identity and queue state. The Congestion Point Identifier (CPID, 33.4.4) is 8 octets that uniquely name the CP within the Congestion Notification Domain (CND); the transmitting system can format it however it likes, so a receiving Reaction Point shall not read meaning into its subfields. cnmQOffset (33.4.5) is a two-octet two's-complement signed integer equal to (-1 x cpQOffset) in units of 64 octets, clamped to the -32768..32767 range. cnmQDelta (33.4.6) similarly carries the CP's cpQDelta in 64-octet units, same clamping — and although the Reaction Point does not use cnmQDelta, it is included to help an administrator tune configuration parameters.",
+      "zh": "接下来是身份和队列状态。拥塞点标识符（CPID，Congestion Point Identifier，33.4.4）占 8 个八位组，在拥塞通知域（CND，Congestion Notification Domain）内唯一标识该 CP；发送系统可以任意格式化它，因此接收方反应点不得解读其子字段的含义。cnmQOffset（33.4.5）是一个两个八位组的二进制补码有符号整数，等于 (-1 × cpQOffset)，单位为 64 个八位组，被限制在 -32768..32767 范围内。cnmQDelta（33.4.6）同样以 64 个八位组为单位携带 CP 的 cpQDelta，采用相同的范围限制——尽管反应点并不使用 cnmQDelta，但它被纳入其中以帮助管理员调整配置参数。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why is the CPID a full 8 octets when a MAC address is only 6? Deliberately, to break the link between a CP's identity and the CNM's source MAC. The standard's own suggestion: use a Port's 6-octet MAC as the high-order bytes, then use the low-order 2 octets to encode the CP queue's priority and/or which physical port it is — giving every queue on a multi-queue port a distinct identifier.",
+      "zh": "既然 MAC 地址只有 6 个八位组，为什么 CPID 要用满 8 个八位组？这是有意为之，目的是切断 CP 身份与 CNM 源 MAC 之间的关联。标准本身的建议是：用某端口的 6 个八位组 MAC 作为高位字节，再用低位的 2 个八位组编码该 CP 队列的优先级和/或它属于哪个物理端口——从而让多队列端口上的每个队列都有独立的标识符。"
+    },
+    {
+      "type": "prose",
+      "en": "The tail of the CNM echoes the frame that triggered it, so the source can recognize the offending traffic. Encapsulated priority (33.4.7) is 2 octets, with the triggering frame's priority in the top 3 bits and the rest sent as 0 and ignored. Encapsulated destination MAC address (33.4.8) is the 6-octet destination of that frame. Encapsulated MSDU length (33.4.9) is 2 octets giving how many bytes follow. Encapsulated MSDU (33.4.10) is up to 64 octets — the opening bytes of the triggering frame's MAC Service Data Unit, enough for the source to fingerprint the flow without copying the whole packet.",
+      "zh": "CNM 的尾部回显了触发它的那个帧，使源端能够识别出问题流量。封装优先级（Encapsulated priority，33.4.7）占 2 个八位组，触发帧的优先级位于最高 3 比特，其余比特发送时为 0、接收时忽略。封装目的 MAC 地址（Encapsulated destination MAC address，33.4.8）是该帧的 6 个八位组目的地址。封装 MSDU 长度（Encapsulated MSDU length，33.4.9）占 2 个八位组，给出后续的字节数。封装 MSDU（Encapsulated MSDU，33.4.10）最多 64 个八位组——是触发帧 MAC 服务数据单元的开头字节，足以让源端识别该数据流，而无需复制整个数据包。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, validation (33.4.11) tells a receiver when to throw a CNM away. It shall be discarded if the MSDU has fewer than 24 octets (too short to be a real CNM). It may be discarded if it arrives with no CN-TAG — though if an end station has told its neighbor to strip CN-TAGs (the cnpdAcceptsCnTag variable set FALSE), discarding tagless CNMs would lose its own feedback, so that combination is discouraged. Crucially, nonzero bits in Version or ReservedV shall NOT make a CNM invalid: those reserved spaces, plus room after the Encapsulated MSDU, are left open so future revisions can add fields without breaking today's receivers.",
+      "zh": "最后，验证规则（33.4.11）告诉接收方何时应丢弃一个 CNM。如果 MSDU 少于 24 个八位组（短到不可能是真正的 CNM），则必须丢弃。如果到达时没有 CN-TAG，则可以丢弃——但如果某终端站已告知其邻居剥离 CN-TAG（即 cnpdAcceptsCnTag 变量设为 FALSE），那么丢弃无标签的 CNM 会让它丢失自己的反馈，因此不推荐这种组合。关键的是，版本或 ReservedV 中存在非零比特不得使 CNM 失效：这些保留空间，以及封装 MSDU 之后的余地，被刻意留空，以便未来修订能在不破坏当前接收方的前提下添加字段。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every Clause 33 unit and where it was taught",
+        "zh": "覆盖地图——第 33 章每个单元及其讲解位置"
+      },
+      "en": "Structure and framing: 33.1 (octet/bit numbering, big-endian multi-octet numbers, flag = 1 bit) is the encoding-rules prose. CN-TAG: 33.2 is the two-octet EtherType + tag and the addresses/VLAN/CN-TAG/data ordering rule; 33.2.1 Flow Identifier is the opaque round-trip ID a CP must not interpret. CNM container: 33.3 is the CNM EtherType (Table 33-2) and the CN-TAG-retention rule (FlowID 0 if the trigger had none). CNM PDU fields (Table 33-3): 33.4.1 Version (4 bits, sent 0), 33.4.2 ReservedV (6 bits straddling octets 1-2, sent 0), 33.4.3 Quantized Feedback (6 bits, the CP's feedback from 32.9.3), 33.4.4 Congestion Point Identifier (8 octets, opaque, why 8 not 6), 33.4.5 cnmQOffset and 33.4.6 cnmQDelta (signed, 64-octet units, clamp to +/-32768/32767), 33.4.7 Encapsulated priority (top 3 bits of 2 octets), 33.4.8 Encapsulated destination MAC address (6 octets), 33.4.9 Encapsulated MSDU length (2 octets), 33.4.10 Encapsulated MSDU (<=64 octets), 33.4.11 CNM Validation (discard if <24-octet MSDU; may discard if no CN-TAG; nonzero Version/ReservedV stays valid).",
+      "zh": "结构与成帧：33.1（八位组/比特编号、大端多八位组数值、标志位 = 1 比特）即编码规则的正文。CN-TAG：33.2 是两个八位组的以太类型 + 标签以及地址/VLAN/CN-TAG/数据的顺序规则；33.2.1 流标识符是 CP 不得解释的不透明往返 ID。CNM 容器：33.3 是 CNM 以太类型（表 33-2）及 CN-TAG 保留规则（触发帧无标签时用 FlowID 0）。CNM PDU 字段（表 33-3）：33.4.1 版本（4 比特，发送 0）、33.4.2 ReservedV（6 比特，跨第 1-2 八位组，发送 0）、33.4.3 量化反馈（6 比特，来自 32.9.3 的 CP 反馈）、33.4.4 拥塞点标识符（8 个八位组，不透明，为何是 8 而非 6）、33.4.5 cnmQOffset 和 33.4.6 cnmQDelta（有符号，64 八位组为单位，钳位至 ±32768/32767）、33.4.7 封装优先级（2 个八位组的最高 3 比特）、33.4.8 封装目的 MAC 地址（6 个八位组）、33.4.9 封装 MSDU 长度（2 个八位组）、33.4.10 封装 MSDU（≤64 个八位组）、33.4.11 CNM 验证（MSDU 少于 24 八位组则丢弃；无 CN-TAG 时可丢弃；版本/ReservedV 非零仍有效）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1500,
+          1501,
+          1502,
+          1503
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1500,
+        1501,
+        1502,
+        1503
+      ],
+      "note": "Clause 33 — Encoding of congestion notification PDUs: 33.1 structure/encoding, 33.2/33.2.1 CN-TAG and Flow Identifier, 33.3 CNM EtherType, 33.4.1-33.4.11 CNM PDU fields and validation (Tables 33-1/33-2/33-3)."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:33.1",
+    "8021Q-2022:33.2.1",
+    "8021Q-2022:33.3",
+    "8021Q-2022:33.4.1",
+    "8021Q-2022:33.4.2",
+    "8021Q-2022:33.4.3",
+    "8021Q-2022:33.4.4",
+    "8021Q-2022:33.4.5",
+    "8021Q-2022:33.4.6",
+    "8021Q-2022:33.4.7",
+    "8021Q-2022:33.4.8",
+    "8021Q-2022:33.4.9",
+    "8021Q-2022:33.4.10",
+    "8021Q-2022:33.4.11"
+  ],
+  "track": "bridging-tsn"
+}

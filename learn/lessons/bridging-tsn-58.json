@@ -1,0 +1,158 @@
+{
+  "id": "bridging-tsn-58",
+  "title": {
+    "en": "YANG Data Models, Part 1: Framework, Model Family, Structure, and Security",
+    "zh": "YANG 数据模型（上）：框架、模型家族、结构与安全考量"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 48 gives a bridge a machine-readable contract for configuration and monitoring. YANG (Yet Another Next Generation, a data-modeling language from the IETF) describes, in a strict tree, every knob you can turn and every status you can read on a bridge. These models are not invented from scratch: they are derived from the managed objects of Clause 12, so the same VLANs, ports, and counters you already know reappear here as named tree nodes. Clause 48.1 introduces the framework; this lesson (Part 1) walks through 48.1 through 48.5 — the framework, the family of models, how they are structured into modules, the security considerations, and the schema-tree notation.",
+      "zh": "第 48 章为网桥提供了一份可被机器读取的配置与监控契约。YANG（Yet Another Next Generation，IETF 制定的数据建模语言）用一棵严格的树描述了网桥上你能调整的每一个旋钮、能读取的每一项状态。这些模型并非凭空设计：它们源自第 12 章的受管对象，因此你已经熟悉的 VLAN、端口、计数器都会在这里以命名的树节点重新出现。48.1 介绍框架；本课（上篇）讲解 48.1 至 48.5 — 框架、模型家族、它们如何组织成模块、安全考量，以及模式树（schema tree）的记号约定。"
+    },
+    {
+      "type": "prose",
+      "en": "48.1 (YANG Framework) sets the naming and hierarchy rules. Names live under a URN (Uniform Resource Name) rooted at ieee, then the standard, then the working group, following IEEE Std 802d-2017. The data nodes themselves form a hierarchy of configuration and operational data. Crucially, the IEEE 802.1Q models do not stand alone — they hang off two IETF base models: System Management and Interface Management. 48.1.1 (Interface Management) explains that the IETF RFC 8343 interface model gives every network interface a common skeleton (name, type, admin-status, oper-status, octet and packet counters), and the 802.1Q Bridge Port is added on top by augmentation — a YANG verb that grafts new branches onto an existing tree without copying it.",
+      "zh": "48.1（YANG 框架）规定了命名与层级规则。名字位于一个 URN（统一资源名称）之下，其根为 ieee，其后依次是标准、工作组，遵循 IEEE Std 802d-2017。数据节点本身构成配置数据与运行数据的层级。关键在于，IEEE 802.1Q 的模型并非独立存在 — 它们挂接在两个 IETF 基础模型之上：系统管理与接口管理。48.1.1（接口管理）说明 IETF RFC 8343 接口模型为每个网络接口提供了通用骨架（名称、类型、管理状态、运行状态、字节与分组计数器），而 802.1Q 的网桥端口（Bridge Port）通过 augmentation 叠加其上 — 这是 YANG 的一个动词，意为在不复制的前提下把新分支嫁接到已有的树上。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  ROOT[ieee URN root] --> SYS[IETF System Mgmt]\n  ROOT --> IF[IETF Interface Mgmt RFC 8343]\n  ROOT --> Q[802.1Q Bridge]\n  IF --> PORT[Bridge Port augment]\n  Q --> TPMR[TPMR]\n  Q --> CVLAN[Customer VLAN Bridge]\n  Q --> PB[Provider Bridge]\n  Q --> CFM[CFM]",
+      "zh": "flowchart TD\n  ROOT[ieee URN 根] --> SYS[IETF 系统管理]\n  ROOT --> IF[IETF 接口管理 RFC 8343]\n  ROOT --> Q[802.1Q 网桥]\n  IF --> PORT[网桥端口 augment]\n  Q --> TPMR[TPMR]\n  Q --> CVLAN[客户 VLAN 网桥]\n  Q --> PB[运营商网桥]\n  Q --> CFM[CFM]"
+    },
+    {
+      "type": "prose",
+      "en": "48.2 (IEEE 802.1Q YANG models) presents the model family, each shown as a UML (Unified Modeling Language) picture. The base is 48.2.1, the VLAN Bridge components model: a system has one or more components, each a single VLAN-aware MAC Relay Entity with its filtering database, VLAN table, MST (Multiple Spanning Tree) table, and a set of Bridge Ports. Every other model is a subset or an augmentation of this base. 48.2.2 (Two-Port MAC Relay, TPMR) is a VLAN-unaware subset with exactly two ports — it drops the bridge-vlan, bridge-mst, and filtering-database nodes. 48.2.3 (Customer VLAN Bridge) is simply one component typed customer-vlan-bridge. 48.2.4 (Provider Bridge) extends the base with C-VLAN and S-VLAN components plus VID translation and registration tables for carrier networks.",
+      "zh": "48.2（IEEE 802.1Q YANG 模型）展示了模型家族，每个都以 UML（统一建模语言）图呈现。基础是 48.2.1，即 VLAN 网桥组件模型：一个系统含有一个或多个组件，每个组件是一个支持 VLAN 的 MAC 中继实体，带有它的过滤数据库、VLAN 表、MST（多生成树）表以及一组网桥端口。其余每个模型都是这个基础的子集或扩展。48.2.2（双端口 MAC 中继，TPMR）是一个不感知 VLAN、恰有两个端口的子集 — 它去掉了 bridge-vlan、bridge-mst 与 filtering-database 节点。48.2.3（客户 VLAN 网桥）就是一个类型为 customer-vlan-bridge 的单一组件。48.2.4（运营商网桥）在基础之上增加 C-VLAN 与 S-VLAN 组件，以及面向运营商网络的 VID 转换与注册表。"
+    },
+    {
+      "type": "prose",
+      "en": "The TSN-oriented and fault-management members round out the family. 48.2.5 (CFM model) covers Connectivity Fault Management: Maintenance Domains, Maintenance Associations, Maintenance Groups, MEPs (Maintenance association End Points), MIPs (Maintenance domain Intermediate Points), the CFM Stack, and Default MD (Maintenance Domain) Levels. 48.2.5.1 adds RPC-style actions so an operator can launch Continuity Check, Loopback, and Linktrace sessions. 48.2.6 (Stream filters and stream gates) augments the base component with the Stream Filter Instance Table and Stream Gate Instance Table — the gating that PSFP (Per-Stream Filtering and Policing) needs. 48.2.7 (Asynchronous Traffic Shaping, ATS) augments both the base and the stream-filters model with scheduler instance, scheduler group, port-parameter, and timing-characteristic tables.",
+      "zh": "面向 TSN 与故障管理的成员让家族更完整。48.2.5（CFM 模型）涵盖连通性故障管理：维护域、维护关联、维护组、MEP（维护关联端点）、MIP（维护域中间点）、CFM 栈，以及默认 MD（维护域）等级。48.2.5.1 增加了 RPC 风格的动作，使运维者可以发起连续性检查（Continuity Check）、环回（Loopback）与链路追踪（Linktrace）会话。48.2.6（流过滤器与流门）在基础组件上扩展出流过滤器实例表与流门实例表 — 即 PSFP（逐流过滤与监管）所需的门控。48.2.7（异步流量整形，ATS）在基础模型与流过滤器模型之上同时扩展，增加调度器实例、调度器组、端口参数与时序特性表。"
+    },
+    {
+      "type": "prose",
+      "en": "48.3 (Structure of the YANG models) explains that each model is assembled from a set of reusable YANG modules listed in Table 48-1. Three are pure type libraries with no tree of their own: ieee802-types, ieee802-dot1q-types, and ieee802-dot1q-tsn-types. The workhorse is ieee802-dot1q-bridge (Clause 8 capabilities); the others augment it. 48.3.1 lists the modules a VLAN Bridge component needs; 48.3.2 adds ieee802-dot1q-tpmr for the TPMR; 48.3.3 reuses the base set for the Customer VLAN Bridge; 48.3.4 adds ieee802-dot1q-pb for Provider Bridges; 48.3.5 pulls in the three CFM modules (cfm-types, cfm, cfm-bridge) plus cfm-alarm; 48.3.6 adds ieee802-dot1q-stream-filters-gates; and 48.3.7 layers ieee802-dot1q-ats on top of the stream-filters module.",
+      "zh": "48.3（YANG 模型的结构）说明每个模型都由表 48-1 列出的一组可复用 YANG 模块装配而成。其中三个是纯类型库，本身没有树：ieee802-types、ieee802-dot1q-types 与 ieee802-dot1q-tsn-types。主力是 ieee802-dot1q-bridge（第 8 章能力），其余模块都是对它的扩展。48.3.1 列出 VLAN 网桥组件所需的模块；48.3.2 为 TPMR 增加 ieee802-dot1q-tpmr；48.3.3 让客户 VLAN 网桥复用基础模块集；48.3.4 为运营商网桥增加 ieee802-dot1q-pb；48.3.5 引入三个 CFM 模块（cfm-types、cfm、cfm-bridge）外加 cfm-alarm；48.3.6 增加 ieee802-dot1q-stream-filters-gates；48.3.7 在流过滤器模块之上叠加 ieee802-dot1q-ats。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy mental model: ieee802-dot1q-bridge is the trunk. TPMR, Provider Bridge, CFM, stream-filters-gates, and ATS are all branches grafted on by augmentation. So to provision any feature you almost always load the bridge module first, then the one that adds your feature on top.",
+      "zh": "一个好记的心智模型：ieee802-dot1q-bridge 是树干。TPMR、运营商网桥、CFM、流过滤器/流门与 ATS 都是通过 augmentation 嫁接上去的分支。因此要配置任何特性，你几乎总是先加载 bridge 模块，再加载在其之上添加你所需特性的那个模块。"
+    },
+    {
+      "type": "prose",
+      "en": "48.4 (Security considerations) is required text in every IETF/IEEE YANG specification. These modules are meant to be reached over a network configuration protocol such as NETCONF (Network Configuration Protocol, IETF RFC 6241), whose mandatory secure transport is SSH (Secure Shell), with the NETCONF Access Control Model restricting who may read or write which nodes. The clause then walks the writable (rw) and readable (ro) nodes that are sensitive. 48.4.1 flags bridge-module nodes such as filtering-database/aging-time (mis-set, it eases an FDB — Filtering Database — overflow attack or causes excessive flooding) and warns that filtering-entries can leak the topology and the MAC vendors of attached stations — a privacy concern.",
+      "zh": "48.4（安全考量）是每份 IETF/IEEE YANG 规范必备的内容。这些模块意在通过网络配置协议访问，例如 NETCONF（网络配置协议，IETF RFC 6241），其强制的安全传输是 SSH（安全外壳协议），并由 NETCONF 访问控制模型限制谁可以读写哪些节点。本节随后逐一指出敏感的可写（rw）与可读（ro）节点。48.4.1 标注 bridge 模块中的节点，如 filtering-database/aging-time（设置不当会助长 FDB — 过滤数据库 — 溢出攻击或造成过度泛洪），并提醒 filtering-entries 可能泄露拓扑及所接站点的 MAC 厂商信息 — 这是隐私隐患。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"18\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">NETCONF client</text><rect x=\"10\" y=\"28\" width=\"110\" height=\"30\"/><text x=\"20\" y=\"47\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">edit / get-config</text><line x1=\"120\" y1=\"43\" x2=\"180\" y2=\"43\"/><text x=\"125\" y=\"38\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">over SSH</text><rect x=\"180\" y=\"28\" width=\"120\" height=\"30\"/><text x=\"190\" y=\"47\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Access Control</text><line x1=\"300\" y1=\"43\" x2=\"360\" y2=\"43\"/><rect x=\"360\" y=\"28\" width=\"90\" height=\"30\"/><text x=\"370\" y=\"47\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">YANG tree</text><rect x=\"360\" y=\"80\" width=\"90\" height=\"22\"/><text x=\"368\" y=\"95\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">rw nodes</text><rect x=\"360\" y=\"110\" width=\"90\" height=\"22\"/><text x=\"368\" y=\"125\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">ro nodes</text><line x1=\"405\" y1=\"58\" x2=\"405\" y2=\"80\"/></svg>",
+      "caption": {
+        "en": "Access path of 48.4: a NETCONF client reaches the YANG tree over SSH, gated by the access-control model. The clause classifies each node as writable (rw) or read-only (ro) and rates its sensitivity.",
+        "zh": "48.4 的访问路径：NETCONF 客户端经 SSH 访问 YANG 树，受访问控制模型把关。本节将每个节点归类为可写（rw）或只读（ro），并评估其敏感度。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The remaining security subclauses follow the same recipe per module. 48.4.2 (TPMR) warns that mac-status-propagation timers (link-notify, link-notify-wait/retry, mac-notify and friends) can be abused to destabilize a port. 48.4.3 (Customer VLAN Bridge) simply inherits 48.4.1. 48.4.4 (Provider Bridge) calls out cvid-registration and service-priority-regeneration. 48.4.5 (CFM) names maintenance-domain and maintenance-group as the nodes that, if tampered with, can reinitialize CFM state machines. 48.4.6 (Stream filters and gates) and 48.4.7 (ATS) both warn that writing stream-filters, stream-gates, schedulers, or ats-port-parameters can force a reinitialization of PSFP/ATS state machines and cause instability. Each subclause cross-references 48.4.1 because the bridge module is always present underneath.",
+      "zh": "其余安全子条款对每个模块采用相同的写法。48.4.2（TPMR）提醒 mac-status-propagation 的定时器（link-notify、link-notify-wait/retry、mac-notify 等）可能被滥用以使端口失稳。48.4.3（客户 VLAN 网桥）直接继承 48.4.1。48.4.4（运营商网桥）点名 cvid-registration 与 service-priority-regeneration。48.4.5（CFM）指出 maintenance-domain 与 maintenance-group 一旦被篡改，可能令 CFM 状态机重新初始化。48.4.6（流过滤器与流门）与 48.4.7（ATS）都警告：写入 stream-filters、stream-gates、schedulers 或 ats-port-parameters 会迫使 PSFP/ATS 状态机重新初始化，造成不稳定。每个子条款都交叉引用 48.4.1，因为 bridge 模块始终垫在下面。"
+    },
+    {
+      "type": "prose",
+      "en": "48.5 (YANG schema tree definitions) is the reference picture for each module, using a compact notation: rw means configuration (read-write), ro means state (read-only); a trailing ? marks an optional node, ! a presence container, and * a list or leaf-list; square brackets enclose list keys, and parentheses with a colon mark choice/case nodes. Because the three type libraries carry only definitions, 48.5.1 (ieee802-types), 48.5.2 (ieee802-dot1q-types), and 48.5.3 (ieee802-dot1q-tsn-types) each explicitly state they have no tree. 48.5.4 then prints the big ieee802-dot1q-bridge tree: bridges -> bridge[name] -> component[name], holding capabilities, the filtering-database with filtering-entry and vlan-registration-entry lists and their port-maps, and the permanent-database.",
+      "zh": "48.5（YANG 模式树定义）是每个模块的参考图，采用一套紧凑记号：rw 表示配置（读写），ro 表示状态（只读）；结尾的 ? 标记可选节点，! 标记存在性容器（presence container），* 标记列表或叶列表；方括号括起列表的键，带冒号的圆括号标记 choice/case 节点。由于三个类型库只承载定义，48.5.1（ieee802-types）、48.5.2（ieee802-dot1q-types）与 48.5.3（ieee802-dot1q-tsn-types）各自明确声明它们没有树。48.5.4 随后给出庞大的 ieee802-dot1q-bridge 树：bridges -> bridge[name] -> component[name]，其下承载 capabilities、含 filtering-entry 与 vlan-registration-entry 列表及其 port-map 的 filtering-database，以及 permanent-database。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  B[bridges] --> BR[bridge name]\n  BR --> C[component name]\n  C --> CAP[ro capabilities]\n  C --> FDB[rw filtering-database]\n  FDB --> FE[filtering-entry list]\n  FDB --> VRE[vlan-registration-entry]\n  C --> PDB[rw permanent-database]",
+      "zh": "flowchart TD\n  B[bridges] --> BR[bridge name]\n  BR --> C[component name]\n  C --> CAP[ro 能力 capabilities]\n  C --> FDB[rw 过滤数据库]\n  FDB --> FE[filtering-entry 列表]\n  FDB --> VRE[vlan-registration-entry]\n  C --> PDB[rw 永久数据库]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every 48.5 schema-tree subclause (48.5.4 – 48.5.12)",
+        "zh": "覆盖地图：48.5 全部模式树子条款（48.5.4 – 48.5.12）"
+      },
+      "en": "48.5.5 (ieee802-dot1q-tpmr) augments if:interfaces/interface/bridge-port with managed-address and the mac-status-propagation subtree. 48.5.6 (ieee802-dot1q-pb) adds the Provider Bridge nodes (vid-translations, egress-vid-translations, cvid-registration, service-priority). 48.5.7 (ieee802-dot1q-cfm-types) is type-only. 48.5.8 (ieee802-dot1q-cfm) prints the cfm container: maintenance-domain[md-id] with its md-name choice, maintenance-association, MEP with its continuity-check and mep-db, plus the transmit-loopback / transmit-linktrace RPC actions and linktrace-reply. 48.5.9 (ieee802-dot1q-cfm-bridge) attaches CFM Stack, Default MD Levels, and Configuration Error Lists onto the bridge. 48.5.10 (ieee802-dot1q-cfm-alarm) defines the common CFM alarms. 48.5.11 (ieee802-dot1q-stream-filters-gates) shows stream-filters and stream-gates under the component, with stream-gate-instance carrying admin-gate-states and admin-ipv. 48.5.12 (ieee802-dot1q-ats) augments the stream-filter-instance-table with a scheduler reference and adds the scheduler / scheduler-group / scheduler-port-parameter / timing tables. All these schema trees appear on pages 1720–1729.",
+      "zh": "48.5.5（ieee802-dot1q-tpmr）在 if:interfaces/interface/bridge-port 上扩展出 managed-address 与 mac-status-propagation 子树。48.5.6（ieee802-dot1q-pb）增加运营商网桥节点（vid-translations、egress-vid-translations、cvid-registration、service-priority）。48.5.7（ieee802-dot1q-cfm-types）仅含类型。48.5.8（ieee802-dot1q-cfm）给出 cfm 容器：带 md-name choice 的 maintenance-domain[md-id]、maintenance-association、含 continuity-check 与 mep-db 的 MEP，以及 transmit-loopback / transmit-linktrace RPC 动作和 linktrace-reply。48.5.9（ieee802-dot1q-cfm-bridge）把 CFM 栈、默认 MD 等级与配置错误列表挂到网桥上。48.5.10（ieee802-dot1q-cfm-alarm）定义通用 CFM 告警。48.5.11（ieee802-dot1q-stream-filters-gates）在组件下展示 stream-filters 与 stream-gates，其中 stream-gate-instance 携带 admin-gate-states 与 admin-ipv。48.5.12（ieee802-dot1q-ats）在 stream-filter-instance-table 上扩展出调度器引用，并增加 scheduler / scheduler-group / scheduler-port-parameter / 时序表。所有这些模式树出现在第 1720–1729 页。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1720,
+          1724,
+          1725,
+          1726,
+          1727,
+          1728,
+          1729
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1696,
+        1697,
+        1698,
+        1699,
+        1702,
+        1703,
+        1704,
+        1707,
+        1711,
+        1712,
+        1713,
+        1714,
+        1715,
+        1717,
+        1718,
+        1719,
+        1720
+      ],
+      "note": "48.1 framework and interface model; 48.2 model family UML; 48.3 module structure tables; 48.4 security considerations; 48.5 schema-tree notation and the bridge tree."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:48.1.1",
+    "8021Q-2022:48.2.1",
+    "8021Q-2022:48.2.2",
+    "8021Q-2022:48.2.3",
+    "8021Q-2022:48.2.4",
+    "8021Q-2022:48.2.5",
+    "8021Q-2022:48.2.6",
+    "8021Q-2022:48.2.7",
+    "8021Q-2022:48.3.1",
+    "8021Q-2022:48.3.2",
+    "8021Q-2022:48.3.3",
+    "8021Q-2022:48.3.4",
+    "8021Q-2022:48.3.5",
+    "8021Q-2022:48.3.6",
+    "8021Q-2022:48.3.7",
+    "8021Q-2022:48.4.1",
+    "8021Q-2022:48.4.2",
+    "8021Q-2022:48.4.3",
+    "8021Q-2022:48.4.4",
+    "8021Q-2022:48.4.5",
+    "8021Q-2022:48.4.6",
+    "8021Q-2022:48.4.7",
+    "8021Q-2022:48.5.1",
+    "8021Q-2022:48.5.2",
+    "8021Q-2022:48.5.3",
+    "8021Q-2022:48.5.4",
+    "8021Q-2022:48.5.5",
+    "8021Q-2022:48.5.6",
+    "8021Q-2022:48.5.7",
+    "8021Q-2022:48.5.8",
+    "8021Q-2022:48.5.9",
+    "8021Q-2022:48.5.10",
+    "8021Q-2022:48.5.11",
+    "8021Q-2022:48.5.12"
+  ],
+  "track": "bridging-tsn"
+}

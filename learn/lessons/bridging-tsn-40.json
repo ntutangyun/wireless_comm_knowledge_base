@@ -1,0 +1,135 @@
+{
+  "id": "bridging-tsn-40",
+  "title": {
+    "en": "Putting CFM to Work: Where Maintenance Points Live Inside a Bridge",
+    "zh": "让 CFM 落地：维护点在网桥内部的位置"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Earlier clauses defined the pieces of Connectivity Fault Management (CFM) — the protocol that lets a network watch its own health. CFM works by placing Maintenance Points (MPs) at chosen spots and letting them send and watch heartbeat frames. The two kinds of MP are the Maintenance association End Point (MEP), which sources and sinks CFM PDUs (Protocol Data Units, i.e. CFM control frames) at the edge of a monitored region, and the MIP (Maintenance domain Intermediate Point, built from MHFs — MIP Half Functions), which sits in the middle and only relays or responds. Clause 22 answers a very concrete question: given a real bridge, where exactly do these points get placed, and how does an operator configure them? Think of this clause as the wiring diagram that turns CFM theory into a running system.",
+      "zh": "前面的章节定义了连通性故障管理（CFM，Connectivity Fault Management）的各个组件——这套协议让网络监测自身健康。CFM 的工作方式是在选定位置放置维护点（MP，Maintenance Point），让它们发送并观察心跳帧。MP 分两类：维护关联端点（MEP，Maintenance association End Point），它在被监测区域的边缘发出和接收 CFM PDU（协议数据单元，即 CFM 控制帧）；以及 MIP（维护域中间点，由 MHF（MIP 半功能）构成），它位于中间，只做转发或应答。Clause 22 回答一个非常具体的问题：在一个真实网桥里，这些点到底放在哪、运维人员如何配置它们？可以把本章看作把 CFM 理论变成可运行系统的接线图。"
+    },
+    {
+      "type": "prose",
+      "en": "The key placement idea is orientation. Every MP attaches to the EISS Multiplex Entity (the shim, defined in 6.17, that fans frames out by VLAN ID — VID — so each VLAN service instance gets its own 'column' of MPs). Inside that column an MP is either Up or Down. An Up MEP points toward the MAC Relay Entity (the bridge's forwarding core), so it watches traffic flowing through the bridge; a Down MEP points away from the relay, toward the LAN, so it watches the link itself. Crucially, Up MEPs sit above the Port filtering entities and Down MEPs sit below them — which means a MEP can keep sending and receiving CFM PDUs even when the port is blocked by spanning tree, but no frame passes a filter when its VID is filtered out (22.1.1, 22.1.3).",
+      "zh": "放置的关键在于朝向。每个 MP 都挂在 EISS 复用实体（6.17 定义的垫片，按 VLAN 标识——VID——把帧分发开，使每个 VLAN 业务实例拥有自己的一'列' MP）上。在这一列里，MP 要么朝上（Up）要么朝下（Down）。Up MEP 指向 MAC 中继实体（网桥的转发核心），因此监测穿过网桥的流量；Down MEP 背离中继、指向 LAN，因此监测链路本身。关键在于：Up MEP 位于端口过滤实体之上，Down MEP 位于其下——这意味着即便端口被生成树阻塞，MEP 仍能收发 CFM PDU；但当某 VID 被过滤掉时，属于它的帧无法通过过滤器（22.1.1、22.1.3）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 240\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"170\" y=\"10\" width=\"120\" height=\"26\" /><text x=\"230\" y=\"27\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">MAC Relay Entity</text><rect x=\"150\" y=\"50\" width=\"160\" height=\"24\" /><text x=\"230\" y=\"66\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Up MEPs (toward relay)</text><rect x=\"150\" y=\"90\" width=\"160\" height=\"24\" /><text x=\"230\" y=\"106\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Up MHF / Port filtering</text><rect x=\"150\" y=\"130\" width=\"160\" height=\"24\" /><text x=\"230\" y=\"146\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Down MHF / Queuing</text><rect x=\"150\" y=\"170\" width=\"160\" height=\"24\" /><text x=\"230\" y=\"186\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Down MEPs (toward LAN)</text><rect x=\"170\" y=\"210\" width=\"120\" height=\"24\" /><text x=\"230\" y=\"226\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">LAN</text><line x1=\"230\" y1=\"36\" x2=\"230\" y2=\"50\" /><line x1=\"230\" y1=\"74\" x2=\"230\" y2=\"90\" /><line x1=\"230\" y1=\"114\" x2=\"230\" y2=\"130\" /><line x1=\"230\" y1=\"154\" x2=\"230\" y2=\"170\" /><line x1=\"230\" y1=\"194\" x2=\"230\" y2=\"210\" /></svg>",
+      "caption": {
+        "en": "The MP stack on one Bridge Port: Up MEPs above the filtering/queuing core, Down MEPs below it, MHFs forming MIPs in the middle. Higher MD Levels sit nearest the center.",
+        "zh": "一个网桥端口上的 MP 栈：Up MEP 在过滤/排队核心之上，Down MEP 在其下，MHF 在中间组成 MIP。MD 等级越高越靠近中心。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Why does CFM ride alongside the Forwarding Process at all? Because the standard wants CFM PDUs to follow exactly the same path as real data, so that a fault test reflects what data actually experiences. Clause 22.1.2 shows that the forwarding components (active topology enforcement, ingress/egress filtering, queuing, transmission selection) can each be redrawn as a shim passing EISS parameters, and CFM slots into that same chain. A practical consequence (22.1.6): a MEP placed below the queuing entities loses access to those queues — so a flood of loopback replies could starve real traffic — and it becomes VLAN-untagged, protecting all data on the port rather than one VLAN. The standard also clarifies how MPs interact with non-VLAN-aware bridges (22.1.7), with Link Aggregation and MAC Security shims (22.1.8), and how CFM compares to IEEE 802.3 OAM (Operations, Administration, and Maintenance) line-level link checks (22.1.9).",
+      "zh": "CFM 为什么要紧贴转发过程？因为标准希望 CFM PDU 走与真实数据完全相同的路径，这样故障测试才能反映数据实际经历的情况。22.1.2 表明，各转发组件（活动拓扑强制、入/出口过滤、排队、传输选择）都可重画成传递 EISS 参数的垫片，而 CFM 嵌入同一条链。一个实际后果（22.1.6）：放在排队实体之下的 MEP 将无法使用这些队列——大量环回应答可能挤占真实流量——而且它变为不带 VLAN 标签，从而保护端口上的全部数据而非单个 VLAN。标准还说明了 MP 如何与非 VLAN 感知网桥（22.1.7）、与链路聚合及 MAC 安全垫片（22.1.8）协同，以及 CFM 与 IEEE 802.3 OAM（运营、管理与维护）链路级检测的对比（22.1.9）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mnemonic: Up watches the bridge, Down watches the wire. An Up MEP protects the service instance as it passes through the relay; a Down MEP protects the link to the neighbor. Both survive a blocked port because they sit on the right side of the Port filtering entities.",
+      "zh": "记忆口诀：Up 看网桥，Down 看线路。Up MEP 保护穿过中继的业务实例；Down MEP 保护到邻居的链路。两者在端口被阻塞时都能存活，因为它们位于端口过滤实体的正确一侧。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Create MD Level or Maintenance Domain + MA] --> B{MEP or MIP?}\n  B -->|MEP: explicit| C[Set VID/I-SID + Up or Down]\n  C --> D[Placed per Table 22-1]\n  B -->|MIP: implicit| E[Management entity re-evaluates per port/VID]\n  E --> F[Table 22-2 decides if MIP is created]\n  D --> G[Config Error List checked: CFMleak, ConflictingVIDs, ExcessiveLevels, OverlappedLevels]\n  F --> G",
+      "zh": "flowchart TD\n  A[创建 MD 等级或维护域 + MA] --> B{MEP 还是 MIP?}\n  B -->|MEP：显式| C[设置 VID/I-SID + Up 或 Down]\n  C --> D[按表 22-1 放置]\n  B -->|MIP：隐式| E[管理实体按端口/VID 重新评估]\n  E --> F[表 22-2 决定是否创建 MIP]\n  D --> G[检查配置错误列表：CFMleak、ConflictingVIDs、ExcessiveLevels、OverlappedLevels]\n  F --> G"
+    },
+    {
+      "type": "prose",
+      "en": "Creation rules matter because misconfiguration generates false fault alarms. MEPs are always created explicitly: you pick the MA (associated with one or more VIDs, an I-SID — Service Instance Identifier — a TESI, or an ECMP path) and the direction, and Table 22-1 maps that to a position. A bridge refuses to mix Up and Down MEPs in the same MA in the same bridge, and no VID may have Up MEPs in more than one MA — these rules guarantee MEPs cleanly bound a domain regardless of what spanning tree does (22.2.2). MIPs, by contrast, are created implicitly: the management entity watches for triggers (bridge init, a MEP added or removed, a reachability change) and re-runs an evaluation, then consults Table 22-2 with the defMHFnone / defMHFdefault / defMHFexplicit / defMHFdefer enumerations to decide whether to instantiate the MHF pair (22.2.3). When something is inconsistent — a CFMleak, ConflictingVIDs, ExcessiveLevels, or OverlappedLevels — the bridge records it in a Configuration Error List rather than silently breaking (22.2.4).",
+      "zh": "创建规则很重要，因为配置错误会产生虚假故障告警。MEP 总是显式创建：你选定 MA（关联到一个或多个 VID、一个 I-SID（业务实例标识）、一条 TESI 或一条 ECMP 路径）和朝向，表 22-1 把它映射到一个位置。网桥拒绝在同一网桥的同一 MA 中混用 Up 与 Down MEP，且任何 VID 在多于一个 MA 中都不得配置 Up MEP——这些规则确保无论生成树如何变化，MEP 都能干净地界定一个域（22.2.2）。相比之下，MIP 是隐式创建的：管理实体监视触发条件（网桥初始化、MEP 增删、可达性变化）并重新执行评估，再依据 defMHFnone / defMHFdefault / defMHFexplicit / defMHFdefer 枚举查表 22-2，决定是否实例化 MHF 对（22.2.3）。当出现不一致——CFMleak、ConflictingVIDs、ExcessiveLevels 或 OverlappedLevels——网桥会将其记入配置错误列表，而非悄然失效（22.2.4）。"
+    },
+    {
+      "type": "prose",
+      "en": "Two design themes round out the local picture. MD Level (Maintenance Domain Level) assignment (22.3): a port can in theory hold up to 8189 levels across all VIDs, but that is expensive, so the advice is to keep levels few and packed toward MD Level 0 — CFM PDUs above the levels a bridge uses are simply treated as ordinary multicasts. Leaving deliberate gaps or insulating domains with VLAN tags avoids painful renumbering later. And stations, not just bridges, can run CFM (22.4): a station is modeled as a bridge but with no forwarding process, no Up MPs, and no MIPs — only Down MEPs — and it raises only CFMleak configuration errors.",
+      "zh": "两个设计主题补全了本地视图。MD 等级（维护域等级，Maintenance Domain Level）分配（22.3）：一个端口理论上可在所有 VID 上承载多达 8189 个等级，但代价高昂，因此建议把等级数量保持得少、并向 MD 等级 0 集中——高于网桥所用等级的 CFM PDU 会被当作普通组播处理。预留有意的间隙、或用 VLAN 标签隔离各域，可避免日后痛苦的重新编号。此外，不止网桥，终端站（station）也能运行 CFM（22.4）：站点被建模为网桥，但没有转发过程、没有 Up MP、没有 MIP——只有 Down MEP——并且只会产生 CFMleak 配置错误。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Scalability check (22.5): Continuity Check Messages (CCMs) are the steady heartbeat, so their load is predictable. At a 3.3 ms interval with 1000 VID-MEPs, CCMs can exceed 100% of a 10 Mb/s link — but on a 1 Gb/s link the same load is well under 1%. In theory one port can hold 65 504 MEPs and 8188 MHFs; pick CCM intervals with the link speed in mind.",
+      "zh": "可扩展性核对（22.5）：连续性检查报文（CCM，Continuity Check Message）是稳定心跳，其负载可预测。在 3.3 ms 间隔、1000 个 VID-MEP 时，CCM 在 10 Mb/s 链路上可能超过 100% 带宽——但在 1 Gb/s 链路上同样负载远低于 1%。理论上单端口可承载 65504 个 MEP 和 8188 个 MHF；选择 CCM 间隔时务必考虑链路速率。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, Clause 22 scales the picture up to whole networks. In Provider Bridges (22.6), the S-VLAN component carries almost the full CFM suite while the C-VLAN component is stripped down: only the minimum set of entities is mandatory on a C-tagged service interface (22.6.1), and the standard works through the trade-offs of a Maintenance C-VLAN on a Port-based interface (22.6.2), on a C-tagged interface (22.6.3), and on Port-mapping S-VLAN components that only need one extra MP to protect the LAN toward the neighboring provider network (22.6.4). For an enterprise, where users and operators are one company, default MEP/MIP settings make CFM easy: one Maintenance Domain at MD Level 0, an MA per VID, and a single MEP per VID on a Management Port — a port often with no external interface used to manage the bridge (22.7). And 22.8 explains how to make CFM work on older 802.1Q bridges by using MAC Address Registration Entries and incoming-frame filtering so CCMs stop at the right port. Together these give every CFM placement a concrete home.",
+      "zh": "最后，Clause 22 把视图扩展到整个网络。在运营商网桥中（22.6），S-VLAN 组件承载几乎全套 CFM 实体，而 C-VLAN 组件被精简：C 标记业务接口上只有最小实体集是强制的（22.6.1）；标准还逐一分析了维护 C-VLAN 在基于端口接口（22.6.2）、C 标记接口（22.6.3）上的取舍，以及在端口映射 S-VLAN 组件上只需一个额外 MP 来保护通往邻接运营商网络的 LAN（22.6.4）。对于用户与运营方同属一家公司的企业网，默认的 MEP/MIP 设置让 CFM 易于配置：在 MD 等级 0 设一个维护域、每个 VID 一个 MA、在管理端口上每个 VID 一个 MEP——管理端口往往没有外部接口、用于管理网桥（22.7）。22.8 则说明如何在更早版本的 802.1Q 网桥上让 CFM 运行：利用 MAC 地址注册表项与入向帧过滤，使 CCM 在正确的端口被拦下。这些内容共同为每个 CFM 放置点给出了具体归宿。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every Clause 22 subclause by number",
+        "zh": "覆盖地图——按编号列出 Clause 22 全部子条款"
+      },
+      "en": "22.1 CFM shims in Bridges: 22.1.1 preliminary positioning of MPs (the EISS Multiplex Entity fans frames into per-VID columns, each with Up/Down MEPs and MHFs); 22.1.2 CFM and the Forwarding Process (forwarding components redrawn as shims so CFM follows the data path); 22.1.3 Up/Down separation of MPs (Up MEPs above Port filtering, Down MEPs below; DoSAP/ISAP placement); 22.1.4 service instances over multiple Bridges (Figures 22-4/22-5/22-6, VID 9 example); 22.1.5 multiple-VID service instances (one MAID/MA across all VIDs of a TESI); 22.1.6 untagged CFM PDUs (MEPs below queuing lose queues, become untagged, protect all data); 22.1.7 MPs and non-VLAN-aware Bridges (no EISS Multiplex Entity needed); 22.1.8 MPs and other standards (placement relative to Link Aggregation and MAC Security, why MPs stay above MAC Security); 22.1.9 CFM vs IEEE 802.3 OAM (loopback, statistics, intervals, multi-link reach). 22.2 Maintenance Entity creation: 22.2.1 creating Maintenance Domains and MAs (what lets a service instance pass a bridge); 22.2.2 creating MEPs (explicit, Table 22-1, Up/Down cannot mix in one MA); 22.2.3 creating MIPs (implicit, Table 22-2, defMHFnone/default/explicit/defer); 22.2.4 CFM configuration errors (CFMleak, ConflictingVIDs, ExcessiveLevels, OverlappedLevels in the Configuration Error List). 22.3 MPs, Ports, and MD Level assignment (up to 8189 levels per port; keep them few and near level 0; insulate with VLAN tags). 22.4 Stations and CFM (a station is a bridge with only Down MEPs, no MIPs/Up MPs, only CFMleak errors). 22.5 Scalability of CFM (CCM load is predictable; Tables 22-3/22-4; 65 504 MEPs / 8188 MHFs theoretical max). 22.6 CFM in Provider Bridges: 22.6.1 MPs and C-VLAN components (minimum set on a C-tagged interface); 22.6.2 Maintenance C-VLAN on a Port-based service interface (one MA vs one per C-VID trade-offs); 22.6.3 Maintenance C-VLAN on a C-tagged service interface (one MA per provider S-VLAN); 22.6.4 MPs and Port-mapping S-VLAN components (one MP below 8.5 protects the LAN to the neighbor PBN, Figure 22-11). 22.7 Management Port MEPs and CFM in the enterprise environment (one MEP per MA on a Management Port, no MHFs there; default MD Level 0 / MA-per-VID config; Figures 22-12/22-13). 22.8 implementing CFM on bridges running earlier 802.1Q revisions (use MAC Address Registration Entries plus incoming-frame filtering so a CCM stops at the right port; Figure 22-14).",
+      "zh": "22.1 网桥中的 CFM 垫片：22.1.1 MP 的初步定位（EISS 复用实体把帧分到按 VID 的列，每列含 Up/Down MEP 与 MHF）；22.1.2 CFM 与转发过程（转发组件重画为垫片，使 CFM 沿数据路径）；22.1.3 MP 的 Up/Down 分隔（Up MEP 在端口过滤之上，Down MEP 在其下；DoSAP/ISAP 位置）；22.1.4 跨多网桥的业务实例（图 22-4/22-5/22-6，VID 9 示例）；22.1.5 多 VID 业务实例（一个 TESI 的所有 VID 共用一个 MAID/MA）；22.1.6 不带标签的 CFM PDU（排队之下的 MEP 失去队列、变为无标签、保护全部数据）；22.1.7 MP 与非 VLAN 感知网桥（无需 EISS 复用实体）；22.1.8 MP 与其他标准（相对链路聚合与 MAC 安全的位置，为何 MP 留在 MAC 安全之上）；22.1.9 CFM 与 IEEE 802.3 OAM 对比（环回、统计、间隔、跨多链路覆盖）。22.2 维护实体创建：22.2.1 创建维护域与 MA（决定业务实例能否通过网桥的因素）；22.2.2 创建 MEP（显式，表 22-1，同一 MA 不可混用 Up/Down）；22.2.3 创建 MIP（隐式，表 22-2，defMHFnone/default/explicit/defer）；22.2.4 CFM 配置错误（配置错误列表中的 CFMleak、ConflictingVIDs、ExcessiveLevels、OverlappedLevels）。22.3 MP、端口与 MD 等级分配（每端口最多 8189 个等级；保持少且靠近等级 0；用 VLAN 标签隔离）。22.4 站点与 CFM（站点是只含 Down MEP 的网桥，无 MIP/Up MP，仅 CFMleak 错误）。22.5 CFM 可扩展性（CCM 负载可预测；表 22-3/22-4；理论上限 65504 个 MEP / 8188 个 MHF）。22.6 运营商网桥中的 CFM：22.6.1 MP 与 C-VLAN 组件（C 标记接口的最小集）；22.6.2 基于端口接口上的维护 C-VLAN（单 MA 与每 C-VID 一个 MA 的取舍）；22.6.3 C 标记接口上的维护 C-VLAN（每个运营商 S-VLAN 一个 MA）；22.6.4 MP 与端口映射 S-VLAN 组件（8.5 之下的一个 MP 保护通往邻接 PBN 的 LAN，图 22-11）。22.7 管理端口 MEP 与企业环境中的 CFM（管理端口上每 MA 一个 MEP、其上无 MHF；默认 MD 等级 0 / 每 VID 一个 MA 的配置；图 22-12/22-13）。22.8 在运行更早 802.1Q 版本的网桥上实现 CFM（利用 MAC 地址注册表项加入向帧过滤，使 CCM 在正确端口被拦下；图 22-14）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1284,
+          1287,
+          1289,
+          1291,
+          1294,
+          1297,
+          1299,
+          1301,
+          1305,
+          1307
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1284,
+        1285,
+        1287,
+        1289,
+        1291,
+        1294,
+        1295,
+        1297,
+        1299,
+        1301,
+        1305,
+        1307
+      ],
+      "note": "Clause 22 CFM in systems: 22.1 shims/placement, 22.2 MP creation, 22.3 MD Level assignment, 22.4 stations, 22.5 scalability, 22.6 Provider Bridges, 22.7 Management Port/enterprise, 22.8 earlier-revision bridges."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:22.1.1",
+    "8021Q-2022:22.1.2",
+    "8021Q-2022:22.1.3",
+    "8021Q-2022:22.1.4",
+    "8021Q-2022:22.1.5",
+    "8021Q-2022:22.1.6",
+    "8021Q-2022:22.1.7",
+    "8021Q-2022:22.1.8",
+    "8021Q-2022:22.1.9",
+    "8021Q-2022:22.2.1",
+    "8021Q-2022:22.2.2",
+    "8021Q-2022:22.2.3",
+    "8021Q-2022:22.2.4",
+    "8021Q-2022:22.3",
+    "8021Q-2022:22.4",
+    "8021Q-2022:22.5",
+    "8021Q-2022:22.6.1",
+    "8021Q-2022:22.6.2",
+    "8021Q-2022:22.6.3",
+    "8021Q-2022:22.6.4",
+    "8021Q-2022:22.7",
+    "8021Q-2022:22.8"
+  ],
+  "track": "bridging-tsn"
+}

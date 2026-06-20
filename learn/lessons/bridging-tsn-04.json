@@ -1,0 +1,189 @@
+{
+  "id": "bridging-tsn-04",
+  "title": {
+    "en": "How a Bridge Delivers the MAC Service: ISS, EISS, and the QoS Contract",
+    "zh": "网桥如何承载 MAC 服务：ISS、EISS 与服务质量约定"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 6 answers one deceptively simple question: when you plug a string of bridges between two computers, what exactly does the network promise to deliver? The answer is the MAC Service (Media Access Control Service) — an idealized way to hand a frame to the network and have it show up, intact and in order, at the far end. A bridged network must look, to its users, just like one big LAN (Local Area Network). Clause 6.1 (Basic architectural concepts and terms) sets the stage: everything here builds on the OSI layered model, and the precise primitive definitions live in the companion standard IEEE 802.1AC. This lesson walks the first half of Clause 6 (6.1 through 6.11) as a guided map, naming every sub-clause so you can find it again.",
+      "zh": "Clause 6 回答一个看似简单的问题：当你把一串网桥接在两台计算机之间时，网络究竟承诺交付什么？答案就是 MAC 服务（Media Access Control Service，介质访问控制服务）——一种理想化的方式，让你把一个帧交给网络，它就会完好、有序地出现在另一端。对用户而言，桥接网络必须看起来就像一个大的 LAN（Local Area Network，局域网）。Clause 6.1（基本架构概念与术语）为后文铺垫：这里的一切都建立在 OSI 分层模型之上，而精确的原语定义则位于配套标准 IEEE 802.1AC 中。本课将把 Clause 6 的前半部分（6.1 至 6.11）作为一张导览图逐节讲解，点名每个子条款，方便你日后查找。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.2 (Provision of the MAC Service) names the actual interface: the unconfirmed, connectionless MA-UNITDATA.request and MA-UNITDATA.indication primitives, each carrying four parameters — Destination Address, Source Address, MSDU (MAC Service Data Unit, the payload), and Priority. You hand a request in at a MAC Service Access Point (MSAP) on one station, and a matching indication pops out at an MSAP on another. Clause 6.2.1 then classifies the shapes of connectivity a Virtual Bridged Network can offer: point-to-point (exactly two Bridge Ports), multipoint-to-multipoint (a frame in at one port may egress at any of the others), and rooted-multipoint (ports are either Root or Leaf; leaves talk only to roots, never leaf-to-leaf). Point-to-point and multipoint-to-multipoint are just special cases of rooted-multipoint.",
+      "zh": "Clause 6.2（MAC 服务的提供）点明真正的接口：非确认、无连接的 MA-UNITDATA.request 与 MA-UNITDATA.indication 原语，每个都携带四个参数——目的地址、源地址、MSDU（MAC Service Data Unit，MAC 服务数据单元，即载荷）与优先级。你在一台站点的 MAC 服务接入点（MSAP）递入一个 request，匹配的 indication 就会在另一台站点的 MSAP 上冒出来。Clause 6.2.1 接着对虚拟桥接网络可提供的连通形态分类：点到点（恰好两个网桥端口）、多点到多点（从一个端口进入的帧可在任意其他端口出去）、根多点（端口分为 Root 或 Leaf；叶端口只与根通信，绝不叶到叶）。点到点与多点到多点只是根多点的特例。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.3 (Support of the MAC Service) explains how multiple VLANs (Virtual LANs) share one physical wire: a VLAN tag is prepended to the MSDU. A VLAN-unaware end station sends and receives only untagged frames and relies on the Bridge Port to classify them to a VID (VLAN Identifier). The VID does double duty — it names a VLAN and selects a loop-free active topology. Clause 6.4 (Preservation of the MAC Service) lists the invariants a bridge must not break: frames carry the peer end stations' MAC addresses (never a bridge's), end-station addresses are unconstrained by topology, and addresses must be unique within a VLAN. The relay is invisible; users address each other, not the bridge.",
+      "zh": "Clause 6.3（MAC 服务的支持）说明多个 VLAN（Virtual LAN，虚拟局域网）如何共享一条物理线路：在 MSDU 前面加上一个 VLAN 标签。不感知 VLAN 的端站只收发未打标签的帧，依赖网桥端口把它们分类到某个 VID（VLAN Identifier，VLAN 标识符）。VID 身兼两职——既命名一个 VLAN，又选定一个无环的活动拓扑。Clause 6.4（MAC 服务的保持）列出网桥不得破坏的不变量：帧携带对端端站的 MAC 地址（绝非网桥的地址），端站地址不受拓扑约束，且地址在一个 VLAN 内必须唯一。中继是隐形的；用户彼此寻址，而非寻址网桥。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: the MAC Service is a contract, not a protocol. Clause 6.2–6.4 say WHAT the network promises (deliver this frame, keep my address, look like one LAN). Clause 6.5 says how WELL it must keep those promises. The ISS and EISS, later in the clause, are the internal plumbing bridges use to actually honor the contract across many different physical media.",
+      "zh": "思维模型：MAC 服务是一份契约，而非一个协议。Clause 6.2–6.4 说明网络承诺“做什么”（交付这个帧、保留我的地址、看起来像一个 LAN）。Clause 6.5 说明它必须把这些承诺履行得“多好”。本条款后文的 ISS 与 EISS，则是网桥用来真正跨越多种不同物理介质兑现契约的内部管路。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.5 (Quality of Service maintenance) is the service-level contract, broken into ten measurable promises. 6.5.1 Service availability — the fraction of time service is up; bridges raise it by reconfiguring around failures and lower it by denying service. 6.5.2 Frame loss — delivery is not guaranteed, and a bridge may discard for eight listed reasons (buffer exhaustion, oversize SDU, lifetime, filtering, metering, and so on). 6.5.3 Frame misordering — negligible reordering within a given priority/address/flow-hash flow on a VLAN. 6.5.4 Frame duplication — also negligible; a bridge never sends a received frame twice out one port, and split into 6.5.4.1 Loop prevention (RSTP/MSTP/ISIS-SPB agree on one active topology) and 6.5.4.2 Loop mitigation (SPBM tolerates brief loops for faster reaction).",
+      "zh": "Clause 6.5（服务质量维护）是服务级别契约，拆成十条可度量的承诺。6.5.1 服务可用性——服务处于可用状态的时间比例；网桥通过绕过故障重配置来提升它，又通过拒绝服务来降低它。6.5.2 帧丢失——不保证交付，网桥可因所列八种原因丢弃帧（缓冲耗尽、SDU 超大、寿命、过滤、计量等）。6.5.3 帧乱序——在一个 VLAN 上、给定优先级/地址/流哈希的流内，乱序率可忽略。6.5.4 帧重复——同样可忽略；网桥绝不把收到的帧从一个端口发两次，并细分为 6.5.4.1 环路预防（RSTP/MSTP/ISIS-SPB 就单一活动拓扑达成一致）与 6.5.4.2 环路缓解（SPBM 容忍短暂环路以更快反应）。"
+    },
+    {
+      "type": "prose",
+      "en": "The QoS list continues: 6.5.5 Transit delay — the elapsed time from request to indication; a bridge adds at least the time to fully receive a frame (it must check the FCS, Frame Check Sequence, before relaying) plus media-access time. 6.5.6 Frame lifetime — an upper bound on delay; since a bridge cannot know how long a frame has already traveled, it enforces a per-bridge maximum transit delay (Table 6-1: recommended 1.0 s, absolute maximum 4.0 s). 6.5.7 Undetected frame error rate — kept very low by the FCS; relaying between dissimilar MAC types may require recomputing it. 6.5.8 Maximum SDU size — the smaller of the two LANs' limits; oversized frames are simply not relayed. 6.5.9 Priority — a QoS parameter that high-priority requests use to jump the queue, mapped onto traffic classes via the Priority Regeneration Table (Table 6-4). 6.5.10 Throughput — a bridged network can carry far more than one LAN because filtering localizes traffic.",
+      "zh": "QoS 清单继续：6.5.5 传输时延——从 request 到 indication 的经过时间；网桥至少增加“完整接收一个帧”的时间（中继前须校验 FCS，Frame Check Sequence，帧校验序列）加上介质访问时间。6.5.6 帧寿命——时延的上界；由于网桥无法得知一个帧已经走了多久，它强制执行每网桥最大传输时延（表 6-1：推荐 1.0 秒，绝对最大 4.0 秒）。6.5.7 未检出帧错误率——由 FCS 维持得很低；在不同 MAC 类型间中继时可能需要重算它。6.5.8 最大 SDU 尺寸——取两个 LAN 限值中较小者；超尺寸帧直接不中继。6.5.9 优先级——一个 QoS 参数，高优先级请求借它插队，并经优先级再生表（表 6-4）映射到流量类别。6.5.10 吞吐量——桥接网络能承载远超单个 LAN 的流量，因为过滤把流量本地化了。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"8\" y=\"16\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">EISS frame on the wire (tag prepended to MSDU)</text><rect x=\"8\" y=\"30\" width=\"70\" height=\"34\"/><text x=\"14\" y=\"51\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Dest Addr</text><rect x=\"78\" y=\"30\" width=\"70\" height=\"34\"/><text x=\"86\" y=\"51\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Src Addr</text><rect x=\"148\" y=\"30\" width=\"104\" height=\"34\"/><text x=\"156\" y=\"45\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">VLAN tag</text><text x=\"156\" y=\"59\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">PCP / DEI / VID</text><rect x=\"252\" y=\"30\" width=\"130\" height=\"34\"/><text x=\"262\" y=\"51\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">MSDU (payload)</text><rect x=\"382\" y=\"30\" width=\"60\" height=\"34\"/><text x=\"398\" y=\"51\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">FCS</text><text x=\"8\" y=\"92\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">EISS parameters carried alongside:</text><text x=\"8\" y=\"110\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">priority, drop_eligible, vlan_identifier,</text><text x=\"8\" y=\"126\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">flow_hash, time_to_live, connection_identifier</text></svg>",
+      "caption": {
+        "en": "The EISS adds VLAN-specific parameters (priority, drop_eligible, vlan_identifier, flow_hash, time_to_live) on top of the plain ISS. The tagging functions of 6.9 encode these into the VLAN tag's PCP, DEI, and VID fields.",
+        "zh": "EISS 在朴素 ISS 之上增加了与 VLAN 相关的参数（priority、drop_eligible、vlan_identifier、flow_hash、time_to_live）。6.9 的打标签功能把它们编码进 VLAN 标签的 PCP、DEI、VID 字段。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now the internal plumbing. Clause 6.6 (Internal Sublayer Service, ISS) is the media-independent service that hides whatever physical MAC sits below — its full primitive set is defined in IEEE 802.1AC. Clause 6.7 (Support of the ISS by specific MAC procedures) maps that abstract service onto real media. 6.7.1 covers IEEE 802.3 (Ethernet), including how control primitives map and how, when frame preemption is active, the port exposes two interfaces — a preemptable MAC (pMAC) and an express MAC (eMAC). 6.7.2 (Frame preemption) defines the per-priority frame preemption status table whose entries are either express or preemptable (default: express for all). A VLAN-aware bridge needs more than the plain ISS, which leads to the EISS.",
+      "zh": "现在进入内部管路。Clause 6.6（Internal Sublayer Service，内部子层服务，ISS）是与介质无关的服务，隐藏其下方的任何物理 MAC——其完整原语集定义于 IEEE 802.1AC。Clause 6.7（特定 MAC 过程对 ISS 的支持）把该抽象服务映射到真实介质上。6.7.1 涵盖 IEEE 802.3（以太网），包括控制原语如何映射，以及当帧抢占启用时端口如何暴露两个接口——可抢占 MAC（pMAC）与快速 MAC（eMAC）。6.7.2（帧抢占）定义按优先级划分的帧抢占状态表，其条目取值为 express 或 preemptable（默认对所有优先级为 express）。感知 VLAN 的网桥需要的不止朴素 ISS，这就引出了 EISS。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.8 (Enhanced Internal Sublayer Service, EISS) extends the ISS with everything a VLAN bridge needs for tagging and untagging. 6.8.1 (Service primitives) defines EM_UNITDATA.indication and EM_UNITDATA.request, which add parameters absent from the plain ISS: drop_eligible, vlan_identifier (the VID), frame_check_sequence, flow_hash (for picking one of several equal-cost forwarding ports while preserving order), and time_to_live (for hop-limit filtering). 6.8.2 (Status parameters) surfaces MAC_Enabled and MAC_Operational; 6.8.3 (Point-to-point parameters) surfaces operPointToPointMAC and adminPointToPointMAC; both are mapped straight through from the ISS. 6.8.4 (Control primitives) adds EM_CONTROL.request and EM_CONTROL.indication.",
+      "zh": "Clause 6.8（Enhanced Internal Sublayer Service，增强内部子层服务，EISS）在 ISS 之上扩展出 VLAN 网桥打标签与去标签所需的一切。6.8.1（服务原语）定义 EM_UNITDATA.indication 与 EM_UNITDATA.request，它们新增了朴素 ISS 所没有的参数：drop_eligible（可丢弃标志）、vlan_identifier（即 VID）、frame_check_sequence、flow_hash（用于在多个等价转发端口中挑选一个，同时保持顺序）、time_to_live（用于跳数限制过滤）。6.8.2（状态参数）暴露 MAC_Enabled 与 MAC_Operational；6.8.3（点到点参数）暴露 operPointToPointMAC 与 adminPointToPointMAC；两者都直接从 ISS 透传映射。6.8.4（控制原语）新增 EM_CONTROL.request 与 EM_CONTROL.indication。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TB\n  U[VLAN-aware MAC Relay] -->|EISS| E[6.9 tagging / detagging]\n  E -->|ISS| M[6.7 specific MAC]\n  M --> P[Ethernet pMAC / eMAC]\n  E -.->|6.9.3 PCP encode| T[VLAN tag PCP/DEI/VID]\n  E -.->|6.9.4 regenerate priority| Q[traffic class]",
+      "zh": "flowchart TB\n  U[感知VLAN的MAC中继] -->|EISS| E[6.9 打标签/去标签]\n  E -->|ISS| M[6.7 特定MAC]\n  M --> P[以太网 pMAC / eMAC]\n  E -.->|6.9.3 PCP编码| T[VLAN标签 PCP/DEI/VID]\n  E -.->|6.9.4 优先级再生| Q[流量类别]"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.9 (Support of the EISS) is the heart of VLAN processing — the tagging and detagging functions sitting between the EISS above and the ISS below, using either a C-TAG (Customer VLAN tag) or S-TAG (Service VLAN tag). Each Bridge Port keeps an Acceptable Frame Types setting (admit only tagged, admit only untagged/priority-tagged, or admit all), a PVID (Port VLAN ID) for classifying untagged frames, and optional VID translation tables. 6.9.1 (Data indications) is the receive path: discard frames that violate the acceptable-frame rules or carry reserved VID FFF, otherwise strip the tag and derive the VID. 6.9.2 (Data requests) is the transmit path: insert a tag (unless the port is in the VID's untagged set) and rebuild the frame. 6.9.3 (Priority Code Point encoding) uses the per-port Priority Code Point Encoding/Decoding Tables (Tables 6-2 and 6-3) and the optional DEI (Drop Eligible Indicator) to carry priority and drop precedence in the tag's PCP field. 6.9.4 (Regenerating priority) maps received priority to a regenerated value via the eight-entry Priority Regeneration Table (Table 6-4).",
+      "zh": "Clause 6.9（EISS 的支持）是 VLAN 处理的核心——位于上方 EISS 与下方 ISS 之间的打标签与去标签功能，使用 C-TAG（客户 VLAN 标签）或 S-TAG（服务 VLAN 标签）。每个网桥端口都维护一个可接受帧类型设置（仅接受打标签帧、仅接受未打标签/优先级标签帧、或全部接受）、一个用于分类未打标签帧的 PVID（端口 VLAN ID）以及可选的 VID 转换表。6.9.1（数据指示）是接收路径：丢弃违反可接受帧规则或携带保留 VID FFF 的帧，否则剥除标签并推导出 VID。6.9.2（数据请求）是发送路径：插入标签（除非端口属于该 VID 的未打标签集合）并重建帧。6.9.3（优先级码点编码）使用按端口的优先级码点编码/解码表（表 6-2 与表 6-3）以及可选的 DEI（Drop Eligible Indicator，可丢弃指示）把优先级与丢弃优先级承载到标签的 PCP 字段。6.9.4（优先级再生）通过八条目的优先级再生表（表 6-4）把接收优先级映射为再生值。记住这个模式：后续每种端口类型都复用 6.9 这套表与规则，只是换一个标签。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: provider-backbone ports — 6.10 (PIPs) and 6.11 (CBPs)",
+        "zh": "覆盖地图：运营商骨干端口——6.10（PIP）与 6.11（CBP）"
+      },
+      "en": "The last two sections handle Provider Backbone Bridging, where customer frames are wrapped in an I-TAG (backbone Instance tag carrying an I-SID, the backbone service instance identifier). 6.10 (Support of the ISS/EISS by PIPs) — a PIP (Provider Instance Port) on a BEB (Backbone Edge Bridge) presents one VIP (Virtual Instance Port) per backbone service instance. 6.10.1 (Data indications) validates the I-TAG, checks the I-SID matches a VIP, decodes the encapsulated customer C-DA/C-SA, and may use the connection_identifier to learn the backbone MAC. 6.10.2 (Data requests) prepends an I-TAG, sets the source to the PIP MAC address, and chooses the backbone destination from the connection_identifier or the Default Backbone Destination. 6.10.3 (Priority Code Point encoding) reuses the 6.9.3 tables on the I-PCP/I-DEI fields. 6.11 (Support of the EISS by CBPs) — a CBP (Customer Backbone Port) replaces the 6.9 functions using a Backbone Service Instance table. 6.11.1 (Data indications) filters by I-SID, optionally translates Local-SID to Backbone-SID and the B-VID. 6.11.2 (Data requests) does the reverse mapping. 6.11.3 (Priority Code Point decoding) and 6.11.4 (Regenerating priority) again reuse the 6.9.3 decoding table and the 6.9.4 Priority Regeneration table on the I-PCP field. Net effect: the same priority/VID machinery from 6.9 is applied consistently to backbone-encapsulated traffic.",
+      "zh": "最后两节处理运营商骨干桥接，其中客户帧被封装进 I-TAG（骨干实例标签，携带 I-SID，即骨干服务实例标识符）。6.10（PIP 对 ISS/EISS 的支持）——BEB（Backbone Edge Bridge，骨干边缘网桥）上的 PIP（Provider Instance Port，运营商实例端口）为每个骨干服务实例呈现一个 VIP（Virtual Instance Port，虚拟实例端口）。6.10.1（数据指示）校验 I-TAG，检查 I-SID 是否匹配某个 VIP，解码封装的客户 C-DA/C-SA，并可用 connection_identifier 学习骨干 MAC。6.10.2（数据请求）前置一个 I-TAG，把源设为 PIP MAC 地址，并从 connection_identifier 或默认骨干目的地选择骨干目的地址。6.10.3（优先级码点编码）在 I-PCP/I-DEI 字段上复用 6.9.3 的表。6.11（CBP 对 EISS 的支持）——CBP（Customer Backbone Port，客户骨干端口）用骨干服务实例表替换 6.9 的功能。6.11.1（数据指示）按 I-SID 过滤，可选地把 Local-SID 转换为 Backbone-SID 以及 B-VID。6.11.2（数据请求）做反向映射。6.11.3（优先级码点解码）与 6.11.4（优先级再生）再次在 I-PCP 字段上复用 6.9.3 的解码表与 6.9.4 的优先级再生表。最终效果是：6.9 那套相同的优先级/VID 机制被一致地应用到骨干封装的流量上。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          162,
+          163,
+          164,
+          165,
+          166,
+          167,
+          168,
+          169
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        146,
+        147
+      ],
+      "note": "6.1 architectural concepts; 6.2 MAC Service provision and primitives; 6.2.1 connectivity types; 6.3 support of the MAC Service / VID role"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        148,
+        149,
+        150,
+        151
+      ],
+      "note": "6.4 preservation; 6.5.1-6.5.6 availability, loss, misordering, duplication (incl. loop prevention/mitigation), transit delay, lifetime"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        152,
+        153
+      ],
+      "note": "6.5.7-6.5.10 undetected error rate, max SDU size, priority (Table 6-1, 6-4), throughput"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        154,
+        155,
+        156
+      ],
+      "note": "6.6 ISS; 6.7/6.7.1/6.7.2 ISS support, Ethernet, frame preemption (pMAC/eMAC); 6.8.1-6.8.4 EISS primitives, status, p2p, control"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        157,
+        158,
+        159,
+        160,
+        161
+      ],
+      "note": "6.9 support of EISS; 6.9.1 data indications; 6.9.2 data requests; 6.9.3 PCP encoding (Tables 6-2/6-3, DEI); 6.9.4 regenerating priority (Table 6-4)"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        162,
+        163,
+        164,
+        165,
+        166,
+        167,
+        168,
+        169
+      ],
+      "note": "6.10/6.10.1-6.10.3 PIPs and VIPs; 6.11/6.11.1-6.11.4 CBPs, Backbone Service Instance table, I-TAG processing"
+    }
+  ],
+  "covers": [
+    "8021Q-2022:6.1",
+    "8021Q-2022:6.2.1",
+    "8021Q-2022:6.3",
+    "8021Q-2022:6.4",
+    "8021Q-2022:6.5.1",
+    "8021Q-2022:6.5.2",
+    "8021Q-2022:6.5.3",
+    "8021Q-2022:6.5.4",
+    "8021Q-2022:6.5.5",
+    "8021Q-2022:6.5.6",
+    "8021Q-2022:6.5.7",
+    "8021Q-2022:6.5.8",
+    "8021Q-2022:6.5.9",
+    "8021Q-2022:6.5.10",
+    "8021Q-2022:6.6",
+    "8021Q-2022:6.7.1",
+    "8021Q-2022:6.7.2",
+    "8021Q-2022:6.8.1",
+    "8021Q-2022:6.8.2",
+    "8021Q-2022:6.8.3",
+    "8021Q-2022:6.8.4",
+    "8021Q-2022:6.9.1",
+    "8021Q-2022:6.9.2",
+    "8021Q-2022:6.9.3",
+    "8021Q-2022:6.9.4",
+    "8021Q-2022:6.10.1",
+    "8021Q-2022:6.10.2",
+    "8021Q-2022:6.10.3",
+    "8021Q-2022:6.11.1",
+    "8021Q-2022:6.11.2",
+    "8021Q-2022:6.11.3",
+    "8021Q-2022:6.11.4"
+  ],
+  "track": "bridging-tsn"
+}

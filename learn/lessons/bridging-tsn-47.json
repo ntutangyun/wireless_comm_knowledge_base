@@ -1,0 +1,169 @@
+{
+  "id": "bridging-tsn-47",
+  "title": {
+    "en": "ISIS-SPB Link State Protocol: How Bridges Agree on Loop-Free Shortest Paths",
+    "zh": "ISIS-SPB 链路状态协议：网桥如何就无环最短路径达成一致"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Shortest Path Bridging (SPB, Clause 27) needs a routing protocol to learn the network topology, and Clause 28 supplies it: ISIS-SPB. The base protocol is IS-IS (Intermediate System to Intermediate System), the link-state routing protocol from ISO/IEC 10589. SPB extends it to carry Ethernet MAC addresses, VLAN membership, and service (I-SID) membership. Crucially, ISIS-SPB adds NO new packet types to IS-IS — it only extends the existing SPB Hello PDUs (Protocol Data Units) and Link State PDUs (LSPs) with new TLVs (Type-Length-Value fields). This lesson walks through every part of Clause 28: how the control plane is addressed, how adjacencies form, how loops are prevented, and the exact TLVs that carry it all.",
+      "zh": "最短路径桥接（SPB，第 27 章）需要一个路由协议来学习网络拓扑，而第 28 章提供了它：ISIS-SPB。其基础协议是 IS-IS（中间系统到中间系统），来自 ISO/IEC 10589 的链路状态路由协议。SPB 对它进行扩展，使其能够携带以太网 MAC 地址、VLAN 成员关系以及服务（I-SID）成员关系。关键在于，ISIS-SPB 没有向 IS-IS 添加任何新的报文类型——它只是用新的 TLV（类型-长度-值字段）扩展现有的 SPB Hello PDU（协议数据单元）和链路状态 PDU（LSP）。本课逐一讲解第 28 章的每个部分：控制平面如何寻址、邻接关系如何建立、如何防止环路，以及承载这一切的具体 TLV。"
+    },
+    {
+      "type": "prose",
+      "en": "Two foundational pieces come first. The control plane MAC addressing (28.1) keeps the IS-IS addressing principles unchanged but reserves two extra MAC addresses for flooding LSPs; what actually distinguishes SPB from other IS-IS uses is the NLPID (Network Layer Protocol Identifier) value 0xC1, carried in the Protocols Supported TLV of the Hello. A neighbor only treats a link as SPB-capable if it sees 0xC1. Adjacency formation (28.2) then uses the IS-IS three-way handshake (RFC 5303): a link starts 'SPB Operationally down' (signaled by the maximum Link Metric value, 2^24 - 1), and only advances to 'up' after the two ends agree on their MCID/Auxiliary-MCID configuration digest and on the ECT-ALGORITHM and mode bit for every Base VID in the topology.",
+      "zh": "首先是两块基础内容。控制平面 MAC 寻址（28.1）保持 IS-IS 的寻址原则不变，但为泛洪 LSP 额外保留了两个 MAC 地址；真正把 SPB 与其他 IS-IS 用途区分开来的是 NLPID（网络层协议标识符）值 0xC1，它携带在 Hello 的“所支持协议 TLV”中。只有当邻居看到 0xC1 时，才会把该链路视为支持 SPB。邻接关系建立（28.2）随后使用 IS-IS 三次握手（RFC 5303）：链路最初处于“SPB 运行下线”状态（以最大链路度量值 2^24 - 1 表示），只有当两端就各自的 MCID/辅助 MCID 配置摘要、以及拓扑中每个基础 VID 的 ECT-ALGORITHM 和模式位达成一致后，才会推进到“上线”状态。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Acronym anchors: SPBM = SPB MAC mode (forwards on B-VIDs and B-MAC source addresses, derives from Provider Backbone Bridging). SPBV = SPB VLAN mode (each source uses a distinct SPVID, the Shortest Path VID). I-SID = a 24-bit backbone Service Identifier. ECT = Equal Cost Tree — when several shortest paths tie, an ECT Algorithm picks one deterministically. Base VID = the VLAN identifier that anchors one SPT (Shortest Path Tree) Set to one ECT Algorithm.",
+      "zh": "缩写锚点：SPBM = SPB MAC 模式（在 B-VID 和 B-MAC 源地址上转发，源自运营商骨干桥接）。SPBV = SPB VLAN 模式（每个源使用不同的 SPVID，即最短路径 VID）。I-SID = 24 位骨干服务标识符。ECT = 等价树——当多条最短路径打成平局时，由某个 ECT 算法以确定性方式选出一条。Base VID = 把一个 SPT（最短路径树）集合锚定到一个 ECT 算法的 VLAN 标识符。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> Down: link up, SPB metric = 2^24-1\n  Down --> NlpidMatch: Hellos share NLPID 0xC1\n  NlpidMatch --> McidMatch: MCID or Aux-MCID matches\n  McidMatch --> Up: all Base VID ECT+mode matched\n  Up --> Down: neighbor alters ECT while in use",
+      "zh": "stateDiagram-v2\n  [*] --> 下线: 链路启用, SPB度量=2^24-1\n  下线 --> NLPID匹配: Hello共享NLPID 0xC1\n  NLPID匹配 --> MCID匹配: MCID或辅助MCID匹配\n  MCID匹配 --> 上线: 所有BaseVID的ECT与模式匹配\n  上线 --> 下线: 在用时邻居更改ECT"
+    },
+    {
+      "type": "prose",
+      "en": "Loop prevention (28.3) is the heart of SPB safety. Native IS-IS can synchronize databases but has no way to synchronize the REMOVAL of forwarding state — so a transient disagreement could form a loop. ISIS-SPB fixes this with two rules: (a) tear down any potentially loop-causing forwarding entries whenever the local link-state database is NOT synchronized with neighbors, and (b) synchronize with neighbors BEFORE installing group-address FDB (Filtering Database) entries. The Agreement Protocol (13.17) carries this out using a compact summary of the database called the Agreement Digest.",
+      "zh": "环路预防（28.3）是 SPB 安全性的核心。原生 IS-IS 能够同步数据库，但无法同步转发状态的“删除”——因此瞬时的不一致可能形成环路。ISIS-SPB 用两条规则解决：（a）只要本地链路状态数据库与邻居不同步，就拆除任何可能造成环路的转发表项；（b）在安装组地址 FDB（过滤数据库）表项之前，先与邻居同步。Agreement 协议（13.17）借助一个称为 Agreement Digest（一致性摘要）的数据库紧凑摘要来完成这件事。"
+    },
+    {
+      "type": "prose",
+      "en": "The Agreement Digest (28.4) is a 32-byte field with six elements: a Format Identifier (28.4.1, 4 bits — this release defines Format 0), Format Capabilities (28.4.2, reserved, sent as 0), a Convention Identifier (28.4.3, 4 bits — selecting the loop-free forwarding rule: 1 = no match required, 2 = loopFreeBoth which is the default, 3 = loopFreeMCastOnly), Convention Capabilities (28.4.4, value 0 means conventions 1-3 understood), an Edge Count (28.4.5, the sum modulo 2^16 of all edges, each point-to-point link counting as two edges), and the Computed Topology Digest (28.4.6). The Computed Topology Digest signs each edge with an MD5 hash of its two Bridge Identifiers and per-topology SPB Link Metrics, then sums all edge signatures into a 20-byte integer. Two neighbors with identical topology produce identical digests — a fast, incremental match check.",
+      "zh": "Agreement Digest（28.4）是一个 32 字节的字段，包含六个要素：格式标识符（28.4.1，4 位——本版本定义格式 0）、格式能力（28.4.2，保留，发送为 0）、约定标识符（28.4.3，4 位——选择无环转发规则：1 = 无需匹配，2 = loopFreeBoth 即默认值，3 = loopFreeMCastOnly）、约定能力（28.4.4，值 0 表示理解约定 1-3）、边计数（28.4.5，所有边对 2^16 取模求和，每条点到点链路计为两条边），以及计算出的拓扑摘要（28.4.6）。计算出的拓扑摘要用 MD5 哈希对每条边签名，哈希输入为其两个网桥标识符和按拓扑划分的 SPB 链路度量，然后把所有边签名累加成一个 20 字节整数。拓扑相同的两个邻居会产生相同的摘要——这是一种快速、可增量计算的匹配检查。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"6\" y=\"25\" width=\"40\" height=\"40\"/><rect x=\"46\" y=\"25\" width=\"40\" height=\"40\"/><rect x=\"86\" y=\"25\" width=\"40\" height=\"40\"/><rect x=\"126\" y=\"25\" width=\"40\" height=\"40\"/><rect x=\"166\" y=\"25\" width=\"100\" height=\"40\"/><rect x=\"266\" y=\"25\" width=\"248\" height=\"40\"/><text x=\"26\" y=\"20\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\" text-anchor=\"middle\">FmtId</text><text x=\"66\" y=\"20\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\" text-anchor=\"middle\">FmtCap</text><text x=\"106\" y=\"20\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\" text-anchor=\"middle\">ConvId</text><text x=\"146\" y=\"20\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\" text-anchor=\"middle\">ConvCap</text><text x=\"216\" y=\"20\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\" text-anchor=\"middle\">Edge Count</text><text x=\"390\" y=\"20\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\" text-anchor=\"middle\">Computed Topology Digest</text><text x=\"26\" y=\"50\" font-size=\"8\" stroke=\"none\" fill=\"currentColor\" text-anchor=\"middle\">4b</text><text x=\"66\" y=\"50\" font-size=\"8\" stroke=\"none\" fill=\"currentColor\" text-anchor=\"middle\">4b</text><text x=\"106\" y=\"50\" font-size=\"8\" stroke=\"none\" fill=\"currentColor\" text-anchor=\"middle\">4b</text><text x=\"146\" y=\"50\" font-size=\"8\" stroke=\"none\" fill=\"currentColor\" text-anchor=\"middle\">4b</text><text x=\"216\" y=\"50\" font-size=\"8\" stroke=\"none\" fill=\"currentColor\" text-anchor=\"middle\">16b</text><text x=\"390\" y=\"50\" font-size=\"8\" stroke=\"none\" fill=\"currentColor\" text-anchor=\"middle\">20 bytes (bytes 13-32)</text></svg>",
+      "caption": {
+        "en": "The 32-byte Agreement Digest field (Figure 28-1): Format/Convention nibbles, a 16-bit Edge Count, then the 20-byte Computed Topology Digest. Bytes 5-12 are reserved.",
+        "zh": "32 字节的 Agreement Digest 字段（图 28-1）：格式/约定各占半字节、16 位边计数，随后是 20 字节的计算拓扑摘要。第 5-12 字节为保留字段。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "When several shortest paths tie on cost, SPB must pick the same one everywhere, in both directions. Symmetric tie breaking (28.5) does this with the PATHID — the sorted (ascending lexicographic) list of Bridge IDs a path traverses, including endpoints. Because it is sorted, the forward and reverse of a path produce the same PATHID. The default LowPATHID algorithm picks the equal-cost path with the numerically lowest PATHID. To stay deterministic when the two ends advertise different link metrics, SPB always uses the MAXIMUM of the two advertised SPB Link Metric values. The Symmetric ECT framework (28.6) wraps this: each tie-breaker is named by a 32-bit ECT Algorithm = an OUI or CID plus an index. The IEEE 802.1 OUI 00-80-C2 with indexes 1-16 defines the standard symmetric algorithms; index 0 is the (non-shortest-path) spanning tree algorithm. A future algorithm can carry tuning data via Opaque ECT data.",
+      "zh": "当多条最短路径在代价上打平时，SPB 必须在任何地方、在两个方向上都选出同一条。对称断接（28.5）借助 PATHID 实现——它是一条路径所经过的网桥 ID 的排序列表（按升序字典序），包含端点。由于已排序，路径的正向和反向产生相同的 PATHID。默认的 LowPATHID 算法在等价路径中选择数值最小的 PATHID。为了在两端通告不同链路度量时保持确定性，SPB 始终采用两个所通告的 SPB 链路度量中的最大值。对称 ECT 框架（28.6）将其封装：每个断接器由一个 32 位的 ECT 算法命名 = 一个 OUI 或 CID 加一个索引。IEEE 802.1 OUI 00-80-C2 配合索引 1-16 定义了标准对称算法；索引 0 是（非最短路径的）生成树算法。未来的算法可通过 Opaque ECT 数据携带调优参数。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Equal-cost paths found] --> B[Build PATHID = sorted Bridge IDs]\n  B --> C{ECT Algorithm}\n  C -->|index 1 LowPATHID| D[mask 0x00, pick lowest PATHID]\n  C -->|index 2 HighPATHID| E[mask 0xFF, invert then pick]\n  C -->|index 3..16| F[XOR mask per Table 28-1, pick lowest]\n  D --> G[Unique SPT chosen]\n  E --> G\n  F --> G",
+      "zh": "flowchart TD\n  A[发现等价路径] --> B[构建PATHID=排序的网桥ID]\n  B --> C{ECT算法}\n  C -->|索引1 LowPATHID| D[掩码0x00, 选最小PATHID]\n  C -->|索引2 HighPATHID| E[掩码0xFF, 取反后再选]\n  C -->|索引3..16| F[按表28-1异或掩码, 选最小]\n  D --> G[选定唯一SPT]\n  E --> G\n  F --> G"
+    },
+    {
+      "type": "prose",
+      "en": "Symmetric ECT (28.7) explains why multiple trees exist: a Dijkstra run from a root yields a whole SPF (Shortest Path First) tree, and different tie-breaking at branch points yields different trees, distinguished in the data plane by SPVIDs (SPBV) or by B-VID + B-MAC source address (SPBM). The algorithm details (28.8) make the masking concrete: each standard algorithm has an Algorithm Mask that is XORed with every octet of each Bridge Identifier (the 2-octet Bridge Priority concatenated with the 6-octet SPB System Identifier) before ranking. Table 28-1 lists all 16: index 1 uses mask 0x00 (Low PATHID), index 2 uses 0xFF (High PATHID, a rank inversion), and indexes 3-16 use masks like 0x88, 0x77, 0x44 that reorder which Bridge Priority counts as 'best'. This lets operators tune path selection just by adjusting Bridge Priority.",
+      "zh": "对称 ECT（28.7）解释了为何存在多棵树：从某个根运行 Dijkstra 会得到一整棵 SPF（最短路径优先）树，而在分支点采用不同的断接方式会得到不同的树，这些树在数据平面上通过 SPVID（SPBV）或 B-VID + B-MAC 源地址（SPBM）来区分。算法细节（28.8）把掩码讲具体：每个标准算法都有一个算法掩码，在排序之前与每个网桥标识符（2 字节网桥优先级拼接 6 字节 SPB 系统标识符）的每个八位组进行异或。表 28-1 列出全部 16 个：索引 1 用掩码 0x00（Low PATHID），索引 2 用 0xFF（High PATHID，即排名反转），索引 3-16 用诸如 0x88、0x77、0x44 之类的掩码，重新排列哪个网桥优先级算作“最佳”。这让运营商仅通过调整网桥优先级即可调优路径选择。"
+    },
+    {
+      "type": "prose",
+      "en": "ECT Migration (28.9) lets a network adopt a new ECT Algorithm without outages, gated by two flags: the Use-Flag in the Base VLAN-Identifiers sub-TLV (region-wide awareness of use) and the U-bit in the SPB Instance sub-TLV (this Bridge's local use). A new Base-VID-to-algorithm binding is configured bridge-by-bridge with the Use-Flag clear, then services activate it. SPBV migration (28.9.1) typically pairs the new algorithm with a new VLAN and lets ISIS-SPB auto-allocate/release SPVIDs — but it is NOT hitless and may drop traffic. SPBM migration (28.9.2) IS in-service: an I-SID is briefly mapped to both the old and new Base VIDs, traffic is 'rolled' atomically per endpoint, then the old binding is removed and its U-bit cleared. Separately, MAC address registration (28.10) builds Group Address FDB entries from ISIS-SPB and interworks with MMRP (Multiple MAC Registration Protocol) at SPT Region Boundary Ports, translating MMRPDUs into the SPBV MAC Address sub-TLV and back. Circuit IDs and Port Identifiers (28.11) note that ISIS-SPB supports only ONE logical adjacency per topology (MTID); Link Aggregation is the sole way to bundle multiple links, and ties pick the lowest Local Circuit ID on the bridge with the lower SPB System Identifier.",
+      "zh": "ECT 迁移（28.9）让网络在不中断的情况下采用新的 ECT 算法，受两个标志控制：Base VLAN-Identifiers sub-TLV 中的 Use-Flag（全区域对使用情况的感知）和 SPB Instance sub-TLV 中的 U-bit（本网桥的本地使用）。新的 Base-VID 到算法的绑定在 Use-Flag 清零的情况下逐网桥配置，随后由服务激活它。SPBV 迁移（28.9.1）通常将新算法与新 VLAN 配对，并让 ISIS-SPB 自动分配/释放 SPVID——但它并非无损，可能丢弃流量。SPBM 迁移（28.9.2）则可在线进行：一个 I-SID 短暂地同时映射到旧和新两个 Base VID，流量在每个端点上原子地“滚动”切换，随后移除旧绑定并清除其 U-bit。另外，MAC 地址注册（28.10）根据 ISIS-SPB 构建组地址 FDB 表项，并在 SPT 区域边界端口与 MMRP（多 MAC 注册协议）互通，将 MMRPDU 翻译为 SPBV MAC Address sub-TLV 并反向翻译。电路 ID 与端口标识符（28.11）指出，ISIS-SPB 每个拓扑（MTID）只支持一个逻辑邻接；链路聚合是捆绑多条链路的唯一方式，打平时选择 SPB 系统标识符较低的网桥上 Local Circuit ID 最小的链路。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — the ISIS-SPB TLVs (28.12.1-28.12.10) and exact clause homes",
+        "zh": "覆盖地图——ISIS-SPB 的 TLV（28.12.1-28.12.10）及各条款的精确归属"
+      },
+      "en": "Clause 28.12 defines one new TLV plus several sub-TLVs added to existing IS-IS PDUs; each can sit inside an MTID-tagged container for Multi-Topology operation. (28.12.1) MT-Capability TLV (Type 144): a top-level LSP TLV providing the Multi-Topology context — an Overload bit and a 12-bit MTID (0 when only one topology). (28.12.2) SPB MCID sub-TLV (Type 4): carried in an MT-Port-Cap TLV in Hellos; advertises the bridge's MCID and Aux-MCID (51 bytes each) — digests of protocol assignments for all VIDs; a non-match marks a Region boundary. (28.12.3) SPB Digest sub-TLV (Type 5): carries the V (Agreed Digest Valid) bit, A (agreement number) and D (discarded agreement number) fields, plus the 32-byte Agreement Digest of 28.4. (28.12.4) SPB Base VLAN-Identifiers sub-TLV (Type 6): ECT-VID tuples of {ECT-ALGORITHM, Base VID, Use-Flag, M-bit}; the Use-Flag is the OR of all bridges' U-bits. (28.12.5) SPB Instance sub-TLV (Type 1): the big one — carried in MT-Capability TLV in the fragment-zero LSP; holds CIST Root Identifier, CIST External Root Path Cost, Bridge Priority, V bit, 20-bit SPSourceID, Number of Trees, then per-tree VID tuples of {U, M, A bits, ECT-ALGORITHM, Base VID, SPVID}. (28.12.6) SPB Instance Opaque ECT Algorithm sub-TLV (Type 2): carries node-based opaque tuning data for an algorithm; its specialization 28.12.6.1 is the ECMP ECT Algorithm sub-TLV (ECT-ALGORITHM 00-80-C2-11) advertising a Tie-Break Mask + alternate Bridge Priority for shared-tree root selection. (28.12.7) SPB Link Metric sub-TLV (Type 29): inside an Extended IS Reachability TLV; the 24-bit SPB Link Metric (max value = SPB down), Number PORTs, and Port Identifier. (28.12.8) SPB Adjacency Opaque ECT Algorithm sub-TLV (Type 30): link-based opaque tuning data, mirror of 28.12.6 but per adjacency. (28.12.9) SPBV MAC Address sub-TLV (Type 4 in an MT-Capability TLV): SR bits, SPVID, and per-MAC {T (Transmit allowed), R (Receive allowed)} bits plus the 48-bit MAC — the SPBV replacement for MMRP group registration. (28.12.10) SPBM Service Identifier and Unicast Address (ISID-ADDR) sub-TLV (Type 3): declares a B-MAC and maps I-SIDs within a B-VID context to it, building per-I-SID multicast trees (a null B-MAC means the Backbone Service Instance Group address is used in (*,G) mode).",
+      "zh": "第 28.12 条定义了一个新 TLV 以及若干添加到现有 IS-IS PDU 的 sub-TLV；每个都可置于带 MTID 标签的容器中以支持多拓扑运行。（28.12.1）MT-Capability TLV（类型 144）：提供多拓扑上下文的顶层 LSP TLV——含一个过载位和 12 位 MTID（单拓扑时为 0）。（28.12.2）SPB MCID sub-TLV（类型 4）：在 Hello 的 MT-Port-Cap TLV 中携带；通告网桥的 MCID 与辅助 MCID（各 51 字节）——即对所有 VID 的协议分配的摘要；不匹配则标记为区域边界。（28.12.3）SPB Digest sub-TLV（类型 5）：携带 V（一致摘要有效）位、A（一致编号）和 D（已丢弃一致编号）字段，以及 28.4 的 32 字节 Agreement Digest。（28.12.4）SPB Base VLAN-Identifiers sub-TLV（类型 6）：由 {ECT-ALGORITHM、Base VID、Use-Flag、M 位} 组成的 ECT-VID 元组；Use-Flag 是所有网桥 U-bit 的逻辑或。（28.12.5）SPB Instance sub-TLV（类型 1）：最重要的一个——在分片零 LSP 的 MT-Capability TLV 中携带；包含 CIST 根标识符、CIST 外部根路径开销、网桥优先级、V 位、20 位 SPSourceID、树的数量，以及每棵树的 VID 元组 {U、M、A 位、ECT-ALGORITHM、Base VID、SPVID}。（28.12.6）SPB Instance Opaque ECT Algorithm sub-TLV（类型 2）：为某算法携带基于节点的不透明调优数据；其特化形式 28.12.6.1 是 ECMP ECT Algorithm sub-TLV（ECT-ALGORITHM 00-80-C2-11），为共享树根选择通告 Tie-Break Mask + 备用网桥优先级。（28.12.7）SPB Link Metric sub-TLV（类型 29）：位于扩展 IS 可达性 TLV 内；含 24 位 SPB 链路度量（最大值 = SPB 下线）、端口数量、端口标识符。（28.12.8）SPB Adjacency Opaque ECT Algorithm sub-TLV（类型 30）：基于链路的不透明调优数据，是 28.12.6 的对应物但按邻接划分。（28.12.9）SPBV MAC Address sub-TLV（位于 MT-Capability TLV 中的类型 4）：含 SR 位、SPVID，以及每个 MAC 的 {T（允许发送）、R（允许接收）} 位加 48 位 MAC——是 SPBV 对 MMRP 组注册的替代。（28.12.10）SPBM Service Identifier and Unicast Address（ISID-ADDR）sub-TLV（类型 3）：声明一个 B-MAC 并把某 B-VID 上下文内的 I-SID 映射到它，构建按 I-SID 划分的组播树（B-MAC 为空表示在 (*,G) 模式下使用骨干服务实例组地址）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1425,
+          1426,
+          1427,
+          1428,
+          1429,
+          1430,
+          1431,
+          1432,
+          1433
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model for the whole clause: Hellos (with MCID, Digest, Base-VID, Link-Metric sub-TLVs) bring up safe adjacencies; LSPs (with the SPB Instance, Opaque, SPBV-MAC, and ISID-ADDR sub-TLVs) flood the full topology and service membership; the Agreement Digest gates forwarding so no loop forms while databases differ; and the ECT Algorithm makes every bridge compute the identical, symmetric shortest-path trees.",
+      "zh": "整章的思维模型：Hello（携带 MCID、Digest、Base-VID、Link-Metric 等 sub-TLV）建立安全的邻接关系；LSP（携带 SPB Instance、Opaque、SPBV-MAC、ISID-ADDR 等 sub-TLV）泛洪完整的拓扑与服务成员信息；Agreement Digest 在数据库不一致期间对转发设限，从而不会形成环路；而 ECT 算法让每个网桥都计算出完全相同、对称的最短路径树。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1414,
+        1415,
+        1416,
+        1417,
+        1418,
+        1419,
+        1420
+      ],
+      "note": "28.1 control plane MAC, 28.2 adjacency formation/maintenance, 28.3 loop prevention, 28.4 Agreement Digest (28.4.1-28.4.6), 28.5 symmetric tie breaking, 28.6 symmetric ECT framework."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1421,
+        1422,
+        1423,
+        1424
+      ],
+      "note": "28.7 symmetric ECT, 28.8 ECT algorithm details with Table 28-1 masks, 28.9 ECT migration (28.9.1 SPBV, 28.9.2 SPBM), 28.10 MAC address registration, 28.11 Circuit IDs and Port Identifiers."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1425,
+        1426,
+        1427,
+        1428,
+        1429,
+        1430,
+        1431,
+        1432,
+        1433
+      ],
+      "note": "28.12 ISIS-SPB TLVs: 28.12.1 MT-Capability, 28.12.2 MCID, 28.12.3 Digest, 28.12.4 Base VLAN-Identifiers, 28.12.5 SPB Instance, 28.12.6 Opaque ECT (+ECMP), 28.12.7 Link Metric, 28.12.8 Adjacency Opaque ECT, 28.12.9 SPBV MAC Address, 28.12.10 ISID-ADDR."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:28.1",
+    "8021Q-2022:28.2",
+    "8021Q-2022:28.3",
+    "8021Q-2022:28.4.1",
+    "8021Q-2022:28.4.2",
+    "8021Q-2022:28.4.3",
+    "8021Q-2022:28.4.4",
+    "8021Q-2022:28.4.5",
+    "8021Q-2022:28.4.6",
+    "8021Q-2022:28.5",
+    "8021Q-2022:28.6",
+    "8021Q-2022:28.7",
+    "8021Q-2022:28.8",
+    "8021Q-2022:28.9.1",
+    "8021Q-2022:28.9.2",
+    "8021Q-2022:28.10",
+    "8021Q-2022:28.11",
+    "8021Q-2022:28.12.1",
+    "8021Q-2022:28.12.2",
+    "8021Q-2022:28.12.3",
+    "8021Q-2022:28.12.4",
+    "8021Q-2022:28.12.5",
+    "8021Q-2022:28.12.6",
+    "8021Q-2022:28.12.7",
+    "8021Q-2022:28.12.8",
+    "8021Q-2022:28.12.9",
+    "8021Q-2022:28.12.10"
+  ],
+  "track": "bridging-tsn"
+}

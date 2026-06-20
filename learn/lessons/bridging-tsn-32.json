@@ -1,0 +1,96 @@
+{
+  "id": "bridging-tsn-32",
+  "title": {
+    "en": "The Linktrace Responder: One Bridge-Wide Engine That Answers Trace Requests",
+    "zh": "Linktrace Responder：桥内统一应答链路追踪请求的引擎"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Connectivity Fault Management (CFM) lets a network operator trace the exact hop-by-hop path that a frame takes through a chain of bridges. The tool for that is the Linktrace protocol: a Maintenance Association Endpoint (MEP) sends out a Linktrace Message (LTM), and every bridge along the way answers with a Linktrace Reply (LTR). Clause 19.6 specifies the entity inside a bridge that does the answering: the Linktrace Responder. This lesson walks through what it is, why it exists, and the exact paths it uses.",
+      "zh": "连通性故障管理（CFM，Connectivity Fault Management）让网络运维人员能够逐跳追踪一个帧穿过一连串桥（bridge）所走的确切路径。完成这件事的工具是链路追踪（Linktrace）协议：一个维护关联端点（MEP，Maintenance Association Endpoint）发出一条链路追踪消息（LTM，Linktrace Message），路径上每一台桥都用一条链路追踪应答（LTR，Linktrace Reply）来回应。Clause 19.6 规定的就是桥内部负责应答的那个实体——Linktrace Responder。本课讲清它是什么、为何存在，以及它所使用的确切路径。"
+    },
+    {
+      "type": "prose",
+      "en": "The headline rule is simple: a single Linktrace Responder serves all of the Maintenance Association Intermediate Points (MIPs, here called MHFs — MIP Half Functions) and all of the MEPs in a bridge. It is not itself a Maintenance Point (MP); it is a helper entity that assists the MPs in doing their jobs. It connects to every MP and to every Linktrace Output Multiplexer (LOM) in the bridge through two kinds of dedicated attachment points: Linktrace SAPs and LTI SAPs (Service Access Points — the standard's name for an internal attachment/interface).",
+      "zh": "核心规则很简单：一台桥内只有一个 Linktrace Responder，它服务于该桥中所有的维护关联中间点（MIP，Maintenance Association Intermediate Point，此处称为 MHF，即 MIP Half Function）以及所有的 MEP。它本身不是维护点（MP，Maintenance Point），而是一个辅助实体，帮助各 MP 完成其职责。它通过两类专用的接入点连接到桥内的每一个 MP 以及每一个链路追踪输出复用器（LOM，Linktrace Output Multiplexer）：Linktrace SAP 和 LTI SAP（SAP 即 Service Access Point，服务接入点，是标准对内部接入/接口的称谓）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why one responder per bridge, not one per port? An LTM crossing a bridge could, in principle, trigger a response on every port at once. To keep the number of replies bounded, the standard funnels all LTM handling through one shared engine that decides exactly where each LTM goes — and it always re-transmits an LTM on a single Bridge Port (see Clause 20.3).",
+      "zh": "为什么是每桥一个 Responder，而不是每端口一个？一条穿越桥的 LTM 原则上可能在所有端口上同时触发响应。为把回复数量控制在有限范围内，标准把所有 LTM 处理都汇聚到一个共享引擎，由它精确决定每条 LTM 的去向——而且它总是只在单个桥端口（Bridge Port）上重新发送 LTM（见 Clause 20.3）。"
+    },
+    {
+      "type": "prose",
+      "en": "The trickiest part of the design is keeping an LTM out of the bridge's normal forwarding machinery. If a bridge port's ordinary LLC (Logical Link Control) entity were used to send an LTM, the Bridge Port connectivity entity would correctly push the frame out to the LAN — but it would ALSO pass a copy upward toward the Frame filtering entity, the same way it handles Bridge Protocol Data Units (BPDUs). For BPDUs that copy is harmless because the Frame filtering entity discards them by destination MAC address. LTMs can't be filtered that way: MHFs at different Maintenance Domain (MD) Levels sit on different ports for the same VLAN ID (VID), so a destination-address filter cannot cleanly separate them. The Linktrace Responder therefore filters incoming LTMs by the destination_address parameter itself (per 19.4), and a dedicated path is needed that sends an LTM down the port toward the LAN only — never up toward frame filtering.",
+      "zh": "设计中最棘手的部分，是让 LTM 不进入桥的常规转发机制。如果用桥端口普通的 LLC（Logical Link Control，逻辑链路控制）实体来发送 LTM，桥端口连通性实体会正确地把帧推送到 LAN——但它同时也会向上把一份副本送往帧过滤实体（Frame filtering entity），就像处理桥协议数据单元（BPDU，Bridge Protocol Data Unit）那样。对 BPDU 而言这份副本无害，因为帧过滤实体会按目的 MAC 地址将其丢弃。LTM 却无法这样过滤：处于不同维护域级别（MD Level，Maintenance Domain Level）的 MHF 会针对同一个 VLAN 标识（VID，VLAN ID）坐落在不同端口上，因此按目的地址过滤无法干净地把它们区分开。为此，Linktrace Responder 自己按 destination_address 参数过滤进入的 LTM（依据 19.4），并且需要一条专用路径，使 LTM 只向下沿端口送往 LAN——绝不向上送往帧过滤实体。"
+    },
+    {
+      "type": "prose",
+      "en": "That dedicated path is exactly what the Linktrace SAPs provide. They appear in the MEP architecture (Figure 19-2), the MHF architecture (Figure 19-3), and the LOM architecture (Figure 19-5). The Linktrace SAPs do double duty: they carry an LTM down toward the LAN, and they are also how a received LTM is handed up to the Linktrace Responder the moment that LTM first meets an MP at the matching MD Level.",
+      "zh": "Linktrace SAP 提供的正是这条专用路径。它们出现在 MEP 架构（图 19-2）、MHF 架构（图 19-3）和 LOM 架构（图 19-5）中。Linktrace SAP 身兼两职：既把 LTM 向下送往 LAN，也在收到的 LTM 第一次遇到匹配 MD Level 的 MP 时，把这条 LTM 向上交给 Linktrace Responder。"
+    },
+    {
+      "type": "prose",
+      "en": "The LOM (Linktrace Output Multiplexer) deserves a note. It exists on every Bridge Port purely so the Linktrace Responder can transmit an LTM out of one specific port without that LTM bouncing back into the bridge's Forwarding process. An LOM is not an MP and has no component that distinguishes CFM frames from any other frames — it is a plain conduit. Frames entering its Active or Passive SAP pass through unchanged and exit only on the opposite SAP. Because the LOM is not an MP, it cannot itself detect a received LTM; the Linktrace Responder only ever forwards (relays) LTMs through an LOM, never originates from one.",
+      "zh": "LOM（Linktrace Output Multiplexer，链路追踪输出复用器）值得一提。它存在于每一个桥端口上，纯粹是为了让 Linktrace Responder 能从某个特定端口发出 LTM，而不让这条 LTM 反弹回桥的转发（Forwarding）过程。LOM 不是 MP，也没有任何能把 CFM 帧与其他帧区分开的部件——它只是一条纯粹的通道。进入其 Active SAP 或 Passive SAP 的帧原样穿过，并仅从对侧 SAP 离开。由于 LOM 不是 MP，它本身无法检测收到的 LTM；Linktrace Responder 只会通过 LOM 转发（中继）LTM，从不从 LOM 发起 LTM。"
+    },
+    {
+      "type": "prose",
+      "en": "Down MEPs and Up MEPs differ in how they originate an LTM. A Down MEP faces outward, so an LTM it originates goes straight out to the LAN through its Active SAP — exactly one Bridge Port, as desired. An Up MEP faces inward into the bridge, and the bridge it lives in is in effect the FIRST hop of the Linktrace protocol. To handle that, the Up MEP uses a separate LTI SAP (Linktrace Initiator SAP) to hand its originated LTM to the Linktrace Responder; that same LTI SAP path also carries the resulting LTR back to the MEP's Linktrace Initiator. (Figure 20-16 diagrams these paths in full.)",
+      "zh": "Down MEP 与 Up MEP 在发起 LTM 的方式上有所不同。Down MEP 朝向外侧，因此它发起的 LTM 直接经其 Active SAP 送往 LAN——正好是单个桥端口，符合预期。Up MEP 朝向桥内侧，而它所在的桥实际上就是链路追踪协议的第一跳（first hop）。为处理这一点，Up MEP 使用单独的 LTI SAP（Linktrace Initiator SAP，链路追踪发起方 SAP）把它发起的 LTM 交给 Linktrace Responder；同一条 LTI SAP 路径也把生成的 LTR 送回该 MEP 的链路追踪发起方。（图 20-16 完整地图示了这些路径。）"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 220\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"150\" y=\"20\" width=\"160\" height=\"34\" rx=\"4\"/><text x=\"230\" y=\"41\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Linktrace Responder (one per bridge)</text><rect x=\"30\" y=\"110\" width=\"90\" height=\"30\" rx=\"4\"/><text x=\"75\" y=\"129\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Up MEP</text><rect x=\"185\" y=\"110\" width=\"90\" height=\"30\" rx=\"4\"/><text x=\"230\" y=\"129\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">MHF (MIP)</text><rect x=\"340\" y=\"110\" width=\"90\" height=\"30\" rx=\"4\"/><text x=\"385\" y=\"129\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">LOM</text><line x1=\"100\" y1=\"54\" x2=\"75\" y2=\"110\"/><text x=\"60\" y=\"86\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">LTI SAP</text><line x1=\"215\" y1=\"54\" x2=\"230\" y2=\"110\"/><text x=\"232\" y=\"86\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">Linktrace SAP</text><line x1=\"330\" y1=\"54\" x2=\"385\" y2=\"110\"/><text x=\"345\" y=\"86\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">LOM Linktrace SAP</text><line x1=\"75\" y1=\"140\" x2=\"75\" y2=\"185\"/><line x1=\"230\" y1=\"140\" x2=\"230\" y2=\"185\"/><line x1=\"385\" y1=\"140\" x2=\"385\" y2=\"185\"/><rect x=\"20\" y=\"185\" width=\"420\" height=\"26\" rx=\"4\"/><text x=\"230\" y=\"202\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">LAN / Bridge Ports (LTM out on a single port)</text></svg>",
+      "caption": {
+        "en": "One Linktrace Responder connects to every MEP, MHF, and LOM via Linktrace SAPs (and the Up MEP's LTI SAP), and always emits an LTM on a single Bridge Port — keeping it out of the Frame filtering path.",
+        "zh": "唯一的 Linktrace Responder 通过 Linktrace SAP（以及 Up MEP 的 LTI SAP）连接到每个 MEP、MHF 和 LOM，并始终只在单个桥端口上发出 LTM——使其绕开帧过滤路径。"
+      }
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant M as MP (Linktrace SAP)\n  participant R as Linktrace Responder\n  participant L as LOM\n  M->>R: received LTM (filtered by destination_address)\n  R->>R: build LTR (LTR Transmitter SM, 20.50)\n  R->>M: LTR via Linktrace SAP\n  R->>L: relay LTM out one Bridge Port\n  L->>L: pass through Active<->Passive SAP",
+      "zh": "sequenceDiagram\n  participant M as MP（Linktrace SAP）\n  participant R as Linktrace Responder\n  participant L as LOM\n  M->>R: 收到的 LTM（按 destination_address 过滤）\n  R->>R: 构造 LTR（LTR 发送状态机，20.50）\n  R->>M: 经 Linktrace SAP 返回 LTR\n  R->>L: 经单个桥端口中继 LTM\n  L->>L: 在 Active<->Passive SAP 间原样穿过"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "State-machine pointer: the Linktrace Responder instantiates a single LTR Transmitter state machine, specified in 20.50. The broader set of Linktrace Responder variables, procedures, and its main state machine live in 20.46-20.48; this lesson's clause (19.6) defines the entity and its SAP wiring, while Clause 20 defines its dynamic behavior.",
+      "zh": "状态机指引：Linktrace Responder 实例化一个 LTR 发送状态机（LTR Transmitter state machine），规定于 20.50。Linktrace Responder 更完整的变量、过程及其主状态机位于 20.46–20.48；本课的条款（19.6）定义该实体及其 SAP 连线，而 Clause 20 定义其动态行为。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every line of 19.6 (Linktrace Responder)",
+        "zh": "覆盖地图——19.6（Linktrace Responder）逐条对照"
+      },
+      "en": "Clause 19.6 (Linktrace Responder) is a single un-numbered subclause; this lesson teaches all of it. Key points, traced to the text: (1) a single Linktrace Responder serves all MHFs and MEPs in a bridge, connected to every MP and LOM via Linktrace SAPs and LTI SAPs, and is NOT itself an MP. (2) An LTM is always transmitted from a bridge on a single Bridge Port (cross-ref 20.3) to bound the number of responses. (3) Using a port's LLC entity would leak a copy up to the Frame filtering entity (as with BPDUs); BPDUs are filtered by destination MAC, but LTMs cannot be, because MHFs at different MD Levels share a VID across different ports — so the Responder filters incoming LTMs by destination_address (cross-ref 19.4). (4) The required down-only path is supplied by the Linktrace SAPs in the MEP (Figure 19-2), MHF (Figure 19-3), and LOM (Figure 19-5); these SAPs also deliver a received LTM up to the Responder at the matching MD Level. (5) A Down MEP's originated LTM exits its Active SAP straight to the LAN; an Up MEP is the protocol's first hop and uses an LTI SAP to hand its LTM to the Responder and to receive the returning LTR (cross-ref Figure 20-16). (6) Table 19-2 summarizes SAP use for LTMs/LTRs across Up MEP, MHF, Down MEP, and LOM; notably the LOM, not being an MP, cannot detect received LTMs and the Responder only relays (never originates) LTMs through an LOM. (7) The Responder instantiates one LTR Transmitter state machine (described in 20.50).",
+      "zh": "Clause 19.6（Linktrace Responder）是一个不带编号的单一子条款；本课全部讲到。要点（逐条对应原文）：(1) 一台桥内只有一个 Linktrace Responder，服务于所有 MHF 与 MEP，经 Linktrace SAP 与 LTI SAP 连接到每个 MP 和 LOM，且其本身不是 MP。(2) LTM 总是只从桥的单个桥端口发出（交叉引用 20.3），以限制响应数量。(3) 若使用端口的 LLC 实体，会像 BPDU 一样把副本泄漏到帧过滤实体；BPDU 可按目的 MAC 过滤，但 LTM 不能，因为不同 MD Level 的 MHF 会就同一 VID 分布于不同端口——故 Responder 按 destination_address 过滤进入的 LTM（交叉引用 19.4）。(4) 所需的“仅向下”路径由 MEP（图 19-2）、MHF（图 19-3）和 LOM（图 19-5）中的 Linktrace SAP 提供；这些 SAP 也在匹配的 MD Level 把收到的 LTM 上交给 Responder。(5) Down MEP 发起的 LTM 经其 Active SAP 直达 LAN；Up MEP 是协议的第一跳，使用 LTI SAP 把 LTM 交给 Responder 并接收返回的 LTR（交叉引用图 20-16）。(6) 表 19-2 汇总了 Up MEP、MHF、Down MEP 和 LOM 对 LTM/LTR 的 SAP 使用；尤其指出 LOM 因非 MP 无法检测收到的 LTM，且 Responder 只通过 LOM 中继（从不发起）LTM。(7) Responder 实例化一个 LTR 发送状态机（规定于 20.50）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1202,
+          1203
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1202,
+        1203
+      ],
+      "note": "19.6 Linktrace Responder — single responder per bridge, Linktrace/LTI SAPs, single-port LTM transmission, destination_address filtering, Table 19-2 SAP use, Figure 19-5 LOM, LTR Transmitter state machine reference."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:19.6"
+  ],
+  "track": "bridging-tsn"
+}

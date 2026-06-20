@@ -1,0 +1,172 @@
+{
+  "id": "bridging-tsn-24",
+  "title": {
+    "en": "RSTP/MSTP State Machines: The Per-Port Engine Room",
+    "zh": "RSTP/MSTP 状态机：每端口的引擎室"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A bridge that speaks the Rapid Spanning Tree Protocol (RSTP) and the Multiple Spanning Tree Protocol (MSTP) does not run one giant program. Instead, each port runs a small team of cooperating state machines — tiny rule engines that each watch a few variables and flip the port between states. This lesson is a guided tour of that engine room: every state machine in clauses 13.30 through 13.42, plus the two special cases where the machines run inside a provider's edge bridge. A Bridge Protocol Data Unit (BPDU) is the little control packet bridges exchange to agree on the tree; keep that in mind, because most of these machines exist to produce, receive, or react to BPDUs.",
+      "zh": "运行快速生成树协议（RSTP）和多生成树协议（MSTP）的网桥并不是跑一个庞大的程序。相反，每个端口运行着一支相互协作的小型状态机团队——这些微型规则引擎各自监视几个变量，并在状态之间切换端口。本课带你走一遍这个引擎室：从 13.30 到 13.42 的每一个状态机，以及状态机在运营商边缘网桥内部运行的两个特殊情形。网桥协议数据单元（BPDU）是网桥之间交换、用于就生成树达成一致的小型控制报文；请记住这一点，因为这些状态机大多是为了产生、接收或响应 BPDU 而存在的。"
+    },
+    {
+      "type": "prose",
+      "en": "Three machines handle the raw plumbing of time and packets. The Port Timers state machine (13.30) is the heartbeat: a once-per-second 'tick' signal decrements every countdown timer for the port — helloWhen, tcWhile, fdWhile (forward-delay), and many others — using a simple dec(x) rule that stops at zero. The Port Receive state machine (13.31) takes each validated BPDU, decides whether it came from the same MST or SPT Region, and sets a per-tree rcvdMsg flag; it will not process the next BPDU until every tree's machine has cleared its flag. The Port Transmit state machine (13.34) is the mirror image: it decides when to send Configuration, TCN (Topology Change Notification), RST, or SPT BPDUs, honouring the TxHoldCount rate limit so a port never floods its neighbour.",
+      "zh": "有三个状态机负责时间与报文的底层管道。端口定时器状态机（13.30）是心跳：每秒一次的“tick”信号会递减该端口的所有倒计时定时器——helloWhen、tcWhile、fdWhile（转发延迟）等等——用一个简单的 dec(x) 规则在到零时停止。端口接收状态机（13.31）接收每个经过校验的 BPDU，判断它是否来自同一 MST 或 SPT 区域，并设置每棵树的 rcvdMsg 标志；在所有树的状态机清除各自标志之前，它不会处理下一个 BPDU。端口发送状态机（13.34）则是镜像：它决定何时发送配置、TCN（拓扑变更通知）、RST 或 SPT BPDU，并遵守 TxHoldCount 速率限制，使端口永远不会淹没邻居。"
+    },
+    {
+      "type": "prose",
+      "en": "Two more machines manage compatibility and edge detection. The Port Protocol Migration state machine (13.32) decides whether to talk legacy STP or modern RSTP on each link: it starts in SENSING, moves to CHECKING_RSTP, and falls back to SELECTING_STP if it hears a plain STP BPDU, using a mdelayWhile (migration-delay) timer so it does not flap. The Bridge Detection state machine (13.33) decides whether a port is an edge port — a port with no other bridge attached, which can skip the slow listening dance and forward immediately. It watches AdminEdge (configured) and AutoEdge (auto-detected) and an edgeDelayWhile timer to move between EDGE, NOT_EDGE, and ISOLATED.",
+      "zh": "还有两个状态机负责兼容性与边缘检测。端口协议迁移状态机（13.32）决定在每条链路上讲老式 STP 还是现代 RSTP：它从 SENSING 开始，进入 CHECKING_RSTP，若听到普通 STP BPDU 则回退到 SELECTING_STP，并使用 mdelayWhile（迁移延迟）定时器以避免抖动。网桥检测状态机（13.33）判断某端口是否为边缘端口——即没有其他网桥连接的端口，它可以跳过缓慢的侦听过程直接转发。它监视 AdminEdge（手工配置）与 AutoEdge（自动检测）以及 edgeDelayWhile 定时器，在 EDGE、NOT_EDGE 和 ISOLATED 之间切换。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  R[Port Receive 13.31] --> I[Port Information 13.35]\n  T[Port Timers 13.30] -.tick.-> I\n  I --> S[Port Role Selection 13.36]\n  S --> RT[Port Role Transitions 13.37]\n  RT --> ST[Port State Transition 13.38]\n  RT --> TC[Topology Change 13.39]\n  ST --> X[Port Transmit 13.34]\n  TC --> X",
+      "zh": "flowchart TD\n  R[端口接收 13.31] --> I[端口信息 13.35]\n  T[端口定时器 13.30] -.tick.-> I\n  I --> S[端口角色选择 13.36]\n  S --> RT[端口角色转换 13.37]\n  RT --> ST[端口状态转换 13.38]\n  RT --> TC[拓扑变更 13.39]\n  ST --> X[端口发送 13.34]\n  TC --> X"
+    },
+    {
+      "type": "prose",
+      "en": "Now the brains. The Port Information state machine (13.35) is per-tree: it records the spanning-tree priority information currently in use on the port, classifies each incoming BPDU as SuperiorDesignated, RepeatedDesignated, InferiorDesignated, InferiorRootAlternate, or OtherInfo, ages stale information out (infoIs = Aged), and tags where the info came from (Mine, Received, Aged, Disabled). Whenever it changes anything it clears 'selected' and sets 'reselect' to tell the next machine to recompute. That next machine is the Port Role Selection state machine (13.36): once per tree it runs updtRolesTree() across all ports to assign each one a role — Root, Designated, Alternate, Backup, Master, or Disabled — then sets 'selected' again.",
+      "zh": "现在轮到“大脑”。端口信息状态机（13.35）按树运行：它记录该端口当前使用的生成树优先级信息，把每个入站 BPDU 分类为 SuperiorDesignated（更优指定）、RepeatedDesignated（重复指定）、InferiorDesignated（较差指定）、InferiorRootAlternate（较差根/替代）或 OtherInfo（其他信息），将陈旧信息老化掉（infoIs = Aged），并标记信息来源（Mine 本机、Received 收到、Aged 已老化、Disabled 禁用）。每当它改变任何内容，就清除 selected 并置位 reselect，以通知下一个状态机重新计算。那个状态机就是端口角色选择状态机（13.36）：它每棵树运行一次 updtRolesTree()，遍历所有端口为每个端口分配角色——Root（根）、Designated（指定）、Alternate（替代）、Backup（备份）、Master（主）或 Disabled（禁用）——然后再次置位 selected。"
+    },
+    {
+      "type": "prose",
+      "en": "The Port Role Transitions state machine (13.37) is the largest, split across five diagrams — one for each role family: Disabled, Master, Root, Designated, and the Alternate/Backup pair. This is where the famous RSTP proposal/agreement handshake lives: a designated port proposes (sync), a root port agrees, and the 'allSynced' condition lets a port jump straight to forwarding instead of waiting two forward-delay periods. The Port State Transition state machine (13.38) is deliberately tiny and tree-agnostic: it only knows three states — DISCARDING, LEARNING, FORWARDING — driven by the 'learn' and 'forward' variables that the role-transition machine sets. Clause 13.38.1 covers how this works for the CIST (Common and Internal Spanning Tree) and MSTIs (MST Instances) using an explicit Port State; 13.38.2 covers SPTs (Shortest Path Trees), where enableForwarding()/disableForwarding() instead add or remove the port from VLAN registration or filtering entries rather than toggling a classic port state.",
+      "zh": "端口角色转换状态机（13.37）是最大的一个，分成五张图——每个角色家族一张：Disabled、Master、Root、Designated 以及 Alternate/Backup 这一对。著名的 RSTP 提议/同意握手就在这里：指定端口发起提议（sync），根端口同意，而 allSynced 条件让端口可以直接跳到转发，而不必等待两个转发延迟周期。端口状态转换状态机（13.38）刻意做得极小且与树无关：它只知道三种状态——DISCARDING（丢弃）、LEARNING（学习）、FORWARDING（转发）——由角色转换状态机设置的 learn 和 forward 变量驱动。13.38.1 讲述这对 CIST（公共与内部生成树）和 MSTI（MST 实例）如何用显式的端口状态实现；13.38.2 讲述 SPT（最短路径树）的情形，此时 enableForwarding()/disableForwarding() 改为把端口加入或移出 VLAN 注册或过滤条目，而不是切换经典的端口状态。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> DISCARDING\n  DISCARDING --> LEARNING: learn\n  LEARNING --> FORWARDING: forward\n  FORWARDING --> DISCARDING: !forward\n  LEARNING --> DISCARDING: !learn",
+      "zh": "stateDiagram-v2\n  [*] --> DISCARDING\n  DISCARDING --> LEARNING: learn\n  LEARNING --> FORWARDING: forward\n  FORWARDING --> DISCARDING: !forward\n  LEARNING --> DISCARDING: !learn"
+    },
+    {
+      "type": "prose",
+      "en": "The Topology Change state machine (13.39), one per tree, is what makes RSTP fast to heal. When a real topology change happens on an active port (Root, Designated, or Master, and not an edge port), it flushes the Filtering Database (fdbFlush) and propagates the change to other ports via setTcPropTree(), starting a tcWhile timer. Its states — INACTIVE, LEARNING, DETECTED, ACTIVE, NOTIFIED_TC/TCN, PROPAGATING, ACKNOWLEDGED — also feed the tcDetected variable used by the Multiple Registration Protocol (MRP, Clause 10). The Layer 2 Gateway Port Receive state machine (13.40) is an optional variant of the receive machine for an L2 Gateway Port: instead of really receiving BPDUs it synthesises 'pseudo' information (pseudoRcvMsgs(), pseudoInfoHelloWhen) so the port behaves as if a well-behaved neighbour were always present.",
+      "zh": "拓扑变更状态机（13.39），每棵树一个，是 RSTP 能够快速自愈的关键。当某活动端口（Root、Designated 或 Master，且非边缘端口）上发生真正的拓扑变更时，它会清空过滤数据库（fdbFlush），并通过 setTcPropTree() 把变更传播到其他端口，同时启动 tcWhile 定时器。它的状态——INACTIVE、LEARNING、DETECTED、ACTIVE、NOTIFIED_TC/TCN、PROPAGATING、ACKNOWLEDGED——还会输出 tcDetected 变量，供多重注册协议（MRP，第 10 章）使用。二层网关端口接收状态机（13.40）是接收状态机针对 L2 网关端口的一个可选变体：它不真正接收 BPDU，而是合成“伪”信息（pseudoRcvMsgs()、pseudoInfoHelloWhen），让端口表现得像始终有一个行为良好的邻居在场。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy mental model: 13.35 decides WHAT the port knows, 13.36 decides WHAT ROLE it should play, 13.37 manages the HANDSHAKE to safely change role, and 13.38 flips the actual DISCARDING/LEARNING/FORWARDING switch. The timer (13.30), receive (13.31), and transmit (13.34) machines are the I/O around that core.",
+      "zh": "一个好用的思维模型：13.35 决定端口“知道什么”，13.36 决定它“该扮演什么角色”，13.37 管理安全切换角色的“握手”，13.38 拨动真正的 DISCARDING/LEARNING/FORWARDING 开关。定时器（13.30）、接收（13.31）和发送（13.34）状态机则是围绕这个核心的输入输出。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every state machine, clause by clause (13.30–13.40)",
+        "zh": "覆盖地图：逐条款列出每个状态机（13.30–13.40）"
+      },
+      "en": "13.30 Port Timers — once-per-second tick decrements all per-port/per-tree timers via dec(x). 13.31 Port Receive — validates BPDUs, sets per-tree rcvdMsg, gates the next BPDU until all flags clear; states DISCARD/RECEIVE. 13.32 Port Protocol Migration — SENSING/CHECKING_RSTP/SELECTING_STP, mdelayWhile and mcheck pick STP vs RSTP. 13.33 Bridge Detection — EDGE/NOT_EDGE/ISOLATED using AdminEdge, AutoEdge, operEdge, edgeDelayWhile. 13.34 Port Transmit — TRANSMIT_INIT/PERIODIC/CONFIG/TCN/RSTP plus AGREE_SPT, rate-limited by TxHoldCount, sets newInfo/newInfoMsti. 13.35 Port Information — DISABLED/AGED/UPDATE/CURRENT/RECEIVE plus SUPERIOR_DESIGNATED, REPEATED_DESIGNATED, INFERIOR_DESIGNATED, NOT_DESIGNATED, OTHER; sets infoIs and reselect. 13.36 Port Role Selection — INIT_TREE/ROLE_SELECTION runs updtRolesTree(); ISIS-SPB drives it for SPTs. 13.37 Port Role Transitions — five diagrams (Disabled/Master/Root/Designated/Alternate-Backup) with the proposal/agreement handshake. 13.38 Port State Transition — DISCARDING/LEARNING/FORWARDING; 13.38.1 CIST/MSTI explicit Port State, 13.38.2 SPT via VLAN registration / filtering entries. 13.39 Topology Change — INACTIVE..ACTIVE, fdbFlush, setTcPropTree(), tcWhile, feeds MRP. 13.40 L2 Gateway Port Receive — optional, pseudoRcvMsgs()/pseudoInfoHelloWhen for an L2GP.",
+      "zh": "13.30 端口定时器——每秒一次 tick，通过 dec(x) 递减所有每端口/每树定时器。13.31 端口接收——校验 BPDU，设置每树 rcvdMsg，在所有标志清除前阻塞下一个 BPDU；状态 DISCARD/RECEIVE。13.32 端口协议迁移——SENSING/CHECKING_RSTP/SELECTING_STP，由 mdelayWhile 与 mcheck 选择 STP 或 RSTP。13.33 网桥检测——用 AdminEdge、AutoEdge、operEdge、edgeDelayWhile 在 EDGE/NOT_EDGE/ISOLATED 间切换。13.34 端口发送——TRANSMIT_INIT/PERIODIC/CONFIG/TCN/RSTP 及 AGREE_SPT，受 TxHoldCount 限速，设置 newInfo/newInfoMsti。13.35 端口信息——DISABLED/AGED/UPDATE/CURRENT/RECEIVE 及 SUPERIOR_DESIGNATED、REPEATED_DESIGNATED、INFERIOR_DESIGNATED、NOT_DESIGNATED、OTHER；设置 infoIs 与 reselect。13.36 端口角色选择——INIT_TREE/ROLE_SELECTION 运行 updtRolesTree()；SPT 由 ISIS-SPB 驱动。13.37 端口角色转换——五张图（Disabled/Master/Root/Designated/Alternate-Backup）含提议/同意握手。13.38 端口状态转换——DISCARDING/LEARNING/FORWARDING；13.38.1 CIST/MSTI 显式端口状态，13.38.2 SPT 通过 VLAN 注册/过滤条目。13.39 拓扑变更——INACTIVE..ACTIVE，fdbFlush，setTcPropTree()，tcWhile，供 MRP 使用。13.40 二层网关端口接收——可选，L2GP 用 pseudoRcvMsgs()/pseudoInfoHelloWhen。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          573,
+          574,
+          575,
+          576,
+          577,
+          578,
+          579,
+          580,
+          583,
+          584,
+          585,
+          586
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The last two subclauses adapt these same machines to provider bridges, where a customer VLAN component meets a service-provider network. Clause 13.41 covers CEP (Customer Edge Port) spanning tree operation inside a C-VLAN component of a Provider Edge Bridge, where the CEP and each PEP (Provider Edge Port) are treated as separate bridge ports running RSTP. The tweaks: 13.41.1 fixes a PEP's adminPointToPointMAC to Auto and forces operEdge FALSE; 13.41.2 lets updtRolesTree() promote a would-be Alternate PEP to RootPort so the component can have multiple root ports without a loop; 13.41.3 redefines setReRootTree()/setSyncTree()/setTcPropTree() so a PEP only signals itself and the CEP; 13.41.4 evaluates allSynced and reRooted per-port (CEP looks at all PEPs, a PEP looks at the CEP); and 13.41.5 lists recommended configuration defaults — Bridge Priority 61 440, port priority 32, PEP path cost 128 — chosen so the C-VLAN component never accidentally becomes the customer's root.",
+      "zh": "最后两个子条款把这些相同的状态机适配到运营商网桥，即用户 VLAN 组件与服务提供商网络相接之处。13.41 讲述运营商边缘网桥的 C-VLAN 组件内部的 CEP（用户边缘端口）生成树运行，其中 CEP 与每个 PEP（运营商边缘端口）被视为运行 RSTP 的独立网桥端口。其调整为：13.41.1 把 PEP 的 adminPointToPointMAC 固定为 Auto 并强制 operEdge 为 FALSE；13.41.2 让 updtRolesTree() 把本应成为 Alternate 的 PEP 提升为 RootPort，使该组件可以有多个根端口而不形成环路；13.41.3 重定义 setReRootTree()/setSyncTree()/setTcPropTree()，使 PEP 只对自身和 CEP 发出信号；13.41.4 按端口分别评估 allSynced 与 reRooted（CEP 看所有 PEP，PEP 看 CEP）；13.41.5 列出推荐的配置默认值——网桥优先级 61 440、端口优先级 32、PEP 路径开销 128——这些取值使 C-VLAN 组件绝不会意外成为用户的根。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: provider-edge variants (13.41.1–13.41.5, 13.42)",
+        "zh": "覆盖地图：运营商边缘变体（13.41.1–13.41.5、13.42）"
+      },
+      "en": "13.41.1 PEP operPointToPointMAC and operEdge — adminPointToPointMAC always Auto; operPointToPointMAC TRUE only if the service instance connects at most two customer interfaces; AdminEdge/AutoEdge/operEdge fixed at FALSE/TRUE/FALSE. 13.41.2 updtRolesTree() — as 13.29.34, except a would-be AlternatePort PEP whose root vector came from another PEP becomes RootPort (allows multiple root ports, no loop). 13.41.3 setReRootTree()/setSyncTree()/setTcPropTree() — for a PEP, setReRoot/setSync touch the PEP itself and the CEP; setTcProp touches only the CEP. 13.41.4 allSynced, reRooted — CEP: allSynced iff synced for all PEPs, reRooted iff rrWhile==0 for all PEPs; PEP: takes the CEP's synced and CEP's rrWhile==0. 13.41.5 Configuration parameters — Bridge Priority 61 440 (hex F), system ID extension hex FFF, port priority 32, PEP path cost 128; BPDUs use the CEP MAC as source and bridge address, PEP port number = associated S-VID, CEP port number = 0xFFF. 13.42 Virtual Instance Port (VIP) spanning tree operation — inside an I-component of a Backbone Edge Bridge (BEB); CNPs and VIPs are separate bridge ports; VIPs reuse the PEP parameters/functions of 13.41 so no VIP is ever blocked and the I-component is never elected root (safe because each S-VID maps to at most one VIP).",
+      "zh": "13.41.1 PEP 的 operPointToPointMAC 与 operEdge——adminPointToPointMAC 始终为 Auto；仅当服务实例连接至多两个用户接口时 operPointToPointMAC 才为 TRUE；AdminEdge/AutoEdge/operEdge 固定为 FALSE/TRUE/FALSE。13.41.2 updtRolesTree()——同 13.29.34，但本应为 AlternatePort 且根向量来自另一 PEP 的 PEP 改为 RootPort（允许多个根端口而不成环）。13.41.3 setReRootTree()/setSyncTree()/setTcPropTree()——对 PEP，setReRoot/setSync 作用于该 PEP 自身和 CEP；setTcProp 仅作用于 CEP。13.41.4 allSynced、reRooted——CEP：当且仅当所有 PEP 的 synced 为真时 allSynced 为真，当且仅当所有 PEP 的 rrWhile==0 时 reRooted 为真；PEP：取 CEP 的 synced 与 CEP 的 rrWhile==0。13.41.5 配置参数——网桥优先级 61 440（十六进制 F）、系统 ID 扩展 FFF、端口优先级 32、PEP 路径开销 128；BPDU 以 CEP 的 MAC 作为源地址与网桥地址，PEP 端口号 = 关联的 S-VID，CEP 端口号 = 0xFFF。13.42 虚拟实例端口（VIP）生成树运行——位于骨干边缘网桥（BEB）的 I 组件内部；CNP 与 VIP 为独立网桥端口；VIP 复用 13.41 的 PEP 参数/功能，因此任何 VIP 都不会被阻塞，I 组件也绝不会被选为根（因为每个 S-VID 最多映射到一个 VIP，故安全）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          586,
+          587,
+          588
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why two near-identical provider variants? 13.41 (CEP/PEP) lives in the C-VLAN component at the customer edge; 13.42 (CNP/VIP) lives in the I-component deeper in the backbone (a BEB = Backbone Edge Bridge). Both reuse the same trick: never block the provider-facing ports, and pin the bridge priority high so the provider component never wins the root election. The loop-safety comes from the mapping rule — each customer VLAN or S-VID is bound to at most one provider-side port.",
+      "zh": "为什么有两个几乎相同的运营商变体？13.41（CEP/PEP）位于用户边缘的 C-VLAN 组件中；13.42（CNP/VIP）位于骨干网更深处的 I 组件中（BEB = 骨干边缘网桥）。两者复用同一招：绝不阻塞面向运营商一侧的端口，并把网桥优先级置得很高，使运营商组件绝不会赢得根选举。环路安全来自映射规则——每个用户 VLAN 或 S-VID 都被绑定到至多一个运营商侧端口。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        573,
+        574,
+        575,
+        576
+      ],
+      "note": "13.30 Port Timers, 13.31 Port Receive, 13.32 Port Protocol Migration, 13.33 Bridge Detection, 13.34 Port Transmit state machines and their figures."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        577,
+        578,
+        579,
+        580
+      ],
+      "note": "13.35 Port Information, 13.36 Port Role Selection, 13.37 Port Role Transitions (Disabled/Master parts) state machines."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        583,
+        584,
+        585
+      ],
+      "note": "13.38 Port State Transition (13.38.1 CIST/MSTI, 13.38.2 SPT) and 13.39 Topology Change state machines."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        586,
+        587,
+        588
+      ],
+      "note": "13.40 L2 Gateway Port Receive, 13.41 CEP operation (13.41.1-13.41.5) and 13.42 VIP spanning tree operation."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:13.30",
+    "8021Q-2022:13.31",
+    "8021Q-2022:13.32",
+    "8021Q-2022:13.33",
+    "8021Q-2022:13.34",
+    "8021Q-2022:13.35",
+    "8021Q-2022:13.36",
+    "8021Q-2022:13.37",
+    "8021Q-2022:13.38.1",
+    "8021Q-2022:13.38.2",
+    "8021Q-2022:13.39",
+    "8021Q-2022:13.40",
+    "8021Q-2022:13.41.1",
+    "8021Q-2022:13.41.2",
+    "8021Q-2022:13.41.3",
+    "8021Q-2022:13.41.4",
+    "8021Q-2022:13.41.5",
+    "8021Q-2022:13.42"
+  ],
+  "track": "bridging-tsn"
+}

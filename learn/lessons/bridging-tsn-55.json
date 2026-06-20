@@ -1,0 +1,185 @@
+{
+  "id": "bridging-tsn-55",
+  "title": {
+    "en": "VDP: Discovering and Configuring Virtual Stations (Clause 41)",
+    "zh": "VDP：发现并配置虚拟站点（第 41 章）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "When a virtual machine (VM) moves from one physical server to another, its network identity must move with it. The VSI Discovery and Configuration Protocol (VDP) automates that handoff. A VSI (Virtual Station Interface) is the logical network port a virtual station presents to the wired LAN. VDP lets a virtual station register (associate) a VSI instance with a Station-facing Bridge Port (SBP) on an EVB Bridge (an Edge Virtual Bridging-capable switch), so the switch can apply the right VLAN and traffic policy automatically — and re-apply it on the new switch when the VM migrates. Clause 41 defines exactly what gets exchanged and how both ends keep their state machines in lock-step.",
+      "zh": "当一台虚拟机（VM）从一台物理服务器迁移到另一台时，它的网络身份必须随之迁移。VSI 发现与配置协议（VDP）让这一交接自动完成。VSI（虚拟站点接口）是虚拟站点向有线局域网呈现的逻辑网络端口。VDP 让虚拟站点把一个 VSI 实例向 EVB 网桥（支持边缘虚拟桥接的交换机）上的面向站点的网桥端口（SBP）进行注册（关联），交换机便能自动套用正确的 VLAN 与流量策略，并在 VM 迁移后在新交换机上重新套用。第 41 章精确定义了双方交换什么内容、以及两端状态机如何严丝合缝地保持同步。"
+    },
+    {
+      "type": "prose",
+      "en": "VDP rides on top of ECP (Edge Control Protocol, Clause 43) as its transport, addressing ECPDUs to the Nearest Customer Bridge group MAC address. Every ECPDU carrying VDP packs a sequence of TLVs (Type-Length-Value records). Three TLV kinds are defined: the VSI manager ID TLV (41.1), always the first TLV; one or more VDP association TLVs (41.2); and the optional organizationally defined TLV (41.3). Note these are NOT LLDP TLVs — their type numbers come from a separate number space.",
+      "zh": "VDP 以 ECP（边缘控制协议，第 43 章）为传输承载，把 ECPDU 发往“最近客户网桥”组播 MAC 地址。每个承载 VDP 的 ECPDU 都打包了一串 TLV（类型-长度-值记录）。共定义三类 TLV：VSI 管理器 ID TLV（41.1），始终是第一个 TLV；一个或多个 VDP 关联 TLV（41.2）；以及可选的组织自定义 TLV（41.3）。注意它们并非 LLDP TLV——其类型编号取自独立的编号空间。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"8\" y=\"30\" width=\"150\" height=\"34\"/><text x=\"83\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">VSI Mgr ID TLV (41.1)</text><rect x=\"166\" y=\"30\" width=\"170\" height=\"34\"/><text x=\"251\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">VDP assoc TLV (41.2)</text><rect x=\"344\" y=\"30\" width=\"170\" height=\"34\"/><text x=\"429\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">VDP assoc TLV (41.2)</text><rect x=\"522\" y=\"30\" width=\"110\" height=\"34\"/><text x=\"577\" y=\"48\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Org TLV</text><text x=\"577\" y=\"60\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">(41.3)</text><text x=\"8\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">ECPDU carrying VDP — first TLV must be the VSI manager ID</text></svg>",
+      "caption": {
+        "en": "TLV layout inside one VDP-bearing ECPDU: the VSI manager ID TLV leads, followed by association TLVs and an optional organizationally defined TLV.",
+        "zh": "一个承载 VDP 的 ECPDU 内的 TLV 排布：VSI 管理器 ID TLV 居首，其后是关联 TLV 与可选的组织自定义 TLV。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The VSI manager ID TLV (41.1) tells the Bridge which database to consult for VSI Type definitions. Its three fields are: the TLV type (41.1.1), a fixed value from the VDP TLV type table; the TLV information string length (41.1.2), always 16 octets; and the VSI Manager ID (41.1.3) itself — a 16-octet value interpreted as an IPv6 address that names the manager database. A value of 0 means the station does not know which manager to use, so the Bridge picks a default.",
+      "zh": "VSI 管理器 ID TLV（41.1）告诉网桥应查询哪个数据库以获取 VSI 类型定义。它含三个字段：TLV 类型（41.1.1），取自 VDP TLV 类型表的固定值；TLV 信息串长度（41.1.2），恒为 16 个八位组；以及 VSI 管理器 ID 本身（41.1.3）——一个 16 八位组的值，解释为命名管理器数据库的 IPv6 地址。值为 0 表示站点不知道用哪个管理器，于是由网桥选取默认值。"
+    },
+    {
+      "type": "prose",
+      "en": "The VDP association TLV (41.2) is where the real work happens. Its TLV type field (41.2.1) selects one of four operations — Pre-Associate, Pre-Associate with resource reservation, Associate, or De-associate. The TLV information string length (41.2.2) is 23 + M octets, where M is the size of the variable Filter Info field. The Status field (41.2.3) carries a 4-bit error type plus four Boolean flags: in a request the flags signal migration intent (the M-bit and N-bit) and suspension (S-bit); in a response the error type reports the outcome (Success, Invalid Format, Insufficient Resources, and so on) and flags like Hard error and Keep tell the station whether to retry or roll back.",
+      "zh": "VDP 关联 TLV（41.2）才是真正干活的地方。它的 TLV 类型字段（41.2.1）选择四种操作之一——预关联、带资源预留的预关联、关联、解除关联。TLV 信息串长度（41.2.2）为 23 + M 个八位组，其中 M 是可变长 Filter Info 字段的大小。Status 字段（41.2.3）携带 4 位的错误类型外加四个布尔标志：在请求中，这些标志表示迁移意图（M 位与 N 位）和挂起状态（S 位）；在响应中，错误类型报告结果（成功、格式无效、资源不足等），而 Hard error、Keep 等标志告诉站点应重试还是回滚。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining association-TLV fields describe the VSI itself. The VSI Type ID / VTID (41.2.4) is an integer naming a VSI Type (unique only per VSI manager ID); the VSI Type Version (41.2.5) selects among versions of that type. The VSIID format (41.2.6) says how to read the next field — IPv4, IPv6, MAC, Local, or UUID — and the VSIID (41.2.7) is the 16-octet identifier of the VSI instance, generated at creation and held constant across migration. Finally the Filter Info format (41.2.8) names the layout of the Filter Info field (41.2.9), which lists VID, MAC, GroupID, or IP entries the Bridge uses to recognize this VSI's traffic. The eight defined formats range from a plain VID list up to GroupID/MAC/VID/IPv6 tuples, each entry also carrying a PCP value with a PS (PCP Significant) bit.",
+      "zh": "关联 TLV 的其余字段描述 VSI 本身。VSI 类型 ID / VTID（41.2.4）是命名某个 VSI 类型的整数（仅在每个 VSI 管理器 ID 内唯一）；VSI 类型版本（41.2.5）在该类型的多个版本中选择。VSIID 格式（41.2.6）说明如何解读下一字段——IPv4、IPv6、MAC、Local 或 UUID——而 VSIID（41.2.7）是 VSI 实例的 16 八位组标识符，创建时生成，迁移过程中保持不变。最后，Filter Info 格式（41.2.8）指明 Filter Info 字段（41.2.9）的布局，该字段列出 VID、MAC、GroupID 或 IP 条目，供网桥识别此 VSI 的流量。已定义的八种格式从纯 VID 列表一直到 GroupID/MAC/VID/IPv6 元组，每条目还携带一个 PCP 值及一个 PS（PCP 有效）位。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why a separate Filter Info field? A Bridge Port like the EVB SBP carries traffic for many VSIs at once and has no direct knowledge of which VM owns which frame. The filter (a set of VID or MAC/VID values) lets the Bridge pick out one VSI's traffic and apply its VSI Type. GroupID entries let a station name a VLAN globally even when more than 4094 VLANs force region-local VID reuse — the Bridge maps GroupID to a local VID and returns it.",
+      "zh": "为何要单独的 Filter Info 字段？像 EVB SBP 这样的网桥端口同时承载众多 VSI 的流量，并不直接知道哪个 VM 拥有哪一帧。过滤器（一组 VID 或 MAC/VID 值）让网桥挑出某个 VSI 的流量并套用其 VSI 类型。当 VLAN 数超过 4094、迫使各区域复用本地 VID 时，GroupID 条目让站点仍能全局地命名某个 VLAN——网桥把 GroupID 映射到本地 VID 并回传。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — the four association semantics (41.2.10) and the organizationally defined TLV (41.3)",
+        "zh": "覆盖地图——四种关联语义（41.2.10）与组织自定义 TLV（41.3）"
+      },
+      "en": "41.2.10 defines what each association-TLV type means. Pre-Associate (41.2.10.1) tells the Bridge to fetch the VSI Type ahead of time so a later Associate is fast — it does not yet apply the type to traffic. Pre-Associate with Resource Reservation (41.2.10.2) does the same and also reserves Bridge resources for the coming Associate. Associate (41.2.10.3) creates and activates the binding: the Bridge allocates resources, activates the VTID configuration, and applies it to live traffic; a station may Associate without a prior Pre-Associate, and during migration a VSI may briefly be associated on more than one port. De-Associate (41.2.10.4) removes the binding and frees its resources, and can be initiated by either the station or the Bridge (a Bridge sends it as if responding to a request). The organizationally defined TLV (41.3) is the extension hook: its TLV type (41.3.1) is the org-defined value, its length (41.3.2) is 3 + N octets, the OUI/CID field (41.3.3) names the organization via an IEEE-assigned Organizationally Unique Identifier or Company ID, and the organizationally defined information (41.3.4) is whatever that organization specifies.",
+      "zh": "41.2.10 定义了每种关联 TLV 类型的含义。预关联（41.2.10.1）让网桥提前取来 VSI 类型，使之后的关联更快——此时尚不对流量套用该类型。带资源预留的预关联（41.2.10.2）做同样的事，并额外为即将到来的关联预留网桥资源。关联（41.2.10.3）创建并激活绑定：网桥分配资源、激活 VTID 配置并作用于实时流量；站点可不经预关联直接关联，迁移期间一个 VSI 可短暂同时关联到多个端口。解除关联（41.2.10.4）移除绑定并释放其资源，可由站点或网桥任一方发起（网桥发送时如同在响应请求）。组织自定义 TLV（41.3）是扩展挂钩：其 TLV 类型（41.3.1）为组织自定义值，长度（41.3.2）为 3 + N 个八位组，OUI/CID 字段（41.3.3）以 IEEE 分配的组织唯一标识符或公司 ID 命名组织，而组织自定义信息（41.3.4）则由该组织自行规定。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1598,
+          1599,
+          1600
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Before any of this is acted on, the receiver runs the validation rules for VDP TLVs (41.4): if the first TLV in the ECPDU is not a VSI manager ID TLV, the whole ECPDU is discarded; any TLV of an unrecognized type is dropped and ignored by the state machines; and any TLV that runs past the physical end of the ECPDU is discarded. These three checks keep malformed or unexpected input from corrupting the protocol.",
+      "zh": "在对上述任何内容采取行动之前，接收方先运行 VDP TLV 的校验规则（41.4）：若 ECPDU 中第一个 TLV 不是 VSI 管理器 ID TLV，则整个 ECPDU 被丢弃；任何类型无法识别的 TLV 被丢弃并被状态机忽略；任何越过 ECPDU 物理末尾的 TLV 被丢弃。这三项检查防止畸形或意外输入破坏协议。"
+    },
+    {
+      "type": "prose",
+      "en": "The VDP state machines (41.5) coordinate the two ends. Following the conventions of Annex E (41.5.1), a Bridge runs one Bridge VDP state machine per active VSI (41.5.2) and a station runs one station VDP state machine per active VSI (41.5.3). The station machine moves through states like PREASSOC_NEW, ASSOC_NEW, WAIT_SYS_CMD, TRANSMIT_KEEPALIVE, and TRANSMIT_DEASSOC, transmitting command TLVs and waiting for responses; the Bridge machine validates each command via a resource request, transmits a response, and watches for keep-alive liveness. The whole exchange is a request/response handshake with periodic keep-alives so both sides can detect a silent partner.",
+      "zh": "VDP 状态机（41.5）协调两端。遵循附录 E 的约定（41.5.1），网桥为每个活动 VSI 运行一个网桥 VDP 状态机（41.5.2），站点为每个活动 VSI 运行一个站点 VDP 状态机（41.5.3）。站点状态机经历 PREASSOC_NEW、ASSOC_NEW、WAIT_SYS_CMD、TRANSMIT_KEEPALIVE、TRANSMIT_DEASSOC 等状态，发送命令 TLV 并等待响应；网桥状态机通过资源请求校验每条命令、发送响应，并监视保活活性。整个交互是带周期性保活的请求/响应握手，使双方都能察觉对端的沉默。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant S as Station SM (41.5.3)\n  participant B as Bridge SM (41.5.2)\n  S->>B: Pre-Associate / Associate TLV\n  B->>B: resourceCmd() validate\n  B-->>S: Response TLV (Status)\n  loop keep-alive\n    S->>B: Associate keep-alive\n    B-->>S: Response\n  end\n  S->>B: De-Associate (buildDea)\n  B-->>S: Response, resourceFree()",
+      "zh": "sequenceDiagram\n  participant S as 站点状态机 (41.5.3)\n  participant B as 网桥状态机 (41.5.2)\n  S->>B: 预关联 / 关联 TLV\n  B->>B: resourceCmd() 校验\n  B-->>S: 响应 TLV (Status)\n  loop 保活\n    S->>B: 关联保活\n    B-->>S: 响应\n  end\n  S->>B: 解除关联 (buildDea)\n  B-->>S: 响应, resourceFree()"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — state-machine timers, variables, notation, and procedures (41.5.4 – 41.5.7)",
+        "zh": "覆盖地图——状态机定时器、变量、记法与过程（41.5.4 – 41.5.7）"
+      },
+      "en": "41.5.4 defines the VDP timers as 32-bit countdown timers with 10-microsecond resolution; the per-machine waitWhile timer (41.5.4.1) times responses and keep-alive intervals (with a recommended small random jitter so VSIs don't synchronize). 41.5.5 lists the variables and parameters: bridgeExit (41.5.5.1, signal to exit the Bridge machine), newCmd (41.5.5.2, a command is ready to send), NULL (41.5.5.3, no-TLV sentinel), operCmd (41.5.5.4, the current operating command TLV), reinitKeepAlive (41.5.5.5, keep-alive transmit interval, default about 10.5 s), resourceCmdResult (41.5.5.6, result of a resource request — Success/timeOut/Fail), resourceWaitDelay (41.5.5.7, Bridge response-wait interval), Resp (41.5.5.8, response TLV from resourceCmd), respWaitDelay (41.5.5.9, station response-wait interval, default about 17.4 s), rxCmd (41.5.5.10, last received command TLV), rxResp (41.5.5.11, last received response TLV), sysCmd (41.5.5.12, command from the hypervisor), toutKeepAlive (41.5.5.13, Bridge keep-alive timeout), and vsiState (41.5.5.14, the association state: DEASSOC/PREASSOC/PREASSOCR/ASSOC). 41.5.6 explains the field-reference notation used in the diagrams: Tlv.TLVtype and Tlv.Keep read fields, while Tlv.ExceptField (e.g., ExceptStatus, ExceptVidZero, ExceptPsZero) compares two TLVs while ignoring a field; flag bits are always ignored in comparisons. 41.5.7 names the procedures: buildDea() (41.5.7.1, build a De-Associate TLV), resourceCmd(rxCmd, delay) (41.5.7.2, request resources from the Bridge, wait, and build the Resp TLV — returning SUCCESS, KEEP, DEASSOCIATE, or TIMEOUT), resourceFree() (41.5.7.3, release a VSI's resources), and TxTlv(tlv) (41.5.7.4, transmit a TLV).",
+      "zh": "41.5.4 把 VDP 定时器定义为 32 位倒计时定时器，分辨率为 10 微秒；每台状态机各有的 waitWhile 定时器（41.5.4.1）为响应与保活间隔计时（建议加入小幅随机抖动，使各 VSI 不致同步）。41.5.5 列出变量与参数：bridgeExit（41.5.5.1，退出网桥状态机的信号）、newCmd（41.5.5.2，有命令待发送）、NULL（41.5.5.3，无 TLV 哨兵值）、operCmd（41.5.5.4，当前运行命令 TLV）、reinitKeepAlive（41.5.5.5，保活发送间隔，默认约 10.5 秒）、resourceCmdResult（41.5.5.6，资源请求的结果——成功/超时/失败）、resourceWaitDelay（41.5.5.7，网桥等待响应间隔）、Resp（41.5.5.8，resourceCmd 返回的响应 TLV）、respWaitDelay（41.5.5.9，站点等待响应间隔，默认约 17.4 秒）、rxCmd（41.5.5.10，最近收到的命令 TLV）、rxResp（41.5.5.11，最近收到的响应 TLV）、sysCmd（41.5.5.12，来自虚拟机管理程序的命令）、toutKeepAlive（41.5.5.13，网桥保活超时）、以及 vsiState（41.5.5.14，关联状态：DEASSOC/PREASSOC/PREASSOCR/ASSOC）。41.5.6 解释图中所用的字段引用记法：Tlv.TLVtype 与 Tlv.Keep 读取字段，而 Tlv.ExceptField（如 ExceptStatus、ExceptVidZero、ExceptPsZero）在比较两个 TLV 时忽略某字段；比较中始终忽略标志位。41.5.7 命名了各过程：buildDea()（41.5.7.1，构建解除关联 TLV）、resourceCmd(rxCmd, delay)（41.5.7.2，向网桥请求资源、等待并构建 Resp TLV——返回 SUCCESS、KEEP、DEASSOCIATE 或 TIMEOUT）、resourceFree()（41.5.7.3，释放某 VSI 的资源）、以及 TxTlv(tlv)（41.5.7.4，发送一个 TLV）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1600,
+          1602,
+          1603,
+          1604,
+          1605,
+          1606,
+          1607
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1589,
+        1590
+      ],
+      "note": "Clause 41 intro, transport over ECP, three TLV kinds; 41.1 VSI manager ID TLV fields 41.1.1-41.1.3"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1591,
+        1592,
+        1593
+      ],
+      "note": "41.2 VDP association TLV fields 41.2.1-41.2.8; Status flags/error tables; VTID, VSIID format/value tables"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1594,
+        1598
+      ],
+      "note": "41.2.9 Filter Info field and its eight formats; 41.2.10 association semantics"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1599,
+        1600
+      ],
+      "note": "41.2.10 Associate/De-Associate; 41.3 organizationally defined TLV 41.3.1-41.3.4; 41.4 validation rules; 41.5/41.5.1"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1601,
+        1602
+      ],
+      "note": "41.5.2 Bridge VDP state machine and 41.5.3 station VDP state machine diagrams"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1603,
+        1604,
+        1605,
+        1606,
+        1607
+      ],
+      "note": "41.5.4 timers/waitWhile; 41.5.5 variables 41.5.5.1-41.5.5.14; 41.5.6 notation; 41.5.7 procedures"
+    }
+  ],
+  "covers": [
+    "8021Q-2022:41.1.1",
+    "8021Q-2022:41.1.2",
+    "8021Q-2022:41.1.3",
+    "8021Q-2022:41.2.1",
+    "8021Q-2022:41.2.2",
+    "8021Q-2022:41.2.3",
+    "8021Q-2022:41.2.4",
+    "8021Q-2022:41.2.5",
+    "8021Q-2022:41.2.6",
+    "8021Q-2022:41.2.7",
+    "8021Q-2022:41.2.8",
+    "8021Q-2022:41.2.9",
+    "8021Q-2022:41.2.10",
+    "8021Q-2022:41.3.1",
+    "8021Q-2022:41.3.2",
+    "8021Q-2022:41.3.3",
+    "8021Q-2022:41.3.4",
+    "8021Q-2022:41.4",
+    "8021Q-2022:41.5.1",
+    "8021Q-2022:41.5.2",
+    "8021Q-2022:41.5.3",
+    "8021Q-2022:41.5.4",
+    "8021Q-2022:41.5.5",
+    "8021Q-2022:41.5.6",
+    "8021Q-2022:41.5.7"
+  ],
+  "track": "bridging-tsn"
+}

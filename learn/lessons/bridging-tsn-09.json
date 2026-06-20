@@ -1,0 +1,115 @@
+{
+  "id": "bridging-tsn-09",
+  "title": {
+    "en": "Inside the VLAN Tag: 802.1Q Tagged Frame Format",
+    "zh": "深入 VLAN 标签：802.1Q 加标帧格式"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 9 of IEEE Std 802.1Q-2022 answers one deceptively simple question: when a bridge wants to attach extra information to an Ethernet frame, exactly which bytes does it add, and how are they laid out? This is the 'tag' you have heard about whenever someone says VLAN (Virtual Local Area Network — a way to carve one physical network into many logical ones). A tag is inserted by the tag encoding function and stripped by the tag decoding function as frames cross the Enhanced Internal Sublayer Service (EISS), the internal interface bridges use to hand frames between layers. This lesson walks the whole tag byte by byte.",
+      "zh": "IEEE Std 802.1Q-2022 的第 9 章回答了一个看似简单的问题：当网桥想给以太网帧附加额外信息时，到底加了哪些字节、它们如何排布？这就是大家常说的“标签（tag）”，每当有人提到 VLAN（虚拟局域网 Virtual Local Area Network——把一个物理网络划分成多个逻辑网络的方法）时就会涉及它。标签由“标签编码功能”插入，并由“标签解码功能”剥除，这发生在帧跨越增强内部子层服务（EISS）时——EISS 是网桥在各层之间传递帧所用的内部接口。本课将逐字节地剖析整个标签。"
+    },
+    {
+      "type": "prose",
+      "en": "9.1 Purpose of tagging. Why bother adding a tag at all? Two reasons. First, it carries a VID (VLAN Identifier) so every bridge along the path classifies the frame into the same VLAN, keeping traffic for different VLANs cleanly separated. Second, it carries a priority value. Some IEEE 802 media (the physical/link technologies like classic Ethernet) have no built-in way to signal that one frame matters more than another; the tag gives priority a place to ride along.",
+      "zh": "9.1 加标签的目的。为什么要费力加标签？两个原因。其一，它携带 VID（VLAN 标识符 VLAN Identifier），使路径上每一个网桥都把该帧归入同一个 VLAN，从而让不同 VLAN 的流量保持清晰隔离。其二，它携带优先级。某些 IEEE 802 介质（如传统以太网这类物理/链路技术）本身没有办法标示某一帧比另一帧更重要；标签为优先级提供了一个搭载的位置。"
+    },
+    {
+      "type": "prose",
+      "en": "9.2 Representation and encoding of tag fields. Before drawing any field, the standard fixes the bit and byte conventions so everyone reads the layout the same way. Octets (8-bit bytes) are numbered from 1 upward in transmission order. For a multi-octet number, the lower-numbered octet holds the more significant bits (big-endian, network order). Within an octet, bits are numbered 1 to 8, where bit 1 is the LSB (Least Significant Bit) and bit 8 the MSB (Most Significant Bit). The word 'set' means a binary 1 and 'reset' means a binary 0. In diagrams, the lowest-numbered octet sits at the top (or far left), and within an octet bit 8 is drawn on the left, bit 1 on the right.",
+      "zh": "9.2 标签字段的表示与编码。在画出任何字段之前，标准先固定了比特与字节的约定，让所有人以同样方式解读布局。八位组（octet，即 8 比特字节）按传输顺序从 1 开始编号。对于跨多个八位组的数字，编号较低的八位组存放较高位（大端序，即网络字节序）。在一个八位组内，比特从 1 编号到 8，其中比特 1 是最低有效位（LSB Least Significant Bit），比特 8 是最高有效位（MSB Most Significant Bit）。术语“置位（set）”表示二进制 1，“复位（reset）”表示二进制 0。在示意图中，编号最低的八位组位于顶部（或最左侧），而在一个八位组内，比特 8 画在左边、比特 1 画在右边。"
+    },
+    {
+      "type": "prose",
+      "en": "9.3 Tag format. Every tag, regardless of type, follows the same skeleton in this order: (a) a TPID (Tag Protocol Identifier), then (b) the TCI (Tag Control Information), whose contents depend on the tag type, and then (c) any additional information the tag type and TCI call for. The encoder writes these into the first octets of the MSDU (MAC Service Data Unit — the payload the MAC layer carries), right before the original frame data. On receipt, the TPID tells the decoder which decoding function to run, and the rest is parsed accordingly.",
+      "zh": "9.3 标签格式。无论何种类型，每个标签都遵循同一骨架，顺序为：(a) TPID（标签协议标识符 Tag Protocol Identifier），随后 (b) TCI（标签控制信息 Tag Control Information），其内容取决于标签类型，再然后 (c) 该标签类型与 TCI 所要求的任何附加信息。编码器把这些写入 MSDU（MAC 服务数据单元 MAC Service Data Unit——MAC 层承载的载荷）的最前面几个八位组，恰好位于原始帧数据之前。接收时，TPID 告诉解码器该运行哪个解码功能，其余部分据此解析。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 110\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"30\" width=\"120\" height=\"40\"/><rect x=\"130\" y=\"30\" width=\"160\" height=\"40\"/><rect x=\"290\" y=\"30\" width=\"160\" height=\"40\"/><text x=\"70\" y=\"55\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">TPID (9.4)</text><text x=\"210\" y=\"55\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">TCI (9.5/9.6)</text><text x=\"370\" y=\"55\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">Additional info</text><text x=\"70\" y=\"90\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">2 octets</text><text x=\"210\" y=\"90\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">EtherType selects decoder</text><text x=\"260\" y=\"18\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Generic tag skeleton (9.3)</text></svg>",
+      "caption": {
+        "en": "The generic tag skeleton from 9.3: a 2-octet TPID, a TCI whose shape depends on tag type, then optional additional information.",
+        "zh": "来自 9.3 的通用标签骨架：2 个八位组的 TPID、形状随标签类型而变的 TCI，以及可选的附加信息。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "9.4 TPID formats and 9.5 Tag Protocol identification. The TPID is always exactly two octets and contains nothing but an assigned EtherType value — the 'Tag EtherType' — which both flags the frame as tagged and selects the right decoder. Three tag types are defined, each with its own distinct EtherType so they never get confused: a C-TAG (Customer VLAN Tag, EtherType 81-00) used by C-VLAN bridges; an S-TAG (Service VLAN Tag, 88-A8) used by service-provider and backbone edge bridges (the S-TAG is byte-identical to the B-TAG, the Backbone VLAN Tag); and an I-TAG (Backbone Service Instance Tag, 88-E7) used by Backbone Edge Bridges (BEBs).",
+      "zh": "9.4 TPID 格式 与 9.5 标签协议识别。TPID 恒为两个八位组，且只包含一个已分配的 EtherType 值——即“标签 EtherType”——它既把该帧标记为加标帧，又选择正确的解码器。标准定义了三种标签类型，各有独立的 EtherType，从而绝不会混淆：C-TAG（客户 VLAN 标签 Customer VLAN Tag，EtherType 81-00），供 C-VLAN 网桥使用；S-TAG（服务 VLAN 标签 Service VLAN Tag，88-A8），供服务提供商及骨干边缘网桥使用（S-TAG 与骨干 VLAN 标签 B-TAG 逐字节相同）；以及 I-TAG（骨干服务实例标签 Backbone Service Instance Tag，88-E7），供骨干边缘网桥（BEB Backbone Edge Bridge）使用。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Quick mnemonic: C = Customer, S = Service provider, I = Instance (per-service backbone). When you see EtherType 81-00 on the wire, you are looking at a C-TAG; 88-A8 is an S-TAG; 88-E7 is an I-TAG. The EtherType is the very first thing the receiver inspects.",
+      "zh": "速记口诀：C = 客户（Customer），S = 服务提供商（Service provider），I = 实例（Instance，按服务划分的骨干）。当你在线路上看到 EtherType 81-00，那是 C-TAG；88-A8 是 S-TAG；88-E7 是 I-TAG。EtherType 是接收方最先检查的内容。"
+    },
+    {
+      "type": "prose",
+      "en": "9.6 VLAN Tag Control Information (TCI). For C-TAGs and S-TAGs the TCI is two octets and packs three values: a 12-bit VID, a 3-bit PCP (Priority Code Point) carrying priority, and a 1-bit DEI (Drop Eligible Indicator) marking a frame as preferentially droppable under congestion. The 12-bit VID gives a theoretical range of 0–4095, but some values are reserved (Table 9-2): VID 0 is the null VID, meaning the tag carries only priority and no real VLAN; VID 1 is the default PVID (Port VID, the VLAN a port assigns to untagged frames); and 0xFFF is reserved for implementation use, e.g. a wildcard in management. A bridge must support VIDs 0 through some maximum N up to 4094.",
+      "zh": "9.6 VLAN 标签控制信息（TCI）。对于 C-TAG 与 S-TAG，TCI 为两个八位组，打包三个值：12 比特的 VID、携带优先级的 3 比特 PCP（优先级代码点 Priority Code Point），以及 1 比特的 DEI（丢弃资格指示 Drop Eligible Indicator），用于标示该帧在拥塞时可优先被丢弃。12 比特的 VID 在理论上覆盖 0–4095，但部分值被保留（表 9-2）：VID 0 是空 VID，表示标签只携带优先级、不含真正的 VLAN；VID 1 是默认 PVID（端口 VID Port VID，即端口为未加标帧分配的 VLAN）；0xFFF 保留供实现使用，例如在管理中作通配符。网桥必须支持从 0 到某个最大值 N（最高 4094）的 VID。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"40\" width=\"60\" height=\"40\"/><rect x=\"70\" y=\"40\" width=\"40\" height=\"40\"/><rect x=\"110\" y=\"40\" width=\"240\" height=\"40\"/><text x=\"40\" y=\"65\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">PCP</text><text x=\"90\" y=\"65\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">DEI</text><text x=\"230\" y=\"65\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">VID</text><text x=\"40\" y=\"100\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">3 bits</text><text x=\"90\" y=\"100\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">1 bit</text><text x=\"230\" y=\"100\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">12 bits</text><text x=\"180\" y=\"25\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">VLAN TCI = 2 octets (Figure 9-1)</text></svg>",
+      "caption": {
+        "en": "VLAN TCI layout (9.6, Figure 9-1): 3-bit PCP + 1-bit DEI + 12-bit VID = 16 bits / 2 octets.",
+        "zh": "VLAN TCI 布局（9.6，图 9-1）：3 比特 PCP + 1 比特 DEI + 12 比特 VID = 16 比特 / 2 个八位组。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "9.7 Backbone Service Instance Tag Control Information (I-TAG TCI). The I-TAG is the heavyweight, used in Provider Backbone Bridging where a whole customer frame is wrapped (MAC-in-MAC). Its TCI is a full 16 octets and carries: a 3-bit I-PCP (priority) and 1-bit I-DEI (drop eligibility) just like the VLAN TCI; a 1-bit UCA (Use Customer Addresses) flag telling the backbone multiplex entity to honor the encapsulated customer addresses; two reserved fields (Res1, 1 bit, and Res2, 2 bits — Res2 must be zero or the frame is discarded); a 24-bit I-SID (Backbone Service Instance Identifier) naming the service instance; and finally the encapsulated customer C-DA (Destination MAC Address) and C-SA (Source MAC Address). Like VIDs, certain I-SID values are reserved (Table 9-3): 0 and 0xFFFFFF for implementation use, 0xFF as the SPBM default.",
+      "zh": "9.7 骨干服务实例标签控制信息（I-TAG TCI）。I-TAG 是重量级标签，用于运营商骨干桥接（PBB），其中整个客户帧被封装（MAC-in-MAC）。它的 TCI 长达 16 个八位组，携带：与 VLAN TCI 一样的 3 比特 I-PCP（优先级）与 1 比特 I-DEI（丢弃资格）；1 比特的 UCA（使用客户地址 Use Customer Addresses）标志，告知骨干复用实体采用被封装的客户地址；两个保留字段（Res1，1 比特；Res2，2 比特——Res2 必须为零，否则帧被丢弃）；24 比特的 I-SID（骨干服务实例标识符 Backbone Service Instance Identifier），用于标识服务实例；最后是被封装的客户 C-DA（目的 MAC 地址 Destination MAC Address）与 C-SA（源 MAC 地址 Source MAC Address）。与 VID 类似，某些 I-SID 值被保留（表 9-3）：0 与 0xFFFFFF 供实现使用，0xFF 为 SPBM 默认值。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Frame arrives] --> B{Read TPID EtherType}\n  B -->|81-00| C[C-TAG: decode VLAN TCI]\n  B -->|88-A8| D[S-TAG: decode VLAN TCI]\n  B -->|88-E7| E[I-TAG: decode 16-octet I-TAG TCI]\n  C --> F[Recover VID, PCP, DEI]\n  D --> F\n  E --> G[Recover I-SID, C-DA, C-SA, I-PCP]",
+      "zh": "flowchart LR\n  A[帧到达] --> B{读取 TPID EtherType}\n  B -->|81-00| C[C-TAG：解码 VLAN TCI]\n  B -->|88-A8| D[S-TAG：解码 VLAN TCI]\n  B -->|88-E7| E[I-TAG：解码 16 八位组 I-TAG TCI]\n  C --> F[还原 VID、PCP、DEI]\n  D --> F\n  E --> G[还原 I-SID、C-DA、C-SA、I-PCP]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each of 9.1–9.7 lives",
+        "zh": "覆盖地图：9.1–9.7 各自的位置"
+      },
+      "en": "Exact clause-by-clause map of Clause 9. 9.1 Purpose of tagging — the two motivations (convey a VID for consistent VLAN classification; convey priority on media that cannot signal it natively). 9.2 Representation and encoding of tag fields — octet numbering from 1 in transmission order, big-endian multi-octet fields, bit 1 = LSB / bit 8 = MSB, the set/reset convention, and diagram orientation rules. 9.3 Tag format — the ordered skeleton TPID then TCI then optional additional information, written into the leading octets of the MSDU. 9.4 TPID formats — always 2 octets, EtherType-encoded, the Tag EtherType selects the decoder. 9.5 Tag Protocol identification — the three tag types (C-TAG, S-TAG, I-TAG), who uses each, and the distinct EtherTypes in Table 9-1 (81-00, 88-A8, 88-E7); note the S-TAG equals the B-TAG. 9.6 VLAN TCI — 2 octets = 3-bit PCP + 1-bit DEI + 12-bit VID (Figure 9-1), with reserved VIDs 0/1/2/0xFFF in Table 9-2, plus the historical CFI note. 9.7 I-TAG TCI — 16 octets carrying I-PCP, I-DEI, UCA, Res1, Res2, the 24-bit I-SID, and the encapsulated C-DA and C-SA (Figure 9-2), with reserved I-SIDs in Table 9-3.",
+      "zh": "第 9 章逐条精确地图。9.1 加标签的目的——两个动机（携带 VID 以保持一致的 VLAN 分类；在本身无法标示优先级的介质上携带优先级）。9.2 标签字段的表示与编码——八位组按传输顺序从 1 编号、多八位组字段为大端序、比特 1 = LSB / 比特 8 = MSB、置位/复位约定，以及示意图方向规则。9.3 标签格式——有序骨架 TPID 然后 TCI 然后可选附加信息，写入 MSDU 的起始八位组。9.4 TPID 格式——恒为 2 个八位组、EtherType 编码、标签 EtherType 选择解码器。9.5 标签协议识别——三种标签类型（C-TAG、S-TAG、I-TAG）、各自使用者，以及表 9-1 中不同的 EtherType（81-00、88-A8、88-E7）；注意 S-TAG 等于 B-TAG。9.6 VLAN TCI——2 个八位组 = 3 比特 PCP + 1 比特 DEI + 12 比特 VID（图 9-1），表 9-2 中保留的 VID 0/1/2/0xFFF，以及历史性的 CFI 说明。9.7 I-TAG TCI——16 个八位组，携带 I-PCP、I-DEI、UCA、Res1、Res2、24 比特 I-SID，以及被封装的 C-DA 与 C-SA（图 9-2），表 9-3 中有保留的 I-SID。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          268,
+          269,
+          270,
+          271,
+          272
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        268,
+        269,
+        270,
+        271,
+        272
+      ],
+      "note": "Clause 9 Tagged frame format: 9.1 purpose (p.268), 9.2 representation/encoding (p.268-269), 9.3 tag format and 9.4 TPID and 9.5 tag protocol id (p.269), 9.6 VLAN TCI with Table 9-1/9-2 and Figure 9-1 (p.270-271), 9.7 I-TAG TCI with Figure 9-2 and Table 9-3 (p.271-272)."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:9.1",
+    "8021Q-2022:9.2",
+    "8021Q-2022:9.3",
+    "8021Q-2022:9.4",
+    "8021Q-2022:9.5",
+    "8021Q-2022:9.6",
+    "8021Q-2022:9.7"
+  ],
+  "track": "bridging-tsn"
+}

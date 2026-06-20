@@ -1,0 +1,166 @@
+{
+  "id": "bridging-tsn-31",
+  "title": {
+    "en": "Inside a CFM Maintenance Point: MEPs, MIP Half Functions, and the Linktrace Plumbing",
+    "zh": "深入 CFM 维护点：MEP、MIP 半功能与 Linktrace 管道"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Connectivity Fault Management (CFM) is the toolkit a bridged network uses to detect, verify, and isolate faults at the Ethernet layer. Clause 19 specifies how the small software 'shims' that run CFM actually plug into a Bridge Port and what they are made of internally. These shims are called Maintenance Points (MPs). An MP sits in the data path with two ports of its own: an Active SAP (Service Access Point) through which the CFM protocol messages it produces and consumes flow, and a Passive SAP through which ordinary data frames and CFM messages it does not handle simply pass through. Whether the Passive SAP sits above or below the Active SAP in the layering diagram makes an MP an 'Up MP' or a 'Down MP' (Clause 19.1).",
+      "zh": "连通性故障管理（CFM，Connectivity Fault Management）是网桥网络在以太网层检测、验证和隔离故障所用的工具集。第 19 章规定了运行 CFM 的那些小型软件“垫片”如何真正接入网桥端口，以及它们的内部构造。这些垫片称为维护点（MP，Maintenance Point）。一个 MP 位于数据通路中，自身有两个端口：一个是主动 SAP（服务接入点，Service Access Point），它产生和消费的 CFM 协议报文经此流通；另一个是被动 SAP，普通数据帧以及它不处理的 CFM 报文经此径直通过。在分层图中被动 SAP 位于主动 SAP 之上还是之下，决定了该 MP 是“上行 MP”还是“下行 MP”（第 19.1 节）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "There are three kinds of CFM shim. The two MP types are the MEP (MA Endpoint) and the MHF (MIP Half Function); the third, non-MP shim is the LOM (Linktrace Output Multiplexer, Clause 19.5). A MIP (Maintenance Domain Intermediate Point) is built from two MHFs on the same Bridge Port — an Up MHF and a Down MHF.",
+      "zh": "CFM 垫片共有三种。两种 MP 类型分别是 MEP（维护关联端点，MA Endpoint）和 MHF（MIP 半功能，MIP Half Function）；第三种非 MP 垫片是 LOM（Linktrace 输出复用器，Linktrace Output Multiplexer，第 19.5 节）。一个 MIP（维护域中间点，Maintenance Domain Intermediate Point）由同一网桥端口上的两个 MHF 构成——一个上行 MHF 和一个下行 MHF。"
+    },
+    {
+      "type": "prose",
+      "en": "A MA Endpoint (MEP) marks the edge of a Maintenance Association (MA) — a group of MEPs that monitor one another's reachability. A MEP lives in a Bridge Port or in an end station, and it is identified for management by two parameters (Clause 19.2.1): the MAID (Maintenance Association Identifier), which names the MA, and a MEPID, an integer in the range 1 to 8191 that is unique within that MA. The small MEPID range is deliberate: it is tiny enough to index a hardware table of remote MEPs directly, with no lookup. For forwarding, the MEP inherits a set of VIDs (VLAN Identifiers) including a Primary VID, or an I-SID, ESP 3-tuples, or a SEG-ID, plus an MD Level (Maintenance Domain Level) from its Maintenance Domain. A MEP is bound to two Bridge Ports: the one it is configured on, and the one it is implemented on (from which it borrows a MAC address).",
+      "zh": "维护关联端点（MEP）标记一个维护关联（MA，Maintenance Association）的边缘——MA 是一组相互监测可达性的 MEP。MEP 存在于网桥端口或端站中，在管理上由两个参数标识（第 19.2.1 节）：MAID（维护关联标识符，Maintenance Association Identifier），用于命名该 MA；以及 MEPID，一个范围在 1 到 8191 之间、在该 MA 内唯一的整数。MEPID 范围小是刻意为之：它足够小，可直接作为远端 MEP 硬件表的索引而无需查表。为了转发，MEP 从其维护域继承一组 VID（VLAN 标识符，VLAN Identifier）并包含一个主 VID，或继承一个 I-SID、ESP 三元组或 SEG-ID，外加一个 MD 等级（维护域等级，Maintenance Domain Level）。一个 MEP 绑定到两个网桥端口：它被配置的端口，以及它被实现的端口（从后者借用 MAC 地址）。"
+    },
+    {
+      "type": "prose",
+      "en": "What does a MEP actually do (Clause 19.2.2)? It periodically transmits CCMs (Continuity Check Messages) to advertise its liveness; validates and level-filters incoming CFM PDUs (Protocol Data Units); sends LBMs (Loopback Messages) and collects the LBRs (Loopback Replies) that come back; sends LTMs (Linktrace Messages) and processes the LTRs (Linktrace Replies); responds to LBMs and LTMs aimed at it; and maintains its MEP CCM Database. A MEP is tightly constrained when it speaks the EISS (Enhanced Internal Sublayer Service): it never alters the VLAN tag or drop-eligible marking of frames passing through, and every PDU it originates uses its configured Primary VID.",
+      "zh": "MEP 到底做什么（第 19.2.2 节）？它周期性发送 CCM（连通性检查报文，Continuity Check Message）以宣告自己存活；校验并按等级过滤入站的 CFM PDU（协议数据单元，Protocol Data Unit）；发送 LBM（环回报文，Loopback Message）并收集返回的 LBR（环回应答，Loopback Reply）；发送 LTM（链路追踪报文，Linktrace Message）并处理 LTR（链路追踪应答，Linktrace Reply）；响应发往它的 LBM 和 LTM；并维护自己的 MEP CCM 数据库。当 MEP 使用 EISS（增强内部子层服务，Enhanced Internal Sublayer Service）时受到严格约束：它绝不改动经过帧的 VLAN 标签或丢弃资格标记，且它发起的每个 PDU 都使用其配置的主 VID。"
+    },
+    {
+      "type": "prose",
+      "en": "Internally, a MEP (Clause 19.2.3) is a small pipeline of demultiplexers, multiplexers, and responders. Frames first hit a Type Demultiplexer that separates CFM PDUs from ordinary data; CFM PDUs then flow through a Level Demultiplexer that routes them by MD Level (less than / equal to / greater than the MEP's own level); an OpCode Demultiplexer then steers each PDU to the right state machine by message type. Because the picture is symmetric, the same MEP architecture drawn upside-down describes an Up MEP versus a Down MEP. The diagram below sketches this flow.",
+      "zh": "在内部，MEP（第 19.2.3 节）是由一系列分用器、复用器和响应器构成的小型流水线。帧首先到达类型分用器（Type Demultiplexer），将 CFM PDU 与普通数据分离；CFM PDU 随后流经等级分用器（Level Demultiplexer），按 MD 等级（小于／等于／大于本 MEP 等级）进行路由；接着 OpCode 分用器（OpCode Demultiplexer）按报文类型将每个 PDU 导向正确的状态机。由于该图是对称的，将同一 MEP 结构上下翻转即可描述上行 MEP 与下行 MEP 的区别。下图勾勒出该流程。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  IN[Frame in] --> T[Type Demux]\n  T -->|non-CFM| PASS[Pass through]\n  T -->|CFM PDU| L[Level Demux]\n  L -->|equal MD Level| O[OpCode Demux]\n  O -->|CCM| CCR[CC Receiver]\n  O -->|LBM/LBR| LB[Loopback]\n  O -->|LTM/LTR| LT[Linktrace]\n  CCR --> DB[(MEP CCM DB)]",
+      "zh": "flowchart TD\n  IN[帧进入] --> T[类型分用器]\n  T -->|非CFM| PASS[直接透传]\n  T -->|CFM PDU| L[等级分用器]\n  L -->|等级相同| O[OpCode分用器]\n  O -->|CCM| CCR[连通性接收器]\n  O -->|LBM/LBR| LB[环回]\n  O -->|LTM/LTR| LT[链路追踪]\n  CCR --> DB[(MEP CCM 数据库)]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the MEP's internal building blocks (19.2.4 through 19.2.18)",
+        "zh": "覆盖图：MEP 的内部构件（19.2.4 至 19.2.18）"
+      },
+      "en": "Each MEP component has an exact clause. The shared demultiplex/multiplex fabric: MP Type Demultiplexer (19.2.4) splits CFM from data; MP Multiplexer (19.2.5) merges multiple inputs to one output with no queuing; MP Level Demultiplexer (19.2.6) routes by MD Level, discarding any PDU too short to hold a level field; MP OpCode Demultiplexer (19.2.7) — the Equal and Low demuxes in a MEP — sets variables per Table 19-1 to trigger state machines. The active responders and initiators: MEP Continuity Check Receiver (19.2.8) processes CCMs at or below its level, runs one Remote MEP state machine per remote MEP, and can force MAC_Operational false on a fully failed MA; MEP Continuity Check Initiator (19.2.9) transmits CCMs at the MEP's level; MP Loopback Responder (19.2.10) answers LBMs with LBRs; MEP Loopback Initiator (19.2.11) sends LBMs and counts returned LBRs; MEP Linktrace Initiator (19.2.12) sends LTMs and catalogs LTRs. The Linktrace plumbing: MEP LTI SAP (19.2.13) exists only in an Up MEP to launch its own LTMs; MEP Linktrace SAP (19.2.14) relays received LTMs to the Linktrace Responder; the two SAPs together let the MEP tell its own LTR from a forwarded one. Storage and notification: MEP CCM Database (19.2.15) holds one entry per remote MEP; MEP Fault Notification Generator (19.2.16) raises a Fault Alarm (e.g., an SNMP Notification) from the MAdefectIndication variable. Finally the optional DDCFM (Data Center / Down-MEP CFM) components: MEP Decapsulator Responder, DR (19.2.17) decapsulates a matching Send Frame Message (SFM) and emits the payload to the LOM SAP; MEP RFM Receiver (19.2.18) passes a matching Reflected Frame Message (RFM) to a non-standard RFM Analyzer.",
+      "zh": "MEP 的每个构件都对应一个精确条款。共享的分用／复用结构：MP 类型分用器（19.2.4）把 CFM 与数据分开；MP 复用器（19.2.5）将多个输入合并为单一输出且不排队；MP 等级分用器（19.2.6）按 MD 等级路由，丢弃任何短到放不下等级字段的 PDU；MP OpCode 分用器（19.2.7）——MEP 中的“相等”与“较低”两个分用器——按表 19-1 设置变量以触发状态机。主动的响应器与发起器：MEP 连通性检查接收器（19.2.8）处理等级等于或低于自身的 CCM，为每个远端 MEP 运行一个远端 MEP 状态机，并可在 MA 完全失效时强制 MAC_Operational 为假；MEP 连通性检查发起器（19.2.9）在本 MEP 等级发送 CCM；MP 环回响应器（19.2.10）用 LBR 回应 LBM；MEP 环回发起器（19.2.11）发送 LBM 并计数返回的 LBR；MEP 链路追踪发起器（19.2.12）发送 LTM 并归类 LTR。Linktrace 管道：MEP LTI SAP（19.2.13）仅存在于上行 MEP 中以发起其自身的 LTM；MEP Linktrace SAP（19.2.14）将收到的 LTM 转交链路追踪响应器；两个 SAP 共同使 MEP 能区分自己的 LTR 与转发的 LTR。存储与通知：MEP CCM 数据库（19.2.15）为每个远端 MEP 保存一条记录；MEP 故障通知生成器（19.2.16）根据 MAdefectIndication 变量发出故障告警（如 SNMP 通知）。最后是可选的 DDCFM（数据中心／下行 MEP CFM）构件：MEP 解封装响应器 DR（19.2.17）对匹配的发送帧报文（SFM，Send Frame Message）进行解封装，并将载荷送至 LOM SAP；MEP RFM 接收器（19.2.18）把匹配的反射帧报文（RFM，Reflected Frame Message）转交给非标准的 RFM 分析器。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1195,
+          1196,
+          1197,
+          1198
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "A MIP (Maintenance Domain Intermediate Point) is a mid-path watchpoint, and it is assembled from two MIP Half Functions (MHFs) on one Bridge Port (Clause 19.3). An MHF is simpler than a MEP: it has no MAID and no MEPID. It is characterized for management only by the Maintenance Domain it is assigned to (Clause 19.3.1), and for data flow by an MD Level and a set of Primary VIDs (or I-SIDs). Like a MEP, it binds to a configured Bridge Port and an implemented Bridge Port. Functionally (Clause 19.3.2), an MHF validates and responds to LTMs (forwarding them and returning LTRs), responds to LBMs with LBRs, optionally validates CCMs to build a MIP CCM Database, and — like a MEP — never changes the VLAN tag or drop-eligible marking of frames it passes.",
+      "zh": "MIP（维护域中间点，Maintenance Domain Intermediate Point）是路径中段的观测点，它由同一网桥端口上的两个 MIP 半功能（MHF）组装而成（第 19.3 节）。MHF 比 MEP 简单：它没有 MAID，也没有 MEPID。在管理上它仅由所分配的维护域来刻画（第 19.3.1 节），在数据流上由一个 MD 等级和一组主 VID（或 I-SID）刻画。与 MEP 一样，它绑定到一个被配置的网桥端口和一个被实现的网桥端口。在功能上（第 19.3.2 节），MHF 校验并响应 LTM（转发它们并返回 LTR），用 LBR 回应 LBM，可选地校验 CCM 以构建 MIP CCM 数据库，并且——与 MEP 一样——绝不改动它所透传帧的 VLAN 标签或丢弃资格标记。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Most MHF building blocks are deliberately defined as 'identical to' the corresponding MEP block, so the standard does not repeat itself. The MHF Level Demultiplexer (19.3.4) equals the MP Level Demultiplexer; the MHF Type Demultiplexer (19.3.5) equals the MP Type Demultiplexer; the MHF OpCode Demultiplexer (19.3.6) is an instance of the MP one; the MHF Multiplexer (19.3.7) equals the MP Multiplexer; the MHF Loopback Responder (19.3.8) equals the MP Loopback Responder; the MHF DR (19.3.12) equals the MEP DR; and the MHF RFM Receiver (19.3.13) equals the MEP RFM Receiver.",
+      "zh": "大多数 MHF 构件被刻意定义为“与”相应的 MEP 构件“相同”，因此标准不必重复。MHF 等级分用器（19.3.4）等同于 MP 等级分用器；MHF 类型分用器（19.3.5）等同于 MP 类型分用器；MHF OpCode 分用器（19.3.6）是 MP 版的一个实例；MHF 复用器（19.3.7）等同于 MP 复用器；MHF 环回响应器（19.3.8）等同于 MP 环回响应器；MHF DR（19.3.12）等同于 MEP DR；MHF RFM 接收器（19.3.13）等同于 MEP RFM 接收器。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the MHF's blocks that differ from a MEP (19.3.3, 19.3.9, 19.3.10, 19.3.11)",
+        "zh": "覆盖图：MHF 中与 MEP 不同的构件（19.3.3、19.3.9、19.3.10、19.3.11）"
+      },
+      "en": "A few MHF parts deserve their own description. MHF architecture (19.3.3) lays out the single-MHF pipeline (Figure 19-3); as with a MEP, the Passive SAP is the upper SAP and the Active SAP the lower, and flipping the figure turns a Down MHF into an Up MHF. MHF Continuity Check Receiver (19.3.9) is optional: it receives all CCMs at its own MD Level, validates and address-filters them, and feeds the MIP CCM Database — but it does not compare the CCM's MAID to anything (an MHF has no MAID). Neither this receiver nor its database is required for conformance. MIP CCM Database (19.3.10) is the shared, slowly-aging store: it is a list of every distinct {FID, source_address, Port number} triple seen across all of the Bridge's CCM receivers, timed out on the order of a day so the data survives for fault isolation long after it stops being useful for forwarding. MHF Linktrace SAP (19.3.11) relays received LTMs to the Linktrace Responder and carries LTRs back out the MHF's Active SAP.",
+      "zh": "MHF 有少数部件值得单独说明。MHF 结构（19.3.3）给出单个 MHF 的流水线（图 19-3）；与 MEP 一样，被动 SAP 在上、主动 SAP 在下，翻转该图即可把下行 MHF 变为上行 MHF。MHF 连通性检查接收器（19.3.9）是可选的：它接收本 MD 等级上的所有 CCM，对其校验并按地址过滤，再馈入 MIP CCM 数据库——但它不把 CCM 的 MAID 与任何东西比较（MHF 本就没有 MAID）。该接收器及其数据库均非一致性所必需。MIP CCM 数据库（19.3.10）是共享且缓慢老化的存储：它列出网桥所有 CCM 接收器上见过的每个不同的 {FID、source_address、端口号} 三元组，老化时间约为一天，使数据在不再用于转发后仍能长时间用于故障隔离。MHF Linktrace SAP（19.3.11）将收到的 LTM 转交链路追踪响应器，并把 LTR 经 MHF 的主动 SAP 送出。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1199,
+          1200
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "How are these entities addressed (Clause 19.4)? CFM entities use the standard Group addresses for CCM and LTM PDUs, plus — for PBB-TE, SPBM, and ECMP path MAs — individual or group MAC addresses tied to the monitored service, and they recognize the individual MAC address of the port they run on. A crucial asymmetry: a Down MP must NOT share an individual MAC address with an MP on any other Bridge Port (two ports on the same LAN would both answer a loopback), but an Up MP is explicitly allowed to share one, because from outside the Bridge you cannot tell which Up MP sent or received a given PDU. The multiplex/demultiplex blocks ignore the destination address entirely; only the processing entities check it, accepting frames whose destination matches the MP's individual MAC address or a group address (the MEP Continuity Check Receiver is the one exception that does not filter on this).",
+      "zh": "这些实体如何寻址（第 19.4 节）？CFM 实体对 CCM 和 LTM PDU 使用标准的组地址；此外——对 PBB-TE、SPBM 和 ECMP 路径 MA——使用与被监测服务关联的个体或组 MAC 地址，并且它们识别自己运行端口的个体 MAC 地址。一个关键的不对称性：下行 MP 绝不可与任何其他网桥端口上的 MP 共用个体 MAC 地址（同一 LAN 上的两个端口都会回应环回），而上行 MP 则被明确允许共用，因为从网桥外部无法判断某个 PDU 是由哪个上行 MP 发送或接收的。复用／分用构件完全忽略目的地址；只有处理实体才检查它，接受目的地址匹配本 MP 个体 MAC 地址或为组地址的帧（MEP 连通性检查接收器是唯一不据此过滤的例外）。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the Linktrace Output Multiplexer (LOM, Clause 19.5) — the third CFM shim, and not itself an MP. Like an MP it has an Active SAP and a Passive SAP, but it can only ever be a Down LOM (Passive always above Active). Its single active entity is the LOM Multiplexer, which injects LTMs handed to it by the Linktrace Responder into the stream of frames flowing from the Passive SAP toward the Active SAP. Frames arriving on the LOM's Linktrace SAP exit only through the Active SAP, never back through the Passive SAP. Why does the LOM exist? So the Linktrace Responder can emit an LTM on one specific Bridge Port toward the LAN without that LTM being reflected back into the Bridge's own Forwarding process — keeping Linktrace responses bounded and directed.",
+      "zh": "最后是 Linktrace 输出复用器（LOM，第 19.5 节）——第三种 CFM 垫片，本身并非 MP。与 MP 一样它有一个主动 SAP 和一个被动 SAP，但它只能是下行 LOM（被动 SAP 始终在主动 SAP 之上）。它唯一的主动实体是 LOM 复用器（LOM Multiplexer），它把链路追踪响应器交给它的 LTM 注入从被动 SAP 流向主动 SAP 的帧流中。到达 LOM 的 Linktrace SAP 的帧只经主动 SAP 离开，绝不经被动 SAP 返回。LOM 为何存在？是为了让链路追踪响应器能在某个特定网桥端口上朝 LAN 发出 LTM，而不让该 LTM 被反射回网桥自身的转发进程——从而使链路追踪响应保持有界且定向。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1191,
+        1192,
+        1193,
+        1194
+      ],
+      "note": "19.1 Maintenance Points; 19.2 MEPs — identification, functions, architecture (Figures 19-1, 19-2)"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1195,
+        1196,
+        1197,
+        1198
+      ],
+      "note": "19.2.4-19.2.18 MEP component entities; Table 19-1 OpCode Demultiplexer actions; 19.3-19.3.2 MHF intro/identification/functions"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1199,
+        1200,
+        1201,
+        1202
+      ],
+      "note": "19.3.3-19.3.13 MHF components (Figure 19-3); 19.4 MP addressing; 19.5 LOM (Figures 19-4, 19-5)"
+    }
+  ],
+  "covers": [
+    "8021Q-2022:19.1",
+    "8021Q-2022:19.2.1",
+    "8021Q-2022:19.2.2",
+    "8021Q-2022:19.2.3",
+    "8021Q-2022:19.2.4",
+    "8021Q-2022:19.2.5",
+    "8021Q-2022:19.2.6",
+    "8021Q-2022:19.2.7",
+    "8021Q-2022:19.2.8",
+    "8021Q-2022:19.2.9",
+    "8021Q-2022:19.2.10",
+    "8021Q-2022:19.2.11",
+    "8021Q-2022:19.2.12",
+    "8021Q-2022:19.2.13",
+    "8021Q-2022:19.2.14",
+    "8021Q-2022:19.2.15",
+    "8021Q-2022:19.2.16",
+    "8021Q-2022:19.2.17",
+    "8021Q-2022:19.2.18",
+    "8021Q-2022:19.3.1",
+    "8021Q-2022:19.3.2",
+    "8021Q-2022:19.3.3",
+    "8021Q-2022:19.3.4",
+    "8021Q-2022:19.3.5",
+    "8021Q-2022:19.3.6",
+    "8021Q-2022:19.3.7",
+    "8021Q-2022:19.3.8",
+    "8021Q-2022:19.3.9",
+    "8021Q-2022:19.3.10",
+    "8021Q-2022:19.3.11",
+    "8021Q-2022:19.3.12",
+    "8021Q-2022:19.3.13",
+    "8021Q-2022:19.4",
+    "8021Q-2022:19.5"
+  ],
+  "track": "bridging-tsn"
+}

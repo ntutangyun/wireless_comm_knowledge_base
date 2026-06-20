@@ -1,0 +1,129 @@
+{
+  "id": "bridging-tsn-30",
+  "title": {
+    "en": "How CFM Works: Maintenance Domains, MAs, and MD Levels",
+    "zh": "CFM 工作原理：维护域、维护关联与维护域级别"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 18 introduces Connectivity Fault Management (CFM): the set of capabilities a bridged network uses to detect, verify, and isolate connectivity failures. The key challenge it solves is that a single end-to-end service often crosses networks run by several independent operators, none of whom can manage the others' equipment. CFM lets each operator monitor its own slice without seeing inside its neighbors'. It is designed to be transparent to customer data: CFM Entities act as 'shims' that pass user frames through untouched while generating and processing their own CFM Protocol Data Units (PDUs). This lesson covers the three foundational concepts in 18.1, 18.2, and 18.3.",
+      "zh": "第 18 章引入了连通性故障管理（Connectivity Fault Management，CFM）：桥接网络用来检测、验证和隔离连通性故障的一整套能力。它要解决的核心难题是，一条端到端的服务往往要跨越多个相互独立的运营商网络，而任何一方都无法管理其他方的设备。CFM 让每个运营商只监控自己负责的那一段，而看不到邻居内部。它对客户数据是透明的：CFM 实体充当“垫片（shim）”，原样转发用户帧，同时生成和处理自己的 CFM 协议数据单元（PDU）。本课讲解 18.1、18.2 和 18.3 这三个基础概念。"
+    },
+    {
+      "type": "prose",
+      "en": "18.1 — Maintenance Domains and DoSAPs. A 'domain' is a network (or part of one) that offers connectivity to systems outside it through a set of boundary points called Domain Service Access Points (DoSAPs). A Maintenance Domain is simply a domain whose connectivity faults you want to manage. It is controlled by a single operator and is, in the absence of faults, fully connected internally — every DoSAP can reach every other DoSAP. Each Maintenance Domain is separately administered and gets a Maintenance Domain Name, ideally globally unique, so that CFM can guard against accidentally concatenating two unrelated service instances.",
+      "zh": "18.1 —— 维护域与 DoSAP。所谓“域”，是指通过一组称为域业务接入点（Domain Service Access Point，DoSAP）的边界点，向域外系统提供连通性的网络（或网络的一部分）。维护域（Maintenance Domain）就是你想要对其连通性故障进行管理的那种域。它由单一运营商控制，并且在无故障时内部完全连通——每个 DoSAP 都能到达其他所有 DoSAP。每个维护域被单独管理，并被赋予一个维护域名称（Maintenance Domain Name），最好是全局唯一的，这样 CFM 才能防止把两个互不相关的业务实例意外拼接在一起。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "What can a Maintenance Domain actually be? The standard lists concrete options: an MST Region, several interconnected MST Regions, an entire Virtual Bridged Network, a subset of a VLAN bridged network handed to one higher-level provider, a single physical link between two providers, or even a single VLAN on a single physical link. The concept is deliberately flexible so it maps onto whatever administrative boundary you actually care about.",
+      "zh": "维护域到底可以是什么？标准列出了一些具体选项：一个 MST 区域、若干互联的 MST 区域、整个虚拟桥接网络、分配给某个上层提供商的 VLAN 桥接网络子集、两个提供商之间的单条物理链路，甚至是单条物理链路上的单个 VLAN。这个概念被有意设计得很灵活，以便对应到你真正关心的任何管理边界。"
+    },
+    {
+      "type": "prose",
+      "en": "18.2 — Service instances and MAs. Within a Maintenance Domain, an operator configures a service instance for a customer by selecting some DoSAPs and giving them identifiers (such as VIDs) that segregate this customer's traffic from everyone else's. Creating the service instance establishes connectionless connectivity among those chosen DoSAPs. To monitor that connectivity, you configure a MA Endpoint (MEP) at each of the instance's DoSAPs — and together those MEPs form a Maintenance Association (MA). The customer sees only their attached endpoints; how the operator stitches them together stays invisible.",
+      "zh": "18.2 —— 业务实例与 MA。在一个维护域内，运营商为客户配置业务实例（service instance）的方式是：挑选一些 DoSAP，并给它们分配标识符（如 VID），从而把该客户的流量与其他人的隔离开。创建业务实例就在这些被选中的 DoSAP 之间建立了无连接的连通性。为了监控这种连通性，你在该实例的每个 DoSAP 上配置一个维护关联端点（MA Endpoint，MEP）——这些 MEP 合起来构成一个维护关联（Maintenance Association，MA）。客户只看到与自己相连的端点；运营商如何把它们拼接起来对客户始终不可见。"
+    },
+    {
+      "type": "prose",
+      "en": "Each MA needs a name that is unique within its Maintenance Domain — the Short MA Name. Concatenate the Maintenance Domain Name with the Short MA Name and you get the Maintenance Association Identifier (MAID), which every CFM PDU carries so that mismatched or crossed connections between MEPs can be spotted immediately. Within one MA, each MEP is also given a small integer, the MA Endpoint Identifier (MEPID), that uniquely distinguishes it from the other MEPs in the same MA.",
+      "zh": "每个 MA 需要一个在其维护域内唯一的名称——简短 MA 名称（Short MA Name）。把维护域名称与简短 MA 名称拼接起来，就得到维护关联标识符（Maintenance Association Identifier，MAID），每个 CFM PDU 都携带它，从而能立刻发现 MEP 之间不匹配或交叉的连接。在同一个 MA 内，每个 MEP 还被赋予一个小整数，即 MA 端点标识符（MA Endpoint Identifier，MEPID），用来在同一 MA 的多个 MEP 中唯一地区分它。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 170\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"40\" y=\"30\" width=\"340\" height=\"110\" rx=\"8\"/><text x=\"210\" y=\"24\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Maintenance Domain</text><circle cx=\"40\" cy=\"60\" r=\"7\" fill=\"currentColor\"/><circle cx=\"40\" cy=\"110\" r=\"7\" fill=\"currentColor\"/><circle cx=\"380\" cy=\"60\" r=\"7\" fill=\"currentColor\"/><circle cx=\"380\" cy=\"110\" r=\"7\" fill=\"currentColor\"/><text x=\"22\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">MEP 1</text><text x=\"22\" y=\"114\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">MEP 2</text><text x=\"388\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">MEP 3</text><text x=\"388\" y=\"114\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">MEP 4</text><line x1=\"47\" y1=\"60\" x2=\"373\" y2=\"110\"/><line x1=\"47\" y1=\"110\" x2=\"373\" y2=\"60\"/><line x1=\"47\" y1=\"60\" x2=\"373\" y2=\"60\"/><line x1=\"47\" y1=\"110\" x2=\"373\" y2=\"110\"/><circle cx=\"210\" cy=\"85\" r=\"6\"/><text x=\"210\" y=\"112\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">MIP</text></svg>",
+      "caption": {
+        "en": "A service instance with four DoSAPs, each configured as a MEP (filled dots, marked by MEPID). The four MEPs form one MA monitoring the connectionless connectivity among them; an interior point can be configured as a MIP (hollow dot).",
+        "zh": "一个具有四个 DoSAP 的业务实例，每个 DoSAP 都配置为一个 MEP（实心点，用 MEPID 标记）。这四个 MEP 构成一个 MA，监控它们之间的无连接连通性；内部某点可配置为 MIP（空心点）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "18.3 — Maintenance Domain Levels. A Maintenance Domain can offer service to a larger enclosing domain, or use service from a smaller enclosed one. To keep these nesting relationships straight, every CFM PDU carries an explicit Maintenance Domain Level (MD Level). This matters because frames are not re-headered per layer: a single VLAN may simultaneously carry customer, provider, and operator traffic on the same VID, and only the MD Level lets a bridge decide whether to sink a given CFM PDU at its level or pass it through to a higher one. Maintenance Domains are nested, never overlapped.",
+      "zh": "18.3 —— 维护域级别。一个维护域可以向更大的、包围它的域提供服务，也可以使用更小的、被它包围的域所提供的服务。为了厘清这些嵌套关系，每个 CFM PDU 都携带一个显式的维护域级别（Maintenance Domain Level，MD Level）。这一点很重要，因为帧不会按层级重新加头：同一个 VLAN 可能在相同的 VID 上同时承载客户、提供商和运营商的流量，只有 MD Level 才能让网桥判断某个 CFM PDU 应在本级别被终结（sink），还是应透传给更高级别。维护域是嵌套的，绝不重叠。"
+    },
+    {
+      "type": "prose",
+      "en": "MD Levels enable information hiding, which is the whole point. The interior of a lower domain is invisible to any enclosing domain except at deliberately configured points of visibility — so a customer can never learn an operator's internal topology. To diagnose faults across this boundary, an administrator exposes a DoSAP as an Intermediate Service Access Point (ISAP) to the immediately enclosing domain by configuring it as a MA Intermediate Point (MIP). MIPs let a fault detected between two distant MEPs be narrowed to a smaller segment: loss of connectivity between two MIPs corresponds to a MEP-level fault one MD Level lower. Each MIP is modeled as two MIP Half Functions (MHFs), one facing each direction.",
+      "zh": "MD Level 实现了信息隐藏，而这正是其核心目的。较低层域的内部对任何包围它的域都不可见，除非在刻意配置的可见点处——因此客户永远无法获知运营商的内部拓扑。为了跨越这条边界诊断故障，管理员可以把某个 DoSAP 配置为 MA 中间点（MA Intermediate Point，MIP），使其作为中间业务接入点（Intermediate Service Access Point，ISAP）对紧邻的上层域可见。MIP 能把在两个相距较远的 MEP 之间检测到的故障缩小到更小的网段：两个 MIP 之间的连通性丢失，对应于低一个 MD Level 的 MEP 级故障。每个 MIP 被建模为两个 MIP 半功能（MIP Half Function，MHF），各面向一个方向。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TB\n  C[\"Customer MD Level\"] --> P[\"Provider MD Level\"]\n  P --> O[\"Operator MD Level\"]\n  O --> Y[\"Physical MD Level\"]\n  C -. \"MEPs a,b,g,h are MIPs here\" .-> P\n  P -. \"MEPs c,d,e,f are MIPs here\" .-> O",
+      "zh": "flowchart TB\n  C[\"客户 MD 级别\"] --> P[\"提供商 MD 级别\"]\n  P --> O[\"运营商 MD 级别\"]\n  O --> Y[\"物理 MD 级别\"]\n  C -. \"a,b,g,h 的 MEP 在此为 MIP\" .-> P\n  P -. \"c,d,e,f 的 MEP 在此为 MIP\" .-> O"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The names 'customer', 'provider', and 'operator' imply business relationships that cannot be standardized, so the numeric MD Level assigned to each role is somewhat arbitrary. What the standard fixes is the ordering: higher numbers enclose lower ones, and a CFM PDU is sunk at its matching level and passed at higher ones. (Annex J.3 discusses MD Level assignment in more detail.)",
+      "zh": "“客户”“提供商”“运营商”这些名称隐含着无法标准化的商业关系，因此分配给各角色的数字 MD Level 在某种程度上是任意的。标准固定下来的是次序关系：较大的数字包围较小的，CFM PDU 在与之匹配的级别被终结、在更高级别被透传。（附录 J.3 更详细地讨论了 MD Level 的分配。）"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: exactly where 18.1, 18.2, and 18.3 live",
+        "zh": "覆盖地图：18.1、18.2、18.3 各自的确切位置"
+      },
+      "en": "Clause 18 (Principles of CFM operation) opens by naming its parts: a Maintenance Domain (18.1), a Maintenance Domain Level (18.3), and a Maintenance Association / MA (18.2), plus the five CFM functions — path discovery (Linktrace, 20.3), fault detection (Continuity Check / CCM, 20.1), fault verification and isolation (Loopback / LBM, 20.2), fault notification, and fault recovery (Clause 13 for VLANs, 26.10 for TESIs). 18.1 'Maintenance Domains and DoSAPs' defines a domain via its DoSAPs, requires internal full connectivity absent faults, mandates a per-domain Maintenance Domain Name, and lists concrete realizations (MST Region, whole VBN, single link/VLAN, etc.); Figure 18-1 shows one domain with six DoSAPs. 18.2 'Service instances and MAs' explains DoSAP selection per customer, the Short MA Name, the MAID (= MD Name + Short MA Name), the MEPID, and models a MIP as two MHFs; Figures 18-2/18-3 give the operator's and customer's views; Figure 18-4 fixes the MEP/MHF/MIP symbols. 18.3 'Maintenance Domain Levels' introduces the explicit MD Level in CFM PDUs, the nested (non-overlapping) information-hiding model, exposing a DoSAP as an ISAP via a MIP, and fault isolation to smaller segments; Figures 18-5/18-6/18-7 illustrate nested MAs and why MD Levels are needed to sink-versus-pass CFM PDUs on a shared VID.",
+      "zh": "第 18 章（CFM 操作原理）开篇即列出其组成：维护域（18.1）、维护域级别（18.3）、维护关联/MA（18.2），以及五大 CFM 功能——路径发现（Linktrace，20.3）、故障检测（连续性检查/CCM，20.1）、故障验证与隔离（环回/LBM，20.2）、故障通告，以及故障恢复（VLAN 见第 13 章，TESI 见 26.10）。18.1“维护域与 DoSAP”通过 DoSAP 定义域，要求无故障时内部完全连通，规定每域一个维护域名称，并列举具体实现形式（MST 区域、整个虚拟桥接网络、单条链路/VLAN 等）；图 18-1 展示了一个具有六个 DoSAP 的域。18.2“业务实例与 MA”说明按客户挑选 DoSAP、简短 MA 名称、MAID（= 维护域名称 + 简短 MA 名称）、MEPID，并把 MIP 建模为两个 MHF；图 18-2/18-3 给出运营商视角与客户视角；图 18-4 固定了 MEP/MHF/MIP 符号。18.3“维护域级别”引入 CFM PDU 中的显式 MD Level、嵌套（不重叠）的信息隐藏模型、通过 MIP 把 DoSAP 暴露为 ISAP，以及把故障隔离到更小网段；图 18-5/18-6/18-7 说明嵌套的 MA，以及在共享 VID 上为何需要 MD Level 来决定 CFM PDU 是终结还是透传。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1183,
+          1184,
+          1185,
+          1186,
+          1187,
+          1188,
+          1189,
+          1190
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1183,
+        1184
+      ],
+      "note": "Clause 18 intro: CFM concepts (Maintenance Domain, MD Level, MA), the five CFM functions, and start of 18.1."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1185
+      ],
+      "note": "18.1 Maintenance Domains and DoSAPs: full internal connectivity, Maintenance Domain Name, concrete realizations, Figure 18-1."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1186,
+        1187
+      ],
+      "note": "18.2 Service instances and MAs: Short MA Name, MAID, MEPID, MHFs; Figures 18-2/18-3/18-4. Start of 18.3."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1187,
+        1188,
+        1189,
+        1190
+      ],
+      "note": "18.3 Maintenance Domain Levels: explicit MD Level, nesting/information hiding, ISAP via MIP; Figures 18-5/18-6/18-7."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:18.1",
+    "8021Q-2022:18.2",
+    "8021Q-2022:18.3"
+  ],
+  "track": "bridging-tsn"
+}

@@ -1,0 +1,161 @@
+{
+  "id": "bridging-tsn-36",
+  "title": {
+    "en": "CFM Loopback and Fault Alarms: Echo, Mismatch, and Notification",
+    "zh": "CFM 环回与故障告警：回声、失配与通告"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This is part 4 of 5 on Clause 20, the engine room of Connectivity Fault Management (CFM) — the IEEE 802.1Q toolkit that lets a network watch itself for broken paths. Earlier parts built up Continuity Check (CCM) and Linktrace; this part covers four more machines. First, two that detect a subtle wiring error called a cross connect or a Traffic-field mismatch. Then the ping-like Loopback service: a Loopback Message (LBM) is the request, a Loopback Reply (LBR) is the echo. Finally, the Fault Notification Generator (FNG) — the part that decides when enough is wrong to raise an alarm. Throughout, a MEP (Maintenance association End Point) is the monitoring endpoint and an MP (Maintenance Point) is any participating point.",
+      "zh": "本节是 Clause 20 五部分中的第四部分。Clause 20 是连通性故障管理（CFM，Connectivity Fault Management）的核心引擎——IEEE 802.1Q 用来让网络自我监测断路的工具集。前面几部分搭建了连通性检查（CCM）和链路追踪；本部分再讲四台机器。首先是两台检测细微接线错误（称为交叉连接，或 Traffic 字段失配）的机器；接着是类似 ping 的环回服务：环回报文（LBM，Loopback Message）是请求，环回应答（LBR，Loopback Reply）是回声；最后是故障通告生成器（FNG，Fault Notification Generator）——决定何时问题足够严重而发出告警。全程中，MEP（维护关联端点，Maintenance association End Point）是监测端点，MP（维护点，Maintenance Point）是任意参与点。"
+    },
+    {
+      "type": "prose",
+      "en": "20.24 — MEP Cross Connect state machine. A cross connect means a CCM arrived that belongs to the wrong service: the wires are physically crossed somewhere. The machine (Figure 20-7) sits idle, and on each offending CCM it arms a timer to 3.5 times the received interval, records the failing frame, and sets xconCCMdefect = true. When the timer drains with no fresh offending CCM, the defect clears. It is the same 3.5-interval persistence rule CCM uses everywhere: three-and-a-half missed beats before you trust a verdict.",
+      "zh": "20.24——MEP 交叉连接状态机。交叉连接指收到了属于错误业务的 CCM：某处的线缆被物理接错了。该状态机（图 20-7）保持空闲，每收到一个违规 CCM 就把定时器设为收到间隔的 3.5 倍，记录失败帧，并置 xconCCMdefect = true。定时器耗尽且无新的违规 CCM 时，缺陷清除。这与 CCM 处处使用的 3.5 倍间隔持久化规则相同：相信判定前要等三个半节拍。"
+    },
+    {
+      "type": "prose",
+      "en": "20.25 / 20.26 — MEP Mismatch variables and state machines. These run only on a PBB-TE MEP or Infrastructure Segment MEP that implements the Traffic field — engineered point-to-point paths where a CCM carries a Traffic bit saying \"data is flowing here.\" A mismatch is when the received bit (rcvdTrafficBit) disagrees with the local expectation (presentTraffic / ISpresentTraffic). The variables are mmCCMreceived (a mismatch was seen), mmCCMdefect (the confirmed defect), mmCCMTime (how long to wait before declaring it — set to max(50 ms, 4.75 × CCM interval + 10 ms) because a mismatch is normal during the ~50 ms of a protection switch), disableLocdefect (suppress the local-mismatch signal during protection events), and mmLocdefect (the confirmed local mismatch held for 50 ms). Two machines (Figures 20-8 and 20-9) act on these: a Traffic-Field Mismatch machine and a Local Mismatch machine, one each per qualifying MEP.",
+      "zh": "20.25 / 20.26——MEP 失配变量与状态机。它们仅运行于实现了 Traffic 字段的 PBB-TE MEP 或基础设施段 MEP——这是工程化的点到点路径，其 CCM 携带一个 Traffic 比特表示“此处有数据流动”。失配指收到的比特（rcvdTrafficBit）与本地期望（presentTraffic / ISpresentTraffic）不符。变量包括：mmCCMreceived（发现失配）、mmCCMdefect（确认的缺陷）、mmCCMTime（声明前等待多久——设为 max(50 ms, 4.75 × CCM 间隔 + 10 ms)，因为保护倒换的约 50 ms 期间失配属正常）、disableLocdefect（保护事件期间抑制本地失配信号）、mmLocdefect（保持 50 ms 的已确认本地失配）。两台机器（图 20-8、20-9）据此动作：一台 Traffic 字段失配机和一台本地失配机，每个合格 MEP 各一台。"
+    },
+    {
+      "type": "prose",
+      "en": "20.27 – 20.29 — MP Loopback Responder. This is the side that answers a ping. Its variables are LBMreceived (an LBM arrived) and LBMPDU (the captured frame). On arrival the responder runs ProcessLBM() (20.28.1): it discards the frame if the destination address is not its own (unless it is a PBB-TE/SPBM transit point), if a group destination lands on a plain transit point, or if the source is a group address; otherwise it calls xmitLBR() (20.28.2) to build the reply — swapping source/destination, copying priority and the whole payload verbatim, changing only the OpCode from LBM to LBR, and bumping the LBR transmit counter. The state machine (Figure 20-10) is trivially small: idle, then on LBMreceived go respond, run ProcessLBM(), and return.",
+      "zh": "20.27 – 20.29——MP 环回应答器。这是回应 ping 的一方。变量为 LBMreceived（收到 LBM）和 LBMPDU（捕获的帧）。到达时应答器运行 ProcessLBM()（20.28.1）：若目的地址非己（除非是 PBB-TE/SPBM 中转点）、组目的地址落到普通中转点、或源地址是组地址，则丢弃；否则调用 xmitLBR()（20.28.2）构造应答——交换源/目的地址，复制优先级与整段载荷（逐字），仅把 OpCode 从 LBM 改为 LBR，并递增 LBR 发送计数器。状态机（图 20-10）极简：空闲，收到 LBMreceived 即进入响应、运行 ProcessLBM()、返回。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant I as MEP Initiator\n  participant R as MP Responder\n  I->>R: LBM (transID = N)\n  Note over R: ProcessLBM() checks address\n  R->>I: LBR (OpCode swapped, transID = N)\n  Note over I: ProcessLBR() compares transID",
+      "zh": "sequenceDiagram\n  participant I as MEP 发起方\n  participant R as MP 应答器\n  I->>R: LBM (transID = N)\n  Note over R: ProcessLBM() 校验地址\n  R->>I: LBR (OpCode 互换, transID = N)\n  Note over I: ProcessLBR() 比对 transID"
+    },
+    {
+      "type": "prose",
+      "en": "20.30 – 20.34 — MEP Loopback Initiator. This is the side that sends pings and checks the echoes, split into a transmit machine and a receive machine that share one variable block (20.30): LBMsToSend (count to send; writing a nonzero value starts the burst), nextLBMtransID (the transaction ID stamped into each LBM, incremented every send and wrapping at 2^32−1), expectedLBRtransID (the ID the next reply should carry), LBIactive (true while a run is in progress, dropped 5 s after the last LBM or LBR), xmitReady (the Bridge Port saying \"go ahead, send another\"), LBRreceived (a reply arrived), and LBRPDU (the captured reply). The transmit procedure xmitLBM() (20.31.1) fills in addresses, priority, the transaction ID, and optional TLVs, then increments nextLBMtransID. The transmit machine (Figure 20-11, clause 20.32) walks IDLE → STARTING → TRANSMITTING → TRANSMIT, decrementing LBMsToSend each pass and re-arming a 5 s LBIwhile guard.",
+      "zh": "20.30 – 20.34——MEP 环回发起器。这是发出 ping 并检查回声的一方，拆为发送机和接收机，共享一组变量（20.30）：LBMsToSend（待发数量；写入非零值即启动突发）、nextLBMtransID（盖在每个 LBM 上的事务 ID，每发递增，在 2^32−1 处回绕）、expectedLBRtransID（下一个应答应携带的 ID）、LBIactive（运行进行中为 true，在最后一个 LBM 或 LBR 之后 5 秒置 false）、xmitReady（桥端口表示“可以再发一个”）、LBRreceived（收到应答）、LBRPDU（捕获的应答）。发送过程 xmitLBM()（20.31.1）填入地址、优先级、事务 ID 及可选 TLV，然后递增 nextLBMtransID。发送机（图 20-11，20.32）依次走 IDLE → STARTING → TRANSMITTING → TRANSMIT，每轮递减 LBMsToSend 并重置 5 秒的 LBIwhile 守护。"
+    },
+    {
+      "type": "prose",
+      "en": "On the receive side, ProcessLBR() (20.33.1) is the scorekeeper. It discards a reply whose source is a group address or whose destination is not the receiver. Then, only while LBIactive is true, it compares the reply's transaction ID to expectedLBRtransID: equal means a correct LBR (bump the correct counter); unequal means an out-of-order reply (copy the received ID into expectedLBRtransID and bump the incorrect counter); either way, expectedLBRtransID then advances by 1. It may also do a bit-for-bit compare of reply versus original. The receive machine (Figure 20-12, clause 20.34) is the same tiny idle/respond shape as the responder: on LBRreceived, run ProcessLBR().",
+      "zh": "接收侧由 ProcessLBR()（20.33.1）记分。它丢弃源为组地址、或目的非接收方的应答；随后，仅当 LBIactive 为 true 时，将应答的事务 ID 与 expectedLBRtransID 比对：相等表示正确 LBR（递增正确计数器）；不等表示乱序应答（把收到的 ID 拷入 expectedLBRtransID 并递增错误计数器）；无论如何，expectedLBRtransID 随后加 1。它还可对应答与原报文做逐位比较。接收机（图 20-12，20.34）与应答器同样是极简的空闲/响应形态：收到 LBRreceived 即运行 ProcessLBR()。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The transaction ID is the whole trick behind loopback accounting. By stamping a monotonically increasing ID into each LBM and expecting it back in the LBR, the initiator can tell apart \"every echo came home in order\" from \"replies are dropping or arriving scrambled\" — without timestamps or per-frame state. Out-of-order simply resyncs expectedLBRtransID to whatever came back, so one lost reply does not poison the count of every reply after it.",
+      "zh": "事务 ID 是环回计数的全部诀窍。把单调递增的 ID 盖进每个 LBM、并期望它原样回到 LBR 中，发起方便能区分“每个回声都按序返回”与“应答在丢失或乱序到达”——无需时间戳，也无需逐帧状态。乱序时只是把 expectedLBRtransID 重新同步到返回值，因此单个丢失的应答不会污染其后每个应答的计数。"
+    },
+    {
+      "type": "prose",
+      "en": "20.35 – 20.37 — MEP Fault Notification Generator (FNG). All the detectors above feed one decision: should we raise an alarm? The FNG aggregates the worst news. someRMEPCCMdefect (20.35.5) is the OR across all Remote MEP machines of \"I am not hearing valid CCMs.\" someMACstatusDefect (20.35.6) flags a remote MEP reporting its port or interface is down (via Port Status / Interface Status TLVs). someRDIdefect (20.35.7) is the OR of remote MEPs that set the RDI (Remote Defect Indication) bit — \"I see a problem on my side.\" highestDefect (20.35.9) and highestDefectPri (20.35.8) pick the single worst defect across those plus the cross-connect and error-CCM defects, ranked by Table 20-1 and floored by lowestAlarmPri. fngDefect and fngPriority (20.35.1–2) record what was last reported; fngAlarmTime (2.5 s) is how long a defect must persist before alarming, and fngResetTime (10 s) is how long it must stay clear before re-arming.",
+      "zh": "20.35 – 20.37——MEP 故障通告生成器（FNG）。上述所有检测器汇入一个决策：是否发告警？FNG 汇聚最坏的消息。someRMEPCCMdefect（20.35.5）是所有远端 MEP 机器“收不到有效 CCM”的或运算；someMACstatusDefect（20.35.6）标志某远端 MEP（经端口状态/接口状态 TLV）报告其端口或接口已下线；someRDIdefect（20.35.7）是设置了 RDI（远端缺陷指示，Remote Defect Indication）比特的远端 MEP 的或运算——“我这侧有问题”。highestDefect（20.35.9）与 highestDefectPri（20.35.8）在上述缺陷外再加上交叉连接缺陷和错误 CCM 缺陷中，按表 20-1 排序并以 lowestAlarmPri 为下限，选出唯一最坏的缺陷。fngDefect 与 fngPriority（20.35.1–2）记录上次报告内容；fngAlarmTime（2.5 秒）是告警前缺陷须持续的时长，fngResetTime（10 秒）是再次武装前须保持无缺陷的时长。"
+    },
+    {
+      "type": "prose",
+      "en": "The FNG procedure is just xmitFaultAlarm() (20.36.1): it sends a Fault Alarm carrying the MEP identity and fngDefect; the actual transport of that alarm is left to the management system, not fixed by this standard. The FNG state machine (Figure 20-13, clause 20.37) ties it together: from RESET, a defect arms FNGwhile = fngAlarmTime; if the defect is still present when the timer expires, it reports (xmitFaultAlarm) and remembers fngDefect/fngPriority. If a worse defect arrives, it re-reports; if the defect clears, FNGwhile = fngResetTime must drain before the machine returns to RESET — preventing a flapping link from machine-gunning alarms.",
+      "zh": "FNG 过程只有 xmitFaultAlarm()（20.36.1）：发送携带 MEP 身份和 fngDefect 的故障告警；该告警的实际传输交由管理系统，本标准不作规定。FNG 状态机（图 20-13，20.37）将一切串联：从 RESET 开始，出现缺陷即武装 FNGwhile = fngAlarmTime；若定时器到期时缺陷仍在，则报告（xmitFaultAlarm）并记住 fngDefect/fngPriority。若到来更严重的缺陷，则重新报告；若缺陷清除，须等 FNGwhile = fngResetTime 耗尽后机器才返回 RESET——以防抖动链路连珠炮般刷告警。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause in this lesson",
+        "zh": "覆盖图——本课每个条款"
+      },
+      "en": "Cross Connect: 20.24 (state machine, Figure 20-7). Mismatch variables 20.25: 20.25.1 mmCCMreceived, 20.25.2 mmCCMdefect, 20.25.3 mmCCMTime (max(50 ms, 4.75×CCM interval+10 ms)), 20.25.4 disableLocdefect, 20.25.5 mmLocdefect; 20.26 Mismatch state machines (Figures 20-8/20-9). Loopback Responder variables 20.27: 20.27.1 LBMreceived, 20.27.2 LBMPDU; procedures 20.28: 20.28.1 ProcessLBM(), 20.28.2 xmitLBR(); 20.29 state machine (Figure 20-10). Loopback Initiator variables 20.30: 20.30.1 LBMsToSend, 20.30.2 nextLBMtransID, 20.30.3 expectedLBRtransID, 20.30.4 LBIactive, 20.30.5 xmitReady, 20.30.6 LBRreceived, 20.30.7 LBRPDU. Transmit: 20.31.1 xmitLBM(); 20.32 transmit state machine (Figure 20-11). Receive: 20.33.1 ProcessLBR(); 20.34 receive state machine (Figure 20-12). FNG variables 20.35: 20.35.1 fngPriority, 20.35.2 fngDefect, 20.35.3 fngAlarmTime (2.5 s), 20.35.4 fngResetTime (10 s), 20.35.5 someRMEPCCMdefect, 20.35.6 someMACstatusDefect, 20.35.7 someRDIdefect, 20.35.8 highestDefectPri, 20.35.9 highestDefect; 20.36.1 xmitFaultAlarm(); 20.37 FNG state machine (Figure 20-13, Table 20-1 ranks the defects).",
+      "zh": "交叉连接：20.24（状态机，图 20-7）。失配变量 20.25：20.25.1 mmCCMreceived、20.25.2 mmCCMdefect、20.25.3 mmCCMTime（max(50 ms, 4.75×CCM 间隔+10 ms)）、20.25.4 disableLocdefect、20.25.5 mmLocdefect；20.26 失配状态机（图 20-8/20-9）。环回应答器变量 20.27：20.27.1 LBMreceived、20.27.2 LBMPDU；过程 20.28：20.28.1 ProcessLBM()、20.28.2 xmitLBR()；20.29 状态机（图 20-10）。环回发起器变量 20.30：20.30.1 LBMsToSend、20.30.2 nextLBMtransID、20.30.3 expectedLBRtransID、20.30.4 LBIactive、20.30.5 xmitReady、20.30.6 LBRreceived、20.30.7 LBRPDU。发送：20.31.1 xmitLBM()；20.32 发送状态机（图 20-11）。接收：20.33.1 ProcessLBR()；20.34 接收状态机（图 20-12）。FNG 变量 20.35：20.35.1 fngPriority、20.35.2 fngDefect、20.35.3 fngAlarmTime（2.5 秒）、20.35.4 fngResetTime（10 秒）、20.35.5 someRMEPCCMdefect、20.35.6 someMACstatusDefect、20.35.7 someRDIdefect、20.35.8 highestDefectPri、20.35.9 highestDefect；20.36.1 xmitFaultAlarm()；20.37 FNG 状态机（图 20-13，表 20-1 对缺陷排序）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1231,
+          1232,
+          1233,
+          1234,
+          1235,
+          1236,
+          1237,
+          1238,
+          1239,
+          1240,
+          1241
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1231,
+        1232,
+        1233
+      ],
+      "note": "20.24 Cross Connect SM; 20.25 Mismatch variables; 20.26 Mismatch SMs (Fig 20-8/20-9); 20.27 Loopback Responder variables"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1234,
+        1235
+      ],
+      "note": "20.28 ProcessLBM()/xmitLBR(); 20.29 Loopback Responder SM (Fig 20-10); 20.30 Loopback Initiator variables"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1236,
+        1237,
+        1238,
+        1239
+      ],
+      "note": "20.30 variables; 20.31 xmitLBM(); 20.32 transmit SM (Fig 20-11); 20.33 ProcessLBR(); 20.34 receive SM (Fig 20-12); 20.35 FNG variables"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1240,
+        1241
+      ],
+      "note": "20.35 FNG variables; 20.36 xmitFaultAlarm(); 20.37 FNG SM (Fig 20-13)"
+    }
+  ],
+  "covers": [
+    "8021Q-2022:20.24",
+    "8021Q-2022:20.25.1",
+    "8021Q-2022:20.25.2",
+    "8021Q-2022:20.25.3",
+    "8021Q-2022:20.25.4",
+    "8021Q-2022:20.25.5",
+    "8021Q-2022:20.26",
+    "8021Q-2022:20.27.1",
+    "8021Q-2022:20.27.2",
+    "8021Q-2022:20.28.1",
+    "8021Q-2022:20.28.2",
+    "8021Q-2022:20.29",
+    "8021Q-2022:20.30.1",
+    "8021Q-2022:20.30.2",
+    "8021Q-2022:20.30.3",
+    "8021Q-2022:20.30.4",
+    "8021Q-2022:20.30.5",
+    "8021Q-2022:20.30.6",
+    "8021Q-2022:20.30.7",
+    "8021Q-2022:20.31.1",
+    "8021Q-2022:20.32",
+    "8021Q-2022:20.33.1",
+    "8021Q-2022:20.34",
+    "8021Q-2022:20.35.1",
+    "8021Q-2022:20.35.2",
+    "8021Q-2022:20.35.3",
+    "8021Q-2022:20.35.4",
+    "8021Q-2022:20.35.5",
+    "8021Q-2022:20.35.6",
+    "8021Q-2022:20.35.7",
+    "8021Q-2022:20.35.8",
+    "8021Q-2022:20.35.9",
+    "8021Q-2022:20.36.1",
+    "8021Q-2022:20.37"
+  ],
+  "track": "bridging-tsn"
+}

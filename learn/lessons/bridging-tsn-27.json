@@ -1,0 +1,163 @@
+{
+  "id": "bridging-tsn-27",
+  "title": {
+    "en": "MIB Module Relationships: How the 802.1Q SNMP Modules Fit Together",
+    "zh": "MIB 模块间的关系：802.1Q 的 SNMP 模块如何拼装在一起"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 17 of IEEE Std 802.1Q-2022 defines a complete set of SMIv2 MIB modules so that VLAN Bridges can be managed remotely. SMIv2 (Structure of Management Information, version 2) is the data-modeling language for SNMP (Simple Network Management Protocol); a MIB (Management Information Base) is the catalog of managed objects a device exposes. Subclause 17.3 — the focus of this lesson — does not define new objects. Instead it documents how each 802.1Q MIB module *relates* to the others and to the underlying IETF (Internet Engineering Task Force) modules it builds on. Think of 17.3 as the wiring diagram that tells an implementer which modules must be present together and which objects one module borrows from another.",
+      "zh": "IEEE Std 802.1Q-2022 的第 17 章定义了一整套 SMIv2 MIB 模块，使 VLAN 网桥可以被远程管理。SMIv2（管理信息结构第 2 版）是 SNMP（简单网络管理协议）所用的数据建模语言；MIB（管理信息库）则是设备对外暴露的受管对象目录。本课聚焦的 17.3 小节并不定义新对象，而是说明每个 802.1Q MIB 模块之间、以及它们与所依赖的底层 IETF（互联网工程任务组）模块之间是如何*关联*的。可以把 17.3 想成一张接线图，告诉实现者哪些模块必须同时存在、哪个模块又向另一个模块借用了哪些对象。"
+    },
+    {
+      "type": "prose",
+      "en": "A recurring theme (17.3) is reindexing. Several 802.1Q modules were derived from older IETF MIBs and now replace them, because the table indexing had to change to support newer features. The clearest example: Provider Backbone Bridging (PBB) lets one Backbone Edge Bridge (BEB) host multiple Bridge instances. To avoid duplicating the base Bridge tables inside the PBB module, those base tables gained a *component identifier* index — a value unique within a BEB that distinguishes instances. On simpler Bridges that have only one instance, the component identifier is still present but defaults to 1.",
+      "zh": "贯穿 17.3 的一个主题是重新索引（reindexing）。若干 802.1Q 模块脱胎于较旧的 IETF MIB 并取而代之，原因是为支持新特性必须改动表的索引方式。最典型的例子是：骨干网桥接（PBB）允许一个骨干边缘网桥（BEB）承载多个网桥实例。为避免在 PBB 模块里重复定义基础网桥表，这些基础表增加了一个*组件标识符*（component identifier）索引——一个在某个 BEB 内唯一、用来区分实例的值。在只有单个实例的简单网桥上，该组件标识符依然存在，但默认取值为 1。"
+    },
+    {
+      "type": "prose",
+      "en": "Two IETF modules anchor almost everything. The SNMPv2-MIB (IETF RFC 3418) holds device-wide objects such as sysDescr (a text description of the device) and sysUpTime; many 802.1Q modules require at least its System Group. The IF-MIB (IETF RFC 2863) models network interfaces in a table called ifTable, keyed by ifIndex, with attributes like ifType, ifDescr, and ifPhysAddress. The IF-MIB deliberately leaves some areas vague so it can cover any media; each media-specific MIB must clarify those areas. A subtle point (17.3.2.2): each Bridge Port maps to an interface, but the relationship is not always one-to-one — link aggregation can put many physical ports under one Bridge Port, and Port Numbers run 1..65535 even though spanning tree limits usable ports to 4095.",
+      "zh": "几乎所有内容都锚定在两个 IETF 模块上。SNMPv2-MIB（IETF RFC 3418）保存设备级对象，例如 sysDescr（设备的文字描述）和 sysUpTime；许多 802.1Q 模块至少要求实现它的 System Group（系统组）。IF-MIB（IETF RFC 2863）在名为 ifTable 的表中对网络接口建模，以 ifIndex 为键，包含 ifType、ifDescr、ifPhysAddress 等属性。IF-MIB 故意把某些区域写得含糊，以便适配任意介质；每个面向具体介质的 MIB 必须把这些区域澄清清楚。一个微妙之处（17.3.2.2）：每个网桥端口（Bridge Port）映射到一个接口，但这种关系并不总是一一对应——链路聚合可以把多个物理端口归入一个网桥端口，而且端口号取值范围是 1..65535，尽管生成树把可用端口限制在 4095 个以内。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  TC[IEEE8021-TC-MIB textual conventions] --> BR[IEEE8021-BRIDGE-MIB base]\n  SNMP[SNMPv2-MIB RFC3418] --> BR\n  IF[IF-MIB RFC2863] --> BR\n  BR --> RSTP[RSTP MIB]\n  RSTP --> MSTP[MSTP MIB]\n  BR --> QBR[Q-BRIDGE-MIB VLAN]\n  QBR --> PB[PB-BRIDGE MIB]\n  BR --> TSN[FQTSS / ST / PSFP / Preemption / TSN-Remote]",
+      "zh": "flowchart TD\n  TC[IEEE8021-TC-MIB 文本约定] --> BR[IEEE8021-BRIDGE-MIB 基础]\n  SNMP[SNMPv2-MIB RFC3418] --> BR\n  IF[IF-MIB RFC2863] --> BR\n  BR --> RSTP[RSTP MIB]\n  RSTP --> MSTP[MSTP MIB]\n  BR --> QBR[Q-BRIDGE-MIB VLAN]\n  QBR --> PB[PB-BRIDGE MIB]\n  BR --> TSN[FQTSS / ST / PSFP / 抢占 / TSN 远程]"
+    },
+    {
+      "type": "prose",
+      "en": "The foundation module is the IEEE8021-TC-MIB (17.3.1). A textual convention (TC) is a reusable, named data type — for example, a component identifier or a VLAN ID syntax. Originally every IETF module carried its own TCs; 802.1Q consolidated them into one shared module so every other MIB in Clause 17 can import the same definitions. The IEEE8021PbbComponentIdentifierTC defined here is exactly the component-ID index used by the reindexed tables described above. On top of TC sits the IEEE8021-BRIDGE-MIB (17.3.2): the base Bridge module. Note that the explicit Filtering Database (FDB) tables for plain 802.1D Bridges were removed (17.3.2.3) because they duplicated the Q-Bridge FDB — a single-FDB device just uses ieee8021QBridgeTpFdbTable with FdbId 1 and VID indices set to 0.",
+      "zh": "最底层的模块是 IEEE8021-TC-MIB（17.3.1）。文本约定（TC，textual convention）是一种可复用、有命名的数据类型——例如组件标识符或 VLAN ID 的语法。最初每个 IETF 模块各自携带自己的 TC；802.1Q 把它们合并进一个共享模块，使第 17 章里所有其他 MIB 都能导入相同的定义。这里定义的 IEEE8021PbbComponentIdentifierTC 正是上面所说重新索引后的表所用的组件 ID 索引。TC 之上是 IEEE8021-BRIDGE-MIB（17.3.2）：基础网桥模块。注意，面向纯 802.1D 网桥的显式过滤数据库（FDB，filtering database）表已被移除（17.3.2.3），因为它们与 Q-Bridge 的 FDB 重复——单 FDB 设备只需使用 ieee8021QBridgeTpFdbTable，把 FdbId 设为 1、VID 索引设为 0 即可。"
+    },
+    {
+      "type": "prose",
+      "en": "The spanning-tree and VLAN modules layer on top of the base. The IEEE8021-RSTP MIB (17.3.3) supplements the base Bridge MIB and adds an extra index so it can also be used inside PBB; it replaces the old IETF BRIDGE-MIB (RFC 1493 / RFC 4188). The IEEE8021-MSTP-MIB (17.3.6) in turn supplements the RSTP MIB. The IEEE8021-Q-BRIDGE-MIB (17.3.4) is the VLAN heart: it clarifies the IF-MIB (an l2vlan interface, ifType 135, with ifStackTable showing how higher-layer entities stack on a VLAN; 17.3.4.1.1, 17.3.4.1.2), and it refines how the base Bridge subtrees behave when a device has multiple FDBs (the ieee8021BridgeBase, ieee8021BridgeTp, and ieee8021BridgeStatic subtrees, plus 64-bit counters and multi-traffic-class support added in 17.3.4.2.1–17.3.4.2.4). The IEEE8021-PB-BRIDGE MIB (17.3.5) extends Q-Bridge for Provider Edge Bridges and VID translation.",
+      "zh": "生成树与 VLAN 模块叠在基础之上。IEEE8021-RSTP MIB（17.3.3）补充基础网桥 MIB，并增加一个额外索引以便也能在 PBB 中使用；它取代了旧的 IETF BRIDGE-MIB（RFC 1493 / RFC 4188）。IEEE8021-MSTP-MIB（17.3.6）又补充 RSTP MIB。IEEE8021-Q-BRIDGE-MIB（17.3.4）是 VLAN 的核心：它澄清 IF-MIB（一个 l2vlan 接口，ifType 135，通过 ifStackTable 表明高层实体如何叠在 VLAN 之上；见 17.3.4.1.1、17.3.4.1.2），并细化当设备拥有多个 FDB 时基础网桥子树的行为（ieee8021BridgeBase、ieee8021BridgeTp、ieee8021BridgeStatic 三个子树，以及在 17.3.4.2.1–17.3.4.2.4 中新增的 64 位计数器与多流量类别支持）。IEEE8021-PB-BRIDGE MIB（17.3.5）为运营商边缘网桥（Provider Edge Bridge）和 VID 转换扩展 Q-Bridge。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Reading tip: most of 17.3 follows one of two sentence patterns. Either 'module X supplements/extends module Y, so the provisions of 17.3.2 apply' (a dependency you must co-implement), or 'a system implementing X shall also implement at least the System Group of SNMPv2-MIB and the Interfaces Group (IF-MIB)' (the universal baseline). Spotting which pattern a subclause uses tells you instantly what else must be on the device.",
+      "zh": "阅读小贴士：17.3 的大部分内容遵循两种句式之一。要么是“模块 X 补充/扩展模块 Y，因此 17.3.2 的规定适用”（一种必须一并实现的依赖关系），要么是“实现 X 的系统还应至少实现 SNMPv2-MIB 的 System Group 和 Interfaces Group（IF-MIB）”（通用基线）。识别某小节用的是哪种句式，就能立刻知道设备上还必须存在哪些模块。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"55\" width=\"90\" height=\"40\"/><text x=\"55\" y=\"40\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">C-VLAN Comp 1</text><text x=\"55\" y=\"79\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Bridge IF</text><text x=\"55\" y=\"91\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">ifIndex=1 type 209</text><rect x=\"185\" y=\"55\" width=\"90\" height=\"40\"/><text x=\"230\" y=\"40\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">I-LAN</text><text x=\"230\" y=\"79\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">ifIndex=2</text><text x=\"230\" y=\"91\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">ifType=247</text><rect x=\"360\" y=\"55\" width=\"90\" height=\"40\"/><text x=\"405\" y=\"40\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">C-VLAN Comp 2</text><text x=\"405\" y=\"79\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Bridge IF</text><text x=\"405\" y=\"91\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">ifIndex=3 type 209</text><line x1=\"100\" y1=\"75\" x2=\"185\" y2=\"75\"/><text x=\"142\" y=\"70\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">ifStack</text><line x1=\"275\" y1=\"75\" x2=\"360\" y2=\"75\"/><text x=\"317\" y=\"70\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">ifStack</text></svg>",
+      "caption": {
+        "en": "An internal LAN (I-LAN, ifType 247) stitches two components together inside one box. The ifStackTable records that each Bridge interface (ifType 209) is stacked on the shared I-LAN, so frames can be forwarded between C-VLAN component 1 and component 2 internally (17.3.2.2, Figure 17-1). The PBB module uses the same trick to connect an I-component to a B-component through a Provider Instance Port (PIP, ifType 248) (17.3.8).",
+        "zh": "内部 LAN（I-LAN，ifType 247）在同一台设备内部把两个组件缝合起来。ifStackTable 记录每个网桥接口（ifType 209）都叠在共享的 I-LAN 上，于是帧可以在 C-VLAN 组件 1 与组件 2 之间内部转发（见 17.3.2.2、图 17-1）。PBB 模块用同样的手法，通过运营商实例端口（PIP，ifType 248）把 I 组件与 B 组件连接起来（见 17.3.8）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Connectivity Fault Management (CFM) and Provider Backbone Bridging bring the most indexing churn. The IEEE8021-CFM-MIB (17.3.7) requires the SNMPv2-MIB System Group and the IF-MIB, and gives explicit rules for link aggregation (each aggregated port gets its own ifTable row, plus one row for the aggregate). Because PBB needed extra indices, several CFM tables were deprecated and reborn in a second IEEE8021-CFM-V2-MIB — for example dot1agPbbCfmStackTable became ieee8021CfmStackTable (17.3.7.2). The IEEE8021-PBB-MIB (17.3.8) equates the PIP index to an ifIndex and stacks PIPs on Ethernet or I-LAN interfaces; the IEEE8021-DDCFM module (17.3.9) supports defect-detection CFM and likewise needs the System Group and IF-MIB. PBB Traffic Engineering rides on all of this: the IEEE8021-PBBTE-MIB (17.3.10) manages TESIs and pulls in TC, BRIDGE, Q-BRIDGE, CFM, CFM-V2, MSTP, PB and PBB modules together.",
+      "zh": "连通性故障管理（CFM）与骨干网桥接带来了最多的索引变动。IEEE8021-CFM-MIB（17.3.7）要求 SNMPv2-MIB 的 System Group 和 IF-MIB，并就链路聚合给出明确规则（每个被聚合端口各占一行 ifTable，外加聚合体本身一行）。由于 PBB 需要额外索引，若干 CFM 表被弃用，并在第二个模块 IEEE8021-CFM-V2-MIB 中重生——例如 dot1agPbbCfmStackTable 变为 ieee8021CfmStackTable（17.3.7.2）。IEEE8021-PBB-MIB（17.3.8）把 PIP 索引等同于 ifIndex，并把 PIP 叠在以太网或 I-LAN 接口上；IEEE8021-DDCFM 模块（17.3.9）支持缺陷检测型 CFM，同样需要 System Group 和 IF-MIB。PBB 流量工程建立在以上全部之上：IEEE8021-PBBTE-MIB（17.3.10）管理 TESI，并把 TC、BRIDGE、Q-BRIDGE、CFM、CFM-V2、MSTP、PB 和 PBB 等模块一并拉入。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally come the standalone bridge edges and the Time-Sensitive Networking (TSN) family — most of which simply extend the base Bridge MIB and inherit 17.3.2's provisions. The IEEE8021-TPMR MIB (17.3.11) covers a Two-Port MAC Relay and needs the System Group plus IF-MIB. The TSN cluster — FQTSS for forwarding-and-queuing (17.3.12), SRP for stream reservation (17.3.14, which also needs TC and FQTSS), ST for scheduled traffic / time gates (17.3.22), Preemption for frame preemption (17.3.23), PSFP for per-stream filtering and policing (17.3.24), and the TSN-Remote-Management MIB that exposes Bridge transit/propagation delay for stream reservation (17.3.25) — all extend the IEEE8021-BRIDGE-MIB. Congestion-related and registration-protocol modules round it out: IEEE802-CN-MIB for congestion notification (17.3.13), the MVRPX (17.3.15) and MIRP (17.3.16) registration modules that add columns to the base port entry, and the PFC MIB for priority-based flow control (17.3.17).",
+      "zh": "最后是独立的网桥边缘类型和时间敏感网络（TSN，Time-Sensitive Networking）家族——它们大多只是扩展基础网桥 MIB 并继承 17.3.2 的规定。IEEE8021-TPMR MIB（17.3.11）覆盖双端口 MAC 中继（Two-Port MAC Relay），需要 System Group 加 IF-MIB。TSN 集群——用于转发与排队的 FQTSS（17.3.12）、用于流预留的 SRP（17.3.14，还需 TC 与 FQTSS）、用于调度流量/时间门的 ST（17.3.22）、用于帧抢占的 Preemption（17.3.23）、用于逐流过滤与监管的 PSFP（17.3.24），以及为流预留暴露网桥转发/传播时延的 TSN-Remote-Management MIB（17.3.25）——全都扩展 IEEE8021-BRIDGE-MIB。与拥塞和注册协议相关的模块构成补充：用于拥塞通知的 IEEE802-CN-MIB（17.3.13）、为基础端口条目增加列的注册模块 MVRPX（17.3.15）与 MIRP（17.3.16），以及用于基于优先级流控的 PFC MIB（17.3.17）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every subclause of 17.3 (17.3.1 through 17.3.25) with its module and dependencies",
+        "zh": "覆盖地图——17.3 的每个小节（17.3.1 至 17.3.25）及其模块与依赖"
+      },
+      "en": "Foundation and base: 17.3.1 IEEE8021-TC-MIB — single shared textual-conventions module; defines IEEE8021PbbComponentIdentifierTC. 17.3.2 IEEE8021-BRIDGE-MIB base relationships, with 17.3.2.1 (SNMPv2-MIB: sysDescr, sysUpTime), 17.3.2.2 (IF-MIB: ifIndex/ifType/ifDescr/ifPhysAddress/ifLastChange, Bridge Port mapping, I-LAN ifType 247), 17.3.2.3 (FDB tables for 802.1D removed — use ieee8021QBridgeTpFdbTable). Spanning tree: 17.3.3 RSTP MIB supplements base, replaces RFC 1493/4188, adds PBB index. 17.3.6 MSTP-MIB supplements RSTP MIB. VLAN: 17.3.4 Q-BRIDGE-MIB with 17.3.4.1 (IF-MIB, l2vlan ifType 135), 17.3.4.1.1 ifStackTable, 17.3.4.1.2 ifRcvAddressTable, 17.3.4.2 relationship to BRIDGE-MIB and 17.3.4.2.1 ieee8021BridgeBase, 17.3.4.2.2 ieee8021BridgeTp (multi-FDB rules), 17.3.4.2.3 ieee8021BridgeStatic (read-only under multi-FDB), 17.3.4.2.4 additions (multi-class, VLAN, 64-bit counters). 17.3.5 PB-BRIDGE MIB extends Q-Bridge (Provider Edge Bridges, VID translation). CFM/PBB: 17.3.7 CFM-MIB with 17.3.7.1 (IF-MIB, link-aggregation rows) and 17.3.7.2 (deprecated tables reindexed into CFM-V2-MIB). 17.3.8 PBB-MIB (PIP=ifIndex, ifType 248, I-LAN stacking). 17.3.9 DDCFM module (supports 12.17, needs System Group + IF-MIB). 17.3.10 PBBTE-MIB (TESI management; imports TC/BRIDGE/Q-BRIDGE; requires CFM/CFM-V2/MSTP/PB/PBB). TPMR + TSN + congestion + registration: 17.3.11 TPMR MIB (Two-Port MAC Relay). 17.3.12 FQTSS-MIB (extends BRIDGE-MIB, Clause 34). 17.3.13 IEEE802-CN-MIB congestion notification, with 17.3.13.1 (IF-MIB) and 17.3.13.2 (CFM/CFM-V2 VLAN table for CNM). 17.3.14 SRP-MIB (needs TC + BRIDGE + FQTSS, Clause 35). 17.3.15 MVRPX-MIB (adds vars to ieee8021BridgeBasePortEntry). 17.3.16 MIRP-MIB (extends PBB-MIB and base port entry). 17.3.17 PFC-MIB (needs System Group + IF-MIB). 17.3.18 TEIPS-MIB (IPS in PBB-TE region; needs TC + BRIDGE; same set as 17.3.10). 17.3.19 SPB-MIB (control-plane, reuses Q-Bridge VLANs; ISIS-SPB sub-TLVs). 17.3.20 EVB-MIB (Edge Virtual Bridging, Clauses 40-43; needs TC + BRIDGE). 17.3.21 ECMP-MIB (extends SPBM; augments Q-BRIDGE tables). 17.3.22 ST-MIB (scheduled traffic, 8.6.8.4). 17.3.23 Preemption-MIB (frame preemption). 17.3.24 PSFP-MIB (per-stream filtering/policing, 8.6.5.2.1 / 8.6.10). 17.3.25 TSN-REMOTE-MANAGEMENT-MIB (Bridge transit/propagation delay, static-tree support, MSRP attribute propagation). Items 17.3.12 and 17.3.14–17.3.25 that extend the BRIDGE-MIB all inherit the provisions of 17.3.2.",
+      "zh": "基础与核心：17.3.1 IEEE8021-TC-MIB——单一共享的文本约定模块；定义 IEEE8021PbbComponentIdentifierTC。17.3.2 IEEE8021-BRIDGE-MIB 基础关系，含 17.3.2.1（SNMPv2-MIB：sysDescr、sysUpTime）、17.3.2.2（IF-MIB：ifIndex/ifType/ifDescr/ifPhysAddress/ifLastChange、网桥端口映射、I-LAN ifType 247）、17.3.2.3（802.1D 的 FDB 表已移除——改用 ieee8021QBridgeTpFdbTable）。生成树：17.3.3 RSTP MIB 补充基础，取代 RFC 1493/4188，增加 PBB 索引。17.3.6 MSTP-MIB 补充 RSTP MIB。VLAN：17.3.4 Q-BRIDGE-MIB，含 17.3.4.1（IF-MIB，l2vlan ifType 135）、17.3.4.1.1 ifStackTable、17.3.4.1.2 ifRcvAddressTable、17.3.4.2 与 BRIDGE-MIB 的关系，以及 17.3.4.2.1 ieee8021BridgeBase、17.3.4.2.2 ieee8021BridgeTp（多 FDB 规则）、17.3.4.2.3 ieee8021BridgeStatic（多 FDB 下只读）、17.3.4.2.4 新增项（多类别、VLAN、64 位计数器）。17.3.5 PB-BRIDGE MIB 扩展 Q-Bridge（运营商边缘网桥、VID 转换）。CFM/PBB：17.3.7 CFM-MIB，含 17.3.7.1（IF-MIB、链路聚合行）和 17.3.7.2（弃用表重新索引进 CFM-V2-MIB）。17.3.8 PBB-MIB（PIP=ifIndex，ifType 248，I-LAN 叠放）。17.3.9 DDCFM 模块（支持 12.17，需 System Group + IF-MIB）。17.3.10 PBBTE-MIB（TESI 管理；导入 TC/BRIDGE/Q-BRIDGE；需要 CFM/CFM-V2/MSTP/PB/PBB）。TPMR + TSN + 拥塞 + 注册：17.3.11 TPMR MIB（双端口 MAC 中继）。17.3.12 FQTSS-MIB（扩展 BRIDGE-MIB，第 34 章）。17.3.13 IEEE802-CN-MIB 拥塞通知，含 17.3.13.1（IF-MIB）和 17.3.13.2（用于 CNM 的 CFM/CFM-V2 VLAN 表）。17.3.14 SRP-MIB（需 TC + BRIDGE + FQTSS，第 35 章）。17.3.15 MVRPX-MIB（向 ieee8021BridgeBasePortEntry 增加变量）。17.3.16 MIRP-MIB（扩展 PBB-MIB 与基础端口条目）。17.3.17 PFC-MIB（需 System Group + IF-MIB）。17.3.18 TEIPS-MIB（PBB-TE 区域内的 IPS；需 TC + BRIDGE；与 17.3.10 同一套）。17.3.19 SPB-MIB（控制平面，复用 Q-Bridge 的 VLAN；ISIS-SPB sub-TLV）。17.3.20 EVB-MIB（边缘虚拟桥接，第 40-43 章；需 TC + BRIDGE）。17.3.21 ECMP-MIB（扩展 SPBM；增扩 Q-BRIDGE 表）。17.3.22 ST-MIB（调度流量，8.6.8.4）。17.3.23 Preemption-MIB（帧抢占）。17.3.24 PSFP-MIB（逐流过滤/监管，8.6.5.2.1 / 8.6.10）。17.3.25 TSN-REMOTE-MANAGEMENT-MIB（网桥转发/传播时延、静态树支持、MSRP 属性传播）。其中扩展 BRIDGE-MIB 的 17.3.12 以及 17.3.14–17.3.25 各项，都继承 17.3.2 的规定。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          674,
+          675,
+          676,
+          677,
+          678,
+          679,
+          680,
+          681,
+          682,
+          683,
+          684,
+          685
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Big picture: 17.3 is a dependency graph, not a feature list. The IEEE8021-TC-MIB sits at the root (shared types), the IEEE8021-BRIDGE-MIB is the trunk every advanced feature attaches to, the Q-BRIDGE-MIB carries VLANs, and the PBB and TSN families branch off from there — most of them reusing the base module rather than redefining it. Once you internalize that shape, any single subclause in 17.3 reads as 'here is which branches my module hangs from.'",
+      "zh": "宏观图景：17.3 是一张依赖图，而非功能清单。IEEE8021-TC-MIB 位于根部（共享类型），IEEE8021-BRIDGE-MIB 是各种高级特性挂靠的主干，Q-BRIDGE-MIB 承载 VLAN，PBB 与 TSN 家族再由此分枝而出——它们大多复用基础模块而非另起炉灶。一旦把这个形状记在心里，17.3 中的任一小节读起来就只是“我的模块挂在哪些枝干上”。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        674,
+        675,
+        676
+      ],
+      "note": "17.3 intro, 17.3.1 TC-MIB, 17.3.2 BRIDGE-MIB and SNMPv2/IF-MIB relationships, I-LAN, 17.3.2.3 FDB"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        677,
+        678
+      ],
+      "note": "17.3.3 RSTP, 17.3.4 Q-BRIDGE-MIB subtrees and IF-MIB tables, 17.3.4.2.x additions"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        679,
+        680,
+        681
+      ],
+      "note": "17.3.5 PB, 17.3.6 MSTP, 17.3.7 CFM and CFM-V2, 17.3.8 PBB, 17.3.9 DDCFM, 17.3.10 PBBTE"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        682,
+        683,
+        684,
+        685
+      ],
+      "note": "17.3.11 TPMR through 17.3.25 TSN-Remote-Management MIB relationships"
+    }
+  ],
+  "covers": [
+    "8021Q-2022:17.3.1",
+    "8021Q-2022:17.3.2",
+    "8021Q-2022:17.3.3",
+    "8021Q-2022:17.3.4",
+    "8021Q-2022:17.3.5",
+    "8021Q-2022:17.3.6",
+    "8021Q-2022:17.3.7",
+    "8021Q-2022:17.3.8",
+    "8021Q-2022:17.3.9",
+    "8021Q-2022:17.3.10",
+    "8021Q-2022:17.3.11",
+    "8021Q-2022:17.3.12",
+    "8021Q-2022:17.3.13",
+    "8021Q-2022:17.3.14",
+    "8021Q-2022:17.3.15",
+    "8021Q-2022:17.3.16",
+    "8021Q-2022:17.3.17",
+    "8021Q-2022:17.3.18",
+    "8021Q-2022:17.3.19",
+    "8021Q-2022:17.3.20",
+    "8021Q-2022:17.3.21",
+    "8021Q-2022:17.3.22",
+    "8021Q-2022:17.3.23",
+    "8021Q-2022:17.3.24",
+    "8021Q-2022:17.3.25"
+  ],
+  "track": "bridging-tsn"
+}

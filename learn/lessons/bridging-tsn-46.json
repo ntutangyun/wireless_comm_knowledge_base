@@ -1,0 +1,211 @@
+{
+  "id": "bridging-tsn-46",
+  "title": {
+    "en": "Shortest Path Bridging (SPB): How ISIS-SPB Builds Loop-Free Shortest Paths",
+    "zh": "最短路径桥接 (SPB)：ISIS-SPB 如何构建无环最短路径"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Classic spanning tree gives you one loop-free tree for the whole network, so most links sit idle and traffic detours far from the geographic shortest path. Shortest Path Bridging (SPB) fixes this: every bridge forwards user frames along the genuine shortest path. Clause 27 explains how a link-state routing protocol — IS-IS, extended into ISIS-SPB (Intermediate System to Intermediate System, extended for SPB) — gives every bridge an identical map of the network so each can independently compute the same loop-free trees. An SPT Region (Shortest Path Tree Region) is the zone of cooperating SPB bridges; outside it, plain spanning tree (STP/RSTP/MSTP) still applies and SPB interoperates with it.",
+      "zh": "经典的生成树为整个网络只构建一棵无环树，因此大多数链路被闲置，流量也会绕开实际的最短地理路径。最短路径桥接 (SPB, Shortest Path Bridging) 解决了这个问题：每台网桥都沿真正的最短路径转发用户帧。第 27 章讲解了一种链路状态路由协议——IS-IS（中间系统到中间系统），经扩展后成为 ISIS-SPB（为 SPB 扩展的 IS-IS）——如何让每台网桥获得完全一致的网络地图，从而各自独立计算出相同的无环树。SPT 区域（SPT Region，最短路径树区域）是协同工作的 SPB 网桥所组成的区域；区域之外仍使用普通生成树（STP/RSTP/MSTP），SPB 可与之互通。"
+    },
+    {
+      "type": "prose",
+      "en": "SPB comes in two complementary flavours, and the administrator picks one per VLAN (Virtual LAN). SPBV (Shortest Path Bridging — VID) assigns each frame a Shortest Path VID (SPVID) that names both the VLAN and the tree it travels on; it is plug-and-play and suits a single customer's C-VLAN or S-VLAN. SPBM (Shortest Path Bridging — MAC) keeps the Base VID in the tag and instead uses the source and destination MAC (Media Access Control) addresses to pick the tree; it suits backbone B-VLANs in a Provider Backbone Bridged Network (PBBN), where each backbone service instance is named by an I-SID (a 24-bit service identifier). All bridges in a region must agree on the method used for any given VLAN.",
+      "zh": "SPB 有两种互补的模式，管理员为每个 VLAN（虚拟局域网）选择其一。SPBV（最短路径桥接—VID）为每帧分配一个最短路径 VID（SPVID），它同时标识 VLAN 与该帧所走的树；它支持即插即用，适合单一客户的 C-VLAN 或 S-VLAN。SPBM（最短路径桥接—MAC）则在标签中保留基础 VID（Base VID），改用源、目的 MAC（介质访问控制）地址来选择树；它适合运营商骨干桥接网络（PBBN）中的骨干 B-VLAN，其中每个骨干业务实例由一个 I-SID（24 位业务标识符）命名。区域内所有网桥必须就任一 VLAN 所采用的模式达成一致。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[ISIS-SPB shares link-state DB across SPT Domain] --> B[Each bridge computes CIST]\n  B --> C[Identify SPT Regions and boundaries]\n  C --> D[Compute shortest path trees per region]\n  D --> E{Per-VLAN mode}\n  E -->|SPBV| F[Allocate SPVIDs, translate at boundary]\n  E -->|SPBM| G[Use MAC + SPSourceID group address]\n  F --> H[Clause 13 state machines set forward/learn loop-free]\n  G --> H",
+      "zh": "flowchart TD\n  A[ISIS-SPB 在 SPT 域内共享链路状态库] --> B[每桥计算 CIST]\n  B --> C[识别各 SPT 区域与边界]\n  C --> D[各区域计算最短路径树]\n  D --> E{每 VLAN 模式}\n  E -->|SPBV| F[分配 SPVID，边界做转换]\n  E -->|SPBM| G[用 MAC + SPSourceID 组地址]\n  F --> H[第13章状态机无环置位 forward/learn]\n  G --> H"
+    },
+    {
+      "type": "prose",
+      "en": "The engine underneath is ISIS-SPB (27.5): it is fundamentally an information-sharing service. Each bridge contributes its piece, and the protocol ensures (with high probability) that every bridge holds an up-to-date copy of one common database. Each bridge then runs the same agreed algorithms on its own copy, so they all reach the same forwarding result without locking in step. From that shared database a bridge can compute its CIST (Common and Internal Spanning Tree) connectivity, the shortest-path trees within its region, the SPVIDs and SPSourceIDs in use, and the per-VLAN and per-I-SID connectivity. Before any frames flow, the MST Configuration Identifier (MCID) — a digest of how VIDs map to spanning-tree instances — must match across the region, so everyone agrees on the plan (27.2, 27.4).",
+      "zh": "底层引擎是 ISIS-SPB（27.5）：本质上是一种信息共享服务。每台网桥贡献自己的那一部分，协议确保（高概率地）每台网桥都持有一份最新的公共数据库副本。随后每台网桥在各自副本上运行相同的、事先约定好的算法，于是它们无需步调一致即可得到相同的转发结果。基于这份共享数据库，网桥即可计算其 CIST（公共与内部生成树）连通性、区域内的最短路径树、正在使用的 SPVID 与 SPSourceID，以及每 VLAN 和每 I-SID 的连通性。在任何帧流动之前，MST 配置标识符（MCID）——一份关于 VID 如何映射到生成树实例的摘要——必须在整个区域内匹配，以确保所有网桥就方案达成一致（27.2、27.4）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two safety nets work together. The MCID is a fail-safe against configuration mismatches: if neighbours disagree on how VIDs map to trees, connectivity falls back to a single Common Spanning Tree (CST) rather than risking data loops. The Agreement Digest is finer-grained: it ensures that the unavoidable delays in propagating link-state information never let a temporary loop form before everyone has agreed (27.4.1, 27.9).",
+      "zh": "两张安全网协同工作。MCID 是针对配置不一致的故障保护：若相邻网桥对 VID 到树的映射存在分歧，连通性会回退到单一公共生成树（CST），而不冒数据成环的风险。一致性摘要（Agreement Digest）则更精细：它确保链路状态信息传播中不可避免的延迟，不会在所有网桥达成一致之前形成临时环路（27.4.1、27.9）。"
+    },
+    {
+      "type": "prose",
+      "en": "Computing the trees is a two-stage walk. First, CIST calculation (27.6) runs Dijkstra over the whole SPT Domain — the transitive closure of connected SPB bridges — using each port's path cost and adjacencies, to reproduce the same active topology the classic distance-vector spanning tree would, and to discover where each SPT Region begins and ends. When a domain holds more than one region (27.7), each bridge identifies the Boundary Bridge in its own region that reaches every other region over the CST. Second, SPT calculation (27.8) runs Dijkstra again, this time inside the bridge's own region, to find the shortest-path tree rooted at each bridge. A node can also raise an overload bit (27.8.1) — borrowed from ordinary IS-IS — to say \"route around me\"; paths transiting an overloaded bridge are excluded from the shortest-path result, which is handy for edge devices that should never carry transit traffic.",
+      "zh": "构建树分两个阶段进行。首先，CIST 计算（27.6）在整个 SPT 域——相连 SPB 网桥的传递闭包——上运行 Dijkstra 算法，利用每个端口的路径开销和邻接关系，重现经典距离矢量生成树会得到的相同活动拓扑，并发现每个 SPT 区域的起止边界。当一个域包含多个区域时（27.7），每台网桥会识别本区域内、能经 CST 到达其他各区域的边界网桥（Boundary Bridge）。其次，SPT 计算（27.8）再次运行 Dijkstra，这次只在本区域内进行，找出以每台网桥为根的最短路径树。节点还可置位过载位（27.8.1）——借自普通 IS-IS——表示“绕开我”；经过过载网桥的路径会被排除在最短路径结果之外，这对那些不应承载中转流量的边缘设备很有用。"
+    },
+    {
+      "type": "prose",
+      "en": "Identifiers are allocated automatically and consistently across the domain (27.10). Every SPB bridge gets a 20-bit SPSourceID (used by SPBM); each SPBV VLAN that a bridge can source frames onto gets an SPVID drawn from a reserved pool in the MST Configuration Table. Allocation is distributed: candidate values come from a pseudo-random function of the Bridge Identifier, conflicts are won by the numerically least Bridge Identifier, and losers simply pick a new free value — no extra handshake needed because every bridge knows the same tie-break rules. SPVIDs are then mapped to FIDs (Filtering Identifiers) under strict rules (27.11): SPBV and SPBM always use different FIDs, all SPVIDs of one VLAN share a FID, and VLANs on different tree sets use different FIDs — so SPBV learning can never corrupt SPBM forwarding.",
+      "zh": "标识符在整个域内自动且一致地分配（27.10）。每台 SPB 网桥获得一个 20 位的 SPSourceID（供 SPBM 使用）；每个该网桥可作为帧源的 SPBV VLAN 则从 MST 配置表中预留的池里获得一个 SPVID。分配是分布式的：候选值来自对网桥标识符（Bridge Identifier）的伪随机函数，冲突由数值最小的网桥标识符胜出，落败者直接另选一个空闲值——无需额外握手，因为每台网桥都知道相同的仲裁规则。随后 SPVID 在严格规则下映射到 FID（过滤标识符）（27.11）：SPBV 与 SPBM 始终使用不同的 FID，同一 VLAN 的所有 SPVID 共享一个 FID，不同树集上的 VLAN 使用不同的 FID——因此 SPBV 的学习绝不会破坏 SPBM 的转发。"
+    },
+    {
+      "type": "prose",
+      "en": "At a region's edge, an SPBV Boundary Port performs VID translation (27.12): inbound it maps the customer's Base VID to the SPVID of the tree rooted at that bridge; outbound it maps all of a VLAN's SPVIDs back to the single Base VID. Inside the region nothing is translated. Forwarding itself is then pruned by topology management. For SPBV (27.13), each bridge builds Dynamic VLAN Registration Entries — Registered or Not Registered per port — so a VLAN only floods where members actually are, combining the per-tree Port State variable forward with whether a port lies on the shortest path to a boundary that registered the VLAN. For SPBM, the same pruning is done with filtering entries keyed on MAC addresses, distributed by ISIS-SPB.",
+      "zh": "在区域边缘，SPBV 边界端口执行 VID 转换（27.12）：入向时将客户的基础 VID 映射为以该网桥为根的树的 SPVID；出向时将某 VLAN 的所有 SPVID 映射回单一的基础 VID。区域内部则不做任何转换。转发本身再由拓扑管理进行剪枝。对 SPBV（27.13），每台网桥构建动态 VLAN 注册条目——每端口为已注册或未注册——使 VLAN 只在真正有成员的地方泛洪，其依据是每树的端口状态变量 forward 与该端口是否位于通往已注册该 VLAN 的边界的最短路径上。对 SPBM，同样的剪枝改用以 MAC 地址为键、由 ISIS-SPB 分发的过滤条目完成。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"8\" y=\"16\" font-size=\"11\" stroke=\"none\" fill=\"currentColor\">SPBM source-rooted group MAC address (Figure 27-3)</text><rect x=\"10\" y=\"30\" width=\"90\" height=\"34\"/><rect x=\"100\" y=\"30\" width=\"170\" height=\"34\"/><rect x=\"270\" y=\"30\" width=\"180\" height=\"34\"/><text x=\"55\" y=\"51\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\" text-anchor=\"middle\">type 1100</text><text x=\"185\" y=\"51\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\" text-anchor=\"middle\">SPSourceID (20 bit)</text><text x=\"360\" y=\"51\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\" text-anchor=\"middle\">I-SID (24 bit)</text><text x=\"8\" y=\"96\" font-size=\"11\" stroke=\"none\" fill=\"currentColor\">SPBM shared-tree group MAC address (Figure 27-4)</text><rect x=\"10\" y=\"110\" width=\"90\" height=\"34\"/><rect x=\"100\" y=\"110\" width=\"170\" height=\"34\"/><rect x=\"270\" y=\"110\" width=\"180\" height=\"34\"/><text x=\"55\" y=\"131\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\" text-anchor=\"middle\">type 1110</text><text x=\"185\" y=\"131\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\" text-anchor=\"middle\">Tie-Break Mask</text><text x=\"360\" y=\"131\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\" text-anchor=\"middle\">I-SID (24 bit)</text></svg>",
+      "caption": {
+        "en": "SPBM group addresses are locally administered (U/L and I/G bits set). A 2-bit address type chooses the layout: type 1100 encodes an SPSourceID + I-SID for a source-rooted tree; type 1110 encodes a Tie-Break Mask + I-SID for a shared tree, so the same group never collides across two trees (27.15).",
+        "zh": "SPBM 组地址为本地管理（U/L 与 I/G 位置位）。2 位的地址类型决定布局：类型 1100 为源根树编码 SPSourceID + I-SID；类型 1110 为共享树编码 Tie-Break Mask + I-SID，从而使同一组地址绝不会在两棵树间冲突（27.15）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "SPBM forwarding rests on individual-address and group-address machinery. For unicast (27.14), a bridge may use loop mitigation (27.14.1) — install a filtering entry the moment the SPT rooted at that bridge associates a MAC with a port, subject to constraints that block multicast loops — or stricter loop prevention (27.14.2), which mirrors Port States for both Root and Designated Ports. For multicast, group MAC addresses of local significance carry the SPSourceID and I-SID (27.15), so each frame's B-VID plus address names exactly one source-rooted tree, and backbone service instance topology (27.16) installs Static Filtering Entries pruning each I-SID's multicast tree to just the Backbone Edge Bridges (BEBs) that registered it. When several equal-cost shortest paths exist (27.17), Equal Cost Trees (ECTs) and a deterministic tie-breaker let different VLANs ride different paths, and ECMP (Equal Cost Multi-Path) spreads load over many paths under one SPBM VID.",
+      "zh": "SPBM 转发建立在单地址与组地址机制之上。对单播（27.14），网桥可采用环路缓解（loop mitigation，27.14.1）——一旦以该桥为根的 SPT 将某 MAC 关联到某端口，便立即安装过滤条目，但须满足阻止多播环路的约束——或更严格的环路预防（loop prevention，27.14.2），后者同时反映根端口与指定端口的端口状态。对多播，具有本地意义的组 MAC 地址携带 SPSourceID 与 I-SID（27.15），于是每帧的 B-VID 加地址恰好命名一棵源根树；骨干业务实例拓扑（27.16）则安装静态过滤条目，将每个 I-SID 的多播树剪枝到仅注册了它的骨干边缘网桥（BEB）。当存在多条等价最短路径时（27.17），等价树（ECT）与确定性的仲裁机制让不同 VLAN 走不同路径，而 ECMP（等价多路径）可在单一 SPBM VID 下将负载分摊到多条路径上。"
+    },
+    {
+      "type": "prose",
+      "en": "Because SPBM disables flooding of unknown destinations, ordinary Connectivity Fault Management (CFM) needs small adjustments (27.18). SPBM defines three Maintenance Association (MA) types (27.18.1): an SPBM VID MA that behaves like a VLAN MA for monitoring connectivity, plus SPBM path MAs (two endpoints, testing one destination MAC) and SPBM group MAs (testing a service instance's multicast trees by I-SID). Maintenance End Points (MEPs) are always Up MEPs placed only on Customer Backbone Ports (27.18.2); Maintenance Intermediate Points (MIPs) follow the standard per-VID placement rule on Provider Network Ports (27.18.3). The Continuity Check, Loopback, and Linktrace protocols get targeted tweaks (27.18.4) — chiefly the destination address chosen and, for ECMP, setting the flow-hash and time-to-live so probes follow the same path real traffic would.",
+      "zh": "由于 SPBM 禁用了对未知目的地的泛洪，普通连通性故障管理（CFM）需要做小幅调整（27.18）。SPBM 定义了三种维护关联（MA）类型（27.18.1）：行为类似 VLAN MA 的 SPBM VID MA（用于监测连通性），外加 SPBM 路径 MA（两个端点，测试一个目的 MAC）和 SPBM 组 MA（按 I-SID 测试某业务实例的多播树）。维护端点（MEP）始终是 Up MEP，且只放置在客户骨干端口（CBP）上（27.18.2）；维护中间点（MIP）则在运营商网络端口（PNP）上遵循标准的按 VID 放置规则（27.18.3）。连续性检查、环回与链路追踪协议获得了针对性的微调（27.18.4）——主要是所选目的地址，以及在 ECMP 下设置流哈希（flow-hash）与生存时间（TTL），使探测帧走与真实流量相同的路径。"
+    },
+    {
+      "type": "prose",
+      "en": "Two worked examples close the clause (27.19). SPBV (27.19.1) is shown as a campus mesh: an SPT Region of eight bridges, with RSTP-only legacy bridges hanging off the edge; traffic for a Base VID rides the SPVID tree rooted at its access bridge, VID translation happens at the boundary, and SPB Hellos run inside while BPDUs peer with the legacy bridges. SPBM (27.19.2) is shown as a provider backbone: customer C-/S-tagged traffic enters at IB-type Backbone Edge Bridges, B-MAC addresses and I-SIDs are advertised in IS-IS LSPs, customer topology is isolated from backbone topology, and BEBs encapsulate to a group address until the far-end C-MAC is learned. Finally, security (27.20) adds no special mechanism of its own: rely on the optional IS-IS Authentication TLV, and where stronger protection is needed deploy IEEE 802.1AE MAC Security (MACsec) on all SPT bridge ports so only trusted, authenticated bridges join a region.",
+      "zh": "本章以两个实例收尾（27.19）。SPBV（27.19.1）以校园网状网为例：一个含八台网桥的 SPT 区域，边缘挂接仅支持 RSTP 的传统网桥；某基础 VID 的流量沿以其接入网桥为根的 SPVID 树传输，VID 转换发生在边界，区域内运行 SPB Hello，而 BPDU 与传统网桥对等。SPBM（27.19.2）以运营商骨干为例：客户的 C-/S-标签流量从 IB 型骨干边缘网桥进入，B-MAC 地址与 I-SID 通过 IS-IS LSP 通告，客户拓扑与骨干拓扑相互隔离，在学到远端 C-MAC 之前 BEB 将帧封装到一个组地址。最后，安全（27.20）本身不增加特殊机制：依赖可选的 IS-IS 认证 TLV，并在需要更强保护时于所有 SPT 网桥端口部署 IEEE 802.1AE MAC 安全（MACsec），使只有受信任、经认证的网桥才能加入区域。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every Clause 27 subclause taught here, by number",
+        "zh": "覆盖地图——本课所讲第 27 章各子条款（按编号）"
+      },
+      "en": "Design framing: 27.1 protocol design requirements (full, simple, symmetric connectivity; per-VLAN SPBV/SPBM choice). 27.2 protocol support (group address per component type; MCID + Auxiliary MCID; bridge/port priorities and path costs). 27.3 design goals (add bridges/VLANs without disrupting existing traffic). Configuration: 27.4.1 SPT Region and ISIS-SPB adjacency determination (VID-to-FID-to-MSTID tables, MCID digest, hitless MCID migration via Auxiliary MCID). 27.5 ISIS-SPB information (shared database; what each bridge can compute). Tree calculation: 27.6 calculating CIST connectivity (Dijkstra over the SPT Domain, restrictedDomainRole). 27.7 connectivity between regions in the same domain (per-region Boundary Bridge). 27.8.1 ISIS-SPB overload (overload bit excludes a node from transit). 27.9 loop prevention (Clause 13 state machines set learn/forward via Agreements). Identifiers: 27.10 SPVID and SPSourceID allocation (pseudo-random candidates, least-Bridge-ID wins, SPVID pool fallback to CST). 27.11 allocation of VIDs to FIDs (SPBV/SPBM use disjoint FIDs). 27.12 SPBV SPVID translation (Base VID ↔ SPVID at Boundary Ports). Forwarding control: 27.13 VLAN topology management (Dynamic VLAN Registration Entries prune flooding). 27.14.1 loop mitigation and 27.14.2 loop prevention (individual-address Dynamic Filtering Entries). 27.15 SPBM group addressing (locally administered group MAC carrying SPSourceID/I-SID/Tie-Break Mask). 27.16 backbone service instance topology management (Static Filtering Entries prune per-I-SID multicast). 27.17 equal cost shortest paths, ECTs, load spreading (ECT Algorithms, ECMP). CFM: 27.18.1 SPBM MA types, 27.18.2 MEP placement (Up MEPs on CBPs), 27.18.3 MIP placement (per-VID on PNPs), 27.18.4 protocol modifications (CCM/Loopback/Linktrace). Use and security: 27.19.1 SPBV example, 27.19.2 SPBM example, 27.20 security considerations (IS-IS Authentication TLV, MACsec).",
+      "zh": "设计框架：27.1 协议设计要求（完整、简单、对称的连通性；按 VLAN 选择 SPBV/SPBM）。27.2 协议支持（按组件类型选组地址；MCID + 辅助 MCID；网桥/端口优先级与路径开销）。27.3 设计目标（增加网桥/VLAN 而不中断既有流量）。配置：27.4.1 SPT 区域与 ISIS-SPB 邻接判定（VID-FID-MSTID 表、MCID 摘要、经辅助 MCID 的无损 MCID 迁移）。27.5 ISIS-SPB 信息（共享数据库；每桥可计算的内容）。树计算：27.6 计算 CIST 连通性（在 SPT 域上做 Dijkstra，restrictedDomainRole）。27.7 同域内区域间连通性（每区域的边界网桥）。27.8.1 ISIS-SPB 过载（过载位将节点排除出中转）。27.9 环路预防（第 13 章状态机经一致性置位 learn/forward）。标识符：27.10 SPVID 与 SPSourceID 分配（伪随机候选、最小网桥 ID 胜出、SPVID 池不足时回退 CST）。27.11 VID 到 FID 的分配（SPBV/SPBM 使用互不相交的 FID）。27.12 SPBV SPVID 转换（边界端口处 Base VID ↔ SPVID）。转发控制：27.13 VLAN 拓扑管理（动态 VLAN 注册条目剪枝泛洪）。27.14.1 环路缓解与 27.14.2 环路预防（单地址动态过滤条目）。27.15 SPBM 组地址（本地管理的组 MAC，携带 SPSourceID/I-SID/Tie-Break Mask）。27.16 骨干业务实例拓扑管理（静态过滤条目按 I-SID 剪枝多播）。27.17 等价最短路径、ECT 与负载分摊（ECT 算法、ECMP）。CFM：27.18.1 SPBM MA 类型，27.18.2 MEP 放置（CBP 上的 Up MEP），27.18.3 MIP 放置（PNP 上按 VID），27.18.4 协议修改（CCM/环回/链路追踪）。使用与安全：27.19.1 SPBV 示例，27.19.2 SPBM 示例，27.20 安全考量（IS-IS 认证 TLV、MACsec）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1391,
+          1392,
+          1393,
+          1394,
+          1396,
+          1397,
+          1398,
+          1399,
+          1400,
+          1401,
+          1402,
+          1404,
+          1405,
+          1406,
+          1407,
+          1408,
+          1409,
+          1410,
+          1411,
+          1413
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1389,
+        1390,
+        1391
+      ],
+      "note": "Clause 27 introduction; SPBV/SPBM overview; ECMP; 27.1 protocol design requirements"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1392,
+        1393
+      ],
+      "note": "27.2 protocol support; 27.3 design goals; 27.4 ISIS-SPB VLAN configuration"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1394,
+        1395,
+        1396
+      ],
+      "note": "27.4.1 SPT Region and adjacency determination; MCID/Auxiliary MCID; 27.5 ISIS-SPB information"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1397,
+        1398,
+        1399,
+        1400
+      ],
+      "note": "27.6 CIST connectivity; 27.7 inter-region; 27.8/27.8.1 SPT calc + overload; 27.9 loop prevention; 27.10 SPVID/SPSourceID allocation"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1401,
+        1402,
+        1403
+      ],
+      "note": "27.11 VIDs to FIDs; 27.12 SPVID translation; 27.13 VLAN topology management; 27.14 individual addresses"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1404,
+        1405,
+        1406
+      ],
+      "note": "27.14.1/27.14.2 loop mitigation/prevention; 27.15 SPBM group addressing; 27.16 backbone service instance topology"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1407,
+        1408,
+        1409
+      ],
+      "note": "27.17 ECTs/load spreading; 27.18.1-27.18.4 CFM for SPBM"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1410,
+        1411,
+        1413
+      ],
+      "note": "27.19.1 SPBV example; 27.19.2 SPBM example; 27.20 security considerations"
+    }
+  ],
+  "covers": [
+    "8021Q-2022:27.1",
+    "8021Q-2022:27.2",
+    "8021Q-2022:27.3",
+    "8021Q-2022:27.4.1",
+    "8021Q-2022:27.5",
+    "8021Q-2022:27.6",
+    "8021Q-2022:27.7",
+    "8021Q-2022:27.8.1",
+    "8021Q-2022:27.9",
+    "8021Q-2022:27.10",
+    "8021Q-2022:27.11",
+    "8021Q-2022:27.12",
+    "8021Q-2022:27.13",
+    "8021Q-2022:27.14.1",
+    "8021Q-2022:27.14.2",
+    "8021Q-2022:27.15",
+    "8021Q-2022:27.16",
+    "8021Q-2022:27.17",
+    "8021Q-2022:27.18.1",
+    "8021Q-2022:27.18.2",
+    "8021Q-2022:27.18.3",
+    "8021Q-2022:27.18.4",
+    "8021Q-2022:27.19.1",
+    "8021Q-2022:27.19.2",
+    "8021Q-2022:27.20"
+  ],
+  "track": "bridging-tsn"
+}

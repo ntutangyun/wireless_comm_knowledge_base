@@ -1,0 +1,177 @@
+{
+  "id": "bridging-tsn-12",
+  "title": {
+    "en": "Bridge Management Map: Objects, Data Types, and the FDB (Clause 12, part 1 of 4)",
+    "zh": "网桥管理地图：受管对象、数据类型与过滤数据库 FDB（第 12 章，第 1/4 部分）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Up to now we have studied what a bridge *does* — VLAN tagging, forwarding, spanning tree. Clause 12 of IEEE Std 802.1Q-2022 answers a different question: how does an operator *configure and observe* all of that from the outside? It defines a catalog of **managed objects** — abstract control points — and the read/write operations each one supports. A managed object is just a named handle onto one of the internal processes from Clause 8 (the bridge model). This lesson walks the first stretch of that catalog, from the high-level management functions down to the Filtering Database (FDB).",
+      "zh": "到目前为止我们学的都是网桥“做什么”——VLAN 打标签、转发、生成树。IEEE Std 802.1Q-2022 的第 12 章回答的是另一个问题：运营者如何从外部去“配置并观察”这一切？它定义了一份**受管对象（managed object）**目录——也就是抽象的控制点——以及每个对象支持的读/写操作。受管对象不过是指向第 8 章网桥模型里某个内部进程的一个命名句柄。本课走的是这份目录的第一段，从顶层的管理功能一直下沉到过滤数据库（FDB）。"
+    },
+    {
+      "type": "prose",
+      "en": "**12.1 Management functions.** Management is grouped into five classic functional areas (the FCAPS model). **12.1.1 Configuration Management** covers identifying bridges, remote reset, forcing a spanning-tree shape, controlling which VIDs (VLAN IDs) are reachable through which ports, and so on. **12.1.2 Fault Management** is fault prevention, detection, and diagnosis — including connectivity monitoring and path-trace messages within a VLAN. **12.1.3 Performance Management** gathers statistics: utilization, frames forwarded, frames discarded. **12.1.4 Security Management** and **12.1.5 Accounting Management** are named for completeness, but the standard states that bridge management provides no specific facilities in those two areas.",
+      "zh": "**12.1 管理功能。** 管理被归入五个经典功能域（即 FCAPS 模型）。**12.1.1 配置管理**涵盖识别网桥、远程复位、强制指定生成树形状、控制哪些 VID（VLAN 标识符）可经由哪些端口到达等等。**12.1.2 故障管理**负责故障的预防、检测与诊断——包括 VLAN 内的连通性监测与路径追踪报文。**12.1.3 性能管理**收集统计数据：利用率、已转发帧数、已丢弃帧数。**12.1.4 安全管理**与 **12.1.5 计费管理**只是为完整性而列出，标准明确指出网桥管理在这两个域内不提供任何专门设施。"
+    },
+    {
+      "type": "prose",
+      "en": "**12.2 VLAN Bridge objects** lists the managed resources, each tied to a process or entity in Clause 8: the Bridge Management Entity, the per-port MAC Entities, the Forwarding Process, the FDB, the Bridge Protocol Entity, and the various registration-protocol participants. **12.3 Data types** then fixes the vocabulary for every operation's inputs and outputs — independent of how a protocol encodes them on the wire. Examples: *Unsigned* (and note that for spanning-tree priorities, a *lower* number means *higher* priority), *Counter* (wraps at 2^64), *Time Interval* in seconds, *MRP Time Interval* in centiseconds, *Port Number* (1–4095), and *ComponentID* for systems built from several VLAN bridge components.",
+      "zh": "**12.2 VLAN 网桥对象**列出了各受管资源，每个都对应第 8 章中的一个进程或实体：网桥管理实体、各端口的 MAC 实体、转发进程、FDB、网桥协议实体，以及各类注册协议的参与者。**12.3 数据类型**随后为每个操作的输入和输出固定了词汇表——而且与协议在线路上如何编码无关。例如：*Unsigned*（注意：对生成树优先级而言，数值*越小*代表优先级*越高*）、*Counter*（在 2^64 处回绕）、以秒为单位的 *Time Interval*、以厘秒为单位的 *MRP Time Interval*、*Port Number*（1–4095），以及用于由多个 VLAN 网桥部件构成的系统的 *ComponentID*。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: a managed object is *not* a chunk of code — it is a control surface. \"Read X\" and \"Set X\" operations are the only way the outside world touches the live process. Note 12.2's *Persistent* keyword: an object marked Persistent must keep its value across a reboot (e.g. you don't want a configured PVID to vanish on power-cycle).",
+      "zh": "心智模型：受管对象*不是*一段代码——它是一个控制界面。“读 X”和“设 X”这两类操作，是外界触碰运行中进程的唯一途径。注意 12.2 提到的 *Persistent*（持久）关键字：标记为 Persistent 的对象必须在重启后仍保留其取值（比如你不希望配置好的 PVID 一断电就消失）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  MGR[Manager / operator] -->|Read / Set ops| BME[Bridge Mgmt Entity 12.4]\n  MGR --> MAC[MAC Entities 12.5]\n  MGR --> FWD[Forwarding Process 12.6]\n  MGR --> FDB[Filtering Database 12.7]\n  MGR --> BPE[Bridge Protocol Entity 12.8]\n  MGR --> MRP[MRP / MMRP 12.9 12.11]\n  MGR --> VLAN[Bridge VLAN objects 12.10]\n  MGR --> MST[MST config 12.12]",
+      "zh": "flowchart TD\n  MGR[管理者 / 运营者] -->|读 / 设 操作| BME[网桥管理实体 12.4]\n  MGR --> MAC[MAC 实体 12.5]\n  MGR --> FWD[转发进程 12.6]\n  MGR --> FDB[过滤数据库 12.7]\n  MGR --> BPE[网桥协议实体 12.8]\n  MGR --> MRP[MRP / MMRP 12.9 12.11]\n  MGR --> VLAN[网桥 VLAN 对象 12.10]\n  MGR --> MST[MST 配置 12.12]"
+    },
+    {
+      "type": "prose",
+      "en": "**12.4 Bridge Management Entity** holds two objects. **12.4.1 Bridge Configuration** (one per bridge) supports Discover Bridge, Read Bridge, Set Bridge Name, Reset Bridge, plus reading and updating a *component table* entry — each entry describing one component's MAC address, port count, type (I-component, B-component, C-VLAN, S-VLAN, etc.), and capability flags. **12.4.2 Port Configuration** models per-port summary data: a port table entry carries the component ID, port number, port type and type-capabilities, MAC address, point-to-point status, name, and discard counters. **12.5 MAC entities** mostly defers to each MAC's own layer-management standard; **12.5.1** adds an optional *ISS Port Number table* that maps an Internal Sublayer Service (ISS) port number to a bridge port's component ID and port number.",
+      "zh": "**12.4 网桥管理实体**包含两个对象。**12.4.1 网桥配置**（每网桥一个）支持发现网桥、读取网桥、设置网桥名称、复位网桥，外加读取与更新*部件表（component table）*条目——每个条目描述一个部件的 MAC 地址、端口数、类型（I 部件、B 部件、C-VLAN、S-VLAN 等）及能力标志位。**12.4.2 端口配置**对各端口的摘要数据建模：一个端口表条目携带部件 ID、端口号、端口类型与类型能力、MAC 地址、点对点状态、名称以及丢弃计数器。**12.5 MAC 实体**多半交给各 MAC 自身的层管理标准处理；**12.5.1** 增加了一个可选的 *ISS 端口号表*，把内部子层服务（ISS）端口号映射到某个网桥端口的部件 ID 和端口号。"
+    },
+    {
+      "type": "prose",
+      "en": "**12.6 Forwarding process** exposes three things. **12.6.1 The Port Counters** (one set per VID per port) are read with Read Forwarding Port Counters: frames received, octets received, inbound discards, outbound forwards, discards for lack of buffers, discards for transit-delay exceeded, discards on error, and — where supported — discards from ingress filtering or expired TTL. **12.6.2 Priority handling** reads and sets the per-port default priority, priority regeneration table, Priority Code Point (PCP) decode/encode tables, the Use_DEI and Require-Drop-Encoding flags, and service-access-priority tables. **12.6.3 The Traffic Class Table** maps each priority to one of up to eight traffic classes per port — the queueing backbone for quality of service.",
+      "zh": "**12.6 转发进程**对外暴露三样东西。**12.6.1 端口计数器**（每端口每 VID 一组）通过“读转发端口计数器”读取：收到的帧数、收到的字节数、入向丢弃、出向转发、因缺少缓冲区而丢弃、因超出传输时延而丢弃、因出错而丢弃，以及——在受支持时——因入向过滤或 TTL 过期而丢弃。**12.6.2 优先级处理**用于读取和设置各端口的默认优先级、优先级再生表、优先级码点（PCP）解码/编码表、Use_DEI 与“要求丢弃编码”标志位，以及业务接入优先级表。**12.6.3 流量类别表**把每个优先级映射到每端口最多八个流量类别之一——这是服务质量（QoS）排队的支柱。"
+    },
+    {
+      "type": "prose",
+      "en": "**12.7 Filtering Database (FDB).** This is the heart of forwarding: the table of \"which MAC address lives behind which port(s).\" **12.7.1 The Filtering Database object** (one per bridge) reads aggregate facts — FDB size, counts of static and dynamic entries, ageing time — and sets the ageing time for dynamic entries. The standard then distinguishes entry kinds by how they are created and what you may do to them: **12.7.2 Static Filtering Entry** (created/deleted only by management — full create/delete/read/read-range), **12.7.3 Dynamic Filtering Entry** (learned from observed traffic — delete/read/read-range, but no create), **12.7.4 MAC Address Registration Entry** (changes only via MMRP exchanges — read-only), and **12.7.5 VLAN Registration Entry**, split into **12.7.5.1 Static** (management-created) and dynamic (created by MVRP).",
+      "zh": "**12.7 过滤数据库（FDB）。** 这是转发的核心：记录“哪个 MAC 地址在哪个端口后面”的那张表。**12.7.1 过滤数据库对象**（每网桥一个）读取聚合信息——FDB 容量、静态与动态条目的数量、老化时间——并设置动态条目的老化时间。随后，标准按条目的创建方式以及你能对它做什么来区分各类条目：**12.7.2 静态过滤条目**（仅由管理创建/删除——完整支持创建/删除/读取/范围读取）、**12.7.3 动态过滤条目**（从观测到的流量中学习而来——支持删除/读取/范围读取，但不能创建）、**12.7.4 MAC 地址注册条目**（仅经由 MMRP 交互变更——只读），以及 **12.7.5 VLAN 注册条目**，再分为 **12.7.5.1 静态**（由管理创建）和动态（由 MVRP 创建）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 170\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"8\" y=\"16\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">FDB entry kinds (12.7.2-12.7.6) and who writes them</text><rect x=\"10\" y=\"30\" width=\"130\" height=\"40\"/><text x=\"18\" y=\"48\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Static Filtering</text><text x=\"18\" y=\"62\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">writer: management</text><rect x=\"160\" y=\"30\" width=\"130\" height=\"40\"/><text x=\"168\" y=\"48\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Dynamic Filtering</text><text x=\"168\" y=\"62\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">writer: learning</text><rect x=\"310\" y=\"30\" width=\"140\" height=\"40\"/><text x=\"318\" y=\"48\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">MAC Addr Reg.</text><text x=\"318\" y=\"62\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">writer: MMRP</text><rect x=\"10\" y=\"90\" width=\"130\" height=\"40\"/><text x=\"18\" y=\"108\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Static VLAN Reg.</text><text x=\"18\" y=\"122\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">writer: management</text><rect x=\"160\" y=\"90\" width=\"130\" height=\"40\"/><text x=\"168\" y=\"108\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Dynamic VLAN Reg.</text><text x=\"168\" y=\"122\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">writer: MVRP</text><rect x=\"310\" y=\"90\" width=\"140\" height=\"40\"/><text x=\"318\" y=\"108\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Permanent DB</text><text x=\"318\" y=\"122\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">seeds FDB on reset</text><text x=\"10\" y=\"152\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">General ops (12.7.7): Create / Delete / Read / Read-range act on these via VID keys</text></svg>",
+      "caption": {
+        "en": "FDB entry kinds and their writers (12.7.2-12.7.6); the general operations of 12.7.7 act across them.",
+        "zh": "FDB 各类条目及其写入者（12.7.2-12.7.6）；12.7.7 的通用操作跨这些条目生效。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "**12.7.6 Permanent Database object** is the persistent seed: on Reset Bridge the FDB is cleared and reloaded from it, and you can read its size and its static-entry counts. **12.7.7 General FDB operations** are the four verbs that act across the entry kinds: *Create Filtering Entry* (static entries only — it may be rejected, e.g. for a port/VID type conflict or an SPVID), *Delete Filtering Entry*, *Read Filtering Entry*, and *Read Filtering Entry range* (which returns a bounded index window, since a full dump may exceed one response message). All four are keyed by a VID even for a dynamic entry that internally carries an FID (Filtering Identifier) — you supply any VID allocated to that FID.",
+      "zh": "**12.7.6 永久数据库对象**是持久化的“种子”：执行复位网桥时，FDB 会被清空并由它重新加载，你也可以读取它的容量和静态条目数量。**12.7.7 通用 FDB 操作**是跨各类条目生效的四个动词：*创建过滤条目*（仅限静态条目——可能被拒绝，例如端口/VID 类型冲突或命中 SPVID）、*删除过滤条目*、*读取过滤条目*，以及*读取过滤条目范围*（返回一个有界的索引窗口，因为完整转储可能超过单条响应报文的容量）。即便某个动态条目内部携带的是 FID（过滤标识符），这四个操作仍以 VID 作为键——你提供分配给该 FID 的任意一个 VID 即可。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the remaining clause numbers (12.8-12.12) and the exact operations each object exposes",
+        "zh": "覆盖地图：其余条目编号（12.8-12.12）及每个对象暴露的确切操作"
+      },
+      "en": "This lesson teaches all 32 units. **12.1.1-12.1.5** — the five FCAPS areas (Configuration, Fault, Performance, Security, Accounting); only the first three carry bridge facilities. **12.2** lists the managed VLAN-bridge objects mapped to Clause 8 processes; **12.3** fixes the data types (Boolean, Enumerated, Unsigned, Counter, Time/MRP-Time Interval, Port/Bridge Priority, ComponentID, IP Address, etc.). **12.4.1** Bridge Configuration (Discover/Read/Set Name/Reset + component table); **12.4.2** Port Configuration (port table). **12.5.1** the optional ISS Port Number table. **12.6.1** Port Counters (Read Forwarding Port Counters); **12.6.2** Priority handling (default priority, regeneration, PCP decode/encode, Use_DEI, drop-encoding, service-access priority); **12.6.3** the Traffic Class Table. **12.7.1** the FDB object (Read FDB, Set Ageing Time); **12.7.2** Static, **12.7.3** Dynamic, **12.7.4** MAC Address Registration, **12.7.5** VLAN Registration (.1 Static / .2 Dynamic) entries; **12.7.6** Permanent Database; **12.7.7** the four general ops (Create/Delete/Read/Read-range). **12.8.1** the Protocol Entity (Read/Set CIST and MSTI Bridge Protocol Parameters — CIST = Common and Internal Spanning Tree, MSTI = Multiple Spanning Tree Instance); **12.8.2** the per-port spanning-tree controls (including Force BPDU Migration Check, which sets the mcheck variable when forceVersion >= 2). **12.9.1** the MRP (Multiple Registration Protocol) Timer object (Read/Set JoinTime, LeaveTime, LeaveAllTime); **12.9.2** the MRP Attribute Type object (Read/Set Applicant Controls, with a Failed-Registrations counter and an MVRP-only Transmit-Zero flag); **12.9.3** the Periodic state-machine object (Read/Set enabled/disabled). **12.10.1** the Bridge VLAN Configuration object (PVID/VID-set, acceptable frame types, ingress filtering, restricted VLAN registration, protocol-group DB, VID translation); **12.10.2** the VLAN Configuration object; **12.10.3** the VID-to-FID allocation object (Configure/Delete, recomputing the MCID digest on MST bridges). **12.11.1** the MMRP (Multiple MAC Registration Protocol) Configuration object (Read, Notify registration failure, Configure Restricted_MAC_Address_Registration). **12.12.1** the MSTI List (Read/Create/Delete MSTI); **12.12.2** the FID-to-MSTID Allocation Table (Read/Set, MSTID 0 = the CST); **12.12.3** the read-only MST Configuration Table (4096 elements, derived from the VID-to-FID and FID-to-MSTID tables, and carrying the MCID = MST Configuration Identifier).",
+      "zh": "本课讲授全部 32 个单元。**12.1.1-12.1.5**——五个 FCAPS 域（配置、故障、性能、安全、计费），其中只有前三个带有网桥设施。**12.2** 列出映射到第 8 章进程的受管 VLAN 网桥对象；**12.3** 固定数据类型（布尔、枚举、Unsigned、Counter、Time/MRP-Time Interval、端口/网桥优先级、ComponentID、IP 地址等）。**12.4.1** 网桥配置（发现/读取/设名/复位 + 部件表）；**12.4.2** 端口配置（端口表）。**12.5.1** 可选的 ISS 端口号表。**12.6.1** 端口计数器（读转发端口计数器）；**12.6.2** 优先级处理（默认优先级、再生、PCP 解码/编码、Use_DEI、丢弃编码、业务接入优先级）；**12.6.3** 流量类别表。**12.7.1** FDB 对象（读 FDB、设老化时间）；**12.7.2** 静态、**12.7.3** 动态、**12.7.4** MAC 地址注册、**12.7.5** VLAN 注册（.1 静态 / .2 动态）条目；**12.7.6** 永久数据库；**12.7.7** 四个通用操作（创建/删除/读取/范围读取）。**12.8.1** 协议实体（读/设 CIST 与 MSTI 的网桥协议参数——CIST = 公共与内部生成树，MSTI = 多生成树实例）；**12.8.2** 各端口的生成树控制（含“强制 BPDU 迁移检查”，当 forceVersion >= 2 时置位 mcheck 变量）。**12.9.1** MRP（多重注册协议）定时器对象（读/设 JoinTime、LeaveTime、LeaveAllTime）；**12.9.2** MRP 属性类型对象（读/设申请者控制，带“注册失败”计数器和仅 MVRP 的“发送零”标志）；**12.9.3** 周期状态机对象（读/设 启用/禁用）。**12.10.1** 网桥 VLAN 配置对象（PVID/VID 集合、可接受帧类型、入向过滤、受限 VLAN 注册、协议组数据库、VID 转换）；**12.10.2** VLAN 配置对象；**12.10.3** VID 到 FID 分配对象（配置/删除，在 MST 网桥上重算 MCID 摘要）。**12.11.1** MMRP（多重 MAC 注册协议）配置对象（读取、通知注册失败、配置 Restricted_MAC_Address_Registration）。**12.12.1** MSTI 列表（读/建/删 MSTI）；**12.12.2** FID 到 MSTID 分配表（读/设，MSTID 0 = CST）；**12.12.3** 只读的 MST 配置表（4096 个元素，由 VID-到-FID 和 FID-到-MSTID 两张表派生，并携带 MCID = MST 配置标识符）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          323,
+          324,
+          325,
+          326,
+          332,
+          333,
+          341,
+          342,
+          343,
+          344,
+          345,
+          346,
+          353,
+          354,
+          355,
+          356,
+          361,
+          362,
+          364,
+          365,
+          366,
+          367,
+          368
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why the registration-protocol acronyms cluster here: MRP is the generic engine; MVRP (Multiple VLAN Registration Protocol) populates dynamic VLAN registration entries, and MMRP (Multiple MAC Registration Protocol) populates MAC address registration entries. Clause 12 only manages their *timers, controls, and failure reporting* — the protocols themselves live in Clauses 10 and 11. The MST objects (12.12) close the loop: changing a VID-to-FID or FID-to-MSTID mapping forces a recompute of the MCID digest so neighbors agree on the same spanning-tree regions.",
+      "zh": "为什么这些注册协议缩写聚在这里：MRP 是通用引擎；MVRP（多重 VLAN 注册协议）填充动态 VLAN 注册条目，MMRP（多重 MAC 注册协议）填充 MAC 地址注册条目。第 12 章只管理它们的*定时器、控制项和失败上报*——协议本身位于第 10、11 章。MST 对象（12.12）合上了这个闭环：改动 VID-到-FID 或 FID-到-MSTID 映射会强制重算 MCID 摘要，从而让邻居就同一套生成树区域达成一致。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        323,
+        324,
+        325,
+        326,
+        327,
+        328,
+        329,
+        330,
+        331,
+        332,
+        333,
+        341,
+        342,
+        343,
+        344,
+        345,
+        346,
+        353,
+        354,
+        355,
+        356,
+        364,
+        365,
+        366,
+        367,
+        368
+      ],
+      "note": "Clause 12 Bridge management: 12.1 functions; 12.2 objects; 12.3 data types; 12.4 Bridge Mgmt Entity; 12.5 MAC entities; 12.6 forwarding; 12.7 FDB; 12.8 Bridge Protocol Entity; 12.9 MRP; 12.10 Bridge VLAN objects; 12.11 MMRP; 12.12 MST config."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:12.1.1",
+    "8021Q-2022:12.1.2",
+    "8021Q-2022:12.1.3",
+    "8021Q-2022:12.1.4",
+    "8021Q-2022:12.1.5",
+    "8021Q-2022:12.2",
+    "8021Q-2022:12.3",
+    "8021Q-2022:12.4.1",
+    "8021Q-2022:12.4.2",
+    "8021Q-2022:12.5.1",
+    "8021Q-2022:12.6.1",
+    "8021Q-2022:12.6.2",
+    "8021Q-2022:12.6.3",
+    "8021Q-2022:12.7.1",
+    "8021Q-2022:12.7.2",
+    "8021Q-2022:12.7.3",
+    "8021Q-2022:12.7.4",
+    "8021Q-2022:12.7.5",
+    "8021Q-2022:12.7.6",
+    "8021Q-2022:12.7.7",
+    "8021Q-2022:12.8.1",
+    "8021Q-2022:12.8.2",
+    "8021Q-2022:12.9.1",
+    "8021Q-2022:12.9.2",
+    "8021Q-2022:12.9.3",
+    "8021Q-2022:12.10.1",
+    "8021Q-2022:12.10.2",
+    "8021Q-2022:12.10.3",
+    "8021Q-2022:12.11.1",
+    "8021Q-2022:12.12.1",
+    "8021Q-2022:12.12.2",
+    "8021Q-2022:12.12.3"
+  ],
+  "track": "bridging-tsn"
+}

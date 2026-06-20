@@ -1,0 +1,203 @@
+{
+  "id": "bridging-tsn-28",
+  "title": {
+    "en": "MIB Security, Dynamic Components, and Service Provisioning (Clause 17, part 3 of 4)",
+    "zh": "MIB 安全考量、动态组件与业务接口配置（第 17 章，第 3/4 部分）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A Management Information Base (MIB) is the catalog of remotely readable and writable objects that a bridge exposes to a network manager. In IEEE Std 802.1Q-2022, those objects are reached over the Simple Network Management Protocol (SNMP). This lesson covers three faces of that catalog: how to keep it from being abused (17.4 Security considerations), how a manager can grow a bridge by creating components and ports on the fly (17.5 Dynamic component and Port creation), and the exact table recipes a Provider follows to turn those parts into a working customer service (17.6 MIB operations for service interface configuration).",
+      "zh": "管理信息库（MIB，Management Information Base）是网桥向网络管理者开放的、可远程读取和写入的对象目录。在 IEEE Std 802.1Q-2022 中，这些对象通过简单网络管理协议（SNMP，Simple Network Management Protocol）访问。本课讲解该目录的三个侧面：如何防止它被滥用（17.4 安全考量）、管理者如何动态创建组件和端口来扩展一台网桥（17.5 动态组件与端口创建），以及 Provider 把这些部件配置成可用客户业务时所遵循的精确表操作流程（17.6 业务接口配置的 MIB 操作）。"
+    },
+    {
+      "type": "prose",
+      "en": "The whole of 17.4 rests on one warning (17.4.1): SNMP versions before SNMPv3 lacked adequate security, so even on an otherwise-secure network there is no control over who may GET (read) or SET (change/create/delete) these objects. The standard recommends deploying SNMPv3 with its cryptographic authentication and privacy, and leaving it to the operator to grant access only to legitimate principals. The IEEE8021-TC-MIB (17.4.1) defines no objects itself — only textual conventions reused elsewhere — so its security story lives in whichever module borrows those conventions.",
+      "zh": "整个 17.4 都建立在一条警告之上（17.4.1）：SNMPv3 之前的 SNMP 版本缺乏足够的安全性，因此即便网络本身是安全的，也无法控制谁可以 GET（读取）或 SET（修改/创建/删除）这些对象。标准建议部署带有密码学认证与保密机制的 SNMPv3，并把仅向合法主体（principal）授权这一责任交给运营者。IEEE8021-TC-MIB（17.4.1）本身不定义任何对象——只定义供其他模块复用的文本约定（textual convention）——所以它的安全说明落在借用这些约定的具体模块里。"
+    },
+    {
+      "type": "prose",
+      "en": "Every per-module subclause from 17.4.2 onward repeats the same risk model in module-specific terms. Writable objects — those with a MAX-ACCESS of read-write or read-create — are dangerous because a hostile SET can reinitialize state machines, change forwarding/filtering policy, or starve a class of traffic. Readable objects are dangerous because GET leaks topology, MAC vendors, or which protocols are running, helping an attacker pick a target. For the core IEEE8021-BRIDGE-MIB (17.4.2), tampering with ieee8021BridgeTpAgingTime can enable filtering-database (FDB) overflow attacks, and the newRoot/topologyChange notifications can be forged to trigger denial-of-service churn.",
+      "zh": "从 17.4.2 起，每个针对具体模块的小节都用该模块的术语重复同一套风险模型。可写对象——即 MAX-ACCESS 为 read-write 或 read-create 的对象——之所以危险，是因为恶意的 SET 可以重新初始化状态机、改变转发/过滤策略，或者使某一类流量被饿死。可读对象之所以危险，是因为 GET 会泄露拓扑、MAC 厂商或正在运行的协议，从而帮助攻击者选定目标。对核心的 IEEE8021-BRIDGE-MIB（17.4.2）而言，篡改 ieee8021BridgeTpAgingTime 会助长过滤数据库（FDB，filtering database）溢出攻击，而 newRoot/topologyChange 通知可被伪造来引发拒绝服务式的拓扑震荡。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy reading of all of 17.4: ask of each object \"what breaks if an attacker writes it?\" and \"what is revealed if an attacker reads it?\" Writable spanning-tree, VLAN, and scheduling objects threaten availability (loops, instability, starved streams); readable tables threaten confidentiality (topology and address maps). The fix is always the same — proper SNMPv3 access control and, where warranted, encryption of the values in transit.",
+      "zh": "理解整个 17.4 的一个实用方法：对每个对象都问两件事——“如果攻击者写入它，会破坏什么？”以及“如果攻击者读取它，会暴露什么？”可写的生成树、VLAN 和调度类对象威胁可用性（环路、不稳定、流量被饿死）；可读的表则威胁机密性（拓扑与地址映射）。修复手段始终一致——恰当的 SNMPv3 访问控制，并在必要时对传输中的取值加密。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — 17.4 security considerations, module by module (17.4.1–17.4.25)",
+        "zh": "覆盖地图——17.4 逐模块安全考量（17.4.1–17.4.25）"
+      },
+      "en": "Each subclause names the sensitive objects in one MIB module. 17.4.1 IEEE8021-TC-MIB: textual conventions only, no objects. 17.4.2 IEEE8021-BRIDGE-MIB: priority/traffic-class tables, TpAgingTime, BridgeStaticTable, plus topology-leaking FDB reads and forgeable newRoot/topologyChange notifications. 17.4.3 IEEE8021-SPANNING-TREE-MIB: writable RSTP (Rapid Spanning Tree Protocol) timers/priorities/path-costs cause delays and instability. 17.4.4 IEEE8021-Q-BRIDGE-MIB: GvrpStatus, static unicast/multicast and VLAN tables interfere with VLANs; read-only MaxVlanID/FdbTable leak topology. 17.4.5 IEEE8021-PB-MIB: Provider Bridge VID-translation/registration/edge tables. 17.4.6 IEEE8021-MSTP-MIB: CIST/MSTP (Multiple Spanning Tree) BPDU-enable and port priority/path-cost. 17.4.7 IEEE8021-CFM-MIB: Connectivity Fault Management — a \"walled garden\" where each Maintenance Domain administrator is isolated by SNMPv3 securityName; sensitive tables in Table 17-32/17-33. 17.4.8 IEEE8021-PBB-MIB: Provider Backbone Bridge I-SID and VIP/PIP maps. 17.4.9 IEEE8021-DDCFM-MIB: Data-Delay CFM responders that can inject/intercept frames (Table 17-34/17-35). 17.4.10 IEEE8021-PBBTE-MIB: PBB Traffic Engineering protection-group and TESI objects. 17.4.11 IEEE8021-TPMR-MIB: Two-Port MAC Relay MSP and sysName/ifName. 17.4.12 IEEE8021-FQTSS-MIB: Forwarding and Queuing for Time-Sensitive Streams — bandwidth/idle-slope/SR-class objects. 17.4.13 IEEE8021-CN-MIB: Congestion Notification domain boundaries and rate-limiter params. 17.4.14 IEEE8021-SRP-MIB: Stream Reservation Protocol enable/pruning/PVID. 17.4.15 IEEE8021-MVRPX-MIB: Multiple VLAN Registration extensions (New-message control). 17.4.16 IEEE8021-MIRP-MIB: Multiple I-SID Registration. 17.4.17 IEEE8021-PFC-MIB: a single object, PFCLinkDelayAllowance. 17.4.18 IEEE8021-TEIPS-MIB: TE Infrastructure Protection Switching. 17.4.19 IEEE8021-SPB-MIB: Shortest Path Bridging system/MTID/ECT objects. 17.4.20 IEEE8021-EVB-MIB: Edge Virtual Bridging across two management authorities (Table 17-36/17-37). 17.4.21 IEEE8021-ECMP-MIB: Equal-Cost Multi-Path flow-filter and ECT objects. 17.4.22 IEEE8021-ST-MIB: Scheduled Traffic gate/control-list/cycle-time. 17.4.23 IEEE8021-Preemption-MIB: a single object, FramePreemptionAdminStatus. 17.4.24 IEEE8021-PSFP-MIB: Per-Stream Filtering and Policing filters/gates/flow-meters. 17.4.25 IEEE8021-TSN-REMOTE-MANAGEMENT-MIB: MsrpMrpExternalControl affecting TSN stream delay/jitter.",
+      "zh": "每个小节都列出一个 MIB 模块中的敏感对象。17.4.1 IEEE8021-TC-MIB：仅文本约定，无对象。17.4.2 IEEE8021-BRIDGE-MIB：优先级/流量类表、TpAgingTime、BridgeStaticTable，外加泄露拓扑的 FDB 读取和可伪造的 newRoot/topologyChange 通知。17.4.3 IEEE8021-SPANNING-TREE-MIB：可写的 RSTP（快速生成树协议）定时器/优先级/路径开销会造成延迟与不稳定。17.4.4 IEEE8021-Q-BRIDGE-MIB：GvrpStatus、静态单播/组播与 VLAN 表会干扰 VLAN；只读的 MaxVlanID/FdbTable 泄露拓扑。17.4.5 IEEE8021-PB-MIB：Provider Bridge 的 VID 转换/注册/边缘表。17.4.6 IEEE8021-MSTP-MIB：CIST/MSTP（多生成树）BPDU 使能和端口优先级/路径开销。17.4.7 IEEE8021-CFM-MIB：连通性故障管理——一个“围墙花园”，每个维护域管理员靠 SNMPv3 securityName 隔离，敏感表见表 17-32/17-33。17.4.8 IEEE8021-PBB-MIB：Provider Backbone Bridge 的 I-SID 与 VIP/PIP 映射。17.4.9 IEEE8021-DDCFM-MIB：可注入/截获帧的数据延迟 CFM 响应器（表 17-34/17-35）。17.4.10 IEEE8021-PBBTE-MIB：PBB 流量工程保护组与 TESI 对象。17.4.11 IEEE8021-TPMR-MIB：双端口 MAC 中继的 MSP 及 sysName/ifName。17.4.12 IEEE8021-FQTSS-MIB：面向时间敏感流的转发与排队——带宽/空闲斜率/SR 类对象。17.4.13 IEEE8021-CN-MIB：拥塞通知域边界与限速器参数。17.4.14 IEEE8021-SRP-MIB：流预留协议的使能/剪枝/PVID。17.4.15 IEEE8021-MVRPX-MIB：多 VLAN 注册扩展（New 消息控制）。17.4.16 IEEE8021-MIRP-MIB：多 I-SID 注册。17.4.17 IEEE8021-PFC-MIB：单一对象 PFCLinkDelayAllowance。17.4.18 IEEE8021-TEIPS-MIB：TE 基础设施保护倒换。17.4.19 IEEE8021-SPB-MIB：最短路径桥接的系统/MTID/ECT 对象。17.4.20 IEEE8021-EVB-MIB：跨两个管理权限的边缘虚拟桥接（表 17-36/17-37）。17.4.21 IEEE8021-ECMP-MIB：等价多路径的流过滤与 ECT 对象。17.4.22 IEEE8021-ST-MIB：调度流量的门控/控制列表/周期时间。17.4.23 IEEE8021-Preemption-MIB：单一对象 FramePreemptionAdminStatus。17.4.24 IEEE8021-PSFP-MIB：逐流过滤与监管的过滤器/门控/流量计。17.4.25 IEEE8021-TSN-REMOTE-MANAGEMENT-MIB：影响 TSN 流延迟/抖动的 MsrpMrpExternalControl。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          685,
+          686,
+          687,
+          688,
+          689,
+          690,
+          691,
+          692,
+          693,
+          694,
+          695,
+          696,
+          697,
+          698,
+          699,
+          700,
+          701,
+          702,
+          703
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Section 17.5 switches from defense to construction. The Bridge MIBs optionally let a manager create bridge components and bridge ports purely through management operations, rather than tying them to physical hardware insertion (17.5.1). A component is the smallest self-contained bridge: a set of Bridge Ports, a relay that forwards/filters frames between them, and the managed objects controlling it (17.5.1.1). A Bridge Port (or Edge Relay Port) is simply a frame source/sink attached to that relay (17.5.1.2). Because components own ports, you must create the component first, then populate it.",
+      "zh": "第 17.5 节从防御转向构建。Bridge MIB 可选地允许管理者纯粹通过管理操作来创建网桥组件和网桥端口，而不必把它们绑定到物理硬件的插入上（17.5.1）。一个组件是最小的自包含网桥：一组网桥端口、一个在它们之间转发/过滤帧的中继单元，以及控制其运行的受管对象（17.5.1.1）。网桥端口（或边缘中继端口，Edge Relay Port）只是连接到该中继的帧源/帧汇（17.5.1.2）。由于组件“拥有”端口，必须先创建组件，再往里填充端口。"
+    },
+    {
+      "type": "prose",
+      "en": "Two wiring details complete the overview. Internal LAN connections (17.5.1.3) let a Backbone Edge Bridge (BEB) stitch its I-components' Provider Instance Ports (PIPs) to a B-component's Customer Backbone Port via the ieee8021BridgeILanIfTable plus the ifStackTable — creating a virtual interface that represents the link. And Provider Instance Ports (17.5.1.4): although a PIP is not technically a Bridge Port, its creation is folded into the port-creation logic for I-components. Creation itself (17.5.2) is a single move — write a row in ieee8021BridgeBaseTable with the right ieee8021BridgeBaseComponentType — and most component types (MAC Bridge, B-, I-, T-component, 17.5.2.1/17.5.2.4/17.5.2.5/17.5.2.7) have no special rules, while C-VLAN and S-VLAN components (17.5.2.2/17.5.2.3) are often created implicitly when an edge or uplink port is created. Port creation (17.5.3) mirrors this: a row-create on a port-type-specific table makes the agent implicitly fill in the matching ieee8021BridgeBasePortTable entry.",
+      "zh": "两个连线细节补全了这一概览。内部 LAN 连接（17.5.1.3）让骨干边缘网桥（BEB，Backbone Edge Bridge）通过 ieee8021BridgeILanIfTable 加 ifStackTable，把其 I-组件的 Provider 实例端口（PIP，Provider Instance Port）与 B-组件的客户骨干端口缝合起来——创建一个代表该链路的虚拟“接口”。以及 Provider 实例端口（17.5.1.4）：尽管 PIP 在技术上不算网桥端口，但其创建被并入 I-组件的端口创建逻辑。创建本身（17.5.2）只需一步——在 ieee8021BridgeBaseTable 中写入一行并设好 ieee8021BridgeBaseComponentType——大多数组件类型（MAC 网桥、B-、I-、T-组件，17.5.2.1/17.5.2.4/17.5.2.5/17.5.2.7）没有特殊规则，而 C-VLAN 与 S-VLAN 组件（17.5.2.2/17.5.2.3）常在创建某个边缘或上行端口时被隐式创建。端口创建（17.5.3）与此对称：在某个端口类型专用表上执行 row-create，代理就会隐式填好对应的 ieee8021BridgeBasePortTable 表项。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Manager: row-create in BridgeBaseTable] --> B[Component created\\nwith ComponentType]\n  B --> C[Manager: row-create in\\nport-type table]\n  C --> D[Agent implicitly fills\\nBridgeBasePortTable entry]\n  D --> E[Wire components via\\nILanIfTable + ifStackTable]",
+      "zh": "flowchart TD\n  A[管理者: 在 BridgeBaseTable 中 row-create] --> B[按 ComponentType\\n创建组件]\n  B --> C[管理者: 在端口类型表中\\n执行 row-create]\n  C --> D[代理隐式填好\\nBridgeBasePortTable 表项]\n  D --> E[通过 ILanIfTable + ifStackTable\\n连接组件]"
+    },
+    {
+      "type": "prose",
+      "en": "Section 17.6 is the cookbook that ties it all together: given created components and ports, exactly which MIB tables must a Provider touch to stand up each customer service interface. It splits into Provider Bridged Network (PBN) interfaces (17.6.1) and Provider Backbone Bridged Network (PBBN) interfaces (17.6.2), and each side first lists service-type-independent steps, then per-service-type detail. Table 17-38 enumerates the PBN parameters (ComponentID, Port Number, RelaySVid, CVid, LocalSVid, etc.) keyed by service type, and Table 17-39 does the same for PBB interfaces (IComponentID, BComponentID, CBPPortNumber, BackboneSid, B-Vid, and so on).",
+      "zh": "第 17.6 节是把这一切串起来的“菜谱”：在组件和端口已创建的前提下，Provider 究竟要操作哪些 MIB 表才能搭起每一种客户业务接口。它分为 Provider 桥接网络（PBN，Provider Bridged Network）接口（17.6.1）与 Provider 骨干桥接网络（PBBN，Provider Backbone Bridged Network）接口（17.6.2），两侧都先列出与业务类型无关的步骤，再给出逐业务类型的细节。表 17-38 按业务类型列出 PBN 参数（ComponentID、端口号、RelaySVid、CVid、LocalSVid 等），表 17-39 则对 PBB 接口做同样的事（IComponentID、BComponentID、CBPPortNumber、BackboneSid、B-Vid 等）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 480 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"30\" width=\"130\" height=\"40\"/><text x=\"75\" y=\"55\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Port-based</text><rect x=\"175\" y=\"30\" width=\"130\" height=\"40\"/><text x=\"240\" y=\"55\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">C-tagged</text><rect x=\"340\" y=\"30\" width=\"130\" height=\"40\"/><text x=\"405\" y=\"55\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">S-tagged</text><text x=\"75\" y=\"95\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">VlanStaticTable</text><text x=\"75\" y=\"110\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">(egress+untagged)</text><text x=\"240\" y=\"95\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">+ PbEdgePortTable</text><text x=\"240\" y=\"110\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">+ PbCVidRegistration</text><text x=\"405\" y=\"95\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">+ PbVidTranslation</text><text x=\"405\" y=\"110\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">(no untagged set)</text><text x=\"240\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">PBN service interfaces (17.6.1) — tables to configure</text></svg>",
+      "caption": {
+        "en": "The three PBN customer service interfaces of 17.6.1 and the MIB tables each one requires, all keyed by ComponentID and RelaySVid.",
+        "zh": "17.6.1 中的三种 PBN 客户业务接口，以及每一种所需的 MIB 表——均以 ComponentID 和 RelaySVid 为索引。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — 17.5 dynamic creation and 17.6 service provisioning (17.5.1–17.5.3, 17.6.1–17.6.2)",
+        "zh": "覆盖地图——17.5 动态创建与 17.6 业务配置（17.5.1–17.5.3、17.6.1–17.6.2）"
+      },
+      "en": "17.5.1 Overview of dynamically created Bridge entities — optional management-driven creation; component = ports + relay + managed objects; tables indexed by component ID listed (BridgeBaseTable, QBridgeTable, CistTable, etc.); 17.5.1.1 Components (relay moving frames between ports), 17.5.1.2 Bridge Ports (frame source/sink on the relay), 17.5.1.3 Internal LAN connections (ILanIfTable + ifStackTable join PIPs and CBPs in multi-component bridges: Provider Edge Bridges, BEBs, EVB stations/Bridges), 17.5.1.4 Provider Instance Ports (created within I-component port logic though not a Bridge Port). 17.5.2 Component creation via ieee8021BridgeBaseTable + ComponentType, with 17.5.2.1 MAC Bridge / 17.5.2.4 B-component / 17.5.2.5 I-component / 17.5.2.7 T-component having no special rules, 17.5.2.2 C-VLAN and 17.5.2.3 S-VLAN often created implicitly (e.g., a CEP, RCAP, or UAP triggers them), 17.5.2.6 ER created implicitly by a URP. 17.5.3 Port creation: row-create on a port-type table → agent implicitly populates ieee8021BridgeBasePortTable. 17.6.1 Provisioning PBN service interfaces with Table 17-38 parameters: 17.6.1.1 Port-based (manipulate VlanStaticTable egress + untagged sets on the CNP, set AcceptableFrameTypes and IngressFiltering), 17.6.1.2 C-tagged (configure PbEdgePortTable and PbCVidRegistrationTable to link S-VID/CNP/PEP/C-VID), 17.6.1.3 S-tagged (egress set without untagged, optional PbVidTranslationTable). 17.6.2 Provisioning PBBN service interfaces with Table 17-39 parameters: configure both an I-component (chooses the I-SID / backbone service instance) and a B-component (chooses B-VID and Backbone DA for the core), keyed by IComponentID, BComponentID, CBPPortNumber, and BackboneSid.",
+      "zh": "17.5.1 动态创建网桥实体概览——可选的、由管理驱动的创建；组件 = 端口 + 中继 + 受管对象；列出按组件 ID 索引的表（BridgeBaseTable、QBridgeTable、CistTable 等）；17.5.1.1 组件（在端口间搬移帧的中继），17.5.1.2 网桥端口（中继上的帧源/帧汇），17.5.1.3 内部 LAN 连接（ILanIfTable + ifStackTable 在多组件网桥中连接 PIP 与 CBP：Provider 边缘网桥、BEB、EVB 站/网桥），17.5.1.4 Provider 实例端口（虽非网桥端口，但在 I-组件端口逻辑内创建）。17.5.2 组件创建——经由 ieee8021BridgeBaseTable + ComponentType，其中 17.5.2.1 MAC 网桥 / 17.5.2.4 B-组件 / 17.5.2.5 I-组件 / 17.5.2.7 T-组件无特殊规则，17.5.2.2 C-VLAN 与 17.5.2.3 S-VLAN 常被隐式创建（如 CEP、RCAP 或 UAP 触发），17.5.2.6 ER 由 URP 隐式创建。17.5.3 端口创建：在端口类型表上 row-create → 代理隐式填好 ieee8021BridgeBasePortTable。17.6.1 配置 PBN 业务接口（表 17-38 参数）：17.6.1.1 基于端口（在 CNP 上操作 VlanStaticTable 的 egress 与 untagged 集合，设置 AcceptableFrameTypes 与 IngressFiltering），17.6.1.2 C-tagged（配置 PbEdgePortTable 与 PbCVidRegistrationTable 以连接 S-VID/CNP/PEP/C-VID），17.6.1.3 S-tagged（设 egress 而不设 untagged，可选 PbVidTranslationTable）。17.6.2 配置 PBBN 业务接口（表 17-39 参数）：需同时配置一个 I-组件（选择 I-SID / 骨干业务实例）和一个 B-组件（为核心选择 B-VID 与骨干 DA），以 IComponentID、BComponentID、CBPPortNumber 和 BackboneSid 为索引。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          703,
+          704,
+          705,
+          706,
+          716,
+          717,
+          718,
+          719,
+          720
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Tie the three sections together with one mental sequence: 17.5 builds the parts (create a component, then its ports), 17.6 turns those parts into a billable customer service (write the right rows in VlanStaticTable, PbEdgePortTable, PbCVidRegistrationTable, or the I-/B-component tables), and 17.4 reminds you that every one of those writable rows is also an attack surface — which is exactly why SNMPv3 access control sits underneath the whole chapter.",
+      "zh": "用一条心智顺序把三节串起来：17.5 搭建部件（先建组件，再建其端口），17.6 把这些部件变成可计费的客户业务（在 VlanStaticTable、PbEdgePortTable、PbCVidRegistrationTable 或 I-/B-组件各表中写入正确的行），而 17.4 提醒你：每一行可写表项同时也是一个攻击面——这正是 SNMPv3 访问控制贯穿整章底层的原因。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        685,
+        686,
+        687,
+        688,
+        689,
+        690,
+        691,
+        692,
+        693,
+        694,
+        695,
+        696,
+        697,
+        698,
+        699,
+        700,
+        701,
+        702,
+        703
+      ],
+      "note": "17.4 Security considerations, per-module subclauses 17.4.1 through 17.4.25"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        703,
+        704,
+        705,
+        706
+      ],
+      "note": "17.5 Dynamic component and Port creation: overview, component creation, port creation"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        716,
+        717,
+        718,
+        719,
+        720
+      ],
+      "note": "17.6 MIB operations for service interface configuration: PBN (17.6.1) and PBBN (17.6.2) provisioning with Tables 17-38 and 17-39"
+    }
+  ],
+  "covers": [
+    "8021Q-2022:17.4.1",
+    "8021Q-2022:17.4.2",
+    "8021Q-2022:17.4.3",
+    "8021Q-2022:17.4.4",
+    "8021Q-2022:17.4.5",
+    "8021Q-2022:17.4.6",
+    "8021Q-2022:17.4.7",
+    "8021Q-2022:17.4.8",
+    "8021Q-2022:17.4.9",
+    "8021Q-2022:17.4.10",
+    "8021Q-2022:17.4.11",
+    "8021Q-2022:17.4.12",
+    "8021Q-2022:17.4.13",
+    "8021Q-2022:17.4.14",
+    "8021Q-2022:17.4.15",
+    "8021Q-2022:17.4.16",
+    "8021Q-2022:17.4.17",
+    "8021Q-2022:17.4.18",
+    "8021Q-2022:17.4.19",
+    "8021Q-2022:17.4.20",
+    "8021Q-2022:17.4.21",
+    "8021Q-2022:17.4.22",
+    "8021Q-2022:17.4.23",
+    "8021Q-2022:17.4.24",
+    "8021Q-2022:17.4.25",
+    "8021Q-2022:17.5.1",
+    "8021Q-2022:17.5.2",
+    "8021Q-2022:17.5.3",
+    "8021Q-2022:17.6.1",
+    "8021Q-2022:17.6.2"
+  ],
+  "track": "bridging-tsn"
+}

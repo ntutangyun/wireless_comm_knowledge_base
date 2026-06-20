@@ -1,0 +1,151 @@
+{
+  "id": "bridging-tsn-05",
+  "title": {
+    "en": "Supporting the MAC Service, Part 2: Protocol VLANs, Filtering Services, and Multiplex Entities",
+    "zh": "支撑 MAC 服务（下）：协议 VLAN、过滤服务与复用实体"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This lesson finishes Clause 6, the part of IEEE Std 802.1Q-2022 that shows how a bridge keeps offering the plain MAC (Medium Access Control) Service to its users even while it adds tags, filters traffic, and stacks several virtual links onto one real link. Part 1 covered tagging and priority; here we cover three families of mechanism: (1) classifying frames into VLANs (Virtual LANs) by their protocol, (2) the filtering services a bridged network offers, and (3) a set of 'Multiplex Entities' that fan one Service Access Point (SAP) out into many. Throughout, ISS means the Internal Sublayer Service (the basic MAC service a bridge passes around internally) and EISS means the Enhanced ISS (the ISS plus a VLAN identifier and priority).",
+      "zh": "本课讲完 Clause 6，也就是 IEEE Std 802.1Q-2022 中说明网桥如何在加标签、过滤流量、并把多条虚拟链路叠加到一条真实链路上的同时，依然向用户提供普通 MAC（介质访问控制）服务的部分。上篇讲了打标签与优先级；本篇覆盖三类机制：(1) 按协议把帧分类到 VLAN（虚拟局域网）；(2) 桥接网络提供的过滤服务；(3) 一组把一个服务接入点（SAP）扇出成多个的“复用实体”。全篇中，ISS 指内部子层服务（网桥内部传递的基本 MAC 服务），EISS 指增强型 ISS（即 ISS 再加上 VLAN 标识与优先级）。"
+    },
+    {
+      "type": "prose",
+      "en": "Protocol VLAN classification (6.12) lets a port assign an incoming untagged or priority-tagged frame to a VLAN based on which protocol it carries — so IPv4 and AppleTalk arriving on the same wire can land on different VLANs. The matching engine has three pieces. A Protocol Template (6.12.1) is a small pattern such as ('Ethernet', EtherType 0x0800) or ('LLC_Other', a DSAP/SSAP pair) — four template formats exist (Ethernet, RFC_1042, SNAP_Other, LLC_Other). A Protocol Group Identifier (6.12.2) names a group of protocols that share one VLAN; an implicit identifier catches anything that matches no template, so every frame is classified. The Protocol Group Database (6.12.3) is the per-bridge table mapping templates to group identifiers, with an implicit catch-all entry that steers unmatched frames to the port's default VLAN (its PVID, Port VLAN Identifier).",
+      "zh": "协议 VLAN 分类（6.12）让端口根据帧承载的协议，把进来的未打标签帧或仅带优先级标签的帧分配到某个 VLAN——这样同一条线上到达的 IPv4 与 AppleTalk 就能落到不同 VLAN。匹配引擎有三部分。协议模板（6.12.1）是一个小模式，例如（“Ethernet”，EtherType 0x0800）或（“LLC_Other”，一对 DSAP/SSAP），共有四种模板格式（Ethernet、RFC_1042、SNAP_Other、LLC_Other）。协议组标识符（6.12.2）为共享一个 VLAN 的一组协议命名；一个隐式标识符兜住所有不匹配任何模板的帧，因此每个帧都会被分类。协议组数据库（6.12.3）是每网桥一张、把模板映射到组标识符的表，并带一个隐式兜底条目，把未匹配的帧导向端口默认 VLAN（即其 PVID，端口 VLAN 标识符）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"55\" width=\"90\" height=\"40\"/><text x=\"55\" y=\"42\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">incoming frame</text><text x=\"55\" y=\"79\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">untagged</text><rect x=\"150\" y=\"55\" width=\"110\" height=\"40\"/><text x=\"205\" y=\"72\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Protocol Template</text><text x=\"205\" y=\"86\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">match (6.12.1)</text><rect x=\"310\" y=\"30\" width=\"120\" height=\"35\"/><text x=\"370\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Group Id -> VID</text><rect x=\"310\" y=\"85\" width=\"120\" height=\"35\"/><text x=\"370\" y=\"106\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">no match -> PVID</text><line x1=\"100\" y1=\"75\" x2=\"150\" y2=\"75\"/><line x1=\"260\" y1=\"70\" x2=\"310\" y2=\"47\"/><line x1=\"260\" y1=\"80\" x2=\"310\" y2=\"102\"/></svg>",
+      "caption": {
+        "en": "Port-and-Protocol classification: a frame is matched against templates in the Protocol Group Database; a hit selects a Group Identifier (hence a VID), a miss falls back to the port's PVID (6.12.1-6.12.3).",
+        "zh": "端口加协议分类：帧在协议组数据库中与模板比对；命中则选出组标识符（进而得到 VID），未命中则回退到端口的 PVID（6.12.1-6.12.3）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.13 covers a Customer Bridge attaching to a Provider Bridged Network (PBN) — a carrier's bridged network. The shim here implements Service Access Priority Selection: when disabled it is a null pass-through; when enabled, each outbound request gets a priority-only S-TAG (Service VLAN tag, with a null VID) so the customer can ask the provider for priority handling, and a matching S-TAG on the way in is stripped. Data requests (6.13.1) build that S-TAG from a per-port Service Access Priority Table (defaulting to identity, priority N maps to N); data indications (6.13.2) detag and decode priority and drop-eligibility back out. Clause 6.14 covers the ISS inside one system — two bridge components joined internally by ports not otherwise reachable; the link still carries MAC status and point-to-point parameters and is labeled LAN MAC Type 802.1. Clause 6.15 covers the ISS supported by additional technologies (any IEEE 802 or emulated MAC service), where multiplexed virtual services are distinguished by VID or by separate untagged ISS instances.",
+      "zh": "Clause 6.13 讲客户网桥接入提供商桥接网络（PBN，即运营商的桥接网络）。这里的垫片（shim）实现“服务接入优先级选择”：关闭时为空透传；开启时，每个外出请求会加一个仅含优先级的 S-TAG（服务 VLAN 标签，VID 为空），让客户向提供商请求优先处理，回程上匹配的 S-TAG 则被剥除。数据请求（6.13.1）依据每端口的服务接入优先级表（默认恒等，优先级 N 映射为 N）构造该 S-TAG；数据指示（6.13.2）则去标签并解出优先级与丢弃资格。Clause 6.14 讲单个系统内部的 ISS——两个网桥组件经其他方式不可达的端口在内部相连；该链路仍承载 MAC 状态与点到点参数，并标记为 LAN MAC 类型 802.1。Clause 6.15 讲由附加技术（任意 IEEE 802 或仿真 MAC 服务）支撑的 ISS，其中被复用的虚拟服务以 VID 或以各自独立的未打标签 ISS 实例来区分。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.16 describes the filtering services a bridged network offers — the controls that keep frames from flooding everywhere. Its purpose (6.16.1) is twofold: administrative control over which MAC addresses propagate where (6.16.1.1), and improved throughput plus reduced end-station load by confining unicast and group traffic to the parts of the network that need it (6.16.1.2). The goals (6.16.2) are to learn dynamically where unicast recipients are, let stations declare which group addresses they want, and exercise administrative control. The users (6.16.3) are network management and end stations. The basis of service (6.16.4) is filtering decisions keyed on Source MAC, Destination MAC, or VID fields.",
+      "zh": "Clause 6.16 描述桥接网络提供的过滤服务——也就是防止帧到处泛洪的控制手段。其目的（6.16.1）有二：对哪些 MAC 地址在何处传播进行管理控制（6.16.1.1）；以及把单播和组播流量限制在真正需要的网络部分，从而提升吞吐并减轻终端站负担（6.16.1.2）。其目标（6.16.2）是动态学习单播接收者位置、让站点声明想接收哪些组地址、并行使管理控制。其用户（6.16.3）是网络管理与终端站。服务基础（6.16.4）是依据源 MAC、目的 MAC 或 VID 字段做出的过滤决策。"
+    },
+    {
+      "type": "prose",
+      "en": "Filtering comes in two categories (6.16.5). Basic Filtering Services rest on the Forwarding Process plus static and dynamic entries in the FDB (Filtering Database), with dynamic entries kept current by the Learning Process and by MVRP/MIRP registration protocols; every bridge must support them. Extended Filtering Services add MAC Address Registration Entries driven by MMRP (Multiple MAC Registration Protocol) and are optional. Service configuration (6.16.6) sets a port's default behavior for group addresses that have no specific entry — important when mixing equipment that can and cannot do dynamic multicast filtering. The service definition for Extended Filtering Services (6.16.7) is given as service primitives a user sends the provider: REGISTER/DEREGISTER_MAC_ADDRESS to opt into or out of a group's traffic, and REGISTER/DEREGISTER_SERVICE_REQUIREMENT to ask for 'Forward All Groups' or 'Forward Unregistered Groups' behavior (6.16.7.1).",
+      "zh": "过滤分两类（6.16.5）。基本过滤服务依赖转发过程加上 FDB（过滤数据库）中的静态与动态条目，动态条目由学习过程及 MVRP/MIRP 注册协议保持更新；每个网桥都必须支持。扩展过滤服务额外引入由 MMRP（多 MAC 注册协议）驱动的 MAC 地址注册条目，且为可选。服务配置（6.16.6）设定端口对没有专门条目的组地址的默认行为——在混合能与不能做动态组播过滤的设备时尤为重要。扩展过滤服务的服务定义（6.16.7）以用户发给提供商的服务原语给出：用 REGISTER/DEREGISTER_MAC_ADDRESS 加入或退出某组流量，用 REGISTER/DEREGISTER_SERVICE_REQUIREMENT 请求“转发所有组”或“转发未注册组”行为（6.16.7.1）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A clean way to remember 6.16: Basic Filtering = learn-and-flood (works everywhere, no station cooperation needed); Extended Filtering = ask-for-exactly-what-you-want (saves bandwidth, but needs MMRP-aware stations and bridges). The 6.16.7 primitives are simply how a station says 'send me this group' or 'send me everything.'",
+      "zh": "记住 6.16 的简便方法：基本过滤＝学习并泛洪（处处可用，无需站点配合）；扩展过滤＝按需精确订阅（省带宽，但需要支持 MMRP 的站点与网桥）。6.16.7 的原语不过是站点用来说“把这个组发给我”或“把全部发给我”的方式。"
+    },
+    {
+      "type": "prose",
+      "en": "The last group is the Multiplex Entities (6.17-6.21). Each takes one rich SAP and fans it into many narrower SAPs, selecting among them by some field, so that shims (small protocol layers, e.g. Connectivity Fault Management) can be instantiated once per virtual instance. The EISS Multiplex Entity (6.17) demultiplexes by vlan_identifier: one EISS SAP up top, many ISS or EISS SAPs below, each assigned to one or more VIDs. The Backbone Service Instance Multiplex Entity (6.18) works in Provider Backbone Bridging by I-SID (the 24-bit backbone service-instance identifier inside an I-TAG): the demultiplexing direction (6.18.1) removes the I-TAG and routes by I-SID, the multiplexing direction (6.18.2) adds it back, priority is carried in I-PCP/I-DEI fields (6.18.3), and status parameters (6.18.4) roll up MAC_Operational from the multiplexed SAPs.",
+      "zh": "最后一组是复用实体（6.17-6.21）。每个都把一个信息丰富的 SAP 扇出为多个更窄的 SAP，并按某个字段在它们之间选择，从而让垫片（小型协议层，如连通性故障管理）可以为每个虚拟实例各实例化一份。EISS 复用实体（6.17）按 vlan_identifier 解复用：上方一个 EISS SAP，下方多个 ISS 或 EISS SAP，每个分配一个或多个 VID。骨干服务实例复用实体（6.18）用于提供商骨干桥接，按 I-SID（I-TAG 内 24 位的骨干服务实例标识符）工作：解复用方向（6.18.1）去除 I-TAG 并按 I-SID 路由，复用方向（6.18.2）再把它加回，优先级承载于 I-PCP/I-DEI 字段（6.18.3），状态参数（6.18.4）则把各被复用 SAP 的 MAC_Operational 汇总上来。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TB\n  A[single rich SAP] -->|select by field| B[mux SAP 1]\n  A --> C[mux SAP 2]\n  A --> D[mux SAP n]\n  B -.shim.-> S1[CFM shim]\n  C -.shim.-> S2[CFM shim]\n  E{select by:} --- F[VID = EISS 6.17]\n  E --- G[I-SID = Backbone 6.18]\n  E --- H[DA+SA+VID = TESI 6.19 / Infra 6.21]",
+      "zh": "flowchart TB\n  A[单个丰富 SAP] -->|按字段选择| B[复用 SAP 1]\n  A --> C[复用 SAP 2]\n  A --> D[复用 SAP n]\n  B -.垫片.-> S1[CFM 垫片]\n  C -.垫片.-> S2[CFM 垫片]\n  E{选择依据:} --- F[VID = EISS 6.17]\n  E --- G[I-SID = 骨干 6.18]\n  E --- H[DA+SA+VID = TESI 6.19 / 基础段 6.21]"
+    },
+    {
+      "type": "prose",
+      "en": "Two more multiplexers select by a richer key. The TESI Multiplex Entity (6.19) — TESI is a Traffic Engineered Service Instance in PBB-TE (Provider Backbone Bridging - Traffic Engineering) — fans out by the combination of destination_address, source_address, and vlan_identifier, and ties its MAC_Operational to CFM defects (errorCCMdefect, xconCCMdefect). The Infrastructure Segment Multiplex Entity (6.21) is structurally identical but serves Segment Endpoint and Intermediate Ports per Infrastructure Segment, again keyed by DA+SA+VID and gated by the same CFM defects. Between them, the Support of the ISS with signaled priority (6.20) is a shim that feeds explicit priority to a VLAN-unaware MAC Relay: on indications (6.20.1) it decodes priority and drop-eligibility from a C-TAG or S-TAG if present then regenerates priority, and on requests (6.20.2) it simply passes parameters straight through.",
+      "zh": "还有两个复用器按更丰富的键来选择。TESI 复用实体（6.19）——TESI 是 PBB-TE（提供商骨干桥接—流量工程）中的流量工程服务实例——按 destination_address、source_address 与 vlan_identifier 的组合扇出，并把其 MAC_Operational 与 CFM 缺陷（errorCCMdefect、xconCCMdefect）绑定。基础段复用实体（6.21）结构相同，但按基础段服务于段端点端口与段中间端口，同样以 DA+SA+VID 为键、受相同 CFM 缺陷控制。介于二者之间的“带信令优先级的 ISS 支撑”（6.20）是一个垫片，向不感知 VLAN 的 MAC 中继馈送显式优先级：在指示方向（6.20.1）从存在的 C-TAG 或 S-TAG 解出优先级与丢弃资格再重生优先级，在请求方向（6.20.2）则直接原样透传参数。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6 closes with PDU and protocol discrimination and media (6.22). A PDU is a Protocol Data Unit — a frame as a protocol sees it. This subclause reminds us that the format of the data handed to a MAC procedure is identified by the first octets of the MSDU (MAC Service Data Unit): either an LLC (Logical Link Control) source/destination address pair, or a two-octet EtherType. On Length/Type networks (like Ethernet) that first field is either an EtherType or a Length followed by LLC fields. Media that carry no Length/Type field (some IEEE 802.11 uses) rely on a Media Access Method Dependent Convergence Function to translate protocol identifiers. This is the rule that lets one bridge speak to many different physical media while still telling protocols apart.",
+      "zh": "Clause 6 以“PDU 与协议鉴别及介质”（6.22）收尾。PDU 即协议数据单元——从协议视角看的帧。本小节提醒我们：交给某个 MAC 过程的数据，其格式由 MSDU（MAC 服务数据单元）的起始若干字节来识别：要么是一对 LLC（逻辑链路控制）源/目的地址，要么是一个两字节 EtherType。在长度/类型型网络（如以太网）上，该首字段要么是 EtherType，要么是后接 LLC 字段的长度。不携带长度/类型字段的介质（某些 IEEE 802.11 用法）则依靠介质访问方法相关汇聚功能来翻译协议标识符。正是这条规则让一个网桥既能与多种不同物理介质对话，又仍能区分各协议。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause unit in this lesson, by exact number",
+        "zh": "覆盖地图：本课每个子条款，按确切编号列出"
+      },
+      "en": "Protocol VLAN classification (6.12): Protocol Templates 6.12.1 (four formats — Ethernet, RFC_1042, SNAP_Other, LLC_Other), Protocol Group Identifiers 6.12.2 (named groups plus an implicit catch-all), Protocol Group Database 6.12.3 (per-bridge template->group table with implicit PVID fallback). ISS to a PBN (6.13): Data requests 6.13.1 (insert priority-only S-TAG via Service Access Priority Table), Data indications 6.13.2 (strip S-TAG, decode priority/drop_eligible). ISS within a system 6.14 (internal component-to-component link, LAN MAC Type 802.1). ISS by additional technologies 6.15 (VID- or instance-multiplexed). Filtering services (6.16): purpose 6.16.1 with administrative control 6.16.1.1 and throughput/load 6.16.1.2; goals 6.16.2; users 6.16.3; basis 6.16.4 (SA/DA/VID); categories 6.16.5 (Basic vs Extended); configuration 6.16.6; Extended service definition 6.16.7 with dynamic register/deregister 6.16.7.1. Multiplex Entities: EISS 6.17 (by VID); Backbone Service Instance 6.18 with demux 6.18.1, mux 6.18.2, PCP encoding 6.18.3, status 6.18.4 (by I-SID); TESI 6.19 (by DA+SA+VID, PBB-TE); signaled priority 6.20 with indications 6.20.1 and requests 6.20.2; Infrastructure Segment 6.21 (by DA+SA+VID). PDU/protocol discrimination and media 6.22 (EtherType vs LLC, convergence function).",
+      "zh": "协议 VLAN 分类（6.12）：协议模板 6.12.1（四种格式——Ethernet、RFC_1042、SNAP_Other、LLC_Other），协议组标识符 6.12.2（命名组加隐式兜底），协议组数据库 6.12.3（每网桥的模板到组映射表，含隐式 PVID 回退）。面向 PBN 的 ISS（6.13）：数据请求 6.13.1（经服务接入优先级表插入仅含优先级的 S-TAG），数据指示 6.13.2（剥除 S-TAG，解码优先级/丢弃资格）。系统内的 ISS 6.14（内部组件间链路，LAN MAC 类型 802.1）。附加技术支撑的 ISS 6.15（按 VID 或按实例复用）。过滤服务（6.16）：目的 6.16.1 含管理控制 6.16.1.1 与吞吐/负载 6.16.1.2；目标 6.16.2；用户 6.16.3；基础 6.16.4（源/目的 MAC/VID）；类别 6.16.5（基本与扩展）；配置 6.16.6；扩展服务定义 6.16.7 含动态注册/注销 6.16.7.1。复用实体：EISS 6.17（按 VID）；骨干服务实例 6.18，含解复用 6.18.1、复用 6.18.2、PCP 编码 6.18.3、状态 6.18.4（按 I-SID）；TESI 6.19（按 DA+SA+VID，PBB-TE）；带信令优先级 6.20，含指示 6.20.1 与请求 6.20.2；基础段 6.21（按 DA+SA+VID）。PDU/协议鉴别及介质 6.22（EtherType 对 LLC，汇聚功能）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          169,
+          171,
+          172,
+          173,
+          174,
+          175,
+          176,
+          177,
+          178,
+          179,
+          180,
+          181,
+          182,
+          183,
+          184,
+          185
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        169,
+        171,
+        172,
+        173,
+        174,
+        175,
+        176,
+        177,
+        178,
+        179,
+        180,
+        181,
+        182,
+        183,
+        184,
+        185
+      ],
+      "note": "Clause 6.12-6.22: protocol VLAN classification, ISS to PBN, ISS within a system/by additional tech, filtering services, and the EISS/Backbone/TESI/signaled-priority/Infrastructure Segment multiplex entities, plus PDU/protocol discrimination."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:6.12.1",
+    "8021Q-2022:6.12.2",
+    "8021Q-2022:6.12.3",
+    "8021Q-2022:6.13.1",
+    "8021Q-2022:6.13.2",
+    "8021Q-2022:6.14",
+    "8021Q-2022:6.15",
+    "8021Q-2022:6.16.1",
+    "8021Q-2022:6.16.2",
+    "8021Q-2022:6.16.3",
+    "8021Q-2022:6.16.4",
+    "8021Q-2022:6.16.5",
+    "8021Q-2022:6.16.6",
+    "8021Q-2022:6.16.7",
+    "8021Q-2022:6.17",
+    "8021Q-2022:6.18.1",
+    "8021Q-2022:6.18.2",
+    "8021Q-2022:6.18.3",
+    "8021Q-2022:6.18.4",
+    "8021Q-2022:6.19",
+    "8021Q-2022:6.20.1",
+    "8021Q-2022:6.20.2",
+    "8021Q-2022:6.21",
+    "8021Q-2022:6.22"
+  ],
+  "track": "bridging-tsn"
+}

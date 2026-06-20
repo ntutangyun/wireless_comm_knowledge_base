@@ -1,0 +1,97 @@
+{
+  "id": "bridging-tsn-20",
+  "title": {
+    "en": "Spanning Tree Per-Port Variables: Sync, Topology Change, and Transmission",
+    "zh": "生成树每端口变量：同步、拓扑变更与发送控制"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A bridge is a device that joins LAN segments and forwards frames between them. When many bridges interconnect, their links can form loops, and a loop would let frames circulate forever. The Spanning Tree family of protocols (RSTP, the Rapid Spanning Tree Protocol, and MSTP, the Multiple Spanning Tree Protocol) solves this by computing one loop-free tree and blocking the extra links. Clause 13.27 lists the per-port variables — the small pieces of state each port keeps so the protocol's state machines can do their work. This lesson covers the last block of those variables, 13.27.69 through 13.27.76, which govern how a port announces itself, brings itself into a safe (loop-free) state, propagates news that the topology changed, and paces its outgoing protocol messages.",
+      "zh": "网桥（bridge）是连接多个 LAN 网段并在它们之间转发帧的设备。当许多网桥互连时，它们的链路可能构成环路，而环路会让帧无休止地兜圈。生成树（Spanning Tree）协议族——RSTP（快速生成树协议，Rapid Spanning Tree Protocol）和 MSTP（多生成树协议，Multiple Spanning Tree Protocol）——通过计算出一棵无环的树并阻塞多余链路来解决这一问题。第 13.27 节列出了每端口变量，即每个端口为协议状态机正常运作而保存的若干小块状态。本课讲解这些变量的最后一组，即 13.27.69 至 13.27.76，它们决定了端口如何宣告自身、如何把自己转入安全（无环）状态、如何传播拓扑已变更的消息，以及如何调节自己发出的协议报文的节奏。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with sendRSTP (13.27.69). Each port carries a Boolean flag (a TRUE/FALSE value) saying whether it should transmit in the modern RSTP/MSTP format rather than the old, slow STP (the original Spanning Tree Protocol) format. A BPDU (Bridge Protocol Data Unit) is the control message bridges exchange to build the tree. If a port hears only legacy STP BPDUs from its neighbor, it falls back and sends legacy BPDUs too; otherwise it uses the fast format. sendRSTP is the switch that records which mode is active for this port (see clauses 13.32 and 13.34).",
+      "zh": "先看 sendRSTP（13.27.69）。每个端口都带有一个布尔标志（取值 TRUE/FALSE），表示它应当以现代的 RSTP/MSTP 格式发送，还是以旧而慢的 STP（最初的生成树协议）格式发送。BPDU（网桥协议数据单元，Bridge Protocol Data Unit）是网桥之间为构建树而交换的控制报文。如果某端口只从邻居那里听到旧式 STP BPDU，它就回退并同样发送旧式 BPDU；否则使用快速格式。sendRSTP 就是记录该端口当前处于哪种模式的开关（见 13.32 与 13.34 节）。"
+    },
+    {
+      "type": "prose",
+      "en": "The pair sync (13.27.70) and synced (13.27.71) is how RSTP makes its fast transitions safe. \"Synchronized\" means a port's state already matches the loop-free tree the bridge has computed from its priority vectors (the ranked information that picks the best path; see 13.16 and 13.24). synced is the read-out: TRUE only when this port is already compatible with that loop-free topology. sync is the command: setting it forces the port to become compatible — it drops to the Discarding state (it stops forwarding and stops learning addresses) and, if it can, asks its neighbor for an Agreement, but only if the port is not already synced. This sync/agreement handshake is what lets RSTP move a port to forwarding in milliseconds without risking a transient loop.",
+      "zh": "sync（13.27.70）与 synced（13.27.71）这一对变量，是 RSTP 让其快速切换变得安全的方式。“已同步”是指端口的状态已经与网桥依据其优先级向量（用于选出最佳路径的有序信息，见 13.16 与 13.24）算出的无环树相符。synced 是读取值：仅当本端口已与该无环拓扑相符时才为 TRUE。sync 是命令：将其置位会强制端口变为相符——它转入 Discarding 状态（停止转发并停止学习地址），并在可能时向邻居索取一次 Agreement（同意），但仅在端口尚未同步时才如此。正是这套 sync／agreement 握手，使 RSTP 能在毫秒级把端口转入转发，而不冒产生瞬时环路的风险。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> Discarding: sync set\n  Discarding --> Synced: agreement received\n  Synced --> Forwarding: safe to forward\n  note right of Synced\n    synced = TRUE means\n    state matches the\n    loop-free tree\n  end note",
+      "zh": "stateDiagram-v2\n  [*] --> 丢弃: 置位 sync\n  丢弃 --> 已同步: 收到 agreement\n  已同步 --> 转发: 可安全转发\n  note right of 已同步\n    synced = TRUE 表示\n    端口状态已与\n    无环树相符\n  end note"
+    },
+    {
+      "type": "prose",
+      "en": "Next come the topology-change variables. When the active tree changes, bridges must flush stale address-learning entries quickly, or frames will be sent toward where a station used to be. tcAck (13.27.72) is a Boolean that, when set, tells the port to send a Configuration Message with the topology-change-acknowledge flag set — this is how a port confirms to a neighbor that it heard a topology-change notice. tcProp (13.27.73) is set by the Topology Change state machine of some other port on the same bridge to signal \"a topology change happened; please propagate it out through this port too.\" Together they spread the news both inward (acknowledging) and outward (propagating) so the whole network learns to re-learn its address tables.",
+      "zh": "接下来是拓扑变更相关的变量。当活动树发生变化时，网桥必须迅速清除陈旧的地址学习表项，否则帧会被发往某站点曾经所在之处。tcAck（13.27.72）是一个布尔量，置位时告知端口发送一条带有“拓扑变更确认”标志的 Configuration Message（配置消息）——端口以此向邻居确认自己已收到拓扑变更通告。tcProp（13.27.73）由同一网桥上某个其他端口的拓扑变更状态机置位，用来发出信号：“发生了一次拓扑变更，请也通过本端口把它传播出去。”二者协同，把消息既向内传播（确认）又向外传播（扩散），从而让整个网络都获知应重新学习其地址表。"
+    },
+    {
+      "type": "prose",
+      "en": "The final group times and paces the protocol. tick (13.27.74) is a Boolean driven by the Port Timers state machine (13.30); it pulses once per second and is the heartbeat that drives every per-second timer action on the port. txCount (13.27.75) is a counter, not a Boolean: the Port Transmission state machine (13.34) increments it on every BPDU it sends, and the Port Timers machine decrements it once a second. If txCount reaches TxHoldCount (the configured transmit-hold limit, 13.26.12), further transmissions are delayed — this is a simple rate limiter so a port cannot flood the link with BPDUs. updtInfo (13.27.76) is set by the Port Role Selection state machine (13.36) to tell the Port Information state machine to copy designatedPriority into portPriority and designatedTimes into portTimes — in other words, to adopt the freshly computed best information for this port.",
+      "zh": "最后一组变量负责计时与调节协议节奏。tick（13.27.74）是由端口定时器状态机（Port Timers，13.30）驱动的布尔量；它每秒脉冲一次，是驱动端口上所有按秒执行的定时动作的心跳。txCount（13.27.75）是一个计数器而非布尔量：端口发送状态机（Port Transmission，13.34）每发出一个 BPDU 就将其加一，端口定时器状态机每秒将其减一。若 txCount 达到 TxHoldCount（配置的发送保持上限，13.26.12），后续发送将被延迟——这是一个简单的限速机制，使端口不会用 BPDU 淹没链路。updtInfo（13.27.76）由端口角色选择状态机（Port Role Selection，13.36）置位，用于告知端口信息状态机把 designatedPriority 复制到 portPriority、把 designatedTimes 复制到 portTimes——也就是为本端口采纳新算出的最佳信息。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy way to group these eight: sendRSTP picks the message format; sync/synced keep transitions loop-free; tcAck/tcProp spread topology-change news; tick is the per-second heartbeat; txCount paces transmissions; updtInfo commits newly computed port information. Most are Booleans — txCount is the one counter.",
+      "zh": "记住这八个变量的一个简便分组方式：sendRSTP 选择报文格式；sync／synced 让状态切换保持无环；tcAck／tcProp 传播拓扑变更消息；tick 是每秒心跳；txCount 调节发送节奏；updtInfo 提交新算出的端口信息。它们大多是布尔量——只有 txCount 是计数器。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">Per-port state (13.27.69-76)</text><rect x=\"10\" y=\"34\" width=\"130\" height=\"30\"/><text x=\"18\" y=\"53\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">sendRSTP: format</text><rect x=\"150\" y=\"34\" width=\"130\" height=\"30\"/><text x=\"158\" y=\"53\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">sync / synced</text><rect x=\"290\" y=\"34\" width=\"140\" height=\"30\"/><text x=\"298\" y=\"53\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">tcAck / tcProp</text><rect x=\"10\" y=\"84\" width=\"130\" height=\"30\"/><text x=\"18\" y=\"103\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">tick: 1/sec</text><rect x=\"150\" y=\"84\" width=\"130\" height=\"30\"/><text x=\"158\" y=\"103\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">txCount: limiter</text><rect x=\"290\" y=\"84\" width=\"140\" height=\"30\"/><text x=\"298\" y=\"103\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">updtInfo: commit</text><text x=\"10\" y=\"150\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">format - safe transition - change news</text><text x=\"10\" y=\"168\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">heartbeat - pacing - info update</text></svg>",
+      "caption": {
+        "en": "The eight per-port variables sorted by job: message format, loop-free transition, topology-change spreading, timing, pacing, and information commit.",
+        "zh": "按职责归类的八个每端口变量：报文格式、无环切换、拓扑变更传播、计时、节奏控制与信息提交。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: 13.27.69 - 13.27.76, exact clause references",
+        "zh": "覆盖地图：13.27.69 - 13.27.76，精确条款引用"
+      },
+      "en": "13.27.69 sendRSTP — Boolean; selects RSTP/MSTP vs legacy STP transmission format (refs 13.32, 13.34). 13.27.70 sync — Boolean; forces the port toward the loop-free topology (13.16, 13.24): transition to Discarding and solicit an Agreement if not already synced (13.27.71). 13.27.71 synced — Boolean; TRUE only when the Port State is compatible with the loop-free topology held by the bridge (13.16, 13.24). 13.27.72 tcAck — Boolean; set to transmit a Configuration Message with the topology-change-acknowledge flag set. 13.27.73 tcProp — Boolean; set by another port's Topology Change state machine to propagate a topology change out this port. 13.27.74 tick — Boolean; driven by the Port Timers state machine (13.30), pulsing once per second. 13.27.75 txCount — a counter; incremented by the Port Transmission state machine (13.34) per BPDU sent, decremented once per second by Port Timers (13.30); transmissions delayed when it reaches TxHoldCount (13.26.12). 13.27.76 updtInfo — Boolean; set by the Port Role Selection state machine (13.36, 13.29.34) to have the Port Information state machine copy designatedPriority to portPriority and designatedTimes to portTimes.",
+      "zh": "13.27.69 sendRSTP——布尔量；选择 RSTP/MSTP 与旧式 STP 的发送格式（引用 13.32、13.34）。13.27.70 sync——布尔量；强制端口转向无环拓扑（13.16、13.24）：转入 Discarding 并在尚未同步（13.27.71）时索取一次 Agreement。13.27.71 synced——布尔量；仅当端口状态与网桥持有的无环拓扑相符（13.16、13.24）时为 TRUE。13.27.72 tcAck——布尔量；置位以发送一条带拓扑变更确认标志的配置消息。13.27.73 tcProp——布尔量；由其他端口的拓扑变更状态机置位，以便通过本端口传播拓扑变更。13.27.74 tick——布尔量；由端口定时器状态机（13.30）驱动，每秒脉冲一次。13.27.75 txCount——计数器；端口发送状态机（13.34）每发一个 BPDU 加一，端口定时器（13.30）每秒减一；当其达到 TxHoldCount（13.26.12）时延迟发送。13.27.76 updtInfo——布尔量；由端口角色选择状态机（13.36、13.29.34）置位，使端口信息状态机把 designatedPriority 复制到 portPriority、把 designatedTimes 复制到 portTimes。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          559
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Why does the standard split state into so many tiny Booleans? Because Spanning Tree is specified as a set of cooperating state machines, and each machine reads and writes named variables rather than calling the others directly. A flag like tcProp set by one port's Topology Change machine becomes the input that another part of the bridge reacts to; updtInfo set by Port Role Selection is later consumed by Port Information. Knowing these per-port variables by name lets you read the state-machine diagrams in the rest of Clause 13 fluently — each box and transition is just testing or setting one of these values.",
+      "zh": "标准为何把状态拆成如此多的微小布尔量？因为生成树是以一组相互协作的状态机来规定的，每台状态机读写命名变量，而非直接调用彼此。例如由某端口拓扑变更状态机置位的 tcProp，会成为网桥另一部分作出反应的输入；由端口角色选择置位的 updtInfo，随后被端口信息状态机消费。逐一记住这些每端口变量的名称，能让你流畅地读懂第 13 节其余部分的状态机图——每个框与每次转移，无非是在测试或设置这些值之一。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        558,
+        559,
+        560
+      ],
+      "note": "13.27 Per port variables; clauses 13.27.69-13.27.76 (sendRSTP through updtInfo) appear on p.559; surrounding context (role/selected) on p.558 and the 13.28 condition list on p.560."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:13.27.69",
+    "8021Q-2022:13.27.70",
+    "8021Q-2022:13.27.71",
+    "8021Q-2022:13.27.72",
+    "8021Q-2022:13.27.73",
+    "8021Q-2022:13.27.74",
+    "8021Q-2022:13.27.75",
+    "8021Q-2022:13.27.76"
+  ],
+  "track": "bridging-tsn"
+}

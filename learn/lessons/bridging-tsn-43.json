@@ -1,0 +1,166 @@
+{
+  "id": "bridging-tsn-43",
+  "title": {
+    "en": "Bridge Performance Guarantees and Carrying Customer Traffic Across a Provider Backbone (PBBN)",
+    "zh": "网桥性能保证，以及通过运营商骨干网（PBBN）承载客户流量"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This lesson covers two short but important parts of IEEE Std 802.1Q-2022. Clause 24 (Bridge performance) gives buyers a small, honest set of numbers to judge a bridge by. Clause 25 explains how a Provider Backbone Bridged Network (PBBN) carries one customer's traffic across a service-provider core without that customer ever seeing the core's addressing. A bridge is just a device that relays frames between LAN segments; a frame is one Ethernet packet. We define every other acronym the first time it appears.",
+      "zh": "本课讲解 IEEE Std 802.1Q-2022 中两个篇幅不长却很关键的部分。Clause 24（网桥性能）为采购方提供一小组诚实的数字，用来评判一台网桥。Clause 25 则说明运营商骨干桥接网络（PBBN，Provider Backbone Bridged Network）如何在服务提供商的核心网中承载某个客户的流量，同时让该客户完全看不到核心网的寻址方式。网桥就是在多个局域网（LAN）网段之间转发帧的设备；帧就是一个以太网数据包。其余缩写在首次出现时都会逐一解释。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 24 defines just two headline performance numbers. The Guaranteed Port Filtering Rate (24.1) is, for one Bridge Port, the frames-per-second rate at which the bridge promises to correctly drop (filter) frames that should not be forwarded — measured over a time window called TF, and only while no other port is overloaded and the forwarding database (FDB, the table that records which addresses live behind which port) was already configured before the window started. The Guaranteed Bridge Relaying Rate (24.2) is the matching promise for frames the bridge does forward (relay), measured over a window TR. Both numbers only hold when output ports are not congested.",
+      "zh": "Clause 24 只定义了两个核心性能数字。保证端口过滤速率（Guaranteed Port Filtering Rate，24.1）针对单个网桥端口（Bridge Port），是指网桥承诺能正确丢弃（过滤）那些不应转发的帧的每秒帧数——在一个名为 TF 的时间窗口内测量，且前提是没有其他端口过载、转发数据库（FDB，Forwarding Database，记录哪个地址位于哪个端口后面的表）在窗口开始前已配置完成。保证网桥中继速率（Guaranteed Bridge Relaying Rate，24.2）则是对网桥确实要转发（中继）的帧给出的对应承诺，在窗口 TR 内测量。两个数字都仅在输出端口不拥塞时成立。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "These are floors, not ceilings. The standard is careful to say they give only 'a basic level of confidence' and are not an exhaustive performance description. Clause 24.3 adds a timing floor for the Rapid Spanning Tree Protocol (RSTP, the loop-prevention protocol): the delay from an external event to the required RSTP action must not exceed a Maximum RSTP processing delay of 1.0 s, and BPDU (Bridge Protocol Data Unit — the message spanning tree uses) transmissions must follow within a Maximum BPDU transmission delay of 0.2 s (Table 24-1).",
+      "zh": "这些是下限，不是上限。标准谨慎地说明：它们只提供“基本的信心水平”，并非对性能的详尽描述。Clause 24.3 还为快速生成树协议（RSTP，Rapid Spanning Tree Protocol，即防环路协议）增加了时间下限：从外部事件到 RSTP 所要求动作之间的延迟，不得超过最大 RSTP 处理延迟 1.0 秒；而 BPDU（Bridge Protocol Data Unit，生成树使用的消息）的发送必须在最大 BPDU 发送延迟 0.2 秒内完成（表 24-1）。"
+    },
+    {
+      "type": "prose",
+      "en": "Now Clause 25. A PBBN is built from Backbone Edge Bridges (BEBs) joined by Backbone Core Bridges (BCBs). At the edge, a BEB wraps each customer frame in a new envelope so the customer's own MAC addresses (C-MAC) and VLAN IDs (VID — a number, 1 to 4094, naming a virtual LAN) stay completely independent of the backbone's own B-MAC addresses and Backbone VLAN IDs (B-VID). The envelope adds an I-TAG carrying a 24-bit service identifier called the I-SID, which names the backbone service instance that this customer belongs to. So a customer's traffic rides the backbone tagged by I-SID, inside a B-VLAN, between two B-MAC addresses — and the customer never has to know any of that.",
+      "zh": "现在看 Clause 25。PBBN 由骨干边缘网桥（BEB，Backbone Edge Bridge）通过骨干核心网桥（BCB，Backbone Core Bridge）互连而成。在边缘，BEB 会给每个客户帧套上一层新的封装，使客户自己的 MAC 地址（C-MAC）和 VLAN 标识（VID，一个 1 到 4094 的数字，用来命名一个虚拟局域网）与骨干网自身的 B-MAC 地址、骨干 VLAN 标识（B-VID）完全独立。该封装加入一个 I-TAG，携带一个 24 位的服务标识符 I-SID，用来命名该客户所属的骨干服务实例。于是客户流量在骨干网中以 I-SID 标记、置于某个 B-VLAN 内、在两个 B-MAC 地址之间传输——而客户对这一切毫不知情。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 560 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"40\" width=\"70\" height=\"40\"/><text x=\"45\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">B-MAC DA</text><rect x=\"80\" y=\"40\" width=\"70\" height=\"40\"/><text x=\"115\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">B-MAC SA</text><rect x=\"150\" y=\"40\" width=\"60\" height=\"40\"/><text x=\"180\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">B-TAG</text><rect x=\"210\" y=\"40\" width=\"80\" height=\"40\"/><text x=\"250\" y=\"60\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">I-TAG</text><text x=\"250\" y=\"74\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">(I-SID)</text><rect x=\"290\" y=\"40\" width=\"260\" height=\"40\" stroke-dasharray=\"4 3\"/><text x=\"420\" y=\"60\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">original customer frame</text><text x=\"420\" y=\"74\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">C-MAC, (S-TAG), (C-TAG), data</text><text x=\"10\" y=\"24\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Backbone envelope added by the BEB</text></svg>",
+      "caption": {
+        "en": "How a BEB encapsulates a customer frame: a backbone header (B-MAC destination/source, B-TAG, and an I-TAG carrying the I-SID) is prepended, leaving the original customer frame untouched inside (Clause 25, Figure 25-6).",
+        "zh": "BEB 如何封装客户帧：在前面加上骨干头部（B-MAC 目的/源地址、B-TAG，以及携带 I-SID 的 I-TAG），而内部原始客户帧保持不变（Clause 25，图 25-6）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 25.1 (Service transparency) states the promise plainly: the backbone is invisible to the customer's media-access-independent functions and to end stations using the MAC Service (the basic 'send this frame to that address' service Ethernet offers upper layers). It is not transparent to the media-specific functions on the shared LAN — those still run hop by hop. Clauses 25.2–25.5 then describe the four customer service interface types a provider can sell, summarized in Figure 25-3.",
+      "zh": "Clause 25.1（服务透明性）把承诺讲得很清楚：骨干网对客户的“与媒体接入无关”的功能、以及使用 MAC 服务（以太网向上层提供的“把这个帧发到那个地址”的基本服务）的终端站而言是不可见的。但它对共享 LAN 上“与媒体相关”的功能并不透明——那些功能仍逐跳运行。随后 Clause 25.2–25.5 描述运营商可以销售的四种客户服务接口类型，总结于图 25-3。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  C[Customer service interface] --> P[Port-based 25.3<br/>all untagged frames to one I-SID]\n  C --> S[S-tagged 25.4<br/>map S-VID to I-SID]\n  C --> I[I-tagged 25.5<br/>customer supplies I-SID and B-DA]\n  C --> T[Transparent 25.11<br/>forward everything untouched]\n  S --> S1[one-to-one]\n  S --> S2[bundled / all-to-one]",
+      "zh": "flowchart TD\n  C[客户服务接口] --> P[基于端口 25.3<br/>所有未打标帧映射到一个 I-SID]\n  C --> S[S 标记 25.4<br/>把 S-VID 映射到 I-SID]\n  C --> I[I 标记 25.5<br/>客户提供 I-SID 与 B-DA]\n  C --> T[透明 25.11<br/>原样转发一切]\n  S --> S1[一对一]\n  S --> S2[捆绑 / 全部归一]"
+    },
+    {
+      "type": "prose",
+      "en": "Walking the interfaces: a Port-based interface (25.3) delivers everything on one CNP (Customer Network Port — a provider-owned port facing the customer) onto a single backbone service instance, discarding any frame that carries a real S-TAG. An S-tagged interface (25.4) maps a PBN's service VLAN, identified by an S-VID, onto an I-SID — either one-to-one, or bundling several S-VIDs (even all of them) into one I-SID. An I-tagged interface (25.5) lets a sophisticated customer hand the backbone a frame that already carries an I-SID and a backbone destination address (B-DA). PBN here means Provider Bridged Network — the customer-side provider network described in Clause 16.",
+      "zh": "逐一走过这些接口：基于端口的接口（25.3）把某个 CNP（Customer Network Port，客户网络端口，即运营商拥有、面向客户的端口）上的一切都送入单个骨干服务实例，并丢弃任何携带真实 S-TAG 的帧。S 标记接口（25.4）把 PBN 的服务 VLAN（由 S-VID 标识）映射到一个 I-SID——可以一对一，也可以把多个 S-VID（甚至全部）捆绑到一个 I-SID。I 标记接口（25.5）允许较为高级的客户直接交给骨干网一个已经携带 I-SID 和骨干目的地址（B-DA）的帧。这里的 PBN 指 Provider Bridged Network（运营商桥接网络），即 Clause 16 描述的客户侧运营商网络。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: segregation, selection, priority, and access protection (25.6–25.9)",
+        "zh": "覆盖图：隔离、选择、优先级与接入保护（25.6–25.9）"
+      },
+      "en": "25.6 Service instance segregation: keeps customers apart by rule — no frame leaves a Customer Backbone Port (CBP) without an I-TAG; nothing is accepted without first running service instance selection; nothing is delivered without explicit service instance identification; and BCBs plus the B-component live only under provider control. Many customer service instances may share one backbone service instance, but each customer instance maps to exactly one. 25.7 Service instance selection and identification: a Port-based CNP accepts only untagged/priority-tagged frames; an S-tagged CNP turns on Enable Ingress Filtering and only joins VLANs the customer may use; an I-tagged CBP is configured with the allowed I-SID values. 25.8 Service priority and drop eligibility selection: priority comes from the frame's received priority — from the media access method (Port-based), from the PCP/DEI bits in the S-TAG (S-tagged), or from the I-PCP/I-DEI bits in the I-TAG (I-tagged); PCP is the 3-bit Priority Code Point, DEI is the 1-bit Drop Eligibility Indicator. 25.9 Service access protection: three classes — Class I unprotected (one LAN, one node); Class II (25.9.1) link-redundant via IEEE Std 802.1AX Link Aggregation, surviving LAN failures but not node failures; Class III (25.9.2) link-and-node-redundant, using MSTP plus MVRP and CFM so the customer and provider coordinate a failover across whole nodes.",
+      "zh": "25.6 服务实例隔离：用规则把各客户隔开——没有 I-TAG 的帧不得离开客户骨干端口（CBP，Customer Backbone Port）；未先做服务实例选择的帧不予接收；没有明确服务实例标识的帧不予交付；BCB 与 B 组件只受运营商控制。多个客户服务实例可共享一个骨干服务实例，但每个客户实例只映射到唯一一个。25.7 服务实例选择与标识：基于端口的 CNP 只接受未打标/优先级打标帧；S 标记 CNP 开启 Enable Ingress Filtering，并只加入客户可用的 VLAN；I 标记 CBP 则配置允许的 I-SID 取值。25.8 服务优先级与丢弃资格选择：优先级来自帧的接收优先级——来自媒体接入方式（基于端口）、来自 S-TAG 中的 PCP/DEI 位（S 标记）、或来自 I-TAG 中的 I-PCP/I-DEI 位（I 标记）；PCP 是 3 位优先级码点（Priority Code Point），DEI 是 1 位丢弃资格指示（Drop Eligibility Indicator）。25.9 服务接入保护：分三级——Class I 不保护（单 LAN、单节点）；Class II（25.9.1）借助 IEEE Std 802.1AX 链路聚合实现链路冗余，可抵御 LAN 故障但不抵御节点故障；Class III（25.9.2）实现链路与节点双冗余，借助 MSTP 加 MVRP 与 CFM，让客户与运营商协同完成跨整节点的故障切换。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1335,
+          1336,
+          1337,
+          1338,
+          1339
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: Provider Backbone Bridging Traffic Engineering (PBB-TE), 25.10.1–25.10.2, and the transparent interface (25.11)",
+        "zh": "覆盖图：运营商骨干桥接流量工程（PBB-TE），25.10.1–25.10.2，以及透明接口（25.11）"
+      },
+      "en": "25.10 introduces a PBB-TE Region — a contiguous set of IB-BEBs and BCBs that hand a block of B-VIDs to an external control agent instead of spanning tree, so paths can be engineered. PBB-TE means Provider Backbone Bridging Traffic Engineering. The engineered path is an Ethernet Switched Path (ESP), identified by the 3-tuple <ESP-DA, ESP-SA, ESP-VID> where ESP-VID is a reserved B-VID tied to a special MST identifier (the TE-MSTID). A TESI (Traffic Engineered Service Instance) is a bidirectional service made from a pair (or set) of ESPs. 25.10.1 Provisioning TESIs: the external agent populates each bridge's FDB with static filtering entries keyed on (ESP-DA, ESP-VID) — treated as one 60-bit address — so paths are explicitly routed rather than learned. 25.10.2 ESP forwarding behavior: a frame whose (ESP-DA, ESP-VID) has no static entry is discarded, never flooded (flooding could loop forever with no spanning tree); MAC learning is disabled for ESP-VID frames; the active topology is owned by the external agent. Finally, 25.11 Transparent service interface: delivered on a CNP via T-components, it forwards every frame over a single backbone service instance, never adding, removing, or modifying S-tags or C-tags and never learning customer addresses — it only honors the TPMR (Two-Port MAC Relay) component's reserved and management addresses.",
+      "zh": "25.10 引入 PBB-TE 区域——一组连续的 IB-BEB 和 BCB，把一段 B-VID 交给外部控制代理而非生成树管理，从而可以对路径做流量工程。PBB-TE 指 Provider Backbone Bridging Traffic Engineering（运营商骨干桥接流量工程）。被工程化的路径称为以太网交换路径（ESP，Ethernet Switched Path），由三元组 <ESP-DA, ESP-SA, ESP-VID> 标识，其中 ESP-VID 是绑定到特殊 MST 标识符（TE-MSTID）的保留 B-VID。TESI（Traffic Engineered Service Instance，流量工程服务实例）是由一对（或一组）ESP 构成的双向服务。25.10.1 配置 TESI：外部代理在每台网桥的 FDB 中写入以 (ESP-DA, ESP-VID) 为键的静态过滤条目——该键被当作一个 60 位地址处理——因此路径是显式路由的，而非学习得到的。25.10.2 ESP 转发行为：若某帧的 (ESP-DA, ESP-VID) 没有静态条目，则丢弃而绝不泛洪（在没有生成树时泛洪可能永久成环）；对 ESP-VID 帧禁用 MAC 学习；活动拓扑由外部代理掌控。最后，25.11 透明服务接口：通过 T 组件在 CNP 上交付，把每个帧都送入单个骨干服务实例，绝不添加、删除或修改 S-tag 或 C-tag，也不学习客户地址——它只遵从 TPMR（Two-Port MAC Relay，双端口 MAC 中继）组件的保留地址与管理地址。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1339,
+          1340,
+          1341,
+          1342,
+          1343
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "One mental model ties it all together: Clause 24 tells you how fast a bridge can be trusted to filter and relay (with RSTP timing bounds); Clause 25 tells you how a backbone provider sells a slice of that relaying as a clean, address-isolated service — choosing an interface (Port-based, S-tagged, I-tagged, transparent), an I-SID to name the slice, a priority and drop-eligibility policy, a protection class for resilience, and optionally PBB-TE for fully engineered, statically provisioned paths.",
+      "zh": "一个心智模型把这些串起来：Clause 24 告诉你一台网桥能被信任的过滤与中继速度有多快（并带有 RSTP 时序界限）；Clause 25 告诉你骨干运营商如何把这种中继能力切出一片，作为干净、地址隔离的服务来出售——选择一种接口（基于端口、S 标记、I 标记、透明），用一个 I-SID 来命名这一片，制定优先级与丢弃资格策略，选定一个保护等级以保证韧性，并可选地用 PBB-TE 实现完全工程化、静态配置的路径。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1325,
+        1326
+      ],
+      "note": "Clause 24: Guaranteed Port Filtering Rate (24.1), Guaranteed Bridge Relaying Rate (24.2), RSTP performance requirements with Table 24-1 (24.3)."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1327,
+        1328,
+        1329,
+        1330,
+        1331
+      ],
+      "note": "Clause 25 intro and PBB terminology; service transparency (25.1), customer service interface (25.2), Port-based (25.3), S-tagged (25.4)."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1333,
+        1335,
+        1336
+      ],
+      "note": "I-tagged service interface (25.5); service instance segregation (25.6); selection and identification (25.7); priority and drop eligibility (25.8)."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1338,
+        1339
+      ],
+      "note": "Service access protection: Class II redundant LANs (25.9.1) and Class III redundant LANs and nodes (25.9.2)."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1340,
+        1341,
+        1342,
+        1343
+      ],
+      "note": "PBB-TE Region support, provisioning TESIs (25.10.1), ESP forwarding behavior (25.10.2); transparent service interface (25.11)."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:24.1",
+    "8021Q-2022:24.2",
+    "8021Q-2022:24.3",
+    "8021Q-2022:25.1",
+    "8021Q-2022:25.2",
+    "8021Q-2022:25.3",
+    "8021Q-2022:25.4",
+    "8021Q-2022:25.5",
+    "8021Q-2022:25.6",
+    "8021Q-2022:25.7",
+    "8021Q-2022:25.8",
+    "8021Q-2022:25.9.1",
+    "8021Q-2022:25.9.2",
+    "8021Q-2022:25.10.1",
+    "8021Q-2022:25.10.2",
+    "8021Q-2022:25.11"
+  ],
+  "track": "bridging-tsn"
+}

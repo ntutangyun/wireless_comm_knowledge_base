@@ -1,0 +1,228 @@
+{
+  "id": "bridging-tsn-10",
+  "title": {
+    "en": "MRP and MMRP: How Bridges Register and Prune Group Traffic",
+    "zh": "MRP 与 MMRP：网桥如何注册并裁剪组播流量"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Imagine a building full of switches (the standard calls them Bridges). One device wants to receive a video multicast; dozens of others do not. How does the network learn, automatically, which paths actually need that traffic — and prune the rest? Clause 10 answers this with two layers. The Multiple Registration Protocol (MRP) is a generic engine that lets participants declare an attribute (an interest) and have it registered across the network. The Multiple MAC Registration Protocol (MMRP) is one application built on MRP: its attributes are MAC addresses and Group service requirements, used to steer multicast filtering. MRP overview (10.1): a participant makes or withdraws a declaration; declarations register at every other participant, and a registration is removed only when all peers on a shared LAN withdraw. Registrations get propagated only along the spanning-tree active topology, so each declaration flows toward the participants that care about it.",
+      "zh": "想象一栋楼里全是交换机（标准里称为网桥 Bridge）。一台设备想接收某路视频组播，其余几十台都不想。网络如何自动学到哪些路径真正需要这股流量、并把其余路径裁剪掉？Clause 10 用两层来回答。多重注册协议（MRP，Multiple Registration Protocol）是一台通用引擎，让参与者声明一个属性（一种兴趣）并使其在全网注册。多重 MAC 注册协议（MMRP，Multiple MAC Registration Protocol）是建立在 MRP 之上的一个应用：它的属性是 MAC 地址和组服务需求，用于引导组播过滤。MRP 概览（10.1）：参与者发出或撤回声明；声明会在所有其他参与者处注册，且只有当共享 LAN 上的所有对端都撤回时，注册才被移除。注册只沿生成树活动拓扑传播，因此每个声明都流向真正关心它的参与者。"
+    },
+    {
+      "type": "prose",
+      "en": "MRP architecture (10.2): each MRP Participant has two halves. An application component owns the meaning of attribute values, and an MRP Attribute Declaration (MAD) component runs the actual protocol state machines. The application asks MAD to act with two primitives — MAD_Join.request and MAD_Leave.request — and MAD reports changes back with MAD_Join.indication and MAD_Leave.indication. There is one Participant per application per LAN attachment: one in an end station, one per Port in a Bridge. Inside a Bridge, MRP Attribute Propagation (MAP, 10.3) glues the per-Port Participants together: a Join indication arriving on one Port is re-issued as a Join request to every other Port in the active topology, and a Leave only propagates outward once no other Port still holds a registration. MAP also reacts to spanning-tree changes — when a Port joins or leaves the forwarding set, MAP replays the needed Joins or Leaves so state stays consistent.",
+      "zh": "MRP 架构（10.2）：每个 MRP 参与者分两半。应用组件掌管属性值的语义，而 MRP 属性声明组件（MAD，MRP Attribute Declaration）运行真正的协议状态机。应用通过两个原语请求 MAD 动作——MAD_Join.request 与 MAD_Leave.request——MAD 再用 MAD_Join.indication 与 MAD_Leave.indication 把变化回报给应用。每个应用、每个 LAN 接入点对应一个参与者：端站一个，网桥每个端口一个。在网桥内部，MRP 属性传播组件（MAP，MRP Attribute Propagation，10.3）把各端口的参与者粘合起来：从某端口到达的 Join 指示会作为 Join 请求重新发往活动拓扑中的其他每个端口，而 Leave 只有在再无其他端口持有注册时才向外传播。MAP 还响应生成树变化——当某端口加入或离开转发集合时，MAP 重放所需的 Join 或 Leave，使状态保持一致。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  APP[Application component] -->|MAD_Join.request| MAD[MAD state machines]\n  MAD -->|MAD_Join.indication| APP\n  MAD --> MAP[MAP propagation]\n  MAP --> P2[Other Ports' MAD]\n  MAD -->|MRPDU| LAN[(LAN)]\n  LAN -->|MRPDU| MAD",
+      "zh": "flowchart LR\n  APP[应用组件] -->|MAD_Join.request| MAD[MAD 状态机]\n  MAD -->|MAD_Join.indication| APP\n  MAD --> MAP[MAP 传播]\n  MAP --> P2[其他端口的 MAD]\n  MAD -->|MRPDU| LAN[(局域网)]\n  LAN -->|MRPDU| MAD"
+    },
+    {
+      "type": "prose",
+      "en": "MAP Context (10.3.1) is the scope a Participant operates in. Context 0 is always the Base Spanning Tree Context (the RSTP topology); a VLAN Context is the subset of Ports and the spanning tree that carry a given VID (VLAN identifier). Because RSTP/MSTP can flip Port roles quickly, attribute propagation risks information loops (10.3.1.1): a Bridge's Alternate Port may have registered the same attributes as its Root Port. To prevent loops, a Registrar's information for a Port is discarded whenever that Port transitions from Root or Alternate role to Designated. Clause 10.4 then lists the requirements MRP must meet — issue and withdraw declarations, propagate them, track per-Port state, recover stale state, keep latency low and bandwidth tiny — and 10.5 fixes the interoperability rules: MRPDUs use a group MAC destination (Table 10-1, e.g. MMRP at 01-80-C2-00-00-20), are carried over LLC with a per-application EtherType (Table 10-2, MMRP = 0x88F6), and any malformed MRPDU is discarded.",
+      "zh": "MAP 上下文（10.3.1）是参与者运行的范围。上下文 0 始终是基础生成树上下文（RSTP 拓扑）；VLAN 上下文则是承载某个 VID（VLAN 标识符）的端口子集及其生成树。由于 RSTP/MSTP 可能快速翻转端口角色，属性传播存在信息环路风险（10.3.1.1）：网桥的备用端口可能注册了与其根端口相同的属性。为防止环路，每当某端口从根端口或备用端口角色转为指定端口时，该端口上 Registrar 的信息就会被丢弃。随后 10.4 列出 MRP 必须满足的要求——发出与撤回声明、传播它们、跟踪每端口状态、回收陈旧状态、保持低时延与极小带宽——10.5 则规定互操作规则：MRPDU 使用组 MAC 目的地址（表 10-1，例如 MMRP 为 01-80-C2-00-00-20），通过 LLC 承载并带有按应用区分的 EtherType（表 10-2，MMRP = 0x88F6），任何格式错误的 MRPDU 都被丢弃。"
+    },
+    {
+      "type": "prose",
+      "en": "Protocol operation (10.6) gives the intuition before the formal tables. MRP is fully distributed and many-to-many, and its correctness does not depend on exact timer values. A full Participant keeps, per attribute, an Applicant state machine (makes sure this Participant's declaration is registered by peers, and prompts peers to re-register after a withdrawal) and a Registrar state machine (records what peers have declared — it never transmits). Per-Participant, it also keeps a LeaveAll machine (periodically forces everyone to re-assert, guarding against silent failures) and a PeriodicTransmission machine (re-sends in lossy media). State is carried compactly in four messages — Empty (not declared, not registered), In (registered only), JoinEmpty (declared, not registered), JoinIn (declared and registered) — plus a Leave message to withdraw. Because messages carry both Applicant and Registrar state, redundant re-declarations can be suppressed.",
+      "zh": "协议操作（10.6）在正式表格之前给出直觉。MRP 是完全分布式的多对多协议，其正确性不依赖于精确的定时器取值。完整参与者为每个属性维护一个 Applicant 状态机（确保本参与者的声明被对端注册，并在某方撤回后促使对端重新注册）和一个 Registrar 状态机（记录对端声明了什么——它从不发送报文）。在参与者层面，它还维护一个 LeaveAll 状态机（周期性迫使所有人重新声明，防范静默失效）和一个 PeriodicTransmission 状态机（在易丢包介质中重发）。状态用四种消息紧凑承载——Empty（未声明、未注册）、In（仅已注册）、JoinEmpty（已声明、未注册）、JoinIn（已声明且已注册）——外加一个 Leave 消息用于撤回。由于消息同时携带 Applicant 与 Registrar 状态，冗余的重复声明得以被抑制。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why the funny names? An Applicant tracks whether it is Active (has spoken), Passive (needs registration but never had to declare), or an Observer (just watching). A Registrar only ever sits in IN (registered), LV (leaving — counting down the leavetimer before forgetting), or MT (empty). Reading any MRP state table, the left axis is the current state and each cell tells you the next state plus the message to send. That is the whole protocol.",
+      "zh": "为什么名字这么古怪？Applicant 跟踪自己是 Active（已发言）、Passive（需要注册但从未必须声明），还是 Observer（仅旁观）。Registrar 只会处于 IN（已注册）、LV（正在离开——倒计 leavetimer，到期前先记着）或 MT（空）三种状态之一。读任何 MRP 状态表时，左轴是当前状态，每个单元格告诉你下一个状态以及要发送的消息。整个协议就是这样。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "MRP protocol specification — the state machines, events, actions and timers (10.7.1–10.7.14)",
+        "zh": "MRP 协议规范——状态机、事件、动作与定时器（10.7.1–10.7.14）"
+      },
+      "en": "10.7 specifies MRP as four state tables: per-attribute Applicant and Registrar machines, plus a per-Participant LeaveAll and PeriodicTransmission machine. 10.7.1 fixes the shorthand (rXXX = receive, sXXX = send, XXX! = event) and state abbreviations (IN/LV/MT for Registrar; VO/VP/VN/AN/AA/QA/LA/AO/QO/AP/QP/LO for Applicant). 10.7.2 Registrar Administrative Controls let an operator pin a registration: Normal, Registration Fixed (New ignored), Registration Fixed (New propagated), or Registration Forbidden. 10.7.3 Applicant Administrative Controls choose Normal, New-Only, or Non-Participant. 10.7.4 defines the four timers — jointimer (transmit-opportunity spacing), leavetimer (LV→MT dwell), leavealltimer (LeaveAll cadence, randomized), periodictimer (1 s). 10.7.5 enumerates every event: Begin!, Flush!, Re-declare!, New!, Join!, Lv!, tx!, txLA!, txLAF!, periodic! and its enable/disable variants, the message-reception events rNew!/rJoinIn!/rJoinMt!/rLv!/rIn!/rMt!/rLA!, and the timer-expiry events. 10.7.6 defines the matching actions (sN, sJ/[sJ], sL, s/[s], sLA, the Join/New/Lv indications, and the start/stop timer actions). 10.7.7 Applicant, 10.7.8 Registrar, 10.7.9 LeaveAll and 10.7.10 PeriodicTransmission give the four tables (Tables 10-3 through 10-6). 10.7.11 gives timer relationships and defaults (Table 10-7: JoinTime 20, LeaveTime 60–100, LeaveAllTime 1000 centiseconds). 10.7.12 covers operational reporting (failure-to-register counts; optional peer tracking). 10.7.13 explains the sequentiality constraint needed when MRPDUs cross an MRP-unaware Bridge. 10.7.14 adds the External Control managed object that lets a manager disable MAP, read registrations, or write declarations for a Participant.",
+      "zh": "10.7 把 MRP 规定为四张状态表：每属性的 Applicant 与 Registrar 状态机，加上每参与者的 LeaveAll 与 PeriodicTransmission 状态机。10.7.1 确定了缩写（rXXX=接收，sXXX=发送，XXX!=事件）与状态简称（Registrar 的 IN/LV/MT；Applicant 的 VO/VP/VN/AN/AA/QA/LA/AO/QO/AP/QP/LO）。10.7.2 Registrar 管理控制可让运维固定注册：Normal、Registration Fixed（忽略 New）、Registration Fixed（传播 New）、Registration Forbidden。10.7.3 Applicant 管理控制可选 Normal、New-Only 或 Non-Participant。10.7.4 定义四个定时器——jointimer（发送机会间隔）、leavetimer（LV→MT 驻留）、leavealltimer（LeaveAll 节律，取随机值）、periodictimer（1 秒）。10.7.5 列举每个事件：Begin!、Flush!、Re-declare!、New!、Join!、Lv!、tx!、txLA!、txLAF!、periodic! 及其启用/停用变体，消息接收事件 rNew!/rJoinIn!/rJoinMt!/rLv!/rIn!/rMt!/rLA!，以及定时器到期事件。10.7.6 定义对应的动作（sN、sJ/[sJ]、sL、s/[s]、sLA，Join/New/Lv 指示，以及启停定时器的动作）。10.7.7 Applicant、10.7.8 Registrar、10.7.9 LeaveAll 与 10.7.10 PeriodicTransmission 给出四张表（表 10-3 至 10-6）。10.7.11 给出定时器关系与默认值（表 10-7：JoinTime 20、LeaveTime 60–100、LeaveAllTime 1000 厘秒）。10.7.12 涵盖运行报告（注册失败计数；可选的对端跟踪）。10.7.13 说明当 MRPDU 穿越不支持 MRP 的网桥时所需的顺序性约束。10.7.14 增加外部控制托管对象，使管理者可为某参与者禁用 MAP、读取注册或写入声明。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          285,
+          286,
+          287,
+          288,
+          289,
+          290,
+          291,
+          292,
+          293,
+          294,
+          295,
+          296,
+          297
+        ]
+      }
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 560 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"20\" width=\"70\" height=\"30\"/><text x=\"45\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">ProtoVer</text><rect x=\"80\" y=\"20\" width=\"360\" height=\"30\"/><text x=\"260\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Message 1 ... Message N</text><rect x=\"440\" y=\"20\" width=\"110\" height=\"30\"/><text x=\"495\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">EndMark</text><rect x=\"80\" y=\"70\" width=\"90\" height=\"28\"/><text x=\"125\" y=\"88\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">AttrType</text><rect x=\"170\" y=\"70\" width=\"90\" height=\"28\"/><text x=\"215\" y=\"88\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">AttrLength</text><rect x=\"260\" y=\"70\" width=\"180\" height=\"28\"/><text x=\"350\" y=\"88\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">AttributeList + EndMark</text><rect x=\"170\" y=\"112\" width=\"80\" height=\"26\"/><text x=\"210\" y=\"129\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">VectorHdr</text><rect x=\"250\" y=\"112\" width=\"90\" height=\"26\"/><text x=\"295\" y=\"129\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">FirstValue</text><rect x=\"340\" y=\"112\" width=\"100\" height=\"26\"/><text x=\"390\" y=\"129\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Vector (packed)</text></svg>",
+      "caption": {
+        "en": "MRPDU layout (10.8): a ProtocolVersion octet, one or more Messages, and an EndMark. Each Message holds an AttributeType, AttributeLength and an AttributeList of VectorAttributes; each VectorAttribute is a VectorHeader (LeaveAllEvent x 8192 + NumberOfValues), a FirstValue, and a Vector of events packed three-per-octet.",
+        "zh": "MRPDU 结构（10.8）：一个 ProtocolVersion 字节、一个或多个 Message，以及一个 EndMark。每个 Message 含 AttributeType、AttributeLength 和由 VectorAttribute 组成的 AttributeList；每个 VectorAttribute 由 VectorHeader（LeaveAllEvent×8192＋NumberOfValues）、一个 FirstValue 和一个把事件按每字节三个打包的 Vector 构成。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "MRPDU structure and encoding (10.8.1–10.8.3)",
+        "zh": "MRPDU 的结构与编码（10.8.1–10.8.3）"
+      },
+      "en": "10.8.1 Structure: octet/bit ordering (10.8.1.1, octet 1 first, bit 1 is the low-order bit) and the BNF for the PDU (10.8.1.2): MRPDU = ProtocolVersion, Messages, EndMark; a Message = AttributeType, AttributeLength, optional AttributeListLength, AttributeList; an AttributeList = VectorAttributes + EndMark; a VectorAttribute = VectorHeader + FirstValue + Vector. 10.8.2 Encoding of parameters: ProtocolVersion (10.8.2.1), AttributeType (10.8.2.2, value 0 reserved), AttributeLength (10.8.2.3, length of FirstValue), AttributeListLength (10.8.2.4, used by MSRP but not MMRP/MVRP), AttributeEvent (10.8.2.5, the six operators New=0, JoinIn=1, In=2, JoinMt=3, Mt=4, Lv=5), LeaveAllEvent (10.8.2.6, NullLeaveAllEvent=0 or LeaveAll=1), FirstValue (10.8.2.7, application-defined increment), VectorHeader (10.8.2.8, LeaveAllEvent x 8192 + NumberOfValues, max 8191 events), EndMark (10.8.2.9, 0x0000), and the Vector itself (10.8.2.10) packed as ThreePackedEvents (10.8.2.10.1, three event codes per octet) or FourPackedEvents (10.8.2.10.2, used by other applications). 10.8.3 Packing and parsing: how VectorAttributes are packed across PDUs (10.8.3.1), how received MRPDUs are handed to the Participant or to the Forwarding Process if the application is unsupported (10.8.3.2), discarding badly formed PDUs (10.8.3.3), parsing with the end-of-PDU treated as an EndMark (10.8.3.4), and forward-compatible handling of higher protocol versions (10.8.3.5).",
+      "zh": "10.8.1 结构：字节/比特顺序（10.8.1.1，字节 1 在先，比特 1 为低位）与 PDU 的 BNF（10.8.1.2）：MRPDU＝ProtocolVersion、若干 Message、EndMark；Message＝AttributeType、AttributeLength、可选 AttributeListLength、AttributeList；AttributeList＝若干 VectorAttribute＋EndMark；VectorAttribute＝VectorHeader＋FirstValue＋Vector。10.8.2 参数编码：ProtocolVersion（10.8.2.1）、AttributeType（10.8.2.2，值 0 保留）、AttributeLength（10.8.2.3，FirstValue 的长度）、AttributeListLength（10.8.2.4，MSRP 使用而 MMRP/MVRP 不用）、AttributeEvent（10.8.2.5，六个操作符 New=0、JoinIn=1、In=2、JoinMt=3、Mt=4、Lv=5）、LeaveAllEvent（10.8.2.6，NullLeaveAllEvent=0 或 LeaveAll=1）、FirstValue（10.8.2.7，按应用定义递增）、VectorHeader（10.8.2.8，LeaveAllEvent×8192＋NumberOfValues，最多 8191 个事件）、EndMark（10.8.2.9，0x0000），以及 Vector 本身（10.8.2.10），打包为 ThreePackedEvents（10.8.2.10.1，每字节三个事件码）或 FourPackedEvents（10.8.2.10.2，供其他应用使用）。10.8.3 打包与解析：VectorAttribute 如何跨 PDU 打包（10.8.3.1）、接收到的 MRPDU 如何交给参与者或在不支持该应用时交给转发进程（10.8.3.2）、丢弃格式错误的 PDU（10.8.3.3）、把 PDU 结尾视作 EndMark 的解析（10.8.3.4），以及对更高协议版本的前向兼容处理（10.8.3.5）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          298,
+          299,
+          300,
+          301,
+          302,
+          303,
+          304
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "MMRP — purpose (10.9): MMRP lets end stations and Bridges dynamically register and deregister three kinds of information — Group membership (a group MAC address someone wants to receive), Group service requirement (a request that a Port default to Forward All Groups or Forward Unregistered Groups), and individual MAC addresses. Registering Group membership creates MAC Address Registration Entries in the Filtering Database (FDB), so multicast frames are forwarded only toward registered members. MMRP runs only in Extended Filtering Mode; Bridges in Basic mode are transparent and just flood MMRP frames. Model of operation (10.10): one MMRP Participant per VLAN Context stacks the MMRP application over MAP and MAD. 10.10.1 Group membership propagation builds an 'Open Host Group' — any source can send, but filtering prunes the tree to just the LANs with members. 10.10.2 propagates Group service requirements so backbone Ports adopt the highest-precedence default behavior. 10.10.3 source pruning lets a sender (needing both Registrar and Applicant roles) suppress traffic when no members exist downstream. 10.10.4 lets routers or monitors register All Groups or All Unregistered Groups for promiscuous reception.",
+      "zh": "MMRP——目的（10.9）：MMRP 让端站与网桥动态注册和注销三类信息——组成员（某方想接收的组 MAC 地址）、组服务需求（请求某端口默认采用 Forward All Groups 或 Forward Unregistered Groups），以及单播 MAC 地址。注册组成员会在过滤数据库（FDB，Filtering Database）中创建 MAC 地址注册条目，使组播帧只向已注册成员转发。MMRP 仅在扩展过滤模式下运行；处于基础模式的网桥是透明的，只会泛洪 MMRP 帧。操作模型（10.10）：每个 VLAN 上下文一个 MMRP 参与者，把 MMRP 应用叠加在 MAP 与 MAD 之上。10.10.1 组成员传播构建“开放主机组”——任何源都可发送，但过滤会把树裁剪到仅含成员的 LAN。10.10.2 传播组服务需求，使骨干端口采用最高优先级的默认行为。10.10.3 源裁剪让发送方（需同时具备 Registrar 与 Applicant 角色）在下游无成员时抑制流量。10.10.4 让路由器或监控设备注册 All Groups 或 All Unregistered Groups 以实现混杂接收。"
+    },
+    {
+      "type": "prose",
+      "en": "Default Group filtering and MMRP propagation (10.11): because MMRP frames only leave Ports in the Member set for a VID, registrations propagate only toward regions where that VID is registered. Whether a Bridge outside that region forwards or filters frames for the Group then depends on its Default Group Filtering Behavior — Forward All Groups and Forward Unregistered Groups keep the VLAN 'open' to external traffic, while Filter Unregistered Groups makes it 'closed.' Finally, the MMRP application definition (10.12) nails down the concrete details: MMRP uses VLAN Contexts keyed by VID (10.12.1.1–10.12.1.2), the Customer/Provider Bridge MMRP group address and EtherType 0x88F6 (10.12.1.3–10.12.1.4), ProtocolVersion 0x00 (10.12.1.5), and two AttributeTypes — Service Requirement (type 1) and MAC (type 2) — with their FirstValue, AttributeLength and Vector encodings (10.12.1.6–10.12.1.10).",
+      "zh": "默认组过滤与 MMRP 传播（10.11）：由于 MMRP 帧只从某 VID 成员集合中的端口发出，注册只向该 VID 已注册的区域传播。区域之外的网桥对该组的帧是转发还是过滤，取决于其默认组过滤行为——Forward All Groups 与 Forward Unregistered Groups 使 VLAN 对外部流量保持“开放”，而 Filter Unregistered Groups 使其“封闭”。最后，MMRP 应用定义（10.12）敲定具体细节：MMRP 使用以 VID 为键的 VLAN 上下文（10.12.1.1–10.12.1.2）、客户/运营商网桥 MMRP 组地址与 EtherType 0x88F6（10.12.1.3–10.12.1.4）、ProtocolVersion 0x00（10.12.1.5），以及两个 AttributeType——服务需求（类型 1）与 MAC（类型 2）——连同它们的 FirstValue、AttributeLength 与 Vector 编码（10.12.1.6–10.12.1.10）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — MMRP services, controls and support requirements (10.12.2–10.12.5)",
+        "zh": "覆盖图——MMRP 服务、控制与支持要求（10.12.2–10.12.5）"
+      },
+      "en": "10.12.2 Provision of Extended Filtering Services: 10.12.2.1 maps the Extended Filtering primitives onto MAD — REGISTER_MAC_ADDRESS becomes a MAD_Join.request on the MAC Vector type, DEREGISTER_MAC_ADDRESS a MAD_Leave.request, and the REGISTER/DEREGISTER_SERVICE_REQUIREMENT primitives map onto the Service Requirement type. 10.12.2.2 defines the events: a MAD_Join.indication marks the Port Forwarding in the MAC Address Registration Entry (creating one if needed), while a MAD_Leave.indication marks it Filtering and removes the entry once no Port remains Forwarding; entry creation can be limited by the Restricted_MAC_Address_Registration control. 10.12.2.3 Administrative controls realize Registrar control through Static Filtering Entries, with the Permanent Database shipping an All Groups entry set to Registration Fixed (New ignored) so the default behavior is Forward All Groups until a manager changes it; it also covers Applicant Administrative Controls and the per-Port Restricted_MAC_Address_Registration control (default FALSE). 10.12.3: MMRP does not use the 'new' declaration capability. 10.12.4 Attribute value support: MMRP must keep state for all Service Requirement values and be able to support any MAC value, though the maximum count is implementation-defined and stated in the PICS. 10.12.5 Registrar Administrative Controls: MMRP supports Registration Fixed (New ignored) but not Registration Fixed (New propagated).",
+      "zh": "10.12.2 扩展过滤服务的提供：10.12.2.1 把扩展过滤原语映射到 MAD——REGISTER_MAC_ADDRESS 变为 MAC Vector 类型上的 MAD_Join.request，DEREGISTER_MAC_ADDRESS 变为 MAD_Leave.request，而 REGISTER/DEREGISTER_SERVICE_REQUIREMENT 原语映射到服务需求类型。10.12.2.2 定义事件：MAD_Join.indication 在 MAC 地址注册条目中把端口标为 Forwarding（必要时新建条目），而 MAD_Leave.indication 把端口标为 Filtering，并在再无端口处于 Forwarding 时移除该条目；条目创建可受 Restricted_MAC_Address_Registration 控制限制。10.12.2.3 管理控制通过静态过滤条目实现 Registrar 控制，永久数据库出厂时带有一条设为 Registration Fixed（忽略 New）的 All Groups 条目，使默认行为为 Forward All Groups，直到管理者更改；它还涵盖 Applicant 管理控制与每端口的 Restricted_MAC_Address_Registration 控制（默认 FALSE）。10.12.3：MMRP 不使用“new”声明能力。10.12.4 属性值支持：MMRP 必须为所有服务需求值保留状态，并能支持任意 MAC 值，但最大数量由实现决定并在 PICS 中声明。10.12.5 Registrar 管理控制：MMRP 支持 Registration Fixed（忽略 New），但不支持 Registration Fixed（传播 New）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          312,
+          313,
+          314
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        273,
+        274,
+        275,
+        276,
+        277,
+        278,
+        279,
+        280,
+        281
+      ],
+      "note": "10.1 MRP overview through 10.6 protocol operation: architecture, MAP, MAP Context, requirements, interoperability"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        285,
+        286,
+        287,
+        288,
+        289,
+        290,
+        291,
+        292,
+        293,
+        294,
+        295,
+        296,
+        297,
+        298
+      ],
+      "note": "10.7 protocol specification: state machines, events, actions, timers, reporting, interoperability, external control"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        298,
+        299,
+        300,
+        301,
+        302,
+        303,
+        304
+      ],
+      "note": "10.8 MRPDU structure and encoding"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        305,
+        306,
+        307,
+        308,
+        309,
+        310,
+        311,
+        312,
+        313,
+        314
+      ],
+      "note": "10.9 MMRP purpose through 10.12 MMRP application definition"
+    }
+  ],
+  "covers": [
+    "8021Q-2022:10.1",
+    "8021Q-2022:10.2",
+    "8021Q-2022:10.3.1",
+    "8021Q-2022:10.4",
+    "8021Q-2022:10.5",
+    "8021Q-2022:10.6",
+    "8021Q-2022:10.7.1",
+    "8021Q-2022:10.7.2",
+    "8021Q-2022:10.7.3",
+    "8021Q-2022:10.7.4",
+    "8021Q-2022:10.7.5",
+    "8021Q-2022:10.7.6",
+    "8021Q-2022:10.7.7",
+    "8021Q-2022:10.7.8",
+    "8021Q-2022:10.7.9",
+    "8021Q-2022:10.7.10",
+    "8021Q-2022:10.7.11",
+    "8021Q-2022:10.7.12",
+    "8021Q-2022:10.7.13",
+    "8021Q-2022:10.7.14",
+    "8021Q-2022:10.8.1",
+    "8021Q-2022:10.8.2",
+    "8021Q-2022:10.8.3",
+    "8021Q-2022:10.9",
+    "8021Q-2022:10.10.1",
+    "8021Q-2022:10.10.2",
+    "8021Q-2022:10.10.3",
+    "8021Q-2022:10.10.4",
+    "8021Q-2022:10.11",
+    "8021Q-2022:10.12.1",
+    "8021Q-2022:10.12.2",
+    "8021Q-2022:10.12.3",
+    "8021Q-2022:10.12.4",
+    "8021Q-2022:10.12.5"
+  ],
+  "track": "bridging-tsn"
+}

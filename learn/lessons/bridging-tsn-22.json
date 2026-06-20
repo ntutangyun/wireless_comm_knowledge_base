@@ -1,0 +1,144 @@
+{
+  "id": "bridging-tsn-22",
+  "title": {
+    "en": "Spanning Tree State Machines: The Procedure Toolbox (13.29)",
+    "zh": "生成树状态机：过程工具箱 (13.29)"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A spanning tree protocol keeps a bridged Ethernet network loop-free by electing one root bridge and disabling redundant links. The control logic is written in IEEE 802.1Q-2022 as a set of cooperating state machines (small step-by-step rule engines), one per port. But state machines should not contain long blocks of detail inline — instead they call named helper PROCEDURES. Clause 13.29 is the dictionary of those procedures: 35 small, named functions that every state machine reuses. This lesson walks through the 34 procedures from betterorsameInfo() to updtRolesTree() so you can read any state-machine diagram in the standard and know exactly what each box does. Acronyms first: BPDU = Bridge Protocol Data Unit (the control frame bridges exchange); CIST = Common and Internal Spanning Tree (the single tree spanning the whole network); MSTI = Multiple Spanning Tree Instance (an extra per-VLAN-group tree); SPT = Shortest Path Tree (the SPB / shortest-path-bridging variant).",
+      "zh": "生成树协议通过选举一个根桥并禁用冗余链路，使桥接的以太网保持无环路。IEEE 802.1Q-2022 把这套控制逻辑写成一组协作的状态机（逐步执行的小型规则引擎），每个端口一套。但状态机不应在内部塞入冗长的细节，而是调用具名的辅助“过程”。13.29 节就是这些过程的词典：35 个小型具名函数，供所有状态机复用。本课讲解从 betterorsameInfo() 到 updtRolesTree() 的 34 个过程，让你读懂标准中任意状态机图里每个方框的确切含义。先解释缩写：BPDU = 桥协议数据单元（桥之间交换的控制帧）；CIST = 公共与内部生成树（覆盖整个网络的单一树）；MSTI = 多生成树实例（按 VLAN 组划分的附加树）；SPT = 最短路径树（SPB 最短路径桥接变体）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: the state machines decide WHEN to act (on a timer, on a received BPDU, on a role change); the 13.29 procedures define WHAT happens. Most procedures fall into five families — receive/decode, record, set-tree-wide-flag, transmit, and recompute roles. Group them that way and 35 functions stop being a wall of names.",
+      "zh": "心智模型：状态机决定“何时”动作（定时器到期、收到 BPDU、角色变化）；13.29 的过程定义“做什么”。多数过程可归为五类——接收/解码、记录、置全树标志、发送、重算角色。这样分组后，35 个函数就不再是一堵名字墙。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  RX[BPDU arrives] --> DEC[\"rcvMsgs / rcvInfo\\n(decode + classify)\"]\n  DEC --> REC[\"record*\\n(store into port state)\"]\n  REC --> SEL[\"updtRolesTree\\n(recompute port roles)\"]\n  SEL --> FLG[\"set*Tree\\n(tree-wide flags)\"]\n  FLG --> TX[\"txConfig / txRstp / txTcn\\n(send a BPDU)\"]\n  SEL --> FWD[\"enable/disable\\nForwarding & Learning\"]",
+      "zh": "flowchart TD\n  RX[BPDU 到达] --> DEC[\"rcvMsgs / rcvInfo\\n（解码+分类）\"]\n  DEC --> REC[\"record*\\n（存入端口状态）\"]\n  REC --> SEL[\"updtRolesTree\\n（重算端口角色）\"]\n  SEL --> FLG[\"set*Tree\\n（全树标志）\"]\n  FLG --> TX[\"txConfig / txRstp / txTcn\\n（发送 BPDU）\"]\n  SEL --> FWD[\"启用/禁用\\n转发与学习\"]"
+    },
+    {
+      "type": "prose",
+      "en": "Family 1 — receive and classify. When a BPDU lands, rcvMsgs() (13.29.13) decodes it: it pulls out the message priority and timer values, marks topology-change bits, and sets rcvdMsg so the per-tree machines wake up. updtBPDUVersion() (13.29.31) tags the frame as legacy (rcvdSTP, a Config or TCN BPDU) or rapid (rcvdRSTP, an RST or MST BPDU). fromSameRegion() (13.29.8) answers 'did this come from a bridge in my own MST region?' by matching the MST Configuration Identifier (MCID). Then rcvInfo() (13.29.12) classifies the message against what the port already believes: SuperiorDesignatedInfo (better news), RepeatedDesignatedInfo (same as before), InferiorDesignatedInfo, InferiorRootAlternateInfo, or OtherInfo. betterorsameInfo(newInfoIs) (13.29.1) is the tie-break helper used inside that comparison — it returns TRUE when freshly received or self-originated (Mine) priority is at least as good as the stored portPriority.",
+      "zh": "第一类——接收与分类。BPDU 到达时，rcvMsgs()（13.29.13）对其解码：提取消息优先级和定时器值、标记拓扑变化位，并设置 rcvdMsg 以唤醒各树状态机。updtBPDUVersion()（13.29.31）把帧标记为旧式（rcvdSTP，即 Config 或 TCN BPDU）或快速式（rcvdRSTP，即 RST 或 MST BPDU）。fromSameRegion()（13.29.8）通过匹配 MST 配置标识符（MCID）回答“它来自我自己 MST 区域内的桥吗？”。随后 rcvInfo()（13.29.12）将消息与端口现有认知比较并分类：SuperiorDesignatedInfo（更优消息）、RepeatedDesignatedInfo（与之前相同）、InferiorDesignatedInfo、InferiorRootAlternateInfo 或 OtherInfo。betterorsameInfo(newInfoIs)（13.29.1）是该比较内部的判优辅助函数——当新收到或自生成（Mine）的优先级不劣于已存的 portPriority 时返回 TRUE。"
+    },
+    {
+      "type": "prose",
+      "en": "Family 2 — record into port state. Once a message is classified, the record* procedures copy the relevant facts into per-port variables. recordPriority() (13.29.18) saves the message priority into portPriority; recordTimes() (13.29.20) saves Message Age, Max Age, Forward Delay, and remaining hops into portTimes. recordProposal() (13.29.19) latches a neighbour's 'I propose to forward' flag; recordAgreement() (13.29.15) latches the matching 'I agree' flag (the handshake that lets RSTP transition a link to forwarding fast). recordMastered() (13.29.17) tracks the MSTI Master flag, and recordDispute() (13.29.16) flags a dispute when a neighbour is still learning on a link we think we own — a loop-safety check. Each of these carefully handles the cross-region case: facts arriving from a different MST region propagate to all MSTIs, while in-region facts stay per-instance.",
+      "zh": "第二类——记录到端口状态。消息分类后，record* 系列过程把相关事实写入各端口变量。recordPriority()（13.29.18）把消息优先级存入 portPriority；recordTimes()（13.29.20）把消息寿命、最大寿命、转发延迟和剩余跳数存入 portTimes。recordProposal()（13.29.19）锁存邻居的“我提议转发”标志；recordAgreement()（13.29.15）锁存对应的“我同意”标志（这一握手让 RSTP 能快速把链路切到转发）。recordMastered()（13.29.17）跟踪 MSTI Master 标志，recordDispute()（13.29.16）在邻居仍在我们认为归己所有的链路上学习时标记争议——这是一项防环安全检查。每个过程都谨慎处理跨区域情形：来自不同 MST 区域的事实会传播到所有 MSTI，而区域内事实保持按实例独立。"
+    },
+    {
+      "type": "prose",
+      "en": "Family 3 — set a flag across the whole tree. Several procedures fan a single decision out to every port of the bridge for one tree. clearReselectTree() (13.29.3) clears reselect everywhere; setSelectedTree() (13.29.22) sets selected on all ports (but only if no port still needs reselecting); setReRootTree() (13.29.21) sets reRoot; setSyncTree() (13.29.23) sets sync — the cue for ports to block until they have re-agreed, the core of RSTP's loop-free handshake. setTcPropTree() (13.29.25) propagates a topology change (tcProp) to every OTHER port, unless that port is configured to restrict topology-change notifications. clearAllRcvdMsgs() (13.29.2) clears rcvdMsg for the CIST and all MSTIs on this port. setTcFlags() (13.29.24) reads the Topology Change and Topology Change Acknowledgment bits out of a received BPDU and sets rcvdTc / rcvdTcAck. syncMaster() (13.29.26) handles MSTI Master ports: it clears agree/agreed/synced and sets sync so a regional-root change cannot create a transient loop.",
+      "zh": "第三类——在整棵树上置标志。若干过程把一个决定扩散到该树的桥上每个端口。clearReselectTree()（13.29.3）在各处清除 reselect；setSelectedTree()（13.29.22）在所有端口置 selected（但仅当没有端口仍需 reselect 时）；setReRootTree()（13.29.21）置 reRoot；setSyncTree()（13.29.23）置 sync——提示端口阻塞直到重新达成一致，这是 RSTP 无环握手的核心。setTcPropTree()（13.29.25）把拓扑变化（tcProp）传播给所有“其他”端口，除非该端口被配置为限制拓扑变化通知。clearAllRcvdMsgs()（13.29.2）清除本端口 CIST 和所有 MSTI 的 rcvdMsg。setTcFlags()（13.29.24）从收到的 BPDU 中读出拓扑变化与拓扑变化确认位，并设置 rcvdTc / rcvdTcAck。syncMaster()（13.29.26）处理 MSTI Master 端口：清除 agree/agreed/synced 并置 sync，使区域根变化不会造成瞬时环路。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> Detected: newTcDetected()\n  Detected --> Spreading: newTcWhile()\\n(start tcWhile)\n  Spreading --> Notify: txTcn() / txConfig()\\n(TC flag set)\n  Notify --> Propagate: setTcPropTree()\\n(other ports)\n  Propagate --> [*]: tcWhile expires",
+      "zh": "stateDiagram-v2\n  [*] --> 检测到: newTcDetected()\n  检测到 --> 扩散中: newTcWhile()\\n（启动 tcWhile）\n  扩散中 --> 通告: txTcn() / txConfig()\\n（置 TC 标志）\n  通告 --> 传播: setTcPropTree()\\n（其他端口）\n  传播 --> [*]: tcWhile 到期"
+    },
+    {
+      "type": "prose",
+      "en": "Family 4 — topology change and transmit. newTcDetected() (13.29.9) arms a tcDetected timer when a change is first seen; newTcWhile() (13.29.10) (re)starts the tcWhile window during which this port keeps flagging the change, and requests a new BPDU by setting newInfo. The transmit trio actually puts frames on the wire: txConfig() (13.29.27) sends a legacy Configuration BPDU (used when talking STP), txTcn() (13.29.29) sends a Topology Change Notification BPDU, and txRstp() (13.29.28) sends the modern RST / MST / SPT BPDU — its exact form chosen by ForceProtocolVersion, encoding the CIST priority, port role, Agreement/Proposal flags, timers, the MST Configuration Identifier, and (for SPB) the agreement numbers and digest. updtRcvdInfoWhile() (13.29.33) sets how long received info stays valid: three times Hello Time while Message Age (external region) or remaining hops (internal region) are still within bounds, and zero once they are not — that is how stale information ages out.",
+      "zh": "第四类——拓扑变化与发送。newTcDetected()（13.29.9）在首次发现变化时启动 tcDetected 定时器；newTcWhile()（13.29.10）（重新）启动 tcWhile 窗口，在此期间本端口持续标记该变化，并通过置 newInfo 请求发送新 BPDU。发送三件套真正把帧送上线路：txConfig()（13.29.27）发送旧式 Configuration BPDU（与 STP 通信时使用），txTcn()（13.29.29）发送拓扑变化通知（TCN）BPDU，txRstp()（13.29.28）发送现代的 RST / MST / SPT BPDU——其具体形式由 ForceProtocolVersion 决定，编码 CIST 优先级、端口角色、Agreement/Proposal 标志、定时器、MST 配置标识符，以及（对 SPB）协议号和摘要。updtRcvdInfoWhile()（13.29.33）设定收到信息的有效时长：当消息寿命（外部区域）或剩余跳数（内部区域）仍在界内时为 Hello Time 的三倍，超界后为零——陈旧信息便由此老化。"
+    },
+    {
+      "type": "prose",
+      "en": "Family 5 — recompute roles, and the forwarding switches. The heart of the protocol is updtRolesTree() (13.29.34): it recomputes the root path priority vectors, picks the bridge's root priority vector and root times, derives each port's designated priority, then assigns every port a role — DisabledPort, RootPort, DesignatedPort, AlternatePort, BackupPort, or (in an MST region) MasterPort — setting updtInfo where a port's stored vector no longer matches. Once roles are set, four tiny implementation-dependent procedures flip the actual data plane: enableForwarding() (13.29.6) / disableForwarding() (13.29.4) start or stop the Forwarding Process, and enableLearning() (13.29.7) / disableLearning() (13.29.5) start or stop MAC address learning — each only returning once the change has truly taken effect, so the state machine never races ahead of the hardware.",
+      "zh": "第五类——重算角色与转发开关。协议的核心是 updtRolesTree()（13.29.34）：它重新计算根路径优先级向量，选出本桥的根优先级向量与根定时器，推导每个端口的指定优先级，然后为每个端口分配角色——DisabledPort、RootPort、DesignatedPort、AlternatePort、BackupPort，或（在 MST 区域内）MasterPort——并在端口存储向量不再匹配时置 updtInfo。角色确定后，四个微小且依赖实现的过程切换真正的数据平面：enableForwarding()（13.29.6）/ disableForwarding()（13.29.4）启动或停止转发进程，enableLearning()（13.29.7）/ disableLearning()（13.29.5）启动或停止 MAC 地址学习——每个过程仅在变化真正生效后才返回，因此状态机绝不会抢在硬件之前推进。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The SPB extras (Shortest Path Bridging, the ISIS-SPB variant) reuse the same toolbox but add four agreement-handling procedures. They only run when ForceProtocolVersion selects the SPT BPDU. If you are only learning classic STP / RSTP / MSTP, you can treat rcvAgreements(), updtAgreement(), updtDigest(), and pseudoRcvMsgs() as advanced reading.",
+      "zh": "SPB 扩展（最短路径桥接，即 ISIS-SPB 变体）复用同一工具箱，但增加了四个协议握手处理过程。它们仅在 ForceProtocolVersion 选择 SPT BPDU 时运行。若你只学习经典 STP / RSTP / MSTP，可把 rcvAgreements()、updtAgreement()、updtDigest() 和 pseudoRcvMsgs() 当作进阶阅读。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every procedure in 13.29.1–13.29.34 by exact clause number",
+        "zh": "覆盖图——按确切条款号列出 13.29.1–13.29.34 的每个过程"
+      },
+      "en": "Receive/classify: betterorsameInfo() (13.29.1) priority tie-break; fromSameRegion() (13.29.8) MCID match; rcvInfo() (13.29.12) classify Superior/Repeated/Inferior/OtherInfo; rcvMsgs() (13.29.13) decode BPDU and set rcvdMsg; updtBPDUVersion() (13.29.31) tag rcvdSTP vs rcvdRSTP. Record: recordAgreement() (13.29.15); recordDispute() (13.29.16); recordMastered() (13.29.17); recordPriority() (13.29.18); recordProposal() (13.29.19); recordTimes() (13.29.20). Tree-wide flags: clearAllRcvdMsgs() (13.29.2); clearReselectTree() (13.29.3); setReRootTree() (13.29.21); setSelectedTree() (13.29.22); setSyncTree() (13.29.23); setTcFlags() (13.29.24); setTcPropTree() (13.29.25); syncMaster() (13.29.26). Topology change + transmit: newTcDetected() (13.29.9); newTcWhile() (13.29.10); txConfig() (13.29.27); txRstp() (13.29.28); txTcn() (13.29.29); updtRcvdInfoWhile() (13.29.33). Data plane: disableForwarding() (13.29.4); disableLearning() (13.29.5); enableForwarding() (13.29.6); enableLearning() (13.29.7). Role recompute: updtRolesTree() (13.29.34). SPB/ISIS-SPB only: pseudoRcvMsgs() (13.29.11) simulate a self-BPDU for L2GP ports; rcvAgreements() (13.29.14) process SPT-BPDU agreements; updtAgreement() (13.29.30) recompute agreed/agreedPriority; updtDigest() (13.29.32) update Agreement Digest and sequence numbers.",
+      "zh": "接收/分类：betterorsameInfo()（13.29.1）优先级判优；fromSameRegion()（13.29.8）MCID 匹配；rcvInfo()（13.29.12）分类 Superior/Repeated/Inferior/OtherInfo；rcvMsgs()（13.29.13）解码 BPDU 并置 rcvdMsg；updtBPDUVersion()（13.29.31）标记 rcvdSTP 与 rcvdRSTP。记录：recordAgreement()（13.29.15）；recordDispute()（13.29.16）；recordMastered()（13.29.17）；recordPriority()（13.29.18）；recordProposal()（13.29.19）；recordTimes()（13.29.20）。全树标志：clearAllRcvdMsgs()（13.29.2）；clearReselectTree()（13.29.3）；setReRootTree()（13.29.21）；setSelectedTree()（13.29.22）；setSyncTree()（13.29.23）；setTcFlags()（13.29.24）；setTcPropTree()（13.29.25）；syncMaster()（13.29.26）。拓扑变化+发送：newTcDetected()（13.29.9）；newTcWhile()（13.29.10）；txConfig()（13.29.27）；txRstp()（13.29.28）；txTcn()（13.29.29）；updtRcvdInfoWhile()（13.29.33）。数据平面：disableForwarding()（13.29.4）；disableLearning()（13.29.5）；enableForwarding()（13.29.6）；enableLearning()（13.29.7）。角色重算：updtRolesTree()（13.29.34）。仅 SPB/ISIS-SPB：pseudoRcvMsgs()（13.29.11）为 L2GP 端口模拟自发 BPDU；rcvAgreements()（13.29.14）处理 SPT-BPDU 握手；updtAgreement()（13.29.30）重算 agreed/agreedPriority；updtDigest()（13.29.32）更新协议摘要与序列号。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          562,
+          563,
+          564,
+          565,
+          566,
+          567,
+          568,
+          569,
+          570,
+          571,
+          572
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        562,
+        563,
+        564,
+        565,
+        566,
+        567,
+        568,
+        569,
+        570,
+        571,
+        572
+      ],
+      "note": "Clause 13.29 State machine procedures, 13.29.1 betterorsameInfo() through 13.29.34 updtRolesTree()."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:13.29.1",
+    "8021Q-2022:13.29.2",
+    "8021Q-2022:13.29.3",
+    "8021Q-2022:13.29.4",
+    "8021Q-2022:13.29.5",
+    "8021Q-2022:13.29.6",
+    "8021Q-2022:13.29.7",
+    "8021Q-2022:13.29.8",
+    "8021Q-2022:13.29.9",
+    "8021Q-2022:13.29.10",
+    "8021Q-2022:13.29.11",
+    "8021Q-2022:13.29.12",
+    "8021Q-2022:13.29.13",
+    "8021Q-2022:13.29.14",
+    "8021Q-2022:13.29.15",
+    "8021Q-2022:13.29.16",
+    "8021Q-2022:13.29.17",
+    "8021Q-2022:13.29.18",
+    "8021Q-2022:13.29.19",
+    "8021Q-2022:13.29.20",
+    "8021Q-2022:13.29.21",
+    "8021Q-2022:13.29.22",
+    "8021Q-2022:13.29.23",
+    "8021Q-2022:13.29.24",
+    "8021Q-2022:13.29.25",
+    "8021Q-2022:13.29.26",
+    "8021Q-2022:13.29.27",
+    "8021Q-2022:13.29.28",
+    "8021Q-2022:13.29.29",
+    "8021Q-2022:13.29.30",
+    "8021Q-2022:13.29.31",
+    "8021Q-2022:13.29.32",
+    "8021Q-2022:13.29.33",
+    "8021Q-2022:13.29.34"
+  ],
+  "track": "bridging-tsn"
+}

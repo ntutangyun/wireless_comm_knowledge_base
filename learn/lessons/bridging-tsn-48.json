@@ -1,0 +1,230 @@
+{
+  "id": "bridging-tsn-48",
+  "title": {
+    "en": "Diagnosing Data-Driven Faults (DDCFM) and the Principles of Congestion Notification",
+    "zh": "诊断数据驱动型故障 (DDCFM) 与拥塞通知原理"
+  },
+  "estMinutes": 6,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This lesson covers two diagnostic and control tools that ride on top of an Ethernet bridge. The first is DDCFM — Data-driven and Data-dependent Connectivity Fault Management (Clause 29). It extends ordinary Connectivity Fault Management (CFM) to chase faults that only show up when real, live traffic is flowing. The second is Congestion Notification (Clause 30), the Layer-2 closed-loop scheme that asks senders to slow down before a switch buffer overflows. Both are tools that a network operator turns on deliberately, inside a Maintenance Domain (MD) — an administrative region the operator owns.",
+      "zh": "本课讲解两种架设在以太网桥之上的诊断与控制工具。第一种是 DDCFM——数据驱动与数据相关的连通性故障管理 (Data-driven and Data-dependent Connectivity Fault Management, 第 29 章)。它扩展了常规的连通性故障管理 (CFM), 用于追查那些只有在真实活跃流量流动时才会暴露的故障。第二种是拥塞通知 (Congestion Notification, 第 30 章), 这是一种二层闭环机制, 在交换机缓冲区溢出之前请求发送方降速。两者都是网络运营商在自己拥有的管理域 (Maintenance Domain, MD) 内有意开启的工具。"
+    },
+    {
+      "type": "prose",
+      "en": "Why DDCFM exists (29.1.1): some faults are invisible to ping-style health checks because they only bite certain frames. A simple data-dependent fault repetitively drops or misdirects specific frames — usually a misconfiguration, like a protocol filter installed in the wrong place. A true data-driven fault is subtler: the presence (or absence) of some frames changes the fate of others, as happens with IGMP snooping, stateful firewalls, or link-aggregation conversation hashing. The strategy (29.1.2) is divide-and-conquer: keep splitting the network into segments and check whether the frames under test traverse each segment as expected, until the culprit is narrowed to a single Bridge, Bridge Port, or LAG member link. Crucially, DDCFM runs while live traffic flows, because the fault may not appear with synthetic test data.",
+      "zh": "DDCFM 存在的原因 (29.1.1): 有些故障对 ping 式的健康检查不可见, 因为它们只针对特定帧发作。简单的数据相关故障会反复丢弃或误投特定帧——通常是配置错误, 比如把协议过滤器装在了错误的位置。真正的数据驱动故障更隐蔽: 某些帧的存在 (或缺失) 会改变其他帧的命运, 例如 IGMP 侦听、有状态防火墙或链路聚合的会话哈希。其策略 (29.1.2) 是分而治之: 不断把网络切分成段, 检查被测帧是否如预期般穿过每一段, 直到把祸首缩小到单个网桥、单个网桥端口或某条 LAG 成员链路。关键在于, DDCFM 在活跃流量流动时运行, 因为该故障在合成测试数据下可能根本不出现。"
+    },
+    {
+      "type": "prose",
+      "en": "DDCFM works through two complementary tests (29.1.2.1, 29.1.2.2). The Forward Path Test (FPT) asks: can the chosen frames reach a particular spot intact? A Reflection Responder (RR) sits at that spot, copies matching live frames, wraps each in a Reflection Frame Message (RFM) header, and sends it to a Target location for analysis — while optionally letting the original keep going (the Continue option). The Return Path Test (RPT) goes the other way: an SFM Originator wraps test frames in Sent Frame Message (SFM) headers and ships them to a Decapsulator Responder (DR), which strips the header and injects the frames toward their real destinations. FPT and RPT can be combined (29.1.2.3) — for example, an RR and DR on two mid-network ports test whether traffic survives the segment between them, which is handy around firewalls.",
+      "zh": "DDCFM 通过两种互补的测试工作 (29.1.2.1, 29.1.2.2)。前向路径测试 (Forward Path Test, FPT) 要回答: 所选帧能否完好抵达某一特定位置? 反射响应器 (Reflection Responder, RR) 驻守该位置, 复制匹配的活跃帧, 把每帧封装进一个反射帧消息 (Reflection Frame Message, RFM) 头部, 发往目标 (Target) 位置进行分析——同时可选地让原始帧继续前往目的地 (Continue 选项)。返回路径测试 (Return Path Test, RPT) 方向相反: SFM 发起器 (SFM Originator) 把测试帧封装进发送帧消息 (Sent Frame Message, SFM) 头部, 发往解封装响应器 (Decapsulator Responder, DR), 后者剥去头部并将帧注入其真实目的地。FPT 与 RPT 可组合使用 (29.1.2.3)——例如在网络中段的两个端口上各放一个 RR 和 DR, 测试流量能否穿过两者之间的网段, 这在防火墙周围很实用。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  SRC[Data source A] -->|live frames| RR[Reflection Responder]\n  RR -->|RFM copy| TGT[Target / RFM Receiver]\n  RR -->|Continue option| DST[Original destination B]\n  TGT -->|optional LBM check| RR",
+      "zh": "flowchart LR\n  SRC[数据源 A] -->|活跃帧| RR[反射响应器 RR]\n  RR -->|RFM 副本| TGT[目标 / RFM 接收器]\n  RR -->|Continue 选项| DST[原始目的地 B]\n  TGT -->|可选 LBM 检查| RR"
+    },
+    {
+      "type": "prose",
+      "en": "The entities (29.2.1) — RR, DR, RFM Receiver, and SFM Originator — are CFM shims created and activated only by the owning operator, and all of them are timer-limited so a test cannot run forever. RFMs and SFMs are CFM PDUs (protocol data units): a Maintenance End Point (MEP) at a higher MD level drops them, an MEP at the same level processes but does not forward them, and a Maintenance Intermediate Point's Half Function (MHF) forwards them. The RR (29.2.2) has three sub-functions: an RR Filter that selects frames, RR Encapsulation that wraps each in an RFM, and RR Transmit that looks up the egress port in the Filtering Database (FDB) and sends it out. Its behavior is tuned by RR-related parameters (29.2.3): the RR identification (port + MD + Up/Down direction), the MA (Maintenance Association) supplying the VID, the Filter definition (Reflect-All, VLAN, destination/source address, or EtherType), the sampling interval that caps reflection rate, the Continue option, an active-duration / max-frame limit, and a Truncation flag for oversized frames.",
+      "zh": "这些实体 (29.2.1)——RR、DR、RFM 接收器和 SFM 发起器——都是 CFM 垫片 (shim), 仅由拥有该域的运营商创建并激活, 且全部受定时器限制, 因此测试不会永远运行。RFM 和 SFM 都是 CFM PDU (协议数据单元): 处于更高 MD 等级的维护端点 (MEP) 会丢弃它们, 同等级的 MEP 处理但不转发它们, 而维护中间点的半功能 (MHF) 会转发它们。RR (29.2.2) 有三个子功能: 选择帧的 RR 过滤器、把每帧封装进 RFM 的 RR 封装、以及在过滤数据库 (FDB) 中查出口端口并发出的 RR 发送。其行为由 RR 相关参数调节 (29.2.3): RR 标识 (端口 + MD + 上行/下行方向)、提供 VID 的 MA (维护关联)、过滤器定义 (全反射、VLAN、目的/源地址或 EtherType)、限制反射速率的采样间隔、Continue 选项、活跃时长/最大帧数限制, 以及针对超长帧的截断 (Truncation) 标志。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Trust boundaries are baked in. An operator can only set an RR or DR inside its own MD, and at most one RR should be active per MD at a time — a permissive RR filter could reflect a flood of frames and itself become a congestion source. The RR Filter also implicitly refuses to reflect RFMs, so reflected frames are never re-reflected.",
+      "zh": "信任边界是内建的。运营商只能在自己的 MD 内设置 RR 或 DR, 且每个 MD 同一时刻最多激活一个 RR——过于宽松的 RR 过滤器可能反射出海量帧, 自身反而成为拥塞源。RR 过滤器还隐式拒绝反射 RFM, 因此被反射的帧绝不会被二次反射。"
+    },
+    {
+      "type": "prose",
+      "en": "On the return side, the Reflection Target / RFM Receiver (29.2.4) is where reflected frames land; it must be in the same MD as the RR, and if it sees no RFMs it can fire a Loopback Message (LBM) to confirm reachability. RPT-related parameters (29.2.5) split into configuring the SFM Originator and the DR. The DR (29.2.6) validates each SFM, decapsulates it, normally rewrites the source_address to its own MAC (to avoid corrupting other bridges' address learning — unless SourceAddressStayFlag is set), and forwards using an FDB lookup. The SFM Originator (29.2.7) simply builds one SFM per data frame and must share the DR's MD level so the SFM can reach it.",
+      "zh": "在返回侧, 反射目标 / RFM 接收器 (29.2.4) 是被反射帧的落点; 它必须与 RR 处于同一 MD, 若收不到 RFM, 可发出环回消息 (Loopback Message, LBM) 确认可达性。RPT 相关参数 (29.2.5) 分为配置 SFM 发起器和配置 DR 两部分。DR (29.2.6) 校验每个 SFM, 解封装它, 通常把 source_address 改写成自己的 MAC (以免破坏其他网桥的地址学习——除非设置了 SourceAddressStayFlag), 再通过 FDB 查表转发。SFM 发起器 (29.2.7) 只是为每个数据帧构造一个 SFM, 且必须与 DR 共享同一 MD 等级, SFM 才能到达 DR。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the DDCFM protocol machinery (29.3) and PDU encoding (29.4)",
+        "zh": "覆盖地图: DDCFM 协议机制 (29.3) 与 PDU 编码 (29.4)"
+      },
+      "en": "Clause 29.3 specifies DDCFM as state machines plus their variables and procedures. The RR side: RR variables (29.3.1) include RRcontinue, the per-Bridge nPendingRFMs counter, dataReceived/dataFrame, the filteredFrameList and nextFilteredFrame, timers RRtime/RRwhile/RRsampInt/RRsampWhile, RRmaxFrames/RRframeCount, filterMatched, RRactive, nextRFMtransID, maxDataTLVvalueSize, and reflectedDataLength. RR Filter procedures (29.3.2) are forwardFrame(), filterFrame(), loadFilteredFrameList(). RR Encapsulation procedures (29.3.3) are processRRencap(), splitFilteredFrame(), constructRFM() — the last fills in source/destination address, priority, VID, OpCode, MD level, the chosen Data TLV type, and the transaction ID. RR Transmit (29.3.4) is xmitRFM(), which queries the FDB and respects MEP-level rules. The RR-related state machines (29.3.5) are the RR Filter, RR Encapsulation, and shared RR Transmit machines. The receive side: RFM Receiver variables (29.3.6) RFMreceived and RFMPDU; the RFM Receiver procedure (29.3.7) ReceiveRFM() and its state machine. The DR side: DR variables (29.3.8) DRwhile, DRtime, SFMPDU, DRactive, SFMreceived, previousSFMtransId, SFMsequenceErrors; DR procedures (29.3.9) processSFM() and DropSFM(); and the Decapsulator Responder state machine (29.3.10). Clause 29.4 encodes the PDUs: the shared RFM/SFM header reuses the Common CFM Header with new OpCodes (29.4.1); the RFM format (29.4.2) has Flags, a First TLV Offset of 4, a 4-octet RFM Transaction Identifier, a Reflected Data TLV (whose Type can be Data=3, Truncated=9, Part-1=10, or Part-2=11), and optional Additional TLVs; the SFM format (29.4.3) mirrors it with Flags, First TLV Offset, an SFM Transaction Identifier for ordering, an Original Data TLV carrying the whole original frame, and Additional TLVs.",
+      "zh": "第 29.3 节以状态机加变量与过程的形式规定 DDCFM。RR 侧: RR 变量 (29.3.1) 包括 RRcontinue、每网桥的 nPendingRFMs 计数器、dataReceived/dataFrame、filteredFrameList 与 nextFilteredFrame、定时器 RRtime/RRwhile/RRsampInt/RRsampWhile、RRmaxFrames/RRframeCount、filterMatched、RRactive、nextRFMtransID、maxDataTLVvalueSize 与 reflectedDataLength。RR 过滤器过程 (29.3.2) 为 forwardFrame()、filterFrame()、loadFilteredFrameList()。RR 封装过程 (29.3.3) 为 processRRencap()、splitFilteredFrame()、constructRFM()——最后一个填入源/目的地址、优先级、VID、OpCode、MD 等级、所选 Data TLV 类型以及事务标识。RR 发送 (29.3.4) 为 xmitRFM(), 它查询 FDB 并遵守 MEP 等级规则。RR 相关状态机 (29.3.5) 为 RR 过滤器、RR 封装与共享的 RR 发送状态机。接收侧: RFM 接收器变量 (29.3.6) RFMreceived 与 RFMPDU; RFM 接收器过程 (29.3.7) ReceiveRFM() 及其状态机。DR 侧: DR 变量 (29.3.8) DRwhile、DRtime、SFMPDU、DRactive、SFMreceived、previousSFMtransId、SFMsequenceErrors; DR 过程 (29.3.9) processSFM() 与 DropSFM(); 以及解封装响应器状态机 (29.3.10)。第 29.4 节编码这些 PDU: 共享的 RFM/SFM 头部复用通用 CFM 头部并定义新 OpCode (29.4.1); RFM 格式 (29.4.2) 含 Flags、值为 4 的 First TLV Offset、4 字节的 RFM 事务标识、反射数据 TLV (其 Type 可为 Data=3、Truncated=9、Part-1=10 或 Part-2=11) 及可选的附加 TLV; SFM 格式 (29.4.3) 与之对称, 含 Flags、First TLV Offset、用于排序的 SFM 事务标识、承载整个原始帧的原始数据 TLV 及附加 TLV。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1445,
+          1446,
+          1447,
+          1448,
+          1449,
+          1450,
+          1451,
+          1452,
+          1453,
+          1454,
+          1455,
+          1456,
+          1457
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now the second half: Congestion Notification (Clause 30). The problem (30.1) is that a Layer-2 region with a bandwidth-delay product up to roughly 5 Mbit can lose frames when a switch buffer overflows, and TCP-style end-to-end recovery is too slow to help. The design requirements demand a stable, responsive, proportionally fair scheme that keeps Congestion Point (CP) buffers small, costs little state — a CP keeps no per-flow state, only per-priority queues — and never assumes a fixed path through the network. The answer is QCN, Quantized Congestion Notification (30.2): a congested CP samples outgoing frames and mails a Congestion Notification Message (CNM) back to the source; the source's Reaction Point (RP) then slows down.",
+      "zh": "现在进入下半部分: 拥塞通知 (第 30 章)。问题 (30.1) 在于: 带宽时延积约在 5 Mbit 以内的二层区域, 在交换机缓冲区溢出时会丢帧, 而 TCP 式的端到端恢复太慢, 帮不上忙。设计要求是: 稳定、响应迅速、按比例公平, 同时保持拥塞点 (Congestion Point, CP) 缓冲区较小、状态开销极低 (CP 不保存任何按流的状态, 只有按优先级的队列), 且绝不假设网络中存在固定路径。答案就是 QCN——量化拥塞通知 (Quantized Congestion Notification, 30.2): 拥塞的 CP 对发出的帧采样, 把拥塞通知消息 (Congestion Notification Message, CNM) 寄回源端; 源端的反应点 (Reaction Point, RP) 随即降速。"
+    },
+    {
+      "type": "prose",
+      "en": "The CP algorithm (30.2.1) keeps the queue near a setpoint Qeq. It computes a feedback value Fb = -(Qoff + w·ΔQ), where Qoff is how far the queue exceeds Qeq and ΔQ is the queue's rate of change; Fb is quantized to 6 bits. Only when Fb is negative (oversubscribed) does the CP reflect a CNM, with a probability that grows with |Fb|. The basic RP algorithm (30.2.2) reacts: on a CNM it does a multiplicative decrease — CR ← CR(1 - Gd·|Fb|), capped at a 50% cut — then rebuilds rate in two phases. Fast Recovery (30.2.2.2) runs 5 byte-counter cycles of 150 kB, each setting CR ← ½(CR+TR) to claw back the lost rate; Active Increase then probes for spare bandwidth by nudging the Target Rate up by a constant RAI. Because byte-counter cycles stretch out when the rate is tiny, the RP algorithm with timer (30.2.3) adds a clock running parallel cycles; when both the byte counter and timer reach the increase phase the RP enters Hyper-Active Increase for aggressive recovery — but only after at least 500 frames and 50 ms with no CNM, which guards stability.",
+      "zh": "CP 算法 (30.2.1) 把队列维持在设定点 Qeq 附近。它计算反馈值 Fb = -(Qoff + w·ΔQ), 其中 Qoff 是队列超出 Qeq 的程度, ΔQ 是队列的变化率; Fb 量化为 6 比特。只有当 Fb 为负 (超额订阅) 时, CP 才以随 |Fb| 增大的概率反射一个 CNM。基本 RP 算法 (30.2.2) 作出反应: 收到 CNM 时执行乘性降速——CR ← CR(1 - Gd·|Fb|), 单次最多降 50%——随后分两阶段重建速率。快速恢复 (30.2.2.2) 运行 5 个字节计数器周期, 每个 150 kB, 每周期令 CR ← ½(CR+TR) 以收回失去的速率; 主动增长则通过把目标速率上调一个常数 RAI 来探测空闲带宽。由于速率极小时字节计数器周期会拉得很长, 带定时器的 RP 算法 (30.2.3) 加入一个并行计时的时钟; 当字节计数器与定时器都进入增长阶段时, RP 进入超主动增长以激进恢复——但仅在至少发出 500 帧且 50 ms 内无 CNM 之后才会发生, 这保障了稳定性。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 400 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><line x1=\"30\" y1=\"120\" x2=\"380\" y2=\"120\"/><line x1=\"30\" y1=\"120\" x2=\"30\" y2=\"20\"/><text x=\"6\" y=\"24\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Rate</text><text x=\"360\" y=\"138\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Time</text><polyline points=\"40,40 90,40 90,90\"/><circle cx=\"90\" cy=\"90\" r=\"4\" fill=\"currentColor\" stroke=\"none\"/><text x=\"70\" y=\"108\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">CNM: cut 50%</text><polyline points=\"90,90 140,75 190,67 240,63\"/><text x=\"120\" y=\"60\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">Fast Recovery</text><polyline points=\"240,63 290,50 340,37\"/><text x=\"275\" y=\"30\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">Active Increase</text></svg>",
+      "caption": {
+        "en": "QCN Reaction Point: a CNM triggers a multiplicative rate cut, then Fast Recovery rebuilds the lost rate and Active Increase probes for spare bandwidth (30.2.2).",
+        "zh": "QCN 反应点: 一个 CNM 触发乘性降速, 随后快速恢复重建失去的速率, 主动增长探测空闲带宽 (30.2.2)。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The remaining clauses define what QCN acts upon. A Congestion Controlled Flow, CCF (30.3), is all the frames passing through a single Flow queue in an end station — it might be one UDP connection, one process's traffic, a hash of IP 5-tuple fields, or simply all frames at one priority; every frame in a CCF carries the same priority. That priority is a Congestion Notification Priority Value, CNPV (30.4): one of the eight 802.1Q priorities reserved for CCF use, with up to seven CNPVs per port (at least one priority is always left for best-effort). To help the source identify which RP a CNM targets, an end station may attach a CN-TAG (30.5) carrying a Flow Identifier; the CP always echoes the CN-TAG (or a zero Flow ID) in the CNM. All cooperating systems for one CNPV form a Congestion Notification Domain, CND (30.6), whose boundaries can be discovered automatically by carrying a Congestion Notification TLV in the IEEE 802.1AB Link Layer Discovery Protocol (LLDP) — so each CND/CNPV can be added or removed independently.",
+      "zh": "其余各节定义 QCN 所作用的对象。拥塞受控流 (Congestion Controlled Flow, CCF, 30.3) 是端站中穿过同一个流队列 (Flow queue) 的全部帧——可以是一条 UDP 连接、某进程的流量、IP 五元组字段的哈希, 或干脆是某一优先级的全部帧; CCF 中的每帧都带有相同优先级。该优先级是拥塞通知优先级值 (Congestion Notification Priority Value, CNPV, 30.4): 802.1Q 八个优先级中保留给 CCF 使用的一个, 每端口最多七个 CNPV (始终至少留一个给尽力而为流量)。为帮助源端识别 CNM 针对哪个 RP, 端站可附加一个携带流标识符 (Flow Identifier) 的 CN-TAG (30.5); CP 始终在 CNM 中回显该 CN-TAG (或回显零 Flow ID)。服务于同一 CNPV 的所有协作系统构成一个拥塞通知域 (Congestion Notification Domain, CND, 30.6), 其边界可通过在 IEEE 802.1AB 链路层发现协议 (LLDP) 中携带拥塞通知 TLV 自动发现——因此每个 CND/CNPV 都能独立增删。"
+    },
+    {
+      "type": "prose",
+      "en": "Two final notes round out Clause 30. Multicast data (30.7) is not prohibited on a CCF but is discouraged for heavy use: a multicast stream travels many paths, so it is more likely to hit a congested port, and the RP would then throttle the whole flow to the slowest path — raising the risk of unintended fate-sharing with a co-resident unicast stream. Finally, congestion notification and additional tags (30.8): sending a CNM from a CP to an RP makes them peer entities in the IEEE 802.1AC sense, layered above whatever VLAN tags (C-TAG, S-TAG) the bridged network already uses — so CN coexists with ordinary VLAN bridging rather than replacing it.",
+      "zh": "两点收尾说明完整了第 30 章。多播数据 (30.7) 并不禁止在 CCF 上传输, 但不鼓励大量使用: 多播流经多条路径, 因而更易撞上拥塞端口, RP 随即会把整条流限速到最慢路径——增大了与同处一流的单播流意外共担命运的风险。最后, 拥塞通知与附加标签 (30.8): 从 CP 向 RP 发送 CNM 使两者成为 IEEE 802.1AC 意义上的对等实体, 叠加在桥接网络已有的各种 VLAN 标签 (C-TAG、S-TAG) 之上——因此 CN 与普通 VLAN 桥接共存, 而非取而代之。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every Clause 30 unit, by clause number",
+        "zh": "覆盖地图: 第 30 章每个单元 (按条款号)"
+      },
+      "en": "30.1 Congestion notification design requirements — performance (low loss, small bounded CP buffers, proportional fairness, full link use) plus complexity limits (no per-flow/per-RP state at the CP; fixed per-RP state; path-agnostic operation; no reliance on higher-layer info). 30.2 QCN overview, split into 30.2.1 the CP algorithm (compute Fb = -(Qoff + w·ΔQ), reflect a CNM with probability rising in |Fb|), 30.2.2 the basic RP algorithm with 30.2.2.1 rate decreases (multiplicative, ≤50%) and 30.2.2.2 rate increases (Fast Recovery then Active Increase), and 30.2.3 the RP algorithm with timer (parallel byte-counter and timer cycles, Hyper-Active Increase only after 500 frames / 50 ms). 30.3 CCF — frames sharing one Flow queue and one CNPV priority. 30.4 CNPV — one of eight priorities reserved for CCF, up to seven per port. 30.5 CN-TAG — optional per-frame Flow Identifier, always echoed in the CNM. 30.6 CND — connected subset of systems serving one CNPV, boundaries auto-discovered via the LLDP Congestion Notification TLV. 30.7 Multicast data — permitted but discouraged because multi-path exposure raises congestion and fate-sharing risk. 30.8 Additional tags — CP and RP become 802.1AC peers, with CN layered above existing C-TAG/S-TAG VLAN bridging.",
+      "zh": "30.1 拥塞通知设计要求——性能 (低丢包、CP 缓冲区小且有界、按比例公平、链路充分利用) 加上复杂度限制 (CP 不保存按流/按 RP 状态; 按 RP 状态固定; 与路径无关运行; 不依赖高层信息)。30.2 QCN 概览, 分为 30.2.1 CP 算法 (计算 Fb = -(Qoff + w·ΔQ), 以随 |Fb| 升高的概率反射 CNM)、30.2.2 基本 RP 算法 (含 30.2.2.1 降速: 乘性、≤50%, 与 30.2.2.2 增速: 先快速恢复再主动增长)、以及 30.2.3 带定时器的 RP 算法 (字节计数器与定时器并行计周期, 仅在 500 帧 / 50 ms 之后进入超主动增长)。30.3 CCF——共享一个流队列与一个 CNPV 优先级的帧。30.4 CNPV——保留给 CCF 的八个优先级之一, 每端口最多七个。30.5 CN-TAG——可选的按帧流标识符, 始终在 CNM 中回显。30.6 CND——服务于一个 CNPV 的连通系统子集, 边界经 LLDP 拥塞通知 TLV 自动发现。30.7 多播数据——允许但不鼓励, 因多路径暴露增大拥塞与命运共担风险。30.8 附加标签——CP 与 RP 成为 802.1AC 对等实体, CN 叠加在已有的 C-TAG/S-TAG VLAN 桥接之上。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1458,
+          1459,
+          1460,
+          1461,
+          1462,
+          1463,
+          1464,
+          1465,
+          1466
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1437,
+        1438,
+        1439
+      ],
+      "note": "29.1 Principles of DDCFM operation: DDFs, divide-and-conquer isolation, FPT, RPT, derived scenarios"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1440,
+        1441,
+        1442,
+        1443,
+        1444,
+        1445
+      ],
+      "note": "29.2 DDCFM Entity operation: implementation, RR + filter/encap/transmit, RR parameters, RFM Receiver, DR, SFM Originator"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1445,
+        1446,
+        1447,
+        1448,
+        1449,
+        1450,
+        1451,
+        1452,
+        1453,
+        1454,
+        1455
+      ],
+      "note": "29.3 DDCFM protocols: RR/RFM Receiver/DR variables, procedures, and state machines"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1455,
+        1456,
+        1457
+      ],
+      "note": "29.4 Encoding of DDCFM PDUs: RFM/SFM header, RFM format, SFM format"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1458,
+        1459,
+        1460,
+        1461,
+        1462,
+        1463,
+        1464
+      ],
+      "note": "30.1 design requirements; 30.2 QCN (CP algorithm, RP algorithm, RP with timer); 30.3 CCF"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1465,
+        1466
+      ],
+      "note": "30.4 CNPV; 30.5 CN-TAG; 30.6 CND; 30.7 multicast; 30.8 additional tags / CP-RP peering"
+    }
+  ],
+  "covers": [
+    "8021Q-2022:29.1.1",
+    "8021Q-2022:29.1.2",
+    "8021Q-2022:29.2.1",
+    "8021Q-2022:29.2.2",
+    "8021Q-2022:29.2.3",
+    "8021Q-2022:29.2.4",
+    "8021Q-2022:29.2.5",
+    "8021Q-2022:29.2.6",
+    "8021Q-2022:29.2.7",
+    "8021Q-2022:29.3.1",
+    "8021Q-2022:29.3.2",
+    "8021Q-2022:29.3.3",
+    "8021Q-2022:29.3.4",
+    "8021Q-2022:29.3.5",
+    "8021Q-2022:29.3.6",
+    "8021Q-2022:29.3.7",
+    "8021Q-2022:29.3.8",
+    "8021Q-2022:29.3.9",
+    "8021Q-2022:29.3.10",
+    "8021Q-2022:29.4.1",
+    "8021Q-2022:29.4.2",
+    "8021Q-2022:29.4.3",
+    "8021Q-2022:30.1",
+    "8021Q-2022:30.2.1",
+    "8021Q-2022:30.2.2",
+    "8021Q-2022:30.2.3",
+    "8021Q-2022:30.3",
+    "8021Q-2022:30.4",
+    "8021Q-2022:30.5",
+    "8021Q-2022:30.6",
+    "8021Q-2022:30.7",
+    "8021Q-2022:30.8"
+  ],
+  "track": "bridging-tsn"
+}

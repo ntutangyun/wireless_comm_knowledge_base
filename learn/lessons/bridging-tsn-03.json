@@ -1,0 +1,123 @@
+{
+  "id": "bridging-tsn-03",
+  "title": {
+    "en": "End-Station Conformance: From Audio/Video Shapers to TSN and Data-Center Virtualization",
+    "zh": "终端站点一致性要求：从音视频整形器到 TSN 与数据中心虚拟化"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 5 of IEEE Std 802.1Q-2022 is the standard's checklist of what a conforming implementation must do. The first part covered bridges and basic VLAN behavior. This second part covers the requirements that an end station (a talker or listener at the edge of the network, not a bridge in the middle) must meet to claim conformance to the standard's more advanced traffic-shaping, time-sensitive, and virtualization features. Think of each subclause as a contract: 'if you advertise feature X, here is exactly what your device has to support.' We will walk through all of them, define every acronym, and finish with a coverage map naming each clause number.",
+      "zh": "IEEE Std 802.1Q-2022 的第 5 章是该标准对“合规实现必须做什么”的检查清单。第一部分讲的是网桥和基本的 VLAN 行为。这第二部分讲的是终端站点（位于网络边缘的发送方或接收方，而非中间的网桥）要声明符合标准中更高级的流量整形、时间敏感与虚拟化特性时必须满足的要求。可以把每个子条款看作一份合同：“如果你声称支持特性 X，那么你的设备必须支持的内容就在这里。”我们将逐一讲解，首次出现的缩略语都会解释，最后用一张覆盖图列出每个条款号。"
+    },
+    {
+      "type": "prose",
+      "en": "We start with traffic shaping for audio/video. Clause 5.20 covers FQTSS (Forwarding and Queuing Enhancements for Time-Sensitive Streams) — the framework that lets a network carry smooth audio and video. A conforming end station must support at least two traffic classes: one using strict priority (always send the higher-priority queue first) and one declared an SR class (Stream Reservation class). For the SR class it must run the credit-based shaper algorithm, which meters out packets so a stream cannot burst and starve everything else — credit builds up while idle and is spent while transmitting. By default SR class 'B' uses a fixed priority value from the standard's table; an implementation may add more SR classes (up to seven) and use class 'A' too.",
+      "zh": "我们从音视频流量整形开始。条款 5.20 讲 FQTSS（面向时间敏感流的转发与排队增强）——让网络能平滑传输音视频的框架。合规的终端站点必须支持至少两个流量类别：一个使用严格优先级（始终先发送较高优先级队列），另一个被声明为 SR 类（流预留类）。对于 SR 类，它必须运行基于信用的整形算法，按节奏放行报文，使某条流无法突发占用而饿死其他流——空闲时积累信用，发送时消耗信用。默认情况下 SR 类“B”使用标准表中固定的优先级值；实现可以增加更多 SR 类（最多七个），也可使用类“A”。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5.21 lists end-station requirements for congestion notification — the mechanism (Clause 30 through Clause 33) where a congested point in the network sends a CNM (Congestion Notification Message) back toward the source so the source can slow down. A conforming VLAN-aware end station must implement at least one RP (Reaction Point) — the place that receives a CNM and rate-limits its output. It may also implement CPs (Congestion Points) that generate CNMs, advertise the Congestion Notification capability via LLDP (Link Layer Discovery Protocol, the neighbor-discovery protocol of IEEE Std 802.1AB), and operate per CNPV (Congestion Notification Priority Value). This is Ethernet's lossless-fabric back-pressure story.",
+      "zh": "条款 5.21 列出终端站点对拥塞通知的要求——这一机制（第 30 章至第 33 章）让网络中的拥塞点向源端回送 CNM（拥塞通知消息），使源端得以减速。合规的支持 VLAN 的终端站点必须实现至少一个 RP（反应点）——即接收 CNM 并对其输出进行限速的部位。它还可以实现生成 CNM 的 CP（拥塞点），通过 LLDP（链路层发现协议，IEEE Std 802.1AB 的邻居发现协议）通告拥塞通知能力，并按 CNPV（拥塞通知优先级值）逐项运行。这就是以太网“无损交换网络”反压机制的故事。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A recurring pattern in Clause 5: each subclause splits into 'shall' (mandatory to claim conformance) and 'may' (optional capabilities). When something optional is supported, the standard often requires the implementation to declare the details in its PICS (Protocol Implementation Conformance Statement) — the filled-in checklist a vendor publishes so buyers know exactly which options are present.",
+      "zh": "第 5 章中反复出现的模式：每个子条款都分为“应”（声明一致性所必需）和“可”（可选能力）。当支持某项可选内容时，标准往往要求实现在其 PICS（协议实现一致性声明）中声明细节——即厂商发布的填好的检查清单，让采购方明确知道支持了哪些选项。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5.22 acknowledges the real world: MAC-specific bridging methods may exist alongside the method in this standard on the same LAN (Local Area Network). When they coexist, neither may block communication, both must preserve the MAC Service, each must keep its own characteristics within its own domain, and the two techniques must coexist without adverse interaction. In short, this clause is a 'play nicely with others' rule for mixed bridging on one wire.",
+      "zh": "条款 5.22 承认现实：在同一个 LAN（局域网）上，可能存在与本标准方法并存的 MAC 专用桥接方法。当二者共存时，任一方都不得阻断通信，二者都必须保持 MAC 服务，各自必须在其自身域内保持自身特性，并且两种技术必须在不产生不良相互作用的情况下共存。简而言之，这一条款是同一条线缆上混合桥接的“与他人和睦相处”规则。"
+    },
+    {
+      "type": "prose",
+      "en": "Clauses 5.23 and 5.24 turn to EVB (Edge Virtual Bridging) — the technology for connecting virtual machines in a server to the network as if each had its own bridge port. Clause 5.23 (EVB Bridge requirements) describes the physical switch side: it comprises a C-VLAN component and optionally an S-VLAN component, and each external port can act as a C-VLAN Bridge Port, an SBP (Station-facing Bridge Port), or a UAP (Uplink Access Port). It must run ECP (Edge Control Protocol) and the Bridge role of VDP (VSI Discovery and Configuration Protocol, where VSI is a Virtual Station Interface) on each SBP. Clause 5.24 (EVB station requirements) describes the server/host side, built from one or more ERs (Edge Relays); covered as 5.24.1, an ER must support the EISS (Enhanced Internal Sublayer Service), recognize C-TAGs, relay and filter frames, and run the station role of VDP.",
+      "zh": "条款 5.23 和 5.24 转向 EVB（边缘虚拟桥接）——将服务器中的虚拟机接入网络、仿佛每台虚拟机都有自己网桥端口的技术。条款 5.23（EVB 网桥要求）描述物理交换机一侧：它由一个 C-VLAN 组件以及可选的 S-VLAN 组件构成，每个外部端口可充当 C-VLAN 网桥端口、SBP（面向站点的网桥端口）或 UAP（上行接入端口）。它必须在每个 SBP 上运行 ECP（边缘控制协议）和 VDP（VSI 发现与配置协议，其中 VSI 为虚拟站点接口）的网桥角色。条款 5.24（EVB 站点要求）描述服务器/主机一侧，由一个或多个 ER（边缘中继）构成；其在 5.24.1 中被覆盖：ER 必须支持 EISS（增强内部子层服务）、识别 C-TAG、中继与过滤帧，并运行 VDP 的站点角色。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  VM[Virtual Machine] --- ER[Edge Relay / EVB station]\n  ER -- VDP station role --> SBP[SBP on EVB Bridge]\n  SBP --- BR[EVB Bridge C-VLAN]\n  BR -- VDP bridge role --> NET[Bridged Network]",
+      "zh": "flowchart LR\n  VM[虚拟机] --- ER[边缘中继 / EVB 站点]\n  ER -- VDP 站点角色 --> SBP[EVB 网桥上的 SBP]\n  SBP --- BR[EVB 网桥 C-VLAN]\n  BR -- VDP 网桥角色 --> NET[桥接网络]"
+    },
+    {
+      "type": "prose",
+      "en": "Clauses 5.25 through 5.28 and 5.31 are the heart of TSN (Time-Sensitive Networking) for end stations. Clause 5.25 (enhancements for scheduled traffic) requires support for time-gated queues — gates that open and close on a clock so a critical stream gets the wire at a guaranteed instant. Clause 5.26 (frame preemption) requires the ability to pause a long low-priority frame mid-transmission and slip an urgent frame through. Clause 5.27 (PSFP, Per-Stream Filtering and Policing) requires per-stream gates and policers plus their state machines and management. Clause 5.28 (CQF, Cyclic Queuing and Forwarding — described in Annex T) bundles scheduled-traffic and stream-gate support together with the PSFP requirements to deliver bounded latency by cycling traffic through alternating buffers. Clause 5.31 (ATS, Asynchronous Traffic Shaping) requires two traffic classes — strict priority plus the ATS transmission selection algorithm — and the ATS talker behavior, giving bounded latency without a network-wide schedule.",
+      "zh": "条款 5.25 至 5.28 以及 5.31 是终端站点 TSN（时间敏感网络）的核心。条款 5.25（计划流量增强）要求支持时间门控队列——按时钟开闭的门，使关键流在有保证的时刻获得线路。条款 5.26（帧抢占）要求能在传输途中暂停一个较长的低优先级帧，插入一个紧急帧。条款 5.27（PSFP，逐流过滤与监管）要求逐流的门与监管器，外加其状态机与管理。条款 5.28（CQF，循环排队与转发——见附录 T）将计划流量与流门支持同 PSFP 要求捆绑在一起，通过让流量在交替缓冲区间循环来实现有界时延。条款 5.31（ATS，异步流量整形）要求两个流量类别——严格优先级加上 ATS 传输选择算法——以及 ATS 发送方行为，无需全网调度即可获得有界时延。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5.29 covers the TSN CNC (Centralized Network Configuration) station — the brain that programs schedules and reservations across a TSN network. A conforming CNC must support a remote management protocol (and state which one), the managed objects for stream reservation, and at least one User/network configuration protocol; if it uses a YANG-based protocol it must use the standard's YANG module, and if it uses SRP (Stream Reservation Protocol, Clause 35) it must support MRP External Control. Clause 5.30 covers VDP-NVO3 — using VDP in NVO3 (Network Virtualization Overlays over Layer 3) data centers, split between two halves of a Network Virtualization Edge: 5.30.1 the nNVE (network-side NVE, plays the VDP bridge role) and 5.30.2 the tNVE (terminal/host-side NVE, plays the VDP station role). Both must support VDP in their role and the assignment of VIDs (VLAN Identifiers) to GroupIDs.",
+      "zh": "条款 5.29 讲 TSN CNC（集中式网络配置）站点——在整个 TSN 网络中编排调度与预留的“大脑”。合规的 CNC 必须支持一种远程管理协议（并声明是哪一种）、流预留所需的受管对象，以及至少一种用户/网络配置协议；若使用基于 YANG 的协议，则必须使用标准的 YANG 模块；若使用 SRP（流预留协议，第 35 章），则必须支持 MRP 外部控制。条款 5.30 讲 VDP-NVO3——在 NVO3（基于三层的网络虚拟化叠加）数据中心中使用 VDP，被拆分到网络虚拟化边缘的两半之间：5.30.1 是 nNVE（网络侧 NVE，担任 VDP 网桥角色），5.30.2 是 tNVE（终端/主机侧 NVE，担任 VDP 站点角色）。两者都必须在各自角色下支持 VDP，以及将 VID（VLAN 标识符）分配给 GroupID。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"20\" width=\"110\" height=\"50\"/><text x=\"65\" y=\"40\" text-anchor=\"middle\" font-size=\"11\" fill=\"currentColor\" stroke=\"none\">tNVE (5.30.2)</text><text x=\"65\" y=\"56\" text-anchor=\"middle\" font-size=\"9\" fill=\"currentColor\" stroke=\"none\">VDP station role</text><rect x=\"340\" y=\"20\" width=\"110\" height=\"50\"/><text x=\"395\" y=\"40\" text-anchor=\"middle\" font-size=\"11\" fill=\"currentColor\" stroke=\"none\">nNVE (5.30.1)</text><text x=\"395\" y=\"56\" text-anchor=\"middle\" font-size=\"9\" fill=\"currentColor\" stroke=\"none\">VDP bridge role</text><line x1=\"120\" y1=\"45\" x2=\"340\" y2=\"45\"/><text x=\"230\" y=\"38\" text-anchor=\"middle\" font-size=\"9\" fill=\"currentColor\" stroke=\"none\">VDP over Split-NVE</text><rect x=\"175\" y=\"100\" width=\"110\" height=\"40\"/><text x=\"230\" y=\"124\" text-anchor=\"middle\" font-size=\"10\" fill=\"currentColor\" stroke=\"none\">VID to GroupID</text><line x1=\"230\" y1=\"45\" x2=\"230\" y2=\"100\"/></svg>",
+      "caption": {
+        "en": "VDP-NVO3 Split-NVE: the host-side tNVE (station role) and network-side nNVE (bridge role) share VDP, both mapping VIDs to GroupIDs (Clause 5.30).",
+        "zh": "VDP-NVO3 分离式 NVE：主机侧 tNVE（站点角色）与网络侧 nNVE（网桥角色）共享 VDP，二者都将 VID 映射到 GroupID（条款 5.30）。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause taught in this lesson, by number",
+        "zh": "覆盖图——本课所讲每个条款，按编号列出"
+      },
+      "en": "5.20 End station requirements—FQTSS (forwarding/queuing for time-sensitive streams: ≥2 traffic classes, strict priority + SR class, credit-based shaper, SR class B/A priorities, PICS for extra SR classes). 5.21 End station requirements for congestion notification (≥1 RP; optional CPs, CNMs, LLDP Congestion Notification TLV, per-CNPV defense modes). 5.22 MAC-specific bridging methods (coexistence on one LAN: no blocking, preserve MAC Service, preserve per-domain characteristics, no adverse interaction). 5.23 EVB Bridge requirements (C-VLAN + optional S-VLAN component; ports as C-VLAN Bridge Port / SBP / UAP; ECP and VDP bridge role per SBP; optional S-channels via CDCP). 5.24 EVB station requirements (one or more ERs; UAP/URP ports; VDP station role) — with 5.24.1 Edge Relay (ER) requirements (EISS, C-TAGs, relay/filter, PVID, FIDs, exactly one URP, VEB or VEPA behavior). 5.25 enhancements for scheduled traffic (8.6.8.4 scheduling + 8.6.9 state machines). 5.26 frame preemption (6.7.1, 6.7.2, 8.6.8). 5.27 PSFP — Per-Stream Filtering and Policing (8.6.5.2.1, 8.6.6; stream-gate state machines 8.6.10; management 12.31). 5.28 CQF — Cyclic Queuing and Forwarding, Annex T (scheduled traffic + stream gates + PSFP bundled). 5.29 TSN CNC station — Centralized Network Configuration (remote management protocol, stream-reservation managed objects 12.32, user/network config protocol per 46.2, YANG module 46.3, MRP External Control if SRP). 5.30.1 VDP-NVO3 nNVE (network-side NVE: VDP bridge role per SBP, VID-to-GroupID). 5.30.2 VDP-NVO3 tNVE (host-side NVE: VDP station role per URP, VID-to-GroupID). 5.31 ATS — Asynchronous Traffic Shaping (≥2 traffic classes: strict priority + ATS algorithm 8.6.8.5; ATS talker behavior 47.1).",
+      "zh": "5.20 终端站点 FQTSS 要求（面向时间敏感流的转发/排队：≥2 个流量类别、严格优先级 + SR 类、基于信用的整形器、SR 类 B/A 优先级、额外 SR 类需在 PICS 声明）。5.21 终端站点拥塞通知要求（≥1 个 RP；可选 CP、CNM、LLDP 拥塞通知 TLV、逐 CNPV 防御模式）。5.22 MAC 专用桥接方法（同一 LAN 上共存：不阻断、保持 MAC 服务、保持各域特性、无不良相互作用）。5.23 EVB 网桥要求（C-VLAN + 可选 S-VLAN 组件；端口可为 C-VLAN 网桥端口 / SBP / UAP；每 SBP 上运行 ECP 与 VDP 网桥角色；可选经 CDCP 的 S-通道）。5.24 EVB 站点要求（一个或多个 ER；UAP/URP 端口；VDP 站点角色）——含 5.24.1 边缘中继（ER）要求（EISS、C-TAG、中继/过滤、PVID、FID、恰好一个 URP、VEB 或 VEPA 行为）。5.25 计划流量增强（8.6.8.4 调度 + 8.6.9 状态机）。5.26 帧抢占（6.7.1、6.7.2、8.6.8）。5.27 PSFP——逐流过滤与监管（8.6.5.2.1、8.6.6；流门状态机 8.6.10；管理 12.31）。5.28 CQF——循环排队与转发，附录 T（计划流量 + 流门 + PSFP 捆绑）。5.29 TSN CNC 站点——集中式网络配置（远程管理协议、流预留受管对象 12.32、符合 46.2 的用户/网络配置协议、YANG 模块 46.3、若用 SRP 则需 MRP 外部控制）。5.30.1 VDP-NVO3 nNVE（网络侧 NVE：每 SBP 上 VDP 网桥角色、VID 到 GroupID）。5.30.2 VDP-NVO3 tNVE（主机侧 NVE：每 URP 上 VDP 站点角色、VID 到 GroupID）。5.31 ATS——异步流量整形（≥2 个流量类别：严格优先级 + ATS 算法 8.6.8.5；ATS 发送方行为 47.1）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          138,
+          139,
+          140,
+          141,
+          142,
+          143,
+          144
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "How to read these end-station clauses fluently: each names the feature, then points to the operational clauses elsewhere in the standard (e.g., 8.6.x for transmission selection and shapers, Clause 40-43 for EVB protocols, Clause 46-47 for TSN configuration and ATS). Clause 5 itself never defines the mechanism — it only declares the minimum set you must implement to honestly say 'this device conforms.'",
+      "zh": "如何流畅地阅读这些终端站点条款：每条先点名特性，再指向标准中别处的操作性条款（例如 8.6.x 讲传输选择与整形器、第 40–43 章讲 EVB 协议、第 46–47 章讲 TSN 配置与 ATS）。第 5 章本身从不定义机制——它只声明你要诚实地说“本设备合规”所必须实现的最小集合。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144
+      ],
+      "note": "Clause 5.20-5.31 end-station and bridge conformance requirements (FQTSS, congestion notification, MAC-specific bridging, EVB, scheduled traffic, frame preemption, PSFP, CQF, TSN CNC, VDP-NVO3, ATS)."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:5.20",
+    "8021Q-2022:5.21",
+    "8021Q-2022:5.22",
+    "8021Q-2022:5.23",
+    "8021Q-2022:5.24.1",
+    "8021Q-2022:5.25",
+    "8021Q-2022:5.26",
+    "8021Q-2022:5.27",
+    "8021Q-2022:5.28",
+    "8021Q-2022:5.29",
+    "8021Q-2022:5.30.1",
+    "8021Q-2022:5.30.2",
+    "8021Q-2022:5.31"
+  ],
+  "track": "bridging-tsn"
+}

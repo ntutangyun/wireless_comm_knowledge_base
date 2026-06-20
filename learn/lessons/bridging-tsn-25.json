@@ -1,0 +1,190 @@
+{
+  "id": "bridging-tsn-25",
+  "title": {
+    "en": "BPDU Encoding and Provider Bridged Networks: How Bridges Talk and How Carriers Sell Ethernet",
+    "zh": "BPDU 编码与运营商桥接网络：网桥如何对话，运营商如何售卖以太网服务"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This lesson covers three neighbouring parts of IEEE Std 802.1Q-2022. Clause 14 defines the exact byte layout of the Bridge Protocol Data Units (BPDUs) that spanning-tree bridges exchange — the wire format behind everything Clause 13 computes. Clause 15 describes how a Provider Bridged Network (PBN) — a carrier's Ethernet network that resells connectivity to customers — delivers the MAC Service to those customers. Clause 16 ties it together with the operating principles of a PBN. Think of Clause 14 as the alphabet bridges write in, and Clauses 15-16 as how a service provider builds a business on top of bridging.",
+      "zh": "本课讲解 IEEE Std 802.1Q-2022 中相邻的三个部分。Clause 14 定义生成树网桥之间交换的网桥协议数据单元（BPDU，Bridge Protocol Data Unit）的精确字节布局——它是 Clause 13 所有计算背后的线缆格式。Clause 15 描述运营商桥接网络（PBN，Provider Bridged Network，即运营商向客户转售连接能力的以太网网络）如何向客户提供 MAC 服务。Clause 16 用 PBN 的运行原理把它们串起来。可以把 Clause 14 看作网桥书写所用的字母表，而 Clause 15–16 则是服务提供商如何在桥接之上构建业务。"
+    },
+    {
+      "type": "prose",
+      "en": "A BPDU is the small control frame bridges send to each other to elect a root and break loops. Clause 14.1 fixes its skeleton. 14.1.1 says every BPDU is a whole number of octets (bytes), numbered from 1 in the order they enter the Data Link Service Data Unit (DLSDU), with bit 8 the high-order bit in each octet. 14.1.2 defines the fields common to all BPDUs: a 2-octet Protocol Identifier (always all-zeros, identifying the spanning-tree family STP/RSTP/MSTP), a Protocol Version Identifier, and a BPDU Type. The Version Identifier is what tells a receiver whether the frame is an RST BPDU, an MST BPDU, or an SPT BPDU.",
+      "zh": "BPDU 是网桥之间发送的小型控制帧，用于选举根桥并打断环路。Clause 14.1 固定了它的骨架。14.1.1 规定每个 BPDU 都是整数个八位组（字节），按进入数据链路服务数据单元（DLSDU）的顺序从 1 开始编号，每个八位组中第 8 位为高位。14.1.2 定义所有 BPDU 共有的字段：2 个八位组的协议标识符（Protocol Identifier，恒为全零，标识 STP/RSTP/MSTP 生成树协议族）、协议版本标识符（Protocol Version Identifier）以及 BPDU 类型（BPDU Type）。版本标识符告诉接收方该帧是 RST BPDU、MST BPDU 还是 SPT BPDU。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 230\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><g font-family=\"sans-serif\" font-size=\"10\" fill=\"currentColor\" stroke=\"none\"><text x=\"4\" y=\"14\">Octets</text></g><g stroke=\"currentColor\"><rect x=\"60\" y=\"6\" width=\"60\" height=\"22\"/><rect x=\"120\" y=\"6\" width=\"40\" height=\"22\"/><rect x=\"160\" y=\"6\" width=\"40\" height=\"22\"/><rect x=\"200\" y=\"6\" width=\"40\" height=\"22\"/></g><g font-family=\"sans-serif\" font-size=\"9\" fill=\"currentColor\" stroke=\"none\"><text x=\"66\" y=\"21\">ProtoID 1-2</text><text x=\"126\" y=\"21\">Ver 3</text><text x=\"166\" y=\"21\">Type 4</text><text x=\"206\" y=\"21\">Flags 5</text></g><g stroke=\"currentColor\"><rect x=\"60\" y=\"40\" width=\"90\" height=\"22\"/><rect x=\"150\" y=\"40\" width=\"90\" height=\"22\"/><rect x=\"240\" y=\"40\" width=\"90\" height=\"22\"/></g><g font-family=\"sans-serif\" font-size=\"9\" fill=\"currentColor\" stroke=\"none\"><text x=\"66\" y=\"55\">Root ID 6-13</text><text x=\"156\" y=\"55\">Ext Cost 14-17</text><text x=\"246\" y=\"55\">RegRoot 18-25</text></g><g stroke=\"currentColor\"><rect x=\"60\" y=\"74\" width=\"60\" height=\"22\"/><rect x=\"120\" y=\"74\" width=\"110\" height=\"22\"/></g><g font-family=\"sans-serif\" font-size=\"9\" fill=\"currentColor\" stroke=\"none\"><text x=\"66\" y=\"89\">PortID 26-27</text><text x=\"126\" y=\"89\">4 Timers 28-35</text></g><g stroke=\"currentColor\"><rect x=\"60\" y=\"108\" width=\"40\" height=\"22\"/><rect x=\"100\" y=\"108\" width=\"50\" height=\"22\"/><rect x=\"150\" y=\"108\" width=\"100\" height=\"22\"/></g><g font-family=\"sans-serif\" font-size=\"9\" fill=\"currentColor\" stroke=\"none\"><text x=\"104\" y=\"123\">V3 Len 37-38</text><text x=\"156\" y=\"123\">MCID 39-89</text><text x=\"62\" y=\"123\">V1=0 36</text></g><g stroke=\"currentColor\"><rect x=\"60\" y=\"142\" width=\"80\" height=\"22\"/><rect x=\"140\" y=\"142\" width=\"70\" height=\"22\"/><rect x=\"210\" y=\"142\" width=\"40\" height=\"22\"/></g><g font-family=\"sans-serif\" font-size=\"9\" fill=\"currentColor\" stroke=\"none\"><text x=\"62\" y=\"157\">IntCost 90-93</text><text x=\"146\" y=\"157\">BridgeID 94-101</text><text x=\"214\" y=\"157\">Hops 102</text></g><g stroke=\"currentColor\" stroke-dasharray=\"4 3\"><rect x=\"60\" y=\"176\" width=\"170\" height=\"22\"/><rect x=\"230\" y=\"176\" width=\"170\" height=\"22\"/></g><g font-family=\"sans-serif\" font-size=\"9\" fill=\"currentColor\" stroke=\"none\"><text x=\"66\" y=\"191\">MSTI Config Msgs (MST/SPT)</text><text x=\"236\" y=\"191\">V4 Len + Aux MCID + Agreement (SPT)</text></g></g></svg>",
+      "caption": {
+        "en": "RST/MST/SPT/STP Configuration BPDU layout (Figure 14-1). The first 35 octets are the STP core; RST adds octet 36; MST adds the Version 3 block and MSTI messages; SPT adds the Version 4 block and Agreement Digest.",
+        "zh": "RST/MST/SPT/STP 配置 BPDU 布局（图 14-1）。前 35 个八位组是 STP 核心；RST 增加第 36 八位组；MST 增加版本 3 块和 MSTI 消息；SPT 增加版本 4 块和协议摘要（Agreement Digest）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 14.2 is the rulebook for how each parameter type is encoded. The Protocol Identifier is two octets (14.2.1); the Protocol Version Identifier is one octet where a greater number means a newer version (14.2.2); the BPDU Type is one octet that merely distinguishes types with no ordering implied (14.2.3); a Flag is one bit, set when 1, with undefined bits transmitted as 0 (14.2.4). A Bridge Identifier is a 64-bit number whose top 4 bits are a settable priority, the next 12 bits a system-ID extension carrying the MSTID, and the low 48 bits the Bridge's MAC address (14.2.5). The External and Internal Root Path Costs are each four octets (14.2.6). A Port Identifier is 16 bits — 4 priority bits plus a 12-bit port number (14.2.7). Timer Values are two octets in units of 1/256 second (14.2.8). Port Role is two flag bits encoding Master/Alternate-or-Backup/Root/Designated (14.2.9). Length Values use one octet for Version 1 and two octets for Versions 3 and 4 (14.2.10). The remaining Hop Count is a single octet (14.2.11). Clause 14.3 says how a bridge fills in the bytes when transmitting: the Protocol Identifier is all zeros, and the version/type pair is chosen by the Force Protocol Version setting — version 0 + type 0 for an STP Configuration BPDU, version 0 + type 0x80 for an STP Topology Change Notification (TCN), version 2 for RST, version 3 for MST, version 4 for SPT (all with type 0x02). Clause 14.4 then walks octet-by-octet through encoding and decoding: which bit of octet 5 carries each flag (Topology Change, Proposal, Port Role, Learning, Forwarding, Agreement, Acknowledge), where the Root Identifier, costs, Port Identifier, four timers, MST Configuration Identifier (MCID), Internal Root Path Cost, Bridge Identifier and Hops live, and finally the optional MSTI Configuration Messages and the SPT Version 4 block. 14.4.1 details one MSTI Configuration Message: 16 octets carrying that instance's flags, Regional Root Identifier (with the MSTID inside), Internal Root Path Cost, Bridge and Port priorities, and remaining Hops.",
+      "zh": "Clause 14.2 是各参数类型如何编码的规则手册。协议标识符为两个八位组（14.2.1）；协议版本标识符为一个八位组，数值越大表示版本越新（14.2.2）；BPDU 类型为一个八位组，仅用于区分类型、不隐含先后顺序（14.2.3）；标志为一位，置 1 表示设置，未定义位发送时为 0（14.2.4）。网桥标识符（Bridge Identifier）是 64 位数，最高 4 位为可设置的优先级，接下来 12 位为携带 MSTID 的系统 ID 扩展，低 48 位为网桥的 MAC 地址（14.2.5）。外部与内部根路径开销各占四个八位组（14.2.6）。端口标识符（Port Identifier）为 16 位——4 位优先级加 12 位端口号（14.2.7）。定时器值为两个八位组，单位为 1/256 秒（14.2.8）。端口角色用两个标志位编码主/备用或后备/根/指定（14.2.9）。长度值在版本 1 用一个八位组，在版本 3 和 4 用两个八位组（14.2.10）。剩余跳数为单个八位组（14.2.11）。Clause 14.3 规定网桥发送时如何填写字节：协议标识符全零，版本/类型组合由 Force Protocol Version 设置决定——版本 0+类型 0 表示 STP 配置 BPDU，版本 0+类型 0x80 表示 STP 拓扑变更通知（TCN），版本 2 表示 RST，版本 3 表示 MST，版本 4 表示 SPT（后三者类型均为 0x02）。Clause 14.4 随后逐个八位组讲解编码与解码：第 5 八位组的哪一位承载哪个标志（拓扑变更、提议、端口角色、学习、转发、协议一致、确认），根标识符、各开销、端口标识符、四个定时器、MST 配置标识符（MCID）、内部根路径开销、网桥标识符和跳数各自所在的位置，最后是可选的 MSTI 配置消息和 SPT 版本 4 块。14.4.1 详述单条 MSTI 配置消息：16 个八位组，承载该实例的标志、区域根标识符（其中含 MSTID）、内部根路径开销、网桥与端口优先级以及剩余跳数。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The clever trick in Clause 14.5/14.6: a receiver classifies a BPDU by checking the Protocol Identifier, Type, and total length — not by trusting the version number. A long BPDU that is too short to be an MST or SPT BPDU, or whose length fields are inconsistent, is simply decoded as the older RST form. Any octets beyond what the receiver's version understands are ignored. That is why a brand-new SPT bridge and a legacy RSTP bridge can share a LAN: each reads only the fields its version defines and silently skips the rest.",
+      "zh": "Clause 14.5/14.6 的巧妙之处：接收方通过检查协议标识符、类型和总长度来对 BPDU 分类，而不是盲信版本号。一个长度不足以构成 MST 或 SPT BPDU、或长度字段不一致的 BPDU，会被直接按更早的 RST 形式解码。超出接收方版本所能理解范围的任何八位组都被忽略。这正是全新的 SPT 网桥与旧式 RSTP 网桥能共处同一 LAN 的原因：各自只读取本版本定义的字段，并悄然跳过其余部分。"
+    },
+    {
+      "type": "prose",
+      "en": "Now Clause 15 switches topics entirely: how a carrier sells the MAC Service. A Provider Bridge relays frames across the IEEE 802 LANs that make up a PBN. The headline idea (15.1, Service transparency) is that the provider's network is invisible to the customer: end stations and the media-independent functions of Customer Bridges behave as if directly connected. Clause 15.2 introduces the menu of customer service interfaces — each offers different service selection, priority, and access protection. Acronyms to anchor: C-VLAN = customer VLAN, S-VLAN = service-provider VLAN, C-TAG / S-TAG = the VLAN tags carrying a C-VID / S-VID, and a CNP is a Customer Network Port (the provider-side port a customer plugs into).",
+      "zh": "Clause 15 完全切换主题：运营商如何售卖 MAC 服务。运营商桥（Provider Bridge）在构成 PBN 的各 IEEE 802 LAN 之间转发帧。核心思想（15.1，服务透明性）是：运营商网络对客户不可见——终端站和客户桥（Customer Bridge）的媒体无关功能表现得仿佛直接相连。Clause 15.2 引入客户服务接口的菜单——每种接口在服务选择、优先级和接入保护上各不相同。需记住的缩写：C-VLAN=客户 VLAN，S-VLAN=服务提供商 VLAN，C-TAG/S-TAG=承载 C-VID/S-VID 的 VLAN 标签，CNP=客户网络端口（Customer Network Port，客户接入的运营商侧端口）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  CUST[Customer system] -->|Port-based 15.3| CNP[CNP no S-VID]\n  CUST -->|C-tagged 15.4 C-VID| CEP[CEP via C-VLAN comp]\n  CUST -->|S-tagged 15.5 S-VID| SI[S-tagged iface]\n  CNP --> SVLAN[S-VLAN component]\n  CEP --> SVLAN\n  SI --> SVLAN\n  SVLAN -->|S-TAG on PNP| CORE[Provider core]",
+      "zh": "flowchart LR\n  CUST[客户系统] -->|基于端口 15.3| CNP[CNP 无 S-VID]\n  CUST -->|C 标记 15.4 C-VID| CEP[CEP 经 C-VLAN 组件]\n  CUST -->|S 标记 15.5 S-VID| SI[S 标记接口]\n  CNP --> SVLAN[S-VLAN 组件]\n  CEP --> SVLAN\n  SI --> SVLAN\n  SVLAN -->|PNP 上加 S-TAG| CORE[运营商核心网]"
+    },
+    {
+      "type": "prose",
+      "en": "The three local interface flavours: a Port-based service interface (15.3) maps one CNP to exactly one service instance — frames carry no S-VID, just an optional priority S-TAG. A C-tagged service interface (15.4) uses a C-VLAN component inside a Provider Edge Bridge so the customer picks the service instance per frame by C-VID, entering at a Customer Edge Port (CEP). An S-tagged service interface (15.5) is offered to a customer running their own S-VLAN bridge, who selects the instance directly by S-VID. Clause 15.6 adds Remote Customer Service Interfaces (RCSIs): when the customer LAN sits behind a second (access) PBN, a Port-mapping S-VLAN component with one external Remote Customer Access Port (RCAP) and several internal Provider Access Ports (PAPs) maps each external S-VID to one internal port, so service can reach customers across a neighbouring carrier.",
+      "zh": "三种本地接口形态：基于端口的服务接口（15.3）把一个 CNP 映射到恰好一个服务实例——帧不带 S-VID，仅可带优先级 S-TAG。C 标记服务接口（15.4）在运营商边缘桥（Provider Edge Bridge）内使用 C-VLAN 组件，客户通过 C-VID 逐帧选择服务实例，从客户边缘端口（CEP，Customer Edge Port）进入。S 标记服务接口（15.5）提供给运行自有 S-VLAN 网桥的客户，由其直接通过 S-VID 选择实例。Clause 15.6 增加远程客户服务接口（RCSI，Remote Customer Service Interface）：当客户 LAN 位于第二个（接入）PBN 之后时，一个端口映射 S-VLAN 组件——含一个外部远程客户接入端口（RCAP）和若干内部运营商接入端口（PAP）——把每个外部 S-VID 映射到一个内部端口，使服务可跨越相邻运营商触达客户。"
+    },
+    {
+      "type": "prose",
+      "en": "Clauses 15.7-15.10 state the guarantees a PBN must keep. Service instance segregation (15.7): each instance lives in its own S-VLAN; nothing leaves a Provider Network Port (PNP) without an S-TAG, nothing is accepted from a customer without service-instance selection, and only the service provider controls the bridges. Service instance selection and identification (15.8): a Port-based CNP selects by its PVID and Admit-Only-Untagged setting; a C-tagged interface selects by C-VID via the C-VID Registration Table; an S-tagged interface selects by S-VID with ingress filtering; a VID Translation Table lets the provider use independent S-VIDs. Service priority selection (15.9): priority comes from the media access method for Port-based, from the C-TAG for C-tagged, and from the S-TAG PCP field for S-tagged interfaces. Service access protection (15.10): a customer can attach to two or more interfaces over separate LANs for redundancy and fast failover.",
+      "zh": "Clause 15.7–15.10 阐述 PBN 必须信守的保证。服务实例隔离（15.7）：每个实例独占其 S-VLAN；任何帧离开运营商网络端口（PNP，Provider Network Port）都必带 S-TAG，任何来自客户的帧都须先经服务实例选择，且只有服务提供商可控制网桥。服务实例选择与标识（15.8）：基于端口的 CNP 通过其 PVID 和「仅接纳未标记」设置选择；C 标记接口经 C-VID 注册表按 C-VID 选择；S 标记接口启用入口过滤按 S-VID 选择；VID 翻译表让运营商使用独立的 S-VID。服务优先级选择（15.9）：基于端口的优先级来自媒体接入方法，C 标记来自 C-TAG，S 标记来自 S-TAG 的 PCP 字段。服务接入保护（15.10）：客户可经独立 LAN 接入两个或更多接口，以实现冗余与快速故障切换。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 16 states the operating principles of a PBN — a Virtual Bridged Network of Provider Bridges and Provider Edge Bridges under one service provider's control. 16.1 (PBN overview) lists the essential elements: segregation, selection-on-ingress / identification-on-egress, and resource allocation for connectivity (16.3), plus the optional management of address learning (16.4) and loop prevention (16.5). 16.2 (the PBN itself) explains the core-and-access structure with worked examples (multiplexing service instances onto one access LAN, resilient dual-access links, C-VLAN selection) and the 'Hairpin Switching' case where a frame received on one RCSI is sent back out the same RCAP under a different S-VID. 16.3 (service instance connectivity) shows how MSTP gives several independent spanning trees and MVRP auto-configures each S-VLAN's extent, kept independent of customer spanning trees by the Provider Bridge Group Address and the restrictedRole / restrictedTcn parameters.",
+      "zh": "Clause 16 阐述 PBN 的运行原理——它是由运营商桥和运营商边缘桥构成、受单一服务提供商控制的虚拟桥接网络。16.1（PBN 概览）列出核心要素：隔离、入口选择/出口标识、为连通性分配资源（16.3），以及可选的地址学习管理（16.4）和环路防护（16.5）。16.2（PBN 本身）用核心-接入结构和实例讲解（把多个服务实例复用到一条接入 LAN、弹性双接入链路、C-VLAN 选择），以及「发夹交换」（Hairpin Switching）情形——在某 RCSI 收到的帧以不同 S-VID 从同一 RCAP 送回。16.3（服务实例连通性）展示 MSTP 如何提供多棵独立生成树、MVRP 如何自动配置每个 S-VLAN 的范围，并通过运营商桥组地址（Provider Bridge Group Address）和 restrictedRole/restrictedTcn 参数与客户生成树相互独立。"
+    },
+    {
+      "type": "prose",
+      "en": "Three more principles close Clause 16. Service provider learning of customer end-station addresses (16.4): customer frames are confined to their S-VLAN's topology and further restricted by source-address learning; in a network where each customer touches only a few interfaces, learning can be limited to the two ingress/egress ports of a two-point S-VLAN, and MVRP's 'new' flag can flush learned addresses after a customer topology change. Detection of connectivity loops through attached networks (16.5): MSTP BPDUs sent through CNPs catch accidental loops, but since a provider cannot rely on customer networks relaying them, each C-VLAN component in a Provider Edge Bridge runs RSTP (with the enhancements of 13.41) toward the customer; restrictedRole keeps a stray customer BPDU from disturbing the core. Network management (16.6): a Provider Bridge is managed solely by the service provider — customers must not reach the managed objects of provider bridges inside the network.",
+      "zh": "Clause 16 以另外三条原理收尾。服务提供商对客户终端站地址的学习（16.4）：客户帧被限定在其 S-VLAN 的拓扑内，并通过源地址学习进一步限制；在每个客户只触及少数接口的网络中，学习可限定在双点 S-VLAN 的入口/出口两个端口上，且 MVRP 的「new」标志可在客户拓扑变化后清除已学地址。经由所连网络检测连通性环路（16.5）：经 CNP 发送的 MSTP BPDU 可捕捉意外环路，但由于运营商无法依赖客户网络转发它们，运营商边缘桥中的每个 C-VLAN 组件都向客户侧运行 RSTP（含 13.41 的增强），restrictedRole 则防止迷途的客户 BPDU 干扰核心网。网络管理（16.6）：运营商桥仅由服务提供商管理——客户不得触及网络内部运营商桥的被管对象。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause number in this lesson",
+        "zh": "覆盖地图——本课涉及的每个条款编号"
+      },
+      "en": "Clause 14 BPDU encoding: 14.1.1 octet transmission/representation; 14.1.2 common fields (Protocol Identifier, Version, Type). 14.2 parameter encodings: 14.2.1 Protocol Identifier (2 octets), 14.2.2 Protocol Version Identifier (1 octet), 14.2.3 BPDU Type (1 octet), 14.2.4 flags (1 bit), 14.2.5 Bridge Identifier (64-bit: priority + system-ID extension + MAC), 14.2.6 External/Internal Root Path Cost (4 octets each), 14.2.7 Port Identifier (16-bit: priority + port number), 14.2.8 Timer Values (2 octets, 1/256 s), 14.2.9 Port Role (2 flag bits), 14.2.10 Length Values (V1 1 octet; V3/V4 2 octets), 14.2.11 Hop Counts (1 octet). 14.3 transmission (version/type per protocol). 14.4.1 MSTI Configuration Message (16 octets). 14.5 validation of received BPDUs (classify by ProtoID/Type/length). 14.6 validation and interoperability (lower-version interpretation, ignore extra octets). Clause 15 MAC Service by PBNs: 15.1 transparency; 15.2 customer service interfaces; 15.3 Port-based interface (one CNP = one instance); 15.4 C-tagged interface (C-VID via CEP); 15.5 S-tagged interface (S-VID); 15.6 RCSIs (RCAP/PAP, Port-mapping S-VLAN component); 15.7 segregation; 15.8 selection and identification; 15.9 priority selection; 15.10 access protection (redundant LANs). Clause 16 PBN principles: 16.1 overview; 16.2 the PBN and Hairpin Switching; 16.3 service instance connectivity (MSTP + MVRP); 16.4 customer end-station address learning; 16.5 loop detection through attached networks; 16.6 network management (provider-only).",
+      "zh": "Clause 14 BPDU 编码：14.1.1 八位组传输/表示；14.1.2 共有字段（协议标识符、版本、类型）。14.2 参数编码：14.2.1 协议标识符（2 八位组）、14.2.2 协议版本标识符（1 八位组）、14.2.3 BPDU 类型（1 八位组）、14.2.4 标志（1 位）、14.2.5 网桥标识符（64 位：优先级+系统 ID 扩展+MAC）、14.2.6 外/内部根路径开销（各 4 八位组）、14.2.7 端口标识符（16 位：优先级+端口号）、14.2.8 定时器值（2 八位组，1/256 秒）、14.2.9 端口角色（2 标志位）、14.2.10 长度值（V1 1 八位组；V3/V4 2 八位组）、14.2.11 跳数（1 八位组）。14.3 发送（按协议确定版本/类型）。14.4.1 MSTI 配置消息（16 八位组）。14.5 接收 BPDU 的校验（按协议标识符/类型/长度分类）。14.6 校验与互操作（按较低版本解释、忽略多余八位组）。Clause 15 PBN 的 MAC 服务支撑：15.1 透明性；15.2 客户服务接口；15.3 基于端口接口（一个 CNP=一个实例）；15.4 C 标记接口（经 CEP 用 C-VID）；15.5 S 标记接口（S-VID）；15.6 RCSI（RCAP/PAP、端口映射 S-VLAN 组件）；15.7 隔离；15.8 选择与标识；15.9 优先级选择；15.10 接入保护（冗余 LAN）。Clause 16 PBN 原理：16.1 概览；16.2 PBN 与发夹交换；16.3 服务实例连通性（MSTP+MVRP）；16.4 客户终端站地址学习；16.5 经所连网络的环路检测；16.6 网络管理（仅运营商）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          589,
+          590,
+          591,
+          592,
+          593,
+          594,
+          595,
+          596,
+          597,
+          598,
+          599,
+          600,
+          601,
+          602,
+          603,
+          604,
+          605,
+          606,
+          607,
+          608,
+          609,
+          610,
+          611,
+          612,
+          613
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        589,
+        590,
+        591,
+        592,
+        593,
+        594,
+        595,
+        596,
+        597
+      ],
+      "note": "Clause 14 — BPDU structure, parameter encodings, transmission, MSTI message, validation, and interoperability."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        598,
+        599,
+        600,
+        601,
+        602,
+        603,
+        604,
+        605,
+        606
+      ],
+      "note": "Clause 15 — service transparency, customer/port-based/C-tagged/S-tagged interfaces, RCSIs, segregation, selection, priority, access protection."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        607,
+        608,
+        609,
+        610,
+        611,
+        612,
+        613
+      ],
+      "note": "Clause 16 — PBN overview, structure and Hairpin Switching, service instance connectivity, address learning, loop detection, network management."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:14.1.1",
+    "8021Q-2022:14.1.2",
+    "8021Q-2022:14.2.1",
+    "8021Q-2022:14.2.2",
+    "8021Q-2022:14.2.3",
+    "8021Q-2022:14.2.4",
+    "8021Q-2022:14.2.5",
+    "8021Q-2022:14.2.6",
+    "8021Q-2022:14.2.7",
+    "8021Q-2022:14.2.8",
+    "8021Q-2022:14.2.9",
+    "8021Q-2022:14.2.10",
+    "8021Q-2022:14.2.11",
+    "8021Q-2022:14.3",
+    "8021Q-2022:14.4.1",
+    "8021Q-2022:14.5",
+    "8021Q-2022:14.6",
+    "8021Q-2022:15.1",
+    "8021Q-2022:15.2",
+    "8021Q-2022:15.3",
+    "8021Q-2022:15.4",
+    "8021Q-2022:15.5",
+    "8021Q-2022:15.6",
+    "8021Q-2022:15.7",
+    "8021Q-2022:15.8",
+    "8021Q-2022:15.9",
+    "8021Q-2022:15.10",
+    "8021Q-2022:16.1",
+    "8021Q-2022:16.2",
+    "8021Q-2022:16.3",
+    "8021Q-2022:16.4",
+    "8021Q-2022:16.5",
+    "8021Q-2022:16.6"
+  ],
+  "track": "bridging-tsn"
+}

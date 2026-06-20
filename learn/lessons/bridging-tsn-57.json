@@ -1,0 +1,217 @@
+{
+  "id": "bridging-tsn-57",
+  "title": {
+    "en": "Spreading and Steering Traffic: ECMP and Path Control & Reservation (PCR)",
+    "zh": "分散与引导流量：ECMP 与路径控制和预留（PCR）"
+  },
+  "estMinutes": 6,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Shortest Path Bridging (SPB) normally picks one shortest path per VLAN, but a real mesh often has several equally short paths between two bridges. Clauses 44 and 45 add two ways to use that spare capacity. Clause 44 — Equal Cost Multiple Paths (ECMP) — load-spreads traffic across many equal-cost paths under a single VID (VLAN Identifier). Clause 45 — Path Control and Reservation (PCR) — lets an external Path Computation Element (PCE) draw explicit trees that need not follow the shortest path, optionally reserve bandwidth on them, and build redundant trees for resilience. ECMP applies only to SPBM (the MAC-in-MAC backbone flavour of SPB); PCR rides on the same IS-IS control plane but adds its own extensions (ISIS-PCR).",
+      "zh": "最短路径桥接（SPB）通常为每个 VLAN 选一条最短路径，但真实的网状网络中两台网桥之间往往有多条同样短的路径。Clause 44 和 45 提供了两种利用这些闲置容量的方法。Clause 44——等价多路径（ECMP）——在单个 VID（VLAN 标识符）下把流量分散到多条等价路径上。Clause 45——路径控制和预留（PCR）——允许一个外部路径计算单元（PCE）绘制无需沿最短路径的显式树，并可在其上预留带宽，还能构建冗余树以增强韧性。ECMP 仅适用于 SPBM（SPB 的 MAC-in-MAC 骨干形态）；PCR 运行在同一个 IS-IS 控制平面上，但增加了自己的扩展（ISIS-PCR）。"
+    },
+    {
+      "type": "prose",
+      "en": "ECMP's core trick (44.1.1, 44.1.2) is to replace SPB's single tie-breaker with a per-address hash. For a destination MAC the bridge has k equal-cost forwarding ports; it runs a form of the FNV non-cryptographic hash over its own SPB System Identifier, the neighbour's identifier, and the address, then keeps the port whose hash is smallest. This is deterministic, so every frame of one flow takes the same port (ordering preserved), while different addresses scatter across ports (load spread). For multicast the standard cannot scatter frames, so instead it assigns each group a multicast mode — source-rooted SPT, shared tree, or head-end replication — chosen by a tie-break mask (up to 16 trees). Loop prevention (44.1.3) reuses Clause 13 spanning-tree machinery, extended to allow multiple Root Ports while a per-frame rule still sends each frame out exactly one of them.",
+      "zh": "ECMP 的核心技巧（44.1.1、44.1.2）是用按地址的哈希取代 SPB 单一的决胜规则。对某个目的 MAC，网桥有 k 个等价转发端口；它对自己的 SPB 系统标识符、邻居标识符和该地址运行一种 FNV 非加密哈希，保留哈希值最小的端口。这是确定性的，因此同一条流的每一帧都走同一端口（保序），而不同地址散布到各端口（分散负载）。组播无法逐帧散布，于是标准为每个组分配一种组播模式——源根 SPT、共享树或头端复制——由决胜掩码（最多 16 棵树）选择。环路防护（44.1.3）复用 Clause 13 的生成树机制，扩展为允许多个根端口，同时逐帧规则确保每帧只从其中一个端口发出。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 170\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"60\" cy=\"85\" r=\"22\"/><text x=\"60\" y=\"90\" font-size=\"12\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Src</text><circle cx=\"380\" cy=\"85\" r=\"22\"/><text x=\"380\" y=\"90\" font-size=\"12\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Dst</text><circle cx=\"220\" cy=\"35\" r=\"18\"/><circle cx=\"220\" cy=\"85\" r=\"18\"/><circle cx=\"220\" cy=\"135\" r=\"18\"/><line x1=\"82\" y1=\"78\" x2=\"203\" y2=\"42\"/><line x1=\"82\" y1=\"85\" x2=\"202\" y2=\"85\"/><line x1=\"82\" y1=\"92\" x2=\"203\" y2=\"128\"/><line x1=\"237\" y1=\"42\" x2=\"358\" y2=\"78\"/><line x1=\"238\" y1=\"85\" x2=\"358\" y2=\"85\"/><line x1=\"237\" y1=\"128\" x2=\"358\" y2=\"92\"/><text x=\"220\" y=\"160\" font-size=\"11\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">3 equal-cost paths; hash(addr) picks one</text></svg>",
+      "caption": {
+        "en": "ECMP spreads flows over equal-cost paths: a per-address hash selects one port, so each flow stays ordered while different flows fan out.",
+        "zh": "ECMP 把流量分散到等价路径上：按地址哈希选出一个端口，使每条流保序，而不同流则扇出分布。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Flow filtering (44.2) sharpens ECMP from per-address to per-flow spreading. At the domain edge a Customer Backbone Port (CBP) computes a Flow Hash and carries it in a new Flow Filtering Tag (F-TAG, 44.2.1) — a 4-octet tag holding PCP, DEI, a 6-bit TTL and a 16-bit Flow Hash. A 'shim' on each port (44.2.2) generates the tag at the edge and decrements the TTL at every hop on intermediate ports (PNPs); a frame arriving with TTL 0 is dropped. The forwarding process (44.2.3) then runs the FNV hash over the bridge identifier and the Flow Hash to pick one of the equal-cost ports recorded in the FDB. The TTL gives loop mitigation (44.2.4) — a safety net that caps how far a stray looping frame can travel.",
+      "zh": "流过滤（44.2）把 ECMP 从按地址分散提升为按流分散。在域边缘，客户骨干端口（CBP）计算一个流哈希，并把它放进新的流过滤标签（F-TAG，44.2.1）——一个 4 字节标签，含 PCP、DEI、6 位 TTL 和 16 位流哈希。每个端口上的“垫片”（44.2.2）在边缘生成该标签，并在中间端口（PNP）的每一跳递减 TTL；TTL 为 0 的帧将被丢弃。转发过程（44.2.3）随后对网桥标识符和流哈希运行 FNV 哈希，从 FDB 中记录的等价端口里选出一个。TTL 提供环路缓解（44.2.4）——一张限制游离环路帧能走多远的安全网。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"30\" width=\"90\" height=\"34\"/><text x=\"55\" y=\"51\" font-size=\"11\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">TPID 89-4B</text><rect x=\"100\" y=\"30\" width=\"60\" height=\"34\"/><text x=\"130\" y=\"51\" font-size=\"11\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">PCP/DEI</text><rect x=\"160\" y=\"30\" width=\"50\" height=\"34\"/><text x=\"185\" y=\"45\" font-size=\"10\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Rsvd</text><rect x=\"210\" y=\"30\" width=\"60\" height=\"34\"/><text x=\"240\" y=\"51\" font-size=\"11\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">TTL (6b)</text><rect x=\"270\" y=\"30\" width=\"170\" height=\"34\"/><text x=\"355\" y=\"51\" font-size=\"11\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Flow Hash (16b)</text><text x=\"225\" y=\"20\" font-size=\"11\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">F-TAG: TPID + 4-octet TCI</text></svg>",
+      "caption": {
+        "en": "The Flow Filtering Tag (F-TAG): EtherType 89-4B plus a 4-octet TCI carrying PCP, DEI, a 6-bit TTL, and the 16-bit Flow Hash used to steer each flow (44.2.1).",
+        "zh": "流过滤标签（F-TAG）：以太类型 89-4B 加上 4 字节 TCI，携带 PCP、DEI、6 位 TTL 以及用于引导每条流的 16 位流哈希（44.2.1）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "PCR (Clause 45) takes the opposite stance: instead of hashing across paths, an external Path Computation Element (PCE) draws exactly the trees it wants. ISIS-PCR floods those tree descriptions through IS-IS, and each tree is owned by one PCE. Trees come in two structural styles (45.1.1): ad-hoc trees (any shape, a shared bidirectional (*,G) tree) and template trees (one tree rooted on every bridge, forming a full any-to-any plane). The standard defines five explicit-tree ECT Algorithms (45.1.2): Strict Tree (ST, fully PCE-controlled, no IS-IS repair), Loose Tree (LT) and Loose Tree Set (LTS, where bridges compute the loose hops and IS-IS restores them), plus Maximally Redundant Trees with or without a shared GADAG (MRT / MRTG). Every PCR bridge must support ST; the rest are optional.",
+      "zh": "PCR（Clause 45）采取相反的策略：不是在路径间做哈希，而是由外部路径计算单元（PCE）精确绘制它想要的树。ISIS-PCR 通过 IS-IS 泛洪这些树的描述，每棵树由一个 PCE 拥有。树有两种结构风格（45.1.1）：自组织树（任意形状，共享双向 (*,G) 树）和模板树（每台网桥都作为根的一棵树，构成完整的任到任平面）。标准定义了五种显式树 ECT 算法（45.1.2）：严格树（ST，完全由 PCE 控制，IS-IS 不修复）、松散树（LT）和松散树集（LTS，由网桥计算松散跳并由 IS-IS 恢复），以及带或不带共享 GADAG 的最大冗余树（MRT / MRTG）。每台 PCR 网桥都必须支持 ST，其余为可选。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  PCE[PCE draws tree] -->|Topology sub-TLV| ISIS[ISIS-PCR floods LSP]\n  ISIS --> B[Each bridge: BLCE computes hops]\n  B --> FDB[Install Dynamic Filtering Entries]\n  FDB --> FWD[Forward on explicit tree]",
+      "zh": "flowchart LR\n  PCE[PCE 绘制树] -->|拓扑子TLV| ISIS[ISIS-PCR 泛洪 LSP]\n  ISIS --> B[各网桥：BLCE 计算各跳]\n  B --> FDB[安装动态过滤条目]\n  FDB --> FWD[沿显式树转发]"
+    },
+    {
+      "type": "prose",
+      "en": "The descriptor that carries a tree is the Topology sub-TLV (45.1.9). It lists one or more Base VIDs and an ordered set of Hop sub-TLVs (45.1.10), each naming a bridge by its IS-IS System ID and carrying flags — Root, Leaf, Edge Bridge, Exclude, plus optional VID with Transmit/Receive (T/R) flags and a delay budget. For a strict tree the hop order spells out exact branches; for a loose tree it lists only the bridges that must (or must not) appear, letting the Bridge Local Computation Engine (BLCE) fill in the rest. Constraints on loose hops are added with the Administrative Group sub-TLV (45.1.11, a 32-bit colour/resource-class membership) and the Bandwidth Constraint sub-TLV (45.1.12, how much available bandwidth a hop must offer, per PCP traffic class). Configuration glue — which MSTID and ECT Algorithm a VLAN maps to, learning vs non-learning behaviour, and how MAC addresses and FDB entries are derived — is spelled out in 45.1.3 through 45.1.8.",
+      "zh": "承载一棵树的描述符是拓扑子TLV（45.1.9）。它列出一个或多个 Base VID 和一组有序的跳子TLV（45.1.10），每个跳用 IS-IS 系统 ID 指明一台网桥，并携带标志位——Root、Leaf、Edge Bridge、Exclude，以及可选的 VID 及其发送/接收（T/R）标志和时延预算。对严格树，跳的顺序拼出精确的分支；对松散树，只列出必须（或不得）出现的网桥，让网桥本地计算引擎（BLCE）补齐其余。松散跳上的约束由管理组子TLV（45.1.11，32 位颜色/资源类成员关系）和带宽约束子TLV（45.1.12，按 PCP 流量类别规定某跳须提供多少可用带宽）添加。配置粘合——VLAN 映射到哪个 MSTID 和 ECT 算法、学习与非学习行为、以及如何派生 MAC 地址和 FDB 条目——在 45.1.3 到 45.1.8 中详述。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Reservation (45.2) only works when MSRP is not active in the region — the two never reserve at once. A PCE records bandwidth with the Bandwidth Assignment sub-TLV (45.2.1, per-PCP, an Importance field, bytes/second as IEEE float). When two PCEs ask for the same resource, precedence ordering (45.2.3) decides: higher PCP wins, then higher Importance, then the earlier Timestamp sub-TLV (45.2.2, PTP seconds); ties finally go to the least LSP ID. If a request would overbook a link, no bandwidth is reserved and a management report is raised.",
+      "zh": "预留（45.2）只在区域内未启用 MSRP 时生效——两者绝不同时预留。PCE 用带宽分配子TLV（45.2.1，按 PCP，含 Importance 字段，以 IEEE 浮点的字节/秒表示）记录带宽。当两个 PCE 争用同一资源时，由优先级排序（45.2.3）裁决：PCP 高者胜，其次 Importance 高者，再次是更早的时间戳子TLV（45.2.2，PTP 秒）；最终并列时归 LSP ID 最小者。若某请求会使链路超额，则不预留带宽并产生管理报告。"
+    },
+    {
+      "type": "prose",
+      "en": "Redundancy (45.3) is PCR's resilience story. The lightest scheme is Loop-Free Alternates (LFA, 45.3.1): a downstream neighbour that is always closer to the destination is a safe backup, so a Point of Local Repair (PLR) can switch to it instantly on a failure. Heavier schemes use redundant trees. Static redundant trees (45.3.2) are just multiple strict trees the PCE manages independently — handy for 1+1 protection where a copy of every frame rides each tree. Maximally Redundant Trees (45.3.3) compute a pair, MRT-Blue (primary) and MRT-Red (backup), from a GADAG (Generalized Almost Directed Acyclic Graph) using the MRT Lowpoint Algorithm; IS-IS restores them cautiously, one of each redundant pair at a time, and only when all bridges agree on the topology. The MRTG variant (45.3.4) moves GADAG computation to a single GADAG Computer that floods the graph (ear decomposition) so every bridge derives identical MRTs.",
+      "zh": "冗余（45.3）是 PCR 的韧性方案。最轻量的是无环备选路径（LFA，45.3.1）：始终更靠近目的地的下游邻居是安全的备份，故本地修复点（PLR）在故障时可立即切换。较重的方案使用冗余树。静态冗余树（45.3.2）只是 PCE 各自独立管理的多棵严格树——适合 1+1 保护，即每帧的副本各走一棵树。最大冗余树（45.3.3）用 MRT Lowpoint 算法从一个 GADAG（广义近似有向无环图）计算出一对：MRT-Blue（主）和 MRT-Red（备）；IS-IS 谨慎地恢复它们，每对冗余树一次只恢复一棵，且仅在所有网桥对拓扑达成一致时进行。MRTG 变体（45.3.4）把 GADAG 计算交给单一的 GADAG 计算者，由它泛洪图（耳分解），使每台网桥派生出一致的 MRT。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> Normal\n  Normal --> OnMRTRed: link fails on MRT-Blue\n  OnMRTRed --> Recompute: all bridges agree topology\n  Recompute --> Normal: new MRT-Blue installed, then MRT-Red",
+      "zh": "stateDiagram-v2\n  [*] --> 正常\n  正常 --> 切到MRTRed: MRT-Blue 链路故障\n  切到MRTRed --> 重算: 各网桥对拓扑达成一致\n  重算 --> 正常: 先装新 MRT-Blue，再装 MRT-Red"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause of 44 and 45, by number",
+        "zh": "覆盖图：44 与 45 的每个条款（按编号）"
+      },
+      "en": "Clause 44 ECMP — 44.1 SPBM ECMP: 44.1.1 ECMP Operation (single-VID load spreading; per-flow ordering vs per-flow spreading goals; optional F-TAG); 44.1.2 ECMP ECT Algorithm (the FNV hash port-selection over k sorted ports; Table 44-1 ECT-ALGORITHM values 00-80-C2-11/12; multicast tie-break masks, shared trees, head-end replication); 44.1.3 Loop prevention (Clause 13 reused, multiple Root Ports allowed, single Root Port enforced per-frame). 44.2 Support for Flow Filtering: 44.2.1 F-TAG (EtherType 89-4B, 4-octet TCI: PCP, DEI, Reserved, 6-bit TTL, 16-bit Flow Hash); 44.2.2 F-TAG processing (the shim, Flow Filtering Control Table per VID; 44.2.2.1 data indications generate/decrement; 44.2.2.2 data requests insert the tag); 44.2.3 Forwarding-process extension (FNV hash mod k selects one port); 44.2.4 TTL loop mitigation; 44.2.5 CFM for ECMP with flow filtering (the ECMP path MA cycling flow-hash values; 44.2.5.1 MEP placement via TESI Multiplex Entity; 44.2.5.2 Continuity-Check protocol changes); 44.2.6 Operation with selective support (incremental upgrade, F-TAG mandatory only at boundary CBPs). Clause 45 PCR — 45.1 Explicit trees: 45.1.1 Tree structures (ad-hoc vs template); 45.1.2 Explicit ECT Algorithms (ST/LT/LTS/MRT/MRTG, Tables 45-1 & 45-2); 45.1.3 ISIS-PCR VLAN configuration (Base VID to SPBM/SPBV MSTID, learning vs non-learning, MRT VID rules, Fig 45-3); 45.1.4 VIDs for strict explicit trees (scaling, single-egress rules); 45.1.5 MAC addresses and ISIS-PCR (SPBV MAC Address & SPBM Service Identifier sub-TLVs); 45.1.6 Filtering Database entries; 45.1.7 ISIS-PCR support (adjacencies, MCID, PCR object management); 45.1.8 Attributes for path computation (RFC 5305/7810 TE link attributes, SRLG TLV); 45.1.9 Topology sub-TLV (Base VIDs + Hop sub-TLVs, strict-branch vs loose encoding, GADAG); 45.1.10 Hop sub-TLV (System ID, Root/Leaf/Edge/Exclude/Circuit/VID flags, T/R, delay constraint, Table 45-3); 45.1.11 Administrative Group sub-TLV; 45.1.12 Bandwidth Constraint sub-TLV. 45.2 Reservation: 45.2.1 Bandwidth Assignment sub-TLV; 45.2.2 Timestamp sub-TLV; 45.2.3 Precedence ordering. 45.3 Redundancy: 45.3.1 Loop-free alternates; 45.3.2 Static redundant trees; 45.3.3 Maximally Redundant Trees (MRT Lowpoint Algorithm, MRT-Blue/Red, cautious restoration, PLR); 45.3.4 MRTs with centralized GADAG computation (GADAG Computer, ear decomposition, topology blocks).",
+      "zh": "Clause 44 ECMP——44.1 SPBM ECMP：44.1.1 ECMP 操作（单 VID 负载分散；按流保序与按流分散的目标；可选 F-TAG）；44.1.2 ECMP ECT 算法（对 k 个排序端口的 FNV 哈希选端口；表 44-1 的 ECT-ALGORITHM 值 00-80-C2-11/12；组播决胜掩码、共享树、头端复制）；44.1.3 环路防护（复用 Clause 13，允许多个根端口，逐帧强制单根端口）。44.2 流过滤支持：44.2.1 F-TAG（以太类型 89-4B，4 字节 TCI：PCP、DEI、保留、6 位 TTL、16 位流哈希）；44.2.2 F-TAG 处理（垫片，按 VID 的流过滤控制表；44.2.2.1 数据指示生成/递减；44.2.2.2 数据请求插入标签）；44.2.3 转发过程扩展（FNV 哈希取模 k 选一端口）；44.2.4 TTL 环路缓解；44.2.5 带流过滤的 ECMP 的 CFM（ECMP 路径 MA 轮换流哈希值；44.2.5.1 经 TESI 复用实体放置 MEP；44.2.5.2 连续性检查协议改动）；44.2.6 选择性支持下的运行（增量升级，仅边界 CBP 强制 F-TAG）。Clause 45 PCR——45.1 显式树：45.1.1 树结构（自组织与模板）；45.1.2 显式 ECT 算法（ST/LT/LTS/MRT/MRTG，表 45-1 与 45-2）；45.1.3 ISIS-PCR VLAN 配置（Base VID 映射到 SPBM/SPBV MSTID、学习与非学习、MRT VID 规则、图 45-3）；45.1.4 严格显式树的 VID 使用（可扩展性、单出端口规则）；45.1.5 MAC 地址与 ISIS-PCR（SPBV MAC 地址与 SPBM 服务标识符子TLV）；45.1.6 过滤数据库条目；45.1.7 ISIS-PCR 支持（邻接、MCID、PCR 对象管理）；45.1.8 路径计算属性（RFC 5305/7810 TE 链路属性、SRLG TLV）；45.1.9 拓扑子TLV（Base VID + 跳子TLV、严格分支与松散编码、GADAG）；45.1.10 跳子TLV（系统 ID、Root/Leaf/Edge/Exclude/Circuit/VID 标志、T/R、时延约束、表 45-3）；45.1.11 管理组子TLV；45.1.12 带宽约束子TLV。45.2 预留：45.2.1 带宽分配子TLV；45.2.2 时间戳子TLV；45.2.3 优先级排序。45.3 冗余：45.3.1 无环备选路径；45.3.2 静态冗余树；45.3.3 最大冗余树（MRT Lowpoint 算法、MRT-Blue/Red、谨慎恢复、PLR）；45.3.4 集中 GADAG 计算的 MRT（GADAG 计算者、耳分解、拓扑块）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1621,
+          1624,
+          1625,
+          1628,
+          1629,
+          1631,
+          1635,
+          1636,
+          1638,
+          1644,
+          1646,
+          1649,
+          1652,
+          1654,
+          1656,
+          1658,
+          1660
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1621,
+        1622,
+        1623,
+        1624
+      ],
+      "note": "Clause 44.1 SPBM ECMP: operation, FNV ECT Algorithm, multicast modes, loop prevention"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1624,
+        1625,
+        1626,
+        1627,
+        1628,
+        1629,
+        1630
+      ],
+      "note": "Clause 44.2 flow filtering: F-TAG, shim processing, forwarding extension, TTL, CFM, selective support"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1631,
+        1635,
+        1636,
+        1637,
+        1638
+      ],
+      "note": "Clause 45 intro & 45.1.1-45.1.3 explicit trees, ECT Algorithms, VLAN config"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1642,
+        1643,
+        1644,
+        1645,
+        1646,
+        1647,
+        1648
+      ],
+      "note": "Clause 45.1.4-45.1.9 VIDs, MAC, FDB, support, TE attributes, Topology sub-TLV"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1649,
+        1650,
+        1651,
+        1652,
+        1653
+      ],
+      "note": "Clause 45.1.10-45.1.12 Hop, Administrative Group, Bandwidth Constraint sub-TLVs"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1654,
+        1655,
+        1656
+      ],
+      "note": "Clause 45.2 reservation sub-TLVs and precedence ordering"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1656,
+        1657,
+        1658,
+        1659,
+        1660,
+        1661,
+        1662
+      ],
+      "note": "Clause 45.3 redundancy: LFA, static trees, MRT, MRTG/GADAG"
+    }
+  ],
+  "covers": [
+    "8021Q-2022:44.1.1",
+    "8021Q-2022:44.1.2",
+    "8021Q-2022:44.1.3",
+    "8021Q-2022:44.2.1",
+    "8021Q-2022:44.2.2",
+    "8021Q-2022:44.2.3",
+    "8021Q-2022:44.2.4",
+    "8021Q-2022:44.2.5",
+    "8021Q-2022:44.2.6",
+    "8021Q-2022:45.1.1",
+    "8021Q-2022:45.1.2",
+    "8021Q-2022:45.1.3",
+    "8021Q-2022:45.1.4",
+    "8021Q-2022:45.1.5",
+    "8021Q-2022:45.1.6",
+    "8021Q-2022:45.1.7",
+    "8021Q-2022:45.1.8",
+    "8021Q-2022:45.1.9",
+    "8021Q-2022:45.1.10",
+    "8021Q-2022:45.1.11",
+    "8021Q-2022:45.1.12",
+    "8021Q-2022:45.2.1",
+    "8021Q-2022:45.2.2",
+    "8021Q-2022:45.2.3",
+    "8021Q-2022:45.3.1",
+    "8021Q-2022:45.3.2",
+    "8021Q-2022:45.3.3",
+    "8021Q-2022:45.3.4"
+  ],
+  "track": "bridging-tsn"
+}

@@ -1,0 +1,162 @@
+{
+  "id": "bridging-tsn-41",
+  "title": {
+    "en": "MAC Status Propagation: How a TPMR Tells the Link \"I'm Down\" (Part 1)",
+    "zh": "MAC 状态传播：TPMR 如何告知链路\"我已断开\"（上篇）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "When you chain a few simple two-port relays between two Bridges, the Bridges should still feel like they are sitting on one ordinary LAN. The trouble is connectivity: if a link deep inside the chain breaks, the end Bridges may not notice for a long time, and worse, when a broken link comes back they can briefly create a forwarding loop. Clause 23 of IEEE Std 802.1Q-2022 defines MAC status propagation — the mechanism that pushes a connectivity change all the way to the ends of the chain so each device's MAC_Operational flag (the simple TRUE/FALSE \"can I talk on this LAN?\" status from IEEE Std 802.1AC) flips just as if everything were one wire. The two-port relay doing this work is a TPMR (Two-Port MAC Relay).",
+      "zh": "当你把几个简单的双端口中继串接在两台网桥之间时，这两台网桥仍应感觉像是接在同一条普通 LAN 上。难点在于连通性：如果链路链条内部某处断开，两端网桥可能很久都察觉不到；更糟的是，断开的链路恢复时它们可能短暂地形成转发环路。IEEE Std 802.1Q-2022 的第 23 章定义了 MAC 状态传播——这套机制把连通性变化一路推送到链条两端，使每台设备的 MAC_Operational 标志（来自 IEEE Std 802.1AC 的简单 TRUE/FALSE\"我能在此 LAN 上通信吗？\"状态）翻转，就如同整条链路是一根线一样。完成这项工作的双端口中继叫作 TPMR（Two-Port MAC Relay，双端口 MAC 中继）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why MAC_Operational matters: protocols like spanning tree react to it transitioning TRUE to initialize and prevent loops, and react to it going FALSE to reroute fast. Without propagation, Bridges fall back to timing out periodic BPDUs — slow to detect failure, and unable to spot a loop until after it has formed. MSP (MAC Status Protocol) is what makes the transitions arrive promptly.",
+      "zh": "MAC_Operational 为何重要：像生成树这样的协议依赖它翻转为 TRUE 来初始化并防止环路，依赖它变为 FALSE 来快速重路由。没有传播机制，网桥只能退回到等待周期性 BPDU 超时——检测故障慢，而且要等环路形成后才能发现。MSP（MAC Status Protocol，MAC 状态协议）正是让这些状态变化及时到达的机制。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 23.1 (Model of operation) places MSP inside the standard Bridge architecture so its behavior is described consistently, while letting any implementation use its own internals. Two new entities do the work. 23.1.1 defines the MAC Status Shim (MSS): one per Port, it sits between the LAN's MAC and the rest of the relay and can gate frames — it only passes traffic when its MAC_Operational is TRUE, which happens only when both MAC_Enabled (controlled by the variable disableMSS) and the underlying LAN MAC's own MAC_Operational are TRUE. Above the shims sits the MSPE (MAC Status Propagation Entity), which runs the actual protocol: it controls each MSS over a Layer Management Interface (LMI), sends and receives the notification frames, and can disable the LAN MAC to force a peer offline. 23.1.2 (Relationship of CFM to the MSS) gives placement advice: Connectivity Fault Management MEPs that protect a single LAN belong below the MSS, while MEPs that protect a whole chain of TPMRs belong above it — otherwise a low MEP would hide the LAN MAC's status and break MSP.",
+      "zh": "第 23.1 节（Model of operation，运行模型）把 MSP 放进标准网桥架构中，使其行为得到一致描述，同时允许任何实现采用自己的内部结构。两个新实体承担这项工作。23.1.1 定义了 MAC Status Shim（MSS，MAC 状态垫片）：每个端口一个，位于 LAN 的 MAC 与中继其余部分之间，可以对帧进行门控——只有当它的 MAC_Operational 为 TRUE 时才放行流量，而这只在 MAC_Enabled（由变量 disableMSS 控制）和底层 LAN MAC 自身的 MAC_Operational 都为 TRUE 时发生。垫片之上是 MSPE（MAC Status Propagation Entity，MAC 状态传播实体），它运行真正的协议：通过 Layer Management Interface（LMI，层管理接口）控制每个 MSS，收发通知帧，并可禁用 LAN MAC 以强制对端下线。23.1.2（Relationship of CFM to the MSS，CFM 与 MSS 的关系）给出放置建议：保护单条 LAN 的连通性故障管理 MEP 应放在 MSS 之下，而保护整条 TPMR 链的 MEP 应放在其之上——否则下方的 MEP 会遮蔽 LAN MAC 的状态并破坏 MSP。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"120\" y=\"10\" width=\"220\" height=\"28\" /><text x=\"230\" y=\"29\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">MAC Relay Entity</text><rect x=\"170\" y=\"58\" width=\"120\" height=\"26\" /><text x=\"230\" y=\"75\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">MSPE</text><rect x=\"30\" y=\"108\" width=\"120\" height=\"26\" /><text x=\"90\" y=\"125\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">MSS (Port 1)</text><rect x=\"310\" y=\"108\" width=\"120\" height=\"26\" /><text x=\"370\" y=\"125\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">MSS (Port 2)</text><rect x=\"30\" y=\"158\" width=\"120\" height=\"26\" /><text x=\"90\" y=\"175\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">LAN MAC</text><rect x=\"310\" y=\"158\" width=\"120\" height=\"26\" /><text x=\"370\" y=\"175\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">LAN MAC</text><line x1=\"90\" y1=\"134\" x2=\"90\" y2=\"158\" /><line x1=\"370\" y1=\"134\" x2=\"370\" y2=\"158\" /><line x1=\"90\" y1=\"108\" x2=\"160\" y2=\"38\" /><line x1=\"370\" y1=\"108\" x2=\"300\" y2=\"38\" /><line x1=\"170\" y1=\"71\" x2=\"90\" y2=\"108\" stroke-dasharray=\"4 3\" /><line x1=\"290\" y1=\"71\" x2=\"370\" y2=\"108\" stroke-dasharray=\"4 3\" /></svg>",
+      "caption": {
+        "en": "TPMR internals (Figure 23-3, simplified): the MSPE controls one MSS per Port over the LMI (dashed). Each MSS gates traffic between its LAN MAC and the MAC Relay Entity.",
+        "zh": "TPMR 内部结构（图 23-3，简化版）：MSPE 通过 LMI（虚线）控制每个端口一个 MSS。每个 MSS 在其 LAN MAC 与 MAC Relay Entity 之间对流量进行门控。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 23.2 (MSP overview) walks through the protocol with time-sequence diagrams and introduces the vocabulary. MSP uses two notification styles. Link status notification sends MSPDUs (MAC Status Protocol Data Units) — small frames carrying the words add (connectivity gained), loss (connectivity lost), ack (I heard you), add confirm and loss confirm (the change reached the end and came back). It does not interrupt other traffic, but because it can't itself stop forwarding it cannot alone prevent loops. MAC status notification is the blunt alternative: the MSPE tells the local LAN MAC to disable itself, which is equivalent to yanking the link down for the peer — effective and loop-safe, but it cuts all traffic. A typical TPMR tries link status notification first and falls back to MAC status notification only if no MSP-capable peer answers in time.",
+      "zh": "第 23.2 节（MSP overview，MSP 概览）用时序图讲解协议并引入术语。MSP 使用两种通知方式。Link status notification（链路状态通知）发送 MSPDU（MAC Status Protocol Data Unit，MAC 状态协议数据单元）——携带 add（连通性恢复）、loss（连通性丢失）、ack（我收到了）、add confirm 与 loss confirm（变化已到达链路末端并返回）等关键字的小帧。它不打断其他流量，但由于自身无法停止转发，单凭它无法防止环路。MAC status notification（MAC 状态通知）是更直接的替代方案：MSPE 让本地 LAN MAC 禁用自己，对对端而言等同于把链路拉断——有效且不会形成环路，但会切断所有流量。典型的 TPMR 先尝试链路状态通知，只有在限定时间内没有支持 MSP 的对端响应时，才退回到 MAC 状态通知。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant A as Bridge A\n  participant T as TPMR chain\n  participant B as Bridge B\n  A->>T: link recovers (MAC_Operational TRUE)\n  T->>T: hold MSS disabled, send add\n  T->>B: add (forwarded)\n  B-->>T: ack\n  Note over T,B: no MSP peer -> use MAC status notification\n  T->>B: blip MAC down then up\n  T->>A: add confirm\n  Note over A,B: both ends now agree MAC_Operational",
+      "zh": "sequenceDiagram\n  participant A as 网桥 A\n  participant T as TPMR 链\n  participant B as 网桥 B\n  A->>T: 链路恢复（MAC_Operational TRUE）\n  T->>T: 保持 MSS 禁用，发送 add\n  T->>B: add（转发）\n  B-->>T: ack\n  Note over T,B: 无 MSP 对端 -> 使用 MAC 状态通知\n  T->>B: 把 MAC 短暂拉断再恢复\n  T->>A: add confirm\n  Note over A,B: 两端现在对 MAC_Operational 达成一致"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 23.3 (MSP state machines) says each Port runs four cooperating pieces: a Status Transition state machine (STM), a Status Notification state machine (SNM), a Receive Process, and a Transmit Process. They share variables, and a name prefixed with 'r.' means \"the same variable belonging to the other Port.\" The division of labor is neat: a Port's STM watches its own LAN's MAC_Operational and, on a change, tells the OTHER Port's Transmit process to send add/loss and the other Port's SNM to chase confirmation. The SNM handles incoming ack and add-confirm/loss-confirm, and tells the originating STM when the change is confirmed so it can stop retrying.",
+      "zh": "第 23.3 节（MSP state machines，MSP 状态机）规定每个端口运行四个协作部件：Status Transition state machine（STM，状态转换状态机）、Status Notification state machine（SNM，状态通知状态机）、Receive Process（接收进程）和 Transmit Process（发送进程）。它们共享变量，名字带前缀 'r.' 表示\"对方端口的同名变量\"。分工清晰：某端口的 STM 监视自己 LAN 的 MAC_Operational，一旦变化，就让另一端口的发送进程发出 add/loss，并让另一端口的 SNM 去追踪确认。SNM 处理收到的 ack 和 add confirm/loss confirm，并在变化被确认后通知发起方的 STM，使其停止重试。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Four timers run the show (23.4). linkNotifyWhen (23.4.1) is the retry timer: while it counts down, the same link notification is re-sent on each expiry until confirmed. linkNotifyWhile (23.4.2) is the patience timer: it starts when a change is first propagated, and only on its expiry is MAC status notification allowed. macNotifyWhile (23.4.3) sets how long the MAC stays disabled during MAC status notification. macRecoverWhile (23.4.4) sets how long a MAC may stay non-operational after being disabled before the link is declared lost. Timers are just counters decremented per tick; expiry is reaching zero.",
+      "zh": "四个定时器掌控全局（23.4）。linkNotifyWhen（23.4.1）是重试定时器：在它倒计时期间，每次到期都重发同一条链路通知，直到被确认。linkNotifyWhile（23.4.2）是耐心定时器：在变化首次传播时启动，只有到期后才允许使用 MAC 状态通知。macNotifyWhile（23.4.3）设定 MAC 状态通知期间 MAC 保持禁用的时长。macRecoverWhile（23.4.4）设定 MAC 被禁用后允许保持不可用、直至判定链路丢失的时长。定时器只是每个时钟节拍递减的计数器；归零即到期。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 23.5 (MSP performance parameters) lists six constants the machines treat as fixed inputs (each manageable per Port, with defaults in Table 23-2): LinkNotify (23.5.1, TRUE/FALSE — does this Port originate link status notification and wait for it before MAC notification?); LinkNotifyWait (23.5.2, default 0.4 s — the initial value of linkNotifyWhile); LinkNotifyRetry (23.5.3, default 1.0 s — the initial value of the OTHER Port's linkNotifyWhen); MACNotify (23.5.4, TRUE/FALSE — does this Port use MAC status notification at all?); MACNotifyTime (23.5.5, default 0.2 s — the initial value of macNotifyWhile); and MACRecoverTime (23.5.6, default 0.1 s — the initial value of macRecoverWhile). Notice how each performance parameter seeds one of the four timers — that is the bridge between the static configuration and the running machines.",
+      "zh": "第 23.5 节（MSP performance parameters，MSP 性能参数）列出六个状态机视为固定输入的常量（每个端口可独立管理，默认值见表 23-2）：LinkNotify（23.5.1，TRUE/FALSE——本端口是否发起链路状态通知并在转用 MAC 通知前等待它？）；LinkNotifyWait（23.5.2，默认 0.4 秒——linkNotifyWhile 的初值）；LinkNotifyRetry（23.5.3，默认 1.0 秒——对方端口 linkNotifyWhen 的初值）；MACNotify（23.5.4，TRUE/FALSE——本端口是否使用 MAC 状态通知？）；MACNotifyTime（23.5.5，默认 0.2 秒——macNotifyWhile 的初值）；以及 MACRecoverTime（23.5.6，默认 0.1 秒——macRecoverWhile 的初值）。注意每个性能参数都为四个定时器之一赋初值——这正是静态配置与运行中状态机之间的桥梁。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the 19 state machine variables (23.6.1–23.6.19) and the procedures note (23.7)",
+        "zh": "覆盖地图：19 个状态机变量（23.6.1–23.6.19）与过程说明（23.7）"
+      },
+      "en": "Clause 23.6 defines the shared variables. Control & status: 23.6.1 BEGIN (TRUE pins every machine in its initial state; FALSE lets them transition); 23.6.5 disableMSS (STM sets/resets it to drive the MSS's MAC_Enabled FALSE/TRUE); 23.6.3 disableMAC (SNM sets it to make the LAN MAC disable itself so the peer's MAC_Operational goes FALSE); 23.6.4 disabledMAC (SNM keeps it set while disableMAC is set and for MACRecoverTime after, so the STM doesn't mistake it for a real loss); 23.6.7 macOperational (the LAN MAC's MAC_Operational); 23.6.8 mssOperational (the MAC_Operational the MSS presents upward to the relay); 23.6.9 prop (the other Port's STM sets it to Add or Loss to tell this SNM a change is propagating; SNM resets to None). Confirmation flags: 23.6.2 addConfirmed and 23.6.6 lossConfirmed (the other Port's SNM sets them to tell STM the add/loss was confirmed; STM clears them). Receive-side flags (set by the Receive Process): 23.6.10 rxAck, 23.6.11 rxAdd, 23.6.12 rxAddConfirm, 23.6.13 rxLoss, 23.6.14 rxLossConfirm — each says which MSPDU just arrived; SNM or STM clears them. Transmit-side flags (cleared by the Transmit Process once sent): 23.6.15 txAck (STM asks to send an ack), 23.6.16 txAdd and 23.6.18 txLoss (the other Port's STM asks to send add/loss), 23.6.17 txAddConfirm and 23.6.19 txLossConfirm (the other Port's SNM asks to send add/loss confirm). Finally 23.7 (State machine procedures) is a single sentence: no procedures are defined beyond those represented inside the state machines themselves — all behavior lives in the STM and SNM diagrams (covered in Part 2).",
+      "zh": "第 23.6 节定义共享变量。控制与状态类：23.6.1 BEGIN（TRUE 把每台机器钉在初始状态，FALSE 允许其转换）；23.6.5 disableMSS（STM 置位/复位以驱动 MSS 的 MAC_Enabled 为 FALSE/TRUE）；23.6.3 disableMAC（SNM 置位使 LAN MAC 禁用自身，从而让对端 MAC_Operational 变 FALSE）；23.6.4 disabledMAC（SNM 在 disableMAC 置位期间及其复位后的 MACRecoverTime 内保持其置位，使 STM 不会误判为真正的链路丢失）；23.6.7 macOperational（LAN MAC 的 MAC_Operational）；23.6.8 mssOperational（MSS 向中继呈现的 MAC_Operational）；23.6.9 prop（对方端口的 STM 将其置为 Add 或 Loss，告知本 SNM 有变化正在传播；SNM 复位为 None）。确认标志类：23.6.2 addConfirmed 与 23.6.6 lossConfirmed（对方端口的 SNM 置位以告知 STM add/loss 已确认；STM 清除）。接收侧标志（由接收进程置位）：23.6.10 rxAck、23.6.11 rxAdd、23.6.12 rxAddConfirm、23.6.13 rxLoss、23.6.14 rxLossConfirm——分别表示刚到达哪种 MSPDU；由 SNM 或 STM 清除。发送侧标志（由发送进程发出后清除）：23.6.15 txAck（STM 请求发 ack）、23.6.16 txAdd 与 23.6.18 txLoss（对方端口 STM 请求发 add/loss）、23.6.17 txAddConfirm 与 23.6.19 txLossConfirm（对方端口 SNM 请求发 add/loss confirm）。最后，23.7（State machine procedures，状态机过程）只有一句话：除状态机本身所表示的之外，不定义额外过程——所有行为都存在于 STM 和 SNM 图中（在下篇讲解）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1318,
+          1319,
+          1320
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Part 2 of this lesson takes the actual STM and SNM state diagrams (Figures 23-10 and 23-11) and the MSPDU format. For now, the mental model is: performance parameters seed timers; the STM watches local MAC_Operational and asks the far Port to notify; the SNM chases confirmation and, if link notification stalls, escalates to disabling the MAC; and a dozen rx/tx flags carry add, loss, ack, and confirm between the two Ports.",
+      "zh": "本课下篇将讲解真正的 STM 与 SNM 状态图（图 23-10 和图 23-11）以及 MSPDU 格式。目前的心智模型是：性能参数为定时器赋初值；STM 监视本地 MAC_Operational 并请求远端端口通知；SNM 追踪确认，若链路通知停滞则升级为禁用 MAC；十几个 rx/tx 标志在两个端口间传递 add、loss、ack 和 confirm。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1308,
+        1309,
+        1310,
+        1311
+      ],
+      "note": "Clause 23 intro, 23.1 model of operation, MSS and CFM relationship"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1311,
+        1312,
+        1313,
+        1314,
+        1315,
+        1316
+      ],
+      "note": "23.2 MSP overview, time-sequence diagrams, MSPDU vocabulary"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1316,
+        1317
+      ],
+      "note": "23.3 state machines, 23.4 timers, 23.5 performance parameters"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1318,
+        1319,
+        1320
+      ],
+      "note": "23.5 parameter defaults, 23.6 state machine variables, 23.7 procedures note"
+    }
+  ],
+  "covers": [
+    "8021Q-2022:23.1.1",
+    "8021Q-2022:23.1.2",
+    "8021Q-2022:23.2",
+    "8021Q-2022:23.3",
+    "8021Q-2022:23.4.1",
+    "8021Q-2022:23.4.2",
+    "8021Q-2022:23.4.3",
+    "8021Q-2022:23.4.4",
+    "8021Q-2022:23.5.1",
+    "8021Q-2022:23.5.2",
+    "8021Q-2022:23.5.3",
+    "8021Q-2022:23.5.4",
+    "8021Q-2022:23.5.5",
+    "8021Q-2022:23.5.6",
+    "8021Q-2022:23.6.1",
+    "8021Q-2022:23.6.2",
+    "8021Q-2022:23.6.3",
+    "8021Q-2022:23.6.4",
+    "8021Q-2022:23.6.5",
+    "8021Q-2022:23.6.6",
+    "8021Q-2022:23.6.7",
+    "8021Q-2022:23.6.8",
+    "8021Q-2022:23.6.9",
+    "8021Q-2022:23.6.10",
+    "8021Q-2022:23.6.11",
+    "8021Q-2022:23.6.12",
+    "8021Q-2022:23.6.13",
+    "8021Q-2022:23.6.14",
+    "8021Q-2022:23.6.15",
+    "8021Q-2022:23.6.16",
+    "8021Q-2022:23.6.17",
+    "8021Q-2022:23.6.18",
+    "8021Q-2022:23.6.19",
+    "8021Q-2022:23.7"
+  ],
+  "track": "bridging-tsn"
+}

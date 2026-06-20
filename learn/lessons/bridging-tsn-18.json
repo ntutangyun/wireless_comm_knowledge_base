@@ -1,0 +1,155 @@
+{
+  "id": "bridging-tsn-18",
+  "title": {
+    "en": "Spanning Tree Per-Port Variables: The Agreement and Edge Family (13.27.1–13.27.34)",
+    "zh": "生成树每端口变量：协议确认与边缘端口家族（13.27.1–13.27.34）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A bridge running a spanning tree protocol does not keep its decisions in one big global pile. Instead, it stores a set of small per-port variables on every port, and the protocol's state machines read and write those variables to decide whether each port should forward traffic, learn addresses, or stay blocked. Subclause 13.27 of IEEE Std 802.1Q-2022 lists every one of these variables. This lesson walks the first 34 of them (13.27.1 through 13.27.34), which cover the edge-port controls, the SPT (Shortest Path Tree) agreement machinery, and the basic forward/learn flags. Note that the standard is explicit (p.547): the variables themselves are normative, but the prose descriptions are only there to aid comprehension.",
+      "zh": "运行生成树协议的网桥不会把所有决策堆在一个全局大表里，而是在每个端口上保存一组小型的“每端口变量”，协议的状态机读写这些变量，来决定每个端口应当转发流量、学习地址，还是保持阻塞。IEEE Std 802.1Q-2022 的 13.27 小节逐一列出了所有这些变量。本课讲解其中前 34 个（13.27.1 到 13.27.34），它们涵盖边缘端口控制、SPT（最短路径树，Shortest Path Tree）的协议确认机制，以及基本的转发/学习标志。请注意标准明确指出（第 547 页）：变量本身是规范性的，而随附的文字说明仅用于帮助理解。"
+    },
+    {
+      "type": "prose",
+      "en": "Edge ports come first. An edge port connects to an end station, not to another bridge, so it can go straight to forwarding without risking a loop. AdminEdge (13.27.1) is a Boolean a manager sets to declare a port an edge port immediately at startup, skipping the usual delay. AutoEdge (13.27.18) lets the Bridge Detection state machine (BDM) figure this out automatically by watching for other bridges; its recommended default is TRUE. The result of either path is held in operEdge. AutoIsolate (13.27.19) is the cautious cousin: when set, it lets a designated port fall back to Discarding (the isolate flag, 13.27.27, gets set) if both AdminEdge and AutoEdge are FALSE and the presumed neighbor bridge has gone silent.",
+      "zh": "首先是边缘端口。边缘端口连接的是终端设备而非另一台网桥，因此可以直接进入转发状态而不会造成环路。AdminEdge（13.27.1）是一个布尔值，由管理员设置，用于在启动时立即将端口声明为边缘端口，省去通常的延时。AutoEdge（13.27.18）让网桥检测状态机（BDM）通过监听其他网桥来自动判断，推荐默认值为 TRUE。两种方式的结果都保存在 operEdge 中。AutoIsolate（13.27.19）则是谨慎的“表亲”：设置后，若 AdminEdge 与 AutoEdge 均为 FALSE 且推测的邻居网桥已沉默，则允许指定端口回退到丢弃状态（即设置 isolate 标志，13.27.27）。"
+    },
+    {
+      "type": "prose",
+      "en": "Next are the BPDU on/off switches. A BPDU (Bridge Protocol Data Unit) is the control frame bridges exchange to build the tree. enableBPDUrx (13.27.23) and enableBPDUtx (13.27.24) are management Booleans, set by default, that gate whether the port receives or transmits BPDUs at all. The standard warns clearly: clearing them can create loops or break connectivity, so you should only do it on a Layer Two Gateway Port. isL2gp (13.27.26) is the Boolean that marks a port as exactly that kind of gateway port; when set, enableBPDUtx should be cleared so the port does not leak BPDUs across the boundary.",
+      "zh": "接下来是 BPDU 收发开关。BPDU（网桥协议数据单元，Bridge Protocol Data Unit）是网桥之间交换、用以构建生成树的控制帧。enableBPDUrx（13.27.23）与 enableBPDUtx（13.27.24）是默认开启的管理布尔值，分别控制端口是否接收或发送 BPDU。标准明确警告：清除它们可能造成环路或中断连通，因此只应在二层网关端口上这样做。isL2gp（13.27.26）正是把端口标记为这种网关端口的布尔值；设置后应清除 enableBPDUtx，以免端口跨边界泄漏 BPDU。"
+    },
+    {
+      "type": "prose",
+      "en": "Path cost variables tell the tree how 'expensive' a port is. ExternalPortPathCost (13.27.25) is the port's contribution to the External Root Path Cost when it is the CIST Master Port or the CST Root Port — that is, cost across the boundary between regions. InternalPortPathCost (13.27.33) is its contribution to the Internal Root Path Cost when it is an IST or SPT Root Port — cost inside a region. CIST means Common and Internal Spanning Tree, CST means Common Spanning Tree, and IST means Internal Spanning Tree; the split lets MSTP (Multiple Spanning Tree Protocol) treat a whole region as one node from the outside while running its own tree inside.",
+      "zh": "路径开销变量告诉生成树某个端口有多“昂贵”。ExternalPortPathCost（13.27.25）是端口作为 CIST 主端口或 CST 根端口时，对外部根路径开销的贡献，也就是跨区域边界的开销。InternalPortPathCost（13.27.33）是端口作为 IST 或 SPT 根端口时，对内部根路径开销的贡献，即区域内部的开销。CIST 指公共与内部生成树（Common and Internal Spanning Tree），CST 指公共生成树（Common Spanning Tree），IST 指内部生成树（Internal Spanning Tree）；这种划分让 MSTP（多生成树协议，Multiple Spanning Tree Protocol）从外部把整个区域当作一个节点，同时在内部运行自己的树。"
+    },
+    {
+      "type": "prose",
+      "en": "The heart of rapid reconvergence is the agree/agreed handshake. agree (13.27.3) and agreed (13.27.4) are Booleans tied to the proposal–agreement exchange (13.16). agreed is set, for the CIST or an MSTI, when an Agreement received from the neighbor confirms that its port states and priority vectors are compatible with a loop-free active topology determined by this port. This handshake is what lets a designated port move to forwarding quickly instead of waiting out a timer — the neighbor explicitly says 'yes, we agree on who is upstream.'",
+      "zh": "快速重新收敛的核心是 agree/agreed 握手。agree（13.27.3）与 agreed（13.27.4）是与“提议—确认”交换（13.16）相关的布尔值。对于 CIST 或某个 MSTI，当从邻居收到的 Agreement 确认其端口状态与优先级向量同本端口确定的无环活动拓扑相容时，agreed 被置位。正是这一握手让指定端口能够快速进入转发，而非苦等定时器到期——邻居明确表示“是的，我们就谁在上游达成一致”。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant D as Designated port\n  participant R as Neighbor root port\n  D->>R: BPDU with Proposal flag\n  R->>R: sync, then set agree\n  R->>D: BPDU with Agreement flag\n  D->>D: set agreed -> go Forwarding\n  Note over D,R: rapid transition, no timer wait",
+      "zh": "sequenceDiagram\n  participant D as 指定端口\n  participant R as 邻居根端口\n  D->>R: 带提议标志的 BPDU\n  R->>R: 同步后置位 agree\n  R->>D: 带确认标志的 BPDU\n  D->>D: 置位 agreed -> 进入转发\n  Note over D,R: 快速切换，无需等定时器"
+    },
+    {
+      "type": "prose",
+      "en": "A large block of 13.27 supports SPB (Shortest Path Bridging) via ISIS-SPB, where bridges agree not just on a port state but on a digest of the whole topology. agreedDigest (13.27.6) is the Agreement Digest carried in the last BPDU received on an SPT-internal port; agreedDigestValid (13.27.7) is TRUE if that BPDU's Agreement Valid flag was set. The transmit side mirrors this: agreeDigest (13.27.8) is the digest this port currently puts into outgoing SPT BPDUs, and agreeDigestValid (13.27.9) is TRUE when the Agreement Valid flag should be set on transmit. agreedTopology (13.27.14) becomes TRUE when the agreement protocol declares a topology match — agreeDigest equals the locally calculated agreementDigest.",
+      "zh": "13.27 中有一大块变量服务于通过 ISIS-SPB 实现的 SPB（最短路径桥接，Shortest Path Bridging），此时网桥不仅就端口状态达成一致，还就整个拓扑的摘要达成一致。agreedDigest（13.27.6）是在 SPT 内部端口上最后收到的 BPDU 所携带的协议确认摘要；若该 BPDU 的 Agreement Valid 标志被置位，则 agreedDigestValid（13.27.7）为 TRUE。发送侧与之对应：agreeDigest（13.27.8）是该端口当前放入外发 SPT BPDU 的摘要，agreeDigestValid（13.27.9）在发送时应置 Agreement Valid 标志时为 TRUE。当确认协议宣告拓扑匹配——即 agreeDigest 等于本地计算的 agreementDigest 时——agreedTopology（13.27.14）变为 TRUE。"
+    },
+    {
+      "type": "prose",
+      "en": "SPB also numbers its agreements so a bridge can tell stale messages from fresh ones. agreedN (13.27.11) is the Agreement Number on the last received BPDU; agreeN (13.27.16) is the Agreement Number this port transmits. agreedND (13.27.12) is the Discarded Agreement Number to include in outgoing SPT BPDUs, and agreeND (13.27.17) is the last Discarded Agreement Number received — when agreeND matches agreeN, there is no outstanding agreement. All of these are 2-bit fields with modulo-4 arithmetic (so 3 + 1 = 0). agreedMisorder (13.27.10) flags an out-of-order message detected by the agreement number, and is reset when an in-order one arrives.",
+      "zh": "SPB 还为它的确认编号，以便网桥区分陈旧消息与最新消息。agreedN（13.27.11）是最后收到的 BPDU 上的协议确认编号；agreeN（13.27.16）是该端口发送的协议确认编号。agreedND（13.27.12）是放入外发 SPT BPDU 的“被丢弃确认编号”，agreeND（13.27.17）是最后收到的“被丢弃确认编号”——当 agreeND 与 agreeN 相等时，表示没有未决确认。这些都是采用模 4 运算的两比特字段（因此 3 + 1 = 0）。agreedMisorder（13.27.10）在依据确认编号检测到乱序消息时置位，收到顺序正确的消息时复位。"
+    },
+    {
+      "type": "prose",
+      "en": "Two more SPB variables track the priority of agreements. agreedPriority (13.27.13) is the priority vector for the worst priority a CIST or SPT designated port received from an SPT region in BPDUs sent by root ports (zero if none). agreementOutstanding (13.27.15) is the worst-priority vector for agreements still pending from a CIST or SPT root, alternate, or backup port within an SPT region. agreedAbove (13.27.5) is a Boolean set by the updtAgreement() procedure to record agreement on a neighbor's superior priority vector. agreedAbove and neighbourPriority exist per SPT; agreedPriority and agreementOutstanding exist for the CIST and per SPT.",
+      "zh": "还有两个 SPB 变量跟踪确认的优先级。agreedPriority（13.27.13）是 CIST 或 SPT 指定端口从某 SPT 区域、在根端口发送的 BPDU 中收到的最差优先级所对应的优先级向量（若无则为零）。agreementOutstanding（13.27.15）是某 SPT 区域内 CIST 或 SPT 的根端口、备用端口或备份端口仍待处理的确认中最差优先级向量。agreedAbove（13.27.5）是由 updtAgreement() 过程置位的布尔值，用于记录对邻居更优先级向量的确认。agreedAbove 与 neighbourPriority 按每个 SPT 存在；agreedPriority 与 agreementOutstanding 对 CIST 以及每个 SPT 存在。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"40\" width=\"90\" height=\"36\"/><rect x=\"100\" y=\"40\" width=\"110\" height=\"36\"/><rect x=\"210\" y=\"40\" width=\"110\" height=\"36\"/><rect x=\"320\" y=\"40\" width=\"130\" height=\"36\"/><text x=\"55\" y=\"63\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">flags</text><text x=\"155\" y=\"63\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">agreeN / ND</text><text x=\"265\" y=\"63\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">agreeDigest</text><text x=\"385\" y=\"63\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">priority vector</text><text x=\"10\" y=\"30\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">SPT BPDU agreement fields (conceptual)</text><text x=\"155\" y=\"96\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">2-bit, modulo 4</text></svg>",
+      "caption": {
+        "en": "Conceptual layout of the SPB agreement information a port tracks: validity flags, the modulo-4 agreement/discarded numbers, the agreement digest, and the priority vectors. The standard defines these as variables, not a literal frame format.",
+        "zh": "端口所跟踪的 SPB 协议确认信息的概念布局：有效性标志、模 4 的确认/丢弃编号、协议确认摘要以及优先级向量。标准将其定义为变量，而非字面上的帧格式。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now the everyday role and state plumbing. designatedPriority (13.27.20) holds the components of the port's designated priority vector (Root Identifier, path costs, Designated Bridge and Port Identifiers); designatedTimes (13.27.21) holds the timer values (Message Age, Max Age, Forward Delay, remainingHops) copied from the bridge's rootTimes and used in BPDUs the port transmits. disputed (13.27.22) is a Boolean used by the dispute-detection logic to catch a neighbor still claiming designated status with inferior information. fdbFlush (13.27.28) is set by the topology change state machine to tell the FDB (Filtering Database — the bridge's learned MAC table) to remove this port's entries, either immediately (under RSTP) or by rapid ageing (under legacy STP), and it is skipped for edge ports.",
+      "zh": "接下来是日常的角色与状态管道。designatedPriority（13.27.20）保存端口指定优先级向量的各分量（根标识符、各路径开销、指定网桥与端口标识符）；designatedTimes（13.27.21）保存从网桥 rootTimes 复制而来、并用于端口发送的 BPDU 中的定时器值（消息年龄、最大年龄、转发延迟、remainingHops）。disputed（13.27.22）是争议检测逻辑使用的布尔值，用于发现仍以劣质信息自称指定端口的邻居。fdbFlush（13.27.28）由拓扑变化状态机置位，指示 FDB（过滤数据库，Filtering Database，即网桥学习到的 MAC 表）清除该端口的表项——在 RSTP 下立即清除，在传统 STP 下通过快速老化清除，且对边缘端口跳过此操作。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally the forward/learn pair and the information-origin variable. forward (13.27.29) and learn (13.27.34) are Booleans the Port Role Transitions state machine sets to instruct the Port State Transitions state machine to enable or disable forwarding and learning respectively; forwarding (13.27.30) and the related learning flag are the read-backs that report the actual state. infoIs (13.27.32) records where a port's spanning-tree information came from: Mine (derived from the bridge's own root port), Received (current info from the designated bridge), Aged (the info has timed out), or Disabled (the port is down). infoInternal (13.27.31) refines the Received case: it is set when that designated bridge is in the same MST Region as the receiving bridge. Together these variables are the working memory each state machine consults on every BPDU and every tick.",
+      "zh": "最后是转发/学习这对变量以及信息来源变量。forward（13.27.29）与 learn（13.27.34）是端口角色转换状态机置位的布尔值，分别指示端口状态转换状态机启用或禁用转发与学习；forwarding（13.27.30）及相关的 learning 标志则是回读值，报告实际状态。infoIs（13.27.32）记录端口的生成树信息来源：Mine（源自本网桥的根端口）、Received（来自指定网桥的当前信息）、Aged（信息已超时）或 Disabled（端口已关闭）。infoInternal（13.27.31）细化了 Received 情形：当该指定网桥与接收网桥位于同一 MST 区域时被置位。这些变量共同构成各状态机在每个 BPDU、每个时钟节拍都要查阅的工作记忆。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A useful mental split: per-port variables fall into management knobs you set (AdminEdge, AutoEdge, AutoIsolate, enableBPDUrx/tx, isL2gp), per-tree decision state the protocol computes (the agree/agreed family, designatedPriority/Times, infoIs, forward/learn), and SPB-only digest/number bookkeeping (the agreeDigest and agreeN/agreeND groups). Knowing which bucket a variable lives in tells you who writes it and when.",
+      "zh": "一个实用的心智划分：每端口变量分为三类——你设置的管理旋钮（AdminEdge、AutoEdge、AutoIsolate、enableBPDUrx/tx、isL2gp）、协议计算的每树决策状态（agree/agreed 家族、designatedPriority/Times、infoIs、forward/learn），以及仅用于 SPB 的摘要/编号记账（agreeDigest 与 agreeN/agreeND 组）。知道变量属于哪一类，就知道由谁、在何时写入它。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: exact clause numbers 13.27.1–13.27.34",
+        "zh": "覆盖映射：精确条款号 13.27.1–13.27.34"
+      },
+      "en": "Edge and BPDU controls: AdminEdge (13.27.1), AutoEdge (13.27.18), AutoIsolate (13.27.19), isolate (13.27.27), enableBPDUrx (13.27.23), enableBPDUtx (13.27.24), isL2gp (13.27.26). Ageing: ageingTime (13.27.2) — FDB entries age out after this, switched to FwdDelay during a flush under legacy STP. Path cost: ExternalPortPathCost (13.27.25), InternalPortPathCost (13.27.33). Agreement core: agree (13.27.3), agreed (13.27.4), agreedAbove (13.27.5). SPB digest: agreedDigest (13.27.6), agreedDigestValid (13.27.7), agreeDigest (13.27.8), agreeDigestValid (13.27.9), agreedTopology (13.27.14). SPB numbers: agreedMisorder (13.27.10), agreedN (13.27.11), agreedND (13.27.12), agreeN (13.27.16), agreeND (13.27.17). SPB priority: agreedPriority (13.27.13), agreementOutstanding (13.27.15). Role/state: designatedPriority (13.27.20), designatedTimes (13.27.21), disputed (13.27.22), fdbFlush (13.27.28), forward (13.27.29), forwarding (13.27.30), infoInternal (13.27.31), infoIs (13.27.32), learn (13.27.34). All 34 are defined on pages 551–555, with the per-port variable inventory introduced on pages 548–550.",
+      "zh": "边缘与 BPDU 控制：AdminEdge（13.27.1）、AutoEdge（13.27.18）、AutoIsolate（13.27.19）、isolate（13.27.27）、enableBPDUrx（13.27.23）、enableBPDUtx（13.27.24）、isL2gp（13.27.26）。老化：ageingTime（13.27.2）——FDB 表项在此时间后老化，传统 STP 清空期间切换为 FwdDelay。路径开销：ExternalPortPathCost（13.27.25）、InternalPortPathCost（13.27.33）。确认核心：agree（13.27.3）、agreed（13.27.4）、agreedAbove（13.27.5）。SPB 摘要：agreedDigest（13.27.6）、agreedDigestValid（13.27.7）、agreeDigest（13.27.8）、agreeDigestValid（13.27.9）、agreedTopology（13.27.14）。SPB 编号：agreedMisorder（13.27.10）、agreedN（13.27.11）、agreedND（13.27.12）、agreeN（13.27.16）、agreeND（13.27.17）。SPB 优先级：agreedPriority（13.27.13）、agreementOutstanding（13.27.15）。角色/状态：designatedPriority（13.27.20）、designatedTimes（13.27.21）、disputed（13.27.22）、fdbFlush（13.27.28）、forward（13.27.29）、forwarding（13.27.30）、infoInternal（13.27.31）、infoIs（13.27.32）、learn（13.27.34）。这 34 项全部定义于第 551–555 页，每端口变量清单引入于第 548–550 页。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          548,
+          549,
+          550,
+          551,
+          552,
+          553,
+          554,
+          555
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        548,
+        549,
+        550,
+        551,
+        552,
+        553,
+        554,
+        555
+      ],
+      "note": "13.27 Per port variables: inventory (p.548-550) and definitions 13.27.1-13.27.34 (p.551-555)."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:13.27.1",
+    "8021Q-2022:13.27.2",
+    "8021Q-2022:13.27.3",
+    "8021Q-2022:13.27.4",
+    "8021Q-2022:13.27.5",
+    "8021Q-2022:13.27.6",
+    "8021Q-2022:13.27.7",
+    "8021Q-2022:13.27.8",
+    "8021Q-2022:13.27.9",
+    "8021Q-2022:13.27.10",
+    "8021Q-2022:13.27.11",
+    "8021Q-2022:13.27.12",
+    "8021Q-2022:13.27.13",
+    "8021Q-2022:13.27.14",
+    "8021Q-2022:13.27.15",
+    "8021Q-2022:13.27.16",
+    "8021Q-2022:13.27.17",
+    "8021Q-2022:13.27.18",
+    "8021Q-2022:13.27.19",
+    "8021Q-2022:13.27.20",
+    "8021Q-2022:13.27.21",
+    "8021Q-2022:13.27.22",
+    "8021Q-2022:13.27.23",
+    "8021Q-2022:13.27.24",
+    "8021Q-2022:13.27.25",
+    "8021Q-2022:13.27.26",
+    "8021Q-2022:13.27.27",
+    "8021Q-2022:13.27.28",
+    "8021Q-2022:13.27.29",
+    "8021Q-2022:13.27.30",
+    "8021Q-2022:13.27.31",
+    "8021Q-2022:13.27.32",
+    "8021Q-2022:13.27.33",
+    "8021Q-2022:13.27.34"
+  ],
+  "track": "bridging-tsn"
+}

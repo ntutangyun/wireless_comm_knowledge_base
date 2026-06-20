@@ -1,0 +1,173 @@
+{
+  "id": "bridging-tsn-37",
+  "title": {
+    "en": "CFM Linktrace & PDU Versioning: From LTM to LTR (Clause 20, part 5 of 5)",
+    "zh": "CFM 链路跟踪与 PDU 版本控制：从 LTM 到 LTR（第 20 章，5 之 5）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This is the final part of Clause 20 of IEEE Std 802.1Q-2022, which specifies the protocol machinery for CFM (Connectivity Fault Management) — the toolkit that lets bridged networks detect and diagnose connectivity faults. We finish three things: the last fault-alarm generator, the full Linktrace exchange (a traceroute for bridges), and the versioning rules that let today's bridges interoperate with future ones. Throughout, an MP (Maintenance Point) is an endpoint or pass-through point of monitoring; a MEP (Maintenance association End Point) sits at the edge of a monitored domain, while an MHF (MIP Half Function) and MIP (Maintenance domain Intermediate Point) sit in the middle.",
+      "zh": "这是 IEEE Std 802.1Q-2022 第 20 章的最后一部分，该章规定了 CFM（连通性故障管理，Connectivity Fault Management）的协议机制——它是一套让桥接网络检测和诊断连通性故障的工具。我们在此完成三件事：最后一个故障告警生成器、完整的链路跟踪（Linktrace）交互（相当于桥接网络的 traceroute），以及让今天的桥与未来的桥互通的版本控制规则。全文中，MP（维护点，Maintenance Point）是监控的端点或中转点；MEP（维护关联端点，Maintenance association End Point）位于被监控域的边缘，而 MHF（MIP 半功能，MIP Half Function）和 MIP（维护域中间点）位于中间。"
+    },
+    {
+      "type": "prose",
+      "en": "First, the Mismatch Fault Notification Generator. Some MEPs — those on a PBB-TE (Provider Backbone Bridge Traffic Engineering) MA (Maintenance Association) or an Infrastructure Segment — can detect a 'mismatch' defect, where a connection is wired to the wrong place. 20.38 defines its four variables: mfngAllowed (20.38.1) is a configurable on/off switch; mmdefectIndication (20.38.2) is the logical AND of mfngAllowed with the CCM-mismatch and LOC defect flags, so an alarm fires only when all conditions hold; mfngAlarmTime (20.38.3, default 2.5 s) is how long a defect must persist before an alarm; and mfngResetTime (20.38.4, default 10 s) is how long it must stay clear afterward. 20.39 gives the single procedure xmitFaultAlarm() (20.39.1), which sends a Fault Alarm naming the MEP and stating the cause is a mismatch. 20.40 ties them together into a state machine that arms, waits out the alarm timer, reports once, then waits out the reset timer before it can fire again.",
+      "zh": "首先是失配故障通知生成器（Mismatch Fault Notification Generator）。某些 MEP——位于 PBB-TE（运营商骨干桥流量工程，Provider Backbone Bridge Traffic Engineering）的 MA（维护关联，Maintenance Association）或基础设施段上的那些——能检测“失配”缺陷，即连接被接到了错误的地方。20.38 定义了它的四个变量：mfngAllowed（20.38.1）是一个可配置的开关；mmdefectIndication（20.38.2）是 mfngAllowed 与 CCM 失配标志、LOC 缺陷标志的逻辑与，因此只有所有条件都满足时才告警；mfngAlarmTime（20.38.3，默认 2.5 秒）是缺陷必须持续多久才告警；mfngResetTime（20.38.4，默认 10 秒）是告警后缺陷必须保持清除多久。20.39 给出唯一的过程 xmitFaultAlarm()（20.39.1），它发送一个故障告警，注明 MEP 身份并说明原因是失配缺陷。20.40 把它们组合成一个状态机：先就绪，等过告警计时器，上报一次，再等过复位计时器才能再次触发。"
+    },
+    {
+      "type": "prose",
+      "en": "Now Linktrace — CFM's traceroute. An LTM (Linktrace Message) is launched toward a target MAC address; every bridge along the path returns an LTR (Linktrace Reply) and forwards a decremented copy onward, so the initiator learns the whole hop-by-hop path. 20.41 defines the initiator's variables: nextLTMtransID (20.41.1) is the transaction ID stamped on the next LTM and incremented each send (wrapping from 2^32 − 1 to 0); ltmReplyList (20.41.2) is the Linktrace database — a list of recently sent LTMs, each with the LTRs that came back attached to it. Each LTR entry records what the reply carried: its Flags, Reply TTL, egress identifiers, relay/ingress/egress actions, the ingress and egress MAC addresses and Port IDs, and any Sender-ID or Organization-Specific TLVs (Type/Length/Value fields).",
+      "zh": "现在讲链路跟踪——CFM 的 traceroute。一条 LTM（链路跟踪消息，Linktrace Message）朝某个目标 MAC 地址发出；路径上的每个桥都返回一条 LTR（链路跟踪应答，Linktrace Reply），并把 TTL 递减后的副本继续转发，于是发起方就能逐跳地获知整条路径。20.41 定义了发起方的变量：nextLTMtransID（20.41.1）是盖在下一条 LTM 上的事务 ID，每次发送后递增（从 2^32 − 1 回绕到 0）；ltmReplyList（20.41.2）是链路跟踪数据库——一份最近发出的 LTM 列表，每条 LTM 上挂着回来的各条 LTR。每个 LTR 条目记录应答携带的内容：Flags、Reply TTL、出口标识、中继/入口/出口动作、入口与出口的 MAC 地址和端口 ID，以及任何 Sender-ID 或组织特定 TLV（类型/长度/值字段，Type/Length/Value）。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant I as Initiator MEP\n  participant B1 as Bridge 1 (MIP)\n  participant T as Target MP\n  I->>B1: LTM (TTL=N)\n  B1-->>I: LTR (hop 1)\n  B1->>T: LTM (TTL=N-1)\n  T-->>I: LTR (target reached)\n  Note over I: ProcessLTR fills ltmReplyList",
+      "zh": "sequenceDiagram\n  participant I as 发起方 MEP\n  participant B1 as 桥 1 (MIP)\n  participant T as 目标 MP\n  I->>B1: LTM (TTL=N)\n  B1-->>I: LTR (第 1 跳)\n  B1->>T: LTM (TTL=N-1)\n  T-->>I: LTR (到达目标)\n  Note over I: ProcessLTR 填充 ltmReplyList"
+    },
+    {
+      "type": "prose",
+      "en": "How the initiator sends and collects. 20.42's procedure xmitLTM() (20.42.1) builds the LTM when management asks for a Linktrace: it sets destination and source MACs, copies nextLTMtransID into the Transaction Identifier, sets a unique Egress Identifier TLV, fills the Target MAC and TTL, sets flags, creates a new ltmReplyList entry, and increments nextLTMtransID. Replies arrive asynchronously, so 20.43 defines receive variables LTRreceived (20.43.1, a flag set when an LTR arrives) and LTRPDU (20.43.2, the buffer holding it). 20.44's procedure ProcessLTR() (20.44.1) validates each LTR — discarding it if the destination MAC doesn't match or it fails the 20.51.4 checks — and otherwise attaches it to the matching LTM entry, or counts it as 'unexpected' if no LTM matches. 20.45 wraps this into a tiny two-state receive state machine: idle, then respond by calling ProcessLTR().",
+      "zh": "发起方如何发送与收集。20.42 的过程 xmitLTM()（20.42.1）在管理层请求链路跟踪时构造 LTM：它设置目的与源 MAC、把 nextLTMtransID 拷入事务标识、设置唯一的 Egress Identifier TLV、填入目标 MAC 与 TTL、设置标志位、新建一个 ltmReplyList 条目，并递增 nextLTMtransID。应答是异步到达的，所以 20.43 定义了接收变量 LTRreceived（20.43.1，收到 LTR 时置位的标志）和 LTRPDU（20.43.2，保存该报文的缓冲区）。20.44 的过程 ProcessLTR()（20.44.1）校验每条 LTR——若目的 MAC 不匹配或未通过 20.51.4 的检查则丢弃——否则把它挂到匹配的 LTM 条目上，若无匹配的 LTM 则计为“意外”应答。20.45 把这些封装成一个极简的两态接收状态机：空闲，然后调用 ProcessLTR() 进行响应。"
+    },
+    {
+      "type": "prose",
+      "en": "The other half is the Linktrace Responder — what a bridge in the middle does when an LTM passes through. 20.46 gives its variables: nPendingLTRs (20.46.1) counts LTRs queued but not yet sent; LTMreceived (20.46.2) flags a valid incoming LTM; and LTMPDU (20.46.3) holds it. 20.47 defines the LTM Receiver's procedures. ProcessLTM() (20.47.1) first validates the LTM (20.51.3) and checks its TTL, then decides — depending on whether the LTM hits a Down MEP, an Up MEP, an Up MHF, etc. — whether to call ForwardLTM() to pass an altered copy onward and/or enqueLTR() to queue a reply. clearPendingLTRs() (20.47.2) empties the queue and resets the counter. ForwardLTM() (20.47.3) builds the forwarded copy: it decrements the TTL by 1, rewrites the Egress Identifier TLV to name itself, drops then optionally re-adds a Sender ID TLV, and copies all other fields verbatim. enqueLTR() (20.47.4) constructs the reply — addressing it back to the LTM's Original MAC, copying the Transaction Identifier, setting Reply TTL to one less than the LTM TTL, filling Relay/Ingress/Egress actions and TLVs, then incrementing nPendingLTRs.",
+      "zh": "另一半是链路跟踪响应方（Linktrace Responder）——即中间的桥在 LTM 经过时所做的事。20.46 给出其变量：nPendingLTRs（20.46.1）统计已排队但尚未发出的 LTR；LTMreceived（20.46.2）标记收到有效的 LTM；LTMPDU（20.46.3）保存它。20.47 定义 LTM 接收方的过程。ProcessLTM()（20.47.1）先校验 LTM（20.51.3）并检查其 TTL，再根据 LTM 命中的是下行 MEP、上行 MEP、上行 MHF 等情况，决定是否调用 ForwardLTM() 把修改后的副本继续转发，以及是否调用 enqueLTR() 排队一条应答。clearPendingLTRs()（20.47.2）清空队列并重置计数器。ForwardLTM()（20.47.3）构造转发副本：把 TTL 减 1、改写 Egress Identifier TLV 以标明自身、删除后可选地重新加入 Sender ID TLV，其余字段原样拷贝。enqueLTR()（20.47.4）构造应答——将其寻址回 LTM 的 Original MAC，拷贝事务标识，把 Reply TTL 设为 LTM TTL 减 1，填入中继/入口/出口动作与 TLV，然后递增 nPendingLTRs。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[LTM arrives] --> B{Valid? 20.51.3}\n  B -->|no| X[Discard]\n  B -->|yes| C{TTL & target check}\n  C --> D[enqueLTR 20.47.4]\n  C --> E{TTL>1 and not target}\n  E -->|yes| F[ForwardLTM 20.47.3]\n  D --> G[nPendingLTRs++]\n  G --> H[xmitOldestLTR 20.49.1]",
+      "zh": "flowchart TD\n  A[LTM 到达] --> B{有效? 20.51.3}\n  B -->|否| X[丢弃]\n  B -->|是| C{TTL 与目标检查}\n  C --> D[enqueLTR 20.47.4]\n  C --> E{TTL>1 且非目标}\n  E -->|是| F[ForwardLTM 20.47.3]\n  D --> G[nPendingLTRs++]\n  G --> H[xmitOldestLTR 20.49.1]"
+    },
+    {
+      "type": "prose",
+      "en": "Sending the queued replies is deliberately spread out in time so a flood of LTRs doesn't all leave at once. 20.48 defines the LTM Receiver state machine (idle → respond → ProcessLTM). 20.49's procedure xmitOldestLTR() (20.49.1) dequeues and sends one LTR, decrementing nPendingLTRs, but only if the counter is nonzero. 20.50's LTR Transmitter state machine implements the required random wait by a simple free-running 1-second timer: instead of one timer per received LTM, every LTR transmission is triggered on the next tick — and the standard explicitly allows any other implementation that meets the same delay requirement.",
+      "zh": "发送排队的应答是被刻意在时间上拉开的，这样大量 LTR 就不会一拥而出。20.48 定义 LTM 接收方状态机（空闲 → 响应 → ProcessLTM）。20.49 的过程 xmitOldestLTR()（20.49.1）出队并发送一条 LTR，递减 nPendingLTRs，但仅当计数器非零时才执行。20.50 的 LTR 发送方状态机用一个简单的自由运行的 1 秒计时器来实现所要求的随机等待：不是每条收到的 LTM 配一个计时器，而是在下一个时钟节拍统一触发所有 LTR 发送——标准还明确允许任何满足同样延迟要求的其他实现。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The golden versioning rule (20.51.4.2 / 20.51.5): a receiver always processes a CFM PDU using the lower of (1) the PDU's Version field and (2) the highest Version it knows. So a Version-1 bridge reads a Version-2 PDU as if it were Version 1 — ignoring anything newer. This is exactly why a bridge must transmit reserved bits as 0 (20.51.2) and never reject a PDU just because it has extra fields or unknown TLVs (20.51.4.2): those 'oddities' are how future versions extend the format without breaking today's hardware.",
+      "zh": "黄金版本规则（20.51.4.2 / 20.51.5）：接收方总是用以下两者中较小的版本来处理一条 CFM PDU：（1）PDU 的 Version 字段，（2）它自己所知的最高版本。因此一个 Version 1 的桥会把 Version 2 的 PDU 当作 Version 1 来读——忽略一切更新的内容。这正是为什么桥必须把保留位发为 0（20.51.2），且绝不能仅因 PDU 含有额外字段或未知 TLV 就拒收它（20.51.4.2）：这些“怪异之处”正是未来版本在不破坏今天硬件的前提下扩展格式的方式。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — versioning & identification (20.51, 20.52, 20.53)",
+        "zh": "覆盖地图——版本控制与识别（20.51、20.52、20.53）"
+      },
+      "en": "20.51 'CFM PDU validation and versioning' states the goals (20.51.1): interoperate with future versions, allow proprietary extensions, and not block future standard growth. 20.51.2 'PDU transmission' fixes the rules for what you send (fixed header exact, reserved bits = 0, no extra fixed-header fields, no reserved code points, only Organization-Specific TLVs as the compliant extension). 20.51.3 'PDU validation' frames processing as a two-pass algorithm: a Validation pass then, only on success, an Execution pass. 20.51.4 'Validation pass' makes no state changes (only counters) and splits into: 20.51.4.1 the MP Level Demultiplexer's one length check; 20.51.4.2 operations all MPs perform (ignore reserved bits, apply the lower-version rule, and the list of criteria you must NOT reject on — longer header, set reserved bits, unknown TLV Type, oversized TLV Length, missing End TLV); 20.51.4.3 length-sanity checks required of some components (header/TLV lengths not running past the frame, per-Clause-21 field validity). 20.51.5 'Execution pass' is where databases and state machines actually change, again under the lower-version rule, ignoring undefined bits/TLVs and anything past the End TLV; it also requires a bridge to survive a CFM-PDU flood without losing loop-free forwarding. 20.51.6 'Future extensions' sketches how later versions might extend the format (new header fields, new/longer TLVs, a pre-Version-0 TLV, post-End-TLV data) — all reserved for future use. 20.52 'PDU identification' explains how a received CFM PDU is matched to one MP: by flow direction, the vlan_identifier (service instance), and the MD Level — the MAID and MEP ID are NOT used; with the Shared MP address model the target can be genuinely ambiguous. 20.53 'Use of transaction IDs and sequence numbers' notes that CCM, LBM, and LTM each carry an incrementing field (driven by CCIsentCCMs, nextLBMtransID, nextLTMtransID); in theory one set per MEP, in practice these can be shared serially across MEPs — except CCIsentCCMs, which must be per-MEP because remote MEPs track each CCM stream independently.",
+      "zh": "20.51“CFM PDU 校验与版本控制”陈述了目标（20.51.1）：与未来版本互通、允许专有扩展、不阻碍标准未来的发展。20.51.2“PDU 发送”固定了发送规则（固定头精确、保留位为 0、不增加固定头字段、不发送保留码点、唯一合规扩展是组织特定 TLV）。20.51.3“PDU 校验”把处理框定为两遍算法：先校验遍，仅在成功后才执行遍。20.51.4“校验遍”不改任何状态（仅更新计数器），分为：20.51.4.1 MP 级解复用器的一项长度检查；20.51.4.2 所有 MP 都执行的操作（忽略保留位、应用较低版本规则，以及一份“不得据以拒收”的标准清单——更长的头、被置位的保留位、未知 TLV 类型、超长 TLV 长度、缺失的 End TLV）；20.51.4.3 部分组件需执行的长度合理性检查（头/TLV 长度不越出帧尾、符合第 21 章的字段有效性）。20.51.5“执行遍”才真正改动数据库与状态机，同样遵循较低版本规则，忽略未定义的位/TLV 及 End TLV 之后的内容；它还要求桥在 CFM PDU 洪泛下仍保持无环转发。20.51.6“未来扩展”勾勒了后续版本可能如何扩展格式（新增头字段、新增/加长 TLV、置于 Version 0 之前的 TLV、End TLV 之后的数据）——均保留供未来使用。20.52“PDU 识别”说明收到的 CFM PDU 如何匹配到某个 MP：依据流向、vlan_identifier（服务实例）和 MD Level——而不用 MAID 与 MEP ID；在共享 MP 地址模型下目标可能确实存在歧义。20.53“事务 ID 与序列号的使用”指出 CCM、LBM、LTM 各带一个递增字段（分别由 CCIsentCCMs、nextLBMtransID、nextLTMtransID 驱动）；理论上每个 MEP 一套，实际上可在多个 MEP 间串行共享——但 CCIsentCCMs 例外，它必须按 MEP 独立，因为远端 MEP 各自独立跟踪每条 CCM 流。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1255,
+          1256,
+          1257,
+          1258,
+          1259,
+          1260
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — generators, Linktrace, and state machines (20.38–20.50)",
+        "zh": "覆盖地图——生成器、链路跟踪与状态机（20.38–20.50）"
+      },
+      "en": "Mismatch Fault Notification Generator: 20.38 variables — mfngAllowed (20.38.1), mmdefectIndication (20.38.2, the AND of mfngAllowed, mmCCMdefect, mmLocdefect), mfngAlarmTime (20.38.3, 2.5 s), mfngResetTime (20.38.4, 10 s); 20.39 procedure xmitFaultAlarm() (20.39.1) sending a mismatch-cause Fault Alarm; 20.40 the state machine (Figure 20-14). Linktrace Initiator: 20.41 variables nextLTMtransID (20.41.1) and ltmReplyList (20.41.2); 20.42 procedure xmitLTM() (20.42.1) building the LTM; receive side 20.43 variables LTRreceived (20.43.1), LTRPDU (20.43.2); 20.44 procedure ProcessLTR() (20.44.1); 20.45 the receive state machine (Figure 20-15). Linktrace Responder: 20.46 variables nPendingLTRs (20.46.1), LTMreceived (20.46.2), LTMPDU (20.46.3); 20.47 LTM Receiver procedures — ProcessLTM() (20.47.1) with its path cases, clearPendingLTRs() (20.47.2), ForwardLTM() (20.47.3) which decrements TTL and rewrites the Egress Identifier, enqueLTR() (20.47.4) which builds the reply and increments nPendingLTRs; 20.48 the LTM Receiver state machine (Figure 20-17). LTR Transmitter: 20.49 procedure xmitOldestLTR() (20.49.1) sending one queued LTR if nPendingLTRs is nonzero; 20.50 the LTR Transmitter state machine (Figure 20-18) using a free-running 1 s timer to space out transmissions.",
+      "zh": "失配故障通知生成器：20.38 变量——mfngAllowed（20.38.1）、mmdefectIndication（20.38.2，mfngAllowed、mmCCMdefect、mmLocdefect 三者的逻辑与）、mfngAlarmTime（20.38.3，2.5 秒）、mfngResetTime（20.38.4，10 秒）；20.39 过程 xmitFaultAlarm()（20.39.1）发送以失配为原因的故障告警；20.40 状态机（图 20-14）。链路跟踪发起方：20.41 变量 nextLTMtransID（20.41.1）与 ltmReplyList（20.41.2）；20.42 过程 xmitLTM()（20.42.1）构造 LTM；接收侧 20.43 变量 LTRreceived（20.43.1）、LTRPDU（20.43.2）；20.44 过程 ProcessLTR()（20.44.1）；20.45 接收状态机（图 20-15）。链路跟踪响应方：20.46 变量 nPendingLTRs（20.46.1）、LTMreceived（20.46.2）、LTMPDU（20.46.3）；20.47 LTM 接收方过程——ProcessLTM()（20.47.1）及其路径分情况、clearPendingLTRs()（20.47.2）、ForwardLTM()（20.47.3，递减 TTL 并改写 Egress Identifier）、enqueLTR()（20.47.4，构造应答并递增 nPendingLTRs）；20.48 LTM 接收方状态机（图 20-17）。LTR 发送方：20.49 过程 xmitOldestLTR()（20.49.1）在 nPendingLTRs 非零时发送一条排队的 LTR；20.50 LTR 发送方状态机（图 20-18）用自由运行的 1 秒计时器把发送在时间上拉开。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1241,
+          1242,
+          1243,
+          1244,
+          1245,
+          1246,
+          1247,
+          1248,
+          1252,
+          1253,
+          1254,
+          1255
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Putting it together: the mismatch generator handles a niche but important fault (wrong wiring on engineered paths); Linktrace turns a one-shot management command into a self-pacing, version-tolerant traceroute across bridges; and the validation/versioning rules of 20.51–20.53 are the connective tissue that lets every CFM PDU be matched to the right MP and processed safely even as the standard grows. That completes Clause 20's protocol specification — the runnable heart of Connectivity Fault Management.",
+      "zh": "把这些串起来看：失配生成器处理一类小众但重要的故障（工程化路径上的接线错误）；链路跟踪把一次性的管理命令变成一个自我调速、对版本宽容、跨越多个桥的 traceroute；而 20.51–20.53 的校验与版本控制规则则是连接组织，让每条 CFM PDU 都能被匹配到正确的 MP，并在标准不断演进时仍能被安全处理。至此，第 20 章的协议规范——连通性故障管理可运行的核心——便完整了。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1241,
+        1242,
+        1243,
+        1244,
+        1245,
+        1246,
+        1247,
+        1248
+      ],
+      "note": "20.38–20.47: Mismatch FNG variables/procedure/state machine; Linktrace Initiator variables, xmitLTM(), receive variables/ProcessLTR()/state machine; Linktrace Responder variables and LTM Receiver ProcessLTM()."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1252,
+        1253,
+        1254,
+        1255,
+        1256,
+        1257,
+        1258,
+        1259,
+        1260
+      ],
+      "note": "20.47.2–20.53: clearPendingLTRs/ForwardLTM/enqueLTR, LTM Receiver SM, LTR Transmitter procedure/SM, CFM PDU validation & versioning, PDU identification, transaction IDs & sequence numbers."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:20.38.1",
+    "8021Q-2022:20.38.2",
+    "8021Q-2022:20.38.3",
+    "8021Q-2022:20.38.4",
+    "8021Q-2022:20.39.1",
+    "8021Q-2022:20.40",
+    "8021Q-2022:20.41.1",
+    "8021Q-2022:20.41.2",
+    "8021Q-2022:20.42.1",
+    "8021Q-2022:20.43.1",
+    "8021Q-2022:20.43.2",
+    "8021Q-2022:20.44.1",
+    "8021Q-2022:20.45",
+    "8021Q-2022:20.46.1",
+    "8021Q-2022:20.46.2",
+    "8021Q-2022:20.46.3",
+    "8021Q-2022:20.47.1",
+    "8021Q-2022:20.47.2",
+    "8021Q-2022:20.47.3",
+    "8021Q-2022:20.47.4",
+    "8021Q-2022:20.48",
+    "8021Q-2022:20.49.1",
+    "8021Q-2022:20.50",
+    "8021Q-2022:20.51.1",
+    "8021Q-2022:20.51.2",
+    "8021Q-2022:20.51.3",
+    "8021Q-2022:20.51.4",
+    "8021Q-2022:20.51.5",
+    "8021Q-2022:20.51.6",
+    "8021Q-2022:20.52",
+    "8021Q-2022:20.53"
+  ],
+  "track": "bridging-tsn"
+}

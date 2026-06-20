@@ -1,0 +1,146 @@
+{
+  "id": "bridging-tsn-59",
+  "title": {
+    "en": "The 802.1Q YANG Module Library: A Module-by-Module Tour",
+    "zh": "802.1Q YANG 模块库：逐个模块导览"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A YANG module is a machine-readable description of what a device can be configured to do and what state it reports back. YANG (Yet Another Next Generation) is the data-modelling language defined by the IETF (Internet Engineering Task Force); a network controller speaks to a bridge over a protocol such as NETCONF or RESTCONF, and the YANG modules tell both sides exactly which knobs, lists, and counters exist. Clause 48.6 of IEEE Std 802.1Q-2022 ships the full library of these modules so that any standards-compliant bridge can be managed by any standards-compliant tool. This lesson walks every module in the library, naming the exact subclause where each one lives.",
+      "zh": "YANG 模块是一份机器可读的描述，说明一台设备可以被配置成什么样、又会上报哪些状态。YANG（Yet Another Next Generation，又一代数据建模语言）是 IETF（互联网工程任务组）定义的数据建模语言；网络控制器通过 NETCONF 或 RESTCONF 之类的协议与网桥对话，而 YANG 模块则明确告诉双方究竟存在哪些可调参数、列表和计数器。IEEE Std 802.1Q-2022 的第 48.6 条提供了这些模块的完整库，使得任何符合标准的网桥都能被任何符合标准的工具管理。本课逐个走查库中的每个模块，并指明每个模块所在的精确子条款编号。"
+    },
+    {
+      "type": "prose",
+      "en": "The library is layered like a software dependency graph. At the bottom sit pure type modules — collections of reusable data types with no configuration of their own. ieee802-types (48.6.1) holds generic IEEE 802 types such as the canonical MAC-address string and LLDP chassis/port identifier types. ieee802-dot1q-types (48.6.2) adds bridge-specific types: VLAN-tag identities (Customer VLAN and Service VLAN), the transmission-selection-algorithm identities (strict priority, credit-based shaper, enhanced transmission selection, asynchronous traffic shaping), and helpers like priority-type (0..7) and VLAN-ID range strings. ieee802-dot1q-tsn-types (48.6.3) carries the Time-Sensitive Networking (TSN) building blocks: the Stream ID type, interface-identifier groupings, and the talker/listener configuration groupings shared across TSN modules.",
+      "zh": "这个库像软件的依赖关系图一样分层。最底层是纯类型模块——它们只是可复用数据类型的集合，本身不含任何配置。ieee802-types（48.6.1）收纳通用的 IEEE 802 类型，例如规范格式的 MAC 地址字符串以及 LLDP 机箱/端口标识符类型。ieee802-dot1q-types（48.6.2）补充网桥专用类型：VLAN 标签身份（客户 VLAN 与服务 VLAN）、传输选择算法身份（严格优先级、基于信用的整形器、增强传输选择、异步流量整形），以及 priority-type（0..7）和 VLAN-ID 范围字符串等辅助类型。ieee802-dot1q-tsn-types（48.6.3）承载时间敏感网络（TSN）的构件：流标识符类型、接口标识分组，以及在各 TSN 模块间共享的发话者/监听者配置分组。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy rule of thumb: modules whose names end in -types never configure anything. They are dictionaries of reusable definitions (typedefs, identities, groupings) that the real configuration modules import. Three of the twelve modules in this clause — 48.6.1, 48.6.2, 48.6.3, plus 48.6.7 — are exactly these type dictionaries.",
+      "zh": "一个实用的判断窍门：名字以 -types 结尾的模块从不配置任何东西。它们是可复用定义（typedef、identity、grouping）的词典，供真正的配置模块导入。本条款十二个模块中有三个——48.6.1、48.6.2、48.6.3，再加上 48.6.7——正是这类类型词典。"
+    },
+    {
+      "type": "prose",
+      "en": "On top of the type dictionaries sit the three core bridge-configuration modules. ieee802-dot1q-bridge (48.6.4) is the keystone: a single model that describes Two-Port MAC Relays, Customer VLAN Bridges, and Provider Bridges, exposing features such as ingress filtering, extended filtering services, and port-and-protocol-based VLAN classification. ieee802-dot1q-tpmr (48.6.5) augments that base specifically for the Two-Port MAC Relay (TPMR) — a minimal two-port bridge. ieee802-dot1q-pb (48.6.6) augments the base for Provider Bridges (PB), the bridges that carry many customers' VLANs across a service-provider network. Both 48.6.5 and 48.6.6 import 48.6.4 rather than redefining it — a clean reuse pattern.",
+      "zh": "在类型词典之上，是三个核心的网桥配置模块。ieee802-dot1q-bridge（48.6.4）是基石：单一模型即可描述两端口 MAC 中继、客户 VLAN 网桥和提供商网桥，并暴露入口过滤、扩展过滤服务、基于端口与协议的 VLAN 分类等功能特性。ieee802-dot1q-tpmr（48.6.5）专门为两端口 MAC 中继（TPMR，一种最小化的两端口网桥）扩充该基础模型。ieee802-dot1q-pb（48.6.6）则为提供商网桥（PB，在服务提供商网络中承载众多客户 VLAN 的网桥）扩充基础模型。48.6.5 与 48.6.6 都是导入 48.6.4 而非重新定义它——这是一种干净的复用模式。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  T1[\"ieee802-types\\n48.6.1\"] --> B[\"dot1q-bridge\\n48.6.4\"]\n  T2[\"dot1q-types\\n48.6.2\"] --> B\n  T3[\"dot1q-tsn-types\\n48.6.3\"] --> SFSG\n  B --> TPMR[\"dot1q-tpmr\\n48.6.5\"]\n  B --> PB[\"dot1q-pb\\n48.6.6\"]\n  B --> SFSG[\"stream-filters-gates\\n48.6.11\"]\n  SFSG --> ATS[\"dot1q-ats\\n48.6.12\"]",
+      "zh": "flowchart TD\n  T1[\"ieee802-types\\n48.6.1\"] --> B[\"dot1q-bridge\\n48.6.4\"]\n  T2[\"dot1q-types\\n48.6.2\"] --> B\n  T3[\"dot1q-tsn-types\\n48.6.3\"] --> SFSG\n  B --> TPMR[\"两端口中继\\n48.6.5\"]\n  B --> PB[\"提供商网桥\\n48.6.6\"]\n  B --> SFSG[\"流过滤器与门\\n48.6.11\"]\n  SFSG --> ATS[\"异步整形\\n48.6.12\"]"
+    },
+    {
+      "type": "prose",
+      "en": "The next family handles Connectivity Fault Management (CFM) — the capabilities for detecting, verifying, and isolating connectivity failures across networks run by several independent operators. ieee802-dot1q-cfm-types (48.6.7) is the CFM type dictionary. ieee802-dot1q-cfm (48.6.8) is the main CFM model, defining the maintenance domains, maintenance associations, and end/intermediate points used to monitor reachability. ieee802-dot1q-cfm-bridge (48.6.9) is the small glue module that binds the generic CFM model onto an actual 802.1Q bridge's ports. ieee802-dot1q-cfm-alarm (48.6.10) augments CFM with alarm objects so that a fault crossing a threshold can raise a notification.",
+      "zh": "下一个家族处理连接故障管理（CFM）——即在由多个独立运营商运行的网络中检测、验证和隔离连接故障的能力。ieee802-dot1q-cfm-types（48.6.7）是 CFM 的类型词典。ieee802-dot1q-cfm（48.6.8）是主 CFM 模型，定义用于监测可达性的维护域、维护关联以及端点/中间点。ieee802-dot1q-cfm-bridge（48.6.9）是把通用 CFM 模型绑定到实际 802.1Q 网桥端口上的小型黏合模块。ieee802-dot1q-cfm-alarm（48.6.10）为 CFM 扩充告警对象，使得某项故障越过阈值时能够触发通知。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the recurring three-part shape inside CFM: a -types dictionary (48.6.7), a generic model (48.6.8), and a thin -bridge binding module (48.6.9), with an optional -alarm augmentation (48.6.10) layered on top. Splitting a feature into generic logic plus a bridge-specific binding lets the same CFM model be reused outside 802.1Q.",
+      "zh": "请留意 CFM 内部反复出现的三段式结构：一个 -types 词典（48.6.7）、一个通用模型（48.6.8）、一个薄薄的 -bridge 绑定模块（48.6.9），再叠加一个可选的 -alarm 扩充（48.6.10）。把一项功能拆成通用逻辑加上针对网桥的绑定，可以让同一个 CFM 模型在 802.1Q 之外也能被复用。"
+    },
+    {
+      "type": "prose",
+      "en": "The final pair serves the per-stream policing side of TSN. ieee802-dot1q-stream-filters-gates (48.6.11) manages Stream Filters and Stream Gates — the objects that match incoming frames to a stream and then permit or block them according to a time-driven gate state (this is the per-stream filtering and policing engine, also called PSFP). ieee802-dot1q-ats (48.6.12) manages Asynchronous Traffic Shaping (ATS), a token-bucket-style shaper that smooths bursts without needing a network-wide synchronized clock; it imports the stream-filters-gates module (48.6.11) because ATS scheduling attaches to the same stream-gate machinery.",
+      "zh": "最后一对模块服务于 TSN 中按流监管的一侧。ieee802-dot1q-stream-filters-gates（48.6.11）管理流过滤器与流门——这些对象先把进入的帧匹配到某条流，再依据受时间驱动的门状态放行或阻断它们（这就是按流过滤与监管引擎，也称 PSFP）。ieee802-dot1q-ats（48.6.12）管理异步流量整形（ATS），一种类似令牌桶的整形器，无需全网同步时钟即可平滑突发流量；它导入流过滤器与门模块（48.6.11），因为 ATS 的调度挂接在同一套流门机制之上。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"10\" width=\"420\" height=\"30\"/><text x=\"220\" y=\"30\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Type dictionaries: 48.6.1 / 48.6.2 / 48.6.3</text><rect x=\"10\" y=\"50\" width=\"420\" height=\"30\"/><text x=\"220\" y=\"70\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Core bridges: 48.6.4 base + 48.6.5 TPMR + 48.6.6 PB</text><rect x=\"10\" y=\"90\" width=\"205\" height=\"30\"/><text x=\"112\" y=\"110\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">CFM: 48.6.7-48.6.10</text><rect x=\"225\" y=\"90\" width=\"205\" height=\"30\"/><text x=\"327\" y=\"110\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Stream policing: 48.6.11 / 48.6.12</text></svg>",
+      "caption": {
+        "en": "The twelve modules of Clause 48.6, grouped by role: reusable types at the base, the three core bridge models in the middle, and the two feature families (fault management and per-stream policing) on top.",
+        "zh": "第 48.6 条的十二个模块，按职责分组：底层是可复用类型，中层是三个核心网桥模型，顶层是两个功能家族（故障管理与按流监管）。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: all twelve YANG modules with their exact subclauses",
+        "zh": "覆盖地图：十二个 YANG 模块及其精确子条款"
+      },
+      "en": "Type dictionaries — 48.6.1 ieee802-types: generic IEEE 802 types (MAC-address pattern, chassis/port-id subtypes for LLDP). 48.6.2 ieee802-dot1q-types: VLAN-type identities (c-vlan, s-vlan), transmission-selection-algorithm identities, name-type, port-number-type, priority-type (0..7), vid-range-type. 48.6.3 ieee802-dot1q-tsn-types: stream-id-type and the talker/listener/interface groupings for TSN configuration. Core bridge models — 48.6.4 ieee802-dot1q-bridge: the unified model for Two-Port MAC Relays, Customer VLAN Bridges, and Provider Bridges, with features ingress-filtering, extended-filtering-services, port-and-protocol-based-vlan, flow-filtering, simple/flexible bridge ports. 48.6.5 ieee802-dot1q-tpmr: Two-Port MAC Relay augmentation of 48.6.4. 48.6.6 ieee802-dot1q-pb: Provider Bridge augmentation of 48.6.4. Connectivity Fault Management — 48.6.7 ieee802-dot1q-cfm-types: CFM type dictionary (e.g. unicast-mac-address-type). 48.6.8 ieee802-dot1q-cfm: the generic CFM model. 48.6.9 ieee802-dot1q-cfm-bridge: binds CFM to an 802.1Q bridge. 48.6.10 ieee802-dot1q-cfm-alarm: augments CFM with alarm objects. Per-stream policing — 48.6.11 ieee802-dot1q-stream-filters-gates: Stream Filters and Stream Gates (PSFP). 48.6.12 ieee802-dot1q-ats: Asynchronous Traffic Shaping, importing 48.6.11.",
+      "zh": "类型词典——48.6.1 ieee802-types：通用 IEEE 802 类型（MAC 地址模式、用于 LLDP 的机箱/端口标识符子类型）。48.6.2 ieee802-dot1q-types：VLAN 类型身份（c-vlan、s-vlan）、传输选择算法身份、name-type、port-number-type、priority-type（0..7）、vid-range-type。48.6.3 ieee802-dot1q-tsn-types：stream-id-type 以及用于 TSN 配置的发话者/监听者/接口分组。核心网桥模型——48.6.4 ieee802-dot1q-bridge：统一描述两端口 MAC 中继、客户 VLAN 网桥与提供商网桥的模型，含入口过滤、扩展过滤服务、基于端口与协议的 VLAN、流过滤、简单/灵活网桥端口等特性。48.6.5 ieee802-dot1q-tpmr：对 48.6.4 的两端口 MAC 中继扩充。48.6.6 ieee802-dot1q-pb：对 48.6.4 的提供商网桥扩充。连接故障管理——48.6.7 ieee802-dot1q-cfm-types：CFM 类型词典（如 unicast-mac-address-type）。48.6.8 ieee802-dot1q-cfm：通用 CFM 模型。48.6.9 ieee802-dot1q-cfm-bridge：将 CFM 绑定到 802.1Q 网桥。48.6.10 ieee802-dot1q-cfm-alarm：为 CFM 扩充告警对象。按流监管——48.6.11 ieee802-dot1q-stream-filters-gates：流过滤器与流门（PSFP）。48.6.12 ieee802-dot1q-ats：异步流量整形，并导入 48.6.11。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1730,
+          1735,
+          1749,
+          1768,
+          1793,
+          1798,
+          1801,
+          1812,
+          1831,
+          1839,
+          1841,
+          1847
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Two practical notes close the tour. First, each module carries a revision history right at the top, recording the IEEE amendment that introduced or last changed it (for example, the CFM modules trace back to 802.1Qcx and the ATS module to 802.1Qcr). A controller reads the most recent revision date to confirm it is talking to a model it understands. Second, the standard grants a copyright release: implementers may freely reproduce these YANG modules for their intended purpose, and an ASCII copy of every module is attached to the PDF and mirrored on the IEEE 802.1 website. That openness is what lets the same twelve modules show up unchanged inside vendor tools, open-source NETCONF servers, and test harnesses alike.",
+      "zh": "用两点实用说明为本次导览收尾。第一，每个模块在开头都带有修订历史，记录引入它或最近一次修改它的 IEEE 修正案（例如 CFM 模块可追溯到 802.1Qcx，ATS 模块可追溯到 802.1Qcr）。控制器读取最新的修订日期，即可确认自己正在与一个它能理解的模型对话。第二，标准给予版权豁免：实现者可以为其预期用途自由复制这些 YANG 模块，并且每个模块的 ASCII 文本都附在 PDF 中，同时在 IEEE 802.1 网站上镜像提供。正是这种开放性，使得同样的十二个模块能够原封不动地出现在厂商工具、开源 NETCONF 服务器以及测试框架之中。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1730,
+        1731,
+        1732,
+        1733,
+        1734,
+        1735,
+        1736
+      ],
+      "note": "48.6, 48.6.1 ieee802-types, 48.6.2 ieee802-dot1q-types start; copyright-release footnotes; VLAN-type and transmission-selection-algorithm identities."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1749,
+        1750,
+        1768,
+        1769,
+        1793,
+        1798
+      ],
+      "note": "48.6.3 tsn-types (stream-id-type, group-interface-id), 48.6.4 dot1q-bridge (features), 48.6.5 tpmr, 48.6.6 pb module headers."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1801,
+        1812,
+        1831,
+        1839,
+        1841,
+        1847
+      ],
+      "note": "48.6.7 cfm-types, 48.6.8 cfm, 48.6.9 cfm-bridge, 48.6.10 cfm-alarm, 48.6.11 stream-filters-gates, 48.6.12 ats module headers and descriptions."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:48.6.1",
+    "8021Q-2022:48.6.2",
+    "8021Q-2022:48.6.3",
+    "8021Q-2022:48.6.4",
+    "8021Q-2022:48.6.5",
+    "8021Q-2022:48.6.6",
+    "8021Q-2022:48.6.7",
+    "8021Q-2022:48.6.8",
+    "8021Q-2022:48.6.9",
+    "8021Q-2022:48.6.10",
+    "8021Q-2022:48.6.11",
+    "8021Q-2022:48.6.12"
+  ],
+  "track": "bridging-tsn"
+}

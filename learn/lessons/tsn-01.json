@@ -1,0 +1,183 @@
+{
+  "id": "tsn-01",
+  "title": {
+    "en": "Reserving Bandwidth for Streams: FQTSS (Clause 34) and the Stream Reservation Protocol (Clause 35)",
+    "zh": "为数据流预留带宽：FQTSS（第 34 章）与流预留协议（第 35 章）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Imagine a live concert where the giant screen must stay perfectly in sync with the sound on stage. The video and audio travel across a network as a 'time-sensitive stream' — a one-way flow from a single source (the Talker) to one or more destinations (Listeners) that needs a bounded, predictable delay. Two cooperating mechanisms make this possible in a bridged (Ethernet) network. Clause 34, FQTSS (Forwarding and Queuing Enhancements for time-sensitive streams), is the toolbox a bridge uses to set aside bandwidth on each outbound port. Clause 35, SRP (the Stream Reservation Protocol), is the signaling that lets Talkers and Listeners actually request and lock in that bandwidth end to end. Clause 34.1 frames the whole picture: an SR class (stream reservation class) is simply a traffic class whose bandwidth can be reserved for such streams.",
+      "zh": "想象一场现场演唱会，巨型屏幕必须与舞台上的声音保持完美同步。视频和音频以“时间敏感流”的形式穿越网络——这是一条从单一源头（Talker，发送者）流向一个或多个目的地（Listener，接收者）的单向数据流，要求时延有界且可预测。在桥接（以太网）网络中，两套协同工作的机制让这成为可能。第 34 章的 FQTSS（面向时间敏感流的转发与排队增强）是桥设备在每个出端口上预留带宽所用的工具箱；第 35 章的 SRP（流预留协议）则是让 Talker 和 Listener 端到端地请求并锁定带宽的信令。第 34.1 节勾勒出全貌：SR 类（流预留类）不过是一种带宽可被这类流预留的流量类别。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  T[Talker source] -->|stream| B1[Bridge]\n  B1 --> B2[Bridge]\n  B2 -->|stream| L[Listener]\n  L -.Listener Ready.-> B2\n  B2 -.->|reserve| B1\n  B1 -.->|reserve| T",
+      "zh": "flowchart LR\n  T[Talker 发送者] -->|流| B1[桥]\n  B1 --> B2[桥]\n  B2 -->|流| L[Listener 接收者]\n  L -.Listener Ready.-> B2\n  B2 -.->|预留| B1\n  B1 -.->|预留| T"
+    },
+    {
+      "type": "prose",
+      "en": "Before a bridge can reserve anything, it must know where the cooperating region ends. Clause 34.2 (Detection of SRP domains) explains that a bridge watches SRP activity: if a port receives SRP registrations on a given priority, it is talking to an SRP-capable neighbor. A per-port, per-SR-class flag called SRPdomainBoundaryPort marks whether the port sits at the edge of the domain (where priorities entering it must be regenerated) or in its core. Clause 35.1.4 gives the formal definition of an SRP domain: a set of stations and links where everyone uses the credit-based shaper for the SR class, everyone supports SRP, and everyone agrees on the same priority value for that class. A boundary appears wherever neighbors disagree on the priority.",
+      "zh": "在桥能预留任何资源之前，它必须知道协作区域的边界在哪里。第 34.2 节（SRP 域的探测）说明桥会观察 SRP 活动：若某端口在某个优先级上收到 SRP 注册，就说明它正与支持 SRP 的邻居通信。一个按端口、按 SR 类设置的标志 SRPdomainBoundaryPort 标记该端口是位于域的边缘（进入此端口的优先级须被重新生成）还是位于域的核心。第 35.1.4 节给出 SRP 域的正式定义：一组站点与链路，其中所有成员对该 SR 类都使用基于信用的整形器（credit-based shaper）、都支持 SRP、并对该类约定相同的优先级值。只要邻居们对优先级意见不一致，边界就出现在那里。"
+    },
+    {
+      "type": "prose",
+      "en": "How much bandwidth can be reserved? Clause 34.3 defines a set of per-port, per-traffic-class bandwidth availability parameters: portTransmitRate (the link rate), deltaBandwidth(N) (a percentage that may be reserved), adminIdleSlope(N) (bandwidth requested by management when SRP is not running), operIdleSlope(N) (the bandwidth actually reserved right now), classMeasurementInterval(N) (the window over which traffic is measured), and a Boolean lockClassBandwidth(N) that picks how deltaBandwidth is interpreted. Clause 34.3.1 covers the default 'false' case: deltaBandwidth is a true delta — unused reservation in a higher-priority queue can be borrowed by lower-priority queues, and the defaults cap total reservation at 75% so at least 25% stays for best-effort traffic. Clause 34.3.2 covers 'true': each class gets a hard, independent cap that lower classes cannot borrow. Clause 34.3.3 explains management of these values and the bandwidthAvailabilityChanged signal that fires when the link rate or deltaBandwidth changes — for example when a wireless link's rate drops — prompting SRP to recompute which streams still fit.",
+      "zh": "能预留多少带宽？第 34.3 节定义了一组按端口、按流量类的带宽可用性参数：portTransmitRate（链路速率）、deltaBandwidth(N)（可预留的百分比）、adminIdleSlope(N)（SRP 未运行时由管理面请求的带宽）、operIdleSlope(N)（当前实际预留的带宽）、classMeasurementInterval(N)（测量流量的时间窗口），以及布尔值 lockClassBandwidth(N)，用于决定 deltaBandwidth 的解释方式。第 34.3.1 节讲解默认的 false 情形：此时 deltaBandwidth 是真正的“增量”——高优先级队列未用完的预留可被低优先级队列借用，默认值将总预留上限设为 75%，从而至少留 25% 给尽力而为流量。第 34.3.2 节讲解 true 情形：每个类获得一个独立的硬上限，低优先级类无法借用。第 34.3.3 节说明这些值的管理，以及当链路速率或 deltaBandwidth 变化时（例如无线链路速率下降时）触发的 bandwidthAvailabilityChanged 信号，它促使 SRP 重新计算哪些流仍然放得下。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A stream's TSpec (traffic specification) only describes the layer-2 payload (MaxFrameSize and MaxIntervalFrames). Clause 34.4 reminds us that the wire consumes more than the payload. To get the real reservation, a bridge adds perFrameOverhead — VLAN/security tags, MAC header and trailer plus padding, and physical-layer preamble and inter-frame gaps: actualBandwidth = (perFrameOverhead + assumedPayloadSize) x maxFrameRate. This is why two links carrying the same stream can reserve different amounts.",
+      "zh": "一条流的 TSpec（流量规格）只描述二层负载（MaxFrameSize 与 MaxIntervalFrames）。第 34.4 节提醒我们：线路上消耗的不止是负载。要得到真实的预留量，桥需加上 perFrameOverhead（每帧开销）——VLAN/安全标签、MAC 头与尾及填充、以及物理层前导码与帧间隔：actualBandwidth =（perFrameOverhead + assumedPayloadSize）× maxFrameRate。这正是为什么承载同一条流的两条链路可能预留不同的带宽量。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 34.5 (Default SR class configuration) gives recommended starting points so devices interoperate out of the box. SR class A defaults to priority 3 with a 125 microsecond classMeasurementInterval; SR class B defaults to priority 2 with 250 microseconds. The recommended priority-to-traffic-class mappings ensure that SR-class traffic lands on queues using the credit-based shaper, that those queues sit above strict-priority queues, and that at least one strict-priority queue remains for best-effort traffic. Clause 34.6 then specifies transmission selection — the act of shaping each stream's frames to the reserved rate. The credit-based shaper algorithm (34.6.1) must be supported for SR classes A and B; the strict priority algorithm (34.6.2) and scheduled traffic (34.6.3) may also be used.",
+      "zh": "第 34.5 节（默认 SR 类配置）给出推荐的起点，使设备开箱即可互通。SR 类 A 默认使用优先级 3、classMeasurementInterval 为 125 微秒；SR 类 B 默认使用优先级 2、为 250 微秒。推荐的优先级到流量类映射确保：SR 类流量落到使用基于信用整形器的队列上，这些队列位于严格优先级队列之上，且至少保留一个严格优先级队列给尽力而为流量。第 34.6 节随后规定传输选择（transmission selection）——即把每条流的帧整形到预留速率的动作。SR 类 A 与 B 必须支持基于信用的整形器算法（34.6.1）；也可使用严格优先级算法（34.6.2）与计划流量（scheduled traffic，34.6.3）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 360 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"20\" width=\"60\" height=\"24\"/><rect x=\"10\" y=\"54\" width=\"60\" height=\"24\"/><rect x=\"10\" y=\"88\" width=\"60\" height=\"24\"/><text x=\"40\" y=\"36\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">stream 1</text><text x=\"40\" y=\"70\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">stream 2</text><text x=\"40\" y=\"104\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">stream 3</text><line x1=\"70\" y1=\"32\" x2=\"150\" y2=\"60\"/><line x1=\"70\" y1=\"66\" x2=\"150\" y2=\"66\"/><line x1=\"70\" y1=\"100\" x2=\"150\" y2=\"72\"/><rect x=\"150\" y=\"50\" width=\"70\" height=\"34\"/><text x=\"185\" y=\"70\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">SR class queue</text><line x1=\"220\" y1=\"66\" x2=\"270\" y2=\"66\"/><rect x=\"270\" y=\"50\" width=\"80\" height=\"34\"/><text x=\"310\" y=\"65\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">transmission</text><text x=\"310\" y=\"77\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">selection</text></svg>",
+      "caption": {
+        "en": "A Talker's queuing model (Clause 34.6.1): each per-stream queue is shaped to its own reserved rate, then merges into the per-traffic-class SR queue, which transmission selection drains at the summed idleSlope. A Talker behaves like a single-port bridge.",
+        "zh": "Talker 的排队模型（第 34.6.1 节）：每条流各自的队列被整形到自身的预留速率，再汇入按流量类划分的 SR 队列，传输选择以各流 idleSlope 之和的速率将其排空。Talker 的行为如同一个单端口的桥。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now to the signaling itself. Clause 35.1 introduces MSRP (the Multiple Stream Registration Protocol), the SRP component that carries stream declarations. SRP actually leans on three protocols — MMRP and MVRP register MAC/VLAN membership, while MSRP carries the stream reservations. Unlike its siblings, MSRP attributes can be combined, altered, or dropped by bridges as they propagate. Clause 35.1.1 (MSRP and Shared Media) explains a subtlety: classic half-duplex CSMA/CD cannot guarantee latency and is unsupported, but media with a controlling node — such as a Wi-Fi access point or an EPON OLT — are supported via a Designated MSRP Node (DMN) that owns resource allocation on that medium. Clause 35.1.2 describes end-station behavior: Talkers declare a Talker Advertise (resources look available) or Talker Failed (blocked somewhere), while Listeners reply with Listener Ready, Listener Ready Failed (some listeners fine, others not), or Listener Asking Failed (none can receive). Clause 35.1.3 covers bridges, which register declarations, propagate Talker declarations broadly but Listener declarations only back toward the matching Talker, and treat a declaration as 'blocked' on any port where spanning tree is not Forwarding (35.1.3.1).",
+      "zh": "现在来看信令本身。第 35.1 节引入 MSRP（多流注册协议），它是承载流声明的 SRP 组件。SRP 实际上依赖三个协议——MMRP 与 MVRP 注册 MAC/VLAN 成员关系，而 MSRP 承载流预留。与其同类不同，MSRP 属性在传播途中可被桥合并、修改或丢弃。第 35.1.1 节（MSRP 与共享介质）解释了一个微妙之处：经典的半双工 CSMA/CD 无法保证时延，因此不被支持；但带有控制节点的介质——如 Wi-Fi 接入点或 EPON 的 OLT——通过一个指定 MSRP 节点（DMN）得到支持，由它掌管该介质上的资源分配。第 35.1.2 节描述端站行为：Talker 声明 Talker Advertise（资源看似可用）或 Talker Failed（某处受阻），Listener 回应 Listener Ready、Listener Ready Failed（部分接收者正常、其余不行）或 Listener Asking Failed（无人能接收）。第 35.1.3 节讲述桥：桥注册声明，把 Talker 声明广泛传播，但 Listener 声明仅朝匹配的 Talker 方向传播，并在任何生成树状态非 Forwarding 的端口上将声明视为“受阻”（35.1.3.1）。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant T as Talker\n  participant B as Bridge\n  participant L as Listener\n  T->>B: Talker Advertise (TSpec)\n  B->>L: Talker Advertise (relayed)\n  L->>B: Listener Ready\n  B->>T: Listener Ready (reserved)\n  Note over B: reserve bandwidth, set FDB",
+      "zh": "sequenceDiagram\n  participant T as Talker\n  participant B as 桥\n  participant L as Listener\n  T->>B: Talker Advertise（TSpec）\n  B->>L: Talker Advertise（转发）\n  L->>B: Listener Ready\n  B->>T: Listener Ready（已预留）\n  Note over B: 预留带宽、设置转发数据库"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 35.2 defines the MSRP application in detail. Clause 35.2.1 lists the internal state variables — Port Media Type (Access Control Port vs Non-DMN shared-medium port), Direction (Talker or Listener), Declaration Type (the five flavors above), and a long list of SRP parameters such as talkerPruning, streamAge (older streams rank higher), msrpEnabledStatus, msrpMaxFanInPorts, SRPdomainBoundaryPort, and SR_PVID. Clause 35.2.2 defines the MRP elements carried in MSRPDUs (MSRP protocol data units): the application address, EtherType, ProtocolVersion (MSRPv0 original vs MSRPv1 enhanced attribute types), and the FirstValue field formats — StreamID, DataFrameParameters, TSpec, PriorityAndRank, Accumulated Latency, FailureInformation, plus the Domain attribute (SRclassID, SRclassPriority, SRclassVID) that establishes domain boundaries.",
+      "zh": "第 35.2 节详细定义 MSRP 应用。第 35.2.1 节列出内部状态变量——Port Media Type（接入控制端口与非 DMN 共享介质端口）、Direction（Talker 或 Listener）、Declaration Type（上述五种）以及一长串 SRP 参数，如 talkerPruning、streamAge（越早建立的流优先级越高）、msrpEnabledStatus、msrpMaxFanInPorts、SRPdomainBoundaryPort 与 SR_PVID。第 35.2.2 节定义 MSRPDU（MSRP 协议数据单元）中承载的 MRP 元素：应用地址、EtherType、ProtocolVersion（MSRPv0 原始与 MSRPv1 增强属性类型）以及 FirstValue 字段格式——StreamID、DataFrameParameters、TSpec、PriorityAndRank、Accumulated Latency、FailureInformation，外加用于确立域边界的 Domain 属性（SRclassID、SRclassPriority、SRclassVID）。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining subclauses tie the machinery together. Clause 35.2.3 (Provision and support of Stream registration service) defines the service primitives a Talker and Listener use — REGISTER_STREAM / DEREGISTER_STREAM to advertise or withdraw a stream, and REGISTER_ATTACH / DEREGISTER_ATTACH to request or release reception — each translated into MRP MAD_Join/MAD_Leave operations. Clause 35.2.4 (MSRP Attribute Propagation) is the heart of the bridge logic: it ranks streams by importance (35.2.4.1, using Rank then streamAge then StreamID), computes per-stream bandwidth including overhead and shared-media doubling (35.2.4.2), and propagates Talker and Listener attributes — failing a Talker Advertise to Talker Failed when bandwidth runs out or when crossing a domain boundary, merging multiple Listeners' declarations, updating the Dynamic Reservation Entries and operIdleSlope, and translating between MSRPv0 and MSRPv1 attribute formats. Clause 35.2.5 adds an optional Dropped Stream Frame Counter. Clause 35.2.6 (Encoding) describes how a changed attribute on a port is treated as an implicit leave-then-rejoin so only one Talker (and one Listener) declaration per StreamID exists per port. Clause 35.2.7 sets the implementation requirement to keep state for all stream-reservation attribute values, with the supported count stated in the PICS (protocol implementation conformance statement).",
+      "zh": "其余子条款把整套机制串联起来。第 35.2.3 节（流注册服务的提供与支持）定义 Talker 与 Listener 使用的服务原语——REGISTER_STREAM / DEREGISTER_STREAM 用于发布或撤回一条流，REGISTER_ATTACH / DEREGISTER_ATTACH 用于请求或释放接收——每个原语都转换为 MRP 的 MAD_Join/MAD_Leave 操作。第 35.2.4 节（MSRP 属性传播）是桥逻辑的核心：它按重要性给流排序（35.2.4.1，先看 Rank，再看 streamAge，最后看 StreamID），计算含开销与共享介质翻倍的每流带宽（35.2.4.2），并传播 Talker 与 Listener 属性——在带宽耗尽或跨越域边界时把 Talker Advertise 降为 Talker Failed，合并多个 Listener 的声明，更新动态预留条目与 operIdleSlope，并在 MSRPv0 与 MSRPv1 属性格式间转换。第 35.2.5 节增加了可选的丢弃流帧计数器。第 35.2.6 节（编码）说明端口上某属性变化时如何被当作隐式的“先离开再重新加入”，从而保证每端口每 StreamID 只存在一个 Talker（及一个 Listener）声明。第 35.2.7 节规定实现须为所有流预留属性值保留状态，并在 PICS（协议实现一致性声明）中说明所支持的数量。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: exact clause numbers",
+        "zh": "覆盖地图：精确条款编号"
+      },
+      "en": "Clause 34 (FQTSS): 34.1 Overview (SR class definition, the five tools). 34.2 Detection of SRP domains (SRPdomainBoundaryPort, edge vs core). 34.3 Bandwidth availability parameters: 34.3.1 deltaBandwidth when lockClassBandwidth is false (borrowable delta, 75% default cap); 34.3.2 deltaBandwidth when lockClassBandwidth is true (hard independent cap); 34.3.3 Bandwidth availability parameter management (admin vs oper IdleSlope, bandwidthAvailabilityChanged). 34.4 Deriving actual bandwidth from MSDU size (perFrameOverhead, Equations 34-1..34-3). 34.5 Default SR class configuration (class A priority 3 / 125 us, class B priority 2 / 250 us; Tables 34-1, 34-2). 34.6 Transmission selection: 34.6.1 Credit-based shaper (Talker and Listener behavior, Figure 34-1); 34.6.2 Strict priority (operIdleSlope reserves queue space); 34.6.3 Scheduled traffic (centralized vs distributed, TSpecTimeAware TLV). Clause 35 (SRP): 35.1 MSRP overview: 35.1.1 MSRP and Shared Media (DMN); 35.1.2 Behavior of end stations (35.1.2.1 Talkers, 35.1.2.2 Listeners — the five declaration types); 35.1.3 Behavior of Bridges (35.1.3.1 Blocked Declarations); 35.1.4 SRP domains and status parameters. 35.2 Definition of the MSRP application: 35.2.1 Internal state variables (Port Media Type, Direction, Declaration Type, SRP parameters); 35.2.2 MRP elements (addresses, ProtocolVersion, FirstValue / Domain attributes); 35.2.3 Stream registration service primitives; 35.2.4 MSRP Attribute Propagation (importance, bandwidth calc, Talker/Listener propagation, ProtocolVersion translation, MaxLatency); 35.2.5 Operational reporting and statistics (Dropped Stream Frame Counter); 35.2.6 Encoding (implicit leave/rejoin on change); 35.2.7 Attribute value support requirements (PICS).",
+      "zh": "第 34 章（FQTSS）：34.1 概述（SR 类定义、五件工具）。34.2 SRP 域探测（SRPdomainBoundaryPort、边缘对核心）。34.3 带宽可用性参数：34.3.1 lockClassBandwidth 为 false 时的 deltaBandwidth（可借用的增量，75% 默认上限）；34.3.2 为 true 时（独立的硬上限）；34.3.3 带宽可用性参数管理（admin 对 oper IdleSlope、bandwidthAvailabilityChanged）。34.4 由 MSDU 大小推导实际带宽（perFrameOverhead、式 34-1..34-3）。34.5 默认 SR 类配置（A 类优先级 3 / 125 微秒，B 类优先级 2 / 250 微秒；表 34-1、34-2）。34.6 传输选择：34.6.1 基于信用的整形器（Talker 与 Listener 行为、图 34-1）；34.6.2 严格优先级（operIdleSlope 预留队列空间）；34.6.3 计划流量（集中式对分布式、TSpecTimeAware TLV）。第 35 章（SRP）：35.1 MSRP 概述：35.1.1 MSRP 与共享介质（DMN）；35.1.2 端站行为（35.1.2.1 Talker、35.1.2.2 Listener——五种声明类型）；35.1.3 桥的行为（35.1.3.1 受阻声明）；35.1.4 SRP 域与状态参数。35.2 MSRP 应用定义：35.2.1 内部状态变量（Port Media Type、Direction、Declaration Type、SRP 参数）；35.2.2 MRP 元素（地址、ProtocolVersion、FirstValue / Domain 属性）；35.2.3 流注册服务原语；35.2.4 MSRP 属性传播（重要性、带宽计算、Talker/Listener 传播、ProtocolVersion 转换、MaxLatency）；35.2.5 运行报告与统计（丢弃流帧计数器）；35.2.6 编码（变化时隐式离开/重新加入）；35.2.7 属性值支持要求（PICS）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1504,
+          1505,
+          1506,
+          1507,
+          1508,
+          1509,
+          1510,
+          1511,
+          1512,
+          1515,
+          1516,
+          1517,
+          1518,
+          1519,
+          1520,
+          1521,
+          1545,
+          1547,
+          1549,
+          1550,
+          1551,
+          1555,
+          1559,
+          1560
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1504,
+        1505,
+        1506,
+        1507,
+        1508,
+        1509,
+        1510,
+        1511,
+        1512
+      ],
+      "note": "Clause 34 FQTSS: 34.1 overview, 34.2 SRP domain detection, 34.3 bandwidth parameters, 34.4 MSDU-to-bandwidth, 34.5 default SR class config, 34.6 transmission selection."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1513,
+        1514,
+        1515,
+        1516,
+        1517,
+        1518,
+        1519,
+        1520,
+        1521
+      ],
+      "note": "Clause 35 SRP / MSRP: 35.1 MSRP overview, shared media (DMN), end-station and bridge behavior, SRP domains; 35.2.1 internal state variables; 35.2.2 MRP elements."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1545,
+        1547,
+        1548,
+        1549,
+        1550,
+        1551,
+        1552,
+        1555,
+        1556,
+        1557,
+        1558,
+        1559,
+        1560
+      ],
+      "note": "Clause 35.2.3 registration service primitives; 35.2.4 attribute propagation (importance, bandwidth, translation, MaxLatency); 35.2.5 dropped-frame counter; 35.2.6 encoding; 35.2.7 attribute value support."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:34.1",
+    "8021Q-2022:34.2",
+    "8021Q-2022:34.3.1",
+    "8021Q-2022:34.3.2",
+    "8021Q-2022:34.3.3",
+    "8021Q-2022:34.4",
+    "8021Q-2022:34.5",
+    "8021Q-2022:34.6.1",
+    "8021Q-2022:34.6.2",
+    "8021Q-2022:34.6.3",
+    "8021Q-2022:35.1.1",
+    "8021Q-2022:35.1.2",
+    "8021Q-2022:35.1.3",
+    "8021Q-2022:35.1.4",
+    "8021Q-2022:35.2.1",
+    "8021Q-2022:35.2.2",
+    "8021Q-2022:35.2.3",
+    "8021Q-2022:35.2.4",
+    "8021Q-2022:35.2.5",
+    "8021Q-2022:35.2.6",
+    "8021Q-2022:35.2.7"
+  ],
+  "track": "tsn"
+}

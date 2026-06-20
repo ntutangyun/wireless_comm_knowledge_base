@@ -1,0 +1,90 @@
+{
+  "id": "bridging-tsn-23",
+  "title": {
+    "en": "Spanning Tree State Machines: Disabling Every Port of a Tree (uptRolesDisabledTree)",
+    "zh": "生成树状态机：将一棵树的所有端口标记为禁用（uptRolesDisabledTree）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 13 of IEEE Std 802.1Q-2022 defines the spanning tree protocols that keep a bridged LAN loop-free: RSTP (Rapid Spanning Tree Protocol) for a single tree, and MSTP (Multiple Spanning Tree Protocol), which runs many trees at once — one CIST (Common and Internal Spanning Tree) plus several MSTIs (Multiple Spanning Tree Instances). Subclause 13.29 is the toolbox of *state machine procedures*: small, named helper routines that the protocol's state machines call to do concrete work. This lesson zooms in on the very last one, 13.29.35 — a tiny but important procedure named uptRolesDisabledTree().",
+      "zh": "IEEE Std 802.1Q-2022 的第 13 章定义了让桥接局域网保持无环路的生成树协议：用于单棵树的 RSTP（快速生成树协议）和可同时运行多棵树的 MSTP（多生成树协议）——后者包含一棵 CIST（公共与内部生成树）以及若干 MSTI（多生成树实例）。13.29 子条款是一组“状态机过程”的工具箱：协议的状态机调用这些命名好的小型辅助例程来完成具体工作。本课聚焦于其中最后一个，即 13.29.35——一个小巧却重要、名为 uptRolesDisabledTree() 的过程。"
+    },
+    {
+      "type": "prose",
+      "en": "First, the one idea you need: every bridge port, for every tree it participates in, is assigned a *role*. The state machine writes its chosen role into a per-port variable called selectedRole. Common roles are RootPort (the port leading toward the root bridge), DesignatedPort (the port that serves a LAN segment), AlternatePort and BackupPort (loop-free standbys), MasterPort (a boundary role used by MSTP/SPT), and DisabledPort (the port plays no part in this tree). Most of 13.29 is about *computing* which role each port should get. uptRolesDisabledTree() is the blunt opposite: it forces all of them to DisabledPort for one tree.",
+      "zh": "首先要掌握一个核心概念：对于每个桥接端口、在它参与的每一棵树中，都会被分配一个“角色”。状态机把所选角色写入一个名为 selectedRole 的逐端口变量。常见角色有：RootPort（指向根桥的端口）、DesignatedPort（为某 LAN 网段服务的端口）、AlternatePort 与 BackupPort（无环路的备用端口）、MasterPort（MSTP/SPT 使用的边界角色）以及 DisabledPort（该端口在这棵树中不起任何作用）。13.29 的大部分内容都在“计算”每个端口应得到的角色，而 uptRolesDisabledTree() 则是直截了当的反面操作：它把某一棵树的所有端口强制设为 DisabledPort。"
+    },
+    {
+      "type": "prose",
+      "en": "Here is the exact behavior the standard specifies for 13.29.35: \"This procedure sets selectedRole to DisabledPort for all ports of the Bridge for a given tree (CIST, or MSTI, or SPT).\" That is the whole procedure. It takes a tree as its subject — the CIST, one MSTI, or an SPT (Shortest Path Tree, used by SPB / Shortest Path Bridging) — and sweeps across every port of the bridge, stamping DisabledPort into each port's selectedRole for that tree.",
+      "zh": "标准对 13.29.35 规定的精确行为是：“本过程将本桥在某一指定树（CIST、或某个 MSTI、或某个 SPT）中所有端口的 selectedRole 设为 DisabledPort。”这就是该过程的全部。它以一棵树为操作对象——CIST、某个 MSTI、或某个 SPT（最短路径树，由 SPB / 最短路径桥接使用）——并遍历该桥的每一个端口，为该树把每个端口的 selectedRole 都标记为 DisabledPort。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Read the name as a verb phrase: \"update roles — disabled — for this tree.\" (The standard prints it as 'uptRolesDisabledTree', a clipped spelling of 'updateRolesDisabledTree'.) It is the disabling sibling of 13.29.34 updtRolesTree(), which does the full, nuanced role calculation. When you don't need nuance — you need *everything off* — you call uptRolesDisabledTree() instead.",
+      "zh": "可以把这个名字读作一个动词短语：“更新角色——禁用——针对这棵树。”（标准中拼作 'uptRolesDisabledTree'，是 'updateRolesDisabledTree' 的缩略写法。）它是 13.29.34 updtRolesTree() 的“禁用版”兄弟过程，后者执行完整、精细的角色计算；而当你不需要精细计算、只需要“全部关闭”时，就改为调用 uptRolesDisabledTree()。"
+    },
+    {
+      "type": "prose",
+      "en": "Why would a tree want all its ports disabled? Because a tree can be inactive on this bridge. In MSTP a port carries CIST information from neighbors and, separately, instance information for each MSTI. When a given tree instance is not running on the bridge, there is no meaningful root or path to compute for it — so rather than leave stale roles lying around, the role-selection logic calls uptRolesDisabledTree() to put every port into DisabledPort for that tree in one clean stroke. This guarantees a consistent, well-defined starting point.",
+      "zh": "为什么一棵树会希望它的所有端口都被禁用？因为某棵树在本桥上可能处于非活动状态。在 MSTP 中，端口承载来自邻居的 CIST 信息，并分别承载每个 MSTI 的实例信息。当某个树实例没有在本桥上运行时，对它而言并不存在有意义的根或路径需要计算——因此与其留下过时的角色，角色选择逻辑会调用 uptRolesDisabledTree()，一举把该树的每个端口都置为 DisabledPort。这样就保证了一个一致、定义明确的起点。"
+    },
+    {
+      "type": "prose",
+      "en": "Contrast this with the per-port DisabledPort path inside 13.29.34. There, a *single* port becomes DisabledPort only when its own information says it is Disabled (infoIs == Disabled). updtRolesTree() walks the priority vectors and timers and may end up assigning RootPort, DesignatedPort, AlternatePort, BackupPort, or MasterPort to different ports. uptRolesDisabledTree() skips all that arithmetic: regardless of any port's individual state, the answer for the whole tree is DisabledPort, uniformly.",
+      "zh": "可以把它与 13.29.34 内部的“逐端口 DisabledPort”路径作对比。在那里，只有当某个端口自身的信息表明它处于禁用状态（infoIs == Disabled）时，该“单个”端口才会变为 DisabledPort。updtRolesTree() 会遍历优先级向量和定时器，最终可能为不同端口分配 RootPort、DesignatedPort、AlternatePort、BackupPort 或 MasterPort。而 uptRolesDisabledTree() 跳过所有这些运算：无论各端口的个体状态如何，整棵树的结果统一都是 DisabledPort。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Tree role decision] --> B{Tree active on this bridge?}\n  B -- Yes --> C[updtRolesTree 13.29.34]\n  C --> D[Per port: Root / Designated / Alternate / Backup / Master / Disabled]\n  B -- No --> E[uptRolesDisabledTree 13.29.35]\n  E --> F[Every port selectedRole = DisabledPort]",
+      "zh": "flowchart TD\n  A[树的角色决策] --> B{该树在本桥上是否活动?}\n  B -- 是 --> C[updtRolesTree 13.29.34]\n  C --> D[逐端口: 根 / 指定 / 备用 / 备份 / 主控 / 禁用]\n  B -- 否 --> E[uptRolesDisabledTree 13.29.35]\n  E --> F[每个端口 selectedRole = DisabledPort]"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><text x=\"10\" y=\"20\" stroke=\"none\" fill=\"currentColor\" font-size=\"13\">Bridge ports for one tree</text><rect x=\"10\" y=\"40\" width=\"90\" height=\"50\"/><rect x=\"115\" y=\"40\" width=\"90\" height=\"50\"/><rect x=\"220\" y=\"40\" width=\"90\" height=\"50\"/><rect x=\"325\" y=\"40\" width=\"85\" height=\"50\"/><text x=\"55\" y=\"70\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\" text-anchor=\"middle\">Port 1</text><text x=\"160\" y=\"70\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\" text-anchor=\"middle\">Port 2</text><text x=\"265\" y=\"70\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\" text-anchor=\"middle\">Port 3</text><text x=\"367\" y=\"70\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\" text-anchor=\"middle\">Port N</text><text x=\"55\" y=\"115\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">DisabledPort</text><text x=\"160\" y=\"115\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">DisabledPort</text><text x=\"265\" y=\"115\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">DisabledPort</text><text x=\"367\" y=\"115\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\" text-anchor=\"middle\">DisabledPort</text><text x=\"10\" y=\"140\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">uptRolesDisabledTree() stamps selectedRole = DisabledPort on all ports</text></svg>",
+      "caption": {
+        "en": "uptRolesDisabledTree() applied to one tree: every port's selectedRole is set to DisabledPort in a single uniform sweep.",
+        "zh": "对一棵树调用 uptRolesDisabledTree()：以一次统一的遍历将每个端口的 selectedRole 都设为 DisabledPort。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Where does selectedRole go next? Setting it is only half the story. A separate machine — the Role Transitions state machine — watches selectedRole and drives the port's behavior (forwarding, learning, sending BPDUs) to match. By writing DisabledPort uniformly, uptRolesDisabledTree() tells that downstream machine: this tree contributes nothing here, so quiesce every port for it. That keeps the data path safe (no accidental loops) while the instance is dormant.",
+      "zh": "设置好 selectedRole 之后会发生什么？设置它只是故事的一半。另一个状态机——角色转换状态机——会监视 selectedRole，并驱动端口的行为（转发、学习、发送 BPDU）与之匹配。通过统一写入 DisabledPort，uptRolesDisabledTree() 告诉下游状态机：这棵树在此不起任何作用，因此让每个端口都为它进入静默状态。这样在该实例休眠期间能保证数据通路安全（不会意外形成环路）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — 13.29.35 uptRolesDisabledTree() in the 13.29 procedure family",
+        "zh": "覆盖地图——13.29.35 uptRolesDisabledTree() 在 13.29 过程族中的位置"
+      },
+      "en": "This lesson teaches exactly one unit: 8021Q-2022:13.29.35 — uptRolesDisabledTree() (p.573). The standard's text is a single sentence: the procedure sets selectedRole to DisabledPort for all ports of the bridge, for a given tree — the CIST (Common and Internal Spanning Tree), an MSTI (Multiple Spanning Tree Instance), or an SPT (Shortest Path Tree). It is the trivial counterpart of its immediate neighbor 13.29.34 updtRolesTree(), which performs the full priority-vector and timer computation that assigns RootPort / DesignatedPort / AlternatePort / BackupPort / MasterPort / DisabledPort per port. Both live in 13.29 'State machine procedures', the named helper routines invoked by the Clause 13 state machines (e.g. the Port Role Selection machine). selectedRole is the per-port output variable these procedures write; downstream the Role Transitions machine acts on it. The terms 'CIST', 'MSTI', and 'SPT' tie back to 13.9–13.12 (priority vector calculations) and 13.36 (SPB / ISIS-SPB).",
+      "zh": "本课恰好讲授一个单元：8021Q-2022:13.29.35——uptRolesDisabledTree()（第 573 页）。标准原文只有一句话：该过程把本桥在某一指定树中所有端口的 selectedRole 设为 DisabledPort——该树可以是 CIST（公共与内部生成树）、某个 MSTI（多生成树实例）或某个 SPT（最短路径树）。它是其紧邻条款 13.29.34 updtRolesTree() 的极简对应物，后者执行完整的优先级向量与定时器计算，为每个端口分配 RootPort / DesignatedPort / AlternatePort / BackupPort / MasterPort / DisabledPort。两者都属于 13.29“状态机过程”——即第 13 章各状态机（如端口角色选择状态机）所调用的命名辅助例程。selectedRole 是这些过程写入的逐端口输出变量；下游的角色转换状态机会据此动作。术语 'CIST'、'MSTI' 与 'SPT' 可上溯到 13.9–13.12（优先级向量计算）和 13.36（SPB / ISIS-SPB）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          572,
+          573
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        572,
+        573
+      ],
+      "note": "13.29.35 uptRolesDisabledTree() (p.573) and its sibling 13.29.34 updtRolesTree() (pp.571-573 of the standard, PDF pages 572-573); selectedRole, role names, CIST/MSTI/SPT context."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:13.29.35"
+  ],
+  "track": "bridging-tsn"
+}

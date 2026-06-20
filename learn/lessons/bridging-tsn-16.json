@@ -1,0 +1,207 @@
+{
+  "id": "bridging-tsn-16",
+  "title": {
+    "en": "Spanning Tree Protocols: The Big Picture (RSTP, MSTP, SPB)",
+    "zh": "生成树协议全景图：RSTP、MSTP 与 SPB"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A bridged network usually has redundant links so that one cable or one bridge can fail without cutting connectivity. But redundancy means physical loops, and a loop is fatal for bridges: a broadcast frame would circle forever, multiplying on every lap until it saturates every link. Clause 13 of IEEE Std 802.1Q-2022 solves this by computing a loop-free *active topology* — a spanning tree — on top of the physical mesh. This lesson is the opening tour of Clause 13: it names every mechanism in the clause and gives each one an intuitive home, so the detailed state-machine clauses that follow make sense.",
+      "zh": "桥接网络通常布有冗余链路，这样一根线缆或一台桥失效时连通性也不会中断。但冗余意味着物理环路，而环路对桥来说是致命的：一个广播帧会永远绕圈，每绕一圈就复制一份，直到塞满每条链路。IEEE Std 802.1Q-2022 的第 13 章通过在物理网状结构之上计算出一个无环的“活动拓扑”（即一棵生成树）来解决这个问题。本课是第 13 章的开篇导览：它点名章节中的每一个机制并为其找到直观的归宿，让后续详尽的状态机章节变得易于理解。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 13 covers three protocols that all build spanning trees but at increasing levels of sophistication. RSTP (Rapid Spanning Tree Protocol) builds one tree for the whole network and recovers quickly from failures. MSTP (Multiple Spanning Tree Protocol) lets different VLANs (Virtual LANs — logically separate networks sharing one physical fabric) follow different trees, so traffic can be load-balanced across links. SPB (Shortest Path Bridging), driven by the IS-IS routing protocol (ISIS-SPB), computes genuine shortest paths instead of one tree rooted at a single bridge. The standard's design requirements (13.1) demand that, alone or together, these protocols keep the network fully and simply connected and stabilize within a short, bounded time after any change.",
+      "zh": "第 13 章涵盖三种协议，它们都构建生成树，但复杂度依次递增。RSTP（快速生成树协议）为整个网络构建一棵树，并能从故障中快速恢复。MSTP（多生成树协议）让不同的 VLAN（虚拟局域网，即共享同一物理结构的逻辑独立网络）走不同的树，从而在链路间做负载均衡。SPB（最短路径桥接）由 IS-IS 路由协议（ISIS-SPB）驱动，计算真正的最短路径，而非以单一桥为根的一棵树。标准的设计需求（13.1）要求：无论单独还是协同运行，这些协议都要让网络保持全连通且简单连通，并在任何变化后于一个短而有界的时间内稳定下来。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Acronym anchor: a BPDU (Bridge Protocol Data Unit) is the control message bridges exchange. The CIST (Common and Internal Spanning Tree) is the single tree that spans the whole network across all regions. An MSTI (Multiple Spanning Tree Instance) is one of several extra trees inside a region. An MCID (MST Configuration Identifier) is the fingerprint bridges compare to decide whether they belong to the same region. An SPT (Shortest Path Tree) is what SPB computes. Keep these five handy.",
+      "zh": "缩写锚点：BPDU（桥协议数据单元）是桥之间交换的控制消息。CIST（公共与内部生成树）是横跨所有区域、覆盖整个网络的那棵唯一的树。MSTI（多生成树实例）是某个区域内额外多棵树中的一棵。MCID（MST 配置标识符）是桥用来比对、判断彼此是否同属一个区域的指纹。SPT（最短路径树）是 SPB 计算出的结果。记牢这五个。"
+    },
+    {
+      "type": "prose",
+      "en": "How does a tree get chosen? Every bridge has a Bridge Identifier; the numerically lowest one wins and becomes the Root Bridge (13.4.1). Each other bridge computes its lowest-cost path to the root by summing Port Path Costs, and assigns Port Roles: the Root Port points toward the root; a Designated Port serves each LAN's path away from the root; Alternate and Backup Ports stand by as redundant paths (13.12). Forwarding ports carry data; Alternate and Backup ports sit in the Discarding state to break loops. MSTP adds one more role — the Master Port — which is the single port that carries a region's regional trees out to the wider CIST.",
+      "zh": "树是怎么选出来的？每台桥都有一个桥标识符（Bridge Identifier），数值最小者胜出，成为根桥（Root Bridge，13.4.1）。其余每台桥通过累加端口路径开销（Port Path Cost）算出到根的最低开销路径，并分配端口角色（Port Role，13.12）：根端口（Root Port）指向根；指定端口（Designated Port）负责每个 LAN 通往远离根方向的路径；备用端口（Alternate Port）和后备端口（Backup Port）作为冗余路径待命。转发端口承载数据；备用与后备端口处于丢弃（Discarding）状态以打断环路。MSTP 又增加一个角色——主端口（Master Port），它是把一个区域内的区域树引出到更大范围 CIST 的那个唯一端口。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"230\" cy=\"30\" r=\"20\"/><text x=\"230\" y=\"35\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">Root</text><circle cx=\"110\" cy=\"110\" r=\"20\"/><text x=\"110\" y=\"115\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">B2</text><circle cx=\"350\" cy=\"110\" r=\"20\"/><text x=\"350\" y=\"115\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">B3</text><circle cx=\"230\" cy=\"170\" r=\"20\"/><text x=\"230\" y=\"175\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">B4</text><line x1=\"212\" y1=\"42\" x2=\"128\" y2=\"98\"/><line x1=\"248\" y1=\"42\" x2=\"332\" y2=\"98\"/><line x1=\"126\" y1=\"126\" x2=\"214\" y2=\"158\"/><line x1=\"334\" y1=\"126\" x2=\"246\" y2=\"158\" stroke-dasharray=\"6 5\"/><text x=\"150\" y=\"70\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Designated</text><text x=\"300\" y=\"70\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Designated</text><text x=\"110\" y=\"150\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Root Port</text><text x=\"300\" y=\"150\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Alternate (block)</text></svg>",
+      "caption": {
+        "en": "A four-bridge mesh: the solid links form the loop-free active topology; the dashed link is held by an Alternate Port in the Discarding state so no loop forms. B4 reaches the root through B2's solid path.",
+        "zh": "四桥网状结构：实线链路构成无环的活动拓扑；虚线链路由一个处于丢弃状态的备用端口持有，因此不会形成环路。B4 经由 B2 的实线路径到达根。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The genius of MSTP is making each region behave like one big bridge to the outside world (13.5.3). Bridges that share the same MCID and are interconnected form an MST Region; inside it, the CIST fragment is called the IST (Internal Spanning Tree), and each MSTI runs like its own independent RSTP. The CIST External Root Path Cost is carried unchanged across a region, so from outside the region simply looks like a single node. SPB (13.6) is built on top of MSTP's machinery — SPT BPDUs are a superset of MST BPDUs — but instead of one rooted tree it computes a shortest-path tree rooted at each source, using either SPBV (SPVID-based) or SPBM (MAC-address-based) mode.",
+      "zh": "MSTP 的精妙之处在于让每个区域对外表现得像一台大桥（13.5.3）。共享同一 MCID 且彼此互连的桥构成一个 MST 区域；区域内部，CIST 的片段称为 IST（内部生成树），每个 MSTI 都像一套独立的 RSTP 那样运行。CIST 外部根路径开销（External Root Path Cost）在跨越区域时保持不变，因此从外部看，整个区域就像一个单一节点。SPB（13.6）建立在 MSTP 的机制之上——SPT BPDU 是 MST BPDU 的超集——但它不构建一棵有根的树，而是为每个源计算一棵以该源为根的最短路径树，模式可为 SPBV（基于 SPVID）或 SPBM（基于 MAC 地址）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Best Bridge ID becomes Root] --> B[Each bridge finds lowest-cost path]\n  B --> C[Assign Port Roles: Root / Designated / Alternate / Backup / Master]\n  C --> D[Forwarding vs Discarding states]\n  D --> E{Topology change?}\n  E -- yes --> F[Propose / Agree, re-converge]\n  F --> C\n  E -- no --> G[Stable: send periodic BPDUs]",
+      "zh": "flowchart TD\n  A[最优桥ID成为根] --> B[各桥计算最低开销路径]\n  B --> C[分配端口角色: 根/指定/备用/后备/主]\n  C --> D[转发 与 丢弃 状态]\n  D --> E{拓扑变化?}\n  E -- 是 --> F[提议/同意, 重新收敛]\n  F --> C\n  E -- 否 --> G[稳定: 周期发送BPDU]"
+    },
+    {
+      "type": "prose",
+      "en": "Convergence relies on priority vectors — concise tuples that fully order who is better. The CIST priority vector (13.9) is {Root ID : External Root Path Cost : Regional Root ID : Internal Root Path Cost : Designated Bridge ID : Designated Port ID : Receiving Port ID}; an MSTI vector drops the global components. A bridge compares the message vector it receives against its own port vector — lower numbers are 'better' — and the formal less-than rules in 13.10 (CIST) and 13.11 (MSTI) decide which to keep. Port Path Cost is added at the right hop: external cost once at the regional root's root port, internal cost at each internal hop. The result is provably stable (13.13): every LAN ends with exactly one Designated Port and every non-root bridge with exactly one Root Port, so the topology is both spanning and a tree.",
+      "zh": "收敛依赖于优先级向量（priority vector）——一组能对“谁更优”做出全序排列的简洁元组。CIST 优先级向量（13.9）为 {根ID : 外部根路径开销 : 区域根ID : 内部根路径开销 : 指定桥ID : 指定端口ID : 接收端口ID}；MSTI 向量则去掉全局分量。桥把收到的消息向量与自己的端口向量逐项比较——数值越小越“优”——由 13.10（CIST）和 13.11（MSTI）中正式的“小于”规则决定保留哪个。端口路径开销在正确的跳点累加：外部开销只在区域根的根端口加一次，内部开销在每个内部跳点累加。最终结果可被证明是稳定的（13.13）：每个 LAN 最终恰好有一个指定端口，每台非根桥恰好有一个根端口，因此拓扑既覆盖全网（spanning）又无环（tree）。"
+    },
+    {
+      "type": "prose",
+      "en": "Information has to move and change safely. Bridges communicate by sending group-addressed BPDUs carrying Configuration Messages, Topology Change Notifications (TCNs), MCIDs, and SPB agreements (13.14). When something changes (13.15), new vectors supersede old ones; to stop stale data from circling forever, MSTP uses a decrementing hop count, while RSTP reuses Message Age against Max Age. The hardest part is changing Port States without ever opening a loop. RSTP and MSTP (13.16) use a Proposal/Agreement handshake: a Root Port can go Forwarding immediately, but a Designated Port on a point-to-point link must receive an explicit Agreement first; any subtree not yet in agreement is temporarily blocked, so the 'cut' walks safely toward the network edge.",
+      "zh": "信息必须安全地传播与变更。桥之间通过发送组地址 BPDU 来通信，其中携带配置消息（Configuration Message）、拓扑变化通知（TCN）、MCID 以及 SPB 协议中的“同意”信息（13.14）。当发生变化时（13.15），新向量取代旧向量；为防止陈旧数据永远绕圈，MSTP 使用递减的跳数计数，而 RSTP 则复用消息年龄（Message Age）与最大年龄（Max Age）比较。最难的部分是在绝不开环的前提下改变端口状态。RSTP 与 MSTP（13.16）采用“提议/同意”握手：根端口可立即进入转发，但点到点链路上的指定端口必须先收到明确的“同意”；任何尚未达成一致的子树会被临时阻塞，从而让这条“切口”安全地向网络边缘推移。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every Clause 13 subclause in this lesson, with exact numbers",
+        "zh": "覆盖映射——本课涉及的第 13 章每个子条款及其确切编号"
+      },
+      "en": "Foundations: 13.1 protocol design requirements (full/simple connectivity, bounded convergence); 13.2 protocol support requirements (unique group MAC, Bridge & Port identifiers, priorities, costs), with 13.2.1 MSTP support (consistent VID-to-MSTID, Configuration Name/Revision) and 13.2.2 SPB support (MTID, IS-IS area/system ID, Base VID, ECT-ALGORITHM); 13.3 design goals (plug-and-play, timer-independent convergence, bounded per-port memory). Overviews: 13.4 RSTP, with 13.4.1 computing the active topology and 13.4.2 worked example topologies (Figures 13-1 to 13-5); 13.5 MSTP, with 13.5.1 example regions, 13.5.2 relationship to RSTP, 13.5.3 modeling a region as a single bridge; 13.6 SPB overview (SPBV/SPBM, loop prevention vs mitigation). Interop & identity: 13.7.1 Designated Port selection across STP/RSTP/MSTP, 13.7.2 Force Protocol Version (0=STP, 2=RST, 3+=MSTP, 4+=SPT); 13.8 the MCID (Format Selector, Configuration Name, Revision Level, HMAC-MD5 Configuration Digest, Auxiliary MCID). Math: 13.9 priority vectors; 13.10 CIST and 13.11 MST vector calculations (port/message/root-path/bridge/designated vectors, better/superior rules); 13.12 Port Role assignments (Root, Designated, Alternate, Backup, Master, Boundary, Disabled); 13.13 stable-connectivity proof. Dynamics: 13.14 communicating via BPDUs; 13.15 changing info with hop count / Message Age; 13.16 changing Port States — 13.16.1 subtree connectivity & priority vectors, 13.16.2 Root Port to Forwarding, 13.16.3 Designated Port to Forwarding (Proposal/Agreement), 13.16.4 Master Port to Forwarding; 13.17 SPB Port-State changes with 13.17.1 the Agreement Digest. Management & resilience: 13.18 managing topologies (Bridge/Port priority and path-cost tables 13-3/13-4); 13.19 updating learned station location (TCN handling, FDB flush); 13.20 managing reconfiguration (backup root placement, restrictedRole, restrictedTcn, L2 Gateway Port); 13.21 partial & disputed connectivity (one-way links, disputed flag); 13.22 in-service upgrades (canned BPDUs, IS-IS RFC 5306 restart); 13.23 Fragile Bridges (AutoIsolate); 13.24 the roster of spanning-tree state machines (PRS, PTI, PPM, PRX, PTX, BDM, L2GPRX, PIM, TCM, PRT, PST).",
+      "zh": "基础：13.1 协议设计需求（全连通/简单连通、有界收敛）；13.2 协议支持需求（唯一组 MAC、桥与端口标识符、优先级、开销），其中 13.2.1 MSTP 支持（一致的 VID 到 MSTID 映射、配置名/修订级），13.2.2 SPB 支持（MTID、IS-IS 区域/系统 ID、基准 VID、ECT 算法）；13.3 设计目标（即插即用、与定时器无关的收敛、每端口内存有界）。概览：13.4 RSTP，含 13.4.1 活动拓扑计算与 13.4.2 拓扑实例（图 13-1 至 13-5）；13.5 MSTP，含 13.5.1 区域示例、13.5.2 与 RSTP 的关系、13.5.3 把区域建模为单桥；13.6 SPB 概览（SPBV/SPBM、环路预防与环路缓解）。互通与标识：13.7.1 跨 STP/RSTP/MSTP 的指定端口选择，13.7.2 强制协议版本（0=STP、2=RST、3+=MSTP、4+=SPT）；13.8 MCID（格式选择子、配置名、修订级、HMAC-MD5 配置摘要、辅助 MCID）。数学：13.9 优先级向量；13.10 CIST 与 13.11 MST 向量计算（端口/消息/根路径/桥/指定向量，“更优/占优”规则）；13.12 端口角色分配（根、指定、备用、后备、主、边界、禁用）；13.13 稳定连通性证明。动态：13.14 通过 BPDU 通信；13.15 用跳数/消息年龄变更信息；13.16 改变端口状态——13.16.1 子树连通性与优先级向量、13.16.2 根端口转入转发、13.16.3 指定端口转入转发（提议/同意）、13.16.4 主端口转入转发；13.17 SPB 的端口状态变更，含 13.17.1 同意摘要（Agreement Digest）。管理与韧性：13.18 拓扑管理（桥/端口优先级与路径开销表 13-3/13-4）；13.19 更新已学习的站点位置（TCN 处理、FDB 清除）；13.20 重配置管理（备份根放置、restrictedRole、restrictedTcn、二层网关端口）；13.21 部分与争议连通性（单向链路、disputed 标志）；13.22 在役升级（罐装 BPDU、IS-IS RFC 5306 重启）；13.23 脆弱桥（AutoIsolate）；13.24 生成树状态机清单（PRS、PTI、PPM、PRX、PTX、BDM、L2GPRX、PIM、TCM、PRT、PST）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          503,
+          504,
+          505,
+          516,
+          518,
+          524,
+          528,
+          533,
+          536,
+          539,
+          540,
+          542
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The clause closes with a robustness toolkit. SPB's Port-State changes (13.17) can't rely on tidy hop-by-hop propagation because IS-IS floods information in parallel, so it uses an Agreement Digest (13.17.1) — a compact summary of all SPTs that neighbors compare before allowing new forwarding. Operators steer the tree with priorities and path costs (13.18). Reconfiguration is sped up by placing backup roots well and using controls like restrictedRole and the optional Layer 2 Gateway Port (13.20). TCNs flush only the right learned station entries (13.19). And edge cases are handled head-on: one-way and disputed links (13.21), control-plane hot upgrades without a connectivity break (13.22), and even nonconformant 'Fragile Bridges' that silently stop sending BPDUs (13.23, via AutoIsolate). All of this behavior is ultimately pinned down by the eleven interacting state machines listed in 13.24 — the subject of the lessons that follow.",
+      "zh": "本章以一套健壮性工具箱收尾。SPB 的端口状态变更（13.17）无法依赖整齐的逐跳传播，因为 IS-IS 是并行泛洪信息的，于是它使用同意摘要（Agreement Digest，13.17.1）——一份对所有 SPT 的紧凑汇总，邻居在允许新转发前先比对它。运维人员通过优先级和路径开销来调控树（13.18）。通过合理放置备份根并使用 restrictedRole、可选的二层网关端口等控制手段来加速重配置（13.20）。TCN 只清除恰当的已学习站点表项（13.19）。各类边缘情况也被正面处理：单向与争议链路（13.21）、不中断连通性的控制面热升级（13.22），乃至会悄然停发 BPDU 的不合规“脆弱桥”（13.23，借助 AutoIsolate）。所有这些行为最终都由 13.24 列出的十一个相互协作的状态机来精确定义——这正是后续课程的主题。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Reading order tip from the standard itself: start with RSTP (13.4), then see MSTP as 'RSTP per region with regions modeled as single bridges' (13.5.3), then SPB as 'MSTP machinery plus IS-IS shortest paths' (13.6). When the general text (13.1–13.23) and the state machines (13.24–13.40) seem to disagree, the state machines win — they are the normative specification.",
+      "zh": "标准本身给出的阅读顺序建议：先从 RSTP（13.4）入手，再把 MSTP 理解为“按区域运行的 RSTP，且每个区域被建模为单台桥”（13.5.3），最后把 SPB 理解为“MSTP 机制加上 IS-IS 最短路径”（13.6）。当一般性描述（13.1–13.23）与状态机（13.24–13.40）看似冲突时，以状态机为准——它们才是规范性条款。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        503,
+        504,
+        505
+      ],
+      "note": "13.1 design requirements, 13.2/13.2.1/13.2.2 support requirements, 13.3 design goals, 13.4 RSTP overview"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        506,
+        507,
+        509,
+        510,
+        511
+      ],
+      "note": "13.4.1 active topology computation, 13.4.2 example topologies (Figs 13-1..13-5), 13.5/13.5.1 MSTP overview"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        513,
+        514,
+        515,
+        516,
+        517
+      ],
+      "note": "13.5.2 relationship to RSTP, 13.5.3 region-as-single-bridge, 13.6 SPB, 13.7.1/13.7.2 interop, 13.8 MCID"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        518,
+        519,
+        520,
+        521,
+        522,
+        523,
+        524,
+        525
+      ],
+      "note": "13.9 priority vectors, 13.10 CIST calc, 13.11 MST calc, 13.12 Port Roles, 13.13 stable connectivity"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        526,
+        527,
+        528,
+        529,
+        531,
+        532
+      ],
+      "note": "13.14 communicating, 13.15 changing info, 13.16/13.16.1-4 changing Port States with RSTP/MSTP"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        533,
+        534,
+        535,
+        536,
+        537,
+        538,
+        539,
+        540,
+        541,
+        542
+      ],
+      "note": "13.17/13.17.1 SPB Port States, 13.18 managing topologies, 13.19 station location, 13.20 reconfiguration, 13.21 disputed, 13.22 in-service upgrades, 13.23 Fragile Bridges, 13.24 state machine roster"
+    }
+  ],
+  "covers": [
+    "8021Q-2022:13.1",
+    "8021Q-2022:13.2.1",
+    "8021Q-2022:13.2.2",
+    "8021Q-2022:13.3",
+    "8021Q-2022:13.4.1",
+    "8021Q-2022:13.4.2",
+    "8021Q-2022:13.5.1",
+    "8021Q-2022:13.5.2",
+    "8021Q-2022:13.5.3",
+    "8021Q-2022:13.6",
+    "8021Q-2022:13.7.1",
+    "8021Q-2022:13.7.2",
+    "8021Q-2022:13.8",
+    "8021Q-2022:13.9",
+    "8021Q-2022:13.10",
+    "8021Q-2022:13.11",
+    "8021Q-2022:13.12",
+    "8021Q-2022:13.13",
+    "8021Q-2022:13.14",
+    "8021Q-2022:13.15",
+    "8021Q-2022:13.16.1",
+    "8021Q-2022:13.16.2",
+    "8021Q-2022:13.16.3",
+    "8021Q-2022:13.16.4",
+    "8021Q-2022:13.17.1",
+    "8021Q-2022:13.18",
+    "8021Q-2022:13.19",
+    "8021Q-2022:13.20",
+    "8021Q-2022:13.21",
+    "8021Q-2022:13.22",
+    "8021Q-2022:13.23",
+    "8021Q-2022:13.24"
+  ],
+  "track": "bridging-tsn"
+}

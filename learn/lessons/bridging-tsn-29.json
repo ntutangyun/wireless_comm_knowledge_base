@@ -1,0 +1,130 @@
+{
+  "id": "bridging-tsn-29",
+  "title": {
+    "en": "The MIB Module Catalog: 25 SNMP Modules for Bridges and TSN",
+    "zh": "MIB 模块总目录：网桥与 TSN 的 25 个 SNMP 模块"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "We now reach the heart of Clause 17: subclause 17.7, the actual list of MIB modules. A MIB (Management Information Base) module is a machine-readable file, written in a formal language called SMI (Structure of Management Information), that declares every variable a remote manager can read or write over SNMP (Simple Network Management Protocol). Subclause 17.7 contains 25 such modules (17.7.1 through 17.7.25), one per feature area of the bridge. Each module declares a tree of named objects, plus textual conventions (reusable data types) and conformance groups (which objects a compliant device must support). Think of this subclause as the master parts catalog: every knob and gauge the standard exposes lives in exactly one of these 25 modules.",
+      "zh": "现在我们来到 Clause 17 的核心：第 17.7 节，也就是 MIB 模块的实际清单。MIB（Management Information Base，管理信息库）模块是一份机器可读的文件，用一种叫 SMI（Structure of Management Information，管理信息结构）的形式化语言写成，声明了远程管理者通过 SNMP（Simple Network Management Protocol，简单网络管理协议）可以读取或写入的每一个变量。第 17.7 节包含 25 个这样的模块（17.7.1 到 17.7.25），网桥的每个功能领域对应一个。每个模块声明一棵命名对象树，外加文本约定（可复用的数据类型）和一致性组（合规设备必须支持哪些对象）。可以把这一节看成主零件目录：标准暴露的每一个旋钮和仪表，都恰好住在这 25 个模块中的某一个里。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "All 25 modules share one root: they hang off ieee802dot1mibs, an OBJECT IDENTIFIER (a dotted path of numbers) defined in the first module. Each later module claims its own numbered branch, e.g. the Scheduled Traffic MIB is ieee802dot1mibs.30 and the TSN Remote Management MIB is ieee802dot1mibs.32. That single shared root is why every module starts by IMPORT-ing ieee802dot1mibs from the IEEE8021-TC-MIB.",
+      "zh": "所有 25 个模块共享同一个根：它们都挂在 ieee802dot1mibs 之下——这是第一个模块里定义的一个 OBJECT IDENTIFIER（对象标识符，即一串以点分隔的数字路径）。后面每个模块认领自己的编号分支，例如调度流量 MIB 是 ieee802dot1mibs.30，TSN 远程管理 MIB 是 ieee802dot1mibs.32。正因为有这个共享的根，每个模块开头都会从 IEEE8021-TC-MIB 中 IMPORT（导入）ieee802dot1mibs。"
+    },
+    {
+      "type": "prose",
+      "en": "The very first module, 17.7.1, is the IEEE8021-TC-MIB — the TC (Textual Conventions) module. It defines no manageable knobs of its own; instead it defines shared data types that every other module reuses, such as IEEE8021PbbComponentIdentifier (a number 1..4294967295 that distinguishes virtual bridge components inside one physical box) and IEEE8021PriorityValue. Defining these once, in a common module, keeps the other 24 modules consistent: when two modules both refer to a 'priority value' or a 'bridge port number', they mean exactly the same encoded type.",
+      "zh": "第一个模块 17.7.1 是 IEEE8021-TC-MIB——即 TC（Textual Conventions，文本约定）模块。它本身不定义任何可管理的旋钮；相反，它定义了其他每个模块都会复用的共享数据类型，例如 IEEE8021PbbComponentIdentifier（一个 1..4294967295 的数字，用来区分同一台物理设备内部的多个虚拟网桥组件）和 IEEE8021PriorityValue。把这些类型在一个公共模块里只定义一次，能让其余 24 个模块保持一致：当两个模块都引用「优先级值」或「网桥端口号」时，它们指的是完全相同的编码类型。"
+    },
+    {
+      "type": "prose",
+      "en": "Modules 17.7.2 through 17.7.6 cover the classic bridging core. 17.7.2 IEEE8021-BRIDGE-MIB is the base bridge: ports, components, traffic classes — the variables everything else builds on. 17.7.3 IEEE8021-SPANNING-TREE-MIB manages the loop-prevention spanning tree. 17.7.4 IEEE8021-Q-BRIDGE-MIB manages VLANs (Virtual LANs — logically separated networks sharing one physical fabric), including the VLAN index type other modules import. 17.7.5 IEEE8021-PB-MIB covers Provider Bridging (carrier-grade VLAN stacking, often called Q-in-Q). 17.7.6 IEEE8021-MSTP-MIB manages MSTP (Multiple Spanning Tree Protocol), which runs a separate tree per VLAN group.",
+      "zh": "模块 17.7.2 到 17.7.6 覆盖经典的桥接核心。17.7.2 IEEE8021-BRIDGE-MIB 是基础网桥：端口、组件、流量类别——其他一切都建立在这些变量之上。17.7.3 IEEE8021-SPANNING-TREE-MIB 管理用于防环的生成树。17.7.4 IEEE8021-Q-BRIDGE-MIB 管理 VLAN（Virtual LAN，虚拟局域网——在同一物理网络上逻辑隔离的多个网络），其中包含其他模块导入的 VLAN 索引类型。17.7.5 IEEE8021-PB-MIB 覆盖 Provider Bridging（运营商级 VLAN 嵌套，常称 Q-in-Q）。17.7.6 IEEE8021-MSTP-MIB 管理 MSTP（Multiple Spanning Tree Protocol，多生成树协议），它为每个 VLAN 组运行一棵独立的树。"
+    },
+    {
+      "type": "prose",
+      "en": "Modules 17.7.7 through 17.7.11 cover operations, administration, and maintenance (OAM) plus provider backbones. 17.7.7 holds the two CFM (Connectivity Fault Management) modules: 17.7.7.1 IEEE8021-CFM-MIB and 17.7.7.2 IEEE8021-CFM-V2-MIB — the tooling that detects and isolates faults across a bridged service. 17.7.8 IEEE8021-PBB-MIB manages Provider Backbone Bridging (stacking a backbone MAC header so a carrier can scale far past Q-in-Q). 17.7.9 IEEE8021-DDCFM-MIB adds CFM data-collection extensions. 17.7.10 IEEE8021-PBBTE-MIB covers PBB-TE (Traffic Engineering — explicitly pinned, connection-oriented paths over a backbone). 17.7.11 IEEE8021-TPMR-MIB manages a TPMR (Two-Port MAC Relay), a minimal two-port bridge used for link OAM.",
+      "zh": "模块 17.7.7 到 17.7.11 覆盖运行、管理与维护（OAM）以及运营商骨干网。17.7.7 包含两个 CFM（Connectivity Fault Management，连通性故障管理）模块：17.7.7.1 IEEE8021-CFM-MIB 和 17.7.7.2 IEEE8021-CFM-V2-MIB——用于在桥接服务中检测和定位故障的工具。17.7.8 IEEE8021-PBB-MIB 管理 Provider Backbone Bridging（骨干网桥接，叠加一个骨干 MAC 头，使运营商规模远超 Q-in-Q）。17.7.9 IEEE8021-DDCFM-MIB 增加 CFM 数据采集扩展。17.7.10 IEEE8021-PBBTE-MIB 覆盖 PBB-TE（Traffic Engineering，流量工程——在骨干网上显式钉死的面向连接路径）。17.7.11 IEEE8021-TPMR-MIB 管理 TPMR（Two-Port MAC Relay，双端口 MAC 中继），一种用于链路 OAM 的最小双端口网桥。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">ieee802dot1mibs (shared root)</text><line x1=\"20\" y1=\"26\" x2=\"20\" y2=\"130\"/><rect x=\"40\" y=\"30\" width=\"150\" height=\"20\"/><text x=\"48\" y=\"44\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">17.7.2 BRIDGE-MIB (base)</text><line x1=\"20\" y1=\"40\" x2=\"40\" y2=\"40\"/><rect x=\"40\" y=\"60\" width=\"150\" height=\"20\"/><text x=\"48\" y=\"74\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">17.7.4 Q-BRIDGE (VLAN)</text><line x1=\"20\" y1=\"70\" x2=\"40\" y2=\"70\"/><rect x=\"240\" y=\"30\" width=\"180\" height=\"20\"/><text x=\"248\" y=\"44\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">17.7.22 ST-MIB = .30 (TSN)</text><line x1=\"20\" y1=\"40\" x2=\"240\" y2=\"40\"/><rect x=\"240\" y=\"60\" width=\"180\" height=\"20\"/><text x=\"248\" y=\"74\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">17.7.25 TSN-REMOTE = .32</text><line x1=\"20\" y1=\"70\" x2=\"240\" y2=\"70\"/><rect x=\"40\" y=\"100\" width=\"380\" height=\"22\"/><text x=\"48\" y=\"114\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">... 25 modules total, each a numbered branch off the root ...</text><line x1=\"20\" y1=\"111\" x2=\"40\" y2=\"111\"/></svg>",
+      "caption": {
+        "en": "All 25 modules of 17.7 branch off the shared ieee802dot1mibs root; later TSN modules take fixed numbers like .30 and .32.",
+        "zh": "第 17.7 节的全部 25 个模块都从共享的 ieee802dot1mibs 根分支出来；较晚的 TSN 模块占用固定编号，例如 .30 和 .32。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Modules 17.7.12 through 17.7.17 are the first wave of audio/video and congestion features. 17.7.12 IEEE8021-FQTSS-MIB manages FQTSS (Forwarding and Queuing Enhancements for Time-Sensitive Streams) — the credit-based shaper that smooths AV traffic. 17.7.13 IEEE8021-CN-MIB manages CN (Congestion Notification), where a congested bridge signals the source to slow down. 17.7.14 IEEE8021-SRP-MIB manages SRP (Stream Reservation Protocol), which reserves bandwidth for a stream end-to-end. 17.7.15 IEEE8021-MVRPX-MIB and 17.7.16 IEEE8021-MIRP-MIB manage registration protocols (MVRP for VLAN membership, MIRP as a generic registration carrier). 17.7.17 IEEE8021-PFC-MIB manages PFC (Priority-based Flow Control), per-priority pause that lets one traffic class be paused without stalling others.",
+      "zh": "模块 17.7.12 到 17.7.17 是音视频与拥塞特性的第一批。17.7.12 IEEE8021-FQTSS-MIB 管理 FQTSS（Forwarding and Queuing Enhancements for Time-Sensitive Streams，时间敏感流的转发与排队增强）——即用于平滑 AV 流量的基于信用的整形器。17.7.13 IEEE8021-CN-MIB 管理 CN（Congestion Notification，拥塞通知），拥塞的网桥据此通知源端降速。17.7.14 IEEE8021-SRP-MIB 管理 SRP（Stream Reservation Protocol，流预留协议），为一条流端到端预留带宽。17.7.15 IEEE8021-MVRPX-MIB 和 17.7.16 IEEE8021-MIRP-MIB 管理注册协议（MVRP 用于 VLAN 成员注册，MIRP 作为通用注册载体）。17.7.17 IEEE8021-PFC-MIB 管理 PFC（Priority-based Flow Control，基于优先级的流控），即按优先级暂停，使某个流量类别被暂停而不拖累其他类别。"
+    },
+    {
+      "type": "prose",
+      "en": "Modules 17.7.18 through 17.7.21 round out backbone protection and data-center fabrics. 17.7.18 IEEE8021-TEIPS-V2-MIB manages PBB-TE Infrastructure Protection Switching (fast failover between pinned backbone paths). 17.7.19 IEEE8021-SPB-MIB manages SPB (Shortest Path Bridging), a link-state alternative to spanning tree that uses all links. 17.7.20 IEEE8021-EVB-MIB manages EVB (Edge Virtual Bridging), for virtual-machine networking. 17.7.21 IEEE8021-ECMP-MIB manages ECMP (Equal-Cost Multi-Path) for SPB, spreading traffic over equal-cost routes.",
+      "zh": "模块 17.7.18 到 17.7.21 补齐骨干保护与数据中心交换结构。17.7.18 IEEE8021-TEIPS-V2-MIB 管理 PBB-TE 基础设施保护倒换（在钉死的骨干路径之间快速倒换）。17.7.19 IEEE8021-SPB-MIB 管理 SPB（Shortest Path Bridging，最短路径桥接），一种基于链路状态、能利用所有链路的生成树替代方案。17.7.20 IEEE8021-EVB-MIB 管理 EVB（Edge Virtual Bridging，边缘虚拟桥接），用于虚拟机组网。17.7.21 IEEE8021-ECMP-MIB 为 SPB 管理 ECMP（Equal-Cost Multi-Path，等价多路径），把流量分散到多条等价路由上。"
+    },
+    {
+      "type": "prose",
+      "en": "The last four modules, 17.7.22 through 17.7.25, are the TSN (Time-Sensitive Networking) core — the features that make Ethernet usable for industrial control and automotive timing. 17.7.22 IEEE8021-ST-MIB is the Scheduled Traffic module (the time-aware gate / 802.1Qbv schedule), with subtrees like ieee8021STMaxSDUTable and ieee8021STParameters, and types like a 10-octet PTPtime value. 17.7.23 IEEE8021-Preemption-MIB manages frame preemption (802.1Qbu — letting an express frame interrupt a long best-effort one). 17.7.24 IEEE8021-PSFP-MIB manages PSFP (Per-Stream Filtering and Policing). 17.7.25 IEEE8021-TSN-REMOTE-MANAGEMENT-MIB supports TSN stream reservations driven from a remote controller.",
+      "zh": "最后四个模块 17.7.22 到 17.7.25 是 TSN（Time-Sensitive Networking，时间敏感网络）核心——正是这些特性让以太网可用于工业控制和汽车定时。17.7.22 IEEE8021-ST-MIB 是调度流量模块（时间感知门控 / 802.1Qbv 调度表），其子树包括 ieee8021STMaxSDUTable 和 ieee8021STParameters，并有诸如 10 字节 PTPtime 值这样的类型。17.7.23 IEEE8021-Preemption-MIB 管理帧抢占（802.1Qbu——让快速帧打断一个较长的尽力而为帧）。17.7.24 IEEE8021-PSFP-MIB 管理 PSFP（Per-Stream Filtering and Policing，按流过滤与监管）。17.7.25 IEEE8021-TSN-REMOTE-MANAGEMENT-MIB 支持由远程控制器驱动的 TSN 流预留。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the dependency layering: the PSFP module (17.7.24) imports the PTPtime type from the ST module (17.7.22), which in turn builds on the base BRIDGE-MIB (17.7.2) and the TC-MIB (17.7.1). Reading a module's IMPORTS section is the fastest way to see which other modules it leans on — a built-in dependency graph for the whole catalog.",
+      "zh": "注意这种依赖分层：PSFP 模块（17.7.24）从 ST 模块（17.7.22）导入 PTPtime 类型，而后者又建立在基础 BRIDGE-MIB（17.7.2）和 TC-MIB（17.7.1）之上。阅读一个模块的 IMPORTS（导入）段，是看清它依赖哪些其他模块的最快途径——相当于整个目录内置的依赖关系图。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: all 25 MIB modules of 17.7, by exact clause number",
+        "zh": "覆盖地图：第 17.7 节全部 25 个 MIB 模块，按确切条款号"
+      },
+      "en": "Core bridging — 17.7.1 IEEE8021-TC-MIB (shared textual conventions, ieee802dot1mibs root); 17.7.2 IEEE8021-BRIDGE-MIB (base ports/components); 17.7.3 IEEE8021-SPANNING-TREE-MIB; 17.7.4 IEEE8021-Q-BRIDGE-MIB (VLANs); 17.7.5 IEEE8021-PB-MIB (Provider Bridging); 17.7.6 IEEE8021-MSTP-MIB (Multiple Spanning Tree). OAM and backbone — 17.7.7 CFM modules (17.7.7.1 IEEE8021-CFM-MIB, 17.7.7.2 IEEE8021-CFM-V2-MIB); 17.7.8 IEEE8021-PBB-MIB (Provider Backbone Bridging); 17.7.9 IEEE8021-DDCFM-MIB; 17.7.10 IEEE8021-PBBTE-MIB (PBB Traffic Engineering); 17.7.11 IEEE8021-TPMR-MIB (Two-Port MAC Relay). AV/congestion/registration — 17.7.12 IEEE8021-FQTSS-MIB; 17.7.13 IEEE8021-CN-MIB (Congestion Notification); 17.7.14 IEEE8021-SRP-MIB (Stream Reservation); 17.7.15 IEEE8021-MVRPX-MIB; 17.7.16 IEEE8021-MIRP-MIB; 17.7.17 IEEE8021-PFC-MIB (Priority-based Flow Control). Backbone protection/fabric — 17.7.18 IEEE8021-TEIPS-V2-MIB (PBB-TE protection switching); 17.7.19 IEEE8021-SPB-MIB (Shortest Path Bridging); 17.7.20 IEEE8021-EVB-MIB (Edge Virtual Bridging); 17.7.21 IEEE8021-ECMP-MIB. TSN core — 17.7.22 IEEE8021-ST-MIB (Scheduled Traffic, ieee802dot1mibs.30); 17.7.23 IEEE8021-Preemption-MIB (ieee802dot1mibs.29); 17.7.24 IEEE8021-PSFP-MIB (Per-Stream Filtering and Policing); 17.7.25 IEEE8021-TSN-REMOTE-MANAGEMENT-MIB (ieee802dot1mibs.32, remote stream reservations).",
+      "zh": "桥接核心——17.7.1 IEEE8021-TC-MIB（共享文本约定，ieee802dot1mibs 根）；17.7.2 IEEE8021-BRIDGE-MIB（基础端口/组件）；17.7.3 IEEE8021-SPANNING-TREE-MIB；17.7.4 IEEE8021-Q-BRIDGE-MIB（VLAN）；17.7.5 IEEE8021-PB-MIB（Provider Bridging）；17.7.6 IEEE8021-MSTP-MIB（多生成树）。OAM 与骨干——17.7.7 CFM 模块（17.7.7.1 IEEE8021-CFM-MIB、17.7.7.2 IEEE8021-CFM-V2-MIB）；17.7.8 IEEE8021-PBB-MIB（骨干网桥接）；17.7.9 IEEE8021-DDCFM-MIB；17.7.10 IEEE8021-PBBTE-MIB（PBB 流量工程）；17.7.11 IEEE8021-TPMR-MIB（双端口 MAC 中继）。AV/拥塞/注册——17.7.12 IEEE8021-FQTSS-MIB；17.7.13 IEEE8021-CN-MIB（拥塞通知）；17.7.14 IEEE8021-SRP-MIB（流预留）；17.7.15 IEEE8021-MVRPX-MIB；17.7.16 IEEE8021-MIRP-MIB；17.7.17 IEEE8021-PFC-MIB（基于优先级的流控）。骨干保护/交换结构——17.7.18 IEEE8021-TEIPS-V2-MIB（PBB-TE 保护倒换）；17.7.19 IEEE8021-SPB-MIB（最短路径桥接）；17.7.20 IEEE8021-EVB-MIB（边缘虚拟桥接）；17.7.21 IEEE8021-ECMP-MIB。TSN 核心——17.7.22 IEEE8021-ST-MIB（调度流量，ieee802dot1mibs.30）；17.7.23 IEEE8021-Preemption-MIB（ieee802dot1mibs.29）；17.7.24 IEEE8021-PSFP-MIB（按流过滤与监管）；17.7.25 IEEE8021-TSN-REMOTE-MANAGEMENT-MIB（ieee802dot1mibs.32，远程流预留）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          725,
+          726,
+          1138,
+          1139,
+          1149,
+          1154,
+          1174
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        725,
+        726,
+        1138,
+        1139,
+        1149,
+        1154,
+        1174
+      ],
+      "note": "17.7 MIB modules: subclause intro and TC-MIB root (725-726); ST-MIB scheduled traffic (1138-1139); Preemption-MIB (1149); PSFP-MIB (1154); TSN-REMOTE-MANAGEMENT-MIB (1174). The full 17.7.1-17.7.25 module list appears in the TOC on p.725."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:17.7.1",
+    "8021Q-2022:17.7.2",
+    "8021Q-2022:17.7.3",
+    "8021Q-2022:17.7.4",
+    "8021Q-2022:17.7.5",
+    "8021Q-2022:17.7.6",
+    "8021Q-2022:17.7.7",
+    "8021Q-2022:17.7.8",
+    "8021Q-2022:17.7.9",
+    "8021Q-2022:17.7.10",
+    "8021Q-2022:17.7.11",
+    "8021Q-2022:17.7.12",
+    "8021Q-2022:17.7.13",
+    "8021Q-2022:17.7.14",
+    "8021Q-2022:17.7.15",
+    "8021Q-2022:17.7.16",
+    "8021Q-2022:17.7.17",
+    "8021Q-2022:17.7.18",
+    "8021Q-2022:17.7.19",
+    "8021Q-2022:17.7.20",
+    "8021Q-2022:17.7.21",
+    "8021Q-2022:17.7.22",
+    "8021Q-2022:17.7.23",
+    "8021Q-2022:17.7.24",
+    "8021Q-2022:17.7.25"
+  ],
+  "track": "bridging-tsn"
+}

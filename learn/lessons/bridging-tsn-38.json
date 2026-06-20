@@ -1,0 +1,173 @@
+{
+  "id": "bridging-tsn-38",
+  "title": {
+    "en": "Encoding CFM PDUs: Header, TLVs, CCM, and Loopback",
+    "zh": "CFM PDU 编码：公共头、TLV、CCM 与环回报文"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Connectivity Fault Management (CFM) is how bridged networks watch their own health: endpoints send small monitoring frames to detect broken paths. Clause 21 of IEEE Std 802.1Q-2022 specifies exactly how those frames are laid out byte-by-byte. This lesson walks the first half of that encoding: the bit/octet conventions, the way a CFM Protocol Data Unit (PDU — a self-contained message) is wrapped into an Ethernet frame, the shared Common CFM Header, the flexible TLV (Type-Length-Value) building block, and two of the message types — the Continuity Check Message (CCM) and the Loopback Message/Reply (LBM/LBR).",
+      "zh": "连通性故障管理（CFM, Connectivity Fault Management）是桥接网络监测自身健康状况的机制：端点发送小型监测帧来发现断裂的路径。IEEE Std 802.1Q-2022 的第 21 章精确规定了这些帧逐字节的布局。本课讲解该编码的前半部分：比特/字节约定、CFM 协议数据单元（PDU，一个自包含的消息）如何被封装进以太网帧、共享的公共 CFM 头、灵活的 TLV（类型-长度-值）构建块，以及其中两种消息类型——连通性检查消息（CCM）和环回消息/应答（LBM/LBR）。"
+    },
+    {
+      "type": "prose",
+      "en": "21.1 (Structure, representation, and encoding) sets the ground rules so everyone reads the bytes the same way. Every CFM PDU is a whole number of octets. Octets are numbered from 1 in transmission order; bits within an octet are numbered 1 (the least significant bit, LSB) to 8. In the standard's diagrams, octets higher on the page or to the left come earlier; bits to the left are more significant. For multi-octet numbers the lower-numbered octet is the most significant (big-endian). A flag is one bit, True when set to 1. 21.2 (CFM encapsulation) then says how to recognize a CFM frame on the wire: it carries the dedicated EtherType 89-02 (the EtherType is the two-octet protocol identifier in an Ethernet frame).",
+      "zh": "21.1（结构、表示与编码）确立了基本规则，让每个人都以相同方式读取字节。每个 CFM PDU 都是整数个字节。字节从 1 开始按发送顺序编号；字节内的比特从 1（最低有效位，LSB）到 8 编号。在标准的图示中，位置更高或更靠左的字节排在前面；更靠左的比特更高有效。对于多字节数值，编号较小的字节为最高有效（大端序）。一个标志位占一比特，置 1 表示 True。21.2（CFM 封装）随后说明如何在线路上识别 CFM 帧：它携带专用的 EtherType 89-02（EtherType 是以太网帧中两字节的协议标识符）。"
+    },
+    {
+      "type": "prose",
+      "en": "21.3 (CFM request and indication parameters) covers the two addresses that frame each PDU. 21.3.1 (destination_address) explains there are three addressing classes: messages sent to all Maintenance association End Points (MEPs) in a service (CCM), messages sent to all immediately adjacent Maintenance Points (MPs) at one Maintenance Domain (MD) Level (the Linktrace Message, LTM), and messages sent to one specific MP (LBM, LBR, and the Linktrace Reply, LTR). In a VLAN bridge the VLAN Identifier (VID) distinguishes which service a frame monitors, and for group-addressed PDUs the lowest three bits of the destination match the MD Level. 21.3.2 (source_address) is simply the individual MAC address of the transmitting MP — and the standard explicitly requires it to be Individual, never a Group address.",
+      "zh": "21.3（CFM 请求与指示参数）涵盖框定每个 PDU 的两个地址。21.3.1（destination_address，目的地址）说明存在三类寻址：发送给某服务中所有维护关联端点（MEP, Maintenance association End Point）的消息（CCM）、发送给某一维护域（MD, Maintenance Domain）等级下所有直接相邻维护点（MP, Maintenance Point）的消息（链路追踪消息 LTM），以及发送给某个特定 MP 的消息（LBM、LBR 和链路追踪应答 LTR）。在 VLAN 桥中，VLAN 标识符（VID）区分一个帧所监测的服务；对于组地址 PDU，目的地址的最低三比特与 MD 等级相匹配。21.3.2（source_address，源地址）就是发送方 MP 的单播 MAC 地址——标准明确要求它必须是单播地址，绝不能是组地址。"
+    },
+    {
+      "type": "prose",
+      "en": "21.4 (Common CFM Header) defines the four octets every CFM PDU starts with. 21.4.1 (MD Level) is the top 3 bits of octet 1: higher numbers mean larger domains (customer level) with greater reach, lower numbers mean physical links and single bridges. 21.4.2 (Version) is the bottom 5 bits, always 0, ignored on receipt. 21.4.3 (OpCode), octet 2, names the PDU type and thus the layout of everything after the header — for example CCM=1, LBR=2, LBM=3, LTR=4, LTM=5; stimulus/response pairs use even/odd values where the larger (odd) is the request. 21.4.4 (Flags), octet 3, is one octet whose meaning is defined separately per OpCode. 21.4.5 (First TLV Offset), octet 4, says how many octets past the header the first TLV begins — each message type fixes its own value.",
+      "zh": "21.4（公共 CFM 头）定义了每个 CFM PDU 开头的四个字节。21.4.1（MD Level，维护域等级）是第 1 字节的高 3 比特：数值越大表示域越大（客户层）、覆盖范围越广，数值越小表示物理链路和单个桥。21.4.2（Version，版本）是低 5 比特，恒为 0，接收时忽略。21.4.3（OpCode，操作码）位于第 2 字节，标明 PDU 类型，从而决定头部之后所有内容的布局——例如 CCM=1、LBR=2、LBM=3、LTR=4、LTM=5；激励/响应成对使用偶/奇值，较大（奇）的为请求。21.4.4（Flags，标志）为第 3 字节，是一个字节，其含义按每个 OpCode 分别定义。21.4.5（First TLV Offset，首个 TLV 偏移）为第 4 字节，说明第一个 TLV 在头部之后多少字节处开始——每种消息类型固定自己的取值。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"30\" width=\"60\" height=\"40\"/><rect x=\"70\" y=\"30\" width=\"90\" height=\"40\"/><rect x=\"160\" y=\"30\" width=\"70\" height=\"40\"/><rect x=\"230\" y=\"30\" width=\"110\" height=\"40\"/><rect x=\"340\" y=\"30\" width=\"160\" height=\"40\" stroke-dasharray=\"5 3\"/><text x=\"40\" y=\"54\" font-size=\"10\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">MD Level</text><text x=\"40\" y=\"66\" font-size=\"8\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">+Version</text><text x=\"115\" y=\"54\" font-size=\"10\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">OpCode</text><text x=\"195\" y=\"54\" font-size=\"10\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">Flags</text><text x=\"285\" y=\"54\" font-size=\"9\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">First TLV Offset</text><text x=\"420\" y=\"54\" font-size=\"10\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">PDU body + TLVs</text><text x=\"40\" y=\"22\" font-size=\"8\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">octet 1</text><text x=\"115\" y=\"22\" font-size=\"8\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">octet 2</text><text x=\"195\" y=\"22\" font-size=\"8\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">octet 3</text><text x=\"285\" y=\"22\" font-size=\"8\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">octet 4</text><text x=\"255\" y=\"95\" font-size=\"9\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">Common CFM Header = octets 1-4</text></svg>",
+      "caption": {
+        "en": "The 4-octet Common CFM Header (21.4) precedes every CFM PDU; the body that follows depends on the OpCode.",
+        "zh": "4 字节的公共 CFM 头（21.4）位于每个 CFM PDU 之前；其后的报文体取决于 OpCode。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "21.5 (TLV format) introduces the reusable building block. A TLV (Type-Length-Value) encodes optional or variable-length information; TLVs simply follow one another with no padding between them. 21.5.1 gives the general shape: 21.5.1.1 (Type, 1 octet) — if 0, nothing else follows (that is the End marker); 21.5.1.2 (Length, 2 octets) — the size of the Value in octets, present only when Type is non-zero; 21.5.1.3 (Value) — the actual payload, absent when Length is 0. The standard then defines specific TLVs: 21.5.2 (Organization-Specific TLV, Type 31) lets any organization carry custom data, identified by its OUI/CID (Organizationally Unique Identifier or Company ID) plus a Subtype.",
+      "zh": "21.5（TLV 格式）引入了可复用的构建块。TLV（类型-长度-值）用于编码可选或可变长度的信息；多个 TLV 直接首尾相接，彼此之间无填充。21.5.1 给出通用结构：21.5.1.1（Type，类型，1 字节）——若为 0，则后面没有任何内容（这就是结束标记）；21.5.1.2（Length，长度，2 字节）——以字节计的 Value 大小，仅在 Type 非零时存在；21.5.1.3（Value，值）——实际负载，当 Length 为 0 时不存在。随后标准定义了若干具体 TLV：21.5.2（组织专用 TLV，Type 31）允许任何组织携带自定义数据，由其 OUI/CID（组织唯一标识符或公司 ID）加一个子类型来标识。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "TLVs are the extensibility trick of the whole CFM design: a fixed header gives receivers a predictable starting point, and the chain of self-describing TLVs lets the message grow with new information without breaking old parsers. A receiver that meets a Type it does not recognize can simply skip Length octets and keep going.",
+      "zh": "TLV 是整个 CFM 设计的可扩展性诀窍：固定的头部为接收方提供可预测的起点，而自描述 TLV 链让消息能随新信息增长而不破坏旧的解析器。遇到不认识的 Type 时，接收方只需跳过 Length 个字节继续处理即可。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining TLVs round out the catalogue. 21.5.3 (Sender ID TLV, Type 1) identifies the bridge hosting the transmitting MP and optionally a management address; its subfields 21.5.3.1–21.5.3.7 carry Chassis ID Length, Chassis ID Subtype, Chassis ID, then Management Address Domain Length, Management Address Domain (an Object Identifier referencing a transport domain such as SNMP-over-UDP/IPv4), Management Address Length, and Management Address. 21.5.4 (Port Status TLV, Type 2) reports whether the port can pass ordinary data (psUp / psBlocked). 21.5.5 (Interface Status TLV, Type 4) reports the interface's operational status (up, down, testing, dormant, and so on, mirroring the IF-MIB). 21.5.6 (Data TLV, Type 3) carries arbitrary test bytes for sizing and error-dependency tests. 21.5.7 (End TLV, Type 0) is the required terminator — just the single Type=0 octet, no Length or Value.",
+      "zh": "其余 TLV 补全了清单。21.5.3（发送方 ID TLV，Type 1）标识承载发送方 MP 的桥，并可选地携带管理地址；其子字段 21.5.3.1–21.5.3.7 依次携带机箱 ID 长度、机箱 ID 子类型、机箱 ID，然后是管理地址域长度、管理地址域（一个对象标识符 OID，引用诸如 SNMP-over-UDP/IPv4 的传输域）、管理地址长度和管理地址。21.5.4（端口状态 TLV，Type 2）报告端口能否传送普通数据（psUp / psBlocked）。21.5.5（接口状态 TLV，Type 4）报告接口的运行状态（up、down、testing、dormant 等，对应 IF-MIB）。21.5.6（数据 TLV，Type 3）携带任意测试字节，用于大小和错误依赖测试。21.5.7（结束 TLV，Type 0）是必需的终止符——仅一个 Type=0 字节，没有 Length 或 Value。"
+    },
+    {
+      "type": "prose",
+      "en": "21.6 (CCM format) details the Continuity Check Message, the periodic heartbeat each MEP multicasts so peers can detect loss of connectivity. To keep hardware cheap the standard caps the whole CCM at 128 octets and the Maintenance Association Identifier (MAID) at 48 octets. After the Common CFM Header come: 21.6.1 (Flags) split into 21.6.1.1 (RDI — the Remote Defect Indication bit, the most significant bit, set when the sender's presentRDI is set), 21.6.1.2 (Reserved, set to 0 and ignored), 21.6.1.3 (CCM Interval, the low 3 bits choosing the transmission period from 3 1/3 ms up to 10 min, and never 0), and 21.6.1.4 (Traffic field, used only for PBB-TE or Infrastructure Segment MAs to flag backbone traffic). Then 21.6.2 (First TLV Offset) is transmitted as 70.",
+      "zh": "21.6（CCM 格式）详述连通性检查消息，即每个 MEP 周期性组播的心跳，使对端能检测连通性丢失。为降低硬件成本，标准将整个 CCM 限制在 128 字节、将维护关联标识符（MAID, Maintenance Association Identifier）限制在 48 字节。在公共 CFM 头之后依次是：21.6.1（Flags）被拆分为 21.6.1.1（RDI——远端缺陷指示位，最高有效位，当发送方的 presentRDI 置位时置 1）、21.6.1.2（保留位，置 0 并忽略）、21.6.1.3（CCM 间隔，低 3 比特，选择从 3⅓ 毫秒到 10 分钟的发送周期，且绝不为 0）和 21.6.1.4（流量字段，仅用于 PBB-TE 或基础设施段 MA 以标记骨干流量）。随后 21.6.2（首个 TLV 偏移）发送值为 70。"
+    },
+    {
+      "type": "prose",
+      "en": "The CCM body continues with 21.6.3 (Sequence Number, 4 octets — either 0 or the running CCIsentCCMs counter), 21.6.4 (Maintenance association Endpoint Identifier, 2 octets — the MEPID, in range 1–8191, naming which endpoint sent the CCM), and 21.6.5 (Maintenance Association Identifier, exactly 48 octets) which is split into 21.6.5.1 Maintenance Domain Name Format, 21.6.5.2 Maintenance Domain Name Length, 21.6.5.3 Maintenance Domain Name, 21.6.5.4 Short MA Name Format, 21.6.5.5 Short MA Name Length, and 21.6.5.6 Short MA Name, zero-padded to fill the fixed 48 octets. This MAID is what a receiver binary-compares to decide whether a CCM belongs to its own MA. Finally 21.6.6 (Defined by ITU-T G.8013/Y.1731, 16 octets — transmit 0) reserves interworking space, and 21.6.7 (Optional CCM TLVs) lists the Sender ID, Port Status, and Interface Status TLVs that should be included, plus the Organization-Specific TLV that may be, in any order.",
+      "zh": "CCM 报文体继续包含 21.6.3（序列号，4 字节——为 0 或递增的 CCIsentCCMs 计数器）、21.6.4（维护关联端点标识符，2 字节——MEPID，取值范围 1–8191，标明哪个端点发送了该 CCM），以及 21.6.5（维护关联标识符，恰为 48 字节），后者拆分为 21.6.5.1 维护域名格式、21.6.5.2 维护域名长度、21.6.5.3 维护域名、21.6.5.4 短 MA 名格式、21.6.5.5 短 MA 名长度和 21.6.5.6 短 MA 名，并以零填充至固定的 48 字节。接收方正是对这个 MAID 做二进制比较，以判断某 CCM 是否属于自己的 MA。最后 21.6.6（由 ITU-T G.8013/Y.1731 定义，16 字节——发送 0）预留互通空间，21.6.7（可选 CCM TLV）列出应当包含的发送方 ID、端口状态和接口状态 TLV，以及可以包含的组织专用 TLV，顺序任意。"
+    },
+    {
+      "type": "prose",
+      "en": "21.7 (LBM and LBR formats) covers the Loopback pair — CFM's equivalent of a ping, sent to one target MP to confirm reachability. Both share a simple layout. 21.7.1 (Flags) in an LBM is set to 0 and not examined. 21.7.2 (First TLV Offset) is transmitted as 4. 21.7.3 (Loopback Transaction Identifier, 4 octets) copies the sender's nextLBMtransID so a reply can be matched to its request. 21.7.4 (Additional LBM/LBR TLVs) lists what may ride along: a Sender ID TLV (should), a Data TLV (by management action), an Organization-Specific TLV (may), and the PBB-TE MIP TLV (shall, on PBB-TE MAs only, placed first). 21.7.5 (PBB-TE MIP TLV, Type 9) lets Maintenance Intermediate Points (MIPs) intercept LBMs aimed at them; its fields 21.7.5.1 (MIP MAC address), 21.7.5.2 (Reverse VID), and 21.7.5.3 (Reverse MAC) tell the MIP how to address the corresponding reply back along the path.",
+      "zh": "21.7（LBM 与 LBR 格式）涵盖环回这一对消息——相当于 CFM 的 ping，发送给某个目标 MP 以确认可达性。两者布局相同且简单。21.7.1（Flags）在 LBM 中置 0 且不被检查。21.7.2（首个 TLV 偏移）发送值为 4。21.7.3（环回事务标识符，4 字节）复制发送方的 nextLBMtransID，以便将应答与其请求匹配。21.7.4（附加 LBM/LBR TLV）列出可随行的内容：发送方 ID TLV（宜含）、数据 TLV（经管理动作）、组织专用 TLV（可含），以及 PBB-TE MIP TLV（在 PBB-TE MA 上必含，且置于首位）。21.7.5（PBB-TE MIP TLV，Type 9）让维护中间点（MIP, Maintenance Intermediate Point）拦截发往自己的 LBM；其字段 21.7.5.1（MIP MAC 地址）、21.7.5.2（反向 VID）和 21.7.5.3（反向 MAC）告诉 MIP 如何沿路径反向寻址相应的应答。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant A as MEP A\n  participant B as Target MP B\n  A->>B: LBM (OpCode 3, TransID=N)\n  B-->>A: LBR (OpCode 2, TransID=N)\n  Note over A,B: matched by Loopback Transaction Identifier",
+      "zh": "sequenceDiagram\n  participant A as MEP A\n  participant B as 目标 MP B\n  A->>B: LBM (OpCode 3, 事务ID=N)\n  B-->>A: LBR (OpCode 2, 事务ID=N)\n  Note over A,B: 由环回事务标识符匹配"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause in this lesson by exact number",
+        "zh": "覆盖地图：本课逐一对应的精确条款编号"
+      },
+      "en": "21.1 structure/representation/encoding (octet & bit numbering, big-endian, flags). 21.2 CFM encapsulation (EtherType 89-02). 21.3.1 destination_address (three addressing classes; VID and MD Level mapping). 21.3.2 source_address (individual MAC only). 21.4 Common CFM Header overview, with 21.4.1 MD Level, 21.4.2 Version, 21.4.3 OpCode, 21.4.4 Flags, 21.4.5 First TLV Offset. 21.5 TLV concept, with 21.5.1 general format (Type/Length/Value), 21.5.2 Organization-Specific TLV (Type 31), 21.5.3 Sender ID TLV (Type 1), 21.5.4 Port Status TLV (Type 2), 21.5.5 Interface Status TLV (Type 4), 21.5.6 Data TLV (Type 3), 21.5.7 End TLV (Type 0). 21.6 CCM format, with 21.6.1 Flags (RDI/Reserved/Interval/Traffic), 21.6.2 First TLV Offset (=70), 21.6.3 Sequence Number, 21.6.4 MEP Identifier, 21.6.5 MAID (48 octets), 21.6.6 ITU-T G.8013/Y.1731 field (16 octets), 21.6.7 Optional CCM TLVs. 21.7 LBM/LBR formats, with 21.7.1 Flags, 21.7.2 First TLV Offset (=4), 21.7.3 Loopback Transaction Identifier, 21.7.4 Additional TLVs, 21.7.5 PBB-TE MIP TLV (Type 9).",
+      "zh": "21.1 结构/表示/编码（字节与比特编号、大端序、标志）。21.2 CFM 封装（EtherType 89-02）。21.3.1 目的地址（三类寻址；VID 与 MD 等级映射）。21.3.2 源地址（仅单播 MAC）。21.4 公共 CFM 头概览，含 21.4.1 MD 等级、21.4.2 版本、21.4.3 OpCode、21.4.4 Flags、21.4.5 首个 TLV 偏移。21.5 TLV 概念，含 21.5.1 通用格式（类型/长度/值）、21.5.2 组织专用 TLV（Type 31）、21.5.3 发送方 ID TLV（Type 1）、21.5.4 端口状态 TLV（Type 2）、21.5.5 接口状态 TLV（Type 4）、21.5.6 数据 TLV（Type 3）、21.5.7 结束 TLV（Type 0）。21.6 CCM 格式，含 21.6.1 Flags（RDI/保留/间隔/流量）、21.6.2 首个 TLV 偏移（=70）、21.6.3 序列号、21.6.4 MEP 标识符、21.6.5 MAID（48 字节）、21.6.6 ITU-T G.8013/Y.1731 字段（16 字节）、21.6.7 可选 CCM TLV。21.7 LBM/LBR 格式，含 21.7.1 Flags、21.7.2 首个 TLV 偏移（=4）、21.7.3 环回事务标识符、21.7.4 附加 TLV、21.7.5 PBB-TE MIP TLV（Type 9）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1261,
+          1262,
+          1263,
+          1264,
+          1265,
+          1266,
+          1267,
+          1268,
+          1269,
+          1270,
+          1271,
+          1272,
+          1273,
+          1274,
+          1275,
+          1276
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1261,
+        1262,
+        1263,
+        1264,
+        1265,
+        1266,
+        1267,
+        1268
+      ],
+      "note": "21.1-21.5: encoding conventions, encapsulation EtherType, addressing parameters, Common CFM Header, and the TLV catalogue."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1269,
+        1270,
+        1271,
+        1272,
+        1273,
+        1274
+      ],
+      "note": "21.6: CCM format, Flags subfields, Sequence Number, MEPID, the 48-octet MAID and its name subfields, ITU-T field, optional TLVs."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1274,
+        1275,
+        1276
+      ],
+      "note": "21.7: LBM/LBR formats, Flags, First TLV Offset, Loopback Transaction Identifier, additional TLVs, and the PBB-TE MIP TLV."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:21.1",
+    "8021Q-2022:21.2",
+    "8021Q-2022:21.3.1",
+    "8021Q-2022:21.3.2",
+    "8021Q-2022:21.4.1",
+    "8021Q-2022:21.4.2",
+    "8021Q-2022:21.4.3",
+    "8021Q-2022:21.4.4",
+    "8021Q-2022:21.4.5",
+    "8021Q-2022:21.5.1",
+    "8021Q-2022:21.5.2",
+    "8021Q-2022:21.5.3",
+    "8021Q-2022:21.5.4",
+    "8021Q-2022:21.5.5",
+    "8021Q-2022:21.5.6",
+    "8021Q-2022:21.5.7",
+    "8021Q-2022:21.6.1",
+    "8021Q-2022:21.6.2",
+    "8021Q-2022:21.6.3",
+    "8021Q-2022:21.6.4",
+    "8021Q-2022:21.6.5",
+    "8021Q-2022:21.6.6",
+    "8021Q-2022:21.6.7",
+    "8021Q-2022:21.7.1",
+    "8021Q-2022:21.7.2",
+    "8021Q-2022:21.7.3",
+    "8021Q-2022:21.7.4",
+    "8021Q-2022:21.7.5"
+  ],
+  "track": "bridging-tsn"
+}

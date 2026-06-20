@@ -1,0 +1,118 @@
+{
+  "id": "bridging-tsn-11",
+  "title": {
+    "en": "VLAN Topology Management: Static Config and MVRP",
+    "zh": "VLAN 拓扑管理：静态配置与 MVRP"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A bridge forwards a VLAN-tagged frame only out the ports through which that VLAN's members are reachable. That set of ports is the VLAN's Member Set, and it lives in the Filtering Database (FDB) as VLAN Registration Entries. Clause 11 answers a single practical question: how does each port learn which VLAN IDs (VIDs) it should carry? The standard offers two complementary answers — you can configure entries by hand (static), or let a protocol fill them in automatically (dynamic). A VID (VLAN Identifier) is the 12-bit number that names a VLAN.",
+      "zh": "网桥只会把带 VLAN 标签的帧从“能到达该 VLAN 成员”的端口转发出去。这组端口称为该 VLAN 的成员集（Member Set），它以 VLAN 注册条目的形式保存在过滤数据库（FDB，Filtering Database）中。第 11 章回答一个非常实际的问题：每个端口如何知道自己应该承载哪些 VLAN 标识（VID）？标准给出两种互补的答案——你可以手工配置条目（静态），也可以让协议自动填写（动态）。VID（VLAN Identifier）是用来标识一个 VLAN 的 12 位编号。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.1 (Static and dynamic VLAN configuration) lays out four ways a port's VID membership can be set. (a) Static only: management (Clause 12) writes Static VLAN Registration Entries and MVRP is disabled on the port, so any registration messages arriving there are ignored — useful as an administrative boundary, e.g. pinning end-user ports to specific VLANs. (b) Static with topology changes: still statically configured, but MVRP/MIRP is allowed through purely to signal that learned MAC addresses must be flushed after a topology change. (c) Dynamic only: the port relies entirely on MVRP to create and update Dynamic VLAN Registration Entries — ideal for core ports where the spanning tree prunes redundant paths. (d) Combined: some VIDs pinned statically, the rest left to MVRP — common on mobile end-user ports that want both control and flexibility.",
+      "zh": "第 11.1 节（静态与动态 VLAN 配置）列出端口 VID 成员关系的四种设定方式。(a) 仅静态：由管理功能（第 12 章）写入静态 VLAN 注册条目，并在该端口关闭 MVRP，因此到达该端口的任何注册消息都被忽略——可作为管理边界，例如把终端用户端口固定到特定 VLAN。(b) 静态加拓扑变更：仍为静态配置，但允许 MVRP/MIRP 通过，仅用于在拓扑变更后通知刷新已学到的 MAC 地址。(c) 仅动态：端口完全依赖 MVRP 来创建和更新动态 VLAN 注册条目——适合核心端口，因为生成树会裁剪掉冗余路径。(d) 混合：部分 VID 静态固定，其余交给 MVRP——常见于既要控制又要灵活的移动终端用户端口。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  P[Bridge Port] --> A[a Static only<br/>MVRP off]\n  P --> B[b Static + topology<br/>MVRP only flushes MAC]\n  P --> C[c Dynamic only<br/>MVRP fills FDB]\n  P --> D[d Combined<br/>some static, rest MVRP]",
+      "zh": "flowchart TD\n  P[网桥端口] --> A[a 仅静态<br/>关闭 MVRP]\n  P --> B[b 静态+拓扑<br/>MVRP 仅刷新 MAC]\n  P --> C[c 仅动态<br/>MVRP 填充 FDB]\n  P --> D[d 混合<br/>部分静态, 其余 MVRP]"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.2 introduces the Multiple VLAN Registration Protocol (MVRP) — the dynamic engine. MVRP is an application built on the Multiple Registration Protocol (MRP) machinery from Clause 10: MRP Attribute Declaration (MAD) drives the per-attribute join/leave state machines, and MRP Attribute Propagation (MAP) spreads declarations across the bridge. When a device declares interest in a VID, every MVRP Participant that hears the declaration marks the receiving port as Registered in that VID's Dynamic VLAN Registration Entry. When the last interested participant on a LAN withdraws, the port reverts to Unregistered. The net effect: the FDBs across the whole network stay consistent automatically, without an administrator touching each bridge.",
+      "zh": "第 11.2 节引入多 VLAN 注册协议（MVRP，Multiple VLAN Registration Protocol）——动态引擎。MVRP 是构建在第 10 章 MRP（Multiple Registration Protocol，多注册协议）机制之上的一个应用：MRP 属性声明（MAD，MRP Attribute Declaration）驱动每个属性的加入/离开状态机，MRP 属性传播（MAP，MRP Attribute Propagation）将声明在网桥内扩散。当某设备声明对某 VID 感兴趣时，每个收到该声明的 MVRP 参与者都会在该 VID 的动态 VLAN 注册条目中把接收端口标记为“已注册”。当某 LAN 上最后一个感兴趣的参与者撤销声明时，该端口恢复为“未注册”。最终效果是：全网的 FDB 自动保持一致，无需管理员逐台网桥配置。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.2.1 (MVRP overview) frames MVRP as a close cousin of MMRP (which registers MAC-address/group membership), with two key differences: the values carried are 12-bit VIDs rather than MAC addresses, and registering a VID touches Dynamic VLAN Registration Entries rather than MAC Address Registration Entries. Crucially, there is one MVRP Participant per port (not one per VID), operating in a single MAP Context in an SST environment, or in multiple MAP Contexts in an MST environment. The three sub-parts spell out the players: 11.2.1.1 end stations — a VLAN-aware end station declares the VIDs it belongs to and can 'source prune' (discard at source) traffic for VLANs that have no other members; 11.2.1.2 Bridges — register and propagate VLAN membership on every port in the active spanning-tree topology, using the MST Configuration Table to pick the right tree per VID; 11.2.1.3 the PVID — the Permanent Database ships with a Static entry for the Default PVID set to Registration Fixed (New ignored) on all ports, so default connectivity exists out of the box. PVID is the Port VLAN Identifier — the VID assigned to untagged frames arriving on a port.",
+      "zh": "第 11.2.1 节（MVRP 概述）把 MVRP 描述为 MMRP（注册 MAC 地址/组成员关系）的近亲，但有两点关键差异：所承载的值是 12 位 VID 而非 MAC 地址；注册一个 VID 影响的是动态 VLAN 注册条目，而非 MAC 地址注册条目。关键之处在于：每个端口只有一个 MVRP 参与者（而非每 VID 一个），在 SST 环境下运行于单一 MAP 上下文，在 MST 环境下运行于多个 MAP 上下文。三个子节点明了各角色：11.2.1.1 终端站——具备 VLAN 感知能力的终端站声明自己所属的 VID，并可对没有其他成员的 VLAN 进行“源端剪枝”（在源头丢弃流量）；11.2.1.2 网桥——在活动生成树拓扑的每个端口上注册并传播 VLAN 成员关系，并用 MST 配置表为每个 VID 选择正确的生成树；11.2.1.3 PVID——永久数据库出厂时为默认 PVID 配有一条静态条目，在所有端口上设为“注册固定（忽略 New）”，从而默认即具备连通性。PVID（Port VLAN Identifier，端口 VLAN 标识）是分配给某端口上到达的无标签帧的 VID。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why 'source prune' matters: if an end station knows (from incoming MVRP declarations) that nobody else on its LAN wants VLAN 50, it simply never transmits VLAN-50 frames. MVRP thus doubles as a traffic-suppression tool, not just an addressing tool — unwanted multicast/broadcast stays off links that have no listeners.",
+      "zh": "“源端剪枝”为何重要：如果终端站从收到的 MVRP 声明得知本 LAN 上没有其他设备需要 VLAN 50，它就干脆不发送 VLAN 50 的帧。因此 MVRP 不仅是寻址工具，还兼具流量抑制作用——无人收听的链路上不会出现多余的组播/广播流量。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant ES as End Station\n  participant B1 as Bridge A\n  participant B2 as Bridge B\n  ES->>B1: MVRPDU declare VID 50 (MAD_Join)\n  Note over B1: mark port Registered in Dynamic Entry\n  B1->>B2: MAP propagates VID 50\n  Note over B2: mark port Registered\n  ES->>B1: MVRPDU withdraw VID 50 (MAD_Leave)\n  Note over B1,B2: ports revert to Unregistered",
+      "zh": "sequenceDiagram\n  participant ES as 终端站\n  participant B1 as 网桥 A\n  participant B2 as 网桥 B\n  ES->>B1: MVRPDU 声明 VID 50 (MAD_Join)\n  Note over B1: 在动态条目中标记端口为已注册\n  B1->>B2: MAP 传播 VID 50\n  Note over B2: 标记端口为已注册\n  ES->>B1: MVRPDU 撤销 VID 50 (MAD_Leave)\n  Note over B1,B2: 端口恢复为未注册"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.2.2 (VLAN registration service definition) gives the protocol its clean API. A MAC Service user (an end station's higher layer) calls just two primitives: ES_REGISTER_VLAN_MEMBER(VID) to say 'I want frames for this VLAN', and ES_DEREGISTER_VLAN_MEMBER(VID) to say 'I no longer do'. Everything below — turning those calls into MAD_Join/MAD_Leave requests, propagating them, and updating Dynamic VLAN Registration Entries — is handled by MVRP itself, as detailed in 11.2.3. This is the boundary between intent (the user's wish) and mechanism (the protocol's machinery).",
+      "zh": "第 11.2.2 节（VLAN 注册服务定义）为协议定义了简洁的接口。MAC 服务用户（终端站的上层）只需调用两个原语：ES_REGISTER_VLAN_MEMBER(VID) 表示“我想收到该 VLAN 的帧”，ES_DEREGISTER_VLAN_MEMBER(VID) 表示“我不再想要了”。其下的一切——把这些调用转换为 MAD_Join/MAD_Leave 请求、进行传播、并更新动态 VLAN 注册条目——都由 MVRP 自身处理，详见 11.2.3。这是“意图”（用户的愿望）与“机制”（协议的实现）之间的分界线。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: 11.2.3 (MVRP application internals) and 11.2.4 (VID Translation Table)",
+        "zh": "覆盖地图：11.2.3（MVRP 应用内部）与 11.2.4（VID 转换表）"
+      },
+      "en": "11.2.3 defines the MVRP application precisely. 11.2.3.1 fixes the MRP elements: the MAP Context is the Base Spanning Tree (CIST) in SST environments (11.2.3.1.1) or one context per spanning tree in MST environments (11.2.3.1.2) — all MVRPDUs are sent untagged; the application address (11.2.3.1.3) is the Customer- or Provider-Bridge MVRP group MAC; the EtherType (11.2.3.1.4) is the MVRP EtherType; ProtocolVersion (11.2.3.1.5) is 0x00. The encoding details: a single AttributeType = 1, the 'VID Vector Attribute Type' (11.2.3.1.6); FirstValue is two octets holding the VID, range 0–4094, where 0 means 'use the receiving port's PVID' (11.2.3.1.7); AttributeLength = 0x02 (11.2.3.1.8); AttributeListLength is absent (11.2.3.1.9); only ThreePackedEvent vectors are used (11.2.3.1.10). 11.2.3.2 wires it to the service: 11.2.3.2.1 maps ES_REGISTER→MAD_Join.request and ES_DEREGISTER→MAD_Leave.request; 11.2.3.2.2 maps MAD_Join.indication→mark port Registered (creating an FDB entry if room exists and the VID is supported) and MAD_Leave.indication→mark not Registered; 11.2.3.2.3 covers the Administrative Controls — Applicant/Registrar Administrative Control parameters (stored as Static VLAN Registration Entries) and the per-port Restricted_VLAN_Registration control, which, when TRUE, only lets MVRP create dynamic entries for VIDs that already have a Static entry with Registrar Administrative Control = Normal Registration (default FALSE). 11.2.4 (VID Translation Table) says: if a port uses a VID Translation Table (6.9), incoming MVRP VID values are translated before processing and outgoing ones after — except Attribute value 0, whose 'use my PVID' meaning is left untouched.",
+      "zh": "11.2.3 精确定义 MVRP 应用。11.2.3.1 固定 MRP 元素：MAP 上下文在 SST 环境下为基础生成树（CIST）（11.2.3.1.1），在 MST 环境下为每棵生成树一个上下文（11.2.3.1.2）——所有 MVRPDU 均以无标签方式发送；应用地址（11.2.3.1.3）为客户桥或运营商桥的 MVRP 组 MAC；EtherType（11.2.3.1.4）为 MVRP EtherType；协议版本（11.2.3.1.5）为 0x00。编码细节：单一 AttributeType = 1，即“VID 向量属性类型”（11.2.3.1.6）；FirstValue 为两个八位组承载 VID，范围 0–4094，其中 0 表示“使用接收端口的 PVID”（11.2.3.1.7）；AttributeLength = 0x02（11.2.3.1.8）；AttributeListLength 不存在（11.2.3.1.9）；仅使用 ThreePackedEvent 向量（11.2.3.1.10）。11.2.3.2 将其接入服务：11.2.3.2.1 把 ES_REGISTER 映射为 MAD_Join.request，ES_DEREGISTER 映射为 MAD_Leave.request；11.2.3.2.2 把 MAD_Join.indication 映射为标记端口已注册（若 FDB 有空间且支持该 VID 则创建条目），MAD_Leave.indication 映射为标记未注册；11.2.3.2.3 介绍管理控制——申请者/注册者管理控制参数（存为静态 VLAN 注册条目）以及每端口的 Restricted_VLAN_Registration 控制，当其为 TRUE 时，仅允许 MVRP 为已存在静态条目且注册者管理控制为“正常注册”的 VID 创建动态条目（默认 FALSE）。11.2.4（VID 转换表）规定：若端口使用 VID 转换表（6.9），收到的 MVRP VID 值在处理前转换，发出的在处理后转换——但属性值 0 例外，其“使用我的 PVID”含义保持不变。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          319,
+          320,
+          321,
+          322
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: 11.2.5 ('new' declarations), 11.2.6 (New-Only Participant), 11.2.7 (attribute value support)",
+        "zh": "覆盖地图：11.2.5（“new”声明）、11.2.6（New-Only 参与者）、11.2.7（属性值支持）"
+      },
+      "en": "11.2.5 (Use of the 'new' declaration capability) explains how MVRP reacts to topology changes. When a Bridge Port has just transitioned to Forwarding, the MADs it originates or propagates are flagged 'new'. Receiving any MVRP declaration marked 'new' for a given VID (whether via an incoming MVRPDU as MAD_Join.indication, or a MAD_Join.request from MAP/the application) causes the bridge to remove the Dynamic Filtering Entries for that port and VID — forcing stale learned MAC addresses to be relearned along the changed topology. 11.2.6 (New-Only Participant and Registrar Administrative Controls) describes an optional mode where a port's MVRP Participant only handles 'new' declarations — useful in an I-component with statically configured S-VLAN registrations that still needs to signal MAC flushes. It is selected by a managed object in 12.9.2, separate from the New ignored / New propagated choice in 12.7.7.3.3; a 'new' MAD_Join.indication that doesn't match a Static VLAN Registration Entry of Registration Fixed (New propagated) is discarded without propagation. The standard warns this assumes the LAN is fully statically configured, so misuse can break connectivity. 11.2.7 (Attribute value support requirements) is the blunt conformance rule: an MVRP implementation shall support every attribute value in the full range of registrable VIDs and shall maintain current state for all of them.",
+      "zh": "11.2.5（“new”声明能力的使用）说明 MVRP 如何响应拓扑变更。当某网桥端口刚转入转发（Forwarding）状态时，它发起或传播的 MAD 会被标记为“new”。收到任何针对某 VID 标记为“new”的 MVRP 声明（无论是作为 MAD_Join.indication 的入站 MVRPDU，还是来自 MAP/应用的 MAD_Join.request），都会促使网桥删除该端口与该 VID 的动态过滤条目——迫使过时的已学 MAC 地址沿变更后的拓扑重新学习。11.2.6（New-Only 参与者与注册者管理控制）描述一种可选模式，端口的 MVRP 参与者只处理“new”声明——适用于已静态配置 S-VLAN 注册、但仍需发出 MAC 刷新信号的 I 组件。该模式由 12.9.2 的受管对象选择，与 12.7.7.3.3 中“忽略 New / 传播 New”的选择相互独立；若“new”的 MAD_Join.indication 没有匹配到“注册固定（传播 New）”的静态 VLAN 注册条目，则被丢弃且不传播。标准警告这假设该 LAN 已完全静态配置，因此误用可能破坏连通性。11.2.7（属性值支持要求）是直白的一致性规则：MVRP 实现应支持可注册 VID 全范围内的每一个属性值，并应为它们全部维护当前状态信息。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          322
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: think of static configuration as a hand-drawn map an administrator pins to the wall, and MVRP as a live, self-updating map the devices redraw among themselves. Restricted_VLAN_Registration and the New-Only Participant are the guardrails that let you blend the two safely — letting dynamic registration happen only inside boundaries the administrator has pre-approved.",
+      "zh": "记忆模型：把静态配置想象成管理员钉在墙上的手绘地图，而 MVRP 是设备之间实时自我更新、互相重绘的地图。Restricted_VLAN_Registration 与 New-Only 参与者就是护栏，让你能安全地融合二者——只允许动态注册发生在管理员预先批准的边界之内。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        315,
+        316,
+        317,
+        318,
+        319,
+        320,
+        321,
+        322
+      ],
+      "note": "Clause 11 VLAN topology management: 11.1 static/dynamic config (p.315-316) and 11.2 MVRP overview, service definition, application, VID translation, 'new' declarations, New-Only Participant, attribute support (p.316-322)."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:11.1",
+    "8021Q-2022:11.2.1",
+    "8021Q-2022:11.2.2",
+    "8021Q-2022:11.2.3",
+    "8021Q-2022:11.2.4",
+    "8021Q-2022:11.2.5",
+    "8021Q-2022:11.2.6",
+    "8021Q-2022:11.2.7"
+  ],
+  "track": "bridging-tsn"
+}

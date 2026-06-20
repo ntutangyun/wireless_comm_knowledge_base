@@ -1,0 +1,217 @@
+{
+  "id": "bridging-tsn-54",
+  "title": {
+    "en": "Data Center Bridging toolkit: PFC, ETS, DCBX, MIRP and Edge Virtual Bridging",
+    "zh": "数据中心桥接工具箱：PFC、ETS、DCBX、MIRP 与边缘虚拟桥接（EVB）"
+  },
+  "estMinutes": 6,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This lesson walks through five lossless / data-center-oriented mechanisms in IEEE Std 802.1Q-2022: Priority-based Flow Control (PFC, Clause 36), Enhanced Transmission Selection (ETS, Clause 37), the Data Center Bridging eXchange protocol (DCBX, Clause 38), the Multiple I-SID Registration Protocol (MIRP, Clause 39), and Edge Virtual Bridging (EVB, Clause 40). Together they let a data-center fabric carry storage, clustering and LAN traffic on one wire without dropping the loss-sensitive flows, while a server's virtual machines plug cleanly into the physical bridge.",
+      "zh": "本课讲解 IEEE Std 802.1Q-2022 中面向数据中心、追求无丢包的五个机制：基于优先级的流控（PFC，第 36 章）、增强传输选择（ETS，第 37 章）、数据中心桥接交换协议（DCBX，第 38 章）、多 I-SID 注册协议（MIRP，第 39 章），以及边缘虚拟桥接（EVB，第 40 章）。它们共同让数据中心网络在同一根线上承载存储、集群和普通局域网流量而不丢弃对丢包敏感的流，同时让服务器里的虚拟机干净地接入物理桥接设备。"
+    },
+    {
+      "type": "prose",
+      "en": "Priority-based Flow Control (PFC) is link-level backpressure that works per priority instead of pausing the whole link. Clause 36.1.1 (Overview) limits PFC to a data-center environment and to a pair of full-duplex MACs on one point-to-point link; it can stop frames being dropped for protocols that need that, but because it can spread congestion it is meant for networks of limited extent. A station that wants its peer to stop sending certain priorities issues the PFC primitives (36.1.2): an M_CONTROL.request to multicast address 01-80-C2-00-00-01 with opcode 01-01, carrying a priority_enable_vector (which of the 8 priorities to pause) and a time_vector (eight time[n] values, each in pause_quanta = the time to send 512 bits at the MAC rate). When PFC is on for any priority, the IEEE 802.3 PAUSE mechanism is not used.",
+      "zh": "基于优先级的流控（PFC）是一种链路级背压，它按优先级而非整条链路来暂停。第 36.1.1 节（概述）将 PFC 限定在数据中心环境、限定在一条点对点链路上的一对全双工 MAC 之间；它能为需要无丢包的协议避免丢帧，但由于会扩散拥塞，只适合范围有限的网络。一个希望对端停止发送某些优先级的站点会发出 PFC 原语（36.1.2）：向多播地址 01-80-C2-00-00-01、操作码 01-01 发出 M_CONTROL.request，携带 priority_enable_vector（暂停 8 个优先级中的哪些）和 time_vector（八个 time[n] 值，单位为 pause_quanta = 以 MAC 速率发送 512 比特所需的时间）。只要任一优先级启用了 PFC，就不再使用 IEEE 802.3 的 PAUSE 机制。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant A as Station 1 (congested)\n  participant B as Station 2\n  A->>B: M_CONTROL.request 01-80-C2-00-00-01 opcode 01-01\n  Note over A,B: priority_enable_vector + time_vector\n  B->>B: M_CONTROL.indication -> start priority_timer[n]\n  Note over B: Priority_Paused[n] = TRUE\n  B-->>B: timer counts down\n  Note over B: Priority_Paused[n] = FALSE, resume",
+      "zh": "sequenceDiagram\n  participant A as 站点1（拥塞）\n  participant B as 站点2\n  A->>B: M_CONTROL.request 01-80-C2-00-00-01 操作码 01-01\n  Note over A,B: priority_enable_vector + time_vector\n  B->>B: M_CONTROL.indication -> 启动 priority_timer[n]\n  Note over B: Priority_Paused[n] = TRUE\n  B-->>B: 计时器倒数\n  Note over B: Priority_Paused[n] = FALSE，恢复发送"
+    },
+    {
+      "type": "prose",
+      "en": "On the receiving side (36.1.3 Detailed specification), the PFC Receiver keeps eight booleans Priority_Paused[n]. When an indication arrives, each enabled timer is loaded with the corresponding time value; Priority_Paused[n] becomes TRUE while its priority_timer[n] is nonzero and FALSE when it counts down to zero (a time of zero is the same as 'unpause'). Clause 36.1.3.3 (Timing considerations) puts a hard upper bound on the reaction: without MACsec a queue must enter the paused state within 614.4 ns of the indication; with MACsec, add a 'SecY transmit delay'. Clause 36.2 then frames this as two queue functions in a PFC-aware system: the PFC Initiator (36.2.1) generates the requests when an input buffer crosses a threshold, and the PFC Receiver (36.2.2) processes indications per physical port and exposes Priority_Paused[n] to Transmission Selection (even when running above Link Aggregation).",
+      "zh": "在接收侧（36.1.3 详细规范），PFC Receiver 维护八个布尔量 Priority_Paused[n]。收到 indication 时，每个被使能的计时器装入对应的 time 值；当 priority_timer[n] 非零时 Priority_Paused[n] 为 TRUE，倒数到零时变为 FALSE（time 为零等同于“解除暂停”）。第 36.1.3.3 节（时序考量）对响应给出硬上限：不使用 MACsec 时，队列须在 indication 之后 614.4 ns 内进入暂停状态；使用 MACsec 时再加上一段“SecY 发送延迟”。第 36.2 节将其归纳为 PFC 感知系统中的两个队列功能：PFC Initiator（36.2.1）在输入缓冲越过阈值时生成请求，PFC Receiver（36.2.2）按物理端口处理 indication 并把 Priority_Paused[n] 提供给传输选择（即便运行在链路聚合之上）。"
+    },
+    {
+      "type": "prose",
+      "en": "Enhanced Transmission Selection (ETS, Clause 37.1 Overview) sits above PFC: it shares bandwidth among traffic classes so that LAN, storage, clustering and management traffic can coexist. ETS coexists with the strict-priority and credit-based shaper algorithms; clause 37.1.1 just reminds you to assign traffic classes carefully (per 34.5) when mixing them. The ETS configuration parameters (37.2) are: numTrafficClassesSupported (minimum 3, maximum 8), TCPriorityAssignment(P) mapping each priority to a traffic class, and TCBandwidth(N) the percentage of bandwidth per class summing to 100%. A class only runs ETS if its Transmission Selection Algorithm Table entry is value 2. All of this must be configured via DCBX (Clause 38).",
+      "zh": "增强传输选择（ETS，第 37.1 节概述）位于 PFC 之上：它在各流量类（traffic class）之间分配带宽，使局域网、存储、集群和管理流量得以共存。ETS 与严格优先级、基于信用的整形器算法并存；第 37.1.1 节只是提醒你在混用时要按 34.5 谨慎分配流量类。ETS 配置参数（37.2）包括：numTrafficClassesSupported（最少 3、最多 8）、把每个优先级 P 映射到某流量类的 TCPriorityAssignment(P)，以及各类带宽百分比、合计为 100% 的 TCBandwidth(N)。只有当某流量类在传输选择算法表中的取值为 2 时才运行 ETS。这些都必须通过 DCBX（第 38 章）配置。"
+    },
+    {
+      "type": "prose",
+      "en": "The ETS algorithm itself (37.3) is deliberately not pinned down: any bandwidth-sharing scheme (e.g. weighted round robin) is allowed as long as it meets the performance requirements. The key rule is that each ETS class gets its configured percentage of the Available Bandwidth (link bandwidth left after non-ETS classes are served), with 1% granularity; an under-loaded class lends its share to others. When fully loaded and no congestion (no PFC frames), an ETS class's delivered bandwidth must not deviate from its allocation by more than 10% over a 10 000 000-bit-time window. At least 3 traffic classes are required. Clause 37.4 (Legacy configuration) notes that strict-priority scheduling stays the default (algorithm value 0) and the default priority-to-traffic-class mapping is unchanged when ETS is used.",
+      "zh": "ETS 算法本身（37.3）有意不作硬性规定：只要满足性能要求，任何带宽共享方案（如加权轮询）都可以。关键规则是：每个 ETS 类按 1% 粒度获得其配置的“可用带宽”百分比（可用带宽 = 服务完非 ETS 类后剩余的链路带宽）；负载不足的类会把自己的份额借给其他类。在满载且无拥塞（无 PFC 帧）时，某 ETS 类实际交付的带宽在 10 000 000 比特时间窗口内偏离其分配不得超过 10%。至少需支持 3 个流量类。第 37.4 节（传统配置）指出，严格优先级调度仍是默认（算法取值 0），且启用 ETS 时默认的优先级到流量类映射保持不变。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: PFC keeps loss-sensitive priorities from being dropped (per-priority pause), while ETS keeps bandwidth-hungry classes from starving each other (weighted sharing). DCBX is the discovery-and-negotiation glue that auto-configures both across a link so two boxes don't have to be hand-matched.",
+      "zh": "思维模型：PFC 防止对丢包敏感的优先级被丢弃（按优先级暂停），ETS 防止抢带宽的流量类相互饿死（加权共享）。DCBX 则是发现与协商的“黏合剂”，跨链路自动配置二者，免去对两台设备逐一手工对齐。"
+    },
+    {
+      "type": "prose",
+      "en": "The Data Center Bridging eXchange protocol (DCBX, Clause 38.1 Overview) lets DCB devices exchange configuration with directly connected peers and detect misconfiguration; the base protocol defines state machines and TLVs (Type-Length-Value structures) for ETS, PFC, the Application Priority TLV and the Application VLAN TLV. Its goals (38.2) are: discovery of DCB capability in a peer, feature misconfiguration detection, and peer configuration of features when the peer is willing. DCBX recognizes three attribute types (38.3): informational attributes (38.3.1), which are simply advertised via LLDP with no state machine, plus asymmetric and symmetric attributes handled by state machines. Clause 38.4 (DCBX and LLDP) carries everything over the Link Layer Discovery Protocol (LLDP, IEEE Std 802.1AB) using the IEEE 802.1 OUI 00-80-C2; DCBX is enabled by default, expects a point-to-point link, and ignores a peer's TLVs if more than one DCBX peer is seen.",
+      "zh": "数据中心桥接交换协议（DCBX，第 38.1 节概述）让 DCB 设备与直连对端交换配置并检测误配置；基础协议为 ETS、PFC、应用优先级 TLV 和应用 VLAN TLV 定义了状态机和 TLV（类型-长度-值结构）。其目标（38.2）是：发现对端的 DCB 能力、检测特性误配置，以及在对端“愿意”时对其进行配置。DCBX 识别三类属性（38.3）：信息型属性（38.3.1），仅通过 LLDP 通告、不参与状态机；以及由状态机处理的非对称和对称属性。第 38.4 节（DCBX 与 LLDP）将所有内容承载于链路层发现协议（LLDP，IEEE Std 802.1AB）之上，使用 IEEE 802.1 的 OUI 00-80-C2；DCBX 默认启用，期望点对点链路，若检测到多个 DCBX 对端则忽略其 TLV。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "DCBX attribute passing: asymmetric (38.4.1) vs symmetric (38.4.2)",
+        "zh": "DCBX 属性传递：非对称（38.4.1）与对称（38.4.2）"
+      },
+      "en": "Asymmetric passing (38.4.1) moves an attribute from one port to its peer where the two configs need not match. It uses a Configuration TLV (current operational state plus a Willing bit, signalling the local port will accept config) and an optional Recommendation TLV (a recommendation for the remote port's state). Its state variables (38.4.1.2) are LocalWilling, OperParam, LocalAdminParam, RemoteParam (last Recommendation TLV) and DCBXMapping; the Asymmetric state machine (38.4.1.3) sets OperParam = DCBXMapping(RemoteParam) when LocalWilling and a recommendation exist, else OperParam = LocalAdminParam. Symmetric passing (38.4.2) drives both ports to one common value using a single Configuration TLV with a Willing (W) bit: a Willing port adopts the received attribute if the sender's W bit is zero, and if both are willing, the lower numerical MAC address wins. Its state variables (38.4.2.2) add RemoteWilling, LocalMAC and RemoteMAC, and a 'Pending' indication flags that the machine is still settling.",
+      "zh": "非对称传递（38.4.1）把属性从一个端口送到其对端，二者配置不必相同。它使用配置 TLV（携带当前运行状态加 Willing 位，表示本端愿意接受配置）和可选的推荐 TLV（对远端状态的建议）。其状态变量（38.4.1.2）有 LocalWilling、OperParam、LocalAdminParam、RemoteParam（最近一次推荐 TLV）和 DCBXMapping；非对称状态机（38.4.1.3）在 LocalWilling 且存在推荐时令 OperParam = DCBXMapping(RemoteParam)，否则 OperParam = LocalAdminParam。对称传递（38.4.2）用带 Willing（W）位的单一配置 TLV 把两端驱动到同一取值：当发送方 W 位为零时，Willing 端采用收到的属性；若两端都 Willing，则数值较小的 MAC 地址胜出。其状态变量（38.4.2.2）增加了 RemoteWilling、LocalMAC、RemoteMAC，并用一个“Pending”指示表明状态机仍在收敛中。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1570,
+          1571,
+          1572
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Switching to backbone networks: the Multiple I-SID Registration Protocol (MIRP, Clause 39) is an MRP application that lets an I-component flush learned MAC addresses from its filtering database (FDB) on a per-I-SID basis. Instead of sending up to 4094 MVRPDUs (one per VLAN) to signal a topology change, one MIRPDU can do it through the Provider Instance Port (PIP). Clause 39.1.1 (Behavior of I-components) requires such a component to implement the MIRP application, the MVRP/MIRP attribute translation function, and to operate only as an MRP New-Only Participant; clause 39.1.2 (Behavior of B-components) places MIRP Participants on zero or more Customer Backbone Ports (CBPs) plus at most one non-CBP port, with the MADs interacting via MAP. The trick: MIRP attributes are 24-bit I-SID values (not 12-bit VIDs) and it is fixed to Registration Fixed (New propagated).",
+      "zh": "转到骨干网：多 I-SID 注册协议（MIRP，第 39 章）是一个 MRP 应用，让 I-组件能按 I-SID 逐个清空其过滤数据库（FDB）中学到的 MAC 地址。无需发送多达 4094 个 MVRPDU（每 VLAN 一个）来通告拓扑变化，一个 MIRPDU 即可通过提供者实例端口（PIP）完成。第 39.1.1 节（I-组件行为）要求此类组件实现 MIRP 应用、MVRP/MIRP 属性转换函数，且仅作为 MRP 仅新增参与者（New-Only Participant）运行；第 39.1.2 节（B-组件行为）将 MIRP 参与者置于零个或多个客户骨干端口（CBP）及至多一个非 CBP 端口上，各 MAD 通过 MAP 交互。要点：MIRP 属性是 24 比特 I-SID 值（而非 12 比特 VID），并固定为 Registration Fixed（New propagated）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Inside the MIRP application: clauses 39.2.1 – 39.2.5",
+        "zh": "MIRP 应用内部：39.2.1 – 39.2.5 各节"
+      },
+      "en": "Clause 39.2.1 defines the MRP elements: 39.2.1.1 the S-VID/I-SID translation in an I-component (mapping 12-bit S-VIDs to/from the 24-bit VIP-ISID so MVRP and MIRP MADs interwork), 39.2.1.2 I-SID translation in a B-component (Local-SID at CBPs, Backbone-SID elsewhere), plus the MAP Context (39.2.1.3-4), addressing in I- and B-components (39.2.1.5-6, using the Nearest Customer Bridge group address 01-80-C2-00-00-00 or a Default Backbone Destination), the MIRP EtherType (39.2.1.7), ProtocolVersion 0x00 (39.2.1.8), the single I-SID Vector AttributeType = 1 (39.2.1.9), the 3-octet FirstValue encoding (39.2.1.10) and administrative controls (39.2.1.11). Clause 39.2.2 gives an interoperable alternate B-component model with a pair of MIRP Participants per CBP. Clause 39.2.3 (Use of 'new' declaration capability) says a received 'new' declaration removes the matching FDB entries; 39.2.4 (Attribute value support) requires support for at least 4094 attributes in an I-component; 39.2.5 (MRP Message filtering) says a participant in New-propagated mode ignores any message whose attribute is not a valid VIP-ISID, Local-SID or Backbone-SID.",
+      "zh": "第 39.2.1 节定义 MRP 元素：39.2.1.1 为 I-组件中的 S-VID/I-SID 转换（在 12 比特 S-VID 与 24 比特 VIP-ISID 间映射，使 MVRP 与 MIRP 的 MAD 互通），39.2.1.2 为 B-组件中的 I-SID 转换（CBP 处用 Local-SID，其他处用 Backbone-SID），还有 MAP 上下文（39.2.1.3-4）、I- 与 B-组件中的寻址（39.2.1.5-6，使用最近客户桥组地址 01-80-C2-00-00-00 或默认骨干目的地址）、MIRP EtherType（39.2.1.7）、协议版本 0x00（39.2.1.8）、单一 I-SID 向量 AttributeType = 1（39.2.1.9）、3 字节 FirstValue 编码（39.2.1.10）和管理控制（39.2.1.11）。第 39.2.2 节给出一个可互操作的 B-组件替代模型，每个 CBP 上有一对 MIRP 参与者。第 39.2.3 节（“新增”声明能力的使用）规定收到“new”声明会删除匹配的 FDB 表项；39.2.4 节（属性值支持）要求 I-组件至少支持 4094 个属性；39.2.5 节（MRP 消息过滤）规定处于 New-propagated 模式的参与者会忽略任何属性不是有效 VIP-ISID、Local-SID 或 Backbone-SID 的消息。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1575,
+          1576,
+          1577,
+          1578,
+          1579,
+          1580
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Edge Virtual Bridging (EVB, Clause 40) handles the server edge: an EVB station hosts virtual stations (e.g. VMs), each reaching the network through an edge relay (ER) over a Virtual Station Interface (VSI). An ER can run as a virtual edge bridge (VEB), forwarding VM-to-VM traffic itself, or as VEPA, sending it up one Uplink Relay Port (URP) to the EVB Bridge, whose Station-facing Bridge Port (SBP) uses reflective relay (8.6.1) to bounce it back so every frame passes the bridge's policy. Clause 40.1 (Architecture without S-channels) is the simplest case (no Port-mapping S-VLAN components); clause 40.2 (Architecture with S-channels) uses Port-mapping S-VLAN components so one physical LAN carries multiple S-channels (point-to-point S-VLANs) via S-channel Access Ports (CAPs), each S-channel feeding a distinct ER. Clause 40.3 (Asymmetric architecture) covers the case where only one side has an S-VLAN component, falling back to a default S-channel on S-VID 1.",
+      "zh": "边缘虚拟桥接（EVB，第 40 章）处理服务器边缘：EVB 站点托管虚拟站点（如虚拟机），每个虚拟站点通过边缘中继（ER）经虚拟站点接口（VSI）接入网络。ER 可作为虚拟边缘桥（VEB）自行转发虚拟机之间的流量，或作为 VEPA 把流量经一个上行中继端口（URP）送到 EVB 桥，由其面向站点的桥端口（SBP）用反射中继（8.6.1）将流量弹回，使每一帧都经过桥的策略。第 40.1 节（无 S-channel 架构）是最简单的情形（无端口映射 S-VLAN 组件）；第 40.2 节（含 S-channel 架构）使用端口映射 S-VLAN 组件，使一条物理 LAN 经 S-channel 接入端口（CAP）承载多条 S-channel（点对点 S-VLAN），每条 S-channel 馈送一个不同的 ER。第 40.3 节（非对称架构）覆盖只有一侧拥有 S-VLAN 组件的情形，回退到 S-VID 1 上的默认 S-channel。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 230\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"20\" width=\"190\" height=\"190\"/><text x=\"20\" y=\"38\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">EVB station</text><rect x=\"24\" y=\"50\" width=\"60\" height=\"34\"/><text x=\"30\" y=\"71\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">VM / VSI</text><rect x=\"110\" y=\"50\" width=\"60\" height=\"34\"/><text x=\"117\" y=\"71\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">VM / VSI</text><rect x=\"60\" y=\"120\" width=\"80\" height=\"34\"/><text x=\"86\" y=\"141\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">ER</text><line x1=\"54\" y1=\"84\" x2=\"90\" y2=\"120\"/><line x1=\"140\" y1=\"84\" x2=\"110\" y2=\"120\"/><text x=\"24\" y=\"178\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">DRP</text><rect x=\"70\" y=\"178\" width=\"60\" height=\"24\"/><text x=\"86\" y=\"194\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">URP</text><line x1=\"100\" y1=\"154\" x2=\"100\" y2=\"178\"/><rect x=\"260\" y=\"20\" width=\"190\" height=\"190\"/><text x=\"270\" y=\"38\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">EVB Bridge</text><rect x=\"300\" y=\"60\" width=\"110\" height=\"30\"/><text x=\"322\" y=\"79\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">SBP (reflective)</text><rect x=\"300\" y=\"120\" width=\"110\" height=\"34\"/><text x=\"312\" y=\"141\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">C-VLAN relay</text><line x1=\"355\" y1=\"90\" x2=\"355\" y2=\"120\"/><line x1=\"130\" y1=\"190\" x2=\"300\" y2=\"75\"/><text x=\"170\" y=\"128\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\">URP - SBP link</text></svg>",
+      "caption": {
+        "en": "EVB overview (Clause 40): virtual stations reach the network via VSIs and an edge relay (ER); in VEPA mode the ER sends VM-to-VM traffic up the URP to the EVB Bridge's SBP, which reflective-relays it back so every frame is policed.",
+        "zh": "EVB 概览（第 40 章）：虚拟站点经 VSI 与边缘中继（ER）接入网络；在 VEPA 模式下，ER 把虚拟机之间的流量经 URP 送到 EVB 桥的 SBP，由其反射中继弹回，使每一帧都受策略管控。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "EVB status parameters: EVBMode (40.4.x) and NVO3 mode (40.5.x)",
+        "zh": "EVB 状态参数：EVBMode（40.4.x）与 NVO3 模式（40.5.x）"
+      },
+      "en": "Clause 40.4 attaches an EVBMode parameter to each EVB-capable port. Clause 40.4.1 (Not Supported) means no further parameters and normal bridge forwarding. Clause 40.4.2 (EVB Bridge) exposes reflectiveRelayCapable (an inherent implementation property) and operReflectiveRelayControl (whether reflective relay is currently enabled). Clause 40.4.3 (EVB station) exposes adminReflectiveRelayRequest (TRUE/FALSE: ask the bridge to enable/disable reflective relay) and operReflectiveRelayStatus (TRUE/FALSE/Unknown). Clause 40.4.4 (NVO3 Mode) says when EVBMode = NVO3 Mode an NVERole parameter is inspected and further parameters live in 40.5. Clause 40.5 amends EVB for an NVO3 Split-NVE scenario, where tNVE and nNVE replace EVB station and EVB Bridge. Clause 40.5.1 (NVERole = nNVE) sets reflectiveRelayCapable FALSE, operReflectiveRelayControl FALSE, and BGID TRUE (the nNVE controls VID assignment and uses the GroupID, equivalent to the NVO3 VNI ID, in VDP). Clause 40.5.2 (NVERole = tNVE) sets adminReflectiveRelayRequest FALSE, operReflectiveRelayStatus FALSE or Unknown, and SGID TRUE (the tNVE supports the GroupID).",
+      "zh": "第 40.4 节为每个支持 EVB 的端口附加一个 EVBMode 参数。第 40.4.1 节（Not Supported）表示无更多参数、按普通桥转发。第 40.4.2 节（EVB Bridge）暴露 reflectiveRelayCapable（实现固有属性）和 operReflectiveRelayControl（当前是否启用反射中继）。第 40.4.3 节（EVB station）暴露 adminReflectiveRelayRequest（TRUE/FALSE：请求桥启用/禁用反射中继）和 operReflectiveRelayStatus（TRUE/FALSE/Unknown）。第 40.4.4 节（NVO3 Mode）规定当 EVBMode = NVO3 Mode 时要检查 NVERole 参数，更多参数见 40.5。第 40.5 节为 NVO3 Split-NVE 场景修订 EVB，其中 tNVE 与 nNVE 取代 EVB 站点与 EVB 桥。第 40.5.1 节（NVERole = nNVE）将 reflectiveRelayCapable 设为 FALSE、operReflectiveRelayControl 设为 FALSE、BGID 设为 TRUE（nNVE 控制 VID 分配并在 VDP 中使用 GroupID，等价于 NVO3 的 VNI ID）。第 40.5.2 节（NVERole = tNVE）将 adminReflectiveRelayRequest 设为 FALSE、operReflectiveRelayStatus 设为 FALSE 或 Unknown、SGID 设为 TRUE（tNVE 支持 GroupID）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1587,
+          1588
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Quick map of the five clauses: PFC (36) = per-priority pause so lossless flows aren't dropped; ETS (37) = weighted bandwidth sharing among traffic classes; DCBX (38) = LLDP-carried negotiation that auto-configures PFC/ETS across a link; MIRP (39) = one frame to flush FDB state per I-SID in a backbone; EVB (40) = clean attachment of VMs to a physical bridge with optional reflective relay.",
+      "zh": "五章速记：PFC（36）= 按优先级暂停，使无丢包流不被丢弃；ETS（37）= 在流量类间加权共享带宽；DCBX（38）= 经 LLDP 承载的协商，跨链路自动配置 PFC/ETS；MIRP（39）= 在骨干网中用一帧按 I-SID 清空 FDB 状态；EVB（40）= 让虚拟机干净接入物理桥，并可选反射中继。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1561,
+        1562,
+        1563,
+        1564
+      ],
+      "note": "Clause 36 PFC: operation, primitives, detailed spec, timing, PFC-aware queue functions (Initiator/Receiver)"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1567,
+        1568
+      ],
+      "note": "Clause 37 ETS: overview, configuration parameters, algorithm, legacy configuration"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1569,
+        1570,
+        1571,
+        1572
+      ],
+      "note": "Clause 38 DCBX: overview, goals, attribute types, DCBX/LLDP, asymmetric and symmetric state machines"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1573,
+        1575,
+        1576,
+        1577,
+        1578,
+        1579,
+        1580
+      ],
+      "note": "Clause 39 MIRP: I-/B-component behavior and the MIRP application definition (39.2.1-39.2.5)"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1581,
+        1582,
+        1583,
+        1585,
+        1587,
+        1588
+      ],
+      "note": "Clause 40 EVB: architecture with/without and asymmetric S-channels, EVB status parameters, NVO3 mode"
+    }
+  ],
+  "covers": [
+    "8021Q-2022:36.1.1",
+    "8021Q-2022:36.1.2",
+    "8021Q-2022:36.1.3",
+    "8021Q-2022:36.2.1",
+    "8021Q-2022:36.2.2",
+    "8021Q-2022:37.1.1",
+    "8021Q-2022:37.2",
+    "8021Q-2022:37.3",
+    "8021Q-2022:37.4",
+    "8021Q-2022:38.1",
+    "8021Q-2022:38.2",
+    "8021Q-2022:38.3.1",
+    "8021Q-2022:38.4.1",
+    "8021Q-2022:38.4.2",
+    "8021Q-2022:39.1.1",
+    "8021Q-2022:39.1.2",
+    "8021Q-2022:39.2.1",
+    "8021Q-2022:39.2.2",
+    "8021Q-2022:39.2.3",
+    "8021Q-2022:39.2.4",
+    "8021Q-2022:39.2.5",
+    "8021Q-2022:40.1",
+    "8021Q-2022:40.2",
+    "8021Q-2022:40.3",
+    "8021Q-2022:40.4.1",
+    "8021Q-2022:40.4.2",
+    "8021Q-2022:40.4.3",
+    "8021Q-2022:40.4.4",
+    "8021Q-2022:40.5.1",
+    "8021Q-2022:40.5.2"
+  ],
+  "track": "bridging-tsn"
+}

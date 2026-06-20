@@ -1,0 +1,127 @@
+{
+  "id": "bridging-tsn-21",
+  "title": {
+    "en": "Spanning Tree Helper Conditions: The Shorthand Vocabulary of the State Machines",
+    "zh": "生成树辅助条件：状态机的简写词汇表"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "The Multiple Spanning Tree Protocol (MSTP) state machines in Clause 13 of IEEE Std 802.1Q-2022 are written as compact diagrams whose transitions are guarded by short Boolean expressions. To keep those diagrams readable, Clause 13.28 ('State machine conditions and parameters') gives names to two dozen recurring sub-expressions and timer look-ups. None of these is a brand-new mechanism; each is simply a piece of notational convenience — a named shorthand that the state machines reference instead of repeating a long formula. This lesson walks every one of the 25 definitions so you can read any MSTP transition fluently. Acronyms used throughout: CIST = Common and Internal Spanning Tree (the single tree that spans every bridge), MSTI = Multiple Spanning Tree Instance (one of several per-VLAN-group trees inside a region), SPT = Shortest Path Tree (the per-instance tree built by an SPT Bridge), and BPDU = Bridge Protocol Data Unit (the message bridges exchange).",
+      "zh": "IEEE Std 802.1Q-2022 第 13 章里的多生成树协议（MSTP，Multiple Spanning Tree Protocol）状态机被画成一组紧凑的图，每条状态转移都由简短的布尔表达式作为守卫条件。为了让这些图易读，13.28 节（“状态机条件与参数”）为二十多个反复出现的子表达式和定时器查询起了名字。它们都不是全新的机制，而只是记号上的便利——状态机直接引用这些命名简写，而不必每次重复一长串公式。本课逐一讲解全部 25 个定义，让你能流畅阅读任何一条 MSTP 转移。全文用到的缩写：CIST = 公共与内部生成树（贯穿所有网桥的唯一一棵树）；MSTI = 多生成树实例（一个区域内按 VLAN 分组的多棵树之一）；SPT = 最短路径树（由 SPT 网桥为每个实例构建的树）；BPDU = 网桥协议数据单元（网桥之间交换的报文）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: think of Clause 13.28 as a glossary of macros. Wherever you see one of these names in a state machine guard (for example 'allSynced' or 'rstpVersion'), you can mentally substitute the definition here. Many names just select a value out of one of three 'flavours' of tree — CIST, MSTI, or SPT — which is why the very first job of several conditions is to answer 'which kind of state machine am I?'",
+      "zh": "心智模型：把 13.28 节看成一份宏定义词表。每当你在状态机守卫条件里看到这些名字之一（例如 allSynced 或 rstpVersion），都可以在脑中替换成这里的定义。很多名字只是从三种“口味”的树——CIST、MSTI 或 SPT——中挑出一个值，这也是为什么好几个条件做的第一件事就是回答“我是哪一类状态机？”。"
+    },
+    {
+      "type": "prose",
+      "en": "Three of the definitions are exactly that 'which flavour am I' selector. cist (13.28.5) is TRUE only for CIST state machine instances, msti (13.28.13) is TRUE only for MSTI instances, and spt (13.28.22) is TRUE only for SPT instances inside an SPT Bridge — each one being FALSE for the other two flavours. Because one physical port runs a CIST instance plus one instance per MSTI, the state machine code is shared and these three Booleans let a single transition behave differently depending on which tree it is currently serving.",
+      "zh": "其中三个定义正是这种“我是哪种口味”的选择器。cist（13.28.5）仅在 CIST 状态机实例中为真，msti（13.28.13）仅在 MSTI 实例中为真，spt（13.28.22）仅在 SPT 网桥内的 SPT 实例中为真——每一个对其他两种口味都为假。由于同一个物理端口要运行一个 CIST 实例外加每个 MSTI 一个实例，状态机代码是共享的，这三个布尔量让同一条转移能根据当前服务的是哪棵树而表现出不同行为。"
+    },
+    {
+      "type": "prose",
+      "en": "Another cluster answers 'what role does this port hold?' for a given tree. cistRootPort (13.28.6) is TRUE when the CIST role of the port is Root Port, and cistDesignatedPort (13.28.7) is TRUE when it is Designated Port. On the MSTI side, mstiMasterPort (13.28.15) is TRUE if the port's role for any MSTI is Master Port, while mstiDesignatedOrTCpropagatingRootPort (13.28.14) is TRUE if, for any MSTI, the port is a Designated Port — or is a Root Port whose tcWhile (topology-change) timer is still running. Here TC stands for Topology Change; that second branch flags a root port that is still propagating a topology-change event.",
+      "zh": "另一组回答的是“这个端口在某棵树上扮演什么角色？”。cistRootPort（13.28.6）在端口的 CIST 角色为根端口时为真，cistDesignatedPort（13.28.7）在其为指定端口时为真。在 MSTI 一侧，mstiMasterPort（13.28.15）在端口对任意 MSTI 的角色为主端口（Master Port）时为真；mstiDesignatedOrTCpropagatingRootPort（13.28.14）则在对任意 MSTI 该端口为指定端口、或为根端口且其 tcWhile（拓扑变更）定时器仍在运行时为真。这里 TC 代表拓扑变更（Topology Change），第二个分支标记的是仍在传播拓扑变更事件的根端口。"
+    },
+    {
+      "type": "prose",
+      "en": "A third cluster aggregates a per-port flag across all the ports of the bridge, to decide whether the active topology is stable enough to act. allSynced (13.28.2) is the big one: for a given port and tree it is TRUE only when every port has finished its role selection (selected is TRUE, role equals selectedRole, updtInfo is FALSE) AND the relevant neighbours are 'synced' to the loop-free topology — with the exact set of neighbours depending on whether the given port is a Root/Alternate, Designated, or Master Port (and a special SPT-Region rule for Designated ports). allTransmitReady (13.28.3) is TRUE when, across all trees for the port, selected is TRUE and updtInfo is FALSE — i.e. the port has settled and may transmit. allSptAgree (13.28.1) is TRUE when agree is TRUE for the port across all SPTs. reRooted (13.28.20) is TRUE when the rrWhile (recent-root) timer has expired (is zero) on every OTHER port of the tree, confirming no other port is still mid-reroot.",
+      "zh": "第三组把某个按端口的标志在网桥所有端口上做汇总，以判断当前活动拓扑是否已稳定到可以采取行动。allSynced（13.28.2）是其中最重要的：对给定端口和给定树，仅当每个端口都完成角色选择（selected 为真、role 等于 selectedRole、updtInfo 为假）且相关邻居都已与无环拓扑“同步”时才为真——具体涉及哪组邻居取决于该端口是根/备用端口、指定端口还是主端口（指定端口另有一条 SPT 区域的特殊规则）。allTransmitReady（13.28.3）在端口对所有树都满足 selected 为真且 updtInfo 为假时为真，即端口已稳定、可以发送。allSptAgree（13.28.1）在端口对所有 SPT 的 agree 都为真时为真。reRooted（13.28.20）在该树上所有“其他”端口的 rrWhile（最近成根）定时器都已超时（为零）时为真，确认没有其他端口仍在重新成根的过程中。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Port settled?] -->|selected and not updtInfo| B[allTransmitReady]\n  A -->|all neighbours synced| C[allSynced]\n  C --> D[Port may move to Forwarding]\n  E[rrWhile zero on other ports] --> F[reRooted]",
+      "zh": "flowchart TD\n  A[端口已稳定?] -->|selected 且 updtInfo 为假| B[allTransmitReady]\n  A -->|邻居均已同步| C[allSynced]\n  C --> D[端口可进入转发]\n  E[其他端口 rrWhile 为零] --> F[reRooted]"
+    },
+    {
+      "type": "prose",
+      "en": "Several definitions are timer or parameter look-ups that select WHICH timing value applies right now. FwdDelay (13.28.10) is the Forward Delay component of the CIST's designatedTimes; MaxAge (13.28.12) is the Max Age component of designatedTimes; HelloTime (13.28.11) is the Hello Time component of the CIST's portTimes (with the recommended default in Table 13-5). Two more are computed choices: forwardDelay (13.28.9, lower-case) returns HelloTime when sendRSTP is TRUE and FwdDelay otherwise — so a Rapid Spanning Tree (RSTP) speaker uses the faster Hello-based delay; and EdgeDelay (13.28.8) returns MigrateTime when the link is point-to-point (operPointToPointMAC TRUE) and MaxAge otherwise. RSTP = Rapid Spanning Tree Protocol, the faster predecessor mode MSTP is built on.",
+      "zh": "有几个定义是定时器或参数的查询，用来选出此刻应当采用“哪个”时间值。FwdDelay（13.28.10）是 CIST 的 designatedTimes 中的转发延迟分量；MaxAge（13.28.12）是 designatedTimes 中的最大寿命分量；HelloTime（13.28.11）是 CIST 的 portTimes 中的 Hello 时间分量（推荐默认值见表 13-5）。另有两个是计算出的选择：forwardDelay（13.28.9，小写）在 sendRSTP 为真时返回 HelloTime、否则返回 FwdDelay——因此一个快速生成树（RSTP，Rapid Spanning Tree Protocol）发送方会使用更快的基于 Hello 的延迟；EdgeDelay（13.28.8）在链路为点对点（operPointToPointMAC 为真）时返回 MigrateTime、否则返回 MaxAge。RSTP 即快速生成树协议，是 MSTP 所基于的更快的前身模式。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the lower-case vs upper-case pairing: forwardDelay (a computed choice) wraps FwdDelay (a raw parameter). The standard uses capitalisation deliberately — the capitalised names (FwdDelay, MaxAge, HelloTime) are direct components of a stored times vector, while the lower-case computed ones (forwardDelay, EdgeDelay) pick between values based on current conditions.",
+      "zh": "注意小写与大写的成对关系：forwardDelay（计算选择）包裹了 FwdDelay（原始参数）。标准刻意区分大小写——首字母大写的名字（FwdDelay、MaxAge、HelloTime）是存储的时间向量的直接分量，而小写的计算量（forwardDelay、EdgeDelay）则根据当前条件在多个值之间做选择。"
+    },
+    {
+      "type": "prose",
+      "en": "A 'message received?' family routes incoming BPDUs to the right instance. rcvdAnyMsg (13.28.17) is TRUE if the per-port rcvdMsg flag is set for the CIST OR any MSTI. rcvdCistMsg (13.28.18) is TRUE only when rcvdMsg is set for the CIST. rcvdMstiMsg (13.28.19) is TRUE for a port-and-MSTI only when rcvdMsg is FALSE for the CIST but TRUE for that MSTI — ensuring CIST information is processed before the MSTI part of the same BPDU. The parallel updtInfo family follows the same shape: updtCistInfo (13.28.24) is TRUE when updtInfo is set for the CIST, and updtMstiInfo (13.28.25) is TRUE for a port-and-MSTI when updtInfo is set for that MSTI OR for the CIST. A standard NOTE explains this CIST dependency: MSTIs live inside the context of Common Spanning Tree parameters, so the machines always update CIST parameters from a received BPDU before processing the MSTI information.",
+      "zh": "一组“是否收到报文”的条件把进来的 BPDU 路由到正确的实例。rcvdAnyMsg（13.28.17）在该端口的 rcvdMsg 标志对 CIST 或任意 MSTI 置位时为真。rcvdCistMsg（13.28.18）仅在 CIST 的 rcvdMsg 置位时为真。rcvdMstiMsg（13.28.19）对某端口及某 MSTI，仅当 CIST 的 rcvdMsg 为假而该 MSTI 的 rcvdMsg 为真时才为真——以保证同一个 BPDU 中的 CIST 信息先于 MSTI 部分被处理。与之并行的 updtInfo 一组形状相同：updtCistInfo（13.28.24）在 CIST 的 updtInfo 置位时为真，updtMstiInfo（13.28.25）对某端口及某 MSTI，在该 MSTI 或 CIST 的 updtInfo 置位时为真。标准中的一条 NOTE 解释了这种对 CIST 的依赖：MSTI 存在于公共生成树参数的上下文中，因此状态机总是先用收到的 BPDU 更新 CIST 参数，再处理 MSTI 信息。"
+    },
+    {
+      "type": "prose",
+      "en": "The last few definitions cover protocol-version gating and remaining helpers. rstpVersion (13.28.21) is TRUE when ForceProtocolVersion (set in 13.7.2) is greater than or equal to 2 — meaning the port runs in RSTP/MSTP rapid mode; stpVersion (13.28.23) is the complement, TRUE when ForceProtocolVersion is less than 2, forcing the slow legacy Spanning Tree Protocol (STP) behaviour. operPointToPoint (13.28.16) is TRUE when the underlying MAC reports operPointToPointMAC TRUE (per IEEE Std 802.1AC) — a point-to-point link, which lets RSTP skip the slow timer-based handshake. Finally, BestAgreementPriority (13.28.4) is simply the best (numerically lowest) of all possible priority vectors, used as a reference 'best case' when evaluating agreements.",
+      "zh": "最后几个定义涉及协议版本的门控以及其余辅助量。rstpVersion（13.28.21）在 ForceProtocolVersion（于 13.7.2 设置）大于等于 2 时为真——表示端口运行于 RSTP/MSTP 快速模式；stpVersion（13.28.23）与之互补，在 ForceProtocolVersion 小于 2 时为真，强制采用缓慢的传统生成树协议（STP，Spanning Tree Protocol）行为。operPointToPoint（13.28.16）在底层 MAC 报告 operPointToPointMAC 为真时（依据 IEEE Std 802.1AC）为真——即点对点链路，这让 RSTP 可以跳过缓慢的基于定时器的握手。最后，BestAgreementPriority（13.28.4）就是所有可能优先级向量中最佳的（数值最小的）那个，在评估“同意”时作为参考的“最优情形”。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — all 25 conditions of Clause 13.28, by exact clause number",
+        "zh": "覆盖地图——13.28 节全部 25 个条件，按精确条款号"
+      },
+      "en": "Flavour selectors: cist (13.28.5) TRUE only for CIST; msti (13.28.13) TRUE only for MSTI; spt (13.28.22) TRUE only for SPT in an SPT Bridge. Port-role tests: cistRootPort (13.28.6) CIST role is Root Port; cistDesignatedPort (13.28.7) CIST role is Designated Port; mstiMasterPort (13.28.15) any MSTI role is Master Port; mstiDesignatedOrTCpropagatingRootPort (13.28.14) any MSTI is Designated, or Root with tcWhile non-zero. Stability aggregates: allSptAgree (13.28.1) agree TRUE across all SPTs; allSynced (13.28.2) every port selected/role-stable and the role-specific neighbour set synced; allTransmitReady (13.28.3) selected TRUE and updtInfo FALSE across all trees; reRooted (13.28.20) rrWhile zero on all other ports. Timer/parameter look-ups: EdgeDelay (13.28.8) MigrateTime if point-to-point else MaxAge; forwardDelay (13.28.9) HelloTime if sendRSTP else FwdDelay; FwdDelay (13.28.10) Forward Delay of CIST designatedTimes; HelloTime (13.28.11) Hello Time of CIST portTimes; MaxAge (13.28.12) Max Age of CIST designatedTimes. Link test: operPointToPoint (13.28.16) tracks operPointToPointMAC. Message-received: rcvdAnyMsg (13.28.17) CIST or any MSTI; rcvdCistMsg (13.28.18) CIST only; rcvdMstiMsg (13.28.19) MSTI when CIST not pending. Update-info: updtCistInfo (13.28.24) CIST updtInfo; updtMstiInfo (13.28.25) MSTI or CIST updtInfo. Version gating: rstpVersion (13.28.21) ForceProtocolVersion >= 2; stpVersion (13.28.23) ForceProtocolVersion < 2. Reference priority: BestAgreementPriority (13.28.4) numerically lowest possible priority vector.",
+      "zh": "口味选择器：cist（13.28.5）仅 CIST 为真；msti（13.28.13）仅 MSTI 为真；spt（13.28.22）仅 SPT 网桥内的 SPT 为真。端口角色判定：cistRootPort（13.28.6）CIST 角色为根端口；cistDesignatedPort（13.28.7）CIST 角色为指定端口；mstiMasterPort（13.28.15）任意 MSTI 角色为主端口；mstiDesignatedOrTCpropagatingRootPort（13.28.14）任意 MSTI 为指定端口、或为根端口且 tcWhile 非零。稳定性汇总：allSptAgree（13.28.1）所有 SPT 的 agree 为真；allSynced（13.28.2）每端口已选定且角色稳定、且按角色确定的邻居集已同步；allTransmitReady（13.28.3）所有树上 selected 为真且 updtInfo 为假；reRooted（13.28.20）所有其他端口 rrWhile 为零。定时器/参数查询：EdgeDelay（13.28.8）点对点取 MigrateTime 否则取 MaxAge；forwardDelay（13.28.9）sendRSTP 取 HelloTime 否则取 FwdDelay；FwdDelay（13.28.10）CIST designatedTimes 的转发延迟；HelloTime（13.28.11）CIST portTimes 的 Hello 时间；MaxAge（13.28.12）CIST designatedTimes 的最大寿命。链路判定：operPointToPoint（13.28.16）跟踪 operPointToPointMAC。收到报文：rcvdAnyMsg（13.28.17）CIST 或任意 MSTI；rcvdCistMsg（13.28.18）仅 CIST；rcvdMstiMsg（13.28.19）CIST 不待处理时的 MSTI。更新信息：updtCistInfo（13.28.24）CIST 的 updtInfo；updtMstiInfo（13.28.25）MSTI 或 CIST 的 updtInfo。版本门控：rstpVersion（13.28.21）ForceProtocolVersion >= 2；stpVersion（13.28.23）ForceProtocolVersion < 2。参考优先级：BestAgreementPriority（13.28.4）数值上最小的可能优先级向量。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          559,
+          560,
+          561,
+          562
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Takeaway: Clause 13.28 itself does not change the protocol; it is the named vocabulary that the Port Role Selection, Port Information, Port State Transition, and Port Timers state machines read in their guards. Knowing these 25 names by heart turns the dense MSTP transition diagrams from cryptic into readable.",
+      "zh": "要点：13.28 节本身并不改变协议；它是端口角色选择、端口信息、端口状态转移和端口定时器等状态机在守卫条件中引用的命名词汇。把这 25 个名字记熟，就能把密密麻麻的 MSTP 转移图从晦涩变得可读。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        559,
+        560,
+        561,
+        562
+      ],
+      "note": "13.28 State machine conditions and parameters, definitions 13.28.1–13.28.25"
+    }
+  ],
+  "covers": [
+    "8021Q-2022:13.28.1",
+    "8021Q-2022:13.28.2",
+    "8021Q-2022:13.28.3",
+    "8021Q-2022:13.28.4",
+    "8021Q-2022:13.28.5",
+    "8021Q-2022:13.28.6",
+    "8021Q-2022:13.28.7",
+    "8021Q-2022:13.28.8",
+    "8021Q-2022:13.28.9",
+    "8021Q-2022:13.28.10",
+    "8021Q-2022:13.28.11",
+    "8021Q-2022:13.28.12",
+    "8021Q-2022:13.28.13",
+    "8021Q-2022:13.28.14",
+    "8021Q-2022:13.28.15",
+    "8021Q-2022:13.28.16",
+    "8021Q-2022:13.28.17",
+    "8021Q-2022:13.28.18",
+    "8021Q-2022:13.28.19",
+    "8021Q-2022:13.28.20",
+    "8021Q-2022:13.28.21",
+    "8021Q-2022:13.28.22",
+    "8021Q-2022:13.28.23",
+    "8021Q-2022:13.28.24",
+    "8021Q-2022:13.28.25"
+  ],
+  "track": "bridging-tsn"
+}

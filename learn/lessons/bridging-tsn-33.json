@@ -1,0 +1,139 @@
+{
+  "id": "bridging-tsn-33",
+  "title": {
+    "en": "CFM Protocols, Part 1: Continuity Check, Loopback, Linktrace, and Their Timers",
+    "zh": "CFM 协议第一部分：连续性检查、环回、链路追踪及其计时器"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Connectivity Fault Management (CFM) is how a bridged network watches itself for breakage. Clause 20 specifies the three core CFM protocols and the machinery behind them. The actors are Maintenance association End Points (MEPs), which sit at the edges of a monitored region called a Maintenance Association (MA), and MIP Half Functions (MHFs), which sit at intermediate points inside it. A Maintenance Domain (MD) has a numeric MD Level so that nested monitoring regions never interfere. This lesson walks through the protocols intuitively, then gives every clause a precise home in a coverage map.",
+      "zh": "连通性故障管理（CFM，Connectivity Fault Management）是桥接网络自我监测故障的机制。第 20 章规定了三种核心 CFM 协议及其背后的运行机制。参与者包括维护关联端点（MEP，Maintenance association End Point），它们位于被监测区域——即维护关联（MA，Maintenance Association）——的边缘；以及 MIP 半功能（MHF，MIP Half Function），它们位于该区域内部的中间点。维护域（MD，Maintenance Domain）带有一个数字化的 MD 等级，使得嵌套的监测区域互不干扰。本课先直观讲解这些协议，再用一张覆盖图为每个条款给出精确归属。"
+    },
+    {
+      "type": "prose",
+      "en": "The Continuity Check protocol (20.1) is the heartbeat. Each MEP in an MA periodically multicasts a Continuity Check Message (CCM); it expects no reply. If a MEP fails to receive three consecutive CCMs from a peer, it declares a connectivity failure. CCMs also catch misconfiguration: a wrong transmission interval, a mismatched MEPID or MA Identifier (MAID), or a CCM arriving with an MD Level lower than the receiver's — any of these signals a cross-connect or configuration error. Each MEP uses its own local timer to detect loss, rather than trusting the sender's rate, which keeps a MEP tracking hundreds of peers simple.",
+      "zh": "连续性检查协议（20.1）是网络的心跳。MA 中的每个 MEP 周期性地以组播方式发送连续性检查消息（CCM，Continuity Check Message），且不期待任何回复。若某个 MEP 连续三次未收到某对端的 CCM，便判定为连通性故障。CCM 还能捕获配置错误：传输间隔不对、MEPID 或 MA 标识符（MAID，MA Identifier）不匹配，或者收到的 CCM 其 MD 等级低于接收方——这些都意味着交叉连接或配置错误。每个 MEP 使用自己的本地计时器来检测丢失，而非信任发送方声明的速率，这让一个 MEP 同时跟踪数百个对端时仍保持简单。"
+    },
+    {
+      "type": "prose",
+      "en": "CCMs are multicast for a reason beyond saving frames: multicast lets a MEP detect a cross-connect error when two different service instances are accidentally joined by a wiring or VLAN-mapping mistake. The CCM also carries a single Remote Defect Indication (RDI) bit. RDI absent means the sender is hearing everyone it should; RDI present lets even a receive-only MEP learn that some MEP in the MA has a defect. A sequence number in each CCM lets a receiver count occasional losses and spot a degrading link before it fails outright.",
+      "zh": "CCM 采用组播不仅是为了节省帧数：组播使得当两个不同业务实例因布线或 VLAN 映射错误被意外连通时，MEP 能够检测出交叉连接错误。CCM 还携带一个单比特的远端缺陷指示（RDI，Remote Defect Indication）。RDI 为零表示发送方正在收到所有应收到的 CCM；RDI 置位则让即便是只收不发的 MEP 也能得知 MA 中存在缺陷的 MEP。每个 CCM 中的序列号让接收方能够统计偶发丢失，从而在链路彻底失效前发现其性能正在劣化。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 480 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><circle cx=\"60\" cy=\"60\" r=\"22\"/><text x=\"60\" y=\"64\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">MEP A</text><circle cx=\"240\" cy=\"60\" r=\"22\"/><text x=\"240\" y=\"64\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">MHF</text><circle cx=\"420\" cy=\"60\" r=\"22\"/><text x=\"420\" y=\"64\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">MEP B</text><line x1=\"82\" y1=\"60\" x2=\"218\" y2=\"60\"/><line x1=\"262\" y1=\"60\" x2=\"398\" y2=\"60\"/><text x=\"150\" y=\"40\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">CCM heartbeat</text><text x=\"330\" y=\"40\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">CCM heartbeat</text><text x=\"240\" y=\"105\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">one Maintenance Association (MA), one MD Level</text></svg>",
+      "caption": {
+        "en": "Two MEPs bound a Maintenance Association; an intermediate MHF sits between them. Each MEP multicasts periodic CCMs.",
+        "zh": "两个 MEP 界定一个维护关联，中间的 MHF 位于其间。每个 MEP 周期性组播 CCM。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Once continuity is monitored, two on-demand tools handle verification and isolation. The Loopback protocol (20.2) is CFM's ping: an operator tells a MEP to send a Loopback Message (LBM) to one MP's unicast address; that MP replies with a Loopback Reply (LBR). A Loopback Transaction Identifier in each LBM lets the initiator match returning LBRs to requests and count in-sequence versus out-of-sequence replies. The responder copies the LBM payload into the LBR almost verbatim, swapping addresses and changing the OpCode from LBM to LBR — so the initiator can even compare returned data bit-for-bit.",
+      "zh": "在连通性受到监测之后，两个按需工具负责验证与故障定位。环回协议（20.2）是 CFM 的 ping：操作员命令某个 MEP 向某个 MP 的单播地址发送环回消息（LBM，Loopback Message），该 MP 以环回回复（LBR，Loopback Reply）作答。每个 LBM 中的环回事务标识符让发起方能够将返回的 LBR 与请求一一对应，并区分按序与乱序回复的计数。响应方几乎原样地把 LBM 负载复制进 LBR，仅交换地址并把操作码从 LBM 改为 LBR——因此发起方甚至可以逐比特比对返回的数据。"
+    },
+    {
+      "type": "prose",
+      "en": "The Linktrace protocol (20.3) is CFM's traceroute. A MEP Linktrace Initiator sends a Linktrace Message (LTM) carrying a target MAC address; it is relayed hop by hop until an MP at the right MD Level intercepts it and hands it to that bridge's Linktrace Responder. The responder checks its Filtering Database (FDB) to see which single egress port would carry an ordinary frame to the target, sends back a unicast Linktrace Reply (LTR) after a small random delay, and forwards an altered LTM onward with its Time-To-Live (TTL) field decremented. Collecting the LTRs reconstructs the exact path of bridges toward the target.",
+      "zh": "链路追踪协议（20.3）是 CFM 的 traceroute。MEP 链路追踪发起方发送一条携带目标 MAC 地址的链路追踪消息（LTM，Linktrace Message）；它被逐跳转发，直到处于正确 MD 等级的某个 MP 将其截获并交给该网桥的链路追踪响应方。响应方查询其过滤数据库（FDB，Filtering Database），判断哪一个出口端口会把指向目标的普通帧转发出去，在一段很短的随机延迟后回送一条单播链路追踪回复（LTR，Linktrace Reply），并把生存时间（TTL，Time-To-Live）字段减一后将修改过的 LTM 继续向前转发。收集这些 LTR 便可重建出通往目标的逐跳网桥路径。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant I as MEP Initiator\n  participant B1 as Bridge 1 Responder\n  participant B2 as Bridge 2 Responder\n  I->>B1: LTM (target MAC, TTL)\n  B1-->>I: LTR (after random delay)\n  B1->>B2: LTM forwarded (TTL-1)\n  B2-->>I: LTR (after random delay)\n  Note over I: collect LTRs, rebuild path",
+      "zh": "sequenceDiagram\n  participant I as MEP 发起方\n  participant B1 as 网桥1 响应方\n  participant B2 as 网桥2 响应方\n  I->>B1: LTM (目标MAC, TTL)\n  B1-->>I: LTR (随机延迟后)\n  B1->>B2: 转发 LTM (TTL-1)\n  B2-->>I: LTR (随机延迟后)\n  Note over I: 收集 LTR, 重建路径"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why the random LTR delay and TTL? Many bridges on a shared LAN may receive one LTM. Making each reply conditional on an FDB query ensures at most one bridge answers per path, while the TTL stops an LTM from looping forever during a topology change. The random 0–1 s spread on LTRs keeps the initiator from being swamped if replies do arrive along several paths.",
+      "zh": "为何要给 LTR 加随机延迟和 TTL？共享 LAN 上的众多网桥可能都收到同一条 LTM。让每次回复都以 FDB 查询为条件，可确保每条路径上至多一个网桥作答；而 TTL 则防止 LTM 在拓扑变化期间无限循环。LTR 上 0 到 1 秒的随机延迟，使得即便回复确实沿多条路径返回，发起方也不会被瞬间淹没。"
+    },
+    {
+      "type": "prose",
+      "en": "These protocols are driven by state machines (20.4) and the timer variables that pace them (20.5). The timers fall into tidy groups. One LTFwhile times out expected LTRs for the whole system. Per MEP there is CCIwhile (paces CCM transmission), errorCCMwhile (times out invalid CCMs), xconCCMwhile (times out cross-connect CCMs), LBIwhile (awaits LBRs), and FNGwhile (lets the Fault Notification Generator wait for defects to settle). PBB-TE MEPs that implement the Traffic field add mmCCMwhile, mmLocwhile, and mmFNGwhile for mismatch handling. Finally, one rMEPwhile per remote MEP times out that peer's CCMs — its granularity is tuned so a defect fires after exactly three lost CCMs, never two.",
+      "zh": "这些协议由状态机（20.4）及为其定速的计时器变量（20.5）驱动。计时器分为几个清晰的组别。全系统共有一个 LTFwhile，用于为预期的 LTR 计时超时。每个 MEP 各有：CCIwhile（为 CCM 发送定速）、errorCCMwhile（为无效 CCM 计时超时）、xconCCMwhile（为交叉连接 CCM 计时超时）、LBIwhile（等待 LBR）以及 FNGwhile（让故障通告生成器等待缺陷稳定）。实现了 Traffic 字段的 PBB-TE MEP 还增加 mmCCMwhile、mmLocwhile 与 mmFNGwhile 用于失配处理。最后，每个远端 MEP 各有一个 rMEPwhile，为该对端的 CCM 计时超时——其粒度经过调校，使缺陷恰在丢失三个 CCM 后触发，绝不会在仅丢两个时触发。"
+    },
+    {
+      "type": "prose",
+      "en": "Two small but essential pieces tie it together. The procedure CCMtime() (20.6.1) converts a CCM-interval code into the actual time value the CCIwhile and rMEPwhile timers use. The Maintenance Domain variable mdLevel (20.7.1) holds the integer MD Level shared across that domain's state machines. And the MA variable CCMinterval (20.8.1) holds the configured spacing between CCM transmissions — the single knob that, fed through CCMtime(), sets the whole continuity-check rhythm.",
+      "zh": "两个虽小却关键的部件把整体串联起来。过程 CCMtime()（20.6.1）把一个 CCM 间隔编码转换为 CCIwhile 与 rMEPwhile 计时器实际使用的时间值。维护域变量 mdLevel（20.7.1）保存该域内各状态机共享的整数 MD 等级。而 MA 变量 CCMinterval（20.8.1）保存配置的 CCM 发送间隔——这是唯一的旋钮，经 CCMtime() 转换后即设定了整个连续性检查的节奏。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause taught here, by number",
+        "zh": "覆盖图——本课所讲每个条款，按编号列出"
+      },
+      "en": "Continuity Check protocol 20.1: 20.1.1 MAC status reporting in the CCM (Port Status TLV and Interface Status TLV let an Up MEP report a failure just outboard of the MA); 20.1.2 Defects and Fault Alarms (defects are ranked by priority in Table 20-1 — xconCCM highest, RDI lowest — and only the highest is reported in an alarm); 20.1.3 CCM reception (every active MEP catalogs CCMs in its MEP CCM Database, checks MAID match and that its own MEPID is not duplicated; the optional MIP CCM Database keeps {FID, source_address, Port} triples for 24–48 h). Loopback protocol 20.2: 20.2.1 LBM transmission (operator-commanded, Loopback Transaction Identifier incremented per LBM); 20.2.2 LBM reception and LBR transmission (validity/discard rules, payload copied with address swap and OpCode change); 20.2.3 LBR reception (match transaction ID, increment in-/out-of-sequence counters, optional bit-for-bit compare). Linktrace protocol 20.3: 20.3.1 LTM origination (nextLTMtransID retained ≥5 s, Linktrace database entry created); 20.3.2 LTM reception, forwarding, and replying (Linktrace Responder, FDB egress-port test, Reply Ingress/Egress TLVs, TTL decrement); 20.3.3 LTR reception (validate against Linktrace database, create indexed entry). State machinery: 20.4 CFM state machines (Figure 20-1 relationships). Timers 20.5: 20.5.1 LTFwhile, 20.5.2 CCIwhile, 20.5.3 errorCCMwhile, 20.5.4 xconCCMwhile, 20.5.5 LBIwhile, 20.5.6 FNGwhile, 20.5.7 mmCCMwhile, 20.5.8 mmLocwhile, 20.5.9 mmFNGwhile, 20.5.10 rMEPwhile (3.25×–3.5× CCMtime bound). Procedures 20.6: 20.6.1 CCMtime(). 20.7.1 mdLevel. 20.8.1 CCMinterval.",
+      "zh": "连续性检查协议 20.1：20.1.1 CCM 中的 MAC 状态报告（端口状态 TLV 与接口状态 TLV 让 Up MEP 报告紧邻 MA 外侧的故障）；20.1.2 缺陷与故障告警（缺陷按优先级排序，见表 20-1——xconCCM 最高、RDI 最低——且仅最高者写入告警）；20.1.3 CCM 接收（每个活动 MEP 在其 MEP CCM 数据库中登记 CCM，检查 MAID 匹配且自身 MEPID 未重复；可选的 MIP CCM 数据库保留 {FID, 源地址, 端口} 三元组 24 至 48 小时）。环回协议 20.2：20.2.1 LBM 发送（由操作员命令触发，环回事务标识符逐 LBM 递增）；20.2.2 LBM 接收与 LBR 发送（有效性/丢弃规则，负载随地址交换与操作码变更被复制）；20.2.3 LBR 接收（匹配事务 ID，递增按序/乱序计数器，可选逐比特比对）。链路追踪协议 20.3：20.3.1 LTM 发起（nextLTMtransID 至少保留 5 秒，创建链路追踪数据库条目）；20.3.2 LTM 接收、转发与回复（链路追踪响应方、FDB 出口端口判定、回复入口/出口 TLV、TTL 减一）；20.3.3 LTR 接收（依据链路追踪数据库校验，创建带索引的条目）。状态机制：20.4 CFM 状态机（图 20-1 的关系）。计时器 20.5：20.5.1 LTFwhile、20.5.2 CCIwhile、20.5.3 errorCCMwhile、20.5.4 xconCCMwhile、20.5.5 LBIwhile、20.5.6 FNGwhile、20.5.7 mmCCMwhile、20.5.8 mmLocwhile、20.5.9 mmFNGwhile、20.5.10 rMEPwhile（受 3.25 至 3.5 倍 CCMtime 约束）。过程 20.6：20.6.1 CCMtime()。20.7.1 mdLevel。20.8.1 CCMinterval。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1205,
+          1206,
+          1207,
+          1208,
+          1209,
+          1210,
+          1211,
+          1212,
+          1213,
+          1214,
+          1215,
+          1216,
+          1217
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1205,
+        1206,
+        1207,
+        1208,
+        1209,
+        1210,
+        1211,
+        1212,
+        1213,
+        1214,
+        1215,
+        1216,
+        1217
+      ],
+      "note": "Clause 20.1–20.8: Continuity Check, Loopback, and Linktrace protocols; CFM state machines; timers (20.5.1–20.5.10); CCMtime(); mdLevel; CCMinterval."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:20.1.1",
+    "8021Q-2022:20.1.2",
+    "8021Q-2022:20.1.3",
+    "8021Q-2022:20.2.1",
+    "8021Q-2022:20.2.2",
+    "8021Q-2022:20.2.3",
+    "8021Q-2022:20.3.1",
+    "8021Q-2022:20.3.2",
+    "8021Q-2022:20.3.3",
+    "8021Q-2022:20.4",
+    "8021Q-2022:20.5.1",
+    "8021Q-2022:20.5.2",
+    "8021Q-2022:20.5.3",
+    "8021Q-2022:20.5.4",
+    "8021Q-2022:20.5.5",
+    "8021Q-2022:20.5.6",
+    "8021Q-2022:20.5.7",
+    "8021Q-2022:20.5.8",
+    "8021Q-2022:20.5.9",
+    "8021Q-2022:20.5.10",
+    "8021Q-2022:20.6.1",
+    "8021Q-2022:20.7.1",
+    "8021Q-2022:20.8.1"
+  ],
+  "track": "bridging-tsn"
+}

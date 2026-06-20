@@ -1,0 +1,119 @@
+{
+  "id": "bridging-tsn-42",
+  "title": {
+    "en": "MAC Status Propagation: State Machines, the MSPDU, and the Wire Format",
+    "zh": "MAC 状态传播：状态机、MSPDU 与线上格式"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This is part 2 of MAC Status Propagation (MSP) in IEEE Std 802.1Q-2022 Clause 23. Part 1 set up the model: a Two-Port MAC Relay (TPMR) — a tiny two-port bridge often built into a media converter — uses MSP so that when a link goes down on one side, the far side learns about it quickly. MSP does this through a MAC Status Shim (MSS), which gates whether frames may flow through a Port, and a MAC Status Propagation Entity (MSPE) that runs the protocol. This part covers the machinery that actually drives MSP: the two state machines, the receive and transmit processes, management counters, and the exact bytes of an MSP Protocol Data Unit (MSPDU) on the wire.",
+      "zh": "这是 IEEE Std 802.1Q-2022 第 23 章 MAC 状态传播（MSP）的第 2 部分。第 1 部分搭建了模型：双端口 MAC 中继器（TPMR）——一种常内置于介质转换器中的微型双端口网桥——利用 MSP，使得当一侧链路断开时，另一侧能够快速获知。MSP 通过 MAC 状态垫片（MSS，控制端口是否允许帧通过）和运行该协议的 MAC 状态传播实体（MSPE）来实现这一点。本部分讲解真正驱动 MSP 的机制：两个状态机、收发进程、管理计数器，以及 MSPDU（MSP 协议数据单元）在线上的精确字节格式。"
+    },
+    {
+      "type": "prose",
+      "en": "MSP runs on two cooperating state machines per Port. The Status Transition state machine (STM, clause 23.8) tracks the local MAC's condition (DOWN, ADD, UP, LOSS, PROP_ADD, PROP_LOSS) and decides when to disable the shim and when to announce an add or loss. The Status Notification state machine (SNM, clause 23.9) handles the notification handshake — it sends and waits for acknowledgements and confirmations so both ends agree on the new status before traffic resumes. Each machine is defined entirely by its state diagram (Figure 23-10 for the STM, Figure 23-11 for the SNM) plus the variables and procedures from earlier in the clause; clause 23.8 and 23.9 add no new behaviour beyond pointing at those figures.",
+      "zh": "MSP 在每个端口上运行两个相互协作的状态机。状态转换状态机（STM，第 23.8 节）跟踪本地 MAC 的状态（DOWN、ADD、UP、LOSS、PROP_ADD、PROP_LOSS），并决定何时关闭垫片、何时通告 add（接入）或 loss（断开）。状态通知状态机（SNM，第 23.9 节）处理通知握手——它发送并等待确认（ack）和确认完成（confirm），使两端在流量恢复前对新状态达成一致。每个状态机完全由其状态图定义（STM 见图 23-10，SNM 见图 23-11），外加本章前面定义的变量与过程；第 23.8、23.9 节本身不增加图之外的新行为。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> DOWN\n  DOWN --> ADD: macOperational\n  ADD --> UP: confirmed\n  UP --> LOSS: link lost\n  LOSS --> ADD: macOperational\n  ADD --> PROP_ADD: notify peer\n  LOSS --> PROP_LOSS: notify peer",
+      "zh": "stateDiagram-v2\n  [*] --> DOWN\n  DOWN --> ADD: MAC可用\n  ADD --> UP: 已确认\n  UP --> LOSS: 链路丢失\n  LOSS --> ADD: MAC可用\n  ADD --> PROP_ADD: 通知对端\n  LOSS --> PROP_LOSS: 通知对端"
+    },
+    {
+      "type": "prose",
+      "en": "Two thin processes connect the state machines to the wire. The Receive Process (clause 23.10) receives and validates incoming MSPDUs exactly as clause 23.16 specifies, then sets the matching reception variable (rxAdd, rxLoss, and so on). The Transmit Process (clause 23.11) encodes and sends MSPDUs as clauses 23.13–23.15 specify. It also enforces two simple safety rules: if it is asked to send a new MSPDU before the previous one has gone out, the older one is discarded; and if the MSS reports MAC_Operational is FALSE for the Port, the MSPDU is discarded rather than sent — you never advertise status over a link the shim has already shut.",
+      "zh": "两个轻量进程把状态机连接到线上。接收进程（第 23.10 节）严格按第 23.16 节接收并校验进入的 MSPDU，然后置位相应的接收变量（rxAdd、rxLoss 等）。发送进程（第 23.11 节）按第 23.13–23.15 节编码并发送 MSPDU。它还执行两条简单的安全规则：若在前一个 MSPDU 尚未发出时又被要求发送新的，则丢弃较旧的那个；若 MSS 报告该端口的 MAC_Operational 为 FALSE，则丢弃该 MSPDU 而不发送——绝不在垫片已关闭的链路上通告状态。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: the STM asks \"what is my link's status, and do I need to tell the neighbour?\" The SNM asks \"have we both agreed on the new status yet?\" The Receive and Transmit Processes are just the postal service — they don't decide anything, they only deliver and validate the small status packets the machines hand them.",
+      "zh": "记忆模型：STM 关心“我的链路是什么状态？需要告诉邻居吗？”；SNM 关心“双方是否已就新状态达成一致？”收发进程只是“邮政服务”——它们不做任何决策，只负责投递并校验状态机交给它们的小型状态包。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 23.12 (Management of MSP) lets management read and optionally modify the performance parameters, and maintain a set of per-Port counters. These counters are pure visibility — they count each kind of MSPDU sent and received (acksTransmitted/Received, addNotificationsTransmitted/Received, addConfirmationsTransmitted/Received, loss equivalents, etc.) plus three event counters tied to the state machines: addEvents (transitions into STM:ADD from DOWN or LOSS), lossEvents (transitions into STM:LOSS from UP or ADD), and macStatusNotifications (transitions into SNM:MAC_NOTIFICATION). They give an operator a clear picture of how often links are flapping and whether notifications are getting through.",
+      "zh": "第 23.12 节（MSP 的管理）允许管理实体读取并可选地修改性能参数，并维护一组按端口的计数器。这些计数器纯属可观测性——它们统计每类 MSPDU 的收发次数（acksTransmitted/Received、addNotificationsTransmitted/Received、addConfirmationsTransmitted/Received、loss 对应项等），外加三个与状态机绑定的事件计数器：addEvents（从 DOWN 或 LOSS 进入 STM:ADD 的次数）、lossEvents（从 UP 或 ADD 进入 STM:LOSS 的次数）以及 macStatusNotifications（进入 SNM:MAC_NOTIFICATION 的次数）。它们让运维人员清楚地了解链路抖动的频率以及通知是否成功送达。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the wire. Clause 23.13 says MSPDUs travel using the ordinary MAC Service via an LLC (Logical Link Control) entity at a MAC Service Access Point (MSAP). Each MSPDU is one MAC Service request out and one indication in, carrying destination address, source address, MSDU (MAC Service Data Unit), and priority. The four addressing rules are tight: the destination (23.13.1) is always the \"Nearest non-TPMR Bridge group address\" — a reserved multicast that every relay above the TPMR sublayer filters, so it never escapes the link; the source (23.13.2) is an individual address of the local MSAP; the priority (23.13.3) is the MSAP default and the frame carries no VLAN or priority tag; and the protocol is identified (23.13.4) by the MSP EtherType 22-E2 from Table 23-3.",
+      "zh": "现在看线上格式。第 23.13 节规定 MSPDU 通过 MSAP（MAC 服务接入点）上的 LLC（逻辑链路控制）实体，借助普通的 MAC 服务来传输。每个 MSPDU 对应一次发出的 MAC 服务请求和一次进入的指示，携带目的地址、源地址、MSDU（MAC 服务数据单元）和优先级。四条寻址规则非常严格：目的地址（23.13.1）始终是“最近非 TPMR 网桥组地址”——一个保留多播地址，TPMR 子层之上的所有中继都会将其过滤，因此它绝不会越出本条链路；源地址（23.13.2）是本地 MSAP 的一个单播地址；优先级（23.13.3）取 MSAP 默认值，且该帧不带 VLAN 或优先级标签；协议由表 23-3 中的 MSP EtherType 22-E2 标识（23.13.4）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 23.14 fixes the octet conventions so encoders and decoders agree on byte order: octets are numbered from 1 in transmission order, the lower-numbered octet holds the more significant bits of a multi-octet number (big-endian), and in diagrams octet 1 is at the top, bit 8 on the left, bit 1 on the right. With that settled, the MSPDU structure (clause 23.15, Figure 23-12) is refreshingly tiny — just two octets: octet 1 is the Protocol Version and octet 2 is the Packet Type. Clause 23.15.1 says the Protocol Version is a single unsigned octet; this version of the standard encodes 0000 0000 and all other values are reserved, and a relaying TPMR never changes it.",
+      "zh": "第 23.14 节固定了八位组（octet）约定，使编码方与解码方对字节序达成一致：八位组按发送顺序从 1 开始编号，多八位组数值中编号较小的八位组存放更高有效位（大端序），在图中八位组 1 位于顶部，位 8 在左、位 1 在右。约定确定后，MSPDU 结构（第 23.15 节，图 23-12）出奇地小——仅两个八位组：八位组 1 是协议版本（Protocol Version），八位组 2 是包类型（Packet Type）。第 23.15.1 节规定协议版本为单个无符号八位组；本版标准编码为 0000 0000，其余值均保留，且中继的 TPMR 绝不修改它。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 360 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"20\" y=\"30\" width=\"140\" height=\"40\"/><rect x=\"20\" y=\"70\" width=\"140\" height=\"40\"/><text x=\"90\" y=\"55\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Protocol Version</text><text x=\"90\" y=\"95\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Packet Type</text><text x=\"185\" y=\"55\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"start\">octet 1 (= 0x00)</text><text x=\"185\" y=\"95\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"start\">octet 2 (0–4)</text><text x=\"20\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"start\">After MSP EtherType 22-E2:</text></svg>",
+      "caption": {
+        "en": "The whole MSPDU body is two octets: Protocol Version (always 0x00) then Packet Type (0=Add, 1=Loss, 2=Add Confirmed, 3=Loss Confirmed, 4=Ack), per Figure 23-12 and Table 23-4.",
+        "zh": "整个 MSPDU 主体仅两个八位组：协议版本（恒为 0x00）后接包类型（0=Add，1=Loss，2=Add Confirmed，3=Loss Confirmed，4=Ack），见图 23-12 与表 23-4。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 23.15.2 defines the Packet Type as a single unsigned octet whose five valid values are listed in Table 23-4, each tied to the state-machine variable set on transmit and reception: MSP-Add (0), MSP-Loss (1), MSP-Add Confirmed (2), MSP-Loss Confirmed (3), and MSP-Ack (4). All other values are reserved and shall not be used. Validation of received MSPDUs (clause 23.16) is deliberately forgiving for forward-compatibility: an MSPDU is processed if and only if its destination is the group address, it carries the MSP EtherType, it is at least two octets long, and its Packet Type is one of the five table values. Otherwise it is discarded. Notably, the Protocol Version is NOT checked, and an MSPDU longer than two octets is still accepted — so a future version can add fields without breaking today's receivers.",
+      "zh": "第 23.15.2 节将包类型定义为单个无符号八位组，其五个有效值列于表 23-4，每个值都与发送/接收时置位的状态机变量绑定：MSP-Add（0）、MSP-Loss（1）、MSP-Add Confirmed（2）、MSP-Loss Confirmed（3）、MSP-Ack（4）。其余值均保留且不得使用。对收到的 MSPDU 的校验（第 23.16 节）出于前向兼容而刻意宽松：当且仅当目的地址为该组地址、携带 MSP EtherType、长度至少两个八位组、且包类型为表中五个值之一时，才处理该 MSPDU；否则丢弃。值得注意的是，协议版本不被检查，且长于两个八位组的 MSPDU 仍被接受——因此未来版本可以增加字段而不破坏今天的接收方。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, clause 23.17 (Other MSP participants) describes a useful shortcut at the end of a TPMR chain. An end station or non-TPMR Bridge sitting at the far end can choose to participate in link status notification. It listens for MSPDUs but only acts on a received loss or add — it tells its own protocol clients that connectivity changed, and immediately replies with an add confirm or loss confirm. It does not need to originate adds, losses, or acks, nor act on acks or confirms, nor start MAC status notification itself. This lets the last TPMR in the chain skip the slower MAC-status-notification path and bring the link to operational faster.",
+      "zh": "最后，第 23.17 节（其他 MSP 参与者）描述了 TPMR 链末端的一种实用捷径。位于远端的终端站或非 TPMR 网桥可以选择参与链路状态通知。它监听 MSPDU，但仅对收到的 loss 或 add 作出反应——它告知自己的协议客户端连接性已变化，并立即回复 add confirm 或 loss confirm。它无需发起 add、loss 或 ack，也无需对 ack 或 confirm 作出反应，更无需自行启动 MAC 状态通知。这使链中最后一个 TPMR 能跳过较慢的 MAC 状态通知路径，更快地让链路进入可用状态。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause in this lesson, by number",
+        "zh": "覆盖地图：本课涉及的每个条款（按编号）"
+      },
+      "en": "State machines: 23.8 Status Transition state machine (STM) — implements Figure 23-10. 23.9 Status Notification state machine (SNM) — implements Figure 23-11. Processes: 23.10 Receive Process — receive + validate per 23.16. 23.11 Transmit Process — encode + transmit per 23.13–23.15, discard a superseded MSPDU and discard when MAC_Operational is FALSE. Management: 23.12 Management of MSP — readable/modifiable performance params and per-Port counters (ack/add/loss notify + confirm transmitted & received, addEvents, lossEvents, macStatusNotifications). Addressing/identification: 23.13.1 Destination MAC Address = Nearest non-TPMR Bridge group address; 23.13.2 Source MAC Address = individual address of the MSAP; 23.13.3 Priority = MSAP default, untagged; 23.13.4 EtherType = 22-E2 (Table 23-3). Encoding: 23.14 octet/bit numbering and big-endian byte order. Structure: 23.15.1 Protocol Version = single octet, value 0x00, others reserved, unchanged on relay; 23.15.2 Packet Type = single octet, values 0–4 (Table 23-4), others reserved. Validation: 23.16 process iff dest group address + MSP EtherType + ≥2 octets + valid Packet Type; version not checked, longer MSPDUs accepted. Participants: 23.17 end station / non-TPMR Bridge acts only on received add/loss and replies with a confirm.",
+      "zh": "状态机：23.8 状态转换状态机（STM）——实现图 23-10。23.9 状态通知状态机（SNM）——实现图 23-11。进程：23.10 接收进程——按 23.16 接收并校验。23.11 发送进程——按 23.13–23.15 编码并发送，丢弃被取代的 MSPDU，并在 MAC_Operational 为 FALSE 时丢弃。管理：23.12 MSP 的管理——可读/可改的性能参数及按端口的计数器（ack/add/loss 通知与 confirm 的收发计数、addEvents、lossEvents、macStatusNotifications）。寻址/标识：23.13.1 目的 MAC 地址=最近非 TPMR 网桥组地址；23.13.2 源 MAC 地址=MSAP 的单播地址；23.13.3 优先级=MSAP 默认，不加标签；23.13.4 EtherType=22-E2（表 23-3）。编码：23.14 八位组/位编号与大端字节序。结构：23.15.1 协议版本=单八位组，值 0x00，其余保留，中继时不变；23.15.2 包类型=单八位组，值 0–4（表 23-4），其余保留。校验：23.16 当且仅当目的为组地址＋MSP EtherType＋≥2 个八位组＋有效包类型时才处理；不检查版本，更长的 MSPDU 也被接受。参与者：23.17 终端站／非 TPMR 网桥仅对收到的 add/loss 作出反应并回复 confirm。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1320,
+          1321,
+          1322,
+          1323,
+          1324
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1320,
+        1321,
+        1322,
+        1323,
+        1324
+      ],
+      "note": "Clause 23.8–23.17: STM/SNM state machines, Receive/Transmit Processes, MSP management counters, MSPDU addressing/EtherType (22-E2), octet encoding, two-octet MSPDU structure (Protocol Version + Packet Type, Table 23-4), validation rules, and other MSP participants."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:23.8",
+    "8021Q-2022:23.9",
+    "8021Q-2022:23.10",
+    "8021Q-2022:23.11",
+    "8021Q-2022:23.12",
+    "8021Q-2022:23.13.1",
+    "8021Q-2022:23.13.2",
+    "8021Q-2022:23.13.3",
+    "8021Q-2022:23.13.4",
+    "8021Q-2022:23.14",
+    "8021Q-2022:23.15.1",
+    "8021Q-2022:23.15.2",
+    "8021Q-2022:23.16",
+    "8021Q-2022:23.17"
+  ],
+  "track": "bridging-tsn"
+}

@@ -1,0 +1,135 @@
+{
+  "id": "bridging-tsn-39",
+  "title": {
+    "en": "Encoding Linktrace: The LTM Request and LTR Reply Frames",
+    "zh": "链路追踪编码：LTM 请求帧与 LTR 应答帧"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Connectivity Fault Management (CFM) is the toolkit that lets a network operator find faults in a bridged network without leaving the data plane. One of its three core tools is Linktrace — the bridge-network cousin of the IP world's `traceroute`. A Maintenance End Point (MEP, the device that originates and terminates monitoring) sends a Linktrace Message (LTM) toward a target MAC address, and every bridge along the path that hosts a Maintenance Point (MP) answers with a Linktrace Reply (LTR). Collecting the LTRs reconstructs the hop-by-hop path. This lesson dissects exactly how those two frames are laid out on the wire, field by field, as defined in Clause 21.8 (LTM) and Clause 21.9 (LTR).",
+      "zh": "连通性故障管理（CFM，Connectivity Fault Management）是一套让网络运营商无需离开数据平面就能定位桥接网络故障的工具集。它的三大核心工具之一是链路追踪（Linktrace），相当于桥接网络版的 IP `traceroute`。维护端点（MEP，Maintenance End Point，发起并终结监测的设备）向某个目标 MAC 地址发出一条链路追踪消息（LTM，Linktrace Message），路径上每个承载维护点（MP，Maintenance Point）的桥都会回复一条链路追踪应答（LTR，Linktrace Reply）。把这些 LTR 汇总起来就能逐跳还原出完整路径。本课逐字段拆解这两种帧在线路上的布局，对应标准的 21.8 节（LTM）和 21.9 节（LTR）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 660 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">LTM (21.8)</text><rect x=\"10\" y=\"30\" width=\"110\" height=\"34\"/><text x=\"18\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">CFM Header 1-4</text><rect x=\"120\" y=\"30\" width=\"100\" height=\"34\"/><text x=\"128\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Trans ID 5-8</text><rect x=\"220\" y=\"30\" width=\"55\" height=\"34\"/><text x=\"228\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">TTL 9</text><rect x=\"275\" y=\"30\" width=\"120\" height=\"34\"/><text x=\"283\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Original MAC 10-15</text><rect x=\"395\" y=\"30\" width=\"120\" height=\"34\"/><text x=\"403\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Target MAC 16-21</text><rect x=\"515\" y=\"30\" width=\"135\" height=\"34\"/><text x=\"523\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">LTM TLVs (Egress ID)</text><text x=\"10\" y=\"100\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">LTR (21.9)</text><rect x=\"10\" y=\"110\" width=\"110\" height=\"34\"/><text x=\"18\" y=\"131\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">CFM Header 1-4</text><rect x=\"120\" y=\"110\" width=\"100\" height=\"34\"/><text x=\"128\" y=\"131\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Trans ID 5-8</text><rect x=\"220\" y=\"110\" width=\"75\" height=\"34\"/><text x=\"228\" y=\"131\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">ReplyTTL 9</text><rect x=\"295\" y=\"110\" width=\"90\" height=\"34\"/><text x=\"303\" y=\"131\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Relay Act 10</text><rect x=\"385\" y=\"110\" width=\"265\" height=\"34\"/><text x=\"393\" y=\"131\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">LTR TLVs (Egress ID, Ingress, Egress)</text></svg>",
+      "caption": {
+        "en": "The two Linktrace frames share a Common CFM Header and a Transaction Identifier, then diverge: the LTM carries TTL plus Original/Target MAC; the LTR carries Reply TTL plus a Relay Action and the result-bearing TLVs.",
+        "zh": "两种链路追踪帧共用一个通用 CFM 头和事务标识符，随后分道：LTM 携带 TTL 以及发起方/目标 MAC；LTR 携带应答 TTL、一个中继动作字段以及携带结果的若干 TLV。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The LTM (Table 21-22) opens with the 4-octet Common CFM Header. Its 1-octet Flags field (21.8.1) carries one defined bit, UseFDBonly: when set, a responder must determine the egress port using only the addresses learned in the bridge's Filtering Database (FDB) and not the entries cached in the MIP CCM Database. The 1-octet First TLV Offset (21.8.2) tells a reader where the optional TLVs begin; in an LTM it is always transmitted as 17, and a conforming receiver accepts any value greater than or equal to 17. A TLV (Type-Length-Value) is the self-describing block format CFM uses for optional, extensible data.",
+      "zh": "LTM（表 21-22）以 4 字节的通用 CFM 头开头。它的 1 字节标志字段（21.8.1）只定义了一个比特 UseFDBonly：置位时，应答方只能用桥的过滤数据库（FDB，Filtering Database）中学到的地址来确定出端口，而不能用 MIP CCM 数据库中缓存的条目。1 字节的首个 TLV 偏移（First TLV Offset，21.8.2）告诉读取方可选 TLV 从哪里开始；在 LTM 中它恒为 17 发送，符合标准的接收方接受任何不小于 17 的值。TLV（类型-长度-值，Type-Length-Value）是 CFM 用于承载可选、可扩展数据的自描述块格式。"
+    },
+    {
+      "type": "prose",
+      "en": "Three fields make the LTM trace work. The 4-octet LTM Transaction Identifier (21.8.3) is copied from the MEP's `nextLTMtransID` counter so the originator can match returning LTRs to the request it sent. The 1-octet LTM TTL (Time To Live, 21.8.4) is the hop budget: each Linktrace Responder decrements it by one, returns one-less-than-its-value in the reply, and refuses to forward when the value reaches 0 or 1 (a value of 0 on input also suppresses any reply). The default is 64 when an operator does not specify one. Finally there are two 6-octet addresses: the Original MAC Address (21.8.5) is the MEP that started the trace — it stays fixed even though each hop rewrites the frame's source MAC — and the Target MAC Address (21.8.6) is the destination whose path we are tracing. Both must be individual (unicast), not group, addresses.",
+      "zh": "三个字段让 LTM 的追踪得以运作。4 字节的 LTM 事务标识符（21.8.3）从 MEP 的 `nextLTMtransID` 计数器复制而来，使发起方能把返回的 LTR 与自己发出的请求对上号。1 字节的 LTM TTL（生存时间，Time To Live，21.8.4）是跳数预算：每个链路追踪响应方将其减 1，在应答中返回比自身值小 1 的数，并在该值降到 0 或 1 时拒绝转发（入口值为 0 时还会抑制任何应答）。运营商未指定时默认为 64。最后是两个 6 字节地址：发起方 MAC 地址（21.8.5）是启动追踪的那个 MEP——尽管每一跳都会改写帧的源 MAC，它始终保持不变；目标 MAC 地址（21.8.6）是我们正在追踪其路径的目的地。两者都必须是单播（个体）地址，而非组地址。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why keep the Original MAC separate from the frame's source MAC? Because each Maintenance Intermediate Point (MIP) along the path overwrites the source MAC with its own when it forwards the LTM. Without a dedicated Original MAC field, a responder could no longer tell who actually started the trace — so 21.8.5 preserves that identity end to end.",
+      "zh": "为什么要把发起方 MAC 与帧的源 MAC 分开？因为路径上每个维护中间点（MIP，Maintenance Intermediate Point）在转发 LTM 时都会把源 MAC 改写成自己的地址。如果没有专门的发起方 MAC 字段，应答方就无法分辨究竟是谁启动了这次追踪——所以 21.8.5 把这个身份端到端地保留了下来。"
+    },
+    {
+      "type": "prose",
+      "en": "After the fixed fields come the Additional LTM TLVs (21.8.7). Exactly one is mandatory on every LTM that any Maintenance Point originates or forwards: the LTM Egress Identifier TLV. Optional ones include the Sender ID TLV and Organization-Specific TLV(s); a PBB-TE MIP TLV is mandatory only on a Provider Backbone Bridge Traffic Engineering (PBB-TE) Maintenance Association (MA). The order of these TLVs is free. The LTM Egress Identifier TLV itself (21.8.8) carries Type = 7 and an 8-octet Egress Identifier: its low-order six octets hold an EUI-48 MAC address unique to the responding system, and its high-order two octets hold an integer (usually 0) that disambiguates the sender — useful when several virtual bridges live in one physical box.",
+      "zh": "固定字段之后是附加 LTM TLV（21.8.7）。每条由任意维护点发起或转发的 LTM 都必须且只须强制携带一个：LTM 出口标识符 TLV（LTM Egress Identifier TLV）。可选的包括发送方 ID TLV（Sender ID TLV）和组织专有 TLV；PBB-TE MIP TLV 仅在运营商骨干桥流量工程（PBB-TE，Provider Backbone Bridge Traffic Engineering）维护关联（MA，Maintenance Association）中才是强制的。这些 TLV 的排列顺序不限。LTM 出口标识符 TLV 本身（21.8.8）的类型为 7，携带一个 8 字节的出口标识符：低 6 字节是响应系统唯一的 EUI-48 MAC 地址，高 2 字节是一个整数（通常为 0），用于区分发送者——当一个物理设备中运行多个虚拟桥时尤其有用。"
+    },
+    {
+      "type": "prose",
+      "en": "The LTR (Table 21-25) is the mirror image. Its Flags field (21.9.1) copies UseFDBonly from the LTM but adds two report bits: FwdYes says whether this responder forwarded the LTM onward, and TerminalMEP says whether the MP being reported is a MEP (the path's end). First TLV Offset (21.9.2) is transmitted as 6 in an LTR (receivers accept >= 6). The LTR Transaction Identifier (21.9.3) echoes the LTM's value so the originator can pair reply with request, and the Reply TTL (21.9.4) is one less than the LTM TTL that triggered it — the decremented hop count that lets the originator order the replies into a path.",
+      "zh": "LTR（表 21-25）是 LTM 的镜像。它的标志字段（21.9.1）从 LTM 复制 UseFDBonly，但增加了两个报告比特：FwdYes 表示该响应方是否继续向前转发了 LTM，TerminalMEP 表示被报告的 MP 是否为 MEP（路径终点）。LTR 中的首个 TLV 偏移（21.9.2）以 6 发送（接收方接受不小于 6 的值）。LTR 事务标识符（21.9.3）回显 LTM 的值，使发起方能把应答与请求配对；应答 TTL（21.9.4）比触发它的 LTM TTL 小 1——正是这个递减的跳数让发起方能把各条应答按顺序排成一条路径。"
+    },
+    {
+      "type": "prose",
+      "en": "The 1-octet Relay Action field (21.9.5) tells the originator how the targeted data frame would be passed through the bridge's MAC Relay Entity toward an egress port. It takes one of three values: RlyHit (1) means the LTM reached an MP whose MAC matches the target; RlyFDB (2) means the egress port was found by consulting the Filtering Database; and RlyMPDB (3) means it was found in the MIP CCM Database. That single byte is what turns a pile of replies into a meaningful diagnosis of how each hop made its forwarding decision.",
+      "zh": "1 字节的中继动作字段（Relay Action，21.9.5）告诉发起方：被追踪的数据帧将如何经由桥的 MAC 中继实体（MAC Relay Entity）送往出端口。它取三个值之一：RlyHit（1）表示 LTM 到达了一个 MAC 与目标匹配的 MP；RlyFDB（2）表示出端口是通过查询过滤数据库得到的；RlyMPDB（3）表示出端口是在 MIP CCM 数据库中找到的。正是这一个字节，把一堆应答变成了对每一跳如何做出转发决策的有意义诊断。"
+    },
+    {
+      "type": "prose",
+      "en": "The LTR's Additional TLVs (21.9.6) carry the real payload of the diagnosis. The LTR Egress Identifier TLV (21.9.7, Type = 8) holds two 8-octet fields: the Last Egress Identifier (21.9.7.1) echoes the LTM's Egress Identifier, and the Next Egress Identifier (21.9.7.2) names the responder that can forward the LTM onward (undefined when FwdYes is false). At least one of two result TLVs must also be present. The Reply Ingress TLV (21.9.8, Type = 5) is sent only if the receiving port hosts an MP in the LTM's MA; it reports an Ingress Action (21.9.8.1 — IngOK, IngDown, IngBlocked, or IngVID, telling you whether the frame would be accepted, the port is down, topology blocks it, or VLAN ID (VID) filtering drops it), an Ingress MAC Address (21.9.8.2), and a port identifier built from an Ingress Port ID Length (21.9.8.3), Subtype (21.9.8.4), and Ingress Port ID (21.9.8.5) per IEEE Std 802.1AB.",
+      "zh": "LTR 的附加 TLV（21.9.6）承载诊断的真正负载。LTR 出口标识符 TLV（21.9.7，类型 8）含两个 8 字节字段：上一出口标识符（Last Egress Identifier，21.9.7.1）回显 LTM 的出口标识符，下一出口标识符（Next Egress Identifier，21.9.7.2）指明能继续转发 LTM 的响应方（当 FwdYes 为假时其内容未定义）。两个结果 TLV 中至少须出现一个。回复入口 TLV（Reply Ingress TLV，21.9.8，类型 5）仅当接收端口在 LTM 的 MA 中承载 MP 时才发送；它报告入口动作（21.9.8.1——IngOK、IngDown、IngBlocked 或 IngVID，分别表示帧会被接受、端口已停、拓扑阻塞或 VLAN 标识符（VID）过滤丢弃）、入口 MAC 地址（21.9.8.2），以及由入口端口 ID 长度（21.9.8.3）、子类型（21.9.8.4）和入口端口 ID（21.9.8.5）按 IEEE Std 802.1AB 构成的端口标识符。"
+    },
+    {
+      "type": "prose",
+      "en": "The Reply Egress TLV (21.9.9, Type = 6) is the outbound counterpart: it appears only if the egress port toward the target could be identified and hosts an MP in the LTM's MA. It mirrors the ingress structure exactly — an Egress Action (21.9.9.1 — EgrOK, EgrDown, EgrBlocked, or EgrVID), an Egress MAC Address (21.9.9.2), and the same port-ID triple: Egress Port ID Length (21.9.9.3), Egress Port ID Subtype (21.9.9.4), and Egress Port ID (21.9.9.5). Reading the ingress and egress TLVs together tells the operator both how a frame would enter a hop and how it would leave it — a complete in-and-out picture at every bridge on the traced path.",
+      "zh": "回复出口 TLV（Reply Egress TLV，21.9.9，类型 6）是出向对应物：仅当朝目标的出端口可被识别且在 LTM 的 MA 中承载 MP 时才出现。它与入口结构完全对称——出口动作（21.9.9.1——EgrOK、EgrDown、EgrBlocked 或 EgrVID）、出口 MAC 地址（21.9.9.2），以及同样的端口 ID 三元组：出口端口 ID 长度（21.9.9.3）、出口端口 ID 子类型（21.9.9.4）和出口端口 ID（21.9.9.5）。把入口与出口 TLV 一起读，运营商就能同时看清帧如何进入一跳、又如何离开它——在被追踪路径上每个桥处形成完整的进出全景。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant MEP as Originating MEP\n  participant B1 as Bridge MP hop 1\n  participant B2 as Bridge MP hop 2\n  MEP->>B1: LTM (TTL=64, TransID=N)\n  B1->>MEP: LTR (ReplyTTL=63, RlyFDB)\n  B1->>B2: LTM (TTL=63)\n  B2->>MEP: LTR (ReplyTTL=62, RlyHit)",
+      "zh": "sequenceDiagram\n  participant MEP as 发起 MEP\n  participant B1 as 桥 MP 第1跳\n  participant B2 as 桥 MP 第2跳\n  MEP->>B1: LTM (TTL=64, 事务ID=N)\n  B1->>MEP: LTR (应答TTL=63, RlyFDB)\n  B1->>B2: LTM (TTL=63)\n  B2->>MEP: LTR (应答TTL=62, RlyHit)"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Clause-by-clause coverage map for 21.8 (LTM) and 21.9 (LTR)",
+        "zh": "21.8（LTM）与 21.9（LTR）的逐条覆盖地图"
+      },
+      "en": "LTM format (21.8): 21.8.1 Flags (UseFDBonly bit 8, rest reserved); 21.8.2 First TLV Offset (transmitted as 17, accept >= 17); 21.8.3 LTM Transaction Identifier (4 octets from nextLTMtransID); 21.8.4 LTM TTL (1 octet, decremented each hop, default 64, no forward at 0/1); 21.8.5 Original MAC Address (6 octets, the initiating MEP, individual only); 21.8.6 Target MAC Address (6 octets, traced destination, individual only); 21.8.7 Additional LTM TLVs (mandatory LTM Egress Identifier TLV; optional Sender ID, Organization-Specific; PBB-TE MIP TLV on PBB-TE MAs); 21.8.8 LTM Egress Identifier TLV (Type=7, 8-octet Egress Identifier = EUI-48 + 2-octet integer). LTR format (21.9): 21.9.1 Flags (UseFDBonly copied, plus FwdYes and TerminalMEP); 21.9.2 First TLV Offset (transmitted as 6, accept >= 6); 21.9.3 LTR Transaction Identifier (echoes LTM); 21.9.4 Reply TTL (LTM TTL minus 1); 21.9.5 Relay Action (RlyHit=1, RlyFDB=2, RlyMPDB=3); 21.9.6 Additional LTR TLVs (LTR Egress Identifier required, Reply Ingress and/or Reply Egress required, Sender ID and Organization-Specific optional); 21.9.7 LTR Egress Identifier TLV (Type=8) with 21.9.7.1 Last Egress Identifier and 21.9.7.2 Next Egress Identifier; 21.9.8 Reply Ingress TLV (Type=5) with 21.9.8.1 Ingress Action (IngOK/IngDown/IngBlocked/IngVID), 21.9.8.2 Ingress MAC Address, 21.9.8.3 Port ID Length, 21.9.8.4 Port ID Subtype, 21.9.8.5 Port ID; 21.9.9 Reply Egress TLV (Type=6) with 21.9.9.1 Egress Action (EgrOK/EgrDown/EgrBlocked/EgrVID), 21.9.9.2 Egress MAC Address, 21.9.9.3 Port ID Length, 21.9.9.4 Port ID Subtype, 21.9.9.5 Port ID.",
+      "zh": "LTM 格式（21.8）：21.8.1 标志（UseFDBonly 为第 8 位，其余保留）；21.8.2 首个 TLV 偏移（以 17 发送，接受 ≥17）；21.8.3 LTM 事务标识符（4 字节，取自 nextLTMtransID）；21.8.4 LTM TTL（1 字节，逐跳递减，默认 64，值为 0/1 时不转发）；21.8.5 发起方 MAC 地址（6 字节，发起 MEP，仅个体地址）；21.8.6 目标 MAC 地址（6 字节，被追踪目的，仅个体地址）；21.8.7 附加 LTM TLV（强制 LTM 出口标识符 TLV；可选 发送方 ID、组织专有；PBB-TE MA 上强制 PBB-TE MIP TLV）；21.8.8 LTM 出口标识符 TLV（类型 7，8 字节出口标识符 = EUI-48 + 2 字节整数）。LTR 格式（21.9）：21.9.1 标志（复制 UseFDBonly，外加 FwdYes 与 TerminalMEP）；21.9.2 首个 TLV 偏移（以 6 发送，接受 ≥6）；21.9.3 LTR 事务标识符（回显 LTM）；21.9.4 应答 TTL（LTM TTL 减 1）；21.9.5 中继动作（RlyHit=1、RlyFDB=2、RlyMPDB=3）；21.9.6 附加 LTR TLV（强制 LTR 出口标识符，至少其一的 回复入口/回复出口，可选 发送方 ID 与组织专有）；21.9.7 LTR 出口标识符 TLV（类型 8），含 21.9.7.1 上一出口标识符 与 21.9.7.2 下一出口标识符；21.9.8 回复入口 TLV（类型 5），含 21.9.8.1 入口动作（IngOK/IngDown/IngBlocked/IngVID）、21.9.8.2 入口 MAC 地址、21.9.8.3 端口 ID 长度、21.9.8.4 端口 ID 子类型、21.9.8.5 端口 ID；21.9.9 回复出口 TLV（类型 6），含 21.9.9.1 出口动作（EgrOK/EgrDown/EgrBlocked/EgrVID）、21.9.9.2 出口 MAC 地址、21.9.9.3 端口 ID 长度、21.9.9.4 端口 ID 子类型、21.9.9.5 端口 ID。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1276,
+          1277,
+          1278,
+          1279,
+          1280,
+          1281,
+          1282,
+          1283
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1276,
+        1277,
+        1278
+      ],
+      "note": "21.8 LTM format and its subclauses 21.8.1-21.8.8, including Tables 21-22, 21-23, 21-24."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1278,
+        1279,
+        1280,
+        1281,
+        1282,
+        1283
+      ],
+      "note": "21.9 LTR format and its subclauses 21.9.1-21.9.9, including Tables 21-25 through 21-32."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:21.8.1",
+    "8021Q-2022:21.8.2",
+    "8021Q-2022:21.8.3",
+    "8021Q-2022:21.8.4",
+    "8021Q-2022:21.8.5",
+    "8021Q-2022:21.8.6",
+    "8021Q-2022:21.8.7",
+    "8021Q-2022:21.8.8",
+    "8021Q-2022:21.9.1",
+    "8021Q-2022:21.9.2",
+    "8021Q-2022:21.9.3",
+    "8021Q-2022:21.9.4",
+    "8021Q-2022:21.9.5",
+    "8021Q-2022:21.9.6",
+    "8021Q-2022:21.9.7",
+    "8021Q-2022:21.9.8",
+    "8021Q-2022:21.9.9"
+  ],
+  "track": "bridging-tsn"
+}

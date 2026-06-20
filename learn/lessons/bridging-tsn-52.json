@@ -1,0 +1,126 @@
+{
+  "id": "bridging-tsn-52",
+  "title": {
+    "en": "Congestion Notification, Part 3: The Reaction Point Rate Controller",
+    "zh": "拥塞通知（第三部分）：反应点速率控制器"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In a Bridged Network (a network of switches, called bridges, that forward Ethernet frames), congestion notification lets a switch that is filling up — the Congestion Point, or CP — send a message back to the original sender so it slows down. The sender's slow-down machinery is the Reaction Point, or RP. The control message is the Congestion Notification Message, or CNM. Earlier parts of Clause 32 covered the CP. This part is the RP: how it stores state (32.13), the procedures it runs (32.14), the state machine that ties them together (32.15), and how a CNM is rebuilt when it has to cross a layered core network (32.16).",
+      "zh": "在桥接网络（由交换机——也称网桥——组成、转发以太网帧的网络）中，拥塞通知机制让快要塞满的交换机（即拥塞点，Congestion Point，简称 CP）向原始发送方回送一条消息，请它放慢速度。发送方的减速机构称为反应点（Reaction Point，简称 RP），而那条控制消息称为拥塞通知消息（Congestion Notification Message，简称 CNM）。Clause 32 前面几部分讲的是 CP，本部分讲的是 RP：它如何保存状态（32.13）、运行哪些过程（32.14）、把它们串起来的状态机（32.15），以及当 CNM 必须穿越分层核心网络时如何被重建（32.16）。"
+    },
+    {
+      "type": "prose",
+      "en": "Each RP keeps its own bag of variables (32.13). rpEnabled (32.13.1) is the on/off switch: when FALSE the state machine sits frozen in reset. rpByteCount (32.13.2) counts down octets sent; each time it reaches zero the RP reconsiders its speed. rpByteStage (32.13.3) and rpTimeStage (32.13.4) count how many byte-based and timer-based 'steps' have happened since the last CNM — together they tell the RP how confidently it can ramp back up. rpTargetRate (32.13.5) is the speed the RP is aiming for, and rpCurrentRate (32.13.6) is the speed it actually runs the rate limiter at, both in bits per second including preamble and inter-frame gap.",
+      "zh": "每个 RP 维护一组自己的变量（32.13）。rpEnabled（32.13.1）是开关：为 FALSE 时状态机冻结在复位状态。rpByteCount（32.13.2）对已发送的字节倒计数，每次归零就重新评估速率。rpByteStage（32.13.3）与 rpTimeStage（32.13.4）记录自上一条 CNM 以来发生了多少次基于字节和基于定时器的“步进”——二者共同告诉 RP 可以多有把握地重新加速。rpTargetRate（32.13.5）是 RP 瞄准的速率，rpCurrentRate（32.13.6）是它实际驱动速率限制器的速率，单位都是比特每秒，并计入前导码和帧间隙。"
+    },
+    {
+      "type": "prose",
+      "en": "Three more variables finish the set. rpFreeze (32.13.7) is a Boolean panic brake: when the output queue has no room it goes TRUE and frames stop. rpLimiterRate (32.13.8) is what the rate limiter physically obeys — it equals rpCurrentRate while rpFreeze is FALSE, and 0 while rpFreeze is TRUE. rpFb (32.13.9) — 'feedback' — holds the last value taken from the Quantized Feedback field of a CNM, or 0; this number is how strongly the CP told the RP to cut back.",
+      "zh": "还有三个变量收尾。rpFreeze（32.13.7）是布尔型的“急刹车”：当输出队列没有空间时置为 TRUE，帧停止发送。rpLimiterRate（32.13.8）是速率限制器实际遵循的值——rpFreeze 为 FALSE 时它等于 rpCurrentRate，为 TRUE 时它为 0。rpFb（32.13.9，意为“反馈”）保存从 CNM 的量化反馈字段（Quantized Feedback）取得的最新值，或为 0；这个数字代表 CP 要求 RP 减速的力度。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: rpCurrentRate is your foot on the gas, rpLimiterRate is the wheels' actual speed (zero when rpFreeze slams the brake), rpTargetRate is the speed limit sign you're driving toward, and rpFb is how hard the traffic cop just waved you down.",
+      "zh": "记忆模型：rpCurrentRate 是你踩油门的力度，rpLimiterRate 是车轮的实际转速（rpFreeze 急刹时为零），rpTargetRate 是你正驶向的限速牌，而 rpFb 则是交警刚才挥手让你减速的力度。"
+    },
+    {
+      "type": "prose",
+      "en": "The RP procedures (32.14) are the actions that change those variables. ResetCnm (32.14.1) runs on entering the reset state: it sets current and target rate back to the configured maximum, refills rpByteCount, and clears rpFb. TestRpTerminate (32.14.2) checks whether the RP can switch itself off — if it is already at max rate, its flow queue is empty, and it is enabled, then it sets rpEnabled FALSE and goes dormant until the next CNM. TransmitDataFrame (32.14.3) runs on every frame sent: it subtracts the frame's length from rpByteCount and may stamp a CN-TAG (a small tag carrying the Flow ID) onto the frame so future CNMs can be routed to the right RP.",
+      "zh": "RP 过程（32.14）是改变上述变量的具体动作。ResetCnm（32.14.1）在进入复位状态时运行：把当前速率和目标速率恢复为配置的最大值，重新填满 rpByteCount，并清零 rpFb。TestRpTerminate（32.14.2）检查 RP 能否自行关闭——若它已处于最大速率、其流队列为空、且处于使能状态，就把 rpEnabled 置 FALSE 并休眠，直到下一条 CNM 到来。TransmitDataFrame（32.14.3）在每发送一帧时运行：从 rpByteCount 中减去该帧长度，并可能为帧打上一个 CN-TAG（携带流标识符 Flow ID 的小标签），以便日后的 CNM 能被送回正确的 RP。"
+    },
+    {
+      "type": "prose",
+      "en": "The receive side has three procedures. ReceiveCnm (32.14.4) runs whenever a CNM arrives: it validates the message, reads the Flow ID from any CN-TAG to pick the right RP state machine, discards the CNM if it cannot match one, copies the Quantized Feedback into rpFb, and — if this RP was dormant — reactivates it. ProcessCnm (32.14.5) runs when the state machine reaches the 'CNM received' state: it computes a decrease factor from rpgGd (a gain constant) times rpFb, clamps it to a configured floor, multiplies rpCurrentRate down by it (never below the minimum rate), and resets the stage counters. AdjustRates (32.14.6) is the recovery half: it nudges rpTargetRate up by an 'increase' amount, then sets rpCurrentRate to the average of target and current — the classic additive-increase, multiplicative-decrease behavior.",
+      "zh": "接收侧有三个过程。ReceiveCnm（32.14.4）在每条 CNM 到达时运行：校验消息，从 CN-TAG 中读取 Flow ID 以选出正确的 RP 状态机，无法匹配则丢弃，将量化反馈值复制进 rpFb，并在该 RP 处于休眠时将其重新激活。ProcessCnm（32.14.5）在状态机进入“已收到 CNM”状态时运行：用增益常数 rpgGd 乘以 rpFb 算出一个递减因子，将其限制在配置下限之上，据此把 rpCurrentRate 乘小（但不低于最小速率），并清零各阶段计数器。AdjustRates（32.14.6）是恢复的另一半：把 rpTargetRate 抬高一个“增量”，再把 rpCurrentRate 设为目标值与当前值的平均——这正是经典的“加性增、乘性减”行为。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> RESET\n  RESET --> CNM_RECEIVED: rpEnabled and rpFb!=0\n  CNM_RECEIVED --> FAST_RECOVERY: ProcessCnm done\n  FAST_RECOVERY --> ACTIVE_INCREASE: stages reach threshold\n  ACTIVE_INCREASE --> HYPER_INCREASE: both stages high\n  CNM_RECEIVED --> RESET: TestRpTerminate disables",
+      "zh": "stateDiagram-v2\n  [*] --> 复位\n  复位 --> 已收到CNM: rpEnabled且rpFb非0\n  已收到CNM --> 快速恢复: ProcessCnm完成\n  快速恢复 --> 主动增速: 阶段达到阈值\n  主动增速 --> 超速增速: 两阶段都很高\n  已收到CNM --> 复位: TestRpTerminate关闭"
+    },
+    {
+      "type": "prose",
+      "en": "The RP rate control state machine (32.15, Figure 32-2) wires these procedures together. It is held in RPR_RESET while the system 'BEGIN' flag is TRUE or rpEnabled is FALSE. When BEGIN clears and a CNM arrives with a negative Quantized Feedback (a request to slow down), rpFb becomes nonzero and forces the machine into RPR_CNM_RECEIVED, which runs ProcessCnm and clears rpFb back to 0. From there the machine climbs back up through Fast Recovery, Active Increase, and Hyper Increase phases — each gated by rpByteStage and rpTimeStage crossing rpgThreshold — applying AdjustRates with progressively larger increments to reclaim bandwidth, until either a new CNM restarts the cut or TestRpTerminate parks the RP.",
+      "zh": "RP 速率控制状态机（32.15，图 32-2）把这些过程连接起来。当系统的 BEGIN 标志为 TRUE 或 rpEnabled 为 FALSE 时，它停留在 RPR_RESET。当 BEGIN 清零、且到来的 CNM 携带负的量化反馈（即减速请求）时，rpFb 变为非零，强制状态机进入 RPR_CNM_RECEIVED，运行 ProcessCnm 并把 rpFb 清回 0。此后状态机依次经由“快速恢复”“主动增速”“超速增速”阶段往上爬——每一步都由 rpByteStage 与 rpTimeStage 是否越过 rpgThreshold 来把关——并以逐渐增大的增量调用 AdjustRates 来收回带宽，直到新的 CNM 重新触发减速，或 TestRpTerminate 让 RP 休眠。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 400 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><polyline points=\"10,90 70,30 70,90 130,55 130,90 190,70 250,55 310,42 370,32\"/><line x1=\"10\" y1=\"100\" x2=\"390\" y2=\"100\"/><line x1=\"10\" y1=\"100\" x2=\"10\" y2=\"10\"/><text x=\"75\" y=\"25\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">CNM: multiplicative decrease</text><text x=\"200\" y=\"50\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">additive recovery</text><text x=\"15\" y=\"15\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">rpCurrentRate</text></svg>",
+      "caption": {
+        "en": "The RP saw-tooth: each CNM cuts rpCurrentRate sharply (multiplicative decrease in ProcessCnm), then AdjustRates climbs it back additively until the next CNM.",
+        "zh": "RP 的锯齿曲线：每条 CNM 都让 rpCurrentRate 急剧下降（ProcessCnm 中的乘性减），随后 AdjustRates 以加性方式将其爬升，直到下一条 CNM 到来。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 32.16 handles a harder case: a layered, hierarchical Bridged Network such as a Provider Backbone Bridged Network (PBBN), where data frames are wrapped inside extra encapsulation — an S-TAG (service tag) and/or an I-TAG (backbone instance tag). A CP deep in the core sees only that wrapper, not the original CN-TAG buried behind it, so a congestion notification and encapsulation interworking function is needed to rebuild a usable CNM. If the original sender's data (including any CN-TAG) is still the first octets the core CP sees, no interworking is needed; but if an encapsulation comes first, the interworking function must step in.",
+      "zh": "Clause 32.16 处理一种更棘手的情形：分层的层级桥接网络，例如运营商骨干桥接网络（Provider Backbone Bridged Network，简称 PBBN），其中数据帧被额外封装包裹——加上 S-TAG（业务标签）和/或 I-TAG（骨干实例标签）。深处核心的 CP 只看得到这层封装，看不到藏在后面的原始 CN-TAG，因此需要一个“拥塞通知与封装互通功能”来重建一条可用的 CNM。如果核心 CP 看到的首批字节仍是原始发送方的数据（含任何 CN-TAG），则无需互通；但若首批字节是封装头，互通功能就必须介入。"
+    },
+    {
+      "type": "prose",
+      "en": "The core CP returns the leading octets of the offending frame in the CNM's Encapsulated MSDU field, with the CN-TAG's Flow ID set to 0 because it cannot see the real one. The interworking function then reconstructs the CNM toward the true RP: in the case where the CNM is addressed to the interworking port (case 1), it derives the destination from the source address inside the Encapsulated MSDU; in the case recognized only by a known encapsulation (case 2), the addresses are left unchanged. It pulls the VLAN ID and encapsulated priority from the Encapsulated MSDU, sets drop_eligible False, copies the real Flow ID into the new CN-TAG if one is found, and strips the now-redundant encapsulation off the front of the field. The clause warns that if a network is configured so the original priority is lost (for example two congestion-notification priority values, called CNPVs, collapsed onto one backbone priority with no CN-TAG carried), CNMs can be misrouted — so carrying the CN-TAG end to end is recommended.",
+      "zh": "核心 CP 把触发拥塞那一帧的首批字节放进 CNM 的 Encapsulated MSDU 字段返回，并把 CN-TAG 的 Flow ID 置为 0，因为它看不到真正的值。互通功能随后向真正的 RP 重建这条 CNM：若 CNM 是发往互通端口的（情形 1），就从 Encapsulated MSDU 内的源地址推导出目的地址；若 CNM 仅靠已知封装识别（情形 2），地址保持不变。它从 Encapsulated MSDU 中取出 VLAN ID 与封装优先级，将 drop_eligible 置为 False，若找到真实 Flow ID 则复制进新的 CN-TAG，并把字段开头那段如今多余的封装剥除。该条款提醒：若网络配置导致原始优先级丢失（例如两个拥塞通知优先级值——称为 CNPV——被合并到同一个骨干优先级、且不携带 CN-TAG），CNM 可能被误投——因此建议端到端携带 CN-TAG。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause in this lesson, by number",
+        "zh": "覆盖地图：本课逐条对应的条款编号"
+      },
+      "en": "32.13 RP variables and its nine members: 32.13.1 rpEnabled (on/off, holds reset), 32.13.2 rpByteCount (octet countdown triggering rate reevaluation), 32.13.3 rpByteStage (byte-step count since last CNM), 32.13.4 rpTimeStage (timer-step count since last CNM), 32.13.5 rpTargetRate (aim speed), 32.13.6 rpCurrentRate (driven rate), 32.13.7 rpFreeze (suppress transmission), 32.13.8 rpLimiterRate (actual limiter rate, 0 when frozen), 32.13.9 rpFb (last Quantized Feedback). 32.14 RP procedures: 32.14.1 ResetCnm (restore max rate, clear rpFb), 32.14.2 TestRpTerminate (disable RP when at max + empty queue), 32.14.3 TransmitDataFrame (decrement rpByteCount, optionally insert CN-TAG), 32.14.4 ReceiveCnm (validate, match RP by Flow ID, set rpFb, reactivate), 32.14.5 ProcessCnm (multiplicative decrease via dec_factor), 32.14.6 AdjustRates (additive increase, average to current). 32.15 RP rate control state machine (Figure 32-2: RPR_RESET, RPR_CNM_RECEIVED, fast/active/hyper increase phases gated by rpgThreshold). 32.16 Congestion notification and encapsulation interworking function (rebuilding a CNM across PBBN-style encapsulation; cases a/b/1/2; Encapsulated MSDU handling; CN-TAG end-to-end recommendation).",
+      "zh": "32.13 RP 变量及其九个成员：32.13.1 rpEnabled（开关，保持复位）、32.13.2 rpByteCount（字节倒计数，触发速率重评估）、32.13.3 rpByteStage（自上一 CNM 起的字节步进计数）、32.13.4 rpTimeStage（自上一 CNM 起的定时器步进计数）、32.13.5 rpTargetRate（目标速率）、32.13.6 rpCurrentRate（驱动速率）、32.13.7 rpFreeze（抑制发送）、32.13.8 rpLimiterRate（限制器实际速率，冻结时为 0）、32.13.9 rpFb（最新量化反馈）。32.14 RP 过程：32.14.1 ResetCnm（恢复最大速率、清零 rpFb）、32.14.2 TestRpTerminate（处于最大速率且队列空时关闭 RP）、32.14.3 TransmitDataFrame（递减 rpByteCount，可选插入 CN-TAG）、32.14.4 ReceiveCnm（校验、按 Flow ID 匹配 RP、置 rpFb、重新激活）、32.14.5 ProcessCnm（经 dec_factor 实现乘性减）、32.14.6 AdjustRates（加性增、向当前取平均）。32.15 RP 速率控制状态机（图 32-2：RPR_RESET、RPR_CNM_RECEIVED、由 rpgThreshold 把关的快速/主动/超速增速阶段）。32.16 拥塞通知与封装互通功能（跨 PBBN 式封装重建 CNM；情形 a/b/1/2；Encapsulated MSDU 处理；端到端携带 CN-TAG 的建议）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1493,
+          1494,
+          1495,
+          1496,
+          1497,
+          1498,
+          1499
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1493,
+        1494,
+        1495,
+        1496,
+        1497,
+        1498,
+        1499
+      ],
+      "note": "Clause 32.13 RP variables, 32.14 RP procedures, 32.15 RP rate control state machine (Figure 32-2), 32.16 congestion notification and encapsulation interworking function."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:32.13.1",
+    "8021Q-2022:32.13.2",
+    "8021Q-2022:32.13.3",
+    "8021Q-2022:32.13.4",
+    "8021Q-2022:32.13.5",
+    "8021Q-2022:32.13.6",
+    "8021Q-2022:32.13.7",
+    "8021Q-2022:32.13.8",
+    "8021Q-2022:32.13.9",
+    "8021Q-2022:32.14.1",
+    "8021Q-2022:32.14.2",
+    "8021Q-2022:32.14.3",
+    "8021Q-2022:32.14.4",
+    "8021Q-2022:32.14.5",
+    "8021Q-2022:32.14.6",
+    "8021Q-2022:32.15",
+    "8021Q-2022:32.16"
+  ],
+  "track": "bridging-tsn"
+}

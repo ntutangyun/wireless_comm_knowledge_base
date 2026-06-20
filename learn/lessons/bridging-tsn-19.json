@@ -1,0 +1,135 @@
+{
+  "id": "bridging-tsn-19",
+  "title": {
+    "en": "Per-Port Spanning Tree Variables: From learning to selectedRole",
+    "zh": "每端口生成树变量：从 learning 到 selectedRole"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A bridge running a spanning tree protocol keeps a small bag of state for every port on every tree it computes. Clause 13.27 of IEEE Std 802.1Q-2022 lists each of these per-port variables one by one. This lesson walks the middle of that list (13.27.35 through 13.27.68): the booleans and records the state machines read and write as a port decides who its neighbours are, whether it may forward or learn, and what role it should play. We will first define a few key terms, then group the rest into an intuitive coverage map. Acronyms used throughout: STP = Spanning Tree Protocol; RSTP = Rapid STP; MSTP = Multiple STP; CIST = Common and Internal Spanning Tree; MSTI = Multiple Spanning Tree Instance; SPT = Shortest Path Tree; BPDU = Bridge Protocol Data Unit (the message bridges exchange).",
+      "zh": "运行生成树协议的网桥会为它所计算的每棵树上的每个端口保存一小袋状态。IEEE Std 802.1Q-2022 的 13.27 条逐一列出了这些“每端口变量”。本课讲解该列表的中段（13.27.35 至 13.27.68）：状态机在端口判断邻居是谁、能否转发或学习、应担任何种角色时所读写的布尔量与记录。我们先定义几个关键术语，再把其余变量归入一张直观的覆盖图。全文用到的缩写：STP＝生成树协议；RSTP＝快速生成树协议；MSTP＝多生成树协议；CIST＝公共与内部生成树；MSTI＝多生成树实例；SPT＝最短路径树；BPDU＝网桥协议数据单元（网桥之间交换的报文）。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the gate that controls a port's two basic behaviours. learning (13.27.35) is a Boolean set or cleared by the Port State Transitions state machine to record whether MAC-address learning is currently enabled on the port — it is the readback that says 'learning is on/off now'. Its sibling, the learn variable just before it, is the instruction; learning is the resulting state. A port that is learning is filling its filtering database with source addresses but may not yet be forwarding user traffic.",
+      "zh": "先看控制端口两项基本行为的开关。learning（13.27.35）是一个布尔量，由端口状态转换状态机置位或清除，用以记录该端口当前是否启用了 MAC 地址学习——它是“现在学习开/关”的回读值。紧挨它之前的 learn 变量是指令，而 learning 是由此产生的状态。处于 learning 的端口正在用源地址填充其过滤数据库，但可能尚未转发用户流量。"
+    },
+    {
+      "type": "prose",
+      "en": "Next come the two MSTP variables that let an instance reach the wider network. master (13.27.36) is set TRUE when the port is a Root or Designated Port for an MSTI and the bridge has chosen a Master Port for that instance — it sets the Master flag in transmitted MST BPDUs. mastered (13.27.37) records the Master flag value seen in MST BPDUs received from the LAN. Together they signal how an MSTI connects to the CIST through the Master Port. The standard notes these are forward-looking hooks that do not change connectivity today, so they are left out of the protocol-operation overviews.",
+      "zh": "接着是两个让 MSTI 实例触达更广网络的 MSTP 变量。master（13.27.36）在端口对某个 MSTI 担任根端口或指定端口、且网桥已为该实例选出主控端口（Master Port）时置 TRUE——它设置发送的 MST BPDU 中的 Master 标志。mastered（13.27.37）记录从 LAN 收到的 MST BPDU 中所见的 Master 标志值。两者共同表明某个 MSTI 如何通过主控端口连接到 CIST。标准指出它们是面向未来的预留挂钩，目前并不改变连通性，因此被排除在协议运行概览之外。"
+    },
+    {
+      "type": "prose",
+      "en": "Migration and message contents follow. mcheck (13.27.38) is a management trigger: set it to force the Port Protocol Migration state machine to send RST (or MST/SPT) BPDUs for a MigrateTime period, testing whether any legacy STP bridges remain on the LAN; it has no effect if the port is forced to plain STP. msgPriority (13.27.39) holds the priority-vector components (root identifiers, path costs, designated bridge and port identifiers) carried in a received BPDU, and msgTimes (13.27.40) holds the timer values (Message Age, Max Age, Forward Delay, Hello Time, remainingHops) from that same BPDU. These are the 'what the neighbour just told me' records the comparison logic feeds on.",
+      "zh": "随后是迁移与报文内容相关的变量。mcheck（13.27.38）是一个管理触发器：置位后强制端口协议迁移状态机在一个 MigrateTime 周期内发送 RST（或 MST/SPT）BPDU，以检测 LAN 上是否还残留旧式 STP 网桥；若端口被强制为纯 STP，则该位无效。msgPriority（13.27.39）保存收到的 BPDU 中携带的优先级向量分量（根标识符、路径开销、指定网桥与端口标识符）；msgTimes（13.27.40）保存同一 BPDU 中的定时器值（报文时龄、最大时龄、转发时延、问候时间、剩余跳数 remainingHops）。它们就是比较逻辑所依赖的“邻居刚刚告诉我什么”记录。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A useful mental split: variables ending in -Priority and -Times come in matched 'msg/port/designated' families. msgPriority/msgTimes = received from the neighbour; portPriority/portTimes = what this port currently believes; designatedPriority/designatedTimes = what it would announce as Designated. The Port Role Selection machine moves values between these slots as roles settle.",
+      "zh": "一个有用的记忆切分：以 -Priority 和 -Times 结尾的变量成对出现，构成 “msg/port/designated” 三族。msgPriority/msgTimes＝从邻居收到的；portPriority/portTimes＝本端口当前所相信的；designatedPriority/designatedTimes＝它作为指定端口将要通告的。端口角色选择状态机会在角色稳定的过程中，在这些槽位之间搬运数值。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the port-identity and reachability set. neighbourPriority (13.27.41) is the designated priority of the other bridge on a point-to-point SPT-region LAN, used to confirm SPT agreement. newInfo (13.27.42) and newInfoMsti (13.27.43) are flags set TRUE when changed CIST or MSTI information must be transmitted, cleared by the Port Transmit machine. operEdge (13.27.44) reflects whether the port is operating as an edge port (no other bridge attached), as decided by the Bridge Detection machine. portEnabled (13.27.45) is TRUE only when the underlying MAC is operational and the administrative port state is Enabled. portId (13.27.46) is this port's Port Identifier, whose top 4 priority bits can be tuned per tree.",
+      "zh": "接下来是端口身份与可达性这一组。neighbourPriority（13.27.41）是同一 SPT 区域内点到点 LAN 上对端网桥的指定优先级，用于确认 SPT 一致性。newInfo（13.27.42）和 newInfoMsti（13.27.43）是在必须发送已变更的 CIST 或 MSTI 信息时置 TRUE 的标志，由端口发送状态机清除。operEdge（13.27.44）反映端口是否作为边缘端口运行（没有其他网桥相连），由网桥检测状态机判定。portEnabled（13.27.45）仅当底层 MAC 处于可运行状态且管理端口状态为 Enabled 时才为 TRUE。portId（13.27.46）是本端口的端口标识符，其高 4 位优先级可按每棵树独立调整。"
+    },
+    {
+      "type": "prose",
+      "en": "portPriority (13.27.47) and portTimes (13.27.48) are the port's own currently-held priority vector and timer values — the working copy used in transmitted BPDUs. proposed (13.27.49) and proposing (13.27.50) drive the rapid handshake: a Designated Port sets proposing to ask its neighbour to agree to it forwarding quickly, and proposed marks that a proposal was received. pseudoRootId (13.27.51) is a Bridge Identifier configured for L2GP (Layer 2 Gateway Port) operation, defaulting to the bridge's own identifier.",
+      "zh": "portPriority（13.27.47）和 portTimes（13.27.48）是端口自身当前持有的优先级向量与定时器值——发送 BPDU 时使用的工作副本。proposed（13.27.49）与 proposing（13.27.50）驱动快速握手：指定端口置 proposing 以请求邻居同意它快速转发，而 proposed 表示已收到一个提议。pseudoRootId（13.27.51）是为 L2GP（二层网关端口）运行而配置的网桥标识符，默认取本网桥自身的标识符。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[BPDU arrives] --> B[rcvdBPDU set]\n  B --> C[Port Receive SM:<br/>rcvdMsg / rcvdRSTP / rcvdSTP]\n  C --> D[rcvdInfo = rcvInfo result]\n  D --> E[rcvdInternal?<br/>same MST Region]\n  C --> F[rcvdTc / rcvdTcn / rcvdTcAck:<br/>topology change]\n  D --> G[Role Selection:<br/>selected, selectedRole, role]",
+      "zh": "flowchart TD\n  A[BPDU 到达] --> B[置 rcvdBPDU]\n  B --> C[端口接收状态机:<br/>rcvdMsg / rcvdRSTP / rcvdSTP]\n  C --> D[rcvdInfo = rcvInfo 结果]\n  D --> E[rcvdInternal?<br/>同一 MST 区域]\n  C --> F[rcvdTc / rcvdTcn / rcvdTcAck:<br/>拓扑变更]\n  D --> G[角色选择:<br/>selected, selectedRole, role]"
+    },
+    {
+      "type": "prose",
+      "en": "The receive-side flags trace a BPDU's journey through the port. rcvdBPDU (13.27.52) is set by the system when a valid BPDU lands and notifies the Port Receive machine; rcvdInfo (13.27.53) captures the classified result of the rcvInfo() procedure; rcvdInternal (13.27.54) is TRUE when the BPDU came from a bridge in the same MST Region. rcvdMsg (13.27.55), rcvdRSTP (13.27.56) and rcvdSTP (13.27.57) flag the message type so the bridge knows whether to speak rapid or legacy. The topology-change trio — rcvdTc (13.27.58), rcvdTcAck (13.27.59) and rcvdTcn (13.27.60) — record a topology change, its acknowledgement, and a topology change notification respectively.",
+      "zh": "接收侧的标志位勾勒出一个 BPDU 在端口内的旅程。rcvdBPDU（13.27.52）在收到有效 BPDU 时由系统置位，用以通知端口接收状态机；rcvdInfo（13.27.53）记录 rcvInfo() 过程的分类结果；rcvdInternal（13.27.54）在 BPDU 来自同一 MST 区域的网桥时为 TRUE。rcvdMsg（13.27.55）、rcvdRSTP（13.27.56）与 rcvdSTP（13.27.57）标记报文类型，让网桥知道该用快速还是旧式协议应答。拓扑变更三件套——rcvdTc（13.27.58）、rcvdTcAck（13.27.59）、rcvdTcn（13.27.60）——分别记录一次拓扑变更、对它的确认，以及一条拓扑变更通知。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally the role-and-recompute group. reRoot (13.27.61) is set by a newly chosen Root Port to push prior Root Ports to Discarding before it forwards. reselect (13.27.62) prompts recomputation of the CIST or an MSTI. The three management restrictions harden the topology: restrictedDomainRole (13.27.63) bars an SPT boundary port from becoming Root Port; restrictedRole (13.27.64) bars a port from Root Port (it becomes Alternate instead) so external bridges cannot steer the active topology; restrictedTcn (13.27.65) stops a port from propagating topology changes, preventing unwanted address flushing. role (13.27.66) is the current Port Role (DisabledPort, RootPort, DesignatedPort, AlternatePort, BackupPort, or MasterPort); selected (13.27.67) marks that role selection has run; and selectedRole (13.27.68) is the newly computed role waiting to become role.",
+      "zh": "最后是角色与重算这一组。reRoot（13.27.61）由新选出的根端口置位，以便在它转发之前先把先前的根端口推入丢弃（Discarding）状态。reselect（13.27.62）触发对 CIST 或某个 MSTI 的重新计算。三个管理限制项用于加固拓扑：restrictedDomainRole（13.27.63）禁止 SPT 边界端口成为根端口；restrictedRole（13.27.64）禁止端口担任根端口（转而成为备用端口 Alternate），使外部网桥无法操控活动拓扑；restrictedTcn（13.27.65）阻止端口传播拓扑变更，避免不必要的地址刷新。role（13.27.66）是当前端口角色（DisabledPort、RootPort、DesignatedPort、AlternatePort、BackupPort 或 MasterPort）；selected（13.27.67）标记角色选择已运行；selectedRole（13.27.68）是新算出、等待成为 role 的角色。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every variable 13.27.35–13.27.68 by exact clause",
+        "zh": "覆盖图：13.27.35–13.27.68 每个变量按精确条款编号"
+      },
+      "en": "State/forwarding: learning (13.27.35). MSTP master flags: master (13.27.36), mastered (13.27.37). Migration: mcheck (13.27.38). Received message records: msgPriority (13.27.39), msgTimes (13.27.40). Neighbour/SPT: neighbourPriority (13.27.41). Transmit flags: newInfo (13.27.42), newInfoMsti (13.27.43). Port status: operEdge (13.27.44), portEnabled (13.27.45), portId (13.27.46). Held vectors/timers: portPriority (13.27.47), portTimes (13.27.48). Rapid handshake: proposed (13.27.49), proposing (13.27.50). L2GP: pseudoRootId (13.27.51). Receive flags: rcvdBPDU (13.27.52), rcvdInfo (13.27.53), rcvdInternal (13.27.54), rcvdMsg (13.27.55), rcvdRSTP (13.27.56), rcvdSTP (13.27.57). Topology change: rcvdTc (13.27.58), rcvdTcAck (13.27.59), rcvdTcn (13.27.60). Reroot/recompute: reRoot (13.27.61), reselect (13.27.62). Management restrictions: restrictedDomainRole (13.27.63), restrictedRole (13.27.64), restrictedTcn (13.27.65). Roles: role (13.27.66), selected (13.27.67), selectedRole (13.27.68).",
+      "zh": "状态/转发：learning（13.27.35）。MSTP Master 标志：master（13.27.36）、mastered（13.27.37）。迁移：mcheck（13.27.38）。收到报文记录：msgPriority（13.27.39）、msgTimes（13.27.40）。邻居/SPT：neighbourPriority（13.27.41）。发送标志：newInfo（13.27.42）、newInfoMsti（13.27.43）。端口状态：operEdge（13.27.44）、portEnabled（13.27.45）、portId（13.27.46）。持有的向量/定时器：portPriority（13.27.47）、portTimes（13.27.48）。快速握手：proposed（13.27.49）、proposing（13.27.50）。L2GP：pseudoRootId（13.27.51）。接收标志：rcvdBPDU（13.27.52）、rcvdInfo（13.27.53）、rcvdInternal（13.27.54）、rcvdMsg（13.27.55）、rcvdRSTP（13.27.56）、rcvdSTP（13.27.57）。拓扑变更：rcvdTc（13.27.58）、rcvdTcAck（13.27.59）、rcvdTcn（13.27.60）。重根/重算：reRoot（13.27.61）、reselect（13.27.62）。管理限制：restrictedDomainRole（13.27.63）、restrictedRole（13.27.64）、restrictedTcn（13.27.65）。角色：role（13.27.66）、selected（13.27.67）、selectedRole（13.27.68）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          555,
+          556,
+          557,
+          558
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why so many booleans? RSTP/MSTP achieve sub-second convergence by replacing slow timers with explicit handshakes (proposing/proposed/agree) and crisp state flags (learning/forwarding/sync). Each variable here is one wire between two state machines; reading them in families — receive, transmit, role, restrict — is how the whole spanning-tree engine stays comprehensible.",
+      "zh": "为何有这么多布尔量？RSTP/MSTP 用显式握手（proposing/proposed/agree）和清晰的状态标志（learning/forwarding/sync）取代缓慢的定时器，从而实现亚秒级收敛。这里每个变量都是两个状态机之间的一根“信号线”；按族阅读——接收、发送、角色、限制——正是让整套生成树引擎保持可理解的方法。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        555,
+        556,
+        557,
+        558
+      ],
+      "note": "Clause 13.27 Per port variables, subclauses 13.27.34–13.27.68 (definitions of learning, master, mastered, mcheck, msgPriority/msgTimes, neighbourPriority, newInfo, operEdge, portEnabled/portId, portPriority/portTimes, proposed/proposing, pseudoRootId, rcvd* flags, reRoot/reselect, restricted* flags, role/selected/selectedRole)."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:13.27.35",
+    "8021Q-2022:13.27.36",
+    "8021Q-2022:13.27.37",
+    "8021Q-2022:13.27.38",
+    "8021Q-2022:13.27.39",
+    "8021Q-2022:13.27.40",
+    "8021Q-2022:13.27.41",
+    "8021Q-2022:13.27.42",
+    "8021Q-2022:13.27.43",
+    "8021Q-2022:13.27.44",
+    "8021Q-2022:13.27.45",
+    "8021Q-2022:13.27.46",
+    "8021Q-2022:13.27.47",
+    "8021Q-2022:13.27.48",
+    "8021Q-2022:13.27.49",
+    "8021Q-2022:13.27.50",
+    "8021Q-2022:13.27.51",
+    "8021Q-2022:13.27.52",
+    "8021Q-2022:13.27.53",
+    "8021Q-2022:13.27.54",
+    "8021Q-2022:13.27.55",
+    "8021Q-2022:13.27.56",
+    "8021Q-2022:13.27.57",
+    "8021Q-2022:13.27.58",
+    "8021Q-2022:13.27.59",
+    "8021Q-2022:13.27.60",
+    "8021Q-2022:13.27.61",
+    "8021Q-2022:13.27.62",
+    "8021Q-2022:13.27.63",
+    "8021Q-2022:13.27.64",
+    "8021Q-2022:13.27.65",
+    "8021Q-2022:13.27.66",
+    "8021Q-2022:13.27.67",
+    "8021Q-2022:13.27.68"
+  ],
+  "track": "bridging-tsn"
+}

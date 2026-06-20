@@ -1,0 +1,179 @@
+{
+  "id": "bridging-tsn-26",
+  "title": {
+    "en": "The 802.1Q MIB Toolbox: SNMP Framework and the 25 MIB Modules",
+    "zh": "802.1Q MIB 工具箱：SNMP 框架与 25 个 MIB 模块"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 17 of IEEE Std 802.1Q-2022 is the standard's machine-readable control panel. Everything a bridge can be told to do — set up a VLAN, tune a spanning tree, schedule time-sensitive traffic — also needs a precise, vendor-neutral way to be *read and written by software*. Clause 17 supplies that: a complete set of MIB modules. MIB stands for Management Information Base — a virtual database of named, typed variables (called managed objects) that a network management station can query or change. This lesson covers the front matter of the clause: 17.1 (the framework it builds on) and 17.2 (the catalog of every MIB module).",
+      "zh": "IEEE Std 802.1Q-2022 的第 17 章是整个标准面向机器的控制面板。网桥能被指挥去做的每一件事——建立一个 VLAN、调整生成树、为时间敏感流量排程——都还需要一种精确、与厂商无关、可被软件读写的方式。第 17 章正提供了这一点：一整套 MIB 模块。MIB 是 Management Information Base（管理信息库）的缩写，它是一个由命名、带类型的变量（称为受管对象 managed object）组成的虚拟数据库，网络管理站可以查询或修改这些变量。本课讲解该章的开篇部分：17.1（它所依托的框架）与 17.2（每个 MIB 模块的目录）。"
+    },
+    {
+      "type": "prose",
+      "en": "17.1 (Internet Standard Management Framework) anchors the whole clause in IETF (Internet Engineering Task Force) practice rather than inventing a new management scheme. Managed objects live in the MIB and are normally accessed through SNMP — the Simple Network Management Protocol. Each object is defined using SMI, the Structure of Management Information, and Clause 17 specifically uses SMIv2 (version 2), as described in IETF STD 58 and RFCs 2578, 2579, and 2580. Fault Alarms in this world are simply SNMP Notifications; because RFC 3413 centralizes notification control in the SNMP-TARGET-MIB and SNMP-NOTIFICATION-MIB, the 802.1Q modules do not need their own objects to switch alarms on and off.",
+      "zh": "17.1（Internet 标准管理框架）把整章锚定在 IETF（互联网工程任务组）的既有实践上，而非另起炉灶发明新的管理体系。受管对象存放于 MIB 中，通常通过 SNMP（简单网络管理协议）访问。每个对象都用 SMI（管理信息结构）来定义，第 17 章具体采用 SMIv2（第 2 版），其规范见 IETF STD 58 以及 RFC 2578、2579、2580。在这一体系里，故障告警（Fault Alarm）就是 SNMP 通知（Notification）；由于 RFC 3413 把通知控制集中到了 SNMP-TARGET-MIB 与 SNMP-NOTIFICATION-MIB，因此 802.1Q 的各模块无需再为开关告警定义自己的对象。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: SMI is the *grammar* for defining a managed object, the MIB is the *dictionary* of objects written in that grammar, and SNMP is the *messenger* that carries get/set requests over the wire. 802.1Q reuses all three from the IETF instead of reinventing them.",
+      "zh": "记忆模型：SMI 是定义受管对象的“语法”，MIB 是用这套语法写成的对象“词典”，SNMP 则是在线路上传递 get/set 请求的“信使”。802.1Q 把这三者都从 IETF 直接复用，而非重新发明。"
+    },
+    {
+      "type": "prose",
+      "en": "17.2 (Structure of the MIB) explains that the 802.1Q MIB is not one giant module but a *family* of modules, one per feature area, summarized in Table 17-1. Each row names a module, points to the subclauses that define its structure (17.2.x), textual conventions (17.3.x), object definitions (17.4.x), and module body (17.7.x), and links to the functional clause it manages. A bit of history is woven in: earlier revisions relied on MIB modules from the IETF Bridge Working Group, and per RFC 4663 responsibility for bridging MIBs was transferred to the IEEE 802.1 Working Group. Today this standard — not any prior amendment — is the definitive specification, and each module's REVISION statements record its history.",
+      "zh": "17.2（MIB 的结构）说明：802.1Q 的 MIB 并非一个庞大的单一模块，而是一个模块“家族”，每个功能领域对应一个模块，汇总于表 17-1。表中每一行命名一个模块，指向定义其结构（17.2.x）、文本约定（17.3.x）、对象定义（17.4.x）与模块正文（17.7.x）的各子条款，并链接到它所管理的功能章节。其中还穿插了一段历史：早期版本依赖 IETF 网桥工作组（Bridge Working Group）提供的 MIB 模块，依据 RFC 4663，桥接相关 MIB 的职责已移交给 IEEE 802.1 工作组。如今，权威规范是本标准本身，而非任何早期修正案；每个模块的 REVISION 语句则记录了它的演进历史。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  NMS[Management Station] -->|SNMP get/set| AG[Bridge SNMP Agent]\n  AG --> MIB[802.1Q MIB family]\n  MIB --> TC[TC-MIB: shared types]\n  MIB --> BR[BRIDGE / Q-BRIDGE]\n  MIB --> ST[Spanning Tree / MSTP]\n  MIB --> TSN[TSN: ST / PSFP / Preempt]\n  SMI[SMIv2 grammar] -.defines.-> MIB",
+      "zh": "flowchart TD\n  NMS[管理站] -->|SNMP get/set| AG[网桥 SNMP 代理]\n  AG --> MIB[802.1Q MIB 家族]\n  MIB --> TC[TC-MIB: 共享类型]\n  MIB --> BR[BRIDGE / Q-BRIDGE]\n  MIB --> ST[生成树 / MSTP]\n  MIB --> TSN[TSN: ST / PSFP / 抢占]\n  SMI[SMIv2 语法] -.定义.-> MIB"
+    },
+    {
+      "type": "prose",
+      "en": "The first module, the IEEE8021-TC-MIB (17.2.1), is special: it defines *textual conventions* (TCs) — reusable named data types shared across all the other modules, like IEEE8021BridgePortNumber, IEEE8021VlanIndex, IEEE8021PriorityCodePoint, and IEEE8021MstIdentifier (Table 17-2). Defining these once keeps every module consistent. Some older TCs (BridgeId, Timeout, PortList, VlanIdOrAny, VlanIdOrNone, VlanIdOrAnyOrNone) still come from the original IETF RFC 4318 and RFC 4363 rather than being re-imported here. The next module, the IEEE8021-BRIDGE-MIB (17.2.2), manages the base bridge (Clause 8); it descends from the IETF BRIDGE MIB (RFC 4188) and P-BRIDGE MIB (RFC 4363) but has been reindexed and rerooted, organizing objects into subtrees such as ieee8021BridgeBase, applicable to all bridge types.",
+      "zh": "第一个模块 IEEE8021-TC-MIB（17.2.1）较为特殊：它定义“文本约定”（TC，textual convention）——一组可复用、带名字的数据类型，供其他所有模块共享，例如 IEEE8021BridgePortNumber、IEEE8021VlanIndex、IEEE8021PriorityCodePoint、IEEE8021MstIdentifier（见表 17-2）。一次性定义这些类型可保证各模块的一致性。部分较早的 TC（BridgeId、Timeout、PortList、VlanIdOrAny、VlanIdOrNone、VlanIdOrAnyOrNone）仍来自原始的 IETF RFC 4318 与 RFC 4363，并未重新导入本模块。下一个模块 IEEE8021-BRIDGE-MIB（17.2.2）管理基础网桥（第 8 章）；它源自 IETF 的 BRIDGE MIB（RFC 4188）与 P-BRIDGE MIB（RFC 4363），但已重新编排索引与根节点，把对象组织进诸如 ieee8021BridgeBase（适用于所有网桥类型）这样的子树。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the naming rhythm: every module name is IEEE8021-<FEATURE>-MIB, and each maps to a functional clause. So when you meet IEEE8021-ST-MIB you can immediately guess 'Scheduled Traffic' and look to its functional clause (here, 8.6.8 and 12.29). The MIB catalog is really a second index into the whole standard.",
+      "zh": "留意命名节奏：每个模块名都是 IEEE8021-<功能>-MIB，并各自映射到一个功能章节。于是当你看到 IEEE8021-ST-MIB 时，可立刻猜出它是“Scheduled Traffic（排程流量）”，并去查它的功能章节（此处为 8.6.8 与 12.29）。这份 MIB 目录实际上是通往整部标准的第二套索引。"
+    },
+    {
+      "type": "prose",
+      "en": "The rest of Table 17-1 walks through feature-specific modules. The VLAN and spanning-tree group: IEEE8021-SPANNING-TREE-MIB (17.2.3, Clause 13, from RFC 4318), IEEE8021-Q-BRIDGE-MIB (17.2.4, Clause 8, from RFC 4363), IEEE8021-PB-MIB (17.2.5, Provider Bridges, Clause 16), and IEEE8021-MSTP-MIB (17.2.6, multiple spanning trees, Clause 13). The connectivity-fault and provider-backbone group: IEEE8021-CFM-MIB (17.2.7, Connectivity Fault Management, Clause 20 — note there are two modules, CFM and CFM-V2), IEEE8021-PBB-MIB (17.2.8, Provider Backbone Bridges, Clause 26), IEEE8021-DDCFM-MIBs (17.2.9, Data-Driven and Data-Dependent CFM, Clause 29, with Reflection-Responder subtrees), IEEE8021-PBBTE-MIB (17.2.10, PBB Traffic Engineering, 25.10), and the TPMR MIB (17.2.11, Two-Port MAC Relay, organized into groups like TPMR Configuration and TPMR Port Counters).",
+      "zh": "表 17-1 的其余部分逐一介绍各功能专属模块。VLAN 与生成树一组：IEEE8021-SPANNING-TREE-MIB（17.2.3，第 13 章，源自 RFC 4318）、IEEE8021-Q-BRIDGE-MIB（17.2.4，第 8 章，源自 RFC 4363）、IEEE8021-PB-MIB（17.2.5，运营商网桥 Provider Bridges，第 16 章）、IEEE8021-MSTP-MIB（17.2.6，多生成树，第 13 章）。连通性故障与运营商骨干一组：IEEE8021-CFM-MIB（17.2.7，连通性故障管理 Connectivity Fault Management，第 20 章——注意此处有 CFM 与 CFM-V2 两个模块）、IEEE8021-PBB-MIB（17.2.8，运营商骨干网桥 Provider Backbone Bridges，第 26 章）、IEEE8021-DDCFM-MIBs（17.2.9，数据驱动与数据相关 CFM，第 29 章，含 Reflection-Responder 子树）、IEEE8021-PBBTE-MIB（17.2.10，PBB 流量工程，25.10），以及 TPMR MIB（17.2.11，双端口 MAC 中继 Two-Port MAC Relay，划分为 TPMR Configuration、TPMR Port Counters 等组）。"
+    },
+    {
+      "type": "prose",
+      "en": "The time-sensitive and reservation group rounds out the catalog: IEEE8021-FQTSS-MIB (17.2.12, Forwarding and Queuing for time-sensitive streams, Clause 34), IEEE8021-CN-MIB (17.2.13, Congestion Notification, Clause 30/32), IEEE8021-SRP-MIB (17.2.14, Stream Reservation Protocol, Clause 35), IEEE8021-MVRPX-MIB (17.2.15, extends the Bridge Port VLAN table for MVRP participants, 11.2), IEEE8021-MIRP-MIB (17.2.16, Clause 39), IEEE8021-PFC-MIB (17.2.17, Priority-based Flow Control, Clause 36), IEEE8021-TEIPS-MIB (17.2.18, Infrastructure Protection Switching in a PBB-TE region, 26.11), IEEE8021-SPB-MIB (17.2.19, Shortest Path Bridging, Clauses 27/28/45), IEEE8021-EVB-MIB (17.2.20, Edge Virtual Bridging, 5.23/5.24), and IEEE8021-ECMP-MIB (17.2.21, Equal-Cost Multipath flow filtering, Clause 44/28). The final four are the modern TSN scheduling modules: IEEE8021-ST-MIB (17.2.22, Scheduled Traffic, 8.6.8/12.29), IEEE8021-Preemption-MIB (17.2.23, frame preemption, 6.7.2/8.6.8/12.30), IEEE8021-PSFP-MIB (17.2.24, Per-Stream Filtering and Policing, 8.6.5/12.31), and IEEE8021-TSN-REMOTE-MANAGEMENT-MIB (17.2.25, remote management of TSN stream reservations, 12.32).",
+      "zh": "时间敏感与预留一组为目录收尾：IEEE8021-FQTSS-MIB（17.2.12，面向时间敏感流的转发与排队，第 34 章）、IEEE8021-CN-MIB（17.2.13，拥塞通知 Congestion Notification，第 30/32 章）、IEEE8021-SRP-MIB（17.2.14，流预留协议 Stream Reservation Protocol，第 35 章）、IEEE8021-MVRPX-MIB（17.2.15，为 MVRP 参与者扩展网桥端口 VLAN 表，11.2）、IEEE8021-MIRP-MIB（17.2.16，第 39 章）、IEEE8021-PFC-MIB（17.2.17，基于优先级的流控 Priority-based Flow Control，第 36 章）、IEEE8021-TEIPS-MIB（17.2.18，PBB-TE 区域内的基础设施保护倒换，26.11）、IEEE8021-SPB-MIB（17.2.19，最短路径桥接 Shortest Path Bridging，第 27/28/45 章）、IEEE8021-EVB-MIB（17.2.20，边缘虚拟桥接 Edge Virtual Bridging，5.23/5.24）、IEEE8021-ECMP-MIB（17.2.21，等价多路径流过滤，第 44/28 章）。最后四个是现代 TSN 排程模块：IEEE8021-ST-MIB（17.2.22，排程流量，8.6.8/12.29）、IEEE8021-Preemption-MIB（17.2.23，帧抢占，6.7.2/8.6.8/12.30）、IEEE8021-PSFP-MIB（17.2.24，逐流过滤与监管 Per-Stream Filtering and Policing，8.6.5/12.31）、IEEE8021-TSN-REMOTE-MANAGEMENT-MIB（17.2.25，TSN 流预留的远程管理，12.32）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"10\" width=\"420\" height=\"30\" rx=\"3\"/><text x=\"220\" y=\"30\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">IEEE8021-TC-MIB (17.2.1) shared types</text><rect x=\"10\" y=\"55\" width=\"100\" height=\"35\" rx=\"3\"/><text x=\"60\" y=\"77\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">BRIDGE / Q</text><rect x=\"120\" y=\"55\" width=\"100\" height=\"35\" rx=\"3\"/><text x=\"170\" y=\"77\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Spanning/MSTP</text><rect x=\"230\" y=\"55\" width=\"100\" height=\"35\" rx=\"3\"/><text x=\"280\" y=\"77\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">CFM/PBB/SPB</text><rect x=\"340\" y=\"55\" width=\"90\" height=\"35\" rx=\"3\"/><text x=\"385\" y=\"77\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">TSN sched.</text><rect x=\"10\" y=\"110\" width=\"420\" height=\"30\" rx=\"3\"/><text x=\"220\" y=\"130\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">SMIv2 grammar + SNMP access (17.1)</text></svg>",
+      "caption": {
+        "en": "The 802.1Q MIB family rests on shared textual conventions (top) and the SMIv2/SNMP framework (bottom); feature modules sit in between, one per functional clause.",
+        "zh": "802.1Q 的 MIB 家族建立在共享文本约定（上）与 SMIv2/SNMP 框架（下）之上；功能模块位于二者之间，每个对应一个功能章节。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause unit taught in this lesson",
+        "zh": "覆盖地图：本课所讲的每个条款单元"
+      },
+      "en": "17.1 Internet Standard Management Framework — grounds the clause in IETF RFC 3410, SMIv2 (STD 58, RFCs 2578/2579/2580), SNMP access, and SNMP-based Fault Alarm/Notification control (RFC 3413), so no per-module notification objects are needed (p.614). 17.2 Structure of the MIB — the family-of-modules concept, Table 17-1, and the RFC 4663 history of IETF→IEEE 802.1 transfer (p.614). Then the per-module structure subclauses, all introduced via Table 17-1 (p.615) and their own headers: 17.2.1 TC-MIB shared textual conventions (p.616); 17.2.2 BRIDGE-MIB, reindexed/rerooted from RFC 4188/4363 (p.617); 17.2.3 SPANNING-TREE-MIB (p.615/621); 17.2.4 Q-BRIDGE-MIB (p.624); 17.2.5 PB-MIB, Provider Bridges (p.629); 17.2.6 MSTP-MIB (p.631); 17.2.7 CFM-MIB and CFM-V2-MIB (p.634); 17.2.8 PBB-MIB (p.640); 17.2.9 DDCFM-MIBs with RR/RFM subtrees (p.643); 17.2.10 PBBTE-MIB (p.645); 17.2.11 TPMR MIB groups (p.648). 17.2.12 FQTSS-MIB (p.650); 17.2.13 CN-MIB (p.651); 17.2.14 SRP-MIB (p.653); 17.2.15 MVRPX-MIB extending the Bridge Port VLAN table (p.655); 17.2.16 MIRP-MIB (p.655); 17.2.17 PFC-MIB (p.656); 17.2.18 TEIPS-MIB for IPS in a PBB-TE region (p.656); 17.2.19 SPB-MIB (p.656/659); 17.2.20 EVB-MIB (p.663); 17.2.21 ECMP-MIB flow filtering (p.667); 17.2.22 ST-MIB scheduled traffic (p.668); 17.2.23 Preemption-MIB frame preemption (p.669); 17.2.24 PSFP-MIB per-stream filtering/policing (p.669); 17.2.25 TSN-REMOTE-MANAGEMENT-MIB for remote TSN stream reservation (p.672).",
+      "zh": "17.1 Internet 标准管理框架——将本章锚定于 IETF RFC 3410、SMIv2（STD 58，RFC 2578/2579/2580）、SNMP 访问，以及基于 SNMP 的故障告警/通知控制（RFC 3413），因此各模块无需自带通知对象（第 614 页）。17.2 MIB 的结构——模块家族的概念、表 17-1，以及 RFC 4663 记载的 IETF→IEEE 802.1 职责移交历史（第 614 页）。随后是各模块的结构子条款，均经表 17-1 引出（第 615 页）并各有标题：17.2.1 TC-MIB 共享文本约定（第 616 页）；17.2.2 BRIDGE-MIB，由 RFC 4188/4363 重排索引与根节点而来（第 617 页）；17.2.3 SPANNING-TREE-MIB（第 615/621 页）；17.2.4 Q-BRIDGE-MIB（第 624 页）；17.2.5 PB-MIB，运营商网桥（第 629 页）；17.2.6 MSTP-MIB（第 631 页）；17.2.7 CFM-MIB 与 CFM-V2-MIB（第 634 页）；17.2.8 PBB-MIB（第 640 页）；17.2.9 DDCFM-MIBs，含 RR/RFM 子树（第 643 页）；17.2.10 PBBTE-MIB（第 645 页）；17.2.11 TPMR MIB 各组（第 648 页）。17.2.12 FQTSS-MIB（第 650 页）；17.2.13 CN-MIB（第 651 页）；17.2.14 SRP-MIB（第 653 页）；17.2.15 MVRPX-MIB，扩展网桥端口 VLAN 表（第 655 页）；17.2.16 MIRP-MIB（第 655 页）；17.2.17 PFC-MIB（第 656 页）；17.2.18 TEIPS-MIB，用于 PBB-TE 区域内的 IPS（第 656 页）；17.2.19 SPB-MIB（第 656/659 页）；17.2.20 EVB-MIB（第 663 页）；17.2.21 ECMP-MIB 流过滤（第 667 页）；17.2.22 ST-MIB 排程流量（第 668 页）；17.2.23 Preemption-MIB 帧抢占（第 669 页）；17.2.24 PSFP-MIB 逐流过滤与监管（第 669 页）；17.2.25 TSN-REMOTE-MANAGEMENT-MIB，用于 TSN 流预留的远程管理（第 672 页）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          614,
+          615,
+          616,
+          617,
+          621,
+          624,
+          629,
+          631,
+          634,
+          640,
+          643,
+          645,
+          648,
+          650,
+          651,
+          653,
+          655,
+          656,
+          658,
+          659,
+          663,
+          667,
+          668,
+          669,
+          672
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        614,
+        615,
+        616,
+        617
+      ],
+      "note": "17.1 framework (SMIv2/SNMP/RFCs), 17.2 structure intro, Table 17-1 module catalog, 17.2.1 TC-MIB and 17.2.2 BRIDGE-MIB"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        621,
+        624,
+        629,
+        631,
+        634,
+        640,
+        643,
+        645,
+        648
+      ],
+      "note": "17.2.3 through 17.2.11 module structure headers (Spanning-Tree, Q-Bridge, PB, MSTP, CFM, PBB, DDCFM, PBBTE, TPMR)"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        650,
+        651,
+        653,
+        655,
+        656,
+        658,
+        659,
+        663,
+        667,
+        668,
+        669,
+        672
+      ],
+      "note": "17.2.12 through 17.2.25 module structure headers (FQTSS, CN, SRP, MVRPX, MIRP, PFC, TEIPS, SPB, EVB, ECMP, ST, Preemption, PSFP, TSN-Remote-Management)"
+    }
+  ],
+  "covers": [
+    "8021Q-2022:17.1",
+    "8021Q-2022:17.2.1",
+    "8021Q-2022:17.2.2",
+    "8021Q-2022:17.2.3",
+    "8021Q-2022:17.2.4",
+    "8021Q-2022:17.2.5",
+    "8021Q-2022:17.2.6",
+    "8021Q-2022:17.2.7",
+    "8021Q-2022:17.2.8",
+    "8021Q-2022:17.2.9",
+    "8021Q-2022:17.2.10",
+    "8021Q-2022:17.2.11",
+    "8021Q-2022:17.2.12",
+    "8021Q-2022:17.2.13",
+    "8021Q-2022:17.2.14",
+    "8021Q-2022:17.2.15",
+    "8021Q-2022:17.2.16",
+    "8021Q-2022:17.2.17",
+    "8021Q-2022:17.2.18",
+    "8021Q-2022:17.2.19",
+    "8021Q-2022:17.2.20",
+    "8021Q-2022:17.2.21",
+    "8021Q-2022:17.2.22",
+    "8021Q-2022:17.2.23",
+    "8021Q-2022:17.2.24",
+    "8021Q-2022:17.2.25"
+  ],
+  "track": "bridging-tsn"
+}

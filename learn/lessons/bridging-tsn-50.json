@@ -1,0 +1,146 @@
+{
+  "id": "bridging-tsn-50",
+  "title": {
+    "en": "Congestion Notification: Defending a CND at Its Borders (Clause 32, part 1)",
+    "zh": "拥塞通知：在 CND 边界上设防（第 32 条，第 1 部分）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 32 specifies the congestion notification protocol — the machinery a Bridge or end station uses to react to a congested queue by asking the traffic source to slow down. Before any of that can work safely, the network has to protect the region where it operates. That region is a CND (Congestion Notification Domain): a connected subset of a Virtual Bridged Network in which every device is configured to honour a particular CNPV (Congestion Notification Priority Value — one of the 8 priority levels reserved for congestion-managed traffic). This part 1 lesson covers the front door of the protocol: how a device recognizes the edges of its CND and defends them. (Clause 30 introduces the principles; Clause 31 names the components; Clause 33 encodes the PDUs.)",
+      "zh": "第 32 条规定了拥塞通知协议——网桥或端站在队列拥塞时用来请求流量源降速的机制。但在这一切安全运行之前，网络必须先保护它工作的区域。这个区域就是 CND（Congestion Notification Domain，拥塞通知域）：虚拟桥接网络中一个连通子集，其中每个设备都被配置为尊重某个特定的 CNPV（Congestion Notification Priority Value，拥塞通知优先级值——为受拥塞管理的流量保留的 8 个优先级之一）。本课（第 1 部分）讲解协议的前门：设备如何识别其 CND 的边界并加以设防。（第 30 条介绍原理，第 31 条命名组件，第 33 条编码 PDU。）"
+    },
+    {
+      "type": "prose",
+      "en": "Why defend the border at all? If even one Bridge along a path is not congestion-aware, or if frames that are not in a CNPV are allowed into the same queues as congestion-managed frames, the end stations get no benefit. So at the edge of a CND, a port must police the priorities of incoming frames. The tool for this is the port's Priority regeneration table (the same table that already remaps incoming priority on every port). For a CNPV, that table is selectively overridden: if a neighbor is trusted (also configured for the CNPV), input priority is left untouched; if the neighbor is untrusted (not configured), any frame carrying the CNPV value is remapped to an alternate, non-CNPV priority, and no other priority is ever allowed to be remapped INTO the CNPV. This is the heart of 32.1.1 — CND defense.",
+      "zh": "为什么要在边界设防？如果路径上哪怕只有一个网桥不具备拥塞感知能力，或者允许非 CNPV 的帧进入与受拥塞管理帧相同的队列，端站就得不到任何好处。因此在 CND 边界上，端口必须管制入向帧的优先级。实现工具是端口的优先级再生表（Priority regeneration table，即每个端口上本就会对入向优先级做重映射的那张表）。针对某个 CNPV，该表被有选择地覆盖：如果邻居可信（同样配置了该 CNPV），入向优先级保持不变；如果邻居不可信（未配置），任何携带该 CNPV 值的帧都被重映射到一个替代的非 CNPV 优先级，且绝不允许任何其他优先级被重映射进该 CNPV。这就是 32.1.1（CND 防御）的核心。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"170\" y=\"20\" width=\"120\" height=\"160\" rx=\"8\" stroke-dasharray=\"6 4\"/><text x=\"230\" y=\"14\" font-size=\"12\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">CND (trusted interior)</text><rect x=\"20\" y=\"70\" width=\"90\" height=\"44\" rx=\"4\"/><text x=\"65\" y=\"96\" font-size=\"11\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Untrusted</text><rect x=\"190\" y=\"70\" width=\"80\" height=\"44\" rx=\"4\"/><text x=\"230\" y=\"90\" font-size=\"11\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Edge port</text><text x=\"230\" y=\"104\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">cptEdge</text><rect x=\"350\" y=\"70\" width=\"90\" height=\"44\" rx=\"4\"/><text x=\"395\" y=\"90\" font-size=\"11\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Interior port</text><text x=\"395\" y=\"104\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">cptInterior</text><line x1=\"110\" y1=\"92\" x2=\"188\" y2=\"92\" marker-end=\"url(#a)\"/><text x=\"149\" y=\"84\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">remap CNPV</text><text x=\"149\" y=\"126\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">to alternate</text><line x1=\"272\" y1=\"92\" x2=\"348\" y2=\"92\" marker-end=\"url(#a)\"/><text x=\"310\" y=\"84\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">no remap</text><defs><marker id=\"a\" markerWidth=\"8\" markerHeight=\"8\" refX=\"7\" refY=\"4\" orient=\"auto\"><path d=\"M0,0 L8,4 L0,8\" fill=\"currentColor\" stroke=\"none\"/></marker></defs></svg>",
+      "caption": {
+        "en": "A CND boundary. An edge port (cptEdge) facing an untrusted neighbor remaps the CNPV to an alternate priority; interior ports (cptInterior) leave it alone.",
+        "zh": "CND 边界示意。面向不可信邻居的边缘端口（cptEdge）将 CNPV 重映射到替代优先级；内部端口（cptInterior）则不作改动。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "For each priority value, a port's CND defense mode takes one of four values (32.1.1): cptDisabled (this priority is not a CNPV; the regeneration table works normally; CN-TAGs are neither added nor stripped — a CN-TAG, or Congestion Notification tag, is the per-frame tag that carries flow identity for congestion control); cptEdge (input frames in this CNPV are remapped to an alternate value, nothing is remapped into the CNPV, and a Bridge strips CN-TAGs on output — optional for an end station, see 32.4.9); cptInterior (input is not remapped either way, but a Bridge still strips CN-TAGs on output); and cptInteriorReady (like cptInterior, but CN-TAGs are allowed to pass — an end station may add them and a Bridge leaves them in place). These four modes, and the promise they uphold, are what every variable in the rest of Clause 32 exists to compute.",
+      "zh": "对于每个优先级值，端口的 CND 防御模式取四种取值之一（32.1.1）：cptDisabled（此优先级不是 CNPV；再生表正常工作；既不添加也不剥离 CN-TAG——CN-TAG（Congestion Notification tag，拥塞通知标签）是携带流标识以供拥塞控制的逐帧标签）；cptEdge（此 CNPV 的入向帧被重映射到替代值，任何优先级都不被映射进该 CNPV，网桥在输出时剥离 CN-TAG——对端站为可选，见 32.4.9）；cptInterior（两个方向都不重映射，但网桥在输出时仍剥离 CN-TAG）；以及 cptInteriorReady（类似 cptInterior，但允许 CN-TAG 通过——端站可添加，网桥保持原样）。这四种模式及其所维护的承诺，正是第 32 条其余所有变量为之计算的目标。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The payoff of correct defense (32.1.1): a frame an end station receives on a CNPV was congestion-governed along its entire path; an uncontrolled stream from a congestion-unaware source can't flood a CP (Congestion Point) queue; and a CN-TAG never lands at a device that can't read it. Misconfiguration or a congestion-unaware Bridge breaks these guarantees — which is exactly why the standard recommends letting recognition run automatically.",
+      "zh": "正确设防的回报（32.1.1）：端站在某 CNPV 上收到的帧，其全程都受拥塞管理；来自非拥塞感知源的失控流量无法淹没某个 CP（Congestion Point，拥塞点）队列；并且 CN-TAG 绝不会落到无法解析它的设备上。配置错误或路径上存在非拥塞感知网桥会破坏这些保证——这正是标准建议让识别过程自动运行的原因。"
+    },
+    {
+      "type": "prose",
+      "en": "How does a port learn whether its neighbor is trustworthy without a human configuring every link? Automatic CND recognition (32.1.2) leans on LLDP (Link Layer Discovery Protocol, IEEE Std 802.1AB). A port advertises a single Congestion Notification TLV (a Type-Length-Value field) in its LLDPDUs carrying two 8-bit maps: Per-priority CNPV indicators (which priorities are CNPVs here) and Per-priority Ready indicators (which CNPVs have their remap defenses disabled). Because multiple LLDP instances can run on a port and reach different distances, the default instance is the Nearest Bridge Address (01-80-C2-00-00-0E), which travels the shortest distance and so minimizes the chance a non-congestion-aware Bridge sits in between. If a port has exactly one neighbor whose TLV sets this CNPV's bit, the CNPV is known-configured remotely — captured by cnpdRcvdCnpv (32.4.11); the Ready bit becomes cnpdRcvdReady (32.4.12).",
+      "zh": "端口如何在无人逐链路配置的情况下得知邻居是否可信？自动 CND 识别（32.1.2）依靠 LLDP（Link Layer Discovery Protocol，链路层发现协议，IEEE Std 802.1AB）。端口在其 LLDPDU 中通告一个 Congestion Notification TLV（一个 Type-Length-Value 字段），携带两个 8 位位图：Per-priority CNPV 指示（此处哪些优先级是 CNPV）和 Per-priority Ready 指示（哪些 CNPV 的重映射防御已被关闭）。由于端口上可运行多个 LLDP 实例且可达距离不同，默认实例为 Nearest Bridge Address（01-80-C2-00-00-0E），其传播距离最短，从而把中间存在非拥塞感知网桥的概率降到最低。如果端口恰好只有一个邻居且其 TLV 置位了该 CNPV 的比特，则该 CNPV 在远端为已知配置——由 cnpdRcvdCnpv（32.4.11）记录；Ready 比特则成为 cnpdRcvdReady（32.4.12）。"
+    },
+    {
+      "type": "prose",
+      "en": "Defense is steered by four layers of managed objects (32.1.3) that override one another: CN component objects (the whole component), CN component priority objects (per-CNPV), CN Port priority objects (per-Port per-CNPV), and Congestion Point objects. The master switch is cngMasterEnable (32.2.1): if FALSE, all congestion notification is suppressed — the regeneration table runs normally and CNMs, CN-TAGs, and LLDP CN TLVs are neither generated nor honoured. If TRUE, the finer objects take over. Tables 32-1 (which LLDP instance carries the TLV) and 32-2 (which object picks the defense mode and alternate priority) define exactly which level wins for each function. The component-wide variables themselves are few: cngMasterEnable, cngCnmTransmitPriority (priority for transmitted CNMs, default 6 — 32.2.2), cngDiscardedFrames (total frames dropped from full CP queues — 32.2.3), and cngErroredPortList (Ports whose alternate priority mistakenly names a CNPV — 32.2.4).",
+      "zh": "防御由四层相互覆盖的受管对象（32.1.3）操控：CN 组件对象（整个组件）、CN 组件优先级对象（逐 CNPV）、CN 端口优先级对象（逐端口逐 CNPV），以及 Congestion Point 对象。总开关是 cngMasterEnable（32.2.1）：若为 FALSE，所有拥塞通知被抑制——再生表正常运行，CNM、CN-TAG 和 LLDP CN TLV 既不生成也不响应。若为 TRUE，则更细粒度的对象接管。表 32-1（哪个 LLDP 实例承载 TLV）与表 32-2（哪个对象选定防御模式与替代优先级）精确定义了每项功能由哪一层胜出。组件级变量本身不多：cngMasterEnable、cngCnmTransmitPriority（发送 CNM 所用优先级，默认 6——32.2.2）、cngDiscardedFrames（从满 CP 队列丢弃的总帧数——32.2.3），以及 cngErroredPortList（替代优先级误指向某 CNPV 的端口列表——32.2.4）。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> CNDD_RESET\n  CNDD_RESET --> CNDD_EDGE: UCT\n  CNDD_EDGE --> CNDD_INTERIOR: rcvdCnpv or not doesEdge\n  CNDD_INTERIOR --> CNDD_INTERIOR_READY: rcvdCnpv and rcvdReady\n  CNDD_INTERIOR_READY --> CNDD_INTERIOR: rcvdCnpv and not rcvdReady\n  CNDD_INTERIOR --> CNDD_EDGE: not rcvdCnpv\n  CNDD_INTERIOR_READY --> CNDD_EDGE: not rcvdCnpv",
+      "zh": "stateDiagram-v2\n  [*] --> CNDD_RESET\n  CNDD_RESET --> CNDD_EDGE: UCT\n  CNDD_EDGE --> CNDD_INTERIOR: 收到CNPV 或 非doesEdge\n  CNDD_INTERIOR --> CNDD_INTERIOR_READY: 收到CNPV 且 收到Ready\n  CNDD_INTERIOR_READY --> CNDD_INTERIOR: 收到CNPV 且 非Ready\n  CNDD_INTERIOR --> CNDD_EDGE: 未收到CNPV\n  CNDD_INTERIOR_READY --> CNDD_EDGE: 未收到CNPV"
+    },
+    {
+      "type": "prose",
+      "en": "The CND defense state machine (32.6) runs one instance per port per priority and walks through the four modes using the per-Port per-CNPV variables (32.4). On entry CNDD_RESET disables remapping and clears cnpdXmitReady. CNDD_EDGE calls TurnOnCnDefenses() (override the regeneration table to remap this CNPV to its alternate priority) and keeps cnpdXmitReady FALSE. CNDD_INTERIOR calls TurnOffCnDefenses() (stop altering the CNPV's priority) and sets cnpdXmitReady to cnpdAcceptsCnTag. CNDD_INTERIOR_READY likewise turns defenses off and signals readiness to carry CN-TAGs. The three procedures (32.5) are exactly DisableCnpvRemapping() (32.5.1), TurnOnCnDefenses() (32.5.2), and TurnOffCnDefenses() (32.5.3) — each just adds or removes a regeneration-table override. Two transmitted Booleans summarize the result to neighbors: cnpdXmitCnpvCapable (32.4.7, TRUE when the master is on and the chosen mode isn't cptDisabled) and cnpdXmitReady (32.4.8, set by the state machine).",
+      "zh": "CND 防御状态机（32.6）按每端口每优先级各运行一个实例，借助逐端口逐 CNPV 变量（32.4）在四种模式间游走。进入 CNDD_RESET 时禁用重映射并清零 cnpdXmitReady。CNDD_EDGE 调用 TurnOnCnDefenses()（覆盖再生表，将此 CNPV 重映射到其替代优先级）并保持 cnpdXmitReady 为 FALSE。CNDD_INTERIOR 调用 TurnOffCnDefenses()（停止改动该 CNPV 的优先级），并将 cnpdXmitReady 设为 cnpdAcceptsCnTag。CNDD_INTERIOR_READY 同样关闭防御，并示意已准备好承载 CN-TAG。三个过程（32.5）恰为 DisableCnpvRemapping()（32.5.1）、TurnOnCnDefenses()（32.5.2）与 TurnOffCnDefenses()（32.5.3）——每个只是添加或移除一项再生表覆盖。两个被发送的布尔量向邻居汇总结果：cnpdXmitCnpvCapable（32.4.7，当总开关打开且所选模式非 cptDisabled 时为 TRUE）与 cnpdXmitReady（32.4.8，由状态机设定）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause in Clause 32 part 1, by exact number",
+        "zh": "覆盖地图——第 32 条第 1 部分每个条款，按精确编号"
+      },
+      "en": "32.1 CND operations: 32.1.1 CND defense (the four modes cptDisabled / cptEdge / cptInterior / cptInteriorReady, priority-regeneration override, CN-TAG stripping); 32.1.2 Automatic CND recognition (LLDP, Congestion Notification TLV, Nearest Bridge Address, the two per-priority indicator maps); 32.1.3 Variables controlling CND defense (the four override layers, cngMasterEnable gate, Tables 32-1/32-2).\n\n32.2 CN component variables: 32.2.1 cngMasterEnable (master on/off); 32.2.2 cngCnmTransmitPriority (CNM TX priority, default 6, CP only); 32.2.3 cngDiscardedFrames (sum of CP drops, CP only); 32.2.4 cngErroredPortList (Ports with an alternate priority that wrongly names a CNPV, CP only).\n\n32.3 Per-CNPV variables: 32.3.1 cncpDefModeChoice (cpcAdmin vs cpcAuto); 32.3.2 cncpAlternatePriority (CP only, remap target for cptEdge, default 0); 32.3.3 cncpAutoAltPri (auto-chosen next non-CNPV priority); 32.3.4 cncpAdminDefenseMode (the admin-set mode, default cptInterior); 32.3.5 cncpCreation (cncpAutoEnable/Disable — what cnpdDefModeChoice a new port inherits); 32.3.6 cncpLldpInstanceChoice (cnlNone/cnlAdmin); 32.3.7 cncpLldpInstanceSelector (which LLDP destination-address entry carries the TLV).\n\n32.4 Per-Port per-CNPV variables: 32.4.1 cnpdDefModeChoice (cpcAdmin/cpcAuto/cpcComp, default cpcComp); 32.4.2 cnpdAdminDefenseMode (port mode when cpcAdmin); 32.4.3 cnpdAutoDefenseMode (the mode LLDP would pick); 32.4.4 cnpdLldpInstanceChoice (cnlNone/cnlAdmin/cnlComponent); 32.4.5 cnpdLldpInstanceSelector (LLDP entry, default 1); 32.4.6 cnpdAlternatePriority (CP only, remap target when cpcAdmin, default 0); 32.4.7 cnpdXmitCnpvCapable (advertised CNPV bit); 32.4.8 cnpdXmitReady (advertised Ready bit); 32.4.9 cncpDoesEdge (does this port implement cptEdge — always TRUE in a Bridge); 32.4.10 cnpdAcceptsCnTag (does it accept incoming CN-TAGs — always TRUE in a Bridge); 32.4.11 cnpdRcvdCnpv (neighbor advertised this CNPV); 32.4.12 cnpdRcvdReady (neighbor turned defenses off); 32.4.13 cnpdIsAdminDefMode and 32.4.14 cnpdDefenseMode (managed-object forcing of a state, per Table 32-3).\n\n32.5 Procedures: 32.5.1 DisableCnpvRemapping(); 32.5.2 TurnOnCnDefenses(); 32.5.3 TurnOffCnDefenses(). 32.6 CND defense state machine: Figure 32-1, one instance per port per priority, states CNDD_RESET / CNDD_EDGE / CNDD_INTERIOR / CNDD_INTERIOR_READY. 32.7 Congestion notification protocol: the clause is the state-machine spec of the QCN (Quantized Congestion Notification) algorithm from 30.2; two stateful participants, the CP (32.8/32.9) and the RP (Reaction Point — 32.12/32.13/32.14/32.15), each behaving as if implementing those clauses; Table 32-4 maps QCN to variables and CNM fields.",
+      "zh": "32.1 CND 操作：32.1.1 CND 防御（cptDisabled/cptEdge/cptInterior/cptInteriorReady 四模式、优先级再生覆盖、CN-TAG 剥离）；32.1.2 自动 CND 识别（LLDP、Congestion Notification TLV、Nearest Bridge Address、两张逐优先级指示位图）；32.1.3 控制 CND 防御的变量（四层覆盖、cngMasterEnable 闸门、表 32-1/32-2）。\n\n32.2 CN 组件变量：32.2.1 cngMasterEnable（总开关）；32.2.2 cngCnmTransmitPriority（CNM 发送优先级，默认 6，仅 CP）；32.2.3 cngDiscardedFrames（CP 丢弃总和，仅 CP）；32.2.4 cngErroredPortList（替代优先级误指 CNPV 的端口，仅 CP）。\n\n32.3 逐 CNPV 变量：32.3.1 cncpDefModeChoice（cpcAdmin 对 cpcAuto）；32.3.2 cncpAlternatePriority（仅 CP，cptEdge 重映射目标，默认 0）；32.3.3 cncpAutoAltPri（自动选定的下一个非 CNPV 优先级）；32.3.4 cncpAdminDefenseMode（管理员设定模式，默认 cptInterior）；32.3.5 cncpCreation（cncpAutoEnable/Disable——新端口继承何种 cnpdDefModeChoice）；32.3.6 cncpLldpInstanceChoice（cnlNone/cnlAdmin）；32.3.7 cncpLldpInstanceSelector（哪个 LLDP 目的地址表项承载 TLV）。\n\n32.4 逐端口逐 CNPV 变量：32.4.1 cnpdDefModeChoice（cpcAdmin/cpcAuto/cpcComp，默认 cpcComp）；32.4.2 cnpdAdminDefenseMode（cpcAdmin 时的端口模式）；32.4.3 cnpdAutoDefenseMode（LLDP 将选的模式）；32.4.4 cnpdLldpInstanceChoice（cnlNone/cnlAdmin/cnlComponent）；32.4.5 cnpdLldpInstanceSelector（LLDP 表项，默认 1）；32.4.6 cnpdAlternatePriority（仅 CP，cpcAdmin 时的重映射目标，默认 0）；32.4.7 cnpdXmitCnpvCapable（通告的 CNPV 比特）；32.4.8 cnpdXmitReady（通告的 Ready 比特）；32.4.9 cncpDoesEdge（此端口是否实现 cptEdge——网桥中恒为 TRUE）；32.4.10 cnpdAcceptsCnTag（是否接受入向 CN-TAG——网桥中恒为 TRUE）；32.4.11 cnpdRcvdCnpv（邻居通告了此 CNPV）；32.4.12 cnpdRcvdReady（邻居已关闭防御）；32.4.13 cnpdIsAdminDefMode 与 32.4.14 cnpdDefenseMode（受管对象按表 32-3 强制某状态）。\n\n32.5 过程：32.5.1 DisableCnpvRemapping()；32.5.2 TurnOnCnDefenses()；32.5.3 TurnOffCnDefenses()。32.6 CND 防御状态机：图 32-1，每端口每优先级一个实例，状态 CNDD_RESET/CNDD_EDGE/CNDD_INTERIOR/CNDD_INTERIOR_READY。32.7 拥塞通知协议：本条是 30.2 中 QCN（Quantized Congestion Notification，量化拥塞通知）算法的状态机规范；两个有状态参与者——CP（32.8/32.9）与 RP（Reaction Point，反应点——32.12/32.13/32.14/32.15）——各自行为如同严格实现上述条款；表 32-4 将 QCN 映射到变量与 CNM 字段。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1475,
+          1476,
+          1477,
+          1478,
+          1479,
+          1480,
+          1481,
+          1482,
+          1483,
+          1484,
+          1485
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A nice subtlety in 32.4.9 / 32.4.10: cncpDoesEdge and cnpdAcceptsCnTag are always TRUE in a Bridge but may be FALSE in an end station. When cncpDoesEdge is FALSE, the state machine slips through CNDD_EDGE straight into CNDD_INTERIOR with no observable delay. When cnpdAcceptsCnTag is FALSE, the port never sets its Ready bit, so the neighbor keeps stripping CN-TAGs on this CNPV — a convenient way for an end station to ask the adjacent Bridge to clean up its frames.",
+      "zh": "32.4.9 / 32.4.10 中有个微妙之处：cncpDoesEdge 与 cnpdAcceptsCnTag 在网桥中恒为 TRUE，但在端站中可为 FALSE。当 cncpDoesEdge 为 FALSE 时，状态机会无可观测延迟地穿过 CNDD_EDGE 直达 CNDD_INTERIOR。当 cnpdAcceptsCnTag 为 FALSE 时，端口永不置位其 Ready 比特，于是邻居会持续在此 CNPV 上剥离 CN-TAG——这给端站提供了一种便捷方式，请相邻网桥替它清理帧。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1475,
+        1476,
+        1477,
+        1478,
+        1479,
+        1480,
+        1481,
+        1482,
+        1483,
+        1484,
+        1485
+      ],
+      "note": "Clause 32.1-32.7: CND operations, CN component / per-CNPV / per-Port per-CNPV variables, CND defense procedures, the CND defense state machine (Figure 32-1, Tables 32-1/32-2/32-3), and the congestion notification protocol overview."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:32.1.1",
+    "8021Q-2022:32.1.2",
+    "8021Q-2022:32.1.3",
+    "8021Q-2022:32.2.1",
+    "8021Q-2022:32.2.2",
+    "8021Q-2022:32.2.3",
+    "8021Q-2022:32.2.4",
+    "8021Q-2022:32.3.1",
+    "8021Q-2022:32.3.2",
+    "8021Q-2022:32.3.3",
+    "8021Q-2022:32.3.4",
+    "8021Q-2022:32.3.5",
+    "8021Q-2022:32.3.6",
+    "8021Q-2022:32.3.7",
+    "8021Q-2022:32.4.1",
+    "8021Q-2022:32.4.2",
+    "8021Q-2022:32.4.3",
+    "8021Q-2022:32.4.4",
+    "8021Q-2022:32.4.5",
+    "8021Q-2022:32.4.6",
+    "8021Q-2022:32.4.7",
+    "8021Q-2022:32.4.8",
+    "8021Q-2022:32.4.9",
+    "8021Q-2022:32.4.10",
+    "8021Q-2022:32.4.11",
+    "8021Q-2022:32.4.12",
+    "8021Q-2022:32.4.13",
+    "8021Q-2022:32.4.14",
+    "8021Q-2022:32.5.1",
+    "8021Q-2022:32.5.2",
+    "8021Q-2022:32.5.3",
+    "8021Q-2022:32.6",
+    "8021Q-2022:32.7"
+  ],
+  "track": "bridging-tsn"
+}

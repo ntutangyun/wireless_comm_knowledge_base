@@ -1,0 +1,208 @@
+{
+  "id": "bridging-tsn-07",
+  "title": {
+    "en": "Inside a Bridge, Part 1: How Frames Are Relayed, Filtered, and Learned",
+    "zh": "网桥内部（上）：帧如何被转发、过滤与学习"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A bridge (the formal name for what most people call an Ethernet switch) has one job: take a frame that arrived on one port and decide which other ports, if any, should send it onward. Clause 8 of IEEE Std 802.1Q-2022 is the heart of the standard because it specifies exactly how that decision is made. This lesson walks through the first half of Clause 8: what a bridge does (8.1), how it is built (8.2), the abstract model used to describe it (8.3), how active topologies and learning interact (8.4), how ports send and receive (8.5), the Forwarding Process (8.6), and the Learning Process (8.7). Every acronym is spelled out the first time it appears.",
+      "zh": "网桥（大多数人口中的“以太网交换机”的正式名称）只做一件事：把从某个端口收到的帧，判断应当从哪些其他端口（如果有的话）继续转发出去。IEEE Std 802.1Q-2022 的第 8 章是整部标准的核心，因为它精确规定了这个决策是如何做出的。本课讲解第 8 章的前半部分：网桥做什么（8.1）、它如何构成（8.2）、用来描述它的抽象模型（8.3）、活动拓扑与学习如何相互作用（8.4）、端口如何收发（8.5）、转发过程（8.6）以及学习过程（8.7）。每个缩写在首次出现时都会展开说明。"
+    },
+    {
+      "type": "prose",
+      "en": "8.1 names the principal elements of bridge operation: relaying frames, and maintaining the information needed to make filtering-and-relaying decisions. 8.1.1 (Relay) lists the supporting functions a frame passes through — reception, error discard, VID (VLAN Identifier; a VLAN is a Virtual Local Area Network) assignment, active-topology confinement, filtering, optional metering, forwarding, traffic-class queuing, transit-delay enforcement, transmission selection, and transmission. The next subclauses explain WHY a bridge keeps state. 8.1.2 (Filtering and relaying information) gives five purposes; 8.1.3 to 8.1.7 each take one purpose: duplicate frame prevention (8.1.3, a loop-free topology built by spanning tree), traffic segregation (8.1.4, confining frames to their VLAN), traffic reduction (8.1.5, learning where stations are so frames are not flooded everywhere), traffic expediting (8.1.6, sorting frames into traffic classes so time-critical traffic goes first), and conversion of frame formats (8.1.7, adding or removing the VLAN tag header for the destination LAN).",
+      "zh": "8.1 列出了网桥运行的主要要素：转发帧，以及维护做出“过滤与转发”决策所需的信息。8.1.1（Relay，中继）列出了帧依次经过的支撑功能——接收、错误丢弃、分配 VID（VLAN Identifier，VLAN 标识符；VLAN 即 Virtual Local Area Network，虚拟局域网）、限定在活动拓扑内、过滤、可选的计量、转发、按流量类别排队、限制传输时延、传输选择以及发送。随后的各小节解释网桥为何要保存状态。8.1.2（过滤与转发信息）给出五个目的；8.1.3 至 8.1.7 各对应其中一个目的：防止帧重复（8.1.3，由生成树构建的无环拓扑）、流量隔离（8.1.4，把帧限定在其所属 VLAN 内）、流量缩减（8.1.5，学习各站点位置以避免帧被到处泛洪）、流量加速（8.1.6，把帧分入流量类别使时间敏感流量优先）、以及帧格式转换（8.1.7，为目的局域网添加或移除 VLAN 标签头）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two kinds of bridge appear throughout Clause 8. A VLAN Bridge uses the EISS (Enhanced Internal Sublayer Service), which carries the VID with every frame, so it can make VLAN-aware decisions. A MAC Bridge (MAC = Media Access Control) uses only the plain ISS (Internal Sublayer Service) and is VLAN-unaware: it never looks at a VID. Whenever the standard says 'not applicable to VLAN-unaware MAC Relays,' it means that step is skipped on a MAC Bridge.",
+      "zh": "整个第 8 章贯穿两类网桥。VLAN 网桥使用 EISS（Enhanced Internal Sublayer Service，增强内部子层服务），它在每个帧上携带 VID，因此可以做出感知 VLAN 的决策。MAC 网桥（MAC 即 Media Access Control，介质访问控制）只使用普通的 ISS（Internal Sublayer Service，内部子层服务），不感知 VLAN：它从不查看 VID。每当标准说“不适用于不感知 VLAN 的 MAC 中继”时，就表示该步骤在 MAC 网桥上被跳过。"
+    },
+    {
+      "type": "prose",
+      "en": "8.2 (Bridge architecture) says a bridge is made of at least one Bridge component, and each component has three parts: a MAC Relay Entity that interconnects the ports, at least two Ports, and Higher Layer Entities (which always include a Spanning Tree Protocol Entity). The MAC Relay Entity does the media-independent work — relaying, filtering, and learning — and reaches each port through the EISS (VLAN Bridge) or ISS (MAC Bridge). 8.3 (Model of operation) is a crucial disclaimer: the processes and entities described are only a model for explaining externally visible behavior; a real product may be built any way it likes as long as the observable protocol matches. The model breaks a port into a Bridge Port Transmit and Receive Process (8.5), the Forwarding Process (8.6), the Learning Process (8.7), the FDB (Filtering Database, 8.8), and the LLC (Logical Link Control) entities that feed higher-layer protocols.",
+      "zh": "8.2（网桥体系结构）指出，一个网桥由至少一个网桥组件构成，每个组件包含三部分：互连各端口的 MAC 中继实体（MAC Relay Entity）、至少两个端口（Port），以及高层实体（Higher Layer Entities，其中始终包含一个生成树协议实体）。MAC 中继实体完成与介质无关的工作——中继、过滤与学习——并通过 EISS（VLAN 网桥）或 ISS（MAC 网桥）连接到每个端口。8.3（运行模型）是一条关键免责声明：所描述的进程与实体仅是用来解释“对外可见行为”的模型；只要可观察的协议一致，真实产品可以采用任何内部实现方式。该模型把一个端口拆分为：网桥端口收发进程（8.5）、转发过程（8.6）、学习过程（8.7）、FDB（Filtering Database，过滤数据库，8.8），以及为高层协议供数据的 LLC（Logical Link Control，逻辑链路控制）实体。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  RX[Reception Port] --> ATE[Active topology 8.6.1]\n  ATE --> ING[Ingress filter 8.6.2]\n  ING --> FF[Frame filtering 8.6.3]\n  FF --> EG[Egress filter 8.6.4]\n  EG --> FM[Flow class+meter 8.6.5]\n  FM --> Q[Queue 8.6.6]\n  Q --> QM[Queue mgmt 8.6.7]\n  QM --> TS[Tx selection 8.6.8]\n  TS --> TX[Transmission Port]\n  ATE -. source+VID .-> L[Learning 8.7]",
+      "zh": "flowchart LR\n  RX[接收端口] --> ATE[活动拓扑 8.6.1]\n  ATE --> ING[入向过滤 8.6.2]\n  ING --> FF[帧过滤 8.6.3]\n  FF --> EG[出向过滤 8.6.4]\n  EG --> FM[流分类+计量 8.6.5]\n  FM --> Q[排队 8.6.6]\n  Q --> QM[队列管理 8.6.7]\n  QM --> TS[传输选择 8.6.8]\n  TS --> TX[发送端口]\n  ATE -. 源地址+VID .-> L[学习 8.7]"
+    },
+    {
+      "type": "prose",
+      "en": "8.4 (Active topologies, learning, and forwarding) defines an active topology as the connectivity offered to frames with a given VID, destination, and source. Distributed protocols build these topologies: RSTP (Rapid Spanning Tree Protocol) builds one tree, the CST (Common Spanning Tree); MSTP (Multiple Spanning Tree Protocol) builds the CIST (Common and Internal Spanning Tree) plus extra MSTIs (Multiple Spanning Tree Instances); and ISIS-SPB (Intermediate System to Intermediate System — Shortest Path Bridging) builds shortest-path trees. Each spanning tree gives every port a Port State summarizing two switches: learning and forwarding. A port that does neither is Discarding; learning-only is Learning; doing both is Forwarding. The VID in a frame selects which tree — and thus which Port State — applies. PBB-TE (Provider Backbone Bridging — Traffic Engineering) instead has an external agent set up paths and disables learning.",
+      "zh": "8.4（活动拓扑、学习与转发）将活动拓扑定义为：为具有给定 VID、目的地址和源地址的帧所提供的连通性。分布式协议负责构建这些拓扑：RSTP（Rapid Spanning Tree Protocol，快速生成树协议）构建一棵树，即 CST（Common Spanning Tree，公共生成树）；MSTP（Multiple Spanning Tree Protocol，多生成树协议）构建 CIST（Common and Internal Spanning Tree，公共与内部生成树）以及额外的 MSTI（Multiple Spanning Tree Instance，多生成树实例）；ISIS-SPB（Intermediate System to Intermediate System — Shortest Path Bridging，中间系统到中间系统的最短路径桥接）则构建最短路径树。每棵生成树为每个端口给出一个 Port State（端口状态），它概括了两个开关：学习与转发。两者皆否为 Discarding（丢弃）；仅学习为 Learning；两者皆是为 Forwarding。帧中的 VID 决定适用哪棵树，从而决定哪个端口状态。PBB-TE（Provider Backbone Bridging — Traffic Engineering，提供商骨干桥接—流量工程）则改由外部代理建立路径并关闭学习。"
+    },
+    {
+      "type": "prose",
+      "en": "8.5 (Bridge Port Transmit and Receive) is the layer that connects a port to its LAN. 8.5.1 (Bridge Port connectivity) is the rule that makes a bridge behave like a bridge: a frame arriving from the LAN is copied identically to the MAC Relay Entity and to every higher-layer entity on that port, and conversely a frame the relay sends out is both put on the wire and delivered up to the local higher-layer entities. 8.5.2 (TPMR Port connectivity) covers the TPMR (Two-Port MAC Relay), a minimal two-port device whose connectivity rules let a listener tell which physical LAN a frame came from and keep transmitted frames on just one LAN. 8.5.3 (Support of Higher Layer Entities) maps the ISS data primitives to the MA_UNITDATA (MAC Service) primitives an attached protocol stack actually uses, so things like an SNMP (Simple Network Management Protocol) agent can ride on a chosen VLAN.",
+      "zh": "8.5（网桥端口收发）是把端口连接到其局域网的那一层。8.5.1（网桥端口连通性）正是让网桥表现得像网桥的规则：从局域网到达的帧会被原样复制给 MAC 中继实体以及该端口上的每个高层实体；反过来，中继发出的帧既会送上线路，也会上交给本地高层实体。8.5.2（TPMR 端口连通性）描述 TPMR（Two-Port MAC Relay，双端口 MAC 中继），这是一种最简的双端口设备，其连通性规则让监听者能判断帧来自哪条物理局域网，并使发出的帧只留在一条局域网上。8.5.3（高层实体的支持）把 ISS 数据原语映射到所连协议栈实际使用的 MA_UNITDATA（MAC 服务）原语，从而让诸如 SNMP（Simple Network Management Protocol，简单网络管理协议）代理这类实体能搭载在选定的 VLAN 上。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"60\" width=\"90\" height=\"34\"/><text x=\"55\" y=\"82\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">LAN / port</text><rect x=\"140\" y=\"20\" width=\"110\" height=\"34\"/><text x=\"195\" y=\"42\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">MAC Relay</text><rect x=\"140\" y=\"100\" width=\"110\" height=\"34\"/><text x=\"195\" y=\"122\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Higher layer</text><rect x=\"300\" y=\"20\" width=\"110\" height=\"34\"/><text x=\"355\" y=\"36\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Forwarding</text><text x=\"355\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">8.6</text><rect x=\"300\" y=\"100\" width=\"110\" height=\"34\"/><text x=\"355\" y=\"116\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Learning</text><text x=\"355\" y=\"129\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">8.7 -> FDB</text><line x1=\"100\" y1=\"77\" x2=\"140\" y2=\"40\"/><line x1=\"100\" y1=\"77\" x2=\"140\" y2=\"117\"/><line x1=\"250\" y1=\"37\" x2=\"300\" y2=\"37\"/><line x1=\"250\" y1=\"117\" x2=\"300\" y2=\"117\"/><line x1=\"410\" y1=\"54\" x2=\"410\" y2=\"100\" stroke-dasharray=\"4 3\"/></svg>",
+      "caption": {
+        "en": "A port (8.5) delivers each received frame both to the MAC Relay Entity, which runs the Forwarding Process (8.6), and to higher-layer entities; the Learning Process (8.7) records the source address and VID into the FDB.",
+        "zh": "端口（8.5）把每个收到的帧既交给运行转发过程（8.6）的 MAC 中继实体，也交给高层实体；学习过程（8.7）把源地址与 VID 记入 FDB。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "8.6 (The Forwarding Process) is the assembly line a frame travels along. 8.6.1 (Active topology enforcement) reads the learning and forwarding values for the reception port: if learning is true and ingress filtering would not discard the frame, the source address and VID go to the Learning Process; if forwarding is true, every other forwarding port becomes a potential transmission port (with reflective relay, even the reception port can be one — see the EVB, Edge Virtual Bridging, rules of 8.6.1.1). 8.6.2 (Ingress filtering) optionally drops a frame whose VID does not include the reception port in its member set. 8.6.3 (Frame filtering) then narrows the transmission ports using destination MAC address, VID, flow hash, and the FDB; it also fixes reserved multicast addresses (the Nearest Bridge / Nearest Customer Bridge group addresses) so control frames travel only as far as intended. 8.6.4 (Egress filtering) removes any port not in the member set for the frame's VID.",
+      "zh": "8.6（转发过程）是帧所经过的流水线。8.6.1（活动拓扑强制）读取接收端口的学习与转发取值：若学习为真且入向过滤不会丢弃该帧，则把源地址与 VID 送往学习过程；若转发为真，则其他每个处于转发状态的端口都成为潜在发送端口（若启用反射中继，连接收端口本身也可成为发送端口——参见 EVB，Edge Virtual Bridging，边缘虚拟桥接的 8.6.1.1 规则）。8.6.2（入向过滤）可选地丢弃那些其 VID 的成员集中不包含接收端口的帧。8.6.3（帧过滤）随后依据目的 MAC 地址、VID、流哈希以及 FDB 收窄发送端口集合；它还固定了若干保留组播地址（如 Nearest Bridge / Nearest Customer Bridge 组地址），使控制帧只传播到预期范围。8.6.4（出向过滤）移除那些不在该帧 VID 成员集中的端口。"
+    },
+    {
+      "type": "prose",
+      "en": "The rest of 8.6 turns a list of approved ports into actual transmissions. 8.6.5 (Flow classification and metering) can rate-limit traffic: either general classification by MAC address/VID/priority, or per-stream processing for TSN (Time-Sensitive Networking) via PSFP (Per-Stream Filtering and Policing) and ATS (Asynchronous Traffic Shaping) — a chain of stream filter, maximum SDU (Service Data Unit) size check, stream gate, and flow meter. 8.6.6 (Queuing frames) places each surviving frame onto a per-port queue chosen by traffic class (mapped from priority, or from an IPV, Internal Priority Value, when a stream gate assigns one). 8.6.7 (Queue management) decides when to drop queued frames — after a transmit request, to respect the maximum bridge transit delay, when the port stops forwarding, or by an active queue-management algorithm that prefers to drop drop-eligible frames. 8.6.8 (Transmission selection) then picks the next frame: strict priority (8.6.8.1) is mandatory and always serves higher traffic classes first; optional algorithms include the credit-based shaper (8.6.8.2), ETS (Enhanced Transmission Selection, 8.6.8.3), the enhancements for scheduled traffic (8.6.8.4), and ATS transmission selection (8.6.8.5).",
+      "zh": "8.6 的其余部分把“被批准的端口列表”变成真正的发送。8.6.5（流分类与计量）可对流量限速：既可按 MAC 地址/VID/优先级做通用分类，也可为 TSN（Time-Sensitive Networking，时间敏感网络）做逐流处理，经由 PSFP（Per-Stream Filtering and Policing，逐流过滤与监管）与 ATS（Asynchronous Traffic Shaping，异步流量整形）——即“流过滤器、最大 SDU（Service Data Unit，服务数据单元）尺寸检查、流门、流计量”这一链条。8.6.6（帧排队）把每个存活的帧放入按流量类别选定的逐端口队列（流量类别由优先级映射而来，或在流门指定时由 IPV，Internal Priority Value，内部优先级值映射而来）。8.6.7（队列管理）决定何时丢弃已排队的帧——发出传输请求之后、为满足最大网桥转发时延、端口不再转发时，或由优先丢弃“可丢弃”帧的主动队列管理算法触发。8.6.8（传输选择）随后选出下一帧：严格优先级（8.6.8.1）为强制算法，始终先服务更高的流量类别；可选算法包括基于信用的整形器（8.6.8.2）、ETS（Enhanced Transmission Selection，增强传输选择，8.6.8.3）、调度流量增强（8.6.8.4）以及 ATS 传输选择（8.6.8.5）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the TSN state machines (8.6.9–8.6.11) and the learning details (8.7.1–8.7.3)",
+        "zh": "覆盖地图：TSN 状态机（8.6.9–8.6.11）与学习细节（8.7.1–8.7.3）"
+      },
+      "en": "8.6.9 (Scheduled traffic state machines): three machines drive a port's gate control list — the Cycle Timer (starts each gating cycle and keeps it aligned to the configured cycle time), the List Execute (runs the gate operations in order, spacing them by their TimeInterval), and the List Config (installs a new schedule, pausing the other two during the swap). 8.6.10 (Stream gate control state machines): the very same three machines run each stream gate's control list, but with renamed procedures and variables — ExecuteStreamGateOperation, SetStreamGateStates, StreamGateListPointer, StreamGateAdminGateStates, StreamGateOperGateStates — plus AdminIPV/OperIPV (the priority a passing frame is given) and IntervalOctetsLeft (a per-interval byte budget; an oversize frame is treated as if the gate were closed and is discarded). 8.6.11 (ATS Scheduler state machines): runs on ATS scheduler clocks that track the transmission-selection clock within a bounded offset; the ProcessFrame() procedure computes each frame's eligibility time from a token-bucket model (CommittedInformationRate, CommittedBurstSize, BucketEmptyTime, GroupEligibilityTime) and discards the frame if it would exceed MaxResidenceTime. 8.7 (The Learning Process): on each qualifying frame it creates or updates a Dynamic Filtering Entry binding source address (and VID for VLAN Bridges) to the reception port, only for individual (non-group) addresses, only if the FDB has room, and only if the filtering utility criteria are met. 8.7.1 (Default filtering utility criteria): for a VLAN Bridge, the frame's VID must have at least one member port (always met for MAC Bridges). 8.7.2 (Enhanced filtering utility criteria): a stricter test requiring a second learning/forwarding port plus a point-to-point, third-port, or reflective-relay condition — mandatory in EVB Bridges. 8.7.3 (Ageing of Dynamic Filtering Entries): learned entries are removed after the Ageing Time (default 300 s, range 10 s to 1 000 000 s) so that moved or silent stations do not stay wrongly bound to an old port.",
+      "zh": "8.6.9（调度流量状态机）：三台状态机驱动端口的门控列表——Cycle Timer（循环定时器，启动每个门控周期并使其对齐到配置的周期时间）、List Execute（列表执行机，按顺序执行各门操作，并按其 TimeInterval 间隔）、List Config（列表配置机，安装新调度表，并在切换期间暂停另两台）。8.6.10（流门控制状态机）：同样这三台机器运行每个流门的控制列表，但过程与变量被重命名——ExecuteStreamGateOperation、SetStreamGateStates、StreamGateListPointer、StreamGateAdminGateStates、StreamGateOperGateStates——并新增 AdminIPV/OperIPV（赋给通过帧的优先级）与 IntervalOctetsLeft（每区间字节预算；超尺寸帧被视同门关闭而丢弃）。8.6.11（ATS 调度器状态机）：运行在 ATS 调度器时钟上，该时钟与传输选择时钟在有界偏移内同步；ProcessFrame() 过程依据令牌桶模型（CommittedInformationRate、CommittedBurstSize、BucketEmptyTime、GroupEligibilityTime）计算每帧的合格时间，若会超过 MaxResidenceTime 则丢弃该帧。8.7（学习过程）：对每个合格帧，创建或更新一条动态过滤条目，把源地址（VLAN 网桥还含 VID）绑定到接收端口，仅对单播（非组播）地址、仅在 FDB 仍有空间、且满足过滤效用准则时进行。8.7.1（默认过滤效用准则）：对 VLAN 网桥，该帧的 VID 必须至少有一个成员端口（对 MAC 网桥始终满足）。8.7.2（增强过滤效用准则）：更严格的判定，要求存在第二个处于学习/转发的端口，并满足点对点、第三端口或反射中继之一的条件——在 EVB 网桥中为强制。8.7.3（动态过滤条目的老化）：学习到的条目在老化时间（默认 300 秒，范围 10 秒至 1 000 000 秒）后被移除，使已迁移或长期静默的站点不会被错误地绑定在旧端口上。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          226,
+          233,
+          234,
+          235,
+          236,
+          239,
+          240
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model for the whole clause: Forwarding (8.6) answers 'where does this frame go right now?' using the FDB as a lookup table, while Learning (8.7) answers 'what should the FDB say next time?' by watching source addresses. Active topology enforcement (8.6.1) is the gate both share — a port must be forwarding to relay and learning to teach. Everything from 8.6.5 onward (metering, queues, shapers, gates) is about quality of service and time-sensitive scheduling layered on top of that core forward/learn decision.",
+      "zh": "理解整章的心智模型：转发（8.6）用 FDB 作为查找表回答“这个帧现在该去哪里？”，而学习（8.7）通过观察源地址回答“下次 FDB 该怎么说？”。活动拓扑强制（8.6.1）是二者共用的闸门——端口必须处于转发状态才能中继、处于学习状态才能学习。从 8.6.5 往后的一切（计量、队列、整形器、门）都是在这个“转发/学习”核心决策之上叠加的服务质量与时间敏感调度。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        191,
+        192,
+        193,
+        194
+      ],
+      "note": "8.1 Bridge operation (8.1.1 Relay through 8.1.7 frame format conversion)"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        194,
+        195,
+        196
+      ],
+      "note": "8.2 Bridge architecture and 8.3 Model of operation"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        200,
+        201
+      ],
+      "note": "8.4 Active topologies, learning, and forwarding; Port State"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        201,
+        202,
+        203
+      ],
+      "note": "8.5 Bridge Port Transmit and Receive (8.5.1, 8.5.2 TPMR, 8.5.3)"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        203,
+        204,
+        205,
+        206
+      ],
+      "note": "8.6.1 active topology enforcement, 8.6.2 ingress, 8.6.3 frame filtering"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        209,
+        210,
+        211
+      ],
+      "note": "8.6.4 egress, 8.6.5 flow classification and metering (PSFP/ATS)"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        218,
+        219,
+        220,
+        221
+      ],
+      "note": "8.6.6 queuing, 8.6.7 queue management, 8.6.8 transmission selection"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        226,
+        233,
+        234,
+        235,
+        236
+      ],
+      "note": "8.6.9 scheduled traffic, 8.6.10 stream gate, 8.6.11 ATS scheduler state machines"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        239,
+        240
+      ],
+      "note": "8.7 Learning Process (8.7.1 default, 8.7.2 enhanced, 8.7.3 ageing)"
+    }
+  ],
+  "covers": [
+    "8021Q-2022:8.1.1",
+    "8021Q-2022:8.1.2",
+    "8021Q-2022:8.1.3",
+    "8021Q-2022:8.1.4",
+    "8021Q-2022:8.1.5",
+    "8021Q-2022:8.1.6",
+    "8021Q-2022:8.1.7",
+    "8021Q-2022:8.2",
+    "8021Q-2022:8.3",
+    "8021Q-2022:8.4",
+    "8021Q-2022:8.5.1",
+    "8021Q-2022:8.5.2",
+    "8021Q-2022:8.5.3",
+    "8021Q-2022:8.6.1",
+    "8021Q-2022:8.6.2",
+    "8021Q-2022:8.6.3",
+    "8021Q-2022:8.6.4",
+    "8021Q-2022:8.6.5",
+    "8021Q-2022:8.6.6",
+    "8021Q-2022:8.6.7",
+    "8021Q-2022:8.6.8",
+    "8021Q-2022:8.6.9",
+    "8021Q-2022:8.6.10",
+    "8021Q-2022:8.6.11",
+    "8021Q-2022:8.7.1",
+    "8021Q-2022:8.7.2",
+    "8021Q-2022:8.7.3"
+  ],
+  "track": "bridging-tsn"
+}

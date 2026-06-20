@@ -1,0 +1,170 @@
+{
+  "id": "tsn-02",
+  "title": {
+    "en": "Configuring TSN Streams: the User/Network Interface and ATS in End Stations",
+    "zh": "配置 TSN 流：用户/网络接口与端站中的 ATS"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Time-Sensitive Networking (TSN) is a family of IEEE 802.1 features that delivers bounded latency, near-zero congestion loss, and resilience to faults. But none of those guarantees happen by accident — somebody has to tell the network what each data flow needs, and the network has to decide whether it can deliver. Clause 46 specifies exactly that conversation. It introduces the idea of a Stream: data transmitted by a Talker (a sending end station) to one or more Listeners (receiving end stations). The whole clause is about how a Stream's requirements get from the user side to the network side and back (46.1.1).",
+      "zh": "时间敏感网络（Time-Sensitive Networking, TSN）是 IEEE 802.1 的一组功能，用于提供有界时延、近乎为零的拥塞丢包以及对故障的韧性。但这些保证不会凭空发生——必须有人告诉网络每条数据流的需求，网络也必须判断自己能否满足。Clause 46 规定的正是这场对话。它引入了“流（Stream）”的概念：由一个 Talker（发送端站）传送给一个或多个 Listener（接收端站）的数据。整个条款讲的就是流的需求如何从用户侧传到网络侧、再传回来（46.1.1）。"
+    },
+    {
+      "type": "prose",
+      "en": "The boundary where this conversation happens is the User/Network Interface (UNI). The user side represents Talkers and Listeners; the network side represents the Bridges that carry the Stream's frames. The key principle: each user states what its data needs without detailed knowledge of the network, and the network — which does know its own topology and the TSN capabilities of every Bridge — figures out the rest and reports back success or failure (46.1.1). Because many different protocols could carry this exchange (signaling, remote management) using text or binary, Clause 46.2 deliberately specifies the information independent of any schema, encoding, or protocol — pure semantics that each protocol later maps onto its own wire format (46.1.2).",
+      "zh": "这场对话发生的边界称为用户/网络接口（User/Network Interface, UNI）。用户侧代表 Talker 和 Listener；网络侧代表承载该流帧的网桥（Bridge）。核心原则是：每个用户在不了解网络细节的情况下声明自己数据的需求，而网络——它确实掌握自身的拓扑和每个网桥的 TSN 能力——则负责完成其余工作并回报成功或失败（46.1.1）。由于可以用多种不同协议（信令、远程管理）以文本或二进制方式承载这次交换，Clause 46.2 特意将信息规定为独立于任何模式、编码或协议——纯粹的语义，再由各协议映射到自己的线上格式（46.1.2）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 46.1.3 then defines three architectural models for how that configuration flows. In the fully distributed model, Talkers and Listeners talk directly to Bridges, and each Bridge manages its own resources locally as requirements propagate along the active tree — the Stream Reservation Protocol (SRP) of Clause 35 is the natural fit here. In the centralized network/distributed user model, end stations still speak the UNI directly, but all Bridge configuration is computed by a single Centralized Network Configuration (CNC) entity, which holds a complete view of topology and can run the heavy computations (like building a scheduled-traffic gate control list) in one place. In the fully centralized model, even the users are centralized: a Centralized User Configuration (CUC) gathers end-station requirements, and the UNI now sits between the CUC and the CNC.",
+      "zh": "Clause 46.1.3 接着定义了配置信息流动的三种架构模型。在完全分布式模型中，Talker 和 Listener 直接与网桥对话，每个网桥在需求沿活动树传播时本地管理自己的资源——Clause 35 的流预留协议（Stream Reservation Protocol, SRP）天然适用于此。在集中网络/分布用户模型中，端站仍直接讲 UNI，但所有网桥的配置都由单一的集中网络配置实体（Centralized Network Configuration, CNC）计算，它掌握完整的拓扑视图，可以把繁重的计算（如构建调度流量的门控列表）集中在一处完成。在完全集中模型中，连用户也被集中：集中用户配置实体（Centralized User Configuration, CUC）汇集端站需求，UNI 此时位于 CUC 与 CNC 之间。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  subgraph FD[Fully distributed]\n    T1[Talker] -.UNI+propagate.-> B1[Bridges] -.-> L1[Listener]\n  end\n  subgraph CN[Centralized network]\n    T2[Talker] -->|UNI| EB[Edge Bridge] -->|mgmt| CNC1[CNC]\n  end\n  subgraph FC[Fully centralized]\n    CUC[CUC] -->|UNI| CNC2[CNC] -->|mgmt| B2[Bridges]\n  end",
+      "zh": "flowchart LR\n  subgraph FD[完全分布式]\n    T1[Talker] -.UNI+传播.-> B1[网桥] -.-> L1[Listener]\n  end\n  subgraph CN[集中网络]\n    T2[Talker] -->|UNI| EB[边缘网桥] -->|管理| CNC1[CNC]\n  end\n  subgraph FC[完全集中]\n    CUC[CUC] -->|UNI| CNC2[CNC] -->|管理| B2[网桥]\n  end"
+    },
+    {
+      "type": "prose",
+      "en": "One subtle but important capability is Stream transformation (46.1.4). The goal is to let Talkers and Listeners keep using their existing transport and application protocols — TCP, UDP, plain MAC/VLAN headers — rather than forcing a special TSN frame format. So a Stream is identified using fields from well-established formats. But the identification a user prefers (say, a UDP 5-tuple with no VLAN) may differ from what the network needs (a specific group MAC address and VLAN tag). Stream transformation rewrites the identifying fields at the user/network boundary, in the end station or nearest Bridge, using the functions of IEEE Std 802.1CB. If transformation is not supported, the user must simply use an identification the network already understands.",
+      "zh": "一个微妙但重要的能力是流变换（Stream transformation, 46.1.4）。其目标是让 Talker 和 Listener 继续使用既有的传输层与应用层协议——TCP、UDP、普通的 MAC/VLAN 头——而不必被迫采用专用的 TSN 帧格式。因此，流通过来自成熟格式的字段来标识。但用户偏好的标识（例如不含 VLAN 的 UDP 五元组）可能与网络所需的（特定的组播 MAC 地址加 VLAN 标签）不同。流变换在用户/网络边界、于端站或最近的网桥处，借助 IEEE Std 802.1CB 的功能改写这些标识字段。若不支持变换，用户就必须直接使用网络已能理解的标识。"
+    },
+    {
+      "type": "prose",
+      "en": "Now to the actual data. Clause 46.2 organizes everything into elements (single items) and groups (collections of related elements, nestable), referred to with dot notation like Talker.StreamID.UniqueID. Before defining any group, 46.2.1 fixes the allowed data types: Boolean, signed/unsigned integers (int8 through uint32), string, enumeration, rational (a uint32 numerator over a uint32 denominator), MAC and IPv4/IPv6 address types, and a sequence-of-X type for lists. Then 46.2.2 names the three top-level groups that any TSN configuration protocol must integrate: Talker and Listener (user to network) and Status (network to user). Critically, every protocol must use the StreamID (46.2.3.1) as the unique key that correlates each request to its response, so configurations for many Streams can overlap in time. Each Talker/Listener group supports two operations: Join (reserve resources) and Leave (release them).",
+      "zh": "现在进入真正的数据。Clause 46.2 把一切组织为元素（element，单个信息项）和组（group，相关元素的集合，可嵌套），并用点号表示法引用，如 Talker.StreamID.UniqueID。在定义任何组之前，46.2.1 先固定了允许的数据类型：布尔、有符号/无符号整数（int8 到 uint32）、字符串、枚举、有理数（uint32 分子比 uint32 分母）、MAC 与 IPv4/IPv6 地址类型，以及表示列表的“X 的序列”类型。随后 46.2.2 命名了任何 TSN 配置协议都必须整合的三个顶层组：Talker 和 Listener（用户到网络）与 Status（网络到用户）。关键在于，每个协议都必须使用 StreamID（46.2.3.1）作为唯一键，将每个请求与其响应关联起来，从而让多条流的配置在时间上可以重叠。每个 Talker/Listener 组支持两种操作：加入（Join，预留资源）与离开（Leave，释放资源）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Talker group (user to network)</text><rect x=\"10\" y=\"28\" width=\"100\" height=\"30\"/><text x=\"16\" y=\"47\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">StreamID</text><rect x=\"115\" y=\"28\" width=\"100\" height=\"30\"/><text x=\"121\" y=\"47\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">StreamRank</text><rect x=\"220\" y=\"28\" width=\"110\" height=\"30\"/><text x=\"226\" y=\"47\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">DataFrameSpec</text><rect x=\"335\" y=\"28\" width=\"115\" height=\"30\"/><text x=\"341\" y=\"47\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">TrafficSpec</text><rect x=\"10\" y=\"62\" width=\"205\" height=\"30\"/><text x=\"16\" y=\"81\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">UserToNetworkRequirements</text><rect x=\"220\" y=\"62\" width=\"230\" height=\"30\"/><text x=\"226\" y=\"81\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">InterfaceCapabilities + EndStationInterfaces</text><text x=\"10\" y=\"118\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Status group (network to user)</text><rect x=\"10\" y=\"126\" width=\"140\" height=\"22\"/><text x=\"16\" y=\"141\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">StatusInfo + StreamID</text><rect x=\"155\" y=\"126\" width=\"140\" height=\"22\"/><text x=\"161\" y=\"141\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">AccumulatedLatency</text><rect x=\"300\" y=\"126\" width=\"150\" height=\"22\"/><text x=\"306\" y=\"141\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\">InterfaceConfig / FailedIfaces</text></svg>",
+      "caption": {
+        "en": "The Talker request carries identity, rank, frame and traffic specs, requirements, and capabilities; the network replies with a Status group keyed by the same StreamID.",
+        "zh": "Talker 请求携带身份、等级、帧与流量规格、需求和能力；网络以同一 StreamID 为键回复一个 Status 组。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The Talker group (46.2.3) is the richest. It states the Talker's behavior, its requirements from the network, and the TSN capabilities of its interfaces. Its sub-groups include StreamID (a 48-bit MacAddress plus a uint16 UniqueID), StreamRank (a Rank of 0 for emergency or 1 for non-emergency traffic, used to decide which Streams survive when a Port is oversubscribed — for example after an IEEE 802.11 bandwidth reduction), EndStationInterfaces (the physical points of attachment, each an InterfaceID of MAC address plus optional name), DataFrameSpecification (how to recognize the Stream's frames), TrafficSpecification (interval, frame size, transmit offsets), UserToNetworkRequirements (such as MaxLatency and NumSeamlessTrees), and InterfaceCapabilities (VLAN tagging and 802.1CB Stream-identification support). The Listener group (46.2.4) is a lean subset — StreamID, EndStationInterfaces, UserToNetworkRequirements, and InterfaceCapabilities — since a receiver mostly states what it needs, not how it transmits.",
+      "zh": "Talker 组（46.2.3）内容最丰富。它声明 Talker 的行为、它对网络的需求，以及其接口的 TSN 能力。其子组包括：StreamID（48 位 MacAddress 加一个 uint16 的 UniqueID）、StreamRank（Rank 取 0 表示紧急流量、取 1 表示非紧急流量，用于在端口超额订阅时——例如 IEEE 802.11 带宽下降后——决定哪些流得以保留）、EndStationInterfaces（物理接入点，每个为一个 InterfaceID，含 MAC 地址加可选名称）、DataFrameSpecification（如何识别该流的帧）、TrafficSpecification（间隔、帧大小、发送偏移）、UserToNetworkRequirements（如 MaxLatency 与 NumSeamlessTrees）以及 InterfaceCapabilities（VLAN 打标签与 802.1CB 流标识支持）。Listener 组（46.2.4）则是一个精简子集——StreamID、EndStationInterfaces、UserToNetworkRequirements 与 InterfaceCapabilities——因为接收方主要声明自己的需求，而非如何发送。"
+    },
+    {
+      "type": "prose",
+      "en": "The network's reply is the Status group (46.2.5). It echoes the StreamID and carries StatusInfo (a TalkerStatus enum of None/Ready/Failed, a ListenerStatus enum of None/Ready/PartialFailed/Failed, and a uint8 FailureCode), the AccumulatedLatency (the worst-case nanoseconds a frame may take along its current path, which must come out at or below the requested MaxLatency for success), InterfaceConfiguration (the network's chosen MAC/VLAN/IP identifiers and any TimeAwareOffset the Talker must transmit at), and FailedInterfaces (which Ports failed, when the FailureCode is nonzero). The 25 standardized FailureCodes turn vague rejections into precise diagnostics — for instance code 1 insufficient bandwidth, code 6 preempted by higher rank, or code 21 MaxLatency exceeded.",
+      "zh": "网络的回复是 Status 组（46.2.5）。它回送 StreamID，并携带 StatusInfo（TalkerStatus 枚举：None/Ready/Failed；ListenerStatus 枚举：None/Ready/PartialFailed/Failed；以及一个 uint8 的 FailureCode）、AccumulatedLatency（一帧沿当前路径可能经历的最坏情况纳秒数，成功时必须等于或低于所请求的 MaxLatency）、InterfaceConfiguration（网络选定的 MAC/VLAN/IP 标识，以及 Talker 必须采用的 TimeAwareOffset）和 FailedInterfaces（当 FailureCode 非零时，标明哪些端口失败）。25 个标准化的 FailureCode 将含糊的拒绝变为精确的诊断——例如代码 1“带宽不足”、代码 6“被更高等级抢占”或代码 21“超过 MaxLatency”。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "AccumulatedLatency is reported per user: a Listener sees the worst case for its own path, while the Talker sees the worst case across all Listeners (the worst path). If NumSeamlessTrees is greater than one, it covers all paths in use. This is how you confirm a Stream actually meets its deadline — not by hoping, but by reading a number back from the network.",
+      "zh": "AccumulatedLatency 是按用户分别报告的：Listener 看到的是它自己路径的最坏情况，而 Talker 看到的是所有 Listener 中的最坏情况（最坏路径）。若 NumSeamlessTrees 大于一，则覆盖所有正在使用的路径。这正是确认一条流确实满足其截止期限的方式——不是靠期望，而是靠从网络读回一个数值。"
+    },
+    {
+      "type": "prose",
+      "en": "For the fully centralized model, the configuration travels over YANG-based remote management protocols. YANG (a data modeling language from IETF RFC 7950) describes the organization and rules of management data, paired with an encoding such as XML or JSON. Clause 46.3 ties the abstract elements of 46.2 to a concrete YANG module (whose text lives in 48.6.3): each element becomes a YANG leaf, and each group becomes a YANG typedef or grouping. The naming conventions differ — YANG uses hyphenated lowercase like mac-address while 46.2 uses camel case like MacAddress — but the standard declares them equivalent, and where description text and 46.2 ever disagree, 46.2 wins.",
+      "zh": "对于完全集中模型，配置通过基于 YANG 的远程管理协议传输。YANG（出自 IETF RFC 7950 的一种数据建模语言）描述管理数据的组织与规则，并搭配 XML 或 JSON 之类的编码。Clause 46.3 将 46.2 的抽象元素与一个具体的 YANG 模块（其文本位于 48.6.3）绑定：每个元素成为一个 YANG leaf，每个组成为一个 YANG typedef 或 grouping。命名约定不同——YANG 用连字符小写如 mac-address，而 46.2 用驼峰式如 MacAddress——但标准声明二者等价，且当 description 文本与 46.2 出现分歧时，以 46.2 为准。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 47 turns from configuration to runtime behavior, specifically Asynchronous Traffic Shaping (ATS) — a per-Stream shaper that smooths bursts so Bridges can offer bounded latency without a global schedule. ATS in Bridges is defined elsewhere; Clause 47 says what a Talker end station must do so its Streams actually fit the ATS machinery downstream. The ATS traffic class model in Talkers (47.1.1) requires a strict one-to-one relationship: one ATS scheduler instance per Stream, each tied to its own dedicated scheduler group, followed by a per-traffic-class queue. Because there is no sharing, the general ProcessFrame procedure collapses into a Simplified ProcessFrame(frame) (47.1.2): compute a length-recovery duration and an empty-to-full duration from the Stream's rate and burst size, derive an eligibilityTime, assign it to the frame, and advance the token-bucket's BucketEmptyTime. And because everything shares one clock, the system clock functions and processing delays (47.1.3) are trivial — a single local clock serves both the ATS scheduler and transmission selection, with ProcessingDelayMin and ProcessingDelayMax both zero.",
+      "zh": "Clause 47 从配置转向运行时行为，特别是异步流量整形（Asynchronous Traffic Shaping, ATS）——一种按流整形器，用于平滑突发，使网桥无需全局调度即可提供有界时延。网桥中的 ATS 在别处定义；Clause 47 规定 Talker 端站必须做什么，才能让其流真正契合下游的 ATS 机制。Talker 中的 ATS 流量类模型（47.1.1）要求严格的一对一关系：每条流一个 ATS 调度器实例，每个实例绑定到自己专属的调度器组，其后接一个按流量类的队列。由于不存在共享，通用的 ProcessFrame 过程收缩为简化的 ProcessFrame(frame)（47.1.2）：根据流的速率与突发大小计算长度恢复时长与从空到满时长，推导出 eligibilityTime，将其赋给该帧，并推进令牌桶的 BucketEmptyTime。又因为一切共享同一个时钟，系统时钟函数与处理时延（47.1.3）极为简单——单一本地时钟同时服务 ATS 调度器与传输选择，且 ProcessingDelayMin 与 ProcessingDelayMax 均为零。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, scheduler parameter consistency (47.2) closes the loop between Talker and Bridge. In the Bridge, a single ATS scheduler instance may aggregate several Streams from the same Talker, so its CommittedInformationRate (CIR) and CommittedBurstSize (CBS) must be set consistently with the per-Stream parameters in the Talker. The standard gives two equations: the Bridge's CBS must be at least the sum of the per-Stream CBS values, and the Bridge's CIR must be at least the sum of the per-Stream CIRs, scaled by a factor that accounts for clock drift — the maximum frequency deviation (in parts per million) of the Talker's transmission-selection clock versus the Bridge's ATS scheduler clock. That ppm correction is what keeps the shaper conformant even when the two ends' clocks are not perfectly aligned.",
+      "zh": "最后，调度器参数一致性（47.2）闭合了 Talker 与网桥之间的回路。在网桥中，单个 ATS 调度器实例可能聚合来自同一 Talker 的多条流，因此其承诺信息速率（CommittedInformationRate, CIR）与承诺突发大小（CommittedBurstSize, CBS）必须与 Talker 中按流的参数一致设置。标准给出两个等式：网桥的 CBS 至少要等于各流 CBS 之和，网桥的 CIR 至少要等于各流 CIR 之和，并乘以一个考虑时钟漂移的比例因子——即 Talker 传输选择时钟相对网桥 ATS 调度器时钟的最大频率偏差（以百万分率 ppm 计）。正是这个 ppm 修正，使得即便两端时钟未完全对齐，整形器仍保持合规。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause number in this lesson",
+        "zh": "覆盖地图：本课涉及的每个条款编号"
+      },
+      "en": "46.1 Overview of TSN configuration — 46.1.1 defines the User/Network Interface (UNI), Stream, Talker, and Listener; 46.1.2 explains why the information is modeled independent of schema/encoding/protocol; 46.1.3 gives the three models (fully distributed, centralized network/distributed user with a CNC, fully centralized with a CUC); 46.1.4 specifies Stream transformation via IEEE Std 802.1CB at the user/network boundary. 46.2 User/network configuration information — 46.2.1 lists the data types (Boolean, int8..uint32, string, enumeration, rational, MAC/IPv4/IPv6 address, sequence-of-X); 46.2.2 defines the three top-level groups (Talker, Listener, Status), the StreamID as correlation key, and the Join/Leave operations; 46.2.3 details the Talker group and its sub-groups (StreamID, StreamRank, EndStationInterfaces, DataFrameSpecification, TrafficSpecification, UserToNetworkRequirements, InterfaceCapabilities); 46.2.4 defines the Listener group as a subset; 46.2.5 defines the Status group (StatusInfo with TalkerStatus/ListenerStatus enums and FailureCode, AccumulatedLatency, InterfaceConfiguration, FailedInterfaces). 46.3 binds 46.2 to a YANG module (text in 48.6.3) for the fully centralized model. 47.1 Talker transmission behavior — 47.1.1 the one-to-one ATS traffic class model in Talkers; 47.1.2 the Simplified ProcessFrame(frame) pseudo-code; 47.1.3 the single system clock and zero processing delays. 47.2 Scheduler parameter consistency — the two equations relating Bridge CIR/CBS to the summed per-Stream values with a clock-drift (ppm) correction.",
+      "zh": "46.1 TSN 配置概述——46.1.1 定义用户/网络接口（UNI）、流、Talker 与 Listener；46.1.2 说明为何信息被建模为独立于模式/编码/协议；46.1.3 给出三种模型（完全分布式、含 CNC 的集中网络/分布用户、含 CUC 的完全集中）；46.1.4 规定经由 IEEE Std 802.1CB 在用户/网络边界进行的流变换。46.2 用户/网络配置信息——46.2.1 列出数据类型（布尔、int8..uint32、字符串、枚举、有理数、MAC/IPv4/IPv6 地址、X 的序列）；46.2.2 定义三个顶层组（Talker、Listener、Status）、作为关联键的 StreamID 以及 Join/Leave 操作；46.2.3 详述 Talker 组及其子组（StreamID、StreamRank、EndStationInterfaces、DataFrameSpecification、TrafficSpecification、UserToNetworkRequirements、InterfaceCapabilities）；46.2.4 将 Listener 组定义为一个子集；46.2.5 定义 Status 组（含 TalkerStatus/ListenerStatus 枚举与 FailureCode 的 StatusInfo、AccumulatedLatency、InterfaceConfiguration、FailedInterfaces）。46.3 为完全集中模型把 46.2 绑定到一个 YANG 模块（文本在 48.6.3）。47.1 Talker 传输行为——47.1.1 Talker 中的一对一 ATS 流量类模型；47.1.2 简化的 ProcessFrame(frame) 伪代码；47.1.3 单一系统时钟与零处理时延。47.2 调度器参数一致性——将网桥 CIR/CBS 与各流参数之和相关联、并带时钟漂移（ppm）修正的两个等式。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1665,
+          1666,
+          1667,
+          1668,
+          1669,
+          1670,
+          1672,
+          1673,
+          1674,
+          1675,
+          1686,
+          1687,
+          1688,
+          1689,
+          1693,
+          1694,
+          1695
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1665,
+        1666,
+        1667,
+        1668,
+        1669,
+        1670,
+        1671,
+        1672,
+        1673,
+        1674,
+        1675,
+        1676
+      ],
+      "note": "Clause 46.1 (UNI, models, Stream transformation) and start of 46.2 (data types, protocol integration, Talker group)."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1686,
+        1687,
+        1688,
+        1689,
+        1690,
+        1691,
+        1692,
+        1693
+      ],
+      "note": "Listener group (46.2.4), Status group with FailureCodes and AccumulatedLatency (46.2.5), and YANG binding (46.3)."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1694,
+        1695
+      ],
+      "note": "Clause 47: ATS Talker model, Simplified ProcessFrame, clock/delay, and scheduler parameter consistency equations."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:46.1.1",
+    "8021Q-2022:46.1.2",
+    "8021Q-2022:46.1.3",
+    "8021Q-2022:46.1.4",
+    "8021Q-2022:46.2.1",
+    "8021Q-2022:46.2.2",
+    "8021Q-2022:46.2.3",
+    "8021Q-2022:46.2.4",
+    "8021Q-2022:46.2.5",
+    "8021Q-2022:46.3",
+    "8021Q-2022:47.1.1",
+    "8021Q-2022:47.1.2",
+    "8021Q-2022:47.1.3",
+    "8021Q-2022:47.2"
+  ],
+  "track": "tsn"
+}

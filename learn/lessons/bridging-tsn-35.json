@@ -1,0 +1,156 @@
+{
+  "id": "bridging-tsn-35",
+  "title": {
+    "en": "CFM Receive Side: How a MEP Decides a Neighbor Is Alive, Broken, or Misconnected",
+    "zh": "CFM 接收侧：MEP 如何判定邻居是存活、故障还是错连"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Connectivity Fault Management (CFM) is the part of 802.1Q that lets a network watch its own health. A MEP (Maintenance association End Point) is a monitoring agent placed at the edge of a maintenance domain; it periodically broadcasts a heartbeat called a CCM (Continuity Check Message). This lesson covers the receive side: what a MEP records when a CCM arrives, how it processes a valid versus an invalid frame, and the small state machines that translate a stream of heartbeats into three verdicts about each neighbor — alive, broken (no heartbeat), or misconnected (a heartbeat from the wrong place).",
+      "zh": "连通性故障管理（CFM, Connectivity Fault Management）是 802.1Q 中让网络自我监测健康状况的部分。MEP（维护关联端点, Maintenance association End Point）是放置在维护域边缘的监测代理；它周期性地广播一种叫 CCM（连通性检查消息, Continuity Check Message）的心跳。本课讲解接收侧：当一条 CCM 到达时 MEP 记录了什么，如何分别处理有效帧与无效帧，以及那些把心跳流转换成对每个邻居的三种判定（存活、故障即无心跳、错连即来自错误位置的心跳）的小型状态机。"
+    },
+    {
+      "type": "prose",
+      "en": "When a CCM arrives, a demultiplexer first sorts it by maintenance level. A CCM at the MEP's own level sets the flag CCMreceivedEqual (20.16.1) and parks the parsed PDU in CCMequalPDU (20.16.2); a CCM from a lower level sets CCMreceivedLow (20.16.3) and parks its PDU in CCMlowPDU (20.16.4). 'Equal' means a peer at your own monitoring level; 'low' means a frame leaking up from a domain that should have been contained below you — which is itself a fault signal.",
+      "zh": "当一条 CCM 到达时，解复用器首先按维护等级（maintenance level）分拣。与本 MEP 同级的 CCM 会置位标志 CCMreceivedEqual（20.16.1），并把解析后的 PDU 暂存到 CCMequalPDU（20.16.2）；来自较低等级的 CCM 会置位 CCMreceivedLow（20.16.3），并把其 PDU 暂存到 CCMlowPDU（20.16.4）。“同级（Equal）”指与你处于同一监测等级的对端；“低级（Low）”指本应被封闭在你下方的某个域却向上泄漏出来的帧——这本身就是一个故障信号。"
+    },
+    {
+      "type": "prose",
+      "en": "From an accepted equal-level CCM, the MEP extracts a set of 'last received' facts about the sender. recvdMacAddress (20.16.5) is the sender's source address; recvdRDI (20.16.6) is its Remote Defect Indication flag (the neighbor telling you it can't hear you); recvdInterval (20.16.7) is the heartbeat period encoded in the CCM. Three optional fields carry status TLVs (Type-Length-Value records): recvdPortState (20.16.8) from the Port Status TLV, recvdInterfaceStatus (20.16.9) from the Interface Status TLV, and recvdSenderId (20.16.10) from the Sender ID TLV. recvdFrame (20.16.11) is a saved copy of the whole frame for diagnostics, and CCMsequenceErrors (20.16.12) counts out-of-order CCMs across all neighbors. rcvdTrafficBit (20.16.13) exists only on PBB-TE / Infrastructure Segment MEPs that carry the Traffic field.",
+      "zh": "从一条被接受的同级 CCM 中，MEP 提取出关于发送方的一组“最近接收到”的事实。recvdMacAddress（20.16.5）是发送方的源地址；recvdRDI（20.16.6）是其远端缺陷指示（RDI, Remote Defect Indication）标志（邻居告诉你它听不到你）；recvdInterval（20.16.7）是 CCM 中编码的心跳周期。三个可选字段携带状态 TLV（类型-长度-值记录, Type-Length-Value）：recvdPortState（20.16.8）来自端口状态 TLV，recvdInterfaceStatus（20.16.9）来自接口状态 TLV，recvdSenderId（20.16.10）来自发送方 ID TLV。recvdFrame（20.16.11）是为诊断保存的整帧副本，CCMsequenceErrors（20.16.12）统计所有邻居中乱序到达的 CCM 数。rcvdTrafficBit（20.16.13）仅存在于携带 Traffic 字段的 PBB-TE / 基础设施段 MEP 上。"
+    },
+    {
+      "type": "prose",
+      "en": "Two procedures do the actual parsing. MEPprocessEqualCCM() (20.17.1) handles same-level CCMs and is the decision hub: it validates the frame, then sorts it into one of three buckets. If the MAID (Maintenance Association IDentifier) does not match, it raises a cross-connect alarm (xconCCMreceived). If the MAID matches but the MEPID is wrong, unknown, or the interval mismatches, it raises an error alarm (errorCCMreceived). Otherwise the CCM is genuinely from an expected neighbor, so it copies all the recvd* fields and sets rCCMreceived for that neighbor's tracker. MEPprocessLowCCM() (20.17.2) is simpler: any valid lower-level CCM is by definition a leak, so it just raises the cross-connect alarm.",
+      "zh": "有两个过程负责实际解析。MEPprocessEqualCCM()（20.17.1）处理同级 CCM，是决策中枢：它先校验帧，然后将其归入三个桶之一。若 MAID（维护关联标识符, Maintenance Association IDentifier）不匹配，则触发错连告警（xconCCMreceived）。若 MAID 匹配但 MEPID 错误、未知或间隔不符，则触发错误告警（errorCCMreceived）。否则该 CCM 确实来自预期的邻居，于是它复制所有 recvd* 字段并为该邻居的跟踪器置位 rCCMreceived。MEPprocessLowCCM()（20.17.2）更简单：任何有效的低级 CCM 按定义就是泄漏，因此它直接触发错连告警。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[CCM arrives] --> B{level vs MEP}\n  B -->|equal| C[MEPprocessEqualCCM]\n  B -->|low| D[MEPprocessLowCCM: set xconCCMreceived]\n  C --> E{MAID match?}\n  E -->|no| F[set xconCCMreceived]\n  E -->|yes| G{MEPID & interval ok?}\n  G -->|no| H[set errorCCMreceived]\n  G -->|yes| I[copy recvd fields, set rCCMreceived]",
+      "zh": "flowchart TD\n  A[CCM 到达] --> B{相对 MEP 的等级}\n  B -->|同级| C[MEPprocessEqualCCM]\n  B -->|低级| D[MEPprocessLowCCM: 置位 xconCCMreceived]\n  C --> E{MAID 匹配?}\n  E -->|否| F[置位 xconCCMreceived]\n  E -->|是| G{MEPID 与间隔正确?}\n  G -->|否| H[置位 errorCCMreceived]\n  G -->|是| I[复制 recvd 字段, 置位 rCCMreceived]"
+    },
+    {
+      "type": "prose",
+      "en": "The MEP Continuity Check Receiver state machine (20.18, Figure 20-4) is the dispatcher that drives those two procedures. From an idle state it watches the two flags: CCMreceivedEqual routes the frame to MEPprocessEqualCCM(), CCMreceivedLow routes it to MEPprocessLowCCM(), and after each it clears the flag and returns to idle. It does no judging itself — it simply guarantees every arriving CCM is parsed exactly once by the right procedure.",
+      "zh": "MEP 连通性检查接收器状态机（20.18，图 20-4）是驱动上述两个过程的分发器。它从空闲状态监视两个标志：CCMreceivedEqual 将帧导向 MEPprocessEqualCCM()，CCMreceivedLow 将帧导向 MEPprocessLowCCM()，每次处理后清除标志并返回空闲。它本身不做判定——只保证每条到达的 CCM 都被正确的过程恰好解析一次。"
+    },
+    {
+      "type": "prose",
+      "en": "The per-neighbor verdict lives in the Remote MEP variables (20.19). There is one instance of these per expected neighbor. rMEPCCMdefect (20.19.1) is the headline: true means no CCM has been heard for at least 3.25 heartbeat intervals — the neighbor looks dead. rMEPlastRDI (20.19.2) caches the neighbor's RDI flag (with a per-path set rMEPlastRDI[i] for ECMP path MEPs). rMEPlastPortState (20.19.3), rMEPlastInterfaceStatus (20.19.4), and rMEPlastSenderId (20.19.5) cache the last TLV values. rCCMreceived (20.19.6) is the per-neighbor 'I just heard from you' pulse that MEPprocessEqualCCM() sets and the state machine clears. rMEPmacAddress (20.19.7) records the neighbor's address. rMEPportStatusDefect (20.19.8) and rMEPinterfaceStatusDefect (20.19.9) are derived booleans — true when the neighbor's last CCM reported a port/interface that is not up. lastPathN (20.19.10) remembers the previous path index, used only by ECMP path MEPs.",
+      "zh": "对每个邻居的判定保存在远端 MEP 变量（20.19）中。每个预期邻居对应一个实例。rMEPCCMdefect（20.19.1）是核心结论：为真表示至少 3.25 个心跳间隔内没有听到任何 CCM——邻居看起来已经失联。rMEPlastRDI（20.19.2）缓存邻居的 RDI 标志（对 ECMP 路径 MEP 还有逐路径集合 rMEPlastRDI[i]）。rMEPlastPortState（20.19.3）、rMEPlastInterfaceStatus（20.19.4）与 rMEPlastSenderId（20.19.5）缓存最近一次的 TLV 值。rCCMreceived（20.19.6）是逐邻居的“刚刚收到你的消息”脉冲，由 MEPprocessEqualCCM() 置位、由状态机清除。rMEPmacAddress（20.19.7）记录邻居地址。rMEPportStatusDefect（20.19.8）与 rMEPinterfaceStatusDefect（20.19.9）是派生布尔量——当邻居最近一条 CCM 报告端口/接口不处于 up 状态时为真。lastPathN（20.19.10）记住上一次的路径索引，仅供 ECMP 路径 MEP 使用。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> RMEP_IDLE\n  RMEP_IDLE --> RMEP_START: enable\n  RMEP_START --> RMEP_OK: rCCMreceived\n  RMEP_OK --> RMEP_OK: rCCMreceived (restart timer)\n  RMEP_OK --> RMEP_FAILED: timer expires\n  RMEP_FAILED --> RMEP_OK: rCCMreceived",
+      "zh": "stateDiagram-v2\n  [*] --> RMEP_IDLE\n  RMEP_IDLE --> RMEP_START: 使能\n  RMEP_START --> RMEP_OK: rCCMreceived\n  RMEP_OK --> RMEP_OK: rCCMreceived (重启定时器)\n  RMEP_OK --> RMEP_FAILED: 定时器超时\n  RMEP_FAILED --> RMEP_OK: rCCMreceived"
+    },
+    {
+      "type": "prose",
+      "en": "The Remote MEP state machine (20.20, Figure 20-5) turns that pulse into the alive/dead verdict. Each time rCCMreceived fires it copies the recvd* fields into the rMEP* caches, restarts the rMEPwhile timer to 3.5 heartbeat intervals, and sits in RMEP_OK. If the timer reaches zero with no new CCM, it moves to RMEP_FAILED, sets rMEPCCMdefect = true, and blanks rMEPmacAddress to all-ones — the neighbor is declared lost until a fresh CCM revives it.",
+      "zh": "远端 MEP 状态机（20.20，图 20-5）把该脉冲转换成存活/失联判定。每当 rCCMreceived 触发，它就把 recvd* 字段复制进 rMEP* 缓存，把 rMEPwhile 定时器重启为 3.5 个心跳间隔，并停留在 RMEP_OK 状态。若定时器归零仍无新 CCM，它转入 RMEP_FAILED，置 rMEPCCMdefect = true，并把 rMEPmacAddress 清为全 1——该邻居被宣告失联，直到一条新的 CCM 将其复活。"
+    },
+    {
+      "type": "prose",
+      "en": "Two near-identical fault trackers handle the abnormal CCMs. The Remote MEP Error variables (20.21) — errorCCMreceived (20.21.1), errorCCMlastFailure (20.21.2, a saved copy of the offending frame), errorCCMdefect (20.21.3) — feed the Remote MEP Error state machine (20.22, Figure 20-6). The MEP Cross Connect variables (20.23) — xconCCMreceived (20.23.1), xconCCMlastFailure (20.23.2), xconCCMdefect (20.23.3) — feed the Cross Connect machine (Figure 20-7). Each works the same way: when its 'received' flag is raised it saves the bad frame, arms a guard timer to 3.5× the CCM interval, and raises its defect flag; the defect stays asserted until 3.5 intervals pass with no further offending CCM, then clears. The error machine flags 'right association, wrong member or timing'; the cross-connect machine flags 'wrong association entirely' — a misconnection.",
+      "zh": "两个几乎相同的故障跟踪器处理异常 CCM。远端 MEP 错误变量（20.21）——errorCCMreceived（20.21.1）、errorCCMlastFailure（20.21.2，违规帧的保存副本）、errorCCMdefect（20.21.3）——供给远端 MEP 错误状态机（20.22，图 20-6）。MEP 错连变量（20.23）——xconCCMreceived（20.23.1）、xconCCMlastFailure（20.23.2）、xconCCMdefect（20.23.3）——供给错连状态机（图 20-7）。二者机制相同：当其“received”标志被置位时，保存坏帧，把保护定时器设为 CCM 间隔的 3.5 倍，并置位其缺陷标志；该缺陷一直保持到 3.5 个间隔内再无违规 CCM 才清除。错误机标记“关联正确、但成员或时序错误”；错连机标记“关联完全错误”——即一次错连。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The recurring 3.5× pattern is the heart of CFM fault detection: a defect latches the instant a bad (or missing) CCM is seen and only clears after 3.5 heartbeat intervals of silence. That hysteresis prevents a single lost or stray frame from flapping an alarm, while still reacting within a few heartbeats — fast enough for sub-second protection switching in carrier and TSN networks.",
+      "zh": "反复出现的 3.5 倍模式是 CFM 故障检测的核心：一旦看到坏的（或缺失的）CCM，缺陷立即锁存，且只有在 3.5 个心跳间隔的静默后才清除。这种迟滞既能防止单个丢失或杂散帧让告警抖动，又能在数个心跳内做出反应——足够快，可支撑运营商网络和 TSN（时间敏感网络, Time-Sensitive Networking）中亚秒级的保护倒换。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause taught here (20.16–20.23)",
+        "zh": "覆盖图——本课讲解的每个条款（20.16–20.23）"
+      },
+      "en": "20.16 MEP Continuity Check Receiver variables: 20.16.1 CCMreceivedEqual / 20.16.2 CCMequalPDU (same-level flag + parked PDU); 20.16.3 CCMreceivedLow / 20.16.4 CCMlowPDU (lower-level flag + PDU); 20.16.5 recvdMacAddress; 20.16.6 recvdRDI; 20.16.7 recvdInterval; 20.16.8 recvdPortState; 20.16.9 recvdInterfaceStatus; 20.16.10 recvdSenderId; 20.16.11 recvdFrame (saved diagnostic copy); 20.16.12 CCMsequenceErrors (out-of-order counter); 20.16.13 rcvdTrafficBit (PBB-TE / Infrastructure Segment only). 20.17 procedures: 20.17.1 MEPprocessEqualCCM() (validate, then split into cross-connect / error / good buckets); 20.17.2 MEPprocessLowCCM() (any valid low CCM → cross-connect). 20.18 MEP Continuity Check Receiver state machine (Figure 20-4 dispatcher). 20.19 Remote MEP variables: 20.19.1 rMEPCCMdefect; 20.19.2 rMEPlastRDI/[i]; 20.19.3 rMEPlastPortState; 20.19.4 rMEPlastInterfaceStatus; 20.19.5 rMEPlastSenderId; 20.19.6 rCCMreceived; 20.19.7 rMEPmacAddress; 20.19.8 rMEPportStatusDefect; 20.19.9 rMEPinterfaceStatusDefect; 20.19.10 lastPathN (ECMP only). 20.20 Remote MEP state machine (Figure 20-5: alive/dead via 3.5× timer). 20.21 Remote MEP Error variables: 20.21.1 errorCCMreceived; 20.21.2 errorCCMlastFailure; 20.21.3 errorCCMdefect. 20.22 Remote MEP Error state machine (Figure 20-6). 20.23 MEP Cross Connect variables: 20.23.1 xconCCMreceived; 20.23.2 xconCCMlastFailure; 20.23.3 xconCCMdefect.",
+      "zh": "20.16 MEP 连通性检查接收器变量：20.16.1 CCMreceivedEqual / 20.16.2 CCMequalPDU（同级标志 + 暂存 PDU）；20.16.3 CCMreceivedLow / 20.16.4 CCMlowPDU（低级标志 + PDU）；20.16.5 recvdMacAddress；20.16.6 recvdRDI；20.16.7 recvdInterval；20.16.8 recvdPortState；20.16.9 recvdInterfaceStatus；20.16.10 recvdSenderId；20.16.11 recvdFrame（诊断用保存副本）；20.16.12 CCMsequenceErrors（乱序计数器）；20.16.13 rcvdTrafficBit（仅 PBB-TE / 基础设施段）。20.17 过程：20.17.1 MEPprocessEqualCCM()（校验后分入错连 / 错误 / 正常三桶）；20.17.2 MEPprocessLowCCM()（任何有效低级 CCM → 错连）。20.18 MEP 连通性检查接收器状态机（图 20-4 分发器）。20.19 远端 MEP 变量：20.19.1 rMEPCCMdefect；20.19.2 rMEPlastRDI/[i]；20.19.3 rMEPlastPortState；20.19.4 rMEPlastInterfaceStatus；20.19.5 rMEPlastSenderId；20.19.6 rCCMreceived；20.19.7 rMEPmacAddress；20.19.8 rMEPportStatusDefect；20.19.9 rMEPinterfaceStatusDefect；20.19.10 lastPathN（仅 ECMP）。20.20 远端 MEP 状态机（图 20-5：通过 3.5 倍定时器判定存活/失联）。20.21 远端 MEP 错误变量：20.21.1 errorCCMreceived；20.21.2 errorCCMlastFailure；20.21.3 errorCCMdefect。20.22 远端 MEP 错误状态机（图 20-6）。20.23 MEP 错连变量：20.23.1 xconCCMreceived；20.23.2 xconCCMlastFailure；20.23.3 xconCCMdefect。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1223,
+          1224,
+          1225,
+          1226,
+          1227,
+          1228,
+          1229,
+          1230,
+          1231
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1223,
+        1224,
+        1225
+      ],
+      "note": "20.16 MEP Continuity Check Receiver variables (20.16.1–20.16.13) and 20.17 procedures (MEPprocessEqualCCM, MEPprocessLowCCM)"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1226,
+        1227,
+        1228
+      ],
+      "note": "20.17.2, 20.18 receiver state machine (Fig 20-4), 20.19 Remote MEP variables, 20.20 Remote MEP state machine (Fig 20-5)"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1229,
+        1230,
+        1231
+      ],
+      "note": "20.21 Remote MEP Error variables + 20.22 state machine (Fig 20-6); 20.23 MEP Cross Connect variables (Fig 20-7)"
+    }
+  ],
+  "covers": [
+    "8021Q-2022:20.16.1",
+    "8021Q-2022:20.16.2",
+    "8021Q-2022:20.16.3",
+    "8021Q-2022:20.16.4",
+    "8021Q-2022:20.16.5",
+    "8021Q-2022:20.16.6",
+    "8021Q-2022:20.16.7",
+    "8021Q-2022:20.16.8",
+    "8021Q-2022:20.16.9",
+    "8021Q-2022:20.16.10",
+    "8021Q-2022:20.16.11",
+    "8021Q-2022:20.16.12",
+    "8021Q-2022:20.16.13",
+    "8021Q-2022:20.17.1",
+    "8021Q-2022:20.17.2",
+    "8021Q-2022:20.18",
+    "8021Q-2022:20.19.1",
+    "8021Q-2022:20.19.2",
+    "8021Q-2022:20.19.3",
+    "8021Q-2022:20.19.4",
+    "8021Q-2022:20.19.5",
+    "8021Q-2022:20.19.6",
+    "8021Q-2022:20.19.7",
+    "8021Q-2022:20.19.8",
+    "8021Q-2022:20.19.9",
+    "8021Q-2022:20.19.10",
+    "8021Q-2022:20.20",
+    "8021Q-2022:20.21.1",
+    "8021Q-2022:20.21.2",
+    "8021Q-2022:20.21.3",
+    "8021Q-2022:20.22",
+    "8021Q-2022:20.23.1",
+    "8021Q-2022:20.23.2",
+    "8021Q-2022:20.23.3"
+  ],
+  "track": "bridging-tsn"
+}

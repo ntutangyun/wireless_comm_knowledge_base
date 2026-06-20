@@ -1,0 +1,143 @@
+{
+  "id": "bridging-tsn-34",
+  "title": {
+    "en": "CFM Heartbeats: The Continuity Check Transmit & MIP Receive Engines",
+    "zh": "CFM 心跳机制：连续性检查的发送端与 MIP 接收端引擎"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Connectivity Fault Management (CFM) keeps a heartbeat running across a bridged network. A Maintenance association End Point (MEP) periodically sends a Continuity Check Message (CCM) — a small 'I am alive' frame — and listens for the CCMs of its peers. If a peer goes silent, CFM raises a fault. This lesson covers the machinery on both ends of that heartbeat: the variables and state machine that *send* CCMs (the MEP Continuity Check Initiator), plus the simpler logic a Maintenance domain Intermediate Point (MIP) uses to *record* the CCMs that pass through it (the MHF Continuity Check Receiver, where MHF means MIP Half Function). We define each acronym on first use and name every exact clause so you can read 802.1Q Clause 20 fluently.",
+      "zh": "连接故障管理（CFM）在桥接网络中维持一条心跳。维护关联端点（MEP）会周期性地发送连续性检查消息（CCM）——一个表示“我还活着”的小帧——并监听对端的 CCM。如果某个对端沉默了，CFM 就会上报故障。本课讲解心跳两端的机制：发送 CCM 的变量与状态机（MEP 连续性检查发起器），以及维护域中间点（MIP）用来记录穿过它的 CCM 的较简单逻辑（MHF 连续性检查接收器，MHF 指 MIP 半功能）。我们对每个缩写在首次出现时给出定义，并标注每一条精确的子句编号，帮助你流畅阅读 802.1Q 第 20 章。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 20.9 declares the shared MEP variables — state that more than one state machine reads. The core seven (20.9.1–20.9.7) live in every MEP. MEPactive (20.9.1) is the administrative on/off switch; it drives the BEGIN input to the MEP state machines, so for a fully configured MEP it doubles as a read-out of whether the MEP is operating. enableRmepDefect (20.9.2) is true when the spanning tree (Clause 13) and VLAN topology (Clause 11) actually let frames pass through this Bridge Port for the monitored service; it also feeds the Port Status TLV (a Type-Length-Value field carried in the CCM). MAdefectIndication (20.9.3) is the summary alarm: true when any enabled defect of high-enough priority is active on the Maintenance Association (MA, the set of MEPs that monitor one service). allRMEPsDead (20.9.4) is true when this MEP hears none of its remote peers — the logical AND of every per-peer 'CCM defect' flag. lowestAlarmPri (20.9.5) is the priority threshold below which defects do not raise a Fault Alarm. presentRDI (20.9.6) sets the Remote Defect Indication bit this MEP stamps into its own outgoing CCMs, telling peers 'I have a problem in your direction.' MEPprimaryVID (20.9.7) is the VLAN ID this MEP treats as primary.",
+      "zh": "子句 20.9 声明了共享的 MEP 变量——即被多个状态机读取的状态。核心七项（20.9.1–20.9.7）存在于每个 MEP 中。MEPactive（20.9.1）是管理上的开关；它驱动 MEP 状态机的 BEGIN 输入，因此对于完全配置好的 MEP，它也兼作 MEP 是否在运行的读出值。enableRmepDefect（20.9.2）在生成树（第 13 章）与 VLAN 拓扑（第 11 章）确实允许帧为被监控的业务通过本桥接端口时为真；它还供给 CCM 中携带的端口状态 TLV（一种类型-长度-值字段）。MAdefectIndication（20.9.3）是汇总告警：当维护关联（MA，即监控同一业务的一组 MEP）上存在任意优先级足够高的已使能缺陷时为真。allRMEPsDead（20.9.4）在本 MEP 听不到任何远端对端时为真——它是每个对端“CCM 缺陷”标志的逻辑与。lowestAlarmPri（20.9.5）是优先级阈值，低于它的缺陷不会触发故障告警。presentRDI（20.9.6）设置本 MEP 在其外发 CCM 中打上的远端缺陷指示（RDI）位，告诉对端“我在你这个方向上有问题”。MEPprimaryVID（20.9.7）是本 MEP 视为主用的 VLAN ID。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining MEP variables (20.9.8–20.9.12) are technology-specific and only appear in special MAs. presentTraffic (20.9.8) and presentmmLoc (20.9.9) exist only in PBB-TE MAs — Provider Backbone Bridge Traffic Engineering, a carrier setup with explicit point-to-point paths called ESPs (Ethernet Switched Paths). presentTraffic is true when a backbone service actually uses the ESP this MEP monitors; presentmmLoc is just presentRDI AND presentTraffic. ISpresentTraffic (20.9.10) and ISpresentmmLoc (20.9.11) are the exact analogues for Infrastructure Segment MAs (which protect a segment via an IPG, an Infrastructure Protection Group). EpMEP (20.9.12) is a simple Boolean that is true only for ECMP path MEPs — Equal-Cost Multi-Path, where one MEP probes several equal-cost routes — and it gates the path-cycling logic we will see in the state machine.",
+      "zh": "其余的 MEP 变量（20.9.8–20.9.12）与特定技术相关，只出现在特殊的 MA 中。presentTraffic（20.9.8）与 presentmmLoc（20.9.9）只存在于 PBB-TE MA 中——运营商骨干桥流量工程，一种带有称为 ESP（以太网交换路径）的显式点到点路径的运营商方案。当某个骨干业务确实使用本 MEP 监控的 ESP 时，presentTraffic 为真；presentmmLoc 即 presentRDI 与 presentTraffic 的逻辑与。ISpresentTraffic（20.9.10）与 ISpresentmmLoc（20.9.11）是基础设施段 MA 的对应项（这类 MA 通过 IPG，即基础设施保护组，来保护一个段）。EpMEP（20.9.12）是一个简单布尔量，仅对 ECMP 路径 MEP 为真——等价多路径，即一个 MEP 探测若干等价代价路由——它控制我们将在状态机中看到的路径轮换逻辑。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 20.10 defines the variables private to the Continuity Check Initiator — the part of the MEP that actually transmits. CCIenabled (20.10.1) is the master transmit switch: true means CCMs go out. CCIsentCCMs (20.10.2) is a counter, initialised to 1, used to fill the CCM Sequence Number field. MACstatusChanged (20.10.3) is a one-shot flag: when a slow heartbeat (10 s or slower) is running and the reported Port Status or Interface Status changes, this fires one extra CCM immediately so peers learn the change without waiting a full interval. The last four are ECMP-only: Npaths (20.10.4) is how many paths this MEP tests (1 by default); flowHash[] (20.10.5) is the array of 16-bit hash values that steer probes down different equal-cost paths; pathN (20.10.6) indexes the current path, computed modulo Npaths and shared with the Remote MEP machine so received RDIs can be correlated to the path being tested; and CCMcnt (20.10.7) is a 0..3 counter that sends each flowHash value in four successive CCMs before advancing.",
+      "zh": "子句 20.10 定义了连续性检查发起器专用的变量——即 MEP 中实际进行发送的部分。CCIenabled（20.10.1）是发送总开关：为真时 CCM 才会发出。CCIsentCCMs（20.10.2）是一个计数器，初始化为 1，用于填充 CCM 的序列号字段。MACstatusChanged（20.10.3）是一次性标志：当运行慢速心跳（10 秒或更慢）且所报告的端口状态或接口状态发生变化时，它会立即额外发送一个 CCM，使对端无需等待整个周期就能得知变化。最后四项仅用于 ECMP：Npaths（20.10.4）是本 MEP 测试的路径数（默认 1）；flowHash[]（20.10.5）是一组 16 位哈希值的数组，用于将探测引导到不同的等价路径；pathN（20.10.6）索引当前路径，按 Npaths 取模计算，并与远端 MEP 状态机共享，以便将收到的 RDI 与正在测试的路径相关联；CCMcnt（20.10.7）是一个 0..3 的计数器，使每个 flowHash 值在四个连续的 CCM 中发送后再前进。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 20.11.1 spells out xmitCCM() — the procedure that actually builds and sends one CCM via an M_UNITDATA.request. Intuitively it stamps the frame with everything a peer needs: the destination address from the multicast table for the MEP's MD Level (Maintenance Domain Level, the nesting depth of the monitored domain); the MEP's own MAC as source; the configured priority; the MD Level field; the CCM Interval field (from CCMinterval, the configured spacing in 20.8.1); the RDI bit copied from presentRDI; the Sequence Number copied from CCIsentCCMs; the MAID (Maintenance Association IDentifier) and the MEPID (this MEP's numeric identity); and optionally a Sender ID TLV, Port Status TLV, and Interface Status TLV. After sending it increments CCIsentCCMs. PBB-TE and Infrastructure Segment MEPs may also fill the Traffic field from presentTraffic / ISpresentTraffic; ECMP MEPs set flow_hash to flowHash[pathN].",
+      "zh": "子句 20.11.1 详述了 xmitCCM()——通过 M_UNITDATA.request 实际构造并发送一个 CCM 的过程。直观地说，它在帧上打上对端所需的一切：来自该 MEP 的 MD 级别（维护域级别，即被监控域的嵌套深度）对应多播表的目的地址；以 MEP 自身 MAC 作为源地址；配置的优先级；MD 级别字段；CCM 间隔字段（取自 CCMinterval，即 20.8.1 中配置的间隔）；从 presentRDI 复制的 RDI 位；从 CCIsentCCMs 复制的序列号；MAID（维护关联标识符）与 MEPID（本 MEP 的数字身份）；并可选地放入发送方 ID TLV、端口状态 TLV 与接口状态 TLV。发送后它将 CCIsentCCMs 加一。PBB-TE 与基础设施段 MEP 还可用 presentTraffic / ISpresentTraffic 填充流量字段；ECMP MEP 则将 flow_hash 设为 flowHash[pathN]。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> CCI_IDLE: BEGIN or not MEPactive\n  CCI_IDLE --> CCI_WAITING: CCIenabled\n  CCI_WAITING --> CCI_WAITING: xmitCCM(); CCIwhile=CCMtime\n  note right of CCI_WAITING: MACstatusChanged or CCIwhile==0 fires next CCM\n  CCI_WAITING --> CCI_IDLE: not CCIenabled",
+      "zh": "stateDiagram-v2\n  [*] --> CCI_IDLE: BEGIN 或 非MEPactive\n  CCI_IDLE --> CCI_WAITING: CCIenabled\n  CCI_WAITING --> CCI_WAITING: xmitCCM(); CCIwhile=CCMtime\n  note right of CCI_WAITING: MACstatusChanged 或 CCIwhile==0 触发下一个CCM\n  CCI_WAITING --> CCI_IDLE: 非CCIenabled"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 20.12 ties the initiator together as a state machine (Figure 20-2). It has two states. CCI_IDLE is the resting state when transmission is off; entered on BEGIN or when MEPactive goes false. When CCIenabled becomes true it moves to CCI_WAITING, calls xmitCCM(), and loads the countdown timer CCIwhile with CCMtime(CCMinterval). Each time the timer expires (CCIwhile == 0) — or MACstatusChanged fires the early extra CCM — it sends again and reloads. For an ECMP MEP (EpMEP true) this same loop advances pathN using CCMcnt, so the heartbeat naturally rotates through the configured set of equal-cost paths, four CCMs per path. A standard's NOTE points out that whether setting MACstatusChanged resets CCIwhile (shifting the transmit phase) is left unspecified.",
+      "zh": "子句 20.12 将发起器整合为一个状态机（图 20-2）。它有两个状态。CCI_IDLE 是发送关闭时的静止状态；在 BEGIN 时或 MEPactive 变为假时进入。当 CCIenabled 变为真时，它转入 CCI_WAITING，调用 xmitCCM()，并将倒计时定时器 CCIwhile 装入 CCMtime(CCMinterval)。每当定时器到期（CCIwhile == 0）——或 MACstatusChanged 触发提前的额外 CCM——它就再次发送并重新装载。对于 ECMP MEP（EpMEP 为真），同一循环会用 CCMcnt 推进 pathN，因此心跳会自然地在配置的等价路径集合中轮转，每条路径四个 CCM。标准的一条 NOTE 指出：设置 MACstatusChanged 是否重置 CCIwhile（从而改变发送相位）未作规定。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: the Initiator is a metronome. CCMinterval sets the tempo, xmitCCM() plays each beat, and MACstatusChanged lets the MEP slip in an urgent extra beat when a port's status flips on a slow timer — so neighbours don't sit blind for up to 10 minutes waiting for the next scheduled CCM.",
+      "zh": "心智模型：发起器就像一台节拍器。CCMinterval 设定节奏，xmitCCM() 敲出每一拍，而 MACstatusChanged 让 MEP 在慢速定时器下端口状态翻转时插入一个紧急的额外拍——这样邻居就不必盲等多达 10 分钟才等到下一个计划中的 CCM。"
+    },
+    {
+      "type": "prose",
+      "en": "The receive side covered here is the simplest of all: the MHF Continuity Check Receiver, run by a MIP (Maintenance domain Intermediate Point) — a transit point that does not own the heartbeat but wants to learn who is reachable through it. Clause 20.13 gives it just two variables. MHFrecvdCCM (20.13.1) is a Boolean set true by the MHF OpCode Demultiplexer when a CCM arrives at the MIP's MD Level, and cleared by the receiver's own state machine. MHFCCMPDU (20.13.2) is the structure holding the received CCM's M_UNITDATA.indication parameters for processing.",
+      "zh": "这里涵盖的接收端是所有部分中最简单的：MHF 连续性检查接收器，由 MIP（维护域中间点）运行——它是一个转接点，自身并不拥有心跳，但希望了解通过它可以到达哪些节点。子句 20.13 只给它两个变量。MHFrecvdCCM（20.13.1）是一个布尔量，当一个 CCM 到达 MIP 的 MD 级别时由 MHF OpCode 解复用器置为真，并由接收器自身的状态机清除。MHFCCMPDU（20.13.2）是保存所收 CCM 的 M_UNITDATA.indication 参数以供处理的结构。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 20.14.1 defines the receiver's single procedure, MHFprocessCCM(). It validates the received CCM and discards it if invalid; otherwise it records the FID (Filtering IDentifier — which forwarding table the frame belongs to), the source_address, and the Port number into the MIP's MIP CCM Database. That database is the raw material a Linktrace responder later uses to say 'yes, I have seen this MAC on this port.' Clause 20.15 wraps this into a trivial two-state machine (Figure 20-3): HC_IDLE waits for MHFrecvdCCM, clears it, transitions unconditionally (UCT) to HC_RECORD, runs MHFprocessCCM(), and returns. No alarms, no RDI, no timers — a MIP only takes notes.",
+      "zh": "子句 20.14.1 定义了接收器唯一的过程 MHFprocessCCM()。它校验所收的 CCM，若无效则丢弃；否则将 FID（过滤标识符——该帧所属的转发表）、source_address 与端口号记录到 MIP 的 MIP CCM 数据库中。该数据库是后续链路追踪（Linktrace）响应器据以回答“是的，我在这个端口上见过这个 MAC”的原始素材。子句 20.15 将此包装为一个极简的两状态机（图 20-3）：HC_IDLE 等待 MHFrecvdCCM，清除它，无条件转移（UCT）到 HC_RECORD，运行 MHFprocessCCM()，然后返回。没有告警、没有 RDI、没有定时器——MIP 只是记录。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> HC_IDLE: BEGIN\n  HC_IDLE --> HC_RECORD: MHFrecvdCCM\\n(clear flag)\n  HC_RECORD --> HC_IDLE: UCT\\nMHFprocessCCM()",
+      "zh": "stateDiagram-v2\n  [*] --> HC_IDLE: BEGIN\n  HC_IDLE --> HC_RECORD: MHFrecvdCCM\\n(清标志)\n  HC_RECORD --> HC_IDLE: 无条件转移\\nMHFprocessCCM()"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause taught here, by exact number",
+        "zh": "覆盖地图——本课所讲每条子句的精确编号"
+      },
+      "en": "MEP variables (20.9): MEPactive 20.9.1 (admin on/off, drives BEGIN); enableRmepDefect 20.9.2 (forwarding-permitted gate, feeds Port Status TLV); MAdefectIndication 20.9.3 (summary alarm vs lowestAlarmPri); allRMEPsDead 20.9.4 (AND of per-peer CCM defects); lowestAlarmPri 20.9.5 (alarm priority threshold); presentRDI 20.9.6 (outgoing RDI bit); MEPprimaryVID 20.9.7 (primary VLAN). PBB-TE-only: presentTraffic 20.9.8, presentmmLoc 20.9.9 (=presentRDI AND presentTraffic). Infrastructure-Segment-only: ISpresentTraffic 20.9.10, ISpresentmmLoc 20.9.11. ECMP-only: EpMEP 20.9.12. Initiator variables (20.10): CCIenabled 20.10.1; CCIsentCCMs 20.10.2 (sequence counter); MACstatusChanged 20.10.3 (extra CCM trigger); Npaths 20.10.4; flowHash[] 20.10.5; pathN 20.10.6 (modulo-Npaths path index); CCMcnt 20.10.7 (0..3, four CCMs per path). Initiator procedure 20.11.1 xmitCCM() (builds/sends the CCM). Initiator state machine 20.12 (CCI_IDLE/CCI_WAITING, Figure 20-2). MHF receiver variables 20.13.1 MHFrecvdCCM, 20.13.2 MHFCCMPDU. MHF receiver procedure 20.14.1 MHFprocessCCM() (validate, record FID/source/Port in MIP CCM Database). MHF receiver state machine 20.15 (HC_IDLE/HC_RECORD, Figure 20-3).",
+      "zh": "MEP 变量（20.9）：MEPactive 20.9.1（管理开关，驱动 BEGIN）；enableRmepDefect 20.9.2（转发许可门控，供给端口状态 TLV）；MAdefectIndication 20.9.3（对比 lowestAlarmPri 的汇总告警）；allRMEPsDead 20.9.4（各对端 CCM 缺陷的逻辑与）；lowestAlarmPri 20.9.5（告警优先级阈值）；presentRDI 20.9.6（外发 RDI 位）；MEPprimaryVID 20.9.7（主用 VLAN）。仅 PBB-TE：presentTraffic 20.9.8、presentmmLoc 20.9.9（=presentRDI 与 presentTraffic）。仅基础设施段：ISpresentTraffic 20.9.10、ISpresentmmLoc 20.9.11。仅 ECMP：EpMEP 20.9.12。发起器变量（20.10）：CCIenabled 20.10.1；CCIsentCCMs 20.10.2（序列号计数器）；MACstatusChanged 20.10.3（额外 CCM 触发）；Npaths 20.10.4；flowHash[] 20.10.5；pathN 20.10.6（按 Npaths 取模的路径索引）；CCMcnt 20.10.7（0..3，每路径四个 CCM）。发起器过程 20.11.1 xmitCCM()（构造/发送 CCM）。发起器状态机 20.12（CCI_IDLE/CCI_WAITING，图 20-2）。MHF 接收器变量 20.13.1 MHFrecvdCCM、20.13.2 MHFCCMPDU。MHF 接收器过程 20.14.1 MHFprocessCCM()（校验，将 FID/源/端口记入 MIP CCM 数据库）。MHF 接收器状态机 20.15（HC_IDLE/HC_RECORD，图 20-3）。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1217,
+          1218,
+          1219,
+          1220,
+          1221,
+          1222,
+          1223
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1217,
+        1218,
+        1219,
+        1220
+      ],
+      "note": "20.9 MEP variables (20.9.1–20.9.12) and 20.10 Initiator variables (20.10.1–20.10.6)"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1221,
+        1222
+      ],
+      "note": "20.10.7 CCMcnt, 20.11.1 xmitCCM(), 20.12 Initiator state machine (Fig 20-2), 20.13 MHF receiver variables"
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1223
+      ],
+      "note": "20.14.1 MHFprocessCCM() and 20.15 MHF receiver state machine (Fig 20-3)"
+    }
+  ],
+  "covers": [
+    "8021Q-2022:20.9.1",
+    "8021Q-2022:20.9.2",
+    "8021Q-2022:20.9.3",
+    "8021Q-2022:20.9.4",
+    "8021Q-2022:20.9.5",
+    "8021Q-2022:20.9.6",
+    "8021Q-2022:20.9.7",
+    "8021Q-2022:20.9.8",
+    "8021Q-2022:20.9.9",
+    "8021Q-2022:20.9.10",
+    "8021Q-2022:20.9.11",
+    "8021Q-2022:20.9.12",
+    "8021Q-2022:20.10.1",
+    "8021Q-2022:20.10.2",
+    "8021Q-2022:20.10.3",
+    "8021Q-2022:20.10.4",
+    "8021Q-2022:20.10.5",
+    "8021Q-2022:20.10.6",
+    "8021Q-2022:20.10.7",
+    "8021Q-2022:20.11.1",
+    "8021Q-2022:20.12",
+    "8021Q-2022:20.13.1",
+    "8021Q-2022:20.13.2",
+    "8021Q-2022:20.14.1",
+    "8021Q-2022:20.15"
+  ],
+  "track": "bridging-tsn"
+}

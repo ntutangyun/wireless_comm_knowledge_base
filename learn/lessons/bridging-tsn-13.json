@@ -1,0 +1,185 @@
+{
+  "id": "bridging-tsn-13",
+  "title": {
+    "en": "Managing Carrier and TSN Bridges: PB, CFM, PBB Edge, and FQTSS",
+    "zh": "运营商网桥与 TSN 网桥的管理：PB、CFM、PBB 边缘与 FQTSS"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 12 of IEEE Std 802.1Q-2022 is the standard's management chapter: it defines the managed objects — the named knobs and read-outs that a network manager touches — for every kind of bridge the standard describes. This lesson is part 2 of 4 and walks the slice that manages the larger carrier-grade and time-sensitive devices. We climb a ladder of increasingly specialised bridges: the Provider Bridge (PB) that resells customer VLANs, the connectivity-fault-management (CFM) machinery that watches a service end-to-end, the Provider Backbone Bridge (PBB) edge that wraps customer traffic for a metro core, the data-path delay measurement (DDCFM) entities, PBB Traffic Engineering (PBB-TE) protection switching, the two-port relay (TPMR), and finally the Forwarding and Queuing for Time-Sensitive Streams (FQTSS) tables. Each section adds managed objects on top of the base bridge management you already met in 12.4 through 12.12.",
+      "zh": "IEEE Std 802.1Q-2022 第 12 章是整部标准的“管理”章节：它为标准描述的每一类网桥定义“受管对象”（managed object）——也就是网络管理员可以操作的具名旋钮与读数。本课是全 4 部分中的第 2 部分，讲解其中管理大型运营商级与时间敏感设备的那一段。我们沿着一条“越来越专门化”的阶梯逐级攀登：转售客户 VLAN 的运营商网桥（PB，Provider Bridge）、端到端监视业务的连通性故障管理（CFM，Connectivity Fault Management）机制、把客户流量封装进城域核心的运营商骨干网桥（PBB，Provider Backbone Bridge）边缘、数据通路时延测量（DDCFM）实体、PBB 流量工程（PBB-TE）保护倒换、两端口中继器（TPMR），最后是面向时间敏感流的转发与排队（FQTSS）表。每一节都在你已学过的 12.4 至 12.12 基础网桥管理之上叠加新的受管对象。"
+    },
+    {
+      "type": "prose",
+      "en": "12.13 Provider Bridge management. A Provider Bridge sells Layer-2 service to customers, stacking a Service VLAN tag (S-tag, with a 12-bit S-VID) outside the customer's own Customer VLAN tag (C-tag, with a C-VID). Each external port is one of four types: a Provider Network Port (PNP) facing the carrier core, a Customer Network Port (CNP), a Customer Edge Port (CEP), or a Remote Customer Access Port (RCAP). 12.13.1 is the Provider Bridge Port Type managed object — read or configure which of those four roles a port plays. 12.13.2 is the Customer Edge Port Configuration object: its C-VID Registration Table maps each customer C-VID onto the S-VID of the service instance that carries it (a many-to-one 'bundling' mapping), plus per-Provider-Edge-Port (PEP) settings and a Service Priority Regeneration Table. 12.13.3 is the Remote Customer Access object, which auto-creates a Port-mapping S-VLAN component behind an RCAP and configures its Internal Interface Table so remote customers reach the right service.",
+      "zh": "12.13 运营商网桥管理。运营商网桥向客户出售二层业务，它在客户自己的客户 VLAN 标签（C-tag，含 C-VID）外再叠加一层业务 VLAN 标签（S-tag，含 12 位 S-VID）。每个对外端口属于四种类型之一：面向运营商核心的运营商网络端口（PNP，Provider Network Port）、客户网络端口（CNP，Customer Network Port）、客户边缘端口（CEP，Customer Edge Port）、远程客户接入端口（RCAP，Remote Customer Access Port）。12.13.1 是运营商网桥端口类型受管对象——读取或配置端口扮演这四种角色中的哪一种。12.13.2 是客户边缘端口配置对象：其 C-VID 注册表把每个客户 C-VID 映射到承载它的业务实例的 S-VID（这是一种多对一的“捆绑”映射），并附带每个运营商边缘端口（PEP，Provider Edge Port）的设置以及一张业务优先级再生表。12.13.3 是远程客户接入对象，它在 RCAP 后自动创建一个端口映射 S-VLAN 组件，并配置其内部接口表，使远程客户接入到正确的业务。"
+    },
+    {
+      "type": "prose",
+      "en": "12.14 CFM entities. Connectivity Fault Management (CFM) is how operators monitor whether a service is actually connected end-to-end. It is organised as a tidy hierarchy (Figure 12-1 in the standard). 12.14.1 is the Maintenance Domain list — one per bridge, holding every Maintenance Domain (MD, an administrative region at a chosen MD Level) you have created, with create/delete operations. 12.14.2 is the CFM Stack — read-only, it reveals which Maintenance Points (MPs) — either Maintenance End Points (MEPs) or MIP Half Functions (MHFs) — sit on a given port and their direction (Up or Down). 12.14.3 is the Default MD Level object, controlling automatic MHF creation and the Sender ID TLV for VIDs/I-SIDs not tied to a specific Maintenance Association. 12.14.4 is the Configuration Error List, reporting misconfigurations like CFMleak or ConflictingVIDs.",
+      "zh": "12.14 CFM 实体。连通性故障管理（CFM）是运营商监视业务是否真正端到端连通的手段，组织为一个整洁的层级（对应标准中的 Figure 12-1）。12.14.1 是维护域列表（Maintenance Domain list）——每个网桥一份，保存你创建的每一个维护域（MD，即在选定 MD 等级上的一个管理区域），并提供创建/删除操作。12.14.2 是 CFM 栈（CFM Stack）——只读，它揭示某端口上配置了哪些维护点（MP，Maintenance Point）——可能是维护端点（MEP，Maintenance End Point）或 MIP 半功能（MHF，MIP Half Function）——以及它们的朝向（Up 或 Down）。12.14.3 是默认 MD 等级对象，控制对未绑定到具体维护关联的 VID/I-SID 自动创建 MHF，以及其 Sender ID TLV。12.14.4 是配置错误列表，报告诸如 CFMleak、ConflictingVIDs 之类的错误配置。"
+    },
+    {
+      "type": "prose",
+      "en": "Continuing CFM: 12.14.5 is the Maintenance Domain managed object — there can be many per bridge, and a Maintenance Association (MA) can only be created inside one. It is deliberately configured identically on every bridge in the network, and from it you reach all its MAs. 12.14.6 is the Maintenance Association managed object — one per monitored service instance. It holds the list of VIDs (or I-SID/TE-SID/SEG-ID) being watched, the Continuity Check Message (CCM) interval, the Sender ID and Fault-Alarm policy, and the list of MEPIDs in the association; from it you create or delete MEPs. 12.14.7 is the Maintenance association Endpoint managed object — one per MEP. Beyond reading/writing the MEP's attributes it carries the active diagnostic verbs: Transmit Loopback Messages (the Layer-2 'ping'), Transmit Linktrace Message and Read Linktrace Reply (the Layer-2 'traceroute'), Read MEP Database (remote-MEP state), and Transmit MEP Fault Alarm (an unsolicited fault notification).",
+      "zh": "继续 CFM：12.14.5 是维护域受管对象——每个网桥可有多个，而维护关联（MA，Maintenance Association）只能在某个维护域内创建。它被刻意配置成在全网每台网桥上完全一致，通过它可以访问其下所有 MA。12.14.6 是维护关联受管对象——每个被监视的业务实例一份，保存被监视的 VID 列表（或 I-SID/TE-SID/SEG-ID）、连续性检查消息（CCM，Continuity Check Message）间隔、Sender ID 与故障告警策略，以及该关联中的 MEPID 列表；可由它创建或删除 MEP。12.14.7 是维护关联端点受管对象——每个 MEP 一份。除读写 MEP 属性外，它还承载主动诊断动作：发送环回消息（二层“ping”）、发送链路追踪消息与读取链路追踪应答（二层“traceroute”）、读取 MEP 数据库（远端 MEP 状态）以及发送 MEP 故障告警（一种主动上报的故障通知）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  BR[Bridge] --> MDL[12.14.1 MD list]\n  MDL --> MD[12.14.5 Maintenance Domain]\n  MD --> MA[12.14.6 Maintenance Assoc]\n  MA --> MEP[12.14.7 MEP object]\n  MEP --> LB[Loopback / Linktrace]\n  MEP --> FA[Fault Alarm]",
+      "zh": "flowchart TD\n  BR[网桥] --> MDL[12.14.1 维护域列表]\n  MDL --> MD[12.14.5 维护域]\n  MD --> MA[12.14.6 维护关联]\n  MA --> MEP[12.14.7 MEP 对象]\n  MEP --> LB[环回 / 链路追踪]\n  MEP --> FA[故障告警]"
+    },
+    {
+      "type": "prose",
+      "en": "12.15 Backbone Core Bridge (BCB) management and 12.16 Backbone Edge Bridge (BEB) management. In a Provider Backbone Bridged Network (PBBN, 'MAC-in-MAC'), customer frames are wrapped inside a backbone header. The Backbone Core Bridge (BCB) sits in the middle and is simply a conformant S-VLAN bridge — so 12.15 needs no new objects; it just reuses 12.4 through 12.14. The interesting device is the Backbone Edge Bridge (BEB) at the boundary, which adds backbone tags. 12.16.1 is the BEB configuration object: it enumerates the BEB's I-components and B-component (each identified by a ComponentID and MAC address) and can create/delete components, Bridge Ports, and Provider Instance Ports (PIPs). A BEB uses Virtual Instance Ports (VIPs), PIPs, and Customer Backbone Ports (CBPs).",
+      "zh": "12.15 骨干核心网桥（BCB，Backbone Core Bridge）管理与 12.16 骨干边缘网桥（BEB，Backbone Edge Bridge）管理。在运营商骨干桥接网络（PBBN，即“MAC-in-MAC”）中，客户帧被封装进一层骨干头部。骨干核心网桥（BCB）位于中间，仅是一台符合规范的 S-VLAN 网桥——因此 12.15 无需新增对象，直接复用 12.4 至 12.14。真正有意思的设备是位于边界、负责添加骨干标签的骨干边缘网桥（BEB）。12.16.1 是 BEB 配置对象：它列举该 BEB 的各 I 组件与 B 组件（每个以 ComponentID 和 MAC 地址标识），并可创建/删除组件、网桥端口和运营商实例端口（PIP，Provider Instance Port）。BEB 使用虚拟实例端口（VIP，Virtual Instance Port）、PIP 以及客户骨干端口（CBP，Customer Backbone Port）。"
+    },
+    {
+      "type": "prose",
+      "en": "The BEB sub-objects: 12.16.2 is the BEB/PB/VLAN Bridge Port configuration object — a read-only lookup that tells you a port's type (C-VLAN Port, PNP, CNP, CEP, CBP, or VIP). 12.16.3 is the VIP configuration object: a VIP is the customer-facing port of an I-component, so this carries the backbone service-instance settings — the I-SID it maps to, the default backbone destination MAC, and whether it may learn B-MAC/C-MAC associations. 12.16.4 is the PIP configuration object: a PIP is not itself a Bridge Port but a port on the BEB onto which many VIPs are multiplexed; it holds the VIP-to-PIP mapping, the PIP MAC address used as backbone source, and PIP priority-code-point encode/decode tables. 12.16.5 is the CBP Configuration object: a CBP faces the backbone, so it carries the Backbone Service Instance table (mapping Backbone-SIDs to B-VIDs and default destinations) and, where PBB-TE is used, TESI assignment of <ESP-DA, ESP-SA, ESP-VID> 3-tuples.",
+      "zh": "BEB 的子对象：12.16.2 是 BEB/PB/VLAN 网桥端口配置对象——一个只读查询，告诉你端口类型（C-VLAN 端口、PNP、CNP、CEP、CBP 或 VIP）。12.16.3 是 VIP 配置对象：VIP 是 I 组件面向客户的端口，因此它承载骨干业务实例设置——所映射的 I-SID、默认骨干目的 MAC，以及是否允许学习 B-MAC/C-MAC 关联。12.16.4 是 PIP 配置对象：PIP 本身不是网桥端口，而是 BEB 上的一个端口，多个 VIP 被复用到其上；它保存 VIP 到 PIP 的映射、用作骨干源地址的 PIP MAC，以及 PIP 的优先级码点编码/解码表。12.16.5 是 CBP 配置对象：CBP 面向骨干，因此承载骨干业务实例表（把 Backbone-SID 映射到 B-VID 及默认目的地），并在使用 PBB-TE 时承载 <ESP-DA, ESP-SA, ESP-VID> 三元组的 TESI 指派。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model for a BEB: a VIP is the door a customer walks through, a PIP is the loading dock where many customers' boxes are stamped with the same backbone return address (the PIP MAC), and a CBP is the gate onto the backbone highway where each box is tagged with its destination depot (the Backbone Service Instance / B-VID). The managed objects 12.16.3–12.16.5 simply expose the paperwork for each of those three stages.",
+      "zh": "理解 BEB 的心智模型：VIP 是客户走进来的“门”，PIP 是“装卸台”——许多客户的包裹在此被盖上同一个骨干回邮地址（PIP MAC），CBP 则是通往骨干“高速公路”的“闸口”，每个包裹在此被贴上目的仓库标签（骨干业务实例 / B-VID）。受管对象 12.16.3–12.16.5 不过是把这三个阶段各自的“单据”暴露出来。"
+    },
+    {
+      "type": "prose",
+      "en": "12.17 DDCFM entities. Delay and Loss measurement CFM (DDCFM) extends CFM with entities that measure the data path itself. 12.17.1 is the DDCFM Stack — read-only discovery of which DDCFM entities live on a port. 12.17.2 is the Reflection Responder (RR), which reflects selected data frames back (with create/write/read/delete plus activate/deactivate, and a flexible Reflection Filter combining primitives like VID==, DA==, SA== with &&/||/!). 12.17.3 is the RFM Receiver, which receives the Reflected Frame Messages (RFMs) the RR sends. 12.17.4 is the Decapsulator Responder (DR), with the same create/read/write/delete/activate/deactivate lifecycle. 12.17.5 is the SFM Originator, which originates Synthetic Frame Messages (SFMs) for loss measurement. Together they let an operator measure real per-flow delay and loss without disturbing customer traffic.",
+      "zh": "12.17 DDCFM 实体。时延与丢包测量 CFM（DDCFM）在 CFM 之上扩展出测量数据通路本身的实体。12.17.1 是 DDCFM 栈——只读地发现某端口上存在哪些 DDCFM 实体。12.17.2 是反射响应器（RR，Reflection Responder），把选中的数据帧反射回去（具备创建/写入/读取/删除以及激活/停用操作，并有一个灵活的反射过滤器，可用 &&/||/! 组合 VID==、DA==、SA== 等原语）。12.17.3 是 RFM 接收器，接收 RR 发出的反射帧消息（RFM，Reflected Frame Message）。12.17.4 是解封装响应器（DR，Decapsulator Responder），具有相同的创建/读取/写入/删除/激活/停用生命周期。12.17.5 是 SFM 发起器，发起用于丢包测量的合成帧消息（SFM，Synthetic Frame Message）。三者合起来，使运营商能够测量真实的逐流时延与丢包，而不打扰客户流量。"
+    },
+    {
+      "type": "prose",
+      "en": "12.18 PBB-TE Protection Switching managed objects. PBB Traffic Engineering (PBB-TE) replaces spanning tree with explicitly engineered paths, and pairs a working path with a protection path so traffic can fail over. 12.18.1 is the TE protection group list — one per IB-BEB, listing every TE protection group with create/delete; each group references two Maintenance Associations (the working entity and the protection entity with the same endpoints). 12.18.2 is the TE protection group managed object: read/write its attributes, and issue administrative commands — Clear, Lockout of Protection, Forced Switch, Manual Switch To Protection, and Manual Switch To Working — exactly the operator levers needed to force or pin which path is live.",
+      "zh": "12.18 PBB-TE 保护倒换受管对象。PBB 流量工程（PBB-TE）以显式工程化路径取代生成树，并为工作路径配一条保护路径，使流量可以倒换。12.18.1 是 TE 保护组列表——每个 IB-BEB 一份，列出每个 TE 保护组并提供创建/删除；每个组引用两个维护关联（工作实体，以及具有相同端点的保护实体）。12.18.2 是 TE 保护组受管对象：读写其属性，并下发管理命令——清除（Clear）、锁定保护（Lockout of Protection）、强制倒换（Forced Switch）、手动倒换到保护（Manual Switch To Protection）、手动倒换到工作（Manual Switch To Working）——正是运营商强制或固定哪条路径生效所需的操作杆。"
+    },
+    {
+      "type": "prose",
+      "en": "12.19 TPMR managed objects. A Two-Port MAC Relay (TPMR) is the simplest bridge — two ports, relaying between them — often used as a tiny demarcation device. Its resources are exposed by 12.19.1 the TPMR management entity (read TPMR / set TPMR name, plus per-port read/set name; a TPMR reports the MAC addresses of both ports and which is the management address); 12.19.2 the per-port MAC and PHY entities; 12.19.3 the Forwarding Process, covering port counters, priority handling (default priority, the Priority Regeneration Table, Priority Code Point selection/decoding, the Use_DEI parameter), and the Traffic Class Table; and 12.19.4 the MAC Status Propagation Entity (MSPE), whose MAC Status Propagation (MSP) object reads/sets timers like LinkNotify, MACNotifyTime, and MACRecoverTime and reads MSP statistics — this is how a TPMR mirrors one port's link failure onto the other so the far end notices.",
+      "zh": "12.19 TPMR 受管对象。两端口 MAC 中继器（TPMR，Two-Port MAC Relay）是最简单的网桥——只有两个端口，在两者之间中继——常用作微型分界设备。其资源由以下对象暴露：12.19.1 TPMR 管理实体（读取 TPMR / 设置 TPMR 名称，以及逐端口读取/设置名称；TPMR 会报告两个端口的 MAC 地址以及哪个是管理地址）；12.19.2 逐端口的 MAC 与 PHY 实体；12.19.3 转发过程，涵盖端口计数器、优先级处理（默认优先级、优先级再生表、优先级码点选择/解码、Use_DEI 参数）以及流量类别表；12.19.4 MAC 状态传播实体（MSPE，MAC Status Propagation Entity），其 MAC 状态传播（MSP）对象读写诸如 LinkNotify、MACNotifyTime、MACRecoverTime 等定时器并读取 MSP 统计——这正是 TPMR 把一侧端口的链路故障“镜像”到另一侧、让远端察觉的机制。"
+    },
+    {
+      "type": "prose",
+      "en": "12.20 Management entities for FQTSS. Forwarding and Queuing for Time-Sensitive Streams (FQTSS, defined in detail in Clause 34) is the credit-based shaping foundation of audio/video bridging and TSN. Four tables manage it. 12.20.1 the Bandwidth Availability Parameter Table (one per port) holds per-traffic-class shaper parameters: deltaBandwidth, adminIdleSlope/operIdleSlope (the credit refill rate), classMeasurementInterval, and lockClassBandwidth. 12.20.2 the Transmission Selection Algorithm Table (one per port) picks the algorithm — e.g. strict priority or credit-based shaper — for each traffic class. 12.20.3 the Priority Regeneration Override Table (one per port) overrides priority regeneration for received priorities tied to a Stream Reservation (SR) class, including an SRPdomainBoundaryPort flag. 12.20.4 the SR Class to Priority Mapping Table (one per bridge component) maps each SR class ID to its priority (default Priority 3 for SR class 6, Priority 2 for SR class 5).",
+      "zh": "12.20 FQTSS 的管理实体。面向时间敏感流的转发与排队（FQTSS，详见第 34 章）是音视频桥接与 TSN 的基于信用整形（credit-based shaping）的基础，由四张表管理。12.20.1 带宽可用性参数表（每端口一份）保存每个流量类别的整形器参数：deltaBandwidth、adminIdleSlope/operIdleSlope（信用补充速率）、classMeasurementInterval 以及 lockClassBandwidth。12.20.2 传输选择算法表（每端口一份）为每个流量类别选择算法——例如严格优先级或基于信用整形器。12.20.3 优先级再生覆盖表（每端口一份）对绑定到流预留（SR，Stream Reservation）类别的接收优先级覆盖其优先级再生，并含 SRPdomainBoundaryPort 标志。12.20.4 SR 类别到优先级映射表（每个网桥组件一份）把每个 SR 类别 ID 映射到其优先级（默认 SR 类别 6 对应优先级 3，SR 类别 5 对应优先级 2）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — exact clause numbers for this lesson",
+        "zh": "覆盖地图——本课对应的精确条款编号"
+      },
+      "en": "Provider Bridge (12.13): 12.13.1 Provider Bridge Port Type managed object; 12.13.2 Customer Edge Port Configuration managed object (C-VID Registration Table, PEP config, Service Priority Regeneration Table); 12.13.3 Remote Customer Access managed object (Internal Interface Table). CFM (12.14): 12.14.1 Maintenance Domain list; 12.14.2 CFM Stack; 12.14.3 Default MD Level; 12.14.4 Configuration Error List; 12.14.5 Maintenance Domain managed object; 12.14.6 Maintenance Association managed object; 12.14.7 Maintenance association Endpoint managed object (loopback, linktrace, MEP database, fault alarm). 12.15 Backbone Core Bridge (BCB) management — reuses 12.4–12.14, no new objects. BEB (12.16): 12.16.1 BEB configuration; 12.16.2 BEB/PB/VLAN Bridge Port configuration; 12.16.3 VIP configuration; 12.16.4 PIP configuration; 12.16.5 CBP Configuration (Backbone Service Instance table, TESI assignment). DDCFM (12.17): 12.17.1 DDCFM Stack; 12.17.2 Reflection Responder; 12.17.3 RFM Receiver; 12.17.4 Decapsulator Responder; 12.17.5 SFM Originator. PBB-TE protection (12.18): 12.18.1 TE protection group list; 12.18.2 TE protection group managed object (admin commands). TPMR (12.19): 12.19.1 TPMR management entity; 12.19.2 MAC and PHY entities; 12.19.3 Forwarding Process (counters, priority handling, Traffic Class Table); 12.19.4 MAC Status Propagation Entity (MSPE). FQTSS (12.20): 12.20.1 Bandwidth Availability Parameter Table; 12.20.2 Transmission Selection Algorithm Table; 12.20.3 Priority Regeneration Override Table; 12.20.4 SR Class to Priority Mapping Table.",
+      "zh": "运营商网桥（12.13）：12.13.1 运营商网桥端口类型受管对象；12.13.2 客户边缘端口配置受管对象（C-VID 注册表、PEP 配置、业务优先级再生表）；12.13.3 远程客户接入受管对象（内部接口表）。CFM（12.14）：12.14.1 维护域列表；12.14.2 CFM 栈；12.14.3 默认 MD 等级；12.14.4 配置错误列表；12.14.5 维护域受管对象；12.14.6 维护关联受管对象；12.14.7 维护关联端点受管对象（环回、链路追踪、MEP 数据库、故障告警）。12.15 骨干核心网桥（BCB）管理——复用 12.4–12.14，无新增对象。BEB（12.16）：12.16.1 BEB 配置；12.16.2 BEB/PB/VLAN 网桥端口配置；12.16.3 VIP 配置；12.16.4 PIP 配置；12.16.5 CBP 配置（骨干业务实例表、TESI 指派）。DDCFM（12.17）：12.17.1 DDCFM 栈；12.17.2 反射响应器；12.17.3 RFM 接收器；12.17.4 解封装响应器；12.17.5 SFM 发起器。PBB-TE 保护（12.18）：12.18.1 TE 保护组列表；12.18.2 TE 保护组受管对象（管理命令）。TPMR（12.19）：12.19.1 TPMR 管理实体；12.19.2 MAC 与 PHY 实体；12.19.3 转发过程（计数器、优先级处理、流量类别表）；12.19.4 MAC 状态传播实体（MSPE）。FQTSS（12.20）：12.20.1 带宽可用性参数表；12.20.2 传输选择算法表；12.20.3 优先级再生覆盖表；12.20.4 SR 类别到优先级映射表。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          370,
+          377,
+          379,
+          382,
+          384,
+          387,
+          393,
+          394,
+          396,
+          400,
+          401,
+          406,
+          409,
+          411,
+          421,
+          424,
+          425,
+          432,
+          434,
+          435
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "How to read these clauses fluently: notice the recurring shape. Almost every managed object is a small set of operations — Read, Set/Write, sometimes Create/Delete, occasionally Activate/Deactivate or a Transmit verb — and each operation lists Purpose, Inputs, and Outputs. Once you internalise that template, a 60-page management clause becomes a predictable catalogue: find the object that owns the resource you care about, then pick the operation that reads or changes it.",
+      "zh": "如何流畅地读这些条款：留意反复出现的“形状”。几乎每个受管对象都是一小组操作——读取、设置/写入、有时是创建/删除、偶尔是激活/停用或某个“发送”动作——而每个操作都列出目的（Purpose）、输入（Inputs）、输出（Outputs）。一旦把这个模板内化，一段 60 页的管理条款就变成可预期的目录：先找到掌管你关心资源的对象，再挑出读取或修改它的那个操作。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        370,
+        371,
+        372,
+        373,
+        374,
+        375,
+        376,
+        377,
+        379,
+        380,
+        381,
+        382,
+        383,
+        384,
+        385,
+        387,
+        393,
+        394,
+        396,
+        400,
+        401,
+        406,
+        409,
+        411,
+        412,
+        421,
+        424,
+        425,
+        432,
+        434,
+        435
+      ],
+      "note": "Clause 12 management objects: 12.13 Provider Bridge, 12.14 CFM, 12.15 BCB, 12.16 BEB, 12.17 DDCFM, 12.18 PBB-TE protection, 12.19 TPMR, 12.20 FQTSS."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:12.13.1",
+    "8021Q-2022:12.13.2",
+    "8021Q-2022:12.13.3",
+    "8021Q-2022:12.14.1",
+    "8021Q-2022:12.14.2",
+    "8021Q-2022:12.14.3",
+    "8021Q-2022:12.14.4",
+    "8021Q-2022:12.14.5",
+    "8021Q-2022:12.14.6",
+    "8021Q-2022:12.14.7",
+    "8021Q-2022:12.15",
+    "8021Q-2022:12.16.1",
+    "8021Q-2022:12.16.2",
+    "8021Q-2022:12.16.3",
+    "8021Q-2022:12.16.4",
+    "8021Q-2022:12.16.5",
+    "8021Q-2022:12.17.1",
+    "8021Q-2022:12.17.2",
+    "8021Q-2022:12.17.3",
+    "8021Q-2022:12.17.4",
+    "8021Q-2022:12.17.5",
+    "8021Q-2022:12.18.1",
+    "8021Q-2022:12.18.2",
+    "8021Q-2022:12.19.1",
+    "8021Q-2022:12.19.2",
+    "8021Q-2022:12.19.3",
+    "8021Q-2022:12.19.4",
+    "8021Q-2022:12.20.1",
+    "8021Q-2022:12.20.2",
+    "8021Q-2022:12.20.3",
+    "8021Q-2022:12.20.4"
+  ],
+  "track": "bridging-tsn"
+}

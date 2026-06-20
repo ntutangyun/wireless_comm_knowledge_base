@@ -1,0 +1,157 @@
+{
+  "id": "bridging-tsn-51",
+  "title": {
+    "en": "Congestion Notification Internals: CP Variables and the Reaction-Point Knobs",
+    "zh": "拥塞通知内部机制：CP 变量与反应点调节参数"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 32 of IEEE Std 802.1Q-2022 defines the Congestion Notification (CN) protocol — a way for a switch to tell a sender \"slow down\" before its buffers overflow. Two roles cooperate: a Congestion Point (CP), the queue inside a bridge that detects buildup and emits a Congestion Notification Message (CNM); and a Reaction Point (RP), the rate limiter in an end station that receives those CNMs and throttles a flow. This lesson (part 2 of 3) opens the hood on the CP's internal variables and procedures, and on the management knobs (parameters you set) that tune how the RP reacts. We will name every clause so you can read the standard fluently.",
+      "zh": "IEEE Std 802.1Q-2022 的第 32 章定义了拥塞通知（CN）协议——一种让交换机在缓冲区溢出之前告诉发送方“慢下来”的机制。两个角色协同工作：拥塞点（Congestion Point，CP）是网桥内部检测到队列堆积并发出拥塞通知消息（Congestion Notification Message，CNM）的队列；反应点（Reaction Point，RP）是终端站中接收这些 CNM 并限制某条流速率的速率限制器。本课（第 2/3 部分）将揭开 CP 内部变量与流程，以及调节 RP 反应方式的管理参数。我们会逐一点明每个条款号，帮助你顺畅地读懂标准。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 32.8 lists the CP's variables. The identity ones are simple: cpMacAddress (32.8.1) is the MAC address the CP puts as source of every CNM it sends, and cpId (32.8.2) is an unsigned integer that uniquely identifies this Congestion Point — it goes into the CNM's Congestion Point Identifier field so a receiver knows which queue complained. The heart of the algorithm is queue accounting: cpQSp (32.8.3) is the set-point, the desired number of octets in the queue (default 26000); cpQLen (32.8.4) is the current octet count; and cpQLenOld (32.8.5) is the previous cpQLen, refreshed each time a CNM is generated. The difference between desired and actual is captured by cpQOffset (32.8.7) = cpQSp − cpQLen, and the trend (how fast the queue is moving) by cpQDelta (32.8.8) = cpQLen − cpQLenOld.",
+      "zh": "第 32.8 条列出了 CP 的各项变量。身份类变量很简单：cpMacAddress（32.8.1）是 CP 在它发送的每个 CNM 中作为源地址填入的 MAC 地址；cpId（32.8.2）是一个唯一标识该拥塞点的无符号整数——它会写入 CNM 的拥塞点标识符字段，使接收方知道是哪条队列在抱怨。算法的核心是队列计量：cpQSp（32.8.3）是设定点，即队列中期望的字节数（默认 26000）；cpQLen（32.8.4）是当前字节数；cpQLenOld（32.8.5）是上一次的 cpQLen，每次生成 CNM 时都会刷新。期望值与实际值之差由 cpQOffset（32.8.7）= cpQSp − cpQLen 表示，而趋势（队列变化有多快）则由 cpQDelta（32.8.8）= cpQLen − cpQLenOld 表示。"
+    },
+    {
+      "type": "prose",
+      "en": "From these, the CP computes its feedback value cpFb (32.8.9): cpFb = cpQOffset − cpW × cpQDelta. The weight cpW (32.8.6, default 2, always a power of 2 so it is just a bit-shift) decides how much the queue's trend matters versus its current depth. The intuition: the first term is how far off the set-point we are, and the second subtracts a multiple of the rate of change — so if the queue is already shrinking toward cpQSp, cpFb lands closer to 0 and no alarm is raised. A negative cpFb means trouble (queue too full and/or growing), and its magnitude becomes the quantized severity sent to the sender.",
+      "zh": "由这些变量，CP 计算其反馈值 cpFb（32.8.9）：cpFb = cpQOffset − cpW × cpQDelta。权重 cpW（32.8.6，默认 2，始终是 2 的幂，因此只是一次移位）决定队列趋势相对于当前深度的重要程度。直觉如下：第一项表示我们偏离设定点多远，第二项减去变化率的一个倍数——所以如果队列已经在朝 cpQSp 收缩，cpFb 会更接近 0，从而不发出警报。cpFb 为负表示出现问题（队列太满和/或在增长），其绝对值大小将成为发送给发送方的量化严重程度。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><rect x=\"20\" y=\"40\" width=\"260\" height=\"50\" stroke=\"currentColor\"/><line x1=\"180\" y1=\"40\" x2=\"180\" y2=\"90\" stroke=\"currentColor\" stroke-dasharray=\"4 3\"/><rect x=\"20\" y=\"40\" width=\"160\" height=\"50\" fill=\"currentColor\" opacity=\"0.18\" stroke=\"none\"/><text x=\"90\" y=\"30\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">cpQLen (current)</text><text x=\"182\" y=\"30\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">cpQSp (set-point)</text><text x=\"60\" y=\"115\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">cpQOffset = cpQSp - cpQLen</text><text x=\"300\" y=\"55\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">cpFb =</text><text x=\"300\" y=\"75\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">cpQOffset</text><text x=\"300\" y=\"92\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">- cpW x cpQDelta</text></svg>",
+      "caption": {
+        "en": "The CP's queue gauge: cpQOffset measures distance from the set-point, cpQDelta the trend; together they form cpFb (32.8.3-32.8.9).",
+        "zh": "CP 的队列计量：cpQOffset 衡量与设定点的距离，cpQDelta 衡量趋势；两者共同构成 cpFb（32.8.3–32.8.9）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The remaining CP variables govern sampling and bookkeeping. cpEnqued (32.8.10) is a down-counter of octets remaining before the next CNM check; cpSampleBase (32.8.11) is the minimum octets to enqueue between CNM transmissions (default 150000) — together they make the CP sample roughly once per so-many bytes rather than every frame. cpMinHeaderOctets (32.8.15, default 0) sets how many bytes of the offending frame's header get echoed back inside the CNM so the receiver can identify the flow. Three counters round it out for management: cpDiscardedFrames (32.8.12) counts frames dropped because the output queue was full, cpTransmittedFrames (32.8.13) counts frames successfully enqueued, and cpTransmittedCnms (32.8.14) counts CNMs sent.",
+      "zh": "其余的 CP 变量负责采样与记账。cpEnqued（32.8.10）是一个向下计数器，记录在下一次 CNM 检查前还剩多少字节；cpSampleBase（32.8.11）是两次 CNM 发送之间至少要入队的字节数（默认 150000）——两者配合使 CP 大致每若干字节采样一次，而不是每一帧都采样。cpMinHeaderOctets（32.8.15，默认 0）规定把触发帧头部的多少字节回显到 CNM 中，以便接收方识别是哪条流。三个计数器用于管理：cpDiscardedFrames（32.8.12）统计因输出队列已满而丢弃的帧，cpTransmittedFrames（32.8.13）统计成功入队的帧，cpTransmittedCnms（32.8.14）统计已发送的 CNM 数。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 32.9 gives the CP's procedures — and notably a CP needs no state machine; everything is driven by one call per frame. Random() (32.9.1) returns a pseudo-random number in [min, max), seeded differently on each reset. EM_UNITDATA.request (32.9.3) is invoked each time a frame is queued: it subtracts the frame's octets from cpEnqued, and when cpEnqued reaches 0 or below, it recomputes cpFb, calls GenerateCnmPdu(), then refills cpEnqued with cpSampleBase × NewCpSampleBase() × Random(0.85, 1.15) — the random jitter spreads samples out so CNMs do not synchronize. NewCpSampleBase() (32.9.2) returns a smaller multiplier (down to 1/8 via a lookup table) when feedback is more severe, so the CP samples more often when congestion is worse.",
+      "zh": "第 32.9 条给出 CP 的各项流程——值得注意的是，CP 不需要状态机；一切都由每帧一次的调用驱动。Random()（32.9.1）返回 [min, max) 区间内的伪随机数，每次复位时以不同种子初始化。EM_UNITDATA.request（32.9.3）在每次帧入队时被调用：它从 cpEnqued 中减去该帧的字节数，当 cpEnqued 降到 0 或以下时，重新计算 cpFb，调用 GenerateCnmPdu()，然后用 cpSampleBase × NewCpSampleBase() × Random(0.85, 1.15) 重新填充 cpEnqued——随机抖动把采样点分散开，使 CNM 不会同步。NewCpSampleBase()（32.9.2）在反馈越严重时返回越小的乘数（通过查找表最低到 1/8），因此拥塞越严重，CP 采样越频繁。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Frame to enqueue] --> B[cpEnqued -= frame octets]\n  B --> C{cpEnqued <= 0?}\n  C -- No --> Z[Enqueue, done]\n  C -- Yes --> D[Compute cpFb 32.8.9]\n  D --> E[GenerateCnmPdu 32.9.4]\n  E --> F[Refill cpEnqued with jitter]\n  F --> Z",
+      "zh": "flowchart TD\n  A[待入队的帧] --> B[cpEnqued 减去帧字节数]\n  B --> C{cpEnqued <= 0?}\n  C -- 否 --> Z[入队, 结束]\n  C -- 是 --> D[计算 cpFb 32.8.9]\n  D --> E[GenerateCnmPdu 32.9.4]\n  E --> F[带抖动重填 cpEnqued]\n  F --> Z"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Deep dive: GenerateCnmPdu() — when and how a CNM is built (32.9.4)",
+        "zh": "深入：GenerateCnmPdu()——何时及如何构建 CNM（32.9.4）"
+      },
+      "en": "GenerateCnmPdu() (32.9.4) decides whether to actually emit a Congestion Notification Message and fills its fields. It uses the triggering frame's source as the CNM's destination [item b]) and cpMacAddress as source; refreshes cpQLenOld := cpQLen [item c]); and crucially does nothing if cpFb >= 0, or if the would-be destination is a group (not individual) address [item d]) — no congestion, no message. It then quantizes feedback into the 6-bit Quantized Feedback field [item e]): saturating at 63 when cpFb < −cpQSp(2cpW+1), else scaling −cpFb·63 / (cpQSp(2cpW+1)); if that lands at 0, again nothing is sent [item f]). The rest copies the Flow Identifier from the frame's CN-TAG (or 0), sets transmit priority (default 6) and VLAN ID, echoes the encapsulated destination MAC and up to 64 octets of MSDU (at least cpMinHeaderOctets), fills Version/ReservedV = 0, writes cpId into the Congestion Point Identifier, fills cnmQOffset/cnmQDelta from cpQOffset/cpQDelta, increments cpTransmittedCnms, and passes the PDU up via EM_UNITDATA.indication. This single procedure consumes cpMacAddress, cpId, cpQSp, cpW, cpQOffset, cpQDelta, cpMinHeaderOctets, and cpTransmittedCnms.",
+      "zh": "GenerateCnmPdu()（32.9.4）决定是否真正发出拥塞通知消息并填充其字段。它把触发帧的源作为 CNM 的目的地址 [item b]），把 cpMacAddress 作为源；刷新 cpQLenOld := cpQLen [item c]）；并且关键地，如果 cpFb >= 0，或目标是组（而非个体）地址，则什么都不做 [item d]）——无拥塞，无消息。随后把反馈量化进 6 位的量化反馈字段 [item e]）：当 cpFb < −cpQSp(2cpW+1) 时饱和到 63，否则按 −cpFb·63 / (cpQSp(2cpW+1)) 缩放；若结果为 0，同样不发送 [item f]）。其余部分从帧的 CN-TAG 复制流标识符（或填 0），设置发送优先级（默认 6）与 VLAN ID，回显封装目的 MAC 及最多 64 字节的 MSDU（至少 cpMinHeaderOctets），把 Version/ReservedV 填为 0，把 cpId 写入拥塞点标识符，从 cpQOffset/cpQDelta 填 cnmQOffset/cnmQDelta，递增 cpTransmittedCnms，并通过 EM_UNITDATA.indication 上交 PDU。这一个流程会用到 cpMacAddress、cpId、cpQSp、cpW、cpQOffset、cpQDelta、cpMinHeaderOctets 和 cpTransmittedCnms。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1489,
+          1490
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now switch to the Reaction Point side. Clause 32.10 holds RP per-Port per-CNPV variables — one set per Port per Congestion Notification Priority Value (CNPV, a priority that participates in CN), created or deleted with the CN Port priority managed object. rpppMaxRps (32.10.1, default 1) caps how many RPs may exist for this CNPV on this Port. rpppCreatedRps (32.10.2) counts how many times an RP was enabled at this priority. rpppRpCentiseconds (32.10.3) accumulates RP-centiseconds — it ticks once per 10 ms for each enabled RP, so management can divide its change by elapsed time to learn the average number of active RPs.",
+      "zh": "现在切换到反应点一侧。第 32.10 条保存 RP 的“每端口每 CNPV”变量——每个端口、每个拥塞通知优先级值（Congestion Notification Priority Value，CNPV，即参与 CN 的优先级）一组，随 CN 端口优先级被管对象的创建或删除而创建或删除。rpppMaxRps（32.10.1，默认 1）限制该端口上此 CNPV 可存在的 RP 数量。rpppCreatedRps（32.10.2）统计该优先级上 RP 被启用的次数。rpppRpCentiseconds（32.10.3）累计 RP-厘秒——每个已启用 RP 每 10 ms 加 1，因此管理实体可用其变化量除以经过时间，得出活跃 RP 的平均数。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Deep dive: the RP group rate-control knobs (32.11.1-32.11.10) and the RP timer (32.12.1)",
+        "zh": "深入：RP 组速率控制参数（32.11.1–32.11.10）与 RP 定时器（32.12.1）"
+      },
+      "en": "Clause 32.11 defines RP group variables — one set per group of RPs serving a single CNPV on a Port; implementations may share one set across RPs or give each its own. rpgEnable (32.11.1) is the master Boolean: TRUE lets the RPs heed CNMs, FALSE pins their rpEnabled FALSE (disabled). rpgTimeReset (32.11.2, default 15 ms) is the value RpWhile is reset to (or its half, with jitter); rpgByteReset (32.11.3, default 150000 octets) likewise resets the byte counter. rpgThreshold (32.11.4, default 5) is how many byte/time stages must elapse before the state machine advances (toward faster increase). The rate knobs: rpgMaxRate (32.11.5, default = Port speed) caps transmit rate; rpgAiRate (32.11.6, default 5 Mb/s) is the active-increase step and rpgHaiRate (32.11.7, default 50 Mb/s) the hyper-increase step; rpgGd (32.11.8, default 1/128, a power of 2) multiplies the received Quantized Feedback to compute the rate decrease; rpgMinDecFac (32.11.9, default 0.5) is the floor on how much a single CNM may cut the current rate; rpgMinRate (32.11.10, default 10 Mb/s) is the minimum current rate. Clause 32.12 lists the RP's single timer: RpWhile (32.12.1) drives the RP rate-control state machine, runs normally when rpFreeze is FALSE, and must not be decremented while rpFreeze is TRUE.",
+      "zh": "第 32.11 条定义 RP 组变量——每个在某端口上服务单一 CNPV 的 RP 组一组；实现可在多个 RP 间共享一组，也可各自一组。rpgEnable（32.11.1）是主开关布尔值：TRUE 让 RP 关注 CNM，FALSE 把它们的 rpEnabled 钉为 FALSE（禁用）。rpgTimeReset（32.11.2，默认 15 ms）是 RpWhile 被重置到的值（或其一半，带抖动）；rpgByteReset（32.11.3，默认 150000 字节）同样用于重置字节计数器。rpgThreshold（32.11.4，默认 5）是状态机推进（走向更快增长）前必须经过的字节/时间阶段数。速率参数方面：rpgMaxRate（32.11.5，默认为端口速率）限制发送速率上限；rpgAiRate（32.11.6，默认 5 Mb/s）是主动增长步长，rpgHaiRate（32.11.7，默认 50 Mb/s）是超增长步长；rpgGd（32.11.8，默认 1/128，2 的幂）乘以收到的量化反馈以计算速率下降量；rpgMinDecFac（32.11.9，默认 0.5）是单个 CNM 可削减当前速率程度的下限；rpgMinRate（32.11.10，默认 10 Mb/s）是当前速率的最小值。第 32.12 条列出 RP 唯一的定时器：RpWhile（32.12.1）驱动 RP 速率控制状态机，在 rpFreeze 为 FALSE 时正常运行，在 rpFreeze 为 TRUE 时不得递减。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          1490,
+          1491,
+          1492
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: the CP variables (32.8) measure congestion and turn it into a quantized feedback number; the CP procedures (32.9) decide when to sample and emit a CNM. On the receiving end, the RP per-Port variables (32.10) count and cap RPs, the RP group variables (32.11) are the tunable dials for how aggressively a flow backs off and recovers, and the lone RP timer RpWhile (32.12) paces the recovery state machine. Part 3 wires these together into the RP's actual rate-control state machine.",
+      "zh": "心智模型：CP 变量（32.8）测量拥塞并把它转成一个量化反馈数；CP 流程（32.9）决定何时采样并发出 CNM。在接收端，RP 每端口变量（32.10）统计并限制 RP 数量，RP 组变量（32.11）是控制流“退避多猛、恢复多快”的可调旋钮，而唯一的 RP 定时器 RpWhile（32.12）为恢复状态机定节奏。第 3 部分会把这些串联成 RP 真正的速率控制状态机。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1486,
+        1487,
+        1488
+      ],
+      "note": "32.8 CP variables (cpMacAddress through cpMinHeaderOctets) and start of 32.9 CP procedures."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1488,
+        1489,
+        1490
+      ],
+      "note": "32.9 CP procedures: Random, NewCpSampleBase, EM_UNITDATA.request, GenerateCnmPdu; 32.10 RP per-Port per-CNPV variables."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        1491,
+        1492
+      ],
+      "note": "32.11 RP group variables (rpgEnable through rpgMinRate) and 32.12 RP timer RpWhile."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:32.8.1",
+    "8021Q-2022:32.8.2",
+    "8021Q-2022:32.8.3",
+    "8021Q-2022:32.8.4",
+    "8021Q-2022:32.8.5",
+    "8021Q-2022:32.8.6",
+    "8021Q-2022:32.8.7",
+    "8021Q-2022:32.8.8",
+    "8021Q-2022:32.8.9",
+    "8021Q-2022:32.8.10",
+    "8021Q-2022:32.8.11",
+    "8021Q-2022:32.8.12",
+    "8021Q-2022:32.8.13",
+    "8021Q-2022:32.8.14",
+    "8021Q-2022:32.8.15",
+    "8021Q-2022:32.9.1",
+    "8021Q-2022:32.9.2",
+    "8021Q-2022:32.9.3",
+    "8021Q-2022:32.9.4",
+    "8021Q-2022:32.10.1",
+    "8021Q-2022:32.10.2",
+    "8021Q-2022:32.10.3",
+    "8021Q-2022:32.11.1",
+    "8021Q-2022:32.11.2",
+    "8021Q-2022:32.11.3",
+    "8021Q-2022:32.11.4",
+    "8021Q-2022:32.11.5",
+    "8021Q-2022:32.11.6",
+    "8021Q-2022:32.11.7",
+    "8021Q-2022:32.11.8",
+    "8021Q-2022:32.11.9",
+    "8021Q-2022:32.11.10",
+    "8021Q-2022:32.12.1"
+  ],
+  "track": "bridging-tsn"
+}

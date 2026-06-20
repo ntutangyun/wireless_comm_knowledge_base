@@ -1,0 +1,198 @@
+{
+  "id": "bridging-tsn-08",
+  "title": {
+    "en": "Inside a Bridge: The Filtering Database, Protocol Entities, and Addressing",
+    "zh": "网桥内部：过滤数据库、协议实体与寻址"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A bridge (the standard's word for what most people call a switch) makes one decision over and over: for this frame, on this outbound port, do I forward or filter? Clause 8 part 2 describes the data structures and helper entities that feed that decision. The star of the show is the Filtering Database, or FDB (8.8) — the table the Forwarding Process consults to decide where a frame may go. This lesson walks the FDB, then the configuration tables and protocol 'entities' that keep it fed, and finally the addressing rules that let bridges, end stations, and protocols find each other.",
+      "zh": "网桥（标准对大多数人口中“交换机”的称呼）反复做着同一个判断：对于这个帧、在这个出端口上，我应该转发还是过滤？Clause 8 的第二部分描述了支撑该判断的数据结构和辅助实体。其中的主角是过滤数据库 FDB（8.8）——转发进程查询它来决定一个帧可以去往何处。本课先讲 FDB，再讲为它持续供给信息的配置表和协议“实体”，最后讲让网桥、终端站和各协议彼此找到对方的寻址规则。"
+    },
+    {
+      "type": "prose",
+      "en": "FDB entries come in two flavors. Static entries are placed by management and never age out. Dynamic entries are created automatically by the bridge's normal operation and protocols. There are two static entry types — the Static Filtering Entry (8.8.1), which controls forwarding for a destination MAC address (individual, group, or wildcards like 'All Group Addresses'), and the Static VLAN Registration Entry (8.8.2), which controls forwarding for a VID (VLAN Identifier) and whether egress frames are tagged or untagged. There are four dynamic types: Dynamic Filtering Entries (8.8.3), MAC Address Registration Entries (8.8.4), Dynamic VLAN Registration Entries (8.8.5), and Dynamic Reservation Entries (8.8.7). Each entry carries a Port Map: one control element per outbound port saying forward, filter, or 'use dynamic info'.",
+      "zh": "FDB 表项分两大类。静态表项由管理配置，永不老化。动态表项由网桥的正常运行和协议自动生成。静态表项有两种类型——静态过滤表项（8.8.1）控制对某个目的 MAC 地址（单播、组播或如“全部组地址”这样的通配）的转发；静态 VLAN 注册表项（8.8.2）控制对某个 VID（VLAN 标识符）的转发，以及出口帧是否带标签。动态表项有四种：动态过滤表项（8.8.3）、MAC 地址注册表项（8.8.4）、动态 VLAN 注册表项（8.8.5）和动态预留表项（8.8.7）。每个表项都带一个端口映射：每个出端口一个控制元素，标明转发、过滤或“使用动态信息”。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[FDB entry types] --> B[Static]\n  A --> C[Dynamic]\n  B --> B1[Static Filtering 8.8.1]\n  B --> B2[Static VLAN Reg 8.8.2]\n  C --> C1[Dynamic Filtering 8.8.3]\n  C --> C2[MAC Addr Reg 8.8.4]\n  C --> C3[Dynamic VLAN Reg 8.8.5]\n  C --> C4[Dynamic Reservation 8.8.7]\n  C1 -.learned by.-> L[Learning Process / ISIS-SPB]\n  C2 -.set by.-> M[MMRP]\n  C3 -.set by.-> V[MVRP / MIRP]\n  C4 -.set by.-> S[SRP]",
+      "zh": "flowchart TD\n  A[FDB 表项类型] --> B[静态]\n  A --> C[动态]\n  B --> B1[静态过滤 8.8.1]\n  B --> B2[静态VLAN注册 8.8.2]\n  C --> C1[动态过滤 8.8.3]\n  C --> C2[MAC地址注册 8.8.4]\n  C --> C3[动态VLAN注册 8.8.5]\n  C --> C4[动态预留 8.8.7]\n  C1 -.学习于.-> L[学习进程 / ISIS-SPB]\n  C2 -.设置.-> M[MMRP]\n  C3 -.设置.-> V[MVRP / MIRP]\n  C4 -.设置.-> S[SRP]"
+    },
+    {
+      "type": "prose",
+      "en": "Why so many entry types? Each is owned by a different mechanism. A Dynamic Filtering Entry (8.8.3) is what learning produces: 'I saw source MAC X arrive on port 3, so frames destined to X should go out port 3.' It is keyed not by VID directly but by a FID (Filtering Identifier), a locally significant number that groups one or more VIDs together. MAC Address Registration Entries (8.8.4) come from MMRP (Multiple MAC Registration Protocol) and let stations register interest in a multicast group so the bridge forwards it toward them. Dynamic VLAN Registration Entries (8.8.5) come from MVRP/MIRP and record which ports have VLAN membership. Dynamic Reservation Entries (8.8.7) come from SRP (Stream Reservation Protocol) and gate a reserved stream onto only the ports that actually hold a bandwidth reservation.",
+      "zh": "为什么有这么多表项类型？因为每种由不同机制拥有。动态过滤表项（8.8.3）是学习的产物：“我在端口 3 上看到源 MAC X 到来，所以目的为 X 的帧应从端口 3 发出。”它的键不是直接用 VID，而是用 FID（过滤标识符）——一个本地有效的编号，把一个或多个 VID 归为一组。MAC 地址注册表项（8.8.4）来自 MMRP（多 MAC 注册协议），让站点登记对某个组播组的兴趣，使网桥朝它们转发。动态 VLAN 注册表项（8.8.5）来自 MVRP/MIRP，记录哪些端口具有 VLAN 成员关系。动态预留表项（8.8.7）来自 SRP（流预留协议），把预留流只放行到真正持有带宽预留的端口上。"
+    },
+    {
+      "type": "prose",
+      "en": "The FID is the heart of VLAN learning behavior (8.8.8). Allocate two VIDs to the same FID and they share learned MAC information — this is Shared VLAN Learning (SVL). Allocate them to different FIDs and learning is independent — Independent VLAN Learning (IVL), which even lets two stations use the same MAC address as long as they live on different VLANs. A VLAN bridge must support SVL or IVL (often both); a VID-to-FID allocation table, readable and writable by management, records the mapping. An MST Bridge (one running Multiple Spanning Tree) must support IVL.",
+      "zh": "FID 是 VLAN 学习行为的核心（8.8.8）。把两个 VID 分配到同一个 FID，它们就共享学到的 MAC 信息——这是共享 VLAN 学习（SVL）。把它们分配到不同 FID，学习就相互独立——独立 VLAN 学习（IVL），它甚至允许两个站点使用相同的 MAC 地址，只要它们处于不同的 VLAN。VLAN 网桥必须支持 SVL 或 IVL（通常两者都支持）；一张可由管理读写的 VID 到 FID 分配表记录这个映射。MST 网桥（运行多生成树的网桥）必须支持 IVL。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Querying the FDB (8.8.9) is a strict priority cascade, not a vote. For an individual address: any static 'Forward' wins; else any static 'Filter'; else the wildcard-VID static entry; else the learned (dynamic) entry; else forward by default. For group addresses, Tables 8-11 and 8-12 fold in 'All Group Addresses' and 'All Unregistered Group Addresses' to realize Forward-All / Forward-Unregistered / Filter-Unregistered behaviors. A Dynamic Reservation Entry (Table 8-13) can then veto forwarding on ports with no reservation. Static always beats dynamic.",
+      "zh": "查询 FDB（8.8.9）是一个严格的优先级级联，而非投票。对于单播地址：任何静态“转发”优先；否则任何静态“过滤”；否则通配 VID 的静态表项；否则学到的（动态）表项；否则默认转发。对于组播地址，表 8-11 和表 8-12 把“全部组地址”和“全部未注册组地址”折叠进来，实现“转发全部 / 转发未注册 / 过滤未注册”行为。随后动态预留表项（表 8-13）可以否决没有预留的端口上的转发。静态始终胜过动态。"
+    },
+    {
+      "type": "prose",
+      "en": "Two more FDB pieces complete clause 8.8. Default Group filtering behavior (8.8.6) describes the three baseline policies for multicast — Forward All Groups, Forward Unregistered Groups, Filter Unregistered Groups — and how static plus MMRP entries combine to choose one per port and VID. Bridges that support only Basic Filtering Services always use Forward All Groups. The Permanent Database (8.8.11) is the FDB's 'boot image': fixed storage for static entries (including a default PVID entry) that the FDB is initialized from, editable only by management. And the Connection_Identifier (8.8.12) is an optional tag stored alongside a port in a Dynamic Filtering Entry, carried across the internal service interface when a frame is forwarded — used, for example, with virtual instance ports.",
+      "zh": "还有两块内容补全 8.8。默认组过滤行为（8.8.6）描述了组播的三种基线策略——转发全部组、转发未注册组、过滤未注册组——以及静态表项与 MMRP 表项如何组合以为每个端口和 VID 选出一种。只支持基本过滤服务的网桥始终采用“转发全部组”。永久数据库（8.8.11）是 FDB 的“启动镜像”：为静态表项（包括一条默认 PVID 表项）提供固定存储，FDB 由此初始化，只能由管理修改。连接标识符（8.8.12）是动态过滤表项中与某端口一同存储的可选标记，帧被转发时随之穿过内部服务接口——例如用于虚拟实例端口。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every FDB subclause 8.8.1–8.8.12",
+        "zh": "覆盖地图：FDB 各子条款 8.8.1–8.8.12"
+      },
+      "en": "8.8.1 Static Filtering Entry — MAC spec (individual/group/all-individual/all-group/all-unregistered) + VID spec (specific or wildcard) + Port Map (forward / filter / use-dynamic); also supplies MMRP Registrar Administrative Control. 8.8.2 Static VLAN Registration Entry — per-VID, per-port Registrar control (Fixed/Forbidden/Normal) plus tagged/untagged egress (the untagged set). 8.8.3 Dynamic Filtering Entry — individual MAC + FID + single-port (or ECMP port set) Port Map; learned, aged, also writable by SPB. 8.8.4 MAC Address Registration Entry — MMRP/ISIS-SPB created; subject to Restricted_MAC_Address_Registration. 8.8.5 Dynamic VLAN Registration Entry — per-VID port membership from MVRP/MIRP/ISIS-SPB; subject to Restricted_VLAN_Registration. 8.8.6 Default Group filtering behavior — Forward All / Forward Unregistered / Filter Unregistered. 8.8.7 Dynamic Reservation Entry — SRP-created, gates reserved streams. 8.8.8 Allocation of VIDs to FIDs — SVL vs IVL via the VID-to-FID table. 8.8.9 Querying the FDB — the forward/filter priority cascade (Tables 8-10 to 8-13). 8.8.10 Member set for a VID — combines Static + Dynamic VLAN Registration Entries (Table 8-14) into the set of member ports. 8.8.11 Permanent Database — fixed boot-image store for static entries. 8.8.12 Connection_Identifier — optional per-port identifier in a Dynamic Filtering Entry carried over the EISS.",
+      "zh": "8.8.1 静态过滤表项——MAC 规格（单播/组播/全部单播/全部组/全部未注册）+ VID 规格（特定或通配）+ 端口映射（转发/过滤/用动态）；同时提供 MMRP 注册者管理控制。8.8.2 静态 VLAN 注册表项——每 VID、每端口的注册者控制（固定/禁止/正常）加带标签/不带标签出口（不带标签集合）。8.8.3 动态过滤表项——单播 MAC + FID + 单端口（或 ECMP 端口集）端口映射；学习得到、会老化，也可由 SPB 写入。8.8.4 MAC 地址注册表项——由 MMRP/ISIS-SPB 创建；受 Restricted_MAC_Address_Registration 约束。8.8.5 动态 VLAN 注册表项——由 MVRP/MIRP/ISIS-SPB 给出的每 VID 端口成员；受 Restricted_VLAN_Registration 约束。8.8.6 默认组过滤行为——转发全部/转发未注册/过滤未注册。8.8.7 动态预留表项——由 SRP 创建，限定预留流。8.8.8 VID 到 FID 的分配——通过 VID 到 FID 表实现 SVL 与 IVL。8.8.9 查询 FDB——转发/过滤优先级级联（表 8-10 至 8-13）。8.8.10 VID 的成员集——把静态与动态 VLAN 注册表项（表 8-14）合并为成员端口集合。8.8.11 永久数据库——为静态表项提供固定启动镜像存储。8.8.12 连接标识符——动态过滤表项中可选的每端口标识符，随 EISS 传递。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          243,
+          244,
+          245,
+          246,
+          247,
+          248,
+          249,
+          253,
+          254
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "For multiple spanning trees and shortest path bridging, every bridge in a region must agree on which VLANs map to which trees. That agreement is captured by the MST/SPB/ESP configuration information (8.9). The MST Configuration Table (8.9.1) gives an MSTID (MST Instance Identifier) for every VID — MSTID 0 is the CIST (Common and Internal Spanning Tree). The MST Configuration Identification (8.9.2) is the compact digest (the MCID — MST Configuration Identifier) carried in BPDUs so neighbors can confirm they share the same VID-to-tree mapping and Configuration Name before treating each other as same-region. The FID to MSTI Allocation Table (8.9.3) maps FIDs to MSTIDs, including reserved values like TE-MSTID for PBB-TE and the SPBV/SPBM MSTIDs. The SPT Configuration Identification (8.9.4) extends this to Shortest Path Trees and supports a second (auxiliary) MCID for non-disruptive in-service upgrades.",
+      "zh": "对于多生成树和最短路径桥接，区域内每个网桥必须就哪些 VLAN 映射到哪些树达成一致。这一约定由 MST/SPB/ESP 配置信息（8.9）记录。MST 配置表（8.9.1）为每个 VID 给出一个 MSTID（MST 实例标识符）——MSTID 0 是 CIST（公共与内部生成树）。MST 配置标识（8.9.2）是 BPDU 中携带的紧凑摘要（MCID——MST 配置标识符），让相邻网桥在彼此当作同区域之前确认它们共享相同的 VID 到树映射和配置名。FID 到 MSTI 分配表（8.9.3）把 FID 映射到 MSTID，包含如 PBB-TE 的 TE-MSTID 及 SPBV/SPBM 的 MSTID 等保留值。SPT 配置标识（8.9.4）把这一套扩展到最短路径树，并支持第二个（辅助）MCID 以实现不中断的在线升级。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining subclauses introduce the 'helper entities' and the addressing they rely on. The Spanning Tree Protocol Entity (8.10) sends and receives BPDUs (Bridge Protocol Data Units), updates per-port state, and notifies the FDB when the active topology changes; the ISIS-SPB Entity shares the same port and individual MAC address but uses its own group addresses. MRP entities (8.11) run the registration protocols (MMRP, MVRP, etc.) — exchanging MRPDUs and editing FDB filtering info. The Bridge Management Entity (8.12) models remote management — recommended over SNMP with SMIv2 MIB modules, or over NETCONF/RESTCONF with YANG modules.",
+      "zh": "其余子条款介绍了“辅助实体”以及它们依赖的寻址。生成树协议实体（8.10）收发 BPDU（网桥协议数据单元），更新每端口状态，并在活动拓扑变化时通知 FDB；ISIS-SPB 实体共用同一端口和单播 MAC 地址，但使用自己的组地址。MRP 实体（8.11）运行各注册协议（MMRP、MVRP 等）——交换 MRPDU 并修改 FDB 的过滤信息。网桥管理实体（8.12）对远程管理进行建模——推荐用 SNMP 配合 SMIv2 MIB 模块，或用 NETCONF/RESTCONF 配合 YANG 模块。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"20\" width=\"120\" height=\"30\"/><text x=\"70\" y=\"40\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">STP Entity 8.10</text><rect x=\"10\" y=\"60\" width=\"120\" height=\"30\"/><text x=\"70\" y=\"80\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">MRP Entities 8.11</text><rect x=\"10\" y=\"100\" width=\"120\" height=\"30\"/><text x=\"70\" y=\"120\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Bridge Mgmt 8.12</text><rect x=\"190\" y=\"55\" width=\"110\" height=\"60\"/><text x=\"245\" y=\"82\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">FDB 8.8</text><text x=\"245\" y=\"100\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">forward/filter</text><line x1=\"130\" y1=\"35\" x2=\"190\" y2=\"70\"/><line x1=\"130\" y1=\"75\" x2=\"190\" y2=\"85\"/><line x1=\"130\" y1=\"115\" x2=\"190\" y2=\"100\"/><rect x=\"360\" y=\"55\" width=\"90\" height=\"60\"/><text x=\"405\" y=\"82\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Bridge Ports</text><text x=\"405\" y=\"100\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">8.13.2</text><line x1=\"300\" y1=\"85\" x2=\"360\" y2=\"85\"/></svg>",
+      "caption": {
+        "en": "The helper entities (8.10–8.12) read and update the FDB (8.8), which in turn drives forward/filter decisions on the Bridge Ports addressed per 8.13.",
+        "zh": "辅助实体（8.10–8.12）读取并更新 FDB（8.8），FDB 进而驱动网桥端口（按 8.13 寻址）上的转发/过滤判断。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Addressing (8.13) closes Clause 8. End stations (8.13.1) put source and destination peer MAC addresses in frames; the bridge's own address never appears in relayed user frames. Bridge Ports (8.13.2) each own an individual MAC address used as the source of frames they originate. Spanning tree entities use LLC (Logical Link Control) with a standard LLC address (8.13.3) and discard BPDUs with unknown protocol IDs. Reserved MAC addresses (8.13.4) — listed in Tables 8-1/8-2/8-3 — are never forwarded by any bridge, which is what keeps control frames local. Group MAC addresses for the spanning tree entity (8.13.5) include the Bridge Group Address (filtered by customer bridges) and the Provider Bridge Group Address, plus a separate ISIS-SPB address set. Group MAC addresses for MRP applications (8.13.6) confine each registration protocol to its peer region.",
+      "zh": "寻址（8.13）为 Clause 8 收尾。终端站（8.13.1）在帧中放入对端的源/目的 MAC 地址；网桥自身的地址从不出现在被中继的用户帧中。网桥端口（8.13.2）各自拥有一个单播 MAC 地址，用作它们发起的帧的源地址。生成树实体使用 LLC（逻辑链路控制）配合标准 LLC 地址（8.13.3），并丢弃协议 ID 未知的 BPDU。保留 MAC 地址（8.13.4）——列于表 8-1/8-2/8-3——任何网桥都不转发，这正是让控制帧保持本地的原因。生成树实体的组 MAC 地址（8.13.5）包括网桥组地址（被客户网桥过滤）和提供商网桥组地址，外加一组独立的 ISIS-SPB 地址。MRP 应用的组 MAC 地址（8.13.6）把每个注册协议限制在其对等区域内。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: protocol entities & addressing 8.9.1–8.13.11",
+        "zh": "覆盖地图：协议实体与寻址 8.9.1–8.13.11"
+      },
+      "en": "8.9.1 MST Configuration Table — MSTID per VID, 0 = CIST. 8.9.2 MST configuration identification — same-region test via MCID + Configuration Name (carried in MST BPDUs). 8.9.3 FID to MSTI Allocation Table — FID→MSTID, with reserved values (0=IST, 0xFFE TE-MSTID, 0xFFC SPBM, 0xFFD SPBV, 0xFFF SPVID-Pool). 8.9.4 SPT Configuration Identification — extends region agreement to SPTs; auxiliary MCID for in-service upgrade. 8.10 Spanning Tree Protocol Entity — sends/receives BPDUs, updates port state, notifies FDB; coexists with the ISIS-SPB Entity. 8.11 MRP entities — set of MRP Participants exchanging MRPDUs and editing FDB info. 8.12 Bridge Management Entity — remote management via SNMP/SMIv2 or NETCONF-RESTCONF/YANG. 8.13.1 End stations — peer source/destination addressing; bridge address absent from relayed frames. 8.13.2 Bridge Ports — one individual MAC per MAC-Service instance. 8.13.3 Use of LLC by STP Entities — DL_UNITDATA over standard LLC address; unknown PID discarded; IS-IS LLC encoding. 8.13.4 Reserved MAC addresses — never forwarded (Tables 8-1/8-2/8-3). 8.13.5 Group MAC addresses for spanning tree entity — Bridge Group / Provider Bridge Group Address (8.13.5.1) and ISIS-SPB address set (8.13.5.2). 8.13.6 Group MAC addresses for MRP Applications — confine MMRP/MVRP to their peer regions. 8.13.7 Bridge Management Entities — management stack over one LLC entity / management port. 8.13.8 Unique identification of a Bridge — a unique EUI-48 Bridge Address (Port 1's address recommended). 8.13.9 Points of attachment for Higher Layer Entities — modeled as end stations attached 'outside' their ports. 8.13.10 VLAN attachment and connectivity — ingress/egress rules add switches in the forwarding path; BPDUs/MVRP untagged, MMRP tagged. 8.13.11 CFM entities — reside in shims, recognize specific individual/group MAC addresses, discard frames with unrecognized destination_address.",
+      "zh": "8.9.1 MST 配置表——每 VID 一个 MSTID，0 = CIST。8.9.2 MST 配置标识——通过 MCID + 配置名（在 MST BPDU 中携带）做同区域判定。8.9.3 FID 到 MSTI 分配表——FID→MSTID，含保留值（0=IST、0xFFE TE-MSTID、0xFFC SPBM、0xFFD SPBV、0xFFF SPVID 池）。8.9.4 SPT 配置标识——把区域一致性扩展到 SPT；辅助 MCID 用于在线升级。8.10 生成树协议实体——收发 BPDU、更新端口状态、通知 FDB；与 ISIS-SPB 实体共存。8.11 MRP 实体——交换 MRPDU 并修改 FDB 信息的 MRP 参与者集合。8.12 网桥管理实体——经 SNMP/SMIv2 或 NETCONF-RESTCONF/YANG 远程管理。8.13.1 终端站——对端源/目的寻址；被中继帧中无网桥地址。8.13.2 网桥端口——每个 MAC 服务实例一个单播 MAC。8.13.3 STP 实体对 LLC 的使用——经标准 LLC 地址用 DL_UNITDATA；未知 PID 丢弃；IS-IS 的 LLC 编码。8.13.4 保留 MAC 地址——从不转发（表 8-1/8-2/8-3）。8.13.5 生成树实体的组 MAC 地址——网桥组/提供商网桥组地址（8.13.5.1）及 ISIS-SPB 地址集（8.13.5.2）。8.13.6 MRP 应用的组 MAC 地址——把 MMRP/MVRP 限制在其对等区域。8.13.7 网桥管理实体——管理协议栈经单个 LLC 实体/管理端口。8.13.8 网桥的唯一标识——唯一的 EUI-48 网桥地址（推荐用端口 1 的地址）。8.13.9 高层实体的连接点——建模为附着在其端口“外侧”的终端站。8.13.10 VLAN 连接关系——入口/出口规则在转发路径中加入开关；BPDU/MVRP 不带标签，MMRP 带标签。8.13.11 CFM 实体——驻留于垫片中，识别特定单播/组播 MAC 地址，丢弃目的地址无法识别的帧。",
+      "cite": {
+        "pdf_id": "8021Q-2022",
+        "pages": [
+          255,
+          256,
+          257,
+          258,
+          259,
+          260,
+          261,
+          265,
+          266
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy mental model from 8.13.9 and 8.13.10: the Higher Layer Entities (spanning tree, MRP, management, CFM) attach to the LANs as if they were ordinary end stations 'outside' the port — and Figure 8-23/8-29 draw the Port State, FDB, and ingress/egress rules as switches in the forwarding path. All three (or five, in a VLAN bridge) must be 'closed' for a frame to cross, but none of them block an entity from talking directly to the LAN it sits on. The Bridge Address (8.13.8) is the one unique EUI-48 identity that ties the whole bridge together for RSTP/MSTP.",
+      "zh": "来自 8.13.9 和 8.13.10 的好用心智模型：高层实体（生成树、MRP、管理、CFM）像普通终端站一样附着在端口“外侧”的 LAN 上——图 8-23/8-29 把端口状态、FDB 和入口/出口规则画成转发路径中的开关。要让一个帧穿过，这三个（VLAN 网桥中是五个）开关都必须“闭合”，但它们都不会阻止某个实体直接与其所在的 LAN 通信。网桥地址（8.13.8）是把整座网桥联系在一起、供 RSTP/MSTP 使用的那个唯一 EUI-48 身份。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        240,
+        241,
+        242,
+        243,
+        244,
+        245,
+        246,
+        247,
+        248,
+        249,
+        253,
+        254
+      ],
+      "note": "8.8 The Filtering Database (FDB) and subclauses 8.8.1-8.8.12, Tables 8-9 to 8-14."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        254,
+        255,
+        256,
+        257
+      ],
+      "note": "8.9 MST/SPB/ESP configuration information (8.9.1-8.9.4), 8.10 STP Entity, 8.11 MRP entities, 8.12 Bridge Management Entity."
+    },
+    {
+      "pdf_id": "8021Q-2022",
+      "pages": [
+        257,
+        258,
+        259,
+        260,
+        261,
+        265,
+        266
+      ],
+      "note": "8.13 Addressing (8.13.1-8.13.11), Tables 8-15 to 8-17, Figures 8-28/8-29."
+    }
+  ],
+  "covers": [
+    "8021Q-2022:8.8.1",
+    "8021Q-2022:8.8.2",
+    "8021Q-2022:8.8.3",
+    "8021Q-2022:8.8.4",
+    "8021Q-2022:8.8.5",
+    "8021Q-2022:8.8.6",
+    "8021Q-2022:8.8.7",
+    "8021Q-2022:8.8.8",
+    "8021Q-2022:8.8.9",
+    "8021Q-2022:8.8.10",
+    "8021Q-2022:8.8.11",
+    "8021Q-2022:8.8.12",
+    "8021Q-2022:8.9.1",
+    "8021Q-2022:8.9.2",
+    "8021Q-2022:8.9.3",
+    "8021Q-2022:8.9.4",
+    "8021Q-2022:8.10",
+    "8021Q-2022:8.11",
+    "8021Q-2022:8.12",
+    "8021Q-2022:8.13.1",
+    "8021Q-2022:8.13.2",
+    "8021Q-2022:8.13.3",
+    "8021Q-2022:8.13.4",
+    "8021Q-2022:8.13.5",
+    "8021Q-2022:8.13.6",
+    "8021Q-2022:8.13.7",
+    "8021Q-2022:8.13.8",
+    "8021Q-2022:8.13.9",
+    "8021Q-2022:8.13.10",
+    "8021Q-2022:8.13.11"
+  ],
+  "track": "bridging-tsn"
+}
