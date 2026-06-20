@@ -1,0 +1,208 @@
+{
+  "id": "bridging-tsn-105",
+  "title": {
+    "en": "TSN Configuration & the CNC YANG Model: How Talkers, Listeners, and Centralized Configuration Fit Together (Qdj-2024)",
+    "zh": "TSN 配置与 CNC YANG 模型：Talker、Listener 与集中式配置如何协同（Qdj-2024）"
+  },
+  "estMinutes": 6,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Time-Sensitive Networking (TSN) is the set of IEEE 802.1Q tools that let an ordinary bridged Ethernet network deliver frames with bounded latency — on time, with high probability, and without end-station retransmission. IEEE Std 802.1Qdj-2024 (Amendment 38) does not invent new shapers or schedulers; instead it answers a quieter question: how does an application tell the network what it needs, and how does the network configure itself to meet that need? Clause 1.3 (the amended Introduction, p15) frames the whole amendment around a software User/Network Interface (UNI) — the application states Stream requirements (such as bounded latency), and the network configures resources from the Talker (the sender) to one or more Listeners (the receivers) to satisfy them. This lesson walks every clause of Qdj-2024 in order, so you can read the standard fluently.",
+      "zh": "时间敏感网络（TSN）是 IEEE 802.1Q 提供的一组工具，让普通的桥接以太网也能在有界时延内交付帧——准时、高概率，且无需终端站重传。IEEE Std 802.1Qdj-2024（修正案 38）并未发明新的整形器或调度器，而是回答一个更安静的问题：应用如何告诉网络它的需求，网络又如何自我配置以满足该需求？第 1.3 条（修订后的引言，第 15 页）将整个修正案围绕一个软件用户/网络接口（UNI）展开——应用提出 Stream（流）的需求（例如有界时延），网络则从 Talker（发送方）到一个或多个 Listener（接收方）配置资源以满足这些需求。本课按顺序讲解 Qdj-2024 的每一条款，让你能够流畅地阅读这份标准。"
+    },
+    {
+      "type": "prose",
+      "en": "The vocabulary is small but load-bearing. A Stream is a flow of data from one Talker to its Listeners. The UNI is the logical boundary where a user states requirements and the network returns success or failure (clause 46.1.1, p18). Two new central roles appear: a Centralized Network Configuration (CNC) component, which has the full view of topology and bridge capabilities and configures every bridge; and a Centralized User Configuration (CUC) component, which collects requirements from end stations and talks to the CNC on their behalf. A Configuration Domain (clause 46.1.7, p27) is simply the set of stations under one administration — there is exactly one active CNC per domain, and one or more CUCs.",
+      "zh": "术语不多，但都很关键。Stream（流）是从一个 Talker 流向其 Listener 的数据流。UNI 是逻辑边界：用户在此提出需求，网络在此返回成功或失败（第 46.1.1 条，第 18 页）。这里引入两个新的中心角色：集中式网络配置（CNC）组件，它掌握完整的拓扑视图和桥的能力，并配置每一台桥；以及集中式用户配置（CUC）组件，它从终端站收集需求并代表它们与 CNC 通信。配置域（Configuration Domain，第 46.1.7 条，第 27 页）就是处于同一管理之下的一组站点——每个域恰好有一个活动的 CNC，以及一个或多个 CUC。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Think of the UNI as an order form, not a wire protocol. Clause 46.1.2 (p18) deliberately specifies the user/network configuration information independent of any schema, encoding, or protocol. The same information can ride over the Stream Reservation Protocol (SRP) as binary Type-Length-Value (TLV) fields, or over a YANG-based remote management protocol as XML/JSON. The standard defines what is exchanged; each protocol decides how.",
+      "zh": "把 UNI 看作一张订单，而不是某种线缆协议。第 46.1.2 条（第 18 页）刻意将用户/网络配置信息规定为独立于任何模式、编码或协议。同一份信息既可以通过流预留协议（SRP）以二进制的类型-长度-值（TLV）字段承载，也可以通过基于 YANG 的远程管理协议以 XML/JSON 承载。标准定义的是交换什么；每种协议自行决定如何交换。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 46.1.3 (p18) describes three configuration models, each a different answer to where the decision-making lives. In the fully distributed model (46.1.3.1, p18), end stations signal requirements directly to their neighboring bridge, and a protocol such as SRP propagates that information hop-by-hop along the stream's path — no central brain. In the centralized network / distributed user model (46.1.3.2, p19), end stations still signal to their edge bridge, but those edge bridges act as proxies and forward everything to a single CNC, which performs the hard computations (for example, a scheduled-traffic gate-control list) once with a global view. In the fully centralized model (46.1.3.3, p21), end-station requirements are gathered by a CUC, the UNI now sits between the CUC and the CNC, and the CUC↔end-station protocols are out of scope.",
+      "zh": "第 46.1.3 条（第 18 页）描述了三种配置模型，各自对“决策在哪里发生”给出不同答案。在完全分布式模型（46.1.3.1，第 18 页）中，终端站直接向相邻桥发出需求，SRP 之类的协议沿流路径逐跳传播该信息——没有中心大脑。在集中式网络/分布式用户模型（46.1.3.2，第 19 页）中，终端站仍向边缘桥发信，但这些边缘桥充当代理，把一切转发给单一的 CNC，由 CNC 以全局视图一次性完成繁重计算（例如调度流量的门控列表）。在完全集中式模型（46.1.3.3，第 21 页）中，终端站需求由 CUC 收集，UNI 此时位于 CUC 与 CNC 之间，而 CUC 与终端站之间的协议不在标准范围内。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  T[Talker] -->|UNI| B[Edge Bridge]\n  B -. proxy .-> CNC[CNC]\n  CUC[CUC] -->|UNI 46.2| CNC\n  CNC -. remote mgmt Clause 12 .-> NB[Network Bridges]\n  CNC -->|config| L[Listener]",
+      "zh": "flowchart LR\n  T[Talker] -->|UNI| B[边缘桥]\n  B -. 代理 .-> CNC[CNC]\n  CUC[CUC] -->|UNI 46.2| CNC\n  CNC -. 远程管理 第12章 .-> NB[网络中的桥]\n  CNC -->|配置| L[Listener]"
+    },
+    {
+      "type": "prose",
+      "en": "Why a Talker's identity can change in flight is the subject of clause 46.1.4 (p23). Every frame of a Stream must carry header fields that uniquely identify it, so bridges can apply TSN treatment and tell it apart from best-effort traffic. The goal is to let applications keep their familiar TCP/UDP/IP framing rather than adopt a TSN-specific format. Stream transformation (using IEEE 802.1CB functions in the end station or nearest bridge) translates the user's identification — say a UDP flow with no VLAN awareness — into the network's identification, such as a group destination MAC address plus a VLAN tag that bridges recognize. The CNC typically allocates that group MAC address from a pool it maintains.",
+      "zh": "为什么 Talker 的标识会在传输中改变，是第 46.1.4 条（第 23 页）的主题。流的每一帧都必须携带能唯一标识它的头部字段，使桥能够施加 TSN 处理并将其与尽力而为流量区分开。目标是让应用沿用熟悉的 TCP/UDP/IP 封装，而不必改用 TSN 专用格式。流变换（在终端站或最近的桥中使用 IEEE 802.1CB 功能）把用户侧的标识——比如一个不感知 VLAN 的 UDP 流——翻译为网络侧的标识，例如桥能识别的组目的 MAC 地址加上 VLAN 标签。该组 MAC 地址通常由 CNC 从其维护的地址池中分配。"
+    },
+    {
+      "type": "prose",
+      "en": "Clauses 46.1.5 and 46.1.6 (p25–26) spell out the duties of the two central roles. The CUC reconciles requirements from Talkers and Listeners into a Stream request, sends those requirements to the CNC, receives the end-station communication-configuration back, and distributes it to the end stations — note this configuration informs the application (for example, the order in which to send streams) rather than directly programming hardware. The CNC, in turn, receives Stream requirements, assigns a unique destination MAC address per Stream, computes paths and scheduling/shaping, programs the bridges via remote management (filtering-database entries, transmission gates), discovers topology, retrieves station capabilities, and reports results back to the CUC. Clause 5.29 (p17) makes these duties concrete as conformance: a conforming TSN CNC station shall support a remote management protocol, the Stream-reservation managed objects, and at least one UNI protocol compliant with 46.2 — and if it uses a YANG-based protocol, that protocol shall use the module specified in 46.3.",
+      "zh": "第 46.1.5 与 46.1.6 条（第 25–26 页）阐明两个中心角色的职责。CUC 将来自 Talker 和 Listener 的需求协调为一个 Stream 请求，把这些需求发送给 CNC，接收返回的终端站通信配置，再分发给终端站——注意这份配置是告知应用（例如以何种顺序发送各流），而非直接编程硬件。CNC 则接收 Stream 需求，为每个 Stream 分配唯一的目的 MAC 地址，计算路径与调度/整形，通过远程管理对桥进行编程（过滤数据库条目、传输门），发现拓扑，获取站点能力，并把结果报告给 CUC。第 5.29 条（第 17 页）把这些职责具体化为符合性要求：一个符合标准的 TSN CNC 站点应支持远程管理协议、流预留的被管对象，以及至少一种符合 46.2 的 UNI 协议——并且若它使用基于 YANG 的协议，该协议应使用 46.3 所规定的模块。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 46.2 (p27) is the heart: it specifies the actual information exchanged, organized as nested groups of elements. Clause 46.2.1 (p28) lists the protocol-independent data types — Boolean, sized integers (int8…uint32), string, enumeration, rational, mac-address-type, IPv4/IPv6 address types, and 'sequence of'. Clause 46.2.2 (p28) covers protocol integration and introduces three small but pivotal identifiers: DomainID (46.2.2.1, identifies a Configuration Domain), CucID (46.2.2.2, identifies a CUC within a domain), and CncEnabled (46.2.2.3, a Boolean that turns CNC functionality on or off, defaulting to FALSE). The Talker group (46.2.3, p29) bundles everything the network needs about a sender, and 46.2.3.8 adds StreamStatus — an enumeration (Planned, Configured, Modified) the CNC maintains to track which Streams still need computing.",
+      "zh": "第 46.2 条（第 27 页）是核心：它规定真正交换的信息，组织为元素的嵌套分组。第 46.2.1 条（第 28 页）列出与协议无关的数据类型——布尔、定长整数（int8…uint32）、字符串、枚举、有理数、mac-address-type、IPv4/IPv6 地址类型，以及“某类型的序列”。第 46.2.2 条（第 28 页）讲协议集成，并引入三个虽小却关键的标识：DomainID（46.2.2.1，标识一个配置域）、CucID（46.2.2.2，标识域内的一个 CUC）、以及 CncEnabled（46.2.2.3，一个开关 CNC 功能的布尔值，默认 FALSE）。Talker 分组（46.2.3，第 29 页）打包了网络关于一个发送方所需的一切，46.2.3.8 又新增 StreamStatus——一个由 CNC 维护的枚举（Planned、Configured、Modified），用于跟踪哪些 Stream 仍需计算。"
+    },
+    {
+      "type": "prose",
+      "en": "How do CUC and CNC actually drive each other? Clause 46.2.6 (p30) defines three kinds of protocol operations: Remote Procedure Calls (RPCs) that act on the whole data model, Actions that act on a specific part of it, and Notifications that report progress. The RPCs (46.2.7, p30) are ComputeStreams (compute paths for specified Streams), ComputePlannedAndModifiedStreams (compute only those with StreamStatus planned or modified), ComputeAllStreams (compute every Stream of a CUC), RequestDomainId (a CUC asks which domain it belongs to), and RequestFreeStreamId (a CUC asks for an unused StreamID). Crucially, each compute RPC returns only whether the computation started, not its outcome — because computation and configuration can take an arbitrary amount of time. The single Action is RemoveStreams (46.2.8.1, p32). The three Notifications (46.2.9, p32) — ComputeStreamsCompleted, ConfigureStreamsCompleted, RemoveStreamsCompleted — are how the CNC reports the real success or failure asynchronously, returning a per-Stream FailureCode.",
+      "zh": "CUC 与 CNC 究竟如何驱动彼此？第 46.2.6 条（第 30 页）定义三类协议操作：作用于整个数据模型的远程过程调用（RPC）、作用于其特定部分的 Action（动作）、以及上报进展的 Notification（通知）。RPC（46.2.7，第 30 页）包括 ComputeStreams（为指定的 Stream 计算路径）、ComputePlannedAndModifiedStreams（仅计算 StreamStatus 为 planned 或 modified 者）、ComputeAllStreams（计算某 CUC 的全部 Stream）、RequestDomainId（CUC 询问自己属于哪个域）、以及 RequestFreeStreamId（CUC 申请一个未使用的 StreamID）。关键在于，每个计算类 RPC 只返回计算是否已启动，而不返回其结果——因为计算与配置可能耗时任意长。唯一的 Action 是 RemoveStreams（46.2.8.1，第 32 页）。三个 Notification（46.2.9，第 32 页）——ComputeStreamsCompleted、ConfigureStreamsCompleted、RemoveStreamsCompleted——则是 CNC 异步上报真正成败的方式，并为每个 Stream 返回一个 FailureCode（失败码）。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant CUC\n  participant CNC\n  CUC->>CNC: RequestFreeStreamId\n  CNC-->>CUC: free StreamID\n  CUC->>CNC: ComputeStreams (Talker/Listener)\n  CNC-->>CUC: started OK\n  Note over CNC: compute paths + program bridges\n  CNC->>CUC: ComputeStreamsCompleted\n  CNC->>CUC: ConfigureStreamsCompleted",
+      "zh": "sequenceDiagram\n  participant CUC\n  participant CNC\n  CUC->>CNC: RequestFreeStreamId\n  CNC-->>CUC: 空闲 StreamID\n  CUC->>CNC: ComputeStreams (Talker/Listener)\n  CNC-->>CUC: 已启动\n  Note over CNC: 计算路径并编程桥\n  CNC->>CUC: ComputeStreamsCompleted\n  CNC->>CUC: ConfigureStreamsCompleted"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 46.3 (p33) bridges the abstract information model to YANG — the data-modeling language used by remote management protocols like NETCONF and RESTCONF. It says: to support YANG-based protocols for the fully centralized model, two modules are defined. The base module (48.6.3) provides a YANG typedef or grouping for each group of elements in 46.2, mapping each element to a YANG leaf. The user/network configuration module (48.6.23) imports that base and builds the schema tree the CUC and CNC actually talk over. A naming rule keeps the two worlds aligned: camelCase identifiers in 46.2 (such as MacAddress) correspond to hyphenated lowercase YANG identifiers (mac-address), and if a YANG 'description' ever disagrees with 46.2, the 46.2 text wins.",
+      "zh": "第 46.3 条（第 33 页）把抽象的信息模型衔接到 YANG——NETCONF、RESTCONF 等远程管理协议所用的数据建模语言。它规定：为支持完全集中式模型的基于 YANG 的协议，定义了两个模块。基础模块（48.6.3）为 46.2 中每个元素分组提供一个 YANG typedef 或 grouping，并把每个元素映射为一个 YANG leaf。用户/网络配置模块（48.6.23）导入该基础模块，构建 CUC 与 CNC 实际通信所用的模式树。一条命名规则使两个世界保持一致：46.2 中的驼峰式标识（如 MacAddress）对应 YANG 中带连字符的小写标识（mac-address）；若某处 YANG 的 description 与 46.2 不一致，则以 46.2 的文本为准。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 48 packages all of this as the concrete YANG module ieee802-dot1q-cnc-config. Clause 48.2.12 (p34) introduces the CNC-configuration model — three high-level groups (Talker, Listener, Status) drawn out in Figures 48-21 and 48-22. Clause 48.3.12 (p36) records the module's structure and which modules a station must implement (ieee802-dot1q-tsn-types plus ieee802-dot1q-cnc-config). Clause 48.4.12 (p37) gives security considerations: the tree is structured so access can be restricted via IETF RFC 8341, and it flags the writable subtrees (cnc-config/domain/cuc/stream and the remove_streams action) as the ones an attacker could abuse to destabilize a domain. Clause 48.5.23 (p38) is the human-readable schema tree, and clause 48.6.23 (p42) is the full YANG source — a cnc-config container holding a list of domains, each with cnc-enabled and a list of cucs, each holding streams with talker/listener parameters, plus the RPCs and notifications described above.",
+      "zh": "第 48 条把上述一切打包为具体的 YANG 模块 ieee802-dot1q-cnc-config。第 48.2.12 条（第 34 页）引入 CNC 配置模型——三个高层分组（Talker、Listener、Status），在图 48-21 与图 48-22 中展开。第 48.3.12 条（第 36 页）记录该模块的结构，以及站点必须实现哪些模块（ieee802-dot1q-tsn-types 加 ieee802-dot1q-cnc-config）。第 48.4.12 条（第 37 页）给出安全考量：该树的结构允许通过 IETF RFC 8341 限制访问，并指出可写子树（cnc-config/domain/cuc/stream 与 remove_streams 动作）是攻击者可能滥用以扰乱配置域的部分。第 48.5.23 条（第 38 页）是人类可读的模式树，第 48.6.23 条（第 42 页）则是完整的 YANG 源码——一个 cnc-config 容器，内含 domain 列表，每个 domain 带 cnc-enabled 和 cuc 列表，每个 cuc 持有带 talker/listener 参数的 stream，以及上文所述的 RPC 与通知。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 220\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"10\" width=\"440\" height=\"30\"/><text x=\"20\" y=\"30\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">cnc-config (container)</text><rect x=\"30\" y=\"50\" width=\"410\" height=\"28\"/><text x=\"40\" y=\"69\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">domain* [domain-id]  +  cnc-enabled?</text><rect x=\"50\" y=\"88\" width=\"390\" height=\"28\"/><text x=\"60\" y=\"107\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">cuc* [cuc-id]</text><rect x=\"70\" y=\"126\" width=\"370\" height=\"28\"/><text x=\"80\" y=\"145\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">stream* [stream-id] : talker / listener* / status-info</text><rect x=\"70\" y=\"164\" width=\"180\" height=\"26\"/><text x=\"80\" y=\"182\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">action remove_streams</text><rect x=\"260\" y=\"164\" width=\"180\" height=\"26\"/><text x=\"270\" y=\"182\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">rpcs + notifications</text></svg>",
+      "caption": {
+        "en": "Simplified schema tree of ieee802-dot1q-cnc-config (clauses 48.5.23 / 48.6.23): a cnc-config container nests domains, CUCs, and Streams, with a remove_streams action and the compute/notification operations.",
+        "zh": "ieee802-dot1q-cnc-config 的简化模式树（第 48.5.23 / 48.6.23 条）：cnc-config 容器嵌套 domain、CUC 与 Stream，并带有 remove_streams 动作以及计算类操作与通知。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause this lesson teaches, by number",
+        "zh": "覆盖地图——本课讲解的每一条款（按编号）"
+      },
+      "en": "Clause 1.3 (Introduction, p15): amends the standard's scope to add the software UNI and three configuration models. Clause 5.29 (p17): conformance for a TSN CNC station — remote management, Stream-reservation managed objects, a 46.2-compliant UNI protocol, and the 46.3 YANG module if YANG is used. Clause 46.1.1 (p18): Streams, Talkers, Listeners, and the UNI boundary. 46.1.2 (p18): modeling configuration information independent of protocol. 46.1.3 (p18): the three models — fully distributed, centralized network/distributed user, fully centralized. 46.1.4 (p23): Stream identification and transformation via 802.1CB. 46.1.5 (p25): CUC duties. 46.1.6 (p26): CNC duties. 46.1.7 (p27): the Configuration Domain. 46.2.1 (p28): data types. 46.2.2 (p28): protocol integration + DomainID/CucID/CncEnabled. 46.2.3 (p29): the Talker group and StreamStatus. 46.2.6 (p30): RPCs vs Actions vs Notifications. 46.2.7 (p30): the five RPCs. 46.2.8 (p32): the RemoveStreams action. 46.2.9 (p32): the three completion notifications. 46.3 (p33): the YANG bridge and the camelCase↔hyphen naming rule. 48.2.12 (p34): the CNC-configuration model. 48.3.12 (p36): module structure (Table 48-13). 48.4.12 (p37): security considerations (RFC 8341; sensitive writable subtrees). 48.5.23 (p38): the schema tree. 48.6.23 (p42): the full ieee802-dot1q-cnc-config YANG source. Annex A (normative, p51): the PICS proforma — the amended row CNC-S-11 records whether an implementation conforms to the conditional YANG-protocol requirements of 5.29 item e), 46.2, and 46.3. Annex X (informative, p52): the Bibliography of non-normative references.",
+      "zh": "第 1.3 条（引言，第 15 页）：修订标准范围，加入软件 UNI 与三种配置模型。第 5.29 条（第 17 页）：TSN CNC 站点的符合性——远程管理、流预留被管对象、符合 46.2 的 UNI 协议，以及若使用 YANG 则用 46.3 模块。46.1.1（第 18 页）：Stream、Talker、Listener 与 UNI 边界。46.1.2（第 18 页）：配置信息建模独立于协议。46.1.3（第 18 页）：三种模型——完全分布式、集中式网络/分布式用户、完全集中式。46.1.4（第 23 页）：经由 802.1CB 的流标识与变换。46.1.5（第 25 页）：CUC 职责。46.1.6（第 26 页）：CNC 职责。46.1.7（第 27 页）：配置域。46.2.1（第 28 页）：数据类型。46.2.2（第 28 页）：协议集成 + DomainID/CucID/CncEnabled。46.2.3（第 29 页）：Talker 分组与 StreamStatus。46.2.6（第 30 页）：RPC、Action 与 Notification。46.2.7（第 30 页）：五个 RPC。46.2.8（第 32 页）：RemoveStreams 动作。46.2.9（第 32 页）：三个完成通知。46.3（第 33 页）：YANG 衔接与驼峰↔连字符命名规则。48.2.12（第 34 页）：CNC 配置模型。48.3.12（第 36 页）：模块结构（表 48-13）。48.4.12（第 37 页）：安全考量（RFC 8341；敏感可写子树）。48.5.23（第 38 页）：模式树。48.6.23（第 42 页）：完整的 ieee802-dot1q-cnc-config YANG 源码。附录 A（规范性，第 51 页）：PICS 形式表——修订后的 CNC-S-11 行记录实现是否符合 5.29 项 e)、46.2、46.3 的条件性 YANG 协议要求。附录 X（资料性，第 52 页）：非规范性参考文献的目录。",
+      "cite": {
+        "pdf_id": "8021Qdj-2024",
+        "pages": [
+          15,
+          17,
+          18,
+          23,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          32,
+          33,
+          34,
+          36,
+          37,
+          38,
+          42,
+          51,
+          52
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A useful mental shortcut for the whole amendment: 'requirements go up, configuration comes down.' End stations and CUCs send Stream requirements up to the CNC over the UNI (46.2); the CNC computes once with a global view and pushes configuration down to bridges via remote management (Clause 12). Everything in clauses 46 and 48 is just a precise way to write those requirements and that configuration down — first as a protocol-neutral information model, then as a concrete YANG module.",
+      "zh": "理解整个修正案的一个实用心法：“需求向上走，配置往下落。”终端站与 CUC 通过 UNI（46.2）把 Stream 需求向上送达 CNC；CNC 以全局视图一次性计算，再经远程管理（第 12 章）把配置向下推送到各桥。第 46 与第 48 条中的一切，无非是把这些需求与配置精确地写下来的方式——先以协议无关的信息模型，再以具体的 YANG 模块。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Qdj-2024",
+      "pages": [
+        15,
+        16,
+        17
+      ],
+      "note": "Clause 1.3 Introduction (software UNI, three models); Clause 5.29 TSN CNC station conformance requirements."
+    },
+    {
+      "pdf_id": "8021Qdj-2024",
+      "pages": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27
+      ],
+      "note": "Clause 46.1 overview: 46.1.1 Streams/Talkers/Listeners/UNI; 46.1.2 modeling; 46.1.3 three configuration models; 46.1.4 Stream identification/transformation; 46.1.5 CUC; 46.1.6 CNC; 46.1.7 Configuration Domain."
+    },
+    {
+      "pdf_id": "8021Qdj-2024",
+      "pages": [
+        28,
+        29,
+        30,
+        31,
+        32,
+        33
+      ],
+      "note": "Clause 46.2 user/network configuration information: 46.2.1 data types; 46.2.2 protocol integration + DomainID/CucID/CncEnabled; 46.2.3 Talker + StreamStatus; 46.2.6 operations; 46.2.7 RPCs; 46.2.8 RemoveStreams; 46.2.9 notifications; 46.3 YANG bridge."
+    },
+    {
+      "pdf_id": "8021Qdj-2024",
+      "pages": [
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42
+      ],
+      "note": "Clause 48: 48.2.12 CNC-configuration model; 48.3.12 structure (Table 48-13); 48.4.12 security; 48.5.23 schema tree; 48.6.23 the ieee802-dot1q-cnc-config YANG module."
+    },
+    {
+      "pdf_id": "8021Qdj-2024",
+      "pages": [
+        51,
+        52
+      ],
+      "note": "Annex A (normative) PICS proforma row CNC-S-11; Annex X (informative) Bibliography."
+    }
+  ],
+  "covers": [
+    "8021Qdj-2024:1.3",
+    "8021Qdj-2024:5.29",
+    "8021Qdj-2024:46.1.1",
+    "8021Qdj-2024:46.1.2",
+    "8021Qdj-2024:46.1.3",
+    "8021Qdj-2024:46.1.4",
+    "8021Qdj-2024:46.1.5",
+    "8021Qdj-2024:46.1.6",
+    "8021Qdj-2024:46.1.7",
+    "8021Qdj-2024:46.2.1",
+    "8021Qdj-2024:46.2.2",
+    "8021Qdj-2024:46.2.3",
+    "8021Qdj-2024:46.2.6",
+    "8021Qdj-2024:46.2.7",
+    "8021Qdj-2024:46.2.8",
+    "8021Qdj-2024:46.2.9",
+    "8021Qdj-2024:46.3",
+    "8021Qdj-2024:48.2.12",
+    "8021Qdj-2024:48.3.12",
+    "8021Qdj-2024:48.4.12",
+    "8021Qdj-2024:48.5.23",
+    "8021Qdj-2024:48.6.23",
+    "8021Qdj-2024:Annex_A",
+    "8021Qdj-2024:Annex_X"
+  ],
+  "track": "bridging-tsn"
+}

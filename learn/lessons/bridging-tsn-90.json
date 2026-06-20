@@ -1,0 +1,156 @@
+{
+  "id": "bridging-tsn-90",
+  "title": {
+    "en": "LRP Corrigendum 1: Scope, Objectives, and the Management Models (YANG, MIB, LLDP TLVs)",
+    "zh": "LRP 勘误表 1：范围、目标与管理模型（YANG、MIB、LLDP TLV）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1CS-2020 defines the Link-local Registration Protocol (LRP). LRP's job is to copy a registration database from one end of a point-to-point link to the other, and to keep it in sync as small pieces change — without ever resending the whole thing. It is tuned for databases on the order of 1 Mbyte (a million bytes). This lesson teaches Corrigendum 1 (Cor 1-2024), the maintenance document that corrects LRP's management models and protocol encoding. We walk it as a coverage map: Scope (Clause 1.1), the protocol Objectives (6.3.1), the YANG configuration model (12.2, 12.6), the SNMP MIB modules (13.5.1–13.5.3), and the LLDP TLV format in Annex C.",
+      "zh": "IEEE Std 802.1CS-2020 定义了链路本地注册协议（LRP，Link-local Registration Protocol）。LRP 的任务是把一个注册数据库从点到点链路的一端复制到另一端，并在数据库的小部分发生变化时保持同步——而不必每次都重传整个数据库。它针对约 1 兆字节（一百万字节）量级的数据库进行了优化。本课讲解勘误表 1（Cor 1-2024），这是一份对 LRP 管理模型与协议编码进行更正的维护文档。我们以一张覆盖地图的方式逐项讲解：范围（第 1.1 条）、协议目标（6.3.1）、YANG 配置模型（12.2、12.6）、SNMP MIB 模块（13.5.1–13.5.3），以及附录 C 中的 LLDP TLV 格式。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A corrigendum is not a new protocol — it is a correction. Cor 1-2024 changes specific clauses of the 2020 base standard (you will see \"Change X as follows\" throughout). The behaviour of LRP stays the same; what gets fixed is how it is described in the machine-readable management models and the on-the-wire encodings.",
+      "zh": "勘误表不是一份新协议——它是一份更正。Cor 1-2024 修改的是 2020 版基准标准中的特定条款（你会反复看到“Change X as follows”，即“按如下方式修改 X”）。LRP 的行为保持不变；被修正的是它在机器可读的管理模型以及线缆上编码中的描述方式。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 1.1 (Scope) states what the standard is for. Cor 1-2024 sharpens the scope to add one capability: \"Provision is made for a proxy system to operate LRP on behalf of a controlled system.\" In plain terms, a small, resource-limited device (the Controlled system) does not need to run LRP itself — a more capable Proxy system can run the protocol for it. This is the thread that ties together everything else in the document: the YANG and MIB models, and the LLDP discovery format, all carry the extra fields needed for that proxy relationship.",
+      "zh": "第 1.1 条（范围）说明本标准的用途。Cor 1-2024 收紧了范围并新增了一项能力：“为代理系统（proxy system）代表受控系统运行 LRP 作出了规定。”通俗地说，一个小型、资源受限的设备（受控系统，Controlled system）无需自己运行 LRP——一个能力更强的代理系统可以替它运行该协议。这条线索贯穿了文档的其余部分：YANG 与 MIB 模型，以及 LLDP 发现格式，都携带了支撑这种代理关系所需的额外字段。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.3.1 (Objectives of LRP) is the design brief. It lists thirteen goals (a through m). The headline ones: stay independent of what the application's data actually means (b); let an instance discover its peers and make/break associations (c); transfer data quickly, reliably, and bandwidth-efficiently (e); transfer only the changed parts of a database rather than the whole thing (f); support only point-to-point associations, but allow several per port (h, i); and — added emphasis in this corrigendum — use TCP so the application can live in a separate Proxy system (j), and proxy for a Controlled system without requiring any new behaviour from that system (k). Goal (m) makes the intent explicit: support resource-constrained end systems.",
+      "zh": "第 6.3.1 条（LRP 的目标）是设计纲要。它列出了十三项目标（a 到 m）。重点几条是：与应用数据的实际含义保持独立（b）；让实例能发现其对端并建立/断开关联（c）；快速、可靠且节省带宽地传输数据（e）；只传输数据库中发生变化的部分而非整个数据库（f）；只支持点到点关联，但允许每个端口上有多个关联（h、i）；以及——本勘误表特别强调的——使用 TCP，使应用可以驻留在独立的代理系统中（j），并能在不要求受控系统有任何新行为的前提下为其代理（k）。目标（m）把意图讲得很明白：支持资源受限的终端系统。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"50\" width=\"90\" height=\"50\" rx=\"6\"/><text x=\"55\" y=\"72\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Proxy</text><text x=\"55\" y=\"88\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">system</text><rect x=\"320\" y=\"50\" width=\"90\" height=\"50\" rx=\"6\"/><text x=\"365\" y=\"72\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Controlled</text><text x=\"365\" y=\"88\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">system</text><rect x=\"160\" y=\"55\" width=\"100\" height=\"40\" rx=\"6\"/><text x=\"210\" y=\"79\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">point-to-point link</text><line x1=\"100\" y1=\"75\" x2=\"160\" y2=\"75\"/><line x1=\"260\" y1=\"75\" x2=\"320\" y2=\"75\"/><text x=\"130\" y=\"40\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">TCP (LRP-DT)</text><text x=\"210\" y=\"125\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">LRP runs on the Proxy, on behalf of the Controlled system</text></svg>",
+      "caption": {
+        "en": "The proxy relationship added in Cor 1-2024: a capable Proxy system runs LRP over TCP on behalf of a resource-constrained Controlled system, so the Controlled system needs no new behaviour (objectives j, k; Scope 1.1).",
+        "zh": "Cor 1-2024 新增的代理关系：能力较强的代理系统通过 TCP 代表资源受限的受控系统运行 LRP，因此受控系统无需任何新行为（目标 j、k；范围 1.1）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 12 gives LRP a YANG model — a structured, machine-readable schema for configuring and monitoring the protocol (YANG = Yet Another Next Generation data modelling language, used by NETCONF/RESTCONF). Clause 12.2 (The YANG framework) explains the hierarchy: every IEEE 802.1 YANG module lives under a uniform resource name (URN) rooted at \"ieee\", then the standard, then the working group; the objects themselves form a tree of configuration and operational data. Clause 12.6 (Definition of LRP YANG module) then deletes the old module and inserts the corrected one, `ieee802-dot1cs-lrp`, in namespace `urn:ieee:std:802.1CS:yang:ieee802-dot1cs-lrp`. It augments the standard `/system` tree with an `lrp` container holding leaves like `lrp-ack-timer-init` and `lrp-reconnect-max`, plus a list of `portal` entries.",
+      "zh": "第 12 条为 LRP 提供了一个 YANG 模型——一套用于配置和监控该协议的结构化、机器可读的模式（YANG = Yet Another Next Generation 数据建模语言，被 NETCONF/RESTCONF 使用）。第 12.2 条（YANG 框架）说明其层次结构：每个 IEEE 802.1 YANG 模块都位于一个统一资源名（URN）之下，其根为“ieee”，其后是标准号，再后是制定该标准的工作组；对象本身构成一棵配置数据与运行数据的树。第 12.6 条（LRP YANG 模块的定义）随后删除旧模块，插入更正后的模块 `ieee802-dot1cs-lrp`，其命名空间为 `urn:ieee:std:802.1CS:yang:ieee802-dot1cs-lrp`。它在标准的 `/system` 树上扩充（augment）了一个 `lrp` 容器，其中包含 `lrp-ack-timer-init`、`lrp-reconnect-max` 等叶子节点，以及一个 `portal` 条目列表。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[\"urn:ieee root\"] --> B[\"802.1CS standard\"]\n  B --> C[\"module ieee802-dot1cs-lrp\"]\n  C --> D[\"augment /system\"]\n  D --> E[\"container lrp\"]\n  E --> F[\"leaf lrp-ack-timer-init\"]\n  E --> G[\"leaf lrp-reconnect-max\"]\n  E --> H[\"list portal\"]",
+      "zh": "flowchart TD\n  A[\"urn:ieee 根\"] --> B[\"802.1CS 标准\"]\n  B --> C[\"模块 ieee802-dot1cs-lrp\"]\n  C --> D[\"扩充 /system\"]\n  D --> E[\"容器 lrp\"]\n  E --> F[\"叶子 lrp-ack-timer-init\"]\n  E --> G[\"叶子 lrp-reconnect-max\"]\n  E --> H[\"列表 portal\"]"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 13 provides the same management surface for the older SNMP world, as three MIB modules (MIB = Management Information Base; SNMP = Simple Network Management Protocol). Clause 13.5.1 (LRP Textual conventions MIB), module `LRP-TC-MIB`, defines reusable data types: `LrpHelloStatus` (the Hello state — looking, connecting, connected), `LrpAppId` (a 32-bit application identifier whose top 24 bits are an OUI or CID), and `LrpInetAddressInfo` (whether an address field is present and whether it is IPv4 or IPv6). Cor 1-2024's main fix here is administrative but important: it moves the module's object identifier (OID) from `ieee802dot1mibs 34` to `38` to avoid a clash with another IEEE standard.",
+      "zh": "第 13 条为较早的 SNMP 世界提供了相同的管理面，由三个 MIB 模块组成（MIB = 管理信息库，Management Information Base；SNMP = 简单网络管理协议，Simple Network Management Protocol）。第 13.5.1 条（LRP 文本约定 MIB），即模块 `LRP-TC-MIB`，定义了可复用的数据类型：`LrpHelloStatus`（Hello 状态——looking、connecting、connected）、`LrpAppId`（一个 32 位应用标识符，其高 24 位为 OUI 或 CID），以及 `LrpInetAddressInfo`（地址字段是否存在，以及是 IPv4 还是 IPv6）。Cor 1-2024 在此处的主要修正是管理性的但很重要：它把该模块的对象标识符（OID）从 `ieee802dot1mibs 34` 改为 `38`，以避免与另一个 IEEE 标准发生冲突。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 13.5.2 (LRP MIB), module `LRP-MIB`, is the main configuration and statistics module. It hangs `lrpConfiguration` and `lrpStatistics` under `lrpObjects`, and its first table, `lrpDtInstanceTable`, presents basic information about each LRP-DT (LRP Data Transport) instance — for example whether it uses active TCP and which address families it supports. Like the TC MIB, its OID is renumbered (from `35` to `39`) to dodge a collision with IEEE Std 802.1CBcv-2021. Clause 13.5.3 (LLDPv2 LRP extension MIB), module `LLDP-V2-LRP-EXT-MIB`, wires LRP into LLDP (Link Layer Discovery Protocol, IEEE Std 802.1AB). It branches from the IEEE 802.1 OUI 00-80-C1 and defines tables — local config, local data, remote data — that say which IP addresses and TCP ports a Controlled system should advertise so peers can open the LRP TCP association.",
+      "zh": "第 13.5.2 条（LRP MIB），即模块 `LRP-MIB`，是主要的配置与统计模块。它把 `lrpConfiguration` 和 `lrpStatistics` 挂在 `lrpObjects` 之下，其第一张表 `lrpDtInstanceTable` 给出每个 LRP-DT（LRP 数据传输，LRP Data Transport）实例的基本信息——例如它是否使用主动 TCP，以及它支持哪些地址族。与 TC MIB 一样，它的 OID 也被重新编号（从 `35` 改为 `39`），以避开与 IEEE Std 802.1CBcv-2021 的冲突。第 13.5.3 条（LLDPv2 LRP 扩展 MIB），即模块 `LLDP-V2-LRP-EXT-MIB`，把 LRP 接入 LLDP（链路层发现协议，Link Layer Discovery Protocol，IEEE Std 802.1AB）。它从 IEEE 802.1 的 OUI 00-80-C1 分支出来，并定义了若干表——本地配置、本地数据、远端数据——用来说明一个受控系统应当通告哪些 IP 地址和 TCP 端口，以便对端能够建立 LRP 的 TCP 关联。"
+    },
+    {
+      "type": "prose",
+      "en": "Annex C (normative) defines the actual on-the-wire format: the IEEE 802.1 Organizationally Specific TLVs for LLDP (TLV = Type-Length-Value). The key structure is the LRP TCP Discovery TLV (C.2.2), and within it the Application descriptor (C.2.2.6). Each descriptor is four octets of AppId (three octets of OUI/CID plus a one-octet subtype), then a two-octet TCP port number, then one or two IP addresses described by Address info fields. Table C-2 enumerates the legal combinations: a single IPv4 (5 octets) or IPv6 (17), or one of each — IPv4+IPv6 (22 octets) — so a peer learns exactly where to open the TCP connection. The usage rules in C.2.2.7 require at least one address, forbid the same AppId twice in one TLV, and say a second address (if present) must be a different type than the first.",
+      "zh": "附录 C（规范性）定义了真正的线缆格式：用于 LLDP 的 IEEE 802.1 组织特定 TLV（TLV = 类型-长度-值，Type-Length-Value）。关键结构是 LRP TCP 发现 TLV（C.2.2），其内部是应用描述符（Application descriptor，C.2.2.6）。每个描述符包含四个八位字节的 AppId（三个八位字节的 OUI/CID 加上一个八位字节的子类型），随后是两个八位字节的 TCP 端口号，再随后是由地址信息（Address info）字段描述的一或两个 IP 地址。表 C-2 列举了合法组合：单个 IPv4（5 个八位字节）或 IPv6（17 个），或各一个——IPv4+IPv6（22 个八位字节）——这样对端就能准确得知应在何处建立 TCP 连接。C.2.2.7 中的使用规则要求至少包含一个地址，禁止同一个 AppId 在一个 TLV 中出现两次，并规定第二个地址（若存在）必须与第一个地址类型不同。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"5\" y=\"30\" width=\"90\" height=\"34\"/><text x=\"50\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">OUI/CID (3)</text><rect x=\"95\" y=\"30\" width=\"60\" height=\"34\"/><text x=\"125\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">subtype (1)</text><rect x=\"155\" y=\"30\" width=\"70\" height=\"34\"/><text x=\"190\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">TCP port (2)</text><rect x=\"225\" y=\"30\" width=\"55\" height=\"34\"/><text x=\"252\" y=\"48\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">Addr info1</text><text x=\"252\" y=\"58\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">(1)</text><rect x=\"280\" y=\"30\" width=\"60\" height=\"34\"/><text x=\"310\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">Address1</text><rect x=\"340\" y=\"30\" width=\"55\" height=\"34\" stroke-dasharray=\"3 2\"/><text x=\"367\" y=\"48\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">Addr info2</text><text x=\"367\" y=\"58\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">(1)</text><rect x=\"395\" y=\"30\" width=\"60\" height=\"34\" stroke-dasharray=\"3 2\"/><text x=\"425\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">Address2</text><text x=\"230\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">AppId (4 octets)</text><text x=\"230\" y=\"82\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">dashed = optional second address (different type)</text></svg>",
+      "caption": {
+        "en": "Annex C, Figure C-3: the LRP TCP Discovery TLV Application descriptor — OUI/CID + subtype (AppId), TCP port, then one mandatory and one optional IP address with their Address info bytes.",
+        "zh": "附录 C，图 C-3：LRP TCP 发现 TLV 的应用描述符——OUI/CID + 子类型（AppId）、TCP 端口，随后是一个必选和一个可选的 IP 地址及其地址信息字节。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause taught, with exact numbers and pages",
+        "zh": "覆盖地图——逐条讲解，附精确编号与页码"
+      },
+      "en": "1.1 Scope (p.13): adds the proxy-system provision to LRP's purpose. 6.3.1 Objectives of LRP (p.14): the thirteen goals a)–m), including TCP-based proxying (j, k) and resource-constrained systems (m). 12.2 The YANG framework (p.15): URN hierarchy rooted at \"ieee\"; objects form a config/operational tree. 12.6 Definition of LRP YANG module (p.15–16): deletes old module, inserts `ieee802-dot1cs-lrp`, augmenting `/system` with the `lrp` container (leaves `lrp-ack-timer-init`, `lrp-reconnect-max`, list `portal`). 13.5.1 LRP Textual conventions MIB (p.23–25): `LRP-TC-MIB` types `LrpHelloStatus`, `LrpAppId`, `LrpInetAddressInfo`; OID moved 34→38. 13.5.2 LRP MIB (p.25–26): `LRP-MIB` with `lrpConfiguration`/`lrpStatistics` and `lrpDtInstanceTable`; OID moved 35→39. 13.5.3 LLDPv2 LRP extension MIB (p.37–39): `LLDP-V2-LRP-EXT-MIB` under OUI 00-80-C1, config/local/remote tables for advertising TCP addresses. Annex C (p.55–56): IEEE 802.1 Organizationally Specific TLVs for LLDP — the LRP TCP Discovery TLV, Application descriptor format (Figure C-3, Table C-2), and usage rules (C.2.2.7).",
+      "zh": "1.1 范围（第 13 页）：为 LRP 的用途新增代理系统规定。6.3.1 LRP 的目标（第 14 页）：a)–m) 共十三项目标，包括基于 TCP 的代理（j、k）与资源受限系统（m）。12.2 YANG 框架（第 15 页）：以“ieee”为根的 URN 层次结构；对象构成配置/运行数据树。12.6 LRP YANG 模块的定义（第 15–16 页）：删除旧模块，插入 `ieee802-dot1cs-lrp`，在 `/system` 上扩充 `lrp` 容器（叶子 `lrp-ack-timer-init`、`lrp-reconnect-max`，列表 `portal`）。13.5.1 LRP 文本约定 MIB（第 23–25 页）：`LRP-TC-MIB` 类型 `LrpHelloStatus`、`LrpAppId`、`LrpInetAddressInfo`；OID 由 34 改为 38。13.5.2 LRP MIB（第 25–26 页）：`LRP-MIB`，含 `lrpConfiguration`/`lrpStatistics` 与 `lrpDtInstanceTable`；OID 由 35 改为 39。13.5.3 LLDPv2 LRP 扩展 MIB（第 37–39 页）：OUI 00-80-C1 下的 `LLDP-V2-LRP-EXT-MIB`，含用于通告 TCP 地址的配置/本地/远端表。附录 C（第 55–56 页）：用于 LLDP 的 IEEE 802.1 组织特定 TLV——LRP TCP 发现 TLV、应用描述符格式（图 C-3、表 C-2）以及使用规则（C.2.2.7）。",
+      "cite": {
+        "pdf_id": "8021CS-2020_Cor1-2024",
+        "pages": [
+          13,
+          14,
+          15,
+          16,
+          23,
+          24,
+          25,
+          26,
+          37,
+          38,
+          39,
+          55,
+          56
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021CS-2020_Cor1-2024",
+      "pages": [
+        13,
+        14
+      ],
+      "note": "Clause 1.1 Scope (proxy provision) and 6.3.1 Objectives of LRP (goals a-m)."
+    },
+    {
+      "pdf_id": "8021CS-2020_Cor1-2024",
+      "pages": [
+        15,
+        16
+      ],
+      "note": "Clause 12.2 YANG framework and 12.6 LRP YANG module ieee802-dot1cs-lrp."
+    },
+    {
+      "pdf_id": "8021CS-2020_Cor1-2024",
+      "pages": [
+        23,
+        24,
+        25,
+        26
+      ],
+      "note": "Clause 13.5.1 LRP-TC-MIB and 13.5.2 LRP-MIB (OID renumbering, tables)."
+    },
+    {
+      "pdf_id": "8021CS-2020_Cor1-2024",
+      "pages": [
+        37,
+        38,
+        39
+      ],
+      "note": "Clause 13.5.3 LLDP-V2-LRP-EXT-MIB under OUI 00-80-C1."
+    },
+    {
+      "pdf_id": "8021CS-2020_Cor1-2024",
+      "pages": [
+        55,
+        56
+      ],
+      "note": "Annex C: LRP TCP Discovery TLV Application descriptor (Figure C-3, Table C-2) and usage rules."
+    }
+  ],
+  "covers": [
+    "8021CS-2020_Cor1-2024:1.1",
+    "8021CS-2020_Cor1-2024:6.3.1",
+    "8021CS-2020_Cor1-2024:12.2",
+    "8021CS-2020_Cor1-2024:12.6",
+    "8021CS-2020_Cor1-2024:13.5.1",
+    "8021CS-2020_Cor1-2024:13.5.2",
+    "8021CS-2020_Cor1-2024:13.5.3",
+    "8021CS-2020_Cor1-2024:Annex_C"
+  ],
+  "track": "bridging-tsn"
+}

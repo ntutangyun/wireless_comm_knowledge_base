@@ -1,0 +1,174 @@
+{
+  "id": "bridging-tsn-93",
+  "title": {
+    "en": "GFQoS Systems and the 802.1DC YANG Model: Clauses 7, 9, and the Annexes",
+    "zh": "GFQoS 系统与 802.1DC YANG 模型：第 7、9 章及附录"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1DC-2024 specifies Quality of Service Provision by Network Systems. Its key idea is to take the QoS machinery that IEEE Std 802.1Q normally bolts onto a Bridge and repackage it as GFQoS (General Frame Quality of Service) so any system — not just a Bridge — can provide it. This lesson maps Clause 7 (the GFQoS behavioral model), Clause 9 (the YANG data model used to configure it), and the two informative annexes. Every clause gets a clear home; we define each acronym on first use.",
+      "zh": "IEEE Std 802.1DC-2024 规定了“网络系统的服务质量提供”。其核心思想是把 IEEE Std 802.1Q 通常绑定在网桥（Bridge）上的 QoS 机制重新封装为 GFQoS（General Frame Quality of Service，通用帧服务质量），使任何系统——而不仅是网桥——都能提供这种能力。本课梳理第 7 章（GFQoS 行为模型）、第 9 章（用于配置它的 YANG 数据模型）以及两个资料性附录。每个子条款都有清晰归属，并在首次出现时定义每个缩写。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7.1 names two kinds of GFQoS systems. A GFQoS end system applies the model to frames it transmits and receives on its own ports but does not forward them. A GFQoS forwarding system has two or more ports and moves a frame from a reception port to one or more transmission ports. The thing being protected is a stream: a unidirectional set of frames from one Talker (source end system) to one or more Listeners (destination end systems). A class of frames is broader — it need not come from a single source. All GFQoS systems implement the provision model of 7.2; the functions of 7.3 are optional add-ons.",
+      "zh": "第 7.1 条命名了两类 GFQoS 系统。GFQoS 端系统（end system）对自身端口上收发的帧应用该模型，但不转发帧。GFQoS 转发系统（forwarding system）拥有两个或更多端口，把帧从接收端口移到一个或多个发送端口。被保护的对象是流（stream）：从一个 Talker（源端系统）到一个或多个 Listener（目的端系统）的单向帧集合。帧类别（class）的范围更宽——不必来自单一源。所有 GFQoS 系统都实现 7.2 的提供模型；7.3 的各项功能是可选附加项。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 230\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">reception port</text><rect x=\"40\" y=\"28\" width=\"360\" height=\"26\"/><text x=\"50\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Flow classification &amp; metering (7.2.1)</text><line x1=\"220\" y1=\"54\" x2=\"220\" y2=\"66\"/><rect x=\"40\" y=\"66\" width=\"360\" height=\"26\"/><text x=\"50\" y=\"83\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Queuing frames (7.2.2)</text><line x1=\"220\" y1=\"92\" x2=\"220\" y2=\"104\"/><rect x=\"40\" y=\"104\" width=\"360\" height=\"26\"/><text x=\"50\" y=\"121\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Queue management (7.2.3)</text><line x1=\"220\" y1=\"130\" x2=\"220\" y2=\"142\"/><rect x=\"40\" y=\"142\" width=\"360\" height=\"26\"/><text x=\"50\" y=\"159\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Transmission selection (7.2.4)</text><line x1=\"220\" y1=\"168\" x2=\"220\" y2=\"182\"/><text x=\"10\" y=\"200\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">transmission port</text><rect x=\"40\" y=\"186\" width=\"360\" height=\"22\"/><text x=\"50\" y=\"201\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">priority / IPV decides queue (7.3.1) + 7.2.5 parameters</text></svg>",
+      "caption": {
+        "en": "Figure 7-1 redrawn: a frame flows top-to-bottom through the GFQoS forwarding process — classify/meter, queue, manage, then select for transmission.",
+        "zh": "重绘的图 7-1：帧自上而下流经 GFQoS 转发过程——分类/计量、入队、队列管理，再选择发送。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7.2 is the provision model, walked through as a pipeline. 7.2.1 Flow classification and metering decides each frame's class of service; it splits into 7.2.1.1 General flow classification (discard/mark frames by source/destination MAC address, VID, or priority) and 7.2.1.2 Per-stream classification, which groups stream filtering, stream gating, and metering into two functions — PSFP (Per-Stream Filtering and Policing) and ATS (Asynchronous Traffic Shaping) eligibility-time assignment. 7.2.2 Queuing frames assigns each frame to a queue by its class and preserves in-order delivery per stream. 7.2.3 Queue management may discard frames to hold a maximum transit delay. 7.2.4 Transmission selection picks which queue transmits next. 7.2.5 Parameterization of frames explains that frames are modeled as parameter sets — via the ISS (Internal Sublayer Service, a medium-independent MAC abstraction) and the optional EISS (Enhanced ISS, which adds VLAN fields).",
+      "zh": "第 7.2 条是提供模型，按流水线逐步展开。7.2.1 流分类与计量决定每帧的服务类别；它分为 7.2.1.1 通用流分类（按源/目的 MAC 地址、VID 或优先级丢弃/标记帧）和 7.2.1.2 逐流分类，后者把流过滤、流门控与计量归并为两个功能——PSFP（Per-Stream Filtering and Policing，逐流过滤与监管）和 ATS（Asynchronous Traffic Shaping，异步流量整形）合格时间赋值。7.2.2 帧入队按类别把每帧分配到某个队列，并按流保持有序交付。7.2.3 队列管理可丢弃帧以满足最大传输时延。7.2.4 发送选择决定下一个发送哪个队列。7.2.5 帧的参数化说明帧被建模为参数集合——通过 ISS（Internal Sublayer Service，内部子层服务，一种与介质无关的 MAC 抽象）以及可选的 EISS（增强型 ISS，增加 VLAN 字段）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why no priority/VLAN tagging logic here? 802.1DC treats reading and rewriting priority, drop-eligibility, and VLAN tags as Bridge-specific work. A GFQoS system just acts on whatever priority or internal priority value (IPV) a frame already carries. That separation is what lets the same QoS toolkit live in a non-Bridge.",
+      "zh": "为什么这里没有优先级/VLAN 打标逻辑？802.1DC 把读取与改写优先级、丢弃合格性以及 VLAN 标签视为网桥专属工作。GFQoS 系统只对帧已携带的优先级或内部优先级值（IPV）采取动作。正是这种分离，使同一套 QoS 工具能运行在非网桥系统中。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7.3 lists the optional GFQoS functions and their requirements. 7.3.1 Transmission by priority establishes strict priority as the foundation: queues on a port are served strictly by priority, and the IPV (Internal Priority Value) — which the stream gate can set — overrides the carried priority in choosing the output queue; a GFQoS system shall support strict-priority transmission selection. 7.3.2 Enhanced Internal Sublayer Service makes EISS optional, listing exactly which 802.1Q EISS pieces a supporting system shall implement. 7.3.3 Credit-based shaper says a system supporting CBS shall implement it per 802.1Q 8.6.8.2. 7.3.4 Frame preemption says a forwarding system supporting preemption shall implement it per 802.1Q 6.7.2 — letting an express frame interrupt a preemptable one mid-transmission.",
+      "zh": "第 7.3 条列出可选的 GFQoS 功能及其要求。7.3.1 按优先级发送确立严格优先级（strict priority）为基础：端口上的队列严格按优先级服务，而 IPV（Internal Priority Value，内部优先级值）——可由流门设置——在选择输出队列时覆盖所携带的优先级；GFQoS 系统应支持严格优先级发送选择。7.3.2 增强型内部子层服务使 EISS 成为可选，并明确规定支持的系统应实现 802.1Q 中哪些 EISS 部分。7.3.3 基于信用的整形器规定支持 CBS 的系统应按 802.1Q 8.6.8.2 实现它。7.3.4 帧抢占规定支持抢占的转发系统应按 802.1Q 6.7.2 实现——让一个快速帧在传输中途打断一个可抢占帧。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 9 is the YANG data model. YANG is the IETF data-modeling language used by NETCONF/RESTCONF to describe configuration and operational state. 9.1 YANG framework explains the trick: 802.1Q feature modules come in pairs — one defines reusable groupings, the other augments a Bridge component or Bridge Port. 802.1DC reuses the first half but augments a system or an interface instead of Bridge constructs, so the same QoS knobs apply to a non-Bridge. 9.2 lists which 802.1Q modules are reused (sched, ats, stream-filters-gates, preemption, psfp, cbsa). 9.3 maps each GFQoS function to its DC module. 9.4 Security considerations simply points at the security text in the referenced 802.1Q amendments.",
+      "zh": "第 9 章是 YANG 数据模型。YANG 是 IETF 的数据建模语言，被 NETCONF/RESTCONF 用来描述配置与运行状态。9.1 YANG 框架揭示了关键手法：802.1Q 的功能模块成对出现——一个定义可复用的分组（grouping），另一个增强（augment）网桥组件或网桥端口。802.1DC 复用前半部分，但改为增强系统（system）或接口（interface），而非网桥构件，从而让同样的 QoS 旋钮适用于非网桥系统。9.2 列出复用了哪些 802.1Q 模块（sched、ats、stream-filters-gates、preemption、psfp、cbsa）。9.3 把每个 GFQoS 功能映射到对应的 DC 模块。9.4 安全考量直接指向被引用的 802.1Q 修正案中的安全条文。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[ietf-interfaces / ietf-system] --> B[802.1DC augment modules]\n  B --> C[preemption-if 9.6.1]\n  B --> D[psfp-sys 9.6.2]\n  B --> E[gfqos 9.6.3]\n  B --> F[sched-if 9.6.4]\n  B --> G[cbsa-if 9.6.5]\n  B --> H[ats-if 9.6.6]\n  C --> I[reuse 802.1Q groupings]\n  D --> I\n  E --> I\n  F --> I\n  G --> I\n  H --> I",
+      "zh": "flowchart TD\n  A[ietf-interfaces / ietf-system] --> B[802.1DC 增强模块]\n  B --> C[preemption-if 9.6.1]\n  B --> D[psfp-sys 9.6.2]\n  B --> E[gfqos 9.6.3]\n  B --> F[sched-if 9.6.4]\n  B --> G[cbsa-if 9.6.5]\n  B --> H[ats-if 9.6.6]\n  C --> I[复用 802.1Q 分组]\n  D --> I\n  E --> I\n  F --> I\n  G --> I\n  H --> I"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 9.5 gives the schema-tree overviews — compact ASCII pictures of each module's shape. 9.5.1 preemption-if augments an interface with preemption-parameters. 9.5.2 psfp-sys augments the system with psfp-parameters. 9.5.3 gfqos augments an interface with the gfqos-ifc container: pvid and acceptable-frame (guarded by the eiss feature), a transmission-selection-algorithm-table keyed by traffic-class, and rich read-only statistics (frame/octet counters, delay-exceeded and MTU-exceeded discards). 9.5.4 sched-if, 9.5.5 cbsa-if, and 9.5.6 ats-if each pull in their respective parameter groupings; ats-if augments both an interface (per-port) and the system (stream filters and gates).",
+      "zh": "第 9.5 条给出模式树（schema tree）概览——每个模块形状的紧凑 ASCII 图。9.5.1 preemption-if 用 preemption-parameters 增强接口。9.5.2 psfp-sys 用 psfp-parameters 增强系统。9.5.3 gfqos 用 gfqos-ifc 容器增强接口：pvid 与 acceptable-frame（受 eiss 特性约束）、以 traffic-class 为键的发送选择算法表，以及丰富的只读统计（帧/字节计数、超时延丢弃和超 MTU 丢弃）。9.5.4 sched-if、9.5.5 cbsa-if 与 9.5.6 ats-if 各自引入相应的参数分组；ats-if 同时增强接口（逐端口）与系统（流过滤器与门）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the six normative YANG modules of 9.6 and the two annexes",
+        "zh": "覆盖地图：9.6 的六个规范性 YANG 模块与两个附录"
+      },
+      "en": "Clause 9.6 contains the full YANG source, each module published with revision 2024-09-26 and freely reproducible. 9.6.1 ieee802-dot1dc-preemption-if augments /if:interfaces/if:interface using ieee802-dot1q-preemption — frame preemption control. 9.6.2 ieee802-dot1dc-psfp-sys augments /sys:system using ieee802-dot1q-psfp — Per-Stream Filtering and Policing. 9.6.3 ieee802-dot1dc-gfqos augments the interface with the EISS-related gfqos-ifc container and statistics. 9.6.4 ieee802-dot1dc-sched-if augments the interface using ieee802-dot1q-sched — scheduled (time-gated) transmission. 9.6.5 ieee802-dot1dc-cbsa-if augments the interface using ieee802-dot1q-cbsa — the credit-based shaper. 9.6.6 ieee802-dot1dc-ats-if augments both interface and system using ieee802-dot1q-ats and ieee802-dot1q-stream-filters-gates, wiring each stream filter to an ATS scheduler via scheduler-ref/scheduler-enable. Annex A (informative) is the PICS (Protocol Implementation Conformance Statement) proforma: a fixed-format questionnaire a supplier completes to declare which capabilities are implemented, using status symbols M (mandatory), O (optional), O.n / O/n (group options), X (prohibited), and predicate conditions; A.2 enumerates items such as *END, *RLY, MC1–MC8, and end-system options ES9 (CBS), ES10 (PSFP). Annex B (informative) is the Bibliography — references B1–B11 (IEEE 802.1AE, 802.1AX, 802.3, 802.11, and IETF RFCs for UDP, IP, RSVP, DiffServ, IPv6, SCTP, TCP).",
+      "zh": "第 9.6 条包含完整的 YANG 源代码，每个模块均以修订日期 2024-09-26 发布且可自由复制。9.6.1 ieee802-dot1dc-preemption-if 使用 ieee802-dot1q-preemption 增强 /if:interfaces/if:interface——帧抢占控制。9.6.2 ieee802-dot1dc-psfp-sys 使用 ieee802-dot1q-psfp 增强 /sys:system——逐流过滤与监管。9.6.3 ieee802-dot1dc-gfqos 用与 EISS 相关的 gfqos-ifc 容器及统计增强接口。9.6.4 ieee802-dot1dc-sched-if 使用 ieee802-dot1q-sched 增强接口——调度（时间门控）发送。9.6.5 ieee802-dot1dc-cbsa-if 使用 ieee802-dot1q-cbsa 增强接口——基于信用的整形器。9.6.6 ieee802-dot1dc-ats-if 使用 ieee802-dot1q-ats 与 ieee802-dot1q-stream-filters-gates 同时增强接口与系统，通过 scheduler-ref/scheduler-enable 把每个流过滤器接到一个 ATS 调度器。附录 A（资料性）是 PICS（Protocol Implementation Conformance Statement，协议实现一致性声明）模板：供应商填写的固定格式问卷，声明实现了哪些能力，使用状态符号 M（强制）、O（可选）、O.n / O/n（组选项）、X（禁止）以及谓词条件；A.2 列举诸如 *END、*RLY、MC1–MC8 以及端系统选项 ES9（CBS）、ES10（PSFP）等条目。附录 B（资料性）是参考文献——条目 B1–B11（IEEE 802.1AE、802.1AX、802.3、802.11，以及关于 UDP、IP、RSVP、DiffServ、IPv6、SCTP、TCP 的 IETF RFC）。",
+      "cite": {
+        "pdf_id": "8021DC-2024",
+        "pages": [
+          38,
+          40,
+          41,
+          45,
+          46,
+          47,
+          48,
+          50,
+          51,
+          53
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: Clause 7 is the behavior (what a GFQoS system does to frames), Clause 9 is the dashboard (how you configure that behavior over NETCONF/RESTCONF), Annex A is the checklist (what you claim to support), and Annex B is the reading list. Each YANG module in 9.6 is just an 802.1Q feature re-aimed from a Bridge at an ordinary system or interface.",
+      "zh": "心智模型：第 7 章是行为（GFQoS 系统对帧做什么），第 9 章是仪表盘（如何通过 NETCONF/RESTCONF 配置该行为），附录 A 是清单（你声明支持什么），附录 B 是阅读书目。9.6 中的每个 YANG 模块只是把一项 802.1Q 特性从网桥重新瞄准到普通系统或接口。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021DC-2024",
+      "pages": [
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "note": "Clause 7.1-7.2.5: GFQoS systems, provision model pipeline, parameterization."
+    },
+    {
+      "pdf_id": "8021DC-2024",
+      "pages": [
+        31,
+        32,
+        33
+      ],
+      "note": "Clause 7.3.1-7.3.4: strict priority, EISS, credit-based shaper, frame preemption requirements."
+    },
+    {
+      "pdf_id": "8021DC-2024",
+      "pages": [
+        35,
+        36,
+        37
+      ],
+      "note": "Clause 9.1-9.5.3: YANG framework, module list, structure, security, first schema trees."
+    },
+    {
+      "pdf_id": "8021DC-2024",
+      "pages": [
+        38,
+        40,
+        41,
+        45,
+        46,
+        47
+      ],
+      "note": "Clause 9.5.4-9.6.6: remaining schema trees and the six YANG modules."
+    },
+    {
+      "pdf_id": "8021DC-2024",
+      "pages": [
+        48,
+        50,
+        51,
+        53
+      ],
+      "note": "Annex A PICS proforma and Annex B bibliography."
+    }
+  ],
+  "covers": [
+    "8021DC-2024:7.1",
+    "8021DC-2024:7.2.1",
+    "8021DC-2024:7.2.2",
+    "8021DC-2024:7.2.3",
+    "8021DC-2024:7.2.4",
+    "8021DC-2024:7.2.5",
+    "8021DC-2024:7.3.1",
+    "8021DC-2024:7.3.2",
+    "8021DC-2024:7.3.3",
+    "8021DC-2024:7.3.4",
+    "8021DC-2024:9.1",
+    "8021DC-2024:9.2",
+    "8021DC-2024:9.3",
+    "8021DC-2024:9.4",
+    "8021DC-2024:9.5.1",
+    "8021DC-2024:9.5.2",
+    "8021DC-2024:9.5.3",
+    "8021DC-2024:9.5.4",
+    "8021DC-2024:9.5.5",
+    "8021DC-2024:9.5.6",
+    "8021DC-2024:9.6.1",
+    "8021DC-2024:9.6.2",
+    "8021DC-2024:9.6.3",
+    "8021DC-2024:9.6.4",
+    "8021DC-2024:9.6.5",
+    "8021DC-2024:9.6.6",
+    "8021DC-2024:Annex_A",
+    "8021DC-2024:Annex_B"
+  ],
+  "track": "bridging-tsn"
+}

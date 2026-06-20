@@ -1,0 +1,193 @@
+{
+  "id": "bridging-tsn-82",
+  "title": {
+    "en": "Counting the Bytes, Catching the Faults: Accounting, Monitoring, and FDM",
+    "zh": "记账与排障：计量、监测与故障诊断维护（FDM）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "An access network has to answer two everyday operational questions. First: who used how much of the network, and how well did it perform? That is the job of clause 6.8, Accounting and monitoring. Second: when something breaks, how do we notice, find the cause, and fix it? That is clause 6.9, Fault diagnostics and maintenance (FDM). This lesson walks both clauses end to end. To keep the cast of characters straight: TE is the terminal (the user device), NA is the node of attachment (the access point you connect to), BH is the backhaul (the link carrying traffic deeper into the network), ANC is the access network control (the central controller), SS is the subscription service (it holds per-user policy), and NMS is the network management system (the human operator's console).",
+      "zh": "接入网每天都要回答两个运营层面的问题。第一：谁用了多少网络资源、性能如何？这是 6.8「计量与监测」（Accounting and monitoring）要做的事。第二：出故障时，我们如何发现、定位原因并修复？这是 6.9「故障诊断与维护」（FDM，Fault diagnostics and maintenance）的职责。本课从头到尾讲清这两节。先理清角色：TE 是终端（用户设备），NA 是接入节点（你连接的接入点），BH 是回传（把流量往网络深处传送的链路），ANC 是接入网控制器（中央控制器），SS 是订阅服务（保存每用户策略），NMS 是网络管理系统（运营人员的人机界面）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.8.1 (Introduction) frames accounting as gathering usage data records at network devices and exporting them to an accounting server, while monitoring is the act of measuring the amount and type of traffic. Both active techniques (more intrusive but more accurate, e.g. the Ethernet OAMPDU loopback in IEEE Std 802.3) and passive techniques (low overhead, e.g. the IEEE 802.11k radio measurement protocols) are supported. The data feeds billing, performance management, and security. Clause 6.8.2 (Roles) assigns the work: the TE may be asked by the ANC to take measurements (6.8.2.1); the NMS gives the operator a human view of usage records (6.8.2.2); the ANC collects, mediates, and formats records and schedules remote monitoring tasks (6.8.2.3); the NA and BH host the observation points and keep raw counters in management information bases, or MIBs (6.8.2.4); and the SS supplies the per-user policy that configures it all (6.8.2.5).",
+      "zh": "6.8.1（引言）把记账定义为在网络设备上收集使用数据记录并导出到记账服务器，而监测则是测量流量的多少与类型。标准同时支持主动技术（更具侵入性但更精确，例如 IEEE Std 802.3 的以太网 OAMPDU 环回）和被动技术（开销低，例如 IEEE 802.11k 的无线电测量协议）。这些数据用于计费、性能管理和安全分析。6.8.2（角色）分配职责：TE 可被 ANC 要求执行测量（6.8.2.1）；NMS 为运营人员提供查看使用记录的人机界面（6.8.2.2）；ANC 负责收集、整理、格式化记录并调度远程监测任务（6.8.2.3）；NA 与 BH 承载观测点，并把原始计数器保存在管理信息库（MIB）中（6.8.2.4）；SS 提供配置这一切的每用户策略（6.8.2.5）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.8.3 (Use cases) gives three reasons the data matters: performance analysis (6.8.3.2) compares polled records against history to spot deviations and trends; security analysis (6.8.3.3) uses traffic patterns to detect attacks and suspicious streams; and billing (6.8.3.4) turns raw records into invoices through charging (deriving non-monetary costs from tariffs) and billing (translating those into money). Clause 6.8.4 (Functional requirements) lists what an implementation should support: applying accounting policy, monitoring and generating usage records, storing and collecting them, and applying data filtering, sampling, aggregation, correlation, de-duplication, and mediation to turn raw records into well-formatted accounting records — plus policy exchange between subscription services for roaming, and QoS accounting.",
+      "zh": "6.8.3（用例）给出数据为何重要的三个理由：性能分析（6.8.3.2）把轮询到的记录与历史数据比较，发现偏差与趋势；安全分析（6.8.3.3）利用流量模式检测攻击与可疑流；计费（6.8.3.4）通过「计价」（根据资费从记账数据推导非货币成本）和「出账」（再换算为货币并生成账单）把原始记录变成发票。6.8.4（功能需求）列出实现应支持的能力：应用记账策略、监测并生成使用记录、存储与收集记录，以及对原始记录进行过滤、抽样、聚合、关联、去重和整理（mediation），使其成为格式规整的记账记录；还包括漫游场景下订阅服务之间的策略交换，以及对 QoS 的记账。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.8.5 (Attributes) defines the data structures. Session statistics (6.8.5.1) carry a StatsRecord-ID, a SessionKey (the session credential from authentication), a DP-ID (datapath identifier), AccountingStart and AccountingStop timestamps, and StatsParams such as transmitted/received volume and QoS parameters. The NA (6.8.5.2) and BH (6.8.5.3) expose monitoring usage data on their reference interfaces (R1/R6 for the NA, R3/R6 for the BH) — throughput, volume, QoS data. The ANC (6.8.5.4) holds three config sets: MonitorConfig, CollectionConfig, and MediationConfig. The SS (6.8.5.5) holds a ServiceProvider-ID and an AccountingConfig. These attributes are the vocabulary the procedures speak in.",
+      "zh": "6.8.5（属性）定义数据结构。会话统计（6.8.5.1）包含 StatsRecord-ID、SessionKey（认证阶段生成的会话凭据）、DP-ID（数据通路标识）、AccountingStart 与 AccountingStop 时间戳，以及 StatsParams（如收发字节量与 QoS 参数）。NA（6.8.5.2）与 BH（6.8.5.3）在各自参考接口上暴露监测使用数据（NA 用 R1/R6，BH 用 R3/R6）——吞吐量、流量、QoS 数据。ANC（6.8.5.4）持有三组配置：MonitorConfig、CollectionConfig 与 MediationConfig。SS（6.8.5.5）持有 ServiceProvider-ID 与 AccountingConfig。这些属性正是后续流程所使用的「词汇表」。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Monitoring<br/>6.8.6.1] --> B[Collection<br/>6.8.6.2]\n  B --> C[Mediation<br/>6.8.6.3]\n  C --> D[Applications:<br/>billing / security]\n  subgraph Mediation steps\n    M1[Filter] --> M2[Threshold]\n    M2 --> M3[Aggregate]\n    M3 --> M4[Correlate]\n    M4 --> M5[De-duplicate]\n    M5 --> M6[Format + store]\n  end\n  C -.-> M1",
+      "zh": "flowchart LR\n  A[监测<br/>6.8.6.1] --> B[收集<br/>6.8.6.2]\n  B --> C[整理<br/>6.8.6.3]\n  C --> D[应用：<br/>计费 / 安全]\n  subgraph 整理步骤\n    M1[过滤] --> M2[阈值]\n    M2 --> M3[聚合]\n    M3 --> M4[关联]\n    M4 --> M5[去重]\n    M5 --> M6[格式化与存储]\n  end\n  C -.-> M1"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.8.6 (Basic functions) is the data pipeline drawn above. Monitoring (6.8.6.1) gathers and optionally preprocesses usage records at devices (a network element or a dedicated black-box meter); it is configured by trigger condition, scope, type, granularity (measurement interval), and schedule, and each job emits scheduled measurement records. Collection (6.8.6.2) brings that data to a collection server in the ANC, using either a push model (the device exports at the end of each granularity period) or a pull model (the device keeps counters in its MIB and the ANC fetches them). Mediation (6.8.6.3) is the cleanup stage: filtering to cut volume, threshold monitoring against a normal baseline, data aggregation by key fields or over time, correlation/enrichment across sources, de-duplication when the same record is metered in several places, and finally formatting and storage in a common format.",
+      "zh": "6.8.6（基本功能）就是上图这条数据流水线。监测（6.8.6.1）在设备（网络单元或专用「黑盒」计量器）上收集并可选地预处理使用记录；其配置项包括触发条件、范围、类型、粒度（测量间隔）与时间表，每个任务在粒度周期结束时产生测量记录。收集（6.8.6.2）把数据汇聚到 ANC 中的收集服务器，可采用推模型（设备在每个粒度周期结束时主动导出）或拉模型（设备把计数器保存在 MIB 中，由 ANC 定期取回）。整理（6.8.6.3）是清洗阶段：过滤以削减数据量、相对正常基线进行阈值监测、按关键字段或时间窗口聚合、跨来源关联与丰富、对在多处被计量的同一记录去重，最后以统一格式格式化并存储。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant SS\n  participant ANC\n  participant NA\n  SS->>ANC: Accounting config (per-user policy)\n  ANC->>NA: Monitoring request (start metering)\n  NA-->>ANC: Monitoring indication (interim octets/frames)\n  ANC-->>SS: Accounting request (interim)\n  ANC->>NA: Monitoring request (end)\n  NA-->>ANC: Final session results\n  ANC-->>SS: Accounting request (end + cause)",
+      "zh": "sequenceDiagram\n  participant SS as SS\n  participant ANC as ANC\n  participant NA as NA\n  SS->>ANC: 记账配置（每用户策略）\n  ANC->>NA: 监测请求（开始计量）\n  NA-->>ANC: 监测指示（中间收发字节/帧）\n  ANC-->>SS: 记账请求（中间）\n  ANC->>NA: 监测请求（结束）\n  NA-->>ANC: 最终会话结果\n  ANC-->>SS: 记账请求（结束+原因）"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: 6.8.7 procedures and 6.8.8 technology mapping",
+        "zh": "覆盖地图：6.8.7 详细流程与 6.8.8 技术映射"
+      },
+      "en": "Clause 6.8.7 (Detailed procedures) has three parts. 6.8.7.1 Accounting configuration: after a user authenticates, the SS sends an accounting configuration to the ANC (carrying policy conditions like user ID and service class, and policy actions like record structure, destination, report interval, storage time); the ANC acks and converts it into a monitoring configuration for the NA, which sets up a local meter — this can be folded into the AAA authorization framework. 6.8.7.2 Accounting: the ANC sends an accounting request (start) to the SS, then a monitoring request to the NA; during the session the NA sends monitoring indications carrying interim results (SessionOctetsRx/Tx, SessionFramesRx/Tx, Session ID, user name, session time), the ANC forwards accounting requests (interim) to the SS, and at session end the ANC retrieves final results and sends an accounting request (end) with the termination cause (e.g. EAPoL-logoff, lost carrier, timeout). 6.8.7.3 Monitoring: the ANC asks the NMS to authorize a monitoring task, the NMS returns monitoring configuration, the monitoring point is set up on the NA, and results are mediated and forwarded to the NMS; the task ends on request, timeout, or session end. 6.8.8 Mapping to IEEE 802 technologies: Table 8 and Table 9 map these functions to concrete MIB objects — e.g. dot11TransmittedFrameCount and sessionOctetsTx (from IEEE 802.1X) for volume in 802.11, the dot11QosCounters group for QoS monitoring, and equivalents in 802.3, 802.16, and 802.22.",
+      "zh": "6.8.7（详细流程）分三部分。6.8.7.1 记账配置：用户认证后，SS 向 ANC 发送记账配置（携带策略条件如用户 ID 与服务等级，以及策略动作如记录结构、目的地、上报间隔、存储时长）；ANC 确认后将其转换为针对 NA 的监测配置，NA 据此建立本地计量器——此过程可并入 AAA 授权框架。6.8.7.2 记账：ANC 向 SS 发送记账请求（开始），再向 NA 发送监测请求；会话期间 NA 发送携带中间结果的监测指示（SessionOctetsRx/Tx、SessionFramesRx/Tx、会话 ID、用户名、会话时长），ANC 把记账请求（中间）转发给 SS，会话结束时 ANC 取回最终结果并发送带终止原因（如 EAPoL-logoff、载波丢失、超时）的记账请求（结束）。6.8.7.3 监测：ANC 请求 NMS 授权监测任务，NMS 返回监测配置，监测点在 NA 上建立，结果经整理后转发给 NMS；任务可因请求、超时或会话结束而终止。6.8.8 映射到 IEEE 802 技术：表 8 与表 9 把这些功能映射到具体 MIB 对象——例如 802.11 中以 dot11TransmittedFrameCount 与 sessionOctetsTx（来自 IEEE 802.1X）计量流量，以 dot11QosCounters 组进行 QoS 监测，并在 802.3、802.16、802.22 中给出对应项。",
+      "cite": {
+        "pdf_id": "8021CF-2019",
+        "pages": [
+          118,
+          119,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now to clause 6.9, Fault diagnostics and maintenance (FDM). Clause 6.9.1 (Introduction) defines a fault as a deviation from normal operation — it may strike a network element (hardware or software failure) or a link (degraded performance, lost connectivity). When a fault occurs, the capable network element shall generate an alarm carrying everything the detection process found. FDM provides the capabilities to detect, isolate, report, and mitigate failures over a session's life, drawing on IEEE 802 FDM tools (e.g. IEEE 802.3 Clause 57 OAM, IEEE 802.1Q Clause 20, and IEEE 802.11 clauses 11.11/11.24). Clause 6.9.2 (Roles): the NMS (6.9.2.2) is the operator's interface, mostly served by the element manager in the ANC over the R11 interface; the ANC (6.9.2.3) is the central controller, exchanging FDM information with subordinate elements over control interfaces (R5, R7, R8, R9) and data interfaces (R1, R6, R3), while network elements run autonomous self-checks.",
+      "zh": "现在进入 6.9「故障诊断与维护」（FDM）。6.9.1（引言）把故障定义为偏离正常运行——它可能袭击网络单元（硬件或软件失效）或链路（性能下降、连接丢失）。故障发生时，具备能力的网络单元「应」生成告警，携带检测过程发现的全部信息。FDM 提供在会话生命周期内检测、隔离、上报与缓解故障的能力，借助 IEEE 802 的 FDM 工具（如 IEEE 802.3 第 57 章 OAM、IEEE 802.1Q 第 20 章、IEEE 802.11 的 11.11/11.24）。6.9.2（角色）：NMS（6.9.2.2）是运营人员界面，主要由 ANC 中的网元管理器经 R11 接口服务；ANC（6.9.2.3）是中央控制器，经控制接口（R5、R7、R8、R9）与数据接口（R1、R6、R3）与下属单元交换 FDM 信息，而各网络单元自行运行自检。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.9.3 (Use cases) gives three: alarm notification to NMS (6.9.3.2) — an element detects a fault, notifies the ANC, and if the ANC cannot find the root cause it forwards aggregated information to the NMS; NMS maintenance requests to ANC (6.9.3.3) — the operator asks the ANC to configure elements, poll capabilities, run loopback tests, or initiate recovery; and automatic fault recovery by ANC (6.9.3.4) — the ANC isolates and recovers on its own, for example reassigning channels when two neighbouring NAs interfere, or rebooting an NA with a software fault. Clause 6.9.4 (Functional requirements) asks for automatic discovery of remote FDM capabilities, configurable parameters/thresholds/flows, notify-and-poll of FDM information (alarms, counters, thresholds, events, MIB variables, status codes, system logs), detection of hardware/software/performance faults, root-cause determination, and isolation or replacement of faulty resources.",
+      "zh": "6.9.3（用例）给出三个：向 NMS 告警通知（6.9.3.2）——某单元检测到故障并通知 ANC，若 ANC 无法定位根因，则把聚合信息转发给 NMS；NMS 向 ANC 发起维护请求（6.9.3.3）——运营人员要求 ANC 配置网元、轮询能力、运行环回测试或发起恢复；ANC 自动故障恢复（6.9.3.4）——ANC 自行隔离与恢复，例如两个相邻 NA 互相干扰时重新分配信道，或对存在软件故障的 NA 执行重启。6.9.4（功能需求）要求：自动发现远端 FDM 能力，参数/阈值/流程可配置，对 FDM 信息（告警、计数器、阈值、事件、MIB 变量、状态码、系统日志）进行通知与轮询，检测硬件/软件/性能故障，确定根因，以及隔离或替换故障资源。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: 6.9.5 attributes and 6.9.6 basic functions",
+        "zh": "覆盖地图：6.9.5 属性与 6.9.6 基本功能"
+      },
+      "en": "Clause 6.9.5 (FDM-specific attributes) defines the data: the Alarm list (6.9.5.1) with Alarm-ID, AlarmParameter, ProbCause (probable cause), Events, and State (active or suppressed); Link-monitoring statistics (6.9.5.2) with LM-ID, NE-ID (network element ID), State, NBInfo (neighbour info), EnInfo (radio environment info), and Events; Test statistics (6.9.5.3) with Test-ID, TestConfig, and TestResult (e.g. round-trip time, jitter); and SelfCheck statistics (6.9.5.4) with SC-ID plus HWinfo, SWinfo, MIBinfo, Loginfo, and Cominfo. The remaining attribute blocks define configuration holders: FDM capabilities (6.9.5.5: BHCapability, NACapability, TECapability, ARCapability), FDM configuration (6.9.5.6: BHConfig, NAConfig, TEConfig, ARConfig), the ANC's own FDMCapability/FDMConfig (6.9.5.7), and the NMS's FDMRules and AggregationStats (6.9.5.8). Clause 6.9.6 (FDM-specific basic functions) names the four core operations: capability discovery (6.9.6.1) identifies devices and their FDM capabilities and forwards them to the element manager in the ANC; FDM registration (6.9.6.2) is the NMS registering with an ANC to receive alarms and other FDM information; fault isolation (6.9.6.3) pinpoints one or more root causes using aggregated/correlated information; and fault recovery (6.9.6.4) executes countermeasures — enabling a redundant resource, replacing or resetting hardware, reinitialising software, or running spanning tree protocols to find an alternate path — and the alarm is cleared once recovery is confirmed.",
+      "zh": "6.9.5（FDM 专属属性）定义数据：告警列表（6.9.5.1）含 Alarm-ID、AlarmParameter、ProbCause（可能原因）、Events 与 State（激活或被抑制）；链路监测统计（6.9.5.2）含 LM-ID、NE-ID（网元标识）、State、NBInfo（邻居信息）、EnInfo（无线环境信息）与 Events；测试统计（6.9.5.3）含 Test-ID、TestConfig 与 TestResult（如往返时延、抖动）；自检统计（6.9.5.4）含 SC-ID 以及 HWinfo、SWinfo、MIBinfo、Loginfo、Cominfo。其余属性块定义配置容器：FDM 能力（6.9.5.5：BHCapability、NACapability、TECapability、ARCapability）、FDM 配置（6.9.5.6：BHConfig、NAConfig、TEConfig、ARConfig）、ANC 自身的 FDMCapability/FDMConfig（6.9.5.7），以及 NMS 的 FDMRules 与 AggregationStats（6.9.5.8）。6.9.6（FDM 基本功能）给出四项核心操作：能力发现（6.9.6.1）识别设备及其 FDM 能力并转发给 ANC 中的网元管理器；FDM 注册（6.9.6.2）是 NMS 向某 ANC 注册以接收告警及其他 FDM 信息；故障隔离（6.9.6.3）利用聚合/关联信息定位一个或多个根因；故障恢复（6.9.6.4）执行对策——启用冗余资源、替换或重置硬件、重新初始化软件，或运行生成树协议寻找备用路径——恢复确认后清除告警。",
+      "cite": {
+        "pdf_id": "8021CF-2019",
+        "pages": [
+          129,
+          130,
+          131,
+          132
+        ]
+      }
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"55\" width=\"90\" height=\"40\"/><text x=\"55\" y=\"79\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Detect</text><rect x=\"120\" y=\"55\" width=\"90\" height=\"40\"/><text x=\"165\" y=\"79\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Isolate</text><rect x=\"230\" y=\"55\" width=\"90\" height=\"40\"/><text x=\"275\" y=\"79\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Report</text><rect x=\"340\" y=\"55\" width=\"90\" height=\"40\"/><text x=\"385\" y=\"79\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Mitigate</text><line x1=\"100\" y1=\"75\" x2=\"120\" y2=\"75\" marker-end=\"url(#a)\"/><line x1=\"210\" y1=\"75\" x2=\"230\" y2=\"75\" marker-end=\"url(#a)\"/><line x1=\"320\" y1=\"75\" x2=\"340\" y2=\"75\" marker-end=\"url(#a)\"/><text x=\"55\" y=\"40\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">self-check</text><text x=\"165\" y=\"40\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">root cause</text><text x=\"275\" y=\"40\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">alarm</text><text x=\"385\" y=\"40\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">recover</text><defs><marker id=\"a\" markerWidth=\"8\" markerHeight=\"8\" refX=\"6\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L6,3 L0,6\" fill=\"currentColor\" stroke=\"none\"/></marker></defs></svg>",
+      "caption": {
+        "en": "The FDM lifecycle from clause 6.9: detect a fault (self-check / link monitoring), isolate the root cause, report it as an alarm, then mitigate (recover).",
+        "zh": "6.9 节的 FDM 生命周期：检测故障（自检 / 链路监测），隔离根因，作为告警上报，再缓解（恢复）。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: 6.9.7 procedures and 6.9.8 technology mapping",
+        "zh": "覆盖地图：6.9.7 详细流程与 6.9.8 技术映射"
+      },
+      "en": "Clause 6.9.7 (Detailed procedures) has five. 6.9.7.1 FDM configuration: after registering, the NMS sends an FDM configuration to the ANC (device addresses, alarm structure, performance criteria, link-monitoring parameters, report interval, isolation/recovery rules); the ANC acks, converts, and applies it to subordinate elements such as the NA. 6.9.7.2 Remote failure indication: an element uses self-check circuits and daemons to validate hardware/software and, on failure (e.g. a dying gasp on power-down), generates an alarm forwarded to the ANC as an unsolicited notification — the alarm carries fault type, severity, time, probable cause, and units at fault, and is sent directly (Figure 75) or via another element (Figure 76). 6.9.7.3 Link monitoring: the ANC sends a link-monitoring request (transaction ID, type, parameters, report condition/interval, granularity); the element measures KPIs (key performance indicators) such as error/duplicate frame counts, RSSI (receive signal strength indicator), LQI (link quality indicator), SINR (signal-to-interference-noise ratio), MIB health variables, LLDP (Link Layer Discovery Protocol) neighbours, and logs, possibly pulling from a second element, then reports once, conditionally, or periodically. 6.9.7.4 Testing: loopback test (echo for round-trip delay/jitter), continuity check (multicast heartbeat for connectivity), and linktrace (discover maintenance points along a path), initiated by ANC or operator. 6.9.7.5 Management information aggregation: the ANC collects unsuppressed alarms into an active alarm list, correlates alarms likely from the same fault, and answers NMS aggregation requests (transaction ID, filtering criteria, report interval) with the requested FDM information for root-cause isolation. 6.9.8 Mapping to IEEE 802 technologies: Table 10 and Table 11 map capability discovery, registration/configuration, fault isolation/recovery, remote failure indication, link monitoring, testing, and aggregation to specific clauses and MIBs in 802.3 (Clause 57 OAM, Clause 30), 802.1Q (Clause 20 CFM, Clause 17 MIB), 802.11 (Clause 11 MLME, C.3 MIB), 802.16, and 802.22.",
+      "zh": "6.9.7（详细流程）分五部分。6.9.7.1 FDM 配置：注册后，NMS 向 ANC 发送 FDM 配置（设备地址、告警结构、性能准则、链路监测参数、上报间隔、隔离/恢复规则）；ANC 确认、转换并下发至 NA 等下属单元。6.9.7.2 远端失效指示：网元用自检电路与守护程序校验软硬件，失效时（如断电时的 dying gasp）生成告警，以非请求通知的形式转发给 ANC——告警携带故障类型、严重程度、时间、可能原因与故障单元，可直接上报（图 75）或经另一网元上报（图 76）。6.9.7.3 链路监测：ANC 发送链路监测请求（事务 ID、类型、参数、上报条件/间隔、粒度）；网元测量 KPI（关键性能指标），如错误/重复帧计数、RSSI（接收信号强度指示）、LQI（链路质量指示）、SINR（信干噪比）、MIB 健康变量、LLDP（链路层发现协议）邻居与日志，必要时从第二个网元拉取，随后一次性、按条件或周期性上报。6.9.7.4 测试：环回测试（回显以测往返时延/抖动）、连续性检查（组播心跳检连通性）、链路追踪（发现路径上的维护点），由 ANC 或运营人员发起。6.9.7.5 管理信息聚合：ANC 把未被抑制的告警收入活动告警列表，对很可能源自同一故障的告警进行关联，并以所需 FDM 信息回应 NMS 的聚合请求（事务 ID、过滤条件、上报间隔），用于根因隔离。6.9.8 映射到 IEEE 802 技术：表 10 与表 11 把能力发现、注册/配置、故障隔离/恢复、远端失效指示、链路监测、测试与聚合映射到 802.3（第 57 章 OAM、第 30 章）、802.1Q（第 20 章 CFM、第 17 章 MIB）、802.11（第 11 章 MLME、C.3 MIB）、802.16 与 802.22 中的具体章节与 MIB。",
+      "cite": {
+        "pdf_id": "8021CF-2019",
+        "pages": [
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy mnemonic: accounting and monitoring (6.8) is the pipeline that always runs — monitor, collect, mediate — while FDM (6.9) is the loop that runs when something goes wrong — detect, isolate, report, mitigate. Both lean on the same plumbing: per-element MIBs hold raw data, the ANC aggregates and mediates, and the NMS is where the human operator sees the result and pushes back policy.",
+      "zh": "一个好记的口诀：计量与监测（6.8）是一直运行的流水线——监测、收集、整理；而 FDM（6.9）是出问题时才启动的环路——检测、隔离、上报、缓解。两者依赖同一套管道：各网元的 MIB 保存原始数据，ANC 负责聚合与整理，NMS 则是运营人员查看结果并下发策略的地方。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021CF-2019",
+      "pages": [
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125
+      ],
+      "note": "6.8 Accounting and monitoring: introduction, roles, use cases, requirements, attributes, basic functions (monitoring/collection/mediation), detailed procedures, and IEEE 802 technology mapping (Tables 8-9)."
+    },
+    {
+      "pdf_id": "8021CF-2019",
+      "pages": [
+        126,
+        127,
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139
+      ],
+      "note": "6.9 Fault diagnostics and maintenance (FDM): introduction, roles, use cases, requirements, attributes, basic functions, detailed procedures (config, remote failure indication, link monitoring, testing, aggregation), and IEEE 802 mapping (Tables 10-11)."
+    }
+  ],
+  "covers": [
+    "8021CF-2019:6.8.1",
+    "8021CF-2019:6.8.2",
+    "8021CF-2019:6.8.3",
+    "8021CF-2019:6.8.4",
+    "8021CF-2019:6.8.5",
+    "8021CF-2019:6.8.6",
+    "8021CF-2019:6.8.7",
+    "8021CF-2019:6.8.8",
+    "8021CF-2019:6.9.1",
+    "8021CF-2019:6.9.2",
+    "8021CF-2019:6.9.3",
+    "8021CF-2019:6.9.4",
+    "8021CF-2019:6.9.5",
+    "8021CF-2019:6.9.6",
+    "8021CF-2019:6.9.7",
+    "8021CF-2019:6.9.8"
+  ],
+  "track": "bridging-tsn"
+}

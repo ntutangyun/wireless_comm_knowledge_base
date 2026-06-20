@@ -1,0 +1,199 @@
+{
+  "id": "tsn-22",
+  "title": {
+    "en": "Inside the gPTP State Machines: Sync, Best-Clock Selection, and Capability Signaling (Clause 10, part 1)",
+    "zh": "深入 gPTP 状态机：时间同步、最佳时钟选择与能力信令（第 10 章，上篇）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1ASdm-2024 is Amendment 3 to gPTP — the generalized Precision Time Protocol that keeps clocks across a Time-Sensitive Networking (TSN) network aligned to nanoseconds. gPTP runs as a swarm of cooperating state machines inside every PTP Instance (a clock participating in a gPTP domain). Clause 10 is the media-independent layer: the logic that works the same whether the link underneath is wired Ethernet or Wi-Fi. This lesson walks the first half of Clause 10 — time-synchronization (10.2), best-clock selection and port configuration (10.3), capability signaling (10.4), and the message attributes and formats those machines exchange (10.5, 10.6) — so every clause has a clear home.",
+      "zh": "IEEE Std 802.1ASdm-2024 是 gPTP 的第 3 号修正案。gPTP 即“通用精确时间协议”，它让时间敏感网络（TSN）中各处的时钟保持纳秒级对齐。gPTP 在每个 PTP 实例（参与某个 gPTP 域的时钟）内部以一组相互协作的状态机的形式运行。第 10 章是“与介质无关层”：无论底层链路是有线以太网还是 Wi-Fi，这套逻辑都一样工作。本课讲解第 10 章的上半部分——时间同步（10.2）、最佳时钟选择与端口配置（10.3）、能力信令（10.4），以及这些状态机所交换的消息属性与格式（10.5、10.6），为每个子条款都安排一个清晰的归宿。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Vocabulary check. PTP Instance = one clock in a gPTP domain. PTP Port = one of its network attachments. timeTransmitter = the upstream clock a port listens to; timeReceiver = the role a port plays when it receives time. BTCA = Best TimeTransmitter Clock Algorithm, the distributed election that picks the Grandmaster (the root clock everyone synchronizes to). TLV = Type-Length-Value, a self-describing data block appended to a message.",
+      "zh": "术语速查。PTP 实例 = gPTP 域中的一个时钟。PTP 端口 = 它的一个网络接入点。timeTransmitter（时间发送方）= 某端口所聆听的上游时钟；timeReceiver（时间接收方）= 端口在接收时间时所扮演的角色。BTCA = 最佳时间发送时钟算法，即选出大家都向其同步的根时钟（主时钟，Grandmaster）的分布式选举。TLV = 类型-长度-值，附加在消息后、可自我描述的数据块。"
+    },
+    {
+      "type": "prose",
+      "en": "10.2 — Time-synchronization state machines. The overview (10.2.1) lays out how synchronized time flows: time enters at a timeReceiver port, climbs to the clock's core, and fans back out to every other port. The data structures passed between machines (10.2.2) — MDSyncSend, MDSyncReceive, and PortSyncSync — each carry a domainNumber tagging which gPTP domain they belong to, plus an upstreamTxTime computed from the ingress timestamp, the measured link delay, and the neighbor's rate ratio. Two tables of global variables organize the machinery: per-PTP-Instance variables (10.2.4, e.g. selectedState, the array of each port's role) and per-port variables (10.2.5, e.g. neighborRateRatio and meanLinkDelay). Section 10.2.3 is the index that summarizes which variable has which scope.",
+      "zh": "10.2——时间同步状态机。概述（10.2.1）描述了同步时间如何流动：时间从一个 timeReceiver 端口进入，上升到时钟核心，再扇出到其他所有端口。各状态机之间传递的数据结构（10.2.2）——MDSyncSend、MDSyncReceive 和 PortSyncSync——都带有一个 domainNumber，用以标记所属的 gPTP 域，并携带一个 upstreamTxTime（由入口时间戳、实测链路时延和邻居速率比计算得出）。两张全局变量表组织了这套机制：每 PTP 实例变量（10.2.4，例如 selectedState，即各端口角色构成的数组）和每端口变量（10.2.5，例如 neighborRateRatio 与 meanLinkDelay）。10.2.3 则是汇总各变量作用域的索引。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  RX[timeReceiver port] --> PSR[PortSyncSyncReceive 10.2.8]\n  PSR --> SSS[SiteSyncSync]\n  CTS[ClockTimeTransmitterSyncSend 10.2.9] --> SSS\n  SSS --> PSS[PortSyncSyncSend 10.2.12]\n  SSS --> CRS[ClockTimeReceiverSync 10.2.13]\n  PSS --> TX[other ports egress]\n  CRS --> OFF[ClockTimeTransmitterSyncOffset 10.2.10]",
+      "zh": "flowchart LR\n  RX[timeReceiver 端口] --> PSR[PortSyncSyncReceive 10.2.8]\n  PSR --> SSS[SiteSyncSync 站点同步]\n  CTS[ClockTimeTransmitterSyncSend 10.2.9] --> SSS\n  SSS --> PSS[PortSyncSyncSend 10.2.12]\n  SSS --> CRS[ClockTimeReceiverSync 10.2.13]\n  PSS --> TX[其他端口 出口]\n  CRS --> OFF[ClockTimeTransmitterSyncOffset 10.2.10]"
+    },
+    {
+      "type": "prose",
+      "en": "10.3 — Best-clock selection and external port configuration. There are two ways to decide each port's role. The classic way is the BTCA, a distributed election driven by Announce messages. The newer way (10.3.1.3) is external port configuration: an outside controller sets each port's desired state directly. Clause 10.3 carries both. The machinery mirrors itself: PortAnnounceReceive (10.3.11), PortAnnounceInformation (10.3.12), and PortStateSelection (10.3.13) run the BTCA, while PortAnnounceInformationExt (10.3.14) and PortStateSettingExt (10.3.15) run the external-config path — each pair gated by the variable externalPortConfigurationEnabled so exactly one path is active per port.",
+      "zh": "10.3——最佳时钟选择与外部端口配置。决定每个端口角色有两种方式。经典方式是 BTCA，一种由 Announce 消息驱动的分布式选举。较新的方式（10.3.1.3）是外部端口配置：由外部控制器直接设定每个端口的期望状态。10.3 同时涵盖二者。这套机制是镜像式的：PortAnnounceReceive（10.3.11）、PortAnnounceInformation（10.3.12）和 PortStateSelection（10.3.13）运行 BTCA，而 PortAnnounceInformationExt（10.3.14）与 PortStateSettingExt（10.3.15）运行外部配置路径——每一对都由变量 externalPortConfigurationEnabled 门控，从而保证每个端口同时只有一条路径生效。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> Decide\n  Decide --> BTCA: extConfig=FALSE\n  Decide --> ExtCfg: extConfig=TRUE\n  BTCA --> PortStateSelection_10_3_13\n  ExtCfg --> PortStateSettingExt_10_3_15\n  PortStateSelection_10_3_13 --> Announce\n  PortStateSettingExt_10_3_15 --> Announce\n  Announce --> PortAnnounceTransmit_10_3_16",
+      "zh": "stateDiagram-v2\n  [*] --> 决策\n  决策 --> BTCA路径: 外部配置=FALSE\n  决策 --> 外部配置路径: 外部配置=TRUE\n  BTCA路径 --> PortStateSelection_10_3_13\n  外部配置路径 --> PortStateSettingExt_10_3_15\n  PortStateSelection_10_3_13 --> 发布Announce\n  PortStateSettingExt_10_3_15 --> 发布Announce\n  发布Announce --> PortAnnounceTransmit_10_3_16"
+    },
+    {
+      "type": "prose",
+      "en": "Two more 10.3 machines tune the heartbeat. AnnounceIntervalSetting (10.3.17) and SyncIntervalSetting (10.3.18) listen for Signaling messages that request a faster or slower Announce / Sync rate, clamp the request to a supported value, and — crucially — implement a 'slowdown' guard: when slowing down, a port keeps sending at the old fast rate for a few more messages (already advertising the new slower interval) so a peer that briefly loses packets does not trip a false timeout. Special request values matter: -128 means leave the interval unchanged, 126 resets to the initial value, and 127 tells the receiver to stop sending.",
+      "zh": "10.3 还有两个状态机用于调节“心跳”节奏。AnnounceIntervalSetting（10.3.17）与 SyncIntervalSetting（10.3.18）聆听请求加快或放慢 Announce / Sync 速率的 Signaling 消息，把请求钳制到受支持的取值，并且——关键在于——实现了“减速（slowdown）”保护：在放慢时，端口会以旧的较快速率再多发几条消息（但其中已通告新的较慢间隔），这样短暂丢包的对端就不会误触超时。特殊请求值也很重要：-128 表示间隔不变，126 表示重置为初始值，127 则指示接收方停止发送。"
+    },
+    {
+      "type": "prose",
+      "en": "10.4 — Signaling gPTP capability. Before two neighbors trust each other with time, each must confirm the other speaks gPTP. A new enable clause (10.4.a) says: if the managed object gptpCapableStateMachinesEnabled is FALSE, skip these machines and simply assume the neighbor is capable (set neighborGptpCapable = TRUE). When enabled, GptpCapableTransmit (10.4.1) periodically sends a Signaling message carrying a gPTP-capable TLV; GptpCapableReceive (10.4.2) sets neighborGptpCapable = TRUE on receipt and arms a receipt-timeout that flips it back to FALSE if the neighbor goes quiet; and GptpCapableIntervalSetting (10.4.3) negotiates how often that heartbeat is sent, with the same clamp-and-slowdown logic as the Announce/Sync interval machines.",
+      "zh": "10.4——gPTP 能力信令。在两个邻居把时间托付给彼此之前，各方都必须确认对方“会说” gPTP。新增的使能条款（10.4.a）规定：若受管对象 gptpCapableStateMachinesEnabled 为 FALSE，则跳过这些状态机，直接假定邻居具备能力（置 neighborGptpCapable = TRUE）。使能时，GptpCapableTransmit（10.4.1）周期性发送携带 gPTP-capable TLV 的 Signaling 消息；GptpCapableReceive（10.4.2）在收到时置 neighborGptpCapable = TRUE，并启动一个接收超时，一旦邻居静默便将其翻回 FALSE；GptpCapableIntervalSetting（10.4.3）协商该心跳的发送频率，采用与 Announce/Sync 间隔状态机相同的钳制与减速逻辑。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"4\" y=\"30\" width=\"120\" height=\"34\"/><text x=\"64\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">header (34 oct)</text><rect x=\"124\" y=\"30\" width=\"110\" height=\"34\"/><text x=\"179\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">targetPortIdentity</text><rect x=\"234\" y=\"30\" width=\"222\" height=\"34\"/><text x=\"345\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">one or more TLVs (16N)</text><text x=\"4\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Signaling message body (Table 10-13)</text></svg>",
+      "caption": {
+        "en": "Signaling message layout (10.6.4): a PTP header, the target port identity, then one or more TLVs — the interval-request TLV or the gPTP-capable TLV. Per 10.6.4.2.2 the two are not mixed in one message; send two messages instead.",
+        "zh": "Signaling 消息布局（10.6.4）：PTP 头部、目标端口标识，随后是一个或多个 TLV——可以是间隔请求 TLV 或 gPTP-capable TLV。按 10.6.4.2.2，这两者不在同一条消息中混用；需要时分两条消息发送。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "10.5 / 10.6 — Message attributes and formats. Addresses (10.5.3): over full-duplex IEEE 802.3, every Announce and Signaling message uses the egress physical port's own MAC address as source. Subtype (10.5.5): a message's subtype is read from the majorSdoId field of the common header. The header (10.6.2) carries the domainNumber (10.6.2.2.6), a flags octet-pair (10.6.2.2.8) whose Announce bits mirror the time-property globals like leap61, leap59, and ptpTimescale, and a messageTypeSpecific field (10.6.2.2.10) reserved for General-class messages. The Signaling message (10.6.4) is the carrier for those interval-request and capability TLVs.",
+      "zh": "10.5 / 10.6——消息属性与格式。地址（10.5.3）：在全双工 IEEE 802.3 上，每条 Announce 与 Signaling 消息都以出口物理端口自身的 MAC 地址作为源地址。子类型（10.5.5）：消息的子类型从公共头部的 majorSdoId 字段读取。头部（10.6.2）携带 domainNumber（10.6.2.2.6）、一对标志字节（10.6.2.2.8，其 Announce 相关位映射 leap61、leap59、ptpTimescale 等时间属性全局变量），以及一个为通用类消息保留的 messageTypeSpecific 字段（10.6.2.2.10）。Signaling 消息（10.6.4）正是承载上述间隔请求 TLV 与能力 TLV 的载体。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause taught in this lesson, by exact number",
+        "zh": "覆盖地图——本课所讲的每个子条款（按精确编号）"
+      },
+      "en": "10.2 Time synchronization: 10.2.1 overview of the cooperating state machines and which are optional for non-grandmaster-capable instances; 10.2.2 inter-machine structures (MDSyncSend/MDSyncReceive/PortSyncSync) where domainNumber tags the domain and upstreamTxTime is derived from ingress timestamp, meanLinkDelay, and neighbor rate ratio; 10.2.3 the global-variable scope summary table; 10.2.4 per-PTP-Instance globals (selectedState array; new drift-tracking variables such as syncGrandmasterIdentity, syncStepsRemoved, driftTrackingTlvSupport); 10.2.5 per-port globals (asymmetryMeasurementMode, neighborRateRatio, meanLinkDelay, delayAsymmetry, ptpPortEnabled); 10.2.8 PortSyncSyncReceive (adds a TEMP helper variable); 10.2.9 ClockTimeTransmitterSyncSend (domainNumber set per domain); 10.2.10 ClockTimeTransmitterSyncOffset (computes clockSourcePhaseOffset/FreqOffset when this instance is not grandmaster); 10.2.12 PortSyncSyncSend (setMDSync domainNumber); 10.2.13 ClockTimeReceiverSync (computes syncReceiptTime and clockTimeReceiverTime from a received PortSyncSync structure).\n\n10.3 Best-clock selection / external config / interval setting: 10.3.1 BTCA-vs-external overview, including how a port that loses asCapable falls out of TimeReceiverPort; 10.3.7 overview and interrelationships of the external-config machines; 10.3.8 scope summary of the 10.3 globals; 10.3.9 per-instance globals (reselect, selected, leap61/59, currentUtcOffset, gmPriority, externalPortConfigurationEnabled, pathTrace, lastAnnouncePort); 10.3.10 per-port globals (announceInterval, infoIs, timeTransmitterPriority, newInfo, the ann* saved Announce flags); 10.3.11 PortAnnounceReceive (qualifies Announce messages, BTCA only); 10.3.12 PortAnnounceInformation (BTCA path); 10.3.13 PortStateSelection (the updtStatesTree() role-assignment logic and gmPresent update); 10.3.14 PortAnnounceInformationExt (external path, sets newinfo=TRUE on receive); 10.3.15 PortStateSettingExt (per-port external state setting, updtPortState()); 10.3.16 PortAnnounceTransmit (emits Announce when the interval elapses); 10.3.17 AnnounceIntervalSetting (computeLogAnnounceInterval clamp + announceSlowdown); 10.3.18 SyncIntervalSetting (computeLogSyncInterval clamp + syncSlowdown).\n\n10.4 Capability signaling: 10.4.1 GptpCapableTransmit (periodic gPTP-capable TLV with slowdown); 10.4.2 GptpCapableReceive (sets neighborGptpCapable, arms receipt timeout); 10.4.3 GptpCapableIntervalSetting (negotiates the capable-message interval).\n\n10.5 / 10.6 Attributes and formats: 10.5.3 source-address rule for Announce/Signaling on 802.3; 10.5.5 subtype via majorSdoId; 10.6.2 header (domainNumber, flags Table 10-9, messageTypeSpecific Table 10-10); 10.6.4 Signaling message (Table 10-13 body; one TLV type per message per 10.6.4.2.2; logGptpCapableMessageInterval).",
+      "zh": "10.2 时间同步：10.2.1 协作状态机概述及哪些对非主时钟能力实例为可选；10.2.2 机间结构（MDSyncSend/MDSyncReceive/PortSyncSync），其中 domainNumber 标记域，upstreamTxTime 由入口时间戳、meanLinkDelay 与邻居速率比导出；10.2.3 全局变量作用域汇总表；10.2.4 每实例全局变量（selectedState 数组；新增的漂移跟踪变量如 syncGrandmasterIdentity、syncStepsRemoved、driftTrackingTlvSupport）；10.2.5 每端口全局变量（asymmetryMeasurementMode、neighborRateRatio、meanLinkDelay、delayAsymmetry、ptpPortEnabled）；10.2.8 PortSyncSyncReceive（新增 TEMP 辅助变量）；10.2.9 ClockTimeTransmitterSyncSend（按域设定 domainNumber）；10.2.10 ClockTimeTransmitterSyncOffset（本实例非主时钟时计算 clockSourcePhaseOffset/FreqOffset）；10.2.12 PortSyncSyncSend（setMDSync 的 domainNumber）；10.2.13 ClockTimeReceiverSync（由收到的 PortSyncSync 结构计算 syncReceiptTime 与 clockTimeReceiverTime）。\n\n10.3 最佳时钟选择／外部配置／间隔设定：10.3.1 BTCA 与外部配置概述，含端口失去 asCapable 时如何退出 TimeReceiverPort；10.3.7 外部配置状态机的概述与相互关系；10.3.8 这些全局变量的作用域汇总；10.3.9 每实例全局变量（reselect、selected、leap61/59、currentUtcOffset、gmPriority、externalPortConfigurationEnabled、pathTrace、lastAnnouncePort）；10.3.10 每端口全局变量（announceInterval、infoIs、timeTransmitterPriority、newInfo、保存的 ann* Announce 标志）；10.3.11 PortAnnounceReceive（甄别 Announce 消息，仅 BTCA）；10.3.12 PortAnnounceInformation（BTCA 路径）；10.3.13 PortStateSelection（updtStatesTree() 的角色分配逻辑与 gmPresent 更新）；10.3.14 PortAnnounceInformationExt（外部路径，接收时置 newinfo=TRUE）；10.3.15 PortStateSettingExt（逐端口外部状态设定，updtPortState()）；10.3.16 PortAnnounceTransmit（间隔到期时发出 Announce）；10.3.17 AnnounceIntervalSetting（computeLogAnnounceInterval 钳制 + announceSlowdown）；10.3.18 SyncIntervalSetting（computeLogSyncInterval 钳制 + syncSlowdown）。\n\n10.4 能力信令：10.4.1 GptpCapableTransmit（带减速的周期性 gPTP-capable TLV）；10.4.2 GptpCapableReceive（置 neighborGptpCapable，启动接收超时）；10.4.3 GptpCapableIntervalSetting（协商能力消息间隔）。\n\n10.5 / 10.6 属性与格式：10.5.3 802.3 上 Announce/Signaling 的源地址规则；10.5.5 经 majorSdoId 的子类型；10.6.2 头部（domainNumber、标志位表 10-9、messageTypeSpecific 表 10-10）；10.6.4 Signaling 消息（表 10-13 消息体；按 10.6.4.2.2 每条消息一种 TLV 类型；logGptpCapableMessageInterval）。",
+      "cite": {
+        "pdf_id": "8021ASdm-2024",
+        "pages": [
+          38,
+          42,
+          44,
+          46,
+          47,
+          49,
+          50,
+          51,
+          52,
+          57,
+          60,
+          62,
+          63,
+          66,
+          68,
+          70,
+          72,
+          74,
+          75,
+          77,
+          79,
+          80
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: the three rhythms of gPTP. Sync messages carry the time itself, Announce messages carry who-is-grandmaster and the spanning tree, and gPTP-capable messages carry are-you-still-there. Clause 10 part 1 gives each rhythm its own send/receive/interval-setting state machine trio — and the interval machines all share the same clamp-to-supported-value and slowdown-guard pattern.",
+      "zh": "心智模型：gPTP 的三种节律。Sync 消息携带时间本身，Announce 消息携带“谁是主时钟”及生成树，gPTP-capable 消息携带“你还在吗”。第 10 章上篇为每种节律配备了各自的“发送／接收／间隔设定”三件套状态机——而所有间隔状态机都共用同样的“钳制到受支持值”与“减速保护”模式。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        38,
+        39,
+        40,
+        41,
+        42,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50
+      ],
+      "note": "10.2 time-synchronization state machines: overview, inter-machine structures, global-variable tables, and the per-machine subclauses (10.2.1-10.2.13)."
+    },
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        50,
+        51,
+        52,
+        54,
+        57,
+        60,
+        62,
+        63,
+        66,
+        68,
+        70,
+        71
+      ],
+      "note": "10.3 best-clock selection, external port configuration, and interval-setting state machines (10.3.1-10.3.18)."
+    },
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        72,
+        73,
+        74,
+        75,
+        76
+      ],
+      "note": "10.4 gPTP-capability signaling state machines and the new enable/disable clause 10.4.a (10.4.1-10.4.3)."
+    },
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        77,
+        78,
+        79,
+        80
+      ],
+      "note": "10.5 message attributes (addresses, subtype) and 10.6 message formats (header flags, messageTypeSpecific, Signaling message body)."
+    }
+  ],
+  "covers": [
+    "8021ASdm-2024:10.2.1",
+    "8021ASdm-2024:10.2.2",
+    "8021ASdm-2024:10.2.3",
+    "8021ASdm-2024:10.2.4",
+    "8021ASdm-2024:10.2.5",
+    "8021ASdm-2024:10.2.8",
+    "8021ASdm-2024:10.2.9",
+    "8021ASdm-2024:10.2.10",
+    "8021ASdm-2024:10.2.12",
+    "8021ASdm-2024:10.2.13",
+    "8021ASdm-2024:10.3.1",
+    "8021ASdm-2024:10.3.7",
+    "8021ASdm-2024:10.3.8",
+    "8021ASdm-2024:10.3.9",
+    "8021ASdm-2024:10.3.10",
+    "8021ASdm-2024:10.3.11",
+    "8021ASdm-2024:10.3.12",
+    "8021ASdm-2024:10.3.13",
+    "8021ASdm-2024:10.3.14",
+    "8021ASdm-2024:10.3.15",
+    "8021ASdm-2024:10.3.16",
+    "8021ASdm-2024:10.3.17",
+    "8021ASdm-2024:10.3.18",
+    "8021ASdm-2024:10.4.1",
+    "8021ASdm-2024:10.4.2",
+    "8021ASdm-2024:10.4.3",
+    "8021ASdm-2024:10.5.3",
+    "8021ASdm-2024:10.5.5",
+    "8021ASdm-2024:10.6.2",
+    "8021ASdm-2024:10.6.4"
+  ],
+  "track": "tsn"
+}

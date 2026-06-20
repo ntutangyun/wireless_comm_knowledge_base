@@ -1,0 +1,104 @@
+{
+  "id": "tsn-30",
+  "title": {
+    "en": "gPTP Message Formats and Protocol Timing: The Inclusive-Terminology Edits",
+    "zh": "gPTP 报文格式与协议定时：包容性术语修订"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This lesson walks through the second half of Clause 10 of IEEE Std 802.1ASdr-2024 — the parts of the media-independent layer that describe how gPTP messages are laid out (Clause 10.6, Message formats) and how often they are sent and how long a receiver waits before giving up (Clause 10.7, Protocol timing characterization). gPTP (generalized Precision Time Protocol) is the profile of PTP (Precision Time Protocol, IEEE 1588) that IEEE 802.1AS uses to synchronize clocks across a bridged network. 802.1ASdr-2024 is the 'Inclusive Terminology' amendment: it does not invent new mechanisms, it renames existing ones so the standard uses neutral vocabulary.",
+      "zh": "本课讲解 IEEE Std 802.1ASdr-2024 第 10 章的后半部分——媒体无关层中描述 gPTP 报文如何排布（10.6 报文格式）以及报文发送频率与接收方放弃前等待多久（10.7 协议定时刻画）的内容。gPTP（通用精确时间协议）是 IEEE 802.1AS 用于在桥接网络中同步时钟的 PTP（精确时间协议，IEEE 1588）配置档。802.1ASdr-2024 是“包容性术语”修正案：它并未发明新机制，而是对既有机制重新命名，使标准采用中性词汇。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Three renames carry almost the whole amendment, and they appear on every page below: master → timeTransmitter (the clock that sends time), slave → timeReceiver (the clock that receives time), and BMCA → BTCA (Best Master Clock Algorithm → Best TimeTransmitter Clock Algorithm, the election that picks the network's reference clock). When you see the new word, the meaning is identical to the old one.",
+      "zh": "三处重命名几乎承载了整个修正案，且在下文每一页都出现：master → timeTransmitter（发送时间的时钟）、slave → timeReceiver（接收时间的时钟），以及 BMCA → BTCA（最佳主时钟算法 → 最佳时间发送时钟算法，即选出全网参考时钟的选举过程）。看到新词时，其含义与旧词完全相同。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with 10.6.1 (General). It establishes the skeleton every gPTP message shares: a header, a body, and an optional suffix holding one or more TLVs (Type-Length-Value records — a self-describing way to attach optional data). The Announce and Signaling messages are the two that use this header/body/suffix shape. The clause also fixes universal rules: reserved fields are sent as all-zero and ignored on receipt, and the data type of each field is the type named in brackets in that field's subclause title. It points to where the two key optional records live — the path trace TLV on the Announce message (10.6.3.2.8) and the message interval request TLV on the Signaling message (10.6.4.3).",
+      "zh": "先看 10.6.1（总则）。它确立了每个 gPTP 报文共享的骨架：一个头部、一个主体，以及一个可选后缀，后缀承载一个或多个 TLV（类型-长度-值记录——一种自描述地附加可选数据的方式）。Announce 与 Signaling 报文正是采用这种头部/主体/后缀结构的两类报文。该条款还规定了通用规则：保留字段以全零发送并在接收时忽略，每个字段的数据类型即其子条款标题方括号中标注的类型。它还指出两条关键可选记录的位置——Announce 报文上的 path trace TLV（10.6.3.2.8）与 Signaling 报文上的 message interval request TLV（10.6.4.3）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "TLV propagation rule worth remembering: if a TLV is attached to an Announce message and marked 'Propagate' by IEEE 1588 but the PTP Relay Instance does not support that optional feature, the relay must still forward the TLV unchanged from ingress to egress. And any non-forwarding TLV a node cannot parse is skipped, then the node tries the next TLV.",
+      "zh": "值得记住的 TLV 转发规则：若某 TLV 附在 Announce 报文上、被 IEEE 1588 标记为“Propagate”，但 PTP 中继实例不支持该可选特性，中继仍须将该 TLV 原样从入口转发至出口。而任何节点无法解析的非转发型 TLV 都会被跳过，节点随后尝试解析下一个 TLV。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"30\" width=\"110\" height=\"34\"/><rect x=\"120\" y=\"30\" width=\"150\" height=\"34\"/><rect x=\"270\" y=\"30\" width=\"180\" height=\"34\"/><text x=\"65\" y=\"51\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Header</text><text x=\"195\" y=\"51\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Body</text><text x=\"360\" y=\"47\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Suffix</text><text x=\"360\" y=\"60\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">TLV, TLV, ...</text><text x=\"65\" y=\"22\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">flags, stepsRemoved</text><text x=\"360\" y=\"22\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">optional</text></svg>",
+      "caption": {
+        "en": "The shared layout of an Announce or Signaling message: a header (10.6.2), a body (10.6.3 defines the Announce body), and an optional suffix of TLVs.",
+        "zh": "Announce 或 Signaling 报文的共享布局：头部（10.6.2）、主体（10.6.3 定义 Announce 主体），以及可选的 TLV 后缀。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.6.2 (Header) defines fields common to all messages. The amendment touches one cell of the flags field (10.6.2.2.8): the flag at Octet 0, Bit 0 is renamed to alternateMasterTimeTransmitterFlag (it is not used in this standard — sent FALSE, ignored on receipt). The same flags table also documents the Announce-only status bits the receiver reads — leap61, leap59, currentUtcOffsetValid, ptpTimescale, timeTraceable, and frequencyTraceable — each mirroring a global variable defined back in 10.3. The twoStepFlag (Octet 0, Bit 1) tells whether a Sync message will be followed by a Follow_Up (TRUE = two-step) or carries its timestamp inline (FALSE = one-step).",
+      "zh": "10.6.2（头部）定义了所有报文共有的字段。本修正案改动了 flags 字段（10.6.2.2.8）中的一个单元：Octet 0、Bit 0 的标志被重命名为 alternateMasterTimeTransmitterFlag（本标准未使用——以 FALSE 发送、接收时忽略）。同一张 flags 表还记录了接收方读取的、仅用于 Announce 的状态位——leap61、leap59、currentUtcOffsetValid、ptpTimescale、timeTraceable 与 frequencyTraceable——每一位都对应 10.3 中定义的一个全局变量。twoStepFlag（Octet 0、Bit 1）指示 Sync 报文之后是否跟随 Follow_Up（TRUE = 两步法），还是将时间戳内联携带（FALSE = 一步法）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.6.3 (Announce message) specifies the Announce body — the periodic broadcast that advertises a candidate reference clock's quality so the network can elect a Grandmaster. The amendment edits 10.6.3.2.6, the stepsRemoved field: its value is now the renamed variable masterStepsRemoved → mastertimeTransmitterStepsRemoved (see 10.3.9.3). stepsRemoved counts how many bridge hops the Announce-issuing instance is from the Grandmaster — the BTCA uses it as a tie-breaker so the topology converges to a single, loop-free synchronization tree.",
+      "zh": "10.6.3（Announce 报文）规定了 Announce 主体——这是周期性广播，宣告候选参考时钟的质量，以便全网选举出 Grandmaster（大主时钟）。修正案修改了 10.6.3.2.6 的 stepsRemoved 字段：其取值现为重命名后的变量 masterStepsRemoved → mastertimeTransmitterStepsRemoved（见 10.3.9.3）。stepsRemoved 记录发出 Announce 的实例距 Grandmaster 有多少个网桥跳数——BTCA 以此作为决胜依据，使拓扑收敛为单一、无环的同步树。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.7 (Protocol timing characterization) shifts from layout to rhythm. 10.7.2 (Message transmission intervals) governs how often messages go out; the amendment retitles and edits 10.7.2.4, which sets the interval at which the ClockMaster → ClockTimeTransmitter entity feeds synchronization information to the SiteSync entity. The renamed variable is clockMasterLogSyncInterval → clockTimeTransmitterLogSyncInterval, an internal per-instance value that is less than or equal to the smallest currentLogSyncInterval (10.7.2.3) across all the instance's ports — so the internal clock is always serviced at least as often as the fastest port.",
+      "zh": "10.7（协议定时刻画）从布局转向节奏。10.7.2（报文发送间隔）规定报文发送的频率；修正案重命名并修改了 10.7.2.4，它设定 ClockMaster → ClockTimeTransmitter 实体向 SiteSync 实体提供同步信息的间隔。重命名后的变量为 clockMasterLogSyncInterval → clockTimeTransmitterLogSyncInterval，这是一个内部的、每实例的取值，小于或等于该实例所有端口中最小的 currentLogSyncInterval（10.7.2.3）——因此内部时钟被服务的频率至少与最快的端口相当。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.7.3 (Timeouts) defines how patient a receiver is. syncReceiptTimeout (10.7.3.1) is the number of sync intervals a timeReceiver port waits without receiving synchronization information before it concludes its timeTransmitter has gone silent and the BTCA must rerun. announceReceiptTimeout (10.7.3.2) is the analogous count of announce intervals to wait without an Announce message. Both default to 3 and are per-PTP-Port attributes. Counting in intervals rather than fixed seconds means the timeout automatically scales with whatever sync/announce rate that port negotiated.",
+      "zh": "10.7.3（超时）定义接收方的耐心程度。syncReceiptTimeout（10.7.3.1）是 timeReceiver 端口在未收到同步信息时等待的 sync 间隔数，超过后即判定其 timeTransmitter 已沉默、必须重新运行 BTCA。announceReceiptTimeout（10.7.3.2）是类似的、在未收到 Announce 报文时等待的 announce 间隔数。两者默认值均为 3，且均为每 PTP 端口属性。以“间隔数”而非固定秒数计数，意味着超时会随该端口协商出的 sync/announce 速率自动伸缩。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> Locked\n  Locked --> Locked: Sync/Announce arrives, reset counter\n  Locked --> Timeout: miss 3 intervals\n  Timeout --> Locked: run BTCA, re-elect",
+      "zh": "stateDiagram-v2\n  [*] --> 已锁定\n  已锁定 --> 已锁定: 收到 Sync/Announce，计数器清零\n  已锁定 --> 超时: 连续错过 3 个间隔\n  超时 --> 已锁定: 运行 BTCA，重新选举"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: exact clause numbers for this lesson",
+        "zh": "覆盖地图：本课对应的精确条款编号"
+      },
+      "en": "10.6 Message formats. 10.6.1 (General) — the header/body/optional-TLV-suffix skeleton of Announce and Signaling messages, reserved-field rules, field-type convention, and TLV propagation/parsing rules. 10.6.2 (Header) — common-to-all-messages fields; the amendment edits the flags table (10.6.2.2.8) renaming the Octet0/Bit0 flag to alternateMasterTimeTransmitterFlag and listing the Announce status flags. 10.6.3 (Announce message) — the Announce body; the amendment edits stepsRemoved (10.6.3.2.6) to reference mastertimeTransmitterStepsRemoved (10.3.9.3). 10.7 Protocol timing characterization. 10.7.2 (Message transmission intervals) — the amendment retitles/edits 10.7.2.4, renaming clockMasterLogSyncInterval to clockTimeTransmitterLogSyncInterval, the internal interval at which the ClockTimeTransmitter feeds SiteSync, bounded by the smallest currentLogSyncInterval (10.7.2.3). 10.7.3 (Timeouts) — syncReceiptTimeout (10.7.3.1) and announceReceiptTimeout (10.7.3.2), both default 3, per-PTP-Port, counted in intervals, triggering a BTCA rerun. Across all of these the amendment's substance is the inclusive-terminology renames: master→timeTransmitter, slave→timeReceiver, BMCA→BTCA.",
+      "zh": "10.6 报文格式。10.6.1（总则）——Announce 与 Signaling 报文的头部/主体/可选 TLV 后缀骨架、保留字段规则、字段类型约定，以及 TLV 转发/解析规则。10.6.2（头部）——所有报文共有的字段；修正案修改 flags 表（10.6.2.2.8），将 Octet0/Bit0 标志重命名为 alternateMasterTimeTransmitterFlag 并列出 Announce 状态标志位。10.6.3（Announce 报文）——Announce 主体；修正案修改 stepsRemoved（10.6.3.2.6），使其引用 mastertimeTransmitterStepsRemoved（10.3.9.3）。10.7 协议定时刻画。10.7.2（报文发送间隔）——修正案重命名/修改 10.7.2.4，将 clockMasterLogSyncInterval 改为 clockTimeTransmitterLogSyncInterval，即 ClockTimeTransmitter 向 SiteSync 供给的内部间隔，受所有端口中最小 currentLogSyncInterval（10.7.2.3）约束。10.7.3（超时）——syncReceiptTimeout（10.7.3.1）与 announceReceiptTimeout（10.7.3.2），默认均为 3，均为每 PTP 端口属性，以间隔数计数，触发 BTCA 重新运行。贯穿所有这些内容，修正案的实质是包容性术语重命名：master→timeTransmitter、slave→timeReceiver、BMCA→BTCA。",
+      "cite": {
+        "pdf_id": "8021ASdr-2024",
+        "pages": [
+          83,
+          84,
+          85,
+          86
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021ASdr-2024",
+      "pages": [
+        83,
+        84,
+        85,
+        86
+      ],
+      "note": "10.6 Message formats (10.6.1 General, 10.6.2 Header/flags, 10.6.3 Announce message/stepsRemoved) and 10.7 Protocol timing characterization (10.7.2 transmission intervals, 10.7.3 timeouts)."
+    }
+  ],
+  "covers": [
+    "8021ASdr-2024:10.6.1",
+    "8021ASdr-2024:10.6.2",
+    "8021ASdr-2024:10.6.3",
+    "8021ASdr-2024:10.7.2",
+    "8021ASdr-2024:10.7.3"
+  ],
+  "track": "tsn"
+}

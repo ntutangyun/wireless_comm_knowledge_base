@@ -1,0 +1,97 @@
+{
+  "id": "tsn-23",
+  "title": {
+    "en": "Protocol Timing: Transmission Intervals and Timeouts",
+    "zh": "协议时序：发送间隔与超时"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In generalized Precision Time Protocol (gPTP), nodes do not synchronize once and forget about it. They keep exchanging messages forever: Announce messages (which advertise who the best clock is), time-synchronization (Sync) messages (which carry the actual time), and gPTP-capable Signaling messages (which prove a neighbor still speaks gPTP). Clause 10.7 'Protocol timing characterization' answers two practical questions about that ongoing chatter: how often should each message be sent (10.7.2), and how long should a listener wait before deciding the sender has gone silent (10.7.3)? This lesson walks through both, naming every exact clause number.",
+      "zh": "在通用精确时间协议（gPTP，generalized Precision Time Protocol）中，节点并不是同步一次就完事。它们会一直交换消息：Announce 消息（宣告谁是最优时钟）、时间同步（Sync）消息（携带实际时间），以及 gPTP-capable 信令（Signaling）消息（证明邻居仍在运行 gPTP）。第 10.7 节“协议时序特征”（Protocol timing characterization）回答了关于这种持续交互的两个实际问题：每种消息应该多久发送一次（10.7.2），以及监听方在判定发送方已经失声之前应该等待多久（10.7.3）？本课逐一讲解二者，并标注每个确切的子条款编号。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with 10.7.2 'Message transmission intervals'. The standard does not say messages must be sent at an exactly fixed period. Real software has jitter — interrupts, scheduling delays, busy CPUs. So instead it sets a statistical tolerance band. For Announce messages, 10.7.2.2 says the arithmetic mean of the gaps between transmissions must be within plus or minus 30% of 2 raised to the currentLogAnnounceInterval (a log-base-2 encoding of the period in seconds), AND at least 90% of the individual gaps must also fall within that plus or minus 30% band. Time-synchronization messages get the identical rule in 10.7.2.3, just using currentLogSyncInterval instead.",
+      "zh": "先看 10.7.2“消息发送间隔”（Message transmission intervals）。标准并没有要求消息必须以严格固定的周期发送。真实软件存在抖动——中断、调度延迟、CPU 繁忙。因此它设定的是一个统计容差带。对于 Announce 消息，10.7.2.2 规定：发送间隔的算术平均值必须落在 2 的 currentLogAnnounceInterval 次方（周期秒数的以 2 为底的对数编码）的正负 30% 之内，并且至少 90% 的单个间隔也必须落在该正负 30% 带内。时间同步消息在 10.7.2.3 中沿用完全相同的规则，只是把 currentLogSyncInterval 换进来。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why log-base-2? gPTP encodes intervals as a signed integer exponent. A logSyncInterval of -3 means 2^-3 = 0.125 s (8 messages per second); a value of 0 means 1 s. Storing the exponent keeps the field tiny while covering a huge range, from sub-millisecond to many seconds.",
+      "zh": "为什么用以 2 为底的对数？gPTP 把间隔编码为一个带符号整数指数。logSyncInterval 为 -3 表示 2^-3 = 0.125 秒（每秒 8 条消息）；为 0 表示 1 秒。存储指数让字段非常小，同时覆盖从亚毫秒到数秒的巨大范围。"
+    },
+    {
+      "type": "prose",
+      "en": "There is also an upper bound on any single gap. 10.7.2.2 says successive Announce messages should not be separated by more than twice 2^currentLogAnnounceInterval, specifically to avoid tripping the listener's announceReceiptTimeout. The Sync rule in 10.7.2.3 mirrors this: a gap should not exceed twice 2^currentLogSyncInterval, to avoid tripping syncReceiptTimeout. In short, the sender's pacing rules in 10.7.2 are deliberately designed so that a well-behaved sender never accidentally trips the receiver's timeouts defined in 10.7.3. The two halves of Clause 10.7 are two sides of the same contract.",
+      "zh": "对单个间隔也设有上限。10.7.2.2 规定相邻 Announce 消息之间不应超过 2^currentLogAnnounceInterval 的两倍，专门为了避免触发监听方的 announceReceiptTimeout。10.7.2.3 中的 Sync 规则与之对应：间隔不应超过 2^currentLogSyncInterval 的两倍，以避免触发 syncReceiptTimeout。简言之，10.7.2 中发送方的节奏规则是有意设计的，使得一个行为良好的发送方绝不会意外触发 10.7.3 中定义的接收方超时。第 10.7 节的这两半是同一份契约的两面。"
+    },
+    {
+      "type": "prose",
+      "en": "Now 10.7.3 'Timeouts' — the receiver's patience, counted in message intervals rather than raw seconds. There are three timeouts. syncReceiptTimeout (10.7.3.1) tells a timeReceiver port how many Sync intervals to wait without receiving synchronization information before assuming the timeTransmitter has gone silent and the Best timeTransmitter Clock Algorithm (BTCA, the routine that re-elects the grandmaster clock) may need to run. announceReceiptTimeout (10.7.3.2) is the same idea but counts missed Announce intervals. Both default to 3 and have a range of 2 through 255, and both are per-PTP-Port attributes — each port keeps its own counter.",
+      "zh": "再看 10.7.3“超时”（Timeouts）——接收方的耐心，以消息间隔（而非纯秒数）来计。共有三种超时。syncReceiptTimeout（10.7.3.1）告诉 timeReceiver 端口：在判定 timeTransmitter 已失声、并可能需要运行最优 timeTransmitter 时钟算法（BTCA，Best timeTransmitter Clock Algorithm，即重新选举主时钟的例程）之前，应等待多少个 Sync 间隔而仍未收到同步信息。announceReceiptTimeout（10.7.3.2）是同样的思路，但计的是错过的 Announce 间隔。二者默认值均为 3，取值范围为 2 至 255，且都是按 PTP 端口（per-PTP-Port）的属性——每个端口各自维护计数器。"
+    },
+    {
+      "type": "prose",
+      "en": "The third timeout, gPtpCapableReceiptTimeout (10.7.3.3), is different in purpose. It counts how many gPTP-capable message intervals a PTP Port waits without receiving a Signaling message containing a gPTP-capable TLV (Type-Length-Value field) from its neighbor, before deciding the neighbor is no longer running gPTP. A note in 10.7.3.3 spells out the consequence: that determination causes the port to set asCapable to FALSE — meaning gPTP traffic stops flowing across that link. Note its values differ from the other two: the default is 9, and the range is 12 through 255.",
+      "zh": "第三种超时 gPtpCapableReceiptTimeout（10.7.3.3）目的不同。它计的是：一个 PTP 端口在判定邻居不再运行 gPTP 之前，要等待多少个 gPTP-capable 消息间隔而仍未从邻居收到包含 gPTP-capable TLV（类型-长度-值字段，Type-Length-Value）的 Signaling 消息。10.7.3.3 中的一条注释说明了后果：这一判定会使该端口将 asCapable 置为 FALSE——意味着 gPTP 流量在该链路上停止流动。请注意其取值与前两者不同：默认值为 9，范围为 12 至 255。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A timeout measured in intervals, not seconds, is self-scaling. If a link slows its Sync rate from 8/s to 1/s, syncReceiptTimeout = 3 still means 'three missed Syncs,' so the wall-clock patience automatically stretches with the chosen rate. No reconfiguration needed.",
+      "zh": "以间隔（而非秒数）来计的超时是自适应缩放的。如果某链路把 Sync 速率从每秒 8 条降到每秒 1 条，syncReceiptTimeout = 3 仍意味着“连续错过三条 Sync”，因此实际墙钟耐心会随所选速率自动伸缩，无需重新配置。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 480 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><line x1=\"20\" y1=\"40\" x2=\"460\" y2=\"40\"/><polyline points=\"40,40 40,28\" /><polyline points=\"110,40 110,28\"/><polyline points=\"180,40 180,28\"/><polyline points=\"250,40 250,28\"/><text x=\"30\" y=\"20\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Sync</text><text x=\"100\" y=\"20\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Sync</text><text x=\"170\" y=\"20\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Sync</text><text x=\"243\" y=\"20\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">(none)</text><text x=\"243\" y=\"60\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">x</text><text x=\"313\" y=\"60\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">x</text><text x=\"383\" y=\"60\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">x</text><line x1=\"250\" y1=\"40\" x2=\"250\" y2=\"100\" stroke-dasharray=\"4 4\"/><line x1=\"460\" y1=\"40\" x2=\"460\" y2=\"100\" stroke-dasharray=\"4 4\"/><line x1=\"250\" y1=\"100\" x2=\"460\" y2=\"100\"/><text x=\"255\" y=\"120\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">3 missed intervals = syncReceiptTimeout</text><text x=\"255\" y=\"138\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">then BTCA may run</text></svg>",
+      "caption": {
+        "en": "syncReceiptTimeout counts missed Sync intervals (default 3). After that many silent intervals the timeReceiver assumes the source is gone and the BTCA may re-elect a clock.",
+        "zh": "syncReceiptTimeout 计的是错过的 Sync 间隔数（默认 3）。在连续这么多个静默间隔之后，timeReceiver 认为时间源已消失，BTCA 可能会重新选举时钟。"
+      }
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Interval elapses, no message] --> B{Which message type?}\n  B -->|Sync missed| C[syncReceiptTimeout counter ++]\n  B -->|Announce missed| D[announceReceiptTimeout counter ++]\n  B -->|gPTP-capable TLV missed| E[gPtpCapableReceiptTimeout counter ++]\n  C -->|reaches default 3| F[Assume source silent, BTCA may run]\n  D -->|reaches default 3| F\n  E -->|reaches default 9| G[Set asCapable = FALSE]",
+      "zh": "flowchart TD\n  A[间隔到期且无消息] --> B{哪种消息类型?}\n  B -->|错过 Sync| C[syncReceiptTimeout 计数 ++]\n  B -->|错过 Announce| D[announceReceiptTimeout 计数 ++]\n  B -->|错过 gPTP-capable TLV| E[gPtpCapableReceiptTimeout 计数 ++]\n  C -->|达到默认值 3| F[判定源失声, BTCA 可运行]\n  D -->|达到默认值 3| F\n  E -->|达到默认值 9| G[置 asCapable = FALSE]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: exact clause numbers in 10.7.2 and 10.7.3",
+        "zh": "覆盖地图：10.7.2 与 10.7.3 中的确切子条款编号"
+      },
+      "en": "10.7 Protocol timing characterization has two taught branches. 10.7.2 Message transmission intervals — 10.7.2.2 Announce message transmission interval sets the plus/minus 30% mean rule, the 90%-of-gaps rule, and the 'no more than twice 2^currentLogAnnounceInterval' cap (and notes the PortAnnounceTransmit state machine of 10.3.16 is consistent with it); 10.7.2.3 Time-synchronization event message transmission interval applies the identical statistics to Sync messages when syncLocked is FALSE, using currentLogSyncInterval, capped at twice that value, and notes consistency with the PortSyncSyncSend state machine. 10.7.3 Timeouts — 10.7.3.1 syncReceiptTimeout (default 3, range 2-255, per-PTP-Port); 10.7.3.2 announceReceiptTimeout (default 3, range 2-255, per-PTP-Port); 10.7.3.3 gPtpCapableReceiptTimeout (default 9, range 12-255; reaching it sets asCapable to FALSE). All values here are as amended by IEEE Std 802.1ASdm-2024.",
+      "zh": "10.7 协议时序特征有两条被讲解的分支。10.7.2 消息发送间隔——10.7.2.2 Announce 消息发送间隔规定了均值正负 30% 规则、90% 间隔规则，以及“不超过 2^currentLogAnnounceInterval 两倍”的上限（并指出 10.3.16 的 PortAnnounceTransmit 状态机与之一致）；10.7.2.3 时间同步事件消息发送间隔在 syncLocked 为 FALSE 时对 Sync 消息应用相同统计，使用 currentLogSyncInterval，上限为其两倍，并指出与 PortSyncSyncSend 状态机一致。10.7.3 超时——10.7.3.1 syncReceiptTimeout（默认 3，范围 2-255，按 PTP 端口）；10.7.3.2 announceReceiptTimeout（默认 3，范围 2-255，按 PTP 端口）；10.7.3.3 gPtpCapableReceiptTimeout（默认 9，范围 12-255；达到后将 asCapable 置为 FALSE）。此处所有数值均为 IEEE Std 802.1ASdm-2024 修订后的版本。",
+      "cite": {
+        "pdf_id": "8021ASdm-2024",
+        "pages": [
+          80,
+          81
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The takeaway: Clause 10.7 is a tightly matched pair. The transmission-interval rules (10.7.2) keep senders pacing within a statistical band and below a hard per-gap cap; the timeout rules (10.7.3) give receivers a patience budget, counted in intervals, that is guaranteed never to fire under normal sending. When messages truly stop, the timeouts fire deterministically — Sync and Announce timeouts trigger a possible BTCA re-election, and the gPTP-capable timeout tears down gPTP on that link by clearing asCapable.",
+      "zh": "要点：第 10.7 节是一对严丝合缝的搭档。发送间隔规则（10.7.2）让发送方把节奏保持在统计带内、并低于每间隔的硬上限；超时规则（10.7.3）给接收方一份以间隔计的耐心预算，保证在正常发送下绝不触发。当消息真的停止时，超时会确定性地触发——Sync 与 Announce 超时触发可能的 BTCA 重选，而 gPTP-capable 超时通过清除 asCapable 拆除该链路上的 gPTP。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        80,
+        81
+      ],
+      "note": "10.7.2 message transmission intervals (Announce 10.7.2.2, Sync 10.7.2.3) and 10.7.3 timeouts (syncReceiptTimeout 10.7.3.1, announceReceiptTimeout 10.7.3.2, gPtpCapableReceiptTimeout 10.7.3.3)."
+    }
+  ],
+  "covers": [
+    "8021ASdm-2024:10.7.2",
+    "8021ASdm-2024:10.7.3"
+  ],
+  "track": "tsn"
+}

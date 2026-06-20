@@ -1,0 +1,164 @@
+{
+  "id": "bridging-tsn-80",
+  "title": {
+    "en": "From Power-Up to Association: Setup, Discovery, and Connection (Clause 6, part 1)",
+    "zh": "从上电到关联：网络搭建、发现与连接（第 6 章，第 1 部分）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1CF-2019 (nicknamed \"Omnirange\") is a recommended practice that describes any IEEE 802 access network — Ethernet, Wi-Fi, and others — using one shared vocabulary. Clause 6 is where the abstract architecture from Clause 5 becomes step-by-step behavior. It walks the full life of a session: the access network powers up and configures itself, a terminal scans for and picks the best place to connect, the two sides associate, trust is established, a datapath is built, data flows, and finally everything is torn down. This lesson (6.1) covers the first three acts: setup, discovery & selection, and association/disassociation.",
+      "zh": "IEEE Std 802.1CF-2019（别名 \"Omnirange\"）是一份推荐性规范，它用一套统一的词汇来描述任何 IEEE 802 接入网络——以太网、Wi-Fi 等等。第 6 章把第 5 章里抽象的架构变成一步步的具体行为，完整走过一次会话的生命周期：接入网上电并自我配置，终端扫描并挑选最佳连接点，双方完成关联，建立信任，搭建数据通路，数据流动，最后全部拆除。本课（6.1）涵盖前三幕：网络搭建、发现与选择、关联与解关联。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Key actors, defined once: TE (Terminal) — your device. NA (Node of Attachment) — the radio/port edge you connect through (a Wi-Fi access point, an Ethernet switch port). AN (Access Network) — all the NAs plus their backhaul (BH) and control. ANC (Access Network Control) — the brain that configures the AN. NMS (Network Management System) — the operator's master config store. CIS (Coordination and Information Service) — shared cross-network parameters. SS (Subscription Service) — your service-provider relationship. AR (Access Router) — the gateway to higher-layer (IP) connectivity. R1 — the reference point (interface) between TE and NA.",
+      "zh": "关键角色，先定义一次：TE（终端 Terminal）——你的设备。NA（接入节点 Node of Attachment）——你接入的无线/端口边缘（Wi-Fi 接入点、以太网交换机端口）。AN（接入网 Access Network）——所有 NA 加上其回传（BH）与控制。ANC（接入网控制 Access Network Control）——配置 AN 的大脑。NMS（网络管理系统 Network Management System）——运营商的主配置库。CIS（协调与信息服务 Coordination and Information Service）——跨网络共享的参数。SS（订阅服务 Subscription Service）——你与服务提供商的关系。AR（接入路由器 Access Router）——通往高层（IP）连通性的网关。R1——TE 与 NA 之间的参考点（接口）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Setup\\n6.2] --> B[Discovery & Selection NDS\\n6.3]\n  B --> C[Association\\n6.4]\n  C --> D[Auth, Datapath,\\nData... 6.5+]\n  D --> E[Disassociation\\n6.4]",
+      "zh": "flowchart LR\n  A[网络搭建\\n6.2] --> B[发现与选择 NDS\\n6.3]\n  B --> C[关联\\n6.4]\n  C --> D[认证、数据通路、\\n数据... 6.5+]\n  D --> E[解关联\\n6.4]"
+    },
+    {
+      "type": "prose",
+      "en": "Access network setup (6.2) happens before any user can connect. 6.2.1 frames the goal: a freshly powered AN starts from default values and must adjust base parameters, link its elements together, and connect to the associated SSs, ARs, NMS, and CIS — including tuning radios to legal channels. 6.2.2 assigns the roles: the TE plays no part here; the AN, NA, and BH must all be configured; the ANC does the configuring (acting as agent for the NMS); the NMS holds the permanent config repository; and the CIS supplies parameters shared across networks. 6.2.3 lists three use cases — initialization (fresh power-up), reconfiguration/reinitialization (a big config change while already running), and radio channel adjustments (retuning a single NA mid-operation without a full restart, optionally warning terminals first so they can follow).",
+      "zh": "接入网搭建（6.2）发生在任何用户连接之前。6.2.1 点明目标：刚上电的 AN 从默认值出发，必须调整基础参数、把各网元互联起来，并连接到关联的 SS、AR、NMS 和 CIS——包括把无线电调到合法信道。6.2.2 分配角色：TE 在此无戏份；AN、NA、BH 都需被配置；ANC 负责配置（充当 NMS 的代理）；NMS 保存永久配置库；CIS 提供跨网络共享的参数。6.2.3 列出三种用例——初始化（全新上电）、重配置/重初始化（运行中进行大的配置变更）、无线信道调整（运行中重调单个 NA 而无需完全重启，可选地先通知终端以便跟随）。"
+    },
+    {
+      "type": "prose",
+      "en": "6.2.4 spells out the functional requirements: configuration (ANC fetches config from the NMS, then configures the elements), interconnection (linking to SSs and ARs), channel selection (each NA tunes to a preferably non-overlapping channel and reports neighbors), channel reselection (retuning later, which briefly drops clients), operation on various channels, and multi-mode support (a radio adapting its mode to the environment). The exact channel-picking algorithm is deliberately out of scope. 6.2.5 defines the setup attributes — identifiers and status flags such as NMS-ID, OperationStatus for the ANC/BH/NA, and ANCConfig/NAConfig/BHConfig configuration records. 6.2.6 explains one basic function in plain terms: the boot-up process of network elements — from holding circuits at a defined state, to releasing clocks, fetching boot ROM code, bringing up the OS and I/O, and finally starting the networking processes.",
+      "zh": "6.2.4 详述功能需求：配置（ANC 从 NMS 取配置，再配置各网元）、互联（连接到 SS 与 AR）、信道选择（每个 NA 优选不重叠信道并上报邻居）、信道重选（之后重调，会短暂中断客户端）、多信道操作，以及多模支持（无线电按环境自适应模式）。具体的选信道算法被有意排除在范围之外。6.2.5 定义搭建属性——标识符与状态标志，如 NMS-ID、ANC/BH/NA 的 OperationStatus，以及 ANCConfig/NAConfig/BHConfig 配置记录。6.2.6 用通俗语言讲一项基础功能：网元的启动过程——从把电路保持在确定状态、释放时钟、从启动 ROM 取代码、拉起操作系统与 I/O，到最后启动网络进程。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant ANC\n  participant NMS\n  participant NA\n  ANC->>NMS: ANCinit Request\n  NMS-->>ANC: ANCinit Response\n  NA->>ANC: Join Request\n  ANC->>NMS: Update Request\n  NMS-->>ANC: Update Response\n  ANC-->>NA: Join Response (config)",
+      "zh": "sequenceDiagram\n  participant ANC\n  participant NMS\n  participant NA\n  ANC->>NMS: ANCinit 请求\n  NMS-->>ANC: ANCinit 响应\n  NA->>ANC: Join 请求\n  ANC->>NMS: Update 请求\n  NMS-->>ANC: Update 响应\n  ANC-->>NA: Join 响应（配置）"
+    },
+    {
+      "type": "prose",
+      "en": "6.2.7 gives the detailed procedures. In setup: the ANC boots, sends an ANCinit Request to its NMS, and gets an ANCinit Response with its config; then powering-up NAs send Join Requests, the ANC registers each NA with the NMS (Update Request/Response), and finally hands the NA its full config via a Join Response so it goes operational. Release works either way around: the ANC can self-initiate teardown (telling the NMS via Release Request) for abnormal conditions, or the operator initiates it through the NMS for maintenance; either way the ANC sends ShutDown Requests to each NA, terminals are disassociated over R1, and the ANC sends a ShutOff to the NMS — optionally staying in a hibernated state for fast re-invocation. 6.2.8 maps this to IEEE 802: power-up/initialization is only specified by those technologies where physical interfaces or special start-up states require it.",
+      "zh": "6.2.7 给出详细流程。搭建时：ANC 启动，向其 NMS 发送 ANCinit 请求，收到带配置的 ANCinit 响应；随后上电的各 NA 发送 Join 请求，ANC 通过 Update 请求/响应向 NMS 注册每个 NA，最后用 Join 响应把完整配置交给 NA，使其进入运行状态。释放可由两端发起：异常情况下 ANC 可自行发起拆除（通过 Release 请求告知 NMS），或运营商为维护而经 NMS 发起；无论哪种，ANC 都向每个 NA 发送 ShutDown 请求，终端在 R1 上被解关联，ANC 再向 NMS 发送 ShutOff——并可选地停留在休眠态以便快速重新唤起。6.2.8 把这映射到 IEEE 802：仅在物理接口或特殊启动状态需要时，相应技术才规定上电/初始化。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the network is live — so the terminal's job begins with Network Discovery and Selection, NDS (6.3). 6.3.1 introduces it: the TE detects available access networks, gathers information about each NA in range, then evaluates everything (plus locally stored policy) to pick the single most appropriate NA. NDS is mostly a wireless concern; for wired IEEE 802.3 there is only one NA so little applies. 6.3.2 sets the roles: the TE searches the radio environment and decodes announcements (using a subscription identified by an NAI — Network Access Identifier, per IETF RFC 7542); the NA broadcasts detectability info; the AN advertises its services and capabilities. 6.3.3 covers four use cases: finding the most appropriate AN from scratch, reconnecting (an abbreviated scan to the last-used NA), handover within an AN (seamless, keeping upper-layer state), and handover to another AN (usually more disruptive).",
+      "zh": "现在网络已上线——于是终端的工作从网络发现与选择（NDS，6.3）开始。6.3.1 引入它：TE 检测可用的接入网，收集范围内每个 NA 的信息，再综合评估一切（加上本地存储的策略）以挑选唯一最合适的 NA。NDS 主要面向无线；对有线的 IEEE 802.3，只有一个 NA，故几乎不适用。6.3.2 确定角色：TE 搜索无线环境并解码广播信息（使用以 NAI——网络接入标识符 Network Access Identifier，依 IETF RFC 7542——标识的订阅）；NA 广播可被发现的信息；AN 通告其服务与能力。6.3.3 涵盖四种用例：从零找到最合适的 AN、重连（向上次使用的 NA 做简化扫描）、AN 内切换（无缝，保留高层状态）、切换到另一个 AN（通常更具中断性）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[NA Discovery\\npassive/active scan] --> B[AN Detection]\n  B --> C[SS Detection]\n  C --> D[AR Detection]\n  D --> E[SS & AR Selection\\npick best NA]",
+      "zh": "flowchart TD\n  A[NA 发现\\n被动/主动扫描] --> B[AN 检测]\n  B --> C[SS 检测]\n  C --> D[AR 检测]\n  D --> E[SS 与 AR 选择\\n选出最佳 NA]"
+    },
+    {
+      "type": "prose",
+      "en": "6.3.4 lists NDS requirements: handle multiple access technologies, multiple ANs serving the same or different SSs, multiple subscriptions on one technology, extensibility for service-specific attributes, and discovery of AN capabilities without prior knowledge. 6.3.5 defines the attributes: the selection result is a tuple (ServiceProvider-ID, IPProvider-ID, NA-ID, AN-ID, SUS-ID, AR-ID); a subscription carries Subscription-ID (NAI), provider IDs, and weighted AccessPolicy lists; the TE advertises TECapabilities; and each NA carries AN-ID, ANInfo, ANCapabilities (cost, roaming partners, link-layer MTU/encryption, performance), and a BeaconPeriod timer. 6.3.6 names the five basic functions in order: NA Discovery (passive scanning — quietly listening channel by channel — or active scanning — probing for faster but radio-emitting responses), AN Detection, SS Detection, AR Detection, and the final SS and AR Selection (a weighted, policy-driven choice).",
+      "zh": "6.3.4 列出 NDS 需求：支持多种接入技术、支持服务于相同或不同 SS 的多个 AN、支持同一技术上的多个订阅、可扩展以承载服务专属属性，以及无需先验知识即可发现 AN 能力。6.3.5 定义属性：选择结果是一个元组（ServiceProvider-ID、IPProvider-ID、NA-ID、AN-ID、SUS-ID、AR-ID）；订阅携带 Subscription-ID（NAI）、各提供商 ID 以及带权的 AccessPolicy 列表；TE 通告 TECapabilities；每个 NA 携带 AN-ID、ANInfo、ANCapabilities（成本、漫游伙伴、链路层 MTU/加密、性能）以及一个 BeaconPeriod 定时器。6.3.6 按顺序点名五项基础功能：NA 发现（被动扫描——逐信道静静监听——或主动扫描——发探测帧以更快但会发射无线电地获得响应）、AN 检测、SS 检测、AR 检测，以及最终的 SS 与 AR 选择（带权、由策略驱动的抉择）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause taught here (6.2, 6.3 detailed procedures & mappings, 6.4 association)",
+        "zh": "覆盖地图——本课所讲的每个条款（6.2、6.3 详细流程与映射、6.4 关联）"
+      },
+      "en": "6.3.7 (NDS detailed procedures): 6.3.7.1 first-time use without a subscription (discover, then run online subscription setup, e.g. Wi-Fi Passpoint); 6.3.7.2 initial AN access (subscribed TE does full discover→select→network-entry); 6.3.7.3 NA transition (weak link → discover another NA of the SAME AN, optionally pre-establishing for fast handover); 6.3.7.4 access network reentry (lost link → reconnect to an NA of the previous AN); 6.3.7.5 access network transition (move to an NA of ANOTHER AN still serving the same SS/AR). All revert to initial AN access on failure. 6.3.8 (mapping to IEEE 802): 6.3.8.1 intro — R1 carries broadcast announcements and query/response; 6.3.8.2 IEEE 802.3 uses IEEE 802.1X EAP-Announcement; 6.3.8.3 IEEE 802.11 uses MLME-SCAN with Beacon/Probe Request/Probe Response, plus ANQP, Pre-Association Discovery, network-triggered NDS, and online sign-up. 6.4 (Association & disassociation): 6.4.1 intro — association registers your MAC address with the peer and negotiates MAC/PHY parameters, opening the port; disassociation orderly-releases it. 6.4.2 roles — TE (with TEI terminal interface + TEC terminal control), NA (the peer), ANC (sets constraints, can deny, can move session context for reassociation). 6.4.3 use cases — connection setup at network entry, relocation within the same AN, and teardown (which may also happen silently on link loss). 6.4.4 functional requirements — capability discovery, extensible parameter sets, orderly negotiation, MAC addressing (incl. changing MAC per session), reason codes, fast relocation, vendor extensions. 6.4.5 attributes — Link-ID/LinkConfig for the access link; TE Supported* capability lists and ResultCodes; NA Allowed*/Preferred* profiles. 6.4.6 basic functions — Association (ASSOCIATE_request/response), Reassociation (REASSOCIATE to a target NA that fetches session context from the serving NA), Disassociation (single DISASSOCIATE message, instant teardown). 6.4.7 detailed procedures — 6.4.7.1 successful setup with negotiation; 6.4.7.2 orderly teardown by TE; 6.4.7.3 termination enforced by NA; 6.4.7.4 fast-transition session relocation via reassociation. 6.4.8 mapping — Table 4: IEEE 802.3 calls it Auto-negotiation, IEEE 802.11 Association, IEEE 802.16/802.22 Registration (802.11 does an open-system authentication first for legacy compatibility).",
+      "zh": "6.3.7（NDS 详细流程）：6.3.7.1 无订阅的首次使用（先发现，再做在线订阅设置，如 Wi-Fi Passpoint）；6.3.7.2 初始 AN 接入（已订阅的 TE 完整走 发现→选择→入网）；6.3.7.3 NA 切换（链路变弱→在同一 AN 内发现另一 NA，可选地预建立以实现快速切换）；6.3.7.4 接入网重入（链路丢失→重连到先前 AN 的某个 NA）；6.3.7.5 接入网迁移（迁到仍服务同一 SS/AR 的另一 AN 的 NA）。失败时均回退到初始 AN 接入。6.3.8（映射到 IEEE 802）：6.3.8.1 引言——R1 承载广播通告与查询/响应；6.3.8.2 IEEE 802.3 使用 IEEE 802.1X 的 EAP-Announcement；6.3.8.3 IEEE 802.11 使用带 Beacon/Probe Request/Probe Response 的 MLME-SCAN，外加 ANQP、预关联发现、网络触发的 NDS 与在线注册。6.4（关联与解关联）：6.4.1 引言——关联把你的 MAC 地址注册到对端并协商 MAC/PHY 参数、打开端口；解关联有序释放它。6.4.2 角色——TE（含 TEI 终端接口 + TEC 终端控制）、NA（对端）、ANC（设约束、可拒绝、可为重关联搬移会话上下文）。6.4.3 用例——入网时的连接建立、同一 AN 内的重定位、拆除（链路丢失时也可能静默发生）。6.4.4 功能需求——能力发现、可扩展参数集、有序协商、MAC 寻址（含每会话更换 MAC）、原因码、快速重定位、厂商扩展。6.4.5 属性——接入链路的 Link-ID/LinkConfig；TE 的 Supported* 能力列表与 ResultCodes；NA 的 Allowed*/Preferred* 配置档。6.4.6 基础功能——关联（ASSOCIATE_request/response）、重关联（向目标 NA 发 REASSOCIATE，由其从服务 NA 取会话上下文）、解关联（单条 DISASSOCIATE 消息，即时拆除）。6.4.7 详细流程——6.4.7.1 带协商的成功建立；6.4.7.2 由 TE 发起的有序拆除；6.4.7.3 由 NA 强制的终止；6.4.7.4 经重关联的快速迁移会话重定位。6.4.8 映射——表 4：IEEE 802.3 称之为自动协商，IEEE 802.11 称关联，IEEE 802.16/802.22 称注册（802.11 为兼容旧系统会先做开放系统认证）。",
+      "cite": {
+        "pdf_id": "8021CF-2019",
+        "pages": [
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Once NDS has chosen an NA, association (6.4) builds the actual link. 6.4.1 explains it intuitively: association is a MAC-sublayer registration — the TE registers its MAC address with the peer NA, opening the port for MAC service data units (MSDUs), and at the same time negotiates the MAC/PHY parameters (capabilities are exchanged, then final values agreed). The NA creates a fresh MAC instance per associated terminal, and authentication typically follows. Disassociation is the orderly reverse: tear down the MAC connection, clear dynamic ports, free resources. A single DISASSOCIATE message does it (6.4.6.3), and the sender assumes teardown the moment it transmits — though sessions can also just vanish when the radio link fails. Reassociation (6.4.6.2) is the fast-handover special case: the target NA pulls the session context from the serving NA so the move skips lengthy renegotiation. That entire association story closes Clause 6's first act, leading naturally into authentication and datapath establishment in the next lessons.",
+      "zh": "一旦 NDS 选定了 NA，关联（6.4）便建立真正的链路。6.4.1 直观地解释：关联是 MAC 子层的注册——TE 把自己的 MAC 地址注册到对端 NA，打开端口以传输 MAC 服务数据单元（MSDU），同时协商 MAC/PHY 参数（先交换能力，再商定最终值）。NA 为每个已关联终端创建一个全新的 MAC 实例，认证通常随后进行。解关联是有序的逆过程：拆除 MAC 连接、清除动态端口、释放资源。一条 DISASSOCIATE 消息即可完成（6.4.6.3），发送方在发出的那一刻即认定连接已拆除——不过会话也可能在无线链路失效时直接消失。重关联（6.4.6.2）是快速切换的特例：目标 NA 从服务 NA 拉取会话上下文，使迁移跳过漫长的重新协商。这段完整的关联故事为第 6 章的第一幕收尾，自然引出后续课程中的认证与数据通路建立。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021CF-2019",
+      "pages": [
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61
+      ],
+      "note": "6.1 Introduction and session life cycle; 6.2 Access network setup (roles, use cases, requirements, attributes, boot-up, setup/release procedures, mapping)."
+    },
+    {
+      "pdf_id": "8021CF-2019",
+      "pages": [
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70
+      ],
+      "note": "6.3 Access network discovery and selection (NDS): intro, roles, use cases, requirements, attributes, basic functions, detailed procedures, IEEE 802 mappings."
+    },
+    {
+      "pdf_id": "8021CF-2019",
+      "pages": [
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76
+      ],
+      "note": "6.4 Association and disassociation: intro, roles, use cases, requirements, attributes, basic functions, detailed procedures, Table 4 IEEE 802 mapping."
+    }
+  ],
+  "covers": [
+    "8021CF-2019:6.1",
+    "8021CF-2019:6.2.1",
+    "8021CF-2019:6.2.2",
+    "8021CF-2019:6.2.3",
+    "8021CF-2019:6.2.4",
+    "8021CF-2019:6.2.5",
+    "8021CF-2019:6.2.6",
+    "8021CF-2019:6.2.7",
+    "8021CF-2019:6.2.8",
+    "8021CF-2019:6.3.1",
+    "8021CF-2019:6.3.2",
+    "8021CF-2019:6.3.3",
+    "8021CF-2019:6.3.4",
+    "8021CF-2019:6.3.5",
+    "8021CF-2019:6.3.6",
+    "8021CF-2019:6.3.7",
+    "8021CF-2019:6.3.8",
+    "8021CF-2019:6.4.1",
+    "8021CF-2019:6.4.2",
+    "8021CF-2019:6.4.3",
+    "8021CF-2019:6.4.4",
+    "8021CF-2019:6.4.5",
+    "8021CF-2019:6.4.6",
+    "8021CF-2019:6.4.7",
+    "8021CF-2019:6.4.8"
+  ],
+  "track": "bridging-tsn"
+}

@@ -1,0 +1,154 @@
+{
+  "id": "tsn-33",
+  "title": {
+    "en": "Managing gPTP: The MIB, the CSN Media Layer, and the Conformance & Profile Annexes",
+    "zh": "管理 gPTP：MIB、CSN 介质层，以及一致性与配置文件附录"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1ASdr-2024 is the \"Inclusive Terminology\" amendment to gPTP (generalized Precision Time Protocol — the profile of IEEE 1588 that distributes a single synchronized clock across a bridged network for time-sensitive applications). It does not invent new mechanisms; instead it touches the existing clauses to update wording — most notably replacing \"master/slave\" with \"timeTransmitter/timeReceiver\", and \"BMCA\" (Best Master Clock Algorithm) with \"BTCA\" (Best TimeTransmitter Clock Algorithm). This lesson walks the parts that the amendment edits in Clauses 15 and 16, plus three annexes. Think of it as the standard's \"operations manual\": how to manage a gPTP device (Clause 15), how time crosses a coordinated shared network (Clause 16), and how an implementer proves conformance (Annexes A, F, G).",
+      "zh": "IEEE Std 802.1ASdr-2024 是 gPTP（generalized Precision Time Protocol，广义精确时间协议——IEEE 1588 的一个配置文件，用于在桥接网络中为时间敏感应用分发统一的同步时钟）的「包容性术语」修正案。它没有发明新机制，而是修订现有条款的措辞——最显著的是把「master/slave」改为「timeTransmitter/timeReceiver」，把「BMCA」（Best Master Clock Algorithm，最佳主时钟算法）改为「BTCA」（Best TimeTransmitter Clock Algorithm，最佳时间发送时钟算法）。本课讲解该修正案在第 15、16 章中修订的部分，以及三个附录。可以把它看作标准的「操作手册」：如何管理一个 gPTP 设备（第 15 章）、时间如何穿越协调共享网络（第 16 章），以及实现者如何证明一致性（附录 A、F、G）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 15 defines the Management Information Base (MIB) — the structured set of named, addressable objects that a network manager reads and writes over SNMP (Simple Network Management Protocol). 15.2 lays out the MIB's structure: it is organized into subtrees that mirror gPTP's data sets, including the Default Data Set (defaultDS, a PTP Instance's native capabilities), Current Data Set (currentDS, its position relative to the Grandmaster — the elected root clock), Parent and TimeProperties data sets, the Port Data Set (portDS), per-port statistics, and the Common Mean Link Delay Service data sets (cmldsDefaultDS, cmldsLinkPortDS). Table 15-1 cross-references every MIB object to its defining subclause in Clause 14. In this amendment, the object name prefix changes from \"...AsV2...\" to \"...AsV2V3...\" and individual object names lose the old master/slave wording (for example MasterTimeTransmitter, SlavePortTimeReceiverPort).",
+      "zh": "第 15 章定义管理信息库（MIB，Management Information Base）——一组有名称、可寻址的结构化对象，网络管理者通过 SNMP（Simple Network Management Protocol，简单网络管理协议）对其进行读写。15.2 给出 MIB 的结构：它被组织成若干子树，对应 gPTP 的各个数据集，包括默认数据集（defaultDS，一个 PTP Instance 的原生能力）、当前数据集（currentDS，它相对于 Grandmaster——被选出的根时钟——的位置）、Parent 与 TimeProperties 数据集、端口数据集（portDS）、每端口统计，以及公共平均链路时延服务的数据集（cmldsDefaultDS、cmldsLinkPortDS）。表 15-1 把每个 MIB 对象交叉引用到第 14 章中定义它的子条款。在本修正案中，对象名前缀从「...AsV2...」改为「...AsV2V3...」，且各对象名去掉了旧的 master/slave 措辞（例如 MasterTimeTransmitter、SlavePortTimeReceiverPort）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 250\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"170\" y=\"10\" width=\"120\" height=\"30\" rx=\"4\"/><text x=\"230\" y=\"30\" text-anchor=\"middle\" font-size=\"12\" stroke=\"none\" fill=\"currentColor\">IEEE8021-AS-V3 MIB</text><line x1=\"230\" y1=\"40\" x2=\"60\" y2=\"70\"/><line x1=\"230\" y1=\"40\" x2=\"170\" y2=\"70\"/><line x1=\"230\" y1=\"40\" x2=\"290\" y2=\"70\"/><line x1=\"230\" y1=\"40\" x2=\"410\" y2=\"70\"/><rect x=\"10\" y=\"70\" width=\"100\" height=\"28\" rx=\"4\"/><text x=\"60\" y=\"88\" text-anchor=\"middle\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\">defaultDS</text><rect x=\"120\" y=\"70\" width=\"100\" height=\"28\" rx=\"4\"/><text x=\"170\" y=\"88\" text-anchor=\"middle\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\">currentDS</text><rect x=\"240\" y=\"70\" width=\"100\" height=\"28\" rx=\"4\"/><text x=\"290\" y=\"88\" text-anchor=\"middle\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\">portDS</text><rect x=\"360\" y=\"70\" width=\"90\" height=\"28\" rx=\"4\"/><text x=\"405\" y=\"88\" text-anchor=\"middle\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\">cmldsDS</text><rect x=\"120\" y=\"130\" width=\"220\" height=\"40\" rx=\"4\"/><text x=\"230\" y=\"148\" text-anchor=\"middle\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\">Table 15-1: each object</text><text x=\"230\" y=\"162\" text-anchor=\"middle\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\">cross-refs Clause 14</text><line x1=\"230\" y1=\"98\" x2=\"230\" y2=\"130\" stroke-dasharray=\"3 3\"/><rect x=\"120\" y=\"200\" width=\"220\" height=\"34\" rx=\"4\"/><text x=\"230\" y=\"221\" text-anchor=\"middle\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\">Network manager (SNMP GET/SET)</text><line x1=\"230\" y1=\"170\" x2=\"230\" y2=\"200\"/></svg>",
+      "caption": {
+        "en": "Clause 15 MIB structure (15.2): subtrees mirror gPTP's data sets; Table 15-1 maps each object back to Clause 14, and an SNMP manager reads/writes them.",
+        "zh": "第 15 章 MIB 结构（15.2）：各子树对应 gPTP 的数据集；表 15-1 把每个对象映射回第 14 章，SNMP 管理者对其进行读写。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The rest of Clause 15 frames how the MIB fits together. 15.3 explains the MIB's lineage: the version 1 module from IEEE Std 802.1AS-2011 was superseded by version 2 (802.1AS-2020), and this amendment defines version 3 — identical to version 2 except for the updated terminology. For a device supporting a single PTP Instance, versions 1, 2, and 3 can co-exist and interoperate. 15.4 covers security considerations: writable objects (MAX-ACCESS of read-write or read-create, such as the priority1/priority2 and PtpPortEnabled objects) are sensitive, because an unprotected SET can disrupt timing; even GET access leaks which system is Grandmaster, so SNMP should be encrypted. 15.5 lists the MIB's textual conventions — the reusable data types (renamed with the V2V3 prefix) such as ClockIdentity, PtpTimeInterval, ScaledNs, and PTPInstanceIdentifier. 15.6 is the MIB module itself: the amendment replaces the entire IEEE8021-AS-V2 MIB text with the IEEE8021-AS-V3 MIB, freely reproducible and also published as ASCII on the IEEE 802.1 website.",
+      "zh": "第 15 章的其余部分说明 MIB 各部分如何衔接。15.3 解释 MIB 的沿革：源自 IEEE Std 802.1AS-2011 的第 1 版模块被第 2 版（802.1AS-2020）取代，本修正案定义第 3 版——除术语更新外与第 2 版完全相同。对于仅支持单个 PTP Instance 的设备，第 1、2、3 版可以共存并互操作。15.4 讨论安全考量：可写对象（MAX-ACCESS 为 read-write 或 read-create，例如 priority1/priority2 和 PtpPortEnabled 对象）较为敏感，因为未受保护的 SET 操作会扰乱定时；即使是 GET 访问也会泄露哪个系统是 Grandmaster，故 SNMP 应加密。15.5 列出 MIB 的文本约定（textual conventions）——可复用的数据类型（已加上 V2V3 前缀重命名），如 ClockIdentity、PtpTimeInterval、ScaledNs 和 PTPInstanceIdentifier。15.6 是 MIB 模块本身：本修正案用 IEEE8021-AS-V3 MIB 整体替换原 IEEE8021-AS-V2 MIB 文本，该模块可自由复制，并在 IEEE 802.1 网站上以 ASCII 形式发布。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why \"V2V3\" in the object names? The amendment renames objects to drop master/slave wording, but to keep the data model stable it keeps version 2's structure. The shared prefix signals: same shape as V2, new (inclusive) names in V3.",
+      "zh": "为什么对象名里是「V2V3」？本修正案重命名对象以去除 master/slave 措辞，但为保持数据模型稳定，沿用了第 2 版的结构。这个共享前缀表示：结构与 V2 相同，名称在 V3 中更新为包容性术语。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 16 specifies the media-dependent layer for a CSN (Coordinated Shared Network — a multi-access medium such as MoCA or ITU-T G.hn where many nodes share one channel under a central coordinator, unlike a simple point-to-point link). 16.1 Overview restates the core idea of gPTP: synchronized time flows from the root of the clock spanning tree (the Grandmaster) outward toward the leaves — from leaf-facing timeTransmitter ports to root-facing timeReceiver ports — but the exact way a timeTransmitter port hands time to its downstream partner depends on the link type. On a CSN, the medium itself already maintains a shared network reference clock, so gPTP rides on top of it rather than measuring link delay hop-by-hop.",
+      "zh": "第 16 章规定面向 CSN（Coordinated Shared Network，协调共享网络——如 MoCA 或 ITU-T G.hn 这类由中央协调器管理、多节点共享同一信道的多址介质，区别于简单的点对点链路）的介质相关层。16.1 概述重申 gPTP 的核心思想：同步时间从时钟生成树的根（Grandmaster）向叶子方向流动——从面向叶子的 timeTransmitter 端口流向面向根的 timeReceiver 端口——但 timeTransmitter 端口把时间交给下游伙伴的具体方式取决于链路类型。在 CSN 上，介质本身已维护一个共享的网络参考时钟，因此 gPTP 是在其之上承载，而非逐跳测量链路时延。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  GM[Grandmaster] --> IN[CSN ingress node]\n  IN -- CSN TLV in Follow_Up --> EG[CSN egress node]\n  EG --> DS[Downstream PTP Instance]\n  IN -. shared network<br/>reference clock .- EG",
+      "zh": "flowchart LR\n  GM[Grandmaster] --> IN[CSN 入口节点]\n  IN -- Follow_Up 中的 CSN TLV --> EG[CSN 出口节点]\n  EG --> DS[下游 PTP Instance]\n  IN -. 共享网络<br/>参考时钟 .- EG"
+    },
+    {
+      "type": "prose",
+      "en": "Two specific edits in Clause 16 show how this plays out. 16.5.3 covers synchronization message propagation across a CSN that has a network reference clock; its subclause 16.5.3.3 (CSN egress node) is updated so the egress port modifies the ClockSlaveTimeReceiverSync state machine to extract the upstreamTxTime, meanLinkDelay, neighborRateRatio, and delayAsymmetry values from the CSN TLV (Type-Length-Value field) carried in the Follow_Up message — or in the Sync message when one-step operation is used. 16.6.2 specifies MoCA-specific behavior (MoCA = Multimedia over Coax Alliance, a CSN technology): the MoCA port in the timeTransmitter state propagates Sync and Follow_Up messages per 16.5.3, computing the CSN TLV values from the LocalClock, i.e., the MoCA central time clock (CTC). The amendment's edits here are the same terminology swaps — MasterPort becomes MasterPortTimeTransmitterPort, and so on.",
+      "zh": "第 16 章中的两处具体修订展示了这一点。16.5.3 讲述在具有网络参考时钟的 CSN 上同步消息的传播；其子条款 16.5.3.3（CSN 出口节点）被更新为：出口端口修改 ClockSlaveTimeReceiverSync 状态机，从 Follow_Up 消息所携带的 CSN TLV（Type-Length-Value，类型-长度-值字段）中提取 upstreamTxTime、meanLinkDelay、neighborRateRatio 和 delayAsymmetry 值——在采用一步式（one-step）操作时则从 Sync 消息中提取。16.6.2 规定 MoCA 特定行为（MoCA = Multimedia over Coax Alliance，同轴电缆多媒体联盟，一种 CSN 技术）：处于 timeTransmitter 状态的 MoCA 端口按 16.5.3 传播 Sync 与 Follow_Up 消息，并用 LocalClock（即 MoCA 中央时间时钟 CTC）计算 CSN TLV 的值。此处修正案的改动同样是术语替换——MasterPort 改为 MasterPortTimeTransmitterPort，等等。"
+    },
+    {
+      "type": "prose",
+      "en": "Annex A (normative) is the PICS proforma — Protocol Implementation Conformance Statement. It is a fill-in-the-blanks checklist where an implementer declares, feature by feature, what their device supports, with each row tagged Mandatory (M), Optional (O), or conditional, plus a reference to the defining clause. Table A.5 (Major capabilities) lists items like DOM0 (support domain 0 — mandatory), GMCAP (can act as Grandmaster — optional), and the media options MDFDPP (full-duplex point-to-point), MDDOT11 (IEEE 802.11), MDCSN (CSN). Table A.7 (Minimal time-aware system) and A.9 (Best timeTransmitter clock) drill into the required state machines. Because Annex A is normative, ticking these boxes is how a product formally claims gPTP conformance; the amendment edits the proforma so its feature names use the new inclusive terminology (for example \"Best mastertimeTransmitter clock\" in A.9).",
+      "zh": "附录 A（规范性）是 PICS proforma——协议实现一致性声明（Protocol Implementation Conformance Statement）。它是一份填空式清单，实现者逐项声明其设备支持什么，每一行标注为强制（M）、可选（O）或条件性，并附上定义该特性的条款引用。表 A.5（主要能力）列出诸如 DOM0（支持域 0——强制）、GMCAP（可充当 Grandmaster——可选）以及介质选项 MDFDPP（全双工点对点）、MDDOT11（IEEE 802.11）、MDCSN（CSN）等条目。表 A.7（最小时间感知系统）和 A.9（最佳 timeTransmitter 时钟）则细化到所需的状态机。由于附录 A 是规范性的，勾选这些方框正是产品正式宣告 gPTP 一致性的方式；本修正案修订该 proforma，使其特性名称采用新的包容性术语（例如 A.9 中的「Best mastertimeTransmitter clock」）。"
+    },
+    {
+      "type": "prose",
+      "en": "The two informative annexes round out the picture. Annex F (informative) documents the PTP profile that this standard defines — the specific set of IEEE 1588 options gPTP selects. F.4 lists those options: the algorithm used is the default BTCA per IEEE 1588-2019 clause 9.3; several optional 1588 states are not used (FAULTY, UNCALIBRATED, LISTENING, PRE_MASTERTIME_TRANSMITTER), the foreign timeTransmitter feature is off, and the acceptable timeTransmitter table is used only on EPON links. Annex G (informative) describes the asymmetry compensation measurement procedure based on line-swapping — a lab method to measure and correct a link's path-delay asymmetry (when transmit and receive directions take unequal time, which biases the clock). Per G.3, a network management system (NMS) puts the two ports of the link under test into asymmetry measurement mode by setting the asymmetryMeasurementMode MIB object to TRUE; those ports stop affecting PTP calculations, and the BTCA reconfigures the spanning tree so the rest of the network stays synchronized during the test.",
+      "zh": "两个资料性附录补全全貌。附录 F（资料性）记录本标准定义的 PTP 配置文件——gPTP 所选定的那组特定 IEEE 1588 选项。F.4 列出这些选项：所用算法是 IEEE 1588-2019 第 9.3 节规定的默认 BTCA；若干可选的 1588 状态不被使用（FAULTY、UNCALIBRATED、LISTENING、PRE_MASTERTIME_TRANSMITTER），外部 timeTransmitter 特性关闭，可接受 timeTransmitter 表仅在 EPON 链路上使用。附录 G（资料性）描述基于线缆交换（line-swapping）的非对称补偿测量过程——一种用于测量并校正链路路径时延非对称的实验室方法（当收发两个方向耗时不等时，会使时钟产生偏差）。按 G.3，网络管理系统（NMS）通过把 asymmetryMeasurementMode MIB 对象置为 TRUE，将被测链路的两个端口置入非对称测量模式；这两个端口随即停止影响 PTP 计算，BTCA 重新配置生成树，使网络其余部分在测试期间保持同步。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every unit, by exact clause number",
+        "zh": "覆盖地图——逐一对应到精确条款号"
+      },
+      "en": "Clause 15 (Managed object definitions): 15.2 Structure of the MIB — the data-set subtrees (defaultDS, currentDS, parentDS, timePropertiesDS, pathTraceDS, portDS, statistics, CMLDS sets) and Table 15-1 object cross-reference; objects re-prefixed AsV2V3 (p.126-133). 15.3 Relationship to the MIB in IEEE Std 802.1AS-2011 — v1 superseded by v2, this amendment adds v3 (terminology-only change); single-instance v1/v2/v3 interoperate (p.133). 15.4 Security considerations — read-write/read-create objects are sensitive; encrypt SNMP even for GET (p.134). 15.5 Textual conventions — ClockIdentity, GPtpProfileIdentifier, ClockClassValue, PtpTimeInterval, PtpPortIdentity, ScaledNs/UScaledNs, PTPInstanceIdentifier, Timestamp, all V2V3-prefixed (p.134-135). 15.6 IEEE 802.1AS MIB module — IEEE8021-AS-V2 MIB replaced by IEEE8021-AS-V3 MIB; freely reproducible, ASCII on ieee802.org (p.135). Clause 16 (Media-dependent layer for CSN): 16.1 Overview — time flows root→leaves via timeTransmitter→timeReceiver ports; method varies by link type (p.206). 16.5.3 Synchronization message propagation on a CSN with network reference clock — 16.5.3.3 CSN egress node reads upstreamTxTime/meanLinkDelay/neighborRateRatio/delayAsymmetry from the CSN TLV in the Follow_Up (or Sync in one-step) via ClockSlaveTimeReceiverSync (p.206). 16.6.2 MoCA-specific behavior — MasterPortTimeTransmitterPort propagates Sync/Follow_Up per 16.5.3; CSN TLV computed from MoCA CTC LocalClock (p.206). Annex_A (normative) PICS proforma — A.5 major capabilities (DOM0, GMCAP, MDCSN, MDDOT11…), A.7 minimal time-aware system, A.9 best timeTransmitter clock; feature names re-termed (p.207-211). Annex_F (informative) PTP profile — F.4 options: default BTCA per 1588-2019 §9.3; FAULTY/UNCALIBRATED/LISTENING/PRE_MASTERTIME_TRANSMITTER unused; acceptable timeTransmitter table on EPON (p.219). Annex_G (informative) asymmetry compensation via line-swapping — G.2 pre-conditions, G.3 NMS sets asymmetryMeasurementMode=TRUE on the tested ports; BTCA reconfigures the spanning tree to keep sync (p.220-221).",
+      "zh": "第 15 章（受管对象定义）：15.2 MIB 结构——数据集子树（defaultDS、currentDS、parentDS、timePropertiesDS、pathTraceDS、portDS、统计、CMLDS 集）及表 15-1 对象交叉引用；对象重新加 AsV2V3 前缀（第 126-133 页）。15.3 与 IEEE Std 802.1AS-2011 中 MIB 的关系——v1 被 v2 取代，本修正案新增 v3（仅术语变更）；单实例下 v1/v2/v3 可互操作（第 133 页）。15.4 安全考量——read-write/read-create 对象敏感；即便 GET 也应加密 SNMP（第 134 页）。15.5 文本约定——ClockIdentity、GPtpProfileIdentifier、ClockClassValue、PtpTimeInterval、PtpPortIdentity、ScaledNs/UScaledNs、PTPInstanceIdentifier、Timestamp，均加 V2V3 前缀（第 134-135 页）。15.6 IEEE 802.1AS MIB 模块——IEEE8021-AS-V2 MIB 被 IEEE8021-AS-V3 MIB 替换；可自由复制，ieee802.org 提供 ASCII 版（第 135 页）。第 16 章（CSN 介质相关层）：16.1 概述——时间经 timeTransmitter→timeReceiver 端口从根流向叶；方式因链路类型而异（第 206 页）。16.5.3 在具网络参考时钟的 CSN 上的同步消息传播——16.5.3.3 CSN 出口节点经 ClockSlaveTimeReceiverSync 从 Follow_Up（一步式则为 Sync）中的 CSN TLV 读取 upstreamTxTime/meanLinkDelay/neighborRateRatio/delayAsymmetry（第 206 页）。16.6.2 MoCA 特定行为——MasterPortTimeTransmitterPort 按 16.5.3 传播 Sync/Follow_Up；CSN TLV 由 MoCA CTC LocalClock 计算（第 206 页）。Annex_A（规范性）PICS proforma——A.5 主要能力（DOM0、GMCAP、MDCSN、MDDOT11……）、A.7 最小时间感知系统、A.9 最佳 timeTransmitter 时钟；特性名重新命名（第 207-211 页）。Annex_F（资料性）PTP 配置文件——F.4 选项：1588-2019 §9.3 默认 BTCA；FAULTY/UNCALIBRATED/LISTENING/PRE_MASTERTIME_TRANSMITTER 不使用；可接受 timeTransmitter 表用于 EPON（第 219 页）。Annex_G（资料性）基于线缆交换的非对称补偿——G.2 前提条件，G.3 NMS 把被测端口的 asymmetryMeasurementMode 置为 TRUE；BTCA 重配生成树以维持同步（第 220-221 页）。",
+      "cite": {
+        "pdf_id": "8021ASdr-2024",
+        "pages": [
+          126,
+          133,
+          134,
+          135,
+          206,
+          207,
+          211,
+          219,
+          220,
+          221
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Big picture: Clause 15 is how you observe and configure a gPTP node, Clause 16 is how time survives a shared coax/G.hn medium, and Annexes A/F/G are how you prove conformance, pin down the exact 1588 profile, and calibrate link asymmetry. The 802.1ASdr-2024 amendment leaves all of these mechanisms intact and only modernizes the terminology.",
+      "zh": "全局视角：第 15 章讲如何观测与配置一个 gPTP 节点，第 16 章讲时间如何在共享同轴/G.hn 介质上存续，附录 A/F/G 讲如何证明一致性、确定具体的 1588 配置文件并校准链路非对称。802.1ASdr-2024 修正案保留了所有这些机制，仅对术语做现代化更新。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021ASdr-2024",
+      "pages": [
+        126,
+        127,
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135
+      ],
+      "note": "Clause 15: 15.2 MIB structure & Table 15-1, 15.3 lineage, 15.4 security, 15.5 textual conventions, 15.6 MIB module replacement."
+    },
+    {
+      "pdf_id": "8021ASdr-2024",
+      "pages": [
+        206
+      ],
+      "note": "Clause 16: 16.1 overview, 16.5.3.3 CSN egress node, 16.6.2 MoCA-specific behavior."
+    },
+    {
+      "pdf_id": "8021ASdr-2024",
+      "pages": [
+        207,
+        208,
+        209,
+        210,
+        211
+      ],
+      "note": "Annex A (normative) PICS proforma: A.5 major capabilities, A.7 minimal time-aware system, A.9 best timeTransmitter clock."
+    },
+    {
+      "pdf_id": "8021ASdr-2024",
+      "pages": [
+        219,
+        220,
+        221
+      ],
+      "note": "Annex F (informative) PTP profile options F.4; Annex G (informative) asymmetry compensation via line-swapping G.2/G.3."
+    }
+  ],
+  "covers": [
+    "8021ASdr-2024:15.2",
+    "8021ASdr-2024:15.3",
+    "8021ASdr-2024:15.4",
+    "8021ASdr-2024:15.5",
+    "8021ASdr-2024:15.6",
+    "8021ASdr-2024:16.1",
+    "8021ASdr-2024:16.5.3",
+    "8021ASdr-2024:16.6.2",
+    "8021ASdr-2024:Annex_A",
+    "8021ASdr-2024:Annex_F",
+    "8021ASdr-2024:Annex_G"
+  ],
+  "track": "tsn"
+}

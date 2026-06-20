@@ -1,0 +1,214 @@
+{
+  "id": "bridging-tsn-74",
+  "title": {
+    "en": "LACP, Marker, and Conversation-Sensitive Distribution: How a Link Aggregation Group Runs Itself",
+    "zh": "LACP、Marker 与会话敏感分发：链路聚合组如何自我运行"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In part 1 we saw the static picture of a Link Aggregation Group (LAG): several physical links bundled to look like one logical link. This lesson is about the machinery that keeps that bundle correct while the world changes — links coming up, links failing, the neighbor reconfiguring. The star of the show is the Link Aggregation Control Protocol (LACP). LACP is the conversation two devices have, link by link, to agree on which links belong together and when each link may carry data (Clause 6.4.1). Its design philosophy is deliberately gentle: it exchanges information and state, never commands. Each device — called the Actor — tells its neighbor (the Partner) what it believes about both its own state and the Partner's state, and that is enough for the Partner to decide what to do next.",
+      "zh": "在第 1 部分中，我们看到了链路聚合组（LAG，Link Aggregation Group）的静态画面：若干条物理链路被捆绑成一条逻辑链路。本节讲的是在世界不断变化时——链路上线、链路失效、邻居重新配置——让这个捆绑始终保持正确的运行机制。主角是链路聚合控制协议（LACP，Link Aggregation Control Protocol）。LACP 是两台设备逐条链路进行的对话，用来商定哪些链路属于一组、以及每条链路何时可以承载数据（条款 6.4.1）。它的设计理念刻意温和：只交换信息和状态，从不下达命令。每台设备——称为 Actor（本端）——把它对自身状态以及对 Partner（对端）状态的认知告诉邻居，这就足以让 Partner 决定下一步该怎么做。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Three acronyms you will see everywhere. Actor = the local system sending a frame. Partner = the system at the far end of the link. LACPDU = the LACP Data Unit, the small periodic frame the two sides exchange (Clause 6.4.2). NTT (Need To Transmit) is the flag a system raises when its state changed and the Partner must be told right away.",
+      "zh": "三个随处可见的缩写。Actor＝发送帧的本端系统。Partner＝链路另一端的系统。LACPDU＝LACP 数据单元，即双方周期性交换的小帧（条款 6.4.2）。NTT（Need To Transmit，需要发送）是当系统状态发生变化、必须立即告知 Partner 时所置位的标志。"
+    },
+    {
+      "type": "prose",
+      "en": "An LACPDU carries everything the two sides need to reach agreement (Clause 6.4.2). It is built from TLVs — Type/Length/Value tuples. The first three are fixed: an Actor Information TLV (the sender's System ID, Key, Port, and an eight-bit Actor_State), a Partner Information TLV (the sender's view of the neighbor), and a Collector Information TLV (carrying CollectorMaxDelay). The eight bits of Actor_State are the heartbeat of the protocol: LACP_Activity (do I speak actively or only when spoken to?), Short_Timeout (do I want fast or slow keepalives?), Aggregation (is this link a candidate for bundling, or Solitary?), Synchronization (do I believe this link is in the right LAG?), Collecting (am I accepting received frames?), Distributing (am I sending frames?), Defaulted (am I using administratively configured Partner values because none arrived?), and Expired (has my Receive machine timed out?). Version 2 LACPDUs add optional TLVs — the Port Algorithm, Port Conversation Link Digest, and Port Conversation Service Digest TLVs — which we will meet in clause 6.6.",
+      "zh": "一个 LACPDU 携带双方达成一致所需的全部内容（条款 6.4.2）。它由若干 TLV（Type/Length/Value，类型/长度/值三元组）组成。前三个是固定的：Actor 信息 TLV（发送方的 System ID、Key、Port 以及 8 位的 Actor_State）、Partner 信息 TLV（发送方对邻居的看法）、以及 Collector 信息 TLV（携带 CollectorMaxDelay）。Actor_State 的 8 个比特是协议的心跳：LACP_Activity（我主动发言还是只在被招呼时才发言？）、Short_Timeout（我想要快速还是慢速保活？）、Aggregation（这条链路是捆绑候选，还是孤立链路 Solitary？）、Synchronization（我是否相信这条链路在正确的 LAG 中？）、Collecting（我是否接收收到的帧？）、Distributing（我是否发送帧？）、Defaulted（因为没收到对端信息，我是否在使用管理员配置的 Partner 默认值？）、Expired（我的接收状态机是否已超时？）。版本 2 的 LACPDU 增加了可选 TLV——Port Algorithm、Port Conversation Link Digest 和 Port Conversation Service Digest TLV——这些将在条款 6.6 中遇到。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"40\" width=\"70\" height=\"40\"/><rect x=\"80\" y=\"40\" width=\"110\" height=\"40\"/><rect x=\"190\" y=\"40\" width=\"110\" height=\"40\"/><rect x=\"300\" y=\"40\" width=\"110\" height=\"40\"/><rect x=\"410\" y=\"40\" width=\"110\" height=\"40\"/><rect x=\"520\" y=\"40\" width=\"60\" height=\"40\"/><text x=\"45\" y=\"64\" font-size=\"11\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">Subtype/Ver</text><text x=\"135\" y=\"58\" font-size=\"11\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">Actor Info</text><text x=\"135\" y=\"72\" font-size=\"10\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">TLV (20)</text><text x=\"245\" y=\"58\" font-size=\"11\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">Partner Info</text><text x=\"245\" y=\"72\" font-size=\"10\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">TLV (20)</text><text x=\"355\" y=\"58\" font-size=\"11\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">Collector</text><text x=\"355\" y=\"72\" font-size=\"10\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">TLV (16)</text><text x=\"465\" y=\"58\" font-size=\"11\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">Other TLVs</text><text x=\"465\" y=\"72\" font-size=\"10\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">(Version 2)</text><text x=\"550\" y=\"64\" font-size=\"11\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">Term/Pad</text><text x=\"10\" y=\"110\" font-size=\"11\" fill=\"currentColor\" stroke=\"none\">Slow Protocols EtherType 0x8809 precedes the LACPDU; total padded to a fixed length.</text></svg>",
+      "caption": {
+        "en": "The LACPDU layout (Clause 6.4.2): three mandatory TLVs, optional Version 2 TLVs, then Terminator and Pad.",
+        "zh": "LACPDU 布局（条款 6.4.2）：三个必选 TLV、可选的版本 2 TLV，随后是 Terminator 和 Pad。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Underneath the wire format runs a tidy set of state machines, summarized in Clause 6.4.3. There are three machines per Aggregation Port plus one shared decision-maker. The LACP Receive machine (Clause 6.4.11) takes in LACPDUs, records the Partner's parameters, and starts a timeout; if nothing arrives in time it falls through EXPIRED to DEFAULTED, where it installs administratively configured Partner values so a link can still operate with no live neighbor. The Mux machine (Clause 6.4.13) physically attaches the port to an Aggregator and then walks DETACHED → ATTACHED → COLLECTING → COLLECTING_DISTRIBUTING, turning reception on before transmission so frames are never sent before the Partner is ready. The LACP Transmit machine (Clause 6.4.14) sends LACPDUs both on demand (when NTT is set) and periodically, in either FAST_PERIODIC or SLOW_PERIODIC mode. All three lean on fixed Constants (Clause 6.4.4): Fast_Periodic_Time = 1 s, Slow_Periodic_Time = 30 s, Short/Long timeouts at 3× those (3 s and 90 s), and Aggregate_Wait_Time = 2 s.",
+      "zh": "在线缆格式之下运行着一组整洁的状态机，概览见条款 6.4.3。每个聚合端口（Aggregation Port）有三个状态机，外加一个共享的决策者。LACP 接收状态机（条款 6.4.11）接收 LACPDU、记录 Partner 的参数并启动超时；若超时内无报文到达，它会经 EXPIRED 落到 DEFAULTED 状态，在那里装入管理员配置的 Partner 值，使链路在没有活跃邻居时仍能工作。Mux 状态机（条款 6.4.13）把端口实际挂接到一个 Aggregator，随后依次走过 DETACHED → ATTACHED → COLLECTING → COLLECTING_DISTRIBUTING，先开启接收再开启发送，确保不会在 Partner 就绪之前就发送帧。LACP 发送状态机（条款 6.4.14）既按需发送 LACPDU（当 NTT 置位时），也以 FAST_PERIODIC 或 SLOW_PERIODIC 模式周期性发送。三者都依赖固定常量（条款 6.4.4）：Fast_Periodic_Time＝1 秒、Slow_Periodic_Time＝30 秒、短/长超时为其 3 倍（3 秒和 90 秒）、Aggregate_Wait_Time＝2 秒。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> DETACHED\n  DETACHED --> ATTACHED: Selected & Ready\n  ATTACHED --> COLLECTING: Partner in sync\n  COLLECTING --> COLLECTING_DISTRIBUTING: Partner collecting\n  COLLECTING_DISTRIBUTING --> COLLECTING: Partner stops collecting\n  COLLECTING --> ATTACHED: Partner out of sync\n  ATTACHED --> DETACHED: Unselected",
+      "zh": "stateDiagram-v2\n  [*] --> 已分离\n  已分离 --> 已挂接: 已选定且就绪\n  已挂接 --> 收集中: 对端已同步\n  收集中 --> 收发中: 对端开始收集\n  收发中 --> 收集中: 对端停止收集\n  收集中 --> 已挂接: 对端失步\n  已挂接 --> 已分离: 取消选定"
+    },
+    {
+      "type": "prose",
+      "en": "How does a port decide which Aggregator to join? That is the Selection Logic (Clause 6.4.12), the shared decision-maker. It compares the port's LAG ID — built from the Actor's and Partner's System Identifiers and Keys — and picks a compatible Aggregator. The standard separates required behavior (6.4.12.1: e.g., a port may only select an Aggregator with the same System ID and operational Key, members of one LAG select the same Aggregator, a disabled Aggregator forces UNSELECTED) from the recommended default (6.4.12.2: each port has its own Aggregator with a matching Key, and ties go to the lowest-numbered port). The Selected variable a port carries has three values: SELECTED (committed), UNSELECTED (none yet), and STANDBY (a fit was found but a size limit holds the link in reserve). To the Mux machine, STANDBY behaves exactly like UNSELECTED.",
+      "zh": "端口如何决定加入哪个 Aggregator？这就是选择逻辑（Selection Logic，条款 6.4.12），即那个共享决策者。它比较端口的 LAG ID——由 Actor 与 Partner 的 System Identifier 和 Key 构成——并挑选一个兼容的 Aggregator。标准把必需行为（6.4.12.1：例如端口只能选择与自身 System ID 和运行 Key 相同的 Aggregator、同一 LAG 的成员选择同一 Aggregator、被禁用的 Aggregator 强制使端口进入 UNSELECTED）与推荐默认行为（6.4.12.2：每个端口拥有 Key 匹配的自有 Aggregator，并列时取端口号最小者）分开。端口携带的 Selected 变量有三种取值：SELECTED（已确定）、UNSELECTED（尚无）、STANDBY（找到了合适项但因规模限制把链路留作备用）。对 Mux 状态机而言，STANDBY 与 UNSELECTED 完全等同。"
+    },
+    {
+      "type": "prose",
+      "en": "Before a LAG can safely move traffic from one link to another, it must be sure no in-flight frames will arrive out of order. That is the job of the Marker protocol (Clause 6.5). The idea (6.5.1, 6.5.2) is simple: the Frame Distribution function injects a Marker PDU into a conversation's frame stream and stops sending more frames for that conversation; when the matching Marker Response PDU comes back, the sender knows the Partner has finished collecting everything before the marker, so it can now safely redistribute that conversation. The Marker and Marker Response PDUs share one format (6.5.3): a Subtype of 0x02, Requester_Port, Requester_System, and a Requester_Transaction_ID that the responder echoes back unchanged. The responder side is mandatory and trivially simple (6.5.4): on receiving a Marker PDU, flip its TLV type from Marker Information to Marker Response Information and send it straight back out the same port. Generating Markers is optional; responding to them is not.",
+      "zh": "在 LAG 能够安全地把流量从一条链路移到另一条链路之前，它必须确保没有在途的帧会乱序到达。这正是 Marker 协议（条款 6.5）的职责。其思路（6.5.1、6.5.2）很简单：帧分发功能向某个会话的帧流中注入一个 Marker PDU，并停止为该会话发送更多帧；当对应的 Marker Response PDU 返回时，发送方就知道 Partner 已收齐 marker 之前的所有帧，因此现在可以安全地重新分发该会话。Marker 与 Marker Response PDU 共用一种格式（6.5.3）：Subtype 为 0x02，含 Requester_Port、Requester_System，以及由响应方原样回传的 Requester_Transaction_ID。响应方是强制的且极其简单（6.5.4）：收到 Marker PDU 时，把它的 TLV 类型从 Marker Information 改为 Marker Response Information，原样从同一端口发回即可。生成 Marker 是可选的；响应 Marker 则不可省略。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant D as Distributor\n  participant C as Collector (Partner)\n  D->>C: Marker PDU (txn ID, stop sending convo)\n  C->>D: Marker Response (same txn ID)\n  Note over D: All prior frames collected; safe to redistribute",
+      "zh": "sequenceDiagram\n  participant D as 分发方\n  participant C as 收集方（对端）\n  D->>C: Marker PDU（事务ID，暂停该会话）\n  C->>D: Marker 响应（相同事务ID）\n  Note over D: 之前的帧已收齐；可安全重新分发"
+    },
+    {
+      "type": "prose",
+      "en": "The Marker protocol is one way to keep order; Conversation-Sensitive Collection and Distribution (CSCD, Clause 6.6) is the richer alternative. CSCD lets an administrator pin each conversation to a chosen link in both directions, which makes load-balancing, traffic management, and monitoring predictable. The mechanism (6.6.1) is a Port Algorithm that maps every frame to a 12-bit Port Conversation ID (0–4095) — by hashing fields, reading a VLAN tag directly, or going through an Admin_Conv_Service_Map of 32-bit Service IDs. Links are referred to by a Link_Number (6.6.2); each port has an Admin_Link_Number, and a Version 2 LACP exchange lets the two sides agree on a common operational Link_Number per port. An Admin_Conv_Link_Map then lists, for each Conversation ID, a preference-ordered set of links — the first active one wins. Conversation-sensitive LACP (6.6.3) ties it together: the two systems exchange digests of their algorithm and maps, and only when those match (and Discard_Wrong_Conversation permits) do they trust each other enough to accept a conversation only on its expected link. The result is per-Port-Conversation-ID Collection_Conversation_Mask and Distribution_Conversation_Mask bitmaps that gate frames in and out, carefully never letting one conversation map to two links at once.",
+      "zh": "Marker 协议是保序的一种方式；会话敏感的收集与分发（CSCD，Conversation-Sensitive Collection and Distribution，条款 6.6）则是更丰富的替代方案。CSCD 让管理员把每个会话双向固定到选定的链路上，从而使负载均衡、流量管理和监控变得可预测。其机制（6.6.1）是一个 Port Algorithm，把每个帧映射到一个 12 位的 Port Conversation ID（0–4095）——可通过哈希字段、直接读取 VLAN 标签，或经由把 32 位 Service ID 映射的 Admin_Conv_Service_Map 来实现。链路用 Link_Number 标识（6.6.2）；每个端口有一个 Admin_Link_Number，版本 2 的 LACP 交换让双方就每个端口商定一个共同的运行 Link_Number。随后 Admin_Conv_Link_Map 为每个 Conversation ID 列出一组按优先级排序的链路——第一个处于活跃状态的链路获胜。会话敏感 LACP（6.6.3）把这一切串起来：双方交换其算法和映射表的摘要，只有当这些摘要匹配（且 Discard_Wrong_Conversation 允许）时，它们才足够信任彼此，从而只在预期链路上接收某个会话。最终得到按 Port Conversation ID 索引的 Collection_Conversation_Mask 与 Distribution_Conversation_Mask 位图，用以控制帧的进出，并谨慎地绝不让一个会话同时映射到两条链路。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause in 6.4–6.7 and where it lives",
+        "zh": "覆盖地图：6.4–6.7 的每个条款及其归属"
+      },
+      "en": "LACP (6.4): 6.4.1 design elements (information-not-commands, LACP_Activity, NTT). 6.4.2 LACPDU structure/encoding — octet/bit order, EtherType 0x8809 encapsulation, the three mandatory TLVs, the eight Actor_State bits, and the Version 2 TLV table (Port Algorithm 0x04, Port Conversation Link Digest 0x05, Port Conversation Service Digest 0x0A). 6.4.3 state-machine overview (three machines per port + Selection Logic). 6.4.4 Constants (Fast/Slow_Periodic_Time, Short/Long_Timeout_Time, Aggregate_Wait_Time, Actor_System_LACP_Version=2, coupled_control). 6.4.5 Aggregator variables (Aggregator_Enabled, Aggregator_Operational, MAC address, interface ID, Actor_Admin_System/Priority). 6.4.6 per-Aggregation-Port variables. 6.4.7 management variables (BEGIN, Port_Operational, NTT, LACP_Timeout, Ready, Selected SELECTED/UNSELECTED/STANDBY, port_attached, txOpportunity). 6.4.8 Functions (recordPDU, recordDefault, transmitLACPDU, updateSelected, updateNTT, attach/detachMuxToAggregator, enableCollecting, enable/disableCollectingDistributing). 6.4.9 Timers (LACP_currentWhile, LACP_txWhen, waitWhile, wtrWhile). 6.4.10 Messages (rcvdLACPDU). 6.4.11 Receive machine (INITIALIZE → PORT_DISABLED → EXPIRED → DEFAULTED/CURRENT). 6.4.12 Selection Logic (.1 requirements, .2 recommended default). 6.4.13 Mux machine (DETACHED → ATTACH → ATTACHED → COLLECTING → COLLECTING_DISTRIBUTING, plus ATTACHED_WTR wait-to-restore). 6.4.14 Transmit machine (NO_TX, FAST_PERIODIC, SLOW_PERIODIC, TX).\n\nMarker (6.5): 6.5.1 introduction (reorder-free redistribution, responder mandatory). 6.5.2 sequence of operations. 6.5.3 Marker/Marker Response PDU structure (Subtype 0x02, Requester fields, fixed padding). 6.5.4 protocol definition + Marker Responder state diagram (WAIT FOR MARKER → RESPOND TO MARKER).\n\nCSCD (6.6): 6.6.1 Port Algorithms and 12-bit Port Conversation IDs. 6.6.2 Link_Numbers and link selection (Admin/operational Link_Number, Admin_Conv_Link_Map preference lists). 6.6.3 conversation-sensitive LACP (digests, masks, Update Mask machine).\n\nConfiguration (6.7): 6.7.1 system and port priorities (System/Port Aggregation Priority, STANDBY for excess links). 6.7.2 dynamic Key allocation (higher-priority system may search configurations). 6.7.3 shared-medium links treated as Solitary, LACP disabled. 6.7.4 Selection Logic variants (.1 reduced reconfiguration, .2 limited Aggregator availability). 6.7.5 dual-homed Systems (one Operational Key, one Aggregator → only one link active, loop-free).",
+      "zh": "LACP（6.4）：6.4.1 设计要素（传信息不传命令、LACP_Activity、NTT）。6.4.2 LACPDU 结构/编码——字节/比特顺序、EtherType 0x8809 封装、三个必选 TLV、Actor_State 的 8 个比特，以及版本 2 TLV 表（Port Algorithm 0x04、Port Conversation Link Digest 0x05、Port Conversation Service Digest 0x0A）。6.4.3 状态机概览（每端口三机＋选择逻辑）。6.4.4 常量（Fast/Slow_Periodic_Time、Short/Long_Timeout_Time、Aggregate_Wait_Time、Actor_System_LACP_Version=2、coupled_control）。6.4.5 Aggregator 变量（Aggregator_Enabled、Aggregator_Operational、MAC 地址、接口 ID、Actor_Admin_System/Priority）。6.4.6 每聚合端口变量。6.4.7 管理变量（BEGIN、Port_Operational、NTT、LACP_Timeout、Ready、Selected 的 SELECTED/UNSELECTED/STANDBY、port_attached、txOpportunity）。6.4.8 函数（recordPDU、recordDefault、transmitLACPDU、updateSelected、updateNTT、attach/detachMuxToAggregator、enableCollecting、enable/disableCollectingDistributing）。6.4.9 定时器（LACP_currentWhile、LACP_txWhen、waitWhile、wtrWhile）。6.4.10 消息（rcvdLACPDU）。6.4.11 接收状态机（INITIALIZE → PORT_DISABLED → EXPIRED → DEFAULTED/CURRENT）。6.4.12 选择逻辑（.1 要求、.2 推荐默认）。6.4.13 Mux 状态机（DETACHED → ATTACH → ATTACHED → COLLECTING → COLLECTING_DISTRIBUTING，外加 ATTACHED_WTR 等待恢复）。6.4.14 发送状态机（NO_TX、FAST_PERIODIC、SLOW_PERIODIC、TX）。\n\nMarker（6.5）：6.5.1 引言（无乱序重分发、响应方强制）。6.5.2 操作时序。6.5.3 Marker/Marker Response PDU 结构（Subtype 0x02、Requester 字段、固定填充）。6.5.4 协议定义＋Marker 响应方状态图（WAIT FOR MARKER → RESPOND TO MARKER）。\n\nCSCD（6.6）：6.6.1 Port Algorithm 与 12 位 Port Conversation ID。6.6.2 Link_Number 与链路选择（Admin/运行 Link_Number、Admin_Conv_Link_Map 优先级列表）。6.6.3 会话敏感 LACP（摘要、掩码、Update Mask 状态机）。\n\n配置（6.7）：6.7.1 系统与端口优先级（System/Port Aggregation Priority、多余链路置 STANDBY）。6.7.2 动态 Key 分配（高优先级系统可搜索配置）。6.7.3 共享介质链路按 Solitary 处理、禁用 LACP。6.7.4 选择逻辑变体（.1 减少重配置、.2 受限的 Aggregator 数量）。6.7.5 双归属系统（单一运行 Key、单一 Aggregator → 仅一条链路活跃、无环路）。",
+      "cite": {
+        "pdf_id": "8021AX-2020",
+        "pages": [
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          103,
+          104,
+          105,
+          106
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.7 closes the loop with the practical knobs and limits. When a system can bundle only some links (say four of six with the same Key), 6.7.1 ranks candidates by System Aggregation Priority (priority + System ID) and Port Aggregation Priority (port priority + port number), and parks the losers in STANDBY with Synchronization FALSE. If priorities alone are not enough, 6.7.2 lets the higher-priority system dynamically rewrite operational Keys to search for the best bundling — and forbids the lower-priority side from doing the same, which guarantees the search converges. Some realities are hard limits: 6.7.3 says shared-medium links cannot be aggregated, so they are forced Solitary with LACP turned off. 6.7.4 offers two relaxations of the default Selection Logic — reduced reconfiguration (don't always rehome to the lowest-numbered port) and limited Aggregator availability (fewer Aggregators than ports). Finally, 6.7.5 shows the elegant dual-homed trick: give a set of ports one shared Operational Key but only one matching Aggregator, so exactly one link can be active at a time — a built-in, loop-free failover to a second Partner without any external loop-prevention protocol.",
+      "zh": "条款 6.7 以实用的旋钮和限制收尾。当系统只能捆绑部分链路时（比如六条同 Key 链路中的四条），6.7.1 按 System Aggregation Priority（优先级＋System ID）和 Port Aggregation Priority（端口优先级＋端口号）对候选者排序，把落选者以 Synchronization 为 FALSE 置入 STANDBY。若仅靠优先级仍不够，6.7.2 允许较高优先级的系统动态改写运行 Key 来搜索最佳捆绑方案——并禁止较低优先级一方做同样的事，从而保证搜索收敛。有些现实是硬性限制：6.7.3 规定共享介质链路不能聚合，因此被强制为 Solitary 并关闭 LACP。6.7.4 提供了对默认选择逻辑的两种放宽——减少重配置（不总是迁回端口号最小者）和受限的 Aggregator 数量（Aggregator 比端口少）。最后，6.7.5 展示了优雅的双归属技巧：给一组端口配置一个共享的运行 Key，但只配一个匹配的 Aggregator，于是任一时刻恰好只有一条链路能活跃——这是一种内建的、无环路的、无需任何外部防环协议即可切换到第二个 Partner 的故障切换机制。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AX-2020",
+      "pages": [
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62
+      ],
+      "note": "6.4 LACP: design elements, LACPDU structure/encoding and Version 2 TLVs, state-machine overview, constants, Aggregator variables."
+    },
+    {
+      "pdf_id": "8021AX-2020",
+      "pages": [
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83
+      ],
+      "note": "6.4.7–6.4.14: management variables, functions, timers, messages, Receive machine, Selection Logic, Mux machine, Transmit machine."
+    },
+    {
+      "pdf_id": "8021AX-2020",
+      "pages": [
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91
+      ],
+      "note": "6.5 Marker protocol (intro, sequence, PDU structure, responder) and 6.6 Conversation-Sensitive Collection and Distribution (Port Algorithms, Link_Numbers, conversation-sensitive LACP)."
+    },
+    {
+      "pdf_id": "8021AX-2020",
+      "pages": [
+        103,
+        104,
+        105,
+        106
+      ],
+      "note": "6.7 Configuration capabilities and restrictions: priorities, dynamic Keys, shared-medium links, Selection Logic variants, dual-homed Systems."
+    }
+  ],
+  "covers": [
+    "8021AX-2020:6.4.1",
+    "8021AX-2020:6.4.2",
+    "8021AX-2020:6.4.3",
+    "8021AX-2020:6.4.4",
+    "8021AX-2020:6.4.5",
+    "8021AX-2020:6.4.6",
+    "8021AX-2020:6.4.7",
+    "8021AX-2020:6.4.8",
+    "8021AX-2020:6.4.9",
+    "8021AX-2020:6.4.10",
+    "8021AX-2020:6.4.11",
+    "8021AX-2020:6.4.12",
+    "8021AX-2020:6.4.13",
+    "8021AX-2020:6.4.14",
+    "8021AX-2020:6.5.1",
+    "8021AX-2020:6.5.2",
+    "8021AX-2020:6.5.3",
+    "8021AX-2020:6.5.4",
+    "8021AX-2020:6.6.1",
+    "8021AX-2020:6.6.2",
+    "8021AX-2020:6.6.3",
+    "8021AX-2020:6.7.1",
+    "8021AX-2020:6.7.2",
+    "8021AX-2020:6.7.3",
+    "8021AX-2020:6.7.4",
+    "8021AX-2020:6.7.5"
+  ],
+  "track": "bridging-tsn"
+}

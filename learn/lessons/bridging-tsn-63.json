@@ -1,0 +1,182 @@
+{
+  "id": "bridging-tsn-63",
+  "title": {
+    "en": "LLDP Agent Operation and Management: State Machines, Timers, and Managed Objects",
+    "zh": "LLDP 代理的运行与管理：状态机、定时器与受管对象"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "The Link Layer Discovery Protocol (LLDP) lets a device tell its immediate neighbors who it is, and lets it learn the same about them — one Ethernet hop at a time. Clause 9 of IEEE Std 802.1AB-2016 describes how a single LLDP agent does this work, and Clause 10 describes how a manager configures and watches that work. An LLDP agent is the piece of software that runs the protocol for one MAC address (Media Access Control address — the 48-bit hardware address) on one Port. If a Port supports several MAC addresses, each gets its own agent instance. Throughout, the agent keeps two databases, called MIBs (Management Information Bases): the local system MIB holds facts about itself, and the remote systems MIB holds facts learned from neighbors. The unit of transmission is an LLDPDU (LLDP Data Unit), a frame built from TLVs (Type-Length-Value fields).",
+      "zh": "链路层发现协议（LLDP，Link Layer Discovery Protocol）让一台设备把“我是谁”告诉直接相邻的邻居，同时也了解邻居的信息——每次只跨越一个以太网跳。IEEE Std 802.1AB-2016 的第 9 章描述单个 LLDP 代理如何完成这项工作，第 10 章描述管理者如何配置并监视这项工作。LLDP 代理是为一个 Port 上的一个 MAC 地址（Media Access Control 地址，即 48 位硬件地址）运行该协议的软件实体。如果一个 Port 支持多个 MAC 地址，则每个地址都有独立的代理实例。整个过程中，代理维护两个数据库，称为 MIB（管理信息库，Management Information Base）：本地系统 MIB 保存自身信息，远端系统 MIB 保存从邻居学到的信息。传输单位是 LLDPDU（LLDP 数据单元），它由若干 TLV（类型-长度-值字段）构成。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 9.1 gives the overview of agent duties: keep the local MIB current, format and send that information periodically or on change, recognize and process incoming LLDP frames, keep the remote MIB current, and call somethingChangedLocal() / somethingChangedRemote() to notify other MIB managers when anything changes. An agent may run in one of three modes — transmit only, receive only, or both. Clause 9.1.1 (frame transmission) explains when an LLDPDU goes out: on a regular timer tick (so neighbors do not age out our entry), in a quick burst of four when a new neighbor appears, immediately when a local value changes, and on a roughly one-second system tick that carries a small random jitter on shared media so transmitters do not synchronize. A credit scheme caps how fast change-driven frames can fire.",
+      "zh": "9.1（概述）列出代理的职责：保持本地 MIB 最新；定期或在变化时格式化并发送这些信息；识别并处理收到的 LLDP 帧；保持远端 MIB 最新；在任何内容变化时调用 somethingChangedLocal() / somethingChangedRemote() 通知其他 MIB 管理者。代理可运行于三种模式之一——仅发送、仅接收或收发兼备。9.1.1（帧发送）说明 LLDPDU 何时发出：在常规定时器滴答时（以免邻居把我们的条目老化掉）；在新邻居出现时快速连发四次；在本地值变化时立即发送；以及在约一秒的系统滴答上发送，在共享介质上该滴答带有少量随机抖动，避免各发送方同步。一个信用（credit）机制限制了由变化触发的帧的最大发送速率。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 9.1.2 defines two LLDPDU types. A normal LLDPDU (9.1.2.1) carries the three mandatory TLVs — Chassis ID, Port ID, and Time To Live (TTL) — plus any optional TLVs the manager selected. A shutdown LLDPDU (9.1.2.2) is sent when a Port is about to go down: it carries the same Chassis ID and Port ID but sets TTL to zero, telling neighbors to discard our entry at once. Clause 9.1.3 (frame reception) splits receive into three phases — recognition (right destination MAC and EtherType), validation (well-formed, mandatory TLVs present), and updating the remote MIB. A normal LLDPDU creates or wholly replaces a neighbor's entry; a shutdown LLDPDU deletes it; and the TTL value decides how long an entry lives before being aged out.",
+      "zh": "9.1.2 定义了两种 LLDPDU。普通 LLDPDU（9.1.2.1）携带三个强制 TLV——机箱 ID（Chassis ID）、端口 ID（Port ID）和生存时间（TTL，Time To Live）——以及管理者选定的可选 TLV。关闭 LLDPDU（9.1.2.2）在某 Port 即将下线时发送：它携带相同的机箱 ID 与端口 ID，但把 TTL 置为零，告诉邻居立即丢弃我们的条目。9.1.3（帧接收）把接收分为三个阶段——识别（目的 MAC 与 EtherType 正确）、校验（结构完好、强制 TLV 齐全）以及更新远端 MIB。普通 LLDPDU 会创建或整体替换某邻居的条目；关闭 LLDPDU 则删除它；TTL 值决定一条条目在被老化掉之前能存活多久。"
+    },
+    {
+      "type": "prose",
+      "en": "Three more overview subclauses handle the edge cases. Clause 9.1.4 (too many neighbors) admits that memory is finite: when a new neighbor cannot fit, the implementation may ignore it, evict the oldest, or evict at random — the choice is out of scope, but the agent must track the condition with the tooManyNeighbors variable and the tooManyNeighborsTimer. Clause 9.1.5 covers rxInfoTTL timer expiration: when a neighbor's TTL countdown reaches zero, all its information is deleted and somethingChangedRemote() fires. Clause 9.1.6 (local port/connection failure) says that if a link fails unexpectedly before a shutdown frame arrives, the agent does NOT immediately purge that neighbor — it waits for re-initialization or for the rxInfoTTL timer to expire, so a brief glitch does not erase still-valid data.",
+      "zh": "还有三个概述小节处理边角情形。9.1.4（邻居过多）承认内存有限：当新邻居放不下时，实现可以忽略它、逐出最旧的，或随机逐出——具体选择不在标准范围内，但代理必须用 tooManyNeighbors 变量和 tooManyNeighborsTimer 跟踪这一状况。9.1.5 处理 rxInfoTTL 定时器到期：当某邻居的 TTL 倒计时归零时，其全部信息被删除并触发 somethingChangedRemote()。9.1.6（本地端口/连接故障）规定：若链路在收到关闭帧之前意外失效，代理不会立即清除该邻居——它会等待重新初始化或 rxInfoTTL 定时器到期，这样短暂的抖动不会抹掉仍然有效的数据。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 9.2 models the protocol as three state machines plus their timers. Clause 9.2.1 (notational conventions) defines the drawing rules: each state is a box (upper part = name in uppercase, lower part = procedures run once on entry), arrows are transitions whose labels are Boolean conditions, UCT means an unconditional transition, ELSE fires when no other condition holds, and where a state diagram and the text disagree, the diagram wins. Clause 9.2.2 (timers) specifies countdown timers with one-second resolution: rxInfoTTL ages out each remote entry, tooManyNeighborsTimer marks how long the overflow condition has held, txTTR schedules the next transmission, and txShutdownWhile delays re-initialization. On point-to-point links a tick is exactly 1 s; on shared media it is 0.8 s plus 0.0–0.4 s of jitter, averaging 1 s.",
+      "zh": "9.2 把协议建模为三个状态机及其定时器。9.2.1（记号约定）定义了画法规则：每个状态是一个方框（上半部为大写的状态名，下半部为进入时执行一次的过程），箭头是转移，其标签为布尔条件，UCT 表示无条件转移，ELSE 在没有其他条件成立时触发，若状态图与文字描述冲突，以状态图为准。9.2.2（定时器）规定了以一秒为分辨率的倒计时定时器：rxInfoTTL 用于老化每条远端条目，tooManyNeighborsTimer 标记溢出状况持续了多久，txTTR 安排下一次发送，txShutdownWhile 延迟重新初始化。点对点链路上一个滴答恰为 1 秒；共享介质上为 0.8 秒加 0.0–0.4 秒抖动，平均为 1 秒。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  TICK[1s tick: txTick] --> TT[Transmit timer SM]\n  CHG[local change] --> TT\n  NEW[new neighbor] --> TT\n  TT -->|txNow| TX[Transmit SM]\n  TX -->|LLDPDU| LINK[(neighbor)]\n  LINK -->|rcvFrame| RX[Receive SM]\n  RX -->|update| RMIB[(remote MIB)]\n  RMIB -->|rxInfoTTL=0| AGE[age out + notify]",
+      "zh": "flowchart LR\n  TICK[1秒滴答: txTick] --> TT[发送定时器状态机]\n  CHG[本地变化] --> TT\n  NEW[新邻居] --> TT\n  TT -->|txNow| TX[发送状态机]\n  TX -->|LLDPDU| LINK[(邻居)]\n  LINK -->|rcvFrame| RX[接收状态机]\n  RX -->|更新| RMIB[(远端 MIB)]\n  RMIB -->|rxInfoTTL=0| AGE[老化并通知]"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 9.2.3 (per-System variables) holds the single BEGIN flag — TRUE forces every state machine into its initial state at startup. Clause 9.2.4 (per-Port variables) holds portEnabled, which is TRUE while the underlying MAC service is operable. Clause 9.2.5 (per-Agent variables) is the largest bucket: adminStatus (enabledRxTx / enabledTxOnly / enabledRxOnly / disabled), the timing knobs msgTxInterval (default 30 s), msgTxHold (default 4, the multiplier that sets txTTL), msgFastTx, reinitDelay, the credit pair txCredit and txCreditMax (default 5), the fast-burst counters txFast and txFastInit (default 4), and signals like localChange, newNeighbor, rcvFrame, rxChanges, rxTTL, txNow, txTick, and txTTL. Clause 9.2.6 (per-Agent statistical counters) are 32-bit counts: framesIn/Out totals, frames discarded or in error, TLVs discarded or unrecognized, ageouts, and length errors.",
+      "zh": "9.2.3（每系统变量）只含一个 BEGIN 标志——为 TRUE 时在启动阶段强制每个状态机进入其初始状态。9.2.4（每端口变量）含 portEnabled，当底层 MAC 服务可用时为 TRUE。9.2.5（每代理变量）是最大的一类：adminStatus（enabledRxTx / enabledTxOnly / enabledRxOnly / disabled）；定时旋钮 msgTxInterval（默认 30 秒）、msgTxHold（默认 4，用于计算 txTTL 的乘数）、msgFastTx、reinitDelay；信用对 txCredit 与 txCreditMax（默认 5）；快速连发计数器 txFast 与 txFastInit（默认 4）；以及 localChange、newNeighbor、rcvFrame、rxChanges、rxTTL、txNow、txTick、txTTL 等信号。9.2.6（每代理统计计数器）是 32 位计数：收/发帧总数、丢弃或出错的帧、丢弃或未识别的 TLV、老化次数与长度错误。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "How TTL is computed: txTTL = min( msgTxInterval × msgTxHold + 1, 65535 ). With the defaults (30 s × 4) a neighbor will hold our entry for about 120 s — four missed refreshes — before aging it out. When a Port goes disabled, txTTL is forced to zero, which is exactly what makes a shutdown LLDPDU mean 'delete me now.'",
+      "zh": "TTL 的计算方式：txTTL = min( msgTxInterval × msgTxHold + 1, 65535 )。采用默认值（30 秒 × 4）时，邻居会把我们的条目保留约 120 秒——相当于错过四次刷新——之后才老化掉。当某 Port 被禁用时，txTTL 被强制为零，这正是关闭 LLDPDU 表示“立即删除我”的原理。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 9.2.7 (state machine procedures) names the helper functions the boxes call: dec() decrements a timer; mibConstrInfoLLDPDU() and mibConstrShutdownLLDPDU() build normal and shutdown frames; mibDeleteObjects() and mibUpdateObjects() maintain the remote MIB; rxInitializeLLDP() and txInitializeLLDP() set up the receive and transmit modules; rxProcessFrame() validates an incoming frame and detects new neighbors and the too-many-neighbors case; somethingChangedLocal() and somethingChangedRemote() raise change notifications; txAddCredit() refills the credit bucket; and txFrame() actually hands the LLDPDU to LLC for transmission. The three machines themselves are 9.2.8 (transmit state machine, Figure 9-1 — builds and sends frames), 9.2.9 (receive state machine, Figure 9-2 — recognizes, validates, and stores), and 9.2.10 (transmit timer state machine, Figure 9-3 — decides when txNow should be raised based on ticks, fast bursts, and credit).",
+      "zh": "9.2.7（状态机过程）给出方框所调用的辅助函数：dec() 递减定时器；mibConstrInfoLLDPDU() 与 mibConstrShutdownLLDPDU() 分别构造普通帧与关闭帧；mibDeleteObjects() 与 mibUpdateObjects() 维护远端 MIB；rxInitializeLLDP() 与 txInitializeLLDP() 初始化接收与发送模块；rxProcessFrame() 校验收到的帧并检测新邻居及邻居过多的情形；somethingChangedLocal() 与 somethingChangedRemote() 发出变化通知；txAddCredit() 补充信用桶；txFrame() 真正把 LLDPDU 交给 LLC 发送。三个状态机本身是：9.2.8（发送状态机，图 9-1——构造并发送帧）、9.2.9（接收状态机，图 9-2——识别、校验并存储）和 9.2.10（发送定时器状态机，图 9-3——根据滴答、快速连发与信用决定何时拉起 txNow）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10 turns to management. Clause 10.1 (data storage and retrieval) simply mandates that an agent have somewhere to keep local and remote information — no implementation is implied. Clause 10.2 lists the LLDP management entity's responsibilities, broken into five jobs. Clause 10.2.1 (protocol initialization management) retrieves non-volatile config, applies defaults, and loads physical topology. Clause 10.2.2 (TLV selection management) gives the network manager a per-port bitmap to enable specific TLVs (mibBasicTLVsTxEnable, mibMgmtAddrInstanceTxEnable). Clause 10.2.3 (transmission management) extracts MIB data, orders the mandatory TLVs first, adds selected optional TLVs, controls length, and submits the frame. Clause 10.2.4 (reception management) parses, validates the first three TLVs, checks for a new MSAP (MAC Service Access Point) identifier, arbitrates overflow, and updates the remote MIB. Clause 10.2.5 (performance management) watches the change procedures, the txTTR and rxInfoTTL timers, shutdown indications, and the too-many-neighbors condition, and keeps statistics.",
+      "zh": "第 10 章转向管理。10.1（数据存储与检索）只要求代理有地方保存本地和远端信息——不暗示任何具体实现。10.2 列出 LLDP 管理实体的职责，分为五项工作。10.2.1（协议初始化管理）检索非易失配置、应用默认值并加载物理拓扑。10.2.2（TLV 选择管理）给网络管理者一个按端口的位图，用于启用特定 TLV（mibBasicTLVsTxEnable、mibMgmtAddrInstanceTxEnable）。10.2.3（发送管理）提取 MIB 数据、把强制 TLV 排在最前、加入选定的可选 TLV、控制长度并提交帧。10.2.4（接收管理）解析、校验前三个 TLV、检查是否为新的 MSAP（MAC 服务接入点，MAC Service Access Point）标识、仲裁溢出并更新远端 MIB。10.2.5（性能管理）监视变化过程、txTTR 与 rxInfoTTL 定时器、关闭指示和邻居过多状况，并维护统计数据。"
+    },
+    {
+      "type": "prose",
+      "en": "The final three subclauses describe the managed data abstractly. Clause 10.3 (managed objects) says management is modeled as operations on managed objects tied to individual TLVs and to frame transmission/reception. Clause 10.4 (data types) lists the parameter types used independent of any management-protocol encoding: Boolean, Enumerated, Unsigned, MAC address, Time interval (seconds), and Counter (32-bit, wraps at 2^32). Clause 10.5 sorts LLDP variables into three groups, each its own subclause. Clause 10.5.1 (operational status and control) is the knobs — adminStatus, msgTxHold, msgTxInterval, reinitDelay, txCreditMax, txFastInit, remoteChanges, tooManyNeighbors. Clause 10.5.2 (operational statistics counters) is the per-port tallies — statsFramesOut/InTotal, statsLengthErrorsTotal, statsAgeoutsTotal, statsFramesDiscardedTotal, statsFramesInErrorsTotal, statsTlvsDiscardedTotal, statsTLVsUnrecognizedTotal. Clause 10.5.3 (TLV required variables) is the data the TLVs themselves carry — e.g. Chassis ID subtype and Chassis ID — outputs from the local agent and inputs to the remote agent.",
+      "zh": "最后三个小节抽象地描述受管数据。10.3（受管对象）指出，管理被建模为对绑定到各个 TLV 及帧收发的受管对象的操作。10.4（数据类型）列出独立于任何管理协议编码的参数类型：布尔型、枚举型、无符号型、MAC 地址、时间间隔（秒）和计数器（32 位，在 2^32 处回绕）。10.5 把 LLDP 变量分为三组，各自成一小节。10.5.1（运行状态与控制）是各个旋钮——adminStatus、msgTxHold、msgTxInterval、reinitDelay、txCreditMax、txFastInit、remoteChanges、tooManyNeighbors。10.5.2（运行统计计数器）是按端口的统计——statsFramesOut/InTotal、statsLengthErrorsTotal、statsAgeoutsTotal、statsFramesDiscardedTotal、statsFramesInErrorsTotal、statsTlvsDiscardedTotal、statsTLVsUnrecognizedTotal。10.5.3（TLV 所需变量）是 TLV 本身携带的数据——例如机箱 ID 子类型与机箱 ID——它们是本地代理的输出、远端代理的输入。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause taught in this lesson, by number",
+        "zh": "覆盖地图——本课所讲每个条款（按编号）"
+      },
+      "en": "Clause 9.1 overview: 9.1.1 frame transmission (timer, new-neighbor burst, change-driven, jittered tick, credit cap); 9.1.2 LLDPDU types — 9.1.2.1 normal (mandatory Chassis ID / Port ID / TTL + optional TLVs), 9.1.2.2 shutdown (TTL=0); 9.1.3 frame reception (recognize / validate / update, create-or-replace, age-out); 9.1.4 too many neighbors (ignore / evict-oldest / evict-random; tooManyNeighbors + tooManyNeighborsTimer); 9.1.5 rxInfoTTL expiry (delete + somethingChangedRemote()); 9.1.6 local port/connection failure (do not purge until re-init or rxInfoTTL expiry). Clause 9.2 state machines: 9.2.1 notation (state boxes, UCT, ELSE, diagram precedence); 9.2.2 timers (rxInfoTTL, tooManyNeighborsTimer, txTTR, txShutdownWhile; 1 s tick, shared-media jitter); 9.2.3 per-System (BEGIN); 9.2.4 per-Port (portEnabled); 9.2.5 per-Agent (adminStatus, msgTxInterval/Hold/FastTx, reinitDelay, txCredit/Max, txFast/Init, localChange, newNeighbor, rcvFrame, rxChanges, rxTTL, txNow, txTick, txTTL); 9.2.6 counters (statsFramesIn/Out, Discarded, InErrors, TLVsDiscarded/Unrecognized, Ageouts, lengthErrors); 9.2.7 procedures (mibConstr*, mibUpdate/DeleteObjects, rx/txInitializeLLDP, rxProcessFrame, somethingChangedLocal/Remote, txAddCredit, txFrame); 9.2.8 transmit SM (Fig 9-1); 9.2.9 receive SM (Fig 9-2); 9.2.10 transmit timer SM (Fig 9-3). Clause 10 management: 10.1 data storage/retrieval; 10.2.1 init mgmt; 10.2.2 TLV selection (mibBasicTLVsTxEnable, mibMgmtAddrInstanceTxEnable); 10.2.3 transmission mgmt; 10.2.4 reception mgmt (MSAP check, overflow arbitration); 10.2.5 performance mgmt; 10.3 managed objects; 10.4 data types (Boolean, Enumerated, Unsigned, MAC address, Time interval, Counter mod 2^32); 10.5.1 status/control variables; 10.5.2 statistics counters; 10.5.3 TLV required variables (e.g. Chassis ID subtype/ID).",
+      "zh": "9.1 概述：9.1.1 帧发送（定时器、新邻居连发、变化驱动、抖动滴答、信用上限）；9.1.2 LLDPDU 类型——9.1.2.1 普通帧（强制的机箱 ID / 端口 ID / TTL + 可选 TLV）、9.1.2.2 关闭帧（TTL=0）；9.1.3 帧接收（识别/校验/更新、创建或替换、老化）；9.1.4 邻居过多（忽略/逐出最旧/随机逐出；tooManyNeighbors + tooManyNeighborsTimer）；9.1.5 rxInfoTTL 到期（删除 + somethingChangedRemote()）；9.1.6 本地端口/连接故障（在重新初始化或 rxInfoTTL 到期前不清除）。9.2 状态机：9.2.1 记号（状态框、UCT、ELSE、状态图优先）；9.2.2 定时器（rxInfoTTL、tooManyNeighborsTimer、txTTR、txShutdownWhile；1 秒滴答、共享介质抖动）；9.2.3 每系统（BEGIN）；9.2.4 每端口（portEnabled）；9.2.5 每代理（adminStatus、msgTxInterval/Hold/FastTx、reinitDelay、txCredit/Max、txFast/Init、localChange、newNeighbor、rcvFrame、rxChanges、rxTTL、txNow、txTick、txTTL）；9.2.6 计数器（statsFramesIn/Out、Discarded、InErrors、TLVsDiscarded/Unrecognized、Ageouts、lengthErrors）；9.2.7 过程（mibConstr*、mibUpdate/DeleteObjects、rx/txInitializeLLDP、rxProcessFrame、somethingChangedLocal/Remote、txAddCredit、txFrame）；9.2.8 发送状态机（图 9-1）；9.2.9 接收状态机（图 9-2）；9.2.10 发送定时器状态机（图 9-3）。第 10 章管理：10.1 数据存储/检索；10.2.1 初始化管理；10.2.2 TLV 选择（mibBasicTLVsTxEnable、mibMgmtAddrInstanceTxEnable）；10.2.3 发送管理；10.2.4 接收管理（MSAP 检查、溢出仲裁）；10.2.5 性能管理；10.3 受管对象；10.4 数据类型（布尔、枚举、无符号、MAC 地址、时间间隔、模 2^32 计数器）；10.5.1 状态/控制变量；10.5.2 统计计数器；10.5.3 TLV 所需变量（如机箱 ID 子类型/ID）。",
+      "cite": {
+        "pdf_id": "8021AB-2016",
+        "pages": [
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76
+        ]
+      }
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"40\" width=\"90\" height=\"40\"/><rect x=\"100\" y=\"40\" width=\"90\" height=\"40\"/><rect x=\"190\" y=\"40\" width=\"90\" height=\"40\"/><rect x=\"280\" y=\"40\" width=\"130\" height=\"40\"/><rect x=\"410\" y=\"40\" width=\"100\" height=\"40\"/><text x=\"55\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Chassis ID</text><text x=\"145\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Port ID</text><text x=\"235\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">TTL</text><text x=\"345\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">optional TLVs</text><text x=\"460\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">End TLV</text><text x=\"10\" y=\"28\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">mandatory (9.1.2.1)</text><text x=\"280\" y=\"28\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">selected (10.2.2)</text><text x=\"10\" y=\"110\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Shutdown LLDPDU (9.1.2.2): same first two TLVs, TTL = 0</text></svg>",
+      "caption": {
+        "en": "An LLDPDU always opens with the three mandatory TLVs (Chassis ID, Port ID, TTL), followed by manager-selected optional TLVs and an optional End TLV. A shutdown LLDPDU keeps the first two but sets TTL = 0.",
+        "zh": "LLDPDU 总是以三个强制 TLV（机箱 ID、端口 ID、TTL）开头，其后是管理者选定的可选 TLV 和可选的结束 TLV。关闭 LLDPDU 保留前两个 TLV，但把 TTL 置为 0。"
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AB-2016",
+      "pages": [
+        53,
+        54,
+        55,
+        56
+      ],
+      "note": "9.1 overview: frame transmission, LLDPDU types, reception, too-many-neighbors, rxInfoTTL expiry, local failure"
+    },
+    {
+      "pdf_id": "8021AB-2016",
+      "pages": [
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63
+      ],
+      "note": "9.2 state machines: notation, timers, per-System/Port/Agent variables, counters, procedures"
+    },
+    {
+      "pdf_id": "8021AB-2016",
+      "pages": [
+        70,
+        71,
+        72
+      ],
+      "note": "9.2.7 txInitializeLLDP, 9.2.8 transmit SM, 9.2.9 receive SM, 9.2.10 transmit timer SM"
+    },
+    {
+      "pdf_id": "8021AB-2016",
+      "pages": [
+        73,
+        74,
+        75,
+        76
+      ],
+      "note": "Clause 10: data storage, management entity responsibilities, managed objects, data types, LLDP variables"
+    }
+  ],
+  "covers": [
+    "8021AB-2016:9.1.1",
+    "8021AB-2016:9.1.2",
+    "8021AB-2016:9.1.3",
+    "8021AB-2016:9.1.4",
+    "8021AB-2016:9.1.5",
+    "8021AB-2016:9.1.6",
+    "8021AB-2016:9.2.1",
+    "8021AB-2016:9.2.2",
+    "8021AB-2016:9.2.3",
+    "8021AB-2016:9.2.4",
+    "8021AB-2016:9.2.5",
+    "8021AB-2016:9.2.6",
+    "8021AB-2016:9.2.7",
+    "8021AB-2016:9.2.8",
+    "8021AB-2016:9.2.9",
+    "8021AB-2016:9.2.10",
+    "8021AB-2016:10.1",
+    "8021AB-2016:10.2.1",
+    "8021AB-2016:10.2.2",
+    "8021AB-2016:10.2.3",
+    "8021AB-2016:10.2.4",
+    "8021AB-2016:10.2.5",
+    "8021AB-2016:10.3",
+    "8021AB-2016:10.4",
+    "8021AB-2016:10.5.1",
+    "8021AB-2016:10.5.2",
+    "8021AB-2016:10.5.3"
+  ],
+  "track": "bridging-tsn"
+}

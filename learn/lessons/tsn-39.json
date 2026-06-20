@@ -1,0 +1,159 @@
+{
+  "id": "tsn-39",
+  "title": {
+    "en": "FRER Extended Stream ID: Conformance, Stream Identification, Sequencing & Bridges",
+    "zh": "FRER 扩展流识别：一致性、流识别、序列化与网桥"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This lesson walks through the heart of IEEE Std 802.1CBdb-2021, an amendment to 802.1CB — the standard for FRER (Frame Replication and Elimination for Reliability). FRER sends two copies of every packet down two disjoint network paths and then quietly throws away the duplicate at the far end, so a single broken cable never drops a frame. 802.1CBdb adds a powerful new way to recognize which packets belong to a protected flow: the Mask-and-match Stream identification function. A Stream here means a flow of related frames (for example, all the packets of one robot's control loop) that the network treats as one protected entity. Along the way the amendment refreshes the conformance lists, the sequencing math, and the bridge rules so everything fits together.",
+      "zh": "本课讲解 IEEE Std 802.1CBdb-2021 的核心内容。它是 802.1CB 的修正案，而 802.1CB 是关于 FRER（帧复制与消除以提升可靠性，Frame Replication and Elimination for Reliability）的标准。FRER 会把每个数据包复制两份，分别沿两条互不相交的路径发送，再在远端悄悄丢掉重复的那份，这样即使一条线缆断了也不会丢帧。802.1CBdb 新增了一种强大的识别方式来判断哪些数据包属于受保护的流：掩码匹配流识别功能（Mask-and-match Stream identification）。这里所说的「流」（Stream）是指一组相关帧的集合（例如某个机器人控制环路的全部数据包），网络把它当作单个受保护实体来处理。在此过程中，本修正案还更新了一致性清单、序列化算法以及网桥规则，让各部分协调一致。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5 (Conformance) is a checklist of what a conforming device must, should, or may do. 802.1CBdb edits several of these lists to add the two new identification functions. A Stream identification component should support Active Destination MAC and VLAN Stream identification (5.4), and may optionally add IP Stream identification or the new Mask-and-match function (5.5). The same optional pair is folded into Talker (sender) end systems (5.7 recommended, 5.8 optional) and Listener (receiver) end systems (5.10 recommended, 5.11 optional), where the optional list also names the HSR sequence tag and PRP sequence trailer. A relay system — a device that forwards on behalf of others — should support IP or Mask-and-match identification so it can proxy for a FRER-unaware end station (5.13). Finally 5.15 ties the FRER C-component (a VLAN-aware bridging block) to the IEEE 802.1Q-2018 C-VLAN component requirements.",
+      "zh": "第 5 条（一致性，Conformance）是一份清单，规定符合标准的设备必须、应当或可以做哪些事。802.1CBdb 修改了其中几份清单，加入了两个新的识别功能。流识别组件应当支持「主动目的 MAC 与 VLAN 流识别」（5.4），并可选地增加 IP 流识别或新的掩码匹配功能（5.5）。同样这对可选功能也被纳入 Talker（发送端）终端系统（5.7 推荐、5.8 可选）和 Listener（接收端）终端系统（5.10 推荐、5.11 可选），其中可选清单还列出了 HSR 序列标签与 PRP 序列尾标。中继系统（relay system，代他人转发的设备）应当支持 IP 或掩码匹配识别，以便为不感知 FRER 的终端站点充当代理（5.13）。最后，5.15 把 FRER C 组件（一个支持 VLAN 的桥接模块）与 IEEE 802.1Q-2018 C-VLAN 组件的要求绑定起来。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Talker and Listener are 802.1CB's names for the two ends of a protected Stream: a Talker produces the frames and splits them onto redundant paths; a Listener receives the copies and eliminates duplicates. Both can also be a relay system in the middle that proxies the function for legacy gear.",
+      "zh": "Talker 和 Listener 是 802.1CB 对受保护流两端的称呼：Talker 产生帧并把它们分发到冗余路径上；Listener 接收这些副本并消除重复。两者中间还可以有中继系统，为旧设备代理执行该功能。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6 (Stream identification) explains how a frame is recognized as belonging to a Stream. All identification functions plug into a single Service Access Point (SAP) — the doorway between protocol layers — using the ISS (Internal Sublayer Service) or the EISS (Enhanced Internal Sublayer Service, the VLAN-aware version from 802.1Q). The connectivity model carries a local-only connection_identifier parameter, and FRER smuggles its extra data inside it as named subparameters such as stream_handle and sequence_number (6.1). The identification function itself (6.2) maps a frame to a stream_handle, and the order in which functions run when several match is left out of scope. Clause 6.3 shows where these functions sit inside a relay system's forwarding path.",
+      "zh": "第 6 条（流识别，Stream identification）说明如何把一个帧识别为属于某个流。所有识别功能都通过单一的服务接入点（SAP，Service Access Point，即协议层之间的入口）接入，使用 ISS（内部子层服务，Internal Sublayer Service）或 EISS（增强内部子层服务，Enhanced Internal Sublayer Service，即来自 802.1Q 的支持 VLAN 的版本）。连接模型携带一个仅在本地有意义的 connection_identifier 参数，FRER 把它的额外数据以命名子参数的形式藏在其中，例如 stream_handle 和 sequence_number（6.1）。识别功能本身（6.2）把一个帧映射到某个 stream_handle；当多个功能同时匹配时它们的执行顺序不在本标准范围内。6.3 则展示了这些功能在中继系统转发路径中的位置。"
+    },
+    {
+      "type": "prose",
+      "en": "There are five concrete identification flavors, summarized in Table 6-1. Null Stream identification (6.4) is purely passive: it inspects the destination MAC address and VLAN ID and overwrites nothing — it just attaches a stream_handle. Source MAC and VLAN identification (6.5) does the same but keys on the source address instead. Active Destination MAC and VLAN identification (6.6) is the only active one: it actually rewrites the destination MAC, VLAN, and priority of the frame, swapping in alternate values chosen by the stream_handle — this is how a bridge can re-address a flow to a value unique within itself. IP Stream identification (6.7) reaches up into the IP header, matching on IP source/destination, DSCP, next-protocol, and TCP/UDP ports.",
+      "zh": "表 6-1 概括了五种具体的识别方式。空流识别（Null Stream identification，6.4）是纯被动的：它检查目的 MAC 地址和 VLAN ID，不改写任何内容——只附加一个 stream_handle。源 MAC 与 VLAN 识别（6.5）做法相同，但以源地址为关键字。主动目的 MAC 与 VLAN 识别（6.6）是唯一的主动方式：它会真正改写帧的目的 MAC、VLAN 和优先级，换入由 stream_handle 选定的替代值——网桥正是借此把某个流重新寻址为在其内部唯一的值。IP 流识别（6.7）则深入到 IP 头部，依据 IP 源/目的地址、DSCP、下一层协议以及 TCP/UDP 端口进行匹配。"
+    },
+    {
+      "type": "prose",
+      "en": "The headline addition is Mask-and-match Stream identification (6.8). It is passive and works at the raw frame level over the ISS. For each frame passed up the stack it ignores any incoming stream_handle and computes a fresh one by masking a chosen subset of fields — the source address, the destination address, and the first N octets of the MAC service data unit (the frame payload), where N is implementation-dependent. The masked bits are then compared against stored match values. Because the mask can reach arbitrary bytes of the payload, this single function can recognize flows of almost any higher-layer protocol — even ones the standard never anticipated. It is often paired with Active Destination MAC and VLAN identification (6.6) to first recognize a payload pattern and then re-stamp the frame with a unique address triplet.",
+      "zh": "本次最重要的新增内容是掩码匹配流识别（Mask-and-match Stream identification，6.8）。它是被动的，在原始帧层面通过 ISS 工作。对于每个向上传递的帧，它忽略任何传入的 stream_handle，转而通过对选定的字段子集做掩码来计算出一个全新的 stream_handle——这些字段包括源地址、目的地址，以及 MAC 服务数据单元（即帧载荷）的前 N 个八位字节，其中 N 由实现决定。掩码取出的比特随后与预存的匹配值比对。由于掩码可以触及载荷中的任意字节，这一个功能就能识别几乎任何高层协议的流——甚至是标准未曾预见的协议。它常与主动目的 MAC 与 VLAN 识别（6.6）配对使用：先识别载荷模式，再为帧重新打上唯一的地址三元组。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"30\" width=\"90\" height=\"34\"/><rect x=\"100\" y=\"30\" width=\"90\" height=\"34\"/><rect x=\"190\" y=\"30\" width=\"200\" height=\"34\"/><text x=\"55\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">DA</text><text x=\"145\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">SA</text><text x=\"290\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">MSDU (payload)</text><rect x=\"190\" y=\"30\" width=\"60\" height=\"34\" stroke-dasharray=\"4 3\"/><text x=\"220\" y=\"82\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">first N octets</text><text x=\"55\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">mask?</text><text x=\"145\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">mask?</text><text x=\"220\" y=\"105\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">(mask) AND field == match value  -&gt;  stream_handle</text><text x=\"10\" y=\"140\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">Mask-and-match (6.8): any chosen bits of DA / SA / first N payload octets</text></svg>",
+      "caption": {
+        "en": "Mask-and-match (6.8): mask off the bits you care about in the destination address, source address, or the first N payload octets, compare to a match value, and emit a stream_handle.",
+        "zh": "掩码匹配（6.8）：在目的地址、源地址或载荷前 N 个八位字节中掩出你关心的比特，与匹配值比对，再输出一个 stream_handle。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7 (Frame Replication and Elimination for Reliability) holds the sequencing math. The Sequence generation function (7.4.1) stamps each outgoing copy with an increasing sequence_number; a SequenceGenerationReset can momentarily cause a packet drop. The Base recovery function (7.4.3) is the duplicate eliminator: it remembers recently-seen sequence numbers in a SequenceHistory window. As long as the spread between the fastest and slowest path stays within that window, every duplicate is removed and no good frame is lost — but if a path lags too far, frames may be discarded. Its two algorithms, the VectorRecoveryAlgorithm (a sliding acceptance window, good for steady Bulk Streams) and the MatchRecoveryAlgorithm (accept-if-different, good for sparse Intermittent Streams), share a RemainingTicks timer that re-arms the function if traffic stops, so a Talker reset can never wedge it forever.",
+      "zh": "第 7 条（帧复制与消除以提升可靠性）包含序列化算法。序列生成功能（Sequence generation function，7.4.1）为每个发出的副本打上递增的 sequence_number；一次 SequenceGenerationReset 可能会瞬时造成丢包。基础恢复功能（Base recovery function，7.4.3）是重复消除器：它用一个 SequenceHistory 窗口记住最近见过的序列号。只要最快与最慢路径之间的差距保持在该窗口内，每个重复包都会被去除且不丢失任何有效帧——但若某条路径滞后太多，则可能丢弃帧。它的两种算法——向量恢复算法（VectorRecoveryAlgorithm，一个滑动接受窗口，适合稳定的批量流 Bulk Streams）与匹配恢复算法（MatchRecoveryAlgorithm，不同即接受，适合稀疏的间歇流 Intermittent Streams）——共用一个 RemainingTicks 计时器，在流量停止时重新启用该功能，因此 Talker 复位也绝不会让它永久卡死。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Frame arrives] --> B{seq present?}\n  B -- no --> P[Pass up: count tagless]\n  B -- yes --> C{first after reset?}\n  C -- yes --> P2[Accept, set RecovSeqNum]\n  C -- no --> D{seen in history window?}\n  D -- yes --> X[Discard duplicate]\n  D -- no --> P3[Accept, update window]",
+      "zh": "flowchart LR\n  A[帧到达] --> B{有序列号?}\n  B -- 无 --> P[向上传递: 计无标签包]\n  B -- 有 --> C{复位后首包?}\n  C -- 是 --> P2[接受, 设 RecovSeqNum]\n  C -- 否 --> D{在历史窗口内见过?}\n  D -- 是 --> X[丢弃重复包]\n  D -- 否 --> P3[接受, 更新窗口]"
+    },
+    {
+      "type": "prose",
+      "en": "The same sequence_number can be carried in three different on-the-wire encodings, and the amendment refreshes all three to reference 802.1Q-2018 and the subparameter model: the Redundancy tag or R-TAG (7.8), 802.1CB's own EtherType tag; the HSR sequence tag (7.9), borrowed from High-availability Seamless Redundancy rings; and the PRP sequence trailer (7.10), borrowed from the Parallel Redundancy Protocol, which appends its sequence number at the tail of the frame. Each operates at the frame level over the ISS or EISS, carrying the stream_handle and sequence_number subparameters defined back in 6.1.",
+      "zh": "同一个 sequence_number 可以用三种不同的线上编码来承载，本修正案把这三种都更新为引用 802.1Q-2018 及子参数模型：冗余标签（Redundancy tag，即 R-TAG，7.8），这是 802.1CB 自有的 EtherType 标签；HSR 序列标签（7.9），借自高可用无缝冗余环网（High-availability Seamless Redundancy）；以及 PRP 序列尾标（7.10），借自并行冗余协议（Parallel Redundancy Protocol），它把序列号附在帧的尾部。它们都在帧层面通过 ISS 或 EISS 工作，携带 6.1 中定义的 stream_handle 和 sequence_number 子参数。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 8 (FRER in Bridges) places all this inside an 802.1Q bridge. Limiting options (8.1) describes Augmented forwarding: the ordinary Bridge Forwarding Process gets identification, sequence encode/decode, and recovery functions slotted in around it, with strict rules on ordering — for example, flow metering sits after passive identification (so the stream_handle is available to meter on) but before recovery, and output transformations run after forwarding. The C-component input transformations (8.2) let a bridge act as a proxy for a non-FRER end station: it identifies the flow (often via IP or Mask-and-match), serializes it with a sequence number, encodes an R-TAG, and re-addresses it with Active Destination MAC and VLAN identification. Finally 8.3 confirms FRER sits above the Bridge Port transmit/receive layer, so a frame may carry both a C-VLAN tag and an R-TAG.",
+      "zh": "第 8 条（网桥中的 FRER）把上述全部内容置于 802.1Q 网桥之中。限定选项（Limiting options，8.1）描述了「增强转发」（Augmented forwarding）：在普通的网桥转发过程周围插入识别、序列编码/解码与恢复功能，并对顺序有严格规定——例如流量计量（flow metering）位于被动识别之后（以便可基于 stream_handle 计量）但位于恢复之前，而输出变换在转发之后执行。C 组件输入变换（8.2）让网桥能为不支持 FRER 的终端站点充当代理：它识别该流（通常借助 IP 或掩码匹配），用序列号将其序列化，编码出一个 R-TAG，再用主动目的 MAC 与 VLAN 识别为其重新寻址。最后，8.3 确认 FRER 位于网桥端口收发层之上，因此一个帧可以同时携带 C-VLAN 标签和 R-TAG。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause taught in this lesson, by number",
+        "zh": "覆盖地图——本课所讲每个条款（按编号）"
+      },
+      "en": "Clause 5 Conformance (p.16-17): 5.4 adds Active Destination MAC and VLAN as recommended for an identification component; 5.5 makes IP (6.7) and Mask-and-match (6.8) optional; 5.7 / 5.8 do the same for Talker end systems (recommended / optional, optional also lists HSR 7.9 and PRP 7.10); 5.10 / 5.11 do the same for Listener end systems (5.11 also requires two Individual recovery instances using the VectorRecoveryAlgorithm); 5.13 recommends a relay system support IP or Mask-and-match so it can proxy a FRER-unaware end system; 5.15 binds the FRER C-component to the 802.1Q-2018 C-VLAN component rules. Clause 6 Stream identification (p.18-21): 6.1 subparameters (stream_handle, sequence_number in connection_identifier); 6.2 the identification function and out-of-scope precedence note; 6.3 placement in systems; 6.4 Null (passive, examines DA+VLAN); 6.5 Source MAC and VLAN (passive, examines SA+VLAN); 6.6 Active Destination MAC and VLAN (active, overwrites DA, VLAN, priority); 6.7 IP (passive, examines IP 5-tuple + DSCP); 6.8 Mask-and-match (passive ISS-level, masks DA/SA/first N MSDU octets, compares to match values, pairs with 6.6). Clause 7 (p.22-26): 7.4.1 Sequence generation (7.4.1.3 reset can drop a packet); 7.4.3 Base recovery (SequenceHistory window, VectorRecoveryAlgorithm 7.4.3.4 sliding window for Bulk, MatchRecoveryAlgorithm 7.4.3.5 accept-if-different for Intermittent, RemainingTicks re-arm); 7.8 R-TAG; 7.9 HSR sequence tag; 7.10 PRP sequence trailer. Clause 8 (p.27-28): 8.1 Limiting options / Augmented forwarding ordering; 8.2 C-component input transformations (proxy: identify -> sequence -> R-TAG -> Active Destination re-address); 8.3 FRER above Bridge Port transmit/receive, frame can hold C-VLAN tag + R-TAG.",
+      "zh": "第 5 条 一致性（第 16-17 页）：5.4 将主动目的 MAC 与 VLAN 列为识别组件的推荐项；5.5 将 IP（6.7）和掩码匹配（6.8）列为可选项；5.7 / 5.8 对 Talker 终端系统作同样处理（推荐 / 可选，可选项还列出 HSR 7.9 与 PRP 7.10）；5.10 / 5.11 对 Listener 终端系统作同样处理（5.11 还要求两个使用向量恢复算法的独立恢复实例）；5.13 推荐中继系统支持 IP 或掩码匹配以便代理不感知 FRER 的终端系统；5.15 将 FRER C 组件绑定到 802.1Q-2018 C-VLAN 组件规则。第 6 条 流识别（第 18-21 页）：6.1 子参数（connection_identifier 中的 stream_handle、sequence_number）；6.2 识别功能及优先级不在范围内的说明；6.3 在系统中的位置；6.4 空（被动，检查 DA+VLAN）；6.5 源 MAC 与 VLAN（被动，检查 SA+VLAN）；6.6 主动目的 MAC 与 VLAN（主动，改写 DA、VLAN、优先级）；6.7 IP（被动，检查 IP 五元组 + DSCP）；6.8 掩码匹配（被动，ISS 层面，对 DA/SA/MSDU 前 N 字节掩码并与匹配值比对，与 6.6 配对）。第 7 条（第 22-26 页）：7.4.1 序列生成（7.4.1.3 复位可能丢包）；7.4.3 基础恢复（SequenceHistory 窗口，向量恢复算法 7.4.3.4 滑动窗口适合批量流，匹配恢复算法 7.4.3.5 不同即接受适合间歇流，RemainingTicks 重新启用）；7.8 R-TAG；7.9 HSR 序列标签；7.10 PRP 序列尾标。第 8 条（第 27-28 页）：8.1 限定选项 / 增强转发顺序；8.2 C 组件输入变换（代理：识别 -> 序列化 -> R-TAG -> 主动目的地址重写）；8.3 FRER 位于网桥端口收发之上，帧可同时含 C-VLAN 标签 + R-TAG。",
+      "cite": {
+        "pdf_id": "8021CBdb-2021",
+        "pages": [
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          25,
+          26,
+          27,
+          28
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021CBdb-2021",
+      "pages": [
+        16,
+        17
+      ],
+      "note": "Clause 5 conformance lists 5.4, 5.5, 5.7, 5.8, 5.10, 5.11, 5.13, 5.15"
+    },
+    {
+      "pdf_id": "8021CBdb-2021",
+      "pages": [
+        18,
+        19,
+        20,
+        21
+      ],
+      "note": "Clause 6 stream identification 6.1-6.8, Table 6-1, Mask-and-match"
+    },
+    {
+      "pdf_id": "8021CBdb-2021",
+      "pages": [
+        22,
+        25,
+        26
+      ],
+      "note": "Clause 7 sequencing 7.4.1, 7.4.3, R-TAG 7.8, HSR 7.9, PRP 7.10"
+    },
+    {
+      "pdf_id": "8021CBdb-2021",
+      "pages": [
+        27,
+        28
+      ],
+      "note": "Clause 8 bridges: 8.1 limiting options, 8.2 input transformations, 8.3 VLAN tags"
+    }
+  ],
+  "covers": [
+    "8021CBdb-2021:5.4",
+    "8021CBdb-2021:5.5",
+    "8021CBdb-2021:5.7",
+    "8021CBdb-2021:5.8",
+    "8021CBdb-2021:5.10",
+    "8021CBdb-2021:5.11",
+    "8021CBdb-2021:5.13",
+    "8021CBdb-2021:5.15",
+    "8021CBdb-2021:6.1",
+    "8021CBdb-2021:6.2",
+    "8021CBdb-2021:6.3",
+    "8021CBdb-2021:6.4",
+    "8021CBdb-2021:6.5",
+    "8021CBdb-2021:6.6",
+    "8021CBdb-2021:6.7",
+    "8021CBdb-2021:6.8",
+    "8021CBdb-2021:7.4.1",
+    "8021CBdb-2021:7.4.3",
+    "8021CBdb-2021:7.8",
+    "8021CBdb-2021:7.9",
+    "8021CBdb-2021:7.10",
+    "8021CBdb-2021:8.1",
+    "8021CBdb-2021:8.2",
+    "8021CBdb-2021:8.3"
+  ],
+  "track": "tsn"
+}

@@ -1,0 +1,180 @@
+{
+  "id": "bridging-tsn-99",
+  "title": {
+    "en": "YANG Models for TSN: How Bridges Describe Their Gates, Preemption, and Filters",
+    "zh": "TSN 的 YANG 模型：网桥如何描述自己的门控、抢占与过滤器"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A modern bridge in a Time-Sensitive Networking (TSN) network is not configured by typing commands into one box at a time. Instead, a controller talks to every bridge over a network management protocol such as NETCONF (Network Configuration Protocol), and every knob the controller can turn is described by a data model written in YANG (Yet Another Next Generation — a language for modeling configuration and state). Clause 48 of IEEE Std 802.1Qcw-2023 is exactly this: it adds YANG models so that three TSN features — Scheduled Traffic, Frame Preemption, and Per-Stream Filtering and Policing (PSFP) — can be configured and read remotely in a uniform way. This lesson walks the first half of Clause 48: which models exist (48.2), how they are layered into modules (48.3), how to protect them (48.4), and what their schema trees look like (48.5).",
+      "zh": "在时间敏感网络（TSN，Time-Sensitive Networking）中，现代网桥不再靠逐台敲命令来配置。取而代之的是：控制器通过网络管理协议（例如 NETCONF，Network Configuration Protocol，网络配置协议）与每一台网桥对话，而控制器能调的每一个旋钮都由一份用 YANG（Yet Another Next Generation，一种描述配置与状态的数据建模语言）编写的数据模型来描述。IEEE Std 802.1Qcw-2023 的第 48 章正是做这件事：它新增了一批 YANG 模型，让三项 TSN 功能——调度流量（Scheduled Traffic）、帧抢占（Frame Preemption）以及逐流过滤与监管（PSFP，Per-Stream Filtering and Policing）——都能以统一方式被远程配置和读取。本课讲解第 48 章的前半部分：有哪些模型（48.2）、它们如何分层为模块（48.3）、如何加以保护（48.4），以及它们的模式树长什么样（48.5）。"
+    },
+    {
+      "type": "prose",
+      "en": "Section 48.2 redraws the picture-level models for several familiar bridge types. 48.2.1 (VLAN Bridge components model) replaces the Bridge Port figure that lists every per-port object — VLAN identity (PVID, the Port VLAN Identifier), priority handling, traffic-class tables, and the read-only counters under statistics. 48.2.2 (Two-Port MAC Relay, TPMR, model) is the slimmed-down two-port relay variant. 48.2.4 (Provider Bridge model) covers carrier bridges that carry customer C-VLANs inside service S-VLANs, with C-VID/S-VID registration. 48.2.5 (CFM Model) covers Connectivity Fault Management — the maintenance endpoints (MEPs) that detect link faults. These four are the existing scaffolding onto which the new TSN features bolt on.",
+      "zh": "48.2 节为几种常见网桥类型重绘了图示级模型。48.2.1（VLAN 网桥组件模型）替换了列出每个端口对象的网桥端口图——包括 VLAN 标识（PVID，端口 VLAN 标识符）、优先级处理、流量类别表，以及 statistics 下的只读计数器。48.2.2（双端口 MAC 中继，TPMR，模型）是精简的两端口中继变体。48.2.4（提供商网桥模型）针对运营商网桥，它把客户 C-VLAN 装进服务 S-VLAN 中承载，并带有 C-VID/S-VID 注册。48.2.5（CFM 模型）针对连通性故障管理（Connectivity Fault Management），即检测链路故障的维护端点（MEP）。这四者是已有的支架，新增的 TSN 功能就挂接其上。"
+    },
+    {
+      "type": "prose",
+      "en": "The genuinely new TSN models appear in 48.2.7 through 48.2.11. 48.2.7 (Asynchronous Traffic Shaping, ATS, model) adds scheduler groups and per-scheduler committed-information-rate / committed-burst-size objects, plus timing-characteristics that bound clock offset and processing delay. 48.2.8 (Congestion Isolation, CI, model) adds peer and stream tables so a bridge can isolate a congesting flow. Then come the three headline features: 48.2.9 (Scheduled Traffic model) adds one gate-parameter-table per port — the heart of the time-aware gate that opens and closes per traffic class. 48.2.10 (Frame Preemption model) adds one frame-preemption-parameter-table per port so express frames can interrupt preemptable ones. 48.2.11 (Per-Stream Filtering and Policing model) adds stream-filter, stream-gate, and flow-meter instance tables per bridge component.",
+      "zh": "真正全新的 TSN 模型出现在 48.2.7 至 48.2.11。48.2.7（异步流量整形，ATS，模型）新增调度器组以及每个调度器的承诺信息速率/承诺突发大小对象，外加约束时钟偏移与处理时延的定时特性。48.2.8（拥塞隔离，CI，模型）新增对端表与流表，使网桥能隔离造成拥塞的流。随后是三大主打功能：48.2.9（调度流量模型）为每个端口新增一张 gate-parameter-table——这是按流量类别开闭的时间感知门控的核心。48.2.10（帧抢占模型）为每个端口新增一张 frame-preemption-parameter-table，使快速帧能打断可抢占帧。48.2.11（逐流过滤与监管模型）为每个网桥组件新增 stream-filter、stream-gate 与 flow-meter 实例表。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A useful mental model: the standard splits a feature into two YANG modules. A feature module (for example ieee802-dot1q-sched) defines the data types and the rules; a bridge module (for example ieee802-dot1q-sched-bridge) augments — grafts — those nodes onto the existing Bridge Port tree. That split lets the same feature definitions be reused on different node types without copy-pasting the tree.",
+      "zh": "一个有用的心智模型：标准把每项功能拆成两个 YANG 模块。功能模块（例如 ieee802-dot1q-sched）定义数据类型与规则；网桥模块（例如 ieee802-dot1q-sched-bridge）则把这些节点 augment（嫁接）到已有的网桥端口树上。这种拆分让同一份功能定义能复用到不同节点类型上，而无需复制整棵树。"
+    },
+    {
+      "type": "prose",
+      "en": "Section 48.3 (Structure of the YANG models) is the bill of materials: it lists exactly which modules a bridge must implement for each feature. 48.3.9 (Scheduled Traffic model) says a bridge implementing Scheduled Traffic implements five modules: ieee802-types, ieee802-dot1q-types, ieee802-dot1q-bridge, ieee802-dot1q-sched, and ieee802-dot1q-sched-bridge. 48.3.10 (Frame Preemption model) lists ieee802-dot1q-types, ieee802-dot1q-bridge, ieee802-dot1q-preemption, and ieee802-dot1q-preemption-bridge. 48.3.11 (Per-Stream Filtering and Policing model) lists seven modules, including the stream-filters-gates pair plus ieee802-dot1q-psfp and ieee802-dot1q-psfp-bridge. Each feature's two-module pattern (feature + bridge augment) is visible directly in these tables.",
+      "zh": "48.3 节（YANG 模型的结构）是一份物料清单：它精确列出每项功能要求网桥实现哪些模块。48.3.9（调度流量模型）规定：实现调度流量的网桥须实现五个模块：ieee802-types、ieee802-dot1q-types、ieee802-dot1q-bridge、ieee802-dot1q-sched 与 ieee802-dot1q-sched-bridge。48.3.10（帧抢占模型）列出 ieee802-dot1q-types、ieee802-dot1q-bridge、ieee802-dot1q-preemption 与 ieee802-dot1q-preemption-bridge。48.3.11（逐流过滤与监管模型）列出七个模块，包括 stream-filters-gates 这一对，外加 ieee802-dot1q-psfp 与 ieee802-dot1q-psfp-bridge。每项功能的“功能模块 + 网桥嫁接模块”双模块模式在这些表中一目了然。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  base[Bridge Port tree] --> sched[sched-bridge augment]\n  base --> preempt[preemption-bridge augment]\n  comp[Bridge component] --> psfp[psfp-bridge augment]\n  sched --> gpt[gate-parameter-table]\n  preempt --> fpp[frame-preemption-parameters]\n  psfp --> sf[stream-filters]\n  psfp --> sg[stream-gates]\n  psfp --> fm[flow-meters]",
+      "zh": "flowchart TD\n  base[网桥端口树] --> sched[sched-bridge 嫁接]\n  base --> preempt[preemption-bridge 嫁接]\n  comp[网桥组件] --> psfp[psfp-bridge 嫁接]\n  sched --> gpt[门控参数表]\n  preempt --> fpp[帧抢占参数]\n  psfp --> sf[流过滤器]\n  psfp --> sg[流门控]\n  psfp --> fm[流量计]"
+    },
+    {
+      "type": "prose",
+      "en": "Section 48.4 (Security considerations) reminds us that a remote-config model is also a remote-attack surface. The new third paragraph of 48.4 warns that read-write objects edited over NETCONF (via edit-config, delete-config, copy-config) without protection can harm the network. The three new subclauses pin this down per feature. 48.4.9 (Scheduled Traffic) flags the gate-parameter-table: tampering could force a reinitialization of the Scheduled Traffic state machines, causing instability. 48.4.10 (Frame Preemption) flags frame-preemption-parameters: tampering could reinitialize the preemption status table. 48.4.11 (PSFP) flags stream-filters, stream-gates, and flow-meters: tampering could reinitialize the PSFP state machines. Each subclause cross-references 48.4.1 for the underlying bridge-model security notes.",
+      "zh": "48.4 节（安全考量）提醒我们：一个可远程配置的模型同时也是一个可远程攻击的面。48.4 节新增的第三段告诫：在缺乏保护时通过 NETCONF（借助 edit-config、delete-config、copy-config）编辑读写对象，可能损害网络。三个新增子条款针对各功能逐一明确风险。48.4.9（调度流量）标记 gate-parameter-table：篡改它可能强制调度流量状态机重新初始化，引发不稳定。48.4.10（帧抢占）标记 frame-preemption-parameters：篡改它可能重新初始化抢占状态表。48.4.11（PSFP）标记 stream-filters、stream-gates 与 flow-meters：篡改它们可能重新初始化 PSFP 状态机。每个子条款都交叉引用 48.4.1 中底层网桥模型的安全说明。"
+    },
+    {
+      "type": "prose",
+      "en": "Section 48.5 (YANG schema tree definitions) shows the actual tree shapes. The notation is standard YANG tree output: +--rw marks a read-write (configurable) node, +--ro a read-only (operational) node, a trailing ? marks an optional node, and * marks a list keyed by the names in brackets. 48.5.4 (ieee802-dot1q-bridge module) is the base tree everything augments — bridges → bridge* [name] → component* [name], with the capabilities, filtering-database, and filtering-entry lists hanging beneath. This is the trunk; the TSN feature trees graft onto its branches.",
+      "zh": "48.5 节（YANG 模式树定义）展示真实的树形结构。其记法是标准的 YANG 树输出：+--rw 表示读写（可配置）节点，+--ro 表示只读（运行态）节点，结尾的 ? 表示可选节点，* 表示一个以方括号中名字为键的列表。48.5.4（ieee802-dot1q-bridge 模块）是其他一切所嫁接的基础树——bridges → bridge* [name] → component* [name]，其下挂着 capabilities、filtering-database 与 filtering-entry 列表。这是主干；TSN 功能树就嫁接到它的枝条上。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"10\" width=\"180\" height=\"30\"/><text x=\"20\" y=\"30\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">gate-parameter-table (rw)</text><rect x=\"30\" y=\"55\" width=\"200\" height=\"26\"/><text x=\"40\" y=\"72\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">admin-control-list (gate entries)</text><rect x=\"30\" y=\"90\" width=\"200\" height=\"26\"/><text x=\"40\" y=\"107\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">admin-cycle-time (num/den)</text><rect x=\"30\" y=\"125\" width=\"200\" height=\"26\"/><text x=\"40\" y=\"142\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">admin-base-time (sec/nsec)</text><rect x=\"260\" y=\"55\" width=\"185\" height=\"26\"/><text x=\"270\" y=\"72\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">oper-* mirrors (ro)</text><rect x=\"260\" y=\"125\" width=\"185\" height=\"26\"/><text x=\"270\" y=\"142\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">config-change-error (ro)</text><line x1=\"100\" y1=\"40\" x2=\"100\" y2=\"55\"/><line x1=\"100\" y1=\"40\" x2=\"100\" y2=\"125\"/><line x1=\"352\" y1=\"40\" x2=\"352\" y2=\"55\"/></svg>",
+      "caption": {
+        "en": "The Scheduled Traffic schema (48.5.18): each read-write admin-* knob is paired with a read-only oper-* mirror, so a controller writes the plan and reads back what is actually running.",
+        "zh": "调度流量模式（48.5.18）：每个读写的 admin-* 旋钮都配有一个只读的 oper-* 镜像，于是控制器写入计划、再读回实际运行的状态。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — the exact schema-tree subclauses 48.5.17 through 48.5.22",
+        "zh": "覆盖地图——精确的模式树子条款 48.5.17 至 48.5.22"
+      },
+      "en": "48.5.17 (ieee802-dot1q-sched module): this module deliberately has NO schema tree — it only defines types and identities reused by the bridge augment. 48.5.18 (ieee802-dot1q-sched-bridge): augments /if:interfaces/if:interface/dot1q:bridge-port with the gate-parameter-table — queue-max-sdu-table* per traffic-class, gate-enabled, admin/oper-gate-states, the admin/oper-control-list of gate-control-entry* [index], admin/oper-cycle-time (numerator/denominator), admin/oper-base-time, config-change, tick-granularity, and supported-* maxima. 48.5.19 (ieee802-dot1q-preemption module): again NO schema tree (types only). 48.5.20 (ieee802-dot1q-preemption-bridge): augments bridge-port with frame-preemption-parameters {frame-preemption}? — the frame-preemption-status-table with priority0..priority7 each an express/preemptable enum, plus read-only hold-advance, release-advance, preemption-active, hold-request. 48.5.21 (ieee802-dot1q-psfp module): NO schema tree (types only). 48.5.22 (ieee802-dot1q-psfp-bridge): augments /dot1q:bridges/dot1q:bridge/dot1q:component with flow-meters (flow-meter-instance-table* with CIR/CBS/EIR/EBS, coupling-flag, color-mode, drop-on-yellow, mark-all-frames-red), stream-gates (stream-gate-instance-table* with gate-enable, admin/oper gate-state and ipv, the admin/oper-control-list, cycle/base-time, and gate-closed-due-to-* flags), and stream-filters (stream-filter-instance-table* with stream-handle-spec choice of wildcard/stream-handle, priority-spec, max-sdu-size, a stream-gate-ref leafref, six matching/passing/red counters, and a flow-meter-ref).",
+      "zh": "48.5.17（ieee802-dot1q-sched 模块）：该模块刻意没有模式树——它只定义供网桥嫁接复用的类型与标识。48.5.18（ieee802-dot1q-sched-bridge）：在 /if:interfaces/if:interface/dot1q:bridge-port 上嫁接 gate-parameter-table——含按 traffic-class 的 queue-max-sdu-table*、gate-enabled、admin/oper-gate-states、由 gate-control-entry* [index] 组成的 admin/oper-control-list、admin/oper-cycle-time（分子/分母）、admin/oper-base-time、config-change、tick-granularity 以及 supported-* 上限。48.5.19（ieee802-dot1q-preemption 模块）：同样没有模式树（仅类型）。48.5.20（ieee802-dot1q-preemption-bridge）：在 bridge-port 上嫁接 frame-preemption-parameters {frame-preemption}?——含 frame-preemption-status-table（priority0..priority7 各为 express/preemptable 枚举），以及只读的 hold-advance、release-advance、preemption-active、hold-request。48.5.21（ieee802-dot1q-psfp 模块）：没有模式树（仅类型）。48.5.22（ieee802-dot1q-psfp-bridge）：在 /dot1q:bridges/dot1q:bridge/dot1q:component 上嫁接 flow-meters（flow-meter-instance-table*，含 CIR/CBS/EIR/EBS、coupling-flag、color-mode、drop-on-yellow、mark-all-frames-red）、stream-gates（stream-gate-instance-table*，含 gate-enable、admin/oper 的 gate-state 与 ipv、admin/oper-control-list、cycle/base-time 以及 gate-closed-due-to-* 标志），以及 stream-filters（stream-filter-instance-table*，含 wildcard/stream-handle 二选一的 stream-handle-spec、priority-spec、max-sdu-size、一个 stream-gate-ref 叶引用、六个匹配/通过/红色计数器，以及一个 flow-meter-ref）。",
+      "cite": {
+        "pdf_id": "8021Qcw-2023",
+        "pages": [
+          92,
+          93,
+          94
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — the picture-level models (48.2) and module bills (48.3, 48.4)",
+        "zh": "覆盖地图——图示级模型（48.2）与模块清单（48.3、48.4）"
+      },
+      "en": "48.2.1 VLAN Bridge components model (replaces Figure 48-5, the Bridge Port object list). 48.2.2 Two-Port MAC Relay (TPMR) model (replaces Figure 48-7). 48.2.4 Provider Bridge model (replaces Figures 48-9/48-10, C-VLAN and S-VLAN interfaces). 48.2.5 CFM Model (replaces Figure 48-12, MEP relationships). 48.2.7 Asynchronous Traffic Shaping model (Figure 48-16, scheduler groups + timing characteristics). 48.2.8 Congestion Isolation model (Figure 48-17, CI peer/stream tables). 48.2.9 Scheduled Traffic model (Figure 48-18, one gate-parameter-table per port; gate-control-entry operations SetGateStates, Set-And-Hold-MAC, Set-And-Release-MAC). 48.2.10 Frame Preemption model (Figure 48-19, one frame-preemption-parameter-table per port). 48.2.11 Per-Stream Filtering and Policing model (Figure 48-20, stream-filter / stream-gate / flow-meter instance tables per component). 48.3.9/48.3.10/48.3.11 list the module bill of materials per feature (Tables 48-10/48-11/48-12). 48.4.9/48.4.10/48.4.11 give the per-feature security considerations naming the sensitive read-write subtrees.",
+      "zh": "48.2.1 VLAN 网桥组件模型（替换图 48-5，网桥端口对象列表）。48.2.2 双端口 MAC 中继（TPMR）模型（替换图 48-7）。48.2.4 提供商网桥模型（替换图 48-9/48-10，C-VLAN 与 S-VLAN 接口）。48.2.5 CFM 模型（替换图 48-12，MEP 关系）。48.2.7 异步流量整形模型（图 48-16，调度器组 + 定时特性）。48.2.8 拥塞隔离模型（图 48-17，CI 对端/流表）。48.2.9 调度流量模型（图 48-18，每端口一张 gate-parameter-table；gate-control-entry 操作含 SetGateStates、Set-And-Hold-MAC、Set-And-Release-MAC）。48.2.10 帧抢占模型（图 48-19，每端口一张 frame-preemption-parameter-table）。48.2.11 逐流过滤与监管模型（图 48-20，每组件含 stream-filter / stream-gate / flow-meter 实例表）。48.3.9/48.3.10/48.3.11 逐功能列出模块物料清单（表 48-10/48-11/48-12）。48.4.9/48.4.10/48.4.11 给出逐功能的安全考量，点名敏感的读写子树。",
+      "cite": {
+        "pdf_id": "8021Qcw-2023",
+        "pages": [
+          72,
+          74,
+          75,
+          78,
+          80,
+          81,
+          82,
+          83,
+          85,
+          86,
+          87
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the recurring admin/oper pairing. admin-* nodes are read-write — what you ask for. oper-* nodes are read-only — what the hardware actually adopted, often only at the next cycle boundary. The config-change flag plus config-change-time let a controller stage a new schedule and have it take effect atomically at a precise future instant. That two-sided design is the backbone of deterministic TSN configuration.",
+      "zh": "请注意反复出现的 admin/oper 配对。admin-* 节点是读写的——即你所请求的。oper-* 节点是只读的——即硬件实际采用的，往往要到下一个周期边界才生效。config-change 标志加上 config-change-time，让控制器能预置一份新调度表，并使其在未来某个精确时刻原子地生效。这种双面设计正是确定性 TSN 配置的骨干。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Qcw-2023",
+      "pages": [
+        72,
+        74,
+        75,
+        78
+      ],
+      "note": "48.2.1, 48.2.2, 48.2.4, 48.2.5 — VLAN Bridge, TPMR, Provider Bridge, CFM picture models."
+    },
+    {
+      "pdf_id": "8021Qcw-2023",
+      "pages": [
+        80,
+        81,
+        82,
+        83
+      ],
+      "note": "48.2.7, 48.2.8, 48.2.9, 48.2.10, 48.2.11 — ATS, CI, Scheduled Traffic, Frame Preemption, PSFP models."
+    },
+    {
+      "pdf_id": "8021Qcw-2023",
+      "pages": [
+        85,
+        86
+      ],
+      "note": "48.3.9, 48.3.10, 48.3.11 — module bill of materials (Tables 48-10/11/12)."
+    },
+    {
+      "pdf_id": "8021Qcw-2023",
+      "pages": [
+        87
+      ],
+      "note": "48.4.9, 48.4.10, 48.4.11 — per-feature security considerations."
+    },
+    {
+      "pdf_id": "8021Qcw-2023",
+      "pages": [
+        88,
+        92,
+        93,
+        94
+      ],
+      "note": "48.5.4, 48.5.17-48.5.22 — base bridge schema and the six TSN schema trees."
+    }
+  ],
+  "covers": [
+    "8021Qcw-2023:48.2.1",
+    "8021Qcw-2023:48.2.2",
+    "8021Qcw-2023:48.2.4",
+    "8021Qcw-2023:48.2.5",
+    "8021Qcw-2023:48.2.7",
+    "8021Qcw-2023:48.2.8",
+    "8021Qcw-2023:48.2.9",
+    "8021Qcw-2023:48.2.10",
+    "8021Qcw-2023:48.2.11",
+    "8021Qcw-2023:48.3.9",
+    "8021Qcw-2023:48.3.10",
+    "8021Qcw-2023:48.3.11",
+    "8021Qcw-2023:48.4.9",
+    "8021Qcw-2023:48.4.10",
+    "8021Qcw-2023:48.4.11",
+    "8021Qcw-2023:48.5.4",
+    "8021Qcw-2023:48.5.17",
+    "8021Qcw-2023:48.5.18",
+    "8021Qcw-2023:48.5.19",
+    "8021Qcw-2023:48.5.20",
+    "8021Qcw-2023:48.5.21",
+    "8021Qcw-2023:48.5.22"
+  ],
+  "track": "bridging-tsn"
+}

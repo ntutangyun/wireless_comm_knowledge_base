@@ -1,0 +1,170 @@
+{
+  "id": "tsn-25",
+  "title": {
+    "en": "Managing gPTP: The Data Sets Behind Timing and Synchronization",
+    "zh": "管理 gPTP：定时与同步背后的数据集"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE 802.1AS is the Time-Sensitive Networking (TSN) profile of the Precision Time Protocol (PTP). The version used inside 802.1AS is called gPTP (generalized PTP), and a network device that participates is a time-aware system. Clause 14 is the management chapter: it does not change how time flows across the wire — it defines the named, readable/writable knobs and gauges (managed objects) that let an operator configure and observe a gPTP node. These knobs are grouped into data sets (DS). This lesson walks the data sets touched by the 802.1ASdm-2024 amendment, which adds Hot Standby (timing redundancy) and clock-drift error reduction.",
+      "zh": "IEEE 802.1AS 是精确时间协议（PTP，Precision Time Protocol）在时间敏感网络（TSN，Time-Sensitive Networking）中的应用规范。802.1AS 内部使用的版本称为 gPTP（通用 PTP，generalized PTP），参与其中的网络设备称为时间感知系统（time-aware system）。第 14 章是管理章节：它并不改变时间在链路上的传递方式，而是定义了一组有名字的、可读可写的旋钮和仪表（即被管理对象 managed objects），让运维人员能够配置并观察一个 gPTP 节点。这些旋钮被归类到数据集（DS，Data Set）中。本课讲解 802.1ASdm-2024 修正案所涉及的数据集——该修正案新增了热备份（定时冗余）与时钟漂移误差抑制功能。"
+    },
+    {
+      "type": "prose",
+      "en": "Think of management as a tree. The top of the tree is the time-aware system, which holds an instanceList[] of one or more PTP Instances (a PTP Instance is one independent timing role/domain inside the device). Each PTP Instance carries instance-wide data sets — defaultDS (its identity and domain), currentDS (how far off it is from the grandmaster), parentDS (who its upstream master is) — plus a portList[] of per-port data sets. Alongside the instances sit commonServices: the Common Mean Link Delay Service (CMLDS), which measures link delay once and shares it across domains, and the new Hot Standby Service. Clause 14.1.1 specifies exactly this hierarchy.",
+      "zh": "可以把管理结构想象成一棵树。树顶是时间感知系统，它持有一个 instanceList[]，包含一个或多个 PTP 实例（一个 PTP 实例代表设备内部一个独立的定时角色／域）。每个 PTP 实例携带实例级数据集——defaultDS（其身份与域）、currentDS（它与大师时钟的偏差）、parentDS（它的上游主时钟是谁），外加一个 portList[]（每端口数据集）。与各实例并列的是 commonServices（公共服务）：公共平均链路时延服务（CMLDS，Common Mean Link Delay Service），它把链路时延测量一次后跨域共享；以及新增的热备份服务（Hot Standby Service）。第 14.1.1 节正是规定了这一层级结构。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  TAS[Time-aware system] --> IL[instanceList: PTP Instances]\n  TAS --> CS[commonServices]\n  IL --> DDS[defaultDS]\n  IL --> CDS[currentDS]\n  IL --> PDS[parentDS]\n  IL --> PL[portList: portDS / portStatisticsDS]\n  CS --> CMLDS[Common Mean Link Delay Service]\n  CS --> HS[Hot Standby Service]\n  HS --> HSDS[hotStandbySystemDS]\n  HS --> HSD[hotStandbySystemDescriptionDS]",
+      "zh": "flowchart TD\n  TAS[时间感知系统] --> IL[instanceList：PTP 实例]\n  TAS --> CS[commonServices 公共服务]\n  IL --> DDS[defaultDS]\n  IL --> CDS[currentDS]\n  IL --> PDS[parentDS]\n  IL --> PL[portList：portDS / portStatisticsDS]\n  CS --> CMLDS[公共平均链路时延服务]\n  CS --> HS[热备份服务]\n  HS --> HSDS[hotStandbySystemDS]\n  HS --> HSD[hotStandbySystemDescriptionDS]"
+    },
+    {
+      "type": "prose",
+      "en": "The per-instance scalars are small but important. domainNumber (14.2.16) names which gPTP domain this instance serves; the instance with domainNumber 0 has special constraints (e.g., a fixed timescale). offsetFromTimeTransmitter (14.3.3) is the timeReceiver's own estimate of how far its clock sits from the Grandmaster Clock (the elected master), expressed as a TimeInterval. The parentDS table (14.4.8) collects who the upstream parent/grandmaster is and its quality; 802.1ASdm adds the read-only gmPresent boolean (is a grandmaster currently reachable?) to this table.",
+      "zh": "每实例的标量字段虽小却很关键。domainNumber（14.2.16）指明该实例服务于哪个 gPTP 域；domainNumber 为 0 的实例受到特殊约束（例如固定的时间标度）。offsetFromTimeTransmitter（14.3.3）是时间接收方（timeReceiver）自行估计的、其时钟与大师时钟（Grandmaster Clock，被选举出来的主时钟）之间的偏差，以 TimeInterval 类型表示。parentDS 表（14.4.8）汇总了上游父节点／大师时钟是谁及其质量；802.1ASdm 在此表中新增了只读布尔值 gmPresent（当前是否能联系到大师时钟？）。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the per-port data sets. delayMechanism (14.8.5) says how this port measures one-way link delay and neighbor rate ratio — choices include the transport-specific peer-to-peer mechanism (P2P), the shared CMLDS (COMMON_P2P), or a transport with a native time-transfer mechanism (SPECIAL, e.g., IEEE 802.11 or EPON). isMeasuringDelay (14.8.6) is the live boolean telling you the port is actively measuring. The portDS table (14.8.55) is where 802.1ASdm inserts five new rows, including nrrPdelay and nrrSync — neighbor rate ratio estimated from Pdelay versus from Sync messages — used by the drift-reduction machinery.",
+      "zh": "接下来是每端口数据集。delayMechanism（14.8.5）说明该端口如何测量单向链路时延和邻居速率比，可选项包括：传输层特定的点对点机制（P2P）、共享的 CMLDS（COMMON_P2P），或自带原生时间传递机制的传输（SPECIAL，例如 IEEE 802.11 或 EPON）。isMeasuringDelay（14.8.6）是一个实时布尔值，告知该端口正在主动测量。portDS 表（14.8.55）正是 802.1ASdm 插入五个新行之处，其中包括 nrrPdelay 与 nrrSync——分别由 Pdelay 消息和 Sync 消息估算出的邻居速率比（neighbor rate ratio）——供漂移抑制机制使用。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why two neighbor-rate-ratio estimates? nrrPdelay comes from the dedicated Pdelay (path-delay) exchange, while nrrSync is inferred from the regular Sync stream. Comparing the two lets a node detect and reduce clock-drift error between sync events — the core goal of the 802.1ASdm drift-tracking feature.",
+      "zh": "为什么要有两个邻居速率比估计值？nrrPdelay 来自专门的 Pdelay（路径时延）交互，而 nrrSync 则由常规 Sync 消息流推断得出。比较两者，节点便能在两次同步事件之间检测并抑制时钟漂移误差——这正是 802.1ASdm 漂移跟踪功能的核心目标。"
+    },
+    {
+      "type": "prose",
+      "en": "Counters live in statistics data sets. In the per-port portStatisticsDS, 14.10.9 is rxPtpPacketDiscardCount (the amendment merely retitles it from rxPTPPacketDiscardCount), counting received PTP packets that were discarded; the portStatisticsDS table (14.10.20) is updated to add rxSyncCountTimeReceiverP, which counts Sync receptions while the port is a TimeReceiverPort. The asymmetryMeasurementModeDS table (14.13.3) is the small data set that enables/disables the Asymmetry Compensation Measurement Procedure for the single domain-0 instance when CMLDS is not in use.",
+      "zh": "计数器存放在统计数据集中。在每端口的 portStatisticsDS 中，14.10.9 是 rxPtpPacketDiscardCount（本修正案只是将其名称从 rxPTPPacketDiscardCount 重命名），统计被丢弃的已接收 PTP 报文；portStatisticsDS 表（14.10.20）经更新后新增了 rxSyncCountTimeReceiverP，用于统计端口作为 TimeReceiverPort 时收到的 Sync 次数。asymmetryMeasurementModeDS 表（14.13.3）是一个小型数据集，在不使用 CMLDS 且仅有单一域 0 实例时，用于启用／禁用非对称补偿测量过程（Asymmetry Compensation Measurement Procedure）。"
+    },
+    {
+      "type": "prose",
+      "en": "The CMLDS measures link delay once per physical link and lets every gPTP domain reuse that result, instead of each domain re-measuring. Its per-link-port data set, cmldsLinkPortDS, is touched by the amendment at: isMeasuringDelay (14.16.4) — same idea as the port version but per Link Port and across all domains; nrrPdelay (14.16.9), renamed from neighborRateRatio, the link-port neighbor rate ratio scaled by 2^41; and the cmldsLinkPortDS table (14.16.27), whose eighth row is updated to the new nrrPdelay name. The companion cmldsLinkPortStatisticsDS retitles its discard counter rxPtpPacketDiscardCount (14.17.5) and updates the cmldsLinkPortStatisticsDS table (14.17.10).",
+      "zh": "CMLDS 对每条物理链路只测量一次链路时延，并让每个 gPTP 域复用该结果，而不必各域重复测量。本修正案在其每链路端口数据集 cmldsLinkPortDS 中改动了：isMeasuringDelay（14.16.4）——与端口版本含义相同，但作用于每个链路端口（Link Port）且跨所有域；nrrPdelay（14.16.9），由 neighborRateRatio 重命名而来，是链路端口的邻居速率比，按 2^41 缩放；以及 cmldsLinkPortDS 表（14.16.27），其第八行被更新为新的 nrrPdelay 名称。配套的 cmldsLinkPortStatisticsDS 将其丢弃计数器重命名为 rxPtpPacketDiscardCount（14.17.5），并更新 cmldsLinkPortStatisticsDS 表（14.17.10）。"
+    },
+    {
+      "type": "prose",
+      "en": "The headline new feature is Hot Standby: pairing two PTP Instances so that if the primary's timing fails, the secondary keeps the application synchronized. The hotStandbySystemDS (14.19) describes one Hot Standby Service instance. It binds the pair via primaryPtpInstanceIndex (14.19.2) and secondaryPtpInstanceIndex (14.19.3), is turned on by hotStandbySystemEnable (14.19.4), and reports hotStandbySystemState (14.19.5) — one of INIT, REDUNDANT, NOT_REDUNDANT, or OUT_OF_SYNC. hotStandbySystemSplitFunctionality (14.19.6) selects optional split operation. The redundancy decision is governed by primarySecondaryOffset (14.19.7, the absolute time gap between the two instances), its threshold primarySecondaryOffsetThresh (14.19.8), and the dwell time hotStandbySystemLogSyncTimeThresh (14.19.9, a log2-seconds delay before promoting state, where -128 means switch immediately).",
+      "zh": "最受瞩目的新功能是热备份（Hot Standby）：将两个 PTP 实例配对，使得当主实例的定时失效时，备用实例仍能让应用保持同步。hotStandbySystemDS（14.19）描述一个热备份服务实例。它通过 primaryPtpInstanceIndex（14.19.2）和 secondaryPtpInstanceIndex（14.19.3）绑定这一对实例，由 hotStandbySystemEnable（14.19.4）启用，并报告 hotStandbySystemState（14.19.5）——取值为 INIT、REDUNDANT、NOT_REDUNDANT 或 OUT_OF_SYNC 之一。hotStandbySystemSplitFunctionality（14.19.6）用于选择可选的拆分运行模式。冗余判定由 primarySecondaryOffset（14.19.7，两实例之间时间差的绝对值）、其阈值 primarySecondaryOffsetThresh（14.19.8），以及驻留时间 hotStandbySystemLogSyncTimeThresh（14.19.9，以 log2 秒表示的状态提升前延迟，-128 表示立即切换）共同决定。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> INIT\n  INIT --> REDUNDANT: both instances synced\n  REDUNDANT --> NOT_REDUNDANT: one instance faulted\n  NOT_REDUNDANT --> REDUNDANT: fault recovers\n  NOT_REDUNDANT --> OUT_OF_SYNC: second also faults\n  OUT_OF_SYNC --> NOT_REDUNDANT: one recovers\n  OUT_OF_SYNC --> REDUNDANT: both recover",
+      "zh": "stateDiagram-v2\n  [*] --> INIT\n  INIT --> REDUNDANT: 两实例均已同步\n  REDUNDANT --> NOT_REDUNDANT: 一个实例失效\n  NOT_REDUNDANT --> REDUNDANT: 故障恢复\n  NOT_REDUNDANT --> OUT_OF_SYNC: 第二个也失效\n  OUT_OF_SYNC --> NOT_REDUNDANT: 一个恢复\n  OUT_OF_SYNC --> REDUNDANT: 两者均恢复"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, every Hot Standby instance also gets a human-readable label. The hotStandbySystemDescriptionDS (14.20) holds purely descriptive metadata: userDescription (14.20.2) is a character string up to 128 characters that an operator can set to identify this redundancy pair. The hotStandbySystemDescriptionDS table (14.20.3) — one per Hot Standby instance — formalizes that single read/write field. The data set hierarchy and per-instance vs. per-port vs. common-service split (14.1.1) plus the data set descriptions list (14.1.2) together give a precise vocabulary for everything above.",
+      "zh": "最后，每个热备份实例还配有一个可读标签。hotStandbySystemDescriptionDS（14.20）保存纯描述性元数据：userDescription（14.20.2）是一个最长 128 个字符的字符串，运维人员可用它来标识这组冗余配对。hotStandbySystemDescriptionDS 表（14.20.3）——每个热备份实例一张——将这唯一的读／写字段正式定义下来。数据集层级结构以及「每实例／每端口／公共服务」的划分（14.1.1），加上数据集描述列表（14.1.2），共同为上述全部内容提供了精确的术语体系。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause taught here, by exact number",
+        "zh": "覆盖映射表：本课所讲每一个条款的精确编号"
+      },
+      "en": "General & hierarchy: 14.1.1 data set hierarchy (instanceList[] / portList[] / commonServices), 14.1.2 data set descriptions (the lettered list naming each DS, incl. new ptpInstanceSyncDS, driftTrackingDS, hotStandbySystemDS, hotStandbySystemDescriptionDS). Per-instance scalars: 14.2.16 domainNumber; 14.3.3 offsetFromTimeTransmitter; 14.4.8 parentDS table (adds gmPresent row). Per-port: 14.8.5 delayMechanism (P2P / COMMON_P2P / SPECIAL); 14.8.6 isMeasuringDelay; 14.8.55 portDS table (five new rows incl. nrrPdelay, nrrSync). Port statistics: 14.10.9 rxPtpPacketDiscardCount (retitled); 14.10.20 portStatisticsDS table (adds rxSyncCountTimeReceiverP). Asymmetry: 14.13.3 asymmetryMeasurementModeDS table. CMLDS link port: 14.16.4 isMeasuringDelay (per Link Port, across domains), 14.16.9 nrrPdelay (was neighborRateRatio), 14.16.27 cmldsLinkPortDS table. CMLDS link-port statistics: 14.17.5 rxPtpPacketDiscardCount (retitled), 14.17.10 cmldsLinkPortStatisticsDS table. Hot Standby system: 14.19.1 general, 14.19.2 primaryPtpInstanceIndex, 14.19.3 secondaryPtpInstanceIndex, 14.19.4 hotStandbySystemEnable, 14.19.5 hotStandbySystemState, 14.19.6 hotStandbySystemSplitFunctionality, 14.19.7 primarySecondaryOffset, 14.19.8 primarySecondaryOffsetThresh, 14.19.9 hotStandbySystemLogSyncTimeThresh, 14.19.10 hotStandbySystemDS table. Hot Standby description: 14.20.1 general, 14.20.2 userDescription, 14.20.3 hotStandbySystemDescriptionDS table.",
+      "zh": "总则与层级：14.1.1 数据集层级（instanceList[] / portList[] / commonServices），14.1.2 数据集描述（列举各数据集的字母列表，含新增的 ptpInstanceSyncDS、driftTrackingDS、hotStandbySystemDS、hotStandbySystemDescriptionDS）。每实例标量：14.2.16 domainNumber；14.3.3 offsetFromTimeTransmitter；14.4.8 parentDS 表（新增 gmPresent 行）。每端口：14.8.5 delayMechanism（P2P / COMMON_P2P / SPECIAL）；14.8.6 isMeasuringDelay；14.8.55 portDS 表（五个新行，含 nrrPdelay、nrrSync）。端口统计：14.10.9 rxPtpPacketDiscardCount（重命名）；14.10.20 portStatisticsDS 表（新增 rxSyncCountTimeReceiverP）。非对称：14.13.3 asymmetryMeasurementModeDS 表。CMLDS 链路端口：14.16.4 isMeasuringDelay（每链路端口、跨域），14.16.9 nrrPdelay（原 neighborRateRatio），14.16.27 cmldsLinkPortDS 表。CMLDS 链路端口统计：14.17.5 rxPtpPacketDiscardCount（重命名），14.17.10 cmldsLinkPortStatisticsDS 表。热备份系统：14.19.1 总则，14.19.2 primaryPtpInstanceIndex，14.19.3 secondaryPtpInstanceIndex，14.19.4 hotStandbySystemEnable，14.19.5 hotStandbySystemState，14.19.6 hotStandbySystemSplitFunctionality，14.19.7 primarySecondaryOffset，14.19.8 primarySecondaryOffsetThresh，14.19.9 hotStandbySystemLogSyncTimeThresh，14.19.10 hotStandbySystemDS 表。热备份描述：14.20.1 总则，14.20.2 userDescription，14.20.3 hotStandbySystemDescriptionDS 表。",
+      "cite": {
+        "pdf_id": "8021ASdm-2024",
+        "pages": [
+          113,
+          114,
+          115,
+          116,
+          117,
+          119,
+          121,
+          122,
+          123,
+          124,
+          125,
+          126
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        113,
+        114,
+        115
+      ],
+      "note": "14.1.1 data set hierarchy and 14.1.2 data set descriptions"
+    },
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        116,
+        117
+      ],
+      "note": "14.2.16 domainNumber, 14.3.3 offsetFromTimeTransmitter, 14.4.8 parentDS table (gmPresent)"
+    },
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        119,
+        121,
+        122
+      ],
+      "note": "14.8.5/14.8.6/14.8.55 portDS, 14.10.9/14.10.20 portStatisticsDS, 14.13.3 asymmetryMeasurementModeDS table"
+    },
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        123,
+        124
+      ],
+      "note": "14.16 cmldsLinkPortDS and 14.17 cmldsLinkPortStatisticsDS members and tables"
+    },
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        124,
+        125,
+        126
+      ],
+      "note": "14.19 hotStandbySystemDS and 14.20 hotStandbySystemDescriptionDS"
+    }
+  ],
+  "covers": [
+    "8021ASdm-2024:14.1.1",
+    "8021ASdm-2024:14.1.2",
+    "8021ASdm-2024:14.2.16",
+    "8021ASdm-2024:14.3.3",
+    "8021ASdm-2024:14.4.8",
+    "8021ASdm-2024:14.8.5",
+    "8021ASdm-2024:14.8.6",
+    "8021ASdm-2024:14.8.55",
+    "8021ASdm-2024:14.10.9",
+    "8021ASdm-2024:14.10.20",
+    "8021ASdm-2024:14.13.3",
+    "8021ASdm-2024:14.16.4",
+    "8021ASdm-2024:14.16.9",
+    "8021ASdm-2024:14.16.27",
+    "8021ASdm-2024:14.17.5",
+    "8021ASdm-2024:14.17.10",
+    "8021ASdm-2024:14.19.1",
+    "8021ASdm-2024:14.19.2",
+    "8021ASdm-2024:14.19.3",
+    "8021ASdm-2024:14.19.4",
+    "8021ASdm-2024:14.19.5",
+    "8021ASdm-2024:14.19.6",
+    "8021ASdm-2024:14.19.7",
+    "8021ASdm-2024:14.19.8",
+    "8021ASdm-2024:14.19.9",
+    "8021ASdm-2024:14.19.10",
+    "8021ASdm-2024:14.20.1",
+    "8021ASdm-2024:14.20.2",
+    "8021ASdm-2024:14.20.3"
+  ],
+  "track": "tsn"
+}

@@ -1,0 +1,180 @@
+{
+  "id": "bridging-tsn-107",
+  "title": {
+    "en": "Conformance, Timers, and YANG for Spanning Tree (RSTP & MSTP)",
+    "zh": "生成树的一致性、定时器与 YANG 模型（RSTP 与 MSTP）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1Qdy-2025 is Amendment 40 to 802.1Q, the standard for bridges and bridged networks. Its single mission is to add YANG data models for the Multiple Spanning Tree Protocol (MSTP) and the Rapid Spanning Tree Protocol (RSTP). YANG is the IETF data-modelling language (RFC 7950) used to describe what a network device's configuration and state look like so that protocols like NETCONF and RESTCONF can read and write them programmatically. This lesson walks the four places the amendment touches: how it changes what a bridge must support (Clause 5, Conformance), one timer table tweak (Clause 13), the bulk of the work — the new YANG models (Clause 48) — and the conformance checklist (Annex A).",
+      "zh": "IEEE Std 802.1Qdy-2025 是 802.1Q（网桥与桥接网络标准）的第 40 号修正案。它唯一的使命是为多生成树协议（MSTP，Multiple Spanning Tree Protocol）和快速生成树协议（RSTP，Rapid Spanning Tree Protocol）添加 YANG 数据模型。YANG 是 IETF 制定的数据建模语言（RFC 7950），用来描述网络设备的配置与状态长什么样，从而让 NETCONF、RESTCONF 等协议能够以编程方式读写它们。本课讲解该修正案触及的四个位置：它如何改变网桥的强制支持要求（第 5 章，一致性）、一处定时器表格的微调（第 13 章）、工作量最大的部分——新增的 YANG 模型（第 48 章）——以及一致性检查清单（附录 A）。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with conformance. Clause 5.1 (VLAN Bridge component requirements) lists what every VLAN Bridge must do; this amendment leaves the mandatory list unchanged but anchors the new material there. The real change is in Clause 5.4.1 (VLAN Bridge component options) — the optional features. Inside 5.4.1.1 (Multiple Spanning Tree operation, optional), a new list item q) is added: a bridge may now declare that it 'supports YANG modules for the management of MSTP', pointing at the four new modules defined in 48.6.26 through 48.6.29. In plain terms: managing MSTP over YANG is an optional capability a bridge can advertise, not a new burden imposed on everyone.",
+      "zh": "先看一致性。第 5.1 节（VLAN 网桥组件要求）列出每个 VLAN 网桥必须做到的事项；本修正案并未改动这份强制清单，只是把新内容挂靠在此处。真正的改动在第 5.4.1 节（VLAN 网桥组件可选项）——也就是可选特性。在 5.4.1.1（多生成树操作，可选）中新增了列表项 q）：网桥现在可以声明它“支持用于管理 MSTP 的 YANG 模块”，指向 48.6.26 至 48.6.29 定义的四个新模块。通俗地说：通过 YANG 管理 MSTP 是网桥可以选择宣告的一项可选能力，而非强加给所有设备的新负担。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 13 governs the spanning tree protocols themselves. The only change here is in 13.25 (State machine timers): Table 13-5, which lists timer defaults and permitted ranges, has its Max Hops row widened. Max Hops bounds how many bridges a piece of spanning-tree information may traverse before it expires — like a hop-count budget that stops stale data from circling forever in a loop. The permitted range grows from 6..40 to 6..100, and the accompanying note explains why: larger Max Hops lets a spanning tree restore connectivity across extended ring topologies, where a path may legitimately cross many more bridges than older limits allowed.",
+      "zh": "第 13 章规范生成树协议本身。这里唯一的改动在 13.25 节（状态机定时器）：列出定时器默认值与允许范围的表 13-5，其中 Max Hops（最大跳数）那一行的取值范围被拓宽了。Max Hops 限定一条生成树信息在过期之前最多可以穿过多少个网桥——就像一份跳数预算，防止陈旧信息在环路里无限打转。允许范围从 6..40 扩大到 6..100，随附的注释解释了原因：更大的 Max Hops 让生成树能够在扩展的环形拓扑中恢复连通性，因为在这类拓扑中，一条路径合理地穿过的网桥数量可能远超旧限制。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model for the two protocols: RSTP builds ONE loop-free tree across the whole network (the Common Spanning Tree, CST, and within an MST Region the Common and Internal Spanning Tree, CIST). MSTP layers MULTIPLE trees on top, one per Multiple Spanning Tree Instance (MSTI), so different VLANs can take different paths and share the physical links. That is why the YANG comes in pairs: an RSTP module for the single-tree nodes, and an MSTP module that augments it with the per-instance nodes.",
+      "zh": "理解这两个协议的思维模型：RSTP 在整个网络上构建一棵无环树（公共生成树 CST，以及在 MST 区域内的公共与内部生成树 CIST）。MSTP 在其之上叠加多棵树，每个多生成树实例（MSTI，Multiple Spanning Tree Instance）一棵，从而让不同的 VLAN 走不同路径、共享物理链路。这正是 YANG 成对出现的原因：一个 RSTP 模块承载单树节点，一个 MSTP 模块在其基础上增补每实例节点。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the heart of the amendment: Clause 48 (YANG Data Models). Clause 48.2 introduces the models conceptually. 48.2.14 (RSTP model) describes a model that augments the existing VLAN Bridge components model and the Bridge-Port interface model with nodes common to both RSTP and MSTP — things like bridge-id, root-id, port-role, port-state, the timers (bridge-max-age, bridge-forward-delay, tx-hold-count), and an action to trigger a protocol migration check. 48.2.15 (MSTP model) augments that RSTP model further, adding the MSTP-specific nodes: per-MSTI configuration, the MST Configuration Identifier (mst-config-id), assignment of VLANs/VIDs to instances (fid-to-mstid, vid-to-fid), max-hops, regional-root-id, and remaining-hops.",
+      "zh": "现在进入修正案的核心：第 48 章（YANG 数据模型）。48.2 节从概念上介绍这些模型。48.2.14（RSTP 模型）描述的模型在既有的 VLAN 网桥组件模型与网桥端口接口模型之上，增补 RSTP 与 MSTP 共有的节点——例如 bridge-id、root-id、port-role、port-state、各定时器（bridge-max-age、bridge-forward-delay、tx-hold-count），以及一个触发协议迁移检查的动作（action）。48.2.15（MSTP 模型）进一步在该 RSTP 模型上增补 MSTP 特有的节点：每个 MSTI 的配置、MST 配置标识符（mst-config-id）、把 VLAN/VID 分配到实例（fid-to-mstid、vid-to-fid）、max-hops、regional-root-id 以及 remaining-hops。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  B[VLAN Bridge component model] --> R[RSTP model 48.2.14]\n  P[Bridge-Port interface model] --> R\n  R --> M[MSTP model 48.2.15]\n  R -.augments.-> B\n  M -.augments.-> R\n  M --> I[per-MSTI nodes: VLAN to instance]",
+      "zh": "flowchart TD\n  B[VLAN 网桥组件模型] --> R[RSTP 模型 48.2.14]\n  P[网桥端口接口模型] --> R\n  R --> M[MSTP 模型 48.2.15]\n  R -.增补.-> B\n  M -.增补.-> R\n  M --> I[每个 MSTI 节点: VLAN 到实例]"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 48.3 (Structure of the YANG models) names the actual modules and says which a conforming bridge must implement. 48.3.14 (RSTP model) says a bridge implementing it loads the modules in Table 48-15: the base types modules plus ieee802-dot1q-rstp and ieee802-dot1q-rstp-bridge. 48.3.15 (MSTP model) says an MSTP bridge loads everything in Table 48-16 — the RSTP set plus ieee802-dot1q-mstp and ieee802-dot1q-mstp-bridge. So there are four new modules, in two pairs: a base module (the type definitions and groupings) and a '-bridge' module (the augmentations that actually graft the nodes onto the bridge tree).",
+      "zh": "第 48.3 节（YANG 模型的结构）给出真正的模块名，并说明合规网桥必须实现哪些。48.3.14（RSTP 模型）规定：实现该模型的网桥须加载表 48-15 中的模块——基础类型模块，外加 ieee802-dot1q-rstp 与 ieee802-dot1q-rstp-bridge。48.3.15（MSTP 模型）规定：MSTP 网桥须加载表 48-16 中的全部内容——RSTP 那一套，再加 ieee802-dot1q-mstp 与 ieee802-dot1q-mstp-bridge。所以共有四个新模块，分两对：一个基础模块（类型定义与分组），一个“-bridge”模块（真正把节点嫁接到网桥树上的增补部分）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 48.4 (Security considerations) is the standard YANG safety note. 48.4.14 (RSTP) and 48.4.15 (MSTP) each carry the same warning: every writeable node in the respective module could be manipulated to interfere with basic network connectivity — because changing a bridge priority, a path cost, or a timer can reshape or break the spanning tree. Both point back to 48.4.1 for the general bridge-model security guidance (use NETCONF/RESTCONF over a secure transport with access control).",
+      "zh": "第 48.4 节（安全考量）是 YANG 标准的安全提示。48.4.14（RSTP）与 48.4.15（MSTP）各自给出相同的告警：对应模块中每一个可写节点都可能被操纵以干扰基本网络连通性——因为修改网桥优先级、路径开销或定时器都可能重塑甚至破坏生成树。两者都回指 48.4.1，那里给出网桥模型的通用安全指引（通过带访问控制的安全传输使用 NETCONF/RESTCONF）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"20\" width=\"120\" height=\"40\"/><text x=\"70\" y=\"44\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">ieee802-dot1q-rstp</text><rect x=\"150\" y=\"20\" width=\"140\" height=\"40\"/><text x=\"220\" y=\"40\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">ieee802-dot1q-</text><text x=\"220\" y=\"53\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">rstp-bridge</text><rect x=\"10\" y=\"90\" width=\"120\" height=\"40\"/><text x=\"70\" y=\"114\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">ieee802-dot1q-mstp</text><rect x=\"150\" y=\"90\" width=\"140\" height=\"40\"/><text x=\"220\" y=\"110\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">ieee802-dot1q-</text><text x=\"220\" y=\"123\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">mstp-bridge</text><line x1=\"130\" y1=\"40\" x2=\"150\" y2=\"40\"/><line x1=\"70\" y1=\"60\" x2=\"70\" y2=\"90\"/><line x1=\"130\" y1=\"110\" x2=\"150\" y2=\"110\"/><text x=\"330\" y=\"44\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">base + augment</text><text x=\"330\" y=\"114\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">base + augment</text></svg>",
+      "caption": {
+        "en": "The four new YANG modules in two pairs: a base module (definitions) and a -bridge module (augmentations that graft nodes onto the bridge), for RSTP (top) and MSTP (bottom). MSTP builds on RSTP.",
+        "zh": "四个新 YANG 模块分两对：基础模块（定义）与 -bridge 模块（把节点嫁接到网桥的增补），分别对应 RSTP（上）与 MSTP（下）。MSTP 构建于 RSTP 之上。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 48.5 (YANG schema tree definitions) gives the compact tree view a reader uses to navigate a module. There is a neat asymmetry: 48.5.26 (ieee802-dot1q-rstp) and 48.5.28 (ieee802-dot1q-mstp) each state 'this YANG module does not have a YANG schema tree' — they only define types and groupings, so there is no tree to draw. The real trees live in the augmenting modules: 48.5.27 (rstp-bridge) shows the rstp container grafted onto each bridge component and bridge-port (force-protocol-version, the bridge-id/root-id groups, the timers, edge-port flags, the migration-check action); 48.5.29 (mstp-bridge) shows the bridge-mstp and port-mstp containers with mst-config-id, max-hops, the IST (Internal Spanning Tree) node, and the per-msti lists. The leaf annotations 'rw' (read-write, configurable) versus 'ro' (read-only, operational state) tell you at a glance what you may set versus only observe.",
+      "zh": "第 48.5 节（YANG 模式树定义）给出读者用来导览模块的紧凑树视图。这里有一处巧妙的不对称：48.5.26（ieee802-dot1q-rstp）与 48.5.28（ieee802-dot1q-mstp）各自写明“此 YANG 模块没有 YANG 模式树”——它们只定义类型与分组，因此无树可画。真正的树位于增补模块中：48.5.27（rstp-bridge）展示嫁接到每个网桥组件与网桥端口上的 rstp 容器（force-protocol-version、bridge-id/root-id 分组、各定时器、边缘端口标志、迁移检查动作）；48.5.29（mstp-bridge）展示 bridge-mstp 与 port-mstp 容器，含 mst-config-id、max-hops、IST（内部生成树，Internal Spanning Tree）节点以及 per-msti 列表。叶节点上的标注 rw（可读写、可配置）与 ro（只读、运行状态）让你一眼看清哪些可以设置、哪些只能观察。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause this lesson teaches, with exact numbers",
+        "zh": "覆盖地图——本课讲授的每个条款及其精确编号"
+      },
+      "en": "Conformance (Clause 5): 5.1 (VLAN Bridge component requirements) — the mandatory-requirements anchor, unchanged in substance; 5.4.1 / 5.4.1.1 (VLAN Bridge component options → optional MST operation) — adds optional item q): support YANG modules for managing MSTP (48.6.26–48.6.29). Spanning tree (Clause 13): 13.25 (State machine timers) — Table 13-5 widens Max Hops permitted range to 6..100, with a revised note on extended ring topologies. YANG models (Clause 48): 48.2.14 (RSTP model overview), 48.2.15 (MSTP model overview) introduce the models; 48.3.14 / 48.3.15 (structure) list the required modules in Table 48-15 (RSTP) and Table 48-16 (MSTP); 48.4.14 / 48.4.15 (security) warn that writeable nodes can break connectivity; 48.5.26–48.5.29 (schema trees): 48.5.26 ieee802-dot1q-rstp (no tree — types only), 48.5.27 ieee802-dot1q-rstp-bridge (the rstp augmentations), 48.5.28 ieee802-dot1q-mstp (no tree — types only), 48.5.29 ieee802-dot1q-mstp-bridge (bridge-mstp / port-mstp augmentations); 48.6.26–48.6.29 (the full YANG module source): 48.6.26 ieee802-dot1q-rstp, 48.6.27 ieee802-dot1q-rstp-bridge, 48.6.28 ieee802-dot1q-mstp, 48.6.29 ieee802-dot1q-mstp-bridge. Conformance checklist (Annex A): Annex_A (normative PICS proforma — Bridge implementations) adds two rows in A.47 (YANG): YANG-RSTP (is ieee802-dot1q-rstp supported? status RSTP:O, ref 48.6.26) and YANG-MSTP (is ieee802-dot1q-mstp supported? status MSTP:O, ref 48.6.28). PICS = Protocol Implementation Conformance Statement; the ':O' marks these as optional.",
+      "zh": "一致性（第 5 章）：5.1（VLAN 网桥组件要求）——强制要求的挂靠点，实质内容未变；5.4.1 / 5.4.1.1（VLAN 网桥组件可选项 → 可选的 MST 操作）——新增可选项 q）：支持用于管理 MSTP 的 YANG 模块（48.6.26–48.6.29）。生成树（第 13 章）：13.25（状态机定时器）——表 13-5 将 Max Hops 允许范围拓宽至 6..100，并修订了关于扩展环形拓扑的注释。YANG 模型（第 48 章）：48.2.14（RSTP 模型概述）、48.2.15（MSTP 模型概述）引入模型；48.3.14 / 48.3.15（结构）在表 48-15（RSTP）与表 48-16（MSTP）中列出必需模块；48.4.14 / 48.4.15（安全）警告可写节点会破坏连通性；48.5.26–48.5.29（模式树）：48.5.26 ieee802-dot1q-rstp（无树——仅类型）、48.5.27 ieee802-dot1q-rstp-bridge（rstp 增补）、48.5.28 ieee802-dot1q-mstp（无树——仅类型）、48.5.29 ieee802-dot1q-mstp-bridge（bridge-mstp / port-mstp 增补）；48.6.26–48.6.29（完整 YANG 模块源码）：48.6.26 ieee802-dot1q-rstp、48.6.27 ieee802-dot1q-rstp-bridge、48.6.28 ieee802-dot1q-mstp、48.6.29 ieee802-dot1q-mstp-bridge。一致性检查清单（附录 A）：Annex_A（规范性 PICS 形式表——网桥实现）在 A.47（YANG）中新增两行：YANG-RSTP（是否支持 ieee802-dot1q-rstp？状态 RSTP:O，引用 48.6.26）与 YANG-MSTP（是否支持 ieee802-dot1q-mstp？状态 MSTP:O，引用 48.6.28）。PICS = 协议实现一致性声明；其中“:O”标记表示可选。",
+      "cite": {
+        "pdf_id": "8021Qdy-2025",
+        "pages": [
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          45
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 48.6 (YANG modules) is the long part — the literal source text of all four modules, ready to compile. 48.6.26 (ieee802-dot1q-rstp) and 48.6.28 (ieee802-dot1q-mstp) are the base modules: namespaces, imports (ietf-yang-types, ietf-interfaces, ieee802-types), typedefs such as id-priority and id-port-number, and reusable groupings like bridge-id. 48.6.27 (ieee802-dot1q-rstp-bridge) and 48.6.29 (ieee802-dot1q-mstp-bridge) are the augmenting modules that attach those building blocks to the live bridge configuration tree. Together these four are exactly what Clause 5 item q) and the Annex A PICS rows refer to — closing the loop from 'a bridge may optionally support this' to 'here is the precise, machine-readable definition of what that support means.'",
+      "zh": "第 48.6 节（YANG 模块）是篇幅最长的部分——四个模块逐字的源码文本，可直接编译。48.6.26（ieee802-dot1q-rstp）与 48.6.28（ieee802-dot1q-mstp）是基础模块：命名空间、导入项（ietf-yang-types、ietf-interfaces、ieee802-types）、诸如 id-priority 与 id-port-number 的类型定义，以及可复用的分组如 bridge-id。48.6.27（ieee802-dot1q-rstp-bridge）与 48.6.29（ieee802-dot1q-mstp-bridge）是增补模块，把这些构件挂接到运行中的网桥配置树上。这四个模块合在一起，正是第 5 章项 q）与附录 A 的 PICS 行所引用的对象——从“网桥可选择支持此功能”闭合到“这里给出该支持含义的精确、机器可读的定义”。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Qdy-2025",
+      "pages": [
+        15
+      ],
+      "note": "Clause 5.1 / 5.4.1 / 5.4.1.1 — VLAN Bridge component requirements and options; new optional item q) for MSTP YANG support."
+    },
+    {
+      "pdf_id": "8021Qdy-2025",
+      "pages": [
+        16
+      ],
+      "note": "Clause 13.25 — State machine timers; Table 13-5 Max Hops range widened to 6..100, revised note."
+    },
+    {
+      "pdf_id": "8021Qdy-2025",
+      "pages": [
+        17,
+        18
+      ],
+      "note": "Clause 48.2.14 / 48.2.15 — RSTP and MSTP model overviews (Figures 48-24, 48-25)."
+    },
+    {
+      "pdf_id": "8021Qdy-2025",
+      "pages": [
+        19,
+        20
+      ],
+      "note": "Clause 48.3.14 / 48.3.15 — module structure; Tables 48-1, 48-15, 48-16."
+    },
+    {
+      "pdf_id": "8021Qdy-2025",
+      "pages": [
+        21
+      ],
+      "note": "Clause 48.4.14 / 48.4.15 — security considerations for RSTP and MSTP YANG modules."
+    },
+    {
+      "pdf_id": "8021Qdy-2025",
+      "pages": [
+        22,
+        23,
+        24
+      ],
+      "note": "Clause 48.5.26–48.5.29 — YANG schema tree definitions for the four modules."
+    },
+    {
+      "pdf_id": "8021Qdy-2025",
+      "pages": [
+        25,
+        26
+      ],
+      "note": "Clause 48.6.26–48.6.29 — full YANG module source (ieee802-dot1q-rstp etc.)."
+    },
+    {
+      "pdf_id": "8021Qdy-2025",
+      "pages": [
+        45
+      ],
+      "note": "Annex A (normative) PICS proforma; A.47 adds YANG-RSTP and YANG-MSTP rows."
+    }
+  ],
+  "covers": [
+    "8021Qdy-2025:5.1",
+    "8021Qdy-2025:5.4.1",
+    "8021Qdy-2025:13.25",
+    "8021Qdy-2025:48.2.14",
+    "8021Qdy-2025:48.2.15",
+    "8021Qdy-2025:48.3.14",
+    "8021Qdy-2025:48.3.15",
+    "8021Qdy-2025:48.4.14",
+    "8021Qdy-2025:48.4.15",
+    "8021Qdy-2025:48.5.26",
+    "8021Qdy-2025:48.5.27",
+    "8021Qdy-2025:48.5.28",
+    "8021Qdy-2025:48.5.29",
+    "8021Qdy-2025:48.6.26",
+    "8021Qdy-2025:48.6.27",
+    "8021Qdy-2025:48.6.28",
+    "8021Qdy-2025:48.6.29",
+    "8021Qdy-2025:Annex_A"
+  ],
+  "track": "bridging-tsn"
+}

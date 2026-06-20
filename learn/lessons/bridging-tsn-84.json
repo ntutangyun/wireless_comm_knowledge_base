@@ -1,0 +1,135 @@
+{
+  "id": "bridging-tsn-84",
+  "title": {
+    "en": "LRP Orientation: Scope, Specification Model, and the Conformance Map",
+    "zh": "LRP 入门导览：标准范围、规范模型与一致性地图"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1CS-2020 defines the Link-local Registration Protocol (LRP). The job of LRP is deceptively simple: take a registration database living at one end of a point-to-point link and reliably replicate it to the other end, then keep both copies in step as changes occur (Clause 1.1, Scope). The database is expected to be on the order of 1 Mbyte, and a facility exists to purge the replicated copy if the source stops responding. This lesson walks through the front matter of the standard — Clause 1 (Overview) and Clause 5 (Conformance) — so you can read the rest of the document fluently. Think of Clause 1 as 'what and why' and Clause 5 as 'who must do what'.",
+      "zh": "IEEE Std 802.1CS-2020 定义了链路本地注册协议（Link-local Registration Protocol，LRP）。LRP 的任务看似简单：把位于点对点链路一端的注册数据库可靠地复制到另一端，并在发生变化时让两份副本保持同步（第 1.1 节，范围）。该数据库的预期规模约为 1 MB，并且当源端停止响应时，标准提供了清除已复制副本的机制。本课讲解标准的前置部分——第 1 章（概述）与第 5 章（一致性），帮助你流畅地读懂文档其余部分。可以把第 1 章理解为“是什么、为什么”，把第 5 章理解为“谁必须做什么”。"
+    },
+    {
+      "type": "prose",
+      "en": "Why does LRP exist? Its purpose (Clause 1.2) is to make it easy to build applications that distribute information through all or part of a network. The introduction (Clause 1.7) fills in the mechanics: LRP offers an LRP Database Synchronization (LRP-DS) service interface to one or more LRP applications. Information travels hop-by-hop — each information element is tied to a specific pair of connected ports. For every link, LRP builds a bi-directional association made of two one-way paths. On each path there is an applicant database at one end and a registrar database at the other; LRP rapidly and reliably copies the applicant's database into the neighbor's registrar. Stitch all these per-link copies together and an application can propagate information across the whole network. The standard deliberately specifies LRP itself but not any application that runs on top of it.",
+      "zh": "为什么需要 LRP？它的目的（第 1.2 节）是便于构建在整个或部分网络中分发信息的应用。引言（第 1.7 节）补充了运行机制：LRP 向一个或多个 LRP 应用提供 LRP 数据库同步（LRP Database Synchronization，LRP-DS）服务接口。信息按逐跳方式传递——每个信息元素都绑定到一对相连端口。对每条链路，LRP 建立一个由两条单向路径组成的双向关联；每条路径一端是申请者（applicant）数据库，另一端是登记者（registrar）数据库；LRP 快速可靠地把申请者数据库复制到邻居的登记者数据库。把所有这些逐链路副本串联起来，应用就能在整个网络中传播信息。标准刻意只规定 LRP 本身，而不规定运行其上的任何应用。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 170\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"20\" y=\"30\" width=\"150\" height=\"110\" rx=\"6\"/><rect x=\"290\" y=\"30\" width=\"150\" height=\"110\" rx=\"6\"/><text x=\"95\" y=\"22\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">System A</text><text x=\"365\" y=\"22\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">System B</text><rect x=\"40\" y=\"50\" width=\"50\" height=\"28\" rx=\"3\"/><text x=\"65\" y=\"68\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">A db</text><rect x=\"100\" y=\"50\" width=\"50\" height=\"28\" rx=\"3\"/><text x=\"125\" y=\"68\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">R db</text><rect x=\"310\" y=\"50\" width=\"50\" height=\"28\" rx=\"3\"/><text x=\"335\" y=\"68\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">R db</text><rect x=\"370\" y=\"50\" width=\"50\" height=\"28\" rx=\"3\"/><text x=\"395\" y=\"68\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">A db</text><text x=\"95\" y=\"105\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">app instance</text><text x=\"365\" y=\"105\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">app instance</text><line x1=\"65\" y1=\"120\" x2=\"335\" y2=\"120\"/><text x=\"200\" y=\"114\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">LRP over point-to-point link</text><line x1=\"60\" y1=\"50\" x2=\"340\" y2=\"50\" stroke-dasharray=\"4 3\"/><line x1=\"150\" y1=\"64\" x2=\"310\" y2=\"64\" stroke-dasharray=\"4 3\"/></svg>",
+      "caption": {
+        "en": "LRP simplified (after Figure 1-1): on each one-way path an applicant database (A db) is copied to the neighbor's registrar database (R db). Two paths form one bi-directional association across the link.",
+        "zh": "LRP 简化示意（参照图 1-1）：在每条单向路径上，申请者数据库（A db）被复制到邻居的登记者数据库（R db）。两条路径构成跨链路的一个双向关联。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Before the protocol body, Clause 1 sets the ground rules for how the document expresses itself. Clause 1.3 (State diagram conventions) says state machines follow the conventions of Annex E of IEEE Std 802.1Q-2018, and that the C programming language (ISO/IEC 9899:2018) is also used to document conformant operation, with C functions shown in a fixed-width font. Clause 1.4 (Specification model) makes a crucial promise: the model of operation is only a way to describe externally visible behavior. An implementation may use any internal design it likes — conformance is judged purely on observable protocol, never on internal structure.",
+      "zh": "在协议正文之前，第 1 章先确立文档的表达规则。第 1.3 节（状态图约定）规定状态机遵循 IEEE Std 802.1Q-2018 附录 E 的约定，并且还使用 C 语言（ISO/IEC 9899:2018）来记述一致性系统的运行，C 函数以等宽字体表示。第 1.4 节（规范模型）作出一个关键承诺：所给出的运行模型只是描述对外可见行为的一种方式。实现可以采用任意内部设计——一致性只依据可观测的协议来判定，绝不依据内部结构。"
+    },
+    {
+      "type": "prose",
+      "en": "Two short notes round out Clause 1. Clause 1.5 (Note on inter-table references) explains the recurring phrase 'a reference to xyz': such a reference might be a pointer, an array index, or any other value unique enough to be unambiguous — how you implement it is your choice and is not specified (except, of course, for the concrete data representations of managed objects in the YANG and MIB modules). Clause 1.6 (Specification precedence) gives the tie-breaker when parts of the standard appear to conflict: state machine diagrams win first, then normative tables, then normative text, then normative figures, and finally the YANG and MIB modules. Anything in an annex marked non-normative carries no requirements.",
+      "zh": "两条简短的说明为第 1 章收尾。第 1.5 节（关于跨表引用的说明）解释了反复出现的短语“对 xyz 的引用”：这种引用可以是指针、数组下标，或任何足够唯一、不致歧义的值——具体如何实现由你决定，标准不作规定（当然，YANG 与 MIB 模块中受管对象的具体数据表示除外）。第 1.6 节（规范优先级）给出当标准各部分看似冲突时的裁决顺序：状态机图优先级最高，其次是规范性表格，再次是规范性正文，然后是规范性插图，最后才是 YANG 与 MIB 模块。任何标注为非规范性的附录内容都不构成要求。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Precedence in practice: if a state diagram and a paragraph of text seem to disagree, the state diagram is authoritative (Clause 1.6). This is why LRP leans so heavily on its 802.1Q-style state machines — they are the single source of truth, and the prose is there to explain them.",
+      "zh": "优先级的实际意义：如果状态图与某段正文看似不一致，以状态图为准（第 1.6 节）。这正是 LRP 如此倚重其 802.1Q 风格状态机的原因——状态机是唯一的权威依据，正文只是用来解释它们。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5 (Conformance) tells you which behaviors are mandatory and which are optional. Its introduction (Clause 5.1) names four kinds of system and points to where each is specified. The categories come from two yes/no questions. First: does the system own the target ports (the ports a Portal is associated with) AND their Portals? A Native system owns both; a Proxy system has the Portals but not the target ports (it runs LRP on behalf of someone else); a Controlled system has the target ports but not the Portals (the Proxy holds those for it). Second: is the system an end system (an initial source or final destination of data) or a relay system (a router or bridge that forwards between ports)?",
+      "zh": "第 5 章（一致性）告诉你哪些行为是强制的、哪些是可选的。其引言（第 5.1 节）列出四类系统，并指明各自的规定位置。分类来自两个是/否问题。第一：该系统是否同时拥有目标端口（target port，即与 Portal 关联的端口）及其 Portal？本地系统（Native system）两者都有；代理系统（Proxy system）有 Portal 但没有目标端口（它代他人运行 LRP）；受控系统（Controlled system）有目标端口但没有 Portal（由代理系统替它持有）。第二：该系统是端系统（end system，数据的初始源或最终目的地）还是中继系统（relay system，在端口间转发的路由器或网桥）？"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  Q1{Owns target ports<br/>AND their Portals?} -->|Both| N[Native system]\n  Q1 -->|Portals only| P[Proxy system]\n  Q1 -->|Target ports only| C[Controlled system]\n  N --> Q2{End or relay?}\n  Q2 -->|End| NE[Native end<br/>5.3+5.4 req, 5.5 opt]\n  Q2 -->|Relay| NR[Native relay<br/>5.3+5.6 req, 5.7 opt]\n  P --> PR[Proxy<br/>5.8 req, 5.9 opt]\n  C --> CR[Controlled<br/>5.10 optional]",
+      "zh": "flowchart TD\n  Q1{同时拥有目标端口<br/>及其 Portal?} -->|两者都有| N[本地系统]\n  Q1 -->|仅有 Portal| P[代理系统]\n  Q1 -->|仅有目标端口| C[受控系统]\n  N --> Q2{端系统还是中继?}\n  Q2 -->|端系统| NE[本地端系统<br/>5.3+5.4 强制, 5.5 可选]\n  Q2 -->|中继系统| NR[本地中继系统<br/>5.3+5.6 强制, 5.7 可选]\n  P --> PR[代理系统<br/>5.8 强制, 5.9 可选]\n  C --> CR[受控系统<br/>5.10 可选]"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5.2 (Requirements terminology) is the rulebook for reading those mandates. Shall marks a mandatory requirement; may marks a permitted choice (so 'may' and 'may not' mean exactly the same thing); should marks a recommended but not equally desirable choice. The Protocol Implementation Conformance Statement (PICS) proformas in Annex A simply tally every shall, may, and should. The standard also reserves quieter verbs: is / are state definitions and logical consequences; can describes behavior that is permitted but neither always required nor directly controlled; cannot describes what never happens in a conformant system; allow means 'support the ability for'; and capability means 'can be configured to'.",
+      "zh": "第 5.2 节（要求术语）是解读这些规定的规则书。Shall（应）表示强制要求；may（可）表示被允许的选择（因此“may”与“may not”含义完全相同）；should（宜）表示推荐但并非同等可取的选择。附录 A 中的协议实现一致性声明（Protocol Implementation Conformance Statement，PICS）格式表只是把每一处 shall、may、should 逐一统计列出。标准还保留了一些较“轻”的动词：is / are 用于定义和一致性行为的逻辑结果；can 描述被允许、但既非始终要求也非直接受控的行为；cannot 描述在一致性系统中绝不发生的情况；allow 意为“支持……的能力”；capability 意为“可被配置为”。"
+    },
+    {
+      "type": "prose",
+      "en": "The heart of Clause 5 is a stack of building blocks. Clause 5.3 (Common Native and Proxy required behaviors) is the shared foundation every Native or Proxy system shall provide: the LRP-DT (LRP Data Transport) instance state machine, the Portal association maintenance state machines, at least one transport — Edge Control Protocol (ECP) or Transmission Control Protocol (TCP) — conformant LRPDU (LRP Data Unit) format and encoding, and access to the required managed objects. On top of 5.3, each system type adds its own required and optional layers, summarized in the coverage map below.",
+      "zh": "第 5 章的核心是一组层层叠加的构件。第 5.3 节（本地与代理系统的共同强制行为）是每个本地或代理系统都应提供的共享基础：LRP-DT（LRP 数据传输，LRP Data Transport）实例状态机、Portal 关联维护状态机、至少一种传输方式——边缘控制协议（Edge Control Protocol，ECP）或传输控制协议（Transmission Control Protocol，TCP）、符合规范的 LRPDU（LRP 数据单元）格式与编码，以及对所需受管对象的访问。在 5.3 之上，每类系统再叠加各自的强制与可选层，下面的覆盖地图作了归纳。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every conformance subclause (5.3–5.10) by exact clause number",
+        "zh": "覆盖地图：按确切节号列出每个一致性子条款（5.3–5.10）"
+      },
+      "en": "Common base — 5.3: a Native or Proxy system shall provide the LRP-DT instance state machine (7.2, 7.3), the Portal association maintenance state machines (8.2), at least one transport (ECP or TCP, 6.9.1/6.9.2), conformant LRPDU format and encoding (Clause 9), and access to the required managed objects (Clause 11).\n\nNative end system — 5.4 (required): conform to 5.3, and provide the Applicant state machine (8.3), the Registrar state machine (8.4), or both, on one or more ports. 5.5 (optional): if it provides TCP transport it should also conform to IEEE Std 802.1AB (Link Layer Discovery Protocol, LLDP) and the LRP TCP Discovery TLV (Type-Length-Value) in C.2.2; if it does not provide TCP it may conform to 802.1AB and the LLDP TLVs in Annex C; and it may expose managed objects via the YANG modules (Clause 12) and/or MIB modules (Clause 13).\n\nNative relay system — 5.6 (required): conform to 5.3 and provide all of the Applicant and Registrar state machines (8.3, 8.4), on more than one port (a relay forwards, so it needs at least two ports). 5.7 (optional): the same LLDP/TLV and YANG/MIB choices as 5.5, applied to 5.3+5.6.\n\nProxy system — 5.8 (required): a Proxy system shall provide the LRP-DT instance state machine (7.2, 7.3), the Portal association maintenance state machines (8.2), all of the Applicant and Registrar state machines (8.3, 8.4), the LRP-DT TCP mechanism specifically (6.9.2), conformant LRPDU format/encoding (Clause 9), and access to the required managed objects (Clause 11). 5.9 (optional): expose the 5.3+5.8 managed objects via YANG (Clause 12) and/or MIB (Clause 13).\n\nControlled system — 5.10 (all optional): it should conform to IEEE Std 802.1AB and the LLDP TLVs in Annex C, provide access to the managed objects that configure its Proxy system's address(es) (11.6.1), and/or provide access to managed objects for monitoring LLDP TLVs (11.6.2); it may also expose implemented managed objects via YANG (Clause 12) and/or MIB (Clause 13). A note in 5.5/5.7/5.9 reminds you that a particular LRP application can make any of these optional behaviors mandatory (see B.11).",
+      "zh": "共同基础——5.3：本地或代理系统应提供 LRP-DT 实例状态机（7.2、7.3）、Portal 关联维护状态机（8.2）、至少一种传输方式（ECP 或 TCP，6.9.1/6.9.2）、符合规范的 LRPDU 格式与编码（第 9 章），以及对所需受管对象的访问（第 11 章）。\n\n本地端系统——5.4（强制）：符合 5.3，并在一个或多个端口上提供申请者状态机（8.3）、登记者状态机（8.4）或两者。5.5（可选）：若提供 TCP 传输，则宜同时符合 IEEE Std 802.1AB（链路层发现协议，Link Layer Discovery Protocol，LLDP）以及 C.2.2 中的 LRP TCP 发现 TLV（类型-长度-值，Type-Length-Value）；若不提供 TCP，则可符合 802.1AB 及附录 C 中的 LLDP TLV；并且可通过 YANG 模块（第 12 章）和/或 MIB 模块（第 13 章）暴露受管对象。\n\n本地中继系统——5.6（强制）：符合 5.3，并在多于一个端口上提供全部申请者与登记者状态机（8.3、8.4）（中继需转发，故至少两个端口）。5.7（可选）：与 5.5 相同的 LLDP/TLV 及 YANG/MIB 选项，应用于 5.3+5.6。\n\n代理系统——5.8（强制）：代理系统应提供 LRP-DT 实例状态机（7.2、7.3）、Portal 关联维护状态机（8.2）、全部申请者与登记者状态机（8.3、8.4）、专门的 LRP-DT TCP 机制（6.9.2）、符合规范的 LRPDU 格式/编码（第 9 章），以及对所需受管对象的访问（第 11 章）。5.9（可选）：通过 YANG（第 12 章）和/或 MIB（第 13 章）暴露 5.3+5.8 的受管对象。\n\n受控系统——5.10（全部可选）：宜符合 IEEE Std 802.1AB 及附录 C 中的 LLDP TLV，提供配置其代理系统地址的受管对象访问（11.6.1），和/或提供监控 LLDP TLV 的受管对象访问（11.6.2）；也可通过 YANG（第 12 章）和/或 MIB（第 13 章）暴露已实现的受管对象。5.5/5.7/5.9 中的注释提醒：特定的 LRP 应用可使上述任一可选行为变为强制（见 B.11）。",
+      "cite": {
+        "pdf_id": "8021CS-2020",
+        "pages": [
+          21,
+          22,
+          23
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A quick mental model for Clause 5: a Proxy system (5.8) is the most demanding — it must carry the full Applicant and Registrar machinery and TCP specifically, because it works on behalf of Controlled systems that themselves carry almost nothing mandatory (5.10 is entirely 'should'/'may'). Native end and relay systems sit in between, both built on the common 5.3 floor.",
+      "zh": "记忆第 5 章的简易心法：代理系统（5.8）要求最高——它必须承载完整的申请者与登记者机制，并且专门要求 TCP，因为它代受控系统工作，而受控系统本身几乎没有任何强制项（5.10 全是“宜”/“可”）。本地端系统与中继系统居于中间，二者都建立在共同的 5.3 基础之上。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021CS-2020",
+      "pages": [
+        14,
+        15
+      ],
+      "note": "Clause 1.1-1.7: Scope, Purpose, state diagram conventions, specification model, inter-table references, precedence, and Introduction (incl. Figure 1-1)."
+    },
+    {
+      "pdf_id": "8021CS-2020",
+      "pages": [
+        18,
+        19
+      ],
+      "note": "Clause 3 definitions for Native/Proxy/Controlled systems, applicant, registrar, Portal, target port, end/relay system."
+    },
+    {
+      "pdf_id": "8021CS-2020",
+      "pages": [
+        21,
+        22,
+        23
+      ],
+      "note": "Clause 5.1-5.10: conformance introduction, requirements terminology, and the required/optional behaviors for Native end, Native relay, Proxy, and Controlled systems."
+    }
+  ],
+  "covers": [
+    "8021CS-2020:1.1",
+    "8021CS-2020:1.2",
+    "8021CS-2020:1.3",
+    "8021CS-2020:1.4",
+    "8021CS-2020:1.5",
+    "8021CS-2020:1.6",
+    "8021CS-2020:1.7",
+    "8021CS-2020:5.1",
+    "8021CS-2020:5.2",
+    "8021CS-2020:5.3",
+    "8021CS-2020:5.4",
+    "8021CS-2020:5.5",
+    "8021CS-2020:5.6",
+    "8021CS-2020:5.7",
+    "8021CS-2020:5.8",
+    "8021CS-2020:5.9",
+    "8021CS-2020:5.10"
+  ],
+  "track": "bridging-tsn"
+}

@@ -1,0 +1,184 @@
+{
+  "id": "tsn-45",
+  "title": {
+    "en": "Scheduled Traffic in the Car: EST Modes (Bus, Phased, CQF) and the Informative Annexes",
+    "zh": "车载网络中的调度流量：EST 配置模式（总线、分相、CQF）与各资料性附录"
+  },
+  "estMinutes": 6,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1DG-2025 is a TSN (Time-Sensitive Networking) profile for automotive in-vehicle Ethernet. Clause 8 does not invent new hardware behavior — it gives system integrators configuration guidance for one base-standard feature: Enhancements for Scheduled Traffic (EST), the time-gated transmission mechanism standardized in IEEE 802.1Q clause 8.6.8.4. EST works by attaching a per-port timetable (a GateControlList) to each traffic class (TC) queue, opening and closing transmission gates so that critical frames get the wire at known moments. Clause 8.1 is explicit that these are interpretations and guidance only; whenever the profile and the base standard disagree, the base standard wins.",
+      "zh": "IEEE Std 802.1DG-2025 是一份面向汽车车载以太网的 TSN（时间敏感网络）行规。第 8 章并不发明新的硬件行为，而是为系统集成商提供一项基础标准特性的配置指导：调度流量增强（EST），即 IEEE 802.1Q 第 8.6.8.4 条标准化的时间门控传输机制。EST 的工作方式是为每个端口的每个流量类别（TC）队列附加一张时间表（门控列表 GateControlList），按时打开和关闭发送门，使关键帧在已知时刻获得线路。第 8.1 条明确说明这些只是解释和指导；当行规与基础标准冲突时，以基础标准为准。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 8.2 names three configuration modes that an integrator can choose. Bus Mode (8.3) and Phased Mode (8.4) target minimum latency — they try to push a critical frame across the network as fast as possible. Cyclic Queuing and Forwarding, CQF (8.5), instead targets reduced jitter (timing variation) at the cost of higher latency. A key ground rule: if EST is used on a port, by default no other shapers run on the traffic classes whose gates open and close there, and only one scheduled-traffic TC is open for transmission at any instant.",
+      "zh": "第 8.2 条列出了集成商可选择的三种配置模式。总线模式（8.3）和分相模式（8.4）以最低时延为目标——尽量让关键帧以最快速度穿过网络。循环排队转发 CQF（8.5）则以降低抖动（时延波动）为目标，代价是更高的时延。一条关键基本规则：若某端口使用 EST，则默认情况下，在那些门会开关的流量类别上不再运行其他整形器，并且任一时刻只有一个调度流量 TC 处于开放发送状态。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Pick EST mode] --> B{Goal?}\n  B -->|Lowest latency| C[Bus Mode 8.3]\n  B -->|Lowest latency, per-path| D[Phased Mode 8.4]\n  B -->|Bounded jitter| E[CQF 8.5]\n  C --> F[min 8 GCL entries/port]\n  D --> G[min 32 GCL entries/port]\n  E --> H[Annex T of 802.1Q]",
+      "zh": "flowchart TD\n  A[选择 EST 模式] --> B{目标?}\n  B -->|最低时延| C[总线模式 8.3]\n  B -->|按路径最低时延| D[分相模式 8.4]\n  B -->|有界抖动| E[CQF 8.5]\n  C --> F[每端口至少8个门控表项]\n  D --> G[每端口至少32个门控表项]\n  E --> H[802.1Q 附录T]"
+    },
+    {
+      "type": "prose",
+      "en": "Bus Mode (8.3, 8.3.1) imitates a shared TDMA (Time-Division Multiple Access) bus: it opens one communication path from a single Talker (sender) to all potential Listeners (receivers) at once, ideally right when the application produces a frame. The simplest schedule uses just two intervals — a short interval for time-critical frames and a long interval for the rest — and needs at least 8 GateControlList entries per port. Network diameter (hop count) sets the short interval; more hops means a longer short window. Phased Mode (8.4, 8.4.1) is finer-grained: each bridge gets a guard-band and schedule so an incoming frame can be forwarded immediately along a pre-planned path, and it needs at least 32 GateControlList entries per port. Both modes ask the integrator to tune the clock tick (TickGranularity) to the link speed for efficiency.",
+      "zh": "总线模式（8.3、8.3.1）模仿共享的 TDMA（时分多址）总线：它一次性打开从单个 Talker（发送方）到所有潜在 Listener（接收方）的一条通信路径，理想情况下恰好在应用生成帧时打开。最简单的调度只用两个区间——给时间关键帧的短区间和给其余流量的长区间——且每端口至少需要 8 个门控列表表项。网络直径（跳数）决定短区间长度；跳数越多，短窗口越长。分相模式（8.4、8.4.1）更细粒度：每个网桥都配置一个保护带和调度，使到达的帧能沿预规划路径立即转发，每端口至少需要 32 个门控列表表项。两种模式都要求集成商根据链路速率调整时钟节拍（TickGranularity）以提升效率。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "CQF (8.5) is described entirely by reference to Annex T of IEEE 802.1Q. The trade-off it makes: bridges must buffer all frames received in each interval, then burst them out on strict priority when the gate opens. Short intervals keep buffers small; long intervals need large buffers. CBS can intersperse frames during transmission, but it does not change the bounded maximum latency.",
+      "zh": "CQF（8.5）完全通过引用 IEEE 802.1Q 附录 T 来描述。它的权衡在于：网桥必须缓存每个区间内收到的所有帧，待门打开时按严格优先级突发送出。短区间使缓冲区较小；长区间需要大缓冲区。CBS 可在传输时穿插帧，但不会改变有界的最大时延。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 8.6 frames the latency/efficiency picture: Bus and Phased Mode are 'minimum latency' configurations, while CQF is a 'bounded maximum latency' configuration. For Bus and Phased Mode, a frame's worst-case gate-induced latency depends on how long its gate stays closed (operCycleTime minus gateOpenTime), and the bandwidth a TC gets is the ratio operCycleTime over gateOpenTime. Opening and closing gates frequently is costly everywhere because of the guard bands, and imprecise time synchronization forces over-provisioning. Lowest latency is only achievable when Talker and Listener applications are themselves synchronized to the schedule — they supply data only when transmission is possible and consume it the moment it arrives.",
+      "zh": "第 8.6 条勾勒出时延/效率的全貌：总线模式和分相模式是“最低时延”配置，而 CQF 是“有界最大时延”配置。对总线和分相模式而言，一帧由门控引起的最坏情况时延取决于其门关闭的时长（operCycleTime 减去 gateOpenTime），而某个 TC 获得的带宽是 operCycleTime 与 gateOpenTime 之比。频繁开关门处处代价高昂，原因在于保护带；而不精确的时间同步会迫使过度预留资源。只有当 Talker 与 Listener 的应用本身也同步到该调度时——即仅在可发送时供给数据、在数据到达瞬间消费——才能达到最低时延。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 8.7 warns about combining EST with other shapers. The general rule (8.7.1): for any of the three modes to give bounded latency, each TC's transmission queue must be empty when its gate closes, or another full cycle is added to the frame's latency — in network calculus this is the 'stability condition'. Combining CBS (Credit-Based Shaper) with EST (8.7.2): per 802.1Q the CBS idleSlope is modified so no credit accumulates while the gate is closed and the credit rate is scaled up by the inverse of the open duty cycle; CBS then effectively runs only during the open window. Combining ATS (Asynchronous Traffic Shaper) with EST (8.7.3): ATS instances are unaware of the gate state, so they release a burst as soon as the gate opens, which adds little delay to the stream itself but can block lower-priority TCs.",
+      "zh": "第 8.7 条提醒不要轻易将 EST 与其他整形器组合。一般规则（8.7.1）：要使三种模式中任一种给出有界时延，每个 TC 的发送队列必须在其门关闭时为空，否则会给帧时延再加上一个完整周期——在网络演算中这称为“稳定性条件”。CBS（基于信用的整形器）与 EST 组合（8.7.2）：按 802.1Q，CBS 的 idleSlope 被修改，使门关闭时不累积信用，而信用累积率按开放占空比的倒数放大；于是 CBS 实际上只在开放窗口内运行。ATS（异步流量整形器）与 EST 组合（8.7.3）：ATS 实例不感知门状态，因此门一打开就释放一批帧，这对该流自身增加的时延很小，但会阻塞较低优先级的 TC。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 400 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><text x=\"0\" y=\"12\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\">One EST cycle (operCycleTime)</text><rect x=\"2\" y=\"22\" width=\"70\" height=\"28\"/><text x=\"8\" y=\"40\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">Short: critical</text><rect x=\"72\" y=\"22\" width=\"14\" height=\"28\" stroke-dasharray=\"3 2\"/><text x=\"74\" y=\"64\" font-size=\"7\" stroke=\"none\" fill=\"currentColor\">guard</text><rect x=\"86\" y=\"22\" width=\"300\" height=\"28\"/><text x=\"92\" y=\"40\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">Long: non-critical / best-effort</text><line x1=\"2\" y1=\"58\" x2=\"386\" y2=\"58\"/><text x=\"150\" y=\"80\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">bandwidth for a TC ~ gateOpenTime / operCycleTime</text></svg>",
+      "caption": {
+        "en": "A two-interval Bus Mode schedule: a short window for time-critical frames (with a guard band), then a long window for everything else. The fraction of the cycle a gate stays open sets that traffic class's bandwidth (Clause 8.3, 8.6).",
+        "zh": "两区间的总线模式调度：先是给时间关键帧的短窗口（含保护带），再是给其余流量的长窗口。门在一个周期中开放的比例决定该流量类别的带宽（第 8.3、8.6 条）。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — Clause 8 subclauses (8.1–8.7.3)",
+        "zh": "覆盖地图——第 8 章子条款（8.1–8.7.3）"
+      },
+      "en": "8.1 Purpose: EST configuration guidance is interpretive, not normative; base standard takes precedence. 8.2 Configuration modes: lists Bus (8.3), Phased (8.4), CQF (8.5); default disables other shapers on gated TCs; only one scheduled-traffic TC open at a time. 8.3.1 Bus Mode configuration: at least 8 GateControlList entries per port; tune TickGranularity to link speed. 8.4.1 Phased Mode configuration: at least 32 GateControlList entries per port; tune TickGranularity. 8.5 CQF: defined by 802.1Q Annex T; buffer-then-burst on strict priority. 8.6 Latency/efficiency: worst case ~ (operCycleTime - gateOpenTime); bandwidth ~ operCycleTime/gateOpenTime; guard bands and imprecise sync cost efficiency. 8.7.1 General: stability condition — queues must drain before the gate closes. 8.7.2 CBS+EST: idleSlope modified, credit only accrues while gate open. 8.7.3 ATS+EST: ATS ignores gate state, bursts at gate-open, blocks lower TCs.",
+      "zh": "8.1 目的：EST 配置指导是解释性的、非规范性的；以基础标准为准。8.2 配置模式：列出总线（8.3）、分相（8.4）、CQF（8.5）；默认在受门控的 TC 上禁用其他整形器；任一时刻只开放一个调度流量 TC。8.3.1 总线模式配置：每端口至少 8 个门控列表表项；按链路速率调 TickGranularity。8.4.1 分相模式配置：每端口至少 32 个门控列表表项；调 TickGranularity。8.5 CQF：由 802.1Q 附录 T 定义；先缓存后按严格优先级突发。8.6 时延/效率：最坏情况约为（operCycleTime − gateOpenTime）；带宽约为 operCycleTime/gateOpenTime；保护带与不精确同步损耗效率。8.7.1 一般：稳定性条件——队列必须在门关闭前排空。8.7.2 CBS+EST：idleSlope 被修改，信用仅在门开放时累积。8.7.3 ATS+EST：ATS 忽略门状态，门开即突发，阻塞较低 TC。",
+      "cite": {
+        "pdf_id": "8021DG-2025",
+        "pages": [
+          28,
+          29,
+          30,
+          31
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — the informative & normative annexes (A–I)",
+        "zh": "覆盖地图——资料性与规范性附录（A–I）"
+      },
+      "en": "Annex A (normative) PCS proforma: the Profile Conformance Statement — fixed-format questionnaires (Bridge PCS, End station PCS, station-requirements PCS tables SR-A through SR-E) a supplier fills to claim conformance; defines status symbols M/O/X and conditional 'pred:S' predicates. Annex B (informative) Intentional limitations: this profile deliberately gives NO guidance on shaper interactions (ATS/CBS with EST), MACsec usage, or frame-preemption interactions, even though 802.1Q permits them. Annex C (informative) Terminology: automotive-friendly definitions — bridge, end station, ECU, Stream/Member Stream, packet vs frame vs MSDU (Figure C-1), bandwidth B=D/T, scheduled traffic (C.7.2), scheduler vs shaper vs policing (C.8), FRER (C.9), frame loss (C.10). Annex D (informative) IEEE 802.1 features: the big walkthrough of the bridge/end-station processing pipeline — VLAN classification, PCP decoding, stream identification, ingress/egress filtering, stream filters/gates, flow metering, queuing, transmission selection, transmission gates (D.22), frame preemption. Annex E (informative) Congestion: defines congesting vs congested traffic, congestion separation, and causes/cures. Annex F (informative) Stream identification: rationale for using only passive out-facing stream identification (no in-facing, no active). Annex G (informative) Non-real-time capable protocols: why TCP and other retransmitting protocols clash with EST's stability condition and should not sit in the highest TCs. Annex H (informative) Egress shaping in end stations: how OS/middleware/software (e.g., Linux HTB) shape traffic at the Talker. Annex I (informative) Bibliography: reference list (AUTOSAR, Avnu, 802.1AS, 1588, FlexRay, Turner [B12], Valiant [B13]).",
+      "zh": "附录 A（规范性）PCS 表格：行规符合性声明——供应商填写的固定格式问卷（网桥 PCS、端站 PCS、站点要求 SR-A 至 SR-E 表）以声明符合性；定义状态符号 M/O/X 及条件式“pred:S”谓词。附录 B（资料性）有意的限制：本行规有意不就整形器交互（ATS/CBS 与 EST）、MACsec 使用或帧抢占交互给出指导，尽管 802.1Q 允许这些组合。附录 C（资料性）术语：面向汽车的定义——网桥、端站、ECU、流/成员流、包与帧与 MSDU（图 C-1）、带宽 B=D/T、调度流量（C.7.2）、调度器与整形器与监管（C.8）、FRER（C.9）、帧丢失（C.10）。附录 D（资料性）IEEE 802.1 特性：对网桥/端站处理流水线的全面梳理——VLAN 分类、PCP 解码、流识别、入口/出口过滤、流过滤器/流门、流量计量、排队、发送选择、发送门（D.22）、帧抢占。附录 E（资料性）拥塞：定义致拥塞流量与被拥塞流量、拥塞隔离及成因与对策。附录 F（资料性）流识别：阐述为何只使用被动的外向流识别（不用内向、不用主动）。附录 G（资料性）非实时协议：为何 TCP 等重传协议与 EST 的稳定性条件相冲突，不应置于最高 TC。附录 H（资料性）端站出口整形：OS/中间件/软件（如 Linux HTB）如何在 Talker 处整形流量。附录 I（资料性）参考文献：引用清单（AUTOSAR、Avnu、802.1AS、1588、FlexRay、Turner [B12]、Valiant [B13]）。",
+      "cite": {
+        "pdf_id": "8021DG-2025",
+        "pages": [
+          32,
+          35,
+          36,
+          40,
+          41,
+          44,
+          46,
+          53,
+          54,
+          55,
+          57,
+          58,
+          59,
+          60
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "How the annexes fit together as a learner's mental model: Annex C gives you the vocabulary, Annex D walks the full per-frame processing pipeline a bridge or end station runs, Annexes E/F/G/H explain why specific design choices were made (congestion control, passive stream ID only, keeping TCP out of top TCs, where shaping really happens in an end station), Annex B lists what the profile deliberately leaves unspecified, and Annex A is the formal checklist a vendor signs to claim conformance.",
+      "zh": "把这些附录串成学习者的心智模型：附录 C 给你词汇，附录 D 走一遍网桥或端站对每帧执行的完整处理流水线，附录 E/F/G/H 解释为何做出特定设计选择（拥塞控制、只用被动流识别、把 TCP 挡在高优先级 TC 之外、端站中整形究竟发生在何处），附录 B 列出行规有意不规定的内容，而附录 A 是厂商用以声明符合性的正式核对清单。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021DG-2025",
+      "pages": [
+        28,
+        29,
+        30,
+        31
+      ],
+      "note": "Clause 8: 8.1 Purpose, 8.2 modes, 8.3/8.3.1 Bus, 8.4/8.4.1 Phased, 8.5 CQF, 8.6 latency, 8.7.1/8.7.2/8.7.3 shaper combining"
+    },
+    {
+      "pdf_id": "8021DG-2025",
+      "pages": [
+        32,
+        35,
+        36
+      ],
+      "note": "Annex A normative PCS proforma: status symbols, Bridge/End station PCS tables"
+    },
+    {
+      "pdf_id": "8021DG-2025",
+      "pages": [
+        40
+      ],
+      "note": "Annex B intentional limitations (shaper interactions, MACsec, preemption)"
+    },
+    {
+      "pdf_id": "8021DG-2025",
+      "pages": [
+        41,
+        44
+      ],
+      "note": "Annex C terminology: stations, MSDU/Figure C-1, scheduled traffic, scheduler vs shaper"
+    },
+    {
+      "pdf_id": "8021DG-2025",
+      "pages": [
+        46,
+        53,
+        54
+      ],
+      "note": "Annex D IEEE 802.1 features pipeline, D.22 transmission gates"
+    },
+    {
+      "pdf_id": "8021DG-2025",
+      "pages": [
+        55,
+        57,
+        58,
+        59,
+        60
+      ],
+      "note": "Annex E congestion, F stream identification, G non-real-time protocols, H egress shaping, I bibliography"
+    }
+  ],
+  "covers": [
+    "8021DG-2025:8.1",
+    "8021DG-2025:8.2",
+    "8021DG-2025:8.3.1",
+    "8021DG-2025:8.4.1",
+    "8021DG-2025:8.5",
+    "8021DG-2025:8.6",
+    "8021DG-2025:8.7.1",
+    "8021DG-2025:8.7.2",
+    "8021DG-2025:8.7.3",
+    "8021DG-2025:Annex_A",
+    "8021DG-2025:Annex_B",
+    "8021DG-2025:Annex_C",
+    "8021DG-2025:Annex_D",
+    "8021DG-2025:Annex_E",
+    "8021DG-2025:Annex_F",
+    "8021DG-2025:Annex_G",
+    "8021DG-2025:Annex_H",
+    "8021DG-2025:Annex_I"
+  ],
+  "track": "tsn"
+}

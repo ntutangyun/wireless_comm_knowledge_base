@@ -1,0 +1,137 @@
+{
+  "id": "bridging-tsn-96",
+  "title": {
+    "en": "Auto Attach State Machines: Functions, AAD and AAB",
+    "zh": "自动接入状态机：函数、AAD 与 AAB"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In part 1 we met the players: an Auto Attach Device (AAD, an edge device that wants service) and an Auto Attach BEB (AAB, the provider's Backbone Edge Bridge that grants it), talking over LLDP (Link Layer Discovery Protocol, IEEE 802.1AB). Each side carries two TLVs (Type-Length-Value records): a System TLV describing identity and readiness, and an Assignment TLV listing the VID-to-I-SID mappings being requested (VID = VLAN identifier, I-SID = backbone service instance identifier). This lesson covers the engine room: clause 50.5's helper functions and the two state machines (50.6 for the AAD, 50.7 for the AAB) that drive the whole handshake.",
+      "zh": "在第 1 部分中我们认识了主要角色：自动接入设备（AAD，希望获得服务的边缘设备）和自动接入骨干边缘桥（AAB，提供方授予服务的骨干边缘桥），它们通过 LLDP（链路层发现协议，IEEE 802.1AB）通信。每一方都携带两个 TLV（类型-长度-值记录）：描述身份与就绪状态的 System TLV，以及列出所请求的 VID 到 I-SID 映射的 Assignment TLV（VID = VLAN 标识符，I-SID = 骨干服务实例标识符）。本课讲解发动机舱：50.5 的辅助函数，以及驱动整个握手的两个状态机（50.6 用于 AAD，50.7 用于 AAB）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 50.5 defines functions in plain words plus C-style pseudo-code. They are not an implementation — they describe the externally observable behaviour of the Auto Attach Protocol (AAP). Most operate on two structures: a SYSstring (the System TLV in local form) and an ASGNSstring (the Assignment TLV in local form). The builders fill these structures, the table functions track who is discovered on which port, the enable/disable functions push or tear down VLAN mappings, and the statistics functions count what happened.",
+      "zh": "50.5 用文字加 C 风格伪代码定义函数。它们不是实现——而是描述自动接入协议（AAP）对外可观察的行为。多数函数操作两个结构：SYSstring（本地形式的 System TLV）和 ASGNSstring（本地形式的 Assignment TLV）。构建函数填充这些结构，表函数跟踪哪个端口上发现了谁，启用/禁用函数下发或拆除 VLAN 映射，统计函数则计数发生了什么。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"20\" width=\"120\" height=\"40\"/><text x=\"70\" y=\"44\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Build TLVs</text><text x=\"70\" y=\"75\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">50.5.1 / 50.5.2</text><rect x=\"170\" y=\"20\" width=\"120\" height=\"40\"/><text x=\"230\" y=\"44\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Match / Disc table</text><text x=\"230\" y=\"75\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">50.5.7-50.5.10</text><rect x=\"330\" y=\"20\" width=\"120\" height=\"40\"/><text x=\"390\" y=\"44\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Enable / Disable</text><text x=\"390\" y=\"75\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">50.5.4/.6/.11/.12</text><rect x=\"170\" y=\"100\" width=\"120\" height=\"40\"/><text x=\"230\" y=\"118\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Set TLV + notify</text><text x=\"230\" y=\"132\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">50.5.14/.15/.20</text><path d=\"M130 40 L170 40\"/><path d=\"M290 40 L330 40\"/><path d=\"M230 60 L230 100\"/></svg>",
+      "caption": {
+        "en": "The 50.5 helper functions grouped by job: build TLVs, match against the discovery table, enable/disable mappings, then write the result back to LLDP and notify.",
+        "zh": "按职责分组的 50.5 辅助函数：构建 TLV、与发现表匹配、启用/禁用映射，然后把结果写回 LLDP 并通知。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The builders come first. aaBuildSysTlv (50.5.1) stamps a System TLV for this port with its system type, MAC, port ID and tagging, marking state NOT_READY until proven otherwise. aaBuildAsgnsTlv (50.5.2) fills an Assignment TLV from the admin-requested VID/I-SID array, sets each new entry to PENDING, then copies forward any status already known from the operational TLV — so a mapping that was previously ACCEPT keeps that status instead of restarting. aaConfigAabAsgn (50.5.3) is the AAB's actual configuration step: it provisions a Customer Edge Port or Customer Network Port, couples the requested VLAN to the backbone service instance, advertises the I-SID via Shortest Path Bridging or PBB management, and returns ACCEPT or PENDING.",
+      "zh": "构建函数先行。aaBuildSysTlv（50.5.1）为本端口标记一个 System TLV，写入系统类型、MAC、端口 ID 与标记方式，状态置为 NOT_READY，直到另行证明。aaBuildAsgnsTlv（50.5.2）根据管理员请求的 VID/I-SID 数组填充 Assignment TLV，把每个新条目设为 PENDING，再把操作 TLV 中已知的状态向前复制——这样先前为 ACCEPT 的映射会保留该状态而不必重来。aaConfigAabAsgn（50.5.3）是 AAB 真正的配置步骤：它配置 Customer Edge Port 或 Customer Network Port，把请求的 VLAN 耦合到骨干服务实例，通过最短路径桥接或 PBB 管理面通告 I-SID，并返回 ACCEPT 或 PENDING。"
+    },
+    {
+      "type": "prose",
+      "en": "Enable and disable are deliberately separate. aaEnableAabVidIsidAsgns (50.5.11) walks every PENDING pair, and if the AAB finds it acceptable, calls aaConfigAabAsgn and records ACCEPT/PENDING — otherwise REJECT. aaEnableAadVidIsidAsgns (50.5.12) is the AAD twin: it enables the VLANs the AAB marked active and disables the rest. aaDisableAabVidIsidAsgns (50.5.4) compares an old and new Assignment TLV and tears down any mapping that was ACCEPT but is now missing or REJECTED. aaDisableVidIsidAsgns (50.5.6) wipes all active mappings on the port, and aaDisableLldpAaTlvTx (50.5.5) stops transmitting the Auto Attach TLVs entirely. Together these give the machine both graceful narrowing and full teardown.",
+      "zh": "启用与禁用是有意分开的。aaEnableAabVidIsidAsgns（50.5.11）遍历每个 PENDING 对，若 AAB 认为可接受则调用 aaConfigAabAsgn 并记录 ACCEPT/PENDING，否则记 REJECT。aaEnableAadVidIsidAsgns（50.5.12）是 AAD 的对应函数：启用 AAB 标记为激活的 VLAN，禁用其余。aaDisableAabVidIsidAsgns（50.5.4）比较新旧 Assignment TLV，拆除任何曾为 ACCEPT 但现在缺失或被 REJECTED 的映射。aaDisableVidIsidAsgns（50.5.6）清除端口上所有激活映射，aaDisableLldpAaTlvTx（50.5.5）则完全停止发送自动接入 TLV。它们共同提供了平滑收窄与彻底拆除两种能力。"
+    },
+    {
+      "type": "prose",
+      "en": "The discovery-association table is how a port remembers who it is talking to. aaDiscAssocAabTblCheck (50.5.7) and aaDiscAssocAadTblCheck (50.5.8) search aaOperDiscAssocTable[] to decide whether a remote system is newly attached, already attached here (ASSOC_ATTACHED), seen on a different port (ASSOC_INVALID), or should wait as a backup (ASSOC_STANDBY) — because an AAD may only hold one active association at a time. aaDiscAssocTblInsert (50.5.10) adds a port-plus-remote-identity row, and aaDiscAssocTblDelete (50.5.9) removes the row for a port once the association moves on.",
+      "zh": "发现-关联表是端口记住自己在和谁通信的方式。aaDiscAssocAabTblCheck（50.5.7）与 aaDiscAssocAadTblCheck（50.5.8）搜索 aaOperDiscAssocTable[]，判断一个远端系统是新接入、已在此接入（ASSOC_ATTACHED）、在别的端口出现（ASSOC_INVALID），还是应作为备份等待（ASSOC_STANDBY）——因为一个 AAD 同一时间只能持有一个活动关联。aaDiscAssocTblInsert（50.5.10）添加一行端口加远端身份记录，aaDiscAssocTblDelete（50.5.9）在关联转移后删除某端口对应的行。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining helpers wire the machine to LLDP and to the counters. aaSetAsgnsTlv (50.5.14) and aaSetSysTlv (50.5.15) lock LLDP, convert the local structure into network byte/bit order, place it in the LLDP database, set the corresponding enable flag, then call SomethingChangedLocal (50.5.20) to tell LLDP to rebuild its frame. Inbound, aaSomethingChangedRemote (50.5.16) is the callback LLDP invokes when the neighbour's database changes: it checks for a point-to-point topology (multiple neighbours means aaTopologyError = TRUE), and otherwise refreshes aaRemSysTlv and aaRemAsgnsTlv from the received big-endian TLVs. aaSomethingChangeRemoteInit (50.5.17) registers that callback at startup. The counters aaUpdateReqDelVidIsidStats (50.5.18) tally requested vs. withdrawn mappings, aaUpdateAcptRejVidIsidStats (50.5.19) tally accepted vs. rejected, and aaPortClearStats (50.5.13) resets them all.",
+      "zh": "其余辅助函数把状态机接到 LLDP 与计数器上。aaSetAsgnsTlv（50.5.14）和 aaSetSysTlv（50.5.15）锁定 LLDP，把本地结构转换为网络字节/位序，放入 LLDP 数据库，设置对应的使能标志，然后调用 SomethingChangedLocal（50.5.20）通知 LLDP 重建帧。入向方面，aaSomethingChangedRemote（50.5.16）是邻居数据库变化时 LLDP 调用的回调：它检查点对点拓扑（出现多个邻居即 aaTopologyError = TRUE），否则从收到的大端 TLV 刷新 aaRemSysTlv 与 aaRemAsgnsTlv。aaSomethingChangeRemoteInit（50.5.17）在启动时注册该回调。计数器 aaUpdateReqDelVidIsidStats（50.5.18）统计请求与撤回的映射，aaUpdateAcptRejVidIsidStats（50.5.19）统计接受与拒绝，aaPortClearStats（50.5.13）则将其全部清零。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A mental shortcut: any function whose name starts aaSet... writes outward to LLDP and triggers SomethingChangedLocal; any function reacting to aaSomethingChangedRemote reads inward. The whole protocol is just these two directions plus a status field (NOT_READY, READY_TO_ASSOC, READY_TO_ATTACH, ASSOC_ATTACHED, ASSOC_STANDBY, the ASSOC_FAILED_* codes) that both machines watch.",
+      "zh": "记忆捷径：凡是名字以 aaSet… 开头的函数都向外写入 LLDP 并触发 SomethingChangedLocal；凡是响应 aaSomethingChangedRemote 的函数都向内读取。整个协议无非是这两个方向，加上一个两台状态机都监视的状态字段（NOT_READY、READY_TO_ASSOC、READY_TO_ATTACH、ASSOC_ATTACHED、ASSOC_STANDBY，以及 ASSOC_FAILED_* 系列代码）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 50.6 defines the AAD state machine (Figure 50-4). It begins at INIT, where it stops TLV transmission and disables any mappings (and on BEGIN also clears stats and re-registers the remote callback). When a usable neighbour appears it moves to VALIDATE_REMOTE_ASSOCIATION / ASSIGNMENT_STATUS: it copies the remote System TLV, then checks readiness — NULL or NOT_READY gives ASSOC_FAILED_OTHER, a non-AAB peer gives ASSOC_FAILED_TYPES, a tagging mismatch gives ASSOC_FAILED_TAGS, and otherwise READY_TO_ATTACH. It then advertises its system, requests assignments (REQUEST_ASSIGNMENTS builds the Assignment TLV from aaAdminVidIsidAsgns[]), and on a topology error or disabled admin flag drops to RESET, arming aaResetTimer before returning to INIT.",
+      "zh": "50.6 定义 AAD 状态机（图 50-4）。它从 INIT 开始，停止 TLV 发送并禁用所有映射（在 BEGIN 时还会清零统计并重新注册远端回调）。当出现可用邻居时进入 VALIDATE_REMOTE_ASSOCIATION / ASSIGNMENT_STATUS：复制远端 System TLV，然后检查就绪性——NULL 或 NOT_READY 得 ASSOC_FAILED_OTHER，非 AAB 对端得 ASSOC_FAILED_TYPES，标记方式不匹配得 ASSOC_FAILED_TAGS，否则为 READY_TO_ATTACH。随后它通告自身系统、请求分配（REQUEST_ASSIGNMENTS 根据 aaAdminVidIsidAsgns[] 构建 Assignment TLV），遇到拓扑错误或管理标志关闭时跌回 RESET，在返回 INIT 前装载 aaResetTimer。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> INIT\n  INIT --> VALIDATE: neighbour ready\n  VALIDATE --> ADVERTISE: READY_TO_ATTACH\n  ADVERTISE --> ACTIVATE: peer attached\n  ACTIVATE --> REQUEST: active assoc\n  REQUEST --> ASSIGN_STATUS: TLV sent\n  ASSIGN_STATUS --> REQUEST: admin changed\n  ACTIVATE --> RESET: standby/fail\n  RESET --> INIT: timer 0",
+      "zh": "stateDiagram-v2\n  [*] --> 初始化\n  初始化 --> 校验: 邻居就绪\n  校验 --> 通告: READY_TO_ATTACH\n  通告 --> 激活: 对端已接入\n  激活 --> 请求: 活动关联\n  请求 --> 分配状态: TLV已发送\n  分配状态 --> 请求: 管理变更\n  激活 --> 复位: 备用/失败\n  复位 --> 初始化: 计时器归零"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 50.7 defines the AAB state machine (Figure 50-5), the mirror image. Because each AAB port has an independent VID space, it serves exactly one AAD per port. Its INIT, RESET and advertising flow parallel the AAD's, but in ACTIVATE_REMOTE_ASSOCIATION it rejects a peer that is itself an AAB (ASSOC_FAILED_TYPES), echoes the AAD's tagging into its own System TLV, and uses aaDiscAssocAabTblCheck. Its ASSIGNMENT_STATUS state is where the real provisioning happens: it clears aaPendingCompleted, records the new remote Assignment TLV, calls aaDisableAabVidIsidAsgns to remove withdrawn mappings, then aaEnableAabVidIsidAsgns to bring up the rest, updating the requested/withdrawn and accepted/rejected counters and writing the result back with aaSetAsgnsTlv. The aaPendingCompleted flag lets a slow backbone attachment finish asynchronously and re-trigger this state when it does.",
+      "zh": "50.7 定义 AAB 状态机（图 50-5），是镜像。由于每个 AAB 端口拥有独立的 VID 空间，它在每个端口上只服务一个 AAD。其 INIT、RESET 与通告流程与 AAD 平行，但在 ACTIVATE_REMOTE_ASSOCIATION 中它拒绝本身也是 AAB 的对端（ASSOC_FAILED_TYPES），把 AAD 的标记方式回显进自己的 System TLV，并使用 aaDiscAssocAabTblCheck。它的 ASSIGNMENT_STATUS 状态是真正完成配置的地方：清除 aaPendingCompleted，记录新的远端 Assignment TLV，调用 aaDisableAabVidIsidAsgns 移除被撤回的映射，再用 aaEnableAabVidIsidAsgns 拉起其余映射，更新请求/撤回与接受/拒绝计数器，并用 aaSetAsgnsTlv 把结果写回。aaPendingCompleted 标志让较慢的骨干接入异步完成，并在完成时重新触发此状态。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause in 50.5, 50.6 and 50.7 by number",
+        "zh": "覆盖图——按编号列出 50.5、50.6 与 50.7 的每一条款"
+      },
+      "en": "State machine functions (50.5): 50.5.1 aaBuildSysTlv (load System TLV for the port). 50.5.2 aaBuildAsgnsTlv (load Assignment TLV, set PENDING, carry forward status). 50.5.3 aaConfigAabAsgn (configure CEP/CNP, couple VLAN to BSI, return ACCEPT/PENDING). 50.5.4 aaDisableAabVidIsidAsgns (tear down old ACCEPT mappings now missing/REJECTED). 50.5.5 aaDisableLldpAaTlvTx (stop sending the AA TLVs). 50.5.6 aaDisableVidIsidAsgns (delete all active mappings on the port). 50.5.7 aaDiscAssocAabTblCheck (AAB-side table lookup → ATTACHED/INVALID). 50.5.8 aaDiscAssocAadTblCheck (AAD-side, single active assoc → ATTACHED/STANDBY). 50.5.9 aaDiscAssocTblDelete (remove a port's row). 50.5.10 aaDiscAssocTblInsert (add port+remote identity row). 50.5.11 aaEnableAabVidIsidAsgns (activate acceptable PENDING pairs, else REJECT). 50.5.12 aaEnableAadVidIsidAsgns (enable ACTIVE VLANs, disable rest). 50.5.13 aaPortClearStats (zero the counters). 50.5.14 aaSetAsgnsTlv (write Assignment TLV to LLDP + SomethingChangedLocal). 50.5.15 aaSetSysTlv (write System TLV to LLDP + SomethingChangedLocal). 50.5.16 aaSomethingChangedRemote (inbound callback; topology check; refresh aaRemSysTlv/aaRemAsgnsTlv). 50.5.17 aaSomethingChangeRemoteInit (register that callback, init vars). 50.5.18 aaUpdateReqDelVidIsidStats (requested vs. withdrawn counts). 50.5.19 aaUpdateAcptRejVidIsidStats (accepted vs. rejected counts). 50.5.20 SomethingChangedLocal (LLDP routine to rebuild outbound frame). State machines: 50.6 AAD state machine (Figure 50-4 — one valid association with one AAB, INIT→VALIDATE→ADVERTISE→ACTIVATE→REQUEST→ASSIGNMENT_STATUS, RESET on failure/topology error). 50.7 AAB state machine (Figure 50-5 — one AAD per port, mirrors the AAD plus echoes tagging and runs the disable-then-enable provisioning with aaPendingCompleted for async backbone attach).",
+      "zh": "状态机函数（50.5）：50.5.1 aaBuildSysTlv（为端口载入 System TLV）。50.5.2 aaBuildAsgnsTlv（载入 Assignment TLV，置 PENDING，沿用旧状态）。50.5.3 aaConfigAabAsgn（配置 CEP/CNP，把 VLAN 耦合到 BSI，返回 ACCEPT/PENDING）。50.5.4 aaDisableAabVidIsidAsgns（拆除现已缺失/被拒的旧 ACCEPT 映射）。50.5.5 aaDisableLldpAaTlvTx（停止发送 AA TLV）。50.5.6 aaDisableVidIsidAsgns（删除端口上全部活动映射）。50.5.7 aaDiscAssocAabTblCheck（AAB 侧查表 → ATTACHED/INVALID）。50.5.8 aaDiscAssocAadTblCheck（AAD 侧，单一活动关联 → ATTACHED/STANDBY）。50.5.9 aaDiscAssocTblDelete（删除某端口的行）。50.5.10 aaDiscAssocTblInsert（添加端口+远端身份行）。50.5.11 aaEnableAabVidIsidAsgns（激活可接受的 PENDING 对，否则 REJECT）。50.5.12 aaEnableAadVidIsidAsgns（启用 ACTIVE 的 VLAN，禁用其余）。50.5.13 aaPortClearStats（计数器清零）。50.5.14 aaSetAsgnsTlv（把 Assignment TLV 写入 LLDP + SomethingChangedLocal）。50.5.15 aaSetSysTlv（把 System TLV 写入 LLDP + SomethingChangedLocal）。50.5.16 aaSomethingChangedRemote（入向回调；拓扑检查；刷新 aaRemSysTlv/aaRemAsgnsTlv）。50.5.17 aaSomethingChangeRemoteInit（注册该回调并初始化变量）。50.5.18 aaUpdateReqDelVidIsidStats（请求与撤回计数）。50.5.19 aaUpdateAcptRejVidIsidStats（接受与拒绝计数）。50.5.20 SomethingChangedLocal（重建出向帧的 LLDP 例程）。状态机：50.6 AAD 状态机（图 50-4——与一个 AAB 形成单一有效关联，INIT→校验→通告→激活→请求→ASSIGNMENT_STATUS，失败/拓扑错误时进入 RESET）。50.7 AAB 状态机（图 50-5——每端口一个 AAD，镜像 AAD，并回显标记方式、用 aaPendingCompleted 支持异步骨干接入运行先禁用后启用的配置流程）。",
+      "cite": {
+        "pdf_id": "8021Qcj-2023",
+        "pages": [
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Qcj-2023",
+      "pages": [
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77
+      ],
+      "note": "50.5 state machine functions (50.5.1-50.5.20) on pp.68-75; 50.6 AAD state machine (Figure 50-4) p.76; 50.7 AAB state machine (Figure 50-5) p.77."
+    }
+  ],
+  "covers": [
+    "8021Qcj-2023:50.5.1",
+    "8021Qcj-2023:50.5.2",
+    "8021Qcj-2023:50.5.3",
+    "8021Qcj-2023:50.5.4",
+    "8021Qcj-2023:50.5.5",
+    "8021Qcj-2023:50.5.6",
+    "8021Qcj-2023:50.5.7",
+    "8021Qcj-2023:50.5.8",
+    "8021Qcj-2023:50.5.9",
+    "8021Qcj-2023:50.5.10",
+    "8021Qcj-2023:50.5.11",
+    "8021Qcj-2023:50.5.12",
+    "8021Qcj-2023:50.5.13",
+    "8021Qcj-2023:50.5.14",
+    "8021Qcj-2023:50.5.15",
+    "8021Qcj-2023:50.5.16",
+    "8021Qcj-2023:50.5.17",
+    "8021Qcj-2023:50.5.18",
+    "8021Qcj-2023:50.5.19",
+    "8021Qcj-2023:50.5.20",
+    "8021Qcj-2023:50.6",
+    "8021Qcj-2023:50.7"
+  ],
+  "track": "bridging-tsn"
+}

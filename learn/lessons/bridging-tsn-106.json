@@ -1,0 +1,139 @@
+{
+  "id": "bridging-tsn-106",
+  "title": {
+    "en": "Managing the Credit-Based Shaper: YANG Models and PICS Proformas",
+    "zh": "管理基于信用的整形器：YANG 模型与 PICS 一致性声明表"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1Qdx-2024 is Amendment 39 to IEEE Std 802.1Q. Its job is to add a standardized way to *manage* the credit-based shaper algorithm (CBSA) — a Time-Sensitive Networking (TSN) traffic shaper that smooths out bursts by metering each traffic class against a 'credit' balance. CBSA itself was already defined in the base standard (clause 8.6.8.2); this amendment supplies the missing management plumbing. The plumbing comes in two forms: YANG data models (a vendor-neutral language for describing configurable network objects) added to Clause 48, and PICS proformas (Protocol Implementation Conformance Statement checklists) added to Annex A and Annex B. This lesson walks every sub-clause this amendment inserts.",
+      "zh": "IEEE Std 802.1Qdx-2024 是 IEEE Std 802.1Q 的第 39 号修正案。它的任务是为基于信用的整形器算法（CBSA，credit-based shaper algorithm）提供一套标准化的*管理*方式——CBSA 是一种时间敏感网络（TSN，Time-Sensitive Networking）流量整形机制，通过对每个流量类别（traffic class）维护一个“信用”余额来平滑突发流量。CBSA 本身已在基础标准（第 8.6.8.2 节）中定义；本修正案补上了缺失的管理接口。这些接口有两种形式：加入第 48 章的 YANG 数据模型（一种厂商中立的、用于描述可配置网络对象的语言），以及加入附录 A 和附录 B 的 PICS 一致性声明表（PICS，Protocol Implementation Conformance Statement，协议实现一致性声明）。本课逐一讲解本修正案插入的每一个子条款。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two new YANG modules carry all the new structure: `ieee802-dot1q-cbsa` (the reusable parameter grouping) and `ieee802-dot1q-cbsa-bridge` (which attaches that grouping to a Bridge Port). Almost every sub-clause in this lesson is one of these two modules viewed from a different angle — as a picture, as a tree, as code, or as a conformance row.",
+      "zh": "两个新的 YANG 模块承载了所有新增结构：`ieee802-dot1q-cbsa`（可复用的参数分组）和 `ieee802-dot1q-cbsa-bridge`（把该分组挂接到网桥端口上）。本课中几乎每个子条款，都是从不同角度审视这两个模块——作为图示、作为树形结构、作为代码，或作为一致性条目。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the model itself (48.2.13, 'Credit-based shaper algorithm model'). The standard describes it as augmenting the Bridge Port model with nodes representing the managed objects of CBSA from Table 12-4, illustrated in Figure 48-23. Concretely, each Bridge Port gains a `cbsa` container holding a `cbsa-parameter-table` indexed by traffic class (one entry per class, up to 8). Each entry carries three leaves: `traffic-class` (the class number, higher = higher priority), `admin-idle-slope` (the bandwidth in bits/second that management requests be reserved for that class's queue — read/write), and `oper-idle-slope` (the bandwidth actually reserved right now — read-only). 'Idle slope' is the rate at which the shaper's credit refills while the queue waits; it is what determines the reserved bandwidth.",
+      "zh": "先看模型本身（48.2.13，“基于信用的整形器算法模型”）。标准将其描述为：在网桥端口模型上增补一些节点，用以表示来自表 12-4 的 CBSA 受管对象，并由图 48-23 加以图示。具体来说，每个网桥端口都新增一个 `cbsa` 容器，其中包含按流量类别索引的 `cbsa-parameter-table`（每个类别一条，最多 8 条）。每条记录携带三个叶子节点：`traffic-class`（类别编号，数值越大优先级越高）、`admin-idle-slope`（管理方请求为该类别队列预留的带宽，单位为比特/秒，可读写）、以及 `oper-idle-slope`（当前实际预留的带宽，只读）。“空闲斜率”（idle slope）是指队列等待时整形器信用余额的回填速率；它决定了所预留的带宽。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 220\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"20\" width=\"180\" height=\"180\" rx=\"6\"/><text x=\"100\" y=\"40\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Bridge Port model</text><rect x=\"30\" y=\"55\" width=\"140\" height=\"26\"/><text x=\"100\" y=\"72\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">bridge-name (r-w)</text><rect x=\"30\" y=\"90\" width=\"140\" height=\"26\"/><text x=\"100\" y=\"107\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">component-name (r-w)</text><line x1=\"190\" y1=\"110\" x2=\"260\" y2=\"110\" stroke-dasharray=\"5 4\"/><text x=\"225\" y=\"103\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">augment</text><rect x=\"260\" y=\"20\" width=\"190\" height=\"180\" rx=\"6\" stroke-dasharray=\"4 3\"/><text x=\"355\" y=\"40\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">cbsa container</text><rect x=\"280\" y=\"55\" width=\"150\" height=\"26\"/><text x=\"355\" y=\"72\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">traffic-class (key)</text><rect x=\"280\" y=\"90\" width=\"150\" height=\"26\"/><text x=\"355\" y=\"107\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">admin-idle-slope (r-w)</text><rect x=\"280\" y=\"125\" width=\"150\" height=\"26\"/><text x=\"355\" y=\"142\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">oper-idle-slope (r-o)</text><text x=\"355\" y=\"180\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">list [1..8] per traffic class</text></svg>",
+      "caption": {
+        "en": "Figure 48-23 in essence: the new cbsa container augments the existing Bridge Port model, adding a per-traffic-class parameter list (up to 8 entries).",
+        "zh": "图 48-23 的核心：新的 cbsa 容器增补到现有网桥端口模型上，按流量类别添加一张参数列表（最多 8 条）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Next, structure (48.3.13, 'Credit-based shaper algorithm model'). A bridge that implements the CBSA model must implement a specific set of YANG modules, listed in the new Table 48-14: the shared building blocks (`ieee802-types`, `ieee802-dot1q-types`, `ieee-802-dot1q-tsn-types`, `ieee802-dot1q-bridge`) plus the two new ones, `ieee802-dot1q-cbsa` and `ieee802-dot1q-cbsa-bridge`. The amendment also adds two rows to the master Table 48-1 (the summary of all 802.1Q YANG modules), registering both new modules with their references and a one-line description of what each manages.",
+      "zh": "接下来是结构（48.3.13，“基于信用的整形器算法模型”）。实现 CBSA 模型的网桥必须实现一组特定的 YANG 模块，列于新增的表 48-14 中：共享的基础构件（`ieee802-types`、`ieee802-dot1q-types`、`ieee-802-dot1q-tsn-types`、`ieee802-dot1q-bridge`），外加两个新模块 `ieee802-dot1q-cbsa` 和 `ieee802-dot1q-cbsa-bridge`。本修正案还向主表 48-1（所有 802.1Q YANG 模块的汇总表）添加了两行，登记这两个新模块及其引用条款，并用一行文字说明各自管理的内容。"
+    },
+    {
+      "type": "prose",
+      "en": "Then security (48.4.13, 'Security considerations of the credit-based shaper algorithm model'). YANG modules are read/write over a management protocol, so the standard flags which objects are sensitive. Here it names `interfaces/interface/bridge-port/cbsa/cbsa-parameter-table`: tampering with these could force a reinitialization of the credit-based shaper's state and thereby cause network instability. The lesson here is general to TSN management — the same writable knobs that let you provision bandwidth are the ones an attacker would target to disrupt timing guarantees.",
+      "zh": "然后是安全（48.4.13，“基于信用的整形器算法模型的安全考量”）。YANG 模块通过管理协议进行读写，因此标准会标出哪些对象是敏感的。这里点名了 `interfaces/interface/bridge-port/cbsa/cbsa-parameter-table`：篡改这些对象可能迫使基于信用的整形器状态重新初始化，从而引发网络不稳定。这一点对 TSN 管理具有普遍意义——那些用于配置带宽的可写旋钮，正是攻击者会盯上的目标，用以破坏时序保证。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  M[Model 48.2.13] --> S[Structure 48.3.13]\n  S --> SEC[Security 48.4.13]\n  SEC --> T[Schema trees 48.5.24 / 48.5.25]\n  T --> C[YANG code 48.6.24 / 48.6.25]\n  C --> P[PICS Annex A & B]",
+      "zh": "flowchart LR\n  M[模型 48.2.13] --> S[结构 48.3.13]\n  S --> SEC[安全 48.4.13]\n  SEC --> T[模式树 48.5.24 / 48.5.25]\n  T --> C[YANG 代码 48.6.24 / 48.6.25]\n  C --> P[PICS 附录 A 和 B]"
+    },
+    {
+      "type": "prose",
+      "en": "The schema trees come next (48.5.24 and 48.5.25). A YANG 'schema tree' is the compact ASCII outline of a module's nodes, with `rw` marking configurable (read/write) nodes and `ro` marking read-only state. For 48.5.24 the standard simply states the `ieee802-dot1q-cbsa` module does not have a schema tree — because it only defines a reusable `grouping`, not data placed in the live tree. The real tree is in 48.5.25 for `ieee802-dot1q-cbsa-bridge`: it augments the Bridge Port with the `cbsa` container, conditional on the `credit-based-shaper-algorithm` feature, holding the `cbsa-parameter-table` list keyed by `traffic-class`, with `admin-idle-slope` (rw) and `oper-idle-slope` (ro).",
+      "zh": "接着是模式树（48.5.24 和 48.5.25）。YANG 的“模式树”（schema tree）是模块节点的紧凑 ASCII 大纲，其中 `rw` 标记可配置（读写）节点，`ro` 标记只读状态。对于 48.5.24，标准直接说明 `ieee802-dot1q-cbsa` 模块没有模式树——因为它只定义了一个可复用的 `grouping`（分组），而不是放入实时数据树中的数据。真正的树在 48.5.25，针对 `ieee802-dot1q-cbsa-bridge`：它以 `credit-based-shaper-algorithm` 特性（feature）为条件，把 `cbsa` 容器增补到网桥端口上，容器内含以 `traffic-class` 为键的 `cbsa-parameter-table` 列表，并带有 `admin-idle-slope`（rw）和 `oper-idle-slope`（ro）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — the two YANG modules in full (48.6.24, 48.6.25)",
+        "zh": "覆盖地图——两个 YANG 模块的完整定义（48.6.24、48.6.25）"
+      },
+      "en": "48.6.24 prints the full `ieee802-dot1q-cbsa` module. Namespace `urn:ieee:std:802.1Q:yang:ieee802-dot1q-cbsa`, prefix `cbsa`, revision 2024-08-07. It imports `ieee802-dot1q-types` and defines one `grouping cbsa-parameters` containing the `cbsa` container, whose `cbsa-parameter-table` list (key `traffic-class`, `max-elements 8`) holds the three leaves: `traffic-class` (type `traffic-class-type`), `admin-idle-slope` (uint64, units bits/second, default 0), and `oper-idle-slope` (uint64, `config false` so read-only). The list is valid for a Bridge Port only in the absence of the stream reservation protocol; when that protocol is not running, oper-idle-slope equals admin-idle-slope. 48.6.25 prints the full `ieee802-dot1q-cbsa-bridge` module: namespace `...ieee802-dot1q-cbsa-bridge`, prefix `cbsa-bridge`, importing `ietf-interfaces`, `ieee802-dot1q-cbsa`, and `ieee802-dot1q-bridge`. It declares the `credit-based-shaper-algorithm` feature and a single `augment` of `/if:interfaces/if:interface/dot1q:bridge-port` that, gated by that feature, pulls in the grouping via `uses cbsa:cbsa-parameters`. So the split is deliberate: 48.6.24 is a portable definition of *what* the parameters are; 48.6.25 is the bridge-specific glue that decides *where* they attach.",
+      "zh": "48.6.24 给出完整的 `ieee802-dot1q-cbsa` 模块。命名空间 `urn:ieee:std:802.1Q:yang:ieee802-dot1q-cbsa`，前缀 `cbsa`，修订日期 2024-08-07。它导入 `ieee802-dot1q-types`，并定义一个 `grouping cbsa-parameters`，内含 `cbsa` 容器，其 `cbsa-parameter-table` 列表（键为 `traffic-class`，`max-elements 8`）持有三个叶子：`traffic-class`（类型 `traffic-class-type`）、`admin-idle-slope`（uint64，单位比特/秒，默认 0）、以及 `oper-idle-slope`（uint64，`config false` 即只读）。该列表仅在不运行流预留协议（stream reservation protocol）时对网桥端口有效；当该协议未运行时，oper-idle-slope 等于 admin-idle-slope。48.6.25 给出完整的 `ieee802-dot1q-cbsa-bridge` 模块：命名空间 `...ieee802-dot1q-cbsa-bridge`，前缀 `cbsa-bridge`，导入 `ietf-interfaces`、`ieee802-dot1q-cbsa` 和 `ieee802-dot1q-bridge`。它声明 `credit-based-shaper-algorithm` 特性，并对 `/if:interfaces/if:interface/dot1q:bridge-port` 做单一 `augment`，在该特性开启时通过 `uses cbsa:cbsa-parameters` 引入分组。因此这种拆分是有意为之：48.6.24 是关于参数*是什么*的可移植定义；48.6.25 则是网桥专属的“胶水”，决定它们*挂接到哪里*。",
+      "cite": {
+        "pdf_id": "8021Qdx-2024",
+        "pages": [
+          19,
+          20,
+          21
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — the PICS proformas (Annex A bridges, Annex B end stations)",
+        "zh": "覆盖地图——PICS 一致性声明表（附录 A 网桥、附录 B 端站）"
+      },
+      "en": "A PICS proforma is the conformance checklist an implementer fills in to declare exactly which optional features they built. Annex A (normative) is for Bridge implementations. It adds a `CBSA` row to A.5 'Major capabilities' (status O = optional, reference 8.6.8.2), two YANG rows to A.47 — `YANG-CBSA` (is `ieee802-dot1q-cbsa` supported?) and `YANG-CBSA-BRIDGE` (is `ieee802-dot1q-cbsa-bridge` supported?), each with status `CBSA:O` (optional if CBSA is claimed) — and a new sub-clause A.55 with two mandatory-if-claimed items: CBSA-1 (supports the algorithm and parameters of 8.6.8.2) and CBSA-2 (supports the management parameters adminIdleSlope and operIdleSlope of 12.20.1). Annex B (normative) mirrors this for End station implementations: a `CBSA` row in B.5 and a new sub-clause B.21 with the same CBSA-1 and CBSA-2 items. The conditional notation (`CBSA:O`, `CBSA:M`) means those rows only apply once the top-level CBSA option is claimed; otherwise the table is marked N/A.",
+      "zh": "PICS 一致性声明表是实现者填写的一致性清单，用以准确声明自己实现了哪些可选特性。附录 A（规范性）针对网桥实现。它在 A.5“主要能力”中添加一行 `CBSA`（状态 O = 可选，引用 8.6.8.2）；在 A.47 中添加两行 YANG 条目——`YANG-CBSA`（是否支持 `ieee802-dot1q-cbsa`？）和 `YANG-CBSA-BRIDGE`（是否支持 `ieee802-dot1q-cbsa-bridge`？），二者状态均为 `CBSA:O`（若声明了 CBSA 则可选）；并新增子条款 A.55，含两个“一旦声明即强制”的条目：CBSA-1（支持 8.6.8.2 的算法及参数）和 CBSA-2（支持 12.20.1 定义的管理参数 adminIdleSlope 与 operIdleSlope）。附录 B（规范性）为端站实现做了对应处理：在 B.5 中添加一行 `CBSA`，并新增子条款 B.21，含相同的 CBSA-1 和 CBSA-2 条目。条件记法（`CBSA:O`、`CBSA:M`）表示这些行仅在顶层 CBSA 选项被声明后才适用；否则该表标记为 N/A（不适用）。",
+      "cite": {
+        "pdf_id": "8021Qdx-2024",
+        "pages": [
+          22,
+          23,
+          24,
+          25
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A good mental model for the whole amendment: 8.6.8.2 already says *how* the credit-based shaper behaves. Qdx adds two ways to talk about it — YANG (Clause 48) lets a controller read and set adminIdleSlope/operIdleSlope at runtime, and the PICS proformas (Annex A & B) let a vendor formally declare 'yes, my bridge/end station does this.' One is for machines configuring the network; the other is for humans certifying conformance.",
+      "zh": "理解整个修正案的好思路：8.6.8.2 已经规定了基于信用的整形器*如何*运作。Qdx 则增加了两种谈论它的方式——YANG（第 48 章）让控制器能在运行时读取并设置 adminIdleSlope/operIdleSlope；而 PICS 一致性声明表（附录 A 与 B）让厂商能正式声明“是的，我的网桥／端站做到了这一点”。前者面向配置网络的机器，后者面向认证一致性的人。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Qdx-2024",
+      "pages": [
+        15,
+        16,
+        17,
+        18
+      ],
+      "note": "48.2.13 model (Fig 48-23), 48.3.13 structure (Table 48-14, Table 48-1), 48.4.13 security, 48.5.24/48.5.25 schema trees."
+    },
+    {
+      "pdf_id": "8021Qdx-2024",
+      "pages": [
+        19,
+        20,
+        21
+      ],
+      "note": "48.6.24 ieee802-dot1q-cbsa module and 48.6.25 ieee802-dot1q-cbsa-bridge module, full YANG text."
+    },
+    {
+      "pdf_id": "8021Qdx-2024",
+      "pages": [
+        22,
+        23,
+        24,
+        25
+      ],
+      "note": "Annex A PICS (A.5, A.47, A.55) for bridges; Annex B PICS (B.5, B.21) for end stations."
+    }
+  ],
+  "covers": [
+    "8021Qdx-2024:48.2.13",
+    "8021Qdx-2024:48.3.13",
+    "8021Qdx-2024:48.4.13",
+    "8021Qdx-2024:48.5.24",
+    "8021Qdx-2024:48.5.25",
+    "8021Qdx-2024:48.6.24",
+    "8021Qdx-2024:48.6.25",
+    "8021Qdx-2024:Annex_A",
+    "8021Qdx-2024:Annex_B"
+  ],
+  "track": "bridging-tsn"
+}

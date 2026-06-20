@@ -1,0 +1,172 @@
+{
+  "id": "bridging-tsn-94",
+  "title": {
+    "en": "PBBN Auto Attach: Overview, Conformance, Management, MIB, and YANG",
+    "zh": "PBBN 自动接入：总览、符合性、管理对象、MIB 与 YANG"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1Qcj-2023 is Amendment 37 to the bridging standard 802.1Q. Its job is to let devices attach themselves automatically to a service running over a Provider Backbone Bridged Network (PBBN) — a carrier network that tunnels customer traffic inside backbone MAC frames. Clause 1.3 (Introduction) sets the scene: the amendment defines an Auto Attach Protocol (AAP) that rides on top of the Link Layer Discovery Protocol (LLDP, the standard 'hello, here is what I am' neighbor protocol). AAP lets an end station or bridge announce 'I want my VLAN coupled to a backbone service' and lets the backbone edge respond, all without an operator hand-configuring every link.",
+      "zh": "IEEE Std 802.1Qcj-2023 是桥接标准 802.1Q 的第 37 号修正案。它的目标是让设备自动接入运行在运营商骨干桥接网络（PBBN，一种把客户流量封装进骨干 MAC 帧的运营商网络）之上的服务。Clause 1.3（引言）交代了背景：本修正案定义了一个自动接入协议（AAP, Auto Attach Protocol），它运行在链路层发现协议（LLDP, Link Layer Discovery Protocol，即标准的“你好，这是我的身份”邻居协议）之上。AAP 让终端站或桥说出“我想把我的 VLAN 耦合到某个骨干服务”，并让骨干边缘做出响应，整个过程无需运营商对每条链路手工配置。"
+    },
+    {
+      "type": "prose",
+      "en": "A handful of acronyms recur throughout. A Backbone Service Instance (BSI) is one service running inside the PBBN, named by an I-SID (a 24-bit Backbone Service Instance Identifier). An Auto Attach System (AAS) is any device that speaks AAP; it is either an Auto Attach Device (AAD) — an end station or bridge asking to attach — or an Auto Attach BEB (AAB) — a Backbone Edge Bridge that answers those requests. The core service AAP automates is binding a VLAN ID (VID) to an I-SID, so a customer VLAN is mapped onto the right backbone service automatically.",
+      "zh": "全文反复出现几个缩写。骨干服务实例（BSI, Backbone Service Instance）是 PBBN 内运行的一个服务，由 I-SID（24 位的骨干服务实例标识符）命名。自动接入系统（AAS, Auto Attach System）是任何会讲 AAP 的设备；它要么是自动接入设备（AAD, Auto Attach Device）——发起接入请求的终端站或桥，要么是自动接入 BEB（AAB, Auto Attach BEB）——负责应答这些请求的骨干边缘桥（Backbone Edge Bridge）。AAP 自动化的核心动作是把 VLAN ID（VID）绑定到 I-SID，从而把客户 VLAN 自动映射到正确的骨干服务上。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  AAD[\"AAD\\n(end station / bridge)\"] -- \"AAP over LLDP\\nVID to I-SID request\" --> AAB[\"AAB\\n(Backbone Edge Bridge)\"]\n  AAB -- \"status / assignment\" --> AAD\n  AAB -- \"binds VID to I-SID\" --> BSI[\"Backbone Service\\nInstance (BSI)\"]",
+      "zh": "flowchart LR\n  AAD[\"AAD\\n（终端站/桥）\"] -- \"AAP 承载于 LLDP\\nVID 到 I-SID 请求\" --> AAB[\"AAB\\n（骨干边缘桥）\"]\n  AAB -- \"状态/分配结果\" --> AAD\n  AAB -- \"绑定 VID 到 I-SID\" --> BSI[\"骨干服务\\n实例（BSI）\"]"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5 (Conformance) answers a precise question: for each kind of bridge, what does a vendor have to implement to claim PBBN Auto Attach support? Crucially, Auto Attach is always optional — every conformance sub-clause is marked '(optional)'. But once a device opts in, it must meet a fixed checklist. The checklist is almost identical across device types, which tells you AAP behaves the same regardless of where it runs. Each device that opts in shall support LLDP transmit and receive (per IEEE Std 802.1AB), the PBBN Auto Attach System TLV and Assignment TLV (the on-the-wire data structures, where TLV means Type-Length-Value), the relevant Auto Attach state machine, and the management objects of Clause 12.34.",
+      "zh": "Clause 5（符合性）回答一个明确的问题：对于每一类桥，厂商要实现什么才能声称支持 PBBN 自动接入？关键在于，自动接入始终是可选的——每个符合性子条款都标注了“(optional)”。但设备一旦选择支持，就必须满足一份固定清单。该清单在各类设备间几乎完全相同，这说明无论运行在何处，AAP 的行为都一致。每个选择支持的设备都应当（shall）支持 LLDP 收发（依据 IEEE Std 802.1AB）、PBBN 自动接入系统 TLV 与分配 TLV（线缆上的数据结构，TLV 即类型-长度-值，Type-Length-Value）、相应的自动接入状态机，以及 Clause 12.34 的管理对象。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Read the conformance clauses as a 'who must do what' grid. 5.9.2 covers the C-VLAN Bridge (customer-VLAN-aware), 5.10.3 the S-VLAN / Provider Bridge (service-VLAN-aware), 5.12.2 the Backbone Edge Bridge that becomes an AAB, 5.14.2 the plain MAC Bridge, and 5.33 the end station. The 'shall' list (LLDP, the two TLVs, the state machine, the 12.34 managed objects) is mandatory for that device; the 'may' list (the SNMP MIB of 17.7.26, the LLDP-TLV MIB, and the YANG for AAP TLVs) is optional polish on top.",
+      "zh": "把符合性条款当作一张“谁必须做什么”的表格来读。5.9.2 针对 C-VLAN 桥（感知客户 VLAN），5.10.3 针对 S-VLAN / 提供商桥（感知服务 VLAN），5.12.2 针对成为 AAB 的骨干边缘桥，5.14.2 针对普通 MAC 桥，5.33 针对终端站。“shall（应当）”清单（LLDP、两个 TLV、状态机、12.34 管理对象）对该设备是强制的；“may（可以）”清单（17.7.26 的 SNMP MIB、LLDP-TLV MIB，以及 AAP TLV 的 YANG）则是其上的可选增强。"
+    },
+    {
+      "type": "prose",
+      "en": "There is one structural rule worth singling out. Clause 5.12.2 says an Auto Attach BEB shall be a conformant Backbone Edge Bridge with at least one I-component (the part of a BEB that maps customer service interfaces onto backbone I-SIDs) and shall expose one or more C-VLAN components offering externally visible Customer Edge Ports (CEPs). In plain terms: an AAB is not a new box, it is an ordinary backbone edge bridge that additionally answers Auto Attach requests on the ports facing customers.",
+      "zh": "有一条结构性规则值得单独点出。Clause 5.12.2 规定，自动接入 BEB 应当是一个符合规范的骨干边缘桥，至少具备一个 I-组件（BEB 中负责把客户服务接口映射到骨干 I-SID 的部件），并且应当对外提供一个或多个 C-VLAN 组件，暴露可见的客户边缘端口（CEP, Customer Edge Port）。说白了：AAB 不是一种新设备，它就是一台普通的骨干边缘桥，只是额外在面向客户的端口上应答自动接入请求。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 12.34 (Bridge Management) defines the managed objects — the knobs and readouts an operator or network-management station uses. They split into five tables. 12.34.1 (System objects) carries the device-wide settings: aaSystemEnable (a read-write flag that defaults to FALSE so you can configure before you turn anything on — flipping it to TRUE starts Auto Attach on all enabled ports), aaSystemMAC (a read-only MAC address that uniquely names the whole system), aaSystemType (whether this is an AAB or one of the AAD flavors), and aaSystemResetTime. 12.34.2 (Port table) lists which ports, link aggregation groups (LAGs), or distributed resilient network interconnects (DRNIs) participate, keyed by a per-port aaPortId and a domain-wide aaPortNetId.",
+      "zh": "Clause 12.34（桥管理）定义了管理对象——运营商或网管站使用的旋钮与读数。它们分为五张表。12.34.1（系统对象）承载设备级设置：aaSystemEnable（一个可读写标志，默认 FALSE，便于先配置再启用——置为 TRUE 即在所有已启用端口上启动自动接入）、aaSystemMAC（只读 MAC 地址，唯一标识整个系统）、aaSystemType（指明本机是 AAB 还是某种 AAD）以及 aaSystemResetTime。12.34.2（端口表）列出哪些端口、链路聚合组（LAG, Link Aggregation Group）或分布式弹性网络互连（DRNI, Distributed Resilient Network Interconnect）参与其中，以每端口的 aaPortId 和域内唯一的 aaPortNetId 作为键。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining three tables track what is actually happening. 12.34.3 (Discovered Auto Attach Systems table) is read-only and catalogs the remote ports an AAS has found via AAP — for each, the remote system type, its tagging mode, and the association state (a rich enumeration like READY_TO_ASSOC, ASSOC_ATTACHED, ASSOC_FAILED_TAGS). 12.34.4 (Assignment table) is the heart of the feature: it holds each VID-to-I-SID assignment with a status. On an AAD these rows are read-write (the administrator requests assignments, which begin PENDING then move to ACCEPTED or a REJECTED reason); on an AAB the same table is read-only and mirrors what the backbone actually granted. 12.34.5 (Statistics table) gives per-port read-only counters — associations attached, failed, reset, standby, and assignments requested, accepted, rejected, withdrawn — all cleared on system reset.",
+      "zh": "其余三张表记录实际发生的情况。12.34.3（已发现自动接入系统表）是只读的，登记某个 AAS 经由 AAP 发现的远端端口——逐条记录远端系统类型、其打标签模式，以及关联状态（一个丰富的枚举，如 READY_TO_ASSOC、ASSOC_ATTACHED、ASSOC_FAILED_TAGS）。12.34.4（分配表）是该特性的核心：它保存每条 VID 到 I-SID 的分配及其状态。在 AAD 上这些行是可读写的（管理员请求分配，状态从 PENDING 开始，随后转为 ACCEPTED 或某个 REJECTED 原因）；在 AAB 上同一张表是只读的，反映骨干实际授予的结果。12.34.5（统计表）提供每端口的只读计数器——关联的已附着、失败、复位、待机，以及分配请求的已请求、已接受、已拒绝、已撤回——全部在系统复位时清零。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">12.34 PBBN Auto Attach managed objects</text><rect x=\"10\" y=\"34\" width=\"200\" height=\"40\"/><text x=\"20\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">12.34.1 System objects</text><text x=\"20\" y=\"67\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">aaSystemEnable / MAC / Type</text><rect x=\"10\" y=\"82\" width=\"200\" height=\"40\"/><text x=\"20\" y=\"100\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">12.34.2 Port table</text><text x=\"20\" y=\"115\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">aaPortId / aaPortEnable</text><rect x=\"250\" y=\"34\" width=\"200\" height=\"40\"/><text x=\"260\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">12.34.3 Discovered systems</text><text x=\"260\" y=\"67\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">read-only, assoc state</text><rect x=\"250\" y=\"82\" width=\"200\" height=\"40\"/><text x=\"260\" y=\"100\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">12.34.4 Assignment table</text><text x=\"260\" y=\"115\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">VID to I-SID + status</text><rect x=\"130\" y=\"140\" width=\"200\" height=\"40\"/><text x=\"140\" y=\"158\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">12.34.5 Statistics table</text><text x=\"140\" y=\"173\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">per-port counters</text></svg>",
+      "caption": {
+        "en": "The five managed-object tables of Clause 12.34 — configuration on the left, observed state and counters on the right and bottom.",
+        "zh": "Clause 12.34 的五张管理对象表——左侧为配置，右侧与底部为观测状态与计数器。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 17 (Management Information Base, MIB) renders those same objects as an SNMP MIB module named IEEE8021-PBBN-AA-MIB, so they can be read and set with the Simple Network Management Protocol. 17.2.26 (Structure) lays out the module tree — config scalars (ieee8021AaConfig), a port table, a discovered-systems table, an assignment table, and a statistics group — and a big mapping table tying each SNMP object back to its 12.34 managed object. 17.3.26 (Relationships) is a single sentence: this MIB extends the functionality of the IEEE 802.1AB LLDP MIB, since AAP rides on LLDP. 17.4.26 (Security) flags that several read-write objects (the enables, row statuses, and the VID/I-SID assignment fields) could be misconfigured to disrupt forwarding and scheduled traffic, so SET access should be controlled and ideally protected with SNMPv3 security. 17.7.26 is the actual ASN.1 MIB module definition — the MODULE-IDENTITY, the OBJECT-TYPE definitions for the scalars and tables, registered under the IEEE 802.1 object identifier branch.",
+      "zh": "Clause 17（管理信息库，MIB, Management Information Base）把同一批对象呈现为一个名为 IEEE8021-PBBN-AA-MIB 的 SNMP MIB 模块，从而可用简单网络管理协议（SNMP）读取与设置。17.2.26（结构）勾勒出模块树——配置标量（ieee8021AaConfig）、端口表、已发现系统表、分配表和统计组——以及一张大映射表，把每个 SNMP 对象对应回其 12.34 管理对象。17.3.26（关系）只有一句话：因为 AAP 承载于 LLDP，该 MIB 扩展了 IEEE 802.1AB LLDP MIB 的功能。17.4.26（安全考量）指出若干可读写对象（各类使能位、行状态以及 VID/I-SID 分配字段）若被误配置可能扰乱转发与定时流量，因此应控制 SET 访问，并最好用 SNMPv3 安全机制加以保护。17.7.26 则是真正的 ASN.1 MIB 模块定义——MODULE-IDENTITY、各标量与表的 OBJECT-TYPE 定义，注册在 IEEE 802.1 的对象标识符（OID）分支下。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  C12[\"12.34 managed objects\"] --> MIB[\"17.7.26\\nIEEE8021-PBBN-AA-MIB\"]\n  MIB --> S172[\"17.2.26 structure\"]\n  MIB --> R173[\"17.3.26 extends LLDP MIB\"]\n  MIB --> SEC[\"17.4.26 security\"]\n  C12 --> Y48[\"48.6.2 ieee802-dot1q-types\\nYANG (adds isid-type)\"]",
+      "zh": "flowchart TD\n  C12[\"12.34 管理对象\"] --> MIB[\"17.7.26\\nIEEE8021-PBBN-AA-MIB\"]\n  MIB --> S172[\"17.2.26 结构\"]\n  MIB --> R173[\"17.3.26 扩展 LLDP MIB\"]\n  MIB --> SEC[\"17.4.26 安全考量\"]\n  C12 --> Y48[\"48.6.2 ieee802-dot1q-types\\nYANG（新增 isid-type）\"]"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 48 (YANG Data Models) provides the modern, model-driven face of the same data. YANG is the data-modeling language used by NETCONF/RESTCONF for programmable network management. 48.6.2 takes the existing common-types module ieee802-dot1q-types and republishes it: the amendment deletes the old module and inserts a new revision dated 2023-10-26 whose stated purpose is to add the isid-type — the YANG type for the 24-bit I-SID that Auto Attach assigns. The module also carries the shared 802.1Q building blocks (VLAN-type identities like c-vlan and s-vlan, transmission-selection-algorithm identities), so any 802.1Q YANG model that needs to talk about an I-SID now has a standard type to reuse.",
+      "zh": "Clause 48（YANG 数据模型）为同一批数据提供了现代的、模型驱动的呈现。YANG 是 NETCONF/RESTCONF 用于可编程网络管理的数据建模语言。48.6.2 取出既有的公共类型模块 ieee802-dot1q-types 并重新发布：本修正案删除旧模块，插入一个日期为 2023-10-26 的新修订版，其明确目的是新增 isid-type——即自动接入所分配的 24 位 I-SID 的 YANG 类型。该模块还承载共享的 802.1Q 构件（如 c-vlan、s-vlan 等 VLAN 类型标识，以及 transmission-selection-algorithm 标识），于是任何需要表达 I-SID 的 802.1Q YANG 模型现在都有了一个可复用的标准类型。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause taught in this lesson, by number",
+        "zh": "覆盖地图：本课所讲的每个条款（按编号）"
+      },
+      "en": "Clause 1 (Overview): 1.3 Introduction — defines AAP over LLDP and lists what the amendment adds (concepts of AAS/AAD/AAB, I-SID-to-VID bindings, the 802.1 Organizationally Specific LLDP TLVs, SNMP MIB and YANG support). Clause 5 (Conformance), all optional opt-in lists: 5.9.2 C-VLAN Bridge requirements; 5.10.3 S-VLAN (Provider) Bridge requirements; 5.12.2 Backbone Edge Bridge requirements (an AAB is a BEB with an I-component and customer-facing C-VLAN components/CEPs); 5.14.2 MAC Bridge requirements; 5.33 End station requirements. Clause 12.34 (managed objects): 12.34.1 System objects (aaSystemEnable/MAC/Type/ResetTime); 12.34.2 Port table (aaPortId, aaPortNetId, aaPortEnable, covering ports/LAGs/DRNIs); 12.34.3 Discovered Auto Attach Systems table (read-only catalog of remote ports + association state); 12.34.4 Assignment table (VID-to-I-SID + status, read-write at the AAD, read-only at the AAB); 12.34.5 Statistics table (per-port counters, cleared on reset). Clause 17 (MIB), all for IEEE8021-PBBN-AA-MIB: 17.2.26 Structure; 17.3.26 Relationship (extends the IEEE 802.1AB LLDP MIB); 17.4.26 Security considerations (read-write objects are sensitive); 17.7.26 the MIB module definition itself. Clause 48 (YANG): 48.6.2 The ieee802-dot1q-types module — deleted and re-inserted with the 2023-10-26 revision that adds isid-type.",
+      "zh": "Clause 1（总览）：1.3 引言——定义承载于 LLDP 之上的 AAP，并列出本修正案新增的内容（AAS/AAD/AAB 概念、I-SID 到 VID 的绑定、802.1 组织专有 LLDP TLV、SNMP MIB 与 YANG 支持）。Clause 5（符合性），均为可选的选择性清单：5.9.2 C-VLAN 桥要求；5.10.3 S-VLAN（提供商）桥要求；5.12.2 骨干边缘桥要求（AAB 是带 I-组件并面向客户提供 C-VLAN 组件/CEP 的 BEB）；5.14.2 MAC 桥要求；5.33 终端站要求。Clause 12.34（管理对象）：12.34.1 系统对象（aaSystemEnable/MAC/Type/ResetTime）；12.34.2 端口表（aaPortId、aaPortNetId、aaPortEnable，涵盖端口/LAG/DRNI）；12.34.3 已发现自动接入系统表（远端端口及关联状态的只读目录）；12.34.4 分配表（VID 到 I-SID 及状态，AAD 上可读写、AAB 上只读）；12.34.5 统计表（每端口计数器，复位时清零）。Clause 17（MIB），均针对 IEEE8021-PBBN-AA-MIB：17.2.26 结构；17.3.26 关系（扩展 IEEE 802.1AB LLDP MIB）；17.4.26 安全考量（可读写对象较敏感）；17.7.26 MIB 模块定义本身。Clause 48（YANG）：48.6.2 ieee802-dot1q-types 模块——删除并以 2023-10-26 修订版重新插入，新增 isid-type。",
+      "cite": {
+        "pdf_id": "8021Qcj-2023",
+        "pages": [
+          17,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          29,
+          30,
+          40
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Qcj-2023",
+      "pages": [
+        17
+      ],
+      "note": "1.3 Introduction: AAP over LLDP, AAS/AAD/AAB concepts, scope list"
+    },
+    {
+      "pdf_id": "8021Qcj-2023",
+      "pages": [
+        20,
+        21
+      ],
+      "note": "5.9.2, 5.10.3, 5.12.2, 5.14.2, 5.33 conformance opt-in checklists"
+    },
+    {
+      "pdf_id": "8021Qcj-2023",
+      "pages": [
+        22,
+        23,
+        24,
+        25,
+        26
+      ],
+      "note": "12.34.1-12.34.5 managed-object tables"
+    },
+    {
+      "pdf_id": "8021Qcj-2023",
+      "pages": [
+        27,
+        29
+      ],
+      "note": "17.2.26 structure; 17.3.26 relationships; 17.4.26 security considerations"
+    },
+    {
+      "pdf_id": "8021Qcj-2023",
+      "pages": [
+        30,
+        31
+      ],
+      "note": "17.7.26 IEEE8021-PBBN-AA-MIB module definition"
+    },
+    {
+      "pdf_id": "8021Qcj-2023",
+      "pages": [
+        40,
+        41
+      ],
+      "note": "48.6.2 ieee802-dot1q-types YANG module, adds isid-type"
+    }
+  ],
+  "covers": [
+    "8021Qcj-2023:1.3",
+    "8021Qcj-2023:5.9.2",
+    "8021Qcj-2023:5.10.3",
+    "8021Qcj-2023:5.12.2",
+    "8021Qcj-2023:5.14.2",
+    "8021Qcj-2023:5.33",
+    "8021Qcj-2023:12.34.1",
+    "8021Qcj-2023:12.34.2",
+    "8021Qcj-2023:12.34.3",
+    "8021Qcj-2023:12.34.4",
+    "8021Qcj-2023:12.34.5",
+    "8021Qcj-2023:17.2.26",
+    "8021Qcj-2023:17.3.26",
+    "8021Qcj-2023:17.4.26",
+    "8021Qcj-2023:17.7.26",
+    "8021Qcj-2023:48.6.2"
+  ],
+  "track": "bridging-tsn"
+}

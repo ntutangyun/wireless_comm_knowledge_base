@@ -1,0 +1,163 @@
+{
+  "id": "tsn-34",
+  "title": {
+    "en": "FRER Foundations: Overview, Conformance Roles, and Stream Identification",
+    "zh": "FRER 基础：总览、一致性角色与流识别"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1CB-2017 defines Frame Replication and Elimination for Reliability (FRER), a Time-Sensitive Networking (TSN) mechanism. The idea is simple and powerful: to make a packet very likely to arrive, send several copies along different paths, then throw away the duplicates at the far end. Clause 1.1 (Scope) limits the standard to exactly that work — identifying packets, replicating them, spotting duplicates, and eliminating them. It explicitly does NOT create the multiple paths; that job belongs to other standards. Clause 1.2 (Rationale) explains why: when paths are fixed and protected against congestion loss (for example using IEEE Std 802.1BA), FRER substantially cuts the chance of packet loss caused by equipment failures, because a single failed link no longer drops the data.",
+      "zh": "IEEE Std 802.1CB-2017 定义了“面向可靠性的帧复制与消除”(Frame Replication and Elimination for Reliability, FRER)——一种时间敏感网络(Time-Sensitive Networking, TSN)机制。其思路简单而有力：要让一个数据包极可能送达，就沿不同路径发送多份副本，再在终点丢弃重复副本。Clause 1.1(范围)把标准的职责严格限定于此——识别数据包、复制数据包、发现重复并消除重复。它明确“不”负责创建多条路径，那是其他标准的工作。Clause 1.2(原理)解释了原因：当路径固定且受到防拥塞丢包保护(例如使用 IEEE Std 802.1BA)时，FRER 能大幅降低由设备故障引起的丢包概率，因为单条链路失效不再导致数据丢失。"
+    },
+    {
+      "type": "prose",
+      "en": "FRER takes one logical Stream — a one-directional flow of time-sensitive packets from one Talker (sender) to one or more Listeners (receivers) — and splits it into several linked Member Streams. The original, now made of several Member Streams, is called a Compound Stream. Copies travel over the Member Streams, get rejoined elsewhere, the duplicates are eliminated, and the rebuilt Stream is delivered. Clause 1.6 (Introduction) frames FRER as one member of the IEEE 802.1 TSN family that together aim for extremely low loss and bounded, stable latency. The remaining Clause 1 subclauses set ground rules for reading the document: 1.3 (State diagram conventions) says behavior is written as C-language functions (ISO/IEC 9899:2011) shown in a fixed-width font, executed instantaneously when an event occurs; 1.4 (Specification model) clarifies that any internal design is fine as long as the externally observable protocol matches; 1.5 (Specification precedence) ranks the text when parts conflict — C functions win first, then normative tables, then normative text, then normative figures.",
+      "zh": "FRER 把一条逻辑“流”(Stream)——从一个 Talker(发送端)到一个或多个 Listener(接收端)的单向时间敏感数据流——拆分成若干相互关联的成员流(Member Stream)。原来的流由多条成员流组成后，称为复合流(Compound Stream)。副本沿各成员流传输，在别处重新汇合，重复副本被消除，重建后的流被交付。Clause 1.6(引言)把 FRER 定位为 IEEE 802.1 TSN 家族的一员，整个家族共同追求极低丢包率与有界、稳定的时延。Clause 1 余下小节确立了阅读本文档的基本规则：1.3(状态图约定)规定用 C 语言函数(ISO/IEC 9899:2011)以等宽字体描述行为，在事件发生时瞬时执行；1.4(规范模型)说明只要外部可观测协议一致，内部实现可任意；1.5(规范优先级)给出冲突时的排序——C 函数优先，其次规范性表格，再次规范性正文，最后规范性插图。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 170\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"10\" y=\"70\" width=\"70\" height=\"34\" rx=\"4\"/><text x=\"45\" y=\"91\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Talker</text><path d=\"M80 80 C140 30 200 30 250 45\"/><path d=\"M80 95 C140 130 200 130 250 117\"/><rect x=\"250\" y=\"38\" width=\"56\" height=\"24\" rx=\"3\"/><text x=\"278\" y=\"54\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Member A</text><rect x=\"250\" y=\"105\" width=\"56\" height=\"24\" rx=\"3\"/><text x=\"278\" y=\"121\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Member B</text><path d=\"M306 50 C350 60 360 75 375 82\"/><path d=\"M306 117 C350 107 360 92 375 88\"/><rect x=\"375\" y=\"70\" width=\"75\" height=\"34\" rx=\"4\"/><text x=\"412\" y=\"86\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Listener</text><text x=\"412\" y=\"99\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">(eliminate dup)</text><text x=\"165\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">replicate into Member Streams</text></svg>",
+      "caption": {
+        "en": "A Compound Stream replicated into two Member Streams on disjoint paths, then merged and de-duplicated at the Listener — the core FRER picture from Clause 1.",
+        "zh": "一条复合流被复制为两条走不相交路径的成员流，再在 Listener 处汇合并去重——这正是 Clause 1 描述的 FRER 核心图景。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Vocabulary that recurs everywhere: a Stream flows from a Talker to Listeners; an 'end system' is the original source or final destination of packets; a 'relay system' is a router or bridge in the middle; and a 'packet' on an Ethernet LAN is just a frame. The standard prefers the generic terms (end system, packet) so the same rules apply to both bridged and routed networks.",
+      "zh": "贯穿全文的高频词汇：一条流(Stream)从 Talker 流向 Listener；“端系统”(end system)是数据包的最初来源或最终目的地；“中继系统”(relay system)是中间的路由器或网桥；而以太网 LAN 上的“数据包”(packet)其实就是帧(frame)。标准偏好使用这些通用术语(端系统、数据包)，以便同一套规则同时适用于桥接网络和路由网络。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5 (Conformance) answers: what must a product actually do to claim it implements 802.1CB? Clause 5.1 (Requirements terminology) sets the precise meaning of words: 'shall' = mandatory, 'should' = recommended, 'may' = a permitted choice. It also uses 'can' for permitted-but-uncontrolled behavior, 'cannot' for what never happens in a conformant system, 'allow' to mean 'support the ability for,' and 'capability' to mean 'can be configured to.' These words feed directly into the Protocol Implementation Conformance Statement (PICS) proforma in Annex A. Clause 5.2 (Conformant components and equipment) then names the five roles a product can claim: (1) Stream identification components, (2) Talker end systems, (3) Listener end systems, (4) Relay systems, and (5) a special relay called the FRER C-component. Each role has its own required / recommended / optional menu in 5.3–5.15.",
+      "zh": "Clause 5(一致性)回答了一个问题：一款产品到底要做到什么，才能声称实现了 802.1CB？ Clause 5.1(要求术语)确立了关键词的精确含义：“shall(应当)”=强制，“should(宜)”=推荐，“may(可)”=允许的选择。此外，“can”表示允许但不受控的行为，“cannot”表示一致性系统中绝不发生的行为，“allow”意为“支持……的能力”，“capability”意为“可被配置为”。这些词直接对应附录 A 的协议实现一致性声明(Protocol Implementation Conformance Statement, PICS)模板。随后 Clause 5.2(一致性组件与设备)列出产品可声称的五种角色：(1)流识别组件；(2)Talker 端系统；(3)Listener 端系统；(4)中继系统；(5)一种特殊中继——FRER C 组件。每种角色在 5.3–5.15 中各有其“必需/推荐/可选”清单。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  C5[Clause 5 Conformance] --> SI[Stream id component 5.3-5.5]\n  C5 --> TK[Talker end system 5.6-5.8]\n  C5 --> LI[Listener end system 5.9-5.11]\n  C5 --> RS[Relay system 5.12-5.14]\n  C5 --> CC[FRER C-component 5.15]\n  CC -.builds on.-> RS",
+      "zh": "flowchart TD\n  C5[Clause 5 一致性] --> SI[流识别组件 5.3-5.5]\n  C5 --> TK[Talker 端系统 5.6-5.8]\n  C5 --> LI[Listener 端系统 5.9-5.11]\n  C5 --> RS[中继系统 5.12-5.14]\n  C5 --> CC[FRER C 组件 5.15]\n  CC -.基于.-> RS"
+    },
+    {
+      "type": "prose",
+      "en": "The five roles follow the same three-tier rhythm: required ('shall'), recommended ('should'), optional ('may'). A Stream identification component (5.3 required / 5.4 recommended / 5.5 optional) is the lightest role — it only identifies packets, never touches FRER sequence numbers; it shall do Stream identification plus Null Stream identification, should add Active Destination MAC and VLAN identification, and may add IP identification or extra ports. A Talker end system (5.6 / 5.7 / 5.8) originates Compound Streams: it shall generate sequences and encode the Redundancy tag (R-TAG); it should add Active Destination identification and a Stream splitting function; it may add IP identification, HSR tags, or PRP trailers. A Listener end system (5.9 / 5.10 / 5.11) consumes Compound Streams: it shall run Sequence recovery (supporting both the Match and Vector recovery algorithms) plus at least two Individual recovery instances. A Relay system (5.12 / 5.13 / 5.14) transfers or discards Compound-Stream packets and shall do both generation and recovery on at least two ports; it should add Active Destination and IP identification (so it can proxy for a FRER-unaware end system). Finally 5.15 (FRER C-component) is an IEEE 802.1Q C-VLAN component that is FRER-capable: it shall meet all C-VLAN requirements AND all relay-system required behaviors, may take any relay-system options, and shall follow the C-component configuration rules.",
+      "zh": "这五种角色都遵循相同的三档节奏：必需(“shall”)、推荐(“should”)、可选(“may”)。流识别组件(5.3 必需 / 5.4 推荐 / 5.5 可选)是最轻量的角色——它只识别数据包，从不处理 FRER 序列号；它应当执行流识别加 Null 流识别，宜增加“主动目的 MAC 与 VLAN 识别”，并可增加 IP 识别或更多端口。Talker 端系统(5.6 / 5.7 / 5.8)发起复合流：它应当生成序列号并编码冗余标签(Redundancy tag, R-TAG)；宜增加主动目的识别与流拆分功能；可增加 IP 识别、HSR 标签或 PRP 尾部。Listener 端系统(5.9 / 5.10 / 5.11)消费复合流：它应当运行序列恢复(同时支持 Match 与 Vector 恢复算法)并提供至少两个独立恢复实例。中继系统(5.12 / 5.13 / 5.14)转发或丢弃复合流数据包，应当在至少两个端口上同时执行生成与恢复；宜增加主动目的识别与 IP 识别(以便为不支持 FRER 的端系统作代理)。最后，5.15(FRER C 组件)是一种具备 FRER 能力的 IEEE 802.1Q C-VLAN 组件：它应当同时满足全部 C-VLAN 要求与中继系统的全部必需行为，可采用中继系统的任意可选项，并应当遵循 C 组件配置规则。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6 (Stream identification) explains how a system decides which Stream a packet belongs to — the prerequisite for replicating or de-duplicating it. Clause 6.2 (Stream identification function) models it as a function with two Service Access Points (SAPs): one to the upper layers carrying a stream_handle (and possibly a sequence_number), and one to the lower layers (which usually carries neither). On receive, it examines an incoming packet and assigns the right stream_handle; if the packet belongs to no known Stream it passes through with null values. On transmit, it uses the packet's stream_handle to decide how to forward it. Identification can be active (it rewrites fields, e.g. 6.6) or passive (it only reads fields, e.g. 6.4). Clause 6.1 (Stream service subparameters) defines the two local variables that ride along inside the connection_identifier of the Internal Sublayer Service (ISS): stream_handle (an integer naming the Stream, local to the system — not a wire field) and sequence_number (the packet's order within the Compound Stream). Clause 6.3 (Stream identification in systems) then shows where these functions sit in a real relay or end system, distinguishing 'in-facing' functions (toward the forwarding function, used for proxying) from 'out-facing' functions (toward the wire).",
+      "zh": "Clause 6(流识别)解释系统如何判断一个数据包属于哪条流——这是复制或去重的前提。Clause 6.2(流识别功能)将其建模为一个带两个服务访问点(Service Access Point, SAP)的功能：一个面向上层，携带 stream_handle(可能还有 sequence_number)；一个面向下层(通常二者都不携带)。在接收方向，它检查到达的数据包并赋予正确的 stream_handle；若数据包不属于任何已知流，则带空值原样通过。在发送方向，它依据数据包的 stream_handle 决定如何转发。识别可以是主动的(改写字段，如 6.6)，也可以是被动的(只读取字段，如 6.4)。Clause 6.1(流服务子参数)定义了搭载在内部子层服务(Internal Sublayer Service, ISS)的 connection_identifier 中的两个本地变量：stream_handle(标识流的整数，仅在系统内部有效——并非线路上的字段)与 sequence_number(数据包在复合流中的顺序)。Clause 6.3(系统中的流识别)进一步展示这些功能在真实中继或端系统中的位置，区分“朝内”(in-facing，朝向转发功能，用于代理)与“朝外”(out-facing，朝向线路)的功能。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 180\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><text x=\"210\" y=\"16\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Upper layers (per-Stream SAPs)</text><line x1=\"40\" y1=\"28\" x2=\"380\" y2=\"28\"/><circle cx=\"110\" cy=\"28\" r=\"4\"/><circle cx=\"210\" cy=\"28\" r=\"4\"/><circle cx=\"310\" cy=\"28\" r=\"4\"/><text x=\"110\" y=\"46\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">handle 1</text><text x=\"210\" y=\"46\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">handles 2,16,28</text><text x=\"310\" y=\"46\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">unknown</text><rect x=\"40\" y=\"62\" width=\"340\" height=\"54\" rx=\"5\"/><text x=\"210\" y=\"86\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Stream identification function</text><text x=\"210\" y=\"104\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">examine -&gt; stream_handle / sequence_number (6.1, 6.2)</text><circle cx=\"210\" cy=\"140\" r=\"4\"/><line x1=\"40\" y1=\"140\" x2=\"380\" y2=\"140\"/><text x=\"210\" y=\"162\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Lower layers (single SAP: MAC + PHY)</text></svg>",
+      "caption": {
+        "en": "The Stream identification function (Clause 6.2): one SAP down to MAC/PHY, an array of SAPs up to the Streams, with stream_handle and sequence_number subparameters (6.1) crossing the upper boundary.",
+        "zh": "流识别功能(Clause 6.2)：向下到 MAC/PHY 只有一个 SAP，向上对应各条流则是 SAP 阵列，stream_handle 与 sequence_number 子参数(6.1)在上边界穿过。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The standard defines four concrete identification methods, each instantiated by encoding the tsnStreamIdIdentificationType managed object with OUI 00-80-C2. Clause 6.4 (Null Stream identification) is passive and operates at frame level: it derives the stream_handle purely from the frame's destination MAC address + VLAN ID, changing nothing. It suits cases where every packet to a given {MAC, VLAN} pair is a Stream packet (e.g. AVB Streams). Clause 6.5 (Source MAC and VLAN Stream identification) is the mirror image — also passive, deriving the stream_handle from the source MAC address + VLAN ID, overwriting nothing. Clause 6.6 (Active Destination MAC and VLAN Stream identification) is the only active method here: it replaces the destination_address, vlan_identifier, and priority with alternate values, so a Talker can map a Stream onto a particular {MAC, VLAN} for the bridges to see, and a Listener (or proxy relay) can restore the original addressing on the way up. Clause 6.7 (IP Stream identification) is passive but reaches higher: it identifies the Stream using IP-layer fields — IP source/destination address, DSCP, IP next protocol, source/destination port — alongside destination MAC and VLAN, changing nothing. It is often paired with Active Destination identification so a relay can proxy for a FRER-unaware end system.",
+      "zh": "标准定义了四种具体识别方法，每一种都通过用 OUI 00-80-C2 编码 tsnStreamIdIdentificationType 管理对象来实例化。Clause 6.4(Null 流识别)是被动的、工作在帧级：它仅依据帧的目的 MAC 地址 + VLAN ID 推导 stream_handle，不改动任何内容。它适用于发往某 {MAC, VLAN} 对的每个数据包都是流数据包的场景(如 AVB 流)。Clause 6.5(源 MAC 与 VLAN 流识别)是其镜像——同样被动，依据源 MAC 地址 + VLAN ID 推导 stream_handle，不覆盖任何字段。Clause 6.6(主动目的 MAC 与 VLAN 流识别)是此处唯一的主动方法：它用替代值替换 destination_address、vlan_identifier 与 priority，从而让 Talker 把一条流映射到特定 {MAC, VLAN} 供网桥识别，而 Listener(或代理中继)可在向上传递时恢复原始寻址。Clause 6.7(IP 流识别)是被动的但触及更高层：它用 IP 层字段——IP 源/目的地址、DSCP、IP 下一协议、源/目的端口——连同目的 MAC 与 VLAN 一起识别流，不改动任何内容。它常与主动目的识别配对，使中继能为不支持 FRER 的端系统作代理。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Clause-by-clause coverage map (exact numbers)",
+        "zh": "逐条覆盖地图(精确编号)"
+      },
+      "en": "Clause 1 — Overview: 1.1 Scope (identify/replicate/detect/eliminate; does not build the paths); 1.2 Rationale (cut failure-induced loss on protected fixed paths); 1.3 State diagram conventions (behavior as instantaneous C functions, ISO/IEC 9899:2011, fixed-width font); 1.4 Specification model (only externally observable protocol is normative); 1.5 Specification precedence (C functions > normative tables > normative text > normative figures); 1.6 Introduction (FRER in the IEEE 802.1 TSN family; Talker/Listener/Stream/Member Stream/Compound Stream/Reservation). Clause 5 — Conformance: 5.1 Requirements terminology (shall/should/may/can/cannot/allow/capability, feeding the PICS in Annex A); 5.2 Conformant components and equipment (five roles); 5.3/5.4/5.5 Stream identification component required/recommended/optional; 5.6/5.7/5.8 Talker end system required/recommended/optional; 5.9/5.10/5.11 Listener end system required/recommended/optional; 5.12/5.13/5.14 Relay system required/recommended/optional; 5.15 FRER C-component (C-VLAN + relay required behaviors + 8.4 config). Clause 6 — Stream identification: 6.1 Stream service subparameters (stream_handle, sequence_number in the ISS connection_identifier); 6.2 Stream identification function (two SAPs, active vs passive, examine/assign); 6.3 Stream identification in systems (in-facing vs out-facing placement, Figures 6-5/6-6); 6.4 Null Stream id (passive, dest MAC + VLAN); 6.5 Source MAC and VLAN Stream id (passive, source MAC + VLAN); 6.6 Active Destination MAC and VLAN Stream id (active, rewrites dest MAC/VLAN/priority); 6.7 IP Stream id (passive, IP + transport fields). All four methods set tsnStreamIdIdentificationType with OUI 00-80-C2.",
+      "zh": "Clause 1——总览：1.1 范围(识别/复制/检测/消除；不创建路径)；1.2 原理(在受保护的固定路径上削减故障致丢包)；1.3 状态图约定(行为以瞬时执行的 C 函数表达，ISO/IEC 9899:2011，等宽字体)；1.4 规范模型(仅外部可观测协议具规范性)；1.5 规范优先级(C 函数 > 规范性表格 > 规范性正文 > 规范性插图)；1.6 引言(FRER 属于 IEEE 802.1 TSN 家族；Talker/Listener/流/成员流/复合流/预留)。Clause 5——一致性：5.1 要求术语(shall/should/may/can/cannot/allow/capability，对应附录 A 的 PICS)；5.2 一致性组件与设备(五种角色)；5.3/5.4/5.5 流识别组件 必需/推荐/可选；5.6/5.7/5.8 Talker 端系统 必需/推荐/可选；5.9/5.10/5.11 Listener 端系统 必需/推荐/可选；5.12/5.13/5.14 中继系统 必需/推荐/可选；5.15 FRER C 组件(C-VLAN + 中继必需行为 + 8.4 配置)。Clause 6——流识别：6.1 流服务子参数(ISS connection_identifier 中的 stream_handle、sequence_number)；6.2 流识别功能(两个 SAP，主动与被动，检查/赋值)；6.3 系统中的流识别(朝内与朝外的位置，图 6-5/6-6)；6.4 Null 流识别(被动，目的 MAC + VLAN)；6.5 源 MAC 与 VLAN 流识别(被动，源 MAC + VLAN)；6.6 主动目的 MAC 与 VLAN 流识别(主动，改写目的 MAC/VLAN/优先级)；6.7 IP 流识别(被动，IP + 传输层字段)。四种方法均以 OUI 00-80-C2 设置 tsnStreamIdIdentificationType。",
+      "cite": {
+        "pdf_id": "8021CB-2017",
+        "pages": [
+          17,
+          18,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy way to remember the four methods: Null and Source MAC are passive 'read-only' identifiers (one keys off destination {MAC, VLAN}, the other off source {MAC, VLAN}); Active Destination is the lone 'rewriter' that swaps the destination address/VLAN/priority; and IP identification reads deepest, all the way into IP and transport ports. Only one of the four (Active Destination, 6.6) ever changes the packet.",
+      "zh": "记住这四种方法的小窍门：Null 与源 MAC 都是被动的“只读”识别器(前者以目的 {MAC, VLAN} 为键，后者以源 {MAC, VLAN} 为键)；主动目的识别是唯一的“改写者”，会替换目的地址/VLAN/优先级；而 IP 识别读取得最深，一直深入到 IP 与传输层端口。四者中只有主动目的识别(6.6)会真正改动数据包。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021CB-2017",
+      "pages": [
+        17,
+        18
+      ],
+      "note": "Clause 1 Overview: 1.1 Scope through 1.6 Introduction."
+    },
+    {
+      "pdf_id": "8021CB-2017",
+      "pages": [
+        23,
+        24,
+        25,
+        26
+      ],
+      "note": "Clause 5 Conformance: 5.1 terminology, 5.2 five roles, 5.3-5.15 required/recommended/optional behaviors."
+    },
+    {
+      "pdf_id": "8021CB-2017",
+      "pages": [
+        27,
+        28,
+        29,
+        30,
+        31,
+        32
+      ],
+      "note": "Clause 6 Stream identification: 6.1 subparameters through 6.7 IP Stream identification, Table 6-1, Figures 6-1 to 6-6."
+    }
+  ],
+  "covers": [
+    "8021CB-2017:1.1",
+    "8021CB-2017:1.2",
+    "8021CB-2017:1.3",
+    "8021CB-2017:1.4",
+    "8021CB-2017:1.5",
+    "8021CB-2017:1.6",
+    "8021CB-2017:5.1",
+    "8021CB-2017:5.2",
+    "8021CB-2017:5.3",
+    "8021CB-2017:5.4",
+    "8021CB-2017:5.5",
+    "8021CB-2017:5.6",
+    "8021CB-2017:5.7",
+    "8021CB-2017:5.8",
+    "8021CB-2017:5.9",
+    "8021CB-2017:5.10",
+    "8021CB-2017:5.11",
+    "8021CB-2017:5.12",
+    "8021CB-2017:5.13",
+    "8021CB-2017:5.14",
+    "8021CB-2017:5.15",
+    "8021CB-2017:6.1",
+    "8021CB-2017:6.2",
+    "8021CB-2017:6.3",
+    "8021CB-2017:6.4",
+    "8021CB-2017:6.5",
+    "8021CB-2017:6.6",
+    "8021CB-2017:6.7"
+  ],
+  "track": "tsn"
+}

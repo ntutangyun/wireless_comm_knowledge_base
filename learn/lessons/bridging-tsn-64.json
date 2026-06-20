@@ -1,0 +1,170 @@
+{
+  "id": "bridging-tsn-64",
+  "title": {
+    "en": "The LLDP MIB and the Back Matter: Clause 11 plus Annexes A–D",
+    "zh": "LLDP 的 MIB 与附录：第 11 章及附录 A–D"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clauses 7–10 of IEEE Std 802.1AB-2016 (LLDP, the Link Layer Discovery Protocol) describe what a station puts on the wire and how the state machines run. But none of that is useful to a network operator unless they can *read* what each device discovered. Clause 11 is the bridge to management software: it defines the LLDP MIB (Management Information Base) — the structured set of named, typed variables an SNMP manager can fetch. The annexes then close the standard out: A is the conformance checklist, B reconciles LLDP with an older topology MIB, C draws example frames, and D lists the references. This lesson gives every one of those parts a clear home.",
+      "zh": "IEEE Std 802.1AB-2016（LLDP，链路层发现协议）的第 7 至第 10 章描述了一个站点在线路上发送什么、状态机如何运行。但如果网络运维人员无法“读取”每台设备发现到的信息，这些内容就毫无用处。第 11 章正是通往管理软件的桥梁：它定义了 LLDP MIB（Management Information Base，管理信息库）——一组有名称、有类型的结构化变量，SNMP 管理器可以读取它们。随后的附录为标准收尾：附录 A 是合规性清单，附录 B 协调 LLDP 与一个较旧的拓扑 MIB，附录 C 画出示例帧，附录 D 列出参考文献。本课为这些部分每一个都安排一个清晰的归宿。"
+    },
+    {
+      "type": "prose",
+      "en": "11.1 (Internet Standard Management Framework) sets the ground rules. SNMP is the Simple Network Management Protocol — the messages a manager uses to read and write device variables. SMI (Structure of Management Information), specifically SMIv2, is the modeling language used to *define* those variables. 11.1 says the LLDP MIB is written in SMIv2 (per IETF RFCs 2578/2579/2580) and is read over SNMP — ideally SNMPv3. The key idea: the data model (the MIB), the modeling language (SMI), and the wire protocol (SNMP) are deliberately kept separate.",
+      "zh": "11.1（Internet 标准管理框架）确立了基本规则。SNMP 即 Simple Network Management Protocol（简单网络管理协议）——管理器用来读写设备变量的报文。SMI（Structure of Management Information，管理信息结构），具体说是 SMIv2，是用来“定义”这些变量的建模语言。11.1 指出 LLDP MIB 以 SMIv2 编写（依据 IETF RFC 2578/2579/2580），通过 SNMP 读取——最好是 SNMPv3。核心思想是：数据模型（MIB）、建模语言（SMI）与线路协议（SNMP）被刻意分离开来。"
+    },
+    {
+      "type": "prose",
+      "en": "11.2 (Structure of the LLDP MIB) lays out the shape. The MIB has a mandatory basic part plus zero or more organizationally specific extensions (for example the IEEE 802.1 extension MIB and the IEEE 802.3 extension MIB). Each module splits into a configuration/control half and a data half, so a device that only transmits, only receives, or does both can implement just the groups it needs. Table 11-1 maps object groups to those operating modes; Table 11-2 cross-references each MIB object back to the protocol variable or TLV it represents — for instance lldpV2LocChassisId maps to the chassis ID carried in 8.5.2, and lldpV2RemSysName to a neighbor's system name. (TLV = Type-Length-Value, the self-describing fields inside an LLDPDU, the LLDP Data Unit.)",
+      "zh": "11.2（LLDP MIB 的结构）勾勒出整体形态。MIB 包含一个强制性的基础部分，外加零个或多个机构专属扩展（例如 IEEE 802.1 扩展 MIB 与 IEEE 802.3 扩展 MIB）。每个模块都分为配置/控制部分与数据部分，因此仅发送、仅接收或两者皆有的设备可以只实现自己需要的组。表 11-1 将对象组映射到这些工作模式；表 11-2 将每个 MIB 对象交叉引用回它所代表的协议变量或 TLV——例如 lldpV2LocChassisId 映射到 8.5.2 中携带的机箱 ID，lldpV2RemSysName 映射到邻居的系统名称。（TLV = Type-Length-Value，类型-长度-值，即 LLDPDU——LLDP 数据单元——内部自描述的字段。）"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 220\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"20\" y=\"20\" width=\"180\" height=\"180\"/><rect x=\"260\" y=\"20\" width=\"180\" height=\"180\"/><text x=\"110\" y=\"40\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\" font-size=\"13\">Basic LLDP MIB</text><text x=\"350\" y=\"40\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\" font-size=\"13\">Extension MIBs</text><rect x=\"35\" y=\"55\" width=\"150\" height=\"55\"/><text x=\"110\" y=\"78\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\" font-size=\"11\">Config / Control</text><text x=\"110\" y=\"95\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\" font-size=\"10\">Tx / Rx groups</text><rect x=\"35\" y=\"125\" width=\"150\" height=\"55\"/><text x=\"110\" y=\"148\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\" font-size=\"11\">Data</text><text x=\"110\" y=\"165\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\" font-size=\"10\">Local + Remote</text><rect x=\"275\" y=\"55\" width=\"150\" height=\"55\"/><text x=\"350\" y=\"86\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\" font-size=\"10\">IEEE 802.1 MIB</text><rect x=\"275\" y=\"125\" width=\"150\" height=\"55\"/><text x=\"350\" y=\"156\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\" font-size=\"10\">IEEE 802.3 MIB</text></svg>",
+      "caption": {
+        "en": "11.2 structure: a mandatory basic MIB (split into config/control and data halves) plus optional organizationally specific extension MIBs.",
+        "zh": "11.2 的结构：一个强制性的基础 MIB（分为配置/控制与数据两部分），外加可选的机构专属扩展 MIB。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "11.3 (Relationship to other MIBs) explains how the LLDP MIB sits alongside its neighbors. 11.3.1 (Relationship to LLDP Version 1 MIB) notes that the 2005 version-1 module is superseded by the version-2 module; v2 re-indexes objects so LLDP can run to multiple destination MAC addresses, yet a v1 and a v2 device still interoperate (the protocol changes touched only timing, not frame content). 11.3.2 (IETF Physical Topology MIB) says LLDP can feed the PTOPO MIB (RFC 2922) and is in fact a logical superset of it. 11.3.3 (IETF Entity MIB) lets chassis IDs in an LLDPDU line up with physical-component inventory entries (entPhysicalTable). 11.3.4 (IETF Interfaces MIB) ties port IDs to interface-table rows (ifTable/ifXTable), which an LLDP-MIB agent must also implement.",
+      "zh": "11.3（与其他 MIB 的关系）说明 LLDP MIB 如何与相邻的 MIB 共存。11.3.1（与 LLDP 版本 1 MIB 的关系）指出 2005 年的版本 1 模块已被版本 2 模块取代；v2 重新编排对象索引，使 LLDP 能向多个目的 MAC 地址发送，而 v1 与 v2 设备仍可互通（协议变更只涉及时序，不涉及帧内容）。11.3.2（IETF 物理拓扑 MIB）指出 LLDP 可为 PTOPO MIB（RFC 2922）供数据，并且在逻辑上是它的超集。11.3.3（IETF 实体 MIB）让 LLDPDU 中的机箱 ID 与物理组件清单条目（entPhysicalTable）对应。11.3.4（IETF 接口 MIB）将端口 ID 与接口表行（ifTable/ifXTable）关联，实现 LLDP-MIB 的代理也必须实现它们。"
+    },
+    {
+      "type": "prose",
+      "en": "11.4 (Security considerations for LLDP base MIB module) is a candid warning. Several objects are read-write (MAX-ACCESS read-write), so an attacker who can SET them can, for example, force a flood of LLDPDUs (by abusing the transmit-interval or fast-init timers), advertise management addresses you never meant to expose, or flip a port's admin status into the wrong mode. Even read-only objects leak topology and identity. The mitigation is blunt: do not deploy SNMP versions older than SNMPv3, and use SNMPv3's authentication and privacy (encryption) so only authorized principals can GET or SET these objects.",
+      "zh": "11.4（LLDP 基础 MIB 模块的安全考量）是一则坦率的警告。若干对象是可读写的（MAX-ACCESS 为 read-write），因此能够对它们执行 SET 的攻击者可以——例如——滥用发送间隔或快速初始化定时器迫使 LLDPDU 泛洪、广告你本不想暴露的管理地址，或把端口的管理状态切换到错误模式。即便是只读对象也会泄露拓扑与身份信息。缓解措施很直接：不要部署早于 SNMPv3 的 SNMP 版本，并使用 SNMPv3 的认证与隐私（加密）机制，使得只有获授权的主体才能 GET 或 SET 这些对象。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: the MIB is a read-out panel of LLDP. The 'Local' tables show what *this* device advertises about itself; the 'Remote' tables show what neighbors said about themselves. A topology map is just the Remote tables of every device, stitched together.",
+      "zh": "心智模型：MIB 就是 LLDP 的读数面板。“本地（Local）”表显示“本”设备对外广告的关于自身的信息；“远端（Remote）”表显示邻居对外宣告的关于它们自身的信息。一张拓扑图，无非就是把每台设备的远端表拼接在一起。"
+    },
+    {
+      "type": "prose",
+      "en": "11.5 (LLDP MIB modules) is where the actual SMIv2 source lives. It is two modules. 11.5.1 (Definitions for the LLDP-V2-TC MIB module) is the textual-conventions module: reusable named types such as LldpV2ChassisIdSubtype (an enumeration like macAddress, networkAddress, local), LldpV2PortIdSubtype, LldpV2ManAddress (a 1–31 octet management address), and LldpV2SystemCapabilitiesMap (a bit map with bits for bridge, router, wlanAccessPoint, telephone, and so on). Splitting these out lets other standards' extension MIBs import the same types. 11.5.2 (LLDP MIB module - version 2) is the LLDP-V2-MIB itself, importing those textual conventions plus standard SNMP types and defining every actual object, table, and notification (such as lldpV2RemTablesChange).",
+      "zh": "11.5（LLDP MIB 模块）正是真正的 SMIv2 源码所在。它包含两个模块。11.5.1（LLDP-V2-TC MIB 模块的定义）是文本约定模块：可复用的具名类型，例如 LldpV2ChassisIdSubtype（一个枚举，如 macAddress、networkAddress、local）、LldpV2PortIdSubtype、LldpV2ManAddress（1–31 字节的管理地址），以及 LldpV2SystemCapabilitiesMap（一个位图，含 bridge、router、wlanAccessPoint、telephone 等位）。将这些独立出来，便于其他标准的扩展 MIB 导入相同类型。11.5.2（LLDP MIB 模块——版本 2）即 LLDP-V2-MIB 本体，导入这些文本约定及标准 SNMP 类型，并定义每一个实际对象、表与通知（例如 lldpV2RemTablesChange）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  TC[\"11.5.1 LLDP-V2-TC<br/>textual conventions\"] -->|imported by| MIB[\"11.5.2 LLDP-V2-MIB<br/>objects + tables\"]\n  EXT[\"802.1 / 802.3<br/>extension MIBs\"] -->|also import TCs| TC\n  MIB -->|read over| SNMP[\"SNMPv3 manager\"]",
+      "zh": "flowchart LR\n  TC[\"11.5.1 LLDP-V2-TC<br/>文本约定\"] -->|被导入| MIB[\"11.5.2 LLDP-V2-MIB<br/>对象+表\"]\n  EXT[\"802.1 / 802.3<br/>扩展 MIB\"] -->|也导入约定| TC\n  MIB -->|读取经由| SNMP[\"SNMPv3 管理器\"]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the four annexes (A normative PICS, B normative PTOPO update, C informative frames, D informative bibliography)",
+        "zh": "覆盖地图：四个附录（A 规范性 PICS、B 规范性 PTOPO 更新、C 资料性帧格式、D 资料性参考文献）"
+      },
+      "en": "Annex A (normative) is the PICS proforma — PICS = Protocol Implementation Conformance Statement. It is the fixed-format questionnaire a supplier fills in to claim conformance: A.1 explains its uses, A.2 lists the status symbols (M mandatory, O optional, O.n one-of-group, X prohibited, plus the conditional 'pred: S' form and the negation symbol), A.3 gives completion instructions including conditional predicates and the implementation-identification/protocol-summary forms, and A.4 is the actual table of major capabilities — controlled-vs-uncontrolled-port LLDP under 802.1X, addressing/EtherType conformance, the basic TLV set (Chassis ID, Port ID, TTL, Port Description, System Name/Description/Capabilities, Management Address), operational modes (Tx, Rx, TxRx), and whether an SNMP MIB or equivalent storage is provided. Annex B (normative) is the PTOPO MIB update rules: how an LLDP agent keeps the IETF Physical Topology MIB in step — delete PTOPO objects when LLDP remote objects age out or when a Time-To-Live TLV value is zero (port shutting down), find-or-create a ptopoRemEntry for a non-zero TTL, bump ptopoConnTabInserts on insert, and fire a ptopoConfigChange trap when the table changes. Annex C (informative) shows two example LLDP frame formats: C.1 the direct-encoded IEEE 802.3 frame (Figure C.1) and C.2 the SNAP-encoded IEEE 802.11 frame with To DS/From DS both zero (Figure C.2). Annex D (informative) is the bibliography — the IEEE and IETF documents referenced as [B1]…[B12], including the SMIv2 trio (RFC 2578/2579/2580), the PTOPO MIB (RFC 2922), and IEEE Std 802.11.",
+      "zh": "附录 A（规范性）是 PICS 形式表——PICS = Protocol Implementation Conformance Statement（协议实现合规声明）。它是供应商为声明合规而填写的固定格式问卷：A.1 说明用途，A.2 列出状态符号（M 强制、O 可选、O.n 组内择一、X 禁止，以及条件式“pred: S”形式和否定符号），A.3 给出填写说明，包括条件谓词以及实现标识/协议摘要表，A.4 则是主要能力的实际表格——802.1X 下受控端口与非受控端口的 LLDP、寻址/EtherType 合规性、基础 TLV 集（机箱 ID、端口 ID、TTL、端口描述、系统名称/描述/能力、管理地址）、工作模式（Tx、Rx、TxRx），以及是否提供 SNMP MIB 或等效存储。附录 B（规范性）是 PTOPO MIB 更新规则：LLDP 代理如何使 IETF 物理拓扑 MIB 保持同步——当 LLDP 远端对象老化或某 Time-To-Live TLV 值为零（端口正在关闭）时删除 PTOPO 对象，对非零 TTL 查找或创建 ptopoRemEntry，插入时递增 ptopoConnTabInserts，并在表变化时触发 ptopoConfigChange 陷阱。附录 C（资料性）展示两种示例 LLDP 帧格式：C.1 为直接编码的 IEEE 802.3 帧（图 C.1），C.2 为 SNAP 编码、To DS/From DS 均为零的 IEEE 802.11 帧（图 C.2）。附录 D（资料性）是参考文献——以 [B1]…[B12] 引用的 IEEE 与 IETF 文档，包括 SMIv2 三件套（RFC 2578/2579/2580）、PTOPO MIB（RFC 2922）以及 IEEE Std 802.11。",
+      "cite": {
+        "pdf_id": "8021AB-2016",
+        "pages": [
+          137,
+          138,
+          139,
+          141,
+          142,
+          143,
+          144,
+          145
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why two frame examples in Annex C? LLDP rides directly on an EtherType for IEEE 802.3 wired links (C.1), but on IEEE 802.11 wireless links the EtherType is carried inside a SNAP (Subnetwork Access Protocol) header — hence the 'SNAP-encoded' second format (C.2). Same payload, different link-layer wrapper.",
+      "zh": "附录 C 为何给出两种帧示例？在 IEEE 802.3 有线链路上，LLDP 直接承载于某个 EtherType 之上（C.1）；但在 IEEE 802.11 无线链路上，该 EtherType 被装入 SNAP（Subnetwork Access Protocol，子网接入协议）头中——因此有了“SNAP 编码”的第二种格式（C.2）。负载相同，链路层封装不同。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Quick index: where each Clause 11 unit lives",
+        "zh": "速查索引：第 11 章每个单元的位置"
+      },
+      "en": "11.1 Internet Standard Management Framework — SMIv2 model + SNMP access (p.78). 11.2 Structure of the LLDP MIB — basic + extension modules, config/data split, Tables 11-1 and 11-2 (pp.78–82). 11.3 Relationship to other MIBs, with 11.3.1 LLDP Version 1 MIB (superseded; multi-DA re-indexing), 11.3.2 IETF PTOPO MIB (superset, RFC 2922), 11.3.3 IETF Entity MIB (chassis IDs to entPhysicalTable), 11.3.4 IETF Interfaces MIB (port IDs to ifTable/ifXTable) (pp.83–84). 11.4 Security considerations — read-write risks, deploy SNMPv3 only (pp.84–86). 11.5.1 LLDP-V2-TC MIB module — textual conventions / reusable types (pp.87–93). 11.5.2 LLDP MIB module version 2 — LLDP-V2-MIB objects, tables, notifications (p.94 onward).",
+      "zh": "11.1 Internet 标准管理框架——SMIv2 建模 + SNMP 访问（第 78 页）。11.2 LLDP MIB 的结构——基础 + 扩展模块、配置/数据分离、表 11-1 与表 11-2（第 78–82 页）。11.3 与其他 MIB 的关系，含 11.3.1 LLDP 版本 1 MIB（已被取代；多目的地址重新索引）、11.3.2 IETF PTOPO MIB（超集，RFC 2922）、11.3.3 IETF 实体 MIB（机箱 ID 对应 entPhysicalTable）、11.3.4 IETF 接口 MIB（端口 ID 对应 ifTable/ifXTable）（第 83–84 页）。11.4 安全考量——可读写风险，仅部署 SNMPv3（第 84–86 页）。11.5.1 LLDP-V2-TC MIB 模块——文本约定/可复用类型（第 87–93 页）。11.5.2 LLDP MIB 模块版本 2——LLDP-V2-MIB 的对象、表、通知（第 94 页起）。",
+      "cite": {
+        "pdf_id": "8021AB-2016",
+        "pages": [
+          78,
+          83,
+          84,
+          86,
+          87,
+          94
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AB-2016",
+      "pages": [
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86
+      ],
+      "note": "Clause 11.1–11.4: management framework, MIB structure (Tables 11-1/11-2), relationships to v1/PTOPO/Entity/Interfaces MIBs, and security considerations."
+    },
+    {
+      "pdf_id": "8021AB-2016",
+      "pages": [
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94
+      ],
+      "note": "Clause 11.5.1 LLDP-V2-TC textual conventions and the start of 11.5.2 LLDP-V2-MIB version 2 module."
+    },
+    {
+      "pdf_id": "8021AB-2016",
+      "pages": [
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145
+      ],
+      "note": "Annex A PICS proforma, Annex B PTOPO MIB update rules, Annex C example 802.3/802.11 frame formats, Annex D bibliography."
+    }
+  ],
+  "covers": [
+    "8021AB-2016:11.1",
+    "8021AB-2016:11.2",
+    "8021AB-2016:11.3.1",
+    "8021AB-2016:11.3.2",
+    "8021AB-2016:11.3.3",
+    "8021AB-2016:11.3.4",
+    "8021AB-2016:11.4",
+    "8021AB-2016:11.5.1",
+    "8021AB-2016:11.5.2",
+    "8021AB-2016:Annex_A",
+    "8021AB-2016:Annex_B",
+    "8021AB-2016:Annex_C",
+    "8021AB-2016:Annex_D"
+  ],
+  "track": "bridging-tsn"
+}

@@ -1,0 +1,170 @@
+{
+  "id": "bridging-tsn-102",
+  "title": {
+    "en": "Congestion Isolation in Bridged Networks: A Clause-by-Clause Walkthrough of 802.1Qcz",
+    "zh": "桥接网络中的拥塞隔离：802.1Qcz 逐条款详解"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Imagine a busy highway where one stalled truck blocks an entire lane, and every car behind it waits — even cars that want a different exit. That is head-of-line (HOL) blocking, and it is exactly what IEEE Std 802.1Qcz-2023 sets out to cure in data center networks. This amendment, formally 'Amendment 35: Congestion Isolation' to the 802.1Q bridging standard, lets a VLAN-aware Bridge (a switch that understands Virtual LAN tags) spot the one flow that is causing congestion, move just that flow into a separate 'congesting queue', and tell its upstream neighbor about it — so the well-behaved flows sharing the same traffic class keep moving (Clause 1.3). This lesson walks every covered clause so you can read the standard fluently.",
+      "zh": "想象一条繁忙的高速公路，一辆抛锚的卡车堵住了整条车道，后面所有的车都得等着——哪怕它们要去的是别的出口。这就是队头阻塞（HOL，head-of-line blocking），而 IEEE Std 802.1Qcz-2023 正是要在数据中心网络中根治它。这份修正案正式名称是对 802.1Q 桥接标准的“修正案 35：拥塞隔离”，它让支持 VLAN（虚拟局域网，Virtual LAN）的网桥（即能识别 VLAN 标签的交换机）找出造成拥塞的那条流，仅把这条流移入一个独立的“拥塞队列”，并通知它的上游邻居——这样共享同一流量类的良好流量得以继续通行（条款 1.3）。本课逐条讲解所覆盖的条款，帮助你流畅地读懂这份标准。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 1.3 (Introduction) lists the five things this standard adds. A congestion isolation aware Bridge can: (1) identify flows that are creating congestion; (2) adjust transmission selection for those congesting flows' frames; (3) discover peer Bridges and stations that also support congestion isolation; (4) signal the congestion to those peers; and (5) recognize its own level and port orientation relative to the edge of the topology. Three new acronyms anchor everything: CI (Congestion Isolation), CIM (Congestion Isolation Message — the frame sent upstream to describe a congesting flow), and CIP (Congestion Isolation Point — the per-port function that monitors queues, isolates flows, and generates CIMs).",
+      "zh": "条款 1.3（引言）列出了本标准新增的五件事。一个具备拥塞隔离感知能力的网桥可以：（1）识别正在造成拥塞的流；（2）为这些拥塞流的帧调整传输选择；（3）发现同样支持拥塞隔离的对等网桥和站点；（4）向这些对等方发出拥塞信号；（5）识别自身相对于拓扑边缘的层级与端口朝向。三个新缩写贯穿全篇：CI（拥塞隔离，Congestion Isolation）、CIM（拥塞隔离消息，Congestion Isolation Message——向上游发送、用以描述某条拥塞流的帧）、以及 CIP（拥塞隔离点，Congestion Isolation Point——负责监控队列、隔离流并生成 CIM 的逐端口功能）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Upstream Bridge</text><text x=\"360\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Downstream Bridge (CIP)</text><rect x=\"10\" y=\"30\" width=\"120\" height=\"40\"/><text x=\"22\" y=\"55\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">flows A,B,C</text><line x1=\"130\" y1=\"50\" x2=\"360\" y2=\"50\"/><polygon points=\"360,50 350,45 350,55\" fill=\"currentColor\" stroke=\"none\"/><rect x=\"360\" y=\"30\" width=\"150\" height=\"40\"/><text x=\"370\" y=\"48\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">monitored queue</text><text x=\"370\" y=\"62\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">A,B move on; C congests</text><rect x=\"360\" y=\"110\" width=\"150\" height=\"40\"/><text x=\"370\" y=\"128\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">congesting queue</text><text x=\"370\" y=\"142\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">flow C isolated here</text><line x1=\"435\" y1=\"70\" x2=\"435\" y2=\"110\"/><polygon points=\"435,110 430,100 440,100\" fill=\"currentColor\" stroke=\"none\"/><line x1=\"360\" y1=\"130\" x2=\"130\" y2=\"130\"/><polygon points=\"130,130 140,125 140,135\" fill=\"currentColor\" stroke=\"none\"/><text x=\"150\" y=\"125\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">CIM: \"flow C is congesting\"</text></svg>",
+      "caption": {
+        "en": "A CIP isolates the congesting flow C into a separate queue so flows A and B keep moving, then sends a CIM upstream so the neighbor can do the same (Clause 1.3, 8.6.8.6).",
+        "zh": "CIP 把拥塞流 C 隔离到独立队列，使流 A 和 B 继续通行，再向上游发送 CIM，让邻居也照此处理（条款 1.3、8.6.8.6）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "How does a Bridge legally claim to 'support congestion isolation'? Clause 5 (Conformance) sets the contract. Clause 5.4 covers VLAN Bridge component requirements: a new option (5.4.1) simply adds CI to the menu of capabilities a Bridge may advertise, while the heart of it is 5.4.7 — VLAN Bridge requirements for congestion isolation (optional). A conforming Bridge shall create at least one CIP, support ECN (Explicit Congestion Notification, the IETF RFC 3168 marking that signals congestion in IP headers) together with AQM (Active Queue Management, the queue-policing discipline that decides when to mark or drop), do per-stream classification, run the Congestion Isolation Protocol at each CIP, expose the managed objects, and carry a Congestion Isolation TLV (Type-Length-Value field) in LLDP (Link Layer Discovery Protocol, how neighbors announce capabilities). End stations have their own, slimmer list in 5.32.",
+      "zh": "网桥要怎样才算合法地“支持拥塞隔离”？条款 5（一致性）规定了这份契约。条款 5.4 涵盖 VLAN 网桥组件要求：新增选项（5.4.1）只是把 CI 加入网桥可声明的能力清单，而核心在 5.4.7——VLAN 网桥的拥塞隔离要求（可选）。一个一致的网桥应当：创建至少一个 CIP；支持 ECN（显式拥塞通知，Explicit Congestion Notification，即 IETF RFC 3168 中在 IP 头部标记拥塞的机制）并配合 AQM（主动队列管理，Active Queue Management，决定何时标记或丢弃的队列管理策略）；执行逐流分类；在每个 CIP 上运行拥塞隔离协议；公开受管对象；并在 LLDP（链路层发现协议，Link Layer Discovery Protocol，邻居用以宣告能力）中携带拥塞隔离 TLV（类型-长度-值字段，Type-Length-Value）。终端站点在 5.32 中有一份更精简的清单。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The difference between 5.4.7 (Bridges) and 5.32 (end stations) is subtle but worth noting: end stations need not create CIPs as a 'shall' the way Bridges do, and they may support a non-relay 'server' role of Topology Recognition. Both, however, must support ECN+AQM, run the CI Protocol at each CIP they do have, conform to IEEE Std 802.1AB (LLDP), and carry the Congestion Isolation TLV.",
+      "zh": "5.4.7（网桥）与 5.32（终端站点）的区别很微妙但值得留意：终端站点不像网桥那样把创建 CIP 列为强制（shall），并且它们可以支持拓扑识别中的非中继“服务器”角色。但两者都必须支持 ECN+AQM、在各自拥有的每个 CIP 上运行 CI 协议、符合 IEEE Std 802.1AB（LLDP），并携带拥塞隔离 TLV。"
+    },
+    {
+      "type": "prose",
+      "en": "When a CIM actually arrives, where is it caught? Clause 6 (Support of the MAC Service) — specifically 6.10.1 (Data indications) — patches the receive path of the PIP (Provider Instance Port, an internal port type in provider bridges). The rule: on receiving a frame, if the PIP is congestion isolation aware and the first octets of the payload (the MAC service data unit, MSDU) contain a valid CIM encapsulation, the frame is handed to the CI Protocol's receive procedure rather than being forwarded normally or discarded. This is the hook that turns an ordinary data frame into a congestion signal.",
+      "zh": "当 CIM 真正抵达时，是在哪里被捕获的？条款 6（MAC 服务的支持）——具体是 6.10.1（数据指示）——修补了 PIP（提供者实例端口，Provider Instance Port，提供者网桥中的一种内部端口）的接收路径。规则是：收到一帧时，若该 PIP 具备拥塞隔离感知能力，且载荷（MAC 服务数据单元，MSDU）的起始字节包含有效的 CIM 封装，则该帧会被交给 CI 协议的接收过程处理，而不是按常规转发或丢弃。这正是把一个普通数据帧转化为拥塞信号的关键钩子。"
+    },
+    {
+      "type": "prose",
+      "en": "The mechanical heart of the standard lives in Clause 8 (Principles of Bridge operation), inside 8.6 The Forwarding Process. Clause 8.6.5 (Flow classification and metering) now lists CI alongside PSFP (Per-Stream Filtering and Policing) and ATS (Asynchronous Traffic Shaping) as users of the shared per-stream machinery. CI reuses two existing building blocks: a stream filter (which matches a frame by its stream_handle and priority) feeding a stream gate (which can overwrite the frame's effective priority via an IPV, Internal Priority Value). CI wires up two filter/gate pairs: one pushes a congesting flow from the monitored queue down into the congesting queue, and a second pushes it back up once it recovers — the second pair triggered by the absence of a stream_handle (the 'null-handle').",
+      "zh": "本标准的机械核心位于条款 8（网桥操作原理）中的 8.6 转发过程。条款 8.6.5（流分类与计量）现在把 CI 与 PSFP（逐流过滤与监管，Per-Stream Filtering and Policing）和 ATS（异步流量整形，Asynchronous Traffic Shaping）并列，作为共享的逐流机制的使用者。CI 复用了两个既有构件：流过滤器（按帧的 stream_handle 和优先级进行匹配）馈入流门（可通过 IPV，即内部优先级值 Internal Priority Value，覆写帧的有效优先级）。CI 接入两对“过滤器/门”：一对把拥塞流从监控队列下推至拥塞队列，另一对在其恢复后把它推回——后一对由 stream_handle 的缺失（即“空句柄”null-handle）触发。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  RX[Frame received] --> SF{Stream filter}\n  SF -->|has handle + priority| G1[Gate: IPV to congesting]\n  SF -->|null-handle| G2[Gate: IPV to monitored]\n  G1 --> CQ[Congesting queue]\n  G2 --> MQ[Monitored queue]\n  CQ --> TS[Transmission selection 8.6.8]\n  MQ --> TS",
+      "zh": "flowchart LR\n  RX[收到帧] --> SF{流过滤器}\n  SF -->|有句柄+优先级| G1[流门: IPV 转拥塞队列]\n  SF -->|空句柄| G2[流门: IPV 转监控队列]\n  G1 --> CQ[拥塞队列]\n  G2 --> MQ[监控队列]\n  CQ --> TS[传输选择 8.6.8]\n  MQ --> TS"
+    },
+    {
+      "type": "prose",
+      "en": "Two more 8.6 subclauses complete the picture. Clause 8.6.6 (Queuing frames) notes that in a congestion isolation aware Bridge, the very act of queuing a frame can cause the Forwarding Process to generate a CIM, which is then injected back into the Forwarding Process as if it had been received on that port — that is how the outbound signal gets created. Clause 8.6.8 (Transmission selection) adds 8.6.8.6 (Enhancements for congestion isolation): because a flow may briefly have frames in both the congesting and monitored queues, transmission gates keep ordering intact. The rule of thumb: with strict-priority scheduling and 'de-isolate only when the congesting queue is empty', the gate can simply stay Open; for any other algorithm, a control variable (cipGateControl) manages the gate. Congesting queues are always given lower priority than their monitored counterparts.",
+      "zh": "8.6 中另两个小节补全了全貌。条款 8.6.6（帧排队）指出：在具备拥塞隔离感知能力的网桥中，给某帧排队这一动作本身就可能促使转发过程生成一个 CIM，随后该 CIM 会像在该端口上被收到一样重新注入转发过程——这正是出站信号的生成方式。条款 8.6.8（传输选择）新增 8.6.8.6（拥塞隔离增强）：由于一条流可能短暂地在拥塞队列和监控队列中同时存在帧，传输门用以保持顺序不乱。经验法则是：采用严格优先级调度且“仅当拥塞队列为空时才解除隔离”时，门可直接保持打开（Open）；对任何其他算法，则由控制变量（cipGateControl）管理该门。拥塞队列的优先级始终低于其对应的监控队列。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 12 (Bridge management) is where an operator actually configures all of this. Clause 12.1.1 (Configuration Management) gains the ability to create, delete, and control the functional elements of congestion isolation; Clause 12.2 (VLAN Bridge objects) registers 'the congestion isolation entities' as a new managed object family. Clause 12.31 (Managed objects for per-stream classification and metering) extends the tables CI shares with PSFP/ATS: 12.31.1 The Stream Parameter Table (limits like MaxStreamFilterInstances now carry a CI conformance column), 12.31.2 The Stream Filter Instance Table (now allows the null-handle stream_handle spec for CI), and 12.31.3 The Stream Gate Instance Table (where StreamGateAdminIPV/OperIPV — the priority-overwrite values CI relies on — are marked CI-required).",
+      "zh": "条款 12（网桥管理）是运维人员真正配置上述一切的地方。条款 12.1.1（配置管理）新增了创建、删除并控制拥塞隔离功能元素的能力；条款 12.2（VLAN 网桥对象）将“拥塞隔离实体”登记为一类新的受管对象。条款 12.31（逐流分类与计量的受管对象）扩展了 CI 与 PSFP/ATS 共享的表：12.31.1 流参数表（MaxStreamFilterInstances 等上限现在带有 CI 一致性列）、12.31.2 流过滤器实例表（现允许为 CI 使用空句柄 stream_handle 规范）、以及 12.31.3 流门实例表（其中 CI 所依赖的优先级覆写值 StreamGateAdminIPV/OperIPV 被标记为 CI 必需）。"
+    },
+    {
+      "type": "prose",
+      "en": "Brand-new in Clause 12 is 12.33 (Congestion Isolation managed objects), the operator's full CI control panel, built from four objects. 12.33.1 (CI entity managed object) holds the per-bridge knobs — ciMasterEnable (turn CI on/off), ciCIMTransmitPriority, and ciMaxFlowLife. 12.33.2 (CI Peer Table) has one row per CI-supporting port, carrying what's needed to build a CIM toward that neighbor (its type — L2, IPv4, or IPv6 — and addresses). 12.33.3 (CI Stream Table) has one row per congesting flow, tracking the management variables that isolate and de-isolate it (its stream handle, CIM count, queue key, and the frame's addresses/VID). 12.33.4 (CIP entity managed object) gives each CIP its own object — its addresses, UDP port, and the cipQueueMap[] that maps monitored queues to congesting queues.",
+      "zh": "条款 12 中全新加入的是 12.33（拥塞隔离受管对象），即运维人员完整的 CI 控制面板，由四个对象构成。12.33.1（CI 实体受管对象）持有逐网桥的开关——ciMasterEnable（开/关 CI）、ciCIMTransmitPriority 和 ciMaxFlowLife。12.33.2（CI 对等表）为每个支持 CI 的端口设一行，携带向该邻居构造 CIM 所需的信息（其类型——L2、IPv4 或 IPv6——以及地址）。12.33.3（CI 流表）为每条拥塞流设一行，跟踪用于隔离和解除隔离的管理变量（其流句柄、CIM 计数、队列键，以及帧的地址/VID）。12.33.4（CIP 实体受管对象）为每个 CIP 配一个对象——其地址、UDP 端口，以及把监控队列映射到拥塞队列的 cipQueueMap[]。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: Clause 30 (congestion notification context) and Clause 46 (TSN configuration data types) — exact clause numbers",
+        "zh": "覆盖地图：条款 30（拥塞通知背景）与条款 46（TSN 配置数据类型）——精确条款编号"
+      },
+      "en": "Clause 30 (Principles of congestion notification) frames CI against the older QCN (Quantized Congestion Notification) scheme. 30.1 (Congestion notification design requirements) revises item x): QCN cannot regulate frame transmission by acknowledgments the way TCP/IP does (RFC 791/793) — a reminder that CI is meant to assist end-to-end congestion control, not replace it. 30.3 (Congestion Controlled Flow, CCF) updates item a) so a CCF can be the frames of a single UDP (User Datagram Protocol, RFC 768) connection — broadening 'flow' beyond TCP. Clause 46 (TSN configuration) touches the data dictionary used to describe streams to a configuration entity. 46.2.1 (Data types) lists the primitive types — Boolean, int8/16/32, uint8/16/32, string, enumeration, rational, mac-address-type, ipv4-address-type, ipv6-address-type, and sequence-of — the vocabulary every TSN config field is built from. 46.2.3 (Talker) covers a Talker's stream description; the amendment touches 46.2.3.4 DataFrameSpecification down to 46.2.3.4.4 IPv6-tuple, clarifying that the IPv6-tuple group specifies fields identifying an IPv6 (RFC 8200) stream — so a congesting IPv6 flow can be named precisely. Together these two clauses give CI its surrounding context (how congestion is signaled and how flows are described) without adding new mechanism of their own.",
+      "zh": "条款 30（拥塞通知原理）把 CI 置于较旧的 QCN（量化拥塞通知，Quantized Congestion Notification）方案之上加以对照。30.1（拥塞通知设计要求）修订了第 x）项：QCN 无法像 TCP/IP 那样以确认应答来调节帧的发送（RFC 791/793）——提醒我们 CI 旨在辅助端到端拥塞控制，而非取而代之。30.3（受控拥塞流，CCF）更新了第 a）项，使一条 CCF 可以是单个 UDP（用户数据报协议，User Datagram Protocol，RFC 768）连接的帧——把“流”的概念从 TCP 之外拓宽。条款 46（TSN 配置）触及用于向配置实体描述流的数据字典。46.2.1（数据类型）列出基本类型——Boolean、int8/16/32、uint8/16/32、string、enumeration、rational、mac-address-type、ipv4-address-type、ipv6-address-type 以及 sequence-of——这是每个 TSN 配置字段的构造词汇。46.2.3（Talker，发送者）描述某个 Talker 的流；本修正案触及 46.2.3.4 DataFrameSpecification 直至 46.2.3.4.4 IPv6-tuple，明确 IPv6-tuple 组规定了用以标识一条 IPv6（RFC 8200）流的字段——这样一条拥塞的 IPv6 流便可被精确命名。这两个条款共同为 CI 提供了周边背景（拥塞如何被信号化、流如何被描述），本身并不引入新的机制。",
+      "cite": {
+        "pdf_id": "8021Qcz-2023",
+        "pages": [
+          34,
+          35
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The mental model to keep: CI is not a new congestion-control algorithm — it is a 'lane management' helper. It reuses the existing per-stream filter/gate plumbing (8.6.5), parks one misbehaving flow in a low-priority queue, signals the upstream neighbor with a CIM (caught at 6.10.1, generated at 8.6.6), and exposes every knob through managed objects (12.33). Clauses 30 and 46 supply the surrounding vocabulary. Read those clause numbers as the 'where do I look' index whenever you open the standard.",
+      "zh": "要记住的心智模型是：CI 并不是一种全新的拥塞控制算法，而是一个“车道管理”助手。它复用既有的逐流过滤器/门管道（8.6.5），把一条行为不端的流停进低优先级队列，用 CIM 通知上游邻居（在 6.10.1 捕获、在 8.6.6 生成），并通过受管对象（12.33）暴露每一个开关。条款 30 与 46 提供了周边词汇。每当你翻开这份标准时，就把这些条款编号当作“该去哪查”的索引。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Qcz-2023",
+      "pages": [
+        17
+      ],
+      "note": "Clause 1.3 Introduction — the five capabilities CI adds"
+    },
+    {
+      "pdf_id": "8021Qcz-2023",
+      "pages": [
+        21,
+        22
+      ],
+      "note": "Clause 5.4.1 / 5.4.7 Bridge CI requirements; 5.32 end station requirements"
+    },
+    {
+      "pdf_id": "8021Qcz-2023",
+      "pages": [
+        23
+      ],
+      "note": "Clause 6.10.1 Data indications — CIM catch on the PIP receive path"
+    },
+    {
+      "pdf_id": "8021Qcz-2023",
+      "pages": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "note": "Clause 8.6.5/8.6.6/8.6.8.6 — filter/gate reuse, CIM injection, transmission gates"
+    },
+    {
+      "pdf_id": "8021Qcz-2023",
+      "pages": [
+        28,
+        29,
+        30,
+        31,
+        32,
+        33
+      ],
+      "note": "Clause 12.1.1/12.2/12.31/12.33 — management functions and CI managed objects"
+    },
+    {
+      "pdf_id": "8021Qcz-2023",
+      "pages": [
+        34,
+        35
+      ],
+      "note": "Clause 30.1/30.3 congestion notification context; 46.2.1/46.2.3 TSN config data types"
+    }
+  ],
+  "covers": [
+    "8021Qcz-2023:1.3",
+    "8021Qcz-2023:5.4.1",
+    "8021Qcz-2023:5.4.7",
+    "8021Qcz-2023:5.32",
+    "8021Qcz-2023:6.10.1",
+    "8021Qcz-2023:8.6.5",
+    "8021Qcz-2023:8.6.6",
+    "8021Qcz-2023:8.6.8",
+    "8021Qcz-2023:12.1.1",
+    "8021Qcz-2023:12.2",
+    "8021Qcz-2023:12.31.1",
+    "8021Qcz-2023:12.31.2",
+    "8021Qcz-2023:12.31.3",
+    "8021Qcz-2023:12.33.1",
+    "8021Qcz-2023:12.33.2",
+    "8021Qcz-2023:12.33.3",
+    "8021Qcz-2023:12.33.4",
+    "8021Qcz-2023:30.1",
+    "8021Qcz-2023:30.3",
+    "8021Qcz-2023:46.2.1",
+    "8021Qcz-2023:46.2.3"
+  ],
+  "track": "bridging-tsn"
+}

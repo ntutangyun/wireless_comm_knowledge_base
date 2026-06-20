@@ -1,0 +1,168 @@
+{
+  "id": "bridging-tsn-87",
+  "title": {
+    "en": "LRP on the Wire: LRPDU Encoding (Clause 9) and the LRP-DS Service Interface (Clause 10)",
+    "zh": "LRP 的线缆表达：LRPDU 编码（第 9 章）与 LRP-DS 服务接口（第 10 章）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "The Link-local Registration Protocol (LRP) lets two neighboring systems on a single link keep a small database in sync — think of it as a reliable, replicated key/value store that travels one hop. This lesson covers the two layers that make that happen on the wire and in software: Clause 9 defines how the protocol's messages (LRP Data Units, or LRPDUs) are byte-for-byte encoded, and Clause 10 defines the LRP-DS (LRP Database Synchronization) service interface — the local function calls an application makes to drive LRP, which never appear on the wire at all.",
+      "zh": "链路本地注册协议（LRP，Link-local Registration Protocol）让一条链路上相邻的两个系统保持一个小型数据库的同步——可以把它想象成一个可靠的、单跳传输的复制式键值存储。本课讲解让这一切在线缆上和软件中成真的两个层次：第 9 章定义协议消息（LRP 数据单元，LRPDU）如何逐字节编码；第 10 章定义 LRP-DS（LRP 数据库同步）服务接口——应用驱动 LRP 时所调用的本地函数，这些调用根本不会出现在线缆上。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with identity (9.1, 9.2). Clause 9.1 is just a roadmap: 9.2 covers the AppId, 9.3 the common LRPDU shape, 9.4 each individual message, and 9.5 how messages ride the transport. The AppId (9.2) is a 4-octet tag that names which LRP application owns a conversation. Its first 3 octets are an OUI or CID (an Organizationally Unique Identifier / Company ID assigned by the IEEE Registration Authority), and the 4th octet is an Application Sub-ID the owning organization manages freely. The same AppId tag is reused in several places — in Hello messages and in the service interface's Local Target Port request — so one definition serves many contexts.",
+      "zh": "先从身份说起（9.1、9.2）。9.1 只是一张路线图：9.2 讲 AppId，9.3 讲 LRPDU 的通用形态，9.4 讲每一种具体消息，9.5 讲消息如何搭载在传输之上。AppId（9.2）是一个 4 字节标签，用于标明哪个 LRP 应用拥有这段会话。它的前 3 字节是 OUI 或 CID（组织唯一标识符／公司标识，由 IEEE 注册管理机构分配），第 4 字节是由所属组织自行管理的 Application Sub-ID（应用子标识）。同一个 AppId 标签在多处复用——出现在 Hello 消息中，也出现在服务接口的本地目标端口请求中——因此一次定义即可服务于多种场景。"
+    },
+    {
+      "type": "prose",
+      "en": "The common message shape (9.3). Every LRPDU except one is a TLV — Type, Length, Value. The Type is one octet (9.3.2): 0 = Stop, 1 = Hello, 2 = Record, 3 = Partial List, 4 = Complete List, and 5-9 are the inner TLV types used inside a Hello. The Length is a 2-octet big-endian integer (9.3.3) giving the size of the value field, so a single TLV can carry up to 65 535 octets. The lone exception is the Stop LRPDU (the next block): it is a Type field with no Length and no Value, which is exactly why a run of zero bytes can be read as padding.",
+      "zh": "通用消息形态（9.3）。除了一种之外，每个 LRPDU 都是 TLV——类型、长度、值（Type、Length、Value）。类型占 1 字节（9.3.2）：0 = Stop，1 = Hello，2 = Record，3 = Partial List，4 = Complete List，而 5–9 是 Hello 内部使用的内层 TLV 类型。长度是一个 2 字节的大端整数（9.3.3），给出值字段的大小，因此单个 TLV 最多可承载 65 535 字节。唯一的例外是 Stop LRPDU（见下一块内容）：它只有一个类型字段，没有长度也没有值——这正是为什么一连串的零字节可以被解读为填充。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 130\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"18\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">Hello LRPDU</text><rect x=\"10\" y=\"30\" width=\"40\" height=\"34\"/><rect x=\"50\" y=\"30\" width=\"55\" height=\"34\"/><rect x=\"105\" y=\"30\" width=\"70\" height=\"34\"/><rect x=\"175\" y=\"30\" width=\"60\" height=\"34\"/><rect x=\"235\" y=\"30\" width=\"75\" height=\"34\"/><rect x=\"310\" y=\"30\" width=\"55\" height=\"34\"/><rect x=\"365\" y=\"30\" width=\"145\" height=\"34\" stroke-dasharray=\"4 3\"/><text x=\"14\" y=\"51\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">Type</text><text x=\"55\" y=\"51\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">Length</text><text x=\"112\" y=\"51\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">AppId(4)</text><text x=\"179\" y=\"48\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">status/err</text><text x=\"239\" y=\"48\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">Portal#(4)</text><text x=\"314\" y=\"48\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">HelloT(2)</text><text x=\"380\" y=\"48\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">inner TLVs...</text><text x=\"10\" y=\"86\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">Record LRPDU</text><rect x=\"10\" y=\"96\" width=\"40\" height=\"30\"/><rect x=\"50\" y=\"96\" width=\"55\" height=\"30\"/><rect x=\"105\" y=\"96\" width=\"75\" height=\"30\"/><rect x=\"180\" y=\"96\" width=\"330\" height=\"30\" stroke-dasharray=\"4 3\"/><text x=\"14\" y=\"115\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">Type</text><text x=\"55\" y=\"115\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">Length</text><text x=\"110\" y=\"115\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">Portal#(4)</text><text x=\"200\" y=\"115\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">0+ records (num/seq/cksum/len/data)</text></svg>",
+      "caption": {
+        "en": "Two key LRPDU layouts. Solid boxes are fixed-length octets; dashed boxes are variable. The Hello carries identity and timing then a run of inner TLVs; the Record carries the sender's My Portal Number followed by zero or more application records.",
+        "zh": "两种关键 LRPDU 布局。实线框为定长字节，虚线框为可变长。Hello 携带身份与定时信息，随后是一串内层 TLV；Record 携带发送方的 My Portal Number，后跟零个或多个应用记录。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The five message types (9.4). The Stop LRPDU (9.4.1) is pure padding — Type 0, no body — used to fill a frame up to its medium's minimum length. The Hello LRPDU (9.4.2) is the handshake heartbeat: after fixed fields (AppId 9.4.2.1; a 4-bit Hello status of Looking/Connecting/Connected 9.4.2.2; a 4-bit Error status whose only defined bit is database-overflow 9.4.2.3; the 4-octet My Portal Number 9.4.2.4 that uniquely names the sending Portal; and a Hello Time time-to-live in seconds 9.4.2.5) come the inner TLVs: My Chassis ID, My Port ID, Neighbor Chassis ID, Neighbor Port ID (9.4.2.6-9.4.2.9, all reusing the LLDP TLV formats from IEEE Std 802.1AB) plus an optional opaque Application Information TLV (9.4.2.10).",
+      "zh": "五种消息类型（9.4）。Stop LRPDU（9.4.1）是纯填充——类型 0，无主体——用于把帧补齐到所用介质的最小长度。Hello LRPDU（9.4.2）是握手心跳：在固定字段之后（AppId 见 9.4.2.1；4 位的 Hello 状态 Looking/Connecting/Connected 见 9.4.2.2；4 位的错误状态，其唯一定义的位是“数据库溢出” 见 9.4.2.3；4 字节的 My Portal Number，唯一标识发送方 Portal 见 9.4.2.4；以及以秒为单位的存活时间 Hello Time 见 9.4.2.5），便是内层 TLV：My Chassis ID、My Port ID、Neighbor Chassis ID、Neighbor Port ID（9.4.2.6–9.4.2.9，均复用 IEEE Std 802.1AB 的 LLDP TLV 格式），再加上一个可选的、不透明的 Application Information TLV（9.4.2.10）。"
+    },
+    {
+      "type": "prose",
+      "en": "The three database-sync messages (9.4.3-9.4.5) all begin with the 4-octet My Portal Number, then differ. A Record LRPDU (9.4.3) carries the actual data: zero or more records, each with a record number, a sequence number, a 2-octet checksum, a data length, and the application payload (up to 65 520 octets). A Partial List LRPDU (9.4.4) carries only record headers (number + sequence + checksum, no data) — a compact 'here is what I have' digest. A Complete List LRPDU (9.4.5) adds a First/Last record number range, so a full inventory of every record a sender holds can be split across several Complete Lists whose ranges together span the whole 0 to 4 294 967 295 number space. The checksum in every header is the Fletcher checksum (9.4.6), computed over the data with the 2-octet data-length field prepended as if it were the first two payload bytes.",
+      "zh": "三种数据库同步消息（9.4.3–9.4.5）都以 4 字节的 My Portal Number 开头，之后各有不同。Record LRPDU（9.4.3）携带真正的数据：零个或多个记录，每个记录含一个记录号、一个序列号、一个 2 字节校验和、一个数据长度，以及应用负载（最多 65 520 字节）。Partial List LRPDU（9.4.4）只携带记录头（记录号＋序列号＋校验和，无数据）——一份紧凑的“我有哪些”摘要。Complete List LRPDU（9.4.5）则增加了首／末记录号范围，因此一份发送方所持全部记录的完整清单可以拆分到多个 Complete List 中，这些范围合起来覆盖 0 至 4 294 967 295 的整个号段。每个头中的校验和都是 Fletcher 校验和（9.4.6），对数据计算时把 2 字节的数据长度字段当作负载的前两个字节一并纳入。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant A as Portal A\n  participant B as Portal B\n  A->>B: Hello (identity, status, My Portal Number)\n  B->>A: Hello (Connected)\n  A->>B: Complete List (record range + headers)\n  B->>A: Partial List (headers I'm missing)\n  A->>B: Record LRPDU (full data + Fletcher checksum)\n  Note over A,B: databases now in sync",
+      "zh": "sequenceDiagram\n  participant A as Portal A\n  participant B as Portal B\n  A->>B: Hello（身份、状态、My Portal Number）\n  B->>A: Hello（已连接 Connected）\n  A->>B: Complete List（记录范围＋记录头）\n  B->>A: Partial List（我缺少的记录头）\n  A->>B: Record LRPDU（完整数据＋Fletcher 校验和）\n  Note over A,B: 数据库现已同步"
+    },
+    {
+      "type": "prose",
+      "en": "Riding the transport (9.5). LRPDUs travel two ways. Over ECP — the Edge Control Protocol of IEEE Std 802.1Q — any number of LRPDUs are concatenated into one Layer-2 frame, the ECP Subtype field is set to 3 to mark 'this carries LRP', and a short frame is padded out with Stop LRPDUs (9.5.1). One LRPDU can never be split across two frames. Over TCP, LRPDUs are simply serialized as the byte stream's user data, with the port chosen per the rules elsewhere in the standard (9.5.2). That dual transport — link-local multicast for the direct hop, TCP for proxying across distance — is why LRP is flexible enough for both edge devices and aggregating proxies.",
+      "zh": "搭载到传输上（9.5）。LRPDU 有两种传输方式。在 ECP（IEEE Std 802.1Q 的边缘控制协议 Edge Control Protocol）之上，任意数量的 LRPDU 被拼接进一个二层帧，ECP 子类型字段置为 3 以标记“此帧承载 LRP”，过短的帧用 Stop LRPDU 补齐（9.5.1）。一个 LRPDU 绝不能跨两个帧拆分。在 TCP 之上，LRPDU 直接序列化为字节流的用户数据，端口按标准别处的规则选择（9.5.2）。这种双重传输——直接单跳用链路本地，跨距离代理用 TCP——正是 LRP 足够灵活、既适用于边缘设备又适用于聚合代理的原因。"
+    },
+    {
+      "type": "prose",
+      "en": "The service interface (Clause 10). Clause 10 is the other face of LRP: not bytes on a link, but the local primitives an application calls. The standard stresses these are not externally visible and need not be implemented literally (10.1) — they exist to connect an application's logic to LRP's state machines, and they refer to a Portal by an abstract PortalId whose form is unspecified. They split into association primitives (10.2, set up Portals) and a Portal interface (10.3, push and pull records). The standard also lists two database assumptions: the LRP-DS Portal owns the definitive applicant database, while the application builds its own registrar database from indications.",
+      "zh": "服务接口（第 10 章）。第 10 章是 LRP 的另一张面孔：不是链路上的字节，而是应用所调用的本地原语。标准强调这些原语在外部不可见、无需照字面实现（10.1）——它们的存在是为了把应用逻辑连接到 LRP 的状态机，并通过一个抽象的、形式未作规定的 PortalId 来指代某个 Portal。它们分为关联原语（10.2，建立 Portal）和 Portal 接口（10.3，推送与拉取记录）。标准还列出两条数据库假设：LRP-DS Portal 拥有权威的申请方（applicant）数据库，而应用则依据各种 indication 自行构建注册方（registrar）数据库。"
+    },
+    {
+      "type": "prose",
+      "en": "Association flow (10.2). The order is fixed (10.2.1): the app issues a Local Target Port request (10.2.2) — naming its AppId, LLDP Chassis/Port IDs, whether ECP or TCP is usable plus IP/port details, and Hello parameters — to create local Portals; then Neighbor Target Port requests (10.2.3) to describe the far end and trigger Hellos. When the first Hello arrives, LRP raises a First Hello indication (10.2.5) handing the app a fresh PortalId and the Hello's contents. The app answers with an Associate Portal request (10.2.4) carrying that PortalId and a TRUE/FALSE accept flag. Thereafter a Portal status indication (10.2.6) reports 'connected' or 'disconnected' plus the neighbor's overflow and database-correct booleans. Both request primitives return success or badInput.",
+      "zh": "关联流程（10.2）。顺序是固定的（10.2.1）：应用先发出 Local Target Port request（本地目标端口请求，10.2.2）——给出其 AppId、LLDP 的机箱／端口标识、是否可用 ECP 或 TCP 及 IP／端口细节、以及 Hello 参数——以创建本地 Portal；再发出 Neighbor Target Port request（邻居目标端口请求，10.2.3）以描述对端并触发 Hello。当首个 Hello 到达时，LRP 产生 First Hello indication（首个 Hello 指示，10.2.5），把一个新的 PortalId 和该 Hello 的内容交给应用。应用以 Associate Portal request（关联 Portal 请求，10.2.4）回应，携带该 PortalId 和一个 TRUE/FALSE 的接受标志。此后，Portal status indication（Portal 状态指示，10.2.6）报告“已连接”或“已断开”，并附带邻居的溢出标志与数据库正确标志。两个 request 原语均返回 success 或 badInput。"
+    },
+    {
+      "type": "prose",
+      "en": "The Portal interface (10.3). Once a Portal is associated, the app moves records through it. On the applicant side (10.3.1), a Write record request (10.3.1.1) takes a PortalId, a record number, and data: nonzero data for a new/missing number creates a record, matching an existing number alters it, and zero-length data deletes it. On the registrar side (10.3.2), a Delete record request (10.3.2.1) removes a received record; a Database overflow request (10.3.2.2) sets the local overflow boolean — which makes outgoing Hellos light up the overflow Error-status bit you met in 9.4.2.3; and a Record written indication (10.3.2.3) fires whenever an incoming Record LRPDU creates, changes, or deletes a record (zero-length data signalling a delete). That closes the loop: Clause 10's primitives drive the state machines that emit and consume the Clause 9 bytes.",
+      "zh": "Portal 接口（10.3）。一旦 Portal 完成关联，应用便通过它来流转记录。在申请方一侧（10.3.1），Write record request（写记录请求，10.3.1.1）接受 PortalId、记录号和数据：对一个新的／不存在的记录号给出非零数据则创建记录，匹配到已有记录号则修改，零长度数据则删除。在注册方一侧（10.3.2），Delete record request（删除记录请求，10.3.2.1）移除一条已收到的记录；Database overflow request（数据库溢出请求，10.3.2.2）设置本地溢出布尔值——这会让发出的 Hello 点亮你在 9.4.2.3 见过的溢出错误状态位；而 Record written indication（记录已写入指示，10.3.2.3）则在收到的 Record LRPDU 创建、更改或删除某记录时触发（零长度数据表示删除）。这就闭合了回路：第 10 章的原语驱动着发送和消费第 9 章字节的状态机。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Three different 'numbers' name a Portal and the spec warns they are unrelated: My Portal Number (9.4.2.4) goes on the wire inside LRPDUs; PortalId (Clause 10) is the local, implementation-defined handle the service interface uses; and lrpPortalNumber lives in the management MIB. Don't assume one equals another.",
+      "zh": "有三种不同的“编号”用于指代 Portal，而标准明确警告它们彼此无关：My Portal Number（9.4.2.4）随 LRPDU 出现在线缆上；PortalId（第 10 章）是服务接口使用的、由实现自定义的本地句柄；而 lrpPortalNumber 则存在于管理 MIB 中。切勿假设其中一个等于另一个。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause unit by exact number",
+        "zh": "覆盖地图：按确切编号列出每个章节单元"
+      },
+      "en": "Clause 9 (encoding): 9.1 Introduction (roadmap to 9.2-9.5). 9.2 AppId (3-octet OUI/CID + 1-octet Application Sub-ID). 9.3.1 LRPDU TLV format (Type/Length/Value, data up to 65 535 octets; Stop is the only non-TLV). 9.3.2 LRPDU type field (1 octet; values 0=Stop, 1=Hello, 2=Record, 3=Partial List, 4=Complete List, 5-9 inner-TLV types, 10-255 reserved). 9.3.3 TLV Length field (2-octet big-endian; 0 = no data). 9.4.1 Stop LRPDU (type only, padding). 9.4.2 Hello LRPDU (fixed fields + inner TLVs; sub-fields 9.4.2.1 appId through 9.4.2.10 Application Information TLV). 9.4.3 Record LRPDU (My Portal Number + records with num/seq/checksum/length/data). 9.4.4 Partial List LRPDU (record headers only). 9.4.5 Complete List LRPDU (First/Last record range + headers). 9.4.6 Record checksum (Fletcher algorithm, data-length prepended). 9.5.1 LRP-DT ECP protocol (ECP Subtype = 3, concatenation, Stop padding). 9.5.2 LRP-DT TCP protocol (serial user data, port per 6.9.2.3). Clause 10 (service interface): 10.1 Introduction (primitives are not externally visible; PortalId abstract; applicant vs registrar database assumptions). 10.2.1 Use of association primitives (ordered flow). 10.2.2 Local Target Port request (AppId, LLDP IDs, ECP/TCP info, Hello params; outputs success/badInput). 10.2.3 Neighbor Target Port request (neighbor LLDP/ECP/TCP info; success/badInput). 10.2.4 Associate Portal request (PortalId + TRUE/FALSE). 10.2.5 First Hello indication (returns PortalId + Hello contents). 10.2.6 Portal status indication (connected/disconnected + neighbor overflow/correct booleans). 10.3.1 Applicant database primitives / 10.3.1.1 Write record request (create/alter/delete by data length). 10.3.2 Registrar database primitives: 10.3.2.1 Delete record request, 10.3.2.2 Database overflow request (sets the 9.4.2.3 overflow bit), 10.3.2.3 Record written indication.",
+      "zh": "第 9 章（编码）：9.1 引言（指向 9.2–9.5 的路线图）。9.2 AppId（3 字节 OUI/CID ＋ 1 字节 Application Sub-ID）。9.3.1 LRPDU TLV 格式（类型／长度／值，数据最多 65 535 字节；Stop 是唯一非 TLV）。9.3.2 LRPDU 类型字段（1 字节；取值 0=Stop、1=Hello、2=Record、3=Partial List、4=Complete List、5–9 内层 TLV 类型、10–255 保留）。9.3.3 TLV 长度字段（2 字节大端；0 表示无数据）。9.4.1 Stop LRPDU（仅类型，作填充）。9.4.2 Hello LRPDU（固定字段＋内层 TLV；子字段 9.4.2.1 appId 至 9.4.2.10 Application Information TLV）。9.4.3 Record LRPDU（My Portal Number ＋ 含记录号／序列号／校验和／长度／数据的记录）。9.4.4 Partial List LRPDU（仅记录头）。9.4.5 Complete List LRPDU（首／末记录号范围＋记录头）。9.4.6 记录校验和（Fletcher 算法，数据长度前置）。9.5.1 LRP-DT ECP 协议（ECP 子类型＝3、拼接、Stop 填充）。9.5.2 LRP-DT TCP 协议（串行用户数据，端口依 6.9.2.3）。第 10 章（服务接口）：10.1 引言（原语在外部不可见；PortalId 抽象；申请方与注册方数据库假设）。10.2.1 关联原语的使用（有序流程）。10.2.2 Local Target Port request（AppId、LLDP 标识、ECP/TCP 信息、Hello 参数；输出 success/badInput）。10.2.3 Neighbor Target Port request（邻居 LLDP/ECP/TCP 信息；success/badInput）。10.2.4 Associate Portal request（PortalId ＋ TRUE/FALSE）。10.2.5 First Hello indication（返回 PortalId ＋ Hello 内容）。10.2.6 Portal status indication（已连接／已断开 ＋ 邻居溢出／正确布尔值）。10.3.1 申请方数据库原语 / 10.3.1.1 Write record request（按数据长度创建／修改／删除）。10.3.2 注册方数据库原语：10.3.2.1 Delete record request、10.3.2.2 Database overflow request（设置 9.4.2.3 的溢出位）、10.3.2.3 Record written indication。",
+      "cite": {
+        "pdf_id": "8021CS-2020",
+        "pages": [
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021CS-2020",
+      "pages": [
+        63,
+        64,
+        65,
+        66,
+        67
+      ],
+      "note": "9.1-9.4.3: AppId, common TLV/type/length formats, Stop and Hello LRPDUs with inner TLVs, Record LRPDU."
+    },
+    {
+      "pdf_id": "8021CS-2020",
+      "pages": [
+        68,
+        69,
+        70
+      ],
+      "note": "9.4.4-9.5.2: Partial/Complete List LRPDUs, Fletcher record checksum, ECP and TCP transports."
+    },
+    {
+      "pdf_id": "8021CS-2020",
+      "pages": [
+        71,
+        72,
+        73,
+        74
+      ],
+      "note": "10.1-10.2.5: service interface intro, association primitives, Local/Neighbor Target Port requests, Associate Portal, First Hello."
+    },
+    {
+      "pdf_id": "8021CS-2020",
+      "pages": [
+        75,
+        76
+      ],
+      "note": "10.2.6-10.3.2.3: Portal status indication and the applicant/registrar Portal-interface primitives."
+    }
+  ],
+  "covers": [
+    "8021CS-2020:9.1",
+    "8021CS-2020:9.2",
+    "8021CS-2020:9.3.1",
+    "8021CS-2020:9.3.2",
+    "8021CS-2020:9.3.3",
+    "8021CS-2020:9.4.1",
+    "8021CS-2020:9.4.2",
+    "8021CS-2020:9.4.3",
+    "8021CS-2020:9.4.4",
+    "8021CS-2020:9.4.5",
+    "8021CS-2020:9.4.6",
+    "8021CS-2020:9.5.1",
+    "8021CS-2020:9.5.2",
+    "8021CS-2020:10.1",
+    "8021CS-2020:10.2.1",
+    "8021CS-2020:10.2.2",
+    "8021CS-2020:10.2.3",
+    "8021CS-2020:10.2.4",
+    "8021CS-2020:10.2.5",
+    "8021CS-2020:10.2.6",
+    "8021CS-2020:10.3.1",
+    "8021CS-2020:10.3.2"
+  ],
+  "track": "bridging-tsn"
+}

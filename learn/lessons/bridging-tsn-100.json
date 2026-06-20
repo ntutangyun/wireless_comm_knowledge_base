@@ -1,0 +1,199 @@
+{
+  "id": "bridging-tsn-100",
+  "title": {
+    "en": "The TSN YANG Modules: Scheduling, Preemption, and Per-Stream Policing",
+    "zh": "TSN YANG 模块：调度、抢占与逐流策略"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This is the second half of Clause 48 (YANG Data Models). A YANG module is a machine-readable schema — written in the YANG modeling language (RFC 7950) — that describes exactly what a device can be configured to do and what state it reports back. Network management tools (over NETCONF or RESTCONF) read these schemas to drive the bridge. IEEE Std 802.1Qcw-2023 (Amendment 36) writes the YANG modules for three Time-Sensitive Networking (TSN) features: Scheduled Traffic, Frame Preemption, and Per-Stream Filtering and Policing (PSFP). This lesson walks each module so you can find the exact clause for any knob you need.",
+      "zh": "这是 Clause 48（YANG 数据模型）的下半部分。YANG 模块是一份机器可读的模式（schema）——用 YANG 建模语言（RFC 7950）编写——它精确描述了设备可以被配置成什么样、以及会上报哪些状态。网络管理工具（通过 NETCONF 或 RESTCONF）读取这些模式来驱动网桥。IEEE Std 802.1Qcw-2023（修正案 36）为三项时间敏感网络（TSN）功能编写了 YANG 模块：调度流量（Scheduled Traffic）、帧抢占（Frame Preemption）和逐流过滤与策略（PSFP）。本课逐一讲解每个模块，让你能为任何参数找到精确的条款号。"
+    },
+    {
+      "type": "prose",
+      "en": "First, two foundation modules that everything else builds on. Clause 48.6.1 defines ieee802-types — a library of reusable data types: mac-address (a hex string like 'AA-BB-CC-DD-EE-FF'), chassis and port identifiers, a rational-grouping (a number expressed as numerator/denominator, used for cycle times), and a ptp-time-grouping (a Precision Time Protocol timestamp split into seconds and nanoseconds). Clause 48.6.2 defines ieee802-dot1q-types — the dot1Q-specific vocabulary: VLAN tag identities (c-vlan, s-vlan), the transmission-selection-algorithm identities (strict-priority, credit-based-shaper, enhanced-transmission-selection, asynchronous-traffic-shaping), and the type-of-operation base used to name gate operations. VLAN means Virtual LAN; an identity in YANG is a named, extensible enumeration value.",
+      "zh": "首先是两个基础模块，其余一切都构建于其上。条款 48.6.1 定义 ieee802-types——一个可复用数据类型的库：mac-address（形如 'AA-BB-CC-DD-EE-FF' 的十六进制字符串）、机箱与端口标识符、rational-grouping（用分子/分母表示的数，用于周期时间）以及 ptp-time-grouping（拆分为秒和纳秒的精确时间协议时间戳）。条款 48.6.2 定义 ieee802-dot1q-types——dot1Q 专用词汇：VLAN 标签身份（c-vlan、s-vlan）、传输选择算法身份（严格优先级、基于信用的整形器、增强型传输选择、异步流量整形）以及用于命名门操作的 type-of-operation 基类。VLAN 即虚拟局域网；YANG 中的 identity 是一种命名的、可扩展的枚举值。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the pattern that runs through every TSN feature: a _types module supplies shared definitions, a feature module (e.g. -sched) carries the data nodes as a reusable grouping, and a thin _-bridge module simply augments the standard bridge-port (or component) with that grouping. Splitting 'what the data looks like' from 'where it attaches' lets the same scheduling parameters bolt onto any bridge model.",
+      "zh": "请注意贯穿每项 TSN 功能的模式：一个 _types 模块提供共享定义，一个功能模块（如 -sched）以可复用的 grouping 承载数据节点，而一个轻量的 _-bridge 模块只是把该 grouping 增补（augment）到标准的 bridge-port（或 component）上。把“数据长什么样”和“挂在哪里”分开，使同一套调度参数能附着到任意网桥模型上。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 48.6.4 defines ieee802-dot1q-bridge, the core bridge configuration model covering Two-Port MAC Relays, Customer VLAN Bridges, and Provider Bridges. It also declares feature flags such as ingress-filtering, extended-filtering-services, and port-and-protocol-based-vlan — a YANG 'feature' marks capability that a device may or may not implement, so management software can probe before configuring. Clause 48.6.6 defines ieee802-dot1q-pb (Provider Bridge), which augments each bridge-port with provider-specific nodes: the Service VLAN identifier (svid), the C-VID Registration Table (mapping a customer VID to the service instance's S-VID), and service-priority-regeneration. (A VID is a VLAN Identifier; C = Customer, S = Service.)",
+      "zh": "条款 48.6.4 定义 ieee802-dot1q-bridge，即核心网桥配置模型，涵盖两端口 MAC 中继、客户 VLAN 网桥和运营商网桥。它还声明了若干特性开关，如 ingress-filtering、extended-filtering-services 和 port-and-protocol-based-vlan——YANG 中的 feature 标记一项设备可能实现也可能不实现的能力，管理软件可在配置前先探测。条款 48.6.6 定义 ieee802-dot1q-pb（运营商网桥），它为每个 bridge-port 增补运营商专用节点：服务 VLAN 标识符（svid）、C-VID 注册表（把客户 VID 映射到服务实例的 S-VID）以及服务优先级再生（service-priority-regeneration）。（VID 即 VLAN 标识符；C = 客户，S = 服务。）"
+    },
+    {
+      "type": "prose",
+      "en": "Now the TSN headliners. Clause 48.6.17 (ieee802-dot1q-sched) models Scheduled Traffic — the time-aware shaper. Each output port has eight per-traffic-class gates; a Gate Control List (GCL) opens and closes them on a repeating cycle synchronized to PTP time. The module's gate-parameter-table holds admin-gate-states / oper-gate-states (an 8-bit value where bit 7 is traffic class 7, 1 = open, 0 = closed), the admin/oper-control-list of set-gate-states operations, admin/oper-cycle-time (a rational number), admin/oper-base-time (a PTP timestamp), the config-change trigger, and the queue-max-sdu-table. The thin Clause 48.6.18 (ieee802-dot1q-sched-bridge) augments each bridge-port with that scheduling grouping. SDU means Service Data Unit (the frame payload the queue handles).",
+      "zh": "现在进入 TSN 的主角。条款 48.6.17（ieee802-dot1q-sched）为调度流量建模——即时间感知整形器。每个输出端口有八个按流量类（traffic class）划分的门；一份门控列表（Gate Control List，GCL）按与 PTP 时间同步的重复周期开关这些门。模块的 gate-parameter-table 保存 admin-gate-states / oper-gate-states（一个 8 位值，第 7 位对应流量类 7，1 = 开，0 = 关）、由 set-gate-states 操作组成的 admin/oper-control-list、admin/oper-cycle-time（有理数）、admin/oper-base-time（PTP 时间戳）、config-change 触发器以及 queue-max-sdu-table。轻量的条款 48.6.18（ieee802-dot1q-sched-bridge）把这套调度 grouping 增补到每个 bridge-port。SDU 即服务数据单元（队列处理的帧载荷）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"6\" y=\"16\" font-size=\"11\" stroke=\"none\" fill=\"currentColor\">Gate Control List, one cycle (8 gates: TC7..TC0)</text><rect x=\"10\" y=\"30\" width=\"110\" height=\"30\"/><text x=\"20\" y=\"49\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\">t0: 10000000</text><rect x=\"120\" y=\"30\" width=\"150\" height=\"30\"/><text x=\"130\" y=\"49\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\">t1: 00111111</text><rect x=\"270\" y=\"30\" width=\"120\" height=\"30\"/><text x=\"280\" y=\"49\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\">t2: 11111111</text><line x1=\"10\" y1=\"75\" x2=\"390\" y2=\"75\"/><line x1=\"10\" y1=\"71\" x2=\"10\" y2=\"79\"/><line x1=\"390\" y1=\"71\" x2=\"390\" y2=\"79\"/><text x=\"150\" y=\"92\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\">cycle-time (repeats), aligned to base-time</text><text x=\"6\" y=\"120\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\">bit value 1 = gate open  /  0 = gate closed; MSB = traffic class 7</text></svg>",
+      "caption": {
+        "en": "A Gate Control List: each entry sets the 8 per-traffic-class gates (open/closed) for a time interval; the whole list repeats every cycle-time, anchored to a PTP base-time.",
+        "zh": "门控列表：每个条目在一段时间间隔内设定 8 个按流量类的门（开/关）；整份列表每个 cycle-time 重复一次，并锚定到 PTP 的 base-time。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 48.6.19 (ieee802-dot1q-preemption) models Frame Preemption — letting an 'express' frame interrupt a long 'preemptable' frame mid-transmission and resume it afterward, slashing the latency a high-priority frame waits behind a big one. Its frame-preemption-status-table holds eight leaves (priority0..priority7), each set to 'express' or 'preemptable'. Read-only state includes hold-advance and release-advance (timing properties of the underlying MAC, in nanoseconds), preemption-active, and hold-request. MAC means Media Access Control, the layer that actually transmits on the wire. Clause 48.6.20 (ieee802-dot1q-preemption-bridge) augments each bridge-port with this grouping, gated behind the frame-preemption feature.",
+      "zh": "条款 48.6.19（ieee802-dot1q-preemption）为帧抢占建模——让一个“快速（express）”帧在传输途中打断一个较长的“可抢占（preemptable）”帧，事后再续传，从而大幅削减高优先级帧排在大帧之后的等待时延。它的 frame-preemption-status-table 含八个叶子（priority0..priority7），每个取值 'express' 或 'preemptable'。只读状态包括 hold-advance 与 release-advance（底层 MAC 的定时属性，单位纳秒）、preemption-active 和 hold-request。MAC 即媒体访问控制，是真正在线路上发送的那一层。条款 48.6.20（ieee802-dot1q-preemption-bridge）把这套 grouping 增补到每个 bridge-port，并由 frame-preemption 特性开关把控。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 48.6.21 (ieee802-dot1q-psfp) models Per-Stream Filtering and Policing — per-flow gatekeeping. It defines stream gates driven by their own gate control list of set-gate-and-ipv operations (each setting gate open/closed and an Internal Priority Value, IPV), with the same admin/oper cycle-time, base-time, and config-change machinery as scheduling. It also defines flow-meters: a flow-meter-instance-table with classic two-rate bandwidth-profile parameters — Committed Information Rate (CIR), Committed Burst Size (CBS), Excess Information Rate (EIR), Excess Burst Size (EBS), a coupling-flag, color-mode (color-blind / color-aware), and drop/mark controls. Per-stream-filter counters (matching-frames, passing-frames, red-frames, and so on) report what the gate and meter actually did. Clause 48.6.22 (ieee802-dot1q-psfp-bridge) augments the bridge component with this grouping. (Color here refers to MEF metering: green = within commitment, yellow = excess, red = dropped.)",
+      "zh": "条款 48.6.21（ieee802-dot1q-psfp）为逐流过滤与策略建模——即逐流把关。它定义由各自门控列表（由 set-gate-and-ipv 操作组成，每个设定门的开/关以及一个内部优先级值 IPV）驱动的流门（stream gate），并采用与调度相同的 admin/oper 周期时间、基准时间和 config-change 机制。它还定义流量计（flow-meter）：一个 flow-meter-instance-table，含经典的双速率带宽剖面参数——承诺信息速率（CIR）、承诺突发尺寸（CBS）、超额信息速率（EIR）、超额突发尺寸（EBS）、coupling-flag、color-mode（色盲/色感知）以及丢弃/标记控制。逐流过滤计数器（matching-frames、passing-frames、red-frames 等）报告门与计量器实际做了什么。条款 48.6.22（ieee802-dot1q-psfp-bridge）把这套 grouping 增补到网桥 component 上。（这里的“颜色”指 MEF 计量：绿 = 在承诺内，黄 = 超额，红 = 丢弃。）"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Incoming stream] --> B[Stream Filter]\n  B --> C[Stream Gate open or closed]\n  C --> D[Flow Meter CIR/EIR]\n  D -->|green| E[Forward]\n  D -->|yellow| F[Mark drop-eligible]\n  D -->|red| G[Discard]",
+      "zh": "flowchart LR\n  A[入向数据流] --> B[流过滤器]\n  B --> C[流门 开或关]\n  C --> D[流量计 CIR/EIR]\n  D -->|绿| E[转发]\n  D -->|黄| F[标记为可丢弃]\n  D -->|红| G[丢弃]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause taught here, by exact number",
+        "zh": "覆盖图——本课所讲每个条款的精确编号"
+      },
+      "en": "Foundation types: 48.6.1 ieee802-types (mac-address, chassis/port id types, rational-grouping, ptp-time-grouping); 48.6.2 ieee802-dot1q-types (VLAN identities, transmission-selection-algorithm identities, type-of-operation base). Bridge models: 48.6.4 ieee802-dot1q-bridge (core bridge config + feature flags ingress-filtering, extended-filtering-services, port-and-protocol-based-vlan); 48.6.6 ieee802-dot1q-pb (Provider Bridge augment: svid, cvid-registration, service-priority-regeneration). Scheduled Traffic: 48.6.17 ieee802-dot1q-sched (gate-parameter-table: admin/oper-gate-states, admin/oper-control-list of set-gate-states, cycle-time, base-time, config-change, queue-max-sdu-table, supported-list-max / supported-cycle-max / supported-interval-max); 48.6.18 ieee802-dot1q-sched-bridge (augments bridge-port with sched-parameters). Frame Preemption: 48.6.19 ieee802-dot1q-preemption (frame-preemption-status-table priority0..7 = express/preemptable, hold-advance, release-advance, preemption-active, hold-request); 48.6.20 ieee802-dot1q-preemption-bridge (augments bridge-port, if-feature frame-preemption). PSFP: 48.6.21 ieee802-dot1q-psfp (flow-meter-instance-table with CIR/CBS/EIR/EBS/coupling-flag/color-mode, stream-gate set-gate-and-ipv control lists, per-filter counters, gate-closed-due-to-invalid-rx / -octets-exceeded); 48.6.22 ieee802-dot1q-psfp-bridge (augments bridge component with psfp-parameters). Each -bridge module is a thin augment; the feature module carries the reusable grouping.",
+      "zh": "基础类型：48.6.1 ieee802-types（mac-address、机箱/端口 id 类型、rational-grouping、ptp-time-grouping）；48.6.2 ieee802-dot1q-types（VLAN 身份、传输选择算法身份、type-of-operation 基类）。网桥模型：48.6.4 ieee802-dot1q-bridge（核心网桥配置 + 特性开关 ingress-filtering、extended-filtering-services、port-and-protocol-based-vlan）；48.6.6 ieee802-dot1q-pb（运营商网桥增补：svid、cvid-registration、service-priority-regeneration）。调度流量：48.6.17 ieee802-dot1q-sched（gate-parameter-table：admin/oper-gate-states、由 set-gate-states 组成的 admin/oper-control-list、cycle-time、base-time、config-change、queue-max-sdu-table、supported-list-max / supported-cycle-max / supported-interval-max）；48.6.18 ieee802-dot1q-sched-bridge（用 sched-parameters 增补 bridge-port）。帧抢占：48.6.19 ieee802-dot1q-preemption（frame-preemption-status-table priority0..7 = express/preemptable、hold-advance、release-advance、preemption-active、hold-request）；48.6.20 ieee802-dot1q-preemption-bridge（增补 bridge-port，if-feature frame-preemption）。PSFP：48.6.21 ieee802-dot1q-psfp（含 CIR/CBS/EIR/EBS/coupling-flag/color-mode 的 flow-meter-instance-table、由 set-gate-and-ipv 组成的流门控制列表、逐过滤器计数器、gate-closed-due-to-invalid-rx / -octets-exceeded）；48.6.22 ieee802-dot1q-psfp-bridge（用 psfp-parameters 增补网桥 component）。每个 -bridge 模块都是轻量增补；功能模块承载可复用的 grouping。",
+      "cite": {
+        "pdf_id": "8021Qcw-2023",
+        "pages": [
+          95,
+          100,
+          116,
+          142,
+          146,
+          152,
+          153,
+          157,
+          158,
+          168
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Reading tip: a node marked 'config false' in YANG is operational state the device reports (read-only), while a normal leaf is configurable. So oper-gate-states (config false) is what the port is doing right now, and admin-gate-states is what you asked for — the config-change leaf is the trigger that copies admin into oper at the scheduled base-time. The same admin/oper split recurs in every TSN module here.",
+      "zh": "阅读提示：YANG 中标注 'config false' 的节点是设备上报的运行状态（只读），而普通叶子是可配置的。因此 oper-gate-states（config false）是端口此刻正在做的，admin-gate-states 是你请求的——config-change 叶子则是在预定的 base-time 把 admin 复制进 oper 的触发器。这种 admin/oper 拆分在本课每个 TSN 模块中反复出现。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Qcw-2023",
+      "pages": [
+        95,
+        96,
+        97,
+        98,
+        99
+      ],
+      "note": "48.6.1 ieee802-types: mac-address, chassis/port id types, rational-grouping, ptp-time-grouping"
+    },
+    {
+      "pdf_id": "8021Qcw-2023",
+      "pages": [
+        100,
+        101
+      ],
+      "note": "48.6.2 ieee802-dot1q-types: VLAN and transmission-selection-algorithm identities, type-of-operation"
+    },
+    {
+      "pdf_id": "8021Qcw-2023",
+      "pages": [
+        116,
+        117
+      ],
+      "note": "48.6.4 ieee802-dot1q-bridge: core bridge config and feature flags"
+    },
+    {
+      "pdf_id": "8021Qcw-2023",
+      "pages": [
+        142,
+        143
+      ],
+      "note": "48.6.6 ieee802-dot1q-pb: Provider Bridge augment (svid, cvid-registration)"
+    },
+    {
+      "pdf_id": "8021Qcw-2023",
+      "pages": [
+        146,
+        147,
+        148,
+        149,
+        150,
+        151
+      ],
+      "note": "48.6.17 ieee802-dot1q-sched: gate-parameter-table, control list, cycle/base time"
+    },
+    {
+      "pdf_id": "8021Qcw-2023",
+      "pages": [
+        152
+      ],
+      "note": "48.6.18 ieee802-dot1q-sched-bridge: augments bridge-port with sched-parameters"
+    },
+    {
+      "pdf_id": "8021Qcw-2023",
+      "pages": [
+        153,
+        154,
+        155,
+        156
+      ],
+      "note": "48.6.19 ieee802-dot1q-preemption: frame-preemption-status-table, hold/release-advance"
+    },
+    {
+      "pdf_id": "8021Qcw-2023",
+      "pages": [
+        157
+      ],
+      "note": "48.6.20 ieee802-dot1q-preemption-bridge: augments bridge-port, if-feature frame-preemption"
+    },
+    {
+      "pdf_id": "8021Qcw-2023",
+      "pages": [
+        158,
+        159,
+        160,
+        161,
+        162,
+        163,
+        164,
+        165,
+        166,
+        167
+      ],
+      "note": "48.6.21 ieee802-dot1q-psfp: stream gates, flow-meters (CIR/CBS/EIR/EBS), counters"
+    },
+    {
+      "pdf_id": "8021Qcw-2023",
+      "pages": [
+        168
+      ],
+      "note": "48.6.22 ieee802-dot1q-psfp-bridge: augments bridge component with psfp-parameters"
+    }
+  ],
+  "covers": [
+    "8021Qcw-2023:48.6.1",
+    "8021Qcw-2023:48.6.2",
+    "8021Qcw-2023:48.6.4",
+    "8021Qcw-2023:48.6.6",
+    "8021Qcw-2023:48.6.17",
+    "8021Qcw-2023:48.6.18",
+    "8021Qcw-2023:48.6.19",
+    "8021Qcw-2023:48.6.20",
+    "8021Qcw-2023:48.6.21",
+    "8021Qcw-2023:48.6.22"
+  ],
+  "track": "bridging-tsn"
+}

@@ -1,0 +1,162 @@
+{
+  "id": "bridging-tsn-66",
+  "title": {
+    "en": "LLDP Goes Multi-Frame (XLLDP): A Clause-by-Clause Walkthrough of 802.1ABdh-2021",
+    "zh": "LLDP 走向多帧（XLLDP）：802.1ABdh-2021 逐条款精读"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "The Link Layer Discovery Protocol (LLDP) lets a device announce \"who I am and what port you're plugged into\" so neighbors can build a network map. Classic LLDP packs everything into one Link Layer Discovery Protocol Data Unit (LLDPDU) — a single frame. But one frame can only hold so much. IEEE Std 802.1ABdh-2021 adds Extended LLDP (XLLDP): a way to advertise more information than fits in one frame by spilling the extra Type-Length-Value records (TLVs) into one or more follow-up frames. This lesson is a guided tour of the amendment's clauses so you can read the standard fluently.",
+      "zh": "链路层发现协议（LLDP, Link Layer Discovery Protocol）让设备对外宣告\"我是谁、你接在我的哪个端口上\"，从而让邻居们绘制出网络拓扑图。经典 LLDP 把所有信息塞进一个链路层发现协议数据单元（LLDPDU），也就是一帧里。但一帧能装的东西有限。IEEE Std 802.1ABdh-2021 引入了扩展 LLDP（XLLDP, Extended LLDP）：当信息装不进一帧时，把多余的类型-长度-值记录（TLV, Type-Length-Value）放进一个或多个后续帧中发布。本课逐条款带你走读这份修正案，让你能够流畅地阅读标准原文。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 3.1 (Definitions) introduces the new vocabulary you'll meet everywhere. A Normal LLDPDU is an LLDPDU containing a Time To Live (TTL) TLV — the familiar frame. An Extension LLDPDU (XPDU) carries an Extension Identifier TLV instead of a TTL and holds the overflow TLVs. An Extension Request LLDPDU (XREQ) carries an Extension Request TLV and is how a collector asks for those overflow frames. A Manifest LLDPDU is a Normal LLDPDU that also carries a Manifest TLV — a table of contents listing every XPDU on offer. The Scope MAC Address is the destination address of Normal LLDPDUs and decides how far they propagate; a shutdown LLDPDU is just a Normal LLDPDU with TTL = 0, meaning \"discard my info now.\"",
+      "zh": "条款 3.1（定义）引入了贯穿全文的新术语。普通 LLDPDU（Normal LLDPDU）是含有生存时间（TTL, Time To Live）TLV 的那种熟悉的帧。扩展 LLDPDU（XPDU）携带的是扩展标识符 TLV 而非 TTL，承载溢出的 TLV。扩展请求 LLDPDU（XREQ）携带扩展请求 TLV，是收集方索取那些溢出帧的方式。清单 LLDPDU（Manifest LLDPDU）是一个额外携带了清单 TLV（Manifest TLV）的普通 LLDPDU——清单 TLV 就像一份\"目录\"，列出所有可供索取的 XPDU。范围 MAC 地址（Scope MAC Address）是普通 LLDPDU 的目的地址，决定其传播范围；关闭 LLDPDU（shutdown LLDPDU）就是 TTL=0 的普通 LLDPDU，意为\"立即丢弃我的信息\"。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant A as Advertiser\n  participant C as Collector\n  A->>C: Manifest LLDPDU (Normal + table of contents)\n  C->>A: Extension Request LLDPDU (XREQ)\n  A->>C: Extension LLDPDU (XPDU) #1\n  A->>C: Extension LLDPDU (XPDU) #2\n  Note over C: All XPDUs received -> update remote MIB",
+      "zh": "sequenceDiagram\n  participant A as 发布方\n  participant C as 收集方\n  A->>C: 清单 LLDPDU（普通帧+目录）\n  C->>A: 扩展请求 LLDPDU（XREQ）\n  A->>C: 扩展 LLDPDU（XPDU）#1\n  A->>C: 扩展 LLDPDU（XPDU）#2\n  Note over C: 收齐所有 XPDU -> 更新远端 MIB"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5.3 (Required capabilities) lists what a conformant implementation must do, and 6.2 (LLDP operational modes) reminds us LLDP is a one-way protocol: an agent can be transmit-only, receive-only, or both. The amendment adds item p): if XLLDP is supported, the extended LLDP set of TLVs must be implemented, the XREQ/XPDU formats and addressing must work, and the extended receive state machine (Figure 9-2a) must run. Crucially XLLDP stays optional — but classic LLDP keeps the inherent property that the advertiser alone decides what information to provide (6.2). Extended LLDP does not turn LLDP into a configuration or query protocol; it only lets a collector pull detail that was summarized in a Manifest TLV.",
+      "zh": "条款 5.3（必备能力）列出符合标准的实现必须做到的事，而 6.2（LLDP 工作模式）提醒我们 LLDP 是单向协议：一个代理可以是仅发送、仅接收、或收发兼具。修正案新增了 p）项：若支持 XLLDP，则必须实现扩展 LLDP 的 TLV 集合、XREQ/XPDU 的格式与寻址、以及扩展接收状态机（图 9-2a）。关键在于 XLLDP 仍是可选的——但经典 LLDP 保留了\"由发布方独自决定提供什么信息\"这一固有特性（6.2）。扩展 LLDP 没有把 LLDP 变成配置或查询协议；它只是让收集方拉取那些在清单 TLV 中已被概括的细节。"
+    },
+    {
+      "type": "prose",
+      "en": "Clauses 6.1, 6.5, and 6.6.1 set the operating principles. Per 6.1 every LLDPDU begins with a mandatory sequence of three TLVs — Chassis ID, Port ID, and then either a Time To Live TLV (Normal LLDPDU), an Extension Request TLV (XREQ), or an Extension Identifier TLV (XPDU). The first two form a logical MAC Service Access Point (MSAP) identifier that names the sending port. 6.5 (Transmission principles) explains a transmit cycle fires on a timer or on a local change, and that XLLDP adds the step of also emitting XPDUs when an XREQ arrives. 6.6.1 (LLDPDU and TLV error handling) is the safety net: the three mandatory TLVs are checked first, LLDPDUs with errors there are discarded, optional TLVs with errors are dropped, and unrecognized but well-formed TLVs are stored for later retrieval.",
+      "zh": "条款 6.1、6.5、6.6.1 确立了工作原理。按 6.1，每个 LLDPDU 都以三个强制 TLV 的固定序列开头——机箱标识（Chassis ID）、端口标识（Port ID），随后是生存时间 TLV（普通 LLDPDU）、扩展请求 TLV（XREQ）或扩展标识符 TLV（XPDU）三者之一。前两个拼成一个逻辑 MAC 服务接入点（MSAP, MAC Service Access Point）标识符，用以命名发送端口。6.5（发送原理）说明发送周期由定时器或本地变化触发，而 XLLDP 增加了一步：当 XREQ 到达时也发出 XPDU。6.6.1（LLDPDU 与 TLV 错误处理）是安全网：先检查三个强制 TLV，其中有错的 LLDPDU 直接丢弃，有错的可选 TLV 被丢弃，而无法识别但格式正确的 TLV 则被存起来供日后取用。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.7 (Systems with multiple LLDP Agents) explains that one system can run several LLDP agents, each using a different address scope, distinguished by the MAC address used as the destination of Normal LLDPDUs. Clause 6.9 (Extended LLDP) is the heart of the amendment: when a transmission cycle starts, the advertiser encodes a unique descriptor of each Extension LLDPDU into a Manifest TLV inside the Normal LLDPDU. A collector supporting XLLDP that sees a Manifest TLV requests the new or changed XPDUs by sending an XREQ to the agent that sourced the Manifest LLDPDU; a non-supporting collector simply treats the Manifest TLV as unrecognized and keeps only what was in the Normal LLDPDU. One XREQ can ask for several XPDUs, and a new XREQ is sent only after all previously requested XPDUs arrive — this paces the transfer. A timer allows an XREQ to be retried if a request or response is lost.",
+      "zh": "条款 6.7（含多个 LLDP 代理的系统）说明一个系统可运行多个 LLDP 代理，各自使用不同的地址范围，以普通 LLDPDU 目的地址所用的 MAC 地址加以区分。条款 6.9（扩展 LLDP）是修正案的核心：发送周期开始时，发布方把每个扩展 LLDPDU 的唯一描述符编码进普通 LLDPDU 内的清单 TLV。支持 XLLDP 的收集方看到清单 TLV 后，向发出该清单 LLDPDU 的代理发送 XREQ，索取新增或变化的 XPDU；不支持的收集方则把清单 TLV 当作无法识别，只保留普通 LLDPDU 中的内容。一个 XREQ 可索取多个 XPDU，且只有在先前所有已请求的 XPDU 到齐后才发新的 XREQ——以此控制传输节奏。定时器允许在请求或响应丢失时重试 XREQ。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7 covers addressing. 7.1.1 (Destination address for Normal LLDPDUs) defines the Scope MAC Address from a table of standard group addresses (Nearest bridge, Nearest non-TPMR bridge, Nearest Customer Bridge) plus any group or individual MAC address, with each value's support being mandatory, recommended, permitted, or not permitted per system type. 7.1.2 (Destination address for Extension Request and Extension LLDPDUs) says these always use an individual address: an XREQ is sent to the Return MAC Address from the Manifest TLV, and an XPDU is sent to the Return MAC Address from the Extension Request TLV. 7.2 (Source address) fixes the source as the individual MAC address of the sending MSAP. 7.4 (LLDPDU reception) accepts a frame whose destination equals the agent's individual MAC address or its Scope MAC Address.",
+      "zh": "条款 7 讲寻址。7.1.1（普通 LLDPDU 的目的地址）从一张标准组地址表（最近网桥、最近非 TPMR 网桥、最近客户网桥）以及任意组播或单播 MAC 地址中定义范围 MAC 地址，每个取值在不同系统类型下的支持级别分别为强制、推荐、允许或不允许。7.1.2（扩展请求与扩展 LLDPDU 的目的地址）规定这两者一律使用单播地址：XREQ 发往清单 TLV 中的回送 MAC 地址（Return MAC Address），XPDU 发往扩展请求 TLV 中的回送 MAC 地址。7.2（源地址）将源地址固定为发送方 MSAP 的单播 MAC 地址。7.4（LLDPDU 接收）接受目的地址等于代理单播 MAC 地址或其范围 MAC 地址的帧。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"8\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">Normal LLDPDU</text><rect x=\"8\" y=\"28\" width=\"110\" height=\"34\"/><text x=\"14\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Chassis ID</text><rect x=\"118\" y=\"28\" width=\"90\" height=\"34\"/><text x=\"124\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Port ID</text><rect x=\"208\" y=\"28\" width=\"110\" height=\"34\"/><text x=\"214\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Time To Live</text><rect x=\"318\" y=\"28\" width=\"110\" height=\"34\"/><text x=\"324\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Manifest TLV</text><rect x=\"428\" y=\"28\" width=\"100\" height=\"34\"/><text x=\"434\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Optional TLV</text><rect x=\"528\" y=\"28\" width=\"80\" height=\"34\"/><text x=\"534\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">End TLV</text><text x=\"8\" y=\"100\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">Extension Request LLDPDU (XREQ)</text><rect x=\"8\" y=\"108\" width=\"110\" height=\"34\"/><text x=\"14\" y=\"129\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Chassis ID</text><rect x=\"118\" y=\"108\" width=\"90\" height=\"34\"/><text x=\"124\" y=\"129\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Port ID</text><rect x=\"208\" y=\"108\" width=\"160\" height=\"34\"/><text x=\"214\" y=\"129\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Extension Request TLV</text><rect x=\"368\" y=\"108\" width=\"80\" height=\"34\"/><text x=\"374\" y=\"129\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">End TLV</text><text x=\"8\" y=\"180\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">Extension LLDPDU (XPDU)</text><rect x=\"8\" y=\"188\" width=\"110\" height=\"10\"/><rect x=\"118\" y=\"188\" width=\"90\" height=\"10\"/><rect x=\"208\" y=\"188\" width=\"160\" height=\"10\"/><rect x=\"368\" y=\"188\" width=\"100\" height=\"10\"/></svg>",
+      "caption": {
+        "en": "The three LLDPDU shapes from Clause 8.2: all begin with Chassis ID + Port ID; the third TLV is what differentiates a Normal, Extension Request, or Extension LLDPDU.",
+        "zh": "条款 8.2 中的三种 LLDPDU 形态：都以机箱标识+端口标识开头；第三个 TLV 才区分出普通、扩展请求或扩展 LLDPDU。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 8 defines the bytes on the wire. 8.2 (LLDPDU format) shows the three frame shapes and caps the LLDPDU at the underlying MAC's maximum data field (1500 octets for basic Ethernet). 8.3 (TLV categories) now lists three families: the basic management set (mandatory for all), the extended LLDP set (mandatory only when XLLDP is supported), and organizationally specific TLVs. 8.4.1 (TLV type) reserves type values 12-126 for the extended LLDP set within Table 8-1. 8.5.2 (Chassis ID TLV) and 8.5.3 (Port ID TLV) each mandate exactly one per LLDPDU, constant while the port stays operational. 8.5.4 (Time To Live TLV) must be the third TLV in every Normal LLDPDU and must never appear in an XPDU or XREQ. 8.6.1 (Basic Organizationally Specific TLV format) keeps the familiar OUI/Company-ID plus subtype layout for vendor extensions.",
+      "zh": "条款 8 定义线路上的字节。8.2（LLDPDU 格式）展示三种帧形态，并把 LLDPDU 上限定为底层 MAC 的最大数据字段（基本以太网为 1500 字节）。8.3（TLV 类别）现列出三大族：基本管理集（所有实现强制）、扩展 LLDP 集（仅支持 XLLDP 时强制）、组织特定 TLV。8.4.1（TLV 类型）在表 8-1 中将类型值 12-126 保留给扩展 LLDP 集。8.5.2（机箱标识 TLV）与 8.5.3（端口标识 TLV）各要求每个 LLDPDU 中有且仅有一个，且在端口保持工作期间值不变。8.5.4（生存时间 TLV）必须是每个普通 LLDPDU 的第三个 TLV，且绝不出现在 XPDU 或 XREQ 中。8.6.1（基本组织特定 TLV 格式）为厂商扩展保留了熟悉的 OUI/公司标识加子类型的布局。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The Manifest TLV (8.5a.1) is essentially a checksum-stamped index. Each XPDU Descriptor carries an XPDU Number (unique ID), an XPDU Revision (random at init, incremented modulo 256 on every change), and an XPDU Check Value (low-order bits of an MD5 hash over the XPDU). A collector compares these descriptors against what it already stored to decide which XPDUs actually changed — so unchanged data is never re-requested.",
+      "zh": "清单 TLV（8.5a.1）本质上是一份带校验和的索引。每个 XPDU 描述符携带一个 XPDU 编号（唯一标识）、一个 XPDU 修订号（初始化时随机，每次变更后模 256 递增）、以及一个 XPDU 校验值（对整个 XPDU 求 MD5 哈希后取低位若干比特）。收集方将这些描述符与已存内容比对，判断哪些 XPDU 确实变了——因此未改动的数据绝不会被重复索取。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 9 is the agent's behavior. 9.1.1 (Frame transmission) defines a transmit cycle as a Normal LLDPDU (optionally with a Manifest TLV) followed by XPDUs sent in response to XREQs; it also lists the triggers — the periodic timer, a newly recognized neighbor (four rapid cycles), a local MIB change (credit-based burst), and the jittered system tick. 9.1.2 (Frame reception) walks the phases — recognition, validation, TLV collection, and remote-systems-MIB updating — and explains that when a Manifest TLV is present, validated TLVs are held until the needed XPDUs arrive. 9.2 holds the state machines: 9.2.1 (Notational conventions) defines the diagram symbols; 9.2.2 (Timers) adds rxTimer, which bounds each extension request and the overall collection; 9.2.5 (Per-Agent variables) redefines the Scope MAC Address and adds per-neighbor variables like rxExtended and manifestComplete.",
+      "zh": "条款 9 讲代理的行为。9.1.1（帧发送）把发送周期定义为：一个普通 LLDPDU（可选携带清单 TLV），随后是为响应 XREQ 而发的 XPDU；它还列出触发条件——周期定时器、新识别的邻居（四次快速周期）、本地 MIB 变化（基于信用的突发）、以及带抖动的系统时钟节拍。9.1.2（帧接收）走遍各阶段——识别、校验、TLV 收集、远端系统 MIB 更新——并说明当存在清单 TLV 时，已校验的 TLV 会被暂存，直到所需 XPDU 到齐。9.2 包含状态机：9.2.1（记号约定）定义状态图符号；9.2.2（定时器）新增 rxTimer，用以限定每次扩展请求及整个收集过程的时长；9.2.5（每代理变量）重新定义范围 MAC 地址，并新增 rxExtended、manifestComplete 等每邻居变量。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> INITIALIZE\n  INITIALIZE --> CHECK_MANIFEST: Manifest received\n  CHECK_MANIFEST --> REQUEST_EXTENDED_PDU: descriptors need update\n  CHECK_MANIFEST --> WAIT_FOR_XLLDPDU: manifestComplete\n  REQUEST_EXTENDED_PDU --> WAIT_FOR_XLLDPDU: send XREQ\n  WAIT_FOR_XLLDPDU --> RECEIVE_EXTENDED_PDU: XPDU arrives\n  WAIT_FOR_XLLDPDU --> RX_TICK: timer tick\n  RECEIVE_EXTENDED_PDU --> WAIT_FOR_XLLDPDU\n  RX_TICK --> WAIT_FOR_XLLDPDU\n  WAIT_FOR_XLLDPDU --> RECEIVE_MANIFEST: rxTTLExpired or new manifest",
+      "zh": "stateDiagram-v2\n  [*] --> 初始化\n  初始化 --> 检查清单: 收到清单\n  检查清单 --> 请求扩展PDU: 描述符需更新\n  检查清单 --> 等待扩展LLDPDU: 清单已完整\n  请求扩展PDU --> 等待扩展LLDPDU: 发送XREQ\n  等待扩展LLDPDU --> 接收扩展PDU: XPDU到达\n  等待扩展LLDPDU --> 接收节拍: 定时器节拍\n  接收扩展PDU --> 等待扩展LLDPDU\n  接收节拍 --> 等待扩展LLDPDU\n  等待扩展LLDPDU --> 接收清单: rxTTL超时或新清单"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: state-machine procedures (9.2.7), the receive state machines (9.2.9), management (10.2.2-10.2.4), and the PICS proforma (Annex A)",
+        "zh": "覆盖图：状态机过程（9.2.7）、接收状态机（9.2.9）、管理（10.2.2-10.2.4）、与 PICS 一致性声明（附录 A）"
+      },
+      "en": "9.2.7 (State machine procedures) defines the new helpers that drive XLLDP. checkManifest reviews every XPDU Descriptor in a new manifest and sets manifestComplete TRUE only when none are still flagged \"update\", \"requested\", or \"retried\". constructXreqPDU selects descriptors (promoting \"requested\" to \"retried\", or \"update\" to \"requested\") and builds the Extension Request LLDPDU, arming rxTimer. checkRxTimer detects two kinds of timeout — a per-XREQ timeout (still has \"requested\" descriptors) versus the overall collection timeout (sets rxTTLExpired). rxProcessXREQ answers an incoming XREQ by emitting one Extension Identifier TLV per matching descriptor via txFrame.\n\n9.2.9 (Receive state machine) is amended so the base machine in Figure 9-2 hands off to a dynamically instantiated extended receive state machine (Figure 9-2a) whenever a Normal LLDPDU containing a Manifest TLV is received; the extended machine is destroyed (and its temporary TLVs discarded) when a Normal LLDPDU without a Manifest TLV arrives or on BEGIN. Per-neighbor variables are referenced with an \"MSAP\" prefix (this specific neighbor) or an \"any\" prefix (logical OR across all extended machines).\n\nClause 10.2 (LLDP management entity's responsibilities) gets three extensions: 10.2.2 (TLV selection management) says when XLLDP is unsupported, TLVs that don't fit are silently dropped, but when supported, each TLV maps to the Normal LLDPDU or an XPDU and the management entity maintains that mapping to build the Manifest TLV, bumping the XPDU Revision whenever a mapped TLV changes. 10.2.3 (Transmission management) adds the step of creating a Manifest TLV and of starting a cycle when rxProcessXREQ requests an XPDU. 10.2.4 (Reception management) requires associating each stored remote TLV with the XPDU Number it arrived in (using zero for Normal-LLDPDU TLVs) so the right entries are updated or deleted later.\n\nAnnex A (normative, PICS Proforma) is the conformance checklist. The amendment changes the rows for addr, lldpdu, and rxmode, and adds rows xlldp (\"Is Extended LLDP supported?\"), xlldpdu (XPDU/XREQ encapsulation conformance), and xaddr (addressing and EtherType encoding for Extension Request and Extension LLDPDUs, including the Return-MAC-address destination rules).",
+      "zh": "9.2.7（状态机过程）定义了驱动 XLLDP 的新辅助过程。checkManifest 检视新清单中的每个 XPDU 描述符，仅当没有任何描述符仍被标记为\"update\"\"requested\"或\"retried\"时，才把 manifestComplete 置为 TRUE。constructXreqPDU 选择描述符（把\"requested\"升为\"retried\"，或把\"update\"升为\"requested\"）并构建扩展请求 LLDPDU，同时启动 rxTimer。checkRxTimer 区分两类超时——单次 XREQ 超时（仍有\"requested\"描述符）与整体收集超时（置 rxTTLExpired）。rxProcessXREQ 通过 txFrame 为每个匹配的描述符发出一个扩展标识符 TLV，以此响应到来的 XREQ。\n\n9.2.9（接收状态机）经修订后，图 9-2 中的基础状态机在收到含清单 TLV 的普通 LLDPDU 时，会移交给一个动态实例化的扩展接收状态机（图 9-2a）；当收到不含清单 TLV 的普通 LLDPDU 或 BEGIN 被置位时，该扩展状态机被销毁（其暂存 TLV 一并丢弃）。每邻居变量以\"MSAP\"前缀引用（指当前这个邻居）或以\"any\"前缀引用（对所有扩展状态机做逻辑或）。\n\n条款 10.2（LLDP 管理实体的职责）获得三处扩展：10.2.2（TLV 选择管理）指出不支持 XLLDP 时装不下的 TLV 被静默丢弃，而支持时每个 TLV 映射到普通 LLDPDU 或某个 XPDU，管理实体维护该映射以构建清单 TLV，并在任一被映射的 TLV 变化时递增 XPDU 修订号。10.2.3（发送管理）新增了创建清单 TLV、以及在 rxProcessXREQ 请求某个 XPDU 时启动周期的步骤。10.2.4（接收管理）要求把每个存储的远端 TLV 与其到达时所在的 XPDU 编号关联（普通 LLDPDU 的 TLV 用编号零），以便日后正确更新或删除相应条目。\n\n附录 A（规范性，PICS 一致性声明）是一致性检查表。修正案改动了 addr、lldpdu、rxmode 各行，并新增 xlldp（\"是否支持扩展 LLDP？\"）、xlldpdu（XPDU/XREQ 封装一致性）、xaddr（扩展请求与扩展 LLDPDU 的寻址及 EtherType 编码，含回送 MAC 地址作为目的地址的规则）。",
+      "cite": {
+        "pdf_id": "8021ABdh-2021",
+        "pages": [
+          47,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021ABdh-2021",
+      "pages": [
+        13,
+        15,
+        16,
+        17,
+        18,
+        19,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        30,
+        31,
+        32,
+        34,
+        36,
+        37,
+        47,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54
+      ],
+      "note": "Clauses 3.1, 5.3, 6.1-6.9, 7.1-7.4, 8.2-8.6.1, 9.1.1-9.2.9, 10.2.2-10.2.4, and Annex A (PICS) of IEEE Std 802.1ABdh-2021 (LLDP Multi-Frame / Extended LLDP)."
+    }
+  ],
+  "covers": [
+    "8021ABdh-2021:3.1",
+    "8021ABdh-2021:5.3",
+    "8021ABdh-2021:6.1",
+    "8021ABdh-2021:6.2",
+    "8021ABdh-2021:6.5",
+    "8021ABdh-2021:6.6.1",
+    "8021ABdh-2021:6.7",
+    "8021ABdh-2021:6.9",
+    "8021ABdh-2021:7.1.1",
+    "8021ABdh-2021:7.1.2",
+    "8021ABdh-2021:7.2",
+    "8021ABdh-2021:7.4",
+    "8021ABdh-2021:8.2",
+    "8021ABdh-2021:8.3",
+    "8021ABdh-2021:8.4.1",
+    "8021ABdh-2021:8.5.2",
+    "8021ABdh-2021:8.5.3",
+    "8021ABdh-2021:8.5.4",
+    "8021ABdh-2021:8.6.1",
+    "8021ABdh-2021:9.1.1",
+    "8021ABdh-2021:9.1.2",
+    "8021ABdh-2021:9.2.1",
+    "8021ABdh-2021:9.2.2",
+    "8021ABdh-2021:9.2.5",
+    "8021ABdh-2021:9.2.7",
+    "8021ABdh-2021:9.2.9",
+    "8021ABdh-2021:10.2.2",
+    "8021ABdh-2021:10.2.3",
+    "8021ABdh-2021:10.2.4",
+    "8021ABdh-2021:Annex_A"
+  ],
+  "track": "bridging-tsn"
+}

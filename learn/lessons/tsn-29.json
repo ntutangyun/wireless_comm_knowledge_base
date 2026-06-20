@@ -1,0 +1,176 @@
+{
+  "id": "tsn-29",
+  "title": {
+    "en": "Inside gPTP's Media-Independent Layer (Part 1): Sync State Machines and Best-Clock Selection",
+    "zh": "深入 gPTP 媒体无关层(上):时间同步状态机与最佳时钟选择"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1ASdr-2024 is the \"Inclusive Terminology\" amendment to gPTP (generalized Precision Time Protocol), the standard that keeps clocks across a bridged Ethernet/Wi-Fi network aligned to within nanoseconds. This amendment does not change the protocol's behaviour; it renames roles to neutral terms — \"master\" becomes \"timeTransmitter\" and \"slave\" becomes \"timeReceiver\", so BMCA (Best Master Clock Algorithm) is now written BTCA (Best TimeTransmitter Clock Algorithm). Clause 10 is the media-independent layer: the logic that runs identically whether the link underneath is Ethernet, Wi-Fi, or a coordinated shared medium. This lesson walks the first half of Clause 10 — the synchronization state machines (10.2), the clock-selection machines (10.3), and message attributes (10.5).",
+      "zh": "IEEE Std 802.1ASdr-2024 是 gPTP(通用精确时间协议)的“包容性术语”修订版,而 gPTP 这个标准能让整个桥接以太网/Wi-Fi 网络中的各个时钟保持纳秒级对齐。本修订并不改变协议行为,只是把角色名称改成中性术语——“master(主)”改为“timeTransmitter(时间发送方)”,“slave(从)”改为“timeReceiver(时间接收方)”,因此 BMCA(最佳主时钟算法)现在写作 BTCA(最佳时间发送方时钟算法)。Clause 10 是媒体无关层:无论底层链路是以太网、Wi-Fi 还是协调式共享介质,这部分逻辑都完全一致。本课讲解 Clause 10 的前半部分——同步状态机(10.2)、时钟选择状态机(10.3)以及消息属性(10.5)。"
+    },
+    {
+      "type": "prose",
+      "en": "10.1.2 sets the model of operation: a PTP Instance (one time-aware device in the domain) is split into entities. A single SiteSync, ClockTimeTransmitter, and ClockTimeReceiver serve the whole instance, plus one PortSync per PTP Port and one MD (media-dependent) entity per port. The ClockTimeTransmitter takes time from an external ClockSource; the ClockTimeReceiver hands recovered time to a clockTarget application. SiteSync runs the instance-wide part of clock selection — it decides which port heard the best information and distributes synchronization from the timeReceiver port out to every timeTransmitter port. 10.1.3 clarifies that even a PTP Instance that is not grandmaster-capable still runs the selection algorithm and relays synchronization from the current Grandmaster PTP Instance.",
+      "zh": "10.1.2 给出运行模型:一个 PTP Instance(域中的一个具备时间感知能力的设备)被拆分为若干实体。整个实例只有一个 SiteSync、一个 ClockTimeTransmitter 和一个 ClockTimeReceiver,此外每个 PTP Port 各有一个 PortSync,每个端口各有一个 MD(媒体相关)实体。ClockTimeTransmitter 从外部 ClockSource 获取时间;ClockTimeReceiver 把恢复出的时间交给 clockTarget 应用。SiteSync 负责整机层面的时钟选择——它判断哪个端口收到了最优信息,并把同步信息从 timeReceiver 端口分发到每一个 timeTransmitter 端口。10.1.3 进一步说明:即使某个 PTP Instance 不具备成为 grandmaster 的能力,它仍会运行选择算法,并转发来自当前 Grandmaster PTP Instance 的同步信息。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"150\" y=\"70\" width=\"160\" height=\"60\" rx=\"6\"/><text x=\"230\" y=\"95\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">SiteSync</text><text x=\"230\" y=\"112\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">(instance-wide selection)</text><rect x=\"10\" y=\"15\" width=\"120\" height=\"40\" rx=\"6\"/><text x=\"70\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">ClockTimeTransmitter</text><rect x=\"10\" y=\"145\" width=\"120\" height=\"40\" rx=\"6\"/><text x=\"70\" y=\"169\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">ClockTimeReceiver</text><rect x=\"340\" y=\"15\" width=\"110\" height=\"40\" rx=\"6\"/><text x=\"395\" y=\"34\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">PortSync</text><text x=\"395\" y=\"48\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">+ MD (per port)</text><rect x=\"340\" y=\"145\" width=\"110\" height=\"40\" rx=\"6\"/><text x=\"395\" y=\"164\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">PortSync</text><text x=\"395\" y=\"178\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">+ MD (per port)</text><line x1=\"130\" y1=\"35\" x2=\"150\" y2=\"80\"/><line x1=\"130\" y1=\"165\" x2=\"150\" y2=\"120\"/><line x1=\"310\" y1=\"80\" x2=\"340\" y2=\"35\"/><line x1=\"310\" y1=\"120\" x2=\"340\" y2=\"165\"/></svg>",
+      "caption": {
+        "en": "Figure 10-1 model: one SiteSync, ClockTimeTransmitter, and ClockTimeReceiver per PTP Instance, with a PortSync + MD entity per port (10.1.2).",
+        "zh": "图 10-1 模型:每个 PTP Instance 含一个 SiteSync、一个 ClockTimeTransmitter 和一个 ClockTimeReceiver,每个端口各配一个 PortSync 与 MD 实体(10.1.2)。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "10.2 specifies the time-synchronization state machines that move time through the instance. 10.2.1 names the seven cooperating machines and notes that the three ClockTimeTransmitter machines are optional on instances that are not grandmaster-capable. The flow is a pipeline: ClockTimeTransmitterSyncReceive (10.2.11) ingests time from the ClockSource and builds timeTransmitterTime; ClockTimeTransmitterSyncOffset (10.2.10) computes phase/frequency offset versus the received time; ClockTimeTransmitterSyncSend (10.2.9) packages synchronized time into a PortSyncSync structure for SiteSync. On the receive side, PortSyncSyncReceive (10.2.8) takes MD-entity timing, computes the accumulated rateRatio and a sync-receipt timeout, and feeds SiteSync. SiteSyncSync (10.2.7) fans the chosen timeReceiver-port info out to every port; PortSyncSyncSend (10.2.12) asks each MD entity to emit a Sync event and computes the follow-up correction; ClockTimeReceiverSync (10.2.13) recovers clockTimeReceiverTime and syncReceiptTime for the application.",
+      "zh": "10.2 规定了在实例内部传递时间的同步状态机。10.2.1 列出了七个相互协作的状态机,并指出其中三个 ClockTimeTransmitter 状态机对不具备 grandmaster 能力的实例是可选的。整个流程像一条流水线:ClockTimeTransmitterSyncReceive(10.2.11)从 ClockSource 取入时间并构建 timeTransmitterTime;ClockTimeTransmitterSyncOffset(10.2.10)计算相对接收时间的相位/频率偏移;ClockTimeTransmitterSyncSend(10.2.9)把同步后的时间封装进 PortSyncSync 结构交给 SiteSync。在接收侧,PortSyncSyncReceive(10.2.8)接收 MD 实体的定时信息,计算累积的 rateRatio 和同步接收超时,再送给 SiteSync。SiteSyncSync(10.2.7)把选定的 timeReceiver 端口信息扇出到每个端口;PortSyncSyncSend(10.2.12)请求各 MD 实体发出 Sync 事件并计算后续(Follow_Up)修正量;ClockTimeReceiverSync(10.2.13)为应用恢复出 clockTimeReceiverTime 和 syncReceiptTime。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  CS[ClockSource] --> R[SyncReceive 10.2.11]\n  R --> O[SyncOffset 10.2.10]\n  O --> S[SyncSend 10.2.9]\n  S --> SS[SiteSyncSync 10.2.7]\n  MD[MD entity] --> PR[PortSyncSyncReceive 10.2.8]\n  PR --> SS\n  SS --> PS[PortSyncSyncSend 10.2.12]\n  SS --> CR[ClockTimeReceiverSync 10.2.13]\n  PS --> MD2[MD entity out]\n  CR --> APP[clockTarget app]",
+      "zh": "flowchart LR\n  CS[ClockSource] --> R[同步接收 10.2.11]\n  R --> O[同步偏移 10.2.10]\n  O --> S[同步发送 10.2.9]\n  S --> SS[SiteSyncSync 10.2.7]\n  MD[MD 实体] --> PR[端口同步接收 10.2.8]\n  PR --> SS\n  SS --> PS[端口同步发送 10.2.12]\n  SS --> CR[时间接收方同步 10.2.13]\n  PS --> MD2[MD 实体 出]\n  CR --> APP[clockTarget 应用]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: data structures and global-variable scope (10.2.2 – 10.2.5)",
+        "zh": "覆盖地图:数据结构与全局变量作用域(10.2.2 – 10.2.5)"
+      },
+      "en": "The state machines talk through three shared structures and a catalogue of global variables. 10.2.2 defines those structures: MDSyncSend and MDSyncReceive carry timing between the MD entity and PortSync (including preciseOriginTimestamp — the Grandmaster's send time — and upstreamTxTime, derived from syncEventIngressTimestamp minus meanLinkDelay times neighborRateRatio), while PortSyncSync carries gmTimeBaseIndicator, lastGmPhaseChange, and lastGmFreqChange between entities. 10.2.3 is Table 10-1, the master list of every global variable used by these machines and its scope. 10.2.4 defines the per-PTP-Instance (per-domain) variables — clockTimeTransmitterSyncInterval, gmRateRatio, gmPresent, currentTime, masterTimeTransmitterTime, syncReceiptTime, and so on. 10.2.5 defines the per-port variables — asCapable, neighborRateRatio, meanLinkDelay, delayAsymmetry, portOper, ptpPortEnabled, syncLocked, and the CMLDS (Common Mean Link Delay Service) per-LinkPort instances flagged in the table.",
+      "zh": "这些状态机通过三个共享结构和一份全局变量清单进行通信。10.2.2 定义这些结构:MDSyncSend 与 MDSyncReceive 在 MD 实体与 PortSync 之间传递定时信息(包含 preciseOriginTimestamp——即 Grandmaster 的发送时刻——以及 upstreamTxTime,后者由 syncEventIngressTimestamp 减去 meanLinkDelay 乘 neighborRateRatio 得到),而 PortSyncSync 在各实体间传递 gmTimeBaseIndicator、lastGmPhaseChange 和 lastGmFreqChange。10.2.3 即 Table 10-1,是这些状态机所用全部全局变量及其作用域的总表。10.2.4 定义每 PTP Instance(每域)的变量——clockTimeTransmitterSyncInterval、gmRateRatio、gmPresent、currentTime、masterTimeTransmitterTime、syncReceiptTime 等。10.2.5 定义每端口的变量——asCapable、neighborRateRatio、meanLinkDelay、delayAsymmetry、portOper、ptpPortEnabled、syncLocked,以及表中标注的由 CMLDS(公共平均链路时延服务)按 LinkPort 维护的实例。",
+      "cite": {
+        "pdf_id": "8021ASdr-2024",
+        "pages": [
+          37,
+          41,
+          42,
+          43
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "10.3 covers how the domain picks its Grandmaster and shapes the synchronization spanning tree. 10.3.1 gives two methods: method (a), the BTCA, which auto-selects the root and assigns port states; and method (b), external port configuration, where an outside entity forces the states by setting externalPortConfigurationPortDS.desiredState. Table 10-2 defines the four PTP Port states — TimeTransmitterPort (closer to root, sends time), TimeReceiverPort (the single port closest to the root, receives time), PassivePort (neither, stays quiet), and DisabledPort (portOper/ptpPortEnabled/asCapable not all TRUE). The decision is driven by comparing systemIdentity (10.3.2) — a 14-byte concatenation of priority1, clockClass, clockAccuracy, offsetScaledLogVariance, priority2, and clockIdentity, where a smaller value is \"better\" — and stepsRemoved (10.3.3), the hop count from the root.",
+      "zh": "10.3 讲述域如何选出 Grandmaster 并塑造同步生成树。10.3.1 给出两种方法:方法 (a) 即 BTCA,自动选出根并分配端口状态;方法 (b) 即外部端口配置,由外部实体通过设置 externalPortConfigurationPortDS.desiredState 来强制端口状态。Table 10-2 定义四种 PTP Port 状态——TimeTransmitterPort(更靠近根,发送时间)、TimeReceiverPort(全机唯一最靠近根的端口,接收时间)、PassivePort(两者皆非,保持静默)和 DisabledPort(portOper/ptpPortEnabled/asCapable 未全为 TRUE)。判定依据是比较 systemIdentity(10.3.2)——它是 priority1、clockClass、clockAccuracy、offsetScaledLogVariance、priority2 和 clockIdentity 拼成的 14 字节值,数值越小越“优”——以及 stepsRemoved(10.3.3),即距根的跳数。"
+    },
+    {
+      "type": "prose",
+      "en": "10.3.4 and 10.3.5 formalise this with priority vectors — the same trick Rapid Spanning Tree Protocol (RSTP) uses. A priority vector concatenates rootSystemIdentity, stepsRemoved, sourcePortIdentity, and the receiving portNumber, ordered most-significant first, so the whole vector compares like one big number where lower is better. The messagePriorityVector arrives in an Announce message; the portPriorityVector is what the port currently holds. A message replaces the port's vector if it is better, or if it came from the same timeTransmitter that set the current vector. From the port vector you derive the gmPathPriorityVector (add 1 to stepsRemoved), the systemPriorityVector (this instance as root), the gmPriorityVector (best of all candidates), and the timeTransmitterPriorityVector (what this port would announce). 10.3.6 then maps the winning vectors onto concrete port-state assignments for both the BTCA and external configuration.",
+      "zh": "10.3.4 与 10.3.5 用优先级向量将其形式化——这正是快速生成树协议(RSTP)所用的技巧。一个优先级向量把 rootSystemIdentity、stepsRemoved、sourcePortIdentity 和接收端口的 portNumber 按最高位在前的顺序拼接,于是整个向量可像一个大数那样比较,数值越小越优。messagePriorityVector 来自收到的 Announce 消息;portPriorityVector 是端口当前持有的向量。当某条消息更优,或来自设定当前向量的同一 timeTransmitter 时,该消息就替换端口向量。由端口向量可推导出 gmPathPriorityVector(stepsRemoved 加 1)、systemPriorityVector(本实例作为根)、gmPriorityVector(所有候选中的最优)以及 timeTransmitterPriorityVector(本端口将要通告的内容)。随后 10.3.6 把胜出的向量映射为 BTCA 与外部配置两种模式下具体的端口状态分配。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mnemonic: in gPTP priority vectors, \"smaller is better\". A grandmaster-capable instance always wins over a non-capable one because priority1 is below 255 when capable and exactly 255 when not — so the lower number sorts first.",
+      "zh": "记忆口诀:在 gPTP 优先级向量里“越小越优”。具备 grandmaster 能力的实例总能胜过不具备者,因为具备能力时 priority1 小于 255,而不具备时正好等于 255——较小的数会排在前面。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the selection state machines (10.3.7 – 10.3.16)",
+        "zh": "覆盖地图:选择状态机(10.3.7 – 10.3.16)"
+      },
+      "en": "10.3.7 introduces the machines and notes a key fact: all BTCA machines run in the media-independent layer (SiteSync/PortSync); the MD entity merely hands Announce frames down to 802.3/802.11. It lists PortAnnounceReceive (qualifies messages), PortAnnounceInformation, PortStateSelection, and PortAnnounceTransmit. 10.3.8 introduces the global-variable catalogue (Table 10-3) covering per-instance, per-port, and CMLDS scopes; 10.3.9 defines the per-PTP-Instance variables (reselect, selected, the leap/UTC/timescale flags, gmPriority, externalPortConfigurationEnabled); 10.3.10 defines the per-port variables (portPriority, portStepsRemoved, updtInfo, and the annLeap61/annCurrentUtcOffset Announce-snapshot variables). Then the machines themselves: 10.3.12 PortAnnounceInformation — its rcvInfo() classifies an Announce as Repeated / Superior / Inferior / Other relative to the held vector, and drives the SUPERIOR/REPEATED/INFERIOR/CURRENT/UPDATE states. 10.3.13 PortStateSelection — its updtStatesTree() recomputes gmPathPriority, gmPriority and timeTransmitterPriority for every port, sets timeTransmitterStepsRemoved, and assigns each selectedState[j]. 10.3.14 PortAnnounceInformationExt and 10.3.15 PortStateSettingExt are the external-configuration counterparts (one instance per port; updtPortState() copies desiredState, recomputes gmPresent and the priority vectors, and handles PTP Port 0). 10.3.16 PortAnnounceTransmit — its txAnnounce() builds the outgoing Announce from the timeTransmitterPriorityVector, the leap/UTC flags, stepsRemoved, the sequenceId, and an optional path-trace TLV; it serves both the BTCA and external modes.",
+      "zh": "10.3.7 介绍这些状态机并点明一个要点:所有 BTCA 状态机都运行在媒体无关层(SiteSync/PortSync);MD 实体只是把 Announce 帧向下交给 802.3/802.11。它列出 PortAnnounceReceive(对消息做合格性判定)、PortAnnounceInformation、PortStateSelection 和 PortAnnounceTransmit。10.3.8 引入全局变量总表(Table 10-3),涵盖每实例、每端口和 CMLDS 三种作用域;10.3.9 定义每 PTP Instance 变量(reselect、selected,以及闰秒/UTC/时间标尺标志、gmPriority、externalPortConfigurationEnabled);10.3.10 定义每端口变量(portPriority、portStepsRemoved、updtInfo,以及 annLeap61/annCurrentUtcOffset 等 Announce 快照变量)。接着是各状态机本身:10.3.12 PortAnnounceInformation——其 rcvInfo() 相对所持向量把一条 Announce 分类为 Repeated/Superior/Inferior/Other,并驱动 SUPERIOR/REPEATED/INFERIOR/CURRENT/UPDATE 等状态。10.3.13 PortStateSelection——其 updtStatesTree() 为每个端口重算 gmPathPriority、gmPriority 与 timeTransmitterPriority,设定 timeTransmitterStepsRemoved,并为每个 selectedState[j] 赋值。10.3.14 PortAnnounceInformationExt 与 10.3.15 PortStateSettingExt 是外部配置模式的对应机(每端口一个实例;updtPortState() 复制 desiredState、重算 gmPresent 与优先级向量,并处理 PTP Port 0)。10.3.16 PortAnnounceTransmit——其 txAnnounce() 依据 timeTransmitterPriorityVector、闰秒/UTC 标志、stepsRemoved、sequenceId 以及可选的 path-trace TLV 构建外发的 Announce;它同时服务于 BTCA 和外部模式两种情形。",
+      "cite": {
+        "pdf_id": "8021ASdr-2024",
+        "pages": [
+          63,
+          66,
+          74,
+          77,
+          79,
+          81
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Finally, 10.5.2 (Message class) records that the Announce message is a general message — it is not timestamped — and carries status and characterization of the transmitting PTP Instance and the Grandmaster, which the receiver uses to run the BTCA. The same subclause notes the Signaling message is also a general message, used to request intervals for Sync, link-delay, and Announce messages, and to keep a power-saving device attached to the domain. Together, Clause 10 part 1 gives you the full picture: how time flows (10.2), how the domain elects and trees its Grandmaster (10.3), and what kind of message carries the selection information (10.5.2). Part 2 continues into message formats and timing characterization.",
+      "zh": "最后,10.5.2(消息类别)指出 Announce 消息是 general 消息——它不被打时间戳——并携带发送 PTP Instance 及 Grandmaster 的状态与特征信息,接收方据此运行 BTCA。同一小节还说明 Signaling 消息同样是 general 消息,用于请求 Sync、链路时延和 Announce 消息的间隔,并可让处于省电模式的设备保持接入域中。综上,Clause 10 上半部分给出了完整图景:时间如何流动(10.2)、域如何选出并以树形组织其 Grandmaster(10.3),以及由哪种消息承载选择信息(10.5.2)。下半部分将继续讲解消息格式与协议定时特征。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021ASdr-2024",
+      "pages": [
+        32,
+        34
+      ],
+      "note": "10.1.2 model of operation; 10.1.3 grandmaster-capable instance; 10.2.1 overview"
+    },
+    {
+      "pdf_id": "8021ASdr-2024",
+      "pages": [
+        36,
+        37,
+        41,
+        42,
+        43
+      ],
+      "note": "10.2.1 machine list; 10.2.2 data structures; 10.2.3 Table 10-1; 10.2.4/10.2.5 variable scopes"
+    },
+    {
+      "pdf_id": "8021ASdr-2024",
+      "pages": [
+        55,
+        58,
+        59,
+        60,
+        62
+      ],
+      "note": "10.3.1 two methods + Table 10-2 + 10.2.7 note; 10.3.2 systemIdentity; 10.3.3 stepsRemoved; 10.3.4/10.3.5 priority vectors; 10.3.6 state assignments"
+    },
+    {
+      "pdf_id": "8021ASdr-2024",
+      "pages": [
+        63,
+        66,
+        74,
+        77,
+        79,
+        81,
+        83
+      ],
+      "note": "10.3.7/10.3.8 overviews; 10.3.10/10.3.12 PortAnnounceInformation; 10.3.13 PortStateSelection; 10.3.14/10.3.15 Ext machines; 10.3.16 PortAnnounceTransmit; 10.5.2 message class"
+    }
+  ],
+  "covers": [
+    "8021ASdr-2024:10.1.2",
+    "8021ASdr-2024:10.1.3",
+    "8021ASdr-2024:10.2.1",
+    "8021ASdr-2024:10.2.2",
+    "8021ASdr-2024:10.2.3",
+    "8021ASdr-2024:10.2.4",
+    "8021ASdr-2024:10.2.5",
+    "8021ASdr-2024:10.2.7",
+    "8021ASdr-2024:10.2.8",
+    "8021ASdr-2024:10.2.9",
+    "8021ASdr-2024:10.2.10",
+    "8021ASdr-2024:10.2.11",
+    "8021ASdr-2024:10.2.12",
+    "8021ASdr-2024:10.2.13",
+    "8021ASdr-2024:10.3.1",
+    "8021ASdr-2024:10.3.2",
+    "8021ASdr-2024:10.3.3",
+    "8021ASdr-2024:10.3.4",
+    "8021ASdr-2024:10.3.5",
+    "8021ASdr-2024:10.3.6",
+    "8021ASdr-2024:10.3.7",
+    "8021ASdr-2024:10.3.8",
+    "8021ASdr-2024:10.3.9",
+    "8021ASdr-2024:10.3.10",
+    "8021ASdr-2024:10.3.12",
+    "8021ASdr-2024:10.3.13",
+    "8021ASdr-2024:10.3.14",
+    "8021ASdr-2024:10.3.15",
+    "8021ASdr-2024:10.3.16",
+    "8021ASdr-2024:10.5.2"
+  ],
+  "track": "tsn"
+}

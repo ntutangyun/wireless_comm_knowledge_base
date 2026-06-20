@@ -1,0 +1,140 @@
+{
+  "id": "bridging-tsn-69",
+  "title": {
+    "en": "One MAC Service, Many Media: Convergence Functions and the MA_UNITDATA Primitives (Clauses 13-14, Annexes A-B)",
+    "zh": "一套 MAC 服务，多种介质：汇聚功能与 MA_UNITDATA 原语（第 13-14 章、附录 A-B）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1AC-2016 defines the MAC (Media Access Control) Service — the clean, media-independent interface that bridges and upper layers see, no matter what physical technology actually carries the bits. Clause 13 answers a single recurring question: given some concrete MAC technology (Ethernet, Wi-Fi, WirelessMAN, etc.), how do we glue it to the abstract service so everything above behaves identically? Each glue layer is a 'convergence function'. The core abstraction it presents is the ISS (Internal Sublayer Service), the bridge-internal version of the MAC Service. Clause 13's preamble (p.33) sets two ground rules that apply everywhere: MAC control frames — frames that steer the MAC itself rather than carry user data — never produce ISS data indications (a bridge never forwards them off their origin LAN), and only error-free user-data frames raise an M_UNITDATA.indication (a frame the MAC declares to be in error is silently discarded). The mac_service_data_unit (MSDU, the user payload) is always Length/Type encoded: its first two octets are either a length followed by an LLC (Logical Link Control) identifier, or an EtherType. This lesson walks every convergence function in Clause 13, then the connectionless MAC Service in Clause 14, and finally the two informative annexes.",
+      "zh": "IEEE Std 802.1AC-2016 定义了 MAC（媒体访问控制）服务——这是网桥和上层所看到的、与介质无关的统一接口，无论底层用什么物理技术传输比特都一样。第 13 章回答一个反复出现的问题：给定某种具体的 MAC 技术（以太网、Wi-Fi、WirelessMAN 等），如何把它粘合到这个抽象服务上，让上层行为完全一致？每一层粘合代码就是一个“汇聚功能”。它所呈现的核心抽象是 ISS（Internal Sublayer Service，内部子层服务），即网桥内部版本的 MAC 服务。第 13 章的引言（第 33 页）确立了两条普遍适用的基本规则：MAC 控制帧——用于操控 MAC 自身而非承载用户数据的帧——绝不产生 ISS 数据指示（网桥绝不会把它们转发出其源 LAN），且只有无差错的用户数据帧才会触发 M_UNITDATA.indication（被 MAC 判定为错误的帧会被静默丢弃）。mac_service_data_unit（MSDU，即用户载荷）始终采用 Length/Type 编码：其前两个八位字节要么是长度后跟 LLC（逻辑链路控制）标识符，要么是一个 EtherType。本课依次讲解第 13 章中的每个汇聚功能，然后是第 14 章的无连接 MAC 服务，最后是两个资料性附录。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><text x=\"260\" y=\"22\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"14\">Upper layers / Bridge see ONE service: the ISS</text><rect x=\"160\" y=\"36\" width=\"200\" height=\"34\"/><text x=\"260\" y=\"58\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"13\">M_UNITDATA.request / .indication</text><line x1=\"100\" y1=\"95\" x2=\"420\" y2=\"95\"/><text x=\"260\" y=\"112\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">Convergence functions (Clause 13)</text><rect x=\"20\" y=\"130\" width=\"90\" height=\"50\"/><text x=\"65\" y=\"160\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">802.3 Ethernet</text><rect x=\"122\" y=\"130\" width=\"90\" height=\"50\"/><text x=\"167\" y=\"160\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">802.11 Wi-Fi</text><rect x=\"224\" y=\"130\" width=\"90\" height=\"50\"/><text x=\"269\" y=\"155\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">802.16 / 802.17</text><text x=\"269\" y=\"170\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">802.20</text><rect x=\"326\" y=\"130\" width=\"90\" height=\"50\"/><text x=\"371\" y=\"160\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">PMPN</text></svg>",
+      "caption": {
+        "en": "Each media-specific convergence function maps its native MAC onto the same M_UNITDATA primitives, so everything above the line is media-agnostic.",
+        "zh": "每个特定介质的汇聚功能都把自己的原生 MAC 映射到相同的 M_UNITDATA 原语上，因此横线之上的一切都与介质无关。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The Ethernet convergence function (13.1, p.33-34) is the simplest case: it presents one ISS instance over one instance of the IEEE 802.3 MAC Service. On request it forwards destination_address and source_address unchanged, may add pad octets to meet 802.3's 64-octet minimum frame size (or up to 68 octets when an 802.1Q VLAN tag is present), and ignores priority, drop_eligible, and the SAP/connection identifiers. On indication, drop_eligible is FALSE and priority takes the SAP's configurable Default Priority (default 0). MAC_Enabled is always TRUE; MAC_Operational tracks aMediaAvailable. Whether the MAC counts as point-to-point (operPointToPointMAC) depends on auto-negotiation resolving full duplex, or management forcing it.",
+      "zh": "以太网汇聚功能（13.1，第 33-34 页）是最简单的情形：它在一个 IEEE 802.3 MAC 服务实例之上呈现一个 ISS 实例。请求时它原样转发 destination_address 与 source_address，可以填充补位八位字节以满足 802.3 的 64 字节最小帧长（存在 802.1Q VLAN 标签时可达 68 字节），并忽略 priority、drop_eligible 以及 SAP/连接标识符。指示时 drop_eligible 为 FALSE，priority 取该 SAP 可配置的默认优先级（默认值 0）。MAC_Enabled 恒为 TRUE；MAC_Operational 跟踪 aMediaAvailable。MAC 是否算作点到点（operPointToPointMAC）取决于自动协商是否解析为全双工，或管理是否强制设定。"
+    },
+    {
+      "type": "prose",
+      "en": "Wi-Fi (13.2, p.34-37) needs more than one convergence function because IEEE 802.11 offers the MAC Service at different architectural points. The portal convergence function (13.2.1) sits above an 802.11 distribution system (DS) and uses the DS SAP's DS-UNITDATA primitives — it links a bridge to access points and mesh gates. The station convergence function (13.2.3) sits directly above one 802.11 station's MA-UNITDATA service. Crucially, a raw 802.11 STA cannot itself satisfy the ISS, because it reflects group-addressed frames back to the sender — behaviour the ISS forbids. The security architecture subclause (13.2.2) explains why the 802.1AE SecY (the MAC Security Entity, with its Controlled and Uncontrolled Ports) is generally NOT used over Wi-Fi: 802.11 protects fragments below its own SAP, so it places equivalent ports there instead.",
+      "zh": "Wi-Fi（13.2，第 34-37 页）需要不止一个汇聚功能，因为 IEEE 802.11 在不同的体系结构位置提供 MAC 服务。portal 汇聚功能（13.2.1）位于 802.11 分布式系统（DS）之上，使用 DS SAP 的 DS-UNITDATA 原语——它把网桥连接到接入点和网格网关。station 汇聚功能（13.2.3）则直接位于某个 802.11 站点的 MA-UNITDATA 服务之上。关键在于，原始的 802.11 STA 自身无法满足 ISS，因为它会把组地址帧反射回发送方——而这是 ISS 所禁止的行为。安全架构小节（13.2.2）解释了为何 802.1AE SecY（MAC 安全实体，带受控端口与非受控端口）通常不用于 Wi-Fi：802.11 在自己的 SAP 之下保护分片，因此把等效的端口放在了那里。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  UP[Upper layers / ISS] --> CF{802.11 convergence}\n  CF -->|13.2.1 portal| DS[DS SAP: DS-UNITDATA]\n  CF -->|13.2.3 station| STA[MA-UNITDATA of one STA]\n  DS --> AP[Access points / mesh gates]\n  STA --> SEC[Controlled + Uncontrolled Ports]\n  CF -.13.2.4 shared mapping.-> MAP[priority pass-through; service class = QoSAck]",
+      "zh": "flowchart TD\n  UP[上层 / ISS] --> CF{802.11 汇聚}\n  CF -->|13.2.1 portal| DS[DS SAP: DS-UNITDATA]\n  CF -->|13.2.3 station| STA[单个 STA 的 MA-UNITDATA]\n  DS --> AP[接入点 / 网格网关]\n  STA --> SEC[受控端口 + 非受控端口]\n  CF -.13.2.4 共享映射.-> MAP[priority 透传; 服务类别 = QoSAck]"
+    },
+    {
+      "type": "prose",
+      "en": "Both Wi-Fi convergence functions share one parameter mapping (13.2.4, p.37). On requests (13.2.4.1) destination_address, source_address, and priority pass through unaltered; the MSDU is translated and carried as the data parameter; drop_eligible, frame_check_sequence, and the SAP/connection identifiers are ignored; routing information is null; and the service class is always QoSAck. On indications (13.2.4.2) the addresses and priority pass through, drop_eligible is FALSE, the identifier parameters are null, and routing/reception-status/service-class are ignored. This symmetry is what lets a bridge treat Wi-Fi like any other LAN.",
+      "zh": "两个 Wi-Fi 汇聚功能共享同一套参数映射（13.2.4，第 37 页）。请求时（13.2.4.1）destination_address、source_address 和 priority 原样透传；MSDU 经翻译后作为 data 参数承载；drop_eligible、frame_check_sequence 以及 SAP/连接标识符被忽略；路由信息为 null；服务类别恒为 QoSAck。指示时（13.2.4.2）地址与 priority 透传，drop_eligible 为 FALSE，标识符参数为 null，路由/接收状态/服务类别被忽略。正是这种对称性让网桥能把 Wi-Fi 当作任何其他 LAN 一样对待。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining Clause 13 functions follow the same recipe over other media. WirelessMAN (13.3, IEEE 802.16) supports the ISS only through its IEEE 802.3/Ethernet CS (Convergence Sublayer) Mode; 13.3.1 (p.38) encodes parameters as in 13.1, forces operPointToPointMAC TRUE, and keeps MAC_Operational FALSE until the subscriber station (SS) has registered, authenticated, negotiated capabilities, and established service flows. Resilient Packet Ring (13.4, IEEE 802.17, p.38-40) maps addresses to da/sa (or daExtended/saExtended), the MSDU to protocolType/serviceDataUnit, and priority to a service-class subfield via Tables 13-1 and 13-2; it also computes the FCS as a 32-bit CRC. The Mobile Broadband Wireless Access (MBWA, IEEE 802.20) method has two flavours: Wideband Mode (13.5.1) and 625k-MC mode (13.5.2), each presenting an 802.3-like point-to-point MAC to the higher layer once the terminal has registered and a stream is established.",
+      "zh": "第 13 章其余的功能在别的介质上遵循同样的套路。WirelessMAN（13.3，IEEE 802.16）仅通过其 IEEE 802.3/以太网 CS（Convergence Sublayer，汇聚子层）模式支持 ISS；13.3.1（第 38 页）按 13.1 的方式编码参数，强制 operPointToPointMAC 为 TRUE，并在订户站（SS）完成注册、认证、能力协商并建立业务流之前一直保持 MAC_Operational 为 FALSE。弹性分组环（RPR，13.4，IEEE 802.17，第 38-40 页）把地址映射到 da/sa（或 daExtended/saExtended），把 MSDU 映射到 protocolType/serviceDataUnit，并通过表 13-1 与表 13-2 把 priority 映射到服务类别子字段；它还把 FCS 计算为 32 位 CRC。移动宽带无线接入（MBWA，IEEE 802.20）方法有两种形态：宽带模式（13.5.1）和 625k-MC 模式（13.5.2），二者在终端注册并建立流之后，都向高层呈现一个类 802.3 的点到点 MAC。"
+    },
+    {
+      "type": "prose",
+      "en": "The Point-to-Multipoint Network function (13.6, p.41-42) is the most interesting twist. A PMPN (Point-to-Multipoint Network) is physically a single shared half-duplex port, but logically a fully connected one-hop mesh. To reuse the huge body of protocols designed for point-to-point LANs, the PMPN convergence function (13.6.2) makes the network look like several virtual point-to-point LANs — offering zero or more ISS SAPs, optionally split into Controlled and Uncontrolled Ports if the PMPN provides its own link security. It uses one PMPN SAP that adds a 'station vector' parameter naming which node(s) a request goes to, or which single node an indication came from. As links form and break, an implementation may create/destroy virtual LANs or just toggle their MAC_Operational status.",
+      "zh": "点到多点网络功能（13.6，第 41-42 页）是最有趣的转折。PMPN（Point-to-Multipoint Network，点到多点网络）在物理上是单个共享的半双工端口，但在逻辑上是全连接的一跳网格。为复用为点到点 LAN 设计的大量协议，PMPN 汇聚功能（13.6.2）把网络伪装成若干个虚拟点到点 LAN——提供零个或多个 ISS SAP，若 PMPN 自带链路安全则可拆分为受控端口与非受控端口。它使用单个 PMPN SAP，并增加一个“站点向量”参数，指明请求发往哪些节点，或指示来自哪个单一节点。随着链路的建立与断开，实现可以创建/销毁虚拟 LAN，或仅切换它们的 MAC_Operational 状态。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 14 (p.43-44) steps back to define the MAC Service itself as a connectionless-mode transmission service built from a subset of the ISS. 14.1 (Function) stresses it is self-contained: one MSDU goes from one MSAP (MAC Service Access Point) to another in a single access, with no connection setup or teardown, and no required flow-control state. 14.2 (Service primitives and parameters) gives just two primitives — MA_UNITDATA.request and MA_UNITDATA.indication — each carrying destination_address, source_address, mac_service_data_unit, and priority (0 default, 1-7 ordered with 0 between 1 and 2). 14.3 (Status parameters) exposes MAC_Enabled (use permitted) and MAC_Operational (able to transmit/receive AND enabled). 14.4 (Sequence of primitives) shows the trivial time sequence: a .request on one side produces a .indication on the other.",
+      "zh": "第 14 章（第 43-44 页）退后一步，把 MAC 服务本身定义为基于 ISS 子集构建的无连接传输服务。14.1（功能）强调它是自包含的：一个 MSDU 在单次访问中从一个 MSAP（MAC Service Access Point，MAC 服务接入点）送到另一个，无需建立或拆除连接，也不要求维护流控状态。14.2（服务原语与参数）只给出两个原语——MA_UNITDATA.request 与 MA_UNITDATA.indication——各自携带 destination_address、source_address、mac_service_data_unit 和 priority（默认 0，1-7 有序，0 介于 1 和 2 之间）。14.3（状态参数）暴露 MAC_Enabled（允许使用）和 MAC_Operational（既能收发又已启用）。14.4（原语序列）展示了简单的时序：一侧的 .request 在另一侧产生一个 .indication。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant A as Sender MSAP\n  participant B as Receiver MSAP\n  A->>B: MA_UNITDATA.request\n  Note over A,B: self-contained MSDU, no connection\n  B-->>B: MA_UNITDATA.indication",
+      "zh": "sequenceDiagram\n  participant A as 发送方 MSAP\n  participant B as 接收方 MSAP\n  A->>B: MA_UNITDATA.request\n  Note over A,B: 自包含 MSDU，无连接\n  B-->>B: MA_UNITDATA.indication"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: Clause 13 = 'adapters' (one per medium, each translating native MAC frames to/from the M_UNITDATA primitives), Clause 14 = the simple two-primitive socket those adapters expose upward. Learn the Ethernet adapter (13.1) first; every other adapter is described as deltas against it.",
+      "zh": "心智模型：第 13 章 = “适配器”（每种介质一个，各自在原生 MAC 帧与 M_UNITDATA 原语之间互译），第 14 章 = 这些适配器向上暴露的、仅含两个原语的简单接口。先学以太网适配器（13.1）；其余每个适配器都是以它为基准的差异描述。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause and annex, by exact number",
+        "zh": "覆盖地图：按精确编号列出每个章节与附录"
+      },
+      "en": "Clause 13 (p.33) preamble: control frames give no ISS indication; only error-free user frames raise M_UNITDATA.indication; MSDU is Length/Type encoded. 13.1 Ethernet convergence function (p.33-34): single ISS over one 802.3 MAC; padding to 64/68 octets; priority defaults to SAP Default Priority; operPointToPointMAC from auto-neg/full-duplex. 13.2 Wireless LAN (p.34): two CFs because 802.11 offers the service at different points. 13.2.1 portal CF (p.35): uses DS SAP DS-UNITDATA; not subject to Controlled/Uncontrolled Ports. 13.2.2 Security architecture (p.35-36): 802.1AE SecY with Controlled (C) and Uncontrolled (U) Ports generally not used on 802.11 (it protects fragments below the SAP). 13.2.3 station CF (p.36-37): over one STA's MA-UNITDATA; provides C and U ports. 13.2.4 parameter mapping (p.37): 13.2.4.1 requests (addresses+priority pass through, MSDU translated, service class = QoSAck, routing null), 13.2.4.2 indications (drop_eligible FALSE, identifiers null). 13.3 WirelessMAN (p.37-38): ISS only via 802.3/Ethernet CS Mode; must enable MAC CRC; PHS validation kept on. 13.3.1 (p.38): encode as 13.1, operPointToPointMAC TRUE, MAC_Operational FALSE until SS registers/authenticates/negotiates/flows up. 13.4 RPR / 802.17 (p.38-40): da/sa or daExtended/saExtended; protocolType/serviceDataUnit; priority<->service class via Tables 13-1/13-2; 32-bit CRC FCS; optional 802.17 params defaulted/ignored. 13.5 MBWA / 802.20: 13.5.1 Wideband Mode (p.40, Basic Packet Consolidation Protocol; 13.5.1.1 ISS support, operPointToPointMAC TRUE, MAC_Operational FALSE until AT registers and stream established), 13.5.2 625k-MC mode (p.40-41; L3 CM/RM modules, virtual connections; 13.5.2.1 ISS support, UT registration gates MAC_Operational). 13.6 PMPN: 13.6.1 (p.41) defines a PMPN as a shared half-duplex port that is a logical one-hop mesh; 13.6.2 (p.42) CF presents zero-or-more virtual point-to-point LANs via a PMPN SAP carrying a station vector. 14.1 Function (p.43): connectionless, self-contained MSDU, no flow-control state. 14.2 primitives/parameters (p.43-44): MA_UNITDATA.request/.indication with destination_address, source_address, mac_service_data_unit, priority. 14.3 Status parameters (p.44): MAC_Enabled, MAC_Operational. 14.4 Sequence of primitives (p.44): Figure 14-1 request->indication. Annex A (p.45): informative Bibliography ([B1] 802.1AE-2006, [B2] ISO/IEC 8802-2, [B3] ISO/IEC 15802-1, [B4] IETF RFC 787). Annex B (p.46): informative restatement of ISS support for 802.11 media, with the General Link (GLK) and non-GLK convergence functions (B.1.1-B.1.5) framing Wi-Fi inside an 802.1Q bridged LAN.",
+      "zh": "第 13 章（第 33 页）引言：控制帧不产生 ISS 指示；仅无差错用户帧触发 M_UNITDATA.indication；MSDU 采用 Length/Type 编码。13.1 以太网汇聚功能（第 33-34 页）：单 ISS 位于一个 802.3 MAC 之上；填充至 64/68 字节；priority 默认取 SAP 默认优先级；operPointToPointMAC 由自动协商/全双工决定。13.2 无线 LAN（第 34 页）：两个 CF，因为 802.11 在不同位置提供服务。13.2.1 portal CF（第 35 页）：使用 DS SAP 的 DS-UNITDATA；不涉及受控/非受控端口。13.2.2 安全架构（第 35-36 页）：带受控（C）与非受控（U）端口的 802.1AE SecY 通常不用于 802.11（它在 SAP 之下保护分片）。13.2.3 station CF（第 36-37 页）：位于单个 STA 的 MA-UNITDATA 之上；提供 C 与 U 端口。13.2.4 参数映射（第 37 页）：13.2.4.1 请求（地址+priority 透传，MSDU 翻译，服务类别 = QoSAck，路由为 null），13.2.4.2 指示（drop_eligible 为 FALSE，标识符为 null）。13.3 WirelessMAN（第 37-38 页）：仅通过 802.3/以太网 CS 模式支持 ISS；须启用 MAC CRC；PHS 校验保持开启。13.3.1（第 38 页）：按 13.1 编码，operPointToPointMAC 为 TRUE，在 SS 注册/认证/协商/业务流就绪前 MAC_Operational 为 FALSE。13.4 RPR / 802.17（第 38-40 页）：da/sa 或 daExtended/saExtended；protocolType/serviceDataUnit；priority 与服务类别通过表 13-1/13-2 互映；32 位 CRC 的 FCS；可选 802.17 参数取默认值/被忽略。13.5 MBWA / 802.20：13.5.1 宽带模式（第 40 页，基本分组合并协议；13.5.1.1 ISS 支持，operPointToPointMAC 为 TRUE，在 AT 注册且流建立前 MAC_Operational 为 FALSE），13.5.2 625k-MC 模式（第 40-41 页；L3 CM/RM 模块，虚拟连接；13.5.2.1 ISS 支持，UT 注册门控 MAC_Operational）。13.6 PMPN：13.6.1（第 41 页）把 PMPN 定义为共享半双工端口、逻辑上为一跳网格；13.6.2（第 42 页）CF 通过携带站点向量的 PMPN SAP 呈现零个或多个虚拟点到点 LAN。14.1 功能（第 43 页）：无连接、自包含 MSDU、无流控状态。14.2 原语/参数（第 43-44 页）：MA_UNITDATA.request/.indication，带 destination_address、source_address、mac_service_data_unit、priority。14.3 状态参数（第 44 页）：MAC_Enabled、MAC_Operational。14.4 原语序列（第 44 页）：图 14-1 request->indication。附录 A（第 45 页）：资料性参考文献（[B1] 802.1AE-2006、[B2] ISO/IEC 8802-2、[B3] ISO/IEC 15802-1、[B4] IETF RFC 787）。附录 B（第 46 页）：对 802.11 介质 ISS 支持的资料性重述，含通用链路（GLK）与非 GLK 汇聚功能（B.1.1-B.1.5），把 Wi-Fi 框入 802.1Q 桥接 LAN 之中。",
+      "cite": {
+        "pdf_id": "8021AC-2016",
+        "pages": [
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AC-2016",
+      "pages": [
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "note": "Clause 13 convergence functions (Ethernet, WLAN, WirelessMAN, RPR, MBWA, PMPN), Clause 14 MAC Service primitives/status/sequence, Annex A bibliography, Annex B informative 802.11 ISS support."
+    }
+  ],
+  "covers": [
+    "8021AC-2016:13.1",
+    "8021AC-2016:13.2.1",
+    "8021AC-2016:13.2.2",
+    "8021AC-2016:13.2.3",
+    "8021AC-2016:13.2.4",
+    "8021AC-2016:13.3.1",
+    "8021AC-2016:13.4",
+    "8021AC-2016:13.5.1",
+    "8021AC-2016:13.5.2",
+    "8021AC-2016:13.6.1",
+    "8021AC-2016:13.6.2",
+    "8021AC-2016:14.1",
+    "8021AC-2016:14.2",
+    "8021AC-2016:14.3",
+    "8021AC-2016:14.4",
+    "8021AC-2016:Annex_A",
+    "8021AC-2016:Annex_B"
+  ],
+  "track": "bridging-tsn"
+}

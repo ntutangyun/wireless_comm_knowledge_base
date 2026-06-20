@@ -1,0 +1,152 @@
+{
+  "id": "tsn-36",
+  "title": {
+    "en": "Managing FRER: Configuration Tables, Counters, PICS, and System Examples (Clause 10 + Annexes A-D)",
+    "zh": "管理 FRER：配置表、计数器、PICS 与系统示例（第 10 章 + 附录 A-D）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Earlier clauses of IEEE Std 802.1CB-2017 describe what Frame Replication and Elimination for Reliability (FRER) does: a talker replicates a time-sensitive Stream onto several disjoint paths, and a listener eliminates the duplicates so a single fault on any one path never drops a packet. Clause 10 answers a different question: how does a network manager actually turn those functions on, point them at the right Streams and ports, and watch them work? It is the management surface for FRER — a set of configuration tables, plus counters you read back to see whether replication is paying off. The Annexes then add the conformance checklist (PICS), interoperability notes, worked system examples, and the bibliography.",
+      "zh": "IEEE Std 802.1CB-2017 的前面各章描述了帧复制与消除以提高可靠性（FRER，Frame Replication and Elimination for Reliability）做什么：发送方（talker）把一条时间敏感的流（Stream）复制到多条互不相交的路径上，接收方（listener）消除重复帧，从而任何单条路径上的单点故障都不会丢包。第 10 章回答的是另一个问题：网络管理者究竟如何把这些功能打开、把它们对准正确的流和端口，并观察其运行情况？这就是 FRER 的管理面（management surface）——一组配置表，外加一批用来读回、判断复制是否奏效的计数器。随后的附录补充了一致性检查表（PICS）、互操作说明、完整的系统示例以及参考文献。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10 opens (10.1) with one rule shared by every counter in the standard: counters never reset to a chosen value — when they overflow they wrap to 0 and keep counting. The standard assumes management reads each counter often enough that at most one wrap happens between reads, that a \"time since last reset\" object exists, and that a counter is wide enough to take at least a minute to wrap (and at least 64 bits on links faster than 650 Mbit/s). Next, 10.2 adds two fields to each Stream-identity entry used by autoconfiguration: tsnStreamIdAutoconfigured (10.2.1, a read-only flag saying whether the entry was created by hand or auto-created) and tsnStreamIdLanPathId (10.2.2, the LanId/PathId that an HSR or PRP frame must match, where HSR = High-availability Seamless Redundancy and PRP = Parallel Redundancy Protocol).",
+      "zh": "第 10 章开篇（10.1）给出所有计数器共用的一条规则：计数器从不复位到某个指定值——溢出时回绕（wrap）到 0 并继续计数。标准假定：管理实体读取每个计数器的频率足够高，两次读取之间最多发生一次回绕；系统中存在一个“自上次复位以来的时间”对象；且计数器位宽足够大，从 0 回绕一圈至少需要一分钟（在快于 650 Mbit/s 的链路上至少为 64 位）。接着，10.2 为自动配置所用的每个流标识表项新增两个字段：tsnStreamIdAutoconfigured（10.2.1，只读标志，指明该表项是手工创建还是自动创建）与 tsnStreamIdLanPathId（10.2.2，即 HSR 或 PRP 帧必须匹配的 LanId/PathId，其中 HSR = 高可用无缝冗余，PRP = 并行冗余协议）。"
+    },
+    {
+      "type": "prose",
+      "en": "The heart of Clause 10 is six configuration tables, each one switch-board for a FRER function defined back in Clause 7. The Sequence generation table (10.3, entry frerSeqGenEntry 10.3.1) stamps an outgoing sequence number onto a Stream: it just names which Streams and which side of the port (out-facing vs in-facing). The Sequence recovery table (10.4, frerSeqRcvyEntry 10.4.1) is the richest — it configures the duplicate-elimination engine, choosing the algorithm (Vector or Match), how much history to remember, reset timers, whether to do per-port Individual recovery, and an optional Latent error detection function that quietly checks whether one path has silently died. The Sequence identification table (10.5, frerSeqEncEntry 10.5.1) says how the sequence number is carried on the wire — an R-TAG, an HSR tag, or a PRP trailer — and whether the function is active (encodes outgoing frames) or passive (only decodes). The Stream split table (10.6, frerSplitEntry 10.6.1) is the replicator: it maps one input stream_handle to several output stream_handles, one copy per path.",
+      "zh": "第 10 章的核心是六张配置表，每张都是第 7 章所定义某个 FRER 功能的“配电盘”。序列生成表（10.3，表项 frerSeqGenEntry 10.3.1）为发出的流打上序列号：只需指明作用于哪些流、以及端口的哪一侧（朝外 out-facing 还是朝内 in-facing）。序列恢复表（10.4，frerSeqRcvyEntry 10.4.1）最为丰富——它配置去重引擎，可选择算法（Vector 或 Match）、记忆多少历史、复位定时器、是否进行逐端口的单独恢复（Individual recovery），以及可选的潜伏错误检测功能（Latent error detection），用以悄悄检查某条路径是否已无声地失效。序列标识表（10.5，frerSeqEncEntry 10.5.1）规定序列号在线路上如何承载——R-TAG、HSR 标签还是 PRP 尾标——以及该功能是主动（active，对发出帧编码）还是被动（passive，仅解码）。流拆分表（10.6，frerSplitEntry 10.6.1）就是复制器：它把一个输入 stream_handle 映射为多个输出 stream_handle，每条路径一份副本。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Stream identity table 9.1 + 10.2 fields] --> B[Sequence generation 10.3]\n  B --> C[Stream split 10.6]\n  C --> D[Sequence identification 10.5 encode]\n  D --> P1[Path 1]\n  D --> P2[Path 2]\n  P1 --> E[Sequence identification 10.5 decode]\n  P2 --> E\n  E --> F[Sequence recovery 10.4 eliminate dups]\n  G[Autoconfig tables 10.7] -. auto-create .-> A & D & F\n  F --> H[Counters 10.8 / 10.9]",
+      "zh": "flowchart LR\n  A[流标识表 9.1 + 10.2 字段] --> B[序列生成 10.3]\n  B --> C[流拆分 10.6]\n  C --> D[序列标识 10.5 编码]\n  D --> P1[路径 1]\n  D --> P2[路径 2]\n  P1 --> E[序列标识 10.5 解码]\n  P2 --> E\n  E --> F[序列恢复 10.4 去重]\n  G[自动配置表 10.7] -. 自动创建 .-> A & D & F\n  F --> H[计数器 10.8 / 10.9]"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy mental split: tables 10.3 and 10.6 live on the talker/sender side (stamp a number, fan out copies), tables 10.4 and 10.5 live on the listener/receiver side (read the number, throw away duplicates), and 10.5 is the only one that touches the actual bytes on the wire (the tag or trailer carrying the sequence number).",
+      "zh": "一个好记的划分：10.3 和 10.6 两张表位于发送方（talker）一侧（打号、分发副本）；10.4 和 10.5 两张表位于接收方（listener）一侧（读号、丢弃重复）；而 10.5 是唯一真正改动线路上字节的表（承载序列号的标签或尾标）。"
+    },
+    {
+      "type": "prose",
+      "en": "Configuring all of that by hand for every Stream would be tedious, so 10.7 adds autoconfiguration tables that build entries automatically the first time a matching packet arrives. The Sequence autoconfiguration table (10.7.1, entry frerAutSeqEntry) describes one class of Streams — which ports, VLAN tagging rules, and which encapsulation to recognize — and the template values (algorithm, history length, timers, whether to also create Individual recovery or Latent error detection) used to fill in a fresh recovery entry. The Output autoconfiguration table (10.7.2, entry frerAutOutEntry) does the same job for the sending side, auto-creating active Sequence encode/decode functions and the LanId/PathId to insert. An idle auto-created function is torn down after a configurable timeout (default one day), keeping the tables tidy.",
+      "zh": "为每条流手工配置上述全部内容会非常繁琐，因此 10.7 增加了自动配置（autoconfiguration）表，在首次收到匹配报文时自动建立表项。序列自动配置表（10.7.1，表项 frerAutSeqEntry）描述一类流——涉及哪些端口、VLAN 打标签规则、识别哪种封装——以及用于填充新建恢复表项的模板值（算法、历史长度、各定时器、是否同时创建单独恢复或潜伏错误检测）。输出自动配置表（10.7.2，表项 frerAutOutEntry）为发送侧做同样的事，自动创建主动的序列编码/解码功能以及要插入的 LanId/PathId。空闲的自动创建功能会在可配置的超时（默认一天）后被拆除，使表保持整洁。"
+    },
+    {
+      "type": "prose",
+      "en": "How do you know FRER is helping rather than silently failing? The counters in 10.8 and 10.9. The per-port, per-Stream counters (10.8) tell the detailed story per Stream: how often the generator was reset (10.8.2), how many packets arrived out of order (10.8.3), rogue packets too far outside the history window (10.8.4), packets passed up the stack (10.8.5), duplicates discarded — the headline win of FRER (10.8.6), packets lost on every path at once (10.8.7), tagless packets with no sequence number (10.8.8), recovery resets (10.8.9), latent-error resets (10.8.10), and frames the encoder could not decode (10.8.11). The per-port roll-ups (10.9) total these across all Streams on a port: passed (10.9.1), discarded-plus-rogue (10.9.2), and encode errors (10.9.3). A healthy redundant network shows discarded-duplicate counts climbing steadily (the second copy was unneeded — good) while lost counts stay at zero.",
+      "zh": "你怎么知道 FRER 在帮忙而不是在悄悄失效？靠 10.8 与 10.9 的计数器。逐端口、逐流计数器（10.8）给出每条流的细节：生成器被复位的次数（10.8.2）、乱序到达的报文数（10.8.3）、偏离历史窗口过远的“异常”（rogue）报文（10.8.4）、向上层递交的报文（10.8.5）、被丢弃的重复帧——这正是 FRER 的核心成效（10.8.6）、在所有路径上同时丢失的报文（10.8.7）、没有序列号的无标签报文（10.8.8）、恢复复位次数（10.8.9）、潜伏错误复位次数（10.8.10）、以及编码器无法解码的帧（10.8.11）。逐端口汇总（10.9）把这些在一个端口上的所有流上累加：已递交（10.9.1）、丢弃加异常（10.9.2）、编码错误（10.9.3）。一个健康的冗余网络中，被丢弃的重复帧计数应稳步上升（说明第二份副本未被用到——这是好事），而丢失计数应保持为零。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 140\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"8\" y=\"16\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Per-Stream counters (10.8) feed per-port roll-ups (10.9)</text><rect x=\"10\" y=\"30\" width=\"120\" height=\"26\"/><text x=\"16\" y=\"47\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">10.8.5 Passed</text><rect x=\"10\" y=\"62\" width=\"120\" height=\"26\"/><text x=\"16\" y=\"79\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">10.8.6 Discarded dup</text><rect x=\"10\" y=\"94\" width=\"120\" height=\"26\"/><text x=\"16\" y=\"111\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">10.8.4 Rogue</text><line x1=\"130\" y1=\"43\" x2=\"300\" y2=\"50\"/><line x1=\"130\" y1=\"75\" x2=\"300\" y2=\"86\"/><line x1=\"130\" y1=\"107\" x2=\"300\" y2=\"90\"/><rect x=\"300\" y=\"38\" width=\"130\" height=\"26\"/><text x=\"306\" y=\"55\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">10.9.1 Port passed</text><rect x=\"300\" y=\"78\" width=\"130\" height=\"26\"/><text x=\"306\" y=\"95\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">10.9.2 Port discarded</text></svg>",
+      "caption": {
+        "en": "Per-Stream FRER counters (10.8) sum into per-port totals (10.9): e.g. port passed (10.9.1) is the sum of every Stream's passed counter on that port.",
+        "zh": "逐流 FRER 计数器（10.8）汇总为逐端口总计（10.9）：例如端口已递交（10.9.1）等于该端口上各条流的已递交计数之和。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The Annexes round out the standard. Annex A (normative) is the Protocol Implementation Conformance Statement (PICS) proforma — a fixed questionnaire a supplier fills in to declare exactly which capabilities and options of Clause 7 their FRER product implements, using symbols like M (mandatory), O (optional), X (prohibited), and conditional predicates. Annex B (informative) covers interoperability with IEC 62439-3 HSR/PRP and RFC 3985 pseudowires: all three use 16-bit sequence numbers like FRER, but HSR/PRP sequence per source MAC address rather than per Stream, so a listener must size its history window (10.4.1.6) generously to avoid mistaking gaps for loss. Annex C (informative) gives worked system examples — dual-homed end systems using IEEE 802.1AX Link Aggregation, relay systems acting as FRER proxies, and various protocol-stack placements — showing how the Clause 6/7 building blocks combine. Annex D (informative) is the bibliography (referencing IEEE 802.1BA, 802.3, 1722, and RFC 3985).",
+      "zh": "各附录使标准更加完整。附录 A（规范性）是协议实现一致性声明（PICS，Protocol Implementation Conformance Statement）模板——一份固定问卷，供应商据此声明其 FRER 产品究竟实现了第 7 章的哪些能力与选项，使用 M（强制）、O（可选）、X（禁止）等符号以及条件谓词。附录 B（资料性）讨论与 IEC 62439-3 的 HSR/PRP 及 RFC 3985 伪线（pseudowire）的互操作：三者都像 FRER 一样使用 16 位序列号，但 HSR/PRP 按源 MAC 地址而非按流编号，因此接收方必须把历史窗口（10.4.1.6）配置得足够大，以免把序号间隙误判为丢失。附录 C（资料性）给出完整的系统示例——使用 IEEE 802.1AX 链路聚合的双归属端系统、充当 FRER 代理的中继系统、以及各种协议栈位置——展示第 6/7 章的构件如何组合。附录 D（资料性）是参考文献（引用 IEEE 802.1BA、802.3、1722 与 RFC 3985）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every Clause 10 subclause and Annex, by number",
+        "zh": "覆盖地图：第 10 章每个子条款与附录（按编号）"
+      },
+      "en": "Counter rules — 10.1: all counters wrap to 0 on overflow, never reset to a value; assumes frequent reads, a last-reset-time object, and ≥1-minute wrap (≥64 bits above 650 Mbit/s). Stream-identity additions — 10.2.1 tsnStreamIdAutoconfigured (read-only: created by hand=False, auto=True); 10.2.2 tsnStreamIdLanPathId (LanId/PathId an HSR/PRP frame must match; –1 = ignore). Six config tables — 10.3.1 frerSeqGenEntry: Streams + out/in-facing direction for the Sequence generation function. 10.4.1 frerSeqRcvyEntry: the recovery engine (Stream list, port list, direction, reset, algorithm Vector/Match, history length, reset timer, invalid-sequence value, take-no-sequence, Individual-vs-Sequence recovery, latent-error detection and its difference/period/paths/reset-period sub-objects). 10.5.1 frerSeqEncEntry: encapsulation type (R-TAG / HSR tag / PRP trailer), port, direction, active-vs-passive, PathId/LanId. 10.6.1 frerSplitEntry: the replicator — port, direction, input and output stream_handle lists. Autoconfiguration — 10.7.1 Sequence autoconfiguration table (frerAutSeqEntry: receive/recovery port lists, tagging, VLAN, template algorithm/history/timers, create-Individual/Recovery/latent-error flags, destruct timeout); 10.7.2 Output autoconfiguration table (frerAutOutEntry: port list, encapsulation, LanId/PathId). Counters — per-port-per-Stream 10.8: 10.8.1 per-Stream vs per-Stream-per-port semantics; 10.8.2 SeqGenResets; 10.8.3 OutOfOrderPackets; 10.8.4 RoguePackets; 10.8.5 PassedPackets; 10.8.6 DiscardedPackets (duplicates removed); 10.8.7 LostPackets; 10.8.8 TaglessPackets; 10.8.9 SeqRcvyResets; 10.8.10 LatentErrorResets; 10.8.11 SeqEncErroredPackets. Per-port roll-ups 10.9: 10.9.1 passed, 10.9.2 discarded+rogue, 10.9.3 encode errors — each the modulo sum of the matching 10.8 counters on that port. Annexes — Annex_A (normative) PICS proforma with M/O/X symbols and conditional predicates; Annex_B (informative) interoperability with HSR/PRP and pseudowires (16-bit numbers, per-source sequencing caveat, history-window sizing); Annex_C (informative) worked system examples (Link Aggregation dual-homing, proxy relay, stack placements); Annex_D (informative) bibliography (802.1BA, 802.3, 1722, RFC 3985).",
+      "zh": "计数器规则——10.1：所有计数器溢出时回绕到 0，绝不复位到某个值；假定频繁读取、存在上次复位时间对象、回绕周期 ≥1 分钟（650 Mbit/s 以上 ≥64 位）。流标识新增字段——10.2.1 tsnStreamIdAutoconfigured（只读：手工=False，自动=True）；10.2.2 tsnStreamIdLanPathId（HSR/PRP 帧须匹配的 LanId/PathId；–1 表示忽略）。六张配置表——10.3.1 frerSeqGenEntry：序列生成功能的流列表与朝外/朝内方向。10.4.1 frerSeqRcvyEntry：恢复引擎（流列表、端口列表、方向、复位、算法 Vector/Match、历史长度、复位定时器、无效序号值、接受无序号、单独恢复与序列恢复之别、潜伏错误检测及其差值/周期/路径数/复位周期子对象）。10.5.1 frerSeqEncEntry：封装类型（R-TAG / HSR 标签 / PRP 尾标）、端口、方向、主动与被动、PathId/LanId。10.6.1 frerSplitEntry：复制器——端口、方向、输入与输出 stream_handle 列表。自动配置——10.7.1 序列自动配置表（frerAutSeqEntry：接收/恢复端口列表、打标签、VLAN、模板算法/历史/定时器、创建单独/恢复/潜伏错误标志、拆除超时）；10.7.2 输出自动配置表（frerAutOutEntry：端口列表、封装、LanId/PathId）。计数器——逐端口逐流 10.8：10.8.1 逐流与逐流逐端口语义；10.8.2 生成复位；10.8.3 乱序报文；10.8.4 异常报文；10.8.5 已递交报文；10.8.6 丢弃报文（去除的重复）；10.8.7 丢失报文；10.8.8 无标签报文；10.8.9 恢复复位；10.8.10 潜伏错误复位；10.8.11 编码错误报文。逐端口汇总 10.9：10.9.1 已递交、10.9.2 丢弃+异常、10.9.3 编码错误——各为该端口上对应 10.8 计数器的取模之和。附录——Annex_A（规范性）含 M/O/X 符号与条件谓词的 PICS 模板；Annex_B（资料性）与 HSR/PRP 及伪线的互操作（16 位编号、按源编号注意事项、历史窗口取值）；Annex_C（资料性）系统示例（链路聚合双归属、代理中继、协议栈位置）；Annex_D（资料性）参考文献（802.1BA、802.3、1722、RFC 3985）。",
+      "cite": {
+        "pdf_id": "8021CB-2017",
+        "pages": [
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          88,
+          89,
+          90,
+          101
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021CB-2017",
+      "pages": [
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78
+      ],
+      "note": "Clause 10: counter behavior (10.1), tsnStreamIdEntry additions (10.2), the six FRER configuration tables (10.3-10.6), autoconfiguration tables (10.7), and per-Stream/per-port counters (10.8-10.9)."
+    },
+    {
+      "pdf_id": "8021CB-2017",
+      "pages": [
+        79,
+        80,
+        88,
+        89,
+        90,
+        101
+      ],
+      "note": "Annex A PICS proforma intro and symbols; Annex B HSR/PRP and pseudowire interoperability; Annex C worked system examples; Annex D bibliography."
+    }
+  ],
+  "covers": [
+    "8021CB-2017:10.1",
+    "8021CB-2017:10.2.1",
+    "8021CB-2017:10.2.2",
+    "8021CB-2017:10.3.1",
+    "8021CB-2017:10.4.1",
+    "8021CB-2017:10.5.1",
+    "8021CB-2017:10.6.1",
+    "8021CB-2017:10.7.1",
+    "8021CB-2017:10.7.2",
+    "8021CB-2017:10.8.1",
+    "8021CB-2017:10.8.2",
+    "8021CB-2017:10.8.3",
+    "8021CB-2017:10.8.4",
+    "8021CB-2017:10.8.5",
+    "8021CB-2017:10.8.6",
+    "8021CB-2017:10.8.7",
+    "8021CB-2017:10.8.8",
+    "8021CB-2017:10.8.9",
+    "8021CB-2017:10.8.10",
+    "8021CB-2017:10.8.11",
+    "8021CB-2017:10.9.1",
+    "8021CB-2017:10.9.2",
+    "8021CB-2017:10.9.3",
+    "8021CB-2017:Annex_A",
+    "8021CB-2017:Annex_B",
+    "8021CB-2017:Annex_C",
+    "8021CB-2017:Annex_D"
+  ],
+  "track": "tsn"
+}

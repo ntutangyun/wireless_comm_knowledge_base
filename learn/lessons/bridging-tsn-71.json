@@ -1,0 +1,110 @@
+{
+  "id": "bridging-tsn-71",
+  "title": {
+    "en": "Wiring the MAC Service to 802.15.3 Wireless Multimedia: Clause 13.7 and Annex A",
+    "zh": "把 MAC 服务接到 802.15.3 无线多媒体网络：13.7 节与附录 A"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1ACct-2021 is a tiny but important amendment. Its whole job is to teach the MAC Service Definition (the abstract interface that bridges and higher layers use to send and receive frames) how to ride on top of a new kind of link: a High Data Rate Wireless Multi-Media Network defined by IEEE Std 802.15.3-2016. This lesson covers the two pieces that make that connection real — the new convergence subclause 13.7, and the one new bibliography entry added in Annex A.",
+      "zh": "IEEE Std 802.1ACct-2021 是一份篇幅很小但意义明确的修订案。它的全部任务，就是教 MAC 服务定义（桥接设备和上层用来收发帧的抽象接口）如何运行在一种新型链路之上：由 IEEE Std 802.15.3-2016 定义的高数据率无线多媒体网络。本课讲解让这一连接真正落地的两个部分——新增的汇聚子条款 13.7，以及附录 A 中新增的一条参考文献。"
+    },
+    {
+      "type": "prose",
+      "en": "First, some vocabulary. The Internal Sublayer Service (ISS) is the precise version of the MAC Service that bridges use internally; it carries primitives like M_UNITDATA.request (a 'please send this frame' message) and M_UNITDATA.indication (a 'here is a received frame' message). A convergence function is the glue that maps those abstract ISS primitives onto the real send/receive operations of a specific MAC technology. Clause 13 collects one such glue layer per MAC; subclause 13.7 adds the glue for 802.15.3.",
+      "zh": "先理清几个术语。内部子层服务（ISS，Internal Sublayer Service）是桥接设备内部使用的 MAC 服务的精确版本；它承载 M_UNITDATA.request（“请发送这一帧”的消息）和 M_UNITDATA.indication（“这是收到的一帧”的消息）等原语。汇聚功能（convergence function）则是把这些抽象的 ISS 原语对接到某种具体 MAC 技术真实收发操作上的“胶水”。条款 13 为每一种 MAC 收集一份这样的胶水层；子条款 13.7 增加了针对 802.15.3 的那一份。"
+    },
+    {
+      "type": "prose",
+      "en": "The 802.15.3 standard already defines its own adaptation layer called the Frame Convergence Sublayer (FCSL) — described in Annex B of IEEE Std 802.15.3-2016 — which presents a single interface to the underlying MAC Service. 802.15.3 uses Ethertype Protocol Discrimination (EPD), the scheme that tags a payload by its 16-bit Ethertype value, and explicitly does not support LLC Protocol Discrimination (LPD), the older LLC/SNAP-based scheme. Clause 13.7 simply points to where the EPD FCSL is specified: its function in B.2, its QoS aspects in B.3, and the FCSL Service Access Point (SAP) — the named point where primitives cross the interface — in B.4.",
+      "zh": "802.15.3 标准本身已经定义了一个自己的适配层，称为帧汇聚子层（FCSL，Frame Convergence Sublayer）——在 IEEE Std 802.15.3-2016 的附录 B 中描述——它向底层 MAC 服务呈现一个统一的接口。802.15.3 采用以太类型协议识别（EPD，Ethertype Protocol Discrimination），即用 16 位以太类型值来标识载荷的方案，并且明确不支持 LLC 协议识别（LPD，LLC Protocol Discrimination）这一基于 LLC/SNAP 的较旧方案。条款 13.7 只是指明 EPD FCSL 的规定所在：其功能见 B.2，其 QoS 方面见 B.3，而 FCSL 服务接入点（SAP，Service Access Point）——原语穿过接口的命名点——见 B.4。"
+    },
+    {
+      "type": "prose",
+      "en": "A nice detail: an 802.15.3 network runs in one of two modes. A piconet is a cluster of up to roughly 250 devices, while a pairnet is exactly two devices. In both modes the FCSL behaves as one single interface to the MAC Service, so the convergence rules above are identical regardless of mode — only the chosen primitive differs (more on that next).",
+      "zh": "一个有趣的细节：802.15.3 网络以两种模式之一运行。微微网（piconet）是多达约 250 个设备组成的集群，而对网（pairnet）则恰好由两个设备组成。在这两种模式下，FCSL 都表现为面向 MAC 服务的同一个统一接口，因此上述汇聚规则与模式无关——只有所选用的原语不同（下文详述）。"
+    },
+    {
+      "type": "prose",
+      "en": "How are devices addressed? When a device joins a piconet or pairnet it receives an 8-bit Device Identifier (DEVID) that is unique within that network, and most frames carry the DEVID in place of the full MAC address. A device can always recover the associated MAC address from a DEVID, so the ISS — which thinks in MAC addresses — stays happy. Note the lowercase-vs-uppercase trap: DEVID here is the 802.15.3 device identifier, not the secure DevID of IEEE Std 802.1AR-2018; they are unrelated.",
+      "zh": "设备如何寻址？当一个设备加入微微网或对网时，会获得一个在该网络内唯一的 8 位设备标识符（DEVID，Device Identifier），大多数帧使用 DEVID 来代替完整的 MAC 地址。设备始终可以根据 DEVID 反查出对应的 MAC 地址，因此以 MAC 地址思考的 ISS 不受影响。注意大小写陷阱：这里的 DEVID 是 802.15.3 的设备标识符，并不是 IEEE Std 802.1AR-2018 中的安全设备标识 DevID，二者毫无关联。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TB\n  ISS[ISS M_UNITDATA.request] --> FCSL[EPD FCSL]\n  FCSL --> Q{priority?}\n  Q -->|piconet 0-1| A[MAC-ASYNC-DATA.request]\n  Q -->|piconet 2-7| B[MAC-ISOCH-DATA.request]\n  Q -->|pairnet| C[MAC-HRCP-MUL-DATA.request]",
+      "zh": "flowchart TB\n  ISS[ISS M_UNITDATA.request] --> FCSL[EPD FCSL 汇聚]\n  FCSL --> Q{优先级?}\n  Q -->|微微网 0-1| A[MAC-ASYNC-DATA.request]\n  Q -->|微微网 2-7| B[MAC-ISOCH-DATA.request]\n  Q -->|对网| C[MAC-HRCP-MUL-DATA.request]"
+    },
+    {
+      "type": "prose",
+      "en": "The heart of 13.7 is the mapping table for the send direction. When the FCSL receives an M_UNITDATA.request, it picks one 802.15.3 MAC SAP primitive based on the network mode and the priority value. In a piconet, priorities 0–1 use MAC-ASYNC-DATA.request (best-effort asynchronous delivery) and priorities 2–7 use MAC-ISOCH-DATA.request (isochronous, for time-sensitive streams). In a pairnet, regardless of priority, the FCSL uses MAC-HRCP-MUL-DATA.request. The parameters are copied across cleanly: destination_address and source_address pass through unaltered, the mac_service_data_unit becomes the Data parameter, and the ISS priority becomes UserPriority. The drop_eligible, frame_check_sequence, service_access_point_identifier, and connection_identifier parameters are simply ignored.",
+      "zh": "13.7 的核心是发送方向的映射表。当 FCSL 收到一个 M_UNITDATA.request 时，它会根据网络模式和优先级值选取一个 802.15.3 的 MAC SAP 原语。在微微网中，优先级 0–1 使用 MAC-ASYNC-DATA.request（尽力而为的异步传输），优先级 2–7 使用 MAC-ISOCH-DATA.request（等时传输，用于时间敏感的流）。在对网中，无论优先级如何，FCSL 都使用 MAC-HRCP-MUL-DATA.request。各参数被干净地复制过去：destination_address 与 source_address 原样传递，mac_service_data_unit 成为 Data 参数，ISS 的 priority 成为 UserPriority。而 drop_eligible、frame_check_sequence、service_access_point_identifier 和 connection_identifier 这几个参数则被直接忽略。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Remember the priority split with a simple rule: in a piconet, low priority (0–1) goes asynchronous, higher priority (2–7) goes isochronous; a pairnet has only one path, so priority does not branch at all. Time-sensitive traffic naturally lands on the isochronous primitive.",
+      "zh": "用一条简单规则记住优先级划分：在微微网中，低优先级（0–1）走异步，较高优先级（2–7）走等时；对网只有一条路径，因此优先级根本不分叉。时间敏感流量自然落到等时原语上。"
+    },
+    {
+      "type": "prose",
+      "en": "The receive direction mirrors this. When the FCSL receives a MAC SAP data indication, it builds an M_UNITDATA.indication: DestinationAddress and SourceAddress pass through unchanged, and the Ethertype and Data parameters are concatenated to rebuild the mac_service_data_unit (this is exactly the EPD scheme at work). For a MAC-ISOCH-DATA.indication the UserPriority is preserved; for a MAC-ASYNC-DATA.indication the priority is set to zero. The delivered frame is marked drop_eligible = FALSE, and frame_check_sequence, service_access_point_identifier, and connection_identifier are all null. Two status booleans round it out: MAC_Enabled is always TRUE, and MAC_Operational is TRUE only while the device is associated with a piconet or pairnet.",
+      "zh": "接收方向与之对称。当 FCSL 收到一个 MAC SAP 数据指示原语时，它会构建一个 M_UNITDATA.indication：DestinationAddress 与 SourceAddress 原样传递，并把 Ethertype 与 Data 参数拼接起来重建出 mac_service_data_unit（这正是 EPD 方案在起作用）。对于 MAC-ISOCH-DATA.indication，UserPriority 被保留；对于 MAC-ASYNC-DATA.indication，priority 被置为零。送达的帧被标记为 drop_eligible = FALSE，而 frame_check_sequence、service_access_point_identifier 和 connection_identifier 全部为空值。两个状态布尔量收尾：MAC_Enabled 恒为 TRUE，MAC_Operational 仅在设备已关联到某个微微网或对网时为 TRUE。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 400 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"4\" y=\"16\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Received MAC SAP indication</text><rect x=\"4\" y=\"24\" width=\"90\" height=\"30\"/><text x=\"49\" y=\"43\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">Ethertype</text><rect x=\"94\" y=\"24\" width=\"150\" height=\"30\"/><text x=\"169\" y=\"43\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">Data</text><text x=\"4\" y=\"82\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">M_UNITDATA.indication MSDU</text><rect x=\"4\" y=\"90\" width=\"240\" height=\"26\"/><text x=\"124\" y=\"108\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">Ethertype + Data concatenated</text></svg>",
+      "caption": {
+        "en": "On receive, the EPD FCSL concatenates the Ethertype and Data fields to reconstruct the ISS mac_service_data_unit.",
+        "zh": "在接收时，EPD FCSL 把 Ethertype 与 Data 字段拼接起来，重建出 ISS 的 mac_service_data_unit。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: exactly where 13.7 and Annex A live",
+        "zh": "覆盖地图：13.7 与附录 A 的确切位置"
+      },
+      "en": "Clause 13.7 — High Data Rate Wireless Multi-Media Networks convergence functions — is inserted as a brand-new subclause at the end of Clause 13 (Support of the Internal Sublayer Service by specific MAC procedures). It (a) points the reader to the EPD FCSL of IEEE Std 802.15.3-2016: function in B.2, QoS in B.3, SAP in B.4; (b) explains piconet vs. pairnet modes and the 8-bit DEVID addressing; (c) gives Table 13-3, the request-direction mapping of M_UNITDATA.request to MAC-ASYNC-DATA.request / MAC-ISOCH-DATA.request / MAC-HRCP-MUL-DATA.request by mode and priority; (d) lists which ISS parameters pass through and which are ignored on request; and (e) defines the indication-direction reconstruction (Ethertype+Data concatenation, priority handling, drop_eligible, and the MAC_Enabled / MAC_Operational status values). Annex A (informative) Bibliography adds exactly one reference, [B1a] IEEE Std 802.1AR-2018 (Secure Device Identity), inserted after [B1]; it is the citation behind the footnote that distinguishes the 802.15.3 DEVID from the 802.1AR DevID.",
+      "zh": "条款 13.7——高数据率无线多媒体网络汇聚功能——作为一个全新的子条款插入在条款 13（特定 MAC 过程对内部子层服务的支持）的末尾。它（a）将读者指向 IEEE Std 802.15.3-2016 的 EPD FCSL：功能见 B.2，QoS 见 B.3，SAP 见 B.4；（b）解释微微网与对网两种模式以及 8 位 DEVID 寻址；（c）给出表 13-3，即请求方向上按模式和优先级把 M_UNITDATA.request 映射到 MAC-ASYNC-DATA.request / MAC-ISOCH-DATA.request / MAC-HRCP-MUL-DATA.request 的映射表；（d）列出请求时哪些 ISS 参数透传、哪些被忽略；（e）定义指示方向的重建（Ethertype+Data 拼接、优先级处理、drop_eligible，以及 MAC_Enabled / MAC_Operational 状态值）。附录 A（资料性）参考文献恰好新增一条 [B1a] IEEE Std 802.1AR-2018（安全设备标识），插入在 [B1] 之后；它正是区分 802.15.3 的 DEVID 与 802.1AR 的 DevID 那条脚注所引用的依据。",
+      "cite": {
+        "pdf_id": "8021ACct-2021",
+        "pages": [
+          13,
+          14,
+          15
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Big picture: 802.1ACct is a thin adapter, not a new protocol. By writing one convergence subclause (13.7) plus a one-line bibliography entry (Annex A), it lets every bridge and higher-layer entity that already speaks the ISS treat an 802.15.3 wireless multimedia link just like any other MAC — no upper-layer changes required.",
+      "zh": "全局视角：802.1ACct 是一个轻薄的适配器，而非一种新协议。它只用一个汇聚子条款（13.7）加上一条参考文献（附录 A），就让所有已经使用 ISS 的桥接设备和上层实体，能够像对待任何其他 MAC 一样对待 802.15.3 无线多媒体链路——无需改动上层。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021ACct-2021",
+      "pages": [
+        13,
+        14
+      ],
+      "note": "Clause 13.7 — EPD FCSL convergence, piconet/pairnet, DEVID, Table 13-3 request mapping, indication reconstruction, MAC_Enabled/MAC_Operational."
+    },
+    {
+      "pdf_id": "8021ACct-2021",
+      "pages": [
+        15
+      ],
+      "note": "Annex A (informative) Bibliography — new reference [B1a] IEEE Std 802.1AR-2018."
+    }
+  ],
+  "covers": [
+    "8021ACct-2021:13.7",
+    "8021ACct-2021:Annex_A"
+  ],
+  "track": "bridging-tsn"
+}

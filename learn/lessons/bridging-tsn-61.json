@@ -1,0 +1,169 @@
+{
+  "id": "bridging-tsn-61",
+  "title": {
+    "en": "LLDP Foundations: Scope, Conformance, and How Discovery Frames Move (Clauses 1, 3, 5, 6, 7)",
+    "zh": "LLDP 基础：适用范围、合规性，以及发现帧如何传输（第 1、3、5、6、7 章）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "The Link Layer Discovery Protocol (LLDP), standardized as IEEE Std 802.1AB-2016, lets a station attached to an IEEE 802 LAN (Local Area Network) advertise who it is and how to manage it to its immediate neighbors on the same LAN. Each receiver stores what it hears in a Management Information Base (MIB) — a structured database — so a Network Management System (NMS) can read it later using a protocol such as SNMP (Simple Network Management Protocol). The standard's Scope (Clause 1.1) defines a protocol that advertises connectivity and management information to adjacent stations, receives the same from them, works over all IEEE 802 media, and stays compatible with the IETF physical-topology MIB (PTOPO). Its Purpose (Clause 1.2) is to make multi-vendor topology discovery interoperable and to help operators spot configuration inconsistencies that quietly break higher layers.",
+      "zh": "链路层发现协议（LLDP，Link Layer Discovery Protocol），即 IEEE Std 802.1AB-2016 标准，让接入某个 IEEE 802 局域网（LAN，Local Area Network）的站点向同一 LAN 上的直接邻居通告自己是谁、以及如何对其进行管理。每个接收方把听到的信息存入管理信息库（MIB，Management Information Base）这一结构化数据库中，之后网络管理系统（NMS，Network Management System）便可通过 SNMP（简单网络管理协议）等协议读取它。标准的适用范围（第 1.1 章）定义的协议会向相邻站点通告连接与管理信息、从它们处接收同类信息、可工作于所有 IEEE 802 介质之上，并与 IETF 的物理拓扑 MIB（PTOPO）保持兼容。其目的（第 1.2 章）是让多厂商拓扑发现实现互操作，并帮助运维人员发现那些悄悄破坏高层通信的配置不一致问题。"
+    },
+    {
+      "type": "prose",
+      "en": "Before the mechanics, the standard pins down its vocabulary (Clause 3.1, Definitions). A few terms recur constantly: a chassis is the physical box housing one or more stations; a port is the entity in a chassis that supports exactly one MAC Service Access Point (MSAP) — the door through which MAC (Media Access Control) service is delivered. The LLDP agent is the protocol entity that runs LLDP for one MSAP. Crucially, the receiver builds an MSAP identifier by concatenating the chassis ID and the port ID — a stable name for 'which port on which box.' A TLV (type, length, value) is the compact, self-describing encoding LLDP uses for every information element. Clause 3.2 (Numerical representation) is the reading key: decimals for counts, hex for addresses (e.g. 01-80-C2-00-00-0E), and binary for bit patterns, with subscripts to disambiguate.",
+      "zh": "在讲机制之前，标准先确定其术语（第 3.1 章，定义）。有几个术语会反复出现：chassis（机箱）是容纳一个或多个站点的物理盒子；port（端口）是机箱中恰好支持一个 MAC 服务接入点（MSAP，MAC Service Access Point）的实体——也就是交付 MAC（媒体访问控制）服务的那扇门。LLDP 代理（agent）是为某一个 MSAP 运行 LLDP 的协议实体。关键在于，接收方通过把机箱 ID 与端口 ID 拼接起来构造出一个 MSAP 标识符——这是对“哪个盒子上的哪个端口”的稳定命名。TLV（类型、长度、值，type/length/value）是 LLDP 为每个信息元素采用的紧凑、自描述的编码。第 3.2 章（数值表示）是阅读密钥：计数用十进制，地址用十六进制（如 01-80-C2-00-00-0E），位模式用二进制，并用下标加以区分。"
+    },
+    {
+      "type": "prose",
+      "en": "Conformance (Clause 5) tells you what counts as a real LLDP implementation. Clause 5.1 (Terminology) fixes the verbs: shall is mandatory, may is a free choice, should is recommended. A conformant supplier shall fill out a PICS (Protocol Implementation Conformance Statement) — the checklist in Annex A that mirrors every shall/may/should in the text (Clause 5.2). Required capabilities (Clause 5.3) include conforming destination/source addressing (7.1, 7.2) and EtherType encapsulation (7.3); supporting the receive (or transmit) of every TLV in any TLV set you claim; letting the operator pick which optional TLVs to send; and providing storage equivalent to the MIB even when SNMP is absent. Optional capabilities (Clause 5.4) are genuinely up to the vendor — for example, also running LLDP exchanges through the IEEE 802.1X uncontrolled port.",
+      "zh": "合规性（第 5 章）告诉你什么才算一个真正的 LLDP 实现。第 5.1 章（术语）固定了动词：shall（应）表示强制，may（可）表示自由选择，should（宜）表示推荐。合规的供应商应填写一份 PICS（协议实现一致性声明，Protocol Implementation Conformance Statement）——附录 A 中的清单，逐条对应正文里的每个 shall/may/should（第 5.2 章）。必备能力（第 5.3 章）包括：目的/源地址寻址须符合 7.1、7.2，EtherType 封装须符合 7.3；对所声明支持的每个 TLV 集合中的每个 TLV 都须支持接收（或发送）；须让运维人员选择发送哪些可选 TLV；并且即使没有 SNMP，也须提供与 MIB 等价的存储能力。可选能力（第 5.4 章）则确实由厂商自定，例如同时通过 IEEE 802.1X 的非受控端口运行 LLDP 交换。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model for LLDP: it is a one-way 'business card' broadcast, not a conversation. There is no request, no acknowledgment, and no negotiation. An agent simply posts its card periodically; neighbors read and cache it. That single design choice (Clause 6.2) explains almost everything else about how the protocol behaves.",
+      "zh": "理解 LLDP 的心智模型：它是单向的“名片”广播，而非对话。没有请求、没有确认、也没有协商。代理只是周期性地贴出自己的名片，邻居读取并缓存。这一个设计选择（第 6.2 章）几乎解释了该协议其余的全部行为。"
+    },
+    {
+      "type": "prose",
+      "en": "Principles of operation (Clause 6) assemble the picture. Transmission and reception (Clause 6.1): every LLDP frame carries an LLDPDU (LLDP Data Unit) — a sequence of TLVs that always begins with three mandatory ones, Chassis ID, Port ID, and Time To Live (TTL), optionally followed by other TLVs and an End-Of-LLDPDU marker. The TTL (in seconds) tells the receiver how long to trust this information before aging it out; a TTL of zero means 'discard my data now' (useful at port shutdown). Operational modes (Clause 6.2): because LLDP is one-way, transmit and receive are separately enabled, so a port may be transmit-only, receive-only, or both. Information categories (Clause 6.3): beyond the three mandatory TLVs there is a basic management set (Port Description, System Name, System Description, System Capabilities, Management Address) plus Organizationally Specific TLVs that vendors and other bodies can define.",
+      "zh": "运行原理（第 6 章）把全貌拼合起来。传输与接收（第 6.1 章）：每个 LLDP 帧承载一个 LLDPDU（LLDP 数据单元）——一串 TLV，开头总是三个强制 TLV：机箱 ID、端口 ID 和生存时间（TTL，Time To Live），其后可选跟随其他 TLV 以及一个 End-Of-LLDPDU 结束标记。TTL（以秒计）告诉接收方在将这条信息老化清除之前应信任它多久；TTL 为零表示“立即丢弃我的数据”（在端口关闭时很有用）。运行模式（第 6.2 章）：由于 LLDP 是单向的，发送和接收可分别启用，因此一个端口可以是仅发送、仅接收或两者兼具。信息类别（第 6.3 章）：除三个强制 TLV 外，还有一个基本管理集（端口描述、系统名称、系统描述、系统能力、管理地址），以及厂商和其他组织可自定义的“组织特定 TLV”。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"0\" y=\"14\" font-size=\"11\" stroke=\"none\" fill=\"currentColor\">MSDU = LLDP EtherType (88-CC) + LLDPDU</text><rect x=\"0\" y=\"24\" width=\"70\" height=\"40\"/><text x=\"35\" y=\"48\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">EtherType</text><rect x=\"70\" y=\"24\" width=\"110\" height=\"40\"/><text x=\"125\" y=\"45\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Chassis ID</text><text x=\"125\" y=\"57\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">(mandatory)</text><rect x=\"180\" y=\"24\" width=\"100\" height=\"40\"/><text x=\"230\" y=\"45\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Port ID</text><text x=\"230\" y=\"57\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">(mandatory)</text><rect x=\"280\" y=\"24\" width=\"80\" height=\"40\"/><text x=\"320\" y=\"45\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">TTL</text><text x=\"320\" y=\"57\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">(mandatory)</text><rect x=\"360\" y=\"24\" width=\"150\" height=\"40\" stroke-dasharray=\"4 3\"/><text x=\"435\" y=\"48\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">optional TLVs...</text><rect x=\"510\" y=\"24\" width=\"110\" height=\"40\" stroke-dasharray=\"4 3\"/><text x=\"565\" y=\"48\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">End-Of-LLDPDU</text><text x=\"125\" y=\"82\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Chassis ID + Port ID</text><text x=\"125\" y=\"94\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">= MSAP identifier</text><path d=\"M70 70 L70 88 L280 88 L280 70\" stroke-dasharray=\"3 2\"/></svg>",
+      "caption": {
+        "en": "LLDPDU layout (Clause 6.1, 7.3): the LLDP EtherType 88-CC is prepended to the LLDPDU to form the MSDU. The first three TLVs are always Chassis ID, Port ID, and TTL; the receiver concatenates Chassis ID and Port ID into the MSAP identifier.",
+        "zh": "LLDPDU 结构（第 6.1、7.3 章）：LLDP EtherType 88-CC 被前置到 LLDPDU 之前以构成 MSDU。前三个 TLV 始终是机箱 ID、端口 ID 和 TTL；接收方将机箱 ID 与端口 ID 拼接成 MSAP 标识符。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "TLV selection (Clause 6.4) draws a clean line: the data you send out is read from the LLDP local system MIB, and the data you hear is stored in the LLDP remote systems MIB — network management decides which TLVs go on the wire. Transmission principles (Clause 6.5): a transmit cycle fires either when a countdown timer expires or when a local managed object changes value; the management entity formats the objects into TLVs, packs them into an LLDPDU, and hands it to the transmit module, which prepends the addressing parameters. A transmission-delay timer caps how often frames can be re-sent so a burst of small changes does not flood the link, and senders typically set TTL high enough that several refreshes can be lost before a neighbor ages the entry out.",
+      "zh": "TLV 选择（第 6.4 章）划出一条清晰的界线：你发出的数据从 LLDP 本地系统 MIB 读取，你听到的数据存入 LLDP 远端系统 MIB——由网络管理决定哪些 TLV 上线。传输原理（第 6.5 章）：当倒计时定时器到期，或当本地某个被管对象的值发生变化时，便触发一个发送周期；管理实体把对象格式化为 TLV，打包进 LLDPDU，交给发送模块，由其前置寻址参数。一个传输延迟定时器限定帧的重发频率，以免一连串小改动淹没链路；发送方通常会把 TTL 设得足够高，使得在邻居把条目老化清除之前可以容忍丢失若干次刷新。"
+    },
+    {
+      "type": "prose",
+      "en": "Reception principles (Clause 6.6) close the loop. The receive module uses LLC (Logical Link Control) services to recognize that an incoming frame is an LLDPDU (the detailed match is in 7.4). Error handling (Clause 6.6.1): it checks the three mandatory TLVs are present in order — if any of them has a detectable error the whole LLDPDU is discarded; bad optional TLVs are dropped individually; unrecognized-but-well-formed TLVs are kept for later retrieval; and anything after an End-Of-LLDPDU TLV is ignored. A TLV whose length field is larger than its known fields is NOT discarded — this is the forward-compatibility rule that lets newer TLV versions append fields safely. MIB update (Clause 6.6.2): only after every TLV validates does the agent update the LLDP remote systems MIB.",
+      "zh": "接收原理（第 6.6 章）使闭环完整。接收模块利用 LLC（逻辑链路控制，Logical Link Control）服务识别出某个到达帧是一个 LLDPDU（详细匹配见 7.4）。错误处理（第 6.6.1 章）：它检查三个强制 TLV 是否按序齐备——只要其中任何一个存在可检测错误，整个 LLDPDU 就被丢弃；有问题的可选 TLV 被单独丢弃；无法识别但格式正确的 TLV 会被保留以供日后取用；End-Of-LLDPDU TLV 之后的任何内容都被忽略。长度字段大于其已知字段之和的 TLV 不会被丢弃——这正是向前兼容规则，使较新版本的 TLV 能够安全地追加字段。MIB 更新（第 6.6.2 章）：只有在每个 TLV 都通过校验后，代理才更新 LLDP 远端系统 MIB。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Frame arrives at MSAP] --> B{DA matches agent AND EtherType=88-CC?}\n  B -- no --> X[Drop]\n  B -- yes --> C[Deliver to LLDP receive module]\n  C --> D{First 3 TLVs valid and in order?}\n  D -- no --> X\n  D -- yes --> E[Validate each optional TLV]\n  E --> F[Update remote systems MIB]",
+      "zh": "flowchart TD\n  A[帧到达 MSAP] --> B{目的地址匹配代理 且 EtherType=88-CC?}\n  B -- 否 --> X[丢弃]\n  B -- 是 --> C[递交给 LLDP 接收模块]\n  C --> D{前三个强制 TLV 有效且按序?}\n  D -- 否 --> X\n  D -- 是 --> E[逐个校验可选 TLV]\n  E --> F[更新远端系统 MIB]"
+    },
+    {
+      "type": "prose",
+      "en": "Two structural cases round out Clause 6. Systems with multiple LLDP agents (Clause 6.7): each agent owns exactly one MSAP and uses its LSAP (Link Service Access Point) directly, so an agent is uniquely identified by its MSAP identifier — and one management entity can run many agents. A MAC Bridge naturally has an agent per port; a station using IEEE 802.1X has separate agents on its Controlled and Uncontrolled ports; and a single port can host several agents (one per destination-address scope) by adding a shim that multiplexes onto the common MSAP. LLDP and Link Aggregation (Clause 6.8): an agent can sit on an aggregated port or on a member physical port, but TLVs must match — physical-link-specific TLVs belong only on the agent with the shortest reach, while aggregation-wide TLVs belong on the aggregated port, per IEEE Std 802.1AX.",
+      "zh": "两种结构性情形为第 6 章收尾。具有多个 LLDP 代理的系统（第 6.7 章）：每个代理恰好拥有一个 MSAP，并直接使用其 LSAP（链路服务接入点，Link Service Access Point），因此代理可由其 MSAP 标识符唯一标识——而一个管理实体可运行多个代理。MAC 网桥天然为每个端口配一个代理；使用 IEEE 802.1X 的站点在其受控端口与非受控端口上各有独立代理；单个端口还可通过添加一个垫片（shim）复用到公共 MSAP 上，从而承载多个代理（每个对应一种目的地址作用域）。LLDP 与链路聚合（第 6.8 章）：代理可位于聚合端口上，也可位于某个成员物理端口上，但 TLV 必须匹配——物理链路专属的 TLV 只应放在到达距离最短的代理上，而聚合范围的 TLV 应放在聚合端口上，遵循 IEEE Std 802.1AX。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, Clause 7 nails down exactly how an LLDPDU travels. The four MAC-service parameters are destination address, source address, EtherType, and the LLDPDU itself. Destination address (Clause 7.1): three standard group MAC addresses give three propagation scopes — Nearest bridge (01-80-C2-00-00-0E) is blocked by every bridge type, so it never leaves the single physical link; Nearest non-TPMR bridge (01-80-C2-00-00-03) is relayed only by Two-Port MAC Relays (TPMRs); Nearest Customer Bridge (01-80-C2-00-00-00) is relayed by TPMRs and S-VLAN components. Implementations may also use any group or individual MAC address — an individual address even lets a Wi-Fi access point target one associated station. Source address (Clause 7.2) shall be the sending port's individual MAC address. EtherType (Clause 7.3) shall be the LLDP EtherType 88-CC, encoded directly on media like 802.3 or via SNAP on media like 802.11. LLDPDU reception (Clause 7.4): a frame is delivered up only if its destination address matches the agent's address AND its EtherType equals 88-CC.",
+      "zh": "最后，第 7 章精确规定 LLDPDU 如何传输。四个 MAC 服务参数是：目的地址、源地址、EtherType 和 LLDPDU 本身。目的地址（第 7.1 章）：三个标准组播 MAC 地址给出三种传播作用域——最近网桥（01-80-C2-00-00-0E）被所有类型的网桥拦截，因此永不离开单条物理链路；最近非 TPMR 网桥（01-80-C2-00-00-03）仅由双端口 MAC 中继（TPMR，Two-Port MAC Relay）转发；最近客户网桥（01-80-C2-00-00-00）由 TPMR 和 S-VLAN 组件转发。实现也可使用任意组播或单播 MAC 地址——单播地址甚至让 Wi-Fi 接入点能定向到某个已关联的站点。源地址（第 7.2 章）应为发送端口的单播 MAC 地址。EtherType（第 7.3 章）应为 LLDP EtherType 88-CC，在 802.3 等介质上直接编码，在 802.11 等介质上通过 SNAP 编码。LLDPDU 接收（第 7.4 章）：仅当帧的目的地址匹配代理地址且 EtherType 等于 88-CC 时，该帧才被向上递交。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause taught here, by number",
+        "zh": "覆盖地图——本课按编号讲解的每一个章节"
+      },
+      "en": "Clause 1 Overview: 1.1 Scope (advertise/receive connectivity + management info over all 802 media, PTOPO-compatible); 1.2 Purpose (multi-vendor topology discovery, detect/correct config inconsistencies). Clause 3: 3.1 Definitions (chassis, port, MSAP, LLDP agent, MSAP identifier = chassis ID + port ID, TLV); 3.2 Numerical representation (decimal counts, hex addresses, binary bit patterns, hyphenated MAC/EtherType). Clause 5 Conformance: 5.1 Terminology (shall/may/should); 5.2 PICS (complete Annex A proforma); 5.3 Required capabilities (addressing per 7.1/7.2, EtherType per 7.3, full TLV-set support, operator TLV selection, MIB-equivalent storage without SNMP); 5.4 Optional capabilities (e.g. LLDP over the 802.1X uncontrolled port). Clause 6 Principles: 6.1 Transmission and reception (LLDPDU = 3 mandatory TLVs + optional + End-Of-LLDPDU; TTL semantics); 6.2 Operational modes (one-way; tx-only/rx-only/both); 6.3 Information categories (basic management set + Organizationally Specific TLVs); 6.4 TLV selection (local system MIB out, remote systems MIB in); 6.5 Transmission principles (timer- or change-triggered, transmission-delay timer); 6.6 Reception principles, with 6.6.1 LLDPDU/TLV error handling (mandatory-TLV errors discard the frame; forward-compat length rule) and 6.6.2 remote systems MIB update (only after all TLVs validate); 6.7 Multiple LLDP agents (one MSAP per agent; bridge/802.1X/shim examples); 6.8 LLDP and Link Aggregation (match TLV scope to physical vs aggregated port per 802.1AX). Clause 7: 7.1 Destination address (Nearest bridge / Nearest non-TPMR bridge / Nearest Customer Bridge scopes; any group/individual MAC allowed); 7.2 Source address (sending port's individual MAC); 7.3 EtherType (88-CC; direct or SNAP encoding); 7.4 LLDPDU reception (deliver iff DA matches agent AND EtherType = 88-CC).",
+      "zh": "第 1 章 概述：1.1 适用范围（在所有 802 介质上通告/接收连接与管理信息，兼容 PTOPO）；1.2 目的（多厂商拓扑发现，检测/纠正配置不一致）。第 3 章：3.1 定义（机箱、端口、MSAP、LLDP 代理、MSAP 标识符 = 机箱 ID + 端口 ID、TLV）；3.2 数值表示（计数用十进制、地址用十六进制、位模式用二进制、MAC/EtherType 用连字符）。第 5 章 合规性：5.1 术语（shall/may/should）；5.2 PICS（填写附录 A 表格）；5.3 必备能力（寻址依 7.1/7.2、EtherType 依 7.3、完整 TLV 集支持、运维 TLV 选择、无 SNMP 时的等价 MIB 存储）；5.4 可选能力（如经 802.1X 非受控端口运行 LLDP）。第 6 章 原理：6.1 传输与接收（LLDPDU = 3 个强制 TLV + 可选 + End-Of-LLDPDU；TTL 语义）；6.2 运行模式（单向；仅发/仅收/两者）；6.3 信息类别（基本管理集 + 组织特定 TLV）；6.4 TLV 选择（本地系统 MIB 出、远端系统 MIB 入）；6.5 传输原理（定时器或变化触发，传输延迟定时器）；6.6 接收原理，含 6.6.1 LLDPDU/TLV 错误处理（强制 TLV 出错则丢弃整帧；向前兼容长度规则）与 6.6.2 远端系统 MIB 更新（仅在所有 TLV 通过校验后）；6.7 多个 LLDP 代理（每个代理一个 MSAP；网桥/802.1X/垫片示例）；6.8 LLDP 与链路聚合（依 802.1AX 将 TLV 作用域匹配到物理端口或聚合端口）。第 7 章：7.1 目的地址（最近网桥/最近非 TPMR 网桥/最近客户网桥三种作用域；允许任意组播/单播 MAC）；7.2 源地址（发送端口的单播 MAC）；7.3 EtherType（88-CC；直接或 SNAP 编码）；7.4 LLDPDU 接收（仅当目的地址匹配代理且 EtherType = 88-CC 时递交）。",
+      "cite": {
+        "pdf_id": "8021AB-2016",
+        "pages": [
+          18,
+          21,
+          22,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          34,
+          35,
+          37,
+          38
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AB-2016",
+      "pages": [
+        17,
+        18
+      ],
+      "note": "Clause 1 Overview, 1.1 Scope, 1.2 Purpose"
+    },
+    {
+      "pdf_id": "8021AB-2016",
+      "pages": [
+        21,
+        22
+      ],
+      "note": "Clause 3.1 Definitions, 3.2 Numerical representation"
+    },
+    {
+      "pdf_id": "8021AB-2016",
+      "pages": [
+        25,
+        26
+      ],
+      "note": "Clause 5.1-5.4 Conformance, terminology, PICS, required/optional capabilities"
+    },
+    {
+      "pdf_id": "8021AB-2016",
+      "pages": [
+        27,
+        28,
+        29,
+        30,
+        31,
+        34
+      ],
+      "note": "Clause 6.1-6.8 Principles of operation, multiple agents, link aggregation"
+    },
+    {
+      "pdf_id": "8021AB-2016",
+      "pages": [
+        35,
+        36,
+        37,
+        38
+      ],
+      "note": "Clause 7.1-7.4 destination/source address, EtherType 88-CC, LLDPDU reception"
+    }
+  ],
+  "covers": [
+    "8021AB-2016:1.1",
+    "8021AB-2016:1.2",
+    "8021AB-2016:3.1",
+    "8021AB-2016:3.2",
+    "8021AB-2016:5.1",
+    "8021AB-2016:5.2",
+    "8021AB-2016:5.3",
+    "8021AB-2016:5.4",
+    "8021AB-2016:6.1",
+    "8021AB-2016:6.2",
+    "8021AB-2016:6.3",
+    "8021AB-2016:6.4",
+    "8021AB-2016:6.5",
+    "8021AB-2016:6.6.1",
+    "8021AB-2016:6.6.2",
+    "8021AB-2016:6.7",
+    "8021AB-2016:6.8",
+    "8021AB-2016:7.1",
+    "8021AB-2016:7.2",
+    "8021AB-2016:7.3",
+    "8021AB-2016:7.4"
+  ],
+  "track": "bridging-tsn"
+}

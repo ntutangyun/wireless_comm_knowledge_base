@@ -1,0 +1,126 @@
+{
+  "id": "bridging-tsn-103",
+  "title": {
+    "en": "Clause 48: Modeling Congestion Isolation in YANG",
+    "zh": "Clause 48：用 YANG 建模拥塞隔离"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 48 is where IEEE Std 802.1Qcz-2023 turns its Congestion Isolation (CI) mechanism into something a controller can actually read and configure over the network. YANG (Yet Another Next Generation) is the data-modeling language used by network-management protocols such as NETCONF (Network Configuration Protocol) and RESTCONF to describe the knobs and gauges of a device. This part of Clause 48 covers five sub-areas: 48.2 introduces the new CI management model, 48.3 lists which YANG modules a system must implement, 48.4 warns about the security of those knobs, 48.5 shows the schema 'trees' of every module, and 48.6 ships the actual module text. Think of it as the machine-readable contract that sits underneath the human-readable managed objects of Clause 12.",
+      "zh": "Clause 48 是 IEEE Std 802.1Qcz-2023 把拥塞隔离（CI，Congestion Isolation）机制变成控制器可以通过网络真正读取和配置的对象的地方。YANG（Yet Another Next Generation）是 NETCONF（网络配置协议，Network Configuration Protocol）和 RESTCONF 等网络管理协议使用的数据建模语言，用来描述设备的各种开关与仪表。本节涵盖五个子领域：48.2 引入新的 CI 管理模型，48.3 列出系统必须实现哪些 YANG 模块，48.4 提示这些开关的安全风险，48.5 展示每个模块的 schema 树，48.6 给出实际的模块文本。可以把它看作 Clause 12 中人类可读托管对象底层那份机器可读的契约。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with 48.2.8, the Congestion Isolation (CI) model. It does not invent a fresh tree; it augments two existing models — the Bridge component model and the Interface Management model for Bridge ports — by adding nodes that represent four managed objects: the CI entity, the CI Peer Table, the CI Stream Table, and the CIP entity (CIP = Congestion Isolation Port). In plain terms, every CI-capable bridge component gains a list of peers it talks to, a list of streams it is currently isolating, and per-port parameters such as the queue map and the maximum number of Congestion Isolation Messages (CIMs) it may transmit. Figure 48-17 draws this as UML so you can see how the new nodes hang off the standard bridge-port nodes.",
+      "zh": "先看 48.2.8，即拥塞隔离（CI）模型。它并不另起炉灶，而是增强（augment）两个已有模型——网桥组件模型和网桥端口的接口管理模型——添加表示四个托管对象的节点：CI 实体、CI 对端表（CI Peer Table）、CI 流表（CI Stream Table）以及 CIP 实体（CIP = 拥塞隔离端口，Congestion Isolation Port）。通俗地说，每个支持 CI 的网桥组件会获得一份与之通信的对端列表、一份当前正在隔离的流列表，以及诸如队列映射（queue map）和可发送的最大拥塞隔离消息（CIM，Congestion Isolation Message）数量等逐端口参数。图 48-17 用 UML 画出这一切，让你看清新节点如何挂接在标准网桥端口节点之下。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  C[Bridge component] --> CIM[CI entity]\n  C --> PT[CI Peer Table]\n  C --> ST[CI Stream Table]\n  P[Bridge port] --> CIP[CIP entity / queue-map]\n  CIM --> CFG[ci-master-enable]\n  PT --> PEER[peer MAC / IP / CIM type]\n  ST --> STRM[stream-handle-id / cim-count]",
+      "zh": "flowchart TD\n  C[网桥组件] --> CIM[CI 实体]\n  C --> PT[CI 对端表]\n  C --> ST[CI 流表]\n  P[网桥端口] --> CIP[CIP 实体 / 队列映射]\n  CIM --> CFG[ci-master-enable]\n  PT --> PEER[对端 MAC / IP / CIM 类型]\n  ST --> STRM[流句柄 ID / cim-count]"
+    },
+    {
+      "type": "prose",
+      "en": "48.3 explains how the modules are packaged. Table 48-1 (changed by 48.3.7) is the master summary of every YANG module, with references and a one-line note for each. 48.3.7 also reorganizes the Asynchronous Traffic Shaping (ATS) model: it splits stream-filter/stream-gate handling into a reusable base module plus a 'bridge' companion that binds those features onto an actual Bridge component. 48.3.8 then defines the CI model's module set in Table 48-9 — a CI system must implement ieee802-types, ieee802-dot1q-types, ieee802-dot1q-bridge, ieee802-dot1q-stream-filters-gates, ieee802-dot1q-congestion-isolation, and ieee802-dot1q-congestion-isolation-bridge. The recurring base-plus-bridge split is the key pattern: a base module defines the data once, and a '-bridge' module augments the real bridge with it.",
+      "zh": "48.3 解释这些模块如何打包。表 48-1（由 48.3.7 修改）是所有 YANG 模块的总览，为每个模块列出引用和一行说明。48.3.7 还重组了异步流量整形（ATS，Asynchronous Traffic Shaping）模型：把流过滤器/流门的处理拆分为一个可复用的基础模块，外加一个把这些功能绑定到实际网桥组件上的“bridge”配套模块。48.3.8 随后在表 48-9 中定义 CI 模型的模块集——一个 CI 系统必须实现 ieee802-types、ieee802-dot1q-types、ieee802-dot1q-bridge、ieee802-dot1q-stream-filters-gates、ieee802-dot1q-congestion-isolation 和 ieee802-dot1q-congestion-isolation-bridge。反复出现的“基础模块加 bridge 模块”拆分是关键模式：基础模块只定义一次数据，而“-bridge”模块用它来增强真实的网桥。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why split a module into base and '-bridge'? The base module (e.g., ieee802-dot1q-congestion-isolation) is a free-standing, reusable definition of the data nodes. The '-bridge' module (e.g., ieee802-dot1q-congestion-isolation-bridge) does the augment that grafts those nodes onto /bridges/bridge/component and /interfaces/interface/bridge-port. This keeps the data definition independent of where it gets mounted — the same trick TSN reuses across stream filters, gates, ATS, and CI.",
+      "zh": "为什么把模块拆成基础模块和“-bridge”模块？基础模块（如 ieee802-dot1q-congestion-isolation）是数据节点的独立、可复用定义。“-bridge”模块（如 ieee802-dot1q-congestion-isolation-bridge）则执行 augment，把这些节点嫁接到 /bridges/bridge/component 和 /interfaces/interface/bridge-port 上。这样数据定义就与挂载位置解耦——TSN 在流过滤器、流门、ATS 和 CI 上反复使用这一手法。"
+    },
+    {
+      "type": "prose",
+      "en": "48.4.8 is the security warning for the CI model. Many CI objects are read-write configuration; a management protocol like NETCONF can edit or delete them (edit-config, delete-config, copy-config). Done in an unsecured environment, that could destabilize the network. The clause names the specific objects to protect — ci-master-enable, the ci-peer-table, ci-streams, the stream-gate and stream-filter instance tables, queue-map, min-header-octets, and the CIM-transmit limits — because tampering with them can interfere with MAC status propagation on a TPMR (Two-Port MAC Relay) port and be used to provoke instability.",
+      "zh": "48.4.8 是 CI 模型的安全提示。许多 CI 对象是可读写配置；像 NETCONF 这样的管理协议可以编辑或删除它们（edit-config、delete-config、copy-config）。若在不安全的环境中操作，可能导致网络失稳。该条款点名了需要保护的具体对象——ci-master-enable、ci-peer-table、ci-streams、流门和流过滤器实例表、queue-map、min-header-octets 以及 CIM 发送上限——因为篡改它们会干扰 TPMR（双端口 MAC 中继，Two-Port MAC Relay）端口上的 MAC 状态传播，并可被用来制造不稳定。"
+    },
+    {
+      "type": "prose",
+      "en": "48.5 is the visual heart: it prints each module's schema tree, the compact YANG notation where '+--rw' means a read-write (configurable) node and '+--ro' means read-only (operational state), a trailing '*' marks a list, and '?' marks an optional node. 48.5.11 redraws the base ieee802-dot1q-stream-filters-gates tree — stream-filter-instance-table entries (each with a stream handle, priority spec, max SDU size, and a gate reference) plus a stream-gate-instance-table. 48.5.12 gives the new '-bridge' companion that mounts those same gates and filters onto a Bridge component via augment. These two are the shared foundation that ATS and CI both build upon.",
+      "zh": "48.5 是直观的核心：它打印每个模块的 schema 树，这是紧凑的 YANG 记法，其中“+--rw”表示可读写（可配置）节点，“+--ro”表示只读（运行状态）节点，结尾的“*”标记列表，“?”标记可选节点。48.5.11 重绘了基础模块 ieee802-dot1q-stream-filters-gates 的树——流过滤器实例表的条目（每个带有流句柄、优先级规格、最大 SDU 尺寸和一个门引用）外加一个流门实例表。48.5.12 给出新的“-bridge”配套模块，通过 augment 把这些相同的门和过滤器挂载到网桥组件上。这两者是 ATS 和 CI 共同依赖的共享基础。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 180\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"10\" width=\"200\" height=\"160\"/><text x=\"20\" y=\"30\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">stream-filter-instance-table*</text><rect x=\"24\" y=\"40\" width=\"172\" height=\"18\"/><text x=\"30\" y=\"53\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">stream-handle-spec (rw)</text><rect x=\"24\" y=\"62\" width=\"172\" height=\"18\"/><text x=\"30\" y=\"75\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">priority-spec / max-sdu (rw)</text><rect x=\"24\" y=\"84\" width=\"172\" height=\"18\"/><text x=\"30\" y=\"97\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">stream-gate-ref (rw)</text><rect x=\"250\" y=\"10\" width=\"200\" height=\"160\"/><text x=\"260\" y=\"30\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">stream-gate-instance-table*</text><rect x=\"264\" y=\"40\" width=\"172\" height=\"18\"/><text x=\"270\" y=\"53\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">gate-enable (rw)</text><rect x=\"264\" y=\"62\" width=\"172\" height=\"18\"/><text x=\"270\" y=\"75\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">admin-gate-states (rw)</text><rect x=\"264\" y=\"84\" width=\"172\" height=\"18\"/><text x=\"270\" y=\"97\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">admin-ipv (rw)</text></svg>",
+      "caption": {
+        "en": "The shared stream-filters-gates schema (48.5.11): a filter table referencing a gate table — the base both ATS and CI reuse.",
+        "zh": "共享的 stream-filters-gates schema（48.5.11）：一张过滤器表引用一张门表——ATS 与 CI 共同复用的基础。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause in 48.5 and 48.6, with what each module carries",
+        "zh": "覆盖地图：48.5 与 48.6 中每个条款，及每个模块承载的内容"
+      },
+      "en": "Schema trees (48.5): 48.5.11 ieee802-dot1q-stream-filters-gates — base filter+gate tables. 48.5.12 ieee802-dot1q-stream-filters-gates-bridge — augments /bridges/bridge/component with those gates and filters. 48.5.13 ieee802-dot1q-ats — adds schedulers, scheduler-groups (committed-information-rate, committed-burst-size, max-residence-time), and read-only scheduler-timing-characteristics (clock-offset/rate deviation, processing delays) onto each filter. 48.5.14 ieee802-dot1q-ats-bridge — the ATS scheduler tree augmented onto a Bridge component, plus a read-only discarded-frames-count on each bridge-port. 48.5.15 ieee802-dot1q-congestion-isolation — the base filter+gate tree extended with a new 'null-handle' choice under stream-handle-spec, gated by the 'congestion-isolation' feature. 48.5.16 ieee802-dot1q-congestion-isolation-bridge — the largest tree: ci-master-enable, ci-cim-tx-priority, ci-max-flow-life, the ci-peer-table (cim-type, peer MAC/IPv4/IPv6, peer-udp-port, peer-cim-encap-len), the ci-stream-table (stream-handle-id, cim-count, create-time, create-mask, queue-key, dest/source MAC, vid, msdu), plus per-bridge-port cip-mac/ipv4/ipv6 addresses, queue-map, min-header-octets, and max-cim-tx. YANG modules (48.6): 48.6.2 replaces ieee802-dot1q-types (common typedefs, revision history back to 2018). 48.6.11–48.6.16 ship the full module text for the same six modules whose trees appear in 48.5.11–48.5.16: stream-filters-gates (48.6.11), stream-filters-gates-bridge (48.6.12), ats (48.6.13), ats-bridge (48.6.14), congestion-isolation (48.6.15), and congestion-isolation-bridge (48.6.16). Each carries IEEE 802.1 WG contact info, the 2023-07-03 revision stamp, and a 'congestion-isolation' feature flag where CI-only nodes appear.",
+      "zh": "Schema 树（48.5）：48.5.11 ieee802-dot1q-stream-filters-gates——基础过滤器+门表。48.5.12 ieee802-dot1q-stream-filters-gates-bridge——把这些门和过滤器 augment 到 /bridges/bridge/component。48.5.13 ieee802-dot1q-ats——在每个过滤器上加入调度器、调度器组（承诺信息速率、承诺突发量、最大驻留时间）以及只读的调度器时序特性（时钟偏移/速率偏差、处理时延）。48.5.14 ieee802-dot1q-ats-bridge——把 ATS 调度树 augment 到网桥组件上，并在每个网桥端口加只读的 discarded-frames-count。48.5.15 ieee802-dot1q-congestion-isolation——在基础过滤器+门树下扩展一个新的“null-handle”选项，由“congestion-isolation”特性开关控制。48.5.16 ieee802-dot1q-congestion-isolation-bridge——最大的树：ci-master-enable、ci-cim-tx-priority、ci-max-flow-life、ci-peer-table（cim-type、对端 MAC/IPv4/IPv6、peer-udp-port、peer-cim-encap-len）、ci-stream-table（stream-handle-id、cim-count、create-time、create-mask、queue-key、目的/源 MAC、vid、msdu），以及逐网桥端口的 cip-mac/ipv4/ipv6 地址、queue-map、min-header-octets 和 max-cim-tx。YANG 模块（48.6）：48.6.2 替换 ieee802-dot1q-types（通用类型定义，修订历史可追溯至 2018）。48.6.11–48.6.16 给出与 48.5.11–48.5.16 中那些树相对应的同样六个模块的完整文本：stream-filters-gates（48.6.11）、stream-filters-gates-bridge（48.6.12）、ats（48.6.13）、ats-bridge（48.6.14）、congestion-isolation（48.6.15）和 congestion-isolation-bridge（48.6.16）。每个都带有 IEEE 802.1 工作组联系信息、2023-07-03 修订标记，以及在仅 CI 节点处出现的“congestion-isolation”特性标志。",
+      "cite": {
+        "pdf_id": "8021Qcz-2023",
+        "pages": [
+          40,
+          41,
+          42,
+          43,
+          44,
+          59,
+          73
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "48.6 is the deliverable: the actual YANG source. 48.6.2 deletes and re-publishes ieee802-dot1q-types — the common typedef module (priority-type, vlan-index-type, and friends) — carrying a revision log from 2018 through the 2023-07-03 Qcz stamp. 48.6.11 through 48.6.16 then deliver the six functional modules. A footnote in 48.6 makes a practical promise: an ASCII copy of every module is attached to the PDF and mirrored at the IEEE 802.1 website, so implementers can feed the modules directly into YANG tooling rather than re-type them. That is what makes Clause 48 a true reference: the schema trees in 48.5 are the map, and the modules in 48.6 are the territory.",
+      "zh": "48.6 是最终交付物：实际的 YANG 源码。48.6.2 删除并重新发布 ieee802-dot1q-types——通用类型定义模块（priority-type、vlan-index-type 等）——其修订日志从 2018 一直延续到 2023-07-03 的 Qcz 标记。48.6.11 至 48.6.16 随后交付六个功能模块。48.6 中的一条脚注给出务实承诺：每个模块的 ASCII 副本都附在 PDF 中并在 IEEE 802.1 网站镜像，因此实现者可以把模块直接喂给 YANG 工具，而无需重新键入。这正是 Clause 48 成为真正参考资料的原因：48.5 的 schema 树是地图，48.6 的模块是疆域。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Reading the YANG shorthand fast: '+--rw' = configurable, '+--ro' = read-only state, '*' = a list (keyed by the names in brackets), '?' = optional, and '+--:(name)' marks one arm of a choice. The CI-specific 'null-handle' arm in 48.5.15/48.5.16 only exists when the 'congestion-isolation' feature is enabled — that's the {congestion-isolation} marker you see beside it.",
+      "zh": "快速读懂 YANG 简写：“+--rw”=可配置，“+--ro”=只读状态，“*”=列表（以方括号内名称为键），“?”=可选，“+--:(name)”标记 choice 的一个分支。48.5.15/48.5.16 中专属于 CI 的“null-handle”分支只有在启用“congestion-isolation”特性时才存在——那就是你在旁边看到的 {congestion-isolation} 标记。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Qcz-2023",
+      "pages": [
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        59,
+        73
+      ],
+      "note": "Clause 48 YANG Data Models: 48.2.8 CI model (p.36); 48.3.7-48.3.8 module structure & tables (p.37-38); 48.4.8 security (p.39); 48.5.11-48.5.16 schema trees (p.40-43); 48.6.2 types module (p.44); 48.6.11/48.6.15 module text headers (p.59, p.73)."
+    }
+  ],
+  "covers": [
+    "8021Qcz-2023:48.2.8",
+    "8021Qcz-2023:48.3.7",
+    "8021Qcz-2023:48.3.8",
+    "8021Qcz-2023:48.4.8",
+    "8021Qcz-2023:48.5.11",
+    "8021Qcz-2023:48.5.12",
+    "8021Qcz-2023:48.5.13",
+    "8021Qcz-2023:48.5.14",
+    "8021Qcz-2023:48.5.15",
+    "8021Qcz-2023:48.5.16",
+    "8021Qcz-2023:48.6.2",
+    "8021Qcz-2023:48.6.11",
+    "8021Qcz-2023:48.6.12",
+    "8021Qcz-2023:48.6.13",
+    "8021Qcz-2023:48.6.14",
+    "8021Qcz-2023:48.6.15",
+    "8021Qcz-2023:48.6.16"
+  ],
+  "track": "bridging-tsn"
+}

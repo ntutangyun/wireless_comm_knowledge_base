@@ -1,0 +1,201 @@
+{
+  "id": "bridging-tsn-76",
+  "title": {
+    "en": "DRNI and DRCP: Making Two Boxes Look Like One LAG End (Clause 9 + Annexes A-G)",
+    "zh": "DRNI 与 DRCP：让两台设备看起来像一个聚合组端点（第 9 章 + 附录 A-G）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A normal Link Aggregation Group (LAG) bundles several physical links between two boxes so they behave like one fat, fault-tolerant link. But what if a whole box dies? Clause 9 answers this with the Distributed Resilient Network Interconnect (DRNI): two cooperating systems share one end of a LAG, so that the partner on the far side, running ordinary Link Aggregation Control Protocol (LACP), still sees a single Aggregation System (9.1). The two systems present the same Actor System Identifier and Aggregation Key, so the partner cannot tell it is talking to a pair rather than to one device.",
+      "zh": "普通的链路聚合组（LAG，Link Aggregation Group）把两台设备之间的多条物理链路捆成一条又粗又抗故障的逻辑链路。但如果整台设备宕机了怎么办？第 9 章用分布式弹性网络互连（DRNI，Distributed Resilient Network Interconnect）来解决：两台协作的系统共享 LAG 的一端，于是对端运行普通链路聚合控制协议（LACP，Link Aggregation Control Protocol）的设备仍然只看到一个聚合系统（9.1）。这两台系统对外呈现相同的 Actor 系统标识符与聚合密钥（Key），因此对端无法察觉自己面对的是一对设备而非单台设备。"
+    },
+    {
+      "type": "prose",
+      "en": "The trick lives in the Distributed Relay (9.2). Each system runs a DRNI Gateway with three doors: a Gateway Port toward its local client, an Aggregator Port toward the shared LAG, and an Intra-Relay Port (IRP). The two IRPs are joined by an Intra-Relay Connection (IRC) (9.3) — a logical link that may be a dedicated cable, a dedicated LAG, or a service through a provider network. A frame arriving on a LAG link attached to system A but belonging to a conversation 'owned' by system B's client is simply carried across the IRC to B. Because the two gateways agree, via the control protocol, which gateway owns each conversation, neither accidentally loops a frame back onto the LAG.",
+      "zh": "奥妙在于分布式中继（Distributed Relay，9.2）。每台系统运行一个 DRNI 网关（Gateway），它有三道门：朝向本地客户端的网关端口（Gateway Port）、朝向共享 LAG 的聚合器端口（Aggregator Port），以及一个中继间端口（IRP，Intra-Relay Port）。两个 IRP 通过中继间连接（IRC，Intra-Relay Connection，9.3）相连——这是一条逻辑链路，可以是专用线缆、专用 LAG，或穿越运营商网络的某项业务。一帧若到达连在系统 A 上的 LAG 链路、但属于系统 B 客户端「拥有」的会话，就直接经 IRC 送往 B。由于两个网关通过控制协议就「每条会话归谁」达成一致，谁都不会误把帧绕回 LAG 形成环路。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 220\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"20\" y=\"30\" width=\"170\" height=\"150\" rx=\"6\"/><rect x=\"270\" y=\"30\" width=\"170\" height=\"150\" rx=\"6\"/><text x=\"105\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">DRNI System A</text><text x=\"355\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">DRNI System B</text><rect x=\"45\" y=\"45\" width=\"120\" height=\"24\" rx=\"3\"/><text x=\"105\" y=\"61\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Gateway Port</text><rect x=\"45\" y=\"95\" width=\"120\" height=\"24\" rx=\"3\"/><text x=\"105\" y=\"111\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Distributed Relay</text><rect x=\"45\" y=\"145\" width=\"120\" height=\"24\" rx=\"3\"/><text x=\"105\" y=\"161\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Aggregator Port</text><rect x=\"295\" y=\"45\" width=\"120\" height=\"24\" rx=\"3\"/><text x=\"355\" y=\"61\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Gateway Port</text><rect x=\"295\" y=\"95\" width=\"120\" height=\"24\" rx=\"3\"/><text x=\"355\" y=\"111\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Distributed Relay</text><rect x=\"295\" y=\"145\" width=\"120\" height=\"24\" rx=\"3\"/><text x=\"355\" y=\"161\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Aggregator Port</text><line x1=\"190\" y1=\"107\" x2=\"270\" y2=\"107\"/><text x=\"230\" y=\"100\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">IRC</text><line x1=\"105\" y1=\"169\" x2=\"105\" y2=\"205\"/><line x1=\"355\" y1=\"169\" x2=\"355\" y2=\"205\"/><text x=\"230\" y=\"212\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">DRNI LAG to single LACP Partner</text></svg>",
+      "caption": {
+        "en": "Two DRNI Systems, joined by an Intra-Relay Connection (IRC), terminate one DRNI LAG that the partner sees as a single Aggregation System (9.2, 9.5).",
+        "zh": "两台 DRNI 系统由中继间连接（IRC）相连，共同终结一个 DRNI LAG；对端只看到一个聚合系统（9.2、9.5）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Why bother? Section 9.4 lays out the use cases and the resilience story. DRNI can attach an end station (or a distributed pair of them) to a network, or stitch two bridged networks together (9.4.1). Its fault recovery (9.4.2) is the headline: if a LAG link fails, its conversations are reallocated among the survivors and tunneled over the IRC if they land on the wrong system; if the IRC itself fails, both systems revert to independent operation, each advertising its own Home System Identifier so the partner will not lump the now-split links into one LAG; and if a whole system fails, the survivor takes over its conversations — to the partner this just looks like a few links going down. Getting all this right needs careful, matched configuration in both systems (9.4.3): the DRNI Aggregator Identifier and Key, the gateway-selection masks, and the Conversation-Sensitive Collection and Distribution (CSCD) parameters must agree.",
+      "zh": "这有什么用？9.4 给出应用场景与弹性机制。DRNI 可把一个终端站（或一对分布式终端站）接入网络，或把两个桥接网络缝合起来（9.4.1）。它的故障恢复（9.4.2）是重头戏：某条 LAG 链路失效时，其会话被重新分配给幸存链路，若落到错误的系统就经 IRC 隧道送回；若 IRC 本身失效，两台系统都回退到独立运行，各自通告自己的本地系统标识符（Home System Identifier），使对端不会把已分裂的链路再并成一个 LAG；若整台系统失效，幸存者接管其会话——在对端看来不过是几条链路掉线而已。要把这一切做对，需要两台系统精心且一致的配置（9.4.3）：DRNI 聚合器标识符与密钥、网关选择掩码，以及会话敏感的收集与分发（CSCD，Conversation-Sensitive Collection and Distribution）参数都必须一致。"
+    },
+    {
+      "type": "prose",
+      "en": "The DRNI Gateway internals (9.5) are where frames actually get routed. The gateway has a DRCP Parser/Multiplexer (9.5.1) on the IRP that splits arriving control frames (DRCP) from data frames; control goes to the control block, data goes to the relay. The DRNI Gateway Relay (9.5.2) maps every frame to a Gateway Conversation ID and a Port Conversation ID, then applies Boolean masks indexed by those IDs to decide whether the frame may pass each port — this is how 'Up' frames (from the LAG) and 'Down' frames (from the client) are steered without duplication. DRNI Gateway Control (9.5.3) computes those masks: it handles DRNI identification and forming the DRNI (9.5.3.1, 9.5.3.2), partner selection (9.5.3.3), Aggregator Port selection (9.5.3.4), and the rich gateway-port selection policy (9.5.3.5) with its administrative, client-driven, and aggregation-driven options.",
+      "zh": "DRNI 网关内部（9.5）才是帧真正被路由的地方。网关在 IRP 上有一个 DRCP 解析器/复用器（Parser/Multiplexer，9.5.1），把到达的控制帧（DRCP）与数据帧分开：控制帧送往控制模块，数据帧送往中继。DRNI 网关中继（9.5.2）把每一帧映射到一个网关会话标识符（Gateway Conversation ID）和一个端口会话标识符（Port Conversation ID），再用以这些 ID 为索引的布尔掩码（Boolean mask）判断该帧能否通过各端口——「上行」帧（来自 LAG）与「下行」帧（来自客户端）就是这样被无重复地引导的。DRNI 网关控制（9.5.3）负责计算这些掩码：它处理 DRNI 标识与组建 DRNI（9.5.3.1、9.5.3.2）、对端选择（9.5.3.3）、聚合器端口选择（9.5.3.4），以及内涵丰富的网关端口选择策略（9.5.3.5），含管理控制、客户端驱动与聚合驱动等选项。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Frame at IRP] --> B{DRCP frame?}\n  B -- yes --> C[Control block]\n  B -- no --> D[Relay block]\n  D --> E[Map to Gateway and Port Conversation IDs]\n  E --> F{Boolean masks allow?}\n  F -- yes --> G[Forward to chosen port]\n  F -- no --> H[Discard]",
+      "zh": "flowchart LR\n  A[IRP 上的帧] --> B{是 DRCP 帧?}\n  B -- 是 --> C[控制模块]\n  B -- 否 --> D[中继模块]\n  D --> E[映射到网关与端口会话 ID]\n  E --> F{布尔掩码允许?}\n  F -- 是 --> G[转发到选定端口]\n  F -- 否 --> H[丢弃]"
+    },
+    {
+      "type": "prose",
+      "en": "Holding it all together is the Distributed Relay Control Protocol (DRCP, 9.6). DRCP runs only over the IRC between the two gateways. Its jobs: establish communication, verify the two systems are configured compatibly, distribute each gateway's state, compute frame paths to avoid loops and duplicates, and keep the DRNI LAG alive. DRCP Data Units (DRCPDUs) are addressed to a bridge group address and carry a dedicated DRNI EtherType and subtype (9.6.1), and are built from Type-Length-Value (TLV) blocks — Home/Neighbor System Identification, DRNI State, Aggregator State, Gateway State, and Gateway Preference (9.6.2). The protocol is realized as four state machines (9.6.3): Receive, Distributed Relay, Gateway-and-Aggregator, and Transmit.",
+      "zh": "把这一切黏合在一起的是分布式中继控制协议（DRCP，Distributed Relay Control Protocol，9.6）。DRCP 只在两个网关之间的 IRC 上运行。它的职责是：建立通信、核验两台系统的配置是否兼容、分发各网关的状态、计算帧路径以避免环路与重复、并维持 DRNI LAG 在线。DRCP 数据单元（DRCPDU）以桥接组地址为目的地址，携带专用的 DRNI 以太网类型（EtherType）与子类型（9.6.1），由类型-长度-值（TLV，Type-Length-Value）块构成——含本地/邻居系统标识、DRNI 状态、聚合器状态、网关状态与网关偏好（9.6.2）。该协议由四个状态机实现（9.6.3）：接收、分布式中继、网关与聚合器、发送。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "DRCP timing mirrors LACP. Short Timeouts send a DRCPDU every 1 second and expire neighbor info after 3 seconds; Long Timeouts send every 30 seconds and expire after 90 (9.6.4). But timing out is the last resort — link hardware's MAC_Operational status is the preferred, faster way to detect that the IRC has failed.",
+      "zh": "DRCP 的计时与 LACP 如出一辙。短超时（Short Timeout）每 1 秒发送一个 DRCPDU，3 秒后令邻居信息失效；长超时（Long Timeout）每 30 秒发送，90 秒后失效（9.6.4）。但超时是最后手段——链路硬件的 MAC_Operational 状态才是检测 IRC 失效更快、更优先的方式。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every Clause 9 subclause and what it nails down",
+        "zh": "覆盖地图：第 9 章每个子条款及其要点"
+      },
+      "en": "9.1 Goals — system redundancy, load sharing, conversation distribution, interoperability with a single Aggregation System, localized fault recovery. 9.2 Distributed Relay operation — Up/Down frames, DRNI Gateway Ports, CSCD allocating conversations independently of link allocation. 9.3 Intra-Relay Connection — the IRC as a logical ISS link; dedicated link, dedicated LAG, or provider-network service. 9.4.1 connectivity (end-station and network attach), 9.4.2 fault recovery (link, IRC, and system failure scenarios a-c; unprotected conversations), 9.4.3 configuration (DRNI Aggregator Identifier/Key, gateway masks, CSCD params, IRP setup). 9.5 DRNI Gateway block: 9.5.1 DRCP Parser/Multiplexer (IsControlFrame test on DA, EtherType, subtype); 9.5.2 DRNI Gateway Relay (DR_Gateway Collector/Distributor, DR_Aggregator and DR_IRP Parser/Multiplexers, service-interface prefixes); 9.5.3 DRNI Gateway Control — 9.5.3.1 Home/DRNI Aggregator/Neighbor identification, 9.5.3.2 forming the DRNI, 9.5.3.3 partner selection and forming a LAG, 9.5.3.4 port algorithm and Aggregator Port selection, 9.5.3.5 gateway algorithm and DRNI Gateway Port selection policies. 9.6 DRCP: 9.6.1 transmission/addressing/protocol ID (DA, SA, priority, EtherType, encapsulation); 9.6.2 DRCPDU structure and TLV encoding (Table 9-4 TLV types); 9.6.3 state-machine overview (Figure 9-19); 9.6.4 constants (periodic and timeout times); 9.6.5 variables associated with the DRNI Gateway (DRNI_DA, identifiers, keys); 9.6.6 variables managing the state machines (BEGIN, Differ_DRNI, DRCP_Enabled, DRCP_NTT, DRCP_Timeout); 9.6.7 functions (recordDefaultDRCPDU, compareDrniValues, recordNeighborState, recordReflectedState, updateIrpState, updateHome*); 9.6.8 timers (DRCP_currentWhile, DRCP_txWhen); 9.6.9 messages (rcvdDRCPDU); 9.6.10 DRCP Receive machine; 9.6.11 Distributed Relay machine (DR_SOLO vs DR_PAIRED, operational key update); 9.6.12 DRNI Gateway and Aggregator machine (UPDATE_HOME, HOME_GW/AGG_SELECTION, mask update); 9.6.13 DRCP Transmit machine (NO_TX, FAST_PERIODIC, SLOW_PERIODIC, periodic + on-demand transmit).",
+      "zh": "9.1 目标——系统冗余、负载分担、会话分发、与单一聚合系统的互操作、局部化故障恢复。9.2 分布式中继运行——上行/下行帧、DRNI 网关端口、CSCD 独立于链路分配地分配会话。9.3 中继间连接——IRC 作为承载 ISS 的逻辑链路；可为专用链路、专用 LAG 或运营商网络业务。9.4.1 连通性（终端站与网络接入）、9.4.2 故障恢复（链路、IRC 与系统失效场景 a-c；非保护会话）、9.4.3 配置（DRNI 聚合器标识符/密钥、网关掩码、CSCD 参数、IRP 设置）。9.5 DRNI 网关结构：9.5.1 DRCP 解析器/复用器（对 DA、EtherType、子类型作 IsControlFrame 判定）；9.5.2 DRNI 网关中继（DR_Gateway 收集/分发器、DR_Aggregator 与 DR_IRP 解析器/复用器、服务接口前缀）；9.5.3 DRNI 网关控制——9.5.3.1 本地/DRNI 聚合器/邻居标识，9.5.3.2 组建 DRNI，9.5.3.3 对端选择与组建 LAG，9.5.3.4 端口算法与聚合器端口选择，9.5.3.5 网关算法与 DRNI 网关端口选择策略。9.6 DRCP：9.6.1 传输/寻址/协议标识（DA、SA、优先级、EtherType、封装）；9.6.2 DRCPDU 结构与 TLV 编码（表 9-4 的 TLV 类型）；9.6.3 状态机总览（图 9-19）；9.6.4 常量（周期时间与超时时间）；9.6.5 与 DRNI 网关相关的变量（DRNI_DA、标识符、密钥）；9.6.6 管理状态机运行的变量（BEGIN、Differ_DRNI、DRCP_Enabled、DRCP_NTT、DRCP_Timeout）；9.6.7 函数（recordDefaultDRCPDU、compareDrniValues、recordNeighborState、recordReflectedState、updateIrpState、updateHome*）；9.6.8 定时器（DRCP_currentWhile、DRCP_txWhen）；9.6.9 消息（rcvdDRCPDU）；9.6.10 DRCP 接收状态机；9.6.11 分布式中继状态机（DR_SOLO 与 DR_PAIRED、操作密钥更新）；9.6.12 DRNI 网关与聚合器状态机（UPDATE_HOME、HOME_GW/AGG_SELECTION、掩码更新）；9.6.13 DRCP 发送状态机（NO_TX、FAST_PERIODIC、SLOW_PERIODIC、周期性 + 按需发送）。",
+      "cite": {
+        "pdf_id": "8021AX-2020",
+        "pages": [
+          152,
+          153,
+          155,
+          156,
+          158,
+          159,
+          160,
+          161,
+          166,
+          167,
+          168,
+          169,
+          170,
+          179,
+          180,
+          196,
+          199
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the seven annexes (A through G)",
+        "zh": "覆盖地图：七个附录（A 至 G）"
+      },
+      "en": "Annex A (normative) — the Protocol Implementation Conformance Statement (PICS) proforma: a checklist a supplier completes to declare which mandatory (M) and optional (O) capabilities of Clause 5 conformance the implementation provides, usable for self-checking, interworking prediction, and test selection. Annex B (informative) — example collection and distribution algorithms: it states the design constraints (no duplication, preserve per-conversation ordering, a single collection algorithm independent of the partner's distributor, no segmentation/reordering) and gives illustrative distribution algorithms plus the Marker protocol's role; Clause 6 specifies only the requirements, not the algorithms. Annex C (informative) — LACP standby link selection and dynamic Key management: protocol rules and worked examples letting Systems choose which links go standby and partition links into aggregations via dynamic Keys, coordinated and reproducibly. Annex D (normative) — the SMIv2 MIB module for managing Link Aggregation over SNMP, including security notes on read-write/read-create objects (e.g., dot3adAggTable). Annex E (informative) — DRNI on Bridges: E.1 VLAN Bridges, plus Provider Bridges and Backbone Edge Bridges, showing how a service instance (S-VLAN or backbone instance) can serve as the IRC. Annex F (normative) — Link Aggregation and the Link Layer Discovery Protocol (LLDP): how an LLDP Parser/Multiplexer lets LLDP run over individual links within a LAG, and TLV rules superseding/clarifying IEEE Std 802.1AB. Annex G (informative) — Bibliography: the referenced documents, e.g., IEEE Std 802.1AB [B1] and IETF RFC 5798 VRRP [B7].",
+      "zh": "附录 A（规范性）——协议实现一致性声明（PICS，Protocol Implementation Conformance Statement）模板：供应商据此勾选清单，声明其实现提供了第 5 章一致性中哪些强制（M）与可选（O）能力，可用于自查、互通性预测与测试选型。附录 B（资料性）——收集与分发算法示例：阐明设计约束（不得重复、保持每会话内有序、单一收集算法且独立于对端分发器、不分段/不重排），并给出示例分发算法及标记协议（Marker protocol）的作用；第 6 章只规定要求，不规定算法本身。附录 C（资料性）——LACP 备用链路选择与动态密钥管理：给出协议规则与实例，使系统能协调且可复现地选定哪些链路转为备用，并通过动态密钥把链路划分进各聚合组。附录 D（规范性）——用于通过 SNMP 管理链路聚合的 SMIv2 MIB 模块，含对可读写/可读建对象（如 dot3adAggTable）的安全说明。附录 E（资料性）——桥上的 DRNI：E.1 VLAN 桥，以及运营商桥与骨干边缘桥，说明如何用业务实例（S-VLAN 或骨干实例）充当 IRC。附录 F（规范性）——链路聚合与链路层发现协议（LLDP，Link Layer Discovery Protocol）：说明 LLDP 解析器/复用器如何让 LLDP 在 LAG 内的单条链路上运行，以及取代/澄清 IEEE Std 802.1AB 的 TLV 规则。附录 G（资料性）——参考文献：所引文档，如 IEEE Std 802.1AB [B1] 与 IETF RFC 5798 VRRP [B7]。",
+      "cite": {
+        "pdf_id": "8021AX-2020",
+        "pages": [
+          201,
+          215,
+          219,
+          224,
+          326,
+          329,
+          332
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: LACP makes many links look like one link to the box at the other end; DRNI makes two boxes look like one box at this end. DRCP is to the IRC what LACP is to a LAG — the chatter that keeps the two halves in agreement so the outside world never notices the seam.",
+      "zh": "记忆模型：LACP 让多条链路在对端看来像一条链路；DRNI 让两台设备在本端看来像一台设备。DRCP 之于 IRC，恰如 LACP 之于 LAG——正是这种「对话」让两半始终保持一致，使外界永远察觉不到接缝。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AX-2020",
+      "pages": [
+        152,
+        153,
+        155,
+        156
+      ],
+      "note": "9.1 goals, 9.2 Distributed Relay operation, 9.3 Intra-Relay Connection, 9.4.1 connectivity"
+    },
+    {
+      "pdf_id": "8021AX-2020",
+      "pages": [
+        158,
+        159,
+        160,
+        161
+      ],
+      "note": "9.4.2 fault recovery, 9.4.3 configuration, 9.5 DRNI Gateway, 9.5.1 Parser/Multiplexer, 9.5.2 Relay"
+    },
+    {
+      "pdf_id": "8021AX-2020",
+      "pages": [
+        166,
+        167,
+        168,
+        169,
+        170
+      ],
+      "note": "9.5.3 Gateway Control subclauses and 9.6/9.6.1/9.6.2 DRCP intro, addressing, TLV encoding"
+    },
+    {
+      "pdf_id": "8021AX-2020",
+      "pages": [
+        179,
+        180,
+        196,
+        199
+      ],
+      "note": "9.6.3-9.6.13 state machines, constants, variables, functions, timers, messages"
+    },
+    {
+      "pdf_id": "8021AX-2020",
+      "pages": [
+        201,
+        215,
+        219,
+        224,
+        326,
+        329,
+        332
+      ],
+      "note": "Annex A PICS, B collection/distribution, C standby/dynamic Key, D MIB, E DRNI on Bridges, F LLDP, G bibliography"
+    }
+  ],
+  "covers": [
+    "8021AX-2020:9.1",
+    "8021AX-2020:9.2",
+    "8021AX-2020:9.3",
+    "8021AX-2020:9.4.1",
+    "8021AX-2020:9.4.2",
+    "8021AX-2020:9.4.3",
+    "8021AX-2020:9.5.1",
+    "8021AX-2020:9.5.2",
+    "8021AX-2020:9.5.3",
+    "8021AX-2020:9.6.1",
+    "8021AX-2020:9.6.2",
+    "8021AX-2020:9.6.3",
+    "8021AX-2020:9.6.4",
+    "8021AX-2020:9.6.5",
+    "8021AX-2020:9.6.6",
+    "8021AX-2020:9.6.7",
+    "8021AX-2020:9.6.8",
+    "8021AX-2020:9.6.9",
+    "8021AX-2020:9.6.10",
+    "8021AX-2020:9.6.11",
+    "8021AX-2020:9.6.12",
+    "8021AX-2020:9.6.13",
+    "8021AX-2020:Annex_A",
+    "8021AX-2020:Annex_B",
+    "8021AX-2020:Annex_C",
+    "8021AX-2020:Annex_D",
+    "8021AX-2020:Annex_E",
+    "8021AX-2020:Annex_F",
+    "8021AX-2020:Annex_G"
+  ],
+  "track": "bridging-tsn"
+}

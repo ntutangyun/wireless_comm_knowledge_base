@@ -1,0 +1,235 @@
+{
+  "id": "bridging-tsn-81",
+  "title": {
+    "en": "Trust, Datapaths, and QoS: The Session Lifecycle in 802.1CF",
+    "zh": "信任、数据通路与 QoS：802.1CF 中的会话生命周期"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1CF-2019 is a Recommended Practice that describes a Network Reference Model (NRM) for an IEEE 802 access network — a vendor-neutral map of the roles and reference points an access network needs no matter which radio (Wi-Fi, 802.16, etc.) sits underneath. This lesson walks the middle of Clause 6, the functional decomposition. It covers three back-to-back stages of a connection's life: 6.5 authentication and trust, 6.6 the datapath (the pipe your data actually travels through), and 6.7 authorization, Quality of Service (QoS), and policy control. Read it as a guided tour where every clause number gets a home.",
+      "zh": "IEEE Std 802.1CF-2019 是一份推荐性规程，它描述了 IEEE 802 接入网的网络参考模型（NRM, Network Reference Model）——这是一张厂商中立的地图，无论底层是哪种无线技术（Wi-Fi、802.16 等），都标出了接入网所需的角色与参考点。本课讲解 Clause 6 的中间部分，即功能分解。它涵盖连接生命周期中紧密相连的三个阶段：6.5 认证与信任、6.6 数据通路（数据真正流经的管道）、6.7 授权、服务质量（QoS, Quality of Service）与策略控制。请把它当作一次导览，让每一个条款号都有自己的归属。"
+    },
+    {
+      "type": "prose",
+      "en": "First, the cast of acronyms, defined once so the rest reads smoothly. TE = Terminal (your device). NA = Node of Attachment (the radio port you connect to, e.g. an access point). BH = Backhaul (the wired/wireless network behind the NA). AR = Access Router (the edge to the wider network). ANC = Access Network Control (the brain that configures the access network). SS = Subscription Service (holds your contract, credentials, and policy — the authority). TEC/ARC = Terminal Control / Access Router Control. Reference points are labelled R1–R12 (e.g. R1 is the TE–NA radio link, R4 is ANC–SS).",
+      "zh": "先把缩略语介绍一遍，只定义一次，后文便顺畅。TE = 终端（Terminal，你的设备）。NA = 接入节点（Node of Attachment，你连接的无线端口，例如接入点）。BH = 回传（Backhaul，NA 后面的有线/无线网络）。AR = 接入路由器（Access Router，通往更大网络的边界）。ANC = 接入网控制（Access Network Control，配置接入网的大脑）。SS = 签约服务（Subscription Service，保存你的合约、凭证与策略，是权威方）。TEC/ARC = 终端控制/接入路由器控制。参考点标记为 R1–R12（例如 R1 是 TE–NA 无线链路，R4 是 ANC–SS）。"
+    },
+    {
+      "type": "prose",
+      "en": "Stage one — 6.5 Authentication and trust establishment (6.5.1). Two goals: secure the service to the user, and secure the infrastructure against attack. The mechanism is port-based authentication with the Extensible Authentication Protocol (EAP). The terminal holds a Supplicant, the access network holds an Authenticator, and the SS holds the Authentication Server. Each port has an uncontrolled half (only EAP over LAN, EAPoL, passes) and a controlled half (user data) that stays blocked until mutual authentication succeeds and a pairwise master key is installed. Crucially, the standard recommends deriving short-lived temporary keys rather than using the stored credential directly.",
+      "zh": "第一阶段——6.5 认证与信任建立（6.5.1）。两个目标：保护面向用户的服务，以及保护基础设施免受攻击。机制是基于端口的认证，配合可扩展认证协议（EAP, Extensible Authentication Protocol）。终端持有请求者（Supplicant），接入网持有认证者（Authenticator），SS 持有认证服务器（Authentication Server）。每个端口都有一个非受控部分（只通过 LAN 上的 EAP，即 EAPoL）和一个受控部分（用户数据）；受控部分一直被阻断，直到双向认证成功并安装好成对主密钥。关键之处在于：标准建议派生短时的临时密钥，而不是直接使用存储的凭证。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant TE\n  participant NA\n  participant ANC\n  participant SS\n  NA->>TE: Identity_request\n  TE->>NA: Identity_response (NAI)\n  NA->>ANC: forward NAI\n  ANC->>SS: Access_request\n  SS-->>TE: EAP exchange\n  SS->>ANC: Access_accept (+ master key)\n  ANC->>TE: Success",
+      "zh": "sequenceDiagram\n  participant TE as 终端\n  participant NA as 接入节点\n  participant ANC as 接入网控制\n  participant SS as 签约服务\n  NA->>TE: 身份请求\n  TE->>NA: 身份响应 (NAI)\n  NA->>ANC: 转发 NAI\n  ANC->>SS: 接入请求\n  SS-->>TE: EAP 交互\n  SS->>ANC: 接入接受 (+主密钥)\n  ANC->>TE: 成功"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — 6.5 Authentication and trust (6.5.1–6.5.8)",
+        "zh": "覆盖地图——6.5 认证与信任（6.5.1–6.5.8）"
+      },
+      "en": "6.5.1 Introduction frames the two security aspects (secure service, secure infrastructure) and the EAP / port-based architecture. 6.5.2 Roles names the players: User, Service provider, Subscription, TE, AN, SS — a subscription is the contract (a unique ID plus a shared secret plus a service portfolio). 6.5.3 Use cases gives three relations between access network and SS: direct, relayed over another SS, and via a roaming consortium. 6.5.4 Functional requirements lists must-haves (mutual auth, multiple auth methods, master-key derivation, NAI = Network Access Identifier formats, identity hiding, one subscription on many terminals, no credential leakage when roaming). 6.5.5 Authentication-specific attributes defines the data: a SecurityAssociation (SessionKey, EncryptionMode), Subscription (Subscription-ID as NAI, User-ID, SubsCredential, ServiceProvider-ID, ServiceProfile), TE/ANC/SS supported and preferred auth methods and encryption modes, plus the SS credential. 6.5.6 Basic functions are the verbs: Identification request, Identification notify, Authentication process, Trust establishment (SS generates and distributes keys), Trust revocation (SS forces session end). 6.5.7 Detailed procedures shows two flows — direct service access (6.5.7.1) and authentication relayed over another SS (6.5.7.2, with SSR the roaming partner and SSSP the service provider's SS). 6.5.8 Mapping to IEEE 802 technologies is Table 5: EAP support, data-plane encryption (e.g. 802.1AE / 802.11), and mutual authentication across 802.3/.11/.16/.22.",
+      "zh": "6.5.1 引言 给出两个安全方面（保护服务、保护基础设施）以及 EAP / 基于端口的架构。6.5.2 角色 列出参与者：用户、服务提供商、签约、TE、AN、SS——签约即合约（唯一标识符＋共享密钥＋服务套餐）。6.5.3 用例 给出接入网与 SS 之间的三种关系：直连、经另一 SS 中继、经漫游联盟。6.5.4 功能需求 列出必备项（双向认证、多种认证方法、主密钥派生、NAI＝网络接入标识符格式、身份隐藏、一个签约用于多终端、漫游时不泄露凭证）。6.5.5 认证专属属性 定义数据：安全关联（SessionKey、EncryptionMode）、签约（作为 NAI 的 Subscription-ID、User-ID、SubsCredential、ServiceProvider-ID、ServiceProfile）、TE/ANC/SS 支持与首选的认证方法及加密模式，以及 SS 凭证。6.5.6 基本功能 是动词：身份识别请求、身份识别通知、认证过程、信任建立（SS 生成并分发密钥）、信任撤销（SS 强制结束会话）。6.5.7 详细流程 展示两条流程——直接服务接入（6.5.7.1）与经另一 SS 中继认证（6.5.7.2，其中 SSR 为漫游伙伴，SSSP 为服务提供商的 SS）。6.5.8 到 IEEE 802 技术的映射 即表 5：EAP 支持、数据面加密（如 802.1AE / 802.11）以及 802.3/.11/.16/.22 上的双向认证。",
+      "cite": {
+        "pdf_id": "8021CF-2019",
+        "pages": [
+          76,
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Stage two — 6.6 Datapath establishment, relocation, and teardown (6.6.1). Once you are trusted, you need a pipe. The datapath is the transport for user payload from the Terminal Interface (TEI), across R1 to the NA, over R6 through the backhaul, to the Access Router Interface (ARI) over R3. Forwarding is done by 802.1Q bridging on MAC addresses. The standard borrows three connectivity shapes from carrier Ethernet: E-Line (point-to-point), E-LAN (any-to-any multipoint), and E-Tree (leaves talk only to roots). Traffic can be best-effort (BE), rate-constrained (RC), or time-triggered (TT) — the last underpins time-sensitive networking (TSN).",
+      "zh": "第二阶段——6.6 数据通路的建立、迁移与拆除（6.6.1）。一旦你被信任，就需要一条管道。数据通路负责传输用户净荷：从终端接口（TEI, Terminal Interface），经 R1 到 NA，经 R6 穿过回传，再经 R3 到接入路由器接口（ARI, Access Router Interface）。转发由 802.1Q 网桥按 MAC 地址完成。标准从运营商以太网借来三种连通形态：E-Line（点到点）、E-LAN（任意到任意的多点）、E-Tree（叶子只与根通信）。流量可以是尽力而为（BE）、速率受限（RC）或时间触发（TT）——后者支撑时间敏感网络（TSN, Time-Sensitive Networking）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Direction convention worth memorising: 'upstream' = terminal toward access router; 'downstream' = access router toward terminal. A terminal sits on one datapath per session, but later sessions may use different datapaths.",
+      "zh": "值得记住的方向约定：'上行'＝从终端流向接入路由器；'下行'＝从接入路由器流向终端。一个终端在每个会话期间位于一条数据通路上，但后续会话可能使用不同的数据通路。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  TE -->|R1| NA\n  NA -->|R6| BH\n  BH -->|R3| AR\n  ANC -.config.-> NA\n  ANC -.config.-> BH\n  SS -.authz.-> ANC",
+      "zh": "flowchart LR\n  TE[终端] -->|R1| NA[接入节点]\n  NA -->|R6| BH[回传]\n  BH -->|R3| AR[接入路由器]\n  ANC[接入网控制] -.配置.-> NA\n  ANC -.配置.-> BH\n  SS[签约服务] -.授权.-> ANC"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — 6.6 Datapath (6.6.1–6.6.8)",
+        "zh": "覆盖地图——6.6 数据通路（6.6.1–6.6.8）"
+      },
+      "en": "6.6.1 Introduction has four parts: data forwarding (6.6.1.1, the TEI→NA→BH→ARI pipe via 802.1Q), connectivity characteristics (6.6.1.2, E-Line / E-LAN / E-Tree from MEF), traffic types (6.6.1.3, BE / RC / TT with the Priority Code Point and Stream Reservation Protocol SRP), and time-sensitive networking (6.6.1.4, the four pillars: synchronization via 802.1AS, bounded latency, reliability, resource management). 6.6.2 Roles assigns the pieces: Datapath, TEI, NA, BH, ARI, SS, ANC, and NMS (Network Management System, which pre-configures long-lived datapaths). 6.6.3 Use cases gives four deployments: single plain access network, industrial TSN network, shared wireless access network, and multi-operator backhaul. 6.6.4 Functional requirements (configurable P2P/multipoint/rooted, C-VID differentiation, TSN support, relocation, integrity and encryption of payload). 6.6.5 Attributes: DP-ID and DPConfig for the datapath; R1Config/R6Config/BRcfg for the NA; R6Config/R3Config/BRCfg for the backhaul; IPProvider-ID/ARI-ID/R3Config for the AR; ServiceProvider-ID/DPSrvSpec for the SS. 6.6.6 Basic functions: retrieve session config (6.6.6.1), activate/teardown datapath in the NA (6.6.6.2–3) and backhaul (6.6.6.4–5), and AR interface establishment/teardown (6.6.6.6–7). 6.6.7 Detailed procedures: overview lifecycle (6.6.7.1), establishment (6.6.7.2), relocation with break-before-make vs make-before-break handover (6.6.7.3), and teardown (6.6.7.4). 6.6.8 Mapping to IEEE 802 technologies is Table 6 (frame format, forwarding, VLAN, security, MAC service per technology).",
+      "zh": "6.6.1 引言 分四部分：数据转发（6.6.1.1，经 802.1Q 的 TEI→NA→BH→ARI 管道）、连通特性（6.6.1.2，源自 MEF 的 E-Line / E-LAN / E-Tree）、流量类型（6.6.1.3，BE / RC / TT，涉及优先级代码点与流预留协议 SRP）、时间敏感网络（6.6.1.4，四大支柱：经 802.1AS 的同步、有界时延、可靠性、资源管理）。6.6.2 角色 分配各部件：数据通路、TEI、NA、BH、ARI、SS、ANC 以及 NMS（网络管理系统，预配置长寿命数据通路）。6.6.3 用例 给出四种部署：单一普通接入网、工业 TSN 网络、共享无线接入网、多运营商回传。6.6.4 功能需求（可配置点到点/多点/有根、C-VID 区分、TSN 支持、迁移、净荷完整性与加密）。6.6.5 属性：数据通路的 DP-ID 与 DPConfig；NA 的 R1Config/R6Config/BRcfg；回传的 R6Config/R3Config/BRCfg；AR 的 IPProvider-ID/ARI-ID/R3Config；SS 的 ServiceProvider-ID/DPSrvSpec。6.6.6 基本功能：检索会话配置（6.6.6.1）、在 NA（6.6.6.2–3）与回传（6.6.6.4–5）中激活/拆除数据通路，以及 AR 接口的建立/拆除（6.6.6.6–7）。6.6.7 详细流程：生命周期概览（6.6.7.1）、建立（6.6.7.2）、采用先断后通与先通后断切换的迁移（6.6.7.3）、拆除（6.6.7.4）。6.6.8 到 IEEE 802 技术的映射 即表 6（各技术的帧格式、转发、VLAN、安全、MAC 服务）。",
+      "cite": {
+        "pdf_id": "8021CF-2019",
+        "pages": [
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99
+        ]
+      }
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"10\" y=\"45\" width=\"70\" height=\"30\"/><rect x=\"110\" y=\"45\" width=\"70\" height=\"30\"/><rect x=\"210\" y=\"45\" width=\"70\" height=\"30\"/><rect x=\"310\" y=\"45\" width=\"70\" height=\"30\"/><line x1=\"80\" y1=\"60\" x2=\"110\" y2=\"60\"/><line x1=\"180\" y1=\"60\" x2=\"210\" y2=\"60\"/><line x1=\"280\" y1=\"60\" x2=\"310\" y2=\"60\"/><text x=\"45\" y=\"64\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">TE/TEI</text><text x=\"145\" y=\"64\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">NA</text><text x=\"245\" y=\"64\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">BH</text><text x=\"345\" y=\"64\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">AR/ARI</text><text x=\"95\" y=\"40\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">R1</text><text x=\"195\" y=\"40\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">R6</text><text x=\"295\" y=\"40\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">R3</text><text x=\"210\" y=\"100\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">datapath = TEI -> NA -> BH -> ARI</text></svg>",
+      "caption": {
+        "en": "The datapath as a chain of segments: TEI to NA over R1, NA to backhaul over R6, backhaul to ARI over R3 (clause 6.6.2.1).",
+        "zh": "数据通路是一串分段：TEI 经 R1 到 NA，NA 经 R6 到回传，回传经 R3 到 ARI（条款 6.6.2.1）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Stage three — 6.7 Authorization, QoS, and policy control (6.7.1). With a pipe in place, who decides how good the service is? IEEE 802 offers two QoS models, borrowed from IP terminology: diffserv (prioritise packets, the common case in unlicensed Wi-Fi via 802.11e EDCA) and intserv (reserve resources for a stream). The control architecture is the classic split: a policy database (in the SS), a policy decision point (in the ANC), and policy enforcement points (the NA and backhaul). TSN configuration follows 802.1Qcc models — distributed, centralized-network/distributed-user, or fully centralized — where a Centralized Network Configuration (CNC) and Centralized User Configuration (CUC) coordinate Talkers and Listeners over a User Network Interface (UNI).",
+      "zh": "第三阶段——6.7 授权、QoS 与策略控制（6.7.1）。管道就位后，由谁决定服务有多好？IEEE 802 提供两种借自 IP 术语的 QoS 模型：diffserv（对分组排优先级，是非授权 Wi-Fi 经 802.11e EDCA 的常见做法）与 intserv（为某个流预留资源）。控制架构是经典的三分：策略数据库（在 SS）、策略决策点（在 ANC）、策略执行点（NA 与回传）。TSN 配置遵循 802.1Qcc 的模型——分布式、集中网络/分布用户、完全集中——其中集中网络配置（CNC, Centralized Network Configuration）与集中用户配置（CUC, Centralized User Configuration）通过用户网络接口（UNI, User Network Interface）协调 Talker 与 Listener。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The unit of QoS is the service flow, identified by a ServiceFlow-ID. It moves through states Provisioned → Permitted → Active, and may be static (fixed for the session) or dynamic (changes mid-session). A default service flow is set up at session start and torn down last. In TSN terms a service flow is a 'Stream' from a 'Talker' to a 'Listener'.",
+      "zh": "QoS 的基本单位是服务流（service flow），由 ServiceFlow-ID 标识。它经历 已配置 → 已许可 → 已激活 的状态，可以是静态（整个会话固定）或动态（会话中途改变）。默认服务流在会话开始时建立，并在最后被拆除。用 TSN 的术语说，一个服务流就是从 'Talker' 到 'Listener' 的一条 'Stream'。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — 6.7 Authorization, QoS, policy (6.7.1–6.7.8)",
+        "zh": "覆盖地图——6.7 授权、QoS、策略（6.7.1–6.7.8）"
+      },
+      "en": "6.7.1 Introduction covers the aspects (6.7.1.1), the diffserv/intserv QoS models per IEEE 802 (6.7.1.2), the policy/QoS repository in the SS (6.7.1.3), the policy-control architecture mapped to the NRM — database in SS, decision point in ANC, enforcement in NA/BH (6.7.1.4), and the TSN control architecture mapping 802.1Qcc models to the NRM with CNC in the ANC and CUC in the SS (6.7.1.5). 6.7.2 Roles: the service flow itself (6.7.2.1, with states and static/dynamic kinds), Subscription holding permitted QoS (6.7.2.2), SS as policy repository (6.7.2.3), ANC as policy decision point (6.7.2.4), NA and BH as enforcement points (6.7.2.5), TEC and ARC as the requesters (6.7.2.6). 6.7.3 Use cases: policy provisioning to ANC (6.7.3.1), default service flow lifecycle (6.7.3.2), change of authorization by SS (6.7.3.3), AR-initiated flows (6.7.3.4), terminal-initiated flows (6.7.3.5). 6.7.4 Functional requirements (user-specific QoS, diffserv+intserv/TSN, static and dynamic flows, SS-driven change, dynamic creation on request, IEEE 802 reservation protocols). 6.7.5 Attributes: the service flow (ServiceFlow-ID, SFConfig with filter/priority/bandwidth/delay/jitter, SessionKey, DP-ID), NA and BH SFParams, and SS-side ServiceProvider-ID/SFSpec/PolicyRules. 6.7.6 Basic functions: provision authorization at session start (6.7.6.1), change of authorization during a session (6.7.6.2), provision QoS to enforcement points over R5/R7 (6.7.6.3), and service-flow requests from terminal (6.7.6.4) or access router (6.7.6.5). 6.7.7 Detailed procedures show the full message dance: pre-provisioned establishment (6.7.7.1), SF init by terminal (6.7.7.2), SF init by access router (6.7.7.3), SF modification by terminal (6.7.7.4), SF termination by terminal (6.7.7.5), change of authorization by SS (6.7.7.6). 6.7.8 Mapping to IEEE 802 technologies is Table 7 — diffserv (e.g. EDCA), intserv (e.g. HCCA/UGS/SRP), QoS parameters, traffic streams, and QoS management per technology.",
+      "zh": "6.7.1 引言 涵盖各方面（6.7.1.1）、IEEE 802 的 diffserv/intserv QoS 模型（6.7.1.2）、位于 SS 的策略/QoS 仓库（6.7.1.3）、映射到 NRM 的策略控制架构——数据库在 SS、决策点在 ANC、执行在 NA/BH（6.7.1.4），以及把 802.1Qcc 模型映射到 NRM 的 TSN 控制架构，CNC 在 ANC、CUC 在 SS（6.7.1.5）。6.7.2 角色：服务流本身（6.7.2.1，含状态与静态/动态种类）、保存许可 QoS 的签约（6.7.2.2）、作为策略仓库的 SS（6.7.2.3）、作为策略决策点的 ANC（6.7.2.4）、作为执行点的 NA 与 BH（6.7.2.5）、作为请求方的 TEC 与 ARC（6.7.2.6）。6.7.3 用例：向 ANC 配置策略（6.7.3.1）、默认服务流生命周期（6.7.3.2）、SS 发起的授权变更（6.7.3.3）、AR 发起的流（6.7.3.4）、终端发起的流（6.7.3.5）。6.7.4 功能需求（用户专属 QoS、diffserv＋intserv/TSN、静态与动态流、SS 驱动变更、按需动态创建、IEEE 802 预留协议）。6.7.5 属性：服务流（ServiceFlow-ID、含过滤器/优先级/带宽/时延/抖动的 SFConfig、SessionKey、DP-ID）、NA 与 BH 的 SFParams，以及 SS 侧的 ServiceProvider-ID/SFSpec/PolicyRules。6.7.6 基本功能：会话开始时配置授权（6.7.6.1）、会话中变更授权（6.7.6.2）、经 R5/R7 向执行点配置 QoS（6.7.6.3）、来自终端（6.7.6.4）或接入路由器（6.7.6.5）的服务流请求。6.7.7 详细流程 展示完整的消息往来：预配置建立（6.7.7.1）、终端发起 SF（6.7.7.2）、接入路由器发起 SF（6.7.7.3）、终端修改 SF（6.7.7.4）、终端终止 SF（6.7.7.5）、SS 发起授权变更（6.7.7.6）。6.7.8 到 IEEE 802 技术的映射 即表 7——各技术的 diffserv（如 EDCA）、intserv（如 HCCA/UGS/SRP）、QoS 参数、流量流与 QoS 管理。",
+      "cite": {
+        "pdf_id": "8021CF-2019",
+        "pages": [
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Putting the three stages together gives the spine of a session: you authenticate and a master key is installed (6.5); the SS hands the ANC your authorization, and the ANC programs a datapath through NA, backhaul, and access router (6.6); and on top of that pipe the ANC instantiates service flows that carry your QoS, adjusting them on request or when the SS changes your authorization (6.7). Notice the recurring pattern — the SS is always the authority and repository, the ANC is always the decision-maker and configurator, and the NA/backhaul are always the enforcers. Master that triangle and the rest of Clause 6 reads as variations on one theme.",
+      "zh": "把三个阶段合在一起，便是一次会话的主干：你完成认证并安装主密钥（6.5）；SS 把你的授权交给 ANC，ANC 经 NA、回传、接入路由器编排出一条数据通路（6.6）；在这条管道之上，ANC 实例化承载你 QoS 的服务流，并在收到请求或 SS 变更授权时调整它们（6.7）。请注意反复出现的模式——SS 始终是权威与仓库，ANC 始终是决策者与配置者，NA/回传始终是执行者。掌握这个三角，Clause 6 的其余部分便都是同一主题的变奏。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021CF-2019",
+      "pages": [
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84
+      ],
+      "note": "6.5 Authentication and trust establishment: roles, use cases, requirements, attributes, basic functions, detailed procedures, and IEEE 802 mapping."
+    },
+    {
+      "pdf_id": "8021CF-2019",
+      "pages": [
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99
+      ],
+      "note": "6.6 Datapath establishment, relocation, and teardown: forwarding, connectivity (E-Line/E-LAN/E-Tree), traffic types, TSN, roles, use cases, attributes, functions, procedures."
+    },
+    {
+      "pdf_id": "8021CF-2019",
+      "pages": [
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112
+      ],
+      "note": "6.7 Authorization, QoS, and policy control: QoS models, policy/TSN architecture, roles, use cases, attributes, functions, service-flow procedures, and IEEE 802 mapping."
+    }
+  ],
+  "covers": [
+    "8021CF-2019:6.5.1",
+    "8021CF-2019:6.5.2",
+    "8021CF-2019:6.5.3",
+    "8021CF-2019:6.5.4",
+    "8021CF-2019:6.5.5",
+    "8021CF-2019:6.5.6",
+    "8021CF-2019:6.5.7",
+    "8021CF-2019:6.5.8",
+    "8021CF-2019:6.6.1",
+    "8021CF-2019:6.6.2",
+    "8021CF-2019:6.6.3",
+    "8021CF-2019:6.6.4",
+    "8021CF-2019:6.6.5",
+    "8021CF-2019:6.6.6",
+    "8021CF-2019:6.6.7",
+    "8021CF-2019:6.6.8",
+    "8021CF-2019:6.7.1",
+    "8021CF-2019:6.7.2",
+    "8021CF-2019:6.7.3",
+    "8021CF-2019:6.7.4",
+    "8021CF-2019:6.7.5",
+    "8021CF-2019:6.7.6",
+    "8021CF-2019:6.7.7",
+    "8021CF-2019:6.7.8"
+  ],
+  "track": "bridging-tsn"
+}

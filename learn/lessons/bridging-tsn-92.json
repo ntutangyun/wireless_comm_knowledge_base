@@ -1,0 +1,131 @@
+{
+  "id": "bridging-tsn-92",
+  "title": {
+    "en": "Mapping the QoS Toolbox: How 802.1DC Borrows from 802.1Q",
+    "zh": "服务质量工具箱全景图：802.1DC 如何借用 802.1Q"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1DC-2024 does not invent a brand-new set of quality-of-service (QoS) mechanisms. Instead, its Clause 6 is a map: it takes the well-known QoS toolkit already defined in IEEE Std 802.1Q (the bridging standard) and shows which tools a generic forwarding system can use. The term used throughout is GFQoS — Generic Forwarding QoS — meaning QoS functions specified for any end system or forwarding system, not only for a full 802.1Q Bridge. Clause 6.1 (Overview) tells us the plan: 6.2 lists the GFQoS functions, 6.3 points at the exact 802.1Q clauses that specify them, 6.4 names neighboring Bridge functions that affect QoS but are not GFQoS, and 6.5 lists QoS mechanisms deliberately left out.",
+      "zh": "IEEE Std 802.1DC-2024 并没有发明一整套全新的服务质量（QoS，Quality of Service）机制。它的第 6 章其实是一张地图：把桥接标准 IEEE Std 802.1Q 中早已定义好的成熟 QoS 工具箱拿过来，指明一个通用转发系统可以使用其中哪些工具。全文反复出现的术语是 GFQoS——通用转发服务质量（Generic Forwarding QoS），指的是为任意端系统或转发系统（而不只是完整的 802.1Q 网桥）所规定的 QoS 功能。6.1 概述给出了整体安排：6.2 列出各项 GFQoS 功能，6.3 指向 802.1Q 中规定这些功能的具体条款，6.4 点名那些会影响 QoS 但本身不属于 GFQoS 的相邻网桥功能，6.5 则列出有意未纳入的 QoS 机制。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Reading tip: throughout Clause 6, a reference like '5.3:c' points back to the conformance list in Clause 5 of this same standard, while a reference like '[Q] 8.6.8.1' points into IEEE Std 802.1Q-2022. The [Q] prefix always means 'go look in 802.1Q.'",
+      "zh": "阅读提示：在第 6 章中，形如 “5.3:c” 的引用指向本标准第 5 章的符合性列表，而形如 “[Q] 8.6.8.1” 的引用则指向 IEEE Std 802.1Q-2022。凡带 [Q] 前缀的，都表示“请到 802.1Q 里查”。"
+    },
+    {
+      "type": "prose",
+      "en": "The heart of Clause 6 is 6.2, the list of GFQoS functions. It begins with the foundation: 6.2.1 Basic GFQoS functionality defines the reference model — the observable measurement points against which every other function is described. 6.2.2 Strict priority is the simplest scheduler: output queues are ranked by priority, and the highest-priority eligible queue always transmits first. 6.2.3 introduces the Enhanced Internal Sublayer Service (EISS), the internal MAC service interface that carries VLAN (Virtual LAN) tagging information so the bridge knows each frame's priority. 6.2.4 Priority-based Flow Control (PFC) lets a receiver send a pause for one specific layer-2 priority so the sender stops draining just that queue, leaving other priorities flowing.",
+      "zh": "第 6 章的核心是 6.2，即 GFQoS 功能清单。它从地基讲起：6.2.1 基本 GFQoS 功能定义了参考模型——即描述其他所有功能所依据的可观测测量点。6.2.2 严格优先级是最简单的调度方式：输出队列按优先级排序，符合条件的最高优先级队列总是最先发送。6.2.3 引入了增强型内部子层服务（EISS，Enhanced Internal Sublayer Service），这是承载 VLAN（虚拟局域网）标签信息的内部 MAC 服务接口，使网桥知道每个帧的优先级。6.2.4 基于优先级的流控（PFC，Priority-based Flow Control）允许接收方针对某一个特定的二层优先级发送暂停，让发送方只停止抽取那一个队列，而其他优先级继续流动。"
+    },
+    {
+      "type": "prose",
+      "en": "Next come the mechanisms that make timing predictable. 6.2.5 Frame preemption lets a long, ordinary frame's transmission be interrupted so a more time-critical frame can squeeze through, then resumed afterward. 6.2.6 Frame Replication and Elimination for Reliability (FRER) — defined in IEEE Std 802.1CB — numbers a stream's frames, sends copies along disjoint paths, then merges them and drops duplicates, so a single failed path does not lose data. 6.2.7 General flow classification and metering discards or marks frames for reduced delivery probability based on source/destination MAC address, VLAN ID (VID), or priority. 6.2.8 Per-Stream Filtering and Policing (PSFP) goes finer-grained: it identifies individual streams and applies timed input gates, class-of-service assignment, size-based discard, and per-flow metering.",
+      "zh": "接下来是让时延变得可预测的机制。6.2.5 帧抢占允许一个又长又普通的帧在发送途中被打断，让一个更具时间紧迫性的帧先挤过去，之后再续传被打断的帧。6.2.6 面向可靠性的帧复制与消除（FRER，Frame Replication and Elimination for Reliability）——定义于 IEEE Std 802.1CB——为一条流的各帧编号，沿互不相交的路径发送副本，再合并并丢弃重复帧，使单条路径失效不会丢数据。6.2.7 通用流分类与计量根据源/目的 MAC 地址、VLAN ID（VID）或优先级，丢弃或标记帧以降低其投递概率。6.2.8 逐流过滤与监管（PSFP，Per-Stream Filtering and Policing）则更细粒度：它识别单条流，并施加定时输入门、服务等级分配、按帧长丢弃以及逐流计量。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining 6.2 functions are the schedulers and shapers that bound latency. 6.2.9 Enhanced Transmission Selection (ETS) caps the share of a port's bandwidth a priority (or group of priorities) may consume. 6.2.10 Scheduled traffic runs a fixed-frequency repeating schedule whose entries open and close specific output queues. 6.2.11 Credit-based shaper (CBS) paces a queue's output using a credit account so worst-case delivery times can be computed; note CBS is the only piece of 802.1Q's FQTSS (Forwarding and Queuing Enhancements for Time-Sensitive Streams) adopted here. 6.2.12 Cyclic queuing and forwarding (CQF) combines scheduled traffic and stream gates to ping-pong two queues between filling and transmitting, synchronously across all bridges, for a predictable per-hop rate. 6.2.13 Asynchronous Traffic Shaping (ATS) assigns a per-stream state machine that stamps each frame an arrival-based transmission time, bounding worst-case latency without a synchronized clock.",
+      "zh": "6.2 中其余的功能是用来约束时延的调度器与整形器。6.2.9 增强传输选择（ETS，Enhanced Transmission Selection）限制某个优先级（或一组优先级）可占用的端口带宽份额。6.2.10 时间感知调度按固定频率循环运行一张时间表，表中每个条目开启或关闭特定的输出队列。6.2.11 基于信用的整形器（CBS，Credit-based Shaper）用信用额度账户为队列输出限速，从而可计算最坏投递时间；请注意，CBS 是 802.1Q 中 FQTSS（面向时间敏感流的转发与排队增强，Forwarding and Queuing Enhancements for Time-Sensitive Streams）里唯一被本标准采纳的部分。6.2.12 循环排队与转发（CQF，Cyclic Queuing and Forwarding）把时间感知调度与流门结合起来，让两个队列在“填充”和“发送”之间乒乓切换，且全网各网桥同步切换，从而获得可预测的逐跳速率。6.2.13 异步流量整形（ATS，Asynchronous Traffic Shaping）为每条流分配一个状态机，依据到达时间给每个帧标记发送时间，无需同步时钟即可约束最坏时延。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"16\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">A frame's journey through GFQoS functions</text><rect x=\"10\" y=\"30\" width=\"90\" height=\"34\"/><text x=\"55\" y=\"51\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">Classify + meter</text><rect x=\"120\" y=\"30\" width=\"90\" height=\"34\"/><text x=\"165\" y=\"47\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">Stream gate</text><text x=\"165\" y=\"58\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">(PSFP)</text><rect x=\"230\" y=\"30\" width=\"90\" height=\"34\"/><text x=\"275\" y=\"51\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">Queue</text><rect x=\"340\" y=\"30\" width=\"110\" height=\"34\"/><text x=\"395\" y=\"51\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">Queue mgmt</text><line x1=\"100\" y1=\"47\" x2=\"120\" y2=\"47\" marker-end=\"url(#a)\"/><line x1=\"210\" y1=\"47\" x2=\"230\" y2=\"47\" marker-end=\"url(#a)\"/><line x1=\"320\" y1=\"47\" x2=\"340\" y2=\"47\" marker-end=\"url(#a)\"/><text x=\"10\" y=\"92\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Transmission selection (pick next frame)</text><rect x=\"10\" y=\"104\" width=\"100\" height=\"30\"/><text x=\"60\" y=\"123\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">Strict priority</text><rect x=\"120\" y=\"104\" width=\"60\" height=\"30\"/><text x=\"150\" y=\"123\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">CBS</text><rect x=\"190\" y=\"104\" width=\"60\" height=\"30\"/><text x=\"220\" y=\"123\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">ETS</text><rect x=\"260\" y=\"104\" width=\"100\" height=\"30\"/><text x=\"310\" y=\"123\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">Scheduled / CQF</text><rect x=\"370\" y=\"104\" width=\"80\" height=\"30\"/><text x=\"410\" y=\"123\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">ATS</text><text x=\"10\" y=\"162\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Egress shaping aids: Frame preemption, PFC backpressure</text><rect x=\"10\" y=\"172\" width=\"440\" height=\"22\"/><text x=\"230\" y=\"187\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">Preemption interrupts a long frame; PFC pauses one priority</text><defs><marker id=\"a\" markerWidth=\"6\" markerHeight=\"6\" refX=\"5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L6,3 L0,6\" fill=\"currentColor\" stroke=\"none\"/></marker></defs></svg>",
+      "caption": {
+        "en": "The GFQoS functions arranged in the order a frame meets them: input classification and metering, stream gating (PSFP), queuing, then transmission selection (strict priority, CBS, ETS, scheduled/CQF, ATS), with frame preemption and PFC acting on egress.",
+        "zh": "按帧遇到它们的先后顺序排列的 GFQoS 功能：输入分类与计量、流门控（PSFP）、排队，然后是传输选择（严格优先级、CBS、ETS、时间感知调度/CQF、ATS），帧抢占与 PFC 则作用于出口。"
+      }
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  In[Frame arrives] --> CM[Classify + meter]\n  CM --> SG[Stream gate PSFP]\n  SG --> Q[Queue by class]\n  Q --> TS{Transmission selection}\n  TS --> SP[Strict priority]\n  TS --> SH[CBS / ETS / ATS]\n  TS --> SCH[Scheduled / CQF]\n  SP --> Out[Egress + preemption + PFC]\n  SH --> Out\n  SCH --> Out",
+      "zh": "flowchart LR\n  In[帧到达] --> CM[分类与计量]\n  CM --> SG[流门 PSFP]\n  SG --> Q[按等级排队]\n  Q --> TS{传输选择}\n  TS --> SP[严格优先级]\n  TS --> SH[CBS / ETS / ATS]\n  TS --> SCH[时间感知调度 / CQF]\n  SP --> Out[出口 + 抢占 + PFC]\n  SH --> Out\n  SCH --> Out"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "6.3 — Coverage map: exactly where each function lives in 802.1Q-2022",
+        "zh": "6.3 — 对照地图：各功能在 802.1Q-2022 中的确切位置"
+      },
+      "en": "Clause 6.3 is the precise cross-reference into IEEE Std 802.1Q-2022. [Q] 6 'Support of the MAC Service' frames the service a bridge helps offer: [Q] 6.5 defines the QoS-maintenance parameters, [Q] 6.7.1 and [Q] 6.7.2 cover frame preemption, and [Q] 6.8 / [Q] 6.9 specify EISS and VLAN tag use. [Q] 8 'Principles of Bridge operation' is the engine room: [Q] 8.2 gives bridge architecture context and [Q] 8.6 'The Forwarding Process' walks a 'day in the life of a frame.' Between input and queuing: flow classification and metering at [Q] 8.6.5 / 7.2.1 (general at 7.2.1.1, per-stream at 7.2.1.2, with normative references to 802.1CB-2017); stream gate control at [Q] 8.6.10 (part of PSFP); queuing frames at [Q] 8.6.6; queue management at [Q] 8.6.7. For choosing the next frame to send: strict priority at [Q] 8.6.8.1; credit-based shaper at [Q] 8.6.8.2 and Annex L; ETS at [Q] 8.6.8.3 and [Q] 37; scheduled traffic at [Q] 8.6.8.4, [Q] 8.6.9, and Annex Q; CQF at [Q] Annex T; asynchronous traffic shaper at [Q] 8.6.11 and [Q] 47; and priority flow control at [Q] 36. ([Q] 34.6.1 adds end-station considerations for CBS.)",
+      "zh": "6.3 是对 IEEE Std 802.1Q-2022 的精确交叉引用。[Q] 6 “MAC 服务的支持”界定了网桥协助提供的服务：[Q] 6.5 定义 QoS 维护参数，[Q] 6.7.1 与 [Q] 6.7.2 涵盖帧抢占，[Q] 6.8 / [Q] 6.9 规定 EISS 与 VLAN 标签的使用。[Q] 8 “网桥操作原理”是引擎室：[Q] 8.2 提供网桥架构背景，[Q] 8.6 “转发过程”以“一个帧的一天”串讲。从输入到排队之间：流分类与计量在 [Q] 8.6.5 / 7.2.1（通用见 7.2.1.1，逐流见 7.2.1.2，并规范性引用 802.1CB-2017）；流门控制在 [Q] 8.6.10（属 PSFP）；帧排队在 [Q] 8.6.6；队列管理在 [Q] 8.6.7。选择下一个发送帧时：严格优先级在 [Q] 8.6.8.1；基于信用的整形器在 [Q] 8.6.8.2 与附录 L；ETS 在 [Q] 8.6.8.3 与 [Q] 37；时间感知调度在 [Q] 8.6.8.4、[Q] 8.6.9 与附录 Q；CQF 在 [Q] 附录 T；异步流量整形器在 [Q] 8.6.11 与 [Q] 47；优先级流控在 [Q] 36。（[Q] 34.6.1 为 CBS 补充了端站方面的考虑。）",
+      "cite": {
+        "pdf_id": "8021DC-2024",
+        "pages": [
+          23,
+          24
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.4 names three Bridge functions that visibly affect QoS yet are deliberately not specified as GFQoS. 6.4.1 Link Aggregation (IEEE Std 802.1AX) bundles several physical ports into one logical port for more bandwidth and reliability; because 802.1Q never says whether the queues sit on the combined Aggregator Port or on each physical Aggregation Port, GFQoS behavior can differ sharply depending on that design choice. 6.4.2 MAC Security entity (IEEE Std 802.1AE) applies a cryptographic transform that takes finite, sometimes variable, time — which is exactly why QoS is specified at reference points observable outside the system, leaving implementation and management to account for that delay. 6.4.3 Priority/DSCP regeneration covers a bridge rewriting a frame's priority, or a router rewriting the IETF Differentiated Services Code Point (DSCP); this protects the network from frames that falsely wear a time-sensitive priority but is too tied to forwarding to standardize here (see [Q] 6.9.4).",
+      "zh": "6.4 点名了三项明显影响 QoS、却被有意不列为 GFQoS 的网桥功能。6.4.1 链路聚合（IEEE Std 802.1AX）把多个物理端口捆成一个逻辑端口以提升带宽与可靠性；由于 802.1Q 从未说明队列究竟挂在合并后的聚合器端口（Aggregator Port）还是各物理聚合端口（Aggregation Port）上，GFQoS 的表现会因这一设计选择而大不相同。6.4.2 MAC 安全实体（IEEE Std 802.1AE）施加的加密变换耗费有限且有时可变的时间——这正是 QoS 要在系统外部可观测的参考点处规定的原因，从而把核算该时延的责任留给实现与网络管理。6.4.3 优先级/DSCP 再生指网桥改写帧的优先级，或路由器改写 IETF 区分服务代码点（DSCP，Differentiated Services Code Point）；它可保护网络免受那些假冒时间敏感优先级的帧的影响，但因与转发联系过于紧密而不在本标准中规定（参见 [Q] 6.9.4）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "6.5 — What 802.1DC leaves out, and why",
+        "zh": "6.5 — 802.1DC 略去了什么，以及为什么"
+      },
+      "en": "Clause 6.5 lists QoS mechanisms intentionally excluded from this standard. 6.5.1 Congestion notification is not specified here; it lives in 802.1Q-2022 clauses [Q] 30, [Q] 31, [Q] 32, and [Q] 33. 6.5.2 Media QoS capabilities: although some media (for example IEEE Std 802.11 Wi-Fi) offer their own QoS, this standard specifies GFQoS only for end systems and forwarding systems, not for medium-specific QoS. 6.5.3 Frame Replication and Elimination for Reliability is fully described in IEEE Std 802.1CB for end systems and forwarding systems alike, so it applies to GFQoS systems without re-specification — this standard makes normative references to 802.1CB only for stream identification used by other GFQoS functions. 6.5.4 Control protocols: reserving resources before a stream starts is done by the Stream Reservation Protocol ([Q] 35) or the IETF Resource ReSerVation Protocol (RSVP, RFC 2205); both assume a particular forwarding device (bridge or router) and so are unsuitable for this assumption-free standard.",
+      "zh": "6.5 列出本标准有意排除的 QoS 机制。6.5.1 拥塞通知不在此规定；它位于 802.1Q-2022 的 [Q] 30、[Q] 31、[Q] 32 与 [Q] 33。6.5.2 介质 QoS 能力：尽管某些介质（例如 IEEE Std 802.11 Wi-Fi）提供自有的 QoS，本标准只为端系统与转发系统规定 GFQoS，而不涉及特定介质的 QoS 功能。6.5.3 面向可靠性的帧复制与消除已在 IEEE Std 802.1CB 中对端系统与转发系统一并完整描述，因此无需重新规定即适用于 GFQoS 系统——本标准仅就供其他 GFQoS 功能使用的流标识对 802.1CB 作规范性引用。6.5.4 控制协议：在流开始前预留资源由流预留协议（[Q] 35）或 IETF 资源预留协议（RSVP，Resource ReSerVation Protocol，RFC 2205）完成；二者都对所用转发设备（网桥或路由器）作出假设，因而不适合这部不作此类假设的标准。",
+      "cite": {
+        "pdf_id": "8021DC-2024",
+        "pages": [
+          25,
+          26
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Big picture: Clause 6 is the Rosetta stone between 802.1DC's generic forwarding view and the rich, bridge-centric QoS machinery of 802.1Q. Once you can name each GFQoS function (6.2), find it in 802.1Q (6.3), recognize the neighbors that influence it (6.4), and know what is left to other standards (6.5), the rest of 802.1DC reads as a focused subset rather than a new world.",
+      "zh": "整体把握：第 6 章是 802.1DC 的通用转发视角与 802.1Q 丰富的、以网桥为中心的 QoS 机制之间的“罗塞塔石碑”。一旦你能叫出每项 GFQoS 功能的名字（6.2）、在 802.1Q 中找到它（6.3）、认出影响它的相邻功能（6.4），并知道哪些留给了其他标准（6.5），802.1DC 的其余部分读起来就只是一个聚焦的子集，而非一个全新的世界。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021DC-2024",
+      "pages": [
+        22,
+        23,
+        24,
+        25,
+        26
+      ],
+      "note": "Clause 6 in full: 6.1 overview; 6.2.1-6.2.13 GFQoS function list; 6.3 cross-references into 802.1Q-2022; 6.4.1-6.4.3 adjacent bridge functions; 6.5.1-6.5.4 excluded mechanisms."
+    }
+  ],
+  "covers": [
+    "8021DC-2024:6.1",
+    "8021DC-2024:6.2.1",
+    "8021DC-2024:6.2.2",
+    "8021DC-2024:6.2.3",
+    "8021DC-2024:6.2.4",
+    "8021DC-2024:6.2.5",
+    "8021DC-2024:6.2.6",
+    "8021DC-2024:6.2.7",
+    "8021DC-2024:6.2.8",
+    "8021DC-2024:6.2.9",
+    "8021DC-2024:6.2.10",
+    "8021DC-2024:6.2.11",
+    "8021DC-2024:6.2.12",
+    "8021DC-2024:6.2.13",
+    "8021DC-2024:6.3",
+    "8021DC-2024:6.4.1",
+    "8021DC-2024:6.4.2",
+    "8021DC-2024:6.4.3",
+    "8021DC-2024:6.5.1",
+    "8021DC-2024:6.5.2",
+    "8021DC-2024:6.5.3",
+    "8021DC-2024:6.5.4"
+  ],
+  "track": "bridging-tsn"
+}

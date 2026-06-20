@@ -1,0 +1,183 @@
+{
+  "id": "tsn-31",
+  "title": {
+    "en": "Three Ways to Carry gPTP Time: Point-to-Point Ethernet, Wi-Fi, and EPON",
+    "zh": "gPTP 时间的三种承载方式：点对点以太网、Wi-Fi 与 EPON"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "gPTP (generalized Precision Time Protocol, IEEE 802.1AS) keeps every device in a network agreed on the same nanosecond. But the actual wire matters: pushing a timestamp across a wired Ethernet cable, a Wi-Fi radio link, and a passive optical fiber network all look different at the lowest level. So 802.1AS splits into a media-independent layer (the shared logic) and a media-dependent (MD) layer that adapts to each link type. This lesson walks the three MD specifications: Clause 11 (full-duplex point-to-point links, i.e. ordinary Ethernet), Clause 12 (IEEE 802.11 Wi-Fi links), and Clause 13 (IEEE 802.3 EPON, an Ethernet passive optical network). The 802.1ASdr-2024 amendment we read here re-words these clauses with inclusive terminology — 'mastertimeTransmitter' and 'slavetimeReceiver' replace the older master/slave wording, but the mechanisms are unchanged.",
+      "zh": "gPTP（通用精确时间协议，IEEE 802.1AS）让网络中每台设备都对齐到同一个纳秒。但底层介质很重要：把一个时间戳推过有线以太网电缆、Wi-Fi 无线链路、无源光纤网络，在最底层看起来完全不同。因此 802.1AS 拆分为介质无关层（共享逻辑）和介质相关（MD）层（针对各类链路做适配）。本课逐一讲解三套 MD 规范：Clause 11（全双工点对点链路，即普通以太网）、Clause 12（IEEE 802.11 Wi-Fi 链路）、Clause 13（IEEE 802.3 EPON，以太网无源光网络）。我们这里读的 802.1ASdr-2024 修订版用包容性术语重写了这些条款——用 'mastertimeTransmitter' 和 'slavetimeReceiver' 替换旧的 master/slave 措辞，但机制不变。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  MI[\"Media-independent gPTP logic (Clause 10)\"]\n  MI --> C11[\"Clause 11: point-to-point Ethernet\"]\n  MI --> C12[\"Clause 12: IEEE 802.11 Wi-Fi\"]\n  MI --> C13[\"Clause 13: IEEE 802.3 EPON\"]\n  C11 --> M1[\"Sync + Follow_Up messages\"]\n  C12 --> M2[\"TM / FTM frame exchanges\"]\n  C13 --> M3[\"TIMESYNC via OSSP message\"]",
+      "zh": "flowchart TD\n  MI[\"介质无关 gPTP 逻辑 (Clause 10)\"]\n  MI --> C11[\"Clause 11: 点对点以太网\"]\n  MI --> C12[\"Clause 12: IEEE 802.11 Wi-Fi\"]\n  MI --> C13[\"Clause 13: IEEE 802.3 EPON\"]\n  C11 --> M1[\"Sync + Follow_Up 消息\"]\n  C12 --> M2[\"TM / FTM 帧交换\"]\n  C13 --> M3[\"经 OSSP 消息的 TIMESYNC\"]"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11 — ordinary full-duplex point-to-point Ethernet — is the simplest case. The transmitting side (the mastertimeTransmitter port) sends a Sync message marking the moment time leaves, optionally followed by a Follow_Up message carrying the precise origin timestamp (11.1.3 'Transport of time-synchronization information', 11.1.4 'Model of operation'). Mathematically this is equivalent to a syntonized peer-to-peer Transparent Clock from IEEE 1588. When several physical Ethernet links bundle into one Link Aggregation Group, gPTP measures delay on every physical link but the protocol picks just one of them to actually carry the master time (11.2.5 'Use of link aggregation'). The amendment also updates message wording: the Sync message (11.4.3) carries an originTimestamp = the source time of the Grandmaster's time-transmitter entity; the Follow_Up message (11.4.4) carries that same source time as the preciseOriginTimestamp. Both belong to the Event message class (11.3.2).",
+      "zh": "Clause 11——普通的全双工点对点以太网——是最简单的情形。发送侧（mastertimeTransmitter 端口）发出一个 Sync 消息标记时间离开的时刻，可选地再跟一个 Follow_Up 消息携带精确的起源时间戳（11.1.3「时间同步信息的传输」、11.1.4「运行模型」）。数学上这等价于 IEEE 1588 中一个已同频的对等透明时钟。当多条物理以太网链路捆绑为一个链路聚合组时，gPTP 在每条物理链路上测量时延，但协议只挑选其中一条来实际承载主时间（11.2.5「链路聚合的使用」）。修订版还更新了消息措辞：Sync 消息（11.4.3）携带 originTimestamp，即大主时钟的时间发送实体的源时间；Follow_Up 消息（11.4.4）将同一源时间作为 preciseOriginTimestamp 携带。二者都属于事件消息类（11.3.2）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 400 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"40\" width=\"110\" height=\"36\"/><text x=\"65\" y=\"63\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Sync</text><rect x=\"130\" y=\"40\" width=\"170\" height=\"36\"/><text x=\"215\" y=\"58\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Follow_Up</text><text x=\"215\" y=\"71\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">preciseOriginTimestamp</text><rect x=\"310\" y=\"40\" width=\"80\" height=\"36\"/><text x=\"350\" y=\"63\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">TLV fields</text><text x=\"10\" y=\"25\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Clause 11 two-step transport (Event class)</text></svg>",
+      "caption": {
+        "en": "Two-step transport on point-to-point Ethernet: a Sync event marks departure, the Follow_Up then carries the precise origin timestamp and Follow_Up information TLV (11.4.3, 11.4.4).",
+        "zh": "点对点以太网上的两步传输：Sync 事件标记出发时刻，随后的 Follow_Up 携带精确起源时间戳与 Follow_Up 信息 TLV（11.4.3、11.4.4）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 12 handles Wi-Fi (IEEE 802.11), where there is no quiet dedicated cable — so instead of one-way Sync messages, time is recovered from a round-trip frame exchange (12.1.1 General). Two flavors exist (12.1.2): Timing Measurement (TM) and Fine Timing Measurement (FTM). In both, four timestamps are captured — t1 (request leaves the transmitter), t2 (request arrives at the receiver), t3 (the Ack leaves the receiver), t4 (the Ack arrives back). Crucially the direction of control differs. With TM, the mastertimeTransmitter pushes measurement frames at the required rate; with FTM, the slavetimeReceiver pulls — it requests a burst of FTM frames. Each frame carries the t1/t4 timestamps of the previous exchange (plus FollowUpInformation), so the receiver reconstructs the link delay one step behind. The MD entity sits between the PortSync logic above and the 802.11 MLME (MAC sublayer management entity) below, and each Wi-Fi association needs its own MD entity instance (12.1.3 Layering).",
+      "zh": "Clause 12 处理 Wi-Fi（IEEE 802.11），这里没有安静的专用电缆——因此不用单向 Sync 消息，而是从往返帧交换中恢复时间（12.1.1 总则）。存在两种方式（12.1.2）：定时测量（TM）与精细定时测量（FTM）。两者都捕获四个时间戳——t1（请求离开发送方）、t2（请求到达接收方）、t3（Ack 离开接收方）、t4（Ack 返回到达）。关键在于控制方向不同。TM 中由 mastertimeTransmitter 按所需速率推送测量帧；FTM 中由 slavetimeReceiver 拉取——它请求一突发（burst）的 FTM 帧。每个帧携带上一次交换的 t1/t4 时间戳（外加 FollowUpInformation），使接收方滞后一步重建链路时延。MD 实体位于上方的 PortSync 逻辑与下方的 802.11 MLME（MAC 子层管理实体）之间，且每个 Wi-Fi 关联都需要自己的 MD 实体实例（12.1.3 分层）。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant TR as TimeReceiver (FTM initiator)\n  participant TT as TimeTransmitter\n  TR->>TT: Initial FTM Request (ASAP, FTMs/burst=3)\n  TT-->>TR: Ack\n  TT->>TR: FTM_1 (t1,t4 = 0)\n  TR-->>TT: Ack\n  TT->>TR: FTM_2 (carries t1_1,t4_1)\n  TR-->>TT: Ack\n  TT->>TR: FTM_3 (carries t1_2,t4_2)\n  TR-->>TT: Ack",
+      "zh": "sequenceDiagram\n  participant TR as 时间接收方 (FTM 发起方)\n  participant TT as 时间发送方\n  TR->>TT: 初始 FTM 请求 (ASAP, 每突发3帧)\n  TT-->>TR: Ack\n  TT->>TR: FTM_1 (t1,t4 = 0)\n  TR-->>TT: Ack\n  TT->>TR: FTM_2 (携带 t1_1,t4_1)\n  TR-->>TT: Ack\n  TT->>TR: FTM_3 (携带 t1_2,t4_2)\n  TR-->>TT: Ack"
+    },
+    {
+      "type": "prose",
+      "en": "Whether the Wi-Fi link counts as carrying gPTP at all is decided by asCapable (12.4). The port must support TM, or support FTM with the transmitter able to grant a burst of either 3 or 2 FTM frames — these come from the tmFtmSupport bits. The behavior is then pinned down by state machines (12.5): on the transmit side, mastertimeTransmitter state machine A drives TM requests and stores follow-up info, while state machine B handles the FTM request/grant handshake (12.5.1). On the receive side, a single slavetimeReceiver state machine (12.5.2) requests bursts (first asking for 3 frames, retrying with 2 if denied), counts received frames, extracts the minimum-delay timestamps, computes neighborRateRatio and meanLinkDelay, and builds an MDSyncReceive structure to hand upward. The exact FTM parameter values the receiver must request — Number of Bursts Exponent = 0, ASAP = 1, FTMs per burst 3 then 2 — are tabulated in 12.6.",
+      "zh": "Wi-Fi 链路是否算作能承载 gPTP，由 asCapable 决定（12.4）。该端口必须支持 TM，或支持 FTM 且发送方能够授予 3 帧或 2 帧的突发——这些取决于 tmFtmSupport 位。其行为随后由状态机锁定（12.5）：发送侧，mastertimeTransmitter 状态机 A 驱动 TM 请求并保存跟随信息，状态机 B 处理 FTM 请求/授予握手（12.5.1）。接收侧，单个 slavetimeReceiver 状态机（12.5.2）请求突发（先请求 3 帧，被拒则重试 2 帧），统计收到的帧，提取最小时延时间戳，计算 neighborRateRatio 与 meanLinkDelay，并构造一个 MDSyncReceive 结构向上递交。接收方必须请求的精确 FTM 参数值——突发数指数=0、ASAP=1、每突发先 3 帧后 2 帧——列于 12.6 的表中。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why pass last round's timestamps in this round's frame? On Wi-Fi, a station cannot know t4 (when its Ack arrived back) until after it has already sent the current frame. So each FTM/TM frame ships the previous exchange's t1 and t4 — the receiver always works one measurement behind, but ends up with a complete four-timestamp set. The receiver even computes delay over the two frames with the smaller delay (D1 vs D2) to filter out a slow channel-access frame.",
+      "zh": "为什么在本轮帧里携带上一轮的时间戳？在 Wi-Fi 上，一个站点在发出当前帧之前无法得知 t4（它的 Ack 何时返回到达）。于是每个 FTM/TM 帧都装载上一次交换的 t1 与 t4——接收方总是滞后一次测量，但最终能凑齐完整的四时间戳集合。接收方甚至会在时延较小的那两帧上计算时延（比较 D1 与 D2），以滤除某个信道接入缓慢的帧。"
+    },
+    {
+      "type": "prose",
+      "en": "Two Wi-Fi housekeeping pieces close out Clause 12. The VendorSpecific information element (12.7) is the container that smuggles a complete Follow_Up message — common header, preciseOriginTimestamp, and the Follow_Up information TLV — across the 802.11 link in its FollowUpInformation field, using exactly the same byte layout as point-to-point Ethernet, identified by an OUI/CID Type field. And the synchronization message interval (12.8.2): for TM, a receiver that asks the transmitter to change its currentLogSyncInterval can confirm the request was honored by reading the logMessageInterval field returned in a later MLME indication. This keeps Wi-Fi consistent with the wired media even though the framing differs.",
+      "zh": "两个 Wi-Fi 收尾部分结束 Clause 12。VendorSpecific 信息元素（12.7）是把完整 Follow_Up 消息——公共头、preciseOriginTimestamp 与 Follow_Up 信息 TLV——夹带过 802.11 链路的容器，放在其 FollowUpInformation 字段中，使用与点对点以太网完全相同的字节布局，并由 OUI/CID 的 Type 字段标识。还有同步消息间隔（12.8.2）：对 TM，请求发送方更改 currentLogSyncInterval 的接收方，可通过读取后续 MLME 指示中返回的 logMessageInterval 字段来确认请求是否被采纳。这让 Wi-Fi 即便帧格式不同，仍与有线介质保持一致。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 13 covers EPON (Ethernet Passive Optical Network, IEEE 802.3), a point-to-multipoint fiber tree where one OLT (Optical Line Terminal) fans out to many ONUs (Optical Network Units). Here the OLT is always the clock mastertimeTransmitter and each ONU a clock slavetimeReceiver (13.1.1 General). Timing rides on EPON's existing 32-bit MPCP (MultiPoint Control Protocol) counters, which tick every 16 ns and double as the gPTP LocalClock (13.1.2). Because EPON is a shared medium where downstream uses TDM and upstream uses TDMA with different optical wavelengths, the up and down delays are asymmetric — so the OLT picks a future counter value X, computes the synchronized time-of-day ToD that the ONU's counter will reach (correcting for round-trip time RTTi and refraction-index asymmetry nup vs ndown), and sends the pair (X, ToD) downstream (13.1.4 Time synchronization in EPON).",
+      "zh": "Clause 13 涵盖 EPON（以太网无源光网络，IEEE 802.3），一种点对多点的光纤树，其中一个 OLT（光线路终端）扇出到多个 ONU（光网络单元）。这里 OLT 始终是时钟 mastertimeTransmitter，每个 ONU 是时钟 slavetimeReceiver（13.1.1 总则）。定时搭载在 EPON 已有的 32 位 MPCP（多点控制协议）计数器上，该计数器每 16 ns 递增一次，并兼作 gPTP 的 LocalClock（13.1.2）。由于 EPON 是共享介质，下行用 TDM、上行用 TDMA 且光波长不同，上下行时延是非对称的——因此 OLT 选取一个未来计数器值 X，计算 ONU 计数器将到达该值时的同步时刻 ToD（并校正往返时间 RTTi 与折射率非对称 nup 对 ndown），再把 (X, ToD) 这对值下发（13.1.4 EPON 中的时间同步）。"
+    },
+    {
+      "type": "prose",
+      "en": "To make sure an ONU only ever follows its own OLT, EPON reuses IEEE 1588's acceptable-master-table feature (13.1.3 'Best mastertimeTransmitter selection'). Each ONU port keeps an acceptableMasterTimeTransmitterTable and per-port flag; by default it holds exactly one entry pointing at the attached OLT with alternatePriority1 = 244, so the best-master algorithm (BMCABTCA) qualifies Announce messages only from that OLT and forces the OLT to win. The carrier of the time values is the TIMESYNC message (13.3.1) holding the (X, ToD) pair, delivered via the Organization-Specific Slow Protocol (OSSP) — analogous to a Follow_Up. Layering (13.5) places the EPON MD entity with its OSSP transmitter/receiver state machines between PortSync and the MAC. The two service primitives are OSSPDU.request (13.6.1), generated by the OLT every sync interval to fire a TIMESYNC, and OSSPDU.indication (13.6.2), raised at the ONU when that TIMESYNC arrives. The OLT MD entity holds the per-link RTTi variable (13.7), and the requester state machine (13.8.1) tracks ToDX,i / ToDX,o as it builds each TIMESYNC.",
+      "zh": "为确保 ONU 只跟随自己的 OLT，EPON 复用了 IEEE 1588 的可接受主时钟表特性（13.1.3「最佳 mastertimeTransmitter 选择」）。每个 ONU 端口维护一个 acceptableMasterTimeTransmitterTable 及每端口标志；默认它只含一条指向所连 OLT 的条目，alternatePriority1 = 244，因此最佳主时钟算法（BMCABTCA）只采纳来自该 OLT 的 Announce 消息并迫使 OLT 胜出。承载时间值的是 TIMESYNC 消息（13.3.1），其中含 (X, ToD) 对，经组织特定慢协议（OSSP）投递——类似 Follow_Up。分层（13.5）把 EPON MD 实体及其 OSSP 发送/接收状态机置于 PortSync 与 MAC 之间。两个服务原语为：OSSPDU.request（13.6.1），由 OLT 每个同步间隔生成以触发一次 TIMESYNC；OSSPDU.indication（13.6.2），在该 TIMESYNC 到达时于 ONU 处触发。OLT MD 实体保存每链路的 RTTi 变量（13.7），请求方状态机（13.8.1）在构造每条 TIMESYNC 时跟踪 ToDX,i / ToDX,o。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause in this lesson, by exact number",
+        "zh": "覆盖地图——本课每个条款的精确编号"
+      },
+      "en": "Clause 11 (point-to-point Ethernet): 11.1.3 transport of time-sync info via Sync/Follow_Up; 11.1.4 model of operation (PTP Instance with full-duplex links); 11.2.5 use of link aggregation (measure all links, transmit on one); 11.3.2 Sync belongs to the Event message class; 11.4.3 Sync message originTimestamp = Grandmaster source time; 11.4.4 Follow_Up message preciseOriginTimestamp. Clause 12 (IEEE 802.11): 12.1.1 general one-hop propagation; 12.1.2 TM and FTM round-trip procedures with t1..t4; 12.1.3 layering — MD entity between PortSync and 802.11 MLME, one per association; 12.4 asCapable conditions from tmFtmSupport bits and FTMs-per-burst grant; 12.5.1 mastertimeTransmitter state machines A and B; 12.5.2 slavetimeReceiver state machine (burst request, setTimes, constructMdSyncReceiveStructure, neighborRateRatio, meanLinkDelay); 12.6 FTM parameters table (Number of Bursts Exponent 0, ASAP 1, FTMs per burst 3 then 2); 12.7 VendorSpecific information element carrying the full Follow_Up; 12.8.2 sync message interval default and request confirmation via logMessageInterval. Clause 13 (IEEE 802.3 EPON): 13.1.1 general (OLT=master, ONU=slave); 13.1.2 EPON timing process on 32-bit MPCP counters (16 ns tick); 13.1.3 best-master selection via acceptableMasterTimeTransmitterTable (default one OLT entry, alternatePriority1=244); 13.1.4 time synchronization in EPON (asymmetric up/down delay, X and ToD, RTTi, refraction indices); 13.3.1 TIMESYNC message (ToDX,i field); 13.5 layering for EPON links; 13.6.1 OSSPDU.request (OLT fires TIMESYNC every sync interval); 13.6.2 OSSPDU.indication (ONU receives); 13.7 MD entity global variable RTTi (OLT only, zero in ONU); 13.8.1 requester state machine variables ToDX,i and ToDX,o.",
+      "zh": "Clause 11（点对点以太网）：11.1.3 经 Sync/Follow_Up 传输时间同步信息；11.1.4 运行模型（具全双工链路的 PTP 实例）；11.2.5 链路聚合使用（在所有链路测量、在一条上发送）；11.3.2 Sync 属于事件消息类；11.4.3 Sync 消息 originTimestamp=大主时钟源时间；11.4.4 Follow_Up 消息 preciseOriginTimestamp。Clause 12（IEEE 802.11）：12.1.1 单跳传播总则；12.1.2 含 t1..t4 的 TM 与 FTM 往返过程；12.1.3 分层——MD 实体位于 PortSync 与 802.11 MLME 之间，每关联一个；12.4 由 tmFtmSupport 位与每突发帧数授予决定的 asCapable 条件；12.5.1 mastertimeTransmitter 状态机 A 与 B；12.5.2 slavetimeReceiver 状态机（突发请求、setTimes、constructMdSyncReceiveStructure、neighborRateRatio、meanLinkDelay）；12.6 FTM 参数表（突发数指数 0、ASAP 1、每突发先 3 后 2）；12.7 携带完整 Follow_Up 的 VendorSpecific 信息元素；12.8.2 同步消息间隔默认值及经 logMessageInterval 的请求确认。Clause 13（IEEE 802.3 EPON）：13.1.1 总则（OLT=主、ONU=从）；13.1.2 基于 32 位 MPCP 计数器（16 ns 一拍）的 EPON 定时过程；13.1.3 经 acceptableMasterTimeTransmitterTable 的最佳主时钟选择（默认一条 OLT 条目，alternatePriority1=244）；13.1.4 EPON 时间同步（上下行非对称时延、X 与 ToD、RTTi、折射率）；13.3.1 TIMESYNC 消息（ToDX,i 字段）；13.5 EPON 链路分层；13.6.1 OSSPDU.request（OLT 每个同步间隔触发 TIMESYNC）；13.6.2 OSSPDU.indication（ONU 接收）；13.7 MD 实体全局变量 RTTi（仅 OLT，ONU 中为零）；13.8.1 请求方状态机变量 ToDX,i 与 ToDX,o。",
+      "cite": {
+        "pdf_id": "8021ASdr-2024",
+        "pages": [
+          87,
+          88,
+          89,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021ASdr-2024",
+      "pages": [
+        87,
+        88,
+        89,
+        90
+      ],
+      "note": "Clause 11 — point-to-point Ethernet: transport (11.1.3), model (11.1.4), link aggregation (11.2.5), Event message class (11.3.2), Sync (11.4.3) and Follow_Up (11.4.4) messages."
+    },
+    {
+      "pdf_id": "8021ASdr-2024",
+      "pages": [
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109
+      ],
+      "note": "Clause 12 — IEEE 802.11: overview/TM-FTM/layering (12.1.1-12.1.3), asCapable (12.4), state machines (12.5.1-12.5.2), FTM parameters (12.6), VendorSpecific IE (12.7), sync interval (12.8.2)."
+    },
+    {
+      "pdf_id": "8021ASdr-2024",
+      "pages": [
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117
+      ],
+      "note": "Clause 13 — IEEE 802.3 EPON: overview/timing/best-master/sync (13.1.1-13.1.4), TIMESYNC message (13.3.1), layering (13.5), OSSPDU primitives (13.6.1-13.6.2), RTTi variable (13.7), requester state machine (13.8.1)."
+    }
+  ],
+  "covers": [
+    "8021ASdr-2024:11.1.3",
+    "8021ASdr-2024:11.1.4",
+    "8021ASdr-2024:11.2.5",
+    "8021ASdr-2024:11.3.2",
+    "8021ASdr-2024:11.4.3",
+    "8021ASdr-2024:11.4.4",
+    "8021ASdr-2024:12.1.1",
+    "8021ASdr-2024:12.1.2",
+    "8021ASdr-2024:12.1.3",
+    "8021ASdr-2024:12.4",
+    "8021ASdr-2024:12.5.1",
+    "8021ASdr-2024:12.5.2",
+    "8021ASdr-2024:12.6",
+    "8021ASdr-2024:12.7",
+    "8021ASdr-2024:12.8.2",
+    "8021ASdr-2024:13.1.1",
+    "8021ASdr-2024:13.1.2",
+    "8021ASdr-2024:13.1.3",
+    "8021ASdr-2024:13.1.4",
+    "8021ASdr-2024:13.3.1",
+    "8021ASdr-2024:13.5",
+    "8021ASdr-2024:13.6.1",
+    "8021ASdr-2024:13.6.2",
+    "8021ASdr-2024:13.7",
+    "8021ASdr-2024:13.8.1"
+  ],
+  "track": "tsn"
+}

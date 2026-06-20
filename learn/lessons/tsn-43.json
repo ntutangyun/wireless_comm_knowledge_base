@@ -1,0 +1,191 @@
+{
+  "id": "tsn-43",
+  "title": {
+    "en": "TSN for Fronthaul (CMde-2020): Overview, Conformance, Latency Budgets, Sync Solutions and Annexes",
+    "zh": "面向前传的 TSN（CMde-2020）：概述、符合性、时延预算、同步方案与附录"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1CMde-2020 is Amendment 1 to 802.1CM-2018, the standard that profiles Time-Sensitive Networking (TSN) for mobile fronthaul. Fronthaul is the link between a base station's central unit and its remote radio gear; carrying that traffic over a switched Ethernet (bridged) network instead of a dedicated point-to-point link only works if the network keeps latency, loss, and clock alignment inside very tight budgets. This amendment widens the standard to cover 5G New Radio (NR), the eCPRI interface, and enhanced synchronization. As an amendment it reads as editing instructions ('Change…', 'Insert…', 'Delete…') against the base text. This lesson walks every clause it touches so you can navigate it fluently.",
+      "zh": "IEEE Std 802.1CMde-2020 是 802.1CM-2018 的修订案 1，后者定义了用于移动前传的时间敏感网络（TSN，Time-Sensitive Networking）配置文件。前传（fronthaul）是基站集中单元与远端射频设备之间的链路；要把这种流量承载在交换式以太网（桥接网络）而非专用点对点链路上，前提是网络把时延、丢包和时钟对齐都控制在极紧的预算内。本修订案把标准扩展到 5G 新空口（NR，New Radio）、eCPRI 接口以及增强同步。作为修订案，它以针对基准文本的编辑指令（“更改……”“插入……”“删除……”）形式呈现。本课逐条讲解它涉及的每个子句，帮助你流畅地查阅它。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 1.3 (Introduction) lists the building-block standards the fronthaul profile leans on: the VLAN bridge (IEEE 802.1Q), the MAC service (802.1AC), Ethernet PHY (802.3), interspersing express traffic and frame preemption (802.3br / 802.1Q), the Precision Time Protocol (PTP, IEEE 1588), the telecom timing profile ITU-T G.8275.1, and Synchronous Ethernet (SyncE) from ITU-T G.8261/G.8262/G.8264. Clause 4 also inserts one new acronym used throughout: NR = New Radio access technology for 5G. Keeping this map in mind makes the rest of the standard read as 'glue' that ties these pieces to fronthaul's timing needs.",
+      "zh": "子句 1.3（引言）列出了前传配置文件所依赖的基础标准：VLAN 桥（IEEE 802.1Q）、MAC 服务（802.1AC）、以太网物理层（802.3）、快速流量插入与帧抢占（802.3br / 802.1Q）、精确时间协议（PTP，Precision Time Protocol，IEEE 1588）、电信定时配置文件 ITU-T G.8275.1，以及来自 ITU-T G.8261/G.8262/G.8264 的同步以太网（SyncE，Synchronous Ethernet）。子句 4 还新增了一个全文常用缩写：NR = 用于 5G 的新空口接入技术。记住这张地图，标准的其余部分读起来就像把这些零件粘合到前传定时需求上的“胶水”。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5 (Conformance) turns the abstractions into shall/may checkboxes. 5.3.1 (common bridge requirements) requires flow metering with the MEF 10.3 token-bucket bandwidth profile — the gate that limits how much traffic enters the network. 5.4 (bridge options) and 5.4.1 (Profile B requirements) describe frame preemption: a bridge supporting Profile B must support both 802.1Q frame preemption and 802.3br Interspersing Express Traffic on ports up to 10 Gbps, with a configurable 64-octet fragment size. 5.4.2 (bridge requirements for synchronization) and 5.6.1 (end-station requirements for time synchronization) pin the clock side: support the ITU-T G.8275.1 telecom profile plus boundary/transparent/grandmaster clocks, and SyncE with either a standard (G.8262) or enhanced (G.8262.1) equipment clock.",
+      "zh": "子句 5（符合性）把抽象概念变成“应/可”勾选项。5.3.1（通用桥要求）要求采用 MEF 10.3 令牌桶带宽配置文件进行流量计量——这是限制进入网络流量多少的关口。5.4（桥可选项）和 5.4.1（配置文件 B 要求）描述帧抢占：支持配置文件 B 的桥必须在速率不超过 10 Gbps 的端口上同时支持 802.1Q 帧抢占和 802.3br 快速流量插入，且分片大小可配置为 64 字节。5.4.2（桥的同步要求）和 5.6.1（端站的时间同步要求）锁定时钟侧：支持 ITU-T G.8275.1 电信配置文件外加边界/透明/主时钟，以及采用标准（G.8262）或增强（G.8262.1）设备时钟的 SyncE。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two halves of one base station: REC/eREC is the controller end (Radio Equipment Control, or eCPRI Radio Equipment Control), and RE/eRE is the radio end (Radio Equipment / eCPRI Radio Equipment). CPRI carries raw IQ samples (Class 1); eCPRI splits the radio PHY so far less data crosses the link (Class 2). The bridged TSN network sits between them.",
+      "zh": "一个基站的两半：REC/eREC 是控制端（无线电设备控制，或 eCPRI 无线电设备控制），RE/eRE 是射频端（无线电设备 / eCPRI 无线电设备）。CPRI 承载原始 IQ 采样（Class 1）；eCPRI 拆分了射频物理层，使跨链路的数据量大幅减少（Class 2）。桥接 TSN 网络位于二者之间。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6 (Fronthaul) is the requirements core. 6.1 (E-UTRA/NR technology background) explains that both Evolved Universal Terrestrial Radio Access (E-UTRA, the LTE air interface) and 5G NR use Orthogonal Frequency Division Multiplexing (OFDM), so fronthaul packet timing is anchored to OFDM symbol times built from the basic unit Ts = 1/(15000 × 2048) s. 6.2.3 (IQ data requirements) and its 6.2.3.1 set the Class 1 ceiling: 100 microseconds maximum end-to-end one-way latency for raw IQ data between edge ports. Clause 6.3 (Class 2 requirements) covers the eCPRI world — 6.3.1 (eCPRI background, the intra-PHY split), 6.3.2 (User Plane data, the 100 µs 'fast' / 1 ms 'slow' split), and 6.3.3 (Control & Management Plane, with relaxed 1 ms / 100 ms latency and a Frame Loss Ratio (FLR) of 10⁻⁶ to 10⁻⁷).",
+      "zh": "子句 6（前传）是需求核心。6.1（E-UTRA/NR 技术背景）说明演进型通用陆地无线接入（E-UTRA，即 LTE 空口）和 5G NR 都使用正交频分复用（OFDM，Orthogonal Frequency Division Multiplexing），因此前传分组定时锚定到由基本单位 Ts = 1/(15000 × 2048) 秒构成的 OFDM 符号时间。6.2.3（IQ 数据要求）及其 6.2.3.1 设定 Class 1 上限：边缘端口之间原始 IQ 数据的端到端单向时延最大 100 微秒。子句 6.3（Class 2 要求）覆盖 eCPRI 世界——6.3.1（eCPRI 背景，PHY 内拆分）、6.3.2（用户面数据，100 µs“快”/1 ms“慢”之分）以及 6.3.3（控制与管理面，时延放宽到 1 ms / 100 ms，丢帧率（FLR，Frame Loss Ratio）为 10⁻⁶ 至 10⁻⁷）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"55\" width=\"70\" height=\"40\"/><text x=\"45\" y=\"79\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">eREC</text><rect x=\"150\" y=\"45\" width=\"50\" height=\"30\"/><rect x=\"210\" y=\"45\" width=\"50\" height=\"30\"/><rect x=\"270\" y=\"45\" width=\"50\" height=\"30\"/><text x=\"235\" y=\"30\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">bridged network</text><rect x=\"380\" y=\"55\" width=\"70\" height=\"40\"/><text x=\"415\" y=\"79\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">eRE</text><line x1=\"80\" y1=\"60\" x2=\"150\" y2=\"60\"/><line x1=\"200\" y1=\"60\" x2=\"210\" y2=\"60\"/><line x1=\"260\" y1=\"60\" x2=\"270\" y2=\"60\"/><line x1=\"320\" y1=\"60\" x2=\"380\" y2=\"60\"/><text x=\"115\" y=\"120\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">edge port</text><text x=\"345\" y=\"120\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">edge port</text><text x=\"235\" y=\"140\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">end-to-end one-way latency budget (e.g. 100 us HPF)</text></svg>",
+      "caption": {
+        "en": "Latency is measured edge port to edge port across the bridged fronthaul network — the 100 µs budget covers propagation plus per-bridge delays (6.2.3.1, 6.3.2.1).",
+        "zh": "时延在桥接前传网络中从边缘端口测到边缘端口——100 µs 预算涵盖传播时延加上每个桥的内部时延（6.2.3.1、6.3.2.1）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.4 (Synchronization requirements) is where the nanosecond budgets live. 6.4.1 (time synchronization) defines Categories A, B, and C of Time Error (TE) — the deviation between a recovered clock and its reference. The amendment deletes the old Category A+ and renumbers, then expresses Category A and B as relative TE between two cooperating radios (e.g., max|TE|relative of 60–70 ns for Category A, 100–200 ns for Category B, derived from 3GPP's Time Alignment Error limits of 130 ns and 260 ns), while Category C is an absolute limit per ITU-T G.8271.1. 6.4.2 (frequency synchronization) requires the network to deliver frequency accurate enough that the radio meets the ±50 parts-per-billion (ppb) air-interface limit, recoverable via PTP or SyncE.",
+      "zh": "子句 6.4（同步要求）是纳秒级预算所在。6.4.1（时间同步）定义了时间误差（TE，Time Error，即恢复时钟与其参考之间的偏差）的 A、B、C 三个类别。本修订案删除了旧的 A+ 类并重新编号，然后把 A 类和 B 类表示为两个协作射频之间的相对 TE（例如 A 类的 max|TE|relative 为 60–70 ns，B 类为 100–200 ns，由 3GPP 的时间对齐误差上限 130 ns 和 260 ns 推导而来），而 C 类是按 ITU-T G.8271.1 给出的绝对上限。6.4.2（频率同步）要求网络交付的频率足够准确，使射频满足 ±50 十亿分之一（ppb，parts-per-billion）的空口上限，可通过 PTP 或 SyncE 恢复。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Bridge provides time sync?] -->|yes| B{Which Category?}\n  B -->|A / B| C[Relative TE between two radios]\n  B -->|C| D[Absolute TE per G.8271.1]\n  C --> E[Budget split: bridged net + eRE/RE + T-TSC]\n  D --> E",
+      "zh": "flowchart TD\n  A[桥提供时间同步?] -->|是| B{哪个类别?}\n  B -->|A / B| C[两射频间的相对 TE]\n  B -->|C| D[按 G.8271.1 的绝对 TE]\n  C --> E[预算分摊: 桥接网 + eRE/RE + T-TSC]\n  D --> E"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7 (Bridge and synchronization functions) gives the mechanisms. 7.3 (Frame preemption) defines preemption as suspending a preemptable frame so express frames jump ahead, using the 802.3br MAC Merge sublayer; preemption only occurs once at least 60 octets have been sent and at least 64 octets (including CRC) remain, and completes within (1240 + 512 × addFragSize) bit times. 7.4 (Network synchronization) lists the timing-distribution toolbox: packet timing (PTP/G.8275.1 boundary clocks), physical-layer frequency via SyncE, and a satellite reference — Global Navigation Satellite System (GNSS) such as GPS, GLONASS, Galileo, or BeiDou — typically accurate to ~100 ns.",
+      "zh": "子句 7（桥与同步功能）给出机制。7.3（帧抢占）将抢占定义为：挂起一个可抢占帧，让快速帧插队，使用 802.3br MAC 合并子层；抢占仅在已发送至少 60 字节且仍剩余至少 64 字节（含 CRC）时发生，并在 (1240 + 512 × addFragSize) 比特时间内完成。7.4（网络同步）列出定时分发工具箱：分组定时（PTP/G.8275.1 边界时钟）、经 SyncE 的物理层频率，以及卫星参考——全球导航卫星系统（GNSS，Global Navigation Satellite System），如 GPS、GLONASS、Galileo 或北斗——通常精度约 100 ns。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 8 (Fronthaul profiles) packages everything into two deployable profiles. 8.1.3 (Profile A — meeting latency targets) shows the budget arithmetic: over 10 km the fiber propagation delay alone is ~50 µs, half the 100 µs High-Priority Fronthaul (HPF) budget, and edge bridges shall enforce the MEF 10.3 token-bucket bandwidth profile so excess HPF traffic is discarded rather than blowing the budget. 8.2.3 (Profile B — meeting latency targets) adds frame preemption on top: because Medium-Priority Fronthaul (MPF) and Low-Priority Fronthaul (LPF) are not preemptable, the worst-case HPF queuing delay is the same as Profile A, and the same bandwidth-profile policing applies. Clause 9.1 (Solutions for Category A) then explains how to actually meet the Category A relative-TE budget: connect co-located radios to the same time source via point-to-point packet timing, controlling fiber asymmetry to the nanosecond.",
+      "zh": "子句 8（前传配置文件）把一切打包成两个可部署的配置文件。8.1.3（配置文件 A——满足时延目标）展示预算算术：在 10 km 上，仅光纤传播时延就约 50 µs，是 100 µs 高优先前传（HPF，High-Priority Fronthaul）预算的一半，边缘桥应执行 MEF 10.3 令牌桶带宽配置文件，使超额 HPF 流量被丢弃而非超出预算。8.2.3（配置文件 B——满足时延目标）在其上叠加帧抢占：由于中优先前传（MPF，Medium-Priority Fronthaul）和低优先前传（LPF，Low-Priority Fronthaul）不可被抢占，HPF 的最坏排队时延与配置文件 A 相同，且采用相同的带宽配置文件监管。子句 9.1（A 类解决方案）随后说明如何真正满足 A 类相对 TE 预算：通过点对点分组定时把同址射频连接到同一时间源，并把光纤不对称控制到纳秒级。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause this lesson teaches, by number",
+        "zh": "覆盖地图——本课讲解的每个子句（按编号）"
+      },
+      "en": "Clause 1.3 (p.11): Introduction — the base-standard building blocks (802.1Q/AC, 802.3/.3br, IEEE 1588 PTP, G.8275.1, SyncE). Clause 5.3.1 (p.15): common bridge requirement — MEF 10.3 flow metering. 5.4.1 (p.15): Profile B bridge — 802.1Q preemption + 802.3br Interspersing Express Traffic, ≤10 Gbps, 64-octet fragments. 5.4.2 (p.15): bridge sync — G.8275.1 telecom profile, T-BC/T-TC/grandmaster, SyncE (G.8262/G.8262.1). 5.6.1 (p.16): end-station time sync — Telecom Time Slave Clock / Telecom-Boundary Clock to meet 6.4. 6.1 (p.17): E-UTRA/NR OFDM timing, Ts basic unit. 6.2.3 (p.17–18): Class 1 IQ data, 100 µs latency. 6.3.1 (p.18): eCPRI intra-PHY split; 6.3.2 (p.18–19): Class 2 User Plane fast/slow (100 µs / 1 ms); 6.3.3 (p.19–20): C&M Plane latency (1 ms / 100 ms) and FLR (10⁻⁶/10⁻⁷). 6.4.1 (p.20–23): time-sync Categories A/B/C and TE budgets (Table 6-1; 130 ns / 260 ns Time Alignment Error). 6.4.2 (p.23): frequency sync, ±50 ppb, SyncE limits. 7.3 (p.24): frame preemption mechanics (60/64-octet rule, 1240+512·addFragSize bit times). 7.4 (p.24–25): network sync methods (PTP, SyncE, GNSS). 8.1.3 (p.26–27): Profile A latency budget + MEF 10.3 policing. 8.2.3 (p.27): Profile B preemption-aware latency. 9.1 (p.28): Category A solution (co-located radios, point-to-point packet timing). Annex_A (p.29–30): normative PCS proforma B-Q items mapping conformance to 5.3.1/5.4/5.4.1. Annex_C (p.33): informative fronthaul interfaces — BS split Options 1–8 (CPRI=Option 8, eCPRI=Option 7 intra-PHY, F1=Option 2 high-layer). Annex_D (p.34): informative Bibliography updates (eCPRI v1.2 specs, 3GPP 38.x, ITU-T G.8271).",
+      "zh": "子句 1.3（第 11 页）：引言——基准标准的构建模块（802.1Q/AC、802.3/.3br、IEEE 1588 PTP、G.8275.1、SyncE）。5.3.1（第 15 页）：通用桥要求——MEF 10.3 流量计量。5.4.1（第 15 页）：配置文件 B 桥——802.1Q 抢占 + 802.3br 快速流量插入，≤10 Gbps，64 字节分片。5.4.2（第 15 页）：桥同步——G.8275.1 电信配置文件、T-BC/T-TC/主时钟、SyncE（G.8262/G.8262.1）。5.6.1（第 16 页）：端站时间同步——电信时间从时钟 / 电信边界时钟以满足 6.4。6.1（第 17 页）：E-UTRA/NR OFDM 定时，Ts 基本单位。6.2.3（第 17–18 页）：Class 1 IQ 数据，100 µs 时延。6.3.1（第 18 页）：eCPRI PHY 内拆分；6.3.2（第 18–19 页）：Class 2 用户面快/慢（100 µs / 1 ms）；6.3.3（第 19–20 页）：控制与管理面时延（1 ms / 100 ms）与 FLR（10⁻⁶/10⁻⁷）。6.4.1（第 20–23 页）：时间同步 A/B/C 类与 TE 预算（表 6-1；130 ns / 260 ns 时间对齐误差）。6.4.2（第 23 页）：频率同步，±50 ppb，SyncE 限值。7.3（第 24 页）：帧抢占机制（60/64 字节规则，1240+512·addFragSize 比特时间）。7.4（第 24–25 页）：网络同步方法（PTP、SyncE、GNSS）。8.1.3（第 26–27 页）：配置文件 A 时延预算 + MEF 10.3 监管。8.2.3（第 27 页）：配置文件 B 抢占感知时延。9.1（第 28 页）：A 类解决方案（同址射频、点对点分组定时）。Annex_A（第 29–30 页）：规范性 PCS 一致性声明的 B-Q 条目，将符合性映射到 5.3.1/5.4/5.4.1。Annex_C（第 33 页）：资料性前传接口——基站拆分选项 1–8（CPRI=选项 8，eCPRI=选项 7 PHY 内拆分，F1=选项 2 高层拆分）。Annex_D（第 34 页）：资料性参考文献更新（eCPRI v1.2 规范、3GPP 38.x、ITU-T G.8271）。",
+      "cite": {
+        "pdf_id": "8021CMde-2020",
+        "pages": [
+          11,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          23,
+          24,
+          26,
+          27,
+          28,
+          29,
+          30,
+          33,
+          34
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The three annexes: proforma, interfaces, bibliography",
+        "zh": "三个附录：一致性声明、接口、参考文献"
+      },
+      "en": "Annex A (normative) — the PCS (Protocol Conformance Statement) proforma. It is the printable checklist a vendor fills in to claim conformance. The amendment changes A.7.2 (IEEE 802.1Q bridge requirements) and A.7.4 (Profile B requirements): each row (B-Q-1 … B-Q-17, PB, PB-1, PB-2) maps a yes/no answer to the exact normative clause (e.g., B-Q-12 → flow metering, 5.3.1 p); B-Q-15/16 → frame preemption on 1/10 Gbps ports). Annex C (informative) — Fronthaul interfaces. It catalogs how a base station can be functionally split (Options 1–8 from 3GPP TR 38.801): Option 8 low-layer split = CPRI; Option 7 intra-PHY split {ID;IID;IU} = eCPRI; Option 2 high-layer split = F1. Lower-layer splits have the tightest fronthaul requirements; the Clause 8 profiles and Clause 9 solutions also apply to the more relaxed high-layer F1 split. Annex D (informative) — Bibliography. Updated references: eCPRI Interface Specification v1.2 and Transport Network Requirements v1.2 [B5][B6], the 3GPP NR documents (38.104, 38.211, 38.470, TR 38.801) and 21.905 vocabulary, plus ITU-T G.8271 [B14a].",
+      "zh": "Annex A（规范性）——PCS（协议一致性声明，Protocol Conformance Statement）一致性声明表。这是厂商为声明符合性而填写的可打印清单。本修订案更改了 A.7.2（IEEE 802.1Q 桥要求）和 A.7.4（配置文件 B 要求）：每一行（B-Q-1 … B-Q-17、PB、PB-1、PB-2）把一个“是/否”答案映射到确切的规范性子句（例如 B-Q-12 → 流量计量，5.3.1 p）项；B-Q-15/16 → 1/10 Gbps 端口上的帧抢占）。Annex C（资料性）——前传接口。它列举基站如何按功能拆分（3GPP TR 38.801 的选项 1–8）：选项 8 低层拆分 = CPRI；选项 7 PHY 内拆分 {ID;IID;IU} = eCPRI；选项 2 高层拆分 = F1。越低层的拆分前传要求越严；子句 8 的配置文件与子句 9 的解决方案同样适用于要求更宽松的高层 F1 拆分。Annex D（资料性）——参考文献。更新的引用：eCPRI 接口规范 v1.2 与传输网络要求 v1.2 [B5][B6]、3GPP NR 文档（38.104、38.211、38.470、TR 38.801）与 21.905 术语表，以及 ITU-T G.8271 [B14a]。",
+      "cite": {
+        "pdf_id": "8021CMde-2020",
+        "pages": [
+          29,
+          30,
+          33,
+          34
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021CMde-2020",
+      "pages": [
+        11
+      ],
+      "note": "1.3 Introduction — base-standard building blocks; Clause 4 inserts NR acronym"
+    },
+    {
+      "pdf_id": "8021CMde-2020",
+      "pages": [
+        15,
+        16
+      ],
+      "note": "5.3.1 / 5.4 / 5.4.1 / 5.4.2 / 5.6.1 — conformance, bridge & end-station requirements"
+    },
+    {
+      "pdf_id": "8021CMde-2020",
+      "pages": [
+        17,
+        18,
+        19,
+        20,
+        23
+      ],
+      "note": "6.1 / 6.2.3 / 6.3.1 / 6.3.2 / 6.3.3 / 6.4.1 / 6.4.2 — fronthaul requirements & sync budgets"
+    },
+    {
+      "pdf_id": "8021CMde-2020",
+      "pages": [
+        24,
+        25
+      ],
+      "note": "7.3 frame preemption; 7.4 network synchronization methods"
+    },
+    {
+      "pdf_id": "8021CMde-2020",
+      "pages": [
+        26,
+        27,
+        28
+      ],
+      "note": "8.1.3 Profile A / 8.2.3 Profile B latency targets; 9.1 Category A solutions"
+    },
+    {
+      "pdf_id": "8021CMde-2020",
+      "pages": [
+        29,
+        30,
+        33,
+        34
+      ],
+      "note": "Annex A PCS proforma; Annex C fronthaul interfaces; Annex D bibliography"
+    }
+  ],
+  "covers": [
+    "8021CMde-2020:1.3",
+    "8021CMde-2020:5.3.1",
+    "8021CMde-2020:5.4.1",
+    "8021CMde-2020:5.4.2",
+    "8021CMde-2020:5.6.1",
+    "8021CMde-2020:6.1",
+    "8021CMde-2020:6.2.3",
+    "8021CMde-2020:6.3.1",
+    "8021CMde-2020:6.3.2",
+    "8021CMde-2020:6.3.3",
+    "8021CMde-2020:6.4.1",
+    "8021CMde-2020:6.4.2",
+    "8021CMde-2020:7.3",
+    "8021CMde-2020:7.4",
+    "8021CMde-2020:8.1.3",
+    "8021CMde-2020:8.2.3",
+    "8021CMde-2020:9.1",
+    "8021CMde-2020:Annex_A",
+    "8021CMde-2020:Annex_C",
+    "8021CMde-2020:Annex_D"
+  ],
+  "track": "tsn"
+}

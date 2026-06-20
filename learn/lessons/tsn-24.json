@@ -1,0 +1,193 @@
+{
+  "id": "tsn-24",
+  "title": {
+    "en": "gPTP Media-Dependent Layer: Drift Tracking on Point-to-Point Links and the EPON Interface (Clauses 11 & 13)",
+    "zh": "gPTP 媒体相关层：点对点链路上的漂移跟踪与 EPON 接口（第 11、13 章）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 11 of IEEE Std 802.1ASdm-2024 specifies the media-dependent (MD) layer for full-duplex point-to-point links — the part of generalized Precision Time Protocol (gPTP) that actually touches the wire. \"Media-dependent\" means it knows how the link behaves physically; the rest of gPTP is media-independent and treats every port the same. This amendment (Amendment 3: Hot Standby and Clock Drift Error Reduction) adds a new way to track how a clock's frequency drifts, so that synchronization stays accurate between message exchanges. Clause 13 makes one tiny matching edit to the Ethernet passive optical network (EPON) interface. This lesson is a guided tour of every subclause.",
+      "zh": "IEEE Std 802.1ASdm-2024 的第 11 章规定了全双工点对点链路的媒体相关（MD, media-dependent）层——这是广义精密时间协议（gPTP, generalized Precision Time Protocol）中真正接触物理链路的部分。「媒体相关」意味着它了解链路的物理行为；gPTP 的其余部分是媒体无关的，对每个端口一视同仁。本修正案（修正案 3：热备份与时钟漂移误差降低）新增了一种跟踪时钟频率漂移的方法，使得在两次报文交换之间同步仍保持精确。第 13 章对以太网无源光网络（EPON, Ethernet passive optical network）接口做了一处对应的小改动。本课逐一讲解每个子条款。"
+    },
+    {
+      "type": "prose",
+      "en": "First, the foundations (11.1). The propagation delay measurement (11.1.2) is the back-and-forth handshake that learns how long a frame takes to cross the link. Each port runs the peer-to-peer delay mechanism with its neighbor; both ends learn the delay independently. The amendment renames the per-link frequency ratio from neighborRateRatio to nrrPdelay (the ratio of the responder's LocalClock frequency to the requester's, computed from peer-delay messages — see 11.2.13.13). Because delay and rate ratio are the same in every clock domain, a single state machine measures them once and shares the result with all domains. The transport of time-synchronization information (11.1.3) then divides measured meanLinkDelay by nrrPdelay to convert it into the local time base before passing it up the chain.",
+      "zh": "首先是基础（11.1）。传播时延测量（11.1.2）是一次往返握手，用以得知一帧穿越链路所需的时间。每个端口与其邻居运行对等时延机制；两端各自独立地得出该时延。本修正案把每条链路的频率比从 neighborRateRatio 重命名为 nrrPdelay（响应方 LocalClock 频率与请求方频率之比，由对等时延报文计算得出——见 11.2.13.13）。由于时延和频率比在每个时钟域中都相同，单个状态机只测量一次，并把结果共享给所有域。随后，时间同步信息的传输（11.1.3）将测得的 meanLinkDelay 除以 nrrPdelay，先换算到本地时基，再沿链传递。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Acronym quick-reference: gPTP = generalized Precision Time Protocol; MD = media-dependent; CMLDS = Common Mean Link Delay Service; TLV = Type-Length-Value (a self-describing field appended to a message); nrr = neighbor rate ratio. \"Two-step\" means the timestamp is sent in a separate Follow_Up message rather than stamped into the Sync message itself (\"one-step\").",
+      "zh": "缩写速查：gPTP = 广义精密时间协议；MD = 媒体相关；CMLDS = 公共平均链路时延服务（Common Mean Link Delay Service）；TLV = 类型-长度-值（Type-Length-Value，附加在报文上的自描述字段）；nrr = 邻居频率比。「两步」指时间戳放在单独的 Follow_Up 报文中发送，而非直接戳进 Sync 报文里（「一步」）。"
+    },
+    {
+      "type": "prose",
+      "en": "The state machines (11.2) are the engines that drive these exchanges, and the General overview (11.2.1) lists them: MDSyncReceiveSM and MDSyncSendSM (one per port, per domain) handle Sync/Follow_Up; MDPdelayReq and MDPdelayResp (one per port, shared by all domains) handle the peer-delay handshake. The asCapable determination (11.2.2) is the gatekeeper: a port is asCapable only if its asCapableAcrossDomains flag is set, which requires that peer-delay messages are flowing, the measured delay stays under meanLinkDelayThresh, and no duplicate or self-responses arrive. The overview of MD entity global variables (11.2.12) and the variables themselves (11.2.13) define the shared state — including the three new variables nrrPdelay, nrrSync, and nrrCompMethod that let a port pick which method feeds neighborRateRatio.",
+      "zh": "状态机（11.2）是驱动这些交换的引擎，总体概述（11.2.1）列出了它们：MDSyncReceiveSM 和 MDSyncSendSM（每端口、每域各一个）处理 Sync/Follow_Up；MDPdelayReq 和 MDPdelayResp（每端口一个，所有域共享）处理对等时延握手。asCapable 判定（11.2.2）是把关者：仅当端口的 asCapableAcrossDomains 标志置位时它才 asCapable，而这要求对等时延报文正在流动、测得时延低于 meanLinkDelayThresh，且没有收到重复或自身的响应。MD 实体全局变量概述（11.2.12）及变量本身（11.2.13）定义了共享状态——包括三个新变量 nrrPdelay、nrrSync 与 nrrCompMethod，使端口能选择由哪种方法来给 neighborRateRatio 赋值。"
+    },
+    {
+      "type": "prose",
+      "en": "The headline feature lives in the receive and send machines. MDSyncReceiveSM (11.2.14) now, when driftTrackingTlvSupport is TRUE, reads a Drift_Tracking TLV out of successive Sync/Follow_Up messages and computes nrrSync — a second, independent estimate of the neighbor's frequency ratio derived from Sync timing rather than peer-delay timing. MDSyncSendSM (11.2.15) does the mirror job: when drift tracking is enabled it attaches a Drift_Tracking TLV to outgoing messages, filling in syncGrandmasterIdentity, syncStepsRemoved, syncEgressTimestamp, and rateRatioDrift (the estimated rate of change of the grandmaster-to-local frequency offset). Why bother? Frequency drifts slowly between Sync messages; carrying its rate of change lets a downstream clock extrapolate and shrink the error — exactly the \"clock drift error reduction\" the amendment is named for.",
+      "zh": "核心特性体现在接收与发送状态机中。当 driftTrackingTlvSupport 为 TRUE 时，MDSyncReceiveSM（11.2.14）现在会从连续的 Sync/Follow_Up 报文中读取 Drift_Tracking TLV，并计算 nrrSync——这是基于 Sync 时序（而非对等时延时序）得出的、对邻居频率比的第二个独立估计。MDSyncSendSM（11.2.15）做镜像工作：启用漂移跟踪时，它给发出的报文附上 Drift_Tracking TLV，填入 syncGrandmasterIdentity、syncStepsRemoved、syncEgressTimestamp 和 rateRatioDrift（祖时钟相对本地频率偏移的估计变化率）。何必如此？频率在两次 Sync 报文之间缓慢漂移；携带其变化率，使下游时钟得以外推并缩小误差——这正是本修正案得名的「时钟漂移误差降低」。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><rect x=\"10\" y=\"40\" width=\"40\" height=\"30\"/><text x=\"30\" y=\"60\" font-size=\"9\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">hdr</text><rect x=\"50\" y=\"40\" width=\"55\" height=\"30\"/><text x=\"77\" y=\"60\" font-size=\"8\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">timestamp</text><rect x=\"105\" y=\"40\" width=\"70\" height=\"30\"/><text x=\"140\" y=\"60\" font-size=\"8\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">Follow_Up TLV</text><rect x=\"175\" y=\"40\" width=\"110\" height=\"30\" stroke-dasharray=\"4 3\"/><text x=\"230\" y=\"60\" font-size=\"8\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">Drift_Tracking TLV</text><text x=\"230\" y=\"30\" font-size=\"9\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">optional, 30 octets</text><rect x=\"175\" y=\"90\" width=\"275\" height=\"45\" stroke-dasharray=\"2 2\"/><text x=\"312\" y=\"107\" font-size=\"8\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">tlvType=0x3 | len=26 | orgId=00-80-C2 | subType=6</text><text x=\"312\" y=\"123\" font-size=\"8\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">syncEgressTimestamp | gmId | stepsRemoved | rateRatioDrift</text><line x1=\"230\" y1=\"70\" x2=\"230\" y2=\"90\"/></svg>",
+      "caption": {
+        "en": "A two-step Follow_Up message with the optional 30-octet Drift_Tracking TLV appended (11.4.4). The TLV carries the grandmaster identity, steps-removed hop count, the Sync egress timestamp, and rateRatioDrift.",
+        "zh": "附带可选 30 字节 Drift_Tracking TLV 的两步 Follow_Up 报文（11.4.4）。该 TLV 携带祖时钟标识、跳数（steps-removed）、Sync 出口时间戳以及 rateRatioDrift。"
+      }
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant I as Initiator port\n  participant R as Responder port\n  I->>R: Pdelay_Req (t1)\n  Note right of R: stamps t2 on arrival\n  R->>I: Pdelay_Resp (t2,t3)\n  R->>I: Pdelay_Resp_Follow_Up\n  Note left of I: t4 on arrival; compute meanLinkDelay and nrrPdelay",
+      "zh": "sequenceDiagram\n  participant I as 发起方端口\n  participant R as 响应方端口\n  I->>R: Pdelay_Req (t1)\n  Note right of R: 到达时戳记 t2\n  R->>I: Pdelay_Resp (t2,t3)\n  R->>I: Pdelay_Resp_Follow_Up\n  Note left of I: 到达记 t4；计算 meanLinkDelay 与 nrrPdelay"
+    },
+    {
+      "type": "prose",
+      "en": "The peer-delay handshake above is run by MDPdelayReq (11.2.19) and MDPdelayResp (11.2.20), one shared instance per port across all domains. The requester sends Pdelay_Req, the responder replies with Pdelay_Resp and Pdelay_Resp_Follow_Up, and from the four timestamps the initiator's computePdelayRateRatio() derives nrrPdelay while computing meanLinkDelay. The LinkDelayIntervalSetting state machine (11.2.21) decides how often Pdelay_Req goes out and whether meanLinkDelay and nrrPdelay are computed at all, reacting to Message Interval Request TLVs. The Common Mean Link Delay Service, CMLDS (11.2.17), is the shared variant: one set of these machines measures delay once per physical link (a \"Link Port\") and offers it to every domain and even other PTP profiles, using sdoId 0x200 to distinguish its messages from transport-specific ones (0x100).",
+      "zh": "上述对等时延握手由 MDPdelayReq（11.2.19）与 MDPdelayResp（11.2.20）执行，每端口一个共享实例、跨所有域。请求方发送 Pdelay_Req，响应方以 Pdelay_Resp 和 Pdelay_Resp_Follow_Up 回复，发起方的 computePdelayRateRatio() 从四个时间戳推导出 nrrPdelay，同时计算 meanLinkDelay。LinkDelayIntervalSetting 状态机（11.2.21）决定 Pdelay_Req 的发送频率，以及是否计算 meanLinkDelay 与 nrrPdelay，并响应 Message Interval Request TLV。公共平均链路时延服务 CMLDS（11.2.17）是其共享变体：一套这样的状态机为每条物理链路（即「Link Port」）测量一次时延，并提供给每个域乃至其他 PTP 配置，用 sdoId 0x200 把它的报文与传输专用报文（0x100）区分开。"
+    },
+    {
+      "type": "prose",
+      "en": "On the wire, the message attributes and formats (11.3, 11.4) get the matching edits. The Subtype (11.3.6) clarifies that the subtype of Sync, Follow_Up, and the three Pdelay messages is carried in the majorSdoId field. The Header (11.4.2) updates Table 11-6, the rules for correctionField, to spell out how transport-specific peer delay and CMLDS each set asymmetry corrections. The Sync message (11.4.3) and Follow_Up message (11.4.4) gain the optional Drift_Tracking TLV — defined fully in 11.4.4.4 with a fixed tlvType 0x3, lengthField 26, organizationId 00-80-C2, organizationSubType 6, and the rateRatioDrift field scaled by 2^41. Carrying the TLV is always optional, preserving interoperability with implementations that ignore it.",
+      "zh": "在报文层面，报文属性与格式（11.3、11.4）做了对应修改。子类型（11.3.6）澄清：Sync、Follow_Up 及三种 Pdelay 报文的子类型由 majorSdoId 字段携带。报头（11.4.2）更新了表 11-6（correctionField 的取值规则），明确了传输专用对等时延与 CMLDS 各自如何设置非对称性修正。Sync 报文（11.4.3）与 Follow_Up 报文（11.4.4）新增了可选的 Drift_Tracking TLV——在 11.4.4.4 中完整定义：固定 tlvType 为 0x3、lengthField 为 26、organizationId 为 00-80-C2、organizationSubType 为 6，而 rateRatioDrift 字段按 2^41 缩放。携带该 TLV 始终是可选的，从而与忽略它的实现保持互操作性。"
+    },
+    {
+      "type": "prose",
+      "en": "Timing and control round things out. The Pdelay_Req message transmission interval (11.5.2.2) defines how initialLogPdelayReqInterval and currentLogPdelayReqInterval set the mean spacing between Pdelay_Req messages (the value 127 means \"send none\"); transmissions must average at least 0.9 x 2^currentLogPdelayReqInterval seconds apart. allowedFaults (11.5.4) is the tolerance: after this many faults — a meanLinkDelay over threshold, or an invalid nrrPdelay — asCapableAcrossDomains drops to FALSE (default 9, range 1-255). Control of computation of neighborRateRatio (11.6) is the final switch: if drift tracking is on and nrrCompMethod is Sync, neighborRateRatio takes the value of nrrSync; otherwise it takes nrrPdelay, and computeNeighborRateRatio governs whether nrrPdelay is computed at all. Finally, Clause 13 (13.3.1) makes a one-line wording fix to the EPON TIMESYNC message's domainNumber field.",
+      "zh": "时序与控制收尾。Pdelay_Req 报文发送间隔（11.5.2.2）定义 initialLogPdelayReqInterval 与 currentLogPdelayReqInterval 如何设置 Pdelay_Req 报文之间的平均间隔（取值 127 表示「不发送」）；发送间隔的平均值不得小于 0.9 × 2^currentLogPdelayReqInterval 秒。allowedFaults（11.5.4）是容差：累计这么多次故障后——meanLinkDelay 超阈值，或 nrrPdelay 无效——asCapableAcrossDomains 降为 FALSE（默认 9，范围 1-255）。neighborRateRatio 计算的控制（11.6）是最后的开关：若开启漂移跟踪且 nrrCompMethod 为 Sync，则 neighborRateRatio 取 nrrSync 的值；否则取 nrrPdelay，而 computeNeighborRateRatio 控制是否计算 nrrPdelay。最后，第 13 章（13.3.1）对 EPON TIMESYNC 报文的 domainNumber 字段做了一处一行的措辞修正。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause number in this lesson and where it lives",
+        "zh": "覆盖地图：本课涉及的每个条款编号及其归属"
+      },
+      "en": "11.1 Overview: 11.1.2 propagation delay measurement (renames neighborRateRatio to nrrPdelay; domain-independent single measurement); 11.1.3 transport of time-sync info (divides meanLinkDelay by nrrPdelay). 11.2 MD state machines: 11.2.1 general list of the four machines; 11.2.2 asCapable / asCapableAcrossDomains determination with its four conditions and meanLinkDelayThresh; 11.2.12 overview of MD global variables and their scopes (Table 11-2); 11.2.13 the global variables, adding nrrPdelay (11.2.13.13), nrrSync (11.2.13.14), nrrCompMethod (11.2.13.15); 11.2.14 MDSyncReceiveSM (computes nrrSync from received Drift_Tracking TLVs, sets neighborRateRatio); 11.2.15 MDSyncSendSM (attaches Drift_Tracking TLV via setFollowUp() and setSyncOneStep()); 11.2.17 CMLDS (shared single instance per Link Port, sdoId 0x200, and the computational differences vs transport-specific peer delay); 11.2.19 MDPdelayReq (setPdelayReq(), computePdelayRateRatio(), nrrPdelayValid); 11.2.20 MDPdelayResp (setPdelayResp(), setPdelayRespFollowUp()); 11.2.21 LinkDelayIntervalSetting (computeLogPdelayReqInterval(), controls interval and whether delay/nrr are computed). 11.3.6 Subtype carried in majorSdoId. 11.4 formats: 11.4.2 header correctionField Table 11-6; 11.4.3 Sync message with optional Drift_Tracking TLV (Tables 11-8/11-9); 11.4.4 Follow_Up message and the full Drift_Tracking TLV definition (11.4.4.4: tlvType 0x3, length 26, orgId 00-80-C2, subType 6, rateRatioDrift). 11.5 timing: 11.5.2 (11.5.2.2 Pdelay_Req interval, 0.9 x 2^logInterval floor); 11.5.4 allowedFaults (default 9, range 1-255). 11.6 control of neighborRateRatio (Sync vs Pdelay selection, computeNeighborRateRatio). 13.3.1 EPON TIMESYNC domainNumber wording fix (13.3.1.2.15).",
+      "zh": "11.1 概述：11.1.2 传播时延测量（把 neighborRateRatio 重命名为 nrrPdelay；域无关的单次测量）；11.1.3 时间同步信息传输（将 meanLinkDelay 除以 nrrPdelay）。11.2 MD 状态机：11.2.1 四个状态机的总体列表；11.2.2 asCapable / asCapableAcrossDomains 判定及其四个条件与 meanLinkDelayThresh；11.2.12 MD 全局变量概述及其作用域（表 11-2）；11.2.13 全局变量，新增 nrrPdelay（11.2.13.13）、nrrSync（11.2.13.14）、nrrCompMethod（11.2.13.15）；11.2.14 MDSyncReceiveSM（从收到的 Drift_Tracking TLV 计算 nrrSync，设置 neighborRateRatio）；11.2.15 MDSyncSendSM（经 setFollowUp() 与 setSyncOneStep() 附加 Drift_Tracking TLV）；11.2.17 CMLDS（每 Link Port 一个共享实例，sdoId 0x200，及其相对传输专用对等时延的计算差异）；11.2.19 MDPdelayReq（setPdelayReq()、computePdelayRateRatio()、nrrPdelayValid）；11.2.20 MDPdelayResp（setPdelayResp()、setPdelayRespFollowUp()）；11.2.21 LinkDelayIntervalSetting（computeLogPdelayReqInterval()，控制间隔及是否计算时延/nrr）。11.3.6 子类型由 majorSdoId 携带。11.4 格式：11.4.2 报头 correctionField 表 11-6；11.4.3 带可选 Drift_Tracking TLV 的 Sync 报文（表 11-8/11-9）；11.4.4 Follow_Up 报文及完整的 Drift_Tracking TLV 定义（11.4.4.4：tlvType 0x3、长度 26、orgId 00-80-C2、subType 6、rateRatioDrift）。11.5 时序：11.5.2（11.5.2.2 Pdelay_Req 间隔，下限 0.9 × 2^logInterval）；11.5.4 allowedFaults（默认 9，范围 1-255）。11.6 neighborRateRatio 计算的控制（Sync 与 Pdelay 的选择、computeNeighborRateRatio）。13.3.1 EPON TIMESYNC domainNumber 措辞修正（13.3.1.2.15）。",
+      "cite": {
+        "pdf_id": "8021ASdm-2024",
+        "pages": [
+          82,
+          83,
+          85,
+          86,
+          87,
+          88,
+          89,
+          93,
+          96,
+          98,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        82,
+        83
+      ],
+      "note": "11.1 Overview: propagation delay measurement (11.1.2), transport of time-sync info (11.1.3)"
+    },
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        83,
+        84,
+        85,
+        86
+      ],
+      "note": "11.2.1 state machine overview; 11.2.2 asCapable/asCapableAcrossDomains; 11.2.12 global variable scopes"
+    },
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        87,
+        88
+      ],
+      "note": "11.2.13 MD entity global variables incl. nrrPdelay, nrrSync, nrrCompMethod"
+    },
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        89,
+        90,
+        93,
+        94,
+        95
+      ],
+      "note": "11.2.14 MDSyncReceiveSM and 11.2.15 MDSyncSendSM with Drift_Tracking TLV handling"
+    },
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        96,
+        97,
+        98,
+        99,
+        103,
+        104,
+        105
+      ],
+      "note": "11.2.17 CMLDS; 11.2.19 MDPdelayReq; 11.2.20 MDPdelayResp; 11.2.21 LinkDelayIntervalSetting; 11.3.6 Subtype"
+    },
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        106,
+        107,
+        108,
+        109
+      ],
+      "note": "11.4.2 header correctionField; 11.4.3 Sync; 11.4.4 Follow_Up and Drift_Tracking TLV definition; 11.5.2.2 Pdelay_Req interval"
+    },
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        110,
+        111,
+        112
+      ],
+      "note": "11.5.4 allowedFaults; 11.6 control of neighborRateRatio; 13.3.1 EPON TIMESYNC domainNumber"
+    }
+  ],
+  "covers": [
+    "8021ASdm-2024:11.1.2",
+    "8021ASdm-2024:11.1.3",
+    "8021ASdm-2024:11.2.1",
+    "8021ASdm-2024:11.2.2",
+    "8021ASdm-2024:11.2.12",
+    "8021ASdm-2024:11.2.13",
+    "8021ASdm-2024:11.2.14",
+    "8021ASdm-2024:11.2.15",
+    "8021ASdm-2024:11.2.17",
+    "8021ASdm-2024:11.2.19",
+    "8021ASdm-2024:11.2.20",
+    "8021ASdm-2024:11.2.21",
+    "8021ASdm-2024:11.3.6",
+    "8021ASdm-2024:11.4.2",
+    "8021ASdm-2024:11.4.3",
+    "8021ASdm-2024:11.4.4",
+    "8021ASdm-2024:11.5.2",
+    "8021ASdm-2024:11.5.4",
+    "8021ASdm-2024:11.6",
+    "8021ASdm-2024:13.3.1"
+  ],
+  "track": "tsn"
+}

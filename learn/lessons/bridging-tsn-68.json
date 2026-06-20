@@ -1,0 +1,203 @@
+{
+  "id": "bridging-tsn-68",
+  "title": {
+    "en": "The MAC Service Definition: A Guided Tour of 802.1AC's Architecture, Primitives, and Internal Sublayer Service",
+    "zh": "MAC 服务定义详解：802.1AC 的架构、原语与内部子层服务导览"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1AC-2016 answers one deceptively simple question: when a higher-layer protocol hands a chunk of data to \"the network,\" what exactly is the network promising to do with it? The answer is the MAC Service (Media Access Control Service) — an abstract, technology-neutral contract that sits above Ethernet, Wi-Fi, and every other IEEE 802 medium. This lesson walks the front half of the standard (Clauses 3 through 12) as a guided tour. The trick to reading it is that 802.1AC describes a *service*, not an implementation: it tells you what crosses the boundary between a user and a provider, never how the bits are physically carried.",
+      "zh": "IEEE Std 802.1AC-2016 回答了一个看似简单的问题：当高层协议把一段数据交给“网络”时，网络究竟承诺如何处理它？答案就是 MAC 服务（Media Access Control Service，介质访问控制服务）——一份抽象的、与具体技术无关的契约，它位于以太网、Wi-Fi 以及其他所有 IEEE 802 介质之上。本课将以导览的方式走过标准的前半部分（第 3 至第 12 条）。阅读它的关键在于：802.1AC 描述的是一种“服务”，而非某种实现——它规定了在用户与提供者边界上传递什么，而从不规定比特在物理上如何承载。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 3 (Definitions) keeps its vocabulary tiny by borrowing from the ISO/IEC OSI reference-model work rather than reinventing it. 3.1 (Basic reference model definitions) imports two terms from ISO/IEC 7498 — the (N)-entity and the (N)-service — that let the standard talk about layers abstractly. 3.2 (Service conventions definitions) imports five more from ISO/IEC 10731: service user, service provider, primitive, request, and indication. A primitive is the atomic interaction between a user and the provider; a request is the user asking for something, and an indication is the provider delivering something. These five words are the grammar of everything that follows.",
+      "zh": "第 3 条（定义）通过借用 ISO/IEC OSI 参考模型的成果而非重新发明，把词汇量保持得极小。3.1（基本参考模型定义）从 ISO/IEC 7498 引入两个术语——(N)-实体 与 (N)-服务——使标准能够抽象地讨论分层。3.2（服务约定定义）从 ISO/IEC 10731 再引入五个：服务用户、服务提供者、原语、请求 与 指示。原语是用户与提供者之间不可再分的交互；请求是用户发起诉求，指示是提供者送达内容。这五个词就是后续一切内容的语法。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Acronym primer (Clause 4): MSAP = MAC Service Access Point (the named doorway where the service is offered); MSDU = MAC Service Data Unit (the user's data payload); ISS = Internal Sublayer Service; LPD = LLC Protocol Discrimination; EPD = EtherType Protocol Discrimination; QoS = quality of service. LLC = Logical Link Control. Keep these handy — they recur in every clause below.",
+      "zh": "缩略语速查（第 4 条）：MSAP = MAC 服务访问点（提供服务的命名门户）；MSDU = MAC 服务数据单元（用户的数据载荷）；ISS = 内部子层服务；LPD = LLC 协议鉴别；EPD = EtherType 协议鉴别；QoS = 服务质量；LLC = 逻辑链路控制。请记住它们——下文每一条都会反复出现。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5 (Conformance) states what a conformant implementation must actually do, and it has exactly two operative rules. 5.1 (Translation between media using different protocol discrimination methods) says: when you send or receive on a medium that uses LPD — Wi-Fi being the canonical example — you *shall* translate the MSDU exactly as Clause 12 specifies. 5.2 (Support of the ISS by different MAC procedures) says: if you attach to one of the listed media (802.3 Ethernet, 802.11 Wireless LAN, 802.16 WirelessMAN, 802.17 RPR, 802.20 MBWA), you shall implement the matching convergence function from Clause 13. Clause 6 (Conventions) then sets ground rules: 6.1 (General considerations) declares the whole model abstract — the service primitives and time-sequence diagrams are descriptions, never an implementation spec — and 6.2 (Parameters) defines a parameter as information carried by a primitive to a peer service user or used by the provider.",
+      "zh": "第 5 条（一致性）规定一个合规实现究竟必须做什么，它恰好只有两条可操作规则。5.1（在使用不同协议鉴别方法的介质之间转换）规定：当你在使用 LPD 的介质上收发时——Wi-Fi 是典型例子——你“应当”严格按第 12 条转换 MSDU。5.2（不同 MAC 过程对 ISS 的支持）规定：若你接入所列介质之一（802.3 以太网、802.11 无线局域网、802.16 WirelessMAN、802.17 RPR、802.20 MBWA），就应当实现第 13 条中对应的汇聚功能。随后第 6 条（约定）确立基本规则：6.1（总体考虑）声明整个模型是抽象的——服务原语与时序图只是描述，绝非实现规范；6.2（参数）将参数定义为由原语携带给对端服务用户、或由提供者使用的信息。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7 (Basic architectural concepts and terms) is the conceptual heart, and it builds an eight-step ladder. 7.1 (Protocol entities, peers, layers, services, and clients): each entity lives at a numbered layer N, talks to a peer at the same layer, uses the (N-1)-service below, and offers the (N)-service above. 7.2 (Service interface primitives, parameters, and frames): the MAC Service is just a data request plus a matching data indication, each carrying destination address, source address, an MSDU, and priority — collectively nicknamed a \"frame.\" 7.3 (Layer management interfaces): counters, controls, and status that need not change in lockstep with each primitive travel through a separate management interface (e.g., SNMP), not through the service. 7.4 (Service access points, interface stacks, and ports): a service is offered at one SAP; the entities behind a SAP form an interface stack, and the word \"port\" refers to that stack for a given SAP.",
+      "zh": "第 7 条（基本架构概念与术语）是概念核心，它搭起一架八级阶梯。7.1（协议实体、对端、层、服务与客户）：每个实体处于编号层 N，与同层对端通信，使用下方的 (N-1)-服务，并向上提供 (N)-服务。7.2（服务接口原语、参数与帧）：MAC 服务无非是一个数据请求加一个对应的数据指示，各自携带目的地址、源地址、一个 MSDU 与优先级——合起来俗称“帧”。7.3（层管理接口）：那些无需随每个原语同步变化的计数器、控制项与状态，通过单独的管理接口（如 SNMP）传递，而非通过服务本身。7.4（服务访问点、接口栈与端口）：服务在单个 SAP 上提供；SAP 背后的实体构成接口栈，而“端口”一词指给定 SAP 的这个栈。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 220\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"20\" y=\"20\" width=\"150\" height=\"40\"/><text x=\"95\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">MAC Client (user)</text><rect x=\"290\" y=\"20\" width=\"150\" height=\"40\"/><text x=\"365\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">MAC Client (user)</text><rect x=\"20\" y=\"90\" width=\"150\" height=\"40\"/><text x=\"95\" y=\"115\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">MAC entity</text><rect x=\"290\" y=\"90\" width=\"150\" height=\"40\"/><text x=\"365\" y=\"115\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">MAC entity</text><circle cx=\"95\" cy=\"75\" r=\"4\" fill=\"currentColor\"/><text x=\"95\" y=\"82\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\"></text><text x=\"60\" y=\"80\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">MSAP</text><circle cx=\"365\" cy=\"75\" r=\"4\" fill=\"currentColor\"/><text x=\"330\" y=\"80\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">MSAP</text><rect x=\"95\" y=\"160\" width=\"270\" height=\"34\"/><text x=\"230\" y=\"181\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">LAN / MAN (MAC Service provider)</text><line x1=\"95\" y1=\"130\" x2=\"95\" y2=\"160\"/><line x1=\"365\" y1=\"130\" x2=\"365\" y2=\"160\"/><line x1=\"95\" y1=\"60\" x2=\"95\" y2=\"90\"/><line x1=\"365\" y1=\"60\" x2=\"365\" y2=\"90\"/><text x=\"180\" y=\"15\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">request -> indication</text></svg>",
+      "caption": {
+        "en": "The 802.1AC service model (after Figure 7-1 / 9-1): two MAC clients exchange data via MA_UNITDATA.request and .indication primitives at their MSAPs, with the LAN/MAN acting as the MAC Service provider in the middle.",
+        "zh": "802.1AC 服务模型（参照图 7-1 / 9-1）：两个 MAC 客户在各自的 MSAP 上通过 MA_UNITDATA.request 与 .indication 原语交换数据，中间的 LAN/MAN 充当 MAC 服务提供者。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The ladder's top rungs cover composition and connectivity. 7.5 (MAC method independent protocols and shims): some protocols are media-specific (802.3, 802.11), while others — link aggregation, bridging — are MAC-method-independent. A \"shim\" is a special entity that offers its user the *same* service it consumes, so it can be slid into a stack to add aggregation (802.1AX), security, or multiplexing without changing the interface. 7.6 (MAC Service clients): the entity using an MSAP is the client; inside a bridge the MAC Relay Entity is a client of the ISS, and an LLC entity is a client of the MAC. 7.7 (Stations and systems): a LAN station is one media-access entity plus its mandated companions, while a system (like a bridge) can hold many stations whose internal communication is not externally observable. 7.8 (Connectionless connectivity): an 802 LAN gives connectionless service — peers talk without any prior handshake. A LAN is therefore defined not by physical equipment but by the connectivity association among a set of MSAPs.",
+      "zh": "阶梯的顶端涉及组合与连接性。7.5（MAC 方法无关协议与垫片）：有些协议与介质相关（802.3、802.11），而另一些——链路聚合、桥接——则与 MAC 方法无关。“垫片（shim）”是一种特殊实体，它向其用户提供与自身所消费的“相同”服务，因而可被插入栈中以添加聚合（802.1AX）、安全或复用功能而不改变接口。7.6（MAC 服务客户）：使用某个 MSAP 的实体就是客户；在桥内，MAC 中继实体是 ISS 的客户，而 LLC 实体是 MAC 的客户。7.7（站与系统）：一个 LAN 站是一个介质访问实体加上其强制的配套实体，而一个系统（如桥）可包含多个站，它们的内部通信不可被外部观察。7.8（无连接连接性）：802 LAN 提供无连接服务——对端无需任何事先握手即可通信。因此 LAN 不由物理设备定义，而由一组 MSAP 之间的连接性关联来定义。"
+    },
+    {
+      "type": "prose",
+      "en": "Clauses 9 and 10 nail down behavior. 9.1 (Model of a MAC connectionless-mode transmission): the only object you can hand to the provider is a unitdata object, passed from User A to User B over a preexisting connectivity association. 9.2 (Service provided by the connectionless-mode MAC Service): the provider may *discard* objects and *reorder* them, but exhibits only a negligible rate of *duplication* and of *reordering within a single priority*. Crucially, knowing how often loss/duplication/misordering happens is the user's own a priori knowledge of the environment. Clause 10 (Quality of connectionless-mode service): 10.1 (Determination of QoS) stresses there is no negotiation — because connectionless service sets up no connection, the user learns the service's characteristics ahead of time through layer management, not by bargaining at send time. 10.2 (Definition of connectionless-mode QoS parameters) then lists the ten QoS measures: service availability, frame loss, misordering, duplication, transit delay, lifetime, undetected error rate, maximum SDU size, priority, and throughput.",
+      "zh": "第 9、10 条厘清行为。9.1（MAC 无连接模式传输模型）：你能交给提供者的唯一对象是 unitdata 对象，它经由一个预先存在的连接性关联从用户 A 传到用户 B。9.2（无连接模式 MAC 服务所提供的服务）：提供者“可能”丢弃对象、改变其顺序，但“对象重复”以及“同一优先级内的乱序”发生率可忽略。关键在于，丢失/重复/乱序发生的频率属于用户对环境的先验知识。第 10 条（无连接模式服务质量）：10.1（QoS 的确定）强调没有协商——因为无连接服务不建立连接，用户通过层管理事先获知服务特性，而非在发送时讨价还价。10.2（无连接模式 QoS 参数定义）随后列出十项 QoS 度量：服务可用性、帧丢失、乱序、重复、传输时延、帧寿命、未检出错误率、最大 SDU 尺寸、优先级与吞吐量。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11 (Internal Sublayer Service) is where bridging lives. The ISS is the richer service beneath the plain MAC Service; an end station uses a subset of it, while a VLAN bridge augments it. 11.1 (Service primitives and parameters) defines two unitdata primitives — M_UNITDATA.request and .indication — each carrying eight parameters: destination_address, source_address, mac_service_data_unit, priority, drop_eligible, frame_check_sequence, service_access_point_identifier, and connection_identifier. Priority runs 0-7 (with 0 sitting between 1 and 2); drop_eligible TRUE means this frame may be dropped first under congestion; the FCS (Frame Check Sequence) can be passed through so a bridge can reuse it; and the last two identifiers are purely local — opaque to the user and never sent to the peer — which is exactly what lets shims be inserted transparently.",
+      "zh": "第 11 条（内部子层服务）正是桥接所在之处。ISS 是位于朴素 MAC 服务之下的更丰富的服务；端站使用其子集，而 VLAN 桥对其进行扩充。11.1（服务原语与参数）定义两个 unitdata 原语——M_UNITDATA.request 与 .indication——各携带八个参数：目的地址、源地址、mac_service_data_unit、优先级、drop_eligible（可丢弃标志）、frame_check_sequence（帧校验序列）、service_access_point_identifier 与 connection_identifier。优先级取 0-7（0 介于 1 与 2 之间）；drop_eligible 为 TRUE 表示拥塞时此帧可优先被丢弃；FCS（帧校验序列）可被透传以便桥复用；而最后两个标识符纯属本地——对用户不透明、永不发送给对端——这正是垫片得以被透明插入的原因。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant U as MAC user (source)\n  participant P as MAC Service provider\n  participant V as MAC user (dest)\n  U->>P: M_UNITDATA.request\n  Note over U,P: dest/src addr, MSDU, priority, drop_eligible, FCS\n  P->>V: M_UNITDATA.indication\n  Note over P,V: same params, priority maybe adjusted\n  U->>P: M_CONTROL.request (opcode)\n  P->>V: M_CONTROL.indication (opcode)",
+      "zh": "sequenceDiagram\n  participant U as MAC 用户(源)\n  participant P as MAC 服务提供者\n  participant V as MAC 用户(目的)\n  U->>P: M_UNITDATA.request\n  Note over U,P: 目的/源地址, MSDU, 优先级, drop_eligible, FCS\n  P->>V: M_UNITDATA.indication\n  Note over P,V: 同样参数, 优先级可能被调整\n  U->>P: M_CONTROL.request (操作码)\n  P->>V: M_CONTROL.indication (操作码)"
+    },
+    {
+      "type": "prose",
+      "en": "The rest of Clause 11 covers status and control. 11.2 (Status parameters): MAC_Enabled is TRUE when use of the service is permitted by administrative control; MAC_Operational is TRUE only when the MAC can actually transmit/receive *and* MAC_Enabled is TRUE. 11.3 (Point-to-point parameters): operPointToPointMAC tells the user whether the link behaves as a connection to exactly one other system; adminPointToPointMAC overrides it with ForceTrue, ForceFalse, or Auto (let the provider decide), and the operational value is re-evaluated whenever either input changes. 11.4 (Control primitives and parameters): two further primitives, M_CONTROL.request (destination_address, opcode, request_operand_list) and M_CONTROL.indication (opcode, indication_operand_list), exist mainly to support Priority-Based Flow Control in 802.1Q.",
+      "zh": "第 11 条余下部分涉及状态与控制。11.2（状态参数）：当管理控制允许使用服务时 MAC_Enabled 为 TRUE；只有当 MAC 确实能收发“且” MAC_Enabled 为 TRUE 时 MAC_Operational 才为 TRUE。11.3（点对点参数）：operPointToPointMAC 告知用户该链路是否表现为与恰好一个其他系统的连接；adminPointToPointMAC 以 ForceTrue、ForceFalse 或 Auto（交由提供者决定）覆盖它，且每当任一输入改变时都会重新求值。11.4（控制原语与参数）：另有两个原语 M_CONTROL.request（目的地址、操作码、请求操作数列表）与 M_CONTROL.indication（操作码、指示操作数列表），主要用于支持 802.1Q 中的基于优先级的流量控制。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 12 (Protocol discrimination and media) is the concrete payoff of conformance rule 5.1. Some media use EPD (the leading octets are an EtherType, e.g., 802.3) and some use LPD (the leading octets are LSAP identifiers plus control, e.g., 802.11). Because the ISS MSDU is always Length/Type encoded, an EPD medium needs no transformation — but an LPD medium must convert. 12.1 (M_UNITDATA.request data transformation for LPD media): on transmit, a leading value of 0000-05DC is a Length field that gets stripped (and the data truncated to it); a value equal to the LLC encapsulation EtherType has those two octets removed; a value of 0600-FFFF is an EtherType, so the six octets AA-AA-03-00-00-00 are inserted before it. 12.2 (...indication...): on receive, the inverse — a leading AA-AA-03-00-00-00 is removed; otherwise a small length is prepended, or the LLC encapsulation EtherType is prepended. 12.3 (Tags in end stations): the net result is that MSDUs are identical across LPD and EPD media except for the outermost tag's encoding, so an end station on LPD media shall LPD-encode only the outermost tag and Length/Type-encode everything after it.",
+      "zh": "第 12 条（协议鉴别与介质）是一致性规则 5.1 的具体兑现。有些介质用 EPD（前导字节是 EtherType，如 802.3），有些用 LPD（前导字节是 LSAP 标识符加控制字节，如 802.11）。由于 ISS 的 MSDU 始终采用 Length/Type 编码，EPD 介质无需转换——但 LPD 介质必须转换。12.1（LPD 介质的 M_UNITDATA.request 数据转换）：发送时，前导值在 0000-05DC 范围内即为长度字段，应被剥除（并据此截断数据）；前导值等于 LLC 封装 EtherType 时则移除这两个字节；前导值在 0600-FFFF 范围内即为 EtherType，故在其前插入六字节 AA-AA-03-00-00-00。12.2（……indication……）：接收时执行逆操作——前导为 AA-AA-03-00-00-00 则移除；否则前置一个小长度值，或前置 LLC 封装 EtherType。12.3（端站中的标签）：最终结果是 LPD 与 EPD 介质上的 MSDU 完全相同，仅最外层标签的编码不同，因此 LPD 介质上的端站应仅对最外层标签做 LPD 编码，其后的一切用 Length/Type 编码。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — exact clause numbers and where each was taught",
+        "zh": "覆盖地图——精确的条款编号及各自讲解之处"
+      },
+      "en": "Definitions: 3.1 Basic reference model definitions ((N)-entity, (N)-service from ISO/IEC 7498); 3.2 Service conventions definitions (service user/provider, primitive, request, indication from ISO/IEC 10731). Conformance: 5.1 Translation between media using different protocol discrimination methods (LPD -> translate per Clause 12); 5.2 Support of the ISS by different MAC procedures (Table 5-1 media -> convergence functions in Clause 13). Conventions: 6.1 General considerations (abstract descriptive model, not an implementation spec); 6.2 Parameters (information carried by a primitive). Architecture: 7.1 Protocol entities/peers/layers/services/clients (the N-layer model); 7.2 Service interface primitives, parameters, and frames (request+indication = a \"frame\"); 7.3 Layer management interfaces (management-plane vs service-plane); 7.4 SAPs, interface stacks, and ports (one SAP per service, stack = port); 7.5 MAC method independent protocols and shims (a shim offers the same service it uses); 7.6 MAC Service clients (MAC Relay Entity, LLC as clients); 7.7 Stations and systems (a system holds many stations); 7.8 Connectionless connectivity (LAN = a connectivity association among MSAPs). Model: 9.1 Model of a MAC connectionless-mode transmission (the unitdata object, User A -> User B); 9.2 Service provided (may discard/reorder; negligible duplication/intra-priority reorder). QoS: 10.1 Determination of QoS (no negotiation; learned via layer management); 10.2 Definition of QoS parameters (the ten measures). ISS: 11.1 Service primitives and parameters (M_UNITDATA.request/.indication, eight parameters); 11.2 Status parameters (MAC_Enabled, MAC_Operational); 11.3 Point-to-point parameters (oper/adminPointToPointMAC, ForceTrue/ForceFalse/Auto); 11.4 Control primitives and parameters (M_CONTROL.request/.indication for PFC). Protocol discrimination: 12.1 M_UNITDATA.request transformation for LPD media (strip Length / strip LLC-EtherType / insert AA-AA-03-00-00-00); 12.2 M_UNITDATA.indication transformation for LPD media (the inverse); 12.3 Tags in end stations (only the outermost tag is LPD-encoded; LLC encapsulation EtherType = C9-D1 in Table 12-2).",
+      "zh": "定义：3.1 基本参考模型定义（来自 ISO/IEC 7498 的 (N)-实体、(N)-服务）；3.2 服务约定定义（来自 ISO/IEC 10731 的服务用户/提供者、原语、请求、指示）。一致性：5.1 在使用不同协议鉴别方法的介质之间转换（LPD -> 按第 12 条转换）；5.2 不同 MAC 过程对 ISS 的支持（表 5-1 的介质 -> 第 13 条的汇聚功能）。约定：6.1 总体考虑（抽象描述模型，非实现规范）；6.2 参数（由原语携带的信息）。架构：7.1 协议实体/对端/层/服务/客户（N 层模型）；7.2 服务接口原语、参数与帧（请求+指示=一个“帧”）；7.3 层管理接口（管理面与服务面之分）；7.4 SAP、接口栈与端口（每服务一个 SAP，栈=端口）；7.5 MAC 方法无关协议与垫片（垫片提供与自身所用相同的服务）；7.6 MAC 服务客户（MAC 中继实体、LLC 作为客户）；7.7 站与系统（一个系统含多个站）；7.8 无连接连接性（LAN = MSAP 之间的连接性关联）。模型：9.1 MAC 无连接模式传输模型（unitdata 对象，用户 A -> 用户 B）；9.2 所提供的服务（可丢弃/重排序；重复与同优先级内乱序可忽略）。QoS：10.1 QoS 的确定（无协商；经层管理获知）；10.2 QoS 参数定义（十项度量）。ISS：11.1 服务原语与参数（M_UNITDATA.request/.indication，八个参数）；11.2 状态参数（MAC_Enabled、MAC_Operational）；11.3 点对点参数（oper/adminPointToPointMAC，ForceTrue/ForceFalse/Auto）；11.4 控制原语与参数（用于 PFC 的 M_CONTROL.request/.indication）。协议鉴别：12.1 LPD 介质的 M_UNITDATA.request 转换（剥长度 / 剥 LLC-EtherType / 插入 AA-AA-03-00-00-00）；12.2 LPD 介质的 M_UNITDATA.indication 转换（逆操作）；12.3 端站中的标签（仅最外层标签做 LPD 编码；表 12-2 中 LLC 封装 EtherType = C9-D1）。",
+      "cite": {
+        "pdf_id": "8021AC-2016",
+        "pages": [
+          16,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The one big idea to carry away: 802.1AC defines a *boundary*, not a wire. Everything above the MSAP sees the same abstract service — eight parameters, two unitdata primitives, ten QoS measures — no matter whether the medium underneath is Ethernet or Wi-Fi. Clause 12's octet surgery exists precisely so that this uniform view holds even when the physical encoding (LPD vs EPD) differs.",
+      "zh": "需要带走的一个核心思想：802.1AC 定义的是一条“边界”，而非一根线缆。无论下方介质是以太网还是 Wi-Fi，MSAP 之上看到的都是同一套抽象服务——八个参数、两个 unitdata 原语、十项 QoS 度量。第 12 条的字节级处理正是为了让这一统一视图在物理编码（LPD 与 EPD）不同时仍然成立。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AC-2016",
+      "pages": [
+        16
+      ],
+      "note": "Clause 3 definitions (3.1, 3.2) and Clause 4 acronyms"
+    },
+    {
+      "pdf_id": "8021AC-2016",
+      "pages": [
+        18
+      ],
+      "note": "Clause 5 conformance (5.1, 5.2) and Table 5-1 media/convergence"
+    },
+    {
+      "pdf_id": "8021AC-2016",
+      "pages": [
+        19
+      ],
+      "note": "Clause 6 conventions (6.1 general considerations, 6.2 parameters)"
+    },
+    {
+      "pdf_id": "8021AC-2016",
+      "pages": [
+        20,
+        21,
+        22,
+        23
+      ],
+      "note": "Clause 7 architecture (7.1-7.8), Figure 7-1 and 7-2"
+    },
+    {
+      "pdf_id": "8021AC-2016",
+      "pages": [
+        25
+      ],
+      "note": "Clause 9 model of the MAC Service (9.1, 9.2), Figure 9-1"
+    },
+    {
+      "pdf_id": "8021AC-2016",
+      "pages": [
+        26
+      ],
+      "note": "Clause 10 QoS (10.1 determination, 10.2 ten QoS parameters)"
+    },
+    {
+      "pdf_id": "8021AC-2016",
+      "pages": [
+        27,
+        28,
+        29,
+        30
+      ],
+      "note": "Clause 11 ISS primitives, eight parameters, status, point-to-point, control"
+    },
+    {
+      "pdf_id": "8021AC-2016",
+      "pages": [
+        31,
+        32
+      ],
+      "note": "Clause 12 LPD transformations (12.1, 12.2), tags in end stations (12.3), Table 12-2"
+    }
+  ],
+  "covers": [
+    "8021AC-2016:3.1",
+    "8021AC-2016:3.2",
+    "8021AC-2016:5.1",
+    "8021AC-2016:5.2",
+    "8021AC-2016:6.1",
+    "8021AC-2016:6.2",
+    "8021AC-2016:7.1",
+    "8021AC-2016:7.2",
+    "8021AC-2016:7.3",
+    "8021AC-2016:7.4",
+    "8021AC-2016:7.5",
+    "8021AC-2016:7.6",
+    "8021AC-2016:7.7",
+    "8021AC-2016:7.8",
+    "8021AC-2016:9.1",
+    "8021AC-2016:9.2",
+    "8021AC-2016:10.1",
+    "8021AC-2016:10.2",
+    "8021AC-2016:11.1",
+    "8021AC-2016:11.2",
+    "8021AC-2016:11.3",
+    "8021AC-2016:11.4",
+    "8021AC-2016:12.1",
+    "8021AC-2016:12.2",
+    "8021AC-2016:12.3"
+  ],
+  "track": "bridging-tsn"
+}

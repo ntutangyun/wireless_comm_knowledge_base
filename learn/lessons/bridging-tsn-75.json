@@ -1,0 +1,151 @@
+{
+  "id": "bridging-tsn-75",
+  "title": {
+    "en": "Managing a LAG and Picking a Link: Clause 7 (Management) and Clause 8 (Distribution Algorithms)",
+    "zh": "管理链路聚合组并选择链路：第 7 章 (管理) 与第 8 章 (分发算法)"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "So far you have seen how Link Aggregation bundles several physical links into one logical link, and how the Link Aggregation Control Protocol (LACP) negotiates that bundle. This lesson covers two practical questions a real deployment must answer. First, Clause 7: how does an operator *see and control* a running Link Aggregation Group (LAG) — what knobs and counters exist? Second, Clause 8: once frames are flowing, *which member link does each frame take*? IEEE Std 802.1AX-2020 answers the first with a protocol-independent management model, and the second with a small family of standardized distribution algorithms.",
+      "zh": "到目前为止，你已经了解了链路聚合如何把多条物理链路捆绑成一条逻辑链路，以及链路聚合控制协议 (LACP，Link Aggregation Control Protocol) 如何协商这个捆绑。本课讲解真实部署必须回答的两个实际问题。第一，第 7 章：运营商如何*查看与控制*一个运行中的链路聚合组 (LAG，Link Aggregation Group)——存在哪些可调参数和计数器？第二，第 8 章：当帧开始流动后，*每一帧走哪条成员链路*？IEEE Std 802.1AX-2020 用一个与协议无关的管理模型回答第一个问题，用一小族标准化的分发算法回答第二个问题。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7 opens (7.1.1, Systems management overview) by placing Link Aggregation management inside the OSI (Open Systems Interconnection) systems-management framework: there is a need to initialize, terminate, and monitor activity, and a management protocol carries information between systems — but the standard deliberately stays *protocol-independent*, so it works equally over SNMP, NETCONF, or anything else. Crucially, no peer management is needed for normal protocol operation; LACP handles that itself. 7.1.2 (Management model) then gives the vocabulary: a *managing system* issues operations to a *managed system*, and each manageable resource is abstracted as a **managed object** defined by four element types — Attributes (data you read/write), Actions (operations you invoke), Notifications (events the object emits), and Behavior (how it all ties back to the real resource).",
+      "zh": "第 7 章开篇 (7.1.1，系统管理概述) 把链路聚合管理放进 OSI (开放系统互连，Open Systems Interconnection) 系统管理框架中：需要对活动进行初始化、终止和监控，并由一个管理协议在系统之间传递信息——但标准刻意保持*与协议无关*，因此它在 SNMP、NETCONF 或其他任何协议之上都能同样工作。关键在于，正常的协议运行不需要对端管理；这由 LACP 自己处理。随后 7.1.2 (管理模型) 给出术语：*管理系统*向*被管系统*下发操作，每个可管理的资源都被抽象为一个**被管对象 (managed object)**，由四类元素定义——属性 (你读/写的数据)、动作 (你调用的操作)、通知 (对象发出的事件)，以及行为 (这一切如何映射回真实资源)。"
+    },
+    {
+      "type": "prose",
+      "en": "Section 7.2 (Managed objects) tells you *which* objects exist and how they relate. 7.2.1 (Introduction) sets a key implementation rule: every counter in this clause is a **wraparound counter** — it rolls from its maximum back to zero with no reset, so management must poll often enough not to lose information; it also gives a formula to scale a counter's maximum increment rate to faster link speeds. 7.2.2 (Overview of managed objects) lists the five object classes by their formal names: oDRNI, oAggregator, oAggregationPort, oAggPortStats, and oAggPortDebugInformation, and states their one-line purpose: identify, control, and monitor a resource. 7.2.3 (Containment) defines the parent/child tree among them, 7.2.4 (Naming) explains that an object is named hierarchically by its place in that tree (e.g. \"Aggregation Port 13 of aggregator 3\"), and 7.2.5 (Capabilities) groups attributes into mandatory and optional **packages**, where the Basic and Mandatory packages are the minimum for conformance.",
+      "zh": "7.2 节 (被管对象) 告诉你存在*哪些*对象以及它们如何关联。7.2.1 (引言) 确立一条关键的实现规则：本章中的每个计数器都是**回绕计数器 (wraparound counter)**——它从最大值回滚到零且没有复位，因此管理端必须足够频繁地轮询以免丢失信息；它还给出一个公式，把计数器的最大递增速率换算到更高的链路速率。7.2.2 (被管对象概览) 用正式名称列出五个对象类：oDRNI、oAggregator、oAggregationPort、oAggPortStats 和 oAggPortDebugInformation，并说明其一句话用途：标识、控制和监控资源。7.2.3 (包含关系) 定义它们之间的父/子树，7.2.4 (命名) 说明对象按其在树中的位置分层命名 (例如\"聚合器 3 的聚合端口 13\")，7.2.5 (能力) 把属性归入强制和可选的**包 (package)**，其中 Basic 与 Mandatory 包是符合性的最低要求。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 250\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"150\" y=\"10\" width=\"160\" height=\"34\" rx=\"4\"/><text x=\"230\" y=\"31\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">oDRNI (7.4.1, optional)</text><rect x=\"150\" y=\"70\" width=\"160\" height=\"34\" rx=\"4\"/><text x=\"230\" y=\"91\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">oAggregator (7.3.1)</text><rect x=\"150\" y=\"130\" width=\"160\" height=\"34\" rx=\"4\"/><text x=\"230\" y=\"151\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">oAggregationPort (7.3.2)</text><rect x=\"30\" y=\"200\" width=\"170\" height=\"34\" rx=\"4\"/><text x=\"115\" y=\"221\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">oAggPortStats (7.3.3)</text><rect x=\"250\" y=\"200\" width=\"180\" height=\"34\" rx=\"4\"/><text x=\"340\" y=\"221\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">oAggPortDebugInformation (7.3.4)</text><line x1=\"230\" y1=\"44\" x2=\"230\" y2=\"70\"/><line x1=\"230\" y1=\"104\" x2=\"230\" y2=\"130\"/><line x1=\"230\" y1=\"164\" x2=\"115\" y2=\"200\"/><line x1=\"230\" y1=\"164\" x2=\"340\" y2=\"200\"/></svg>",
+      "caption": {
+        "en": "The managed-object containment tree (7.2.3, Figure 7-1). oDRNI is optional and, when present, is the top object; otherwise oAggregator is the root. One Aggregator contains one or more Aggregation Ports, each of which optionally contains a Statistics object and a Debug Information object.",
+        "zh": "被管对象的包含树 (7.2.3，图 7-1)。oDRNI 为可选；存在时位于树顶，否则 oAggregator 为根。一个聚合器包含一个或多个聚合端口，每个端口可选地包含一个统计对象和一个调试信息对象。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Section 7.3 (Management for Link Aggregation) then fills the tree with real attributes. 7.3.1 (Aggregator managed object class) is the top-level view that an Aggregator Client sees: it deliberately makes the LAG *look like one ordinary IEEE 802 MAC*, summing each member port's contributed counts so received/transmitted frame totals match what the client expects (control frames such as LACP and Marker PDUs are excluded). Example attributes include aAggID (a unique read-only identifier) and aAggDescription (a human-readable string that can name the distribution algorithm in use). 7.3.2 (Aggregation Port managed object class) is the per-member-link view — for instance aAggPortID, the unique read-only identifier of one physical port within the aggregation.",
+      "zh": "7.3 节 (链路聚合的管理) 随后用真实属性填满这棵树。7.3.1 (聚合器被管对象类) 是聚合器客户端 (Aggregator Client) 看到的顶层视图：它刻意让 LAG *看起来像一个普通的 IEEE 802 MAC*，把各成员端口贡献的计数累加起来，使收/发帧总数与客户端的预期一致 (LACP 和 Marker PDU 等控制帧被排除在外)。示例属性包括 aAggID (唯一的只读标识符) 和 aAggDescription (可读字符串，可注明正在使用的分发算法)。7.3.2 (聚合端口被管对象类) 是每条成员链路的视图——例如 aAggPortID，即聚合中某个物理端口的唯一只读标识符。"
+    },
+    {
+      "type": "prose",
+      "en": "Two optional, debugging-oriented classes hang off each port. 7.3.3 (Aggregation Port Statistics managed object class) counts protocol-frame activity: LACPDUs, Marker PDUs, and Marker Response PDUs received and transmitted, plus aAggPortStatsUnknownRx (Slow-Protocols frames with an unknown PDU) and aAggPortStatsIllegalRx (badly-formed Slow-Protocols frames). 7.3.4 (Aggregation Port Debug Information managed object class) holds rarer diagnostic state, such as aAggPortDebugPartnerChangeCount — how many times this port's view of the Partner's LAG ID has changed, a direct signal of instability. The Aggregator also emits two notifications, nAggLinkUpNotification and nAggLinkDownNotification, when the LAG's operational state flips.",
+      "zh": "每个端口下挂着两个可选的、面向调试的类。7.3.3 (聚合端口统计被管对象类) 统计协议帧活动：收/发的 LACPDU、Marker PDU 和 Marker Response PDU，外加 aAggPortStatsUnknownRx (PDU 未知的慢协议帧) 和 aAggPortStatsIllegalRx (格式错误的慢协议帧)。7.3.4 (聚合端口调试信息被管对象类) 保存较少见的诊断状态，例如 aAggPortDebugPartnerChangeCount——本端口对 Partner 的 LAG ID 认知变化的次数，是不稳定性的直接信号。聚合器在 LAG 运行状态翻转时还会发出两个通知：nAggLinkUpNotification 和 nAggLinkDownNotification。"
+    },
+    {
+      "type": "prose",
+      "en": "Section 7.4 (Management for Distributed Resilient Network Interconnect) adds the optional top object. 7.4.1 (DRNI Managed Object Class) defines oDRNI, the management view of a **DRNI** (Distributed Resilient Network Interconnect) — two cooperating systems that *together* terminate one end of a LAG so the network survives the failure of an entire system, not just a link. Its attributes include aDrniID (a unique read-only identifier), aDrniDescription (read-only vendor text), and aDrniName (a read-write local name), alongside many GET-only attributes that report what the DRNI Neighbor is doing (its gateway algorithm, active links, and DRCPDU counts). DRNI itself is detailed in Clause 9; here we only meet its management surface.",
+      "zh": "7.4 节 (分布式弹性网络互连的管理) 增加了那个可选的顶层对象。7.4.1 (DRNI 被管对象类) 定义 oDRNI，即 **DRNI** (分布式弹性网络互连，Distributed Resilient Network Interconnect) 的管理视图——由两个协作的系统*共同*终结 LAG 的一端，使网络不仅能在单链路故障下、也能在整个系统故障下幸存。其属性包括 aDrniID (唯一只读标识符)、aDrniDescription (只读厂商文本) 和 aDrniName (可读写的本地名称)，以及许多只读 (GET) 属性，用于报告 DRNI 邻居的行为 (其网关算法、活动链路和 DRCPDU 计数)。DRNI 本身在第 9 章详述；这里我们只接触它的管理界面。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 8 (Distribution algorithms) now answers the \"which link?\" question. Every algorithm maps a frame to a **Port Conversation ID** (or, for DRNI, a Gateway Conversation ID); the conversation then sticks to one link. 8.1 (Distribution algorithm identification) makes each algorithm nameable so partners can check they agree: an identifier is **4 octets** — the first 3 are the defining organization's OUI (Organizationally Unique Identifier) or CID (Company ID), and the 4th octet names the algorithm. The most-significant bit of that 4th octet is a *Map* flag: 1 means the algorithm uses a configurable Service-ID-to-Conversation-ID mapping table, 0 means it does not. The reserved identifier 00-80-C2-00 means \"unspecified / not advertised.\"",
+      "zh": "第 8 章 (分发算法) 现在回答\"走哪条链路\"的问题。每个算法都把一帧映射到一个**端口会话 ID (Port Conversation ID)** (对 DRNI 则是网关会话 ID)；该会话随后固定走一条链路。8.1 (分发算法标识) 使每个算法可被命名，以便伙伴双方核对是否一致：标识符为 **4 个八位组**——前 3 个是定义组织的 OUI (机构唯一标识符，Organizationally Unique Identifier) 或 CID (公司标识，Company ID)，第 4 个八位组命名算法。该第 4 字节的最高位是一个 *Map* 标志：1 表示该算法使用可配置的\"服务 ID 到会话 ID\"映射表，0 表示不使用。保留标识符 00-80-C2-00 表示\"未指定 / 未通告\"。"
+    },
+    {
+      "type": "prose",
+      "en": "Section 8.2 (Per-Service Frame Distribution) explains *why* you might map by service rather than by a blind hash, and lists the standard service-based algorithms. Mapping a whole service onto one physical link gives three benefits: CFM (Connectivity Fault Management) congruity, so management PDUs follow the same path as the data they protect; bidirectional congruity, so both directions of a service share one link (helping symmetry-sensitive protocols like PTP, the Precision Time Protocol); and ingress predictability, so per-service metering stays on one link. The five algorithms differ only in *which field becomes the Service ID*: 8.2.1 uses the 12-bit C-VID (Customer VLAN Identifier), 8.2.2 the 12-bit S-VID (Service VLAN Identifier), 8.2.3 the 24-bit I-SID (Backbone Service Instance Identifier), 8.2.4 the 32-bit TE-SID (Traffic Engineering Service Instance Identifier), and 8.2.5 the 16-bit Flow Hash from the F-Tag. When no mapping table is used, the Conversation ID is simply the (low 12 bits of the) Service ID, and a frame lacking the relevant tag gets Service ID 0.",
+      "zh": "8.2 节 (按服务的帧分发) 解释*为什么*你可能按服务而非按盲哈希来映射，并列出标准的基于服务的算法。把整个服务映射到一条物理链路带来三个好处：CFM (连通性故障管理，Connectivity Fault Management) 一致性，使管理 PDU 与其保护的数据走同一路径；双向一致性，使服务的两个方向共用一条链路 (有利于像 PTP 即精确时间协议这类对对称性敏感的协议)；以及入口可预测性，使按服务的计量保持在一条链路上。这五种算法只在*哪个字段作为服务 ID*上不同：8.2.1 用 12 位 C-VID (客户 VLAN 标识)，8.2.2 用 12 位 S-VID (服务 VLAN 标识)，8.2.3 用 24 位 I-SID (骨干服务实例标识)，8.2.4 用 32 位 TE-SID (流量工程服务实例标识)，8.2.5 用 F-Tag 中的 16 位流哈希。当不使用映射表时，会话 ID 就是服务 ID (的低 12 位)，而缺少相关标签的帧其服务 ID 取 0。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Incoming frame] --> B{Read configured<br/>Service ID field}\n  B -->|C-VID 8.2.1| C[Service ID]\n  B -->|S-VID 8.2.2| C\n  B -->|I-SID 8.2.3| C\n  B -->|TE-SID 8.2.4| C\n  B -->|Flow Hash 8.2.5| C\n  C --> D{Map flag<br/>in algo ID?}\n  D -->|0 no map| E[Conversation ID =<br/>low 12 bits of Service ID]\n  D -->|1 use map| F[Lookup in<br/>Service-to-Conv table]\n  E --> G[Send on the link<br/>assigned to that Conversation]\n  F --> G",
+      "zh": "flowchart TD\n  A[到达的帧] --> B{读取配置的<br/>服务 ID 字段}\n  B -->|C-VID 8.2.1| C[服务 ID]\n  B -->|S-VID 8.2.2| C\n  B -->|I-SID 8.2.3| C\n  B -->|TE-SID 8.2.4| C\n  B -->|流哈希 8.2.5| C\n  C --> D{算法 ID 中的<br/>Map 标志?}\n  D -->|0 无映射| E[会话 ID =<br/>服务 ID 低 12 位]\n  D -->|1 用映射| F[在服务到会话<br/>映射表中查找]\n  E --> G[在该会话所分配的<br/>链路上发送]\n  F --> G"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: Clause 7 is the dashboard and Clause 8 is the steering. Clause 7's managed objects let you read counters, name parts, and get up/down notifications without touching the protocol; Clause 8's algorithms decide, per frame, which member link carries it — and choosing a service-based algorithm keeps each conversation (and its fault-management and timing traffic) pinned to one link in both directions.",
+      "zh": "心智模型：第 7 章是仪表盘，第 8 章是方向盘。第 7 章的被管对象让你在不触碰协议的情况下读取计数器、命名部件并获取上/下线通知；第 8 章的算法逐帧决定由哪条成员链路承载它——选择基于服务的算法可使每个会话 (及其故障管理与定时流量) 在两个方向上都固定在一条链路上。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause unit in this lesson, by exact number",
+        "zh": "覆盖地图：本课涉及的每个子条款，按精确编号列出"
+      },
+      "en": "Clause 7 — Management. 7.1 Overview: 7.1.1 Systems management overview (Link Aggregation management within the OSI framework, protocol-independent, no peer management needed for normal operation); 7.1.2 Management model (managing vs managed system; managed object defined by Attributes, Actions, Notifications, Behavior). 7.2 Managed objects: 7.2.1 Introduction (wraparound counters; increment-rate scaling formula); 7.2.2 Overview of managed objects (the five classes identify/control/monitor resources); 7.2.3 Containment (Figure 7-1 parent/child tree); 7.2.4 Naming (hierarchical names within a system); 7.2.5 Capabilities (mandatory + optional packages; Basic and Mandatory = minimum conformance). 7.3 Management for Link Aggregation: 7.3.1 Aggregator managed object class (LAG modeled as one MAC; aAggID, aAggDescription; nAggLinkUp/DownNotification); 7.3.2 Aggregation Port managed object class (per-port view, aAggPortID); 7.3.3 Aggregation Port Statistics managed object class (LACPDU/Marker counts, UnknownRx, IllegalRx); 7.3.4 Aggregation Port Debug Information managed object class (aAggPortDebugPartnerChangeCount). 7.4 Management for DRNI: 7.4.1 DRNI Managed Object Class (oDRNI; aDrniID, aDrniDescription, aDrniName, neighbor GET attributes). Clause 8 — Distribution algorithms. 8.1 Distribution algorithm identification (4-octet ID = 3-octet OUI/CID + 1 algorithm octet; MSB = Map flag; 00-80-C2-00 = unspecified). 8.2 Per-Service Frame Distribution (benefits: CFM congruity, bidirectional congruity, ingress predictability): 8.2.1 C-VID (12-bit); 8.2.2 S-VID (12-bit); 8.2.3 I-SID (24-bit); 8.2.4 TE-SID (32-bit); 8.2.5 Flow Hash (16-bit, F-Tag). Without a map, Conversation ID = low 12 bits of the Service ID; an untagged frame has Service ID 0.",
+      "zh": "第 7 章——管理。7.1 概述：7.1.1 系统管理概述 (链路聚合管理置于 OSI 框架内，与协议无关，正常运行无需对端管理)；7.1.2 管理模型 (管理系统对被管系统；被管对象由属性、动作、通知、行为定义)。7.2 被管对象：7.2.1 引言 (回绕计数器；递增速率换算公式)；7.2.2 被管对象概览 (五个类用于标识/控制/监控资源)；7.2.3 包含关系 (图 7-1 父/子树)；7.2.4 命名 (系统内分层命名)；7.2.5 能力 (强制+可选包；Basic 与 Mandatory = 最低符合性)。7.3 链路聚合的管理：7.3.1 聚合器被管对象类 (LAG 建模为一个 MAC；aAggID、aAggDescription；nAggLinkUp/DownNotification)；7.3.2 聚合端口被管对象类 (按端口视图，aAggPortID)；7.3.3 聚合端口统计被管对象类 (LACPDU/Marker 计数、UnknownRx、IllegalRx)；7.3.4 聚合端口调试信息被管对象类 (aAggPortDebugPartnerChangeCount)。7.4 DRNI 的管理：7.4.1 DRNI 被管对象类 (oDRNI；aDrniID、aDrniDescription、aDrniName、邻居只读属性)。第 8 章——分发算法。8.1 分发算法标识 (4 字节 ID = 3 字节 OUI/CID + 1 字节算法；最高位 = Map 标志；00-80-C2-00 = 未指定)。8.2 按服务的帧分发 (好处：CFM 一致性、双向一致性、入口可预测性)：8.2.1 C-VID (12 位)；8.2.2 S-VID (12 位)；8.2.3 I-SID (24 位)；8.2.4 TE-SID (32 位)；8.2.5 流哈希 (16 位，F-Tag)。无映射时，会话 ID = 服务 ID 低 12 位；未打标签的帧服务 ID 为 0。",
+      "cite": {
+        "pdf_id": "8021AX-2020",
+        "pages": [
+          107,
+          108,
+          109,
+          110,
+          115,
+          116,
+          126,
+          134,
+          135,
+          138,
+          149,
+          150,
+          151
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AX-2020",
+      "pages": [
+        107,
+        108,
+        109,
+        110
+      ],
+      "note": "7.1 Overview (7.1.1 systems management, 7.1.2 model) and 7.2 Managed objects (7.2.1-7.2.5 incl. Figure 7-1 containment tree)"
+    },
+    {
+      "pdf_id": "8021AX-2020",
+      "pages": [
+        115,
+        116,
+        126,
+        134,
+        135,
+        138
+      ],
+      "note": "7.3 Management for Link Aggregation (7.3.1 Aggregator, 7.3.2 Aggregation Port, 7.3.3 Statistics, 7.3.4 Debug) and 7.4.1 DRNI managed object class"
+    },
+    {
+      "pdf_id": "8021AX-2020",
+      "pages": [
+        149,
+        150,
+        151
+      ],
+      "note": "8.1 Distribution algorithm identification (Figure 8-1, Table 8-1) and 8.2 Per-Service Frame Distribution (8.2.1-8.2.5)"
+    }
+  ],
+  "covers": [
+    "8021AX-2020:7.1.1",
+    "8021AX-2020:7.1.2",
+    "8021AX-2020:7.2.1",
+    "8021AX-2020:7.2.2",
+    "8021AX-2020:7.2.3",
+    "8021AX-2020:7.2.4",
+    "8021AX-2020:7.2.5",
+    "8021AX-2020:7.3.1",
+    "8021AX-2020:7.3.2",
+    "8021AX-2020:7.3.3",
+    "8021AX-2020:7.3.4",
+    "8021AX-2020:7.4.1",
+    "8021AX-2020:8.1",
+    "8021AX-2020:8.2.1",
+    "8021AX-2020:8.2.2",
+    "8021AX-2020:8.2.3",
+    "8021AX-2020:8.2.4",
+    "8021AX-2020:8.2.5"
+  ],
+  "track": "bridging-tsn"
+}

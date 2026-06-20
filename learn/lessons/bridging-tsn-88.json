@@ -1,0 +1,159 @@
+{
+  "id": "bridging-tsn-88",
+  "title": {
+    "en": "Watching LRP from Outside: Managed Objects and YANG Models",
+    "zh": "从外部观察 LRP：被管对象与 YANG 模型"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Once a protocol works, operators need a way to look inside it from a distance — to read counters, statuses, and timers without touching the running code. Clause 11 of IEEE Std 802.1CS-2020 defines the **managed objects** for the Link-local Registration Protocol (LRP), and Clause 12 defines the **YANG data models** that expose those same objects to network-management software. Think of Clause 11 as the catalogue of dials and gauges, and Clause 12 as the machine-readable wiring that lets a remote tool actually read them.",
+      "zh": "协议一旦跑起来，运维人员就需要一种远程观察它的方式——读取计数器、状态和定时器，而不必触碰正在运行的代码。IEEE Std 802.1CS-2020 的 Clause 11 为链路本地注册协议（LRP，Link-local Registration Protocol）定义了**被管对象（managed objects）**，Clause 12 则定义了把这些对象暴露给网络管理软件的 **YANG 数据模型**。可以把 Clause 11 看作一份仪表盘上所有刻度与指针的目录，而 Clause 12 是让远程工具真正读到这些读数的机器可读接线。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A defining design choice (11.1, 12.1): these objects only **monitor** — they are almost entirely read-only. LRP does not let you create or destroy Portals or LRP-DT instances through management. That job belongs to Clause 10 primitives, invoked by the application. So the managed-object surface is a window, not a control panel. (LRP-DT = LRP Data Transport; a Portal is a per-application registration endpoint.)",
+      "zh": "一个关键的设计取舍（11.1、12.1）：这些对象只用于**监控**——几乎全部是只读的。LRP 不允许你通过管理接口创建或销毁 Portal 或 LRP-DT 实例，那是 Clause 10 原语由应用调用来完成的工作。因此被管对象这一层是一扇观察窗，而非控制面板。（LRP-DT = LRP 数据传输 LRP Data Transport；Portal 是每个应用的注册端点。）"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.2 organizes everything as a UML (Unified Modeling Language) model — a single picture (Figure 11-1) showing three nested tables. At the top sit the **system-global** objects (one per system). Inside the LRP container live two tables: one row **per Portal**, and one row **per LRP-DT instance**. Each row carries both descriptive status fields (mirroring state-machine variables) and event counters. The hierarchy in 11.2 is the same hierarchy the YANG model in 12.5 reproduces — they are two views of one structure.",
+      "zh": "Clause 11.2 用 UML（统一建模语言 Unified Modeling Language）模型把一切组织起来——一张图（Figure 11-1）展示三层嵌套的表。最顶层是**系统全局（system-global）**对象（每个系统一份）。在 LRP 容器内有两张表：每个 Portal 一行，每个 LRP-DT 实例一行。每一行既携带描述性的状态字段（映射状态机变量），也携带事件计数器。11.2 中的这套层级与 12.5 中 YANG 模型再现的层级完全一致——它们是同一结构的两种视角。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 400 230\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"10\" width=\"380\" height=\"210\" rx=\"6\"/><text x=\"24\" y=\"30\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">ieee802-dot1cs-lrp (system global)</text><text x=\"24\" y=\"48\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">lrpAckTimerInit (11.3.1) · lrpReconnectMax (11.3.2)</text><rect x=\"24\" y=\"62\" width=\"352\" height=\"70\" rx=\"4\"/><text x=\"36\" y=\"80\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">portal* [portal-id]  (11.5)</text><text x=\"36\" y=\"98\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">status fields + 16 counters</text><text x=\"36\" y=\"114\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">SentHellos … DiscardedUnknowns (11.5.1-16)</text><rect x=\"24\" y=\"142\" width=\"352\" height=\"60\" rx=\"4\"/><text x=\"36\" y=\"160\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">lrp-dt-instance* [instance-id]  (11.4)</text><text x=\"36\" y=\"178\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">tcp status fields + instDiscardedLRPDUs (11.4.1)</text></svg>",
+      "caption": {
+        "en": "The 11.2 UML hierarchy: a system-global container holding a per-Portal table and a per-LRP-DT-instance table — the same shape Clause 12.5 renders as a YANG tree.",
+        "zh": "11.2 的 UML 层级：一个系统全局容器，内含每 Portal 表和每 LRP-DT 实例表——与 Clause 12.5 渲染成 YANG 树的形状完全相同。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The **system-global** objects (11.3) are just two protocol-wide knobs. **lrpAckTimerInit** (11.3.1) is a read-only count of milliseconds for the acknowledgement timer's initial value. **lrpReconnectMax** (11.3.2) is the one notable exception to read-only: it is read-write, capping how slowly a Native end system backs off when retrying a failed TCP connection — important so that when a downed network controller (a Proxy) comes back, the slow retries do not stall the whole network for too long.",
+      "zh": "**系统全局**对象（11.3）只有两个协议级旋钮。**lrpAckTimerInit**（11.3.1）是确认定时器初始值的只读毫秒数。**lrpReconnectMax**（11.3.2）是只读规则中那个值得注意的例外：它是可读写的，用于限制 Native 端系统在 TCP 连接失败重试时退避的最慢程度——这一点很重要，因为当一个曾宕机的网络控制器（Proxy）恢复时，过慢的重试不应让整个网络长时间停滞。"
+    },
+    {
+      "type": "prose",
+      "en": "Each **LRP-DT instance** (11.4) carries five status fields that mirror its TCP transport state plus one counter: **instDiscardedLRPDUs** (11.4.1) counts LRP Data Units (LRPDUs) that arrived but could not be matched to any Portal for processing. These objects appear and disappear with the instance itself (created/destroyed per 7.2 and 8.2.1) and are all read-only.",
+      "zh": "每个 **LRP-DT 实例**（11.4）携带五个映射其 TCP 传输状态的状态字段，外加一个计数器：**instDiscardedLRPDUs**（11.4.1）统计那些到达却无法匹配到任何 Portal 进行处理的 LRP 数据单元（LRPDU）。这些对象随实例本身一起出现和消失（按 7.2 与 8.2.1 创建/销毁），且全部只读。"
+    },
+    {
+      "type": "prose",
+      "en": "The richest table is **per-Portal** (11.5): sixteen objects, mostly counters, that tell the full registration story. Two are gauges — **ApplicantActiveRecords** (11.5.1) and **RegistrarActiveRecords** (11.5.2) — counting how many records sit in the applicant and registrar databases right now. The rest are running totals of frames, grouped by message type and by accepted/discarded outcome: Hellos (sent 11.5.3, accepted 11.5.4, discarded 11.5.5), full Records (11.5.6-8), plus RecordErrors (11.5.9) for records dropped because Checksum, Application-data, and Data-length disagree.",
+      "zh": "内容最丰富的是**每 Portal 表**（11.5）：十六个对象，大多是计数器，讲述完整的注册过程。其中两个是即时仪表——**ApplicantActiveRecords**（11.5.1）和 **RegistrarActiveRecords**（11.5.2）——统计当前申请方（applicant）和登记方（registrar）数据库里各有多少条记录。其余是按消息类型、按接受/丢弃结果分组的帧累计总数：Hello 帧（发送 11.5.3、接受 11.5.4、丢弃 11.5.5）、完整 Record（11.5.6-8），外加 RecordErrors（11.5.9），统计因 Checksum、Application-data 与 Data-length 不一致而被丢弃的记录。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Hello LRPDU] --> H[SentHellos / AcceptedHellos / DiscardedHellos]\n  B[Record LRPDU] --> R[SentRecords / AcceptedRecords / DiscardedRecords + RecordErrors]\n  C[Partial List LRPDU] --> P[SentPartials / AcceptedPartials / DiscardedPartials]\n  D[Complete List LRPDU] --> E[SentCompletes / AcceptedCompletes / DiscardedCompletes]\n  F[Unknown type] --> G[DiscardedUnknowns]",
+      "zh": "flowchart LR\n  A[Hello LRPDU] --> H[SentHellos / AcceptedHellos / DiscardedHellos]\n  B[Record LRPDU] --> R[SentRecords / AcceptedRecords / DiscardedRecords + RecordErrors]\n  C[部分列表 LRPDU] --> P[SentPartials / AcceptedPartials / DiscardedPartials]\n  D[完整列表 LRPDU] --> E[SentCompletes / AcceptedCompletes / DiscardedCompletes]\n  F[未知类型] --> G[DiscardedUnknowns]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every per-Portal counter (11.5.10-16) and the LLDP-TLV objects (11.6.1-2)",
+        "zh": "覆盖地图：每个每 Portal 计数器（11.5.10-16）与 LLDP-TLV 对象（11.6.1-2）"
+      },
+      "en": "Completing the per-Portal counters: Partial List LRPDUs are tracked by SentPartials (11.5.10), AcceptedPartials (11.5.11), and DiscardedPartials (11.5.12); Complete List LRPDUs by SentCompletes (11.5.13), AcceptedCompletes (11.5.14), and DiscardedCompletes (11.5.15). Finally DiscardedUnknowns (11.5.16) counts LRPDUs of an unrecognized type thrown away by either the Applicant or Partial-list state machine. The 11.6 group covers LLDP (Link Layer Discovery Protocol) organization-specific TLVs (Type-Length-Value fields) used for LRP discovery. 11.6.1 — Controlled system IP address information — has one object, lrpLldpTcpIpAddressses (11.6.1.1): the TCP port and optional IPv4/IPv6 addresses a Proxy advertises on a Controlled system's behalf in LRP TCP Discovery TLVs; this is the only thing that must be added to a Controlled system for a Proxy to run LRP for it. 11.6.2 — LRP LLDP TLV information — exposes six objects letting management observe the ECP and TCP Discovery TLVs being sent and received: lrpLldpEcpXmitEnable (11.6.2.1), lrpLldpEcpTlvXmitInfo (11.6.2.2), lrpLldpEcpTlvRecvInfo (11.6.2.3), lrpLldpTcpXmitEnable (11.6.2.4), lrpLldpTcpTlvXmitInfo (11.6.2.5), and lrpLldpTcpTlvRecvInfo (11.6.2.6). (ECP = Edge Control Protocol; the two TLVs are defined in Annex C.2.1 and C.2.2.)",
+      "zh": "补齐每 Portal 计数器：部分列表（Partial List）LRPDU 由 SentPartials（11.5.10）、AcceptedPartials（11.5.11）、DiscardedPartials（11.5.12）跟踪；完整列表（Complete List）LRPDU 由 SentCompletes（11.5.13）、AcceptedCompletes（11.5.14）、DiscardedCompletes（11.5.15）跟踪。最后，DiscardedUnknowns（11.5.16）统计被申请方或部分列表状态机丢弃的未知类型 LRPDU。11.6 组涵盖用于 LRP 发现的 LLDP（链路层发现协议 Link Layer Discovery Protocol）组织专用 TLV（类型-长度-值字段 Type-Length-Value）。11.6.1——受控系统 IP 地址信息——只有一个对象 lrpLldpTcpIpAddressses（11.6.1.1）：即 Proxy 代表受控（Controlled）系统在 LRP TCP 发现 TLV 中通告的 TCP 端口与可选的 IPv4/IPv6 地址；这是为让 Proxy 替受控系统运行 LRP 而必须加到受控系统上的唯一一项。11.6.2——LRP LLDP TLV 信息——暴露六个对象，让管理侧观察正在收发的 ECP 与 TCP 发现 TLV：lrpLldpEcpXmitEnable（11.6.2.1）、lrpLldpEcpTlvXmitInfo（11.6.2.2）、lrpLldpEcpTlvRecvInfo（11.6.2.3）、lrpLldpTcpXmitEnable（11.6.2.4）、lrpLldpTcpTlvXmitInfo（11.6.2.5）、lrpLldpTcpTlvRecvInfo（11.6.2.6）。（ECP = 边缘控制协议 Edge Control Protocol；这两个 TLV 在附录 C.2.1 与 C.2.2 定义。）",
+      "cite": {
+        "pdf_id": "8021CS-2020",
+        "pages": [
+          80,
+          81,
+          82
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 12 turns this catalogue into a real, downloadable **YANG module**. YANG is the IETF data-modelling language used to define what a network device exposes to protocols like NETCONF. Crucially (12.1), the module is **monitoring-only** — no configurable items — and it is derived directly from the 11.2 UML, not from the SNMP MIB. 12.2 explains the framework: it follows IETF RFC 6087 guidance and roots its namespace in an `ieee`-prefixed URN (Uniform Resource Name), with `ieee` → standard → working group hierarchy.",
+      "zh": "Clause 12 把这份目录变成一个真实、可下载的 **YANG 模块**。YANG 是 IETF 的数据建模语言，用于定义网络设备向 NETCONF 等协议暴露的内容。关键在于（12.1），该模块是**仅监控**的——没有任何可配置项——并且它直接源自 11.2 的 UML，而非 SNMP 的 MIB。12.2 说明了框架：它遵循 IETF RFC 6087 的指导，并把命名空间扎根于以 `ieee` 为前缀的 URN（统一资源名 Uniform Resource Name），层级为 `ieee` → 标准 → 工作组。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: security (12.3), module relationships (12.4), the schema tree (12.5), and the module definition (12.6)",
+        "zh": "覆盖地图：安全（12.3）、模块关系（12.4）、数据树（12.5）与模块定义（12.6）"
+      },
+      "en": "12.3 (Security considerations) notes the module is meant to be accessed over a secure transport — NETCONF over SSH (RFC 6241, RFC 4251) — with the NETCONF Access Control Model (RFC 8341) restricting which users may read which nodes. Because the module has no configurable items, the only threat is observation of LRP operation; even so, read-only counters may be sensitive in some networks. 12.4 (Relationship to other YANG modules): the LRP module **augments** the standard /sys:system module (so it applies to most systems), and there is deliberately no YANG module for the LLDP extensions of 13.5.3. 12.5 (YANG data scheme definition) prints the tree: `module: ieee802-dot1cs-lrp` augmenting `/sys:system`, with a top-level `lrp` container holding `lrp-ack-timer-init` and `lrp-reconnect-max`, a `portal*` list keyed by `portal-id` (carrying the status fields and all 16 counters), and an `lrp-dt-instance*` list keyed by `instance-id` (the TCP status fields plus `discarded-lrpdus`). The `ro`/`rw` flags confirm everything is read-only except `lrp-reconnect-max`. 12.6 (Definition of LRP YANG module) is the actual normative source code: `module ieee802-dot1cs-lrp { yang-version 1.1; namespace \"urn:ieee:std:802.1CS:yang:ieee802-dot1cs-lrp\"; prefix \"dot1cs\"; ... }` importing ietf-system, ieee802-dot1ab-types, and ietf-yang-types. A copyright release lets users reproduce the module freely, and an ASCII copy is attached to the PDF and hosted at the IEEE 802.1 YANG website.",
+      "zh": "12.3（安全考虑）指出该模块应通过安全传输访问——NETCONF over SSH（RFC 6241、RFC 4251）——并由 NETCONF 访问控制模型（RFC 8341）限制哪些用户可读哪些节点。由于模块没有可配置项，唯一威胁是对 LRP 运行情况的观察；即便如此，只读计数器在某些网络中仍可能敏感。12.4（与其他 YANG 模块的关系）：LRP 模块**增扩（augments）**标准的 /sys:system 模块（因而适用于大多数系统），并且有意不为 13.5.3 的 LLDP 扩展提供 YANG 模块。12.5（YANG 数据架构定义）打印出数据树：`module: ieee802-dot1cs-lrp` 增扩 `/sys:system`，顶层 `lrp` 容器持有 `lrp-ack-timer-init` 与 `lrp-reconnect-max`，一个以 `portal-id` 为键的 `portal*` 列表（携带状态字段与全部 16 个计数器），以及一个以 `instance-id` 为键的 `lrp-dt-instance*` 列表（TCP 状态字段加 `discarded-lrpdus`）。`ro`/`rw` 标志确认除 `lrp-reconnect-max` 外一切只读。12.6（LRP YANG 模块定义）是真正的规范性源代码：`module ieee802-dot1cs-lrp { yang-version 1.1; namespace \"urn:ieee:std:802.1CS:yang:ieee802-dot1cs-lrp\"; prefix \"dot1cs\"; ... }`，导入 ietf-system、ieee802-dot1ab-types 与 ietf-yang-types。版权释放允许用户自由复制该模块，PDF 附带 ASCII 版本，IEEE 802.1 的 YANG 网站亦提供。",
+      "cite": {
+        "pdf_id": "8021CS-2020",
+        "pages": [
+          83,
+          84
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The big takeaway: Clause 11 and Clause 12 are two encodings of one read-only observation model. Clause 11's UML names the objects; Clause 12's YANG makes them callable over NETCONF. Knowing the mapping — every 11.5.x counter is a `+--ro` leaf in the 12.5 portal list — lets you read either clause and instantly picture the other.",
+      "zh": "核心要点：Clause 11 与 Clause 12 是同一个只读观察模型的两种编码。Clause 11 的 UML 为对象命名；Clause 12 的 YANG 让它们可通过 NETCONF 调用。掌握这个映射——每个 11.5.x 计数器都是 12.5 portal 列表里的一个 `+--ro` 叶子——你读到任一条款都能立刻想象出另一条款。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021CS-2020",
+      "pages": [
+        77,
+        78
+      ],
+      "note": "11.1-11.4: introduction, UML model (Fig 11-1), system-global and per-LRP-DT-instance managed objects"
+    },
+    {
+      "pdf_id": "8021CS-2020",
+      "pages": [
+        79,
+        80,
+        81,
+        82
+      ],
+      "note": "11.5 per-Portal counters and 11.6 LLDP TLV managed objects"
+    },
+    {
+      "pdf_id": "8021CS-2020",
+      "pages": [
+        83,
+        84
+      ],
+      "note": "Clause 12: YANG framework, security, relationships, schema tree and module definition"
+    }
+  ],
+  "covers": [
+    "8021CS-2020:11.1",
+    "8021CS-2020:11.2",
+    "8021CS-2020:11.3.1",
+    "8021CS-2020:11.3.2",
+    "8021CS-2020:11.4.1",
+    "8021CS-2020:11.5.1",
+    "8021CS-2020:11.5.2",
+    "8021CS-2020:11.5.3",
+    "8021CS-2020:11.5.4",
+    "8021CS-2020:11.5.5",
+    "8021CS-2020:11.5.6",
+    "8021CS-2020:11.5.7",
+    "8021CS-2020:11.5.8",
+    "8021CS-2020:11.5.9",
+    "8021CS-2020:11.5.10",
+    "8021CS-2020:11.5.11",
+    "8021CS-2020:11.5.12",
+    "8021CS-2020:11.5.13",
+    "8021CS-2020:11.5.14",
+    "8021CS-2020:11.5.15",
+    "8021CS-2020:11.5.16",
+    "8021CS-2020:11.6.1",
+    "8021CS-2020:11.6.2",
+    "8021CS-2020:12.1",
+    "8021CS-2020:12.2",
+    "8021CS-2020:12.3",
+    "8021CS-2020:12.4",
+    "8021CS-2020:12.5",
+    "8021CS-2020:12.6"
+  ],
+  "track": "bridging-tsn"
+}

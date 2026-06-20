@@ -1,0 +1,161 @@
+{
+  "id": "tsn-42",
+  "title": {
+    "en": "Fronthaul Profiles A & B, Synchronization Solutions, and the Conformance Annexes",
+    "zh": "前传 Profile A 与 B、同步解决方案，以及一致性附录"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1CM-2018 is the TSN (Time-Sensitive Networking) profile for fronthaul — the link between a radio's central unit (eREC/REC, the baseband \"brain\") and its remote radio units (eRE/RE, the antennas). This part of the standard does three jobs. Clause 8 gives two recipes — Profile A and Profile B — for configuring an Ethernet bridged network so that fronthaul traffic meets its tight latency and frame-loss limits. Clause 9 explains how to deliver accurate time synchronization for four accuracy categories. The annexes provide the formal conformance checklist (Annex A), worked delay-math examples (Annex B), and a bibliography (Annex C). Acronyms: HPF = High Priority Fronthaul, MPF = Medium Priority Fronthaul, LPF = Low Priority Fronthaul, FLR = Frame Loss Ratio.",
+      "zh": "IEEE Std 802.1CM-2018 是面向前传（fronthaul）的 TSN（时间敏感网络，Time-Sensitive Networking）配置规范。前传指无线设备的中央单元（eREC/REC，基带“大脑”）与远端射频单元（eRE/RE，天线）之间的链路。本部分标准做三件事：Clause 8 给出两套“配方”——Profile A 与 Profile B——用于配置以太网桥接网络，使前传流量满足严苛的时延与丢帧限制；Clause 9 解释如何为四个精度类别提供准确的时间同步；附录则提供正式的一致性核对表（Annex A）、时延计算示例（Annex B）和参考文献（Annex C）。缩略语：HPF = 高优先级前传，MPF = 中优先级前传，LPF = 低优先级前传，FLR = 丢帧率（Frame Loss Ratio）。"
+    },
+    {
+      "type": "prose",
+      "en": "Profile A is the baseline (Clause 8.1). It is built only on ordinary bridging with strict priority queuing — no advanced features. Every bridge in a fronthaul network shall support Profile A. Its four sub-clauses set the configuration knobs. Frame size (8.1.1): the maximum frame from destination MAC address through the CRC is 2000 octets (1522 octets for a basic 802.3 frame with one 802.1Q C-VLAN tag); operators may use a smaller maximum, and the value actually applied feeds the worst-case latency math. Traffic classes (8.1.2): HPF data gets the highest priority and uses the strict-priority transmission selection algorithm (algorithm 0), MPF sits just below HPF, and LPF just below MPF.",
+      "zh": "Profile A 是基线方案（Clause 8.1），只构建在普通桥接加严格优先级排队之上，不使用任何高级特性。前传网络中的每个网桥都“应（shall）”支持 Profile A。它的四个子条款设定配置旋钮。帧长（8.1.1）：从目的 MAC 地址到 CRC 末尾的最大帧长为 2000 字节（带单个 802.1Q C-VLAN 标签的基本 802.3 帧为 1522 字节）；运营商可使用更小的最大值，且实际采用的值会进入最坏情况时延计算。流量类别（8.1.2）：HPF 数据获得最高优先级并采用严格优先级传输选择算法（算法 0），MPF 紧排在 HPF 之下，LPF 紧排在 MPF 之下。"
+    },
+    {
+      "type": "prose",
+      "en": "Meeting latency targets in Profile A (8.1.3) is a design exercise, not a single switch. Because propagation delay matters — 10 km of fiber is roughly 50 µs, half of the typical 100 µs one-way HPF budget — the network topology is laid out to bound the number of hops and total link length. The worst-case end-to-end latency te = sum of per-bridge worst-case delays (from Equation 7-1) plus total propagation delay (Equation 8-1). To stop traffic exceeding what the design assumed, edge bridges shall police ingress with the MEF 10.3 token-bucket bandwidth profile per traffic class, discarding excess HPF. Meeting FLR targets (8.1.4): configure and operate so congestion never drops fronthaul frames; bit-error loss on an Ethernet link is negligible compared with the FLR tolerance.",
+      "zh": "在 Profile A 中满足时延目标（8.1.3）是一项设计工作，而非单一开关。由于传播时延很关键——10 km 光纤约 50 µs，相当于典型 100 µs 单向 HPF 预算的一半——因此要规划网络拓扑以限制跳数和总链路长度。最坏情况端到端时延 te = 各网桥最坏时延之和（来自公式 7-1）加上总传播时延（公式 8-1）。为防止流量超出设计假设，边缘网桥“应”在入口按流量类别用 MEF 10.3 令牌桶带宽配置进行管制，丢弃超额 HPF。满足 FLR 目标（8.1.4）：通过配置与运行确保拥塞绝不丢弃前传帧；以太网链路上的误码丢失相对 FLR 容限可忽略不计。"
+    },
+    {
+      "type": "prose",
+      "en": "Profile B (Clause 8.2) extends Profile A by adding frame preemption (a way to interrupt a long, low-priority frame mid-transmission so an urgent frame can go first). It is optional — bridges may support it. Frame size (8.2.1): fronthaul data keeps the same rules as 8.1.1, but because non-fronthaul frames are now preemptable they no longer delay fronthaul traffic, so no maximum frame size is specified for non-fronthaul data. Preemption configuration (8.2.2): preemption is enabled on every port carrying both fronthaul and non-fronthaul flows, the smallest 64-octet fragment size is used, and fronthaul priorities are marked as express traffic. Meeting latency (8.2.3): the benefit is that the queuing delay a non-fronthaul frame can impose drops to just 1240 bit times (155 octet times); the same Equation 8-1 still gives HPF end-to-end latency.",
+      "zh": "Profile B（Clause 8.2）在 Profile A 基础上增加帧抢占（frame preemption，一种在低优先级长帧传输途中将其打断、让紧急帧先发的机制）。它是可选的——网桥“可（may）”支持。帧长（8.2.1）：前传数据沿用 8.1.1 的规则，但由于非前传帧现在可被抢占、不再延误前传流量，故对非前传数据不再规定最大帧长。抢占配置（8.2.2）：在每个同时承载前传与非前传流的端口上启用抢占，使用最小的 64 字节分片，并将前传优先级标记为快速（express）流量。满足时延（8.2.3）：好处在于非前传帧能造成的排队时延降至仅 1240 比特时间（155 字节时间）；HPF 端到端时延仍由同一公式 8-1 给出。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Non-fronthaul long frame] -->|preempted| P{Express gate}\n  H[HPF express frame] -->|jumps ahead| P\n  P --> O[Egress port]\n  A -.resumes after.-> O",
+      "zh": "flowchart LR\n  A[非前传长帧] -->|被抢占| P{快速门}\n  H[HPF 快速帧] -->|插队| P\n  P --> O[出口端口]\n  A -.随后续传.-> O"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Rule of thumb: Profile A buys latency guarantees with strict priority alone and works everywhere; Profile B adds frame preemption to cut the worst-case interference from big non-fronthaul frames down to 155 octet times. Preemption's payoff shrinks as port speed rises — at 10/25 Gbps a maximum-size frame already drains quickly, so Profile A may suffice.",
+      "zh": "经验法则：Profile A 仅靠严格优先级就换来时延保障，且处处可用；Profile B 增加帧抢占，将大型非前传帧造成的最坏干扰削减到 155 字节时间。端口速率越高，抢占收益越小——在 10/25 Gbps 下一个最大帧本就很快发完，因此 Profile A 可能已足够。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 9 turns to time synchronization, mapping the four accuracy categories (defined in 6.4.1) onto the delivery methods of 7.4. The packet-timing methods use the ITU-T G.8275.1 PTP (Precision Time Protocol) telecom profile and Synchronous Ethernet (SyncE, per ITU-T G.8261/G.8262/G.8264); GNSS (Global Navigation Satellite System) and other local methods place no requirement on the bridged network. The tightest tier, Category A+ (9.1), is met with packet timing from a co-located common master at the eRE/REs — meaning the radio units sit next to each other so they share one timing source and inter-port time error stays bounded. Category A (9.2) is met by point-to-point synchronization distribution (needing nanosecond control of link delay asymmetry) or, again, a co-located common master.",
+      "zh": "Clause 9 转向时间同步，将四个精度类别（在 6.4.1 中定义）映射到 7.4 的传递方法上。分组定时方法采用 ITU-T G.8275.1 的 PTP（精确时间协议，Precision Time Protocol）电信规范以及同步以太网（SyncE，依 ITU-T G.8261/G.8262/G.8264）；GNSS（全球导航卫星系统，Global Navigation Satellite System）及其他本地方法对桥接网络不提任何要求。最严格的等级 Category A+（9.1）通过在 eRE/RE 处放置共址公共主时钟的分组定时来满足——即射频单元彼此相邻、共享同一时间源，使端口间时间误差受限。Category A（9.2）通过点到点同步分发（需纳秒级控制链路时延不对称）或同样使用共址公共主时钟来满足。"
+    },
+    {
+      "type": "prose",
+      "en": "The looser tiers have more options. Category B (9.3) can use point-to-point distribution, a co-located common master, or timing fed to a cluster of eRE/REs from the nearest common master / boundary clock; alternatively the radio units can carry their own GNSS receiver (a PRTC — Primary Reference Time Clock — per ITU-T G.8272), where antenna and cabling quality matter. Category C (9.4) is the most relaxed: any of the 7.4 methods works, as long as the timing reference traces back to an internationally recognized master such as GNSS.",
+      "zh": "较宽松的等级选项更多。Category B（9.3）可采用点到点分发、共址公共主时钟，或由最近的公共主时钟/边界时钟向一簇 eRE/RE 馈送定时；或者射频单元自带 GNSS 接收机（即 PRTC——主参考时间时钟，Primary Reference Time Clock——依 ITU-T G.8272），此时天线与布线质量很关键。Category C（9.4）最为宽松：只要时间基准可追溯到国际公认的主时钟（如 GNSS），7.4 中的任意方法皆可。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 170\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"8\" y=\"16\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Sync category vs. delivery method (Clause 9)</text><rect x=\"10\" y=\"30\" width=\"90\" height=\"26\"/><text x=\"55\" y=\"47\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">A+ (9.1)</text><rect x=\"120\" y=\"30\" width=\"300\" height=\"26\"/><text x=\"270\" y=\"47\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Co-located common master only</text><rect x=\"10\" y=\"62\" width=\"90\" height=\"26\"/><text x=\"55\" y=\"79\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">A (9.2)</text><rect x=\"120\" y=\"62\" width=\"300\" height=\"26\"/><text x=\"270\" y=\"79\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">P2P (ns asymmetry) or co-located master</text><rect x=\"10\" y=\"94\" width=\"90\" height=\"26\"/><text x=\"55\" y=\"111\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">B (9.3)</text><rect x=\"120\" y=\"94\" width=\"300\" height=\"26\"/><text x=\"270\" y=\"111\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">P2P / cluster boundary clock / on-site GNSS</text><rect x=\"10\" y=\"126\" width=\"90\" height=\"26\"/><text x=\"55\" y=\"143\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">C (9.4)</text><rect x=\"120\" y=\"126\" width=\"300\" height=\"26\"/><text x=\"270\" y=\"143\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Any 7.4 method traceable to a recognized master</text></svg>",
+      "caption": {
+        "en": "Tighter sync categories allow fewer delivery options; Category C accepts any traceable method.",
+        "zh": "同步要求越严格，可选的传递方法越少；Category C 接受任何可追溯的方法。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: Clause 8 (8.1.1–8.2.3), Clause 9 (9.1–9.4), and Annexes A/B/C by exact clause",
+        "zh": "覆盖图：按精确条款的 Clause 8（8.1.1–8.2.3）、Clause 9（9.1–9.4）及附录 A/B/C"
+      },
+      "en": "Clause 8 — Profile A (8.1, p.41–43): 8.1.1 frame size (2000-octet max, 1522 with one C-VLAN tag); 8.1.2 traffic-class config (HPF highest priority, strict-priority algorithm 0, MPF then LPF below it); 8.1.3 meeting latency (topology bounds hops/length, te = Σ tMaxBridge + tPropagation per Eq. 8-1, MEF 10.3 token bucket polices ingress); 8.1.4 meeting FLR (no congestion loss; bit-error loss negligible). Profile B (8.2, p.43–44): 8.2.1 frame size (no max for non-fronthaul since it is preemptable); 8.2.2 frame-preemption config (enabled on mixed ports, 64-octet fragments, fronthaul = express, default status express); 8.2.3 meeting latency (non-fronthaul interference capped at 1240 bit times / 155 octet times; HPF still via Eq. 8-1). Clause 9 — synchronization solutions (p.45): 9.1 Category A+ (co-located common master, 7.4(a)(2)); 9.2 Category A (P2P 7.4(a)(1) with ns asymmetry control, or co-located master); 9.3 Category B (P2P, co-located master, cluster from nearest boundary clock 7.4(a)(3), or on-site GNSS per G.8272); 9.4 Category C (any 7.4 method traceable to a recognized master). Annex A (normative, p.46–55): the PCS — Profile Conformance Statement — proforma; a fixed-format questionnaire (M=mandatory, O=optional, X=prohibited) with tables for implementation type (A.6), bridge MAC/802.1Q/Profile A/Profile B/sync requirements (A.7.1–A.7.5: PA mandatory, PB optional, preemption rows B-Q-15/16 and PB-1/PB-2), and end-station requirements (A.8). Annex B (informative, p.56–59): worked delay examples — B.1 self-queuing delay (fan-in of bursts arriving at different ingress ports, frames a–i across bridges 282/373) and B.2 an example network (T1→L1 worst path, 10 Gbps links, t1542 = 1.2336 µs, bridge delays in Table B-1 totaling 34.8032 µs, leaving ~65 µs propagation budget ≈ 13 km). Annex C (informative, p.60–61): the bibliography — 3GPP TS 36.x, CPRI/eCPRI, IETF RFCs, ISO/IEC 7498, ITU-T G.826x/G.827/Y.1563, MEF 22.3.",
+      "zh": "Clause 8 — Profile A（8.1，p.41–43）：8.1.1 帧长（最大 2000 字节，带单个 C-VLAN 标签为 1522）；8.1.2 流量类别配置（HPF 最高优先级、严格优先级算法 0，MPF、LPF 依次排其下）；8.1.3 满足时延（拓扑限制跳数/长度，按公式 8-1 te = Σ tMaxBridge + tPropagation，MEF 10.3 令牌桶管制入口）；8.1.4 满足 FLR（无拥塞丢失；误码丢失可忽略）。Profile B（8.2，p.43–44）：8.2.1 帧长（非前传可抢占故不设最大值）；8.2.2 帧抢占配置（混合端口启用、64 字节分片、前传为快速、默认状态为快速）；8.2.3 满足时延（非前传干扰封顶 1240 比特时间 / 155 字节时间；HPF 仍用公式 8-1）。Clause 9 — 同步解决方案（p.45）：9.1 Category A+（共址公共主时钟，7.4(a)(2)）；9.2 Category A（点到点 7.4(a)(1) 配纳秒级不对称控制，或共址主时钟）；9.3 Category B（点到点、共址主时钟、由最近边界时钟向集群馈送 7.4(a)(3)，或现场 GNSS 依 G.8272）；9.4 Category C（任意 7.4 方法，只要可追溯到公认主时钟）。Annex A（规范性，p.46–55）：PCS——Profile 一致性声明——proforma；固定格式问卷（M=强制，O=可选，X=禁止），含实现类型表（A.6），网桥 MAC/802.1Q/Profile A/Profile B/同步要求（A.7.1–A.7.5：PA 强制、PB 可选、抢占行 B-Q-15/16 与 PB-1/PB-2），以及端站要求（A.8）。Annex B（资料性，p.56–59）：时延计算示例——B.1 自排队时延（不同入口端口同时到达突发的扇入，帧 a–i 经网桥 282/373）与 B.2 示例网络（T1→L1 最坏路径，10 Gbps 链路，t1542 = 1.2336 µs，表 B-1 网桥时延合计 34.8032 µs，留约 65 µs 传播预算≈13 km）。Annex C（资料性，p.60–61）：参考文献——3GPP TS 36.x、CPRI/eCPRI、IETF RFC、ISO/IEC 7498、ITU-T G.826x/G.827/Y.1563、MEF 22.3。",
+      "cite": {
+        "pdf_id": "8021CM-2018",
+        "pages": [
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          53,
+          54,
+          56,
+          58,
+          59,
+          60
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Annex B makes the latency math tangible. Self-queuing delay (B.1) is the wait a frame suffers because of other frames in its own traffic class — especially during fan-in, when bursts destined for the same egress port arrive at several ingress ports at nearly the same instant. Because IEEE Std 802.1Q does not fix the transmission order across different ports, the worst case counts every same-class frame that could slip ahead. The B.2 worked example traces the T1→L1 path (the most hops) across 10 Gbps links: a 1542-octet transmission takes t1542 = 1.2336 µs, the four bridges total 34.8032 µs of delay (Table B-1), and against a 100 µs budget that leaves about 65 µs for propagation — roughly 13 km of fiber. Annex C is simply the bibliography of referenced 3GPP, CPRI/eCPRI, IETF, ISO/IEC, ITU-T, and MEF documents.",
+      "zh": "Annex B 让时延计算变得具体。自排队时延（B.1）是一个帧因同一流量类别中其他帧而承受的等待——尤其在扇入（fan-in）时，即去往同一出口端口的突发几乎同一瞬间到达多个入口端口。由于 IEEE Std 802.1Q 不规定跨不同端口的传输顺序，最坏情况要计入每一个可能插队的同类帧。B.2 示例沿 T1→L1 路径（跳数最多）在 10 Gbps 链路上追踪：1542 字节的传输耗时 t1542 = 1.2336 µs，四个网桥合计 34.8032 µs 时延（表 B-1），在 100 µs 预算下约留 65 µs 给传播——相当于约 13 km 光纤。Annex C 即所引用的 3GPP、CPRI/eCPRI、IETF、ISO/IEC、ITU-T 与 MEF 文献的参考目录。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021CM-2018",
+      "pages": [
+        41,
+        42,
+        43
+      ],
+      "note": "Clause 8.1 Profile A: frame size, traffic-class config, meeting latency (Eq. 8-1, MEF 10.3), meeting FLR (8.1.1-8.1.4)"
+    },
+    {
+      "pdf_id": "8021CM-2018",
+      "pages": [
+        43,
+        44
+      ],
+      "note": "Clause 8.2 Profile B: frame size, frame-preemption config, meeting latency (8.2.1-8.2.3)"
+    },
+    {
+      "pdf_id": "8021CM-2018",
+      "pages": [
+        45
+      ],
+      "note": "Clause 9 synchronization solutions: Categories A+/A/B/C (9.1-9.4)"
+    },
+    {
+      "pdf_id": "8021CM-2018",
+      "pages": [
+        46,
+        53,
+        54,
+        55
+      ],
+      "note": "Annex A (normative) PCS proforma: status symbols, profile/bridge/end-station conformance tables"
+    },
+    {
+      "pdf_id": "8021CM-2018",
+      "pages": [
+        56,
+        58,
+        59
+      ],
+      "note": "Annex B (informative) delay calculation examples: self-queuing, fan-in, Table B-1"
+    },
+    {
+      "pdf_id": "8021CM-2018",
+      "pages": [
+        60,
+        61
+      ],
+      "note": "Annex C (informative) bibliography"
+    }
+  ],
+  "covers": [
+    "8021CM-2018:8.1.1",
+    "8021CM-2018:8.1.2",
+    "8021CM-2018:8.1.3",
+    "8021CM-2018:8.1.4",
+    "8021CM-2018:8.2.1",
+    "8021CM-2018:8.2.2",
+    "8021CM-2018:8.2.3",
+    "8021CM-2018:9.1",
+    "8021CM-2018:9.2",
+    "8021CM-2018:9.3",
+    "8021CM-2018:9.4",
+    "8021CM-2018:Annex_A",
+    "8021CM-2018:Annex_B",
+    "8021CM-2018:Annex_C"
+  ],
+  "track": "tsn"
+}

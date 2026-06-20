@@ -1,0 +1,168 @@
+{
+  "id": "tsn-27",
+  "title": {
+    "en": "Conformance and the gPTP YANG Data Model: Clause 5, Clause 17, and Annexes A/F/H",
+    "zh": "一致性与 gPTP YANG 数据模型：第 5 章、第 17 章及附录 A/F/H"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This lesson tours the parts of IEEE Std 802.1ASdn-2024 that make generalized Precision Time Protocol (gPTP) remotely manageable. gPTP is the profile of the Precision Time Protocol (PTP) used to synchronize clocks across a Time-Sensitive Networking (TSN) bridged LAN. The amendment adds a YANG data model — YANG (Yet Another Next Generation) is the IETF data-modeling language defined in RFC 7950 — so a network manager can read and write a PTP Instance's settings over standard protocols. We start with the single conformance hook (Clause 5), spend most of our time on the model itself (Clause 17), and finish with the three annexes (A, F, H) that wire it into the standard's machinery.",
+      "zh": "本课讲解 IEEE Std 802.1ASdn-2024 中让广义精确时间协议（gPTP）可被远程管理的内容。gPTP 是精确时间协议（PTP）的一个配置档（profile），用于在时间敏感网络（TSN）桥接局域网中同步时钟。本修正案新增了一套 YANG 数据模型——YANG（Yet Another Next Generation）是 IETF 在 RFC 7950 中定义的数据建模语言——使网络管理者能够通过标准协议读写某个 PTP 实例的配置。我们先看唯一的一致性挂钩点（第 5 章），再用大部分篇幅讲数据模型本身（第 17 章），最后讲把它接入标准体系的三个附录（A、F、H）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5.4 lists the requirements and options a PTP Instance (a logical clock node) must satisfy. The amendment inserts exactly one new option, item k) 4) inside 5.4.2: if YANG is supported together with a remote management protocol, then the device must support the Clause 17 YANG data model. This is the conditional thread that the whole amendment hangs on — YANG support is optional, but once you claim it, you must implement the model as specified.",
+      "zh": "第 5.4 章列出 PTP 实例（一个逻辑时钟节点）必须满足的要求与可选项。本修正案恰好新增一个可选项，即 5.4.2 中的第 k) 4) 项：如果设备在支持远程管理协议的同时支持 YANG，则必须支持第 17 章的 YANG 数据模型。这就是整个修正案所依赖的条件主线——YANG 支持是可选的，但一旦声明支持，就必须按规范实现该模型。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: Clause 17 does not redefine gPTP. It exposes the Clause 14 information model (the abstract list of readable/writable data) through a concrete YANG schema, so tools like NETCONF (Network Configuration Protocol, RFC 6241) and RESTCONF (RFC 8040) can configure clocks the same way they configure switches and routers.",
+      "zh": "理解要点：第 17 章并不重新定义 gPTP，而是把第 14 章的信息模型（可读/可写数据的抽象清单）通过一套具体的 YANG 模式（schema）暴露出来，使 NETCONF（网络配置协议，RFC 6241）和 RESTCONF（RFC 8040）等工具能够像配置交换机、路由器一样配置时钟。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 17.1 gives the framework. A YANG module organizes management data and maps it to a wire encoding such as XML or JSON, so a client (the manager) and server (the PTP Instance) agree on meaning. Two ideas anchor the hierarchy: a Uniform Resource Name (URN) namespace per IEEE Std 802d-2017, and a tree of YANG containers and leaves. The model is derived from the Clause 14 information model — each Clause 14 data set becomes a YANG container, and each member becomes a YANG leaf. Crucially (17.1.1), the 802.1AS module is built on top of IEEE Std 1588's model: it imports the ieee1588-ptp-tt module whole and augments it, rather than copying it.",
+      "zh": "第 17.1 章给出框架。一个 YANG 模块负责组织管理数据并将其映射到 XML 或 JSON 等线上编码，从而让客户端（管理者）与服务器（PTP 实例）对含义达成一致。层级结构基于两点：依据 IEEE Std 802d-2017 的统一资源名称（URN）命名空间，以及由 YANG 容器（container）与叶子（leaf）构成的树。该模型派生自第 14 章的信息模型——第 14 章的每个数据集成为一个 YANG 容器，每个成员成为一个 YANG 叶子。关键之处在于（17.1.1）：802.1AS 模块构建在 IEEE Std 1588 模型之上，它整体导入 ieee1588-ptp-tt 模块并对其进行增补（augment），而不是复制它。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 17.2 presents the model visually using a UML-like (Unified Modeling Language) representation across Figures 17-1 to 17-4. Figure 17-1 is the big picture: a top-level instance list of PTP Instances, each holding data sets; under each instance a port list of PTP Ports; and a common-services branch including the Common Mean Link Delay Service (cmlds), which measures link delay once and shares it across PTP domains. A clever convention: boxes drawn white are data imported from IEEE Std 1588, while gray boxes are the members unique to 802.1AS and added by augmentation. So at a glance you can see what gPTP borrows versus what it adds.",
+      "zh": "第 17.2 章用类 UML（统一建模语言）的方式，在图 17-1 至图 17-4 中可视化展示该模型。图 17-1 是全局视图：顶层是 PTP 实例列表，每个实例持有若干数据集；每个实例下是 PTP 端口列表；还有一个公共服务（common-services）分支，其中包含公共平均链路时延服务（cmlds）——它只测量一次链路时延，并在多个 PTP 域间共享。一个巧妙约定：白底方框是从 IEEE Std 1588 导入的数据，灰底方框是 802.1AS 独有、通过增补添加的成员。因此一眼就能看出 gPTP 借用了什么、又新增了什么。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  R[ieee802-dot1as-gptp module] -->|imports| B[ieee1588-ptp-tt 1588 base]\n  R --> I[instances: PTP Instances]\n  I --> DS[per-instance data sets: default-ds, current-ds, parent-ds]\n  I --> P[ports: PTP Ports]\n  P --> PDS[port-ds + port-statistics-ds]\n  R --> CS[common-services]\n  CS --> CM[cmlds: shared link-delay service]",
+      "zh": "flowchart TD\n  R[ieee802-dot1as-gptp 模块] -->|导入| B[ieee1588-ptp-tt 1588 基础]\n  R --> I[instances: PTP 实例]\n  I --> DS[实例级数据集: default-ds, current-ds, parent-ds]\n  I --> P[ports: PTP 端口]\n  P --> PDS[port-ds + port-statistics-ds]\n  R --> CS[common-services 公共服务]\n  CS --> CM[cmlds: 共享链路时延服务]"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 17.3 names the building blocks. Table 17-1 lists three YANG modules: ietf-yang-types (common data types, RFC 6991); ieee1588-ptp-tt (the IEEE Std 1588e foundation tree that 802.1AS imports); and ieee802-dot1as-gptp (this standard's module, which uses YANG 'augment' statements to add the 802.1AS-specific members from Clause 14). A useful precedence rule: if the YANG 'description' text ever disagrees with another part of the standard, the definitions outside Clause 17 win.",
+      "zh": "第 17.3 章列出构建块。表 17-1 列出三个 YANG 模块：ietf-yang-types（通用数据类型，RFC 6991）；ieee1588-ptp-tt（802.1AS 所导入的 IEEE Std 1588e 基础树）；以及 ieee802-dot1as-gptp（本标准的模块，使用 YANG 'augment' 语句把第 14 章中 802.1AS 独有的成员添加进来）。一条有用的优先级规则：若 YANG 的 'description' 文本与标准其他部分发生冲突，以第 17 章之外的定义为准。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 17.4 is security considerations. Because the model is accessed over NETCONF and RESTCONF, it relies on those protocols' secure transports — Secure Shell (SSH, RFC 6242) and Transport Layer Security (TLS, RFC 7589) — and on the Network Configuration Access Control Model (NACM, RFC 8341) to limit who may read or write. The clause flags the writable data sets (default-ds, path-trace-ds, port-ds, and so on) as sensitive: a bad edit-config write can degrade accuracy, lose lock on a clock, or even break a whole synchronization network. The standard sets the schema but leaves credential storage and validation to the implementor.",
+      "zh": "第 17.4 章是安全考量。由于该模型通过 NETCONF 与 RESTCONF 访问，它依赖这些协议的安全传输——安全外壳（SSH，RFC 6242）与传输层安全（TLS，RFC 7589）——以及网络配置访问控制模型（NACM，RFC 8341）来限制读写权限。本章把可写数据集（default-ds、path-trace-ds、port-ds 等）标记为敏感：一次错误的 edit-config 写入可能降低精度、使某个时钟失锁，甚至破坏整个同步网络。标准只规定模式，凭证的存储与校验留给实现者。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"55\" width=\"110\" height=\"40\" rx=\"4\"/><text x=\"65\" y=\"79\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Manager (client)</text><rect x=\"400\" y=\"55\" width=\"110\" height=\"40\" rx=\"4\"/><text x=\"455\" y=\"79\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">PTP Instance (server)</text><line x1=\"120\" y1=\"75\" x2=\"400\" y2=\"75\"/><polygon points=\"400,75 390,70 390,80\" fill=\"currentColor\" stroke=\"none\"/><text x=\"260\" y=\"50\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">NETCONF / RESTCONF</text><text x=\"260\" y=\"95\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">over SSH / TLS, gated by NACM</text><text x=\"260\" y=\"125\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">YANG model: ieee802-dot1as-gptp</text></svg>",
+      "caption": {
+        "en": "Clause 17.4 in one picture: the YANG model is the shared schema; secure transport (SSH/TLS) and access control (NACM) protect the writable data sets.",
+        "zh": "一图看懂第 17.4 章：YANG 模型是共享模式；安全传输（SSH/TLS）与访问控制（NACM）共同保护可写数据集。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 17.5 gives a schema tree — a compact text outline of the module using the YANG Tree Diagrams notation (RFC 8340), where '+--rw' marks a configurable (read-write) node and '+--ro' marks a read-only one. Subclause 17.5.1 is the tree for ieee802-dot1as-gptp.yang: it shows each 'augment' onto the 1588 base, for example adding gm-capable and time-source to default-ds, or the large port-ds augment with mean-link-delay-thresh, the log-interval controls, and as-capable. Clause 17.6 then provides the normative YANG module text itself, with 17.6.1 being the actual module ieee802-dot1as-gptp.yang (yang-version 1.1, namespace urn:ieee:std:802.1AS:yang:..., importing ietf-yang-types). The standard grants a copyright release so implementors may freely reproduce the module.",
+      "zh": "第 17.5 章给出一个模式树——用 YANG 树图记法（RFC 8340）写成的模块精简文本提纲，其中 '+--rw' 标记可配置（读写）节点，'+--ro' 标记只读节点。第 17.5.1 小节是 ieee802-dot1as-gptp.yang 的树：它展示对 1588 基础树的每一处 'augment'，例如往 default-ds 添加 gm-capable 与 time-source，或往 port-ds 添加大量节点如 mean-link-delay-thresh、各类 log 周期控制项以及 as-capable。第 17.6 章随后给出规范性的 YANG 模块原文，17.6.1 即实际的模块 ieee802-dot1as-gptp.yang（yang-version 1.1，命名空间 urn:ieee:std:802.1AS:yang:...，导入 ietf-yang-types）。标准授予版权豁免，实现者可自由复制该模块。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Read-write vs read-only at a glance: things you set (intervals, thresholds, enables) are '+--rw'; things the clock reports (counters, measured ratios, lock state) are '+--ro'. That split is exactly why 17.4 worries only about writable nodes — they are the ones that can change behavior.",
+      "zh": "快速区分读写与只读：你设置的项（周期、阈值、使能开关）是 '+--rw'；时钟上报的项（计数器、测得的速率比、锁定状态）是 '+--ro'。正因如此，17.4 只担心可写节点——它们才是能改变行为的那些。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause this lesson teaches, by number",
+        "zh": "覆盖地图——本课所讲的每个条款（按编号）"
+      },
+      "en": "Clause 5 (Conformance): 5.4 PTP Instance requirements and options; 5.4.2 PTP Instance options inserts item k) 4) — if YANG is supported with a remote management protocol, support the Clause 17 model (p.17). Clause 17 (YANG data model): 17.1 YANG framework and 17.1.1 Relationship to the IEEE Std 1588 data model — import-and-augment ieee1588-ptp-tt (p.19-20); 17.2 IEEE 802.1AS YANG data model — UML-like Figures 17-1..17-4, white = imported from 1588, gray = 802.1AS-specific (p.20-23); 17.3 Structure — Table 17-1 lists ietf-yang-types, ieee1588-ptp-tt, ieee802-dot1as-gptp, plus the precedence rule (p.24-25); 17.4 Security considerations — NETCONF/RESTCONF over SSH/TLS, NACM, sensitive writable data sets (p.25); 17.5 schema tree definitions with 17.5.1 Tree diagram for ieee802-dot1as-gptp.yang using RFC 8340 symbols (p.25-30); 17.6 YANG module with 17.6.1 Module ieee802-dot1as-gptp.yang and its copyright release (p.30). Annex A (normative) PICS proforma: A.19 Remote management gains row RMGT-4 — is the Clause 17 YANG model supported? (status RMGT:O, references item k) 4) of 5.4.2 and Clause 17) (p.77). Annex F (informative) PTP profile: F.4 PTP options item c) updated so the management mechanism is now Clause 14, Clause 15, and Clause 17 (p.78). Annex H (informative) Bibliography: adds entries [B13a]-[B13g] (NETCONF RFC 6241, SSH RFC 6242, NACM RFC 8341, NETCONF-over-TLS RFC 7589, RESTCONF RFC 8040, YANG Tree Diagrams RFC 8340, PTP YANG RFC 8575) and [B24a] (OMG UML 2.5) (p.79).",
+      "zh": "第 5 章（一致性）：5.4 PTP 实例的要求与可选项；5.4.2 PTP 实例可选项插入第 k) 4) 项——若在支持远程管理协议的同时支持 YANG，则须支持第 17 章模型（第 17 页）。第 17 章（YANG 数据模型）：17.1 YANG 框架与 17.1.1 与 IEEE Std 1588 数据模型的关系——导入并增补 ieee1588-ptp-tt（第 19-20 页）；17.2 IEEE 802.1AS YANG 数据模型——类 UML 的图 17-1 至 17-4，白底=从 1588 导入，灰底=802.1AS 独有（第 20-23 页）；17.3 结构——表 17-1 列出 ietf-yang-types、ieee1588-ptp-tt、ieee802-dot1as-gptp，并给出优先级规则（第 24-25 页）；17.4 安全考量——经 SSH/TLS 的 NETCONF/RESTCONF、NACM、敏感的可写数据集（第 25 页）；17.5 模式树定义，含 17.5.1 ieee802-dot1as-gptp.yang 的树图（采用 RFC 8340 符号）（第 25-30 页）；17.6 YANG 模块，含 17.6.1 模块 ieee802-dot1as-gptp.yang 及其版权豁免（第 30 页）。附录 A（规范性）PICS 提案表：A.19 远程管理新增 RMGT-4 行——是否支持第 17 章 YANG 模型？（状态 RMGT:O，引用 5.4.2 第 k) 4) 项与第 17 章）（第 77 页）。附录 F（资料性）PTP 配置档：F.4 PTP 可选项的第 c) 项更新为——管理机制现为第 14、15、17 章（第 78 页）。附录 H（资料性）参考文献：新增条目 [B13a]-[B13g]（NETCONF RFC 6241、SSH RFC 6242、NACM RFC 8341、NETCONF-over-TLS RFC 7589、RESTCONF RFC 8040、YANG 树图 RFC 8340、PTP YANG RFC 8575）与 [B24a]（OMG UML 2.5）（第 79 页）。",
+      "cite": {
+        "pdf_id": "8021ASdn-2024",
+        "pages": [
+          17,
+          19,
+          20,
+          24,
+          25,
+          30,
+          77,
+          78,
+          79
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The three annexes close the loop. Annex A is the normative Protocol Implementation Conformance Statement (PICS) proforma — the checklist a vendor fills in to declare what it implements; the new row RMGT-4 lets a vendor tick 'Yes/No' for Clause 17 YANG support (an optional item, RMGT:O). Annex F (informative) records the PTP profile this standard defines, updating F.4 c) to say the management mechanism now spans Clause 14, Clause 15 (the MIB — Management Information Base), and Clause 17. Annex H (informative) is the bibliography, adding the IETF RFCs and OMG UML reference that the new clause cites. Together they show how one optional feature is threaded consistently through conformance, profile, and references.",
+      "zh": "三个附录使整条链路闭合。附录 A 是规范性的协议实现一致性声明（PICS）提案表——供应商据此勾选自己实现了哪些功能；新增的 RMGT-4 行让供应商对第 17 章 YANG 支持勾选“是/否”（这是可选项，RMGT:O）。附录 F（资料性）记录本标准定义的 PTP 配置档，并更新 F.4 c)，说明管理机制现在涵盖第 14 章、第 15 章（MIB——管理信息库）与第 17 章。附录 H（资料性）是参考文献，新增了新条款所引用的 IETF RFC 与 OMG UML 文献。三者共同展示了一个可选功能如何被一致地贯穿到一致性、配置档与参考文献之中。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021ASdn-2024",
+      "pages": [
+        17
+      ],
+      "note": "5.4.2 inserts item k) 4): YANG-with-remote-management requires Clause 17 model"
+    },
+    {
+      "pdf_id": "8021ASdn-2024",
+      "pages": [
+        19,
+        20
+      ],
+      "note": "17.1 YANG framework and 17.1.1 import-and-augment relationship to IEEE Std 1588"
+    },
+    {
+      "pdf_id": "8021ASdn-2024",
+      "pages": [
+        20,
+        21,
+        22,
+        23
+      ],
+      "note": "17.2 UML-like Figures 17-1..17-4; white=1588, gray=802.1AS"
+    },
+    {
+      "pdf_id": "8021ASdn-2024",
+      "pages": [
+        24,
+        25
+      ],
+      "note": "17.3 Table 17-1 modules and precedence; 17.4 security considerations"
+    },
+    {
+      "pdf_id": "8021ASdn-2024",
+      "pages": [
+        25,
+        26,
+        27,
+        28,
+        29,
+        30
+      ],
+      "note": "17.5 / 17.5.1 schema tree (RFC 8340 notation); 17.6 / 17.6.1 module text"
+    },
+    {
+      "pdf_id": "8021ASdn-2024",
+      "pages": [
+        77,
+        78,
+        79
+      ],
+      "note": "Annex A RMGT-4 PICS row; Annex F F.4 c) update; Annex H new bibliography entries"
+    }
+  ],
+  "covers": [
+    "8021ASdn-2024:5.4.2",
+    "8021ASdn-2024:17.1.1",
+    "8021ASdn-2024:17.2",
+    "8021ASdn-2024:17.3",
+    "8021ASdn-2024:17.4",
+    "8021ASdn-2024:17.5.1",
+    "8021ASdn-2024:17.6.1",
+    "8021ASdn-2024:Annex_A",
+    "8021ASdn-2024:Annex_F",
+    "8021ASdn-2024:Annex_H"
+  ],
+  "track": "tsn"
+}

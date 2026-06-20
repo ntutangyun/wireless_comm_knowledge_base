@@ -1,0 +1,146 @@
+{
+  "id": "bridging-tsn-86",
+  "title": {
+    "en": "Inside the LRP Portal: Hello Handshake, Applicant, and Registrar",
+    "zh": "深入 LRP Portal：Hello 握手、Applicant 与 Registrar"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1CS-2020 defines the Link-local Registration Protocol (LRP) — a way for two neighboring devices to keep a copy of each other's application database in sync over a single link. Clause 8 specifies the **Portal**: the bundle of state machines that runs on each end of that link. Clause 8.1 (Introduction) tells you the Portal has three jobs, each handled by its own group of subclauses: (a) keep a neighbor association alive with Hello messages (8.2); (b) run the **Applicant**, which sends your own records and listens for acknowledgements (8.3); and (c) run the **Registrar**, which receives the neighbor's records and replies with lists (8.4). A unit of protocol data here is an LRPDU (LRP Data Unit). This lesson walks through all three pieces so you can read the standard fluently.",
+      "zh": "IEEE Std 802.1CS-2020 定义了链路本地注册协议（LRP，Link-local Registration Protocol）——它让一条链路上相邻的两台设备彼此同步对方的应用数据库副本。第 8 章规定了 **Portal**：运行在链路两端、由一组状态机构成的实体。8.1（引言）说明 Portal 有三项任务，分别由各自的子条款负责：(a) 用 Hello 消息维持与邻居的关联（8.2）；(b) 运行 **Applicant**，负责发送本端记录并监听确认（8.3）；(c) 运行 **Registrar**，负责接收邻居的记录并回复列表（8.4）。这里的协议数据单元称为 LRPDU（LRP 数据单元）。本课逐一讲解这三部分，帮助你流畅阅读标准。"
+    },
+    {
+      "type": "prose",
+      "en": "**Portal association maintenance (8.2.1).** Two Portals form an association by exchanging **Hello LRPDUs**. The clever part is a *three-way handshake* that loops the application instance into the decision. A Portal can be created two ways: either explicit neighbor information is configured in advance, so the Portal starts sending Hellos immediately; or only the local target port is known, and the Portal is created only after the first Hello arrives from a neighbor. When that first Hello arrives, the Portal raises a *First Hello indication* to the application, which answers with an *Associate Portal request* saying yes or no. The Applicant and Registrar are allowed to run only after the connection reaches the state `hsConnected`. Every Portal in a system is uniquely identified by the 5-tuple {pamAppId, pamMyChassisId, pamMyPortId, pamNeighborChassisId, pamNeighborPortId}.",
+      "zh": "**Portal 关联维护（8.2.1）。** 两个 Portal 通过交换 **Hello LRPDU** 建立关联。其精巧之处在于一次*三次握手*，把应用实例也纳入决策。Portal 有两种创建方式：要么事先配置了明确的邻居信息，于是 Portal 立即开始发送 Hello；要么只知道本地目标端口，Portal 仅在收到邻居首个 Hello 后才创建。当首个 Hello 到达时，Portal 向应用发出 *First Hello indication*，应用以 *Associate Portal request* 回应同意或拒绝。只有当连接到达 `hsConnected` 状态后，Applicant 与 Registrar 才允许运行。系统中每个 Portal 由五元组 {pamAppId, pamMyChassisId, pamMyPortId, pamNeighborChassisId, pamNeighborPortId} 唯一标识。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant A as System A\n  participant B as System B\n  A->>B: Hello (hsLooking)\n  B->>B: First Hello -> app approves\n  B->>A: Hello (hsConnecting)\n  A->>A: app approves\n  A->>B: Hello (hsConnecting)\n  B->>A: Hello (hsConnected)\n  A->>B: Hello (hsConnected)\n  Note over A,B: Now records can flow",
+      "zh": "sequenceDiagram\n  participant A as 系统 A\n  participant B as 系统 B\n  A->>B: Hello (hsLooking)\n  B->>B: 首个 Hello -> 应用批准\n  B->>A: Hello (hsConnecting)\n  A->>A: 应用批准\n  A->>B: Hello (hsConnecting)\n  B->>A: Hello (hsConnected)\n  A->>B: Hello (hsConnected)\n  Note over A,B: 此时记录可以流动"
+    },
+    {
+      "type": "prose",
+      "en": "**The Hello state machine variables (8.2.2).** Every variable here is prefixed `pam` (Portal Association Maintenance). They split into three groups. *Identity fields* mirror what goes in the Hello: `pamAppId` (the AppId), `pamMyChassisId`/`pamMyPortId` (who I am), and `pamNeighborChassisId`/`pamNeighborPortId` (who I expect). *Portal-number fields* track the neighbor's identity for later messages: `pamMyPortalNumber` (a 32-bit number unique per AppId+chassis), `pamNeighborPortalNumber` and its validity flag `pamNeighborPortalNumberValid`. *Status and control fields* drive the handshake: `pamMyHelloStatus` carries one of three states (hsLooking, hsConnecting, hsConnected); `pamLocalOverflow`/`pamNeighborOverflow` flag database overflow; `pamNeighborAcknowledged` is the AND of every record's acknowledgement; `pamHelloTime` sets the keep-alive period (zero means send one final Hello then stop); and a family of booleans and timers — `pamNeedHello`, `pamResetReceiveHello`, `pamHelloSendTimer`, `pamHelloReceiveTimer`, `pamHelloReceived`, `pamAssociationYes`/`pamAssociationNo`, `pamLastReceivedStatus`, `pamKill`, and `pamMyAppInfo` — sequence the sending and receiving logic.",
+      "zh": "**Hello 状态机变量（8.2.2）。** 这里每个变量都以 `pam`（Portal Association Maintenance，Portal 关联维护）为前缀，可分三组。*身份字段* 对应 Hello 中携带的内容：`pamAppId`（AppId）、`pamMyChassisId`/`pamMyPortId`（我是谁）、`pamNeighborChassisId`/`pamNeighborPortId`（我期待的对端）。*Portal 编号字段* 用于后续消息中识别邻居：`pamMyPortalNumber`（在同一 AppId 与机箱下唯一的 32 位编号）、`pamNeighborPortalNumber` 及其有效标志 `pamNeighborPortalNumberValid`。*状态与控制字段* 驱动握手：`pamMyHelloStatus` 取三种状态之一（hsLooking、hsConnecting、hsConnected）；`pamLocalOverflow`/`pamNeighborOverflow` 标记数据库溢出；`pamNeighborAcknowledged` 是所有记录确认的逻辑与；`pamHelloTime` 设定保活周期（为零表示发送最后一个 Hello 后停止）；还有一组布尔量与计时器——`pamNeedHello`、`pamResetReceiveHello`、`pamHelloSendTimer`、`pamHelloReceiveTimer`、`pamHelloReceived`、`pamAssociationYes`/`pamAssociationNo`、`pamLastReceivedStatus`、`pamKill` 与 `pamMyAppInfo`——共同编排收发逻辑。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why a Portal Number at all? The receiver picks which Portal handles an incoming Hello using the Neighbor Chassis/Port IDs, but uses the neighbor's My Portal Number to route every *subsequent* LRPDU. So if a neighbor reboots and its Portal Number changes, the receiving side notices the new number rather than silently mixing old and new traffic — the association is rebuilt cleanly.",
+      "zh": "为什么需要 Portal Number？接收方依据 Neighbor Chassis/Port ID 来选择由哪个 Portal 处理收到的 Hello，但用邻居的 My Portal Number 来路由*后续*的每个 LRPDU。因此，当邻居重启、其 Portal Number 改变时，接收侧会发现这个新编号，而不会把新旧流量悄悄混在一起——关联得以干净地重建。"
+    },
+    {
+      "type": "prose",
+      "en": "**Hello routines and state machines (8.2.3–8.2.5).** The routines are the helper functions the state machines call. `pamAssociatePortal` records the application's yes/no answer. `pamResetNeighbor` clears neighbor identity so an exploratory Hello can re-discover a partner (used on ECP, the Edge Control Protocol transport). `pamSendHello` builds a Hello by copying each pam variable into its matching field/TLV (Type-Length-Value element). `pamReceiveHello` does the reverse on receipt: it captures the neighbor's Portal Number, reacts to any overflow change, then flags `pamHelloReceived` so the Receive Hello machine can run. The **Send Hello state machines (8.2.4)** sit in SH_WAITING, firing a Hello whenever the send timer expires or `pamNeedHello` is set, with side branches that react to overflow. The **Receive Hello state machine (8.2.5)** walks RH_LOOKING → RH_CONNECTING → RH_CONNECTED, driving `pamMyHelloStatus` through the handshake, and has an RH_KILL path triggered by `pamKill`.",
+      "zh": "**Hello 例程与状态机（8.2.3–8.2.5）。** 例程是状态机调用的辅助函数。`pamAssociatePortal` 记录应用的同意/拒绝。`pamResetNeighbor` 清除邻居身份，使探测性 Hello 能重新发现伙伴（用于 ECP，即 Edge Control Protocol 边缘控制协议传输）。`pamSendHello` 通过把每个 pam 变量复制到对应字段/TLV（Type-Length-Value 类型-长度-值单元）来构造 Hello。`pamReceiveHello` 在收包时做相反的事：记录邻居的 Portal Number，对溢出变化作出反应，再置位 `pamHelloReceived` 以触发 Receive Hello 状态机。**Send Hello 状态机（8.2.4）** 停留在 SH_WAITING，每当发送计时器到期或 `pamNeedHello` 被置位时发出一个 Hello，并有响应溢出的分支。**Receive Hello 状态机（8.2.5）** 经过 RH_LOOKING → RH_CONNECTING → RH_CONNECTED，推动 `pamMyHelloStatus` 完成握手，并有一条由 `pamKill` 触发的 RH_KILL 路径。"
+    },
+    {
+      "type": "prose",
+      "en": "**The Applicant (8.3.1).** Once a Portal is connected, the Applicant is the side that *publishes* records. There is one Applicant state machine per record, plus a set per Portal; they are created and destroyed as the application adds and removes records. Every Applicant checks `pamMyHelloStatus` so it transmits only when the Portal is properly associated. The companion interface that the application uses to drive this is defined in Clause 10.3.",
+      "zh": "**Applicant（8.3.1）。** Portal 一旦连接，Applicant 就是负责*发布*记录的一方。每条记录对应一个 Applicant 状态机，每个 Portal 另有一组；它们随应用添加和删除记录而创建与销毁。每个 Applicant 都会检查 `pamMyHelloStatus`，仅在 Portal 正确关联时才发送。应用用于驱动它的配套接口定义在第 10.3 条。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"5\" y=\"25\" width=\"95\" height=\"40\"/><rect x=\"100\" y=\"25\" width=\"110\" height=\"40\"/><rect x=\"210\" y=\"25\" width=\"85\" height=\"40\"/><rect x=\"295\" y=\"25\" width=\"95\" height=\"40\"/><rect x=\"390\" y=\"25\" width=\"125\" height=\"40\"/><text x=\"52\" y=\"50\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Record number</text><text x=\"155\" y=\"50\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Sequence number</text><text x=\"252\" y=\"50\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Checksum</text><text x=\"342\" y=\"50\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Data length</text><text x=\"452\" y=\"50\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Application data</text><text x=\"10\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">A record carried in a Record LRPDU</text></svg>",
+      "caption": {
+        "en": "An Applicant record (8.3.2): record number, sequence number, checksum, data length, and the application data — exactly the five fields actSendRecord copies into a Record LRPDU.",
+        "zh": "一条 Applicant 记录（8.3.2）：记录编号、序列号、校验和、数据长度与应用数据——正是 actSendRecord 复制进 Record LRPDU 的五个字段。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "**Applicant variables, routines, and machine (8.3.2–8.3.4).** Each record's variables are prefixed `act`. `actRecordNumber` (a 32-bit ID) and `actSequenceNumber` (bumped on every change) identify the record and its version; `actChecksum`, `actDataLength`, and `actData` hold the payload (a zero checksum with zero length means a deleted/empty record); and three booleans — `actRecordChanged`, `actResendRecord`, `actAcknowledged` — track whether the record needs (re)sending and whether the neighbor has acknowledged it. The routines: `actWriteRecord` is invoked by the application's Write record request, creating a machine if needed and marking the record changed; `actSendRecord` builds a Record LRPDU from the five fields; `actReceivePartialList` processes each acknowledgement header — discarding if still hsLooking, ignoring acks of already-deleted records, resending when the neighbor knows an older version, and clearing `actAcknowledged`/terminating on a clean ack; `actReceiveCompleteList` interprets a Complete List as an ack for every record number in its range (filling gaps with zero-checksum headers); and `actTerminateStateMachine` destroys a record's machine. The **Applicant state machine (8.3.4)** loops through ACT_RECORD_CHANGE → ACT_SEND_RECORD whenever a record changes and the Portal is hsConnected, with a resend branch.",
+      "zh": "**Applicant 变量、例程与状态机（8.3.2–8.3.4）。** 每条记录的变量以 `act` 为前缀。`actRecordNumber`（32 位标识）和 `actSequenceNumber`（每次变更递增）标识记录及其版本；`actChecksum`、`actDataLength`、`actData` 保存载荷（校验和与长度均为零表示已删除/空记录）；三个布尔量——`actRecordChanged`、`actResendRecord`、`actAcknowledged`——跟踪记录是否需要（重）发以及邻居是否已确认。例程方面：`actWriteRecord` 由应用的 Write record request 触发，必要时创建状态机并标记记录已变更；`actSendRecord` 用五个字段构造 Record LRPDU；`actReceivePartialList` 处理每个确认头——若仍处于 hsLooking 则丢弃，忽略对已删除记录的确认，当邻居持有旧版本时重发，收到正确确认则清除 `actAcknowledged` 或终止；`actReceiveCompleteList` 把 Complete List 视为对其范围内每个记录编号的确认（空缺处补零校验和头）；`actTerminateStateMachine` 销毁某记录的状态机。**Applicant 状态机（8.3.4）** 在记录变更且 Portal 处于 hsConnected 时循环经过 ACT_RECORD_CHANGE → ACT_SEND_RECORD，并带有重发分支。"
+    },
+    {
+      "type": "prose",
+      "en": "**The Registrar (8.4.1).** The Registrar is the mirror image: it *receives* the neighbor's records and confirms them. There is one Partial list state machine per Portal, with per-Portal variables (8.4.2) and a per-record array (8.4.3), plus one Complete list state machine (8.4.8). The per-Portal variable `ptlNeedPartialList` (8.4.2.1) requests sending acknowledgement lists. The per-record variables prefixed `reg` mirror the Applicant's: `regRecordNumber`, `regSequenceNumber` and `regChecksum` are copied from the received Record LRPDU, and `regSendAck` flags that this record's header must go out in a Partial List LRPDU.",
+      "zh": "**Registrar（8.4.1）。** Registrar 是镜像角色：它*接收*邻居的记录并加以确认。每个 Portal 有一个 Partial list 状态机，带有 Portal 级变量（8.4.2）和按记录的数组（8.4.3），另有一个 Complete list 状态机（8.4.8）。Portal 级变量 `ptlNeedPartialList`（8.4.2.1）请求发送确认列表。以 `reg` 为前缀的按记录变量与 Applicant 侧对应：`regRecordNumber`、`regSequenceNumber` 与 `regChecksum` 从收到的 Record LRPDU 复制而来，`regSendAck` 标记该记录的头须放入 Partial List LRPDU 发出。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  R[Record LRPDU arrives] --> W[regReceiveWriteRecord]\n  W -->|bad checksum| D[discard, count error]\n  W -->|valid + newer| U[update reg vars, notify app]\n  U --> A[set regSendAck + ptlNeedPartialList]\n  A --> P[Partial list machine: regSendPartialList]\n  P --> ACK[Partial List LRPDU back to neighbor]\n  C[Delete or periodic timer] --> CL[Complete list machine: cplSendCompleteList]",
+      "zh": "flowchart TD\n  R[Record LRPDU 到达] --> W[regReceiveWriteRecord]\n  W -->|校验和错误| D[丢弃并计错误]\n  W -->|有效且更新| U[更新 reg 变量, 通知应用]\n  U --> A[置位 regSendAck + ptlNeedPartialList]\n  A --> P[Partial list 状态机: regSendPartialList]\n  P --> ACK[Partial List LRPDU 回送邻居]\n  C[删除或周期计时器] --> CL[Complete list 状态机: cplSendCompleteList]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every Clause 8 unit and where it lives",
+        "zh": "覆盖地图——第 8 章每个单元及其归属"
+      },
+      "en": "**8.1** Introduction lists the Portal's three roles (pp.49). **8.2 Portal association maintenance:** 8.2.1 overview of the three-way Hello handshake and the unique 5-tuple (pp.49–50); 8.2.2 the pam* variables (8.2.2.1–8.2.2.23): appId, identity TLVs, portal numbers, hello status, overflow flags, the acknowledged AND, timers, and control booleans (pp.50–53); 8.2.3 routines pamAssociatePortal, pamResetNeighbor, pamSendHello, pamReceiveHello (8.2.3.1–8.2.3.4, pp.53–54); 8.2.4 Send Hello state machines and 8.2.5 Receive Hello state machine with the RH_KILL note (pp.54–56). **8.3 Applicant:** 8.3.1 overview, one machine per record (pp.55); 8.3.2 act* variables (8.3.2.1–8.3.2.8): record/sequence numbers, checksum, data length/data, and the changed/resend/acknowledged booleans (pp.55–57); 8.3.3 routines actWriteRecord, actSendRecord, actReceivePartialList, actReceiveCompleteList, actTerminateStateMachine (8.3.3.1–8.3.3.5, pp.57–59); 8.3.4 Applicant state machine, Figure 8-5 (pp.59). **8.4 Registrar:** 8.4.1 overview, Partial + Complete list machines (pp.59–60); 8.4.2 per-Portal variable ptlNeedPartialList (8.4.2.1, pp.60); 8.4.3 per-record reg* variables: regRecordNumber, regSequenceNumber, regChecksum, regSendAck (8.4.3.1–8.4.3.4, pp.60); 8.4.4 routines regReceiveWriteRecord, regSendPartialList, regDeleteRecord (8.4.4.1–8.4.4.3, pp.60–61); 8.4.5 Partial list state machine, Figure 8-6 (pp.61); 8.4.6 Complete list variables cplNeedCompleteList, cplCompleteListTimer, cplCompleteListTimerReset (8.4.6.1–8.4.6.3, pp.61–62); 8.4.7 routines cplResetCplTimer, cplSendCompleteList (8.4.7.1–8.4.7.2, pp.62); 8.4.8 Complete list state machine, Figure 8-7 (pp.62).",
+      "zh": "**8.1** 引言列出 Portal 的三项职责（第 49 页）。**8.2 Portal 关联维护：** 8.2.1 三次 Hello 握手与唯一五元组概述（第 49–50 页）；8.2.2 pam* 变量（8.2.2.1–8.2.2.23）：appId、身份 TLV、portal 编号、hello 状态、溢出标志、确认逻辑与、计时器与控制布尔量（第 50–53 页）；8.2.3 例程 pamAssociatePortal、pamResetNeighbor、pamSendHello、pamReceiveHello（8.2.3.1–8.2.3.4，第 53–54 页）；8.2.4 Send Hello 状态机与 8.2.5 Receive Hello 状态机及 RH_KILL 注记（第 54–56 页）。**8.3 Applicant：** 8.3.1 概述，每条记录一个状态机（第 55 页）；8.3.2 act* 变量（8.3.2.1–8.3.2.8）：记录/序列号、校验和、数据长度/数据，以及 changed/resend/acknowledged 布尔量（第 55–57 页）；8.3.3 例程 actWriteRecord、actSendRecord、actReceivePartialList、actReceiveCompleteList、actTerminateStateMachine（8.3.3.1–8.3.3.5，第 57–59 页）；8.3.4 Applicant 状态机，图 8-5（第 59 页）。**8.4 Registrar：** 8.4.1 概述，Partial 与 Complete list 状态机（第 59–60 页）；8.4.2 Portal 级变量 ptlNeedPartialList（8.4.2.1，第 60 页）；8.4.3 按记录 reg* 变量：regRecordNumber、regSequenceNumber、regChecksum、regSendAck（8.4.3.1–8.4.3.4，第 60 页）；8.4.4 例程 regReceiveWriteRecord、regSendPartialList、regDeleteRecord（8.4.4.1–8.4.4.3，第 60–61 页）；8.4.5 Partial list 状态机，图 8-6（第 61 页）；8.4.6 Complete list 变量 cplNeedCompleteList、cplCompleteListTimer、cplCompleteListTimerReset（8.4.6.1–8.4.6.3，第 61–62 页）；8.4.7 例程 cplResetCplTimer、cplSendCompleteList（8.4.7.1–8.4.7.2，第 62 页）；8.4.8 Complete list 状态机，图 8-7（第 62 页）。",
+      "cite": {
+        "pdf_id": "8021CS-2020",
+        "pages": [
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "**Registrar routines and machines (8.4.4–8.4.8).** `regReceiveWriteRecord` runs for each received record: it discards while hsLooking, validates the checksum (a mismatch is counted in RecordErrors and dropped — no retransmit is requested since the transport is already reliable), creates a record state machine if new, updates `regSequenceNumber`/`regChecksum` and issues a *Record written indication* to the application only when the sequence number is higher, then sets `regSendAck` and `ptlNeedPartialList`. `regSendPartialList` packs every record with `regSendAck` set into Partial List LRPDU(s), clears the flags, and deletes any record whose checksum is now zero. `regDeleteRecord` removes a record on the application's Delete record request and sets `cplNeedCompleteList`. The **Partial list state machine (8.4.5)** simply fires `regSendPartialList` when needed and connected. The Complete list side uses `cplNeedCompleteList` (request), `cplCompleteListTimer` (periodic clock) and `cplCompleteListTimerReset` (its reset value); `cplResetCplTimer` reloads the timer with a randomized interval and `cplSendCompleteList` transmits the full database. The **Complete list state machine (8.4.8)** sends a complete list on demand or each time the timer expires, as long as the Portal stays hsConnected. Together these give LRP a self-healing sync: incremental Partial Lists for fast acknowledgement, periodic Complete Lists as a safety net.",
+      "zh": "**Registrar 例程与状态机（8.4.4–8.4.8）。** `regReceiveWriteRecord` 对每条收到的记录运行：处于 hsLooking 时丢弃，校验和（不匹配则计入 RecordErrors 并丢弃——因传输本已可靠，不请求重传），新记录则创建状态机，仅当序列号更高时才更新 `regSequenceNumber`/`regChecksum` 并向应用发出 *Record written indication*，随后置位 `regSendAck` 与 `ptlNeedPartialList`。`regSendPartialList` 把所有 `regSendAck` 已置位的记录打包进 Partial List LRPDU，清除标志，并删除校验和已为零的记录。`regDeleteRecord` 在应用发出 Delete record request 时删除记录并置位 `cplNeedCompleteList`。**Partial list 状态机（8.4.5）** 在需要且连接时直接调用 `regSendPartialList`。Complete list 侧使用 `cplNeedCompleteList`（请求）、`cplCompleteListTimer`（周期时钟）与 `cplCompleteListTimerReset`（其复位值）；`cplResetCplTimer` 以随机化间隔重载计时器，`cplSendCompleteList` 发送完整数据库。**Complete list 状态机（8.4.8）** 在 Portal 保持 hsConnected 期间，按需或每次计时器到期时发送完整列表。三者共同赋予 LRP 自愈式同步：用增量 Partial List 快速确认，用周期性 Complete List 作为兜底。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021CS-2020",
+      "pages": [
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62
+      ],
+      "note": "Clause 8 Portal: 8.1 Introduction; 8.2 Portal association maintenance (overview, pam* variables, routines, Send/Receive Hello state machines); 8.3 Applicant (overview, act* variables, routines, state machine); 8.4 Registrar (overview, per-Portal/per-record variables, routines, Partial/Complete list state machines)."
+    }
+  ],
+  "covers": [
+    "8021CS-2020:8.1",
+    "8021CS-2020:8.2.1",
+    "8021CS-2020:8.2.2",
+    "8021CS-2020:8.2.3",
+    "8021CS-2020:8.2.4",
+    "8021CS-2020:8.2.5",
+    "8021CS-2020:8.3.1",
+    "8021CS-2020:8.3.2",
+    "8021CS-2020:8.3.3",
+    "8021CS-2020:8.3.4",
+    "8021CS-2020:8.4.1",
+    "8021CS-2020:8.4.2",
+    "8021CS-2020:8.4.3",
+    "8021CS-2020:8.4.4",
+    "8021CS-2020:8.4.5",
+    "8021CS-2020:8.4.6",
+    "8021CS-2020:8.4.7",
+    "8021CS-2020:8.4.8"
+  ],
+  "track": "bridging-tsn"
+}

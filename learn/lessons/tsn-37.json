@@ -1,0 +1,147 @@
+{
+  "id": "tsn-37",
+  "title": {
+    "en": "FRER Gets a MIB: From Overview to SNMP-Managed Sequence Recovery",
+    "zh": "为 FRER 装上 MIB：从总览到可用 SNMP 管理的序列恢复"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1CB defines FRER — Frame Replication and Elimination for Reliability — the Time-Sensitive Networking (TSN) mechanism that sends each frame down two (or more) disjoint paths and then deletes the duplicates at the far end, so a single broken link never drops a packet. The base standard told a device *how* to do this. What it did not give you was a standard, machine-readable way to *configure and monitor* it remotely. The 802.1CBcv-2021 amendment fixes exactly that: it adds a UML (Unified Modeling Language) information model, a YANG data model, and a MIB (Management Information Base) module. This lesson walks the MIB and SMI (Structure of Management Information) half — the parts that let a Simple Network Management Protocol (SNMP) manager read and write FRER from across the network.",
+      "zh": "IEEE Std 802.1CB 定义了 FRER（帧复制与消除以提升可靠性，Frame Replication and Elimination for Reliability）——这是时间敏感网络（TSN，Time-Sensitive Networking）中的一种机制：把每一帧沿两条（或更多条）互不相交的路径同时发送，再在另一端删除重复帧，这样单条链路损坏也不会丢包。基础标准告诉设备“怎么做”，却没有给出一种标准化、机器可读的方式来远程“配置和监控”它。802.1CBcv-2021 修正案恰恰补上了这一点：它新增了一个 UML（统一建模语言，Unified Modeling Language）信息模型、一个 YANG 数据模型，以及一个 MIB（管理信息库，Management Information Base）模块。本课讲解其中的 MIB 与 SMI（管理信息结构，Structure of Management Information）部分——也就是让简单网络管理协议（SNMP，Simple Network Management Protocol）管理者能跨网络读写 FRER 的那些部件。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 1.6 (Introduction) is where the amendment states its purpose. The inserted text says plainly: this standard now also specifies a UML-based information model for the capabilities already in Clause 9 (Stream identification) and Clause 10 (FRER management), and provides both a YANG data model and a MIB module built on that model, so that configuration and status reporting can happen by standard means. One conceptual model, two concrete bindings (YANG and MIB) — that is the whole shape of the amendment.",
+      "zh": "第 1.6 条（引言，Introduction）说明了修正案的目的。插入的文字直白地写道：本标准现在还为第 9 条（流识别，Stream identification）和第 10 条（FRER 管理）中已有的能力，规定了一个基于 UML 的信息模型，并提供基于该模型构建的 YANG 数据模型和 MIB 模块，从而以标准化方式完成配置与状态上报。一个概念模型，两套具体绑定（YANG 与 MIB）——这就是整个修正案的骨架。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5 (Conformance) records what an implementation is *allowed* to claim. The amendment edits three optional-behavior lists. Clause 5.8 (Talker end system optional behaviors) and Clause 5.11 (Listener end system optional behaviors) each gain two new options: supporting the SMIv2 MIB modules of Clause 11, and/or supporting the YANG modules of Clause 12, for managing that role's functions. Clause 5.14 (Relay system optional behaviors) gains the same pair for relay (bridge) functions. The key word is *optional* — a device can be a perfectly conformant FRER node and still expose neither MIB nor YANG; remote manageability is something you opt into, not a requirement.",
+      "zh": "第 5 条（一致性，Conformance）记录了实现“被允许”声明哪些能力。修正案修改了三份可选行为清单。第 5.8 条（讲话者端系统可选行为，Talker end system optional behaviors）和第 5.11 条（听者端系统可选行为，Listener end system optional behaviors）各新增两个选项：支持第 11 条的 SMIv2 MIB 模块，和/或支持第 12 条的 YANG 模块，用以管理该角色的功能。第 5.14 条（中继系统可选行为，Relay system optional behaviors）为中继（网桥）功能新增了同样的一对选项。关键词是“可选”——一个设备可以是完全合规的 FRER 节点，却既不暴露 MIB 也不暴露 YANG；远程可管理性是你主动选用的，而非强制要求。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Talker, Listener, Relay are TSN's three roles. A Talker is the source end system that originates a stream; a Listener is the destination end system that consumes it; a Relay system is a bridge in between. FRER can replicate at the Talker or at any relay, and eliminate duplicates at a relay or the Listener — which is why each of the three roles gets its own conformance entry for MIB/YANG support.",
+      "zh": "讲话者（Talker）、听者（Listener）、中继（Relay）是 TSN 的三种角色。讲话者是发起数据流的源端系统；听者是消费数据流的目的端系统；中继系统则是夹在中间的网桥。FRER 既可以在讲话者也可以在任意中继处进行复制，并在中继或听者处消除重复帧——这正是这三种角色各自都获得独立的 MIB/YANG 支持一致性条目的原因。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7.4.1 (Sequence generation function) is where FRER stamps each frame of a stream with an increasing sequence number — the number the far end later uses to tell an original frame from its replica. The amendment touches subclause 7.4.1.3 (SequenceGenerationReset): this function is called on the BEGIN event *or* when the value True is written to the new frerSeqGenReset managed object (10.3.1.3). It zeroes GenSeqNum (the running sequence counter) and increments the frerCpsSeqGenResets counter. In other words, the amendment wires a manager-writable knob directly into the generation state machine so an operator can force the sequence counter back to zero on demand.",
+      "zh": "第 7.4.1 条（序列生成函数，Sequence generation function）是 FRER 为流中每一帧打上递增序列号的地方——这个号码供远端日后用来区分原始帧与它的副本。修正案改动了其下的 7.4.1.3 节（SequenceGenerationReset）：该函数在 BEGIN 事件发生时被调用，或者当向新增的 frerSeqGenReset 受管对象（10.3.1.3）写入 True 时被调用。它把 GenSeqNum（运行中的序列计数器）清零，并使 frerCpsSeqGenResets 计数器加一。换句话说，修正案把一个管理者可写的旋钮直接接进了生成状态机，让运维人员能按需把序列计数器强制归零。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.3 (Sequence generation table) is the managed-object table behind that knob, and Clause 10.3.1 (frerSeqGenEntry) is one row of it — the configuration of one sequence-generation instance. The amendment inserts subclause 10.3.1.3 (frerSeqGenReset): a Boolean object that triggers SequenceGenerationReset (7.4.1.3) when you write True, does nothing when you write False, and — importantly — always reads back as False. This last detail makes it a pure *action* object (write-to-trigger) rather than a stored setting; reading it never reveals a 'reset is armed' state because there is none.",
+      "zh": "第 10.3 条（序列生成表，Sequence generation table）是那个旋钮背后的受管对象表，而第 10.3.1 条（frerSeqGenEntry）是其中的一行——也就是某个序列生成实例的配置。修正案插入了 10.3.1.3 节（frerSeqGenReset）：这是一个布尔对象，写入 True 会触发 SequenceGenerationReset（7.4.1.3），写入 False 则无任何效果，而且——关键之处——读取时永远返回 False。最后这个细节使它成为一个纯粹的“动作”对象（写入即触发），而不是一项被存储的设置；读取它绝不会显示出“复位已就绪”的状态，因为根本不存在这种状态。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant Mgr as SNMP Manager\n    participant MIB as frerSeqGenReset (10.3.1.3)\n    participant SM as SequenceGenerationReset (7.4.1.3)\n    Mgr->>MIB: SET True\n    MIB->>SM: call reset\n    SM->>SM: GenSeqNum = 0\n    SM->>SM: frerCpsSeqGenResets++\n    Mgr->>MIB: GET\n    MIB-->>Mgr: always False",
+      "zh": "sequenceDiagram\n    participant Mgr as SNMP 管理者\n    participant MIB as frerSeqGenReset (10.3.1.3)\n    participant SM as SequenceGenerationReset (7.4.1.3)\n    Mgr->>MIB: SET 写入 True\n    MIB->>SM: 调用复位\n    SM->>SM: GenSeqNum 置 0\n    SM->>SM: frerCpsSeqGenResets 加一\n    Mgr->>MIB: GET 读取\n    MIB-->>Mgr: 永远返回 False"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11 (Management Information Base) is the heart of this lesson — a complete SMIv2 MIB set for every feature of the standard. Clause 11.1 (Internet Standard Management Framework) sets the ground rules. It explains the three-layer separation the IETF (Internet Engineering Task Force) defined: a data-modeling language (SMIv2) is kept separate from the content-specific data models (the actual object definitions), which are kept separate from the protocol that moves the data (SNMPv3). Managed objects live in a virtual store called the MIB, are usually reached via SNMP, and are defined using SMI. This particular MIB conforms to SMIv2 as described in IETF RFC 2578, RFC 2579, and RFC 2580.",
+      "zh": "第 11 条（管理信息库，Management Information Base）是本课的核心——它是覆盖本标准每一项特性的完整 SMIv2 MIB 集合。第 11.1 条（互联网标准管理框架，Internet Standard Management Framework）确立了基本规则。它阐明了 IETF（互联网工程任务组，Internet Engineering Task Force）所定义的三层分离：数据建模语言（SMIv2）与具体内容的数据模型（实际的对象定义）相分离，而后者又与传输数据的协议（SNMPv3）相分离。受管对象存放在一个名为 MIB 的虚拟信息库中，通常经由 SNMP 访问，并用 SMI 来定义。这份特定的 MIB 遵循 RFC 2578、RFC 2579、RFC 2580 所描述的 SMIv2。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.2 (Structure of the MIB) splits the standard into exactly two MIB modules (Table 11-1): the IEEE8021-STREAM-IDENTIFICATION-MIB, which models stream identification (Clause 9), and the IEEE8021-FRER-MIB, which models FRER itself (Clause 10). Clause 11.2.1 (Structure of the IEEE8021-STREAM-IDENTIFICATION-MIB) lays out the first module's subtrees — the StreamIdentificationTable plus the Null, SrcMacVlan, ActiveDestMacVlan and IP stream-identification tables, the various port-handle-list tables, and the per-port and per-port-per-stream counter tables. Clause 11.2.2 (Structure of the IEEE8021-FRER-MIB) does the same for FRER: SequenceGeneration, SequenceRecovery, SequenceIdentification, StreamSplit, SequenceAutoconfig and OutputAutoconfig tables, each with its handle-list companions and its own counters. Every table is cross-referenced back to the Clause 9/10 subclause it implements.",
+      "zh": "第 11.2 条（MIB 的结构，Structure of the MIB）把本标准恰好划分为两个 MIB 模块（表 11-1）：IEEE8021-STREAM-IDENTIFICATION-MIB，建模流识别（第 9 条）；以及 IEEE8021-FRER-MIB，建模 FRER 本身（第 10 条）。第 11.2.1 条（IEEE8021-STREAM-IDENTIFICATION-MIB 的结构）列出第一个模块的各子树——StreamIdentificationTable，加上 Null、SrcMacVlan、ActiveDestMacVlan 和 IP 流识别表、各类端口句柄列表表，以及按端口和按端口按流的计数器表。第 11.2.2 条（IEEE8021-FRER-MIB 的结构）对 FRER 做同样的事：SequenceGeneration、SequenceRecovery、SequenceIdentification、StreamSplit、SequenceAutoconfig 和 OutputAutoconfig 等表，每个都带有其句柄列表伙伴表和自己的计数器。每张表都交叉引用回它所实现的第 9/10 条子条款。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"230\" y=\"18\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">802.1CB MIB set (Clause 11.2)</text><rect x=\"20\" y=\"35\" width=\"200\" height=\"150\" rx=\"6\"/><text x=\"120\" y=\"54\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">STREAM-IDENTIFICATION-MIB</text><text x=\"120\" y=\"68\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">(11.2.1 / Clause 9)</text><rect x=\"34\" y=\"80\" width=\"172\" height=\"22\" rx=\"3\"/><text x=\"120\" y=\"95\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">StreamIdentificationTable</text><rect x=\"34\" y=\"108\" width=\"172\" height=\"22\" rx=\"3\"/><text x=\"120\" y=\"123\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">Null / IP / VLAN id tables</text><rect x=\"34\" y=\"136\" width=\"172\" height=\"22\" rx=\"3\"/><text x=\"120\" y=\"151\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">PerPort counters</text><rect x=\"240\" y=\"35\" width=\"200\" height=\"150\" rx=\"6\"/><text x=\"340\" y=\"54\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">FRER-MIB</text><text x=\"340\" y=\"68\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">(11.2.2 / Clause 10)</text><rect x=\"254\" y=\"80\" width=\"172\" height=\"22\" rx=\"3\"/><text x=\"340\" y=\"95\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">SequenceGeneration / Recovery</text><rect x=\"254\" y=\"108\" width=\"172\" height=\"22\" rx=\"3\"/><text x=\"340\" y=\"123\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">StreamSplit / Autoconfig</text><rect x=\"254\" y=\"136\" width=\"172\" height=\"22\" rx=\"3\"/><text x=\"340\" y=\"151\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">PerPort counters</text></svg>",
+      "caption": {
+        "en": "The two MIB modules of 802.1CBcv: stream identification on the left (Clause 9 objects), FRER on the right (Clause 10 objects). Each is a tree of related tables, every table mapped to a base-standard subclause.",
+        "zh": "802.1CBcv 的两个 MIB 模块：左侧为流识别（第 9 条对象），右侧为 FRER（第 10 条对象）。每个模块都是一棵由相关表构成的树，每张表都映射到基础标准中的某一子条款。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.3 (Relationship to other MIBs) declares the imports each module depends on. Clause 11.3.1 (Relationship of the IEEE8021-STREAM-IDENTIFICATION-MIB to other MIBs) says it identifies counter interfaces by ifIndex and therefore imports from the IF-MIB, and also pulls items from SNMPv2-SMI, SNMPv2-TC, INET-ADDRESS-MIB and IEEE8021-TC-MIB, requiring SNMPv2-CONF for conformance. Clause 11.3.2 (Relationship of the IEEE8021-FRER-MIB to other MIBs) similarly imports from IF-MIB, plus from the stream-identification MIB above, SNMPv2-SMI, SNMPv2-TC and IEEE8021-TC-MIB, and also requires SNMPv2-CONF. Reusing these common building blocks (an ifIndex for ports, standard textual conventions for data types) is what lets a generic SNMP manager understand FRER objects without bespoke code.",
+      "zh": "第 11.3 条（与其他 MIB 的关系，Relationship to other MIBs）声明每个模块所依赖的导入项。第 11.3.1 条（IEEE8021-STREAM-IDENTIFICATION-MIB 与其他 MIB 的关系）说明：它用 ifIndex 来标识计数器接口，因此从 IF-MIB 导入，同时还从 SNMPv2-SMI、SNMPv2-TC、INET-ADDRESS-MIB 和 IEEE8021-TC-MIB 中取用条目，并需要 SNMPv2-CONF 来做一致性声明。第 11.3.2 条（IEEE8021-FRER-MIB 与其他 MIB 的关系）类似地从 IF-MIB 导入，再加上前述流识别 MIB、SNMPv2-SMI、SNMPv2-TC 和 IEEE8021-TC-MIB，同样需要 SNMPv2-CONF。复用这些通用构件（用 ifIndex 表示端口、用标准文本约定表示数据类型），正是让通用 SNMP 管理者无需定制代码就能理解 FRER 对象的原因。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.4 (Security considerations) is the obligatory warning that comes with any writable MIB. Its preamble notes that SNMP versions before SNMPv3 lacked adequate security, that even on an IPsec-protected network there is no built-in control over *who* may GET/SET objects, and so SNMPv3 with full cryptographic authentication and privacy is strongly recommended. Clause 11.4.1 (Security considerations of the IEEE8021-STREAM-IDENTIFICATION-MIB) and Clause 11.4.2 (Security considerations of the IEEE8021-FRER-MIB) repeat the same reasoning per module: objects with MAX-ACCESS read-write or read-create are sensitive because a bad SET can harm network operation, and even readable objects may be sensitive enough to deserve access control and encryption on the wire.",
+      "zh": "第 11.4 条（安全考量，Security considerations）是任何可写 MIB 都必须附带的警告。其前言指出：SNMPv3 之前的 SNMP 版本缺乏足够的安全性；即便网络受 IPsec 保护，也没有内建机制控制“谁”能 GET/SET 对象；因此强烈建议使用带完整密码学认证与机密性的 SNMPv3。第 11.4.1 条（IEEE8021-STREAM-IDENTIFICATION-MIB 的安全考量）和第 11.4.2 条（IEEE8021-FRER-MIB 的安全考量）针对每个模块重复同样的论证：MAX-ACCESS 为 read-write 或 read-create 的对象很敏感，因为一次恶意 SET 可能损害网络运行；即使只可读的对象，也可能敏感到需要访问控制并在传输时加密。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "MAX-ACCESS is an SMIv2 attribute on every MIB object stating the most you can do to it: not-accessible (it only indexes a table), read-only (you can GET it), read-write (GET and SET), or read-create (GET, SET, and create new table rows). It is the single most useful field to read when judging whether an object is a status reading or a live control knob.",
+      "zh": "MAX-ACCESS 是每个 MIB 对象上的一个 SMIv2 属性，声明你对它最多能做什么：not-accessible（仅用作表索引）、read-only（可 GET 读取）、read-write（可 GET 和 SET）、或 read-create（可 GET、SET 并创建新表行）。判断一个对象是状态读数还是实时控制旋钮时，它是最值得先看的一个字段。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.5 (MIB modules) is where the actual machine-readable definitions live, written in SMIv2's formal syntax. Its preamble notes that requirement words like SHOULD and MUST follow IETF RFC 2119 usage, as is customary for IETF MIB definitions, and that if a DESCRIPTION clause ever disagrees with the rest of the standard, the definition outside 11.5 wins. Clause 11.5.1 (Definitions for the IEEE8021-STREAM-IDENTIFICATION-MIB) opens with the module's IMPORTS (OBJECT-TYPE, Counter64 and friends from SNMPv2-SMI, RowStatus and MacAddress from SNMPv2-TC, ifIndex from IF-MIB, and so on) and its MODULE-IDENTITY metadata. Clause 11.5.2 (Definitions for the IEEE8021-FRER-MIB) is the companion file holding the full FRER object definitions. These two modules are what an implementer compiles into a real, queryable agent.",
+      "zh": "第 11.5 条（MIB 模块，MIB modules）正是真正机器可读的定义所在，用 SMIv2 的形式化语法书写。其前言指出：SHOULD、MUST 等需求词遵循 IETF RFC 2119 的用法（这是 IETF MIB 定义的惯例）；而且若某条 DESCRIPTION 文本与本标准其余部分有出入，则以 11.5 之外的定义为准。第 11.5.1 条（IEEE8021-STREAM-IDENTIFICATION-MIB 的定义）以模块的 IMPORTS（从 SNMPv2-SMI 引入 OBJECT-TYPE、Counter64 等，从 SNMPv2-TC 引入 RowStatus 和 MacAddress，从 IF-MIB 引入 ifIndex 等）以及 MODULE-IDENTITY 元数据开头。第 11.5.2 条（IEEE8021-FRER-MIB 的定义）是配套文件，包含完整的 FRER 对象定义。实现者正是把这两个模块编译成一个真实、可查询的代理（agent）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause this lesson teaches, by number",
+        "zh": "覆盖地图——本课所讲每一条款（按编号）"
+      },
+      "en": "Clause 1.6 (Introduction): the amendment adds a UML information model plus YANG and MIB bindings for Clause 9/10 capabilities. Clause 5.8 / 5.11 / 5.14 (Talker / Listener / Relay system optional behaviors): each list gains 'support SMIv2 MIB modules (Clause 11)' and 'support YANG modules (Clause 12)' as new *optional* conformance items. Clause 7.4.1 (Sequence generation function): subclause 7.4.1.3 SequenceGenerationReset now also fires when True is written to frerSeqGenReset (10.3.1.3), zeroing GenSeqNum and bumping frerCpsSeqGenResets. Clause 10.3.1 (frerSeqGenEntry): new subclause 10.3.1.3 frerSeqGenReset — a write-True-to-trigger Boolean that always reads False. Clause 11.1 (Internet Standard Management Framework): the SMIv2 / SNMP / data-model separation, conforming to RFC 2578/2579/2580. Clause 11.2.1 / 11.2.2 (Structure of each module): the table subtrees of STREAM-IDENTIFICATION-MIB and FRER-MIB. Clause 11.3.1 / 11.3.2 (Relationship to other MIBs): imports from IF-MIB, SNMPv2-SMI/-TC, INET-ADDRESS-MIB, IEEE8021-TC-MIB; SNMPv2-CONF for conformance. Clause 11.4.1 / 11.4.2 (Security considerations): SNMPv3 cryptographic security strongly recommended; read-write/read-create objects are sensitive to SET abuse. Clause 11.5.1 / 11.5.2 (Definitions): the formal SMIv2 module bodies (IMPORTS, MODULE-IDENTITY, object definitions) for stream identification and FRER respectively.",
+      "zh": "第 1.6 条（引言）：修正案为第 9/10 条的能力新增 UML 信息模型，以及 YANG 与 MIB 两套绑定。第 5.8 / 5.11 / 5.14 条（讲话者 / 听者 / 中继系统可选行为）：每份清单新增“支持 SMIv2 MIB 模块（第 11 条）”和“支持 YANG 模块（第 12 条）”作为新的“可选”一致性项。第 7.4.1 条（序列生成函数）：其下 7.4.1.3 节 SequenceGenerationReset 现在也会在向 frerSeqGenReset（10.3.1.3）写入 True 时触发，将 GenSeqNum 清零并使 frerCpsSeqGenResets 加一。第 10.3.1 条（frerSeqGenEntry）：新增 10.3.1.3 节 frerSeqGenReset——一个写入 True 即触发、读取永远为 False 的布尔对象。第 11.1 条（互联网标准管理框架）：SMIv2 / SNMP / 数据模型三层分离，遵循 RFC 2578/2579/2580。第 11.2.1 / 11.2.2 条（各模块的结构）：STREAM-IDENTIFICATION-MIB 与 FRER-MIB 的表子树。第 11.3.1 / 11.3.2 条（与其他 MIB 的关系）：从 IF-MIB、SNMPv2-SMI/-TC、INET-ADDRESS-MIB、IEEE8021-TC-MIB 导入，并以 SNMPv2-CONF 做一致性声明。第 11.4.1 / 11.4.2 条（安全考量）：强烈建议采用 SNMPv3 的密码学安全；read-write/read-create 对象易受 SET 滥用影响而敏感。第 11.5.1 / 11.5.2 条（定义）：分别为流识别与 FRER 的正式 SMIv2 模块本体（IMPORTS、MODULE-IDENTITY、对象定义）。",
+      "cite": {
+        "pdf_id": "8021CBcv-2021",
+        "pages": [
+          14,
+          17,
+          18,
+          19,
+          20,
+          22,
+          24,
+          28,
+          29,
+          30
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021CBcv-2021",
+      "pages": [
+        14,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        24,
+        28,
+        29,
+        30
+      ],
+      "note": "1.6 Introduction (p.14); 5.8/5.11/5.14 conformance optional behaviors (p.17); 7.4.1.3 SequenceGenerationReset (p.18); 10.3.1.3 frerSeqGenReset (p.19); Clause 11 / 11.1 / 11.2 + Table 11-1 (p.20); MIB module structure Fig 11-1 (p.21); 11.2.1 structure (p.22); 11.2.2 structure (p.24); 11.3.1 (p.28); 11.3.2 / 11.4 / 11.4.1 / 11.4.2 (p.29); 11.5 / 11.5.1 IMPORTS+MODULE-IDENTITY (p.30)."
+    }
+  ],
+  "covers": [
+    "8021CBcv-2021:1.6",
+    "8021CBcv-2021:5.8",
+    "8021CBcv-2021:5.11",
+    "8021CBcv-2021:5.14",
+    "8021CBcv-2021:7.4.1",
+    "8021CBcv-2021:10.3.1",
+    "8021CBcv-2021:11.1",
+    "8021CBcv-2021:11.2.1",
+    "8021CBcv-2021:11.2.2",
+    "8021CBcv-2021:11.3.1",
+    "8021CBcv-2021:11.3.2",
+    "8021CBcv-2021:11.4.1",
+    "8021CBcv-2021:11.4.2",
+    "8021CBcv-2021:11.5.1",
+    "8021CBcv-2021:11.5.2"
+  ],
+  "track": "tsn"
+}

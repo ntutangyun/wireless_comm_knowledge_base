@@ -1,0 +1,138 @@
+{
+  "id": "bridging-tsn-91",
+  "title": {
+    "en": "802.1DC Overview & Conformance: GFQoS for Non-Bridge Systems",
+    "zh": "802.1DC 概览与一致性：面向非网桥系统的 GFQoS"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1DC-2024 answers a deceptively simple question: the rich quality-of-service (QoS — the ability to control latency and frame loss) toolbox that IEEE Std 802.1Q defines is buried *inside* the spec for Bridges (Layer-2 switches). What if you want those exact tools in a device that is NOT a Bridge — a router, a security appliance, or even an end station? Clause 1 (the Overview) and Clause 5 (Conformance) lay the foundation. They define a new umbrella concept, **General Frame Quality of Service (GFQoS)**, and tell you precisely what a box must do to legitimately claim it provides GFQoS. This lesson walks both clauses end to end, giving every subclause an intuitive home.",
+      "zh": "IEEE Std 802.1DC-2024 回答了一个看似简单的问题：IEEE Std 802.1Q 定义了一整套丰富的服务质量（QoS——控制时延与丢帧的能力）工具，但它们都埋藏在“网桥”（二层交换机）的规范*内部*。如果你想在一台并非网桥的设备里使用这些完全相同的工具——比如路由器、安全设备，甚至是终端站点——该怎么办？第 1 章（概览）和第 5 章（一致性）奠定了基础。它们定义了一个新的统称概念——**通用帧服务质量（GFQoS，General Frame Quality of Service）**，并精确地规定了一台设备要合法声称“提供 GFQoS”必须做到什么。本课将逐条走过这两章，为每一个子条款找到直观的归属。"
+    },
+    {
+      "type": "prose",
+      "en": "**Clause 1.1 (Scope)** sets the boundary: this standard specifies procedures and managed objects for QoS features defined in IEEE Std 802.1Q — Per-Stream Filtering and Policing, queuing, transmission selection, stream control, and preemption — but in a network system that is *not* a Bridge. **Clause 1.2 (Specification model)** then makes a liberating promise: the model in this document is only a *way to describe* behavior. Any implementation may use whatever internal design it likes, as long as the externally observable protocol matches. Conformance is judged purely on observable behavior, never on internal architecture.",
+      "zh": "**条款 1.1（范围）**划定了边界：本标准为 IEEE Std 802.1Q 定义的 QoS 功能——逐流过滤与监管、排队、传输选择、流控制以及抢占——规定了相应的过程和受管对象，但应用场景是一个*并非*网桥的网络系统。**条款 1.2（规范模型）**随后给出一个解放性的承诺：本文档中的模型只是*描述*行为的一种方式。任何实现都可以采用它喜欢的任意内部设计，只要外部可观察的协议行为相符即可。一致性的判定纯粹基于可观察行为，绝不基于内部架构。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Key mental shift: 802.1Q describes everything as something a *Bridge* does. 802.1DC's job is to peel those QoS pieces off the Bridge and re-home them in any system. The trick it uses — a simple word-substitution table — is the heart of Clause 5.2.",
+      "zh": "关键的思维转变：802.1Q 把一切都描述为*网桥*所做的事情。802.1DC 的任务就是把这些 QoS 部件从网桥上剥离下来，重新安置到任意系统中。它所用的技巧——一张简单的词语替换表——正是条款 5.2 的核心。"
+    },
+    {
+      "type": "prose",
+      "en": "**Clause 1.3 (Specification precedence)** is the tie-breaker rule: if parts of the standard ever appear to conflict, normative tables win, then normative text, then normative figures; anything in annexes is clearly marked non-normative. **Clause 1.4 (Requirements terminology)** defines the vocabulary of obligation. *Shall* = mandatory. *May* = a permitted choice (and \"may\" and \"may not\" mean exactly the same thing). *Should* = recommended but not required. Subtler verbs carry meaning too: *is / are* state definitions and logical consequences, *can* describes behavior that is permitted but not directly controlled, *cannot* describes what never happens in a conformant system, *allow* means \"support the ability for,\" and *capability* means \"can be configured to.\" The PICS proformas in Annex A simply mirror every \"shall / may / should\" in the text.",
+      "zh": "**条款 1.3（规范优先级）**是冲突裁决规则：如果标准的各部分出现表面冲突，规范性表格优先，其次是规范性正文，再次是规范性图示；附录中的内容都被明确标注为非规范性。**条款 1.4（要求术语）**定义了义务性词汇。*应（shall）*= 强制要求。*可（may）*= 允许的选择（且“可”与“可不”含义完全相同）。*宜（should）*= 推荐但不强制。更微妙的动词同样有含义：*是 / 为（is/are）*用于定义和逻辑必然结果，*能（can）*描述被允许但不被直接控制的行为，*不能（cannot）*描述在一致性系统中绝不发生的情形，*允许（allow）*意为“支持具备……的能力”，*能力（capability）*意为“能够被配置为”。附录 A 中的 PICS 表格只是逐一映射正文里的每一处“应 / 可 / 宜”。"
+    },
+    {
+      "type": "prose",
+      "en": "**Clause 1.5 (Structure and relationship to other standards)** explains *why* 802.1DC exists. QoS functions are those that affect a network's ability to serve data flows, measured by three parameters: **latency** (time to forward a frame source-to-destination), **frame loss probability**, and the **variability** of those two. In 802.1Q these QoS features are scattered and tightly coupled to Bridge operation, so non-Bridge devices have no clean reference points. 802.1DC fixes this by defining GFQoS and specifying two kinds of systems that supply it: a **GFQoS end system** (an initial source or final destination of data) and a **GFQoS forwarding system** (a router, security appliance, or other box that forwards frames port-to-port — but explicitly NOT an 802.1Q Bridge, since Bridges are already covered by 802.1Q).",
+      "zh": "**条款 1.5（结构及与其他标准的关系）**解释了 802.1DC 为何存在。QoS 功能是指那些影响网络服务数据流能力的功能，用三个参数衡量：**时延**（帧从源到目的的转发时间）、**丢帧概率**，以及这两者的**波动性**。在 802.1Q 中，这些 QoS 功能分散各处，且与网桥操作紧密耦合，因此非网桥设备没有清晰的引用入口。802.1DC 通过定义 GFQoS、并规定两类提供 GFQoS 的系统来解决此问题：**GFQoS 终端系统**（数据的初始源或最终目的地）和 **GFQoS 转发系统**（路由器、安全设备或其他将帧从一个端口转发到另一个端口的设备——但明确*不包括* 802.1Q 网桥，因为网桥已由 802.1Q 覆盖）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  Q[\"IEEE 802.1Q QoS features\\n(bound to Bridges)\"] --> DC[\"802.1DC: GFQoS\\n(re-homed for any system)\"]\n  DC --> ES[\"GFQoS end system\\nsource / sink of streams\"]\n  DC --> FS[\"GFQoS forwarding system\\nrouter / appliance, NOT a Bridge\"]\n  ES --> COM[\"Common required behaviors (5.3)\"]\n  FS --> COM",
+      "zh": "flowchart TD\n  Q[\"IEEE 802.1Q QoS 功能\\n（绑定于网桥）\"] --> DC[\"802.1DC：GFQoS\\n（重新安置到任意系统）\"]\n  DC --> ES[\"GFQoS 终端系统\\n流的源 / 汇\"]\n  DC --> FS[\"GFQoS 转发系统\\n路由器 / 设备，非网桥\"]\n  ES --> COM[\"共同的必备行为（5.3）\"]\n  FS --> COM"
+    },
+    {
+      "type": "prose",
+      "en": "**Clause 1.6 (Reference conventions)** is a small but essential shorthand. Because 802.1DC constantly points at other standards, it uses bracket prefixes: **[Q]** x.y = a subclause of IEEE Std 802.1Q-2022; **[CB]** x.y = IEEE Std 802.1CB-2017 (Frame Replication and Elimination for Reliability); **[AC]** x.y = IEEE Std 802.1AC-2016 (MAC Service Definition); plus **[Qcw]**, **[Qcz]**, **[Qdx]** for specific 802.1Q amendments. A bare \"x.y\" with no prefix means a subclause of 802.1DC itself. You will see these brackets everywhere in Clause 5, so memorizing them makes the conformance lists instantly readable.",
+      "zh": "**条款 1.6（引用约定）**是一个小巧却必不可少的速记法。由于 802.1DC 不断引用其他标准，它使用方括号前缀：**[Q]** x.y = IEEE Std 802.1Q-2022 的某子条款；**[CB]** x.y = IEEE Std 802.1CB-2017（面向可靠性的帧复制与消除）；**[AC]** x.y = IEEE Std 802.1AC-2016（MAC 服务定义）；外加 **[Qcw]**、**[Qcz]**、**[Qdx]** 对应 802.1Q 的特定修订。不带前缀的纯“x.y”指 802.1DC 自身的子条款。第 5 章里到处都是这些方括号，记住它们能让一致性清单瞬间变得易读。"
+    },
+    {
+      "type": "prose",
+      "en": "Now Clause 5 (Conformance). It opens by naming three roles. A **GFQoS system** is the umbrella term — it provides GFQoS and is *either* an end system *or* a forwarding system; its common required behaviors live in 5.3 and common options in 5.4. A **GFQoS end system** (required: 5.5, optional: 5.6) provides GFQoS on one or more ports to source or sink streams. A **GFQoS forwarding system** (required: 5.7, optional: 5.8) provides GFQoS while forwarding frames between ports. **Clause 5.1 (PICS — Protocol Implementation Conformance Statement)** is the entry gate: a conformance claim must identify the supplier and the implementation, and must complete the PICS proforma in Annex A for that specific system.",
+      "zh": "现在进入第 5 章（一致性）。开篇点出三种角色。**GFQoS 系统**是统称——它提供 GFQoS，*或为*终端系统*或为*转发系统；其共同必备行为见 5.3，共同可选行为见 5.4。**GFQoS 终端系统**（必备：5.5，可选：5.6）在一个或多个端口上提供 GFQoS，用以发出或接收流。**GFQoS 转发系统**（必备：5.7，可选：5.8）在端口间转发帧的同时提供 GFQoS。**条款 5.1（PICS——协议实现一致性声明）**是入口关卡：一致性声明必须标明供应商与实现，并须针对该具体系统填写附录 A 中的 PICS 表格。"
+    },
+    {
+      "type": "prose",
+      "en": "**Clause 5.2 (Interpreting 802.1Q and 802.1CB for GFQoS systems)** is the clever heart of the whole standard. Instead of rewriting 802.1Q, it gives a substitution table you apply while reading it: for \"Bridge\" read \"GFQoS forwarding system\"; for \"MAC Relay\" read \"GFQoS forwarding system\"; for \"Bridge Port\" read \"port\"; for \"end station\" read \"GFQoS end system.\" Crucially, these swaps apply *only* to the specific clauses that 802.1DC explicitly calls out — no \"shall / should / may\" in 802.1Q becomes a requirement on a GFQoS system unless 802.1DC names it. And a forwarding system gains the 802.1CB capabilities of a relay system, except it can never be an 802.1Q Bridge.",
+      "zh": "**条款 5.2（为 GFQoS 系统解读 802.1Q 与 802.1CB）**是整部标准的精巧核心。它并不重写 802.1Q，而是给出一张替换表，供你在阅读时套用：把“网桥”读作“GFQoS 转发系统”；把“MAC 中继”读作“GFQoS 转发系统”；把“网桥端口”读作“端口”；把“终端站点”读作“GFQoS 终端系统”。关键在于，这些替换*仅*适用于 802.1DC 明确点名的特定条款——除非 802.1DC 点名，否则 802.1Q 中任何“应 / 宜 / 可”都不会成为对 GFQoS 系统的要求。此外，转发系统获得中继系统在 802.1CB 中的能力，但它绝不能是 802.1Q 网桥。"
+    },
+    {
+      "type": "prose",
+      "en": "**Clause 5.3 (GFQoS system required behaviors)** is the mandatory floor that *every* GFQoS system must meet. There are just three \"shall\" items: (a) support the GFQoS provision model (7.2); (b) conform to the relevant MAC technology at each port to support the MAC Internal Sublayer Service (ISS — the abstract send/receive interface above the MAC), per [AC] 11.1; and (c) support transmission selection by strict priority (highest-priority eligible queue wins), per 7.3.1 and [Q] 8.6.8.1. **Clause 5.4 (GFQoS system optional behaviors)** lists the common \"may\" items: the Enhanced Internal Sublayer Service (EISS — ISS extended to carry VLAN tag info); Priority-based Flow Control ([Q] 5.11); Enhanced Transmission Selection (bandwidth caps per priority, without requiring DCBX); enhancements for scheduled traffic; and management via the YANG data models in Clause 9.",
+      "zh": "**条款 5.3（GFQoS 系统必备行为）**是*每一个* GFQoS 系统都必须满足的强制底线。仅有三项“应”：（a）支持 GFQoS 提供模型（7.2）；（b）在每个端口上符合相应的 MAC 技术，以支持 MAC 内部子层服务（ISS——位于 MAC 之上的抽象收发接口），依据 [AC] 11.1；（c）支持按严格优先级进行传输选择（最高优先级的合格队列胜出），依据 7.3.1 与 [Q] 8.6.8.1。**条款 5.4（GFQoS 系统可选行为）**列出共同的“可”项：增强型内部子层服务（EISS——扩展 ISS 以携带 VLAN 标签信息）；基于优先级的流控制（[Q] 5.11）；增强型传输选择（按优先级设带宽上限，且不要求 DCBX）；调度流量增强；以及通过第 9 章 YANG 数据模型进行管理。"
+    },
+    {
+      "type": "prose",
+      "en": "The role-specific lists round it out. **Clause 5.5 (GFQoS end system required)** is short: an end system shall, on one or more ports, support all of 5.3 — nothing more is mandatory. **Clause 5.6 (GFQoS end system optional)** is a rich menu it *may* offer on at least one port: any 5.4 item, plus the credit-based shaper (CBS, 7.3.3), Per-Stream Filtering and Policing (PSFP, [Q] 5.27), Asynchronous Traffic Shaping (ATS, [Q] 5.31), cyclic queuing and forwarding (CQF, [Q] 5.28), Talker and Listener behaviors for Frame Replication and Elimination ([CB] 5.6–5.11), and frame preemption ([Q] 5.26). **Clause 5.7 (GFQoS forwarding system required)** mirrors 5.5: a forwarding system shall, on more than one port, support all of 5.3. **Clause 5.8 (GFQoS forwarding system optional)** lists its options on more than one port: any 5.4 item, CBS, PSFP ([Q] 5.4.1.8), ATS ([Q] 5.4.1.10), CQF ([Q] 5.4.1.9), forwarding-system FRER behaviors ([CB] 5.12–5.14), frame preemption (7.3.4), and general flow classification and metering ([Q] 8.6.5.1).",
+      "zh": "角色专属清单补全全局。**条款 5.5（GFQoS 终端系统必备）**很简短：终端系统应在一个或多个端口上支持 5.3 的全部内容——再无其他强制项。**条款 5.6（GFQoS 终端系统可选）**是它*可*在至少一个端口上提供的丰富菜单：任意 5.4 项，外加基于信用的整形器（CBS，7.3.3）、逐流过滤与监管（PSFP，[Q] 5.27）、异步流量整形（ATS，[Q] 5.31）、循环排队与转发（CQF，[Q] 5.28）、用于帧复制与消除的 Talker 与 Listener 行为（[CB] 5.6–5.11），以及帧抢占（[Q] 5.26）。**条款 5.7（GFQoS 转发系统必备）**与 5.5 对称：转发系统应在多于一个端口上支持 5.3 的全部内容。**条款 5.8（GFQoS 转发系统可选）**列出其在多于一个端口上的选项：任意 5.4 项、CBS、PSFP（[Q] 5.4.1.8）、ATS（[Q] 5.4.1.10）、CQF（[Q] 5.4.1.9）、转发系统的 FRER 行为（[CB] 5.12–5.14）、帧抢占（7.3.4），以及通用流分类与计量（[Q] 8.6.5.1）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 400 230\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"200\" y=\"16\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">GFQoS conformance map (Clause 5)</text><rect x=\"120\" y=\"28\" width=\"160\" height=\"34\" rx=\"4\"/><text x=\"200\" y=\"49\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">5.3 required / 5.4 optional</text><text x=\"200\" y=\"75\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">(common to ALL GFQoS systems)</text><line x1=\"120\" y1=\"45\" x2=\"70\" y2=\"110\"/><line x1=\"280\" y1=\"45\" x2=\"330\" y2=\"110\"/><rect x=\"10\" y=\"112\" width=\"180\" height=\"30\" rx=\"4\"/><text x=\"100\" y=\"131\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">End system: 5.5 req / 5.6 opt</text><rect x=\"210\" y=\"112\" width=\"180\" height=\"30\" rx=\"4\"/><text x=\"300\" y=\"131\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Fwd system: 5.7 req / 5.8 opt</text><rect x=\"40\" y=\"165\" width=\"320\" height=\"30\" rx=\"4\" stroke-dasharray=\"4 3\"/><text x=\"200\" y=\"184\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">5.1 PICS proforma + 5.2 word substitutions</text><text x=\"200\" y=\"215\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">claim conformance via Annex A</text></svg>",
+      "caption": {
+        "en": "How Clause 5 fits together: a common required/optional core (5.3/5.4) specializes into end-system (5.5/5.6) and forwarding-system (5.7/5.8) lists, all claimed through the PICS (5.1) and read via the 5.2 substitutions.",
+        "zh": "第 5 章的拼合方式：共同的必备/可选核心（5.3/5.4）特化为终端系统（5.5/5.6）与转发系统（5.7/5.8）两份清单，全部通过 PICS（5.1）声明，并借助 5.2 替换规则来解读。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every Clause 1 and Clause 5 subclause by exact number",
+        "zh": "覆盖地图——按确切编号列出第 1 章与第 5 章的每个子条款"
+      },
+      "en": "Clause 1 (Overview): **1.1 Scope** — QoS features of 802.1Q applied to a system that is not a Bridge. **1.2 Specification model** — the model only describes external behavior; any internal design conforming to observable protocol is acceptable. **1.3 Specification precedence** — normative tables > normative text > normative figures; annex material is non-normative. **1.4 Requirements terminology** — shall (mandatory), may (permitted), should (recommended), plus is/are, can, cannot, allow, capability; PICS reflects every shall/may/should. **1.5 Structure** — QoS = latency, frame-loss probability, variability; defines GFQoS and the end-system vs forwarding-system split; lists what is NOT GFQoS (forwarding decisions, frame transforms, FRER, control protocols). **1.6 Reference conventions** — [Q], [CB], [AC], [Qcw], [Qcz], [Qdx] prefixes; bare x.y = this standard. Clause 5 (Conformance): **5.1 PICS** — identify supplier + implementation, complete Annex A proforma. **5.2 Interpreting 802.1Q/802.1CB** — substitution table (Bridge→forwarding system, MAC Relay→forwarding system, Bridge Port→port, end station→end system), applied only to called-out clauses. **5.3 system required** — GFQoS model (7.2), MAC ISS per [AC] 11.1, strict priority (7.3.1, [Q] 8.6.8.1). **5.4 system optional** — EISS, PFC, ETS (no DCBX), scheduled traffic, YANG (Clause 9). **5.5 end system required** — all of 5.3 on ≥1 port. **5.6 end system optional** — any 5.4 item, CBS, PSFP, ATS, CQF, Talker/Listener FRER, frame preemption. **5.7 forwarding system required** — all of 5.3 on >1 port. **5.8 forwarding system optional** — any 5.4 item, CBS, PSFP, ATS, CQF, forwarding FRER, frame preemption (7.3.4), general flow classification and metering.",
+      "zh": "第 1 章（概览）：**1.1 范围**——将 802.1Q 的 QoS 功能应用于并非网桥的系统。**1.2 规范模型**——模型只描述外部行为；任何符合可观察协议的内部设计都可接受。**1.3 规范优先级**——规范性表格 > 规范性正文 > 规范性图示；附录内容为非规范性。**1.4 要求术语**——应（强制）、可（允许）、宜（推荐），以及 is/are、能、不能、允许、能力；PICS 映射每一处应/可/宜。**1.5 结构**——QoS = 时延、丢帧概率、波动性；定义 GFQoS 及终端系统与转发系统的划分；列出哪些*不属于* GFQoS（转发决策、帧变换、FRER、控制协议）。**1.6 引用约定**——[Q]、[CB]、[AC]、[Qcw]、[Qcz]、[Qdx] 前缀；不带前缀的 x.y = 本标准。第 5 章（一致性）：**5.1 PICS**——标明供应商与实现，填写附录 A 表格。**5.2 解读 802.1Q/802.1CB**——替换表（网桥→转发系统，MAC 中继→转发系统，网桥端口→端口，终端站点→终端系统），仅适用于被点名的条款。**5.3 系统必备**——GFQoS 模型（7.2）、依 [AC] 11.1 的 MAC ISS、严格优先级（7.3.1、[Q] 8.6.8.1）。**5.4 系统可选**——EISS、PFC、ETS（无需 DCBX）、调度流量、YANG（第 9 章）。**5.5 终端系统必备**——在 ≥1 端口上支持 5.3 全部。**5.6 终端系统可选**——任意 5.4 项、CBS、PSFP、ATS、CQF、Talker/Listener FRER、帧抢占。**5.7 转发系统必备**——在 >1 端口上支持 5.3 全部。**5.8 转发系统可选**——任意 5.4 项、CBS、PSFP、ATS、CQF、转发 FRER、帧抢占（7.3.4）、通用流分类与计量。",
+      "cite": {
+        "pdf_id": "8021DC-2024",
+        "pages": [
+          13,
+          14,
+          15,
+          19,
+          20,
+          21
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the elegant symmetry: 5.5 and 5.7 are nearly identical ('support all of 5.3'), differing only in port count — an end system needs one or more ports, a forwarding system needs more than one (you cannot forward with a single port). The real personality of each role lives in its OPTIONAL list (5.6 vs 5.8), where the same acronyms (CBS, PSFP, ATS, CQF, preemption) point to different 802.1Q subclauses tuned for sourcing/sinking vs forwarding.",
+      "zh": "请留意这种优雅的对称：5.5 与 5.7 几乎相同（“支持 5.3 全部”），区别仅在端口数量——终端系统需要一个或多个端口，转发系统需要多于一个端口（单端口无法转发）。每种角色真正的个性体现在其*可选*清单（5.6 与 5.8）中：相同的缩写（CBS、PSFP、ATS、CQF、抢占）指向了为“发/收”与“转发”分别调校的不同 802.1Q 子条款。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021DC-2024",
+      "pages": [
+        13,
+        14,
+        15
+      ],
+      "note": "Clause 1 Overview: 1.1 Scope through 1.6 Reference conventions, incl. GFQoS definitions and QoS parameters."
+    },
+    {
+      "pdf_id": "8021DC-2024",
+      "pages": [
+        19,
+        20,
+        21
+      ],
+      "note": "Clause 5 Conformance: 5.1 PICS, 5.2 substitution table, 5.3–5.8 required/optional behaviors for GFQoS / end / forwarding systems."
+    }
+  ],
+  "covers": [
+    "8021DC-2024:1.1",
+    "8021DC-2024:1.2",
+    "8021DC-2024:1.3",
+    "8021DC-2024:1.4",
+    "8021DC-2024:1.5",
+    "8021DC-2024:1.6",
+    "8021DC-2024:5.1",
+    "8021DC-2024:5.2",
+    "8021DC-2024:5.3",
+    "8021DC-2024:5.4",
+    "8021DC-2024:5.5",
+    "8021DC-2024:5.6",
+    "8021DC-2024:5.7",
+    "8021DC-2024:5.8"
+  ],
+  "track": "bridging-tsn"
+}

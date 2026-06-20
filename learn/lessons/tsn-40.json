@@ -1,0 +1,168 @@
+{
+  "id": "tsn-40",
+  "title": {
+    "en": "Managing the Mask-and-Match Extension: Stream ID Tables, FRER Counters, MIB & YANG",
+    "zh": "管理“掩码匹配”扩展：流标识表、FRER 计数器、MIB 与 YANG"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1CBdb-2021 is Amendment 2 to 802.1CB, the standard for FRER (Frame Replication and Elimination for Reliability) — a Time-Sensitive Networking (TSN) mechanism that sends duplicate copies of a packet down disjoint paths and removes the duplicates at the far end, so a single link failure never drops the stream. This amendment adds one big new feature: the Mask-and-match Stream identification function, a flexible way to recognize which packets belong to which 'Stream' by ANDing a configurable bitmask against the frame and comparing the result to a target value. This lesson is the management half of the amendment: how that feature (and the rest of FRER) is configured, counted, and exposed to network-management tools.",
+      "zh": "IEEE Std 802.1CBdb-2021 是 802.1CB 的第 2 号修正案；802.1CB 定义了 FRER（Frame Replication and Elimination for Reliability，帧复制与消除以提升可靠性）——一种时间敏感网络（TSN）机制，它把同一个数据包复制成多份沿互不相交的路径发送，并在远端去除重复包，使得单条链路故障也不会丢失该数据流。本修正案新增了一个重要功能：掩码匹配（Mask-and-match）流标识功能，它通过把一个可配置的位掩码与帧做按位“与”运算、再将结果与目标值比较，灵活地识别每个数据包属于哪条“流”。本课讲的是修正案的“管理”一半：如何配置、统计该功能（以及整个 FRER），并把它暴露给网络管理工具。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 9 is Stream Identification Management. The heart of it is the stream identity table (9.1), whose per-Stream row is tsnStreamIdEntry (9.1.1). The amendment updates the table of identification types (9.1.1.6) to add type number 5 = Mask-and-match (under OUI 00-80-C2), alongside the existing Null, Source-MAC-and-VLAN, Active-Destination-MAC-and-VLAN, and IP types. Clause 9.1.4 (Active Destination MAC and VLAN) and 9.1.5 (IP Stream identification) get small edits, while a brand-new 9.1.6 defines the managed objects for Mask-and-match: a destination-MAC mask/match pair, a source-MAC mask/match pair, and a payload (MSDU — MAC Service Data Unit) mask/match pair with a configurable length. A mask value of 0 means 'ignore this field'.",
+      "zh": "第 9 章是流标识管理（Stream Identification Management）。其核心是流标识表（9.1），表中每条流对应一行 tsnStreamIdEntry（9.1.1）。本修正案更新了标识类型表（9.1.1.6），在 OUI 00-80-C2 下新增类型编号 5＝掩码匹配，与既有的 Null、源 MAC 与 VLAN、活动目的 MAC 与 VLAN、IP 等类型并列。9.1.4（活动目的 MAC 与 VLAN）和 9.1.5（IP 流标识）有少量改动；而全新的 9.1.6 定义了掩码匹配的受管对象：一对目的 MAC 掩码/匹配值、一对源 MAC 掩码/匹配值，以及一对带可配置长度的负载（MSDU，MAC Service Data Unit，MAC 服务数据单元）掩码/匹配值。掩码取值为 0 表示“忽略该字段”。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"18\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">Incoming frame fields</text><rect x=\"10\" y=\"28\" width=\"110\" height=\"30\"/><text x=\"65\" y=\"47\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">dest MAC</text><rect x=\"120\" y=\"28\" width=\"110\" height=\"30\"/><text x=\"175\" y=\"47\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">src MAC</text><rect x=\"230\" y=\"28\" width=\"220\" height=\"30\"/><text x=\"340\" y=\"47\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">first N octets of MSDU (payload)</text><text x=\"10\" y=\"82\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">AND with mask, then compare to match value</text><rect x=\"10\" y=\"92\" width=\"110\" height=\"28\" stroke-dasharray=\"4 3\"/><text x=\"65\" y=\"110\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">DestMacMask/Match</text><rect x=\"120\" y=\"92\" width=\"110\" height=\"28\" stroke-dasharray=\"4 3\"/><text x=\"175\" y=\"110\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">SrcMacMask/Match</text><rect x=\"230\" y=\"92\" width=\"220\" height=\"28\" stroke-dasharray=\"4 3\"/><text x=\"340\" y=\"110\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">MsduMask/Match (length = MaskLength)</text><text x=\"10\" y=\"142\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">All three match  =&gt;  this Stream is identified</text></svg>",
+      "caption": {
+        "en": "The Mask-and-match function (9.1.6): each frame field is bitwise-ANDed with its mask, and the result is compared to the match value. A mask of 0 ignores the field; the MSDU mask length is bounded by the per-port maximum (9.4.1).",
+        "zh": "掩码匹配功能（9.1.6）：每个帧字段先与其掩码做按位“与”，结果再与匹配值比较。掩码为 0 则忽略该字段；MSDU 掩码长度受每端口最大值（9.4.1）限制。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why masks beat fixed fields: a single Mask-and-match rule can isolate any pattern at any offset — e.g. select a VLAN ID by masking 16 bits at the tag offset (to find the 81-00 EtherType), 4 don't-care bits (PCP/DEI), and 12 bits for the VID. This is how industrial protocols (IEC 61158) and MPLS DetNet flows get identified without a purpose-built field parser.",
+      "zh": "掩码为何优于固定字段：一条掩码匹配规则就能在任意偏移处隔离任意模式——例如，在标签偏移处用 16 位掩码（定位 81-00 EtherType）、4 位“无关”位（PCP/DEI）、12 位掩码 VID，即可按 VLAN ID 选取。工业协议（IEC 61158）和 MPLS DetNet 流正是这样被识别的，无需专门的字段解析器。"
+    },
+    {
+      "type": "prose",
+      "en": "The rest of Clause 9 covers counters and a per-port object. 9.2 (operational per-port per-Stream Stream identification counters) are indexed by port, facing (in-facing or out-facing), and stream_handle; on links above 650 Mbit/s they must be 64-bit so they don't wrap too fast. 9.3 (operational per-port Stream identification counters) are the same idea but indexed by port only. The new 9.4 (per-port managed object) defines 9.4.1 tsnPpMmIdMsduMaskMaxLength — a read-only ceiling, in octets (minimum 2, maximum 1984, the largest IEEE 802.3 MSDU), telling configurators how long a Mask-and-match MSDU mask that port can support.",
+      "zh": "第 9 章其余部分讲计数器和一个每端口对象。9.2（每端口每流的流标识运行计数器）按端口、朝向（朝内 in-facing 或朝外 out-facing）和 stream_handle 索引；在高于 650 Mbit/s 的链路上必须为 64 位，以免回绕过快。9.3（每端口流标识运行计数器）思路相同，但仅按端口索引。新增的 9.4（每端口受管对象）定义了 9.4.1 tsnPpMmIdMsduMaskMaxLength——一个只读上限（单位为字节，最小 2、最大 1984，即最大的 IEEE 802.3 MSDU），告知配置方该端口能支持多长的掩码匹配 MSDU 掩码。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10 is FRER management — managing the replication/elimination machinery itself. 10.2 (additional tsnStreamIdEntry managed objects) is just a heading change here. The sequence recovery table (10.4) is where duplicate elimination lives: each frerSeqRcvyEntry (10.4.1) describes one recovery function. 10.4.1.4 frerSeqRcvyReset is a write-True-to-reset Boolean (it always reads back False). 10.4.1.10 frerSeqRcvyIndividualRecovery picks whether the entry is a per-stream Sequence recovery function (False) or a per-member-stream Individual recovery function (True). The amendment also touches the FRER counters: 10.8 are per-port-and-per-Stream, of which 10.8.8 frerCpsSeqRcvyTaglessPackets counts packets arriving at the recovery algorithm with no sequence_number, and 10.9 are the per-port FRER counters, indexed by port and facing.",
+      "zh": "第 10 章是 FRER 管理——管理复制/消除机制本身。10.2（附加的 tsnStreamIdEntry 受管对象）在此处仅是标题改动。序列恢复表（10.4）是“去重”所在：每个 frerSeqRcvyEntry（10.4.1）描述一个恢复功能。10.4.1.4 frerSeqRcvyReset 是“写 True 即复位”的布尔量（读回恒为 False）。10.4.1.10 frerSeqRcvyIndividualRecovery 决定该条目是按流的序列恢复功能（False）还是按成员流的单独恢复功能（True）。本修正案还涉及 FRER 计数器：10.8 为每端口且每流，其中 10.8.8 frerCpsSeqRcvyTaglessPackets 统计到达恢复算法时不带 sequence_number 的数据包；10.9 为每端口 FRER 计数器，按端口与朝向索引。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Frame arrives] --> B[Stream identification 6.2]\n  B --> C{Has sequence_number?}\n  C -->|no| D[count 10.8.8 tagless]\n  C -->|yes| E[Sequence recovery 10.4]\n  E --> F[drop duplicate or pass]\n  G[Reset 10.4.1.4] -.-> E",
+      "zh": "flowchart LR\n  A[帧到达] --> B[流标识 6.2]\n  B --> C{是否有 sequence_number?}\n  C -->|无| D[计入 10.8.8 无标签]\n  C -->|有| E[序列恢复 10.4]\n  E --> F[丢弃重复或放行]\n  G[复位 10.4.1.4] -.-> E"
+    },
+    {
+      "type": "prose",
+      "en": "Clauses 11 and 12 are the two management interfaces. Clause 11 is the MIB (Management Information Base) — the data model used by SNMP (Simple Network Management Protocol). 11.2 (structure of the MIB) replaces Figure 11-1 to add a MaskAndMatch IdentificationTable and a PerPort MsduMaskMaxLength Table; 11.2.1 (structure of the IEEE8021-STREAM-IDENTIFICATION-MIB) updates Table 11-2 to map every new MIB object back to its clause (e.g. the MaskAndMatch table to 9.1.6, the per-port table to 9.4). 11.5 (MIB modules) and its 11.5.1 give the actual ASN.1 module definitions for the stream-identification MIB. Clause 12 is the parallel YANG model — YANG is the modeling language used by NETCONF/RESTCONF for modern config.",
+      "zh": "第 11、12 章是两套管理接口。第 11 章是 MIB（Management Information Base，管理信息库）——SNMP（Simple Network Management Protocol，简单网络管理协议）使用的数据模型。11.2（MIB 的结构）替换图 11-1，新增一个 MaskAndMatch 标识表和一个 PerPort MsduMaskMaxLength 表；11.2.1（IEEE8021-STREAM-IDENTIFICATION-MIB 的结构）更新表 11-2，把每个新增 MIB 对象映射回其条款（例如 MaskAndMatch 表对应 9.1.6，每端口表对应 9.4）。11.5（MIB 模块）及其 11.5.1 给出流标识 MIB 的实际 ASN.1 模块定义。第 12 章是与之并行的 YANG 模型——YANG 是 NETCONF/RESTCONF 用于现代配置的建模语言。"
+    },
+    {
+      "type": "prose",
+      "en": "Inside Clause 12: 12.2 (IEEE Std 802.1CB YANG model) and its 12.2.1 (Stream identification model) refresh Figure 12-3 and add a {XOR} note — a Stream's parameters are exactly one of the identification types. 12.3 (structure of the YANG model) adds 12.3.1a, the structure of the new ieee802-dot1cb-mask-and-match module. 12.4 (relationship to other YANG modules) adds 12.4.6a, explaining that the mask-and-match module augments (extends) the existing stream-identification module rather than replacing it. 12.6 (definition of 802.1CB YANG modules) carries the literal YANG source: 12.6.1 holds the data-schema trees (with new 12.6.1.1a for mask-and-match) and 12.6.2 holds the full module text (e.g. 12.6.2.1, the stream-identification-types module, revised to add the type number 5).",
+      "zh": "第 12 章内部：12.2（IEEE Std 802.1CB YANG 模型）及其 12.2.1（流标识模型）刷新图 12-3 并加入 {XOR} 注记——一条流的参数恰为其中一种标识类型。12.3（YANG 模型的结构）新增 12.3.1a，即新模块 ieee802-dot1cb-mask-and-match 的结构。12.4（与其他 YANG 模块的关系）新增 12.4.6a，说明掩码匹配模块是对既有流标识模块的增量（augment）扩展，而非替换。12.6（802.1CB YANG 模块的定义）承载逐字的 YANG 源码：12.6.1 给出数据模式树（含新增的 12.6.1.1a 掩码匹配部分），12.6.2 给出完整模块文本（如 12.6.2.1，即流标识类型模块，经修订加入类型编号 5）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: exact clauses for Annex A (PICS), Annex C/C1 (worked examples), Annex D (bibliography)",
+        "zh": "覆盖地图：附录 A（PICS）、附录 C/C1（实例）、附录 D（参考文献）的确切条款"
+      },
+      "en": "Annex A (normative) is the PICS (Protocol Implementation Conformance Statement) proforma — the checklist an implementer fills in to claim conformance. A.2.2 (Stream identification component) and A.2.3/A.2.4/A.2.5 (Talker / Listener / Relay end systems) gain new rows for the optional Mask-and-match feature (item IS4a, LE10a, RS11a, etc., all pointing at 6.8), and A.2.9 (YANG) adds YANG5 for the new ieee802-dot1cb-mask-and-match module. Annex C (informative) shows FRER in whole systems: C.2 (various stack positions) and C.5 (protocol interworking) are reworded so Mask-and-match (6.8) appears alongside IP identification as an option. The inserted Annex C1 (informative) gives two worked Mask-and-match examples — C1.1 an IEC 61158 industrial protocol (untagged, dest-MAC low 12 bits = 0xFAB, EtherType 0x88B6, payload starting 0xBABE) and C1.2 an MPLS DetNet flow — each shown as concrete tsnStreamIdParameters values. Annex D (informative) is the bibliography, adding [Ba] IEC 61158-1:2019, [B9a] IETF RFC 8964 (DetNet MPLS data plane), and [B9b] IETF RFC 9037 (DetNet MPLS over TSN). DetNet = Deterministic Networking; MPLS = Multiprotocol Label Switching.",
+      "zh": "附录 A（规范性）是 PICS（Protocol Implementation Conformance Statement，协议实现一致性声明）模板——实现者据以声明一致性的核对表。A.2.2（流标识组件）与 A.2.3/A.2.4/A.2.5（Talker/Listener/Relay 端系统）为可选的掩码匹配功能新增行（IS4a、LE10a、RS11a 等，均指向 6.8），A.2.9（YANG）新增 YANG5 对应新模块 ieee802-dot1cb-mask-and-match。附录 C（资料性）展示整系统中的 FRER：C.2（不同协议栈位置）和 C.5（协议互通）经改写，使掩码匹配（6.8）与 IP 标识并列为可选项。插入的附录 C1（资料性）给出两个掩码匹配实例——C1.1 为 IEC 61158 工业协议（不带标签、目的 MAC 低 12 位＝0xFAB、EtherType 0x88B6、负载以 0xBABE 开头），C1.2 为 MPLS DetNet 流——均以具体的 tsnStreamIdParameters 取值呈现。附录 D（资料性）是参考文献，新增 [Ba] IEC 61158-1:2019、[B9a] IETF RFC 8964（DetNet MPLS 数据面）和 [B9b] IETF RFC 9037（DetNet MPLS over TSN）。DetNet＝Deterministic Networking，确定性网络；MPLS＝Multiprotocol Label Switching，多协议标签交换。",
+      "cite": {
+        "pdf_id": "8021CBdb-2021",
+        "pages": [
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The amendment's design pattern, in one line: define the feature once (Clause 9.1.6 / 9.4), then surface it through every management surface — SNMP MIB (Clause 11), YANG (Clause 12), and the conformance checklist (Annex A) — and prove it works with concrete examples (Annex C1). Recognizing that pattern makes the whole standard navigable.",
+      "zh": "本修正案的设计套路，一句话概括：先把功能定义一次（9.1.6 / 9.4），再通过每个管理接口把它暴露出来——SNMP MIB（第 11 章）、YANG（第 12 章）、一致性核对表（附录 A）——并用具体实例证明其可用（附录 C1）。看懂这一套路，整部标准便可顺畅导航。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021CBdb-2021",
+      "pages": [
+        30,
+        31,
+        32
+      ],
+      "note": "Clause 9: stream identity table, Mask-and-match managed objects (9.1.6), counters 9.2/9.3, per-port 9.4.1"
+    },
+    {
+      "pdf_id": "8021CBdb-2021",
+      "pages": [
+        33,
+        34
+      ],
+      "note": "Clause 10: 10.2 heading, sequence recovery 10.4.1.4/10.4.1.10, FRER counters 10.8.8 and 10.9"
+    },
+    {
+      "pdf_id": "8021CBdb-2021",
+      "pages": [
+        35,
+        36,
+        37,
+        38,
+        39
+      ],
+      "note": "Clause 11 MIB: structure 11.2/11.2.1, MIB module definitions 11.5/11.5.1"
+    },
+    {
+      "pdf_id": "8021CBdb-2021",
+      "pages": [
+        71,
+        72,
+        73,
+        74
+      ],
+      "note": "Clause 12 YANG: 12.2.1, structure 12.3, relationship 12.4, definitions 12.6.1/12.6.2"
+    },
+    {
+      "pdf_id": "8021CBdb-2021",
+      "pages": [
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89
+      ],
+      "note": "Annex A PICS, Annex C/C1 worked examples, Annex D bibliography"
+    }
+  ],
+  "covers": [
+    "8021CBdb-2021:9.1.1",
+    "8021CBdb-2021:9.1.4",
+    "8021CBdb-2021:9.1.5",
+    "8021CBdb-2021:9.1.6",
+    "8021CBdb-2021:9.2",
+    "8021CBdb-2021:9.3",
+    "8021CBdb-2021:9.4.1",
+    "8021CBdb-2021:10.2",
+    "8021CBdb-2021:10.4.1",
+    "8021CBdb-2021:10.8.8",
+    "8021CBdb-2021:10.9",
+    "8021CBdb-2021:11.2.1",
+    "8021CBdb-2021:11.5.1",
+    "8021CBdb-2021:12.2.1",
+    "8021CBdb-2021:12.3",
+    "8021CBdb-2021:12.4",
+    "8021CBdb-2021:12.6.1",
+    "8021CBdb-2021:12.6.2",
+    "8021CBdb-2021:Annex_A",
+    "8021CBdb-2021:Annex_C",
+    "8021CBdb-2021:Annex_D"
+  ],
+  "track": "tsn"
+}

@@ -1,0 +1,134 @@
+{
+  "id": "bridging-tsn-95",
+  "title": {
+    "en": "PBBN Auto Attach: Architecture, Service Interfaces, and State Machine Variables",
+    "zh": "PBBN 自动接入：架构、业务接口与状态机变量"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Picture a customer VLAN (Virtual LAN — a logical broadcast domain on a switch) that needs to ride across a carrier's backbone. The backbone is a Provider Backbone Bridged Network (PBBN), where each customer service rides inside a Backbone Service Instance (BSI) tagged with a 24-bit I-SID (Backbone Service Instance Identifier). Traditionally, an operator hand-configures the edge device — the Backbone Edge Bridge (BEB) — to map each customer VLAN ID (VID) to the right I-SID. Clause 50 of IEEE Std 802.1Qcj-2023 replaces that manual step with the Auto Attach Protocol (AAP), which carries the mapping requests automatically over the Link Layer Discovery Protocol (LLDP, IEEE Std 802.1AB). This lesson (part 1 of 2) walks through the overview, the service interfaces, the state machine at a high level, and the variables it operates on.",
+      "zh": "设想一个客户 VLAN（虚拟局域网——交换机上的逻辑广播域）需要穿越运营商骨干网传输。骨干网是一个提供商骨干桥接网络（PBBN），其中每个客户业务都封装在一个骨干业务实例（BSI）中，并打上一个 24 位的 I-SID（骨干业务实例标识符）标签。传统做法是运营商手动配置边缘设备——骨干边缘桥（BEB）——把每个客户 VLAN 标识符（VID）映射到正确的 I-SID。IEEE Std 802.1Qcj-2023 的第 50 章用自动接入协议（AAP）取代了这一手动步骤，该协议通过链路层发现协议（LLDP，IEEE Std 802.1AB）自动传送映射请求。本课（共 2 部分中的第 1 部分）将讲解概览、业务接口、状态机的总体框架，以及它所操作的变量。"
+    },
+    {
+      "type": "prose",
+      "en": "Two roles play the AAP. An Auto Attach Device (AAD) is the attaching system — an end station, a C-VLAN Bridge, an S-VLAN Bridge, or a MAC Bridge — that advertises the VID-to-I-SID assignments it wants. An Auto Attach BEB (AAB) is the backbone edge device that decides whether to honor those requests and actually instantiates the VLAN and BSI mappings. The collective term for either party is an Auto Attach System (AAS). The AAD advertises its wishes using two IEEE 802.1 Organizationally Specific LLDP TLVs (Type-Length-Value fields): the PBBN Auto Attach System TLV (which describes who the device is) and the PBBN Auto Attach Assignment TLV (which carries the actual VID/I-SID mappings). Crucially, AAP only runs over a single point-to-point peer-to-peer link — one AAD per AAB port.",
+      "zh": "AAP 有两个角色。自动接入设备（AAD）是发起接入的系统——可以是终端站、C-VLAN 桥、S-VLAN 桥或 MAC 桥——它通告自己希望建立的 VID 到 I-SID 映射。自动接入 BEB（AAB）是骨干边缘设备，负责决定是否接受这些请求，并实际创建 VLAN 与 BSI 映射。两者的统称是自动接入系统（AAS）。AAD 使用两个 IEEE 802.1 组织专有 LLDP TLV（类型-长度-值字段）来通告自己的需求：PBBN 自动接入系统 TLV（描述设备身份）和 PBBN 自动接入分配 TLV（携带实际的 VID/I-SID 映射）。关键的一点是：AAP 只在单条点到点对等链路上运行——每个 AAB 端口只对应一个 AAD。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  AAD[\"AAD (device)\"] -- \"AAP over LLDP\" --> AAB[\"AAB (backbone edge)\"]\n  AAB --> PBBN[\"PBBN backbone\"]\n  AAD -. \"System TLV + Assignment TLV\" .-> AAB\n  AAB -. \"Assignment TLV with status\" .-> AAD",
+      "zh": "flowchart LR\n  AAD[\"AAD（设备）\"] -- \"基于 LLDP 的 AAP\" --> AAB[\"AAB（骨干边缘）\"]\n  AAB --> PBBN[\"PBBN 骨干网\"]\n  AAD -. \"系统 TLV + 分配 TLV\" .-> AAB\n  AAB -. \"带状态的分配 TLV\" .-> AAD"
+    },
+    {
+      "type": "prose",
+      "en": "An AAB offers two flavors of service interface, chosen automatically by the AAD's declared system type. If the AAD is S-VLAN aware, the AAB presents an S-tagged service interface and every mapping in the assignment TLV is S-VID-to-I-SID (50.2.1). For every other AAD type, the AAB presents a C-tagged service interface and the mappings are C-VID-to-I-SID (50.2.2). Either way, the mapping is strictly one-to-one: one VID binds to exactly one I-SID. Frames that match a mapping cross the PBBN; frames that don't are simply not carried. The customer's S-TAG or C-TAG is not carried over the backbone — instead the priority bits (PCP) and drop-eligibility bit (DEI) are regenerated and ride inside the backbone I-TAG, and the original tag is reconstructed on egress.",
+      "zh": "AAB 提供两种业务接口，由 AAD 声明的系统类型自动选择。如果 AAD 是 S-VLAN 感知设备，AAB 就提供 S 标记业务接口，分配 TLV 中的每条映射都是 S-VID 到 I-SID（50.2.1）。对于其他所有 AAD 类型，AAB 提供 C 标记业务接口，映射为 C-VID 到 I-SID（50.2.2）。无论哪种方式，映射都严格是一对一的：一个 VID 恰好绑定一个 I-SID。匹配映射的帧会穿越 PBBN；不匹配的帧则不被承载。客户的 S-TAG 或 C-TAG 不会带过骨干网——而是把优先级比特（PCP）和丢弃资格比特（DEI）重新生成并装入骨干 I-TAG，原始标签在出口处重建。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why one-to-one matters: forcing each customer VLAN to map to exactly one backbone service instance lets the receiving equipment unambiguously identify which service delivered a frame, and it stops the I-component from accidentally stitching point-to-point instances into a multipoint service — which could create data loops. Multipoint service is offered instead through deliberate configuration of the backbone B-VLAN component.",
+      "zh": "为什么一对一很重要：强制每个客户 VLAN 恰好映射到一个骨干业务实例，可以让接收设备明确判断某帧是由哪个业务投递的，并防止 I 组件意外地把点到点实例拼接成多点业务——那样可能造成数据环路。多点业务应通过对骨干 B-VLAN 组件的有意配置来提供。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the state machine, viewed from altitude (50.3). The AAP behavior is split into an AAD state machine and an AAB state machine, and every Auto Attach-enabled port runs its own independent copy. When Auto Attach turns on, the AAS first writes its system information into the local LLDP database; LLDP then transmits it in the System TLV at the next LLDPDU (LLDP Data Unit) interval. Once an AAS sees a neighbor's System TLV, it enters a VALIDATE_REMOTE_ASSOCIATION step that checks the link really is single point-to-point, that the peer's system type is compatible, and that tagging matches. Only after a valid association forms does the AAD start advertising Assignment TLVs; the AAB reads those, decides what it can activate, and writes back each mapping's status as pending, active, or rejected-with-reason.",
+      "zh": "现在从总体俯瞰状态机（50.3）。AAP 行为分为 AAD 状态机和 AAB 状态机，每个启用了自动接入的端口都运行各自独立的副本。自动接入开启时，AAS 首先把系统信息写入本地 LLDP 数据库；LLDP 随后在下一个 LLDPDU（LLDP 数据单元）间隔内通过系统 TLV 发送出去。一旦某 AAS 看到邻居的系统 TLV，便进入 VALIDATE_REMOTE_ASSOCIATION（验证远端关联）步骤，检查该链路确实是单一点到点、对端系统类型兼容、标记方式匹配。只有在形成有效关联之后，AAD 才开始通告分配 TLV；AAB 读取这些 TLV，判断哪些可以激活，并把每条映射的状态回写为待处理（pending）、激活（active）或带原因拒绝（rejected-with-reason）。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> WriteSysTLV: Auto Attach enabled\n  WriteSysTLV --> ValidateAssoc: neighbor System TLV seen\n  ValidateAssoc --> Associated: checks pass\n  ValidateAssoc --> WriteSysTLV: mismatch, keep checking\n  Associated --> Active: AAD sends Assignment TLV\n  Active --> WriteSysTLV: link/system inactivity, restart",
+      "zh": "stateDiagram-v2\n  [*] --> 写系统TLV: 自动接入已启用\n  写系统TLV --> 验证关联: 收到邻居系统TLV\n  验证关联 --> 已关联: 校验通过\n  验证关联 --> 写系统TLV: 不匹配，继续校验\n  已关联 --> 激活: AAD发送分配TLV\n  激活 --> 写系统TLV: 链路/系统失活，重启"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "State machine behavior map: 50.3.1 through 50.3.5",
+        "zh": "状态机行为映射：50.3.1 至 50.3.5"
+      },
+      "en": "50.3.1 System inactivity — if the remote LLDP database is deleted, the Auto Attach TLVs disappear, or System TLVs stop arriving, then all operating VID-to-I-SID assignments are deactivated and the AAP restarts. 50.3.2 Multiple AAD systems — the topology must stay single point-to-point; multiple AADs may NOT associate on one AAB port, only one AAD per AAB port interface. 50.3.3 AAD assignment requests — the AAD sends mapping requests in the Assignment TLV (a combination of VID/I-SID plus status); assignments form only when (a) a valid remote association exists and (b) the per-port variable aaAdminPortVidIsidAsgns[] has been configured via management (12.34.4). 50.3.4 AAB assignment request processing — the AAB processes each request individually, accepting (instantiating the VLAN/BSI, or reusing a pre-existing I-SID) or rejecting it with a reason such as 'invalid VLAN ID', 'I-SID resources unavailable', or 'assignment not allowed'; a rejected AAD keeps re-requesting until the assignment is administratively removed. 50.3.5 Assignment updates — all active assignments on the AAB are refreshed from the AAD's current Assignment TLV; if a previously present VID/I-SID stops appearing in later TLVs, the AAB removes that mapping and releases its binding.",
+      "zh": "50.3.1 系统失活——若远端 LLDP 数据库被删除、自动接入 TLV 消失、或系统 TLV 停止到达，则所有正在运行的 VID 到 I-SID 映射被停用，AAP 重启。50.3.2 多 AAD 系统——拓扑必须保持单一点到点；多个 AAD 不得在同一 AAB 端口上建立关联，每个 AAB 端口接口只允许一个 AAD。50.3.3 AAD 分配请求——AAD 在分配 TLV 中发送映射请求（VID/I-SID 与状态的组合）；只有当（a）存在有效远端关联且（b）每端口变量 aaAdminPortVidIsidAsgns[] 已通过管理接口（12.34.4）配置时，映射才会建立。50.3.4 AAB 分配请求处理——AAB 逐条处理请求，要么接受（创建 VLAN/BSI，或复用已存在的 I-SID），要么以原因拒绝，如“无效 VLAN ID”“I-SID 资源不可用”或“不允许此分配”；被拒绝的 AAD 会持续重新请求，直到该分配被管理员移除。50.3.5 分配更新——AAB 上所有激活的分配都依据 AAD 当前的分配 TLV 刷新；若先前存在的某 VID/I-SID 在后续 TLV 中不再出现，AAB 便移除该映射并释放其绑定。",
+      "cite": {
+        "pdf_id": "8021Qcj-2023",
+        "pages": [
+          60,
+          61,
+          62,
+          63
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The state machine works on two kinds of variables (50.4). Per-AAS (system-wide) variables are shared by all per-port machine instances, so an implementation must interlock access to keep them consistent. Per-port variables belong to a single port's machine. Several variables are built from complex C-style structures (50.4.1) that the machine copies and compares as if they were strings: a copy duplicates the whole structure, and two structures compare equal only when they are exactly the same size and content. Arrays index from zero, and the diagrams use dot notation (structure.object) to reach inside a structure — with an 'except' prefix to exclude a field from a string-style comparison.",
+      "zh": "状态机操作两类变量（50.4）。每 AAS（系统级）变量由所有每端口机器实例共享，因此实现必须对其访问加互锁以保持一致。每端口变量属于单个端口的机器。若干变量由复杂的 C 风格结构（50.4.1）构成，机器把它们当作字符串来复制和比较：复制会整体复制该结构，两个结构只有在大小和内容完全相同时才比较相等。数组从零开始索引，状态机图用点表示法（结构.对象）访问结构内部——并用 except 前缀在字符串式比较中排除某个字段。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"30\" width=\"80\" height=\"30\"/><text x=\"50\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">status:4</text><rect x=\"90\" y=\"30\" width=\"120\" height=\"30\"/><text x=\"150\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">vid:12</text><rect x=\"210\" y=\"30\" width=\"180\" height=\"30\"/><text x=\"300\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">isid:24</text><text x=\"10\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">ASGNStriple (one assignment row)</text></svg>",
+      "caption": {
+        "en": "The ASGNStriple structure (50.4.1.1) packs a 4-bit status, 12-bit VID, and 24-bit I-SID; an array of these triples forms the ASGNSstring that models the whole Assignment TLV.",
+        "zh": "ASGNStriple 结构（50.4.1.1）封装 4 位状态、12 位 VID 和 24 位 I-SID；由这些三元组构成的数组组成 ASGNSstring，用来建模整个分配 TLV。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Variable coverage map: structures 50.4.1, per-AAS 50.4.2, per-port 50.4.3",
+        "zh": "变量覆盖映射：结构 50.4.1、每 AAS 50.4.2、每端口 50.4.3"
+      },
+      "en": "50.4.1 Structure type definitions — C-style typedefs the machine copies/compares as strings: ASGNStriple and ASGNSstring model the Assignment TLV (50.4.1.1); DISCport models one discovered remote attach port (50.4.1.2); SYSstring and PORTNETIDstring model the System TLV (50.4.1.3); VIDISIDpair is a 12-bit VID + 24-bit I-SID 2-tuple (50.4.1.4). 50.4.2 Per-AAS (system-wide) variables — aaAdminSystemEnable (FALSE forces all ports to INIT; set via aaSystemEnable 12.34.1); aaOperDiscAssocTable[] (array of DISCport listing associated remote ports); aaOperAadActiveAssocIndex (index of the active AAD association, or NO_ACTIVE_ASSOC); aaSystemMAC (a MAC uniquely naming this AAS, e.g. the LLDP ChassisID); aaSystemType (AAB, CVLAN_AWARE_AAD, VLAN_UNAWARE_AAD, or SVLAN_AWARE_AAD); aaSystemResetTime (1–1200 s, seeds the reset timer); and BEGIN (TRUE pins every machine in its initial state). 50.4.3 Per-port variables — aaAdminPortEnable (FALSE forces this port to INIT; from aaPortEnable 12.34.2); aaAdminVidIsidAsgns[] (the management-loaded desired VID/I-SID pairs, AAD-only); aaAsgnsTlvEnable (gates Assignment TLV transmission); aaCurVidIsidAsgns[] (assignments the AAD currently advertises); aaCurRemAsgnsTlv, aaLocAsgnsTlv, aaLocSysTlv, aaOperLocAsgnsTlv, aaOperLocSysTlv, aaOperRemAsgnsTlv, aaOperRemSysTlv (current/local/operational copies of the Assignment and System TLVs); aaPendingCompleted (AAB boolean, TRUE when a pending operation finishes); aaPortId (the port's if-ref); and aaPortTagging (the port's configured tagging option).",
+      "zh": "50.4.1 结构类型定义——机器当作字符串复制/比较的 C 风格 typedef：ASGNStriple 与 ASGNSstring 建模分配 TLV（50.4.1.1）；DISCport 建模一个已发现的远端接入端口（50.4.1.2）；SYSstring 与 PORTNETIDstring 建模系统 TLV（50.4.1.3）；VIDISIDpair 是 12 位 VID + 24 位 I-SID 的二元组（50.4.1.4）。50.4.2 每 AAS（系统级）变量——aaAdminSystemEnable（FALSE 强制所有端口进入 INIT；由 aaSystemEnable 12.34.1 设置）；aaOperDiscAssocTable[]（DISCport 数组，列出已关联的远端端口）；aaOperAadActiveAssocIndex（激活 AAD 关联的索引，或 NO_ACTIVE_ASSOC）；aaSystemMAC（唯一标识本 AAS 的 MAC，如 LLDP ChassisID）；aaSystemType（AAB、CVLAN_AWARE_AAD、VLAN_UNAWARE_AAD 或 SVLAN_AWARE_AAD）；aaSystemResetTime（1–1200 秒，用于初始化重置定时器）；以及 BEGIN（TRUE 将每个机器锁定在初始状态）。50.4.3 每端口变量——aaAdminPortEnable（FALSE 强制本端口进入 INIT；来自 aaPortEnable 12.34.2）；aaAdminVidIsidAsgns[]（管理接口加载的期望 VID/I-SID 对，仅 AAD 使用）；aaAsgnsTlvEnable（控制分配 TLV 的发送）；aaCurVidIsidAsgns[]（AAD 当前通告的分配）；aaCurRemAsgnsTlv、aaLocAsgnsTlv、aaLocSysTlv、aaOperLocAsgnsTlv、aaOperLocSysTlv、aaOperRemAsgnsTlv、aaOperRemSysTlv（分配与系统 TLV 的当前/本地/操作副本）；aaPendingCompleted（AAB 布尔量，待处理操作完成时为 TRUE）；aaPortId（端口的 if-ref）；以及 aaPortTagging（端口配置的标记选项）。",
+      "cite": {
+        "pdf_id": "8021Qcj-2023",
+        "pages": [
+          63,
+          64,
+          65,
+          66
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: think of the System TLV as a handshake business card (who I am, what tagging I speak) and the Assignment TLV as the order form (which VLANs I want bound to which backbone services, and the running status of each line item). Part 2 of this lesson dives into the procedures and the full AAD/AAB state machine transitions that act on these variables.",
+      "zh": "记忆模型：把系统 TLV 想成握手用的名片（我是谁、我用哪种标记），把分配 TLV 想成订单（我想把哪些 VLAN 绑定到哪些骨干业务，以及每个条目的当前状态）。本课的第 2 部分将深入讲解作用于这些变量的各类过程，以及完整的 AAD/AAB 状态机转换。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Qcj-2023",
+      "pages": [
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66
+      ],
+      "note": "Clause 50 PBBN Auto Attach: 50.1 Overview, 50.2 Service interfaces, 50.3 State machine overview, 50.4 State machine variables."
+    }
+  ],
+  "covers": [
+    "8021Qcj-2023:50.1",
+    "8021Qcj-2023:50.2.1",
+    "8021Qcj-2023:50.2.2",
+    "8021Qcj-2023:50.3.1",
+    "8021Qcj-2023:50.3.2",
+    "8021Qcj-2023:50.3.3",
+    "8021Qcj-2023:50.3.4",
+    "8021Qcj-2023:50.3.5",
+    "8021Qcj-2023:50.4.1",
+    "8021Qcj-2023:50.4.2",
+    "8021Qcj-2023:50.4.3"
+  ],
+  "track": "bridging-tsn"
+}

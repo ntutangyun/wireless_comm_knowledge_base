@@ -1,0 +1,173 @@
+{
+  "id": "bridging-tsn-98",
+  "title": {
+    "en": "Reading the 802.1Qcw Edits: From Overview to Bridge Management, the MIB, SRP, and TSN Configuration",
+    "zh": "读懂 802.1Qcw 的修订：从概述到桥管理、MIB、SRP 与 TSN 配置"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1Qcw-2023 is Amendment 36 to the bridging standard IEEE Std 802.1Q. Its headline job is to add YANG data models (a structured, machine-readable way to configure and read network devices) for three Time-Sensitive Networking (TSN) features: Scheduled Traffic, Frame Preemption, and Per-Stream Filtering and Policing (PSFP). But to make those models complete, the amendment also threads small edits through several other clauses of the base standard. This lesson is a guided tour of those threaded edits. We will not cover the YANG modules themselves (that is Clause 48); instead we visit each place the amendment touches the Overview (Clause 1), Bridge management (Clause 12), the Management Information Base or MIB (Clause 17), the Stream Reservation Protocol or SRP (Clause 35), and the central TSN configuration model (Clause 46).",
+      "zh": "IEEE Std 802.1Qcw-2023 是桥接标准 IEEE Std 802.1Q 的第 36 号修正案。它的核心任务是为三项时间敏感网络（TSN，Time-Sensitive Networking）特性新增 YANG 数据模型（一种结构化、机器可读的设备配置与读取方式）：计划流量（Scheduled Traffic）、帧抢占（Frame Preemption）以及每流过滤与监管（PSFP，Per-Stream Filtering and Policing）。但要让这些模型完整，修正案还在基础标准的若干其他章节中穿插了一些小改动。本课就是对这些穿插改动的导览。我们不讲 YANG 模块本身（那是第 48 章），而是逐一走访该修正案触及的各处：概述（第 1 章）、桥管理（第 12 章）、管理信息库（MIB，Management Information Base，第 17 章）、流预留协议（SRP，Stream Reservation Protocol，第 35 章）以及核心的 TSN 配置模型（第 46 章）。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the Overview. Clause 1.3 (Introduction) is the list of high-level purposes the standard serves. The amendment inserts a single new list item (lettered cs) right after the existing item cr) and renumbers everything after it: 'Define YANG configuration and operational state models (Clause 48) in support of scheduled traffic, frame preemption, and Per-Stream Filtering and Policing.' That one sentence is the charter for the whole amendment, and it is the only thing 1.3 changes. Note the distinction it draws: configuration models say what you want a device to do, operational state models report what the device is actually doing.",
+      "zh": "先从概述说起。第 1.3 节（引言）列出了标准所服务的高层目的。修正案在原有条目 cr) 之后插入了一个新条目（编号为 cs)），并对其后所有条目重新编号：「定义支持计划流量、帧抢占和每流过滤与监管的 YANG 配置模型与运行状态模型（第 48 章）。」这一句话就是整个修正案的纲领，也是 1.3 节唯一的改动。请留意它划出的区分：配置模型表达「你想让设备做什么」，而运行状态模型报告「设备实际在做什么」。"
+    },
+    {
+      "type": "prose",
+      "en": "Now Bridge management (Clause 12). A managed object is a named, readable (and sometimes writable) value a network manager can query on a device. Clause 12.29 holds the managed objects for Scheduled Traffic, and its 12.29.1 Gate Parameter Table describes the time-gated transmission gates. The amendment adds two read-only objects here. SupportedCycleMax (12.29.1.6) is the largest cycle time the port supports for its schedule, and SupportedIntervalMax (12.29.1.7) is the largest single time interval value the port supports inside that cycle. These let a manager discover a port's hardware limits before pushing a schedule that the port cannot actually run. The amendment also clarifies that a GateControlEntry (12.29.1.2.1) is one operation name followed by up to two parameters: a gate-states value and a time-interval value.",
+      "zh": "再看桥管理（第 12 章）。受管对象（managed object）是一个具名、可读（有时可写）的值，网络管理者可在设备上查询它。第 12.29 节存放计划流量的受管对象，其中 12.29.1 门参数表（Gate Parameter Table）描述按时间开闭的发送门。修正案在此新增了两个只读对象。SupportedCycleMax（12.29.1.6）是该端口在其调度计划中支持的最大周期时间；SupportedIntervalMax（12.29.1.7）是该端口在一个周期内支持的最大单个时间间隔值。有了它们，管理者可在下发设备实际跑不动的调度计划之前，先探明端口的硬件上限。修正案还澄清：一条 GateControlEntry（12.29.1.2.1）由一个操作名加最多两个参数组成——一个门状态值和一个时间间隔值。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 12.31 holds the managed objects for Per-Stream Filtering and Policing. Its 12.31.1 Stream Parameter Table gets the same two limit objects mirrored here: SupportedCycleMax (12.31.1.7) and SupportedIntervalMax (12.31.1.8). Its 12.31.3 Stream Gate Instance Table describes the per-stream gates. The amendment refines the StreamGateControlEntry (12.31.3.2.2) to carry three mandatory parameters plus one optional fourth, and adds that fourth parameter's definition: IntervalOctetMaxValue (12.31.3.2.5), an unsigned integer giving the maximum number of MSDU octets (MAC Service Data Unit bytes, i.e. payload bytes) the gate will admit in one interval. So a stream gate can be limited not just by time, but by how many bytes pass while it is open.",
+      "zh": "第 12.31 节存放每流过滤与监管的受管对象。其中 12.31.1 流参数表（Stream Parameter Table）镜像地获得了同样的两个上限对象：SupportedCycleMax（12.31.1.7）和 SupportedIntervalMax（12.31.1.8）。其 12.31.3 流门实例表（Stream Gate Instance Table）描述每个流的门。修正案细化了 StreamGateControlEntry（12.31.3.2.2），使其携带三个必选参数加一个可选的第四参数，并给出第四参数的定义：IntervalOctetMaxValue（12.31.3.2.5），一个无符号整数，表示门在一个间隔内允许通过的最大 MSDU 字节数（MSDU 即 MAC 服务数据单元，亦即净荷字节）。于是流门不仅可按时间限制，还可按门开启期间通过的字节数来限制。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Network manager] -->|reads| B[SupportedCycleMax]\n  A -->|reads| C[SupportedIntervalMax]\n  B --> D{Schedule fits port limits?}\n  C --> D\n  D -->|yes| E[Push gate schedule]\n  D -->|no| F[Reduce cycle / interval]",
+      "zh": "flowchart LR\n  A[网络管理者] -->|读取| B[SupportedCycleMax]\n  A -->|读取| C[SupportedIntervalMax]\n  B --> D{调度计划符合端口上限?}\n  C --> D\n  D -->|是| E[下发门调度计划]\n  D -->|否| F[缩小周期/间隔]"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The pattern repeats on purpose: SupportedCycleMax and SupportedIntervalMax appear once for Scheduled Traffic (12.29.1) and again for PSFP (12.31.1). Same idea, two feature areas. Spotting that this amendment mostly adds capability-discovery limits in symmetric pairs makes the rest of it much easier to read.",
+      "zh": "这种重复是有意为之：SupportedCycleMax 与 SupportedIntervalMax 在计划流量（12.29.1）中出现一次，又在 PSFP（12.31.1）中再现一次。同一思路，两个特性领域。一旦看出这份修正案主要是以对称成对的方式新增「能力发现」上限，后面的内容就好读多了。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 17 is the Management Information Base (MIB) — the SNMP (Simple Network Management Protocol) view of all those managed objects, expressed in formal MIB module text. It comes in two layers. First, 17.2 Structure of the MIB is a set of summary tables that list each module's objects and point back to the Clause 12 definitions. The amendment adds three rows to 17.2.22 (the IEEE8021-ST-MIB structure, for Scheduled Traffic) and three rows to 17.2.24 (the IEEE8021-PSFP-MIB structure, for PSFP). Notice that SupportedCycleMax — a single rational-number concept — becomes two MIB objects, a numerator and a denominator, because SNMP cannot carry a fraction directly.",
+      "zh": "第 17 章是管理信息库（MIB），也就是所有这些受管对象在 SNMP（简单网络管理协议，Simple Network Management Protocol）下的视图，以正式的 MIB 模块文本表达。它分两层。首先，17.2 节 MIB 结构（Structure of the MIB）是一组汇总表，列出每个模块的对象并指回第 12 章的定义。修正案向 17.2.22（IEEE8021-ST-MIB 结构，用于计划流量）新增三行，向 17.2.24（IEEE8021-PSFP-MIB 结构，用于 PSFP）也新增三行。请注意：SupportedCycleMax 这个单一的有理数概念在 MIB 中变成了两个对象——一个分子、一个分母，因为 SNMP 无法直接承载分数。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 400 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"18\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">SupportedCycleMax (one rational number)</text><rect x=\"10\" y=\"30\" width=\"160\" height=\"34\"/><text x=\"90\" y=\"51\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">RationalNumber</text><path d=\"M180 47 L230 47\" marker-end=\"url(#a)\"/><defs><marker id=\"a\" markerWidth=\"8\" markerHeight=\"8\" refX=\"6\" refY=\"3\" orient=\"auto\"><path d=\"M0 0 L6 3 L0 6 z\" stroke=\"none\" fill=\"currentColor\"/></marker></defs><rect x=\"240\" y=\"15\" width=\"150\" height=\"30\"/><text x=\"315\" y=\"34\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">...CycleMaxNumerator</text><rect x=\"240\" y=\"55\" width=\"150\" height=\"30\"/><text x=\"315\" y=\"74\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">...CycleMaxDenominator</text><text x=\"10\" y=\"115\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">SNMP carries the fraction as two integer MIB objects.</text></svg>",
+      "caption": {
+        "en": "How one rational value (SupportedCycleMax) is split into a numerator MIB object and a denominator MIB object in the IEEE8021-ST-MIB and IEEE8021-PSFP-MIB structures (17.2.22, 17.2.24).",
+        "zh": "在 IEEE8021-ST-MIB 与 IEEE8021-PSFP-MIB 结构（17.2.22、17.2.24）中，一个有理数值（SupportedCycleMax）如何拆成一个分子 MIB 对象和一个分母 MIB 对象。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Second, 17.7 MIB modules holds the actual ASN.1 MIB module text. The amendment edits three modules. The IEEE8021-SRP-MIB (17.7.14), which manages the Stream Reservation Protocol, gets refreshed import lists and an updated revision date. The IEEE8021-ST-MIB (17.7.22) — the Scheduled Traffic module — gains a new revision note adding the SupportedCycleMax and SupportedIntervalMax objects. The IEEE8021-PSFP-MIB (17.7.24) — the PSFP module — gets the same pair of new objects and its own revision note. The 17.2 summary tables and the 17.7 module text are two views of the same change: the summary points to it, the module defines it.",
+      "zh": "其次，17.7 节 MIB 模块（MIB modules）存放真正的 ASN.1 MIB 模块文本。修正案改动了三个模块。IEEE8021-SRP-MIB（17.7.14）管理流预留协议，其导入列表得到刷新、修订日期得到更新。IEEE8021-ST-MIB（17.7.22）即计划流量模块，新增一条修订说明，加入 SupportedCycleMax 与 SupportedIntervalMax 对象。IEEE8021-PSFP-MIB（17.7.24）即 PSFP 模块，获得同样的一对新对象及其自身的修订说明。17.2 的汇总表与 17.7 的模块文本是同一改动的两个视图：汇总表指向它，模块文本定义它。"
+    },
+    {
+      "type": "prose",
+      "en": "The last two stops are about counting frames, and they show a subtle wording fix repeated in two places. Clause 35 is the Stream Reservation Protocol (SRP). Inside 35.2.2 (Definition of MRP elements — MRP is the Multiple Registration Protocol that SRP runs on), the TSpec sub-field defines MaxIntervalFrames: a 16-bit count of the most frames a Talker may transmit in one measurement interval. The amendment changes 'may transmit' to 'can initiate' — a Talker is the source of a stream, and the fix makes clear it counts frames the Talker starts sending, not some other measure. Clause 46 is the central TSN configuration model. Its 46.2.3 Talker description carries MaxFramesPerInterval, the same idea, and gets the identical edit: 'maximum number of frame transmissions that the Talker can initiate in one Interval.' Two clauses, one consistent definition.",
+      "zh": "最后两站都关乎「数帧」，它们展示了在两处重复出现的一处微妙措辞修正。第 35 章是流预留协议（SRP）。在 35.2.2 节（MRP 元素的定义——MRP 即多重注册协议，Multiple Registration Protocol，SRP 即运行其上）中，TSpec 子字段定义了 MaxIntervalFrames：一个 16 位计数，表示发送者（Talker）在一个测量间隔内最多可发送的帧数。修正案把「可发送（may transmit）」改为「可发起（can initiate）」——Talker 是流的源头，此修正点明它计的是 Talker 开始发送的帧，而非别的度量。第 46 章是核心的 TSN 配置模型。其 46.2.3 节 Talker 描述携带 MaxFramesPerInterval，思路相同，并获得完全一致的修订：「Talker 在一个 Interval 内可发起的最大帧传输数」。两个章节，一个统一定义。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause this lesson teaches, by exact number",
+        "zh": "覆盖地图——本课讲授的每个条款，按精确编号"
+      },
+      "en": "Overview: 1.3 (Introduction) inserts list item cs) — define YANG configuration and operational state models for scheduled traffic, frame preemption, and PSFP (Clause 48). Bridge management: 12.29.1 (Gate Parameter Table) adds SupportedCycleMax (12.29.1.6) and SupportedIntervalMax (12.29.1.7) and clarifies GateControlEntry; 12.31.1 (Stream Parameter Table) adds SupportedCycleMax (12.31.1.7) and SupportedIntervalMax (12.31.1.8); 12.31.3 (Stream Gate Instance Table) refines StreamGateControlEntry and adds IntervalOctetMaxValue (12.31.3.2.5). MIB structure: 17.2.22 adds three rows to the IEEE8021-ST-MIB structure (CycleMax numerator + denominator, IntervalMax); 17.2.24 adds three rows to the IEEE8021-PSFP-MIB structure. MIB modules: 17.7.14 updates the IEEE8021-SRP-MIB module; 17.7.22 updates the IEEE8021-ST-MIB module (new revision adding SupportedCycleMax/IntervalMax); 17.7.24 updates the IEEE8021-PSFP-MIB module (same pair). SRP: 35.2.2 changes the TSpec MaxIntervalFrames wording (35.2.2.8.4) to 'can initiate' per classMeasurementInterval. TSN configuration: 46.2.3 (Talker) changes MaxFramesPerInterval (46.2.3.5.2) to 'frame transmissions the Talker can initiate in one Interval.'",
+      "zh": "概述：1.3 节（引言）插入条目 cs)——定义支持计划流量、帧抢占与 PSFP 的 YANG 配置与运行状态模型（第 48 章）。桥管理：12.29.1（门参数表）新增 SupportedCycleMax（12.29.1.6）与 SupportedIntervalMax（12.29.1.7），并澄清 GateControlEntry；12.31.1（流参数表）新增 SupportedCycleMax（12.31.1.7）与 SupportedIntervalMax（12.31.1.8）；12.31.3（流门实例表）细化 StreamGateControlEntry 并新增 IntervalOctetMaxValue（12.31.3.2.5）。MIB 结构：17.2.22 向 IEEE8021-ST-MIB 结构新增三行（CycleMax 分子+分母、IntervalMax）；17.2.24 向 IEEE8021-PSFP-MIB 结构新增三行。MIB 模块：17.7.14 更新 IEEE8021-SRP-MIB 模块；17.7.22 更新 IEEE8021-ST-MIB 模块（新增修订加入 SupportedCycleMax/IntervalMax）；17.7.24 更新 IEEE8021-PSFP-MIB 模块（同一对对象）。SRP：35.2.2 将 TSpec 的 MaxIntervalFrames 措辞（35.2.2.8.4）改为按 classMeasurementInterval「可发起」。TSN 配置：46.2.3（Talker）将 MaxFramesPerInterval（46.2.3.5.2）改为「Talker 在一个 Interval 内可发起的帧传输数」。",
+      "cite": {
+        "pdf_id": "8021Qcw-2023",
+        "pages": [
+          16,
+          17,
+          18,
+          19,
+          20,
+          39,
+          50,
+          70,
+          71
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model for the whole amendment: it pours new capability-limit objects (CycleMax, IntervalMax, IntervalOctetMax) into the Scheduled Traffic and PSFP managed objects (Clause 12), mirrors them into the SNMP MIB (Clause 17), and tidies the frame-counting wording in SRP and TSN configuration (Clauses 35 and 46) — all so the new YANG models in Clause 48 have consistent, well-defined values to expose.",
+      "zh": "整份修正案的思维模型：它向计划流量与 PSFP 的受管对象（第 12 章）注入新的能力上限对象（CycleMax、IntervalMax、IntervalOctetMax），将其镜像进 SNMP MIB（第 17 章），并整理 SRP 与 TSN 配置（第 35、46 章）中的数帧措辞——这一切都是为了让第 48 章的新 YANG 模型有一致、定义良好的值可供暴露。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Qcw-2023",
+      "pages": [
+        16
+      ],
+      "note": "1.3 Introduction — inserts list item cs) for YANG models"
+    },
+    {
+      "pdf_id": "8021Qcw-2023",
+      "pages": [
+        17
+      ],
+      "note": "12.29.1 Gate Parameter Table — SupportedCycleMax/IntervalMax, GateControlEntry"
+    },
+    {
+      "pdf_id": "8021Qcw-2023",
+      "pages": [
+        18
+      ],
+      "note": "12.31.1 Stream Parameter Table and 12.31.3 Stream Gate Instance Table — IntervalOctetMaxValue"
+    },
+    {
+      "pdf_id": "8021Qcw-2023",
+      "pages": [
+        19
+      ],
+      "note": "17.2.22 / 17.2.24 MIB structure tables"
+    },
+    {
+      "pdf_id": "8021Qcw-2023",
+      "pages": [
+        20
+      ],
+      "note": "17.7.14 IEEE8021-SRP-MIB module"
+    },
+    {
+      "pdf_id": "8021Qcw-2023",
+      "pages": [
+        39
+      ],
+      "note": "17.7.22 IEEE8021-ST-MIB module"
+    },
+    {
+      "pdf_id": "8021Qcw-2023",
+      "pages": [
+        50
+      ],
+      "note": "17.7.24 IEEE8021-PSFP-MIB module"
+    },
+    {
+      "pdf_id": "8021Qcw-2023",
+      "pages": [
+        70
+      ],
+      "note": "35.2.2 TSpec MaxIntervalFrames wording"
+    },
+    {
+      "pdf_id": "8021Qcw-2023",
+      "pages": [
+        71
+      ],
+      "note": "46.2.3 Talker MaxFramesPerInterval wording"
+    }
+  ],
+  "covers": [
+    "8021Qcw-2023:1.3",
+    "8021Qcw-2023:12.29.1",
+    "8021Qcw-2023:12.31.1",
+    "8021Qcw-2023:12.31.3",
+    "8021Qcw-2023:17.2.22",
+    "8021Qcw-2023:17.2.24",
+    "8021Qcw-2023:17.7.14",
+    "8021Qcw-2023:17.7.22",
+    "8021Qcw-2023:17.7.24",
+    "8021Qcw-2023:35.2.2",
+    "8021Qcw-2023:46.2.3"
+  ],
+  "track": "bridging-tsn"
+}

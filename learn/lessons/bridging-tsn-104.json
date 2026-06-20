@@ -1,0 +1,220 @@
+{
+  "id": "bridging-tsn-104",
+  "title": {
+    "en": "Congestion Isolation (Clause 49): Moving the Elephants Out of the Way",
+    "zh": "拥塞隔离（第 49 章）：把“大象流”请到一边去"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Congestion Isolation (CI) is IEEE Std 802.1Qcz-2023, Amendment 35 to the bridging standard. Picture a data-center network where a few long-lived 'elephant' flows hog a queue and delay the many short, urgent 'mice' flows behind them — classic head-of-line blocking. CI's idea (Clause 49) is simple and intuitive: when a switch detects congestion, it figures out which flow is to blame, demotes that flow into a separate low-priority 'congesting' queue, and tells its upstream neighbor to do the same. The well-behaved traffic keeps flowing on the normal 'monitored' queue while the troublemaker is gently held back, buying time for the higher-layer congestion control loop (e.g. ECN/RoCE) to slow the source down.",
+      "zh": "拥塞隔离（Congestion Isolation，简称 CI）是 IEEE Std 802.1Qcz-2023，即桥接标准的第 35 号修正案。设想一个数据中心网络：少数几条长时间运行的“大象流”占满了某个队列，把排在后面的大量短小而紧急的“老鼠流”全都拖住了——这就是经典的队头阻塞（head-of-line blocking）。CI（第 49 章）的思路简单而直观：当交换机检测到拥塞时，先找出“肇事”的那条流，把它降级到一个独立的低优先级“拥塞队列”里，再通知上游邻居也照做。规矩的流量继续走正常的“监控队列”，而捣乱的流则被温和地按住，为更高层的拥塞控制环路（如 ECN/RoCE）争取时间去让发送源放慢速度。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Three acronyms to anchor everything: CI = Congestion Isolation (the whole feature); CIM = Congestion Isolation Message (the hop-by-hop signal sent upstream); CIP = Congestion Isolation Point (the new forwarding block inside a bridge port). ECN = Explicit Congestion Notification (IETF RFC 3168) marks IP packets so the end hosts eventually slow down. PFC = Priority-based Flow Control (Clause 36) is the lossless link-level pause CI tries to invoke less often.",
+      "zh": "先记住三个关键缩写：CI = 拥塞隔离（整个功能）；CIM = 拥塞隔离消息（逐跳向上游发送的信号）；CIP = 拥塞隔离点（桥接端口内新增的转发模块）。ECN = 显式拥塞通知（IETF RFC 3168），它在 IP 报文上打标记，使端主机最终降速；PFC = 基于优先级的流控（第 36 章），是无损链路级的暂停机制，而 CI 的目标正是尽量减少触发它。"
+    },
+    {
+      "type": "prose",
+      "en": "Why does this matter? Clause 49.1 lists CI's objectives: with high probability identify congesting flows; avoid head-of-line blocking both locally and at the upstream peer; reduce how often PFC must be invoked in lossless networks; and cut frame loss in lossy networks that don't run PFC. CI is explicitly designed to coexist with what's already deployed — it works in both layer-2 and layer-3 networks, auto-detects legacy peers and disables CIM signaling to them, needs only a small set of consistent configuration knobs, and discovers peer capabilities using existing LLDP (Link Layer Discovery Protocol) messages rather than inventing a new hello protocol.",
+      "zh": "这有什么意义？第 49.1 节列出了 CI 的目标：以高概率识别出拥塞流；在本地和上游对端都避免队头阻塞；在无损网络中减少触发 PFC 的频率；在不运行 PFC 的有损网络中减少丢帧。CI 的设计明确强调与既有部署共存——它同时适用于二层和三层网络，能自动识别旧式（不支持 CI 的）对端并停止向其发送 CIM，只需一小组取值一致的配置参数，并复用已有的 LLDP（链路层发现协议）消息来发现对端能力，而不必另造一套握手协议。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 49.2 walks through the life of a congesting flow. (49.2.1) Identification: an Active Queue Management (AQM) scheme that supports ECN spots the flow — the standard's CP algorithm from Clause 30 may be reused. (49.2.2) The flow is registered in the IEEE Std 802.1CB Stream identity table using IP stream identification, yielding a stream_handle. (49.2.3) Priority modification: per-stream classification and metering (8.6.5.2) uses that handle to rewrite the frame's internal priority, steering it into the congesting queue — and since a frame's Priority Code Point (PCP) encodes its priority, the PCP is rewritten too. (49.2.4) PFC interaction: because PFC acts per-priority, all frames must be VLAN-tagged so the downstream peer pauses the correct priority. (49.2.5) Signaling: once the congesting queue itself congests, a CIM goes upstream carrying enough of the frame to let the peer register the same flow. (49.2.6) Recovery: when the congesting queue drains (or by smarter methods) the flow returns to non-congesting status. (49.2.7) Topology: every device has a 'level' counted in hops from edge servers, and each port faces uplink, downlink, or crosslink. (49.2.8) Versus Congestion Notification (Clause 30): both signal upstream, but CN reaches all the way to the source station, whereas CI talks only to the immediate peer and reclassifies traffic class — which CN never does.",
+      "zh": "第 49.2 节讲述了一条拥塞流的“一生”。（49.2.1）识别：支持 ECN 的主动队列管理（AQM）方案发现该流——可复用第 30 章中标准定义的 CP 算法。（49.2.2）该流以 IP 流标识方式登记进 IEEE Std 802.1CB 流标识表，得到一个 stream_handle（流句柄）。（49.2.3）改优先级：逐流分类与计量（8.6.5.2）借助该句柄改写帧的内部优先级，把它导入拥塞队列——由于优先级编码在优先级码点（PCP）中，PCP 也随之改写。（49.2.4）与 PFC 交互：因为 PFC 是按优先级生效的，所有帧都必须打 VLAN 标签，下游对端才能暂停正确的优先级。（49.2.5）信令：一旦拥塞队列自身也拥塞，就向上游发送 CIM，其中携带帧的一部分，使对端能登记同一条流。（49.2.6）恢复：当拥塞队列排空（或采用更聪明的方法）时，该流恢复为非拥塞状态。（49.2.7）拓扑：每台设备都有一个“层级”，按距边缘服务器的跳数计算，每个端口朝向上行、下行或同层。（49.2.8）与拥塞通知（第 30 章）的对比：两者都向上游发信号，但 CN 一直送达源站，而 CI 只与直接对端通信并重新分类流量类别——这是 CN 从不做的。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Monitored queue<br/>normal traffic] -->|AQM detects<br/>congesting flow| B[CIP Congestion<br/>Detection 49.3.1]\n  B -->|register in<br/>802.1CB table| C[Congesting queue<br/>low priority]\n  B -->|congesting queue<br/>also full| D[Send CIM<br/>upstream 49.2.5]\n  B -->|mark IP packets| E[ECN downstream]\n  C -->|queue drains| F[Return flow to<br/>non-congesting 49.2.6]",
+      "zh": "flowchart LR\n  A[监控队列<br/>正常流量] -->|AQM 检测到<br/>拥塞流| B[CIP 拥塞<br/>检测 49.3.1]\n  B -->|登记进<br/>802.1CB 表| C[拥塞队列<br/>低优先级]\n  B -->|拥塞队列<br/>也已满| D[向上游<br/>发送 CIM 49.2.5]\n  B -->|标记 IP 报文| E[向下游 ECN]\n  C -->|队列排空| F[流恢复为<br/>非拥塞 49.2.6]"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 49.3 specifies the Congestion Isolation Aware Forwarding Process — five new elements plus two new managed tables inside a bridge port. (49.3.1) CIP Congestion Detection runs the AQM, inserts or discards frames, creates table entries, and can emit a CIM. (49.3.2) CIP transmission gates control whether a queue is available to the transmission-selection algorithm; under strict priority the gate stays permanently open, but other algorithms use the gate to preserve order. (49.3.3) The CIM Demultiplexer recognizes incoming CIMs (layer-2, IPv4, or IPv6 encapsulated) and creates a Stream identity table entry from them. (49.3.4) Congesting flow identification uses the 802.1CB Stream identification function: present stream_handle = congesting, absent = non-congesting. (49.3.5) The CIM Multiplexer injects outgoing CIMs among normal frames. (49.3.6) The CI Peer Table — indexed by reception port — holds each peer's CIM format and addressing, populated from the LLDP Congestion Isolation TLV. (49.3.7) The CI Stream Table — indexed by stream_handle, 1:1 with the 802.1CB table — tracks per-flow control variables, the congesting queue used, and a CIM count.",
+      "zh": "第 49.3 节规定了“拥塞隔离感知转发过程”——在桥接端口内新增五个元素和两张托管表。（49.3.1）CIP 拥塞检测运行 AQM，将帧入队或丢弃，创建表项，并可发出 CIM。（49.3.2）CIP 传输门控制某队列是否可被传输选择算法挑选；在严格优先级下门永久打开，其他算法则用门来保序。（49.3.3）CIM 解复用器识别收到的 CIM（二层、IPv4 或 IPv6 封装），并据此创建流标识表项。（49.3.4）拥塞流识别使用 802.1CB 流标识功能：存在 stream_handle 即为拥塞流，缺失则为非拥塞流。（49.3.5）CIM 复用器把待发的 CIM 插入正常帧之间。（49.3.6）CI 对端表——以接收端口为索引——保存各对端的 CIM 格式与地址信息，由 LLDP 拥塞隔离 TLV 填充。（49.3.7）CI 流表——以 stream_handle 为索引，与 802.1CB 表一一对应——跟踪每条流的控制变量、所用的拥塞队列以及已发 CIM 计数。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 480 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"6\" y=\"16\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">CIM PDU (49.4.3.4)</text><rect x=\"6\" y=\"28\" width=\"40\" height=\"34\"/><text x=\"10\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">Ver/RA/D</text><rect x=\"46\" y=\"28\" width=\"90\" height=\"34\"/><text x=\"54\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">Dest Addr (6)</text><rect x=\"136\" y=\"28\" width=\"90\" height=\"34\"/><text x=\"144\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">Src Addr (6)</text><rect x=\"226\" y=\"28\" width=\"50\" height=\"34\"/><text x=\"232\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">VID (12b)</text><rect x=\"276\" y=\"28\" width=\"54\" height=\"34\"/><text x=\"282\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">MSDU</text><text x=\"282\" y=\"57\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">Len (2)</text><rect x=\"330\" y=\"28\" width=\"144\" height=\"34\"/><text x=\"338\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">Encapsulated MSDU</text><text x=\"338\" y=\"57\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">(48-512 octets)</text><text x=\"6\" y=\"92\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Three encapsulations (49.4.3.1-3):</text><rect x=\"6\" y=\"104\" width=\"120\" height=\"26\"/><text x=\"14\" y=\"121\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">L2: EtherType 89-A2</text><rect x=\"134\" y=\"104\" width=\"150\" height=\"26\"/><text x=\"142\" y=\"121\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">IPv4: 08-00 + UDP</text><rect x=\"292\" y=\"104\" width=\"150\" height=\"26\"/><text x=\"300\" y=\"121\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">IPv6: 86-DD + UDP</text></svg>",
+      "caption": {
+        "en": "The CIM PDU (49.4.3.4): version/reserved/Add-Del byte, the triggering frame's destination and source MAC, VLAN ID, the encapsulated-MSDU length, and 48-512 octets of the original frame so the peer can re-identify the flow. It travels in one of three encapsulations (49.4.3.1-3): layer-2 (EtherType 89-A2), IPv4-over-UDP, or IPv6-over-UDP.",
+        "zh": "CIM PDU（49.4.3.4）：版本/保留/增删（Add-Del）字节、触发帧的目的与源 MAC、VLAN ID、封装 MSDU 长度，以及原始帧的 48 至 512 个字节，使对端能重新识别该流。它以三种封装之一传输（49.4.3.1-3）：二层（EtherType 89-A2）、IPv4-over-UDP 或 IPv6-over-UDP。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 49.4 is the Congestion Isolation Protocol — the machinery. (49.4.1) Variables: the CI entity has ciMasterEnable (on/off), ciCIMTransmitPriority (default 6), and ciMaxFlowLife; the CIP entity holds MAC/IPv4/IPv6 addresses, the CIM UDP port, a per-traffic-class queue map, and CIM size limits; per-port and per-stream variables (e.g. cipGateControl, cipCongesting, ciStreamIdHandle, ciCIMCount) track live state. (49.4.2) Procedures spell out the algorithms: ciInitialize(), buildAndSendCim(), processCimPdu(), addCongestingFlow() / delCongestingFlow(), plus background flushCongestingFlows() and periodicTableCleanup() that age out stale entries past ciMaxFlowLife. (49.4.3) Encoding defines the CIM PDU format and its three encapsulations, plus validation rules (a CIM is dropped if its encapsulated MSDU is <48 or >512 octets, but a nonzero Version is tolerated). (49.4.4) The LLDP Congestion Isolation TLV advertises CI support and queue configuration; addCiPeer()/delCiPeer() keep the CI Peer Table in sync as peers appear and vanish.",
+      "zh": "第 49.4 节是拥塞隔离协议——具体机制所在。（49.4.1）变量：CI 实体有 ciMasterEnable（总开关）、ciCIMTransmitPriority（默认 6）和 ciMaxFlowLife；CIP 实体保存 MAC/IPv4/IPv6 地址、CIM 的 UDP 端口、按流量类别的队列映射表以及 CIM 尺寸上限；每端口和每流变量（如 cipGateControl、cipCongesting、ciStreamIdHandle、ciCIMCount）记录实时状态。（49.4.2）过程给出具体算法：ciInitialize()、buildAndSendCim()、processCimPdu()、addCongestingFlow() / delCongestingFlow()，以及后台的 flushCongestingFlows() 和 periodicTableCleanup()——后者按 ciMaxFlowLife 淘汰过期表项。（49.4.3）编码定义 CIM PDU 格式及其三种封装，并给出校验规则（若封装 MSDU 小于 48 或大于 512 字节则丢弃该 CIM，但容忍非零的 Version 字段）。（49.4.4）LLDP 拥塞隔离 TLV 宣告 CI 支持与队列配置；addCiPeer()/delCiPeer() 在对端出现或消失时同步维护 CI 对端表。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant U as Upstream peer\n  participant D as Downstream bridge\n  participant H as End host\n  D->>D: AQM flags congesting flow (49.3.1)\n  D->>D: register in 802.1CB table, demote to congesting queue\n  D->>U: CIM Add (49.4.2.5)\n  U->>U: addCongestingFlow() -> isolate same flow\n  D->>H: ECN mark on IP packets\n  Note over D: congesting queue drains\n  D->>U: CIM Del (49.4.2.8)\n  U->>U: delCongestingFlow() -> restore flow",
+      "zh": "sequenceDiagram\n  participant U as 上游对端\n  participant D as 下游桥接\n  participant H as 端主机\n  D->>D: AQM 标记拥塞流 (49.3.1)\n  D->>D: 登记进 802.1CB 表，降级到拥塞队列\n  D->>U: CIM 增 (49.4.2.5)\n  U->>U: addCongestingFlow() -> 隔离同一条流\n  D->>H: 在 IP 报文上打 ECN 标记\n  Note over D: 拥塞队列排空\n  D->>U: CIM 删 (49.4.2.8)\n  U->>U: delCongestingFlow() -> 恢复该流"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 49.5 is Topology Recognition (TR) — how a device learns its level and each port's orientation automatically. (49.5.1) Theory of operation: TR rides on the LLDP Topology Recognition TLV; non-relay end stations/servers are anchored at level 0 with uplink-facing ports, and bridges/routers start 'unknown' and converge as they hear TLVs from neighbors. (49.5.2) Variables: trDeviceType (a read-only factory setting), trLevel (one per system, 0-254 or 255=unknown), and trPortOrientation (one per port: uplink/downlink/crosslink/unknown). (49.5.3) Procedures: trInit() sets the known state, trSet() triggers an LLDPDU transmission, and trUpdate() processes a neighbor's change — e.g. if a neighbor's level equals mine the port is a crosslink, level+1 makes it an uplink, level-1 a downlink, and a lower level resets my own level to that value plus one. The whole network converges on a consistent level/orientation map with no central coordinator.",
+      "zh": "第 49.5 节是拓扑识别（Topology Recognition，TR）——设备如何自动获知自身层级及各端口朝向。（49.5.1）工作原理：TR 依托 LLDP 拓扑识别 TLV；非中继端站/服务器锚定在第 0 层、端口朝上行，而桥接/路由器起初为“未知”，在收到邻居 TLV 后逐步收敛。（49.5.2）变量：trDeviceType（只读出厂设置）、trLevel（每系统一个，取 0–254，255 表示未知）、trPortOrientation（每端口一个：上行/下行/同层/未知）。（49.5.3）过程：trInit() 设置已知初态，trSet() 触发发送一帧 LLDPDU，trUpdate() 处理邻居变化——例如邻居层级与自己相同则该端口为同层，层级加一则为上行，层级减一则为下行，更低层级则把自身层级重置为该值加一。整个网络无需中央协调即可收敛到一致的层级/朝向映射。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every covered subclause and where it lives",
+        "zh": "覆盖地图——每个被覆盖的子条款及其位置"
+      },
+      "en": "Clause 49 intro + objectives: 49.1 (objectives by category: functionality, compatibility, performance, scale, complexity, manageability). Principles 49.2: 49.2.1 congesting-flow identification via ECN-capable AQM (reuses CP algorithm of Clause 30); 49.2.2 802.1CB IP stream identification -> stream_handle; 49.2.3 flow priority modification via per-stream classification/metering (8.6.5.2), rewriting PCP; 49.2.4 PFC interaction needs VLAN tags so the right priority is paused; 49.2.5 CIM signaling carries 64 bytes by default (up to 512 for overlays); 49.2.6 congesting-to-non-congesting recovery, simplest rule = drain the congesting queue; 49.2.7 topology levels and uplink/downlink/crosslink port orientation; 49.2.8 CI vs Congestion Notification (peer-only vs source, reclassify vs not). Forwarding process 49.3: 49.3.1 CIP Congestion Detection (the AQM home); 49.3.2 CIP transmission gates; 49.3.3 CIM Demultiplexer; 49.3.4 congesting flow identification (stream_handle present/absent); 49.3.5 CIM Multiplexer; 49.3.6 CI Peer Table (per-port, from LLDP); 49.3.7 CI Stream Table (per stream_handle, 1:1 with 802.1CB). Protocol 49.4: 49.4.1 variables (ciMasterEnable, ciCIMTransmitPriority=6, ciMaxFlowLife, cipQueueMap, cipGateControl, etc.); 49.4.2 procedures (ciInitialize, buildAndSendCim, processCimPdu, add/delCongestingFlow, flush + periodic cleanup); 49.4.3 CIM PDU encoding + L2/IPv4/IPv6 encapsulations + validation; 49.4.4 LLDP Congestion Isolation TLV + addCiPeer/delCiPeer. Topology 49.5: 49.5.1 TR theory; 49.5.2 trDeviceType/trLevel/trPortOrientation; 49.5.3 trInit/trSet/trUpdate. Annexes: Annex_A normative PICS proforma for Bridges (A.53 lists CI-1..CI-11 conformance items, e.g. CI-1 create a CIP, CI-2 ECN support, CI-11 Topology Recognition); Annex_B normative PICS proforma for End stations (B.19, items CI-S-1..CI-S-8); Annex_D normative IEEE 802.1 Organizationally Specific TLVs (D.2.15 Congestion Isolation TLV with Queue Map, CIM Encap Length, MAC/IP address, UDP port, Address Family; D.2.16 Topology Recognition TLV); Annex_W informative frame-order preservation (queue-marker/counter mechanism W.1, and PFC interaction W.2 — pausing the ingress priority not the rewritten egress priority); Annex_X informative Bibliography (references [B1]..[B68] including DCQCN and PFC-deadlock papers).",
+      "zh": "第 49 章引言与目标：49.1（按类别列出目标：功能性、兼容性、性能、扩展性、复杂度、可管理性）。原理 49.2：49.2.1 通过支持 ECN 的 AQM 识别拥塞流（复用第 30 章的 CP 算法）；49.2.2 802.1CB IP 流标识 -> stream_handle；49.2.3 借助逐流分类/计量（8.6.5.2）改优先级并改写 PCP；49.2.4 与 PFC 交互需打 VLAN 标签以暂停正确优先级；49.2.5 CIM 信令默认携带 64 字节（覆盖网最多 512）；49.2.6 拥塞到非拥塞的恢复，最简规则是排空拥塞队列；49.2.7 拓扑层级与上行/下行/同层端口朝向；49.2.8 CI 与拥塞通知对比（仅对端 vs 送达源、重分类 vs 不重分类）。转发过程 49.3：49.3.1 CIP 拥塞检测（AQM 所在）；49.3.2 CIP 传输门；49.3.3 CIM 解复用器；49.3.4 拥塞流识别（stream_handle 有无）；49.3.5 CIM 复用器；49.3.6 CI 对端表（按端口，源自 LLDP）；49.3.7 CI 流表（按 stream_handle，与 802.1CB 一一对应）。协议 49.4：49.4.1 变量（ciMasterEnable、ciCIMTransmitPriority=6、ciMaxFlowLife、cipQueueMap、cipGateControl 等）；49.4.2 过程（ciInitialize、buildAndSendCim、processCimPdu、add/delCongestingFlow、flush 与周期清理）；49.4.3 CIM PDU 编码及二层/IPv4/IPv6 封装与校验；49.4.4 LLDP 拥塞隔离 TLV 与 addCiPeer/delCiPeer。拓扑 49.5：49.5.1 TR 原理；49.5.2 trDeviceType/trLevel/trPortOrientation；49.5.3 trInit/trSet/trUpdate。附录：Annex_A 桥接实现的规范性 PICS 一致性陈述（A.53 列出 CI-1..CI-11，如 CI-1 创建 CIP、CI-2 支持 ECN、CI-11 拓扑识别）；Annex_B 端站实现的规范性 PICS（B.19，CI-S-1..CI-S-8）；Annex_D 规范性 IEEE 802.1 机构专属 TLV（D.2.15 拥塞隔离 TLV，含队列映射、CIM 封装长度、MAC/IP 地址、UDP 端口、地址族；D.2.16 拓扑识别 TLV）；Annex_W 信息性的保序方法（队列标记/计数机制 W.1，及 PFC 交互 W.2——应暂停入口优先级而非改写后的出口优先级）；Annex_X 信息性参考文献（[B1]..[B68]，含 DCQCN 与 PFC 死锁相关论文）。",
+      "cite": {
+        "pdf_id": "8021Qcz-2023",
+        "pages": [
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          226,
+          227,
+          228,
+          229,
+          230,
+          231,
+          232,
+          233,
+          234
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Annex W's subtle trap (W.2): when CI demotes a flow it rewrites the egress priority, so the same flow can briefly sit in two queues. A naive lossless bridge that issues PFC based on egress-queue occupancy may pause the wrong priority. The fix: gate frames at ingress and base PFC on the ingress priority of received frames — pause priority 4 (what the peer sent) even though those frames will egress at priority 3. It's a rare but instructive corner case of mixing CI with PFC.",
+      "zh": "Annex W 的隐蔽陷阱（W.2）：当 CI 降级一条流时会改写出口优先级，因此同一条流可能短暂同时存在于两个队列中。一个仅按出口队列占用情况触发 PFC 的简单无损桥接，可能暂停错误的优先级。解法是：在入口对帧做门控，并依据收到帧的入口优先级来触发 PFC——应暂停优先级 4（对端发送时所用的），尽管这些帧最终将从优先级 3 出口。这是 CI 与 PFC 混用时罕见但很有启发性的边角情形。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021Qcz-2023",
+      "pages": [
+        83,
+        84,
+        85,
+        86,
+        87,
+        88
+      ],
+      "note": "Clause 49 intro, 49.1 objectives, 49.2 principles (49.2.1-49.2.8)."
+    },
+    {
+      "pdf_id": "8021Qcz-2023",
+      "pages": [
+        89,
+        90,
+        91
+      ],
+      "note": "49.3 forwarding process (49.3.1-49.3.7), start of 49.4 variables."
+    },
+    {
+      "pdf_id": "8021Qcz-2023",
+      "pages": [
+        101,
+        102,
+        103,
+        104,
+        105
+      ],
+      "note": "49.4.2 procedures (del/flush/cleanup), 49.4.3 CIM PDU encoding + encapsulations + validation, 49.4.4 LLDP TLV."
+    },
+    {
+      "pdf_id": "8021Qcz-2023",
+      "pages": [
+        106,
+        107,
+        108
+      ],
+      "note": "49.5 Topology Recognition (49.5.1-49.5.3)."
+    },
+    {
+      "pdf_id": "8021Qcz-2023",
+      "pages": [
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115
+      ],
+      "note": "Annex A PICS (Bridge, A.53), Annex B PICS (End station, B.19), Annex D Congestion Isolation TLV (D.2.15) and Topology Recognition TLV (D.2.16)."
+    },
+    {
+      "pdf_id": "8021Qcz-2023",
+      "pages": [
+        226,
+        227,
+        228,
+        229,
+        230,
+        231,
+        232,
+        233,
+        234
+      ],
+      "note": "Annex W frame-order preservation (W.1 markers, W.2 PFC interaction); Annex X bibliography."
+    }
+  ],
+  "covers": [
+    "8021Qcz-2023:49.1",
+    "8021Qcz-2023:49.2.1",
+    "8021Qcz-2023:49.2.2",
+    "8021Qcz-2023:49.2.3",
+    "8021Qcz-2023:49.2.4",
+    "8021Qcz-2023:49.2.5",
+    "8021Qcz-2023:49.2.6",
+    "8021Qcz-2023:49.2.7",
+    "8021Qcz-2023:49.2.8",
+    "8021Qcz-2023:49.3.1",
+    "8021Qcz-2023:49.3.2",
+    "8021Qcz-2023:49.3.3",
+    "8021Qcz-2023:49.3.4",
+    "8021Qcz-2023:49.3.5",
+    "8021Qcz-2023:49.3.6",
+    "8021Qcz-2023:49.3.7",
+    "8021Qcz-2023:49.4.1",
+    "8021Qcz-2023:49.4.2",
+    "8021Qcz-2023:49.4.3",
+    "8021Qcz-2023:49.4.4",
+    "8021Qcz-2023:49.5.1",
+    "8021Qcz-2023:49.5.2",
+    "8021Qcz-2023:49.5.3",
+    "8021Qcz-2023:Annex_A",
+    "8021Qcz-2023:Annex_B",
+    "8021Qcz-2023:Annex_D",
+    "8021Qcz-2023:Annex_W",
+    "8021Qcz-2023:Annex_X"
+  ],
+  "track": "bridging-tsn"
+}

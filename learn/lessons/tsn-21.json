@@ -1,0 +1,171 @@
+{
+  "id": "tsn-21",
+  "title": {
+    "en": "gPTP Conformance, Network Model, Domains, and Application Interfaces (802.1ASdm-2024)",
+    "zh": "gPTP 的一致性要求、网络模型、域与应用接口（802.1ASdm-2024）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1ASdm-2024 is Amendment 3 to gPTP — the generalized Precision Time Protocol that keeps clocks across a bridged network aligned to within nanoseconds. gPTP is built on top of IEEE 1588 PTP (Precision Time Protocol). This lesson walks through four reference clauses of the amendment: what a device MUST and MAY implement (Clause 5, Conformance), how the network is modeled (Clause 7), the core vocabulary of domains and ports (Clause 8), and the software interfaces an application uses to read and steer time (Clause 9). Think of it as the 'rules, map, dictionary, and API' of gPTP.",
+      "zh": "IEEE Std 802.1ASdm-2024 是 gPTP 的第 3 号修正案。gPTP 即通用精确时间协议（generalized Precision Time Protocol），它让一张桥接网络中的各个时钟保持在纳秒级的对齐。gPTP 构建在 IEEE 1588 PTP（精确时间协议）之上。本课讲解该修正案的四个参考性条款：设备必须与可选实现什么（第 5 章，一致性）、网络如何被建模（第 7 章）、域与端口的核心术语（第 8 章），以及应用读取并驱动时间所用的软件接口（第 9 章）。可以把它理解为 gPTP 的“规则、地图、词典与 API”。"
+    },
+    {
+      "type": "prose",
+      "en": "A PTP Instance is the piece of a device that runs gPTP for one domain. Clause 5.4.1 (Summary of PTP Instance requirements) is the mandatory checklist: every PTP Instance shall implement the gPTP requirements of Clause 8, support the time-synchronization state machines, have at least one PTP Port, run the best timeTransmitter clock algorithm (BTCA) — the election that picks the master clock — and, by default on domain 0, run BTCA with external port configuration disabled. Clause 5.4.2 (PTP Instance options) lists the MAY items: being grandmaster-capable, supporting more than one domain, external port configuration, the application interfaces of Clause 9, remote management (SNMP or YANG), and the new optional features of this amendment — hot standby (Clause 18) and the Drift_Tracking TLV. Clause 5.4.3 (PTP Relay Instance requirements) adds that a relay shall support more than one port and the timeTransmitter capability, so it can forward corrected time onward.",
+      "zh": "PTP Instance（PTP 实例）是设备中为某一个域运行 gPTP 的那一部分。第 5.4.1 条（PTP 实例要求概述）是强制清单：每个 PTP 实例都必须实现第 8 章的 gPTP 要求、支持时间同步状态机、至少拥有一个 PTP 端口、运行最佳时间发送时钟算法 BTCA（best timeTransmitter clock algorithm，即选出主时钟的选举），并且在域 0 上默认以“关闭外部端口配置”的方式运行 BTCA。第 5.4.2 条（PTP 实例可选项）列出可选内容：具备 grandmaster（祖时钟）能力、支持多个域、外部端口配置、第 9 章的应用接口、远程管理（SNMP 或 YANG），以及本修正案新增的可选特性——热备（第 18 章）与 Drift_Tracking TLV。第 5.4.3 条（PTP 中继实例要求）补充：中继实例必须支持多个端口与时间发送能力，才能把校正后的时间继续转发。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Domain 0 is special. A time-aware system shall always support domain 0, and its domain number can never be changed away from 0 — it is the backward-compatibility anchor with the 2011 edition. On domain 0 the BTCA is the default election method; on other domains a device may instead use externally-configured port states.",
+      "zh": "域 0 很特殊。具备时间感知能力的系统必须始终支持域 0，且其域号永远不能改成非 0——它是与 2011 版保持向后兼容的锚点。在域 0 上，BTCA 是默认的选举方法；在其他域上，设备可以改用外部配置的端口状态。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5.5 (MAC-specific timing and synchronization methods for full-duplex IEEE 802.3 links) pins down what an Ethernet-based time-aware system must do at the media access control (MAC) layer. It shall support full-duplex operation, meet the messaging requirements of Clause 11, implement the SyncIntervalSetting state machine, support two-step capability on both receive and transmit (where the timestamp is sent in a separate Follow_Up message), and provide the Common Mean Link Delay Service (CMLDS) when it runs more than one domain. Optional items include asymmetry measurement, one-step capability (timestamp embedded in the event message itself), and propagation delay averaging.",
+      "zh": "第 5.5 条（全双工 IEEE 802.3 链路的 MAC 专用定时与同步方法）规定了基于以太网的时间感知系统在介质访问控制（MAC，media access control）层必须做什么。它必须支持全双工运行、满足第 11 章的报文要求、实现 SyncIntervalSetting 状态机、在收发两侧都支持两步法（two-step，时间戳放在单独的 Follow_Up 报文中），并在运行多个域时提供公共平均链路时延服务 CMLDS（Common Mean Link Delay Service）。可选项包括非对称测量、一步法（one-step，时间戳直接嵌入事件报文）以及传播时延平均。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7.2 (Architecture of a time-aware network) draws the map. Clause 7.2.1 (General) defines a time-aware network as interconnected time-aware systems — bridges, routers, end stations — running gPTP, where each gPTP instance lives in exactly one gPTP domain. There are two kinds of PTP Instance: a PTP End Instance (a leaf that receives time) and a PTP Relay Instance (receives time, corrects for link and bridge delays, and retransmits it). Clause 7.2.2 (single gPTP domain) explains how the BTCA elects one Grandmaster PTP Instance — the clock everyone follows — and how, if the path to it breaks, the surviving systems automatically fail over to the next-best potential grandmaster, possibly splitting into a second domain. Clause 7.2.3 (multiple gPTP domains) shows a network carrying several domains at once (e.g., domain 0 on the PTP timescale and domain 1 on the ARB timescale) over the same links.",
+      "zh": "第 7.2 条（时间感知网络的体系结构）绘制了地图。第 7.2.1 条（总则）把时间感知网络定义为一组运行 gPTP 的互联时间感知系统——网桥、路由器、端站——其中每个 gPTP 实例恰好属于一个 gPTP 域。PTP 实例分两种：PTP End Instance（端实例，接收时间的叶子节点）与 PTP Relay Instance（中继实例，接收时间、校正链路与网桥时延、再转发出去）。第 7.2.2 条（单个 gPTP 域）说明 BTCA 如何选出唯一的 Grandmaster PTP Instance（祖时钟实例，大家都跟随的时钟），以及当通往它的路径中断时，存活的系统如何自动切换到次优的候选祖时钟，并可能分裂出第二个域。第 7.2.3 条（多个 gPTP 域）展示一张网络在同一组链路上同时承载多个域（例如运行 PTP 时标的域 0 与运行 ARB 时标的域 1）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7.2.4 (networks using BTCA with redundant grandmasters and/or redundant paths) and Clause 7.2.5 (Time-aware network with hot standby) describe how to survive failures. Every redundancy solution has three components: detection (notice that Sync/Announce messages stopped), correction (decide what to do — e.g., re-run BTCA), and action (the new grandmaster starts sending and everyone listens). Hot standby goes further: a primary grandmaster (GM) and a secondary GM each anchor their own synchronization spanning tree in separate domains, with path redundancy to most bridges and end stations. The secondary GM stays synchronized to the primary while standing by, so if the primary fails, switchover is seamless — covered in detail by Clause 18.",
+      "zh": "第 7.2.4 条（使用 BTCA 并具备冗余祖时钟和/或冗余路径的网络）与第 7.2.5 条（带热备的时间感知网络）描述如何从故障中存活。任何冗余方案都有三个组成部分：检测（发现 Sync/Announce 报文停止）、校正（决定如何处理，例如重跑 BTCA）、行动（新的祖时钟开始发送、所有节点跟随）。热备更进一步：一个主祖时钟（primary GM）与一个备祖时钟（secondary GM）各自在不同的域中支撑一棵同步生成树，并对大多数网桥与端站提供路径冗余。备 GM 在待命时保持与主 GM 同步，因此当主 GM 失效时切换是无缝的——第 18 章对此有详细规定。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  CS[Clock source] --> GM[Grandmaster PTP Instance]\n  GM -->|Sync + Announce| R1[PTP Relay Instance / bridge]\n  R1 -->|corrected time| R2[PTP Relay Instance / bridge]\n  R2 --> E1[PTP End Instance]\n  R2 --> E2[PTP End Instance]\n  GM -. BTCA election .-> ALT[Backup grandmaster]",
+      "zh": "flowchart TD\n  CS[时钟源] --> GM[祖时钟 PTP 实例]\n  GM -->|Sync + Announce| R1[PTP 中继实例 / 网桥]\n  R1 -->|校正后的时间| R2[PTP 中继实例 / 网桥]\n  R2 --> E1[PTP 端实例]\n  R2 --> E2[PTP 端实例]\n  GM -. BTCA 选举 .-> ALT[备用祖时钟]"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7.4 (PTP Instance architecture) zooms inside one PTP Instance. Figure 7-8 stacks media-independent logic (Clause 10) on top of media-dependent ports (Clauses 11–16), and crucially shows that the time-aware higher-layer application sits on top, connected through the interfaces of Clause 9. Clause 8 then nails the vocabulary. Clause 8.1 (gPTP domain) says a domain is one or more PTP Instances and links that communicate per IEEE 802.1AS; it defines the scope of messages, state, data sets, and timescale, and is identified by two attributes — a domainNumber (0 through 127) and a 12-bit sdoId split into a 4-bit majorSdoId (fixed at 0x1) and an 8-bit minorSdoId (fixed at 0x00). Both travel in the common header of every PTP message. Clause 8.5.2 (Port identity, including 8.5.2.3 Port number) requires each PTP Port's portNumber to be distinct in the range 0x0001 through 0xFFFE; the value 0 is reserved for the internal ClockTimeTransmitter-to-ClockSource interface (not a real PTP Port), and 0xFFFF is reserved.",
+      "zh": "第 7.4 条（PTP 实例体系结构）深入单个 PTP 实例内部。图 7-8 把与介质无关的逻辑（第 10 章）叠放在与介质相关的端口（第 11–16 章）之上，并关键地表明：具备时间感知能力的高层应用位于最上层，通过第 9 章的接口连接。随后第 8 章确定术语。第 8.1 条（gPTP 域）指出：一个域由一个或多个按 IEEE 802.1AS 通信的 PTP 实例与链路组成；它界定报文、状态、数据集与时标的范围，并由两个属性标识——domainNumber（域号，0 到 127）与 12 位的 sdoId，后者拆为 4 位的 majorSdoId（固定为 0x1）与 8 位的 minorSdoId（固定为 0x00）。两者都随每条 PTP 报文的公共首部传输。第 8.5.2 条（端口标识，含 8.5.2.3 端口号）要求每个 PTP 端口的 portNumber 在 0x0001 到 0xFFFE 范围内互不相同；值 0 保留给内部的 ClockTimeTransmitter 到 ClockSource 接口（它不是真正的 PTP 端口），值 0xFFFF 保留。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 9 (Application interfaces) is the API between gPTP and the software that uses time. There are five abstract interfaces. The ClockSourceTime interface (9.2) is how an application FEEDS time into a grandmaster-capable instance: its 9.2.2 invoke parameters include domainNumber (which domain is being fed) and timeBaseIndicator (a counter the source increments on any phase or frequency change, so downstream consumers can detect a discontinuity). The other four interfaces let an application CONSUME synchronized time on a receiver. A recurring pattern in this amendment is that each .result delivers domainNumber, gmPresent (is a grandmaster present?), isSynced (present only when the optional hot standby feature is implemented — see Clause 18), and grandmasterIdentity (the clock identity now in charge).",
+      "zh": "第 9 章（应用接口）是 gPTP 与使用时间的软件之间的 API。共有五个抽象接口。ClockSourceTime 接口（9.2）是应用向具备祖时钟能力的实例“喂入”时间的方式：其 9.2.2 调用（invoke）参数包括 domainNumber（被喂入的是哪个域）与 timeBaseIndicator（时基指示符，时钟源在任何相位或频率变化时递增的计数器，使下游消费者能检测到不连续）。另外四个接口让应用在接收端“消费”同步时间。本修正案的一个反复出现的模式是：每个 .result 都会交付 domainNumber、gmPresent（是否存在祖时钟）、isSynced（仅当实现了可选的热备特性时才出现——见第 18 章）以及 grandmasterIdentity（当前掌权的时钟标识）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 220\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"230\" y=\"16\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">Clause 9 application interfaces of a PTP Instance</text><rect x=\"170\" y=\"40\" width=\"120\" height=\"34\"/><text x=\"230\" y=\"61\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">ClockSourceTime (9.2)</text><line x1=\"230\" y1=\"74\" x2=\"230\" y2=\"100\"/><rect x=\"30\" y=\"100\" width=\"110\" height=\"38\"/><text x=\"85\" y=\"116\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">EventCapture (9.3)</text><text x=\"85\" y=\"130\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">timestamp an event</text><rect x=\"148\" y=\"100\" width=\"110\" height=\"38\"/><text x=\"203\" y=\"116\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">TriggerGenerate (9.4)</text><text x=\"203\" y=\"130\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">fire at a time</text><rect x=\"266\" y=\"100\" width=\"110\" height=\"38\"/><text x=\"321\" y=\"116\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">ClockGenerator (9.5)</text><text x=\"321\" y=\"130\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">periodic clock</text><rect x=\"384\" y=\"100\" width=\"68\" height=\"38\"/><text x=\"418\" y=\"114\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">PhaseDisc.</text><text x=\"418\" y=\"127\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">(9.6)</text><rect x=\"110\" y=\"170\" width=\"240\" height=\"34\"/><text x=\"230\" y=\"191\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">Time-aware higher-layer application</text><line x1=\"85\" y1=\"138\" x2=\"170\" y2=\"170\"/><line x1=\"203\" y1=\"138\" x2=\"215\" y2=\"170\"/><line x1=\"321\" y1=\"138\" x2=\"260\" y2=\"170\"/><line x1=\"418\" y1=\"138\" x2=\"330\" y2=\"170\"/></svg>",
+      "caption": {
+        "en": "The one feed interface (ClockSourceTime) and the four consume interfaces an application uses on a PTP Instance, per Clause 9.",
+        "zh": "依据第 9 章，应用在 PTP 实例上使用的一个喂入接口（ClockSourceTime）与四个消费接口。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The four consume interfaces map to four real-time needs. ClockTargetEventCapture (9.3) timestamps an external event against the grandmaster timescale — its 9.3.3 result returns timeReceiverTimeCallback (the synchronized time the event happened). ClockTargetTriggerGenerate (9.4) does the reverse: ask the receiver to fire an output exactly at a future synchronized time; its 9.4.3 result adds errorCondition, set TRUE if that moment was already in the past or was skipped over by a time discontinuity. ClockTargetClockGenerator (9.5) requests a periodic clock signal locked to the grandmaster; its 9.5.3 result carries the same status fields plus timeReceiverTimeCallback. ClockTargetPhaseDiscontinuity (9.6) reports jumps: its 9.6.2 result delivers gmTimeBaseIndicator, lastGmPhaseChange (ScaledNs) and lastGmFreqChange (Float64), so an application learns exactly how the grandmaster's phase and frequency just shifted.",
+      "zh": "这四个消费接口对应四种实时需求。ClockTargetEventCapture（9.3）把一个外部事件相对祖时钟时标打上时间戳——其 9.3.3 结果返回 timeReceiverTimeCallback（事件发生的同步时间）。ClockTargetTriggerGenerate（9.4）则相反：要求接收端在未来某个同步时刻精确产生一个输出；其 9.4.3 结果增加 errorCondition，当该时刻已过去或被时间不连续跳过时置为 TRUE。ClockTargetClockGenerator（9.5）请求一个锁定到祖时钟的周期性时钟信号；其 9.5.3 结果携带相同的状态字段并加上 timeReceiverTimeCallback。ClockTargetPhaseDiscontinuity（9.6）报告跳变：其 9.6.2 结果交付 gmTimeBaseIndicator、lastGmPhaseChange（ScaledNs）与 lastGmFreqChange（Float64），使应用准确得知祖时钟的相位与频率刚刚如何移动。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause unit and the page it lives on",
+        "zh": "覆盖地图——每个条款单元及其所在页"
+      },
+      "en": "Clause 5 (Conformance), p.19-22: 5.4.1 Summary of PTP Instance requirements (mandatory list a-j, p.19); 5.4.2 PTP Instance options (the MAY list including hot standby and Drift_Tracking TLV, p.20); 5.4.3 PTP Relay Instance requirements (more than one port + timeTransmitter capability, p.21); 5.5 MAC-specific timing for full-duplex 802.3 links (full-duplex, Clause 11 messaging, SyncIntervalSetting, two-step, CMLDS, p.21-22). Clause 7 (Network model), p.23-29: 7.2.1 General — time-aware systems, End vs Relay Instances (p.23); 7.2.2 single gPTP domain — BTCA and grandmaster election (p.23); 7.2.3 multiple gPTP domains — Figure 7-3 (p.24); 7.2.4 redundant grandmasters/paths — detection/correction/action (p.25-27); 7.2.5 hot standby network — primary/secondary GM trees, Figure 7-6 (p.28-29); 7.4 PTP Instance architecture — Figure 7-8, interfaces per Clause 9 (p.29-30). Clause 8 (Concepts), p.31-32: 8.1 gPTP domain — domainNumber 0-127, sdoId = majorSdoId 0x1 + minorSdoId 0x00, domain 0 mandatory (p.31); 8.5.2 Port identity (8.5.2.3 Port number 0x0001-0xFFFE distinct, 0 reserved internal, 0xFFFF reserved) (p.32). Clause 9 (Application interfaces), p.33-37: 9.2.2 ClockSourceTime.invoke parameters — domainNumber, timeBaseIndicator (p.33); 9.3.2 ClockTargetEventCapture.invoke + 9.3.3 .result — timeReceiverTimeCallback, gmPresent, isSynced, grandmasterIdentity (p.33-34); 9.4.2 ClockTargetTriggerGenerate.invoke + 9.4.3 .result — errorCondition (p.34-35); 9.5.2 ClockTargetClockGenerator.invoke + 9.5.3 .result (p.35-36); 9.6.2 ClockTargetPhaseDiscontinuity.result — gmTimeBaseIndicator, lastGmPhaseChange, lastGmFreqChange (p.36-37).",
+      "zh": "第 5 章（一致性），第 19-22 页：5.4.1 PTP 实例要求概述（强制清单 a-j，第 19 页）；5.4.2 PTP 实例可选项（含热备与 Drift_Tracking TLV 的可选清单，第 20 页）；5.4.3 PTP 中继实例要求（多端口 + 时间发送能力，第 21 页）；5.5 全双工 802.3 链路的 MAC 专用定时（全双工、第 11 章报文、SyncIntervalSetting、两步法、CMLDS，第 21-22 页）。第 7 章（网络模型），第 23-29 页：7.2.1 总则——时间感知系统、端实例与中继实例（第 23 页）；7.2.2 单个 gPTP 域——BTCA 与祖时钟选举（第 23 页）；7.2.3 多个 gPTP 域——图 7-3（第 24 页）；7.2.4 冗余祖时钟/路径——检测/校正/行动（第 25-27 页）；7.2.5 热备网络——主/备 GM 生成树、图 7-6（第 28-29 页）；7.4 PTP 实例体系结构——图 7-8、按第 9 章的接口（第 29-30 页）。第 8 章（概念），第 31-32 页：8.1 gPTP 域——domainNumber 0-127、sdoId = majorSdoId 0x1 + minorSdoId 0x00、域 0 强制（第 31 页）；8.5.2 端口标识（8.5.2.3 端口号 0x0001-0xFFFE 互不相同，0 保留给内部、0xFFFF 保留）（第 32 页）。第 9 章（应用接口），第 33-37 页：9.2.2 ClockSourceTime.invoke 参数——domainNumber、timeBaseIndicator（第 33 页）；9.3.2 ClockTargetEventCapture.invoke 与 9.3.3 .result——timeReceiverTimeCallback、gmPresent、isSynced、grandmasterIdentity（第 33-34 页）；9.4.2 ClockTargetTriggerGenerate.invoke 与 9.4.3 .result——errorCondition（第 34-35 页）；9.5.2 ClockTargetClockGenerator.invoke 与 9.5.3 .result（第 35-36 页）；9.6.2 ClockTargetPhaseDiscontinuity.result——gmTimeBaseIndicator、lastGmPhaseChange、lastGmFreqChange（第 36-37 页）。",
+      "cite": {
+        "pdf_id": "8021ASdm-2024",
+        "pages": [
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        19,
+        20,
+        21,
+        22
+      ],
+      "note": "Clause 5.4.1-5.4.3 PTP Instance / Relay requirements and options; 5.5 MAC-specific timing for full-duplex 802.3 links"
+    },
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30
+      ],
+      "note": "Clause 7.2.1-7.2.5 time-aware network architecture, redundancy, hot standby; 7.4 PTP Instance architecture (Figure 7-8)"
+    },
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        31,
+        32
+      ],
+      "note": "Clause 8.1 gPTP domain (domainNumber, sdoId); 8.5.2 port identity / port number"
+    },
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "note": "Clause 9.2-9.6 application interfaces: ClockSourceTime, EventCapture, TriggerGenerate, ClockGenerator, PhaseDiscontinuity"
+    }
+  ],
+  "covers": [
+    "8021ASdm-2024:5.4.1",
+    "8021ASdm-2024:5.4.2",
+    "8021ASdm-2024:5.4.3",
+    "8021ASdm-2024:5.5",
+    "8021ASdm-2024:7.2.1",
+    "8021ASdm-2024:7.2.2",
+    "8021ASdm-2024:7.2.3",
+    "8021ASdm-2024:7.2.4",
+    "8021ASdm-2024:7.2.5",
+    "8021ASdm-2024:7.4",
+    "8021ASdm-2024:8.1",
+    "8021ASdm-2024:8.5.2",
+    "8021ASdm-2024:9.2.2",
+    "8021ASdm-2024:9.3.2",
+    "8021ASdm-2024:9.3.3",
+    "8021ASdm-2024:9.4.2",
+    "8021ASdm-2024:9.4.3",
+    "8021ASdm-2024:9.5.2",
+    "8021ASdm-2024:9.5.3",
+    "8021ASdm-2024:9.6.2"
+  ],
+  "track": "tsn"
+}

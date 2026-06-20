@@ -1,0 +1,217 @@
+{
+  "id": "tsn-26",
+  "title": {
+    "en": "Hot Standby, the YANG Model, and the Annexes: gPTP Redundancy Reference",
+    "zh": "热备份、YANG 模型与附录：gPTP 冗余参考"
+  },
+  "estMinutes": 6,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This lesson closes out IEEE Std 802.1ASdm-2024, the third amendment to gPTP (generalized Precision Time Protocol, the IEEE 802.1AS profile that distributes a common clock across a bridged network). It walks through four very different parts of the amendment: a small fix to how delay is measured over a CSN (Coordinated Shared Network) backbone (Clause 16), the YANG data model that lets you remotely configure and monitor these features (Clause 17), the headline feature of the whole amendment — Hot Standby clock redundancy (Clause 18) — and the conformance and reference annexes (A, B, F, G, H). Think of it as the operations-and-resilience layer: how two clocks back each other up, and how a management system reaches in to control it.",
+      "zh": "本课收尾 IEEE Std 802.1ASdm-2024，即 gPTP（generalized Precision Time Protocol，广义精确时间协议，IEEE 802.1AS 在桥接网络中分发统一时钟的协议）的第三号修正案。它讲解修正案中四个差异很大的部分：对 CSN（Coordinated Shared Network，协调共享网络）骨干上时延测量方式的一处小修订（第 16 章）、用于远程配置与监控这些功能的 YANG 数据模型（第 17 章）、整个修正案的核心功能——热备份时钟冗余（第 18 章），以及若干一致性与参考附录（A、B、F、G、H）。可以把它视为运维与韧性层：两个时钟如何互为备份，以及管理系统如何接入并控制它。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 16 covers media-dependent behavior on a CSN backbone. Two small edits matter here. 16.4.3 (Path delay measurement between CSN nodes) clarifies that the peer-to-peer delay mechanism — the round-trip exchange of Pdelay messages used to measure cable/link delay — can either be the instance-specific mechanism or be provided by the CMLDS (Common Mean Link Delay Service, a shared delay-measurement service one link can run once for all gPTP domains). It also keeps the option for a CSN that has a native, accurate delay reading to skip the Pdelay protocol entirely and just populate asCapable, neighborRateRatio, and meanLinkDelay directly. 16.5.3 (Synchronization message propagation on a CSN with network reference clock) is a one-line correction renaming the field to domainNumber so the CSN TLV (Type-Length-Value, a tagged data field carried inside a message) matches the rest of the standard.",
+      "zh": "第 16 章涵盖 CSN 骨干上与介质相关的行为。这里有两处小改动很重要。16.4.3（CSN 节点间的路径时延测量）澄清：用于测量线缆/链路时延的对等时延机制（peer-to-peer delay mechanism，即往返交换 Pdelay 报文）既可以是实例专用机制，也可以由 CMLDS（Common Mean Link Delay Service，公共平均链路时延服务，一条链路对所有 gPTP 域只测一次的共享服务）提供。它同时保留这样一种选择：若 CSN 具备原生且精确的时延读数，可完全跳过 Pdelay 协议，直接填写 asCapable、neighborRateRatio 与 meanLinkDelay。16.5.3（带网络参考时钟的 CSN 上同步报文的传播）则是一行修正，把字段改名为 domainNumber，使 CSN TLV（Type-Length-Value，类型-长度-值，报文内携带的带标签数据字段）与标准其余部分保持一致。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 17 adds a YANG data model. YANG (Yet Another Next Generation) is a modeling language used by NETCONF/RESTCONF to describe configuration and state in a tree, so a network management system can read and write a device the same way everywhere. 17.1.1 (Relationship to the IEEE Std 1588 data model) explains the layering: the 802.1AS modules import the IEEE 1588 PTP module as a whole and use YANG 'augment' statements to bolt on the members unique to 802.1AS. 17.2 replaces the overview tree figures to add the managed objects needed for hot standby and the Drift_Tracking TLV. 17.3 updates the module summary table. The new material is collected in a dedicated module, ieee802-dot1as-hs.yang, whose tree (17.5.2) and full text (17.6.2) define exactly the hot-standby objects.",
+      "zh": "第 17 章增加了一个 YANG 数据模型。YANG（Yet Another Next Generation）是一种建模语言，供 NETCONF/RESTCONF 用树形结构描述配置与状态，使网络管理系统能以统一方式读写设备。17.1.1（与 IEEE Std 1588 数据模型的关系）阐明分层：802.1AS 模块整体导入 IEEE 1588 的 PTP 模块，并用 YANG 的 augment（增补）语句挂上 802.1AS 特有的成员。17.2 替换了概览树形图，以加入热备份与 Drift_Tracking TLV 所需的受管对象。17.3 更新了模块汇总表。新增内容集中在一个专用模块 ieee802-dot1as-hs.yang 中，其树形（17.5.2）与完整文本（17.6.2）精确定义了热备份对象。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"10\" width=\"150\" height=\"40\"/><text x=\"85\" y=\"35\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">ieee1588-ptp-tt (imported)</text><rect x=\"10\" y=\"75\" width=\"150\" height=\"40\"/><text x=\"85\" y=\"100\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">dot1as-gptp (augments)</text><rect x=\"10\" y=\"140\" width=\"150\" height=\"40\"/><text x=\"85\" y=\"165\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">dot1as-hs (augments)</text><line x1=\"85\" y1=\"50\" x2=\"85\" y2=\"75\"/><line x1=\"85\" y1=\"115\" x2=\"85\" y2=\"140\"/><rect x=\"250\" y=\"40\" width=\"190\" height=\"120\"/><text x=\"345\" y=\"30\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">hot-standby-system-ds</text><text x=\"260\" y=\"62\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">primary-ptp-instance-index</text><text x=\"260\" y=\"80\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">secondary-ptp-instance-index</text><text x=\"260\" y=\"98\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">hot-standby-system-state</text><text x=\"260\" y=\"116\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">primary-secondary-offset</text><text x=\"260\" y=\"134\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">primary-secondary-offset-thresh</text><text x=\"260\" y=\"152\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">split-functionality</text><line x1=\"160\" y1=\"160\" x2=\"250\" y2=\"110\" stroke-dasharray=\"4 3\"/></svg>",
+      "caption": {
+        "en": "The YANG layering of Clause 17: the hot-standby module augments the gPTP module, which augments the imported IEEE 1588 tree. The hot-standby-system-ds carries the key managed objects (Figures 17-1 to 17-4, 17.5.2).",
+        "zh": "第 17 章的 YANG 分层：热备份模块增补 gPTP 模块，后者再增补导入的 IEEE 1588 树。hot-standby-system-ds 承载关键受管对象（图 17-1 至 17-4，17.5.2）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now the main event: Clause 18, Hot standby. 18.1 (General) defines hot standby as running two gPTP domains at once and merging them into one time for applications. The two domains are statically configured and the BTCA (Best TimeTransmitter Clock Algorithm, the election that normally picks the grandmaster) is disabled for them. One domain is primary, one is secondary. The system uses the primary; if the primary fails (say a cable breaks), it switches to the secondary — no clock glitch for the application. 18.2 (Overview) shows the model: each PTP Instance gets a PtpInstanceSyncStatus state machine that judges whether that instance is healthy, a single HotStandbySystem state machine that picks which time to hand the application (the ClockTarget), and a PrimarySecondaryOffset state machine that keeps measuring how far apart the two domains' times are.",
+      "zh": "现在进入重头戏：第 18 章，热备份。18.1（总则）将热备份定义为同时运行两个 gPTP 域，并将其合并为供应用使用的单一时间。这两个域是静态配置的，且为它们禁用了 BTCA（Best TimeTransmitter Clock Algorithm，最佳时间发送时钟算法，平时用于选举大师钟）。一个域为主用，一个为备用。系统使用主用域；若主用失效（例如断线），便切换到备用域——对应用而言时钟没有跳变。18.2（概述）给出模型：每个 PTP 实例配一个 PtpInstanceSyncStatus 状态机判断该实例是否健康；一个 HotStandbySystem 状态机决定把哪个时间交给应用（即 ClockTarget）；还有一个 PrimarySecondaryOffset 状态机持续测量两个域时间相差多少。"
+    },
+    {
+      "type": "prose",
+      "en": "18.3 (PTP Instance configuration) lists the setup rules: both instances are enabled on their assigned domainNumbers, externalPortConfigurationEnabled is TRUE for both (since BTCA is off, port roles are configured by hand), the grandmaster's ports are set to TimeTransmitterPort or PassivePort, a non-grandmaster has exactly one TimeReceiverPort, and each instance must carry a PtpInstanceSyncStatus state machine. 18.4 then defines that per-instance health monitor. Its global variables (18.4.1) include isSynced (the verdict: is this instance synchronized well enough?), offsetFromTimeTransmitter and its max (how far off it is allowed to drift), and threshold counters. 18.4.2 holds a local variable tracking the last sync count seen, 18.4.3 defines helper functions (isGptpCapable, isGm, portIsCapable), and 18.4.4 ties them together in the state diagram of Figure 18-2.",
+      "zh": "18.3（PTP 实例配置）列出搭建规则：两个实例在各自分配的 domainNumber 上启用；两者的 externalPortConfigurationEnabled 均为 TRUE（因 BTCA 关闭，端口角色须手工配置）；大师钟的端口设为 TimeTransmitterPort 或 PassivePort；非大师钟恰好有一个 TimeReceiverPort；每个实例都必须带一个 PtpInstanceSyncStatus 状态机。18.4 随后定义这个按实例的健康监视器。其全局变量（18.4.1）包括 isSynced（结论：该实例是否同步得足够好？）、offsetFromTimeTransmitter 及其上限（允许偏移多远），以及若干阈值计数器。18.4.2 保存一个本地变量，记录上次看到的同步计数；18.4.3 定义辅助函数（isGptpCapable、isGm、portIsCapable）；18.4.4 在图 18-2 的状态图中把它们串联起来。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n[*] --> INITIALIZING\nINITIALIZING --> GM_ROLE: gPTP-capable & is GM\nINITIALIZING --> NON_GM_ROLE_RX_SYNC: capable, not GM, new sync\nGM_ROLE --> NON_GM_ROLE_RX_SYNC: not GM & new sync\nNON_GM_ROLE_RX_SYNC --> GM_ROLE: becomes GM\nNON_GM_ROLE_RX_SYNC --> NON_GM_ROLE_RX_SYNC: each new sync\nnote right of GM_ROLE: isSynced = TRUE\nnote right of NON_GM_ROLE_RX_SYNC: offset counters\\ndecide isSynced",
+      "zh": "stateDiagram-v2\n[*] --> 初始化\n初始化 --> 大师钟角色: 具gPTP能力 且 为GM\n初始化 --> 非GM接收同步: 有能力 非GM 收到新同步\n大师钟角色 --> 非GM接收同步: 非GM 且 收到新同步\n非GM接收同步 --> 大师钟角色: 成为GM\n非GM接收同步 --> 非GM接收同步: 每次新同步\nnote right of 大师钟角色: isSynced = TRUE\nnote right of 非GM接收同步: 偏移计数器\\n决定 isSynced"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: PtpInstanceSyncStatus internals (18.4.1–18.4.4)",
+        "zh": "覆盖地图：PtpInstanceSyncStatus 内部细节（18.4.1–18.4.4）"
+      },
+      "en": "18.4.1 (global variables): isSynced is the Boolean health verdict; offsetFromTimeTransmitter is the live offset from the current source; offsetFromTimeTransmitterMax is the tolerance; rxSyncCountTimeReceiverP/Thresh detect whether Sync messages are still arriving; offsetMaxExceededCount(Thresh) and offsetMaxMetCount(Thresh) require several consecutive bad (or good) samples before flipping isSynced, so a single outlier does not toggle the verdict. 18.4.2 (local variables): lastRxSyncCountTimeReceiverP remembers the previous Sync count to detect a fresh Sync arrival. 18.4.3 (functions): isGptpCapable() returns TRUE if at least one port is enabled and asCapable; isGm() returns TRUE when no port is a TimeReceiverPort (so the instance is itself the grandmaster); portIsCapable(j) checks one port. 18.4.4 (state diagram, Figure 18-2): a grandmaster instance lands in GM_ROLE with isSynced=TRUE; a non-grandmaster cycles through NON_GM_ROLE_RX_SYNC on each new Sync, where the exceeded/met counters debounce isSynced up and down.",
+      "zh": "18.4.1（全局变量）：isSynced 是布尔健康结论；offsetFromTimeTransmitter 是相对当前源的实时偏移；offsetFromTimeTransmitterMax 是容差；rxSyncCountTimeReceiverP/Thresh 用于检测 Sync 报文是否仍在到达；offsetMaxExceededCount(Thresh) 与 offsetMaxMetCount(Thresh) 要求连续多个坏（或好）样本才翻转 isSynced，因此单个离群值不会改变结论。18.4.2（本地变量）：lastRxSyncCountTimeReceiverP 记住上一个 Sync 计数以检测新 Sync 的到达。18.4.3（函数）：isGptpCapable() 在至少一个端口已启用且 asCapable 时返回 TRUE；isGm() 在没有端口为 TimeReceiverPort 时返回 TRUE（即该实例本身即为大师钟）；portIsCapable(j) 检查单个端口。18.4.4（状态图，图 18-2）：大师钟实例落入 GM_ROLE 且 isSynced=TRUE；非大师钟在每次新 Sync 时循环经过 NON_GM_ROLE_RX_SYNC，其中 exceeded/met 计数器对 isSynced 的升降做去抖。",
+      "cite": {
+        "pdf_id": "8021ASdm-2024",
+        "pages": [
+          143,
+          144,
+          145,
+          146
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "18.5 (HotStandbySystem state machine) is the brain. Its global variables (18.5.1) include hotStandbySystemState — an enumeration of INIT, REDUNDANT (both instances synced, full redundancy), NOT_REDUNDANT (one synced, one faulted, still meets requirements but no backup), and OUT_OF_SYNC (neither synced; the system coasts on stored phase/frequency and slowly drifts). Other variables hold the enable flag, a log sync-time threshold (used to delay state changes so the system does not flap), and primarySecondaryOffset (how far apart the two domains' times are). 18.5.2 adds local variables: references to the primary and secondary instances, a TEMP scratch value, a transitionTime that gates upward state changes, and primarySecondaryOffsetThresh — the cap above which the system refuses to call itself REDUNDANT.",
+      "zh": "18.5（HotStandbySystem 状态机）是大脑。其全局变量（18.5.1）包括 hotStandbySystemState——一个枚举：INIT、REDUNDANT（两个实例都同步，完全冗余）、NOT_REDUNDANT（一个同步、一个故障，仍满足要求但无备份）、OUT_OF_SYNC（都不同步；系统靠存储的相位/频率维持并缓慢漂移）。其他变量保存使能标志、一个对数同步时间阈值（用于延迟状态切换以防抖动），以及 primarySecondaryOffset（两个域时间相差多少）。18.5.2 增加本地变量：对主用与备用实例的引用、一个 TEMP 暂存值、一个对向上状态切换设门限的 transitionTime，以及 primarySecondaryOffsetThresh——超过该上限系统便拒绝自称 REDUNDANT。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n[*] --> INIT\nINIT --> OUT_OF_SYNC: neither synced\nINIT --> NOT_REDUNDANT: exactly one synced\nINIT --> REDUNDANT: both synced & offset ok\nREDUNDANT --> NOT_REDUNDANT: one fails or offset too big\nREDUNDANT --> OUT_OF_SYNC: both fail\nNOT_REDUNDANT --> REDUNDANT: both synced, offset ok, time passed\nNOT_REDUNDANT --> OUT_OF_SYNC: both fail\nOUT_OF_SYNC --> NOT_REDUNDANT: one recovers\nOUT_OF_SYNC --> REDUNDANT: both ok & time passed",
+      "zh": "stateDiagram-v2\n[*] --> INIT\nINIT --> OUT_OF_SYNC: 都不同步\nINIT --> NOT_REDUNDANT: 恰好一个同步\nINIT --> REDUNDANT: 都同步且偏移合格\nREDUNDANT --> NOT_REDUNDANT: 一个失效或偏移过大\nREDUNDANT --> OUT_OF_SYNC: 两个都失效\nNOT_REDUNDANT --> REDUNDANT: 都同步偏移合格且已等待\nNOT_REDUNDANT --> OUT_OF_SYNC: 两个都失效\nOUT_OF_SYNC --> NOT_REDUNDANT: 一个恢复\nOUT_OF_SYNC --> REDUNDANT: 都合格且已等待"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why two thresholds and a transitionTime? Promotions (toward REDUNDANT) wait for currentTime to pass transitionTime, and demotions can be triggered by primarySecondaryOffset exceeding its threshold. Together they debounce the state machine: a clock that briefly recovers does not immediately advertise full redundancy, and two domains that disagree on time are never both trusted at once. This keeps applications from seeing the time backup flap on and off.",
+      "zh": "为何要两个阈值加一个 transitionTime？升级（朝向 REDUNDANT）要等 currentTime 越过 transitionTime，而降级可由 primarySecondaryOffset 超过其阈值触发。两者共同对状态机去抖：短暂恢复的时钟不会立刻宣称完全冗余，而时间彼此不一致的两个域也绝不会被同时信任。这样可避免应用看到时间备份反复抖动。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: HotStandbySystem requirements & offset machine (18.5.1–18.5.4, 18.6.1)",
+        "zh": "覆盖地图：HotStandbySystem 要求与偏移状态机（18.5.1–18.5.4、18.6.1）"
+      },
+      "en": "18.5.1 (global variables) and 18.5.2 (local variables) are listed above. 18.5.3 (requirements) spells out the time-transfer rules per role: 18.5.3.1 (primary grandmaster) transfers phase/frequency from the ClockSource into the primary instance; 18.5.3.2 (secondary grandmaster) covers REDUNDANT (take phase from the primary instance for continuity), NOT_REDUNDANT, and the REDUNDANT→NOT_REDUNDANT transition (the secondary GM must avoid any time jump when the primary faults). 18.5.3.3 (TimeReceiver HotStandbySystem) handles the case where neither instance is a grandmaster — it forwards the synced instance's time to the ClockTarget. 18.5.3.4 (split functionality) is an optional interworking function (IWF) that copies the synced instance's PortSyncSync structure into the unsynced instance so it recovers without re-initializing. 18.5.3.5 covers both-unsynced (OUT_OF_SYNC, coast on stored data). 18.5.4 is the state diagram (Figure 18-3). 18.6 (PrimarySecondaryOffset state machine) and its diagram 18.6.1 (Figure 18-4) recompute primarySecondaryOffset = |primary.clockTimeReceiverTime − secondary.clockTimeReceiverTime| every time either instance produces a new clockTimeReceiverTime.",
+      "zh": "18.5.1（全局变量）与 18.5.2（本地变量）已在上文列出。18.5.3（要求）逐角色规定时间传递规则：18.5.3.1（主用大师钟）将相位/频率从 ClockSource 传入主用实例；18.5.3.2（备用大师钟）涵盖 REDUNDANT（从主用实例取相位以保持连续）、NOT_REDUNDANT，以及 REDUNDANT→NOT_REDUNDANT 的转换（主用故障时备用 GM 须避免任何时间跳变）。18.5.3.3（TimeReceiver 型 HotStandbySystem）处理两个实例都非大师钟的情形——把已同步实例的时间转发给 ClockTarget。18.5.3.4（split 功能）是可选的互通功能（IWF），把已同步实例的 PortSyncSync 结构复制到未同步实例，使其无需重新初始化即可恢复。18.5.3.5 处理两者都未同步（OUT_OF_SYNC，靠存储数据维持）。18.5.4 是状态图（图 18-3）。18.6（PrimarySecondaryOffset 状态机）及其状态图 18.6.1（图 18-4）在任一实例产生新的 clockTimeReceiverTime 时，重算 primarySecondaryOffset = |主用.clockTimeReceiverTime − 备用.clockTimeReceiverTime|。",
+      "cite": {
+        "pdf_id": "8021ASdm-2024",
+        "pages": [
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the annexes (A, B, F, G, H)",
+        "zh": "覆盖地图：附录（A、B、F、G、H）"
+      },
+      "en": "Annex A (normative, PICS proforma): the Protocol Implementation Conformance Statement is the checklist a vendor fills in to declare what it supports. This amendment edits rows for DOM0/DOMADD/SIG, adds HOTSTDBY and DRFTRK (Drift_Tracking TLV) capability items in A.5, adds MINTA-21/MINTA-22 minimal-system rows (MINTA-22 requires the PtpInstanceSyncStatus state machine of 18.4), and adds remote-management rows (RMGT-4/RMGT-5) for the two YANG models. Annex B (normative, performance requirements): B.2.3 (Pdelay turnaround time) is a wording update noting that turnaround-time and frequency-offset errors (in nrrPdelay) cause delay-measurement error. Annex F (informative, the PTP profile in this standard): F.3 updates an attribute-value list item about domains 0 and 1–127. Annex G (informative, asymmetry compensation by line-swapping): G.3 details the measurement procedure — put two ports into asymmetry-measurement mode, collect (t3,t4) Pdelay timestamps, physically swap the transmit/receive fibers, collect (t3',t4'), and compute the fiber delay asymmetry the NMS then programs as compensation. Annex H (informative, bibliography): adds reference [B5a], the IEEE EUI/OUI/CID guidelines.",
+      "zh": "附录 A（规范性，PICS proforma）：Protocol Implementation Conformance Statement（协议实现一致性声明）是厂商用以声明所支持功能的清单。本修正案在 A.5 中编辑 DOM0/DOMADD/SIG 各行，新增 HOTSTDBY 与 DRFTRK（Drift_Tracking TLV）能力项；新增 MINTA-21/MINTA-22 最小系统行（MINTA-22 要求实现 18.4 的 PtpInstanceSyncStatus 状态机）；并为两个 YANG 模型新增远程管理行（RMGT-4/RMGT-5）。附录 B（规范性，性能要求）：B.2.3（Pdelay 周转时间）是措辞更新，指出周转时间误差与频偏误差（在 nrrPdelay 中）会导致时延测量误差。附录 F（资料性，本标准包含的 PTP 配置）：F.3 更新关于域 0 与 1–127 的一条属性值条目。附录 G（资料性，基于换线的非对称补偿测量）：G.3 详述测量流程——把两个端口置入非对称测量模式，采集 (t3,t4) Pdelay 时间戳，物理交换收发光纤，采集 (t3',t4')，再算出光纤时延非对称，由 NMS 编程为补偿值。附录 H（资料性，参考文献）：新增条目 [B5a]，即 IEEE 的 EUI/OUI/CID 指南。",
+      "cite": {
+        "pdf_id": "8021ASdm-2024",
+        "pages": [
+          154,
+          155,
+          156,
+          157,
+          158,
+          159,
+          160,
+          161,
+          162,
+          163
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Big picture: Clause 18 is the why of this amendment — two clocks, one seamless output, with state machines that decide health (18.4), pick a source and gate transitions (18.5), and track the inter-domain offset (18.6). Clause 17's YANG model is how you operate it remotely, Clause 16 keeps CSN delay measurement consistent, and the annexes (A/B/F/G/H) are how you prove conformance, meet performance, and measure the fiber asymmetry that would otherwise corrupt the whole timing budget.",
+      "zh": "全局视角：第 18 章是本修正案的“为什么”——两个时钟、一个无缝输出，由状态机判断健康（18.4）、选择源并对转换设门限（18.5）、跟踪域间偏移（18.6）。第 17 章的 YANG 模型是“如何远程运维”，第 16 章保持 CSN 时延测量一致，附录（A/B/F/G/H）则是如何证明一致性、满足性能，并测量否则会破坏整个时间预算的光纤非对称。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        127
+      ],
+      "note": "Clause 16: 16.4.3 path delay over CSN, 16.5.3 sync message propagation / CSN TLV domainNumber"
+    },
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134
+      ],
+      "note": "Clause 17 YANG: 17.1.1 relationship to 1588, 17.2 model figures, 17.3 module table, 17.5.2 hs tree, 17.6.2 hs module"
+    },
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        142,
+        143,
+        144,
+        145,
+        146,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        153
+      ],
+      "note": "Clause 18 Hot standby: 18.1-18.3 general/overview/config, 18.4 PtpInstanceSyncStatus, 18.5 HotStandbySystem, 18.6 PrimarySecondaryOffset"
+    },
+    {
+      "pdf_id": "8021ASdm-2024",
+      "pages": [
+        154,
+        155,
+        156,
+        157,
+        158,
+        159,
+        160,
+        161,
+        162,
+        163
+      ],
+      "note": "Annex A PICS proforma, Annex B performance, Annex F PTP profile, Annex G line-swapping asymmetry, Annex H bibliography"
+    }
+  ],
+  "covers": [
+    "8021ASdm-2024:16.4.3",
+    "8021ASdm-2024:16.5.3",
+    "8021ASdm-2024:17.1.1",
+    "8021ASdm-2024:17.2",
+    "8021ASdm-2024:17.3",
+    "8021ASdm-2024:17.5.2",
+    "8021ASdm-2024:17.6.2",
+    "8021ASdm-2024:18.1",
+    "8021ASdm-2024:18.2",
+    "8021ASdm-2024:18.3",
+    "8021ASdm-2024:18.4.1",
+    "8021ASdm-2024:18.4.2",
+    "8021ASdm-2024:18.4.3",
+    "8021ASdm-2024:18.4.4",
+    "8021ASdm-2024:18.5.1",
+    "8021ASdm-2024:18.5.2",
+    "8021ASdm-2024:18.5.3",
+    "8021ASdm-2024:18.5.4",
+    "8021ASdm-2024:18.6.1",
+    "8021ASdm-2024:Annex_A",
+    "8021ASdm-2024:Annex_B",
+    "8021ASdm-2024:Annex_F",
+    "8021ASdm-2024:Annex_G",
+    "8021ASdm-2024:Annex_H"
+  ],
+  "track": "tsn"
+}

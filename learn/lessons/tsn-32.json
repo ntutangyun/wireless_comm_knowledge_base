@@ -1,0 +1,137 @@
+{
+  "id": "tsn-32",
+  "title": {
+    "en": "gPTP Data Sets: The Management Model for Timing and Synchronization (Clause 14)",
+    "zh": "gPTP 数据集：定时与同步的管理模型（第 14 章）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In gPTP (generalized Precision Time Protocol, the profile of IEEE 1588 that IEEE 802.1AS defines for time-sensitive networks), every node keeps a structured set of bookkeeping variables called **data sets**. A data set is just a named table of parameters that software can read (and sometimes write) to configure the node or observe how synchronization is going. Clause 14 is the management model: it gives each parameter a precise name, data type, and access mode. This lesson walks the data sets that the IEEE 802.1ASdr-2024 amendment touched — and, importantly, that amendment's whole purpose was to replace older non-inclusive terminology (e.g., 'master/slave') with neutral terms like **TimeTransmitter** and **TimeReceiver**, so you will see those renamed parameters throughout.",
+      "zh": "在 gPTP（generalized Precision Time Protocol，广义精确时间协议，即 IEEE 802.1AS 为时间敏感网络定义的 IEEE 1588 子集）中，每个节点都维护着一组结构化的记录变量，称为**数据集（data set）**。数据集就是一张带名称的参数表，软件可以读取（有时也可写入）它来配置节点或观察同步状态。第 14 章正是这套管理模型：它为每个参数给出精确的名称、数据类型和访问权限。本课讲解 IEEE 802.1ASdr-2024 修正案改动过的那些数据集——而该修正案的核心目的，正是把旧式的非中性术语（如 'master/slave'）替换为中性词，例如 **TimeTransmitter（时间发送方）** 和 **TimeReceiver（时间接收方）**，因此你会在各处看到这些被重命名的参数。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Keep the cast of characters straight. A **PTP Instance** is one logical clock participant inside a node. The **Grandmaster (GM)** is the single clock at the top of the domain that everyone synchronizes to. A node's port can act as a **TimeTransmitter port** (sends time downstream) or a **TimeReceiver port** (receives time from upstream). Data sets simply describe a PTP Instance from these angles: its own defaults, its position relative to the GM, its parent, and its per-port state.",
+      "zh": "先理清角色。**PTP Instance（PTP 实例）** 是节点内部的一个逻辑时钟参与者。**Grandmaster（GM，大主时钟）** 是整个域顶端唯一被所有人同步的时钟。节点的端口可充当 **TimeTransmitter 端口**（向下游发送时间）或 **TimeReceiver 端口**（从上游接收时间）。数据集只是从这些角度描述一个 PTP 实例：它自身的默认值、它相对于 GM 的位置、它的父节点，以及各端口的状态。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[gPTP Node] --> B[instanceList]\n  B --> C[defaultDS]\n  B --> D[currentDS]\n  B --> E[parentDS]\n  B --> F[acceptableMTT TableDS]\n  B --> G[portList]\n  G --> H[portDS]\n  G --> I[portStatisticsDS]\n  G --> J[acceptableMTT PortDS]\n  A --> K[commonServices]\n  K --> L[cmldsLinkPortDS]",
+      "zh": "flowchart TD\n  A[gPTP 节点] --> B[实例列表]\n  B --> C[defaultDS]\n  B --> D[currentDS]\n  B --> E[parentDS]\n  B --> F[可接受MTT表DS]\n  B --> G[端口列表]\n  G --> H[portDS]\n  G --> I[portStatisticsDS]\n  G --> J[可接受MTT端口DS]\n  A --> K[公共服务]\n  K --> L[cmldsLinkPortDS]"
+    },
+    {
+      "type": "prose",
+      "en": "The **defaultDS** (Default Parameter Data Set) holds a PTP Instance's own native, mostly static properties. Several of its members describe how the local timescale relates to civil time. **currentUtcOffset** is the offset between TAI (International Atomic Time) and UTC (Coordinated Universal Time), in seconds, relative to this instance's time-transmitter entity; **currentUtcOffsetValid** is TRUE when that offset is known to be correct. **leap59** and **leap61** flag whether the current UTC day's last minute will be shortened to 59 seconds or stretched to 61 seconds (a leap-second adjustment). **timeTraceable** is TRUE when both the timescale and the UTC offset trace back to a primary reference standard; **frequencyTraceable** is TRUE when the frequency driving the timescale traces to a primary standard. **ptpTimescale** is TRUE when the instance's clock runs on the PTP timescale rather than an arbitrary one. Each of these mirrors a system-level global variable defined elsewhere in Clause 10.",
+      "zh": "**defaultDS（默认参数数据集）** 保存 PTP 实例自身的、大多为静态的固有属性。其中几个成员描述本地时标与民用时间的关系。**currentUtcOffset** 是 TAI（国际原子时）与 UTC（协调世界时）之间的偏移量（单位为秒），相对于本实例的时间发送方实体；**currentUtcOffsetValid** 在该偏移已知正确时为 TRUE。**leap59** 与 **leap61** 分别标记当前 UTC 日的最后一分钟将被缩短为 59 秒还是延长为 61 秒（闰秒调整）。**timeTraceable** 在时标与 UTC 偏移均可追溯到主参考标准时为 TRUE；**frequencyTraceable** 在驱动时标的频率可追溯到主标准时为 TRUE。**ptpTimescale** 在实例时钟运行于 PTP 时标（而非任意时标）时为 TRUE。它们各自对应第 10 章定义的某个系统级全局变量。"
+    },
+    {
+      "type": "prose",
+      "en": "The **currentDS** (Current Parameter Data Set) describes where this instance sits relative to the Grandmaster and how stable that relationship is. **offsetFromMasterTimeTransmitter** is an implementation-specific representation of the current time difference between a TimeReceiver and the Grandmaster Clock (data type TimeInterval). The amendment also adds change-tracking statistics: **gmChangeCount** counts how many times the Grandmaster PTP Instance has changed in the domain, incrementing whenever the PortAnnounceInformation state machine enters a SUPERIOR or INFERIOR time-transmitter port state. The three timestamps **timeOfLastGmChangeEvent**, **timeOfLastGmPhaseChangeEvent**, and **timeOfLastGmFreqChangeEvent** record the sysUpTime (a running uptime counter) of the most recent GM change, GM phase change, and GM frequency change respectively — letting an operator see not just that something shifted, but when.",
+      "zh": "**currentDS（当前参数数据集）** 描述本实例相对于 Grandmaster 的位置以及该关系的稳定程度。**offsetFromMasterTimeTransmitter** 是 TimeReceiver 与 Grandmaster 时钟当前时间差的一种实现相关表示（数据类型 TimeInterval）。修正案还增加了变更跟踪统计：**gmChangeCount** 统计域内 Grandmaster PTP 实例改变的次数，每当 PortAnnounceInformation 状态机进入 SUPERIOR 或 INFERIOR 时间发送方端口状态时递增。三个时间戳 **timeOfLastGmChangeEvent**、**timeOfLastGmPhaseChangeEvent**、**timeOfLastGmFreqChangeEvent** 分别记录最近一次 GM 改变、GM 相位改变、GM 频率改变发生时的 sysUpTime（持续运行的开机计时器）——让运维者不仅知道发生了变化，还知道何时发生。"
+    },
+    {
+      "type": "prose",
+      "en": "The **parentDS** (Parent Parameter Data Set) describes the upstream neighbor that this instance receives time from. Its **parentPortIdentity** member, when this instance is not itself the Grandmaster, is the portIdentity of the TimeTransmitter port on the gPTP communication path attached to this instance's single TimeReceiver port — in plain terms, 'who is feeding me time, and through which of their ports.' The **acceptableMasterTimeTransmitterTableDS** is a per-instance list of which upstream sources this node is willing to accept time from; it is used when an EPON (Ethernet Passive Optical Network) port serves a PTP Instance. Its **maxTableSize** is the table's capacity, **actualTableSize** is how many entries are currently filled (always ≤ maxTableSize), and **acceptableMasterTimeTransmitterArray** holds the entries themselves.",
+      "zh": "**parentDS（父参数数据集）** 描述本实例从中接收时间的上游邻居。其成员 **parentPortIdentity** 在本实例自身不是 Grandmaster 时，是连接到本实例唯一 TimeReceiver 端口的 gPTP 通信路径上那个 TimeTransmitter 端口的 portIdentity——通俗地说，就是“谁在给我喂时间，通过它的哪个端口”。**acceptableMasterTimeTransmitterTableDS** 是本节点逐实例维护的、愿意接受其时间的上游来源清单；当 EPON（以太网无源光网络）端口服务于某 PTP 实例时使用。其 **maxTableSize** 为表容量，**actualTableSize** 为当前已填充条目数（始终 ≤ maxTableSize），**acceptableMasterTimeTransmitterArray** 则保存条目本身。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"30\" width=\"110\" height=\"90\" rx=\"6\"/><text x=\"65\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Grandmaster</text><text x=\"65\" y=\"80\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">GM Clock</text><rect x=\"165\" y=\"30\" width=\"110\" height=\"90\" rx=\"6\"/><text x=\"220\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Relay Instance</text><text x=\"220\" y=\"70\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">TimeReceiver</text><text x=\"220\" y=\"90\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">+TimeTransmitter</text><rect x=\"320\" y=\"30\" width=\"110\" height=\"90\" rx=\"6\"/><text x=\"375\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">End Instance</text><text x=\"375\" y=\"80\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">TimeReceiver</text><line x1=\"120\" y1=\"75\" x2=\"165\" y2=\"75\"/><polygon points=\"165,75 157,71 157,79\" fill=\"currentColor\" stroke=\"none\"/><line x1=\"275\" y1=\"75\" x2=\"320\" y2=\"75\"/><polygon points=\"320,75 312,71 312,79\" fill=\"currentColor\" stroke=\"none\"/><text x=\"142\" y=\"68\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">time</text><text x=\"297\" y=\"68\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">time</text></svg>",
+      "caption": {
+        "en": "Time flows downstream from the Grandmaster. A relay's TimeReceiver port learns from its parent (parentDS), while its TimeTransmitter port feeds the next hop. portDS records the per-port view of this chain.",
+        "zh": "时间从 Grandmaster 向下游流动。中继的 TimeReceiver 端口从父节点学习（parentDS），其 TimeTransmitter 端口则向下一跳供时。portDS 记录这条链路的逐端口视图。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The **portDS** (Port Parameter Data Set) is the per-port view. Its **portState** enumeration (Table 14-7) tells you the port's role: DisabledPort (3), MasterPortTimeTransmitterPort (6), PassivePort (7), or SlavePortTimeReceiverPort (9). **meanLinkDelay** is the port's estimate of one-way propagation time on its attached link (TimeInterval, default zero) — notably zero for IEEE 802.3 EPON links and for the TimeTransmitter port of an IEEE 802.11 (Wi-Fi) link, because that delay isn't directly measured there. Two timeout members govern failover: **announceReceiptTimeout** is how many Announce intervals a TimeReceiver port waits with no Announce before deciding the upstream TimeTransmitter is gone and the best-clock selection algorithm (BTCA) should run; **syncReceiptTimeout** is the analogous count for missing synchronization messages.",
+      "zh": "**portDS（端口参数数据集）** 是逐端口的视图。其 **portState** 枚举（表 14-7）给出端口角色：DisabledPort（3）、MasterPortTimeTransmitterPort（6）、PassivePort（7）或 SlavePortTimeReceiverPort（9）。**meanLinkDelay** 是端口对所连链路单向传播时延的估计（TimeInterval，默认为零）——值得注意的是，IEEE 802.3 EPON 链路以及 IEEE 802.11（Wi-Fi）链路的 TimeTransmitter 端口处该值为零，因为那里不直接测量该时延。两个超时成员控制故障切换：**announceReceiptTimeout** 是 TimeReceiver 端口在未收到 Announce 的情况下等待多少个 Announce 间隔后判定上游 TimeTransmitter 已失联、需运行最佳时钟选择算法（BTCA）；**syncReceiptTimeout** 是针对同步报文缺失的对应计数。"
+    },
+    {
+      "type": "prose",
+      "en": "The **portStatisticsDS** (Port Parameter Statistics Data Set) holds per-port counters; this lesson's covered member is **txSyncCount**, which increments every time the port transmits synchronization information (for example, when the MDSyncSend state machine moves to certain states, or when a Wi-Fi timing-measurement exchange initiates). The **acceptableMasterTimeTransmitterPortDS** is the per-port switch for the acceptable-source feature: it holds the single Boolean **acceptableMasterTimeTransmitterTableEnabled**, and there is one such data set per port (the count equals defaultDS.numberPorts). Finally, the **cmldsLinkPortDS** belongs to the Common Mean Link Delay Service (CMLDS) — a shared service that measures link delay once and lets multiple gPTP domains reuse it. Its **meanLinkDelay** member mirrors the per-port link-delay estimate, with the same zero-value rules for EPON and Wi-Fi TimeTransmitter ports.",
+      "zh": "**portStatisticsDS（端口参数统计数据集）** 保存逐端口计数器；本课涉及的成员是 **txSyncCount**，每当端口发送同步信息时递增（例如 MDSyncSend 状态机进入特定状态时，或 Wi-Fi 定时测量交互发起时）。**acceptableMasterTimeTransmitterPortDS** 是“可接受来源”特性的逐端口开关：它只含一个布尔成员 **acceptableMasterTimeTransmitterTableEnabled**，且每个端口各有一份（数量等于 defaultDS.numberPorts）。最后，**cmldsLinkPortDS** 属于公共平均链路时延服务（CMLDS）——一种只测量一次链路时延、供多个 gPTP 域复用的共享服务。其 **meanLinkDelay** 成员与逐端口链路时延估计一致，对 EPON 与 Wi-Fi TimeTransmitter 端口同样适用零值规则。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every Clause 14 unit by exact number",
+        "zh": "覆盖地图——按精确编号列出第 14 章每个单元"
+      },
+      "en": "14.1 General: 14.1.1 data set hierarchy (instanceList → defaultDS/currentDS/parentDS/.../portList; commonServices → cmldsLinkPortDS); 14.1.2 data set descriptions (renamed acceptableMasterTimeTransmitterTableDS item f and acceptableMasterTimeTransmitterPortDS item j; logical-vs-physical-port NOTE). 14.2 defaultDS: 14.2.8 currentUtcOffset (TAI−UTC in seconds), 14.2.9 currentUtcOffsetValid, 14.2.10 leap59, 14.2.11 leap61, 14.2.12 timeTraceable, 14.2.13 frequencyTraceable, 14.2.14 ptpTimescale. 14.3 currentDS: 14.3.3 offsetFromMasterTimeTransmitter (TimeInterval), 14.3.7 gmChangeCount, 14.3.8 timeOfLastGmChangeEvent, 14.3.9 timeOfLastGmPhaseChangeEvent, 14.3.10 timeOfLastGmFreqChangeEvent, 14.3.11 currentDS table (Table 14-2). 14.4 parentDS: 14.4.2 parentPortIdentity. 14.7 acceptableMasterTimeTransmitterTableDS: 14.7.1 General, 14.7.2 maxTableSize, 14.7.3 actualTableSize, 14.7.4 acceptableMasterTimeTransmitterArray, 14.7.5 table (Table 14-6). 14.8 portDS: 14.8.3 portState (Table 14-7 enum), 14.8.8 meanLinkDelay, 14.8.16 announceReceiptTimeout, 14.8.21 syncReceiptTimeout. 14.10 portStatisticsDS: 14.10.13 txSyncCount. 14.11 acceptableMasterTimeTransmitterPortDS: 14.11.1 General, 14.11.2 acceptableMasterTimeTransmitterTableEnabled, 14.11.3 table (Table 14-13). 14.16 cmldsLinkPortDS: 14.16.6 meanLinkDelay.",
+      "zh": "14.1 概述：14.1.1 数据集层次（instanceList → defaultDS/currentDS/parentDS/…/portList；commonServices → cmldsLinkPortDS）；14.1.2 数据集描述（重命名 f 项 acceptableMasterTimeTransmitterTableDS 与 j 项 acceptableMasterTimeTransmitterPortDS；逻辑端口与物理端口的 NOTE）。14.2 defaultDS：14.2.8 currentUtcOffset（TAI−UTC，秒）、14.2.9 currentUtcOffsetValid、14.2.10 leap59、14.2.11 leap61、14.2.12 timeTraceable、14.2.13 frequencyTraceable、14.2.14 ptpTimescale。14.3 currentDS：14.3.3 offsetFromMasterTimeTransmitter（TimeInterval）、14.3.7 gmChangeCount、14.3.8 timeOfLastGmChangeEvent、14.3.9 timeOfLastGmPhaseChangeEvent、14.3.10 timeOfLastGmFreqChangeEvent、14.3.11 currentDS 表（表 14-2）。14.4 parentDS：14.4.2 parentPortIdentity。14.7 acceptableMasterTimeTransmitterTableDS：14.7.1 概述、14.7.2 maxTableSize、14.7.3 actualTableSize、14.7.4 acceptableMasterTimeTransmitterArray、14.7.5 表（表 14-6）。14.8 portDS：14.8.3 portState（表 14-7 枚举）、14.8.8 meanLinkDelay、14.8.16 announceReceiptTimeout、14.8.21 syncReceiptTimeout。14.10 portStatisticsDS：14.10.13 txSyncCount。14.11 acceptableMasterTimeTransmitterPortDS：14.11.1 概述、14.11.2 acceptableMasterTimeTransmitterTableEnabled、14.11.3 表（表 14-13）。14.16 cmldsLinkPortDS：14.16.6 meanLinkDelay。",
+      "cite": {
+        "pdf_id": "8021ASdr-2024",
+        "pages": [
+          118,
+          119,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why does the same meanLinkDelay appear in both portDS (14.8.8) and cmldsLinkPortDS (14.16.6)? Because gPTP separates 'who consumes the link-delay number' from 'who measures it.' When the Common Mean Link Delay Service runs, the link is measured once at the CMLDS link port and the result is shared across domains; the per-port portDS simply reflects the same per-port global variable. Same value, two management vantage points.",
+      "zh": "为什么同一个 meanLinkDelay 会同时出现在 portDS（14.8.8）和 cmldsLinkPortDS（14.16.6）中？因为 gPTP 把“谁使用链路时延数值”和“谁测量它”分开了。当公共平均链路时延服务（CMLDS）运行时，链路只在 CMLDS 链路端口测量一次，结果跨域共享；逐端口的 portDS 只是反映同一个逐端口全局变量。数值相同，只是两个管理视角。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021ASdr-2024",
+      "pages": [
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125
+      ],
+      "note": "Clause 14 data set definitions: 14.1 hierarchy/descriptions, 14.2 defaultDS members, 14.3 currentDS members and table, 14.4 parentDS, 14.7 acceptableMTT TableDS, 14.8 portDS (portState/meanLinkDelay/timeouts), 14.10 txSyncCount, 14.11 acceptableMTT PortDS, 14.16 cmldsLinkPortDS meanLinkDelay."
+    }
+  ],
+  "covers": [
+    "8021ASdr-2024:14.1.1",
+    "8021ASdr-2024:14.1.2",
+    "8021ASdr-2024:14.2.8",
+    "8021ASdr-2024:14.2.9",
+    "8021ASdr-2024:14.2.10",
+    "8021ASdr-2024:14.2.11",
+    "8021ASdr-2024:14.2.12",
+    "8021ASdr-2024:14.2.13",
+    "8021ASdr-2024:14.2.14",
+    "8021ASdr-2024:14.3.3",
+    "8021ASdr-2024:14.3.7",
+    "8021ASdr-2024:14.3.8",
+    "8021ASdr-2024:14.3.9",
+    "8021ASdr-2024:14.3.10",
+    "8021ASdr-2024:14.3.11",
+    "8021ASdr-2024:14.4.2",
+    "8021ASdr-2024:14.7.1",
+    "8021ASdr-2024:14.7.2",
+    "8021ASdr-2024:14.7.3",
+    "8021ASdr-2024:14.7.4",
+    "8021ASdr-2024:14.7.5",
+    "8021ASdr-2024:14.8.3",
+    "8021ASdr-2024:14.8.8",
+    "8021ASdr-2024:14.8.16",
+    "8021ASdr-2024:14.8.21",
+    "8021ASdr-2024:14.10.13",
+    "8021ASdr-2024:14.11.1",
+    "8021ASdr-2024:14.11.2",
+    "8021ASdr-2024:14.11.3",
+    "8021ASdr-2024:14.16.6"
+  ],
+  "track": "tsn"
+}
