@@ -1,0 +1,243 @@
+{
+  "id": "pan-802-15-23",
+  "title": {
+    "en": "Long-Range Monitoring: the LECIM DSSS and FSK PHYs",
+    "zh": "远距离监测：LECIM DSSS 与 FSK PHY"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Imagine thousands of sensors scattered across a power grid, a water network, or a city's gas pipes. Each one wakes up rarely, sends a tiny reading, and must run for years on a coin cell while reaching a faraway collector. This is Low-Energy Critical Infrastructure Monitoring (LECIM), and IEEE 802.15.4-2024 gives it two dedicated radios: the LECIM DSSS PHY (Clause 23) and the LECIM FSK PHY (Clause 24). Both trade raw speed for extreme range, low power, and the ability to share crowded license-exempt bands. This lesson walks through how each one packages a frame (the PPDU), spreads or modulates it onto the air, and what RF behavior the standard demands.",
+      "zh": "想象成千上万个传感器散布在电网、供水管网或城市燃气管道上。每个传感器很少唤醒，发送一条极小的读数，却必须靠一颗纽扣电池工作数年，同时把数据送达远处的汇聚节点。这就是低能耗关键基础设施监测（LECIM），IEEE 802.15.4-2024 为它提供了两种专用无线电：LECIM DSSS PHY（第 23 章）和 LECIM FSK PHY（第 24 章）。两者都用速率换取超远距离、低功耗，以及在拥挤的免许可频段中共存的能力。本课将逐步讲解每种 PHY 如何封装一个帧（PPDU）、如何把它扩频或调制到空中，以及标准对射频行为提出了哪些要求。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Key jargon up front. PPDU = the full PHY-layer packet on the air. PSDU = the payload it carries. SHR = synchronization header (preamble + SFD) that lets a receiver lock on. PHR = PHY header describing the payload. DSSS = direct-sequence spread spectrum, which multiplies each bit by a fast code so the signal can be dug out below the noise. FSK = frequency-shift keying, where a 0 and a 1 are two slightly different tones. FEC = forward error correction, redundancy added so the receiver can fix errors without asking for a resend.",
+      "zh": "先厘清术语。PPDU＝空中传输的完整物理层数据包。PSDU＝它承载的有效载荷。SHR＝同步头（前导码＋SFD），让接收机能够锁定。PHR＝描述载荷的物理层头部。DSSS＝直接序列扩频，把每个比特乘以一段高速码字，使信号能从噪声以下被挖出。FSK＝频移键控，用两个略有差异的频率分别表示 0 和 1。FEC＝前向纠错，加入冗余使接收机无需重传即可纠错。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the LECIM DSSS PHY (23.1). Its PPDU is simple: an optional Preamble (0, 2, or 4 octets, set by phyLecimDsssPreambleSize), an optional SFD (start-of-frame delimiter), then the PSDU. Table 23-1 lists the exact preamble and SFD bit patterns; the default preamble length for acknowledgment timing is 4 octets. The whole point of DSSS here is the spreading factor (SF): each information bit is multiplied by SF chips, so a higher SF buries the signal deeper below noise and stretches range, at the cost of throughput. The data rate (23.2.2) is therefore 0.5 (for the rate-1/2 FEC) times the modulation rate divided by SF, with one chip per symbol for BPSK and two for O-QPSK.",
+      "zh": "先看 LECIM DSSS PHY（23.1）。它的 PPDU 很简洁：一个可选前导码（0、2 或 4 个字节，由 phyLecimDsssPreambleSize 设定）、一个可选 SFD（帧起始定界符），然后是 PSDU。表 23-1 给出确切的前导码与 SFD 比特图样；用于确认帧定时的默认前导码长度为 4 个字节。这里 DSSS 的核心是扩频因子（SF）：每个信息比特乘以 SF 个码片，因此更高的 SF 把信号埋得更深、把距离拉得更远，代价是吞吐量。于是数据速率（23.2.2）等于 0.5（对应 1/2 码率的 FEC）乘以调制速率再除以 SF，BPSK 每符号 1 个码片，O-QPSK 每符号 2 个码片。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 70\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"20\" width=\"90\" height=\"30\"/><rect x=\"100\" y=\"20\" width=\"60\" height=\"30\"/><rect x=\"160\" y=\"20\" width=\"260\" height=\"30\"/><text x=\"55\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Preamble</text><text x=\"130\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">SFD</text><text x=\"290\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">PSDU</text><text x=\"55\" y=\"14\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">0/2/4 oct</text><text x=\"130\" y=\"14\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">0/1 oct</text><text x=\"290\" y=\"14\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">16/24/32 oct</text><text x=\"130\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">SHR</text></svg>",
+      "caption": {
+        "en": "The LECIM DSSS PPDU (Figure 23-1): a short preamble and SFD form the SHR, followed by a fixed-size PSDU.",
+        "zh": "LECIM DSSS PPDU（图 23-1）：短前导码与 SFD 构成 SHR，后接固定大小的 PSDU。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "How does the DSSS PHY turn PSDU bits into chips on the air? The reference modulator (23.2.3) chains a fixed pipeline. First, rate-1/2 convolutional FEC with constraint length 7 doubles the bits for error resilience (23.2.4); tail biting is an optional way to avoid padding overhead. Next, a pruned bit-reversal interleaver (23.2.5) shuffles bits across fragments of 256, 384, or 512 bits so that a burst of interference damages scattered bits instead of one solid run. Differential encoding (23.2.6) then makes the receiver insensitive to absolute phase. The bit-to-symbol step (23.2.7) maps each bit to +1 or -1 and spreads it with a Gold code (23.2.7.2) -- a pseudo-noise sequence with excellent correlation; an optional OVSF (Walsh-style) code (23.2.7.3) lets co-located networks stay orthogonal. Finally the chips ride the carrier via BPSK or O-QPSK (23.2.8).",
+      "zh": "DSSS PHY 如何把 PSDU 比特变成空中的码片？参考调制器（23.2.3）串联起一条固定流水线。首先，约束长度为 7 的 1/2 码率卷积 FEC 把比特翻倍以增强抗错能力（23.2.4）；尾比特（tail biting）是避免填充开销的可选手段。接着，一个剪枝位反转交织器（23.2.5）在 256、384 或 512 比特的片段内打乱比特顺序，使一阵突发干扰损坏的是分散的比特而非连续的一段。随后差分编码（23.2.6）让接收机对绝对相位不敏感。比特到符号映射（23.2.7）把每个比特映射为 +1 或 -1，并用 Gold 码（23.2.7.2）扩频——这是一种相关特性优异的伪噪声序列；可选的 OVSF（Walsh 类）码（23.2.7.3）让同址网络保持正交。最后码片经 BPSK 或 O-QPSK 调制到载波上（23.2.8）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[PSDU] --> B[Conv FEC 1/2]\n  B --> C[Interleaver]\n  C --> D[Differential encode]\n  D --> E[Bit to symbol]\n  E --> F[Gold + OVSF spread]\n  F --> G[BPSK / O-QPSK]\n  G --> H[Air]",
+      "zh": "flowchart LR\n  A[PSDU] --> B[卷积FEC 1/2]\n  B --> C[交织器]\n  C --> D[差分编码]\n  D --> E[比特到符号]\n  E --> F[Gold+OVSF扩频]\n  F --> G[BPSK / O-QPSK]\n  G --> H[空中]"
+    },
+    {
+      "type": "prose",
+      "en": "Long links are unreliable, so the DSSS PHY mandates a fragmentation sublayer (23.3.1): the PSDU is split into fixed-size fragments, each carrying its own header and a FICS (fragment integrity check sequence) so the receiver can discard a bad fragment without losing the whole message. Before sending, the two devices agree on context via an FSCD information element identified by a TID (23.3.2); fragmentation then proceeds fragment by fragment (23.3.3), each formatted with a Frame Type, TID, Fragment Number, data, and FICS (23.3.4). When security is on, the FICS becomes a 32-bit MIC built from a CCM nonce (23.3.5). Progress is reported by the Frak frame (23.3.6, 23.3.7) -- a selective acknowledgment whose policy (per-fragment, time-based, or last-fragment) is set in the FSCD IE, with a bitmap of received fragments and an LQI quality hint. The receiver reassembles fragments in order and, on the final one, treats the message as complete without a separate FCS check (23.3.8).",
+      "zh": "长距离链路并不可靠，因此 DSSS PHY 强制要求一个分片子层（23.3.1）：把 PSDU 切成固定大小的片段，每片自带头部和一个 FICS（片段完整性校验序列），使接收机能丢弃坏片而不丢失整条消息。发送前，两台设备通过由 TID 标识的 FSCD 信息元素协商上下文（23.3.2）；随后逐片进行分片（23.3.3），每片由帧类型、TID、片段编号、数据和 FICS 构成（23.3.4）。开启安全时，FICS 变为由 CCM 随机数生成的 32 比特 MIC（23.3.5）。进度由 Frak 帧报告（23.3.6、23.3.7）——这是一种选择性确认，其策略（逐片、基于时间或仅最后一片）在 FSCD IE 中设定，并带有已收片段的位图和 LQI 质量提示。接收机按编号顺序重组片段，收到最后一片时即认为消息完整，无需单独的 FCS 校验（23.3.8）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: LECIM DSSS PHY (Clause 23), clause by clause",
+        "zh": "覆盖地图：LECIM DSSS PHY（第 23 章）逐条对照"
+      },
+      "en": "PPDU format (23.1) defines the preamble/SFD/PSDU layout. Modulation and spreading (23.2): general definition of a modulation symbol (23.2.1); data-rate formula (23.2.2); the reference modulator block diagram (23.2.3); rate-1/2, K=7 convolutional FEC with optional tail biting (23.2.4); the pruned bit-reversal interleaver with worked examples for 256/384/512-bit fragments (23.2.5); differential encoding by reference to 14.2.4 (23.2.6); bit-to-symbol and symbol-to-chip with the Gold-code and OVSF-code generators (23.2.7); and BPSK/O-QPSK carrier modulation (23.2.8). PSDU fragmentation (23.3): general rationale (23.3.1); context configuration via FSCD IE and TID (23.3.2); the fragmentation procedure (23.3.3); the fragment packet format (23.3.4); the MIC-based FICS (23.3.5); two-level acknowledgment and retransmission (23.3.6); the Frak frame -- general, policy table, and format (23.3.7); and reassembly (23.3.8). DSSS PHY RF requirements (23.4): radio frequency tolerance of plus/minus 2.5e-6 (23.4.1); channel switch time <= 500 microseconds (23.4.2); transmit spectral mask deferred to local regulation (23.4.3); receiver sensitivity table down to -148 dBm at high SF (23.4.4); adjacent/alternate channel interference rejection of 10/30 dB (23.4.5); TX-to-RX and RX-to-TX turnaround per 11.2.2/11.2.3 (23.4.6, 23.4.7); and a minimum transmit power of -3 dBm (23.4.8).",
+      "zh": "PPDU 格式（23.1）定义前导码/SFD/PSDU 布局。调制与扩频（23.2）：调制符号的一般定义（23.2.1）；数据速率公式（23.2.2）；参考调制器框图（23.2.3）；约束长度 K=7 的 1/2 码率卷积 FEC 及可选尾比特（23.2.4）；带 256/384/512 比特片段示例的剪枝位反转交织器（23.2.5）；引用 14.2.4 的差分编码（23.2.6）；含 Gold 码与 OVSF 码生成器的比特到符号、符号到码片映射（23.2.7）；以及 BPSK/O-QPSK 载波调制（23.2.8）。PSDU 分片（23.3）：总体动机（23.3.1）；经 FSCD IE 与 TID 的上下文配置（23.3.2）；分片流程（23.3.3）；片段包格式（23.3.4）；基于 MIC 的 FICS（23.3.5）；两级确认与重传（23.3.6）；Frak 帧的总述、策略表与格式（23.3.7）；以及重组（23.3.8）。DSSS PHY 射频要求（23.4）：射频容差 ±2.5e-6（23.4.1）；信道切换时间 ≤ 500 微秒（23.4.2）；发射频谱模板交由本地法规（23.4.3）；接收灵敏度表（高 SF 时低至 -148 dBm）（23.4.4）；相邻/隔位信道干扰抑制 10/30 dB（23.4.5）；引用 11.2.2/11.2.3 的收发转换时间（23.4.6、23.4.7）；以及最低发射功率 -3 dBm（23.4.8）。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          794,
+          795,
+          796,
+          797,
+          798,
+          799,
+          800,
+          801,
+          802,
+          803,
+          804,
+          805,
+          806,
+          807,
+          808,
+          809
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now the LECIM FSK PHY (24.1, 24.2). It targets the same very-low-power, long-range goal but uses frequency-shift keying instead of spreading. Its standout feature is split mode (phyLecimFskSplit). In non-split mode the PSDU rides in a single packet, just like a normal radio. In split mode the PHR and PSDU are jointly FEC-encoded and then chopped into many radio-bursts sent on different channels at different times -- no single burst is decodable alone, so the receiver must collect enough of them to reconstruct the message. This frequency-and-time diversity is what makes split mode robust in congested license-exempt bands where any one channel may be hit by interference.",
+      "zh": "再看 LECIM FSK PHY（24.1、24.2）。它瞄准同样的超低功耗、远距离目标，但用频移键控取代扩频。其最大亮点是分裂模式（split mode，由 phyLecimFskSplit 控制）。在非分裂模式下，PSDU 像普通无线电那样装在单个数据包里。在分裂模式下，PHR 与 PSDU 被联合 FEC 编码，然后切成许多在不同信道、不同时间发送的无线电突发（radio-burst）——任何单个突发都无法独立解码，因此接收机必须收集足够多的突发才能重建消息。这种频率与时间分集正是分裂模式在拥挤免许可频段中保持稳健的原因，因为那里任一信道都可能遭遇干扰。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TB\n  P[PHR + PSDU] --> F[Joint FEC encode]\n  F --> S[Split into radio-bursts]\n  S --> B1[Burst @ ch a, t1]\n  S --> B2[Burst @ ch b, t2]\n  S --> B3[Burst @ ch c, t3]\n  B1 --> R[Collect + reconstruct]\n  B2 --> R\n  B3 --> R",
+      "zh": "flowchart TB\n  P[PHR + PSDU] --> F[联合FEC编码]\n  F --> S[切分为无线电突发]\n  S --> B1[突发 信道a t1]\n  S --> B2[突发 信道b t2]\n  S --> B3[突发 信道c t3]\n  B1 --> R[收集并重建]\n  B2 --> R\n  B3 --> R"
+    },
+    {
+      "type": "prose",
+      "en": "The FSK PPDU (24.3) is SHR + PHR + PHY Payload. The SHR (24.3.2) is a preamble of repeated 01010101 octets plus, in non-split mode only, a 3-octet SFD; in split mode each radio-burst instead begins with a 4-bit-coded SRBD (start-of-radio-burst delimiter). The PHR (24.3.3) packs a parity bit, an FCS-Type bit, a data-whitening flag, and an 11-bit Frame Length. On the modulation side (24.4), non-split FSK can be plain FSK or position-based FSK (P-FSK, which encodes two bits by shifting the tone's time position), with modulation index and bit rate chosen per band from Table 24-1; split mode uses shaped FSK at index 0.5. Bit-to-symbol mapping (24.4.3) sets the frequency deviation, and modulation quality (24.4.4) is policed by frequency-deviation and zero-crossing tolerances measured on an eye diagram. Split mode always uses FEC and offers three codes (24.4.5): rate-1/2 and rate-1/3 convolutional codes and a rate-1/4 LDPC code, with the rate-1/3 code mandatory.",
+      "zh": "FSK PPDU（24.3）由 SHR＋PHR＋物理层载荷构成。SHR（24.3.2）是重复 01010101 字节的前导码，加上——仅在非分裂模式下——一个 3 字节的 SFD；在分裂模式下，每个无线电突发改为以一个 4 比特编码的 SRBD（无线电突发起始定界符）开头。PHR（24.3.3）打包了一个奇偶校验位、一个 FCS 类型位、一个数据白化标志和一个 11 比特的帧长度。在调制方面（24.4），非分裂 FSK 可以是普通 FSK 或基于位置的 FSK（P-FSK，通过移动音调的时间位置来编码两个比特），其调制指数和比特率按频段从表 24-1 中选取；分裂模式使用调制指数为 0.5 的整形 FSK。比特到符号映射（24.4.3）设定频偏，调制质量（24.4.4）通过在眼图上测量的频偏容差与过零容差来约束。分裂模式始终使用 FEC 并提供三种码（24.4.5）：1/2 与 1/3 码率卷积码以及 1/4 码率 LDPC 码，其中 1/3 码率为必选。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: LECIM FSK PHY (Clause 24), clause by clause",
+        "zh": "覆盖地图：LECIM FSK PHY（第 24 章）逐条对照"
+      },
+      "en": "Introduction and general split/non-split behavior (24.1, 24.2). PPDU format (24.3): general layout (24.3.1); SHR with preamble and SFD subfields (24.3.2); PHR fields including the parity and Frame Length (24.3.3); the PHY Payload carrying the encoded PSDU (24.3.4); and the radio-burst format with its SRBD for split mode (24.3.5). Modulation and coding (24.4): general FSK/P-FSK and symbol-rate rules (24.4.1); reference modulators for split and non-split modes (24.4.2); bit-to-symbol mapping and frequency deviation (24.4.3); modulation quality via deviation and zero-crossing tolerances (24.4.4); FEC -- non-split rate-1/2 convolutional and split-mode rate-1/2 CC, rate-1/3 CC, and rate-1/4 LDPC (24.4.5); code-bit interleaving for non-split mode (24.4.6); codeword splitting and convolutional/LDPC interleaving for split mode (24.4.7); radio-burst transmit time and channel selection via fixed time-channel patterns (24.4.8); differential precoding (24.4.9); and optional spreading with SF up to 16 (24.4.10). Data whitening with a PN9 sequence (24.5). PSDU fragmentation reused from 23.3 (24.6). RF requirements (24.7): operating frequency range (24.7.1); frequency tolerance, plus/minus 10e-6 non-split and plus/minus 20e-6 split (24.7.2); channel switch time <= 500 microseconds (24.7.3); transmit spectral mask per regulation (24.7.4); receiver sensitivity, -97 dBm non-split and an SF-dependent formula in split mode (24.7.5); TX/RX turnaround per 11.2.2/11.2.3 (24.7.6, 24.7.7); minimum transmit power of -3 dBm (24.7.8); and per-radio-burst CCA before each subsequent burst (24.7.9).",
+      "zh": "引言与分裂/非分裂总体行为（24.1、24.2）。PPDU 格式（24.3）：总体布局（24.3.1）；含前导码与 SFD 子字段的 SHR（24.3.2）；含奇偶校验与帧长度的 PHR 字段（24.3.3）；承载已编码 PSDU 的物理层载荷（24.3.4）；以及用于分裂模式、带 SRBD 的无线电突发格式（24.3.5）。调制与编码（24.4）：FSK/P-FSK 与符号率的一般规则（24.4.1）；分裂与非分裂模式的参考调制器（24.4.2）；比特到符号映射与频偏（24.4.3）；通过频偏与过零容差衡量的调制质量（24.4.4）；FEC——非分裂 1/2 码率卷积码，以及分裂模式的 1/2 码率 CC、1/3 码率 CC 与 1/4 码率 LDPC（24.4.5）；非分裂模式的码比特交织（24.4.6）；分裂模式的码字切分与卷积/LDPC 交织（24.4.7）；经固定时间-信道图样的无线电突发发送时间与信道选择（24.4.8）；差分预编码（24.4.9）；以及 SF 最高为 16 的可选扩频（24.4.10）。基于 PN9 序列的数据白化（24.5）。复用 23.3 的 PSDU 分片（24.6）。射频要求（24.7）：工作频率范围（24.7.1）；频率容差，非分裂 ±10e-6、分裂 ±20e-6（24.7.2）；信道切换时间 ≤ 500 微秒（24.7.3）；按法规的发射频谱模板（24.7.4）；接收灵敏度，非分裂 -97 dBm，分裂模式为依赖 SF 的公式（24.7.5）；引用 11.2.2/11.2.3 的收发转换（24.7.6、24.7.7）；最低发射功率 -3 dBm（24.7.8）；以及每个后续突发前的逐突发 CCA（24.7.9）。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          810,
+          811,
+          812,
+          813,
+          814,
+          815,
+          816,
+          817,
+          818,
+          819,
+          820,
+          821,
+          822,
+          823,
+          824,
+          825,
+          826,
+          827,
+          828,
+          829,
+          830
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The split-mode machinery is worth a second look. After joint FEC, the code bits are spread across radio-bursts by a scramble matrix (convolutional codes, 24.4.7.2) or an LFSR-driven interleaver (LDPC, 24.4.7.3). Each burst then gets a time and channel from fixed patterns (24.4.8) chosen by a pseudo-random number, optional precoding (24.4.9) and spreading (24.4.10) are applied, and mandatory PN9 data whitening (24.5) flattens the spectrum. Crucially, CCA (24.7.9) is run per burst: if a chosen channel is busy, that burst is simply skipped while the others still carry enough redundancy to recover the message -- a polite, interference-tolerant way to share the band.",
+      "zh": "分裂模式的机制值得再看一眼。联合 FEC 之后，码比特通过一个扰码矩阵（卷积码，24.4.7.2）或一个 LFSR 驱动的交织器（LDPC，24.4.7.3）被分散到各个无线电突发中。随后每个突发由一个伪随机数从固定图样（24.4.8）中获得时间与信道，再施加可选的预编码（24.4.9）与扩频（24.4.10），并由强制的 PN9 数据白化（24.5）压平频谱。关键在于，CCA（24.7.9）按突发逐个执行：若所选信道忙，该突发被直接跳过，而其余突发仍携带足够冗余以恢复消息——这是一种礼貌且耐干扰的频段共享方式。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        794,
+        795,
+        796,
+        797,
+        798,
+        799,
+        800,
+        801,
+        802,
+        803,
+        804,
+        805,
+        806,
+        807,
+        808,
+        809
+      ],
+      "note": "Clause 23 LECIM DSSS PHY: PPDU format, modulation/spreading pipeline, fragmentation/Frak, RF requirements."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        810,
+        811,
+        812,
+        813,
+        814,
+        815,
+        816,
+        817,
+        818,
+        819,
+        820,
+        821,
+        822,
+        823,
+        824,
+        825,
+        826,
+        827,
+        828,
+        829,
+        830
+      ],
+      "note": "Clause 24 LECIM FSK PHY: split/non-split PPDU, modulation/coding, radio-burst distribution, whitening, fragmentation, RF requirements."
+    }
+  ],
+  "covers": [
+    "802154-2024:23.1",
+    "802154-2024:23.2.1",
+    "802154-2024:23.2.2",
+    "802154-2024:23.2.3",
+    "802154-2024:23.2.4",
+    "802154-2024:23.2.5",
+    "802154-2024:23.2.6",
+    "802154-2024:23.2.7",
+    "802154-2024:23.2.8",
+    "802154-2024:23.3.1",
+    "802154-2024:23.3.2",
+    "802154-2024:23.3.3",
+    "802154-2024:23.3.4",
+    "802154-2024:23.3.5",
+    "802154-2024:23.3.6",
+    "802154-2024:23.3.7",
+    "802154-2024:23.3.8",
+    "802154-2024:23.4.1",
+    "802154-2024:23.4.2",
+    "802154-2024:23.4.3",
+    "802154-2024:23.4.4",
+    "802154-2024:23.4.5",
+    "802154-2024:23.4.6",
+    "802154-2024:23.4.7",
+    "802154-2024:23.4.8",
+    "802154-2024:24.1",
+    "802154-2024:24.2",
+    "802154-2024:24.3.1",
+    "802154-2024:24.3.2",
+    "802154-2024:24.3.3",
+    "802154-2024:24.3.4",
+    "802154-2024:24.3.5",
+    "802154-2024:24.4.1",
+    "802154-2024:24.4.2",
+    "802154-2024:24.4.3",
+    "802154-2024:24.4.4",
+    "802154-2024:24.4.5",
+    "802154-2024:24.4.6",
+    "802154-2024:24.4.7",
+    "802154-2024:24.4.8",
+    "802154-2024:24.4.9",
+    "802154-2024:24.4.10",
+    "802154-2024:24.5",
+    "802154-2024:24.6",
+    "802154-2024:24.7.1",
+    "802154-2024:24.7.2",
+    "802154-2024:24.7.3",
+    "802154-2024:24.7.4",
+    "802154-2024:24.7.5",
+    "802154-2024:24.7.6",
+    "802154-2024:24.7.7",
+    "802154-2024:24.7.8",
+    "802154-2024:24.7.9"
+  ],
+  "track": "pan-802-15"
+}

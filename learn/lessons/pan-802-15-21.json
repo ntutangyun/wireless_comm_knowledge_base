@@ -1,0 +1,258 @@
+{
+  "id": "pan-802-15-21",
+  "title": {
+    "en": "Ultra-Wideband for Precise Ranging: HRP and LRP UWB PHYs",
+    "zh": "用于精确测距的超宽带：HRP 与 LRP UWB PHY"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Most of 802.15.4 is about sending a few bytes cheaply. Two of its physical layers (PHYs) have a different mission: measuring distance to the centimeter. They do it with ultra-wideband (UWB) — extremely short radio pulses (about 2 ns wide) spread across hundreds of megahertz. A short pulse has a sharp leading edge, and a sharp edge lets a receiver timestamp arrival precisely; multiply that time by the speed of light and you get range. This lesson tours the two UWB PHYs in the 2024 standard: the high-rate-pulse (HRP) UWB PHY in Clause 16, and the low-rate-pulse (LRP) UWB PHY in Clause 19. Both gained secure-ranging features from the 802.15.4z work and power things like phone-to-car digital keys and find-my-tag locators.",
+      "zh": "802.15.4 的大部分内容是关于如何廉价地发送几个字节。但其中两个物理层（PHY）有着不同的使命：把距离测量精确到厘米级。它们依靠超宽带（UWB）——极短的无线脉冲（约 2 ns 宽），频谱铺展数百兆赫兹。脉冲越短，其前沿越陡峭，接收机就能越精确地为到达时刻打上时间戳；把这个时间乘以光速就得到了距离。本课带你浏览 2024 版标准中的两个 UWB PHY：第 16 章的高脉冲速率（HRP）UWB PHY，以及第 19 章的低脉冲速率（LRP）UWB PHY。两者都从 802.15.4z 工作中获得了安全测距能力，支撑着诸如手机—汽车数字钥匙和寻物标签等应用。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with HRP (16.1). It is impulse radio across three band groups: a sub-gigahertz channel (249.6–749.6 MHz), a low band (3.1–4.8 GHz, four channels), and a high band (6.0–10.6 GHz, eleven channels). Each channel pairs with length-31 preamble codes to form a 'complex channel'. The signaling is BPM-BPSK: each symbol carries two bits — one chooses which half of the symbol holds a burst of pulses (burst-position modulation), the other flips the burst's phase (binary phase-shift keying). This common scheme serves both coherent and noncoherent receivers. Devices that add the secure-ranging modes are called HRP-ERDEVs, and they run in either base pulse repetition frequency (BPRF, ~64 MHz) or higher pulse repetition frequency (HPRF) mode.",
+      "zh": "先看 HRP（16.1）。它是横跨三个频段组的脉冲无线电：亚吉赫兹信道（249.6–749.6 MHz）、低频段（3.1–4.8 GHz，四个信道）和高频段（6.0–10.6 GHz，十一个信道）。每个信道与长度为 31 的前导码配对，构成一个“复信道”。其调制是 BPM-BPSK：每个符号承载两比特——一比特选择脉冲突发落在符号的哪半（突发位置调制），另一比特翻转突发的相位（二进制相移键控）。这一通用方案同时服务相干和非相干接收机。加入了安全测距模式的设备称为 HRP-ERDEV，它们运行在基础脉冲重复频率（BPRF，约 64 MHz）或更高脉冲重复频率（HPRF）模式。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><rect x=\"10\" y=\"40\" width=\"120\" height=\"40\"/><text x=\"70\" y=\"65\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">SYNC</text><rect x=\"130\" y=\"40\" width=\"60\" height=\"40\"/><text x=\"160\" y=\"65\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">SFD</text><rect x=\"190\" y=\"40\" width=\"110\" height=\"40\" stroke-dasharray=\"5 4\"/><text x=\"245\" y=\"65\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">STS (opt)</text><rect x=\"300\" y=\"40\" width=\"90\" height=\"40\"/><text x=\"345\" y=\"65\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">PHR</text><rect x=\"390\" y=\"40\" width=\"240\" height=\"40\"/><text x=\"510\" y=\"65\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">PHY Payload (PSDU)</text><text x=\"10\" y=\"25\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">SHR = SYNC + SFD</text><line x1=\"245\" y1=\"95\" x2=\"245\" y2=\"82\"/><text x=\"245\" y=\"110\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">RMARKER</text></svg>",
+      "caption": {
+        "en": "HRP UWB PPDU: the SHR (SYNC + SFD) for acquisition, an optional scrambled timestamp sequence (STS) for secure ranging, the PHR, and the payload. Four STS placements exist (none / after SFD / after payload / STS-only).",
+        "zh": "HRP UWB PPDU：用于捕获的 SHR（SYNC + SFD）、用于安全测距的可选加扰时间戳序列（STS）、PHR 以及载荷。STS 共有四种放置方式（无 / SFD 后 / 载荷后 / 仅 STS）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Walk the HRP PPDU left to right (16.2). The encoding pipeline (16.2.1–16.2.2) is: Reed-Solomon encode the PSDU, build the PHR with its SEC-DED check bits and prepend it, optionally convolutionally encode, then spread, insert the synchronization header (SHR), and modulate. The symbol structure (16.2.3) divides each symbol into two burst-position-modulation halves; a burst of N chips sits in one half (position bit) with a chosen polarity (phase bit). PSDU timing (16.2.4) and preamble timing (16.2.5) tables tie data rate, chips-per-burst, hop positions and mean pulse repetition frequency together — the symbol period stretches or shrinks to set the rate while burst positions stay fixed. The SHR (16.2.6) is a SYNC field of repeated preamble symbols (16, 64, 1024, or 4096) plus a start-of-frame delimiter (SFD).",
+      "zh": "从左到右走一遍 HRP PPDU（16.2）。编码流水线（16.2.1–16.2.2）为：对 PSDU 做里德-所罗门编码，构建带 SEC-DED 校验位的 PHR 并前置，可选地做卷积编码，然后扩频、插入同步头（SHR）并调制。符号结构（16.2.3）把每个符号分为两个突发位置调制的半区；N 个码片组成的突发落在某一半（位置比特），并带有选定的极性（相位比特）。PSDU 定时（16.2.4）和前导定时（16.2.5）表把数据率、每突发码片数、跳变位置和平均脉冲重复频率绑定在一起——符号周期伸缩以设定速率，而突发位置保持不变。SHR（16.2.6）由重复前导符号（16、64、1024 或 4096 个）构成的 SYNC 字段加上帧起始定界符（SFD）组成。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why secure ranging needs the STS (16.2.9): an attacker who can predict your ranging waveform can replay an early copy and make you think a key fob is closer than it is. The STS is a stream of pseudo-random pulse polarities generated by a deterministic random bit generator built on AES-128 in counter mode. Because the polarity sequence is unpredictable to anyone without the shared seed, a receiver can verify the timestamp truly came from the legitimate transmitter — the heart of cryptographically protected distance measurement.",
+      "zh": "为什么安全测距需要 STS（16.2.9）：能预测你测距波形的攻击者可以重放一份提前的副本，让你误以为钥匙扣比实际更近。STS 是由基于 AES-128 计数器模式的确定性随机比特生成器产生的伪随机脉冲极性序列。由于没有共享种子的人无法预测该极性序列，接收机便能验证时间戳确实来自合法的发射机——这正是受密码学保护的距离测量的核心。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[PSDU] --> B[Reed-Solomon encode]\n  B --> C[Add PHR + SEC-DED]\n  C --> D[Convolutional encode]\n  D --> E[Spread + scramble]\n  E --> F[Insert SHR]\n  F --> G[BPM-BPSK modulate]\n  G --> H[UWB pulses on air]",
+      "zh": "flowchart LR\n  A[PSDU] --> B[里德-所罗门编码]\n  B --> C[加 PHR + SEC-DED]\n  C --> D[卷积编码]\n  D --> E[扩频 + 加扰]\n  E --> F[插入 SHR]\n  F --> G[BPM-BPSK 调制]\n  G --> H[空口 UWB 脉冲]"
+    },
+    {
+      "type": "prose",
+      "en": "Now LRP (19.1), Clause 19. It is also band-limited impulse radio but at low pulse repetition frequencies, with ten channels from 6489.6 to 9945.6 MHz. Where HRP leans on one rich BPM-BPSK scheme, LRP offers a family of simple modulations matched to different goals (19.1, summarized in its mode table): base mode (on-off keying, 1 Mb/s), extended mode (convolutionally coded for sensitivity, 250 kb/s), long-range mode (Manchester-coded, 31.25 kb/s for best reach), and the mandatory dual-frequency modes that use pulsed binary frequency-shift keying (PBFSK) — encoding a bit by shifting the pulse's carrier up or down. An optional enhanced payload capacity (EPC) mode layers M-ary pulse-position modulation on top to reach 3–10 Mb/s.",
+      "zh": "现在看第 19 章的 LRP（19.1）。它同样是带限脉冲无线电，但工作在低脉冲重复频率，拥有十个信道，频率从 6489.6 到 9945.6 MHz。HRP 依赖一种丰富的 BPM-BPSK 方案，而 LRP 则提供一系列与不同目标匹配的简单调制（19.1，其模式表作了汇总）：基础模式（通断键控，1 Mb/s）、扩展模式（卷积编码以提升灵敏度，250 kb/s）、长距模式（曼彻斯特编码，31.25 kb/s 以获得最佳覆盖），以及强制的双频模式——采用脉冲二进制频移键控（PBFSK），通过把脉冲载波上移或下移来编码一个比特。可选的增强载荷容量（EPC）模式在其上叠加 M 元脉冲位置调制，可达到 3–10 Mb/s。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><text x=\"10\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Base mode: pulse = 1, silence = 0</text><line x1=\"10\" y1=\"55\" x2=\"630\" y2=\"55\"/><line x1=\"70\" y1=\"55\" x2=\"70\" y2=\"30\"/><line x1=\"190\" y1=\"55\" x2=\"190\" y2=\"30\"/><line x1=\"430\" y1=\"55\" x2=\"430\" y2=\"30\"/><text x=\"40\" y=\"70\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">1</text><text x=\"130\" y=\"70\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">0</text><text x=\"310\" y=\"70\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">0</text><text x=\"40\" y=\"70\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\"></text><text x=\"10\" y=\"100\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">PBFSK: bit = up-shift or down-shift of pulse carrier</text><line x1=\"10\" y1=\"135\" x2=\"630\" y2=\"135\"/><line x1=\"90\" y1=\"135\" x2=\"90\" y2=\"118\"/><text x=\"90\" y=\"150\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">+fdev (=1)</text><line x1=\"300\" y1=\"135\" x2=\"300\" y2=\"148\"/><text x=\"300\" y=\"112\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">-fdev (=0)</text></svg>",
+      "caption": {
+        "en": "Two LRP symbol ideas. Base mode uses on-off keying (a pulse means 1). Dual-frequency modes use PBFSK: every symbol carries a pulse, but shifting its carrier by +/- fdev (153.6 MHz) encodes the bit — robust because energy is always present.",
+        "zh": "两种 LRP 符号思路。基础模式采用通断键控（有脉冲表示 1）。双频模式采用 PBFSK：每个符号都带脉冲，但通过把载波移动 +/- fdev（153.6 MHz）来编码比特——因始终有能量而更稳健。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "LRP's frame mirrors HRP's shape. The symbol structures (19.2.1–19.2.6) define each mode: base (19.2.2) and extended (19.2.3) insert periodic synchronization pulses so a long run of zeros doesn't starve the receiver's clock; long-range (19.2.4) is self-synchronizing thanks to Manchester coding; dual-frequency (19.2.5) sets fdev and the four-pulse extended variant; and an optional variable pulse-repetition-period feature (19.2.6) nudges timing in 7.8125 ns steps so neighboring networks interfere less. The SHR (19.3.1) is a preamble (19.3.2, with per-mode flavors) plus an SFD (19.3.3) — a fixed 16-bit pattern for ordinary devices, or a longer 32/64/128-pulse sequence for secure-ranging LRP-ERDEVs.",
+      "zh": "LRP 的帧结构与 HRP 相仿。符号结构（19.2.1–19.2.6）定义了每种模式：基础（19.2.2）和扩展（19.2.3）插入周期性同步脉冲，使一长串零不会让接收机的时钟“挨饿”；长距模式（19.2.4）借助曼彻斯特编码而自同步；双频模式（19.2.5）设定 fdev 及四脉冲扩展变体；可选的可变脉冲重复周期特性（19.2.6）以 7.8125 ns 步进微调定时，从而减少相邻网络的干扰。SHR（19.3.1）由前导（19.3.2，含各模式变体）加上 SFD（19.3.3）组成——普通设备用固定的 16 比特图案，安全测距的 LRP-ERDEV 则用更长的 32/64/128 脉冲序列。"
+    },
+    {
+      "type": "prose",
+      "en": "LRP's PHY header (19.4.1) is largely mode-independent. Its Encoding Type field (19.4.2) is sent redundantly so a receiver can vote on whether base or extended decoding applies; the Header Extension bit (19.4.3) is reserved-and-discard; a SEC-DED Hamming code (19.4.4) guards the header; the Frame Length field (19.4.5) gives the PSDU octet count; and the location-enhancing-information-postamble (LEIP) Length (19.4.6) and Position (19.4.7) fields say how many extra ranging pulses to append and whether they trail the payload immediately or after a fixed delay. The PSDU itself (19.5.1) is encoded per the active mode, with the EPC option (19.5.2) packing 3, 4, or 5 bits per pulse via 8-, 16-, or 32-position pulse-position modulation. The LEIP (19.6) is that appended pulse train used to sharpen the range estimate.",
+      "zh": "LRP 的 PHY 头（19.4.1）大体上与模式无关。其编码类型字段（19.4.2）冗余发送，使接收机能投票决定采用基础还是扩展解码；头扩展位（19.4.3）保留并在置位时丢弃；SEC-DED 汉明码（19.4.4）保护帧头；帧长度字段（19.4.5）给出 PSDU 的字节数；定位增强信息后导（LEIP）长度（19.4.6）和位置（19.4.7）字段则说明追加多少额外测距脉冲，以及它们是紧随载荷还是在固定延迟后出现。PSDU 本身（19.5.1）按当前模式编码，EPC 选项（19.5.2）通过 8、16 或 32 位置脉冲位置调制每脉冲打包 3、4 或 5 比特。LEIP（19.6）就是那段追加的脉冲串，用于锐化距离估计。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Both PHYs treat time as the product. HRP's optional pulse shapes (16.5) — chirp-on-UWB (16.5.2), continuous-spectrum (16.5.3), and linear-combination-of-pulses (16.5.4) — exist mainly to let many networks coexist or to satisfy detect-and-avoid rules, not to send more data. Likewise LRP's transmitter rules (19.7) and turnaround timing (19.8) obsess over how cleanly and predictably a pulse leaves the antenna, because a 1 ns timing error is a 30 cm range error.",
+      "zh": "两个 PHY 都把“时间”当作最终产物。HRP 的可选脉冲形状（16.5）——超宽带啁啾（16.5.2）、连续谱（16.5.3）、脉冲线性组合（16.5.4）——主要是为了让众多网络共存或满足“探测并规避”规则，而非传输更多数据。同样，LRP 的发射机规则（19.7）和收发转换定时（19.8）都执着于脉冲离开天线时有多干净、多可预测，因为 1 ns 的定时误差就意味着 30 cm 的距离误差。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every Clause 16 (HRP) and Clause 19 (LRP) subclause and where it lives",
+        "zh": "覆盖地图：第 16 章（HRP）与第 19 章（LRP）的每个子条款及其归属"
+      },
+      "en": "HRP UWB PHY (Clause 16): 16.1 general/band groups/BPM-BPSK/ERDEV. PPDU format 16.2 — 16.2.1 general, 16.2.2 encoding process, 16.2.3 symbol (BPM halves + burst), 16.2.4 PSDU timing, 16.2.5 preamble timing, 16.2.6 SHR (SYNC+SFD), 16.2.7 PHR (16.2.7.1 fields/SEC-DED, 16.2.7.2 BPRF, 16.2.7.3 HPRF), 16.2.8 PHY payload, 16.2.9 STS (16.2.9.1 general, 16.2.9.2 AES-CTR DRBG, 16.2.9.3 forming STS, 16.2.9.4 SRMARKERs). Modulation 16.3 — 16.3.1 math framework, 16.3.2 spreading/LFSR scrambler, 16.3.3 FEC (16.3.3.1 overview, 16.3.3.2 Reed-Solomon, 16.3.3.3 convolutional), 16.3.4 HPRF modulation (16.3.4.1 intro, 16.3.4.2 at 249.6 MHz, 16.3.4.3 at 124.8 MHz). RF requirements 16.4 — 16.4.1 frequency bands, 16.4.2 channel assignments, 16.4.3 regulatory, 16.4.4 baseband impulse response, 16.4.5 PSD mask, 16.4.6 chip clock alignment, 16.4.7 TX-to-RX turnaround, 16.4.8 RX-to-TX turnaround, 16.4.9 center-frequency tolerance, 16.4.10 receiver max input, 16.4.11 ED, 16.4.12 LQI, 16.4.13 CCA. Optional pulse shapes 16.5 — 16.5.1 overview, 16.5.2 chirp-on-UWB (CoU), 16.5.3 continuous-spectrum (CS), 16.5.4 linear-combination-of-pulses (LCP). 16.6 extended preamble for CCA mode 6. 16.7 HRP-ERDEV parameter sets (mandatory BPRF/HPRF mode tables). LRP UWB PHY (Clause 19): 19.1 overview/modes. Symbol structure 19.2 — 19.2.1 overview, 19.2.2 base mode, 19.2.3 extended mode, 19.2.4 long-range mode, 19.2.5 dual-frequency (PBFSK, fdev=153.6 MHz), 19.2.6 variable PRP. SHR 19.3 — 19.3.1 general, 19.3.2 preamble, 19.3.3 SFD. PHR 19.4 — 19.4.1 general, 19.4.2 encoding type (voting), 19.4.3 header extension, 19.4.4 SEC-DED, 19.4.5 frame length, 19.4.6 LEIP length, 19.4.7 LEIP position. PSDU 19.5 — 19.5.1 general, 19.5.2 EPC mode (M-PPM). 19.6 LEIP. Transmitter 19.7 — 19.7.1 pulse shape, 19.7.2 pulse timing, 19.7.3 transmit PSD mask. Timing 19.8 — 19.8.1 fixed reply time, 19.8.2 turnaround times.",
+      "zh": "HRP UWB PHY（第 16 章）：16.1 总则/频段组/BPM-BPSK/ERDEV。PPDU 格式 16.2——16.2.1 总则、16.2.2 编码过程、16.2.3 符号（BPM 半区 + 突发）、16.2.4 PSDU 定时、16.2.5 前导定时、16.2.6 SHR（SYNC+SFD）、16.2.7 PHR（16.2.7.1 字段/SEC-DED、16.2.7.2 BPRF、16.2.7.3 HPRF）、16.2.8 PHY 载荷、16.2.9 STS（16.2.9.1 总则、16.2.9.2 AES-CTR DRBG、16.2.9.3 形成 STS、16.2.9.4 SRMARKER）。调制 16.3——16.3.1 数学框架、16.3.2 扩频/LFSR 加扰器、16.3.3 FEC（16.3.3.1 概述、16.3.3.2 里德-所罗门、16.3.3.3 卷积）、16.3.4 HPRF 调制（16.3.4.1 引言、16.3.4.2 249.6 MHz、16.3.4.3 124.8 MHz）。射频要求 16.4——16.4.1 工作频段、16.4.2 信道分配、16.4.3 法规符合性、16.4.4 基带冲激响应、16.4.5 PSD 模板、16.4.6 码片时钟对齐、16.4.7 TX 到 RX 转换、16.4.8 RX 到 TX 转换、16.4.9 中心频率容差、16.4.10 接收机最大输入、16.4.11 ED、16.4.12 LQI、16.4.13 CCA。可选脉冲形状 16.5——16.5.1 概述、16.5.2 超宽带啁啾（CoU）、16.5.3 连续谱（CS）、16.5.4 脉冲线性组合（LCP）。16.6 用于 CCA 模式 6 的扩展前导。16.7 HRP-ERDEV 参数集（强制 BPRF/HPRF 模式表）。LRP UWB PHY（第 19 章）：19.1 概述/模式。符号结构 19.2——19.2.1 概述、19.2.2 基础模式、19.2.3 扩展模式、19.2.4 长距模式、19.2.5 双频（PBFSK，fdev=153.6 MHz）、19.2.6 可变 PRP。SHR 19.3——19.3.1 总则、19.3.2 前导、19.3.3 SFD。PHR 19.4——19.4.1 总则、19.4.2 编码类型（投票）、19.4.3 头扩展、19.4.4 SEC-DED、19.4.5 帧长度、19.4.6 LEIP 长度、19.4.7 LEIP 位置。PSDU 19.5——19.5.1 总则、19.5.2 EPC 模式（M-PPM）。19.6 LEIP。发射机 19.7——19.7.1 脉冲形状、19.7.2 脉冲定时、19.7.3 发射 PSD 模板。定时 19.8——19.8.1 固定回复时间、19.8.2 收发转换时间。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          641,
+          642,
+          645,
+          655,
+          659,
+          662,
+          671,
+          676,
+          680,
+          681,
+          693,
+          694,
+          699,
+          701,
+          703,
+          705,
+          706,
+          711
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        641,
+        642,
+        643,
+        645,
+        646,
+        648,
+        650
+      ],
+      "note": "HRP UWB general, PPDU format, symbol structure, PSDU/preamble timing, SHR (16.1-16.2.6)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        655,
+        657,
+        658,
+        659,
+        660,
+        661,
+        662
+      ],
+      "note": "HRP PHR, PHY payload, STS / AES-CTR DRBG / SRMARKERs (16.2.7-16.2.9)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        662,
+        663,
+        665,
+        667,
+        668,
+        669
+      ],
+      "note": "HRP modulation: math framework, spreading, FEC, HPRF modulation (16.3)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        671,
+        672,
+        673,
+        675,
+        676,
+        677,
+        678,
+        679,
+        680,
+        681,
+        682
+      ],
+      "note": "HRP RF requirements, optional pulse shapes (CoU/CS/LCP), CCA mode 6 preamble, ERDEV parameter sets (16.4-16.7)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        693,
+        694,
+        695,
+        696,
+        697,
+        698
+      ],
+      "note": "LRP UWB overview and symbol structures: base/extended/long-range/dual-frequency, variable PRP (19.1-19.2)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        699,
+        700,
+        701,
+        702,
+        703,
+        704,
+        705
+      ],
+      "note": "LRP SHR, PHR fields, PSDU/EPC, LEIP (19.3-19.6)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        706,
+        707,
+        711
+      ],
+      "note": "LRP transmitter specification and transmit/receive timing requirements (19.7-19.8)"
+    }
+  ],
+  "covers": [
+    "802154-2024:16.1",
+    "802154-2024:16.2.1",
+    "802154-2024:16.2.2",
+    "802154-2024:16.2.3",
+    "802154-2024:16.2.4",
+    "802154-2024:16.2.5",
+    "802154-2024:16.2.6",
+    "802154-2024:16.2.7",
+    "802154-2024:16.2.8",
+    "802154-2024:16.2.9",
+    "802154-2024:16.3.1",
+    "802154-2024:16.3.2",
+    "802154-2024:16.3.3",
+    "802154-2024:16.3.4",
+    "802154-2024:16.4.1",
+    "802154-2024:16.4.2",
+    "802154-2024:16.4.3",
+    "802154-2024:16.4.4",
+    "802154-2024:16.4.5",
+    "802154-2024:16.4.6",
+    "802154-2024:16.4.7",
+    "802154-2024:16.4.8",
+    "802154-2024:16.4.9",
+    "802154-2024:16.4.10",
+    "802154-2024:16.4.11",
+    "802154-2024:16.4.12",
+    "802154-2024:16.4.13",
+    "802154-2024:16.5.1",
+    "802154-2024:16.5.2",
+    "802154-2024:16.5.3",
+    "802154-2024:16.5.4",
+    "802154-2024:16.6",
+    "802154-2024:16.7",
+    "802154-2024:19.1",
+    "802154-2024:19.2.1",
+    "802154-2024:19.2.2",
+    "802154-2024:19.2.3",
+    "802154-2024:19.2.4",
+    "802154-2024:19.2.5",
+    "802154-2024:19.2.6",
+    "802154-2024:19.3.1",
+    "802154-2024:19.3.2",
+    "802154-2024:19.3.3",
+    "802154-2024:19.4.1",
+    "802154-2024:19.4.2",
+    "802154-2024:19.4.3",
+    "802154-2024:19.4.4",
+    "802154-2024:19.4.5",
+    "802154-2024:19.4.6",
+    "802154-2024:19.4.7",
+    "802154-2024:19.5.1",
+    "802154-2024:19.5.2",
+    "802154-2024:19.6",
+    "802154-2024:19.7.1",
+    "802154-2024:19.7.2",
+    "802154-2024:19.7.3",
+    "802154-2024:19.8.1",
+    "802154-2024:19.8.2"
+  ],
+  "track": "pan-802-15"
+}

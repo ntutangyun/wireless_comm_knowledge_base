@@ -1,0 +1,264 @@
+{
+  "id": "pan-802-15-20",
+  "title": {
+    "en": "Spread, Frequency and Phase: CSS, GFSK and MSK PHYs",
+    "zh": "扩频、频移与相移：CSS、GFSK 与 MSK PHY"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE 802.15.4 is not one radio but a family of physical layers (PHYs) that all share the same MAC. This lesson tours three of them, each named after the trick it uses to carry bits over the air: CSS slides a tone in frequency (a 'chirp'), GFSK shifts the frequency between two values, and MSK does the same but with the minimum spacing that keeps the two tones cleanly separable. We will walk each one as a coverage map: its PPDU (PHY protocol data unit — the over-the-air packet), its data rates, how the bits are modulated, and the RF rules a compliant transmitter and receiver must obey.",
+      "zh": "IEEE 802.15.4 并不是单一的无线电，而是一组共享同一个 MAC 的物理层（PHY）。本课带你浏览其中三种，每一种都以它用来传送比特的手法命名：CSS 让一个音调在频率上滑动（即“啁啾”/chirp），GFSK 在两个频率值之间切换，而 MSK 做的是同样的事，但采用能让两个音调干净可分的最小间隔。我们会把每一种当作一张覆盖地图来讲解：它的 PPDU（PHY 协议数据单元，即空口数据包）、数据速率、比特如何被调制，以及合规的发射机与接收机必须遵守的射频规则。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the chirp spread spectrum (CSS) PHY, which lives in the 2450 MHz band and is built for longer range. Its PPDU (15.1.1) is the usual SHR + PHR + PHY Payload. The SHR (synchronization header) holds a Preamble and an SFD (start-of-frame delimiter). At 1 Mb/s the Preamble is 8 chirp symbols; at the optional 250 kb/s it is 20 chirp symbols (15.1.2), and the SFD bit sequences differ between the two rates (15.1.3). The PHR (PHY header) is a 7-bit Length field plus reserved bits, Length sent least-significant-bit first (15.1.4), and the PHY Payload simply carries the PSDU — the MAC's frame (15.1.5).",
+      "zh": "先看啁啾扩频（CSS）PHY，它工作在 2450 MHz 频段，为更远的距离而设计。它的 PPDU（15.1.1）是常见的 SHR + PHR + PHY Payload。SHR（同步头）包含前导码（Preamble）和 SFD（帧起始定界符）。在 1 Mb/s 时前导码为 8 个啁啾符号，在可选的 250 kb/s 时为 20 个啁啾符号（15.1.2），且两种速率的 SFD 比特序列不同（15.1.3）。PHR（PHY 头）是一个 7 比特的长度字段加保留位，长度字段按最低有效位优先发送（15.1.4），PHY Payload 则直接承载 PSDU，即 MAC 的帧（15.1.5）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 70\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><rect x=\"5\" y=\"20\" width=\"150\" height=\"30\"/><rect x=\"10\" y=\"24\" width=\"70\" height=\"22\" stroke-dasharray=\"3 2\"/><rect x=\"82\" y=\"24\" width=\"68\" height=\"22\" stroke-dasharray=\"3 2\"/><rect x=\"155\" y=\"20\" width=\"95\" height=\"30\"/><rect x=\"250\" y=\"20\" width=\"185\" height=\"30\"/><text x=\"80\" y=\"15\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">SHR</text><text x=\"45\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Preamble</text><text x=\"116\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">SFD</text><text x=\"202\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">PHR (Length)</text><text x=\"342\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">PHY Payload (PSDU)</text></svg>",
+      "caption": {
+        "en": "CSS PPDU: an SHR (Preamble + SFD), a PHR carrying the payload Length, then the PHY Payload (PSDU). Figures 15-1 to 15-3.",
+        "zh": "CSS PPDU：SHR（前导码 + SFD）、承载载荷长度的 PHR，然后是 PHY Payload（PSDU）。对应图 15-1 至 15-3。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "How does CSS actually paint bits onto chirps? It combines CSS with DQPSK (differential quadrature phase-shift keying) and bi-orthogonal coding — 8-ary for 1 Mb/s, 64-ary for 250 kb/s (15.2.1), and the mandatory rate is 1 Mb/s with 250 kb/s optional (15.2.2). The standard gives a reference modulator (15.2.3) you can read like an assembly line: a 1:2 de-multiplexer sends odd bits to the I path and even bits to the Q path (15.2.4); serial-to-parallel converters group them into 3-bit symbols at 1 Mb/s or 6-bit symbols at 250 kb/s (15.2.5); each symbol becomes a bi-orthogonal codeword — 4 chips or 32 chips (15.2.6); a parallel-to-serial step maps chip pairs to QPSK symbols (15.2.7); those symbols are differentially encoded with a 4-symbol feedback memory (15.2.8); the result modulates the chirps as DQCSK (15.2.9); a CSK generator emits the subchirp sequences (15.2.10); and for 250 kb/s only, a bit interleaver shuffles chips across two codewords to survive paired errors from the differential detector (15.2.11).",
+      "zh": "CSS 究竟如何把比特“画”到啁啾上？它把 CSS 与 DQPSK（差分正交相移键控）以及双正交编码结合起来——1 Mb/s 用 8 元、250 kb/s 用 64 元（15.2.1），强制速率为 1 Mb/s，250 kb/s 可选（15.2.2）。标准给出一个参考调制器（15.2.3），可以像流水线一样阅读：1:2 解复用器把奇数比特送到 I 路、偶数比特送到 Q 路（15.2.4）；串并转换器在 1 Mb/s 时把它们分成 3 比特符号、在 250 kb/s 时分成 6 比特符号（15.2.5）；每个符号映射为一个双正交码字——4 个码片或 32 个码片（15.2.6）；并串转换将码片对映射为 QPSK 符号（15.2.7）；这些符号用 4 符号反馈存储器做差分编码（15.2.8）；结果以 DQCSK 调制到啁啾上（15.2.9）；CSK 生成器输出子啁啾序列（15.2.10）；仅在 250 kb/s 时，比特交织器在两个码字之间打乱码片，以抵御差分检测器产生的成对错误（15.2.11）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Binary data] --> B[1:2 DEMUX]\n  B --> C[S/P -> data symbols]\n  C --> D[Bi-orthogonal codeword]\n  D --> E[P/S + QPSK map]\n  E --> F[DQPSK encode]\n  F --> G[DQCSK onto subchirps]\n  G --> H[CSK generator]",
+      "zh": "flowchart LR\n  A[二进制数据] --> B[1:2 解复用]\n  B --> C[串并转换 -> 数据符号]\n  C --> D[双正交码字]\n  D --> E[并串 + QPSK 映射]\n  E --> F[DQPSK 编码]\n  F --> G[DQCSK 调到子啁啾]\n  G --> H[CSK 生成器]"
+    },
+    {
+      "type": "prose",
+      "en": "The chirps themselves are defined in 15.3. Four subchirps are concatenated into one chirp symbol that occupies two adjacent frequency subbands, and four different subchirp sequences exist, each subchirp shaped by a raised-cosine window (15.3.1). A time-frequency picture shows each subchirp as either an up-chirp or down-chirp with a positive or negative frequency offset (15.3.2). Between successive chirp symbols the standard alternates small time gaps to push the four sequences closer to mutually orthogonal (15.3.3). The exact baseband signal is given as a continuous-time formula with a chirp-rate constant and per-subchirp center frequencies and directions (15.3.4), the raised-cosine window is defined explicitly (15.3.5), subchirp 1 is sent first and subchirp 4 last (15.3.6), and a fully worked numeric example carries one chirp symbol from input bits all the way to the modulator output (15.3.7).",
+      "zh": "啁啾本身在 15.3 中定义。四个子啁啾拼接成一个占据两个相邻频率子带的啁啾符号，共定义了四种不同的子啁啾序列，每个子啁啾由升余弦窗成形（15.3.1）。时间-频率图把每个子啁啾画成升啁啾或降啁啾，并带正或负的频率偏移（15.3.2）。在相继的啁啾符号之间，标准交替插入小的时间间隙，使四种序列更接近相互正交（15.3.3）。精确的基带信号以连续时间公式给出，含一个啁啾速率常数以及各子啁啾的中心频率与方向（15.3.4）；升余弦窗被显式定义（15.3.5）；子啁啾 1 先发、子啁啾 4 后发（15.3.6）；并有一个完整的数值示例，将一个啁啾符号从输入比特一路推算到调制器输出（15.3.7）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why a chirp at all? A signal that sweeps across a wide band spreads its energy out, so it tolerates narrowband interference and survives multipath — which is also why chirps are handy for ranging. That spreading is the 'spread spectrum' in CSS.",
+      "zh": "为什么要用啁啾？一个在宽频带上扫过的信号会把能量摊开，因此能容忍窄带干扰、抵抗多径——这也是啁啾适合测距的原因。这种摊开正是 CSS 中“扩频”的含义。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "CSS RF requirements — the compliance checklist (15.4.1–15.4.12)",
+        "zh": "CSS 射频要求——合规清单（15.4.1–15.4.12）"
+      },
+      "en": "Beyond regional regulations, a 2450 MHz CSS device must meet 15.4. General scope (15.4.1). The transmit PSD (power spectral density) mask plus a mean-square-error signal-fidelity bound (15.4.2): measured with 100 kHz resolution bandwidth, the spectrum must fall to <=-30 dB in the 11-22 MHz stop band and <=-50 dB beyond 22 MHz. DQCSK symbol rate is 166.667 ksymbol/s +-40 ppm (15.4.3). Receiver sensitivity is -85 dBm at 1 Mb/s and -91 dBm at 250 kb/s (15.4.4). Interference rejection is tabled for non-overlapping adjacent (25 MHz) and alternate (50 MHz) channels (15.4.5). TX-to-RX and RX-to-TX turnaround times must both be within aTurnaroundTime, with TX-to-RX no longer than RX-to-TX (15.4.6, 15.4.7). Transmit center-frequency tolerance is +-40 ppm (15.4.8), minimum transmit power is -3 dBm (15.4.9), receiver maximum input level is >=-20 dBm (15.4.10), and the PHY must provide receiver ED (energy detection) (15.4.11) and LQI (link quality indication) (15.4.12).",
+      "zh": "除区域法规外，2450 MHz 的 CSS 设备还须满足 15.4。总体范围（15.4.1）。发射 PSD（功率谱密度）模板加上一个均方误差信号保真度约束（15.4.2）：以 100 kHz 分辨带宽测量，频谱在 11–22 MHz 阻带须 <=-30 dB，超过 22 MHz 须 <=-50 dB。DQCSK 符号率为 166.667 ksymbol/s ±40 ppm（15.4.3）。接收灵敏度在 1 Mb/s 时为 -85 dBm、250 kb/s 时为 -91 dBm（15.4.4）。干扰抑制按非重叠相邻信道（25 MHz）与交替信道（50 MHz）列表给出（15.4.5）。TX 转 RX 与 RX 转 TX 的转换时间都须在 aTurnaroundTime 之内，且 TX 转 RX 不长于 RX 转 TX（15.4.6、15.4.7）。发射中心频率容差为 ±40 ppm（15.4.8），最小发射功率为 -3 dBm（15.4.9），接收机最大输入电平 >=-20 dBm（15.4.10），且该 PHY 须提供接收 ED（能量检测）（15.4.11）与 LQI（链路质量指示）（15.4.12）。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          638,
+          639,
+          640
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Next is the GFSK PHY (Gaussian frequency-shift keying), a much simpler narrowband radio in the 920.8-928 MHz sub-GHz band. Its PPDU reuses the general format, but the Preamble is 32 symbols (4 octets) of '01010101' (17.1), and the data rate is a steady 100 kb/s (17.2.1). The reference modulator (17.2.2) processes each octet LSB-first through two stages: data whitening — XOR the PHY Payload with a PN9 pseudo-random sequence seeded all-ones and re-seeded each packet, so long runs of identical bits get broken up (17.2.3) — and the GFSK modulator itself, with modulation index 1, Gaussian filter BT = 0.5, a bit '1' shifting the carrier higher and '0' lower, and a nominal +-50 kHz deviation (17.2.4).",
+      "zh": "接下来是 GFSK PHY（高斯频移键控），一个简单得多的窄带无线电，工作在 920.8–928 MHz 的亚 GHz 频段。它的 PPDU 沿用通用格式，但前导码为 32 个符号（4 个八位组）的“01010101”（17.1），数据速率稳定为 100 kb/s（17.2.1）。参考调制器（17.2.2）以最低有效位优先逐八位组处理，分两级：数据白化——把 PHY Payload 与一个 PN9 伪随机序列做异或，该序列种子全为 1 且每包重新置种，从而打散长串相同比特（17.2.3）；以及 GFSK 调制器本身，调制指数为 1，高斯滤波器 BT = 0.5，比特“1”把载波移高、“0”移低，标称频偏为 ±50 kHz（17.2.4）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "GFSK RF requirements (17.3.1–17.3.12)",
+        "zh": "GFSK 射频要求（17.3.1–17.3.12）"
+      },
+      "en": "Operating band is 920.8-928 MHz (17.3.1). The transmit PSD mask sets out-of-band limits at +-300 kHz and across 920-928 MHz (17.3.2). Symbol rate is 100 ksymbol/s +-40 ppm (17.3.3), receiver sensitivity is -85 dBm or better (17.3.4), and interference rejection is tabled for adjacent (0 dB) and alternate (24 dB) channels (17.3.5). TX-to-RX and RX-to-TX turnaround times follow the general 11.2.2 / 11.2.3 definitions (17.3.6, 17.3.7). Transmit center-frequency tolerance is +-40 ppm (17.3.8), minimum transmit power is -3 dBm (17.3.9), receiver maximum input level is >=-20 dBm (17.3.10), and the PHY provides receiver ED (17.3.11) and LQI (17.3.12).",
+      "zh": "工作频段为 920.8–928 MHz（17.3.1）。发射 PSD 模板规定了 ±300 kHz 处以及 920–928 MHz 范围内的带外限值（17.3.2）。符号率为 100 ksymbol/s ±40 ppm（17.3.3），接收灵敏度为 -85 dBm 或更优（17.3.4），干扰抑制按相邻信道（0 dB）与交替信道（24 dB）列表给出（17.3.5）。TX 转 RX 与 RX 转 TX 的转换时间遵循通用的 11.2.2 / 11.2.3 定义（17.3.6、17.3.7）。发射中心频率容差为 ±40 ppm（17.3.8），最小发射功率为 -3 dBm（17.3.9），接收机最大输入电平 >=-20 dBm（17.3.10），且该 PHY 提供接收 ED（17.3.11）与 LQI（17.3.12）。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          685,
+          686,
+          687
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Finally the MSK PHY (minimum-shift keying), the most flexible of the three: it spans the 433 MHz and 2450 MHz bands and four data rates. Its PPDU reuses the general format with a 32-symbol '10101010' Preamble, and at 2000 kb/s the PHR can take an extended form (18.1.1). The base PHR carries a 7-bit Frame Length LSB (18.1.2) plus a 1-bit Extended PHR flag (18.1.3) that the transmitting MAC sets to one whenever the frame exceeds 127 octets — turning on a 4-bit Frame Length MSB field (18.1.4) so the length can reach into the hundreds. The data rates are 31.25, 100, 250 (mandatory in the 433 MHz band) and 2000 kb/s, with a channel map showing which rate is allowed on which channel (18.2). A device may advertise its supported PHYs in a Multi-PHY IE so a higher layer can switch modulation, rate, or channel (18.3), and the SFD has a fixed 16-bit value sent leftmost-bit first (18.4).",
+      "zh": "最后是 MSK PHY（最小频移键控），三者中最灵活的一个：它横跨 433 MHz 与 2450 MHz 频段、支持四种数据速率。它的 PPDU 沿用通用格式，前导码为 32 个符号的“10101010”，且在 2000 kb/s 时 PHR 可采用扩展形式（18.1.1）。基础 PHR 携带 7 比特的帧长度低位（18.1.2）以及 1 比特的扩展 PHR 标志（18.1.3）；当帧超过 127 个八位组时，发射 MAC 把该标志置 1，从而启用一个 4 比特的帧长度高位字段（18.1.4），使长度能达到数百。数据速率有 31.25、100、250（在 433 MHz 频段为强制）和 2000 kb/s，并有一张信道映射表说明哪个速率允许用于哪个信道（18.2）。设备可在多 PHY IE 中通告其支持的各 PHY，使高层能切换调制、速率或信道（18.3），SFD 为固定的 16 比特值，按最左比特优先发送（18.4）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><text x=\"5\" y=\"14\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Extended PHR = 0</text><rect x=\"5\" y=\"22\" width=\"300\" height=\"26\"/><rect x=\"305\" y=\"22\" width=\"60\" height=\"26\"/><text x=\"155\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Frame Length LSB (b0-6)</text><text x=\"335\" y=\"39\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Ext (b7)</text><text x=\"5\" y=\"74\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Extended PHR = 1</text><rect x=\"5\" y=\"82\" width=\"220\" height=\"26\"/><rect x=\"225\" y=\"82\" width=\"45\" height=\"26\"/><rect x=\"270\" y=\"82\" width=\"85\" height=\"26\"/><rect x=\"355\" y=\"82\" width=\"80\" height=\"26\"/><text x=\"115\" y=\"99\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Frame Length LSB</text><text x=\"247\" y=\"99\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Ext</text><text x=\"312\" y=\"99\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Len MSB</text><text x=\"395\" y=\"99\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Reserved</text></svg>",
+      "caption": {
+        "en": "MSK PHR at 2000 kb/s: with the Extended PHR bit clear (top) only a 7-bit length; set (bottom) it adds a 4-bit Frame Length MSB for frames > 127 octets. Figures 18-1, 18-2.",
+        "zh": "2000 kb/s 时的 MSK PHR：扩展 PHR 位为 0 时（上）只有 7 比特长度；置 1 时（下）为大于 127 个八位组的帧增加 4 比特帧长度高位。对应图 18-1、18-2。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "MSK modulation (18.5) again uses a reference modulator (18.5.1) whose whitening reuses the GFSK PN9 procedure but excludes the SHR (18.5.2). Bit-to-symbol mapping sends a '0' to fc-Df and a '1' to fc+Df, where Df is one-quarter of the inverse symbol time (18.5.3). For the actual signal (18.5.4), the 2000 kb/s rate uses GMSK with BT = 0.5, while every other band/rate combination uses FSK with modulation index h = 0.5 — and the two MSK tones differ by exactly 1/(2*Ts), the smallest spacing that keeps them orthogonal. That 'minimum' spacing is what gives minimum-shift keying its name.",
+      "zh": "MSK 调制（18.5）同样使用参考调制器（18.5.1），其白化沿用 GFSK 的 PN9 流程，但排除 SHR（18.5.2）。比特到符号的映射把“0”送到 fc−Δf、把“1”送到 fc+Δf，其中 Δf 为符号时间倒数的四分之一（18.5.3）。对于实际信号（18.5.4），2000 kb/s 速率使用 BT = 0.5 的 GMSK，而其他所有频段/速率组合使用调制指数 h = 0.5 的 FSK——两个 MSK 音调相差恰好为 1/(2·Ts)，这是能保持二者正交的最小间隔。这个“最小”间隔正是最小频移键控得名的由来。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "MSK RF requirements (18.6.1–18.6.8)",
+        "zh": "MSK 射频要求（18.6.1–18.6.8）"
+      },
+      "en": "The MSK PHY offers two optional bands, 433.05-434.79 MHz and 2400-2483 MHz (18.6.1). The transmit PSD mask is tabled per band and rate, with the relative reference window widening from +-100 kHz (31.25 kb/s) to +-1 MHz (2000 kb/s) (18.6.2). Symbol rate is 31.25/100/250 ksymbol/s +-300 ppm in the 433 MHz band, and either 250 ksymbol/s +-300 ppm or 2000 ksymbol/s +-40 ppm at 2450 MHz (18.6.3). Transmit center-frequency tolerance is +-40 ppm (18.6.4); minimum transmit power is -3 dBm at 433 MHz and -13 dBm at 2450 MHz (18.6.5); receiver maximum input level is >=-20 dBm (18.6.6). Two waveform-fidelity rules close it out: modulation frequency deviation must stay within +-30% of the maximum deviation Df (18.6.7), and all zero crossings within +-12.5% of the symbol time (18.6.8).",
+      "zh": "MSK PHY 提供两个可选频段：433.05–434.79 MHz 与 2400–2483 MHz（18.6.1）。发射 PSD 模板按频段与速率列表给出，相对参考窗口从 ±100 kHz（31.25 kb/s）展宽到 ±1 MHz（2000 kb/s）（18.6.2）。符号率在 433 MHz 频段为 31.25/100/250 ksymbol/s ±300 ppm，在 2450 MHz 为 250 ksymbol/s ±300 ppm 或 2000 ksymbol/s ±40 ppm（18.6.3）。发射中心频率容差为 ±40 ppm（18.6.4）；最小发射功率在 433 MHz 为 -3 dBm、在 2450 MHz 为 -13 dBm（18.6.5）；接收机最大输入电平 >=-20 dBm（18.6.6）。最后是两条波形保真度规则：调制频偏须保持在最大频偏 Δf 的 ±30% 之内（18.6.7），所有过零点须在符号时间的 ±12.5% 之内（18.6.8）。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          691,
+          692
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the recurring shape: PPDU format -> data rates -> reference modulator (whitening + modulation) -> RF requirements (PSD mask, symbol rate, sensitivity, interference rejection, turnaround, frequency tolerance, power, max input, ED, LQI). Once you see this template, every 802.15.4 PHY clause reads the same way.",
+      "zh": "注意这个反复出现的结构：PPDU 格式 -> 数据速率 -> 参考调制器（白化 + 调制）-> 射频要求（PSD 模板、符号率、灵敏度、干扰抑制、转换时间、频率容差、功率、最大输入、ED、LQI）。一旦看清这个模板，每一条 802.15.4 的 PHY 条款读起来都如出一辙。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        625,
+        626
+      ],
+      "note": "CSS PPDU format and modulation/spreading reference modulator (15.1, 15.2)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        627,
+        631,
+        632
+      ],
+      "note": "CSS DEMUX, S/P, codeword mapping, QPSK/DQPSK, DQCSK, CSK, interleaver (15.2.4-15.2.11)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        632,
+        633,
+        634,
+        635,
+        636,
+        637
+      ],
+      "note": "CSS waveform and subchirp sequences (15.3.1-15.3.7)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        638,
+        639,
+        640
+      ],
+      "note": "CSS RF requirements (15.4.1-15.4.12)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        684,
+        685,
+        686,
+        687
+      ],
+      "note": "GFSK PHY PPDU, modulation, RF requirements (17.1-17.3.12)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        688,
+        689,
+        690,
+        691,
+        692
+      ],
+      "note": "MSK PHY PPDU, data rate, multi-PHY, SFD, modulation, RF requirements (18.1-18.6.8)"
+    }
+  ],
+  "covers": [
+    "802154-2024:15.1.1",
+    "802154-2024:15.1.2",
+    "802154-2024:15.1.3",
+    "802154-2024:15.1.4",
+    "802154-2024:15.1.5",
+    "802154-2024:15.2.1",
+    "802154-2024:15.2.2",
+    "802154-2024:15.2.3",
+    "802154-2024:15.2.4",
+    "802154-2024:15.2.5",
+    "802154-2024:15.2.6",
+    "802154-2024:15.2.7",
+    "802154-2024:15.2.8",
+    "802154-2024:15.2.9",
+    "802154-2024:15.2.10",
+    "802154-2024:15.2.11",
+    "802154-2024:15.3.1",
+    "802154-2024:15.3.2",
+    "802154-2024:15.3.3",
+    "802154-2024:15.3.4",
+    "802154-2024:15.3.5",
+    "802154-2024:15.3.6",
+    "802154-2024:15.3.7",
+    "802154-2024:15.4.1",
+    "802154-2024:15.4.2",
+    "802154-2024:15.4.3",
+    "802154-2024:15.4.4",
+    "802154-2024:15.4.5",
+    "802154-2024:15.4.6",
+    "802154-2024:15.4.7",
+    "802154-2024:15.4.8",
+    "802154-2024:15.4.9",
+    "802154-2024:15.4.10",
+    "802154-2024:15.4.11",
+    "802154-2024:15.4.12",
+    "802154-2024:17.1",
+    "802154-2024:17.2.1",
+    "802154-2024:17.2.2",
+    "802154-2024:17.2.3",
+    "802154-2024:17.2.4",
+    "802154-2024:17.3.1",
+    "802154-2024:17.3.2",
+    "802154-2024:17.3.3",
+    "802154-2024:17.3.4",
+    "802154-2024:17.3.5",
+    "802154-2024:17.3.6",
+    "802154-2024:17.3.7",
+    "802154-2024:17.3.8",
+    "802154-2024:17.3.9",
+    "802154-2024:17.3.10",
+    "802154-2024:17.3.11",
+    "802154-2024:17.3.12",
+    "802154-2024:18.1.1",
+    "802154-2024:18.1.2",
+    "802154-2024:18.1.3",
+    "802154-2024:18.1.4",
+    "802154-2024:18.2",
+    "802154-2024:18.3",
+    "802154-2024:18.4",
+    "802154-2024:18.5.1",
+    "802154-2024:18.5.2",
+    "802154-2024:18.5.3",
+    "802154-2024:18.5.4",
+    "802154-2024:18.6.1",
+    "802154-2024:18.6.2",
+    "802154-2024:18.6.3",
+    "802154-2024:18.6.4",
+    "802154-2024:18.6.5",
+    "802154-2024:18.6.6",
+    "802154-2024:18.6.7",
+    "802154-2024:18.6.8"
+  ],
+  "track": "pan-802-15"
+}

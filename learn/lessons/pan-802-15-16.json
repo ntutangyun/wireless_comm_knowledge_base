@@ -1,0 +1,186 @@
+{
+  "id": "pan-802-15-16",
+  "title": {
+    "en": "Measuring Distance: 802.15.4 Ranging Foundations",
+    "zh": "测量距离：802.15.4 测距基础"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "How does a phone unlock a car door only when you are actually standing next to it, and not when an attacker relays the radio signal from far away? The answer is precise distance measurement, and IEEE 802.15.4-2024 builds that capability directly into the MAC and PHY. A device that supports ranging is called an RDEV (ranging device). Ranging is optional, but when enabled, the RDEV hands its higher layer accurate transmit and receive timestamps for every special frame — and from those timestamps the upper layer computes how far apart two devices are.",
+      "zh": "手机怎么能做到只在你真正站在车旁时才解锁车门，而当攻击者把无线信号从远处转发过来时却不解锁？答案是精确的距离测量，而 IEEE 802.15.4-2024 把这一能力直接构建进了 MAC 层和 PHY 层。支持测距的设备称为 RDEV（测距设备）。测距是可选功能，但一旦启用，RDEV 就会为每一个专用帧向其上层交付精确的发送与接收时间戳——上层据此计算出两台设备之间的距离。"
+    },
+    {
+      "type": "prose",
+      "en": "The core idea is time of flight (TOF): radio waves travel at the speed of light, so the time a signal takes to fly between two antennas is proportional to the distance. The frame used for a ranging measurement is called an RFRAME. Every timestamp is measured relative to a fixed reference point in the packet called the RMARKER — defined as the moment the first symbol after the start-of-frame delimiter (SFD) reaches the local antenna. Ultra-wideband (UWB) PHYs, with their extremely short pulses, can pin down this instant to picoseconds, which is why accurate ranging in this standard lives on UWB.",
+      "zh": "核心思想是飞行时间（TOF）：无线电波以光速传播，因此信号在两个天线之间飞行所用的时间与距离成正比。用于测距测量的帧称为 RFRAME。每个时间戳都相对于报文中一个固定的参考点——RMARKER——来测量，该参考点定义为帧起始定界符（SFD）之后第一个符号到达本地天线的时刻。超宽带（UWB）PHY 凭借其极短的脉冲，可以把这一时刻锁定到皮秒量级，这正是本标准中精确测距依托于 UWB 的原因。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant A as Device A (Initiator)\n  participant B as Device B (Responder)\n  A->>B: RFRAME (Tprop)\n  Note over B: measures Treply\n  B->>A: Response (Tprop)\n  Note over A: Tround measured<br/>TOF = (Tround - Treply)/2",
+      "zh": "sequenceDiagram\n  participant A as 设备A (发起方)\n  participant B as 设备B (响应方)\n  A->>B: RFRAME (Tprop)\n  Note over B: 测量 Treply\n  B->>A: 响应帧 (Tprop)\n  Note over A: 测得 Tround<br/>TOF = (Tround - Treply)/2"
+    },
+    {
+      "type": "prose",
+      "en": "The standard defines three timing methods (clause 10.29.1.2). In single-sided two-way ranging (SS-TWR), device A sends, device B replies, and A computes TOF from the round-trip time minus B's reply time. In double-sided two-way ranging (DS-TWR), two round trips are combined so that clock-frequency errors in both devices largely cancel — giving picosecond-level accuracy even with 20 ppm crystals; a three-message variant reuses one reply as the next initiation to save a message. For one-way schemes, time difference of arrival (TDOA) locates a mobile 'blink' transmitter by comparing arrival times at several synchronized fixed nodes.",
+      "zh": "标准定义了三种计时方法（条款 10.29.1.2）。在单边双向测距（SS-TWR）中，设备 A 发送、设备 B 回复，A 用往返时间减去 B 的回复时间来计算 TOF。在双边双向测距（DS-TWR）中，两次往返被组合起来，使两台设备的时钟频率误差在很大程度上相互抵消——即使使用 20 ppm 的晶振也能达到皮秒级精度；三报文变体复用一次回复作为下一次发起，从而节省一条报文。对于单向方案，到达时间差（TDOA）通过比较信号在多个已同步的固定节点处的到达时间，来定位发出“闪烁”信号的移动发射器。"
+    },
+    {
+      "type": "prose",
+      "en": "Each ranging report also carries a quality flag. The ranging Figure of Merit (FoM, clause 10.29.1.7) packs a confidence level (from 'no FoM' up to 99%), a confidence interval (100 ps to 3 ns), and a scaling factor into a single byte, so the upper layer knows how much to trust each timestamp. Devices that implement optional crystal characterization additionally report a tracking offset and tracking interval — together they describe the frequency difference between the two oscillators, letting the reply time be corrected for even better accuracy.",
+      "zh": "每份测距报告还附带一个质量标志。测距品质因数（FoM，条款 10.29.1.7）将一个置信级别（从“无 FoM”直到 99%）、一个置信区间（100 ps 到 3 ns）以及一个缩放因子打包进单个字节，使上层知道该在多大程度上信任每个时间戳。实现可选晶体表征功能的设备还会额外报告一个跟踪偏移量和跟踪间隔——二者共同描述两个振荡器之间的频率差，从而可对回复时间进行修正以获得更高的精度。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mind the clocks: a tiny crystal error multiplied by a long reply time becomes a big distance error. SS-TWR keeps reply times short or corrects with the measured clock offset; DS-TWR's symmetric math makes the error almost disappear. This is why the standard reports tracking offset and interval alongside every range.",
+      "zh": "要留意时钟：微小的晶振误差乘以较长的回复时间就会变成很大的距离误差。SS-TWR 让回复时间保持很短，或用测得的时钟偏移来修正；DS-TWR 的对称运算几乎让误差消失。这正是标准在每次测距时都同时报告跟踪偏移量和跟踪间隔的原因。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 70\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"20\" width=\"60\" height=\"30\"/><rect x=\"70\" y=\"20\" width=\"50\" height=\"30\"/><rect x=\"120\" y=\"20\" width=\"110\" height=\"30\" stroke-dasharray=\"4 3\"/><rect x=\"230\" y=\"20\" width=\"100\" height=\"30\"/><rect x=\"330\" y=\"20\" width=\"40\" height=\"30\"/><line x1=\"120\" y1=\"15\" x2=\"120\" y2=\"55\" stroke-dasharray=\"2 2\"/><text x=\"40\" y=\"39\" font-size=\"10\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">SHR</text><text x=\"95\" y=\"39\" font-size=\"10\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">SFD</text><text x=\"175\" y=\"39\" font-size=\"10\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">STS</text><text x=\"280\" y=\"39\" font-size=\"10\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">PHR+Data</text><text x=\"350\" y=\"39\" font-size=\"10\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">FCS</text><text x=\"120\" y=\"12\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">RMARKER</text></svg>",
+      "caption": {
+        "en": "An RFRAME with a scrambled timestamp sequence (STS). The RMARKER is the instant just after the SFD; the STS lets only devices that share the secret seed determine the true arrival time.",
+        "zh": "带有加扰时间戳序列（STS）的 RFRAME。RMARKER 是 SFD 之后的瞬间；STS 使得只有共享秘密种子的设备才能确定真正的到达时刻。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Distance is only trustworthy if an attacker cannot forge the timing. The enhanced ranging device (ERDEV) on the high-rate UWB PHY inserts a scrambled timestamp sequence (STS) — a stream of pulses generated by an AES-128 deterministic random bit generator. Only a transmitter and receiver holding the correct secret seed can cross-correlate the STS to recover the true RMARKER, so a relay attacker who does not know the seed cannot make the devices believe they are closer than they are. Annex G (informative) gives concrete STS test vectors: an example seed and data, the first DRBG output blocks, and the resulting pulse polarities — so implementers can verify their STS generator produces exactly the right sequence.",
+      "zh": "只有当攻击者无法伪造计时时，距离才是可信的。高速率 UWB PHY 上的增强测距设备（ERDEV）会插入一段加扰时间戳序列（STS）——这是一串由 AES-128 确定性随机比特生成器产生的脉冲。只有持有正确秘密种子的发送方和接收方才能对 STS 做互相关运算以恢复真正的 RMARKER，因此不知道种子的转发攻击者无法让设备误以为彼此距离比实际更近。附录 G（资料性）给出了具体的 STS 测试向量：一个示例种子和数据、DRBG 的前几个输出块以及由此产生的脉冲极性——使实现者能验证其 STS 生成器产出的序列完全正确。"
+    },
+    {
+      "type": "prose",
+      "en": "A ranging exchange has setup, core, and finish-up phases. Before the exchange (10.29.2), the higher layer enables ranging on both RDEVs and, if using optional dynamic preamble/channel selection (DPS/DCS), coordinates which preamble code and channel to use — hiding the exchange from other nodes. The basic exchange (10.29.5) is driven by MCPS-DATA.request and MLME-RX-ENABLE.request with RANGING_ON; timestamps come back in the .confirm and .indication primitives. After the exchange (10.29.3), both devices each hold half of the measurement, so one must send its counter values to the other to finish the TOF calculation.",
+      "zh": "一次测距交互分为准备、核心和收尾三个阶段。在交互之前（10.29.2），上层在两个 RDEV 上都启用测距，并在使用可选的动态前导码/信道选择（DPS/DCS）时协调采用哪个前导码和信道——从而对其他节点隐藏本次交互。基本交互（10.29.5）由 MCPS-DATA.request 以及携带 RANGING_ON 的 MLME-RX-ENABLE.request 驱动；时间戳通过 .confirm 和 .indication 原语返回。交互之后（10.29.3），两台设备各持有测量结果的一半，因此其中一方必须把自己的计数器值发给另一方才能完成 TOF 计算。"
+    },
+    {
+      "type": "prose",
+      "en": "The MAC carries this coordination in information elements (IEs). The RRMC IE requests a measurement and controls whether SS-TWR or DS-TWR is running; the RRTI and RMI IEs ferry reply times and round-trip / TOF / angle-of-arrival results back; the RSSD IE aligns the STS seed; the RCPCS IE signals the DPS channel and preamble choice; and the RRTN IE negotiates a fixed reply time so SS-TWR can skip resending the reply time each round. Three MLME service primitives back these up: MLME-DPS for dynamic preamble/channel switching, MLME-SOUNDING for channel impulse data, MLME-CALIBRATE for the antenna RMARKER offset, and MLME-STS for STS parameters.",
+      "zh": "MAC 层通过信息单元（IE）承载这种协调。RRMC IE 请求一次测量并控制运行的是 SS-TWR 还是 DS-TWR；RRTI 和 RMI IE 把回复时间以及往返时间 / TOF / 到达角结果传回；RSSD IE 对齐 STS 种子；RCPCS IE 用于通告 DPS 的信道和前导码选择；RRTN IE 协商固定回复时间，使 SS-TWR 每轮无需重发回复时间。三组 MLME 服务原语为其提供支撑：MLME-DPS 用于动态前导码/信道切换，MLME-SOUNDING 用于信道冲激数据，MLME-CALIBRATE 用于天线 RMARKER 偏移，MLME-STS 用于 STS 参数。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  B[Ranging beacon<br/>RD IE] --> M[Ranging management period]\n  M --> RCAP[RCAP: contention slots]\n  M --> RCFP[RCFP: scheduled slots]\n  B --> P[Ranging period<br/>starts with RCM]\n  P --> R[Ranging slots / rounds]",
+      "zh": "flowchart TD\n  B[测距信标<br/>RD IE] --> M[测距管理期]\n  M --> RCAP[RCAP: 竞争时隙]\n  M --> RCFP[RCFP: 调度时隙]\n  B --> P[测距期<br/>以 RCM 开始]\n  P --> R[测距时隙 / 轮次]"
+    },
+    {
+      "type": "prose",
+      "en": "When many devices range inside one PAN, they share airtime with a superframe-like structure (10.30). Repeating ranging beacons — Enhanced Beacon frames carrying the Ranging Descriptor IE (RD IE) — mark out a beacon interval split into a ranging management period and a ranging period. The management period is divided into beacon slots organized into contention-access (RCAP) and contention-free (RCFP) sub-periods, while the ranging period begins with a ranging control message (RCM) and then runs the actual ranging rounds. Inside those rounds, devices may exchange extra data using ranging ancillary information (10.35): the RAICT IE counts messages spanning multiple slots, tracks retransmissions, and lets a device request more slots from the controller.",
+      "zh": "当许多设备在同一个 PAN 内测距时，它们以类似超帧的结构共享空口时间（10.30）。周期性的测距信标——携带测距描述符 IE（RD IE）的增强信标帧——划分出一个信标间隔，该间隔被分为测距管理期和测距期。管理期被划分为若干信标时隙，组织成竞争接入（RCAP）与无竞争（RCFP）子期；而测距期以一条测距控制报文（RCM）开始，随后运行实际的测距轮次。在这些轮次内部，设备可以使用测距辅助信息（10.35）交换额外数据：RAICT IE 对跨越多个时隙的报文进行计数、跟踪重传，并允许设备向控制器请求更多时隙。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, ranging becomes a security primitive in secure transactions (10.31). For uses like contactless payment or keyless entry, the higher layer sits between the radio and a secure element. The MAC uses the MPX IE (per IEEE Std 802.15.9) with a dispatch code for 'Ranging Enhanced Secure Service Transactions': a received frame is delivered to the higher layer together with its ranging measurement, so the upper layer can refuse the transaction if the measured distance is wrong. The payload format carries a payload type (e.g., an ISO 7816-4 APDU) and a USSID to identify and distinguish concurrent transactions — binding 'who you are paying' to 'how far away you actually are.'",
+      "zh": "最后，测距在安全交易（10.31）中成为一种安全原语。在非接触支付或无钥匙进入等用途中，上层位于无线电与安全单元之间。MAC 层使用 MPX IE（依据 IEEE Std 802.15.9），并带有用于“测距增强安全服务交易”的分派码：接收到的帧会连同其测距测量值一起交付给上层，于是当测得的距离不对时上层可以拒绝该交易。其载荷格式携带一个载荷类型（例如 ISO 7816-4 的 APDU）和一个 USSID 用以标识并区分并发的交易——把“你在向谁付款”与“你实际上离得多远”绑定在一起。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every ranging clause taught here",
+        "zh": "覆盖地图：本课讲到的每个测距条款"
+      },
+      "en": "Full clause inventory. 10.29.1 Ranging measurements — RDEV, RMARKER, ranging counter and its PHY-dependent time unit, RSTU, crystal characterization (tracking offset/interval), and the FoM byte. 10.29.2 Set-up activities (enable ranging, coordinate DPS/DCS). 10.29.3 Finish-up activities (transfer counter values for TOF). 10.29.4 Managing DPS and DCS (MLME-DPS sequence, ConfigTime, timers). 10.29.5 The basic ranging exchange (MCPS-DATA.request, MLME-RX-ENABLE RANGING_ON). 10.29.6 Ranging procedures (SS-TWR deferred/embedded/fixed reply, DS-TWR, transfer of results). 10.29.7 Header IEs for ranging (RSSD IE as a header IE). 10.29.8 Nested IEs for ranging (RRTI, RSSD, RRMC, RMI, RCPCS, RRTN IEs). 10.29.9 MAC management primitives (MLME-DPS, MLME-SOUNDING, MLME-CALIBRATE, MLME-STS). 10.29.10 MAC constants and PIB attributes for ranging (e.g., macRangingSupported). 10.30.1 Overview of ranging in a PAN with superframe structure (ranging beacon, management period, ranging period, RBS, RCAP, RCFP). 10.30.2 Nested IEs for that structure (Ranging Descriptor IE / RD IE, RM Table). 10.31 Secure transactions (MPX IE, dispatch code, payload type, USSID for range-bound transactions). 10.35.1 Ranging ancillary information overview (initiator/responder roles, rounds). 10.35.2 Nested IEs for ancillary info (RAICT IE: message counter/type, frames remaining, slot requests). Annex G (informative) STS generation — test vectors: example seed and data, DRBG output blocks B(0)/B(1), and resulting pulse polarities for verifying an HRP-ERDEV STS generator.",
+      "zh": "完整条款清单。10.29.1 测距测量——RDEV、RMARKER、测距计数器及其随 PHY 而异的时间单位、RSTU、晶体表征（跟踪偏移/间隔）以及 FoM 字节。10.29.2 准备活动（启用测距、协调 DPS/DCS）。10.29.3 收尾活动（传输计数器值以计算 TOF）。10.29.4 管理 DPS 与 DCS（MLME-DPS 序列、ConfigTime、定时器）。10.29.5 基本测距交互（MCPS-DATA.request、带 RANGING_ON 的 MLME-RX-ENABLE）。10.29.6 测距流程（SS-TWR 的延迟/内嵌/固定回复，DS-TWR，结果传输）。10.29.7 测距头部 IE（作为头部 IE 的 RSSD IE）。10.29.8 测距嵌套 IE（RRTI、RSSD、RRMC、RMI、RCPCS、RRTN IE）。10.29.9 MAC 管理原语（MLME-DPS、MLME-SOUNDING、MLME-CALIBRATE、MLME-STS）。10.29.10 测距用 MAC 常量与 PIB 属性（如 macRangingSupported）。10.30.1 在采用超帧结构的 PAN 中测距的概述（测距信标、管理期、测距期、RBS、RCAP、RCFP）。10.30.2 该结构的嵌套 IE（测距描述符 IE / RD IE、RM 表）。10.31 安全交易（MPX IE、分派码、载荷类型、用于距离绑定交易的 USSID）。10.35.1 测距辅助信息概述（发起方/响应方角色、轮次）。10.35.2 辅助信息的嵌套 IE（RAICT IE：报文计数/类型、剩余帧数、时隙请求）。附录 G（资料性）STS 生成——测试向量：示例种子与数据、DRBG 输出块 B(0)/B(1) 以及由此产生的脉冲极性，用于验证 HRP-ERDEV 的 STS 生成器。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          433,
+          434,
+          435,
+          438,
+          439,
+          441,
+          443,
+          444,
+          451,
+          454,
+          457,
+          459,
+          466,
+          467,
+          468,
+          527,
+          528,
+          964
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        433,
+        434,
+        435,
+        436,
+        437,
+        438,
+        439,
+        440,
+        441,
+        443,
+        444
+      ],
+      "note": "10.29.1 ranging measurements (RDEV, RMARKER, counter/RSTU, crystal characterization, FoM); 10.29.1.2 SS-TWR/DS-TWR/TDOA; 10.29.2-10.29.5 set-up, finish-up, DPS management, basic exchange."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        444,
+        451,
+        452,
+        454,
+        455,
+        457,
+        459,
+        460,
+        461,
+        462,
+        463
+      ],
+      "note": "10.29.6 ranging procedures; 10.29.7 RSSD header IE; 10.29.8 nested IEs (RRTI/RSSD/RRMC/RMI/RCPCS/RRTN); 10.29.9 MLME-DPS/SOUNDING/CALIBRATE primitives."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        466,
+        467,
+        468
+      ],
+      "note": "10.29.10 ranging PIB attributes; 10.30.1-10.30.2 ranging in a PAN superframe (RD IE, RBS/RCAP/RCFP); 10.31 secure transactions (MPX IE, USSID)."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        527,
+        528,
+        964,
+        965
+      ],
+      "note": "10.35.1-10.35.2 ranging ancillary information (RAICT IE); Annex G STS generation test vectors."
+    }
+  ],
+  "covers": [
+    "802154-2024:10.29.1",
+    "802154-2024:10.29.2",
+    "802154-2024:10.29.3",
+    "802154-2024:10.29.4",
+    "802154-2024:10.29.5",
+    "802154-2024:10.29.6",
+    "802154-2024:10.29.7",
+    "802154-2024:10.29.8",
+    "802154-2024:10.29.9",
+    "802154-2024:10.29.10",
+    "802154-2024:10.30.1",
+    "802154-2024:10.30.2",
+    "802154-2024:10.31",
+    "802154-2024:10.35.1",
+    "802154-2024:10.35.2",
+    "802154-2024:Annex_G"
+  ],
+  "track": "pan-802-15"
+}

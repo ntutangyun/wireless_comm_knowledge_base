@@ -1,0 +1,243 @@
+{
+  "id": "pan-802-15-17",
+  "title": {
+    "en": "Robust Ranging: Multi-Node, Authenticated and Relay Extensions",
+    "zh": "稳健测距：多节点、认证与中继扩展"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Earlier lessons measured the distance between exactly two radios. Real deployments rarely stay that simple: a phone wants to range against several anchors at once, an electronic key must prove it really is close (not relayed by an attacker), and a sensor may sit beyond the radio horizon of its coordinator. IEEE Std 802.15.4-2024 answers all three with optional MAC extensions built on its UWB ranging core. This lesson tours four of them — multi-node ranging, authenticated challenge-response ranging (ACRR), two small but useful ranging-round helpers, and a relay scheme called TRLE that stretches a star network across multiple hops.",
+      "zh": "此前的课程只测量两台设备之间的距离。但真实部署很少这么简单：手机希望同时对多个锚点测距，电子钥匙必须证明自己确实靠近（而不是被攻击者中继转发），传感器也可能位于其协调器的无线视距之外。IEEE Std 802.15.4-2024 用一组建立在 UWB 测距核心之上的可选 MAC 扩展回应了这三类需求。本课带你浏览其中四项——多节点测距、认证质询-应答测距（ACRR）、两个小巧实用的测距轮辅助机制，以及一种把星型网络延展到多跳的中继方案 TRLE。"
+    },
+    {
+      "type": "prose",
+      "en": "Multi-node ranging (10.32.1) lets one or more initiators range against many responders. A device called the controller sends a Ranging Control Message (RCM) carrying an Advanced Ranging Control IE (ARC IE) to configure the exchange; a controlee follows those parameters. Time is organized hierarchically (10.32.2): a ranging block holds several ranging rounds, and each round is sliced into ranging slots just long enough for one frame, with named phases (control, initiation, response, optional final for double-sided ranging, and measurement report) so every device knows when to transmit and when to listen. Scheduling works two ways. In time-scheduled mode the controller knows every controlee, names each role, and assigns slots using the Ranging Device Management IE (RDM IE). In contention-based mode the controller may not know the participants, so devices contend; the Ranging Contention Phase Structure IE (RCPS IE) marks open slots and the Ranging Contention Maximum Attempts IE (RCMA IE) caps retries for fairness. Two timing styles also exist (10.32.3): interval-based mode adapts the spacing between rounds dynamically, while block-based mode keeps it constant.",
+      "zh": "多节点测距（10.32.1）允许一个或多个发起方对多个响应方测距。一个称为控制器（controller）的设备发送携带高级测距控制 IE（ARC IE）的测距控制消息（RCM）来配置整个交互，受控者（controlee）则遵循这些参数。时间被分层组织（10.32.2）：一个测距块（block）包含若干测距轮（round），每一轮又切分为刚好够发一帧的测距时隙（slot），并带有命名阶段（控制、发起、应答、用于双边测距的可选最终阶段以及测量报告），让每台设备都知道何时发送、何时侦听。调度有两种方式。在时间调度模式下，控制器知道每个受控者，指定各自角色，并用测距设备管理 IE（RDM IE）分配时隙。在基于竞争的模式下，控制器可能并不知道参与者，于是设备们竞争；测距竞争阶段结构 IE（RCPS IE）标出开放时隙，测距竞争最大尝试次数 IE（RCMA IE）为公平起见限制重试次数。测距的时间风格也有两种（10.32.3）：基于间隔的模式动态调整各轮之间的间距，而基于块的模式则保持其恒定。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  RCM[\"Controller sends RCM (ARC IE)\"] --> SCHED{\"Schedule Mode?\"}\n  SCHED -->|Time-scheduled| RDM[\"RDM IE assigns slots & roles\"]\n  SCHED -->|Contention| RCPS[\"RCPS IE marks open slots; RCMA IE caps attempts\"]\n  RDM --> RP[\"Ranging phase: init / response / final\"]\n  RCPS --> RP\n  RP --> MRP[\"Measurement report phase\"]",
+      "zh": "flowchart TD\n  RCM[\"控制器发送 RCM（ARC IE）\"] --> SCHED{\"调度模式？\"}\n  SCHED -->|时间调度| RDM[\"RDM IE 分配时隙与角色\"]\n  SCHED -->|竞争| RCPS[\"RCPS IE 标出开放时隙；RCMA IE 限制尝试\"]\n  RDM --> RP[\"测距阶段：发起/应答/最终\"]\n  RCPS --> RP\n  RP --> MRP[\"测量报告阶段\"]"
+    },
+    {
+      "type": "prose",
+      "en": "The standard spells out concrete procedures for each shape of multi-node exchange. One-to-many SS-TWR (single-sided two-way ranging, 10.32.4) has one initiator broadcast an initiation message; each responder replies in turn, and the initiator reports results in a final frame using Ranging Measurement Information IEs. One-to-many DS-TWR (double-sided, 10.32.5) adds a return leg to cancel clock offset, with a deferred-report option. Many-to-many SS-TWR and DS-TWR (10.32.6, 10.32.7) generalize to multiple initiators and responders sharing one round. When highly secure scrambled-timestamp-sequence (SP3) packets are used, 10.32.8 defines matching SS-TWR and DS-TWR procedures (10.32.8.1–10.32.8.3) — these must be time-scheduled so frames from different devices never collide.",
+      "zh": "标准为每一种多节点交互形态都给出了具体流程。一对多 SS-TWR（单边双向测距，10.32.4）让一个发起方广播发起消息，各响应方依次回复，发起方在最终帧中用测距测量信息 IE 报告结果。一对多 DS-TWR（双边，10.32.5）增加一个返程以抵消时钟偏差，并提供延迟报告选项。多对多 SS-TWR 与 DS-TWR（10.32.6、10.32.7）则推广到多个发起方和响应方共享一轮。当使用高安全的加扰时间戳序列（SP3）分组时，10.32.8 定义了对应的 SS-TWR 与 DS-TWR 流程（10.32.8.1–10.32.8.3）——这些必须时间调度，以保证来自不同设备的帧绝不冲突。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "The multi-node toolbox: nested IEs (10.32.9) that carry every parameter",
+        "zh": "多节点工具箱：携带全部参数的嵌套 IE（10.32.9）"
+      },
+      "en": "Multi-node ranging carries its configuration in a family of nested information elements (10.32.9). The Advanced Ranging Control IE / ARC IE (10.32.9.1) is the master record — its Multi-node Mode field selects unicast, one-to-many, or many-to-many, and its Ranging Round Usage field selects OWR, SS-TWR, or DS-TWR. The Ranging Interval Update IE / RIU IE (10.32.9.2) carries the block, round, and RIUM intervals for interval-based mode. The Ranging Round IE / RR IE (10.32.9.3) and Ranging Block Update IE / RBU IE (10.32.9.4) update round and block structure. For contention, the Ranging Contention Phase Structure IE / RCPS IE (10.32.9.5) and Ranging Contention Maximum Attempts IE / RCMA IE (10.32.9.6) shape the contention window. A controlee asks for changes via the Ranging Change Request IE / RCR IE (10.32.9.7); the Ranging Device Management IE / RDM IE (10.32.9.8) assigns roles and slots; and the SP3 Ranging Request Reports IE / SRRR IE (10.32.9.9) requests AOA, reply-time, or round-trip-time reports in SP3 ranging.",
+      "zh": "多节点测距把它的配置装在一族嵌套信息元素里（10.32.9）。高级测距控制 IE / ARC IE（10.32.9.1）是主记录——其 Multi-node Mode 字段选择单播、一对多或多对多，Ranging Round Usage 字段选择 OWR、SS-TWR 或 DS-TWR。测距间隔更新 IE / RIU IE（10.32.9.2）为基于间隔的模式携带块、轮和 RIUM 间隔。测距轮 IE / RR IE（10.32.9.3）和测距块更新 IE / RBU IE（10.32.9.4）更新轮与块结构。对于竞争，测距竞争阶段结构 IE / RCPS IE（10.32.9.5）和测距竞争最大尝试次数 IE / RCMA IE（10.32.9.6）塑造竞争窗口。受控者通过测距变更请求 IE / RCR IE（10.32.9.7）请求修改；测距设备管理 IE / RDM IE（10.32.9.8）分配角色与时隙；SP3 测距请求报告 IE / SRRR IE（10.32.9.9）在 SP3 测距中请求 AOA、回复时间或往返时间报告。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          470,
+          471,
+          473,
+          483,
+          484,
+          487,
+          490,
+          492,
+          502
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Knowing a distance is not the same as trusting it. A relay attacker can shorten the apparent distance by forwarding ranging frames faster than light-of-context allows, fooling a car or door into thinking the key is near. Authenticated challenge-response ranging (ACRR, 10.33.1) defends against this. Two roles appear: a verifier wants a trustworthy distance, and a prover answers it. The verifier MAC sends a Ranging Verifier command carrying a fresh, unguessable Challenge; the prover MAC replies with a Ranging Prover command containing its Response after a fixed reply time. Because the challenge is random and the reply timing is fixed and measured at the chip level, an attacker cannot guess the response in advance or fake a shorter time. The MCPS-RANGING-VERIFIER and MCPS-RANGING-PROVER primitives drive the exchange and rely on the standard's Clause 9 security services. ACRR scales along several axes. Security levels (10.33.3) set the challenge/response length — 32, 64, or 128 bits — and a special bit-error-tolerant mode (10.33.3.2) trades exact matching for robustness on noisy links by allowing up to k flipped bits. The verifier and prover must agree on method and security level; they coordinate it (10.33.4) using the Authenticated Challenge-Response Ranging Control IE (ACRRC IE), which can never silently downgrade security. Reception filtering can be relaxed in raw mode while doing ACRR (10.33.2). Procedures (10.33.5) cover SS-TWR and DS-TWR, each in one-way and mutual-authentication variants, with multi-node one-way authentication (10.33.5.8) letting several provers reply at staggered fixed delays to one broadcast challenge.",
+      "zh": "知道距离不等于信任这个距离。中继攻击者可以把测距帧转发得比情境允许的更快，从而缩短表观距离，让汽车或门误以为钥匙就在近旁。认证质询-应答测距（ACRR，10.33.1）正是为此而设防。出现两个角色：验证方（verifier）需要一个可信的距离，证明方（prover）作出应答。验证方 MAC 发送携带全新且不可猜测质询（Challenge）的测距验证方命令；证明方 MAC 在固定回复时间后用携带其应答（Response）的测距证明方命令回复。由于质询是随机的、回复时序固定且在码片级测量，攻击者无法提前猜出应答，也无法伪造更短的时间。MCPS-RANGING-VERIFIER 与 MCPS-RANGING-PROVER 原语驱动这一交互，并依赖标准第 9 章的安全服务。ACRR 沿多个维度伸缩。安全级别（10.33.3）设定质询/应答长度——32、64 或 128 比特——而一种特殊的容忍比特错误模式（10.33.3.2）通过允许至多 k 个翻转比特，在噪声链路上以精确匹配换取稳健性。验证方与证明方必须就方法和安全级别达成一致；它们用认证质询-应答测距控制 IE（ACRRC IE）来协调（10.33.4），且该机制绝不会悄悄降级安全等级。在做 ACRR 时可放宽接收过滤（原始模式，10.33.2）。流程（10.33.5）涵盖 SS-TWR 和 DS-TWR，每种又分单向与相互认证变体，其中多节点单向认证（10.33.5.8）让多个证明方以错开的固定时延回应一个广播质询。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><text x=\"60\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">Verifier</text><text x=\"360\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">Prover</text><line x1=\"60\" y1=\"30\" x2=\"60\" y2=\"140\"/><line x1=\"360\" y1=\"30\" x2=\"360\" y2=\"140\"/><line x1=\"60\" y1=\"55\" x2=\"360\" y2=\"55\" marker-end=\"url(#a)\"/><text x=\"210\" y=\"50\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Ranging Verifier cmd (Challenge)</text><line x1=\"360\" y1=\"110\" x2=\"60\" y2=\"110\" marker-end=\"url(#a)\"/><text x=\"210\" y=\"105\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Ranging Prover cmd (Response)</text><text x=\"360\" y=\"85\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">fixed reply time</text><line x1=\"345\" y1=\"60\" x2=\"345\" y2=\"105\" stroke-dasharray=\"3 3\"/><defs><marker id=\"a\" markerWidth=\"8\" markerHeight=\"8\" refX=\"7\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6\" fill=\"currentColor\" stroke=\"none\"/></marker></defs></svg>",
+      "caption": {
+        "en": "ACRR challenge-response: the prover answers a random challenge after a fixed, chip-level reply time, so distance cannot be faked.",
+        "zh": "ACRR 质询-应答：证明方在固定的、码片级回复时间后回应随机质询，因此距离无法被伪造。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "ACRR plumbing: IEs, MAC commands, and service primitives (10.33.6–10.33.8)",
+        "zh": "ACRR 的底层机制：IE、MAC 命令与服务原语（10.33.6–10.33.8）"
+      },
+      "en": "Two nested IEs support ACRR (10.33.6): the Authenticated Challenge-Response Ranging Control IE / ACRRC IE (10.33.6.1) advertises the ranging method and security level, while the ChallengeResponseTransfer IE (10.33.6.2) carries challenge or response data (4–64 octets) when integrity must be verified in a later secured frame. The exchange uses two MAC commands (10.33.7): the Ranging Verifier command (10.33.7.1) carries the Challenge, and the Ranging Prover command (10.33.7.2) carries the Response, both generated from a cryptographically secure random source. The next higher layer drives everything through MAC management primitives (10.33.8). The verifier primitives (10.33.8.1) are MCPS-RANGING-VERIFIER.request / .confirm / .indication; the prover primitives (10.33.8.2) are the matching MCPS-RANGING-PROVER.request / .confirm / .indication. A missing challenge or response ends the exchange with status TRANSACTION_EXPIRED; an AddressMask lets one verifier accept a range of prover addresses in multi-node mode.",
+      "zh": "两个嵌套 IE 支持 ACRR（10.33.6）：认证质询-应答测距控制 IE / ACRRC IE（10.33.6.1）通告测距方法和安全级别；质询应答传输 IE / ChallengeResponseTransfer IE（10.33.6.2）在需要于后续受保护帧中验证完整性时携带质询或应答数据（4–64 个八位字节）。交互使用两个 MAC 命令（10.33.7）：测距验证方命令（10.33.7.1）携带 Challenge，测距证明方命令（10.33.7.2）携带 Response，两者都由密码学安全的随机源生成。上层通过 MAC 管理原语驱动一切（10.33.8）。验证方原语（10.33.8.1）为 MCPS-RANGING-VERIFIER.request / .confirm / .indication；证明方原语（10.33.8.2）为对应的 MCPS-RANGING-PROVER.request / .confirm / .indication。质询或应答缺失时交互以状态 TRANSACTION_EXPIRED 结束；在多节点模式下，AddressMask 让单个验证方接受一段证明方地址。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          502,
+          504,
+          506,
+          515,
+          516,
+          517,
+          518,
+          520,
+          522
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why a fixed reply time? In single-sided ACRR the prover must answer after a precisely known delay, so the verifier can subtract it cleanly and attribute the rest of the round-trip to flight time. Any attacker who delays to forge a response would also show up as extra distance — the one thing they are trying to hide.",
+      "zh": "为何要固定回复时间？在单边 ACRR 中，证明方必须在一个精确已知的时延后回应，验证方才能干净地减去它，并把往返时间的其余部分归为飞行时间。任何为伪造应答而拖延的攻击者，也会表现为额外的距离——而这正是他们想要隐藏的东西。"
+    },
+    {
+      "type": "prose",
+      "en": "Two small helpers make multi-node rounds more robust. The ranging message non-receipt exchange (10.34.1) handles the awkward case where a scheduled responder misses its expected initiation message: instead of sitting silent in its slot, it sends a frame carrying the Ranging Message Non Receipt IE (RMNR IE, 10.34.2.1, which has no content field) to report the miss and implicitly confirm it did receive the RCM. Separately, multiple message receipt confirmation (10.36.1) lets a recipient acknowledge many messages at once: the Ranging Multiple Message Receipt Confirmation IE (RMMRC IE, 10.36.2.1) carries a per-slot bitmap and the initiator's address, so one frame confirms a whole batch of slots, requested via the ARC IE's MMRCR field. The final extension is not about distance at all — it is about reach. In a star network, range is bounded by how far the coordinator and a device can hear each other. Timeslot relaying based link extension (TRLE, 10.37.1) inserts relay coordinators between them. A PAN relay forwards MAC frames either outward (toward a device) or inward (toward the PAN coordinator), giving transparent connectivity with no extra networking overhead at the end device. For a basic PAN using a superframe (10.37.2, 10.37.3), this is one-hop relaying: a relay associates as a coordinator, turns relaying on via MLME-TRLE-MANAGEMENT.request, applies the special filtering rules (10.37.3.2) that accept frames not addressed to itself, and forwards them after a configured delay (10.37.3.3). A DSME-enabled PAN can go further with a full TRLE-enabled PAN (10.37.4) supporting up to seven tiers of relays on a cyclic-superframe: the coordinator starts it (10.37.4.2), relays join by forming a relaying path (10.37.4.3) tier by tier (an inner relay is closer to the coordinator, an outer relay closer to the device), and multihop relaying (10.37.4.4) forwards each frame inward or outward by tier, updating the TRLE Descriptor IE at every hop. Path maintenance (10.37.4.5) keeps the mesh healthy with HELLO and PATH exchanges, beacon-carried time synchronization, and re-joining after missed beacons, while three grades of link access (10.37.4.6) — grade 0 (delay-sensitive), grade 1 (reliable, acknowledged), and grade 2 (best effort) — serve different traffic.",
+      "zh": "两个小助手让多节点轮次更稳健。测距消息未收到交互（10.34.1）处理一个尴尬情形：被调度的响应方错过了它预期的发起消息——它不再在时隙中沉默，而是发送携带测距消息未收到 IE（RMNR IE，10.34.2.1，无内容字段）的帧来报告漏收，并隐式确认它确实收到了 RCM。另外，多消息接收确认（10.36.1）让接收方一次确认多条消息：测距多消息接收确认 IE（RMMRC IE，10.36.2.1）携带逐时隙的位图和发起方地址，于是一帧即可确认一整批时隙，并通过 ARC IE 的 MMRCR 字段请求。最后一项扩展根本不关乎距离——它关乎覆盖范围。在星型网络中，距离受限于协调器与设备彼此能听到的远近。基于时隙中继的链路扩展（TRLE，10.37.1）在两者之间插入中继协调器。PAN 中继把 MAC 帧向外（朝向设备）或向内（朝向 PAN 协调器）转发，为终端设备提供透明连接而无需额外的组网开销。对于使用超帧的基本 PAN（10.37.2、10.37.3），这是单跳中继：中继以协调器身份关联，通过 MLME-TRLE-MANAGEMENT.request 开启中继，应用特殊的过滤规则（10.37.3.2，接受并非发给自己的帧），并在配置的时延后转发它们（10.37.3.3）。DSME 使能的 PAN 可借助完整的 TRLE 使能 PAN 走得更远（10.37.4），在循环超帧上支持至多七层中继：协调器启动它（10.37.4.2），中继逐层加入并形成中继路径（10.37.4.3，内侧中继更靠近协调器，外侧中继更靠近设备），多跳中继（10.37.4.4）按层级把每帧向内或向外转发，并在每一跳更新 TRLE 描述符 IE。路径维护（10.37.4.5）以 HELLO 与 PATH 交互、由信标携带的时间同步以及漏收信标后的重新加入来保持网状健康；三种链路接入等级（10.37.4.6）——等级 0（时延敏感）、等级 1（可靠、需确认）和等级 2（尽力而为）——服务不同流量。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  COORD[\"PAN coordinator\"] -- inward --> R1[\"TRLE relay tier 1\"]\n  R1 -- outward --> R2[\"TRLE relay tier 2\"]\n  R2 -- outward --> DEV[\"end device\"]\n  DEV -- inward --> R2\n  R2 -- inward --> R1\n  R1 -- outward --> COORD",
+      "zh": "flowchart LR\n  COORD[\"PAN 协调器\"] -- 向内 --> R1[\"TRLE 中继 第1层\"]\n  R1 -- 向外 --> R2[\"TRLE 中继 第2层\"]\n  R2 -- 向外 --> DEV[\"终端设备\"]\n  DEV -- 向内 --> R2\n  R2 -- 向内 --> R1\n  R1 -- 向外 --> COORD"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "TRLE MAC services and the rest of the coverage map (10.37.5)",
+        "zh": "TRLE 的 MAC 服务与其余覆盖映射（10.37.5）"
+      },
+      "en": "TRLE exposes a clean MAC service surface (10.37.5). The TRLE Descriptor IE (10.37.5.1.1) rides in beacons, data frames, Enh-Ack frames, and commands; its fields — Relaying Tier Identifier, Relaying Direction, Grade of Link Access, Slot ID, Superframe ID, and PAN Relay Address — let any hop decide where and when to forward. Two MAC commands carry management (10.37.5.2): the TRLE Management Request command (10.37.5.2.1) and the TRLE Management Response command (10.37.5.2.2), each with a Management Type of START, JOIN, LEAVE, HELLO, or PATH. The next higher layer drives all of this through one primitive family (10.37.5.3): MLME-TRLE-MANAGEMENT.request / .indication / .response / .confirm. This deepdive completes coverage of the relay extension alongside the multi-node and ACRR sections taught above; together they take 802.15.4 ranging from a two-device measurement into a multi-node, attack-resistant, range-extended system.",
+      "zh": "TRLE 暴露出整洁的 MAC 服务面（10.37.5）。TRLE 描述符 IE（10.37.5.1.1）搭载于信标、数据帧、Enh-Ack 帧和命令中；其字段——中继层标识、中继方向、链路接入等级、Slot ID、Superframe ID 和 PAN 中继地址——让任意一跳决定往何处、何时转发。两个 MAC 命令承载管理（10.37.5.2）：TRLE 管理请求命令（10.37.5.2.1）和 TRLE 管理响应命令（10.37.5.2.2），各带 START、JOIN、LEAVE、HELLO 或 PATH 的管理类型。上层通过一族原语驱动这一切（10.37.5.3）：MLME-TRLE-MANAGEMENT.request / .indication / .response / .confirm。本深入小节连同上文教授的多节点与 ACRR 章节一起，补全了中继扩展的覆盖；三者合力，把 802.15.4 测距从两设备的测量，提升为多节点、抗攻击、可延展覆盖的系统。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          526,
+          527,
+          528,
+          529,
+          530,
+          531,
+          533,
+          535,
+          537,
+          539,
+          541
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        470,
+        471,
+        472,
+        473,
+        474,
+        475
+      ],
+      "note": "10.32.1-10.32.3 multi-node ranging intro, block/round/slot structure, ranging modes"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        483,
+        484,
+        487,
+        488,
+        490,
+        491,
+        492,
+        493
+      ],
+      "note": "10.32.4-10.32.9 SS/DS-TWR procedures, SP3 ranging, nested IEs (ARC/RIU/RR/RBU/RCPS/RCMA/RCR/RDM/SRRR)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        502,
+        503,
+        504,
+        505,
+        506
+      ],
+      "note": "10.33.1-10.33.5 ACRR overview, raw-mode reception, security levels, coordination, procedures"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        515,
+        516,
+        517,
+        518,
+        520,
+        522
+      ],
+      "note": "10.33.5.8-10.33.8 multi-node ACRR, ACRRC/ChallengeResponseTransfer IEs, Verifier/Prover commands, MCPS primitives"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        526,
+        527
+      ],
+      "note": "10.34 ranging message non-receipt exchange and RMNR IE"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        528,
+        529,
+        530
+      ],
+      "note": "10.36 multiple message receipt confirmation and RMMRC IE"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        530,
+        531,
+        532,
+        533,
+        535,
+        537,
+        539,
+        541,
+        542
+      ],
+      "note": "10.37 TRLE general, one-hop and multihop relaying, path maintenance, grades, MAC services"
+    }
+  ],
+  "covers": [
+    "802154-2024:10.32.1",
+    "802154-2024:10.32.2",
+    "802154-2024:10.32.3",
+    "802154-2024:10.32.4",
+    "802154-2024:10.32.5",
+    "802154-2024:10.32.6",
+    "802154-2024:10.32.7",
+    "802154-2024:10.32.8",
+    "802154-2024:10.32.9",
+    "802154-2024:10.33.1",
+    "802154-2024:10.33.2",
+    "802154-2024:10.33.3",
+    "802154-2024:10.33.4",
+    "802154-2024:10.33.5",
+    "802154-2024:10.33.6",
+    "802154-2024:10.33.7",
+    "802154-2024:10.33.8",
+    "802154-2024:10.34.1",
+    "802154-2024:10.34.2",
+    "802154-2024:10.36.1",
+    "802154-2024:10.36.2",
+    "802154-2024:10.37.1",
+    "802154-2024:10.37.2",
+    "802154-2024:10.37.3",
+    "802154-2024:10.37.4",
+    "802154-2024:10.37.5"
+  ],
+  "track": "pan-802-15"
+}

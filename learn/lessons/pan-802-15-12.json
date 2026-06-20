@@ -1,0 +1,185 @@
+{
+  "id": "pan-802-15-12",
+  "title": {
+    "en": "Wi-Fi-Free Spectrum: TVWS Operation and Multi-PHY Management",
+    "zh": "无 Wi-Fi 频谱：TVWS 运行与多 PHY 管理"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Below the crowded 2.4 GHz and 5 GHz Wi-Fi bands lies a quieter neighborhood: the leftover gaps between television broadcast channels, called television white space (TVWS). These UHF/VHF frequencies travel far and pass through walls, which makes them attractive for low-rate, long-range sensor networks. The catch is that this spectrum still belongs to TV broadcasters and other licensed 'primary' users, so an 802.15.4 device cannot simply turn on and transmit — it must first learn which channels are free at its exact location and time.",
+      "zh": "在拥挤的 2.4 GHz 与 5 GHz Wi-Fi 频段之下，还藏着一片更安静的天地：电视广播频道之间的空隙，称为电视白频谱（TVWS）。这些 UHF/VHF 频率传播距离远、能穿墙，非常适合低速率、长距离的传感器网络。问题在于，这段频谱仍归电视广播台等持牌的“主用户”所有，所以 802.15.4 设备不能一上电就发射——它必须先弄清在自己所在的精确位置与时刻，哪些信道是空闲可用的。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.7.1 (General) sets the ground rule: a TVWS device must obtain channel availability information, typically from a geolocation database (GDB) reached over the Internet. A device with no Internet link is a 'dependent device' — it leans on an 'independent device' that does have database access. A dependent device powers up in the UNENABLED state, scans for an advertisement, moves to ENABLING SETUP COMPLETED when it hears a TVWS Channel Information Source IE, runs a channel-availability query, and only then reaches ENABLED, where it may finally send data. (An IE, or Information Element, is a small self-describing data block carried inside a MAC frame.)",
+      "zh": "10.7.1 节（概述）确立了基本规则：TVWS 设备必须获取信道可用性信息，通常来自通过互联网访问的地理位置数据库（GDB）。没有互联网连接的设备称为“从属设备”——它依赖确实能访问数据库的“独立设备”。从属设备上电时处于 UNENABLED（未启用）状态，扫描寻找通告，听到 TVWS 信道信息来源 IE 后转入 ENABLING SETUP COMPLETED（启用配置完成）状态，执行信道可用性查询，之后才进入 ENABLED（已启用）状态，此时它才终于可以发送数据。（IE 即信息元素，是承载在 MAC 帧内的一小段自描述数据块。）"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> UNENABLED\n  UNENABLED --> SETUP: hears Source IE\n  SETUP --> ENABLED: query success\n  ENABLED --> UNENABLED: de-enable / timeout\n  ENABLED --> [*]",
+      "zh": "stateDiagram-v2\n  [*] --> 未启用\n  未启用 --> 配置完成: 收到来源IE\n  配置完成 --> 已启用: 查询成功\n  已启用 --> 未启用: 去使能/超时\n  已启用 --> [*]"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.7.2 (Channel Timing Management, CTM) handles the time dimension. Database answers are not permanent — a channel may only be free for a window of minutes. CTM lets a device ask a database-capable PAN coordinator for the schedule of when channels are available, carried in the CTM IE (10.7.3.8). A coordinator that cannot supply timing answers with the CTM Control field set to 'Request Declined'; if the schedule is unchanged since the last query, it can reply 'no changes' and leave the timing field empty to save airtime.",
+      "zh": "10.7.2 节（信道时序管理，CTM）处理时间维度。数据库给出的答复并非永久有效——某个信道可能只在数分钟的窗口内空闲。CTM 让设备能向具备数据库访问能力的 PAN 协调器询问各信道的可用时间表，这些信息承载在 CTM IE（10.7.3.8）中。无法提供时序信息的协调器会把 CTM Control 字段置为“请求被拒绝”；若自上次查询以来时间表没有变化，它可回复“无变更”并将时序字段留空，以节省空口时间。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Think of TVWS access as a parking-permit system. The GDB is the city office that tells you which spaces are free near your address (your geolocation) and for how long. CTM is the part of the permit that says when the meter expires. A dependent device without Internet is like a driver who phones a friend already at the office to read back the rules.",
+      "zh": "可以把 TVWS 接入想象成停车许可系统。GDB 就像市政办公室，告诉你在你的地址（你的地理位置）附近哪些车位空着、能停多久。CTM 则是许可中标明“计时器何时到期”的部分。没有互联网的从属设备，就像一位司机打电话给已经在办公室的朋友，请对方把规则念给自己听。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.7.3 defines the family of nested IEs that carry all this information. The TVWS Device Capabilities IE (10.7.3.2) advertises which PHY (FSK, OFDM, or NB-OFDM), bands, and channels a device supports. The TVWS Device Category IE (10.7.3.3) marks a device as stationary/non-stationary and independent/dependent. The TVWS Device Identification IE (10.7.3.4) carries a regulator-assigned or vendor ID. The TVWS Device Location IE (10.7.3.5) reports the device's position (RFC 6225 format) so the database can verify it. The TVWS Channel Information Query IE (10.7.3.6) is the request/response that returns the actual available channels, each with a starting frequency, bandwidth, maximum EIRP, and valid time. The TVWS Channel Information Source IE (10.7.3.7) is the beacon advertisement that says 'I am a source of channel data.' Timestamp IEs (10.7.3.9, 10.7.3.10) carry precise transmit and round-trip timing for ranging.",
+      "zh": "10.7.3 节定义了承载上述全部信息的一组嵌套 IE。TVWS 设备能力 IE（10.7.3.2）通告设备支持哪种 PHY（FSK、OFDM 或 NB-OFDM）、频段与信道。TVWS 设备类别 IE（10.7.3.3）标明设备是固定/非固定、独立/从属。TVWS 设备标识 IE（10.7.3.4）携带监管机构分配的或厂商自定义的 ID。TVWS 设备位置 IE（10.7.3.5）以 RFC 6225 格式上报设备位置，供数据库核验。TVWS 信道信息查询 IE（10.7.3.6）是返回实际可用信道的请求/响应，每个信道带有起始频率、带宽、最大 EIRP 与有效时间。TVWS 信道信息来源 IE（10.7.3.7）则是宣告“我是信道数据来源”的信标通告。时间戳 IE（10.7.3.9、10.7.3.10）携带精确的发送时刻与往返时序，用于测距。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.7.4 rounds out TVWS with its MAC constants and PIB attributes — for example macStartBandEdge and macEndBandEdge, which record the lower and upper frequency edges (in kHz) of the band the device is using. (The PIB, or PAN Information Base, is the table of configuration values the MAC keeps.) With the rules, the timing, the IEs, and the attributes in place, devices can move on to building an actual multi-channel network.",
+      "zh": "10.7.4 节用 MAC 常量与 PIB 属性为 TVWS 收尾——例如 macStartBandEdge 与 macEndBandEdge，它们记录设备所用频段的下边沿与上边沿频率（单位 kHz）。（PIB 即 PAN 信息库，是 MAC 维护的配置值表。）规则、时序、IE 与属性都就绪后，设备便可着手构建真正的多信道网络。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.8 introduces the TVWS Multichannel Cluster Tree PAN (TMCTP) — a way to stitch many small clusters into one wide network where each cluster lives on its own channel to avoid collisions. The 10.8.1 overview names the key roles: a super PAN coordinator (SPC) sits at the top, holds the GDB connection, and provides synchronization. Below it, TMCTP-parent coordinators relay to TMCTP-child coordinators. Each child runs its own cluster on a dedicated channel; the parent briefly hops over to that channel to exchange beacons. Coverage grows; the trade-off is added latency.",
+      "zh": "10.8 节引入 TVWS 多信道簇树 PAN（TMCTP）——一种把许多小簇缝合成一张广域网络的方式，其中每个簇运行在各自的信道上以避免冲突。10.8.1 节的概述点出关键角色：超级 PAN 协调器（SPC）位于顶端，掌握 GDB 连接并提供同步。其下，TMCTP 父协调器向 TMCTP 子协调器中继。每个子协调器在一条专用信道上运行自己的簇；父协调器短暂跳到该信道以交换信标。覆盖范围由此扩大，代价则是时延增加。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 400 170\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><text x=\"10\" y=\"20\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">SPC superframe (one BI)</text><rect x=\"10\" y=\"30\" width=\"40\" height=\"30\"/><text x=\"14\" y=\"49\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">Bcn</text><rect x=\"50\" y=\"30\" width=\"90\" height=\"30\"/><text x=\"82\" y=\"49\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">CAP</text><rect x=\"140\" y=\"30\" width=\"90\" height=\"30\"/><text x=\"172\" y=\"49\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">CFP</text><rect x=\"230\" y=\"30\" width=\"160\" height=\"30\"/><text x=\"295\" y=\"49\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">BOP</text><rect x=\"235\" y=\"34\" width=\"48\" height=\"22\" stroke-dasharray=\"3 2\"/><text x=\"243\" y=\"49\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">DBS2</text><rect x=\"287\" y=\"34\" width=\"48\" height=\"22\" stroke-dasharray=\"3 2\"/><text x=\"295\" y=\"49\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">DBS3</text><rect x=\"339\" y=\"34\" width=\"48\" height=\"22\" stroke-dasharray=\"3 2\"/><text x=\"347\" y=\"49\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\">DBS4</text><text x=\"10\" y=\"95\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">SD (active) = Bcn + CAP + CFP</text><text x=\"10\" y=\"112\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">ED = BOP (one DBS per child, each on its own channel)</text><text x=\"10\" y=\"135\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">In each DBS the SPC hops to the child's channel to hear its beacon.</text></svg>",
+      "caption": {
+        "en": "The TMCTP superframe extends the basic structure with a Beacon Only Period (BOP) made of dedicated beacon slots (DBSs), one per child coordinator.",
+        "zh": "TMCTP 超帧在基本结构之上扩展出一个仅信标期（BOP），由若干专用信标时隙（DBS）组成，每个子协调器一个。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.8.2 (Superframe use) defines how this works in time. The familiar superframe — Beacon, contention access period (CAP), contention-free period (CFP) — is extended by a fourth part, the Beacon Only Period (BOP). The BOP is split into dedicated beacon slots (DBSs); each DBS is the moment a parent and one specific child meet on the child's channel to exchange beacons. The new attribute macTmctpExtendedOrder sets how long this extension lasts. Clause 10.8.3 (Starting and maintaining TMCTPs) walks through the join handshake: the SPC pulls available channels from the GDB and beacons; a child scans, sends a DBS Request command (10.8.5.1) asking for a slot and channel; the SPC replies with a DBS Response command (10.8.5.2) naming the allocated starting slot, length, and PHY channel — then both hop to that channel so the parent can hear the child's beacon.",
+      "zh": "10.8.2 节（超帧使用）定义了它在时间上的运作方式。熟悉的超帧——信标、竞争接入期（CAP）、无竞争期（CFP）——被第四部分仅信标期（BOP）所扩展。BOP 又被划分为若干专用信标时隙（DBS）；每个 DBS 就是父协调器与某个特定子协调器在子协调器的信道上相会、交换信标的时刻。新属性 macTmctpExtendedOrder 设定这段扩展的时长。10.8.3 节（TMCTP 的启动与维护）详述入网握手：SPC 从 GDB 拉取可用信道并发出信标；子协调器扫描后发送 DBS 请求命令（10.8.5.1）申请时隙与信道；SPC 以 DBS 响应命令（10.8.5.2）回复，指明分配的起始时隙、长度与 PHY 信道——随后双方跳到该信道，使父协调器能听到子协调器的信标。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.8.4 specifies the nested IE that announces all of this: the TMCTP Specification IE (10.8.4.1), carried in every Enhanced Beacon of a TMCTP-enabled PAN. It declares the BOP order, whether the device can allocate a DBS or a channel or relay a request, the hop count to the SPC, and the list of child PAN IDs with pending traffic. Clause 10.8.6 wraps the DBS exchange in MLME service primitives — the request/indication/response/confirm quartet (MLME-DBS.request through MLME-DBS.confirm) that lets the upper layer drive allocation. Clause 10.8.7 lists the TMCTP attributes, headlined by macTmctpExtendedOrder.",
+      "zh": "10.8.4 节规定了通告这一切的嵌套 IE：TMCTP 规范 IE（10.8.4.1），承载于启用 TMCTP 的 PAN 的每一个增强信标中。它声明 BOP 阶数、设备能否分配 DBS 或信道或中继请求、到 SPC 的跳数，以及有待处理流量的子 PAN ID 列表。10.8.6 节将 DBS 交换封装为 MLME 服务原语——请求/指示/响应/确认四件套（MLME-DBS.request 至 MLME-DBS.confirm），让上层得以驱动分配。10.8.7 节列出 TMCTP 属性，以 macTmctpExtendedOrder 为首。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.9 covers Multi-PHY Management (MPM), which solves a different problem: in the SUN (Smart Utility Network) bands, several different PHYs — FSK, OFDM, narrowband OFDM — may share the same frequencies and cannot hear each other directly. The 10.9.1 overview explains the fix: a common signaling mode (CSM) that every device can decode, used during discovery so coordinators with different PHYs can find and negotiate with one another. Clause 10.9.2 (Enhanced Beacon frame timing) defines the cadence: alongside its normal beacons, a coordinator sends Enhanced Beacons at an interval set by macEnhancedBeaconOrder, offset from the periodic beacon by macOffsetTimeSlot.",
+      "zh": "10.9 节讲解多 PHY 管理（MPM），它解决的是另一个问题：在 SUN（智能公用网络）频段中，FSK、OFDM、窄带 OFDM 等多种不同 PHY 可能共用同一频率，却无法彼此直接听到。10.9.1 节的概述给出对策：一种每个设备都能解码的公共信令模式（CSM），在发现阶段使用，使采用不同 PHY 的协调器能够互相找到并协商。10.9.2 节（增强信标帧时序）定义了节奏：协调器在常规信标之外，还按 macEnhancedBeaconOrder 设定的间隔发送增强信标，并相对周期信标偏移 macOffsetTimeSlot。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.9.3 (MPM procedure for inter-PHY coexistence) is the protocol itself: any SUN coordinator operating at more than a 1% duty cycle must support it. Enhanced Beacons carrying a Coexistence Specification IE are sent in the CSM across overlapping channels. An 'intending' coordinator (one about to start a network) first scans for these beacons; if it detects one from an 'existing' coordinator, it must either pick a different channel, synchronize with that PAN, or stop — never blindly transmit on top of a neighbor using an incompatible PHY. In networks without a superframe, the Enhanced Beacon can also be requested on demand with an Enhanced Beacon Request command. Clause 10.9.4 defines the Coexistence Specification IE (10.9.4.1) that carries the beacon/superframe/enhanced-beacon ordering, and 10.9.5 lists the MPM attributes — macEnhancedBeaconOrder, macMpmIe (whether to include the IE), macNbPanEnhancedBeaconOrder, and macOffsetTimeSlot.",
+      "zh": "10.9.3 节（用于跨 PHY 共存的 MPM 流程）是协议本身：任何占空比超过 1% 的 SUN 协调器都必须支持它。携带共存规范 IE 的增强信标以 CSM 在相互重叠的信道上发送。“意图”协调器（即将启动网络者）首先扫描这些信标；若它检测到来自“现有”协调器的信标，就必须另选信道、与该 PAN 同步、或停止——绝不能在使用不兼容 PHY 的邻居之上盲目发射。在没有超帧的网络中，增强信标也可用增强信标请求命令按需索取。10.9.4 节定义了承载信标/超帧/增强信标阶数的共存规范 IE（10.9.4.1），10.9.5 节则列出 MPM 属性——macEnhancedBeaconOrder、macMpmIe（是否包含该 IE）、macNbPanEnhancedBeaconOrder 与 macOffsetTimeSlot。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant I as Intending coord (PHY B)\n  participant E as Existing coord (PHY A)\n  E->>E: send Enhanced Beacon in CSM\n  I->>I: scan CSM for Enhanced Beacon\n  E-->>I: Enhanced Beacon (Coexistence IE)\n  I->>I: pick free channel OR sync OR stop",
+      "zh": "sequenceDiagram\n  participant I as 意图协调器(PHY B)\n  participant E as 现有协调器(PHY A)\n  E->>E: 在CSM中发增强信标\n  I->>I: 在CSM中扫描增强信标\n  E-->>I: 增强信标(共存IE)\n  I->>I: 选空闲信道 或 同步 或 停止"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause in this lesson",
+        "zh": "覆盖地图：本课涉及的每个条款"
+      },
+      "en": "TVWS (10.7): 10.7.1 General — database/GDB requirement and the UNENABLED to ENABLED state machine for dependent devices; 10.7.2 Channel Timing Management (CTM) — scheduling when channels are available via the CTM IE and CTM Control field; 10.7.3 Nested IEs (Device Capabilities, Device Category, Device Identification, Device Location, Channel Information Query, Channel Information Source, CTM, Timestamp, Timestamp Difference); 10.7.4 MAC constants and PIB attributes (macStartBandEdge, macEndBandEdge). TMCTP (10.8): 10.8.1 Overview (SPC, parent/child coordinators, per-channel clusters); 10.8.2 Superframe use (BOP and DBS, macTmctpExtendedOrder); 10.8.3 Starting/maintaining via DBS Request/Response exchange; 10.8.4 Nested IEs (TMCTP Specification IE); 10.8.5 MAC commands (DBS Request, DBS Response); 10.8.6 MLME service primitives (MLME-DBS.request/.indication/.response/.confirm); 10.8.7 MAC constants and PIB attributes (macTmctpExtendedOrder). MPM (10.9): 10.9.1 Overview (inter-PHY coexistence via the common signaling mode, CSM); 10.9.2 Enhanced Beacon frame timing (macEnhancedBeaconOrder, macOffsetTimeSlot, EBI); 10.9.3 Procedure for inter-PHY coexistence (1% duty-cycle rule, existing vs intending coordinator, occupy/sync/stop, Enhanced Beacon Request); 10.9.4 Nested IEs (Coexistence Specification IE); 10.9.5 MAC constants and PIB attributes (macEnhancedBeaconOrder, macMpmIe, macNbPanEnhancedBeaconOrder, macOffsetTimeSlot).",
+      "zh": "TVWS（10.7）：10.7.1 概述——数据库/GDB 要求及从属设备从 UNENABLED 到 ENABLED 的状态机；10.7.2 信道时序管理（CTM）——通过 CTM IE 与 CTM Control 字段安排信道可用时间；10.7.3 嵌套 IE（设备能力、设备类别、设备标识、设备位置、信道信息查询、信道信息来源、CTM、时间戳、时间戳差值）；10.7.4 MAC 常量与 PIB 属性（macStartBandEdge、macEndBandEdge）。TMCTP（10.8）：10.8.1 概述（SPC、父/子协调器、按信道划分的簇）；10.8.2 超帧使用（BOP 与 DBS、macTmctpExtendedOrder）；10.8.3 经由 DBS 请求/响应交换的启动与维护；10.8.4 嵌套 IE（TMCTP 规范 IE）；10.8.5 MAC 命令（DBS 请求、DBS 响应）；10.8.6 MLME 服务原语（MLME-DBS.request/.indication/.response/.confirm）；10.8.7 MAC 常量与 PIB 属性（macTmctpExtendedOrder）。MPM（10.9）：10.9.1 概述（经由公共信令模式 CSM 的跨 PHY 共存）；10.9.2 增强信标帧时序（macEnhancedBeaconOrder、macOffsetTimeSlot、EBI）；10.9.3 跨 PHY 共存流程（1% 占空比规则、现有与意图协调器、占用/同步/停止、增强信标请求）；10.9.4 嵌套 IE（共存规范 IE）；10.9.5 MAC 常量与 PIB 属性（macEnhancedBeaconOrder、macMpmIe、macNbPanEnhancedBeaconOrder、macOffsetTimeSlot）。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          281,
+          282,
+          283,
+          297,
+          298,
+          299,
+          300,
+          303,
+          304,
+          306,
+          309,
+          310,
+          311,
+          313,
+          314
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        281,
+        282,
+        283
+      ],
+      "note": "10.7.1 General (GDB, dependent/independent device state machine), 10.7.2 CTM, 10.7.3 nested IEs intro"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        286,
+        290,
+        291,
+        292,
+        293,
+        294,
+        295,
+        296,
+        297
+      ],
+      "note": "10.7.3.2-10.7.3.10 TVWS nested IEs (Capabilities, Category, Identification, Location, Channel Info Query/Source, CTM, Timestamp); 10.7.4 TVWS PIB attributes (macStartBandEdge/macEndBandEdge)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        297,
+        298,
+        299,
+        300,
+        301,
+        303,
+        304,
+        305,
+        306,
+        309
+      ],
+      "note": "10.8.1 TMCTP overview (SPC); 10.8.2 superframe/BOP/DBS; 10.8.3 starting/maintaining; 10.8.4.1 TMCTP Specification IE; 10.8.5 DBS Request/Response commands; 10.8.6 MLME-DBS primitives; 10.8.7 macTmctpExtendedOrder"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        310,
+        311,
+        313,
+        314
+      ],
+      "note": "10.9.1 MPM overview (CSM); 10.9.2 Enhanced Beacon timing; 10.9.3 inter-PHY coexistence procedure; 10.9.4.1 Coexistence Specification IE; 10.9.5 MPM PIB attributes"
+    }
+  ],
+  "covers": [
+    "802154-2024:10.7.1",
+    "802154-2024:10.7.2",
+    "802154-2024:10.7.3",
+    "802154-2024:10.7.4",
+    "802154-2024:10.8.1",
+    "802154-2024:10.8.2",
+    "802154-2024:10.8.3",
+    "802154-2024:10.8.4",
+    "802154-2024:10.8.5",
+    "802154-2024:10.8.6",
+    "802154-2024:10.8.7",
+    "802154-2024:10.9.1",
+    "802154-2024:10.9.2",
+    "802154-2024:10.9.3",
+    "802154-2024:10.9.4",
+    "802154-2024:10.9.5"
+  ],
+  "track": "pan-802-15"
+}

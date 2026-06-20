@@ -1,0 +1,164 @@
+{
+  "id": "pan-802-15-10",
+  "title": {
+    "en": "Deterministic Multichannel: DSME",
+    "zh": "确定性多信道：DSME"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Plain beacon-enabled 802.15.4 gives you one superframe at a time on one channel: a beacon, a contention period (CAP) where devices fight for airtime, and a small contention-free period (CFP) with a handful of guaranteed time slots (GTS). That is fine for a tiny star network, but it caps out fast when you have many devices, multihop paths, and traffic that must arrive on a deadline. The Deterministic and Synchronous Multichannel Extension (DSME) scales this up. Instead of one superframe, it strings several superframes into a repeating cycle called a multi-superframe, and instead of one channel it spreads guaranteed slots across many channels. The result is more reserved bandwidth, resistance to interference on any single channel, and predictable latency for larger, more demanding networks like industrial sensor meshes.",
+      "zh": "普通的启用信标的 802.15.4 在单个信道上每次只提供一个超帧：一个信标、一段竞争访问期（CAP，设备在此争抢空口时间），以及一小段无竞争期（CFP，含少量有保障的时隙 GTS）。这对极小的星型网络足够用，但当设备很多、存在多跳路径、且业务必须按时到达时，它很快就会力不从心。确定性同步多信道扩展（DSME）把这一切放大：它不再只用一个超帧，而是把多个超帧串成一个重复的周期，称为多超帧；也不再只用一个信道，而是把有保障的时隙分散到多个信道上。其结果是更多的预留带宽、对任意单一信道干扰的抵抗力，以及面向更大、更苛刻网络（如工业传感器网状网）的可预测时延。"
+    },
+    {
+      "type": "prose",
+      "en": "A DSME multi-superframe is built from three time orders, all powers of two. The superframe order (SO) sets how long one superframe lasts; the multi-superframe order (MO) sets how many superframes repeat as a cycle; the beacon order (BO) sets the whole beacon interval. They nest as SO <= MO <= BO. A coordinator advertises this structure by periodically sending an Enhanced Beacon frame carrying the DSME PAN Descriptor information element (IE). Each superframe still has a beacon slot, a CAP, and a CFP, but now the CFP slots can live on different channels, and they recur every multi-superframe so a reservation is genuinely periodic.",
+      "zh": "DSME 多超帧由三个时间阶数构建，全部为 2 的幂次。超帧阶数（SO）决定一个超帧持续多久；多超帧阶数（MO）决定多少个超帧组成一个重复周期；信标阶数（BO）决定整个信标间隔。三者嵌套关系为 SO <= MO <= BO。协调器通过周期性发送携带 DSME PAN 描述符信息单元（IE）的增强信标帧来通告这一结构。每个超帧仍含一个信标时隙、一段 CAP 和一段 CFP，但现在 CFP 的时隙可以位于不同信道，并且每个多超帧都会重现，因此预留是真正周期性的。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 140\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"4\" y=\"14\" font-size=\"11\" stroke=\"none\" fill=\"currentColor\">Beacon Interval (BO)</text><text x=\"4\" y=\"54\" font-size=\"11\" stroke=\"none\" fill=\"currentColor\">Multi-superframe (MO)</text><rect x=\"4\" y=\"64\" width=\"220\" height=\"22\"/><rect x=\"224\" y=\"64\" width=\"220\" height=\"22\"/><text x=\"4\" y=\"104\" font-size=\"11\" stroke=\"none\" fill=\"currentColor\">Superframe (SO): B | CAP | CFP</text><rect x=\"4\" y=\"112\" width=\"22\" height=\"20\"/><text x=\"9\" y=\"126\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">B</text><rect x=\"26\" y=\"112\" width=\"70\" height=\"20\"/><text x=\"48\" y=\"126\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">CAP</text><rect x=\"96\" y=\"112\" width=\"128\" height=\"20\"/><text x=\"140\" y=\"126\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">CFP (GTS slots)</text><rect x=\"224\" y=\"112\" width=\"22\" height=\"20\"/><rect x=\"246\" y=\"112\" width=\"70\" height=\"20\"/><rect x=\"316\" y=\"112\" width=\"128\" height=\"20\"/></svg>",
+      "caption": {
+        "en": "Time nesting: a beacon interval (BO) holds one or more multi-superframes (MO), each a cycle of superframes (SO). Every superframe = beacon (B) + CAP + CFP, where the CFP carries the guaranteed time slots.",
+        "zh": "时间嵌套：一个信标间隔（BO）容纳一个或多个多超帧（MO），每个多超帧是超帧（SO）的循环。每个超帧 = 信标（B）+ CAP + CFP，其中 CFP 承载有保障的时隙。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The common channel (the logical channel used during association) always carries the Enhanced Beacons and any CAP traffic, so devices can always find each other. Channel diversity applies only to data and acknowledgments sent in the CFP, and DSME offers two modes selected by macChannelDiversityMode. In channel adaptation, the destination allocates slots on whatever channels currently have good quality; if a link degrades, the recommendation is to deallocate and re-allocate on a better channel. In channel hopping, every DSME GTS steps through a predefined hopping sequence, and a device's channel for a given slot is computed deterministically from the slot index, its own channel offset, and the coordinator's beacon sequence number, so transmitter and receiver always meet on the same channel without per-slot negotiation. Hopping naturally averages out narrowband interferers; adaptation reacts to them.",
+      "zh": "公共信道（关联期间使用的逻辑信道）始终承载增强信标和所有 CAP 流量，因此设备总能彼此发现。信道分集只应用于在 CFP 中发送的数据和确认帧，DSME 提供两种由 macChannelDiversityMode 选择的模式。在信道自适应中，目的设备在当前质量较好的信道上分配时隙；若链路质量下降，建议解除分配并在更好的信道上重新分配。在信道跳变中，每个 DSME GTS 按预定义的跳变序列逐跳前进，某个时隙对应的信道由时隙索引、设备自身的信道偏移以及协调器的信标序列号确定性地计算得出，因此收发双方无需逐时隙协商即可总在同一信道相遇。跳变天然地平均掉窄带干扰，而自适应则对其作出反应。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "CAP reduction (macCapReduction) is the throughput lever. With it on, only the first superframe (ID 0) of each multi-superframe keeps a CAP; the rest are pure CFP. That converts contention airtime into more guaranteed slots, raising deterministic capacity at the cost of fewer chances to send management commands.",
+      "zh": "CAP 缩减（macCapReduction）是吞吐量的调节杠杆。开启后，每个多超帧只有第一个超帧（ID 0）保留 CAP，其余全部为纯 CFP。这把竞争空口时间转化为更多有保障的时隙，以减少发送管理命令的机会为代价，提升了确定性容量。"
+    },
+    {
+      "type": "prose",
+      "en": "Reserving bandwidth in DSME is a three-message handshake done in the CAP. The source sends a DSME GTS Request command naming how many slots it wants and a preferred superframe and slot; the destination (which owns allocation) replies with a DSME GTS Response carrying the slots it actually granted; the source then broadcasts a DSME GTS Notify so neighbors learn the reservation too. Every device tracks two bitmaps: macDsmeAct (its own active allocations) and macDsmeSab (the slot allocation bitmap of the one-hop neighborhood). Because everyone overhears Response and Notify, the SAB stays consistent and slots are granted first-come-first-served, packed contiguously at the end of the superframe. If two reservations collide, a device sends a duplicated-allocation notification and the loser deallocates.",
+      "zh": "在 DSME 中预留带宽是在 CAP 内完成的三消息握手。源设备发送 DSME GTS 请求命令，说明想要多少时隙以及偏好的超帧和时隙；负责分配的目的设备以 DSME GTS 响应命令回复实际授予的时隙；随后源设备广播 DSME GTS 通知命令，让邻居也获知该预留。每个设备维护两张位图：macDsmeAct（自身的活动分配）和 macDsmeSab（一跳邻域的时隙分配位图）。由于所有设备都能旁听到响应和通知命令，SAB 保持一致，时隙按先到先得授予，并紧凑地排在超帧末尾。若两个预留发生冲突，设备会发送重复分配通知命令，失败方解除分配。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant S as Source\n    participant D as Destination\n    participant N as Neighbors\n    S->>D: DSME GTS Request (CAP)\n    D->>S: DSME GTS Response (granted slots)\n    S->>N: DSME GTS Notify (broadcast)\n    Note over S,N: All update macDsmeSab",
+      "zh": "sequenceDiagram\n    participant S as 源设备\n    participant D as 目的设备\n    participant N as 邻居\n    S->>D: DSME GTS 请求 (CAP内)\n    D->>S: DSME GTS 响应 (授予的时隙)\n    S->>N: DSME GTS 通知 (广播)\n    Note over S,N: 各方更新 macDsmeSab"
+    },
+    {
+      "type": "prose",
+      "en": "Reservations are not forever. The MLME watches for idle slots: the destination assumes the source has stopped if no Data frame arrives within macDsmeGtsExpirationTime, triggering deallocation (signalled to the higher layer as an EXPIRATION). A device can also explicitly deallocate, or use the change procedure (REDUCE / RESTART) to shrink or refresh a reservation, all carried by the same Request/Response/Notify commands. If a device loses synchronization just before its slot, it sends a DSME Information Request and the peer answers with a DSME Information Response carrying a fresh timestamp, superframe ID and slot ID so the laggard can re-sync and keep using its GTS without tearing it down.",
+      "zh": "预留并非永久。MLME 监视空闲时隙：若在 macDsmeGtsExpirationTime 内未收到数据帧，目的设备认为源设备已停止使用，触发解除分配（向上层报告为 EXPIRATION 过期）。设备也可显式解除分配，或使用更改流程（REDUCE 缩减 / RESTART 重启）来收缩或刷新预留，这些都由同样的请求/响应/通知命令承载。若设备恰在其时隙前失去同步，它发送 DSME 信息请求命令，对端以携带最新时间戳、超帧 ID 和时隙 ID 的 DSME 信息响应命令回应，使落后方得以重新同步并继续使用其 GTS，而无需将其拆除。"
+    },
+    {
+      "type": "prose",
+      "en": "Multiple coordinators must beacon without stepping on each other. DSME beacon scheduling represents the beacon allocation of a whole beacon interval as a bitmap, carried in the Beacon Bitmap field of the DSME PAN Descriptor IE: each bit is a superframe slot (indexed by SD Index), set to one if a neighbor's beacon already lives there. A joining device scans, reads everyone's bitmap, picks a vacant slot, and announces it with a DSME Beacon Allocation Notification. Two hidden newcomers can pick the same slot; the common neighbor that hears both sends a DSME Beacon Collision Notification to whoever claimed it second, forcing a retry. Time synchronization ties it together: a child treats the coordinator it tracks as its synchronization parent and uses the Beacon Timestamp (start of superframe) and Beacon Offset Timestamp (the delay added by clear-channel assessment) in the Enhanced Beacon to compute the true reception instant and reset its local clock.",
+      "zh": "多个协调器发送信标时必须互不干扰。DSME 信标调度把整个信标间隔的信标分配表示为一张位图，承载在 DSME PAN 描述符 IE 的信标位图字段中：每个比特对应一个超帧时隙（由 SD Index 编号），若某邻居的信标已占据该处则置一。加入的设备扫描后读取各方位图，挑选一个空闲时隙，并用 DSME 信标分配通知命令宣告它。两个互相隐藏的新设备可能选中同一时隙；同时听到两者的公共邻居会向较晚宣告的一方发送 DSME 信标冲突通知命令，迫使其重试。时间同步把这一切串联起来：子设备把它所跟踪的协调器视为同步父节点，利用增强信标中的信标时间戳（超帧起始）与信标偏移时间戳（空闲信道评估带来的延迟）计算出真正的接收时刻并复位本地时钟。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two reliability helpers round out synchronization. A deferred beacon (macDeferredBeaconUsed) lets a coordinator run clear-channel assessment before beaconing to dodge collisions, recording the resulting delay in the Beacon Offset Timestamp. And a passive channel scan records each neighbor's Channel Hopping Specification and channel offset into macChannelOffsetBitmap, so a joining device learns which hopping offsets are already taken before it picks its own.",
+      "zh": "两个可靠性辅助机制使同步更完整。延迟信标（macDeferredBeaconUsed）让协调器在发信标前先做空闲信道评估以规避冲突，并把由此产生的延迟记录在信标偏移时间戳中。被动信道扫描则把每个邻居的信道跳变规范字段和信道偏移记入 macChannelOffsetBitmap，使加入的设备在选择自己的跳变偏移前就能了解哪些偏移已被占用。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every 10.4 unit and where it lives",
+        "zh": "覆盖地图：10.4 各单元及其归属"
+      },
+      "en": "This lesson teaches all of clause 10.4 (DSME). The multi-superframe structure (10.4.1, restated normatively in 10.4.3 with the SO/MO/BO ordering and slot layout) and the DSME command requirements list (10.4.2) frame the design. Channel diversity (10.4.4) splits into general (10.4.4.1), channel adaptation (10.4.4.2), and channel hopping (10.4.4.3); CAP reduction (10.4.5) trades CAP for CFP. DSME GTS allocation and management (10.4.6) covers general rules (10.4.6.1), allocation (10.4.6.2), deallocation (10.4.6.3), expiration (10.4.6.4), retrieve via the Information Request/Response (10.4.6.5), and change/REDUCE/RESTART (10.4.6.6). Beacon scheduling (10.4.7) uses the bitmap plus Allocation/Collision Notification; time synchronization (10.4.8) uses the beacon timestamps; the deferred beacon (10.4.9) and passive channel scan (10.4.10) add reliability. The on-air encodings are the Header IEs for DSME (10.4.11) including the DSME PAN Descriptor IE (10.4.11.1) and Extended DSME PAN Descriptor IE (10.4.11.2); the MAC commands for DSME (10.4.12) are the ten command frames (Association Request/Response, GTS Request/Response/Notify, Information Request/Response, Beacon Allocation/Collision Notification, Link Report). The MAC management service primitives for DSME (10.4.13) expose MLME-DSME-GTS and MLME-DSME-LINK-REPORT to the higher layer, and the MAC constants and PIB attributes for DSME (10.4.14) define the configuration knobs (macChannelDiversityMode, macCapReduction, macDsmeAct, macDsmeSab, macBiIndex, and so on).",
+      "zh": "本课讲授整个 10.4 条款（DSME）。多超帧结构（10.4.1，并在 10.4.3 中以 SO/MO/BO 顺序和时隙布局作规范性重述）与 DSME 命令需求清单（10.4.2）勾勒出整体设计。信道分集（10.4.4）分为总则（10.4.4.1）、信道自适应（10.4.4.2）和信道跳变（10.4.4.3）；CAP 缩减（10.4.5）以 CAP 换取 CFP。DSME GTS 分配与管理（10.4.6）涵盖总则（10.4.6.1）、分配（10.4.6.2）、解除分配（10.4.6.3）、过期（10.4.6.4）、经由信息请求/响应的检索（10.4.6.5）以及更改/缩减/重启（10.4.6.6）。信标调度（10.4.7）使用位图加分配/冲突通知命令；时间同步（10.4.8）使用信标时间戳；延迟信标（10.4.9）与被动信道扫描（10.4.10）增加可靠性。空口编码即 DSME 的头部 IE（10.4.11），含 DSME PAN 描述符 IE（10.4.11.1）和扩展 DSME PAN 描述符 IE（10.4.11.2）；DSME 的 MAC 命令（10.4.12）是十种命令帧（关联请求/响应、GTS 请求/响应/通知、信息请求/响应、信标分配/冲突通知、链路报告）。DSME 的 MAC 管理服务原语（10.4.13）向上层暴露 MLME-DSME-GTS 与 MLME-DSME-LINK-REPORT；DSME 的 MAC 常量与 PIB 属性（10.4.14）定义配置旋钮（macChannelDiversityMode、macCapReduction、macDsmeAct、macDsmeSab、macBiIndex 等）。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          220,
+          221,
+          222,
+          224,
+          225,
+          226,
+          232,
+          233,
+          234,
+          238,
+          249,
+          258
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        220,
+        221,
+        222
+      ],
+      "note": "10.4.1-10.4.4: multi-superframe structure, SO/MO/BO orders, command requirements, channel diversity (adaptation)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        224,
+        225
+      ],
+      "note": "10.4.4.3 channel hopping (deterministic channel formula), 10.4.5 CAP reduction"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        226,
+        230,
+        231,
+        232
+      ],
+      "note": "10.4.6 DSME GTS allocation, deallocation, expiration, retrieve, change"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        232,
+        233,
+        234
+      ],
+      "note": "10.4.7 beacon scheduling, 10.4.8 time synchronization, 10.4.9 deferred beacon, 10.4.10 passive channel scan, 10.4.11 header IEs"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        238,
+        247,
+        248
+      ],
+      "note": "10.4.12 MAC commands for DSME (association, GTS, information, beacon notifications, link report)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        249,
+        258
+      ],
+      "note": "10.4.13 MLME-SAP primitives for DSME, 10.4.14 DSME MAC constants and PIB attributes"
+    }
+  ],
+  "covers": [
+    "802154-2024:10.4.1",
+    "802154-2024:10.4.2",
+    "802154-2024:10.4.3",
+    "802154-2024:10.4.4",
+    "802154-2024:10.4.5",
+    "802154-2024:10.4.6",
+    "802154-2024:10.4.7",
+    "802154-2024:10.4.8",
+    "802154-2024:10.4.9",
+    "802154-2024:10.4.10",
+    "802154-2024:10.4.11",
+    "802154-2024:10.4.12",
+    "802154-2024:10.4.13",
+    "802154-2024:10.4.14"
+  ],
+  "track": "pan-802-15"
+}

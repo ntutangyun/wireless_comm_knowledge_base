@@ -1,0 +1,371 @@
+{
+  "id": "pan-802-15-22",
+  "title": {
+    "en": "Smart Utility Networks: SUN FSK, OFDM and O-QPSK PHYs",
+    "zh": "智能公用事业网络：SUN FSK、OFDM 与 O-QPSK PHY"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Smart Utility Networks (SUN) are the radios that read your electricity, gas, and water meters and carry grid telemetry across a whole neighborhood. They live mostly in the sub-GHz bands (169 MHz up through 928 MHz, plus 2450 MHz) because those low frequencies travel far and slip through walls. IEEE 802.15.4 defines three SUN physical layers (PHYs) — the part of the radio that turns bits into waveforms: SUN FSK (Clause 20), SUN OFDM (Clause 21), and SUN O-QPSK (Clause 22). All three share the same idea: many regional frequency bands, several selectable data-rate 'modes', and a packet structure called the PPDU (PHY Protocol Data Unit). This lesson is a guided map of all three.",
+      "zh": "智能公用事业网络（SUN）是抄读你家电表、燃气表、水表并在整个社区传送电网遥测数据的无线电。它们主要工作在亚 GHz 频段（从 169 MHz 一直到 928 MHz，再加上 2450 MHz），因为低频信号传得远、也更容易穿墙。IEEE 802.15.4 定义了三种 SUN 物理层（PHY，即把比特变成波形的那一层）：SUN FSK（第 20 章）、SUN OFDM（第 21 章）和 SUN O-QPSK（第 22 章）。三者共享同一思路：覆盖多个区域频段、提供若干可选的数据速率“模式”，并使用名为 PPDU（物理层协议数据单元）的分组结构。本课就是带你走完这三种 PHY 的导览图。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Jargon up front. PPDU = the whole over-the-air packet. SHR = Synchronization Header (preamble + SFD) that lets a receiver lock on. SFD = Start-of-Frame Delimiter, the marker that says 'payload starts now'. PHR = PHY Header, carrying length and a few flags. PSDU = the PHY payload (the actual MAC frame). FEC = Forward Error Correction, extra coded bits that let the receiver fix errors. These five terms repeat in all three PHYs.",
+      "zh": "先讲术语。PPDU＝完整的空口分组。SHR＝同步头（前导码＋SFD），让接收机完成同步锁定。SFD＝帧起始定界符，标志“有效载荷从此开始”。PHR＝物理层头，携带长度和若干标志位。PSDU＝物理层有效载荷（即真正的 MAC 帧）。FEC＝前向纠错，附加的编码比特让接收机能纠正错误。这五个术语在三种 PHY 中反复出现。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"30\" width=\"150\" height=\"34\"/><rect x=\"160\" y=\"30\" width=\"120\" height=\"34\"/><rect x=\"280\" y=\"30\" width=\"350\" height=\"34\"/><text x=\"85\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">SHR (Preamble + SFD)</text><text x=\"220\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">PHR</text><text x=\"455\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">PHY Payload (PSDU)</text><text x=\"85\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">sync</text><text x=\"220\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">length + flags</text><text x=\"455\" y=\"22\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">data</text></svg>",
+      "caption": {
+        "en": "The shared SUN PPDU shape: a synchronization header to lock on, a PHY header describing the packet, then the payload. All three SUN PHYs follow this skeleton (Figures 20-1, 21-1, 22-1).",
+        "zh": "共用的 SUN PPDU 骨架：先用同步头完成锁定，再用物理层头描述分组，最后是有效载荷。三种 SUN PHY 都遵循这一框架（图 20-1、21-1、22-1）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "SUN FSK (Frequency Shift Keying) is the simplest and most rugged of the three — perfect for cheap meters that just need to be heard. It shifts the carrier frequency to encode bits: 2-FSK uses two tones (preamble '01010101'), 4-FSK uses four (preamble '0111...'). Each band offers a table of operating modes trading data rate against robustness (e.g. 50 kb/s mode #1 versus 200 kb/s mode #3), set by the modulation index and channel spacing. Mode #1 is mandatory; #2 and #3 are optional. A Generic PHY mechanism even lets the upper layer describe custom rates. Optional FEC (rate-1/2 convolutional, either recursive-systematic RSC or non-recursive NRNSC) plus code-symbol interleaving harden the link against bursts of noise, and optional data whitening scrambles the payload so long runs of identical bits don't confuse the receiver.",
+      "zh": "SUN FSK（频移键控）是三者中最简单、最皮实的，非常适合只需被“听到”的廉价电表。它通过移动载波频率来编码比特：2-FSK 用两个音（前导码“01010101”），4-FSK 用四个音（前导码“0111…”）。每个频段都提供一张操作模式表，在数据速率与鲁棒性之间权衡（如 50 kb/s 的模式 #1 对 200 kb/s 的模式 #3），由调制指数和信道间隔决定。模式 #1 是必选，#2 和 #3 可选。通用 PHY（Generic PHY）机制甚至允许上层自定义速率。可选的 FEC（1/2 码率卷积码，可选递归系统码 RSC 或非递归非系统码 NRNSC）加上码符号交织，可抵御突发噪声；可选的数据白化则打乱有效载荷，避免过长的相同比特串扰乱接收机。"
+    },
+    {
+      "type": "prose",
+      "en": "A standout SUN FSK feature is the mode switch mechanism. A device can send a special Mode Switch PHR — protected by a BCH(15,11) code plus a parity bit for single-error-correct, double-error-detect — telling the receiver that the very next packet will arrive in a different mode or even a different PHY (FSK, OFDM, or O-QPSK). After a SettlingDelay the new-mode packet is transmitted on the channel closest in center frequency to the original. This lets a network start a conversation at a slow, reliable rate and then jump to a faster mode for the bulk data, all on the same center frequency.",
+      "zh": "SUN FSK 的一大亮点是模式切换机制。设备可以发送一个特殊的模式切换 PHR——由 BCH(15,11) 码加一个校验位保护，可实现单纠错、双检错——告诉接收机紧接着的下一个分组将以不同模式、甚至不同 PHY（FSK、OFDM 或 O-QPSK）到达。经过一段 SettlingDelay 之后，新模式分组在与原信道中心频率最接近的信道上发送。这样网络就能以慢速、可靠的速率开启对话，再跳到更快的模式传输大块数据，且全程使用同一中心频率。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant TX as Meter (TX)\n  participant RX as Collector (RX)\n  TX->>RX: Mode Switch PHR (BCH+parity)\n  Note over RX: verify, decode new mode\n  TX->>RX: wait SettlingDelay\n  TX->>RX: New-mode PPDU (faster rate)\n  Note over RX: return to base mode after",
+      "zh": "sequenceDiagram\n  participant TX as 电表(发送)\n  participant RX as 集中器(接收)\n  TX->>RX: 模式切换PHR(BCH+校验)\n  Note over RX: 校验并解出新模式\n  TX->>RX: 等待SettlingDelay\n  TX->>RX: 新模式PPDU(更快速率)\n  Note over RX: 之后返回基础模式"
+    },
+    {
+      "type": "prose",
+      "en": "SUN OFDM (Orthogonal Frequency Division Multiplexing) spreads data across many narrow subcarriers (spaced 10416.6 Hz, 8.3 ksymbol/s) — the same family of modulation as Wi-Fi, scaled down for utility ranges and rates from 12.5 kb/s to 2400 kb/s. It defines four Options (1 to 4), each using fewer active tones and thus less bandwidth (1.2 MHz down to under 200 kHz). The packet starts with an STF (Short Training Field) for coarse detection and an LTF (Long Training Field) for fine channel estimation, both specified as exact frequency-domain tone tables turned into time samples via an inverse DFT, with a cyclic prefix prepended and STF power boosted ~1.94 dB. The PHR carries the Rate field (the MCS Level), and an HCS (Header Check Sequence) protects it. Each Option supports MCS levels mixing BPSK/QPSK/16-QAM with rate-1/2 or 3/4 convolutional coding.",
+      "zh": "SUN OFDM（正交频分复用）把数据分散到许多窄子载波上（间隔 10416.6 Hz，符号速率 8.3 ksymbol/s）——与 Wi-Fi 同源的调制方式，按公用事业的距离和速率（12.5 kb/s 到 2400 kb/s）做了缩放。它定义了四个选项（Option 1 到 4），每个使用更少的有效音，因而带宽更小（从 1.2 MHz 降到不足 200 kHz）。分组以 STF（短训练字段，用于粗检测）和 LTF（长训练字段，用于精细信道估计）开头，两者都以精确的频域音表给出，再经反离散傅里叶变换（IDFT）转成时域样点，前置循环前缀，并把 STF 功率提升约 1.94 dB。PHR 携带 Rate 字段（即 MCS 等级），并由 HCS（头校验序列）保护。每个选项都支持把 BPSK/QPSK/16-QAM 与 1/2 或 3/4 码率卷积码组合的 MCS 等级。"
+    },
+    {
+      "type": "prose",
+      "en": "Inside SUN OFDM, the transmit chain is: scramble, convolutional-encode (rate 1/2, puncture to 3/4), interleave, map bits to BPSK/QPSK/16-QAM with a normalization factor KMOD, then optionally frequency-spread by 2x or 4x (or no spreading) by replicating symbols onto extra tones for robustness. Pilot tones — shifted set-by-set each symbol — let the receiver track Doppler and channel changes, while null tones sit unused at band edges. A quarter-length cyclic prefix (24 us on a 96 us symbol) absorbs multipath echoes, a six-zero PPDU Tail flushes the convolutional decoder, and a Pad field rounds the payload to a whole number of symbols before scrambling.",
+      "zh": "在 SUN OFDM 内部，发送链路为：加扰 → 卷积编码（1/2 码率，打孔到 3/4）→ 交织 → 用归一化因子 KMOD 把比特映射到 BPSK/QPSK/16-QAM → 然后可选地进行 2 倍或 4 倍频率扩展（或不扩展），即把符号复制到额外的音上以提升鲁棒性。导频音——每个符号逐组移位——让接收机跟踪多普勒和信道变化；空音则闲置在频段边缘。四分之一长度的循环前缀（96 us 符号上的 24 us）吸收多径回波；六个零的 PPDU 尾字段冲刷卷积译码器；填充字段在加扰前把有效载荷凑齐为整数个符号。"
+    },
+    {
+      "type": "prose",
+      "en": "SUN O-QPSK (Offset Quadrature Phase Shift Keying) is the spread-spectrum cousin, prized for very low sensitivity floors (down to -110 dBm) and backward compatibility. Its defining trick is DSSS (Direct Sequence Spread Spectrum): each bit is replaced by an N-chip code (a chip is a sub-bit pulse), trading data rate for processing gain. Lower rate modes use big spreading factors like (32,1)-DSSS; faster modes use (4,1), (2,1), or no spreading. An optional MDSSS (Multiplexed DSSS) mode uses a turbo product code with Hadamard spreading for select bands. SHR and PHR get their own coding; the PHR is FEC'd to 60 interleaved code bits and carries a Spreading Mode flag. Crucially, in the 780/915/2450 MHz bands SUN O-QPSK can still talk to older Clause 13 O-QPSK devices.",
+      "zh": "SUN O-QPSK（偏移正交相移键控）是扩频家族的表亲，以极低的灵敏度门限（低至 -110 dBm）和向后兼容著称。它的标志性手法是 DSSS（直接序列扩频）：每个比特被替换为一段 N 片码（chip 即子比特脉冲），以数据速率换取处理增益。低速率模式使用较大的扩频因子，如 (32,1)-DSSS；更快的模式则用 (4,1)、(2,1) 或不扩频。可选的 MDSSS（复用 DSSS）模式在特定频段使用结合 Hadamard 扩频的 Turbo 乘积码。SHR 和 PHR 各有自己的编码；PHR 经 FEC 编为 60 个交织码比特，并携带一个扩频模式标志位。关键在于，在 780/915/2450 MHz 频段，SUN O-QPSK 仍能与较旧的第 13 章 O-QPSK 设备通信。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[PSDU bits] --> B[FEC rate 1/2]\n  B --> C[Interleave]\n  C --> D{Spread?}\n  D -->|BDE + N,1-DSSS| E[Chips]\n  D -->|N,4 / N,8| E\n  E --> F[Chip whitening]\n  F --> G[Pilot insertion]\n  G --> H[O-QPSK modulate]",
+      "zh": "flowchart LR\n  A[PSDU比特] --> B[FEC 1/2码率]\n  B --> C[交织]\n  C --> D{是否扩频?}\n  D -->|BDE + N,1-DSSS| E[码片]\n  D -->|N,4 / N,8| E\n  E --> F[码片白化]\n  F --> G[导频插入]\n  G --> H[O-QPSK调制]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: SUN FSK PHY (Clause 20) — PPDU, modulation/coding, whitening, mode switch, RF requirements",
+        "zh": "覆盖图：SUN FSK PHY（第 20 章）——PPDU、调制/编码、白化、模式切换、射频要求"
+      },
+      "en": "Clause 20 is the SUN FSK PHY. 20.1 Introduction sets the mandatory-support rule and symbol periods. 20.2 PPDU format: 20.2.1 general PPDU layout; 20.2.2 SHR (.1 general, .2 Preamble for 2-/4-FSK, .3 the SFD values); 20.2.3 PHR (Mode Switch/FCS Type/Data Whitening/Frame Length fields); 20.2.4 the Mode Switch PHR (BCH+parity, New Mode field, modulation-scheme and mode tables); 20.2.5 PHY Payload. 20.3 Modulation/coding: 20.3.1 general (2-/4-FSK, operating-mode tables); 20.3.2 reference modulator; 20.3.3 bit-to-symbol mapping (frequency deviation); 20.3.4 modulation quality (.1 general, .2 frequency-deviation tolerance, .3 zero-crossing tolerance with eye diagrams); 20.3.5 FEC (RSC/NRNSC, tail+pad bits); 20.3.6 code-symbol interleaving. 20.4 data whitening; 20.5 mode switch mechanism (SettlingDelay, channel alignment). 20.6 RF requirements: 20.6.1 frequency range, 20.6.2 regulatory compliance, 20.6.3 RF tolerance, 20.6.4 channel switch time (<=500 us), 20.6.5 symbol rate, 20.6.6 transmit spectral mask, 20.6.7 receiver sensitivity, 20.6.8 interference rejection, 20.6.9 TX-to-RX and 20.6.10 RX-to-TX turnaround, 20.6.11 transmit power, 20.6.12 max input level, 20.6.13 receiver ED, 20.6.14 LQI.",
+      "zh": "第 20 章是 SUN FSK PHY。20.1 引言规定了必选支持要求和符号周期。20.2 PPDU 格式：20.2.1 总体布局；20.2.2 SHR（.1 概述、.2 用于 2-/4-FSK 的前导码、.3 SFD 取值）；20.2.3 PHR（模式切换/FCS 类型/数据白化/帧长字段）；20.2.4 模式切换 PHR（BCH+校验、新模式字段、调制方案与模式表）；20.2.5 PHY 有效载荷。20.3 调制/编码：20.3.1 概述（2-/4-FSK、操作模式表）；20.3.2 参考调制器；20.3.3 比特到符号映射（频偏）；20.3.4 调制质量（.1 概述、.2 频偏容限、.3 过零容限及眼图）；20.3.5 FEC（RSC/NRNSC、尾比特+填充）；20.3.6 码符号交织。20.4 数据白化；20.5 模式切换机制（SettlingDelay、信道对齐）。20.6 射频要求：20.6.1 频率范围、20.6.2 法规符合性、20.6.3 射频容限、20.6.4 信道切换时间（≤500 us）、20.6.5 符号速率、20.6.6 发射频谱模板、20.6.7 接收灵敏度、20.6.8 干扰抑制、20.6.9 TX 到 RX 与 20.6.10 RX 到 TX 转换、20.6.11 发射功率、20.6.12 最大输入电平、20.6.13 接收机 ED、20.6.14 LQI。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          712,
+          713,
+          714,
+          715,
+          716,
+          717,
+          721,
+          722,
+          723,
+          724,
+          727,
+          728,
+          731,
+          732,
+          733,
+          734
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: SUN OFDM PHY (Clause 21) — PPDU, data rates, modulation/coding, RF requirements",
+        "zh": "覆盖图：SUN OFDM PHY（第 21 章）——PPDU、数据速率、调制/编码、射频要求"
+      },
+      "en": "Clause 21 is the SUN OFDM PHY. 21.1 Introduction (subcarrier spacing 10416.6 Hz, four Options, 12.5-2400 kb/s). 21.2 PPDU: 21.2.1 general; 21.2.2 STF (.1 frequency-domain tone tables, .2 time-domain generation via IDFT, .3 time-domain repetition, .4 normalization + 1.94 dB boost); 21.2.3 LTF (.1 frequency domain, .2 time-domain generation, .3 normalization); 21.2.4 PHR (Rate field, HCS, Tail); 21.2.5 PSDU. 21.3 data rates (BPSK/QPSK per Option). 21.4 modulation/coding: 21.4.1 reference modulator, 21.4.2 bit-to-symbol mapping (KMOD), 21.4.3 phySymbolsPerOctet, 21.4.4 FEC (rate 1/2 or 3/4), 21.4.5 interleaver (two permutations), 21.4.6 frequency spreading (.1 overview, .2 2x, .3 4x, .4 none), 21.4.7 pilot/null tones, 21.4.8 cyclic prefix (1/4 symbol), 21.4.9 PPDU Tail (six zeros), 21.4.10 Pad field, 21.4.11 scrambler and seeds. 21.5 RF requirements: 21.5.1 frequency range, 21.5.2 PSD mask, 21.5.3 receiver sensitivity, 21.5.4 adjacent and 21.5.5 alternate channel rejection, 21.5.6 TX-to-RX and 21.5.7 RX-to-TX turnaround, 21.5.8 EVM, 21.5.9 center-frequency/symbol tolerance, 21.5.10 transmit power, 21.5.11 max input level, 21.5.12 receiver ED, 21.5.13 LQI, 21.5.14 CCA.",
+      "zh": "第 21 章是 SUN OFDM PHY。21.1 引言（子载波间隔 10416.6 Hz、四个选项、12.5-2400 kb/s）。21.2 PPDU：21.2.1 概述；21.2.2 STF（.1 频域音表、.2 经 IDFT 的时域生成、.3 时域重复、.4 归一化 + 1.94 dB 提升）；21.2.3 LTF（.1 频域、.2 时域生成、.3 归一化）；21.2.4 PHR（Rate 字段、HCS、尾）；21.2.5 PSDU。21.3 数据速率（每个选项的 BPSK/QPSK）。21.4 调制/编码：21.4.1 参考调制器、21.4.2 比特到符号映射（KMOD）、21.4.3 phySymbolsPerOctet、21.4.4 FEC（1/2 或 3/4 码率）、21.4.5 交织器（两次置换）、21.4.6 频率扩展（.1 概述、.2 2 倍、.3 4 倍、.4 不扩频）、21.4.7 导频/空音、21.4.8 循环前缀（1/4 符号）、21.4.9 PPDU 尾（六个零）、21.4.10 填充字段、21.4.11 扰码器与种子。21.5 射频要求：21.5.1 频率范围、21.5.2 PSD 模板、21.5.3 接收灵敏度、21.5.4 邻道与 21.5.5 隔道抑制、21.5.6 TX 到 RX 与 21.5.7 RX 到 TX 转换、21.5.8 EVM、21.5.9 中心频率/符号容限、21.5.10 发射功率、21.5.11 最大输入电平、21.5.12 接收机 ED、21.5.13 LQI、21.5.14 CCA。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          735,
+          738,
+          739,
+          742,
+          743,
+          744,
+          745,
+          746,
+          747,
+          748,
+          749,
+          750,
+          753,
+          754,
+          755,
+          756,
+          757,
+          758,
+          759
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: SUN O-QPSK PHY (Clause 22) — PPDU, DSSS/MDSSS coding/spreading, legacy support, RF requirements",
+        "zh": "覆盖图：SUN O-QPSK PHY（第 22 章）——PPDU、DSSS/MDSSS 编码/扩频、传统兼容、射频要求"
+      },
+      "en": "Clause 22 is the SUN O-QPSK PHY. 22.1 Introduction (DSSS for all bands, optional MDSSS, legacy support). 22.2 PPDU: 22.2.1 general; 22.2.2 SHR (.1 general, .2 Preamble, .3 SFD); 22.2.3 PHR (Spreading Mode field, HCS via degree-8 polynomial); 22.2.4 PHY Payload. 22.3 modulation/coding: 22.3.1 reference modulator; 22.3.2 SHR coding/spreading (BDE + (N,1)-DSSS); 22.3.3 PHR coding/spreading (60 code bits); 22.3.4 PSDU coding/spreading for DSSS (rate-mode/spreading-factor tables); 22.3.5 PSDU for MDSSS; 22.3.6 FEC (rate-1/2 K=7 convolutional); 22.3.7 code-bit interleaving (PHR and PSDU separate); 22.3.8 bit differential encoding (BDE, noncoherent detection); 22.3.9 DSSS bit-to-chip mapping ((N,1)/(N,4) tables); 22.3.10 MDSSS bit-to-chip mapping (Hadamard turbo product code); 22.3.11 chip whitening (m-sequence); 22.3.12 pilot insertion; 22.3.13 O-QPSK modulation parameters (raised-cosine pulse). 22.4 legacy 780/915/2450 MHz O-QPSK support. 22.5 RF requirements: 22.5.1 frequency range, 22.5.2 PSD mask, 22.5.3 receiver sensitivity, 22.5.4 adjacent channel rejection (ISR), 22.5.5 TX-to-RX and 22.5.6 RX-to-TX turnaround, 22.5.7 EVM (<35%), 22.5.8 center-frequency/symbol tolerance, 22.5.9 transmit power, 22.5.10 max input level, 22.5.11 receiver ED, 22.5.12 LQI, 22.5.13 CCA.",
+      "zh": "第 22 章是 SUN O-QPSK PHY。22.1 引言（所有频段用 DSSS、可选 MDSSS、传统兼容）。22.2 PPDU：22.2.1 概述；22.2.2 SHR（.1 概述、.2 前导码、.3 SFD）；22.2.3 PHR（扩频模式字段、用 8 阶多项式生成的 HCS）；22.2.4 PHY 有效载荷。22.3 调制/编码：22.3.1 参考调制器；22.3.2 SHR 编码/扩频（BDE + (N,1)-DSSS）；22.3.3 PHR 编码/扩频（60 个码比特）；22.3.4 DSSS 的 PSDU 编码/扩频（速率模式/扩频因子表）；22.3.5 MDSSS 的 PSDU；22.3.6 FEC（1/2 码率 K=7 卷积码）；22.3.7 码比特交织（PHR 与 PSDU 分开）；22.3.8 比特差分编码（BDE，非相干检测）；22.3.9 DSSS 比特到码片映射（(N,1)/(N,4) 表）；22.3.10 MDSSS 比特到码片映射（Hadamard Turbo 乘积码）；22.3.11 码片白化（m 序列）；22.3.12 导频插入；22.3.13 O-QPSK 调制参数（升余弦脉冲）。22.4 对 780/915/2450 MHz 传统 O-QPSK 的支持。22.5 射频要求：22.5.1 频率范围、22.5.2 PSD 模板、22.5.3 接收灵敏度、22.5.4 邻道抑制（ISR）、22.5.5 TX 到 RX 与 22.5.6 RX 到 TX 转换、22.5.7 EVM（<35%）、22.5.8 中心频率/符号容限、22.5.9 发射功率、22.5.10 最大输入电平、22.5.11 接收机 ED、22.5.12 LQI、22.5.13 CCA。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          760,
+          761,
+          762,
+          763,
+          764,
+          765,
+          769,
+          771,
+          773,
+          774,
+          775,
+          779,
+          782,
+          784,
+          786,
+          787,
+          788,
+          790,
+          792
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "How to choose, in one breath: pick SUN FSK for the cheapest, most robust meters and when you want mid-stream rate jumps via mode switch; pick SUN OFDM when you need the highest throughput and good multipath handling; pick SUN O-QPSK when you need the deepest sensitivity, spread-spectrum coexistence, or must interoperate with legacy 802.15.4 O-QPSK gear. All three share the same regional band plans, so a SUN deployment can mix them on a common channel grid.",
+      "zh": "一句话教你怎么选：要最便宜、最皮实的电表，并希望中途通过模式切换跳变速率，选 SUN FSK；要最高吞吐和良好的多径处理能力，选 SUN OFDM；要最深的灵敏度、扩频共存能力，或需与传统 802.15.4 O-QPSK 设备互通，选 SUN O-QPSK。三者共享相同的区域频段规划，因此一次 SUN 部署可以在统一的信道栅格上混用它们。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        712,
+        713,
+        714,
+        715,
+        716,
+        717,
+        718
+      ],
+      "note": "SUN FSK introduction, PPDU/SHR/PHR/Mode Switch PHR, operating-mode tables (Clause 20.1-20.3.1)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        721,
+        722,
+        723,
+        724,
+        725,
+        726,
+        727,
+        728,
+        729
+      ],
+      "note": "SUN FSK reference modulator, bit-to-symbol mapping, modulation quality, FEC/interleaving, data whitening, mode switch mechanism (20.3.2-20.5)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        731,
+        732,
+        733,
+        734
+      ],
+      "note": "SUN FSK RF requirements 20.6.1-20.6.14"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        735,
+        738,
+        739,
+        742,
+        743,
+        744
+      ],
+      "note": "SUN OFDM introduction, STF/LTF, PHR, PSDU, data rates (21.1-21.3)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        745,
+        746,
+        747,
+        748,
+        749,
+        750,
+        753,
+        754
+      ],
+      "note": "SUN OFDM modulation/coding: modulator, mapping, FEC, interleaver, spreading, pilots, CP, tail, pad, scrambler (21.4)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        755,
+        756,
+        757,
+        758,
+        759
+      ],
+      "note": "SUN OFDM RF requirements 21.5.1-21.5.14"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        760,
+        761,
+        762,
+        763,
+        764,
+        765,
+        769,
+        771,
+        773,
+        774,
+        775,
+        779,
+        782,
+        784,
+        786,
+        787
+      ],
+      "note": "SUN O-QPSK introduction, PPDU, DSSS/MDSSS coding/spreading, BDE, bit-to-chip, whitening, pilots, modulation, legacy support (22.1-22.4)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        788,
+        790,
+        791,
+        792
+      ],
+      "note": "SUN O-QPSK RF requirements 22.5.1-22.5.13"
+    }
+  ],
+  "covers": [
+    "802154-2024:20.1",
+    "802154-2024:20.2.1",
+    "802154-2024:20.2.2",
+    "802154-2024:20.2.3",
+    "802154-2024:20.2.4",
+    "802154-2024:20.2.5",
+    "802154-2024:20.3.1",
+    "802154-2024:20.3.2",
+    "802154-2024:20.3.3",
+    "802154-2024:20.3.4",
+    "802154-2024:20.3.5",
+    "802154-2024:20.3.6",
+    "802154-2024:20.4",
+    "802154-2024:20.5",
+    "802154-2024:20.6.1",
+    "802154-2024:20.6.2",
+    "802154-2024:20.6.3",
+    "802154-2024:20.6.4",
+    "802154-2024:20.6.5",
+    "802154-2024:20.6.6",
+    "802154-2024:20.6.7",
+    "802154-2024:20.6.8",
+    "802154-2024:20.6.9",
+    "802154-2024:20.6.10",
+    "802154-2024:20.6.11",
+    "802154-2024:20.6.12",
+    "802154-2024:20.6.13",
+    "802154-2024:20.6.14",
+    "802154-2024:21.1",
+    "802154-2024:21.2.1",
+    "802154-2024:21.2.2",
+    "802154-2024:21.2.3",
+    "802154-2024:21.2.4",
+    "802154-2024:21.2.5",
+    "802154-2024:21.3",
+    "802154-2024:21.4.1",
+    "802154-2024:21.4.2",
+    "802154-2024:21.4.3",
+    "802154-2024:21.4.4",
+    "802154-2024:21.4.5",
+    "802154-2024:21.4.6",
+    "802154-2024:21.4.7",
+    "802154-2024:21.4.8",
+    "802154-2024:21.4.9",
+    "802154-2024:21.4.10",
+    "802154-2024:21.4.11",
+    "802154-2024:21.5.1",
+    "802154-2024:21.5.2",
+    "802154-2024:21.5.3",
+    "802154-2024:21.5.4",
+    "802154-2024:21.5.5",
+    "802154-2024:21.5.6",
+    "802154-2024:21.5.7",
+    "802154-2024:21.5.8",
+    "802154-2024:21.5.9",
+    "802154-2024:21.5.10",
+    "802154-2024:21.5.11",
+    "802154-2024:21.5.12",
+    "802154-2024:21.5.13",
+    "802154-2024:21.5.14",
+    "802154-2024:22.1",
+    "802154-2024:22.2.1",
+    "802154-2024:22.2.2",
+    "802154-2024:22.2.3",
+    "802154-2024:22.2.4",
+    "802154-2024:22.3.1",
+    "802154-2024:22.3.2",
+    "802154-2024:22.3.3",
+    "802154-2024:22.3.4",
+    "802154-2024:22.3.5",
+    "802154-2024:22.3.6",
+    "802154-2024:22.3.7",
+    "802154-2024:22.3.8",
+    "802154-2024:22.3.9",
+    "802154-2024:22.3.10",
+    "802154-2024:22.3.11",
+    "802154-2024:22.3.12",
+    "802154-2024:22.3.13",
+    "802154-2024:22.4",
+    "802154-2024:22.5.1",
+    "802154-2024:22.5.2",
+    "802154-2024:22.5.3",
+    "802154-2024:22.5.4",
+    "802154-2024:22.5.5",
+    "802154-2024:22.5.6",
+    "802154-2024:22.5.7",
+    "802154-2024:22.5.8",
+    "802154-2024:22.5.9",
+    "802154-2024:22.5.10",
+    "802154-2024:22.5.11",
+    "802154-2024:22.5.12",
+    "802154-2024:22.5.13"
+  ],
+  "track": "pan-802-15"
+}

@@ -1,0 +1,215 @@
+{
+  "id": "pan-802-15-14",
+  "title": {
+    "en": "Finding and Joining: Scanning, Association and PAN Management",
+    "zh": "发现与加入：扫描、关联与 PAN 管理"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A low-rate WPAN — the kind that underlies Zigbee and Thread — is called a PAN (Personal Area Network), and it is run by a coordinator (a special device that hands out addresses and stores messages). Before a small sensor or light bulb can talk on a PAN, it has to do two things: find a PAN to join, and then ask to join it. This lesson walks the whole arc: scanning the air for coordinators, resolving address clashes, the association handshake, leaving cleanly (disassociation), pulling messages a coordinator is holding for you, listening to everything (promiscuous mode), and announcing yourself to neighbors. Every step is driven by the MLME — the MAC sublayer management entity, the part of the MAC that the device's higher software talks to through named request/indication/response/confirm 'primitives'.",
+      "zh": "低速率无线个域网（Zigbee 与 Thread 的底层网络）被称为 PAN（个域网），由一个协调器（coordinator，负责分配地址、暂存消息的特殊设备）来管理。在一个小传感器或灯泡能在 PAN 上通信之前，它必须做两件事：先找到一个可加入的 PAN，再请求加入。本课完整讲解这条主线：扫描空中的协调器、解决地址冲突、关联握手、干净地离开（解关联）、取回协调器为你暂存的消息、监听所有帧（混杂模式），以及向邻居宣告自身。每一步都由 MLME（MAC 子层管理实体，即设备上层软件通过命名的 request/indication/response/confirm“原语”所交互的那一部分 MAC）来驱动。"
+    },
+    {
+      "type": "prose",
+      "en": "Discovery starts with a scan, requested via the MLME-SCAN.request primitive with a chosen ScanType. There are four flavors. An ED (energy detection) scan measures peak energy on each channel — useful for a would-be coordinator picking a quiet channel before starting a PAN; during it the MAC discards every received frame and just reports the maximum energy. An active scan sends a Beacon Request command on each channel and collects the Beacon frames that coordinators send back, so the device can see who is out there. An enhanced active scan does the same but sends an Enhanced Beacon Request command and can carry a filter, so only coordinators matching the filter reply with an Enhanced Beacon. An orphan scan is for a device that has lost its coordinator: it broadcasts an Orphan Notification command and waits up to macResponseWaitTime for a Coordinator Realignment command to put it back on the right PAN ID and channel.",
+      "zh": "发现从扫描开始，通过 MLME-SCAN.request 原语并指定 ScanType 来发起。共有四种。ED（能量检测）扫描测量每个信道上的峰值能量——这对一个准协调器在开启新 PAN 前挑选安静信道很有用；扫描期间 MAC 丢弃所有收到的帧，只上报最大能量值。主动扫描在每个信道上发送 Beacon Request（信标请求）命令，并收集协调器回送的 Beacon（信标）帧，让设备看清周围有谁。增强主动扫描做同样的事，但发送 Enhanced Beacon Request（增强信标请求）命令，并可携带过滤条件，只有匹配过滤条件的协调器才以 Enhanced Beacon 回应。孤儿扫描用于丢失了协调器的设备：它广播 Orphan Notification（孤儿通告）命令，并最多等待 macResponseWaitTime，以收到一条 Coordinator Realignment（协调器重对齐）命令，把它放回正确的 PAN ID 和信道上。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Higher layer needs a PAN] --> B{ScanType?}\n  B -->|ED| C[Measure peak energy per channel]\n  B -->|Active| D[Send Beacon Request, collect Beacons]\n  B -->|Enhanced active| E[Send Enhanced Beacon Request + filter]\n  B -->|Orphan| F[Send Orphan Notification, await Realignment]\n  C --> G[MLME-SCAN.confirm]\n  D --> G\n  E --> G\n  F --> G",
+      "zh": "flowchart TD\n  A[上层需要一个 PAN] --> B{扫描类型?}\n  B -->|ED| C[逐信道测量峰值能量]\n  B -->|主动| D[发送信标请求, 收集信标]\n  B -->|增强主动| E[发送增强信标请求+过滤]\n  B -->|孤儿| F[发送孤儿通告, 等待重对齐]\n  C --> G[MLME-SCAN.confirm]\n  D --> G\n  E --> G\n  F --> G"
+    },
+    {
+      "type": "prose",
+      "en": "Sometimes two PANs end up sharing the same PAN ID within radio range — a PAN ID conflict. The PAN coordinator concludes a conflict exists if it hears a Beacon with the PAN Coordinator bit set and its own macPanId, or if an associated device sends it a PAN ID Conflict Notification command. A device associated through the PAN coordinator detects the conflict by hearing such a Beacon from an address that is not its known coordinator. The resolving rule: a detecting device sends the PAN ID Conflict Notification command (acknowledgment requested) to its PAN coordinator and then reports a sync loss with reason PAN_ID_CONFLICT; the PAN coordinator, on detecting or being told, reports the same sync loss so its higher layer can run an active scan and pick a fresh, unused PAN ID and realign the PAN.",
+      "zh": "有时两个 PAN 在无线范围内共用了同一个 PAN ID——即 PAN ID 冲突。如果 PAN 协调器听到一个带有 PAN Coordinator 位置一且 PAN ID 等于自身 macPanId 的信标，或收到某关联设备发来的 PAN ID Conflict Notification（PAN ID 冲突通告）命令，它就判定存在冲突。通过 PAN 协调器关联的设备，则在听到来自非已知协调器地址的此类信标时检测到冲突。解决规则是：检测到冲突的设备向其 PAN 协调器发送 PAN ID Conflict Notification 命令（要求确认），随后上报原因为 PAN_ID_CONFLICT 的同步丢失；PAN 协调器在检测到或被告知后，上报同样的同步丢失，使其上层可以执行一次主动扫描、挑选一个全新未用的 PAN ID 并重对齐该 PAN。"
+    },
+    {
+      "type": "prose",
+      "en": "Once a device has scanned and picked a PAN, it associates. After a MAC reset and a scan, the higher layer issues MLME-ASSOCIATE.request, and the MAC sends an Association Request command (extended source address, acknowledgment requested) to a coordinator whose macAssociationPermit is TRUE. The Capability Information byte in that request says whether the device is mains-powered, keeps its receiver on when idle, wants security, and — via the Allocate Address bit — whether it wants a short address. The acknowledgment does not mean 'joined'; the coordinator's higher layer takes up to macResponseWaitTime to decide and then queues an Association Response command for indirect (pull) delivery. That response carries a 16-bit Short Address and an Association Status (0x00 success, 0x01 PAN at capacity, 0x02 access denied). A short address of 0xfffe is special: the device joined but got no short address and must use its 64-bit extended address. Fast association is an optional shortcut: setting the Association Type bit makes the coordinator send the Association Response directly instead of indirectly.",
+      "zh": "设备扫描并选定一个 PAN 后，便进行关联。在一次 MAC 复位和扫描之后，上层发出 MLME-ASSOCIATE.request，MAC 随即向某个 macAssociationPermit 为 TRUE 的协调器发送 Association Request（关联请求）命令（使用扩展源地址，要求确认）。该请求中的 Capability Information（能力信息）字节说明设备是否市电供电、空闲时是否保持接收机开启、是否需要安全保护，以及——通过 Allocate Address（分配地址）位——是否想要一个短地址。确认并不代表“已加入”；协调器的上层最多用 macResponseWaitTime 决定，然后将一条 Association Response（关联响应）命令排入间接（拉取）传送队列。该响应携带一个 16 位短地址和一个 Association Status（关联状态：0x00 成功、0x01 PAN 容量已满、0x02 访问被拒）。短地址 0xfffe 较特殊：表示设备已加入但未获分配短地址，必须使用其 64 位扩展地址。快速关联是可选的捷径：置位 Association Type（关联类型）位会让协调器直接（而非间接）发送关联响应。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant D as Device\n  participant C as Coordinator\n  D->>C: Association Request (Allocate Address?)\n  C-->>D: Acknowledgment\n  Note over C: Higher layer decides (<= macResponseWaitTime)\n  D->>C: Data Request (poll for response)\n  C-->>D: Association Response (Short Address + Status)\n  D-->>C: Acknowledgment",
+      "zh": "sequenceDiagram\n  participant D as 设备\n  participant C as 协调器\n  D->>C: 关联请求 (是否分配地址?)\n  C-->>D: 确认\n  Note over C: 上层决策 (<= macResponseWaitTime)\n  D->>C: 数据请求 (轮询响应)\n  C-->>D: 关联响应 (短地址+状态)\n  D-->>C: 确认"
+    },
+    {
+      "type": "prose",
+      "en": "Leaving is the mirror image. The next higher layer triggers MLME-DISASSOCIATE.request, and a Disassociation Notification command is sent — by a device to its coordinator, or by a coordinator to a device (the latter optionally via indirect transmission set by the TxIndirect parameter). The command carries a Disassociation Reason: 0x01 (the coordinator wants the device to leave) or 0x02 (the device wants to leave). A disassociating device wipes its PAN state — clearing macPanId, macShortAddress, macAssociatedPanCoord, and the coordinator address attributes back to defaults — and the result comes back in MLME-DISASSOCIATE.confirm. If the PAN ID in the request does not match macPanId, the confirm returns INVALID_PARAMETER.",
+      "zh": "离开是关联的镜像过程。上层触发 MLME-DISASSOCIATE.request，随即发送一条 Disassociation Notification（解关联通告）命令——由设备发给其协调器，或由协调器发给设备（后者可通过 TxIndirect 参数设置为间接传送）。该命令携带 Disassociation Reason（解关联原因）：0x01（协调器希望设备离开）或 0x02（设备希望离开）。解关联的设备会清除其 PAN 状态——将 macPanId、macShortAddress、macAssociatedPanCoord 以及协调器地址相关属性恢复为默认值——结果通过 MLME-DISASSOCIATE.confirm 返回。若请求中的 PAN ID 与 macPanId 不符，confirm 返回 INVALID_PARAMETER。"
+    },
+    {
+      "type": "prose",
+      "en": "Because most PAN devices are battery-powered and sleep, a coordinator cannot just push data at them. Instead it holds each message as a transaction for up to macTransactionPersistenceTime, and the sleepy device pulls it. This is indirect transmission. A beacon-based PAN lists pending recipients (up to seven) in its Beacon's Address List; a non-beacon device polls. Either way the device sends a Data Request command. The coordinator acknowledges with the Frame Pending (FP) bit: FP=0 means nothing waiting; FP=1 means a Data frame is coming, so the device keeps its receiver on to catch it. The whole pull is launched from software by MLME-POLL.request and reported by MLME-POLL.confirm with a Status of SUCCESS or NO_DATA. This same pull mechanism is exactly how the Association Response above is delivered.",
+      "zh": "由于多数 PAN 设备靠电池供电并会休眠，协调器无法直接把数据推给它们。协调器会把每条消息作为一个事务（transaction）暂存，最长保留 macTransactionPersistenceTime，由休眠设备来拉取。这就是间接传送。基于信标的 PAN 在其信标的 Address List（地址列表）中列出待取消息的接收者（最多七个）；非信标设备则主动轮询。无论哪种方式，设备都发送一条 Data Request（数据请求）命令。协调器在确认帧中用 Frame Pending（FP，帧挂起）位回应：FP=0 表示没有待取消息；FP=1 表示将有一个数据帧到来，于是设备保持接收机开启以接收它。整个拉取由软件通过 MLME-POLL.request 发起，并由 MLME-POLL.confirm 以 SUCCESS 或 NO_DATA 状态上报。上文的关联响应正是通过这同一拉取机制送达的。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"30\" width=\"110\" height=\"32\"/><text x=\"65\" y=\"50\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Data Request</text><rect x=\"130\" y=\"30\" width=\"130\" height=\"32\"/><text x=\"195\" y=\"50\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Ack (FP=1)</text><rect x=\"270\" y=\"30\" width=\"140\" height=\"32\"/><text x=\"340\" y=\"50\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Data frame</text><text x=\"10\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Device polls coordinator, then receives held data</text></svg>",
+      "caption": {
+        "en": "Indirect transmission: the device polls with a Data Request, the Ack's Frame Pending (FP) bit signals data is held, and the Data frame follows.",
+        "zh": "间接传送：设备以数据请求轮询，确认帧的 FP（帧挂起）位表示有暂存数据，随后到达数据帧。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Promiscuous mode is the diagnostic 'hear everything' switch. Setting the macPromiscuousMode PIB attribute to TRUE makes the MAC keep the receiver on and pass every correctly received frame up via MCPS-DATA.indication — but only with the raw bytes (Msdu = MHR + payload) plus link quality, timestamp, and RSSI. Setting it back to FALSE returns the receiver to whatever macRxOnWhenIdle says. It is how a sniffer or network analyzer sees traffic not addressed to it.",
+      "zh": "混杂模式（promiscuous mode）是用于诊断的“监听一切”开关。把 macPromiscuousMode PIB 属性设为 TRUE，会让 MAC 保持接收机开启，并通过 MCPS-DATA.indication 上送每一个正确收到的帧——但只携带原始字节（Msdu = MHR + 载荷）以及链路质量、时间戳和 RSSI。设回 FALSE 则让接收机恢复到 macRxOnWhenIdle 所指定的状态。抓包器或网络分析仪正是借此看到并非发给自己的流量。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, Device Announcement (DA) lets peer devices learn each other's addresses without a coordinator brokering every link. A device broadcasts an Enhanced Beacon carrying a DA IE — an information element listing its neighbors' addresses — when its higher layer issues MLME-DA.request. The DA IE has an Address Mode (short vs extended), a Number of Addresses count, an Addresses Pending bit with Sequence Number and Page Number for splitting a long neighbor list across several beacons, and the Address List itself. A receiver passes what it heard up via MLME-DA.indication; if a device notices its own address is missing from a neighbor's announcements, it can broadcast its own DA IE to make itself known. The originator gets an MLME-DA.confirm reporting SUCCESS or FAILURE.",
+      "zh": "最后，设备宣告（Device Announcement，DA）让对等设备无需协调器为每条链路居间，即可彼此获知地址。当上层发出 MLME-DA.request 时，设备广播一个携带 DA IE 的 Enhanced Beacon——该信息元素列出其邻居地址。DA IE 含有 Address Mode（短地址或扩展地址）、Number of Addresses（地址数量）计数、用于将长邻居列表拆分到多个信标的 Addresses Pending 位及配套的 Sequence Number（序号）和 Page Number（页号），以及地址列表本身。接收方通过 MLME-DA.indication 把听到的内容上送；若某设备发现自己的地址未出现在邻居的宣告中，它可以广播自己的 DA IE 以让对方知晓。发起方收到 MLME-DA.confirm，上报 SUCCESS 或 FAILURE。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause this lesson teaches",
+        "zh": "覆盖地图——本课讲授的每个条款"
+      },
+      "en": "PAN ID conflict resolution: 10.17.1 general, 10.17.2 detection, 10.17.3 resolution, 10.17.4 MAC commands (PAN ID Conflict Notification). Scans: 10.18 ED channel scan; 10.19 active and enhanced active channel scan. Orphan channel scan: 10.20.1 overview, 10.20.2 channel access (Orphan Notification + await Coordinator Realignment), 10.20.3 MAC commands, 10.20.4 MLME-ORPHAN.indication/.response. Association and disassociation: 10.21.1 overview, 10.21.2 association, 10.21.3 disassociation, 10.21.4 fast association, 10.21.5 commands (Association Request/Response, Disassociation Notification), 10.21.6 primitives (MLME-ASSOCIATE.request/.indication/.response/.confirm; MLME-DISASSOCIATE.request/.indication/.confirm), 10.21.7 constants and PIB attributes (macAssociatedPanCoord, macAssociationPermit). Extracting pending data: 10.22.1 overview, 10.22.2 transaction handling (macTransactionPersistenceTime, Frame Pending), 10.22.3 the pull procedure, 10.22.4 Data Request command, 10.22.5 MLME-POLL.request/.confirm. Promiscuous mode: 10.23.1 overview (macPromiscuousMode), 10.23.2 PIB attributes. Device Announcement: 10.24.1 overview, 10.24.2 DA IE header IE, 10.24.3 MLME-DA.request/.indication/.confirm.",
+      "zh": "PAN ID 冲突解决：10.17.1 概述、10.17.2 检测、10.17.3 解决、10.17.4 MAC 命令（PAN ID 冲突通告）。扫描：10.18 ED 信道扫描；10.19 主动与增强主动信道扫描。孤儿信道扫描：10.20.1 概述、10.20.2 信道接入（孤儿通告+等待协调器重对齐）、10.20.3 MAC 命令、10.20.4 MLME-ORPHAN.indication/.response。关联与解关联：10.21.1 概述、10.21.2 关联、10.21.3 解关联、10.21.4 快速关联、10.21.5 命令（关联请求/响应、解关联通告）、10.21.6 原语（MLME-ASSOCIATE.request/.indication/.response/.confirm；MLME-DISASSOCIATE.request/.indication/.confirm）、10.21.7 常量与 PIB 属性（macAssociatedPanCoord、macAssociationPermit）。取回暂存数据：10.22.1 概述、10.22.2 事务处理（macTransactionPersistenceTime、帧挂起）、10.22.3 拉取流程、10.22.4 数据请求命令、10.22.5 MLME-POLL.request/.confirm。混杂模式：10.23.1 概述（macPromiscuousMode）、10.23.2 PIB 属性。设备宣告：10.24.1 概述、10.24.2 DA IE 头部 IE、10.24.3 MLME-DA.request/.indication/.confirm。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          349,
+          350,
+          351,
+          352,
+          353,
+          354,
+          355,
+          356,
+          357,
+          358,
+          360,
+          361,
+          362,
+          363,
+          364,
+          365,
+          373,
+          374,
+          375,
+          376,
+          377,
+          378,
+          379,
+          380,
+          381,
+          382,
+          383
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        349,
+        350
+      ],
+      "note": "10.17 PAN ID conflict resolution: general, detection, resolution, PAN ID Conflict Notification command"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        351,
+        352
+      ],
+      "note": "10.18 ED channel scan; 10.19 active and enhanced active channel scan"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        353,
+        354,
+        355,
+        356
+      ],
+      "note": "10.20 orphan channel scan: overview, channel access, Orphan Notification command, MLME-ORPHAN.indication/.response"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        356,
+        357,
+        358,
+        360,
+        361,
+        362,
+        363,
+        364,
+        365,
+        373
+      ],
+      "note": "10.21 association and disassociation: overview, association, disassociation, fast association, commands, primitives, PIB attributes (10.21.7 on p.373)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        374,
+        375,
+        376,
+        377,
+        378,
+        379
+      ],
+      "note": "10.22 extracting pending data: overview, transaction handling, pull procedure, Data Request command, MLME-POLL.request/.confirm"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        379,
+        380
+      ],
+      "note": "10.23 promiscuous mode: overview and PIB attributes (macPromiscuousMode)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        380,
+        381,
+        382,
+        383
+      ],
+      "note": "10.24 Device Announcement: overview, DA IE, MLME-DA.request/.indication/.confirm"
+    }
+  ],
+  "covers": [
+    "802154-2024:10.17.1",
+    "802154-2024:10.17.2",
+    "802154-2024:10.17.3",
+    "802154-2024:10.17.4",
+    "802154-2024:10.18",
+    "802154-2024:10.19",
+    "802154-2024:10.20.1",
+    "802154-2024:10.20.2",
+    "802154-2024:10.20.3",
+    "802154-2024:10.20.4",
+    "802154-2024:10.21.1",
+    "802154-2024:10.21.2",
+    "802154-2024:10.21.3",
+    "802154-2024:10.21.4",
+    "802154-2024:10.21.5",
+    "802154-2024:10.21.6",
+    "802154-2024:10.21.7",
+    "802154-2024:10.22.1",
+    "802154-2024:10.22.2",
+    "802154-2024:10.22.3",
+    "802154-2024:10.22.4",
+    "802154-2024:10.22.5",
+    "802154-2024:10.23.1",
+    "802154-2024:10.23.2",
+    "802154-2024:10.24.1",
+    "802154-2024:10.24.2",
+    "802154-2024:10.24.3"
+  ],
+  "track": "pan-802-15"
+}

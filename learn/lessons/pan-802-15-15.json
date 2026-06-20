@@ -1,0 +1,234 @@
+{
+  "id": "pan-802-15-15",
+  "title": {
+    "en": "Reserved Slots and Telemetry: GTS, Metrics and Spectrum Measurement",
+    "zh": "预留时隙与遥测：GTS、度量与频谱测量"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "An 802.15.4 beacon-enabled network divides time into a repeating superframe. Most of it is a contention access period (CAP), where devices fight for the channel using CSMA-CA. But some traffic — a motor controller, a medical sensor — cannot tolerate that uncertainty. For these, the standard offers a guaranteed timeslot (GTS): a slice of the superframe reserved exclusively for one device, where it transmits with no contention at all. This lesson walks through the full life of a GTS, then turns to three telemetry tools the MAC offers: a procedure to announce a coming PHY change, a set of MAC metrics counters, and spectrum resource measurement (SRM) for sensing the radio environment.",
+      "zh": "支持信标的 802.15.4 网络把时间划分成不断重复的超帧。其中大部分是竞争接入期（CAP），设备在这里用 CSMA-CA 争抢信道。但有些业务——例如电机控制器、医疗传感器——无法容忍这种不确定性。为此，标准提供了保证时隙（GTS）：超帧中专门保留给某一个设备的一段时间，它在此期间完全无需竞争即可发送。本课先讲完 GTS 的完整生命周期，再介绍 MAC 提供的三种遥测工具：宣告 PHY 参数即将变更的过程、一组 MAC 度量计数器，以及用于感知无线环境的频谱资源测量（SRM）。"
+    },
+    {
+      "type": "prose",
+      "en": "Only the PAN coordinator may allocate a GTS, and only for traffic between itself and an associated device (10.25.1). A GTS may span one or more superframe slots; up to seven can exist at once if there is room. Each GTS has a direction (transmit or receive, relative to the owning device), so a device may hold one transmit GTS and one receive GTS. All GTSs sit contiguously at the end of the superframe, after the CAP, forming the contention-free period (CFP). A device may only request and use a GTS while it is tracking the coordinator's beacons; lose sync, and all its GTS allocations are gone.",
+      "zh": "只有 PAN 协调器可以分配 GTS，且仅用于它与某个已关联设备之间的通信（10.25.1）。一个 GTS 可以跨一个或多个超帧时隙；在容量允许时最多可同时存在七个。每个 GTS 都有方向（相对于拥有它的设备，分为发送或接收），因此一个设备可同时持有一个发送 GTS 和一个接收 GTS。所有 GTS 紧挨着排在超帧末尾、CAP 之后，构成无竞争期（CFP）。设备只有在跟踪协调器信标时才能申请和使用 GTS；一旦失去同步，它的所有 GTS 分配都会作废。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The coordinator must always preserve a minimum CAP length (aMinCapLength) so newcomers can still do CSMA-CA (10.25.2). If GTS demand threatens that floor, the coordinator takes preventative action — trimming pending addresses or even deallocating a GTS — though it may briefly dip below the floor only to carry the temporary beacon growth that GTS bookkeeping itself causes.",
+      "zh": "协调器必须始终保留一段最小 CAP 长度（aMinCapLength），以便新设备仍能进行 CSMA-CA（10.25.2）。当 GTS 需求威胁到这个下限时，协调器会采取预防措施——削减待发地址，甚至回收某个 GTS——不过它也只允许在为承载 GTS 记账本身带来的信标临时增长时，短暂低于该下限。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant D as Device\n  participant C as PAN Coordinator\n  D->>C: GTS Request (alloc, length, dir)\n  C-->>D: Ack\n  C->>C: Check superframe capacity\n  C-->>D: Beacon (GTS descriptor + start slot)\n  D->>D: MLME-GTS.confirm SUCCESS\n  Note over D,C: Device now transmits in its slot, no CSMA-CA",
+      "zh": "sequenceDiagram\n  participant D as 设备\n  participant C as PAN 协调器\n  D->>C: GTS 请求（分配、长度、方向）\n  C-->>D: 确认帧\n  C->>C: 检查超帧容量\n  C-->>D: 信标（GTS 描述符 + 起始时隙）\n  D->>D: MLME-GTS.confirm 成功\n  Note over D,C: 设备此后在自己时隙内发送，无需 CSMA-CA"
+    },
+    {
+      "type": "prose",
+      "en": "Allocation begins when the higher layer issues MLME-GTS.request; the MAC sends a GTS Request command with the Characteristics Type field set to 1 (10.25.3). The coordinator checks capacity, and if there is room it places a GTS descriptor — carrying the device's short address, start slot, and length — into its beacon, where it persists for aGtsDescPersistenceTime (4) superframes. Seeing its descriptor, the device confirms with SUCCESS (or DENIED if the start slot is zero). During usage (10.25.4), a transmit GTS lets the device send immediately without CSMA-CA, as long as the data, acknowledgment, and inter-frame spacing all fit before the slot ends — otherwise it waits for the slot in the next superframe. Inside an allocated GTS, data frames use only short addressing.",
+      "zh": "分配从高层发出 MLME-GTS.request 开始；MAC 随即发送一条特征类型字段置为 1 的 GTS 请求命令（10.25.3）。协调器检查容量，若有空间，就把一个 GTS 描述符——携带该设备的短地址、起始时隙和长度——放进信标，并在其中保留 aGtsDescPersistenceTime（即 4 个）超帧。设备看到自己的描述符后，以 SUCCESS 确认（若起始时隙为零则为 DENIED）。在使用阶段（10.25.4），发送 GTS 让设备无需 CSMA-CA 即可立即发送，前提是数据、确认和帧间隔都能在时隙结束前完成——否则就等到下一超帧的同一时隙。在已分配的 GTS 内，数据帧只使用短地址。"
+    },
+    {
+      "type": "prose",
+      "en": "A GTS can be released two ways (10.25.5). A device deallocates by sending a GTS Request with Characteristics Type 0 and stops using the slot immediately; the coordinator confirms but adds no descriptor. The coordinator can also deallocate on its own — for CAP maintenance or because the GTS expired — in which case it advertises a descriptor with start slot zero so the owner notices. Deallocation leaves a hole, so the CFP is defragmented (10.25.6): every GTS with a lower start slot is shifted to close the gap and re-advertised, growing the CAP back. Expiration (10.25.7) is the coordinator's watchdog: if it sees no data (transmit GTS) or no acknowledgment (receive GTS) for 2×n superframes, it presumes the slot abandoned and reclaims it.",
+      "zh": "GTS 有两种释放方式（10.25.5）。设备发送一条特征类型为 0 的 GTS 请求来回收，并立即停止使用该时隙；协调器予以确认，但不添加描述符。协调器也可自行回收——为维护 CAP，或因 GTS 过期——这时它会广播一个起始时隙为零的描述符，让拥有者察觉。回收会留下空洞，因此要对 CFP 进行碎片整理（10.25.6）：所有起始时隙更靠前的 GTS 都向前平移以填补空隙并重新广播，从而把 CAP 重新撑大。过期机制（10.25.7）是协调器的看门狗：若在 2×n 个超帧内既未收到数据（发送 GTS）也未收到确认（接收 GTS），它就认定该时隙已被弃用并予以回收。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"5\" y=\"25\" width=\"40\" height=\"34\"/><text x=\"25\" y=\"46\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Beacon</text><rect x=\"45\" y=\"25\" width=\"190\" height=\"34\"/><text x=\"140\" y=\"46\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">CAP (CSMA-CA)</text><rect x=\"235\" y=\"25\" width=\"70\" height=\"34\"/><text x=\"270\" y=\"46\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">GTS 1</text><rect x=\"305\" y=\"25\" width=\"60\" height=\"34\"/><text x=\"335\" y=\"46\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">GTS 2</text><rect x=\"365\" y=\"25\" width=\"50\" height=\"34\"/><text x=\"390\" y=\"46\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">GTS 3</text><text x=\"320\" y=\"18\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">CFP (contention-free)</text><line x1=\"235\" y1=\"62\" x2=\"415\" y2=\"62\"/><text x=\"140\" y=\"78\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">aMinCapLength preserved</text></svg>",
+      "caption": {
+        "en": "One superframe: a beacon, then the CAP, then the contention-free period holding up to seven contiguous GTSs at the tail.",
+        "zh": "一个超帧：先是信标，然后是 CAP，再是无竞争期，其末尾紧排着最多七个连续的 GTS。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The PHY parameters change notification procedure (10.26) lets a coordinator warn its network before it switches channel, band, or PHY mode — so nobody is left listening on the old settings. The higher layer triggers it with MLME-PHY-OP-SWITCH.request (10.26.4), which carries a PhyParameterList, a TargetTime (when the change takes effect, in microseconds), and a SignalMethod. With USE_BEACON (10.26.1) the coordinator embeds a PHY Parameter Change IE in its next Enhanced Beacons; with USE_MP (10.26.2) it sends a dedicated PHY Op Mode Switch multipurpose frame, optionally repeated and acknowledged. Recipients learn of the switch via MLME-PHY-OP-SWITCH.indication, and the initiator's higher layer is told the outcome by MLME-PHY-OP-SWITCH.confirm.",
+      "zh": "PHY 参数变更通知过程（10.26）让协调器在切换信道、频段或 PHY 模式之前先通知全网——以免有节点仍停留在旧设置上监听。高层用 MLME-PHY-OP-SWITCH.request（10.26.4）触发它，该原语携带 PhyParameterList、TargetTime（变更生效时刻，以微秒计）和 SignalMethod。采用 USE_BEACON（10.26.1）时，协调器把 PHY Parameter Change IE 嵌入随后的增强信标；采用 USE_MP（10.26.2）时，它发送一帧专门的 PHY Op Mode Switch 多用途帧，可选择重复发送并请求确认。接收方通过 MLME-PHY-OP-SWITCH.indication 得知此次切换，而发起方的高层则由 MLME-PHY-OP-SWITCH.confirm 获知结果。"
+    },
+    {
+      "type": "prose",
+      "en": "MAC metrics (10.27) are the network's self-report card. When macMetricsEnabled is true, the MAC keeps counters such as macRetryCount, macTxSuccessCount, macTxFailCount, macFcsErrorCount, and macRxSuccessCount — every transmitted MSDU bumps exactly one of the four transmit counters, every received frame bumps at least one receive counter (10.27.3). A device can share these with peers by packing a single counter into a MAC Metrics IE, or the whole set into an All MAC Metrics IE (10.27.2). These same counters become the raw material for spectrum measurement next.",
+      "zh": "MAC 度量（10.27）是网络的自评成绩单。当 macMetricsEnabled 为真时，MAC 维护一系列计数器，如 macRetryCount、macTxSuccessCount、macTxFailCount、macFcsErrorCount 和 macRxSuccessCount——每个发出的 MSDU 恰好令四个发送计数器之一加一，每个收到的帧至少令一个接收计数器加一（10.27.3）。设备可以把单个计数器打包进 MAC Metrics IE，或把整组计数器打包进 All MAC Metrics IE（10.27.2），与对端共享。这些同样的计数器，正是接下来频谱测量的原料。"
+    },
+    {
+      "type": "prose",
+      "en": "Spectrum resource measurement (SRM, 10.28) is the richest tool: a way to sense interference and congestion so the network can pick better channels and tune transmit power. Its performance metrics (10.28.2) span the physical and statistical — energy detection (macEd), percentage of time of failed and of deferred transmissions, a retry histogram, channel utilization, the trio of RCPI / RSNI / RSSI received-power indicators, a noise histogram, and average access delay — and they reuse the MAC metric counters to derive a packet success rate. Functionally (10.28.3), SRM IEs ride in Enhanced Beacons (so a joining device can compare PANs), multipurpose frames, or MAC commands, each tagged with a Scope ID — Link, Path, or Network — telling the receiver how far to propagate it. SRM also governs transmit power control via phyMaxTxPower and per-traffic power attributes.",
+      "zh": "频谱资源测量（SRM，10.28）是其中最丰富的工具：一种感知干扰与拥塞的手段，使网络得以挑选更好的信道并调节发射功率。它的性能度量（10.28.2）既覆盖物理量也覆盖统计量——能量检测（macEd）、失败发送占时百分比与延迟发送占时百分比、重传直方图、信道利用率、RCPI / RSNI / RSSI 这一组接收功率指标、噪声直方图，以及平均接入时延——并复用 MAC 度量计数器来推导分组成功率。在功能上（10.28.3），SRM IE 可承载于增强信标（让待入网设备得以比较多个 PAN）、多用途帧或 MAC 命令中，每条都标注一个 Scope ID——Link、Path 或 Network——告诉接收方应传播多远。SRM 还通过 phyMaxTxPower 及各类按业务区分的功率属性来管理发射功率控制。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Think of SRM as a request-reply telemetry bus. One device asks another to measure something with an SRM Request command, carrying an SRM Token, a measurement duration, and a target channel; the peer answers with an SRM Response. Devices can also push readings to the coordinator with an SRM Report command, or broadcast environment facts with an SRM Information command. A Link Margin IE rides inside an enhanced acknowledgment so a sender can immediately trim its transmit power to just what the link needs.",
+      "zh": "可以把 SRM 想象成一条请求-应答式的遥测总线。一个设备用 SRM Request 命令请另一个设备测量某项指标，命令中携带 SRM Token、测量时长和目标信道；对端以 SRM Response 应答。设备也可以用 SRM Report 命令把读数推送给协调器，或用 SRM Information 命令广播环境信息。Link Margin IE 则搭载在增强确认帧内，使发送方能立即把发射功率削减到链路实际所需的水平。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause of 10.25 through 10.28",
+        "zh": "覆盖地图：10.25 至 10.28 的每个条款"
+      },
+      "en": "GTS (10.25): general requirements 10.25.1; CAP maintenance and the aMinCapLength floor 10.25.2; allocation via GTS Request and the beacon descriptor 10.25.3; usage without CSMA-CA 10.25.4; deallocation by device or coordinator 10.25.5; CFP defragmentation 10.25.6; expiration after 2×n idle superframes 10.25.7; the Simplified GTS Specification header IE 10.25.8 (with content field 10.25.8.1); the GTS Request MAC command 10.25.9 (10.25.9.1); the MLME-GTS service primitives 10.25.10 — general 10.25.10.1, request/confirm/indication; and the constant aGtsDescPersistenceTime=4 with PIB attributes 10.25.11. PHY change (10.26): beacon signaling 10.26.1; multipurpose-frame signaling 10.26.2; nested IEs 10.26.3 (PHY Parameter Change IE, O-QPSK PHY Mode IE, RS-GFSK Device Capabilities IE, Multi-PHY IE); and MLME-PHY-OP-SWITCH primitives 10.26.4. MAC metrics (10.27): overview 10.27.1; MAC Metrics IE and All MAC Metrics IE 10.27.2; metrics-specific PIB attributes 10.27.3. SRM (10.28): general purpose 10.28.1; performance metrics 10.28.2 (ED, failed-tx %, deferred-tx %, retry histogram, channel utilization, RCPI, RSNI, RSSI, noise histogram, average access delay, and shared PIB attributes); functionality 10.28.3 (signaling, TPC, Request/Response, Report, Information, scopes); the Link Margin IE in an Enh-Ack 10.28.4; header IE for SRM 10.28.5 (SRM IE); nested Link Margin IE 10.28.6; the SRM MAC commands 10.28.7 (Request, Response, Report, Information); the MLME-SRM-REPORT and MLME-SRM-INFORMATION service primitives 10.28.8; and the MLME-SRM-REPORT/INFORMATION request/indication/confirm flows 10.28.9.",
+      "zh": "GTS（10.25）：总体要求 10.25.1；CAP 维护与 aMinCapLength 下限 10.25.2；经 GTS 请求与信标描述符进行分配 10.25.3；免 CSMA-CA 的使用 10.25.4；由设备或协调器回收 10.25.5；CFP 碎片整理 10.25.6；空闲 2×n 个超帧后过期 10.25.7；简化 GTS 规格头部 IE 10.25.8（含内容字段 10.25.8.1）；GTS 请求 MAC 命令 10.25.9（10.25.9.1）；MLME-GTS 服务原语 10.25.10——总则 10.25.10.1 及 request/confirm/indication；以及常量 aGtsDescPersistenceTime=4 与 PIB 属性 10.25.11。PHY 变更（10.26）：信标信令 10.26.1；多用途帧信令 10.26.2；嵌套 IE 10.26.3（PHY Parameter Change IE、O-QPSK PHY Mode IE、RS-GFSK Device Capabilities IE、Multi-PHY IE）；以及 MLME-PHY-OP-SWITCH 原语 10.26.4。MAC 度量（10.27）：概述 10.27.1；MAC Metrics IE 与 All MAC Metrics IE 10.27.2；度量专属 PIB 属性 10.27.3。SRM（10.28）：总体用途 10.28.1；性能度量 10.28.2（ED、失败发送占时百分比、延迟发送占时百分比、重传直方图、信道利用率、RCPI、RSNI、RSSI、噪声直方图、平均接入时延，及共享 PIB 属性）；功能 10.28.3（信令、TPC、请求/应答、报告、信息、作用范围）；增强确认帧中的 Link Margin IE 10.28.4；SRM 头部 IE 10.28.5（SRM IE）；嵌套 Link Margin IE 10.28.6；SRM MAC 命令 10.28.7（请求、应答、报告、信息）；MLME-SRM-REPORT 与 MLME-SRM-INFORMATION 服务原语 10.28.8；以及 MLME-SRM-REPORT/INFORMATION 的 request/indication/confirm 流程 10.28.9。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          383,
+          384,
+          385,
+          386,
+          387,
+          388,
+          389,
+          390,
+          391,
+          392,
+          393,
+          394,
+          395,
+          396,
+          397,
+          398,
+          399,
+          400,
+          401,
+          402,
+          403,
+          404,
+          405,
+          406,
+          407,
+          408,
+          409,
+          410,
+          411,
+          412,
+          413,
+          414,
+          415,
+          416,
+          417,
+          418,
+          419,
+          420,
+          421,
+          422
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        383,
+        384,
+        385,
+        386,
+        387,
+        388,
+        389
+      ],
+      "note": "GTS general requirements, CAP maintenance, allocation, usage, deallocation, reallocation/defragmentation, expiration"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        389,
+        390,
+        391,
+        392
+      ],
+      "note": "GTS header IE, GTS Request command, MLME-GTS primitives, aGtsDescPersistenceTime constant"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        393,
+        394,
+        395,
+        396,
+        397,
+        398,
+        399
+      ],
+      "note": "PHY parameters change notification: beacon/multipurpose signaling, nested IEs, MLME-PHY-OP-SWITCH primitives"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        400,
+        401
+      ],
+      "note": "MAC metrics overview, MAC Metrics IE / All MAC Metrics IE, metrics-specific PIB attributes"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        402,
+        403,
+        404,
+        405,
+        406,
+        407,
+        408,
+        409,
+        410
+      ],
+      "note": "SRM general, performance metrics (ED/RCPI/RSNI/RSSI/histograms/utilization), functionality, TPC, scopes"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        411,
+        412,
+        413,
+        414,
+        415,
+        416,
+        417,
+        418,
+        419,
+        420,
+        421,
+        422
+      ],
+      "note": "Link Margin IE, SRM header/nested IEs, SRM MAC commands, MLME-SRM-REPORT and MLME-SRM-INFORMATION primitives"
+    }
+  ],
+  "covers": [
+    "802154-2024:10.25.1",
+    "802154-2024:10.25.2",
+    "802154-2024:10.25.3",
+    "802154-2024:10.25.4",
+    "802154-2024:10.25.5",
+    "802154-2024:10.25.6",
+    "802154-2024:10.25.7",
+    "802154-2024:10.25.8",
+    "802154-2024:10.25.9",
+    "802154-2024:10.25.10",
+    "802154-2024:10.25.11",
+    "802154-2024:10.26.1",
+    "802154-2024:10.26.2",
+    "802154-2024:10.26.3",
+    "802154-2024:10.26.4",
+    "802154-2024:10.27.1",
+    "802154-2024:10.27.2",
+    "802154-2024:10.27.3",
+    "802154-2024:10.28.1",
+    "802154-2024:10.28.2",
+    "802154-2024:10.28.3",
+    "802154-2024:10.28.4",
+    "802154-2024:10.28.5",
+    "802154-2024:10.28.6",
+    "802154-2024:10.28.7",
+    "802154-2024:10.28.8",
+    "802154-2024:10.28.9"
+  ],
+  "track": "pan-802-15"
+}

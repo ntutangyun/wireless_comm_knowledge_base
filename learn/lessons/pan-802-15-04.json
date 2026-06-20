@@ -1,0 +1,144 @@
+{
+  "id": "pan-802-15-04",
+  "title": {
+    "en": "Carrying Control: Information Elements and MAC Commands",
+    "zh": "承载控制信息：信息元素与 MAC 命令"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A short MAC header alone cannot say everything two devices need to tell each other. Timing references, capability lists, beacon filters, ranging parameters — this is variable, extensible control information that does not fit in fixed header bits. IEEE 802.15.4 carries it in two complementary structures: Information Elements (IEs), a self-describing type-length-value framework, and MAC commands, a fixed catalog of named management messages. This lesson walks through both.",
+      "zh": "仅靠一个简短的 MAC 头部，无法表达两台设备需要互相告知的全部内容。时间参考、能力列表、信标过滤、测距参数——这些都是可变且可扩展的控制信息，无法塞进固定的头部比特里。IEEE 802.15.4 用两种互补的结构来承载它们：信息元素（IE，一种自描述的“类型-长度-值”框架），以及 MAC 命令（一份固定的、有命名的管理消息目录）。本课将逐一讲解这两者。"
+    },
+    {
+      "type": "prose",
+      "en": "An Information Element is a small, self-describing block: a header that says what it is and how long it is, followed by a content field. Because each IE announces its own length, a receiver can step through a chain of IEs it has never seen before, reading the ones it understands and skipping the rest. 802.15.4 defines two families. Header IEs (clause 7.4.2) sit in the MAC header and are typically not encrypted; Payload IEs (clause 7.4.3) sit in the frame payload and can be encrypted. A Header IE carries a 7-bit Length, an 8-bit Element ID, and a Type bit set to 0; a Payload IE carries an 11-bit Length, a 4-bit Group ID, and a Type bit set to 1 — so a payload IE can be far longer (up to 2047 octets) than a header IE (up to 127 octets).",
+      "zh": "信息元素是一个小巧的、自描述的数据块：先是一个头部，说明“它是什么、有多长”，后面跟着内容字段。由于每个 IE 都声明自己的长度，接收方可以逐个走过一串从未见过的 IE，读取它能理解的、跳过其余的。802.15.4 定义了两大族。头部 IE（条款 7.4.2）位于 MAC 头部，通常不加密；载荷 IE（条款 7.4.3）位于帧载荷中，可以被加密。头部 IE 带有 7 比特的长度字段、8 比特的 Element ID，以及置 0 的类型位；载荷 IE 带有 11 比特的长度字段、4 比特的 Group ID，以及置 1 的类型位——因此载荷 IE（最多 2047 字节）可以比头部 IE（最多 127 字节）长得多。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 480 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"4\" y=\"16\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Header IE (Type=0)</text><rect x=\"4\" y=\"24\" width=\"110\" height=\"34\"/><rect x=\"114\" y=\"24\" width=\"130\" height=\"34\"/><rect x=\"244\" y=\"24\" width=\"50\" height=\"34\"/><rect x=\"294\" y=\"24\" width=\"180\" height=\"34\"/><text x=\"12\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Length (7b)</text><text x=\"122\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Element ID (8b)</text><text x=\"252\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Type=0</text><text x=\"320\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Content (0-127 oct)</text><text x=\"4\" y=\"92\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Payload IE (Type=1)</text><rect x=\"4\" y=\"100\" width=\"130\" height=\"34\"/><rect x=\"134\" y=\"100\" width=\"110\" height=\"34\"/><rect x=\"244\" y=\"100\" width=\"50\" height=\"34\"/><rect x=\"294\" y=\"100\" width=\"180\" height=\"34\"/><text x=\"12\" y=\"121\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Length (11b)</text><text x=\"142\" y=\"121\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Group ID (4b)</text><text x=\"252\" y=\"121\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Type=1</text><text x=\"312\" y=\"121\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Content (0-2047 oct)</text></svg>",
+      "caption": {
+        "en": "The two IE formats. Both are type-length-value, but a Header IE uses an 8-bit Element ID with Type=0, while a Payload IE uses a 4-bit Group ID with Type=1 and a wider Length field.",
+        "zh": "两种 IE 格式。两者都是“类型-长度-值”结构，但头部 IE 使用 8 比特 Element ID 且类型位为 0，载荷 IE 使用 4 比特 Group ID、类型位为 1，且长度字段更宽。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Because payload IEs may be encrypted, a receiver cannot always tell by inspection where the header IE list ends and the payload begins. So the standard defines termination IEs and rules for when they are mandatory (clause 7.4.1). Header Termination 1 IE (Element ID 0x7e) marks the end of the header IEs when payload IEs follow; Header Termination 2 IE (0x7f) marks the end of the header IEs when an unencrypted MAC payload follows directly; and a Payload Termination IE (Group ID 0xf) can close the payload IE list. All three have a zero-length content field — they are pure delimiters. When no IE lists are present, the frame length and FCS alone bound the frame and no terminator is needed.",
+      "zh": "由于载荷 IE 可能被加密，接收方无法总是仅凭检查就判断出头部 IE 列表在哪里结束、载荷从哪里开始。因此标准定义了终止 IE，以及它们何时为强制的规则（条款 7.4.1）。头部终止 1 IE（Element ID 0x7e）在其后跟随载荷 IE 时标记头部 IE 的结束；头部终止 2 IE（0x7f）在其后直接跟随未加密 MAC 载荷时标记头部 IE 的结束；载荷终止 IE（Group ID 0xf）则可关闭载荷 IE 列表。这三者的内容字段长度均为零——它们是纯粹的分隔符。当不存在任何 IE 列表时，仅凭帧长度和 FCS 即可界定帧边界，无需终止符。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The self-describing length is the whole point. A device that has never heard of a new IE can still parse a frame correctly: it reads each IE's Length, skips that many octets, and moves on. This is how 802.15.4 stays forward-compatible — new IE types can be added without breaking old receivers.",
+      "zh": "自描述的长度字段正是关键所在。一台从未听说过某个新 IE 的设备，仍能正确解析整个帧：它读取每个 IE 的长度，跳过相应数量的字节，然后继续。这正是 802.15.4 保持向前兼容的方式——可以添加新的 IE 类型而不破坏旧接收方。"
+    },
+    {
+      "type": "prose",
+      "en": "Within the Header IE family, a handful are defined right here in clause 7. The Vendor Specific Header IE (Element ID 0x00, clause 7.4.2.2) reserves space for proprietary use: it carries a 3-octet Vendor OUI/CID assigned by the IEEE Registration Authority, and any content the vendor likes — a receiver that does not recognize the OUI/CID simply ignores the rest of the IE. The Global Time IE (0x29, clause 7.4.2.3) carries a 4-octet count of seconds since the Unix epoch (00:00:00 UTC, 1 January 1970), signalling that the sender has a reference to global time such as GPS. The two header termination IEs round out the set.",
+      "zh": "在头部 IE 这一族中，有几个就在条款 7 中直接定义。厂商专用头部 IE（Element ID 0x00，条款 7.4.2.2）为专有用途预留空间：它带有由 IEEE 注册管理机构分配的 3 字节 Vendor OUI/CID，以及厂商自定的任意内容——若接收方不识别该 OUI/CID，便直接忽略此 IE 的其余部分。全局时间 IE（0x29，条款 7.4.2.3）携带一个 4 字节的计数值，表示自 Unix 纪元（1970 年 1 月 1 日 00:00:00 UTC）以来经过的秒数，表明发送方拥有诸如 GPS 之类的全局时间参考。两个头部终止 IE 则补全了这一族。"
+    },
+    {
+      "type": "prose",
+      "en": "Payload IEs come in a few flavors. The Encapsulated Service Data Unit (ESDU) IE (Group ID 0x0, clause 7.4.3.2) wraps a higher-layer payload and carries it through untouched — no byte reordering. The MLME IE (0x1, clause 7.4.3.3) is the workhorse: its content is itself a sequence of Nested IEs (clause 7.4.4), letting the MAC management entity pack many sub-elements into one payload IE. A Nested IE comes in a short form (8-bit Length, 7-bit Sub-ID, Type=0, up to 255 octets) and a long form (11-bit Length, 4-bit Sub-ID, Type=1, up to 2047 octets). The Sub-ID tables hold dozens of entries — TSCH synchronization and timeslot descriptors, channel hopping, SUN PHY capabilities, ranging control elements, and so on — which is where most of the protocol's optional machinery actually lives.",
+      "zh": "载荷 IE 有几种形态。封装服务数据单元（ESDU）IE（Group ID 0x0，条款 7.4.3.2）包装一个上层载荷并原样传送——不做字节重排。MLME IE（0x1，条款 7.4.3.3）是主力：其内容本身又是一串嵌套 IE（条款 7.4.4），使 MAC 管理实体能把许多子元素打包进一个载荷 IE。嵌套 IE 分为短格式（8 比特长度、7 比特 Sub-ID、类型位 0，最多 255 字节）和长格式（11 比特长度、4 比特 Sub-ID、类型位 1，最多 2047 字节）。Sub-ID 表中列有数十个条目——TSCH 同步与时隙描述符、信道跳频、SUN PHY 能力、测距控制元素等等——协议中大多数可选机制实际上就栖身于此。"
+    },
+    {
+      "type": "prose",
+      "en": "One nested element to know is the Enhanced Beacon Filter IE (Sub-ID 0x1e, clause 7.4.4.2). Carried in an Enhanced Beacon Request, it lets a scanning device ask coordinators to respond selectively: a Permit Joining On bit, an optional minimum Link Quality threshold, a Percent Filter (a value 0x00-0x64 giving a 0-100% probability of responding, so a crowd of coordinators can thin its replies), and an Attribute IDs bitmap requesting specific information. This keeps beacon storms under control in dense deployments. There is also a Vendor Specific Nested IE (long-format Sub-ID 0x8, short-format 0x40) mirroring the header version with an OUI/CID plus opaque content.",
+      "zh": "一个值得了解的嵌套元素是增强信标过滤 IE（Sub-ID 0x1e，条款 7.4.4.2）。它装在增强信标请求中，让扫描设备能要求协调器有选择地响应：包含一个“允许加入”比特、一个可选的最低链路质量阈值、一个百分比过滤器（取值 0x00 至 0x64，给出 0% 至 100% 的响应概率，从而让一群协调器稀释各自的回复），以及一个用于请求特定信息的 Attribute IDs 位图。这能在密集部署中抑制信标风暴。此外还有厂商专用嵌套 IE（长格式 Sub-ID 0x8、短格式 0x40），与头部版本对应，同样带有 OUI/CID 加上不透明内容。"
+    },
+    {
+      "type": "prose",
+      "en": "The other way to carry control is the MAC command (clause 7.5). Unlike the open-ended IE framework, MAC commands are a closed, numbered catalog. Each command is a frame whose payload begins with a one-octet Command ID field (clause 7.5.1) drawn from Table 7-11. The familiar lifecycle messages live here: Association Request/Response (0x01/0x02), Disassociation Notification (0x03), Data Request (0x04, how a sleeping device polls its coordinator for buffered data), PAN ID Conflict Notification (0x05), Orphan Notification (0x06), Beacon Request (0x07), Coordinator Realignment (0x08), and GTS Request (0x09) for guaranteed time slots — plus extension families for DSME, RIT, TRLE, DBS, SRM, and ranging. Every device must support commands 0x07 and 0x08; optional features bring their own command sets.",
+      "zh": "承载控制信息的另一种方式是 MAC 命令（条款 7.5）。与开放式的 IE 框架不同，MAC 命令是一份封闭的、编了号的目录。每条命令都是一个帧，其载荷以一个单字节的命令 ID 字段（条款 7.5.1）开头，取值来自表 7-11。我们熟悉的生命周期消息都在这里：关联请求/响应（0x01/0x02）、去关联通知（0x03）、数据请求（0x04，休眠设备据此向协调器轮询缓存数据）、PAN ID 冲突通知（0x05）、孤儿通知（0x06）、信标请求（0x07）、协调器重对齐（0x08），以及用于保证时隙的 GTS 请求（0x09）——再加上 DSME、RIT、TRLE、DBS、SRM 和测距等扩展族。每台设备都必须支持命令 0x07 和 0x08；可选特性会自带各自的命令集。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant D as Scanning device\n  participant C as Coordinator\n  D->>C: Beacon Request (0x07, broadcast PAN/addr)\n  C-->>D: Beacon / Enhanced Beacon\n  D->>C: Association Request (0x01)\n  C-->>D: Association Response (0x02, short address)\n  Note over C,D: later, if coordinator moves\n  C->>D: Coordinator Realignment (0x08, new PAN ID/channel)",
+      "zh": "sequenceDiagram\n  participant D as 扫描设备\n  participant C as 协调器\n  D->>C: 信标请求 (0x07，广播 PAN/地址)\n  C-->>D: 信标 / 增强信标\n  D->>C: 关联请求 (0x01)\n  C-->>D: 关联响应 (0x02，短地址)\n  Note over C,D: 之后，若协调器变更\n  C->>D: 协调器重对齐 (0x08，新 PAN ID/信道)"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7 spells out the formats of a few commands directly. The Beacon Request command (0x07, clause 7.5.2) has no content field at all — it is a pure trigger, sent with short destination addressing to the broadcast PAN ID and broadcast short address, asking coordinators in range to emit a beacon. The Enhanced Beacon Request command (0x07 with Frame Version 0b10, clause 7.5.3) also has no content field but may carry an Enhanced Beacon Filter IE and a set of IE IDs, letting a device ask only for the beacons and attributes it cares about. The Coordinator Realignment command (0x08, clause 7.5.4) tells devices a coordinator is changing parameters: its content field carries a new PAN ID, the Coordinator Short Address, and an optional Channel Number with an Extended Channel Number bit that, when set, lets the Reserved/Channel Number field supply the high bits of a wider channel number. Finally, the Vendor Specific command (0x24, clause 7.5.5) is the command-layer twin of the vendor IEs: a 3-octet OUI/CID plus opaque vendor content, ignored by devices that do not recognize the identifier.",
+      "zh": "条款 7 直接给出了几条命令的格式。信标请求命令（0x07，条款 7.5.2）完全没有内容字段——它是一个纯触发器，以短地址寻址方式发往广播 PAN ID 和广播短地址，请求范围内的协调器发出信标。增强信标请求命令（0x07，帧版本为 0b10，条款 7.5.3）同样没有内容字段，但可携带一个增强信标过滤 IE 及一组 IE ID，让设备只请求它关心的信标和属性。协调器重对齐命令（0x08，条款 7.5.4）告知设备某协调器正在更改参数：其内容字段携带新的 PAN ID、协调器短地址，以及一个可选的信道号字段，外加一个扩展信道号比特——该位置 1 时，保留/信道号字段可提供更宽信道号的高位。最后，厂商专用命令（0x24，条款 7.5.5）是厂商类 IE 在命令层的孪生体：3 字节的 OUI/CID 加上不透明的厂商内容，不识别该标识符的设备会将其忽略。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every IE and MAC command clause taught here",
+        "zh": "覆盖地图：本课讲到的每一个 IE 与 MAC 命令条款"
+      },
+      "en": "IE framework (clause 7.4): 7.4.1 IE list termination (HT1/HT2 rules, zero-length delimiters); 7.4.2 Header IEs — 7.4.2.1 format (7-bit Length, 8-bit Element ID, Type=0), 7.4.2.2 Vendor Specific Header IE (0x00), 7.4.2.3 Global Time IE (0x29), 7.4.2.4 Header Termination 1 (0x7e), 7.4.2.5 Header Termination 2 (0x7f); 7.4.3 Payload IEs — 7.4.3.1 format (11-bit Length, 4-bit Group ID, Type=1), 7.4.3.2 ESDU IE (0x0), 7.4.3.3 MLME IE (0x1), 7.4.3.4 Payload Termination IE (0xf); 7.4.4 Nested IE — 7.4.4.1 short/long formats and Sub-ID tables, 7.4.4.2 Enhanced Beacon Filter IE (0x1e), 7.4.4.3 Vendor Specific Nested IE. MAC commands (clause 7.5): 7.5.1 Command ID field and Table 7-11 catalog (Association, Data Request, GTS Request, Orphan, PAN ID Conflict, plus extension families); 7.5.2 Beacon Request (0x07); 7.5.3 Enhanced Beacon Request (0x07, FV=0b10); 7.5.4 Coordinator Realignment (0x08) with PAN ID, short address, and extended channel number; 7.5.5 Vendor Specific command (0x24).",
+      "zh": "IE 框架（条款 7.4）：7.4.1 IE 列表终止（HT1/HT2 规则、零长度分隔符）；7.4.2 头部 IE——7.4.2.1 格式（7 比特长度、8 比特 Element ID、类型位 0）、7.4.2.2 厂商专用头部 IE（0x00）、7.4.2.3 全局时间 IE（0x29）、7.4.2.4 头部终止 1（0x7e）、7.4.2.5 头部终止 2（0x7f）；7.4.3 载荷 IE——7.4.3.1 格式（11 比特长度、4 比特 Group ID、类型位 1）、7.4.3.2 ESDU IE（0x0）、7.4.3.3 MLME IE（0x1）、7.4.3.4 载荷终止 IE（0xf）；7.4.4 嵌套 IE——7.4.4.1 短/长格式及 Sub-ID 表、7.4.4.2 增强信标过滤 IE（0x1e）、7.4.4.3 厂商专用嵌套 IE。MAC 命令（条款 7.5）：7.5.1 命令 ID 字段与表 7-11 目录（关联、数据请求、GTS 请求、孤儿、PAN ID 冲突，以及扩展族）；7.5.2 信标请求（0x07）；7.5.3 增强信标请求（0x07，帧版本 0b10）；7.5.4 协调器重对齐（0x08），含 PAN ID、短地址与扩展信道号；7.5.5 厂商专用命令（0x24）。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          106,
+          107,
+          108,
+          109,
+          110
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        96,
+        97
+      ],
+      "note": "7.4 IEs; 7.4.1 IE list termination (Table 7-6 HT1/HT2 rules); 7.4.2.1 Header IE format"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        98,
+        99,
+        100
+      ],
+      "note": "Header IE Element ID table; 7.4.2.2 Vendor Specific Header IE; 7.4.2.3 Global Time IE; 7.4.2.4/7.4.2.5 header termination IEs; 7.4.3 Payload IEs"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        101,
+        106
+      ],
+      "note": "7.4.3.3 MLME IE; 7.4.3.4 Payload Termination IE; 7.4.4.1 nested IE short/long formats; 7.4.4.2 Enhanced Beacon Filter IE; 7.4.4.3 Vendor Specific Nested IE"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        107,
+        108,
+        109,
+        110
+      ],
+      "note": "7.5 MAC commands; 7.5.1 Command ID field and Table 7-11; 7.5.2 Beacon Request; 7.5.3 Enhanced Beacon Request; 7.5.4 Coordinator Realignment; 7.5.5 Vendor Specific command"
+    }
+  ],
+  "covers": [
+    "802154-2024:7.4.1",
+    "802154-2024:7.4.2",
+    "802154-2024:7.4.3",
+    "802154-2024:7.4.4",
+    "802154-2024:7.5.1",
+    "802154-2024:7.5.2",
+    "802154-2024:7.5.3",
+    "802154-2024:7.5.4",
+    "802154-2024:7.5.5"
+  ],
+  "track": "pan-802-15"
+}

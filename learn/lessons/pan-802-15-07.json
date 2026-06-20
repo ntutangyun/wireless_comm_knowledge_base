@@ -1,0 +1,160 @@
+{
+  "id": "pan-802-15-07",
+  "title": {
+    "en": "Keys and Counters: the Auxiliary Security Header and CCM-star",
+    "zh": "密钥与计数器：辅助安全头与 CCM*"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "When an 802.15.4 frame is protected, the receiver needs to know three things before it can even attempt to verify or decrypt it: how strongly the frame was protected, which counter value was used so replays can be detected, and which key to reach for. Clause 9.4.1 collects exactly that into a small, variable-length block called the Auxiliary Security Header (ASH). It rides inside the MAC header and is present only when the frame's Security Enabled bit is set. The ASH has three parts in order: a 1-octet Security Control field, an optional Frame Counter field, and an optional Key Identifier field.",
+      "zh": "当一个 802.15.4 帧被保护时，接收方在尝试验证或解密之前必须先知道三件事：这一帧被保护到何种强度、使用了哪个计数器值（以便检测重放）、以及应该取用哪把密钥。第 9.4.1 条把这些信息恰好打包进一个长度可变的小区块——辅助安全头（Auxiliary Security Header，简称 ASH）。它位于 MAC 头部之内，仅当该帧的“安全使能”位置 1 时才出现。ASH 依次包含三个部分：1 个八位组的安全控制字段、可选的帧计数器字段、以及可选的密钥标识符字段。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"40\" width=\"120\" height=\"40\"/><rect x=\"130\" y=\"40\" width=\"150\" height=\"40\"/><rect x=\"280\" y=\"40\" width=\"230\" height=\"40\"/><text x=\"70\" y=\"30\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">1 octet</text><text x=\"205\" y=\"30\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">0 / 4 octets</text><text x=\"395\" y=\"30\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">0 / 1 / 5 / 9 octets</text><text x=\"70\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Security Control</text><text x=\"205\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Frame Counter</text><text x=\"395\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Key Identifier</text><text x=\"260\" y=\"105\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Auxiliary Security Header</text></svg>",
+      "caption": {
+        "en": "The auxiliary security header (Figure 9-5): a 1-octet Security Control field, then optional Frame Counter and Key Identifier fields whose presence and size depend on the control bits.",
+        "zh": "辅助安全头（图 9-5）：1 个八位组的安全控制字段，其后是可选的帧计数器与密钥标识符字段；它们是否出现及其长度取决于控制位。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The Security Control field (9.4.2) is the steering wheel. Its low three bits are the Security Level (9.4.2.2): level 0 means no protection, levels 1-3 add a Message Integrity Code (MIC) of 32, 64, or 128 bits for authenticity only, and levels 5-7 add both encryption and a MIC (ENC-MIC-32/64/128). Level 4 — confidentiality without authenticity — is deprecated and must be discarded on receipt, because encrypting without authenticating lets an attacker tamper with ciphertext undetected. Next, the Key Identifier Mode field (9.4.2.3) says whether the key is found implicitly (mode 0, from who is talking to whom) or explicitly named in the header (modes 1-3). Two flags round it out: Frame Counter Suppression (9.4.2.4), which omits the per-frame counter and instead uses a shared global counter such as the TSCH Absolute Slot Number (ASN), and ASN in Nonce (9.4.2.5), which selects whether the ASN rather than the frame counter feeds the nonce.",
+      "zh": "安全控制字段（9.4.2）是方向盘。其低 3 位是安全级别（9.4.2.2）：级别 0 表示不保护；级别 1 至 3 仅添加 32、64 或 128 位的消息完整性码（Message Integrity Code，MIC），只提供真实性；级别 5 至 7 则同时提供加密与 MIC（ENC-MIC-32/64/128）。级别 4——只加密不认证——已被废弃，接收时必须丢弃，因为只加密而不认证会让攻击者得以在不被察觉的情况下篡改密文。接着，密钥标识符模式字段（9.4.2.3）说明密钥是隐式确定（模式 0，由通信双方推断）还是在头部中显式命名（模式 1 至 3）。最后还有两个标志位：帧计数器抑制（9.4.2.4），它省去逐帧计数器，转而使用诸如 TSCH 绝对时隙号（ASN）这样的共享全局计数器；以及随机数中的 ASN（9.4.2.5），它选择由 ASN 而非帧计数器来生成随机数（nonce）。"
+    },
+    {
+      "type": "prose",
+      "en": "The Frame Counter field (9.4.3) is a 32-bit unsigned number that does double duty: it feeds the cryptographic nonce so no two protected frames under one key ever reuse the same input, and it gives the receiver replay protection — an arriving counter that is not newer than what was last seen is rejected. Historically each device kept one outgoing counter; this revision also allows a per-key counter (secFrameCounterPerKey). When any counter hits its maximum the key must be retired and replaced, guaranteeing every frame's nonce stays unique. The Key Identifier field (9.4.4) appears only for key id modes other than 0. It carries an optional Key Source (the originator of a group key — a 4-octet PAN ID plus short address, or an 8-octet extended address) and always a 1-octet Key Index that distinguishes keys from the same originator.",
+      "zh": "帧计数器字段（9.4.3）是一个 32 位无符号数，身兼两职：它参与生成密码学随机数，确保在同一把密钥下被保护的任意两帧绝不会重用相同的输入；同时它为接收方提供重放保护——若到来的计数器不比上次见到的更新，就予以拒绝。过去每台设备只维护一个发送计数器；本版标准还允许采用逐密钥计数器（secFrameCounterPerKey）。任何计数器一旦达到最大值，该密钥必须停用并更换，从而保证每一帧的随机数都保持唯一。密钥标识符字段（9.4.4）仅在密钥标识模式不为 0 时出现。它携带可选的密钥来源（组密钥的发起者——可以是 4 个八位组的 PAN ID 加短地址，或 8 个八位组的扩展地址），并始终携带 1 个八位组的密钥索引，用以区分同一发起者的不同密钥。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[Security Control byte] --> B[Security Level]\n  A --> C[Key Id Mode]\n  A --> D[Frame Counter Suppression]\n  A --> E[ASN in Nonce]\n  C -->|mode 0| F[implicit key]\n  C -->|mode 1-3| G[explicit Key Identifier]\n  B --> H[CCM-star nonce + MIC/encrypt]",
+      "zh": "flowchart LR\n  A[安全控制字节] --> B[安全级别]\n  A --> C[密钥标识模式]\n  A --> D[帧计数器抑制]\n  A --> E[随机数中的ASN]\n  C -->|模式0| F[隐式密钥]\n  C -->|模式1-3| G[显式密钥标识符]\n  B --> H[CCM星 随机数+MIC/加密]"
+    },
+    {
+      "type": "prose",
+      "en": "The header tells you what protection was requested; the MAC PIB (PAN Information Base) holds the policy and the secrets that make it real. Clause 9.5.1 gathers the security-related attributes into one table: a key-lookup list, a device list, a security-level list, plus the device-wide outgoing frame counter and the default security parameters for auto-generated frames such as beacons and data-request commands. A short but important note in 9.5.1 warns that the MAC may update these attributes asynchronously from the upper layer's reads and writes, so implementations should synchronize carefully to avoid a security gap.",
+      "zh": "头部告诉你请求了什么保护；而 MAC PIB（PAN 信息库）则保存着使这些保护落地的策略与秘密。第 9.5.1 条把与安全相关的属性汇集到一张表中：密钥查找列表、设备列表、安全级别列表，再加上设备级的发送帧计数器，以及用于自动生成帧（如信标和数据请求命令）的默认安全参数。9.5.1 中一条简短却重要的注记提醒：MAC 可能与上层的读写异步地更新这些属性，因此实现应当谨慎地保持同步，以避免出现安全缺口。"
+    },
+    {
+      "type": "prose",
+      "en": "Walking the tables in order: secAeadAlgorithm (9.5.2) names which cipher a key uses — AES-128-CCM*, AES-128-CCM, AES-256-CCM, or a future value. The secKeyIdLookupDescriptor (9.5.3) is how a receiver maps the on-the-wire key id (or the implicit addressing) back to a stored key. That key lives in the secKeyDescriptor (9.5.4): the key bytes themselves, the algorithm, an optional per-key frame counter, and the list of frame types it is allowed to protect. Per-key incoming counters for individual remote devices are tracked by the secKeyDeviceFrameCounterDescriptor (9.5.5). The secKeyUsageDescriptor (9.5.6) and secKeyIeUsageDescriptor (9.5.7) restrict a key to specific frame types, command IDs, and even specific information elements (IEs).",
+      "zh": "按顺序逐表浏览：secAeadAlgorithm（9.5.2）指明某把密钥所用的密码算法——AES-128-CCM*、AES-128-CCM、AES-256-CCM，或某个未来取值。secKeyIdLookupDescriptor（9.5.3）是接收方将链路上的密钥标识（或隐式寻址）映射回已存储密钥的方式。该密钥保存在 secKeyDescriptor（9.5.4）中：包含密钥字节本身、算法、可选的逐密钥帧计数器，以及它被允许保护的帧类型列表。针对各个远端设备的逐密钥接收计数器由 secKeyDeviceFrameCounterDescriptor（9.5.5）跟踪。secKeyUsageDescriptor（9.5.6）与 secKeyIeUsageDescriptor（9.5.7）则把一把密钥限定于特定的帧类型、命令 ID，乃至特定的信息元素（IE）。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining three tables enforce who and how strongly. The secDeviceDescriptor (9.5.8) is one entry per remote peer: its PAN ID, short and extended addresses, a minimum acceptable incoming frame counter (anything lower is a replay), and an exempt flag letting a trusted device bypass the minimum security level. The secSecurityLevelDescriptor (9.5.9) is the policy table — for each frame type and command it lists the allowed algorithm/security-level tuples, so a node can demand, say, at least ENC-MIC-64 on data frames. Finally the secIeSecurityLevelDescriptor (9.5.10) applies that same per-policy idea at the granularity of individual IEs, so a single information element can carry its own minimum-protection requirement.",
+      "zh": "其余三张表负责强制执行“是谁”以及“多强”。secDeviceDescriptor（9.5.8）为每个远端对端各设一条目：其 PAN ID、短地址与扩展地址、可接受的最小入向帧计数器（任何更低者即视为重放），以及一个豁免标志，让受信任设备得以绕过最低安全级别。secSecurityLevelDescriptor（9.5.9）是策略表——它为每种帧类型和命令列出所允许的“算法/安全级别”组合，于是节点可以要求，譬如对数据帧至少使用 ENC-MIC-64。最后，secIeSecurityLevelDescriptor（9.5.10）把同样的逐策略思想细化到单个 IE 的粒度，使某个信息元素能够携带它自己的最低保护要求。"
+    },
+    {
+      "type": "prose",
+      "en": "Underneath all of this sits one cipher mode: CCM* (Annex B, normative). CCM* combines AES counter-mode encryption with CBC-MAC authentication in a single keyed primitive, and it extends the classic CCM mode to also support authentication-only and variable-length tags. The instantiation here uses a 128-bit AES block, a length parameter L = 2, a MIC length M of 4, 8, or 16 octets, and a 13-octet nonce (15 minus L). The forward transformation runs an input transformation (formatting and padding the additional authenticated data a and the message m), an authentication transformation (the CBC-MAC producing tag T), and an encryption transformation (counter-mode keystream blocks Ai). A critical rule: within the scope of one key the nonce must never repeat — which is exactly why the frame counter exists. CCM* also caps total use at fewer than 2^61 block-cipher calls per key and forbids leaking any plaintext when verification fails.",
+      "zh": "支撑这一切的是同一种密码模式：CCM*（附录 B，规范性）。CCM* 在单一带密钥原语中将 AES 计数器模式加密与 CBC-MAC 认证结合起来，并在经典 CCM 模式之上扩展，使其同时支持仅认证以及可变长度标签。此处的实例化采用 128 位 AES 分组、长度参数 L = 2、MIC 长度 M 为 4、8 或 16 个八位组，以及 13 个八位组的随机数（15 减 L）。正向变换依次执行：输入变换（对附加认证数据 a 和消息 m 进行格式化与填充）、认证变换（用 CBC-MAC 产生标签 T）、以及加密变换（计数器模式的密钥流分组 Ai）。一条关键规则：在同一把密钥的作用域内，随机数绝不能重复——这正是帧计数器存在的原因。CCM* 还把每把密钥的总用量限制在少于 2^61 次分组密码调用，并禁止在验证失败时泄露任何明文。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why the deprecation of level 4 matters: CCM-style counter-mode encryption is malleable. Without a MIC, an attacker can flip ciphertext bits and flip the corresponding plaintext bits, and the receiver has no way to notice. That is why 802.15.4 ties encryption and authentication together (the ENC-MIC levels) and discards any encrypt-only frame.",
+      "zh": "为何废弃级别 4 很重要：CCM 式的计数器模式加密具有“可延展性”。若没有 MIC，攻击者可以翻转密文比特，从而翻转对应的明文比特，而接收方无从察觉。这正是 802.15.4 把加密与认证绑定在一起（即 ENC-MIC 各级别）、并丢弃任何仅加密帧的原因。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause in this lesson and where it lives in the standard",
+        "zh": "覆盖图：本课涉及的每个条款及其在标准中的位置"
+      },
+      "en": "Auxiliary security header (9.4): 9.4.1 General layout (Security Control + Frame Counter + Key Identifier, present only when Security Enabled = 1); 9.4.2 Security Control field — 9.4.2.1 general, 9.4.2.2 Security Level (Table 9-6: levels 0-7, MIC-32/64/128, ENC variants, level 4 deprecated), 9.4.2.3 Key Identifier Mode (Table 9-7: implicit vs explicit, 0/1/5/9-octet Key Identifier), 9.4.2.4 Frame Counter Suppression, 9.4.2.5 ASN in Nonce; 9.4.3 Frame Counter field (replay protection, per-device vs per-key, key retirement at max); 9.4.4 Key Identifier field — 9.4.4.1 general, 9.4.4.2 Key Source, 9.4.4.3 Key Index. Security PIB (9.5): 9.5.1 generic attribute table (Table 9-8); 9.5.2 secAeadAlgorithm (Table 9-9: AES-128/256-CCM/CCM*); 9.5.3 secKeyIdLookupDescriptor; 9.5.4 secKeyDescriptor (incl. secAeadAlgorithm and per-key counter); 9.5.5 secKeyDeviceFrameCounterDescriptor; 9.5.6 secKeyUsageDescriptor; 9.5.7 secKeyIeUsageDescriptor; 9.5.8 secDeviceDescriptor (min frame counter, exempt); 9.5.9 secSecurityLevelDescriptor (allowed algorithm/level tuples); 9.5.10 secIeSecurityLevelDescriptor (per-IE policy). Annex B (normative): CCM* and CCM mode of operation — AES-128/256 block cipher, L=2, M=4/8/16, 13-octet nonce, forward (input/auth/encrypt) and inverse (decrypt/auth-check) transformations, nonce-uniqueness and 2^61-call restrictions. Annex C (informative): worked test vectors for CCM* applied to beacon, MAC command, and data frames. Annex D (informative): AEAD algorithm support — how secAeadAlgorithm was added to secKeyDescriptor, variable-length keys, and the AEAD/RFC 5116 expectation for future algorithms.",
+      "zh": "辅助安全头（9.4）：9.4.1 总体布局（安全控制 + 帧计数器 + 密钥标识符，仅当安全使能 = 1 时出现）；9.4.2 安全控制字段——9.4.2.1 概述、9.4.2.2 安全级别（表 9-6：级别 0 至 7，MIC-32/64/128、ENC 变体、级别 4 已废弃）、9.4.2.3 密钥标识模式（表 9-7：隐式与显式，0/1/5/9 个八位组的密钥标识符）、9.4.2.4 帧计数器抑制、9.4.2.5 随机数中的 ASN；9.4.3 帧计数器字段（重放保护、逐设备与逐密钥、计数器达最大值时停用密钥）；9.4.4 密钥标识符字段——9.4.4.1 概述、9.4.4.2 密钥来源、9.4.4.3 密钥索引。安全 PIB（9.5）：9.5.1 通用属性表（表 9-8）；9.5.2 secAeadAlgorithm（表 9-9：AES-128/256-CCM/CCM*）；9.5.3 secKeyIdLookupDescriptor；9.5.4 secKeyDescriptor（含 secAeadAlgorithm 与逐密钥计数器）；9.5.5 secKeyDeviceFrameCounterDescriptor；9.5.6 secKeyUsageDescriptor；9.5.7 secKeyIeUsageDescriptor；9.5.8 secDeviceDescriptor（最小帧计数器、豁免）；9.5.9 secSecurityLevelDescriptor（允许的算法/级别组合）；9.5.10 secIeSecurityLevelDescriptor（逐 IE 策略）。附录 B（规范性）：CCM* 与 CCM 运行模式——AES-128/256 分组密码、L=2、M=4/8/16、13 个八位组的随机数，正向（输入/认证/加密）与逆向（解密/认证检查）变换，以及随机数唯一性与 2^61 次调用上限的限制。附录 C（资料性）：将 CCM* 应用于信标帧、MAC 命令帧与数据帧的完整测试向量示例。附录 D（资料性）：AEAD 算法支持——secAeadAlgorithm 如何被加入 secKeyDescriptor、可变长度密钥，以及对未来算法的 AEAD/RFC 5116 期望。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          173,
+          174,
+          175,
+          176,
+          177,
+          178,
+          179,
+          180,
+          181,
+          922,
+          923,
+          924,
+          925,
+          926,
+          927,
+          928,
+          940
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        173,
+        174,
+        175,
+        176
+      ],
+      "note": "9.4 Auxiliary security header: General, Security Control (Security Level Table 9-6, Key Identifier Mode Table 9-7, Frame Counter Suppression, ASN in Nonce), Frame Counter, Key Identifier (Key Source, Key Index)."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        176,
+        177,
+        178,
+        179,
+        180,
+        181
+      ],
+      "note": "9.5 Security-related MAC PIB attributes: generic table 9-8, secAeadAlgorithm, secKeyIdLookupDescriptor, secKeyDescriptor, secKeyDeviceFrameCounterDescriptor, secKeyUsageDescriptor, secKeyIeUsageDescriptor, secDeviceDescriptor, secSecurityLevelDescriptor, secIeSecurityLevelDescriptor."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        922,
+        923,
+        924,
+        925,
+        926,
+        927
+      ],
+      "note": "Annex B (normative): CCM* and CCM mode of operation — building blocks, forward and inverse transformations, nonce uniqueness, restrictions."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        928,
+        940
+      ],
+      "note": "Annex C (informative) test vectors for CCM* on beacon/command/data frames; Annex D (informative) AEAD algorithm support."
+    }
+  ],
+  "covers": [
+    "802154-2024:9.4.1",
+    "802154-2024:9.4.2",
+    "802154-2024:9.4.3",
+    "802154-2024:9.4.4",
+    "802154-2024:9.5.1",
+    "802154-2024:9.5.2",
+    "802154-2024:9.5.3",
+    "802154-2024:9.5.4",
+    "802154-2024:9.5.5",
+    "802154-2024:9.5.6",
+    "802154-2024:9.5.7",
+    "802154-2024:9.5.8",
+    "802154-2024:9.5.9",
+    "802154-2024:9.5.10",
+    "802154-2024:Annex_B",
+    "802154-2024:Annex_C",
+    "802154-2024:Annex_D"
+  ],
+  "track": "pan-802-15"
+}

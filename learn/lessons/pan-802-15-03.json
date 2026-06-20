@@ -1,0 +1,176 @@
+{
+  "id": "pan-802-15-03",
+  "title": {
+    "en": "The 802.15.4 Frame: Addresses, General Format and Frame Types",
+    "zh": "802.15.4 帧：地址、通用格式与帧类型"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every conversation in an 802.15.4 network — the low-rate radio under Zigbee and Thread — happens through MAC frames. A MAC (Medium Access Control) frame is the structured packet the radio actually sends over the air. Clause 7 of the standard defines exactly how those frames are laid out: which bytes mean what, in what order, and which pieces are optional. This lesson walks the anatomy from the outside in: first how a device is identified, then the one general frame skeleton that most frames share, and finally how each specific frame type (Beacon, Data, Acknowledgment, MAC Command, Multipurpose, and the special Fragment and Extended forms) fills that skeleton in.",
+      "zh": "在 802.15.4 网络（即 Zigbee 与 Thread 底层的低速率无线技术）中，所有通信都通过 MAC 帧完成。MAC（介质访问控制）帧就是无线电真正通过空口发送的结构化数据包。标准的第 7 章精确定义了这些帧的排布方式：哪些字节代表什么含义、按什么顺序排列、哪些部分是可选的。本课从外到内逐层剖析帧结构：先看设备如何被标识，再看大多数帧共用的那一套通用帧骨架，最后看每种具体帧类型（信标帧、数据帧、确认帧、MAC 命令帧、多用途帧，以及特殊的分片帧和扩展帧）如何填充这套骨架。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with identity. Clause 7.1 says every device has an extended address that is a 64-bit EUI-64 (Extended Unique Identifier), assigned through the IEEE Registration Authority — globally unique, like a hardware serial number burned into the chip. This 64-bit address is heavy to carry in every tiny frame, so a device that has joined a PAN (Personal Area Network) is usually also given a lighter 16-bit short address to use day to day. The frame format lets you put either form into the address fields, which is why addressing modes matter so much later.",
+      "zh": "先从“身份”说起。第 7.1 节规定每个设备都有一个扩展地址，它是一个 64 位的 EUI-64（扩展唯一标识符），由 IEEE 注册管理机构分配——全球唯一，就像烧录进芯片的硬件序列号。在每个微小的帧里都携带这 64 位地址代价过高，因此已加入某个 PAN（个域网）的设备通常还会获得一个更轻量的 16 位短地址供日常使用。帧格式允许在地址字段中放入这两种形式中的任意一种，这也是为什么后面“寻址模式”如此重要。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 760 120\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\" font-size=\"11\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"40\" width=\"70\" height=\"34\"/><rect x=\"80\" y=\"40\" width=\"55\" height=\"34\"/><rect x=\"135\" y=\"40\" width=\"170\" height=\"34\"/><rect x=\"305\" y=\"40\" width=\"95\" height=\"34\"/><rect x=\"400\" y=\"40\" width=\"55\" height=\"34\"/><rect x=\"455\" y=\"40\" width=\"75\" height=\"34\"/><rect x=\"530\" y=\"40\" width=\"75\" height=\"34\"/><rect x=\"605\" y=\"40\" width=\"95\" height=\"34\"/><rect x=\"700\" y=\"40\" width=\"50\" height=\"34\"/></g><g fill=\"currentColor\" text-anchor=\"middle\"><text x=\"45\" y=\"61\">Frame Ctrl</text><text x=\"107\" y=\"61\">Seq No</text><text x=\"220\" y=\"61\">Addressing fields</text><text x=\"352\" y=\"61\">Aux Security</text><text x=\"427\" y=\"61\">IE</text><text x=\"492\" y=\"61\">Payload</text><text x=\"567\" y=\"61\">FCS</text></g><g fill=\"currentColor\" text-anchor=\"middle\" font-size=\"10\"><text x=\"45\" y=\"31\">1/2</text><text x=\"107\" y=\"31\">0/1</text><text x=\"220\" y=\"31\">variable</text><text x=\"352\" y=\"31\">variable</text><text x=\"427\" y=\"31\">variable</text><text x=\"492\" y=\"31\">variable</text><text x=\"567\" y=\"31\">2/4</text></g><g fill=\"currentColor\" text-anchor=\"middle\" font-size=\"10\"><text x=\"175\" y=\"94\">MHR (header)</text><text x=\"460\" y=\"94\">MAC Payload</text><text x=\"567\" y=\"94\">MFR</text></g></svg>",
+      "caption": {
+        "en": "The general MAC frame (Figure 7-1): a header (MHR) carrying Frame Control, Sequence Number, addressing and security, then the MAC Payload (IEs + frame payload), then the FCS footer (MFR). Numbers are octet counts; '0/...' means the field may be absent.",
+        "zh": "通用 MAC 帧（图 7-1）：帧头（MHR）携带帧控制、序列号、寻址与安全信息，随后是 MAC 净荷（信息元素 + 帧净荷），最后是 FCS 帧尾（MFR）。数字表示字节数；“0/…”表示该字段可能不存在。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7.2 defines that general MAC frame format. Reading left to right (Figure 7-1): the MAC Header (MHR) holds the Frame Control field, an optional Sequence Number, the addressing fields, an optional Auxiliary Security Header, and optional header IEs; then comes the MAC Payload (payload IEs plus the frame payload); and finally the MAC Footer (MFR) is just the FCS. The MHR fields always appear in this fixed order, but many are optional — the Frame Control field at the front is what tells the receiver which optional pieces are actually present. (Two frame types, Fragment and Extended, break this skeleton and are formatted differently, as we'll see at the end.)",
+      "zh": "第 7.2 节定义了这套通用 MAC 帧格式。从左到右读（图 7-1）：MAC 帧头（MHR）包含帧控制字段、可选的序列号、寻址字段、可选的辅助安全头，以及可选的头部信息元素；接着是 MAC 净荷（净荷信息元素加帧净荷）；最后的 MAC 帧尾（MFR）就是 FCS。MHR 中的字段总是按这个固定顺序出现，但其中许多是可选的——位于最前面的帧控制字段正是用来告诉接收方哪些可选部分实际存在。（有两种帧类型，分片帧和扩展帧，会打破这套骨架，采用不同格式，我们将在末尾看到。）"
+    },
+    {
+      "type": "prose",
+      "en": "The Frame Control field (7.2.2) is the steering wheel of the whole frame. Its 16 bits pack: the Frame Type (7.2.2.2, three bits selecting Beacon/Data/Ack/MAC command/Multipurpose/Fragment/Extended per Table 7-1); a Security Enabled bit (7.2.2.3) that, when set, means an Auxiliary Security Header is present; a Frame Pending bit (7.2.2.4) telling the recipient the sender has more queued for it; an Acknowledgment Request (AR) bit (7.2.2.5) demanding an Ack back; a PAN ID Compression bit (7.2.2.6) that drops a redundant PAN ID when source and destination share one; a Sequence Number Suppression bit (7.2.2.7) and an IE Present bit (7.2.2.8), both usable only from frame version 0b10 onward; the Destination and Source Addressing Mode fields (7.2.2.9, 7.2.2.11, two bits each — none, 16-bit short, or 64-bit extended, per Table 7-3); and a Frame Version field (7.2.2.10) that marks which generation of the standard the frame follows.",
+      "zh": "帧控制字段（7.2.2）是整个帧的“方向盘”。它的 16 个比特打包了：帧类型（7.2.2.2，用三个比特按表 7-1 选择信标/数据/确认/MAC 命令/多用途/分片/扩展）；安全使能位（7.2.2.3），置一时表示存在辅助安全头；帧挂起位（7.2.2.4），告知接收方发送方还有更多数据排队等它；确认请求（AR）位（7.2.2.5），要求对方回送确认帧；PAN ID 压缩位（7.2.2.6），当源与目的共用同一个 PAN ID 时省去冗余的那一个；序列号抑制位（7.2.2.7）和 IE 存在位（7.2.2.8），二者仅在帧版本为 0b10 及以后可用；目的与源寻址模式字段（7.2.2.9、7.2.2.11，各占两位——按表 7-3 表示无地址、16 位短地址或 64 位扩展地址）；以及帧版本字段（7.2.2.10），标明该帧遵循标准的哪一代。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why optional fields and compression? 802.15.4 radios are tiny, battery-powered, and low-rate. Every byte costs airtime and energy. PAN ID Compression, Sequence Number Suppression, and 'none' addressing modes all exist so a frame carries only the bytes it truly needs — an Imm-Ack, for example, is just Frame Control + Sequence Number + FCS, nothing else.",
+      "zh": "为什么要有可选字段和压缩机制？802.15.4 的无线电设备体积小、靠电池供电、速率低，每一个字节都要消耗空口时间和能量。PAN ID 压缩、序列号抑制以及“无地址”寻址模式的存在，都是为了让一个帧只携带它真正需要的字节——例如一个即时确认帧（Imm-Ack）就只有帧控制 + 序列号 + FCS，别无其他。"
+    },
+    {
+      "type": "prose",
+      "en": "After Frame Control come the remaining general-format fields, each defined by its own subclause. The Sequence Number (7.2.3) is a per-frame identifier — a BSN for a Beacon, an EBSN for an Enhanced Beacon, or a DSN for everything else — used to match retransmissions and acknowledgments. Then the four addressing fields: Destination PAN ID (7.2.4) and Destination Address (7.2.5) name who the frame is for; Source PAN ID (7.2.6) and Source Address (7.2.7) name who sent it. Each address field is only present when its addressing mode in Frame Control is nonzero, and its length (2 or 8 octets) follows that mode. A broadcast PAN ID or broadcast short address is accepted by every device listening on the channel.",
+      "zh": "帧控制之后是其余的通用格式字段，每个都由各自的子条款定义。序列号（7.2.3）是每帧的标识符——信标帧用 BSN，增强信标帧用 EBSN，其他帧用 DSN——用于匹配重传与确认。接着是四个寻址字段：目的 PAN ID（7.2.4）和目的地址（7.2.5）指明这个帧发给谁；源 PAN ID（7.2.6）和源地址（7.2.7）指明谁发出了它。只有当帧控制中对应的寻址模式非零时，相应地址字段才存在，其长度（2 或 8 字节）也随该模式而定。广播 PAN ID 或广播短地址会被信道上所有正在监听的设备接受。"
+    },
+    {
+      "type": "prose",
+      "en": "The tail end of the general format carries the heavier optional payload. The Auxiliary Security Header (7.2.8) appears only when Security Enabled is set, and tells the receiver how the frame is protected (its format lives in Clause 9). The IE field (7.2.9) is one or more Information Elements — a flexible, extensible way to attach structured control data; it splits into Header IEs (part of the MHR, follow the security header) and Payload IEs (part of the payload, can be encrypted). The Frame Payload (7.2.10) holds the actual upper-layer data and may be encrypted when security is on. Finally the FCS (7.2.11, Frame Check Sequence) is a 16-bit or 32-bit CRC computed over the whole header-plus-payload, letting the receiver detect bit errors; the 4-octet form is mandatory on some PHYs (SUN, TVWS) and selectable on others.",
+      "zh": "通用格式的尾部承载较重的可选净荷。辅助安全头（7.2.8）仅在安全使能位置一时出现，告诉接收方该帧如何被保护（其格式见第 9 章）。IE 字段（7.2.9）是一个或多个信息元素——一种灵活、可扩展的方式来附加结构化控制数据；它分为头部信息元素（属于 MHR，紧跟在安全头之后）和净荷信息元素（属于净荷，可被加密）。帧净荷（7.2.10）承载真正的上层数据，开启安全时可被加密。最后 FCS（7.2.11，帧校验序列）是对整个帧头加净荷计算出的 16 位或 32 位 CRC，使接收方能够检测比特错误；其 4 字节形式在某些 PHY（SUN、TVWS）上是强制的，在另一些上可选。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7.3 then specifies how each frame type fills that skeleton. A Beacon frame (7.3.1) is broadcast by a coordinator to announce and time-structure a PAN; in the legacy format it always carries a Superframe Specification (timing), a GTS Info field (guaranteed time slots), a Pending Address field (devices with messages waiting at the coordinator, max seven), and an optional Beacon Payload — while the modern Enhanced Beacon (frame version 0b10) replaces those fixed fields with flexible IEs. A Data frame (7.3.2) is the workhorse: standard MHR plus a Data Payload of whatever the upper layer handed down. The Acknowledgment frame (7.3.3) comes in two flavors — a bare Imm-Ack (just Frame Control + Sequence Number + FCS) for older versions, and an Enh-Ack (version 0b10) that can carry addresses, security, and IEs, echoing fields from the frame it acknowledges.",
+      "zh": "随后第 7.3 节规定了每种帧类型如何填充这套骨架。信标帧（7.3.1）由协调器广播，用于宣告 PAN 并为其建立时间结构；在传统格式中它始终携带超帧规范（定时）、GTS 信息字段（保证时隙）、挂起地址字段（在协调器处有消息等待的设备，最多七个）以及可选的信标净荷——而现代的增强信标帧（帧版本 0b10）则用灵活的信息元素取代这些固定字段。数据帧（7.3.2）是主力：标准 MHR 加上一段数据净荷，内容即上层交下来的任意数据。确认帧（7.3.3）有两种形态——用于较老版本的精简即时确认帧 Imm-Ack（仅帧控制 + 序列号 + FCS），以及增强确认帧 Enh-Ack（版本 0b10），它可携带地址、安全信息和信息元素，并回显其所确认帧中的相应字段。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  FC[\"Frame Control: Frame Type bits\"] --> B[\"000 Beacon\"]\n  FC --> D[\"001 Data\"]\n  FC --> A[\"010 Acknowledgment\"]\n  FC --> M[\"011 MAC Command\"]\n  FC --> MP[\"101 Multipurpose\"]\n  FC --> FR[\"110 Fragment / Frak\"]\n  FC --> EX[\"111 Extended\"]\n  FR -.-> N1[\"own format, no Frame Control\"]\n  EX -.-> N2[\"own format, Extended Frame Type\"]",
+      "zh": "flowchart TD\n  FC[\"帧控制：帧类型比特\"] --> B[\"000 信标帧\"]\n  FC --> D[\"001 数据帧\"]\n  FC --> A[\"010 确认帧\"]\n  FC --> M[\"011 MAC 命令帧\"]\n  FC --> MP[\"101 多用途帧\"]\n  FC --> FR[\"110 分片帧 / Frak\"]\n  FC --> EX[\"111 扩展帧\"]\n  FR -.-> N1[\"自有格式，无帧控制\"]\n  EX -.-> N2[\"自有格式，含扩展帧类型\"]"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining types round out Clause 7.3. A MAC Command frame (7.3.4) drives MAC management — association, disassociation, data requests and so on; its payload begins with a one-octet Command ID (7.3.4.3) selecting which command, followed by that command's content (7.3.4.4). The Multipurpose frame (7.3.5) is a deliberately flexible container with its own MP Frame Control that offers a short (one-octet) or long (two-octet) form, letting nearly every MHR field be present or omitted; it is handled like a Data frame by the upper layers and is the only general type whose source PAN ID defaults to equal the destination PAN ID. Finally, the special forms: a Fragment frame (Frame Type 110, taught here as 7.2.1 notes it has no Frame Control field and is formatted in Clause 23 for fragmentation), and the Extended frame (7.3.6), whose three extra Extended Frame Type bits open room for future or organization-assigned frame formats beyond the basic seven.",
+      "zh": "其余类型补全了第 7.3 节。MAC 命令帧（7.3.4）驱动 MAC 管理——关联、解除关联、数据请求等；其净荷以一个字节的命令 ID（7.3.4.3）开头，选定使用哪条命令，随后是该命令的内容（7.3.4.4）。多用途帧（7.3.5）是一个刻意做得灵活的容器，拥有自己的 MP 帧控制，提供短（一字节）或长（两字节）两种形式，使几乎每个 MHR 字段都可存在或省略；它被上层当作数据帧处理，也是唯一一种源 PAN ID 默认等于目的 PAN ID 的通用类型。最后是特殊形态：分片帧（帧类型 110，本课提到 7.2.1 指出它没有帧控制字段，其分片格式定义在第 23 章），以及扩展帧（7.3.6），其额外的三个扩展帧类型比特为基本七种之外的未来或机构指定帧格式预留了空间。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause this lesson teaches",
+        "zh": "覆盖映射——本课所讲的每一个条款"
+      },
+      "en": "Identity & general format: 7.1 device extended address (EUI-64). 7.2.1 general MAC frame format (MHR / MAC Payload / MFR, Figure 7-1). 7.2.2 Frame Control field and its subfields — 7.2.2.2 Frame Type (Table 7-1), 7.2.2.3 Security Enabled, 7.2.2.4 Frame Pending, 7.2.2.5 AR, 7.2.2.6 PAN ID Compression, 7.2.2.7 Sequence Number Suppression, 7.2.2.8 IE Present, 7.2.2.9 Destination Addressing Mode (Table 7-3), 7.2.2.10 Frame Version (Table 7-4), 7.2.2.11 Source Addressing Mode. 7.2.3 Sequence Number (BSN/EBSN/DSN). 7.2.4 Destination PAN ID. 7.2.5 Destination Address. 7.2.6 Source PAN ID. 7.2.7 Source Address. 7.2.8 Auxiliary Security Header (format in Clause 9). 7.2.9 IE field (Header IEs / Payload IEs, Figure 7-3). 7.2.10 Frame Payload. 7.2.11 FCS (16-/32-bit CRC). Frame types: 7.3.1 Beacon frame (legacy Superframe Spec / GTS / Pending Address / Beacon Payload vs Enhanced Beacon IEs). 7.3.2 Data frame. 7.3.3 Ack frame (Imm-Ack vs Enh-Ack). 7.3.4 MAC Command frame (Command ID + content). 7.3.5 Multipurpose frame (MP Frame Control, short/long form). 7.3.6 Extended frame (Extended Frame Type bits).",
+      "zh": "身份与通用格式：7.1 设备扩展地址（EUI-64）。7.2.1 通用 MAC 帧格式（MHR / MAC 净荷 / MFR，图 7-1）。7.2.2 帧控制字段及其子字段——7.2.2.2 帧类型（表 7-1）、7.2.2.3 安全使能、7.2.2.4 帧挂起、7.2.2.5 AR、7.2.2.6 PAN ID 压缩、7.2.2.7 序列号抑制、7.2.2.8 IE 存在、7.2.2.9 目的寻址模式（表 7-3）、7.2.2.10 帧版本（表 7-4）、7.2.2.11 源寻址模式。7.2.3 序列号（BSN/EBSN/DSN）。7.2.4 目的 PAN ID。7.2.5 目的地址。7.2.6 源 PAN ID。7.2.7 源地址。7.2.8 辅助安全头（格式见第 9 章）。7.2.9 IE 字段（头部 IE / 净荷 IE，图 7-3）。7.2.10 帧净荷。7.2.11 FCS（16/32 位 CRC）。帧类型：7.3.1 信标帧（传统超帧规范 / GTS / 挂起地址 / 信标净荷，对比增强信标的信息元素）。7.3.2 数据帧。7.3.3 确认帧（Imm-Ack 对比 Enh-Ack）。7.3.4 MAC 命令帧（命令 ID + 内容）。7.3.5 多用途帧（MP 帧控制，短/长形式）。7.3.6 扩展帧（扩展帧类型比特）。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          86,
+          87,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        78
+      ],
+      "note": "7.1 device extended address (EUI-64); 7.2.1 general MAC frame format and Figure 7-1."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        79,
+        80,
+        81,
+        82
+      ],
+      "note": "7.2.2 Frame Control field and subfields 7.2.2.1-7.2.2.11; Tables 7-1, 7-2, 7-3, 7-4; 7.2.3 Sequence Number."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        83,
+        84
+      ],
+      "note": "7.2.4-7.2.11: Destination/Source PAN ID and Address, Auxiliary Security Header, IE field (Figure 7-3), Frame Payload, FCS."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        86,
+        87
+      ],
+      "note": "7.3.1 Beacon frame format, Enhanced Beacon (Figures 7-5, 7-6), MHR and IEs subfields."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        90,
+        91,
+        92
+      ],
+      "note": "7.3.2 Data frame, 7.3.3 Ack frame (Imm-Ack / Enh-Ack, Figures 7-14 to 7-16)."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        92,
+        93,
+        94,
+        95,
+        96
+      ],
+      "note": "7.3.4 MAC Command frame, 7.3.5 Multipurpose frame (MP Frame Control), 7.3.6 Extended frame."
+    }
+  ],
+  "covers": [
+    "802154-2024:7.1",
+    "802154-2024:7.2.1",
+    "802154-2024:7.2.2",
+    "802154-2024:7.2.3",
+    "802154-2024:7.2.4",
+    "802154-2024:7.2.5",
+    "802154-2024:7.2.6",
+    "802154-2024:7.2.7",
+    "802154-2024:7.2.8",
+    "802154-2024:7.2.9",
+    "802154-2024:7.2.10",
+    "802154-2024:7.2.11",
+    "802154-2024:7.3.1",
+    "802154-2024:7.3.2",
+    "802154-2024:7.3.3",
+    "802154-2024:7.3.4",
+    "802154-2024:7.3.5",
+    "802154-2024:7.3.6"
+  ],
+  "track": "pan-802-15"
+}

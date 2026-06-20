@@ -1,0 +1,222 @@
+{
+  "id": "pan-802-15-26",
+  "title": {
+    "en": "The Newest Radios: TASK and RS-GFSK PHYs",
+    "zh": "最新的无线电：TASK 与 RS-GFSK PHY"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE 802.15.4 keeps growing new physical layers (PHYs) — the lowest layer that turns bits into radio waves. This lesson tours two of the freshest additions in the 2024 edition: the TASK PHY (Clause 31) and the RS-GFSK PHY (Clause 32). They solve different problems. TASK spreads each data symbol across a ternary chip sequence and then sends it with amplitude shift keying (ASK), trading raw speed for robustness at very low power. RS-GFSK is a frequency-shift-keying radio with a clever 'rate switch' that lets one packet start slow-and-safe and then speed up for the payload.",
+      "zh": "IEEE 802.15.4 不断增加新的物理层（PHY，即把比特变成无线电波的最底层）。本课带你浏览 2024 版中两个最新加入的成员：TASK PHY（第 31 章）与 RS-GFSK PHY（第 32 章）。它们解决不同的问题。TASK 把每个数据符号扩展成一段三元（ternary，取值 -1/0/1）码片序列，再用幅移键控（ASK）发送，以牺牲原始速率换取在极低功率下的稳健性。RS-GFSK 是一种频移键控无线电，带有巧妙的“速率切换”机制，让一个数据包先以低速安全地起步，再为净荷部分提速。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with TASK (Clause 31.1). The name comes from Ternary Amplitude Shift Keying. A chip is the smallest on-air unit; many chips spell out one data symbol. TASK operates in six band groups, and each band fixes a chip rate and a symbol duration used for MAC and PHY timing — for example 1 Mchip/s and a 16 us symbol in the 2450 MHz band, down to 0.25 Mchip/s and 64 us symbols at 433/470 MHz. The PPDU (the over-the-air packet) is described leftmost-field-first; multi-octet fields go least-significant-octet first and each octet is sent LSB first (31.2.1).",
+      "zh": "先看 TASK（第 31.1 节）。它的名字来自三元幅移键控（Ternary Amplitude Shift Keying）。码片（chip）是空口上最小的单位，多个码片拼出一个数据符号。TASK 在六组频段上工作，每个频段固定一个码片速率和一个用于 MAC 与 PHY 计时的符号时长——例如 2450 MHz 频段为 1 Mchip/s、符号 16 微秒，到 433/470 MHz 则降为 0.25 Mchip/s、符号 64 微秒。PPDU（空口数据包）按最左字段先发的方式描述；多字节字段最低有效字节先发，每个字节最低有效位（LSB）先发（31.2.1）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 600 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><rect x=\"10\" y=\"30\" width=\"150\" height=\"34\"/><rect x=\"160\" y=\"30\" width=\"70\" height=\"34\"/><rect x=\"230\" y=\"30\" width=\"170\" height=\"34\"/><rect x=\"400\" y=\"30\" width=\"190\" height=\"34\"/><text x=\"85\" y=\"52\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">Preamble + SFD (SHR)</text><text x=\"195\" y=\"52\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">PHR</text><text x=\"315\" y=\"52\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">PSDU (payload)</text><text x=\"495\" y=\"52\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">DATA = FEC+spread+invert</text><text x=\"10\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">transmitted first</text><text x=\"590\" y=\"20\" text-anchor=\"end\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">transmitted last</text></svg>",
+      "caption": {
+        "en": "TASK PPDU layout: SHR (Preamble + SFD), then PHR, then the PSDU which becomes the DATA field after coding, spreading, and chip inversion.",
+        "zh": "TASK PPDU 结构：SHR（前导码 + SFD），然后是 PHR，再是 PSDU——PSDU 经过编码、扩展与码片反转后成为 DATA 字段。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The TASK PPDU has three parts (31.2.2.1). The SHR (Synchronization Header) is the Preamble field followed by the SFD (31.2.2.2.1). The Preamble (31.2.2.2.2) repeats a unique 32-chip ternary base sequence 8 times — viewed coherently it is 8 bits at spreading factor 32, viewed noncoherently it is 32 bits at spreading factor 8. The SFD (Start-of-Frame Delimiter, 31.2.2.2.3) is a fixed 8-bit pattern mapped to two orthogonal ternary sequences that announces the end of the SHR. The PHR (PHY Header, 31.2.2.3.1) carries a Length field giving the PSDU octet count (31.2.2.3.2) and an MCS field naming the modulation-and-coding scheme (31.2.2.3.3). Then comes the PSDU field that carries the payload (31.2.2.4).",
+      "zh": "TASK PPDU 有三部分（31.2.2.1）。SHR（同步头）由前导码字段加 SFD 组成（31.2.2.2.1）。前导码（31.2.2.2.2）把一段唯一的 32 码片三元基序列重复 8 次——相干视角下是扩频因子 32 的 8 个比特，非相干视角下是扩频因子 8 的 32 个比特。SFD（帧起始定界符，31.2.2.2.3）是固定的 8 比特图案，映射到两条正交三元序列，用来宣告 SHR 结束。PHR（PHY 头，31.2.2.3.1）携带给出 PSDU 字节数的 Length 字段（31.2.2.3.2）以及指明调制与编码方案的 MCS 字段（31.2.2.3.3）。随后是携带净荷的 PSDU 字段（31.2.2.4）。"
+    },
+    {
+      "type": "prose",
+      "en": "The PHR protects itself with a 4-bit HCS (Header Check Sequence, 31.2.2.3.4) computed as the one's complement of a modulo-2 division by g(x) = 1 + x + x^4. Like the SFD, the PHR bits are also mapped onto two orthogonal ternary sequences (Spreading of PHR field, 31.2.2.3.5). Putting it together, generating the PPDU signal (31.2.3) means: build Preamble/SFD/PHR; apply the chosen MCS coding, ternary spreading, and pseudo-random chip inversion to the PSDU to form DATA; concatenate everything; then ASK-modulate and Gaussian-pulse-shape the chip stream.",
+      "zh": "PHR 用一个 4 比特的 HCS（头校验序列，31.2.2.3.4）自我保护，它通过对 g(x) = 1 + x + x^4 做模 2 除法后取余数的反码得到。与 SFD 一样，PHR 的比特也被映射到两条正交三元序列上（PHR 字段的扩展，31.2.2.3.5）。综合起来，生成 PPDU 信号（31.2.3）就是：构造前导码/SFD/PHR；对 PSDU 施加选定 MCS 的编码、三元扩展与伪随机码片反转以形成 DATA；把各部分拼接；最后对码片流做 ASK 调制和高斯脉冲整形。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The MCS field uses three bits to pick one of four modulation formats — 1/1, 2/4, 3/8, and 5/32-TASK — paired with one of two FEC choices. The notation M/L means M information bits map to an L-chip ternary sequence: a bigger L spreads the same bits over more chips, which lowers the data rate but boosts robustness. 5/32-TASK is the slowest and toughest; 1/1-TASK is the fastest.",
+      "zh": "MCS 字段用三个比特从四种调制格式（1/1、2/4、3/8、5/32-TASK）中选一种，并搭配两种 FEC 之一。记号 M/L 表示 M 个信息比特映射到 L 个码片的三元序列：L 越大，相同比特被铺展到更多码片上，速率更低但更稳健。5/32-TASK 最慢最强，1/1-TASK 最快。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "TASK rates, spreading, chip inversion, modulation, and RF requirements (31.3-31.8)",
+        "zh": "TASK 速率、扩展、码片反转、调制与射频要求（31.3–31.8）"
+      },
+      "en": "MCS mode and rates: the MAC picks the MCS per frame (31.3.1). Eight MCS modes (0-7) define data rates per band — Table 31-5 for 2450 MHz (e.g. 809.52 kb/s for 1/1-TASK down to 126.48 kb/s for 5/32-TASK) (31.3.2), Table 31-6 for the 780/863/915 MHz bands (31.3.3), and Table 31-7 for the 433/470 MHz bands (31.3.4); each row also lists M (bits/symbol), L (chips/symbol), and code rate. FEC, spreading, and inversion (31.4.1): mandatory modes 0-3 use shortened BCH with bit-level interleaving; optional modes 4-7 concatenate BCH-with-interleaving (outer) and a single parity check, SiPC (inner). The BCH path (31.4.2) covers parameter calculation, zero padding, encoding, interleaving, and bits-to-symbol conversion; the SiPC path (31.4.2.2) appends one parity symbol per message block. Ternary sequence spreading (31.4.3.1) maps each data symbol to an L-chip ternary sequence: 1/1-TASK (31.4.3.2) and 2/4-TASK (31.4.3.3) use lookup tables, while 3/8-TASK (31.4.3.4) and 5/32-TASK (31.4.3.5) cyclically shift a base sequence c0. Pseudo-random chip inversion (31.4.4) flips chip polarity using a 16-bit PRBS scrambler (generator 1 + x^14 + x^15, fixed init vector) with unipolar-to-bipolar conversion; a coherent receiver re-runs the PRBS, a noncoherent one needs none. Modulation (31.5): chips drive binary-phase ASK (+A / 0 / -A). Pulse shaping (31.6): each chip is a Gaussian pulse with BTchip = 0.3-0.5 to meet the PSD mask and EVM. The waveform representation (31.7) is the sum of shaped, ASK-keyed pulses on the carrier. RF requirements (31.8): transmit PSD mask (31.8.1, Tables 31-13/14/15 per band); receiver sensitivity of -85 dBm or better at the lowest rate (31.8.2); interference rejection of 0 dB adjacent / 20 dB alternate at 1% PER (31.8.3); TX-to-RX (31.8.4) and RX-to-TX (31.8.5) turnaround times; EVM under 35% (31.8.6); transmit power at least -13 dBm (31.8.7); center-frequency tolerance +/-40 ppm (31.8.8); receiver maximum input level >= -20 dBm (31.8.9); energy detection averaged over 128 chip durations (31.8.10); SNR measurement mapping 0x00..0xff to worst..best signal (31.8.11); and CCA using mode 1, 2, or 3 (31.8.12).",
+      "zh": "MCS 模式与速率：MAC 逐帧选择 MCS（31.3.1）。八种 MCS 模式（0–7）按频段定义速率——2450 MHz 见表 31-5（1/1-TASK 约 809.52 kb/s，到 5/32-TASK 约 126.48 kb/s）（31.3.2），780/863/915 MHz 见表 31-6（31.3.3），433/470 MHz 见表 31-7（31.3.4）；每行还列出 M（比特/符号）、L（码片/符号）与码率。FEC、扩展与反转（31.4.1）：强制模式 0–3 使用带比特级交织的缩短 BCH 码；可选模式 4–7 把带交织的 BCH（外码）与单奇偶校验 SiPC（内码）级联。BCH 路径（31.4.2）涵盖参数计算、补零、编码、交织与比特到符号转换；SiPC 路径（31.4.2.2）为每个消息块追加一个奇偶符号。三元序列扩展（31.4.3.1）把每个数据符号映射为 L 码片三元序列：1/1-TASK（31.4.3.2）与 2/4-TASK（31.4.3.3）用查表，3/8-TASK（31.4.3.4）与 5/32-TASK（31.4.3.5）则对基序列 c0 做循环移位。伪随机码片反转（31.4.4）用 16 位 PRBS 扰码器（生成多项式 1 + x^14 + x^15、固定初始向量）配合单极到双极转换翻转码片极性；相干接收机重跑 PRBS，非相干接收机无需。调制（31.5）：码片驱动二相 ASK（+A / 0 / -A）。脉冲整形（31.6）：每个码片是 BTchip = 0.3–0.5 的高斯脉冲，以满足 PSD 模板与 EVM。波形表示（31.7）是载波上整形后、经 ASK 键控的脉冲之和。射频要求（31.8）：发射 PSD 模板（31.8.1，各频段见表 31-13/14/15）；最低速率下接收灵敏度 -85 dBm 或更好（31.8.2）；干扰抑制为邻道 0 dB、隔道 20 dB（1% PER）（31.8.3）；TX 到 RX（31.8.4）与 RX 到 TX（31.8.5）转换时间；EVM 低于 35%（31.8.6）；发射功率至少 -13 dBm（31.8.7）；中心频率容差 +/-40 ppm（31.8.8）；接收机最大输入电平 >= -20 dBm（31.8.9）；能量检测对 128 个码片时长求平均（31.8.10）；SNR 测量把 0x00..0xff 映射到最差..最好信号（31.8.11）；CCA 使用模式 1、2 或 3（31.8.12）。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          895,
+          896,
+          897,
+          903,
+          904,
+          905,
+          906,
+          907,
+          908,
+          909,
+          910
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now Clause 32, the RS-GFSK PHY. GFSK is Gaussian Frequency Shift Keying — bits move the carrier frequency up or down through a smoothing Gaussian filter. The 'RS' is Rate Switch: a single packet can change its modulation partway through. The PPDU (32.1.1) is a plain bit string sent b0-first. Its Preamble (32.1.2) is a run of '01010101' bytes, and the SFD (32.1.3) is chosen from a small table — different values for FEC-coded versus uncoded packets, with an option to interoperate with the older SUN FSK PHY.",
+      "zh": "现在看第 32 章，RS-GFSK PHY。GFSK 是高斯频移键控——比特通过一个平滑的高斯滤波器把载波频率上移或下移。“RS”指速率切换（Rate Switch）：单个数据包可以在中途改变调制方式。PPDU（32.1.1）是一串普通比特，从 b0 先发。其前导码（32.1.2）是一连串“01010101”字节，SFD（32.1.3）从一张小表中选取——FEC 编码包与未编码包取值不同，并可选地与较旧的 SUN FSK PHY 互通。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[PHR/PSDU bits] --> B{FEC on?}\n  B -- yes --> C[Convolutional FEC]\n  C --> D[Interleave]\n  B -- no --> E[Data whitening]\n  D --> E\n  E --> F{MCS 5/6/7?}\n  F -- yes --> G[Differential encode]\n  F -- no --> H[Bit-to-symbol map]\n  G --> H\n  H --> I[GFSK modulate]",
+      "zh": "flowchart LR\n  A[PHR/PSDU 比特] --> B{启用 FEC?}\n  B -- 是 --> C[卷积 FEC]\n  C --> D[交织]\n  B -- 否 --> E[数据白化]\n  D --> E\n  E --> F{MCS 5/6/7?}\n  F -- 是 --> G[差分编码]\n  F -- 否 --> H[比特到符号映射]\n  G --> H\n  H --> I[GFSK 调制]"
+    },
+    {
+      "type": "prose",
+      "en": "Every RS-GFSK device supports the Long PHR (32.1.4): a 16-bit header whose fields include Rate Switch (on/off), Short PHR (set to zero here), FCS Type (2- or 4-octet checksum), Data Whitening (must be on), and a Frame Length giving the PSDU octet count, sent MSB first. The optional Short PHR (32.1.5) is a compact 8-bit header for payloads of 31 octets or less with FEC disabled. The key idea behind Rate Switch lives in modulation and coding (32.2.1): with Rate Switch off, the whole PPDU is 2-GFSK using one MCS from Table 32-2; with Rate Switch on, the SHR and PHR go out in robust 2-GFSK while the PSDU jumps to faster 4-GFSK from Table 32-3.",
+      "zh": "每个 RS-GFSK 设备都支持长 PHR（32.1.4）：一个 16 比特头，字段包括 Rate Switch（开/关）、Short PHR（此处置零）、FCS Type（2 或 4 字节校验）、Data Whitening（必须开启），以及给出 PSDU 字节数、最高有效位先发的 Frame Length。可选的短 PHR（32.1.5）是用于 31 字节及以下、且关闭 FEC 净荷的紧凑 8 比特头。速率切换的核心思想体现在调制与编码（32.2.1）：关闭速率切换时，整个 PPDU 用表 32-2 中某个 MCS 的 2-GFSK；开启速率切换时，SHR 与 PHR 用稳健的 2-GFSK 发送，而 PSDU 跳到表 32-3 中更快的 4-GFSK。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "RS-GFSK modulation pipeline and RF requirements (32.2.2-32.4.10)",
+        "zh": "RS-GFSK 调制流水线与射频要求（32.2.2–32.4.10）"
+      },
+      "en": "The reference modulator (32.2.2) chains optional convolutional FEC, code-symbol interleaving, data whitening, optional differential encoding, bit-to-symbol mapping, then GFSK. Differential encoding (32.2.3) applies only to MCS modes 5/6/7 when FEC is enabled. Bit-to-symbol mapping (32.2.4) reuses the 2-FSK/4-FSK mappings from the SUN FSK PHY. Modulation quality (32.2.5) is judged from the eye diagram of a 511-bit PN9 sequence via two checks: frequency deviation tolerance (32.2.6, with a normalized Fdev formula for 4-GFSK) and zero crossing tolerance (32.2.7). FEC (32.2.8) is the optional rate-1/2 convolutional code with a defined initial state and pad-bit count NPAD. Code-symbol interleaving (32.2.9) runs only when FEC is on. Data whitening (32.2.10) is mandatory for all transmissions. Rate switch (32.3) spells out the headline trick: SHR and PHR use any 2-GFSK MCS at modulation index 0.9, then the PSDU uses the same symbol rate but 4-GFSK at index 0.3; capability is advertised via the RS-GFSK Device Capabilities IE. RF requirements (32.4): RF clock tolerance T scaling with rate, modulation index, and carrier (32.4.1); channel switch time <= 500 us (32.4.2); receiver sensitivity S that improves with lower bit rate, anchored to S0 from Table 32-4 (32.4.3); interference rejection (32.4.4); TX-to-RX (32.4.5) and RX-to-TX (32.4.6) turnaround times; receiver maximum input level >= -20 dBm (32.4.7); energy detection (32.4.8); LQI link-quality reporting (32.4.9); and CCA using mode 1, 2, 3, or 4 (32.4.10).",
+      "zh": "参考调制器（32.2.2）依次串联可选卷积 FEC、码符号交织、数据白化、可选差分编码、比特到符号映射，再到 GFSK。差分编码（32.2.3）仅在启用 FEC 时对 MCS 模式 5/6/7 生效。比特到符号映射（32.2.4）复用 SUN FSK PHY 的 2-FSK/4-FSK 映射。调制质量（32.2.5）通过 511 比特 PN9 序列的眼图判定，含两项检查：频偏容差（32.2.6，4-GFSK 给出归一化 Fdev 公式）与过零点容差（32.2.7）。FEC（32.2.8）是可选的 1/2 码率卷积码，带规定的初始状态与补位数 NPAD。码符号交织（32.2.9）仅在启用 FEC 时运行。数据白化（32.2.10）对所有传输强制启用。速率切换（32.3）写明了这一标志性技巧：SHR 与 PHR 用调制指数 0.9 的任一 2-GFSK MCS，PSDU 则用相同符号速率但指数 0.3 的 4-GFSK；该能力通过 RS-GFSK Device Capabilities IE 通告。射频要求（32.4）：随速率、调制指数与载波缩放的射频时钟容差 T（32.4.1）；信道切换时间 <= 500 微秒（32.4.2）；随比特率降低而改善、以表 32-4 的 S0 为基准的接收灵敏度 S（32.4.3）；干扰抑制（32.4.4）；TX 到 RX（32.4.5）与 RX 到 TX（32.4.6）转换时间；接收机最大输入电平 >= -20 dBm（32.4.7）；能量检测（32.4.8）；LQI 链路质量报告（32.4.9）；以及使用模式 1、2、3 或 4 的 CCA（32.4.10）。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          913,
+          914,
+          915,
+          916,
+          917,
+          918
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "One sentence to remember each radio: TASK spreads bits into ternary chips and sends them with amplitude shifts for ultra-robust, low-power links; RS-GFSK shifts frequency and can rate-switch a single packet from a safe 2-GFSK header to a fast 4-GFSK payload.",
+      "zh": "一句话记住每种无线电：TASK 把比特扩展成三元码片，用幅度变化发送，以实现超稳健、低功耗的链路；RS-GFSK 改变频率，并能在单个数据包内从安全的 2-GFSK 头切换到快速的 4-GFSK 净荷。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        891,
+        892,
+        893,
+        894
+      ],
+      "note": "TASK PHY general, PPDU/SHR/SFD/PHR/HCS structure, PPDU signal generation (31.1-31.2.3)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        895,
+        896,
+        897
+      ],
+      "note": "TASK MCS modes and per-band data-rate tables; FEC/spreading/inversion overview (31.3-31.4.1)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        903,
+        904,
+        905,
+        906,
+        907,
+        908,
+        909,
+        910
+      ],
+      "note": "TASK ternary spreading tables, chip inversion PRBS, ASK modulation, pulse shaping, waveform, RF requirements (31.4.3-31.8.12)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        911,
+        912
+      ],
+      "note": "RS-GFSK PPDU, preamble, SFD, long/short PHR (32.1.1-32.1.5)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        913,
+        914,
+        915,
+        916,
+        917,
+        918
+      ],
+      "note": "RS-GFSK modulation/coding, rate switch, RF requirements (32.2.1-32.4.10)"
+    }
+  ],
+  "covers": [
+    "802154-2024:31.1",
+    "802154-2024:31.2.1",
+    "802154-2024:31.2.2",
+    "802154-2024:31.2.3",
+    "802154-2024:31.3.1",
+    "802154-2024:31.3.2",
+    "802154-2024:31.3.3",
+    "802154-2024:31.3.4",
+    "802154-2024:31.4.1",
+    "802154-2024:31.4.2",
+    "802154-2024:31.4.3",
+    "802154-2024:31.4.4",
+    "802154-2024:31.5",
+    "802154-2024:31.6",
+    "802154-2024:31.7",
+    "802154-2024:31.8.1",
+    "802154-2024:31.8.2",
+    "802154-2024:31.8.3",
+    "802154-2024:31.8.4",
+    "802154-2024:31.8.5",
+    "802154-2024:31.8.6",
+    "802154-2024:31.8.7",
+    "802154-2024:31.8.8",
+    "802154-2024:31.8.9",
+    "802154-2024:31.8.10",
+    "802154-2024:31.8.11",
+    "802154-2024:31.8.12",
+    "802154-2024:32.1.1",
+    "802154-2024:32.1.2",
+    "802154-2024:32.1.3",
+    "802154-2024:32.1.4",
+    "802154-2024:32.1.5",
+    "802154-2024:32.2.1",
+    "802154-2024:32.2.2",
+    "802154-2024:32.2.3",
+    "802154-2024:32.2.4",
+    "802154-2024:32.2.5",
+    "802154-2024:32.2.6",
+    "802154-2024:32.2.7",
+    "802154-2024:32.2.8",
+    "802154-2024:32.2.9",
+    "802154-2024:32.2.10",
+    "802154-2024:32.3",
+    "802154-2024:32.4.1",
+    "802154-2024:32.4.2",
+    "802154-2024:32.4.3",
+    "802154-2024:32.4.4",
+    "802154-2024:32.4.5",
+    "802154-2024:32.4.6",
+    "802154-2024:32.4.7",
+    "802154-2024:32.4.8",
+    "802154-2024:32.4.9",
+    "802154-2024:32.4.10"
+  ],
+  "track": "pan-802-15"
+}

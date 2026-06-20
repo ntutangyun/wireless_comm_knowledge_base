@@ -1,0 +1,148 @@
+{
+  "id": "pan-802-15-13",
+  "title": {
+    "en": "Purpose-Built PANs: RCCN, SUN and LECIM",
+    "zh": "为特定用途而生的 PAN：RCCN、SUN 与 LECIM"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Most of IEEE 802.15.4 describes a general-purpose toolbox. But three sections of Clause 10 take that toolbox and shape it for very specific jobs. Each one keeps the same MAC frames and information elements (IEs) — small, type-tagged data structures appended to frames — but tunes the timing, the bands, and the capability advertisements for one mission. The three modes are RCCN (rail communications and control), SUN (smart utility networks), and LECIM (low-energy critical-infrastructure monitoring). This lesson gives each one an intuitive home.",
+      "zh": "IEEE 802.15.4 的大部分内容描述的是一套通用工具箱。但第 10 章中有三节把这套工具箱针对非常具体的任务做了定制。它们都沿用相同的 MAC 帧和信息元素（IE，即附加在帧上、带类型标签的小型数据结构），只是为某一项使命调整了时序、频段以及能力声明。这三种模式分别是 RCCN（铁路通信与控制）、SUN（智能公用事业网络）和 LECIM（低能耗关键基础设施监测）。本课为每一种都给出直观的归属。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  Base[802.15.4 MAC toolbox] --> RCCN[RCCN: rail, high speed, 50+ km]\n  Base --> SUN[SUN: utility metering, long range mesh]\n  Base --> LECIM[LECIM: battery sensors, star, sparse data]",
+      "zh": "flowchart TD\n  Base[802.15.4 MAC 工具箱] --> RCCN[RCCN：铁路、高速、50+ 公里]\n  Base --> SUN[SUN：公用事业抄表、远距离网状]\n  Base --> LECIM[LECIM：电池传感器、星型、稀疏数据]"
+    },
+    {
+      "type": "prose",
+      "en": "RCCN serves wireless links along railways: train-to-trackside, trackside-to-network, and train-to-train. The goal is to keep mobile rolling stock connected at high speed over distances exceeding 50 km, while squeezing into small slices of costly spectrum. To organize that traffic, RCCN defines an optional superframe (10.13.2). It opens with an enhanced beacon carrying the RCCN Descriptor IE, then partitions time into management downlink slots (coordinator-to-endpoint), management uplink slots (endpoint-to-coordinator, accessed by slotted CSMA-CA), a contention access period (CAP) for anyone, and a contention-free period (CFP) of guaranteed time slots (GTSs). Each slot lasts (k+1) x aRccnBaseSlotDuration symbols, where k is the Slot Size Multiplier carried in the descriptor.",
+      "zh": "RCCN 服务于铁路沿线的无线链路：列车到轨旁、轨旁到网络、以及列车到列车。其目标是让高速移动的机车车辆在超过 50 公里的距离上保持连接，同时只占用昂贵频谱中很小的一块。为组织这类流量，RCCN 定义了一个可选的超帧（10.13.2）。超帧以携带 RCCN 描述符 IE 的增强信标开头，然后把时间划分为：管理下行时隙（协调器到端点）、管理上行时隙（端点到协调器，采用时隙化 CSMA-CA 接入）、任何设备都可使用的竞争接入期（CAP），以及由保证时隙（GTS）组成的免竞争期（CFP）。每个时隙时长为 (k+1) x aRccnBaseSlotDuration 个符号，其中 k 是描述符中携带的时隙大小乘数。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 70\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><rect x=\"4\" y=\"20\" width=\"60\" height=\"30\"/><rect x=\"64\" y=\"20\" width=\"80\" height=\"30\"/><rect x=\"144\" y=\"20\" width=\"80\" height=\"30\"/><rect x=\"224\" y=\"20\" width=\"100\" height=\"30\"/><rect x=\"324\" y=\"20\" width=\"100\" height=\"30\"/><rect x=\"424\" y=\"20\" width=\"32\" height=\"30\" stroke-dasharray=\"4 3\"/><text x=\"34\" y=\"38\" font-size=\"8\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">Beacon</text><text x=\"104\" y=\"38\" font-size=\"8\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">Mgmt DL</text><text x=\"184\" y=\"38\" font-size=\"8\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">Mgmt UL</text><text x=\"274\" y=\"38\" font-size=\"8\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">CAP</text><text x=\"374\" y=\"38\" font-size=\"8\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">CFP / GTS</text><text x=\"440\" y=\"38\" font-size=\"7\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">Inact</text><text x=\"230\" y=\"14\" font-size=\"8\" fill=\"currentColor\" stroke=\"none\">RCCN superframe (active portion)</text></svg>",
+      "caption": {
+        "en": "The RCCN superframe (10.13.2): an enhanced beacon, management downlink/uplink slots, a contention access period, a contention-free period of guaranteed slots, then an inactive portion.",
+        "zh": "RCCN 超帧（10.13.2）：一个增强信标、管理下行/上行时隙、竞争接入期、由保证时隙组成的免竞争期，最后是非活跃部分。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "How does a device know what an RCCN coordinator can do? Through header IEs (10.13.3). The RCC Capabilities IE announces which frequency bands (from 161 MHz up to 5800 MHz), which PHY/modulation schemes (land-mobile-radio GMSK, 4-FSK, QPSK, DPSK), and which DSSS chip rates and spreading sequences the coordinator supports. The RCCN Descriptor IE carries the superframe layout itself: the Slot Size Multiplier, the count of downlink/uplink/CAP/CFP slots, the inactive duration, and a network identifier set to macRccnNetId. To actually switch a link, a nested IE (10.13.4) — the RCC PHY Operating Mode IE — names the current channel number, operating band, PHY/modulation, chip rate, and spreading sequence.",
+      "zh": "设备如何知道一个 RCCN 协调器能做什么？通过头部 IE（10.13.3）。RCC 能力 IE 宣告协调器支持哪些频段（从 161 MHz 直到 5800 MHz）、哪些 PHY/调制方案（陆地移动无线电 GMSK、4-FSK、QPSK、DPSK），以及哪些 DSSS 码片速率和扩频序列。RCCN 描述符 IE 携带超帧布局本身：时隙大小乘数、下行/上行/CAP/CFP 时隙的数量、非活跃时长，以及一个设为 macRccnNetId 的网络标识符。要真正切换链路，一个嵌套 IE（10.13.4）——RCC PHY 工作模式 IE——指明当前信道号、工作频段、PHY/调制、码片速率和扩频序列。"
+    },
+    {
+      "type": "prose",
+      "en": "RCCN also reserves its own MAC parameters (10.13.5). The constant aRccnBaseSlotDuration is fixed at 60 symbols. The PIB (PAN information base — the device's table of configuration values) gains attributes such as macRccnNumTimeSlots (timeslots per superframe, default 48), macRccnNumMgmtTs (management timeslots, default 4), macRccnNumGtsTs (GTS timeslots, default 24), macRccnNetId, and macRccnDevType, which marks the device as an RCC PAN coordinator, a mobile node, or a fixed node.",
+      "zh": "RCCN 还为自己保留了专属的 MAC 参数（10.13.5）。常量 aRccnBaseSlotDuration 固定为 60 个符号。PIB（PAN 信息库，即设备的配置值表）新增了若干属性，例如 macRccnNumTimeSlots（每超帧的时隙数，默认 48）、macRccnNumMgmtTs（管理时隙数，默认 4）、macRccnNumGtsTs（GTS 时隙数，默认 24）、macRccnNetId，以及 macRccnDevType——它把设备标记为 RCC PAN 协调器、移动节点或固定节点。"
+    },
+    {
+      "type": "prose",
+      "en": "SUN (10.14.1) targets the opposite extreme of mobility: large, mostly stationary utility deployments — electricity, gas, and water meters — that must cover wide geographic areas with many outdoor devices. SUN nodes typically transmit at the maximum regulatory power for long point-to-point links, and lean on mesh or peer-to-peer multihop to reach an access point. When a SUN coordinator starts a PAN (10.14.2), it should first run a passive scan for a Coexistence Specification IE before the active channel scan, so it does not stamp on a neighbouring network.",
+      "zh": "SUN（10.14.1）瞄准移动性的另一个极端：大型、基本静止的公用事业部署——电表、燃气表和水表——必须用大量户外设备覆盖广阔的地理区域。SUN 节点通常以法规允许的最大功率发射以实现远距离点对点链路，并依靠网状或点对点多跳来抵达接入点。当 SUN 协调器启动一个 PAN 时（10.14.2），它应先做一次针对共存规范 IE 的被动扫描，再做主动信道扫描，以免压到邻近网络。"
+    },
+    {
+      "type": "prose",
+      "en": "SUN advertises its abilities through nested IEs (10.14.3). The SUN Device Capabilities IE flags optional PHY features — enhanced acknowledgements, data whitening, interleaving, NRNSC and RSC forward error correction (FEC), mode switching — plus a bitmap of supported frequency bands (169 MHz through 2450 MHz). Because SUN often mixes data rates, the Mode Switch Parameter IE lets a node jump cleanly from one FSK PHY mode to another mid-conversation: it names the target mode, the source mode (2-FSK or 4-FSK), a settling delay, and the secondary preamble length so the receiver can lock onto the new mode.",
+      "zh": "SUN 通过嵌套 IE 宣告其能力（10.14.3）。SUN 设备能力 IE 标记可选的 PHY 特性——增强确认、数据白化、交织、NRNSC 与 RSC 前向纠错（FEC）、模式切换——外加一张所支持频段的位图（169 MHz 至 2450 MHz）。由于 SUN 常常混用多种数据速率，模式切换参数 IE 让节点能在通信中途干净地从一种 FSK PHY 模式跳到另一种：它指明目标模式、源模式（2-FSK 或 4-FSK）、稳定延迟，以及次级前导码长度，使接收机能锁定新模式。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A helpful contrast: RCCN optimizes for speed and motion (a train at 50+ km), SUN optimizes for reach and density (thousands of fixed meters meshing together), and LECIM optimizes for battery life and sparse, occasional data from far-flung sensors.",
+      "zh": "一个有用的对比：RCCN 为速度与运动优化（时速 50+ 公里的列车），SUN 为覆盖范围与密度优化（数千只固定电表互相组网），而 LECIM 为电池寿命以及来自远方传感器的稀疏、偶发数据优化。"
+    },
+    {
+      "type": "prose",
+      "en": "LECIM (10.15.1) builds a minimal infrastructure for collecting scheduled and event data from many non-mains-powered endpoints that are widely dispersed or in tough propagation. It favours a star topology with an asymmetric energy budget: a mains-powered PAN coordinator that listens often, and battery devices that sleep until they have a frame to send. Because long-range PHYs use small payloads, LECIM defines a header IE for fragmentation (10.15.2): the Fragment Sequence Context Description (FSCD) IE carries a transaction identifier (TID) that ties all fragments of one message together, a secure-fragment flag, the PSDU size, and compact addressing. Its companion, the LECIM Capabilities IE, says whether the device speaks LECIM FSK or LECIM DSSS, which bands it supports, and which extended PHY features it has.",
+      "zh": "LECIM（10.15.1）为从众多非市电供电、广泛分散或处于恶劣传播环境的端点收集计划数据与事件数据，构建一套最小的基础设施。它偏好能量预算不对称的星型拓扑：一个市电供电、经常侦听的 PAN 协调器，以及若干在有帧要发之前一直休眠的电池设备。由于远距离 PHY 使用小负载，LECIM 定义了一个用于分片的头部 IE（10.15.2）：分片序列上下文描述（FSCD）IE 携带一个把同一消息的所有分片绑在一起的事务标识符（TID）、一个安全分片标志、PSDU 大小，以及紧凑的寻址信息。它的搭档——LECIM 能力 IE——说明设备讲 LECIM FSK 还是 LECIM DSSS、支持哪些频段，以及具备哪些扩展 PHY 特性。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, LECIM nested IEs (10.15.3) carry the live operating mode for each LECIM PHY. The LECIM DSSS Operating Mode IE specifies operating band, channel number, BPSK or O-QPSK modulation, chip rate, channel spacing, PSDU size, spreading factor, and Gold-code initialization. The LECIM FSK Operating Mode IE describes the FSK channel, position modulation, channel spacing, and whether FEC and interleaving are on. The LECIM FSK Split Operating Mode IE adds split-mode parameters — symbol rate and FEC choice — for the most challenging links. Together these let a battery sensor and its coordinator agree on exactly one long-range, low-power waveform.",
+      "zh": "最后，LECIM 嵌套 IE（10.15.3）为每种 LECIM PHY 携带实时工作模式。LECIM DSSS 工作模式 IE 指明工作频段、信道号、BPSK 或 O-QPSK 调制、码片速率、信道间隔、PSDU 大小、扩频因子，以及 Gold 码初始化。LECIM FSK 工作模式 IE 描述 FSK 信道、位置调制、信道间隔，以及 FEC 和交织是否开启。LECIM FSK 分裂工作模式 IE 为最具挑战的链路增加分裂模式参数——符号速率与 FEC 选择。它们合在一起，让电池传感器与其协调器就唯一一种远距离、低功耗波形达成一致。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where every clause lives",
+        "zh": "覆盖地图：每个子条款的归属"
+      },
+      "en": "RCCN (10.13): 10.13.1 Overview — rail links, 50+ km, scarce spectrum (p.322). 10.13.2 Superframe structure — enhanced beacon plus management DL/UL slots, CAP, CFP/GTS; slot = (k+1) x aRccnBaseSlotDuration (p.322). 10.13.3 Header IEs — RCC Capabilities IE (bands, PHY/modulation, DSSS DPSK) and RCCN Descriptor IE (slot counts, network ID) (p.323-325). 10.13.4 Nested IEs — RCC PHY Operating Mode IE (channel, band, modulation, chip rate, spreading) (p.326-327). 10.13.5 MAC constants and PIB — aRccnBaseSlotDuration = 60; macRccnNumTimeSlots, macRccnNumMgmtTs, macRccnNumGtsTs, macRccnNetId, macRccnDevType (p.327). SUN (10.14): 10.14.1 Overview — wide-area utility, max power, mesh/multihop (p.328). 10.14.2 Starting a PAN — passive Coexistence Specification IE scan before active scan (p.328). 10.14.3 Nested IEs — SUN Device Capabilities IE (Enh-Ack, whitening, interleaving, NRNSC/RSC FEC, mode switch, band bitmap), SUN FSK Generic PHY IE, and Mode Switch Parameter IE (target/source mode, settling delay, secondary preamble) (p.328-336). LECIM (10.15): 10.15.1 Overview — star topology, mains coordinator, sleeping battery devices (p.336). 10.15.2 Header IEs — FSCD IE (TID, secure fragment, PSDU size, addressing) and LECIM Capabilities IE (FSK vs DSSS, bands, extended features) (p.337-340). 10.15.3 Nested IEs — LECIM DSSS Operating Mode IE, LECIM FSK Operating Mode IE, and LECIM FSK Split Operating Mode IE (p.341-345).",
+      "zh": "RCCN（10.13）：10.13.1 概述——铁路链路、50+ 公里、稀缺频谱（第 322 页）。10.13.2 超帧结构——增强信标加管理下行/上行时隙、CAP、CFP/GTS；时隙 = (k+1) x aRccnBaseSlotDuration（第 322 页）。10.13.3 头部 IE——RCC 能力 IE（频段、PHY/调制、DSSS DPSK）与 RCCN 描述符 IE（时隙数、网络 ID）（第 323-325 页）。10.13.4 嵌套 IE——RCC PHY 工作模式 IE（信道、频段、调制、码片速率、扩频）（第 326-327 页）。10.13.5 MAC 常量与 PIB——aRccnBaseSlotDuration = 60；macRccnNumTimeSlots、macRccnNumMgmtTs、macRccnNumGtsTs、macRccnNetId、macRccnDevType（第 327 页）。SUN（10.14）：10.14.1 概述——广域公用事业、最大功率、网状/多跳（第 328 页）。10.14.2 启动 PAN——主动扫描前先做针对共存规范 IE 的被动扫描（第 328 页）。10.14.3 嵌套 IE——SUN 设备能力 IE（Enh-Ack、白化、交织、NRNSC/RSC FEC、模式切换、频段位图）、SUN FSK 通用 PHY IE，以及模式切换参数 IE（目标/源模式、稳定延迟、次级前导码）（第 328-336 页）。LECIM（10.15）：10.15.1 概述——星型拓扑、市电协调器、休眠的电池设备（第 336 页）。10.15.2 头部 IE——FSCD IE（TID、安全分片、PSDU 大小、寻址）与 LECIM 能力 IE（FSK 对 DSSS、频段、扩展特性）（第 337-340 页）。10.15.3 嵌套 IE——LECIM DSSS 工作模式 IE、LECIM FSK 工作模式 IE，以及 LECIM FSK 分裂工作模式 IE（第 341-345 页）。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          322,
+          323,
+          325,
+          326,
+          327,
+          328,
+          336,
+          337,
+          340,
+          341,
+          345
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        322,
+        323,
+        324,
+        325,
+        326,
+        327
+      ],
+      "note": "RCCN: overview, superframe, header IEs (RCC Capabilities, RCCN Descriptor), RCC PHY Operating Mode nested IE, MAC constants and PIB attributes (10.13.1-10.13.5)."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        328,
+        329,
+        336
+      ],
+      "note": "SUN: overview, starting a PAN, SUN Device Capabilities IE and Mode Switch Parameter IE (10.14.1-10.14.3)."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        336,
+        337,
+        338,
+        339,
+        340,
+        341,
+        342,
+        343,
+        344,
+        345
+      ],
+      "note": "LECIM: overview, FSCD and LECIM Capabilities header IEs, DSSS/FSK/FSK-Split operating mode nested IEs (10.15.1-10.15.3)."
+    }
+  ],
+  "covers": [
+    "802154-2024:10.13.1",
+    "802154-2024:10.13.2",
+    "802154-2024:10.13.3",
+    "802154-2024:10.13.4",
+    "802154-2024:10.13.5",
+    "802154-2024:10.14.1",
+    "802154-2024:10.14.2",
+    "802154-2024:10.14.3",
+    "802154-2024:10.15.1",
+    "802154-2024:10.15.2",
+    "802154-2024:10.15.3"
+  ],
+  "track": "pan-802-15"
+}

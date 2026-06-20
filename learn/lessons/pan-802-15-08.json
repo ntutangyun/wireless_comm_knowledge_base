@@ -1,0 +1,175 @@
+{
+  "id": "pan-802-15-08",
+  "title": {
+    "en": "Sharing Airtime: the Superframe, CSMA-CA and Priority Channel Access",
+    "zh": "共享空口：超帧、CSMA-CA 与优先信道接入"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every device in a Low-Rate WPAN (the technology behind Zigbee and Thread) shares one radio channel, so the MAC layer needs rules for who talks when. Clause 10 of IEEE Std 802.15.4-2024 collects the standard's *optional* features, and clause 10.1 (General) makes one thing clear up front: everything in this clause is opt-in, and some features build on others. This lesson walks through the baseline airtime-sharing machinery — the superframe, the listen-before-you-talk algorithm called CSMA-CA, and a fast lane for emergencies called priority channel access (PCA).",
+      "zh": "低速无线个域网（Zigbee 和 Thread 背后的技术）里，所有设备共用一条无线信道，因此 MAC 层需要一套规则来决定谁在何时发送。IEEE Std 802.15.4-2024 的第 10 章汇集了该标准的*可选*特性，而 10.1 节（总则）一开始就说清楚一点：本章内容均为可选启用，且某些特性需以其他特性为前提。本课将讲解共享空口的基础机制——超帧、先听后发的 CSMA-CA 算法，以及为紧急情况开辟快车道的优先信道接入（PCA）。"
+    },
+    {
+      "type": "prose",
+      "en": "A coordinator can organize airtime into a **superframe** (clause 10.2.1, Overview). The superframe is bounded by two beacons sent by the coordinator; those beacons synchronize attached devices, identify the PAN, and describe the superframe's structure. Optionally the superframe has an active portion and an inactive portion — during the inactive portion the coordinator can sleep to save power. If a coordinator does not want a superframe at all, it simply turns off beacon transmissions.",
+      "zh": "协调器可以把空口时间组织成**超帧**（10.2.1 节，概述）。超帧由协调器发送的两个信标界定；这些信标用于同步已接入设备、标识 PAN，并描述超帧的结构。超帧可选地分为活动部分和非活动部分——在非活动部分，协调器可以进入睡眠以节省功耗。如果协调器根本不想使用超帧，只需关闭信标发送即可。"
+    },
+    {
+      "type": "prose",
+      "en": "Two PIB attributes shape the superframe (clause 10.2.2, Channel access). **macBeaconOrder (BO)** sets how often beacons go out: the beacon interval BI = aBaseSuperframeDuration × 2^BO for BO from 0 to 14. **macSuperframeOrder (SO)** sets how long the active portion lasts (SO from 0 to BO). Setting BO = 15 means no superframe: the coordinator stays silent except when a Beacon Request arrives, and everyone uses *unslotted* CSMA-CA. The active portion is divided into equal time slots and contains three parts in order: the beacon (slot 0, sent without CSMA), the contention access period (CAP), then the contention-free period (CFP).",
+      "zh": "两个 PIB 属性决定超帧的形态（10.2.2 节，信道接入）。**macBeaconOrder（BO）**决定信标发送的频率：当 BO 取 0 到 14 时，信标间隔 BI = aBaseSuperframeDuration × 2^BO。**macSuperframeOrder（SO）**决定活动部分的长度（SO 取 0 到 BO）。设 BO = 15 表示不使用超帧：除非收到信标请求命令，协调器保持静默，所有设备使用*非时隙* CSMA-CA。活动部分被划分为等长时隙，依次包含三部分：信标（位于时隙 0，发送时不使用 CSMA）、竞争接入期（CAP），以及随后的免竞争期（CFP）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 130\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><rect x=\"10\" y=\"30\" width=\"30\" height=\"40\"/><rect x=\"40\" y=\"30\" width=\"200\" height=\"40\"/><rect x=\"240\" y=\"30\" width=\"120\" height=\"40\"/><rect x=\"360\" y=\"30\" width=\"140\" height=\"40\" stroke-dasharray=\"5 4\"/><line x1=\"265\" y1=\"30\" x2=\"265\" y2=\"70\"/><line x1=\"312\" y1=\"30\" x2=\"312\" y2=\"70\"/><text x=\"25\" y=\"54\" font-size=\"9\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">Beacon</text><text x=\"140\" y=\"54\" font-size=\"11\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">CAP (CSMA-CA)</text><text x=\"252\" y=\"54\" font-size=\"8\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">GTS</text><text x=\"336\" y=\"54\" font-size=\"8\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">GTS</text><text x=\"300\" y=\"24\" font-size=\"10\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">CFP</text><text x=\"430\" y=\"54\" font-size=\"10\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">Inactive</text><line x1=\"10\" y1=\"90\" x2=\"360\" y2=\"90\"/><text x=\"185\" y=\"104\" font-size=\"10\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">SD (active portion)</text><line x1=\"10\" y1=\"114\" x2=\"500\" y2=\"114\"/><text x=\"255\" y=\"128\" font-size=\"10\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\">BI (beacon interval)</text></svg>",
+      "caption": {
+        "en": "A superframe: beacon at slot 0, then the contention access period (CAP), then the contention-free period (CFP) holding allocated GTSs, then an optional inactive portion. SD is the active duration; BI is the full beacon interval.",
+        "zh": "超帧结构：时隙 0 的信标，随后是竞争接入期（CAP），再是承载已分配 GTS 的免竞争期（CFP），最后是可选的非活动部分。SD 为活动时长，BI 为完整的信标间隔。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Inside the active portion the two periods serve very different traffic (clauses 10.2.2.2 and 10.2.2.3). The **CAP** is open contention: every frame (except acknowledgments and a data frame that immediately follows a Data Request ack) uses slotted CSMA-CA to grab the channel, and a device must finish its whole transaction one interframe-spacing (IFS) period before the CAP ends or defer to the next superframe. The CAP is always at least aMinCapLength long. The **CFP** is reserved: it holds up to seven guaranteed time slots (GTSs) for low-latency or bandwidth-sensitive traffic, and inside the CFP no one uses CSMA-CA at all — each device simply transmits in its own GTS. When the coordinator acts as a TMCTP, a beacon only period (BOP) for child-coordinator beacons can follow the CFP (clause 10.2.2.4).",
+      "zh": "在活动部分内，两个时期服务于截然不同的流量（10.2.2.2 与 10.2.2.3 节）。**CAP**是开放竞争区：除确认帧以及紧跟数据请求确认之后的数据帧外，每个帧都用时隙 CSMA-CA 争用信道；设备必须在 CAP 结束前留出一个帧间间隔（IFS）完成整个事务，否则要推迟到下一个超帧。CAP 长度始终不小于 aMinCapLength。**CFP**是预留区：它最多容纳七个保障时隙（GTS），供低时延或带宽敏感的流量使用；在 CFP 内完全不使用 CSMA-CA——每个设备只在自己的 GTS 中发送。当协调器作为 TMCTP 时，CFP 之后还可跟随用于子协调器信标的仅信标期（BOP）（10.2.2.4 节）。"
+    },
+    {
+      "type": "prose",
+      "en": "Beacons keep the whole structure ticking. A coordinator generates beacons at the BO-defined interval and gives beacon transmission priority over all other transmit and receive operations (clause 10.2.4). A device that is not the PAN coordinator must first track its parent's beacon, then start its own beacons relative to that timing via the StartTime parameter. Devices that want to find pending data or stay in sync acquire beacon synchronization (clause 10.2.6): they enable the receiver around the expected beacon time and timestamp each beacon at a fixed symbol boundary. Miss aMaxLostBeacons in a row and the MLME reports loss with reason BEACON_LOST.",
+      "zh": "信标让整个结构持续运转。协调器按 BO 定义的间隔生成信标，并将信标发送的优先级置于所有其他收发操作之上（10.2.4 节）。非 PAN 协调器的设备必须先跟踪其父节点的信标，再通过 StartTime 参数以该时间为基准启动自己的信标。需要查询待收数据或保持同步的设备会获取信标同步（10.2.6 节）：在预期的信标时刻前开启接收机，并在固定的符号边界为每个信标打时间戳。若连续错过 aMaxLostBeacons 个信标，MLME 将以 BEACON_LOST 原因上报同步丢失。"
+    },
+    {
+      "type": "prose",
+      "en": "Before any contention-based frame goes out, slotted CSMA-CA runs (clause 10.11). In *slotted* mode, every device's backoff-period boundaries line up with the coordinator's slot boundaries — the first backoff period starts at the beacon. Each attempt tracks three variables: **NB** (number of backoffs so far), **CW** (contention window — the number of clear backoff periods needed before transmitting, starting at CW0 = 2), and **BE** (backoff exponent, initialized to macMinBe). The device waits a random number of backoff periods, then performs clear channel assessment (CCA) on a boundary. If the channel is busy it resets CW, increments NB and BE (capped at macMaxBe), and retries — until NB exceeds macMaxCSMABackoffs, which ends in failure.",
+      "zh": "任何基于竞争的帧发送前，都要先执行时隙 CSMA-CA（10.11 节）。在*时隙*模式下，每个设备的退避周期边界都与协调器的时隙边界对齐——第一个退避周期从信标开始。每次尝试跟踪三个变量：**NB**（已退避次数）、**CW**（竞争窗口——发送前需保持空闲的退避周期数，初值 CW0 = 2）以及 **BE**（退避指数，初始化为 macMinBe）。设备等待随机数个退避周期后，在边界上执行空闲信道评估（CCA）。若信道忙，则重置 CW、递增 NB 与 BE（上限为 macMaxBe）后重试——直到 NB 超过 macMaxCSMABackoffs，此时以失败结束。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Start: NB=0, CW=CW0, BE=macMinBe] --> B[Random backoff delay]\n  B --> C[CCA on boundary]\n  C -->|idle| D[CW = CW - 1]\n  D --> E{CW = 0?}\n  E -->|yes| F[Success: transmit]\n  E -->|no| C\n  C -->|busy| G[NB+1, CW=CW0, BE=min BE+1 macMaxBe]\n  G --> H{NB > macMaxCSMABackoffs?}\n  H -->|yes| I[Failure]\n  H -->|no| B",
+      "zh": "flowchart TD\n  A[开始: NB=0, CW=CW0, BE=macMinBe] --> B[随机退避延时]\n  B --> C[在边界上执行 CCA]\n  C -->|空闲| D[CW = CW - 1]\n  D --> E{CW = 0?}\n  E -->|是| F[成功: 发送]\n  E -->|否| C\n  C -->|忙| G[NB+1, CW=CW0, BE=min BE+1 macMaxBe]\n  G --> H{NB > macMaxCSMABackoffs?}\n  H -->|是| I[失败]\n  H -->|否| B"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "CW = 2 (CW0) is why slotted CSMA-CA needs *two* consecutive clear CCAs before transmitting. This double-check guards against the case where a far-away device's frame and an acknowledgment leave a brief gap on the medium — sensing twice avoids mistaking that gap for an idle channel.",
+      "zh": "CW = 2（即 CW0）正是时隙 CSMA-CA 发送前需要*连续两次*空闲 CCA 的原因。这一双重检查可防止远端设备的帧与确认帧在媒介上留下短暂间隙时出错——两次检测能避免把这个间隙误判为信道空闲。"
+    },
+    {
+      "type": "prose",
+      "en": "Critical traffic gets a fast lane: priority channel access (PCA), in clause 10.10. PCA lets critical event messages — any MSDU whose CriticalEventMessage parameter is TRUE — jump ahead during the CAP (clause 10.10.1 overview; 10.10.2 channel access). When enabled (macPriorityChannelAccess = TRUE), the coordinator advertises a **PCA Allocation IE** in every Enhanced Beacon (clause 10.10.3) carrying the delay tolerance and allocation rate. The PCA backoff algorithm differs from ordinary CSMA-CA: it ignores NB, holds BE constant at max(macMinBe-1, 1), and is *persistent* — the device keeps sensing and decrements its TB counter every idle backoff period to win the channel quickly. A separate ALOHA variant (CCA Mode 4) is defined for LECIM (clause 10.10.2.2), and the PCA constants and PIB attributes live in clause 10.10.4.",
+      "zh": "关键流量享有快车道：优先信道接入（PCA），见 10.10 节。PCA 让关键事件消息——即 CriticalEventMessage 参数为 TRUE 的任何 MSDU——在 CAP 期间插队（10.10.1 概述；10.10.2 信道接入）。启用时（macPriorityChannelAccess = TRUE），协调器在每个增强信标中通告 **PCA 分配 IE**（10.10.3 节），携带时延容忍度和分配速率。PCA 退避算法不同于普通 CSMA-CA：它忽略 NB，将 BE 固定为 max(macMinBe-1, 1)，并采用*持续型*机制——设备持续侦听，每遇一个空闲退避周期就将 TB 计数器减一，从而快速抢占信道。针对 LECIM 还定义了独立的 ALOHA 变体（CCA 模式 4）（10.10.2.2 节），PCA 相关常量与 PIB 属性见 10.10.4 节。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, some regions (notably Japan) require backoff to *pause* rather than charge ahead when the medium is noisy. The **suspendable CSMA-CA algorithm** (clause 10.12) is an optional modification enabled by macSuspendedCsma = TRUE and negotiated during association. It runs the normal algorithm with one twist: during each unit backoff period the channel is sensed (using CCA Mode 1, 2, or 3), and if it is busy the backoff timer is *suspended* until the channel goes clear again — or until macSuspendedCsmaMaxTime expires, in which case the attempt fails. This reduces collisions in congested deployments or alongside aggressive interferers.",
+      "zh": "最后，某些地区（尤其是日本）要求在媒介嘈杂时让退避*暂停*而非继续推进。**可挂起 CSMA-CA 算法**（10.12 节）是一项可选修改，由 macSuspendedCsma = TRUE 启用，并在关联过程中协商。它在普通算法基础上做一处改动：在每个单位退避周期内对信道进行侦听（使用 CCA 模式 1、2 或 3），若信道忙，退避定时器将*暂停*，直到信道再次空闲——或直到 macSuspendedCsmaMaxTime 超时，此时本次尝试失败。这能在拥塞部署或存在激进干扰源时减少冲突。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each clause is taught",
+        "zh": "覆盖映射：各子条款的讲解位置"
+      },
+      "en": "Superframe family (pp.182-196): 10.1 General (all clause-10 features optional) and 10.2.1 Overview are taught in the opening two blocks. 10.2.2 Channel access — with its sub-parts 10.2.2.1 General, 10.2.2.2 CAP, 10.2.2.3 CFP, 10.2.2.4 BOP, 10.2.2.5 incoming/outgoing timing, and 10.2.2.6 updating config — is covered by the BO/SO and CAP/CFP/BOP prose. 10.2.3 Starting/realigning a PAN (10.2.3.1 start, 10.2.3.2 realign, 10.2.3.3 device discovery) happens via MLME-START-SUPERFRAME.request and beacon-based discovery; 10.2.4 Beacon generation and 10.2.5 Realignment in a PAN and 10.2.6 Synchronization with beacons are the beacon block. 10.2.7 Transmission when using superframe structure (search for the beacon, then slotted-in-CAP / unslotted-if-not-found) underpins the CSMA-CA setup. 10.2.8 Header IEs (Simplified Superframe Specification IE) and 10.2.9 primitives for updating config (10.2.9.1 General, 10.2.9.2 .request, 10.2.9.3 .confirm) plus 10.2.10 primitives for synchronizing (MLME-SYNC, MLME-SYNC-LOSS) are the StartTime / BEACON_LOST mechanics. 10.2.11 lists the superframe PIB attributes (e.g. macBeaconTxTime, macSuperframeOrder). PCA + algorithms (pp.314-322): 10.10.1 PCA overview, 10.10.2 channel access (10.10.2.1 CSMA-CA with PCA, 10.10.2.2 LECIM ALOHA PCA), 10.10.3 nested PCA Allocation IE, and 10.10.4 PCA constants/PIB are the PCA block; 10.11 slotted CSMA-CA is the three-variable NB/CW/BE block and flowchart; 10.12.1 overview, 10.12.2 channel access, and 10.12.3 constants/PIB are the suspendable-CSMA block.",
+      "zh": "超帧族（第 182-196 页）：10.1 总则（第 10 章所有特性均为可选）与 10.2.1 概述见开篇两个段落。10.2.2 信道接入——含 10.2.2.1 总则、10.2.2.2 CAP、10.2.2.3 CFP、10.2.2.4 BOP、10.2.2.5 入/出超帧定时、10.2.2.6 更新配置——由 BO/SO 与 CAP/CFP/BOP 段落讲解。10.2.3 启动/重对齐 PAN（10.2.3.1 启动、10.2.3.2 重对齐、10.2.3.3 设备发现）通过 MLME-START-SUPERFRAME.request 与基于信标的发现讲解；10.2.4 信标生成、10.2.5 PAN 内重对齐、10.2.6 信标同步对应信标段落。10.2.7 使用超帧结构时的发送（先搜信标，再在 CAP 内时隙发送 / 未找到则非时隙发送）是 CSMA-CA 设置的基础。10.2.8 头部 IE（简化超帧规范 IE）与 10.2.9 更新配置原语（10.2.9.1 总则、10.2.9.2 .request、10.2.9.3 .confirm）以及 10.2.10 同步原语（MLME-SYNC、MLME-SYNC-LOSS）即 StartTime / BEACON_LOST 机制。10.2.11 列出超帧 PIB 属性（如 macBeaconTxTime、macSuperframeOrder）。PCA 与算法（第 314-322 页）：10.10.1 PCA 概述、10.10.2 信道接入（10.10.2.1 PCA CSMA-CA、10.10.2.2 LECIM ALOHA PCA）、10.10.3 嵌套 PCA 分配 IE、10.10.4 PCA 常量/PIB 对应 PCA 段落；10.11 时隙 CSMA-CA 对应 NB/CW/BE 三变量段落与流程图；10.12.1 概述、10.12.2 信道接入、10.12.3 常量/PIB 对应可挂起 CSMA-CA 段落。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          182,
+          183,
+          184,
+          185,
+          186,
+          187,
+          188,
+          189,
+          190,
+          191,
+          194,
+          195,
+          196,
+          314,
+          315,
+          316,
+          317,
+          318,
+          319,
+          320,
+          321
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        182,
+        183,
+        184,
+        185,
+        186,
+        187,
+        188,
+        189
+      ],
+      "note": "10.1 General; 10.2.1-10.2.6 superframe overview, channel access (CAP/CFP/BOP), starting/realigning, beacon generation, synchronization."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        190,
+        191,
+        194,
+        195,
+        196
+      ],
+      "note": "10.2.7 transmission; 10.2.8 Simplified Superframe Specification IE; 10.2.9-10.2.10 START-SUPERFRAME and SYNC primitives; 10.2.11 superframe PIB attributes."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        314,
+        315,
+        316,
+        317,
+        318
+      ],
+      "note": "10.10.1-10.10.4 priority channel access: overview, CSMA-CA with PCA, LECIM ALOHA PCA, PCA Allocation IE, PCA constants/PIB."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        319,
+        320,
+        321
+      ],
+      "note": "10.11 slotted CSMA-CA (NB/CW/BE, flowchart, battery-life extension); 10.12.1-10.12.3 suspendable CSMA-CA overview, channel access, constants/PIB."
+    }
+  ],
+  "covers": [
+    "802154-2024:10.1",
+    "802154-2024:10.2.1",
+    "802154-2024:10.2.2",
+    "802154-2024:10.2.3",
+    "802154-2024:10.2.4",
+    "802154-2024:10.2.5",
+    "802154-2024:10.2.6",
+    "802154-2024:10.2.7",
+    "802154-2024:10.2.8",
+    "802154-2024:10.2.9",
+    "802154-2024:10.2.10",
+    "802154-2024:10.2.11",
+    "802154-2024:10.10.1",
+    "802154-2024:10.10.2",
+    "802154-2024:10.10.3",
+    "802154-2024:10.10.4",
+    "802154-2024:10.11",
+    "802154-2024:10.12.1",
+    "802154-2024:10.12.2",
+    "802154-2024:10.12.3"
+  ],
+  "track": "pan-802-15"
+}

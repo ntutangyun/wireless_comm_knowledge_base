@@ -1,0 +1,171 @@
+{
+  "id": "pan-802-15-09",
+  "title": {
+    "en": "Time-Synchronized Hopping: TSCH (Timeslotted Channel Hopping)",
+    "zh": "时间同步跳频：TSCH（时隙信道跳频）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Picture a factory floor crowded with motors, microwaves, and Wi-Fi access points. Plain CSMA/CA listen-before-talk struggles there: a busy channel and multipath fading wreck reliability. TSCH (Timeslotted Channel Hopping) is the optional 802.15.4 MAC mode built for exactly this. It throws away the old superframe and replaces it with a **slotframe**: a fixed sequence of timeslots that repeats forever, scheduled against a clock that every device shares. Because all devices share a common notion of time and channel, they hop across the whole channel space to dodge fading and interference, and they do it in fixed slots so transmissions rarely collide. The result is the deterministic, low-power backbone underneath 6TiSCH and Thread-like industrial reliability.",
+      "zh": "想象一个挤满电机、微波炉和 Wi-Fi 接入点的工厂车间。普通的 CSMA/CA「先听后发」在这里很吃力：拥挤的信道和多径衰落会破坏可靠性。TSCH（时隙信道跳频）正是 802.15.4 为这种场景设计的可选 MAC 模式。它抛弃了旧的超帧，代之以**时隙帧（slotframe）**：一段固定的时隙序列，不断循环重复，并依照所有设备共享的时钟来调度。由于所有设备共享统一的时间与信道认知，它们会在整个信道空间上跳频以规避衰落和干扰，并在固定时隙中收发，从而极少发生碰撞。这就构成了 6TiSCH 与 Thread 式工业级可靠性背后那条确定性、低功耗的主干。"
+    },
+    {
+      "type": "prose",
+      "en": "The schedule is built from two primitives. A **slotframe** is just a collection of timeslots that repeats; its length (number of timeslots) sets how often each slot comes around, and it carries a `macSlotframeHandle` for identification. A **link** is the unit that fills a slot: it is the pairwise, directed assignment of a communication between two devices, for a given slotframe handle, in a given timeslot, at a given channel offset. A timeslot is sized to fit exactly one frame plus its acknowledgment. A network can even run several slotframes of different sizes at once, giving some device groups dense schedules and others sparse ones to tune duty cycle.",
+      "zh": "整个调度由两个基本概念搭建而成。**时隙帧**只是一组不断重复的时隙；它的长度（时隙数量）决定了每个时隙多久轮转一次，并带有一个 `macSlotframeHandle` 作为标识。**链路（link）**是填充某个时隙的单元：它是两台设备之间成对的、有方向的通信指派——针对某个时隙帧句柄、在某个时隙、使用某个信道偏移。每个时隙的长度恰好能容纳一帧及其确认帧。一个网络甚至可以同时运行多个不同长度的时隙帧，让某些设备组拥有密集的调度，另一些则稀疏，以此调节占空比。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"6\" y=\"16\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Slotframe (length = 3), repeating</text><rect x=\"10\" y=\"30\" width=\"100\" height=\"40\"/><rect x=\"110\" y=\"30\" width=\"100\" height=\"40\"/><rect x=\"210\" y=\"30\" width=\"100\" height=\"40\"/><rect x=\"310\" y=\"30\" width=\"100\" height=\"40\" stroke-dasharray=\"4 3\"/><text x=\"40\" y=\"54\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">TS0 A->B</text><text x=\"142\" y=\"54\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">TS1 B->C</text><text x=\"248\" y=\"54\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">TS2 idle</text><text x=\"330\" y=\"54\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">TS0 A->B</text><text x=\"30\" y=\"88\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">ASN=0</text><text x=\"132\" y=\"88\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">ASN=1</text><text x=\"234\" y=\"88\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">ASN=2</text><text x=\"332\" y=\"88\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">ASN=3</text><text x=\"6\" y=\"118\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">CH = HoppingSeq[(ASN + ChannelOffset) mod L]</text><text x=\"6\" y=\"138\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">ASN never resets; the schedule (TS index) repeats every slotframe length</text></svg>",
+      "caption": {
+        "en": "A three-slot slotframe. The slot index repeats every cycle, but the Absolute Slot Number (ASN) counts up forever and feeds the channel-hopping formula.",
+        "zh": "一个三时隙的时隙帧。时隙索引每个周期重复一次，但绝对时隙号（ASN）会一直递增，并作为信道跳频公式的输入。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "What makes the hopping work is the **Absolute Slot Number (ASN)**: the total count of timeslots that have elapsed since the network started. It increments globally every timeslot and is never reset. The physical channel for any link is computed deterministically as `CH = HoppingSequenceList[(ASN + ChannelOffset) mod HoppingSequenceLength]`. So the *same* directed link, occurring in the *same* slot index each cycle, lands on a *different* physical channel each time ASN advances — that is the channel hopping. The channel offset lets distinct links share a timeslot on distinct channels. ASN also serves as the security frame counter (enabling time-dependent nonces), which is why TSCH enhanced beacons are never encrypted: a joining device needs the ASN to build the nonce in the first place.",
+      "zh": "让跳频得以运作的关键是**绝对时隙号（ASN）**：自网络启动以来已经过去的时隙总数。它在全网范围内每个时隙递增一次，且永不复位。任意链路的物理信道按确定性公式计算：`CH = 跳频序列表[(ASN + 信道偏移) mod 跳频序列长度]`。于是，*同一条*有方向的链路、每个周期落在*同一个*时隙索引上，却会随着 ASN 推进而每次落在*不同的*物理信道上——这就是信道跳频。信道偏移则让不同的链路在同一时隙、不同信道上并存。ASN 还兼作安全帧计数器（从而支持依赖时间的随机数），这也是为什么 TSCH 增强信标从不加密：加入设备首先就需要 ASN 来构造随机数。"
+    },
+    {
+      "type": "prose",
+      "en": "Within a single timeslot, timing is choreographed by a shared **timeslot template** (a set of `macTs...` offsets, e.g. for 2450 MHz: CCA at 1800 us, transmit at 2120 us). From T=0 the transmitter waits `macTsCcaOffset`, optionally performs CCA, then transmits at `macTsTxOffset`; if it expects an acknowledgment it re-enables its receiver after `macTsRxAckDelay`. The receiver waits `macTsRxOffset`, listens for up to `macTsRxWait`, and after receiving sends the acknowledgment at `macTsTxAckDelay`. Because the start time of every device's transmission is so tightly aligned, ordinary CCA is largely ineffective inside the network, and there is no random backoff period when channel access fails — the device simply waits for its next scheduled link.",
+      "zh": "在单个时隙内部，时序由共享的**时隙模板**（一组 `macTs...` 偏移量，例如 2450 MHz：CCA 在 1800 微秒、发送在 2120 微秒）精确编排。从 T=0 起，发送方等待 `macTsCcaOffset`，可选地执行 CCA，然后在 `macTsTxOffset` 发送；如果它期待确认，则在 `macTsRxAckDelay` 后重新打开接收机。接收方等待 `macTsRxOffset`，最多侦听 `macTsRxWait`，收到后在 `macTsTxAckDelay` 时刻发回确认。由于网络内每台设备的发送起始时间高度对齐，普通的 CCA 在网内基本失效，且信道接入失败时没有随机退避周期——设备只是等待下一个被调度的链路。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant TX as Transmitter\n  participant RX as Receiver\n  Note over TX,RX: T=0 (slot start, shared clock)\n  TX->>TX: wait macTsCcaOffset, optional CCA\n  TX->>RX: TX frame at macTsTxOffset\n  RX->>RX: record arrival time vs expected\n  RX->>TX: Enh-Ack with Time Correction IE\n  TX->>TX: adjust clock if RX is time source",
+      "zh": "sequenceDiagram\n  participant TX as 发送方\n  participant RX as 接收方\n  Note over TX,RX: T=0（时隙起点，共享时钟）\n  TX->>TX: 等待 macTsCcaOffset，可选 CCA\n  TX->>RX: 在 macTsTxOffset 发送帧\n  RX->>RX: 记录到达时间与预期之差\n  RX->>TX: 带时间校正 IE 的 Enh-Ack\n  TX->>TX: 若接收方是时间源则校准时钟"
+    },
+    {
+      "type": "prose",
+      "en": "Staying in lockstep is the heart of TSCH. Devices must agree on when each slot begins, within `macTsRxWait/2`. Time propagates outward from the PAN coordinator: each device picks one or more **time source neighbors** (a link whose timekeeping flag is set) and periodically synchronizes to them. Two mechanisms do the work, both based on comparing a frame's actual arrival against the expected `macTsRxOffset + macTsRxWait/2`. In **acknowledgment-based** sync, the receiver measures that delta and returns it as a signed time correction inside the Enh-Ack's Time Correction IE; the originator folds it into the averaged drift of its time sources. In **frame-based** sync, a device simply uses the arrival time of any frame from a time source neighbor to adjust its own clock. Corrections from non-time-source neighbors are ignored.",
+      "zh": "保持步调一致是 TSCH 的核心。设备必须就每个时隙何时开始达成一致，误差在 `macTsRxWait/2` 之内。时间从 PAN 协调器向外传播：每台设备选取一个或多个**时间源邻居**（其守时标志被置位的链路），并周期性地与它们同步。完成同步有两种机制，都基于把帧的实际到达时刻与预期的 `macTsRxOffset + macTsRxWait/2` 相比较。在**基于确认**的同步中，接收方测量这个差值，并作为带符号的时间校正放入 Enh-Ack 的时间校正 IE 返回；发起方将其并入对所有时间源平均漂移的计算。在**基于帧**的同步中，设备直接利用来自时间源邻居的任意帧的到达时间来校准自身时钟。来自非时间源邻居的校正会被忽略。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The Time Correction IE packs a lot into 2 octets: a signed 12-bit correction (-2048 to 2047 us) plus a flag. Setting bit 0x8000 turns the acknowledgment negative — meaning 'I received your frame cleanly and passed FCS, but the MAC discarded it' — while still delivering useful timing. So even a refusal keeps the network synchronized.",
+      "zh": "时间校正 IE 在 2 个字节里塞进了很多信息：一个带符号的 12 位校正值（-2048 到 2047 微秒）加一个标志位。置上 0x8000 位会把确认变为否定确认——意为「我干净地收到了你的帧并通过了 FCS 校验，但 MAC 丢弃了它」——同时仍传递有用的时序信息。因此，即便是一次拒绝也能让网络保持同步。"
+    },
+    {
+      "type": "prose",
+      "en": "To keep clocks fresh even when there is no traffic, a higher layer issues an `MLME-KEEP-ALIVE.request` naming a destination and a period (in timeslots). If nothing has been sent to that time source neighbor within the period, the MAC sends an empty Data frame requesting acknowledgment, and uses the returned Enh-Ack to run acknowledgment-based synchronization. Reliability on transmit is handled separately. **Shared links** are deliberately assigned to more than one transmitter, so collisions can happen; a missing acknowledgment triggers the TSCH retransmission backoff (delay a random number of shared links, `BE` between `macTschMinBe` and `macTschMaxBe`), whereas retransmission on a **dedicated link** needs no waiting. After `macMaxFrameRetries` failures the MAC reports the transmission failed. Critical messages can use a priority channel access backoff.",
+      "zh": "为了即使在没有业务流量时也保持时钟新鲜，上层会发出 `MLME-KEEP-ALIVE.request`，指定一个目标地址和一个周期（以时隙为单位）。如果在该周期内没有向那个时间源邻居发送任何帧，MAC 就发送一个请求确认的空数据帧，并用返回的 Enh-Ack 执行基于确认的同步。发送侧的可靠性则单独处理。**共享链路**被有意指派给多个发送方，因此可能发生碰撞；缺失确认会触发 TSCH 重传退避（延迟随机数量的共享链路，`BE` 取值在 `macTschMinBe` 与 `macTschMaxBe` 之间），而在**专用链路**上重传则无需等待。经过 `macMaxFrameRetries` 次失败后，MAC 报告该传输失败。关键消息可使用优先信道接入退避。"
+    },
+    {
+      "type": "prose",
+      "en": "How does a fresh device get in? An **advertising device** broadcasts Enhanced Beacons carrying four IEs: the TSCH Synchronization IE (the current ASN plus a Join Metric), the Channel Hopping IE, the TSCH Timeslot IE (the timeslot template), and the TSCH Slotframe and Link IE (initial slotframes and links). A joiner scans — passively is preferred — hears a valid beacon, picks a network by Join Metric, then issues `MLME-TSCH-MODE.request` to switch on its TSCH state machine (which fails with NO_SYNC if it is not yet synchronized). Association is optional in TSCH; a joiner may use a TX shared link to send an Association Request and an RX link to hear the response. A higher layer then installs more resources via `MLME-SET-SLOTFRAME.request` and `MLME-SET-LINK.request`. Note that TSCH devices never send a Coordinator Realignment command, and ignore any they receive.",
+      "zh": "新设备如何加入？**广告设备**广播携带四个 IE 的增强信标：TSCH 同步 IE（当前 ASN 加上加入度量 Join Metric）、信道跳频 IE、TSCH 时隙 IE（时隙模板）以及 TSCH 时隙帧与链路 IE（初始的时隙帧与链路）。加入者进行扫描——优先采用被动扫描——听到一个有效信标后，依据加入度量选择网络，然后发出 `MLME-TSCH-MODE.request` 来开启其 TSCH 状态机（如果尚未同步则返回 NO_SYNC 失败）。在 TSCH 中关联是可选的；加入者可用一条 TX 共享链路发送关联请求，并用一条 RX 链路接收响应。随后上层通过 `MLME-SET-SLOTFRAME.request` 和 `MLME-SET-LINK.request` 安装更多资源。注意：TSCH 设备从不发送协调器重对齐命令，并会忽略收到的任何此类命令。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Scan: hear Enhanced Beacon] --> B[Read ASN + Join Metric]\n  B --> C[MLME-TSCH-MODE.request ON]\n  C --> D{Synchronized?}\n  D -- no --> E[confirm: NO_SYNC]\n  D -- yes --> F[Optional Association Req on TX shared link]\n  F --> G[Higher layer adds slotframes and links]\n  G --> H[Keep-alive maintains sync]",
+      "zh": "flowchart TD\n  A[扫描：听到增强信标] --> B[读取 ASN 与加入度量]\n  B --> C[MLME-TSCH-MODE.request 开启]\n  C --> D{已同步?}\n  D -- 否 --> E[确认: NO_SYNC]\n  D -- 是 --> F[在 TX 共享链路上可选发送关联请求]\n  F --> G[上层添加时隙帧与链路]\n  G --> H[保活帧维持同步]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each TSCH clause (10.3.1-10.3.11) lives",
+        "zh": "覆盖地图：各 TSCH 子条款（10.3.1–10.3.11）的归属"
+      },
+      "en": "10.3.1 Overview introduces the slotframe replacing the superframe and the channel-hopping rationale. 10.3.2 Channel access covers the TSCH CCA algorithm (no backoff on access failure), the CSMA-CA retransmission/backoff for shared links, and the slotframe structure (general, ASN, links with the CH formula, multiple slotframes). 10.3.3 Starting/maintaining PANs covers realignment (TSCH ignores Coordinator Realignment) and TSCH PAN formation via Enhanced Beacons with four IEs. 10.3.4 Association/disassociation is optional, with extra disassociation rules (macDisconnectTime). 10.3.5 Synchronization covers time source neighbors, timeslot communication timing (the macTs offsets), and node synchronization (acknowledgment-based and frame-based). 10.3.6 Transmission limits one secured frame per slot (ASN-based nonce). 10.3.7 Reception covers the Enh-Ack acknowledgment and retransmission cross-reference. 10.3.8 Header IEs defines the Time Correction IE (signed 12-bit + NACK flag). 10.3.9 Nested IEs defines the TSCH Synchronization IE, Slotframe and Link IE, and Timeslot IE. 10.3.10 MAC primitives covers MLME-SET-SLOTFRAME, MLME-SET-LINK, MLME-TSCH-MODE, and MLME-KEEP-ALIVE (request/confirm). 10.3.11 Constants and PIB attributes defines the TSCH PIB (macTschMinBe/MaxBe, macAsn, macJoinMetric), macSlotframeTable, macLinkTable, and macTimeslotTemplate (band-default timing values).",
+      "zh": "10.3.1 概述引入了取代超帧的时隙帧以及信道跳频的动因。10.3.2 信道接入涵盖 TSCH CCA 算法（接入失败无退避）、共享链路的 CSMA-CA 重传/退避，以及时隙帧结构（总则、ASN、带 CH 公式的链路、多时隙帧）。10.3.3 启动/维护 PAN 涵盖重对齐（TSCH 忽略协调器重对齐）以及通过携带四个 IE 的增强信标进行的 TSCH PAN 组建。10.3.4 关联/去关联为可选，并带有额外的去关联规则（macDisconnectTime）。10.3.5 同步涵盖时间源邻居、时隙内通信时序（各 macTs 偏移），以及节点同步（基于确认与基于帧）。10.3.6 发送限制每个时隙仅发送一个加密帧（基于 ASN 的随机数）。10.3.7 接收涵盖 Enh-Ack 确认与重传交叉引用。10.3.8 头部 IE 定义时间校正 IE（带符号 12 位 + 否定确认标志）。10.3.9 嵌套 IE 定义 TSCH 同步 IE、时隙帧与链路 IE 以及时隙 IE。10.3.10 MAC 原语涵盖 MLME-SET-SLOTFRAME、MLME-SET-LINK、MLME-TSCH-MODE 与 MLME-KEEP-ALIVE（请求/确认）。10.3.11 常量与 PIB 属性定义 TSCH PIB（macTschMinBe/MaxBe、macAsn、macJoinMetric）、macSlotframeTable、macLinkTable 与 macTimeslotTemplate（各频段默认时序值）。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          197,
+          198,
+          199,
+          200,
+          201,
+          202,
+          203,
+          204,
+          205,
+          206,
+          207,
+          208,
+          209,
+          210,
+          211,
+          212,
+          213,
+          214,
+          215,
+          216,
+          217,
+          218,
+          219
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        197,
+        198,
+        199,
+        200,
+        201
+      ],
+      "note": "10.3.1 overview; 10.3.2 channel access, CCA, retransmission backoff, slotframe structure, ASN, links + CH formula, multiple slotframes."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        202,
+        203,
+        204,
+        205,
+        206
+      ],
+      "note": "10.3.3 PAN formation + realignment; 10.3.4 association/disassociation; 10.3.5 synchronization, timeslot communication, node sync (ack-based and frame-based); 10.3.6 transmission."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        206,
+        207,
+        208,
+        209
+      ],
+      "note": "10.3.7 reception/Enh-Ack/retransmissions; 10.3.8 Time Correction IE; 10.3.9 TSCH Synchronization IE, Slotframe and Link IE, Timeslot IE."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        210,
+        211,
+        212,
+        213,
+        214,
+        215,
+        216,
+        217,
+        218,
+        219
+      ],
+      "note": "10.3.10 MLME-SET-SLOTFRAME/SET-LINK/TSCH-MODE/KEEP-ALIVE primitives; 10.3.11 TSCH PIB, macSlotframeTable, macLinkTable, macTimeslotTemplate."
+    }
+  ],
+  "covers": [
+    "802154-2024:10.3.1",
+    "802154-2024:10.3.2",
+    "802154-2024:10.3.3",
+    "802154-2024:10.3.4",
+    "802154-2024:10.3.5",
+    "802154-2024:10.3.6",
+    "802154-2024:10.3.7",
+    "802154-2024:10.3.8",
+    "802154-2024:10.3.9",
+    "802154-2024:10.3.10",
+    "802154-2024:10.3.11"
+  ],
+  "track": "pan-802-15"
+}

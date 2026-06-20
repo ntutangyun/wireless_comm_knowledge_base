@@ -1,0 +1,194 @@
+{
+  "id": "pan-802-15-05",
+  "title": {
+    "en": "Driving the MAC: the MAC Management and Data Services",
+    "zh": "驱动 MAC：MAC 管理与数据服务"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In 802.15.4 the MAC sublayer sits between the upper layer (the part of the stack that wants to send and receive data) and the PHY (the radio). It is not just a chunk of code — it is a pair of well-defined service interfaces that the next higher layer calls into. Clause 8 of the 2024 standard is the contract for those interfaces: it lists every command (a 'primitive'), every parameter, and every constant that lets you actually drive the MAC. There are exactly two service access points (SAPs). The MAC management service is reached through the MLME-SAP — this is where you ask the MAC to scan channels, start a network, generate beacons, or read/write its settings. The MAC data service is reached through the MCPS-SAP — the plain pipe for moving application bytes. Behind both sits the MLME (MAC sublayer management entity) and a database of settings called the PIB (PAN Information Base). The MLME can even use the data service internally — for example, to send a command frame on the upper layer's behalf.",
+      "zh": "在 802.15.4 中，MAC 子层位于上层（协议栈中想要收发数据的部分）和 PHY（无线电）之间。它不仅仅是一段代码，而是一对定义清晰、供上一层调用的服务接口。2024 版标准的第 8 章就是这些接口的契约：它列出了每一条命令（称为“原语”，primitive）、每一个参数，以及让你真正驱动 MAC 的每一个常量。恰好存在两个服务接入点（SAP）。MAC 管理服务通过 MLME-SAP 访问——你在这里请求 MAC 扫描信道、启动网络、生成信标，或读写它的设置。MAC 数据服务通过 MCPS-SAP 访问——这是搬运应用字节的普通管道。两者背后是 MLME（MAC 子层管理实体）和一个名为 PIB（PAN 信息库）的设置数据库。MLME 甚至可以在内部使用数据服务——例如代表上层发送一个命令帧。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 220\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"40\" y=\"14\" width=\"380\" height=\"34\" rx=\"4\"/><text x=\"230\" y=\"36\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">Next higher layer 上层</text><line x1=\"150\" y1=\"48\" x2=\"150\" y2=\"78\"/><text x=\"150\" y=\"70\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">MCPS-SAP</text><line x1=\"320\" y1=\"48\" x2=\"320\" y2=\"78\"/><text x=\"320\" y=\"70\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">MLME-SAP</text><rect x=\"40\" y=\"78\" width=\"380\" height=\"96\" rx=\"4\"/><text x=\"230\" y=\"96\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">MAC sublayer 子层</text><rect x=\"60\" y=\"110\" width=\"160\" height=\"30\" rx=\"3\"/><text x=\"140\" y=\"130\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">data service 数据服务</text><rect x=\"240\" y=\"110\" width=\"90\" height=\"30\" rx=\"3\"/><text x=\"285\" y=\"130\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">MLME</text><rect x=\"340\" y=\"110\" width=\"60\" height=\"30\" rx=\"3\"/><text x=\"370\" y=\"130\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">PIB</text><line x1=\"230\" y1=\"174\" x2=\"230\" y2=\"196\"/><text x=\"275\" y=\"190\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">PD-SAP / PLME-SAP</text><rect x=\"40\" y=\"196\" width=\"380\" height=\"22\" rx=\"4\"/><text x=\"230\" y=\"211\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">PHY 物理层</text></svg>",
+      "caption": {
+        "en": "Clause 8.1: the MAC reference model. Two SAPs face upward (MCPS-SAP for data, MLME-SAP for management); the PD/PLME-SAPs face the PHY.",
+        "zh": "第 8.1 节：MAC 参考模型。两个 SAP 朝上（MCPS-SAP 用于数据，MLME-SAP 用于管理）；PD/PLME-SAP 朝向 PHY。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Most primitives come in a family of up to four shapes. A .request goes down from the upper layer into the MAC ('please do this'). A .confirm comes back up reporting the outcome ('here is what happened, with a Status code'). An .indication is the MAC volunteering news upward ('a frame arrived', 'a beacon was seen'). A .response goes down to answer a previous indication. Table 8-1 (clause 8.2.1) is the master roster of MLME-SAP primitives; an asterisk marks the optional ones. Many entries point off to other clauses — association (MLME-ASSOCIATE), synchronization (MLME-SYNC), and guaranteed time slots (MLME-GTS) are summarized in this table but defined in Clause 10 — so think of Table 8-1 as the index, and clause 8.2 as the home of the core management primitives.",
+      "zh": "大多数原语成组出现，最多有四种形态。.request 由上层向下进入 MAC（“请执行此操作”）。.confirm 向上返回，报告结果（“发生了什么，并附带一个状态码 Status”）。.indication 是 MAC 主动向上通报消息（“收到了一个帧”“看见了一个信标”）。.response 向下发出，用以回应先前的 indication。表 8-1（第 8.2.1 节）是 MLME-SAP 原语的总名册；星号标记可选项。许多条目指向其他章节——关联（MLME-ASSOCIATE）、同步（MLME-SYNC）和保证时隙（MLME-GTS）在此表中汇总，但定义在第 10 章——因此可以把表 8-1 看作索引，而第 8.2 节是核心管理原语的所在地。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two helper structures cut down on parameter clutter. SecurityParameterDescriptor (8.2.3) bundles security level, key-id mode, key source, and key index into one object that many primitives accept. PanDescriptor (8.2.4.2) packs everything learned about a discovered PAN — its coordinator address, channel, superframe spec, link quality (LQI), and timestamp — into one record returned by scans and beacon notifications.",
+      "zh": "两个辅助结构体减少了参数的杂乱。SecurityParameterDescriptor（8.2.3）把安全等级、密钥标识模式、密钥来源和密钥索引打包成一个对象，供许多原语接受。PanDescriptor（8.2.4.2）把关于一个被发现的 PAN 的全部信息——其协调器地址、信道、超帧规格、链路质量（LQI）和时间戳——打包成一条记录，由扫描和信标通知返回。"
+    },
+    {
+      "type": "prose",
+      "en": "The communications-notification primitives (8.2.4) are the MAC's way of speaking up. MLME-BEACON-NOTIFY.indication hands a received beacon's contents (in a PanDescriptor) and its LQI up to the upper layer. MLME-COMM-STATUS.indication reports an error that arose while the MAC was processing a frame on the upper layer's behalf (for instance during security processing of a response). MLME-IE-NOTIFY.indication surfaces information elements (IEs) the MAC received, and MLME-PHY-DETECT.indication flags that one PHY was detected while another was in use. These never start an action — they only inform.",
+      "zh": "通信通知类原语（8.2.4）是 MAC 主动发声的方式。MLME-BEACON-NOTIFY.indication 把收到的信标内容（封装在 PanDescriptor 中）及其 LQI 上交给上层。MLME-COMM-STATUS.indication 报告 MAC 在代表上层处理帧时出现的错误（例如在对某个 response 做安全处理期间）。MLME-IE-NOTIFY.indication 把 MAC 收到的信息元素（IE）呈现上来，而 MLME-PHY-DETECT.indication 标示在使用一种 PHY 时检测到了另一种 PHY。这些原语从不发起动作——它们只负责通报。"
+    },
+    {
+      "type": "prose",
+      "en": "Three small primitive groups handle housekeeping. MLME-GET (8.2.5.2/8.2.5.3) and MLME-SET (8.2.5.4/8.2.5.5) read and write individual PIB attributes by name — the universal knobs for configuring the MAC. MLME-RESET (8.2.6) returns the MAC sublayer to its defaults. MLME-RX-ENABLE (8.2.7) tells the MAC to turn the receiver on for a specified window (using an RxInstanceDescriptor, 8.2.7.2), and its .indication reports when that window closes — vital for low-power nodes that keep the radio off most of the time. With those knobs in place, the diagram below shows a typical discovery-then-start handshake.",
+      "zh": "三个小的原语组负责日常事务。MLME-GET（8.2.5.2/8.2.5.3）和 MLME-SET（8.2.5.4/8.2.5.5）按名称读写单个 PIB 属性——这是配置 MAC 的通用旋钮。MLME-RESET（8.2.6）把 MAC 子层恢复为默认值。MLME-RX-ENABLE（8.2.7）告诉 MAC 在指定的时间窗内打开接收机（使用 RxInstanceDescriptor，8.2.7.2），其 .indication 在该时间窗关闭时进行报告——这对大部分时间关闭无线电的低功耗节点至关重要。配置好这些旋钮后，下图展示了一次典型的“先发现、后启动”握手。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant U as Upper layer\n  participant M as MLME\n  U->>M: MLME-SCAN.request (channels, type)\n  M->>M: send Beacon Request / listen\n  M-->>U: MLME-BEACON-NOTIFY.indication\n  M-->>U: MLME-SCAN.confirm (PanDescriptorList)\n  U->>M: MLME-START.request (PanId, channel)\n  M-->>U: MLME-START.confirm (Status)",
+      "zh": "sequenceDiagram\n  participant U as 上层\n  participant M as MLME\n  U->>M: MLME-SCAN.request（信道, 类型）\n  M->>M: 发送信标请求 / 侦听\n  M-->>U: MLME-BEACON-NOTIFY.indication\n  M-->>U: MLME-SCAN.confirm（PAN 描述符列表）\n  U->>M: MLME-START.request（PanId, 信道）\n  M-->>U: MLME-START.confirm（状态）"
+    },
+    {
+      "type": "prose",
+      "en": "Channel scanning (8.2.8) is how a device discovers its world. MLME-SCAN.request names a scan type — ED (energy detect), ACTIVE, PASSIVE, ORPHAN, or ENHANCED_ACTIVE_SCAN — plus the channels and dwell time. An active scan transmits a Beacon Request and records every beacon it hears as a PanDescriptor; MLME-SCAN.confirm returns the list of found PANs, the energy-detect results, any unscanned channels, and a Status (SUCCESS, NO_BEACON, BAD_CHANNEL, and so on). Once a coordinator has chosen a PAN, MLME-START (8.2.9) initiates the PAN or switches to a new superframe configuration, and MLME-BEACON (8.2.10) lets a non-beaconing coordinator generate a beacon on demand — MLME-BEACON.request to send one, MLME-BEACON-REQUEST.indication to learn that a peer asked for one.",
+      "zh": "信道扫描（8.2.8）是设备认识周遭环境的方式。MLME-SCAN.request 指定扫描类型——ED（能量检测）、ACTIVE（主动）、PASSIVE（被动）、ORPHAN（孤立）或 ENHANCED_ACTIVE_SCAN（增强主动）——以及信道和驻留时间。主动扫描发送一个信标请求（Beacon Request），并把听到的每个信标记录为一个 PanDescriptor；MLME-SCAN.confirm 返回找到的 PAN 列表、能量检测结果、任何未扫描的信道以及状态（SUCCESS、NO_BEACON、BAD_CHANNEL 等）。一旦协调器选定了 PAN，MLME-START（8.2.9）便发起该 PAN 或切换到新的超帧配置，而 MLME-BEACON（8.2.10）让一个非信标式协调器按需生成信标——用 MLME-BEACON.request 发送，用 MLME-BEACON-REQUEST.indication 得知有对端请求了信标。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the data service (8.3), reached through the MCPS-SAP. It is short and focused: Table 8-26 lists MCPS-DATA and MCPS-PURGE. MCPS-DATA.request (8.3.4) hands an MSDU (the application's bytes) plus addresses, a TxOptions structure (8.3.3 — flags such as AckTx for acknowledged delivery, GtsTx to use a guaranteed time slot, IndirectTx for sleepy destinations), an MsduHandle, and optional security/IE parameters. MCPS-DATA.confirm (8.3.5) reports the outcome — the same handle, a timestamp, the number of CSMA-CA backoffs, the RSSI, and a Status. MCPS-DATA.indication (8.3.6) delivers a received frame upward with its own metadata. Clause 8.3.2 (Ranging, with its DataRequestRangingDescriptor and RangingReportDescriptor) shows that these same data primitives double as the carrier for UWB ranging measurements.",
+      "zh": "现在来看数据服务（8.3），它通过 MCPS-SAP 访问。它简短而专注：表 8-26 列出了 MCPS-DATA 和 MCPS-PURGE。MCPS-DATA.request（8.3.4）交付一个 MSDU（应用的字节）以及地址、一个 TxOptions 结构体（8.3.3——其中包含诸如 AckTx 表示需确认投递、GtsTx 表示使用保证时隙、IndirectTx 用于休眠目标等标志）、一个 MsduHandle，以及可选的安全/IE 参数。MCPS-DATA.confirm（8.3.5）报告结果——相同的句柄、一个时间戳、CSMA-CA 退避次数、RSSI 以及状态。MCPS-DATA.indication（8.3.6）把收到的帧连同其元数据向上递交。第 8.3.2 节（测距，含 DataRequestRangingDescriptor 与 RangingReportDescriptor）表明，这同一组数据原语也兼作 UWB 测距测量的载体。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "MCPS-PURGE (8.3.7/8.3.8) is the 'cancel send' button. A queued MSDU that has not yet been transmitted (for example an indirect frame waiting for a sleepy device to wake) can be pulled back by quoting its MsduHandle. MCPS-PURGE.confirm returns SUCCESS if it was still in the transaction queue, or INVALID_HANDLE if it already left.",
+      "zh": "MCPS-PURGE（8.3.7/8.3.8）是“取消发送”按钮。一个尚未发出的排队 MSDU（例如等待休眠设备醒来的间接帧）可以通过引用其 MsduHandle 撤回。MCPS-PURGE.confirm 在该帧仍在事务队列中时返回 SUCCESS，若已离开队列则返回 INVALID_HANDLE。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, what parameterizes all of this? Clause 8.4 holds the two kinds of named values. MAC constants (8.4.2, Table 8-35) are fixed by the standard — for example aMaxLostBeacons = 4 (after four missed beacons a device declares loss of sync) and aNumSuperframeSlots = 16. MAC PIB attributes (8.4.3) are the writable (or read-only) settings: macAutoRequest, macBeaconOrder, macShortAddress, and dozens more, organized into functional-organization attributes (8.4.3.2), Enhanced Beacon Request attributes (8.4.3.3), and Enhanced Beacon frame attributes (8.4.3.4). The MLME-GET / MLME-SET primitives from earlier are precisely how the upper layer touches these. That closes the loop: primitives act, the PIB remembers, and constants set the immovable rules.",
+      "zh": "最后，是什么在为这一切设定参数？第 8.4 节存放着两类具名值。MAC 常量（8.4.2，表 8-35）由标准固定——例如 aMaxLostBeacons = 4（连续丢失四个信标后设备宣告失去同步）和 aNumSuperframeSlots = 16。MAC PIB 属性（8.4.3）是可写（或只读）的设置：macAutoRequest、macBeaconOrder、macShortAddress 等数十项，按功能组织属性（8.4.3.2）、增强信标请求属性（8.4.3.3）和增强信标帧属性（8.4.3.4）分类。前面提到的 MLME-GET / MLME-SET 原语正是上层访问这些属性的途径。这就闭合了回路：原语执行动作，PIB 负责记忆，常量设定不可更改的规则。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Clause map — every unit of Clause 8 and where it lives",
+        "zh": "章节地图——第 8 章每个单元及其归属"
+      },
+      "en": "Management service (8.2): 8.1 Overview of the two SAPs and the reference model; 8.2.1 Table 8-1 roster of MLME-SAP primitives; 8.2.2 common requirements and the generic security/Status error list; 8.2.3 SecurityParameterDescriptor; 8.2.4 communications-notification primitives (8.2.4 general, PanDescriptor, BEACON-NOTIFY, COMM-STATUS, IE-NOTIFY, PHY-DETECT); 8.2.5 GET/SET PIB primitives; 8.2.6 RESET; 8.2.7 RX-ENABLE (+RxInstanceDescriptor); 8.2.8 SCAN.request/confirm; 8.2.9 START.request/confirm; 8.2.10 BEACON.request/confirm/indication and BEACON-REQUEST.indication. Data service (8.3): 8.3.1 general + Table 8-26 MCPS-SAP roster; 8.3.2 ranging descriptors; 8.3.3 TxOptions; 8.3.4 DATA.request; 8.3.5 DATA.confirm; 8.3.6 DATA.indication; 8.3.7 PURGE.request; 8.3.8 PURGE.confirm. Constants and attributes (8.4): 8.4.1 general; 8.4.2 MAC constants (Table 8-35); 8.4.3 MAC PIB attributes (overview + functional-organization, Enhanced Beacon Request, and Enhanced Beacon frame sub-tables).",
+      "zh": "管理服务（8.2）：8.1 两个 SAP 与参考模型概述；8.2.1 表 8-1 的 MLME-SAP 原语名册；8.2.2 通用要求及通用安全/状态错误清单；8.2.3 SecurityParameterDescriptor；8.2.4 通信通知类原语（8.2.4 总则、PanDescriptor、BEACON-NOTIFY、COMM-STATUS、IE-NOTIFY、PHY-DETECT）；8.2.5 GET/SET PIB 原语；8.2.6 RESET；8.2.7 RX-ENABLE（含 RxInstanceDescriptor）；8.2.8 SCAN.request/confirm；8.2.9 START.request/confirm；8.2.10 BEACON.request/confirm/indication 及 BEACON-REQUEST.indication。数据服务（8.3）：8.3.1 总则及表 8-26 的 MCPS-SAP 名册；8.3.2 测距描述符；8.3.3 TxOptions；8.3.4 DATA.request；8.3.5 DATA.confirm；8.3.6 DATA.indication；8.3.7 PURGE.request；8.3.8 PURGE.confirm。常量与属性（8.4）：8.4.1 总则；8.4.2 MAC 常量（表 8-35）；8.4.3 MAC PIB 属性（概述及功能组织、增强信标请求、增强信标帧各子表）。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          119,
+          122,
+          123,
+          127,
+          128,
+          129,
+          131,
+          132,
+          136,
+          142,
+          143,
+          146,
+          150,
+          151,
+          152,
+          156
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        111,
+        112,
+        113
+      ],
+      "note": "8.1 overview; 8.2.1 Table 8-1 MLME-SAP primitive roster; 8.2.2 common requirements and security/Status errors"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        114,
+        115,
+        116
+      ],
+      "note": "8.2.3 SecurityParameterDescriptor; 8.2.4 communications-notification primitives; PanDescriptor (Table 8-3)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        119,
+        122,
+        123,
+        127
+      ],
+      "note": "8.2.5 GET/SET; 8.2.6 RESET; 8.2.7 RX-ENABLE; 8.2.8 scan general"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        128,
+        129,
+        131,
+        132,
+        135
+      ],
+      "note": "8.2.8 SCAN.request/confirm; 8.2.9 START; 8.2.10 BEACON primitives"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        136,
+        142,
+        143,
+        146,
+        148,
+        150
+      ],
+      "note": "8.3.1 general + Table 8-26; 8.3.2 ranging; 8.3.3 TxOptions; 8.3.4-8.3.6 MCPS-DATA; 8.3.7 PURGE.request"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        151,
+        152,
+        156
+      ],
+      "note": "8.3.8 PURGE.confirm; 8.4.1 general; 8.4.2 MAC constants (Table 8-35); 8.4.3 MAC PIB attributes"
+    }
+  ],
+  "covers": [
+    "802154-2024:8.1",
+    "802154-2024:8.2.1",
+    "802154-2024:8.2.2",
+    "802154-2024:8.2.3",
+    "802154-2024:8.2.4",
+    "802154-2024:8.2.5",
+    "802154-2024:8.2.6",
+    "802154-2024:8.2.7",
+    "802154-2024:8.2.8",
+    "802154-2024:8.2.9",
+    "802154-2024:8.2.10",
+    "802154-2024:8.3.1",
+    "802154-2024:8.3.2",
+    "802154-2024:8.3.3",
+    "802154-2024:8.3.4",
+    "802154-2024:8.3.5",
+    "802154-2024:8.3.6",
+    "802154-2024:8.3.7",
+    "802154-2024:8.3.8",
+    "802154-2024:8.4.1",
+    "802154-2024:8.4.2",
+    "802154-2024:8.4.3"
+  ],
+  "track": "pan-802-15"
+}

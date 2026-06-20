@@ -1,0 +1,174 @@
+{
+  "id": "pan-802-15-11",
+  "title": {
+    "en": "Sipping Power: CSL, RIT and Channel Hopping",
+    "zh": "极省电：CSL、RIT 与信道跳变"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A door sensor or a thermostat may need to run for years on a single coin cell. The radio is the hungriest part of such a device, so the trick is to keep the receiver switched off almost all the time and turn it on only for tiny, scheduled sips. IEEE 802.15.4 — the base layer under Zigbee and Thread — defines three asynchronous low-energy modes that do exactly this without a shared global clock: coordinated sampled listening (CSL), receiver-initiated transmission (RIT), and a general channel-hopping mechanism. This lesson walks through all three.",
+      "zh": "门磁传感器或温控器往往需要靠一颗纽扣电池运行数年。这类设备里最耗电的部分就是无线电，因此省电的窍门是让接收机几乎始终关闭，只在预定的极短时刻打开“浅尝一口”。IEEE 802.15.4 是 Zigbee 与 Thread 的底层标准，它定义了三种无需全局时钟的异步低能耗模式来实现这一点：协调采样侦听（CSL）、接收机发起传输（RIT），以及一种通用的信道跳变机制。本课将逐一讲解这三种模式。"
+    },
+    {
+      "type": "prose",
+      "en": "In coordinated sampled listening (CSL), the receiving device samples the channel for a very short moment once every macCslPeriod and otherwise keeps its radio off. CSL turns on whenever macCslPeriod is nonzero (zero means 'always listening', i.e. CSL off). The sender and receiver are coordinated so the sender knows roughly when the receiver will next sample. To bridge the gap between 'now' and the receiver's next sample, the sender precedes the real payload with a wake-up sequence — a stream of small wake-up frames (a Multipurpose frame carrying only a Rendezvous Time IE and no payload), each one announcing how long is left until the actual data frame arrives.",
+      "zh": "在协调采样侦听（CSL）中，接收设备每隔 macCslPeriod 只对信道采样极短的一瞬，其余时间关闭无线电。只要 macCslPeriod 非零，CSL 即开启（取值为零表示“始终侦听”，即 CSL 关闭）。发送方与接收方相互协调，使发送方大致知道接收方下一次采样的时刻。为了填补“此刻”到接收方下次采样之间的间隔，发送方在真正的数据载荷之前先发出一段唤醒序列——即一连串小型唤醒帧（一种多用途帧，只携带 Rendezvous Time IE、不含载荷），每一帧都告知距离真正的数据帧到达还有多长时间。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"4\" y=\"24\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Receiver</text><line x1=\"70\" y1=\"30\" x2=\"430\" y2=\"30\"/><rect x=\"90\" y=\"22\" width=\"14\" height=\"16\"/><rect x=\"190\" y=\"22\" width=\"14\" height=\"16\"/><rect x=\"290\" y=\"22\" width=\"14\" height=\"16\"/><rect x=\"360\" y=\"14\" width=\"30\" height=\"24\"/><text x=\"86\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\">sample</text><text x=\"352\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\">RX data</text><text x=\"118\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\">macCslPeriod</text><line x1=\"104\" y1=\"44\" x2=\"190\" y2=\"44\" stroke-dasharray=\"3 3\"/><text x=\"4\" y=\"104\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Sender</text><line x1=\"70\" y1=\"110\" x2=\"430\" y2=\"110\"/><rect x=\"230\" y=\"102\" width=\"18\" height=\"16\"/><rect x=\"252\" y=\"102\" width=\"18\" height=\"16\"/><rect x=\"274\" y=\"102\" width=\"18\" height=\"16\"/><rect x=\"296\" y=\"102\" width=\"18\" height=\"16\"/><rect x=\"360\" y=\"94\" width=\"30\" height=\"24\"/><text x=\"232\" y=\"134\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\">wake-up sequence</text><text x=\"360\" y=\"134\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\">payload</text></svg>",
+      "caption": {
+        "en": "CSL: the receiver samples briefly every macCslPeriod; the sender streams wake-up frames until the receiver's next sample, then sends the payload.",
+        "zh": "CSL：接收方每隔 macCslPeriod 短暂采样；发送方持续发出唤醒帧直至接收方的下一次采样时刻，随后发送载荷。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "How long the wake-up sequence needs to be depends on what the sender knows. In an unsynchronized transmission the sender does not know the receiver's CSL phase or period, so the wake-up sequence must span up to macCslMaxPeriod. In a synchronized transmission the sender already knows the receiver's phase and period (learned earlier from a CSL IE carried in an Enhanced-Ack), so it only needs a short guard sequence to cover clock drift. The receiver replies to every payload with an Enhanced-Ack that carries the CSL IE — its current CSL phase and period — so the two sides stay loosely in step. Broadcast works the same way but is always unsynchronized and addressed to the broadcast short address.",
+      "zh": "唤醒序列需要多长，取决于发送方掌握的信息。在非同步传输中，发送方不知道接收方的 CSL 相位与周期，因此唤醒序列最长须覆盖 macCslMaxPeriod。在同步传输中，发送方已知接收方的相位与周期（此前由增强确认帧中携带的 CSL IE 学得），只需一小段守护序列来抵消时钟漂移即可。接收方对每个载荷都回复一个携带 CSL IE 的增强确认帧——其中包含自身当前的 CSL 相位与周期——使双方保持松散同步。广播的方式相同，但始终是非同步传输，并以广播短地址为目标。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The CSL IE (in an Enhanced-Ack) advertises CSL phase and period in units of 10 symbols; the Rendezvous Time IE (in each wake-up frame) tells the receiver how long until the payload, with the last wake-up frame set to zero. Multi-channel CSL (macCslChannelMask) just round-robins the sample across several channels. And for an urgent message, the higher layer can drop out of sampling entirely by setting macCslPeriod to zero — cutting latency at the cost of power.",
+      "zh": "CSL IE（位于增强确认帧中）以 10 个符号为单位通告 CSL 相位与周期；Rendezvous Time IE（位于每个唤醒帧中）告诉接收方距离载荷还有多久，序列中最后一个唤醒帧将其置零。多信道 CSL（macCslChannelMask）只是把采样在多个信道上轮流进行。对于紧急消息，高层可将 macCslPeriod 置零彻底退出采样——以耗电为代价换取更低时延。"
+    },
+    {
+      "type": "prose",
+      "en": "Receiver-initiated transmission (RIT) flips the roles. Instead of senders shouting wake-up frames, the receiver periodically broadcasts an RIT Data Request command every macRitPeriod and a would-be sender stays quiet until it hears one. After sending the request, the receiver listens for macRitDataWaitDuration; if a frame arrives it takes it, otherwise it sleeps again. RIT mode is on when macRitPeriod is nonzero, and CSL and RIT must never be on at the same time. RIT suits low-traffic, latency-tolerant uses (a few seconds is fine) and regulatory regimes that cap continuous transmit time.",
+      "zh": "接收机发起传输（RIT）则把角色对调。这里不再由发送方反复发送唤醒帧，而是由接收方每隔 macRitPeriod 周期性地广播一条 RIT 数据请求命令，潜在的发送方在听到这条命令之前保持安静。发出请求后，接收方侦听 macRitDataWaitDuration 时长；若有帧到达就接收，否则重新进入睡眠。当 macRitPeriod 非零时 RIT 模式开启，且 CSL 与 RIT 绝不能同时开启。RIT 适合低流量、对时延宽容的场景（数秒延迟可接受），也适合限制连续发射时长的法规环境。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant R as Receiver\n  participant S as Sender\n  Note over R: every macRitPeriod\n  R->>S: RIT Data Request (broadcast)\n  Note over R: listen macRitDataWaitDuration\n  S->>R: Data frame\n  Note over R: sleep until next period",
+      "zh": "sequenceDiagram\n  participant R as 接收方\n  participant S as 发送方\n  Note over R: 每隔 macRitPeriod\n  R->>S: RIT 数据请求（广播）\n  Note over R: 侦听 macRitDataWaitDuration\n  S->>R: 数据帧\n  Note over R: 睡眠至下一周期"
+    },
+    {
+      "type": "prose",
+      "en": "A sender that wants to deliver data flips to receive mode and waits up to macRitTxWaitDuration to hear the receiver's RIT Data Request, then sends its frame using unslotted CSMA-CA, copying the request's source PAN ID and address into the data frame's destination fields. The receiver can make a sender's life easier by attaching a Listen Information field (Time to First Listen, Number of Repeat Listen, Repeat Listen Interval) to the request, effectively publishing its future listen schedule so the sender can sleep until exactly the right moment. There is also Implicit RIT (I-RIT) for sensors that mostly transmit: after each frame they send, they briefly open the receiver (macIRitOffsetInterval later, for macIRitListenDuration) to catch a reply from the coordinator.",
+      "zh": "想要投递数据的发送方会切换到接收模式，最多等待 macRitTxWaitDuration 以听到接收方的 RIT 数据请求，然后使用非时隙 CSMA-CA 发出自己的帧，并把请求中的源 PAN ID 与源地址填入数据帧的目的字段。接收方可以在请求中附加 Listen Information 字段（首次侦听时间、重复侦听次数、重复侦听间隔），相当于公布自己未来的侦听日程，从而让发送方一直睡到恰当时刻再醒来，使发送方更省力。此外还有隐式 RIT（I-RIT），用于以发送为主的传感器：每发出一帧后，它们都会短暂开启接收机（间隔 macIRitOffsetInterval 后，持续 macIRitListenDuration）以接收来自协调器的回复。"
+    },
+    {
+      "type": "prose",
+      "en": "The third mechanism is channel hopping, which spreads a network across many frequencies for robustness against interference and fading. It works in slotted mode (synchronized inside a TSCH slotframe or DSME superframe via a shared sequence) or unslotted mode (no global clock — a node must learn a neighbor's sequence and timing). Devices advertise their hopping using the Channel Hopping IE (the sequence itself) and the Hopping Timing IE (the present hop time offset and the macHopDwellTime, how long each channel is used) inside Enhanced Beacons. Each hop sequence is named by a macHoppingSequenceId, with ID 0 reserved for the default sequence.",
+      "zh": "第三种机制是信道跳变，它把网络分散到多个频率上，以增强抗干扰与抗衰落的鲁棒性。它有时隙模式（在 TSCH 时隙帧或 DSME 超帧内通过共享序列同步）和非时隙模式（无全局时钟——节点必须学得邻居的序列与定时）两种。设备通过增强信标中的 Channel Hopping IE（序列本身）与 Hopping Timing IE（当前跳变时间偏移以及 macHopDwellTime，即每个信道的使用时长）来通告其跳变。每条跳变序列以一个 macHoppingSequenceId 命名，ID 为 0 保留给默认序列。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The default sequence (ID 0) is a pseudo-randomly shuffled list of all the PHY's channels, generated from a 9-bit LFSR with polynomial x⁹ + x⁵ + 1 and seed 255. Once two devices share a sequence, the channel for any moment is simply CH = macHoppingSequenceList[COUNTER % macHoppingSequenceLength] — a shared counter indexes into the agreed list. Two devices cannot hop together unless their PHYs support the same number of channels and they agree on (or both use the default) sequence.",
+      "zh": "默认序列（ID 0）是把 PHY 的全部信道做伪随机洗牌后的列表，由一个采用多项式 x⁹ + x⁵ + 1、种子为 255 的 9 位线性反馈移位寄存器（LFSR）生成。一旦两个设备共享同一序列，任意时刻的信道就是 CH = macHoppingSequenceList[COUNTER % macHoppingSequenceLength]——用一个共享计数器索引这条约定好的列表。除非两设备的 PHY 支持相同数量的信道，并且约定使用同一序列（或都用默认序列），否则它们无法一起跳变。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where each clause lives",
+        "zh": "覆盖映射：各子条款的归属"
+      },
+      "en": "CSL (10.5): overview (10.5.1); LE functional description — LE CAP, superframe, timing, scan (10.5.2); LE transmission/reception/ack with positive handshakes (10.5.3); the CSL procedure itself — idle listening, transmission, unicast vs broadcast, reception, multi-channel, turning off to cut latency (10.5.4); header IEs — CSL IE and Rendezvous Time IE (10.5.5); nested Hopping Timing IE (10.5.6); MAC constants and PIB attributes such as macCslPeriod, macCslMaxPeriod, macCslChannelMask, macCslInterval (10.5.7). RIT (10.6): overview (10.6.1); starting/maintaining PANs via RIT passive scan (10.6.2); reception and transmission, including periodic data requests, RIT transmission, and the message sequence charts (10.6.3); Implicit RIT / I-RIT (10.6.4); the RIT IE (10.6.5); MAC commands — RIT Data Request and RIT Data Response (10.6.6); the MLME-RIT primitives — REQ.indication, RES.request/indication/confirm (10.6.7); RIT constants and PIB attributes like macRitPeriod, macRitDataWaitDuration, macRitTxWaitDuration (10.6.8). Channel hopping (10.16): overview and the default LFSR-shuffled sequence (10.16.1); the nested Channel Hopping IE (10.16.2); PIB attributes for the hopping sequence — macHoppingSequenceId, macHoppingSequenceList, macHopDwellTime, and friends (10.16.3).",
+      "zh": "CSL（10.5）：概述（10.5.1）；LE 功能描述——LE CAP、超帧、定时、扫描（10.5.2）；带正向握手的 LE 发送/接收/确认（10.5.3）；CSL 过程本身——空闲侦听、发送、单播与广播、接收、多信道、为降低时延而关闭（10.5.4）；头部 IE——CSL IE 与 Rendezvous Time IE（10.5.5）；嵌套 Hopping Timing IE（10.5.6）；MAC 常量与 PIB 属性，如 macCslPeriod、macCslMaxPeriod、macCslChannelMask、macCslInterval（10.5.7）。RIT（10.6）：概述（10.6.1）；通过 RIT 被动扫描启动与维护 PAN（10.6.2）；接收与发送，包括周期性数据请求、RIT 发送及各消息时序图（10.6.3）；隐式 RIT / I-RIT（10.6.4）；RIT IE（10.6.5）；MAC 命令——RIT 数据请求与 RIT 数据响应（10.6.6）；MLME-RIT 原语——REQ.indication、RES.request/indication/confirm（10.6.7）；RIT 常量与 PIB 属性，如 macRitPeriod、macRitDataWaitDuration、macRitTxWaitDuration（10.6.8）。信道跳变（10.16）：概述及由 LFSR 洗牌得到的默认序列（10.16.1）；嵌套 Channel Hopping IE（10.16.2）；跳变序列的 PIB 属性——macHoppingSequenceId、macHoppingSequenceList、macHopDwellTime 等（10.16.3）。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          261,
+          262,
+          263,
+          264,
+          265,
+          266,
+          267,
+          268,
+          269,
+          270,
+          271,
+          272,
+          273,
+          274,
+          275,
+          276,
+          277,
+          278,
+          279,
+          280,
+          346,
+          347,
+          348,
+          349
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The throughline across all three: a low-rate WPAN saves energy by being predictable. CSL lets the receiver sleep and makes the sender carry the burden of waking it; RIT lets the sender sleep and makes the receiver advertise when it is listening; channel hopping lets the whole network share a frequency schedule for resilience. Pick the one whose energy budget falls on the right side — and Zigbee and Thread devices quietly run for years.",
+      "zh": "贯穿这三种机制的主线是：低速率 WPAN 通过“可预测”来省电。CSL 让接收方睡觉，把唤醒它的负担交给发送方；RIT 让发送方睡觉，让接收方通告自己何时在侦听；信道跳变让整个网络共享一份频率日程以获得韧性。根据能耗预算应落在哪一方来选择合适的机制——Zigbee 与 Thread 设备便能悄然运行数年之久。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        261,
+        262,
+        263,
+        264,
+        265,
+        266,
+        267
+      ],
+      "note": "Clause 10.5 — Low energy (LE) using coordinated sampled listening (CSL): overview, functional description, CSL procedure, header/nested IEs, MAC constants and PIB attributes."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        268,
+        269,
+        270,
+        271,
+        272,
+        273,
+        274,
+        275,
+        276,
+        277,
+        278,
+        279,
+        280
+      ],
+      "note": "Clause 10.6 — Receiver initiated transmission (RIT): overview, RIT passive scan, reception/transmission, I-RIT, RIT IE, MAC commands, MLME-RIT primitives, PIB attributes."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        346,
+        347,
+        348,
+        349
+      ],
+      "note": "Clause 10.16 — Channel hopping: overview and default LFSR-shuffled sequence, Channel Hopping IE, MAC PIB attributes for the hopping sequence."
+    }
+  ],
+  "covers": [
+    "802154-2024:10.5.1",
+    "802154-2024:10.5.2",
+    "802154-2024:10.5.3",
+    "802154-2024:10.5.4",
+    "802154-2024:10.5.5",
+    "802154-2024:10.5.6",
+    "802154-2024:10.5.7",
+    "802154-2024:10.6.1",
+    "802154-2024:10.6.2",
+    "802154-2024:10.6.3",
+    "802154-2024:10.6.4",
+    "802154-2024:10.6.5",
+    "802154-2024:10.6.6",
+    "802154-2024:10.6.7",
+    "802154-2024:10.6.8",
+    "802154-2024:10.16.1",
+    "802154-2024:10.16.2",
+    "802154-2024:10.16.3"
+  ],
+  "track": "pan-802-15"
+}

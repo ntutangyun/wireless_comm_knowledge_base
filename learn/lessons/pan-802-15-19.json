@@ -1,0 +1,184 @@
+{
+  "id": "pan-802-15-19",
+  "title": {
+    "en": "The Classic Zigbee Radios: O-QPSK and BPSK PHYs",
+    "zh": "经典 Zigbee 无线电：O-QPSK 与 BPSK PHY"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "If you have ever used a Zigbee light bulb, a Thread border router, or a smart-home sensor, the radio inside it is almost certainly the O-QPSK PHY of IEEE 802.15.4. A PHY (physical layer) is the part of the standard that defines how bits become radio waves: the packet format on the air, the modulation, and the radio frequency (RF) requirements a chip must meet. This lesson covers the two original 802.15.4 PHYs — the 2.4 GHz O-QPSK PHY (Clause 13) that powers most Zigbee and Thread products, and the older 868/915 MHz BPSK PHY (Clause 14).",
+      "zh": "如果你用过 Zigbee 智能灯泡、Thread 边界路由器或某个智能家居传感器，里面的无线电几乎可以肯定就是 IEEE 802.15.4 的 O-QPSK PHY。PHY（物理层）是标准中规定比特如何变成无线电波的部分：空口的数据包格式、调制方式，以及芯片必须满足的射频（RF）要求。本课介绍 802.15.4 最初的两种 PHY——驱动大多数 Zigbee 与 Thread 产品的 2.4 GHz O-QPSK PHY（第 13 章），以及更老的 868/915 MHz BPSK PHY（第 14 章）。"
+    },
+    {
+      "type": "prose",
+      "en": "Every packet these PHYs send is a PPDU (PHY protocol data unit), and its layout is simple and the same idea for both radios. It has three parts: an SHR (synchronization header) so the receiver can lock onto the signal, a PHR (PHY header) that says how long the rest is, and the PHY payload that carries the actual data. The SHR itself is a Preamble (all binary zeros, to let the receiver settle) followed by an SFD (start-of-frame delimiter) — a fixed bit pattern that marks where the preamble ends and real data begins. The PHR is a single octet: a 7-bit Frame Length field (the number of octets in the payload, called the PSDU) plus one reserved bit.",
+      "zh": "这些 PHY 发送的每个数据包都是一个 PPDU（PHY 协议数据单元），它的布局简单，两种无线电的思路也相同。它由三部分组成：让接收机锁定信号的 SHR（同步头）、说明后续长度的 PHR（PHY 头），以及承载真正数据的 PHY 负载。SHR 本身又分为前导码（Preamble，全为二进制 0，让接收机稳定下来）和随后的 SFD（帧起始定界符）——一个固定比特图样，标记前导码结束、真实数据开始的位置。PHR 只有一个字节：一个 7 比特的帧长度字段（负载即 PSDU 的字节数）加上一个保留比特。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 130\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"20\" width=\"150\" height=\"34\"/><rect x=\"160\" y=\"20\" width=\"90\" height=\"34\"/><rect x=\"250\" y=\"20\" width=\"260\" height=\"34\"/><text x=\"85\" y=\"42\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">SHR</text><text x=\"205\" y=\"42\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">PHR</text><text x=\"380\" y=\"42\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">PHY payload (PSDU)</text><rect x=\"10\" y=\"80\" width=\"95\" height=\"30\"/><rect x=\"105\" y=\"80\" width=\"55\" height=\"30\"/><text x=\"57\" y=\"99\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Preamble</text><text x=\"132\" y=\"99\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">SFD</text><line x1=\"10\" y1=\"54\" x2=\"10\" y2=\"80\"/><line x1=\"160\" y1=\"54\" x2=\"160\" y2=\"80\"/><text x=\"205\" y=\"99\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Frame Length (7b) + Reserved (1b)</text></svg>",
+      "caption": {
+        "en": "The 802.15.4 PPDU: SHR (Preamble + SFD) for synchronization, PHR carrying the frame length, then the payload.",
+        "zh": "802.15.4 的 PPDU：用于同步的 SHR（前导码 + SFD）、携带帧长度的 PHR，随后是负载。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Now the heart of the O-QPSK PHY: how four bits become a chunk of radio. It uses DSSS (direct-sequence spread spectrum), which means each tiny piece of data is spread across many fast 'chips' to make it robust against noise and interference. Specifically it is a 16-ary quasi-orthogonal scheme: the bits of each octet are split into two 4-bit symbols, and each 4-bit symbol selects 1 of 16 nearly-orthogonal pseudo-random noise (PN) sequences. In the 2.4 GHz band each symbol maps to a 32-chip sequence; the chips are then modulated with O-QPSK (offset quadrature phase-shift keying) using half-sine pulse shaping — even chips on the in-phase (I) carrier, odd chips on the quadrature (Q) carrier, with Q delayed by one chip period to create the 'offset' that keeps the signal smooth. The result: a steady 250 kb/s data rate.",
+      "zh": "现在来看 O-QPSK PHY 的核心：四个比特如何变成一段无线电信号。它采用 DSSS（直接序列扩频），即把每一小块数据扩展成许多高速“码片（chip）”，从而抵抗噪声和干扰。具体说它是一种 16 元准正交方案：每个字节的比特被拆成两个 4 比特符号，每个 4 比特符号从 16 个近似正交的伪随机噪声（PN）序列中选出 1 个。在 2.4 GHz 频段，每个符号映射为一个 32 码片序列；这些码片再用 O-QPSK（偏移正交相移键控）加半正弦脉冲整形进行调制——偶数码片放在同相（I）载波上，奇数码片放在正交（Q）载波上，Q 路延迟一个码片周期，形成让信号更平滑的“偏移”。最终得到稳定的 250 kb/s 数据速率。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[4 bits/symbol] --> B[Bit-to-symbol]\n  B --> C[Symbol-to-chip: 1 of 16 PN seqs]\n  C --> D[O-QPSK modulator: I/Q, half-sine]\n  D --> E[RF signal]",
+      "zh": "flowchart LR\n  A[每符号4比特] --> B[比特到符号]\n  B --> C[符号到码片: 16选1 PN序列]\n  C --> D[O-QPSK调制: I/Q, 半正弦]\n  D --> E[射频信号]"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why 'quasi-orthogonal'? The 16 chip sequences are not perfectly independent — they are built from cyclic shifts and conjugation (inverting odd-indexed chips) of one base sequence. That clever trick lets a cheap correlator in the receiver tell the 16 symbols apart reliably, which is a big reason 802.15.4 radios can be tiny and low-power.",
+      "zh": "为什么叫“准正交”？这 16 个码片序列并非完全独立——它们由一个基础序列经过循环移位和共轭（翻转奇数位码片）构造而来。正是这个巧妙技巧，让接收机里廉价的相关器也能可靠区分 16 个符号，这也是 802.15.4 无线电能做得小巧、低功耗的重要原因。"
+    },
+    {
+      "type": "prose",
+      "en": "The O-QPSK PHY is not limited to 2.4 GHz. It also runs in the 780, 868, 915, and 2380 MHz bands. In the sub-1 GHz bands (915/868/780 MHz) each symbol maps to a shorter 16-chip sequence, and the 868 MHz band drops to 100 kb/s; the 780 MHz band uses a raised-cosine pulse instead of half-sine. Whatever the band, the chip transmission order is always least-significant-chip first (c0 first, c31 or c15 last). The radio side spells out hard limits a compliant chip must hit: a transmit power of at least −3 dBm, a receiver sensitivity of −85 dBm or better, EVM (error vector magnitude, a measure of modulation accuracy) under 35%, a center-frequency tolerance of ±40 ppm, and a receiver that tolerates desired signals up to −20 dBm.",
+      "zh": "O-QPSK PHY 并不局限于 2.4 GHz，它还工作在 780、868、915 和 2380 MHz 频段。在 1 GHz 以下频段（915/868/780 MHz），每个符号映射为更短的 16 码片序列，868 MHz 频段速率降到 100 kb/s；780 MHz 频段用升余弦脉冲代替半正弦。无论哪个频段，码片传输顺序始终是最低位码片优先（c0 先发，c31 或 c15 最后发）。射频侧规定了合规芯片必须达到的硬性指标：发射功率至少 −3 dBm、接收灵敏度 −85 dBm 或更好、EVM（误差向量幅度，衡量调制精度）小于 35%、中心频率容差 ±40 ppm，以及接收机可承受最高 −20 dBm 的期望信号。"
+    },
+    {
+      "type": "prose",
+      "en": "The BPSK PHY (Clause 14) is the elder sibling, living only in the 868 and 915 MHz bands. It reuses the same PPDU format as O-QPSK but with a longer 32-symbol preamble. Its modulation is simpler: BPSK (binary phase-shift keying) with DSSS, where each bit is first differentially encoded (each encoded bit is the XOR of the raw bit with the previous encoded bit, so the receiver only cares about phase changes, not absolute phase), then mapped to a 15-chip PN sequence and shaped with a raised-cosine pulse. Data rates are modest: 20 kb/s at 868 MHz and 40 kb/s at 915 MHz. If a device uses O-QPSK in the 868/915 MHz bands, the standard requires it to also support BPSK there for interoperability.",
+      "zh": "BPSK PHY（第 14 章）是“兄长”，只工作在 868 和 915 MHz 频段。它复用与 O-QPSK 相同的 PPDU 格式，但前导码更长，为 32 个符号。它的调制更简单：BPSK（二进制相移键控）配合 DSSS。每个比特先做差分编码（每个编码比特是原始比特与前一个编码比特的异或，这样接收机只关心相位变化，而非绝对相位），再映射为 15 码片 PN 序列，并用升余弦脉冲整形。速率不高：868 MHz 为 20 kb/s，915 MHz 为 40 kb/s。如果设备在 868/915 MHz 频段使用 O-QPSK，标准要求它在该频段同时支持 BPSK 以保证互操作。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  A[1 bit] --> B[Differential encode: XOR prev]\n  B --> C[Bit-to-chip: 15-chip PN]\n  C --> D[BPSK modulator: raised cosine]\n  D --> E[RF signal]",
+      "zh": "flowchart LR\n  A[1比特] --> B[差分编码: 与前位异或]\n  B --> C[比特到码片: 15码片PN]\n  C --> D[BPSK调制: 升余弦]\n  D --> E[射频信号]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every O-QPSK clause (13.1-13.3) and BPSK clause (14.1-14.3)",
+        "zh": "覆盖地图：全部 O-QPSK 章节（13.1–13.3）与 BPSK 章节（14.1–14.3）"
+      },
+      "en": "O-QPSK PHY (Clause 13). PPDU format (13.1.1) is SHR + PHR + payload (Figure 13-1); the SHR (13.1.2.1) holds an 8-symbol all-zero Preamble (13.1.2.2) and the SFD (13.1.2.3); the PHR (13.1.3.1) carries a Frame Length field (13.1.3.2) plus the PHY Payload/PSDU description (13.1.3.3). Modulation and spreading (13.2.1) is 16-ary quasi-orthogonal DSSS; data rate (13.2.2) is 250 kb/s (100 kb/s at 868 MHz); a reference modulator diagram (13.2.3, Figure 13-5) frames bit-to-symbol mapping (13.2.4), symbol-to-chip mapping (13.2.5, 32-chip at 2.4/2380 MHz, 16-chip below 1 GHz), O-QPSK modulation with I/Q offset (13.2.6), pulse shape (13.2.7, half-sine or 780 MHz raised cosine), and chip transmission order c0-first (13.2.8). RF requirements (13.3): operating frequency range across five bands (13.3.1), transmit PSD mask (13.3.2), symbol rate 25/62.5 ksym/s (13.3.3), receiver sensitivity -85 dBm (13.3.4), interference rejection (13.3.5), TX-to-RX and RX-to-TX turnaround (13.3.6, 13.3.7), EVM <35% (13.3.8), center-frequency tolerance +/-40 ppm (13.3.9), transmit power >= -3 dBm (13.3.10), receiver max input -20 dBm (13.3.11), receiver ED energy detection (13.3.12), and LQI link quality indication (13.3.13).\n\nBPSK PHY (Clause 14). PPDU format (14.1) reuses 13.1 with a 32-symbol preamble. Modulation and spreading (14.2.1) is DSSS+BPSK with differential encoding; data rates 20/40 kb/s (14.2.2); reference modulator (14.2.3, Figure 14-1); differential encoding by XOR (14.2.4); bit-to-chip 15-chip mapping (14.2.5); BPSK modulation (14.2.6.1) with raised-cosine pulse shape (14.2.6.2) and c0-first chip order (14.2.6.3). RF requirements (14.3): frequency range 868/915 MHz (14.3.1), 915 MHz transmit PSD mask (14.3.2), symbol rate 20/40 ksym/s (14.3.3), receiver sensitivity -92 dBm (14.3.4), interference rejection (14.3.5), TX-to-RX and RX-to-TX turnaround (14.3.6, 14.3.7), EVM <35% (14.3.8), center-frequency tolerance +/-40 ppm (14.3.9), transmit power >= -3 dBm (14.3.10), receiver max input -20 dBm (14.3.11), receiver ED (14.3.12), and LQI (14.3.13).",
+      "zh": "O-QPSK PHY（第 13 章）。PPDU 格式（13.1.1）为 SHR + PHR + 负载（图 13-1）；SHR（13.1.2.1）含 8 符号全零前导码（13.1.2.2）与 SFD（13.1.2.3）；PHR（13.1.3.1）携带帧长度字段（13.1.3.2）及 PHY 负载/PSDU 说明（13.1.3.3）。调制与扩频（13.2.1）为 16 元准正交 DSSS；数据速率（13.2.2）为 250 kb/s（868 MHz 为 100 kb/s）；参考调制器框图（13.2.3，图 13-5）串起比特到符号映射（13.2.4）、符号到码片映射（13.2.5，2.4/2380 MHz 为 32 码片，1 GHz 以下为 16 码片）、带 I/Q 偏移的 O-QPSK 调制（13.2.6）、脉冲形状（13.2.7，半正弦或 780 MHz 升余弦），以及 c0 优先的码片传输顺序（13.2.8）。射频要求（13.3）：五个频段的工作频率范围（13.3.1）、发射 PSD 掩模（13.3.2）、符号率 25/62.5 ksym/s（13.3.3）、接收灵敏度 -85 dBm（13.3.4）、干扰抑制（13.3.5）、TX 到 RX 与 RX 到 TX 转换时间（13.3.6、13.3.7）、EVM <35%（13.3.8）、中心频率容差 ±40 ppm（13.3.9）、发射功率 ≥ -3 dBm（13.3.10）、接收机最大输入 -20 dBm（13.3.11）、接收机 ED 能量检测（13.3.12）以及 LQI 链路质量指示（13.3.13）。\n\nBPSK PHY（第 14 章）。PPDU 格式（14.1）复用 13.1 但前导码为 32 符号。调制与扩频（14.2.1）为 DSSS+BPSK 加差分编码；数据速率 20/40 kb/s（14.2.2）；参考调制器（14.2.3，图 14-1）；异或差分编码（14.2.4）；比特到码片的 15 码片映射（14.2.5）；BPSK 调制（14.2.6.1）配升余弦脉冲形状（14.2.6.2）与 c0 优先的码片顺序（14.2.6.3）。射频要求（14.3）：频率范围 868/915 MHz（14.3.1）、915 MHz 发射 PSD 掩模（14.3.2）、符号率 20/40 ksym/s（14.3.3）、接收灵敏度 -92 dBm（14.3.4）、干扰抑制（14.3.5）、TX 到 RX 与 RX 到 TX 转换时间（14.3.6、14.3.7）、EVM <35%（14.3.8）、中心频率容差 ±40 ppm（14.3.9）、发射功率 ≥ -3 dBm（14.3.10）、接收机最大输入 -20 dBm（14.3.11）、接收机 ED（14.3.12）与 LQI（14.3.13）。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          614,
+          615,
+          616,
+          617,
+          618,
+          619,
+          620,
+          621,
+          622,
+          623,
+          624
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two recurring RF terms worth remembering: ED (energy detection) lets the radio measure how much energy is on a channel without decoding it — used for clear-channel assessment and channel scans. LQI (link quality indication) gives the upper layers a per-packet quality score. Both the O-QPSK and BPSK PHYs must provide them, which is how a Zigbee or Thread stack decides which channel and which neighbor to trust.",
+      "zh": "两个反复出现、值得记住的射频术语：ED（能量检测）让无线电在不解码的情况下测量信道上的能量——用于空闲信道评估和信道扫描；LQI（链路质量指示）为上层提供逐包的质量评分。O-QPSK 与 BPSK PHY 都必须提供它们，这正是 Zigbee 或 Thread 协议栈决定信任哪个信道、哪个邻居的依据。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        614,
+        615
+      ],
+      "note": "O-QPSK PPDU format: SHR/Preamble/SFD, PHR, Frame Length, PHY Payload (13.1.1-13.1.3.3)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        615,
+        616,
+        617,
+        618
+      ],
+      "note": "O-QPSK modulation & spreading: 16-ary DSSS, data rate, bit/symbol/chip mapping, O-QPSK, pulse shape, chip order (13.2.1-13.2.8)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        618,
+        619,
+        620
+      ],
+      "note": "O-QPSK RF requirements: bands, PSD mask, symbol rate, sensitivity, rejection, turnaround, EVM, tolerance, power, ED, LQI (13.3.1-13.3.13)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        621,
+        622
+      ],
+      "note": "BPSK PPDU format and modulation: 32-symbol preamble, DSSS+BPSK, differential encoding, 15-chip mapping, raised cosine, chip order (14.1-14.2.6.3)"
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        622,
+        623,
+        624
+      ],
+      "note": "BPSK RF requirements: 868/915 MHz, PSD mask, symbol rate, -92 dBm sensitivity, rejection, turnaround, EVM, tolerance, power, ED, LQI (14.3.1-14.3.13)"
+    }
+  ],
+  "covers": [
+    "802154-2024:13.1.1",
+    "802154-2024:13.1.2",
+    "802154-2024:13.1.3",
+    "802154-2024:13.2.1",
+    "802154-2024:13.2.2",
+    "802154-2024:13.2.3",
+    "802154-2024:13.2.4",
+    "802154-2024:13.2.5",
+    "802154-2024:13.2.6",
+    "802154-2024:13.2.7",
+    "802154-2024:13.2.8",
+    "802154-2024:13.3.1",
+    "802154-2024:13.3.2",
+    "802154-2024:13.3.3",
+    "802154-2024:13.3.4",
+    "802154-2024:13.3.5",
+    "802154-2024:13.3.6",
+    "802154-2024:13.3.7",
+    "802154-2024:13.3.8",
+    "802154-2024:13.3.9",
+    "802154-2024:13.3.10",
+    "802154-2024:13.3.11",
+    "802154-2024:13.3.12",
+    "802154-2024:13.3.13",
+    "802154-2024:14.1",
+    "802154-2024:14.2.1",
+    "802154-2024:14.2.2",
+    "802154-2024:14.2.3",
+    "802154-2024:14.2.4",
+    "802154-2024:14.2.5",
+    "802154-2024:14.2.6",
+    "802154-2024:14.3.1",
+    "802154-2024:14.3.2",
+    "802154-2024:14.3.3",
+    "802154-2024:14.3.4",
+    "802154-2024:14.3.5",
+    "802154-2024:14.3.6",
+    "802154-2024:14.3.7",
+    "802154-2024:14.3.8",
+    "802154-2024:14.3.9",
+    "802154-2024:14.3.10",
+    "802154-2024:14.3.11",
+    "802154-2024:14.3.12",
+    "802154-2024:14.3.13"
+  ],
+  "track": "pan-802-15"
+}

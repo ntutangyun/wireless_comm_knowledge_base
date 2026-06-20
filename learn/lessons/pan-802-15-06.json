@@ -1,0 +1,163 @@
+{
+  "id": "pan-802-15-06",
+  "title": {
+    "en": "Securing the PAN: the 802.15.4 Security Model and Operations",
+    "zh": "保护 PAN：802.15.4 安全模型与操作"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A Low-Rate WPAN carries everything from door-lock commands to sensor telemetry over the open air, so frames need protection. In 802.15.4 that protection lives in the MAC sublayer: when a higher layer asks for it, the MAC secures outgoing frames and checks incoming ones. The standard offers three services — data confidentiality (the payload is encrypted so eavesdroppers learn nothing), data authenticity (a tag proves the frame really came from the claimed sender and was not altered), and replay protection (an old, captured frame cannot be re-injected later). Security is optional: a device only performs cryptographic work when its macSecurityEnabled attribute is TRUE.",
+      "zh": "低速无线个域网（WPAN）通过开放的空中接口传输从门锁指令到传感器遥测的一切数据，因此帧需要保护。在 802.15.4 中，这种保护位于 MAC 子层：当上层提出请求时，MAC 对发出的帧进行加固、对收到的帧进行校验。标准提供三项服务——数据机密性（载荷被加密，窃听者一无所获）、数据真实性（一个校验标签证明该帧确实来自声称的发送方且未被篡改）、以及重放保护（旧的、被截获的帧无法在之后被重新注入）。安全功能是可选的：只有当设备的 macSecurityEnabled 属性为 TRUE 时，它才执行密码学运算。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "One important gap: in TSCH (Time-Slotted Channel Hopping) mode the nonce is regenerated for every retransmission, so the receiver cannot tell a retransmission from a replay using the absolute slot number (ASN). Full replay protection is therefore NOT provided in TSCH mode, and devices must use only one security level per key in that mode.",
+      "zh": "一个重要的局限：在 TSCH（时隙信道跳变）模式下，每次重传都会重新生成 nonce，因此接收方无法借助绝对时隙号（ASN）区分重传与重放。所以 TSCH 模式不提供完整的重放保护，且该模式下每个密钥只能使用一种安全级别。"
+    },
+    {
+      "type": "prose",
+      "en": "Everything in the security suite is driven by entries in the MAC PIB (the device's information base; security attributes are written with a 'sec' prefix, such as secFrameCounter). Four tables matter most. The KeyDescriptor holds a key (secKey) plus the algorithm and lookup rules for it. The DeviceDescriptor tracks each peer by address and remembers the highest frame counter seen from it (for replay checks). The SecurityLevelDescriptor states the minimum protection a given frame type must carry. And the frame counter — a monotonically increasing number — guarantees freshness. These four pieces are the vocabulary used by every procedure below.",
+      "zh": "整套安全机制都由 MAC PIB（设备的信息库；安全属性以 “sec” 前缀书写，如 secFrameCounter）中的条目驱动。其中四类表最为关键。KeyDescriptor 保存密钥（secKey）以及对应的算法与查找规则。DeviceDescriptor 按地址跟踪每个对端，并记住从它那里见过的最高帧计数器（用于重放检查）。SecurityLevelDescriptor 规定某一帧类型必须携带的最低保护等级。帧计数器——一个单调递增的数值——则保证新鲜性。这四样东西就是下面每个流程所使用的“词汇”。"
+    },
+    {
+      "type": "prose",
+      "en": "Outgoing frame security (9.2.2) is a checklist. If the requested SecurityLevel is zero, the frame is sent as-is. If macSecurityEnabled is FALSE, the MAC refuses. Otherwise it looks up the key via the KeyDescriptor lookup procedure (9.2.3), checks the frame counter has not hit its maximum value 0xffffffff (which would force a key change), then inserts an Auxiliary Security Header recording the security level, key-identifier mode and current frame counter. It then encrypts/authenticates the payload via the AEAD transform of 9.3.4, increments the frame counter, and returns the secured frame.",
+      "zh": "发送帧安全流程（9.2.2）是一份检查清单。若请求的 SecurityLevel 为零，帧原样发出。若 macSecurityEnabled 为 FALSE，MAC 拒绝处理。否则它通过 KeyDescriptor 查找流程（9.2.3）找到密钥，检查帧计数器尚未达到其最大值 0xffffffff（达到则会强制更换密钥），随后插入一个辅助安全头，记录安全级别、密钥标识模式和当前帧计数器。接着它通过 9.3.4 的 AEAD 变换对载荷加密/鉴权，将帧计数器加一，并返回加固后的帧。"
+    },
+    {
+      "type": "prose",
+      "en": "The KeyDescriptor lookup procedure (9.2.3) finds the right key from the lookup list. With key-identifier mode 0x00 (implicit) it matches on the peer's addressing mode, PAN ID and address; with mode 0x01 it matches on a key index; with modes 0x02/0x03 it matches on an explicit key source plus index. Because implicit lookup needs a specific peer address, it fails for broadcast frames — so the standard advises using explicit key identification for broadcasts.",
+      "zh": "KeyDescriptor 查找流程（9.2.3）从查找列表中找到正确的密钥。在密钥标识模式 0x00（隐式）下，它按对端的寻址模式、PAN ID 和地址进行匹配；在模式 0x01 下按密钥索引匹配；在模式 0x02/0x03 下按显式的密钥来源加索引匹配。由于隐式查找需要一个具体的对端地址，它对广播帧会失败——因此标准建议对广播帧使用显式密钥标识。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Frame to secure] --> B{SecurityLevel = 0?}\n  B -->|Yes| Z[Send as-is]\n  B -->|No| C{macSecurityEnabled?}\n  C -->|No| E[UNSUPPORTED_SECURITY]\n  C -->|Yes| D[KeyDescriptor lookup 9.2.3]\n  D --> F{Counter = 0xffffffff?}\n  F -->|Yes| G[COUNTER_ERROR]\n  F -->|No| H[Insert Aux Security Header]\n  H --> I[AEAD encrypt + authenticate 9.3.4]\n  I --> J[Increment frame counter]\n  J --> K[Secured frame]",
+      "zh": "flowchart TD\n  A[待加固的帧] --> B{安全级别 = 0?}\n  B -->|是| Z[原样发送]\n  B -->|否| C{已启用安全?}\n  C -->|否| E[不支持安全]\n  C -->|是| D[密钥描述符查找 9.2.3]\n  D --> F{计数器 = 0xffffffff?}\n  F -->|是| G[计数器错误]\n  F -->|否| H[插入辅助安全头]\n  H --> I[AEAD 加密 + 鉴权 9.3.4]\n  I --> J[帧计数器加一]\n  J --> K[加固后的帧]"
+    },
+    {
+      "type": "prose",
+      "en": "Incoming frames split two ways. If the Security Enabled field is one (9.2.4), the receiver parses the Auxiliary Security Header, finds the key (9.2.3) and the peer's DeviceDescriptor (9.2.6), then enforces replay protection: it rejects any frame whose Frame Counter is 0xffffffff or is lower than the highest counter already seen from that device, and on success stores Frame Counter + 1. It runs the AEAD inverse transform (9.3.5) to decrypt and verify the tag, then applies the policy checks below before returning the plaintext. If the Security Enabled field is zero (9.2.5), there is nothing to decrypt — the MAC still looks up the device and the required security level and checks that an unprotected frame is actually allowed for its type.",
+      "zh": "收到的帧分两条路径。若 Security Enabled 字段为一（9.2.4），接收方解析辅助安全头，找到密钥（9.2.3）和对端的 DeviceDescriptor（9.2.6），然后执行重放保护：凡帧计数器为 0xffffffff、或低于已从该设备见过的最高计数器的帧，一律拒绝；成功后则存入“帧计数器 + 1”。它运行 AEAD 逆变换（9.3.5）以解密并验证标签，再执行下面的策略检查，最后返回明文。若 Security Enabled 字段为零（9.2.5），则没有要解密的内容——MAC 仍会查找设备和所需的安全级别，并核查这种未受保护的帧对其帧类型是否真的被允许。"
+    },
+    {
+      "type": "prose",
+      "en": "After (or instead of) decryption come the policy gates. The DeviceDescriptor lookup (9.2.6) finds the sender's record; the SecurityLevelDescriptor lookup (9.2.7) finds the policy for that frame type (and command ID). Two checks apply to Information Elements carried in the frame: the incoming IE security level check (9.2.8) marks each IE PASSED or FAILED against the allowed levels, and the incoming IE key usage check (9.2.9) fails any IE that the key is not authorized to carry. Two more checks apply to the whole frame: the incoming security level check (9.2.10) returns PASSED, FAILED, or CONDITIONALLY_PASSED (the latter lets an exempt device send an unprotected frame), and the incoming key usage policy check (9.2.11) confirms this key is allowed for this frame type and command. Any failure aborts unsecuring with a descriptive status.",
+      "zh": "解密之后（或代替解密）便是策略关卡。DeviceDescriptor 查找（9.2.6）找到发送方的记录；SecurityLevelDescriptor 查找（9.2.7）找到该帧类型（及命令 ID）对应的策略。其中两项检查针对帧中携带的信息元素（IE）：收方 IE 安全级别检查（9.2.8）依据允许的级别将每个 IE 标记为通过或失败；收方 IE 密钥用途检查（9.2.9）会让任何密钥无权承载的 IE 失败。另外两项检查针对整帧：收方安全级别检查（9.2.10）返回 通过、失败 或 有条件通过（后者允许豁免设备发送未受保护的帧）；收方密钥用途策略检查（9.2.11）确认该密钥被允许用于此帧类型和命令。任何一项失败都会以一个说明性的状态码中止解保护流程。"
+    },
+    {
+      "type": "prose",
+      "en": "The cryptography itself (9.3) is built on CCM* — counter mode with CBC-MAC, the authenticated-encryption-with-associated-data (AEAD) construction used across IEEE 802.15.4. First, conventions: integers are octet strings in most-significant-octet-first order, and an octet is eight bits most-significant-bit-first (9.3.1). The security level then selects how much protection to apply: levels 1–3 authenticate only (a Message Integrity Code, MIC, of 32/64/128 bits), while levels 5–7 both encrypt the payload and append a 32/64/128-bit MIC. Level 0 means no security.",
+      "zh": "密码学本身（9.3）建立在 CCM* 之上——即计数器模式与 CBC-MAC 的组合，是贯穿 IEEE 802.15.4 的“带关联数据的认证加密”（AEAD）构造。首先是约定：整数表示为按最高有效字节在前排列的字节串，一个字节是按最高有效位在前排列的八个比特（9.3.1）。安全级别随后决定施加多少保护：级别 1–3 仅做鉴权（生成 32/64/128 比特的消息完整性码 MIC），而级别 5–7 既加密载荷又附加 32/64/128 比特的 MIC。级别 0 表示无安全。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Non-TSCH nonce (13 octets)</text><rect x=\"10\" y=\"35\" width=\"260\" height=\"40\"/><rect x=\"270\" y=\"35\" width=\"150\" height=\"40\"/><rect x=\"420\" y=\"35\" width=\"90\" height=\"40\"/><text x=\"140\" y=\"58\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Source Address</text><text x=\"140\" y=\"71\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">8 octets</text><text x=\"345\" y=\"58\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Frame Counter</text><text x=\"345\" y=\"71\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">4 octets</text><text x=\"465\" y=\"55\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Sec Level</text><text x=\"465\" y=\"71\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">1 octet</text><text x=\"10\" y=\"105\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Extended address + counter + level = a unique nonce per frame</text></svg>",
+      "caption": {
+        "en": "The non-TSCH AEAD nonce (9.3.2.1): the originator's 8-octet extended address, the 4-octet frame counter, and the 1-octet security level. Because the address differs per device and the counter increases per frame, every nonce is used at most once per key — the property CCM* needs for security. TSCH mode (9.3.2.2) swaps the frame counter for the ASN, and Fragment frames (9.3.2.3) use a PSDU counter plus fragment number.",
+        "zh": "非 TSCH 的 AEAD nonce（9.3.2.1）：发起方的 8 字节扩展地址、4 字节帧计数器、1 字节安全级别。由于地址因设备而异、计数器逐帧递增，每个 nonce 在同一密钥下至多使用一次——这正是 CCM* 所需的安全性质。TSCH 模式（9.3.2.2）以 ASN 取代帧计数器；分片帧（9.3.2.3）则使用 PSDU 计数器加分片号。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Feeding CCM* takes a precise data layout (9.3.3, 9.3.4, 9.3.5). The MIC length M comes from the security level. The forward transform (9.3.4) takes Key, Nonce, 'a data' (the authenticated-but-clear part — the MAC header including the Auxiliary Security Header, plus the open payload, plus any unencrypted private payload) and 'm data' (the plaintext to encrypt), and outputs 'c data' (the ciphertext concatenated with the MIC). The inverse transform (9.3.5) reverses this: given Key, Nonce, 'c data' and 'a data', it recovers 'm data' only if the MIC verifies — so a tampered or forged frame is rejected rather than decrypted.",
+      "zh": "把数据喂给 CCM* 需要精确的布局（9.3.3、9.3.4、9.3.5）。MIC 长度 M 由安全级别决定。前向变换（9.3.4）以 密钥、Nonce、“a 数据”（被鉴权但明文的部分——含辅助安全头在内的 MAC 头、开放载荷，以及任何未加密的私有载荷）和 “m 数据”（待加密的明文）为输入，输出 “c 数据”（密文与 MIC 的拼接）。逆变换（9.3.5）将其反转：给定 密钥、Nonce、“c 数据” 和 “a 数据”，仅当 MIC 验证通过时才恢复出 “m 数据”——因此被篡改或伪造的帧会被拒绝而非被解密。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Clause-by-clause coverage map of 802.15.4-2024 Clause 9 security",
+        "zh": "802.15.4-2024 第 9 章安全的逐条覆盖图"
+      },
+      "en": "Overview & model — 9.1 Overview (services: confidentiality, authenticity, replay protection; TSCH replay caveat). Functional description (9.2): 9.2.1 General (security is optional; gated by macSecurityEnabled; 'sec' PIB prefix). 9.2.2 Outgoing frame security procedure (level check, key lookup, counter check, Auxiliary Security Header insertion, AEAD secure, counter increment). 9.2.3 KeyDescriptor lookup procedure (implicit vs explicit key-identifier modes; broadcast caveat). 9.2.4 Incoming frame security, Security Enabled = 1 (parse header, replay/counter check, AEAD inverse, policy checks). 9.2.5 Incoming frame security, Security Enabled = 0 (validate an unprotected frame against policy). 9.2.6 DeviceDescriptor lookup. 9.2.7 SecurityLevelDescriptor lookup. 9.2.8 Incoming IE security level checking. 9.2.9 Incoming IE key usage policy checking. 9.2.10 Incoming security level checking (PASSED / FAILED / CONDITIONALLY_PASSED). 9.2.11 Incoming key usage policy checking. Security operations (9.3): 9.3.1 Integer & octet representation (MSB-first conventions). 9.3.2 AEAD nonce (9.3.2.1 non-TSCH, 9.3.2.2 TSCH/ASN, 9.3.2.3 Fragment). 9.3.3 AEAD prerequisites (CCM*; MIC length M from security level). 9.3.4 AEAD transformation (forward: Key, Nonce, a data, m data → c data). 9.3.5 AEAD inverse transformation (Key, Nonce, c data, a data → m data, only if MIC verifies).",
+      "zh": "概览与模型 —— 9.1 概览（服务：机密性、真实性、重放保护；TSCH 重放限制）。功能描述（9.2）：9.2.1 总则（安全可选；由 macSecurityEnabled 控制；PIB “sec” 前缀）。9.2.2 发送帧安全流程（级别检查、密钥查找、计数器检查、插入辅助安全头、AEAD 加固、计数器递增）。9.2.3 KeyDescriptor 查找流程（隐式与显式密钥标识模式；广播限制）。9.2.4 收方帧安全，Security Enabled = 1（解析头部、重放/计数器检查、AEAD 逆变换、策略检查）。9.2.5 收方帧安全，Security Enabled = 0（依策略校验未受保护的帧）。9.2.6 DeviceDescriptor 查找。9.2.7 SecurityLevelDescriptor 查找。9.2.8 收方 IE 安全级别检查。9.2.9 收方 IE 密钥用途策略检查。9.2.10 收方安全级别检查（通过/失败/有条件通过）。9.2.11 收方密钥用途策略检查。安全操作（9.3）：9.3.1 整数与字节表示（最高位在前约定）。9.3.2 AEAD nonce（9.3.2.1 非 TSCH、9.3.2.2 TSCH/ASN、9.3.2.3 分片）。9.3.3 AEAD 前提（CCM*；MIC 长度 M 由安全级别决定）。9.3.4 AEAD 变换（前向：密钥、Nonce、a 数据、m 数据 → c 数据）。9.3.5 AEAD 逆变换（密钥、Nonce、c 数据、a 数据 → m 数据，仅当 MIC 验证通过）。",
+      "cite": {
+        "pdf_id": "802154-2024",
+        "pages": [
+          160,
+          161,
+          162,
+          163,
+          164,
+          165,
+          166,
+          167,
+          168,
+          169,
+          170,
+          171,
+          172
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        160
+      ],
+      "note": "9.1 Overview — confidentiality/authenticity/replay services; TSCH replay caveat; 9.2.1 General; 9.2.2 outgoing procedure start."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        161,
+        162
+      ],
+      "note": "9.2.2 outgoing steps (counter check, Aux Security Header, AEAD); 9.2.3 KeyDescriptor lookup; Table 9-1."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        163,
+        164,
+        165
+      ],
+      "note": "9.2.4 incoming (Security Enabled = 1) with replay/counter checks; 9.2.5 incoming (Security Enabled = 0)."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        166,
+        167,
+        168
+      ],
+      "note": "9.2.6 DeviceDescriptor lookup; 9.2.7 SecurityLevelDescriptor lookup; 9.2.8–9.2.11 IE and frame policy checks."
+    },
+    {
+      "pdf_id": "802154-2024",
+      "pages": [
+        168,
+        169,
+        170,
+        171,
+        172
+      ],
+      "note": "9.3.1 integer/octet representation; 9.3.2 AEAD nonces (Fig 9-1..9-4); 9.3.3 prerequisites/CCM*; 9.3.4 forward & 9.3.5 inverse transforms (Tables 9-3..9-5)."
+    }
+  ],
+  "covers": [
+    "802154-2024:9.1",
+    "802154-2024:9.2.1",
+    "802154-2024:9.2.2",
+    "802154-2024:9.2.3",
+    "802154-2024:9.2.4",
+    "802154-2024:9.2.5",
+    "802154-2024:9.2.6",
+    "802154-2024:9.2.7",
+    "802154-2024:9.2.8",
+    "802154-2024:9.2.9",
+    "802154-2024:9.2.10",
+    "802154-2024:9.2.11",
+    "802154-2024:9.3.1",
+    "802154-2024:9.3.2",
+    "802154-2024:9.3.3",
+    "802154-2024:9.3.4",
+    "802154-2024:9.3.5"
+  ],
+  "track": "pan-802-15"
+}
