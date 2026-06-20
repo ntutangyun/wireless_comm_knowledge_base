@@ -1,0 +1,207 @@
+{
+  "id": "coexistence-04-cxs-algorithms-annexes",
+  "title": {
+    "en": "Making the Call: 802.19.1 Coexistence Algorithms and the Data Model",
+    "zh": "做出决策：802.19.1 共存算法与数据模型"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Earlier lessons introduced the players of an IEEE 802.19.1 coexistence system: the Coexistence Manager (CM) that decides how networks share spectrum, the Coexistence Enabler (CE) that connects a real network to the CM, the Coexistence Discovery and Information Server (CDIS) that finds neighbors, and the white space objects (WSOs) or geolocation-capable operating objects (GCOs) that actually transmit in the TV white space (TVWS) band. This lesson is about the brain and the dictionary: how the CM actually makes its decisions, the algorithms it can run, and the reference data model that lets every entity speak the same language.",
+      "zh": "前面的课程介绍了 IEEE 802.19.1 共存系统的各个角色：决定网络如何共享频谱的共存管理器（CM）、将真实网络接入 CM 的共存使能器（CE）、负责发现邻居的共存发现与信息服务器（CDIS），以及真正在电视空白频段（TVWS）发射的白空间对象（WSO）或具备地理定位能力的运营对象（GCO）。本课聚焦于系统的“大脑”与“词典”：CM 究竟如何做决策、它可以运行哪些算法，以及让所有实体使用同一种语言的参考数据模型。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7.1 frames the two basic mechanisms (7.1.1 Introduction): coexistence management (deciding how potentially interfering networks share radio resources) and coexistence discovery (finding the neighbors you might interfere with). Coexistence management (7.1.2) is delivered to each WSO/GCO as a set of services. Every CM must offer an information service and a management service; the management service comes in two modes — TV channel mode (the CM hands out one or more whole TV channels and the network picks a frequency inside them) and operating frequency mode (the CM hands out a specific operating frequency to use directly).",
+      "zh": "第 7.1 节界定了两种基本机制（7.1.1 引言）：共存管理（决定可能相互干扰的网络如何共享无线资源）与共存发现（找出你可能干扰到的邻居）。共存管理（7.1.2）以一组服务的形式提供给每个 WSO/GCO。每个 CM 都必须提供信息服务和管理服务；管理服务又分两种模式——电视信道模式（CM 分配一个或多个完整的电视信道，由网络在其中自行选择频率）和工作频率模式（CM 直接分配一个具体的工作频率供其使用）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7.1.3 gives the three decision guidelines every CM follows regardless of algorithm: first try to give each network a non-overlapping channel to avoid co-channel interference; if that is impossible, group similar networks together in frequency; and only if even that fails, split a channel among networks in time, code, or frequency. Three decision-making topologies are defined — autonomous (each CM decides alone), distributed (CMs negotiate with neighbor CMs), and centralized (a master CM controls one or more slave CMs) — and a CM may switch topology at any time. In the information service (7.1.3.2) the WSO/GCO chooses its own parameters and reports them back; in the management service (7.1.3.3) the CM issues reconfiguration commands and may request measurements.",
+      "zh": "第 7.1.3 节给出了无论采用何种算法、每个 CM 都要遵循的三条决策准则：首先尽量为每个网络分配互不重叠的信道以避免同信道干扰；若无法做到，则在频域上把相似网络归为一组；只有连这也做不到时，才在时域、码域或频域上将一个信道分给多个网络共享。标准定义了三种决策拓扑——自治式（每个 CM 独立决策）、分布式（CM 之间相互协商）和集中式（一个主 CM 控制一个或多个从 CM）——且 CM 可以随时切换拓扑。在信息服务（7.1.3.2）中，WSO/GCO 自行选择参数并上报；在管理服务（7.1.3.3）中，CM 下发重配置命令，并可请求测量。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[CM needs to allocate spectrum] --> B{Non-overlapping channel available?}\n  B -- Yes --> C[Assign separate channel]\n  B -- No --> D{Can group similar networks in frequency?}\n  D -- Yes --> E[Group in frequency domain]\n  D -- No --> F[Split channel: time / code / frequency]",
+      "zh": "flowchart TD\n  A[CM 需要分配频谱] --> B{有互不重叠的信道吗?}\n  B -- 有 --> C[分配独立信道]\n  B -- 没有 --> D{能在频域上将相似网络归组吗?}\n  D -- 能 --> E[在频域上归组]\n  D -- 不能 --> F[拆分信道: 时域 / 码域 / 频域]"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7.2 collects the coexistence algorithms — the concrete recipes a CM can implement. They fall into three families. The discovery algorithms (7.2.1) decide who can interfere with whom: for example, the statistical-interference algorithm (7.2.1.1) models slave devices as uniformly distributed around each master, runs at least 100 random placements through a path-loss formula, and takes the interference level that 90% of devices stay below as the potential interference between two networks. Other discovery variants handle coverage-and-interference analysis and GCOs whose location is uncertain or that operate across multiple bands.",
+      "zh": "第 7.2 节汇集了共存算法——即 CM 可以实现的具体方法。它们分为三大类。发现算法（7.2.1）判定谁可能干扰谁：例如基于统计干扰的算法（7.2.1.1）将从设备建模为围绕各主设备均匀分布，把至少 100 次随机布点代入路径损耗公式，并取 90% 设备所受干扰不超过的电平值，作为两个网络之间的潜在干扰水平。其它发现算法变体则处理覆盖与干扰分析，以及位置存在不确定性或跨多个频段工作的 GCO。"
+    },
+    {
+      "type": "prose",
+      "en": "The decision algorithms (7.2.2) decide what to do once neighbors are known. The foundational one, the algorithm based on operating channel selection (7.2.2.1), requires the CM to maintain channel-availability information gathered from the TVWS database, the CDIS, neighbor CMs, and CE measurement reports, and to classify every TV channel into sets — disallowed, allowed, available, protected, restricted, unclassified, operating, and coexistent. Clause 7.2.2 then offers more than twenty further strategies (negotiation among CMs, fairness-constrained allocation, EIRP control, load balancing, interference alignment, graph-based allocation, and more) that a CM can choose among.",
+      "zh": "决策算法（7.2.2）则在邻居已知后决定该怎么做。其基础算法——基于工作信道选择的算法（7.2.2.1）——要求 CM 维护从 TVWS 数据库、CDIS、邻居 CM 以及 CE 测量报告中收集的信道可用性信息，并把每个电视信道归入若干集合：不允许、允许、可用、受保护、受限、未分类、工作中、共存中。第 7.2.2 节随后还提供了二十多种策略（CM 间协商、带公平约束的分配、EIRP 控制、负载均衡、干扰对齐、基于图的分配等等）供 CM 选用。"
+    },
+    {
+      "type": "prose",
+      "en": "The third family, the information service for a moving GCO (7.2.3), keeps a mobile device protected as it crosses between regions managed by different CMs. Its proxy coexistence service (7.2.3.1) is the key idea: when a moving GCO tries to switch to the CM of its new region but the connection fails (timeout, etc.), the CE falls back to a proxy coexistence service procedure so the GCO stays covered while it keeps retrying CM association in the background. Companion algorithms handle priority-based management and the selection of candidate serving CMs for the moving GCO.",
+      "zh": "第三类是面向移动 GCO 的信息服务（7.2.3），它在设备穿越由不同 CM 管理的多个区域时持续保护该移动设备。其核心是代理共存服务（7.2.3.1）：当移动 GCO 试图切换到新区域的 CM 却连接失败（如超时）时，CE 会回退到代理共存服务流程，使 GCO 在后台持续重试 CM 关联的同时仍受到保护。配套算法还负责基于优先级的管理，以及为移动 GCO 选择候选服务 CM。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  S[Start] --> BC1{Connected to CM in new region?}\n  BC1 -- Yes --> SUB[Subscription + Registration]\n  BC1 -- No --> BC2{Subscribed in previous region?}\n  BC2 -- Yes --> PROXY[Proxy coexistence service keeps GCO covered]\n  BC2 -- No --> ASSOC[Retry CM association]\n  PROXY --> ASSOC",
+      "zh": "flowchart TD\n  S[开始] --> BC1{已连接到新区域的 CM?}\n  BC1 -- 是 --> SUB[订阅 + 注册]\n  BC1 -- 否 --> BC2{在上一区域已订阅?}\n  BC2 -- 是 --> PROXY[代理共存服务持续保护 GCO]\n  BC2 -- 否 --> ASSOC[重试 CM 关联]\n  PROXY --> ASSOC"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Think of clause 7 as two layers. 7.1 is the policy (the rules and services every CM must honor); 7.2 is the toolbox (interchangeable algorithms a vendor can implement). The standard mandates the policy but lets implementers compete on the algorithms — which is why 7.2.2 alone lists more than twenty of them.",
+      "zh": "可以把第 7 章理解为两层。7.1 是策略（每个 CM 都必须遵守的规则与服务）；7.2 是工具箱（厂商可自行实现、可互换的算法）。标准强制规定策略，却把算法留给实现者去竞争——这正是单单 7.2.2 一节就列出二十多种算法的原因。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: clause 7 algorithms and Annexes A–H, with exact subclauses",
+        "zh": "覆盖地图：第 7 章算法与附录 A–H，含精确子条款"
+      },
+      "en": "Algorithms (7.2): 7.2.1 coexistence discovery algorithms — 7.2.1.1 statistical interference analysis, 7.2.1.2 coverage-and-interference analysis, 7.2.1.3 GCOs under geolocation uncertainty, 7.2.1.4 multi-band GCOs under geolocation uncertainty. 7.2.2 coexistence decision algorithms — twenty-two variants spanning operating-channel selection (7.2.2.1), negotiation among CMs (7.2.2.2), fairness-constrained allocation (7.2.2.3), EIRP control (7.2.2.9), load balancing (7.2.2.8), interference alignment (7.2.2.12), graph-based allocation (7.2.2.19), and more. 7.2.3 information service for a moving GCO — 7.2.3.1 proxy coexistence service, 7.2.3.2 priority-based management, 7.2.3.3 selection of candidate serving CMs.\n\nThe reference data model and supporting material live in the annexes. Annex A (normative) Data types defines every data type in ASN.1 (CxID, Status, Geolocation, CoverageArea, FrequencyRange, CoexistenceReport, MobilityInformation, and dozens more). Annex B (normative) Primitives defines the service-access-point primitives — e.g. the Transport SAP's TrConfigurationRequest, TrConnectionRequest/Indication/Response/Confirm, TrSendRequest — that move messages between entities. Annex C (normative) Messages defines the on-the-wire coexistence protocol messages, importing the Annex A types (CERegistration, CMRegistration, CoexistenceReport, and so on). Annex D (informative) Use cases walks message flows such as WSO registration to a CM and a WSO using the push- or pull-based information service. Annex E (informative) Other algorithms describes additional non-mandatory algorithms, e.g. balanced sharing built on a coexistence value (CV) parameter. Annex F (informative) Measurements and measurement reporting specifies report types — SINR (F.1), FER (F.2), interference-plus-noise floor (F.3), signal distribution (F.4) — with their scaling. Annex G (informative) JSON encoding shows sample JSON renderings of ASN.1 messages (subscription request in G.1, CE registration request in G.2, a merged example in G.3), bridging to PAWS-style database protocols. Annex H (informative) Bibliography lists related references (ETSI TR 103 231, IEEE 802.11af, IEEE 802.19.1a, IEEE 802.22, IETF RFC 7545 PAWS).",
+      "zh": "算法（7.2）：7.2.1 共存发现算法——7.2.1.1 统计干扰分析、7.2.1.2 覆盖与干扰分析、7.2.1.3 地理定位不确定下的 GCO、7.2.1.4 地理定位不确定下的多频段 GCO。7.2.2 共存决策算法——共 22 种变体，涵盖工作信道选择（7.2.2.1）、CM 间协商（7.2.2.2）、带公平约束的分配（7.2.2.3）、EIRP 控制（7.2.2.9）、负载均衡（7.2.2.8）、干扰对齐（7.2.2.12）、基于图的分配（7.2.2.19）等。7.2.3 面向移动 GCO 的信息服务——7.2.3.1 代理共存服务、7.2.3.2 基于优先级的管理、7.2.3.3 候选服务 CM 的选择。\n\n参考数据模型与配套材料位于各附录。附录 A（规范性）数据类型用 ASN.1 定义了所有数据类型（CxID、Status、Geolocation、CoverageArea、FrequencyRange、CoexistenceReport、MobilityInformation 等数十种）。附录 B（规范性）原语定义了服务接入点原语——例如传输 SAP 的 TrConfigurationRequest、TrConnectionRequest/Indication/Response/Confirm、TrSendRequest——用于在实体间传递消息。附录 C（规范性）消息定义了线路上传输的共存协议消息，并导入附录 A 的类型（CERegistration、CMRegistration、CoexistenceReport 等）。附录 D（资料性）用例演示了诸如 WSO 向 CM 注册、以及 WSO 使用推/拉式信息服务等消息流。附录 E（资料性）其它算法描述了额外的非强制算法，例如基于共存值（CV）参数的均衡共享。附录 F（资料性）测量与测量报告规定了报告类型——SINR（F.1）、FER（F.2）、干扰加噪声底（F.3）、信号分布（F.4）——及其标度方式。附录 G（资料性）JSON 编码展示了 ASN.1 消息的 JSON 样例（G.1 订阅请求、G.2 CE 注册请求、G.3 合并示例），衔接 PAWS 风格的数据库协议。附录 H（资料性）参考书目列出了相关文献（ETSI TR 103 231、IEEE 802.11af、IEEE 802.19.1a、IEEE 802.22、IETF RFC 7545 PAWS）。",
+      "cite": {
+        "pdf_id": "802191-2018",
+        "pages": [
+          253,
+          271,
+          356,
+          367,
+          397,
+          408,
+          428,
+          439,
+          448,
+          453,
+          457
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why two encodings? The standard defines its data types, primitives, and messages in ASN.1 (Annexes A–C) for precise, compact binary interchange, then Annex G shows the same messages in JSON. That JSON path lets an implementation talk to white-space database protocols such as IETF RFC 7545 (PAWS) without re-inventing the data model.",
+      "zh": "为何要两套编码？标准用 ASN.1（附录 A–C）定义数据类型、原语和消息，以实现精确、紧凑的二进制交换；附录 G 又把同样的消息呈现为 JSON。这条 JSON 路径让实现能够直接对接诸如 IETF RFC 7545（PAWS）之类的空白频谱数据库协议，而无需重新发明数据模型。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        251,
+        252,
+        253
+      ],
+      "note": "7.1 coexistence mechanisms (7.1.1-7.1.3), decision topologies and services, start of 7.2.1"
+    },
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        254,
+        255,
+        256
+      ],
+      "note": "7.2.1.1 statistical interference discovery algorithm: path loss, distribution model, 90% interference level"
+    },
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        271,
+        272
+      ],
+      "note": "7.2.2 coexistence decision algorithms; 7.2.2.1 operating channel selection and TV channel classification sets"
+    },
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        356,
+        357,
+        358
+      ],
+      "note": "7.2.3 information service for moving GCO; 7.2.3.1 proxy coexistence service flowchart"
+    },
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        367,
+        368
+      ],
+      "note": "Annex A (normative) Data types in ASN.1"
+    },
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        397,
+        398
+      ],
+      "note": "Annex B (normative) Primitives; Transport SAP primitives"
+    },
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        408,
+        409
+      ],
+      "note": "Annex C (normative) Messages importing Annex A data types"
+    },
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        428,
+        429
+      ],
+      "note": "Annex D (informative) Use cases; WSO registration and information service flows"
+    },
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        439,
+        440
+      ],
+      "note": "Annex E (informative) Other algorithms; balanced sharing and coexistence value (CV)"
+    },
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        448,
+        449
+      ],
+      "note": "Annex F (informative) Measurements; SINR, FER, IPNF, signal distribution"
+    },
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        453,
+        454,
+        455,
+        456
+      ],
+      "note": "Annex G (informative) JSON encoding examples"
+    },
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        457
+      ],
+      "note": "Annex H (informative) Bibliography"
+    }
+  ],
+  "covers": [
+    "802191-2018:7.1.1",
+    "802191-2018:7.1.2",
+    "802191-2018:7.1.3",
+    "802191-2018:7.2.1",
+    "802191-2018:7.2.2",
+    "802191-2018:7.2.3",
+    "802191-2018:Annex_A",
+    "802191-2018:Annex_B",
+    "802191-2018:Annex_C",
+    "802191-2018:Annex_D",
+    "802191-2018:Annex_E",
+    "802191-2018:Annex_F",
+    "802191-2018:Annex_G",
+    "802191-2018:Annex_H"
+  ],
+  "track": "coexistence"
+}

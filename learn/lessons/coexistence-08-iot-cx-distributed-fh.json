@@ -1,0 +1,152 @@
+{
+  "id": "coexistence-08-iot-cx-distributed-fh",
+  "title": {
+    "en": "No Coordinator Needed: Distributed Coexistence and Frequency Hopping",
+    "zh": "无需协调者：分布式共存与跳频"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In the earlier lessons a central manager — a coordinator — refereed how an IEEE 802.11ah Wi-Fi HaLow network and an IEEE 802.15.4g smart-utility network shared the same sub-1 GHz airwaves. But you cannot always count on a coordinator being there. This lesson covers Clause 9.3 and 9.4 of IEEE Std 802.19.3-2021: how these two kinds of devices can keep coexisting peacefully when each one has to decide for itself, with no one in charge. We call this distributed coexistence.",
+      "zh": "在前面的课程里，有一个中央管理者——协调者——来仲裁 IEEE 802.11ah（Wi-Fi HaLow）网络与 IEEE 802.15.4g（智能公用事业）网络如何共享同一段 1 GHz 以下频段。但协调者并不总是存在。本课讲解 IEEE Std 802.19.3-2021 的第 9.3 与 9.4 条：当每台设备都必须自己做决定、无人统一指挥时，这两类设备如何继续和平共存。我们把这称为分布式共存。"
+    },
+    {
+      "type": "prose",
+      "en": "The standard first sorts distributed methods into two layers. Network-level operations act on the whole network: channel switching, ED (energy detection) threshold setting, transmission power setting, backoff parameter setting, and frequency hopping. Device-level operations act on a single radio: beamforming, transmission-time delay, alpha-fairness based ED-CCA, Q-Learning based CSMA/CA, prediction-based delay, and frame-size setting. A recurring theme: without a coordinator, a device often cannot even tell whether the foreign system is present — though energy detection (ED), or the ratio of channel-occupancy time to total busy time, gives it a clue.",
+      "zh": "标准首先把分布式方法分成两层。网络级操作作用于整个网络：信道切换、ED（能量检测）门限设置、发射功率设置、退避参数设置和跳频。设备级操作作用于单个射频：波束成形、发送时延、基于 α 公平的 ED-CCA、基于 Q 学习的 CSMA/CA、基于预测的时延和帧长设置。一个反复出现的主题是：没有协调者时，设备往往甚至无法判断对方系统是否存在——不过能量检测（ED），或者信道占用时间与总忙碌时间的比值，能提供线索。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Key intuition: a coordinator turns sharing into a planned schedule. Take it away and several once-useful knobs become a coin flip. The standard is refreshingly honest — it tells you which distributed tricks genuinely help and which it does NOT favor.",
+      "zh": "关键直觉：协调者把共享变成有计划的排程。去掉它，几个原本有用的旋钮就变成了抛硬币。这份标准非常坦诚——它明确告诉你哪些分布式技巧真正有用，以及哪些它并不推荐。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with the ones the standard does NOT favor. Distributed channel switching (9.3.2) becomes random: switching might help, might hurt — so it may not be feasible. Distributed ED-threshold setting (9.3.3): lowering 802.11ah's ED threshold would let it hear more 802.15.4g traffic, but changing that threshold violates the standard, so it is not favored. Distributed transmission-power setting (9.3.4) and distributed beamforming (9.3.5) both become random operations without a coordinator, so neither is favored either. These four are taught here precisely so you understand WHY a coordinator mattered.",
+      "zh": "先看标准不推荐的几种。分布式信道切换（9.3.2）变成随机操作：切了可能更好，也可能更糟——所以未必可行。分布式 ED 门限设置（9.3.3）：调低 802.11ah 的 ED 门限可以让它听到更多 802.15.4g 流量，但更改该门限会违反标准，因此不被推荐。分布式发射功率设置（9.3.4）和分布式波束成形（9.3.5）在没有协调者时同样变成随机操作，因此也都不被推荐。这里讲解这四种，正是为了让你理解协调者为何如此重要。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the methods that DO help. Distributed transmission-time delay (9.3.6) is recommended by 802.11ah itself: when a device knows it coexists with the other system and ED-based CCA (clear-channel assessment) finds energy above its threshold, it delays transmission to dodge the interference — the delay length is left to the implementer. Building on this, prediction-based transmission-time delay (9.3.9) is smarter: an 802.11ah STA records every detected transmission time, removes the ones it can attribute to its own successful or collided sends, treats the rest as likely 802.15.4g activity (weighted by its own collision probability), then forecasts the NEXT 802.15.4g transmission (using a time-series predictor such as Holt's additive-trend method) and suspends itself around that predicted moment.",
+      "zh": "再看真正有用的方法。分布式发送时延（9.3.6）本就是 802.11ah 推荐的机制：当设备知道自己与对方系统共存、且基于 ED 的 CCA（空闲信道评估）检测到能量超过门限时，它就延迟发送以避开干扰——时延长度由实现者决定。在此基础上，基于预测的发送时延（9.3.9）更聪明：802.11ah 站点记录每一次检测到的发送时刻，剔除能归因于自身成功或碰撞发送的那些，把其余视为很可能的 802.15.4g 活动（按自身碰撞概率加权），再预测下一次 802.15.4g 发送时刻（使用如 Holt 加性趋势法之类的时间序列预测器），并在预测时刻前后挂起自己。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 400 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><line x1=\"20\" y1=\"70\" x2=\"380\" y2=\"70\"/><polygon points=\"380,70 372,66 372,74\" fill=\"currentColor\" stroke=\"none\"/><text x=\"20\" y=\"95\" font-size=\"11\" fill=\"currentColor\" stroke=\"none\">now</text><line x1=\"40\" y1=\"60\" x2=\"40\" y2=\"70\"/><line x1=\"75\" y1=\"60\" x2=\"75\" y2=\"70\"/><line x1=\"110\" y1=\"60\" x2=\"110\" y2=\"70\"/><text x=\"35\" y=\"50\" font-size=\"9\" fill=\"currentColor\" stroke=\"none\">past .15.4g TX</text><rect x=\"250\" y=\"40\" width=\"60\" height=\"30\" rx=\"3\"/><text x=\"258\" y=\"32\" font-size=\"9\" fill=\"currentColor\" stroke=\"none\">predicted .15.4g TX</text><rect x=\"235\" y=\"75\" width=\"90\" height=\"16\" rx=\"3\" stroke-dasharray=\"4 3\"/><text x=\"240\" y=\"104\" font-size=\"9\" fill=\"currentColor\" stroke=\"none\">11ah suspends here</text></svg>",
+      "caption": {
+        "en": "Prediction-based delay: the 802.11ah STA forecasts the next 802.15.4g transmission and suspends its own around that window (Clause 9.3.9).",
+        "zh": "基于预测的时延：802.11ah 站点预测下一次 802.15.4g 发送，并在该时间窗附近挂起自身（第 9.3.9 条）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Two device-level methods tackle deeper 802.11ah advantages. Alpha-fairness based ED-CCA (9.3.7) attacks the higher ED threshold problem: when 802.11ah hears energy that sits between the 802.15.4g receiver sensitivity and 802.11ah's own (higher) ED threshold, that signal is readable by 802.15.4g but normally ignored by 802.11ah. Alpha-fairness has 802.11ah report busy-or-idle probabilistically, using a fairness parameter alpha tuned from each network's performance metric (such as packet delivery rate) — handing more medium access to whichever network needs it. Q-Learning based CSMA/CA (9.3.8) attacks 802.11ah's faster backoff: when its backoff counter hits zero and the channel looks idle, the channel may actually be in the middle of an 802.15.4g exchange (during a turnaround or ACK-wait gap). Q-Learning, with a reward built on that same alpha-fairness, decides whether to transmit or defer. The two can run together for even better results.",
+      "zh": "两种设备级方法针对 802.11ah 更深层的优势。基于 α 公平的 ED-CCA（9.3.7）针对较高 ED 门限问题：当 802.11ah 听到的能量落在 802.15.4g 接收灵敏度与 802.11ah 自身（更高的）ED 门限之间时，该信号对 802.15.4g 可读，但 802.11ah 通常会忽略它。α 公平让 802.11ah 按概率报告忙或闲，使用一个由各网络性能指标（如分组投递率）调出的公平参数 α——把更多介质接入让给更需要的那个网络。基于 Q 学习的 CSMA/CA（9.3.8）针对 802.11ah 更快的退避：当其退避计数器归零、信道看似空闲时，信道实际上可能正处于某次 802.15.4g 交互之中（在收发转换或等 ACK 的间隙）。Q 学习用同样基于 α 公平构建的奖励，决定是发送还是延迟。两者可同时运行，效果更佳。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Backoff counter reaches 0] --> B{ED-CCA idle?}\n  B -- No / BC>0 --> C[Continue normal backoff]\n  B -- Yes --> D[Apply Q-Learning]\n  D --> E{Reward favors transmit?}\n  E -- Yes --> F[Transmit]\n  E -- No --> G[Defer]",
+      "zh": "flowchart TD\n  A[退避计数器归零] --> B{ED-CCA 空闲?}\n  B -- 否 / BC>0 --> C[继续正常退避]\n  B -- 是 --> D[应用 Q 学习]\n  D --> E{奖励倾向发送?}\n  E -- 是 --> F[发送]\n  E -- 否 --> G[延迟]"
+    },
+    {
+      "type": "prose",
+      "en": "Hybrid CSMA/CA (9.3.10) flips the perspective to the 802.15.4g side. Because 802.11ah's ED threshold and backoff parameters give it the upper hand in contention, the older 802.15.4g devices need to fight back. Hybrid CSMA/CA lets an 802.15.4g device perform immediate channel access when 802.11ah interference is severe — using just one CCA, and taking a random backoff only if that CCA returns busy. To avoid 802.15.4g neighbors colliding with each other, each accesses immediately with an optimal probability of 1/Ng (Ng = number of 802.15.4g neighbors), and the non-accessing neighbors raise their backoff. Implementation is simple — set macMaxBE = macMinBE = 0 — and crucially it does NOT degrade 802.11ah reliability while improving 802.15.4g reliability, so the standard recommends it for 802.15.4g development.",
+      "zh": "混合 CSMA/CA（9.3.10）把视角切换到 802.15.4g 一侧。由于 802.11ah 的 ED 门限和退避参数让它在竞争中占上风，较老的 802.15.4g 设备需要反击。混合 CSMA/CA 让 802.15.4g 设备在 802.11ah 干扰严重时执行立即信道接入——只用一次 CCA，仅当该 CCA 返回忙时才随机退避。为避免 802.15.4g 邻居彼此碰撞，每台设备以最优概率 1/Ng 立即接入（Ng 为 802.15.4g 邻居数），未接入的邻居则提高退避。实现很简单——设置 macMaxBE = macMinBE = 0——而且关键在于它在提升 802.15.4g 可靠性的同时不会降低 802.11ah 的可靠性，因此标准推荐将其用于 802.15.4g 设备开发。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — distributed methods and the recommendation table (9.3.1–9.3.11)",
+        "zh": "覆盖图——分布式方法与推荐表（9.3.1–9.3.11）"
+      },
+      "en": "This is the full home for Clause 9.3. 9.3.1 Introduction sets the no-coordinator premise and splits methods into network-level (channel switching, ED-threshold, TX power, backoff params, frequency hopping) and device-level (beamforming, TX-time delay, alpha-fairness ED-CCA, Q-Learning CSMA/CA, prediction-based delay, frame size). NOT favored: 9.3.2 distributed channel switching (random), 9.3.3 distributed ED-threshold setting (violates the standard), 9.3.4 distributed TX-power setting (random), 9.3.5 distributed beamforming (random). Favored / recommended: 9.3.6 distributed transmission-time delay (use ED-based CCA, delay if energy above threshold); 9.3.7 alpha-fairness based ED-CCA (probabilistic busy/idle when energy is between 802.15.4g RS and 802.11ah ED threshold); 9.3.8 Q-Learning based CSMA/CA (decide transmit-vs-defer when BC=0 and channel idle; reward built on alpha-fairness; states = idle/busy, actions = transmit/backoff); 9.3.9 prediction-based transmission-time delay (forecast next 802.15.4g TX via Holt's additive-trend model, suspend around it); 9.3.10 hybrid CSMA/CA (802.15.4g immediate access at probability 1/Ng, macMaxBE=macMinBE=0). 9.3.11 Recommendations gathers all five favored methods into Table 6, each row pairing a method with the condition under which a device should apply it.",
+      "zh": "这是第 9.3 条的完整归属。9.3.1 引言确立无协调者的前提，并把方法分为网络级（信道切换、ED 门限、发射功率、退避参数、跳频）和设备级（波束成形、发送时延、α 公平 ED-CCA、Q 学习 CSMA/CA、基于预测的时延、帧长）。不被推荐：9.3.2 分布式信道切换（随机）、9.3.3 分布式 ED 门限设置（违反标准）、9.3.4 分布式发射功率设置（随机）、9.3.5 分布式波束成形（随机）。推荐：9.3.6 分布式发送时延（使用基于 ED 的 CCA，能量超门限则时延）；9.3.7 基于 α 公平的 ED-CCA（能量落在 802.15.4g 接收灵敏度与 802.11ah ED 门限之间时按概率报告忙/闲）；9.3.8 基于 Q 学习的 CSMA/CA（BC=0 且信道空闲时决定发送或延迟；奖励基于 α 公平；状态=空闲/忙，动作=发送/退避）；9.3.9 基于预测的发送时延（用 Holt 加性趋势模型预测下一次 802.15.4g 发送并在其附近挂起）；9.3.10 混合 CSMA/CA（802.15.4g 以概率 1/Ng 立即接入，macMaxBE=macMinBE=0）。9.3.11 推荐把五种推荐方法汇入表 6，每行将一个方法与设备应采用它的条件配对。",
+      "cite": {
+        "pdf_id": "802193-2021",
+        "pages": [
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 9.4 turns to frequency hopping — a coexistence method where every device hops across a set of channels following hopping sequences, varying frequency over time (9.4.1 Overview). The payoff is reliability: spreading transmissions across channels lowers the effective duty cycle per channel and the collision probability, and it shrinks the interference footprint felt by neighboring systems. When a dissimilar system grabs part of the band, the hopper simply hops 'around' it. The catch: the value grows with the number of available channels, and sub-1 GHz spectrum can be scarce in some regions — where there is little diversity, hopping may not help, and it can add latency since a failed attempt should retry on a different channel, possibly on the next hop.",
+      "zh": "第 9.4 条转向跳频——一种共存方法，每台设备按跳频序列在一组信道间跳跃，随时间改变频率（9.4.1 概述）。回报是可靠性：把发送分散到多个信道，降低了每信道的有效占空比和碰撞概率，也缩小了邻近系统感受到的干扰足迹。当异类系统占据频段的一部分时，跳频者只需绕开它跳。代价是：其价值随可用信道数增长，而 1 GHz 以下频谱在某些地区可能稀缺——分集不足之处，跳频未必有用，而且会增加时延，因为失败的尝试应在不同信道上重试，可能要等到下一跳。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — frequency hopping internals and recommendation (9.4.1–9.4.6)",
+        "zh": "覆盖图——跳频内部机制与推荐（9.4.1–9.4.6）"
+      },
+      "en": "Clause 9.4 in full. 9.4.1 Overview: hopping spreads transmissions to cut duty cycle, collision probability, and interference footprint; value scales with available channels; can add latency. 9.4.2 Control methods: two scheduling styles — listener-directed (each receiver picks its own channel sequence/schedule and shares it; sender tracks the right channel; typical for unicast) and transmitter-directed (sender sets the schedule; receivers tune in; typical for broadcast). Dwell duration is the time on one channel; fast hopping = dwell shorter than a PPDU (e.g., IEEE 802.15.4w fragments a PPDU across channels with FEC + interleaving), slow hopping = dwell at least one PPDU (used by 802.15.4 SUN FSK, fixed or dynamic dwell). TSCH-style systems use centralized/zone-wise control needing global sync. 9.4.3 Hopping-sequence selection: generate many UNIQUE pseudo-random sequences so two devices rarely pick the same channel at the same time, with balanced spread across channels and few overlaps as phase rotates (orthogonality), helped by sequences much longer than the channel count. 9.4.4 Hopping-sequence adaptation: adaptive hopping avoids channels found 'bad' using repeatable metrics (e.g., packet failure rates), with dynamic re-evaluation (bad channels may recover) and hysteresis (don't abandon too fast). 9.4.5 Channel access on each channel: CSMA/CA, ALOHA, or hybrid — ALOHA is efficient at low effective duty cycle; CSMA/CA should be used when loading is higher or when multiple transmitters share a channel/time (e.g., broadcast or shared discovery/control schedules). 9.4.6 Recommendation: frequency hopping is recommended when many channels are available and regulatory requirements are met.",
+      "zh": "第 9.4 条全貌。9.4.1 概述：跳频分散发送以降低占空比、碰撞概率和干扰足迹；价值随可用信道数增长；可能增加时延。9.4.2 控制方法：两种排程方式——监听者主导（每个接收者自选信道序列/排程并共享，发送者跟踪正确信道，常用于单播）和发送者主导（发送者定排程，接收者收听，常用于广播）。驻留时长是停留在一个信道上的时间；快速跳频=驻留短于一个 PPDU（如 IEEE 802.15.4w 用前向纠错加交织把 PPDU 分片到各信道），慢速跳频=驻留至少一个 PPDU（802.15.4 SUN FSK 采用，固定或动态驻留）。TSCH 类系统采用需全局同步的集中式/分区控制。9.4.3 跳频序列选择：生成大量唯一的伪随机序列，使两台设备很少在同一时刻选到同一信道，且在各信道上分布均衡、相位旋转时重叠很少（正交性），序列远长于信道数会更有帮助。9.4.4 跳频序列适配：自适应跳频用可重复的指标（如分组失败率）避开判为坏的信道，并动态重新评估（坏信道可能恢复）和加入迟滞（不要太快放弃）。9.4.5 各信道上的信道接入：CSMA/CA、ALOHA 或混合——有效占空比低时 ALOHA 高效；负载较高或多个发送者共享同一信道/时刻时（如广播或共享的发现/控制排程）应使用 CSMA/CA。9.4.6 推荐：当可用信道众多且满足监管要求时，推荐使用跳频。",
+      "cite": {
+        "pdf_id": "802193-2021",
+        "pages": [
+          61,
+          62,
+          63
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The thread tying 9.3 and 9.4 together: with no coordinator, good coexistence comes from each device being a considerate, self-aware neighbor — sensing the channel honestly (alpha-fairness, Q-Learning), predicting and yielding (transmission delay), accessing fairly when squeezed (hybrid CSMA/CA), and spreading out in frequency when the spectrum allows (hopping).",
+      "zh": "把 9.3 与 9.4 串起来的主线是：没有协调者时，良好的共存来自每台设备都做一个体贴、自知的邻居——诚实地感知信道（α 公平、Q 学习）、预测并让路（发送时延）、被挤压时公平接入（混合 CSMA/CA），并在频谱允许时在频率上分散（跳频）。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802193-2021",
+      "pages": [
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63
+      ],
+      "note": "Clause 9.3 distributed coexistence methods (9.3.1-9.3.11) and Clause 9.4 frequency hopping (9.4.1-9.4.6), including Table 6 recommendations."
+    }
+  ],
+  "covers": [
+    "802193-2021:9.3.1",
+    "802193-2021:9.3.2",
+    "802193-2021:9.3.3",
+    "802193-2021:9.3.4",
+    "802193-2021:9.3.5",
+    "802193-2021:9.3.6",
+    "802193-2021:9.3.7",
+    "802193-2021:9.3.8",
+    "802193-2021:9.3.9",
+    "802193-2021:9.3.10",
+    "802193-2021:9.3.11",
+    "802193-2021:9.4.1",
+    "802193-2021:9.4.2",
+    "802193-2021:9.4.3",
+    "802193-2021:9.4.4",
+    "802193-2021:9.4.5",
+    "802193-2021:9.4.6"
+  ],
+  "track": "coexistence"
+}

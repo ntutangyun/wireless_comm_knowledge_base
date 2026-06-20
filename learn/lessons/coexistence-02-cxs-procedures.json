@@ -1,0 +1,156 @@
+{
+  "id": "coexistence-02-cxs-procedures",
+  "title": {
+    "en": "Coordinating Coexistence: The 802.19.1 Procedures",
+    "zh": "协调共存：802.19.1 流程"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "When several wireless networks share the same TV white space (TVWS) — the unused gaps between broadcast TV channels — they can step on each other unless something coordinates who uses which channel. IEEE 802.19.1 defines a coexistence system of cooperating software entities that talk over standard interfaces (TCP/IP, secured with SSH or TLS) to keep neighbouring networks out of each other's way. Clause 5.2 is the heart of that system: a catalogue of step-by-step procedures — request/response and announcement message exchanges — that the entities run to subscribe, register, share information, measure, negotiate, reconfigure, and shut down cleanly.",
+      "zh": "当多个无线网络共享同一片电视空白频谱（TVWS，即广播电视频道之间未被使用的空隙）时，如果没有某种机制来协调谁使用哪个信道，它们就会相互干扰。IEEE 802.19.1 定义了一个由协作软件实体组成的共存系统，这些实体通过标准接口（TCP/IP，并用 SSH 或 TLS 加密）通信，使相邻网络互不妨碍。第 5.2 条是该系统的核心：它是一份分步流程清单——由请求/响应和通告类消息交换构成——实体借此完成订阅、注册、信息共享、测量、协商、重配置以及干净地停止运行。"
+    },
+    {
+      "type": "prose",
+      "en": "First meet the players. A WSO/GCO (white space object / geolocation-capable object, e.g. an RLSS managing a network) is the real radio network that needs to coexist. A CE (coexistence enabler) is the adapter that sits next to a WSO and translates between the WSO's world and the coexistence system. A CM (coexistence manager) makes the actual coexistence decisions for the networks it serves. A CDIS (coexistence discovery and information server) tells CMs which other networks are nearby (their 'coexistence set'). A COE (coexistence operating entity) is the gateway a CM uses to reach a CM in a different coexistence system. Almost every procedure in 5.2 is just a conversation among these five roles.",
+      "zh": "先认识一下角色。WSO/GCO（白空间对象 / 具备地理定位能力的对象，例如管理某网络的 RLSS）是需要共存的真实无线网络。CE（共存使能器）是紧邻 WSO 的适配器，在 WSO 的世界与共存系统之间做翻译。CM（共存管理器）为它所服务的网络做出真正的共存决策。CDIS（共存发现与信息服务器）告诉各 CM 附近还有哪些网络（即它们的“共存集”）。COE（共存操作实体）是某 CM 用来联系另一个共存系统中 CM 的网关。5.2 中几乎每个流程，都只是这五种角色之间的一次对话。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  WSO[WSO / GCO] --- CE\n  CE --- CM1[CM]\n  CM1 --- CDIS\n  CM1 --- CM2[another CM]\n  CM1 --- COE\n  COE --- COE2[COE in other system]",
+      "zh": "flowchart LR\n  WSO[WSO / GCO] --- CE\n  CE --- CM1[CM]\n  CM1 --- CDIS\n  CM1 --- CM2[另一个 CM]\n  CM1 --- COE\n  COE --- COE2[其他系统的 COE]"
+    },
+    {
+      "type": "prose",
+      "en": "A network's life in the coexistence system runs in a natural order. It subscribes to a service, registers its details, then continuously exchanges information until it eventually stops. (5.1) introduces the whole clause and fixes the ground rules: these procedures run among CE, CM, COE, and CDIS and with external WSO/GCO and spectrum-database entities, every exposed interface uses TCP/IP, and every interface must support both SSH and TLS. Subscription comes first (5.2.1): a CE runs the WSO subscription procedure when a network asks to start, choosing either information service (the system only advises) or management service (the system can actively reconfigure the network). The same family covers subscription updates, a CM subscribing to the CDIS's discovery service, and a CM asking a WSO to change its service type.",
+      "zh": "一个网络在共存系统中的“生命周期”遵循自然的顺序：先订阅服务，再注册自身信息，然后持续交换信息，直至最终停止。(5.1) 是整条款的导言，并确立了基本规则：这些流程在 CE、CM、COE、CDIS 之间，以及与外部的 WSO/GCO 和频谱数据库实体之间运行；每个暴露的接口都使用 TCP/IP，且每个接口都必须同时支持 SSH 和 TLS。首先是订阅 (5.2.1)：当某网络请求启动时，CE 执行 WSO 订阅流程，选择信息服务（系统只提供建议）或管理服务（系统可主动重配置该网络）。同一族流程还涵盖订阅更新、CM 向 CDIS 订阅发现服务，以及 CM 请求某 WSO 更改其服务类型。"
+    },
+    {
+      "type": "prose",
+      "en": "Once subscribed, a network must register so the system knows it exists and where it is (5.2.2): the CE sends a registration request to its CM, the CM registers the WSO/GCO and in turn registers itself with the CDIS — and a matching deregistration procedure removes a WSO when it leaves. With registration done, a CM can build a picture of its surroundings: who its neighbours are (the coexistence set, 5.2.3), which channels a WSO is allowed to use (the available channel list, 5.2.4), and how each channel is rated — available, restricted, protected, unclassified, operating, or coexistent (channel classification, 5.2.5). Information flows two ways: a CM can pull data on request, and an entity can push an announcement when its information changes so neighbours stay current.",
+      "zh": "订阅完成后，网络必须注册，以便系统知道它的存在及位置 (5.2.2)：CE 向其 CM 发送注册请求，CM 注册该 WSO/GCO，并进而把自己注册到 CDIS——相应地还有注销流程，在 WSO 离开时将其移除。注册完成后，CM 即可建立对周围环境的认识：邻居都有谁（共存集，5.2.3）、某 WSO 被允许使用哪些信道（可用信道列表，5.2.4），以及每个信道的评级——可用、受限、受保护、未分类、运行中或共存（信道分类，5.2.5）。信息双向流动：CM 可按请求拉取数据，实体也可在自身信息变化时推送通告，使邻居保持最新。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant CE\n  participant CM1 as CM\n  participant CDIS\n  CE->>CM1: SubscriptionRequest (5.2.1)\n  CM1-->>CE: SubscriptionResponse\n  CE->>CM1: CERegistrationRequest (5.2.2)\n  CM1->>CDIS: CMRegistrationRequest\n  CDIS-->>CM1: RegistrationResponse\n  CM1->>CDIS: CoexistenceSetInformationRequest (5.2.3)\n  CDIS-->>CM1: CoexistenceSetInformationResponse",
+      "zh": "sequenceDiagram\n  participant CE\n  participant CM1 as CM\n  participant CDIS\n  CE->>CM1: 订阅请求 (5.2.1)\n  CM1-->>CE: 订阅响应\n  CE->>CM1: CE注册请求 (5.2.2)\n  CM1->>CDIS: CM注册请求\n  CDIS-->>CM1: 注册响应\n  CM1->>CDIS: 共存集信息请求 (5.2.3)\n  CDIS-->>CM1: 共存集信息响应"
+    },
+    {
+      "type": "prose",
+      "en": "Decisions need fresh data, so a CM can fetch arbitrary information — from a WSO via its CE, or directly from another CM (5.2.6) — and can ask a WSO to take radio measurements (5.2.7), either once or on a repeating schedule, with each report acknowledged. When two CMs must share a channel, they negotiate (5.2.8): they trade NegotiationRequest messages until one side reports success, optionally finishing with an announcement of who won which time slots. For tighter coordination they can elect a master CM and configure master/slave roles for centralised decision-making (5.2.9).",
+      "zh": "决策需要新鲜的数据，因此 CM 可以获取任意信息——通过 CE 向 WSO 获取，或直接向另一个 CM 获取 (5.2.6)——并可请求 WSO 进行无线电测量 (5.2.7)，一次性或按重复计划进行，每份报告都会被确认。当两个 CM 必须共享某信道时，它们进行协商 (5.2.8)：双方交换协商请求消息，直到一方报告成功，必要时以一条通告（说明谁赢得了哪些时隙）收尾。为实现更紧密的协调，它们还可推选一个主 CM 并配置主/从角色，用于集中式决策 (5.2.9)。"
+    },
+    {
+      "type": "prose",
+      "en": "A coexistence decision only matters if it is carried out. Reconfiguration (5.2.10) lets a CM push a new channel or power setting to the WSOs it manages, or send the request to another CM that owns the affected WSO. Things also happen unexpectedly: an event procedure (5.2.11) lets a CE warn its CM about problems like degraded quality of service or a crossed signal-to-interference-plus-noise-ratio (SINR) threshold, and lets one CM forward such alerts to another. When a decision touches a network managed by a different CM, the coexistence set element reconfiguration procedure (5.2.12) carries the request across that boundary.",
+      "zh": "共存决策只有被执行才有意义。重配置 (5.2.10) 让 CM 把新的信道或功率设置下发给它所管理的 WSO，或把请求转交给拥有受影响 WSO 的另一个 CM。事情也会意外发生：事件流程 (5.2.11) 让 CE 就服务质量下降或越过信干噪比（SINR）门限等问题向其 CM 报警，并让一个 CM 将此类告警转发给另一个 CM。当某决策涉及由不同 CM 管理的网络时，共存集元素重配置流程 (5.2.12) 把请求跨越这一边界传递过去。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the recurring shape: a Request/Response pair when an entity asks for something and waits, versus an Announcement/Confirm pair when an entity has new information to push out and just wants acknowledgement. Once you spot that pattern, every one of the twenty procedures reads the same way.",
+      "zh": "请注意反复出现的形态：当某实体主动询问并等待时，使用请求/响应这一对；当某实体有新信息要推送出去、只需对方确认时，使用通告/确认这一对。一旦看清这个模式，这二十个流程读起来就都是同一种套路。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, networks come and go and systems span boundaries. The stop operation procedures (5.2.13) let a CE, a CM, or even a CDIS announce an orderly shutdown so peers can deregister and, if a CE loses its last CM, fall back gracefully. Inter-CM information exchange (5.2.14) shares coexistence-set data between CMs that follow different profiles, and the association procedures connect entities that need to talk: a CE associating with a CM (5.2.15), one CM associating with another (5.2.16), and that same association tunnelled across systems through the COE reference point (5.2.17). A CM can also learn what frequencies another network is on, directly (5.2.18) or again across systems over COE (5.2.19). And when a moving network's normal CM cannot serve it, the proxy coexistence service procedure (5.2.20) lets its previous CM relay a coexistence report on its behalf.",
+      "zh": "最后，网络有来有去，系统也会跨越边界。停止运行流程 (5.2.13) 让 CE、CM 乃至 CDIS 通告一次有序关闭，使对端得以注销；若某 CE 失去了最后一个 CM，也能平稳回退。CM 间信息交换 (5.2.14) 在遵循不同剖面的 CM 之间共享共存集数据；关联流程则把需要通信的实体连接起来：CE 与 CM 关联 (5.2.15)、一个 CM 与另一个 CM 关联 (5.2.16)，以及把同样的关联通过 COE 参考点跨系统隧道传输 (5.2.17)。CM 还能获知另一网络所在的频率，可直接获取 (5.2.18)，也可再次通过 COE 跨系统获取 (5.2.19)。而当某个移动中的网络无法被其正常的 CM 服务时，代理共存服务流程 (5.2.20) 让它先前的 CM 代为转交一份共存报告。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: all 21 units of clause 5.2 (5.1 + 5.2.1–5.2.20)",
+        "zh": "覆盖地图：第 5.2 条全部 21 个单元（5.1 + 5.2.1–5.2.20）"
+      },
+      "en": "5.1 General — scope of the procedures, the entities involved (CE, CM, COE, CDIS, plus external WSO/GCO and spectrum database), and the rule that exposed interfaces use TCP/IP and support both SSH and TLS. 5.2.1 Coexistence service subscription — WSO subscription, subscription update, CM-to-CDIS subscription, CM subscription update, and WSO subscription change. 5.2.2 Providing registration information — WSO/GCO registration, registration update, and WSO deregistration. 5.2.3 Obtaining coexistence-set information — obtaining/providing coexistence-set information from the CDIS, obtaining/providing coexistence-set element information between CMs, and obtaining/providing the coexistence report. 5.2.4 Obtaining available channel list from a WSO (via the CE). 5.2.5 Obtaining channel classification information — by CM from another CM, by CE from a CM, and announcing classification updates to a CM and to a CE. 5.2.6 Obtaining information — from a WSO and from another CM. 5.2.7 Requesting and obtaining measurements — request, one-time report, and scheduled reports. 5.2.8 Negotiation between CMs — without and with announcement. 5.2.9 Master CM selection — master/slave selection and master/slave configuration. 5.2.10 Reconfiguration — WSO reconfiguration and CM-to-CM reconfiguration request. 5.2.11 Event procedures — CE-to-CM and CM-to-CM event indications. 5.2.12 Coexistence set element reconfiguration (across CMs). 5.2.13 Stop operation — CE, CM, and CDIS stop procedures. 5.2.14 Inter-CM information exchange — providing and obtaining inter-CM information between different profiles. 5.2.15 CM association (CE to CM). 5.2.16 Inter-CM association (CM to CM across CDIS domains). 5.2.17 Inter-CM association over COE (across coexistence systems). 5.2.18 Obtaining operating frequency information (CM to CM). 5.2.19 Obtaining operating frequency information over COE (across systems). 5.2.20 Proxy coexistence service — a previous serving CM relays a coexistence report for a moving network.",
+      "zh": "5.1 总则——流程的范围、涉及的实体（CE、CM、COE、CDIS，以及外部的 WSO/GCO 和频谱数据库），以及暴露接口使用 TCP/IP 并同时支持 SSH 与 TLS 的规则。5.2.1 共存服务订阅——WSO 订阅、订阅更新、CM 向 CDIS 订阅、CM 订阅更新、WSO 订阅变更。5.2.2 提供注册信息——WSO/GCO 注册、注册更新、WSO 注销。5.2.3 获取共存集信息——从 CDIS 获取/提供共存集信息、在 CM 间获取/提供共存集元素信息、获取/提供共存报告。5.2.4 从 WSO 获取可用信道列表（经由 CE）。5.2.5 获取信道分类信息——CM 向另一 CM 获取、CE 向 CM 获取，以及向 CM 和向 CE 通告分类更新。5.2.6 获取信息——从 WSO 和从另一 CM。5.2.7 请求并获取测量——请求、一次性报告、定时报告。5.2.8 CM 间协商——不带通告与带通告。5.2.9 主 CM 选择——主/从选择与主/从配置。5.2.10 重配置——WSO 重配置与 CM 向 CM 的重配置请求。5.2.11 事件流程——CE 向 CM 与 CM 向 CM 的事件指示。5.2.12 共存集元素重配置（跨 CM）。5.2.13 停止运行——CE、CM、CDIS 的停止流程。5.2.14 CM 间信息交换——在不同剖面之间提供与获取 CM 间信息。5.2.15 CM 关联（CE 到 CM）。5.2.16 CM 间关联（跨 CDIS 域的 CM 到 CM）。5.2.17 经 COE 的 CM 间关联（跨共存系统）。5.2.18 获取运行频率信息（CM 到 CM）。5.2.19 经 COE 获取运行频率信息（跨系统）。5.2.20 代理共存服务——先前服务的 CM 为移动中的网络转交共存报告。",
+      "cite": {
+        "pdf_id": "802191-2018",
+        "pages": [
+          28,
+          35,
+          42,
+          45,
+          47,
+          48,
+          50,
+          52,
+          54,
+          56,
+          58,
+          59,
+          60,
+          61
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61
+      ],
+      "note": "Clause 5 Procedures and protocols: 5.1 General and the full set of 5.2 coexistence procedures (5.2.1 through 5.2.20)."
+    }
+  ],
+  "covers": [
+    "802191-2018:5.1",
+    "802191-2018:5.2.1",
+    "802191-2018:5.2.2",
+    "802191-2018:5.2.3",
+    "802191-2018:5.2.4",
+    "802191-2018:5.2.5",
+    "802191-2018:5.2.6",
+    "802191-2018:5.2.7",
+    "802191-2018:5.2.8",
+    "802191-2018:5.2.9",
+    "802191-2018:5.2.10",
+    "802191-2018:5.2.11",
+    "802191-2018:5.2.12",
+    "802191-2018:5.2.13",
+    "802191-2018:5.2.14",
+    "802191-2018:5.2.15",
+    "802191-2018:5.2.16",
+    "802191-2018:5.2.17",
+    "802191-2018:5.2.18",
+    "802191-2018:5.2.19",
+    "802191-2018:5.2.20"
+  ],
+  "track": "coexistence"
+}

@@ -1,0 +1,192 @@
+{
+  "id": "coexistence-09-iot-cx-parameter-recs",
+  "title": {
+    "en": "Tuning for Coexistence: Frame Size, Backoff and PHY Recommendations",
+    "zh": "为共存而调优：帧长、退避与 PHY 建议"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.19.3-2021 studies what happens when an IEEE 802.11ah (Wi-Fi HaLow) network and an IEEE 802.15.4g (sub-1 GHz IoT) network share the same crowded sub-1 GHz spectrum. After all the analysis, Clause 9 ends with the practical payoff: a set of concrete knobs you can turn to make the two networks coexist more politely. This lesson walks through every one of those recommendations — network load, network size, frame size, backoff, PHY thresholds, application choices, and how to pick a coexistence method overall.",
+      "zh": "IEEE Std 802.19.3-2021 研究的是：当一个 IEEE 802.11ah（Wi-Fi HaLow）网络和一个 IEEE 802.15.4g（sub-1 GHz 物联网）网络共用同一段拥挤的 sub-1 GHz 频谱时，会发生什么。在大量分析之后，第 9 章给出了最实用的成果：一组可以调节的具体旋钮，让两个网络更礼貌地共存。本课逐一讲解这些建议——网络负载、网络规模、帧长、退避、PHY 门限、应用选型，以及如何整体地选择一种共存方法。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Vocabulary up front. \"Offered load\" is the traffic a network tries to send; the standard calls a load of 30 kb/s or less \"lower\" and above 30 kb/s \"higher\". A network of 80 nodes or fewer is \"small\", more than 80 is \"large\". A frame payload under 80 bytes is \"small\", 80-120 bytes is \"medium\", and over 120 bytes is \"large\". Two knobs you mostly cannot turn: network offered load and duty cycle. Keep these thresholds in mind — every recommendation below is keyed to them.",
+      "zh": "先约定术语。“提供负载”（offered load）是网络试图发送的流量；标准把不超过 30 kb/s 的负载称为“较低”，超过 30 kb/s 称为“较高”。节点数不超过 80 的网络为“小型”，超过 80 为“大型”。帧载荷小于 80 字节为“小帧”，80–120 字节为“中帧”，大于 120 字节为“大帧”。有两个旋钮你基本拧不动：网络提供负载与占空比。请记住这些门限——下面每一条建议都以它们为基准。"
+    },
+    {
+      "type": "prose",
+      "en": "Load, duty cycle and network size (9.5, 9.6). Network offered load and duty cycle are essentially fixed: the load is dictated by the application, and lower layers cannot change how much data the app wants to send, so 802.19.3 has little to recommend there. Duty cycle is set by regulators — Japan caps an active sub-1 GHz device at 10%, parts of Europe at 1% — again leaving little room for advice. Network size is different: the number of devices is chosen at deployment, so application developers can tune it. The guidance: when both networks run light, deploy as few devices as possible to save cost; when 802.11ah load is high, keep 802.11ah devices few (especially for latency-critical apps); when 802.15.4g load is high, you can deploy many cheap 802.15.4g devices, especially for reliability-critical apps.",
+      "zh": "两个你基本拧不动的旋钮（9.5、9.6）。网络提供负载与占空比几乎是固定的：负载由应用决定，低层无法改变应用想发多少数据，因此 802.19.3 在这方面几乎无可建议。占空比则由监管规定——日本将工作中的 sub-1 GHz 设备占空比限制在 10%，欧洲部分频段限制到 1%——同样几乎没有建议空间。网络规模则不同：设备数量是在部署时选定的，应用开发者可以调节。建议是：两个网络都很轻载时，尽量少部署设备以节省成本；当 802.11ah 负载高时，尽量少用 802.11ah 设备（尤其对时延敏感的应用）；当 802.15.4g 负载高时，若设备便宜可大量部署 802.15.4g 设备，尤其对可靠性敏感的应用。"
+    },
+    {
+      "type": "prose",
+      "en": "Frame size: the headline rule (9.7). Frame size is freely configurable, so it is one of the best coexistence levers. The standard analyzes four scenarios crossing small/large network with high/low load on each side. The clean takeaway: in three of the four scenarios, you optimize both delivery rate and latency by sending medium frames on 802.11ah and large frames on 802.15.4g. Why? Larger 802.15.4g frames raise the 802.15.4g packet delivery rate; medium 802.11ah frames avoid the latency blow-up that tiny frames cause (small 802.11ah frames can push 80-85% of packets past 25-50 second latencies). The only twist is the large-network / low-11ah / high-4g case (9.7.5), where 802.15.4g should use large frames if its delivery rate matters but medium frames if 802.11ah latency matters.",
+      "zh": "帧长：核心规则（9.7）。帧长可自由配置，因此是最好用的共存杠杆之一。标准分析了四种场景，交叉组合“小型/大型网络”与两侧各自的“高/低负载”。清晰的结论是：四种场景中有三种，让 802.11ah 发中帧、802.15.4g 发大帧，可同时优化投递率与时延。原因何在？更大的 802.15.4g 帧能提升 802.15.4g 的分组投递率；中等的 802.11ah 帧能避免小帧引发的时延暴涨（小的 802.11ah 帧会让 80%–85% 的分组时延超过 25–50 秒）。唯一的特殊情况是“大型网络 / 11ah 低载 / 4g 高载”（9.7.5）：若 802.15.4g 投递率重要则用大帧，若 802.11ah 时延重要则用中帧。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 360 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><text x=\"10\" y=\"18\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">802.11ah frame size vs latency</text><line x1=\"30\" y1=\"120\" x2=\"340\" y2=\"120\"/><line x1=\"30\" y1=\"120\" x2=\"30\" y2=\"30\"/><text x=\"60\" y=\"138\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">small</text><text x=\"165\" y=\"138\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">medium</text><text x=\"285\" y=\"138\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">large</text><polyline points=\"70,45 180,105 300,80\"/><circle cx=\"70\" cy=\"45\" r=\"4\" fill=\"currentColor\"/><circle cx=\"180\" cy=\"105\" r=\"4\" fill=\"currentColor\"/><circle cx=\"300\" cy=\"80\" r=\"4\" fill=\"currentColor\"/><text x=\"185\" y=\"100\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">best</text></svg>",
+      "caption": {
+        "en": "Sketch of the core trade-off: very small 802.11ah frames cause severe latency, large frames add some latency, so medium frames sit in the sweet spot. (Illustrative, not to scale.)",
+        "zh": "核心权衡示意：极小的 802.11ah 帧会造成严重时延，大帧会增加一些时延，因此中帧处于最佳点。（仅为示意，非按比例绘制。）"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the four frame-size scenarios in detail (9.7.1-9.7.6)",
+        "zh": "覆盖地图：四种帧长场景详解（9.7.1–9.7.6）"
+      },
+      "en": "9.7.1 introduces the method and the small/medium/large definitions. 9.7.2 (small network, high 11ah, low 4g): smaller 11ah frames hurt both networks' delivery and blow up 11ah latency, so 11ah should use medium frames; 4g delivery rate is proportional to 4g frame size, so 4g should use large frames. 9.7.3 (small network, low 11ah, high 4g): 11ah uses medium frames; 4g delivery rate is strongly proportional to 4g frame size and small 4g frames greatly increase 11ah latency, so 4g should use large frames. 9.7.4 (large network, high 11ah, low 4g): same conclusion — medium 11ah, large 4g — with small 11ah frames pushing 85% of packets past 50 s latency. 9.7.5 (large network, low 11ah, high 4g): 11ah medium; 4g uses large frames if its delivery rate is critical, medium frames if 11ah latency is critical. 9.7.6 summarizes all of this in Table 7: medium 11ah / large 4g in three scenarios, with the conditional choice in the fourth.",
+      "zh": "9.7.1 引入方法及小/中/大帧定义。9.7.2（小型网络、11ah 高载、4g 低载）：较小的 11ah 帧会损害两网投递率并使 11ah 时延暴涨，故 11ah 用中帧；4g 投递率与 4g 帧长成正比，故 4g 用大帧。9.7.3（小型网络、11ah 低载、4g 高载）：11ah 用中帧；4g 投递率与帧长强正相关，且小的 4g 帧会大幅增加 11ah 时延，故 4g 用大帧。9.7.4（大型网络、11ah 高载、4g 低载）：结论相同——11ah 中帧、4g 大帧——其中小的 11ah 帧会使 85% 分组时延超过 50 秒。9.7.5（大型网络、11ah 低载、4g 高载）：11ah 用中帧；若 4g 投递率重要则用大帧，若 11ah 时延重要则用中帧。9.7.6 在表 7 中汇总：三种场景为 11ah 中帧 / 4g 大帧，第四种为条件选择。",
+      "cite": {
+        "pdf_id": "802193-2021",
+        "pages": [
+          64,
+          65,
+          66,
+          67
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Backoff parameters (9.8). When backoff is configurable, tune it for coexistence. For 802.11ah the lever is the contention window (CW): CWmin is the \"smaller\" window, CWmax the \"larger\". For 802.15.4g the lever is the trio macMinBE / macMaxBE / macMaxCSMABackoffs, grouped into smaller (2/4/3), medium (2/5/4), and larger (2/6/5) settings. The pattern: in small networks, 802.11ah should just keep the standard CW; in large networks it benefits from a smaller CW to cut its own latency. For 802.15.4g, delivery rate is consistently proportional to backoff size (larger backoff = higher delivery), while latency rises with backoff — so larger backoff favors delivery, smaller backoff favors latency.",
+      "zh": "退避参数（9.8）。当退避可配置时，应为共存而调优。对 802.11ah，杠杆是竞争窗口（CW）：CWmin 为“较小”窗口，CWmax 为“较大”窗口。对 802.15.4g，杠杆是三元组 macMinBE / macMaxBE / macMaxCSMABackoffs，分为较小（2/4/3）、中等（2/5/4）、较大（2/6/5）三档。规律是：小型网络中，802.11ah 保持标准 CW 即可；大型网络中，较小的 CW 有助于降低其自身时延。对 802.15.4g，投递率始终与退避大小成正比（退避越大、投递率越高），而时延随退避增大而上升——因此较大退避偏向投递率，较小退避偏向时延。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the four backoff scenarios in detail (9.8.1-9.8.6)",
+        "zh": "覆盖地图：四种退避场景详解（9.8.1–9.8.6）"
+      },
+      "en": "9.8.1 defines the smaller/medium/larger 802.15.4g backoff sets and the CWmin/CWmax naming. 9.8.2 (small, high 11ah, low 4g) and 9.8.3 (small, low 11ah, high 4g): 11ah should keep the standard CW (any non-standard CW only raises 11ah latency); 4g should use larger backoff if delivery rate is critical, smaller if 4g latency is critical (Tables 8 and 9). 9.8.4 (large, high 11ah, low 4g): now 11ah should use a smaller CW to cut latency, and 4g should use larger backoff (which both raises 4g delivery and lowers 11ah latency) — Table 10. 9.8.5 (large, low 11ah, high 4g): 11ah uses smaller CW; 4g uses larger backoff if 11ah latency is critical, smaller backoff if 4g latency is critical — Table 11, since 11ah latency is inversely proportional to 4g backoff. 9.8.6 consolidates everything in Table 12: 11ah CW is driven by scenario (standard in small networks, smaller in large), while the 4g choice depends on the performance priority, with a dash meaning either value works.",
+      "zh": "9.8.1 定义 802.15.4g 退避的较小/中等/较大三档及 CWmin/CWmax 命名。9.8.2（小型、11ah 高载、4g 低载）与 9.8.3（小型、11ah 低载、4g 高载）：11ah 应保持标准 CW（任何非标准 CW 只会增加 11ah 时延）；若投递率重要则 4g 用较大退避，若 4g 时延重要则用较小退避（表 8、表 9）。9.8.4（大型、11ah 高载、4g 低载）：此时 11ah 应使用较小 CW 以降低时延，4g 应使用较大退避（既提升 4g 投递率又降低 11ah 时延）——表 10。9.8.5（大型、11ah 低载、4g 高载）：11ah 用较小 CW；若 11ah 时延重要则 4g 用较大退避，若 4g 时延重要则用较小退避——见表 11，因为 11ah 时延与 4g 退避成反比。9.8.6 在表 12 中汇总：11ah 的 CW 由场景决定（小型网络用标准、大型网络用较小），而 4g 的取舍取决于性能优先级，破折号表示两种取值效果相近。",
+      "cite": {
+        "pdf_id": "802193-2021",
+        "pages": [
+          67,
+          68,
+          69,
+          70,
+          71,
+          72
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "PHY and application recommendations (9.9, 9.10). At the PHY layer, two mismatches hurt the IoT side. First, the 802.11ah energy-detect (ED) threshold sits at least 10 dB above the 802.15.4g receiver sensitivity, so 802.11ah simply ignores 802.15.4g transmissions it could otherwise hear — raising collisions. The fix: an 802.11ah device that detects 802.15.4g neighbors should lower its ED threshold (for example using an alpha-fairness based ED-CCA mechanism). Second, 802.11ah's CCA time is much shorter than 802.15.4g's, so 802.11ah should lengthen its CCA time when coexistence is detected, giving it time to spot more 802.15.4g packets. The application guidance (9.10) is higher-level: pick the radio technology to match real requirements (load, delivery rate, latency, cost, device lifetime, power, environment), plan for coexistence with already-deployed systems, place devices where interference is low, give devices the ability to detect interference, and organize data efficiently so lower layers transmit successfully.",
+      "zh": "PHY 与应用建议（9.9、9.10）。在 PHY 层，有两处失配会损害物联网一侧。其一，802.11ah 的能量检测（ED）门限至少比 802.15.4g 接收灵敏度高 10 dB，于是 802.11ah 会直接忽略本可听到的 802.15.4g 发送，导致碰撞增加。对策：检测到 802.15.4g 邻居的 802.11ah 设备应降低其 ED 门限（例如采用基于 α 公平性的 ED-CCA 机制）。其二，802.11ah 的 CCA 时间远短于 802.15.4g，故检测到共存时 802.11ah 应延长其 CCA 时间，以便发现更多 802.15.4g 分组。应用层建议（9.10）更宏观：根据真实需求（负载、投递率、时延、成本、设备寿命、供电、环境）选择无线技术；为与既有系统的共存做规划；将设备部署在干扰较小的位置；赋予设备检测干扰源的能力；并高效组织数据，让低层有更高的成功发送机会。"
+    },
+    {
+      "type": "prose",
+      "en": "Choosing a coexistence method (9.11). Finally, each side picks a coexistence method that fits its situation. The standard gives a decision flow (Figures 17 and 18). The first question is always the same: is switching to a better channel feasible? If a better channel exists and the network supports switching, just switch. If not, branch on whether you can use network assistance. For 802.11ah the assisted options include RAW scheduling, beamforming, and SST operation; the unassisted options include defer-TX, alpha-fairness ED-CCA, Q-learning, and changing the network profile. For 802.15.4g the assisted side includes superframe structuring and 802.11ah RAW coordination; the unassisted side includes channel hopping, changing CSMA/CA parameters, changing frame size, and hybrid CSMA/CA.",
+      "zh": "选择共存方法（9.11）。最后，每一侧都要选择一种适合自身情况的共存方法。标准给出了决策流程（图 17 与图 18）。第一个问题永远相同：切换到更优信道是否可行？若存在更优信道且网络支持切换，就直接切换。若不行，则根据是否可使用网络协助进行分支。对 802.11ah，需协助的选项包括 RAW 调度、波束成形与 SST 操作；不需协助的选项包括延迟发送、α 公平 ED-CCA、Q 学习与更改网络配置。对 802.15.4g，需协助一侧包括超帧结构化与 802.11ah RAW 协调；不需协助一侧包括跳频、更改 CSMA/CA 参数、更改帧长与混合 CSMA/CA。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Coexistence operation] --> B{Channel switch feasible?}\n  B -- Yes --> C[Switch channel]\n  B -- No --> D{Network assistance?}\n  D -- Assisted --> E[RAW sched / beamforming / SST]\n  D -- Unassisted --> F[Defer-TX / ED-CCA / Q-learning / change profile]",
+      "zh": "flowchart TD\n  A[共存操作] --> B{可切换信道?}\n  B -- 是 --> C[切换信道]\n  B -- 否 --> D{需要网络协助?}\n  D -- 需协助 --> E[RAW调度 / 波束成形 / SST]\n  D -- 不需协助 --> F[延迟发送 / ED-CCA / Q学习 / 改配置]"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: scope clauses and annexes (9.5, 9.6, 9.9, 9.10, 9.11, Annex A, Annex B)",
+        "zh": "覆盖地图：范围条款与附录（9.5、9.6、9.9、9.10、9.11、附录 A、附录 B）"
+      },
+      "en": "9.5 (network offered load and duty cycle) and 9.6 (network size) bound what is even adjustable: load and duty cycle are fixed by application and regulation, while network size is a deployment choice with the cost-vs-performance guidance above. 9.9 gives the two PHY fixes (lower ED threshold, longer CCA time when 802.15.4g is detected). 9.10 lists the application-developer recommendations (technology selection, coexistence planning, placement, interference detection, efficient data organization). 9.11 is the method-selection flow (Figures 17 and 18). Annex A (informative) defines a coexistence fairness index based on normalized throughput (Equation A.1, summing per-device normalized throughputs across both networks); worked numbers show the index rising from 0.916 with standard mechanisms to 0.965 with alpha-fairness ED-CCA, 0.972 with Q-learning CSMA/CA, and 0.983 with both, where 1.0 means perfectly fair coexistence. Annex B (informative) is the bibliography — the supporting IEEE 802.19 contributions and external regulatory/standards references behind every recommendation in this lesson.",
+      "zh": "9.5（网络提供负载与占空比）与 9.6（网络规模）界定了哪些是可调的：负载与占空比由应用和监管固定，而网络规模是部署选择，对应上文的成本与性能权衡建议。9.9 给出两项 PHY 修正（检测到 802.15.4g 时降低 ED 门限、延长 CCA 时间）。9.10 列出对应用开发者的建议（技术选型、共存规划、部署位置、干扰检测、高效组织数据）。9.11 是方法选择流程（图 17 与图 18）。附录 A（资料性）基于归一化吞吐量定义了共存公平性指数（式 A.1，对两网各设备的归一化吞吐量求和）；示例数据显示：标准机制下指数为 0.916，采用 α 公平 ED-CCA 升至 0.965，采用 Q 学习 CSMA/CA 升至 0.972，两者并用升至 0.983，其中 1.0 表示完全公平的共存。附录 B（资料性）是参考文献——支撑本课每条建议的相关 IEEE 802.19 贡献文稿及外部监管/标准引用。",
+      "cite": {
+        "pdf_id": "802193-2021",
+        "pages": [
+          63,
+          64,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802193-2021",
+      "pages": [
+        63,
+        64
+      ],
+      "note": "9.5 network offered load/duty cycle and 9.6 network size recommendations"
+    },
+    {
+      "pdf_id": "802193-2021",
+      "pages": [
+        64,
+        65,
+        66,
+        67
+      ],
+      "note": "9.7 frame size recommendations across the four scenarios and Table 7 summary"
+    },
+    {
+      "pdf_id": "802193-2021",
+      "pages": [
+        67,
+        68,
+        69,
+        70,
+        71,
+        72
+      ],
+      "note": "9.8 backoff parameter recommendations, Tables 8-12"
+    },
+    {
+      "pdf_id": "802193-2021",
+      "pages": [
+        72,
+        73,
+        74
+      ],
+      "note": "9.9 PHY, 9.10 application-based, 9.11 method selection with Figures 17-18"
+    },
+    {
+      "pdf_id": "802193-2021",
+      "pages": [
+        75,
+        76,
+        77
+      ],
+      "note": "Annex A fairness index (Eq A.1) and Annex B bibliography"
+    }
+  ],
+  "covers": [
+    "802193-2021:9.5",
+    "802193-2021:9.6",
+    "802193-2021:9.7.1",
+    "802193-2021:9.7.2",
+    "802193-2021:9.7.3",
+    "802193-2021:9.7.4",
+    "802193-2021:9.7.5",
+    "802193-2021:9.7.6",
+    "802193-2021:9.8.1",
+    "802193-2021:9.8.2",
+    "802193-2021:9.8.3",
+    "802193-2021:9.8.4",
+    "802193-2021:9.8.5",
+    "802193-2021:9.8.6",
+    "802193-2021:9.9",
+    "802193-2021:9.10",
+    "802193-2021:9.11",
+    "802193-2021:Annex_A",
+    "802193-2021:Annex_B"
+  ],
+  "track": "coexistence"
+}

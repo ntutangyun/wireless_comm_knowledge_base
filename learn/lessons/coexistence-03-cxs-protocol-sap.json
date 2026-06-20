@@ -1,0 +1,221 @@
+{
+  "id": "coexistence-03-cxs-protocol-sap",
+  "title": {
+    "en": "On the Wire: 802.19.1 Transport SAP, CDIS, CM and CE Protocols",
+    "zh": "空口之上：802.19.1 传输 SAP、CDIS、CM 与 CE 协议"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE 802.19.1 lets independent wireless networks share TV white space (the unused TV channels) without stepping on each other. It does this with a small family of cooperating software entities that talk over the network. The three you will meet here are the Coexistence Manager (CM), which decides how to share channels; the Coexistence Enabler (CE), which sits next to a managed device and translates between that device and its CM; and the Coexistence Discovery and Information Server (CDIS), a directory that helps CMs find their neighbors. Clause 6 of the standard is the rulebook for how these entities actually exchange messages. This lesson is your map of that rulebook.",
+      "zh": "IEEE 802.19.1 让相互独立的无线网络共享电视白频段（即未被占用的电视频道），同时互不干扰。它依靠一小组协同工作的软件实体在网络上通信来实现这一点。本课要认识的三个实体是：共存管理器（CM），负责决定如何分享信道；共存使能器（CE），紧邻被管理的设备，在该设备与其 CM 之间充当翻译；共存发现与信息服务器（CDIS），一个帮助各 CM 找到邻居的目录服务。标准的第 6 章就是这些实体之间如何真正交换消息的规则手册。本课就是这本规则手册的导览图。"
+    },
+    {
+      "type": "prose",
+      "en": "Everything rides on one common doorway: the COEX_TR_SAP (the Transport Service Access Point). A SAP is just the named interface through which an entity hands a message down to an underlying transport service and gets messages back. The transport service does the unglamorous plumbing: resolving addresses, mapping each entity's coexistence ID (CxID) to an IP address and port, opening and closing connections, detecting disconnections, applying security, and carrying the encoded coexistence messages. Above this single doorway sit three system profiles — Profile 1, 2 and 3 — which are different deployment styles (centralized, distributed, and a hybrid). The beauty of clause 6 is that the transport door is the same for all of them.",
+      "zh": "一切都通过同一个公共入口承载：COEX_TR_SAP（传输服务访问点）。SAP 不过是一个有名字的接口，实体通过它把消息向下交给底层传输服务，并接收回送的消息。传输服务负责那些不起眼却必要的底层工作：解析地址、把每个实体的共存标识（CxID）映射到 IP 地址和端口、建立和关闭连接、检测断连、施加安全选项，以及承载经过编码的共存消息。在这扇统一入口之上，存在三种系统配置档（Profile 1、2、3），它们是不同的部署形态（集中式、分布式以及混合式）。第 6 章的精妙之处在于：对所有配置档而言，这扇传输之门都是同一扇。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant S as Source entity\n  participant ST as Source transport\n  participant DT as Dest transport\n  participant D as Dest entity\n  S->>ST: TrConfigurationRequest (optional)\n  ST-->>S: TrConfigurationResponse\n  S->>ST: TrConnectionRequest\n  DT->>D: TrConnectionIndication\n  D->>DT: TrConnectionResponse\n  ST-->>S: TrConnectionConfirm\n  S->>ST: TrSendRequest (CxMessage)\n  DT->>D: TrReceiveIndication\n  ST-->>S: TrSendConfirm\n  S->>ST: TrDisconnectionRequest\n  DT->>D: TrDisconnectionIndication",
+      "zh": "sequenceDiagram\n  participant S as 源实体\n  participant ST as 源传输服务\n  participant DT as 目的传输服务\n  participant D as 目的实体\n  S->>ST: TrConfigurationRequest（可选）\n  ST-->>S: TrConfigurationResponse\n  S->>ST: TrConnectionRequest\n  DT->>D: TrConnectionIndication\n  D->>DT: TrConnectionResponse\n  ST-->>S: TrConnectionConfirm\n  S->>ST: TrSendRequest（CxMessage）\n  DT->>D: TrReceiveIndication\n  ST-->>S: TrSendConfirm\n  S->>ST: TrDisconnectionRequest\n  DT->>D: TrDisconnectionIndication"
+    },
+    {
+      "type": "prose",
+      "en": "Walk the four phases of the Transport SAP. First, an optional transport service configuration: only used when the source has never talked to this destination before and already knows its coexistence ID, IP address and port (for example CE-to-CM or CM-to-CDIS first contact). If the pair has talked before and the transport already cached the destination's address, configuration is skipped. Second, connection establishment: a TrConnectionRequest becomes a TrConnectionIndication at the far side, answered by TrConnectionResponse and confirmed back as TrConnectionConfirm — with an optional keepAliveInterval so a silent link is noticed and torn down. Third, sending a message: TrSendRequest carries the encoded CxMessage, the far side gets a TrReceiveIndication, and the sender gets a TrSendConfirm. Fourth, connection termination, either deliberately (TrDisconnectionRequest) or because the network dropped (both sides simply get a TrDisconnectionIndication and are expected to try reconnecting).",
+      "zh": "我们走一遍传输 SAP 的四个阶段。第一，可选的传输服务配置：仅当源实体此前从未与该目的实体通信过、但已掌握其共存标识、IP 地址和端口时才使用（例如 CE 到 CM 或 CM 到 CDIS 的首次联系）。若双方此前已通信过、传输服务已缓存目的方地址，则跳过配置。第二，连接建立：一条 TrConnectionRequest 在对端变为 TrConnectionIndication，由 TrConnectionResponse 应答，再以 TrConnectionConfirm 回送确认；其中可选的 keepAliveInterval 用于发现并拆除一条长时间无消息的链路。第三，发送消息：TrSendRequest 携带编码后的 CxMessage，对端收到 TrReceiveIndication，发送方收到 TrSendConfirm。第四，连接终止，可以是有意为之（TrDisconnectionRequest），也可以是网络掉线（双方都只收到 TrDisconnectionIndication，并被期望尝试重连）。"
+    },
+    {
+      "type": "prose",
+      "en": "Every coexistence message (a CxMessage) also carries two tiny universal fields that the standard treats once, up front, so the rest of clause 6 doesn't repeat them. The header is a choice: none for an announcement (fire-and-forget), or requestID for a request — a sender picks any value, and a response copies that same requestID so the sender can match answer to question. The status parameter rides on every response or confirm and reports the outcome: noError (received and processed), rejected (not authorized), invalidEntityStatus (the receiver wasn't expecting this right now), invalidArgument (bad parameters), processFailure (the receiver is misbehaving), or networkFailure (it never arrived). The standard only prescribes behavior for noError; how an entity reacts to the other values is left to the implementation.",
+      "zh": "每条共存消息（CxMessage）还携带两个微小但通用的字段。标准在开篇统一处理它们一次，因此第 6 章后文无需重复说明。其中 header 是一个选择项：announcement（发完即忘的通告）使用 none；request（请求）使用 requestID——发送方可任取一个值，应答则复制同一 requestID，以便发送方把回答与问题对上号。status 参数搭载于每条 response 或 confirm 上，报告处理结果：noError（已接收并处理）、rejected（无权限）、invalidEntityStatus（接收方此刻并不预期此消息）、invalidArgument（参数非法）、processFailure（接收方工作异常）、networkFailure（消息根本未送达）。标准只规定了 noError 时的行为；实体如何应对其他取值由实现自行决定。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: the Transport SAP is the envelope and postal system; header + status are the address label and delivery receipt. Profiles 1/2/3 are merely who is writing to whom and in what style — but they all drop letters in the same mailbox.",
+      "zh": "记忆模型：传输 SAP 是信封与邮政系统；header 与 status 则是地址标签与送达回执。Profile 1/2/3 只不过是“谁给谁写信、用什么风格写”——但它们都把信投进同一个邮箱。"
+    },
+    {
+      "type": "prose",
+      "en": "Now meet the CDIS, the neighbor directory. Its common operation is profile-agnostic on the surface: a CDIS must be able to serve a CM running any profile. The trick is the very first CMRegistrationRequest a CM sends carries a cmProfile field. The CDIS reads it and branches — profile1 routes to one behavior set, profile2 to another, profile3 to a third. Profile 1 models the CDIS as a stateful machine (Inactive, Active, Engaged, Request-sent, Request-received) that handles subscriptions and registrations. Profile 2 is a loop that ingests white-space-object (WSO) information, runs a coexistence discovery algorithm, and hands back coexistence-set information. Profile 3 is the leanest: register a GCO (a general coexistence object), update it, and hand out coexistence-set information on request.",
+      "zh": "现在来认识 CDIS，这个邻居目录。它的公共操作表面上与配置档无关：一个 CDIS 必须能服务运行任意配置档的 CM。窍门在于：CM 发出的第一条 CMRegistrationRequest 携带一个 cmProfile 字段。CDIS 读取它并据此分支——profile1 走一套行为，profile2 走另一套，profile3 走第三套。Profile 1 把 CDIS 建模为一台有状态的机器（非活动、活动、已接洽、请求已发出、请求已收到），处理各类订阅与注册。Profile 2 是一个循环：吸收白频段对象（WSO）信息、运行共存发现算法、再回送共存集合信息。Profile 3 最为精简：注册一个 GCO（通用共存对象）、更新它、并在收到请求时分发共存集合信息。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 360 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"150\" y=\"10\" width=\"60\" height=\"30\" rx=\"4\"/><text x=\"180\" y=\"29\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">CDIS</text><line x1=\"180\" y1=\"40\" x2=\"60\" y2=\"95\"/><line x1=\"180\" y1=\"40\" x2=\"180\" y2=\"95\"/><line x1=\"180\" y1=\"40\" x2=\"300\" y2=\"95\"/><rect x=\"20\" y=\"95\" width=\"80\" height=\"30\" rx=\"4\"/><text x=\"60\" y=\"114\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">CM (P1)</text><rect x=\"140\" y=\"95\" width=\"80\" height=\"30\" rx=\"4\"/><text x=\"180\" y=\"114\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">CM (P2)</text><rect x=\"260\" y=\"95\" width=\"80\" height=\"30\" rx=\"4\"/><text x=\"300\" y=\"114\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">CM (P3)</text><text x=\"180\" y=\"145\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">cmProfile in CMRegistrationRequest selects the branch</text></svg>",
+      "caption": {
+        "en": "One CDIS serves CMs of all three profiles; the cmProfile field in the first registration selects how it talks to each.",
+        "zh": "同一个 CDIS 服务全部三种配置档的 CM；首次注册中的 cmProfile 字段决定它与每个 CM 的对话方式。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "CMs also talk to each other directly, and this is where cross-profile coordination matters. When a Profile 1 CM learns from the CDIS about its neighbors, it inspects each neighbor's cmProfile. Neighbor is also Profile 1? They speak the Profile-1 CM dialect. Neighbor is Profile 2 or 3? Then when a served object's operating channel changes, the CM runs a providing-inter-CM-information procedure and pushes InterCMInformationAnnouncement messages (matched by InterCMInformationConfirm); to pull a neighbor's channel, it sends InterCMInformationRequest and waits for InterCMInformationResponse. The same dance runs symmetrically: a Profile 2/3 CM seeing a Profile 1 neighbor uses exactly these messages. This is how a centralized region and a distributed region stay coherent at their seam.",
+      "zh": "各 CM 之间也直接通信，跨配置档协调正是在这里发挥作用。当一个 Profile 1 的 CM 从 CDIS 获知邻居信息时，它会检查每个邻居的 cmProfile。邻居也是 Profile 1？那它们就用 Profile 1 的 CM 方言交谈。邻居是 Profile 2 或 3？那么当某个被服务对象的工作信道发生变化时，该 CM 运行“提供 inter-CM 信息”过程，推送 InterCMInformationAnnouncement 消息（由 InterCMInformationConfirm 应答）；若要拉取邻居的信道，则发送 InterCMInformationRequest 并等待 InterCMInformationResponse。同样的流程对称地运行：一个看到 Profile 1 邻居的 Profile 2/3 的 CM 恰好使用这同一组消息。这正是集中式区域与分布式区域在接缝处保持一致的方式。"
+    },
+    {
+      "type": "prose",
+      "en": "Below each CM sit its CEs, and the CM-CE protocol is the most procedure-rich part of clause 6 because the CE is the bridge to the real radio device (a GCO, a white-space object, or an RLSS — a registered-location secure server). Across the three profiles the shape is consistent even as the detail differs: the CE subscribes, registers, then loops on the work of its chosen service. In Profile 1 the CE is a six-state machine (Inactive, Active, Waiting-engagement, Engaged, Request-sent, Request-received) handling GCO subscription/registration, channel-classification, measurements, event indications and deregistration. In Profile 2 (for systems such as 802.22, 802.11af and RLSS) the CE loops over WSO subscription, registration, reconfiguration and coexistence reports. In Profile 3 the CE first runs a CM-association procedure, then GCO subscription/registration, then splits into an information-service mode (it provides coexistence reports) or a management-service mode (it provides reconfiguration requests).",
+      "zh": "每个 CM 之下是它的若干 CE，而 CM-CE 协议是第 6 章中过程最丰富的部分，因为 CE 是通往真实无线设备（GCO、白频段对象，或 RLSS——已注册位置安全服务器）的桥梁。在三种配置档中，尽管细节不同，骨架却一致：CE 先订阅、再注册，然后围绕其所选服务循环工作。在 Profile 1 中，CE 是一台六状态机（非活动、活动、等待接洽、已接洽、请求已发出、请求已收到），处理 GCO 订阅/注册、信道分类、测量、事件指示与注销。在 Profile 2 中（面向 802.22、802.11af 与 RLSS 等系统），CE 循环执行 WSO 订阅、注册、重配置与共存报告。在 Profile 3 中，CE 先运行 CM 关联过程，再做 GCO 订阅/注册，随后分流为信息服务模式（提供共存报告）或管理服务模式（提供重配置请求）。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, when two CMs are managed in different regions they may not reach each other directly; the COE (Coexistence Operation Entity) reference point bridges them. Two procedures ride over COE. Inter-CM association: a CM sends InterCMAssociationRequest to its COE, which wraps it as InterCOEAssociationRequest and forwards it to the COE connected to the target CM, carrying the cmID and the geographic management region. Obtaining operating-frequency information: a CM sends OperatingFreqInformationRequest, its COE forwards an InterCOEOperatingFreqInformationRequest to the far COE, which asks the target CM and returns the answer (a list of coexistence reports describing which operating frequencies the GCOs use in that region) back across the COE-to-COE link. The COE is, in short, the relay that lets two coexistence islands negotiate who uses which frequency where.",
+      "zh": "最后，当两个 CM 受管于不同区域时，它们可能无法直接互通；COE（共存操作实体）参考点在它们之间架起桥梁。有两个过程经由 COE 承载。Inter-CM 关联：某 CM 向其 COE 发送 InterCMAssociationRequest，COE 将其封装为 InterCOEAssociationRequest，转发给连接目标 CM 的那个 COE，其中携带 cmID 与该 CM 所管理的地理区域。获取工作频率信息：某 CM 发送 OperatingFreqInformationRequest，其 COE 将一条 InterCOEOperatingFreqInformationRequest 转发给远端 COE，后者询问目标 CM 并把答复（一份共存报告列表，描述该区域内各 GCO 使用了哪些工作频率）沿 COE 到 COE 链路回送。简而言之，COE 是让两座共存孤岛协商“谁在何处使用哪个频率”的中继。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: where every clause-6 unit lives",
+        "zh": "覆盖地图：第 6 章每个条款的归属"
+      },
+      "en": "Common operation: 6.1.1 Transport SAP operation (COEX_TR_SAP: optional configuration, connection establishment, send/receive CxMessage, termination by request or by lost network, with keepAliveInterval), 6.1.2 processing the CxMessage header (none for announcements, requestID echoed on responses), 6.1.3 processing the status parameter (noError / rejected / invalidEntityStatus / invalidArgument / processFailure / networkFailure; only noError behavior is normative). CDIS operation: 6.2.1 CDIS common operation (read cmProfile from the first CMRegistrationRequest and branch), 6.2.2 Profile 1 (five-state CDIS machine: subscriptions, GCO registration, coexistence-set info), 6.2.3 Profile 2 (loop ingesting WSO information, run discovery algorithm, provide coexistence-set info, stop procedures), 6.2.4 Profile 3 (GCO registration, registration update, obtaining coexistence-set information). CM operation: 6.3.1 communication between CMs (inspect each neighbor's cmProfile; cross-profile uses InterCMInformationAnnouncement/Confirm and InterCMInformationRequest/Response), 6.3.2 Profile 1 (six-state CM machine), 6.3.3 Profile 2 (CM operation loop for WSO subscription/registration and CDIS stop handling), 6.3.4 Profile 3 (CM association, GCO subscription/registration/reconfiguration, master/slave config, inter-CM and over-COE procedures). CE operation: 6.4.1 Profile 1 (six-state CE machine: GCO subscription/registration, channel classification, measurements, events, deregistration), 6.4.2 Profile 2 (CE loop for 802.22/802.11af/RLSS: WSO subscription, registration, reconfiguration, coexistence reports, stop procedures), 6.4.3 Profile 3 (CM association then GCO subscription/registration, splitting into information-service vs management-service modes). COE operation: 6.5.1 inter-CM association procedure over COE (InterCMAssociationRequest wrapped as InterCOEAssociationRequest, carrying cmID and management region), 6.5.2 obtaining operating-frequency-information procedure over COE (OperatingFreqInformationRequest relayed via InterCOEOperatingFreqInformationRequest/Response, returning a list of coexistence reports with operating frequencies per region).",
+      "zh": "公共操作：6.1.1 传输 SAP 操作（COEX_TR_SAP：可选配置、连接建立、CxMessage 收发、按请求或因网络丢失而终止，并带 keepAliveInterval），6.1.2 处理 CxMessage 头部（通告用 none，响应回显 requestID），6.1.3 处理 status 参数（noError / rejected / invalidEntityStatus / invalidArgument / processFailure / networkFailure；仅 noError 的行为是规范性的）。CDIS 操作：6.2.1 CDIS 公共操作（从首条 CMRegistrationRequest 读取 cmProfile 并分支），6.2.2 Profile 1（五状态 CDIS 机器：订阅、GCO 注册、共存集合信息），6.2.3 Profile 2（循环吸收 WSO 信息、运行发现算法、提供共存集合信息、停止过程），6.2.4 Profile 3（GCO 注册、注册更新、获取共存集合信息）。CM 操作：6.3.1 各 CM 间通信（检查每个邻居的 cmProfile；跨配置档使用 InterCMInformationAnnouncement/Confirm 与 InterCMInformationRequest/Response），6.3.2 Profile 1（六状态 CM 机器），6.3.3 Profile 2（面向 WSO 订阅/注册及 CDIS 停止处理的 CM 操作循环），6.3.4 Profile 3（CM 关联、GCO 订阅/注册/重配置、主从配置、inter-CM 及经 COE 的过程）。CE 操作：6.4.1 Profile 1（六状态 CE 机器：GCO 订阅/注册、信道分类、测量、事件、注销），6.4.2 Profile 2（面向 802.22/802.11af/RLSS 的 CE 循环：WSO 订阅、注册、重配置、共存报告、停止过程），6.4.3 Profile 3（先 CM 关联再 GCO 订阅/注册，分流为信息服务与管理服务两种模式）。COE 操作：6.5.1 经 COE 的 inter-CM 关联过程（InterCMAssociationRequest 封装为 InterCOEAssociationRequest，携带 cmID 与管理区域），6.5.2 经 COE 的获取工作频率信息过程（OperatingFreqInformationRequest 经 InterCOEOperatingFreqInformationRequest/Response 中继，返回按区域列出工作频率的共存报告列表）。",
+      "cite": {
+        "pdf_id": "802191-2018",
+        "pages": [
+          62,
+          68,
+          69,
+          77,
+          90,
+          96,
+          128,
+          166,
+          193,
+          212,
+          231,
+          249
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        62,
+        63,
+        64,
+        65,
+        66,
+        67
+      ],
+      "note": "6.1.1 Transport SAP operation: configuration, connection establishment, send/receive, termination"
+    },
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        68,
+        69
+      ],
+      "note": "6.1.2 CxMessage header processing; 6.1.3 status parameter values"
+    },
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        69,
+        70
+      ],
+      "note": "6.2.1 CDIS common operation and cmProfile branching; 6.2.2 Profile 1 states"
+    },
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        77,
+        78
+      ],
+      "note": "6.2.3 CDIS Profile 2 general description and WSO information"
+    },
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        90,
+        91
+      ],
+      "note": "6.2.4 CDIS Profile 3 GCO registration and coexistence-set info"
+    },
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        96,
+        97,
+        98,
+        99,
+        100
+      ],
+      "note": "6.3.1 communication between CMs (inter-CM information messages); 6.3.2.1 CM Profile 1 states"
+    },
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        128,
+        129
+      ],
+      "note": "6.3.3 CM Profile 2 general description and operation flowchart"
+    },
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        166,
+        167
+      ],
+      "note": "6.3.4 CM Profile 3 supported procedures and operation"
+    },
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        193,
+        194
+      ],
+      "note": "6.4.1 CE Profile 1 six-state machine and operation flowchart"
+    },
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        212,
+        213
+      ],
+      "note": "6.4.2 CE Profile 2 operation for 802.22/802.11af/RLSS"
+    },
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        231,
+        232
+      ],
+      "note": "6.4.3 CE Profile 3 supported procedures, information vs management service modes"
+    },
+    {
+      "pdf_id": "802191-2018",
+      "pages": [
+        249,
+        250,
+        251
+      ],
+      "note": "6.5.1 inter-CM association over COE; 6.5.2 obtaining operating-frequency information over COE"
+    }
+  ],
+  "covers": [
+    "802191-2018:6.1.1",
+    "802191-2018:6.1.2",
+    "802191-2018:6.1.3",
+    "802191-2018:6.2.1",
+    "802191-2018:6.2.2",
+    "802191-2018:6.2.3",
+    "802191-2018:6.2.4",
+    "802191-2018:6.3.1",
+    "802191-2018:6.3.2",
+    "802191-2018:6.3.3",
+    "802191-2018:6.3.4",
+    "802191-2018:6.4.1",
+    "802191-2018:6.4.2",
+    "802191-2018:6.4.3",
+    "802191-2018:6.5.1",
+    "802191-2018:6.5.2"
+  ],
+  "track": "coexistence"
+}
