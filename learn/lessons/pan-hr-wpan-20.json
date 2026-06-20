@@ -1,0 +1,177 @@
+{
+  "id": "pan-hr-wpan-20",
+  "title": {
+    "en": "The THz PHY: Two Radios for 100+ Gb/s Wireless",
+    "zh": "太赫兹物理层：迈向 100+ Gb/s 的两种无线电"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 14 of IEEE Std 802.15.3-2023 defines the THz PHY (physical layer), a radio operating in the sub-terahertz band (roughly 252 GHz to 325 GHz, with extensions to ~325-450 GHz). PHY simply means the layer that turns bits into a radio waveform and back. Working this high in the spectrum unlocks enormous bandwidth, and the goal is breathtaking: payload rates beyond 100 Gb/s. The clause is short but dense, because it builds heavily on the earlier HRCP and mmWave PHY clauses (12 and 13) rather than re-deriving everything.",
+      "zh": "IEEE Std 802.15.3-2023 的第 14 章定义了太赫兹物理层（THz PHY）。物理层（PHY）就是把比特转换成无线波形、再把波形还原为比特的那一层。这是一种工作在亚太赫兹频段（大约 252 GHz 到 325 GHz，并向上扩展到约 325-450 GHz）的无线电。在如此高的频段工作可以释放巨大的带宽，其目标令人惊叹：净荷速率超过 100 Gb/s。这一章篇幅不长却信息密集，因为它大量复用了前面的 HRCP 与毫米波物理层章节（第 12、13 章），而不是重新推导所有内容。"
+    },
+    {
+      "type": "prose",
+      "en": "14.1.1 (Overview) sets the ground rule: a compliant THz PHY must implement at least one of two modes. The THz-SC PHY (single carrier) chases raw speed with rich modulation; the THz-OOK PHY (on-off keying) chases simplicity, low power, and low cost for short links of a few tens of centimeters. Section 14.1 then states requirements common to both. 14.1.2 (RF power measurements) says every power figure in the clause is corrected for antenna gain, using the manufacturer's maximum data-sheet gain. 14.1.5 (Error vector magnitude calculation) borrows the EVM method from 12.1.8.1 — EVM (error vector magnitude) measures how far transmitted symbols stray from their ideal constellation points.",
+      "zh": "14.1.1（概述）确立了基本规则：合规的太赫兹物理层必须至少实现两种模式之一。THz-SC PHY（单载波）依靠丰富的调制方式追求极致速率；THz-OOK PHY（通断键控）则追求简单、低功耗、低成本，面向仅几十厘米的短距链路。14.1 节随后给出两种模式共同的要求。14.1.2（射频功率测量）规定本章所有功率数值都按天线增益做了修正，采用厂商数据手册给出的最大增益。14.1.5（误差矢量幅度计算）沿用 12.1.8.1 的 EVM 方法——EVM（误差矢量幅度）衡量发送符号偏离理想星座点的程度。"
+    },
+    {
+      "type": "prose",
+      "en": "14.1.3 (RF channelization) is the spectrum map. Table 14-1 lists 201 channels (CHNL_ID 1 to 201). The smallest are 2.16 GHz wide — and that is the building block: every channel's bandwidth is an integer multiple of 2.16 GHz, going up through 4.32, 8.64, 12.96, 17.28, 25.92, 34.56, 51.84, and a colossal 69.12 GHz. Bonding more 2.16 GHz units together is exactly how the PHY trades spectrum for speed. One of CHNL_ID 41, 137, or 149 is designated the default channel.",
+      "zh": "14.1.3（射频信道划分）是频谱地图。表 14-1 列出了 201 个信道（CHNL_ID 1 到 201）。最小的信道宽 2.16 GHz——这正是基本单元：每个信道的带宽都是 2.16 GHz 的整数倍，依次为 4.32、8.64、12.96、17.28、25.92、34.56、51.84，直到庞大的 69.12 GHz。把更多 2.16 GHz 单元绑定在一起，正是物理层用频谱换速率的方式。CHNL_ID 41、137、149 三者之一被指定为默认信道。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"4\" y=\"14\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\">Bandwidth bonding (each unit = 2.16 GHz)</text><rect x=\"6\" y=\"26\" width=\"40\" height=\"18\"/><text x=\"10\" y=\"39\" font-size=\"8\" stroke=\"none\" fill=\"currentColor\">2.16</text><rect x=\"6\" y=\"50\" width=\"80\" height=\"18\"/><text x=\"10\" y=\"63\" font-size=\"8\" stroke=\"none\" fill=\"currentColor\">4.32</text><rect x=\"6\" y=\"74\" width=\"160\" height=\"18\"/><text x=\"10\" y=\"87\" font-size=\"8\" stroke=\"none\" fill=\"currentColor\">8.64 ... up to 69.12 GHz</text><line x1=\"6\" y1=\"100\" x2=\"410\" y2=\"100\"/><text x=\"300\" y=\"112\" font-size=\"8\" stroke=\"none\" fill=\"currentColor\">252-450 GHz band</text></svg>",
+      "caption": {
+        "en": "THz channels are integer multiples of a 2.16 GHz base unit; wider channels carry more bits per second (Table 14-1).",
+        "zh": "太赫兹信道是 2.16 GHz 基本单元的整数倍；信道越宽，每秒承载的比特越多（表 14-1）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "14.1.4 (Transmit PSD mask) fixes the shape of the transmitted spectrum. PSD (power spectral density) describes how transmit power is distributed across frequency; a mask is the legal envelope it must stay inside. THz-SC follows the mask of Figure 14-1, THz-OOK the mask of Figure 14-2 (which adds a single 40 dB spectral line within +/-6 MHz of the carrier). Table 14-2 gives the corner frequencies f1-f4 for each channel width. 14.1.6 (THz PHY management) defines the PIB (PHY information base) — the managed knobs the MAC reads and writes. Highlights: phyType = 0x03 marks the THz PHY; phyMode bits flag which mode(s) are supported; pMaxFrameBodySize is 2 099 200 octets (14.1.6.3), pMaxTransferUnitSize is 2 097 152 octets (14.1.6.4), and pMinFragmentSize is 2048 octets (14.1.6.5).",
+      "zh": "14.1.4（发射 PSD 模板）规定了发射频谱的形状。PSD（功率谱密度）描述发射功率如何分布在各频率上；模板则是它必须保持在内的合法包络。THz-SC 遵循图 14-1 的模板，THz-OOK 遵循图 14-2 的模板（后者在载波 +/-6 MHz 内额外加入一条高出 40 dB 的谱线）。表 14-2 给出每种信道宽度的拐点频率 f1-f4。14.1.6（太赫兹物理层管理）定义了 PIB（物理层信息库）——即 MAC 层读写的可管理参数。要点包括：phyType = 0x03 标识太赫兹物理层；phyMode 的各比特标记支持哪种模式；pMaxFrameBodySize 为 2 099 200 字节（14.1.6.3），pMaxTransferUnitSize 为 2 097 152 字节（14.1.6.4），pMinFragmentSize 为 2048 字节（14.1.6.5）。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the speed demon. 14.2.1 (General) states the THz-SC PHY targets PHY-SAP payload rates of 100 Gb/s, going higher with the right mix of modulation, bandwidth, and coding. 14.2.2 (Channelization) reuses Table 14-1 and tracks the live channel in phyCurrentChannel. The heart is 14.2.3 (Modulation and coding). 14.2.3.1 lays out a constellation ladder — pi/2 BPSK, pi/2 QPSK, pi/2 8-PSK, 8-APSK, 16-APSK, 32-APSK, 16-QAM, and 64-QAM (BPSK, QPSK, etc. pack 1, 2, 3 ... bits into each symbol; APSK and QAM are amplitude-and-phase schemes). pi/2 BPSK and pi/2 QPSK are mandatory; the rest are optional, with normalization factors in Table 14-4 so every constellation has equal average power. 14.2.3.2 makes two LDPC (low-density parity-check) codes mandatory: rate-14/15 LDPC(1440,1344) and rate-11/15 LDPC(1440,1056).",
+      "zh": "现在来看速度怪兽。14.2.1（概述）指出 THz-SC PHY 的目标是 100 Gb/s 的 PHY-SAP 净荷速率，并可通过调制、带宽、编码的恰当组合进一步提高。14.2.2（信道划分）复用表 14-1，并用 phyCurrentChannel 跟踪当前信道。核心是 14.2.3（调制与编码）。14.2.3.1 给出一架星座阶梯——pi/2 BPSK、pi/2 QPSK、pi/2 8-PSK、8-APSK、16-APSK、32-APSK、16-QAM 和 64-QAM（BPSK、QPSK 等每个符号承载 1、2、3……个比特；APSK 和 QAM 是幅相联合方案）。pi/2 BPSK 与 pi/2 QPSK 为强制，其余可选，表 14-4 给出归一化因子，使各星座平均功率相同。14.2.3.2 规定两种 LDPC（低密度奇偶校验）码为强制：速率 14/15 的 LDPC(1440,1344) 和速率 11/15 的 LDPC(1440,1056)。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining 14.2.3 subclauses are the recipe parameters. 14.2.3.3 (MCS dependent parameters) maps each MCS (modulation and coding scheme) to a data rate per bandwidth — Tables 14-5/14-6 reach 315 Gb/s with 64-QAM on a 69.12 GHz channel. A block is 64 chips; the PW (pilot word) length is 0 or 8 chips, with 8 mandatory. 14.2.3.4 (Header dependent parameters) sets the header rate proportional to bandwidth and protects it with an EH (extended Hamming) code. 14.2.3.5 (Timing-related parameters) gives chip rate (1760 to 42 240 Mchip/s) in Table 14-8. 14.2.3.6 (Frame-related parameters) reuses Table 13-9 except for NCBPC (coded bits per symbol, Table 14-9). 14.2.3.7 (Stuff bits) pads the body to a whole number of blocks; 14.2.3.8 (Code spreading) and 14.2.3.9 (Scrambling) reuse the 13.2.3 procedures.",
+      "zh": "14.2.3 其余各小节是配方参数。14.2.3.3（MCS 相关参数）把每个 MCS（调制编码方案）映射到各带宽下的数据速率——表 14-5/14-6 在 69.12 GHz 信道上用 64-QAM 可达 315 Gb/s。一个块为 64 chip；PW（导频字）长度为 0 或 8 chip，其中 8 为强制。14.2.3.4（帧头相关参数）令帧头速率与带宽成正比，并用 EH（扩展汉明）码保护。14.2.3.5（定时相关参数）在表 14-8 给出 chip 速率（1760 到 42 240 Mchip/s）。14.2.3.6（帧相关参数）复用表 13-9，仅 NCBPC（每符号编码比特数，表 14-9）不同。14.2.3.7（填充比特）把帧体补齐到整数个块；14.2.3.8（码扩展）与 14.2.3.9（扰码）复用 13.2.3 的流程。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 70\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"6\" y=\"20\" width=\"70\" height=\"26\"/><text x=\"12\" y=\"37\" font-size=\"8\" stroke=\"none\" fill=\"currentColor\">PHY preamble</text><rect x=\"76\" y=\"20\" width=\"70\" height=\"26\"/><text x=\"86\" y=\"37\" font-size=\"8\" stroke=\"none\" fill=\"currentColor\">PHY header</text><rect x=\"146\" y=\"20\" width=\"70\" height=\"26\"/><text x=\"154\" y=\"37\" font-size=\"8\" stroke=\"none\" fill=\"currentColor\">MAC header</text><rect x=\"216\" y=\"20\" width=\"40\" height=\"26\"/><text x=\"224\" y=\"37\" font-size=\"8\" stroke=\"none\" fill=\"currentColor\">HCS</text><rect x=\"256\" y=\"20\" width=\"140\" height=\"26\"/><text x=\"285\" y=\"37\" font-size=\"8\" stroke=\"none\" fill=\"currentColor\">PHY payload (+PPRE, stuff)</text><text x=\"6\" y=\"14\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">THz-SC PPDU</text></svg>",
+      "caption": {
+        "en": "THz-SC frame: preamble for sync, header (MCS/bandwidth/length), HCS check, then the FEC-coded payload with periodic PPRE (14.2.4).",
+        "zh": "THz-SC 帧：用于同步的前导、帧头（MCS/带宽/长度）、HCS 校验，随后是带周期性 PPRE 的 FEC 编码净荷（14.2.4）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "14.2.4 (THz-SC PHY frame format) assembles the PPDU. 14.2.4.2 (PHY preamble) precedes the header to drive AGC (auto-gain control), frame detection, timing, frequency-offset estimation, sync, and channel estimation; a long preamble is used in one access period, a short one in another. 14.2.4.3 (Frame header) defines the 37-bit THz-SC header in Figure 14-6: MCS, Bandwidth, Scrambler Seed ID, PPRE, PW, and Frame Length fields, protected by a CRC-16 HCS (header check sequence, 14.2.4.3.3) and header FEC (14.2.4.3.4). 14.2.4.4 (Payload field) is built in six steps — scramble, encode, stuff, map, block, then insert PPRE. 14.2.4.5 (PW and PPRE) reuses the 13.2.4.5 block/pilot machinery.",
+      "zh": "14.2.4（THz-SC PHY 帧格式）组装出 PPDU。14.2.4.2（PHY 前导）位于帧头之前，用于驱动 AGC（自动增益控制）、帧检测、定时、频偏估计、同步与信道估计；在一种接入周期使用长前导，另一种使用短前导。14.2.4.3（帧头）在图 14-6 定义 37 比特的 THz-SC 帧头：MCS、Bandwidth、Scrambler Seed ID、PPRE、PW 与 Frame Length 字段，由 CRC-16 HCS（帧头校验序列，14.2.4.3.3）与帧头 FEC（14.2.4.3.4）保护。14.2.4.4（净荷字段）按六步构建——扰码、编码、填充、映射、成块、再插入 PPRE。14.2.4.5（PW 与 PPRE）复用 13.2.4.5 的块/导频机制。"
+    },
+    {
+      "type": "prose",
+      "en": "14.2.5 (Transmitter specifications) sets the quality bar: 14.2.5.1 caps EVM per MCS (Table 14-13, from -6 dB for BPSK down to -23 dB for the densest schemes); 14.2.5.2 limits center-frequency tolerance to +/-30 ppm; 14.2.5.3 ties symbol rate to the chip rate within +/-30 ppm. 14.2.6 (Receiver specifications) sets the other side: 14.2.6.1 fixes the error-rate criterion (FER < 1.3e-7 at a 214-octet payload, i.e. BER 1e-12, in AWGN); 14.2.6.2 lists reference sensitivity (Table 14-14, e.g. -67 dBm for BPSK on 2.16 GHz); 14.2.6.3 requires tolerating at least -10 dBm input. 14.2.7 (PHY layer timing) inherits 13.2.7 for IFS (interframe space), Rx-to-Tx and Tx-to-Rx turnaround, time between retransmissions, and channel-switch time.",
+      "zh": "14.2.5（发射机规范）设定质量门槛：14.2.5.1 按 MCS 限定 EVM（表 14-13，从 BPSK 的 -6 dB 到最密方案的 -23 dB）；14.2.5.2 把中心频率容差限制在 +/-30 ppm；14.2.5.3 令符号速率与 chip 速率一致，容差 +/-30 ppm。14.2.6（接收机规范）规定另一侧：14.2.6.1 确定误码准则（214 字节净荷下 FER < 1.3e-7，即 AWGN 信道下 BER 1e-12）；14.2.6.2 列出参考灵敏度（表 14-14，例如 2.16 GHz 上 BPSK 为 -67 dBm）；14.2.6.3 要求至少能承受 -10 dBm 输入。14.2.7（物理层定时）沿用 13.2.7 的 IFS（帧间间隔）、收发与发收转换时间、重传间隔与信道切换时间。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the lean radio. 14.3.1 (General) frames the THz-OOK PHY for cheap, low-power, low-complexity devices at ranges of a few tens of centimeters, spanning 1.3 Gb/s (one 2.16 GHz channel) up to 52.6 Gb/s (69.12 GHz). OOK (on-off keying) is the simplest modulation alive: the carrier is just switched on for a 1 and off for a 0. 14.3.2 (Channelization) reuses the same channels and masks as 14.1.3/14.1.4. 14.3.3 (Modulation and coding): 14.3.3.1 says the whole frame is OOK; 14.3.3.2 points to 13.3.3.5 for the OOK details; 14.3.3.3 makes a (240,224) Reed-Solomon code mandatory and the two LDPC codes optional. Blocks are 64 chips with 0/8-chip PW (14.3.3.4); the header uses an EH code (14.3.3.5); timing reuses Table 14-8 (14.3.3.6); frame parameters mirror the SC PHY except NCBPC = 1 (14.3.3.7); and stuff bits (14.3.3.8), code spreading (14.3.3.9), and scrambling (14.3.3.10) follow the Clause 13 procedures.",
+      "zh": "再看精简版无线电。14.3.1（概述）把 THz-OOK PHY 定位于廉价、低功耗、低复杂度的设备，作用距离几十厘米，速率从 1.3 Gb/s（单个 2.16 GHz 信道）到 52.6 Gb/s（69.12 GHz）。OOK（通断键控）是现存最简单的调制：载波在发 1 时打开、发 0 时关闭。14.3.2（信道划分）复用 14.1.3/14.1.4 的信道与模板。14.3.3（调制与编码）：14.3.3.1 规定整帧采用 OOK；14.3.3.2 指向 13.3.3.5 的 OOK 细节；14.3.3.3 把 (240,224) 里德-所罗门码定为强制，两种 LDPC 码可选。块为 64 chip，PW 为 0/8 chip（14.3.3.4）；帧头用 EH 码（14.3.3.5）；定时复用表 14-8（14.3.3.6）；帧参数与 SC PHY 相同，仅 NCBPC = 1（14.3.3.7）；填充比特（14.3.3.8）、码扩展（14.3.3.9）与扰码（14.3.3.10）均沿用第 13 章流程。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Two radios, one frame skeleton. The THz-OOK header (Figure 14-7) is shorter — its MCS field is just 2 bits (Table 14-18: 0=Reed-Solomon, 1=LDPC 11/15, 2=LDPC 14/15) versus 4 bits for THz-SC — but both carry Bandwidth, Scrambler Seed ID, PPRE, PW, and Frame Length. Learn the SC frame and you already know 90% of the OOK frame.",
+      "zh": "两种无线电，共用一套帧骨架。THz-OOK 帧头（图 14-7）更短——其 MCS 字段仅 2 比特（表 14-18：0=里德-所罗门，1=LDPC 11/15，2=LDPC 14/15），而 THz-SC 为 4 比特——但二者都携带 Bandwidth、Scrambler Seed ID、PPRE、PW 与 Frame Length。学会 SC 帧，你就已经掌握了 OOK 帧的九成。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause unit and where it lives",
+        "zh": "覆盖地图：每个条款单元及其归属"
+      },
+      "en": "14.1 General requirements (p.556-565): 14.1.1 Overview (two modes, at least one mandatory); 14.1.2 RF power measurements (antenna-gain corrected); 14.1.3 RF channelization (Table 14-1, 201 channels, 2.16 GHz base, default = CHNL_ID 41/137/149); 14.1.4 Transmit PSD mask (Figures 14-1/14-2, parameters Table 14-2); 14.1.5 EVM calculation (per 12.1.8.1); 14.1.6 THz PHY management (PIB Table 14-3; pMaxFrameBodySize 2 099 200, pMaxTransferUnitSize 2 097 152, pMinFragmentSize 2048). 14.2 THz-SC PHY (p.566-579): 14.2.1 General (100 Gb/s target); 14.2.2 Channelization; 14.2.3 Modulation and coding (constellations, mandatory pi/2 BPSK/QPSK + 2 LDPC, MCS Tables 14-5/14-6, header rate, timing Table 14-8, NCBPC, stuff/spreading/scrambling); 14.2.4 Frame format (preamble, Figure 14-6 header, CRC-16 HCS + header FEC, payload steps, PW/PPRE); 14.2.5 Transmitter (EVM Table 14-13, +/-30 ppm freq tolerance, symbol rate); 14.2.6 Receiver (FER 1.3e-7 criterion, sensitivity Table 14-14, -10 dBm max input); 14.2.7 PHY layer timing (IFS, turnaround, retransmission, channel switch via 13.2.7). 14.3 THz-OOK PHY (p.579-584): 14.3.1 General (low-cost, tens of cm, 1.3-52.6 Gb/s); 14.3.2 Channelization (same as 14.1.3/14.1.4); 14.3.3 Modulation and coding (OOK, Table 14-15, mandatory (240,224) Reed-Solomon, optional LDPC, NCBPC=1); 14.3.4 Frame format (Figure 14-7 2-bit MCS header, Table 14-18, payload build, blocks/PW, PPRE all OOK-modulated); 14.3.5 Transmitter (EVM via eye opening G.7, +/-30 ppm, symbol rate); 14.3.6 Receiver (FER 1.3e-7, sensitivity Table 14-19, -10 dBm max input); 14.3.7 PHY layer timing (IFS, turnaround, retransmission, channel switch via 13.2.7).",
+      "zh": "14.1 通用要求（第 556-565 页）：14.1.1 概述（两种模式，至少强制其一）；14.1.2 射频功率测量（按天线增益修正）；14.1.3 射频信道划分（表 14-1，201 个信道，2.16 GHz 基本单元，默认 = CHNL_ID 41/137/149）；14.1.4 发射 PSD 模板（图 14-1/14-2，参数见表 14-2）；14.1.5 EVM 计算（依 12.1.8.1）；14.1.6 太赫兹物理层管理（PIB 表 14-3；pMaxFrameBodySize 2 099 200、pMaxTransferUnitSize 2 097 152、pMinFragmentSize 2048）。14.2 THz-SC PHY（第 566-579 页）：14.2.1 概述（100 Gb/s 目标）；14.2.2 信道划分；14.2.3 调制与编码（星座、强制 pi/2 BPSK/QPSK 与两种 LDPC、MCS 表 14-5/14-6、帧头速率、定时表 14-8、NCBPC、填充/扩展/扰码）；14.2.4 帧格式（前导、图 14-6 帧头、CRC-16 HCS 与帧头 FEC、净荷步骤、PW/PPRE）；14.2.5 发射机（EVM 表 14-13、+/-30 ppm 频率容差、符号速率）；14.2.6 接收机（FER 1.3e-7 准则、灵敏度表 14-14、-10 dBm 最大输入）；14.2.7 物理层定时（IFS、转换、重传、信道切换，依 13.2.7）。14.3 THz-OOK PHY（第 579-584 页）：14.3.1 概述（低成本、几十厘米、1.3-52.6 Gb/s）；14.3.2 信道划分（同 14.1.3/14.1.4）；14.3.3 调制与编码（OOK、表 14-15、强制 (240,224) 里德-所罗门、可选 LDPC、NCBPC=1）；14.3.4 帧格式（图 14-7 的 2 比特 MCS 帧头、表 14-18、净荷构建、块/PW、PPRE 均以 OOK 调制）；14.3.5 发射机（EVM 用 G.7 眼图、+/-30 ppm、符号速率）；14.3.6 接收机（FER 1.3e-7、灵敏度表 14-19、-10 dBm 最大输入）；14.3.7 物理层定时（IFS、转换、重传、信道切换，依 13.2.7）。",
+      "cite": {
+        "pdf_id": "802153-2023",
+        "pages": [
+          556,
+          564,
+          565,
+          566,
+          569,
+          573,
+          576,
+          578,
+          579,
+          581,
+          582,
+          583,
+          584
+        ]
+      }
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Compliant THz PHY] --> B[THz-SC 14.2]\n  A --> C[THz-OOK 14.3]\n  B --> D[100+ Gb/s, rich MCS]\n  C --> E[Low cost, OOK, tens of cm]\n  B --> F[Shared: channels 14.1.3, masks 14.1.4, PIB 14.1.6]\n  C --> F",
+      "zh": "flowchart TD\n  A[合规太赫兹物理层] --> B[THz-SC 14.2]\n  A --> C[THz-OOK 14.3]\n  B --> D[100+ Gb/s, 丰富 MCS]\n  C --> E[低成本, OOK, 几十厘米]\n  B --> F[共用: 信道 14.1.3, 模板 14.1.4, PIB 14.1.6]\n  C --> F"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        556,
+        557,
+        562,
+        563,
+        564,
+        565
+      ],
+      "note": "14.1 general requirements: overview, power, channelization Table 14-1, PSD masks, EVM, PIB and size limits"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        566,
+        568,
+        569,
+        570,
+        571,
+        573,
+        574,
+        575,
+        576,
+        577,
+        578,
+        579
+      ],
+      "note": "14.2 THz-SC PHY: modulation/coding, MCS tables, frame format, Tx/Rx specs, PHY timing"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        579,
+        580,
+        581,
+        582,
+        583,
+        584
+      ],
+      "note": "14.3 THz-OOK PHY: OOK modulation, Reed-Solomon FEC, frame format, Tx/Rx specs, PHY timing"
+    }
+  ],
+  "covers": [
+    "802153-2023:14.1.1",
+    "802153-2023:14.1.2",
+    "802153-2023:14.1.3",
+    "802153-2023:14.1.4",
+    "802153-2023:14.1.5",
+    "802153-2023:14.1.6",
+    "802153-2023:14.2.1",
+    "802153-2023:14.2.2",
+    "802153-2023:14.2.3",
+    "802153-2023:14.2.4",
+    "802153-2023:14.2.5",
+    "802153-2023:14.2.6",
+    "802153-2023:14.2.7",
+    "802153-2023:14.3.1",
+    "802153-2023:14.3.2",
+    "802153-2023:14.3.3",
+    "802153-2023:14.3.4",
+    "802153-2023:14.3.5",
+    "802153-2023:14.3.6",
+    "802153-2023:14.3.7"
+  ],
+  "track": "pan-hr-wpan"
+}

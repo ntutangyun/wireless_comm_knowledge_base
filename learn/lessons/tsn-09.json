@@ -1,0 +1,151 @@
+{
+  "id": "tsn-09",
+  "title": {
+    "en": "gPTP On The Wire: Message Attributes, Formats, and Timing Knobs (Clause 11, Part 2)",
+    "zh": "线缆上的 gPTP：报文属性、格式与定时旋钮（第 11 章，下篇）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In Part 1 we watched the media-dependent (MD) layer run its two engines — the Sync/Follow_Up flow that carries time downstream and the peer-to-peer delay mechanism that measures each hop. This second part is the reference card: it pins down exactly what those five PTP (Precision Time Protocol) messages look like on the wire, how often they are sent, and which switches let you turn parts of the math on and off. The five messages are Sync, Follow_Up, Pdelay_Req (peer-delay request), Pdelay_Resp (peer-delay response), and Pdelay_Resp_Follow_Up.",
+      "zh": "上篇我们看到媒体相关（MD, media-dependent）层运行两台引擎——把时间向下游传递的 Sync/Follow_Up 流，以及逐跳测量的对等延迟机制。本篇是参考卡片：它精确规定了这五种 PTP（精确时间协议，Precision Time Protocol）报文在线缆上的样子、发送频率，以及哪些开关可让你启停其中的运算。这五种报文是 Sync、Follow_Up、Pdelay_Req（对等延迟请求）、Pdelay_Resp（对等延迟响应）和 Pdelay_Resp_Follow_Up。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.3 lists the message attributes — the properties that are not part of the byte layout but still govern how a frame is built and recognized. 11.3.1 simply scopes the subclause. 11.3.2 sorts the messages into two classes: the event class (Sync, Pdelay_Req, Pdelay_Resp) whose arrival at the reference plane is timestamped by the LocalClock, and the general class (Follow_Up, Pdelay_Resp_Follow_Up) which merely carries those timestamps and need not be timestamped itself. The whole protocol hinges on this split — only event messages have a precise capture moment; general messages report it after the fact.",
+      "zh": "11.3 节列出报文属性——那些不属于字节布局、但仍决定帧如何构造和识别的性质。11.3.1 只是界定本小节范围。11.3.2 把报文分为两类：事件类（Sync、Pdelay_Req、Pdelay_Resp），其到达参考平面的时刻由本地时钟（LocalClock）打上时间戳；以及通用类（Follow_Up、Pdelay_Resp_Follow_Up），它们仅携带这些时间戳，自身无需被打时间戳。整个协议都依赖这一划分——只有事件报文有精确的捕获瞬间，通用报文则事后报告它。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining 11.3 items are framing rules. 11.3.3: an 802.1AS frame carries no VLAN tag and no priority tag. 11.3.4: every one of the five messages uses the reserved multicast destination 01-80-C2-00-00-0E, and the source address is the MAC address of the egress physical port. 11.3.5: the EtherType is 88-F7. 11.3.6: the message subtype is signaled by the majorSdoId field. 11.3.7: a sourcePortIdentity field identifies which egress port sent the message. 11.3.8: each port keeps a separate sequenceId counter for Sync and for Pdelay_Req, incrementing by one each time and rolling over as a 16-bit unsigned integer — while Follow_Up, Pdelay_Resp and Pdelay_Resp_Follow_Up borrow their sequence numbers from the message they answer. 11.3.9: the timestamp point — the instant that actually gets captured — is the start of the first symbol after the start-of-frame delimiter.",
+      "zh": "11.3 节余下的条目是组帧规则。11.3.3：802.1AS 帧不带 VLAN 标签，也不带优先级标签。11.3.4：这五种报文都使用保留组播目的地址 01-80-C2-00-00-0E，源地址则是出口物理端口的 MAC 地址。11.3.5：以太类型（EtherType）为 88-F7。11.3.6：报文子类型由 majorSdoId 字段标示。11.3.7：sourcePortIdentity 字段标识由哪个出口端口发出该报文。11.3.8：每个端口为 Sync 和 Pdelay_Req 各维护一个独立的 sequenceId 计数器，每次加一，作为 16 位无符号整数回绕；而 Follow_Up、Pdelay_Resp 和 Pdelay_Resp_Follow_Up 则借用其所应答报文的序列号。11.3.9：时间戳点——真正被捕获的瞬间——是帧起始定界符之后第一个符号的起点。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why a fixed timestamp point matters: every device on the link must agree on which physical edge of the frame they are measuring. By standardizing on 'first symbol after the start-of-frame delimiter' (11.3.9), two clocks that timestamp the same Sync see the same physical moment, so the difference between their timestamps is real link delay — not a disagreement about where 'the frame' begins.",
+      "zh": "为何固定的时间戳点很重要：链路上每台设备都必须就测量帧的哪个物理边沿达成一致。通过统一规定为「帧起始定界符之后的第一个符号」（11.3.9），对同一个 Sync 打时间戳的两个时钟看到的是同一个物理瞬间，于是它们时间戳之差就是真实的链路延迟——而非对「帧从哪里开始」的分歧。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.4 is the byte layout. 11.4.1 (general) says every message has a header, a body, and an optional suffix of one or more TLVs (Type-Length-Value records); reserved fields are sent as zero and ignored on receipt. 11.4.2 defines the common header fields shared by all five: messageType (which event/general bit and the type code from Table 11-5), messageLength, domainNumber (0 for the Pdelay trio), flags, correctionField (nanoseconds scaled by 2^16, holding sub-nanosecond corrections), sourcePortIdentity, sequenceId, and logMessageInterval (the log-base-2 send interval, echoed so the neighbor can confirm a rate request was honored).",
+      "zh": "11.4 节是字节布局。11.4.1（总则）规定每种报文都有头部、主体和可选的、由一个或多个 TLV（类型-长度-值记录，Type-Length-Value）组成的后缀；保留字段以零发送、接收时忽略。11.4.2 定义五者共享的公共头部字段：messageType（区分事件/通用的位，以及表 11-5 中的类型码）、messageLength、domainNumber（Pdelay 三件套为 0）、flags、correctionField（以 2^16 缩放的纳秒，承载亚纳秒级修正）、sourcePortIdentity、sequenceId，以及 logMessageInterval（以 2 为底取对数的发送间隔，回显出来好让邻居确认其速率请求是否被采纳）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 230\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"8\" y=\"16\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">Common header (34 octets) + body</text><rect x=\"8\" y=\"28\" width=\"110\" height=\"30\"/><text x=\"63\" y=\"47\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">header (34)</text><rect x=\"118\" y=\"28\" width=\"110\" height=\"30\"/><text x=\"173\" y=\"47\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">body</text><rect x=\"228\" y=\"28\" width=\"120\" height=\"30\" stroke-dasharray=\"4 3\"/><text x=\"288\" y=\"47\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\" text-anchor=\"middle\">TLV suffix (opt.)</text><text x=\"8\" y=\"86\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Sync (2-step): header + reserved(10)</text><rect x=\"8\" y=\"94\" width=\"160\" height=\"24\"/><text x=\"88\" y=\"110\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">header(34) | reserved(10)</text><text x=\"8\" y=\"140\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Follow_Up: header + preciseOriginTimestamp + Follow_Up info TLV</text><rect x=\"8\" y=\"148\" width=\"90\" height=\"24\"/><text x=\"53\" y=\"164\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">header(34)</text><rect x=\"98\" y=\"148\" width=\"110\" height=\"24\"/><text x=\"153\" y=\"164\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">preciseOrigin(10)</text><rect x=\"208\" y=\"148\" width=\"140\" height=\"24\"/><text x=\"278\" y=\"164\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">Follow_Up TLV(32)</text><text x=\"8\" y=\"196\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Pdelay_Resp: header + requestReceiptTimestamp + requestingPortIdentity</text><rect x=\"8\" y=\"204\" width=\"90\" height=\"22\"/><text x=\"53\" y=\"219\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">header(34)</text><rect x=\"98\" y=\"204\" width=\"110\" height=\"22\"/><text x=\"153\" y=\"219\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">reqReceiptTs(10)</text><rect x=\"208\" y=\"204\" width=\"140\" height=\"22\"/><text x=\"278\" y=\"219\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">reqPortId(10)</text></svg>",
+      "caption": {
+        "en": "Frame strips for three of the five gPTP messages (octet counts from Tables 11-8 through 11-14). Every message starts with the same 34-octet common header; the body and optional TLV suffix differ by type.",
+        "zh": "五种 gPTP 报文中三种的帧条带（字节数取自表 11-8 至表 11-14）。每种报文都以相同的 34 字节公共头部开始；主体和可选的 TLV 后缀因类型而异。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The body sections fill in the type-specific fields. 11.4.3 (Sync): a two-step Sync is just header + reserved; a one-step Sync carries an originTimestamp plus the Follow_Up information TLV. 11.4.4 (Follow_Up): header + preciseOriginTimestamp + the Follow_Up information TLV — and that TLV (organizationId 00-80-C2, subType 1) is where the cumulativeScaledRateOffset, grandmaster time-base indicator, last phase change, and last frequency change ride along, letting downstream nodes track the grandmaster's frequency. 11.4.5 (Pdelay_Req): header plus two reserved blocks, padding it to match the response so link delay is symmetric. 11.4.6 (Pdelay_Resp): carries requestReceiptTimestamp (when the request arrived) and requestingPortIdentity. 11.4.7 (Pdelay_Resp_Follow_Up): carries responseOriginTimestamp (when the response left) and the same requestingPortIdentity. Those two timestamps, plus the requester's own send and receive times, are the four points the peer-delay math needs.",
+      "zh": "主体部分填入各类型专属字段。11.4.3（Sync）：两步式 Sync 只是头部 + 保留字段；一步式 Sync 携带 originTimestamp 加上 Follow_Up 信息 TLV。11.4.4（Follow_Up）：头部 + preciseOriginTimestamp + Follow_Up 信息 TLV——而该 TLV（organizationId 为 00-80-C2，subType 为 1）正是 cumulativeScaledRateOffset、主时钟时基指示、上一次相位变化和上一次频率变化随行之处，使下游节点能跟踪主时钟的频率。11.4.5（Pdelay_Req）：头部加两个保留块，把它填充到与响应对齐，使链路延迟对称。11.4.6（Pdelay_Resp）：携带 requestReceiptTimestamp（请求到达时刻）和 requestingPortIdentity。11.4.7（Pdelay_Resp_Follow_Up）：携带 responseOriginTimestamp（响应离开时刻）以及相同的 requestingPortIdentity。这两个时间戳加上请求方自身的发送和接收时刻，正是对等延迟运算所需的四个点。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant A as Port A (requester)\n  participant B as Port B (responder)\n  A->>B: Pdelay_Req (t1 send)\n  Note over B: t2 = requestReceiptTimestamp\n  B->>A: Pdelay_Resp (carries t2)\n  Note over B: t3 = responseOriginTimestamp\n  B->>A: Pdelay_Resp_Follow_Up (carries t3)\n  Note over A: t4 received; delay from t1..t4",
+      "zh": "sequenceDiagram\n  participant A as 端口 A（请求方）\n  participant B as 端口 B（响应方）\n  A->>B: Pdelay_Req（t1 发送）\n  Note over B: t2 = requestReceiptTimestamp\n  B->>A: Pdelay_Resp（携带 t2）\n  Note over B: t3 = responseOriginTimestamp\n  B->>A: Pdelay_Resp_Follow_Up（携带 t3）\n  Note over A: t4 收到；由 t1..t4 得延迟"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.5 characterizes timing — how fast these messages flow. 11.5.1 scopes it. 11.5.2 sets the message transmission intervals: both Sync and Pdelay_Req intervals are expressed as the log-base-2 of seconds. The Pdelay_Req interval (11.5.2.2) comes from initialLogPdelayReqInterval (default 0, i.e. once per second) unless a management knob overrides it; value 127 means 'send no peer-delay requests at all,' and a port ignores requests for interval values it doesn't support. The Sync interval default (11.5.2.3) is -3, i.e. eight Sync messages per second, with 127 again meaning 'off.' 11.5.3 sets allowedLostResponses (default 9, range 1-255): the number of unanswered Pdelay_Req messages tolerated before the port is judged to have stopped exchanging peer-delay messages. 11.5.4 sets allowedFaults (default 9, range 1-255): the number of faults — either meanLinkDelay exceeding its threshold, or an invalid neighborRateRatio computation — tolerated before the port declares itself not capable of running the protocol with its neighbor.",
+      "zh": "11.5 节刻画定时——这些报文流动得多快。11.5.1 界定范围。11.5.2 设定报文发送间隔：Sync 与 Pdelay_Req 的间隔都以秒数的以 2 为底对数表示。Pdelay_Req 间隔（11.5.2.2）取自 initialLogPdelayReqInterval（默认 0，即每秒一次），除非被管理旋钮覆盖；值 127 表示「完全不发送对等延迟请求」，且端口会忽略对其不支持的间隔值的请求。Sync 间隔默认值（11.5.2.3）为 -3，即每秒八条 Sync，127 同样表示「关闭」。11.5.3 设定 allowedLostResponses（默认 9，范围 1-255）：在判定端口已停止交换对等延迟报文之前，可容忍的无应答 Pdelay_Req 数量。11.5.4 设定 allowedFaults（默认 9，范围 1-255）：在端口宣布自己无法与邻居运行该协议之前可容忍的故障次数——故障指 meanLinkDelay 超过其阈值，或 neighborRateRatio 计算无效。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, two clauses give you on/off control over the per-hop math. 11.6 controls computeNeighborRateRatio — whether this port measures how fast its neighbor's clock runs relative to its own. It is initialized from initialComputeNeighborRateRatio (default TRUE) unless the management variable useMgtSettableComputeNeighborRateRatio is TRUE, in which case the management-supplied value wins. 11.7 mirrors this exactly for computeMeanLinkDelay — whether the port computes the mean link delay at all — again defaulting to TRUE and again overridable by management. Both are per-port attributes, and both can be re-steered at runtime by a Signaling message carrying a message interval request TLV. Together with the intervals of 11.5, these are the dials an operator turns to trade measurement frequency and CPU cost against synchronization accuracy.",
+      "zh": "最后，两节让你对逐跳运算进行启停控制。11.6 控制 computeNeighborRateRatio——即本端口是否测量邻居时钟相对于自身的快慢。它由 initialComputeNeighborRateRatio（默认 TRUE）初始化，除非管理变量 useMgtSettableComputeNeighborRateRatio 为 TRUE，此时由管理提供的值胜出。11.7 对 computeMeanLinkDelay 做完全对称的处理——即端口是否计算平均链路延迟——同样默认 TRUE，同样可被管理覆盖。两者都是每端口属性，且都能在运行时由携带报文间隔请求 TLV 的 Signaling 报文重新调整。它们连同 11.5 的各间隔，正是运维人员用来在测量频率、CPU 开销与同步精度之间权衡的旋钮。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause in this lesson, by number",
+        "zh": "覆盖地图：本课每一个子条款（按编号）"
+      },
+      "en": "11.3 Message attributes — 11.3.1 general scope; 11.3.2 message classes (event: Sync/Pdelay_Req/Pdelay_Resp, timestamped at the reference plane; general: Follow_Up/Pdelay_Resp_Follow_Up, not required to be timestamped); 11.3.3 no VLAN/priority tag; 11.3.4 multicast destination 01-80-C2-00-00-0E and egress-port MAC source; 11.3.5 EtherType 88-F7; 11.3.6 subtype via majorSdoId; 11.3.7 sourcePortIdentity; 11.3.8 sequenceId pools (separate for Sync and Pdelay_Req; borrowed for the others); 11.3.9 timestamp point = first symbol after start-of-frame delimiter. 11.4 Message formats — 11.4.1 general (header/body/TLV suffix, reserved-field rule); 11.4.2 common header fields (messageType, messageLength, domainNumber, flags, correctionField, sourcePortIdentity, sequenceId, logMessageInterval); 11.4.3 Sync (one-step vs two-step layouts, Tables 11-8/11-9); 11.4.4 Follow_Up incl. the Follow_Up information TLV (cumulativeScaledRateOffset, gmTimeBaseIndicator, lastGmPhaseChange, scaledLastGmFreqChange); 11.4.5 Pdelay_Req; 11.4.6 Pdelay_Resp (requestReceiptTimestamp, requestingPortIdentity); 11.4.7 Pdelay_Resp_Follow_Up (responseOriginTimestamp, requestingPortIdentity). 11.5 Protocol timing — 11.5.1 general; 11.5.2 transmission intervals (11.5.2.2 Pdelay_Req default log 0, 11.5.2.3 Sync default log -3, 127 = off); 11.5.3 allowedLostResponses (default 9, 1-255); 11.5.4 allowedFaults (default 9, 1-255). 11.6 control of neighborRateRatio computation. 11.7 control of meanLinkDelay computation.",
+      "zh": "11.3 报文属性——11.3.1 总则范围；11.3.2 报文类别（事件类：Sync/Pdelay_Req/Pdelay_Resp，在参考平面被打时间戳；通用类：Follow_Up/Pdelay_Resp_Follow_Up，无需被打时间戳）；11.3.3 无 VLAN/优先级标签；11.3.4 组播目的地址 01-80-C2-00-00-0E 与出口端口 MAC 源地址；11.3.5 以太类型 88-F7；11.3.6 经 majorSdoId 标示子类型；11.3.7 sourcePortIdentity；11.3.8 sequenceId 计数池（Sync 与 Pdelay_Req 各自独立，其余借用）；11.3.9 时间戳点 = 帧起始定界符后第一个符号。11.4 报文格式——11.4.1 总则（头部/主体/TLV 后缀、保留字段规则）；11.4.2 公共头部字段（messageType、messageLength、domainNumber、flags、correctionField、sourcePortIdentity、sequenceId、logMessageInterval）；11.4.3 Sync（一步与两步布局，表 11-8/11-9）；11.4.4 Follow_Up，含 Follow_Up 信息 TLV（cumulativeScaledRateOffset、gmTimeBaseIndicator、lastGmPhaseChange、scaledLastGmFreqChange）；11.4.5 Pdelay_Req；11.4.6 Pdelay_Resp（requestReceiptTimestamp、requestingPortIdentity）；11.4.7 Pdelay_Resp_Follow_Up（responseOriginTimestamp、requestingPortIdentity）。11.5 协议定时——11.5.1 总则；11.5.2 发送间隔（11.5.2.2 Pdelay_Req 默认 log 0，11.5.2.3 Sync 默认 log -3，127 = 关闭）；11.5.3 allowedLostResponses（默认 9，1-255）；11.5.4 allowedFaults（默认 9，1-255）。11.6 控制 neighborRateRatio 计算。11.7 控制 meanLinkDelay 计算。",
+      "cite": {
+        "pdf_id": "8021AS-2020",
+        "pages": [
+          196,
+          197,
+          198,
+          199,
+          200,
+          201,
+          202,
+          203,
+          204,
+          205,
+          206,
+          207,
+          208
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        196,
+        197,
+        198
+      ],
+      "note": "11.3 Message attributes (11.3.1-11.3.9): message classes, VLAN tag, addresses, EtherType, subtype, source port identity, sequence number, timestamp point"
+    },
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        198,
+        199,
+        200,
+        201,
+        202,
+        203,
+        204,
+        205
+      ],
+      "note": "11.4 Message formats (11.4.1-11.4.7): general, common header, Sync, Follow_Up + Follow_Up info TLV, Pdelay_Req, Pdelay_Resp, Pdelay_Resp_Follow_Up"
+    },
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        206,
+        207,
+        208
+      ],
+      "note": "11.5 Protocol timing (intervals, allowedLostResponses, allowedFaults); 11.6 control of neighborRateRatio; 11.7 control of meanLinkDelay"
+    }
+  ],
+  "covers": [
+    "8021AS-2020:11.3.1",
+    "8021AS-2020:11.3.2",
+    "8021AS-2020:11.3.3",
+    "8021AS-2020:11.3.4",
+    "8021AS-2020:11.3.5",
+    "8021AS-2020:11.3.6",
+    "8021AS-2020:11.3.7",
+    "8021AS-2020:11.3.8",
+    "8021AS-2020:11.3.9",
+    "8021AS-2020:11.4.1",
+    "8021AS-2020:11.4.2",
+    "8021AS-2020:11.4.3",
+    "8021AS-2020:11.4.4",
+    "8021AS-2020:11.4.5",
+    "8021AS-2020:11.4.6",
+    "8021AS-2020:11.4.7",
+    "8021AS-2020:11.5.1",
+    "8021AS-2020:11.5.2",
+    "8021AS-2020:11.5.3",
+    "8021AS-2020:11.5.4",
+    "8021AS-2020:11.6",
+    "8021AS-2020:11.7"
+  ],
+  "track": "tsn"
+}

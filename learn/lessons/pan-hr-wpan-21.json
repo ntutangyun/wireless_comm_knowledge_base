@@ -1,0 +1,162 @@
+{
+  "id": "pan-hr-wpan-21",
+  "title": {
+    "en": "Beam Forming on the mmWave PHY (Clause 15) + the Annex Toolbox (A-G)",
+    "zh": "毫米波 PHY 上的波束赋形（第 15 章）+ 附录工具箱（A-G）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Up at millimeter-wave (mmWave) frequencies, signals fade fast and antennas are tiny, so a device cannot just radiate in every direction and hope for the best. Instead it shapes a focused **beam** and points it at its partner. Clause 15 of IEEE Std 802.15.3-2023 specifies an **optional** beam-forming protocol that works only on the mmWave PHY (the physical layer defined in Clause 12). It supports everything from a single antenna element to sectored, switched, and one- and two-dimensional (1-D / 2-D) antenna arrays. This lesson walks every part of Clause 15, then maps the seven Annexes (A-G) that close out the standard.",
+      "zh": "在毫米波（mmWave）频段，信号衰减很快、天线又极小，所以设备不能简单地向各个方向辐射然后听天由命。它必须塑造一束聚焦的**波束**并对准通信对端。IEEE Std 802.15.3-2023 第 15 章规定了一套**可选的**波束赋形协议，它只工作在毫米波 PHY（第 12 章定义的物理层）之上，支持从单个天线单元到扇区天线、开关天线，以及一维 / 二维（1-D / 2-D）天线阵列的各种配置。本课逐一讲解第 15 章的每个部分，再梳理收尾整部标准的七个附录（A-G）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 15.1 (Introduction) sets out two flavors of the protocol. **On-demand beam forming** runs between any two devices (DEVs) — or between a DEV and the **piconet coordinator (PNC)**, the device that runs the network — inside a dedicated **channel time allocation (CTA)** reserved just for training. **Proactive beam forming** is used when the PNC is the data source to one or many DEVs; it lets multiple DEVs train their receive antennas off the PNC with lower overhead. Both share the same engine: a **two-level training mechanism** — coarse **sector-level** training followed by fine **beam-level** training — and an optional **High-Resolution beam (HRS)** tracking phase. Two selection criteria exist: **BST** (best-sector/beam training, works for any antenna and is mandatory if you implement beam forming) and **PET** (pattern estimation and tracking, only for 1-D/2-D arrays when both DEVs support it).",
+      "zh": "第 15.1 节（引言）给出协议的两种形态。**按需波束赋形（on-demand）**在任意两个设备（DEV）之间运行——或在某个 DEV 与**微网协调器（PNC，运行网络的那个设备）**之间——并在专门为训练保留的**信道时间分配（CTA）**内进行。**主动波束赋形（proactive）**用于 PNC 向一个或多个 DEV 发送数据的场景，它让多个 DEV 以较低开销训练各自的接收天线对准 PNC。两者共用同一套引擎：一个**两级训练机制**——先做粗粒度的**扇区级**训练，再做细粒度的**波束级**训练——外加可选的**高分辨率波束（HRS）**跟踪阶段。存在两种选择准则：**BST**（最佳扇区/波束训练，适用于任何天线，且只要实现波束赋形就必须支持）与 **PET**（图样估计与跟踪，仅在两个 DEV 都支持时用于 1-D/2-D 阵列）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><circle cx=\"50\" cy=\"75\" r=\"6\" fill=\"currentColor\"/><text x=\"30\" y=\"110\" font-size=\"10\" stroke=\"none\" fill=\"currentColor\">DEV</text><path d=\"M50 75 L130 40 A85 85 0 0 1 130 110 Z\" opacity=\"0.5\"/><text x=\"80\" y=\"22\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">quasi-omni</text><path d=\"M200 75 L270 55 A75 75 0 0 1 270 95 Z\"/><text x=\"215\" y=\"45\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">sector</text><path d=\"M340 75 L405 68 L405 82 Z\" fill=\"currentColor\" opacity=\"0.6\"/><text x=\"350\" y=\"58\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">fine beam / HRS</text><text x=\"150\" y=\"140\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">resolution increases  -&gt;</text></svg>",
+      "caption": {
+        "en": "The resolution ladder of Clause 15.2: a broad quasi-omni pattern narrows to a sector, then to fine beams, then to even sharper HRS beams.",
+        "zh": "第 15.2 节的分辨率阶梯：宽阔的准全向（quasi-omni）图样收窄为扇区，再细分为细波束，最后是更锐利的 HRS 波束。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 15.2 (Beam-forming terminology) defines that resolution ladder. **15.2.1 (General)** fixes the notation: the two parties are DEV1 and DEV2 (DEV1 may be the PNC), and superscripts t/r mark transmit vs receive antennas. **15.2.2 (Quasi-omni patterns)** are the coarsest patterns, each covering a very broad region of space; a one-pattern device is 'omni-capable.' **15.2.3 (Sectors)** are the next level — an antenna direction covering several beams; sectors may overlap and need not be contiguous. **15.2.4 (Beams)** are the fine patterns, selected from codebooks (15.3) and indexed 0..K-1 in order of increasing polar angle. **15.2.5 (Clusters)** group beams around a center beam to make tracking efficient; a cluster is encoded in one 8-bit field (c7..c0) that captures how many beams sit in the polar and azimuth directions plus a 2-D puncturing pattern. Clusters are only required for PET.",
+      "zh": "第 15.2 节（波束赋形术语）定义了这个分辨率阶梯。**15.2.1（总则）**确定记法：两方为 DEV1 和 DEV2（DEV1 可以是 PNC），上标 t/r 区分发射与接收天线。**15.2.2（准全向图样）**是最粗的图样，每个覆盖很广的空间区域；仅用一个图样即可覆盖的设备称为“全向能力”设备。**15.2.3（扇区）**是下一层级——覆盖多个波束的天线方向；扇区之间可以重叠，也不必连续。**15.2.4（波束）**是细图样，从码本（15.3）中选取，并按极角递增的顺序编号为 0..K-1。**15.2.5（簇）**把波束围绕一个中心波束分组，使跟踪更高效；一个簇用 8 位字段（c7..c0）编码，记录极角与方位角方向上各有多少波束，外加一种 2-D 打孔（puncturing）图样。簇仅在 PET 下才要求。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 15.3 (Beam-forming codebooks) gives the actual math menu. A **codebook** is a matrix whose columns are **codewords** — each codeword is a beam-former vector (transmit) or combiner vector (receive) aiming a specific direction; together the columns span the full 360 degrees. For sectored/switched arrays the codebook is simply the M-by-M identity matrix (one antenna active at a time). For phased arrays it is built from a closed-form formula keyed to the number of antennas M and the desired number of beams K. A **Codebook ID** field carries 7 bits for K plus 1 bit choosing the round() or fix() rounding function, and it is only needed when both DEVs support PET. Clause 15.4 (Beam-forming reference model) then frames the whole problem as a multiple-input multiple-output (MIMO) channel: DEV1 multiplies its bitstream by a beam-former vector w, the multipath channel applies its channel state information (CSI) matrix, and DEV2 applies a combiner vector c — collapsing the link to an equivalent single-in single-out (SISO) channel. The job of beam forming is to pick w and c that maximize a link-quality cost function (e.g., effective signal-to-noise ratio, SNR); the exact criterion is left to the implementer.",
+      "zh": "第 15.3 节（波束赋形码本）给出真正的数学菜单。**码本**是一个矩阵，其各列就是**码字**——每个码字是一个波束赋形向量（发射）或合并向量（接收），指向某个特定方向；所有列合起来张成完整的 360 度空间。对于扇区/开关阵列，码本就是 M×M 的单位矩阵（每次只有一根天线工作）。对于相控阵，码本由一个闭式公式生成，公式以天线数 M 和期望波束数 K 为参数。**码本 ID（Codebook ID）**字段用 7 位表示 K，再用 1 位选择 round() 还是 fix() 取整函数，仅在两个 DEV 都支持 PET 时才需要。第 15.4 节（波束赋形参考模型）随后把整个问题表述为一个多输入多输出（MIMO）信道：DEV1 把比特流乘以波束赋形向量 w，多径信道施加其信道状态信息（CSI）矩阵，DEV2 再乘以合并向量 c——从而把链路坍缩为一个等效的单输入单输出（SISO）信道。波束赋形的任务就是挑选使链路质量代价函数（例如有效信噪比 SNR）最优的 w 与 c；具体准则由实现者决定。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant D1 as DEV1\n  participant D2 as DEV2\n  Note over D1,D2: Sector-level (coarse)\n  D1->>D2: sector training cycles\n  D2->>D1: sector training cycles\n  D2-->>D1: best sector pair feedback\n  Note over D1,D2: Beam-level (fine)\n  D1->>D2: beam training within best sector\n  D2-->>D1: best beam pair feedback\n  Note over D1,D2: Optional HRS tracking\n  D1->>D2: data + HRS training seq\n  D2-->>D1: keep beam or switch cluster",
+      "zh": "sequenceDiagram\n  participant D1 as DEV1\n  participant D2 as DEV2\n  Note over D1,D2: 扇区级（粗）\n  D1->>D2: 扇区训练周期\n  D2->>D1: 扇区训练周期\n  D2-->>D1: 最佳扇区对反馈\n  Note over D1,D2: 波束级（细）\n  D1->>D2: 在最佳扇区内做波束训练\n  D2-->>D1: 最佳波束对反馈\n  Note over D1,D2: 可选 HRS 跟踪\n  D1->>D2: 数据 + HRS 训练序列\n  D2-->>D1: 保持波束或切换簇"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 15.5 (Beam-forming protocol) is the heart of the clause. **15.5.1 (General)** states the protocol is the two-level mechanism plus optional tracking. **15.5.2 (Two-level training)** breaks down as follows. Sector-level training first limits the region of space and finds the best sector pair; the standard splits behavior by antenna type — **symmetric antenna systems (SAS)**, where the same array transmits and receives, versus **asymmetric antenna systems (AAS)**. In AAS sector training, DEV1 sweeps J(1,t) transmit directions in cycles while DEV2 listens in J(2,r) receive directions, so that every transmit/receive sector combination is tried; then the roles reverse. The result is fed back, and a failure-remedy rule lets a DEV that runs out of acknowledgments or CTA time terminate the stream and restart from scratch. Beam-level training then slices the winning sector into beams (from the codebooks) and repeats the sweep at fine resolution, again with separate AAS and SAS procedures. Each phase ends with Announce-command exchanges and an immediate acknowledgment (Imm-ACK).",
+      "zh": "第 15.5 节（波束赋形协议）是本章的核心。**15.5.1（总则）**指出该协议就是两级机制加可选跟踪。**15.5.2（两级训练）**分解如下。扇区级训练先缩小空间范围并找到最佳扇区对；标准按天线类型区分行为——**对称天线系统（SAS）**，即同一阵列既发射又接收，对比**非对称天线系统（AAS）**。在 AAS 扇区训练中，DEV1 按周期扫过 J(1,t) 个发射方向，而 DEV2 在 J(2,r) 个接收方向上侦听，从而尝试每一种发射/接收扇区组合；随后角色互换。结果被反馈回去，并有一条失败补救规则：当某个 DEV 耗尽确认次数或 CTA 时间时，可终止该流并从头重启。波束级训练接着把胜出的扇区切分为波束（取自码本），在细分辨率上重复扫描，同样分 AAS 与 SAS 两套流程。每个阶段都以 Announce 命令交互和立即确认（Imm-ACK）收尾。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 15.5.3 (Beam tracking) keeps a trained link alive as the channel drifts. Beams within a sector are grouped into HRS clusters; each DEV tracks its **best** and **second-best** cluster. A data frame whose PHY-header 'Beam Tracking' bit is set is a **tracking frame** — it is followed by one or more high-resolution training (HT) sequences. Odd tracking frames probe the best cluster, even ones the second-best, and the best cluster is tracked more frequently. If the link-quality indicator (LQI) of the receive beam falls below an implementer-chosen threshold, the DEV switches immediately to its second-best beam and feeds the result back in an empty frame; if both fail, the whole beam-forming procedure restarts after a timer. Clauses 15.6-15.8 wrap up. **15.6 (On-demand beam forming)** simply runs sector-level then beam-level training inside a reserved CTA. **15.7 (Proactive beam forming)** moves the PNC-to-DEV sector training into the beacon (a dedicated sector-training section), while the rest happens in a beam-forming CTA. **15.8 (TSD — transmit switched diversity)** is a lightweight alternative: when the PNC has several switchable directional antennas and the DEV is omni, the DEV watches the LQI and, via Announce commands carrying a TSD information element (IE) with a Mode field, tells the PNC which transmit antenna direction to switch to.",
+      "zh": "第 15.5.3 节（波束跟踪）在信道漂移时维持已训练好的链路。扇区内的波束被分组为 HRS 簇；每个 DEV 跟踪其**最佳**与**次佳**簇。PHY 头部 “Beam Tracking” 位被置 1 的数据帧就是**跟踪帧**——其后跟随一个或多个高分辨率训练（HT）序列。奇数跟踪帧探测最佳簇，偶数帧探测次佳簇，且最佳簇被更频繁地跟踪。若接收波束的链路质量指示（LQI）跌破实现者选定的阈值，DEV 立即切换到次佳波束，并用一个空帧反馈结果；若两者都失败，整个波束赋形过程在定时器到期后重启。第 15.6-15.8 节收尾。**15.6（按需波束赋形）**就是在保留的 CTA 内先做扇区级、再做波束级训练。**15.7（主动波束赋形）**把 PNC 到 DEV 的扇区训练搬进信标（一个专门的扇区训练段），其余仍在波束赋形 CTA 内进行。**15.8（TSD——发射开关分集）**是一种轻量替代：当 PNC 有若干可切换的定向天线而 DEV 是全向天线时，DEV 监视 LQI，并通过携带 TSD 信息元素（IE，其 Mode 字段）的 Announce 命令告诉 PNC 切换到哪个发射天线方向。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental shortcut: sector training = 'which rough direction?', beam training = 'which sharp beam in that direction?', tracking = 'has the beam drifted — should I jump to my backup?'. BST just picks the best beam from a fixed list; PET solves for the optimal weight vectors, which is more powerful but needs codebooks and clusters at both ends.",
+      "zh": "记忆捷径：扇区训练 = “大致哪个方向？”，波束训练 = “那个方向上哪束更锐利？”，跟踪 = “波束漂移了吗——要不要跳到备用波束？”。BST 只是从固定列表里挑最佳波束；PET 则求解最优权向量，更强大，但需要两端都具备码本与簇。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every Clause 15 subclause and Annex A-G, with exact numbers",
+        "zh": "覆盖地图：第 15 章每个子条款与附录 A-G，附精确编号"
+      },
+      "en": "Clause 15 subclauses — 15.1 Introduction (mmWave-only, on-demand vs proactive, BST vs PET, the IFS timings BBIFS/BSIFS). 15.2 terminology: 15.2.1 General (notation, DEV1/DEV2, t/r superscripts); 15.2.2 Quasi-omni patterns (coarsest, omni-capable case); 15.2.3 Sectors (mid resolution, may overlap); 15.2.4 Beams (fine, indexed 0..K-1, from codebooks); 15.2.5 Clusters (8-bit c7..c0 encoding, polar/azimuth counts + puncturing, PET-only). 15.3 Codebooks (identity matrix for sectored/switched; closed-form for arrays; Codebook ID = 7-bit K + round/fix bit). 15.4 Reference model (w beam-former, CSI matrix, c combiner, MIMO->SISO, cost function = SNR, SAS vs AAS). 15.5 protocol: 15.5.1 General; 15.5.2 Two-level (sector-level 15.5.2.2 with AAS/SAS sweeps + failure remedy; beam-level 15.5.2.3 with AAS/SAS); 15.5.3 Beam tracking (best/second-best clusters, tracking frames, LQI switch). 15.6 On-demand (CTA-based). 15.7 Proactive (sector training in beacon). 15.8 TSD (switched directional antennas + omni DEV, TSD IE Mode field). Annexes — Annex A (informative) Bibliography: numbered references [B1]..[B10] (ETSI, IEEE 802.11/802.15.1/802.15.2, RFC 1157, papers). Annex B (normative) Frame convergence sublayer (FCSL): receives/classifies PDUs from upper layers, delivers to MAC-SAP; EPD (EtherType Protocol Discrimination) classifier maps each PDU to a stream index with QoS; supports multiple sublayers (1394, USB). Annex C (informative) Security considerations: mode-1 goals, physical/network assumptions (open medium, low cost, dynamic membership, limited compute/memory, PNC/PRC as controller). Annex D (informative) Coexistence/interoperability/interference: dual-mode radio overlap with 802.11 DSSS/802.11b (shared band, DQPSK, 11 Mbaud), 802.15.1, with turnaround-time caveats. Annex E (informative) PICS proforma: conformance statement, status notation M/O/O.n/N/A and conditional 'item' rules. Annex F (informative) Implementation considerations: CTA-request guidance, Table F.1 enumerating CTA types (CAP, S-CAP, regular CTA, MCTA). Annex G (normative) Optional OOK/DAMI modes: on-off keying (OOK) / dual alternative mark inversion (DAMI), PNC-capable DEVs use child piconets, precoding equations G.1/G.2.",
+      "zh": "第 15 章子条款——15.1 引言（仅毫米波，按需 vs 主动，BST vs PET，帧间隔 BBIFS/BSIFS 时序）。15.2 术语：15.2.1 总则（记法，DEV1/DEV2，t/r 上标）；15.2.2 准全向图样（最粗，全向能力情形）；15.2.3 扇区（中等分辨率，可重叠）；15.2.4 波束（细，编号 0..K-1，取自码本）；15.2.5 簇（8 位 c7..c0 编码，极角/方位角计数 + 打孔，仅 PET）。15.3 码本（扇区/开关用单位矩阵；阵列用闭式公式；码本 ID = 7 位 K + round/fix 位）。15.4 参考模型（w 波束赋形向量、CSI 矩阵、c 合并向量、MIMO->SISO、代价函数 = SNR、SAS vs AAS）。15.5 协议：15.5.1 总则；15.5.2 两级（扇区级 15.5.2.2 含 AAS/SAS 扫描 + 失败补救；波束级 15.5.2.3 含 AAS/SAS）；15.5.3 波束跟踪（最佳/次佳簇、跟踪帧、LQI 切换）。15.6 按需（基于 CTA）。15.7 主动（扇区训练在信标内）。15.8 TSD（可切换定向天线 + 全向 DEV，TSD IE 的 Mode 字段）。附录——附录 A（资料性）参考书目：编号引用 [B1]..[B10]（ETSI、IEEE 802.11/802.15.1/802.15.2、RFC 1157、论文）。附录 B（规范性）帧汇聚子层（FCSL）：从上层接收/分类 PDU，递交给 MAC-SAP；EPD（以太类型协议鉴别）分类器把每个 PDU 映射到带 QoS 的流索引；支持多个子层（1394、USB）。附录 C（资料性）安全考虑：模式 1 目标，物理/网络假设（开放介质、低成本、动态成员、算力/内存受限、PNC/PRC 作为控制器）。附录 D（资料性）共存/互操作/干扰：与 802.11 DSSS/802.11b 的双模电台重叠（共享频段、DQPSK、11 Mbaud）、802.15.1，并附收发转换时间的注意事项。附录 E（资料性）PICS 表格：一致性声明，状态记法 M/O/O.n/N/A 及条件性 “item” 规则。附录 F（资料性）实现考虑：CTA 请求指南，表 F.1 列举 CTA 类型（CAP、S-CAP、常规 CTA、MCTA）。附录 G（规范性）可选 OOK/DAMI 模式：通断键控（OOK）/ 双交替传号反转（DAMI），具 PNC 能力的 DEV 使用子微网，预编码方程 G.1/G.2。",
+      "cite": {
+        "pdf_id": "802153-2023",
+        "pages": [
+          586,
+          587,
+          588,
+          589,
+          590,
+          591,
+          592,
+          593,
+          594,
+          600,
+          606,
+          607,
+          608,
+          609,
+          610,
+          611,
+          612,
+          624,
+          630,
+          643,
+          666,
+          679
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why the Annexes matter even though most are 'informative': Annex B (FCSL) and Annex G (OOK/DAMI) are normative — implement them as written. Annex E (PICS) is your checklist for declaring conformance. Annexes A, C, D, F are background you read to understand intent, coexistence trade-offs, and CTA bookkeeping — not bits on the air.",
+      "zh": "为什么大多标注“资料性”的附录仍然重要：附录 B（FCSL）与附录 G（OOK/DAMI）是**规范性**的——必须照实现。附录 E（PICS）是你声明一致性的检查清单。附录 A、C、D、F 则是背景资料，用来理解设计意图、共存权衡与 CTA 记账——它们不对应空口上的比特。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        586,
+        587,
+        588,
+        589,
+        590,
+        591,
+        592,
+        593,
+        594,
+        600,
+        606,
+        607,
+        608,
+        609
+      ],
+      "note": "Clause 15 Beam forming: 15.1 intro, 15.2 terminology, 15.3 codebooks, 15.4 reference model, 15.5 protocol + tracking, 15.6 on-demand, 15.7 proactive, 15.8 TSD."
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        610,
+        611,
+        612,
+        624,
+        630,
+        643,
+        666,
+        679
+      ],
+      "note": "Annexes A (Bibliography), B (FCSL), C (Security), D (Coexistence/interop), E (PICS proforma), F (Implementation/CTA types), G (OOK/DAMI modes)."
+    }
+  ],
+  "covers": [
+    "802153-2023:15.1",
+    "802153-2023:15.2.1",
+    "802153-2023:15.2.2",
+    "802153-2023:15.2.3",
+    "802153-2023:15.2.4",
+    "802153-2023:15.2.5",
+    "802153-2023:15.3",
+    "802153-2023:15.4",
+    "802153-2023:15.5.1",
+    "802153-2023:15.5.2",
+    "802153-2023:15.5.3",
+    "802153-2023:15.6",
+    "802153-2023:15.7",
+    "802153-2023:15.8",
+    "802153-2023:Annex_A",
+    "802153-2023:Annex_B",
+    "802153-2023:Annex_C",
+    "802153-2023:Annex_D",
+    "802153-2023:Annex_E",
+    "802153-2023:Annex_F",
+    "802153-2023:Annex_G"
+  ],
+  "track": "pan-hr-wpan"
+}

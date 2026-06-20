@@ -1,0 +1,198 @@
+{
+  "id": "pan-hr-wpan-12",
+  "title": {
+    "en": "MAC Housekeeping: Discovery, Channel Moves, Power Save & More",
+    "zh": "MAC 管理机制：发现、信道迁移、省电及其他"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This is the third and final part of the Clause 7 MAC (Medium Access Control) functional description. Where the earlier parts built the piconet and moved data, this part covers the day-to-day housekeeping a piconet relies on: how devices discover each other (7.13), how the coordinator changes core timing parameters on the fly (7.14), how it dodges interference (7.15), how everyone agrees on a data rate (7.16), how battery-powered devices sleep (7.17 and 7.18), how vendors bolt on custom features (7.19), the master list of MAC constants (7.20), how unequal error protection shields the important bits (7.21), and how neighboring millimeter-wave piconets stay synchronized (7.22). Throughout, the central controller is the PNC (piconet coordinator) and every member is a DEV (device).",
+      "zh": "这是 Clause 7（MAC，媒体访问控制）功能描述的第三部分，也是最后一部分。前两部分搭建了微微网并完成了数据传输，本部分则讲解微微网赖以运行的日常管理机制：设备如何彼此发现（7.13）、协调器如何在运行中修改核心定时参数（7.14）、如何规避干扰（7.15）、各方如何就数据速率达成一致（7.16）、电池供电设备如何休眠（7.17 与 7.18）、厂商如何加入自定义功能（7.19）、MAC 常量主表（7.20）、不等差错保护如何护住重要比特（7.21），以及相邻的毫米波微微网如何保持同步（7.22）。在整个过程中，中央控制器是 PNC（微微网协调器，piconet coordinator），每个成员都是 DEV（设备，device）。"
+    },
+    {
+      "type": "prose",
+      "en": "Peer discovery (7.13) is how a DEV learns about its neighbors. A DEV asks the PNC for a roster with a PNC Information Request (7.13.2); it can probe a specific peer for its information elements with a Probe Request/Response exchange (7.13.3), or push unsolicited information elements with an Announce command (7.13.4). To gauge a link's health, any DEV sends a Channel Status Request and gets a Channel Status Response back (7.13.5). The PNC can also delegate scanning: a Remote Scan (7.13.6) asks a member DEV to scan other channels and report back, which is useful because that DEV may hear networks the PNC itself cannot. The PNC can scan directly too (7.13.7) by skipping a few of its own beacons, and channel probing (7.13.8) lets a source DEV pick the best modulation-and-coding scheme (MCS) for current conditions.",
+      "zh": "对等发现（7.13）是 DEV 了解邻居的方式。DEV 通过 PNC 信息请求（PNC Information Request，7.13.2）向 PNC 索取成员名册；可通过探测请求/响应（Probe Request/Response，7.13.3）向某个特定对端查询其信息元素，或用通告命令（Announce，7.13.4）主动推送未经请求的信息元素。为评估链路质量，任何 DEV 都可发送信道状态请求（Channel Status Request）并收到信道状态响应（Channel Status Response，7.13.5）。PNC 还可委托扫描：远程扫描（Remote Scan，7.13.6）请成员 DEV 扫描其他信道并回报，这很有用，因为该 DEV 可能听到 PNC 自身听不到的网络。PNC 也可直接扫描（7.13.7），方法是跳过自己的几个信标；信道探测（7.13.8）则让源 DEV 为当前条件挑选最佳的调制编码方案（MCS，modulation-and-coding scheme）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Acronym anchors. PNC = piconet coordinator (the controller). DEV = device (a member). IE = information element (a tagged data field carried in beacons and commands). MCS = modulation-and-coding scheme. CTA = channel time allocation (a reserved slot in the superframe). MCTA = management CTA, used for short control exchanges. These recur throughout the clause.",
+      "zh": "缩写锚点。PNC＝微微网协调器（控制器）。DEV＝设备（成员）。IE＝信息元素（信标和命令中携带的带标签数据字段）。MCS＝调制编码方案。CTA＝信道时间分配（超帧中预留的时隙）。MCTA＝管理 CTA，用于短控制交互。这些缩写在本章中反复出现。"
+    },
+    {
+      "type": "prose",
+      "en": "Once a piconet is running, the PNC sometimes needs to change its parameters (7.14) without tearing everything down. It announces the change ahead of time using a Piconet Parameter Change IE carried in several beacons, with a Change Beacon Number telling everyone exactly when the change takes effect. The PNC can slide its beacon to a new position while keeping the superframe length (Moving beacon, 7.14.2), shrink or stretch the superframe duration itself (7.14.3), or swap the piconet's identifiers PNID and BSID (7.14.4) — typically when it detects a collision with another piconet using the same value. Dependent piconets must follow the parent's MOVE or SIZE change in their own beacons to stay synchronized (7.14.5).",
+      "zh": "微微网运行起来后，PNC 有时需要更改其参数（7.14），但又不能把一切推倒重来。它通过在多个信标中携带的微微网参数变更 IE（Piconet Parameter Change IE）提前通告变更，并用变更信标编号（Change Beacon Number）告诉所有人变更确切何时生效。PNC 可在保持超帧长度不变的前提下把信标滑到新位置（移动信标，7.14.2），可缩短或拉长超帧时长本身（7.14.3），或更换微微网标识符 PNID 和 BSID（7.14.4）——通常是在检测到与另一个使用相同值的微微网冲突时。从属微微网必须在自己的信标中跟随父网的 MOVE 或 SIZE 变更，以保持同步（7.14.5）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 130\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"0\" y=\"14\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Announce a change in N beacons, apply at Change Beacon Number</text><rect x=\"4\" y=\"30\" width=\"70\" height=\"34\"/><rect x=\"82\" y=\"30\" width=\"70\" height=\"34\"/><rect x=\"160\" y=\"30\" width=\"70\" height=\"34\"/><rect x=\"238\" y=\"30\" width=\"100\" height=\"34\" stroke-dasharray=\"4 3\"/><text x=\"14\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">CBN-2 +IE</text><text x=\"92\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">CBN-1 +IE</text><text x=\"172\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">CBN +IE</text><text x=\"250\" y=\"51\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">CBN+1 applied</text><line x1=\"4\" y1=\"80\" x2=\"338\" y2=\"80\"/><polygon points=\"338,80 330,76 330,84\" fill=\"currentColor\" stroke=\"none\"/><text x=\"120\" y=\"100\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">time (superframes / beacons)</text></svg>",
+      "caption": {
+        "en": "A piconet parameter change (move, resize, channel, or ID) is pre-announced in several beacons and takes effect at the agreed Change Beacon Number (CBN), so sleeping DEVs need not wake to track it.",
+        "zh": "微微网参数变更（移动、改尺寸、改信道或改 ID）会在多个信标中预先通告，并在约定的变更信标编号（CBN）处生效，因此休眠中的 DEV 无需醒来即可跟踪。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Interference mitigation (7.15) is the PNC's toolkit for a noisy channel. After listening for other piconets or stray networks (7.15.1), it has options: join the neighbor as a child or neighbor piconet, hop to a clear channel via dynamic channel selection (7.15.2), or simply turn down the volume with transmit power control (TPC, 7.15.3). TPC comes in two independent forms (7.15.3.1): a maximum power for the contention access period, beacon, and directed MCTAs — which levels the playing field so no DEV grabs the medium just by shouting (7.15.3.2) — and an adjustable per-link power inside a CTA, negotiated with a Transmit Power Change command to save energy and reduce interference (7.15.3.3). Dynamic channel selection itself reuses the same pre-announce-then-switch mechanism as parameter changes.",
+      "zh": "干扰缓解（7.15）是 PNC 应对嘈杂信道的工具箱。在侦听其他微微网或杂散网络后（7.15.1），它有多个选项：以子网或邻网身份加入邻居、通过动态信道选择（7.15.2）跳到空闲信道，或干脆用发射功率控制（TPC，transmit power control，7.15.3）调小音量。TPC 有两种相互独立的形式（7.15.3.1）：一是针对竞争接入期、信标和定向 MCTA 的最大功率——它拉平了竞争环境，使任何 DEV 都不能仅凭“大声喊”就抢占媒体（7.15.3.2）；二是 CTA 内可调的逐链路功率，通过发射功率变更命令（Transmit Power Change）协商，以节能并降低干扰（7.15.3.3）。动态信道选择本身复用了与参数变更相同的“先通告再切换”机制。"
+    },
+    {
+      "type": "prose",
+      "en": "Multi-rate support (7.16) keeps the network interoperable. Every PHY (physical layer) defines one mandatory base rate plus optional faster and slower rates; a DEV may only transmit at a rate the destination is known to support. A DEV discovers a peer's supported rates four ways: from the PNC's broadcast capabilities, by probing the peer for its Capability IE, by asking the PNC directly, or from the pairnet association exchange. Table 7-5 in the standard fixes the allowed rate per frame type — broadcasts and beacons always use the base rate, an Imm-ACK matches the rate of the frame it acknowledges, and directed data may use any mutually supported rate. A pairnet is the two-device variant of the network introduced in this revision.",
+      "zh": "多速率支持（7.16）让网络保持互操作性。每个 PHY（物理层，physical layer）都定义了一个强制基础速率，外加可选的更快与更慢速率；DEV 只能以已知目的端支持的速率发送。DEV 通过四种方式发现对端支持的速率：从 PNC 广播的能力信息中获取、向对端探测其能力 IE（Capability IE）、直接询问 PNC，或从配对网（pairnet）的关联交互中获取。标准中的表 7-5 规定了每种帧类型的允许速率——广播帧和信标始终用基础速率，立即确认（Imm-ACK）与其确认的帧速率一致，定向数据则可使用双方共同支持的任意速率。配对网是本修订版引入的双设备网络变体。"
+    },
+    {
+      "type": "prose",
+      "en": "Power management for the piconet (7.17) is where battery life is won. There are four PM modes (7.17.1): ACTIVE plus three power-save (PS) modes. In PSPS — piconet synchronized power save (7.17.2) — every saving DEV wakes on the same PNC-chosen system wake beacon. In DSPS — device synchronized power save (7.17.3) — DEVs with similar needs group into DSPS sets, each with its own wake beacon interval, and the PNC aligns CTAs to those wake beacons so the radio sleeps between them (7.17.3.4 ties the CTA rate factor to the wake interval). In APS — asynchronous power save (7.17.4) — a DEV may sleep for long stretches and only has to check in with the PNC once per ATP (the timeout that keeps it associated). Mode transitions use the PM Mode Change command, and the message sequence charts in 7.17.5 walk through joining, leaving, and switching modes.",
+      "zh": "微微网的电源管理（7.17）是延长电池续航的关键。共有四种 PM 模式（7.17.1）：ACTIVE 加三种省电（PS，power-save）模式。在 PSPS（微微网同步省电，piconet synchronized power save，7.17.2）中，每个省电 DEV 都在同一个由 PNC 选定的系统唤醒信标处醒来。在 DSPS（设备同步省电，device synchronized power save，7.17.3）中，需求相近的 DEV 归入 DSPS 集合，每个集合有自己的唤醒信标间隔，PNC 把 CTA 对齐到这些唤醒信标，使射频在其间休眠（7.17.3.4 将 CTA 速率因子与唤醒间隔绑定）。在 APS（异步省电，asynchronous power save，7.17.4）中，DEV 可长时间休眠，只需每个 ATP（维持其关联的超时）向 PNC 报到一次。模式切换使用 PM 模式变更命令（PM Mode Change），7.17.5 中的消息序列图演示了加入、离开和切换模式的过程。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "PSPS vs DSPS vs APS in one breath: PSPS = the whole piconet wakes together on one schedule; DSPS = small groups wake on their own shared schedule (best fit per application); APS = each DEV freewheels its own sleep and just avoids missing its ATP deadline. APS cannot be combined with any other PS mode; PSPS and DSPS can coexist on the same DEV.",
+      "zh": "一句话区分 PSPS、DSPS、APS：PSPS＝整个微微网按同一时间表一起醒来；DSPS＝小组按各自共享的时间表醒来（最贴合各应用需求）；APS＝每个 DEV 自由安排休眠，只要不错过自己的 ATP 截止时间即可。APS 不能与任何其他 PS 模式叠加；PSPS 与 DSPS 可在同一 DEV 上共存。"
+    },
+    {
+      "type": "prose",
+      "en": "Power management for the pairnet (7.18) adds LLPS — low-latency power save — a mode used only by a two-device pairnet in the Associated State. Its three parameters (LLPS Start, Interval, Extend) are fixed at association. The two DEVs run a ping-pong of acknowledgments; once that idle exchange of alternating ACKs lasts longer than LLPS Start, either DEV sends a Sleep Request (a flag in its ACK) and both nap for the LLPS Interval before a Recovery Process wakes them. The interval is kept shorter than the ATP so neither DEV is dropped. AS IE operation (7.19) is the standard's extensibility hook: the Application Specific information element lets a vendor add out-of-scope features carried in the beacon without breaking plain DEVs. A DEV uses AS IE Request/Response commands to add, modify, or remove its AS IE; the PNC keeps it in every beacon until the owner removes it or disassociates, and only the owning DEV may change it.",
+      "zh": "配对网的电源管理（7.18）新增了 LLPS（低时延省电，low-latency power save），这是一种仅供处于关联态（Associated State）的双设备配对网使用的模式。其三个参数（LLPS Start、Interval、Extend）在关联时确定。两个 DEV 进行确认帧的“乒乓”交互；一旦这种交替 ACK 的空闲交互持续时间超过 LLPS Start，任一 DEV 即可发送休眠请求（其 ACK 中的一个标志位），双方在恢复流程（Recovery Process）唤醒之前共同休眠一个 LLPS Interval。该间隔被设得短于 ATP，以免任一 DEV 被断开。AS IE 操作（7.19）是标准的可扩展性挂钩：应用特定信息元素（Application Specific IE）让厂商在信标中加入标准范围之外的功能，而不影响普通 DEV。DEV 通过 AS IE 请求/响应命令（AS IE Request/Response）来添加、修改或移除自己的 AS IE；PNC 会在每个信标中保留它，直到所有者移除它或解除关联，且只有拥有该 IE 的 DEV 才能更改它。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining clauses are reference material. MAC sublayer parameters (7.20) is the master constants table: values like mMaxSuperframeDuration (65535 microseconds), mMaxLostBeacons (4), and mMaxNumValidDEVs (243), plus PHY-dependent timings (SIFS, MIFS, pChannelSwitchTime) for each PHY mode. Unequal error protection (UEP, 7.21) lets a frame protect its most-significant bits (MSBs) more strongly than its least-significant bits (LSBs): Type 1 uses different forward-error-correction (FEC) codes, Type 2 uses different MCSs (with a UEP Specific IE marking the MSB/LSB split point), and Type 3 protects within a subframe via different FEC rates or a skewed constellation. Both DEVs must support the same UEP type or they fall back to equal error protection (EEP). Finally, Sync frame transmission and virtually dependent piconet (7.22) tackles the hidden-PNC problem in millimeter-wave (mmWave) piconets: a DEV periodically emits a Sync frame (at a frequency the PNC sets via a Sync Frame Frequency IE), and a PNC that hears another piconet's Sync frame can synchronize to it — forming a virtually dependent piconet — and shift its own CTAs to avoid the collision.",
+      "zh": "其余各条是参考资料。MAC 子层参数（7.20）是常量主表：诸如 mMaxSuperframeDuration（65535 微秒）、mMaxLostBeacons（4）、mMaxNumValidDEVs（243）等值，外加各 PHY 模式下与 PHY 相关的定时（SIFS、MIFS、pChannelSwitchTime）。不等差错保护（UEP，unequal error protection，7.21）让一帧对其最高有效位（MSB）的保护强于最低有效位（LSB）：Type 1 使用不同的前向纠错（FEC，forward-error-correction）码，Type 2 使用不同的 MCS（用 UEP 特定 IE 标记 MSB/LSB 的分界点），Type 3 则在子帧内通过不同的 FEC 码率或偏斜星座来保护。双方 DEV 必须支持相同的 UEP 类型，否则退回到等差错保护（EEP）。最后，同步帧传输与虚拟从属微微网（7.22）解决毫米波（mmWave）微微网中的隐藏 PNC 问题：DEV 周期性发出同步帧（频率由 PNC 通过同步帧频率 IE 设定），而听到另一微微网同步帧的 PNC 可与之同步——形成虚拟从属微微网——并平移自己的 CTA 以避开冲突。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause number in this lesson",
+        "zh": "覆盖地图——本课涉及的每一个条款编号"
+      },
+      "en": "Discovery (7.13): 7.13.1 general; 7.13.2 PNC Information Request roster; 7.13.3 Probe Request/Response for IEs; 7.13.4 Announce (unsolicited IEs); 7.13.5 Channel Status Request/Response link quality; 7.13.6 Remote Scan (PNC delegates scanning to a DEV); 7.13.7 PNC channel scanning (PNC skips up to twice mMinChannelScan of beacons); 7.13.8 Channel probing for best MCS. Changing parameters (7.14): 7.14.1 general rules (one Parameter Change IE per beacon, honor Change Beacon Number); 7.14.2 Moving beacon (MOVE); 7.14.3 Changing superframe duration (SIZE); 7.14.4 Setting PNID/BSID (never both at once); 7.14.5 dependent-piconet synchronization. Interference (7.15): 7.15.1 listen and choose among four/two methods; 7.15.2 Dynamic channel selection; 7.15.3 TPC — 7.15.3.1 two forms, 7.15.3.2 max power for CAP/beacon/directed MCTAs, 7.15.3.3 adjustable per-CTA power via Transmit Power Change. 7.16 Multi-rate support (base rate per PHY; four ways to learn a peer's rates; Table 7-5). Piconet PM (7.17): 7.17.1 four modes; 7.17.2 PSPS; 7.17.3 DSPS (.1 general, .2 DSPS-set lifecycle, .3 mode changes, .4 CTA timing vs wake interval); 7.17.4 APS; 7.17.5 message sequence charts. 7.18 Pairnet PM (LLPS). 7.19 AS IE operation (add/modify/remove). 7.20 MAC sublayer parameters (Tables 7-7..7-14). 7.21 UEP Types 1/2/3 vs EEP. 7.22 Sync frame + virtually dependent piconet (mmWave hidden-PNC mitigation).",
+      "zh": "发现（7.13）：7.13.1 概述；7.13.2 PNC 信息请求获取名册；7.13.3 探测请求/响应取 IE；7.13.4 通告（未经请求的 IE）；7.13.5 信道状态请求/响应衡量链路质量；7.13.6 远程扫描（PNC 委托 DEV 扫描）；7.13.7 PNC 信道扫描（PNC 跳过至多两倍 mMinChannelScan 的信标）；7.13.8 信道探测以选最佳 MCS。变更参数（7.14）：7.14.1 通用规则（每信标仅一个参数变更 IE，遵守变更信标编号）；7.14.2 移动信标（MOVE）；7.14.3 改超帧时长（SIZE）；7.14.4 设置 PNID/BSID（不可同时改两者）；7.14.5 从属微微网同步。干扰（7.15）：7.15.1 侦听并在四种/两种方法中抉择；7.15.2 动态信道选择；7.15.3 TPC——7.15.3.1 两种形式、7.15.3.2 针对 CAP/信标/定向 MCTA 的最大功率、7.15.3.3 经发射功率变更命令的逐 CTA 可调功率。7.16 多速率支持（每 PHY 一个基础速率；四种了解对端速率的方式；表 7-5）。微微网 PM（7.17）：7.17.1 四种模式；7.17.2 PSPS；7.17.3 DSPS（.1 概述、.2 DSPS 集合生命周期、.3 模式切换、.4 CTA 定时与唤醒间隔的关系）；7.17.4 APS；7.17.5 消息序列图。7.18 配对网 PM（LLPS）。7.19 AS IE 操作（增/改/删）。7.20 MAC 子层参数（表 7-7 至 7-14）。7.21 UEP Type 1/2/3 对比 EEP。7.22 同步帧与虚拟从属微微网（毫米波隐藏 PNC 缓解）。",
+      "cite": {
+        "pdf_id": "802153-2023",
+        "pages": [
+          322,
+          323,
+          324,
+          325,
+          326,
+          327,
+          328,
+          329,
+          330,
+          331,
+          332,
+          333,
+          334,
+          335,
+          336,
+          337,
+          338,
+          342,
+          343,
+          346,
+          349,
+          350
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        322,
+        323,
+        324,
+        325
+      ],
+      "note": "7.13 piconet peer discovery: PNC info request, probe, announce, channel status, remote scan, PNC scanning, channel probing"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        325,
+        326,
+        327
+      ],
+      "note": "7.14 changing piconet parameters: general, moving beacon, superframe duration, PNID/BSID, dependent sync"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        328,
+        329,
+        330
+      ],
+      "note": "7.15 interference mitigation: general, dynamic channel selection, TPC; 7.16 multi-rate support"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        331,
+        332,
+        333,
+        334,
+        335,
+        336,
+        337,
+        338
+      ],
+      "note": "7.16 rate table 7-5; 7.17 piconet power management: PSPS, DSPS sets, CTA timing, APS, MSCs"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        342,
+        343
+      ],
+      "note": "7.18 pairnet LLPS power save; 7.19 AS IE add/modify/remove operation"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        346,
+        349,
+        350
+      ],
+      "note": "7.20 MAC sublayer parameter tables; 7.21 UEP Types 1/2/3; 7.22 sync frame and virtually dependent piconet"
+    }
+  ],
+  "covers": [
+    "802153-2023:7.13.1",
+    "802153-2023:7.13.2",
+    "802153-2023:7.13.3",
+    "802153-2023:7.13.4",
+    "802153-2023:7.13.5",
+    "802153-2023:7.13.6",
+    "802153-2023:7.13.7",
+    "802153-2023:7.13.8",
+    "802153-2023:7.14.1",
+    "802153-2023:7.14.2",
+    "802153-2023:7.14.3",
+    "802153-2023:7.14.4",
+    "802153-2023:7.14.5",
+    "802153-2023:7.15.1",
+    "802153-2023:7.15.2",
+    "802153-2023:7.15.3",
+    "802153-2023:7.16",
+    "802153-2023:7.17.1",
+    "802153-2023:7.17.2",
+    "802153-2023:7.17.3",
+    "802153-2023:7.17.4",
+    "802153-2023:7.17.5",
+    "802153-2023:7.18",
+    "802153-2023:7.19",
+    "802153-2023:7.20",
+    "802153-2023:7.21",
+    "802153-2023:7.22"
+  ],
+  "track": "pan-hr-wpan"
+}

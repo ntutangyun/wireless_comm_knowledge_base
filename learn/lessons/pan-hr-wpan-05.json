@@ -1,0 +1,148 @@
+{
+  "id": "pan-hr-wpan-05",
+  "title": {
+    "en": "The MAC SAP: Data Primitives That Move Your Bytes",
+    "zh": "MAC SAP：搬运数据的服务原语"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In part 1 of Clause 5 we met the MLME SAP, the control panel that sets up and tears down a piconet. This lesson covers the other half of the layer-management story: clause 5.5, the MAC SAP. SAP stands for Service Access Point — a logical doorway through which one software layer hands work to the layer below it. The MAC SAP is the doorway between the MAC (Medium Access Control, the layer that decides who transmits when) and the FCSL (Frame Convergence Sublayer, the thin adapter that sits between an application protocol like Ethernet or video and the MAC). Through this doorway flow your actual user data — not control commands, but the bytes you want delivered.",
+      "zh": "在 Clause 5 的第 1 部分中，我们认识了 MLME SAP——用来建立和拆除微微网（piconet）的控制面板。本课讲解层管理的另一半：5.5 节的 MAC SAP。SAP 是“服务接入点”（Service Access Point）的缩写，指一个软件层把工作交给下层的逻辑入口。MAC SAP 是 MAC（媒体访问控制层，决定谁在何时发送）与 FCSL（帧汇聚子层，介于以太网或视频这类应用协议与 MAC 之间的轻量适配层）之间的入口。通过这道门流动的是真正的用户数据——不是控制命令，而是你想送达的字节。"
+    },
+    {
+      "type": "prose",
+      "en": "The standard describes a SAP with primitives. A primitive is a named message with a fixed list of parameters — think of it as a function call that crosses the layer boundary. The MAC SAP groups its primitives into four families, and each family follows the same .request / .confirm / .indication rhythm (summarized in Table 5-33). The sender calls .request to push data down. The MAC later raises a .confirm back up to report how it went. On the far side, the receiving MAC raises an .indication to deliver the arrived data upward. None of these families uses a .response — that fourth column exists in the standard's template but stays empty here (5.5.1).",
+      "zh": "标准用“原语”（primitive）来描述 SAP。原语是一条带固定参数列表的具名消息——可以把它想成一个跨越层边界的函数调用。MAC SAP 把原语分成四个家族，每个家族都遵循相同的 .request / .confirm / .indication 节奏（汇总于 Table 5-33）。发送方调用 .request 把数据向下推；之后 MAC 通过 .confirm 向上回报结果；在对端，接收方的 MAC 通过 .indication 把到达的数据向上交付。这些家族都没有用到 .response——那第四列在标准模板中存在，但在这里始终为空（5.5.1）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"60\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Sender FCSL</text><text x=\"330\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Receiver FCSL</text><line x1=\"40\" y1=\"30\" x2=\"40\" y2=\"190\"/><line x1=\"230\" y1=\"30\" x2=\"230\" y2=\"190\"/><line x1=\"420\" y1=\"30\" x2=\"420\" y2=\"190\"/><text x=\"110\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">MAC SAP</text><text x=\"300\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">MAC SAP</text><line x1=\"40\" y1=\"70\" x2=\"225\" y2=\"70\" marker-end=\"url(#a)\"/><text x=\"55\" y=\"65\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">.request (data down)</text><line x1=\"230\" y1=\"110\" x2=\"45\" y2=\"110\" marker-end=\"url(#a)\"/><text x=\"60\" y=\"105\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">.confirm (result up)</text><line x1=\"230\" y1=\"70\" x2=\"230\" y2=\"150\" stroke-dasharray=\"3 3\"/><line x1=\"230\" y1=\"150\" x2=\"415\" y2=\"150\" marker-end=\"url(#a)\"/><text x=\"245\" y=\"145\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">.indication (data up)</text><defs><marker id=\"a\" markerWidth=\"8\" markerHeight=\"8\" refX=\"6\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L6,3 L0,6\" fill=\"currentColor\" stroke=\"none\"/></marker></defs></svg>",
+      "caption": {
+        "en": "The shared rhythm of every MAC SAP family: the sender's FCSL issues .request, gets a .confirm back, and the receiver's FCSL gets an .indication.",
+        "zh": "每个 MAC SAP 家族共有的节奏：发送方 FCSL 发出 .request，收到 .confirm 回报，接收方 FCSL 收到 .indication。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "What actually travels in a primitive is described by parameters drawn from one shared master table (Table 5-34). The unit of payload is the MSDU — MAC Service Data Unit, meaning one chunk of data handed in from above, before the MAC wraps it in a frame. A request typically carries the MSDU plus delivery instructions: RequestID (a number that lets the .confirm be matched back to its .request), TrgtId or StreamIndex (who or which stream it is for), MaxRetries, TransmitTimeout, AckRequested (do we need an over-the-air acknowledgment?), and ConfirmRequested, an enumeration of NEVER / ALWAYS / ON_ERROR that decides whether a .confirm is even raised.",
+      "zh": "原语中真正传递的内容由一张共享的主表（Table 5-34）定义。负载的基本单位是 MSDU——MAC 服务数据单元（MAC Service Data Unit），即上层交下来、MAC 尚未封装成帧的一块数据。一个 request 通常携带 MSDU 加上投递指令：RequestID（一个编号，用于把 .confirm 与对应的 .request 匹配起来）、TrgtId 或 StreamIndex（发给谁、或属于哪条流）、MaxRetries、TransmitTimeout、AckRequested（是否需要空口确认？），以及 ConfirmRequested——一个取值为 NEVER / ALWAYS / ON_ERROR 的枚举，决定是否需要产生 .confirm。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why two acknowledgment-like fields? AckRequested asks the radio layer to confirm the frame physically arrived (a link-level ACK, see Clause 7.12). ConfirmRequested is about the local software interface — whether the MAC should report back up through the SAP. They are independent: you can ask for an over-the-air ACK while telling the MAC to stay silent unless something fails (ON_ERROR).",
+      "zh": "为什么有两个看起来都像“确认”的字段？AckRequested 要求无线层确认帧在物理上已送达（链路级 ACK，见 Clause 7.12）。ConfirmRequested 关乎本地软件接口——MAC 是否应通过 SAP 向上回报。二者相互独立：你可以要求空口 ACK，同时告诉 MAC 仅在出错时（ON_ERROR）才回报。"
+    },
+    {
+      "type": "prose",
+      "en": "The first family is asynchronous data — best-effort traffic with no timing guarantee, like a file transfer or a control message. MAC-ASYNC-DATA.request (5.5.2) initiates the transfer; the standard recommends sending it as a Multi-protocol Data frame so piconets running different FCSLs stay interoperable. MAC-ASYNC-DATA.confirm (5.5.3) reports the outcome, carrying a TransmitDelay (how long delivery actually took), a ResultCode (SUCCESS or FAILURE), and on failure a ReasonCode (TRANSMIT_TIMEOUT, MAX_RETRIES, NOT_ASSOCIATED, or OTHER). MAC-ASYNC-DATA.indication (5.5.4) delivers a received MSDU upward, carrying just the target and originator DEVIDs (device identifiers within the piconet) plus the data.",
+      "zh": "第一个家族是异步数据（asynchronous data）——尽力而为、不保证时延的流量，比如文件传输或控制消息。MAC-ASYNC-DATA.request（5.5.2）发起传输；标准建议用多协议数据帧（Multi-protocol Data frame）发送，使运行不同 FCSL 的微微网保持互通。MAC-ASYNC-DATA.confirm（5.5.3）回报结果，携带 TransmitDelay（实际投递耗时）、ResultCode（SUCCESS 或 FAILURE），以及失败时的 ReasonCode（TRANSMIT_TIMEOUT、MAX_RETRIES、NOT_ASSOCIATED 或 OTHER）。MAC-ASYNC-DATA.indication（5.5.4）把收到的 MSDU 向上交付，只携带目标和发起方的 DEVID（微微网内的设备标识符）以及数据。"
+    },
+    {
+      "type": "prose",
+      "en": "The second family is isochronous data — time-sensitive streams such as uncompressed video or audio, where data flows at a steady rate inside a reserved time slot. MAC-ISOCH-DATA.request (5.5.5) carries extra fields these streams need: a StreamIndex tying the MSDU to a previously reserved stream, a UepAllowed flag (UEP = Unequal Error Protection, letting more important bits get stronger coding), and video-specific position fields. MAC-ISOCH-DATA.confirm (5.5.6) mirrors the async confirm but adds the StreamIndex so the report ties back to the right stream.",
+      "zh": "第二个家族是同步数据（isochronous data）——对时间敏感的流，如未压缩视频或音频，数据在预留的时隙内以稳定速率流动。MAC-ISOCH-DATA.request（5.5.5）携带这类流所需的额外字段：StreamIndex（把 MSDU 关联到事先预留的流）、UepAllowed 标志（UEP = 非等差错保护 Unequal Error Protection，让更重要的比特获得更强的编码），以及视频专用的位置字段。MAC-ISOCH-DATA.confirm（5.5.6）与异步的 confirm 类似，但加上 StreamIndex，使回报对应到正确的流。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A neat detail in the isochronous indication (5.5.7): video data that arrived with bit errors can still be passed up to the application. The ErrorFreeData flag tells the higher layer whether the bytes are clean. For uncompressed video a flawed pixel is better than a dropped frame — but only if you know where that pixel belongs, which is why the position fields ride in the MAC header.",
+      "zh": "同步指示（5.5.7）里有个巧妙的细节：即便视频数据带着误码到达，仍可上交给应用。ErrorFreeData 标志告诉上层这些字节是否干净。对未压缩视频来说，一个出错的像素胜过丢掉整帧——但前提是你知道该像素的位置，这正是位置字段要放在 MAC 头里的原因。"
+    },
+    {
+      "type": "prose",
+      "en": "The third and fourth families serve the high-rate close-proximity and terahertz radios. HRCP means High-Rate Close Proximity PHY (a short-range physical layer); THz means terahertz PHY. The MAC-HRCP-DATA family is the leaner of the two: MAC-HRCP-DATA.request (labeled 5.5.7 in the text but indexed as the request for this family) carries a LogicalChannel hint and the data, MAC-HRCP-DATA.confirm (5.5.8) adds the actual MCSIdentifier (the modulation-and-coding scheme used) and ChIdentifier (the frequency channel) so the upper layer learns how the frame was sent, and MAC-HRCP-DATA.indication (5.5.9) delivers just the received Data.",
+      "zh": "第三和第四个家族服务于高速近距与太赫兹无线电。HRCP 指高速近距物理层（High-Rate Close Proximity PHY，一种短距离物理层）；THz 指太赫兹物理层。MAC-HRCP-DATA 家族是两者中更精简的：MAC-HRCP-DATA.request（文本中标为 5.5.7，但作为本家族的 request）携带 LogicalChannel 提示和数据；MAC-HRCP-DATA.confirm（5.5.8）加上实际使用的 MCSIdentifier（调制与编码方案）和 ChIdentifier（频率信道），让上层得知帧是怎样发出的；MAC-HRCP-DATA.indication（5.5.9）只交付收到的 Data。"
+    },
+    {
+      "type": "prose",
+      "en": "The fourth family, MAC-HRCP-MUL-DATA, is the multi-protocol variant — it carries enough addressing to multiplex several upper-layer protocols over the same link. MAC-HRCP-MUL-DATA.request (5.5.10) adds a DataID (which header format: an EtherType, an OUI/CID organization identifier, or protocol discrimination), plus DestinationAddress, SourceAddress, EtherType, and OUI_CID. MAC-HRCP-MUL-DATA.confirm (5.5.11) reports TransmitDelay, ResultCode, ReasonCode, and the MCS/channel actually used. MAC-HRCP-MUL-DATA.indication (5.5.12) delivers the MSDU with its full demultiplexing context — DataID, addresses, EtherType, OUI_CID, and LogicalChannel — so the receiving FCSL can route it to the right upper-layer protocol.",
+      "zh": "第四个家族 MAC-HRCP-MUL-DATA 是多协议变体——它携带足够的寻址信息，可在同一链路上复用多个上层协议。MAC-HRCP-MUL-DATA.request（5.5.10）增加 DataID（指明头格式：EtherType、OUI/CID 组织标识符，或协议判别），以及 DestinationAddress、SourceAddress、EtherType 和 OUI_CID。MAC-HRCP-MUL-DATA.confirm（5.5.11）回报 TransmitDelay、ResultCode、ReasonCode 以及实际使用的 MCS/信道。MAC-HRCP-MUL-DATA.indication（5.5.12）连同完整的解复用上下文——DataID、地址、EtherType、OUI_CID 和 LogicalChannel——一起交付 MSDU，使接收方 FCSL 能把它路由到正确的上层协议。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[FCSL has data to send] --> B{Which traffic?}\n  B -->|best-effort| C[ASYNC 5.5.2-5.5.4]\n  B -->|timed stream| D[ISOCH 5.5.5-5.5.7]\n  B -->|HRCP/THz single| E[HRCP-DATA 5.5.7-5.5.9]\n  B -->|HRCP/THz multi| F[HRCP-MUL 5.5.10-5.5.12]\n  C --> G[MAC sends frame]\n  D --> G\n  E --> G\n  F --> G",
+      "zh": "flowchart TD\n  A[FCSL 有数据要发] --> B{哪种流量?}\n  B -->|尽力而为| C[ASYNC 5.5.2-5.5.4]\n  B -->|定时流| D[ISOCH 5.5.5-5.5.7]\n  B -->|HRCP/THz 单协议| E[HRCP-DATA 5.5.7-5.5.9]\n  B -->|HRCP/THz 多协议| F[HRCP-MUL 5.5.10-5.5.12]\n  C --> G[MAC 发送帧]\n  D --> G\n  E --> G\n  F --> G"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: all twelve 5.5 subclauses by exact number",
+        "zh": "覆盖地图：5.5 全部十二个子条款及其精确编号"
+      },
+      "en": "Asynchronous family — 5.5.2 MAC-ASYNC-DATA.request (initiate best-effort transfer; recommends Multi-protocol Data frames), 5.5.3 MAC-ASYNC-DATA.confirm (raised only when ConfirmRequested is ALWAYS, or ON_ERROR with a FAILURE; carries TransmitDelay/ResultCode/ReasonCode), 5.5.4 MAC-ASYNC-DATA.indication (delivers TrgtId, OrigId, Data). Isochronous family — 5.5.5 MAC-ISOCH-DATA.request (StreamIndex, UepAllowed, video fields), 5.5.6 MAC-ISOCH-DATA.confirm (adds StreamIndex), 5.5.7 MAC-ISOCH-DATA.indication (ErrorFreeData lets errored video still reach the app). HRCP single-protocol family — the MAC-HRCP-DATA.request (printed as 5.5.7 in the body, the duplicate-numbered request for this family; LogicalChannel + Data), 5.5.8 MAC-HRCP-DATA.confirm (adds MCSIdentifier and ChIdentifier), 5.5.9 MAC-HRCP-DATA.indication (Data only). HRCP multi-protocol family — 5.5.10 MAC-HRCP-MUL-DATA.request (DataID, DestinationAddress, SourceAddress, EtherType, OUI_CID), 5.5.11 MAC-HRCP-MUL-DATA.confirm (TransmitDelay, ResultCode, ReasonCode, MCSIdentifier, ChIdentifier), 5.5.12 MAC-HRCP-MUL-DATA.indication (full demux context for routing). The summary Table 5-33 and the parameter master Table 5-34 anchor all four families. Note: the published TOC labels the HRCP-DATA request twice as 5.5.7 and lists 5.5.10 as the HRCP-DATA request row in Table 5-33 — a numbering quirk in the document; the twelve covered units here follow the section headings 5.5.1 through 5.5.12 as printed.",
+      "zh": "异步家族——5.5.2 MAC-ASYNC-DATA.request（发起尽力而为传输；建议用多协议数据帧），5.5.3 MAC-ASYNC-DATA.confirm（仅当 ConfirmRequested 为 ALWAYS、或 ON_ERROR 且结果为 FAILURE 时产生；携带 TransmitDelay/ResultCode/ReasonCode），5.5.4 MAC-ASYNC-DATA.indication（交付 TrgtId、OrigId、Data）。同步家族——5.5.5 MAC-ISOCH-DATA.request（StreamIndex、UepAllowed、视频字段），5.5.6 MAC-ISOCH-DATA.confirm（增加 StreamIndex），5.5.7 MAC-ISOCH-DATA.indication（ErrorFreeData 让带误码的视频仍能到达应用）。HRCP 单协议家族——MAC-HRCP-DATA.request（正文中印为 5.5.7，是本家族重复编号的 request；LogicalChannel + Data），5.5.8 MAC-HRCP-DATA.confirm（增加 MCSIdentifier 和 ChIdentifier），5.5.9 MAC-HRCP-DATA.indication（仅 Data）。HRCP 多协议家族——5.5.10 MAC-HRCP-MUL-DATA.request（DataID、DestinationAddress、SourceAddress、EtherType、OUI_CID），5.5.11 MAC-HRCP-MUL-DATA.confirm（TransmitDelay、ResultCode、ReasonCode、MCSIdentifier、ChIdentifier），5.5.12 MAC-HRCP-MUL-DATA.indication（用于路由的完整解复用上下文）。汇总表 Table 5-33 与参数主表 Table 5-34 支撑这四个家族。注意：发布的目录把 HRCP-DATA 的 request 两次都标为 5.5.7，且在 Table 5-33 中把 5.5.10 列为 HRCP-DATA 的 request 行——这是文档的编号小瑕疵；这里覆盖的十二个单元依照正文中印出的 5.5.1 至 5.5.12 节标题。",
+      "cite": {
+        "pdf_id": "802153-2023",
+        "pages": [
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        111
+      ],
+      "note": "5.5.1 Overview; Table 5-33 summary of MAC SAP primitives; four families and .request/.confirm/.indication structure"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        112,
+        113
+      ],
+      "note": "Table 5-34 master parameter list (RequestID, StreamIndex, AckRequested, ConfirmRequested, ResultCode, ReasonCode, UEP, DataID, addresses, MCS/Ch identifiers)"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        114,
+        115
+      ],
+      "note": "5.5.2-5.5.6 async request/confirm/indication and isoch request/confirm"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        116,
+        117
+      ],
+      "note": "5.5.7-5.5.11 isoch indication, HRCP-DATA request/confirm/indication, HRCP-MUL request/confirm"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        118
+      ],
+      "note": "5.5.12 MAC-HRCP-MUL-DATA.indication"
+    }
+  ],
+  "covers": [
+    "802153-2023:5.5.1",
+    "802153-2023:5.5.2",
+    "802153-2023:5.5.3",
+    "802153-2023:5.5.4",
+    "802153-2023:5.5.5",
+    "802153-2023:5.5.6",
+    "802153-2023:5.5.7",
+    "802153-2023:5.5.8",
+    "802153-2023:5.5.9",
+    "802153-2023:5.5.10",
+    "802153-2023:5.5.11",
+    "802153-2023:5.5.12"
+  ],
+  "track": "pan-hr-wpan"
+}

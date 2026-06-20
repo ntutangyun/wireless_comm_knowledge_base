@@ -1,0 +1,194 @@
+{
+  "id": "pan-hr-wpan-06",
+  "title": {
+    "en": "Reading an HR-WPAN MAC Frame: Header Fields and Frame Types",
+    "zh": "读懂 HR-WPAN MAC 帧：帧头字段与帧类型"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.15.3-2023 is the high-rate wireless personal area network (HR-WPAN) standard for short-range, high-bandwidth links such as wireless audio and video. Every byte that travels over the air is wrapped in a medium access control (MAC) frame, and Clause 6 is the rulebook for how those frames are laid out. This lesson walks the first part of Clause 6: the conventions (6.1), the general frame layout shared by every frame (6.2), and the specific shapes of each frame type (6.3). The standard defines two network flavours: a piconet, coordinated by a piconet coordinator (PNC), and a pairnet, coordinated by a pairnet coordinator (PRC). Both reuse the same field vocabulary, so once you can read one frame you can read them all.",
+      "zh": "IEEE Std 802.15.3-2023 是高速无线个域网（HR-WPAN）标准，面向无线音视频等近距离、高带宽链路。所有在空口上传输的字节都被封装进介质访问控制（MAC）帧中，而第 6 章就是规定这些帧如何排布的规则手册。本课讲解第 6 章的第一部分：约定（6.1）、所有帧共享的通用帧格式（6.2），以及各帧类型各自的具体格式（6.3）。标准定义了两种网络形态：由微微网协调器（PNC）协调的微微网（piconet），以及由配对网协调器（PRC）协调的配对网（pairnet）。两者复用同一套字段词汇，因此只要能读懂一种帧，就能读懂全部。"
+    },
+    {
+      "type": "prose",
+      "en": "6.1 (Frame format conventions) sets the ground rules. Every device (DEV) must validate each received frame using the frame check sequence (FCS), a 32-bit cyclic redundancy check appended to the body; the PHY layer already screens frames with its own header check sequence (HCS) before handing them up. \"Reception\" by the MAC simply means the contents are valid and the protocol version is supported — it says nothing about whether the addressing or frame type is meaningful to that DEV. Every DEV carries a 48-bit address (the EUI-48 extended unique identifier) assigned per IEEE Std 802, always sent in canonical bit order.",
+      "zh": "6.1（帧格式约定）确立了基本规则。每个设备（DEV）都必须用帧校验序列（FCS）校验收到的每一帧——FCS 是附在帧体后的 32 位循环冗余校验；而 PHY 层在上交之前已用自己的头部校验序列（HCS）先行筛过帧。MAC 所谓的“接收”仅表示内容有效且协议版本受支持，并不代表寻址或帧类型对该设备有意义。每个设备都拥有一个 48 位地址（EUI-48 扩展唯一标识符），依 IEEE Std 802 分配，并始终以规范的比特顺序发送。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 720 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"8\" y=\"16\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Piconet MAC frame (Figure 6-1) — octet counts above each field</text><g font-size=\"10\" fill=\"currentColor\" stroke=\"none\"><text x=\"30\" y=\"40\">2</text><text x=\"110\" y=\"40\">2</text><text x=\"185\" y=\"40\">1</text><text x=\"245\" y=\"40\">1</text><text x=\"315\" y=\"40\">3</text><text x=\"400\" y=\"40\">1</text><text x=\"500\" y=\"40\">variable</text><text x=\"650\" y=\"40\">0 or 4</text></g><g><rect x=\"10\" y=\"48\" width=\"80\" height=\"34\"/><rect x=\"90\" y=\"48\" width=\"70\" height=\"34\"/><rect x=\"160\" y=\"48\" width=\"55\" height=\"34\"/><rect x=\"215\" y=\"48\" width=\"55\" height=\"34\"/><rect x=\"270\" y=\"48\" width=\"100\" height=\"34\"/><rect x=\"370\" y=\"48\" width=\"60\" height=\"34\"/><rect x=\"430\" y=\"48\" width=\"180\" height=\"34\"/><rect x=\"610\" y=\"48\" width=\"100\" height=\"34\"/></g><g font-size=\"9\" fill=\"currentColor\" stroke=\"none\"><text x=\"16\" y=\"68\">Frame Ctrl</text><text x=\"108\" y=\"68\">PNID</text><text x=\"168\" y=\"68\">DestID</text><text x=\"222\" y=\"68\">SrcID</text><text x=\"278\" y=\"68\">Frag Ctrl</text><text x=\"378\" y=\"68\">Stream</text><text x=\"480\" y=\"68\">Frame Payload</text><text x=\"628\" y=\"68\">FCS</text></g><line x1=\"10\" y1=\"95\" x2=\"430\" y2=\"95\"/><line x1=\"430\" y1=\"95\" x2=\"710\" y2=\"95\"/><text x=\"180\" y=\"110\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">MAC Header</text><text x=\"520\" y=\"110\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">MAC Frame Body</text></svg>",
+      "caption": {
+        "en": "The piconet MAC frame (6.2.1, Figure 6-1): a fixed-order MAC Header (Frame Control, PNID, DestID, SrcID, Fragmentation Control, Stream Index) followed by the MAC Frame Body (Frame Payload + FCS). The pairnet frame (Figure 6-2) is the same idea but swaps Fragmentation Control for a TX and ACK Information field and omits the trailing FCS in the body.",
+        "zh": "微微网 MAC 帧（6.2.1，图 6-1）：固定顺序的 MAC 帧头（帧控制、PNID、目的 ID、源 ID、分片控制、流索引），后接 MAC 帧体（帧负载 + FCS）。配对网帧（图 6-2）思路相同，但把分片控制换成“发送与 ACK 信息”字段，且帧体末尾不带 FCS。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "6.2.1 (Overview) fixes the field order shown above and caps the body at a PHY-dependent pMaxFrameBodySize. 6.2.2 (Frame Control field) is the 2-octet steering wheel of the frame. 6.2.2.2 Protocol Version is 0b000 for piconet and 0b001 for pairnet; a DEV may silently drop a frame from a higher revision. 6.2.2.3 Frame Type names what the frame is (Beacon, ACKs, Command, Data, Multi-protocol Data, Synchronization). 6.2.2.4 SEC flags whether the payload is encrypted under a key named by the SECID. For piconets, 6.2.2.5 (ACK Policy, Imp-ACK Request, Blk-ACK) together pick the acknowledgment behaviour — No-ACK, immediate ACK (Imm-ACK), delayed ACK (Dly-ACK), implied ACK (Imp-ACK), or block ACK (Blk-ACK); pairnets use a slimmer 6.2.2.6 ACK Policy (No-ACK or Stk-ACK).",
+      "zh": "6.2.1（概述）固定了上图所示的字段顺序，并将帧体大小限制为依 PHY 而定的 pMaxFrameBodySize。6.2.2（帧控制字段）是帧的 2 字节“方向盘”。6.2.2.2 协议版本：微微网为 0b000，配对网为 0b001；设备可静默丢弃来自更高修订版本的帧。6.2.2.3 帧类型标明帧的身份（信标、各类 ACK、命令、数据、多协议数据、同步）。6.2.2.4 SEC 标记负载是否用 SECID 所指定的密钥加密。对微微网，6.2.2.5（ACK 策略、Imp-ACK 请求、Blk-ACK）共同决定确认行为——无 ACK、立即 ACK（Imm-ACK）、延迟 ACK（Dly-ACK）、隐含 ACK（Imp-ACK）或块 ACK（Blk-ACK）；配对网则用更精简的 6.2.2.6 ACK 策略（无 ACK 或 Stk-ACK）。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining piconet Frame Control bits are quick flags: 6.2.2.7 Retry marks a retransmission, 6.2.2.8 More Data signals whether the DEV will keep using its channel time allocation (CTA), 6.2.2.9 Imp-ACK NAK reports that a payload arrived with a failed FCS even though the header was fine, 6.2.2.10 CTA Relinquish hands channel-time ownership to another DEV, and 6.2.2.11 Logical Channel (pairnet only) picks CH0 or CH1 for higher-layer use. After Frame Control come the addressing fields: 6.2.3 Piconet ID (PNID) and 6.2.4 PairnetID identify the network, while 6.2.5 (piconet) and 6.2.6 (pairnet) define the source and destination device identifiers (SrcID/DestID), including reserved values like 0x00 for the coordinator and 0xFF for the broadcast identifier (BcstID). Three more fields handle multiplexing and reassembly: 6.2.7 Fragmentation Control (piconet) carries an MSDU Number (the sequence number of a MAC service data unit), a Fragment Number, and a Last Fragment Number so a long MSDU can be split and rebuilt; 6.2.8 Stream Index labels which logical stream a frame belongs to (0x00 asynchronous, 0xFD management channel time allocation (MCTA) traffic, dynamic values for isochronous streams); and 6.2.9 MAC header validation reminds us the PHY, not the MAC, protects and checks the header.",
+      "zh": "微微网帧控制其余比特是一组快捷标志：6.2.2.7 重传标记重发帧；6.2.2.8 更多数据指示设备是否会继续使用其信道时间分配（CTA）；6.2.2.9 Imp-ACK NAK 报告负载到达时 FCS 校验失败而帧头无误；6.2.2.10 CTA 让出把信道时间所有权交给另一设备；6.2.2.11 逻辑信道（仅配对网）为高层选用 CH0 或 CH1。帧控制之后是寻址字段：6.2.3 微微网 ID（PNID）与 6.2.4 配对网 ID 标识网络，而 6.2.5（微微网）和 6.2.6（配对网）定义源/目的设备标识（SrcID/DestID），含若干保留值，如协调器用 0x00、广播标识（BcstID）用 0xFF。另有三个字段负责复用与重组：6.2.7 分片控制（微微网）携带 MSDU 编号（MAC 业务数据单元的序号）、分片编号和末片编号，使长 MSDU 可被拆分并重建；6.2.8 流索引标明帧所属的逻辑流（0x00 异步、0xFD 管理信道时间分配（MCTA）流量、等时流用动态值）；6.2.9 MAC 帧头校验则提醒我们：保护并检查帧头的是 PHY 而非 MAC。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 720 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"8\" y=\"16\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Frame Control field for piconet (Figure 6-7) — bit positions b0..b15</text><g><rect x=\"10\" y=\"30\" width=\"95\" height=\"30\"/><rect x=\"105\" y=\"30\" width=\"95\" height=\"30\"/><rect x=\"200\" y=\"30\" width=\"45\" height=\"30\"/><rect x=\"245\" y=\"30\" width=\"70\" height=\"30\"/><rect x=\"315\" y=\"30\" width=\"45\" height=\"30\"/><rect x=\"360\" y=\"30\" width=\"55\" height=\"30\"/><rect x=\"415\" y=\"30\" width=\"75\" height=\"30\"/><rect x=\"490\" y=\"30\" width=\"60\" height=\"30\"/><rect x=\"550\" y=\"30\" width=\"75\" height=\"30\"/><rect x=\"625\" y=\"30\" width=\"55\" height=\"30\"/></g><g font-size=\"8\" fill=\"currentColor\" stroke=\"none\"><text x=\"16\" y=\"48\">Proto Ver</text><text x=\"118\" y=\"48\">Frame Type</text><text x=\"210\" y=\"48\">SEC</text><text x=\"252\" y=\"48\">ACK Pol</text><text x=\"320\" y=\"48\">Retry</text><text x=\"364\" y=\"48\">More</text><text x=\"420\" y=\"48\">Imp-ACK</text><text x=\"496\" y=\"48\">NAK</text><text x=\"556\" y=\"48\">Relinq</text><text x=\"630\" y=\"48\">Blk-ACK</text></g></svg>",
+      "caption": {
+        "en": "The piconet Frame Control field (6.2.2.1, Figure 6-7) packs ten control items into 16 bits. The pairnet version (Figure 6-8) is simpler: Protocol Version, Frame Type, SEC, ACK Policy, Logical Channel, and reserved bits.",
+        "zh": "微微网帧控制字段（6.2.2.1，图 6-7）把十项控制信息塞进 16 比特。配对网版本（图 6-8）更简单：协议版本、帧类型、SEC、ACK 策略、逻辑信道与保留位。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "6.2.10 (MAC Frame Body field) defines the payload container and its security wrapper: the 6.2.10.1 Frame Payload, and for secure frames the 6.2.10.2 SECID (key identifier = Key Originator + Key ID), 6.2.10.3 Secure Frame Counter (SFC, the nonce counter that must never repeat under one key), 6.2.10.4 Secure Payload, 6.2.10.5 Integrity Code (the authentication tag over header and payload), and 6.2.10.6 FCS (the 32-bit CRC with its generator polynomial). Subclauses 6.2.10.7–6.2.10.9 point to the pairnet variants. Then come three aggregation formats that pack many subframes into one transmission: 6.2.11 SC/HSI aggregation (standard and low-latency, secure and non-secure), 6.2.12 AV aggregation (an extended MAC header tuned for uncompressed audio/video, with its video and security subheaders), and 6.2.13 the pairnet TX and ACK Information field that piggybacks acknowledgment state on every frame.",
+      "zh": "6.2.10（MAC 帧体字段）定义了负载容器及其安全封装：6.2.10.1 帧负载，以及安全帧所用的 6.2.10.2 SECID（密钥标识 = 密钥发起方 + 密钥 ID）、6.2.10.3 安全帧计数器（SFC，即在同一密钥下绝不可重复的 nonce 计数器）、6.2.10.4 安全负载、6.2.10.5 完整性码（覆盖帧头与负载的认证标签）、6.2.10.6 FCS（32 位 CRC 及其生成多项式）。子条款 6.2.10.7–6.2.10.9 指向配对网的相应变体。接着是三种把多个子帧打包进一次传输的聚合格式：6.2.11 SC/HSI 聚合（标准与低时延、安全与非安全），6.2.12 AV 聚合（为非压缩音视频调优的扩展 MAC 帧头，含视频与安全子头），以及 6.2.13 配对网“发送与 ACK 信息”字段，它把确认状态搭载在每一帧上。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: the SEC bit (6.2.2.4) is the single switch that decides which body format you read. SEC=0 means the plain Frame Payload + FCS (Figures 6-3/6-4); SEC=1 means the secure body — SECID, SFC, Secure Payload, Integrity Code, FCS (Figures 6-5/6-6). Every frame type in 6.3 simply comes in a non-secure and a secure twin built from exactly these pieces.",
+      "zh": "记忆模型：SEC 比特（6.2.2.4）是决定你该读哪种帧体格式的唯一开关。SEC=0 表示普通的“帧负载 + FCS”（图 6-3/6-4）；SEC=1 表示安全帧体——SECID、SFC、安全负载、完整性码、FCS（图 6-5/6-6）。6.3 中的每种帧类型都不过是用这些相同部件搭出的非安全与安全两个孪生版本。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Frame Type field 6.2.2.3] --> B[Beacon 6.3.1]\n  A --> C[Imm-ACK / Dly-ACK 6.3.2]\n  A --> D[Command 6.3.3 piconet / 6.3.4 pairnet]\n  A --> E[Data 6.3.5 piconet / 6.3.6 pairnet]\n  A --> F[Multi-protocol Data 6.3.7 / 6.3.8]\n  A --> G[Synchronization 6.3.9 piconet]",
+      "zh": "flowchart TD\n  A[帧类型字段 6.2.2.3] --> B[信标 6.3.1]\n  A --> C[Imm-ACK / Dly-ACK 6.3.2]\n  A --> D[命令 6.3.3 微微网 / 6.3.4 配对网]\n  A --> E[数据 6.3.5 微微网 / 6.3.6 配对网]\n  A --> F[多协议数据 6.3.7 / 6.3.8]\n  A --> G[同步 6.3.9 微微网]"
+    },
+    {
+      "type": "prose",
+      "en": "6.3 (Format of individual frame types) gives each type its concrete payload. 6.3.1 Beacon frames carry the network heartbeat: synchronization parameters (a strictly increasing Time Token, superframe duration, the contention access period (CAP) end time, max TX power, coordinator address) plus information elements (IEs), in non-secure and secure variants for both piconet and pairnet. 6.3.2 Acknowledgment frames for piconets are the tiny Imm-ACK (no payload, no FCS) and the Dly-ACK that batches acknowledgments using MPDU ID blocks. 6.3.3 / 6.3.4 Command frames carry a Command Block (Command Type, Length, Payload) for management, with secure twins adding SECID/SFC/Integrity Code.",
+      "zh": "6.3（各帧类型的格式）赋予每种类型具体的负载。6.3.1 信标帧承载网络的“心跳”：同步参数（严格递增的时间令牌、超帧时长、竞争接入期（CAP）结束时间、最大发射功率、协调器地址）外加信息元素（IE），并对微微网和配对网各有非安全与安全版本。6.3.2 微微网确认帧分为极小的 Imm-ACK（无负载、无 FCS）与用 MPDU ID 块批量确认的 Dly-ACK。6.3.3 / 6.3.4 命令帧携带命令块（命令类型、长度、负载）用于管理，安全孪生版再加上 SECID/SFC/完整性码。"
+    },
+    {
+      "type": "prose",
+      "en": "6.3.5 Data frames for piconets carry a Data Payload (+ FCS, or the secure SECID/SFC/Payload/Integrity Code form); a null data frame with zero-length payload omits the FCS and is handy for Dly-ACK negotiation. 6.3.6 Data frames for pairnets are aggregated: a chain of MAC subheaders (each with a Subframe Information field of Last Fragment, Sequence Number, Payload Length plus a subheader HCS) and subframe bodies. 6.3.7 Multi-protocol Data frames for piconets add a Data ID + Data Header so one link can carry several upper-layer protocols — Data ID 0x00 means EtherType protocol discrimination with destination/source MAC addresses and an EtherType, 0x01 an OUI/CID, 0x02 a bare EtherType. 6.3.8 carries the same idea into aggregated pairnet frames. Finally, 6.3.9 the Synchronization frame for piconets advertises superframe timing and CTA blocks (location + duration) so DEVs stay aligned. That completes the field-by-field tour of how every HR-WPAN MAC frame is built.",
+      "zh": "6.3.5 微微网数据帧携带数据负载（+ FCS，或安全形式的 SECID/SFC/负载/完整性码）；负载长度为零的空数据帧省去 FCS，便于 Dly-ACK 协商。6.3.6 配对网数据帧是聚合的：由一串 MAC 子头（每个含“子帧信息”字段——末片、序号、负载长度，外加子头 HCS）和子帧体组成。6.3.7 微微网多协议数据帧增加 Data ID + 数据头，使一条链路能承载多种高层协议——Data ID 0x00 表示带目的/源 MAC 地址和 EtherType 的 EtherType 协议识别，0x01 为 OUI/CID，0x02 为单独的 EtherType。6.3.8 把同样的思路带入聚合的配对网帧。最后，6.3.9 微微网同步帧通告超帧定时与 CTA 块（位置 + 时长），使各设备保持同步。至此，我们逐字段走完了每个 HR-WPAN MAC 帧的构造方式。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause number in this lesson",
+        "zh": "覆盖映射：本课涉及的每个条款编号"
+      },
+      "en": "Conventions and general format — 6.1 frame conventions, FCS/HCS roles, EUI-48 addressing (p.119). 6.2.1 overview and field order, pMaxFrameBodySize, secure vs non-secure body (p.119-121). 6.2.2 Frame Control: 6.2.2.1 layout, 6.2.2.2 Protocol Version, 6.2.2.3 Frame Type (Tables 6-1/6-2), 6.2.2.4 SEC, 6.2.2.5 piconet ACK fields (Table 6-3), 6.2.2.6 pairnet ACK Policy (Table 6-4), 6.2.2.7 Retry, 6.2.2.8 More Data, 6.2.2.9 Imp-ACK NAK, 6.2.2.10 CTA Relinquish, 6.2.2.11 Logical Channel (p.121-124). 6.2.3 PNID and 6.2.4 PairnetID (p.124-125). 6.2.5/6.2.6 SrcID & DestID with reserved DEVIDs (p.125). 6.2.7 Fragmentation Control (MSDU/Fragment/Last Fragment numbers), 6.2.8 Stream Index, 6.2.9 MAC header validation (p.126-127). 6.2.10 MAC Frame Body: Frame Payload, SECID, SFC, Secure Payload, Integrity Code, FCS, and pairnet variants (p.127-129). 6.2.11 SC/HSI aggregation (standard + low-latency, secure + non-secure, subheaders, Blk-ACK bitmaps) (p.129-135). 6.2.12 AV aggregation (extended MAC header, Extended Control Header, MAC Extension Header, Security Header, Video Header, subframe formats, Regular and Directional ACK) (p.136-143). 6.2.13 pairnet TX and ACK Information field (p.143). Individual frame types — 6.3.1 Beacon (non-secure/secure, piconet/pairnet) (p.144-149), 6.3.2 Imm-ACK and Dly-ACK (p.149-151), 6.3.3 piconet Command (non-secure/secure) (p.151-152), 6.3.4 pairnet Command (p.153-154), 6.3.5 piconet Data (p.155-156), 6.3.6 pairnet aggregated Data (p.156), 6.3.7 piconet Multi-protocol Data with Data ID table (p.159-160), 6.3.8 pairnet aggregated Multi-protocol Data (p.161-162), 6.3.9 piconet Synchronization frame (p.163).",
+      "zh": "约定与通用格式——6.1 帧约定、FCS/HCS 分工、EUI-48 寻址（p.119）。6.2.1 概述与字段顺序、pMaxFrameBodySize、安全与非安全帧体（p.119-121）。6.2.2 帧控制：6.2.2.1 布局、6.2.2.2 协议版本、6.2.2.3 帧类型（表 6-1/6-2）、6.2.2.4 SEC、6.2.2.5 微微网 ACK 字段（表 6-3）、6.2.2.6 配对网 ACK 策略（表 6-4）、6.2.2.7 重传、6.2.2.8 更多数据、6.2.2.9 Imp-ACK NAK、6.2.2.10 CTA 让出、6.2.2.11 逻辑信道（p.121-124）。6.2.3 PNID 与 6.2.4 配对网 ID（p.124-125）。6.2.5/6.2.6 源/目的 ID 及保留 DEVID（p.125）。6.2.7 分片控制（MSDU/分片/末片编号）、6.2.8 流索引、6.2.9 MAC 帧头校验（p.126-127）。6.2.10 MAC 帧体：帧负载、SECID、SFC、安全负载、完整性码、FCS 及配对网变体（p.127-129）。6.2.11 SC/HSI 聚合（标准 + 低时延、安全 + 非安全、子头、Blk-ACK 位图）（p.129-135）。6.2.12 AV 聚合（扩展 MAC 帧头、扩展控制头、MAC 扩展头、安全头、视频头、子帧格式、常规帧与方向性 ACK）（p.136-143）。6.2.13 配对网发送与 ACK 信息字段（p.143）。各帧类型——6.3.1 信标（非安全/安全、微微网/配对网）（p.144-149），6.3.2 Imm-ACK 与 Dly-ACK（p.149-151），6.3.3 微微网命令（非安全/安全）（p.151-152），6.3.4 配对网命令（p.153-154），6.3.5 微微网数据（p.155-156），6.3.6 配对网聚合数据（p.156），6.3.7 含 Data ID 表的微微网多协议数据（p.159-160），6.3.8 配对网聚合多协议数据（p.161-162），6.3.9 微微网同步帧（p.163）。",
+      "cite": {
+        "pdf_id": "802153-2023",
+        "pages": [
+          119,
+          121,
+          122,
+          123,
+          124,
+          125,
+          126,
+          127,
+          128,
+          129,
+          136,
+          143,
+          144,
+          149,
+          151,
+          153,
+          155,
+          156,
+          159,
+          161,
+          163
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128
+      ],
+      "note": "6.1 conventions; 6.2.1-6.2.10 general frame format, Frame Control field, addressing, fragmentation, stream index, header validation, MAC frame body and security fields."
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143
+      ],
+      "note": "6.2.11 SC/HSI aggregation, 6.2.12 AV aggregation (extended MAC header, video/security headers, subframes), 6.2.13 pairnet TX and ACK Information field."
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        144,
+        146,
+        149,
+        150,
+        151,
+        152,
+        153,
+        154,
+        155,
+        156,
+        159,
+        160,
+        161,
+        162,
+        163
+      ],
+      "note": "6.3.1-6.3.9 individual frame types: Beacon, Imm-ACK/Dly-ACK, Command (piconet/pairnet), Data (piconet/pairnet), Multi-protocol Data, Synchronization."
+    }
+  ],
+  "covers": [
+    "802153-2023:6.1",
+    "802153-2023:6.2.1",
+    "802153-2023:6.2.2",
+    "802153-2023:6.2.3",
+    "802153-2023:6.2.4",
+    "802153-2023:6.2.5",
+    "802153-2023:6.2.6",
+    "802153-2023:6.2.7",
+    "802153-2023:6.2.8",
+    "802153-2023:6.2.9",
+    "802153-2023:6.2.10",
+    "802153-2023:6.2.11",
+    "802153-2023:6.2.12",
+    "802153-2023:6.2.13",
+    "802153-2023:6.3.1",
+    "802153-2023:6.3.2",
+    "802153-2023:6.3.3",
+    "802153-2023:6.3.4",
+    "802153-2023:6.3.5",
+    "802153-2023:6.3.6",
+    "802153-2023:6.3.7",
+    "802153-2023:6.3.8",
+    "802153-2023:6.3.9"
+  ],
+  "track": "pan-hr-wpan"
+}

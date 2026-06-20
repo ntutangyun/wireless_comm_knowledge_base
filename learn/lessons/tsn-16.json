@@ -1,0 +1,139 @@
+{
+  "id": "tsn-16",
+  "title": {
+    "en": "Per-Port Managed Data Sets: Statistics, Acceptable Masters, Port Config & Asymmetry",
+    "zh": "每端口管理数据集：统计计数、可接受主时钟、端口配置与不对称测量"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1AS-2020 builds time synchronization on the generalized Precision Time Protocol (gPTP). Clause 14 exposes the protocol's internal state as managed objects grouped into data sets (DS) — structured tables a management station can read or write. This lesson covers five per-PTP-Port data sets. A PTP Port is one endpoint of a gPTP link on a PTP Instance (a time-aware device); a PTP End Instance has one port, a PTP Relay Instance (a bridge) has several. We will walk each data set intuitively, then a coverage map names every exact clause.",
+      "zh": "IEEE Std 802.1AS-2020 把时间同步建立在通用精确时间协议（gPTP）之上。第 14 章把协议的内部状态以受管对象的形式暴露出来，并归类到数据集（DS，data set）——管理站可以读取或写入的结构化表。本课覆盖五个“每 PTP 端口”的数据集。PTP 端口是 PTP 实例（具备时间感知能力的设备）上某条 gPTP 链路的一个端点；PTP 终端实例只有一个端口，PTP 中继实例（网桥）则有多个端口。我们将逐一直观讲解每个数据集，最后用一张覆盖图点出每一个确切的条款号。"
+    },
+    {
+      "type": "prose",
+      "en": "First, the smallest one: the Description Port Parameter Data Set (descriptionPortDS). It holds a single read-only member, profileIdentifier — a 6-octet value identifying which PTP profile this port uses (gPTP is itself a PTP profile). There is one descriptionPortDS table per PTP Port. Think of it as a nameplate: it does not control behavior, it just tells a management tool 'this port speaks the gPTP profile.'",
+      "zh": "首先是最小的一个：描述端口参数数据集（descriptionPortDS）。它只含一个只读成员 profileIdentifier——一个 6 字节的值，标识该端口使用的是哪个 PTP 配置档（gPTP 本身就是一种 PTP 配置档）。每个 PTP 端口对应一张 descriptionPortDS 表。可以把它看作一块铭牌：它不控制任何行为，只是告诉管理工具“此端口使用 gPTP 配置档”。"
+    },
+    {
+      "type": "prose",
+      "en": "The largest data set here is the Port Parameter Statistics Data Set (portStatisticsDS). It is a set of read-only 32-bit unsigned counters (UInteger32), one set per PTP Port, giving an operator visibility into what the port is actually doing on the wire. The counters split cleanly into receive (rx*) and transmit (tx*) families, plus a few error/timeout counters. They increment on specific, named state-machine transitions — so a counter is not a vague tally, it is anchored to an exact event in the gPTP state machines.",
+      "zh": "这里最大的数据集是端口参数统计数据集（portStatisticsDS）。它是一组只读的 32 位无符号计数器（UInteger32），每个 PTP 端口一组，让运维人员看清端口在线路上的真实行为。这些计数器清晰地分为接收类（rx*）和发送类（tx*）两族，外加几个错误/超时计数器。它们在特定的、有明确命名的状态机跳转上递增——因此一个计数器不是含糊的累加，而是锚定在 gPTP 状态机中的一个确切事件上。"
+    },
+    {
+      "type": "prose",
+      "en": "The receive family answers 'what arrived at this port?' rxSyncCount tallies any received synchronization information; rxOneStepSyncCount narrows that to one-step Sync messages (where the timestamp travels in the Sync itself, no separate Follow_Up); rxFollowUpCount counts received Follow_Up messages (the two-step companion that carries the precise transmit timestamp). For path-delay measurement: rxPdelayRequestCount, rxPdelayResponseCount, and rxPdelayResponseFollowUpCount count received Pdelay_Req, Pdelay_Resp, and Pdelay_Resp_Follow_Up messages respectively — the three-message exchange that measures link delay. rxAnnounceCount counts received Announce messages (used to elect the grandmaster). Finally, rxPTPPacketDiscardCount counts PTP messages thrown away — an unqualified Announce, a missing Follow_Up, or a missing Pdelay response.",
+      "zh": "接收族回答“什么到达了这个端口？”rxSyncCount 统计任何收到的同步信息；rxOneStepSyncCount 进一步缩窄到一步式 Sync 消息（时间戳就携带在 Sync 自身里，没有单独的 Follow_Up）；rxFollowUpCount 统计收到的 Follow_Up 消息（两步式中携带精确发送时间戳的伴随消息）。用于路径时延测量的有：rxPdelayRequestCount、rxPdelayResponseCount、rxPdelayResponseFollowUpCount，分别统计收到的 Pdelay_Req、Pdelay_Resp、Pdelay_Resp_Follow_Up 消息——这三条消息的交换用来测量链路时延。rxAnnounceCount 统计收到的 Announce 消息（用于选举大主时钟）。最后，rxPTPPacketDiscardCount 统计被丢弃的 PTP 消息——例如不合格的 Announce、缺失的 Follow_Up，或缺失的 Pdelay 响应。"
+    },
+    {
+      "type": "prose",
+      "en": "Two more receive-side health counters track lost peers. syncReceiptTimeoutCount increments when sync receipt timeout occurs — the port stopped hearing timing from its source while a grandmaster is present. announceReceiptTimeoutCount increments when announce receipt timeout occurs — the port stopped hearing Announce messages. And pdelayAllowedLostResponsesExceededCount increments when too many consecutive Pdelay responses go missing (lostResponses exceeds allowedLostResponses), meaning the link-delay measurement has lost its peer. These three are the alarms an operator watches for a degrading link.",
+      "zh": "还有两个接收侧的健康计数器跟踪“失去对端”的情况。syncReceiptTimeoutCount 在发生同步接收超时时递增——即在存在大主时钟的情况下，端口不再从其时间源收到定时信息。announceReceiptTimeoutCount 在发生 Announce 接收超时时递增——端口不再收到 Announce 消息。而 pdelayAllowedLostResponsesExceededCount 在连续丢失过多 Pdelay 响应（lostResponses 超过 allowedLostResponses）时递增，意味着链路时延测量已失去对端。这三个就是运维人员监控链路劣化的告警信号。"
+    },
+    {
+      "type": "prose",
+      "en": "The transmit family mirrors the receive family for outgoing messages. txSyncCount counts transmitted synchronization information; txOneStepSyncCount narrows to one-step Sync; txFollowUpCount counts transmitted Follow_Up messages. For path delay: txPdelayRequestCount, txPdelayResponseCount, and txPdelayResponseFollowUpCount count transmitted Pdelay_Req, Pdelay_Resp, and Pdelay_Resp_Follow_Up. txAnnounceCount counts transmitted Announce messages. The whole portStatisticsDS is gathered into one read-only table per port; in implementations supporting dynamic port configuration, each table can be created or removed at runtime.",
+      "zh": "发送族针对发出的消息镜像了接收族。txSyncCount 统计发出的同步信息；txOneStepSyncCount 缩窄到一步式 Sync；txFollowUpCount 统计发出的 Follow_Up 消息。用于路径时延的有：txPdelayRequestCount、txPdelayResponseCount、txPdelayResponseFollowUpCount，分别统计发出的 Pdelay_Req、Pdelay_Resp、Pdelay_Resp_Follow_Up。txAnnounceCount 统计发出的 Announce 消息。整个 portStatisticsDS 汇集成每端口一张只读表；在支持动态端口配置的实现中，每张表都可以在运行时创建或删除。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"18\" font-size=\"12\" stroke=\"none\" fill=\"currentColor\">portStatisticsDS (per PTP Port)</text><rect x=\"10\" y=\"30\" width=\"210\" height=\"150\"/><text x=\"20\" y=\"48\" font-size=\"11\" stroke=\"none\" fill=\"currentColor\">RX family</text><text x=\"20\" y=\"66\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">rxSync / rxOneStepSync</text><text x=\"20\" y=\"82\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">rxFollowUp / rxAnnounce</text><text x=\"20\" y=\"98\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">rxPdelayReq/Resp/FollowUp</text><text x=\"20\" y=\"118\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">rxPTPPacketDiscard</text><text x=\"20\" y=\"138\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">syncReceiptTimeout</text><text x=\"20\" y=\"154\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">announceReceiptTimeout</text><text x=\"20\" y=\"170\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">pdelayLostExceeded</text><rect x=\"240\" y=\"30\" width=\"210\" height=\"150\"/><text x=\"250\" y=\"48\" font-size=\"11\" stroke=\"none\" fill=\"currentColor\">TX family</text><text x=\"250\" y=\"66\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">txSync / txOneStepSync</text><text x=\"250\" y=\"82\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">txFollowUp / txAnnounce</text><text x=\"250\" y=\"98\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">txPdelayReq/Resp/FollowUp</text><text x=\"250\" y=\"130\" font-size=\"9\" stroke=\"none\" fill=\"currentColor\">all UInteger32, read-only</text></svg>",
+      "caption": {
+        "en": "The portStatisticsDS counters split into a receive family and a transmit family, all read-only 32-bit counters anchored to gPTP state-machine events.",
+        "zh": "portStatisticsDS 计数器分为接收族和发送族，全部是锚定在 gPTP 状态机事件上的只读 32 位计数器。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The next three data sets are control knobs rather than counters. The Acceptable Master Port Parameter Data Set (acceptableMasterPortDS) holds one read/write Boolean member, acceptableMasterTableEnabled. When TRUE, the port honors an 'acceptable master table' — an allow-list restricting which neighbors may serve as the timing source. One acceptableMasterPortDS table exists per PTP Port. This is a security/policy lever: it lets you refuse timing from masters you do not trust.",
+      "zh": "接下来的三个数据集是控制旋钮，而非计数器。可接受主时钟端口参数数据集（acceptableMasterPortDS）含一个可读写的布尔成员 acceptableMasterTableEnabled。当其为 TRUE 时，端口会遵循“可接受主时钟表”——一个允许清单，限制哪些邻居可以充当定时源。每个 PTP 端口对应一张 acceptableMasterPortDS 表。这是一根安全/策略杠杆：它让你可以拒绝来自不信任主时钟的定时。"
+    },
+    {
+      "type": "prose",
+      "en": "The External Port Configuration Port Parameter Data Set (externalPortConfigurationPortDS) supports the 'external port configuration' option — a way to set port roles by management instead of by the automatic best-master selection. Its single read/write member, desiredState, names the state you want the port in (an Enumeration8). When defaultDS.externalPortConfigurationEnabled is TRUE, writing desiredState drives the port: it sets the variable portStateInd and, on each write, sets rcvdPortStateInd to TRUE so the state machine acts on the new value. One table exists per gPTP port. This is how an integrator hard-assigns 'this port is master, that one is slave.'",
+      "zh": "外部端口配置端口参数数据集（externalPortConfigurationPortDS）支持“外部端口配置”选项——一种由管理者设定端口角色的方式，取代自动的最佳主时钟选择。它唯一的可读写成员 desiredState 指明你希望端口处于的状态（一个 Enumeration8 枚举）。当 defaultDS.externalPortConfigurationEnabled 为 TRUE 时，写入 desiredState 即驱动该端口：它会设置变量 portStateInd，并在每次写入时把 rcvdPortStateInd 置为 TRUE，使状态机据新值动作。每个 gPTP 端口对应一张表。集成商正是借此硬性指派“此端口为主、那端口为从”。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, the Asymmetry Measurement Mode Parameter Data Set (asymmetryMeasurementModeDS) enables or disables the Asymmetry Compensation Measurement Procedure (defined in Annex G) on a port. gPTP assumes a link's transmit and receive delays are equal; when they are not, that asymmetry biases time. Its single read/write Boolean member, asymmetryMeasurementMode, is TRUE while an asymmetry measurement is running on a full-duplex IEEE 802.3 (Ethernet) link, and must be FALSE for all other media. It must be TRUE at both ends of the link being measured. There is one table for the single PTP Instance whose domain number is 0, used only when there is one gPTP domain and the Common Mean Link Delay Service (CMLDS) is not used — otherwise the CMLDS equivalent data set is used instead.",
+      "zh": "最后，不对称测量模式参数数据集（asymmetryMeasurementModeDS）用于在端口上启用或禁用不对称补偿测量过程（在附录 G 中定义）。gPTP 假定一条链路的发送时延与接收时延相等；当二者不等时，这种不对称会使时间产生偏差。它唯一的可读写布尔成员 asymmetryMeasurementMode：在一条全双工 IEEE 802.3（以太网）链路上进行不对称测量时为 TRUE，对所有其他介质则必须为 FALSE。被测链路两端都必须为 TRUE。它只为域号（domain number）为 0 的那个 PTP 实例配一张表，且仅在只有单个 gPTP 域且未使用公共平均链路时延服务（CMLDS，Common Mean Link Delay Service）时使用——否则改用 CMLDS 对应的数据集。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Reading the operations column pays off. profileIdentifier and every portStatisticsDS counter are read-only (R) — observability, not control. The three policy data sets — acceptableMasterTableEnabled, desiredState, and asymmetryMeasurementMode — are read/write (RW), the actual levers you turn. Spotting R vs RW instantly tells you whether a managed object reports state or changes it.",
+      "zh": "读懂“操作”列很有价值。profileIdentifier 和每一个 portStatisticsDS 计数器都是只读（R）——属于可观测性，而非控制。三个策略数据集——acceptableMasterTableEnabled、desiredState、asymmetryMeasurementMode——是可读写（RW），才是你真正能拨动的杠杆。一眼分辨 R 与 RW，就能立刻知道一个受管对象是在报告状态，还是在改变状态。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — exact clause numbers for all five data sets",
+        "zh": "覆盖图——五个数据集的确切条款号"
+      },
+      "en": "descriptionPortDS: 14.9.1 General (holds the profileIdentifier per F.2); 14.9.2 profileIdentifier (6-octet profile id); 14.9.3 descriptionPortDS table (Table 14-11, one per PTP Port, R). portStatisticsDS: 14.10.1 General (counters per port, count = defaultDS.numberPorts); 14.10.2 rxSyncCount; 14.10.3 rxOneStepSyncCount; 14.10.4 rxFollowUpCount; 14.10.5 rxPdelayRequestCount; 14.10.6 rxPdelayResponseCount; 14.10.7 rxPdelayResponseFollowUpCount; 14.10.8 rxAnnounceCount; 14.10.9 rxPTPPacketDiscardCount; 14.10.10 syncReceiptTimeoutCount; 14.10.11 announceReceiptTimeoutCount; 14.10.12 pdelayAllowedLostResponsesExceededCount; 14.10.13 txSyncCount; 14.10.14 txOneStepSyncCount; 14.10.15 txFollowUpCount; 14.10.16 txPdelayRequestCount; 14.10.17 txPdelayResponseCount; 14.10.18 txPdelayResponseFollowUpCount; 14.10.19 txAnnounceCount; 14.10.20 portStatisticsDS table (Table 14-12, all UInteger32, R). acceptableMasterPortDS: 14.11.1 General; 14.11.2 acceptableMasterTableEnabled (Boolean, per 13.1.3.2/13.1.3.5); 14.11.3 table (Table 14-13, RW). externalPortConfigurationPortDS: 14.12.1 General; 14.12.2 desiredState (sets portStateInd, sets rcvdPortStateInd TRUE on write, when externalPortConfigurationEnabled TRUE); 14.12.3 table (Table 14-14, Enumeration8, RW). asymmetryMeasurementModeDS: 14.13.1 General (enables Annex G procedure; used when domain 0 only and CMLDS not used); 14.13.2 asymmetryMeasurementMode (TRUE during measurement on full-duplex 802.3, FALSE on other media, TRUE at both link ends); 14.13.3 table (Table 14-15, Boolean, RW).",
+      "zh": "descriptionPortDS：14.9.1 概述（按 F.2 保存 profileIdentifier）；14.9.2 profileIdentifier（6 字节配置档标识）；14.9.3 descriptionPortDS 表（表 14-11，每 PTP 端口一张，R）。portStatisticsDS：14.10.1 概述（每端口计数器，数量等于 defaultDS.numberPorts）；14.10.2 rxSyncCount；14.10.3 rxOneStepSyncCount；14.10.4 rxFollowUpCount；14.10.5 rxPdelayRequestCount；14.10.6 rxPdelayResponseCount；14.10.7 rxPdelayResponseFollowUpCount；14.10.8 rxAnnounceCount；14.10.9 rxPTPPacketDiscardCount；14.10.10 syncReceiptTimeoutCount；14.10.11 announceReceiptTimeoutCount；14.10.12 pdelayAllowedLostResponsesExceededCount；14.10.13 txSyncCount；14.10.14 txOneStepSyncCount；14.10.15 txFollowUpCount；14.10.16 txPdelayRequestCount；14.10.17 txPdelayResponseCount；14.10.18 txPdelayResponseFollowUpCount；14.10.19 txAnnounceCount；14.10.20 portStatisticsDS 表（表 14-12，全部 UInteger32，R）。acceptableMasterPortDS：14.11.1 概述；14.11.2 acceptableMasterTableEnabled（布尔，依据 13.1.3.2/13.1.3.5）；14.11.3 表（表 14-13，RW）。externalPortConfigurationPortDS：14.12.1 概述；14.12.2 desiredState（当 externalPortConfigurationEnabled 为 TRUE 时设置 portStateInd，并在写入时把 rcvdPortStateInd 置 TRUE）；14.12.3 表（表 14-14，Enumeration8，RW）。asymmetryMeasurementModeDS：14.13.1 概述（启用附录 G 过程；仅当只有域 0 且未用 CMLDS 时使用）；14.13.2 asymmetryMeasurementMode（在全双工 802.3 测量期间为 TRUE，其他介质为 FALSE，链路两端均为 TRUE）；14.13.3 表（表 14-15，布尔，RW）。",
+      "cite": {
+        "pdf_id": "8021AS-2020",
+        "pages": [
+          270,
+          271,
+          272,
+          273,
+          274,
+          275
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        270,
+        271,
+        272,
+        273,
+        274,
+        275
+      ],
+      "note": "Clause 14.9 descriptionPortDS through 14.13 asymmetryMeasurementModeDS, including Tables 14-11 through 14-15."
+    }
+  ],
+  "covers": [
+    "8021AS-2020:14.9.1",
+    "8021AS-2020:14.9.2",
+    "8021AS-2020:14.9.3",
+    "8021AS-2020:14.10.1",
+    "8021AS-2020:14.10.2",
+    "8021AS-2020:14.10.3",
+    "8021AS-2020:14.10.4",
+    "8021AS-2020:14.10.5",
+    "8021AS-2020:14.10.6",
+    "8021AS-2020:14.10.7",
+    "8021AS-2020:14.10.8",
+    "8021AS-2020:14.10.9",
+    "8021AS-2020:14.10.10",
+    "8021AS-2020:14.10.11",
+    "8021AS-2020:14.10.12",
+    "8021AS-2020:14.10.13",
+    "8021AS-2020:14.10.14",
+    "8021AS-2020:14.10.15",
+    "8021AS-2020:14.10.16",
+    "8021AS-2020:14.10.17",
+    "8021AS-2020:14.10.18",
+    "8021AS-2020:14.10.19",
+    "8021AS-2020:14.10.20",
+    "8021AS-2020:14.11.1",
+    "8021AS-2020:14.11.2",
+    "8021AS-2020:14.11.3",
+    "8021AS-2020:14.12.1",
+    "8021AS-2020:14.12.2",
+    "8021AS-2020:14.12.3",
+    "8021AS-2020:14.13.1",
+    "8021AS-2020:14.13.2",
+    "8021AS-2020:14.13.3"
+  ],
+  "track": "tsn"
+}

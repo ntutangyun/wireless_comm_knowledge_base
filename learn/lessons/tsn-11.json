@@ -1,0 +1,130 @@
+{
+  "id": "tsn-11",
+  "title": {
+    "en": "Managing gPTP: The Data Set Hierarchy and the defaultDS",
+    "zh": "管理 gPTP：数据集层级与 defaultDS"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE 802.1AS-2020 describes gPTP (generalized Precision Time Protocol), the mechanism that keeps every device on a Time-Sensitive Networking (TSN) bridge synchronized to a single shared clock. Clause 14 is the management layer: it defines the configurable knobs and read-only counters — collectively called managed objects — grouped into named bundles called data sets (DS). This lesson teaches Clause 14.1 (the overall structure) and Clause 14.2, the very first data set: the Default Parameter Data Set, or defaultDS, which describes what a device fundamentally is.",
+      "zh": "IEEE 802.1AS-2020 定义了 gPTP（广义精确时间协议，generalized Precision Time Protocol），它让时间敏感网络（TSN）桥接域中的每台设备都同步到同一个共享时钟。第 14 章是管理层：它定义了可配置的旋钮和只读计数器——统称为受管对象（managed objects）——并把它们归入称为数据集（data set，简称 DS）的命名集合中。本课讲解第 14.1 节（整体结构）和第 14.2 节，也就是第一个数据集：默认参数数据集（Default Parameter Data Set，简称 defaultDS），它描述了一台设备本质上是什么。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Key terms up front. A PTP Instance is one logical clock running gPTP inside a device; it is either a PTP Relay Instance (a bridge that relays time) or a PTP End Instance (an end station). A time-aware system is the whole physical device, which may host several PTP Instances. The Grandmaster (GM) is the one clock the entire network ultimately follows. Conformance to any managed object is optional — gPTP works correctly on default values alone (Clause 14.1.1).",
+      "zh": "先说几个关键术语。PTP 实例（PTP Instance）是设备内部运行 gPTP 的一个逻辑时钟，它要么是 PTP 中继实例（PTP Relay Instance，即转发时间的桥接设备），要么是 PTP 端实例（PTP End Instance，即终端站点）。时间感知系统（time-aware system）是整台物理设备，可能承载多个 PTP 实例。大主时钟（Grandmaster，简称 GM）是整个网络最终都跟随的那个时钟。任何受管对象的符合性都是可选的——仅凭默认值，gPTP 也能正确工作（第 14.1.1 节）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 14.1.1 (Data set hierarchy) lays out how the managed objects nest. At the top a time-aware system holds an instanceList — one entry per PTP Instance. Each instance owns six instance-wide data sets (defaultDS, currentDS, parentDS, timePropertiesDS, pathTraceDS, acceptableMasterTableDS) plus a portList of per-port data sets. Alongside the instanceList sits commonServices, currently holding just the Common Mean Link Delay Service (CMLDS) — a shared way to measure cable delay once and let multiple instances reuse the result. A single copy of the CMLDS data sets is kept for the whole system, not per instance.",
+      "zh": "第 14.1.1 节（数据集层级）规定了受管对象如何嵌套。最顶层，一个时间感知系统持有一个 instanceList——每个 PTP 实例对应一个条目。每个实例拥有六个实例级数据集（defaultDS、currentDS、parentDS、timePropertiesDS、pathTraceDS、acceptableMasterTableDS），外加一个包含各端口数据集的 portList。与 instanceList 并列的是 commonServices，目前仅包含公共平均链路时延服务（Common Mean Link Delay Service，简称 CMLDS）——这是一种只测量一次线缆时延、再让多个实例复用结果的共享机制。整个系统只保留一份 CMLDS 数据集，而非每个实例各一份。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  TAS[Time-aware system] --> IL[instanceList: per PTP Instance]\n  TAS --> CS[commonServices]\n  IL --> DDS[defaultDS]\n  IL --> OTH[currentDS, parentDS, timePropertiesDS, pathTraceDS, acceptableMasterTableDS]\n  IL --> PL[portList: per-port data sets]\n  CS --> CMLDS[Common Mean Link Delay Service]",
+      "zh": "flowchart TD\n  TAS[时间感知系统] --> IL[instanceList: 每个PTP实例]\n  TAS --> CS[commonServices]\n  IL --> DDS[defaultDS]\n  IL --> OTH[currentDS, parentDS, timePropertiesDS, pathTraceDS, acceptableMasterTableDS]\n  IL --> PL[portList: 各端口数据集]\n  CS --> CMLDS[公共平均链路时延服务]"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 14.1.2 (Data set descriptions) names each data set and its job. Of the instance-wide set, defaultDS holds native capabilities, currentDS holds the instance's topological position relative to the GM, parentDS describes the upstream neighbor toward the GM, timePropertiesDS describes the GM's time properties, pathTraceDS records the chain of clocks back to the GM, and acceptableMasterTableDS handles EPON cases. The remaining entries (portDS, descriptionPortDS, portStatisticsDS, and the CMLDS data sets) are taught in later lessons. The index into instanceList is purely a management number — it is never the domainNumber, because two instances can share a domainNumber.",
+      "zh": "第 14.1.2 节（数据集说明）逐一命名每个数据集及其职责。在实例级集合中，defaultDS 保存设备的原生能力，currentDS 保存该实例相对 GM 的拓扑位置，parentDS 描述朝向 GM 的上游邻居，timePropertiesDS 描述 GM 的时间属性，pathTraceDS 记录回溯到 GM 的时钟链，acceptableMasterTableDS 处理 EPON 场景。其余条目（portDS、descriptionPortDS、portStatisticsDS 以及各 CMLDS 数据集）将在后续课程讲解。instanceList 的索引纯粹是一个管理编号——它绝不是 domainNumber，因为两个实例可以共用同一个 domainNumber。"
+    },
+    {
+      "type": "prose",
+      "en": "Now Clause 14.2, the defaultDS itself. Per Clause 14.2.1 (General) it represents the native capabilities of a PTP Instance. Its identity fields come first: clockIdentity (Clause 14.2.2) is the unique 8-byte ID of this clock; numberPorts (Clause 14.2.3) is how many PTP Ports the instance has — exactly 1 for an end station. Then clockQuality (Clause 14.2.4) is a structure bundling three figures of merit: clockClass (how good a master it could be), clockAccuracy (how close to true time), and offsetScaledLogVariance (how stable its frequency is).",
+      "zh": "现在进入第 14.2 节，也就是 defaultDS 本身。按第 14.2.1 节（概述），它表示一个 PTP 实例的原生能力。身份字段排在最前：clockIdentity（第 14.2.2 节）是该时钟唯一的 8 字节标识；numberPorts（第 14.2.3 节）是该实例拥有的 PTP 端口数量——终端站点恰好为 1。接着 clockQuality（第 14.2.4 节）是一个结构体，打包了三项品质指标：clockClass（作为主时钟有多优秀）、clockAccuracy（与真实时间的接近程度），以及 offsetScaledLogVariance（其频率的稳定程度）。"
+    },
+    {
+      "type": "prose",
+      "en": "The next fields decide elections. priority1 (Clause 14.2.5) and priority2 (Clause 14.2.6) are tie-breakers the Best Master Clock Algorithm consults when choosing the Grandmaster — lower numbers win, with priority1 outranking everything else. gmCapable (Clause 14.2.7) is simply TRUE if this instance is even allowed to become the Grandmaster, FALSE otherwise. Together these four attributes are how an administrator steers which device the whole TSN domain will follow.",
+      "zh": "接下来的字段决定选举结果。priority1（第 14.2.5 节）和 priority2（第 14.2.6 节）是最佳主时钟算法（Best Master Clock Algorithm）在选择大主时钟时参考的决胜值——数值越小优先级越高，且 priority1 凌驾于其他一切之上。gmCapable（第 14.2.7 节）很简单：如果该实例有资格成为大主时钟则为 TRUE，否则为 FALSE。这四个属性合在一起，正是管理员引导整个 TSN 域跟随哪台设备的手段。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 480 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"8\" y=\"16\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">defaultDS (Table 14-1)</text><rect x=\"8\" y=\"28\" width=\"110\" height=\"34\"/><text x=\"14\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">clockIdentity</text><rect x=\"118\" y=\"28\" width=\"90\" height=\"34\"/><text x=\"124\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">numberPorts</text><rect x=\"208\" y=\"28\" width=\"110\" height=\"34\"/><text x=\"214\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">clockQuality</text><rect x=\"318\" y=\"28\" width=\"70\" height=\"34\"/><text x=\"324\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">priority1/2</text><rect x=\"388\" y=\"28\" width=\"84\" height=\"34\"/><text x=\"394\" y=\"49\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">gmCapable</text><rect x=\"8\" y=\"72\" width=\"150\" height=\"34\"/><text x=\"14\" y=\"93\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">UTC: offset/valid/leap</text><rect x=\"158\" y=\"72\" width=\"150\" height=\"34\"/><text x=\"164\" y=\"93\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">traceable / timescale</text><rect x=\"308\" y=\"72\" width=\"164\" height=\"34\"/><text x=\"314\" y=\"93\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">domainNumber / sdoId</text><rect x=\"8\" y=\"116\" width=\"230\" height=\"30\"/><text x=\"14\" y=\"135\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">externalPortConfigurationEnabled</text><rect x=\"238\" y=\"116\" width=\"150\" height=\"30\"/><text x=\"244\" y=\"135\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">instanceEnable</text></svg>",
+      "caption": {
+        "en": "The defaultDS at a glance: identity, election weights, UTC/leap flags, traceability, domain identity, and enable switches — one such table per PTP Instance (Clause 14.2.20).",
+        "zh": "defaultDS 一览：身份、选举权重、UTC/闰秒标志、可追溯性、域身份与使能开关——每个 PTP 实例对应一份此表（第 14.2.20 节）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The middle block of defaultDS records UTC bookkeeping, all relative to this instance's ClockMaster entity. currentUtcOffset (Clause 14.2.8) is the seconds between TAI (International Atomic Time) and UTC; currentUtcOffsetValid (Clause 14.2.9) flags whether that offset is known-correct. leap59 (Clause 14.2.10) and leap61 (Clause 14.2.11) warn that the current UTC day's final minute will be shortened to 59 s or stretched to 61 s by a leap second. Each defaults from a primary reference if known, otherwise to a safe FALSE.",
+      "zh": "defaultDS 的中间一组字段记录 UTC 簿记信息，全部相对于该实例的 ClockMaster 实体。currentUtcOffset（第 14.2.8 节）是 TAI（国际原子时）与 UTC 之间相差的秒数；currentUtcOffsetValid（第 14.2.9 节）标记该偏移是否已知正确。leap59（第 14.2.10 节）和 leap61（第 14.2.11 节）预告当前 UTC 日的最后一分钟将因闰秒而缩短为 59 秒或延长为 61 秒。若能从主参考源获知，各字段即取该值，否则默认为安全的 FALSE。"
+    },
+    {
+      "type": "prose",
+      "en": "Three flags describe how trustworthy the time really is. timeTraceable (Clause 14.2.12) is TRUE when both the timescale and the UTC offset trace back to a primary reference standard. frequencyTraceable (Clause 14.2.13) is TRUE when the frequency driving the clock traces to such a standard. ptpTimescale (Clause 14.2.14) is TRUE when the ClockMaster runs on the PTP timescale rather than an arbitrary one. timeSource (Clause 14.2.15) then names where the Grandmaster's time comes from (GPS, atomic clock, hand-set, and so on).",
+      "zh": "三个标志描述时间究竟有多可信。timeTraceable（第 14.2.12 节）为 TRUE 表示时间标度与 UTC 偏移都可追溯到某个主参考标准。frequencyTraceable（第 14.2.13 节）为 TRUE 表示驱动时钟的频率可追溯到这样的标准。ptpTimescale（第 14.2.14 节）为 TRUE 表示 ClockMaster 运行在 PTP 时间标度上，而非某个任意标度。timeSource（第 14.2.15 节）则指明大主时钟的时间来源（GPS、原子钟、手动设置等等）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Domain identity and on/off switches close out the data set. domainNumber (Clause 14.2.16) names which gPTP domain this instance serves; domain 0 carries special constraints. sdoId (Clause 14.2.17) is the 12-bit Standards-Development-Organization identifier of that domain — gPTP fixes it at 0x100. externalPortConfigurationEnabled (Clause 14.2.18) lets an operator pin port roles manually instead of relying on the election, and instanceEnable (Clause 14.2.19) is the master switch that turns the whole PTP Instance on or off.",
+      "zh": "域身份与开关收尾整个数据集。domainNumber（第 14.2.16 节）指明该实例服务于哪个 gPTP 域；域 0 带有特殊约束。sdoId（第 14.2.17 节）是该域的 12 位标准制定组织标识——gPTP 将其固定为 0x100。externalPortConfigurationEnabled（第 14.2.18 节）允许操作员手动钉死端口角色，而不依赖选举；instanceEnable（第 14.2.19 节）则是开启或关闭整个 PTP 实例的总开关。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause taught here, by number",
+        "zh": "覆盖地图：本课所讲每个条款（按编号）"
+      },
+      "en": "Clause 14.1 General — 14.1.1 Data set hierarchy (instanceList of PTP Instances, six instance-wide data sets, portList, and the commonServices/CMLDS branch; instanceList index is a management number, not the domainNumber); 14.1.2 Data set descriptions (the role of defaultDS, currentDS, parentDS, timePropertiesDS, pathTraceDS, acceptableMasterTableDS and the port-level/CMLDS data sets). Clause 14.2 defaultDS — 14.2.1 General (native capabilities); 14.2.2 clockIdentity; 14.2.3 numberPorts (1 for an end station); 14.2.4 clockQuality (clockClass, clockAccuracy, offsetScaledLogVariance); 14.2.5 priority1; 14.2.6 priority2; 14.2.7 gmCapable; 14.2.8 currentUtcOffset (TAI minus UTC); 14.2.9 currentUtcOffsetValid; 14.2.10 leap59; 14.2.11 leap61; 14.2.12 timeTraceable; 14.2.13 frequencyTraceable; 14.2.14 ptpTimescale; 14.2.15 timeSource; 14.2.16 domainNumber; 14.2.17 sdoId (12-bit, fixed at 0x100); 14.2.18 externalPortConfigurationEnabled; 14.2.19 instanceEnable; 14.2.20 defaultDS table (Table 14-1, one per PTP Instance).",
+      "zh": "第 14.1 节 概述 —— 14.1.1 数据集层级（PTP 实例的 instanceList、六个实例级数据集、portList，以及 commonServices/CMLDS 分支；instanceList 索引是管理编号，而非 domainNumber）；14.1.2 数据集说明（defaultDS、currentDS、parentDS、timePropertiesDS、pathTraceDS、acceptableMasterTableDS 以及端口级/CMLDS 数据集各自的职责）。第 14.2 节 defaultDS —— 14.2.1 概述（原生能力）；14.2.2 clockIdentity；14.2.3 numberPorts（终端站点为 1）；14.2.4 clockQuality（clockClass、clockAccuracy、offsetScaledLogVariance）；14.2.5 priority1；14.2.6 priority2；14.2.7 gmCapable；14.2.8 currentUtcOffset（TAI 减 UTC）；14.2.9 currentUtcOffsetValid；14.2.10 leap59；14.2.11 leap61；14.2.12 timeTraceable；14.2.13 frequencyTraceable；14.2.14 ptpTimescale；14.2.15 timeSource；14.2.16 domainNumber；14.2.17 sdoId（12 位，固定为 0x100）；14.2.18 externalPortConfigurationEnabled；14.2.19 instanceEnable；14.2.20 defaultDS 表（表 14-1，每个 PTP 实例一份）。",
+      "cite": {
+        "pdf_id": "8021AS-2020",
+        "pages": [
+          246,
+          247,
+          248,
+          249,
+          250,
+          251
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        246,
+        247,
+        248,
+        249,
+        250,
+        251
+      ],
+      "note": "Clause 14.1 (Data set hierarchy and descriptions) and Clause 14.2 (defaultDS, 14.2.1 through 14.2.20, Table 14-1)."
+    }
+  ],
+  "covers": [
+    "8021AS-2020:14.1.1",
+    "8021AS-2020:14.1.2",
+    "8021AS-2020:14.2.1",
+    "8021AS-2020:14.2.2",
+    "8021AS-2020:14.2.3",
+    "8021AS-2020:14.2.4",
+    "8021AS-2020:14.2.5",
+    "8021AS-2020:14.2.6",
+    "8021AS-2020:14.2.7",
+    "8021AS-2020:14.2.8",
+    "8021AS-2020:14.2.9",
+    "8021AS-2020:14.2.10",
+    "8021AS-2020:14.2.11",
+    "8021AS-2020:14.2.12",
+    "8021AS-2020:14.2.13",
+    "8021AS-2020:14.2.14",
+    "8021AS-2020:14.2.15",
+    "8021AS-2020:14.2.16",
+    "8021AS-2020:14.2.17",
+    "8021AS-2020:14.2.18",
+    "8021AS-2020:14.2.19",
+    "8021AS-2020:14.2.20"
+  ],
+  "track": "tsn"
+}

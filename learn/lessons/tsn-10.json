@@ -1,0 +1,185 @@
+{
+  "id": "tsn-10",
+  "title": {
+    "en": "Carrying gPTP Over Wi-Fi and EPON: The Media-Dependent Layers (Clauses 12 & 13)",
+    "zh": "在 Wi-Fi 与 EPON 上承载 gPTP：媒介相关层（第 12、13 章）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1AS-2020 (gPTP — generalized Precision Time Protocol) keeps the same time-distribution logic everywhere, but the way time actually crosses a single link depends on the link technology. That link-specific glue is the media-dependent (MD) entity: it translates the media-independent PortSync entity's requests into whatever measurement primitives the underlying technology offers. Clause 12 specializes the MD entity for wireless IEEE 802.11 (Wi-Fi) links; Clause 13 specializes it for IEEE 802.3 Ethernet passive optical network (EPON) links. This lesson is a reference-grade walkthrough of both, naming every subclause.",
+      "zh": "IEEE Std 802.1AS-2020（gPTP——通用精确时间协议）在各处保持同一套时间分发逻辑，但时间真正跨越单条链路的方式取决于链路技术。承担这种链路相关粘合工作的，是“媒介相关（MD）实体”：它把与媒介无关的 PortSync 实体的请求，翻译成底层技术所提供的测量原语。第 12 章为无线 IEEE 802.11（Wi-Fi）链路定制 MD 实体；第 13 章为 IEEE 802.3 以太网无源光网络（EPON）链路定制 MD 实体。本课是对两者的参考级讲解，逐一点名每个子条款。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 12 opens with the overview (12.1). The key idea (12.1.1, 12.1.2): unlike point-to-point Ethernet, the Wi-Fi MD entity defines no new frames. Instead it reuses two measurement features already in IEEE Std 802.11-2016 — Timing Measurement (TM) and Fine Timing Measurement (FTM) — driven through the 802.11 MAC layer management entity (MLME). Both are round-trip exchanges that capture four timestamps: t1 (request sent, master clock), t2 (request received, slave clock), t3 (Ack sent, slave clock), t4 (Ack received, master clock). For TM the master initiates; for FTM the slave first sends an FTM Request, then the master bursts FTM frames. 12.1.3 then covers layering: because each association is one master-to-one-slave, every Wi-Fi association needs its own PortSync entity and MD entity instance.",
+      "zh": "第 12 章以总览（12.1）开篇。核心思想（12.1.1、12.1.2）是：与点对点以太网不同，Wi-Fi 的 MD 实体不定义任何新帧，而是复用 IEEE Std 802.11-2016 中已有的两种测量特性——定时测量（TM）与精细定时测量（FTM）——它们通过 802.11 MAC 层管理实体（MLME）来驱动。两者都是往返交换，捕获四个时间戳：t1（请求发出，主时基）、t2（请求收到，从时基）、t3（Ack 发出，从时基）、t4（Ack 收到，主时基）。TM 由主端发起；FTM 则先由从端发出 FTM 请求，再由主端突发若干 FTM 帧。12.1.3 讲分层：由于每个关联都是一主对一从，每个 Wi-Fi 关联都需要独立的 PortSync 实体与 MD 实体实例。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant M as Master (802.11)\n  participant S as Slave (802.11)\n  S->>M: FTM Request (ASAP=1, FTMs/burst=3)\n  M-->>S: Ack\n  M->>S: FTM_1 (t1_1) carries prev t1,t4\n  S-->>M: Ack (t3_1)\n  M->>S: FTM_2 (t1_2) carries t1_1,t4_1\n  S-->>M: Ack (t3_2)\n  Note over S: Slave computes link delay + ToD",
+      "zh": "sequenceDiagram\n  participant M as 主端 (802.11)\n  participant S as 从端 (802.11)\n  S->>M: FTM 请求 (ASAP=1, 每突发3帧)\n  M-->>S: Ack\n  M->>S: FTM_1 (t1_1) 携带前次 t1,t4\n  S-->>M: Ack (t3_1)\n  M->>S: FTM_2 (t1_2) 携带 t1_1,t4_1\n  S-->>M: Ack (t3_2)\n  Note over S: 从端计算链路时延与时刻"
+    },
+    {
+      "type": "prose",
+      "en": "12.2 (Messages) makes the no-new-frames rule explicit: all media-dependent frames are produced and consumed inside the 802.11 MLME, and the media-independent Announce and Signaling messages are sent to the WLAN station's unicast address rather than the usual group address. 12.3 (capability) defines a per-port variable tmFtmSupport whose bits record whether TM and/or FTM are supported by both this station and its peer (read from the 802.11 Extended Capabilities information element). 12.4 (asCapable) then says the link is usable for gPTP (asCapable = TRUE) when tmFtmSupport is non-zero, neighborGptpCapable is TRUE, and at least one of TM or FTM can actually be granted — with a backward-compatibility carve-out for domain 0 and the 2011 edition.",
+      "zh": "12.2（消息）明确了“不新增帧”的规则：所有媒介相关帧都在 802.11 MLME 内部生成与消费，而与媒介无关的 Announce 与 Signaling 消息发往 WLAN 站点的单播地址，而非通常的组地址。12.3（能力判定）定义了每端口变量 tmFtmSupport，其各比特记录本站点与对端是否支持 TM 与/或 FTM（取自 802.11 扩展能力信息元素）。12.4（asCapable）则规定：当 tmFtmSupport 非零、neighborGptpCapable 为真、且 TM 或 FTM 至少有一种确实可被授予时，该链路可用于 gPTP（asCapable = TRUE）——并为域 0 与 2011 版保留了向后兼容的例外。"
+    },
+    {
+      "type": "prose",
+      "en": "12.5 specifies the Wi-Fi state machines. 12.5.1 (media-dependent master) actually has two cooperating machines: master state machine A initiates a measurement whenever PortSync asks (driving MLME-TIMINGMSMT.request for TM, or storing the to-be-sent info for FTM), while master state machine B handles the FTM case — it receives the slave's FTM Request, sets asCapable, and emits successive MLME-FINETIMINGMSMT.request primitives carrying the Follow-Up information. 12.5.2 (media-dependent slave) is the receiving side: for FTM it issues MLME-FINETIMINGMSMTRQ.request to ask for a burst and consumes the resulting indications to build the MDSyncReceive structure it hands up to PortSync.",
+      "zh": "12.5 规定了 Wi-Fi 的状态机。12.5.1（媒介相关主端）实际上有两个协作的状态机：主状态机 A 在 PortSync 请求时发起测量（TM 时驱动 MLME-TIMINGMSMT.request，FTM 时则保存待发送信息）；主状态机 B 处理 FTM 场景——它接收从端的 FTM 请求、设置 asCapable，并连续发出携带 Follow-Up 信息的 MLME-FINETIMINGMSMT.request 原语。12.5.2（媒介相关从端）是接收侧：FTM 时它发出 MLME-FINETIMINGMSMTRQ.request 来请求一次突发，并消费由此产生的 indication，构造出向上交给 PortSync 的 MDSyncReceive 结构。"
+    },
+    {
+      "type": "prose",
+      "en": "12.6 (FTM parameters) pins down what the slave puts in the initial FTM Request: Number of Bursts Exponent = 0 (one burst), ASAP = 1 (respond as soon as possible), Partial TSF Timer = 1, and FTMs per burst = 3, retried as 2 if not granted. Burst Duration and Min Delta FTM are not fixed — they scale with the sync interval (currentLogSyncInterval), per the lookup in Table 12-3. 12.7 (VendorSpecific information element) explains how the end-to-end timing payload rides along: the master packs an entire Follow_Up message (preciseOriginTimestamp, rateRatio, correctionField, and the Follow_Up TLV) into a FollowUpInformation field inside the VendorSpecific IE, flagged by Type = 0.",
+      "zh": "12.6（FTM 参数）确定了从端在初始 FTM 请求中所填内容：突发数指数 = 0（一次突发）、ASAP = 1（尽快响应）、部分 TSF 定时器 = 1、每突发 FTM 帧数 = 3，未被授予时重试为 2。突发时长（Burst Duration）与 Min Delta FTM 并非固定——它们随同步间隔（currentLogSyncInterval）按表 12-3 缩放。12.7（VendorSpecific 信息元素）说明端到端定时载荷如何搭载：主端将一整条 Follow_Up 消息（preciseOriginTimestamp、rateRatio、correctionField 以及 Follow_Up TLV）打包进 VendorSpecific IE 中的 FollowUpInformation 字段，并以 Type = 0 标记。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Reuse over reinvention. The whole Wi-Fi clause is a thin adapter: it never sends a gPTP frame on air. It borrows 802.11's own TM/FTM round trips for timestamps and smuggles the gPTP Follow-Up payload inside a VendorSpecific IE. That is why a Wi-Fi gPTP port behaves indistinguishably from a wired one to the layers above.",
+      "zh": "复用胜过重造。整个 Wi-Fi 章节其实是一个轻量适配器：它从不在空口发送 gPTP 帧，而是借用 802.11 自身的 TM/FTM 往返来取时间戳，并把 gPTP 的 Follow-Up 载荷夹带进 VendorSpecific IE 中。正因如此，对上层而言，Wi-Fi gPTP 端口与有线端口表现得别无二致。"
+    },
+    {
+      "type": "prose",
+      "en": "12.8 (synchronization message interval) closes Clause 12: the mean interval between sync messages follows the media-independent rules (10.7.2.1/10.7.2.3) plus 12.8.2's default — 12.8.1 states the general requirement, and 12.8.2 sets initialLogSyncInterval = -3 (eight messages per second), reserves the value 127 for 'send no Sync', and requires processing of the message-interval-request TLV via the SyncIntervalSetting state machine (with the link-delay interval, irrelevant to Wi-Fi, ignored).",
+      "zh": "12.8（同步消息间隔）收尾第 12 章：同步消息之间的平均间隔遵循与媒介无关的规则（10.7.2.1/10.7.2.3）并叠加 12.8.2 的默认值——12.8.1 给出一般性要求，12.8.2 设定 initialLogSyncInterval = -3（每秒八条消息），保留取值 127 表示“不发送 Sync”，并要求通过 SyncIntervalSetting 状态机处理消息间隔请求 TLV（其中与 Wi-Fi 无关的链路时延间隔被忽略）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 13 switches to EPON — a point-to-multipoint optical access network with one optical line terminal (OLT) and many optical network units (ONUs). 13.1 overview: 13.1.1 establishes that the OLT is always clock master and ONUs are clock slaves; 13.1.2 ties timing to the 32-bit MPCP (multipoint control protocol) counters that tick every 16 ns; 13.1.3 forces this master/slave roles via the acceptableMasterTable feature (so the ONU only accepts Announce messages from its OLT); and 13.1.4 derives the synchronization math — the OLT picks a reference timestamp X, computes the time-of-day ToD it will represent (adjusting for round-trip time RTT and the asymmetric upstream/downstream refractive indices), and ships the pair (X, ToD) downstream in an organization-specific slow protocol (OSSP) TIMESYNC message.",
+      "zh": "第 13 章转向 EPON——一种点对多点的光接入网络，含一个光线路终端（OLT）与多个光网络单元（ONU）。13.1 总览：13.1.1 确立 OLT 永远是时钟主端、ONU 为时钟从端；13.1.2 把定时绑定到每 16 ns 跳变一次的 32 位 MPCP（多点控制协议）计数器；13.1.3 通过 acceptableMasterTable 特性强制这种主从角色（使 ONU 只接受来自其 OLT 的 Announce 消息）；13.1.4 推导同步算式——OLT 选定参考时间戳 X，计算它所代表的时刻 ToD（对往返时延 RTT 及上下行不对称折射率进行修正），再把 (X, ToD) 对通过组织特定慢协议（OSSP）的 TIMESYNC 消息向下行发送。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"6\" y=\"30\" width=\"42\" height=\"34\"/><text x=\"27\" y=\"51\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">DA</text><rect x=\"48\" y=\"30\" width=\"42\" height=\"34\"/><text x=\"69\" y=\"51\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">SA</text><rect x=\"90\" y=\"30\" width=\"40\" height=\"34\"/><text x=\"110\" y=\"51\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">Len/Type</text><rect x=\"130\" y=\"30\" width=\"34\" height=\"34\"/><text x=\"147\" y=\"51\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">OUI</text><rect x=\"164\" y=\"30\" width=\"36\" height=\"34\"/><text x=\"182\" y=\"51\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">MsgID</text><rect x=\"200\" y=\"30\" width=\"30\" height=\"34\"/><text x=\"215\" y=\"51\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">X</text><rect x=\"230\" y=\"30\" width=\"58\" height=\"34\"/><text x=\"259\" y=\"51\" font-size=\"8\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">ToD(X,i)</text><rect x=\"288\" y=\"30\" width=\"66\" height=\"34\"/><text x=\"321\" y=\"48\" font-size=\"7\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">srcPortId,</text><text x=\"321\" y=\"58\" font-size=\"7\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">rateRatio...</text><rect x=\"354\" y=\"30\" width=\"60\" height=\"34\"/><text x=\"384\" y=\"51\" font-size=\"7\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">gm fields</text><rect x=\"414\" y=\"30\" width=\"38\" height=\"34\"/><text x=\"433\" y=\"51\" font-size=\"9\" text-anchor=\"middle\" stroke=\"none\" fill=\"currentColor\">FCS</text></svg>",
+      "caption": {
+        "en": "EPON TIMESYNC message body (Clause 13.3.1, Table 13-1): the reference timestamp X and its target time-of-day ToD(X,i) sit alongside the Grandmaster fields carried from MDSyncSend, framed by Ethernet addresses and FCS.",
+        "zh": "EPON TIMESYNC 消息体（13.3.1，表 13-1）：参考时间戳 X 及其目标时刻 ToD(X,i)，与从 MDSyncSend 携带来的祖父时钟字段并排放置，外侧由以太网地址与 FCS 帧定界。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The middle of Clause 13 nails down the wire format and roles. 13.2.1 classifies TIMESYNC as a general message sent only downstream (OLT to ONU). 13.3.1 specifies the TIMESYNC message format field by field (destination 01-80-C2-00-00-02, Length/Type 0x8809, subtype 0x0A, then X, ToD(X,i), sourcePortIdentity, logMessageInterval, rateRatio and the Grandmaster phase/frequency fields). 13.4 sets asCapable = TRUE by default, upgraded by neighborGptpCapable — the EPON default of TRUE preserves 2011-edition behavior. 13.5 (layering) repeats the one-PortSync-and-MD-entity-per-ONU rule, now over the OSSP sublayer.",
+      "zh": "第 13 章的中段固定了线上格式与角色。13.2.1 把 TIMESYNC 归类为只在下行（OLT 到 ONU）发送的通用消息。13.3.1 逐字段规定 TIMESYNC 消息格式（目的地址 01-80-C2-00-00-02、Length/Type 0x8809、子类型 0x0A，随后是 X、ToD(X,i)、sourcePortIdentity、logMessageInterval、rateRatio 以及祖父时钟的相位/频率字段）。13.4 将 asCapable 默认设为 TRUE，并由 neighborGptpCapable 升级——EPON 默认 TRUE 保留了 2011 版的行为。13.5（分层）重申每个 ONU 一个 PortSync 实体与一个 MD 实体的规则，只是现在工作在 OSSP 子层之上。"
+    },
+    {
+      "type": "prose",
+      "en": "13.6 defines the EPON service interface: 13.6.1 OSSPDU.request is generated by the master every sync interval and carries X, ToD(X,i), sourcePortIdentity, logMessageInterval, rateRatio and the Grandmaster fields to trigger one TIMESYNC transmission; 13.6.2 OSSPDU.indication fires at the ONU on receipt, surfacing those same parameters so the MD entity can build an MDSyncReceive structure. 13.7 lists the lone MD global variable, RTTi (round-trip time per slave, used only by the OLT; set to zero in an ONU).",
+      "zh": "13.6 定义 EPON 的服务接口：13.6.1 OSSPDU.request 由主端每个同步间隔生成，携带 X、ToD(X,i)、sourcePortIdentity、logMessageInterval、rateRatio 与祖父时钟字段，触发一次 TIMESYNC 发送；13.6.2 OSSPDU.indication 在 ONU 收到时触发，呈现这些相同参数，使 MD 实体得以构造 MDSyncReceive 结构。13.7 列出唯一的 MD 全局变量 RTTi（每从端的往返时延，仅 OLT 使用；在 ONU 中置零）。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> INIT\n  INIT --> SEND_REQUEST: ready & asCapable\n  SEND_REQUEST --> SEND_REQUEST: new MDSyncSend\n  note right of SEND_REQUEST\n    Requester (OLT): build ToD, send TIMESYNC\n  end note\n  [*] --> WAIT\n  WAIT --> WAIT: OSSPDU.indication\n  note right of WAIT\n    Responder (ONU): build MDSyncReceive\n  end note",
+      "zh": "stateDiagram-v2\n  [*] --> 初始化\n  初始化 --> 发送请求: 就绪且 asCapable\n  发送请求 --> 发送请求: 收到新 MDSyncSend\n  note right of 发送请求\n    请求方(OLT): 计算ToD并发TIMESYNC\n  end note\n  [*] --> 等待\n  等待 --> 等待: OSSPDU.indication\n  note right of 等待\n    响应方(ONU): 构造MDSyncReceive\n  end note"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every subclause of Clauses 12 and 13",
+        "zh": "覆盖地图：第 12、13 章的每个子条款"
+      },
+      "en": "Clause 12 (Wi-Fi). 12.1.1 general overview of MD time distribution; 12.1.2 the TM/FTM round-trip procedures and the four timestamps t1-t4; 12.1.3 layering — one PortSync + MD entity per 802.11 association. 12.2 messages (none new; Announce/Signaling unicast). 12.3 tmFtmSupport capability bits (Table 12-1). 12.4 asCapable conditions. 12.5.1 master state machines A and B; 12.5.2 slave state machine. 12.6 FTM parameter values (Tables 12-2/12-3). 12.7 VendorSpecific IE carrying FollowUpInformation (Type 0, Table 12-4). 12.8.1 general sync-interval rule; 12.8.2 default initialLogSyncInterval = -3.\n\nClause 13 (EPON). 13.1.1 OLT=master/ONU=slave; 13.1.2 MPCP 32-bit counters at 16 ns; 13.1.3 best-master selection via acceptableMasterTable; 13.1.4 the ToD(X,i) synchronization equations with RTT and refractive-index asymmetry. 13.2.1 TIMESYNC message class (general, downstream). 13.3.1 TIMESYNC message format (Table 13-1, fields 13.3.1.2.1-.19). 13.4 asCapable default TRUE. 13.5 layering over OSSP. 13.6.1 OSSPDU.request; 13.6.2 OSSPDU.indication. 13.7 MD global variable RTTi. 13.8.1 requester (OLT) state machine; 13.8.2 responder (ONU) state machine. 13.9.1 general interval rule; 13.9.2 default initialLogSyncInterval = -3.",
+      "zh": "第 12 章（Wi-Fi）。12.1.1 MD 时间分发总览；12.1.2 TM/FTM 往返流程及四个时间戳 t1–t4；12.1.3 分层——每个 802.11 关联一个 PortSync + MD 实体。12.2 消息（不新增；Announce/Signaling 走单播）。12.3 tmFtmSupport 能力比特（表 12-1）。12.4 asCapable 条件。12.5.1 主状态机 A 与 B；12.5.2 从状态机。12.6 FTM 参数取值（表 12-2/12-3）。12.7 携带 FollowUpInformation 的 VendorSpecific IE（Type 0，表 12-4）。12.8.1 同步间隔一般规则；12.8.2 默认 initialLogSyncInterval = -3。\n\n第 13 章（EPON）。13.1.1 OLT=主/ONU=从；13.1.2 16 ns 的 MPCP 32 位计数器；13.1.3 经 acceptableMasterTable 的最佳主时钟选择；13.1.4 含 RTT 与折射率不对称的 ToD(X,i) 同步方程。13.2.1 TIMESYNC 消息类别（通用、下行）。13.3.1 TIMESYNC 消息格式（表 13-1，字段 13.3.1.2.1–.19）。13.4 asCapable 默认为真。13.5 在 OSSP 之上的分层。13.6.1 OSSPDU.request；13.6.2 OSSPDU.indication。13.7 MD 全局变量 RTTi。13.8.1 请求方（OLT）状态机；13.8.2 响应方（ONU）状态机。13.9.1 间隔一般规则；13.9.2 默认 initialLogSyncInterval = -3。",
+      "cite": {
+        "pdf_id": "8021AS-2020",
+        "pages": [
+          209,
+          213,
+          215,
+          216,
+          228,
+          229,
+          230,
+          231,
+          234,
+          235,
+          238,
+          239,
+          241,
+          242,
+          243,
+          245
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 13 finishes with the state machines and timing. 13.8.1 (requester, the OLT) consumes MDSyncSend structures from PortSync, computes ToD(X,i) and emits an OSSPDU.request to send each TIMESYNC; 13.8.2 (responder, the ONU) reacts to each OSSPDU.indication by building an MDSyncReceive structure and handing it up to PortSync. 13.9 mirrors 12.8 exactly: 13.9.1 defers the mean interval to the media-independent rules, and 13.9.2 sets the default initialLogSyncInterval = -3, reserves 127 for 'no TIMESYNC', and requires the message-interval-request TLV to be honored. The symmetry is the lesson's takeaway: two utterly different physical links — radio and fiber — both bolt onto the same media-independent gPTP machinery through a small, technology-specific MD entity.",
+      "zh": "第 13 章以状态机与定时收尾。13.8.1（请求方，即 OLT）消费来自 PortSync 的 MDSyncSend 结构，计算 ToD(X,i)，并发出 OSSPDU.request 以发送每条 TIMESYNC；13.8.2（响应方，即 ONU）对每个 OSSPDU.indication 作出反应，构造 MDSyncReceive 结构并向上交给 PortSync。13.9 与 12.8 完全对称：13.9.1 将平均间隔交由与媒介无关的规则处理，13.9.2 设定默认 initialLogSyncInterval = -3、保留 127 表示“不发 TIMESYNC”，并要求遵从消息间隔请求 TLV。这种对称正是本课要点：两种截然不同的物理链路——无线电与光纤——都通过一个小巧的、技术专属的 MD 实体，接到同一套与媒介无关的 gPTP 机构上。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        209,
+        210,
+        211,
+        212,
+        213,
+        214,
+        215,
+        216,
+        228,
+        229,
+        230
+      ],
+      "note": "Clause 12: Wi-Fi MD layer — overview/TM-FTM (12.1), messages (12.2), capability (12.3), asCapable (12.4), state machines (12.5), FTM parameters (12.6), VendorSpecific IE (12.7), sync interval (12.8)."
+    },
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        231,
+        232,
+        233,
+        234,
+        235,
+        236,
+        237,
+        238,
+        239,
+        240,
+        241,
+        242,
+        243,
+        244,
+        245
+      ],
+      "note": "Clause 13: EPON MD layer — overview/timing/best-master (13.1), message attributes (13.2), TIMESYNC format (13.3), asCapable (13.4), layering (13.5), OSSPDU service interface (13.6), MD globals (13.7), requester/responder state machines (13.8), intervals (13.9)."
+    }
+  ],
+  "covers": [
+    "8021AS-2020:12.1.1",
+    "8021AS-2020:12.1.2",
+    "8021AS-2020:12.1.3",
+    "8021AS-2020:12.2",
+    "8021AS-2020:12.3",
+    "8021AS-2020:12.4",
+    "8021AS-2020:12.5.1",
+    "8021AS-2020:12.5.2",
+    "8021AS-2020:12.6",
+    "8021AS-2020:12.7",
+    "8021AS-2020:12.8.1",
+    "8021AS-2020:12.8.2",
+    "8021AS-2020:13.1.1",
+    "8021AS-2020:13.1.2",
+    "8021AS-2020:13.1.3",
+    "8021AS-2020:13.1.4",
+    "8021AS-2020:13.2.1",
+    "8021AS-2020:13.3.1",
+    "8021AS-2020:13.4",
+    "8021AS-2020:13.5",
+    "8021AS-2020:13.6.1",
+    "8021AS-2020:13.6.2",
+    "8021AS-2020:13.7",
+    "8021AS-2020:13.8.1",
+    "8021AS-2020:13.8.2",
+    "8021AS-2020:13.9.1",
+    "8021AS-2020:13.9.2"
+  ],
+  "track": "tsn"
+}

@@ -1,0 +1,187 @@
+{
+  "id": "pan-hr-wpan-15",
+  "title": {
+    "en": "The 2.4 GHz HR-WPAN PHY: From Constellations to the Frame on the Air (Part 1)",
+    "zh": "2.4 GHz HR-WPAN 物理层：从星座图到空口帧（上篇）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE 802.15.3 began life as a high-rate wireless personal area network (HR-WPAN) — a way for nearby multimedia devices to stream to each other. Clause 11 specifies its original radio: a single-carrier physical layer (PHY, the lowest layer that actually turns bits into radio waves) for the 2.4 GHz industrial-scientific-medical (ISM) band. This lesson walks the first half of Clause 11 as a coverage map: the overview, general requirements, modulation and coding, the frame format, and the transmitter specifications. Every clause number gets a home.",
+      "zh": "IEEE 802.15.3 最初是一种高速率无线个域网（HR-WPAN，high-rate wireless personal area network）——让近距离的多媒体设备彼此传输流媒体。Clause 11 规定了它最早的射频方案：一个工作在 2.4 GHz 工业-科学-医疗（ISM）频段的单载波物理层（PHY，physical layer，最底层、真正把比特变成电波的那一层）。本课把 Clause 11 的前半部分当作一张覆盖地图来讲解：概述、通用要求、调制与编码、帧格式、发射机规格。每一个条款号都会有自己的归属。"
+    },
+    {
+      "type": "prose",
+      "en": "11.1 sets the stage. The 2.4 GHz PHY is one single-carrier radio that supports up to five modulation formats, all running at the same 11 Mbaud symbol rate, to give a ladder of scalable data rates from 11 Mb/s to 55 Mb/s (Table 11-1). The clause is anchored to the regulatory rules of Europe, Japan, Canada and the United States; the set of supported regulatory domains is exposed to higher layers through phyRegDomainsSupported and the current one via phyCurrentRegDomain.",
+      "zh": "11.1 为全篇定调。2.4 GHz 物理层是一个单载波射频，支持最多五种调制格式，全部以相同的 11 Mbaud 符号率运行，从而给出一个从 11 Mb/s 到 55 Mb/s 可伸缩的速率阶梯（表 11-1）。该条款绑定到欧洲、日本、加拿大和美国的法规；所支持的法规域集合通过 phyRegDomainsSupported 暴露给高层，当前所用的域则通过 phyCurrentRegDomain 指示。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 520 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><text x=\"10\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\">Five formats, one 11 Mbaud symbol rate</text><rect x=\"10\" y=\"35\" width=\"90\" height=\"30\"/><text x=\"18\" y=\"54\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">QPSK-TCM</text><text x=\"30\" y=\"82\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">11 Mb/s</text><rect x=\"110\" y=\"35\" width=\"90\" height=\"30\"/><text x=\"128\" y=\"54\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">DQPSK</text><text x=\"130\" y=\"82\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">22 Mb/s (base)</text><rect x=\"210\" y=\"35\" width=\"90\" height=\"30\"/><text x=\"222\" y=\"54\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">16-QAM-TCM</text><text x=\"230\" y=\"82\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">33 Mb/s</text><rect x=\"310\" y=\"35\" width=\"90\" height=\"30\"/><text x=\"322\" y=\"54\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">32-QAM-TCM</text><text x=\"330\" y=\"82\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">44 Mb/s</text><rect x=\"410\" y=\"35\" width=\"90\" height=\"30\"/><text x=\"422\" y=\"54\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">64-QAM-TCM</text><text x=\"430\" y=\"82\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">55 Mb/s</text><text x=\"10\" y=\"120\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">More bits per symbol = higher rate, but needs a cleaner link (lower EVM).</text></svg>",
+      "caption": {
+        "en": "The rate ladder of Table 11-1: same baud, more bits per symbol climbs from 11 to 55 Mb/s.",
+        "zh": "表 11-1 的速率阶梯：波特率不变，每符号承载更多比特，从 11 Mb/s 爬升到 55 Mb/s。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "11.2 collects the general requirements. 11.2.1 fixes the operating frequency range at 2.4–2.4835 GHz. 11.2.2 says RF power measurements are taken at the antenna connector, or interpreted as effective isotropic radiated power (EIRP) for antenna-less devices (DEVs). 11.2.3 defines the channel plan: 5 channels in two overlapping sets — a 4-channel high-density mode and a 3-channel IEEE 802.11b co-existence mode (Table 11-2); every compliant DEV must support all five. 11.2.4 tells a scanning DEV to sweep all five channels and to prefer the 802.11b co-existence set if it detects 802.11b networks. 11.2.5 defers unwanted emissions to the regulators, and 11.2.6 sets the operating temperature range at 0 °C to 40 °C.",
+      "zh": "11.2 汇集了通用要求。11.2.1 把工作频率范围固定在 2.4–2.4835 GHz。11.2.2 规定射频功率在天线连接器处测量，对无天线连接器的设备（DEV，device）则按等效全向辐射功率（EIRP，effective isotropic radiated power）解读。11.2.3 定义信道规划：两组相互重叠的信道共 5 个——4 信道的高密度模式与 3 信道的 IEEE 802.11b 共存模式（表 11-2）；每个合规 DEV 都必须支持全部五个。11.2.4 要求扫描中的 DEV 扫遍五个信道，若检测到 802.11b 网络则优先选用共存信道组。11.2.5 把杂散辐射交由法规规定，11.2.6 把工作温度范围定为 0 °C 至 40 °C。"
+    },
+    {
+      "type": "prose",
+      "en": "11.2.7 gathers the PHY timing parameters (Table 11-3) and the interframe spaces (IFS, the mandated gaps between frames, Table 11-4): pSifsTime is 10 µs, pMifsTime is 2 µs, pCcaDetectTime is 5 × 16/11 µs, and pChannelSwitchTime is 500 µs. Its sub-clauses pin the receive-to-transmit turnaround (11.2.7.3, equal to pSifsTime), transmit-to-receive turnaround (11.2.7.4, less than pSifsTime), the minimum gap between successive transmissions (11.2.7.5, pMifsTime), and the channel switch time (11.2.7.6). 11.2.8 lists the data-size limits: max frame body 2048 octets, max transfer unit 2044 octets, min fragment 64 octets. 11.2.9 protects the combined PHY+MAC headers with a CCITT CRC-16 header check sequence (HCS) — the same CRC as 802.11b. 11.2.10 requires support for the contention access period (CAP) on this PHY.",
+      "zh": "11.2.7 汇总了物理层定时参数（表 11-3）与帧间间隔（IFS，interframe space，帧与帧之间强制的间隙，表 11-4）：pSifsTime 为 10 µs，pMifsTime 为 2 µs，pCcaDetectTime 为 5 × 16/11 µs，pChannelSwitchTime 为 500 µs。其子条款锁定收发转换时间（11.2.7.3，等于 pSifsTime）、发收转换时间（11.2.7.4，小于 pSifsTime）、连续发送之间的最小间隙（11.2.7.5，pMifsTime）以及信道切换时间（11.2.7.6）。11.2.8 列出数据尺寸上限：最大帧体 2048 字节，最大传输单元 2044 字节，最小分片 64 字节。11.2.9 用 CCITT CRC-16 头校验序列（HCS，header check sequence）保护合并后的 PHY+MAC 头——与 802.11b 用的是同一种 CRC。11.2.10 要求本物理层支持竞争接入期（CAP，contention access period）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why is 22 Mb/s DQPSK the base rate (11.3.2), not the slower 11 Mb/s mode? Differential QPSK (DQPSK) lets a receiver demodulate without locking absolute phase, the preamble is built from DQPSK-friendly symbols, and a faster header keeps overhead low. The slow 11 Mb/s QPSK with trellis-coded modulation (TCM) is reserved for assigned channel time allocations (CTAs) to keep distant DEVs connected.",
+      "zh": "为什么基准速率是 22 Mb/s 的 DQPSK（11.3.2），而不是更慢的 11 Mb/s 模式？差分 QPSK（DQPSK，differential QPSK）让接收机无需锁定绝对相位即可解调，前导码也由适合 DQPSK 的符号构成，而更快的头部能压低开销。最慢的、带网格编码调制（TCM，trellis-coded modulation）的 11 Mb/s QPSK 则留给已分配的信道时间分配（CTA，channel time allocation），以维系较远 DEV 之间的连接。"
+    },
+    {
+      "type": "prose",
+      "en": "11.3 is modulation and coding. 11.3.1 states the rule: the radio uses uncoded DQPSK, uncoded QPSK, and 16/32/64-QAM (quadrature amplitude modulation) with 8-state trellis coding; a DEV must at minimum support DQPSK, and if it supports any higher format it must also support all the formats below it. 11.3.2 names 22 Mb/s DQPSK the base rate. 11.3.3 shows the signal constellations (Figure 11-3) and requires a per-format normalization factor KMOD (Table 11-5) so every modulation carries the same average power. 11.3.4 gives the DQPSK encoding table (bit pairs to phase changes), where the whole frame except the preamble is differentially encoded. 11.3.5 specifies the 8-state two-dimensional trellis code used by QPSK and the QAM modes, with its encoder, state transitions, and subset partitioning.",
+      "zh": "11.3 讲调制与编码。11.3.1 给出规则：该射频使用无编码 DQPSK、无编码 QPSK，以及带 8 态网格编码的 16/32/64-QAM（正交幅度调制，quadrature amplitude modulation）；DEV 至少要支持 DQPSK，若支持任一更高格式，就必须同时支持其下的所有格式。11.3.2 把 22 Mb/s DQPSK 命名为基准速率。11.3.3 展示信号星座图（图 11-3），并要求按格式归一化因子 KMOD（表 11-5），使每种调制承载相同的平均功率。11.3.4 给出 DQPSK 编码表（比特对到相位变化），其中除前导码外整帧都做差分编码。11.3.5 规定 QPSK 与各 QAM 模式所用的 8 态二维网格码，含编码器、状态转移与子集划分。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 540 130\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><text x=\"10\" y=\"18\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">PHY frame on the air (first --&gt; last), 22/33/44/55 Mb/s modes</text><rect x=\"10\" y=\"35\" width=\"95\" height=\"34\"/><text x=\"30\" y=\"56\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Preamble</text><rect x=\"105\" y=\"35\" width=\"70\" height=\"34\"/><text x=\"112\" y=\"50\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">PHY hdr</text><rect x=\"175\" y=\"35\" width=\"80\" height=\"34\"/><text x=\"182\" y=\"50\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">MAC hdr</text><rect x=\"255\" y=\"35\" width=\"45\" height=\"34\"/><text x=\"264\" y=\"56\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">HCS</text><rect x=\"300\" y=\"35\" width=\"130\" height=\"34\"/><text x=\"308\" y=\"50\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">payload + FCS</text><rect x=\"430\" y=\"35\" width=\"40\" height=\"34\"/><text x=\"440\" y=\"56\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">SB</text><rect x=\"470\" y=\"35\" width=\"40\" height=\"34\"/><text x=\"482\" y=\"56\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">TS</text><text x=\"10\" y=\"92\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">QPSK</text><text x=\"110\" y=\"92\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">DQPSK header</text><text x=\"300\" y=\"92\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">payload at chosen rate</text><text x=\"10\" y=\"114\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">SB = stuff bits (33/55 Mb/s only); TS = tail symbols (terminate the trellis)</text></svg>",
+      "caption": {
+        "en": "Figure 11-13 style strip: preamble, then DQPSK-modulated headers + HCS, then the payload + FCS at the chosen rate, closed by stuff bits and tail symbols.",
+        "zh": "图 11-13 风格的帧条：前导码，随后是 DQPSK 调制的头部 + HCS，再是按所选速率调制的载荷 + FCS，最后由填充比特和尾符号收尾。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "11.4 is the PHY frame format. 11.4.1 describes assembly: prepend the PHY header to the MAC header, compute the HCS over both, append it, then send preamble, headers+HCS, payload+FCS (frame check sequence), optional stuff bits, and tail symbols — and for the 11 Mb/s mode the headers+HCS block is repeated twice for robustness. 11.4.2 builds the preamble from a constant-amplitude zero-autocorrelation (CAZAC) sequence of 16 QPSK symbols, sent as 12 periods with the last one phase-rotated by 180° as an end delimiter. 11.4.3 says headers use DQPSK in every mode except 11 Mb/s QPSK-TCM (where the second header copy uses QPSK-TCM). 11.4.4 scrambles the MAC header, HCS, frame body and stuff bits with a side-stream pseudo-random binary sequence (PRBS) — never the preamble, PHY header, or tail symbols.",
+      "zh": "11.4 讲物理层帧格式。11.4.1 描述组装过程：把 PHY 头加在 MAC 头之前，对两者计算 HCS 并追加其后，然后依次发送前导码、头部+HCS、载荷+FCS（帧校验序列，frame check sequence）、可选填充比特和尾符号——在 11 Mb/s 模式中，头部+HCS 这一块会重复两次以增强健壮性。11.4.2 用 16 个 QPSK 符号构成的恒幅零自相关（CAZAC，constant-amplitude zero-autocorrelation）序列搭建前导码，发送 12 个周期，最后一个周期相位旋转 180° 作为结束定界符。11.4.3 规定除 11 Mb/s QPSK-TCM 外的所有模式头部都用 DQPSK（在该模式下，头部的第二份副本使用 QPSK-TCM）。11.4.4 用旁路伪随机二进制序列（PRBS，pseudo-random binary sequence）加扰 MAC 头、HCS、帧体和填充比特——绝不加扰前导码、PHY 头或尾符号。"
+    },
+    {
+      "type": "prose",
+      "en": "11.4.5 defines the two-octet PHY header (Table 11-11): a 2-bit scrambler seed identifier, a 3-bit MAC-frame-body data rate (Table 11-12), and an 11-bit payload length in octets, with bit b0 going on the air first. 11.4.6 covers stuff bits — added only for the 33 and 55 Mb/s modes so the MPDU (MAC protocol data unit) is a whole number of symbols; they are ignored on receive and excluded from HCS/FCS. 11.4.7 covers tail symbols, which drive the trellis encoder back to state S0: three 1-bit tail symbols for 11 Mb/s QPSK-TCM (Table 11-13), two symbols for the QAM modes (Table 11-14), and the fixed 0101 pattern for DQPSK.",
+      "zh": "11.4.5 定义两字节的 PHY 头（表 11-11）：2 比特加扰种子标识符、3 比特 MAC 帧体速率（表 11-12），以及 11 比特、以字节计的载荷长度，其中比特 b0 最先发送。11.4.6 讲填充比特——仅在 33 和 55 Mb/s 模式中添加，使 MPDU（MAC 协议数据单元，MAC protocol data unit）凑成整数个符号；接收时被忽略，且不计入 HCS/FCS。11.4.7 讲尾符号，用以把网格编码器驱回状态 S0：11 Mb/s QPSK-TCM 用三个 1 比特尾符号（表 11-13），各 QAM 模式用两个符号（表 11-14），DQPSK 则用固定的 0101 模式。"
+    },
+    {
+      "type": "prose",
+      "en": "11.5 specifies the transmitter. 11.5.1 defines error vector magnitude (EVM) — how far received symbols land from their ideal constellation points, normalized to the outermost point (Equation 11-8). 11.5.2 gives the EVM ceilings per modulation (Table 11-15): 3.3% for 64-QAM, rising to 20% for QPSK-TCM, measured over 1000 symbols through an ideal root-raised-cosine reference receiver with 30% excess bandwidth. 11.5.3 sets the transmit power spectral density (PSD) mask (Table 11-16, Figure 11-20). 11.5.4 caps center-frequency tolerance at ±25 ppm, 11.5.5 fixes the symbol rate at 11 Mbaud ±25 ppm, and 11.5.6 requires the frequency and symbol rate to derive from one reference oscillator. 11.5.7 limits the power-on and power-down ramps to under 2 µs each, 11.5.8 demands ≥15 dB RF carrier suppression, and 11.5.9 lists the regional maximum transmit power levels (Table 11-17) with mandated 3–5 dB monotonic power-down steps.",
+      "zh": "11.5 规定发射机。11.5.1 定义误差矢量幅度（EVM，error vector magnitude）——接收符号落点偏离理想星座点的程度，按最外侧点归一化（式 11-8）。11.5.2 给出每种调制的 EVM 上限（表 11-15）：64-QAM 为 3.3%，到 QPSK-TCM 升至 20%，在 1000 个符号上、经一个 30% 余量带宽的理想根升余弦参考接收机测量。11.5.3 设定发射功率谱密度（PSD，power spectral density）模板（表 11-16，图 11-20）。11.5.4 把中心频率容差限定在 ±25 ppm，11.5.5 把符号率固定为 11 Mbaud ±25 ppm，11.5.6 要求频率与符号率源自同一参考振荡器。11.5.7 把功率上升和下降斜坡各限定在 2 µs 以内，11.5.8 要求射频载波抑制 ≥15 dB，11.5.9 列出各地区最大发射功率（表 11-17）并规定 3–5 dB 的单调降功率步进。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause number in this lesson, with its exact page",
+        "zh": "覆盖地图——本课每个条款号及其确切页码"
+      },
+      "en": "Overview: 11.1 (p.385, single-carrier 2.4 GHz PHY, Table 11-1 rate ladder, regulatory domains). General requirements: 11.2.1 frequency range (p.386); 11.2.2 RF power measurement / EIRP (p.386); 11.2.3 channel assignments, Table 11-2 (p.386); 11.2.4 scanning channels (p.386–387); 11.2.5 unwanted emissions (p.387); 11.2.6 temperature 0–40 °C (p.387); 11.2.7 PHY timing — Tables 11-3/11-4, RX/TX turnaround, successive-Tx gap, channel switch (p.387–388); 11.2.8 data-size limits 2048/2044/64 octets (p.388); 11.2.9 CCITT CRC-16 HCS, Figures 11-1/11-2 (p.388–390); 11.2.10 CAP support (p.390). Modulation and coding: 11.3.1 general / supported formats (p.391); 11.3.2 base rate 22 Mb/s DQPSK (p.391); 11.3.3 constellations + KMOD, Figure 11-3, Table 11-5 (p.391–392); 11.3.4 DQPSK encoding, Table 11-6 (p.392); 11.3.5 8-state 2-D trellis code, Figure 11-4, Tables 11-7/11-8 (p.393). Frame format: 11.4.1 assembly, Figures 11-13/11-14 (p.400–402); 11.4.2 CAZAC preamble, Table 11-9, Figure 11-15 (p.402–403); 11.4.3 header modulation (p.403); 11.4.4 side-stream scrambler, Figure 11-16 (p.404–405); 11.4.5 PHY header, Tables 11-11/11-12 (p.405); 11.4.6 stuff bits (p.406); 11.4.7 tail symbols, Tables 11-13/11-14 (p.406–408). Transmitter specs: 11.5.1 EVM definition, Figure 11-19 (p.409); 11.5.2 EVM values, Table 11-15 (p.409); 11.5.3 PSD mask, Table 11-16, Figure 11-20 (p.410); 11.5.4 center-frequency tolerance (p.410); 11.5.5 symbol rate (p.411); 11.5.6 clock synchronization (p.411); 11.5.7 power ramps (p.411); 11.5.8 RF carrier suppression (p.411); 11.5.9 transmit power, Table 11-17 (p.411).",
+      "zh": "概述：11.1（第 385 页，单载波 2.4 GHz 物理层、表 11-1 速率阶梯、法规域）。通用要求：11.2.1 频率范围（第 386 页）；11.2.2 射频功率测量/EIRP（第 386 页）；11.2.3 信道分配，表 11-2（第 386 页）；11.2.4 扫描信道（第 386–387 页）；11.2.5 杂散辐射（第 387 页）；11.2.6 温度 0–40 °C（第 387 页）；11.2.7 物理层定时——表 11-3/11-4、收发转换、连续发送间隙、信道切换（第 387–388 页）；11.2.8 数据尺寸上限 2048/2044/64 字节（第 388 页）；11.2.9 CCITT CRC-16 HCS，图 11-1/11-2（第 388–390 页）；11.2.10 CAP 支持（第 390 页）。调制与编码：11.3.1 总则/支持格式（第 391 页）；11.3.2 基准速率 22 Mb/s DQPSK（第 391 页）；11.3.3 星座图 + KMOD，图 11-3、表 11-5（第 391–392 页）；11.3.4 DQPSK 编码，表 11-6（第 392 页）；11.3.5 8 态二维网格码，图 11-4、表 11-7/11-8（第 393 页）。帧格式：11.4.1 组装，图 11-13/11-14（第 400–402 页）；11.4.2 CAZAC 前导码，表 11-9、图 11-15（第 402–403 页）；11.4.3 头部调制（第 403 页）；11.4.4 旁路加扰器，图 11-16（第 404–405 页）；11.4.5 PHY 头，表 11-11/11-12（第 405 页）；11.4.6 填充比特（第 406 页）；11.4.7 尾符号，表 11-13/11-14（第 406–408 页）。发射机规格：11.5.1 EVM 定义，图 11-19（第 409 页）；11.5.2 EVM 数值，表 11-15（第 409 页）；11.5.3 PSD 模板，表 11-16、图 11-20（第 410 页）；11.5.4 中心频率容差（第 410 页）；11.5.5 符号率（第 411 页）；11.5.6 时钟同步（第 411 页）；11.5.7 功率斜坡（第 411 页）；11.5.8 射频载波抑制（第 411 页）；11.5.9 发射功率，表 11-17（第 411 页）。",
+      "cite": {
+        "pdf_id": "802153-2023",
+        "pages": [
+          385,
+          386,
+          387,
+          388,
+          390,
+          391,
+          392,
+          393,
+          400,
+          402,
+          403,
+          404,
+          405,
+          406,
+          408,
+          409,
+          410,
+          411
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        385,
+        386,
+        387,
+        388,
+        389,
+        390
+      ],
+      "note": "11.1 overview and 11.2 general requirements: rate ladder, frequency range, channel plan, timing, data-size limits, CCITT CRC-16 HCS, CAP."
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        391,
+        392,
+        393
+      ],
+      "note": "11.3 modulation and coding: supported formats, base rate, constellations and KMOD, DQPSK table, 8-state trellis code."
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        400,
+        401,
+        402,
+        403,
+        404,
+        405,
+        406,
+        407,
+        408
+      ],
+      "note": "11.4 PHY frame format: assembly, CAZAC preamble, header modulation, scrambler, PHY header, stuff bits, tail symbols."
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        409,
+        410,
+        411
+      ],
+      "note": "11.5 transmitter specifications: EVM, PSD mask, frequency/symbol-rate tolerances, power ramps, carrier suppression, transmit power."
+    }
+  ],
+  "covers": [
+    "802153-2023:11.1",
+    "802153-2023:11.2.1",
+    "802153-2023:11.2.2",
+    "802153-2023:11.2.3",
+    "802153-2023:11.2.4",
+    "802153-2023:11.2.5",
+    "802153-2023:11.2.6",
+    "802153-2023:11.2.7",
+    "802153-2023:11.2.8",
+    "802153-2023:11.2.9",
+    "802153-2023:11.2.10",
+    "802153-2023:11.3.1",
+    "802153-2023:11.3.2",
+    "802153-2023:11.3.3",
+    "802153-2023:11.3.4",
+    "802153-2023:11.3.5",
+    "802153-2023:11.4.1",
+    "802153-2023:11.4.2",
+    "802153-2023:11.4.3",
+    "802153-2023:11.4.4",
+    "802153-2023:11.4.5",
+    "802153-2023:11.4.6",
+    "802153-2023:11.4.7",
+    "802153-2023:11.5.1",
+    "802153-2023:11.5.2",
+    "802153-2023:11.5.3",
+    "802153-2023:11.5.4",
+    "802153-2023:11.5.5",
+    "802153-2023:11.5.6",
+    "802153-2023:11.5.7",
+    "802153-2023:11.5.8",
+    "802153-2023:11.5.9"
+  ],
+  "track": "pan-hr-wpan"
+}

@@ -1,0 +1,123 @@
+{
+  "id": "tsn-15",
+  "title": {
+    "en": "The Port Data Set, Part 2: Rate-Ratio, Peer-Delay, One-Step, and Versioning Knobs",
+    "zh": "端口数据集（下篇）：速率比、对等时延、单步与版本控制的可调参数"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Every gPTP port keeps a small database of its own settings and live status, called the Port Parameter Data Set, or portDS (gPTP is generalized Precision Time Protocol, the IEEE 802.1AS profile of PTP that distributes a shared sense of time across a network). This lesson walks the tail end of that data set, clauses 14.8.33 through 14.8.55. These members fall into four intuitive groups: how a port computes its neighbor's clock rate and link delay, how it counts failures before declaring a link unusable, whether it sends timestamps in one message or two, and which protocol version it speaks.",
+      "zh": "每个 gPTP 端口都维护一个记录自身设置与实时状态的小型数据库，称为端口参数数据集（Port Parameter Data Set，portDS）。gPTP 即广义精确时间协议（generalized Precision Time Protocol），是 IEEE 802.1AS 对 PTP 的剪裁，用于在网络中分发共享的时间基准。本课讲解该数据集的末段，即 14.8.33 至 14.8.55 各条。这些成员可直观地分为四组：端口如何计算邻居的时钟速率与链路时延、在判定链路不可用前如何计数故障、是用一条还是两条消息携带时间戳，以及它讲哪个协议版本。"
+    },
+    {
+      "type": "prose",
+      "en": "First, the managed-versus-state pattern that runs through portDS. Many measurements have three companions: an initial value used at startup, a current value the protocol updates as it runs, and a use-management flag. When the flag is FALSE, a state machine drives the value automatically; when the flag is TRUE, a management-settable twin overrides it. The compute knobs follow this exactly. computeNeighborRateRatio (14.8.33 useMgtSettableComputeNeighborRateRatio, 14.8.34 mgtSettableComputeNeighborRateRatio) controls whether the port estimates how fast the neighbor's clock ticks relative to its own. computeMeanLinkDelay (14.8.35 initialComputeMeanLinkDelay, 14.8.36 currentComputeMeanLinkDelay, 14.8.37 useMgtSettableComputeMeanLinkDelay, 14.8.38 mgtSettableComputeMeanLinkDelay) controls whether the port measures the one-way cable delay to that neighbor. On anything other than full-duplex Ethernet or peer-to-peer CSN media, both default to TRUE.",
+      "zh": "首先是贯穿整个 portDS 的「管理值与状态值」模式。许多测量量都有三位伙伴：启动时使用的初始值（initial）、协议运行中更新的当前值（current），以及一个「是否使用管理值」标志。当该标志为 FALSE 时，由状态机自动驱动取值；当其为 TRUE 时，由一个可经管理设置的孪生值覆盖之。各计算开关正是如此。computeNeighborRateRatio（14.8.33 useMgtSettableComputeNeighborRateRatio、14.8.34 mgtSettableComputeNeighborRateRatio）控制端口是否估计邻居时钟相对于自身的走时快慢。computeMeanLinkDelay（14.8.35 initialComputeMeanLinkDelay、14.8.36 currentComputeMeanLinkDelay、14.8.37 useMgtSettableComputeMeanLinkDelay、14.8.38 mgtSettableComputeMeanLinkDelay）控制端口是否测量到该邻居的单向线缆时延。在全双工以太网或对等 CSN 媒介之外的介质上，二者均默认为 TRUE。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why turn off rate-ratio or delay computation? On a media type where these are always TRUE anyway (or where the link delay is negligible), recomputing them every interval wastes effort. The management override lets an operator pin a known-good value instead of letting the LinkDelayIntervalSetting state machine recompute it.",
+      "zh": "为何要关闭速率比或时延计算？在某些介质上它们本就恒为 TRUE（或链路时延可忽略），每个周期重新计算便是浪费。管理覆盖让运维人员钉住一个已知良好的值，而不必让 LinkDelayIntervalSetting 状态机反复重算。"
+    },
+    {
+      "type": "prose",
+      "en": "Second group: failure counting. A gPTP port repeatedly sends Pdelay_Req (peer-delay request) messages to measure link delay. 14.8.39 allowedLostResponses is the number of such requests that may go unanswered before the port concludes its neighbor has stopped exchanging peer-delay messages. 14.8.40 allowedFaults is the number of faults that may accumulate before asCapable is forced FALSE, meaning the port is declared not capable of speaking IEEE 802.1AS with its neighbor. 14.8.41 gPtpCapableReceiptTimeout is a related patience counter: the number of transmission intervals a port waits without receiving the gPTP-capable TLV (Type-Length-Value field) before assuming the neighbor has stopped running gPTP. These three thresholds are how a port distinguishes a momentary glitch from a genuinely dead peer.",
+      "zh": "第二组：故障计数。gPTP 端口反复发送 Pdelay_Req（对等时延请求）消息以测量链路时延。14.8.39 allowedLostResponses 是允许无应答的此类请求数量上限，超过它端口便判定邻居已停止交换对等时延消息。14.8.40 allowedFaults 是允许累积的故障数量上限，超过它 asCapable 被强制置为 FALSE，即判定该端口无法与邻居进行 IEEE 802.1AS 通信。14.8.41 gPtpCapableReceiptTimeout 是相关的「耐心」计数：端口在未收到 gPTP-capable TLV（类型-长度-值字段）时等待的传输周期数，超过它便假定邻居已停止运行 gPTP。这三个阈值正是端口用以区分瞬时抖动与真正失联邻居的依据。"
+    },
+    {
+      "type": "prose",
+      "en": "Third group: versioning and a couple of media-specific physical constants. 14.8.42 versionNumber holds the PTP version the port advertises (versionPTP), and 14.8.54 minorVersionNumber holds the minor version (minorVersionPTP), so a receiver knows exactly which dialect of the protocol a message follows. The two odd ones out are 14.8.43 nup and 14.8.44 ndown: for an OLT (optical line terminal) port of an IEEE 802.3 EPON (Ethernet Passive Optical Network) link, these are the effective index of refraction of the fiber for the upstream and downstream wavelengths (used to convert light travel time into distance/delay). For every other kind of port both are simply 0.",
+      "zh": "第三组：版本控制与几个介质相关的物理常数。14.8.42 versionNumber 保存端口通告的 PTP 版本（versionPTP），14.8.54 minorVersionNumber 保存次版本（minorVersionPTP），使接收方确切知晓某消息遵循协议的哪种「方言」。两个特例是 14.8.43 nup 与 14.8.44 ndown：对于 IEEE 802.3 EPON（以太网无源光网络，Ethernet Passive Optical Network）链路的 OLT（光线路终端，optical line terminal）端口，它们分别是上行与下行波长光在光纤中的有效折射率（用于把光的传播时间换算成距离/时延）。对于其他任何端口，二者皆为 0。"
+    },
+    {
+      "type": "prose",
+      "en": "Fourth group: one-step versus two-step Sync. In two-step mode a port sends a Sync message and then a separate Follow_Up carrying the precise transmit timestamp; in one-step mode the timestamp is embedded in the Sync itself. 14.8.45 oneStepTxOper reports whether the port is currently sending one-step Sync (TRUE) or two-step Sync plus Follow_Up (FALSE). 14.8.46 oneStepReceive reports whether the port can receive and process one-step Sync at all, and 14.8.47 oneStepTransmit whether it can transmit one-step Sync. These last two are fixed hardware capabilities; oneStepTxOper is the live operating choice.",
+      "zh": "第四组：单步与两步 Sync。在两步模式下，端口先发送一条 Sync 消息，再单独发送携带精确发送时间戳的 Follow_Up；在单步模式下，时间戳直接嵌入 Sync 自身。14.8.45 oneStepTxOper 报告端口当前是发送单步 Sync（TRUE）还是两步 Sync 加 Follow_Up（FALSE）。14.8.46 oneStepReceive 报告端口是否具备接收并处理单步 Sync 的能力，14.8.47 oneStepTransmit 报告它是否具备发送单步 Sync 的能力。后两者是固定的硬件能力；oneStepTxOper 才是实时的运行选择。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[useMgtSettableOneStepTxOper?] -->|TRUE| B[currentOneStepTxOper = mgtSettableOneStepTxOper]\n  A -->|FALSE| C[OneStepTxOperSetting state machine sets currentOneStepTxOper]\n  B --> D{currentOneStepTxOper AND oneStepTransmit both TRUE?}\n  C --> D\n  D -->|yes| E[send one-step Sync]\n  D -->|no| F[send two-step Sync + Follow_Up]",
+      "zh": "flowchart TD\n  A[useMgtSettableOneStepTxOper?] -->|TRUE| B[currentOneStepTxOper = mgtSettableOneStepTxOper]\n  A -->|FALSE| C[由 OneStepTxOperSetting 状态机设置 currentOneStepTxOper]\n  B --> D{currentOneStepTxOper 与 oneStepTransmit 均为 TRUE?}\n  C --> D\n  D -->|是| E[发送单步 Sync]\n  D -->|否| F[发送两步 Sync + Follow_Up]"
+    },
+    {
+      "type": "prose",
+      "en": "The desire to send one-step is itself a managed value following the familiar pattern. 14.8.48 initialOneStepTxOper seeds the choice at port initialization (default FALSE) when management is not in control. 14.8.49 currentOneStepTxOper is TRUE when one-step transmission is desired, whether requested by management or by a received Signaling message. 14.8.50 useMgtSettableOneStepTxOper picks the source (default TRUE): TRUE makes currentOneStepTxOper follow 14.8.51 mgtSettableOneStepTxOper, FALSE hands control to the OneStepTxOperSetting state machine. Crucially, a port sends one-step Sync only if currentOneStepTxOper and oneStepTransmit are both TRUE, exactly as the diagram shows.",
+      "zh": "「希望发送单步」这一意图本身也是一个遵循上述熟悉模式的管理值。14.8.48 initialOneStepTxOper 在管理未掌控时于端口初始化阶段设定初值（默认 FALSE）。14.8.49 currentOneStepTxOper 在希望进行单步发送时为 TRUE，无论该意图来自管理还是来自收到的 Signaling 消息。14.8.50 useMgtSettableOneStepTxOper 选择来源（默认 TRUE）：为 TRUE 时 currentOneStepTxOper 跟随 14.8.51 mgtSettableOneStepTxOper，为 FALSE 时则交由 OneStepTxOperSetting 状态机掌控。关键在于：唯有 currentOneStepTxOper 与 oneStepTransmit 均为 TRUE 时端口才发送单步 Sync，正如上图所示。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining members round out the set. 14.8.52 syncLocked is TRUE when the port will retransmit a Sync as soon as possible after the slave (downstream) port receives one, keeping the downstream cadence tightly chained to the upstream one. 14.8.53 pdelayTruncatedTimestampsArray is a four-element snapshot of the most recently completed peer-delay exchange: elements 0 through 3 are the timestamps t1, t2, t3, t4 (Pdelay_Req egress, its ingress at the responder, Pdelay_Resp egress, and Pdelay_Resp ingress), each expressed in units of 2^-16 ns and truncated modulo 2^48 to stay compact. Finally, 14.8.55 portDS table states the framing rule: one portDS table exists per PTP Port per PTP Instance, and it can be created or removed dynamically where implementations support dynamic port configuration.",
+      "zh": "其余成员补齐整个数据集。14.8.52 syncLocked 为 TRUE 时，端口会在从（下游）端口收到一条 Sync 后尽快转发一条 Sync，从而使下游节拍紧密锚定于上游。14.8.53 pdelayTruncatedTimestampsArray 是对最近一次完成的对等时延交换的四元素快照：元素 0 至 3 即时间戳 t1、t2、t3、t4（Pdelay_Req 出端、其在应答方的入端、Pdelay_Resp 出端、Pdelay_Resp 入端），各以 2^-16 ns 为单位，并对 2^48 取模截断以保持紧凑。最后，14.8.55 portDS table 给出框架规则：每个 PTP 实例的每个 PTP 端口各有一张 portDS 表，在支持动态端口配置的实现中可动态创建或移除。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 440 140\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"20\" y=\"18\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Requestor</text><text x=\"360\" y=\"18\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Responder</text><line x1=\"40\" y1=\"24\" x2=\"40\" y2=\"130\"/><line x1=\"400\" y1=\"24\" x2=\"400\" y2=\"130\"/><line x1=\"40\" y1=\"40\" x2=\"400\" y2=\"70\"/><text x=\"45\" y=\"38\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">t1 Pdelay_Req</text><text x=\"340\" y=\"82\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">t2</text><line x1=\"400\" y1=\"85\" x2=\"40\" y2=\"118\"/><text x=\"330\" y=\"96\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">t3 Pdelay_Resp</text><text x=\"45\" y=\"128\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">t4</text></svg>",
+      "caption": {
+        "en": "pdelayTruncatedTimestampsArray captures t1 (Pdelay_Req egress), t2 (its ingress), t3 (Pdelay_Resp egress), t4 (Pdelay_Resp ingress) of the most recent peer-delay exchange (14.8.53).",
+        "zh": "pdelayTruncatedTimestampsArray 记录最近一次对等时延交换的 t1（Pdelay_Req 出端）、t2（其入端）、t3（Pdelay_Resp 出端）、t4（Pdelay_Resp 入端）（14.8.53）。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause 14.8.33-14.8.55 by exact number",
+        "zh": "覆盖地图：14.8.33 至 14.8.55 每条的精确编号"
+      },
+      "en": "Compute knobs: 14.8.33 useMgtSettableComputeNeighborRateRatio (source selector for computeNeighborRateRatio), 14.8.34 mgtSettableComputeNeighborRateRatio (override value), 14.8.35 initialComputeMeanLinkDelay, 14.8.36 currentComputeMeanLinkDelay, 14.8.37 useMgtSettableComputeMeanLinkDelay, 14.8.38 mgtSettableComputeMeanLinkDelay. Failure thresholds: 14.8.39 allowedLostResponses (unanswered Pdelay_Req limit), 14.8.40 allowedFaults (fault limit before asCapable goes FALSE), 14.8.41 gPtpCapableReceiptTimeout (intervals to wait for gPTP-capable TLV). Versioning/physical: 14.8.42 versionNumber (versionPTP), 14.8.43 nup and 14.8.44 ndown (EPON OLT upstream/downstream refractive index, else 0), 14.8.54 minorVersionNumber (minorVersionPTP). One-step Sync: 14.8.45 oneStepTxOper (operating mode), 14.8.46 oneStepReceive (RX capability), 14.8.47 oneStepTransmit (TX capability), 14.8.48 initialOneStepTxOper (init seed, default FALSE), 14.8.49 currentOneStepTxOper (desired mode), 14.8.50 useMgtSettableOneStepTxOper (source selector, default TRUE), 14.8.51 mgtSettableOneStepTxOper (override, default FALSE outside domain 0). Status/structure: 14.8.52 syncLocked (immediate Sync forwarding), 14.8.53 pdelayTruncatedTimestampsArray (t1..t4 in 2^-16 ns mod 2^48, per Table 14-9), 14.8.55 portDS table (one per PTP Port per PTP Instance; dynamically creatable; layout in Table 14-10).",
+      "zh": "计算开关：14.8.33 useMgtSettableComputeNeighborRateRatio（computeNeighborRateRatio 的来源选择器）、14.8.34 mgtSettableComputeNeighborRateRatio（覆盖值）、14.8.35 initialComputeMeanLinkDelay、14.8.36 currentComputeMeanLinkDelay、14.8.37 useMgtSettableComputeMeanLinkDelay、14.8.38 mgtSettableComputeMeanLinkDelay。故障阈值：14.8.39 allowedLostResponses（无应答 Pdelay_Req 上限）、14.8.40 allowedFaults（asCapable 置 FALSE 前的故障上限）、14.8.41 gPtpCapableReceiptTimeout（等待 gPTP-capable TLV 的周期数）。版本/物理：14.8.42 versionNumber（versionPTP）、14.8.43 nup 与 14.8.44 ndown（EPON OLT 上/下行折射率，否则为 0）、14.8.54 minorVersionNumber（minorVersionPTP）。单步 Sync：14.8.45 oneStepTxOper（运行模式）、14.8.46 oneStepReceive（接收能力）、14.8.47 oneStepTransmit（发送能力）、14.8.48 initialOneStepTxOper（初值，默认 FALSE）、14.8.49 currentOneStepTxOper（期望模式）、14.8.50 useMgtSettableOneStepTxOper（来源选择器，默认 TRUE）、14.8.51 mgtSettableOneStepTxOper（覆盖值，域 0 之外默认 FALSE）。状态/结构：14.8.52 syncLocked（立即转发 Sync）、14.8.53 pdelayTruncatedTimestampsArray（t1..t4，单位 2^-16 ns 并对 2^48 取模，见表 14-9）、14.8.55 portDS table（每个 PTP 实例的每个 PTP 端口各一张；可动态创建；布局见表 14-10）。",
+      "cite": {
+        "pdf_id": "8021AS-2020",
+        "pages": [
+          264,
+          265,
+          266,
+          267,
+          268
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        264,
+        265,
+        266,
+        267,
+        268
+      ],
+      "note": "Clause 14.8 portDS members 14.8.33-14.8.55: compute knobs, failure thresholds, versioning, one-step Sync, syncLocked, pdelayTruncatedTimestampsArray (Table 14-9), and the portDS table (Table 14-10)."
+    }
+  ],
+  "covers": [
+    "8021AS-2020:14.8.33",
+    "8021AS-2020:14.8.34",
+    "8021AS-2020:14.8.35",
+    "8021AS-2020:14.8.36",
+    "8021AS-2020:14.8.37",
+    "8021AS-2020:14.8.38",
+    "8021AS-2020:14.8.39",
+    "8021AS-2020:14.8.40",
+    "8021AS-2020:14.8.41",
+    "8021AS-2020:14.8.42",
+    "8021AS-2020:14.8.43",
+    "8021AS-2020:14.8.44",
+    "8021AS-2020:14.8.45",
+    "8021AS-2020:14.8.46",
+    "8021AS-2020:14.8.47",
+    "8021AS-2020:14.8.48",
+    "8021AS-2020:14.8.49",
+    "8021AS-2020:14.8.50",
+    "8021AS-2020:14.8.51",
+    "8021AS-2020:14.8.52",
+    "8021AS-2020:14.8.53",
+    "8021AS-2020:14.8.54",
+    "8021AS-2020:14.8.55"
+  ],
+  "track": "tsn"
+}

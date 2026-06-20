@@ -1,0 +1,100 @@
+{
+  "id": "tsn-13",
+  "title": {
+    "en": "Managing gPTP State: Path Trace and Acceptable Master Tables",
+    "zh": "管理 gPTP 状态：路径追踪表与可接受主时钟表"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1AS-2020 defines gPTP (the generalized Precision Time Protocol), the profile of PTP (Precision Time Protocol, IEEE 1588) used to keep clocks across a Time-Sensitive Networking (TSN) network synchronized to a single Grandmaster. Clause 14 organizes all of the readable and writable state that a managed PTP Instance exposes into named data sets (a DS is a 'data set' — a managed table of attributes). This lesson covers two of them: the Path Trace Parameter Data Set (pathTraceDS), which records the chain of clocks that synchronization passed through, and the Acceptable Master Table Parameter Data Set (acceptableMasterTableDS), which limits which neighbors a node will accept as its time source on certain ports.",
+      "zh": "IEEE Std 802.1AS-2020 定义了 gPTP（通用精确时间协议），它是用于时间敏感网络（TSN）中、让全网时钟同步到单一大主时钟（Grandmaster）的 PTP（精确时间协议，IEEE 1588）的一个配置档（profile）。第 14 章把一个受管 PTP 实例（PTP Instance）对外暴露的所有可读、可写状态，组织成一组命名的数据集（DS 即 data set，一张受管的属性表）。本课讲解其中两个：路径追踪参数数据集（pathTraceDS），它记录同步信号所经过的时钟链条；以及可接受主时钟表参数数据集（acceptableMasterTableDS），它限制某些端口上节点愿意接受哪些邻居作为自己的时间来源。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with pathTraceDS (Clause 14.6). Its job is captured by 14.6.1 'General': it represents the current path trace information available at the PTP Instance. Think of path trace like a postmark trail — as the synchronization message travels from the Grandmaster outward, each clock it crosses appends its own identity, so any node can read back the full ancestry of where its time came from. This is also how gPTP detects rogue timing loops: if a node sees its own identity already in the list, the message has circled back.",
+      "zh": "先看 pathTraceDS（第 14.6 章）。它的职责由 14.6.1“概述”概括：它表示该 PTP 实例当前可用的路径追踪信息。可以把路径追踪想象成一串邮戳——当同步报文从大主时钟向外传播时，它每经过一个时钟，该时钟就把自己的身份追加上去，于是任何节点都能回读出自己的时间来源的完整谱系。这也是 gPTP 检测异常计时环路的方式：如果某节点在列表中看到自己的身份，说明报文已经绕回来了。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  GM[Grandmaster<br/>id A] --> R1[Relay<br/>id B]\n  R1 --> R2[Relay<br/>id C]\n  R2 --> EP[End node<br/>reads list]\n  EP -. pathTraceDS.list .-> L[A, B, C]",
+      "zh": "flowchart LR\n  GM[大主时钟<br/>id A] --> R1[中继<br/>id B]\n  R1 --> R2[中继<br/>id C]\n  R2 --> EP[终端节点<br/>读取列表]\n  EP -. pathTraceDS.list .-> L[A, B, C]"
+    },
+    {
+      "type": "prose",
+      "en": "The members of pathTraceDS fill in the details. 14.6.2 'list' is the array of ClockIdentity values held in the pathTrace array — a ClockIdentity is the unique 8-byte identifier of a clock — and these same values are carried on the wire inside the path trace TLV (TLV = Type-Length-Value, a self-describing field appended to a message). Its initialization value is the empty list, an array of length 0, because before any synchronization arrives there is no ancestry to report. 14.6.3 'enable' is fixed at the value TRUE: while IEEE 1588-2019 makes path trace optional and lets enable be toggled, 802.1AS makes the mechanism mandatory, so enable is always TRUE — the member exists only for compatibility. 14.6.4 'pathTraceDS table' then states the structural rule: there is exactly one pathTraceDS table per PTP Instance, laid out as Table 14-5 (the list member is read-only, and enable is read-only).",
+      "zh": "pathTraceDS 的各成员补足了细节。14.6.2“list”是保存在 pathTrace 数组中的 ClockIdentity 值数组——ClockIdentity 是某个时钟唯一的 8 字节标识符——这些值也会在链路上承载于路径追踪 TLV 内（TLV 即 Type-Length-Value，类型-长度-值，是附加在报文上的自描述字段）。它的初始化值是空列表，即长度为 0 的数组，因为在任何同步到达之前并没有谱系可报告。14.6.3“enable”固定为 TRUE：IEEE 1588-2019 把路径追踪设为可选并允许切换 enable，而 802.1AS 把该机制设为强制，因此 enable 始终为 TRUE——这个成员仅为兼容性而保留。14.6.4“pathTraceDS table”则给出结构规则：每个 PTP 实例恰好有一张 pathTraceDS 表，按表 14-5 排布（list 成员只读，enable 只读）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why is enable hard-wired to TRUE? It is a deliberate 'frozen knob.' IEEE 1588 vendors built tooling expecting an enable member, so 802.1AS keeps the field present for drop-in compatibility — but because path trace is mandatory here, the value can never be FALSE. Reading it always tells you the same thing.",
+      "zh": "为什么把 enable 硬编码为 TRUE？这是一个有意为之的“冻结旋钮”。IEEE 1588 厂商的工具假定存在 enable 成员，所以 802.1AS 保留该字段以便无缝兼容——但由于这里路径追踪是强制的，其值永远不会是 FALSE。无论何时读取，它都返回相同的结果。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the second data set: acceptableMasterTableDS (Clause 14.7). 14.7.1 'General' scopes it precisely — it represents the acceptable master table used when an EPON port is used by a PTP Instance (EPON = Ethernet Passive Optical Network, a shared point-to-multipoint fiber access medium). On such a shared medium a node could hear many potential time sources, so the acceptable master table is a curated allow-list: only neighbors named in it are permitted to act as this node's master. This narrows the candidates the best-master selection considers, which is a safety and trust control on a medium where you cannot assume every talker is friendly.",
+      "zh": "再看第二个数据集：acceptableMasterTableDS（第 14.7 章）。14.7.1“概述”精确界定了它的适用范围——它表示当某个 PTP 实例使用 EPON 端口时所用的可接受主时钟表（EPON 即 Ethernet Passive Optical Network，以太网无源光网络，一种共享的点到多点光纤接入介质）。在这种共享介质上，一个节点可能听到许多潜在的时间来源，因此可接受主时钟表就是一份经过筛选的允许清单：只有清单中列出的邻居才被准许充当本节点的主时钟。它收窄了最佳主时钟选择所考虑的候选范围，是在“不能假设每个发言者都友好”的介质上的一种安全与信任控制。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"10\" y=\"20\" width=\"400\" height=\"110\"/><line x1=\"10\" y1=\"50\" x2=\"410\" y2=\"50\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"130\"/><line x1=\"270\" y1=\"20\" x2=\"270\" y2=\"130\"/><text x=\"20\" y=\"40\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">acceptableMasterArray[i]</text><text x=\"150\" y=\"40\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">actualTableSize</text><text x=\"280\" y=\"40\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">maxTableSize</text><text x=\"20\" y=\"75\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">id B (allowed)</text><text x=\"150\" y=\"75\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">= 2 entries</text><text x=\"280\" y=\"75\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">= 8 (capacity)</text><text x=\"20\" y=\"100\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">id C (allowed)</text><text x=\"150\" y=\"100\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">actual &#8804; max</text></svg>",
+      "caption": {
+        "en": "The acceptable master table: each row is an AcceptableMaster entry; actualTableSize counts the live entries and can never exceed maxTableSize.",
+        "zh": "可接受主时钟表：每一行是一个 AcceptableMaster 条目；actualTableSize 统计当前有效条目数，且永远不会超过 maxTableSize。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The three data members describe the table's shape and contents. 14.7.2 'maxTableSize' is the maximum size of the table — its fixed capacity (a UInteger16, read-only), equal to the maxTableSize member of the underlying AcceptableMasterTable structure. 14.7.3 'actualTableSize' is the current number of elements actually present (a UInteger16, read/write), and the standard states it is always less than or equal to maxTableSize — you cannot fill more rows than the capacity. 14.7.4 'acceptableMasterArray' is the array itself: each element is an AcceptableMaster structure (read/write), holding one permitted master's information. Together these let management read the ceiling, read or set how many entries are in use, and read or edit the entries themselves.",
+      "zh": "三个数据成员描述了这张表的形状与内容。14.7.2“maxTableSize”是表的最大容量——固定的容量上限（UInteger16 类型，只读），等于底层 AcceptableMasterTable 结构中的 maxTableSize 成员。14.7.3“actualTableSize”是当前实际存在的元素个数（UInteger16 类型，可读写），标准规定它始终小于或等于 maxTableSize——填入的行数不能超过容量。14.7.4“acceptableMasterArray”就是数组本身：每个元素是一个 AcceptableMaster 结构（可读写），保存一个被允许的主时钟的信息。三者合起来，让管理实体能够读取容量上限、读取或设置在用条目数，以及读取或编辑条目本身。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally 14.7.5 'acceptableMasterTableDS table' gives the structural rule and the access map: there is one acceptableMasterTableDS table per PTP Instance, detailed in Table 14-6. In that table maxTableSize is read-only (R), while actualTableSize and acceptableMasterArray are read/write (RW). The contrast with pathTraceDS is instructive: pathTraceDS is observe-only state the protocol fills in automatically, whereas the acceptable master table is partly a policy you configure — you write the allow-list, and the system reports back how full it is.",
+      "zh": "最后，14.7.5“acceptableMasterTableDS table”给出结构规则与访问权限映射：每个 PTP 实例有一张 acceptableMasterTableDS 表，详见表 14-6。在该表中，maxTableSize 为只读（R），而 actualTableSize 与 acceptableMasterArray 为可读写（RW）。它与 pathTraceDS 的对比很有启发：pathTraceDS 是协议自动填充的、仅供观察的状态，而可接受主时钟表部分是你配置的策略——你写入允许清单，系统则回报它被填到了多满。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause in 14.6 and 14.7 with its exact role",
+        "zh": "覆盖地图：14.6 与 14.7 各条款及其确切作用"
+      },
+      "en": "pathTraceDS (14.6): 14.6.1 General — defines the data set as the current path trace information at the PTP Instance. 14.6.2 list — the array of ClockIdentity values from the pathTrace array, carried in the path trace TLV; initialized to an empty length-0 list. 14.6.3 enable — fixed at TRUE (mandatory in 802.1AS; the member exists only for IEEE 1588-2019 compatibility, where it is configurable). 14.6.4 pathTraceDS table — one per PTP Instance, structured as Table 14-5 (list = ClockIdentity[N], R; enable = Boolean, R). acceptableMasterTableDS (14.7): 14.7.1 General — the acceptable master table used when an EPON port serves a PTP Instance. 14.7.2 maxTableSize — maximum table size (UInteger16, R), equal to the AcceptableMasterTable structure's maxTableSize. 14.7.3 actualTableSize — current element count (UInteger16, RW), always less than or equal to maxTableSize. 14.7.4 acceptableMasterArray — array whose elements are AcceptableMaster structures (RW). 14.7.5 acceptableMasterTableDS table — one per PTP Instance, structured as Table 14-6 (maxTableSize R; actualTableSize RW; acceptableMasterArray RW).",
+      "zh": "pathTraceDS（14.6）：14.6.1 概述——将该数据集定义为 PTP 实例处当前可用的路径追踪信息。14.6.2 list——来自 pathTrace 数组的 ClockIdentity 值数组，承载于路径追踪 TLV 中；初始化为长度为 0 的空列表。14.6.3 enable——固定为 TRUE（在 802.1AS 中为强制；该成员仅为兼容 IEEE 1588-2019 而存在，在后者中可配置）。14.6.4 pathTraceDS table——每个 PTP 实例一张，按表 14-5 排布（list = ClockIdentity[N]，只读；enable = Boolean，只读）。acceptableMasterTableDS（14.7）：14.7.1 概述——当 EPON 端口服务于某 PTP 实例时所用的可接受主时钟表。14.7.2 maxTableSize——表的最大容量（UInteger16，只读），等于 AcceptableMasterTable 结构的 maxTableSize。14.7.3 actualTableSize——当前元素个数（UInteger16，可读写），始终小于等于 maxTableSize。14.7.4 acceptableMasterArray——其元素为 AcceptableMaster 结构的数组（可读写）。14.7.5 acceptableMasterTableDS table——每个 PTP 实例一张，按表 14-6 排布（maxTableSize 只读；actualTableSize 可读写；acceptableMasterArray 可读写）。",
+      "cite": {
+        "pdf_id": "8021AS-2020",
+        "pages": [
+          257,
+          258,
+          259
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        257,
+        258,
+        259
+      ],
+      "note": "Clause 14.6 pathTraceDS (14.6.1-14.6.4, Table 14-5) and Clause 14.7 acceptableMasterTableDS (14.7.1-14.7.5, Table 14-6)"
+    }
+  ],
+  "covers": [
+    "8021AS-2020:14.6.1",
+    "8021AS-2020:14.6.2",
+    "8021AS-2020:14.6.3",
+    "8021AS-2020:14.6.4",
+    "8021AS-2020:14.7.1",
+    "8021AS-2020:14.7.2",
+    "8021AS-2020:14.7.3",
+    "8021AS-2020:14.7.4",
+    "8021AS-2020:14.7.5"
+  ],
+  "track": "tsn"
+}

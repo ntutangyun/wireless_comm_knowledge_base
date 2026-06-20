@@ -1,0 +1,199 @@
+{
+  "id": "tsn-03",
+  "title": {
+    "en": "gPTP Foundations: Scope, Conformance, Conventions, and the Time-Sync Model",
+    "zh": "gPTP 基础：适用范围、符合性、约定与时间同步模型"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1AS-2020 defines gPTP (the generalized Precision Time Protocol), a way to give every device on a packet network a shared sense of time accurate to fractions of a microsecond. This lesson walks the standard's framing chapters: Clause 1 (what it is for), Clause 5 (what counts as conforming), Clause 6 (how the text and data are written), and Clause 7 (the conceptual model of a time-aware network). Clause 1.1 (Scope) says 802.1AS specifies protocols, procedures, and managed objects that keep synchronization requirements met for time-sensitive applications such as audio, video, and time-sensitive control across IEEE 802 and similar media, including during the addition, removal, or failure of network components. Clause 1.2 (Purpose) explains the why: letting systems meet jitter, wander, and time-synchronization requirements while leveraging the IEEE 1588 (PTP, Precision Time Protocol) Working Group's prior work.",
+      "zh": "IEEE Std 802.1AS-2020 定义了 gPTP（通用精确时间协议），它让分组网络上的每台设备共享一个精确到亚微秒级的统一时间。本课讲解该标准的总论章节：Clause 1（用途）、Clause 5（何为符合性）、Clause 6（文本与数据如何书写）以及 Clause 7（时间感知网络的概念模型）。Clause 1.1（Scope，适用范围）规定 802.1AS 定义了一套协议、流程和可管理对象，以确保在 IEEE 802 及类似介质上，音频、视频、时敏控制等时敏应用的同步要求得到满足，并涵盖网络组件的增减或故障期间。Clause 1.2（Purpose，目的）说明缘由：让系统满足抖动、漂移和时间同步要求，同时复用 IEEE 1588（PTP，精确时间协议）工作组的既有成果。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "gPTP is a 'profile' of IEEE 1588: it picks a tightly constrained subset of PTP, locks down the choices, and adds IEEE 802 media specifics. Where plain 1588 offers many options, gPTP usually mandates one. Keep that lens as you read Clause 7.5, which lists the exact differences.",
+      "zh": "gPTP 是 IEEE 1588 的一个“配置档（profile）”：它从 PTP 中挑选出一个严格受限的子集，把可选项固定下来，并加入 IEEE 802 介质的专门规定。普通 1588 提供众多选项之处，gPTP 通常只强制一种。阅读 Clause 7.5（列举两者确切差异）时请带着这一视角。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5 (Conformance) tells you how to read the rest of the standard as requirements. Clause 5.1 (Requirements terminology) fixes the verbs: shall is mandatory, may is an allowed choice, should is a recommendation; the words is/are state definitions and logical consequences, can describes permitted-but-not-controlled behavior, cannot describes what never happens in a conformant system, and capability means 'can be configured to.' Clause 5.2 (PICS) requires a supplier claiming conformance to fill out the Protocol Implementation Conformance Statement proforma in Annex A, identifying both the supplier and the implementation. Clause 5.3 (Time-aware system requirements) sets the floor: a time-aware system shall support at least one PTP Instance (the entity inside a device that runs gPTP for one timing domain).",
+      "zh": "Clause 5（Conformance，符合性）告诉你如何把标准其余部分当作“要求”来读。Clause 5.1（Requirements terminology，要求术语）固定了情态动词：shall 为强制，may 为允许的选择，should 为建议；is/are 用于定义与逻辑推论，can 描述被允许但不受控的行为，cannot 描述符合性系统中绝不发生的情形，capability 意为“可被配置为”。Clause 5.2（PICS）要求声称符合的供应商填写 Annex A 中的“协议实现符合性声明（PICS）”模板，并标明供应商与实现。Clause 5.3（Time-aware system requirements，时间感知系统要求）给出底线：时间感知系统至少应支持一个 PTP Instance（设备内为某一个时间域运行 gPTP 的实体）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5.4 itemizes what a PTP Instance must and may do. Clause 5.4.1 (Summary of requirements) lists the mandatory pieces: implement the gPTP requirements of Clause 8, support the time-synchronization state machines, have at least one PTP Port, run the BMCA (Best Master Clock Algorithm) with externalPortConfigurationEnabled=FALSE as the default on domain 0, and meet the performance numbers in Annex B. Clause 5.4.2 (PTP Instance options) collects the should/may items: master and Grandmaster capability, external port configuration, remote management (e.g., SNMP, the Simple Network Management Protocol, with the MIB in Clause 15), and supporting more than one domain. Clause 5.4.3 (PTP Relay Instance requirements) says a relay (a node that receives time, corrects it, and re-sends it) shall support more than one PTP Port plus the master capability of 5.4.2.",
+      "zh": "Clause 5.4 逐条列出 PTP Instance 必须做与可以做的事。Clause 5.4.1（Summary of requirements，要求汇总）列出强制项：实现 Clause 8 的 gPTP 要求、支持时间同步状态机、至少有一个 PTP Port、运行 BMCA（最佳主时钟算法）且在 domain 0 上默认 externalPortConfigurationEnabled=FALSE，并满足 Annex B 的性能指标。Clause 5.4.2（PTP Instance options，选项）汇集 should/may 项：主时钟与 Grandmaster 能力、外部端口配置、远程管理（如 SNMP 简单网络管理协议，配合 Clause 15 的 MIB），以及支持多个 domain。Clause 5.4.3（PTP Relay Instance requirements，中继实例要求）规定：中继（接收时间、修正后再转发的节点）应支持多于一个 PTP Port，并具备 5.4.2 的主时钟能力。"
+    },
+    {
+      "type": "prose",
+      "en": "Because gPTP rides on different physical media, Clauses 5.5 through 5.8 add per-MAC (Media Access Control) rules. Clause 5.5 covers full-duplex IEEE 802.3 (Ethernet) links: a system shall support full-duplex operation and the requirements of Clause 11, with options like one-step transmit/receive and asymmetry measurement. Clause 5.6 covers IEEE 802.11 (Wi-Fi): a system shall support Clause 12 and at least one master or slave media-dependent state machine, and an end instance shall support TIMINGMSMT (Timing Measurement, TM) or FINETIMINGMSMT (Fine Timing Measurement, FTM); a relay shall support TM and should support FTM for backward compatibility. Clause 5.7 covers IEEE 802.3 EPON (Ethernet Passive Optical Network), requiring multipoint MAC Control plus Clause 13. Clause 5.8 covers CSN (coordinated shared network, e.g., MoCA or ITU-T G.hn), requiring Clause 16 and at least one MoCA or G.hn port.",
+      "zh": "由于 gPTP 跑在不同物理介质上，Clause 5.5 至 5.8 针对每种 MAC（介质访问控制）追加规则。Clause 5.5 针对全双工 IEEE 802.3（以太网）链路：系统应支持全双工运行及 Clause 11 的要求，并可选支持单步发送/接收、非对称测量等。Clause 5.6 针对 IEEE 802.11（Wi-Fi）：系统应支持 Clause 12 及至少一个主或从介质相关状态机，端实例应支持 TIMINGMSMT（计时测量，TM）或 FINETIMINGMSMT（精细计时测量，FTM）；中继应支持 TM，并宜支持 FTM 以保持向后兼容。Clause 5.7 针对 IEEE 802.3 EPON（以太无源光网络），要求多点 MAC 控制及 Clause 13。Clause 5.8 针对 CSN（协调共享网络，如 MoCA 或 ITU-T G.hn），要求 Clause 16 及至少一个 MoCA 或 G.hn 端口。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6 (Conventions) sets the writing rules. Clause 6.1 (General) says it defines naming, service notation, and data types. Clause 6.2 (Service specification method and notation) borrows Clause 7 of IEEE Std 802.1AC-2016 for describing service interfaces. Clause 6.3 (Lexical form syntax) is the naming convention you will see everywhere: type names like ClockQuality (capitalized words joined), constants like ATOMIC_CLOCK (uppercase with underscores), fields like secondsField (lowercase first word), data set names ending in DS like defaultDS, and message names like Pdelay_Req. Knowing this rule lets you decode any identifier in the standard at a glance.",
+      "zh": "Clause 6（Conventions，约定）确立书写规则。Clause 6.1（General，总则）说明它定义命名、服务记法和数据类型。Clause 6.2（Service specification method and notation，服务规范方法与记法）借用 IEEE Std 802.1AC-2016 的 Clause 7 来描述服务接口。Clause 6.3（Lexical form syntax，词法形式语法）是贯穿全文的命名约定：类型名如 ClockQuality（首字母大写、单词相连），常量如 ATOMIC_CLOCK（全大写加下划线），字段如 secondsField（首词小写），数据集名以 DS 结尾如 defaultDS，消息名如 Pdelay_Req。掌握此规则便能一眼读懂标准中任何标识符。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.4 (Data types and on-the-wire formats) defines how numbers are represented and serialized. Clause 6.4.1 (General) notes that data types define logical properties only; an implementation may store them however it likes internally. Clause 6.4.2 (Primitive data types) lists the building blocks in Table 6-1: Boolean, EnumerationN, signed/unsigned IntegerN (twos-complement), Nibble, Octet, and Float64 (IEEE 754 binary64). Clause 6.4.3 (Derived data type specifications) builds richer types on top: ScaledNs and UScaledNs (time in units of 2^-16 ns), TimeInterval, Timestamp and ExtendedTimestamp, ClockIdentity (an 8-octet ID for a PTP Instance), PortIdentity, and ClockQuality. Clause 6.4.4 (PDU formats) gives the wire layout for these Protocol Data Units: most-significant octet first, bit 7 is most significant within an octet, structs serialize member-by-member with no padding.",
+      "zh": "Clause 6.4（Data types and on-the-wire formats，数据类型与线上格式）定义数字如何表示与序列化。Clause 6.4.1（General）指出数据类型只定义逻辑属性，实现内部可任意存储。Clause 6.4.2（Primitive data types，原始数据类型）在表 6-1 列出基础类型：Boolean、EnumerationN、有/无符号 IntegerN（二补码）、Nibble、Octet 及 Float64（IEEE 754 binary64）。Clause 6.4.3（Derived data type specifications，派生数据类型）在其上构建更丰富的类型：ScaledNs 与 UScaledNs（以 2^-16 ns 为单位的时间）、TimeInterval、Timestamp 与 ExtendedTimestamp、ClockIdentity（标识一个 PTP Instance 的 8 字节 ID）、PortIdentity 以及 ClockQuality。Clause 6.4.4（PDU formats，协议数据单元格式）给出这些 PDU 的线上布局：最高有效字节在前，字节内第 7 位最高，结构体逐成员序列化且无填充。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\"><rect x=\"10\" y=\"30\" width=\"120\" height=\"34\" /><rect x=\"130\" y=\"30\" width=\"70\" height=\"34\" /><rect x=\"200\" y=\"30\" width=\"120\" height=\"34\" /><rect x=\"320\" y=\"30\" width=\"130\" height=\"34\" /><text x=\"70\" y=\"52\" font-size=\"11\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">seconds (48b)</text><text x=\"165\" y=\"52\" font-size=\"11\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">ns (32b)</text><text x=\"260\" y=\"52\" font-size=\"10\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">ClockIdentity (8 oct)</text><text x=\"385\" y=\"52\" font-size=\"10\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">portNumber (16b)</text><text x=\"10\" y=\"20\" font-size=\"11\" fill=\"currentColor\" stroke=\"none\">MSB first  -  Timestamp  -  PortIdentity</text><text x=\"10\" y=\"82\" font-size=\"10\" fill=\"currentColor\" stroke=\"none\">Most-significant octet nearest the start of the PDU (6.4.4)</text></svg>",
+      "caption": {
+        "en": "On-the-wire layout (Clause 6.4): a Timestamp (48-bit seconds + 32-bit nanoseconds) and a PortIdentity (ClockIdentity + portNumber) serialize most-significant-octet-first, members in order, no padding.",
+        "zh": "线上布局（Clause 6.4）：Timestamp（48 位秒 + 32 位纳秒）与 PortIdentity（ClockIdentity + portNumber）按最高有效字节在前、成员依序、无填充的方式序列化。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7 (Time-synchronization model for a packet network) is the mental model. Clause 7.1 (General) frames gPTP as a profile of IEEE 1588-2019. Clause 7.2 (Architecture of a time-aware network) defines the vocabulary: a time-aware network is interconnected time-aware systems (bridges, routers, end stations); each runs one PTP Instance per gPTP domain. There are two instance types: a PTP End Instance (a recipient of time) and a PTP Relay Instance (receives, corrects for delay, retransmits). Clause 7.2.1 (General) introduces these and the four supported media. Clause 7.2.2 covers a single gPTP domain, where the BMCA picks one Grandmaster PTP Instance (the time source) and the network heals if a link fails. Clause 7.2.3 covers multiple domains, each with its own independent BMCA and timescale (one must be domain 0 for backward compatibility). Clause 7.2.4 covers redundancy: every redundancy scheme has a detection, correction, and action component; the BMCA provides a basic level (7.2.4.2), while richer redundant-GM and redundant-path schemes (7.2.4.3) are enabled but not fully specified here.",
+      "zh": "Clause 7（Time-synchronization model for a packet network，分组网络时间同步模型）给出思维模型。Clause 7.1（General）将 gPTP 定位为 IEEE 1588-2019 的配置档。Clause 7.2（Architecture of a time-aware network，时间感知网络架构）定义术语：时间感知网络由互连的时间感知系统（网桥、路由器、端站）组成；每个系统在每个 gPTP domain 中运行一个 PTP Instance。实例分两类：PTP End Instance（时间的接收者）与 PTP Relay Instance（接收、修正延迟、再转发）。Clause 7.2.1（General）引入两类实例与四种受支持介质。Clause 7.2.2 讲单个 gPTP domain，由 BMCA 选出唯一的 Grandmaster PTP Instance（时间源），链路失效时网络自愈。Clause 7.2.3 讲多 domain，每个 domain 有独立的 BMCA 与时标（其中之一须为 domain 0 以向后兼容）。Clause 7.2.4 讲冗余：每种冗余方案都含检测、纠正、动作三部分；BMCA 提供基本冗余（7.2.4.2），更丰富的冗余 GM 与冗余路径方案（7.2.4.3）被支持但未在此完整规定。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n    participant I as 802.1AS initiator\n    participant R as 802.1AS responder\n    I->>R: msg sent at t1\n    Note over R: received at t2\n    R->>I: msg sent at t3\n    Note over I: received at t4\n    Note over I: delay d = ((t2-t1)+(t4-t3))/2",
+      "zh": "sequenceDiagram\n    participant I as 802.1AS 发起方\n    participant R as 802.1AS 响应方\n    I->>R: t1 时刻发送\n    Note over R: t2 时刻收到\n    R->>I: t3 时刻发送\n    Note over I: t4 时刻收到\n    Note over I: 时延 d = ((t2-t1)+(t4-t3))/2"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7.3 (Time synchronization) explains the actual timing math. Clause 7.3.1 (General) says the Grandmaster sends the current time to its neighbors; each PTP Instance corrects it by adding the path propagation time, and a relay adds its own residence time (the time a message spends being forwarded) before passing it on. Clause 7.3.2 (Delay measurement) shows the shared principle, illustrated above: timestamp a message leaving and arriving (t1..t4), send one back, and average to get path delay. Ethernet uses the peer-to-peer (P2P) Pdelay messages, Wi-Fi uses TM/FTM, EPON uses its discovery process, CSN uses native or Ethernet-style methods. Clause 7.3.3 (Logical syntonization) means all instances measure intervals against the same frequency: rather than physically steering an oscillator, each instance carries a cumulative Grandmaster-to-local frequency ratio in a TLV (type-length-value) on the Follow_Up message. Clause 7.3.4 (Grandmaster selection and network establishment) notes the synchronization spanning tree from the BMCA can differ from the RSTP (Rapid Spanning Tree Protocol) forwarding tree, and that the P2P delay mechanism detects non-time-aware neighbors (no response, multiple responses, or excessive delay) so the BMCA can ignore those links. Clause 7.3.5 (Energy efficiency) lets a port ask a neighbor to slow its Sync/Pdelay/Announce rate to save power.",
+      "zh": "Clause 7.3（Time synchronization，时间同步）讲解真正的计时运算。Clause 7.3.1（General）说明 Grandmaster 把当前时间发给邻居；每个 PTP Instance 加上路径传播时间予以修正，中继还要加上自身的驻留时间（residence time，消息被转发所耗时间）后再传出。Clause 7.3.2（Delay measurement，时延测量）展示上图所示的共同原理：给离开与到达的消息打时间戳（t1..t4），反向再发一次并取平均得到路径时延。以太网用点对点（P2P）Pdelay 消息，Wi-Fi 用 TM/FTM，EPON 用其发现流程，CSN 用原生或以太网式方法。Clause 7.3.3（Logical syntonization，逻辑同频）指所有实例都以同一频率测量时间间隔：不去物理调整振荡器，而是在 Follow_Up 消息的 TLV（类型-长度-值）中携带累积的“Grandmaster 对本地”频率比。Clause 7.3.4（Grandmaster 选择与网络建立）指出 BMCA 得到的同步生成树可与 RSTP（快速生成树协议）转发树不同，并用 P2P 时延机制识别非时间感知邻居（无响应、多响应或时延过大），使 BMCA 忽略这些链路。Clause 7.3.5（Energy efficiency，能效）允许端口请求邻居降低 Sync/Pdelay/Announce 速率以省电。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n    A[Time-aware higher-layer application - Clause 9] --> B[Media-independent layer - Clause 10]\n    B --> C[ClockMaster / ClockSlave / SiteSync]\n    C --> D[PortSync entities]\n    D --> E[Media-dependent port - Clauses 11/12/13/16]\n    E --> F[MAC / PHY]",
+      "zh": "flowchart TD\n    A[时间感知上层应用 - Clause 9] --> B[介质无关层 - Clause 10]\n    B --> C[ClockMaster / ClockSlave / SiteSync]\n    C --> D[PortSync 实体]\n    D --> E[介质相关端口 - Clause 11/12/13/16]\n    E --> F[MAC / PHY]"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7.4 (PTP Instance architecture) gives the internal block diagram (Figure 7-8). A PTP Instance has three layers: optional application interfaces (Clause 9); a single media-independent part holding the ClockMaster, ClockSlave, and SiteSync entities plus one PortSync entity per port and a LocalClock, where SiteSync runs the BMCA and forwards time while PortSync computes per-port delay; and media-dependent ports that translate abstract MDSyncSend/MDSyncReceive structures into the right messages for each medium (Ethernet Sync/Follow_Up with a rate-ratio TLV, Wi-Fi TM/FTM via the MAC Layer Management Entity, EPON's slow protocol, CSN like Ethernet). This split is gPTP's key design idea: one common timing brain, swappable media adapters.",
+      "zh": "Clause 7.4（PTP Instance architecture，PTP 实例架构）给出内部框图（图 7-8）。一个 PTP Instance 含三层：可选的应用接口（Clause 9）；单一的介质无关部分，包含 ClockMaster、ClockSlave、SiteSync 实体，外加每端口一个 PortSync 实体和一个 LocalClock，其中 SiteSync 运行 BMCA 并转发时间，PortSync 计算各端口时延；以及介质相关端口，将抽象的 MDSyncSend/MDSyncReceive 结构翻译成各介质对应的消息（以太网用带频率比 TLV 的 Sync/Follow_Up，Wi-Fi 经 MAC 层管理实体用 TM/FTM，EPON 用慢协议，CSN 同以太网）。这种分层正是 gPTP 的关键设计思想：一个通用的计时大脑，加上可替换的介质适配器。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every clause in this lesson, with exact numbers and pages",
+        "zh": "覆盖地图：本课每个条款的确切编号与页码"
+      },
+      "en": "Clause 1 (p.18): 1.1 Scope - protocols/procedures/managed objects for time-sensitive apps over IEEE 802 media; 1.2 Purpose - meet jitter/wander/sync needs, leverage IEEE 1588. Clause 5 Conformance (p.27-30): 5.1 Requirements terminology (shall/may/should/is/can/cannot/capability); 5.2 PICS proforma in Annex A; 5.3 a time-aware system supports >=1 PTP Instance; 5.4.1 mandatory PTP Instance items (Clause 8, state machines, >=1 PTP Port, BMCA default on domain 0, Annex B perf); 5.4.2 optional items (master/Grandmaster capability, external port config, SNMP/MIB Clause 15, multiple domains); 5.4.3 PTP Relay Instance (>1 port + master capability); 5.5 full-duplex 802.3 Ethernet; 5.6 IEEE 802.11 TM/FTM; 5.7 IEEE 802.3 EPON; 5.8 CSN (MoCA / G.hn). Clause 6 Conventions (p.31-35): 6.1 General; 6.2 service notation from 802.1AC-2016; 6.3 lexical naming (ClockQuality, ATOMIC_CLOCK, secondsField, defaultDS, Pdelay_Req); 6.4.1 data types are logical only; 6.4.2 primitives (Table 6-1); 6.4.3 derived types (ScaledNs, TimeInterval, Timestamp, ClockIdentity, ClockQuality); 6.4.4 PDU on-the-wire format (MSB first, no padding). Clause 7 (p.36-47): 7.1 General (gPTP is a 1588 profile); 7.2.1 architecture vocabulary + 2 instance types + 4 media; 7.2.2 single domain + BMCA + healing; 7.2.3 multiple domains + domain 0; 7.2.4 redundancy (7.2.4.1 detect/correct/act, 7.2.4.2 BMCA basic, 7.2.4.3 advanced not fully specified); 7.3.1 sync overview (residence time + path delay); 7.3.2 delay measurement principle; 7.3.3 logical syntonization (frequency ratio in TLV); 7.3.4 BMCA spanning tree vs RSTP, detecting non-time-aware neighbors; 7.3.5 energy efficiency; 7.4 PTP Instance architecture (Figure 7-8); 7.5 differences gPTP vs PTP-1588 (802 MAC only, media-independent/dependent split, only End/Relay instance types, mandatory P2P + two-step + syntonization, formal interfaces).",
+      "zh": "Clause 1（p.18）：1.1 Scope——面向 IEEE 802 介质上时敏应用的协议/流程/可管理对象；1.2 Purpose——满足抖动/漂移/同步需求并复用 IEEE 1588。Clause 5 符合性（p.27-30）：5.1 要求术语（shall/may/should/is/can/cannot/capability）；5.2 Annex A 的 PICS 模板；5.3 时间感知系统支持 >=1 个 PTP Instance；5.4.1 PTP Instance 强制项（Clause 8、状态机、>=1 个 PTP Port、domain 0 默认 BMCA、Annex B 性能）；5.4.2 选项（主/Grandmaster 能力、外部端口配置、SNMP/MIB Clause 15、多 domain）；5.4.3 PTP Relay Instance（>1 端口 + 主时钟能力）；5.5 全双工 802.3 以太网；5.6 IEEE 802.11 的 TM/FTM；5.7 IEEE 802.3 EPON；5.8 CSN（MoCA / G.hn）。Clause 6 约定（p.31-35）：6.1 总则；6.2 取自 802.1AC-2016 的服务记法；6.3 词法命名（ClockQuality、ATOMIC_CLOCK、secondsField、defaultDS、Pdelay_Req）；6.4.1 数据类型仅为逻辑；6.4.2 原始类型（表 6-1）；6.4.3 派生类型（ScaledNs、TimeInterval、Timestamp、ClockIdentity、ClockQuality）；6.4.4 PDU 线上格式（最高位在前、无填充）。Clause 7（p.36-47）：7.1 总则（gPTP 是 1588 配置档）；7.2.1 架构术语 + 两类实例 + 四种介质；7.2.2 单 domain + BMCA + 自愈；7.2.3 多 domain + domain 0；7.2.4 冗余（7.2.4.1 检测/纠正/动作，7.2.4.2 BMCA 基本，7.2.4.3 高级未完整规定）；7.3.1 同步概述（驻留时间 + 路径时延）；7.3.2 时延测量原理；7.3.3 逻辑同频（TLV 中的频率比）；7.3.4 BMCA 生成树与 RSTP 之别、检测非时间感知邻居；7.3.5 能效；7.4 PTP Instance 架构（图 7-8）；7.5 gPTP 与 PTP-1588 的差异（仅 802 MAC、介质无关/相关分层、仅 End/Relay 两类实例、强制 P2P + 两步 + 同频、正式接口）。",
+      "cite": {
+        "pdf_id": "8021AS-2020",
+        "pages": [
+          18,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          43,
+          44,
+          45,
+          46,
+          47
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 7.5 (Differences between gPTP and PTP) is the contrast that makes gPTP's identity clear. Eight points: (a) gPTP communicates only over IEEE 802 MAC PDUs and addressing, where 1588 also allows layer-3/4 transports; (b) gPTP mandates the media-independent/media-dependent sublayer split, which is optional in 1588-2019; (c) gPTP has only two instance types (End and Relay), where 1588 has Ordinary, Boundary, and two Transparent Clock types - a Relay Instance is a tightly defined Boundary Clock that can behave like a P2P Transparent Clock; (d) a gPTP domain contains only PTP Instances (no non-aware relays), unlike 1588; (e) Ethernet links must use the peer-to-peer delay mechanism; (f) Ethernet must use two-step processing with optional one-step; (g) all instances are logically syntonized (mandatory in gPTP, optional in 1588); and (h) gPTP adds formal application interface primitives (Clause 9). Together, Clauses 1-7 give you the why, the rules, the notation, and the model - the foundation for every detailed mechanism in the rest of the standard.",
+      "zh": "Clause 7.5（Differences between gPTP and PTP，gPTP 与 PTP 的差异）是凸显 gPTP 身份的对照。八点：(a) gPTP 只经 IEEE 802 MAC PDU 与寻址通信，而 1588 还允许三/四层传输；(b) gPTP 强制介质无关/介质相关分层，此在 1588-2019 中为可选；(c) gPTP 仅两类实例（End 与 Relay），而 1588 有普通、边界及两种透明时钟——Relay Instance 是被严格定义的边界时钟，可表现得像 P2P 透明时钟；(d) gPTP domain 只含 PTP Instance（不含非感知中继），与 1588 不同；(e) 以太网链路必须用点对点时延机制；(f) 以太网必须用两步处理，单步可选；(g) 所有实例逻辑同频（gPTP 强制，1588 可选）；(h) gPTP 增加正式的应用接口原语（Clause 9）。综合而言，Clause 1-7 给出了用途、规则、记法与模型——是标准其余所有详细机制的基础。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        18
+      ],
+      "note": "Clause 1.1 Scope and 1.2 Purpose"
+    },
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        27,
+        28,
+        29,
+        30
+      ],
+      "note": "Clause 5 Conformance: 5.1-5.8"
+    },
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        31,
+        32,
+        33,
+        34,
+        35
+      ],
+      "note": "Clause 6 Conventions: 6.1-6.4.4 incl. Table 6-1"
+    },
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        36,
+        37,
+        38,
+        39,
+        40,
+        43,
+        44,
+        45,
+        46,
+        47
+      ],
+      "note": "Clause 7 time-sync model: 7.1-7.5 incl. Figures 7-1, 7-7, 7-8"
+    }
+  ],
+  "covers": [
+    "8021AS-2020:1.1",
+    "8021AS-2020:1.2",
+    "8021AS-2020:5.1",
+    "8021AS-2020:5.2",
+    "8021AS-2020:5.3",
+    "8021AS-2020:5.4.1",
+    "8021AS-2020:5.4.2",
+    "8021AS-2020:5.4.3",
+    "8021AS-2020:5.5",
+    "8021AS-2020:5.6",
+    "8021AS-2020:5.7",
+    "8021AS-2020:5.8",
+    "8021AS-2020:6.1",
+    "8021AS-2020:6.2",
+    "8021AS-2020:6.3",
+    "8021AS-2020:6.4.1",
+    "8021AS-2020:6.4.2",
+    "8021AS-2020:6.4.3",
+    "8021AS-2020:6.4.4",
+    "8021AS-2020:7.1",
+    "8021AS-2020:7.2.1",
+    "8021AS-2020:7.2.2",
+    "8021AS-2020:7.2.3",
+    "8021AS-2020:7.2.4",
+    "8021AS-2020:7.3.1",
+    "8021AS-2020:7.3.2",
+    "8021AS-2020:7.3.3",
+    "8021AS-2020:7.3.4",
+    "8021AS-2020:7.3.5",
+    "8021AS-2020:7.4",
+    "8021AS-2020:7.5"
+  ],
+  "track": "tsn"
+}

@@ -1,0 +1,133 @@
+{
+  "id": "tsn-18",
+  "title": {
+    "en": "The CMLDS Link-Port Data Set: Managing Shared Link-Delay Measurement",
+    "zh": "CMLDS 链路端口数据集：管理共享链路时延测量"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In gPTP (generalized Precision Time Protocol, the profile IEEE 802.1AS-2020 defines for time-aware networks), each link can measure its own one-way propagation delay using the peer-to-peer delay mechanism — a back-and-forth exchange of Pdelay_Req and Pdelay_Resp messages. The Common Mean Link Delay Service (CMLDS) lets a single link-delay measurement be shared by multiple PTP (Precision Time Protocol) domains running over the same physical link, instead of each domain measuring delay independently. Clause 14.16 defines the cmldsLinkPortDS — the managed data set that holds all the configuration and read-out parameters for the CMLDS on one Link Port.",
+      "zh": "在 gPTP（广义精确时间协议，即 IEEE 802.1AS-2020 为时间感知网络定义的协议规范）中，每条链路可以使用点对点时延机制测量自身的单向传播时延——通过 Pdelay_Req 与 Pdelay_Resp 消息的往返交换完成。共享平均链路时延服务（CMLDS）允许同一条物理链路上运行的多个 PTP（精确时间协议）域共享一次链路时延测量，而不必各域分别独立测量。Clause 14.16 定义了 cmldsLinkPortDS——这个受管数据集保存了某个链路端口上 CMLDS 的全部配置参数与读取参数。"
+    },
+    {
+      "type": "prose",
+      "en": "A managed data set is just a named bundle of variables that network management can read (R) or, for some of them, write (RW). The standard says there is one cmldsLinkPortDS per Link Port, and the number of these data sets equals cmldsDefaultDS.numberLinkPorts (14.16.1). The first member, portIdentity (14.16.2), simply names which port this data set belongs to. Most members of cmldsLinkPortDS are mirror images of internal per-port variables, exposed so that an operator can inspect — and sometimes tune — how the link measures its own delay.",
+      "zh": "受管数据集本质上是一组带名字的变量，网络管理可以读取（R），其中部分还可以写入（RW）。标准规定每个链路端口对应一个 cmldsLinkPortDS，这类数据集的数量等于 cmldsDefaultDS.numberLinkPorts（14.16.1）。第一个成员 portIdentity（14.16.2）只是标明该数据集属于哪个端口。cmldsLinkPortDS 的大多数成员都是内部按端口变量的镜像，对外暴露，使运维人员能够检查——有时还能调整——链路测量自身时延的方式。"
+    },
+    {
+      "type": "prose",
+      "en": "Several members report the live state of the link. cmldsLinkPortEnabled (14.16.3) is a Boolean saying whether the service is turned on for this port. isMeasuringDelay (14.16.4) tells you whether the port is currently running peer-delay exchanges. asCapableAcrossDomains (14.16.5) is the key verdict: TRUE means this Link Port can carry the 802.1AS protocol for the domains sharing it. meanLinkDelay (14.16.6) is the headline output — the estimated one-way propagation time on this link. Note it is zero for an IEEE 802.3 EPON link and for the master port of an IEEE 802.11 (Wi-Fi) link, because the delay is not directly measured there.",
+      "zh": "若干成员报告链路的实时状态。cmldsLinkPortEnabled（14.16.3）是一个布尔值，表示该端口是否启用了此服务。isMeasuringDelay（14.16.4）告诉你端口当前是否正在进行点对点时延交换。asCapableAcrossDomains（14.16.5）是关键判定：TRUE 表示该链路端口能够为共享它的各域承载 802.1AS 协议。meanLinkDelay（14.16.6）是核心输出——本链路上单向传播时延的估计值。注意：对 IEEE 802.3 EPON 链路以及 IEEE 802.11（Wi-Fi）链路的主端口，该值为零，因为这些场景下时延并非直接测量。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: think of cmldsLinkPortDS as the dashboard for one link's delay-measurement engine. The read-only gauges (meanLinkDelay, isMeasuringDelay, neighborRateRatio) show what the engine is doing; the read/write knobs (thresholds, intervals, the use-management overrides) let an operator change how it runs.",
+      "zh": "心智模型：把 cmldsLinkPortDS 看作某条链路时延测量引擎的仪表盘。只读仪表（meanLinkDelay、isMeasuringDelay、neighborRateRatio）显示引擎正在做什么；读写旋钮（阈值、间隔、各种是否启用管理设置的开关）则让运维人员改变它的运行方式。"
+    },
+    {
+      "type": "prose",
+      "en": "Two members guard link quality. meanLinkDelayThresh (14.16.7) is a propagation-time ceiling: if the measured delay rises above it, the Link Port (and any PTP Port using CMLDS on it) is judged unfit to participate in 802.1AS. delayAsymmetry (14.16.8) records how unequal the delay is in the two directions, relative to the local clock; if asymmetry is not modeled, it is zero. neighborRateRatio (14.16.9) estimates how fast the neighbor's clock runs compared to ours — encoded as the fractional frequency offset multiplied by 2^41 — which is what lets us translate the neighbor's timestamps into our own timebase.",
+      "zh": "有两个成员守护链路质量。meanLinkDelayThresh（14.16.7）是传播时延的上限：若测得时延超过它，该链路端口（以及在其上使用 CMLDS 的任何 PTP 端口）将被判定为不适合参与 802.1AS。delayAsymmetry（14.16.8）记录相对本地时钟、两个方向上时延的不对称程度；若未对不对称建模，则为零。neighborRateRatio（14.16.9）估计邻居时钟相对本机时钟的快慢——以小数频率偏移乘以 2^41 的形式编码——正是它让我们能把邻居的时间戳换算到自己的时基上。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  Req[\"Pdelay_Req\"] --> N[\"Neighbor\"]\n  N --> Resp[\"Pdelay_Resp\"]\n  Resp --> Calc[\"compute meanLinkDelay\\n+ neighborRateRatio\"]\n  Calc --> Chk{\"delay >\\nmeanLinkDelayThresh?\"}\n  Chk -->|yes| NotCap[\"asCapableAcrossDomains = FALSE\"]\n  Chk -->|no| Cap[\"asCapableAcrossDomains = TRUE\"]",
+      "zh": "flowchart LR\n  Req[\"Pdelay_Req\"] --> N[\"邻居\"]\n  N --> Resp[\"Pdelay_Resp\"]\n  Resp --> Calc[\"计算 meanLinkDelay\\n+ neighborRateRatio\"]\n  Calc --> Chk{\"时延 >\\nmeanLinkDelayThresh?\"}\n  Chk -->|是| NotCap[\"asCapableAcrossDomains = FALSE\"]\n  Chk -->|否| Cap[\"asCapableAcrossDomains = TRUE\"]"
+    },
+    {
+      "type": "prose",
+      "en": "The data set also controls how often delay is measured. initialLogPdelayReqInterval (14.16.10) is the starting log-base-2 interval between Pdelay_Req messages, applied when the port initializes or when a message-interval-request TLV asks to reset it; currentLogPdelayReqInterval (14.16.11) is the value in effect right now. For media other than full-duplex 802.3 (or peer-to-peer CSN media), both are the sentinel value 127. The standard repeats this same three-step override pattern for three different quantities — and understanding the pattern once unlocks nine of the members at a glance.",
+      "zh": "该数据集还控制时延测量的频率。initialLogPdelayReqInterval（14.16.10）是 Pdelay_Req 消息之间起始的以 2 为底的对数间隔，在端口初始化时、或当消息间隔请求 TLV 要求复位时应用；currentLogPdelayReqInterval（14.16.11）是当前正在生效的值。对于全双工 802.3（或采用点对点机制的 CSN）以外的介质，两者均为哨兵值 127。标准对三个不同的量重复使用同一套三步式覆盖模式——只要理解一次这个模式，就能一眼读懂九个成员。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"20\" width=\"130\" height=\"40\" rx=\"4\"/><text x=\"75\" y=\"44\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">useMgtSettable... ?</text><rect x=\"190\" y=\"0\" width=\"130\" height=\"34\" rx=\"4\"/><text x=\"255\" y=\"21\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">TRUE: use</text><text x=\"255\" y=\"33\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">mgtSettable value</text><rect x=\"190\" y=\"48\" width=\"130\" height=\"34\" rx=\"4\"/><text x=\"255\" y=\"69\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">FALSE: state machine</text><rect x=\"360\" y=\"24\" width=\"90\" height=\"34\" rx=\"4\"/><text x=\"405\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">current... value</text><path d=\"M140 35 L190 17\" marker-end=\"url(#a)\"/><path d=\"M140 45 L190 65\" marker-end=\"url(#a)\"/><path d=\"M320 17 L360 38\"/><path d=\"M320 65 L360 45\"/><defs><marker id=\"a\" markerWidth=\"8\" markerHeight=\"8\" refX=\"6\" refY=\"3\" orient=\"auto\"><path d=\"M0 0 L6 3 L0 6\" stroke=\"currentColor\"/></marker></defs></svg>",
+      "caption": {
+        "en": "The use-management override pattern, shared by three parameter families: a useMgtSettable... Boolean selects whether the current... value comes from the operator-set mgtSettable... value (TRUE) or from the LinkDelayIntervalSetting state machine (FALSE).",
+        "zh": "三组参数共用的“是否启用管理设置”覆盖模式：useMgtSettable... 布尔值决定 current... 值来自运维设置的 mgtSettable... 值（TRUE），还是来自 LinkDelayIntervalSetting 状态机（FALSE）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The three override families work identically. For the Pdelay_Req interval: useMgtSettableLogPdelayReqInterval (14.16.12) is a Boolean — TRUE makes currentLogPdelayReqInterval take the operator's mgtSettableLogPdelayReqInterval (14.16.13); FALSE hands control to the LinkDelayIntervalSetting state machine. The same shape governs whether to compute the neighbor rate ratio — initialComputeNeighborRateRatio (14.16.14), currentComputeNeighborRateRatio (14.16.15), useMgtSettableComputeNeighborRateRatio (14.16.16), mgtSettableComputeNeighborRateRatio (14.16.17) — and whether to compute the mean link delay — initialComputeMeanLinkDelay (14.16.18), currentComputeMeanLinkDelay (14.16.19), useMgtSettableComputeMeanLinkDelay (14.16.20), mgtSettableComputeMeanLinkDelay (14.16.21). Each defaults the useMgtSettable Boolean to FALSE, so the state machine drives unless an operator opts in.",
+      "zh": "这三组覆盖参数的工作方式完全一致。以 Pdelay_Req 间隔为例：useMgtSettableLogPdelayReqInterval（14.16.12）是布尔值——TRUE 使 currentLogPdelayReqInterval 取运维设定的 mgtSettableLogPdelayReqInterval（14.16.13）；FALSE 则把控制权交给 LinkDelayIntervalSetting 状态机。同样的结构也用于“是否计算邻居频率比”——initialComputeNeighborRateRatio（14.16.14）、currentComputeNeighborRateRatio（14.16.15）、useMgtSettableComputeNeighborRateRatio（14.16.16）、mgtSettableComputeNeighborRateRatio（14.16.17）——以及“是否计算平均链路时延”——initialComputeMeanLinkDelay（14.16.18）、currentComputeMeanLinkDelay（14.16.19）、useMgtSettableComputeMeanLinkDelay（14.16.20）、mgtSettableComputeMeanLinkDelay（14.16.21）。每一组的 useMgtSettable 布尔值默认都是 FALSE，因此除非运维主动启用，否则由状态机驱动。"
+    },
+    {
+      "type": "prose",
+      "en": "The remaining members handle fault counting, versioning, and asymmetry compensation. allowedLostResponses (14.16.22) is how many Pdelay_Req messages can go unanswered before the port is deemed to have stopped exchanging peer-delay messages. allowedFaults (14.16.23) is the fault count above which asCapableAcrossDomains flips to FALSE. versionNumber (14.16.24) is the PTP version and minorVersionNumber (14.16.26) is its minor field. pdelayTruncatedTimestampsArray (14.16.25) holds the four timestamps (t1–t4) of the most recently completed peer-delay exchange, each taken modulo 2^48 — used by the line-swapping asymmetry-compensation procedure.",
+      "zh": "其余成员负责故障计数、版本标识与不对称补偿。allowedLostResponses（14.16.22）规定在判定端口已停止交换点对点时延消息之前，可以有多少条 Pdelay_Req 消息得不到响应。allowedFaults（14.16.23）是故障计数的上限，超过它 asCapableAcrossDomains 就翻转为 FALSE。versionNumber（14.16.24）是 PTP 版本号，minorVersionNumber（14.16.26）是其次版本字段。pdelayTruncatedTimestampsArray（14.16.25）保存最近一次完成的点对点时延交换的四个时间戳（t1–t4），各自对 2^48 取模——供基于线缆交换的不对称补偿过程使用。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every cmldsLinkPortDS member (14.16.1–14.16.27) by exact clause",
+        "zh": "覆盖地图——按精确条款编号列出每个 cmldsLinkPortDS 成员（14.16.1–14.16.27）"
+      },
+      "en": "General & identity: 14.16.1 (one data set per Link Port, count = cmldsDefaultDS.numberLinkPorts), 14.16.2 portIdentity. Live state (read-only): 14.16.3 cmldsLinkPortEnabled, 14.16.4 isMeasuringDelay, 14.16.5 asCapableAcrossDomains, 14.16.6 meanLinkDelay (zero for EPON and 802.11 master port), 14.16.9 neighborRateRatio (fractional offset ×2^41). Quality limits (RW): 14.16.7 meanLinkDelayThresh, 14.16.8 delayAsymmetry. Interval control: 14.16.10 initialLogPdelayReqInterval, 14.16.11 currentLogPdelayReqInterval, 14.16.12 useMgtSettableLogPdelayReqInterval, 14.16.13 mgtSettableLogPdelayReqInterval. Compute-neighbor-rate-ratio family: 14.16.14 / 14.16.15 / 14.16.16 / 14.16.17. Compute-mean-link-delay family: 14.16.18 / 14.16.19 / 14.16.20 / 14.16.21. Fault & version: 14.16.22 allowedLostResponses, 14.16.23 allowedFaults, 14.16.24 versionNumber, 14.16.26 minorVersionNumber. Asymmetry data: 14.16.25 pdelayTruncatedTimestampsArray (t1–t4 mod 2^48). Table summary: 14.16.27 gives Table 14-18, the full cmldsLinkPortDS table with each member's data type and R/RW access — one such table per Link Port, creatable/removable dynamically.",
+      "zh": "总则与标识：14.16.1（每链路端口一个数据集，数量 = cmldsDefaultDS.numberLinkPorts）、14.16.2 portIdentity。实时状态（只读）：14.16.3 cmldsLinkPortEnabled、14.16.4 isMeasuringDelay、14.16.5 asCapableAcrossDomains、14.16.6 meanLinkDelay（EPON 与 802.11 主端口为零）、14.16.9 neighborRateRatio（小数偏移 ×2^41）。质量限值（读写）：14.16.7 meanLinkDelayThresh、14.16.8 delayAsymmetry。间隔控制：14.16.10 initialLogPdelayReqInterval、14.16.11 currentLogPdelayReqInterval、14.16.12 useMgtSettableLogPdelayReqInterval、14.16.13 mgtSettableLogPdelayReqInterval。计算邻居频率比一族：14.16.14 / 14.16.15 / 14.16.16 / 14.16.17。计算平均链路时延一族：14.16.18 / 14.16.19 / 14.16.20 / 14.16.21。故障与版本：14.16.22 allowedLostResponses、14.16.23 allowedFaults、14.16.24 versionNumber、14.16.26 minorVersionNumber。不对称数据：14.16.25 pdelayTruncatedTimestampsArray（t1–t4 对 2^48 取模）。表汇总：14.16.27 给出表 14-18，即完整的 cmldsLinkPortDS 表，列出每个成员的数据类型与 R/RW 访问权限——每个链路端口一张表，可动态创建/移除。",
+      "cite": {
+        "pdf_id": "8021AS-2020",
+        "pages": [
+          277,
+          278,
+          279,
+          280,
+          281
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why this matters: because CMLDS measures the link once and shares the result, a multi-domain network avoids flooding the wire with redundant Pdelay traffic. The cmldsLinkPortDS is where that single, shared measurement is configured and read back — making it the management anchor for cross-domain delay accuracy.",
+      "zh": "为何重要：由于 CMLDS 对链路只测量一次并共享结果，多域网络得以避免在线路上充斥冗余的 Pdelay 流量。cmldsLinkPortDS 正是配置并读回这次共享测量的地方——因而成为跨域时延精度的管理锚点。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        277,
+        278,
+        279,
+        280,
+        281
+      ],
+      "note": "Clause 14.16 cmldsLinkPortDS — all 27 members 14.16.1–14.16.27 and Table 14-18."
+    }
+  ],
+  "covers": [
+    "8021AS-2020:14.16.1",
+    "8021AS-2020:14.16.2",
+    "8021AS-2020:14.16.3",
+    "8021AS-2020:14.16.4",
+    "8021AS-2020:14.16.5",
+    "8021AS-2020:14.16.6",
+    "8021AS-2020:14.16.7",
+    "8021AS-2020:14.16.8",
+    "8021AS-2020:14.16.9",
+    "8021AS-2020:14.16.10",
+    "8021AS-2020:14.16.11",
+    "8021AS-2020:14.16.12",
+    "8021AS-2020:14.16.13",
+    "8021AS-2020:14.16.14",
+    "8021AS-2020:14.16.15",
+    "8021AS-2020:14.16.16",
+    "8021AS-2020:14.16.17",
+    "8021AS-2020:14.16.18",
+    "8021AS-2020:14.16.19",
+    "8021AS-2020:14.16.20",
+    "8021AS-2020:14.16.21",
+    "8021AS-2020:14.16.22",
+    "8021AS-2020:14.16.23",
+    "8021AS-2020:14.16.24",
+    "8021AS-2020:14.16.25",
+    "8021AS-2020:14.16.26",
+    "8021AS-2020:14.16.27"
+  ],
+  "track": "tsn"
+}

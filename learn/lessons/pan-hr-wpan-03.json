@@ -1,0 +1,144 @@
+{
+  "id": "pan-hr-wpan-03",
+  "title": {
+    "en": "The High-Band PHYs: mmWave, HRCP, THz, and How the Standard Talks to Itself",
+    "zh": "高频段物理层：mmWave、HRCP、THz，以及标准如何自我描述"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In part 1 of Clause 4 we met the lower-frequency radios. This part climbs the spectrum: three families of very-high-frequency physical layers (PHYs — the radio-and-signal layer that actually puts bits on the air), then two housekeeping sections that teach you how to *read* the standard itself. The pattern across all three high-band PHYs is identical, so once you learn it once, you can read the rest fluently: each PHY names a frequency band, lists a small menu of modes (a single-carrier mode for speed/simplicity, plus richer modes), and then explains how a coordinator picks which kind of network to start based on the modes it supports.",
+      "zh": "在 Clause 4 的第 1 部分里，我们认识了较低频段的射频。本部分则向频谱高处攀登：介绍三大类极高频物理层（PHY，即真正把比特送上空中的射频与信号层），随后还有两节“说明性”内容，教你如何*阅读*标准本身。这三种高频段 PHY 的结构完全一致，因此学会一种就能流畅地读懂其余两种：每种 PHY 都会指定一个频段、列出一份小小的模式菜单（一个追求速度与简洁的单载波模式，外加若干更丰富的模式），然后说明协调器如何根据自身支持的模式来决定要开启哪种网络。"
+    },
+    {
+      "type": "prose",
+      "en": "A quick vocabulary anchor before we start. A DEV is a device — any station in the network. A piconet is the network coordinated by a PNC (piconet coordinator) that beacons and grants airtime. A pairnet is a simpler two-party network coordinated by a PRC (pairnet coordinator). A CTA (channel time allocation) is a reserved slice of airtime; an MCS (modulation and coding scheme) is one rung on the speed-vs-robustness ladder; a beacon is the periodic frame the coordinator sends to announce the network's structure.",
+      "zh": "在开始之前先锚定几个词。DEV 指设备，即网络中的任意一个站点。piconet（微微网）是由 PNC（piconet coordinator，微微网协调器）协调的网络，PNC 负责发送信标并分配空口时间。pairnet（对网）则是更简单的两方网络，由 PRC（pairnet coordinator，对网协调器）协调。CTA（channel time allocation，信道时间分配）是一段预留的空口时隙；MCS（modulation and coding scheme，调制与编码方案）是“速度对稳健性”这把阶梯上的一级；beacon（信标）是协调器周期性发送、用于宣告网络结构的帧。"
+    },
+    {
+      "type": "prose",
+      "en": "First family — the mmWave PHY (clause 4.9.1, detailed in Clause 12). \"mmWave\" means millimetre-wave: radio in the 57.0–71.0 GHz band, where wavelengths are a few millimetres. It defines three sub-PHYs: the SC PHY (single carrier — simple, cheap, up to 5 Gb/s, the workhorse for short-range bursts like a data kiosk), the HSI PHY (high speed interface — uses OFDM, which splits the signal across many narrow subcarriers, built for non-line-of-sight links like devices around a conference table), and the AV PHY (audio/visual — also OFDM, tuned to stream uncompressed high-definition video). A device must implement at least one of the three. To help strangers find each other, a common mode signaling (CMS) — a low-rate SC mode — gives every mmWave device a shared 'lobby' language.",
+      "zh": "第一类——mmWave PHY（见 4.9.1，详述于 Clause 12）。“mmWave”意为毫米波：工作于 57.0–71.0 GHz 频段的射频，其波长仅几毫米。它定义了三种子 PHY：SC PHY（single carrier，单载波——简单、廉价、速率可达 5 Gb/s，是数据自助终端这类短距突发场景的主力）、HSI PHY（high speed interface，高速接口——采用 OFDM，即把信号分散到许多窄子载波上，专为会议桌周边设备这类非视距链路设计）以及 AV PHY（audio/visual，音视频——同样基于 OFDM，专为传输未压缩的高清视频而调优）。设备至少要实现这三者之一。为了让陌生设备彼此发现，标准定义了 common mode signaling（CMS，公共模式信令）——一种低速率 SC 模式——给每台 mmWave 设备一套共同的“大堂”语言。"
+    },
+    {
+      "type": "prose",
+      "en": "How does a mmWave coordinator decide what network to start (clause 4.9.2)? It follows the modes it supports. A PNC that only does AV starts an AV piconet — beacon, contention periods, even a Sync frame for coexistence, all in AV mode — and AV-only devices can find and join it. SC-only and HSI-only coordinators work the same way, except an SC PNC skips the Sync frame because its beacon already rides on CMS. A multi-mode PNC has a choice: start several piconets (one per mode, the extras as dependent piconets), or run a single piconet where any two devices simply use whatever MCS they both support inside a CTA.",
+      "zh": "那么 mmWave 协调器如何决定开启什么网络（见 4.9.2）？它依据自身支持的模式行事。一个只支持 AV 的 PNC 会开启 AV piconet——信标、竞争期、乃至用于共存的 Sync 帧，全都以 AV 模式发送——只支持 AV 的设备便能发现并加入。仅支持 SC 或仅支持 HSI 的协调器做法相同，区别在于 SC PNC 无需发送 Sync 帧，因为它的信标本就承载在 CMS 上。多模式 PNC 则有选择：要么开启多个 piconet（每种模式一个，多出来的作为 dependent piconet，即从属微微网），要么运行单个 piconet，让任意两台设备在某个 CTA 内直接使用双方都支持的任意 MCS。"
+    },
+    {
+      "type": "prose",
+      "en": "Second family — the HRCP PHY (clause 4.10.1, detailed in Clause 13). HRCP stands for high-rate close proximity: same kind of 60 GHz band (57.0–66.0 GHz) but aimed at very short links pushing extreme throughput. It has two modes: HRCP-SC (single carrier — up to 13 Gb/s on one channel, and up to a staggering 157 Gb/s with MIMO, meaning multiple-input multiple-output, several antennas streaming in parallel) and HRCP-OOK (on-off keying — the simplest possible scheme, just turning the carrier on and off, for low-power, low-cost devices; no MIMO, no channel aggregation). A device implements at least one. Both can bond up to four channels for more bandwidth.",
+      "zh": "第二类——HRCP PHY（见 4.10.1，详述于 Clause 13）。HRCP 意为 high-rate close proximity（高速率近距离）：与 mmWave 同属 60 GHz 频段（57.0–66.0 GHz），但面向追求极致吞吐的极短距链路。它有两种模式：HRCP-SC（单载波——单信道可达 13 Gb/s，借助 MIMO（multiple-input multiple-output，多输入多输出，即多根天线并行传输）甚至高达惊人的 157 Gb/s）和 HRCP-OOK（on-off keying，开关键控——最简单的方案，仅靠开关载波来传信息，面向低功耗、低成本设备；不支持 MIMO，也不支持信道聚合）。设备至少实现其一。两种模式都可绑定多达四个信道以获得更大带宽。"
+    },
+    {
+      "type": "prose",
+      "en": "Starting an HRCP network (clause 4.10.2) uses pairnets, not piconets — recall a pairnet is the lean two-party network run by a PRC. A PRC that supports only HRCP-SC starts an HRCP-SC pairnet whose Beacon frame is sent in HRCP-SC mode; SC-only devices connect to it. HRCP-OOK works identically. The clever part: a dual-mode PRC can welcome both kinds of device at once by transmitting *both* an HRCP-SC Beacon and an HRCP-OOK Beacon (this is Figure 4-10 in the standard). Each beacon independently declares its own number and duration of access slots and its own superframe duration, so the two mode-populations coexist on one coordinator.",
+      "zh": "开启 HRCP 网络（见 4.10.2）使用的是 pairnet 而非 piconet——记得 pairnet 是由 PRC 运行的精简两方网络。仅支持 HRCP-SC 的 PRC 会开启一个 HRCP-SC pairnet，其 Beacon 帧以 HRCP-SC 模式发送；仅支持 SC 的设备即可连接。HRCP-OOK 的做法完全相同。巧妙之处在于：双模 PRC 可以通过*同时*发送 HRCP-SC 信标和 HRCP-OOK 信标（即标准中的 Figure 4-10）来同时接纳两类设备。每个信标各自独立地声明自己的接入时隙数量与时长，以及自己的超帧时长，于是两类模式的设备群得以在同一个协调器下共存。"
+    },
+    {
+      "type": "prose",
+      "en": "Third family — the THz PHY (clause 4.11.1, detailed in Clause 14). THz means terahertz: this PHY reaches all the way up to the 252–450 GHz band, a frontier extension for wireless switched point-to-point links running at a nominal 100 Gb/s with fallbacks. Channel bandwidths range from 2.16 GHz to a colossal 69.12 GHz. Like HRCP it has two modes — THz-SC (single carrier, up to 100 Gb/s, rich modulation including APSK, which is amplitude-and-phase shift keying) and THz-OOK (on-off keying, low complexity; here OOK uniquely offers three FEC choices, with the simple Reed–Solomon code mandatory and two stronger LDPC codes optional). FEC means forward error correction, the math that repairs bit errors without retransmission.",
+      "zh": "第三类——THz PHY（见 4.11.1，详述于 Clause 14）。THz 意为 terahertz（太赫兹）：该 PHY 一路攀升至 252–450 GHz 频段，是面向无线交换式点对点链路的前沿扩展，标称速率 100 Gb/s 并可回退。信道带宽从 2.16 GHz 直至庞大的 69.12 GHz。与 HRCP 类似，它有两种模式——THz-SC（单载波，速率可达 100 Gb/s，调制方式丰富，含 APSK，即 amplitude-and-phase shift keying，幅相键控）和 THz-OOK（开关键控，低复杂度；这里的 OOK 独有三种 FEC 选择，其中简单的 Reed–Solomon 码为强制，两种更强的 LDPC 码为可选）。FEC 意为 forward error correction（前向纠错），即无需重传即可修复比特错误的数学方法。"
+    },
+    {
+      "type": "prose",
+      "en": "Starting a THz network (clause 4.11.2) mirrors HRCP exactly — pairnets again, single-mode PRCs start a matching pairnet, and a dual-mode PRC sends both a THz-SC Beacon and a THz-OOK Beacon (Figure 4-10 covers both families). The one extra idea unique to THz: because the link is *switched* point-to-point, a pairnet connection can be torn down and a fresh one set up toward a different destination device. How you actually steer the beam and choose the new direction is explicitly declared out of scope — the standard defines the link, not the steering policy.",
+      "zh": "开启 THz 网络（见 4.11.2）与 HRCP 如出一辙——同样使用 pairnet，单模 PRC 开启对应的 pairnet，双模 PRC 同时发送 THz-SC 信标和 THz-OOK 信标（Figure 4-10 同时涵盖这两类）。THz 独有的一点是：由于链路是*交换式*点对点的，一个 pairnet 连接可以被拆除，再朝另一个目标设备建立全新的连接。至于如何真正地控制波束指向、如何选定新方向，标准明确声明这超出其范围——标准只定义链路本身，不定义指向策略。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"18\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">Three high-band PHY families (rising frequency)</text><rect x=\"10\" y=\"35\" width=\"125\" height=\"120\"/><text x=\"22\" y=\"55\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">mmWave PHY</text><text x=\"22\" y=\"72\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">57.0-71.0 GHz</text><text x=\"22\" y=\"92\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">SC / HSI / AV</text><text x=\"22\" y=\"108\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">up to 5 Gb/s</text><text x=\"22\" y=\"128\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">piconet (PNC)</text><rect x=\"147\" y=\"35\" width=\"125\" height=\"120\"/><text x=\"159\" y=\"55\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">HRCP PHY</text><text x=\"159\" y=\"72\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">57.0-66.0 GHz</text><text x=\"159\" y=\"92\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">SC / OOK</text><text x=\"159\" y=\"108\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">13-157 Gb/s</text><text x=\"159\" y=\"128\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">pairnet (PRC)</text><rect x=\"284\" y=\"35\" width=\"125\" height=\"120\"/><text x=\"296\" y=\"55\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">THz PHY</text><text x=\"296\" y=\"72\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">252-450 GHz</text><text x=\"296\" y=\"92\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">SC / OOK</text><text x=\"296\" y=\"108\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">up to 100 Gb/s</text><text x=\"296\" y=\"128\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">pairnet (PRC)</text><line x1=\"10\" y1=\"175\" x2=\"409\" y2=\"175\" marker-end=\"url(#a)\"/><defs><marker id=\"a\" markerWidth=\"8\" markerHeight=\"8\" refX=\"6\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L6,3 L0,6\" fill=\"currentColor\" stroke=\"none\"/></marker></defs><text x=\"150\" y=\"193\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">increasing frequency / data rate</text></svg>",
+      "caption": {
+        "en": "The three high-band PHYs share one shape: a band, a short menu of modes (always including a single-carrier mode), and a coordinator that picks the network type from the modes it supports.",
+        "zh": "三种高频段 PHY 共享同一套结构：一个频段、一份简短的模式菜单（其中总有一个单载波模式），以及一个根据自身所支持模式来决定网络类型的协调器。"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Spot the recurring template: name the band → list a single-carrier mode plus extras → 'a device must implement at least one' → 'the coordinator starts the network type matching its supported modes' → 'a dual-mode coordinator transmits both beacons.' All three of 4.9, 4.10, 4.11 are variations on this one sentence. mmWave uses piconets; HRCP and THz use pairnets.",
+      "zh": "留意这套反复出现的模板：指定频段 → 列出一个单载波模式外加其余模式 → “设备至少实现其一” → “协调器开启与自身所支持模式相匹配的网络类型” → “双模协调器同时发送两种信标”。4.9、4.10、4.11 三节都是这句话的变体。mmWave 使用 piconet；HRCP 与 THz 使用 pairnet。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the two reading-the-standard sections. Clause 4.12 (Conventions) is the standard's style guide — the rules that let you decode any name on sight. 'Increment' means add one. Frame names are capitalized and include the word frame (Beacon frame). Command names include command. Field names include a lowercase 'field' (Destination PAN Identifier field). IE names — an IE is an information element, a self-describing data block inside a frame — include the acronym IE (Capability IE). Managed-object (PIB) entries carry a lowercase mac or phy prefix (macDevServicesBroadcast, phyCurrentChannel); constants start with an italic lowercase m or p. Service primitive names are ALL CAPS while their .request/.indication/.response/.confirm suffix stays lowercase, and parameters capitalize at word boundaries (NumberOfPiconets).",
+      "zh": "现在来看两节“如何阅读标准”的内容。Clause 4.12（Conventions，约定）是标准的样式指南——这些规则让你一眼就能解码任意名称。“increment”意为加一。帧名首字母大写并带有 frame 一词（Beacon frame）。命令名带有 command。字段名带有小写的 field（Destination PAN Identifier field）。IE 名——IE 即 information element，信息元素，是帧内一段自我描述的数据块——带有缩写 IE（Capability IE）。受管对象（PIB）条目带有小写的 mac 或 phy 前缀（macDevServicesBroadcast、phyCurrentChannel）；常量以斜体小写的 m 或 p 开头。服务原语名全大写，而其 .request/.indication/.response/.confirm 后缀保持小写，参数则在词边界处大写（NumberOfPiconets）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 4.13 (Concept of primitives) explains the abstraction every later MLME and MCPS chapter relies on. A layer offers services to the layer above it by building on the layer below. The information crossing the boundary is modeled as discrete, instantaneous events, and each event is a service primitive passed through a SAP (service access point — the named doorway between two layers). Crucially, primitives describe *what* service is provided, never *how* it's implemented. There are exactly four primitive types: Request (the user asks for a service to start), Indication (the layer tells the user an internal event happened), Response (the user completes a procedure that an Indication began), and Confirm (the layer reports the result of one or more earlier Requests). That four-beat — request / indication / response / confirm — is the grammar of every interface dialogue in the rest of the standard.",
+      "zh": "Clause 4.13（Concept of primitives，原语概念）阐明了后续所有 MLME、MCPS 章节都依赖的抽象。某一层通过构建于其下层之上，向其上层提供服务。跨越层边界的信息被建模为离散、瞬时的事件，每个事件就是一条通过 SAP（service access point，服务接入点——两层之间具名的“门”）传递的服务原语。关键在于：原语描述的是*提供了什么*服务，而绝不涉及*如何*实现。原语恰好有四种类型：Request（请求，用户要求启动某项服务）、Indication（指示，层告知用户发生了某个内部事件）、Response（响应，用户完成一个由 Indication 开启的过程）、Confirm（确认，层报告一个或多个先前 Request 的结果）。这套“请求/指示/响应/确认”的四拍节奏，正是标准其余部分中每一段接口对话所用的语法。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant U1 as Service user A\n  participant P as Service provider (layer)\n  participant U2 as Service user B\n  U1->>P: Request\n  P->>U2: Indication\n  U2->>P: Response\n  P->>U1: Confirm",
+      "zh": "sequenceDiagram\n  participant U1 as 服务用户 A\n  participant P as 服务提供者（层）\n  participant U2 as 服务用户 B\n  U1->>P: 请求 Request\n  P->>U2: 指示 Indication\n  U2->>P: 响应 Response\n  P->>U1: 确认 Confirm"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — exact clause numbers for every unit in this lesson",
+        "zh": "覆盖地图——本课每个单元的精确条款号"
+      },
+      "en": "4.9 Characteristics of the mmWave PHY: 4.9.1 mmWave PHY characteristics — 57.0–71.0 GHz, four channels (fewer in some regions), three sub-PHYs SC/HSI/AV (Clause 12), at least one required, plus CMS (common mode signaling) as a low-rate SC shared mode (12.1.13). 4.9.2 Piconets using mmWave PHY modes — single-mode PNCs start a matching piconet (AV sends a Sync frame; SC does not, since its beacon is in CMS); a multi-mode PNC may start multiple dependent piconets or one shared piconet using any mutually supported MCS in a CTA. 4.10 Characteristics of HRCP PHY: 4.10.1 — high-rate close proximity, 57.0–66.0 GHz, modes HRCP-SC (up to 13 Gb/s, 157 Gb/s with MIMO) and HRCP-OOK (low-power, no MIMO/aggregation), up to four bonded channels (Clause 13). 4.10.2 Pairnet using HRCP PHY — PRC starts a pairnet matching its mode(s); a dual-mode PRC transmits both HRCP-SC and HRCP-OOK Beacons (Figure 4-10), each declaring its own access-slot count/duration and superframe duration. 4.11 Characteristics of THz PHY: 4.11.1 — terahertz, 252–450 GHz, channel BW 2.16–69.12 GHz, nominal 100 Gb/s, modes THz-SC and THz-OOK (Clause 14); OOK has three FEC schemes (RS mandatory, two LDPC optional). 4.11.2 Pairnet using THz PHY — same dual-Beacon pattern as HRCP, plus the switched point-to-point property: a pairnet can be torn down and re-established toward a new destination, with beam steering out of scope. 4.12 Conventions — editorial rules for Frame/command/field/IE naming, mac/phy PIB prefixes, m/p constants, ALL-CAPS primitive names with lowercase .request/.indication/.response/.confirm. 4.13 Concept of primitives — services cross a SAP as primitives describing what (not how); the four types Request/Indication/Response/Confirm (Figure 4-11).",
+      "zh": "4.9 mmWave PHY 特性：4.9.1 mmWave PHY 特性——57.0–71.0 GHz，定义四个信道（部分地区更少），三种子 PHY SC/HSI/AV（Clause 12），至少实现其一，外加 CMS（公共模式信令）作为低速率 SC 共享模式（12.1.13）。4.9.2 使用 mmWave PHY 模式的 piconet——单模 PNC 开启相匹配的 piconet（AV 发送 Sync 帧；SC 不发，因其信标已在 CMS 上）；多模 PNC 可开启多个从属 piconet，或在一个共享 piconet 中于 CTA 内使用双方共同支持的任意 MCS。4.10 HRCP PHY 特性：4.10.1——高速率近距离，57.0–66.0 GHz，模式 HRCP-SC（可达 13 Gb/s，借 MIMO 达 157 Gb/s）与 HRCP-OOK（低功耗，无 MIMO/聚合），最多绑定四信道（Clause 13）。4.10.2 使用 HRCP PHY 的 pairnet——PRC 开启与其模式匹配的 pairnet；双模 PRC 同时发送 HRCP-SC 与 HRCP-OOK 信标（Figure 4-10），各自声明接入时隙数量/时长与超帧时长。4.11 THz PHY 特性：4.11.1——太赫兹，252–450 GHz，信道带宽 2.16–69.12 GHz，标称 100 Gb/s，模式 THz-SC 与 THz-OOK（Clause 14）；OOK 有三种 FEC（RS 强制，两种 LDPC 可选）。4.11.2 使用 THz PHY 的 pairnet——与 HRCP 相同的双信标模式，外加交换式点对点特性：pairnet 可拆除并朝新目标重建，波束指向超出标准范围。4.12 约定——帧/命令/字段/IE 命名、mac/phy PIB 前缀、m/p 常量、全大写原语名配小写 .request/.indication/.response/.confirm 的编辑规则。4.13 原语概念——服务以原语形式跨越 SAP，只描述“做什么”而非“怎么做”；四种类型 Request/Indication/Response/Confirm（Figure 4-11）。",
+      "cite": {
+        "pdf_id": "802153-2023",
+        "pages": [
+          57,
+          58,
+          59,
+          60,
+          61,
+          62
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        57,
+        58
+      ],
+      "note": "4.9 / 4.9.1 mmWave PHY characteristics (57-71 GHz, SC/HSI/AV, CMS) and 4.9.2 piconets using mmWave PHY modes"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        59
+      ],
+      "note": "4.10 / 4.10.1 HRCP PHY characteristics (HRCP-SC/HRCP-OOK, MIMO, channel bonding) and 4.10.2 pairnet using HRCP PHY (dual-mode Beacons, Figure 4-10)"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        60,
+        61
+      ],
+      "note": "4.11 / 4.11.1 THz PHY characteristics (252-450 GHz, THz-SC/THz-OOK, FEC) and 4.11.2 pairnet using THz PHY (switched point-to-point); 4.12 Conventions begins on p.61"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        61,
+        62
+      ],
+      "note": "4.12 Conventions (naming/editorial rules) and 4.13 Concept of primitives (SAP, four primitive types, Figure 4-11)"
+    }
+  ],
+  "covers": [
+    "802153-2023:4.9.1",
+    "802153-2023:4.9.2",
+    "802153-2023:4.10.1",
+    "802153-2023:4.10.2",
+    "802153-2023:4.11.1",
+    "802153-2023:4.11.2",
+    "802153-2023:4.12",
+    "802153-2023:4.13"
+  ],
+  "track": "pan-hr-wpan"
+}

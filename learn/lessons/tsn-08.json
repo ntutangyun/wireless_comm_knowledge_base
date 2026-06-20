@@ -1,0 +1,179 @@
+{
+  "id": "tsn-08",
+  "title": {
+    "en": "Inside the Wire: gPTP's Peer-Delay and Sync State Machines (Clause 11, part 1)",
+    "zh": "线缆之内：gPTP 的对等时延与同步状态机（第 11 章，上篇）"
+  },
+  "estMinutes": 6,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1AS-2020 is the gPTP (generalized Precision Time Protocol) profile that lets every device on a bridged LAN share one common notion of time, accurate to the nanosecond. Earlier clauses described the media-independent machinery; Clause 11 finally gets specific about the most common medium: a full-duplex point-to-point link (a wire where both ends can transmit at once and only two devices share it — think a normal IEEE 802.3 Ethernet cable). The component that handles a single such link is the MD entity (Media-Dependent entity): there is one per PTP Port (the gPTP logical interface on a port). This lesson walks the Overview (11.1) and the state machines (11.2) that the MD entity runs.",
+      "zh": "IEEE Std 802.1AS-2020 是 gPTP（广义精确时间协议，generalized Precision Time Protocol）的规范，它让桥接局域网中的每台设备共享同一套时间观念，精度可达纳秒级。前面的章节描述了与介质无关的通用机制；第 11 章终于聚焦到最常见的介质：全双工点对点链路（一条两端可同时发送、且只有两台设备共享的线缆——可以想象成一根普通的 IEEE 802.3 以太网线）。处理这样一条链路的部件叫做 MD 实体（介质相关实体，Media-Dependent entity）：每个 PTP 端口（端口上的 gPTP 逻辑接口）有且仅有一个。本课将走读 MD 实体运行的概述（11.1）与状态机（11.2）。"
+    },
+    {
+      "type": "prose",
+      "en": "Two jobs run on every link, and 11.1 frames both. First, measuring how long a message takes to cross the wire — the propagation delay (11.1.2). gPTP uses the peer-to-peer delay mechanism (the same one as IEEE Std 1588-2019, but specialized): each end independently fires off a Pdelay_Req message, the other end answers with Pdelay_Resp and Pdelay_Resp_Follow_Up, and four timestamps (t1, t2, t3, t4) yield the mean delay D = ((t4-t1) - (t3-t2))/2. Because the delay is the same in every PTP domain, a single instance measures it once and shares it with all domains. Second, transporting time itself (11.1.3) using Sync and Follow_Up messages, accumulating residence time and link delay into a correctionField so the original grandmaster timestamp stays intact as it hops node to node.",
+      "zh": "每条链路上都跑着两件工作，11.1 给二者搭好了框架。第一件是测量一条消息穿过线缆所需的时间——即传播时延（11.1.2）。gPTP 采用对等时延机制（peer-to-peer delay mechanism，与 IEEE Std 1588-2019 相同，但做了特化）：每一端各自独立地发出一个 Pdelay_Req 消息，另一端用 Pdelay_Resp 和 Pdelay_Resp_Follow_Up 作答，四个时间戳（t1、t2、t3、t4）即可算出平均时延 D = ((t4-t1) - (t3-t2))/2。由于该时延在每个 PTP 域中都相同，因此只需单个实例测量一次，再共享给所有域。第二件是传递时间本身（11.1.3），用 Sync 与 Follow_Up 消息完成，把驻留时间与链路时延累加进 correctionField，使原始大师钟时间戳在逐跳转发中保持完整。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 220\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"55\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Initiator</text><text x=\"300\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Responder</text><line x1=\"70\" y1=\"28\" x2=\"70\" y2=\"205\"/><line x1=\"330\" y1=\"28\" x2=\"330\" y2=\"205\"/><line x1=\"70\" y1=\"50\" x2=\"330\" y2=\"85\" marker-end=\"url(#a)\"/><text x=\"150\" y=\"58\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Pdelay_Req</text><text x=\"30\" y=\"54\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">t1</text><text x=\"338\" y=\"88\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">t2</text><line x1=\"330\" y1=\"115\" x2=\"70\" y2=\"150\" marker-end=\"url(#a)\"/><text x=\"150\" y=\"126\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Pdelay_Resp (t2)</text><text x=\"338\" y=\"118\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">t3</text><text x=\"40\" y=\"154\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">t4</text><line x1=\"330\" y1=\"165\" x2=\"70\" y2=\"195\" marker-end=\"url(#a)\"/><text x=\"120\" y=\"176\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">Pdelay_Resp_Follow_Up (t3)</text><defs><marker id=\"a\" markerWidth=\"8\" markerHeight=\"8\" refX=\"7\" refY=\"4\" orient=\"auto\"><path d=\"M0,0 L8,4 L0,8\" fill=\"currentColor\" stroke=\"none\"/></marker></defs></svg>",
+      "caption": {
+        "en": "Peer-to-peer delay exchange (11.1.2). Four timestamps t1..t4 give the mean link delay; a symmetric exchange runs in the reverse direction so both ends learn the delay.",
+        "zh": "对等时延交换（11.1.2）。四个时间戳 t1..t4 给出平均链路时延；反方向也运行一次对称交换，使两端都得知该时延。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 11.1.4 (Model of operation) anchors where all this lives: one MD entity per PTP Port carries the medium-specific functions, sitting below the media-independent PortSync entity. A PTP event message is timestamped when its message timestamp point crosses the timestamp measurement plane, then corrected for ingressLatency/egressLatency to the reference plane before the MD entity uses it. Everything below is the detailed behaviour the standard promises here.",
+      "zh": "11.1.4（操作模型）确定了这一切所处的位置：每个 PTP 端口配一个 MD 实体来承载介质相关功能，位于与介质无关的 PortSync 实体之下。当一条 PTP 事件消息的消息时间戳点越过时间戳测量平面时即被打上时间戳，随后针对 ingressLatency/egressLatency 校正到参考平面，MD 实体才使用它。下文正是本章承诺的详细行为。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why does each end measure delay independently and on otherwise-blocked ports? Because if Rapid Spanning Tree later unblocks a port after a topology change, gPTP already knows that link's delay — so there is no loss of synchronization, or much faster resynchronization (11.1.2).",
+      "zh": "为何每一端都独立测量、甚至在本被阻塞的端口上也测量？因为若拓扑变化后快速生成树（RSTP）随后解除某端口的阻塞，gPTP 早已知道该链路的时延——于是不会丢失同步，或能极快地重新同步（11.1.2）。"
+    },
+    {
+      "type": "prose",
+      "en": "Section 11.2 lists the per-port state machines (11.2.1): MDSyncReceiveSM receives Sync/Follow_Up and hands the timing onward; MDSyncSendSM transmits a Sync (and a Follow_Up when two-step); MDPdelayReq runs the requester side of delay measurement; MDPdelayResp runs the responder side. The Sync machines exist once per port per domain, while the Pdelay machines exist once per port for all domains (delay is domain-independent). Before any of this matters, the link must be deemed usable — that is the asCapable decision (11.2.2): asCapableAcrossDomains becomes TRUE only when peer delay messages are flowing, the measured delay stays under meanLinkDelayThresh, no duplicate responses arrive, and the port is not hearing its own echo. asCapable per domain then layers on a neighborGptpCapable / backward-compatibility check.",
+      "zh": "11.2 节列出了各端口的状态机（11.2.1）：MDSyncReceiveSM 接收 Sync/Follow_Up 并将时间信息向后传递；MDSyncSendSM 发送 Sync（两步模式下还发 Follow_Up）；MDPdelayReq 运行时延测量的请求方；MDPdelayResp 运行响应方。Sync 类状态机为每端口每域各一个，而 Pdelay 类状态机为每端口跨所有域共一个（时延与域无关）。在这些都生效之前，链路必须被判定可用——这就是 asCapable 判定（11.2.2）：仅当对等时延消息正常流动、测得时延低于 meanLinkDelayThresh、未收到重复响应、且端口未听到自身回声时，asCapableAcrossDomains 才置为 TRUE。随后每个域的 asCapable 再叠加一道 neighborGptpCapable / 向后兼容性检查。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Pdelay msgs exchanged?] -->|no| F[asCapableAcrossDomains = FALSE]\n  A -->|yes| B[delay < meanLinkDelayThresh?]\n  B -->|no| F\n  B -->|yes| C[no duplicate responses?]\n  C -->|no| F\n  C -->|yes| D[not own echo?]\n  D -->|no| F\n  D -->|yes| T[asCapableAcrossDomains = TRUE]",
+      "zh": "flowchart TD\n  A[已交换 Pdelay 消息?] -->|否| F[asCapableAcrossDomains = FALSE]\n  A -->|是| B[时延 < meanLinkDelayThresh?]\n  B -->|否| F\n  B -->|是| C[无重复响应?]\n  C -->|否| F\n  C -->|是| D[非自身回声?]\n  D -->|否| F\n  D -->|是| T[asCapableAcrossDomains = TRUE]"
+    },
+    {
+      "type": "prose",
+      "en": "A few short rules guard the link's behaviour. A PTP Instance shall not use MAC Control PAUSE (11.2.3) and shall not let priority-based flow control act on the gPTP priority code point (11.2.4) — timing traffic must never be paused. Over an IEEE 802.1AX Link Aggregation Group, gPTP PDUs travel on the individual physical Aggregation Ports, not the logical Aggregator, so each physical link's delay is measured and one is chosen to carry time (11.2.5).",
+      "zh": "几条简短的规则守护着链路行为。PTP 实例不得使用 MAC 控制 PAUSE 操作（11.2.3），也不得让基于优先级的流控作用于 gPTP 的优先级码点（11.2.4）——计时流量绝不能被暂停。在 IEEE 802.1AX 链路聚合组上，gPTP PDU 走的是各条物理聚合端口，而非逻辑聚合器端口，因此每条物理链路的时延都被测量，并从中选一条来承载时间（11.2.5）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map A — Overview and interfaces (11.1.1–11.1.4, 11.2.1–11.2.12)",
+        "zh": "覆盖图谱 A —— 概述与接口（11.1.1–11.1.4、11.2.1–11.2.12）"
+      },
+      "en": "11.1.1 General points to the three overview topics. 11.1.2 Propagation delay measurement defines the four-timestamp peer-to-peer mechanism, Equation (11-1) for mean delay D, granularity error, and the exponential averaging filter feeding neighborRateRatio. 11.1.3 Transport of time-synchronization information explains how Sync/Follow_Up carry preciseOriginTimestamp + correctionField + rateRatio, and how each node folds in link delay and residence time. 11.1.4 Model of operation places one MD entity per PTP Port and defines timestamping at the timestamp measurement plane corrected to the reference plane. 11.2.1 General lists the state machines and their per-port/per-domain scope. 11.2.2 Determination of asCapable and asCapableAcrossDomains gives the four conditions (a–d) for asCapableAcrossDomains and conditions (e–f) for per-domain asCapable. 11.2.3 forbids MAC Control PAUSE; 11.2.4 forbids PFC on the gPTP PCP; 11.2.5 specifies link-aggregation handling. 11.2.6 introduces the service primitives and data structures: 11.2.7 DL-UNITDATA.request (send a Sync/Follow_Up/Pdelay message to the LLC) and 11.2.8 DL-UNITDATA.indication (LLC reports receipt). 11.2.9 MDTimestampReceive carries the timestamp of the just-sent/received event message relative to the timestamp measurement plane. 11.2.10 MDSyncReceive and 11.2.11 MDSyncSend are the structures (defined in 10.2.2) exchanged with PortSync. 11.2.12 Overview of MD entity global variables describes the four variable scopes (per domain; per PTP Instance per port; CMLDS common; CMLDS per LinkPort) summarized in Table 11-2.",
+      "zh": "11.1.1 总则指向三个概述主题。11.1.2 传播时延测量定义了四时间戳的对等机制、求平均时延 D 的式 (11-1)、粒度误差以及为 neighborRateRatio 供数的指数平均滤波器。11.1.3 时间同步信息的传递说明 Sync/Follow_Up 如何携带 preciseOriginTimestamp + correctionField + rateRatio，以及每个节点如何把链路时延与驻留时间叠加进去。11.1.4 操作模型确立每个 PTP 端口一个 MD 实体，并定义在时间戳测量平面打戳、校正到参考平面。11.2.1 总则列出各状态机及其每端口/每域的作用域。11.2.2 asCapable 与 asCapableAcrossDomains 的判定给出 asCapableAcrossDomains 的四个条件 (a–d) 与每域 asCapable 的条件 (e–f)。11.2.3 禁止 MAC 控制 PAUSE；11.2.4 禁止基于优先级的流控作用于 gPTP 的 PCP；11.2.5 规定链路聚合的处理方式。11.2.6 引入服务原语与数据结构：11.2.7 DL-UNITDATA.request（向 LLC 请求发送 Sync/Follow_Up/Pdelay 消息）与 11.2.8 DL-UNITDATA.indication（LLC 报告收到消息）。11.2.9 MDTimestampReceive 携带刚发送/刚接收的事件消息相对时间戳测量平面的时间戳。11.2.10 MDSyncReceive 与 11.2.11 MDSyncSend 是与 PortSync 交换的结构（定义于 10.2.2）。11.2.12 MD 实体全局变量概述描述了四种变量作用域（每域；每 PTP 实例每端口；CMLDS 共享；CMLDS 每 LinkPort），并由表 11-2 汇总。",
+      "cite": {
+        "pdf_id": "8021AS-2020",
+        "pages": [
+          161,
+          162,
+          163,
+          164,
+          165,
+          166,
+          167,
+          168,
+          169,
+          170,
+          171
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map B — Variables, sync machines, and the delay machines (11.2.13–11.2.21)",
+        "zh": "覆盖图谱 B —— 变量、同步状态机与时延状态机（11.2.13–11.2.21）"
+      },
+      "en": "11.2.13 MD entity global variables lists each one: the Pdelay interval timers (currentLogPdelayReqInterval, initialLogPdelayReqInterval, pdelayReqInterval), the fault/loss thresholds (allowedLostResponses, allowedFaults), isMeasuringDelay, meanLinkDelayThresh, syncSequenceId, the one-step flags (oneStepReceive, oneStepTransmit, oneStepTxOper), and asCapableAcrossDomains. 11.2.14 MDSyncReceiveSM defines its variables (e.g. rcvdSync, rcvdFollowUp, followUpReceiptTimeoutTime) and setMDSyncReceiveMDSR(), which builds the MDSyncReceive structure and computes upstreamTxTime from meanLinkDelay/neighborRateRatio. 11.2.15 MDSyncSendSM builds and transmits Sync (setSyncTwoStep/setSyncOneStep, txSync), and for two-step builds the Follow_Up via setFollowUp() with the correctionField, or for one-step folds it in via modifySync(). 11.2.16 OneStepTxOperSetting reacts to a Signaling message to set whether the port transmits one-step. 11.2.17 CMLDS (Common Mean Link Delay Service) explains how, with multiple domains, one shared delay measurement (majorSdoId 0x2, sdoId 0x200) serves every domain, and 11.2.17.2 details how its delayAsymmetry and correctionField math differs from the instance-specific mechanism. 11.2.18 cmldsLinkPortEnabled is the CMLDS enable flag per LinkPort. 11.2.19 MDPdelayReq runs the requester: sends Pdelay_Req, detects lost/duplicate responses, and via computePdelayRateRatio() and computePropTime() derives neighborRateRatio and meanLinkDelay, setting asCapableAcrossDomains. 11.2.20 MDPdelayResp runs the responder: on a Pdelay_Req it builds and sends Pdelay_Resp (setPdelayResp/txPdelayResp) and Pdelay_Resp_Follow_Up (setPdelayRespFollowUp). 11.2.21 LinkDelayIntervalSetting reacts to a Message Interval Request TLV to set the Pdelay_Req interval, bounded by logSupportedPdelayReqIntervalMax.",
+      "zh": "11.2.13 MD 实体全局变量逐一列出：Pdelay 间隔计时器（currentLogPdelayReqInterval、initialLogPdelayReqInterval、pdelayReqInterval）、故障/丢失阈值（allowedLostResponses、allowedFaults）、isMeasuringDelay、meanLinkDelayThresh、syncSequenceId、单步标志（oneStepReceive、oneStepTransmit、oneStepTxOper）以及 asCapableAcrossDomains。11.2.14 MDSyncReceiveSM 定义其变量（如 rcvdSync、rcvdFollowUp、followUpReceiptTimeoutTime）与 setMDSyncReceiveMDSR()，后者构建 MDSyncReceive 结构并由 meanLinkDelay/neighborRateRatio 计算 upstreamTxTime。11.2.15 MDSyncSendSM 构建并发送 Sync（setSyncTwoStep/setSyncOneStep、txSync），两步模式下用 setFollowUp() 构建带 correctionField 的 Follow_Up，单步模式下用 modifySync() 直接叠加。11.2.16 OneStepTxOperSetting 响应一条 Signaling 消息来设定端口是否以单步方式发送。11.2.17 CMLDS（公共平均链路时延服务）说明在多域情形下，如何用一次共享的时延测量（majorSdoId 为 0x2、sdoId 为 0x200）服务每个域，11.2.17.2 详述其 delayAsymmetry 与 correctionField 的算法与实例专用机制的差异。11.2.18 cmldsLinkPortEnabled 是每 LinkPort 的 CMLDS 使能标志。11.2.19 MDPdelayReq 运行请求方：发送 Pdelay_Req、检测丢失/重复响应，并经 computePdelayRateRatio() 与 computePropTime() 推导 neighborRateRatio 与 meanLinkDelay，进而设定 asCapableAcrossDomains。11.2.20 MDPdelayResp 运行响应方：收到 Pdelay_Req 后构建并发送 Pdelay_Resp（setPdelayResp/txPdelayResp）与 Pdelay_Resp_Follow_Up（setPdelayRespFollowUp）。11.2.21 LinkDelayIntervalSetting 响应消息间隔请求 TLV 来设定 Pdelay_Req 间隔，并受 logSupportedPdelayReqIntervalMax 上界约束。",
+      "cite": {
+        "pdf_id": "8021AS-2020",
+        "pages": [
+          172,
+          173,
+          174,
+          177,
+          181,
+          183,
+          184,
+          185,
+          190,
+          193
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "One-step vs two-step is the recurring theme of these machines. A two-step port sends a plain Sync, then a Follow_Up carrying the exact correctionField; a one-step port edits the correctionField into the Sync 'on the fly' as it leaves — often in hardware, and (per 11.2.13.11's note) often needing dedicated hardware per domain. oneStepTxOper, set by the OneStepTxOperSetting machine (11.2.16), is the live switch between the two.",
+      "zh": "单步与两步是这些状态机反复出现的主题。两步端口先发一条普通 Sync，再发一条携带精确 correctionField 的 Follow_Up；单步端口则在 Sync 发出的瞬间“即时”把 correctionField 写入其中——通常由硬件完成，且（据 11.2.13.11 的注）往往需要为每个域配备专用硬件。oneStepTxOper 由 OneStepTxOperSetting 状态机（11.2.16）设定，是两者之间的实时开关。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        161,
+        162,
+        163,
+        164,
+        165,
+        166
+      ],
+      "note": "11.1 Overview: propagation delay measurement, transport of sync information, model of operation."
+    },
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        167,
+        168,
+        169,
+        170,
+        171
+      ],
+      "note": "11.2.1–11.2.12: state machine list, asCapable determination, PAUSE/PFC/LAG rules, service primitives and structures."
+    },
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        172,
+        173,
+        174,
+        177,
+        181,
+        183,
+        184,
+        185,
+        190,
+        193
+      ],
+      "note": "11.2.13–11.2.21: MD entity global variables, MDSyncReceive/Send SMs, OneStepTxOperSetting, CMLDS, MDPdelayReq/Resp, LinkDelayIntervalSetting."
+    }
+  ],
+  "covers": [
+    "8021AS-2020:11.1.1",
+    "8021AS-2020:11.1.2",
+    "8021AS-2020:11.1.3",
+    "8021AS-2020:11.1.4",
+    "8021AS-2020:11.2.1",
+    "8021AS-2020:11.2.2",
+    "8021AS-2020:11.2.3",
+    "8021AS-2020:11.2.4",
+    "8021AS-2020:11.2.5",
+    "8021AS-2020:11.2.6",
+    "8021AS-2020:11.2.7",
+    "8021AS-2020:11.2.8",
+    "8021AS-2020:11.2.9",
+    "8021AS-2020:11.2.10",
+    "8021AS-2020:11.2.11",
+    "8021AS-2020:11.2.12",
+    "8021AS-2020:11.2.13",
+    "8021AS-2020:11.2.14",
+    "8021AS-2020:11.2.15",
+    "8021AS-2020:11.2.16",
+    "8021AS-2020:11.2.17",
+    "8021AS-2020:11.2.18",
+    "8021AS-2020:11.2.19",
+    "8021AS-2020:11.2.20",
+    "8021AS-2020:11.2.21"
+  ],
+  "track": "tsn"
+}

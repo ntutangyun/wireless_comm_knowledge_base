@@ -1,0 +1,175 @@
+{
+  "id": "tsn-05",
+  "title": {
+    "en": "Inside the gPTP Engine: Entities, Shared Structures, and the Sync State Machines",
+    "zh": "深入 gPTP 引擎：实体、共享结构与同步状态机"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1AS-2020 defines gPTP (generalized Precision Time Protocol), the profile of IEEE 1588 that keeps clocks across a Time-Sensitive Networking (TSN) bridge or end station aligned to within fractions of a microsecond. Clause 10 is the media-independent layer: it describes what every gPTP device does regardless of whether the underlying link is Ethernet, Wi-Fi, or anything else. This lesson walks through the first part of Clause 10 — the model of operation (10.1) and the time-synchronization state machines (10.2) — so you can read the standard's own terms fluently.",
+      "zh": "IEEE Std 802.1AS-2020 定义了 gPTP（generalized Precision Time Protocol，通用精确时间协议），它是 IEEE 1588 的一个配置文件，用于让时间敏感网络（TSN，Time-Sensitive Networking）中的网桥或终端设备之间的时钟对齐到亚微秒级。Clause 10 是与介质无关的层：它描述每个 gPTP 设备无论底层链路是以太网、Wi-Fi 还是其他介质都要执行的行为。本课讲解 Clause 10 的第一部分——操作模型（10.1）与时间同步状态机（10.2），帮助你流利地读懂标准本身的术语。"
+    },
+    {
+      "type": "prose",
+      "en": "A gPTP device is called a PTP Instance, and it lives in a domain (a self-contained synchronization scope; unless stated otherwise, everything in Clause 10 is per domain — that is 10.1.1 in one sentence). The model of operation (10.1.2) splits a PTP Instance into cooperating entities: one SiteSync, one ClockMaster, and one ClockSlave for the instance as a whole, plus one PortSync per PTP Port, and one MD (media-dependent) entity per port that lives in the lower layer. The ClockMaster takes time from an external ClockSource; the ClockSlave hands synchronized time to an external ClockTarget application. Underneath them all is the LocalClock entity (10.1.2.1) — a free-running oscillator that every timestamp is measured against and that supplies the variable currentTime.",
+      "zh": "一个 gPTP 设备称为 PTP Instance（PTP 实例），它存在于一个 domain（域，即一个自包含的同步范围；除非另有说明，Clause 10 中的所有内容都是按域计算的——这就是用一句话概括的 10.1.1）。操作模型（10.1.2）把一个 PTP 实例拆分为若干协作的实体：整个实例有一个 SiteSync、一个 ClockMaster、一个 ClockSlave，每个 PTP Port（PTP 端口）有一个 PortSync，每个端口还有一个位于下层的 MD（media-dependent，介质相关）实体。ClockMaster 从外部 ClockSource（时钟源）取时间；ClockSlave 把同步后的时间交给外部 ClockTarget（时钟目标）应用。它们之下是 LocalClock 实体（10.1.2.1）——一个自由运行的振荡器，所有时间戳都以它为基准测量，它还提供变量 currentTime（当前时间）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  CS[ClockSource] --> CM[ClockMaster]\n  CM --> SS[SiteSync]\n  SS --> PS1[PortSync port 1]\n  SS --> PS2[PortSync port 2]\n  SS --> CSL[ClockSlave]\n  PS1 --> MD1[MD entity]\n  PS2 --> MD2[MD entity]\n  CSL --> CT[ClockTarget]\n  LC[LocalClock] -. currentTime .-> SS",
+      "zh": "flowchart LR\n  CS[时钟源 ClockSource] --> CM[ClockMaster]\n  CM --> SS[SiteSync]\n  SS --> PS1[PortSync 端口1]\n  SS --> PS2[PortSync 端口2]\n  SS --> CSL[ClockSlave]\n  PS1 --> MD1[MD 实体]\n  PS2 --> MD2[MD 实体]\n  CSL --> CT[时钟目标 ClockTarget]\n  LC[本地时钟 LocalClock] -. currentTime .-> SS"
+    },
+    {
+      "type": "prose",
+      "en": "Not every PTP Instance can be the source of time for the network. A grandmaster-capable PTP Instance (10.1.3) is one that may be selected as the Grandmaster — the single clock the whole domain follows. Capability is governed by the managed object priority1: set priority1 to 255 and the instance advertises gmCapable = FALSE and clockClass = 255. A non-grandmaster-capable instance still runs the best-master selection and still relays synchronization from whoever is the Grandmaster; it just can never be the source itself.",
+      "zh": "并非每个 PTP 实例都能成为网络的时间源。grandmaster-capable PTP Instance（可担任主时钟的 PTP 实例，10.1.3）是指可被选为 Grandmaster（主时钟，即整个域跟随的那个唯一时钟）的实例。这一能力由托管对象 priority1 控制：把 priority1 设为 255，实例就会通告 gmCapable = FALSE 且 clockClass = 255。一个不可担任主时钟的实例仍会运行最佳主时钟选择，仍会转发来自当前 Grandmaster 的同步信息；它只是永远无法自己成为时间源。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.2 specifies the synchronization function as a set of cooperating state machines (10.2.1). There are seven media-independent machines. Three of them — ClockMasterSyncReceive, ClockMasterSyncOffset, and ClockMasterSyncSend — are optional for instances that are not grandmaster-capable. Conceptually: time enters at the Grandmaster (ClockMaster machines), flows along the slave-to-master chain on each PortSync, is distributed by SiteSync to every port, and is finally consumed by the ClockSlave for the local application.",
+      "zh": "Clause 10.2 把同步功能规定为一组协作的状态机（10.2.1）。共有七个与介质无关的状态机。其中三个——ClockMasterSyncReceive、ClockMasterSyncOffset、ClockMasterSyncSend——对不可担任主时钟的实例而言是可选的。从概念上看：时间在 Grandmaster 处进入（ClockMaster 系列状态机），沿着每个 PortSync 的从端到主端链路流动，由 SiteSync 分发到每个端口，最终由 ClockSlave 消费给本地应用。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  CMR[ClockMasterSyncReceive] --> CMO[ClockMasterSyncOffset]\n  CMR --> CMS[ClockMasterSyncSend]\n  CMO --> CMS\n  PSR[PortSyncSyncReceive] --> SSS[SiteSyncSync]\n  CMS --> SSS\n  SSS --> PSS[PortSyncSyncSend]\n  SSS --> CSS[ClockSlaveSync]\n  PSS --> MD[to MD entity]\n  CSS --> CMO",
+      "zh": "flowchart TD\n  CMR[ClockMasterSyncReceive] --> CMO[ClockMasterSyncOffset]\n  CMR --> CMS[ClockMasterSyncSend]\n  CMO --> CMS\n  PSR[PortSyncSyncReceive] --> SSS[SiteSyncSync]\n  CMS --> SSS\n  SSS --> PSS[PortSyncSyncSend]\n  SSS --> CSS[ClockSlaveSync]\n  PSS --> MD[发往 MD 实体]\n  CSS --> CMO"
+    },
+    {
+      "type": "prose",
+      "en": "The machines talk to each other through three data structures (10.2.2). MDSyncSend (10.2.2.1) flows from a PortSync down to its MD entity to request that a time-synchronization message be sent. MDSyncReceive (10.2.2.2) flows the other way — from the MD entity up to PortSync when sync information arrives. PortSyncSync (10.2.2.3) is the workhorse: PortSync and ClockMaster send it to SiteSync, and SiteSync sends it back out to every PortSync and to ClockSlave. All three carry the same core fields — preciseOriginTimestamp (when the Grandmaster sent it), followUpCorrectionField (accumulated residence/path time since then), rateRatio (Grandmaster frequency / local frequency), and upstreamTxTime — so that synchronized time can be reconstructed at every hop.",
+      "zh": "这些状态机通过三种数据结构（10.2.2）相互通信。MDSyncSend（10.2.2.1）从 PortSync 向下流到其 MD 实体，用于请求发送一条时间同步消息。MDSyncReceive（10.2.2.2）方向相反——当同步信息到达时，从 MD 实体向上流到 PortSync。PortSyncSync（10.2.2.3）是核心结构：PortSync 和 ClockMaster 把它发给 SiteSync，SiteSync 再把它发回每个 PortSync 以及 ClockSlave。这三种结构都携带同一组核心字段——preciseOriginTimestamp（Grandmaster 发出该信息的时刻）、followUpCorrectionField（自那以后累积的驻留/路径时间）、rateRatio（Grandmaster 频率 / 本地频率）和 upstreamTxTime——以便在每一跳都能重建出同步时间。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"20\" stroke=\"none\" fill=\"currentColor\" font-size=\"13\">PortSyncSync structure (10.2.2.3)</text><rect x=\"10\" y=\"35\" width=\"100\" height=\"34\"/><text x=\"16\" y=\"56\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">preciseOrigin</text><rect x=\"110\" y=\"35\" width=\"110\" height=\"34\"/><text x=\"116\" y=\"56\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">followUpCorrection</text><rect x=\"220\" y=\"35\" width=\"80\" height=\"34\"/><text x=\"226\" y=\"56\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">rateRatio</text><rect x=\"300\" y=\"35\" width=\"100\" height=\"34\"/><text x=\"306\" y=\"56\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">upstreamTxTime</text><rect x=\"10\" y=\"79\" width=\"130\" height=\"34\"/><text x=\"16\" y=\"100\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">syncReceiptTimeoutTime</text><rect x=\"140\" y=\"79\" width=\"120\" height=\"34\"/><text x=\"146\" y=\"100\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">sourcePortIdentity</text><rect x=\"260\" y=\"79\" width=\"140\" height=\"34\"/><text x=\"266\" y=\"100\" stroke=\"none\" fill=\"currentColor\" font-size=\"10\">gm phase/freq change</text></svg>",
+      "caption": {
+        "en": "The PortSyncSync structure carries the Grandmaster's origin timestamp, the accumulated correction, the frequency ratio, and timeout/identity fields that travel hop by hop.",
+        "zh": "PortSyncSync 结构携带 Grandmaster 的原始时间戳、累积修正量、频率比值，以及逐跳传递的超时/身份字段。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Before describing each machine, the standard catalogs the global variables (10.2.3 lists their scopes in Table 10-1; 10.2.4 defines the per-PTP-Instance ones; 10.2.5 defines the per-port ones). Per-instance variables include masterTime, clockSlaveTime, syncReceiptTime, gmRateRatio (measured ClockSource-to-LocalClock frequency ratio), gmPresent, currentTime, and selectedState (the array of port states). Per-port variables include asCapable (TRUE only if both ends can interoperate via 802.1AS), meanLinkDelay, neighborRateRatio (neighbor's LocalClock frequency over this one's), syncInterval, syncLocked, and the slowdown bookkeeping (syncSlowdown, oldSyncInterval) that lets a port ramp a rate change gradually instead of risking a sync-receipt timeout. 10.2.6 adds one tiny shared helper — random(), a uniform pseudo-random UInteger16 used to jitter intervals.",
+      "zh": "在描述每个状态机之前，标准先编目了全局变量（10.2.3 在表 10-1 中列出它们的作用域；10.2.4 定义按 PTP 实例的变量；10.2.5 定义按端口的变量）。按实例的变量包括 masterTime、clockSlaveTime、syncReceiptTime、gmRateRatio（测得的 ClockSource 对 LocalClock 频率比）、gmPresent、currentTime 以及 selectedState（端口状态数组）。按端口的变量包括 asCapable（仅当两端都能通过 802.1AS 互操作时才为 TRUE）、meanLinkDelay、neighborRateRatio（邻居 LocalClock 频率与本端之比）、syncInterval、syncLocked，以及降速记账变量（syncSlowdown、oldSyncInterval），后者让端口逐步过渡到新速率，而不至于冒着同步接收超时的风险。10.2.6 再补充一个微小的共享辅助函数——random()，它返回均匀分布的伪随机 UInteger16，用于给各种间隔加抖动。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model for the seven machines: ClockMasterSyncReceive ingests time from the source, ClockMasterSyncOffset measures how far the source drifts from network time, and ClockMasterSyncSend pushes the result toward SiteSync — these three only matter at a Grandmaster. PortSyncSyncReceive accumulates rateRatio coming in from a neighbor, SiteSyncSync fans it out to all ports, PortSyncSyncSend re-emits it downstream, and ClockSlaveSync turns it into the synchronized time your application reads.",
+      "zh": "记住这七个状态机的心智模型：ClockMasterSyncReceive 从时间源摄取时间，ClockMasterSyncOffset 测量时间源相对网络时间的漂移，ClockMasterSyncSend 把结果推送给 SiteSync——这三个只在 Grandmaster 上才有意义。PortSyncSyncReceive 累积从邻居传入的 rateRatio，SiteSyncSync 将其扇出到所有端口，PortSyncSyncSend 向下游重新发出，而 ClockSlaveSync 把它转化为你的应用读取的同步时间。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the seven time-synchronization state machines (10.2.7–10.2.13), clause by clause",
+        "zh": "覆盖地图：七个时间同步状态机（10.2.7–10.2.13）逐条解析"
+      },
+      "en": "10.2.7 SiteSyncSync — receives a PortSyncSync from the current slave port (or from the ClockMaster) and, via setPSSyncSend() then txPSSync(), distributes a copy to every PortSync's PortSyncSyncSend machine and to ClockSlaveSync. It also records parentLogSyncInterval. Two states: INITIALIZING and RECEIVING_SYNC, gated on rcvdPSSyncSSS && selectedState[port]==SlavePort && gmPresent.\n\n10.2.8 PortSyncSyncReceive — receives an MDSyncReceive from the MD entity, accumulates rateRatio (adds neighborRateRatio − 1.0), computes syncReceiptTimeoutTimeInterval, and forwards a PortSyncSync up to SiteSync. Its variable rateRatio (10.2.8.1.4) is the running Grandmaster-to-LocalClock frequency ratio, seeded at the Grandmaster and accumulated hop by hop. States: DISCARD and RECEIVED_SYNC, requiring portOper && ptpPortEnabled && asCapable.\n\n10.2.9 ClockMasterSyncSend — periodically (every clockMasterSyncInterval) builds a PortSyncSync via setPSSyncCMSS(gmRateRatio) and sends it to SiteSync. It sets syncReceiptTimeoutTime to FFFF…FFFF (no timeout, since a ClockMaster receives no Sync). Optional when not grandmaster-capable.\n\n10.2.10 ClockMasterSyncOffset — when this instance is NOT the Grandmaster (selectedState[0]==PassivePort), computes clockSourcePhaseOffset (= masterTime.seconds − syncReceiptTime) and clockSourceFreqOffset via computeClockSourceFreqOffset(). Optional when not grandmaster-capable.\n\n10.2.11 ClockMasterSyncReceive — updates masterTime from the ClockSource's ClockSourceTime.invoke and from LocalClock ticks, and computes gmRateRatio via computeGmRateRatio(). Optional when not grandmaster-capable.\n\n10.2.12 PortSyncSyncSend — receives a PortSyncSync from SiteSyncSync, caches its fields (lastPreciseOriginTimestamp, lastRateRatio, lastUpstreamTxTime, etc.), and if this port is a MasterPort, builds an MDSyncSend via setMDSync() and hands it to the MD entity. It also implements the sync-slowdown logic (numberSyncTransmissions, interval1) and the SYNC_RECEIPT_TIMEOUT path, and sets syncLocked.\n\n10.2.13 ClockSlaveSync — receives a PortSyncSync from SiteSyncSync and computes syncReceiptTime = preciseOriginTimestamp + followUpCorrectionField + meanLinkDelay*(rateRatio/neighborRateRatio) + delayAsymmetry; updates clockSlaveTime via updateSlaveTime() on each LocalClock tick; sets gmTimeBaseIndicator, lastGmPhaseChange, lastGmFreqChange; and invokes ClockTargetPhaseDiscontinuity.result toward the application. When localPortNumber==0 it pins meanLinkDelay=0, delayAsymmetry=0, neighborRateRatio=1.0.",
+      "zh": "10.2.7 SiteSyncSync —— 从当前从端口（或从 ClockMaster）接收一个 PortSyncSync，通过 setPSSyncSend() 再 txPSSync()，把副本分发给每个 PortSync 的 PortSyncSyncSend 状态机以及 ClockSlaveSync，并记录 parentLogSyncInterval。两个状态：INITIALIZING 和 RECEIVING_SYNC，触发条件为 rcvdPSSyncSSS && selectedState[端口]==SlavePort && gmPresent。\n\n10.2.8 PortSyncSyncReceive —— 从 MD 实体接收 MDSyncReceive，累积 rateRatio（加上 neighborRateRatio − 1.0），计算 syncReceiptTimeoutTimeInterval，并向上把 PortSyncSync 转发给 SiteSync。其变量 rateRatio（10.2.8.1.4）是 Grandmaster 对 LocalClock 的累积频率比，在 Grandmaster 处初始化并逐跳累积。状态：DISCARD 和 RECEIVED_SYNC，要求 portOper && ptpPortEnabled && asCapable。\n\n10.2.9 ClockMasterSyncSend —— 周期性地（每隔 clockMasterSyncInterval）通过 setPSSyncCMSS(gmRateRatio) 构建一个 PortSyncSync 并发给 SiteSync。它把 syncReceiptTimeoutTime 设为 FFFF…FFFF（无超时，因为 ClockMaster 不接收 Sync）。不可担任主时钟时可选。\n\n10.2.10 ClockMasterSyncOffset —— 当本实例不是 Grandmaster 时（selectedState[0]==PassivePort），计算 clockSourcePhaseOffset（= masterTime.seconds − syncReceiptTime），并通过 computeClockSourceFreqOffset() 计算 clockSourceFreqOffset。不可担任主时钟时可选。\n\n10.2.11 ClockMasterSyncReceive —— 用 ClockSource 的 ClockSourceTime.invoke 和 LocalClock 的滴答更新 masterTime，并通过 computeGmRateRatio() 计算 gmRateRatio。不可担任主时钟时可选。\n\n10.2.12 PortSyncSyncSend —— 从 SiteSyncSync 接收一个 PortSyncSync，缓存其字段（lastPreciseOriginTimestamp、lastRateRatio、lastUpstreamTxTime 等），若本端口为 MasterPort，则通过 setMDSync() 构建 MDSyncSend 并交给 MD 实体。它还实现降速逻辑（numberSyncTransmissions、interval1）与 SYNC_RECEIPT_TIMEOUT 路径，并设置 syncLocked。\n\n10.2.13 ClockSlaveSync —— 从 SiteSyncSync 接收一个 PortSyncSync，计算 syncReceiptTime = preciseOriginTimestamp + followUpCorrectionField + meanLinkDelay*(rateRatio/neighborRateRatio) + delayAsymmetry；在每个 LocalClock 滴答通过 updateSlaveTime() 更新 clockSlaveTime；设置 gmTimeBaseIndicator、lastGmPhaseChange、lastGmFreqChange；并向应用侧调用 ClockTargetPhaseDiscontinuity.result。当 localPortNumber==0 时，将 meanLinkDelay=0、delayAsymmetry=0、neighborRateRatio=1.0 固定。",
+      "cite": {
+        "pdf_id": "8021AS-2020",
+        "pages": [
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why the rateRatio math matters: because each device's LocalClock runs at its own slightly different frequency, you cannot just add up delays — you must scale them by the ratio of clock speeds. PortSyncSyncReceive accumulates neighborRateRatio − 1.0 hop by hop so that, at the slave, ClockSlaveSync can scale meanLinkDelay by rateRatio/neighborRateRatio and recover the true synchronized time. That single line of arithmetic in 10.2.13 is where the whole chain pays off.",
+      "zh": "为什么 rateRatio 的运算很重要：因为每个设备的 LocalClock 都以各自略有差异的频率运行，所以不能简单地把各段时延相加——必须用时钟速率之比对其进行缩放。PortSyncSyncReceive 逐跳累积 neighborRateRatio − 1.0，使得在从端，ClockSlaveSync 能用 rateRatio/neighborRateRatio 缩放 meanLinkDelay，从而恢复出真实的同步时间。10.2.13 中那一行算式，正是整条链路最终见效之处。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        66,
+        67,
+        68
+      ],
+      "note": "10.1 Overview: general, model of operation, LocalClock entity, grandmaster-capable PTP Instance."
+    },
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        68,
+        69,
+        70
+      ],
+      "note": "10.2.1 overview of the seven state machines; 10.2.2 MDSyncSend / MDSyncReceive / PortSyncSync structures."
+    },
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84
+      ],
+      "note": "10.2.3 scope table; 10.2.4 per-instance globals; 10.2.5 per-port globals; 10.2.6 random()."
+    },
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98
+      ],
+      "note": "10.2.7 SiteSyncSync through 10.2.13 ClockSlaveSync state machines."
+    }
+  ],
+  "covers": [
+    "8021AS-2020:10.1.1",
+    "8021AS-2020:10.1.2",
+    "8021AS-2020:10.1.3",
+    "8021AS-2020:10.2.1",
+    "8021AS-2020:10.2.2",
+    "8021AS-2020:10.2.3",
+    "8021AS-2020:10.2.4",
+    "8021AS-2020:10.2.5",
+    "8021AS-2020:10.2.6",
+    "8021AS-2020:10.2.7",
+    "8021AS-2020:10.2.8",
+    "8021AS-2020:10.2.9",
+    "8021AS-2020:10.2.10",
+    "8021AS-2020:10.2.11",
+    "8021AS-2020:10.2.12",
+    "8021AS-2020:10.2.13"
+  ],
+  "track": "tsn"
+}

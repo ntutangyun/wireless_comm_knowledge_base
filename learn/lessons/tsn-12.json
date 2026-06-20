@@ -1,0 +1,146 @@
+{
+  "id": "tsn-12",
+  "title": {
+    "en": "gPTP Data Sets: Where Am I, Who's My Parent, What Time Is It?",
+    "zh": "gPTP 数据集：我在哪、谁是我的上游、现在几点？"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "IEEE Std 802.1AS-2020 defines gPTP (generalized Precision Time Protocol), the way a network of devices agrees on a single notion of time. Every device that takes part is a PTP Instance (Precision Time Protocol Instance), and one of them is elected the Grandmaster PTP Instance — the reference clock everyone else follows. Each PTP Instance keeps several read-only bookkeeping tables called data sets (DS). This lesson covers three of them: currentDS (Current Parameter Data Set), parentDS (Parent Parameter Data Set), and timePropertiesDS (Time Properties Parameter Data Set). Together they answer three questions: where am I relative to the grandmaster, who is the device just upstream of me toward the grandmaster, and what are the calendar/quality properties of the time being distributed.",
+      "zh": "IEEE Std 802.1AS-2020 定义了 gPTP（通用精确时间协议，generalized Precision Time Protocol），它让网络中的众多设备就同一套时间达成一致。每个参与的设备都是一个 PTP 实例（PTP Instance，精确时间协议实例），其中一个被选为大主时钟实例（Grandmaster PTP Instance）——即其他所有设备都跟随的参考时钟。每个 PTP 实例维护若干只读的记账表，称为数据集（DS）。本课讲解其中三个：currentDS（当前参数数据集）、parentDS（父参数数据集）和 timePropertiesDS（时间属性参数数据集）。它们合起来回答三个问题：相对大主时钟我在哪里、朝大主时钟方向我的紧邻上游设备是谁、以及正在分发的时间具有怎样的日历与质量属性。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  GM[Grandmaster PTP Instance] --> P[Parent / upstream]\n  P --> ME[This PTP Instance]\n  ME -. currentDS: my position .-> ME\n  P -. parentDS: who is upstream .-> ME\n  GM -. timePropertiesDS: calendar/quality .-> ME",
+      "zh": "flowchart LR\n  GM[大主时钟实例] --> P[父节点/上游]\n  P --> ME[本 PTP 实例]\n  ME -. currentDS：我的位置 .-> ME\n  P -. parentDS：上游是谁 .-> ME\n  GM -. timePropertiesDS：日历/质量 .-> ME"
+    },
+    {
+      "type": "prose",
+      "en": "Start with currentDS (clause 14.3.1): it represents the position of this local system relative to the grandmaster. Its headline field is stepsRemoved (14.3.2) — the number of gPTP communication paths (network hops) traversed between this instance and the grandmaster. A grandmaster has stepsRemoved 0; each hop downstream adds one. The second key field is offsetFromMaster (14.3.3): the time difference between this slave and the Grandmaster Clock as computed locally, of data type TimeInterval. These two numbers tell you how far away the source is and how far your clock currently sits from it.",
+      "zh": "先看 currentDS（条款 14.3.1）：它表示本地系统相对大主时钟的位置。其首要字段是 stepsRemoved（14.3.2）——本实例与大主时钟之间经过的 gPTP 通信路径（网络跳数）数量。大主时钟的 stepsRemoved 为 0，向下游每多一跳就加一。第二个关键字段是 offsetFromMaster（14.3.3）：本从节点在本地计算出的、自身与大主时钟之间的时间差，数据类型为 TimeInterval。这两个数告诉你时间源有多远、以及你的时钟当前偏离它多少。"
+    },
+    {
+      "type": "prose",
+      "en": "currentDS also records what happened the last time the time source jumped. When either the grandmaster changes or the grandmaster's time base changes (signalled by gmTimebaseIndicator, 14.3.6), the clock can step in phase and rate. lastGmPhaseChange (14.3.4) captures that phase step and lastGmFreqChange (14.3.5) captures that frequency step. To let management track grandmaster changes over time, gmChangeCount (14.3.7) is a counter that increments whenever the grandmaster changes in the domain, and three sysUpTime timestamps record when those events happened: timeOfLastGmChangeEvent (14.3.8) for the most recent grandmaster change, timeOfLastGmPhaseChangeEvent (14.3.9) for the most recent phase change, and timeOfLastGmFreqChangeEvent (14.3.10) for the most recent frequency change.",
+      "zh": "currentDS 还记录时间源上一次跳变时发生了什么。当大主时钟更换、或大主时钟的时基发生变化（由 gmTimebaseIndicator（14.3.6）指示）时，时钟可能在相位和频率上发生阶跃。lastGmPhaseChange（14.3.4）记录该相位阶跃，lastGmFreqChange（14.3.5）记录该频率阶跃。为便于管理面随时间跟踪大主时钟的变更，gmChangeCount（14.3.7）是一个计数器，每当域内大主时钟发生变更时递增；另有三个 sysUpTime 时间戳记录这些事件发生的时刻：timeOfLastGmChangeEvent（14.3.8）对应最近一次大主时钟变更、timeOfLastGmPhaseChangeEvent（14.3.9）对应最近一次相位变化、timeOfLastGmFreqChangeEvent（14.3.10）对应最近一次频率变化。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: stepsRemoved and offsetFromMaster are the 'live position' fields, while gmChangeCount and the three timeOfLastGm... timestamps are an 'event log' so a network manager can see when and how often the time source last shifted. The currentDS table (14.3.11) — exactly one per PTP Instance — packages all of these as read-only entries.",
+      "zh": "记忆模型：stepsRemoved 与 offsetFromMaster 是“实时位置”字段，而 gmChangeCount 加上三个 timeOfLastGm... 时间戳构成一份“事件日志”，让网络管理者看到时间源上一次何时、多频繁地发生偏移。currentDS 表（14.3.11）——每个 PTP 实例恰有一份——把这些全部封装为只读条目。"
+    },
+    {
+      "type": "prose",
+      "en": "Next is parentDS (14.4.1): it describes the upstream system, toward the grandmaster, as seen from this device. parentPortIdentity (14.4.2) is the port identity of the MasterPort on the path attached to this instance's single slave port; if this instance is itself the grandmaster, the identity uses its own clockIdentity with portNumber 0. cumulativeRateRatio (14.4.3) estimates the ratio of the Grandmaster Clock frequency to this instance's LocalClock frequency, encoded as (rateRatio − 1.0) × 2^41 — a compact way to store how much faster or slower the local oscillator runs versus the source.",
+      "zh": "接下来是 parentDS（14.4.1）：它从本设备视角描述朝大主时钟方向的上游系统。parentPortIdentity（14.4.2）是连接到本实例唯一从端口的那条路径上 MasterPort（主端口）的端口标识；若本实例本身就是大主时钟，则该标识使用其自身的 clockIdentity，portNumber 为 0。cumulativeRateRatio（14.4.3）估计大主时钟频率与本实例 LocalClock（本地时钟）频率之比，编码为 (rateRatio − 1.0) × 2^41——这是一种紧凑方式，用来存放本地振荡器相对时间源快了或慢了多少。"
+    },
+    {
+      "type": "prose",
+      "en": "The rest of parentDS mirrors the grandmaster's identity and quality so any device can judge the source it is following. grandmasterIdentity (14.4.4) is the grandmaster's clockIdentity. grandmasterClockQuality (14.4.5) is a structure of three members: clockClass (14.4.5.2, the category/traceability of the clock), clockAccuracy (14.4.5.3, how accurate it is), and offsetScaledLogVariance (14.4.5.4, its stability). grandmasterPriority1 (14.4.6) and grandmasterPriority2 (14.4.7) are the two priority attributes the Best Master Clock selection uses as tie-breakers. The parentDS table (14.4.8) — again one per PTP Instance — collects these as read-only fields.",
+      "zh": "parentDS 的其余部分镜像了大主时钟的身份与质量，使任何设备都能评估它正在跟随的时间源。grandmasterIdentity（14.4.4）是大主时钟的 clockIdentity。grandmasterClockQuality（14.4.5）是一个含三个成员的结构：clockClass（14.4.5.2，时钟的类别/可溯源性）、clockAccuracy（14.4.5.3，其准确度）、offsetScaledLogVariance（14.4.5.4，其稳定性）。grandmasterPriority1（14.4.6）与 grandmasterPriority2（14.4.7）是最佳主时钟选举用作决胜条件的两个优先级属性。parentDS 表（14.4.8）——同样每个 PTP 实例一份——把这些汇集为只读字段。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally timePropertiesDS (14.5.1) carries the calendar and traceability properties of the grandmaster's time. currentUtcOffset (14.5.2) is the offset in seconds between the PTP timescale (TAI, International Atomic Time) and UTC (Coordinated Universal Time); currentUtcOffsetValid (14.5.3) says whether that offset is known to be correct. leap59 (14.5.4) and leap61 (14.5.5) flag whether the current UTC day will be shortened or lengthened by a leap second. timeTraceable (14.5.6) and frequencyTraceable (14.5.7) say whether time and frequency trace back to a primary reference (e.g., GPS). ptpTimescale (14.5.8) indicates the timescale is PTP rather than arbitrary, and timeSource (14.5.9) names the kind of source (atomic clock, GPS, hand-set, etc.). Each value mirrors the corresponding field for the current grandmaster (see 14.2). The timePropertiesDS table (14.5.10) is the one-per-instance read-only collection.",
+      "zh": "最后，timePropertiesDS（14.5.1）承载大主时钟时间的日历与可溯源属性。currentUtcOffset（14.5.2）是 PTP 时标（TAI，国际原子时）与 UTC（协调世界时）之间以秒为单位的偏移；currentUtcOffsetValid（14.5.3）表明该偏移是否已知为正确。leap59（14.5.4）与 leap61（14.5.5）标记当前 UTC 日是否会因闰秒而缩短或延长。timeTraceable（14.5.6）与 frequencyTraceable（14.5.7）表明时间与频率是否可溯源至主参考源（如 GPS）。ptpTimescale（14.5.8）指示时标为 PTP 而非任意时标，timeSource（14.5.9）说明源的类型（原子钟、GPS、手动设置等）。每个取值都镜像当前大主时钟的对应字段（见 14.2）。timePropertiesDS 表（14.5.10）即每实例一份的只读集合。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 180\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"18\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">currentDS</text><rect x=\"10\" y=\"26\" width=\"130\" height=\"120\"/><text x=\"18\" y=\"46\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">stepsRemoved</text><text x=\"18\" y=\"62\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">offsetFromMaster</text><text x=\"18\" y=\"78\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">lastGmPhase/FreqChange</text><text x=\"18\" y=\"94\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">gmTimebaseIndicator</text><text x=\"18\" y=\"110\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">gmChangeCount</text><text x=\"18\" y=\"126\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">timeOfLastGm... x3</text><text x=\"160\" y=\"18\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">parentDS</text><rect x=\"160\" y=\"26\" width=\"140\" height=\"120\"/><text x=\"168\" y=\"46\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">parentPortIdentity</text><text x=\"168\" y=\"62\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">cumulativeRateRatio</text><text x=\"168\" y=\"78\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">grandmasterIdentity</text><text x=\"168\" y=\"94\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">grandmasterClockQuality</text><text x=\"168\" y=\"110\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">grandmasterPriority1/2</text><text x=\"320\" y=\"18\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">timePropertiesDS</text><rect x=\"320\" y=\"26\" width=\"130\" height=\"120\"/><text x=\"328\" y=\"46\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">currentUtcOffset(+Valid)</text><text x=\"328\" y=\"62\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">leap59 / leap61</text><text x=\"328\" y=\"78\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">timeTraceable</text><text x=\"328\" y=\"94\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">frequencyTraceable</text><text x=\"328\" y=\"110\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">ptpTimescale</text><text x=\"328\" y=\"126\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">timeSource</text><text x=\"10\" y=\"168\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\">All fields read-only; one table of each per PTP Instance.</text></svg>",
+      "caption": {
+        "en": "The three data sets at a glance: currentDS (my position + event log), parentDS (the upstream/grandmaster identity and quality), timePropertiesDS (calendar and traceability of the time).",
+        "zh": "三个数据集一览：currentDS（我的位置 + 事件日志）、parentDS（上游/大主时钟的身份与质量）、timePropertiesDS（时间的日历与可溯源性）。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause number in this lesson",
+        "zh": "覆盖地图——本课涉及的每个条款编号"
+      },
+      "en": "currentDS (14.3): 14.3.1 General (position relative to grandmaster); 14.3.2 stepsRemoved (hop count, per 10.3.3); 14.3.3 offsetFromMaster (TimeInterval, per 10.2.10); 14.3.4 lastGmPhaseChange (phase step at last GM/timebase change); 14.3.5 lastGmFreqChange (frequency step); 14.3.6 gmTimebaseIndicator (current GM timeBaseIndicator); 14.3.7 gmChangeCount (counter on PortAnnounceInformation entering SUPERIOR_MASTER_PORT / INFERIOR_MASTER_OR_OTHER_PORT); 14.3.8 timeOfLastGmChangeEvent, 14.3.9 timeOfLastGmPhaseChangeEvent, 14.3.10 timeOfLastGmFreqChangeEvent (sysUpTime timestamps, IETF RFC 3418); 14.3.11 currentDS table (one per PTP Instance, Table 14-2). parentDS (14.4): 14.4.1 General (upstream toward grandmaster); 14.4.2 parentPortIdentity (MasterPort identity, or own clockIdentity/portNumber 0 if grandmaster); 14.4.3 cumulativeRateRatio ((rateRatio−1.0)×2^41); 14.4.4 grandmasterIdentity; 14.4.5 grandmasterClockQuality (clockClass 14.4.5.2, clockAccuracy 14.4.5.3, offsetScaledLogVariance 14.4.5.4); 14.4.6 grandmasterPriority1; 14.4.7 grandmasterPriority2; 14.4.8 parentDS table (Table 14-3). timePropertiesDS (14.5): 14.5.1 General; 14.5.2 currentUtcOffset; 14.5.3 currentUtcOffsetValid; 14.5.4 leap59; 14.5.5 leap61; 14.5.6 timeTraceable; 14.5.7 frequencyTraceable; 14.5.8 ptpTimescale; 14.5.9 timeSource; 14.5.10 timePropertiesDS table (Table 14-4). Each timePropertiesDS value mirrors the corresponding currentDS-of-grandmaster field in 14.2 and an associated global variable in 10.3.9.",
+      "zh": "currentDS（14.3）：14.3.1 总则（相对大主时钟的位置）；14.3.2 stepsRemoved（跳数，依 10.3.3）；14.3.3 offsetFromMaster（TimeInterval，依 10.2.10）；14.3.4 lastGmPhaseChange（上次 GM/时基变更时的相位阶跃）；14.3.5 lastGmFreqChange（频率阶跃）；14.3.6 gmTimebaseIndicator（当前 GM 的 timeBaseIndicator）；14.3.7 gmChangeCount（当 PortAnnounceInformation 进入 SUPERIOR_MASTER_PORT / INFERIOR_MASTER_OR_OTHER_PORT 状态时的计数器）；14.3.8 timeOfLastGmChangeEvent、14.3.9 timeOfLastGmPhaseChangeEvent、14.3.10 timeOfLastGmFreqChangeEvent（sysUpTime 时间戳，IETF RFC 3418）；14.3.11 currentDS 表（每 PTP 实例一份，表 14-2）。parentDS（14.4）：14.4.1 总则（朝大主时钟的上游）；14.4.2 parentPortIdentity（MasterPort 标识，或为大主时钟时用自身 clockIdentity/portNumber 0）；14.4.3 cumulativeRateRatio（(rateRatio−1.0)×2^41）；14.4.4 grandmasterIdentity；14.4.5 grandmasterClockQuality（clockClass 14.4.5.2、clockAccuracy 14.4.5.3、offsetScaledLogVariance 14.4.5.4）；14.4.6 grandmasterPriority1；14.4.7 grandmasterPriority2；14.4.8 parentDS 表（表 14-3）。timePropertiesDS（14.5）：14.5.1 总则；14.5.2 currentUtcOffset；14.5.3 currentUtcOffsetValid；14.5.4 leap59；14.5.5 leap61；14.5.6 timeTraceable；14.5.7 frequencyTraceable；14.5.8 ptpTimescale；14.5.9 timeSource；14.5.10 timePropertiesDS 表（表 14-4）。每个 timePropertiesDS 取值都镜像 14.2 中大主时钟对应字段以及 10.3.9 中相关全局变量。",
+      "cite": {
+        "pdf_id": "8021AS-2020",
+        "pages": [
+          252,
+          253,
+          254,
+          255,
+          256,
+          257
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why three separate sets? currentDS is about me (my distance and offset), parentDS is about the neighbor I sync from and the grandmaster behind it, and timePropertiesDS is about the time itself (its UTC offset, leap-second warnings, and traceability). Read top to bottom they form a clean story: position, source, and time properties.",
+      "zh": "为何分成三个集合？currentDS 关乎“我”（我的距离与偏移），parentDS 关乎“我同步的邻居”及其背后的大主时钟，timePropertiesDS 关乎“时间本身”（其 UTC 偏移、闰秒预警与可溯源性）。自上而下读来构成一条清晰脉络：位置、源头、时间属性。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        252,
+        253,
+        254
+      ],
+      "note": "14.3 currentDS — General, stepsRemoved, offsetFromMaster, lastGmPhase/FreqChange, gmTimebaseIndicator, gmChangeCount, the three timeOfLastGm timestamps, and currentDS table (Table 14-2)."
+    },
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        254,
+        255,
+        256
+      ],
+      "note": "14.4 parentDS — parentPortIdentity, cumulativeRateRatio, grandmasterIdentity, grandmasterClockQuality (clockClass/clockAccuracy/offsetScaledLogVariance), grandmasterPriority1/2, and parentDS table (Table 14-3)."
+    },
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        256,
+        257
+      ],
+      "note": "14.5 timePropertiesDS — currentUtcOffset(+Valid), leap59/leap61, timeTraceable, frequencyTraceable, ptpTimescale, timeSource, and timePropertiesDS table (Table 14-4)."
+    }
+  ],
+  "covers": [
+    "8021AS-2020:14.3.1",
+    "8021AS-2020:14.3.2",
+    "8021AS-2020:14.3.3",
+    "8021AS-2020:14.3.4",
+    "8021AS-2020:14.3.5",
+    "8021AS-2020:14.3.6",
+    "8021AS-2020:14.3.7",
+    "8021AS-2020:14.3.8",
+    "8021AS-2020:14.3.9",
+    "8021AS-2020:14.3.10",
+    "8021AS-2020:14.3.11",
+    "8021AS-2020:14.4.1",
+    "8021AS-2020:14.4.2",
+    "8021AS-2020:14.4.3",
+    "8021AS-2020:14.4.4",
+    "8021AS-2020:14.4.5",
+    "8021AS-2020:14.4.6",
+    "8021AS-2020:14.4.7",
+    "8021AS-2020:14.4.8",
+    "8021AS-2020:14.5.1",
+    "8021AS-2020:14.5.2",
+    "8021AS-2020:14.5.3",
+    "8021AS-2020:14.5.4",
+    "8021AS-2020:14.5.5",
+    "8021AS-2020:14.5.6",
+    "8021AS-2020:14.5.7",
+    "8021AS-2020:14.5.8",
+    "8021AS-2020:14.5.9",
+    "8021AS-2020:14.5.10"
+  ],
+  "track": "tsn"
+}

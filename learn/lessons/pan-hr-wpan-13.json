@@ -1,0 +1,148 @@
+{
+  "id": "pan-hr-wpan-13",
+  "title": {
+    "en": "HR-WPAN Security: Mechanisms, Modes, and Key Protocols",
+    "zh": "HR-WPAN 安全机制：安全机制、安全模式与密钥协议"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 8 of IEEE 802.15.3-2023 is the security rulebook for a high-rate wireless personal area network (HR-WPAN). A few acronyms recur throughout, so meet them once: a DEV is a device (any node); the PNC is the piconet coordinator (the node running a piconet), and the PRC is the pairnet coordinator (a two-node pairnet); a PRDEV is a device in a pairnet; the MAC is the medium access control layer; the MLME is the MAC sublayer management entity (the control brain of the MAC); and the DME is the device management entity (the layer above that gives policy commands). Clause 8 answers four questions: what protections exist (8.1 mechanisms), whether they are switched on (8.2 modes), how membership and keys are managed (8.3 support), and the exact on-air message flows (8.4 protocol details).",
+      "zh": "IEEE 802.15.3-2023 的第 8 章是高速率无线个域网（HR-WPAN）的安全规则手册。文中反复出现几个缩写，先认识一下：DEV 是设备（任意节点）；PNC 是 piconet 协调器（运行一个 piconet 的节点），PRC 是 pairnet 协调器（两节点 pairnet）；PRDEV 是 pairnet 中的设备；MAC 是媒体访问控制层；MLME 是 MAC 子层管理实体（MAC 的控制大脑）；DME 是设备管理实体（位于其上、下发策略命令的一层）。第 8 章回答四个问题：存在哪些保护（8.1 机制）、是否开启（8.2 模式）、如何管理成员与密钥（8.3 支持），以及确切的空口消息流程（8.4 协议细节）。"
+    },
+    {
+      "type": "prose",
+      "en": "The mechanisms in 8.1 are the toolbox of symmetric-key protections (8.1.1 General). The standard deliberately leaves out how two parties first agree on a secret: becoming a member of a security relationship and establishing a key is out of scope, handled by higher-layer or vendor protocols carried in the Security Message command, with the MLME notified through MLME-MEMBERSHIP-UPDATE (8.1.2). Because association itself is unprotected, an authentication algorithm must validate the DEVID (the device's local address). Once keys exist, four protections apply: key transport encrypts any key sent device-to-device, such as handing out the group data key (8.1.3); data encryption uses a symmetric cipher so only key holders can read payloads (8.1.4); and data integrity attaches an integrity code so tampering is detected and the sender is proven to hold the key — frames that fail integrity go to the DME as an MLME-SECURITY-ERROR.indication and are otherwise dropped (8.1.5).",
+      "zh": "8.1 中的机制是对称密钥保护的工具箱（8.1.1 总则）。标准刻意不规定双方如何首次商定秘密：成为安全关系的成员并建立密钥不在本标准范围内，由更高层或厂商协议处理，并通过 Security Message 命令承载，MLME 经由 MLME-MEMBERSHIP-UPDATE 得到通知（8.1.2）。由于关联过程本身不受保护，认证算法必须校验 DEVID（设备的本地地址）。一旦存在密钥，便有四种保护：密钥传输对任何设备间发送的密钥加密，例如分发组数据密钥（8.1.3）；数据加密用对称密码使只有持密钥者可读载荷（8.1.4）；数据完整性附加一个完整性校验码，从而检测篡改并证明发送方持有密钥——完整性校验失败的帧作为 MLME-SECURITY-ERROR.indication 上交 DME，此外被丢弃（8.1.5）。"
+    },
+    {
+      "type": "prose",
+      "en": "Two more protections cover control traffic and replay. Beacon integrity protection lets every DEV verify the beacon truly came from the PNC/PRC and that no security change slipped by; if the integrity check fails while not scanning, the DEV learns its security state is out of sync with the coordinator (8.1.6). Command integrity protection applies the same integrity code to commands, protected with the PNC-DEV or PRC-DEV management key; failures again become MLME-SECURITY-ERROR.indication (8.1.7). Freshness protection stops replay: a strictly increasing time token rides in every beacon, and a DEV rejects any beacon whose token is less than or equal to the current one. Pairnets add a per-key secure frame counter (SFC), tracked per SECID (the 2-octet security identifier naming a key), and a DEV rejects frames whose SFC is not strictly greater than the last verified value. A DEV keeps two values: CurrentTimeToken (this superframe) and LastValidTimeToken (proof beacons were not compromised) (8.1.8).",
+      "zh": "另两种保护覆盖控制流量和重放。信标完整性保护让每个 DEV 验证信标确实来自 PNC/PRC 且未发生未经察觉的安全变更；若在非扫描状态下完整性校验失败，DEV 便得知其安全状态与协调器不同步（8.1.6）。命令完整性保护对命令施加同样的完整性码，用 PNC-DEV 或 PRC-DEV 管理密钥保护；失败同样转为 MLME-SECURITY-ERROR.indication（8.1.7）。新鲜性保护阻止重放：每个信标携带一个严格递增的时间令牌，DEV 拒绝令牌小于或等于当前值的任何信标。pairnet 额外引入按密钥计的安全帧计数器（SFC），按 SECID（命名某密钥的 2 字节安全标识符）跟踪，DEV 拒绝 SFC 不严格大于上次已验证值的帧。DEV 保存两个值：CurrentTimeToken（本超帧）和 LastValidTimeToken（信标未被篡改的证据）（8.1.8）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: SECID = which key, SFC/time token = which moment. The SECID tells the receiver which key to use; the strictly-increasing counter (time token for piconets, SFC for pairnets) makes every protected frame fresh, so an attacker cannot replay yesterday's frame.",
+      "zh": "记忆模型：SECID = 用哪把密钥，SFC/时间令牌 = 哪一刻。SECID 告诉接收方该用哪把密钥；严格递增的计数器（piconet 用时间令牌、pairnet 用 SFC）使每个受保护帧都是新鲜的，攻击者无法重放昨天的帧。"
+    },
+    {
+      "type": "prose",
+      "en": "Security modes (8.2) decide whether any of this runs at all (8.2.1 General). The active mode is set by the macSecurityOptionImplemented entry in the MAC PIB (the personal-area-network information base, the MAC's parameter store). In security mode 0 a DEV does no cryptography; if it ever receives a frame whose SEC bit is set, it discards the frame and the MLME returns MLME-SECURITY-ERROR.indication with ReasonCode UNAVAILABLE-KEY (8.2.2). In security mode 1 the DEV performs symmetric-key encryption and integrity on frames exchanged with the coordinator and other members; if the SEC field carries an unexpected value (per Table 6-47 for piconets, Table 6-48 for pairnets), the MLME raises MLME-SECURITY-ERROR.indication with ReasonCode INVALID-SEC-VALUE (8.2.3).",
+      "zh": "安全模式（8.2）决定上述一切是否运行（8.2.1 总则）。当前模式由 MAC PIB（个域网信息库，MAC 的参数存储）中的 macSecurityOptionImplemented 项设定。在安全模式 0 中，DEV 不做任何加密；若收到 SEC 位置一的帧，则丢弃，MLME 返回 ReasonCode 为 UNAVAILABLE-KEY 的 MLME-SECURITY-ERROR.indication（8.2.2）。在安全模式 1 中，DEV 对与协调器及其他成员交换的帧执行对称密钥加密与完整性保护；若 SEC 字段携带非预期值（piconet 见表 6-47、pairnet 见表 6-48），MLME 触发 ReasonCode 为 INVALID-SEC-VALUE 的 MLME-SECURITY-ERROR.indication（8.2.3）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Frame arrives] --> B{Mode?}\n  B -->|Mode 0| C{SEC bit set?}\n  C -->|Yes| D[Discard: UNAVAILABLE-KEY]\n  C -->|No| E[Process normally]\n  B -->|Mode 1| F{SEC value expected?}\n  F -->|No| G[Error: INVALID-SEC-VALUE]\n  F -->|Yes| H[Decrypt + integrity + freshness checks]",
+      "zh": "flowchart TD\n  A[帧到达] --> B{模式?}\n  B -->|模式 0| C{SEC 位置一?}\n  C -->|是| D[丢弃: UNAVAILABLE-KEY]\n  C -->|否| E[正常处理]\n  B -->|模式 1| F{SEC 值符合预期?}\n  F -->|否| G[错误: INVALID-SEC-VALUE]\n  F -->|是| H[解密 + 完整性 + 新鲜性校验]"
+    },
+    {
+      "type": "prose",
+      "en": "Security support (8.3) is the operational playbook that keeps keys and membership consistent (8.3.1 General). When the PNC hands its role to another DEV, the old security relationships do not transfer; the new PNC should set up channel time allocations (CTAs) to re-establish secure membership with each DEV, but the group key need not be rekeyed since group membership is unchanged (8.3.2). When a coordinator rotates the group data key, it pushes the new key to all ACTIVE members via the Distribute Key Request command, then advances the SECID in the beacon (piconet) or in outgoing frames (pairnet); DEVs switch to the new key once they see the matching SECID, and may keep accepting old-key frames for a bounded grace period. A beacon with a fresh time token but an unknown SECID triggers the DEV to send a Key Request (8.3.3).",
+      "zh": "安全支持（8.3）是让密钥与成员关系保持一致的操作手册（8.3.1 总则）。当 PNC 将角色移交给另一 DEV 时，原有安全关系不随之转移；新 PNC 应建立信道时间分配（CTA）以与每个 DEV 重新建立安全成员关系，但由于组成员未变，组密钥无需重新生成（8.3.2）。当协调器轮换组数据密钥时，它通过 Distribute Key Request 命令把新密钥推送给所有 ACTIVE 成员，随后在信标（piconet）或出站帧（pairnet）中推进 SECID；DEV 一旦看到匹配的 SECID 即切换到新密钥，并可在有限的宽限期内继续接受旧密钥帧。携带新鲜时间令牌但 SECID 未知的信标会促使 DEV 发送 Key Request（8.3.3）。"
+    },
+    {
+      "type": "prose",
+      "en": "Joining a secure network starts with ordinary association to get a local DEVID, then the DEV establishes secure membership through an out-of-scope (higher-layer) exchange, optionally trading Probe/Announce IEs (information elements) or Security Message commands along the way (8.3.4). Membership update is how the DME tells the MLME that a relationship changed: an MLME-MEMBERSHIP-UPDATE.request carries a TrgtId (target) and MembershipStatus. If TrgtId is the PNCID/PRCID the key is the coordinator management key; otherwise it is a peer-to-peer key. Setting status to NON-MEMBER makes the MLME securely delete the management key, data key, SECID, and key-type/originator state; setting MEMBER with a zero KeyInfoLength deletes just the management key, while a non-zero length installs the new SECID, originator, and key (8.3.5).",
+      "zh": "加入安全网络从普通关联开始以获得本地 DEVID，随后 DEV 通过范围之外（更高层）的交互建立安全成员关系，期间可选地交换 Probe/Announce IE（信息元素）或 Security Message 命令（8.3.4）。成员更新是 DME 告知 MLME 关系发生变化的方式：MLME-MEMBERSHIP-UPDATE.request 携带 TrgtId（目标）和 MembershipStatus。若 TrgtId 为 PNCID/PRCID，则密钥为协调器管理密钥；否则为点对点密钥。状态置为 NON-MEMBER 时，MLME 安全删除管理密钥、数据密钥、SECID 及密钥类型/发起者状态；置为 MEMBER 且 KeyInfoLength 为零时只删除管理密钥，而非零长度则安装新的 SECID、发起者和密钥（8.3.5）。"
+    },
+    {
+      "type": "prose",
+      "en": "Secure frame generation (8.3.6) is the send-side recipe. For each relationship there are two keys — a management key and a data key — and Tables 8-1/8-2 dictate exactly which key (or 'none') protects each frame type; a DEV must never send an unprotected frame, a wrong-SECID frame, or any frame whose only choice is 'none.' If the right key is missing the MLME returns UNAVAILABLE-KEY. The coordinator increments the time token every superframe and sends a secured beacon. Piconets build a CCM nonce (CCM = counter with cipher-block-chaining message authentication code; a nonce is a number used once) from the CurrentTimeToken and SFC, compute and encrypt the integrity code, and recompute the FCS (frame check sequence, the error-detection checksum). Pairnets apply GCM authenticated encryption (GCM = Galois/counter mode) instead. SFCs must strictly increase within a superframe (except identical retransmissions).",
+      "zh": "安全帧生成（8.3.6）是发送侧的配方。每个关系有两把密钥——管理密钥与数据密钥——表 8-1/8-2 精确规定每种帧类型由哪把密钥（或“无”）保护；DEV 绝不可发送无保护帧、SECID 错误的帧，或唯一选项为“无”的任何帧。若缺少正确密钥，MLME 返回 UNAVAILABLE-KEY。协调器每超帧递增时间令牌并发送受保护的信标。piconet 用 CurrentTimeToken 和 SFC 构造 CCM 现时值（CCM = 计数器加密结合 CBC-MAC 认证；nonce 是只用一次的数）、计算并加密完整性码，再重算 FCS（帧校验序列，即错误检测校验和）。pairnet 则改用 GCM 认证加密（GCM = 伽罗瓦/计数器模式）。SFC 在一个超帧内必须严格递增（相同重传除外）。"
+    },
+    {
+      "type": "prose",
+      "en": "If a DEV misses or sees a corrupted beacon, it may bump its CurrentTimeToken forward to stay synchronized, but only while CurrentTimeToken is below LastValidTimeToken + mMaxTimeTokenChange - 1 (8.3.7). Secure frame reception (8.3.8) reverses generation: check the FCS first (a failed subframe FCS in a pairnet aggregate discards that and all later subframes); confirm the time token sits in the valid window or raise BAD-TIME-TOKEN; match the SECID (mismatch on a non-beacon yields UNAVAILABLE-KEY, on a beacon may trigger a key request); enforce strictly-increasing SFC or raise BAD-SFC; then verify integrity/decrypt, raising FAILED-SECURITY-CHECK on failure. The SFC high-water mark only advances after the integrity code verifies. An unexpected SEC value on a command yields INVALID-SEC-VALUE.",
+      "zh": "若 DEV 漏收或收到损坏的信标，它可将 CurrentTimeToken 前推以保持同步，但仅当 CurrentTimeToken 小于 LastValidTimeToken + mMaxTimeTokenChange - 1 时（8.3.7）。安全帧接收（8.3.8）是生成的逆过程：先校验 FCS（pairnet 聚合帧中某子帧 FCS 失败则丢弃该子帧及其后所有子帧）；确认时间令牌落在有效窗口内，否则报 BAD-TIME-TOKEN；匹配 SECID（非信标帧不匹配返回 UNAVAILABLE-KEY，信标不匹配可触发密钥请求）；强制 SFC 严格递增，否则报 BAD-SFC；再验证完整性/解密，失败则报 FAILED-SECURITY-CHECK。SFC 的最高水位只在完整性码验证通过后才推进。命令上的非预期 SEC 值返回 INVALID-SEC-VALUE。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The reception checks run in a fixed order — FCS, freshness window, SECID match, strict SFC, then crypto — and each stage has its own ReasonCode (BAD-TIME-TOKEN, UNAVAILABLE-KEY, BAD-SFC, FAILED-SECURITY-CHECK). Reading the ReasonCode tells you exactly which gate a frame failed.",
+      "zh": "接收检查按固定顺序执行——FCS、新鲜性窗口、SECID 匹配、严格 SFC、再到密码运算——每一阶段都有自己的 ReasonCode（BAD-TIME-TOKEN、UNAVAILABLE-KEY、BAD-SFC、FAILED-SECURITY-CHECK）。读取 ReasonCode 就能精确知道帧在哪一道关卡失败。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant New as New PNC\n  participant Old as Old PNC\n  participant D as DEV\n  Note over New,Old: 8.4.2 security info transfer\n  New->>Old: Security Information Request\n  Old-->>New: Security Information (records)\n  Note over New,D: 8.4.3 key distribution\n  New->>D: Distribute Key Request\n  D-->>New: Imm-ACK then Distribute Key Response\n  Note over D,New: 8.4.4 key request\n  D->>New: Request Key (unknown SECID)\n  New-->>D: Request Key Response",
+      "zh": "sequenceDiagram\n  participant New as 新 PNC\n  participant Old as 旧 PNC\n  participant D as DEV\n  Note over New,Old: 8.4.2 安全信息传输\n  New->>Old: Security Information Request\n  Old-->>New: Security Information (记录)\n  Note over New,D: 8.4.3 密钥分发\n  New->>D: Distribute Key Request\n  D-->>New: Imm-ACK 然后 Distribute Key Response\n  Note over D,New: 8.4.4 密钥请求\n  D->>New: Request Key (未知 SECID)\n  New-->>D: Request Key Response"
+    },
+    {
+      "type": "prose",
+      "en": "Protocol details (8.4) put the message flows on the wire (8.4.1 General); all exchanges assume Imm-ACK acknowledgment for piconets and Stk-ACK for pairnets, and ACKs are omitted from the diagrams since they do not affect security. Security information request and distribution lets a DEV ask for or push security records — most often around PNC handover — via the Security Information Request and Security Information commands, or carried in a Security Message command (the new-PNC-to-old-PNC variants are piconet-only) (8.4.2). The key distribution protocol updates a data key: the coordinator sends a Distribute Key Request to each member, and a peer DEV that passes data authentication answers with a Distribute Key Response (8.4.3). The key request protocol runs the other direction: a DEV that sees an unknown SECID sends a Request Key command to the key originator, which, after verifying the integrity code and the secure relationship, replies with a Request Key Response protected by the management key (8.4.4).",
+      "zh": "协议细节（8.4）把消息流程落到空口（8.4.1 总则）；所有交互对 piconet 假定 Imm-ACK 确认、对 pairnet 假定 Stk-ACK，且因 ACK 不影响安全性而在图中省略。安全信息请求与分发让 DEV 通过 Security Information Request 与 Security Information 命令请求或推送安全记录——最常见于 PNC 移交前后——或承载于 Security Message 命令中（新 PNC 到旧 PNC 的变体仅限 piconet）（8.4.2）。密钥分发协议用于更新数据密钥：协调器向每个成员发送 Distribute Key Request，通过数据认证的对等 DEV 以 Distribute Key Response 应答（8.4.3）。密钥请求协议方向相反：看到未知 SECID 的 DEV 向密钥发起者发送 Request Key 命令，发起者在验证完整性码与安全关系后，以受管理密钥保护的 Request Key Response 回复（8.4.4）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every Clause 8 unit and its exact home",
+        "zh": "覆盖地图——第 8 章每个单元及其确切归属"
+      },
+      "en": "8.1 Security mechanisms (p.351-352): 8.1.1 General (symmetric-key services controlling admission and protecting communications); 8.1.2 Security membership and key establishment (out of scope; Security Message command; DEVID must be authenticated); 8.1.3 Key transport (transmitted keys are encrypted; e.g. group data key); 8.1.4 Data encryption (symmetric cipher, group or pairwise key); 8.1.5 Data integrity (integrity code; failures to MLME-SECURITY-ERROR.indication); 8.1.6 Beacon integrity protection (proves coordinator origin and sync); 8.1.7 Command integrity protection (PNC/PRC-DEV management key); 8.1.8 Freshness protection (strictly increasing time token, per-SECID SFC for pairnets, CurrentTimeToken vs LastValidTimeToken). 8.2 Security modes (p.352-353): 8.2.1 General (macSecurityOptionImplemented in MAC PIB); 8.2.2 Security mode 0 (no crypto; SEC-set frame -> UNAVAILABLE-KEY); 8.2.3 Security mode 1 (symmetric crypto; unexpected SEC -> INVALID-SEC-VALUE). 8.3 Security support (p.353-357): 8.3.1 General; 8.3.2 PNC handover (no rekey; re-establish via CTAs); 8.3.3 Changes in group data key (Distribute Key Request, SECID advance, grace period, Key Request on unknown SECID); 8.3.4 Joining a secure network (associate -> DEVID -> out-of-scope secure membership); 8.3.5 Membership update (TrgtId, MembershipStatus, KeyInfoLength semantics); 8.3.6 Secure frame generation (Tables 8-1/8-2, CCM nonce piconet / GCM pairnet, FCS, increasing SFC); 8.3.7 Updating CurrentTimeToken (bounded increment on missed beacon); 8.3.8 Secure frame reception (ordered checks: FCS, BAD-TIME-TOKEN, UNAVAILABLE-KEY, BAD-SFC, FAILED-SECURITY-CHECK); 8.3.9 Selecting the SECID for a new key (key originator picks 2-octet SECID; coordinator self-selects at network start); 8.3.10 Key selection (management vs data vs group key per frame type). 8.4 Protocol details (p.363-365): 8.4.1 General (Imm-ACK/Stk-ACK assumed, ACKs omitted from diagrams); 8.4.2 Security information request and distribution (Figures 8-1/8-2/8-3); 8.4.3 Key distribution protocol (Distribute Key Request/Response); 8.4.4 Key request protocol (Request Key / Request Key Response).",
+      "zh": "8.1 安全机制（第 351-352 页）：8.1.1 总则（对称密钥服务，控制准入并保护通信）；8.1.2 安全成员与密钥建立（范围之外；Security Message 命令；必须认证 DEVID）；8.1.3 密钥传输（传输的密钥须加密；如组数据密钥）；8.1.4 数据加密（对称密码，组密钥或成对密钥）；8.1.5 数据完整性（完整性码；失败转 MLME-SECURITY-ERROR.indication）；8.1.6 信标完整性保护（证明协调器来源与同步）；8.1.7 命令完整性保护（PNC/PRC-DEV 管理密钥）；8.1.8 新鲜性保护（严格递增时间令牌，pairnet 按 SECID 的 SFC，CurrentTimeToken 与 LastValidTimeToken）。8.2 安全模式（第 352-353 页）：8.2.1 总则（MAC PIB 中的 macSecurityOptionImplemented）；8.2.2 安全模式 0（无密码运算；SEC 置位帧 -> UNAVAILABLE-KEY）；8.2.3 安全模式 1（对称密码；非预期 SEC -> INVALID-SEC-VALUE）。8.3 安全支持（第 353-357 页）：8.3.1 总则；8.3.2 PNC 移交（无需重密钥；经 CTA 重建）；8.3.3 组数据密钥变更（Distribute Key Request、SECID 推进、宽限期、未知 SECID 时发 Key Request）；8.3.4 加入安全网络（关联 -> DEVID -> 范围之外的安全成员建立）；8.3.5 成员更新（TrgtId、MembershipStatus、KeyInfoLength 语义）；8.3.6 安全帧生成（表 8-1/8-2、piconet 用 CCM 现时值 / pairnet 用 GCM、FCS、递增 SFC）；8.3.7 更新 CurrentTimeToken（漏收信标时有界递增）；8.3.8 安全帧接收（顺序检查：FCS、BAD-TIME-TOKEN、UNAVAILABLE-KEY、BAD-SFC、FAILED-SECURITY-CHECK）；8.3.9 为新密钥选择 SECID（密钥发起者选 2 字节 SECID；网络启动时协调器自选）；8.3.10 密钥选择（按帧类型在管理/数据/组密钥间选择）。8.4 协议细节（第 363-365 页）：8.4.1 总则（假定 Imm-ACK/Stk-ACK，图中省略 ACK）；8.4.2 安全信息请求与分发（图 8-1/8-2/8-3）；8.4.3 密钥分发协议（Distribute Key Request/Response）；8.4.4 密钥请求协议（Request Key / Request Key Response）。",
+      "cite": {
+        "pdf_id": "802153-2023",
+        "pages": [
+          351,
+          352,
+          353,
+          354,
+          355,
+          356,
+          357,
+          363,
+          364,
+          365
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        351,
+        352,
+        353,
+        354,
+        355,
+        356,
+        357,
+        363,
+        364,
+        365
+      ],
+      "note": "Clause 8 Security: 8.1 mechanisms (p.351-352), 8.2 modes (p.352-353), 8.3 support (p.353-357), 8.4 protocol details (p.363-365)."
+    }
+  ],
+  "covers": [
+    "802153-2023:8.1.1",
+    "802153-2023:8.1.2",
+    "802153-2023:8.1.3",
+    "802153-2023:8.1.4",
+    "802153-2023:8.1.5",
+    "802153-2023:8.1.6",
+    "802153-2023:8.1.7",
+    "802153-2023:8.1.8",
+    "802153-2023:8.2.1",
+    "802153-2023:8.2.2",
+    "802153-2023:8.2.3",
+    "802153-2023:8.3.1",
+    "802153-2023:8.3.2",
+    "802153-2023:8.3.3",
+    "802153-2023:8.3.4",
+    "802153-2023:8.3.5",
+    "802153-2023:8.3.6",
+    "802153-2023:8.3.7",
+    "802153-2023:8.3.8",
+    "802153-2023:8.3.9",
+    "802153-2023:8.3.10",
+    "802153-2023:8.4.1",
+    "802153-2023:8.4.2",
+    "802153-2023:8.4.3",
+    "802153-2023:8.4.4"
+  ],
+  "track": "pan-hr-wpan"
+}

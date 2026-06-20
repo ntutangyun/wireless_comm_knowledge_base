@@ -1,0 +1,149 @@
+{
+  "id": "pan-hr-wpan-09",
+  "title": {
+    "en": "The MAC Command Catalog: How DEVs Talk to the PNC",
+    "zh": "MAC 命令目录：设备如何与微微网协调器对话"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "We have spent three lessons walking through the building blocks of an 802.15.3 MAC (medium access control) frame: the header, the information elements (IEs), and the payload layouts. This final part of Clause 6 puts those blocks to work. Clause 6.5 defines the MAC commands — the small, purpose-built management frames that a DEV (device) and the PNC (piconet coordinator) exchange to actually run the network: join it, secure it, ask for airtime, save power, hand over control, and tear down again. Think of the rest of Clause 6 as the vocabulary, and 6.5 as the sentences.",
+      "zh": "前三节课我们逐一拆解了 802.15.3 MAC（媒体访问控制）帧的构件：帧头、信息元素（IE）和各种载荷布局。本节作为 Clause 6 的最后一部分，让这些构件真正发挥作用。Clause 6.5 定义了 MAC 命令——也就是 DEV（设备）与 PNC（微微网协调器）之间交换的、专门用途的小型管理帧，用来真正运行整个网络：加入、加密、申请空口时间、省电、移交控制权，以及最终拆除连接。可以把 Clause 6 的其余部分看作词汇，而 6.5 就是用这些词汇造出的句子。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 6.5.1 (Overview) is the master index. Two big tables, Table 6-47 (commands for a piconet) and Table 6-48 (commands for a pairnet — a two-device link), list every command, its 16-bit Command Type hex value, the subclause that defines it, and two flags: whether the sender must be Associated, and whether Secure membership is required. The overview sets blanket rules: when the piconet runs in security mode 1 the SEC (security) field defaults to one, the ACK (acknowledgement) Policy defaults to Imm-ACK (immediate acknowledgement), and only three long commands may be fragmented — PNC Information, PNC Handover Information, and PS Set Information Response.",
+      "zh": "Clause 6.5.1（概述）是总目录。两张大表——Table 6-47（微微网命令）和 Table 6-48（pairnet 命令，即两设备链路）——列出了每条命令、其 16 位命令类型十六进制值、定义它的子条款，以及两个标志：发送方是否必须已关联（Associated），以及是否需要安全成员资格（Secure membership）。概述还设定了通用规则：当微微网运行于安全模式 1 时，SEC（安全）字段默认为 1，ACK（确认）策略默认为 Imm-ACK（立即确认），并且只有三条较长的命令可被分片——PNC 信息、PNC 移交信息、PS 集合信息响应。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A handy mental model: nearly every command comes in Request/Response pairs. A DEV asks (Request), the PNC or peer answers (Response) with a Reason Code — a one-octet result where 0 almost always means Success and 255 almost always means Other failure. Spotting that pattern lets you read most of 6.5 at a glance.",
+      "zh": "一个好用的心智模型：几乎每条命令都成对出现，即请求/响应。DEV 发出请求（Request），PNC 或对端用响应（Response）回答，并附带一个原因码（Reason Code）——这是一个单字节的结果，其中 0 几乎总是表示成功，255 几乎总是表示其他失败。认出这个规律，你就能一眼读懂 6.5 的大部分内容。"
+    },
+    {
+      "type": "prose",
+      "en": "Membership is the first conversation. Clause 6.5.2 (Association and disassociation) carries the Association Request — which advertises the DEV's address, capabilities, and ATP (association timeout period, the idle time the link survives without traffic) — answered by the Association Response that allocates a DEVID (device identifier) or refuses with a reason code such as 'serving maximum number of DEVs.' The Disassociation Request ends membership, with reasons ranging from 'ATP expired' to 'DEV leaving piconet.' Once a member, a DEV uses Clause 6.5.3 (Security commands): Request Key / Request Key Response fetch an encryption key from the key originator, while Distribute Key Request / Response push a key to another DEV. Every one of these is protected by the shared management key.",
+      "zh": "成员关系是第一段对话。Clause 6.5.2（关联与解除关联）承载关联请求——它通告 DEV 的地址、能力和 ATP（关联超时周期，即链路在无流量时能维持的空闲时间）——由关联响应来回答，后者分配一个 DEVID（设备标识符），或以诸如「已服务最大数量设备」之类的原因码拒绝。解除关联请求则结束成员关系，原因可从「ATP 超时」到「DEV 离开微微网」不等。成为成员后，DEV 使用 Clause 6.5.3（安全命令）：请求密钥/请求密钥响应用于向密钥发起方获取加密密钥，而分发密钥请求/响应则把密钥推送给另一台 DEV。所有这些命令都由共享的管理密钥加以保护。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant D as DEV\n  participant P as PNC\n  D->>P: Association Request (6.5.2.2)\n  P-->>D: Association Response + DEVID (6.5.2.3)\n  D->>P: Request Key (6.5.3.2)\n  P-->>D: Request Key Response (6.5.3.3)\n  D->>P: Channel Time Request (6.5.7.2)\n  P-->>D: Channel Time Response (6.5.7.3)\n  D->>P: Disassociation Request (6.5.2.4)",
+      "zh": "sequenceDiagram\n  participant D as DEV\n  participant P as PNC\n  D->>P: 关联请求 (6.5.2.2)\n  P-->>D: 关联响应 + DEVID (6.5.2.3)\n  D->>P: 请求密钥 (6.5.3.2)\n  P-->>D: 请求密钥响应 (6.5.3.3)\n  D->>P: 空口时间请求 (6.5.7.2)\n  P-->>D: 空口时间响应 (6.5.7.3)\n  D->>P: 解除关联请求 (6.5.2.4)"
+    },
+    {
+      "type": "prose",
+      "en": "The PNC is a single point of coordination, so the standard plans for its retirement. Clause 6.5.4 (PNC handover) lets the current PNC pass the baton to another PNC-capable DEV: the PNC Handover Request announces how much state must move (number of DEVs, channel-time request blocks, PS sets) and a Handover Status; the PNC Handover Response accepts or refuses; and the PNC Handover Information command actually transfers the per-DEV channel-time request blocks. Reading the network's state is Clause 6.5.5 (Information request commands): PNC Information Request/Response pull data about associated DEVs, Security Information Request/Response pull their security relationships, and Probe Request/Response fetch specific IEs from one named DEV.",
+      "zh": "PNC 是单一的协调中心，因此标准为其「退位」做了预案。Clause 6.5.4（PNC 移交）允许当前 PNC 把接力棒交给另一台具备 PNC 能力的 DEV：PNC 移交请求通告需要转移多少状态（设备数量、空口时间请求块、PS 集合）以及一个移交状态；PNC 移交响应表示接受或拒绝；而 PNC 移交信息命令则实际转移每台 DEV 的空口时间请求块。读取网络状态属于 Clause 6.5.5（信息请求命令）：PNC 信息请求/响应获取已关联 DEV 的数据，安全信息请求/响应获取它们的安全关系，探测请求/响应则从某一具名 DEV 处取回特定的 IE。"
+    },
+    {
+      "type": "prose",
+      "en": "Some information flows without being asked. Clause 6.5.6 (Information announcement) covers the Piconet Services command, in which the PNC broadcasts every DEV's application-layer capabilities, and the Announce / Announce Response pair, which lets a DEV push unrequested IEs to peers and have each one acknowledged with a per-IE reason code. The heart of a real-time PAN, though, is airtime. Clause 6.5.7 (Channel time allocation) is where a DEV asks for a slice of the CTAP (channel time allocation period). Its Channel Time Request carries one or more Channel Time Request Blocks describing isochronous streams or asynchronous bursts — including the CTA rate factor, super-rate vs sub-rate spacing, and the minimum/desired number of time units (TUs). The Channel Time Response reports the available number of TUs and a reason code.",
+      "zh": "有些信息无需请求即可流动。Clause 6.5.6（信息通告）包含微微网服务（Piconet Services）命令——PNC 借此广播每台 DEV 的应用层能力；以及通告/通告响应这一对——它让某台 DEV 把未经请求的 IE 推送给对端，并让每个 IE 都获得逐 IE 的原因码确认。不过，实时个域网（PAN）的核心是空口时间。Clause 6.5.7（空口时间分配）正是 DEV 申请一段 CTAP（空口时间分配周期）的地方。它的空口时间请求承载一个或多个空口时间请求块，描述等时（isochronous）流或异步（asynchronous）突发——包括 CTA 速率因子、超速率与亚速率间隔，以及最小/期望的时间单元（TU）数量。空口时间响应则报告可用的 TU 数量和一个原因码。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 560 90\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"30\" width=\"70\" height=\"34\"/><rect x=\"80\" y=\"30\" width=\"90\" height=\"34\"/><rect x=\"170\" y=\"30\" width=\"70\" height=\"34\"/><rect x=\"240\" y=\"30\" width=\"70\" height=\"34\"/><rect x=\"310\" y=\"30\" width=\"60\" height=\"34\"/><rect x=\"370\" y=\"30\" width=\"80\" height=\"34\"/><rect x=\"450\" y=\"30\" width=\"100\" height=\"34\"/><text x=\"45\" y=\"51\" font-size=\"9\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">Num Targets</text><text x=\"125\" y=\"51\" font-size=\"9\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">Target ID List</text><text x=\"205\" y=\"48\" font-size=\"8\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">Stream</text><text x=\"205\" y=\"58\" font-size=\"8\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">Index</text><text x=\"275\" y=\"48\" font-size=\"8\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">CTRL +</text><text x=\"275\" y=\"58\" font-size=\"8\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">Rate Factor</text><text x=\"340\" y=\"51\" font-size=\"9\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">CTR TU</text><text x=\"410\" y=\"51\" font-size=\"9\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">Min TUs</text><text x=\"500\" y=\"51\" font-size=\"9\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\">Desired TUs</text><text x=\"10\" y=\"20\" font-size=\"10\" fill=\"currentColor\" stroke=\"none\">Channel Time Request Block (6.5.7.2, Figure 6-195)</text></svg>",
+      "caption": {
+        "en": "A single Channel Time Request Block. The CTA rate factor plus the min/desired TUs tell the PNC how much recurring airtime a stream needs each superframe.",
+        "zh": "一个空口时间请求块。CTA 速率因子加上最小/期望 TU 数量，告诉 PNC 某条流在每个超帧中需要多少周期性空口时间。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Channel quality and power round out the toolbox. Clause 6.5.8 (Channel status commands) lets any DEV ask a peer for its view of the link: the Channel Status Response reports TX/RX frame counts, error counts and loss counts over a measurement window, the Remote Scan Request/Response have a DEV survey other channels and rank them, and the Transmit Power Change command nudges a DEV's TX power up or down in dB. Clause 6.5.9 (Power management commands) is how DEVs sleep: PS Set Information Request/Response describe the piconet's power-save (PS) sets, SPS Configuration Request/Response let a DEV join or leave a synchronized power-save (SPS) set with a chosen wake beacon interval, and the PM Mode Change / Response pair flips a DEV between ACTIVE, APS (asynchronous power save), and SPS modes.",
+      "zh": "信道质量与功率为工具箱收尾。Clause 6.5.8（信道状态命令）让任意 DEV 向对端询问其对链路的看法：信道状态响应报告测量窗口内的发送/接收帧计数、错误计数和丢失计数；远程扫描请求/响应让某台 DEV 巡测其他信道并排序；发射功率变更命令则以 dB 为单位上调或下调某台 DEV 的发射功率。Clause 6.5.9（功率管理命令）是 DEV 休眠的方式：PS 集合信息请求/响应描述微微网的省电（PS）集合；SPS 配置请求/响应让 DEV 以选定的唤醒信标间隔加入或离开同步省电（SPS）集合；PM 模式变更/响应这一对则在 ACTIVE、APS（异步省电）和 SPS 模式之间切换某台 DEV。"
+    },
+    {
+      "type": "prose",
+      "en": "Two final groups catch everything else. Clause 6.5.10 (Special commands) is a grab-bag: the Security Message and Vendor Defined commands carry opaque payloads whose meaning is set by a Unique ID and is outside the standard's scope; the AS IE Request/Response commands ask the PNC to add, modify, or remove an application-specific (AS) IE in the beacon; and the Array Training command plus its Array Training Feedback drive antenna-array selection for MIMO (multiple-input multiple-output) links, with the feedback reporting which training frames arrived and at what RSSI (received signal strength indicator). Finally, Clause 6.5.11 (Piconet Multicast configuration) is a clean pair: a Multicast Configuration Request asks the PNC to join or leave a multicast group address, and the Multicast Configuration Response returns an assigned GrpID (group identifier) or a failure reason.",
+      "zh": "最后两组命令收纳其余一切。Clause 6.5.10（特殊命令）是一个大杂烩：安全消息命令和厂商自定义命令承载不透明的载荷，其含义由一个唯一 ID 决定，且不在标准范围之内；AS IE 请求/响应命令请求 PNC 在信标中添加、修改或移除一个应用特定（AS）IE；阵列训练命令及其阵列训练反馈则驱动 MIMO（多输入多输出）链路的天线阵列选择，反馈会报告哪些训练帧到达以及到达时的 RSSI（接收信号强度指示）。最后，Clause 6.5.11（微微网组播配置）是一对干净利落的命令：组播配置请求让 PNC 加入或离开某个组播组地址，组播配置响应则返回分配的 GrpID（组标识符）或失败原因。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every 6.5 command group by exact clause",
+        "zh": "覆盖地图——按确切条款列出每个 6.5 命令组"
+      },
+      "en": "6.5.1 Overview: Table 6-47/6-48 list all commands with Command Type hex, Associated and Secure-membership flags; the SEC field, Imm-ACK default, and the three fragmentable commands are defined here. 6.5.2 Association/disassociation: Association Request (6.5.2.2, DEV Address, Overall Capabilities, ATP), Association Response (6.5.2.3, DEVID + reason code), Disassociation Request (6.5.2.4). 6.5.3 Security: Request Key (6.5.3.2), Request Key Response (6.5.3.3, SECID + Encrypted Key), Distribute Key Request (6.5.3.4) and Response (6.5.3.5), all protected by the shared management key. 6.5.4 PNC handover: Handover Request (counts of DEVs/CTR blocks/PS sets + Handover Status), Handover Response (reason code), Handover Information (per-DEV Channel Time Request Blocks). 6.5.5 Information request: PNC Information Request/command (6.5.5.2-3), Security Information Request/command (6.5.5.4-5), Probe Request/Response (6.5.5.6-7). 6.5.6 Information announcement: Piconet Services command (6.5.6.1), Announce (6.5.6.2) and Announce Response (6.5.6.3, per-IE element ID + reason code). 6.5.7 Channel time: Channel Time Request (6.5.7.2, Channel Time Request Blocks, CTA rate factor, min/desired TUs) and Channel Time Response (6.5.7.3, available TUs + reason code). 6.5.8 Channel status: Channel Status Request/Response (6.5.8.2-3, TX/RX/error/loss counts), Remote Scan Request/Response (6.5.8.4-5), Transmit Power Change (6.5.8.6). 6.5.9 Power management: PS Set Information Request/Response (6.5.9.2-3), SPS Configuration Request/Response (6.5.9.4-5, wake beacon interval), PM Mode Change/Response (6.5.9.6-7). 6.5.10 Special: Security Message (6.5.10.1), Vendor Defined (6.5.10.2), AS IE Request/Response (6.5.10.3-4), Array Training (6.5.10.5) and Array Training Feedback (6.5.10.6, list of received commands + RSSI report). 6.5.11 Multicast: Multicast Configuration Request (6.5.11.1, Action + Group Address) and Response (6.5.11.2, GrpID + reason code).",
+      "zh": "6.5.1 概述：Table 6-47/6-48 列出所有命令的命令类型十六进制值、已关联标志和安全成员资格标志；SEC 字段、Imm-ACK 默认值以及三条可分片命令都在此定义。6.5.2 关联/解除关联：关联请求（6.5.2.2，DEV 地址、总体能力、ATP）、关联响应（6.5.2.3，DEVID + 原因码）、解除关联请求（6.5.2.4）。6.5.3 安全：请求密钥（6.5.3.2）、请求密钥响应（6.5.3.3，SECID + 加密密钥）、分发密钥请求（6.5.3.4）与响应（6.5.3.5），均由共享管理密钥保护。6.5.4 PNC 移交：移交请求（设备/请求块/PS 集合的计数 + 移交状态）、移交响应（原因码）、移交信息（每台 DEV 的空口时间请求块）。6.5.5 信息请求：PNC 信息请求/命令（6.5.5.2-3）、安全信息请求/命令（6.5.5.4-5）、探测请求/响应（6.5.5.6-7）。6.5.6 信息通告：微微网服务命令（6.5.6.1）、通告（6.5.6.2）与通告响应（6.5.6.3，逐 IE 的元素 ID + 原因码）。6.5.7 空口时间：空口时间请求（6.5.7.2，空口时间请求块、CTA 速率因子、最小/期望 TU）与空口时间响应（6.5.7.3，可用 TU + 原因码）。6.5.8 信道状态：信道状态请求/响应（6.5.8.2-3，发送/接收/错误/丢失计数）、远程扫描请求/响应（6.5.8.4-5）、发射功率变更（6.5.8.6）。6.5.9 功率管理：PS 集合信息请求/响应（6.5.9.2-3）、SPS 配置请求/响应（6.5.9.4-5，唤醒信标间隔）、PM 模式变更/响应（6.5.9.6-7）。6.5.10 特殊命令：安全消息（6.5.10.1）、厂商自定义（6.5.10.2）、AS IE 请求/响应（6.5.10.3-4）、阵列训练（6.5.10.5）与阵列训练反馈（6.5.10.6，已接收命令列表 + RSSI 报告）。6.5.11 组播：组播配置请求（6.5.11.1，动作 + 组地址）与响应（6.5.11.2，GrpID + 原因码）。",
+      "cite": {
+        "pdf_id": "802153-2023",
+        "pages": [
+          210,
+          214,
+          217,
+          219,
+          220,
+          227,
+          230,
+          234,
+          237,
+          241,
+          244
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        210,
+        211,
+        212,
+        214,
+        217,
+        219,
+        220
+      ],
+      "note": "6.5.1 overview tables (6-47/6-48), fragmentable commands; 6.5.2 association/disassociation; 6.5.3 security commands; 6.5.4 PNC handover; 6.5.5 information request"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        227,
+        228,
+        229,
+        230,
+        232,
+        233,
+        234,
+        235,
+        236
+      ],
+      "note": "6.5.6 information announcement (Piconet Services, Announce, Announce Response); 6.5.7 channel time request/response; 6.5.8 channel status, remote scan, transmit power change"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        237,
+        238,
+        239,
+        240,
+        241,
+        242,
+        243,
+        244,
+        245
+      ],
+      "note": "6.5.9 power management (PS Set, SPS Configuration, PM Mode Change); 6.5.10 special (Security Message, Vendor Defined, AS IE, Array Training); 6.5.11 multicast configuration"
+    }
+  ],
+  "covers": [
+    "802153-2023:6.5.1",
+    "802153-2023:6.5.2",
+    "802153-2023:6.5.3",
+    "802153-2023:6.5.4",
+    "802153-2023:6.5.5",
+    "802153-2023:6.5.6",
+    "802153-2023:6.5.7",
+    "802153-2023:6.5.8",
+    "802153-2023:6.5.9",
+    "802153-2023:6.5.10",
+    "802153-2023:6.5.11"
+  ],
+  "track": "pan-hr-wpan"
+}

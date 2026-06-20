@@ -1,0 +1,114 @@
+{
+  "id": "tsn-19",
+  "title": {
+    "en": "CMLDS Link-Port Counters and Asymmetry Mode (cmldsLinkPortStatisticsDS, cmldsAsymmetryMeasurementModeDS)",
+    "zh": "CMLDS 链路端口计数器与不对称测量模式（cmldsLinkPortStatisticsDS、cmldsAsymmetryMeasurementModeDS）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This is the final stop on our tour of Clause 14 (Timing and synchronization management). It covers two small but important management data sets that belong to the Common Mean Link Delay Service (CMLDS) — the shared service that measures the propagation delay of a physical link once and lets every gPTP (generalized Precision Time Protocol) domain reuse that one measurement. We meet the CMLDS sibling of two data sets you have already seen for individual PTP Ports: a statistics counter block (14.17) and an asymmetry-measurement switch (14.18).",
+      "zh": "这是我们巡览第 14 章（定时与同步管理）的最后一站。它涵盖了归属于公共平均链路时延服务（CMLDS，Common Mean Link Delay Service）的两个小而重要的管理数据集。CMLDS 是一项共享服务：它只测量一次物理链路的传播时延，然后让每一个 gPTP（通用精确时间协议，generalized Precision Time Protocol）域复用这一次测量结果。本课介绍的两个数据集，正是你此前在单个 PTP 端口上见过的两个数据集在 CMLDS 中的对应物：一个统计计数器块（14.17）和一个不对称测量开关（14.18）。"
+    },
+    {
+      "type": "prose",
+      "en": "First, the counters. The cmldsLinkPortStatisticsDS (Common Mean Link Delay Service Link Port Parameter Statistics Data Set) holds a bank of read-only counters for every Link Port that the CMLDS runs on. There is exactly one such statistics set per Link Port — the count equals cmldsDefaultDS.numberLinkPorts (14.17.1). Each counter is incremented by a specific, named transition inside the peer-delay (Pdelay) state machines, so a counter is never a vague tally — it maps to one concrete event in the protocol.",
+      "zh": "首先是计数器。cmldsLinkPortStatisticsDS（公共平均链路时延服务链路端口参数统计数据集）为运行 CMLDS 的每一个链路端口（Link Port）保存一组只读计数器。每个链路端口恰好对应一组这样的统计集——其数量等于 cmldsDefaultDS.numberLinkPorts（14.17.1）。每个计数器都由对等时延（Pdelay，peer-delay）状态机内部某个明确命名的状态跳变所递增，因此计数器绝不是模糊的累加，而是精确对应协议中某个具体事件。"
+    },
+    {
+      "type": "prose",
+      "en": "The Pdelay exchange is how a port measures link delay: it sends a Pdelay_Req (peer-delay request), the neighbor answers with a Pdelay_Resp (response) and a Pdelay_Resp_Follow_Up (follow-up carrying the precise timestamp). The receive-side counters tally inbound traffic: rxPdelayRequestCount (14.17.2) every time a Pdelay_Req arrives, rxPdelayResponseCount (14.17.3) for each Pdelay_Resp, and rxPdelayResponseFollowUpCount (14.17.4) for each follow-up. Each is tied to a named variable flipping FALSE-to-TRUE in the MDPdelayResp or MDPdelayReq state machine.",
+      "zh": "Pdelay 交换是端口测量链路时延的方式：它发出一个 Pdelay_Req（对等时延请求），邻居以 Pdelay_Resp（响应）和 Pdelay_Resp_Follow_Up（携带精确时间戳的跟随报文）作答。接收侧计数器统计入站流量：rxPdelayRequestCount（14.17.2）在每次收到 Pdelay_Req 时递增，rxPdelayResponseCount（14.17.3）对应每个 Pdelay_Resp，rxPdelayResponseFollowUpCount（14.17.4）对应每个跟随报文。每个计数器都绑定到 MDPdelayResp 或 MDPdelayReq 状态机中某个命名变量从 FALSE 翻转为 TRUE 的事件。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"60\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Requestor port</text><text x=\"400\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Responder port</text><line x1=\"60\" y1=\"28\" x2=\"60\" y2=\"140\"/><line x1=\"400\" y1=\"28\" x2=\"400\" y2=\"140\"/><line x1=\"60\" y1=\"48\" x2=\"400\" y2=\"64\"/><text x=\"230\" y=\"50\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Pdelay_Req  (tx 14.17.7 / rx 14.17.2)</text><line x1=\"400\" y1=\"82\" x2=\"60\" y2=\"98\"/><text x=\"230\" y=\"84\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Pdelay_Resp  (tx 14.17.8 / rx 14.17.3)</text><line x1=\"400\" y1=\"112\" x2=\"60\" y2=\"128\"/><text x=\"230\" y=\"114\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Pdelay_Resp_Follow_Up  (tx 14.17.9 / rx 14.17.4)</text></svg>",
+      "caption": {
+        "en": "The peer-delay handshake. Each of the three messages has a transmit counter and a receive counter in cmldsLinkPortStatisticsDS, so an operator can see both sides of the exchange.",
+        "zh": "对等时延握手。三种报文中的每一种在 cmldsLinkPortStatisticsDS 中都有一个发送计数器和一个接收计数器，因此运维人员可以看到交换的双方。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Two counters track failures rather than normal traffic. rxPTPPacketDiscardCount (14.17.5) increments whenever a CMLDS PTP message is discarded — for example when an expected Pdelay_Resp or Pdelay_Resp_Follow_Up never arrives and the MDPdelayReq state machine falls back to its RESET state. pdelayAllowedLostResponsesExceededCount (14.17.6) increments when the lostResponses variable climbs past the allowedLostResponses threshold in that same RESET state — the moment the port decides it has lost the link partner often enough to give up treating the neighbor as a reliable peer.",
+      "zh": "有两个计数器跟踪的是故障而非正常流量。rxPTPPacketDiscardCount（14.17.5）在每次丢弃一个 CMLDS PTP 报文时递增——例如当期望的 Pdelay_Resp 或 Pdelay_Resp_Follow_Up 始终未到达、MDPdelayReq 状态机回退到 RESET 状态时。pdelayAllowedLostResponsesExceededCount（14.17.6）在同一个 RESET 状态中、当 lostResponses 变量超过 allowedLostResponses 阈值时递增——这正是端口判定它已多次失去链路对端、不再把该邻居当作可靠对等方的时刻。"
+    },
+    {
+      "type": "prose",
+      "en": "The transmit-side counters mirror the receive side: txPdelayRequestCount (14.17.7) increments when the MDPdelayReq state machine enters a SEND_PDELAY_REQ state and sends a request; txPdelayResponseCount (14.17.8) when the responder answers and moves into SENT_PDELAY_RESP_WAITING_FOR_TIMESTAMP; and txPdelayResponseFollowUpCount (14.17.9) when the follow-up is sent as the responder returns to WAITING_FOR_PDELAY_REQ. Together, the rx and tx counts let an operator audit the health of link-delay measurement entirely from management data.",
+      "zh": "发送侧计数器与接收侧相对应：txPdelayRequestCount（14.17.7）在 MDPdelayReq 状态机进入 SEND_PDELAY_REQ 状态并发出请求时递增；txPdelayResponseCount（14.17.8）在响应方作答并转入 SENT_PDELAY_RESP_WAITING_FOR_TIMESTAMP 状态时递增；txPdelayResponseFollowUpCount（14.17.9）在响应方返回 WAITING_FOR_PDELAY_REQ 状态、发出跟随报文时递增。接收与发送计数合在一起，让运维人员仅凭管理数据就能审计链路时延测量的健康状况。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A practical read: if rxPdelayRequestCount keeps climbing but txPdelayResponseCount does not, this port is hearing its neighbor's requests but failing to answer. If pdelayAllowedLostResponsesExceededCount ever moves, the link's delay measurement has been declared unreliable — a strong hint to look at cabling, the neighbor, or the asymmetry settings below.",
+      "zh": "一种实用的解读方式：如果 rxPdelayRequestCount 持续上升而 txPdelayResponseCount 不动，说明本端口能听到邻居的请求却没能作答。一旦 pdelayAllowedLostResponsesExceededCount 发生变化，就意味着该链路的时延测量已被判定为不可靠——这是一个强烈信号，提示你去检查线缆、邻居设备，或下文介绍的不对称设置。"
+    },
+    {
+      "type": "prose",
+      "en": "The whole counter block is exposed as the cmldsLinkPortStatisticsDS table (14.17.10): one table per Link Port, with each of the eight counters above listed as a UInteger32 (32-bit unsigned integer) with read-only access, per Table 14-19. In implementations that support dynamic configuration of Link Ports, these tables can be created or removed on the fly as ports come and go.",
+      "zh": "整个计数器块以 cmldsLinkPortStatisticsDS 表（14.17.10）的形式对外暴露：每个链路端口一张表，上述八个计数器中的每一个都按 Table 14-19 列为 UInteger32（32 位无符号整数）且为只读访问。在支持链路端口动态配置的实现中，这些表可以随着端口的出现与消失而被动态地创建或移除。"
+    },
+    {
+      "type": "prose",
+      "en": "Now the second data set: cmldsAsymmetryMeasurementModeDS (Common Mean Link Delay Service Asymmetry Measurement Mode Parameter Data Set, 14.18.1). gPTP normally assumes a link's delay is the same in both directions. When it is not — say one fiber strand is longer than the other — that asymmetry biases the time estimate. This data set is the on/off switch for the Asymmetry Compensation Measurement Procedure (defined in Annex G), one switch per CMLDS Link Port. Again the number of data sets equals cmldsDefaultDS.numberLinkPorts.",
+      "zh": "现在看第二个数据集：cmldsAsymmetryMeasurementModeDS（公共平均链路时延服务不对称测量模式参数数据集，14.18.1）。gPTP 通常假定链路在两个方向上的时延相同。当事实并非如此时——比如一根光纤芯比另一根更长——这种不对称会使时间估计产生偏差。该数据集就是不对称补偿测量过程（在附录 G 中定义）的开关，每个 CMLDS 链路端口一个开关。同样，数据集的数量等于 cmldsDefaultDS.numberLinkPorts。"
+    },
+    {
+      "type": "prose",
+      "en": "The single member is asymmetryMeasurementMode (14.18.2), a Boolean mirroring the variable of the same name (see G.3). For full-duplex IEEE 802.3 (Ethernet) media it is TRUE while an asymmetry measurement is in progress on the attached link and FALSE otherwise; for all other media it must always be FALSE. Writing the managed object sets the underlying Boolean to the same value. The standard notes that for a measurement to work, asymmetryMeasurementMode must be TRUE on the Link Ports at both ends of the link.",
+      "zh": "其唯一成员是 asymmetryMeasurementMode（14.18.2），一个布尔值，映射同名变量（见 G.3）。对于全双工 IEEE 802.3（以太网）介质，当所连链路上正在进行不对称测量时其值为 TRUE，否则为 FALSE；对于所有其他介质，它必须始终为 FALSE。写入该被管对象会把底层布尔值设为相同的值。标准指出，要使测量生效，链路两端的链路端口上的 asymmetryMeasurementMode 都必须为 TRUE。"
+    },
+    {
+      "type": "prose",
+      "en": "Unlike the statistics counters, this member is read/write — an operator can both observe and toggle it. It is exposed as the cmldsAsymmetryMeasurementModeDS table (14.18.3): one table for all PTP Instances, per Link Port, with the single Boolean asymmetryMeasurementMode marked RW (read/write) in Table 14-20. This is the CMLDS counterpart of the per-port asymmetryMeasurementModeDS you saw earlier — the CMLDS version is used when CMLDS measures link delay on behalf of the gPTP domains.",
+      "zh": "与统计计数器不同，该成员是读/写的——运维人员既可以观察它也可以切换它。它以 cmldsAsymmetryMeasurementModeDS 表（14.18.3）的形式暴露：所有 PTP 实例共用一张表，按链路端口划分，表中唯一的布尔值 asymmetryMeasurementMode 在 Table 14-20 中标记为 RW（读/写）。这是你此前见过的逐端口 asymmetryMeasurementModeDS 在 CMLDS 中的对应物——当由 CMLDS 代表各 gPTP 域测量链路时延时，使用的就是这个 CMLDS 版本。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause in 14.17 and 14.18 by number",
+        "zh": "覆盖地图——按编号列出 14.17 与 14.18 的每个条款"
+      },
+      "en": "14.17 cmldsLinkPortStatisticsDS: 14.17.1 General — one statistics set per Link Port, count = cmldsDefaultDS.numberLinkPorts. Receive counters: 14.17.2 rxPdelayRequestCount, 14.17.3 rxPdelayResponseCount, 14.17.4 rxPdelayResponseFollowUpCount (each on a FALSE→TRUE variable transition in the MDPdelayResp/MDPdelayReq state machines). Failure counters: 14.17.5 rxPTPPacketDiscardCount (message discarded, e.g. MDPdelayReq falls to RESET), 14.17.6 pdelayAllowedLostResponsesExceededCount (lostResponses exceeds allowedLostResponses in RESET). Transmit counters: 14.17.7 txPdelayRequestCount (enter SEND_PDELAY_REQ), 14.17.8 txPdelayResponseCount (enter SENT_PDELAY_RESP_WAITING_FOR_TIMESTAMP), 14.17.9 txPdelayResponseFollowUpCount (return to WAITING_FOR_PDELAY_REQ). 14.17.10 cmldsLinkPortStatisticsDS table — Table 14-19, one per Link Port, all eight counters UInteger32, read-only; dynamically creatable/removable. 14.18 cmldsAsymmetryMeasurementModeDS: 14.18.1 General — enable/disable the Asymmetry Compensation Measurement Procedure (Annex G) per Link Port, count = cmldsDefaultDS.numberLinkPorts. 14.18.2 asymmetryMeasurementMode — Boolean per G.3; TRUE during measurement on full-duplex IEEE 802.3, FALSE for other media; must be TRUE at both link ends. 14.18.3 cmldsAsymmetryMeasurementModeDS table — Table 14-20, one for all PTP Instances per Link Port, the Boolean is RW.",
+      "zh": "14.17 cmldsLinkPortStatisticsDS：14.17.1 概述——每个链路端口一组统计集，数量 = cmldsDefaultDS.numberLinkPorts。接收计数器：14.17.2 rxPdelayRequestCount、14.17.3 rxPdelayResponseCount、14.17.4 rxPdelayResponseFollowUpCount（均对应 MDPdelayResp/MDPdelayReq 状态机中变量 FALSE→TRUE 的跳变）。故障计数器：14.17.5 rxPTPPacketDiscardCount（报文被丢弃，例如 MDPdelayReq 跌入 RESET）、14.17.6 pdelayAllowedLostResponsesExceededCount（RESET 中 lostResponses 超过 allowedLostResponses）。发送计数器：14.17.7 txPdelayRequestCount（进入 SEND_PDELAY_REQ）、14.17.8 txPdelayResponseCount（进入 SENT_PDELAY_RESP_WAITING_FOR_TIMESTAMP）、14.17.9 txPdelayResponseFollowUpCount（返回 WAITING_FOR_PDELAY_REQ）。14.17.10 cmldsLinkPortStatisticsDS 表——Table 14-19，每个链路端口一张，八个计数器均为 UInteger32 且只读；可动态创建/移除。14.18 cmldsAsymmetryMeasurementModeDS：14.18.1 概述——逐链路端口启用/禁用不对称补偿测量过程（附录 G），数量 = cmldsDefaultDS.numberLinkPorts。14.18.2 asymmetryMeasurementMode——按 G.3 的布尔值；全双工 IEEE 802.3 上测量期间为 TRUE，其他介质为 FALSE；链路两端都必须为 TRUE。14.18.3 cmldsAsymmetryMeasurementModeDS 表——Table 14-20，所有 PTP 实例共用、按链路端口划分，该布尔值为 RW。",
+      "cite": {
+        "pdf_id": "8021AS-2020",
+        "pages": [
+          282,
+          283,
+          284
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        282,
+        283,
+        284
+      ],
+      "note": "14.17 cmldsLinkPortStatisticsDS (14.17.1-14.17.10, Table 14-19) and 14.18 cmldsAsymmetryMeasurementModeDS (14.18.1-14.18.3, Table 14-20)."
+    }
+  ],
+  "covers": [
+    "8021AS-2020:14.17.1",
+    "8021AS-2020:14.17.2",
+    "8021AS-2020:14.17.3",
+    "8021AS-2020:14.17.4",
+    "8021AS-2020:14.17.5",
+    "8021AS-2020:14.17.6",
+    "8021AS-2020:14.17.7",
+    "8021AS-2020:14.17.8",
+    "8021AS-2020:14.17.9",
+    "8021AS-2020:14.17.10",
+    "8021AS-2020:14.18.1",
+    "8021AS-2020:14.18.2",
+    "8021AS-2020:14.18.3"
+  ],
+  "track": "tsn"
+}

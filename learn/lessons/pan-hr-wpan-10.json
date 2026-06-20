@@ -1,0 +1,193 @@
+{
+  "id": "pan-hr-wpan-10",
+  "title": {
+    "en": "MAC Functional Description, Part 1: Building and Joining Piconets and Pairnets",
+    "zh": "MAC 功能说明（一）：组建与加入微微网和配对网"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 7 of IEEE Std 802.15.3-2023 is the standard's narrative heart: it explains *how* the Medium Access Control (MAC) layer actually behaves, in plain procedural language rather than as bit fields. This first part covers the whole lifecycle of forming a network and getting devices onto it. The standard supports two kinds of networks. A **piconet** is a coordinated multi-device network run by one device acting as the **PNC** (piconet coordinator). A **pairnet** is a lightweight two-device link run by a device acting as the **PRC** (pairnet coordinator). Throughout the clause, a generic radio is a **DEV** (device), and the layer above the MAC that issues requests is the **DME** (device management entity), talking to the MAC through optional **MLME** (MAC layer management entity) primitives.",
+      "zh": "IEEE Std 802.15.3-2023 的第 7 章是整部标准的叙事核心：它用平实的过程化语言（而非比特字段）说明媒体访问控制层（MAC，Medium Access Control）究竟如何运作。第一部分覆盖了组建网络并让设备加入其中的完整生命周期。标准支持两类网络。**微微网（piconet）**是由一台担任 **PNC（微微网协调器，piconet coordinator）**的设备统一协调的多设备网络。**配对网（pairnet）**则是由一台担任 **PRC（配对网协调器，pairnet coordinator）**的设备运行的轻量级双设备链路。全章中，一台普通无线设备称为 **DEV（设备，device）**，位于 MAC 之上、负责发起请求的管理实体称为 **DME（设备管理实体，device management entity）**，它通过可选的 **MLME（MAC 层管理实体，MAC layer management entity）**原语与 MAC 交互。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The standard speaks in request/confirm pairs. The DME issues an MLME-XXX.request; the MAC works on it; the MAC returns an MLME-XXX.confirm carrying a ResultCode of SUCCESS or FAILURE (with a ReasonCode such as TIMEOUT). Clause 7.1 also fixes the precise meaning of \"receiving a frame\": the PHY decoded it and both the Frame Check Sequence (FCS) and Header Check Sequence (HCS) matched. A header alone can pass on HCS even when the payload fails FCS.",
+      "zh": "标准以「请求/确认」成对的方式表述。DME 发出 MLME-XXX.request；MAC 处理它；MAC 返回 MLME-XXX.confirm，携带 ResultCode（SUCCESS 或 FAILURE，失败时附带如 TIMEOUT 之类的 ReasonCode）。第 7.1 节还精确界定了「收到一帧」的含义：PHY 成功解码，且帧校验序列（FCS，Frame Check Sequence）与头校验序列（HCS，Header Check Sequence）均匹配。即便载荷未通过 FCS，仅 MAC 头也可能单独通过 HCS 校验。"
+    },
+    {
+      "type": "prose",
+      "en": "A piconet begins when a PNC-capable DEV decides to be the PNC (7.2.1). The standard names four topology roles: an **independent piconet** (no parents, no dependents), a **parent piconet** (has dependents), and two flavors of **dependent piconet** that borrow time from a parent — a **child piconet** (its PNC is a member of the parent) and a **neighbor piconet** (its PNC is *not* a member of the parent). Before starting, every DEV must first listen. Scanning (7.2.2) is always *passive*: the DEV sits in receive mode for at least mMinChannelScan on each channel hunting for Beacon (or Sync) frames, and records a ChannelRatingList so it can pick the quietest channel. To start (7.2.3), the DEV listens one more mMinChannelScan to confirm the channel is clear, then becomes the PNC and broadcasts a beacon once per superframe (if no channel is free, the confirm carries NO_CHANNELS_AVAILABLE). A running PNC periodically re-scans, and on detecting a foreign piconet may change channel, reduce power, or become its child/neighbor. Crucially, a PNC can hand its role to a better-qualified device — **PNC handover** (7.2.4), ranked by Table 7-1 (Des-mode first, then security, source-capability, capacity, power, rate, address). The old PNC ships the new one a PNC Information command and channel-time requests, places a PNC Handover IE in its beacon naming the switchover beacon number, then stops beaconing; associations survive the swap.",
+      "zh": "当一台具备 PNC 能力的 DEV 决定担任 PNC 时，微微网便宣告成立（7.2.1）。标准定义了四种拓扑角色：**独立微微网**（无父网、无从属网）、**父微微网**（拥有从属网），以及两类向父网借用时间的**从属微微网**——**子微微网**（其 PNC 是父网成员）与**邻居微微网**（其 PNC 不是父网成员）。在启动之前，每台 DEV 都须先行侦听。扫描（7.2.2）始终是*被动*的：DEV 在每个信道上保持接收模式至少 mMinChannelScan 时长，搜寻信标（Beacon）帧或同步（Sync）帧，并记录 ChannelRatingList，以便挑选最安静的信道。启动时（7.2.3），DEV 再侦听一个 mMinChannelScan 以确认信道空闲，随即成为 PNC，并在每个超帧广播一次信标（若无空闲信道，确认原语将携带 NO_CHANNELS_AVAILABLE）。运行中的 PNC 会周期性重新扫描，一旦发现外部微微网，可切换信道、降低功率，或成为对方的子网／邻居网。关键在于，PNC 可将角色移交给更合格的设备——这就是 **PNC 切换（handover）**（7.2.4），其优先级由表 7-1 排序（先看 Des-mode，再依次为安全、源能力、容量、功率、速率、地址）。旧 PNC 将 PNC Information 命令与信道时间请求发给新 PNC，在信标中放入 PNC Handover IE 标明切换的信标编号，随后停止发送信标；关联关系在切换过程中得以保留。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant Old as Old PNC\n  participant New as Chosen DEV\n  Old->>New: PNC Handover Request\n  Old->>New: PNC Information + Handover Info\n  New->>Old: Handover Response (Ready)\n  Old->>New: Beacon w/ PNC Handover IE\n  Note over Old,New: at named beacon number\n  New->>Old: New PNC sends first beacon",
+      "zh": "sequenceDiagram\n  participant Old as 旧 PNC\n  participant New as 被选中 DEV\n  Old->>New: PNC 切换请求\n  Old->>New: PNC 信息 + 切换信息\n  New->>Old: 切换响应（就绪）\n  Old->>New: 带 PNC Handover IE 的信标\n  Note over Old,New: 在指定信标编号处\n  New->>Old: 新 PNC 发出首个信标"
+    },
+    {
+      "type": "prose",
+      "en": "Handover has variants for robustness. **Preliminary handover** (7.2.5) lets the PNC pre-load a chosen successor with all the state ahead of time, so a later switch is instant. The **Next PNC** mechanism (7.2.6) is the safety net for when the PNC simply vanishes (powered off or out of range): the PNC pre-designates a successor and a Next PNID via the Next PNC IE in the beacon. If that device misses mMaxLostBeacons+1 beacons and confirms silence, it performs an **implicit handover**, beginning to beacon under the announced Next PNID. **Dependent PNC handover** (7.2.7) is the same dance for a child or neighbor piconet, with the extra step that the target DEV must first join the parent piconet and inherit the dependent piconet's reserved time slot. Dependent piconets borrow that time through a **private CTA** — a channel time allocation whose source and destination are the same DEVID, used purely to reserve airtime, not to carry traffic. A **child piconet** (7.2.8) is formed by a parent member requesting such a private CTA; its PNC then beacons inside that slot under a distinct PNID and includes a Parent Piconet IE. A **neighbor piconet** (7.2.9) is for a device from a *different* system: it first sends an Association Request marked as a neighbor PNC, is given a NbrID, then requests its private CTA — its members never talk directly to the parent. Both must stop transmitting if they miss mMaxLostBeacons of the parent's beacons.",
+      "zh": "切换有若干提升健壮性的变体。**预备切换（preliminary handover）**（7.2.5）允许 PNC 提前把全部状态预加载到选定的继任者，使日后的切换瞬间完成。**Next PNC（下一任 PNC）**机制（7.2.6）是 PNC 突然消失（断电或离开范围）时的安全网：PNC 通过信标中的 Next PNC IE 预先指定继任者及一个 Next PNID。若该设备连续漏收 mMaxLostBeacons+1 个信标并确认信道静默，便执行**隐式切换（implicit handover）**，以所公告的 Next PNID 开始发送信标。**从属 PNC 切换**（7.2.7）是子网或邻居网的同样流程，只是多出一步：目标 DEV 须先加入父网，并继承该从属网预留的时间槽。从属微微网通过**专用 CTA（private CTA）**借用该时间——这是一种源与目的为同一 DEVID 的信道时间分配（CTA，channel time allocation），仅用于预留空口时间，不承载业务。**子微微网**（7.2.8）由一个父网成员请求这样的专用 CTA 而成；其 PNC 随后在该时槽内以独立 PNID 发送信标，并包含 Parent Piconet IE。**邻居微微网**（7.2.9）面向来自*不同*系统的设备：它先发送标记为邻居 PNC 的关联请求，获得一个 NbrID，再请求其专用 CTA——其成员从不与父网直接通信。两者一旦连续漏收父网 mMaxLostBeacons 个信标，都须停止发送。"
+    },
+    {
+      "type": "prose",
+      "en": "Networks also end. **Stopping a piconet** (7.2.10) begins with the DME issuing MLME-STOP.request (RequestType SHUTDOWN). An independent or parent PNC places a PNC Shutdown IE in its beacon; a parent with dependents may nominate the lowest-DEVID dependent to keep running while the rest cease, change channel, or re-home. A parent can also tear down a specific dependent (7.2.10.3) by ending its stream or disassociating it, and a dependent cleans up by returning its borrowed CTA (7.2.10.4). Finally, 7.2.11 notes the obvious: a **non-PNC-capable DEV** simply cannot start a piconet on its own and is meant to be used alongside one that can. Pairnets are the minimalist sibling. Scanning (7.3.1) is again passive, hunting for beacons from a **PRC**. Starting one (7.3.2) means a PRC-capable DEV disconnects any existing link, initializes its sequence-number state, and begins beaconing. Stopping (7.3.3) is just MLME-STOP.request with SHUTDOWN, and 7.3.4 mirrors the piconet rule: a non-PRC-capable PRDEV cannot form a pairnet alone — there is no central scheduler to satisfy, only one partner to lock onto.",
+      "zh": "网络也会终止。**停止微微网**（7.2.10）始于 DME 发出 MLME-STOP.request（RequestType 为 SHUTDOWN）。独立或父 PNC 在信标中放入 PNC Shutdown IE；拥有从属网的父网可指定 DEVID 最小的从属网继续运行，其余从属网则停止、换信道或另投他网。父网亦可针对特定从属网拆除（7.2.10.3），方式是终止其数据流或将其解除关联；从属网则通过归还所借 CTA 完成清理（7.2.10.4）。最后，7.2.11 指出一个显然的事实：**不具备 PNC 能力的 DEV** 无法独自启动微微网，须与具备该能力的设备配合使用。配对网是极简的同胞。扫描（7.3.1）同样是被动的，搜寻来自 **PRC** 的信标。启动配对网（7.3.2）意味着具备 PRC 能力的 DEV 先断开任何现有链路，初始化其序列号状态，然后开始发送信标。停止（7.3.3）只是发出携带 SHUTDOWN 的 MLME-STOP.request；而 7.3.4 与微微网规则如出一辙：不具备 PRC 能力的 PRDEV 无法独自组建配对网——无需满足中心调度器，只需锁定唯一的对端。"
+    },
+    {
+      "type": "prose",
+      "en": "Joining a piconet is **association** (7.4). Membership semantics first (7.4.1): in an unsecured piconet you are a member the instant association completes; in a secure one, only after MLME-MEMBERSHIP-UPDATE marks you MEMBER. The handshake (7.4.2) is a two-shot dance. The unassociated DEV sends an Association Request (SrcID = UnassocID); the PNC Imm-ACKs it, then within mAssocRespConfirmTime sends an Association Response carrying the freshly assigned DEVID. Because that response is *not* directed (no-ACK), each candidate matches its own DEV address. The DEV then sends a *second* Association Request using its new DEVID; the PNC's Imm-ACK to that second request is what finally makes it associated, and the PNC announces it via a DEV Association IE in the beacon. The associating DEV must complete the second request before the **ATP** (association timeout period) expires.",
+      "zh": "加入微微网即**关联（association）**（7.4）。先看成员语义（7.4.1）：在无安全的微微网中，关联一完成你即为成员；在有安全的微微网中，则须待 MLME-MEMBERSHIP-UPDATE 将你标记为 MEMBER 之后。握手（7.4.2）是两轮交互。未关联 DEV 发送关联请求（SrcID = UnassocID）；PNC 以 Imm-ACK 应答，并在 mAssocRespConfirmTime 内发出携带新分配 DEVID 的关联响应。由于该响应*非*定向（no-ACK），每个候选设备各自比对自己的 DEV 地址。随后 DEV 用新 DEVID 发出*第二个*关联请求；PNC 对此第二请求的 Imm-ACK 才最终使其完成关联，PNC 通过信标中的 DEV Association IE 予以公告。关联中的 DEV 须在 **ATP（关联超时期，association timeout period）**到期前完成第二请求。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"140\"/><line x1=\"420\" y1=\"20\" x2=\"420\" y2=\"140\"/><text x=\"20\" y=\"15\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">DEV</text><text x=\"395\" y=\"15\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">PNC</text><line x1=\"40\" y1=\"35\" x2=\"420\" y2=\"35\" marker-end=\"url(#a)\"/><text x=\"70\" y=\"31\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Assoc Request (UnassocID)</text><line x1=\"420\" y1=\"60\" x2=\"40\" y2=\"60\" marker-end=\"url(#a)\"/><text x=\"150\" y=\"56\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Imm-ACK</text><line x1=\"420\" y1=\"85\" x2=\"40\" y2=\"85\" marker-end=\"url(#a)\"/><text x=\"110\" y=\"81\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Assoc Response (DEVID assigned)</text><line x1=\"40\" y1=\"110\" x2=\"420\" y2=\"110\" marker-end=\"url(#a)\"/><text x=\"70\" y=\"106\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">2nd Assoc Request (new DEVID)</text><line x1=\"420\" y1=\"135\" x2=\"40\" y2=\"135\" marker-end=\"url(#a)\"/><text x=\"120\" y=\"131\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Imm-ACK -> Associated</text><defs><marker id=\"a\" markerWidth=\"8\" markerHeight=\"8\" refX=\"7\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6\" fill=\"currentColor\" stroke=\"none\"/></marker></defs></svg>",
+      "caption": {
+        "en": "The two-shot piconet association handshake of 7.4.2: a provisional DEVID is granted in the Association Response, and confirmed by the Imm-ACK to the device's second request.",
+        "zh": "7.4.2 的两轮微微网关联握手：临时 DEVID 在关联响应中授予，并由 PNC 对设备第二请求的 Imm-ACK 予以确认。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Two services round out joining and leaving. **Piconet services** (7.4.3) let an associating DEV set the Piconet Services Inquiry field to fetch a Piconet Services command describing other DEVs; members can register their own service info via Announce, subject to privacy PIB elements. **Broadcasting piconet information** (7.4.4): after a DEV becomes a member, the PNC broadcasts the PNC Information command, and re-broadcasts every member's info at least once per mBroadcastDevInfoDuration. **Disassociation** (7.4.5) is symmetric — either side sends a Disassociation Request — and also happens implicitly: if a DEV's traffic stops long enough that the ATP lapses, or a DEV misses too many beacons, it is dropped, its DEVID is held idle for twice its ATP, and its streams are torn down. Pairnet association (7.5.1) is even leaner. The PRC beacons with a randomly chosen **Next DEVID** and never changes it for that pairnet. An unassociated PRDEV picks a random access slot after a beacon and sends an Association Request (No-ACK) using that Next DEVID; only the matching request makes the PRC stop beaconing and reply with an Association Response. The PRDEV confirms with a **Stk-ACK** (stacked acknowledgment) and is now associated. Disassociation (7.5.2) mirrors the piconet, after which the PRC may re-beacon with a fresh Next DEVID; and optionally (7.5.3), higher-layer setup (e.g., IP configuration) can ride along inside a Higher Layer Protocol Information IE during the association itself.",
+      "zh": "两项服务完善了加入与离开。**微微网服务（piconet services）**（7.4.3）允许关联中的 DEV 设置 Piconet Services Inquiry 字段，以获取描述其他 DEV 的 Piconet Services 命令；成员可通过 Announce 注册自己的服务信息，但受隐私相关 PIB 元素约束。**广播微微网信息**（7.4.4）：DEV 成为成员后，PNC 广播 PNC Information 命令，并至少每隔 mBroadcastDevInfoDuration 重播一次每个成员的信息。**解除关联（disassociation）**（7.4.5）是对称的——任一方均可发送解除关联请求——也会隐式发生：若某 DEV 的业务停顿到 ATP 失效，或漏收过多信标，便被剔除，其 DEVID 闲置保留达两倍 ATP 时长，且其数据流被拆除。配对网关联（7.5.1）更为精简。PRC 以随机选定的 **Next DEVID** 发送信标，且在该配对网存续期间永不更改。未关联的 PRDEV 在某个信标后选取一个随机接入槽，使用该 Next DEVID 发送关联请求（No-ACK）；只有 DEVID 匹配的请求才会使 PRC 停止发信标并回以关联响应。PRDEV 以 **Stk-ACK（堆叠确认，stacked acknowledgment）**确认，至此完成关联。解除关联（7.5.2）与微微网相仿，之后 PRC 可用新的 Next DEVID 重发信标；可选地（7.5.3），高层配置（如 IP 设置）可在关联过程中借助 Higher Layer Protocol Information IE 一并完成。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, **channel access** (7.6) sets the timeline rules. Time is sliced into **superframes**, each opening with a beacon and split into an optional **CAP** (contention access period) and the **CTAP** (channel time allocation period) (7.6.1). In the CAP, DEVs contend with CSMA/CA; in the CTAP, the PNC hands out reserved CTAs. There are four **interframe spaces** (7.6.2) — MIFS, SIFS, BIFS, RIFS — whose exact durations are PHY-dependent (MIFS and BIFS are unused in pairnets). The contention engine, **CSMA/CA** (7.6.3), waits a BIFS of idle, then runs a binary-style backoff: retry_count 0-3 indexes a backoff_window table [7,15,31,63], a random count counts down only while the medium is idle for a full pBackoffSlot, and a lost ACK bumps retry_count up to 3.",
+      "zh": "最后，**信道接入**（7.6）确立了时间轴规则。时间被切分为**超帧（superframe）**，每个超帧以信标开始，并分为可选的 **CAP（竞争接入期，contention access period）**和 **CTAP（信道时间分配期，channel time allocation period）**（7.6.1）。在 CAP 中，DEV 以 CSMA/CA 竞争接入；在 CTAP 中，PNC 分发预留的 CTA。共有四种**帧间隔（interframe space）**（7.6.2）——MIFS、SIFS、BIFS、RIFS——其具体时长依 PHY 而定（MIFS 与 BIFS 在配对网中不使用）。竞争引擎 **CSMA/CA**（7.6.3）先等待一个 BIFS 的空闲，再执行二进制式退避：retry_count 取 0-3，索引退避窗口表 [7,15,31,63]，随机计数仅在介质空闲满一个 pBackoffSlot 时递减，丢失 ACK 则将 retry_count 加 1（至多到 3）。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — exact clause-by-clause index for Part 1 of Clause 7",
+        "zh": "覆盖地图——第 7 章第 1 部分逐条精确索引"
+      },
+      "en": "7.1 Introduction — MAC overview, request/confirm timers, the FCS+HCS definition of a correctly received frame. 7.2 Starting/maintaining/stopping piconets: 7.2.1 General (piconet types: independent, parent, dependent = child/neighbor); 7.2.2 Scanning (passive, mMinChannelScan, ChannelRatingList); 7.2.3 Starting a piconet (clear-channel listen, NO_CHANNELS_AVAILABLE); 7.2.4 PNC handover (Table 7-1 selection order); 7.2.5 Preliminary handover (pre-load successor); 7.2.6 Next PNC (Next PNC IE, implicit handover after mMaxLostBeacons+1); 7.2.7 Dependent PNC handover (target joins parent first); 7.2.8 Child piconet (private CTA, Parent Piconet IE); 7.2.9 Neighbor piconet (NbrID, foreign system, limited command set); 7.2.10 Stopping (7.2.10.1 general, 7.2.10.2 independent/parent via PNC Shutdown IE, 7.2.10.3 parent stopping a dependent, 7.2.10.4 dependent termination); 7.2.11 Non-PNC-capable DEVs. 7.3 Pairnets: 7.3.1 Scanning (passive, for a PRC); 7.3.2 Starting (disconnect, init sequence numbers, beacon); 7.3.3 Stopping (MLME-STOP SHUTDOWN); 7.3.4 Non-PRC-capable PRDEVs. 7.4 Piconet association/disassociation: 7.4.1 General (secure vs unsecured membership); 7.4.2 Association (two-shot, Imm-ACK, ATP); 7.4.3 Piconet services (Inquiry field, Announce, privacy PIB); 7.4.4 Broadcasting piconet information (PNC Information command, mBroadcastDevInfoDuration); 7.4.5 Disassociation (Disassociation Request, ATP expiry, DEVID held 2x ATP). 7.5 Pairnet association/disassociation: 7.5.1 Association (random Next DEVID, random access slot, Stk-ACK); 7.5.2 Disassociation (Disassociation Request, re-beacon with new Next DEVID); 7.5.3 Higher layer protocol setup (Higher Layer Protocol Information IE). 7.6 Channel access: 7.6.1 General (superframe = beacon + CAP + CTAP); 7.6.2 IFS (MIFS/SIFS/BIFS/RIFS, PHY-dependent); 7.6.3 CSMA/CA (BIFS idle, backoff_window [7,15,31,63], retry_count 0-3, pBackoffSlot); 7.6.4 CTAP TDMA access (CTAs, dynamic vs pseudo-static, private/open CTAs); 7.6.5 PAP after association (Stk-ACK, Synchronous vs Asynchronous Phase, SIFS vs RIFS).",
+      "zh": "7.1 引言——MAC 概览、请求/确认计时器、以 FCS+HCS 定义「正确收到一帧」。7.2 启动/维持/停止微微网：7.2.1 总则（微微网类型：独立、父、从属＝子/邻居）；7.2.2 扫描（被动、mMinChannelScan、ChannelRatingList）；7.2.3 启动微微网（空闲信道侦听、NO_CHANNELS_AVAILABLE）；7.2.4 PNC 切换（表 7-1 选择顺序）；7.2.5 预备切换（预加载继任者）；7.2.6 Next PNC（Next PNC IE、漏收 mMaxLostBeacons+1 后隐式切换）；7.2.7 从属 PNC 切换（目标须先加入父网）；7.2.8 子微微网（专用 CTA、Parent Piconet IE）；7.2.9 邻居微微网（NbrID、异系统、受限命令集）；7.2.10 停止（7.2.10.1 总则、7.2.10.2 经 PNC Shutdown IE 停止独立/父网、7.2.10.3 父网停止从属网、7.2.10.4 从属网终止）；7.2.11 不具 PNC 能力的 DEV。7.3 配对网：7.3.1 扫描（被动、找 PRC）；7.3.2 启动（断开、初始化序列号、发信标）；7.3.3 停止（MLME-STOP SHUTDOWN）；7.3.4 不具 PRC 能力的 PRDEV。7.4 微微网关联/解除关联：7.4.1 总则（安全与无安全的成员语义）；7.4.2 关联（两轮、Imm-ACK、ATP）；7.4.3 微微网服务（Inquiry 字段、Announce、隐私 PIB）；7.4.4 广播微微网信息（PNC Information 命令、mBroadcastDevInfoDuration）；7.4.5 解除关联（解除关联请求、ATP 到期、DEVID 保留两倍 ATP）。7.5 配对网关联/解除关联：7.5.1 关联（随机 Next DEVID、随机接入槽、Stk-ACK）；7.5.2 解除关联（解除关联请求、以新 Next DEVID 重发信标）；7.5.3 高层协议配置（Higher Layer Protocol Information IE）。7.6 信道接入：7.6.1 总则（超帧＝信标＋CAP＋CTAP）；7.6.2 IFS（MIFS/SIFS/BIFS/RIFS、依 PHY 而定）；7.6.3 CSMA/CA（BIFS 空闲、退避窗口 [7,15,31,63]、retry_count 0-3、pBackoffSlot）；7.6.4 CTAP 的 TDMA 接入（CTA、动态与伪静态、专用/开放 CTA）；7.6.5 关联后的 PAP（Stk-ACK、同步相位与异步相位、SIFS 与 RIFS）。",
+      "cite": {
+        "pdf_id": "802153-2023",
+        "pages": [
+          246,
+          247,
+          248,
+          249,
+          250,
+          253,
+          254,
+          257,
+          258,
+          260,
+          262,
+          263,
+          264,
+          265,
+          269,
+          271,
+          273,
+          274,
+          275,
+          276,
+          286
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Inside the CTAP (7.6.4), the PNC schedules CTAs as TDMA slots with guaranteed start times. CTAs come in two types: **dynamic** (the PNC may move them superframe to superframe) and **pseudo-static** (held stable, used for isochronous streams and for the private CTAs that anchor child/neighbor piconets). Open CTAs and open MCTAs instead use contention (CSMA/CA or slotted ALOHA). After a pairnet associates, the **PAP** (pairnet access period, 7.6.5) ping-pongs frames: a Synchronous Phase exchanges turns at SIFS, while a MAC-header error or a gap drops it into the Asynchronous Phase at RIFS — with Stk-ACK always carried in the header.",
+      "zh": "在 CTAP 内（7.6.4），PNC 将 CTA 调度为具有确定起始时间的 TDMA 时槽。CTA 分两类：**动态 CTA**（PNC 可逐超帧移动）与**伪静态 CTA**（保持稳定，用于同步数据流，以及锚定子网/邻居网的专用 CTA）。开放 CTA 与开放 MCTA 则采用竞争方式（CSMA/CA 或时隙 ALOHA）。配对网完成关联后，**PAP（配对网接入期，pairnet access period，7.6.5）**以乒乓方式收发帧：同步相位以 SIFS 轮流交换发送权，而 MAC 头错误或间隔过大则使其跌入以 RIFS 运行的异步相位——Stk-ACK 始终承载于 MAC 头中。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        246,
+        247,
+        248,
+        249,
+        250,
+        253,
+        254
+      ],
+      "note": "7.1 intro; 7.2.1-7.2.7 piconet start/maintain, scanning, PNC handover, preliminary/next/dependent handover"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        257,
+        258,
+        260,
+        262,
+        263
+      ],
+      "note": "7.2.8 child piconet, 7.2.9 neighbor piconet, 7.2.10 stopping piconets, 7.2.11 non-PNC DEVs, 7.3.1-7.3.4 pairnet start/stop"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        264,
+        265,
+        269
+      ],
+      "note": "7.4.1-7.4.5 piconet association, piconet services, broadcasting info, disassociation"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        271,
+        273,
+        274
+      ],
+      "note": "7.5.1-7.5.3 pairnet association/disassociation, higher layer protocol setup"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        274,
+        275,
+        276,
+        277,
+        286
+      ],
+      "note": "7.6.1-7.6.5 channel access: superframe, IFS, CSMA/CA backoff, CTAP TDMA, PAP after association"
+    }
+  ],
+  "covers": [
+    "802153-2023:7.1",
+    "802153-2023:7.2.1",
+    "802153-2023:7.2.2",
+    "802153-2023:7.2.3",
+    "802153-2023:7.2.4",
+    "802153-2023:7.2.5",
+    "802153-2023:7.2.6",
+    "802153-2023:7.2.7",
+    "802153-2023:7.2.8",
+    "802153-2023:7.2.9",
+    "802153-2023:7.2.10",
+    "802153-2023:7.2.11",
+    "802153-2023:7.3.1",
+    "802153-2023:7.3.2",
+    "802153-2023:7.3.3",
+    "802153-2023:7.3.4",
+    "802153-2023:7.4.1",
+    "802153-2023:7.4.2",
+    "802153-2023:7.4.3",
+    "802153-2023:7.4.4",
+    "802153-2023:7.4.5",
+    "802153-2023:7.5.1",
+    "802153-2023:7.5.2",
+    "802153-2023:7.5.3",
+    "802153-2023:7.6.1",
+    "802153-2023:7.6.2",
+    "802153-2023:7.6.3",
+    "802153-2023:7.6.4",
+    "802153-2023:7.6.5"
+  ],
+  "track": "pan-hr-wpan"
+}

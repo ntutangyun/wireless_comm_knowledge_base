@@ -1,0 +1,165 @@
+{
+  "id": "tsn-04",
+  "title": {
+    "en": "gPTP Vocabulary and Application Interfaces: Domains, Timescales, Ports, and the Five Clock Hooks",
+    "zh": "gPTP 术语与应用接口：域、时间标尺、端口，以及五个时钟接口"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Before IEEE Std 802.1AS-2020 (the Generalized Precision Time Protocol, gPTP) can synchronize clocks across a network, it has to agree on a vocabulary. Clause 8 is that vocabulary: what a synchronization 'domain' is, which clock the network counts time against, how a one-way cable delay is measured, what kinds of messages flow, and how every clock advertises its own quality. Clause 9 then defines the five 'application interfaces' through which real applications hand time into the protocol or read synchronized time back out. This lesson is a guided tour of both, naming the exact subclause behind every idea so you can read the standard fluently.",
+      "zh": "在 IEEE Std 802.1AS-2020（通用精密时间协议，gPTP）能够在网络上同步时钟之前，它必须先统一一套术语。第 8 章就是这套术语：什么是同步「域」，网络以哪个时钟为准计时，单向线缆时延如何测量，有哪些类型的消息在流动，以及每个时钟如何宣告自身的品质。第 9 章随后定义了五个「应用接口」，真实应用通过它们把时间交给协议，或从协议读回同步后的时间。本课将带你逐一巡览这两章，并标注每个概念背后的确切子条款编号，帮助你流畅地阅读标准。"
+    },
+    {
+      "type": "prose",
+      "en": "A gPTP domain (8.1) is the scope within which synchronization messages, state, and a shared timescale apply. A domain is named by a domainNumber (0 to 127, and domain 0 must always exist) plus a 12-bit sdoId split into a 4-bit majorSdoId (0x1 for gPTP) and an 8-bit minorSdoId (0x00). Both ride in the common header of every message. Inside a domain live PTP Instances (clocks) and the links between them; in steady state they all trace back to one Grandmaster Clock. The timescale (8.2.1) is set by that Grandmaster and comes in two flavors: PTP, whose epoch (8.2.2) is 1 January 1970 00:00:00 TAI (International Atomic Time) and whose unit is the SI second, and ARB (arbitrary), whose epoch is set administratively. Domain 0 must use PTP.",
+      "zh": "一个 gPTP 域（8.1）是同步消息、状态和共享时间标尺所适用的范围。域由 domainNumber（0 到 127，且域 0 必须始终存在）加上一个 12 位的 sdoId 命名，后者拆分为 4 位的 majorSdoId（gPTP 取 0x1）和 8 位的 minorSdoId（取 0x00）。两者都携带在每条消息的公共头部中。域内住着多个 PTP 实例（时钟）以及它们之间的链路；稳态时它们全部追溯到同一个大师时钟（Grandmaster Clock）。时间标尺（8.2.1）由该大师时钟设定，有两种形式：PTP，其历元（8.2.2）为 1970 年 1 月 1 日 00:00:00 TAI（国际原子时），单位为 SI 秒；以及 ARB（任意），其历元由管理操作设定。域 0 必须使用 PTP。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why two timescales? PTP keeps you on real atomic time so you can derive wall-clock UTC (Coordinated Universal Time) via the currentUtcOffset = TAI - UTC value (8.2.3), needed for human-readable timestamps and leap-second handling. ARB just gives you a steadily-advancing counter with an arbitrary start — fine for a closed industrial system that only cares about relative timing. With ARB, currentUtcOffset, leap59, and leap61 cannot be used to recover UTC. Either way, time inside a domain is measured as elapsed time since that domain's epoch (8.2.4).",
+      "zh": "为什么要有两种时间标尺？PTP 让你停留在真实的原子时上，从而可以通过 currentUtcOffset = TAI − UTC 这个值（8.2.3）推导出墙钟 UTC（协调世界时），这是生成人类可读时间戳和处理闰秒所必需的。ARB 只给你一个从任意起点稳定递增的计数器——对于只关心相对时序的封闭工业系统足够了。使用 ARB 时，currentUtcOffset、leap59 和 leap61 无法用于恢复 UTC。无论哪种方式，域内的时间都以「自该域历元起经过的时间」来度量（8.2.4）。"
+    },
+    {
+      "type": "prose",
+      "en": "Link asymmetry (8.3) addresses a subtle source of error. gPTP measures the mean propagation time of a link by a four-timestamp round trip: the initiator timestamps when it sends, the responder timestamps arrival, the responder timestamps its reply, and the initiator timestamps the reply's arrival. From those four values it computes meanLinkDelay = (t_ir + t_ri) / 2. But the two directions are rarely identical; the gap is the delayAsymmetry, defined so that t_ir = meanLinkDelay - delayAsymmetry and t_ri = meanLinkDelay + delayAsymmetry. The standard does not require measuring asymmetry (a port cannot measure it during live operation), but if you model it, you must model it this way — and feeding a known asymmetry into configuration removes a fixed synchronization error.",
+      "zh": "链路非对称性（8.3）处理的是一个微妙的误差来源。gPTP 通过四时间戳往返来测量链路的平均传播时间：发起方记录发送时刻，响应方记录到达时刻，响应方记录其回复时刻，发起方记录回复到达时刻。由这四个值计算 meanLinkDelay = (t_ir + t_ri) / 2。但两个方向很少完全相同，其差距即 delayAsymmetry，定义为 t_ir = meanLinkDelay − delayAsymmetry 且 t_ri = meanLinkDelay + delayAsymmetry。标准并不要求测量非对称性（端口在运行中无法测量它），但如果你要建模，就必须按此方式建模——把已知的非对称性写入配置可以消除一项固定的同步误差。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 400 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"20\" y=\"20\" width=\"110\" height=\"40\" rx=\"4\"/><text x=\"75\" y=\"44\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Initiator</text><rect x=\"270\" y=\"20\" width=\"110\" height=\"40\" rx=\"4\"/><text x=\"325\" y=\"44\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Responder</text><line x1=\"130\" y1=\"35\" x2=\"270\" y2=\"35\" marker-end=\"url(#a)\"/><text x=\"200\" y=\"28\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">t_ir</text><line x1=\"270\" y1=\"50\" x2=\"130\" y2=\"50\" marker-end=\"url(#a)\"/><text x=\"200\" y=\"64\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">t_ri</text><text x=\"200\" y=\"110\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">meanLinkDelay = (t_ir + t_ri) / 2</text><text x=\"200\" y=\"128\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">delayAsymmetry = (t_ri - t_ir) / 2</text><defs><marker id=\"a\" markerWidth=\"8\" markerHeight=\"8\" refX=\"7\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6\" fill=\"currentColor\" stroke=\"none\"/></marker></defs></svg>",
+      "caption": {
+        "en": "Figure 8-1 idea: the two one-way propagation times t_ir and t_ri average to meanLinkDelay; half their difference is delayAsymmetry (8.3).",
+        "zh": "图 8-1 思路：两个单向传播时间 t_ir 与 t_ri 的平均值为 meanLinkDelay；二者差值的一半即 delayAsymmetry（8.3）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "All communication happens via PTP messages and media-specific messages (8.4.1). Every message carries a message class and a message type (8.4.2); the two classes are event messages, which are timestamped on egress and ingress, and general messages, which are not (8.4.2.2). Those event-message timestamps (8.4.3) are taken relative to the LocalClock when the message timestamp point crosses the reference plane between the PTP Instance and the media — a plane chosen low enough that MAC (Medium Access Control) retransmission and queuing variation are hidden, with egressLatency and ingressLatency corrections applied. Finally, 802.1AS messages must be sent expedited ahead of best-effort traffic (8.4.4), or a burst of other traffic could starve them and break synchronization.",
+      "zh": "所有通信都通过 PTP 消息和媒体专用消息进行（8.4.1）。每条消息都带有消息类别和消息类型（8.4.2）；两种类别分别是事件消息（在出口和入口被打时间戳）和通用消息（不打时间戳）（8.4.2.2）。事件消息的时间戳（8.4.3）是在消息时间戳点穿越「PTP 实例与媒体之间的参考平面」时、相对于 LocalClock 取得的——这个平面选得足够低，以隐藏 MAC（媒体访问控制）的重传和排队抖动，并应用 egressLatency 与 ingressLatency 修正。最后，802.1AS 消息必须以加速方式优先于尽力而为流量发送（8.4.4），否则一阵其他流量的突发可能令其饿死并破坏同步。"
+    },
+    {
+      "type": "prose",
+      "en": "gPTP works in terms of logical ports (8.5.1): even over shared media, a PTP Port — one PortSync entity plus one media-dependent (MD) entity — is instantiated per neighbor so that communication is always point-to-point. Each PTP Port has a port identity of type PortIdentity (8.5.2.1) made of a clockIdentity (8.5.2.2) and a portNumber (1 to 0xFFFE; 0 is the internal ClockMaster-to-ClockSource interface, 0xFFFF reserved). The standard even specifies exactly how to order clockIdentity and PortIdentity values as big unsigned integers (8.5.2.4) so the best-master comparison is unambiguous.",
+      "zh": "gPTP 以逻辑端口为单位工作（8.5.1）：即便在共享媒体上，也会为每个邻居实例化一个 PTP 端口——由一个 PortSync 实体加一个媒体相关（MD）实体组成——从而使通信始终是点对点的。每个 PTP 端口拥有一个 PortIdentity 类型的端口标识（8.5.2.1），由 clockIdentity（8.5.2.2）和 portNumber（1 到 0xFFFE；0 用于内部的 ClockMaster-到-ClockSource 接口，0xFFFF 保留）组成。标准甚至精确规定了如何把 clockIdentity 和 PortIdentity 值当作大端无符号整数来排序（8.5.2.4），使最佳大师时钟的比较毫无歧义。"
+    },
+    {
+      "type": "prose",
+      "en": "Finally, every clock characterizes itself (8.6.1). There are two PTP Instance types — PTP End Instance and PTP Relay Instance — and each advertises a set of attributes that the Best Master Clock Algorithm (BMCA) compares. The key ones (8.6.2): priority1 (a manual tie-breaker, lower wins, 255 means not grandmaster-capable), clockClass (traceability — e.g. 6 means GNSS-locked, 248 a plain quartz oscillator, lower wins), clockAccuracy, offsetScaledLogVariance (frequency-stability estimate), priority2 (default 247 for relays, 248 for end instances, to prefer fewer hops), clockIdentity, the informational timeSource (GPS, ATOMIC_CLOCK, NTP, INTERNAL_OSCILLATOR, ...), and numberPorts. These attributes are how a network agrees on which clock should be Grandmaster.",
+      "zh": "最后，每个时钟都对自身进行刻画（8.6.1）。PTP 实例有两种类型——PTP 端实例和 PTP 中继实例——每个都会宣告一组供最佳大师时钟算法（BMCA）比较的属性。关键属性（8.6.2）包括：priority1（人工决胜，数值越小越优，255 表示不具备大师能力）、clockClass（可追溯性——例如 6 表示锁定到 GNSS，248 表示普通石英振荡器，越小越优）、clockAccuracy、offsetScaledLogVariance（频率稳定性估计）、priority2（中继默认 247、端实例默认 248，用以偏好更少跳数）、clockIdentity、信息性的 timeSource（GPS、ATOMIC_CLOCK、NTP、INTERNAL_OSCILLATOR 等），以及 numberPorts。网络正是通过这些属性来商定哪个时钟应当成为大师时钟。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 9 turns to the application interfaces (9.1): abstract models — not real APIs — of how applications connect to the protocol. There are five. One feeds time in: ClockSourceTime, from a ClockSource entity (which holds or accesses an external clock) into the ClockMaster. Four read time out at the ClockSlave for a ClockTarget (any application that consumes synchronized time): ClockTargetEventCapture (timestamp an event), ClockTargetTriggerGenerate (fire an action at a future time), ClockTargetClockGenerator (emit a periodic clock signal), and ClockTargetPhaseDiscontinuity (warn that the Grandmaster jumped). Each interface is a pair of .invoke (request) and .result (response) functions.",
+      "zh": "第 9 章转向应用接口（9.1）：这些是抽象模型——并非真实的 API——描述应用如何与协议连接。共有五个。一个把时间送入：ClockSourceTime，从 ClockSource 实体（持有或可访问外部时钟）送入 ClockMaster。四个在 ClockSlave 处把时间读出，供 ClockTarget（任何消费同步时间的应用）使用：ClockTargetEventCapture（为事件打时间戳）、ClockTargetTriggerGenerate（在未来某时刻触发动作）、ClockTargetClockGenerator（输出周期性时钟信号），以及 ClockTargetPhaseDiscontinuity（提醒大师时钟发生了跳变）。每个接口都是一对 .invoke（请求）与 .result（响应）函数。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart LR\n  CS[ClockSource] -->|ClockSourceTime.invoke| CM[ClockMaster]\n  CM --> Net((gPTP domain))\n  Net --> CSlave[ClockSlave]\n  CT[ClockTarget app] -->|EventCapture / TriggerGenerate / ClockGenerator .invoke| CSlave\n  CSlave -->|.result + gmPresent / PhaseDiscontinuity| CT",
+      "zh": "flowchart LR\n  CS[ClockSource 源] -->|ClockSourceTime.invoke| CM[ClockMaster 主]\n  CM --> Net((gPTP 域))\n  Net --> CSlave[ClockSlave 从]\n  CT[ClockTarget 应用] -->|EventCapture / TriggerGenerate / ClockGenerator .invoke| CSlave\n  CSlave -->|.result + gmPresent / 相位不连续| CT"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Read the four ClockTarget interfaces as a matched set. EventCapture asks 'what time was it when this happened?' (input event, output a timestamp). TriggerGenerate is the mirror image: 'make this happen at exactly this time' (input a future time, output the fired action — or an error if that time already passed). ClockGenerator is TriggerGenerate on repeat — a clock signal at a chosen period and phase. PhaseDiscontinuity is purely informational: it lets an app notice the Grandmaster's time jumped so it can react gracefully. The shared gmPresent flag in three of them tells the app whether a real Grandmaster is steering time or it has fallen back to the free-running LocalClock.",
+      "zh": "把四个 ClockTarget 接口当作一套配对来理解。EventCapture 问的是「这件事发生时是几点？」（输入事件，输出时间戳）。TriggerGenerate 是镜像：「在恰好这个时刻让这件事发生」（输入未来时刻，输出被触发的动作——若该时刻已过则返回错误）。ClockGenerator 是重复版的 TriggerGenerate——以选定的周期和相位输出时钟信号。PhaseDiscontinuity 纯属信息性：让应用察觉大师时钟的时间发生了跳变，从而优雅地应对。其中三个接口共享的 gmPresent 标志告诉应用：当前是真实的大师时钟在驾驭时间，还是已回退到自由运行的 LocalClock。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every Clause 8 and Clause 9 subclause, by number",
+        "zh": "覆盖地图——按编号列出第 8 章与第 9 章的每个子条款"
+      },
+      "en": "Clause 8 (concepts and terminology): 8.1 gPTP domain — domainNumber 0-127, 12-bit sdoId (majorSdoId 0x1, minorSdoId 0x00), domain 0 mandatory, all instances trace to one Grandmaster. 8.2 Timescale: 8.2.1 introduction (PTP vs ARB, set by the Grandmaster Clock); 8.2.2 epoch (PTP epoch = 1 Jan 1970 00:00:00 TAI); 8.2.3 UTC offset (currentUtcOffset = TAI - UTC; leap59/leap61; ARB cannot derive UTC); 8.2.4 measurement of time (elapsed time since the domain's epoch). 8.3 Link asymmetry — four-timestamp round trip, meanLinkDelay = (t_ir+t_ri)/2, delayAsymmetry sign convention (Figure 8-1), not required but if modeled must follow this clause. 8.4 Messages: 8.4.1 general (PTP and media-specific messages); 8.4.2 message attributes (8.4.2.1 class + type; 8.4.2.2 event vs general message classes — event messages timestamped, general not); 8.4.3 generation of event message timestamps (reference plane vs timestamp measurement plane, egressLatency/ingressLatency, hides MAC retransmission — Figure 8-2); 8.4.4 priorities (expedited transmission ahead of best-effort). 8.5 Ports: 8.5.1 general (logical PTP Port = PortSync + MD entity, point-to-point even on shared media); 8.5.2 port identity (8.5.2.1 PortIdentity = clockIdentity + portNumber; 8.5.2.2 clockIdentity per 1588; 8.5.2.3 portNumber 1-0xFFFE, 0 = ClockMaster/ClockSource interface, 0xFFFF reserved; 8.5.2.4 ordering rules as unsigned integers). 8.6 PTP Instance characterization: 8.6.1 instance type (PTP End Instance, PTP Relay Instance; attribute list); 8.6.2 attributes (8.6.2.1 priority1 + Table 8-1 defaults 246/248/250/255; 8.6.2.2 clockClass + traceability; 8.6.2.3 clockAccuracy; 8.6.2.4 offsetScaledLogVariance; 8.6.2.5 priority2 defaults 247/248; 8.6.2.6 clockIdentity; 8.6.2.7 timeSource enum Table 8-2; 8.6.2.8 numberPorts). Clause 9 (application interfaces): 9.1 overview (one ClockSource->ClockMaster interface + four ClockTarget<->ClockSlave interfaces, Figure 9-1, abstract models not APIs). 9.2 ClockSourceTime: 9.2.1 general (ClockSource feeds time to ClockMaster); 9.2.2 ClockSourceTime.invoke params (domainNumber, sourceTime, timeBaseIndicator changes on any phase/freq change, lastGmPhaseChange, lastGmFreqChange). 9.3 ClockTargetEventCapture: 9.3.1 general (timestamp a signaled event); 9.3.2 .invoke params (domainNumber); 9.3.3 .result params (domainNumber, slaveTimeCallback, gmPresent). 9.4 ClockTargetTriggerGenerate: 9.4.1 general (fire at a specified synchronized time); 9.4.2 .invoke params (domainNumber, slaveTimeCallback; zero cancels a pending request); 9.4.3 .result params (domainNumber, errorCondition TRUE if time already passed/skipped, gmPresent); 9.4.4 interface definition (stores slaveTimeCallback until time reached, uses LocalClock when gmPresent FALSE). 9.5 ClockTargetClockGenerator: 9.5.1 general (periodic clock signal); 9.5.2 .invoke params (domainNumber, clockPeriod with <=0 terminating, slaveTimeCallbackPhase); 9.5.3 .result params (domainNumber, slaveTimeCallback). 9.6 ClockTargetPhaseDiscontinuity: 9.6.1 general (invoked in SEND_SYNC_INDICATION of ClockSlaveSync); 9.6.2 .result params (domainNumber, gmIdentity, gmTimeBaseIndicator, lastGmPhaseChange, lastGmFreqChange).",
+      "zh": "第 8 章（概念与术语）：8.1 gPTP 域——domainNumber 0-127，12 位 sdoId（majorSdoId 0x1，minorSdoId 0x00），域 0 必备，所有实例追溯到唯一大师时钟。8.2 时间标尺：8.2.1 引言（PTP 与 ARB，由大师时钟设定）；8.2.2 历元（PTP 历元 = 1970 年 1 月 1 日 00:00:00 TAI）；8.2.3 UTC 偏移（currentUtcOffset = TAI − UTC；leap59/leap61；ARB 无法推导 UTC）；8.2.4 时间度量（自该域历元起经过的时间）。8.3 链路非对称性——四时间戳往返，meanLinkDelay = (t_ir+t_ri)/2，delayAsymmetry 的符号约定（图 8-1），非强制但若建模须遵此条款。8.4 消息：8.4.1 总则（PTP 与媒体专用消息）；8.4.2 消息属性（8.4.2.1 类别+类型；8.4.2.2 事件消息与通用消息两类——事件消息打时间戳、通用消息不打）；8.4.3 事件消息时间戳的生成（参考平面与时间戳测量平面、egressLatency/ingressLatency、隐藏 MAC 重传——图 8-2）；8.4.4 优先级（先于尽力而为流量加速发送）。8.5 端口：8.5.1 总则（逻辑 PTP 端口 = PortSync + MD 实体，共享媒体上亦点对点）；8.5.2 端口标识（8.5.2.1 PortIdentity = clockIdentity + portNumber；8.5.2.2 clockIdentity 依 1588；8.5.2.3 portNumber 1-0xFFFE，0 = ClockMaster/ClockSource 接口，0xFFFF 保留；8.5.2.4 作为无符号整数的排序规则）。8.6 PTP 实例刻画：8.6.1 实例类型（PTP 端实例、PTP 中继实例；属性列表）；8.6.2 属性（8.6.2.1 priority1 + 表 8-1 默认值 246/248/250/255；8.6.2.2 clockClass 与可追溯性；8.6.2.3 clockAccuracy；8.6.2.4 offsetScaledLogVariance；8.6.2.5 priority2 默认 247/248；8.6.2.6 clockIdentity；8.6.2.7 timeSource 枚举表 8-2；8.6.2.8 numberPorts）。第 9 章（应用接口）：9.1 概览（一个 ClockSource→ClockMaster 接口 + 四个 ClockTarget↔ClockSlave 接口，图 9-1，抽象模型而非 API）。9.2 ClockSourceTime：9.2.1 总则（ClockSource 向 ClockMaster 提供时间）；9.2.2 ClockSourceTime.invoke 参数（domainNumber、sourceTime、timeBaseIndicator 在任何相位/频率变化时改变、lastGmPhaseChange、lastGmFreqChange）。9.3 ClockTargetEventCapture：9.3.1 总则（为被发信号的事件打时间戳）；9.3.2 .invoke 参数（domainNumber）；9.3.3 .result 参数（domainNumber、slaveTimeCallback、gmPresent）。9.4 ClockTargetTriggerGenerate：9.4.1 总则（在指定同步时刻触发）；9.4.2 .invoke 参数（domainNumber、slaveTimeCallback；为零则取消挂起请求）；9.4.3 .result 参数（domainNumber、errorCondition 在时刻已过/被跳过时为 TRUE、gmPresent）；9.4.4 接口定义（存储 slaveTimeCallback 直至到达该时刻，gmPresent 为 FALSE 时使用 LocalClock）。9.5 ClockTargetClockGenerator：9.5.1 总则（周期性时钟信号）；9.5.2 .invoke 参数（domainNumber、clockPeriod 取 ≤0 则终止、slaveTimeCallbackPhase）；9.5.3 .result 参数（domainNumber、slaveTimeCallback）。9.6 ClockTargetPhaseDiscontinuity：9.6.1 总则（在 ClockSlaveSync 的 SEND_SYNC_INDICATION 中被调用）；9.6.2 .result 参数（domainNumber、gmIdentity、gmTimeBaseIndicator、lastGmPhaseChange、lastGmFreqChange）。",
+      "cite": {
+        "pdf_id": "8021AS-2020",
+        "pages": [
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59
+      ],
+      "note": "Clause 8 — gPTP domain (8.1), timescale (8.2), link asymmetry (8.3), messages (8.4), ports (8.5), PTP Instance characterization (8.6)."
+    },
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        60,
+        61,
+        62,
+        63,
+        64,
+        65
+      ],
+      "note": "Clause 9 — overview (9.1) and the five application interfaces ClockSourceTime (9.2), ClockTargetEventCapture (9.3), ClockTargetTriggerGenerate (9.4), ClockTargetClockGenerator (9.5), ClockTargetPhaseDiscontinuity (9.6)."
+    }
+  ],
+  "covers": [
+    "8021AS-2020:8.1",
+    "8021AS-2020:8.2.1",
+    "8021AS-2020:8.2.2",
+    "8021AS-2020:8.2.3",
+    "8021AS-2020:8.2.4",
+    "8021AS-2020:8.3",
+    "8021AS-2020:8.4.1",
+    "8021AS-2020:8.4.2",
+    "8021AS-2020:8.4.3",
+    "8021AS-2020:8.4.4",
+    "8021AS-2020:8.5.1",
+    "8021AS-2020:8.5.2",
+    "8021AS-2020:8.6.1",
+    "8021AS-2020:8.6.2",
+    "8021AS-2020:9.1",
+    "8021AS-2020:9.2.1",
+    "8021AS-2020:9.2.2",
+    "8021AS-2020:9.3.1",
+    "8021AS-2020:9.3.2",
+    "8021AS-2020:9.3.3",
+    "8021AS-2020:9.4.1",
+    "8021AS-2020:9.4.2",
+    "8021AS-2020:9.4.3",
+    "8021AS-2020:9.4.4",
+    "8021AS-2020:9.5.1",
+    "8021AS-2020:9.5.2",
+    "8021AS-2020:9.5.3",
+    "8021AS-2020:9.6.1",
+    "8021AS-2020:9.6.2"
+  ],
+  "track": "tsn"
+}

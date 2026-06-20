@@ -1,0 +1,139 @@
+{
+  "id": "tsn-14",
+  "title": {
+    "en": "The Port Parameter Data Set (portDS): Per-Port Knobs of gPTP",
+    "zh": "端口参数数据集 (portDS)：gPTP 的每端口调节旋钮"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In IEEE Std 802.1AS-2020, every time-aware device (a PTP Instance, where PTP means Precision Time Protocol) keeps several data sets that describe its timing state. Clause 14.8 defines the Port Parameter Data Set, abbreviated portDS. While the defaultDS describes the whole device, the portDS describes ONE network port. A PTP End Instance has a single port and therefore one portDS; a PTP Relay Instance (a bridge that relays time) has one portDS per port — the count equals defaultDS.numberPorts. These per-port values are the basis for protocol decisions and supply the numbers placed in outgoing message fields (14.8.1).",
+      "zh": "在 IEEE Std 802.1AS-2020 中，每个时间感知设备（一个 PTP 实例，PTP 指精确时间协议）都维护若干描述其授时状态的数据集。Clause 14.8 定义了端口参数数据集，简称 portDS。defaultDS 描述整个设备，而 portDS 描述单个网络端口。PTP 端实例只有一个端口，因此只有一个 portDS；PTP 中继实例（转发时间的网桥）则每个端口各有一个 portDS——数量等于 defaultDS.numberPorts。这些每端口数值是协议决策的依据，并为外发报文字段提供取值（14.8.1）。"
+    },
+    {
+      "type": "prose",
+      "en": "The first few members identify the port and its role. portIdentity is the port's globally unique identity (14.8.2). portState is the current role of the port — taken from an enumeration of DisabledPort (3), MasterPort (6), PassivePort (7), or SlavePort (9) — and it mirrors the global variable selectedState; the default is DisabledPort (14.8.3). ptpPortEnabled is a Boolean that turns gPTP on or off for the port; writing the managed object drives the underlying Boolean (14.8.4).",
+      "zh": "开头几个成员标识端口及其角色。portIdentity 是端口的全局唯一标识（14.8.2）。portState 是端口的当前角色——取自枚举：DisabledPort(3)、MasterPort(6)、PassivePort(7) 或 SlavePort(9)——它镜像全局变量 selectedState，默认值为 DisabledPort（14.8.3）。ptpPortEnabled 是一个布尔量，用于为该端口开启或关闭 gPTP；写入该被管对象会同步驱动底层布尔量（14.8.4）。"
+    },
+    {
+      "type": "prose",
+      "en": "The next group describes how the link's propagation delay is measured. delayMechanism names the method, chosen from an enumeration: P2P (the peer-to-peer delay mechanism), COMMON_P2P (the Common Mean Link Delay Service, CMLDS), or SPECIAL (a transport with a native time-transfer mechanism, such as IEEE 802.11 or IEEE 802.3 EPON, so no peer-to-peer exchange is needed) (14.8.5). isMeasuringDelay is a Boolean indicating whether the port is actively measuring (14.8.6). asCapable is a Boolean stating whether the neighbor is capable of running the 802.1AS protocol on this link (14.8.7).",
+      "zh": "下一组描述如何测量链路的传播时延。delayMechanism 命名所用方法，取自枚举：P2P（点对点时延机制）、COMMON_P2P（公共平均链路时延服务，CMLDS）或 SPECIAL（具备原生时间传递机制的传输方式，如 IEEE 802.11 或 IEEE 802.3 EPON，因此无需点对点交换）（14.8.5）。isMeasuringDelay 是布尔量，指示端口是否正在主动测量（14.8.6）。asCapable 是布尔量，表明对端是否能够在此链路上运行 802.1AS 协议（14.8.7）。"
+    },
+    {
+      "type": "prose",
+      "en": "The measured numbers themselves live here too. meanLinkDelay is an estimate of the one-way propagation time on the attached link (type TimeInterval, default zero); notably it is zero for IEEE 802.3 EPON links and for the master port of an IEEE 802.11 link, because that delay is not measured there (14.8.8). meanLinkDelayThresh is the threshold above which the port is considered not capable of participating — exceed it and the port effectively drops out (14.8.9). delayAsymmetry captures any asymmetry in propagation delay relative to the Grandmaster Clock; it is 0 if asymmetry is not modeled (14.8.10). neighborRateRatio is an estimate of how fast the neighbor's clock runs relative to this one, encoded as the fractional frequency offset multiplied by 2^41 (14.8.11).",
+      "zh": "测得的数值本身也存放于此。meanLinkDelay 是所连链路单向传播时间的估计值（类型 TimeInterval，默认为零）；值得注意的是，对于 IEEE 802.3 EPON 链路以及 IEEE 802.11 链路的主端口，该值为零，因为那里并不测量此时延（14.8.8）。meanLinkDelayThresh 是阈值，超过它则认为端口不具备参与能力——一旦超出，端口实际上退出（14.8.9）。delayAsymmetry 捕捉相对于主时钟的传播时延不对称性；若不建模不对称性则为 0（14.8.10）。neighborRateRatio 估计对端时钟相对本端的快慢，编码为小数频偏乘以 2^41（14.8.11）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A recurring four-member pattern governs every adjustable message interval: initialLog… (the value used at startup or after a reset request), currentLog… (the value in effect right now), useMgtSettableLog… (a Boolean: if TRUE, take the value from management; if FALSE, let the relevant state machine decide), and mgtSettableLog… (the value management supplies, used only when the useMgtSettable… Boolean is TRUE). Spot the quartet once and you can read every interval block below at a glance.",
+      "zh": "一个反复出现的四成员模式管理着每个可调报文间隔：initialLog…（启动时或收到复位请求后所用的值）、currentLog…（当前生效的值）、useMgtSettableLog…（布尔量：为 TRUE 时取管理面的值，为 FALSE 时由相应状态机决定）、以及 mgtSettableLog…（管理面提供的值，仅当 useMgtSettable… 布尔为 TRUE 时使用）。认出这个四元组后，下面每个间隔块都能一眼读懂。"
+    },
+    {
+      "type": "prose",
+      "en": "Announce interval. Announce messages advertise a candidate Grandmaster so the Best Master Clock Algorithm (BMCA) can choose. initialLogAnnounceInterval is the log-base-2 announce interval used at port initialization or when a message-interval-request TLV carries field value 126 (14.8.12); currentLogAnnounceInterval is the value in force now (14.8.13); useMgtSettableLogAnnounceInterval picks management versus the AnnounceIntervalSetting state machine — default FALSE for domain 0, TRUE for other domains (14.8.14); mgtSettableLogAnnounceInterval is the management-supplied value (14.8.15). announceReceiptTimeout is how many announce intervals a slave port waits with no Announce before assuming the master is gone and re-running the BMCA (14.8.16).",
+      "zh": "Announce 间隔。Announce 报文通告候选主时钟，供最佳主时钟算法（BMCA）选择。initialLogAnnounceInterval 是端口初始化时或当报文间隔请求 TLV 携带字段值 126 时所用的以 2 为底的对数间隔（14.8.12）；currentLogAnnounceInterval 是当前生效值（14.8.13）；useMgtSettableLogAnnounceInterval 选择管理面还是 AnnounceIntervalSetting 状态机——域 0 默认 FALSE，其他域默认 TRUE（14.8.14）；mgtSettableLogAnnounceInterval 是管理面提供的值（14.8.15）。announceReceiptTimeout 是从端口在收不到 Announce 时等待多少个 announce 间隔后即认定主时钟失联并重新运行 BMCA（14.8.16）。"
+    },
+    {
+      "type": "prose",
+      "en": "Sync interval. Sync messages carry the actual time. initialLogSyncInterval, currentLogSyncInterval, useMgtSettableLogSyncInterval (default FALSE for domain 0, TRUE otherwise; chooses management versus the SyncIntervalSetting state machine), and mgtSettableLogSyncInterval follow the same quartet (14.8.17–14.8.20). Two related timeouts: syncReceiptTimeout is the number of sync intervals a slave waits without sync information before assuming the master is gone and the BMCA may need to re-run (14.8.21); syncReceiptTimeoutTimeInterval is that same condition expressed directly as a time interval (14.8.22).",
+      "zh": "Sync 间隔。Sync 报文承载实际时间。initialLogSyncInterval、currentLogSyncInterval、useMgtSettableLogSyncInterval（域 0 默认 FALSE，其余默认 TRUE；选择管理面还是 SyncIntervalSetting 状态机）以及 mgtSettableLogSyncInterval 遵循同一四元组（14.8.17–14.8.20）。两个相关超时：syncReceiptTimeout 是从端在收不到同步信息时等待多少个 sync 间隔后即认定主时钟失联、可能需要重跑 BMCA（14.8.21）；syncReceiptTimeoutTimeInterval 则把同一条件直接表示为一个时间间隔（14.8.22）。"
+    },
+    {
+      "type": "prose",
+      "en": "Pdelay request interval. On full-duplex IEEE 802.3 media (and CSN media using the peer-to-peer mechanism), Pdelay_Req messages probe link delay. The quartet repeats: initialLogPdelayReqInterval — used at init or on TLV value 126; on all other media this is 127 (14.8.23); currentLogPdelayReqInterval — current value, again 127 on other media (14.8.24); useMgtSettableLogPdelayReqInterval — management versus the LinkDelayIntervalSetting state machine, default FALSE (14.8.25); mgtSettableLogPdelayReqInterval — the management value (14.8.26).",
+      "zh": "Pdelay 请求间隔。在全双工 IEEE 802.3 介质（以及使用点对点机制的 CSN 介质）上，Pdelay_Req 报文探测链路时延。四元组重复出现：initialLogPdelayReqInterval——初始化时或 TLV 值为 126 时使用；在所有其他介质上该值为 127（14.8.23）；currentLogPdelayReqInterval——当前值，在其他介质上同样为 127（14.8.24）；useMgtSettableLogPdelayReqInterval——管理面还是 LinkDelayIntervalSetting 状态机，默认 FALSE（14.8.25）；mgtSettableLogPdelayReqInterval——管理面取值（14.8.26）。"
+    },
+    {
+      "type": "prose",
+      "en": "gPTP-capable message interval. These announce that a port speaks gPTP across a bridge that may not. The quartet appears once more: initialLogGptpCapableMessageInterval — at init or on TLV value 126 (14.8.27); currentLogGptpCapableMessageInterval — current value (14.8.28); useMgtSettableLogGptpCapableMessageInterval — management versus the GptpCapableMessageIntervalSetting state machine, default FALSE (14.8.29); mgtSettableLogGptpCapableMessageInterval — the management value (14.8.30). Finally, initialComputeNeighborRateRatio sets whether the port computes the neighbor rate ratio: on full-duplex 802.3 / peer-to-peer CSN media it is the initial value of computeNeighborRateRatio, and on all other media it is TRUE (14.8.31); currentComputeNeighborRateRatio is the value in effect now, likewise TRUE on other media (14.8.32).",
+      "zh": "gPTP 能力报文间隔。它们用于跨可能不支持 gPTP 的网桥通告本端口支持 gPTP。四元组再次出现：initialLogGptpCapableMessageInterval——初始化时或 TLV 值为 126 时（14.8.27）；currentLogGptpCapableMessageInterval——当前值（14.8.28）；useMgtSettableLogGptpCapableMessageInterval——管理面还是 GptpCapableMessageIntervalSetting 状态机，默认 FALSE（14.8.29）；mgtSettableLogGptpCapableMessageInterval——管理面取值（14.8.30）。最后，initialComputeNeighborRateRatio 设定端口是否计算邻居速率比：在全双工 802.3 / 点对点 CSN 介质上取 computeNeighborRateRatio 的初始值，在所有其他介质上为 TRUE（14.8.31）；currentComputeNeighborRateRatio 是当前生效值，在其他介质上同样为 TRUE（14.8.32）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[useMgtSettableLog... ?] -->|TRUE| B[currentLog... = mgtSettableLog...]\n  A -->|FALSE| C[State machine sets currentLog...]\n  B --> D[currentLog... in effect]\n  C --> D",
+      "zh": "flowchart TD\n  A[useMgtSettableLog... ?] -->|TRUE| B[currentLog... = mgtSettableLog...]\n  A -->|FALSE| C[由状态机设定 currentLog...]\n  B --> D[currentLog... 生效]\n  C --> D"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"18\" font-size=\"13\" stroke=\"none\" fill=\"currentColor\">portDS (per PTP Port)</text><rect x=\"10\" y=\"30\" width=\"200\" height=\"26\"/><text x=\"18\" y=\"47\" font-size=\"11\" stroke=\"none\" fill=\"currentColor\">identity / state / asCapable</text><rect x=\"10\" y=\"64\" width=\"200\" height=\"26\"/><text x=\"18\" y=\"81\" font-size=\"11\" stroke=\"none\" fill=\"currentColor\">delayMechanism / meanLinkDelay</text><rect x=\"240\" y=\"30\" width=\"210\" height=\"26\"/><text x=\"248\" y=\"47\" font-size=\"11\" stroke=\"none\" fill=\"currentColor\">Announce interval quartet</text><rect x=\"240\" y=\"64\" width=\"210\" height=\"26\"/><text x=\"248\" y=\"81\" font-size=\"11\" stroke=\"none\" fill=\"currentColor\">Sync interval quartet</text><rect x=\"240\" y=\"98\" width=\"210\" height=\"26\"/><text x=\"248\" y=\"115\" font-size=\"11\" stroke=\"none\" fill=\"currentColor\">Pdelay_Req interval quartet</text><rect x=\"240\" y=\"132\" width=\"210\" height=\"26\"/><text x=\"248\" y=\"149\" font-size=\"11\" stroke=\"none\" fill=\"currentColor\">gPTP-capable interval quartet</text><rect x=\"10\" y=\"132\" width=\"200\" height=\"26\"/><text x=\"18\" y=\"149\" font-size=\"11\" stroke=\"none\" fill=\"currentColor\">computeNeighborRateRatio</text></svg>",
+      "caption": {
+        "en": "Map of the portDS members covered: identity and role, link-delay measurement, and the four interval 'quartets' plus the neighbor-rate-ratio control.",
+        "zh": "本课所覆盖 portDS 成员的全貌：标识与角色、链路时延测量，以及四组间隔“四元组”和邻居速率比控制。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — exact clause numbers for all 32 portDS members",
+        "zh": "覆盖地图——全部 32 个 portDS 成员的精确条款编号"
+      },
+      "en": "Identity and role: 14.8.1 General (portDS purpose; count = defaultDS.numberPorts), 14.8.2 portIdentity, 14.8.3 portState (DisabledPort/MasterPort/PassivePort/SlavePort), 14.8.4 ptpPortEnabled. Delay measurement: 14.8.5 delayMechanism (P2P/COMMON_P2P/SPECIAL), 14.8.6 isMeasuringDelay, 14.8.7 asCapable, 14.8.8 meanLinkDelay, 14.8.9 meanLinkDelayThresh, 14.8.10 delayAsymmetry, 14.8.11 neighborRateRatio. Announce interval quartet + timeout: 14.8.12 initialLogAnnounceInterval, 14.8.13 currentLogAnnounceInterval, 14.8.14 useMgtSettableLogAnnounceInterval, 14.8.15 mgtSettableLogAnnounceInterval, 14.8.16 announceReceiptTimeout. Sync interval quartet + timeouts: 14.8.17 initialLogSyncInterval, 14.8.18 currentLogSyncInterval, 14.8.19 useMgtSettableLogSyncInterval, 14.8.20 mgtSettableLogSyncInterval, 14.8.21 syncReceiptTimeout, 14.8.22 syncReceiptTimeoutTimeInterval. Pdelay_Req interval quartet: 14.8.23 initialLogPdelayReqInterval, 14.8.24 currentLogPdelayReqInterval, 14.8.25 useMgtSettableLogPdelayReqInterval, 14.8.26 mgtSettableLogPdelayReqInterval. gPTP-capable interval quartet: 14.8.27 initialLogGptpCapableMessageInterval, 14.8.28 currentLogGptpCapableMessageInterval, 14.8.29 useMgtSettableLogGptpCapableMessageInterval, 14.8.30 mgtSettableLogGptpCapableMessageInterval. Neighbor-rate-ratio control: 14.8.31 initialComputeNeighborRateRatio, 14.8.32 currentComputeNeighborRateRatio.",
+      "zh": "标识与角色：14.8.1 总则（portDS 用途；数量 = defaultDS.numberPorts）、14.8.2 portIdentity、14.8.3 portState（DisabledPort/MasterPort/PassivePort/SlavePort）、14.8.4 ptpPortEnabled。时延测量：14.8.5 delayMechanism（P2P/COMMON_P2P/SPECIAL）、14.8.6 isMeasuringDelay、14.8.7 asCapable、14.8.8 meanLinkDelay、14.8.9 meanLinkDelayThresh、14.8.10 delayAsymmetry、14.8.11 neighborRateRatio。Announce 间隔四元组及超时：14.8.12 initialLogAnnounceInterval、14.8.13 currentLogAnnounceInterval、14.8.14 useMgtSettableLogAnnounceInterval、14.8.15 mgtSettableLogAnnounceInterval、14.8.16 announceReceiptTimeout。Sync 间隔四元组及超时：14.8.17 initialLogSyncInterval、14.8.18 currentLogSyncInterval、14.8.19 useMgtSettableLogSyncInterval、14.8.20 mgtSettableLogSyncInterval、14.8.21 syncReceiptTimeout、14.8.22 syncReceiptTimeoutTimeInterval。Pdelay_Req 间隔四元组：14.8.23 initialLogPdelayReqInterval、14.8.24 currentLogPdelayReqInterval、14.8.25 useMgtSettableLogPdelayReqInterval、14.8.26 mgtSettableLogPdelayReqInterval。gPTP 能力间隔四元组：14.8.27 initialLogGptpCapableMessageInterval、14.8.28 currentLogGptpCapableMessageInterval、14.8.29 useMgtSettableLogGptpCapableMessageInterval、14.8.30 mgtSettableLogGptpCapableMessageInterval。邻居速率比控制：14.8.31 initialComputeNeighborRateRatio、14.8.32 currentComputeNeighborRateRatio。",
+      "cite": {
+        "pdf_id": "8021AS-2020",
+        "pages": [
+          259,
+          260,
+          261,
+          262,
+          263,
+          264
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        259,
+        260,
+        261,
+        262,
+        263,
+        264
+      ],
+      "note": "Clause 14.8 Port Parameter Data Set (portDS), members 14.8.1 through 14.8.32, including Tables 14-7 (portState) and 14-8 (delayMechanism)."
+    }
+  ],
+  "covers": [
+    "8021AS-2020:14.8.1",
+    "8021AS-2020:14.8.2",
+    "8021AS-2020:14.8.3",
+    "8021AS-2020:14.8.4",
+    "8021AS-2020:14.8.5",
+    "8021AS-2020:14.8.6",
+    "8021AS-2020:14.8.7",
+    "8021AS-2020:14.8.8",
+    "8021AS-2020:14.8.9",
+    "8021AS-2020:14.8.10",
+    "8021AS-2020:14.8.11",
+    "8021AS-2020:14.8.12",
+    "8021AS-2020:14.8.13",
+    "8021AS-2020:14.8.14",
+    "8021AS-2020:14.8.15",
+    "8021AS-2020:14.8.16",
+    "8021AS-2020:14.8.17",
+    "8021AS-2020:14.8.18",
+    "8021AS-2020:14.8.19",
+    "8021AS-2020:14.8.20",
+    "8021AS-2020:14.8.21",
+    "8021AS-2020:14.8.22",
+    "8021AS-2020:14.8.23",
+    "8021AS-2020:14.8.24",
+    "8021AS-2020:14.8.25",
+    "8021AS-2020:14.8.26",
+    "8021AS-2020:14.8.27",
+    "8021AS-2020:14.8.28",
+    "8021AS-2020:14.8.29",
+    "8021AS-2020:14.8.30",
+    "8021AS-2020:14.8.31",
+    "8021AS-2020:14.8.32"
+  ],
+  "track": "tsn"
+}

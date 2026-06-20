@@ -1,0 +1,216 @@
+{
+  "id": "pan-hr-wpan-11",
+  "title": {
+    "en": "Sharing the Air: Channel Time, Sync, Fragmentation, Aggregation and ACKs",
+    "zh": "共享空口：信道时间、同步、分片、聚合与确认"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This is the middle third of Clause 7, the MAC (medium access control) functional description of IEEE Std 802.15.3-2023. By now you know the two network shapes the standard supports: a piconet — many devices (DEVs) coordinated by one piconet coordinator (PNC) — and a pairnet, a stripped-down link between exactly two devices coordinated by a PRC (pairnet coordinator). This part teaches the day-to-day mechanics: how a DEV books airtime (7.7), how everyone stays on the same clock (7.8, 7.9), and how a single message is chopped up, bundled together, and confirmed delivered (7.10, 7.11, 7.12).",
+      "zh": "这是 IEEE Std 802.15.3-2023 第 7 章（MAC，即介质访问控制功能描述）的中间三分之一。此时你已经了解标准支持的两种网络形态：微微网（piconet）——由一个微微网协调器（PNC）协调的多个设备（DEV）；以及配对网（pairnet）——由配对网协调器（PRC）协调的、恰好两台设备之间的精简链路。本部分讲解日常运行机制：DEV 如何预订空口时间（7.7）、所有设备如何保持时钟一致（7.8、7.9），以及一条消息如何被切分、捆绑并确认送达（7.10、7.11、7.12）。"
+    },
+    {
+      "type": "prose",
+      "en": "Start with channel time management for piconets (7.7.1). Airtime in a piconet is parcelled out by the PNC into channel time allocations (CTAs) — reserved slots inside each superframe. Two flavours exist: isochronous streams (7.7.2), which are steady, repeating reservations for media like a video feed, and asynchronous channel time (7.7.3), bursty one-off reservations for ordinary data. A DEV never grabs airtime directly; it negotiates. It sends a Channel Time Request command to the PNC, and the PNC answers with a Channel Time Response command. If granted, the new CTA appears in the beacon for everyone to see.",
+      "zh": "先看微微网的信道时间管理（7.7.1）。微微网中的空口时间由 PNC 划分为信道时间分配（CTA）——每个超帧内的预留时隙。它有两种类型：等时流（isochronous stream，7.7.2），即为视频流等媒体预留的稳定、重复的时隙；以及异步信道时间（asynchronous channel time，7.7.3），即为普通数据预留的突发性一次性时隙。DEV 从不直接抢占空口时间，而是协商：它向 PNC 发送信道时间请求命令（Channel Time Request），PNC 以信道时间响应命令（Channel Time Response）作答。若获批准，新的 CTA 会出现在信标（beacon）中，供所有设备查看。"
+    },
+    {
+      "type": "prose",
+      "en": "An isochronous stream has a full lifecycle. Creation (7.7.2.2): the originating DEV names a target DEV, asks for a number of time units (TUs), and the PNC either grants a stream index plus airtime (reason code \"success\") or refuses with a reason like \"channel time unavailable\" or \"target DEV not a member.\" Modification (7.7.2.3): only the originating DEV or the PNC may resize an existing stream, again via a Channel Time Request. Termination (7.7.2.4): the originator, the target, or the PNC can tear a stream down, and the PNC announces the teardown using a CTA Status IE (information element) in the beacon. Asynchronous time (7.7.3.1) is requested either as one shared CTA for a group of targets or as individual CTAs, and can be released the same way (7.7.3.2).",
+      "zh": "等时流有完整的生命周期。创建（7.7.2.2）：发起 DEV 指定目标 DEV，请求一定数量的时间单元（TU），PNC 要么授予流索引和空口时间（原因码为\"success\"），要么以\"channel time unavailable\"或\"target DEV not a member\"等理由拒绝。修改（7.7.2.3）：只有发起 DEV 或 PNC 可以调整已有流的大小，同样通过信道时间请求完成。终止（7.7.2.4）：发起方、目标方或 PNC 都能拆除某条流，PNC 通过信标中的 CTA 状态信息元素（CTA Status IE）公告此次拆除。异步时间（7.7.3.1）既可作为一组目标共享的单个 CTA 申请，也可作为各自独立的 CTA 申请，并可同样方式释放（7.7.3.2）。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant D as Originating DEV\n  participant P as PNC\n  participant T as Target DEV\n  D->>P: Channel Time Request\n  P-->>D: Channel Time Response (success)\n  Note over P: Adds CTA to beacon\n  P->>T: Beacon w/ CTA Status IE\n  Note over D,T: Stream runs in its CTA\n  D->>P: Channel Time Request (TUs=0)\n  Note over P: Stream terminated",
+      "zh": "sequenceDiagram\n  participant D as 发起 DEV\n  participant P as PNC\n  participant T as 目标 DEV\n  D->>P: 信道时间请求\n  P-->>D: 信道时间响应（成功）\n  Note over P: 将 CTA 加入信标\n  P->>T: 含 CTA 状态 IE 的信标\n  Note over D,T: 流在其 CTA 内运行\n  D->>P: 信道时间请求（TU=0）\n  Note over P: 流被终止"
+    },
+    {
+      "type": "prose",
+      "en": "Multicast group configuration (7.7.4) lets several DEVs share one logical destination. A DEV sends a Multicast Configuration Request to \"Join\" a group address; the PNC assigns a group ID (GrpID) — a DEVID that stands for the whole group — and tracks every member. \"Leave\" removes a member, and when the last member leaves the PNC frees the GrpID. This is how the standard maps the IEEE 802 idea of group MAC addresses onto its compact internal device IDs.",
+      "zh": "多播组配置（7.7.4）让多个 DEV 共享一个逻辑目的地。DEV 发送多播配置请求（Multicast Configuration Request）以\"加入\"（Join）某个组地址；PNC 分配一个组标识（GrpID）——一个代表整个组的 DEVID——并跟踪每个成员。\"离开\"（Leave）会移除某成员，当最后一名成员离开时，PNC 释放该 GrpID。标准正是借此把 IEEE 802 的组 MAC 地址概念映射到其紧凑的内部设备标识上。"
+    },
+    {
+      "type": "prose",
+      "en": "Synchronization for the piconet (7.8) keeps every DEV on the PNC's clock. The PNC transmits a beacon at the start of each superframe (7.8.3); every DEV — including the PNC — resets its superframe clock to zero at the beginning of the beacon preamble, so all timing is measured from that instant (7.8.1). Timers must hold accuracy at least as good as pClockAccuracy (7.8.2). DEVs read the beacon's CAP (contention access period) end time and CTA IEs to know when to transmit (7.8.4); a beacon is \"lost\" if its frame check sequence (FCS) fails or it never arrives. Some information elements ride in every beacon, others — beacon information announcements (7.8.5) — appear only when something changes and are repeated for at least mMinBeaconInfoRepeat beacons so power-saving DEVs catch them.",
+      "zh": "微微网同步（7.8）让每个 DEV 都跟随 PNC 的时钟。PNC 在每个超帧开始时发送信标（7.8.3）；每个 DEV——包括 PNC——在信标前导码开始时将其超帧时钟清零，因此所有计时都从那一刻起算（7.8.1）。定时器精度必须至少达到 pClockAccuracy（7.8.2）。DEV 读取信标中的 CAP（竞争访问期）结束时间和 CTA IE，以确定何时发送（7.8.4）；若信标的帧校验序列（FCS）失败或从未到达，则视为\"丢失\"。部分信息元素出现在每个信标中，而另一些——信标信息公告（7.8.5）——仅在状态变化时出现，并至少重复 mMinBeaconInfoRepeat 个信标，以便省电的 DEV 能接收到。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Directional PHYs: how beaconing works when antennas point one way (7.8.6)",
+        "zh": "定向 PHY：天线只朝一个方向时如何发信标（7.8.6）"
+      },
+      "en": "When a PHY (physical layer) has no omni-directional mode, the superframe needs extra structure (7.8.6.1). The quasi-omni beacon (7.8.6.2) repeats the Beacon frame I(1,t) times, each in a different antenna direction, optionally followed by a PNC quasi-omni tracking section (QT sequences) and a sector training section (ST sequences) for beamforming. The CAP splits into an association section, a regular sub-CAP (S-CAP) section, and a regular CAP — the directional CAP (7.8.6.3). Directional association (7.8.6.4) has a joining DEV listen across all its receive directions, pick the best antenna-direction pair by link quality indication (LQI), and report it in the Association Request. Finally, DEV quasi-omni transmit direction training and tracking (7.8.6.5) reserves a CTA where the DEV cycles through transmit directions while the PNC cycles receive directions; the PNC returns the optimum in a Feedback IE and re-checks it periodically.",
+      "zh": "当 PHY（物理层）没有全向模式时，超帧需要额外结构（7.8.6.1）。准全向信标（7.8.6.2）将信标帧重复 I(1,t) 次，每次朝不同天线方向发送，之后可选地跟随 PNC 准全向跟踪段（QT 序列）和用于波束成形的扇区训练段（ST 序列）。CAP 分为关联段、常规子 CAP（S-CAP）段和常规 CAP——即定向 CAP（7.8.6.3）。定向关联（7.8.6.4）让加入的 DEV 在其所有接收方向上侦听，依据链路质量指示（LQI）选出最佳天线方向对，并在关联请求中上报。最后，DEV 准全向发送方向训练与跟踪（7.8.6.5）预留一个 CTA，DEV 在其中遍历各发送方向，同时 PNC 遍历各接收方向；PNC 通过反馈 IE（Feedback IE）返回最优方向，并周期性复核。",
+      "cite": {
+        "pdf_id": "802153-2023",
+        "pages": [
+          303,
+          304,
+          305,
+          306,
+          307
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Synchronization for the pairnet (7.9) is the trimmed-down twin. All pairnet devices (PRDEVs) sync to the PRC's clock during the pairnet synchronous phase (PSP), resetting at the beacon preamble exactly as in a piconet (7.9.1), with the same pClockAccuracy requirement (7.9.2). The PRC sends a beacon each superframe, but — unlike a piconet — an extended beacon is not supported (7.9.3). After association the pairnet access period (PAP) replaces the CAP and runs to the end of the superframe, so no further sync is needed. The PRC still announces a handful of information elements in its beacons (7.9.4).",
+      "zh": "配对网同步（7.9）是其精简版孪生体。所有配对网设备（PRDEV）在配对网同步阶段（PSP）期间跟随 PRC 时钟，与微微网完全一样在信标前导码处清零（7.9.1），并满足相同的 pClockAccuracy 要求（7.9.2）。PRC 每个超帧发送一个信标，但与微微网不同的是，不支持扩展信标（7.9.3）。关联之后，配对网访问期（PAP）取代 CAP，一直运行到超帧结束，因此无需进一步同步。PRC 仍会在其信标中公告少量信息元素（7.9.4）。"
+    },
+    {
+      "type": "prose",
+      "en": "Fragmentation and defragmentation for piconets (7.10) handles messages too big for one frame. The transmitting DEV may split a MAC service data unit (MSDU) — or a MAC command data unit (MCDU) — into equal-sized fragments (the last may be shorter, and never below pMinFragmentSize). Each fragment carries a Fragment Number and a Last Fragment Number; the number is NOT bumped on a retransmission. The receiver reassembles them in order before handing the MSDU to the frame convergence sublayer (FCSL); any MSDU with a missing fragment is discarded. A DEV must support receiving fragments of at least three MSDUs at once.",
+      "zh": "微微网的分片与重组（7.10）处理过大而无法装入单帧的消息。发送 DEV 可将一个 MAC 服务数据单元（MSDU）——或 MAC 命令数据单元（MCDU）——切分为等长分片（最后一片可较短，但绝不小于 pMinFragmentSize）。每个分片携带分片号（Fragment Number）和末分片号（Last Fragment Number）；重传时该编号不递增。接收方按序重组后才将 MSDU 交给帧汇聚子层（FCSL）；任何缺失分片的 MSDU 都被丢弃。DEV 必须支持同时接收至少三个 MSDU 的分片。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 400 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"4\" y=\"14\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\">One aggregated frame (standard aggregation, up to 8 subframes)</text><rect x=\"4\" y=\"28\" width=\"60\" height=\"28\"/><text x=\"10\" y=\"46\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">MAC hdr</text><rect x=\"64\" y=\"28\" width=\"80\" height=\"28\"/><text x=\"70\" y=\"46\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">Subheaders</text><rect x=\"144\" y=\"28\" width=\"56\" height=\"28\"/><text x=\"150\" y=\"46\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">Subfr 1</text><rect x=\"200\" y=\"28\" width=\"56\" height=\"28\"/><text x=\"206\" y=\"46\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">Subfr 2</text><rect x=\"256\" y=\"28\" width=\"56\" height=\"28\"/><text x=\"262\" y=\"46\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">Subfr 3</text><rect x=\"312\" y=\"28\" width=\"56\" height=\"28\"/><text x=\"318\" y=\"46\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">Subfr 4</text><text x=\"4\" y=\"82\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">Receiver replies with a Blk-ACK Bitmap: bit set = subframe received OK</text><rect x=\"4\" y=\"90\" width=\"22\" height=\"18\"/><text x=\"10\" y=\"103\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">1</text><rect x=\"26\" y=\"90\" width=\"22\" height=\"18\"/><text x=\"32\" y=\"103\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">1</text><rect x=\"48\" y=\"90\" width=\"22\" height=\"18\"/><text x=\"54\" y=\"103\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">0</text><rect x=\"70\" y=\"90\" width=\"22\" height=\"18\"/><text x=\"76\" y=\"103\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">1</text><text x=\"100\" y=\"103\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">→ retransmit subframe 3</text></svg>",
+      "caption": {
+        "en": "Standard aggregation bundles up to 8 subframes under one MAC header; the Block-ACK bitmap tells the sender exactly which subframes to resend.",
+        "zh": "标准聚合在一个 MAC 头下捆绑至多 8 个子帧；块确认位图精确告知发送方需重传哪些子帧。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Aggregation (7.11) does the opposite of fragmentation — it packs many small MSDUs into one frame to cut overhead. Piconet standard aggregation (7.11.1) maps each MSDU into a subframe with its own subheader, bundles up to 8 of them under one MAC header, and forces the ACK Policy field to Block acknowledgment (Blk-ACK). Piconet low-latency aggregation (7.11.2) is for tight-latency traffic: the two DEVs negotiate a bidirectional CTA relinquish duration (BCRD) timer and swap transmit control back and forth so retransmissions happen almost immediately; idle gaps are filled with zero-length MSDUs to keep the link alive. Pairnet aggregation (7.11.3) packs up to 256 subframes, assigns each a sequence number, pads subframes to a fixed unit, and sets the ACK Policy to Stack acknowledgment (Stk-ACK).",
+      "zh": "聚合（7.11）做的恰与分片相反——它把许多小 MSDU 打包进一帧以削减开销。微微网标准聚合（7.11.1）将每个 MSDU 映射为带有自身子头的子帧，在一个 MAC 头下捆绑至多 8 个，并强制将 ACK 策略字段设为块确认（Blk-ACK）。微微网低时延聚合（7.11.2）面向严格时延业务：两台 DEV 协商一个双向 CTA 让出时长（BCRD）定时器，来回交换发送控制权，使重传几乎即刻发生；空闲间隙用零长度 MSDU 填充以维持链路。配对网聚合（7.11.3）可打包至多 256 个子帧，为每个分配序列号，将子帧填充至固定单元，并将 ACK 策略设为栈确认（Stk-ACK）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mnemonic for the six ACK types: think about WHEN and HOW MUCH you confirm. No-ACK = never. Imm-ACK = right now, one frame. Imp-ACK = implied by sending a reply frame. Dly-ACK = batched later for a stream burst. Blk-ACK = one bitmap covering an aggregated frame. Stk-ACK = the pairnet's piggybacked, ping-pong confirmation.",
+      "zh": "记忆六种 ACK 类型的窍门：想想\"何时确认\"和\"确认多少\"。No-ACK = 从不确认。Imm-ACK = 立刻确认一帧。Imp-ACK = 通过回发一帧隐含确认。Dly-ACK = 为流突发稍后批量确认。Blk-ACK = 用一个位图覆盖整个聚合帧。Stk-ACK = 配对网中乒乓往返、捎带的确认。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — the six acknowledgment types and retransmission (7.12)",
+        "zh": "覆盖地图——六种确认类型与重传（7.12）"
+      },
+      "en": "7.12.1 Overview lists all six ACK types. 7.12.2 No-ACK: the frame is assumed delivered and is mandatory for broadcast/multicast. 7.12.3 Imm-ACK (immediate): the recipient sends an Imm-ACK frame right after a correctly received directed frame. 7.12.4 Dly-ACK (delayed): used only for isochronous stream bursts; the source sends a Dly-ACK Request, the destination replies with a Dly-ACK frame carrying Max Burst and Max Frames to size the burst window — a Max Burst of zero stops transmission. 7.12.5 Imp-ACK (implied): in a CTA, the target's reply frame itself counts as the ACK, enabling bidirectional use of a unidirectional stream; an Imp-ACK NAK flag signals a payload that failed FCS. 7.12.6 Blk-ACK (block): only with aggregated frames; the Blk-ACK Bitmap marks each subframe OK or not, with separate rules for standard aggregation (7.12.6.2 — empty Data frame reply, Retry field on lost bitmap) and low-latency aggregation (7.12.6.3 — the source maintains a list of outstanding MSDU numbers up to mMaxSubframeNum). 7.12.7 Stk-ACK (stack) for pairnets: 7.12.7.1 the synchronous phase uses ping-pong transmission where each DEV piggybacks the last good sequence number; 7.12.7.2 the recovery process (asynchronous phase) is entered on a MAC-header error, where DEVs probe with RIFS-spaced header-only frames until they resync. 7.12.8 Retransmissions follow backoff in the CAP and a RIFS gap inside a CTA, bounded by a retry limit. 7.12.9 Duplicate detection uses the SrcID, Stream Index, Fragmentation Control, Retry, and PNID fields so a re-received frame is delivered upward only once.",
+      "zh": "7.12.1 概述列出全部六种 ACK 类型。7.12.2 No-ACK：假定帧已送达，广播/多播帧强制使用。7.12.3 Imm-ACK（立即）：接收方在正确收到定向帧后立即发送 Imm-ACK 帧。7.12.4 Dly-ACK（延迟）：仅用于等时流突发；源端发送 Dly-ACK 请求，目的端回复携带 Max Burst 和 Max Frames 的 Dly-ACK 帧以确定突发窗口大小——Max Burst 为零则停止发送。7.12.5 Imp-ACK（隐含）：在 CTA 中，目标的回复帧本身即视为 ACK，使单向流得以双向使用；Imp-ACK NAK 标志用于指示某负载未通过 FCS。7.12.6 Blk-ACK（块）：仅用于聚合帧；Blk-ACK 位图标记每个子帧是否正确，标准聚合（7.12.6.2——回空数据帧、位图丢失时置 Retry 字段）与低时延聚合（7.12.6.3——源端维护一份至多 mMaxSubframeNum 个未确认 MSDU 编号的列表）各有规则。7.12.7 配对网栈确认（Stk-ACK）：7.12.7.1 同步阶段采用乒乓传输，每台 DEV 捎带最后一个正确的序列号；7.12.7.2 恢复过程（异步阶段）在出现 MAC 头错误时进入，DEV 以 RIFS 间隔的纯头帧探测直至重新同步。7.12.8 重传在 CAP 中遵循退避、在 CTA 内以 RIFS 间隔进行，并受重试上限约束。7.12.9 重复检测使用 SrcID、流索引、分片控制、Retry 与 PNID 字段，使重复收到的帧只向上递交一次。",
+      "cite": {
+        "pdf_id": "802153-2023",
+        "pages": [
+          314,
+          315,
+          316,
+          317,
+          318,
+          319,
+          320,
+          321,
+          322
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Big picture: 7.7 books the airtime, 7.8/7.9 keep the clocks aligned so everyone uses that airtime at the right moment, and 7.10/7.11/7.12 govern how the bits travel inside a slot — split apart, bundled together, and confirmed received. Part 3 of this clause picks up power management and the remaining MAC services.",
+      "zh": "全局视角：7.7 预订空口时间，7.8/7.9 对齐时钟使所有设备在正确时刻使用该时间，而 7.10/7.11/7.12 管理比特在时隙内如何传输——拆分、捆绑、确认接收。本章第 3 部分将继续讲解电源管理及其余 MAC 服务。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        287,
+        288,
+        289,
+        290,
+        291,
+        292,
+        293,
+        294,
+        295,
+        296,
+        297,
+        298,
+        299
+      ],
+      "note": "7.7 channel time management: isochronous stream create/modify/terminate, asynchronous reservation/termination, multicast group config"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        300,
+        301,
+        302,
+        303,
+        304,
+        305,
+        306,
+        307
+      ],
+      "note": "7.8 piconet synchronization: beacon generation/reception, info announcement, directional PHY support"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        308,
+        309
+      ],
+      "note": "7.9 pairnet synchronization and 7.10 fragmentation/defragmentation"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        310,
+        311,
+        312,
+        313
+      ],
+      "note": "7.11 aggregation: standard, low-latency, pairnet"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        314,
+        315,
+        316,
+        317,
+        318,
+        319,
+        320,
+        321,
+        322
+      ],
+      "note": "7.12 acknowledgment types and retransmission, duplicate detection"
+    }
+  ],
+  "covers": [
+    "802153-2023:7.7.1",
+    "802153-2023:7.7.2",
+    "802153-2023:7.7.3",
+    "802153-2023:7.7.4",
+    "802153-2023:7.8.1",
+    "802153-2023:7.8.2",
+    "802153-2023:7.8.3",
+    "802153-2023:7.8.4",
+    "802153-2023:7.8.5",
+    "802153-2023:7.8.6",
+    "802153-2023:7.9.1",
+    "802153-2023:7.9.2",
+    "802153-2023:7.9.3",
+    "802153-2023:7.9.4",
+    "802153-2023:7.10",
+    "802153-2023:7.11.1",
+    "802153-2023:7.11.2",
+    "802153-2023:7.11.3",
+    "802153-2023:7.12.1",
+    "802153-2023:7.12.2",
+    "802153-2023:7.12.3",
+    "802153-2023:7.12.4",
+    "802153-2023:7.12.5",
+    "802153-2023:7.12.6",
+    "802153-2023:7.12.7",
+    "802153-2023:7.12.8",
+    "802153-2023:7.12.9"
+  ],
+  "track": "pan-hr-wpan"
+}

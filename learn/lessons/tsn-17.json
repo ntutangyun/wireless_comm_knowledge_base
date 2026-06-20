@@ -1,0 +1,102 @@
+{
+  "id": "tsn-17",
+  "title": {
+    "en": "Wiring a PTP Port to the Shared Delay Service: commonServicesPortDS & cmldsDefaultDS",
+    "zh": "把 PTP 端口接入共享时延服务：commonServicesPortDS 与 cmldsDefaultDS"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This part of Clause 14 covers two small managed data sets that connect a clock's ports to a shared link-delay measuring service. First, some vocabulary. A PTP (Precision Time Protocol) Instance is one logical clock inside a device that runs the gPTP (generalized PTP) protocol; it talks to the network through PTP Ports. The CMLDS (Common Mean Link Delay Service) is a separate, shared service that measures the one-way propagation delay of a physical link ONCE and lets multiple PTP Instances reuse that single measurement, instead of each one re-measuring the same wire. The CMLDS reaches the wire through its own Link Ports. The two data sets here, commonServicesPortDS and cmldsDefaultDS, are the wiring diagram that ties a PTP Port to the matching CMLDS Link Port.",
+      "zh": "本部分 Clause 14 讲解两个小型管理数据集，它们把时钟的端口连接到一个共享的链路时延测量服务上。先建立词汇。PTP（Precision Time Protocol，精确时间协议）实例是设备内部运行 gPTP（generalized PTP，通用精确时间协议）的一个逻辑时钟，它通过 PTP 端口与网络通信。CMLDS（Common Mean Link Delay Service，公共平均链路时延服务）是一个独立的共享服务，它对一条物理链路的单向传播时延只测量一次，供多个 PTP 实例复用，而不必让每个实例重复测同一根线。CMLDS 通过自己的 Link Port（链路端口）接入物理链路。这里的两个数据集 commonServicesPortDS 与 cmldsDefaultDS 就是把 PTP 端口与对应 CMLDS Link Port 绑定起来的接线图。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why share delay measurement? In multi-domain TSN (Time-Sensitive Networking), several time domains may run over the same physical cable. The propagation delay of that cable is a property of the wire, not of any one domain — so measuring it once with the CMLDS and sharing it saves Pdelay (peer delay) message traffic and keeps every domain's estimate consistent.",
+      "zh": "为什么要共享时延测量？在多域 TSN（Time-Sensitive Networking，时间敏感网络）中，多个时间域可能跑在同一根物理线缆上。该线缆的传播时延是这根线本身的属性，与任何单一域无关——因此用 CMLDS 测量一次并共享，可以省下 Pdelay（peer delay，对等时延）报文开销，并让各个域的估计值保持一致。"
+    },
+    {
+      "type": "prose",
+      "en": "14.14 defines the commonServicesPortDS (Common Services Port Data Set). Per 14.14.1 (General), this data set lets a single PTP Port of a PTP Instance discover which port of a common service corresponds to it. Today the only common service defined is the CMLDS, and so the data set has exactly one member: cmldsLinkPortPortNumber. Think of it as a pointer that says, 'for this PTP Port, the delay value comes from THAT CMLDS Link Port.'",
+      "zh": "14.14 定义 commonServicesPortDS（Common Services Port Data Set，公共服务端口数据集）。按 14.14.1（General，总则），该数据集让 PTP 实例的某个 PTP 端口找出哪个公共服务端口与它对应。目前唯一定义的公共服务就是 CMLDS，因此该数据集只有一个成员：cmldsLinkPortPortNumber。可以把它看作一个指针，意思是“对这个 PTP 端口而言，时延值来自那个 CMLDS Link Port”。"
+    },
+    {
+      "type": "prose",
+      "en": "14.14.2 specifies that single member, cmldsLinkPortPortNumber. Its value is the portNumber attribute of the cmldsLinkPortDS.portIdentity (defined in 14.16.2) of the Link Port that corresponds to this PTP Port. In plain terms: a portIdentity uniquely names a port; its portNumber is the integer index part. So this field simply records the index of the CMLDS Link Port riding on the same physical link as this PTP Port. 14.14.3 then states the table scope — there is one commonServicesPortDS table per PTP Port, per PTP Instance, laid out in Table 14-16. The one row is cmldsLinkPortPortNumber, a UInteger16 (unsigned 16-bit integer), read-only.",
+      "zh": "14.14.2 规定那个唯一成员 cmldsLinkPortPortNumber。它的值是与该 PTP 端口对应的 Link Port 的 cmldsLinkPortDS.portIdentity（定义见 14.16.2）中的 portNumber 属性。通俗说：portIdentity 唯一地命名一个端口，其中的 portNumber 是整数索引部分。因此该字段只是记录了与此 PTP 端口跑在同一条物理链路上的 CMLDS Link Port 的索引。14.14.3 接着说明表的范围——每个 PTP 实例的每个 PTP 端口各有一张 commonServicesPortDS 表，布局见 Table 14-16。唯一的一行就是 cmldsLinkPortPortNumber，类型为 UInteger16（无符号 16 位整数），只读。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"20\" y=\"20\" width=\"170\" height=\"60\" rx=\"6\"/><text x=\"105\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">PTP Instance (domain)</text><text x=\"105\" y=\"63\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">PTP Port</text><rect x=\"20\" y=\"120\" width=\"170\" height=\"60\" rx=\"6\"/><text x=\"105\" y=\"145\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">CMLDS (shared)</text><text x=\"105\" y=\"163\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">Link Port (portNumber)</text><line x1=\"105\" y1=\"80\" x2=\"105\" y2=\"120\" stroke-dasharray=\"4 3\"/><text x=\"118\" y=\"104\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">cmldsLinkPortPortNumber</text><rect x=\"300\" y=\"70\" width=\"140\" height=\"60\" rx=\"6\"/><text x=\"370\" y=\"95\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">Physical link</text><text x=\"370\" y=\"113\" fill=\"currentColor\" stroke=\"none\" font-size=\"11\" text-anchor=\"middle\">measured once</text><line x1=\"190\" y1=\"150\" x2=\"300\" y2=\"100\"/></svg>",
+      "caption": {
+        "en": "commonServicesPortDS holds one pointer (cmldsLinkPortPortNumber) from a PTP Port down to the CMLDS Link Port that measures the shared link delay.",
+        "zh": "commonServicesPortDS 保存一个指针（cmldsLinkPortPortNumber），从 PTP 端口指向测量共享链路时延的 CMLDS Link Port。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "14.15 defines the cmldsDefaultDS (CMLDS Default Data Set). Per 14.15.1 (General), this set describes the per-time-aware-system attributes of the CMLDS — that is, the properties that belong to the whole device's instance of the shared service, not to any single link. A useful note here: the sdoId (Standards Development Organization identifier, a code distinguishing protocol variants) for the CMLDS is fixed at 0x200 and cannot be changed, so no data-set member is needed to hold it.",
+      "zh": "14.15 定义 cmldsDefaultDS（CMLDS Default Data Set，CMLDS 默认数据集）。按 14.15.1（General，总则），该数据集描述 CMLDS 的“每时间感知系统”级属性——也就是属于整台设备这一份共享服务实例的属性，而非属于某一条链路。这里有一条有用的说明：CMLDS 的 sdoId（Standards Development Organization identifier，标准开发组织标识符，用于区分协议变体的编码）固定为 0x200 且不可更改，因此无需用数据集成员来保存它。"
+    },
+    {
+      "type": "prose",
+      "en": "14.15.2 specifies clockIdentity — the ClockIdentity value used to identify the CMLDS (its definition lives in 8.5.2.2). A clockIdentity is the globally unique 8-byte name of a clock, so this gives the shared service its own identity in protocol messages. 14.15.3 specifies numberLinkPorts — the number of Link Ports of the time-aware system on which the CMLDS is implemented. For an end station (a leaf device with a single network attachment) this value is 1. This count also fixes how many cmldsLinkPortDS instances exist (one per Link Port, covered in the next lesson).",
+      "zh": "14.15.2 规定 clockIdentity——用于标识 CMLDS 的 ClockIdentity 值（其定义见 8.5.2.2）。clockIdentity 是一个时钟全局唯一的 8 字节名称，因此它为这份共享服务在协议报文中赋予了自己的身份。14.15.3 规定 numberLinkPorts——该时间感知系统上实现了 CMLDS 的 Link Port 数量。对于 end station（端站，只有单一网络接入的叶子设备）此值为 1。该计数同时决定了存在多少个 cmldsLinkPortDS 实例（每个 Link Port 一个，下一课讲解）。"
+    },
+    {
+      "type": "prose",
+      "en": "14.15.4 gives the table scope: there is one cmldsDefaultDS table per time-aware system, laid out in Table 14-17. The table has two rows — clockIdentity (data type ClockIdentity) and numberLinkPorts (data type UInteger16) — both read-only. Notice the asymmetry of scope: cmldsDefaultDS is one-per-system (the service as a whole), while commonServicesPortDS from 14.14 is one-per-PTP-Port (the wiring for each individual port).",
+      "zh": "14.15.4 给出表的范围：每个时间感知系统各有一张 cmldsDefaultDS 表，布局见 Table 14-17。该表有两行——clockIdentity（数据类型 ClockIdentity）和 numberLinkPorts（数据类型 UInteger16）——均为只读。注意两者范围的不对称：cmldsDefaultDS 是“每系统一份”（整份服务），而 14.14 的 commonServicesPortDS 是“每 PTP 端口一份”（每个端口各自的接线）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  S[time-aware system] -->|one per system| D[cmldsDefaultDS]\n  D --> C[clockIdentity]\n  D --> N[numberLinkPorts]\n  S --> P1[PTP Port 1]\n  S --> P2[PTP Port 2]\n  P1 -->|one per port| L1[commonServicesPortDS]\n  P2 -->|one per port| L2[commonServicesPortDS]\n  L1 --> X1[cmldsLinkPortPortNumber]\n  L2 --> X2[cmldsLinkPortPortNumber]",
+      "zh": "flowchart TD\n  S[时间感知系统] -->|每系统一份| D[cmldsDefaultDS]\n  D --> C[clockIdentity]\n  D --> N[numberLinkPorts]\n  S --> P1[PTP 端口 1]\n  S --> P2[PTP 端口 2]\n  P1 -->|每端口一份| L1[commonServicesPortDS]\n  P2 -->|每端口一份| L2[commonServicesPortDS]\n  L1 --> X1[cmldsLinkPortPortNumber]\n  L2 --> X2[cmldsLinkPortPortNumber]"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Read-only everywhere here: every member of both tables is R (read-only). These data sets report wiring and identity that the protocol establishes itself; management software observes them but does not set them. (Some neighboring CMLDS data sets in 14.16 do allow read/write — but not these two.)",
+      "zh": "这里全是只读：两张表的每个成员都是 R（只读）。这些数据集报告的是协议自身建立的接线与身份，管理软件只能观察、不能设置。（14.16 中相邻的某些 CMLDS 数据集确实允许读写——但这两个不行。）"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: exact clauses 14.14.1–14.14.3 and 14.15.1–14.15.4",
+        "zh": "覆盖地图：精确条款 14.14.1–14.14.3 与 14.15.1–14.15.4"
+      },
+      "en": "14.14 commonServicesPortDS — 14.14.1 General: lets a PTP Port find the corresponding common-service port; the only common service is the CMLDS, and the only member is cmldsLinkPortPortNumber. 14.14.2 cmldsLinkPortPortNumber: equals the portNumber of cmldsLinkPortDS.portIdentity (see 14.16.2) of the matching CMLDS Link Port. 14.14.3 commonServicesPortDS table: one table per PTP Port per PTP Instance; Table 14-16 lists cmldsLinkPortPortNumber as UInteger16, read-only. 14.15 cmldsDefaultDS — 14.15.1 General: per-time-aware-system attributes of the CMLDS; sdoId is fixed at 0x200 so it needs no member. 14.15.2 clockIdentity: the ClockIdentity (see 8.5.2.2) identifying the CMLDS. 14.15.3 numberLinkPorts: number of Link Ports running the CMLDS; 1 for an end station. 14.15.4 cmldsDefaultDS table: one table per time-aware system; Table 14-17 lists clockIdentity (ClockIdentity) and numberLinkPorts (UInteger16), both read-only.",
+      "zh": "14.14 commonServicesPortDS——14.14.1 General：让 PTP 端口找到对应的公共服务端口；唯一公共服务是 CMLDS，唯一成员是 cmldsLinkPortPortNumber。14.14.2 cmldsLinkPortPortNumber：等于对应 CMLDS Link Port 的 cmldsLinkPortDS.portIdentity（见 14.16.2）中的 portNumber。14.14.3 commonServicesPortDS table：每 PTP 实例的每 PTP 端口一张表；Table 14-16 将 cmldsLinkPortPortNumber 列为 UInteger16，只读。14.15 cmldsDefaultDS——14.15.1 General：CMLDS 的每时间感知系统级属性；sdoId 固定为 0x200，故无需成员。14.15.2 clockIdentity：标识 CMLDS 的 ClockIdentity（见 8.5.2.2）。14.15.3 numberLinkPorts：运行 CMLDS 的 Link Port 数量；端站为 1。14.15.4 cmldsDefaultDS table：每时间感知系统一张表；Table 14-17 列出 clockIdentity（ClockIdentity）和 numberLinkPorts（UInteger16），均只读。",
+      "cite": {
+        "pdf_id": "8021AS-2020",
+        "pages": [
+          276,
+          277
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        276,
+        277
+      ],
+      "note": "14.14 commonServicesPortDS (14.14.1-14.14.3, Table 14-16) and 14.15 cmldsDefaultDS (14.15.1-14.15.4, Table 14-17)."
+    }
+  ],
+  "covers": [
+    "8021AS-2020:14.14.1",
+    "8021AS-2020:14.14.2",
+    "8021AS-2020:14.14.3",
+    "8021AS-2020:14.15.1",
+    "8021AS-2020:14.15.2",
+    "8021AS-2020:14.15.3",
+    "8021AS-2020:14.15.4"
+  ],
+  "track": "tsn"
+}

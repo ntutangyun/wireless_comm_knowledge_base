@@ -1,0 +1,230 @@
+{
+  "id": "tsn-06",
+  "title": {
+    "en": "Choosing the Grandmaster: BMCA State Machines, Announce/Signaling Messages",
+    "zh": "选出大师钟：BMCA 状态机与 Announce/Signaling 报文"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "In a gPTP (generalized Precision Time Protocol) network, exactly one clock must become the source everyone else follows — the Grandmaster PTP Instance — and the network must agree on a loop-free tree rooted at it (the time-synchronization spanning tree). Clause 10.3 specifies how that happens. There are two methods (10.3.1): (a) the Best Master Clock Algorithm (BMCA) figures it out automatically, or (b) external port configuration, where an outside entity simply dictates each port's role. A single per-instance flag, externalPortConfigurationEnabled, picks the method (FALSE = BMCA, the default on domain 0). Every PTP Port ends up with one of four states — MasterPort (faces away from the root), SlavePort (the one port closest to the root), PassivePort (none of the above), or DisabledPort.",
+      "zh": "在 gPTP（generalized Precision Time Protocol，通用精确时间协议）网络中，必须恰好有一个时钟成为所有其他节点跟随的时间源——即大师钟实例（Grandmaster PTP Instance）——并且全网要就一棵以它为根、无环路的树（时间同步生成树）达成一致。Clause 10.3 规定了这一过程如何完成。共有两种方法（10.3.1）：(a) 由最佳主时钟算法（BMCA，Best Master Clock Algorithm）自动选出，或 (b) 外部端口配置，由外部实体直接指定每个端口的角色。一个每实例标志 externalPortConfigurationEnabled 决定采用哪种方法（FALSE = BMCA，是 domain 0 上的默认值）。每个 PTP 端口最终都会处于四种状态之一：MasterPort（背对根的一侧）、SlavePort（最接近根的那个端口）、PassivePort（以上皆非）或 DisabledPort。"
+    },
+    {
+      "type": "prose",
+      "en": "The BMCA compares clocks using a few stacked numbers, lowest-is-best. The systemIdentity (10.3.2) is a 14-byte value formed by concatenating priority1, clockClass, clockAccuracy, offsetScaledLogVariance, priority2, and finally clockIdentity (the tie-breaker). Because a grandmaster-capable clock always has priority1 < 255, it automatically beats any clock that is not grandmaster-capable. stepsRemoved (10.3.3) counts the hops from the root; the port with the lowest stepsRemoved becomes the SlavePort. These are bundled into a time-synchronization spanning tree priority vector (10.3.4): rootSystemIdentity : stepsRemoved : sourcePortIdentity : portNumber. The whole vector is compared as if it were one long number — earlier octets dominate — which is why \"lower is better\" is used everywhere.",
+      "zh": "BMCA 通过若干堆叠的数值来比较时钟，数值越小越优。systemIdentity（10.3.2）是一个 14 字节的值，由 priority1、clockClass、clockAccuracy、offsetScaledLogVariance、priority2，最后再加上 clockIdentity（作为决胜项）依次拼接而成。由于可作大师钟的时钟其 priority1 < 255，它会自动胜过任何不可作大师钟的时钟。stepsRemoved（10.3.3）记录到根的跳数；stepsRemoved 最小的端口成为 SlavePort。这些信息被打包进一个时间同步生成树优先级向量（10.3.4）：rootSystemIdentity : stepsRemoved : sourcePortIdentity : portNumber。整个向量被当作一个长整数来比较——靠前的字节权重更高——这正是处处采用“越小越优”的原因。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "The priority vector calculus (10.3.5) names five vectors. The messagePriorityVector arrives in an Announce message. The portPriorityVector is what a port currently believes after digesting Announces. Adding one hop yields the gmPathPriorityVector. The systemPriorityVector is what this instance would advertise if it were root. The best of all candidates is the gmPriorityVector, and the version a Master port advertises is the masterPriorityVector. PTP Port states then follow mechanically (10.3.6): the source of the gmPriorityVector is the SlavePort; ports advertising their own masterPriorityVector are MasterPorts; everything else is PassivePort.",
+      "zh": "优先级向量运算（10.3.5）涉及五个向量。messagePriorityVector 由 Announce 报文携带而来。portPriorityVector 是端口在处理完各 Announce 后当前所持的信念。增加一跳即得到 gmPathPriorityVector。systemPriorityVector 是本实例若作为根时将通告的向量。所有候选中最优者即 gmPriorityVector，而 Master 端口实际通告的版本为 masterPriorityVector。PTP 端口状态随后机械地确定（10.3.6）：gmPriorityVector 的来源端口为 SlavePort；通告自身 masterPriorityVector 的端口为 MasterPort；其余皆为 PassivePort。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Announce in] --> B[PortAnnounceReceive 10.3.11]\n  B -->|qualified, rcvdMsg| C[PortAnnounceInformation 10.3.12]\n  C -->|portPriority, infoIs| D[PortStateSelection 10.3.13]\n  D -->|selectedState, masterPriority| E[PortAnnounceTransmit 10.3.16]\n  E -->|Announce out| F[MD entity / wire]\n  S[Signaling: Interval Request] --> G[AnnounceIntervalSetting 10.3.17]\n  S --> H[SyncIntervalSetting 10.3.18]",
+      "zh": "flowchart TD\n  A[Announce 输入] --> B[PortAnnounceReceive 10.3.11]\n  B -->|合格, rcvdMsg| C[PortAnnounceInformation 10.3.12]\n  C -->|portPriority, infoIs| D[PortStateSelection 10.3.13]\n  D -->|selectedState, masterPriority| E[PortAnnounceTransmit 10.3.16]\n  E -->|Announce 输出| F[MD 实体 / 线路]\n  S[Signaling: 间隔请求] --> G[AnnounceIntervalSetting 10.3.17]\n  S --> H[SyncIntervalSetting 10.3.18]"
+    },
+    {
+      "type": "prose",
+      "en": "These calculations run inside a chain of cooperating state machines (10.3.7), all living in the media-independent layer — the media-dependent (MD) entity just hands Announce frames up and down. PortAnnounceReceive (10.3.11) qualifies an incoming Announce (rejecting self-sent messages, stepsRemoved ≥ 255, or loops detected via the path-trace TLV). PortAnnounceInformation (10.3.12) classifies it as Superior, Repeated, or Inferior master info and updates the port's belief. PortStateSelection (10.3.13) — one instance for the whole PTP Instance — runs updtStatesTree() to recompute every port's role and the gmPresent flag. PortAnnounceTransmit (10.3.16) emits Announces from MasterPorts at the right cadence, including a \"slowdown\" ramp after the interval lengthens.",
+      "zh": "这些计算在一连串协作的状态机（10.3.7）内运行，它们全部位于媒体无关层——媒体相关（MD，media-dependent）实体只负责把 Announce 帧上下传递。PortAnnounceReceive（10.3.11）对收到的 Announce 进行合格性判定（拒绝自发报文、stepsRemoved ≥ 255、或经 path-trace TLV 检测到的环路）。PortAnnounceInformation（10.3.12）将其归类为 Superior、Repeated 或 Inferior 主信息并更新端口的信念。PortStateSelection（10.3.13）——整个 PTP 实例仅一个实例——运行 updtStatesTree() 重新计算每个端口的角色以及 gmPresent 标志。PortAnnounceTransmit（10.3.16）以正确的节奏从各 MasterPort 发出 Announce，并在间隔变长后包含一段“减速（slowdown）”过渡。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Reading the variable scopes (10.3.8) saves a lot of confusion. Per-instance variables (10.3.9) describe the whole clock and the grandmaster's time properties — systemPriority, gmPriority, lastGmPriority, masterStepsRemoved, the leap61/leap59/currentUtcOffset/timeSource flags, pathTrace, and externalPortConfigurationEnabled. Per-port variables (10.3.10) describe one port's view — infoIs, portPriority, portStepsRemoved, masterPriority, announceInterval, rcvdAnnouncePtr, updtInfo, and a parallel set of ann* fields (annLeap61 … annTimeSource) that cache the last Announce's time properties before they are promoted instance-wide.",
+      "zh": "读懂变量作用域（10.3.8）能省去许多困惑。每实例变量（10.3.9）描述整个时钟以及大师钟的时间属性——systemPriority、gmPriority、lastGmPriority、masterStepsRemoved，以及 leap61/leap59/currentUtcOffset/timeSource 等标志、pathTrace 与 externalPortConfigurationEnabled。每端口变量（10.3.10）描述单个端口的视角——infoIs、portPriority、portStepsRemoved、masterPriority、announceInterval、rcvdAnnouncePtr、updtInfo，以及一组并行的 ann* 字段（annLeap61 … annTimeSource），它们在被提升为整机属性之前缓存最近一条 Announce 的时间属性。"
+    },
+    {
+      "type": "prose",
+      "en": "When externalPortConfigurationEnabled is TRUE, the BMCA machines step aside and two replacements run instead. PortAnnounceInformationExt (10.3.14) simply receives and stores Announce information (it still copies the path-trace TLV into pathTrace when the port is the SlavePort). PortStateSettingExt (10.3.15) copies the externally chosen desiredState into selectedState for each port, then recomputes masterStepsRemoved, the time-property flags, gmPresent, and the gmPriorityVector/masterPriorityVector — the same outputs the BMCA would produce, only the port roles came from an operator instead of an election. PortAnnounceTransmit is shared by both modes.",
+      "zh": "当 externalPortConfigurationEnabled 为 TRUE 时，BMCA 状态机退居一旁，改由两个替代状态机运行。PortAnnounceInformationExt（10.3.14）只是接收并保存 Announce 信息（当端口为 SlavePort 时仍会把 path-trace TLV 复制到 pathTrace）。PortStateSettingExt（10.3.15）将外部选定的 desiredState 复制到每个端口的 selectedState，然后重新计算 masterStepsRemoved、各时间属性标志、gmPresent，以及 gmPriorityVector/masterPriorityVector——与 BMCA 会产生的输出相同，只是端口角色来自运维人员的设定而非选举。PortAnnounceTransmit 由两种模式共用。"
+    },
+    {
+      "type": "prose",
+      "en": "Two more state machines tune message rates by request. The AnnounceIntervalSetting machine (10.3.17) and SyncIntervalSetting machine (10.3.18) each react to a Signaling message carrying a Message Interval Request TLV. Their helper computeLogAnnounceInterval()/computeLogSyncInterval() honors the requested log-interval if supported, otherwise returns the nearest supported rate. Special request values mean: −128 (don't change), 126 (reset to the initial value), and 127 (stop sending). When an interval grows, a slowdown flag smooths the transition. Clause 10.4 adds a parallel family — GptpCapableTransmit (10.4.1), GptpCapableReceive (10.4.2), and GptpCapableIntervalSetting (10.4.3) — that periodically announces \"I am still speaking gPTP\" via a gPTP-capable TLV, so a neighbor learns (neighborGptpCapable) when the peer falls silent.",
+      "zh": "另有两个状态机按请求调整报文速率。AnnounceIntervalSetting 状态机（10.3.17）与 SyncIntervalSetting 状态机（10.3.18）各自响应携带 Message Interval Request TLV 的 Signaling 报文。其辅助函数 computeLogAnnounceInterval()/computeLogSyncInterval() 在支持时采用所请求的对数间隔，否则返回最接近的受支持速率。特殊请求值含义为：−128（不改变）、126（重置为初始值）、127（停止发送）。当间隔变大时，一个 slowdown 标志会平滑过渡。Clause 10.4 增加了一组并行机制——GptpCapableTransmit（10.4.1）、GptpCapableReceive（10.4.2）与 GptpCapableIntervalSetting（10.4.3）——它们通过 gPTP-capable TLV 周期性宣告“我仍在讲 gPTP”，从而让邻居在对端沉默时得知（neighborGptpCapable）。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 10.5 fixes the shared attributes of the two media-independent messages. Both Announce and Signaling are general (un-timestamped) messages (10.5.2): Announce carries BMCA selection data, Signaling carries requests/commands via TLVs. Both use the reserved destination MAC 01-80-C2-00-00-0E (10.5.3) — a non-forwarded address — and EtherType 88-F7 (10.5.4). The subtype lives in the majorSdoId field (10.5.5), the sourcePortIdentity names the sending egress port (10.5.6), and each message type keeps its own rolling 16-bit sequenceId, incremented by one per send (10.5.7).",
+      "zh": "Clause 10.5 固定了这两类媒体无关报文的共有属性。Announce 与 Signaling 都是通用（无时间戳）报文（10.5.2）：Announce 携带 BMCA 选举数据，Signaling 通过 TLV 携带请求/命令。两者都使用保留目的 MAC 地址 01-80-C2-00-00-0E（10.5.3）——一个不转发的地址——以及 EtherType 88-F7（10.5.4）。子类型存放于 majorSdoId 字段（10.5.5），sourcePortIdentity 标识发送出口端口（10.5.6），并且每种报文类型各自维护一个滚动的 16 位 sequenceId，每发送一次加一（10.5.7）。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"6\" y=\"16\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">PTP common header (34 octets) + Announce body</text><rect x=\"6\" y=\"26\" width=\"120\" height=\"30\"/><text x=\"12\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">header 34B</text><rect x=\"126\" y=\"26\" width=\"60\" height=\"30\"/><text x=\"130\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">UTCoff/GM</text><rect x=\"186\" y=\"26\" width=\"70\" height=\"30\"/><text x=\"190\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">GM quality</text><rect x=\"256\" y=\"26\" width=\"70\" height=\"30\"/><text x=\"260\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">GM identity</text><rect x=\"326\" y=\"26\" width=\"55\" height=\"30\"/><text x=\"330\" y=\"40\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">steps</text><text x=\"330\" y=\"52\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">Removed</text><rect x=\"381\" y=\"26\" width=\"73\" height=\"30\" stroke-dasharray=\"4 3\"/><text x=\"385\" y=\"45\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">pathTrace TLV</text><text x=\"6\" y=\"92\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\">Signaling body</text><rect x=\"6\" y=\"102\" width=\"120\" height=\"30\"/><text x=\"12\" y=\"121\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">header 34B</text><rect x=\"126\" y=\"102\" width=\"110\" height=\"30\"/><text x=\"130\" y=\"121\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">targetPortIdentity</text><rect x=\"236\" y=\"102\" width=\"180\" height=\"30\" stroke-dasharray=\"4 3\"/><text x=\"240\" y=\"121\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">interval-request / gPTP-capable TLV</text></svg>",
+      "caption": {
+        "en": "Announce and Signaling message layouts (10.6): both begin with the 34-octet common PTP header (10.6.2); Announce adds grandmaster fields, stepsRemoved, and an optional path-trace TLV; Signaling adds an all-ones targetPortIdentity plus exactly one TLV.",
+        "zh": "Announce 与 Signaling 报文布局（10.6）：两者都以 34 字节的 PTP 通用头部（10.6.2）开始；Announce 增加大师钟相关字段、stepsRemoved 以及可选的 path-trace TLV；Signaling 增加全为 1 的 targetPortIdentity 以及恰好一个 TLV。"
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — every clause 10.3 / 10.4 / 10.5 / 10.6 unit in this lesson",
+        "zh": "覆盖地图——本课所涉 10.3 / 10.4 / 10.5 / 10.6 各单元"
+      },
+      "en": "10.3 BMCA / external-config / interval state machines. 10.3.1 two methods + PTP Port states (Table 10-2) + externalPortConfigurationEnabled. 10.3.2 systemIdentity (14-byte concatenation, clockIdentity tie-breaker). 10.3.3 stepsRemoved (hop count; lowest = SlavePort). 10.3.4 priority vector layout (rootSystemIdentity:stepsRemoved:sourcePortIdentity:portNumber). 10.3.5 the five priority-vector calculations (message/port/gmPath/system/master). 10.3.6 PTP Port state assignments under BMCA (10.3.6.1) and external config (10.3.6.2). 10.3.7 overview of the machine set + Figures 10-11/10-12 + the AnnounceIntervalSetting overview. 10.3.8 variable-scope summary (Table 10-3). 10.3.9 per-instance globals (.1 reselect … .25 lastAnnouncePort). 10.3.10 per-port globals (.1 announceReceiptTimeoutTimeInterval … .24 receivedPathTrace). 10.3.11 PortAnnounceReceive + qualifyAnnounce(). 10.3.12 PortAnnounceInformation + rcvInfo() returning Superior/Repeated/Inferior/Other. 10.3.13 PortStateSelection + updtStatesTree()/updtStateDisabledTree(). 10.3.14 PortAnnounceInformationExt. 10.3.15 PortStateSettingExt + updtPortState(). 10.3.16 PortAnnounceTransmit + txAnnounce() + slowdown. 10.3.17 AnnounceIntervalSetting + computeLogAnnounceInterval(). 10.3.18 SyncIntervalSetting + computeLogSyncInterval(). 10.4 gPTP-capable signaling: 10.4.1 GptpCapableTransmit, 10.4.2 GptpCapableReceive (sets neighborGptpCapable), 10.4.3 GptpCapableIntervalSetting. 10.5 message attributes: 10.5.1 general, 10.5.2 message class (Announce & Signaling are general/un-timestamped), 10.5.3 destination MAC 01-80-C2-00-00-0E, 10.5.4 EtherType 88-F7, 10.5.5 subtype = majorSdoId, 10.5.6 sourcePortIdentity, 10.5.7 sequenceId (+1 per send, per type). 10.6 message formats: 10.6.1 general (header + body + TLV suffix), 10.6.2 common header (Table 10-7; messageType 0xB Announce, 0xC Signaling; flags Table 10-9), 10.6.3 Announce message + path-trace TLV (tlvType 0x8), 10.6.4 Signaling message + message-interval-request TLV (tlvType 0x3, organizationId 00-80-C2) or gPTP-capable TLV.",
+      "zh": "10.3 BMCA / 外部配置 / 间隔设置状态机。10.3.1 两种方法 + PTP 端口状态（表 10-2）+ externalPortConfigurationEnabled。10.3.2 systemIdentity（14 字节拼接，clockIdentity 为决胜项）。10.3.3 stepsRemoved（跳数；最小者为 SlavePort）。10.3.4 优先级向量布局（rootSystemIdentity:stepsRemoved:sourcePortIdentity:portNumber）。10.3.5 五个优先级向量运算（message/port/gmPath/system/master）。10.3.6 BMCA 下（10.3.6.1）与外部配置下（10.3.6.2）的端口状态分配。10.3.7 状态机集合总览 + 图 10-11/10-12 + AnnounceIntervalSetting 概述。10.3.8 变量作用域汇总（表 10-3）。10.3.9 每实例全局变量（.1 reselect … .25 lastAnnouncePort）。10.3.10 每端口全局变量（.1 announceReceiptTimeoutTimeInterval … .24 receivedPathTrace）。10.3.11 PortAnnounceReceive + qualifyAnnounce()。10.3.12 PortAnnounceInformation + 返回 Superior/Repeated/Inferior/Other 的 rcvInfo()。10.3.13 PortStateSelection + updtStatesTree()/updtStateDisabledTree()。10.3.14 PortAnnounceInformationExt。10.3.15 PortStateSettingExt + updtPortState()。10.3.16 PortAnnounceTransmit + txAnnounce() + 减速。10.3.17 AnnounceIntervalSetting + computeLogAnnounceInterval()。10.3.18 SyncIntervalSetting + computeLogSyncInterval()。10.4 gPTP 能力信令：10.4.1 GptpCapableTransmit、10.4.2 GptpCapableReceive（设置 neighborGptpCapable）、10.4.3 GptpCapableIntervalSetting。10.5 报文属性：10.5.1 概述、10.5.2 报文类别（Announce 与 Signaling 为通用/无时间戳）、10.5.3 目的 MAC 01-80-C2-00-00-0E、10.5.4 EtherType 88-F7、10.5.5 子类型 = majorSdoId、10.5.6 sourcePortIdentity、10.5.7 sequenceId（每类型每次发送 +1）。10.6 报文格式：10.6.1 概述（头部 + 主体 + TLV 后缀）、10.6.2 通用头部（表 10-7；messageType 0xB 为 Announce、0xC 为 Signaling；flags 见表 10-9）、10.6.3 Announce 报文 + path-trace TLV（tlvType 0x8）、10.6.4 Signaling 报文 + message-interval-request TLV（tlvType 0x3，organizationId 00-80-C2）或 gPTP-capable TLV。",
+      "cite": {
+        "pdf_id": "8021AS-2020",
+        "pages": [
+          99,
+          102,
+          103,
+          104,
+          105,
+          108,
+          110,
+          116,
+          118,
+          120,
+          123,
+          125,
+          128,
+          130,
+          133,
+          136,
+          138,
+          140,
+          143,
+          144,
+          145,
+          149,
+          151
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105
+      ],
+      "note": "10.3.1-10.3.6 methods, PTP Port states, systemIdentity, stepsRemoved, priority vectors and state assignments"
+    },
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113
+      ],
+      "note": "10.3.7-10.3.10 state-machine overview (Figs 10-11/10-12) and global-variable definitions"
+    },
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135
+      ],
+      "note": "10.3.11-10.3.18 the BMCA, external-config, and interval-setting state machines"
+    },
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142
+      ],
+      "note": "10.4.1-10.4.3 GptpCapableTransmit/Receive/IntervalSetting state machines"
+    },
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        143,
+        144
+      ],
+      "note": "10.5.1-10.5.7 message attributes: class, addresses, EtherType, subtype, source port identity, sequence number"
+    },
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        144,
+        145,
+        146,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152
+      ],
+      "note": "10.6.1-10.6.4 message formats: header, Announce + path-trace TLV, Signaling + interval-request/gPTP-capable TLV"
+    }
+  ],
+  "covers": [
+    "8021AS-2020:10.3.1",
+    "8021AS-2020:10.3.2",
+    "8021AS-2020:10.3.3",
+    "8021AS-2020:10.3.4",
+    "8021AS-2020:10.3.5",
+    "8021AS-2020:10.3.6",
+    "8021AS-2020:10.3.7",
+    "8021AS-2020:10.3.8",
+    "8021AS-2020:10.3.9",
+    "8021AS-2020:10.3.10",
+    "8021AS-2020:10.3.11",
+    "8021AS-2020:10.3.12",
+    "8021AS-2020:10.3.13",
+    "8021AS-2020:10.3.14",
+    "8021AS-2020:10.3.15",
+    "8021AS-2020:10.3.16",
+    "8021AS-2020:10.3.17",
+    "8021AS-2020:10.3.18",
+    "8021AS-2020:10.4.1",
+    "8021AS-2020:10.4.2",
+    "8021AS-2020:10.4.3",
+    "8021AS-2020:10.5.1",
+    "8021AS-2020:10.5.2",
+    "8021AS-2020:10.5.3",
+    "8021AS-2020:10.5.4",
+    "8021AS-2020:10.5.5",
+    "8021AS-2020:10.5.6",
+    "8021AS-2020:10.5.7",
+    "8021AS-2020:10.6.1",
+    "8021AS-2020:10.6.2",
+    "8021AS-2020:10.6.3",
+    "8021AS-2020:10.6.4"
+  ],
+  "track": "tsn"
+}

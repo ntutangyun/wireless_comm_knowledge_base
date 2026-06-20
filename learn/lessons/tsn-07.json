@@ -1,0 +1,102 @@
+{
+  "id": "tsn-07",
+  "title": {
+    "en": "gPTP Timing Knobs: Message Intervals and Timeouts",
+    "zh": "gPTP 时间旋钮：消息间隔与超时"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "A gPTP network (generalized Precision Time Protocol — the IEEE 802.1AS profile of PTP) does not just measure time once; it keeps re-measuring forever. To do that, every PTP Port must answer two timing questions: how often do I send my periodic messages, and how long do I wait before I conclude my neighbor has gone silent? Clause 10.7 (Protocol timing characterization) is the small but crucial subclause that pins down both. It defines the message intervals and the timeout counts for the media-independent state machines you met earlier in Clause 10 — the layer that works the same no matter whether the link underneath is Ethernet, Wi-Fi, or a coordinated shared network.",
+      "zh": "gPTP 网络（generalized Precision Time Protocol，即 IEEE 802.1AS 对 PTP 的剪裁版）并不是测一次时间就完事，而是要不停地反复测量。为此，每个 PTP 端口都必须回答两个时间问题：我多久发送一次周期性消息？以及在我判定邻居已经沉默之前要等待多久？Clause 10.7（协议时间特性，Protocol timing characterization）正是把这两件事钉死的关键小节。它为前面在 Clause 10 中介绍过的与介质无关的状态机定义了消息间隔和超时计数——这一层无论底下链路是以太网、Wi-Fi 还是协调式共享网络，行为都完全一致。"
+    },
+    {
+      "type": "prose",
+      "en": "10.7.1 (General) sets the scope in one sentence: this subclause specifies the timing and timeout attributes for the media-independent sublayer state machines. In other words, everything in 10.7 is media-independent — the numbers here are about the protocol's own rhythm, not about how fast a particular cable or radio is. The media-dependent timing (how a Wi-Fi or Ethernet link actually realizes these intervals) lives in later clauses.",
+      "zh": "10.7.1（总则，General）用一句话框定了范围：本小节规定与介质无关的子层状态机的时间和超时属性。换句话说，10.7 里的一切都是与介质无关的——这里的数字描述的是协议自身的节奏，而不是某条具体的网线或某个射频有多快。与介质相关的时间（Wi-Fi 或以太网链路如何真正实现这些间隔）则放在后面的章节里。"
+    },
+    {
+      "type": "prose",
+      "en": "10.7.2 (Message transmission intervals) governs how often the three periodic messages go out. Each interval is stored not as a raw number of seconds but as a base-2 logarithm, so a value of 0 means 2^0 = 1 second, a value of -3 means 2^-3 = 1/8 second (eight messages per second), and +1 means 2 seconds. This log encoding lets a single signed byte cover a huge dynamic range. Three intervals matter: the announce interval (how often Announce messages advertise the clock hierarchy), the sync interval (how often time-synchronization messages carry the actual time), and the gPTP-capable message interval (how often a port reminds its neighbor that it speaks gPTP).",
+      "zh": "10.7.2（消息发送间隔，Message transmission intervals）规定三种周期性消息各自的发送频率。每个间隔并不以秒为单位的原始数值存储，而是以 2 为底的对数表示，因此取值 0 表示 2^0 = 1 秒，取值 -3 表示 2^-3 = 1/8 秒（每秒八条消息），而 +1 表示 2 秒。这种对数编码让一个有符号字节就能覆盖极大的动态范围。三种间隔很重要：announce 间隔（Announce 消息多久通告一次时钟层级）、sync 间隔（时间同步消息多久携带一次实际时间）、以及 gPTP-capable 消息间隔（端口多久向邻居提醒一次自己支持 gPTP）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Each interval comes in two flavors: an initial value (the interval at port startup, e.g. initialLogAnnounceInterval) and a current value (the live interval right now, e.g. currentLogAnnounceInterval). A peer can ask you to change the current value via a Signaling message, and a special request value of 126 means 'reset me back to the initial value.' If a management override flag (useMgtSettable...) is TRUE, the current value is simply forced to the management-set value and the initial value is ignored.",
+      "zh": "每个间隔都有两种形态：初始值（端口启动时的间隔，例如 initialLogAnnounceInterval）和当前值（此刻正在生效的间隔，例如 currentLogAnnounceInterval）。对端可以通过 Signaling 消息请求你修改当前值，而特殊的请求值 126 表示“把我重置回初始值”。如果某个管理覆盖标志（useMgtSettable...）为 TRUE，当前值就直接被强制设为管理面设定的值，初始值被忽略。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 480 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"10\" y=\"18\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">logInterval (base-2 log of seconds)</text><line x1=\"20\" y1=\"60\" x2=\"460\" y2=\"60\"/><line x1=\"20\" y1=\"55\" x2=\"20\" y2=\"65\"/><line x1=\"130\" y1=\"55\" x2=\"130\" y2=\"65\"/><line x1=\"240\" y1=\"55\" x2=\"240\" y2=\"65\"/><line x1=\"350\" y1=\"55\" x2=\"350\" y2=\"65\"/><line x1=\"460\" y1=\"55\" x2=\"460\" y2=\"65\"/><text x=\"4\" y=\"80\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">-3</text><text x=\"120\" y=\"80\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">0</text><text x=\"234\" y=\"80\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">+1</text><text x=\"344\" y=\"80\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">+2</text><text x=\"454\" y=\"80\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">+3</text><text x=\"2\" y=\"100\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">1/8 s</text><text x=\"116\" y=\"100\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">1 s</text><text x=\"228\" y=\"100\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">2 s</text><text x=\"340\" y=\"100\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">4 s</text><text x=\"450\" y=\"100\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">8 s</text><text x=\"10\" y=\"135\" stroke=\"none\" fill=\"currentColor\" font-size=\"11\">Mean spacing must stay within +/-30%; >=90% of gaps within +/-30%.</text></svg>",
+      "caption": {
+        "en": "The log encoding: a small signed integer names a wide range of intervals. The standard requires the arithmetic mean of inter-message gaps to stay within +/-30% of 2^currentLogInterval, with at least 90% of individual gaps also within +/-30%.",
+        "zh": "对数编码：一个小的有符号整数即可表示很宽的间隔范围。标准要求消息间隔的算术平均值保持在 2^currentLogInterval 的 ±30% 以内，且至少 90% 的单个间隔也落在 ±30% 以内。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The +/-30% rule is what keeps timing tight. 10.7.2.2 (Announce) and 10.7.2.3 (Sync) both demand that the arithmetic mean of the gaps between successive messages stays within +/-30% of the target interval, and that at least 90% of individual gaps also fall within +/-30%. They add a soft guideline: the gap should not exceed twice the target interval, because three intervals of silence is exactly what trips a receipt timeout. A subtle detail in 10.7.2.3: while syncLocked is FALSE the +/-30% statistical bounds apply; the sync interval's default is media-dependent (defined in the per-medium clauses), whereas the announce interval defaults to logInterval 0 (one per second).",
+      "zh": "±30% 规则正是保持时间精度的关键。10.7.2.2（Announce）和 10.7.2.3（Sync）都要求连续消息之间间隔的算术平均值保持在目标间隔的 ±30% 以内，且至少 90% 的单个间隔也落在 ±30% 以内。它们还补充了一条柔性准则：间隔不应超过目标间隔的两倍，因为连续三个间隔的沉默恰好会触发接收超时。10.7.2.3 中有个细微之处：当 syncLocked 为 FALSE 时适用 ±30% 的统计边界；sync 间隔的默认值与介质相关（在各介质对应的章节中定义），而 announce 间隔默认 logInterval 为 0（每秒一次）。"
+    },
+    {
+      "type": "prose",
+      "en": "10.7.2.4 (Interval for providing synchronization information by ClockMaster entity) defines clockMasterLogSyncInterval — an internal, per-PTP-Instance variable telling how often the ClockMaster entity feeds fresh time to the SiteSync entity inside the same device. It must be less than or equal to the smallest currentLogSyncInterval across all the instance's ports, so the internal source never lags any outgoing port. 10.7.2.5 (Interval for sending the gPTP-capable TLV) governs the heartbeat that announces gPTP capability: its default log value is 0 (one per second) and its valid range is -24 through 24; value 127 on a port means 'stop sending the gPTP-capable Signaling messages entirely.'",
+      "zh": "10.7.2.4（由 ClockMaster 实体提供同步信息的间隔）定义了 clockMasterLogSyncInterval——一个内部的、每个 PTP 实例一份的变量，表示同一设备内 ClockMaster 实体多久向 SiteSync 实体喂送一次新鲜时间。它必须小于或等于该实例所有端口中最小的 currentLogSyncInterval，这样内部时间源永远不会落后于任何对外端口。10.7.2.5（发送 gPTP-capable TLV 的间隔）规定了通告 gPTP 能力的“心跳”：其默认对数值为 0（每秒一次），有效范围为 -24 到 24；端口取值 127 表示“彻底停止发送 gPTP-capable Signaling 消息”。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant N as Neighbor\n  participant P as PTP Port\n  Note over N,P: gPTP-capable heartbeat\n  N->>P: gPTP-capable TLV\n  N->>P: gPTP-capable TLV\n  Note over P: silence...\n  Note over P: 9 intervals pass\n  Note over P: gPtpCapableReceiptTimeout -> asCapable = FALSE",
+      "zh": "sequenceDiagram\n  participant N as 邻居\n  participant P as PTP 端口\n  Note over N,P: gPTP-capable 心跳\n  N->>P: gPTP-capable TLV\n  N->>P: gPTP-capable TLV\n  Note over P: 沉默...\n  Note over P: 经过 9 个间隔\n  Note over P: gPtpCapableReceiptTimeout -> asCapable = FALSE"
+    },
+    {
+      "type": "prose",
+      "en": "10.7.3 (Timeouts) defines the three patience counters — each expressed as a number of intervals, not seconds, so the timeout automatically scales with whatever message rate is in effect. 10.7.3.1 (syncReceiptTimeout) tells a slave port how many sync intervals to wait with no time-synchronization info before assuming the master went silent and the Best Master Clock Algorithm (BMCA, the election that picks the grandmaster) may need to re-run; default is 3. 10.7.3.2 (announceReceiptTimeout) does the same for Announce messages; default is also 3. 10.7.3.3 (gPtpCapableReceiptTimeout) counts missed gPTP-capable messages before concluding the neighbor is no longer running gPTP, which forces asCapable to FALSE; its default is 9 and its range is 1 through 255.",
+      "zh": "10.7.3（超时，Timeouts）定义了三个“耐心计数器”——每个都以间隔数而非秒数表示，因此超时会随当前生效的消息速率自动伸缩。10.7.3.1（syncReceiptTimeout）告诉从端口：在收不到任何时间同步信息时要等待多少个 sync 间隔，才判定主端已沉默、并可能需要重跑最佳主时钟算法（BMCA，Best Master Clock Algorithm，即选出大主时钟的选举过程）；默认值为 3。10.7.3.2（announceReceiptTimeout）对 Announce 消息做同样的事，默认值也是 3。10.7.3.3（gPtpCapableReceiptTimeout）统计丢失的 gPTP-capable 消息数，达到后就判定邻居不再运行 gPTP，从而把 asCapable 强制设为 FALSE；其默认值为 9，范围为 1 到 255。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the elegant self-scaling: timeouts are counted in intervals. If a port speeds its sync rate to 8 messages/second, three missed intervals is still just 3/8 of a second — the failure detection tracks the message cadence automatically, with no separate timeout in seconds to keep consistent. That is why 10.7.3's defaults (3, 3, 9) are unitless small integers.",
+      "zh": "注意这里优雅的自伸缩设计：超时是按间隔数计的。如果端口把 sync 速率提高到每秒 8 条，那么丢三个间隔仍然只是 3/8 秒——故障检测会自动跟随消息节奏，无需另外维护一个以秒为单位、还得保持一致的超时值。这正是 10.7.3 的默认值（3、3、9）都是无单位小整数的原因。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map — exact clause numbers in 10.7",
+        "zh": "覆盖地图——10.7 中的精确条款号"
+      },
+      "en": "10.7.1 General — scope statement: 10.7 specifies timing and timeout attributes for the media-independent sublayer state machines. 10.7.2 Message transmission intervals: 10.7.2.1 General (announce/sync/gPTP-capable intervals named); 10.7.2.2 Announce message transmission interval (initial/currentLogAnnounceInterval, default 0, value 127 = stop, +/-30% mean and >=90%-within-30% rules, useMgtSettableLogAnnounceInterval override); 10.7.2.3 Time-synchronization event message transmission interval (initial/currentLogSyncInterval, media-dependent default, syncLocked gating, same +/-30% rules); 10.7.2.4 Interval for providing synchronization information by ClockMaster entity (clockMasterLogSyncInterval <= smallest currentLogSyncInterval, internal per-Instance); 10.7.2.5 Interval for sending the gPTP-capable TLV Signaling message (initial/currentLogGptpCapableMessageInterval, default 0, range -24..24, value 127 = stop, value 126 via Table 10-21 = reset to initial). 10.7.3 Timeouts: 10.7.3.1 syncReceiptTimeout (counted in sync intervals, default 3, triggers BMCA re-run); 10.7.3.2 announceReceiptTimeout (counted in announce intervals, default 3); 10.7.3.3 gPtpCapableReceiptTimeout (counted in gPTP-capable intervals, default 9, range 1..255, expiry sets asCapable = FALSE).",
+      "zh": "10.7.1 总则——范围声明：10.7 规定与介质无关子层状态机的时间和超时属性。10.7.2 消息发送间隔：10.7.2.1 总则（命名 announce/sync/gPTP-capable 三种间隔）；10.7.2.2 Announce 消息发送间隔（initial/currentLogAnnounceInterval，默认 0，取值 127=停止，±30% 均值与“≥90% 落在 ±30% 内”规则，useMgtSettableLogAnnounceInterval 覆盖）；10.7.2.3 时间同步事件消息发送间隔（initial/currentLogSyncInterval，默认值与介质相关，受 syncLocked 控制，同样的 ±30% 规则）；10.7.2.4 由 ClockMaster 实体提供同步信息的间隔（clockMasterLogSyncInterval ≤ 最小的 currentLogSyncInterval，每实例内部变量）；10.7.2.5 发送 gPTP-capable TLV Signaling 消息的间隔（initial/currentLogGptpCapableMessageInterval，默认 0，范围 -24..24，取值 127=停止，取值 126 经表 10-21=重置为初始值）。10.7.3 超时：10.7.3.1 syncReceiptTimeout（以 sync 间隔计，默认 3，触发 BMCA 重跑）；10.7.3.2 announceReceiptTimeout（以 announce 间隔计，默认 3）；10.7.3.3 gPtpCapableReceiptTimeout（以 gPTP-capable 间隔计，默认 9，范围 1..255，到期使 asCapable=FALSE）。",
+      "cite": {
+        "pdf_id": "8021AS-2020",
+        "pages": [
+          157,
+          158,
+          159,
+          160
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        157,
+        158,
+        159,
+        160
+      ],
+      "note": "Clause 10.7 Protocol timing characterization: 10.7.1 General (p.157), 10.7.2 Message transmission intervals incl. 10.7.2.1-10.7.2.5 (pp.157-160), 10.7.3 Timeouts incl. 10.7.3.1-10.7.3.3 (p.160)."
+    }
+  ],
+  "covers": [
+    "8021AS-2020:10.7.1",
+    "8021AS-2020:10.7.2",
+    "8021AS-2020:10.7.3"
+  ],
+  "track": "tsn"
+}

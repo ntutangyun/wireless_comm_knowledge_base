@@ -1,0 +1,155 @@
+{
+  "id": "pan-hr-wpan-02",
+  "title": {
+    "en": "Piconets, Pairnets, and the MAC at a Glance: Clause 4, Part 1",
+    "zh": "微微网、配对网与 MAC 全景速览：第 4 章（上）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 4 is the standard's own plain-language tour of everything that follows. Before diving into bit-exact frame formats and state machines, IEEE Std 802.15.3-2023 — the standard for high-rate Wireless Personal Area Networks (HR-WPAN), a short-range \"around-the-person\" wireless network for fast multimedia — pauses to explain what a network looks like, who the players are, and what the Medium Access Control (MAC, the sublayer that decides who transmits when) actually does. This lesson walks the first half of that tour: how the document writes numbers and frames (4.1), the two network shapes it supports (4.2-4.6), the MAC's job list (4.7), and the personality of the original 2.4 GHz radio (4.8).",
+      "zh": "第 4 章是标准用通俗语言为后续内容所作的总览。在进入逐比特的帧格式和状态机之前，IEEE Std 802.15.3-2023——这份面向高速无线个域网（HR-WPAN，一种围绕人体的近距离高速多媒体无线网络）的标准——先停下来解释：一个网络长什么样、有哪些角色、媒体访问控制层（MAC，即决定谁在何时发送的子层）究竟做什么。本课走完总览的前半段：文档如何书写数字与帧（4.1）、它支持的两种网络形态（4.2–4.6）、MAC 的职责清单（4.7），以及最初那套 2.4 GHz 射频的特性（4.8）。"
+    },
+    {
+      "type": "prose",
+      "en": "Section 4.1 sets the document's notation. Numbers (4.1.1) are written in decimal nnn, binary 0bnnn, or hexadecimal 0xnnn, and inside transmitted fields they are laid out least-significant-bit (LSB) first (leftmost), most-significant-bit (MSB) rightmost — the reverse of how we normally write them on paper. Strings (4.1.2) are bit sequences numbered 0 to k-1, bit 0 leftmost. The MAC frame format (4.1.3) is a sequence of fields drawn in transmission order: leftmost bit goes out first in time, and the payload is sent lowest octet first, LSB first (with the Frame Check Sequence and Header Check Sequence as deliberate exceptions). Reserved fields (4.1.4) are set to zero on transmit and ignored on receive — the standard's way of leaving room for future growth without breaking today's devices.",
+      "zh": "4.1 节确定了文档的记号约定。数字（4.1.1）可写成十进制 nnn、二进制 0bnnn 或十六进制 0xnnn；在发送字段中，它们按最低有效位（LSB，最左）在前、最高有效位（MSB，最右）排列——与我们在纸上的常规写法相反。字符串（4.1.2）是从 0 到 k-1 编号的比特序列，比特 0 在最左。MAC 帧格式（4.1.3）是按发送顺序绘制的字段序列：最左比特最先在时间上发出，净荷以最低字节在前、LSB 在前发送（帧校验序列与头校验序列是有意为之的例外）。保留字段（4.1.4）发送时置零、接收时忽略——这是标准为未来扩展预留空间而又不破坏现有设备的方式。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Watch the bit order: 0x47 sits in an 8-bit field as 1110 0010, because the field is drawn LSB-first while 0x47 is written MSB-first. This single convention silently governs how you read every field diagram in the rest of the standard.",
+      "zh": "注意比特顺序：0x47 在 8 比特字段中写作 1110 0010，因为字段按 LSB 在前绘制，而 0x47 按 MSB 在前书写。这一条约定无声地支配着你对标准后续每一张字段图的解读。"
+    },
+    {
+      "type": "prose",
+      "en": "Section 4.2 names the two network shapes a device (DEV) can join. A piconet (4.3) is a wireless ad hoc network — formed on the spot, no planning — letting several independent DEVs talk to each other within roughly 10 m around a person or object; it is smaller in scope than a LAN, MAN, or WAN, and it is not used for the High-Rate Close Proximity (HRCP) PHY or the terahertz (THz) PHY. A pairnet (4.5) is the minimalist cousin: at most two DEVs, used for HRCP and THz radios, with typical reach of 10 cm or less for HRCP and from a few centimeters up to several hundred meters for THz. The components differ accordingly: a piconet (4.4) has DEVs plus one DEV that becomes the piconet coordinator (PNC), which beacons the timing and manages quality of service (QoS), power-save, and admission; a pairnet (4.6) has just a pairnet coordinator (PRC) and a pairnet device (PRDEV) — the PRC beacons only until the connection forms, then stops.",
+      "zh": "4.2 节命名了设备（DEV）可加入的两种网络形态。微微网（piconet，4.3）是一种无线自组织网络——即时组建、无需规划——让若干独立 DEV 在围绕人或物约 10 m 的范围内相互通信；其覆盖范围小于局域网（LAN）、城域网（MAN）或广域网（WAN），且不用于高速近距（HRCP）PHY 或太赫兹（THz）PHY。配对网（pairnet，4.5）是其极简表亲：至多两个 DEV，用于 HRCP 与 THz 射频，HRCP 典型距离 10 cm 以内，THz 则从几厘米到数百米不等。其组成也相应不同：微微网（4.4）由若干 DEV 加上一个担任微微网协调器（PNC）的 DEV 构成，PNC 以信标广播定时，并管理服务质量（QoS）、省电模式与准入；配对网（4.6）只有配对网协调器（PRC）和配对网设备（PRDEV）——PRC 仅在连接建立前发送信标，之后停止。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 200\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"110\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">Piconet</text><circle cx=\"110\" cy=\"95\" r=\"22\"/><text x=\"110\" y=\"99\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">PNC/DEV</text><circle cx=\"40\" cy=\"55\" r=\"16\"/><text x=\"40\" y=\"59\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">DEV</text><circle cx=\"185\" cy=\"55\" r=\"16\"/><text x=\"185\" y=\"59\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">DEV</text><circle cx=\"40\" cy=\"150\" r=\"16\"/><text x=\"40\" y=\"154\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">DEV</text><circle cx=\"185\" cy=\"150\" r=\"16\"/><text x=\"185\" y=\"154\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">DEV</text><line x1=\"92\" y1=\"80\" x2=\"54\" y2=\"66\"/><line x1=\"128\" y1=\"80\" x2=\"171\" y2=\"66\"/><line x1=\"92\" y1=\"110\" x2=\"54\" y2=\"140\"/><line x1=\"128\" y1=\"110\" x2=\"171\" y2=\"140\"/><text x=\"370\" y=\"20\" fill=\"currentColor\" stroke=\"none\" font-size=\"13\" text-anchor=\"middle\">Pairnet</text><circle cx=\"320\" cy=\"95\" r=\"22\"/><text x=\"320\" y=\"99\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">PRC</text><circle cx=\"420\" cy=\"95\" r=\"22\"/><text x=\"420\" y=\"99\" fill=\"currentColor\" stroke=\"none\" font-size=\"8\" text-anchor=\"middle\">PRDEV</text><line x1=\"342\" y1=\"95\" x2=\"398\" y2=\"95\"/></svg>",
+      "caption": {
+        "en": "Two network shapes: a piconet (one PNC plus DEVs, star-organized around the beacon) versus a pairnet (exactly two DEVs — a PRC and a PRDEV).",
+        "zh": "两种网络形态：微微网（一个 PNC 加若干 DEV，围绕信标呈星形组织）对比配对网（恰好两个 DEV——一个 PRC 与一个 PRDEV）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Section 4.7 is the MAC's mission statement and feature catalogue. The overview (4.7.1) lists six design goals: fast connection time, ad hoc networking, QoS data transport, security, dynamic membership, and efficient data transfer. Coordination (4.7.2) is how networks come to life and change hands: a piconet exists the moment a PNC-capable DEV starts beaconing (4.7.2.1); starting a piconet means scanning for a clear channel before beaconing (4.7.2.2), while starting a pairnet skips the scan and beacons on a default channel (4.7.2.3). PNC handover (4.7.2.4) lets a more-capable arriving DEV take over coordination without dropping existing time allocations. When no channels are free, a DEV can spawn a dependent piconet — a child piconet (4.7.2.5), whose PNC is a member of the parent and borrows a private channel time allocation (CTA), or a neighbor piconet (4.7.2.6), whose PNC is not a parent member but shares the spectrum for coexistence.",
+      "zh": "4.7 节是 MAC 的使命宣言与功能目录。概述（4.7.1）列出六项设计目标：快速连接、自组织组网、带 QoS 的数据传输、安全、动态成员管理、高效数据传输。协调（4.7.2）讲网络如何诞生与易主：只要一个具备 PNC 能力的 DEV 开始发送信标，微微网就存在了（4.7.2.1）；启动微微网需先扫描出空闲信道再发信标（4.7.2.2），而启动配对网则跳过扫描、直接在默认信道发信标（4.7.2.3）。PNC 移交（4.7.2.4）允许新到的更强 DEV 接管协调而不中断既有时间分配。当无空闲信道时，DEV 可派生从属微微网——子微微网（4.7.2.5，其 PNC 是父网成员并借用一段私有信道时间分配 CTA），或邻居微微网（4.7.2.6，其 PNC 非父网成员，但为共存而共享频谱）。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[PNC-capable DEV] -->|scan for clear channel| B{channel free?}\n  B -->|yes| C[Start piconet: send beacon]\n  B -->|no| D[Start dependent piconet]\n  D --> E[Child piconet: PNC is parent member]\n  D --> F[Neighbor piconet: shares spectrum]\n  C -->|more-capable DEV joins| G[PNC handover]",
+      "zh": "flowchart TD\n  A[具PNC能力的DEV] -->|扫描空闲信道| B{信道空闲?}\n  B -->|是| C[启动微微网: 发送信标]\n  B -->|否| D[启动从属微微网]\n  D --> E[子微微网: PNC为父网成员]\n  D --> F[邻居微微网: 共享频谱]\n  C -->|更强DEV加入| G[PNC移交]"
+    },
+    {
+      "type": "prose",
+      "en": "The MAC catalogue continues with the full lifecycle. Ending a piconet (4.7.3) uses a PNC Shutdown information element (IE) in the beacon to warn members; ending one that has a dependent piconet (4.7.4) lets exactly one dependent survive and become independent. Ending a pairnet (4.7.5) is a Disassociation Request, after which the PRC may beacon again. Joining works through association: in a piconet (4.7.6) a DEV gets a short device identifier (DEVID) instead of carrying its full address; in a pairnet (4.7.7) dedicated association/disassociation procedures apply. The security overview (4.7.8) offers Mode 0 (open, no payload protection) or Mode 1 (secure membership plus payload protection using AES-128 in CCM for piconets, GCM for pairnets).",
+      "zh": "MAC 目录继续覆盖完整生命周期。结束微微网（4.7.3）在信标中放入 PNC 关闭信息元素（IE）以告知成员；结束一个带从属微微网的微微网（4.7.4）会让恰好一个从属网存活并转为独立网。结束配对网（4.7.5）发送解关联请求，之后 PRC 可重新发送信标。加入通过关联完成：微微网中（4.7.6）DEV 获得一个短设备标识符（DEVID）以替代携带完整地址；配对网中（4.7.7）则适用专门的关联/解关联流程。安全概述（4.7.8）提供模式 0（开放，无净荷保护）或模式 1（安全成员加净荷保护，微微网用 CCM 模式的 AES-128，配对网用 GCM 模式）。"
+    },
+    {
+      "type": "prose",
+      "en": "Timing in a piconet is organized into a superframe (4.7.9.1): a beacon, then a contention access period (CAP) using carrier sense multiple access with collision avoidance (CSMA/CA), then a channel time allocation period (CTAP) made of channel time allocations (CTAs) and management CTAs (MCTAs) on a time-division multiple access (TDMA) schedule. Pairnets use a different superframe (4.7.9.2) split into a pairnet setup period (PSP) and pairnet associated period (PAP). Channel time management (4.7.10) explains the three ways to move data in a piconet — asynchronous in the CAP, isochronous streams in CTAs, asynchronous CTAs — versus the single PAP-based path in a pairnet. Data communications (4.7.11) cover fragmentation and the no-ACK, immediate-ACK (Imm-ACK), and delayed-ACK (Dly-ACK) acknowledgment policies.",
+      "zh": "微微网的定时被组织成超帧（4.7.9.1）：先是信标，然后是采用带冲突避免的载波侦听多址（CSMA/CA）的竞争访问期（CAP），再是由信道时间分配（CTA）和管理 CTA（MCTA）按时分多址（TDMA）排程构成的信道时间分配期（CTAP）。配对网使用不同的超帧（4.7.9.2），分为配对网建立期（PSP）和配对网关联期（PAP）。信道时间管理（4.7.10）说明微微网中搬运数据的三种方式——CAP 中的异步、CTA 中的等时流、异步 CTA——以及配对网中基于 PAP 的单一路径。数据通信（4.7.11）涵盖分片，以及无确认、立即确认（Imm-ACK）、延迟确认（Dly-ACK）三种确认策略。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the remaining MAC services (4.7.12-4.7.20) and the exact clause anchors for 4.1-4.8",
+        "zh": "覆盖地图：其余 MAC 服务（4.7.12–4.7.20）以及 4.1–4.8 的确切条款锚点"
+      },
+      "en": "Format conventions: numbers (4.1.1), strings (4.1.2), MAC frame format (4.1.3), reserved fields set-to-zero/ignored (4.1.4). Network types (4.2): piconet (4.3) vs pairnet (4.5), with components in 4.4 (DEV + PNC) and 4.6 (PRC + PRDEV). MAC functionality (4.7): overview goals (4.7.1); coordination (4.7.2); ending piconets/pairnets (4.7.3-4.7.5); association (4.7.6-4.7.7); security Modes 0/1 (4.7.8); superframes (4.7.9); channel time management (4.7.10); data + ACK policies (4.7.11). The rest of the MAC tour: Information discovery (4.7.12) lists four ways a DEV learns about peers — PNC Information Request, Probe Request, Announce, and Piconet Services commands — plus Remote Scan Request and Channel Status Request. Dynamic channel selection (4.7.13) lets the PNC move the whole piconet to a cleaner channel without interrupting CTAs (not applicable to pairnets). Power management (4.7.14) defines Device Synchronized Power Save (DSPS), Piconet Synchronized Power Save (PSPS), and Asynchronous Power Save (APS) modes, with DSPS+PSPS jointly called Synchronized Power Save (SPS). Controlling transmit power (4.7.15) gives the PNC a maximum-power cap for beacon/CAP/MCTAs and lets paired DEVs negotiate power on a good link. Quasi-omni mode (4.7.16) sends the same beacon round-robin across directions for millimeter-wave (mmWave) piconets. Frame aggregation (4.7.17) batches frames for throughput using block-ACK (Blk-ACK) or, for PRDEVs, stack-ACK (Stk-ACK). Beam forming (4.7.18) raises antenna gain for mmWave DEVs. Channel probing (4.7.19) picks the best modulation and coding scheme (MCS) for current conditions (not for pairnets). Unequal error protection (4.7.20) protects MSBs more than LSBs for video on the three mmWave PHYs. Finally the 2.4 GHz PHY (4.8): general characteristics (4.8.1) — the 2.4-2.4835 GHz unlicensed band, two channel plans (4 channels high-density, 3 channels for IEEE 802.11b coexistence), five data rates 11-55 Mb/s using QPSK/DQPSK/16-/32-/64-QAM with a 22 Mb/s uncoded base rate, a CAZAC preamble, and 15 MHz on-air bandwidth — and coexistence/interoperability (4.8.2), listing passive scanning, dynamic channel selection, channel-quality requests, link-quality/RSSI reporting, a low-overlap channel plan, lower transmit power, transmit power control, and neighbor-piconet capability.",
+      "zh": "格式约定：数字（4.1.1）、字符串（4.1.2）、MAC 帧格式（4.1.3）、保留字段置零/忽略（4.1.4）。网络类型（4.2）：微微网（4.3）对比配对网（4.5），组成见 4.4（DEV+PNC）与 4.6（PRC+PRDEV）。MAC 功能（4.7）：概述目标（4.7.1）；协调（4.7.2）；结束微微网/配对网（4.7.3–4.7.5）；关联（4.7.6–4.7.7）；安全模式 0/1（4.7.8）；超帧（4.7.9）；信道时间管理（4.7.10）；数据与 ACK 策略（4.7.11）。其余 MAC 内容：信息发现（4.7.12）列出 DEV 了解对端的四种方式——PNC 信息请求、探测请求、通告、微微网服务命令——加上远程扫描请求与信道状态请求。动态信道选择（4.7.13）让 PNC 把整个微微网迁到更干净的信道而不中断 CTA（不适用于配对网）。电源管理（4.7.14）定义设备同步省电（DSPS）、微微网同步省电（PSPS）、异步省电（APS）模式，DSPS+PSPS 合称同步省电（SPS）。发射功率控制（4.7.15）给 PNC 一个针对信标/CAP/MCTA 的功率上限，并允许链路良好的成对 DEV 协商功率。准全向模式（4.7.16）为毫米波（mmWave）微微网在各方向轮流发送同一信标。帧聚合（4.7.17）用块确认（Blk-ACK）或（针对 PRDEV）栈确认（Stk-ACK）批量发帧以提升吞吐。波束成形（4.7.18）为 mmWave DEV 提升天线增益。信道探测（4.7.19）为当前条件挑选最佳调制编码方案（MCS）（不用于配对网）。不等差错保护（4.7.20）在三种 mmWave PHY 上对视频的 MSB 比 LSB 提供更强保护。最后是 2.4 GHz PHY（4.8）：一般特性（4.8.1）——2.4–2.4835 GHz 免许可频段、两套信道规划（高密度 4 信道、与 IEEE 802.11b 共存的 3 信道）、五种 11–55 Mb/s 速率，采用 QPSK/DQPSK/16-/32-/64-QAM 且基础速率 22 Mb/s 不编码、CAZAC 前导、15 MHz 空口带宽——以及共存/互操作性（4.8.2），列举被动扫描、动态信道选择、信道质量请求、链路质量/RSSI 报告、低重叠信道规划、降低发射功率、发射功率控制与邻居微微网能力。",
+      "cite": {
+        "pdf_id": "802153-2023",
+        "pages": [
+          43,
+          53,
+          54,
+          55,
+          56,
+          57
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "A useful mental split: 4.1 tells you how to read the rest of the document, 4.2-4.6 tell you the cast of characters (DEV, PNC, PRC, PRDEV), 4.7 is the MAC's job description, and 4.8 is the first PHY's resume. Part 2 of this Clause-4 tour picks up at the mmWave and other PHYs.",
+      "zh": "一个实用的心智划分：4.1 教你如何阅读文档其余部分，4.2–4.6 介绍角色阵容（DEV、PNC、PRC、PRDEV），4.7 是 MAC 的岗位说明书，4.8 是第一套 PHY 的简历。第 4 章总览的下篇将从毫米波及其他 PHY 接续讲起。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        43,
+        44,
+        45
+      ],
+      "note": "4.1 format conventions (numbers, strings, MAC frame format, reserved fields); 4.2-4.4 network types, piconet, piconet components."
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        46,
+        47,
+        48,
+        49,
+        50
+      ],
+      "note": "4.5-4.6 pairnet and its components; 4.7.1-4.7.9 MAC goals, coordination, ending/association, security modes, superframe."
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57
+      ],
+      "note": "4.7.9.2-4.7.20 pairnet superframe, channel time, data/ACK, discovery, dynamic channel, power, tx power, quasi-omni, aggregation, beamforming, probing, UEP; 4.8.1-4.8.2 2.4 GHz PHY characteristics and coexistence."
+    }
+  ],
+  "covers": [
+    "802153-2023:4.1.1",
+    "802153-2023:4.1.2",
+    "802153-2023:4.1.3",
+    "802153-2023:4.1.4",
+    "802153-2023:4.2",
+    "802153-2023:4.3",
+    "802153-2023:4.4",
+    "802153-2023:4.5",
+    "802153-2023:4.6",
+    "802153-2023:4.7.1",
+    "802153-2023:4.7.2",
+    "802153-2023:4.7.3",
+    "802153-2023:4.7.4",
+    "802153-2023:4.7.5",
+    "802153-2023:4.7.6",
+    "802153-2023:4.7.7",
+    "802153-2023:4.7.8",
+    "802153-2023:4.7.9",
+    "802153-2023:4.7.10",
+    "802153-2023:4.7.11",
+    "802153-2023:4.7.12",
+    "802153-2023:4.7.13",
+    "802153-2023:4.7.14",
+    "802153-2023:4.7.15",
+    "802153-2023:4.7.16",
+    "802153-2023:4.7.17",
+    "802153-2023:4.7.18",
+    "802153-2023:4.7.19",
+    "802153-2023:4.7.20",
+    "802153-2023:4.8.1",
+    "802153-2023:4.8.2"
+  ],
+  "track": "pan-hr-wpan"
+}

@@ -1,0 +1,191 @@
+{
+  "id": "pan-hr-wpan-04",
+  "title": {
+    "en": "Layer Management, Part 1: The MLME Control Panel",
+    "zh": "层管理（上）：MLME 控制面板"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "Clause 5 of IEEE Std 802.15.3-2023 describes how the brain of a high-rate wireless personal area network (HR-WPAN) is steered. Every device (DEV) carries two control entities alongside its data path: the MAC sublayer management entity (MLME) for the medium access control (MAC) sublayer, and the PHY layer management entity (PLME) for the physical (PHY) layer. Clause 5.1 sets up this reference model: above the MAC sits the protocol adaptation layer (PAL), which bundles the frame convergence sublayer (FCSL) and the device management entity (DME). The DME is the 'driver' that issues commands; the MLME is the 'control panel' it operates through.",
+      "zh": "IEEE Std 802.15.3-2023 的第 5 章描述了如何操控一个高速无线个域网（HR-WPAN）的“大脑”。每个设备（DEV）在数据通路之外都带有两个控制实体：负责媒体接入控制（MAC）子层的 MAC 子层管理实体（MLME），以及负责物理（PHY）层的 PHY 层管理实体（PLME）。第 5.1 节搭建了这一参考模型：MAC 之上是协议适配层（PAL），它把帧汇聚子层（FCSL）和设备管理实体（DME）打包在一起。DME 是发号施令的“驾驶员”，而 MLME 则是它操作的“控制面板”。"
+    },
+    {
+      "type": "prose",
+      "en": "These entities talk across service access points (SAPs) — named doorways through which defined primitives are exchanged. Clause 5.1 lists three exposed SAPs: the PAL SAP, the MAC SAP (carrying actual data, detailed in Annex B), and the MLME SAP (carrying management commands). The PHY SAP and PLME SAP exist conceptually but are not specified here, because real implementations rarely expose them — PHY attributes are reached through the MLME SAP instead. If a device never exposes these interfaces, it need not implement them as written; if it does, it should follow the primitives in this clause.",
+      "zh": "这些实体通过服务接入点（SAP）通信——SAP 是一道道命名的“门”，定义好的原语（primitive）从中穿过。第 5.1 节列出了三个对外暴露的 SAP：PAL SAP、承载真实数据的 MAC SAP（详见附录 B），以及承载管理命令的 MLME SAP。PHY SAP 与 PLME SAP 在概念上存在，但本标准不作规定，因为实际实现很少暴露它们——PHY 的属性改由 MLME SAP 访问。若设备从不暴露这些接口，就无需照本实现；若暴露了，则应遵循本章的原语。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 420 230\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"60\" y=\"10\" width=\"300\" height=\"34\" rx=\"4\"/><text x=\"210\" y=\"32\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">PAL (FCSL + DME)</text><line x1=\"110\" y1=\"44\" x2=\"110\" y2=\"70\"/><text x=\"150\" y=\"60\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">MAC SAP</text><line x1=\"310\" y1=\"44\" x2=\"310\" y2=\"70\"/><text x=\"350\" y=\"60\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\">MLME SAP</text><rect x=\"60\" y=\"70\" width=\"180\" height=\"50\" rx=\"4\"/><text x=\"150\" y=\"100\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">MAC sublayer</text><rect x=\"260\" y=\"70\" width=\"100\" height=\"50\" rx=\"4\"/><text x=\"310\" y=\"100\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">MLME</text><line x1=\"240\" y1=\"95\" x2=\"260\" y2=\"95\" stroke-dasharray=\"3 3\"/><rect x=\"60\" y=\"150\" width=\"180\" height=\"50\" rx=\"4\"/><text x=\"150\" y=\"180\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">PHY layer</text><rect x=\"260\" y=\"150\" width=\"100\" height=\"50\" rx=\"4\"/><text x=\"310\" y=\"180\" fill=\"currentColor\" stroke=\"none\" font-size=\"12\" text-anchor=\"middle\">PLME</text><line x1=\"150\" y1=\"120\" x2=\"150\" y2=\"150\"/><line x1=\"310\" y1=\"120\" x2=\"310\" y2=\"150\"/><text x=\"330\" y=\"138\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\">PLME SAP</text></svg>",
+      "caption": {
+        "en": "The Clause 5.1 reference model: the DME drives the MAC through the MAC SAP and the MLME through the MLME SAP; PHY attributes are reached via the MLME, so the PLME SAP is not specified.",
+        "zh": "第 5.1 节的参考模型：DME 通过 MAC SAP 驱动 MAC，通过 MLME SAP 驱动 MLME；PHY 属性经由 MLME 访问，因此 PLME SAP 不作规定。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5.2 (Generic management primitives) defines the two universal verbs every control panel needs: read and write. Each layer's settings live in a personal area network (PAN) information base (PIB) — the MAC PIB and PHY PIB — conceptually 'held' inside the MLME and PLME. The 5.2.1 Overview frames this as a lighter cousin of the LAN/MAN management information base (MIB) and SNMP: piconets are not managed across a network, just locally queried. The verbs come as request/confirm pairs: MLME-GET.request (5.2.2) asks for an attribute and MLME-GET.confirm (5.2.3) returns its PIBvalue; MLME-SET.request (5.2.4) writes an attribute and MLME-SET.confirm (5.2.5) reports the outcome. Reading a write-only attribute, or writing a read-only one, is simply invalid.",
+      "zh": "第 5.2 节（通用管理原语）定义了任何控制面板都需要的两个万能动词：读和写。每一层的设置都存放在个域网（PAN）信息库（PIB）中——即 MAC PIB 和 PHY PIB——它们在概念上“保存”于 MLME 与 PLME 内部。第 5.2.1 节的概述把它比作 LAN/MAN 管理信息库（MIB）与 SNMP 的轻量版：微网（piconet）并不在网络范围内被管理，只在本地查询。这两个动词都是请求/确认成对出现：MLME-GET.request（5.2.2）查询某个属性，MLME-GET.confirm（5.2.3）返回其 PIBvalue；MLME-SET.request（5.2.4）写入属性，MLME-SET.confirm（5.2.5）报告结果。读一个只写属性或写一个只读属性都是非法操作。"
+    },
+    {
+      "type": "diagram",
+      "en": "sequenceDiagram\n  participant DME\n  participant MLME\n  DME->>MLME: MLME-GET.request(PIBattribute)\n  MLME-->>DME: MLME-GET.confirm(value, ResultCode)\n  DME->>MLME: MLME-SET.request(attribute, value)\n  MLME-->>DME: MLME-SET.confirm(ResultCode, ReasonCode)",
+      "zh": "sequenceDiagram\n  participant DME\n  participant MLME\n  DME->>MLME: MLME-GET.request(PIB属性)\n  MLME-->>DME: MLME-GET.confirm(取值, 结果码)\n  DME->>MLME: MLME-SET.request(属性, 取值)\n  MLME-->>DME: MLME-SET.confirm(结果码, 原因码)"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 5.3 (MLME SAP interface) is the heart of the control panel — the full catalogue of management actions, not just generic read/write. Clause 5.3.1 explains the grammar: most actions are an ACTION.request followed by an ACTION.confirm. When something arrives from the local MAC or from another DEV, the MLME raises an ACTION.indication, and the DME may answer with an ACTION.response. Two roles recur throughout: the piconet coordinator (PNC) — the master that runs a piconet — and the pairnet coordinator (PRC), its counterpart in a two-device pairnet. The interface models a single piconet or pairnet at a time.",
+      "zh": "第 5.3 节（MLME SAP 接口）是控制面板的核心——一份完整的管理动作目录，而不只是通用的读/写。第 5.3.1 节讲解了它的“语法”：大多数动作是一个 ACTION.request 后跟一个 ACTION.confirm。当某事件来自本地 MAC 或另一个 DEV 时，MLME 会抛出一个 ACTION.indication，DME 可用 ACTION.response 回应。两个角色贯穿始终：微网协调器（PNC）——运行一个微网的主控者，以及对网协调器（PRC）——它在两设备“对网”（pairnet）中的对应角色。该接口一次只建模一个微网或对网。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model: the DME is you at a console, the MLME SAP is the panel of labeled buttons, and the PIB is the settings file behind it. GET/SET (5.2) read and flip individual switches; the 5.3 actions (RESET, SCAN, START, ASSOCIATE…) are the big labeled buttons that trigger whole procedures defined elsewhere in the standard.",
+      "zh": "记忆模型：DME 是坐在控制台前的你，MLME SAP 是一排贴着标签的按钮，PIB 则是按钮背后的设置文件。GET/SET（5.2）用来读取和拨动单个开关；而 5.3 的各类动作（RESET、SCAN、START、ASSOCIATE……）是触发整套流程的大按钮，那些流程在标准的其他章节中定义。"
+    },
+    {
+      "type": "prose",
+      "en": "The lifecycle actions form a natural arc. MLME-RESET (5.3.2) returns the MAC to initial conditions — and resets the PHY too — with a SetDefaultPIB flag choosing whether to wipe settings or keep them. MLME-SCAN (5.3.3) listens for nearby piconets and pairnets, returning a description set and even a channel rating list ordered best-to-worst by interference. MLME-START (5.3.4) makes the DEV become a PNC or PRC, starting an independent, child, or neighbor piconet; MLME-STOP (5.3.5) shuts it down or hands the PNC role to another DEV. Then membership: MLME-ASSOCIATE (5.3.6) joins a piconet/pairnet (its .response form is valid only for pairnets), and MLME-DISASSOCIATE (5.3.7) leaves — or kicks a DEV out.",
+      "zh": "生命周期类动作构成一条自然的弧线。MLME-RESET（5.3.2）把 MAC 恢复到初始状态——同时也复位 PHY——并用 SetDefaultPIB 标志决定是清空设置还是保留。MLME-SCAN（5.3.3）侦听附近的微网与对网，返回一份描述集，甚至给出一份按干扰从优到劣排序的信道评级列表。MLME-START（5.3.4）让 DEV 成为 PNC 或 PRC，启动独立微网、子微网或邻居微网；MLME-STOP（5.3.5）则将其关闭，或把 PNC 角色移交给另一个 DEV。随后是成员管理：MLME-ASSOCIATE（5.3.6）加入微网/对网（其 .response 形式仅对对网有效），MLME-DISASSOCIATE（5.3.7）则用于退出——或把某个 DEV 踢出。"
+    },
+    {
+      "type": "diagram",
+      "en": "stateDiagram-v2\n  [*] --> Reset: MLME-RESET\n  Reset --> Scanning: MLME-SCAN\n  Scanning --> Coordinator: MLME-START\n  Scanning --> Member: MLME-ASSOCIATE\n  Member --> Scanning: MLME-DISASSOCIATE\n  Coordinator --> Reset: MLME-STOP",
+      "zh": "stateDiagram-v2\n  [*] --> 复位: MLME-RESET\n  复位 --> 扫描中: MLME-SCAN\n  扫描中 --> 协调器: MLME-START\n  扫描中 --> 成员: MLME-ASSOCIATE\n  成员 --> 扫描中: MLME-DISASSOCIATE\n  协调器 --> 复位: MLME-STOP"
+    },
+    {
+      "type": "prose",
+      "en": "Beyond joining and leaving, the MLME SAP exposes the running-network controls. Security management (5.3.8) installs, updates, and deletes keys and security relationships (MLME-MEMBERSHIP-UPDATE, MLME-SECURITY-MESSAGE, plus a MLME-SECURITY-ERROR indication). PNC handover (5.3.9) transfers coordinator duties to another DEV — piconet-only. A DEV can pull the roster with MLME-DEV-INFO (5.3.10, requesting DEV information from the PNC) and check key/relationship state with MLME-SECURITY-INFO (5.3.11). Beacons can carry payloads too: application specific data management (5.3.12) adds/modifies/removes vendor data in the beacon, while piconet services management (5.3.13) lets a DEV advertise a service and lets others query the PNC's stored service list.",
+      "zh": "除了加入和离开，MLME SAP 还暴露了网络运行期的各类控制。安全管理（5.3.8）负责安装、更新和删除密钥及安全关系（MLME-MEMBERSHIP-UPDATE、MLME-SECURITY-MESSAGE，以及一个 MLME-SECURITY-ERROR 指示）。PNC 切换（5.3.9）把协调器职责移交给另一个 DEV——仅限微网。DEV 可用 MLME-DEV-INFO（5.3.10，向 PNC 请求设备信息）拉取成员名册，用 MLME-SECURITY-INFO（5.3.11）查询密钥/关系状态。信标（beacon）也能携带负载：应用特定数据管理（5.3.12）在信标中增/改/删厂商数据，而微网服务管理（5.3.13）让 DEV 公告自身服务，并允许他人查询 PNC 存储的服务列表。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: every Clause 5 unit and where it lives (5.3.14–5.3.19, 5.4)",
+        "zh": "覆盖地图：第 5 章每个单元的归属（5.3.14–5.3.19、5.4）"
+      },
+      "en": "Reference walkthrough of the units this lesson covers, naming the exact clause numbers.\n\n5.1 Overview of management model — MLME/PLME, the PAL (FCSL+DME), and the PAL/MAC/MLME SAPs; PHY SAP & PLME SAP left unspecified.\n5.2 Generic management primitives — 5.2.1 Overview (PIB = PAN information base; GET/SET model). 5.2.2 MLME-GET.request, 5.2.3 MLME-GET.confirm, 5.2.4 MLME-SET.request, 5.2.5 MLME-SET.confirm (params in Table 5-2: PIBattribute, PIBvalue, ResultCode, ReasonCode).\n5.3 MLME SAP interface — 5.3.1 Overview (request/confirm/indication/response grammar; PNC & PRC roles; summary Table 5-3). Lifecycle: 5.3.2 Reset (MLME-RESET, SetDefaultPIB), 5.3.3 Scanning (MLME-SCAN, channel rating list), 5.3.4 Starting (MLME-START — independent/child/neighbor), 5.3.5 Stopping (MLME-STOP — shutdown or handover), 5.3.6 Associating (MLME-ASSOCIATE; .response pairnet-only), 5.3.7 Disassociation (MLME-DISASSOCIATE). Running-network: 5.3.8 Security management (MLME-MEMBERSHIP-UPDATE / -SECURITY-MESSAGE / -SECURITY-ERROR), 5.3.9 PNC handover (piconet-only), 5.3.10 Requesting DEV information from the PNC (MLME-DEV-INFO), 5.3.11 Security information retrieval (MLME-SECURITY-INFO), 5.3.12 Application specific data management (beacon AS IEs), 5.3.13 Piconet services management (MLME-ANNOUNCE-SERVICE / -PICONET-SERVICES). Streams & tuning: 5.3.14 Stream management (MLME-CREATE-/MODIFY-/TERMINATE-STREAM for isochronous streams), 5.3.15 Piconet parameter management (MLME-BSID-CHANGE, MLME-PICONET-PARM-CHANGE indication), 5.3.16 Power management (MLME-PS-SET-INFORMATION, MLME-SPS-CONFIGURE, MLME-PM-MODE-CHANGE, MLME-MONITOR-PM-MODE; PM modes ACTIVE/PSPS/DSPS/APS), 5.3.17 Multicast operations (MLME-MULTICAST-CONFIGURATION via group address/GrpID, MLME-MULTICAST-RX-SETUP via McstID — not for pairnets), 5.3.18 Timing synchronization (MLME-BEACON-EVENT; beacon data-preamble timing — piconet-only), 5.3.19 Transmit switched diversity / TSD (MLME-TXDIV, antenna selection by threshold).\n5.4 MAC management — 5.4.1 General (the MAC PIB: managed objects/attributes/actions/notifications; read-only vs read/write access). 5.4.2 MAC PIB PNC and PRC group (Table 5-29 PNC group: e.g. macCapEndTime, macMaxPsSets, macBsid, macAllowedChannelSet; Table 5-30 PRC group: e.g. macSuperframeDuration, macNumAssocSlots). 5.4.3 MAC PIB characteristic group (Table 5-31 DEV capabilities/characteristics: e.g. macPowerManagementMode, macPspsSupported, macDspsSupported, macApsSupported).",
+      "zh": "本课所覆盖单元的参考逐条说明，明确点出每个章节号。\n\n5.1 管理模型概述——MLME/PLME、PAL（FCSL+DME），以及 PAL/MAC/MLME 三个 SAP；PHY SAP 与 PLME SAP 不作规定。\n5.2 通用管理原语——5.2.1 概述（PIB＝PAN 信息库；GET/SET 模型）。5.2.2 MLME-GET.request、5.2.3 MLME-GET.confirm、5.2.4 MLME-SET.request、5.2.5 MLME-SET.confirm（参数见表 5-2：PIBattribute、PIBvalue、ResultCode、ReasonCode）。\n5.3 MLME SAP 接口——5.3.1 概述（请求/确认/指示/响应的语法；PNC 与 PRC 角色；汇总表 5-3）。生命周期：5.3.2 复位（MLME-RESET，SetDefaultPIB）、5.3.3 扫描（MLME-SCAN，信道评级列表）、5.3.4 启动（MLME-START——独立/子/邻居微网）、5.3.5 停止（MLME-STOP——关闭或切换）、5.3.6 关联（MLME-ASSOCIATE；.response 仅对网有效）、5.3.7 去关联（MLME-DISASSOCIATE）。运行期：5.3.8 安全管理（MLME-MEMBERSHIP-UPDATE / -SECURITY-MESSAGE / -SECURITY-ERROR）、5.3.9 PNC 切换（仅微网）、5.3.10 向 PNC 请求设备信息（MLME-DEV-INFO）、5.3.11 安全信息检索（MLME-SECURITY-INFO）、5.3.12 应用特定数据管理（信标 AS IE）、5.3.13 微网服务管理（MLME-ANNOUNCE-SERVICE / -PICONET-SERVICES）。数据流与调优：5.3.14 流管理（MLME-CREATE-/MODIFY-/TERMINATE-STREAM 用于等时流）、5.3.15 微网参数管理（MLME-BSID-CHANGE、MLME-PICONET-PARM-CHANGE 指示）、5.3.16 功耗管理（MLME-PS-SET-INFORMATION、MLME-SPS-CONFIGURE、MLME-PM-MODE-CHANGE、MLME-MONITOR-PM-MODE；PM 模式 ACTIVE/PSPS/DSPS/APS）、5.3.17 组播操作（MLME-MULTICAST-CONFIGURATION 用组地址/GrpID，MLME-MULTICAST-RX-SETUP 用 McstID——不适用于对网）、5.3.18 定时同步（MLME-BEACON-EVENT；信标数据前导定时——仅微网）、5.3.19 发射切换分集 TSD（MLME-TXDIV，按门限选择天线）。\n5.4 MAC 管理——5.4.1 总则（MAC PIB：受管对象/属性/动作/通知；只读 vs 读/写访问）。5.4.2 MAC PIB PNC 与 PRC 组（表 5-29 PNC 组：如 macCapEndTime、macMaxPsSets、macBsid、macAllowedChannelSet；表 5-30 PRC 组：如 macSuperframeDuration、macNumAssocSlots）。5.4.3 MAC PIB 特性组（表 5-31 DEV 能力/特性：如 macPowerManagementMode、macPspsSupported、macDspsSupported、macApsSupported）。",
+      "cite": {
+        "pdf_id": "802153-2023",
+        "pages": [
+          63,
+          64,
+          65,
+          66,
+          67,
+          84,
+          85,
+          97,
+          98,
+          102,
+          103,
+          105,
+          107,
+          108,
+          109,
+          110
+        ]
+      }
+    },
+    {
+      "type": "prose",
+      "en": "The final group of 5.3 actions tunes the live network. Stream management (5.3.14) sets up isochronous (steady-rate) media flows via MLME-CREATE-STREAM, MLME-MODIFY-STREAM, and MLME-TERMINATE-STREAM. Piconet parameter management (5.3.15) lets the PNC rename the beacon source identifier (BSID) and broadcasts piconet changes through MLME-PICONET-PARM-CHANGE. Power management (5.3.16) negotiates sleep behaviour — ACTIVE, piconet-synchronized power save (PSPS), device-synchronized power save (DSPS), and asynchronous power save (APS) — via primitives like MLME-PM-MODE-CHANGE. Multicast operations (5.3.17) join/leave groups and filter group traffic. Timing synchronization (5.3.18) hands the DME a MLME-BEACON-EVENT tied to beacon timing, and transmit switched diversity / TSD (5.3.19) picks the better antenna using MLME-TXDIV. Finally, clause 5.4 (MAC management) defines the MAC PIB itself: 5.4.1 the general structure, 5.4.2 the PNC/PRC group (coordinator-and-network attributes), and 5.4.3 the characteristic group (per-DEV capabilities) — the very attributes that the GET/SET primitives of 5.2 read and write.",
+      "zh": "5.3 的最后一组动作用于调优运行中的网络。流管理（5.3.14）通过 MLME-CREATE-STREAM、MLME-MODIFY-STREAM 和 MLME-TERMINATE-STREAM 建立等时（恒定速率）媒体流。微网参数管理（5.3.15）让 PNC 更改信标源标识符（BSID），并通过 MLME-PICONET-PARM-CHANGE 广播微网变更。功耗管理（5.3.16）协商休眠行为——ACTIVE、微网同步省电（PSPS）、设备同步省电（DSPS）和异步省电（APS）——使用如 MLME-PM-MODE-CHANGE 之类的原语。组播操作（5.3.17）负责加入/离开组并过滤组流量。定时同步（5.3.18）向 DME 递交一个与信标定时绑定的 MLME-BEACON-EVENT，发射切换分集 TSD（5.3.19）则用 MLME-TXDIV 选择更优的天线。最后，第 5.4 节（MAC 管理）定义了 MAC PIB 本身：5.4.1 总体结构、5.4.2 PNC/PRC 组（协调器与网络属性）、5.4.3 特性组（每个 DEV 的能力）——而这些属性正是 5.2 的 GET/SET 原语所读写的对象。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        63,
+        64,
+        65,
+        66,
+        67
+      ],
+      "note": "5.1 management model & SAPs; 5.2 generic GET/SET primitives and Table 5-2; 5.3.1 MLME SAP overview and summary Table 5-3."
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        68,
+        73,
+        75,
+        76,
+        78,
+        79,
+        80
+      ],
+      "note": "5.3.2 Reset, 5.3.3 Scan, 5.3.4 Start, 5.3.5 Stop, 5.3.6 Associate, 5.3.7 Disassociate, 5.3.8 Security management overviews."
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        84,
+        85,
+        86,
+        88,
+        90,
+        91,
+        92
+      ],
+      "note": "5.3.9 PNC handover, 5.3.10 DEV info, 5.3.11 Security info, 5.3.12 Application-specific data, 5.3.13 Piconet services."
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        97,
+        98,
+        102,
+        103,
+        105,
+        107
+      ],
+      "note": "5.3.15 Piconet parameter mgmt, 5.3.16 Power management (PM modes), 5.3.17 Multicast, 5.3.18 Timing sync, 5.3.19 TSD; 5.4.1 MAC management general."
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        108,
+        109,
+        110
+      ],
+      "note": "5.4.2 MAC PIB PNC/PRC group (Tables 5-29, 5-30) and 5.4.3 MAC PIB characteristic group (Table 5-31)."
+    }
+  ],
+  "covers": [
+    "802153-2023:5.1",
+    "802153-2023:5.2.1",
+    "802153-2023:5.2.2",
+    "802153-2023:5.2.3",
+    "802153-2023:5.2.4",
+    "802153-2023:5.2.5",
+    "802153-2023:5.3.1",
+    "802153-2023:5.3.2",
+    "802153-2023:5.3.3",
+    "802153-2023:5.3.4",
+    "802153-2023:5.3.5",
+    "802153-2023:5.3.6",
+    "802153-2023:5.3.7",
+    "802153-2023:5.3.8",
+    "802153-2023:5.3.9",
+    "802153-2023:5.3.10",
+    "802153-2023:5.3.11",
+    "802153-2023:5.3.12",
+    "802153-2023:5.3.13",
+    "802153-2023:5.3.14",
+    "802153-2023:5.3.15",
+    "802153-2023:5.3.16",
+    "802153-2023:5.3.17",
+    "802153-2023:5.3.18",
+    "802153-2023:5.3.19",
+    "802153-2023:5.4.1",
+    "802153-2023:5.4.2",
+    "802153-2023:5.4.3"
+  ],
+  "track": "pan-hr-wpan"
+}

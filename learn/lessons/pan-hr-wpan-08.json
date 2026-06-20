@@ -1,0 +1,155 @@
+{
+  "id": "pan-hr-wpan-08",
+  "title": {
+    "en": "MAC Information Elements: The Beam-Training Toolkit",
+    "zh": "MAC 信息元素：波束训练工具箱"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "An Information Element (IE) is a self-describing, optional chunk that a device drops into a beacon, command, or frame body — each one carries one piece of structured information. This lesson walks the third slice of Clause 6.4's IE catalog (subclauses 6.4.33 through 6.4.45). Almost every IE here exists to make directional radios — phased-array antennas that steer narrow beams instead of radiating in all directions — find and keep a good link. In high-rate WPANs (wireless personal area networks) at millimeter-wave and THz frequencies, the antenna must point its energy precisely, so the standard gives the MAC (medium access control) layer a whole toolkit of training IEs.",
+      "zh": "信息元素（IE，Information Element）是一段自描述的、可选的数据块，设备把它放进信标、命令或帧体中，每个元素承载一项结构化信息。本课讲解 Clause 6.4 信息元素目录的第三部分（子条款 6.4.33 到 6.4.45）。这里几乎每个 IE 都是为定向无线电服务的——所谓定向，是指相控阵天线把能量聚成窄波束、而非向四面八方辐射。在毫米波和太赫兹频段的高速 WPAN（无线个域网）中，天线必须精确指向，因此标准为 MAC（介质访问控制）层提供了一整套训练用 IE 工具箱。"
+    },
+    {
+      "type": "prose",
+      "en": "Beamforming happens in two passes. First sector-level training narrows things down to a coarse sector; then beam-level training refines that into a sharp beam, and HRS (high resolution) beams can be used for ongoing tracking. The standard supports two antenna styles: AAS (active antenna system), where transmit and receive beams differ, and SAS (sectorized antenna system), where transmit and receive use the same configuration — which is why so many IEs say 'for the SAS case, the receive field is omitted.' Keep that two-pass, two-style picture in mind and the IEs below fall into place.",
+      "zh": "波束成形分两轮进行。先做扇区级训练（sector-level training）粗略锁定一个扇区，再做波束级训练（beam-level training）把它细化成一束锐利的波束，之后还可用 HRS（high resolution，高分辨率）波束做持续跟踪。标准支持两种天线形态：AAS（active antenna system，有源天线系统）的收发波束不同；SAS（sectorized antenna system，扇区化天线系统）的收发使用相同配置——这正是众多 IE 都写着“SAS 情况下省略接收字段”的原因。记住“两轮、两形态”这幅图景，下面的 IE 就各归其位了。"
+    },
+    {
+      "type": "prose",
+      "en": "Two non-beam IEs bracket the set. The CTA Relinquish Duration IE (6.4.33) carries a single time value, in microseconds, saying how much of a CTA (channel time allocation — a reserved slot in the superframe) the owner is giving back, so neighbors can reuse the freed airtime. The Feedback IE (6.4.34) is the heart of sector-level training: it reports the Best Sector index plus its LQI (link quality indicator), the Second Best Sector and its LQI, an End Of Sector Training flag, and a running 'feedback N of total' counter so both sides know when the exchange is complete.",
+      "zh": "两个非波束 IE 把这组元素夹在中间。CTA Relinquish Duration IE（6.4.33）只携带一个以微秒为单位的时间值，表示拥有者交还了多少 CTA（channel time allocation，信道时间分配，即超帧中的预留时隙），以便邻居复用这段空出的空口时间。Feedback IE（6.4.34）是扇区级训练的核心：它上报最佳扇区索引及其 LQI（link quality indicator，链路质量指示），次佳扇区及其 LQI，一个“扇区训练结束”标志，以及一个“第 N 个 / 共 M 个反馈”的计数器，让双方都知道交换何时完成。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "LQI is not a raw dB number — it is an encoded index. The Feedback IE encodes link quality two ways: as SNR/SINR (signal-to-noise / signal-to-interference-plus-noise ratio), where the field value steps in 0.5 dB and the real SNR equals Ec/N0 + 20 dB; or as RSSIR (received signal strength indication relative to sensitivity), where each step is 1 dB above the receiver's sensitivity floor. Same field, two interpretations — the system context tells the receiver which table to read.",
+      "zh": "LQI 不是原始的 dB 数值，而是一个编码后的索引。Feedback IE 用两种方式编码链路质量：一是 SNR/SINR（信噪比 / 信号与干扰加噪声比），字段值以 0.5 dB 为步进，真实 SNR 等于 Ec/N0 + 20 dB；二是 RSSIR（received signal strength indication relative to sensitivity，相对灵敏度的接收信号强度指示），每一步比接收机灵敏度门限高 1 dB。同一个字段、两种解读——系统上下文告诉接收方该查哪张表。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 640 120\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><text x=\"8\" y=\"16\" stroke=\"none\" fill=\"currentColor\" font-size=\"12\">Feedback IE Content (6.4.34)</text><rect x=\"8\" y=\"28\" width=\"70\" height=\"40\"/><rect x=\"78\" y=\"28\" width=\"90\" height=\"40\"/><rect x=\"168\" y=\"28\" width=\"90\" height=\"40\"/><rect x=\"258\" y=\"28\" width=\"100\" height=\"40\"/><rect x=\"358\" y=\"28\" width=\"70\" height=\"40\"/><rect x=\"428\" y=\"28\" width=\"100\" height=\"40\"/><rect x=\"528\" y=\"28\" width=\"104\" height=\"40\"/><text x=\"43\" y=\"52\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">Best Sector</text><text x=\"123\" y=\"52\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">Best LQI</text><text x=\"213\" y=\"52\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">2nd Sector</text><text x=\"308\" y=\"52\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">2nd LQI</text><text x=\"393\" y=\"52\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">End Trn</text><text x=\"478\" y=\"52\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">Total Fdbk</text><text x=\"580\" y=\"52\" stroke=\"none\" fill=\"currentColor\" font-size=\"9\" text-anchor=\"middle\">Cur Index</text><text x=\"43\" y=\"84\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\" text-anchor=\"middle\">b0-3</text><text x=\"123\" y=\"84\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\" text-anchor=\"middle\">b4-9</text><text x=\"213\" y=\"84\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\" text-anchor=\"middle\">b10-13</text><text x=\"308\" y=\"84\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\" text-anchor=\"middle\">b14-19</text><text x=\"393\" y=\"84\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\" text-anchor=\"middle\">b20</text><text x=\"478\" y=\"84\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\" text-anchor=\"middle\">b24-27</text><text x=\"580\" y=\"84\" stroke=\"none\" fill=\"currentColor\" font-size=\"8\" text-anchor=\"middle\">b28-31</text></svg>",
+      "caption": {
+        "en": "The Feedback IE (6.4.34): two best sectors with their LQIs, an end-of-training flag, and a feedback counter (bits b21-b23 reserved).",
+        "zh": "Feedback IE（6.4.34）：两个最佳扇区及其 LQI、一个训练结束标志和一个反馈计数器（b21-b23 为保留位）。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "After feedback comes mapping and clustering. The Mapping IE (6.4.35) hands over the number of TX (transmit) and RX (receive) beams to use next, a Sync Mode that sets the sync-sequence length, and a Tracking Period for the best and second-best cluster (encoded as a small index, e.g. 0.004 ms up to 32.768 ms). A 'cluster' is a group of neighboring beams treated as a unit. The BST Clustering IE (6.4.36) describes this beam-search-training (BST) clustering: how many TX/RX clusters there are and how many beams sit in each. The PET Clustering IE (6.4.37) does the analogous job for PET — pattern estimation training — where each Cluster Descriptor carries a Center Beam Index and a Cluster Encoding that names the cluster's geometry.",
+      "zh": "反馈之后是映射与分簇。Mapping IE（6.4.35）交付接下来要使用的 TX（发送）与 RX（接收）波束数量、设定同步序列长度的 Sync Mode，以及最佳簇和次佳簇的 Tracking Period（跟踪周期，以小索引编码，例如 0.004 ms 直到 32.768 ms）。所谓“簇（cluster）”是把相邻的若干波束当作一个单元来处理。BST Clustering IE（6.4.36）描述这种波束搜索训练（BST，beam-search-training）的分簇：有多少个 TX/RX 簇，以及每个簇里有多少波束。PET Clustering IE（6.4.37）则为 PET（pattern estimation training，方向图估计训练）做同样的事，其中每个簇描述符携带一个中心波束索引和一个说明簇几何形状的 Cluster Encoding。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Sector-level training] -->|Feedback IE 6.4.34| B[Best + 2nd sector chosen]\n  B -->|Mapping IE 6.4.35| C[Beam counts + tracking period]\n  C --> D[Clustering: BST 6.4.36 / PET 6.4.37]\n  D -->|Beam PET 6.4.38| E[Pattern estimation training]\n  E -->|PET Amplitude 6.4.40 / PET Phase 6.4.41| F[Per-element weights]\n  D -->|HRS Beam PET 6.4.39| G[High-res beam tracking]",
+      "zh": "flowchart TD\n  A[扇区级训练] -->|Feedback IE 6.4.34| B[选定最佳与次佳扇区]\n  B -->|Mapping IE 6.4.35| C[波束数量 + 跟踪周期]\n  C --> D[分簇: BST 6.4.36 / PET 6.4.37]\n  D -->|Beam PET 6.4.38| E[方向图估计训练]\n  E -->|PET Amplitude 6.4.40 / PET Phase 6.4.41| F[逐阵元权重]\n  D -->|HRS Beam PET 6.4.39| G[高分辨率波束跟踪]"
+    },
+    {
+      "type": "prose",
+      "en": "PET — pattern estimation training — is how a device learns the exact amplitude and phase weights for each antenna element so it can synthesize a custom beam shape. The Beam PET IE (6.4.38) configures it: how many antennas along the z-axis and x-axis (a 2-D array example), which Beam Codebook IDs to use per axis, and the Amplitude Resolution and Phase Resolution (each coded as N, giving 2^N discrete values, capped at N=4). The HRS Beam PET IE (6.4.39) is the same idea for high-resolution beams, carrying just the HRS codebook IDs per axis. Then the estimated weights themselves arrive: the PET Amplitude IE (6.4.40) lists each element's amplitude as a fraction N/D of the strongest element, and the PET Phase IE (6.4.41) lists each element's phase as a fraction of a full circle (e.g. resolution 4 gives 16 steps of 22.5 degrees each).",
+      "zh": "PET（pattern estimation training，方向图估计训练）是设备学习每个天线阵元精确幅度与相位权重的过程，从而合成出定制的波束形状。Beam PET IE（6.4.38）对其进行配置：z 轴和 x 轴各有多少天线（以二维阵列为例）、每个轴使用哪个波束码本 ID，以及幅度分辨率（Amplitude Resolution）和相位分辨率（Phase Resolution，各以 N 编码，给出 2^N 个离散值，上限 N=4）。HRS Beam PET IE（6.4.39）是高分辨率波束的同一思路，只携带每个轴的 HRS 码本 ID。随后估计出的权重本身到达：PET Amplitude IE（6.4.40）将每个阵元的幅度表示为相对最强阵元的分数 N/D，PET Phase IE（6.4.41）将每个阵元的相位表示为整圆的分数（例如分辨率为 4 时给出 16 个 22.5 度的步进）。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Notice the recurring 'Reserved field present only if odd' trick in the PET Amplitude and PET Phase IEs. Each element value is 4 bits, so an odd number of elements would leave the content unaligned; a 6-bit reserved tail is appended only when needed to round the byte boundary. This is a common octet-alignment pattern across the IE catalog — worth recognizing so the bit layouts never surprise you.",
+      "zh": "注意 PET Amplitude 和 PET Phase IE 中反复出现的“仅当为奇数时才有保留字段”技巧。每个阵元值占 4 比特，因此奇数个阵元会使内容无法对齐；只有在需要时才追加一个 6 比特的保留尾部，以凑齐字节边界。这是 IE 目录中常见的八位字节对齐模式——认得它，比特布局就再不会让你意外。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Coverage map: the four 'outlier' IEs — Sync Frame Frequency, Directional Peer, MIMO Information, Higher Layer Protocol Information",
+        "zh": "覆盖地图：四个“异类”IE——Sync Frame Frequency、Directional Peer、MIMO Information、Higher Layer Protocol Information"
+      },
+      "en": "The final four IEs step outside pure beam training. The Sync Frame Frequency IE (6.4.42) lets the PNC (piconet coordinator) ask a device how many superframes to wait between Sync frames (zero means 'stop sending'), plus a Sync Frame Direction bit: 0 = omni-directional transmission, 1 = directional (round-robin across the device's directions). The Directional Peer IE (6.4.43) sets up directional peer-to-peer links in the CAP (contention access period) / S-CAP: a SrcID and DestID (both DEVIDs, device identifiers), a Configuration field with a Request/Release bit and a Unidirectional/Bidirectional Allowance bit, and an Allocated Superframes count. The MIMO Information IE (6.4.44, for pairnet) packs a MIMO (multiple-input multiple-output) Parameter field: an SC (single-carrier) Supported MIMO bitmap for 2x2 / 4x4 / 9x9 / 16x16, a Number of MIMO Array Training count, an Array Training Interval (10/20/40/80 ms), and a MIMO CES (channel estimation sequence) Type bit selecting frequency- vs time-domain estimation. Finally the Higher Layer Protocol Information IE (6.4.45, for pairnet) is a passthrough: a 3-octet Unique ID identifies an entity, and the variable Higher Layer Protocol Information field carries data whose format is outside this standard's scope — a note recommends processing it before other IEs for fast connection setup.",
+      "zh": "最后四个 IE 走出了纯粹的波束训练范畴。Sync Frame Frequency IE（6.4.42）让 PNC（piconet coordinator，微微网协调器）告诉设备每隔多少超帧发送一次 Sync 帧（零表示“停止发送”），外加一个 Sync Frame Direction 比特：0 = 全向发送，1 = 定向（在设备各方向间轮询）。Directional Peer IE（6.4.43）在 CAP（contention access period，竞争接入期）/ S-CAP 中建立定向点对点链路：一个 SrcID 和一个 DestID（均为 DEVID，设备标识符）、一个含 Request/Release 比特和 Unidirectional/Bidirectional Allowance 比特的 Configuration 字段，以及一个 Allocated Superframes 计数。MIMO Information IE（6.4.44，用于 pairnet）封装一个 MIMO（multiple-input multiple-output，多输入多输出）Parameter 字段：一个针对 2x2 / 4x4 / 9x9 / 16x16 的 SC（single-carrier，单载波）Supported MIMO 位图、一个 MIMO 阵列训练次数、一个阵列训练间隔（10/20/40/80 ms），以及一个选择频域或时域估计的 MIMO CES（channel estimation sequence，信道估计序列）Type 比特。最后，Higher Layer Protocol Information IE（6.4.45，用于 pairnet）是一个透传：3 字节的 Unique ID 标识某个实体，可变长的 Higher Layer Protocol Information 字段承载其格式超出本标准范围的数据——一条注释建议优先处理它以实现快速连接建立。",
+      "cite": {
+        "pdf_id": "802153-2023",
+        "pages": [
+          207,
+          208,
+          209,
+          210
+        ]
+      }
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Full clause index for this lesson (6.4.33 - 6.4.45)",
+        "zh": "本课完整条款索引（6.4.33 - 6.4.45）"
+      },
+      "en": "Quick reference, in order. 6.4.33 CTA Relinquish Duration IE — microseconds of a CTA given back (p.201). 6.4.34 Feedback IE — best/second-best sector + LQI, sector-training feedback (p.201-202). 6.4.35 Mapping IE — beam counts, sync mode, cluster tracking period (p.203). 6.4.36 BST Clustering IE — beam-search-training cluster sizes (p.204). 6.4.37 PET Clustering IE — pattern-estimation cluster descriptors with center beam + geometry (p.204-205). 6.4.38 Beam PET IE — antenna counts, codebook IDs, amplitude/phase resolution (p.205-206). 6.4.39 HRS Beam PET IE — high-resolution codebook IDs (p.206). 6.4.40 PET Amplitude IE — per-element amplitude fractions (p.207). 6.4.41 PET Phase IE — per-element phase fractions (p.207). 6.4.42 Sync Frame Frequency IE — superframes between Sync frames + direction (p.207-208). 6.4.43 Directional Peer IE — directional peer link setup in the CAP/S-CAP (p.208). 6.4.44 MIMO Information IE — MIMO config and array-training parameters for pairnet (p.209-210). 6.4.45 Higher Layer Protocol Information IE — opaque upper-layer passthrough for pairnet (p.210).",
+      "zh": "速查表，按顺序排列。6.4.33 CTA Relinquish Duration IE——交还的 CTA 微秒数（第 201 页）。6.4.34 Feedback IE——最佳/次佳扇区及 LQI，扇区训练反馈（第 201-202 页）。6.4.35 Mapping IE——波束数量、同步模式、簇跟踪周期（第 203 页）。6.4.36 BST Clustering IE——波束搜索训练的簇大小（第 204 页）。6.4.37 PET Clustering IE——方向图估计的簇描述符，含中心波束与几何（第 204-205 页）。6.4.38 Beam PET IE——天线数量、码本 ID、幅度/相位分辨率（第 205-206 页）。6.4.39 HRS Beam PET IE——高分辨率码本 ID（第 206 页）。6.4.40 PET Amplitude IE——逐阵元幅度分数（第 207 页）。6.4.41 PET Phase IE——逐阵元相位分数（第 207 页）。6.4.42 Sync Frame Frequency IE——Sync 帧间隔的超帧数及方向（第 207-208 页）。6.4.43 Directional Peer IE——在 CAP/S-CAP 中建立定向点对点链路（第 208 页）。6.4.44 MIMO Information IE——pairnet 的 MIMO 配置与阵列训练参数（第 209-210 页）。6.4.45 Higher Layer Protocol Information IE——pairnet 的不透明上层透传（第 210 页）。",
+      "cite": {
+        "pdf_id": "802153-2023",
+        "pages": [
+          201,
+          202,
+          203,
+          204,
+          205,
+          206,
+          207,
+          208,
+          209,
+          210
+        ]
+      }
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        201,
+        202
+      ],
+      "note": "6.4.33 CTA Relinquish Duration IE; 6.4.34 Feedback IE with LQI/SNR/RSSIR encoding tables"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        203,
+        204,
+        205
+      ],
+      "note": "6.4.35 Mapping IE; 6.4.36 BST Clustering IE; 6.4.37 PET Clustering IE; 6.4.38 Beam PET IE"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        206,
+        207,
+        208
+      ],
+      "note": "6.4.39 HRS Beam PET IE; 6.4.40 PET Amplitude; 6.4.41 PET Phase; 6.4.42 Sync Frame Frequency; 6.4.43 Directional Peer IE"
+    },
+    {
+      "pdf_id": "802153-2023",
+      "pages": [
+        209,
+        210
+      ],
+      "note": "6.4.44 MIMO Information IE; 6.4.45 Higher Layer Protocol Information IE"
+    }
+  ],
+  "covers": [
+    "802153-2023:6.4.33",
+    "802153-2023:6.4.34",
+    "802153-2023:6.4.35",
+    "802153-2023:6.4.36",
+    "802153-2023:6.4.37",
+    "802153-2023:6.4.38",
+    "802153-2023:6.4.39",
+    "802153-2023:6.4.40",
+    "802153-2023:6.4.41",
+    "802153-2023:6.4.42",
+    "802153-2023:6.4.43",
+    "802153-2023:6.4.44",
+    "802153-2023:6.4.45"
+  ],
+  "track": "pan-hr-wpan"
+}

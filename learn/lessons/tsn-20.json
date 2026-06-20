@@ -1,0 +1,170 @@
+{
+  "id": "tsn-20",
+  "title": {
+    "en": "The Reference Shelf: gPTP's MIB, Coordinated Shared Networks, and the Annexes (PICS, Performance, Timescales, Profile)",
+    "zh": "参考资料架：gPTP 的 MIB、协调共享网络（CSN）与各附录（PICS、性能、时标、PTP 配置文件）"
+  },
+  "estMinutes": 5,
+  "prereqs": [],
+  "blocks": [
+    {
+      "type": "prose",
+      "en": "This lesson is the reference shelf at the back of IEEE Std 802.1AS-2020, the generalized Precision Time Protocol (gPTP) standard. We cover three things a fluent reader needs to find quickly: Clause 15, the Management Information Base (MIB) that lets a network manager read and configure the timing engine; Clause 16, how gPTP rides over a Coordinated Shared Network (CSN) such as a coax or powerline backbone; and the eight annexes (A through H) that carry the conformance checklist, the hard performance numbers, the timescale background, and the formal PTP profile. None of this invents new protocol behavior — it packages, manages, and pins down the machinery taught earlier.",
+      "zh": "本课是 IEEE Std 802.1AS-2020（广义精确时间协议，gPTP 标准）末尾的「参考资料架」。我们覆盖熟练读者需要快速查到的三类内容：第 15 章——管理信息库（MIB），让网管能读取并配置授时引擎；第 16 章——gPTP 如何运行在协调共享网络（CSN，如同轴或电力线骨干）之上；以及 A 至 H 八个附录，分别承载一致性核对表、硬性能指标、时标背景知识和正式的 PTP 配置文件。这些内容都不发明新的协议行为，而是把前面讲过的机制加以打包、管理与精确固定。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 15 (Managed object definitions) is gPTP's window for remote management. 15.1 (Internet Standard Management Framework) anchors it to the IETF world: managed objects live in a MIB, are reached via the Simple Network Management Protocol (SNMP), and are written in SMIv2 (Structure of Management Information, version 2). 15.2 (Structure of the MIB) lists the subtrees — one per data set the protocol already defines: defaultDS, currentDS, parentDS, timePropertiesDS, portDS, the statistics sets, and the Common Mean Link Delay Service (CMLDS) sets. So the MIB is not new state; it is an SNMP-shaped mirror of the data sets you met in the clauses on the state machines.",
+      "zh": "第 15 章（受管对象定义）是 gPTP 的远程管理窗口。15.1（Internet 标准管理框架）把它锚定到 IETF 体系：受管对象存放在 MIB 中，通过简单网络管理协议（SNMP）访问，并以 SMIv2（管理信息结构第 2 版）书写。15.2（MIB 结构）列出各子树——每个对应协议已定义的一个数据集：defaultDS、currentDS、parentDS、timePropertiesDS、portDS、各统计集合，以及公共平均链路时延服务（CMLDS）的相关集合。因此 MIB 不是新状态，而是你在状态机各章节里见过的那些数据集的、按 SNMP 形态呈现的镜像。"
+    },
+    {
+      "type": "prose",
+      "en": "The rest of Clause 15 fills in the details. 15.3 (Relationship to MIB in IEEE Std 802.1AS-2011) explains that this version-2 module (IEEE8021-AS-V2) supersedes the 2011 version-1 module, re-indexing objects so multiple PTP Instances (multiple gPTP domains) can be addressed; for a single-instance device the two co-exist. 15.4 (Security considerations) is a frank warning: SNMP before v3 lacked real security, so use SNMPv3 with cryptographic authentication and privacy — and it names the dangerous writable objects (priority1, priority2 can rig the Grandmaster election; ptpPortEnabled and delayAsymmetry can segment the network or corrupt accuracy). 15.5 (Textual conventions) defines reusable data types such as ClockIdentity and scaled-nanosecond time intervals, and 15.6 (IEEE 802.1AS MIB module) is the actual machine-readable module body, freely reproducible and downloadable in ASCII from the IEEE 802.1 website.",
+      "zh": "第 15 章其余部分补全细节。15.3（与 IEEE Std 802.1AS-2011 中 MIB 的关系）说明此第 2 版模块（IEEE8021-AS-V2）取代 2011 年的第 1 版模块，对对象重新编址以便寻址多个 PTP 实例（多个 gPTP 域）；对单实例设备两版可共存。15.4（安全考量）是直白的警告：SNMPv3 之前缺乏真正的安全，故应使用带加密认证与保密的 SNMPv3——并点名危险的可写对象（priority1、priority2 可操纵主时钟选举；ptpPortEnabled 与 delayAsymmetry 可使网络分段或破坏精度）。15.5（文本约定）定义可复用数据类型，如 ClockIdentity 和以纳秒缩放为单位的时间间隔；15.6（IEEE 802.1AS MIB 模块）则是实际的机器可读模块正文，可自由复制，并能从 IEEE 802.1 网站下载 ASCII 版本。"
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Mental model for Clause 15: the MIB is a remote dashboard, not a new brain. Every knob (read-write object) and gauge (read-only object) maps back to a data-set field defined elsewhere in the standard. If you can name the data set, you can find its MIB object in Table 15-1.",
+      "zh": "理解第 15 章的心智模型：MIB 是一块远程仪表盘，而非新的大脑。每个旋钮（可读写对象）和仪表（只读对象）都映射回标准其他处定义的某个数据集字段。只要你能说出数据集名称，就能在表 15-1 中找到对应的 MIB 对象。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 16 (Media-dependent layer specification for CSN) handles a link type that is neither point-to-point Ethernet nor Wi-Fi. 16.1 (Overview) reminds us time flows from the Grandmaster (root of the clock spanning tree) toward the leaves, but the way time crosses each hop depends on the medium. 16.2 (Coordinated Shared Network characteristics) defines a CSN: a contention-free, time-division, shared medium where one node coordinates transmission opportunities. Physically it is one shared wire; logically it is a fully connected one-hop mesh. Each CSN node acts as a two-port PTP Relay Instance bridging the shared medium to an external segment. 16.3 (Layering for CSN links) gives each CSN logical port one PortSync entity plus one Media-Dependent (MD) entity that translates media-independent primitives into CSN-specific ones, reusing the MDSyncSend and MDSyncReceive state machines.",
+      "zh": "第 16 章（CSN 的介质相关层规范）处理一种既非点对点以太网也非 Wi-Fi 的链路类型。16.1（概述）提醒我们：时间从主时钟（时钟生成树的根）流向叶子，但时间跨越每一跳的方式取决于介质。16.2（协调共享网络特性）定义 CSN：一种无竞争、时分、共享介质的网络，由一个节点协调各节点的发送机会。物理上它是一根共享线缆；逻辑上它是全连接的单跳网状网。每个 CSN 节点充当双端口 PTP 中继实例，把共享介质桥接到外部网段。16.3（CSN 链路的分层）为每个 CSN 逻辑端口配一个 PortSync 实体加一个介质相关（MD）实体，后者把介质无关原语翻译为 CSN 专用原语，并复用 MDSyncSend 与 MDSyncReceive 状态机。"
+    },
+    {
+      "type": "figure",
+      "svg": "<svg viewBox=\"0 0 460 150\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"10\" y=\"55\" width=\"70\" height=\"40\"/><text x=\"45\" y=\"40\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Upstream PTP</text><rect x=\"140\" y=\"55\" width=\"70\" height=\"40\"/><text x=\"175\" y=\"40\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Ingress CSN node</text><rect x=\"250\" y=\"55\" width=\"70\" height=\"40\"/><text x=\"285\" y=\"40\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Egress CSN node</text><rect x=\"380\" y=\"55\" width=\"70\" height=\"40\"/><text x=\"415\" y=\"40\" fill=\"currentColor\" stroke=\"none\" font-size=\"10\" text-anchor=\"middle\">Downstream PTP</text><line x1=\"80\" y1=\"75\" x2=\"140\" y2=\"75\"/><text x=\"110\" y=\"70\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Path 1</text><line x1=\"210\" y1=\"75\" x2=\"250\" y2=\"75\" stroke-dasharray=\"4 3\"/><text x=\"230\" y=\"70\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Path 2 (CSN)</text><line x1=\"320\" y1=\"75\" x2=\"380\" y2=\"75\"/><text x=\"350\" y=\"70\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">Path 3</text><text x=\"230\" y=\"120\" fill=\"currentColor\" stroke=\"none\" font-size=\"9\" text-anchor=\"middle\">propagation delay measured on Paths 1, 2, 3; residence time at each node</text></svg>",
+      "caption": {
+        "en": "The three path-delay segments over a CSN backbone (Clause 16.4): node-to-neighbor on each side, and node-to-node across the shared medium.",
+        "zh": "CSN 骨干上的三段路径时延（第 16.4 节）：两侧各自的节点—邻居段，以及跨共享介质的节点—节点段。"
+      }
+    },
+    {
+      "type": "prose",
+      "en": "16.4 (Path delay measurement over a CSN backbone) splits the journey into three measured segments. 16.4.1 (General) names them: upstream-to-ingress, ingress-to-egress (across the CSN), and egress-to-downstream; precise timestamps at every node ingress and egress let you separate propagation delay from residence time. 16.4.2 (between CSN node and neighbor PTP Instance) just uses whatever the neighboring medium specifies. 16.4.3 (between CSN nodes) offers two methods: 16.4.3.2 reuses the standard peer-to-peer delay protocol (Pdelay_Req/Resp) with free-running clocks, computing neighborRateRatio and meanLinkDelay from the timestamps; 16.4.3.3 lets a CSN with a native ranging mechanism skip Pdelay entirely and simply populate asCapable, neighborRateRatio, and meanLinkDelay from the native measurement.",
+      "zh": "16.4（跨 CSN 骨干的路径时延测量）把整段行程拆为三个测量段。16.4.1（总则）为它们命名：上游到入口、入口到出口（跨 CSN）、出口到下游；每个节点入口与出口的精确时间戳让你把传播时延与驻留时间分离开。16.4.2（CSN 节点与邻接 PTP 实例之间）直接采用邻接介质所规定的方法。16.4.3（CSN 节点之间）给出两种方法：16.4.3.2 复用标准的对等时延协议（Pdelay_Req/Resp），在自由运行时钟下用时间戳计算 neighborRateRatio 与 meanLinkDelay；16.4.3.3 则允许带原生测距机制的 CSN 完全跳过 Pdelay，直接用原生测量填充 asCapable、neighborRateRatio 与 meanLinkDelay。"
+    },
+    {
+      "type": "diagram",
+      "en": "flowchart TD\n  A[Sync arrives at ingress CSN node] --> B{CSN has network reference clock?}\n  B -->|No 16.5.2| C[Treat nodes as free-running; relay Sync + Follow_Up per point-to-point rules]\n  B -->|Yes 16.5.3| D[Timestamp at ingress and egress; carry data in CSN TLV]\n  D --> E[Egress strips CSN TLV, forwards Sync downstream]\n  C --> F[Downstream PTP Instance]\n  E --> F",
+      "zh": "flowchart TD\n  A[Sync 到达入口 CSN 节点] --> B{CSN 是否有网络参考时钟?}\n  B -->|否 16.5.2| C[节点视为自由运行; 按点对点规则转发 Sync 与 Follow_Up]\n  B -->|是 16.5.3| D[在入口与出口打时间戳; 数据装入 CSN TLV]\n  D --> E[出口剥除 CSN TLV, 向下游转发 Sync]\n  C --> F[下游 PTP 实例]\n  E --> F"
+    },
+    {
+      "type": "prose",
+      "en": "16.5 (Synchronization messages) is how time actually crosses the CSN. 16.5.1 (General) says the CSN propagates time using Sync (plus Follow_Up if two-step) once the three delay segments are known. 16.5.2 (without network reference clock) treats the ingress and egress clocks as independent free-runners and uses the ordinary point-to-point Sync/Follow_Up machinery, optionally broadcasting. 16.5.3 (with network reference clock) is the elegant shortcut: if the CSN already keeps all node clocks mutually synchronized, the ingress node timestamps the Sync, packs upstreamTxTime, neighborRateRatio, meanLinkDelay, and delayAsymmetry into a CSN TLV (a 00-80-C2 organization-extension Type-Length-Value field), the egress node reads those values back out and removes the TLV before forwarding. The CSN residence time replaces the per-link delay math.",
+      "zh": "16.5（同步报文）讲时间实际如何跨越 CSN。16.5.1（总则）说明：一旦三段时延已知，CSN 即用 Sync（两步法时再加 Follow_Up）传播时间。16.5.2（无网络参考时钟）把入口与出口时钟视为彼此独立的自由运行时钟，采用普通点对点的 Sync/Follow_Up 机制，可选广播。16.5.3（有网络参考时钟）是优雅的捷径：若 CSN 已让所有节点时钟彼此同步，入口节点给 Sync 打时间戳，把 upstreamTxTime、neighborRateRatio、meanLinkDelay 与 delayAsymmetry 装入一个 CSN TLV（00-80-C2 组织扩展型长度值字段），出口节点再读出这些值并在转发前移除该 TLV。CSN 驻留时间替代了逐链路的时延计算。"
+    },
+    {
+      "type": "prose",
+      "en": "Clause 16 closes with the practicalities. 16.6 (Specific CSN requirements): 16.6.1 (General) points to Table 16-2 for each technology's reference plane; 16.6.2 (MoCA-specific behavior) maps gPTP onto Multimedia over Coax Alliance (MoCA) networks, timestamping Sync at the channel time clock (CTC) and carrying frames as MoCA control frames; 16.6.3 (ITU-T G.hn-specific behavior) covers G.hn powerline/coax/phone-line links, using a 32-bit native timestamp in the G.hn header. 16.7 (Grandmaster PTP Instance capability) lets any CSN node be grandmaster-capable, with broadcast Announce messages disciplined so only one PortSync/MD pair emits them. 16.8 (CSN clock and node performance requirements) simply binds CSN clocks and nodes to the numeric limits in Annex B.",
+      "zh": "第 16 章以工程细节收尾。16.6（CSN 专项要求）：16.6.1（总则）指向表 16-2 给出各技术的参考平面；16.6.2（MoCA 专属行为）把 gPTP 映射到 MoCA（同轴多媒体联盟）网络，用信道时间时钟（CTC）给 Sync 打时间戳，并以 MoCA 控制帧承载报文；16.6.3（ITU-T G.hn 专属行为）涵盖 G.hn 电力线/同轴/电话线链路，使用 G.hn 头部中的 32 位原生时间戳。16.7（主时钟 PTP 实例能力）允许任意 CSN 节点具备主时钟能力，并约束广播 Announce 报文使得只有一个 PortSync/MD 对发出它们。16.8（CSN 时钟与节点性能要求）则直接把 CSN 时钟与节点绑定到附录 B 的数值限值上。"
+    },
+    {
+      "type": "deepdive",
+      "summary": {
+        "en": "Annex coverage map (A–H): conformance, performance numbers, timescales, the PTP profile, and asymmetry compensation",
+        "zh": "附录覆盖地图（A–H）：一致性、性能指标、时标、PTP 配置文件与不对称补偿"
+      },
+      "en": "Annex A (normative) — Protocol Implementation Conformance Statement (PICS) proforma: the supplier's checklist of which mandatory (M) / optional (O) / prohibited (X) capabilities are implemented, used by implementers, acquirers, and testers to predict interworking (p.380). Annex B (normative) — Performance requirements: the hard numbers — LocalClock frequency within +/-100 ppm, time-measurement granularity <= ~40 ns, jitter <= 2 ns peak-to-peak, wander masks via TDEV/ADEV/PTPDEV, residence time and Pdelay turnaround each <= 10 ms, rate-ratio measurement error <= 0.1 ppm, and the headline end-to-end result: <= 1 microsecond peak-to-peak across seven or fewer hops (pp.398-405). Annex C (informative) — Timescales and epochs: how TAI, UTC, GPS, NTP, and PTP relate, leap seconds, and the POSIX conversion formulas (pp.406-409). Annex D — Reserved for future use (p.410). Annex E — Reserved for future use; redirects readers to Clause 16 for CSN (p.411). Annex F (informative) — PTP profile included in this standard: the formal IEEE 802.1AS PTP profile, profileIdentifier 00-80-C2-00-02-00, naming the peer-to-peer delay mechanism, default BMCA, and the default intervals; note this profile is NOT used over Wi-Fi or EPON, which use native timing (pp.412-414). Annex G (informative) — Asymmetry compensation by line-swapping: a Network Management System procedure that physically swaps transmit/receive fibers and measures the delay difference to compensate long-fiber asymmetry (pp.415-417). Annex H (informative) — Bibliography: the cited references (RFCs, ITU-T, MoCA, IEEE 1588, etc.) (pp.418-419).",
+      "zh": "附录 A（规范性）——协议实现一致性声明（PICS）模板：供应商列出哪些强制（M）/可选（O）/禁止（X）能力已实现的核对表，供实现者、采购方与测试者预判互通性（第 380 页）。附录 B（规范性）——性能要求：硬性指标——LocalClock 频率在 +/-100 ppm 内、时间测量粒度 <= 约 40 ns、抖动 <= 2 ns 峰峰值、用 TDEV/ADEV/PTPDEV 表示的漂移模板、驻留时间与 Pdelay 周转时间各 <= 10 ms、速率比测量误差 <= 0.1 ppm，以及标志性的端到端结果：七跳及以内 <= 1 微秒峰峰值（第 398-405 页）。附录 C（资料性）——时标与历元：TAI、UTC、GPS、NTP 与 PTP 的关系、闰秒，以及 POSIX 换算公式（第 406-409 页）。附录 D——预留未来使用（第 410 页）。附录 E——预留未来使用；将读者引向第 16 章的 CSN（第 411 页）。附录 F（资料性）——本标准包含的 PTP 配置文件：正式的 IEEE 802.1AS PTP 配置文件，profileIdentifier 为 00-80-C2-00-02-00，规定对等时延机制、默认 BMCA 与默认间隔；注意该配置文件不用于 Wi-Fi 或 EPON，二者使用原生授时（第 412-414 页）。附录 G（资料性）——基于换线法的不对称补偿：由网络管理系统控制、物理交换收发光纤并测量时延差以补偿长光纤不对称的流程（第 415-417 页）。附录 H（资料性）——参考文献：所引用的资料（RFC、ITU-T、MoCA、IEEE 1588 等）（第 418-419 页）。",
+      "cite": {
+        "pdf_id": "8021AS-2020",
+        "pages": [
+          380,
+          398,
+          403,
+          406,
+          410,
+          411,
+          412,
+          415,
+          418
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "en": "Why Annex B is the one to memorize: those few numbers — 100 ppm, 40 ns granularity, 10 ms residence, 0.1 ppm rate-ratio error, and 1 microsecond over seven hops — are the budget that every other clause spends. When you wonder 'why is this interval or this state machine designed this way?', the answer usually traces back to staying inside Annex B.",
+      "zh": "为何附录 B 最值得记住：那寥寥几个数字——100 ppm、40 ns 粒度、10 ms 驻留、0.1 ppm 速率比误差、七跳内 1 微秒——就是其他所有章节要花用的预算。当你疑惑「为什么这个间隔或这个状态机要这样设计」时，答案往往可追溯到要守住附录 B 的限值。"
+    }
+  ],
+  "cites": [
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        285,
+        286,
+        292,
+        293,
+        294
+      ],
+      "note": "Clause 15: MIB framework, structure, relationship to 2011 MIB, security, textual conventions, module"
+    },
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        369,
+        370,
+        371,
+        372,
+        373,
+        374,
+        375,
+        376,
+        377,
+        378,
+        379
+      ],
+      "note": "Clause 16: CSN overview, layering, path delay, sync messages, MoCA/G.hn, grandmaster, performance"
+    },
+    {
+      "pdf_id": "8021AS-2020",
+      "pages": [
+        380,
+        398,
+        403,
+        406,
+        410,
+        411,
+        412,
+        415,
+        418
+      ],
+      "note": "Annexes A-H: PICS, performance numbers, timescales, reserved, PTP profile, asymmetry, bibliography"
+    }
+  ],
+  "covers": [
+    "8021AS-2020:15.1",
+    "8021AS-2020:15.2",
+    "8021AS-2020:15.3",
+    "8021AS-2020:15.4",
+    "8021AS-2020:15.5",
+    "8021AS-2020:15.6",
+    "8021AS-2020:16.1",
+    "8021AS-2020:16.2",
+    "8021AS-2020:16.3",
+    "8021AS-2020:16.4.1",
+    "8021AS-2020:16.4.2",
+    "8021AS-2020:16.4.3",
+    "8021AS-2020:16.5.1",
+    "8021AS-2020:16.5.2",
+    "8021AS-2020:16.5.3",
+    "8021AS-2020:16.6.1",
+    "8021AS-2020:16.6.2",
+    "8021AS-2020:16.6.3",
+    "8021AS-2020:16.7",
+    "8021AS-2020:16.8",
+    "8021AS-2020:Annex_A",
+    "8021AS-2020:Annex_B",
+    "8021AS-2020:Annex_C",
+    "8021AS-2020:Annex_D",
+    "8021AS-2020:Annex_E",
+    "8021AS-2020:Annex_F",
+    "8021AS-2020:Annex_G",
+    "8021AS-2020:Annex_H"
+  ],
+  "track": "tsn"
+}
